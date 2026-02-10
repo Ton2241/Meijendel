@@ -1,0 +1,1 @@
+JOIN soorten s ON w.soort_id = s.id

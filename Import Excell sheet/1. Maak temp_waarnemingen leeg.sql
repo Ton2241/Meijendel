@@ -1,0 +1,2 @@
+TRUNCATE TABLE temp_waarnemingen_breed;
+TRUNCATE TABLE temp_waarnemingen_lang;
