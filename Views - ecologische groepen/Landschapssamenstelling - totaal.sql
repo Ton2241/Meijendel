@@ -32,7 +32,7 @@ GroepTotalen AS (
 SELECT 
     gt.jaar AS Jaar,
     gt.gekozen_code AS Groep_code,
-    evg.beschrijving AS `Ecologische Groep`,
+    evg.beschrijving AS `ecologische_groep_beschrijving`,
     -- We berekenen de dichtheid (territoria / totaal oppervlak) 
     -- en kijken welk aandeel dat heeft in de totale dichtheid van dat jaar
     ROUND((gt.som_territoria_groep / jo.totaal_opp_jaar) / 

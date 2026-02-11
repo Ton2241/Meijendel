@@ -35,7 +35,7 @@ SELECT
     gtj.plot_id AS plot_id,
     gtj.jaar AS jaar,
     gtj.gekozen_code AS groep_code,
-    evg.beschrijving AS `Ecologische Groep`,
+    evg.beschrijving AS `ecologische_groep_beschrijving`,
     ROUND((gtj.totaal_groep_territoria / NULLIF(gtj.jaar_totaal, 0)) * 100, 0) AS `%`
 FROM GroepTotalenPerJaar gtj
 JOIN ecologische_vogelgroepen evg ON gtj.gekozen_code = evg.groep_code
