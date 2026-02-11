@@ -1,0 +1,1 @@
+WHERE p.KavelNummer NOT IN ('66', '91')
