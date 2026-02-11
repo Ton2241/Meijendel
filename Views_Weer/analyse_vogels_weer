@@ -2,10 +2,11 @@
 WITH weer_per_jaar AS (
     SELECT 
         YEAR(datum) AS jaar, 
-        -- We delen door 10.0 om decimalen te forceren en ronden af op 1 cijfer
-        ROUND(AVG(temp_gem) / 10.0, 1) AS gem_temp_broedseizoen
-    FROM weer_katwijk_data
-    WHERE temp_gem != 0 -- Negeer dagen waar de meter op 0 stond (foutieve data)
+        -- We gebruiken nu de kolom 'temp_celsius' uit de View
+        -- De deling door 10.0 zit al in de View ingebakken!
+        ROUND(AVG(temp_celsius), 1) AS gem_temp_broedseizoen
+    FROM weer_totaal
+    WHERE temp_celsius != 0 
       AND (
         (MONTH(datum) = 2 AND DAY(datum) >= 15)
         OR (MONTH(datum) BETWEEN 3 AND 5)
