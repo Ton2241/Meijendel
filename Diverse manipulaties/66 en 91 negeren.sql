@@ -1,1 +1,1 @@
-WHERE p.KavelNummer NOT IN ('66', '91')
+WHERE p.kavel_nummer NOT IN ('66', '91')

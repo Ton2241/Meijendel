@@ -1,16 +1,16 @@
 SELECT 
-    s.Soort AS vogelsoort,
+    s.soort_naam AS vogelsoort,
     w.jaar,
     SUM(w.territoria) AS totaal_territoria,
-    GROUP_CONCAT(DISTINCT p.KavelNummer ORDER BY p.KavelNummer SEPARATOR ', ') AS kavels
+    GROUP_CONCAT(DISTINCT p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ', ') AS kavels
 FROM kernopgave_soort ks
 JOIN soorten s ON ks.soort_id = s.id
 LEFT JOIN waarnemingen w ON s.id = w.soort_id
 LEFT JOIN plots p ON w.plot_id = p.plot_id
 GROUP BY 
-    s.Soort, 
+    s.soort_naam, 
     w.jaar
 ORDER BY 
     w.jaar IS NULL ASC,  -- Houdt de lege records onderaan
-    s.Soort ASC, 
+    s.soort_naam ASC, 
     w.jaar DESC;

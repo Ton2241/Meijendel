@@ -1,5 +1,5 @@
 SELECT 
-    s.Soort AS vogelnaam,
+    s.soort_naam AS vogelnaam,
     -- Zuid-Holland Verschil (%)
     ROUND(((t2.waarde / t1.waarde) * 100) - 100, 1) AS `ZH_%`,
 
@@ -36,6 +36,6 @@ WHERE t1.regio = 'Zuid-Holland'
   AND t1.jaar = 1990
   AND t2.jaar = 2024
   AND t1.waarde > 0 
-GROUP BY s.Soort, s.id, t1.waarde, t2.waarde
+GROUP BY s.soort_naam, s.id, t1.waarde, t2.waarde
 HAVING (SELECT SUM(w.territoria) FROM waarnemingen w WHERE w.soort_id = s.id AND w.jaar = 1990) > 0
 ORDER BY `Lokaal_Verschil_PP` ASC;

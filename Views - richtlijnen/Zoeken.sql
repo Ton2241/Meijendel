@@ -1,5 +1,5 @@
 SELECT 
-    s.Soort AS Vogelnaam, 
+    s.soort_naam AS Vogelnaam, 
     w.territoria AS Aantal_Territoria,
     w.jaar AS Jaar
 FROM waarnemingen w

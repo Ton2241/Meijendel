@@ -1,6 +1,6 @@
 SELECT 
-    s.Euring, 
-    s.Soort AS nederlandse_naam, 
+    s.euring_code, 
+    s.soort_naam AS nederlandse_naam, 
     e.latijnse_naam 
 FROM soorten s
-LEFT JOIN euring e ON s.Euring = e.euring_code;
+LEFT JOIN euring e ON s.euring_code = e.euring_code;

@@ -1,8 +1,8 @@
 -- Rechtsklik op temp_waarnemingen in de linkerlijst -> Import -> From CSV.
 -- Selecteer je bestand.
 -- In het importvenster (TablePlus):
--- Map Soort naar vogelnaam_temp.
+-- Map soort_naam naar vogelnaam_temp.
 -- Map de kolom met het jaartal (bijv. 1988) naar territoria.
--- Map Euring naar Euring.
+-- Map euring_code naar euring_code.
 -- Map plot_id naar plot_id.
 -- Klik op Import.

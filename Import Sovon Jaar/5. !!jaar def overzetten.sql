@@ -1,6 +1,6 @@
 -- Kopieer de gegevens van de tijdelijke tabel naar de tabel waarnemingen
-INSERT INTO waarnemingen (plot_id, Euring, jaar, territoria)
-SELECT plot_id, Euring, jaar, territoria
+INSERT INTO waarnemingen (plot_id, euring_code, jaar, territoria)
+SELECT plot_id, euring_code, jaar, territoria
 FROM temp_waarnemingen;
 
 -- EXTRA: Controleer of de totalen in beide tabellen nu gelijk zijn voor het jaar 1988

@@ -4,12 +4,12 @@ Welkom in mijn persoonlijke verzameling SQL-scripts. In deze repository bewaar i
 
 De database Meijendel legt ecologische data, specifiek gericht op vogelpopulaties, habitats en waarnemingen in het natuurgebied Meijendel vast. De structuur ondersteunt langetermijnonderzoek door vogelstandgegevens te koppelen aan specifieke geografische percelen (plots/kavels), tellers en omgevingsfactoren zoals het weer.
 
-1. Kerngegevens: Soorten en Taxonomie  
+1. Kerngegevens: soort_naamen en Taxonomie  
 
 Deze tabellen vormen de basis voor de identificatie van de vogels.
-soorten: De centrale tabel met vogelnamen en hun unieke Euring-codes (een standaard Europese nummering voor vogelsoorten).
+soorten: De centrale tabel met vogelnamen en hun unieke euring_code-codes (een standaard Europese nummering voor vogelsoorten).
 familie: Bevat de Nederlandse en wetenschappelijke namen van vogelfamilies.
-euring: Een referentietabel die dient als masterlijst voor Euring-codes en namen.
+euring: Een referentietabel die dient als masterlijst voor euring_code-codes en namen.
 soort\_familie: Een koppeltabel die soorten linkt aan hun respectievelijke familie.  
 
 2. Geografie en Monitoring: Plots en Oppervlakte  

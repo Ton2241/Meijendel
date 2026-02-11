@@ -2,7 +2,7 @@ SELECT
     k.code AS Kernopgave_Code,
     k.omschrijving AS Omschrijving,
     GROUP_CONCAT(DISTINCT h.habitat_naam SEPARATOR ', ') AS Gekoppelde_Habitats,
-    GROUP_CONCAT(DISTINCT s.Soort SEPARATOR ', ') AS Gekoppelde_Vogelsoorten
+    GROUP_CONCAT(DISTINCT s.soort_naam SEPARATOR ', ') AS Gekoppelde_Vogelsoorten
 FROM kernopgaven k
 -- Koppel aan habitats via de koppeltabel
 LEFT JOIN kernopgave_habitat kh ON k.id = kh.kernopgave_id

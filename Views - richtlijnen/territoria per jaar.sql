@@ -3,7 +3,7 @@ SELECT
     w.jaar AS Jaar,
     r.naam AS Richtlijn,
     SUM(w.territoria) AS Totaal_Territoria,
-    COUNT(DISTINCT w.soort_id) AS Aantal_Soorten
+    COUNT(DISTINCT w.soort_id) AS Aantal_soort_naamen
 FROM waarnemingen w
 JOIN soort_richtlijn sr ON w.soort_id = sr.soort_id
 JOIN richtlijnen r ON sr.richtlijn_id = r.id
