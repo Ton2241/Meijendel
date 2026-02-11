@@ -1,0 +1,26 @@
+-- werkt nog niet. data katwijk lopen door tot 2016 en rare cijfers
+WITH weer_per_jaar AS (
+    SELECT 
+        YEAR(datum) AS jaar, 
+        -- We delen door 10.0 om decimalen te forceren en ronden af op 1 cijfer
+        ROUND(AVG(temp_gem) / 10.0, 1) AS gem_temp_broedseizoen
+    FROM weer_katwijk_data
+    WHERE temp_gem != 0 -- Negeer dagen waar de meter op 0 stond (foutieve data)
+      AND (
+        (MONTH(datum) = 2 AND DAY(datum) >= 15)
+        OR (MONTH(datum) BETWEEN 3 AND 5)
+        OR (MONTH(datum) = 6 AND DAY(datum) <= 15)
+      )
+    GROUP BY YEAR(datum)
+)
+SELECT 
+    w.jaar, 
+    s.soort_naam, 
+    SUM(w.territoria) AS totaal_territoria,
+    rj.gem_temp_broedseizoen
+FROM waarnemingen AS w
+JOIN soorten AS s ON w.soort_id = s.id
+LEFT JOIN weer_per_jaar AS rj ON w.jaar = rj.jaar
+WHERE s.soort_naam LIKE '%Nachtegaal%'
+GROUP BY w.jaar, s.soort_naam, rj.gem_temp_broedseizoen
+ORDER BY w.jaar DESC;
