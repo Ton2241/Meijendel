@@ -1,3 +1,3 @@
-SELECT DISTINCT Plotid 
+SELECT DISTINCT plot_id 
 FROM temp_waarnemingen 
-WHERE Plotid NOT IN (SELECT Plotid FROM plots);
+WHERE plot_id NOT IN (SELECT plot_id FROM plots);

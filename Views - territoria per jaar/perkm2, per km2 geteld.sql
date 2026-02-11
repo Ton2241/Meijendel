@@ -14,7 +14,7 @@ SELECT
         SELECT SUM(pjo2.oppervlakte_km2) 
         FROM plot_jaar_oppervlak pjo2 
         WHERE pjo2.jaar = w.jaar 
-        AND pjo2.Plotid IN (SELECT DISTINCT Plotid FROM waarnemingen WHERE jaar = w.jaar)
+        AND pjo2.plot_id IN (SELECT DISTINCT plot_id FROM waarnemingen WHERE jaar = w.jaar)
     ) AS Gem_Getelde_km2
 
 FROM waarnemingen w

@@ -14,7 +14,7 @@ JaarOppervlakte AS (
         jaar, 
         SUM(oppervlakte_km2) as totaal_opp_jaar
     FROM plot_jaar_oppervlak
-    WHERE plotid NOT IN (3503, 3514)
+    WHERE plot_id NOT IN (3503, 3514)
     GROUP BY jaar
 ),
 GroepTotalen AS (
@@ -25,7 +25,7 @@ GroepTotalen AS (
         SUM(w.territoria) as som_territoria_groep
     FROM waarnemingen w
     JOIN GeselecteerdeGroepen gg ON w.soort_id = gg.soort_id
-    WHERE w.plotid NOT IN (3503, 3514)
+    WHERE w.plot_id NOT IN (3503, 3514)
     GROUP BY w.jaar, gg.gekozen_code
 )
 -- Stap 4: Finale berekening waarbij we de oppervlakte-weging toepassen

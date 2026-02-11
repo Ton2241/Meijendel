@@ -7,5 +7,5 @@ SELECT
     w.territoria
 FROM waarnemingen w
 JOIN soorten s ON w.soort_id = s.id
-JOIN plots p ON w.Plotid = p.Plotid
+JOIN plots p ON w.plot_id = p.plot_id
 ORDER BY w.jaar DESC, p.Plotnaam ASC, s.Soort ASC;

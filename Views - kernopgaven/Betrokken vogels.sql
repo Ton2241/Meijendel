@@ -6,7 +6,7 @@ SELECT
 FROM kernopgave_soort ks
 JOIN soorten s ON ks.soort_id = s.id
 LEFT JOIN waarnemingen w ON s.id = w.soort_id
-LEFT JOIN plots p ON w.Plotid = p.Plotid
+LEFT JOIN plots p ON w.plot_id = p.plot_id
 GROUP BY 
     s.Soort, 
     w.jaar

@@ -12,17 +12,17 @@ JaarData AS (
     -- Stap 2: Filter op één specifiek plot (pas het nummer hieronder aan)
     SELECT 
         w.jaar,
-        w.plotid,
+        w.plot_id,
         w.soort_id,
         w.territoria
     FROM waarnemingen w
-    WHERE w.plotid = 3500 -- VERVANG DIT DOOR HET GEWENSTE PLOTID
+    WHERE w.plot_id = 3500 -- VERVANG DIT DOOR HET GEWENSTE plot_id
 ),
 GroepTotalenPerJaar AS (
     -- Stap 3: Bereken totalen per jaar voor dit plot
     SELECT 
         jd.jaar,
-        jd.plotid,
+        jd.plot_id,
         gg.gekozen_code,
         SUM(jd.territoria) as totaal_groep_territoria,
         SUM(SUM(jd.territoria)) OVER(PARTITION BY jd.jaar) as jaar_totaal
@@ -32,7 +32,7 @@ GroepTotalenPerJaar AS (
 )
 -- Stap 4: Finale selectie
 SELECT 
-    gtj.plotid AS Plotid,
+    gtj.plot_id AS plot_id,
     gtj.jaar AS jaar,
     gtj.gekozen_code AS groep_code,
     evg.beschrijving AS `Ecologische Groep`,

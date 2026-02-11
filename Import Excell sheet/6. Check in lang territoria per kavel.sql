@@ -1,7 +1,7 @@
 SELECT 
-    t.Plotid, 
+    t.plot_id, 
     p.KavelNummer, 
     SUM(t.territoria) AS totaal_territoria
 FROM temp_waarnemingen_lang t
-JOIN plots p ON t.Plotid = p.Plotid
-GROUP BY t.Plotid, p.KavelNummer;
+JOIN plots p ON t.plot_id = p.plot_id
+GROUP BY t.plot_id, p.KavelNummer;

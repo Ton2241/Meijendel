@@ -49,7 +49,7 @@ weer\_legenda: Verklarende lijst voor de meteorologische codes (zoals TG voor da
 
 Belangrijkste Relaties en Integriteit
 Referentiële Integriteit: De database maakt uitgebreid gebruik van FOREIGN KEY constraints. Dit zorgt ervoor dat je bijvoorbeeld geen waarneming kunt invoeren voor een plot dat niet bestaat.
-Unieke Constraints: Er zijn veel UNIQUE keys op combinaties zoals (Plotid, soort\_id, jaar). Dit voorkomt dubbele tellingen voor dezelfde soort in hetzelfde gebied.
+Unieke Constraints: Er zijn veel UNIQUE keys op combinaties zoals (plot_id, soort\_id, jaar). Dit voorkomt dubbele tellingen voor dezelfde soort in hetzelfde gebied.
 
 Hier vind je de SQL-scripts bij deze database.
 * SQL Dialect: MySQL 

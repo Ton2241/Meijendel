@@ -4,5 +4,5 @@
 -- Map Soort naar vogelnaam_temp.
 -- Map de kolom met het jaartal (bijv. 1988) naar territoria.
 -- Map Euring naar Euring.
--- Map Plotid naar Plotid.
+-- Map plot_id naar plot_id.
 -- Klik op Import.
