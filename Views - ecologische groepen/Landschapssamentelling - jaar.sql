@@ -5,7 +5,7 @@ WITH GeselecteerdeGroepen AS (
         MIN(evg.groep_code) as gekozen_code
     FROM soort_ecogroep se
     JOIN ecologische_vogelgroepen evg ON se.ecogroep_id = evg.id
-    WHERE evg.groep_code % 100 != 0 -- Filter op specifieke subgroepen
+    WHERE evg.groep_code bezetting_percentage 100 != 0 -- Filter op specifieke subgroepen
     GROUP BY se.soort_id
 ),
 JaarData AS (
@@ -35,8 +35,8 @@ SELECT
     2025 AS jaar,
     gtp.gekozen_code AS groep_code,
     evg.beschrijving AS `ecologische_groep_beschrijving`,
-    ROUND((gtp.totaal_groep_territoria / NULLIF(gtp.plot_totaal, 0)) * 100, 0) AS `%`
+    ROUND((gtp.totaal_groep_territoria / NULLIF(gtp.plot_totaal, 0)) * 100, 0) AS `bezetting_percentage`
 FROM GroepTotalenPerPlot gtp
 JOIN ecologische_vogelgroepen evg ON gtp.gekozen_code = evg.groep_code
 WHERE ROUND((gtp.totaal_groep_territoria / NULLIF(gtp.plot_totaal, 0)) * 100, 0) > 0
-ORDER BY gtp.plot_id ASC, `%` DESC;
+ORDER BY gtp.plot_id ASC, `bezetting_percentage` DESC;

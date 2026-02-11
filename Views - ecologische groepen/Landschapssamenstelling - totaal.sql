@@ -5,7 +5,7 @@ WITH GeselecteerdeGroepen AS (
         MIN(evg.groep_code) as gekozen_code
     FROM soort_ecogroep se
     JOIN ecologische_vogelgroepen evg ON se.ecogroep_id = evg.id
-    WHERE evg.groep_code % 100 != 0 
+    WHERE evg.groep_code bezetting_percentage 100 != 0 
     GROUP BY se.soort_id
 ),
 JaarOppervlakte AS (
@@ -36,9 +36,9 @@ SELECT
     -- We berekenen de dichtheid (territoria / totaal oppervlak) 
     -- en kijken welk aandeel dat heeft in de totale dichtheid van dat jaar
     ROUND((gt.som_territoria_groep / jo.totaal_opp_jaar) / 
-          (SUM(gt.som_territoria_groep / jo.totaal_opp_jaar) OVER(PARTITION BY gt.jaar)) * 100, 1) AS `Gewogen %`
+          (SUM(gt.som_territoria_groep / jo.totaal_opp_jaar) OVER(PARTITION BY gt.jaar)) * 100, 1) AS `Gewogen bezetting_percentage`
 FROM GroepTotalen gt
 JOIN JaarOppervlakte jo ON gt.jaar = jo.jaar
 JOIN ecologische_vogelgroepen evg ON gt.gekozen_code = evg.groep_code
 WHERE jo.totaal_opp_jaar > 0
-ORDER BY gt.jaar DESC, `Gewogen %` DESC;
+ORDER BY gt.jaar DESC, `Gewogen bezetting_percentage` DESC;

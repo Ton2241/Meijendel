@@ -1,9 +1,9 @@
 SELECT 
     s.soort_naam AS vogelnaam,
-    -- Zuid-Holland Verschil (%)
-    ROUND(((t2.waarde / t1.waarde) * 100) - 100, 1) AS `ZH_%`,
+    -- Zuid-Holland Verschil (bezetting_percentage)
+    ROUND(((t2.waarde / t1.waarde) * 100) - 100, 1) AS `ZH_bezetting_percentage`,
 
-    -- Meijendel Verschil (%)
+    -- Meijendel Verschil (bezetting_percentage)
     ROUND(
         (
             (SELECT COALESCE(SUM(w.territoria), 0) / NULLIF((SELECT SUM(pjo.oppervlakte_km2) FROM plot_jaar_oppervlak pjo WHERE pjo.jaar = 2024), 0)
@@ -13,7 +13,7 @@ SELECT
             NULLIF((SELECT COALESCE(SUM(w.territoria), 0) / NULLIF((SELECT SUM(pjo.oppervlakte_km2) FROM plot_jaar_oppervlak pjo WHERE pjo.jaar = 1990), 0)
              FROM waarnemingen w 
              WHERE w.soort_id = s.id AND w.jaar = 1990), 0)
-        ) * 100 - 100, 1) AS `Meijendel_%`,
+        ) * 100 - 100, 1) AS `Meijendel_bezetting_percentage`,
     
     -- Lokaal Verschil in Procentpunten
     ROUND(

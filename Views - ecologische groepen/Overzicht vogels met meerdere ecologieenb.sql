@@ -11,9 +11,9 @@ WHERE se.soort_id IN (
     SELECT se2.soort_id 
     FROM soort_ecogroep se2
     JOIN ecologische_vogelgroepen evg2 ON se2.ecogroep_id = evg2.id
-    WHERE evg2.groep_code % 100 != 0
+    WHERE evg2.groep_code bezetting_percentage 100 != 0
     GROUP BY se2.soort_id 
     HAVING COUNT(*) > 1
 )
-AND evg.groep_code % 100 != 0
+AND evg.groep_code bezetting_percentage 100 != 0
 ORDER BY s.soort ASC, se.prioriteit ASC, evg.groep_code ASC;
