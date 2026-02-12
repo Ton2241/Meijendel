@@ -1,0 +1,38 @@
+SELECT 
+    w.jaar, 
+    s.soort_naam, 
+    SUM(w.territoria) AS totaal_territoria,
+    actief_oppervlak.totaal_km2,
+    -- Berekening: aantal territoria gedeeld door het getelde oppervlak
+    ROUND(SUM(w.territoria) / actief_oppervlak.totaal_km2, 2) AS dichtheid_per_km2,
+    ROUND(weer_broed.gem_temp_broed * 10, 1) AS temp_broedseizoen
+FROM waarnemingen w
+JOIN soorten s ON w.soort_id = s.id
+JOIN (
+    -- Subquery: Bereken alleen het oppervlak van plots die dat jaar geteld zijn
+    SELECT 
+        pjo.jaar, 
+        SUM(pjo.oppervlakte_km2) AS totaal_km2
+    FROM plot_jaar_oppervlak pjo
+    WHERE EXISTS (
+        SELECT 1 
+        FROM waarnemingen w2 
+        WHERE w2.plot_id = pjo.plot_id 
+          AND w2.jaar = pjo.jaar
+    )
+    GROUP BY pjo.jaar
+) AS actief_oppervlak ON actief_oppervlak.jaar = w.jaar
+LEFT JOIN (
+    -- Subquery: Gemiddelde temperatuur broedseizoen (15 feb - 15 jun)
+    SELECT 
+        YEAR(datum) AS jaar, 
+        AVG(temp_gem) AS gem_temp_broed
+    FROM weer_totaal
+    WHERE (MONTH(datum) = 2 AND DAY(datum) >= 15)
+       OR (MONTH(datum) BETWEEN 3 AND 5)
+       OR (MONTH(datum) = 6 AND DAY(datum) <= 15)
+    GROUP BY YEAR(datum)
+) AS weer_broed ON weer_broed.jaar = w.jaar
+WHERE s.soort_naam = 'Nachtegaal'
+GROUP BY w.jaar, s.soort_naam, actief_oppervlak.totaal_km2, weer_broed.gem_temp_broed
+ORDER BY w.jaar;
