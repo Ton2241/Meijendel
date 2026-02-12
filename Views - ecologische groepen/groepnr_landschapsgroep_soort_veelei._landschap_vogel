@@ -1,0 +1,10 @@
+SELECT 
+    g.groepsnummer,
+    g.landschap_groep,
+    s.soort_naam AS vogelnaam,
+    vl.veeleisendheid_score,
+    vl.beschrijving_landschap_vogel
+FROM evg_vogel_landschapgroep vl
+JOIN evg_vogelgroepen g ON vl.groepsnummer = g.groepsnummer
+JOIN soorten s ON vl.vogel_id = s.id
+ORDER BY g.groepsnummer, s.soort_naam;
