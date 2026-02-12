@@ -1,0 +1,5 @@
+SELECT s.soort_naam, COUNT(*) AS aantal_landschappen
+FROM evg_vogel_landschapstype vlt
+JOIN soorten s ON vlt.soort_id = s.id
+GROUP BY s.id
+ORDER BY aantal_landschappen DESC;

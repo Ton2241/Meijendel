@@ -1,0 +1,9 @@
+SQL
+SELECT 
+    l.beschrijving AS landschapstype,
+    COUNT(vlt.soort_id) AS aantal_soorten,
+    ROUND(AVG(CAST(vlt.veeleisendheid AS UNSIGNED)), 2) AS gemiddelde_score
+FROM evg_vogel_landschapstype vlt
+JOIN evg_landschapstypen l ON vlt.landschap_id = l.id
+GROUP BY l.id, l.beschrijving
+ORDER BY gemiddelde_score DESC;

@@ -1,0 +1,8 @@
+SELECT 
+    l.beschrijving AS landschap,
+    s.soort_naam AS vogelsoort,
+    vlt.veeleisendheid
+FROM evg_vogel_landschapstype vlt
+JOIN soorten s ON vlt.soort_id = s.id
+JOIN evg_landschapstypen l ON vlt.landschap_id = l.id
+ORDER BY l.beschrijving, s.soort_naam;
