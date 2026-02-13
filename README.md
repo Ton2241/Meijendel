@@ -1,65 +1,109 @@
-# 📊 Mijn SQL Query Bibliotheek
+# 
 
-Welkom in mijn persoonlijke verzameling SQL-scripts. In deze repository bewaar ik al mijn queries voor data-analyse, rapportages en databasebeheer van de database Meijendel. 
+In deze repository vind je een sql op datum met alle (lege) bestanden en verder mijn queries voor data-analyse, rapportages en databasebeheer van de database Meijendel. 
 
-De database Meijendel legt ecologische data, specifiek gericht op vogelpopulaties, habitats en waarnemingen in het natuurgebied Meijendel vast. De structuur ondersteunt langetermijnonderzoek door vogelstandgegevens te koppelen aan specifieke geografische percelen (plots/kavels), tellers en omgevingsfactoren zoals het weer.
+De database legt ecologische data, specifiek gericht op vogelpopulaties, habitats en andere ‘verstorende’ factoren in het natuurgebied Meijendel vast. De database integreert ecologische, geografische en klimatologische data om trends, dichtheden en habitatrelaties te analyseren.
 
-1. Kerngegevens: soort_naamen en Taxonomie  
+De database biedt:
+- Registratie van broedvogelwaarnemingen per plot, soort en jaar
+- Koppeling tussen vogelsoorten en landschapstypen
+- Berekening van vogeldichtheden op basis van territoria en oppervlakten
+- Beheer van telgegevens en vrijwilligers
+- Integratie met Natura 2000 doelstellingen
+- Historische referentiedata vanaf 1924
+- Klimaatdata voor correlatiestudies
 
-Deze tabellen vormen de basis voor de identificatie van de vogels.
-soorten: De centrale tabel met vogelnamen en hun unieke euring_code-codes (een standaard Europese nummering voor vogelsoorten).
-familie: Bevat de Nederlandse en wetenschappelijke namen van vogelfamilies.
-euring: Een referentietabel die dient als masterlijst voor euring_code-codes en namen.
-soort\_familie: Een koppeltabel die soorten linkt aan hun respectievelijke familie.  
+De databasestructuur  
 
-2. Geografie en Monitoring: Plots en Oppervlakte  
+Vogelgegevens
+soorten - Vogelsoorten met EURING codes  
+euring - Uitgebreide EURING referentietabel met Latijnse en Nederlandse namen  
+familie - Taxonomische indeling op familieniveau  
+waarnemingen - Kerngegevens: territoria per soort per plot per jaar (116.681 records)  
+trends - Populatietrends per soort en jaar voor Zuid-Holland en Nederland  
+vogelstand\_1924 - Uitkomst telling van 1924
 
-Monitoring vindt plaats in specifieke gebieden, in de database "plots" genoemd.
-plots: Bevat de vaste gegevens van de onderzoeksgebieden, zoals de naam en het kavelnummer.
-plot\_jaar\_oppervlak: Cruciaal voor berekeningen; het legt vast hoe groot een plot was in een specifiek jaar (oppervlakte kan immers over tijd veranderen door beheerskeuzes).
-plotkolom\_mapping: Een technische tabel die waarschijnlijk helpt bij het importeren van data uit brede Excel-bestanden waar plots als kolommen worden weergegeven.  
+Ecologische classificatie
+evg\_landschapstypen - Landschapstypen (duinen, struweel, grasland, etc.)  
+evg\_vogel\_landschapstype - Koppeltabel: welke soorten zijn kenmerkend voor welk landschap  
+evg\_vogelgroepen - Ecologische vogelgroepen  
+evg\_vogel\_landschapgroep - Koppeltabel met veeleisendheidsscores  
+analyse\_ecologie\_kavels - Bezettingspercentages per ecologische groep
 
-3. Waarnemingen en Trends  
+Geografische gegevens
+plots - Telgebieden met identificatie via plot\_id, plot\_naam en kavel\_nummer  
+plot\_jaar\_oppervlak - Oppervlakten in km² per plot per jaar (5.293 records)  
+plotkolom\_mapping - Hulptabel voor data-import
 
-Dit is het hart van de database, waar de feitelijke telgegevens worden opgeslagen.
-waarnemingen: De belangrijkste data-tabel. Hierin wordt per plot, per soort en per jaar het aantal territoria vastgelegd. Dit is de standaardmaatstaf voor broedvogelmonitoring.
-trends: Bevat de trendmatige ontwikkeling van de vogelsoorten voor Zuid-Holland en Nederland.
-Vogelstand\_1924: Een historische tabel met beschrijvingen van de vogelstand uit het jaar 1924, wat dient als historisch ijkpunt.  
+Natura 2000 integratie
+habitattypen - Natura 2000 habitattypen met codes en doelstellingen  
+plot\_jaar\_habitat - Aandeel van elk habitattype per plot  
+kernopgaven - Natura 2000 kernopgaven  
+maatregelen - Beheermaatregelen met drukfactoren  
+plot\_jaar\_maatregel - Uitgevoerde maatregelen per plot  
+richtlijnen - Vogelrichtlijn en andere beschermingsregelingen  
 
-4. Ecologie en Beleid  
+Koppeltabellen:
+kernopgave\_habitat - Relatie kernopgaven en habitattypen
+kernopgave\_soort - Relatie kernopgaven en doelsoorten
+maatregel\_habitat - Relatie maatregelen en habitattypen
+soort\_habitat - Relatie soorten en habitattypen
+soort\_richtlijn - Relatie soorten en beschermingsregelingen
+soort\_familie - Relatie soorten en families  
 
-Deze tabellen voegen context toe aan de waarnemingen door soorten te koppelen aan habitat-eisen en beschermingsstatus.
-habitattypen: Beschrijft verschillende landschapstypen (bijv. duinen, bos) en de bijbehorende natuurdoelstellingen.
-ecologische\_vogelgroepen: Groepeert vogels op basis van hun ecologische rol of gedrag.
-richtlijnen: Bevat namen van beschermingsrichtlijnen (zoals de Vogelrichtlijn of Rode Lijst).
-Koppeltabellen: soort\_habitat, soort\_ecogroep, soort\_richtlijn en plot\_jaar\_habitat. Hiermee kan men analyseren of specifieke soorten profiteren van bepaalde habitat-ontwikkelingen.
-Toe te voegen: In deze categorie zal nog een tabel met beheermaatregelen, zoals benoemd in Natura 2000-beheerplan Meijendel &Berkheide 2026 - 2032 en de jaarverslagen van vogelwerkgroep - worden toegevoegd.   
+Tellers en monitoring
+tellers - Vrijwilligers met contactgegevens en lidmaatschapsstatus  
+plot\_jaar\_teller - Registratie wie welk plot in welk jaar telde (2.823 records)
 
-5. Tellers  
+Klimaatgegevens
+weer\_historie\_katwijk - Historische weerdata (temperatuur, wind, neerslag)  
+weer\_actueel\_voorschoten - Actuele weerdata vanaf 2016  
+weer\_legenda - Toelichting bij weervariabelen  
+weer\_totaal - View die historische en actuele data combineert (overgang 4 mei 2016)
 
-De database houdt bij wie waar heeft geteld.
-tellers: Een uitgebreide tabel met contactgegevens van de vrijwilligers, inclusief hun lidmaatschapstype en controles op postcode- en e-mailformaat.
-plot\_jaar\_teller: Legt vast welke teller in welk jaar verantwoordelijk was voor welk plot.  
+Import en hulptabellen
+import\_waarnemingen\_breed - Staging tabel voor data-import (breed formaat met plotkolommen)  
+import\_waarnemingen\_lang - Staging tabel voor data-import (genormaliseerd formaat)  
+habitattypen\_doelstelling - Hulptabel voor habitatdata
 
-6. Externe Factoren: Weergegevens  
+- Technische kenmerken
 
-Om fluctuaties in vogelpopulaties te verklaren, zijn weergegevens toegevoegd.
-weer\_katwijk: Dagelijkse meteorologische gegevens (temperatuur, neerslag, zonneschijn) van het nabijgelegen station Katwijk.
-weer\_legenda: Verklarende lijst voor de meteorologische codes (zoals TG voor daggemiddelde temperatuur).
+Database type: MySQL / MariaDB  
+Character set: UTF8MB4  
+Engine: InnoDB met referentiële integriteit  
+Gegenereerd: TablePlus 6.8.1  
+Exportdatum: 13 februari 2026
 
-Belangrijkste Relaties en Integriteit
-Referentiële Integriteit: De database maakt uitgebreid gebruik van FOREIGN KEY constraints. Dit zorgt ervoor dat je bijvoorbeeld geen waarneming kunt invoeren voor een plot dat niet bestaat.
-Unieke Constraints: Er zijn veel UNIQUE keys op combinaties zoals (plot_id, soort\_id, jaar). Dit voorkomt dubbele tellingen voor dezelfde soort in hetzelfde gebied.
+Datakwaliteit
+De database bevat validatieregels via CHECK constraints:
+- Jaarbereik 1900-2100
+- Oppervlakten altijd positief
+- Percentages tussen 0 en 100
+- Territoria niet negatief
+- Postcode en telefoonnummer formaat validatie
+- Email format validatie
 
-Hier vind je de SQL-scripts bij deze database.
-* SQL Dialect: MySQL 
-* Tools: GitHub Desktop, TablePlus, Tailscale, Visual Studio Code
+Indexering
+Strategische indexen op:
+- Jaar, soort\_id en plot\_id combinaties
+- Naam velden voor zoekacties
+- Foreign key relaties
+- Unieke combinaties (plot + soort + jaar)
 
-Hoe deze scripts te gebruiken  
+Data omvang
+Geschatte omvang op basis van auto\_increment waarden:
+- Waarnemingen: 116.681 records
+- Plot-jaar combinaties: 5.293 records
+- Teller-plot-jaar combinaties: 2.823 records
+- Trends: 16.384 records
+- Vogelsoorten: 291 stuks
+- Families: 66 stuks
+- Habitattypen: 28 stuks
+- EURING codes: 528 stuks
 
-1. Kloon deze repository naar je eigen machine.
-2. Zorg dat je verbinding hebt met de Meijendel omgeving.
-3. Let op: vervang in de scripts altijd de placeholders zoals `<datum_vanaf>` door de gewenste waarden.
+Contact en gebruik
+Voor vragen over de database of toegang tot de data, neem contact op met de databeheerder. Hier vind je de SQL-scripts bij deze database.
+SQL Dialect: MySQL  
+Tools: GitHub Desktop, TablePlus, Tailscale, Visual Studio Code
 
----
-*Laatste update: februari 2026*
+Laatste update: februari 2026*

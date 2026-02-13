@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-12 22:36:04.2380
+-- Generation Time: 2026-02-13 14:15:34.0540
 -- -------------------------------------------------------------
 
 
@@ -35,9 +35,10 @@ CREATE TABLE `analyse_ecologie_kavels` (
 CREATE TABLE `euring` (
   `id` int NOT NULL AUTO_INCREMENT,
   `euring_code` int NOT NULL,
-  `latijnse_naam` varchar(255) DEFAULT NULL,
-  `nederlandse_naam` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  `latijnse_naam` varchar(255) NOT NULL,
+  `nederlandse_naam` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_euring_nederlandse_naam` (`nederlandse_naam`)
 ) ENGINE=InnoDB AUTO_INCREMENT=528 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `evg_landschapstypen` (
@@ -47,11 +48,11 @@ CREATE TABLE `evg_landschapstypen` (
 ) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `evg_vogel_landschapgroep` (
-  `groepsnummer` int DEFAULT NULL,
-  `vogel_id` int DEFAULT NULL,
+  `groepsnummer` int NOT NULL,
+  `vogel_id` int NOT NULL,
   `veeleisendheid_score` int DEFAULT NULL,
   `beschrijving_landschap_vogel` text,
-  KEY `groepsnummer` (`groepsnummer`),
+  PRIMARY KEY (`groepsnummer`,`vogel_id`),
   KEY `vogel_id` (`vogel_id`),
   CONSTRAINT `evg_vogel_landschapgroep_ibfk_1` FOREIGN KEY (`groepsnummer`) REFERENCES `evg_vogelgroepen` (`groepsnummer`),
   CONSTRAINT `evg_vogel_landschapgroep_ibfk_2` FOREIGN KEY (`vogel_id`) REFERENCES `soorten` (`id`)
@@ -84,212 +85,20 @@ CREATE TABLE `familie` (
 
 CREATE TABLE `habitattypen` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `habitat_code` varchar(20) DEFAULT NULL,
-  `habitat_naam` varchar(255) DEFAULT NULL,
+  `habitat_code` varchar(20) NOT NULL,
+  `habitat_naam` varchar(255) NOT NULL,
   `habitat_doelstelling` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_habitat_code` (`habitat_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Natura 2000 habitattypen met doelstellingen';
 
-CREATE TABLE `kernopgave_habitat` (
-  `kernopgave_id` int NOT NULL,
-  `habitat_id` int NOT NULL,
-  PRIMARY KEY (`kernopgave_id`,`habitat_id`),
-  KEY `fk_kh_habitat` (`habitat_id`),
-  CONSTRAINT `fk_kh_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_kh_kernopgave` FOREIGN KEY (`kernopgave_id`) REFERENCES `kernopgaven` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `kernopgave_soort` (
-  `kernopgave_id` int NOT NULL,
-  `soort_id` int NOT NULL,
-  PRIMARY KEY (`kernopgave_id`,`soort_id`),
-  KEY `fk_ks_soort` (`soort_id`),
-  CONSTRAINT `fk_ks_kernopgave` FOREIGN KEY (`kernopgave_id`) REFERENCES `kernopgaven` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_ks_soort` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `kernopgaven` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `code` varchar(10) NOT NULL,
-  `omschrijving` text,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_kernopgave_code` (`code`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `maatregel_habitat` (
-  `maatregel_id` int NOT NULL,
-  `habitat_id` int NOT NULL,
-  PRIMARY KEY (`maatregel_id`,`habitat_id`),
-  KEY `fk_mh_habitat` (`habitat_id`),
-  CONSTRAINT `fk_mh_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_mh_maatregel` FOREIGN KEY (`maatregel_id`) REFERENCES `maatregelen` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `maatregelen` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `omschrijving` text NOT NULL,
-  `druk_aandachtspunt` text,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `plot_jaar_habitat` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `plot_id` int NOT NULL,
-  `jaar` int NOT NULL,
-  `habitat_id` int NOT NULL,
-  `aandeel_percentage` decimal(5,2) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_plot_jaar_habitat_uniek` (`plot_id`,`jaar`,`habitat_id`),
-  KEY `fk_phj_habitat` (`habitat_id`),
-  CONSTRAINT `fk_phj_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`),
-  CONSTRAINT `fk_phj_plot_jaar` FOREIGN KEY (`plot_id`, `jaar`) REFERENCES `plot_jaar_oppervlak` (`plot_id`, `jaar`),
-  CONSTRAINT `plot_jaar_habitat_chk_1` CHECK ((`aandeel_percentage` <= 100))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `plot_jaar_maatregel` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `plot_id` int NOT NULL,
-  `jaar` int NOT NULL,
-  `maatregel_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_plot_jaar_maatregel` (`plot_id`,`jaar`,`maatregel_id`),
-  KEY `fk_pjm_maatregel` (`maatregel_id`),
-  CONSTRAINT `fk_pjm_maatregel` FOREIGN KEY (`maatregel_id`) REFERENCES `maatregelen` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_pjm_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `plot_jaar_oppervlak` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `plot_id` int NOT NULL,
-  `jaar` int NOT NULL,
-  `oppervlakte_km2` decimal(10,4) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_plot_jaar_uniek` (`plot_id`,`jaar`),
-  CONSTRAINT `fk_plot_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
-  CONSTRAINT `chk_pjo_jaar` CHECK ((`jaar` between 1900 and 2100))
-) ENGINE=InnoDB AUTO_INCREMENT=5293 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `plot_jaar_teller` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `tellercode` varchar(50) NOT NULL,
-  `plot_id` int NOT NULL,
-  `jaar` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_teller_plot_jaar` (`tellercode`,`plot_id`,`jaar`),
-  KEY `fk_plot_teller_relatie` (`plot_id`),
-  CONSTRAINT `fk_plot_teller_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
-  CONSTRAINT `fk_teller_relatie` FOREIGN KEY (`tellercode`) REFERENCES `tellers` (`tellercode`)
-) ENGINE=InnoDB AUTO_INCREMENT=2823 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `plotkolom_mapping` (
-  `kolomnaam` varchar(50) NOT NULL,
-  `plot_id` int NOT NULL,
-  PRIMARY KEY (`kolomnaam`),
-  KEY `idx_plot_id` (`plot_id`),
-  CONSTRAINT `plotkolom_mapping_ibfk_1` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `plots` (
-  `plot_id` int NOT NULL,
-  `plot_nr` int DEFAULT NULL,
-  `plot_naam` varchar(255) DEFAULT NULL,
-  `kavel_nummer` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`plot_id`),
-  KEY `idx_plot_naam` (`plot_naam`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `richtlijnen` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `naam` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `soort_familie` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `soort_id` int NOT NULL,
-  `familie_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_soort_familie` (`soort_id`),
-  KEY `fk_familie_link` (`familie_id`),
-  CONSTRAINT `fk_soort_familie_familie` FOREIGN KEY (`familie_id`) REFERENCES `familie` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_soort_familie_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=304 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `soort_habitat` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `soort_id` int NOT NULL,
-  `habitat_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_soort_id_habitat_id` (`soort_id`,`habitat_id`),
-  KEY `fk_habitat_soort` (`habitat_id`),
-  CONSTRAINT `fk_habitat_soort` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`),
-  CONSTRAINT `fk_soort_habitat_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `soort_richtlijn` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `soort_id` int NOT NULL,
-  `richtlijn_id` int NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_soort_richtlijn` (`soort_id`,`richtlijn_id`),
-  KEY `fk_richtlijn_type` (`richtlijn_id`),
-  CONSTRAINT `fk_richtlijn_type` FOREIGN KEY (`richtlijn_id`) REFERENCES `richtlijnen` (`id`) ON DELETE CASCADE,
-  CONSTRAINT `fk_soort_richtlijn_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=256 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `soorten` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `euring_code` int NOT NULL,
-  `soort_naam` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `Euring` (`euring_code`),
-  UNIQUE KEY `uq_euring` (`euring_code`),
-  KEY `idx_soort_naam` (`soort_naam`)
-) ENGINE=InnoDB AUTO_INCREMENT=291 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `tellers` (
-  `tellercode` varchar(50) NOT NULL,
-  `voornaam` varchar(100) DEFAULT NULL,
-  `tussenvoegsel` varchar(20) DEFAULT NULL,
-  `achternaam` varchar(100) DEFAULT NULL,
-  `straat` varchar(255) DEFAULT NULL,
-  `huisnummer` varchar(20) DEFAULT NULL,
-  `postcode` varchar(10) DEFAULT NULL,
-  `woonplaats` varchar(100) DEFAULT NULL,
-  `telefoon_vast` varchar(20) DEFAULT NULL,
-  `telefoon_mobiel` varchar(20) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `soort_lid` enum('aspirant','gewoon','buitengewoon','ondersteunend','donateur','erelid','onbekend','oudteller') DEFAULT 'gewoon',
-  `bandnummer` int unsigned DEFAULT NULL,
-  PRIMARY KEY (`tellercode`),
-  CONSTRAINT `chk_email_format` CHECK (((`email` = _utf8mb4'') or (`email` is null) or (`email` like _utf8mb4'%@%'))),
-  CONSTRAINT `chk_mobiel_formaat` CHECK (((`telefoon_mobiel` = _utf8mb4'') or (`telefoon_mobiel` is null) or regexp_like(`telefoon_mobiel`,_utf8mb4'^[0-9 +-]+$'))),
-  CONSTRAINT `chk_mobiel_vast` CHECK (((`telefoon_vast` = _utf8mb4'') or (`telefoon_vast` is null) or regexp_like(`telefoon_vast`,_utf8mb4'^[0-9 +-]+$'))),
-  CONSTRAINT `chk_postcode_formaat_flexibel` CHECK (regexp_like(`postcode`,_utf8mb4'^[0-9]{4} ?[A-Z]{2}$'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `temp_doelstellingen` (
+CREATE TABLE `habitattypen_doelstelling` (
   `habitat_naam_csv` varchar(255) DEFAULT NULL,
   `habitat_code_csv` varchar(50) DEFAULT NULL,
   `doelstelling_csv` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `temp_import_scores` (
-  `vogel_naam` varchar(255) DEFAULT NULL,
-  `rl_verdwenen` int DEFAULT NULL,
-  `rl_ernstig_bedreigd` int DEFAULT NULL,
-  `rl_bedreigd` int DEFAULT NULL,
-  `rl_kwetsbaar` int DEFAULT NULL,
-  `rl_gevoelig` int DEFAULT NULL,
-  `oranje_lijst` int DEFAULT NULL,
-  `vogelrichtlijn` int DEFAULT NULL,
-  `euring_code` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-;
-
-CREATE TABLE `temp_waarnemingen_breed` (
+CREATE TABLE `import_waarnemingen_breed` (
   `euring_code` int DEFAULT NULL,
   `p_1A` int DEFAULT NULL,
   `p_1B` int DEFAULT NULL,
@@ -348,21 +157,202 @@ CREATE TABLE `temp_waarnemingen_breed` (
   `jaar` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `temp_waarnemingen_lang` (
+CREATE TABLE `import_waarnemingen_lang` (
   `euring_code` int DEFAULT NULL,
   `plot_id` int DEFAULT NULL,
   `territoria` int DEFAULT NULL,
   `jaar` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `kernopgave_habitat` (
+  `kernopgave_id` int NOT NULL,
+  `habitat_id` int NOT NULL,
+  PRIMARY KEY (`kernopgave_id`,`habitat_id`),
+  KEY `fk_kh_habitat` (`habitat_id`),
+  CONSTRAINT `fk_kh_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_kh_kernopgave` FOREIGN KEY (`kernopgave_id`) REFERENCES `kernopgaven` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `kernopgave_soort` (
+  `kernopgave_id` int NOT NULL,
+  `soort_id` int NOT NULL,
+  PRIMARY KEY (`kernopgave_id`,`soort_id`),
+  KEY `fk_ks_soort` (`soort_id`),
+  CONSTRAINT `fk_ks_kernopgave` FOREIGN KEY (`kernopgave_id`) REFERENCES `kernopgaven` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_ks_soort` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `kernopgaven` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `code` varchar(10) NOT NULL,
+  `omschrijving` text,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_kernopgave_code` (`code`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `maatregel_habitat` (
+  `maatregel_id` int NOT NULL,
+  `habitat_id` int NOT NULL,
+  PRIMARY KEY (`maatregel_id`,`habitat_id`),
+  KEY `fk_mh_habitat` (`habitat_id`),
+  CONSTRAINT `fk_mh_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_mh_maatregel` FOREIGN KEY (`maatregel_id`) REFERENCES `maatregelen` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `maatregelen` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `omschrijving` text NOT NULL,
+  `druk_aandachtspunt` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `plot_jaar_habitat` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `plot_id` int NOT NULL,
+  `jaar` int NOT NULL,
+  `habitat_id` int NOT NULL,
+  `aandeel_percentage` decimal(5,2) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_plot_jaar_habitat_uniek` (`plot_id`,`jaar`,`habitat_id`),
+  KEY `fk_phj_habitat` (`habitat_id`),
+  CONSTRAINT `fk_phj_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`),
+  CONSTRAINT `fk_phj_plot_jaar` FOREIGN KEY (`plot_id`, `jaar`) REFERENCES `plot_jaar_oppervlak` (`plot_id`, `jaar`),
+  CONSTRAINT `chk_pjh_percentage_range` CHECK ((`aandeel_percentage` between 0 and 100))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `plot_jaar_maatregel` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `plot_id` int NOT NULL,
+  `jaar` int NOT NULL,
+  `maatregel_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_plot_jaar_maatregel` (`plot_id`,`jaar`,`maatregel_id`),
+  KEY `fk_pjm_maatregel` (`maatregel_id`),
+  CONSTRAINT `fk_pjm_maatregel` FOREIGN KEY (`maatregel_id`) REFERENCES `maatregelen` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_pjm_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `plot_jaar_oppervlak` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `plot_id` int NOT NULL,
+  `jaar` int NOT NULL,
+  `oppervlakte_km2` decimal(10,4) NOT NULL COMMENT 'Oppervlakte van plot in vierkante kilometers',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_plot_jaar_uniek` (`plot_id`,`jaar`),
+  CONSTRAINT `fk_plot_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
+  CONSTRAINT `chk_pjo_jaar` CHECK ((`jaar` between 1900 and 2100)),
+  CONSTRAINT `chk_pjo_oppervlak_positief` CHECK ((`oppervlakte_km2` > 0))
+) ENGINE=InnoDB AUTO_INCREMENT=5293 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `plot_jaar_teller` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `tellercode` varchar(50) NOT NULL,
+  `plot_id` int NOT NULL,
+  `jaar` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_teller_plot_jaar` (`tellercode`,`plot_id`,`jaar`),
+  KEY `fk_plot_teller_relatie` (`plot_id`),
+  CONSTRAINT `fk_plot_teller_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
+  CONSTRAINT `fk_teller_relatie` FOREIGN KEY (`tellercode`) REFERENCES `tellers` (`tellercode`)
+) ENGINE=InnoDB AUTO_INCREMENT=2823 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `plotkolom_mapping` (
+  `kolomnaam` varchar(50) NOT NULL,
+  `plot_id` int NOT NULL,
+  PRIMARY KEY (`kolomnaam`),
+  KEY `idx_plot_id` (`plot_id`),
+  CONSTRAINT `plotkolom_mapping_ibfk_1` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `plots` (
+  `plot_id` int NOT NULL,
+  `plot_nr` int DEFAULT NULL,
+  `plot_naam` varchar(255) DEFAULT NULL,
+  `kavel_nummer` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`plot_id`),
+  KEY `idx_plot_naam` (`plot_naam`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Geografische telgebieden voor vogelmonitoring';
+
+CREATE TABLE `richtlijnen` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `naam` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `soort_familie` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `soort_id` int NOT NULL,
+  `familie_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_soort_familie` (`soort_id`),
+  KEY `fk_familie_link` (`familie_id`),
+  CONSTRAINT `fk_soort_familie_familie` FOREIGN KEY (`familie_id`) REFERENCES `familie` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_soort_familie_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=304 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `soort_habitat` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `soort_id` int NOT NULL,
+  `habitat_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_soort_id_habitat_id` (`soort_id`,`habitat_id`),
+  KEY `fk_habitat_soort` (`habitat_id`),
+  CONSTRAINT `fk_habitat_soort` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`),
+  CONSTRAINT `fk_soort_habitat_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `soort_richtlijn` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `soort_id` int NOT NULL,
+  `richtlijn_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_soort_richtlijn` (`soort_id`,`richtlijn_id`),
+  KEY `fk_richtlijn_type` (`richtlijn_id`),
+  CONSTRAINT `fk_richtlijn_type` FOREIGN KEY (`richtlijn_id`) REFERENCES `richtlijnen` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_soort_richtlijn_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=256 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `soorten` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `euring_code` int NOT NULL,
+  `soort_naam` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `Euring` (`euring_code`),
+  UNIQUE KEY `uq_euring` (`euring_code`),
+  KEY `idx_soort_naam` (`soort_naam`)
+) ENGINE=InnoDB AUTO_INCREMENT=291 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
+
+CREATE TABLE `tellers` (
+  `tellercode` varchar(50) NOT NULL,
+  `voornaam` varchar(100) DEFAULT NULL,
+  `tussenvoegsel` varchar(20) DEFAULT NULL,
+  `achternaam` varchar(100) DEFAULT NULL,
+  `straat` varchar(255) DEFAULT NULL,
+  `huisnummer` varchar(20) DEFAULT NULL,
+  `postcode` varchar(10) DEFAULT NULL,
+  `woonplaats` varchar(100) DEFAULT NULL,
+  `telefoon_vast` varchar(20) DEFAULT NULL,
+  `telefoon_mobiel` varchar(20) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `soort_lid` enum('aspirant','gewoon','buitengewoon','ondersteunend','donateur','erelid','onbekend','oudteller') DEFAULT 'gewoon',
+  `bandnummer` int unsigned DEFAULT NULL,
+  PRIMARY KEY (`tellercode`),
+  KEY `idx_tellers_email` (`email`),
+  CONSTRAINT `chk_email_format` CHECK (((`email` = _utf8mb4'') or (`email` is null) or (`email` like _utf8mb4'%@%'))),
+  CONSTRAINT `chk_mobiel_formaat` CHECK (((`telefoon_mobiel` = _utf8mb4'') or (`telefoon_mobiel` is null) or regexp_like(`telefoon_mobiel`,_utf8mb4'^[0-9 +-]+$'))),
+  CONSTRAINT `chk_mobiel_vast` CHECK (((`telefoon_vast` = _utf8mb4'') or (`telefoon_vast` is null) or regexp_like(`telefoon_vast`,_utf8mb4'^[0-9 +-]+$'))),
+  CONSTRAINT `chk_postcode_formaat_flexibel` CHECK (regexp_like(`postcode`,_utf8mb4'^[0-9]{4} ?[A-Z]{2}$'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `trends` (
   `id` int NOT NULL AUTO_INCREMENT,
   `soort_id` int NOT NULL,
   `regio` varchar(100) DEFAULT NULL,
-  `jaar` int DEFAULT NULL,
-  `waarde` int DEFAULT NULL,
+  `jaar` int NOT NULL,
+  `waarde` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_trends_soort_jaar` (`soort_id`,`jaar`),
+  KEY `idx_trends_regio_soort_jaar` (`regio`,`soort_id`,`jaar`),
   CONSTRAINT `fk_trends_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE,
   CONSTRAINT `chk_trends_jaar` CHECK ((`jaar` between 1900 and 2100))
 ) ENGINE=InnoDB AUTO_INCREMENT=16384 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -386,13 +376,14 @@ CREATE TABLE `waarnemingen` (
   UNIQUE KEY `uq_waarneming_uniek` (`plot_id`,`soort_id`,`jaar`),
   KEY `idx_waarneming_jaar` (`jaar`),
   KEY `idx_soort_jaar` (`jaar`),
-  KEY `fk_waarneming_jaar_plot` (`plot_id`,`jaar`),
   KEY `idx_waarneming_soort_id` (`soort_id`),
+  KEY `idx_waarneming_jaar_soort_territoria` (`jaar`,`soort_id`,`territoria`),
+  KEY `idx_waarneming_plot_jaar_soort` (`plot_id`,`jaar`,`soort_id`),
   CONSTRAINT `fk_waarneming_jaar_plot` FOREIGN KEY (`plot_id`, `jaar`) REFERENCES `plot_jaar_oppervlak` (`plot_id`, `jaar`),
   CONSTRAINT `fk_waarneming_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
   CONSTRAINT `fk_waarneming_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `chk_waarneming_territoria` CHECK ((`territoria` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=116681 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=116681 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
 
 CREATE TABLE `weer_actueel_voorschoten` (
   `datum` date NOT NULL,
