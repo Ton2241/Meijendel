@@ -1,0 +1,127 @@
+-- ============================================================================
+-- QUERY: Vogeldichtheid per jaar per landschapstype (PLOTS 1-17)
+-- ============================================================================
+-- Doel: Bereken de totale vogeldichtheid (territoria per km²) per jaar voor 
+-- elk landschapstype, alleen voor plots 1 t/m 17 (incl. varianten met letters).
+--
+-- Plot selectie:
+-- - Plots met kavel_nummer 1 t/m 17
+-- - Inclusief varianten met letters (bijv. 1A, 1B, 2A, 17A)
+-- - EXCLUSIEF kavel 17B
+--
+-- Aanpak:
+-- 1. Filter relevante plots op basis van kavel_nummer
+-- 2. Selecteer landschapstypen (exclusief 1, 2, 10, 11, 16)
+-- 3. Koppel aan specifieke vogelsoorten via evg_vogel_landschapstype
+-- 4. Verzamel territoria uit waarnemingen (alleen voor geselecteerde plots)
+-- 5. Bereken totaal oppervlak van daadwerkelijk getelde plots
+-- 6. Bereken dichtheid: totaal territoria / totaal oppervlak
+-- ============================================================================
+
+WITH geselecteerde_plots AS (
+  -- STAP 1: Selecteer plots met kavel_nummer 1 t/m 17 (inclusief varianten met letters)
+  -- Doel: Maak lijst van relevante plot_id's op basis van kavel_nummer
+  -- Filter: Neem alle kavels 1-17 mee, ook met letters, maar sluit 17B uit
+  -- 
+  -- Uitleg regex patroon '^([1-9]|1[0-7])([A-Z])?$':
+  -- ^ = begin van string
+  -- ([1-9]|1[0-7]) = cijfer 1-9 OF 10-17
+  -- ([A-Z])? = optioneel één hoofdletter
+  -- $ = einde van string
+  SELECT plot_id, kavel_nummer
+  FROM plots
+  WHERE kavel_nummer REGEXP '^([1-9]|1[0-7])([A-Z])?$'
+    AND kavel_nummer != '17B'
+),
+
+landschap_vogels AS (
+  -- STAP 2: Selecteer landschapstypen en hun specifieke vogelsoorten
+  -- Doel: Maak een lijst van alle relevante landschappen met hun kenmerkende vogels
+  -- Filter: Sluit landschapstypen 1, 2, 10, 11, 16 uit zoals gevraagd
+  SELECT 
+    lt.id AS landschap_id,
+    lt.beschrijving AS landschapstype,
+    vl.soort_id
+  FROM evg_landschapstypen lt
+  INNER JOIN evg_vogel_landschapstype vl ON lt.id = vl.landschap_id
+  WHERE lt.id NOT IN (1, 2, 10, 11, 16)
+),
+
+unieke_plots_per_landschap AS (
+  -- STAP 3: Identificeer alle unieke (geselecteerde) plots per landschap per jaar
+  -- Doel: Voorkom dat plots meerdere keren meetellen als ze meerdere vogelsoorten 
+  --       van hetzelfde landschapstype bevatten
+  -- Nieuw: Alleen plots uit geselecteerde_plots worden meegenomen
+  SELECT DISTINCT
+    lv.landschap_id,
+    lv.landschapstype,
+    w.jaar,
+    w.plot_id
+  FROM landschap_vogels lv
+  INNER JOIN waarnemingen w ON lv.soort_id = w.soort_id
+  INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id  -- NIEUW: filter op geselecteerde plots
+),
+
+oppervlak_per_landschap AS (
+  -- STAP 4: Bereken het totale oppervlak van getelde plots per landschap per jaar
+  -- Doel: Som de oppervlakten van alle geselecteerde plots die minimaal één waarneming 
+  --       hebben van een vogel die specifiek is voor dat landschapstype
+  -- Eenheid: Oppervlakte in km² (zoals opgeslagen in plot_jaar_oppervlak)
+  SELECT 
+    up.landschap_id,
+    up.landschapstype,
+    up.jaar,
+    SUM(pjo.oppervlakte_km2) AS totaal_oppervlak_km2
+  FROM unieke_plots_per_landschap up
+  INNER JOIN plot_jaar_oppervlak pjo 
+    ON up.plot_id = pjo.plot_id 
+    AND up.jaar = pjo.jaar
+  GROUP BY up.landschap_id, up.landschapstype, up.jaar
+),
+
+territoria_per_landschap AS (
+  -- STAP 5: Tel het totaal aantal territoria per landschap per jaar
+  -- Doel: Verzamel alle territoria van vogels die specifiek zijn voor elk landschapstype
+  -- Nieuw: Alleen territoria uit geselecteerde plots
+  -- Let op: Hier tellen we WEL alle waarnemingen op, ook als meerdere soorten 
+  --         in hetzelfde plot voorkomen (dit is correct voor dichtheidsberekening)
+  SELECT 
+    lv.landschap_id,
+    lv.landschapstype,
+    w.jaar,
+    SUM(w.territoria) AS totaal_territoria
+  FROM landschap_vogels lv
+  INNER JOIN waarnemingen w ON lv.soort_id = w.soort_id
+  INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id  -- NIEUW: filter op geselecteerde plots
+  GROUP BY lv.landschap_id, lv.landschapstype, w.jaar
+)
+
+-- STAP 6: Combineer territoria en oppervlak en bereken vogeldichtheid
+-- Formule: vogeldichtheid = totaal_territoria / totaal_oppervlak_km2
+-- Eenheid: aantal territoria per km²
+-- Afronding: 2 decimalen voor leesbaarheid
+SELECT 
+  t.jaar,
+  t.landschap_id,
+  t.landschapstype,
+  t.totaal_territoria,
+  o.totaal_oppervlak_km2,
+  ROUND(t.totaal_territoria / o.totaal_oppervlak_km2, 2) AS vogeldichtheid_per_km2
+FROM territoria_per_landschap t
+INNER JOIN oppervlak_per_landschap o 
+  ON t.landschap_id = o.landschap_id 
+  AND t.jaar = o.jaar
+ORDER BY t.jaar, t.landschap_id;
+
+-- ============================================================================
+-- TOELICHTING BIJ DE RESULTATEN:
+-- ============================================================================
+-- jaar                      : Het telseizoen
+-- landschap_id              : ID van het landschapstype
+-- landschapstype            : Beschrijving van het landschapstype
+-- totaal_territoria         : Som van alle territoria van specifieke vogels (kavels 1-17)
+-- totaal_oppervlak_km2      : Som van oppervlakten van getelde plots (kavels 1-17)
+-- vogeldichtheid_per_km2    : Berekende dichtheid (territoria per vierkante kilometer)
+--
+-- Plot selectie: Alleen plots met kavel_nummer 1 t/m 17 (incl. varianten met letters, excl. 17B)
+-- ============================================================================
