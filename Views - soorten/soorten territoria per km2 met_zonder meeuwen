@@ -1,37 +1,36 @@
-/* OVERZICHT AANTAL GETELDE SOORTEN PER JAAR VANAF 1958
-   Deze query telt het aantal unieke vogelsoorten waarvoor in een 
-   specifiek jaar minstens één territorium is vastgesteld.
-*/
-
 SELECT 
-    -- Stap 4a: Selecteer het jaar van de waarnemingen
-    w.jaar,
-    
-    -- Stap 4b: Tel het aantal unieke vogelsoorten (soort_id)
-    -- We gebruiken DISTINCT omdat een soort in veel verschillende plots 
-    -- kan voorkomen, maar we willen elke soort slechts één keer per jaar tellen.
-    COUNT(DISTINCT w.soort_id) AS aantal_onderscheiden_soorten,
-    
-    -- Stap 4c: Optioneel - Totaal aantal territoria over alle soorten heen
-    SUM(w.territoria) AS totaal_aantal_territoria
+    -- Stap 5a: Groepeer de resultaten per jaar
+    pjo.jaar,
 
--- Stap 1: Gebruik de tabel 'waarnemingen' als bron
--- Hierin staan de koppelingen tussen soorten, jaren en locaties
+    -- Stap 5b: Het totaal getelde oppervlak (DISTINCT om dubbeltellingen te voorkomen)
+    ROUND(SUM(DISTINCT pjo.oppervlakte_km2), 2) AS geteld_oppervlak_km2,
+
+    -- Stap 5c: Oorspronkelijke berekening (alle soorten)
+    ROUND(SUM(w.territoria) / SUM(DISTINCT pjo.oppervlakte_km2), 2) AS tot_territoria_per_km2,
+
+    -- Stap 5d: Berekening exclusief meeuwen (ID 103 t/m 115)
+    -- We gebruiken een CASE om de territoria op 0 te zetten als het een meeuw betreft
+    ROUND(
+        SUM(CASE 
+            WHEN w.soort_id BETWEEN 103 AND 115 THEN 0 
+            ELSE w.territoria 
+        END) / SUM(DISTINCT pjo.oppervlakte_km2), 
+    2) AS territoria_excl_meeuwen_per_km2
+
+-- Stap 1: Koppel oppervlakte aan waarnemingen
 FROM 
-    waarnemingen w
+    plot_jaar_oppervlak pjo
+INNER JOIN 
+    waarnemingen w ON pjo.plot_id = w.plot_id AND pjo.jaar = w.jaar
 
 WHERE 
-    -- Stap 2: Filter de resultaten vanaf het jaar 1958
-    w.jaar >= 1958
-    
-    -- Stap 3: We tellen alleen soorten mee die daadwerkelijk aanwezig waren
-    -- (territoria groter dan 0).
-    AND w.territoria > 0
+    -- Stap 2: Filter vanaf startjaar 1958
+    pjo.jaar >= 1958
 
--- Stap 4: Groepeer de data per jaar zodat we de telling per jaar zien
+-- Stap 3: Groepeer per jaar
 GROUP BY 
-    w.jaar
+    pjo.jaar
 
--- Stap 5: Sorteer de lijst chronologisch
+-- Stap 4: Sorteer chronologisch
 ORDER BY 
-    w.jaar ASC;
+    pjo.jaar ASC;
