@@ -1,0 +1,37 @@
+/* OVERZICHT AANTAL GETELDE SOORTEN PER JAAR VANAF 1958
+   Deze query telt het aantal unieke vogelsoorten waarvoor in een 
+   specifiek jaar minstens één territorium is vastgesteld.
+*/
+
+SELECT 
+    -- Stap 4a: Selecteer het jaar van de waarnemingen
+    w.jaar,
+    
+    -- Stap 4b: Tel het aantal unieke vogelsoorten (soort_id)
+    -- We gebruiken DISTINCT omdat een soort in veel verschillende plots 
+    -- kan voorkomen, maar we willen elke soort slechts één keer per jaar tellen.
+    COUNT(DISTINCT w.soort_id) AS aantal_onderscheiden_soorten,
+    
+    -- Stap 4c: Optioneel - Totaal aantal territoria over alle soorten heen
+    SUM(w.territoria) AS totaal_aantal_territoria
+
+-- Stap 1: Gebruik de tabel 'waarnemingen' als bron
+-- Hierin staan de koppelingen tussen soorten, jaren en locaties
+FROM 
+    waarnemingen w
+
+WHERE 
+    -- Stap 2: Filter de resultaten vanaf het jaar 1958
+    w.jaar >= 1958
+    
+    -- Stap 3: We tellen alleen soorten mee die daadwerkelijk aanwezig waren
+    -- (territoria groter dan 0).
+    AND w.territoria > 0
+
+-- Stap 4: Groepeer de data per jaar zodat we de telling per jaar zien
+GROUP BY 
+    w.jaar
+
+-- Stap 5: Sorteer de lijst chronologisch
+ORDER BY 
+    w.jaar ASC;
