@@ -7,7 +7,6 @@ De database is ontworpen voor de analyse van de ontwikkeling van broedvogelterri
 De database biedt:
 - broedvogelterritoria per plot/kavel, soort en jaar
 - Koppeling met vogelfamilies, ecologische vogelgroepen en landschapstypen
-- Berekening van vogeldichtheden op basis van territoria en oppervlakten
 - Natura 2000 doelstellingen
 - Beheersmatige ingrepen (maatregelen)
 - Weerdata sinds 1958
