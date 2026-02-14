@@ -1,0 +1,41 @@
+/* OVERZICHT GETELD OPPERVLAK PER JAAR VANAF 1958
+   Deze query berekent de som van de oppervlaktes van alle plots 
+   waarin daadwerkelijk vogelwaarnemingen zijn geregistreerd.
+*/
+
+SELECT 
+    -- Stap 5a: Selecteer het jaar van de meting
+    pjo.jaar,
+    
+    -- Stap 5b: Tel de oppervlaktes van alle relevante plots bij elkaar op
+    -- We ronden af op 2 decimalen voor een leesbaar overzicht
+    ROUND(SUM(pjo.oppervlakte_km2), 2) AS totaal_oppervlakte_km2,
+    
+    -- Stap 5c: Tel het aantal unieke plots om de omvang van de monitoring te zien
+    COUNT(DISTINCT pjo.plot_id) AS aantal_getelde_plots
+
+-- Stap 1: Gebruik de tabel met historische oppervlaktegegevens per plot/jaar
+FROM 
+    plot_jaar_oppervlak pjo
+
+WHERE 
+    -- Stap 2: Filter de resultaten vanaf het gevraagde startjaar 1958
+    pjo.jaar >= 1958
+    
+    -- Stap 3: Cruciale check - we willen alleen oppervlaktes meetellen 
+    -- van plots die in dat specifieke jaar ook echt zijn bezocht/geteld.
+    -- We controleren dit door te kijken of er data bestaat in de tabel 'waarnemingen'.
+    AND EXISTS (
+        SELECT 1 
+        FROM waarnemingen w 
+        WHERE w.plot_id = pjo.plot_id 
+        AND w.jaar = pjo.jaar
+    )
+
+-- Stap 4: Groepeer alle gevonden plots per jaar zodat we totalen kunnen berekenen
+GROUP BY 
+    pjo.jaar
+
+-- Stap 6: Toon de resultaten in chronologische volgorde
+ORDER BY 
+    pjo.jaar ASC;
