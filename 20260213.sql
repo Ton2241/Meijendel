@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-13 14:15:34.0540
+-- Generation Time: 2026-02-13 22:01:28.0270
 -- -------------------------------------------------------------
 
 
@@ -17,29 +17,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-
-CREATE TABLE `analyse_ecologie_kavels` (
-  `plot_id` int NOT NULL,
-  `jaar` int NOT NULL,
-  `groep_code` int NOT NULL,
-  `bezetting_percentage` decimal(5,2) DEFAULT NULL,
-  PRIMARY KEY (`plot_id`,`jaar`,`groep_code`),
-  KEY `idx_aek_plot_jaar` (`plot_id`,`jaar`),
-  KEY `fk_aek_groep` (`groep_code`),
-  CONSTRAINT `fk_aek_groep` FOREIGN KEY (`groep_code`) REFERENCES `ecologische_vogelgroepen` (`groep_code`),
-  CONSTRAINT `fk_aek_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
-  CONSTRAINT `chk_aek_jaar` CHECK ((`jaar` between 1900 and 2100)),
-  CONSTRAINT `chk_aek_percentage` CHECK ((`bezetting_percentage` between 0 and 100))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `euring` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `euring_code` int NOT NULL,
-  `latijnse_naam` varchar(255) NOT NULL,
-  `nederlandse_naam` varchar(255) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `idx_euring_nederlandse_naam` (`nederlandse_naam`)
-) ENGINE=InnoDB AUTO_INCREMENT=528 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `evg_landschapstypen` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -269,6 +246,7 @@ CREATE TABLE `plots` (
   `plot_nr` int DEFAULT NULL,
   `plot_naam` varchar(255) DEFAULT NULL,
   `kavel_nummer` varchar(255) DEFAULT NULL,
+  `geom` geometry /*!80003 SRID 28992 */ DEFAULT NULL,
   PRIMARY KEY (`plot_id`),
   KEY `idx_plot_naam` (`plot_naam`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Geografische telgebieden voor vogelmonitoring';
@@ -316,11 +294,12 @@ CREATE TABLE `soorten` (
   `id` int NOT NULL AUTO_INCREMENT,
   `euring_code` int NOT NULL,
   `soort_naam` varchar(100) NOT NULL,
+  `latijnse_naam` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `Euring` (`euring_code`),
   UNIQUE KEY `uq_euring` (`euring_code`),
   KEY `idx_soort_naam` (`soort_naam`)
-) ENGINE=InnoDB AUTO_INCREMENT=291 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
+) ENGINE=InnoDB AUTO_INCREMENT=810 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
 
 CREATE TABLE `tellers` (
   `tellercode` varchar(50) NOT NULL,
