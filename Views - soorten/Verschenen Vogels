@@ -1,0 +1,32 @@
+-- Stap 1: Selecteer de vogelsoorten
+SELECT 
+    s.id, 
+    s.euring_code, 
+    s.soort_naam
+FROM soorten s
+WHERE s.id IN (
+    -- Stap 2: Selecteer soorten die RECENT (laatste 10 jaar) aanwezig waren
+    SELECT DISTINCT soort_id
+    FROM waarnemingen
+    WHERE jaar >= (2026 - 10) 
+    AND territoria > 0
+)
+AND s.id NOT IN (
+    -- Stap 3: Sluit soorten uit die aanwezig waren in de periode 1958-1989
+    SELECT DISTINCT soort_id
+    FROM waarnemingen
+    WHERE jaar BETWEEN 1958 AND 1989
+    AND territoria > 0
+)
+AND s.id IN (
+    -- Stap 4: NIEUWE STAP - Selecteer alleen soorten die sinds 1989 
+    -- in totaal minimaal 10 verschillende jaren een territorium hadden.
+    -- Dit bevestigt dat de soort zich na 1989 echt gevestigd heeft.
+    SELECT soort_id 
+    FROM waarnemingen
+    WHERE jaar > 1989
+    AND territoria > 0
+    GROUP BY soort_id
+    HAVING COUNT(DISTINCT jaar) >= 10
+)
+ORDER BY s.soort_naam ASC;
