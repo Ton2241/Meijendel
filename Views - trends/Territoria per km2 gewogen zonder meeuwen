@@ -1,47 +1,40 @@
-/* STAP 1: Gebruik een Common Table Expression (CTE) om de ruwe data te aggregeren.
-  We moeten eerst de totalen per jaar berekenen voordat we de deling kunnen maken.
+/* STAP 1: Bereken het totaal aantal territoria per jaar, EXCLUSIEF meeuwen.
+   We filteren hier op de soort_id's om de koloniebroeders buiten de som te houden.
 */
-WITH JaarlijkseStatistieken AS (
+WITH TotaalVogelsPerJaar AS (
     SELECT 
-        w.jaar,
-        
-        /* STAP 2: Tel alle territoria bij elkaar op voor alle vogelsoorten.
-           De tabel 'waarnemingen' bevat het aantal territoria per soort per plot.
-        */
-        SUM(w.territoria) AS totaal_aantal_territoria,
-        
-        /* STAP 3: Bereken de totale getelde oppervlakte.
-           We koppelen 'waarnemingen' aan 'plot_jaar_oppervlak' via plot_id EN jaar.
-           Dit is cruciaal omdat de omvang van een telgebied (plot) per jaar kan variëren.
-        */
-        SUM(pjo.oppervlakte_km2) AS totale_oppervlakte_km2
-        
-    FROM waarnemingen w
-    INNER JOIN plot_jaar_oppervlak pjo 
-        ON w.plot_id = pjo.plot_id 
-        AND w.jaar = pjo.jaar
-        
-    /* STAP 4: Filter de startdatum zoals gevraagd (1958) */
-    WHERE w.jaar >= 1958
-    
-    /* STAP 5: Groepeer de resultaten per jaar om de totalen per tijdsperiode te krijgen */
-    GROUP BY w.jaar
+        jaar, 
+        SUM(territoria) AS som_territoria
+    FROM waarnemingen
+    WHERE jaar >= 1958
+    /* UITSLUITING: De soorten 103 t/m 112 (meeuwen) worden hier overgeslagen */
+    AND soort_id NOT BETWEEN 103 AND 112
+    GROUP BY jaar
+),
+
+/* STAP 2: Bereken de unieke getelde oppervlakte per jaar.
+   We gebruiken de tabel 'plot_jaar_oppervlak' om te voorkomen dat 
+   kilometers dubbel worden geteld door meerdere vogelsoorten.
+*/
+TotaalOppervlaktePerJaar AS (
+    SELECT 
+        jaar, 
+        SUM(oppervlakte_km2) AS som_km2
+    FROM plot_jaar_oppervlak
+    WHERE jaar >= 1958
+    /* We kijken alleen naar jaren waarvoor ook daadwerkelijk tellingen zijn ingevoerd */
+    AND EXISTS (SELECT 1 FROM waarnemingen w WHERE w.jaar = plot_jaar_oppervlak.jaar)
+    GROUP BY jaar
 )
 
-/* STAP 6: De uiteindelijke selectie en berekening van de ratio.
-   Hier transformeren we de totalen naar een gemiddelde dichtheid.
+/* STAP 3: Combineer de vogel-totalen met de oppervlakte-totalen.
+   De resulterende 'territoria_per_km2' geeft nu de dichtheid van de overige vogelsoorten.
 */
 SELECT 
-    jaar,
-    totaal_aantal_territoria,
-    ROUND(totale_oppervlakte_km2, 2) AS km2_geteld,
-    
-    /* STAP 7: De kern-berekening: Dichtheid = Aantal / Oppervlakte.
-       We gebruiken ROUND om het resultaat hanteerbaar te houden (bijv. 120.50 vogels per km2).
-    */
-    ROUND(totaal_aantal_territoria / totale_oppervlakte_km2, 2) AS territoria_per_km2
-
-FROM JaarlijkseStatistieken
-
-/* STAP 8: Sorteer chronologisch zodat de trend van 1958 tot heden zichtbaar wordt */
-ORDER BY jaar ASC;
+    v.jaar,
+    v.som_territoria AS vogels_excl_meeuwen,
+    ROUND(o.som_km2, 2) AS km2_geteld,
+    ROUND(v.som_territoria / o.som_km2, 2) AS territoria_per_km2
+FROM TotaalVogelsPerJaar v
+JOIN TotaalOppervlaktePerJaar o ON v.jaar = o.jaar
+ORDER BY v.jaar ASC;
