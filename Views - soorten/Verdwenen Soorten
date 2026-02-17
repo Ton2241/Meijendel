@@ -22,4 +22,4 @@ AND s.id NOT IN (
     WHERE jaar >= (2026 - 10) 
     AND territoria > 0
 )
-ORDER BY s.soort_naam ASC;ß®
+ORDER BY s.soort_naam ASC;
