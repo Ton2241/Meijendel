@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-13 22:01:28.0270
+-- Generation Time: 2026-02-17 13:39:22.7750
 -- -------------------------------------------------------------
 
 
@@ -60,14 +60,26 @@ CREATE TABLE `familie` (
   UNIQUE KEY `uq_familienaam` (`familienaam_nl`)
 ) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+CREATE TABLE `habitats_export_2014` (
+  `plotid` int DEFAULT NULL,
+  `H2130A` int DEFAULT NULL,
+  `H2130B` int DEFAULT NULL,
+  `H2160` int DEFAULT NULL,
+  `H2180Ao` int DEFAULT NULL,
+  `H2180B` int DEFAULT NULL,
+  `H2180C` int DEFAULT NULL,
+  `area_m2` float DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 CREATE TABLE `habitattypen` (
   `id` int NOT NULL AUTO_INCREMENT,
   `habitat_code` varchar(20) NOT NULL,
   `habitat_naam` varchar(255) NOT NULL,
+  `beschrijving` varchar(255) DEFAULT NULL,
   `habitat_doelstelling` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_habitat_code` (`habitat_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Natura 2000 habitattypen met doelstellingen';
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Natura 2000 habitattypen met doelstellingen';
 
 CREATE TABLE `habitattypen_doelstelling` (
   `habitat_naam_csv` varchar(255) DEFAULT NULL,
@@ -188,14 +200,13 @@ CREATE TABLE `plot_jaar_habitat` (
   `plot_id` int NOT NULL,
   `jaar` int NOT NULL,
   `habitat_id` int NOT NULL,
-  `aandeel_percentage` decimal(5,2) DEFAULT NULL,
+  `aandeel_m2` decimal(12,2) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_plot_jaar_habitat_uniek` (`plot_id`,`jaar`,`habitat_id`),
-  KEY `fk_phj_habitat` (`habitat_id`),
-  CONSTRAINT `fk_phj_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`),
-  CONSTRAINT `fk_phj_plot_jaar` FOREIGN KEY (`plot_id`, `jaar`) REFERENCES `plot_jaar_oppervlak` (`plot_id`, `jaar`),
-  CONSTRAINT `chk_pjh_percentage_range` CHECK ((`aandeel_percentage` between 0 and 100))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  KEY `fk_pjh_habitat` (`habitat_id`),
+  KEY `fk_pjh_plot` (`plot_id`),
+  CONSTRAINT `fk_pjh_habitat` FOREIGN KEY (`habitat_id`) REFERENCES `habitattypen` (`id`),
+  CONSTRAINT `fk_pjh_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=313 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plot_jaar_maatregel` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -219,7 +230,7 @@ CREATE TABLE `plot_jaar_oppervlak` (
   CONSTRAINT `fk_plot_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
   CONSTRAINT `chk_pjo_jaar` CHECK ((`jaar` between 1900 and 2100)),
   CONSTRAINT `chk_pjo_oppervlak_positief` CHECK ((`oppervlakte_km2` > 0))
-) ENGINE=InnoDB AUTO_INCREMENT=5293 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5295 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plot_jaar_teller` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -299,7 +310,7 @@ CREATE TABLE `soorten` (
   UNIQUE KEY `Euring` (`euring_code`),
   UNIQUE KEY `uq_euring` (`euring_code`),
   KEY `idx_soort_naam` (`soort_naam`)
-) ENGINE=InnoDB AUTO_INCREMENT=810 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
+) ENGINE=InnoDB AUTO_INCREMENT=625 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
 
 CREATE TABLE `tellers` (
   `tellercode` varchar(50) NOT NULL,
