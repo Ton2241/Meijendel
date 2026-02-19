@@ -1,6 +1,5 @@
 WITH geselecteerde_plots AS (
-  -- STAP 1: Verbeterde plotselectie (Case-insensitive en robuuste regex)
-  -- De regex accepteert nu zowel kleine letters als hoofdletters [a-zA-Z]
+  -- STAP 1: Filter plots 1-17 (excl. 17B) op basis van kavel_nummer
   SELECT plot_id, kavel_nummer
   FROM plots
   WHERE kavel_nummer REGEXP '^([1-9]|1[0-7])([a-zA-Z])?$'
@@ -8,8 +7,7 @@ WITH geselecteerde_plots AS (
 ),
 
 landschap_vogels AS (
-  -- STAP 2: Relevante landschappen en hun vogelsoorten
-  -- Bron: evg_landschapstypen, evg_vogel_landschapstype
+  -- STAP 2: Koppel landschapstypen aan vogelsoorten (exclusief types 1, 2, 10, 11, 16)
   SELECT 
     lt.id AS landschap_id,
     lt.beschrijving AS landschapstype,
@@ -20,42 +18,108 @@ landschap_vogels AS (
 ),
 
 actieve_oppervlakte AS (
-  -- STAP 3: Bepaal het totaal getelde oppervlak per jaar voor de geselecteerde plots
-  -- We kijken in waarnemingen of een plot bezocht is (ongeacht welke vogel gezien is)
-  -- Dit voorkomt dat het oppervlak op 0 springt als 'kenmerkende' soorten ontbreken
+  -- STAP 3: Bereken totaal getelde km2 per jaar voor de geselecteerde plots
+  -- Alleen voor jaren waarin daadwerkelijk waarnemingen zijn geregistreerd
   SELECT 
     w.jaar,
     SUM(pjo.oppervlakte_km2) AS totaal_oppervlak_km2
   FROM (SELECT DISTINCT jaar, plot_id FROM waarnemingen) w
   INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
   INNER JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
+  WHERE w.jaar BETWEEN 1958 AND 2025
   GROUP BY w.jaar
 ),
 
-territoria_per_landschap AS (
-  -- STAP 4: Tel territoria van specifieke vogelsoorten binnen de selectie
-  -- Bron: waarnemingen, soorten
+data_bron AS (
+  -- STAP 4: Berekening van dichtheid per landschap per jaar
   SELECT 
     lv.landschap_id,
     lv.landschapstype,
     w.jaar,
-    SUM(COALESCE(w.territoria, 0)) AS totaal_territoria
+    ROUND(SUM(COALESCE(w.territoria, 0)) / ao.totaal_oppervlak_km2, 4) AS dichtheid
   FROM landschap_vogels lv
   INNER JOIN waarnemingen w ON lv.soort_id = w.soort_id
   INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
-  GROUP BY lv.landschap_id, lv.landschapstype, w.jaar
+  INNER JOIN actieve_oppervlakte ao ON w.jaar = ao.jaar
+  GROUP BY lv.landschap_id, lv.landschapstype, w.jaar, ao.totaal_oppervlak_km2
 )
 
--- STAP 5: Finale samenvoeging met LEFT JOIN
--- Dit zorgt ervoor dat jaren met tellingen maar zonder specifieke vogels toch verschijnen
+-- STAP 5: Matrix presentatie (Pivot) van 2025 terug naar 1958
 SELECT 
-    ao.jaar,
-    tl.landschap_id,
-    tl.landschapstype,
-    COALESCE(tl.totaal_territoria, 0) AS totaal_territoria,
-    ao.totaal_oppervlak_km2,
-    ROUND(COALESCE(tl.totaal_territoria, 0) / ao.totaal_oppervlak_km2, 4) AS vogeldichtheid_per_km2
-FROM actieve_oppervlakte ao
-LEFT JOIN territoria_per_landschap tl ON ao.jaar = tl.jaar
-WHERE tl.landschap_id IS NOT NULL
-ORDER BY ao.jaar DESC, tl.landschap_id ASC;
+    landschap_id,
+    landschapstype,
+    -- Jaren 2025 t/m 2010
+    MAX(CASE WHEN jaar = 2025 THEN dichtheid END) AS `2025`,
+    MAX(CASE WHEN jaar = 2024 THEN dichtheid END) AS `2024`,
+    MAX(CASE WHEN jaar = 2023 THEN dichtheid END) AS `2023`,
+    MAX(CASE WHEN jaar = 2022 THEN dichtheid END) AS `2022`,
+    MAX(CASE WHEN jaar = 2021 THEN dichtheid END) AS `2021`,
+    MAX(CASE WHEN jaar = 2020 THEN dichtheid END) AS `2020`,
+    MAX(CASE WHEN jaar = 2019 THEN dichtheid END) AS `2019`,
+    MAX(CASE WHEN jaar = 2018 THEN dichtheid END) AS `2018`,
+    MAX(CASE WHEN jaar = 2017 THEN dichtheid END) AS `2017`,
+    MAX(CASE WHEN jaar = 2016 THEN dichtheid END) AS `2016`,
+    MAX(CASE WHEN jaar = 2015 THEN dichtheid END) AS `2015`,
+    MAX(CASE WHEN jaar = 2014 THEN dichtheid END) AS `2014`,
+    MAX(CASE WHEN jaar = 2013 THEN dichtheid END) AS `2013`,
+    MAX(CASE WHEN jaar = 2012 THEN dichtheid END) AS `2012`,
+    MAX(CASE WHEN jaar = 2011 THEN dichtheid END) AS `2011`,
+    MAX(CASE WHEN jaar = 2010 THEN dichtheid END) AS `2010`,
+    -- Jaren 2009 t/m 1990
+    MAX(CASE WHEN jaar = 2009 THEN dichtheid END) AS `2009`,
+    MAX(CASE WHEN jaar = 2008 THEN dichtheid END) AS `2008`,
+    MAX(CASE WHEN jaar = 2007 THEN dichtheid END) AS `2007`,
+    MAX(CASE WHEN jaar = 2006 THEN dichtheid END) AS `2006`,
+    MAX(CASE WHEN jaar = 2005 THEN dichtheid END) AS `2005`,
+    MAX(CASE WHEN jaar = 2004 THEN dichtheid END) AS `2004`,
+    MAX(CASE WHEN jaar = 2003 THEN dichtheid END) AS `2003`,
+    MAX(CASE WHEN jaar = 2002 THEN dichtheid END) AS `2002`,
+    MAX(CASE WHEN jaar = 2001 THEN dichtheid END) AS `2001`,
+    MAX(CASE WHEN jaar = 2000 THEN dichtheid END) AS `2000`,
+    MAX(CASE WHEN jaar = 1999 THEN dichtheid END) AS `1999`,
+    MAX(CASE WHEN jaar = 1998 THEN dichtheid END) AS `1998`,
+    MAX(CASE WHEN jaar = 1997 THEN dichtheid END) AS `1997`,
+    MAX(CASE WHEN jaar = 1996 THEN dichtheid END) AS `1996`,
+    MAX(CASE WHEN jaar = 1995 THEN dichtheid END) AS `1995`,
+    MAX(CASE WHEN jaar = 1994 THEN dichtheid END) AS `1994`,
+    MAX(CASE WHEN jaar = 1993 THEN dichtheid END) AS `1993`,
+    MAX(CASE WHEN jaar = 1992 THEN dichtheid END) AS `1992`,
+    MAX(CASE WHEN jaar = 1991 THEN dichtheid END) AS `1991`,
+    MAX(CASE WHEN jaar = 1990 THEN dichtheid END) AS `1990`,
+    -- Jaren 1989 t/m 1970
+    MAX(CASE WHEN jaar = 1989 THEN dichtheid END) AS `1989`,
+    MAX(CASE WHEN jaar = 1988 THEN dichtheid END) AS `1988`,
+    MAX(CASE WHEN jaar = 1987 THEN dichtheid END) AS `1987`,
+    MAX(CASE WHEN jaar = 1986 THEN dichtheid END) AS `1986`,
+    MAX(CASE WHEN jaar = 1985 THEN dichtheid END) AS `1985`,
+    MAX(CASE WHEN jaar = 1984 THEN dichtheid END) AS `1984`,
+    MAX(CASE WHEN jaar = 1983 THEN dichtheid END) AS `1983`,
+    MAX(CASE WHEN jaar = 1982 THEN dichtheid END) AS `1982`,
+    MAX(CASE WHEN jaar = 1981 THEN dichtheid END) AS `1981`,
+    MAX(CASE WHEN jaar = 1980 THEN dichtheid END) AS `1980`,
+    MAX(CASE WHEN jaar = 1979 THEN dichtheid END) AS `1979`,
+    MAX(CASE WHEN jaar = 1978 THEN dichtheid END) AS `1978`,
+    MAX(CASE WHEN jaar = 1977 THEN dichtheid END) AS `1977`,
+    MAX(CASE WHEN jaar = 1976 THEN dichtheid END) AS `1976`,
+    MAX(CASE WHEN jaar = 1975 THEN dichtheid END) AS `1975`,
+    MAX(CASE WHEN jaar = 1974 THEN dichtheid END) AS `1974`,
+    MAX(CASE WHEN jaar = 1973 THEN dichtheid END) AS `1973`,
+    MAX(CASE WHEN jaar = 1972 THEN dichtheid END) AS `1972`,
+    MAX(CASE WHEN jaar = 1971 THEN dichtheid END) AS `1971`,
+    MAX(CASE WHEN jaar = 1970 THEN dichtheid END) AS `1970`,
+    -- Jaren 1969 t/m 1958
+    MAX(CASE WHEN jaar = 1969 THEN dichtheid END) AS `1969`,
+    MAX(CASE WHEN jaar = 1968 THEN dichtheid END) AS `1968`,
+    MAX(CASE WHEN jaar = 1967 THEN dichtheid END) AS `1967`,
+    MAX(CASE WHEN jaar = 1966 THEN dichtheid END) AS `1966`,
+    MAX(CASE WHEN jaar = 1965 THEN dichtheid END) AS `1965`,
+    MAX(CASE WHEN jaar = 1964 THEN dichtheid END) AS `1964`,
+    MAX(CASE WHEN jaar = 1963 THEN dichtheid END) AS `1963`,
+    MAX(CASE WHEN jaar = 1962 THEN dichtheid END) AS `1962`,
+    MAX(CASE WHEN jaar = 1961 THEN dichtheid END) AS `1961`,
+    MAX(CASE WHEN jaar = 1960 THEN dichtheid END) AS `1960`,
+    MAX(CASE WHEN jaar = 1959 THEN dichtheid END) AS `1959`,
+    MAX(CASE WHEN jaar = 1958 THEN dichtheid END) AS `1958`
+FROM data_bron
+GROUP BY landschap_id, landschapstype
+ORDER BY landschap_id ASC;
