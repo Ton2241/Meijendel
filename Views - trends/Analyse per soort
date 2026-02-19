@@ -1,0 +1,53 @@
+WITH SoortID AS (
+    -- STAP 1: ID van de Nachtegaal ophalen
+    SELECT id FROM soorten WHERE soort_naam = 'Nachtegaal' LIMIT 1
+),
+ActievePlots AS (
+    -- STAP 2: Bereken totaal geteld oppervlak per jaar in Meijendel
+    SELECT 
+        w.jaar,
+        SUM(pjo.oppervlakte_km2) as totaal_oppervlakte_km2
+    FROM waarnemingen w
+    JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
+    GROUP BY w.jaar
+),
+MeijendelBasis AS (
+    -- STAP 3: Bereken de ruwe dichtheid per km2
+    SELECT 
+        w.jaar,
+        SUM(w.territoria) / ap.totaal_oppervlakte_km2 AS dichtheid
+    FROM waarnemingen w
+    JOIN ActievePlots ap ON w.jaar = ap.jaar
+    WHERE w.soort_id = (SELECT id FROM SoortID)
+    GROUP BY w.jaar, ap.totaal_oppervlakte_km2
+),
+IndexJaar AS (
+    -- STAP 4: Zoek het jaar waarin de landelijke trend 100 is
+    SELECT jaar 
+    FROM trends 
+    WHERE soort_id = (SELECT id FROM SoortID) 
+      AND regio = 'landelijk' 
+      AND waarde = 100
+    LIMIT 1
+),
+MeijendelReferentie AS (
+    -- STAP 5: Haal de dichtheid van Meijendel op uit dat specifieke indexjaar
+    SELECT dichtheid 
+    FROM MeijendelBasis 
+    WHERE jaar = (SELECT jaar FROM IndexJaar)
+)
+-- STAP 6: Combineer alles en bereken de nieuwe trendkolom
+SELECT 
+    j.jaar,
+    t.waarde AS trend_landelijk,
+    ROUND(mb.dichtheid, 2) AS territoria_per_km2_meijendel,
+    ROUND((mb.dichtheid / (SELECT dichtheid FROM MeijendelReferentie)) * 100, 1) AS trend_meijendel
+FROM (
+    SELECT jaar FROM waarnemingen UNION SELECT jaar FROM trends 
+    WHERE soort_id = (SELECT id FROM SoortID) AND regio = 'landelijk'
+) j
+LEFT JOIN trends t ON j.jaar = t.jaar 
+    AND t.soort_id = (SELECT id FROM SoortID) 
+    AND t.regio = 'landelijk'
+LEFT JOIN MeijendelBasis mb ON j.jaar = mb.jaar
+ORDER BY j.jaar DESC;

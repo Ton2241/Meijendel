@@ -59,11 +59,6 @@ weer\_actueel\_voorschoten - Actuele weerdata vanaf 2016
 weer\_legenda - Toelichting bij weervariabelen  
 weer\_totaal - View die historische en actuele data combineert (overgang 4 mei 2016)
 
-_Import en hulptabellen_
-import\_waarnemingen\_breed - Staging tabel voor data-import (breed formaat met plotkolommen)  
-import\_waarnemingen\_lang - Staging tabel voor data-import (genormaliseerd formaat)  
-habitattypen\_doelstelling - Hulptabel voor habitatdata
-
 **Technische kenmerken**
 
 Database type: MySQL / MariaDB  
@@ -71,7 +66,7 @@ Character set: UTF8MB4
 Engine: InnoDB met referentiële integriteit
 Tools: GitHub Desktop, Tailscale, Visual Studio Code  
 Gegenereerd: TablePlus 6.8.1  
-Exportdatum: 13 februari 2026
+Exportdatum: 18 februari 2026
 
 **Datakwaliteit**
 De database bevat validatieregels via CHECK constraints:
