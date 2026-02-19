@@ -1,0 +1,17 @@
+SELECT 
+    
+    s.soort_naam,
+    
+    w.territoria
+FROM 
+    waarnemingen w
+JOIN 
+    plots p ON w.plot_id = p.plot_id
+JOIN 
+    soorten s ON w.soort_id = s.id
+WHERE 
+    p.plot_naam = 'Meijendel k 15' -- Vul hier het  gewenste nummer in
+    AND w.jaar = 2025              -- Vul hier het gewenste jaar in
+ORDER BY 
+    w.territoria DESC, 
+    s.soort_naam ASC;
