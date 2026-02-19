@@ -1,0 +1,146 @@
+WITH geselecteerde_plots AS (
+  SELECT plot_id, kavel_nummer
+  FROM plots
+  WHERE kavel_nummer REGEXP '^([1-9]|1[0-7])([a-zA-Z])?$'
+    AND UPPER(kavel_nummer) != '17B'
+),
+
+landschap_clustering AS (
+  -- STAP 1: Clusters definiëren en filteren (Hoogveen ID 4 uitgesloten)
+  SELECT 
+    lt.id AS origineel_id,
+    CASE 
+      WHEN lt.id IN (13, 14, 15) THEN 'Bos'
+      WHEN lt.id IN (3, 5) THEN 'Vochtig'
+      WHEN lt.id IN (12, 17, 18) THEN 'Ruigten'
+      ELSE lt.beschrijving 
+    END AS categorie_naam,
+    vl.soort_id
+  FROM evg_landschapstypen lt
+  INNER JOIN evg_vogel_landschapstype vl ON lt.id = vl.landschap_id
+  WHERE lt.id NOT IN (1, 2, 10, 11, 16, 4)
+),
+
+actieve_oppervlakte AS (
+  SELECT 
+    w.jaar,
+    SUM(pjo.oppervlakte_km2) AS totaal_oppervlak_km2
+  FROM (SELECT DISTINCT jaar, plot_id FROM waarnemingen) w
+  INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
+  INNER JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
+  WHERE w.jaar BETWEEN 1958 AND 2025
+  GROUP BY w.jaar
+),
+
+dichtheid_per_groep AS (
+  SELECT 
+    lc.categorie_naam,
+    w.jaar,
+    SUM(COALESCE(w.territoria, 0)) / ao.totaal_oppervlak_km2 AS groep_dichtheid
+  FROM landschap_clustering lc
+  INNER JOIN waarnemingen w ON lc.soort_id = w.soort_id
+  INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
+  INNER JOIN actieve_oppervlakte ao ON w.jaar = ao.jaar
+  GROUP BY lc.categorie_naam, w.jaar, ao.totaal_oppervlak_km2
+),
+
+jaar_totalen AS (
+  SELECT jaar, SUM(groep_dichtheid) AS totaal_dichtheid_jaar
+  FROM dichtheid_per_groep
+  GROUP BY jaar
+),
+
+data_bron AS (
+  SELECT 
+    dpg.categorie_naam,
+    dpg.jaar,
+    ROUND((dpg.groep_dichtheid / jt.totaal_dichtheid_jaar) * 100, 2) AS percentage
+  FROM dichtheid_per_groep dpg
+  JOIN jaar_totalen jt ON dpg.jaar = jt.jaar
+)
+
+-- STAP 5: Matrix van 1958 naar 2025
+SELECT 
+    categorie_naam,
+    -- Jaren 1958 t/m 1969
+    MAX(CASE WHEN jaar = 1958 THEN percentage END) AS `1958`,
+    MAX(CASE WHEN jaar = 1959 THEN percentage END) AS `1959`,
+    MAX(CASE WHEN jaar = 1960 THEN percentage END) AS `1960`,
+    MAX(CASE WHEN jaar = 1961 THEN percentage END) AS `1961`,
+    MAX(CASE WHEN jaar = 1962 THEN percentage END) AS `1962`,
+    MAX(CASE WHEN jaar = 1963 THEN percentage END) AS `1963`,
+    MAX(CASE WHEN jaar = 1964 THEN percentage END) AS `1964`,
+    MAX(CASE WHEN jaar = 1965 THEN percentage END) AS `1965`,
+    MAX(CASE WHEN jaar = 1966 THEN percentage END) AS `1966`,
+    MAX(CASE WHEN jaar = 1967 THEN percentage END) AS `1967`,
+    MAX(CASE WHEN jaar = 1968 THEN percentage END) AS `1968`,
+    MAX(CASE WHEN jaar = 1969 THEN percentage END) AS `1969`,
+    -- Jaren 1970 t/m 1989
+    MAX(CASE WHEN jaar = 1970 THEN percentage END) AS `1970`,
+    MAX(CASE WHEN jaar = 1971 THEN percentage END) AS `1971`,
+    MAX(CASE WHEN jaar = 1972 THEN percentage END) AS `1972`,
+    MAX(CASE WHEN jaar = 1973 THEN percentage END) AS `1973`,
+    MAX(CASE WHEN jaar = 1974 THEN percentage END) AS `1974`,
+    MAX(CASE WHEN jaar = 1975 THEN percentage END) AS `1975`,
+    MAX(CASE WHEN jaar = 1976 THEN percentage END) AS `1976`,
+    MAX(CASE WHEN jaar = 1977 THEN percentage END) AS `1977`,
+    MAX(CASE WHEN jaar = 1978 THEN percentage END) AS `1978`,
+    MAX(CASE WHEN jaar = 1979 THEN percentage END) AS `1979`,
+    MAX(CASE WHEN jaar = 1980 THEN percentage END) AS `1980`,
+    MAX(CASE WHEN jaar = 1981 THEN percentage END) AS `1981`,
+    MAX(CASE WHEN jaar = 1982 THEN percentage END) AS `1982`,
+    MAX(CASE WHEN jaar = 1983 THEN percentage END) AS `1983`,
+    MAX(CASE WHEN jaar = 1984 THEN percentage END) AS `1984`,
+    MAX(CASE WHEN jaar = 1985 THEN percentage END) AS `1985`,
+    MAX(CASE WHEN jaar = 1986 THEN percentage END) AS `1986`,
+    MAX(CASE WHEN jaar = 1987 THEN percentage END) AS `1987`,
+    MAX(CASE WHEN jaar = 1988 THEN percentage END) AS `1988`,
+    MAX(CASE WHEN jaar = 1989 THEN percentage END) AS `1989`,
+    -- Jaren 1990 t/m 2009
+    MAX(CASE WHEN jaar = 1990 THEN percentage END) AS `1990`,
+    MAX(CASE WHEN jaar = 1991 THEN percentage END) AS `1991`,
+    MAX(CASE WHEN jaar = 1992 THEN percentage END) AS `1992`,
+    MAX(CASE WHEN jaar = 1993 THEN percentage END) AS `1993`,
+    MAX(CASE WHEN jaar = 1994 THEN percentage END) AS `1994`,
+    MAX(CASE WHEN jaar = 1995 THEN percentage END) AS `1995`,
+    MAX(CASE WHEN jaar = 1996 THEN percentage END) AS `1996`,
+    MAX(CASE WHEN jaar = 1997 THEN percentage END) AS `1997`,
+    MAX(CASE WHEN jaar = 1998 THEN percentage END) AS `1998`,
+    MAX(CASE WHEN jaar = 1999 THEN percentage END) AS `1999`,
+    MAX(CASE WHEN jaar = 2000 THEN percentage END) AS `2000`,
+    MAX(CASE WHEN jaar = 2001 THEN percentage END) AS `2001`,
+    MAX(CASE WHEN jaar = 2002 THEN percentage END) AS `2002`,
+    MAX(CASE WHEN jaar = 2003 THEN percentage END) AS `2003`,
+    MAX(CASE WHEN jaar = 2004 THEN percentage END) AS `2004`,
+    MAX(CASE WHEN jaar = 2005 THEN percentage END) AS `2005`,
+    MAX(CASE WHEN jaar = 2006 THEN percentage END) AS `2006`,
+    MAX(CASE WHEN jaar = 2007 THEN percentage END) AS `2007`,
+    MAX(CASE WHEN jaar = 2008 THEN percentage END) AS `2008`,
+    MAX(CASE WHEN jaar = 2009 THEN percentage END) AS `2009`,
+    -- Jaren 2010 t/m 2025
+    MAX(CASE WHEN jaar = 2010 THEN percentage END) AS `2010`,
+    MAX(CASE WHEN jaar = 2011 THEN percentage END) AS `2011`,
+    MAX(CASE WHEN jaar = 2012 THEN percentage END) AS `2012`,
+    MAX(CASE WHEN jaar = 2013 THEN percentage END) AS `2013`,
+    MAX(CASE WHEN jaar = 2014 THEN percentage END) AS `2014`,
+    MAX(CASE WHEN jaar = 2015 THEN percentage END) AS `2015`,
+    MAX(CASE WHEN jaar = 2016 THEN percentage END) AS `2016`,
+    MAX(CASE WHEN jaar = 2017 THEN percentage END) AS `2017`,
+    MAX(CASE WHEN jaar = 2018 THEN percentage END) AS `2018`,
+    MAX(CASE WHEN jaar = 2019 THEN percentage END) AS `2019`,
+    MAX(CASE WHEN jaar = 2020 THEN percentage END) AS `2020`,
+    MAX(CASE WHEN jaar = 2021 THEN percentage END) AS `2021`,
+    MAX(CASE WHEN jaar = 2022 THEN percentage END) AS `2022`,
+    MAX(CASE WHEN jaar = 2023 THEN percentage END) AS `2023`,
+    MAX(CASE WHEN jaar = 2024 THEN percentage END) AS `2024`,
+    MAX(CASE WHEN jaar = 2025 THEN percentage END) AS `2025`
+FROM data_bron
+GROUP BY categorie_naam
+ORDER BY 
+    CASE 
+        WHEN categorie_naam = 'Bos' THEN 1
+        WHEN categorie_naam = 'Ruigten' THEN 2
+        WHEN categorie_naam = 'Vochtig' THEN 3
+        ELSE 4 
+    END, 
+    categorie_naam ASC;
