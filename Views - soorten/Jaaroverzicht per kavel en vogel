@@ -1,0 +1,71 @@
+SELECT 
+    CASE 
+        WHEN GROUPING(s.euring_code) = 1 THEN 'TOTAAL' 
+        ELSE s.soort_naam 
+    END AS Vogelsoort,
+    -- Volledige lijst van kavels uit CSV + 1A, 1B, 2, 3
+    SUM(CASE WHEN p.kavel_nummer = '1A' THEN w.territoria ELSE 0 END) AS `1A`,
+    SUM(CASE WHEN p.kavel_nummer = '1B' THEN w.territoria ELSE 0 END) AS `1B`,
+    SUM(CASE WHEN p.kavel_nummer = '2' THEN w.territoria ELSE 0 END) AS `2`,
+    SUM(CASE WHEN p.kavel_nummer = '3' THEN w.territoria ELSE 0 END) AS `3`,
+    SUM(CASE WHEN p.kavel_nummer = '4/5' THEN w.territoria ELSE 0 END) AS `4/5`,
+    SUM(CASE WHEN p.kavel_nummer = '6' THEN w.territoria ELSE 0 END) AS `6`,
+    SUM(CASE WHEN p.kavel_nummer = '7' THEN w.territoria ELSE 0 END) AS `7`,
+    SUM(CASE WHEN p.kavel_nummer = '8' THEN w.territoria ELSE 0 END) AS `8`,
+    SUM(CASE WHEN p.kavel_nummer = '10,12,76' THEN w.territoria ELSE 0 END) AS `10,12,76`,
+    SUM(CASE WHEN p.kavel_nummer = '12A' THEN w.territoria ELSE 0 END) AS `12A`,
+    SUM(CASE WHEN p.kavel_nummer = '13' THEN w.territoria ELSE 0 END) AS `13`,
+    SUM(CASE WHEN p.kavel_nummer = '13S' THEN w.territoria ELSE 0 END) AS `13S`,
+    SUM(CASE WHEN p.kavel_nummer = '14' THEN w.territoria ELSE 0 END) AS `14`,
+    SUM(CASE WHEN p.kavel_nummer = '15' THEN w.territoria ELSE 0 END) AS `15`,
+    SUM(CASE WHEN p.kavel_nummer = '16+' THEN w.territoria ELSE 0 END) AS `16+`,
+    SUM(CASE WHEN p.kavel_nummer = '16S' THEN w.territoria ELSE 0 END) AS `16S`,
+    SUM(CASE WHEN p.kavel_nummer = '17A' THEN w.territoria ELSE 0 END) AS `17A`,
+    SUM(CASE WHEN p.kavel_nummer = '17B' THEN w.territoria ELSE 0 END) AS `17B`,
+    SUM(CASE WHEN p.kavel_nummer = '31' THEN w.territoria ELSE 0 END) AS `31`,
+    SUM(CASE WHEN p.kavel_nummer = '32' THEN w.territoria ELSE 0 END) AS `32`,
+    SUM(CASE WHEN p.kavel_nummer = '33' THEN w.territoria ELSE 0 END) AS `33`,
+    SUM(CASE WHEN p.kavel_nummer = '34' THEN w.territoria ELSE 0 END) AS `34`,
+    SUM(CASE WHEN p.kavel_nummer = '35' THEN w.territoria ELSE 0 END) AS `35`,
+    SUM(CASE WHEN p.kavel_nummer = '36' THEN w.territoria ELSE 0 END) AS `36`,
+    SUM(CASE WHEN p.kavel_nummer = '41' THEN w.territoria ELSE 0 END) AS `41`,
+    SUM(CASE WHEN p.kavel_nummer = '42' THEN w.territoria ELSE 0 END) AS `42`,
+    SUM(CASE WHEN p.kavel_nummer = '43' THEN w.territoria ELSE 0 END) AS `43`,
+    SUM(CASE WHEN p.kavel_nummer = '45' THEN w.territoria ELSE 0 END) AS `45`,
+    SUM(CASE WHEN p.kavel_nummer = '46' THEN w.territoria ELSE 0 END) AS `46`,
+    SUM(CASE WHEN p.kavel_nummer = '51' THEN w.territoria ELSE 0 END) AS `51`,
+    SUM(CASE WHEN p.kavel_nummer = '52' THEN w.territoria ELSE 0 END) AS `52`,
+    SUM(CASE WHEN p.kavel_nummer = '53' THEN w.territoria ELSE 0 END) AS `53`,
+    SUM(CASE WHEN p.kavel_nummer = '54A' THEN w.territoria ELSE 0 END) AS `54A`,
+    SUM(CASE WHEN p.kavel_nummer = '54Bn' THEN w.territoria ELSE 0 END) AS `54Bn`,
+    SUM(CASE WHEN p.kavel_nummer = '55' THEN w.territoria ELSE 0 END) AS `55`,
+    SUM(CASE WHEN p.kavel_nummer = '61' THEN w.territoria ELSE 0 END) AS `61`,
+    SUM(CASE WHEN p.kavel_nummer = '62' THEN w.territoria ELSE 0 END) AS `62`,
+    SUM(CASE WHEN p.kavel_nummer = '63' THEN w.territoria ELSE 0 END) AS `63`,
+    SUM(CASE WHEN p.kavel_nummer = '64' THEN w.territoria ELSE 0 END) AS `64`,
+    SUM(CASE WHEN p.kavel_nummer = '65' THEN w.territoria ELSE 0 END) AS `65`,
+    SUM(CASE WHEN p.kavel_nummer = '66' THEN w.territoria ELSE 0 END) AS `66`,
+    SUM(CASE WHEN p.kavel_nummer = '71' THEN w.territoria ELSE 0 END) AS `71`,
+    SUM(CASE WHEN p.kavel_nummer = '72' THEN w.territoria ELSE 0 END) AS `72`,
+    SUM(CASE WHEN p.kavel_nummer = '73' THEN w.territoria ELSE 0 END) AS `73`,
+    SUM(CASE WHEN p.kavel_nummer = '74' THEN w.territoria ELSE 0 END) AS `74`,
+    SUM(CASE WHEN p.kavel_nummer = '75' THEN w.territoria ELSE 0 END) AS `75`,
+    SUM(CASE WHEN p.kavel_nummer = '75a' THEN w.territoria ELSE 0 END) AS `75a`,
+    SUM(CASE WHEN p.kavel_nummer = '77' THEN w.territoria ELSE 0 END) AS `77`,
+    SUM(CASE WHEN p.kavel_nummer = '78/79' THEN w.territoria ELSE 0 END) AS `78/79`,
+    SUM(CASE WHEN p.kavel_nummer = '83' THEN w.territoria ELSE 0 END) AS `83`,
+    SUM(CASE WHEN p.kavel_nummer = '84' THEN w.territoria ELSE 0 END) AS `84`,
+    SUM(CASE WHEN p.kavel_nummer = '84S' THEN w.territoria ELSE 0 END) AS `84S`,
+    SUM(CASE WHEN p.kavel_nummer = '85' THEN w.territoria ELSE 0 END) AS `85`,
+    SUM(CASE WHEN p.kavel_nummer = '91' THEN w.territoria ELSE 0 END) AS `91`,
+    SUM(CASE WHEN p.kavel_nummer = '105n' THEN w.territoria ELSE 0 END) AS `105n`,
+
+    SUM(w.territoria) AS `Totaal per Vogel`
+FROM soorten s
+JOIN waarnemingen w ON s.id = w.soort_id
+JOIN plots p ON w.plot_id = p.plot_id
+WHERE w.jaar = 2024
+GROUP BY s.euring_code, s.soort_naam WITH ROLLUP
+HAVING (GROUPING(s.euring_code) = 0 AND GROUPING(s.soort_naam) = 0) 
+    OR (GROUPING(s.euring_code) = 1)
+ORDER BY GROUPING(s.euring_code) ASC, s.euring_code ASC;
