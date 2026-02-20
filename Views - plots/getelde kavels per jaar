@@ -1,0 +1,12 @@
+SELECT DISTINCT
+    p.plot_id,
+    p.plot_naam,
+    p.kavel_nummer
+FROM 
+    plots p
+JOIN 
+    waarnemingen w ON p.plot_id = w.plot_id
+WHERE 
+    w.jaar = 1999
+ORDER BY 
+    p.plot_id;
