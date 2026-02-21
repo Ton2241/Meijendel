@@ -1,0 +1,32 @@
+-- 1. STEL HET BEREIK IN
+SET @start_jaar = 1983;
+SET @eind_jaar  = 2024;
+
+-- 2. HET OVERZICHT VAN DISCREPANTIES
+SELECT 
+    COALESCE(pjt.jaar, w.jaar) AS Jaar,
+    p.plot_id AS Kavel_ID,
+    p.kavel_nummer AS Kavel_Nummer,
+    IFNULL(MAX(pjt.tellercode), '---') AS Teller_Code,
+    CASE 
+        WHEN MAX(pjt.tellercode) IS NOT NULL AND COUNT(w.id) > 0 THEN '✅ Volledig'
+        WHEN MAX(pjt.tellercode) IS NOT NULL AND COUNT(w.id) = 0 THEN '❌ GEEN DATA (Wel teller)'
+        WHEN MAX(pjt.tellercode) IS NULL AND COUNT(w.id) > 0 THEN '✅ Geen teller (Wel geteld)'
+        ELSE '❌ Niets (Geen teller/Geen data)'
+    END AS Status,
+    COUNT(w.id) AS Aantal_Records,
+    IFNULL(SUM(w.territoria), 0) AS Totaal_Territoria
+FROM plots p
+-- Koppeling met planning binnen het bereik
+LEFT JOIN plot_jaar_teller pjt ON p.plot_id = pjt.plot_id 
+    AND pjt.jaar BETWEEN @start_jaar AND @eind_jaar
+-- Koppeling met waarnemingen binnen het bereik
+LEFT JOIN waarnemingen w ON p.plot_id = w.plot_id 
+    AND w.jaar BETWEEN @start_jaar AND @eind_jaar
+    AND (w.jaar = pjt.jaar OR pjt.jaar IS NULL)
+
+GROUP BY Jaar, p.plot_id, p.kavel_nummer
+-- Filter alleen op de fouten/hiaten
+HAVING Status IN ('❌ GEEN DATA (Wel teller)', '✅ Geen teller (Wel geteld)')
+   AND Jaar IS NOT NULL
+ORDER BY Jaar ASC, p.kavel_nummer ASC;
