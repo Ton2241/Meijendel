@@ -1,3 +1,8 @@
+/* Dichtheidsanalyse NacVogelsoort 
+Deze query berekent de aantallen per km2 en koppelt dit aan de 
+gemiddelde temperatuur tussen 15 feb en 15 juni.
+*/
+
 SELECT 
     w.jaar, 
     s.soort_naam, 

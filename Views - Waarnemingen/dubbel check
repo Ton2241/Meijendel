@@ -1,0 +1,27 @@
+-- 1. STEL HET JAAR IN
+SET @zoek_jaar = 2022;
+
+-- 2. DE GECORRIGEERDE CHECK
+SELECT 
+    p.plot_id AS Kavel_ID,
+    p.kavel_nummer AS Kavel_Nummer,
+    @zoek_jaar AS Gezocht_Jaar,
+    -- Subquery voor de teller (voorkomt dubbele rijen)
+    IFNULL((SELECT tellercode FROM plot_jaar_teller 
+            WHERE plot_id = p.plot_id AND jaar = @zoek_jaar LIMIT 1), '---') AS Geregistreerde_Teller,
+    -- Subquery voor het aantal records (geeft gegarandeerd 0 als er niets is)
+    (SELECT COUNT(*) FROM waarnemingen w 
+     WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar) AS Aantal_Waarnemingen,
+    -- Subquery voor de territoria
+    IFNULL((SELECT SUM(territoria) FROM waarnemingen w 
+            WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar), 0) AS Totaal_Territoria,
+    -- Alleen soorten ophalen als ze er echt zijn
+    IFNULL((SELECT GROUP_CONCAT(DISTINCT s.soort_naam ORDER BY s.soort_naam SEPARATOR ', ') 
+            FROM waarnemingen w 
+            JOIN soorten s ON w.soort_id = s.id 
+            WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar), 'GEEN DATA') AS Gevonden_Soorten
+FROM plots p
+-- Filter op de gewenste kavels
+WHERE p.plot_id IN ('3534', '3531', '3514') 
+   OR p.kavel_nummer IN ('3534', '3531', '3514')
+ORDER BY p.kavel_nummer ASC;
