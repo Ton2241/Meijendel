@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-20 20:01:39.3390
+-- Generation Time: 2026-02-21 22:14:06.6700
 -- -------------------------------------------------------------
 
 
@@ -88,6 +88,7 @@ CREATE TABLE `habitattypen_doelstelling` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `import_waarnemingen_breed` (
+  `bron` enum('sovon','jrvslg_m','jrvslg_b') NOT NULL,
   `euring_code` int DEFAULT NULL,
   `p_1A` int DEFAULT NULL,
   `p_1B` int DEFAULT NULL,
@@ -151,7 +152,8 @@ CREATE TABLE `import_waarnemingen_lang` (
   `soort_id` int DEFAULT NULL,
   `plot_id` int DEFAULT NULL,
   `territoria` int DEFAULT NULL,
-  `jaar` int DEFAULT NULL
+  `jaar` int DEFAULT NULL,
+  `bron` enum('sovon','jrvslg_m','jrvslg_b') NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `kernopgave_habitat` (
@@ -243,7 +245,7 @@ CREATE TABLE `plot_jaar_teller` (
   KEY `fk_plot_teller_relatie` (`plot_id`),
   CONSTRAINT `fk_plot_teller_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
   CONSTRAINT `fk_teller_relatie` FOREIGN KEY (`tellercode`) REFERENCES `tellers` (`tellercode`)
-) ENGINE=InnoDB AUTO_INCREMENT=2823 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2827 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plotkolom_mapping` (
   `kolomnaam` varchar(50) NOT NULL,
@@ -308,7 +310,6 @@ CREATE TABLE `soorten` (
   `soort_naam` varchar(100) NOT NULL,
   `latijnse_naam` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `Euring` (`euring_code`),
   UNIQUE KEY `uq_euring` (`euring_code`),
   KEY `idx_soort_naam` (`soort_naam`)
 ) ENGINE=InnoDB AUTO_INCREMENT=625 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
@@ -363,10 +364,11 @@ CREATE TABLE `waarnemingen` (
   `soort_id` int NOT NULL,
   `jaar` int NOT NULL,
   `territoria` int DEFAULT '0',
+  `invoerdatum` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Datum en tijd waarop de waarneming is ingevoerd',
+  `bron` enum('sovon','jrvslg_m','jrvslg_b') NOT NULL DEFAULT 'sovon' COMMENT 'Bron van de waarnemingsgegevens',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_waarneming_uniek` (`plot_id`,`soort_id`,`jaar`),
+  UNIQUE KEY `uq_waarneming_bron_uniek` (`plot_id`,`soort_id`,`jaar`,`bron`),
   KEY `idx_waarneming_jaar` (`jaar`),
-  KEY `idx_soort_jaar` (`jaar`),
   KEY `idx_waarneming_soort_id` (`soort_id`),
   KEY `idx_waarneming_jaar_soort_territoria` (`jaar`,`soort_id`,`territoria`),
   KEY `idx_waarneming_plot_jaar_soort` (`plot_id`,`jaar`,`soort_id`),
