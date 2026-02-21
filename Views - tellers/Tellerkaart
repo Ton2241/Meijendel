@@ -1,12 +1,12 @@
 -- 1. STEL DE TELLERCODE IN
-SET @gekozen_code = 'AAAA00'; 
+SET @gekozen_code = 'ALNK00'; 
 
--- 2. DE QUERY (MET EXTRA KOLOM VOOR PLOTS)
+-- 2. DE QUERY
 SET SESSION group_concat_max_len = 10000;
 
 SELECT Label, Gegevens, Plots
 FROM (
-    -- Persoonlijke gegevens (Plots kolom is hier leeg)
+    -- SECTIE 1: Persoonlijke gegevens
     SELECT 1 AS nr, 'Naam' AS Label, CONCAT(voornaam, ' ', IFNULL(tussenvoegsel, ''), ' ', achternaam) AS Gegevens, '' AS Plots FROM tellers WHERE tellercode = @gekozen_code
     UNION ALL
     SELECT 2, 'Adres', CONCAT(straat, ' ', huisnummer), '' FROM tellers WHERE tellercode = @gekozen_code
@@ -22,51 +22,83 @@ FROM (
     SELECT 7, 'Bandnummer', IFNULL(CAST(bandnummer AS CHAR), 'onbekend'), '' FROM tellers WHERE tellercode = @gekozen_code
     UNION ALL
     SELECT 8, '', '', '' 
+    
+    -- SECTIE 2: Statistieken (Nu ook met EXISTS voor consistentie)
     UNION ALL
-    -- Statistieken
     SELECT 9, 'Meest geregistreerd', 
-        (SELECT s.soort_naam 
+        IFNULL((SELECT s.soort_naam 
          FROM waarnemingen w 
          JOIN soorten s ON w.soort_id = s.id 
-         JOIN plot_jaar_teller pjt ON w.plot_id = pjt.plot_id AND w.jaar = pjt.jaar
-         WHERE pjt.tellercode = @gekozen_code 
+         WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)
          GROUP BY s.id 
-         ORDER BY SUM(w.territoria) DESC LIMIT 1), ''
+         ORDER BY SUM(w.territoria) DESC LIMIT 1), 'Geen data'), ''
     UNION ALL
-    SELECT 10, 'Slechts éénmaal', 
-        (SELECT IFNULL(GROUP_CONCAT(DISTINCT s.soort_naam ORDER BY s.soort_naam SEPARATOR ', '), 'Geen')
-         FROM waarnemingen w 
-         JOIN soorten s ON w.soort_id = s.id 
-         JOIN plot_jaar_teller pjt ON w.plot_id = pjt.plot_id AND w.jaar = pjt.jaar
-         WHERE pjt.tellercode = @gekozen_code 
-         GROUP BY pjt.tellercode
-         HAVING SUM(w.territoria) = 1), ''
-    UNION ALL
-    SELECT 11, '', '', '' 
+    SELECT 10, 'Minst geregistreerde', 
+        IFNULL((SELECT GROUP_CONCAT(soort_naam SEPARATOR ', ')
+         FROM (
+             SELECT s.soort_naam, SUM(w.territoria) as totaal
+             FROM waarnemingen w
+             JOIN soorten s ON w.soort_id = s.id
+             WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)
+             GROUP BY s.id
+         ) AS sub
+         WHERE totaal = (
+             SELECT MIN(totaal_min)
+             FROM (
+                 SELECT SUM(w2.territoria) as totaal_min
+                 FROM waarnemingen w2
+                 WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt2 WHERE pjt2.plot_id = w2.plot_id AND pjt2.jaar = w2.jaar AND pjt2.tellercode = @gekozen_code)
+                 GROUP BY w2.soort_id
+             ) AS min_sub
+         )), 'Geen data'), ''
     UNION ALL
     SELECT 12, 'Totaal records', 
-        CAST((SELECT COUNT(*) 
-              FROM waarnemingen w 
-              JOIN plot_jaar_teller pjt ON w.plot_id = pjt.plot_id AND w.jaar = pjt.jaar 
-              WHERE pjt.tellercode = @gekozen_code) AS CHAR), ''
+        CAST((SELECT COUNT(*) FROM waarnemingen w 
+              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)) AS CHAR), ''
     UNION ALL
     SELECT 13, 'Totaal territoria', 
-        CAST((SELECT SUM(w.territoria) 
-              FROM waarnemingen w 
-              JOIN plot_jaar_teller pjt ON w.plot_id = pjt.plot_id AND w.jaar = pjt.jaar 
-              WHERE pjt.tellercode = @gekozen_code) AS CHAR), ''
+        IFNULL(CAST((SELECT SUM(w.territoria) FROM waarnemingen w 
+              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)) AS CHAR), '0'), ''
     UNION ALL
     SELECT 14, '', '', '' 
+    
+    -- SECTIE 3: Jaaroverzichten (De 'vrije' koppeling)
     UNION ALL
-    -- Jaaroverzichten (Inclusief de plots per jaar)
-    SELECT 15 + w.jaar, 
+    SELECT 20 + w.jaar, 
            CAST(w.jaar AS CHAR), 
            CONCAT(SUM(w.territoria), ' territoria'),
            GROUP_CONCAT(DISTINCT p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ', ')
     FROM waarnemingen w
-    JOIN plot_jaar_teller pjt ON w.plot_id = pjt.plot_id AND w.jaar = pjt.jaar
     JOIN plots p ON w.plot_id = p.plot_id
-    WHERE pjt.tellercode = @gekozen_code 
+    WHERE EXISTS (
+        SELECT 1 FROM plot_jaar_teller pjt 
+        WHERE pjt.plot_id = w.plot_id 
+        AND pjt.jaar = w.jaar 
+        AND pjt.tellercode = @gekozen_code
+    )
     GROUP BY w.jaar
+
+    -- SECTIE 4: De volledige lijst met vogelsoorten
+    UNION ALL
+    SELECT 3000, '', '', ''
+    UNION ALL
+    SELECT 3001, 'TOTAAL PER SOORT', 'Aantal territoria', ''
+    UNION ALL
+    SELECT 3002, '--------------------', '-----------------', ''
+    UNION ALL
+    SELECT 4000, 
+           s.soort_naam, 
+           CAST(SUM(w.territoria) AS CHAR),
+           ''
+    FROM waarnemingen w
+    JOIN soorten s ON w.soort_id = s.id
+    WHERE EXISTS (
+        SELECT 1 FROM plot_jaar_teller pjt 
+        WHERE pjt.plot_id = w.plot_id 
+        AND pjt.jaar = w.jaar 
+        AND pjt.tellercode = @gekozen_code
+    )
+    GROUP BY s.soort_naam
+
 ) AS resultaat_tabel
-ORDER BY nr;
+ORDER BY nr ASC, Label ASC;
