@@ -1,0 +1,11 @@
+-- zoeken
+SHOW INDEX FROM TABELNAAM;
+-- verwijderen
+SELECT 
+    TABLE_SCHEMA AS 'Database', 
+    TABLE_NAME AS 'Tabel', 
+    INDEX_NAME AS 'Index Naam'
+FROM 
+    information_schema.STATISTICS 
+WHERE 
+    INDEX_NAME = 'AAA';

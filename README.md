@@ -25,8 +25,7 @@ _Ecologische classificatie_
 evg\_landschapstypen - Landschapstypen (duinen, struweel, grasland, etc.)  
 evg\_vogel\_landschapstype - Koppeltabel: welke soorten zijn kenmerkend voor welk landschap  
 evg\_vogelgroepen - Ecologische vogelgroepen  
-evg\_vogel\_landschapgroep - Koppeltabel met veeleisendheidsscores  
-analyse\_ecologie\_kavels - Bezettingspercentages per ecologische groep
+evg\_vogel\_landschapgroep - Koppeltabel met veeleisendheidsscores
 
 _Geografische gegevens_
 plots - Telgebieden met identificatie via plot\_id, plot\_naam en kavel\_nummer  
