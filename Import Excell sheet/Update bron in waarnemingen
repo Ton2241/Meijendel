@@ -1,0 +1,4 @@
+UPDATE waarnemingen
+SET bron = 'jrvslg_m'
+WHERE jaar = 1992 
+  AND plot_id IN (3529, 29459, 10626, 3507, 3522, 3518, 3517);
