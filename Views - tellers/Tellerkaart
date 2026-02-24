@@ -7,19 +7,19 @@ SET SESSION group_concat_max_len = 10000;
 SELECT Label, Gegevens, Plots
 FROM (
     -- SECTIE 1: Persoonlijke gegevens
-    SELECT 1 AS nr, 'Naam' AS Label, CONCAT(voornaam, ' ', IFNULL(tussenvoegsel, ''), ' ', achternaam) AS Gegevens, '' AS Plots FROM tellers WHERE tellercode = @gekozen_code
+    SELECT 1 AS nr, 'Naam' AS Label, CONCAT(voornaam, ' ', IFNULL(tussenvoegsel, ''), ' ', achternaam) AS Gegevens, '' AS Plots FROM tellers WHERE teller_id = @gekozen_code
     UNION ALL
-    SELECT 2, 'Adres', CONCAT(straat, ' ', huisnummer), '' FROM tellers WHERE tellercode = @gekozen_code
+    SELECT 2, 'Adres', CONCAT(straat, ' ', huisnummer), '' FROM tellers WHERE teller_id = @gekozen_code
     UNION ALL
-    SELECT 3, 'Woonplaats', CONCAT(postcode, ' ', woonplaats), '' FROM tellers WHERE tellercode = @gekozen_code
+    SELECT 3, 'Woonplaats', CONCAT(postcode, ' ', woonplaats), '' FROM tellers WHERE teller_id = @gekozen_code
     UNION ALL
-    SELECT 4, 'Contact', CONCAT(IFNULL(telefoon_mobiel, '-'), ' / ', IFNULL(email, '-')), '' FROM tellers WHERE tellercode = @gekozen_code
+    SELECT 4, 'Contact', CONCAT(IFNULL(telefoon_mobiel, '-'), ' / ', IFNULL(email, '-')), '' FROM tellers WHERE teller_id = @gekozen_code
     UNION ALL
     SELECT 5, '', '', '' 
     UNION ALL
-    SELECT 6, 'Tellercode', tellercode, '' FROM tellers WHERE tellercode = @gekozen_code
+    SELECT 6, 'Tellercode', teller_id, '' FROM tellers WHERE teller_id = @gekozen_code
     UNION ALL
-    SELECT 7, 'Bandnummer', IFNULL(CAST(bandnummer AS CHAR), 'onbekend'), '' FROM tellers WHERE tellercode = @gekozen_code
+    SELECT 7, 'Bandnummer', IFNULL(CAST(bandnummer AS CHAR), 'onbekend'), '' FROM tellers WHERE teller_id = @gekozen_code
     UNION ALL
     SELECT 8, '', '', '' 
     
@@ -29,7 +29,7 @@ FROM (
         IFNULL((SELECT s.soort_naam 
          FROM waarnemingen w 
          JOIN soorten s ON w.soort_id = s.id 
-         WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)
+         WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @gekozen_code)
          GROUP BY s.id 
          ORDER BY SUM(w.territoria) DESC LIMIT 1), 'Geen data'), ''
     UNION ALL
@@ -39,7 +39,7 @@ FROM (
              SELECT s.soort_naam, SUM(w.territoria) as totaal
              FROM waarnemingen w
              JOIN soorten s ON w.soort_id = s.id
-             WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)
+             WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @gekozen_code)
              GROUP BY s.id
          ) AS sub
          WHERE totaal = (
@@ -47,18 +47,18 @@ FROM (
              FROM (
                  SELECT SUM(w2.territoria) as totaal_min
                  FROM waarnemingen w2
-                 WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt2 WHERE pjt2.plot_id = w2.plot_id AND pjt2.jaar = w2.jaar AND pjt2.tellercode = @gekozen_code)
+                 WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt2 WHERE pjt2.plot_id = w2.plot_id AND pjt2.jaar = w2.jaar AND pjt2.teller_id = @gekozen_code)
                  GROUP BY w2.soort_id
              ) AS min_sub
          )), 'Geen data'), ''
     UNION ALL
     SELECT 12, 'Totaal records', 
         CAST((SELECT COUNT(*) FROM waarnemingen w 
-              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)) AS CHAR), ''
+              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @gekozen_code)) AS CHAR), ''
     UNION ALL
     SELECT 13, 'Totaal territoria', 
         IFNULL(CAST((SELECT SUM(w.territoria) FROM waarnemingen w 
-              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.tellercode = @gekozen_code)) AS CHAR), '0'), ''
+              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @gekozen_code)) AS CHAR), '0'), ''
     UNION ALL
     SELECT 14, '', '', '' 
     
@@ -74,7 +74,7 @@ FROM (
         SELECT 1 FROM plot_jaar_teller pjt 
         WHERE pjt.plot_id = w.plot_id 
         AND pjt.jaar = w.jaar 
-        AND pjt.tellercode = @gekozen_code
+        AND pjt.teller_id = @gekozen_code
     )
     GROUP BY w.jaar
 
@@ -96,7 +96,7 @@ FROM (
         SELECT 1 FROM plot_jaar_teller pjt 
         WHERE pjt.plot_id = w.plot_id 
         AND pjt.jaar = w.jaar 
-        AND pjt.tellercode = @gekozen_code
+        AND pjt.teller_id = @gekozen_code
     )
     GROUP BY s.soort_naam
 

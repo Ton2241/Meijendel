@@ -7,11 +7,11 @@ SELECT
     COALESCE(pjt.jaar, w.jaar) AS Jaar,
     p.plot_id AS Kavel_ID,
     p.kavel_nummer AS Kavel_Nummer,
-    IFNULL(MAX(pjt.tellercode), '---') AS Teller_Code,
+    IFNULL(MAX(pjt.teller_id), '---') AS Teller_Code,
     CASE 
-        WHEN MAX(pjt.tellercode) IS NOT NULL AND COUNT(w.id) > 0 THEN '✅ Volledig'
-        WHEN MAX(pjt.tellercode) IS NOT NULL AND COUNT(w.id) = 0 THEN '❌ GEEN DATA (Wel teller)'
-        WHEN MAX(pjt.tellercode) IS NULL AND COUNT(w.id) > 0 THEN '✅ Geen teller (Wel geteld)'
+        WHEN MAX(pjt.teller_id) IS NOT NULL AND COUNT(w.id) > 0 THEN '✅ Volledig'
+        WHEN MAX(pjt.teller_id) IS NOT NULL AND COUNT(w.id) = 0 THEN '❌ GEEN DATA (Wel teller)'
+        WHEN MAX(pjt.teller_id) IS NULL AND COUNT(w.id) > 0 THEN '✅ Geen teller (Wel geteld)'
         ELSE '❌ Niets (Geen teller/Geen data)'
     END AS Status,
     COUNT(w.id) AS Aantal_Records,

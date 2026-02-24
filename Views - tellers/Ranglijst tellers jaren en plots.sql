@@ -5,9 +5,9 @@ SELECT
     COUNT(DISTINCT pjt.jaar) AS aantal_jaren,
     COUNT(pjt.plot_id) AS totaal_aantal_plots_geteld
 FROM tellers t
-JOIN plot_jaar_teller pjt ON t.tellercode = pjt.tellercode
+JOIN plot_jaar_teller pjt ON t.teller_id = pjt.teller_id
 GROUP BY 
-    t.tellercode, 
+    t.teller_id, 
     t.voornaam, 
     t.tussenvoegsel, 
     t.achternaam, 

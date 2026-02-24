@@ -7,7 +7,7 @@ SELECT
     p.kavel_nummer AS Kavel_Nummer,
     @zoek_jaar AS Gezocht_Jaar,
     -- Subquery voor de teller (voorkomt dubbele rijen)
-    IFNULL((SELECT tellercode FROM plot_jaar_teller 
+    IFNULL((SELECT teller_id FROM plot_jaar_teller 
             WHERE plot_id = p.plot_id AND jaar = @zoek_jaar LIMIT 1), '---') AS Geregistreerde_Teller,
     -- Subquery voor het aantal records (geeft gegarandeerd 0 als er niets is)
     (SELECT COUNT(*) FROM waarnemingen w 

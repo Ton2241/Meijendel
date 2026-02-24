@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-21 22:14:06.6700
+-- Generation Time: 2026-02-24 15:54:12.5460
 -- -------------------------------------------------------------
 
 
@@ -237,15 +237,16 @@ CREATE TABLE `plot_jaar_oppervlak` (
 
 CREATE TABLE `plot_jaar_teller` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `tellercode` varchar(50) NOT NULL,
+  `teller_id` int NOT NULL,
+  `teller_id` varchar(50) NOT NULL,
   `plot_id` int NOT NULL,
   `jaar` int NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_teller_plot_jaar` (`tellercode`,`plot_id`,`jaar`),
+  UNIQUE KEY `uq_teller_id_plot_jaar` (`teller_id`,`plot_id`,`jaar`),
   KEY `fk_plot_teller_relatie` (`plot_id`),
-  CONSTRAINT `fk_plot_teller_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
-  CONSTRAINT `fk_teller_relatie` FOREIGN KEY (`tellercode`) REFERENCES `tellers` (`tellercode`)
-) ENGINE=InnoDB AUTO_INCREMENT=2827 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `fk_pjt_teller_id` FOREIGN KEY (`teller_id`) REFERENCES `tellers` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `fk_plot_teller_relatie` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2828 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `plotkolom_mapping` (
   `kolomnaam` varchar(50) NOT NULL,
@@ -315,7 +316,8 @@ CREATE TABLE `soorten` (
 ) ENGINE=InnoDB AUTO_INCREMENT=625 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Vogelsoorten met EURING codes en classificaties';
 
 CREATE TABLE `tellers` (
-  `tellercode` varchar(50) NOT NULL,
+  `id` int NOT NULL AUTO_INCREMENT,
+  `teller_id` varchar(50) NOT NULL,
   `voornaam` varchar(100) DEFAULT NULL,
   `tussenvoegsel` varchar(20) DEFAULT NULL,
   `achternaam` varchar(100) DEFAULT NULL,
@@ -328,13 +330,14 @@ CREATE TABLE `tellers` (
   `email` varchar(255) DEFAULT NULL,
   `soort_lid` enum('aspirant','gewoon','buitengewoon','ondersteunend','donateur','erelid','onbekend','oudteller') DEFAULT 'gewoon',
   `bandnummer` int unsigned DEFAULT NULL,
-  PRIMARY KEY (`tellercode`),
+  PRIMARY KEY (`id`),
   KEY `idx_tellers_email` (`email`),
+  KEY `id` (`id`),
   CONSTRAINT `chk_email_format` CHECK (((`email` = _utf8mb4'') or (`email` is null) or (`email` like _utf8mb4'%@%'))),
   CONSTRAINT `chk_mobiel_formaat` CHECK (((`telefoon_mobiel` = _utf8mb4'') or (`telefoon_mobiel` is null) or regexp_like(`telefoon_mobiel`,_utf8mb4'^[0-9 +-]+$'))),
   CONSTRAINT `chk_mobiel_vast` CHECK (((`telefoon_vast` = _utf8mb4'') or (`telefoon_vast` is null) or regexp_like(`telefoon_vast`,_utf8mb4'^[0-9 +-]+$'))),
   CONSTRAINT `chk_postcode_formaat_flexibel` CHECK (regexp_like(`postcode`,_utf8mb4'^[0-9]{4} ?[A-Z]{2}$'))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `trends` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -376,7 +379,7 @@ CREATE TABLE `waarnemingen` (
   CONSTRAINT `fk_waarneming_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
   CONSTRAINT `fk_waarneming_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `chk_waarneming_territoria` CHECK ((`territoria` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=117082 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
+) ENGINE=InnoDB AUTO_INCREMENT=118963 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
 
 CREATE TABLE `weer_actueel_voorschoten` (
   `datum` date NOT NULL,
