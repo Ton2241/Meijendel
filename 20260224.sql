@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-24 15:54:12.5460
+-- Generation Time: 2026-02-24 21:45:01.1350
 -- -------------------------------------------------------------
 
 
@@ -238,7 +238,6 @@ CREATE TABLE `plot_jaar_oppervlak` (
 CREATE TABLE `plot_jaar_teller` (
   `id` int NOT NULL AUTO_INCREMENT,
   `teller_id` int NOT NULL,
-  `teller_id` varchar(50) NOT NULL,
   `plot_id` int NOT NULL,
   `jaar` int NOT NULL,
   PRIMARY KEY (`id`),
@@ -317,7 +316,7 @@ CREATE TABLE `soorten` (
 
 CREATE TABLE `tellers` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `teller_id` varchar(50) NOT NULL,
+  `tellercode` varchar(50) NOT NULL,
   `voornaam` varchar(100) DEFAULT NULL,
   `tussenvoegsel` varchar(20) DEFAULT NULL,
   `achternaam` varchar(100) DEFAULT NULL,
@@ -379,7 +378,7 @@ CREATE TABLE `waarnemingen` (
   CONSTRAINT `fk_waarneming_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
   CONSTRAINT `fk_waarneming_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
   CONSTRAINT `chk_waarneming_territoria` CHECK ((`territoria` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=118963 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
+) ENGINE=InnoDB AUTO_INCREMENT=119405 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
 
 CREATE TABLE `weer_actueel_voorschoten` (
   `datum` date NOT NULL,
