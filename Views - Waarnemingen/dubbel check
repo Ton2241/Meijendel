@@ -10,14 +10,14 @@ SELECT
     IFNULL((SELECT teller_id FROM plot_jaar_teller 
             WHERE plot_id = p.plot_id AND jaar = @zoek_jaar LIMIT 1), '---') AS Geregistreerde_Teller,
     -- Subquery voor het aantal records (geeft gegarandeerd 0 als er niets is)
-    (SELECT COUNT(*) FROM waarnemingen w 
+    (SELECT COUNT(*) FROM territoria w 
      WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar) AS Aantal_Waarnemingen,
     -- Subquery voor de territoria
-    IFNULL((SELECT SUM(territoria) FROM waarnemingen w 
+    IFNULL((SELECT SUM(territoria) FROM territoria w 
             WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar), 0) AS Totaal_Territoria,
     -- Alleen soorten ophalen als ze er echt zijn
     IFNULL((SELECT GROUP_CONCAT(DISTINCT s.soort_naam ORDER BY s.soort_naam SEPARATOR ', ') 
-            FROM waarnemingen w 
+            FROM territoria w 
             JOIN soorten s ON w.soort_id = s.id 
             WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar), 'GEEN DATA') AS Gevonden_Soorten
 FROM plots p

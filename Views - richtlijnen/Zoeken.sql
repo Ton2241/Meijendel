@@ -2,7 +2,7 @@ SELECT
     s.soort_naam AS Vogelnaam, 
     w.territoria AS Aantal_Territoria,
     w.jaar AS Jaar
-FROM waarnemingen w
+FROM territoria w
 JOIN soorten s ON w.soort_id = s.id
 JOIN soort_richtlijn sr ON s.id = sr.soort_id
 JOIN richtlijnen r ON sr.richtlijn_id = r.id

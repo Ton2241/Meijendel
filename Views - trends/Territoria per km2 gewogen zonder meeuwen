@@ -5,7 +5,7 @@ WITH TotaalVogelsPerJaar AS (
     SELECT 
         jaar, 
         SUM(territoria) AS som_territoria
-    FROM waarnemingen
+    FROM territoria
     WHERE jaar >= 1958
     /* UITSLUITING: De soorten 103 t/m 112 (meeuwen) worden hier overgeslagen */
     AND soort_id NOT BETWEEN 103 AND 112
@@ -23,7 +23,7 @@ TotaalOppervlaktePerJaar AS (
     FROM plot_jaar_oppervlak
     WHERE jaar >= 1958
     /* We kijken alleen naar jaren waarvoor ook daadwerkelijk tellingen zijn ingevoerd */
-    AND EXISTS (SELECT 1 FROM waarnemingen w WHERE w.jaar = plot_jaar_oppervlak.jaar)
+    AND EXISTS (SELECT 1 FROM territoria w WHERE w.jaar = plot_jaar_oppervlak.jaar)
     GROUP BY jaar
 )
 

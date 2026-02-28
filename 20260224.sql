@@ -360,7 +360,7 @@ CREATE TABLE `vogelstand_1924` (
   CONSTRAINT `fk_vogelstand_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=205 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `waarnemingen` (
+CREATE TABLE `territoria` (
   `id` int NOT NULL AUTO_INCREMENT,
   `plot_id` int NOT NULL,
   `soort_id` int NOT NULL,

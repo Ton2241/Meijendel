@@ -62,7 +62,7 @@ SELECT
 
     SUM(w.territoria) AS `Totaal per Vogel`
 FROM soorten s
-JOIN waarnemingen w ON s.id = w.soort_id
+JOIN territoria w ON s.id = w.soort_id
 JOIN plots p ON w.plot_id = p.plot_id
 WHERE w.jaar = 2024
 GROUP BY s.euring_code, s.soort_naam WITH ROLLUP

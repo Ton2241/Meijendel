@@ -19,11 +19,11 @@ landschap_vogels AS (
 
 actieve_oppervlakte AS (
   -- STAP 3: Bereken totaal getelde km2 per jaar voor de geselecteerde plots
-  -- Alleen voor jaren waarin daadwerkelijk waarnemingen zijn geregistreerd
+  -- Alleen voor jaren waarin daadwerkelijk territoria zijn geregistreerd
   SELECT 
     w.jaar,
     SUM(pjo.oppervlakte_km2) AS totaal_oppervlak_km2
-  FROM (SELECT DISTINCT jaar, plot_id FROM waarnemingen) w
+  FROM (SELECT DISTINCT jaar, plot_id FROM territoria) w
   INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
   INNER JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
   WHERE w.jaar BETWEEN 1958 AND 2025
@@ -38,7 +38,7 @@ data_bron AS (
     w.jaar,
     ROUND(SUM(COALESCE(w.territoria, 0)) / ao.totaal_oppervlak_km2, 4) AS dichtheid
   FROM landschap_vogels lv
-  INNER JOIN waarnemingen w ON lv.soort_id = w.soort_id
+  INNER JOIN territoria w ON lv.soort_id = w.soort_id
   INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
   INNER JOIN actieve_oppervlakte ao ON w.jaar = ao.jaar
   GROUP BY lv.landschap_id, lv.landschapstype, w.jaar, ao.totaal_oppervlak_km2

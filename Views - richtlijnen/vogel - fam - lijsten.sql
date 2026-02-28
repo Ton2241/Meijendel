@@ -3,7 +3,7 @@ SELECT
     IFNULL(f.familienaam_nl, '--- Nog koppelen ---') AS Familie,
     GROUP_CONCAT(DISTINCT r.naam ORDER BY r.naam SEPARATOR ', ') AS Lijsten
 FROM soorten s
-INNER JOIN waarnemingen w ON s.id = w.soort_id
+INNER JOIN territoria w ON s.id = w.soort_id
 INNER JOIN soort_richtlijn sr ON s.id = sr.soort_id
 INNER JOIN richtlijnen r ON sr.richtlijn_id = r.id
 LEFT JOIN soort_familie sf ON s.id = sf.soort_id

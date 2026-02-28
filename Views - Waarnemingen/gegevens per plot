@@ -20,8 +20,8 @@ FROM plots p
 -- Koppeling met planning binnen het bereik
 LEFT JOIN plot_jaar_teller pjt ON p.plot_id = pjt.plot_id 
     AND pjt.jaar BETWEEN @start_jaar AND @eind_jaar
--- Koppeling met waarnemingen binnen het bereik
-LEFT JOIN waarnemingen w ON p.plot_id = w.plot_id 
+-- Koppeling met territoria binnen het bereik
+LEFT JOIN territoria w ON p.plot_id = w.plot_id 
     AND w.jaar BETWEEN @start_jaar AND @eind_jaar
     AND (w.jaar = pjt.jaar OR pjt.jaar IS NULL)
 

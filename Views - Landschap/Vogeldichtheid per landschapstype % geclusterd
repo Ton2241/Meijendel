@@ -25,7 +25,7 @@ actieve_oppervlakte AS (
   SELECT 
     w.jaar,
     SUM(pjo.oppervlakte_km2) AS totaal_oppervlak_km2
-  FROM (SELECT DISTINCT jaar, plot_id FROM waarnemingen) w
+  FROM (SELECT DISTINCT jaar, plot_id FROM territoria) w
   INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
   INNER JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
   WHERE w.jaar BETWEEN 1958 AND 2025
@@ -38,7 +38,7 @@ dichtheid_per_groep AS (
     w.jaar,
     SUM(COALESCE(w.territoria, 0)) / ao.totaal_oppervlak_km2 AS groep_dichtheid
   FROM landschap_clustering lc
-  INNER JOIN waarnemingen w ON lc.soort_id = w.soort_id
+  INNER JOIN territoria w ON lc.soort_id = w.soort_id
   INNER JOIN geselecteerde_plots gp ON w.plot_id = gp.plot_id
   INNER JOIN actieve_oppervlakte ao ON w.jaar = ao.jaar
   GROUP BY lc.categorie_naam, w.jaar, ao.totaal_oppervlak_km2

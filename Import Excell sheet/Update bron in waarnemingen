@@ -1,4 +1,4 @@
-UPDATE waarnemingen
+UPDATE territoria
 SET bron = 'jrvslg_m'
 WHERE jaar = #### 
   AND plot_id IN (####, ####);

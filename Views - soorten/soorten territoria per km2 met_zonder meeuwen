@@ -17,11 +17,11 @@ SELECT
         END) / SUM(DISTINCT pjo.oppervlakte_km2), 
     2) AS territoria_excl_meeuwen_per_km2
 
--- Stap 1: Koppel oppervlakte aan waarnemingen
+-- Stap 1: Koppel oppervlakte aan territoria
 FROM 
     plot_jaar_oppervlak pjo
 INNER JOIN 
-    waarnemingen w ON pjo.plot_id = w.plot_id AND pjo.jaar = w.jaar
+    territoria w ON pjo.plot_id = w.plot_id AND pjo.jaar = w.jaar
 
 WHERE 
     -- Stap 2: Filter vanaf startjaar 1958

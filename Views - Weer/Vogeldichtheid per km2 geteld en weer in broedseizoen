@@ -11,7 +11,7 @@ SELECT
     -- Berekening: aantal territoria gedeeld door het getelde oppervlak
     ROUND(SUM(w.territoria) / actief_oppervlak.totaal_km2, 2) AS dichtheid_per_km2,
     ROUND(weer_broed.gem_temp_broed * 10, 1) AS temp_broedseizoen
-FROM waarnemingen w
+FROM territoria w
 JOIN soorten s ON w.soort_id = s.id
 JOIN (
     -- Subquery: Bereken alleen het oppervlak van plots die dat jaar geteld zijn
@@ -21,7 +21,7 @@ JOIN (
     FROM plot_jaar_oppervlak pjo
     WHERE EXISTS (
         SELECT 1 
-        FROM waarnemingen w2 
+        FROM territoria w2 
         WHERE w2.plot_id = pjo.plot_id 
           AND w2.jaar = pjo.jaar
     )

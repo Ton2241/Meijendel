@@ -5,7 +5,7 @@ FROM (
         s.soort_naam, 
         SUM(w.territoria) AS totaal,
         RANK() OVER (PARTITION BY w.jaar ORDER BY SUM(w.territoria) DESC) as rang
-    FROM waarnemingen w
+    FROM territoria w
     JOIN soorten s ON w.soort_id = s.id
     WHERE w.jaar BETWEEN 2008 AND 2010
     GROUP BY w.jaar, s.soort_naam

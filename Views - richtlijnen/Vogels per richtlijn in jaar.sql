@@ -1,7 +1,7 @@
 SELECT 
     s.soort_naam AS Vogelnaam,
     SUM(w.territoria) AS Totaal_Territoria
-FROM waarnemingen w
+FROM territoria w
 JOIN soorten s ON w.soort_id = s.id
 JOIN soort_richtlijn sr ON s.id = sr.soort_id
 JOIN richtlijnen r ON sr.richtlijn_id = r.id

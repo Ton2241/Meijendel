@@ -17,7 +17,7 @@ _Vogelgegevens_
 soorten - Vogelsoorten met EURING codes  
 euring - Uitgebreide EURING referentietabel met Latijnse en Nederlandse namen  
 familie - Taxonomische indeling op familieniveau  
-waarnemingen - Kerngegevens: territoria per soort per plot per jaar (116.681 records). Het betreft SOVON-gegevens, aangevuld met gegevens uit jaarverslagen.  
+territoria - Kerngegevens: territoria per soort per plot per jaar (116.681 records). Het betreft SOVON-gegevens, aangevuld met gegevens uit jaarverslagen.  
 trends - Populatietrends per soort en jaar voor Zuid-Holland en Nederland  
 vogelstand\_1924 - Uitkomst telling van 1924
 

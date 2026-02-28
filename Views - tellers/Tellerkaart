@@ -30,7 +30,7 @@ FROM (
     UNION ALL
     SELECT 9, 'Meest geregistreerd', 
         IFNULL((SELECT s.soort_naam 
-         FROM waarnemingen w 
+         FROM territoria w 
          JOIN soorten s ON w.soort_id = s.id 
          WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @teller_id_intern)
          GROUP BY s.id 
@@ -40,7 +40,7 @@ FROM (
         IFNULL((SELECT GROUP_CONCAT(soort_naam SEPARATOR ', ')
          FROM (
              SELECT s.soort_naam, SUM(w.territoria) as totaal
-             FROM waarnemingen w
+             FROM territoria w
              JOIN soorten s ON w.soort_id = s.id
              WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @teller_id_intern)
              GROUP BY s.id
@@ -49,18 +49,18 @@ FROM (
              SELECT MIN(totaal_min)
              FROM (
                  SELECT SUM(w2.territoria) as totaal_min
-                 FROM waarnemingen w2
+                 FROM territoria w2
                  WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt2 WHERE pjt2.plot_id = w2.plot_id AND pjt2.jaar = w2.jaar AND pjt2.teller_id = @teller_id_intern)
                  GROUP BY w2.soort_id
              ) AS min_sub
          )), 'Geen data'), ''
     UNION ALL
     SELECT 12, 'Totaal records', 
-        CAST((SELECT COUNT(*) FROM waarnemingen w 
+        CAST((SELECT COUNT(*) FROM territoria w 
               WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @teller_id_intern)) AS CHAR), ''
     UNION ALL
     SELECT 13, 'Totaal territoria', 
-        IFNULL(CAST((SELECT SUM(w.territoria) FROM waarnemingen w 
+        IFNULL(CAST((SELECT SUM(w.territoria) FROM territoria w 
               WHERE EXISTS (SELECT 1 FROM plot_jaar_teller pjt WHERE pjt.plot_id = w.plot_id AND pjt.jaar = w.jaar AND pjt.teller_id = @teller_id_intern)) AS CHAR), '0'), ''
     UNION ALL
     SELECT 14, '', '', '' 
@@ -71,7 +71,7 @@ FROM (
            CAST(w.jaar AS CHAR), 
            CONCAT(SUM(w.territoria), ' territoria'),
            GROUP_CONCAT(DISTINCT p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ', ')
-    FROM waarnemingen w
+    FROM territoria w
     JOIN plots p ON w.plot_id = p.plot_id
     WHERE EXISTS (
         SELECT 1 FROM plot_jaar_teller pjt 
@@ -93,7 +93,7 @@ FROM (
            s.soort_naam, 
            CAST(SUM(w.territoria) AS CHAR),
            ''
-    FROM waarnemingen w
+    FROM territoria w
     JOIN soorten s ON w.soort_id = s.id
     WHERE EXISTS (
         SELECT 1 FROM plot_jaar_teller pjt 

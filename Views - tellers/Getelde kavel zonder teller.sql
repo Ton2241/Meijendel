@@ -3,7 +3,7 @@ SELECT DISTINCT
     w.plot_id,
     p.Plotnaam
 FROM 
-    waarnemingen w
+    territoria w
 JOIN 
     plots p ON w.plot_id = p.plot_id
 WHERE 

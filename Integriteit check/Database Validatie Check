@@ -25,21 +25,21 @@ SELECT
 FROM evg_vogel_landschapgroep
 WHERE groepsnummer IS NULL OR vogel_id IS NULL;
 
--- Check 3: Orphaned waarnemingen
+-- Check 3: Orphaned territoria
 SELECT 
-  'Orphaned waarnemingen (geen plot)' as check_naam,
+  'Orphaned territoria (geen plot)' as check_naam,
   COUNT(*) as aantal_problemen,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
-FROM waarnemingen w
+FROM territoria w
 LEFT JOIN plots p ON w.plot_id = p.plot_id
 WHERE p.plot_id IS NULL;
 
 -- Check 4: Waarnemingen met ongeldige soort_id
 SELECT 
-  'Orphaned waarnemingen (geen soort)' as check_naam,
+  'Orphaned territoria (geen soort)' as check_naam,
   COUNT(*) as aantal_problemen,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
-FROM waarnemingen w
+FROM territoria w
 LEFT JOIN soorten s ON w.soort_id = s.id
 WHERE s.id IS NULL;
 
@@ -60,7 +60,7 @@ SELECT
   'Waarnemingen met negatieve territoria' as check_naam,
   COUNT(*) as aantal_problemen,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
-FROM waarnemingen
+FROM territoria
 WHERE territoria < 0;
 
 -- Check 7: Ongeldige jaren
@@ -68,7 +68,7 @@ SELECT
   'Waarnemingen met ongeldig jaar' as check_naam,
   COUNT(*) as aantal_problemen,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
-FROM waarnemingen
+FROM territoria
 WHERE jaar < 1900 OR jaar > YEAR(CURDATE()) + 1;
 
 -- Check 8: Dubbele EURING codes
@@ -268,7 +268,7 @@ SELECT
   'Waarnemingen zonder plot_jaar_oppervlak record' as check_naam,
   COUNT(*) as aantal_problemen,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
-FROM waarnemingen w
+FROM territoria w
 LEFT JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
 WHERE pjo.id IS NULL;
 

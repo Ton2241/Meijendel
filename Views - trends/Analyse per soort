@@ -7,7 +7,7 @@ ActievePlots AS (
     SELECT 
         w.jaar,
         SUM(pjo.oppervlakte_km2) as totaal_oppervlakte_km2
-    FROM waarnemingen w
+    FROM territoria w
     JOIN plot_jaar_oppervlak pjo ON w.plot_id = pjo.plot_id AND w.jaar = pjo.jaar
     GROUP BY w.jaar
 ),
@@ -16,7 +16,7 @@ MeijendelBasis AS (
     SELECT 
         w.jaar,
         SUM(w.territoria) / ap.totaal_oppervlakte_km2 AS dichtheid
-    FROM waarnemingen w
+    FROM territoria w
     JOIN ActievePlots ap ON w.jaar = ap.jaar
     WHERE w.soort_id = (SELECT id FROM SoortID)
     GROUP BY w.jaar, ap.totaal_oppervlakte_km2
@@ -43,7 +43,7 @@ SELECT
     ROUND(mb.dichtheid, 2) AS territoria_per_km2_meijendel,
     ROUND((mb.dichtheid / (SELECT dichtheid FROM MeijendelReferentie)) * 100, 1) AS trend_meijendel
 FROM (
-    SELECT jaar FROM waarnemingen UNION SELECT jaar FROM trends 
+    SELECT jaar FROM territoria UNION SELECT jaar FROM trends 
     WHERE soort_id = (SELECT id FROM SoortID) AND regio = 'landelijk'
 ) j
 LEFT JOIN trends t ON j.jaar = t.jaar 

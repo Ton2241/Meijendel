@@ -6,10 +6,10 @@ SELECT
 FROM soorten s
 WHERE s.id IN (
     -- Stap 2: Selecteer soorten met een historisch 'track record'
-    -- We groeperen de waarnemingen per soort en tellen de unieke jaren
+    -- We groeperen de territoria per soort en tellen de unieke jaren
     -- Alleen soorten die in >= 15 verschillende jaren territoria hadden blijven over
     SELECT soort_id 
-    FROM waarnemingen
+    FROM territoria
     WHERE territoria > 0
     GROUP BY soort_id
     HAVING COUNT(DISTINCT jaar) >= 10
@@ -18,7 +18,7 @@ AND s.id NOT IN (
     -- Stap 3: Sluit de soorten uit die de afgelopen 10 jaar nog zijn gezien
     -- Dit zorgt ervoor dat we alleen de 'echt verdwenen' soorten overhouden
     SELECT DISTINCT soort_id
-    FROM waarnemingen
+    FROM territoria
     WHERE jaar >= (2026 - 10) 
     AND territoria > 0
 )

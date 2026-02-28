@@ -5,7 +5,7 @@ SELECT
     GROUP_CONCAT(DISTINCT p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ', ') AS kavels
 FROM kernopgave_soort ks
 JOIN soorten s ON ks.soort_id = s.id
-LEFT JOIN waarnemingen w ON s.id = w.soort_id
+LEFT JOIN territoria w ON s.id = w.soort_id
 LEFT JOIN plots p ON w.plot_id = p.plot_id
 GROUP BY 
     s.soort_naam, 

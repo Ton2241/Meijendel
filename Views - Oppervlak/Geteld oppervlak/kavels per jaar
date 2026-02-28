@@ -24,10 +24,10 @@ WHERE
     
     -- Stap 3: Cruciale check - we willen alleen oppervlaktes meetellen 
     -- van plots die in dat specifieke jaar ook echt zijn bezocht/geteld.
-    -- We controleren dit door te kijken of er data bestaat in de tabel 'waarnemingen'.
+    -- We controleren dit door te kijken of er data bestaat in de tabel 'territoria'.
     AND EXISTS (
         SELECT 1 
-        FROM waarnemingen w 
+        FROM territoria w 
         WHERE w.plot_id = pjo.plot_id 
         AND w.jaar = pjo.jaar
     )
