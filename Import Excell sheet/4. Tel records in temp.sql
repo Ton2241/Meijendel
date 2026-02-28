@@ -1,2 +1,2 @@
 SELECT SUM(territoria) AS totaal
-FROM temp_waarnemingen_lang;
+FROM import_waarnemingen_lang;

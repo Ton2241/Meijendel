@@ -1,5 +1,5 @@
 SELECT DISTINCT t.plot_id, p.plot_naam
-FROM temp_waarnemingen_lang t
+FROM import_waarnemingen_lang t
 JOIN plots p ON t.plot_id = p.plot_id
 WHERE NOT EXISTS (
     SELECT 1 FROM plot_jaar_oppervlak pjo 
