@@ -1,6 +1,6 @@
 SELECT 
     w.jaar,
-    p.Plotnaam,
+    p.plot_naam,
     p.plot_nr,
     s.soort_naam,
     s.euring_code,
@@ -8,4 +8,4 @@ SELECT
 FROM territoria w
 JOIN soorten s ON w.soort_id = s.id
 JOIN plots p ON w.plot_id = p.plot_id
-ORDER BY w.jaar DESC, p.Plotnaam ASC, s.soort_naam ASC;
+ORDER BY w.jaar DESC, p.plot_naam ASC, s.soort_naam ASC;

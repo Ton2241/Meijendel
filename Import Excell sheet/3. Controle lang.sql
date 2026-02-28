@@ -1,4 +1,4 @@
-SELECT DISTINCT t.plot_id, p.Plotnaam
+SELECT DISTINCT t.plot_id, p.plot_naam
 FROM temp_waarnemingen_lang t
 JOIN plots p ON t.plot_id = p.plot_id
 WHERE NOT EXISTS (
