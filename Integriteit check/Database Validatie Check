@@ -43,17 +43,40 @@ FROM territoria w
 LEFT JOIN soorten s ON w.soort_id = s.id
 WHERE s.id IS NULL;
 
--- Check 5: Habitat percentages die > 100% zijn per plot
+-- Check 5: Som habitats m2 wijkt meer dan 1 m2 af van de plotoppervlakte
 SELECT 
-  'Plots met habitat percentage > 100%' as check_naam,
+  'Plots waar som habitat m2 afwijkt van plotoppervlakte' as check_naam,
   COUNT(*) as aantal_problemen,
-  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '⚠️  WAARSCHUWING' END as status
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '⚠️  WAARSCHUWING' END as status,
+  -- Stap 4: Toon de afwijkende plots direct als kommalijst, zodat u ze zonder
+  -- extra query kunt opzoeken. NULL als er geen problemen zijn.
+  GROUP_CONCAT(
+      CONCAT(p.plot_naam, ' (', afwijkend.jaar, ', verschil: ', 
+             ROUND(afwijkend.verschil_m2), ' m2)')
+      ORDER BY afwijkend.jaar, p.plot_naam
+      SEPARATOR ' | '
+  ) AS afwijkende_plots
 FROM (
-  SELECT plot_id, jaar, SUM(aandeel_percentage) as totaal
-  FROM plot_jaar_habitat
-  GROUP BY plot_id, jaar
-  HAVING totaal > 100.01  -- 0.01 tolerantie voor floating point
-) as probleem_plots;
+    -- Stap 1: Bereken per plot en jaar de som van alle habitat-oppervlakten
+    -- en vergelijk die met de bekende plotoppervlakte omgerekend naar m2
+    SELECT 
+        pjh.plot_id,
+        pjh.jaar,
+        SUM(pjh.aandeel_m2) AS som_habitat_m2,
+        pjo.oppervlakte_km2 * 1000000 AS totaal_plot_m2,
+        ABS(SUM(pjh.aandeel_m2) - (pjo.oppervlakte_km2 * 1000000)) AS verschil_m2
+    FROM plot_jaar_habitat pjh
+    -- Stap 2: Koppel de plotoppervlakte op hetzelfde plot en jaar
+    JOIN plot_jaar_oppervlak pjo 
+        ON pjh.plot_id = pjo.plot_id 
+        AND pjh.jaar = pjo.jaar
+    GROUP BY pjh.plot_id, pjh.jaar, pjo.oppervlakte_km2
+    -- Stap 3: Houd alleen combinaties over waar het verschil groter is dan 1 m2
+    HAVING ABS(SUM(pjh.aandeel_m2) - (pjo.oppervlakte_km2 * 1000000)) > 1
+) AS afwijkend
+-- Stap 4: Koppel de plotnaam voor leesbare uitvoer
+JOIN plots p ON afwijkend.plot_id = p.plot_id;
+
 
 -- Check 6: Negatieve waardes
 SELECT 
@@ -248,7 +271,7 @@ SELECT
   CONCAT(ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM soorten), 1), '%') as percentage,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '⚠️  PROBLEEM' END as status
 FROM soorten
-WHERE nederlandse_naam IS NULL OR nederlandse_naam = '';
+WHERE soort_naam IS NULL OR soort_naam = '';
 
 SELECT 
   'Tellers zonder email' as check_naam,
