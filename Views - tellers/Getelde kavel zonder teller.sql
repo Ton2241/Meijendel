@@ -1,7 +1,7 @@
 SELECT DISTINCT
     w.jaar,
     w.plot_id,
-    p.Plotnaam
+    p.plot_naam
 FROM 
     territoria w
 JOIN 
