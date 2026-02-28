@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-24 21:45:01.1350
+-- Generation Time: 2026-02-28 14:33:59.4460
 -- -------------------------------------------------------------
 
 
@@ -59,17 +59,6 @@ CREATE TABLE `familie` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uq_familienaam` (`familienaam_nl`)
 ) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `habitats_export_2014` (
-  `plotid` int DEFAULT NULL,
-  `H2130A` int DEFAULT NULL,
-  `H2130B` int DEFAULT NULL,
-  `H2160` int DEFAULT NULL,
-  `H2180Ao` int DEFAULT NULL,
-  `H2180B` int DEFAULT NULL,
-  `H2180C` int DEFAULT NULL,
-  `area_m2` float DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 CREATE TABLE `habitattypen` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -145,7 +134,7 @@ CREATE TABLE `import_waarnemingen_breed` (
   `p_91` int DEFAULT NULL,
   `p_105` int DEFAULT NULL,
   `jaar` int DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Werktabel voor jaarlijkse importverwerking. Bevat brede SOVON-download met plots als kolommen. Na verwerking leegmaken met TRUNCATE.';
 
 CREATE TABLE `import_waarnemingen_lang` (
   `euring_code` int DEFAULT NULL,
@@ -154,7 +143,7 @@ CREATE TABLE `import_waarnemingen_lang` (
   `territoria` int DEFAULT NULL,
   `jaar` int DEFAULT NULL,
   `bron` enum('sovon','jrvslg_m','jrvslg_b') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Werktabel voor jaarlijkse importverwerking. Bevat lange versie van SOVON-download. Na verwerking leegmaken met TRUNCATE.';
 
 CREATE TABLE `kernopgave_habitat` (
   `kernopgave_id` int NOT NULL,
@@ -336,7 +325,27 @@ CREATE TABLE `tellers` (
   CONSTRAINT `chk_mobiel_formaat` CHECK (((`telefoon_mobiel` = _utf8mb4'') or (`telefoon_mobiel` is null) or regexp_like(`telefoon_mobiel`,_utf8mb4'^[0-9 +-]+$'))),
   CONSTRAINT `chk_mobiel_vast` CHECK (((`telefoon_vast` = _utf8mb4'') or (`telefoon_vast` is null) or regexp_like(`telefoon_vast`,_utf8mb4'^[0-9 +-]+$'))),
   CONSTRAINT `chk_postcode_formaat_flexibel` CHECK (regexp_like(`postcode`,_utf8mb4'^[0-9]{4} ?[A-Z]{2}$'))
-) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=200 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+CREATE TABLE `territoria` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `plot_id` int NOT NULL,
+  `soort_id` int NOT NULL,
+  `jaar` int NOT NULL,
+  `territoria` int DEFAULT '0',
+  `invoerdatum` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Datum en tijd waarop de waarneming is ingevoerd',
+  `bron` enum('sovon','jrvslg_m','jrvslg_b') NOT NULL DEFAULT 'sovon' COMMENT 'Bron van de waarnemingsgegevens',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_territoria_bron_uniek` (`plot_id`,`soort_id`,`jaar`,`bron`),
+  KEY `idx_territoria_jaar` (`jaar`),
+  KEY `idx_territoria_soort_id` (`soort_id`),
+  KEY `idx_territoria_jaar_soort_aantal` (`jaar`,`soort_id`,`territoria`),
+  KEY `idx_territoria_plot_jaar_soort` (`plot_id`,`jaar`,`soort_id`),
+  CONSTRAINT `fk_territoria_jaar_plot` FOREIGN KEY (`plot_id`, `jaar`) REFERENCES `plot_jaar_oppervlak` (`plot_id`, `jaar`),
+  CONSTRAINT `fk_territoria_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
+  CONSTRAINT `fk_territoria_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
+  CONSTRAINT `chk_territoria_waarde` CHECK ((`territoria` >= 0))
+) ENGINE=InnoDB AUTO_INCREMENT=119402 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
 
 CREATE TABLE `trends` (
   `id` int NOT NULL AUTO_INCREMENT,
@@ -360,34 +369,9 @@ CREATE TABLE `vogelstand_1924` (
   CONSTRAINT `fk_vogelstand_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=205 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-CREATE TABLE `territoria` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `plot_id` int NOT NULL,
-  `soort_id` int NOT NULL,
-  `jaar` int NOT NULL,
-  `territoria` int DEFAULT '0',
-  `invoerdatum` timestamp NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Datum en tijd waarop de waarneming is ingevoerd',
-  `bron` enum('sovon','jrvslg_m','jrvslg_b') NOT NULL DEFAULT 'sovon' COMMENT 'Bron van de waarnemingsgegevens',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uq_waarneming_bron_uniek` (`plot_id`,`soort_id`,`jaar`,`bron`),
-  KEY `idx_waarneming_jaar` (`jaar`),
-  KEY `idx_waarneming_soort_id` (`soort_id`),
-  KEY `idx_waarneming_jaar_soort_territoria` (`jaar`,`soort_id`,`territoria`),
-  KEY `idx_waarneming_plot_jaar_soort` (`plot_id`,`jaar`,`soort_id`),
-  CONSTRAINT `fk_waarneming_jaar_plot` FOREIGN KEY (`plot_id`, `jaar`) REFERENCES `plot_jaar_oppervlak` (`plot_id`, `jaar`),
-  CONSTRAINT `fk_waarneming_plot` FOREIGN KEY (`plot_id`) REFERENCES `plots` (`plot_id`),
-  CONSTRAINT `fk_waarneming_soort_id` FOREIGN KEY (`soort_id`) REFERENCES `soorten` (`id`) ON DELETE RESTRICT ON UPDATE CASCADE,
-  CONSTRAINT `chk_waarneming_territoria` CHECK ((`territoria` >= 0))
-) ENGINE=InnoDB AUTO_INCREMENT=119405 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='Broedvogel territoria per plot per jaar';
-
-CREATE TABLE `weer_actueel_voorschoten` (
-  `datum` date NOT NULL,
-  `temp_gem` decimal(5,1) DEFAULT NULL,
-  `neerslag_hoeveelheid` decimal(5,1) DEFAULT NULL,
-  PRIMARY KEY (`datum`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
-CREATE TABLE `weer_historie_katwijk` (
+CREATE TABLE `weer` (
+  `STN` int DEFAULT NULL,
+  `Naam` varchar(100) DEFAULT NULL,
   `windsnelheid_gem` int DEFAULT NULL,
   `temp_gem` decimal(5,1) DEFAULT NULL,
   `temp_min` decimal(5,1) DEFAULT NULL,
@@ -406,9 +390,6 @@ CREATE TABLE `weer_legenda` (
   PRIMARY KEY (`variabele`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
-
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `weer_totaal` AS select `weer_historie_katwijk`.`datum` AS `datum`,`weer_historie_katwijk`.`temp_gem` AS `temp_gem` from `weer_historie_katwijk` where (`weer_historie_katwijk`.`datum` < '2016-05-04') union all select `weer_actueel_voorschoten`.`datum` AS `datum`,`weer_actueel_voorschoten`.`temp_gem` AS `temp_gem` from `weer_actueel_voorschoten` where (`weer_actueel_voorschoten`.`datum` >= '2016-05-04');
 
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
