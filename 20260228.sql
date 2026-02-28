@@ -4,7 +4,7 @@
 -- https://tableplus.com/
 --
 -- Database: Meijendel
--- Generation Time: 2026-02-28 14:33:59.4460
+-- Generation Time: 2026-02-28 19:47:41.7900
 -- -------------------------------------------------------------
 
 
@@ -372,10 +372,10 @@ CREATE TABLE `vogelstand_1924` (
 CREATE TABLE `weer` (
   `STN` int DEFAULT NULL,
   `Naam` varchar(100) DEFAULT NULL,
-  `windsnelheid_gem` int DEFAULT NULL,
-  `temp_gem` decimal(5,1) DEFAULT NULL,
-  `temp_min` decimal(5,1) DEFAULT NULL,
-  `temp_max` decimal(5,1) DEFAULT NULL,
+  `FG` int DEFAULT NULL,
+  `TG` decimal(5,1) DEFAULT NULL,
+  `TN` decimal(5,1) DEFAULT NULL,
+  `TX` decimal(5,1) DEFAULT NULL,
   `SQ` int DEFAULT NULL,
   `RH` decimal(5,1) DEFAULT NULL,
   `PG` int DEFAULT NULL,
