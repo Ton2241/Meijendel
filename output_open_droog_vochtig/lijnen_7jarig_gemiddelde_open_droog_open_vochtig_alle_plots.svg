@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1700" height="760" viewBox="0 0 1700 760">
+<style>text{font-family:Arial,sans-serif;fill:#222}.axis{stroke:#333;stroke-width:1}.grid{stroke:#ddd;stroke-width:1}.l1{fill:none;stroke:#d8a24a;stroke-width:3}.l2{fill:none;stroke:#4f9f8f;stroke-width:3}</style>
+<rect x="0" y="0" width="1700" height="760" fill="white"/>
+<line class="grid" x1="90" y1="680.00" x2="1660" y2="680.00"/>
+<text x="80" y="684.00" font-size="12" text-anchor="end">0</text>
+<line class="grid" x1="90" y1="620.00" x2="1660" y2="620.00"/>
+<text x="80" y="624.00" font-size="12" text-anchor="end">5</text>
+<line class="grid" x1="90" y1="560.00" x2="1660" y2="560.00"/>
+<text x="80" y="564.00" font-size="12" text-anchor="end">10</text>
+<line class="grid" x1="90" y1="500.00" x2="1660" y2="500.00"/>
+<text x="80" y="504.00" font-size="12" text-anchor="end">15</text>
+<line class="grid" x1="90" y1="440.00" x2="1660" y2="440.00"/>
+<text x="80" y="444.00" font-size="12" text-anchor="end">20</text>
+<line class="grid" x1="90" y1="380.00" x2="1660" y2="380.00"/>
+<text x="80" y="384.00" font-size="12" text-anchor="end">25</text>
+<line class="grid" x1="90" y1="320.00" x2="1660" y2="320.00"/>
+<text x="80" y="324.00" font-size="12" text-anchor="end">30</text>
+<line class="grid" x1="90" y1="260.00" x2="1660" y2="260.00"/>
+<text x="80" y="264.00" font-size="12" text-anchor="end">35</text>
+<line class="grid" x1="90" y1="200.00" x2="1660" y2="200.00"/>
+<text x="80" y="204.00" font-size="12" text-anchor="end">40</text>
+<line class="grid" x1="90" y1="140.00" x2="1660" y2="140.00"/>
+<text x="80" y="144.00" font-size="12" text-anchor="end">45</text>
+<line class="grid" x1="90" y1="80.00" x2="1660" y2="80.00"/>
+<text x="80" y="84.00" font-size="12" text-anchor="end">50</text>
+<line class="axis" x1="90" y1="80" x2="90" y2="680"/>
+<line class="axis" x1="90" y1="680" x2="1660" y2="680"/>
+<text x="136.87" y="698" font-size="10" text-anchor="middle">1960</text>
+<text x="254.03" y="698" font-size="10" text-anchor="middle">1965</text>
+<text x="371.19" y="698" font-size="10" text-anchor="middle">1970</text>
+<text x="488.36" y="698" font-size="10" text-anchor="middle">1975</text>
+<text x="605.52" y="698" font-size="10" text-anchor="middle">1980</text>
+<text x="722.69" y="698" font-size="10" text-anchor="middle">1985</text>
+<text x="839.85" y="698" font-size="10" text-anchor="middle">1990</text>
+<text x="957.01" y="698" font-size="10" text-anchor="middle">1995</text>
+<text x="1074.18" y="698" font-size="10" text-anchor="middle">2000</text>
+<text x="1191.34" y="698" font-size="10" text-anchor="middle">2005</text>
+<text x="1308.51" y="698" font-size="10" text-anchor="middle">2010</text>
+<text x="1425.67" y="698" font-size="10" text-anchor="middle">2015</text>
+<text x="1542.84" y="698" font-size="10" text-anchor="middle">2020</text>
+<text x="1660.00" y="698" font-size="10" text-anchor="middle">2025</text>
+<path class="l1" d="M 160.30 274.03 L 183.73 294.72 L 207.16 315.07 L 230.60 333.59 L 254.03 347.38 L 277.46 361.76 L 300.90 377.99 L 324.33 382.33 L 347.76 381.67 L 371.19 390.78 L 394.63 397.60 L 418.06 405.93 L 441.49 405.87 L 464.93 414.94 L 488.36 378.73 L 511.79 336.30 L 535.22 289.94 L 558.66 243.32 L 582.09 190.13 L 605.52 149.04 L 628.96 104.06 L 652.39 108.73 L 675.82 156.70 L 699.25 158.56 L 722.69 162.02 L 746.12 193.48 L 769.55 249.18 L 792.99 306.84 L 816.42 364.82 L 839.85 383.66 L 863.28 446.07 L 886.72 505.47 L 910.15 541.35 L 933.58 544.20 L 957.01 538.03 L 980.45 532.32 L 1003.88 523.80 L 1027.31 517.00 L 1050.75 512.84 L 1074.18 513.05 L 1097.61 512.22 L 1121.04 510.36 L 1144.48 509.18 L 1167.91 512.86 L 1191.34 515.28 L 1214.78 518.20 L 1238.21 520.85 L 1261.64 520.12 L 1285.07 524.40 L 1308.51 523.98 L 1331.94 524.42 L 1355.37 523.65 L 1378.81 522.67 L 1402.24 520.93 L 1425.67 524.98 L 1449.10 523.17 L 1472.54 521.10 L 1495.97 517.12 L 1519.40 510.60 L 1542.84 505.25 L 1566.27 500.31 L 1589.70 492.59"/>
+<path class="l2" d="M 160.30 322.81 L 183.73 335.59 L 207.16 356.19 L 230.60 374.48 L 254.03 390.12 L 277.46 408.38 L 300.90 427.76 L 324.33 440.14 L 347.76 450.89 L 371.19 466.01 L 394.63 477.84 L 418.06 489.83 L 441.49 495.04 L 464.93 498.67 L 488.36 512.26 L 511.79 525.71 L 535.22 538.68 L 558.66 554.74 L 582.09 569.71 L 605.52 587.16 L 628.96 605.54 L 652.39 610.61 L 675.82 610.24 L 699.25 612.30 L 722.69 614.39 L 746.12 612.60 L 769.55 607.28 L 792.99 599.85 L 816.42 594.22 L 839.85 590.94 L 863.28 584.49 L 886.72 573.42 L 910.15 562.99 L 933.58 552.67 L 957.01 543.21 L 980.45 536.69 L 1003.88 527.60 L 1027.31 520.40 L 1050.75 516.22 L 1074.18 516.00 L 1097.61 514.76 L 1121.04 512.69 L 1144.48 511.31 L 1167.91 514.79 L 1191.34 517.03 L 1214.78 519.88 L 1238.21 522.47 L 1261.64 521.83 L 1285.07 526.03 L 1308.51 525.60 L 1331.94 526.08 L 1355.37 525.23 L 1378.81 524.27 L 1402.24 522.62 L 1425.67 526.85 L 1449.10 525.35 L 1472.54 523.48 L 1495.97 519.74 L 1519.40 513.41 L 1542.84 507.98 L 1566.27 503.19 L 1589.70 495.39"/>
+<text x="850.00" y="34" font-size="20" text-anchor="middle">7-jarig gemiddelde (alle plots): aandeel van twee vogelclusters</text>
+<text x="850.00" y="740" font-size="13" text-anchor="middle">Jaar</text>
+<text x="22" y="380.00" font-size="13" text-anchor="middle" transform="rotate(-90 22 380.00)">Percentage van totaal getelde vogels</text>
+<text x="1310" y="56" font-size="13" fill="#d8a24a">open &amp; droog (2+6), 7-jarig gemiddeld</text>
+<text x="1310" y="78" font-size="13" fill="#4f9f8f">open en vochtig (3+5), 7-jarig gemiddeld</text>
+<text x="90" y="722" font-size="11" fill="#666">Gecentreerd 7-jaarsvenster: waarden bestaan voor 1961-2022</text>
+</svg>
