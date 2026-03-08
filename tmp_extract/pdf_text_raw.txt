@@ -1,0 +1,632 @@
+===== PAGE 1 =====
+Bijlage 18. Geinventariseerde oppervlakte per hokkenkavel per jaar i
+Bijlage 18. Geïnventariseerde opperulakte per hokkenkavel per jaar
+OPPTOT = totale oppervlakte van hokkenkavel �
+OPPTOT = totale oppeMakte van hokkenkavel
+OPPINV = geinventariseerde oppervlakte van hokkenkavel
+OPPINV = geihventariseerde oppervlakte van hokkenkavel
++ = kavel geheel geihventariseerd volgens toenmalige kavelomgrenzing, maar door verschoven
++ = kavel geheel geinventariseerd volgens toenmalige kavelomgrenzing, maar door verschoven
+kavelgrenzen en ontbreken van kaartmateriaal is de geihventariseerde oppervlakte van het
+kavelgrenzen en ontbreken van kaartmateriaal Is de geinventariseerde oppervlakte van het
+hokkenkavel nlet te bepalen.
+hokkenkavel niet te bepalen.
+M'DEL = Meijendel buiten het geihventariseerde gebied.
+M'DEL = Meijendel buiten het geinventariseerde gebied.
+REST = 'kavel extral (= extra hokken, in Meijendel buiten de kavelomgrenzing vallend).
+REST = 'kavel extra' (= extra hokken, in Meijendel buiten de kavelomgrenzing vallend).
+! ! ! ! !\\\\\\\\\\\\\\\\\\\\\\\\\\\\t\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\l\\\\\\\\\\\\\\\\\\\\\\\\!
+! ! ! 5 9 ! 6 0 ! 61 ! 6 2 ! 6 3 ! 64 ! 6 5 ! 6 6 ! 6 7 ! 6 8 ! 6 9 ! 7 0 ! 71 ! 7 2 !
+! Me ! N A N N N N N A N N A A N N N N N N N N A A A A N N N N N N N N A N N A N A N N N N N A N N N N N N A A N N N N A N N N N N N } � N A N A N N N N N N N N N N N N N N N N N !
+r ào ! ér r àz | 6o I b4 ! èr I óa | 67 t ée t ii t id i ir i ii"i
+! ! ! ! !\\\\\\\\\\\\\\\\\\\\\\\\\\\\'\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrrrrrriirri
+! \ \ \ , , , \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \"\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \·\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !
+! ! D P P TO T ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V ! D P P I N V !
+! !oppïoÍ ! rrppr,rr,n opptNv !tpptNv! FptNV !opptN\, ! opprNvtopp rw ! opptNv ! opptw ! t pprrp t opplxv t opptxvr orprw r riÈpiiv i !\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrrirrrirriirisrrrrrrrrrrrrrrrrrrrirririi
+! \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ ' \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ !
+lr{AvEL | ! ! ! ! ! ! ! ! r 1 t ! ! t. "--i
+!KAVEL ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+! N N N N X ! ! ! ! ! ! ! ! ! ! ! ! ! ! ! !
+!\\\\\\! ! ! ! ! I I ! r t i i r r i i
+! 1 A ! 4 5 . 0 ! 3 1 . 0 ! 3 2 . 0 ! 3 2 . 0 ! ila,.-_i..r.o! 3r.o! 32,or..32.or..!2-o!..31o! 3z.o! 32.oi sg.or co.oi rt.oi 4r.oi 44.oi fi.oi re.oi
+3 2 . 0 ! 3 2 . 0 ! 3 2 . 0 ! 3 2 . 0 ! 3 6 . 0 ! 4 0 . 0 ! 4 5 . 0 ! 4 5 . 0 ! 4 4 . 0 ! 4 4 . 0 ! 4 4 . 0 !
+! NNNNNNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNXXXNANNNNNNNNNNNNNANNNNANNNXXNNNNNNNANNNNNNANXNNNNXNNNNNNNNNXNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\§i\\\\\\\\\\rrrrrrrrrtiriirriiiiirrririsrrrrrrrrrriiirriiiii ilt....j.??:9! zr.or z9,o:--??:9!..a?:ol ?e.or 29.o! ?e.o! ?e.o! zt.o: zi.ói ?e.o! z?.o! ep.ór ai.di
+!1B ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 ! 2 9 . 0 !
+! NNNNNNXNNNNNXNNAA� NNNXNNNNXNXNNNNNNNNNNNNNNNNNNXXXANNNNNNNNNNNNNNNNNNNNNXNXANNNAANNNNNNNNNNNNXNNXNNNNNNNXNNNXNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ttrrtirttrrtrrtrttttrttrrttrtitrtir\trrttr\rttt\rrrrrrrrtrrrrriii l.a ! 36.o! sa.o! 36.0! J6.o! 36.0! a6.o! 3È.o! 3ó.o! 3ó.o! ss.ór ói.ói aó.o! 36.o! 36.ot 36.o!
+! 2 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! 3 6 . 0 ! ! \NNXNNNNANNNANNXXNNXNXNNXAXXNNNNNNNNNNXNNXNXNNNNANNNNNXXN*XX\NNAAXXNNNNNXNNXNNNNNXNXXXNNNNNNXXNNNXNNXNNXNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\r\\\\\\\\\\\\\\\\\\\\\ii\iirrrrrrrrrrrrirrriiiiirriiiii
+3 6 . 0 ! 3 6 . 0 !
+! 3 ! 3 4 . 0 ! 3 4 . 0 ! 3 4 . 0 ! 3 3 . 0 ! 3 3 . 0 ! 3 3 . 0 ! !9.-.-..! 34:O! 34.0! 3(.ot..J3,9!..ii,g!.33.o! 33.o! 33.0! 34.O! aq,or ii.ói 3rr.o! 3:,.0! es.or gó.ói
+3 3 . 0 ! 3 3 . 0 ! 3 4 . 0 ! 3 4 . 0 ! 3 3 . 0 ! 3 3 . 0 ! 3 3 . 0 ! 3 3 . 0 ! 3 3 . 0 !
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\irrrirrrrririirrrii\iirrrrrrrrrririrrriiiiirrii\ii t4ts ! 2?.ol zo.o! ao.o!-.zo-or..2o.ol ?o.ot zo.ot eo.o! e?.o! ?2.o! 20,o! tr.o! ?o.o! zr,ot ir.oi
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\-\\\\\\\\\\\\\\\\\rrrriii(rrrrrrrrtrtrttrrttttitttiiiiirrrrrrrrrrrrrrrrrtrirrriiiii !ó | zz.ot 26.öl z7.ol ?16.ot 26.ot zt.ot zz.ót 27.o1 ?t ot ?7.ot 27.o! zz.o! ?z.o! 2z.ot 2?,o,!
+� � ! NANANNNNNXNNNNNNAXAXNNNNNNXXXNNNNNNNXNNXNNNXNANNXxNNNNNNNNNNNNNNNNNNNNNNNNN� NANNNNNNAN� NNNNNNNNNNNNNXNNNNNNNNNN!
+! 4 / 5 ! NNNNNNNNNNNNNNNXNNNNANNNXNXXNNNNNXNNXNXNXXNANNNNXNNNNA� NNNNNNNNNNXNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN!
+! 6 � � � � ! 2 2 . 0 ! � � � � ! 2 7 . 0 ! � � � � 2 0 . 0 ! 2 0 . 0 ! 2 0 . 0 ! 2 0 . 0 ! 2 0 . 0 ! 2 0 . 0 ! 2 0 . 0 ! 2 2 . 0 ! 2 2 . 0 ! 2 0 . 0 ! 1 9 . 0 ! 2 0 . 0 ! 2 1 . 0 ! 2 6 . 0 ! »�»�•�»�"�"�"�"�"�"�»A»�»I
+2 1 . 0 !
+2 7 . 0 ! 2 6 . 0 ! 2 6 . 0 ! 2 7 . 0 ! 2 7 . 0 ! 2 7 . 0 ! 2e 0 ! 2 7 . 0 ! 2 7 . 0 ! 2 7 . 0 ! 2 7 . 0 ! 2 7 . 0 ! 2 7 . 0 !
+!\\\\\\\\\\\\À\\\\)\\\\\\i\\\\\\\trrrrr!irrrrrlrrrrrir\iirrrrrrrr\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\! 17 | 37,o: z6.ot z6.ot z6.ot z6.ol ?2. o! 35. o! e7. ot aà. o! 28. O! 27. O!
+! NNNNNNNNNNN� NNNXNXXXXXNNNXNNNNNNNXNNNNNNNN NNNNNNAAN� XNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\1\\\\\\\\\\\\\rrrrrrrrrririrrririiirrfrrrrrrrrrrrrrrrrirrriiiii
+O! ?A. O! 28. O! ee. O!
+"8,
+! B i9.....!..4ó:o! /r3.o! ia.o! 38.o! ig.o! a3.o! gE.o! 46.o! 4ó.o! 46.o! ra.ór ra.ot ra.ot le.ot rc.oi
+! 4 6 . 0 ! 4 3 . 0 ! 3 8 . 0 ! 3 8 . 0 ! 3 8 , 0 ! 3 3 . 0 ! 3 8 . 0 ! 4 6 . 0 ! 4 6 . 0 ! 4 6 . 0 ! 4 6 . 0 ! 4 6 . 0 ! 4 6 . 0 ! ! NANNNNNNNNNNNXN' NNNNNNNXXNNXNNNNNXNXNNNXNXNXNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\. \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\tirirtrrtrrrrrtr\\\\\\\\\\\\\\\\!
+4 6 . 0 ! 4 6 . 0 !
+! 1 0 / 1 2 ! 4 3 . 0 ! !1911? j .43.o1 3B,o! ,r2.ot..tz-o:. fl.oI 4e.or 4e.o! ?a.ot ?è.or rr.ot rd.d,r ro.ot rr.or rr.or rr.ói
+3 8 . 0 ! 4 2 . 0 ! 4 2 . 0 ! 4 2 . 0 ! 4 2 . 0 ! 4 2 . 0 ! 2 2 . 0 ! 2 6 . 0 ! 4 1 . 0 ! 4 0 . 0 ! 4 0 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 !
+! NNNNNNNNNNNNNNNANNNNNXNNXNNXXXNNNXNXNNXXNNNSNNXNNAANNNNNNNNNXN� NNNNXNNNXNNNXXNNNXNXNNNNNNNNXNNNNNNNNNXNNNNNNXNX!
+t\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrririirrriiiirrrrrrrrrrrrrrrrrrrirrrriiii !r?A_._l 73.0!.zr.o! 7t,o!-.Ë-.9!. zr,or 73.o! 7r.o! 7i,ot 72,ot za.ór ió.di 73.o! 73.ot 7i.o! 73.o!
+!12A ! 7 3 . 0 ! 7 3 . 0 ! 7 3 , 0 ! 7 3 . 0 ! 7 3 . 0 ! 7 3 . 0 ! 7 3 . 0 ! 7 3 . 0 ! 7 2 . 0 ! 7 3 . 0 ! 7 3 . 0 ! 7 3 . 0 ! 7 3 . 0 ! t\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrtrrrirttrrrtttttrtrtrittrrttt\rrrrrrrrrririirriiiiirrrrrrrrrrr\\\\\\\\\\\\\\\\!
+7 3 . 0 ! 7 3 . 0 !
+! ANNNNNNANNNNNNVNNNNXANNNNNNNNNXNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN!
+! 1 3 il? . i tz.ot t7.ot +!.-...tj--._.tj. !z.or ,2.o,!. t7.o! t7.ot rz.or ri.'ói tl.ot ,7.ot rc.or ri.ói
+! 1 7 . 0 ! 1 7 . 0 ! + ! + ! + ! 17.0! 1 7 . 0 ! 1 7 . 0 ! 1 7 . 0 ! 1 7 . 0 ! 1 7 . 0 ! 1 7 . 0 ! 1 7 . 0 ! ! NNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNNNNAANNANNNANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\i\\rrtttttrtrt\rttrrrrrrrrririiirriiiiirrrrrrrrrrrrrrrriiiiirriiiii
+1 6 . 0 ! 1 7 . 0 !
+! 1 3 6 !f 39..
+! 53. 5 ! 2 1 . 0 ! + ! + ! . i !3. r! ?!. o! +! +t +r r?.,! ,a.,! ,2. ,r ,?.,! sa. ir ii. ii rr. rrut.,! ,r. il ii. ii
++ ! 4 9 . 5 ! 5 2 . 5 ! 5 2 . 5 ! 5 2 . 5 ! 5 2 . 5 ! 5 2 . 5 ! 5 1 . 5 ! 5 1 . 5 ! 5 1 . 5 ! 5 1 . 5 !
+! NAN\NNANNNANNNNXNNNAANNNNANNNNNNNXNNXNNXNANXNXNNNNNNNNXNNNNNNNNNNNNXXNNNNNNXNNNXNXXNXNNNNANNNNNXXANNANNXNXNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\iriiirrrrrrrrrrrrrrrriiriirriiiii !14 ! 4t.o! 4l.o! qt.o!..rí.,.ol. +! ro.or .rr.d,i .t.o! irt.o! 4t.ot /rr.ot tr.ot 4l.o! 4t,o! /rt.o!
+!14 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 41.O! + ! 1 0 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 ! 4 1 . 0 ! ! NNNNNNXNNNXNNXNXXAXNNXNNNXNXXNNNXNNNNNNNNANAAAAANNANNNN� NANNNNANANNN� NNNNNNNXSAXNXNNNNNNNNXNNNNNANNXNNNNNNNNXNN!
+!\\\\\\\\\\\\\\\rrrrrrrrirrrrrrirrrrrrrrrrrrrririirriiiiirrrrrrrrrrirrrrrriiiirrii\iirrrrrrrrrrr\\\\\\\\\\\\\\\\!
+4 1 . 0 ! 4 1 . 0 !
+! 1 6 ! B 1 . 0 ! 8 1 . 0 ! i!9 ! Bt. o! e.r.o ! +! +r +! Et. o! er. or ao. or gr. or ir. ói ai.oi ar. ol Br. o! Bt. ot B!. ol
++ ! + ! + ! B 1 . 0 ! B 1 . 0 ! 8 0 . 0 ! B 1 . 0 ! 8 1 . 0 ! 8 1 . 0 ! B 1 . 0 ! B 1 . 0 ! B 1 . 0 ! B 1 . 0 !
+! \ANNAN\NANANNNANNXNXNNNNXNNNXNNNNNNNNNNNNANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNAXNNNNNNNNNANNNNNNNNNXNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\iiiirrrrrrrrrrrrrrrrriiiiirr(iiii !ràB ,.tr,o! r.o! +! +! +! t!.o! tl.o! rl.o!'rr,ot'ii.di"ii,;i rt.o! rt.o! tt.o! rt.ol
+! 1 6 8 ! 1 1 . 0 ! 1 . 0 ! + ! + ! + ! 1 1 . 0 ! 1 1 . 0 ! 1 1 . 0 ! 1 1 , 0 ! 1 1 . 0 ! 11,O! 1 1 . 0 ! 1 1 . 0 ! 1 1 . 0 ! 1 1 . 0 !
+! NNNNNNNNNNNNNNNXNXXXXNNNNNNNNNNNXNNNNNNXXNXNNXNNXNXNNXNNNNNNNNNNXNNNNXNNNNN� NNANXXXNXXNNNNNX� XNNNNNANNNXNNNNNNX!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\iiiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! il'l | 49.31 17.t! rr8-5!-.rr8.5t. q6:q! 48.r! 48.!! 46,t! 4t.rr rz.jr'ij.rii la.5! 46.!t /r3.r! 47.8!
+! 1 7 ! 4 8 . 5 } 4 7 . 5 ! 4 8 . 5 ! 48.5! 4 8 , 5 ! 4 8 . 5 ! 4 8 . 5 ! 4 8 . 5 ! 4 5 . 5 ! 4 7 . 5 ! 4 5 . 0 ! 4 5 . 5 ! 4 6 . 5 ! 4 5 . 5 ! 4 7 . 5 !
+! NANANNANNANNXNNANNAAANNNNNNNXNNNNANNNNNNANNNANXXNNNNNNNNAXNNNNNXNANNXANNNANNNXANNNNNNNNNNNNNNXNNNNNNNNNNNNNX!
+!\\\\\\\\\\\\\\\rrttrtttittrrtttirrrrriiirrrrririirrr{\(\aaraarr\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\! |t7B ! t?.o! ?.0! .! .! .! t.o! 7.ot t.o! t?.o! to.o! ta.o! te.o! t2.o! t?.0! t2.o!
+!17B ! 1 2 . 0 ! 2 . 0 ! : ! 1 1 . 0 ! 7 . 0 ! 1 . 0 ! 12. 0 ! 1 0 . 0 ! 1 2 , 0 ! 1 2 . 0 ! 1 2 . 0 ! 1 2 . 0 ! 12. 0 !
+! NNNNANNNNNNNNNNNNXAAXXNNNNNNNNNNNNNNNNNNNXNNNNNNNNANNNXNNXNNNNNANNNNNNNXNNNNNNNNNNXNNNNNNNNXNNNNNNNNNNXNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\i\\\\\\\\rrrirrrrriiiiirrii\iirrrrrrrrrrr\\\\\\\\\\\\\\\\! !33 ! 34.r! e.o! ,! .! .! 4.or a.o! /r.o! 4.o! 6.ot d.óa .! a.o! z.o! a.o!
+! 3 3 ! 3 4 . 5 ! 2 . 0 ! . ! ! ! 4 . 0 ! 2 . 0 ! 4 . 0 ! 4 . 0 ! 6 . 0 ! 5 . 0 ! ! 3 . 0 ! 2 . 0 ! 4 . 0 !
+! \NNNNNNXNXNNNNNNNNNXNXXXXNNXNNXNXXXXXNXN� NXNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXN� XNNNNN!
+! \\\\\\\\\\\\\\\\\\\\ \\\\\\\\\\\\\\\\\\\\\\ \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ \\\\\ri\iirrrrrrrrrrr\\\\\\\\\\\\\\\\ !
+!34 ! 1 7 . 5 ! ! . ! ! ! ! ! ! ! 1 . 0 ! ! 2 . 0 ! 1 . 0 ! ! • !
+!34 ! r7.5t .! .! .l .t .! .! .! .! t.ot .i ?,o! t.ot .! .r
+! \NNNNNNNNNNNNNNNNNNNNNNNXN� XXNNXNXNNNNNXNNAX� NNNANNNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNXNNNNNNNNNXNNNNXNXNXXNNNNNNNX!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrriiiirrttt\itrrrrrrrrrr\\\\\\\\\\\\\\\\! !35 ! ?t.t! 3.o! .! .! .! e.o! .! t.o! ?.o! e.or 2.o1 t.or l.o, t.o! t.o,
+! 3 5 ! 2 1 . 5 ! 3 . 0 ! ! . ! ! 2 . 0 ! ! 1 . 0 ! 2 . 0 ! 2 . 0 ! 2 . 0 ! 1 . 0 ! 1 . 0 ! 1 . 0 ! 1 . 0 !
+! \NNNNNNNNNXNNNNNNNNNNNNNNNNANNXNNNXXNNNNNNNNNNNNNNNNANNNNNNNNNNN� NNXNNNNNNNANNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrririrrrriiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! !36 ! 9o.9! .! .!.. :J .! .! t.or t.o! .! a.ol r.d,i 3.o! J.o! t.o! 4.o!
+! 3 6 ! 5 0 . 5 ! ! ! ! ! ! 1 . 0 ! 1 . 0 ! . ! 3 . 0 ! 1 . 0 ! 3 . 0 ! 3 . 0 ! 1 . 0 ! 4 . 0 !
+! NNNNNNANNNNNXNNXNNNXNNNXNXNXXNNNNXNNNXNXNNAXNNNNANNNXNNNNNNANXXNNXNNNNNXXANXNNNNNAXNXNXNNNANNANNNXNNNNNXNXNNXNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ttrrrirrirrrrrrr\\\\\\\\\\\\\\\\riiiirrrrrrrrrrr\\\\\\\\\\\\\\\\l !.t ! t3.o! .! .t .! .r .! .! .t .! r.oi i.di .! r.ot z.o! l.o!
+!41 ! 1 3 . 0 ! ! ! ! . ! . ! . ! . ! . ! 1 . 0 ! 2 . 0 ! . ! 4 . 0 ! 2 . 0 ! 1 . 0 !
+! NNNNNNNNNXNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNN� NNNNNN� NXNNNNNNNNNNNNNNNNNNNNNNNANNNNNNNNNNNNNNNNNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrriiiirrri\iirrrrrrrrrrr\\\\\\\\\\\\\\\\! !43 ! i7.or .! .! .! .! ,l .! .! .t .r' '.'i .! t.o! t.o! t,o!
+! 4 3 ! 3 7 . 0 ! ! ! ! . ! . ! . ! . ! . ! . ! . ! . ! 1 . 0 ! 1 . 0 ! 1 . 0 !
+\\ \ \\\\\\\ \\\\\\ \ \ \ \ \\\\ \ \ \ \ \ \\ \ \ \\ \ \\\\ \ \\\ \ \\ \ t t t trrrt ittr t t t tr rrr rr rr r r r riir r r r r\ i r r rr rr rrrrr\\\\\\\\ \\\ \ \\ \\\
+\ANNANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNANNNNNNNNNNNNNNNNNNNNNNNNNNNN
+! 4 5 ! 4 0 . 5 ! . ! : ! ! 2 . 0 ! 1 . 0 ! 1 . 0 ! 2 . 0 ! 1 . 0 ! 4 . 0 ! 2 . 0 ! 4 . 0 ! 4 . 0 ! 4 . 0 !
+!4t ! 40.t! .! .!----.:! .! 2.0! !.0! t.o! ?.ot t.o! r.ot e.o! /t.o! a.o! a.o!
+! NNNNNNANNANNNAXXAXNNNNNANNNNNNNNXNNNXXNNNNNNNXNNXNNNXNNNNXNNNNNNNXNNXNNXXNNNNNNNNNNNNXNNNNNNXNXXNNNNANXNNXNX!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrriiirrrrtrrrrrrrrrrrrririirrrriiirrrrrrrrrrr\\\\\\\\\\\\\\\\! !46 ! a9.o! 3.o! .t :! .! 2.o! i.or z.o! o.o! i.dr"i.-di's.ol 3.o! ,t.or r.o!
+I
+! 4 6 ! 2 9 . 0 ! 3 . 0 ! . ! . ! . ! 2 . 0 ! 3 . 0 ! 2 . 0 ! 3 . 0 ! 2 . 0 ! 3 . 0 ! 3 . 0 ! 3 . 0 ! 4 . 0 ! 4 . 0 !
+! NNNNNNNNNNNNNNNXNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNANNNNNNNNNNNNNNNNNXNNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrri\irrrrrrrrtrrrrrrrrririirrriiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! lrt , 3r.t! t.ot .! .! .! e.o! 6.0! 4.o! 4.o! +.ót r.tii .! ,! .! t.o!
+!51 ! 3 9 . 5 ! 1 . 0 ! . ! . ! . ! 2 . 0 ! 6 . 0 ! 4 . 0 ! 4 . 0 ! 4 . 0 ! 1 . 0 ! . ! . ! . ! 1 . 0 !
+! NNNNNNNNNNNNNNXXNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNX� NNNNNNNNNNNNNNNNNXNNXNNNNXNNNNNNNNNNXNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrtrririrrrrtrrrrrrtrrrrrrrriirrr(iiirrrrrrrrrrrrrrrrrrriirrri\ii loa ! 3o.t! t.0! .! .! .! .! t.ot 3.o! ,.o! i.oi'---.'j' r.or t.o! .! ,r
+! 5 2 ! 3 0 . 5 ! 1 . 0 ! . ! . ! ! . ! 1 . 0 ! 3 . 0 ! 5 . 0 ! 4 . 0 ! . ! 1 . 0 ! 1 . 0 ! . ! . !
+! ANNANNANNNNNNNNANNNNNNXNNNNAXNNNNXNNXNNXXNNNNANNNNNNNNNNNNNNNNNNNXNNNNNNXNNNNANNNNNNNNANNNNNNNNNNNNNNXNNNNXNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\tttttitrttttttr\ttrtrtrttt\tirrtrtriirrrrrrrrrrr\\\\\\\\\\\\\\\\! lle r 4e.o! .! .t.7.ol .! 7.ot, .r e.o! a.o! :i.ór É,rii's.or r.or r.tii à.ó!
+! 5 5 ! 4 9 . 0 ! . ! . ! 7 . 0 ! . ! 7 . 0 ! ! 9 . 0 ! 2 . 0 ! 3 . 0 ! 5 . 0 ! 5 . 0 ! 1 . 0 ! 1 . 0 ! 2 . 0 !
+! \NNNNNANNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNANNNNNNNNNANNNNNNNNNNNNX!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\trrrrrriirrrrrrrrrrrrrrrrrrriirrriiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! !6r ! a3. o! r, o! . ! ,o. ot . ! ó.0! /r. o! 6.0t {. ot i. ór "'i.'di'
+!61 ! 2 3 . 0 ! 5 . 0 ! . ! 1 0 . 0 ! . ! 6 . 0 ! 4 . 0 ! 6 . 0 ! 4 . 0 ! 3 . 0 ! 3 . 0 ! 1 . 0 ! 1 . 0 ! 4 . 0 ! 2 . 0 !
+r. or t. o! . 4.0! a. o!
+! NANNANNNNNNXNNNXNNANNNNNNNNNXXANNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNAXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrririrrrriiiirrrrrrrrrriiiirrriiiirrriiii !6.. ! re.r! t.0! .! .! .! ,! .t .! .! .i .r .! .l .i .i
+! 6 2 ! 1 9 . 5 ! 1 . 0 ! . ! . ! . ! ! ! ! . ! . ! ! . ! . ! . ! . !
+! NNNNNNNNNNNNNNXNNNNNXNNNAXNANNNNNNNNNNNNNANNNANNXNNNNNXNNNNNNNXNNNNNXXNNNNNNNNNNNXAXXNNNNNNNXNNXXNANNNNXNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrtrttiitrrrrrr\\\\\\\\\\\\\\\\rrtiirrrrrrrrrrr\\\\\\\\\\\\\\\\! !63 ! s4.r! .l .!.. .! .! .! .! .! .! .! .! .! .! r.o! .i
+! 6 3 ! 3 4 . 5 ! . ! . ! � ! � � � . ! i : ! � ! 1 . 0 ! . !
+! ANNAXNXXXNXXNNXNXNXXXNXNNXXNXNNNANXXNNNNNNXXNNNNNXNNNNNNNNNNNNNNXNNNNNNNNNNXNNNNNNXXNNNNNNNNNNNANNNXNNXNNNNNX!
+l\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrtiitrrtrrrtrrrrrrtrrrr\irrrtriirrrrrrrrrrr\\\\\\\\\\\\\\\\! 164 ! 3t.t! t.o! ,! .!. .! .! t.o! t.ot t.o! z,o! i.dl'r.ol ?.o! 2.o! .2.o!
+!64 ! 3 1 . 5 ! 1 . 0 ! . ! . ! . ! . ! 1 . 0 ! 1 , 0 ! 1 . 0 ! 2 . 0 ! 2 . 0 ! 1 . 0 ! 2 . 0 ! 2 . 0 ! 2 . 0 !
+! NNNNNXAANNXNNXNNXNXXXXNNXXXXNXXNNNXXXXNXNNXXNXNXXXNNNNXXNNNNNXNXNNXNNXNXNNXNNXXNXNXXNNNXXNNNXANNNANNXXNNNNXNNNX!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ttrtrtrirrtrtrrr\\\\\\\\\\\\\\\\ririirrrrrrrrrrr\\\\\\\\\\\\\\\\!
+! 6 5 ! 3 2 . 5 ! . ! ! ! . ! 1 1 . 0 ! 1 4 . 0 ! 1 3 . 0 ! 1 3 . 0 ! 1 0 . 0 ! 1 0 . 0 ! 1 0 . 0 ! 1 3 . 0 ! 1 7 . 0 ! 10. 0 !
+!6t ! 32.§r .t .! .! .! tt.o! 14.o! t3.o! 13.o! to.o! td,.ot ro.or t3.ol 17.o! ro.o!
+! \NNNNNNXNNNXXNNNNNXXNNNNNNNANNNXNXNXNNNXXNNXNNNNNXNNNNXXNNNNNNNXNNXNNNNNNNNNNNXXNXANNXNXNNNXXXXNXNNNNXNXNXNNXNX!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\trrtrtritttrtrttrrrtrrrrrirrirrriiiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! t7, ! 14.rr .! .! .! .! t.o! a.o! i.o! B.o! à.or ó.ii-s.:r t.!t z.ot e,ii
+!71 ! 5 4 . 5 ! ! ! ! ! 5 . 0 ! 8 . 0 ! 5 . 0 ! 8 . 0 ! 6 . 0 ! 6 . 5 ! 6 . 5 ! 7 . 9 ! 7 . 0 ! 8 . 5 !
+! \NNXNNNXNXNNXNNXNNXXNNXNXNXXXNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNXNXNNNNNNNNNNNNNNNNNNNNNNNNNNXXNXANNNNXXNNNNNXN!
+! \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\ \\\\rtrtrtrttrrritrtriiiirrrrrrr rrrr\\\\\\\\\\\\\\\\ !
+! 7 2 ! 6 . 5 ! : . ! ! . ! 5 . 5 ! 6 . 0 ! 6 . 0 ! 6 . 0 ! 6 . 0 ! 5 . 0 ! 6 . 5 ! 6 . 5 ! 6 . 5 ! 6 . 0 !
+l7z ! à.9! .! .! .! .! t.t! 6.oi 6.0! ó.or 6.0l i.ól c.sr 6.r! 6.D! 6,0!
+! NNNNANANNNNNNNNNNNNNNNNXANAXXNNNNNNNNNNXNNXNNNNNNNNNNAXNNNNNNNAXNANNNNNNNNNNANNNNXXXNANNNNNAANNNXNNNNNNNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\riiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! rz3 ! 3o.o! .! .! .! .! 6.0! È.g! 7.o! t.o! t.or i.ói'a.or tz,o! !3.o! t3,o!
+! 7 3 ! 5 0 . 0 ! . ! ! . ! . ! 6 . 0 ! 6 . 0 ! 7 . 0 ! 1 . 0 ! 1 . 0 ! 6 . 0 ! 8 . 0 ! 1 2 . 0 ! 1 3 . 0 ! 13. 0 !
+! NANANNNXNNNNNNNNNNNNNANNNNNNNNNNNXNNNNNNNXNNNNNNNNNNNNNNNNNN� NNNNNNANNNNNNNNNNNNNNNNNNNNNNNNNNNNNANNNNNNNNXNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrtrrrirrtrtrrrrrrrrrrrrriiiirrrii(irrrrrrrrrrr\\\\\\\\\\\\\\\\! !74 ! !z.o! .! .! .! .! .r o.§! o.r! o,!! o.ri ó,ii o.ol o,r! o.rt o.r!
+!74 ! 12. 0 ! . ! . ! ! ! . ! 0 . 5 ! 0 . 5 ! 0 . 5 ! 0 . 5 ! 0 . 5 ! 0 . 5 ! 0 . 5 ! 0 . 5 ! 0 . 5 !
+! NNNNNNNNNNNNNNNNNNNANNNNNXNNNNNNNNNANNNNNNNNNNANNNNNANNNNNNAANNANNNNNNNNNNNNNNNNXNNNNNNNNNNNNANNNANNNNNNNANANN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrririrrrriiiirrrrrrrrrrr\\\\\\\\\\\\\\\\! t7í I 4e.§! .! .! .! .! r.o! r.o! l,ol q.or i.ói"i.di-e.ol ,,ot 6.0! r.o!
+! 7 5 ! 4 9 . 5 ! . ! . ! . ! . ! 5 . 0 ! 5 . 0 ! 7 . 0 ! 4 . 0 ! 5 . 0 ! 6 . 0 ! 6 . 0 ! 5 . 0 ! 6 . 0 ! 1 . 0 !
+! \ AN N N N N N N AN AN N N N N N N N N XN N N N N N N N N N AXAN N N N AN N N N N N N N N N N N AN N N N N N N AXN N N N N N N N N N N N N XN N N N N XN N AN N AN XN N AN N N N N N N N N N N N N !
+r\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrrrrrrrrririirrriiiirrrrrrrrrrirrrrrrrrrrrrririirrrrrrrrrrr\\\\\\\\\\\\\\\\! i?è ! zr.o!. 3.o! .r .! .! a.ol lo.dl .! .! t.ol r.ói-l.or /r.o! 1,.a .!
+t\\\\\\\\\\\\\\\\\1\\\\\\\\\\\\\rrrrrrrrrrrrrri\iirriiiiirrrrrrrrrrrrrrrrririrrrri\iirrrrrrrrrrr\\\\\\\\\\\\\\\\!
+!76 ! 2 1 . 0 ! 3 . 0 ! . ! . ! . ! 2 . 0 ! 2 0 . 0 ! . ! . ! 1 . 0 ! 1 . 0 ! 1 . 0 ! 4 . 0 ! 4 . 0 ! . !
+! NANNANNNNANNXNXANXNNNNNNNNNXNXNNNNNNNNNXNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN� NNNNNANNNNNNNNNNNNNNNN!
+!77 ! 3 2 . 0 ! 6 . 0 ! . ! . ! . ! 6 . 0 ! 1 1 . 0 ! 7 . 0 ! 7 . 0 ! 7 . 0 ! 6 . 0 ! 8 . 0 ! 8 . 0 ! B . 0 ! 2 0 . 0 !
+it7 ! 3a.o! É.o! .! .! .! 6.or tl.ol 7,o! i.ot i.ói "i.di' a.or B,o! s.o! ?o.o!
+! \NANANNNNNNNNNNNANXXNNNNNNNNNNNNNAANNNNNNNNNNNNNNNNNNNNNXNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNN!
+!\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrr\rrrrrrrrririirrii\iirrrrrrrrrrrrrrrrrriiirrriiiirrrrrrrrrrr\\\\\\\\\\\\\\\\!
+! 7 8 ! 2 5 . 5 ! . ! . ! . ! . ! . ! . ! . ! 0 . 5 ! 0 . 5 ! . ! . ! . ! . ! . !
+i76 ! ?e.r! .! .t .! .! .i ",i .t o.r! o.e! .r' .! .! ,! .!
+!-\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\rrrrrrriirrrrrrr\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\!
+! NNNAXNNNNNXNNNNNNNXNNNNNNNNNNXNNXNNXNNXNNNNNNNNNNXXN� XNXNNNXNNNNNNNNXNXNNXXNNNANNXNXNNXNNXNNNNNNNNNXNNNNANN!
+!MDEL ! ! . ! . ! . ! . ! . ! . ! � ! . ! . ! . ! . ! . ! . ! . !
+!!pEL ! ! .! .! .! .! .l .i .t .! .r "".'i- .r .! .! .!
+! \NNNNNANNNNNNNNNNNNNNANNNNNNNNNNNNXNNNXNNNNNNNNNNNNNNNNNNNNNNNNXNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN!
+l\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\iirrrrriirrrrrrr\\\\\\\\\\\\\\\\rtr\irrrrrrrrrrt\\\\\\\\\\\\\\\\!
+!REST ! . ! 4 . 0 ! . ! . ! . ! 4 . 0 ! 9 . 0 ! 9 . 0 ! 1 0 . 0 ! 9 . 0 ! 2 . 0 ! 2 . 0 ! 2 . 0 ! 3 . 0 ! 8 . 0 !
+JnEsr I ,! 4.or .! ,! ,! t.o! i.or 9.0! ro.o! ?.ot j.dr'e.or ?.0! 3.0! Lo! \\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\irrrri\iirrrrrrrrriirrrrrriiiirrriiiirrrrrrrrrrr\\\\\\\\\\\\\\\\\
+\NNNANNXXXXNXXNNXXNNNNNNNNNNXXNNNXNNXXXNXXNNNNXNXNNNNXXNNNNNXXNXNXXANNNNNNNXNXNXNNXNXXXXXNNXXXNXNNNANNNNNXXXNNNN
+l
+===== PAGE 2 =====
+?7 .0 27 .0
+Bijlage 1B (vervolg). Geïnventariseerde oppervlakte per hokkenkavel per jaar
+JAAR
+5 I te I tt I za I ---+------+------+------+--
+INV OPPINV OPP I NV OPP I NV OPP I NV
+79 80 I
+{5.0 45. 0
+4E
+ol 11.01 rr.ol
+-+------+------+ sl 4s.51 4E.51
+-+------+------+
+0 I 12.0 I 12.0 I -+------+------+
+t2
+18.0
+OPPINV OPP PI}{V
+OPPTOT OPP I NV
+:,ri--::*l
+73 I
+------+
+74 I t
+------+---
+oPPIi'iu iopn ------+---
+rA
+5l:q ------+---- q/5 I zz
+------+----
+6 27
+32
+q6
+l0/L2 43. 0
+lzA 75.0
+15 I rz
+------+---- r3s I ss ------+----
+l-,,,,1--1:,d--
+45. 0
+?9.0 29 .0
+36.0 56.0 4.0
+q5.0 (r4 ,0 q5.0
+?9 .0 ?9 .0 29.0
+36 .0 96. o
+q5
+29.0 ?9 .O ?9 ol ?e.o
+-+----- -
+ol 36.0
+-+------ ol 3q.o
+-+--
+36 .0 36.0
+32. 0 52. 0
+q6 .0 46.0 q5 .0
+q3. 0 43.0 1 q5. o 43. 0 41. 0
+73 3.01 75.01 .---+------+
+7.o l 17 .01
+---+------+
+53. 5 53.5 53. 5 53.5 53.5
+I
+I
+o I q5. o
+-+--
+-----*+----
+54. 01
+----+-
+2.51
+-__r
+54. 0 34. 0 54. 0 34
+21.0 ?2.0 22.s
+0 27.0 I zt.
++-----
+0 32. 0
+?? .0 22 .0
+q6 .0
+| 43. +-----
+5.01 75.01 ZS.
+---+------+----- 7.ol t7.ol rz.
+q6 .0 46.0
+43. 0 43. 0
+52.0 I Se .ol sz.ol
+--+------+
+32. 0
+E6.ol q0
+------+----
+43. o
+4E .5 48 .5
+14 I 41.0 I qt .0 | 41.0
+------+------+------+------ 16 I El.0l 80.0f 81.0
+------+------+------+------
+75.0
+sl rz.sl
+-+------+-- I.0
+1.0 5.0
+r6s I ------+ L7 I
+------+ 178 I
+------+ 31 I
+------+ 32 I
+------+
+1?
+11.0 rl.ol
+q6 .5 4E .5
+I2.0 12.0
+ll.ol
+----+ qa.sl
+----+ rz.ol
+--+------+
+5 qq.5
+73.0
+48.5
+?.0
+I z.o
+ol I
+.sl 5
+--+---
+55 .5 I s:.=
+a____,
+55.5 53 .5 53.5
+41.0 4I.0
+.01 7
+--+---
+17.0 17.0 __11: 17 .0
+qt.0 41.0 41.0 4l .0
+79.5 8r.0 61.01 8r.0 79 .0 EI. O
+11.0 11.0 11.0 11.0
+71.0 75.0
+17.0 17.0
+41 .0 41.0 4l .0
+81.0 I ar. o
++------ I rr.o
+l------ I qa.s
+q6 .5
+34 .5 54 34 ,5
+33. 0 35.0
+17 L7 .5
+11 .0
+3E .5 35. 0 34.0
+34 .5 54.5 34
+r8.ol
+------+---- 45.51 Se
+------+----
+L7.0 12.0 12.0 12.0
+3.0 54.0 55 .5
+1:
+l1
+35
+3q .5 34 .5 :q.sl -11:l 54 .5
+17 .5 17.5 17.5
+2t.5 | 21.5 21 .5 2l .0 2L.5 2l .5 1.0 21 .5
+50.5 2.0 4.0 50.51 SO
+3.0 4.0 4.0 1.0 5.0
+45. 0 q5. 0 45. 0
+36 .5
+17 .5
+:I
+:l
+:I
+50.5
+I
+0
+q9,0
+lrz
+5.0 2t
+17.5 I rZ. S
+----+------
+36 50 .5
+41
+50.5
+13.0 15.0
+45. 0
+49.0
+52.0
+35. 0 55. 0
+10.0
+50.5 50.5 50 .5
+?.0 r.ol 2.0
+q.0 1.0
+q.0 q5
+85
+84
+49 .0 q9 .0
+85
+REST I
+.l 2.0
+---+------ o.ol 2.0 2.0
+52. 0
+.l .l .l s5.o
+-----+------+------+------ z.ol 2.ol z.ol 5.0
+ol
+-+------ ol 5.0
+/.
+11a
+I l,
+o L_
+(
+)
+xu-
+3íjlage 19. Fragment 'v'àr'r
+Huis (1 985 )
+11j
+1 1eb
+>¤ à
+'-- \
+12vw
+26t
+1 leb
+32b
+)
+33v
+e66*s
+\) 33v t
+i
+33v
+33v
+33v
+27m
+G.
+2.
+IB
+2
+?9 .0 2e .0 | 28.0
+36.0 36 .0 36.0
+54. 0 54.0 | 34.0 5q.0
+2?.0 ??.0 22 .0
+27,0 27 .01 Zt .a ?7.A
+7 32. 0
+q6 .0 q6.o q6 .0
+{3.0
+73.0
+8l .0
+.l.r
+56 .0
+3.0
+2.0
+(5. 0 q4 .0 q5 .0
+37.0 37.0 37.0 1.0 37.0 57.0 37.01 36.0 57 .0
+40"51 sg.s 4.0 59 .5 q0.5 q0.5 (0.5 40.5 39.5 q0.5 40.5
+?9 ,0 ?e .01 2e.01 2e .s 29 .0 29.0 2e.ol zs.o 29 .0 ?9.4 2E .0
+59 .5 8.0 4.0 6.0 7.0 5.0 7.0 7.0 6.0 39 .5 39 .5
+50 .51 Zt .S 50.5 30 .5 30 .5 30.5 | 50.5 50.5 51 .5 50 .5 30. 5
+55.0 .l 55.0 35. 0 55.0 3.0
+59 .0 1.01 39.0
+49.A q9.0 (t9.01 qg. O q8 .5 10.0 49.01 49.01 E.o 50.0 11.0
+?3.A I ZS. O 25. 0 23. 0 u5.0 25.0 I es. o 2?.0 ?E.A 25. 0 25. 0
+I9.5 19.5 19.51 rg.s 19.5 19.5 19.5 19.5 19.51 rg.s 19 .5
+3q .5 34.5 53. 0 3q .5 32.0 54.5 I Sq. S 3q .5 54.5 34 .5
+51.5 5l .5 31 .51 Sr . S 51 .5 51.5 3l .5 31.5
+3?.5 3?.5 52.5 3?.5 3?.5 3z.s I sz. s 3?.5
+5l
+3?
+31.5
+32.5 32.5
+5t
+5q .5 55.0 I Sc. o 55.0 53. 0 5q .0 5q.ol 54.0 54.0 5q.0 54. 0
+6.5 6.5 6.5 6.5 e.sl 6.5 6.5 6.5 e.sl 6.5 6.5
+50.0 50.0 50 .0 50 .0 50.0 50.0
+12.5 L2.5 r?.s l rz. s 12.5 t?,5 L2.5 12,5
+49 .5 q9 .5 q9 .5 49 .5 (i9 ,5 q9 .5 q9 .5 (19 ,5
+4.0 2I.0 21 .0 2.0 2.0 3.ol 2l .o 2I.0
+32.0 32.0 5.0 ?..4 32. 0 32.0 52. 0
+?5 ,5 25.5 (t.O 5.ol ?q.5 q.0
+14.0
+0
+5
+3q
+50
+3?
+29
+39
+q0.5
+36 .5
+50 .5
+2.0
+E.0
+34.5
+25. 0
+19.5
+3?.5
+3.0
+54.0
+32. 0
+6.5
+50.0
+.49 .5
+t?.5
+50. 0
+t/82 I
+50
+l2
+(19
+32
+4E.0
+1.0
+12.s
+27.A
+11.0
+17.0
+q9 .5
+21 .0
+32.0
+25 .5
+14.0
+I 75.01
+1.0 2.0
+11v'e
+Bijlage 18 (vervolg). Geinventariseerde oppervlakte per hokkenkavel per jaar
+--------------------------------------------------------------------------------------------
+.
+'
+�
+a
+D
+a
+--
+�
+33y
+2
+�
+Bijlage 19.
+�
+� � � 8e
+� �
+11ve �
+A
+�
+2 5 6 5
+0 �
+---
+/ �
+� � � � �
+�
+�
+�
+� 11j
+5 2
+� 1a --s's,_�
+I I JAAR
+e • �• �• • w e � �
+. . . . .
+� w e e �• • • e w e . �•
+. . .
+• �. . . . . . . . . . . . �. . . . . e . � . . . . . . w e . . . . . w e w e e . . . . � . . . . - . . o . . �
+7 3 l 74 l 7 5 I 76 I 77 I 78 I 79 I 80 I 81 l 8 2 l 83
+orr rorlorr 1nvj orr 1nvi orrrnvi ore rnvi ore rnviorr rnvi orr1nviorrrnvi orrrivI ore1nvi orr1nv
+------+------+------+------+------+------+------+------+------+------+------+------.------
+2"-I s.l � ..I � � .I � ...l � � ."I � � ..I "..l "sl "..I � � .l � � .I �.
+------+------+------+------+------+------+------+------+------.------+------.------+------
+1B I 2 9 . 0 ] 2 9 . 0 I 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 8 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ------+------+------+------+------+------+------+------+------+------+------+------+------
+2 I 3 6 . 0 I 3 6 . 0 I 3 6 . 0 ] 4 . 0 ] 3 6 . 0 ] 3 6 . 0 ] 3 6 . 0 ] 3 6 . 0 ] 3 6 . 0 ] 3 6 . 0 ] 3 6 . 0 ] 3 6 . 0 ------+------+------+------+------+------+------+------+------+------+------.------+------
+3 I 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 1 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ] 3 4 . 0 ------+------+------+------+------+------+------+------+------+------+------+------+------
+4/5 I 2 2 . 0 ] 2 1 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0 ] 2 2 . 0
+------+------+------+------+------+----·-+------+------+------+------+------+------+------
+6 I 27. 0 I 27. 0 I 2 7 . 0 I 27. 0 I 2 7 . 0 I 2 7 . 0 I 27 . 0 I 2 7 . 0 I 27. 0 I 27. 0 I 27.01 2 7 . 0 ------+------+------+------+------+------+------+------+------+------+------+------.------
+7 I 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 6.0 3 2 . 0 ------+------+------+------+------+------+------+------+------+------+------+------+------
+8 I 4 6 . 0 I 4 6 . 0 I 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 6 . 0 ] 4 5 . 0
+------+------+------+------+�-.----+------+------+------+------+------+------+------+------
+10/12 I 4 3 . 0 I 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 4 3 . 0 ] 43.0
+------+------+-·----+------+------+-----+------+------+------+------+------+------+------
+12A I 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 3 . 0 ] 7 1 . 0 ] 7 3 . 0 ------+------+------+------+------+------+------+------+------+------+------+------.------
+13 I 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ] 1 7 . 0 ------+------+------+------+------+------+------+------+------+------+------+------.------
+13S I 5 3 . 5 ] 5 2 . 5 I 5 3 . 5 ] 5 3 . 5 [ 5 3 . 5 ] 5 3 . 5 ] 5 3 . 5 ] 5 3 . 5 ] 5 3 . 5 ] 5 3 . 5 I 5 3 . 5 ] 5 3 . 5 ------+------+------+------+------.------+------+------+------+------+------+------.------
+14 I 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0 ] 4 1 . 0
+------+------+------+------+------+------+------+------+------+------�------.------+------
+16 I 8 1 . 0 ] 8 0 . 0 ] 8 1 . 0 ] 7 9 . 5 ] 8 1 . 0 ] 8 1 . 0 ] 8 1 . 0 ] 7 9 . 0 ] 8 1 . 0 ] 8 1 . 0 ] 8 1 . 0 ] 8 1 . 0 ------+------+------+------+------+------+------+------+------+------+------+------.------
+16S I 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0 ] 1 1 . 0
+------$------+------+------+------+------+------+------+------+------+------.-- �
+------
+17 I 4 8 . 5 ] 4 8 . 5 ] 4 8 . 5 ] 4 8 . 5 ] 4 8 . 5 ] 4 8 . 5 ] 48.51 4 8 . 5 l 48.51 4 8 . 5 ] I 4 8 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+17B I 1 2 . 0 I 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0 ] 1 2 . 0
+- - - - - - ♦ - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - + - - - - - - . - - - - - -
+31 I 1 8 . 0 ] . I .1 .1 .1 .1 .1 .1 .1 1 8 . 0 l .1 1 . 0 ------.------+------+------+------+------+------+------+------+------+------.------.------
+32 l 4 5 . 5 ] 3 6 . 5 ] 4 4 . 5 ] 3 . 0 ] 3 4 . 0 ] 3 3 . 5 ] 3 3 . 0 ] 3 5 . 0 ] 3 6 . 0 ] 3 8 . 5 ] 3 5 . 0 ] 3 4 . 0 ------+------+------+------+------+------+------+------+------+------+------+------+------
+33 I 3 4 . 5 I 3 4 . 5 ] 3 4 . 5 I 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ] 34.51 3 4 . 5 ] 3 6 . 5 ] 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ------.------+------+------+------+------+------+------+------+------+------+------+------
+34 I 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 l 1 7 . 5 ] 1 7 . 5 ] 1 7 . 5 ------+------+------.------+------+------+------+------+------+------.------.------+------
+35 I 2 1 . 5 I 2 1 . 5 ] 2 1 . 5 ] 2 1 . 0 ] 2 1 . 5 ] 1 . 0 ] 2 1 . 5 ] 1 . 0 ] .1 2 1 . 5 ] 5 . 0 ) 2 1 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+36 I 5 0 . 5 I 5 0 . 5 ] 5 0 . 5 ] 5 0 . 5 ] 5 0 . 5 ] 3 . 0 ] 5 0 . 5 ] 2 . 0 ] 4 . 0 ] 5 0 . 5 ] 5 0 . 5 ] 5 0 . 5 ------.------+------+------+------+------+------+------+------+------+------+------+------
+41 I 1 3 . 0 I 1 3 . 0 ] 2 . 0 ] 2 . 0 ] 1 . 0 ] 2 . 0 ] 3 . 0 ] 4 . 0 ] 4 . 0 ] 1 . 0 ] 3 . 0 ] 2 . 0
+a I 6 G I E T 4 G I . 1 . 1 . I s T I 5 T I 5 T I 5 G I � I a . .
+------+------+------+------+------+------+------+------+------+------+------+------+------
+43 I 3 7 . 0 I 3 7 . 0 ] 3 7 . 0 ] . I 1 . 0 ] .1 3 7 . 0 ] 3 7 . 0 ] 3 7 . 0 ] 3 6 . 0 ] 3 7 . 0 ] 3 6 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+45 I 4 0 . 5 ] 3 9 . 5 ] 4 . 0 I 3 9 . 5 ] 4 0 . 5 ] 40.51 4 0 . 5 ] 4 0 . 5 ] 3 9 . 5 ] 4 0 . 5 ] 4 0 . 5 ] 4 0 . 5
+------+------+------+------+------+------+------♦------+------+------+------+------+------
+46 I 2 9 . 0 I 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 9 . 0 ] 2 8 . 0 ] 2 9 . 0 ------+------+------+------+------+------+------+------+------+------+------.------+------
+51 I 3 9 . 5 I 8 . 0 ] 4 . 0 I 6 . 0 ] 7 . 0 ] 5 . 0 ] 7 . 0 ] 7 . 0 ] 6 . 0 ] 3 9 . 5 I 3 9 . 5 j 3 9 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+52 I 3 0 . 5 I 2 7 . 5 I 3 0 . 5 ] 3 0 . 5 ] 3 0 . 5 ] 3 0 . 5 ] 3 0 . 5 ] 30.51 3 1 . 5 ] 3 0 . 5 ] 3 0 . 5 ] 3 0 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+53 I 3 5 . 0 I . I . I 3 5 . 0 ] 3 5 . 0 l . l . I . I .] 3 5 . 0 ] 3 . 0 ] 2 . 0 ------+------+------+------+------+------+------+------+------+------+------+------+------
+54 1 3 9 . 0 ] .1 . l .1 1 . 0 l .1 .1 .1 .1 3 9 . 0 I . I . ------+------+------+------+------+------+------+------+------+------+------+------+------
+55 I 4 9 . 0 ] 4 9 . 0 ] 4 9 . 0 ] 4 9 . 0 l 4 8 . 5 ] 1 0 . 0 ] 4 9 . 0 ] 4 9 . 0 ] 8 . 0 I 5 0 . 0 ] 1 1 . 0 ] 8 . 0 ------+------+------+------+------+------.------+------+------+------1------+------.------
+61 I 2 3 . 0 ] 2 3 . 0 I 2 3 . 0 I 2 3 . 0 ] 2 3 . 0 ] 2 3 . 0 ] 2 3 . 0 I 2 2 . 0 ] 24.01 2 3 . 0 ] 2 3 . 0 ] 2 3 . 0 ------+------+------+------+------+------+------+------+------+------i------.------.------
+6 2 I I 9 . 5 I 1 9 . 5 ] 1 9 . 5 I 1 9 . 5 ] 1 9 . 5 ] 19.51 1 9 . 5 ] 1 9 . 5 ] 1 9 . 5 ] 19.51 1 9 . 5 ] 1 9 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+6 3 I 3 4 . 5 ] 3 4 . 5 ] 3 3 . 0 ] 3 4 . 5 ] 3 2 . 0 ] 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ] 3 4 . 5 ------+------+------+------+------+------+------+------+------+------+------.------+------
+64 I 3 1 . 5 ] 3 1 . 5 ] 3 1 . 5 ] 3 1 . 5 ] 3 1 . 5 ] 3 1 . 5 ! 3 1 . 5 ] 31.51 3 I . 5 ] 3 1 . 5 ] 3 1 . 5 ] 3 0 . 5
+E } s 2 E T s 2 E I s 2 E T s 2 E I s E E T 5 E T 1 s 2 E I s E ; I s ± E I s 2 E I s 2 E I s%.s
+------+------+------+------+------+------+------+------+------+------+------+------+------
+71 I 5 4 . 5 I 5 3 . 0 I 5 4 . 0 I 5 3 . 0 I 5 3 . 0 ] 5 4 . 0 ] 5 4 . 0 ] 5 4 . 0 ] 5 4 . 0 ] 5 4 . 0 ] 5 4 . 0 ] 5 4 . 0
+------�------+------+------+------4------+------+------+------+------+------+------t------
+7 2 I 6 . 5 I 6 . 5 I 6 . 5 I 6 . 5 I 6.51 6.51 6 . 5 ] 6.51 6 . 5 ] 6 . 5 ] 6.51 6 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+7 3 I 5 0 . 0 I 4 8 . 0 I 5 0 . 0 I 5 0 . 0 I 5 0 . 0 ] 5 0 . 0 l 5 0 . 0 ] 5 0 . 0 I 5 0 . 0 ] 5 0 . 0 ] 5 0 . 0 ] 5 0 . 0 ------+------+------+------+------+------+------+------+------+------+------+------.------
+74 I 1 2 . 5 I 1 2 . 5 I 1 2 . 5 I I 2 . 5 ] 1 2 . 5 ] 1 2 . 5 I 1 2 . 5 ] 1 2 . 5 I 1 2 . 5 I 1 2 . 5 ] 1 2 . 5 ] 1 2 . 5 ------+------+------+------+------+------+------+------+------+------+------+------t------
+7 5 I 4 9 . 5 I 1 1 . 0 I 4 9 . 5 I 4 9 . 5 I 4 9 . 5 ] 49.51 4 9 . 5 ] 4 9 . 5 ] 4 9 . 5 ] 4 9 . 5 ] 4 9 . 5 I 4 9 . 5 ------+------+------+------+------+------+------+------+------+------+------+------+------
+76 I 2 1 . 0 ] 1 7 . 0 ] 3 . 0 I 4 . 0 ] 2 1 . 0 ] 2 1 . 0 ] 2 . 0 ] 2 . 0 ] 3 . 0 ] 2 1 . 0 ] 2 1 . 0 ] 2 1 . 0
+------.------+------+------+------+------+------♦------+------+------.------.------.------
+77 I 3 2 . 0 I 2 7 . 0 I 3 2 . 0 I 3 2 . 0 ] 3 2 . 0 ] 3 . 0 ] 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ] 3 2 . 0 ------+------+------+------+------+------+------+------+------+------+------+------+------
+78 I 2 5 . 5 I 1 . 0 I 3 . 0 I 2 5 . 5 ] 2 5 . 5 l .1 .l 4 . 0 ] 5 . 0 2 4 . 5 ] 4 . 0 ] 3 . 0 ------+------+------+------+------+------+------+------+------+------+------.------+------
+79 I 1 4 . 0 l . I . I . I .1 .1 .1 .1 .I 1 4 . 0 ] .1 �
+------+---r--+------+------+------+------+------+------+------♦------+------+------+------
+81/82 1 75.01 . I .1 .1 .1 .1 .1 .1 .I 75.01 . I �
+s 1 5 5 1 H G 1 .I G I G I G I s 5 I .I z5I 5 5 I 4 5 5 I 45.o
+------+------+------+------+------+------+------+------+------+------+------+------+------
+84 I 5 2 . 0 l . I .I .I .1 . I .I .j . I 5 2 . 0 i .1 �
+------+------t------+------+------+------+------+------+------+------+------+------+------
+8 5 I 3 5 . 0 ] 3 5 . 0 I .I 2 . 0 l 2 . 0 ] .1 .I . I .I 3 5 . 0 ] 1 . 0 I �
+------+------+------+------+------+------+------+------+------+------+------+------+------
+REST I • I 1 0 . 0 ] 1 0 . 0 ] 2 . 0 l 2 . 0 l 2.01 2 . 0 ] 2 . 0 ] 2 . 0 ] 3 . 0 I 2 . 0 ] 3 . 0--------------------------------------------------------------------------------------------
+Fragment van
+Huis (1985)
+11eb
+� � � �
+3 �" *
+j E � A
+" ) r �
+� � � � � � � � � �
+7 ) A w t
+2 s
+-
+� � 1 2
+w A _ o 5 a
+S A 2
+» S o � " \ 6
+� � .I � �
+�
+, s 1 � � � � � � �
+� 0 � �
+� � � � �
+C �
+s
+7 7 )
+�
+8 -
+s : e , v s
+. - is
+� 0 u m 0
+_
+33y �
+27 �
+4TA �
+N9
+2
+� - ( � c i
+" " 0 U s
+� � 6 a
+( 6 � 8
+e m � E e � » -
+8 a
+� � � � �
+� 2 7 m
+� � �
+�
+�
