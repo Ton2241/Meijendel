@@ -1,7 +1,5 @@
 \# 
 
-In deze repository vind je een sql op datum met alle (lege) bestanden en verder mijn queries voor data-analyse, rapportages en databasebeheer van de database Meijendel. 
-
 De database is ontworpen voor de analyse van de ontwikkeling van broedvogelterritoria in Meijendel sinds 1958. De gegevens van 1958-1983 zijn afkomstig van de Vogelwerkgroep Meijendel. De gegevens vanaf 1984 zijn gedownload van SOVON.
 
 De database biedt:
@@ -48,9 +46,8 @@ soort\_habitat - Relatie soorten en habitattypen
 soort\_richtlijn - Relatie soorten en beschermingsregelingen
 soort\_familie - Relatie soorten en families  
 
-_Tellers en monitoring_
-tellers - Vrijwilligers met contactgegevens en lidmaatschapsstatus  
-plot\_jaar\_teller - Registratie wie welk plot in welk jaar telde (2.823 records)
+_Tellers en monitoring_  
+plot\_jaar\_teller - Geanonimiseerde gegevens (id) van wie welk plot in welk jaar telde (2.823 records)
 
 _Weergegevens_
 weer\_historie\_katwijk - Historische weerdata (temperatuur, wind, neerslag)  
@@ -65,7 +62,7 @@ Character set: UTF8MB4
 Engine: InnoDB met referentiële integriteit
 Tools: GitHub Desktop, Tailscale, Visual Studio Code  
 Gegenereerd: TablePlus 6.8.1  
-Exportdatum: 18 februari 2026
+Exportdatum: 9 maart 2026
 
 **Datakwaliteit**
 De database bevat validatieregels via CHECK constraints:
@@ -97,4 +94,4 @@ Geschatte omvang op basis van auto\_increment waarden:
 **Contact en gebruik**
 Voor vragen over de database of toegang tot de data, neem contact op met de databeheerder.
 
-Laatste update: februari 2026\*
+Laatste update: maart 2026\*
