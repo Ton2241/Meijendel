@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: perkm2, per km2 geteld.
+*/
+
+-- Stap 1: Leest gegevens uit: `plot_jaar_oppervlak`, `territoria`.
 SELECT 
     w.jaar AS Jaar,
     SUM(w.territoria) AS Totaal_Aantal_Territoria,

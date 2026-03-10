@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Top 5 meerdere jaren.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `soorten`.
 SELECT jaar, soort_naam, totaal
 FROM (
     SELECT 

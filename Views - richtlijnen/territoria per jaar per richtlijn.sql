@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: territoria per jaar per richtlijn.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `soort_richtlijn`, `richtlijnen`.
 
 SELECT 
     w.jaar AS Jaar,

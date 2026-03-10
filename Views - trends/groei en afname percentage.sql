@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: groei en afname percentage.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `plot_jaar_oppervlak`, `trends`, `soorten`.
 SELECT 
     s.soort_naam AS vogelnaam,
     -- Zuid-Holland Indices & Verschil

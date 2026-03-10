@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Habitat en typische soorten.
+*/
+
+-- Stap 1: Leest gegevens uit: `habitattypen`, `soort_habitat`, `soorten`.
 SELECT 
     h.habitat_code, 
     h.habitat_naam,

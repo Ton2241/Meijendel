@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Zoeken.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `soorten`, `soort_richtlijn`, `richtlijnen`.
 SELECT 
     s.soort_naam AS Vogelnaam, 
     w.territoria AS Aantal_Territoria,

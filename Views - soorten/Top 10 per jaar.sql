@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Top 10 per jaar.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `soorten`.
 SELECT 
     s.soort_naam, 
     SUM(w.territoria) AS totaal

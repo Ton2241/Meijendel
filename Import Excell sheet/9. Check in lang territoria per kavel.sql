@@ -1,3 +1,8 @@
+/* UITLEG
+Dit bestand hoort bij het importproces: 9. Check in lang territoria per kavel.
+*/
+
+-- Stap 1: Leest gegevens uit: `import_waarnemingen_lang`, `plots`.
 SELECT 
     t.plot_id, 
     p.kavel_nummer, 

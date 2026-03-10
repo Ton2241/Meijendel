@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Betrokken vogels.
+*/
+
+-- Stap 1: Leest gegevens uit: `kernopgave_soort`, `soorten`, `territoria`, `plots`.
 SELECT 
     s.soort_naam AS vogelsoort,
     w.jaar,

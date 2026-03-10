@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Overzicht.
+*/
+
+-- Stap 1: Leest gegevens uit: `kernopgaven`, `kernopgave_habitat`, `habitattypen`, `kernopgave_soort`, `soorten`.
 SELECT 
     k.code AS Kernopgave_Code,
     k.omschrijving AS Omschrijving,

@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Percentage verschil.
+*/
+
+-- Stap 1: Leest gegevens uit: `plot_jaar_oppervlak`, `territoria`, `trends`, `soorten`.
 SELECT 
     s.soort_naam AS vogelnaam,
     -- Zuid-Holland Verschil (bezetting_percentage)

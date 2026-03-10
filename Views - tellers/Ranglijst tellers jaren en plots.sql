@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Ranglijst tellers jaren en plots.
+*/
+
+-- Stap 1: Leest gegevens uit: `tellers`, `plot_jaar_teller`.
 
 SELECT 
     CONCAT(t.voornaam, ' ', IFNULL(t.tussenvoegsel, ''), ' ', t.achternaam) AS teller_naam,

@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: vogel - fam - lijsten.
+*/
+
+-- Stap 1: Leest gegevens uit: `soorten`, `territoria`, `soort_richtlijn`, `richtlijnen`, `soort_familie`, `familie`.
 SELECT 
     s.soort_naam AS Vogelnaam,
     IFNULL(f.familienaam_nl, '--- Nog koppelen ---') AS Familie,

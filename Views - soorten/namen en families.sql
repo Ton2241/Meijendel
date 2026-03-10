@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: namen en families.
+*/
+
+-- Stap 1: Leest gegevens uit: `soorten`, `territoria`, `soort_familie`, `familie`, `soort_richtlijn`, `richtlijnen`.
 SELECT 
     s.soort_naam AS Vogelnaam,
     f.familienaam_nl AS Familie,

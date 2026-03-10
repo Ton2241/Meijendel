@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Getelde kavel zonder teller.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `plot_jaar_teller`, `plots`.
 SELECT DISTINCT
     w.jaar,
     w.plot_id,

@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Vogels per richtlijn in jaar.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `soorten`, `soort_richtlijn`, `richtlijnen`.
 SELECT 
     s.soort_naam AS Vogelnaam,
     SUM(w.territoria) AS Totaal_Territoria

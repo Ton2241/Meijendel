@@ -1,3 +1,8 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: per jaar per plot.
+*/
+
+-- Stap 1: Leest gegevens uit: `territoria`, `soorten`, `plots`.
 SELECT 
     w.jaar,
     p.plot_naam,
