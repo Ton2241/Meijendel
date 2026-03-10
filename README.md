@@ -1,97 +1,120 @@
-\# 
+## Database dump (Meijendel)
 
-De database is ontworpen voor de analyse van de ontwikkeling van broedvogelterritoria in Meijendel sinds 1958. De gegevens van 1958-1983 zijn afkomstig van de Vogelwerkgroep Meijendel. De gegevens vanaf 1984 zijn gedownload van SOVON.
+Deze repository bevat een MySQL/MariaDB‑dump van de database **Meijendel**.
 
-De database biedt:
-- broedvogelterritoria per plot/kavel, soort en jaar
-- Koppeling met vogelfamilies, ecologische vogelgroepen, landschapstypen en habitatcodes
-- Natura 2000 doelstellingen
-- Beheersmatige ingrepen (maatregelen)
-- Weerdata sinds 1958
+- Bron: TablePlus 6.8.5
+- Generatietijd: 2026-03-09 22:22:45
+- Dumpbestand: `20260309.sql`
+- Charset/collation: `utf8mb4` / `utf8mb4_0900_ai_ci`
+- Bevat `DROP TABLE` + `CREATE TABLE` + `INSERT` statements
 
-**De databasestructuur**  
+### Tabellen (31)
+Belangrijke domeinen die in de dump voorkomen:
+- Soorten en taxonomie: `soorten`, `familie`, `soort_familie`, `richtlijnen`, `soort_richtlijn`
+- Habitat/maatregelen: `habitattypen`, `habitattypen_doelstelling`, `soort_habitat`, `maatregelen`, `maatregel_habitat`
+- Plotgegevens en tijdreeksen: `plots`, `plot_jaar_oppervlak`, `plot_jaar_habitat`, `plot_jaar_teller`, `plot_jaar_maatregel`
+- Trends en territoria: `trends`, `territoria`
+- Weerdata: `weer`, `weer_legenda`
+- EVG/vogel/landschap indelingen: `evg_landschapstypen`, `evg_vogelgroepen`, `evg_vogel_landschapgroep`, `evg_vogel_landschapstype`
+- Overig/inputs: `import_waarnemingen_breed`, `import_waarnemingen_lang`, `plotkolom_mapping`, `kernopgaven`, `kernopgave_soort`, `kernopgave_habitat`, `BGgroup`, `vogelstand_1924`
 
-_Vogelgegevens_
-soorten - Vogelsoorten met EURING codes  
-euring - Uitgebreide EURING referentietabel met Latijnse en Nederlandse namen  
-familie - Taxonomische indeling op familieniveau  
-territoria - Kerngegevens: territoria per soort per plot per jaar (116.681 records). Het betreft SOVON-gegevens, aangevuld met gegevens uit jaarverslagen.  
-trends - Populatietrends per soort en jaar voor Zuid-Holland en Nederland  
-vogelstand\_1924 - Uitkomst telling van 1924
+### Inhoud (rij‑aantallen)
+Onderstaande aantallen zijn afgeleid uit het aantal tuples in de `INSERT`‑statements in de dump.
 
-_Ecologische classificatie_
-evg\_landschapstypen - Landschapstypen (duinen, struweel, grasland, etc.)  
-evg\_vogel\_landschapstype - Koppeltabel: welke soorten zijn kenmerkend voor welk landschap  
-evg\_vogelgroepen - Ecologische vogelgroepen  
-evg\_vogel\_landschapgroep - Koppeltabel met veeleisendheidsscores
+| Tabel                       | Rijen  |
+| --------------------------- | -----: |
+| `territoria`                | 70,724 |
+| `weer`                      | 24,837 |
+| `trends`                    | 11,165 |
+| `plot_jaar_oppervlak`       | 5,296  |
+| `plot_jaar_teller`          | 2,378  |
+| `evg_vogel_landschapstype`  | 622    |
+| `soorten`                   | 604    |
+| `evg_vogel_landschapgroep`  | 418    |
+| `tellers`                   | 199    |
+| `soort_familie`             | 181    |
+| `soort_richtlijn`           | 174    |
+| `BGgroup`                   | 163    |
+| `import_waarnemingen_breed` | 156    |
+| `vogelstand_1924`           | 75     |
+| `familie`                   | 71     |
+| `plots`                     | 69     |
+| `plotkolom_mapping`         | 54     |
+| `plot_jaar_habitat`         | 51     |
+| `maatregel_habitat`         | 47     |
+| `evg_vogelgroepen`          | 43     |
+| `import_waarnemingen_lang`  | 28     |
+| `evg_landschapstypen`       | 18     |
+| `soort_habitat`             | 18     |
+| `habitattypen_doelstelling` | 15     |
+| `habitattypen`              | 14     |
+| `kernopgave_soort`          | 11     |
+| `kernopgave_habitat`        | 9      |
+| `maatregelen`               | 9      |
+| `weer_legenda`              | 8      |
+| `richtlijnen`               | 7      |
+| `kernopgaven`               | 4      |
 
-_Geografische gegevens_
-plots - Telgebieden met identificatie via plot\_id, plot\_naam en kavel\_nummer  
-plot\_jaar\_oppervlak - Oppervlakten in km² per plot per jaar (5.293 records)  
-plotkolom\_mapping - Hulptabel voor data-import
+| Tabel                       | Rijen  |
+| --------------------------- | -----: |
+| `territoria`                | 70,724 |
+| `weer`                      | 24,837 |
+| `trends`                    | 11,165 |
+| `plot_jaar_oppervlak`       | 5,296  |
+| `plot_jaar_teller`          | 2,378  |
+| `soorten`                   | 604    |
+| `evg_vogel_landschapstype`  | 622    |
+| `evg_vogel_landschapgroep`  | 418    |
+| `soort_familie`             | 181    |
+| `soort_richtlijn`           | 174    |
+| `BGgroup`                   | 163    |
+| `import_waarnemingen_breed` | 156    |
+| `plots`                     | 69     |
+| `familie`                   | 71     |
+| `vogelstand_1924`           | 75     |
+| `plotkolom_mapping`         | 54     |
+| `plot_jaar_habitat`         | 51     |
+| `evg_vogelgroepen`          | 43     |
+| `maatregel_habitat`         | 47     |
+| `import_waarnemingen_lang`  | 28     |
+| `habitattypen_doelstelling` | 15     |
+| `habitattypen`              | 14     |
+| `kernopgave_soort`          | 11     |
+| `kernopgave_habitat`        | 9      |
+| `maatregelen`               | 9      |
+| `richtlijnen`               | 7      |
+| `kernopgaven`               | 4      |
+| `evg_landschapstypen`       | 18     |
+| `soort_habitat`             | 18     |
+| `weer_legenda`              | 8      |
 
-_Natura 2000 integratie_
-habitattypen - Natura 2000 habitattypen met codes en doelstellingen  
-plot\_jaar\_habitat - Aandeel van elk habitattype per plot  
-kernopgaven - Natura 2000 kernopgaven  
-maatregelen - Beheermaatregelen met drukfactoren  
-plot\_jaar\_maatregel - Uitgevoerde maatregelen per plot  
-richtlijnen - Vogelrichtlijn en andere beschermingsregelingen  
-
-_Koppeltabellen:_
-kernopgave\_habitat - Relatie kernopgaven en habitattypen
-kernopgave\_soort - Relatie kernopgaven en doelsoorten
-maatregel\_habitat - Relatie maatregelen en habitattypen
-soort\_habitat - Relatie soorten en habitattypen
-soort\_richtlijn - Relatie soorten en beschermingsregelingen
-soort\_familie - Relatie soorten en families  
-
-_Tellers en monitoring_  
-plot\_jaar\_teller - Geanonimiseerde gegevens (id) van wie welk plot in welk jaar telde (2.823 records)
-
-_Weergegevens_
-weer\_historie\_katwijk - Historische weerdata (temperatuur, wind, neerslag)  
-weer\_actueel\_voorschoten - Actuele weerdata vanaf 2016  
-weer\_legenda - Toelichting bij weervariabelen  
-weer\_totaal - View die historische en actuele data combineert (overgang 4 mei 2016)
-
-**Technische kenmerken**
-
-Database type: MySQL / MariaDB  
-Character set: UTF8MB4  
-Engine: InnoDB met referentiële integriteit
-Tools: GitHub Desktop, Tailscale, Visual Studio Code  
-Gegenereerd: TablePlus 6.8.1  
-Exportdatum: 9 maart 2026
-
-**Datakwaliteit**
-De database bevat validatieregels via CHECK constraints:
-- Jaarbereik 1900-2100
-- Oppervlakten altijd positief
-- Percentages tussen 0 en 100
-- Territoria niet negatief
-- Postcode en telefoonnummer formaat validatie
-- Email format validatie
-
-**Indexering**
-Strategische indexen op:
-- Jaar, soort\_id en plot\_id combinaties
-- Naam velden voor zoekacties
-- Foreign key relaties
-- Unieke combinaties (plot + soort + jaar)
-
-**Data omvang**
-Geschatte omvang op basis van auto\_increment waarden:
-- Waarnemingen: 116.681 records
-- Plot-jaar combinaties: 5.293 records
-- Teller-plot-jaar combinaties: 2.823 records
-- Trends: 16.384 records
-- Vogelsoorten: 291 stuks
-- Families: 66 stuks
-- Habitattypen: 28 stuks
-- EURING codes: 528 stuks
-
-**Contact en gebruik**
-Voor vragen over de database of toegang tot de data, neem contact op met de databeheerder.
-
-Laatste update: maart 2026\*
+### Foreign keys (uit `Meijendel.dump`)
+- `evg_vogel_landschapgroep.groepsnummer` -\> `evg_vogelgroepen.groepsnummer`
+- `evg_vogel_landschapgroep.vogel_id` -\> `soorten.id`
+- `evg_vogel_landschapstype.landschap_id` -\> `evg_landschapstypen.id`
+- `evg_vogel_landschapstype.soort_id` -\> `soorten.id`
+- `kernopgave_habitat.habitat_id` -\> `habitattypen.id`
+- `kernopgave_habitat.kernopgave_id` -\> `kernopgaven.id`
+- `kernopgave_soort.kernopgave_id` -\> `kernopgaven.id`
+- `kernopgave_soort.soort_id` -\> `soorten.id`
+- `maatregel_habitat.habitat_id` -\> `habitattypen.id`
+- `maatregel_habitat.maatregel_id` -\> `maatregelen.id`
+- `plot_jaar_habitat.habitat_id` -\> `habitattypen.id`
+- `plot_jaar_habitat.plot_id` -\> `plots.plot_id`
+- `plot_jaar_maatregel.maatregel_id` -\> `maatregelen.id`
+- `plot_jaar_maatregel.plot_id` -\> `plots.plot_id`
+- `plot_jaar_oppervlak.plot_id` -\> `plots.plot_id`
+- `plot_jaar_teller.teller_id` -\> `tellers.id`
+- `plot_jaar_teller.plot_id` -\> `plots.plot_id`
+- `plotkolom_mapping.plot_id` -\> `plots.plot_id`
+- `soort_familie.familie_id` -\> `familie.id`
+- `soort_familie.soort_id` -\> `soorten.id`
+- `soort_habitat.habitat_id` -\> `habitattypen.id`
+- `soort_habitat.soort_id` -\> `soorten.id`
+- `soort_richtlijn.richtlijn_id` -\> `richtlijnen.id`
+- `soort_richtlijn.soort_id` -\> `soorten.id`
+- `territoria.plot_id, territoria.jaar` -\> `plot_jaar_oppervlak.plot_id, plot_jaar_oppervlak.jaar`
+- `territoria.plot_id` -\> `plots.plot_id`
+- `territoria.soort_id` -\> `soorten.id`
+- `trends.soort_id` -\> `soorten.id`
+- `vogelstand_1924.soort_id` -\> `soorten.id`
