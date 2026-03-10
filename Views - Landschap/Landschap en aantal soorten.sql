@@ -1,0 +1,10 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Landschap en aantal soorten.
+*/
+
+-- Stap 1: Leest gegevens uit: `evg_vogel_landschapstype`, `evg_landschapstypen`.
+SELECT l.beschrijving, COUNT(*) AS aantal_soorten
+FROM evg_vogel_landschapstype vlt
+JOIN evg_landschapstypen l ON vlt.landschap_id = l.id
+GROUP BY l.id
+ORDER BY aantal_soorten DESC;

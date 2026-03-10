@@ -1,3 +1,0 @@
-UPDATE `import_waarnemingen_lang` i
-JOIN `soorten` s ON i.`euring_code` = s.`euring_code`
-SET i.`soort_id` = s.`id`;

@@ -1,0 +1,41 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: soorten territoria per km2 met_zonder meeuwen.
+*/
+
+-- Stap 1: Leest gegevens uit: `plot_jaar_oppervlak`, `territoria`.
+SELECT 
+    -- Stap 5a: Groepeer de resultaten per jaar
+    pjo.jaar,
+
+    -- Stap 5b: Het totaal getelde oppervlak (DISTINCT om dubbeltellingen te voorkomen)
+    ROUND(SUM(DISTINCT pjo.oppervlakte_km2), 2) AS geteld_oppervlak_km2,
+
+    -- Stap 5c: Oorspronkelijke berekening (alle soorten)
+    ROUND(SUM(w.territoria) / SUM(DISTINCT pjo.oppervlakte_km2), 2) AS tot_territoria_per_km2,
+
+    -- Stap 5d: Berekening exclusief meeuwen (ID 103 t/m 115)
+    -- We gebruiken een CASE om de territoria op 0 te zetten als het een meeuw betreft
+    ROUND(
+        SUM(CASE 
+            WHEN w.soort_id BETWEEN 103 AND 115 THEN 0 
+            ELSE w.territoria 
+        END) / SUM(DISTINCT pjo.oppervlakte_km2), 
+    2) AS territoria_excl_meeuwen_per_km2
+
+-- Stap 1: Koppel oppervlakte aan territoria
+FROM 
+    plot_jaar_oppervlak pjo
+INNER JOIN 
+    territoria w ON pjo.plot_id = w.plot_id AND pjo.jaar = w.jaar
+
+WHERE 
+    -- Stap 2: Filter vanaf startjaar 1958
+    pjo.jaar >= 1958
+
+-- Stap 3: Groepeer per jaar
+GROUP BY 
+    pjo.jaar
+
+-- Stap 4: Sorteer chronologisch
+ORDER BY 
+    pjo.jaar ASC;

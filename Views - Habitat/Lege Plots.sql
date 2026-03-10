@@ -1,0 +1,13 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Lege Plots.
+*/
+
+-- Stap 1: Leest gegevens uit: `plot_jaar_oppervlak`, `plots`, `plot_jaar_habitat`.
+SELECT 
+    p.plot_naam, 
+    pjo.oppervlakte_km2 * 1000000 AS oppervlakte_m2
+FROM plot_jaar_oppervlak pjo
+JOIN plots p ON pjo.plot_id = p.plot_id
+LEFT JOIN plot_jaar_habitat pjh ON pjo.plot_id = pjh.plot_id AND pjo.jaar = pjh.jaar
+WHERE pjo.jaar = 2014 
+  AND pjh.habitat_id IS NULL;

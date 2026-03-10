@@ -1,0 +1,19 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Controle som m2 = totaal opp..
+*/
+
+-- Stap 1: Uitvoering van een SQL‑statement.
+SQL
+SELECT 
+    p.plot_naam,
+    pjo.oppervlakte_km2 * 1000000 AS totaal_plot_m2,
+    SUM(pjh.oppervlakte_m2) AS som_habitats_m2,
+    (pjo.oppervlakte_km2 * 1000000) - SUM(pjh.oppervlakte_m2) AS verschil_m2
+FROM plot_jaar_oppervlak pjo
+JOIN plot_jaar_habitat pjh ON pjo.plot_id = pjh.plot_id AND pjo.jaar = pjh.jaar
+JOIN plots p ON pjo.plot_id = p.plot_id
+WHERE pjo.jaar = 2014
+GROUP BY p.plot_id
+HAVING ABS(verschil_m2) > 1;
+-- Stap 2: Uitvoering van een SQL‑statement.
+ -- Toon alleen plots waar het verschil groter is dan 1 m2

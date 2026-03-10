@@ -1,0 +1,88 @@
+/* UITLEG
+Deze query is bedoeld voor een view/rapport: Vogeldichtheid per km2 geteld en weer in broedseizoen.
+*/
+
+-- Stap 1: Uitvoering van een SQL‑statement.
+/*
+  Dichtheidsanalyse: Pas naam van de vogel aan!!
+  Berekent het aantal territoria per km² geteld oppervlak per jaar,
+  gekoppeld aan de gemiddelde temperatuur tijdens de zomer
+  (21 juni t/m 21 september).
+
+  Gebruikte weerkolom uit tabel `weer`:
+    TG = etmaalgemiddelde temperatuur in 0,1 °C (zie weer_legenda)
+    Conversie naar Celsius: TG / 10.0
+*/
+
+SELECT
+    t.jaar,
+    s.soort_naam,
+
+    -- Stap 1: Tel alle territoria voor de soort in dit jaar op
+    SUM(t.territoria) AS totaal_territoria,
+
+    -- Stap 2: Haal het getelde oppervlak uit subquery A
+    actief_oppervlak.totaal_km2,
+
+    -- Stap 3: Deel de territoria door het getelde oppervlak voor de dichtheid
+    ROUND(
+        SUM(t.territoria) / actief_oppervlak.totaal_km2,
+        2
+    ) AS dichtheid_per_km2,
+
+    -- Stap 4: Gemiddelde zomertemperatuur in °C
+    -- TG staat in 0,1 °C;
+-- Stap 2: Uitvoering van een SQL‑statement.
+ delen door 10.0 geeft de werkelijke Celsius-waarde
+    -- (Bron: weer_legenda, variabele = 'TG')
+    ROUND(weer_zomer.gem_temp_zomer_celsius, 1) AS gem_temp_zomer_celsius
+
+FROM territoria t
+
+-- Koppel de soortsnaam via de soortentabel
+JOIN soorten s ON t.soort_id = s.id
+
+JOIN (
+    -- Subquery A: Bereken uitsluitend het oppervlak van plots
+    -- die in het betreffende jaar ook daadwerkelijk geteld zijn
+    SELECT
+        pjo.jaar,
+        SUM(pjo.oppervlakte_km2) AS totaal_km2
+    FROM plot_jaar_oppervlak pjo
+    WHERE EXISTS (
+        SELECT 1
+        FROM territoria t2
+        WHERE t2.plot_id = pjo.plot_id
+          AND t2.jaar = pjo.jaar
+    )
+    GROUP BY pjo.jaar
+) AS actief_oppervlak ON actief_oppervlak.jaar = t.jaar
+
+LEFT JOIN (
+    -- Subquery B: Gemiddelde temperatuur per jaar over de zomer (21 jun t/m 21 sep)
+    -- TG staat in 0,1 °C;
+-- Stap 3: Uitvoering van een SQL‑statement.
+ AVG(TG) / 10.0 geeft het gemiddelde in °C
+    SELECT
+        YEAR(datum)            AS jaar,
+        AVG(TG) / 10.0         AS gem_temp_zomer_celsius
+    FROM weer
+    WHERE
+        (MONTH(datum) = 6 AND DAY(datum) >= 21)
+        OR (MONTH(datum) = 7)
+        OR (MONTH(datum) = 8)
+        OR (MONTH(datum) = 9 AND DAY(datum) <= 21)
+    GROUP BY YEAR(datum)
+) AS weer_zomer ON weer_zomer.jaar = t.jaar
+
+-- Filter op de gewenste soort
+WHERE s.soort_naam = 'Nachtegaal'
+
+-- Stap 5: Groepeer zodat SUM() per jaar en soort correct berekent
+GROUP BY
+    t.jaar,
+    s.soort_naam,
+    actief_oppervlak.totaal_km2,
+    weer_zomer.gem_temp_zomer_celsius
+
+ORDER BY t.jaar;
