@@ -1,0 +1,87 @@
+VARIABELE,VAR_OMSCHR,VARNR
+AORO_LIJST,Rode Lijst,36
+APBL_LIJST,Blauwe Lijst,37
+AQNBP,Natuurbeleidsplan,38
+ARBMP,Index BMP,39
+ASPTT,Index BMP,40
+ATOE_GROEP,Oeco-groep,41
+AUPMI73_77,Minimum aantal broedparen 73-77,42
+AVPMA73_77,Maximum aantal broedparen 73-77,43
+AWPMI79_85,Minimum aantal broedparen 79-83,44
+AXPMA79_85,Maximum aantal broedparen 79-83,45
+AYTRST_BR,Trekstatus broedvogels,46
+AZTRST_NBR,Trekstatus niet-broedvogels,47
+BAWINT_GEB,Overwinteringsgebied,48
+BBBROEDGEB,Broedgebied,49
+BCBRV_NED,Status broedvogel in Nederland,50
+BDPRESENT,Presentie broedvogel 73-77,51
+BEBROEDBIO,Broedbiotoop,52
+BFBRTYBEG,Broedtijd begin (maand),53
+BGBRTYEND,Broedtijd einde (maand),54
+BHBRDUUR,Broedduur (dagen),55
+BIEI_MIN,Minimum aantal eieren,56
+BJEI_NORM,Gemiddeld aantal eieren,57
+BKEI_MAX,Maximum aantal eieren,58
+BLLEG_MIN,Minimum aantal legsels per seizoen,59
+BMLEG_NORM,Gemiddeld aantal legsels per seizoen,60
+BNLEG_MAX,Maximum aantal legsels per seizoen,61
+Bodem1,Bodemtype preferent,19
+Bodem2,Bodemtype(s) overig,20
+BONESTH,Nesthoogte (gemiddeld; in m),62
+BPHOLBROED,Holenbroeder,63
+BQKOLBROED,Kolonievogel,64
+BRNESTPER,Nestperiode (dagen),65
+Broed-eco1,Voorkeursecotoop nestbouw,2
+Broed-eco2,Overige ecotopen nestbouw,3
+Broedvogel,Status als broedvogel in Nederland,1
+BSNESTVLIE,Nestvlieder,66
+BTGESLRIJP,Leeftijd waarop geslachtsrijp (jaren),67
+BULEEF_MAX,Maximum leeftijd,68
+BVOVERLEV,Overlevingspercentage,69
+BWONVKLEED,Aantal maanden onvolwassen kleed,70
+BXGEW_MAN,Gewicht man,71
+BYGEW_VR,Gewicht vrouw,72
+BZLENG_MAN,Vleugellengte man,73
+CALENG_VR,Vleugellengte vrouw,74
+Ecogroep,Ecologische vogelgroep,85
+Intensivering,Gevoelig voor intensivering,81
+Klimaat,Gevoelig voor klimaatsverandering,75
+Kolonievogel,Vogelsoort broedt in kolonies,15
+Nest-pl1,Voorkeursplaats nestbouw,4
+Nest-pl2,Overige plaatsen nestbouw,5
+Openh-max,Openheid maximaal,12
+Openh-min,Openheid minimaal,11
+Openh-opt.,Openheid optimaal,10
+Pendelaar,Pendelaar,14
+Randvogel,Vogelsoort van randen en overgangen,13
+Recreatie,Gevoelig voor verstoring door recreatie,84
+Stroming-max,Stroming maximaal,35
+Stroming-min,Stroming minimaal,34
+Stroming-opt,Stroming optimaal,33
+Ter-gem,Territoriumgrootte gemiddeld,16
+Ter-max,Territoriumgrootte maximaal,18
+Ter-min,Territoriumgrootte minimaal,17
+Verdroging,Gevoelig voor verdroging,77
+Verkeer,Gevoelig voor verstoring door verkeer,83
+Vermesting,Gevoelig voor vermesting,76
+Versnippering,Gevoelig voor versnippering,80
+Verspreiding,Gevoelig voor verspreiding,79
+Verstoring,Gevoelig voor verstoring,82
+Verzuring,Gevoelig voor verzuring,78
+Vocht-max,Vochtigheid maximaal,23
+Vocht-min,Vochtigheid minimaal,22
+Vocht-opt,Vochtigheid optimaal,21
+Voedsel-eco1,Voorkeursecotoop voor voedsel zoeken,6
+Voedsel-eco2,Overige ecotopen voor voedsel zoeken,7
+Voedsel-pl1,Voorkeursplaats voor voedsel zoeken,8
+Voedsel-pl2,Overige ecotopen voor voedsel zoeken,9
+Voedselrijk-max,Voedselrijkdom maximaal,29
+Voedselrijk-min,Voedselrijkdom minimaal,28
+Voedselrijk-opt,Voedselrijkdom optimaal,27
+Zout-max,Zouttolerantie maximaal,32
+Zout-min,Zouttolerantie minimaal,31
+Zout-opt,Zouttolerantie optimaal,30
+Zuur-max,Zuurgraad maximaal,26
+Zuur-min,Zuurgraad minimaal,25
+Zuur-opt,Zuurgraad optimaal,24
+Sleutelfactor,Steutelfactor,86

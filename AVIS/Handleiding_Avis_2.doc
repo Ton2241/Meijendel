@@ -1,0 +1,1437 @@
+{\rtf1\ansi\ansicpg1252\uc1 \deff1\deflang1043\deflangfe1043{\fonttbl{\f0\froman\fcharset0\fprq2{\*\panose 02020603050405020304}Times New Roman;}{\f1\fswiss\fcharset0\fprq2{\*\panose 020b0604020202020204}Arial;}
+{\f11\fswiss\fcharset0\fprq2{\*\panose 00000000000000000000}MS Sans Serif;}{\f28\fswiss\fcharset0\fprq0{\*\panose 00000000000000000000}Times New Roman Standaard;}{\f288\froman\fcharset238\fprq2 Times New Roman CE;}
+{\f289\froman\fcharset204\fprq2 Times New Roman Cyr;}{\f291\froman\fcharset161\fprq2 Times New Roman Greek;}{\f292\froman\fcharset162\fprq2 Times New Roman Tur;}{\f293\froman\fcharset177\fprq2 Times New Roman (Hebrew);}
+{\f294\froman\fcharset178\fprq2 Times New Roman (Arabic);}{\f295\froman\fcharset186\fprq2 Times New Roman Baltic;}{\f296\fswiss\fcharset238\fprq2 Arial CE;}{\f297\fswiss\fcharset204\fprq2 Arial Cyr;}{\f299\fswiss\fcharset161\fprq2 Arial Greek;}
+{\f300\fswiss\fcharset162\fprq2 Arial Tur;}{\f301\fswiss\fcharset177\fprq2 Arial (Hebrew);}{\f302\fswiss\fcharset178\fprq2 Arial (Arabic);}{\f303\fswiss\fcharset186\fprq2 Arial Baltic;}}{\colortbl;\red0\green0\blue0;\red0\green0\blue255;
+\red0\green255\blue255;\red0\green255\blue0;\red255\green0\blue255;\red255\green0\blue0;\red255\green255\blue0;\red255\green255\blue255;\red0\green0\blue128;\red0\green128\blue128;\red0\green128\blue0;\red128\green0\blue128;\red128\green0\blue0;
+\red128\green128\blue0;\red128\green128\blue128;\red192\green192\blue192;\red1\green1\blue0;\red255\green255\blue255;}{\stylesheet{\ql \li720\ri0\sa200\nowidctlpar\faauto\rin0\lin720\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+\snext0 Normal;}{\s1\ql \li0\ri0\sa300\sl240\slmult0\nowidctlpar\faauto\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 1;}{\s2\ql \li0\ri0\sb200\sa200\sl240\slmult0
+\keep\keepn\nowidctlpar\faauto\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 2;}{\s3\ql \li0\ri0\sb100\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\rin0\lin0\itap0 
+\f1\fs28\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 3;}{\s4\ql \li720\ri0\sb100\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\rin0\lin720\itap0 \b\f1\fs24\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+\sbasedon0 \snext0 heading 4;}{\s5\ql \li720\ri0\sb100\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\rin0\lin720\itap0 \f1\fs24\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 5;}{
+\s6\ql \li720\ri0\sb100\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\rin0\lin720\itap0 \f1\fs24\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 6;}{\s7\ql \li720\ri0\sb100\sa200\sl240\slmult0
+\keep\keepn\nowidctlpar\faauto\rin0\lin720\itap0 \f1\fs24\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 7;}{\s8\ql \li720\ri0\sb100\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\rin0\lin720\itap0 
+\f1\fs24\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 heading 8;}{\s9\ql \li720\ri0\sb100\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\rin0\lin720\itap0 \f1\fs24\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+\sbasedon0 \snext0 heading 9;}{\*\cs10 \additive Default Paragraph Font;}{\s15\ql \li0\ri0\sb120\sa120\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin0\itap0 \b\caps\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 1;}{
+\s16\ql \li0\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin0\itap0 \scaps\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 2;}{\s17\ql \li200\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin200\itap0 
+\i\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 3;}{\s18\ql \li400\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin400\itap0 \fs18\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd 
+toc 4;}{\s19\ql \li600\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin600\itap0 \fs18\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 5;}{\s20\ql \li800\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin800\itap0 
+\fs18\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 6;}{\s21\ql \li1000\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1000\itap0 \fs18\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd 
+toc 7;}{\s22\ql \li1200\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1200\itap0 \fs18\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 8;}{\s23\ql \li1400\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1400\itap0 
+\fs18\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd toc 9;}{\s24\ql \fi-200\li200\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin200\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+\sbasedon0 \snext0 \sautoupd index 1;}{\s25\ql \li720\ri0\sb120\sa120\nowidctlpar\faauto\rin0\lin720\itap0 \b\i\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext29 index heading;}{\s26\ql \fi-200\li400\ri0\nowidctlpar
+\tqr\tldot\tx8640\faauto\rin0\lin400\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd index 2;}{\s27\ql \fi-200\li600\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin600\itap0 
+\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd index 3;}{\s28\ql \fi-200\li800\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin800\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+\sbasedon0 \snext0 \sautoupd index 4;}{\s29\ql \fi-200\li1000\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1000\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd index 5;}{\s30\ql \fi-200\li1200\ri0\nowidctlpar
+\tqr\tldot\tx8640\faauto\rin0\lin1200\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd index 6;}{\s31\ql \fi-200\li1400\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1400\itap0 
+\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd index 7;}{\s32\ql \fi-200\li1600\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1600\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+\sbasedon0 \snext0 \sautoupd index 8;}{\s33\ql \fi-200\li1800\ri0\nowidctlpar\tqr\tldot\tx8640\faauto\rin0\lin1800\itap0 \fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 \sbasedon0 \snext0 \sautoupd index 9;}}{\*\revtbl {Unknown;}}{\info{\title Avis voor Windows }
+{\subject Converted from AVIS.HLP by Help-to-Word }{\author Blue Sky Software Help-to-Word}{\keywords 2111}{\doccomm The version number of this converted HLP file is 4.0 (BlockType:LZ PhraseType:Hall). }{\operator Henk Sierdsema}
+{\creatim\yr2000\mo9\dy19\hr15\min13}{\revtim\yr2000\mo9\dy19\hr15\min13}{\version2}{\edmins1}{\nofpages14}{\nofwords4045}{\nofchars23057}{\*\company Sovon Vogelonderzoek}{\nofcharsws28315}{\vern8249}}\margl1417\margr1417\margt1417\margb1417 
+\widowctrl\ftnbj\aenddoc\hyphhotz425\noxlattoyen\expshrtn\noultrlspc\dntblnsbdb\nospaceforul\hyphcaps0\horzdoc\dghspace120\dgvspace120\dghorigin1701\dgvorigin1984\dghshow0\dgvshow3\jcompress\viewkind1\viewscale100\nolnhtadjtbl \fet0\sectd 
+\psz1\linex0\headery708\footery708\colsx708\sectdefaultcl {\*\pnseclvl1\pnucrm\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl2\pnucltr\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl3\pndec\pnstart1\pnindent720\pnhang{\pntxta .}}{\*\pnseclvl4
+\pnlcltr\pnstart1\pnindent720\pnhang{\pntxta )}}{\*\pnseclvl5\pndec\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl6\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl7\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}
+{\pntxta )}}{\*\pnseclvl8\pnlcltr\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}{\*\pnseclvl9\pnlcrm\pnstart1\pnindent720\pnhang{\pntxtb (}{\pntxta )}}\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0
+\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Avis voor windows}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf11 Gebruik van toetsenbord en muis
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf2 Project}{\fs22\cf2    
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 \tab }{\b\cf11 Nieuw}{\b\cf6 
+\par }{\b\cf2 \tab }{\b\cf11 Open
+\par }{\b\cf2 \tab }{\b\cf11 Verwijder   }{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Hernoem}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Herindexeer   }{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Converteer}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Exporteer
+\par \tab Importeer
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf2 Kartering   
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 \tab }{\b\cf11 Nieuw}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Wijzig}{\b\uldb\cf2 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx430\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 \tab \tab }{\b\cf11 Gebiedinformatie}{\b\uldb\cf2 
+\par }{\b\cf2 \tab \tab }{\b\cf11 Soortinformatie}{\b\uldb\cf2 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 \tab }{\b\cf11 Verwijder}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Print}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Analyse}{\b\uldb\cf2 
+\par }{\b\cf2 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf2 Tabellen   
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 \tab }{\b\cf11 Vogelgroepen en soorten}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Terreintypen en vogelgroepen}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Terreintypen en kenmerkende vogelsoorten}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Referenties en broedvogels}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Fotos tonen
+\par \tab Informatie printen}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Vogelgroep toevoegen}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Vogelgroep verwijderen}{\b\uldb\cf2 
+\par }{\b\cf2 \tab }{\b\cf11 Ornitologisch Basisregister}{\b\uldb\cf2 
+\par }{\b\cf2 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf2 Opties   
+\par }\pard \ql \li0\ri0\nowidctlpar\tx710\faauto\rin0\lin0\itap0 {\b\cf2 \tab }{\b\cf11 Veranderen projectdirectorie}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 \tab }{\b\cf11 Registratie}{\cf17 
+\par \tab }{\b\cf11 Vragen en opmerkingen}{\f0\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf2 Staatsbosbeheer
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\b\cf2 \tab }{\b\cf11 Importeren Arcviewbestand}{\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Gebruik van toetsenbord en muis
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Gebruik van toetsenbord en muis}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Muis - gebruik van}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Toetsenbord - gebruik van}}}{\f0\fs22\cf17 
+
+\par }{\cf17 
+\par In afwijking van de algemene Windowsstandaard worden in een tabel regels geselecteerd met behulp van de spatiebalk of door te dubbelklikken op de eerste kolom.
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Nieuw project}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Nieuw project}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - nieuw}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Nieuw}{\cf2    
+\par }{\f0\cf17 
+\par 
+\par }{\cf17 Met dit menu-onderdeel kunnen nieuwe projecten worden aangemaakt. Voor de naam van een project kunnen alleen letters, cijfers en het "underscore-teken" ( _ ) worden gebruikt. De naam mag uit maximaal 8 karakters bestaan.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Project openen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Open project}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - open}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Open}{\cf2    
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }{\cf17 Hiermee kunnen bestaande projecten worden geopend.}{\fs22\cf17 
+\par }{\f0\cf17 
+\par 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Project verwijderen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Project - verwijderen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Verwijderen project}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Verwijder}{\cf2    
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par }{\cf17 Hiermee kunnen projecten worden verwijderd. 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Project hernoemen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Hernoemen project}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - hernoemen}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Hernoem}{\cf2    
+\par }{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 Hiermee kan de naam van een project gewijzigd worden.
+\par Zie voor de naamgeving }{\b\cf11 Nieuw project}{\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Project herindexeren}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Herindexeren project}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - herindexeren}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Herindexeer}{\cf2    
+\par }{\f0\cf17 
+\par 
+\par }{\cf17 Wanneer ingevoerde gegevens verdwenen lijken te zijn is het mogelijk, dat er problemen zijn met de indexbestanden. Met deze menu-optie worden deze index-bestanden weer opnieuw aangemaakt.
+\par Ook wanneer u gegevens importeert kan het soms noodzakelijk zijn het project te herindexeren.
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Converteer een Avis 1.0-project naar Avis 2.x-formaat}{\fs28\cf17 
+
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Converteren project}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - converteren}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Converteer}{\cf2    
+\par }{\f0\cf17 
+\par }{\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 Met het menu-onderdeel 'Converteer' kunnen AVIS 1- bestanden worden omgezet naar AVIS 2 bestanden. 
+\par Het verschil tussen beide bestandversies is, dat in
+ AVIS 1 alle nulwaarnemingen werden opgenomen in het bestand terwijl in AVIS 2 de soorten die niet zijn geteld met de waarde -1 zijn opgenomen in het bestand.  Hierdoor wordt de grootte van de databestanden een flink stuk kleiner.
+\par 
+\par De eerste keer dat AVIS 2 wordt opgestart, worden automatisch alle AVIS 1-bestanden op de harde schijf geconverteerd naar het AVIS 2 format. Wanneer u AVIS 1-gegevens wilt converteren die op een andere plaats staan, dan er zijn er twee verschillende mogel
+ijkheden te om deze gegevens te converteren: 
+\par 1. plaats de bestanden in een aparte map in de datamap van AVIS. Dan wordt door het programma gevraagd om de map op de geven waar deze bestanden staan. AVIS maakt voor deze gegevens een nieuw project aan, waarva
+n u zelf de naam kunt wijzigen (met het menu-onderdeel Project| Hernoem).
+\par 2. Met behulp van het menu 'Opties | Wijzigen projecten-directory' kunt u de projecten-directory wijzigen. Ga naar de map waarin de gegevens staan die u wilt converteren. Geef vervolgens de naam van de map op die u wilt converteren.
+\par }{\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Project exporteren
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Exporteer project}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - exporteer}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Project | Exporteer }{\cf2   
+\par }{\b\f0\cf17 
+\par }{\b\cf17 
+\par }{\cf17 Met behulp van dit menu onderdeel kunt u alle gegevens van een project exporteren naar een tekstdocument. Elk getal wordt op een aparte regel gezet. Het tekstdocument kunt u weer inlezen in een database of spreadsheet.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 Om de gegevens weer te kunnen importeren in AVIS moet er eerst een kruistabel van worden gemaakt (zie Project importeren).}{\fs24\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Project importeren
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Importeren project}}}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Project - importeren}}}{\b\f0\cf17 
+\par }{\b\cf2 Project | Importeer }{\cf2   
+\par }{\b\f0\cf17 
+\par }{\b\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 Hiermee kunt u gegevens inlezen in een bestaand of nieuw project die bijvoorbeeld in een spreadsheet zijn ingevoerd (zoals het voorbeeld hieronder). 
+\par 
+\par }\trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\b\cf17 Gebiedscode}{\cf17 \cell }{\b\cf17 Gebiedsnaam}{\cf17 \cell }{\b\cf17 Oppervlakte}{\cf17 \cell }{\b\cf17 Euringnummer}{
+\cf17 \cell }{\b\cf17 Soort}{\cf17 \cell }{\b\cf17 1990}{\cf17 \cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\b\cf17 1991}{\cf17 \cell }{\b\cf17 1992}{\cf17 \cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 
+\trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb
+\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell 
+Oostereng Natuurbos1\cell 110.4\cell 2310\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 Wespendief\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 1\cell \cell 1\cell }\pard 
+\ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 
+\cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 
+\cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 
+\cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 
+\cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell Oostereng Natuurbos1\cell 110.4\cell 
+2670\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 Havik\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 1\cell 1\cell 2\cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd 
+\trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell Oostereng Natuurbos1\cell 110.4\cell 2690\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 
+Sperwer\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 \cell 1\cell \cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard 
+\qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell Oostereng Natuurbos1\cell 110.4\cell 2870\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 Buizerd\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 2
+\cell 1\cell 3\cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone 
+\cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell 
+Oostereng Natuurbos1\cell 110.4\cell 3100\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 Boomvalk\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 \cell \cell 1\cell }\pard 
+\ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 
+\cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 
+\cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 
+\cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 
+\cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell Oostereng Natuurbos1\cell 110.4\cell 
+5290\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 Houtsnip\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 1\cell 1\cell 3\cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd 
+\trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell Oostereng Natuurbos1\cell 110.4\cell 7610\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 
+Bosuil\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 -1\cell \cell 2\cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\trowd 
+\trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone 
+\clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 10000001\cell Oostereng Natuurbos1\cell 110.4\cell 7670\cell }\pard \ql \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 Ransuil
+\cell }\pard \qr \li0\ri0\nowidctlpar\intbl\faauto\rin0\lin0 {\cf17 \cell \cell 1\cell }\pard \ql \li720\ri0\sa200\nowidctlpar\intbl\faauto\rin0\lin720 {\cf17 \trowd \trgaph30\trftsWidth1\trpaddl30\trpaddr30\trpaddfl3\trpaddfr3 \clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1360 \cellx1360\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth2140 \cellx3500\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1271 \cellx4771\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1550 \cellx6321\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth1190 \cellx7511\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8061\clvertalt\clbrdrt
+\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx8611\clvertalt\clbrdrt\brdrnone \clbrdrl\brdrnone \clbrdrb\brdrnone \clbrdrr\brdrnone \cltxlrtb\clftsWidth3\clwWidth550 \cellx9161\row }\pard 
+\ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+\par Dit bestand moet eerst worden opgeslagen als een CSV of txt-bestand. Het bestand moet de volgende structuur hebben:
+\par 
+\par Gebiedscode, Gebiedsnaam, Oppervlakte, Euringnummer, Soort, Jaar1, Jaar2, Jaar3,etc.
+\par 
+\par }{\f0\cf17 \emdash }{\cf17 gegevens gescheiden door komma's-----------aantal paren per jaar per soort-------
+\par 
+\par Een voorbeeld van een import-bestand vindt u hieronder:
+\par 
+\par Gebiedscode,Gebiedsnaam,Oppervlakte,Euringnummer,Soort,1990,1991,1992
+\par 10000001,Oostereng Natuurbos1,110.4,2310,Wespendief,1,,1
+\par 10000001,Oostereng Natuurbos1,110.4,2670,Havik,1,1,2
+\par 10000001,Oostereng Natuurbos1,110.4,2690,Sperwer,,1,
+\par 10000001,Oostereng Natuurbos1,110.4,2870,Buizerd,2,1,3
+\par 10000001,Oostereng Natuurbos1,110.4,3100,Boomvalk,,,1
+\par 10000001,Oostereng Natuurbos1,110.4,5290,Houtsnip,1,1,3
+\par 10000001,Oostereng Natuurbos1,110.4,7610,Bosuil,-1,,2
+\par 10000001,Oostereng Natuurbos1,110.4,7670,Ransuil,,,1
+\par 
+\par U kunt een dergelijk bestand maken door in Excel of Quattro het bestand op te slaan als CSV-bestand.
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\cf17 In het bestand moet 
+door middel van het getal -1 worden aangegeven welke soorten niet zijn geteld. Het is niet nodig om nullen toe te voegen aan het bestand (mag wel).}{\b\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Nieuwe kartering}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Kartering - nieuw}}}{\b\deleted\v\f11  Nieuwe kartering}{\f0\cf17  
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Kartering | Nieuw   
+\par }{\b\f0\cf17 
+\par }{\f0\cf17 
+\par }{\cf17 Hiermee kan een nieuwe kartering}{\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \v\f1\fs20\cf17\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 
+{\xe {\cf17 }{\f11\cf17 Nieuwe kartering}{\cf17 }}}{\cf17  worden gemaakt. In nieuwe gebieden moeten zowel de gebiedsgegevens als het jaartal worden ingevuld. Bij bestaande gebieden hoeft alleen een jaartal te worden toegevoegd.
+\par De code van een gebied dient uit maximaal 8 cijfers te bestaan.
+\par }{\b\cf17 
+\par }{\cf17 Na het klikken op de knop  }{\b\cf17 Bewaren}{\cf17  verschijnt een invoerscherm voor het invoeren van de vogel gegevens. U kunt de soortnamen sorteren op soortgroep (kolonievogels, zeldzame broedvogels, schaa
+rse broedvogels, etc.), alfabetische volgorde, systematische volgorde en op aantal.
+\par }{\b\cf17 
+\par }{\cf17 Door het klikken op de knop }{\b\cf17 Filter}{\cf17  kunt u desgewenst soorten tijdelijk toevoegen of onzichtbaar maken in de invoerlijst. Een aantal zeer zeldzame soorten zijn niet standaa
+rd opgenomen in de soortenlijst; door te klikken op de knop 'filter' kunt u deze soorten zichtbaar maken.
+\par }{\b\cf17 
+\par }{\cf17 Achter elke soort staat standaard een 0. U kunt hier een getal invullen door eerst op de enter-toets te drukken en vervolgens het aantal in te vullen. 
+\par }{\b\cf11 Niet-getelde soorten worden aangegeven door middel van het getal '-1'. Dit getal wordt automatisch ingevuld wanneer u op de spatiebalk drukt (het is hierbij niet nodig eerst op de enter-toets te drukken).}{\b\cf17 
+\par }{\cf17 Wanneer u klaar bent met invoeren klikt u op de knop }{\b\cf17 Bewaren}{\cf17 . Op dat moment worden de gegevens toegevoegd aan de database.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f28\fs24\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Kartering wijzigen
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Kartering - wijzig}}}{\b\deleted\v\f11  Wijzigen kartering}{
+\b\f0\cf17  
+\par }{\b\cf2 Project | Open | <selecteer het project waarin de te wijzigen kartering}{\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 
+\b\v\f1\fs20\cf2\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\cf2 }{\b\f11\cf2 Wijzigen kartering}{\b\cf2 }}}{\b\cf2  is opgenomen>   
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\f0\cf17 
+\par }{\cf17 
+De gegevens van de karteringen zijn verdeeld over twee venster. In het linker venster is per regel de gebiedsinformatie van een kartering opgenomen. In het rechter venster staan de gekarteerde soorten vermeld die bij de in het linkervenster geselecteerde
+ kartering horen. 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx1350\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\cf17 Toetsen:
+\par }{\i\cf17 Tab}{\cf17 :\tab Wisselen tussen linker (gebiedsinformatie) en rechter (soortgegegevens) venster.
+\par }{\i\cf17 Enter}{\cf17 :\tab Wijzigen gebiedsinformatie (linker venster) of wijzigen soortinformatie (rechter venster)
+\par }{\i\cf17 Ins}{\cf17 :\tab Nieuwe kartering invoeren 
+\par }{\i\cf17 Spatie}{\cf17 :\tab Selecteer een karteing voor onder andere analyse en printen.
+\par }{\i\cf17 Del}{\cf17 :\tab (De)selecteer een kartering voor verwijdering.
+\par 
+\par 
+\par Muis:
+\par }{\i\cf17 Enkelklik}{\cf17 :\tab Maak linker of rechter venster actief.
+\par }{\i\cf17 Dubbelklik}{\cf17 :\tab Wijzig gebiedsinformatie (linker venster) of wijzig soortinformatie (rechts). Met }{\i\cf17 dubbelklik}{\cf17  op de allereerst kolom van de tabel in het linker venster wordt een kartering ge(de)selecteerd voor 
+verwijdering, }{\i\cf17 dubbelklikken}{\cf17  op de  tweede kolom selecteerd een kartering om  onder andere te kunnen analyseren en printen.
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx450\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\cf17 Zie ook:}{\b\cf11 Gebiedsinformatie wijzigen}{\b\uldb\cf2 
+\par }{\b\cf2 \tab \tab }{\b\cf11 Soortinformatie wijzigen}{\b\uldb\cf2 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\f0\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Gebiedinformatie kartering wijzigen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Gebiedsinformatie wijzigen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Wijzigen - gebiedsinformatie}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Kartering | Wijzig | Gebiedsinformatie   
+\par }{\b\f0\cf17 
+\par 
+\par }{\cf17 Met behulp van dit menu onderdeel kunt u de gebiedinformatie wijzigen. U kunt altijd het gebiedsnummer wijzigen, dus ook wanneer er karteringen zijn ingevoerd (dit in tegenstelling tot AVIS 1).
+\par U kunt de gebiedinformatie ook wijzigen door te dubbelklikken op de regel die u wilt veranderen}{\b\f0\cf17 .
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Soortinformatie kartering wijzigen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Vogels - wijzigen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Wijzigen - vogels}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Kartering | Wijzig | Soortinformatie   
+\par }{\b\f0\cf17 
+\par 
+\par }{\cf17 Met behulp van dit menu onderdeel kunt u de soortinformatie van de kartering wijzigen.
+\par U kunt ook dubbelklikken op het venster met soort gegevens}{\b\cf17 . }{\cf17 Zie verder bij }{\b\cf11 Nieuwe kartering}{\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\f0\fs24\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Filteren van vogelgroepen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Filteren vogelgroepen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Vogelgroepen filteren}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\f0\cf17 
+\par }{\cf17 Om de invoer van de vogelgegevens te vereenvoudigen zijn de vogelsoorten ingedeeld naar talrijkheid. Zeer zeldzame vogels zijn niet standaard opgenomen in de lijst. U kunt deze zichtbaar maken door het vakje voor }{\b\cf17 Overige vogels}{\cf17 
+ aan te vinken.
+\par }{\b\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Karteringen verwijderen
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\b\deleted\v\f11  Kartering verwijderen}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 
+\b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Verwijderen kartering}}}{\b\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Kartering | Verwijder   
+\par }{\b\f0\cf17 
+\par 
+\par }{\cf17 Met dit menu onderdeel kunt u een kartering verwijderen}{\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 
+\v\f1\fs20\cf17\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\cf17 }{\f11\cf17 Kartering verwijderen}{\cf17 }}}{\cf17  uit het projectbestand. De te verwijderen karteringen moet u eerst selecteren do
+or op de <Delete>-toets te drukken of te dubbelklikken op het kruisje voor aan de regel.
+\par }\pard \ql \li0\ri0\sb240\sa60\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\fs28\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Karteringen printen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Kartering printen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Printen kartering}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+\par Door op de knop }{\b\cf17 Printen}{\cf17  te klikken worden de gegevens van de geselecteerde karter
+ingen afgedrukt of worden weggeschreven naar een text-bestand (SDF bestand) of komma-gescheiden-bestand om in te lezen in een spreadsheet (spreadsheet-bestand). 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Karteringen analyseren
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Analyse kartering}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Kartering analyseren}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Kartering | Analyse   
+\par }{\b\f0\cf17 
+\par 
+\par }{\cf17 Dit menu onderdeel is het hart van het programma. Hier kunt u de gegevens van de kartering vergelijken met de broedvogelgegevens van de referenties.
+\par Eerst dient u de kartering(en) te selecteren die nu wilt analyseren. U kunt dit doen door het aank
+likken  van de verkenner-knop aan de rechterkant. Wanneer er al karteringen geselecteerd zijn voor u het analysescherm opent is de informatie van deze karteringen reeds ingevuld.
+\par Na selectie van de kartering kunt u een referentie selecteren en/of een vogelgroep. Ook hier voor kunt u selectieschermen oproepen door op de betreffende verkennerknoppen aan de rechterkant te klikken.
+\par 
+\par }{\b\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Selecteer karteringen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Kartering selecteren}}}{\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }{\cf17 Selecteer \'e9\'e9n of meer dan een karteringen door op de Spatiebalk  te drukken of door te dubbelklikken op de eerste kolom. Klik op }{\b\cf17 Selecteer}{\cf17 
+ om terug te keren in het analysescherm: de gegevens van de geselecteerde karteringen zijn nu ingevuld. 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Selecteer een vogelgroep
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Referentie selecteren}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Selecteren referentie}}}{\f0\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+Door te dubbelklikken met de muis of te navigeren met de pijltjestoetsen en de "+"-toets kunt u naar de gewenste vogelgroep gaan. U selecteert de gewenste vogelgroep door op de knop }{\b\cf17 Selecteer}{\cf17 
+ te klikken. Hierna komt u weer terug in het analysescherm: de gegevens van de geselecteerde vogelgroep zijn nu ingevuld.
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+\par Door op de knop }{\b\cf17 Verwijder soort}{\cf17  te klikken is het mogelijk soorten uit een bepaalde vogelgroep tijdelijk weg te laten uit de a
+nalyse (zoals zeer talrijke soorten die sterk van invloed zijn op het resultaat van de analyse). In het rechtervenster kan de soort geselecteerd worden die tijdelijk uitgesloten moet worden van de analyse.
+\par Voor het uitsluiten van meer dan een soort dient de procedure herhaald te worden.
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Selecteer een referentie
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Selecteren vogelgroep}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Vogelgroep selecteren}}}{\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\cf17 
+Door te dubbelklikken met de muis of te navigeren met de pijltjestoetsen en de "+"-toets kunt u naar het gewenste terreintype gaa
+n.  Alle terreintypen waarvoor referenties zijn worden weergegeven met een groen boekje. Door te dubbelklikken op dat terreintype verschijnt de lijst met beschikbare referenties. In de meeste gevallen gaat het om Nederland (NL) rond 1990. U selecteert de 
+gewenste referentie door op de knop }{\b\cf17 Selecteer}{\cf17  te klikken. Hierna komt u weer terug in het analysescherm: de gegevens van de geselecteerde referentie zijn nu ingevuld.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Resultaten van de analyse bekijken
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Analyseresulaten bekijken}}}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Bekijken analyseresulaten}}}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Resulaten analyse bekijken}}}{\f0\fs22\cf17 
+\par 
+\par }{\cf17 Na de berekening kunnen de resultaten worden bekeken in het resultaatscherm.  In het bovenste deel van het scherm staan de uitgevoerde berekeningen, in het onderste deel de resultaten van die berekeningen.
+\par Met "goede soorten" worden kenmerkende, (vrij) kritische soorten bedoeld.
+\par 
+\par De resultaten van de analyse kunnen ook in grafiekvorm worden weergegeven. Selecteer \'e9\'e9n of meerdere analyses met behulp van de spatiebalk of door te dubbelklikken in het open vakje vooraan de regel. Wanneer u dan op de knop }{\b\cf17 Grafieken}{
+\cf17  klikt wordt er een apart programma opgestart waarin de resultaten in grafiekvorm worden weergegeven.
+\par De resultaten kunnen op twee verschillende manieren worden weergegeven: voor de geselecteerde vogelgroepen of voor de afzonderlijke soorten uit een groep. Wanneer u meer dan \'e9\'e9
+n vogelgroep hebt geselecteerd krijgt u automatisch een grafiek met de verschillende vogelgroepen, selecteert u slechts \'e9\'e9n vogelgroep dan worden de afzonderlijke soorten weergegeve
+n. De grafieken voor de verschillende berekeningen staan op de afzonderlijke tabbladen.
+\par De gegevens van de kartering worden met groen weergegeven, de gegevens van de referentie in het blauw.
+\par }{\f0\fs22\cf17 
+\par }{\b\cf17 Printen:}{\cf17  Voer de tabel direct uit naar de printer, of schrijf de gegevens weg naar een bestand.
+\par }{\f0\fs22\cf17 
+\par }{\b\cf17 Grafieken: }{\cf17 Presenteer de resultaten in grafieken. Zie ook}{\f0\fs22\cf17  }{\b\cf11 Korte handleiding bij de grafiek-presentatie}{\cf17 
+\par }{\f0\fs22\cf17 
+\par }{\b\cf17 Verwijder:}{\cf17  Verwijder \'e9\'e9n of meer regels uit de tabel met resultaten. Selecteer daartoe eerst de te verwijderen analyses
+ met behulp van de <Delete>-toets of door te dubbelklikken op de eerste kolom.  Het groene kruisje wordt dan rood. 
+\par }{\f0\fs22\cf17 
+\par 
+\par \tab 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Korte handleiding bij de grafiek-presentatie
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Analyse - grafische presentatie}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Grafische presentatie analyse}}}{
+\f0\fs22\cf17 
+\par 
+\par }{\cf17 Boven de grafiek staat een hele serie knoppen waarmee u de instellingen van de grafiek kunt aanpassen, de grafiek kunt kopi\'ebren naar het klembord of de grafiek afdrukken. U kunt hier zelf mee experimenteren.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 {\*\shppict{\pict{\*\picprop\shplid1025{\sp{\sn shapeType}{\sv 75}}{\sp{\sn fFlipH}{\sv 0}}
+{\sp{\sn fFlipV}{\sv 0}}{\sp{\sn fLine}{\sv 0}}{\sp{\sn fLayoutInCell}{\sv 1}}}\picscalex100\picscaley100\piccropl0\piccropr0\piccropt0\piccropb0
+\picw13129\pich767\picwgoal7443\pichgoal435\pngblip\bliptag-227949344{\*\blipuid f269c4e0a6db002eb0d481794bbc9d92}89504e470d0a1a0a0000000d49484452000001f00000001d0802000000da63a959000000017352474200aece1ce9000000097048597300000ec200000ec5015a
+69dc47000008d649444154785eed5d01762a370c6c7a31b8597f4ef69393a582098ab0bdf658d66e08911f8f0fc496a5b13c9ed542fbf2f6f6f64fb644201148
+0412819f8fc0bf3f3f848c20114804128144e08240127ae64122900824024f82c08b965ccee7f3624c622ac408e946c85c69a4403b6a114380fd9d9990517710
+08c9ab273362e1fa247489f0e3e383cca466b7d7d7d73f7ffe841861cafa510e8bcf2b51cbd8a8a843a07b32234766c2e34097516f6dc9a85dff386b1de2894d
+983b427f7f7ff7b11b2c82dad68df009bd3e97f8bc785c23c9d63d49239a7b9a4e4766c2e3e09f51f7093df71af0696e93236ae842795bcd777ee4a844600b81
+d3e914050e43acc3b9c448889dfe448b5bacd03485c3fdb7c5313c04e4c13b5824bfc5d5450776277408d8660bc18bd7d740aa73f82ffac37bb26b89508c339e
+9ccf27794c85ec4835c693291f3a9d2d9547d1faa21dbd21b1688781686b8b914b4076eb7b82d38b694c442b7d74b3f777bd9d023dadf3fc586cba450c61c1ae
+a3c3e698d0919408d50df1cb7d133bf2c18ac1595ebe223570df12d6d66b3702b1034fa7b33c626df68f1900080ce55f47aaededad5c898337e5d97d550e2755
+56cb9d21779662e36038ec585396387645460f952117afbbf11fdd164fb8e19921a55454530bd83bbc617b829af1094fd398b16e3cb04549dd51616f13ba6e57
+8907957169f20219c96f661c38170ab86f7c84533d413af502306c7e7572f0987266a7ce3cf8576adbe4fdb7b77779304e5a2ad7fe808acf7566a2d83ebae72d
+4793dbbbf0c4c13e96cdad353565a173d8e7b1c24487ad941ca564e343a87b92070739859ebb8a95e5f1594ec759621b03be5265e1b31027335c4735085dc7cb
+0b7c0904f25a5ed85b88fc344d793e7530300ba3ac5d703ac9e6cc14537dec413d35f08a4cbb1e82cc93f6fe7e79cc9abd67964335be4ebddfb5850a73c9374d
+5d154dbac1c413ab940b0c9b8caffaba1686cd25d86273dbb9e3c3cab2ca36d587d8511db562f3078d054df91a72065baca0789ed36b362f68d3e71b3faaadd0
+3b79c0a7889e394d798e84e691ea8754b0b672fa149bdbcdd07ccdc37aeb295727a3420f6dd4261959015fe7fd3e80b3229d1701342a5f1d45188afdcb86be5d
+6a418e14975df8708b4fc582a8bf62f68e1edc12d77dd1adb3d7733902b743ec55e694a990a5e99c7cc55938e5db319d518d505e924995dc4907301c16fefebd
+0c824d727848b75e0d5d55b95537e41988fc28b4b9bed53330248d9aa4034e1fd6cd79109bda8d1f8e9ea46c473d44c181aa45a228adcf4e5d48e375ae9f7500
+9e63de9075ef3900a566971f47f4f5c3fe1eabebefc253d2b62a09b338687fb0792c14b51021dd0bb962202b21d26dbdcaa4645204a8e5043270dbad0081b9d2
+d2e15bfc7030a7b7091d192cbe4aea0bfa9a73d809fad72dc8b0753b4d8fbe90342ab6ad7a35cde69d22ba233b3686dcee2c8e2dd6972fcae67c057c3ccda847
+c111a3eeedbf17e7501d9acf6c639412f78245d5e9aaa04338483d52fb383c166fe1da40eb145e80c133942ca0af87acd7fd85c4c4e7a4ee4484c846341bb35b
+3c15c0312c277d9a3ecf7e7964fc2d17819e71a888c14ad1fab5748e02cbce7b5560b2969f52cc938f6b636ca4db96c44bb60e83545355eb580875c32fc92b92
+1080799cece5851d85d0ec75c3ba56fd524938ccaf09e16b967184cda1d0b1f97d06314a8b124355e49bc5add07dd37defa815315e13b7ae2cf2509eed2dc3c5
+48c9b429387dea5882876342275d2902aee5b9d66decb54920ad83cdaf6e5c2ad79ebd5cef06fd845fcf71d95c7ab044037c5031f72d843a4e96ddeb756cd0a2
+28a06b08f2bce2951d1b98099710b0fcd3d7688d65d6edaddeae940bb4282133c5aa7eb8ee56e8eba7a93daefa17e82b39a32b24640731ce6fcd664f38a3cfb7
+1d77d9775a520f4ece0d8f019a2d53e313c84432cc01a117d5c69502bf4d6538c77b390cc6b0b9f67571fafd4c362f873ed01d58857e4c1a516ed7c7e38dd387
+c3fb5706f257b11d15e954ea0f3dd70ed0e6627c85cac1e0f22cd6449e23f9d72b0f4514b52621c30c21d9236be8129755e82a66f1214ff4e0343c5b36579627
+018ceab6c539245b3608ddde0245a85b9f7462c0d6b24d4f1edd752139745d57796a1ed49fe517cdf201e810d7fa885a22732ff46a72acd08b3285af625e4872
+9f91afb42e38fdfa366405ed155b00e4faf3a7ae2d727ba80d38891b4bf5af8418b795cda1b9d67ffdd49cd4add09910983ec7d7d0f5972e97ad756b8cab9ac0
+56a417590db20ac973d2a5ba9bcece246dfb7be8f69450558e0b106d1deb0a90ed5f9c3c48eb20a43a975dbb91f4ccfadc930cabd06766d8b7ef27e71af917cc
+c281eee3e0a96be8ba06ae9f284bae427e8a6dd5a11dc10e0d6e15ab0cc4eda8fdd83c10c54553c5be0edae65f4ee10ec4b00da350612e3dc16f850c7d903ce7
+397d5c4307ed22d4214056d19412ddbc976e716cce3b35ea2954601fa3eedebf8f15baff06a6f1c92dc9b7e22a8e646ff83b8efbccfbdbc153bcc54f6edce402
+ed09ef5587768291890ac6d995cdb7be224cde39b4bb153703b5d56fb7a2b6d72eb5800bcc9f0eb7e04f282a2841371d2e74a7f4a905e88ec93a699accdb1fff
+9fcf9d3a66b066fa8c558705f7012303e53a0fbf6a995aa3c293473332158b3dc8217642c2619258f10f71d81a91d945621765eead0f6dd4f2ba23deb7eae608
+1634348c65bfa887536fad753feadaacfdd6d0b744ad1bd6aad521f8ba4cc8f02db8fa7c421ae9af4533617e3ca1f3f957ec556c1e4be853a674e11f736b4dc5
+82ceb149d64f7747a676764ec85c4d23cd4a77fd612c74434e81fed82f6a3279326af73dedfda0bb2374dcf37137e8b275237c42afcfa584ee8e1a5b6bdd9334
+522cc1946a7b26fc8fccffc7c9badf197508fe16baaf1afae296c06e0c314272eb9173f55d0af1248d90eb5e777b32e8481c326a12a85f9530f93f893ebbd342
+2b15b3d5f37a465bc573fbf37c4648289e0cff8cba83c093ad754838162eff4d7f32edb25b229008240289c031088cbfb6788c1f394b229008240289c0220249e88b00e6f044201148041e058124f4475989f42311480412814504fe07cfbd4569b67945870000000049454e44ae426082}}{\nonshppict
+{\pict\picscalex100\picscaley100\piccropl0\piccropr0\piccropt0\piccropb0\picw13129\pich767\picwgoal7443\pichgoal435\wmetafile8\bliptag-227949344\blipupi95{\*\blipuid f269c4e0a6db002eb0d481794bbc9d92}
+0100090000038c54000000006a54000000000400000003010800050000000b0200000000050000000c021d00f00104000000070104006a540000430f2000cc00
+00001d00f001000000001d00f0010000000028000000f00100001d000000010018000000000090a80000c20e0000c50e00000000000000000000c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000c0c0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c00000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000c0c0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c00000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000c0c0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c00000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c00000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c000000000000000
+0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808000000080808080808080808080808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+808080808080000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c00000008080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080000000808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808000000080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080808080800000008080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080808080808080808080000000808080808080808080808080808080808080808080808080808080808080
+808080808080808080808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c00000008080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080000000808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808000000080808080808080808080808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808000000080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080800000008080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000808080808080
+80808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808000000080
+80808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80000000808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808000000080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffff8080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080808080808080808080808080808080000000ffffff808080808080808080808080808080808080808080
+808080808080808080808080808080808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffff8080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffff80808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080808080808080808080808080808080808080808080000000ffffff8080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080808080808080808080808080808080000000ffffff808080808080808080808080808080808080808080
+808080808080808080808080808080808080808080808080808080808080808080808080808080808080000000ffffff80808080808080808080808080808080
+8080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080000000ffffff8080808080808080808080
+80808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffff80808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080808080808080808080808080808080808080808080000000ffffff8080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080808080808080808080808080808080000000ffffff808080808080808080808080808080808080808080
+808080808080808080808080808080808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffff8080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080000000ffffff808080808080808080808080808080808080808080808080808080808080808080808080
+808080808080808080808080808080808080808080808080808080000000ffffff80808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0000000ffffff808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+808080808080808080808080000000ffffff80808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+8080808080808080808080808080808080000000ffffff8080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080000000ffffff808080808080808080808080808080808080808080808080808080808080808080808080
+808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c00000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffff
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080808080808000
+0000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080
+80808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0
+c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0
+c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0c0c0c0ffffffffffffffffffffffffffffffffffffffffffffffffffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffff
+ffc0c0c0c0c0c0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc0c0c0c0c0c0808080808080
+000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000000000000000c0c0
+c0000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c000000000000000000000000000000000000000000000000000000000
+0000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0000000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000000000c0c0c0c0c0c0
+808080808080000000808080c0c0c0c0c0c0000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000000000ff0000ff00000000000000ff0000ff000000000000ffff00ffff000000000000ff00ff0000
+ff000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000000000000000000000c0c0c0000000000000000000000000000000000000c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffff
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080808080808080808080808080808080808080808080808080c0c0c0ffffffc0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0c0c0c0c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0
+c0c0c0c0c0808080808080000000ffffffc0c0c08080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0000000000000c0c0c0c0c0c0808080808080000000ff
+ffffc0c0c0808080000000c0c0c0c0c0c0c0c0c0000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080808080
+80000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000bfbf000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0
+c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080800000
+00000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff0000ff00
+00ff0000ff0000000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c000000000ff0000ff0000ff0000ff0000ff00000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000000000ff0000ff00000000000000ff0000ff000000000000
+ffff00ffff0000000000000000ffff00ff000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0ff0000ff0000c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000000000ffff00ffff00ffff00000000000000ffff00ff
+ff00ffff00ffff00ffff00000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0c0c0
+c0c0c0c0ffffffffffff808080ffffffffffffffffffffffffc0c0c0c0c0c0808080808080000000ffffffc0c0c0808080808080c0c0c0ffffffffffffffffff
+ffffffffffffc0c0c0808080c0c0c0ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080
+c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffffc0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c080
+8080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0000000ffffffc0c0c0808080808080808080808080808080808080808080808080808080808080808080808080808080000000c0c0c0c0c0c0
+c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0000000000000000000000000000000c0c0c0000000000000000000000000000000c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000bfbf000000c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0000000000000000000c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c080808000
+0000000000000000000000000000000000000000000000000000000000000000000000808080c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c00000
+00000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0000000c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000000000ff0000ff0000ff0000ff0000ff0000ff
+0000ff0000ff0000000000000000000000000000000000000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c000000000ff0000ff0000ff0000ff
+0000ff00000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000000000ff0000ff00
+000000000000ff0000ff0000000000000000000000000000000000ff00ff0000ff000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c000
+ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c00000
+00c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffff
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000ffff00ffff00ffff00ffff00000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080808080808000
+0000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080
+80808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000ffff00ffff00
+000000ffff00ffff00000000ffff00ffff00000000000000ffff00ffff00000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0808080ffffffc0c0c0c0c0c0808080808080808080808080808080808080808080c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c08080
+80ffffff808080808080808080808080808080ffffffffffffc0c0c0808080c0c0c0ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c08080
+80c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffffc0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0808080000000c0c0c0000000808080000000c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000
+000000bfbf000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+000000ffffffc0c0c0c0c0c0000000808080808080000000000000808080808080808080808080000000000000808080808080000000c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0ffffffffffffffffffc0c0c0c0c0c0000000000000000000c0c0c0c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000ffff
+000000ff0000ff0000ff0000ff0000ff0000ff000000000000ffff00ffff00ffff00ffff00ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0
+c0c0000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c000000000000000ff0000ff00000000000000ff0000ff0000000000c0c0c0c0c0c0c0c0c00000000000ffff00ff000000c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000000000ffff00ffff00ffff00ffff00ffff00ffff00000000000000c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000
+0000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0c0c0c0000000000000000000000000ffff00ffff00000000ffff00ffff00000000000000ffff00ffff00000000808080c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0ffffff808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0808080ffffff808080808080808080808080808080808080ffffffffffffc0c0c0808080c0c0c0ffffffc0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0
+000000ffffffffffffff0000ff0000ff0000ff0000ff0000ff0000ffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c000
+0000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffff
+ffc0c0c0808080ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc0c0c0c0c0c0808080808080
+000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffff000000000000000000000000ff
+ffff000000ffffff000000000000000000ffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c00000000000
+00000000c0c0c0000000c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000bfbf000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000808080808080000000808080808080808080808080808080808080000000808080
+808080000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080808080c0c0c0c0
+c0c0000000c0c0c0000000c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c000000000ffff00ffff000000ff0000ff0000ff0000ff000000000000ffff00ffff00ffff00ffff00ffff00ffff000000c0c0c0c0c0c0
+808080808080000000808080c0c0c0c0c0c0000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000000000ff0000ff00000000000000ff0000ff0000000000c0c0c0c0c0c0c0c0c0000000ff00ff0000
+ff000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0ff0000ff0000c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000ffff00ffff00ffff00ffff00ffff00ffff
+00000000ff00ff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c000000000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c000ffff00ffffc0c0c0000000c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000000000ffff00ffff00000000ffff00ffff00000000000000ffff00ffff000000
+00808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0ffffffc0c0c0808080c0c0c0808080ffffff
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffff808080808080808080808080808080808080808080ffffffffffffff
+ffff808080ffffffffffffc0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0000000000000c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0
+c0c0c0c0c0808080808080000000ffffffc0c0c08080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0
+ffffff000000ffffffffffff000000ffffffffffffffffff000000ffffffffffff000000ffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ff
+ffffc0c0c0c0c0c0c0c0c0808080000000808080c0c0c0c0c0c0000000c0c0c0000000c0c0c0000000c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c08080808080
+80000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000bfbf000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000c0c0c0c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000808080808080000000808080c0c0c08080
+80808080808080808080000000808080808080000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000000000000000000000000000000000
+000000000000000000000000000000000000000000c0c0c0c0c0c0000000c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000ffff00ffff00ffff000000ff000000000000000000ffff00ffff00ffff00ffff00ff
+ff00ffff00ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c0000000ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00
+000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000000000000000000000000000000000ff0000ff0000000000c0
+c0c0c0c0c0c0c0c00000000000ffff00ff000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0
+c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0000000ffff00ff
+ff00ffff00ffff00ffff00ffff00000000ff00ffff00ffff00ff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c000000000ffff00ff
+ffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000ffff00ffffc0c0c0c0c0c0000000c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000ffff00ffff00000000000000ffff00ff
+ff00000000000000ffff00ffff00000000808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffff808080ffff
+ff808080c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffff808080808080808080808080
+808080808080808080808080808080808080808080808080c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffff0000ff0000ff0000ff0000ff0000ff0000ffffffffff
+ff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080
+c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffffffff000000000000000000ffffffffffffffffff000000ffffffffffff000000ffffff000000c0c0c0c0c0c0
+c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0000000c0c0c0000000c0c0c0000000808080000000c0c0c0c0
+c0c0000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000bfbf000000c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0000000000000ffffffffffffffffffffffff000000000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c000000080
+8080808080000000808080ffffffc0c0c0808080808080808080000000808080808080000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c00000
+00c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0000000c0c0c0000000c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c000000000ffff00ffff00ffff00ffff00000000ffff00
+ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c0000000ffff00ffff00ffff00ffff
+00ffff00ffff00ffff00ffff00ffff00000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0
+c0c0c0000000ff0000ff0000000000c0c0c0c0c0c0c0c0c0000000ff00ff0000ff000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0
+c0c0c0c0c0c0c0c0000000c0c0c000ffff00ffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c00000
+00c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffff
+c0c0c0c0c0c0c0c0c0000000000000000000000000000000000000000000ff00ffff00ffff00ffff00ff000000c0c0c0c0c0c0c0c0c0c0c0c080808080808000
+0000ffffffc0c0c0000000c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080
+80808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000000000000000
+000000ffff00ffff00000000ffff00ffff00000000000000ffff00ffff00000000808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0ffffff808080ffffff808080808080ffffffffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c08080
+80ffffff808080808080808080808080808080808080808080ffffffc0c0c0c0c0c0ffffffffffffc0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c08080
+80c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffffc0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffffffffffffffffffff000000ffffffffffffffffff000000ffffffffff
+ff000000ffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000c0c0c0c0c0c0
+c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000
+000000bfbf000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffff
+ffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+000000ffffffc0c0c0c0c0c0000000ffffffffffff000000000000808080808080808080808080000000000000ffffffffffff000000c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0c0c0c0000000000000000000000000000000000000000000000000000000000000c0c0c0000000c0c0c0000000000000c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000000000
+00ffff00ffff00ffff00ffff00ffff00ffff00ffff00000000ffff00ffff00ffff00ffff00ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0
+c0c0000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0000000ff0000ff0000000000c0c0c0c0c0c0c0c0c0000000000000000000000000c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0000000c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c000000000ffff00ffff00ffff00ffff00ffff000000ff00ffff00ffff00ffff00ff000000c0c0c0
+c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0c0c0c0000000ffff00ffff00000000ffff00ffff00000000ffff00ffff00000000000000ffff00ffff00000000808080c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0c0c0c0c0c0c0808080808080808080808080808080808080808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0808080ffffff808080808080808080808080808080808080808080ffffffc0c0c0808080808080ffffffffffffc0c0c0ffff
+ffc0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0
+000000ffffffffffffff0000ff0000ff0000ff0000ff0000ff0000ffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c000
+0000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffff
+ffc0c0c0808080ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc0c0c0c0c0c0808080808080
+000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffff000000000000000000ffffffff
+ffffffffffffffff000000000000000000ffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c00000
+00c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000bfbf000000c0c0c0c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0
+c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000ffffffffffffffffff000000000000000000000000000000000000ffffffffffff
+ffffff000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffff00
+0000c0c0c0000000c0c0c0000000c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0000000c0c0c000000000ffff00ffff00ffff00ffff00ffff000000c0c0c000000000ffff00ffff00ffff00ffff000000c0c0c0c0c0c0
+808080808080000000808080c0c0c0c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0000000ff0000ff0000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0000000
+ff0000ff0000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c000000000ffff00ffff00ffff00ffff00ffff000000ff00
+ffff00ffff00ffff00ff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c000000000ffff00ffff
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0000000ffff00ffff00ffff00ffff00000000000000ffff00ffff00ffff00ffff00ffff000000008080
+80808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0ffffff808080808080808080808080808080ffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffc0c0c0808080808080000000ffffffc0c0c0808080ffffff808080808080808080808080808080808080808080ffffffc0c0c080
+8080808080808080ffffff808080ffffffc0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0000000000000c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0
+c0c0c0c0c0808080808080000000ffffffc0c0c08080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0
+ffffffffffffffffffffffffffffffffffffffffffffffff000000ffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ff
+ffffc0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0000000c0c0c0000000c0c0c0c0c0c08080808080
+80000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0c0c000000000bfbf000000c0c0c0000000808080000000c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c00000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000ffffff000000
+000000000000000000000000ffffff000000000000000000000000c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c000000000ffff00ffff00ffff000000c0c0c0c0c0c0c0c0c000000000ff
+ff00ffff00ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c000000000ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff00ffff
+00ffff00ffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c000ffff00ffffc0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c000000000
+ffff00ffff00ffff00ffff000000ff00ffff00ffff00ff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffc0c0c0ffffff00000000000000000080808000000000000000
+0000000000000000000000808080808080c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c08080808080808080808080808080808080808080808080
+80808080808080808080808080808080808080808080808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080c0c0c0808080808080808080808080
+808080808080808080ffffffc0c0c0c0c0c0808080808080808080808080ffffffc0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffff0000ff0000ff0000ff0000ffffffffffffffffffffff
+ff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080
+c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffffffffffffffffffffffffffffffffffffffffffff000000ffffffffffffffffffffffff000000c0c0c0c0c0c0
+c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0000000808080000000c0c0c0000000c0c0c0c0c0c0000000c0c0c0c0
+c0c0000000c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c00000008080800000000000000000000000000000000000008080808080
+80000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffff000000
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c000
+0000000000c0c0c0808080000000ffffffffffff000000808080c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c000000000ffff000000c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000ffff00ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c000000000ffff00ffff00ffff00ff
+ff00ffff00ffff00ffff00ffff00ffff00ffff00ffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000000000ffff00ffffc0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c00000
+00c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffff
+c0c0c0c0c0c0c0c0c0c0c0c000000000ffff00ffff00ffff00ffff000000ff00ffff00ffff00ff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080808080808000
+0000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080
+80808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0ffffffffffffffffff
+c0c0c0808080808080808080c0c0c0c0c0c0808080808080808080808080c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c080
+8080808080808080808080808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0808080c0c0c0808080808080808080808080808080808080ffffffc0c0c0c0c0c0c0c0c0808080808080808080ffffffc0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffff
+ffffffffffffffff000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c08080
+80c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080ffffffc0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0000000c0c0c0000000
+c0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c000000080808080808080808080
+8080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0000000ffffffffffffffffffffff
+ffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080000000000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffff000000000000000000000000000000ffffff000000c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0
+c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000ffff000000c0c0c0c0c0c0808080808080000000808080c0c0c0c0
+c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c000ffff00ffffc0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0ff0000ff0000c0c0c0c0c0c0c0c0
+c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c000000000000000ffff00ffff000000ff00ff000000000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffc0c0c0c0c0c0ffffffffffffffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080
+000000ffffffc0c0c0c0c0c0c0c0c0808080808080808080808080808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080
+8080808080000000ffffffc0c0c0c0c0c0c0c0c0808080c0c0c0808080808080808080808080808080c0c0c0c0c0c0c0c0c0808080808080808080808080c0c0
+c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0
+000000ffffffffffffffffffffffffffffffffffffffffff000000c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c000
+0000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffff
+ffc0c0c0808080ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffc0c0c0c0c0c0808080808080
+000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c080808080808080808080808080808080
+8080808080808080808080808080808080808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000c0c0c0c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0
+c0c0c0000000808080000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0
+c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffff
+ffffffffff000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0c0c0
+808080808080000000808080c0c0c0c0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0ff0000ff0000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c00000000000000000000000
+00c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0ffffffc0c0c0ffffffc0c0c0ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0808080ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0000000ffffffc0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffff000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0000000000000c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080c0
+c0c0c0c0c0808080808080000000ffffffc0c0c08080808080808080808080808080808080808080808080808080808080808080808080808080808080808080
+80c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0000000000000c0c0c0c0c0c0808080808080000000ff
+ffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080808080
+80000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+808080808080000000ffffffc0c0c0c0c0c0c0c0c0000000000000ffffffffffffffffffffffff000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000
+000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0000000000000000000000000000000000000000000000000000000c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0000000c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0808080
+c0c0c0c0c0c0c0c0c0c0c0c0808080c0c0c0c0c0c0808080808080000000ffffffc0c0c0808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000808080c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffff
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c080808080808000
+0000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c08080
+80808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000ffffffc0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0808080808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffff808080000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffff808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff80808000000080808080808080
+8080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080808080000000ffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080
+000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffff808080000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffff808080000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffff808080000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffff808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080
+000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffff808080000000ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffff808080000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080000000ffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080000000ffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080
+000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000ffffffffffffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080000000ffffffffffffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080000000ffffffffffffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080000000ffffffffffffff
+ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff808080000000c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000c0c0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000c0c0c00000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000000000000000000000000000000000c0c0c0000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000000000000000000000000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000c0c0c00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00000000000000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0000000000000
+000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c0c0c000
+00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+00c0c0c0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+000000000000c0c0c000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+0000000000000000000000c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0
+c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c00400000007010100030000000000}}}{\f0  }{\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\fs22\cf17 Enkele belangrijke knoppen zijn: 
+\par }{\cf17 -knop met fotocamera: hiermee kopieert u de grafiek naar het klembord.  Op deze manier kan de grafiek meteen worden ingevoegd in bijvoorbeeld een tekstverwerker of presentatieprogramma.
+\par - knop met printer: hiermee drukt u de grafiek af.
+\par - met de volgende zeven knoppen kunt u het grafiektype kiezen.
+\par - knop met het papiertje: hiermee kan de legenda worden aangepast.
+\par - knop met de hamer: hiermee kan onder andere de data editor worden opgeroepen.  Op deze manier kunnen de cijfers die gebruikt zijn voor de grafiek worden 
+bekeken en/of aangepast.  Onder "1" staan de resultaten van de kartering, onder "2"staan de gegevens van de referentie.
+\par - knop met het vergrootglas:  view options.  Hiermee kan onder andere de schaal van de grafiek worden ingesteld door het getal achter "max" te veranderen.
+\par 
+\par Door te dubbelklikken op de balken van de grafiek verschijnt informatie over de waarden van deze balk.
+\par }\pard \ql \li0\ri0\sb240\sa60\nowidctlpar\faauto\rin0\lin0\itap0 {\b\fs28\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Vogelgroepen en soorten}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Overzichtstabel vogelgroepen en soorten}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Tabel vogelgroepen en soorten}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Vogelgroepen soorten - overzichtstabel}}}{\f0\cf17 
+\par }{\f0\fs22\cf17 
+\par }{\cf17 Met dit menu onderdeel kan de samenstelling van de vogelgroepen worden bekeken. Wanneer dit scherm actief is kunt u bovendien zelf vogelgroepen samenstellen. Zie hiervoor het menu onderdeel }{\b\cf11 Vogelgroep toevoegen}{\cf17 .
+\par }{\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Terreintypen en vogelgroepen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Overzichtstabel terreintypen en vogelgroepen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Tabel terreintypen en vogelgroepen}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Terreintypen en vogelgroepen - overzichtstabel}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\f0\fs22\cf17 
+\par }{\cf17 Hier kan worden bekeken welke vogelgroepen kenmerkend zijn bij de verschillende terreintypen. Dit zijn de vogelgroepen die automatisch worden doorgerekend wanneer in de analyse geen vogelgroep wordt geselecteerd.
+\par 
+\par Wanneer geen vogelgroepen worden weergegeven zijn deze hetzelfde als de vogelgroepen die staan bij een niveau hoger in de hi\'ebrarchie.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Terreintypen en kenmerkende vogelsoorten
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Overzichtstabel terreintypen en kenmerkende vogelsoorten}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Tabel terreintypen en kenmerkende vogelsoorten}}}
+{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Terreintypen en kenmerkende vogelsoorten - overzichtstabel}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\f0\fs22\cf17 
+\par }{\cf17 Hier kan worden bekeken wat de kenmerkende soorten zijn van elk terreintype.  Wanneer er geen soorten vermeld staan, zijn dit de soorten die staan bij een niveau hoger in de hi\'ebrarchie. 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Referenties en vogelsoorten}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Overzichtstabel referenties en vogelsoorten}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 
+Referenties en vogelsoorten - overzichtstabel}}}{\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 
+\b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Tabel referenties en vogelsoorten}}}{\cf17 
+\par 
+\par Met behulp van dit menu onderdeel kan de samenstelling van de broedvogelbevolking van alle referenties worden bekeken.  Bovendien kan worden bekeken welke proefvlakken zijn gebruikt om de referentie samen te stellen.
+\par 
+\par De terreintypen waar referenties van b
+eschikbaar zijn weergegeven door middel van groene boekjes. Wanneer dit boekje wordt geopend  door er op te dubbelklikken of door de +-toets in te drukken verschijnt er een lijst met de beschikbare referenties. Dit is in vrijwel alle gevallen slechts \'e9
+\'e9n r
+eferentie, namelijk Nederland (NL) rond 1990.  In enkele gevallen heeft de referentie betrekking op een deel van Nederland (broedvogeldistrict).  In de toekomst zal het aantal referenties verder worden uitgebreid. Wanneer u een referentie selecteert versc
+hijnt aan de rechterkant van het scherm de beschrijving van de broedvogelbevolking en een lijst en kaartje van de proefvlakken die gebruikt zijn om deze referentie samen te stellen.
+\par 
+\par Door met de muiswijzer op het smalle balkje tussen de verschillende scherm
+onderdelen te gaan staan verandert deze in een dubbele pijl.  Door nu de linker muisknop in te drukken en te slepen kunnen de verschillende schermonderdelen vergroot of verkleind worden.  Met de schuifbalken kan informatie die niet zichtbaar is zichtbaar 
+w
+orden gemaakt. Dit is met name van belang in het vensteronderdeel waarin de proefvlakken vermeld staan: naast de naam van de proefvlakken zijn hier onder meer oppervlakte, kwaliteit (op een relatieve schaal van 1- 10), ecotoop (indien van toepassing) en d
+e ligging in Nederland (met X- en Y-co\'f6rdinaten) vermeld.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Foto's
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Fotos tonen}}}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Tonen fotos}}}{\f0\fs22\cf17 
+\par 
+\par }{\cf17 Van een aantal terreintypen zijn ook foto's beschikbaar. Deze foto's kunnen worden bekeken door op de knop met het fototoestel te klikken of door het ki
+ezen van het menu onderdeel "foto's tonen". Hoe hoger u staat in de boom met het terreintypen, hoe meer foto's u te zien krijgt.  Wanneer u bijvoorbeeld op het niveau "5000 Moeras" staat, krijgt u alle foto's te zien van moeras. Wanneer u op het niveau  "
+5700 Laagveenmoeras" staat alleen foto's van laagveenmoerassen.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Vogelgroep toevoegen
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Toevoegen vogelgroep}}}{\b\deleted\v\f11 
+ Vogelgroep toevoegen}{\b\f0\cf17 
+\par }{\b\cf2 Tabellen | Vogelgroep toevoegen}{\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 
+\b\v\f1\fs20\cf2\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\cf2 }{\b\f11\cf2 Vogelgroep toevoegen}{\b\cf2 }}}{\b\cf2    
+\par }{\b\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\f0\fs26\cf17 
+\par }{\cf17 Dit menu onderdeel is alleen beschikbaar in het venster }{\f0\cf17 \'93}{\cf17 vogelgroepen en soorten}{\f0\cf17 \'94}{\cf17 . Selecteer \'e9\'e9
+rst het hoofdniveau waar de groep onder valt (100 watervogels - 900 vogels van bebouwing/ overig). Kies daarna pas het menu onderdeel }{\f0\cf17 \'93}{\cf17 Vogelgroep toevoegen}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \v\f1\fs20\cf17\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\cf17 }{\f11\cf17 Vogelgroep toevoegen}{\cf17 }}}{\f0\cf17 \'94}{\cf17 
+. Het nummer van de nieuwe vogelgroep is al automatisch in lichtgrijs ingevuld. Selecteer nu de gewenste vogelsoorten voor de nieuwe vogelgroep en geef de groep een naam en een beschrijving van het habitat. Door te klikken op de knop }{\b\cf17 Bewaren}{
+\cf17  wordt de vogelgroep opgeslagen en kan nu gebruikt worden in nieuwe analyses.
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Vogelgroep verwijderen
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\b\deleted\v\f11 
+ Verwijderen vogelgroep Vogelgroep verwijderen}{\b\f0\cf17 
+\par }{\b\cf2 Opties | Vogelgroep verwijderen}{\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 
+\b\v\f1\fs20\cf2\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\cf2 }{\b\f11\cf2 Vogelgroep verwijderen}{\b\cf2 }}}{\b\cf2  
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 H
+iermee kunt u vogelgroepen verwijderen die u zelf heeft samengesteld.  De standaard vogelgroepen van AVIS kunnen niet worden verwijderd. Selecteer eerste de te verwijderen vogelgroep}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \v\f1\fs20\cf17\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\cf17 }{\f11\cf17 Verwijderen vogelgroep}{\cf17 }}}{\cf17 
+ in het venster }{\f0\cf17 \'93}{\cf17 vogelgroepen en soorten}{\f0\cf17 \'94}{\cf17  en vervolgens het menu onderdeel }{\f0\cf17 \'93}{\cf17 Vogelgroep verwijderen}{\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 \v\f1\fs20\cf17\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\cf17 }{\f11\cf17 Vogelgroep verwijderen}{\cf17 }}}{\f0\cf17 \'94}{
+\cf17 .
+\par }\pard \ql \li0\ri0\sb240\sa60\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\fs28\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Het Ornithologisch Basisregister  raadplegen}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Ornithologisch Basisregister raadplegen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Raadplegen Ornithologisch Basisregister}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\cf2 Tabellen | Ornithologisch Basisregister   
+\par }{\b\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\fs22\cf17 
+\par }{\cf17 In het ornithologisch basisregister is een grote hoeveelheid ecologische informatie per soort opgenomen. De volgende literatuur is hiervoor geraadpleegd: Cramp et al. 1977-94, Glutz von Blotzheim et al. 1966-94 en Elseviers broedvogelgids
+\par 
+\par De kolommen }{\f0\cf17 \lquote }{\cf17 Rode lijst}{\f0\cf17 \rquote }{\cf17  tot en met }{\f0\cf17 \lquote }{\cf17 Vleugellengte vrouw}{\f0\cf17 \rquote }{\cf17 
+ zijn afkomstig uit BioBase van het Centraal Bureau voor de Statistiek. Voor achtergrondinformatie hierover wordt verwezen naar BioBase (CBS 1997).
+\par  
+\par De gegevens in deze tabel kunnen gebruikt worden om meer detailinformatie over afzonderlijke soorten op te zoeken. Bovendien kunnen met de gegevens zelf vogelgroepen worden samengesteld.
+\par In veel gevallen zult u bij de informatie vraagtekens aantreffen. In de geraadpleegde literatuur is hierover geen of weinig informatie te vinden. 
+\par Opmerkingen of aanvullingen zijn van harte welkom.
+\par 
+\par De soorten en in de lijst kunnen zowel op alfabetische als op systematische volgorde worden getoond door te klikken op de knop met }{\f0\cf17 \lquote }{\cf17 AZ}{\f0\cf17 \rquote }{\cf17  of rechtsonder op }{\f0\cf17 \lquote }{\cf17 Alfabetisch}{\f0\cf17 
+\rquote }{\cf17  of }{\f0\cf17 \lquote }{\cf17 Systematisch}{\f0\cf17 \rquote }{\cf17  .
+\par 
+\par }{\b\cf17 Toelichting op enkele onderdelen: 
+\par }{\cf17 
+\par }{\b\cf17 Openheid/kleinschaligheid (grootte open ruimtes) 
+\par }{\cf17 Hiermee wordt aangegeven wat de voorkeuren en toleranties zijn van broedvogelsoorten voor de open- en geslotenheid van het landschap.
+\par 
+\par }{\b\cf17 Randvogel 
+\par }{\cf17 Vogelsoort van randen/overgangen 
+\par 
+\par }{\b\cf17 Pendelaar  
+\par }{\cf17 Vogelsoort heeft (ten dele) gescheiden broed en foerageergebied (pendelt) 
+\par 
+\par }{\b\cf17 Kolonievogel 
+\par }{\cf17 Vogelsoort broedt in kolonies
+\par 
+\par 
+\par }{\b\cf17 Territoriumgrootte/grootte leefgebied (gemiddeld, minimaal, maximaal) 
+\par }{\cf17 Grootte van het territorium bij soorten met een. Van soorten die altijd pendelen is de grootte van het leefgebied vermeld.
+\par De hier gebruikte territoriumgrootte is bepaald aan de hand van dichtheidsgegevens en ge\'efnterpreteerde soortkaarten van broedvogelkarteringen. Ze is bedoeld om te bepalen hoeveel paren potentieel aanwezig zouden kunnen zijn in een gebied.
+\par 
+\par Van de aantal abiotische parameters worden zowel het optimum als de tolerantie (minimaal-maximaal) aangegeven.
+\par 
+\par }{\b\cf17 Vochtbehoefte (optimum, minimaal, maximaal) 
+\par }{\cf17 De genoemde grondwatertrappen geven een globale indicatie en zijn in de praktijk afhankelijk van het bodemtype.
+\par 
+\par }{\b\cf17 Zuurgraad (opt, min, max) 
+\par }{\cf17 Voorkeur voor zuur of basisch leefmilieu (water, bodem).
+\par 
+\par }{\b\cf17 Voedselrijkdom (opt, min, max) 
+\par }{\cf17 Voorkeur voor voedselrijkdom van het leefmilieu (water, bodem)
+\par 
+\par }{\b\cf17 Zoutbehoefte/tolerantie (opt, min, max) 
+\par }{\cf17 Voorkeur en/of tolerantie voor zout
+\par 
+\par }{\b\cf17 Stroming (opt, min, max) 
+\par }{\cf17 Voorkeur en/of tolerantie voor stromend water
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Wijzigen projectendirectorie
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar
+\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Projectendirectorie wijzigen}}}{\pard\plain 
+\ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Wijzigen projectendirectorie}}}{
+\b\f0\cf17 
+\par }{\b\cf2 Opties | Wijzigen projecten-directory 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\cf17 
+\par 
+\par U kunt hier instellen in welke directory de projecten moeten komen of waar u ze heeft opgeslagen. De standaard-directory waarin AVIS de gegevens opslaat is in de map 'Data' in de AVIS-directory.
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\cf17 Wanneer u met een netwerk werkt is het aan te bevelen de data in een directory op het netwerk te zetten. 
+
+\par }\pard \ql \li0\ri0\sb240\sa60\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\fs28\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\f0\fs24\cf17 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Registratie}{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Registratie}}}{\f0\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\f0\fs33\cf17 \tab 
+\par }{\cf17 Met de ongeregistreerde versie van AVIS kunnen geen karteringen worden ingevoerd.
+\par Door AVIS te registreren ontvangt u een offici\'eble versie van het programma waar gegevens mee kunnen worden ingevoerd en een cd-rom met foto}{\f0\cf17 \rquote }{\cf17 s. Bovendien kunt u gebruik maken van de helpdesk.  De kosten bedragen \'8375,-
+voor particulieren en vogelwerkgroepen en \'83500,- voor organisaties. Meer informatie kunt u krijgen via  of door contact op te nemen met SOVON Vogelonderzoek Nederland, Rijksstraatweg 178, 6573 DG, Beek-Ubbergen, (024) 68 48 111.}{\f0\fs22\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\b\f0\fs33\cf17 \tab 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Vragen en opmerkingen}{\f0\fs22\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Opmerkingen en vragen}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Vragen en opmerkingen}}}{\f0\fs22\cf17 
+\par 
+\par }{\cf17 Wanneer u vragen of opmerkingen heeft over het programma dan kunt u die doorgeven aan  of door contact op te nemen met Henk Sierdsema, SOVON Vogelonderzoek Nederland, Rijksstraatweg 178, 6573 DG, Beek-Ubbergen, (024) 68 48 145
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Importeren Arcviewbestand }{\fs28\cf17 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {
+\b\f11 Arcviewbestand importeren}}}{\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \b\v\f11\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\xe {\b\f11 Importeren Arcviewbestand}}}{\cf17 
+\par }{\b\cf2 Project | Staatsbosbeheer | Analyseer resultaatbestand Arcview 
+\par }{\cf17 
+\par 
+\par Het bestand van Arcview is het resultaat van het op elkaar leggen van een kaart met broedvogeltellingen op een kaart met de Staatsbosbeheer-subdoeltypen. In de tabel is voor iedere stip (gekarteerd terririum) aangegeven tot welk subdoeltype het behoord.
+
+\par Per ruimtelijke eenheid (subdoeltype of vak/afdeling) en per jaar worden de aangetroffen vogelsoorten gegroepeerd tot karteringen. 
+\par 
+\par Bestaande karteringen in het project worden v\'f2\'f2r de analyse verwijderd. }{\cf2 Voer deze analyse dus nooit uit in een geopend project met karteringen die niet verwijderd mogen worden!}{\cf17 
+\par 
+\par }{\b\cf17 Analyse per\'85}{\cf17 : i
+n het dialoogvenster moet allereerst opgegeven worden of de analyse per subdoeltype, of per vak/afdeling uitgevoerd moet worden. In het algemeen levert de keuze voor vak/afdeling een groter aantal karteringen op, en dus ook een groter aantal analyses.
+
+\par 
+\par }{\b\cf17 Veldinformatie importbestand Arcview:}{\cf17 
+ Hierbij moet worden aangegeven waar de noodzakelijke gegevens zijn opgeslagen in het Arcviewbestand. Avis gaat uit van een aantal standaardveldnamen. Als een bepaalde veldnaam niet is aangetroffen dient u zelf aan te geve
+n in welk veld de desbetreffende informatie is opgeslagen. Onderaan in het scherm wordt een aantal regels uit het resultatenbestand weergegeven. Hierin kan gebladerd worden als hulp voor het maken van een juiste keuze van de velden.
+\par De veldinformatie voor vak en afdeling kan leeg blijven indien u de analyse op het niveau van subdoeltype wilt uitvoeren. Bij afwezigheid van het jaartal wordt het huidige jaar aangehouden, bij afwezigheid van het aantal het getal 1.
+\par 
+\par Klik op }{\b\cf17 Oke}{\cf17  voor het uitvoeren van de analyse.
+\par 
+\par }{\f0\cf17 
+\par 
+\par 
+\par }\pard\plain \s2\ql \li0\ri0\sb200\sa200\sl240\slmult0\keep\keepn\nowidctlpar\faauto\outlinelevel1\rin0\lin0\itap0 \b\f1\fs36\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\fs28\cf6 Resultaten analyse Arcviewbestand 
+\par }\pard\plain \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 \f1\fs20\lang1043\langfe1043\cgrid\langnp1043\langfenp1043 {\cf17 
+\par 
+\par In de tabel wordt per subdoeltype en/of vak/afdeling en per jaar de resultaten van de analyse gepresenteerd. Van belang is hoe de dichtheid van een geka
+rteerde vogelgroep ligt ten opzichte van de dichtheid van dezelfde vogelgroep in de referentie. Wat in de tabel is aangeduid als }{\f0\cf17 \lquote }{\cf17 Referentie}{\f0\cf17 \rquote }{\cf17  wordt verderop als bovengrens beschouwd.
+\par 
+\par }{\b\cf17 Printen:}{\cf17  Hiermee kan de resultatentabel naar een printer of een bestand uitgevoerd worden.
+\par 
+\par }{\b\cf17 Stippen:}{\cf17  Van het ingelezen resultatenbestand van Arcview kan een letterlijke kopie worden gemaakt met extra informatie over tot welke vogelgroep een soort behoord en welke 
+veeleisendheid ze daarin heeft. De uitgevoerde tabel is handig om bijvoorbeeld in Arcview verspreidingsgegevens per soort te aggregeren tot vogelgroepen. 
+\par 
+\par }{\b\cf17 Vogelgroep: }{\cf17 Per vogelgroep kan een bestand worden gemaakt voor Arcview, waarbij de verhouding van het dichtheden van de gekarteerde vogelgroep ten opzichte van de referentie wordt uitgedrukt in een index waarde.
+\par De indexwaarde kan varieren van 0 t/m 4.
+\par 0 = de dichtheid van de gekarteerde vogelgroep is 0 (vogelgroep echter wel aangetroffen in de referentie)
+\par 1= de dichtheid van de gekarteerde vogelgroep ligt lager dan de ondergrens van het subdeoeltype (ca. 1/3 van de referentie).
+\par 2 = de dichtheid van de gekarteerde vogelgroep ligt tussen ondergrens en de helft van de referentie min de ondergrens .
+\par 3= de dichtheid van de gekarteerde vogelgroep ligt tussen de helft van de referentie minus ondergrens en de referentie.
+\par 4 = de dichtheid van de gekarteerde vogelgroep is hoger dan de referentiewaarde van het subdoeltype.
+\par Indexwaarden 0, 1 en 2 vertegenwoordigen een te verbeteren situatie aan, 3 en 4 stellen respectievelijk een aanvaardbare en goede situatie voor.
+\par 
+\par 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\f0\fs24\cf17 
+\par 
+\par }{\b\f0\cf17 
+\par }\pard \ql \li0\ri0\sb240\sa60\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\fs28\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\b\f0\fs24\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\faauto\rin0\lin0\itap0 {\f0\fs24\cf17 
+\par }\pard \ql \li0\ri0\nowidctlpar\tx0\tx710\tx1420\tx2120\tx2830\tx3540\tx4250\tx4960\tx5660\tx6370\tx7080\tx7790\tx8500\tx8640\faauto\rin0\lin0\itap0 {\f0\fs24\cf17 
+\par 
+\par 
+\par }{\b\f0\fs24\cf17 
+\par }{\f0\fs24\cf17 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par 
+\par }\pard \ql \li0\ri0\nowidctlpar\faauto\rin0\lin0\itap0 {\f0\cf17 
+\par 
+\par 
+\par 
+\par 
+\par }}

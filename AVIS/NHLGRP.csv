@@ -1,0 +1,278 @@
+SDT_CODE0,SUBNHL,OMSCHRIJVI,ECOGROEP,GROEPNAAM,HABITAT,STATUS,ONDERGRENS,REFERENTIE
+01.01,1.1,Kwelder,301,Strandplevier-groep,"schaars begroeide zandplaten, zout tot brak",Standaard,3.491,10.47
+01.01,1.1,Kwelder,303,Scholekster-groep,open pioniervegetaties in kustduinen,Standaard,42.647,127.94
+01.01,1.1,Kwelder,502,Grutto-groep,vochtig tot drassig grasland,Standaard,6.018,18.05
+01.02,1.2,Zee,0,,,,0.0,0.0
+01.03,1.3,Stuivend duin,301,Strandplevier-groep,"schaars begroeide zandplaten, zout tot brak",Standaard,0.0,0.0
+01.03,1.3,Stuivend duin,303,Scholekster-groep,open pioniervegetaties in kustduinen,Standaard,0.0,0.0
+01.03,1.3,Stuivend duin,501,Zomertaling-groep,"drassig, structuurrijk grasland. Plaatselijk open water",Standaard,0.0,0.0
+01.03,1.3,Stuivend duin,502,Grutto-groep,vochtig tot drassig grasland,Standaard,0.0,0.0
+01.03,1.3,Stuivend duin,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,0.0
+01.03,1.3,Stuivend duin,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Facultatief,0.0,0.0
+02.02,2.2,Beekboslandschap,0,,,,0.0,0.0
+02.03,2.3,Moeras,102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,3.534,10.6
+02.03,2.3,Moeras,204,Blauwborst-groep,verlande rietvegetaties met struiken,Facultatief,0.0,45.01
+02.03,2.3,Moeras,211,Waterrietvogels,natte rietvegetaties,Standaard,8.792,26.38
+02.03,2.3,Moeras,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,52.68
+02.03,2.3,Moeras,701,Buidelmees-groep,"boomgroepen in rietland, rivierbegeleidend bos",Standaard,0.06,0.18
+02.04,2.4,Afgesloten zoete zeearmen,102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,8.464,25.39
+02.04,2.4,Afgesloten zoete zeearmen,211,Waterrietvogels,natte rietvegetaties,Standaard,10.863,32.59
+02.04,2.4,Afgesloten zoete zeearmen,500,Weidevogels,grazige vegetaties,Standaard,11.065,33.2
+02.04,2.4,Afgesloten zoete zeearmen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,23.146,69.44
+02.04,2.4,Afgesloten zoete zeearmen,812,Holenbroeders,"oud bos, dode bomen",Facultatief,0.0,1.16
+02.05,2.5,Iepen-Essenwoud,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,0.0,0.0
+02.05,2.5,Iepen-Essenwoud,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,0.0,0.0
+02.05,2.5,Iepen-Essenwoud,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,0.0,0.0
+02.05,2.5,Iepen-Essenwoud,812,Holenbroeders,"oud bos, dode bomen",Standaard,0.0,0.0
+02.06,2.6,Rivierboslandschap,102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,0.0,0.0
+02.06,2.6,Rivierboslandschap,211,Waterrietvogels,natte rietvegetaties,Standaard,0.0,0.0
+02.06,2.6,Rivierboslandschap,701,Buidelmees-groep,"boomgroepen in rietland, rivierbegeleidend bos",Standaard,0.0,0.0
+02.06,2.6,Rivierboslandschap,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,0.0,0.0
+02.06,2.6,Rivierboslandschap,803,Appelvink-groep,opgaand bos met loofbomen,Facultatief,0.0,0.0
+02.06,2.6,Rivierboslandschap,812,Holenbroeders,"oud bos, dode bomen",Facultatief,0.0,0.0
+02.07,2.7,Dynamisch duinlandschap,301,Strandplevier-groep,"schaars begroeide zandplaten, zout tot brak",Standaard,0.0,0.0
+02.07,2.7,Dynamisch duinlandschap,303,Scholekster-groep,open pioniervegetaties in kustduinen,Standaard,0.0,0.0
+03.01,3.1,Dennenbossen op kalkarme (land)duinen,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,8.867,26.6
+03.01,3.1,Dennenbossen op kalkarme (land)duinen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,12.766,38.3
+03.01,3.1,Dennenbossen op kalkarme (land)duinen,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,3.941,11.82
+03.01,3.1,Dennenbossen op kalkarme (land)duinen,812,Holenbroeders,"oud bos, dode bomen",Standaard,20.395,61.18
+03.02,3.2,Broekbossen op zure venen,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,29.567,88.7
+03.02,3.2,Broekbossen op zure venen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,7.421,22.26
+03.02,3.2,Broekbossen op zure venen,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,4.13,12.39
+03.02,3.2,Broekbossen op zure venen,812,Holenbroeders,"oud bos, dode bomen",Standaard,4.52,13.56
+03.03,3.3,Loofbossen op arme zandgronden,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,42.6,127.8
+03.03,3.3,Loofbossen op arme zandgronden,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,10.563,31.69
+03.03,3.3,Loofbossen op arme zandgronden,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,10.873,32.62
+03.03,3.3,Loofbossen op arme zandgronden,812,Holenbroeders,"oud bos, dode bomen",Standaard,43.262,129.79
+03.04,3.4,Loofbossen op lemige zandgronden,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,21.433,64.3
+03.04,3.4,Loofbossen op lemige zandgronden,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,6.654,19.96
+03.04,3.4,Loofbossen op lemige zandgronden,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,10.589,31.77
+03.04,3.4,Loofbossen op lemige zandgronden,812,Holenbroeders,"oud bos, dode bomen",Standaard,82.882,248.65
+03.05,3.5,Loofbossen op kalkrijke (zee)duinen,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,12.467,37.4
+03.05,3.5,Loofbossen op kalkrijke (zee)duinen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,14.965,44.9
+03.05,3.5,Loofbossen op kalkrijke (zee)duinen,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,1.643,4.93
+03.05,3.5,Loofbossen op kalkrijke (zee)duinen,812,Holenbroeders,"oud bos, dode bomen",Standaard,25.208,75.62
+03.06,3.6,Loofbossen op lemen en kalkrijke zandgronden,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,58.733,176.2
+03.06,3.6,Loofbossen op lemen en kalkrijke zandgronden,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,7.054,21.16
+03.06,3.6,Loofbossen op lemen en kalkrijke zandgronden,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,25.099,75.3
+03.06,3.6,Loofbossen op lemen en kalkrijke zandgronden,812,Holenbroeders,"oud bos, dode bomen",Standaard,101.872,305.62
+03.07,3.7,Loofbossen op kalkrijke bodems,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,6.6,19.8
+03.07,3.7,Loofbossen op kalkrijke bodems,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,6.614,19.84
+03.07,3.7,Loofbossen op kalkrijke bodems,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,30.952,92.86
+03.07,3.7,Loofbossen op kalkrijke bodems,812,Holenbroeders,"oud bos, dode bomen",Standaard,123.016,369.05
+03.08,3.8,Loofbossen op klei- en zavelgronden,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,38.0,114.0
+03.08,3.8,Loofbossen op klei- en zavelgronden,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,29.003,87.01
+03.08,3.8,Loofbossen op klei- en zavelgronden,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,2.663,7.99
+03.08,3.8,Loofbossen op klei- en zavelgronden,812,Holenbroeders,"oud bos, dode bomen",Standaard,34.707,104.12
+03.09,3.9,Beekbegleidende loofbossen,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,116.3,348.9
+03.09,3.9,Beekbegleidende loofbossen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,14.881,44.64
+03.09,3.9,Beekbegleidende loofbossen,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,15.625,46.88
+03.09,3.9,Beekbegleidende loofbossen,812,Holenbroeders,"oud bos, dode bomen",Standaard,102.679,308.04
+03.10,3.10,Broekbossen op laagveen,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,37.8,113.4
+03.10,3.10,Broekbossen op laagveen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,8.321,24.96
+03.10,3.10,Broekbossen op laagveen,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,10.079,30.24
+03.10,3.10,Broekbossen op laagveen,812,Holenbroeders,"oud bos, dode bomen",Standaard,20.813,62.44
+04.01,4.1,Eiken-hakhout,0,,,,0.0,0.0
+04.02,4.2,Grienden & essen/elzenhakhout,0,,,,0.0,0.0
+04.03,4.3,Middenbos,0,,,,0.0,0.0
+04.04,4.4,Park- en stinse bos,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,20.3,60.9
+04.04,4.4,Park- en stinse bos,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,6.556,19.67
+04.04,4.4,Park- en stinse bos,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,2.025,6.07
+04.04,4.4,Park- en stinse bos,812,Holenbroeders,"oud bos, dode bomen",Standaard,67.398,202.19
+04.05,4.5,Overige natuurbossen,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,0.0,0.0
+04.05,4.5,Overige natuurbossen,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,0.0,0.0
+04.05,4.5,Overige natuurbossen,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,0.0,0.0
+04.05,4.5,Overige natuurbossen,812,Holenbroeders,"oud bos, dode bomen",Standaard,0.0,0.0
+05.01,5.1,Natte duinvalleien,203,Porseleinhoen-groep,"natte, lage vegetaties (vnl. zeggen; incl. gemaaid riet) met",Standaard,0.0,0.0
+05.01,5.1,Natte duinvalleien,301,Strandplevier-groep,"schaars begroeide zandplaten, zout tot brak",Standaard,0.0,0.0
+05.01,5.1,Natte duinvalleien,500,Weidevogels,grazige vegetaties,Facultatief,0.0,33.23
+05.01,5.1,Natte duinvalleien,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Facultatief,0.0,72.2
+05.02,5.2,Hoogveen,401,Korhoen-groep,"open, structuurrrijke heide en hoogveen grenzend aan cultuur",Facultatief,0.0,2.66
+05.02,5.2,Hoogveen,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Standaard,5.177,15.53
+05.02,5.2,Hoogveen,602,Roodborsttapuit-groep,"lage struwelen en heggen, hoge ruigten (heide, stuifzand en",Standaard,6.661,19.98
+05.02,5.2,Hoogveen,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Facultatief,0.0,6.01
+05.03,5.3,Hoogveenvennen,101,Dodaars-groep,voedselarm-matig voedselrijk open water,Facultatief,0.0,0.0
+05.03,5.3,Hoogveenvennen,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Standaard,0.0,0.0
+05.04,5.4,Natte heide,101,Dodaars-groep,voedselarm-matig voedselrijk open water,Facultatief,0.0,10.62
+05.04,5.4,Natte heide,401,Korhoen-groep,"open, structuurrrijke heide en hoogveen grenzend aan cultuur",Facultatief,0.0,3.36
+05.04,5.4,Natte heide,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Standaard,2.151,6.45
+05.04,5.4,Natte heide,602,Roodborsttapuit-groep,"lage struwelen en heggen, hoge ruigten (heide, stuifzand en",Standaard,4.803,14.41
+05.04,5.4,Natte heide,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Facultatief,0.0,5.81
+06.01,6.1,Open duin,303,Scholekster-groep,open pioniervegetaties in kustduinen,Standaard,5.894,17.68
+06.01,6.1,Open duin,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Facultatief,0.0,48.92
+06.02,6.2,Duinstruweel,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,29.18,87.54
+06.02,6.2,Duinstruweel,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Facultatief,0.0,12.0
+06.02,6.2,Duinstruweel,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,1.743,5.23
+06.03,6.3,"Droge, open heide",304,Tapuit-groep,"open zandige plekken en zeer korte, schrale vegetaties (heid",Standaard,2.169,6.51
+06.03,6.3,"Droge, open heide",401,Korhoen-groep,"open, structuurrrijke heide en hoogveen grenzend aan cultuur",Facultatief,0.0,1.57
+06.03,6.3,"Droge, open heide",402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Standaard,1.08,3.24
+06.03,6.3,"Droge, open heide",602,Roodborsttapuit-groep,"lage struwelen en heggen, hoge ruigten (heide, stuifzand en",Standaard,4.546,13.64
+06.03,6.3,"Droge, open heide",702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Facultatief,0.0,12.8
+06.04,6.4,Stuifzanden,304,Tapuit-groep,"open zandige plekken en zeer korte, schrale vegetaties (heid",Standaard,6.818,20.45
+06.04,6.4,Stuifzanden,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,12.66,37.98
+06.05,6.5,Heide met struweel en bos,401,Korhoen-groep,"open, structuurrrijke heide en hoogveen grenzend aan cultuur",Facultatief,0.0,1.04
+06.05,6.5,Heide met struweel en bos,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Standaard,0.376,1.13
+06.05,6.5,Heide met struweel en bos,602,Roodborsttapuit-groep,"lage struwelen en heggen, hoge ruigten (heide, stuifzand en",Standaard,3.932,11.8
+06.05,6.5,Heide met struweel en bos,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,5.652,16.96
+06.05,6.5,Heide met struweel en bos,812,Holenbroeders,"oud bos, dode bomen",Facultatief,0.0,19.49
+06.06,6.6,Overige heiden,401,Korhoen-groep,"open, structuurrrijke heide en hoogveen grenzend aan cultuur",Facultatief,0.0,0.0
+06.06,6.6,Overige heiden,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Standaard,0.0,0.0
+06.06,6.6,Overige heiden,602,Roodborsttapuit-groep,"lage struwelen en heggen, hoge ruigten (heide, stuifzand en",Standaard,0.0,0.0
+06.06,6.6,Overige heiden,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,0.0,0.0
+07.01,7.1,Jonge verlanding,101,Dodaars-groep,voedselarm-matig voedselrijk open water,Standaard,1.905,5.71
+07.01,7.1,Jonge verlanding,102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,15.167,45.5
+07.01,7.1,Jonge verlanding,211,Waterrietvogels,natte rietvegetaties,Standaard,31.522,94.57
+07.02,7.2,Oude riet ruigten,204,Blauwborst-groep,verlande rietvegetaties met struiken,Standaard,15.871,47.61
+07.02,7.2,Oude riet ruigten,211,Waterrietvogels,natte rietvegetaties,Standaard,34.997,104.99
+07.02,7.2,Oude riet ruigten,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,69.41
+07.01,7.3,Brakwaterverlanding,101,Dodaars-groep,voedselarm-matig voedselrijk open water,Standaard,0.0,0.0
+07.01,7.3,Brakwaterverlanding,102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,0.0,0.0
+07.01,7.3,Brakwaterverlanding,211,Waterrietvogels,natte rietvegetaties,Standaard,0.0,0.0
+08.01,8.1,Veenmosrietlanden en trilvenen,211,Waterrietvogels,natte rietvegetaties,Standaard,0.0,0.0
+08.01,8.1,Veenmosrietlanden en trilvenen,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Facultatief,0.0,0.0
+08.02,8.2,Natte schraallanden,501,Zomertaling-groep,"drassig, structuurrijk grasland. Plaatselijk open water",Standaard,0.0,0.0
+08.02,8.2,Natte schraallanden,502,Grutto-groep,vochtig tot drassig grasland,Facultatief,0.0,0.0
+08.02,8.2,Natte schraallanden,503,Veldleeuwerik-groep,nat tot droog grasland,Facultatief,0.0,0.0
+08.02,8.2,Natte schraallanden,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,0.0,0.0
+09.01,9.1,Glanshaverhooiland,501,Zomertaling-groep,"drassig, structuurrijk grasland. Plaatselijk open water",Facultatief,0.0,0.0
+09.01,9.1,Glanshaverhooiland,502,Grutto-groep,vochtig tot drassig grasland,Standaard,0.0,0.0
+09.01,9.1,Glanshaverhooiland,503,Veldleeuwerik-groep,nat tot droog grasland,Facultatief,0.0,0.0
+09.01,9.1,Glanshaverhooiland,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,0.0,0.0
+09.02,9.2,Kamgrasweiden en zilverschoongraslanden,500,Weidevogels,grazige vegetaties,Standaard,28.232,84.7
+09.02,9.2,Kamgrasweiden en zilverschoongraslanden,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,9.601,28.8
+09.03,9.3,Kalkgraslanden,503,Veldleeuwerik-groep,nat tot droog grasland,Facultatief,0.0,0.0
+09.03,9.3,Kalkgraslanden,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,0.0,0.0
+09.04,9.4,Zilte graslanden,500,Weidevogels,grazige vegetaties,Standaard,37.644,112.93
+09.05,9.5,Droge schraallanden,304,Tapuit-groep,"open zandige plekken en zeer korte, schrale vegetaties (heid",Facultatief,0.0,0.0
+09.05,9.5,Droge schraallanden,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,0.0,0.0
+09.05,9.5,Droge schraallanden,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,0.0,0.0
+09.06,9.6,Overige bloemrijke graslanden,0,,,,0.0,0.0
+10.01,10.1,Vochtig schraal grasland,501,Zomertaling-groep,"drassig, structuurrijk grasland. Plaatselijk open water",Standaard,0.0,0.0
+10.01,10.1,Vochtig schraal grasland,502,Grutto-groep,vochtig tot drassig grasland,Standaard,0.0,0.0
+10.01,10.1,Vochtig schraal grasland,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,0.0,0.0
+10.02,10.2,Veenweide,501,Zomertaling-groep,"drassig, structuurrijk grasland. Plaatselijk open water",Standaard,9.31,27.93
+10.02,10.2,Veenweide,502,Grutto-groep,vochtig tot drassig grasland,Standaard,30.565,91.69
+10.02,10.2,Veenweide,503,Veldleeuwerik-groep,nat tot droog grasland,Standaard,17.679,53.04
+11.01,11.1,Watergemeenschappen in laagveen en kleigebieden,101,Dodaars-groep,voedselarm-matig voedselrijk open water,Standaard,0.0,0.0
+11.01,11.1,Watergemeenschappen in laagveen en kleigebieden,102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,1.773,5.32
+11.01,11.1,Watergemeenschappen in laagveen en kleigebieden,211,Waterrietvogels,natte rietvegetaties,Facultatief,0.0,55.85
+11.02,11.2,"Vennen en plassen op zand, zwak gebufferd",101,Dodaars-groep,voedselarm-matig voedselrijk open water,Standaard,0.0,0.0
+11.02,11.2,"Vennen en plassen op zand, zwak gebufferd",102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,0.0,0.0
+11.02,11.2,"Vennen en plassen op zand, zwak gebufferd",402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Facultatief,0.0,0.0
+11.03,11.3,Beken en rellen,104,IJsvogel-groep,beken,Standaard,0.0,0.0
+12.01,12.1,"Complex van ooibos, pionier- en watervegetaties in",101,Dodaars-groep,voedselarm-matig voedselrijk open water,Facultatief,0.0,3.3
+12.01,12.1,"Complex van ooibos, pionier- en watervegetaties in",102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,14.377,43.13
+12.01,12.1,"Complex van ooibos, pionier- en watervegetaties in",211,Waterrietvogels,natte rietvegetaties,Standaard,2.337,7.01
+12.01,12.1,"Complex van ooibos, pionier- en watervegetaties in",603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,91.03
+12.01,12.1,"Complex van ooibos, pionier- en watervegetaties in",701,Buidelmees-groep,"boomgroepen in rietland, rivierbegeleidend bos",Standaard,0.894,2.68
+12.01,12.1,"Complex van ooibos, pionier- en watervegetaties in",812,Holenbroeders,"oud bos, dode bomen",Facultatief,0.0,34.09
+12.02,12.2,"Complex van bos, rietruigten, gras en water op laa",101,Dodaars-groep,voedselarm-matig voedselrijk open water,Facultatief,0.0,3.47
+12.02,12.2,"Complex van bos, rietruigten, gras en water op laa",102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open water",Standaard,6.654,19.96
+12.02,12.2,"Complex van bos, rietruigten, gras en water op laa",211,Waterrietvogels,natte rietvegetaties,Standaard,13.718,41.16
+12.02,12.2,"Complex van bos, rietruigten, gras en water op laa",603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,33.01
+12.02,12.2,"Complex van bos, rietruigten, gras en water op laa",701,Buidelmees-groep,"boomgroepen in rietland, rivierbegeleidend bos",Standaard,0.727,2.18
+12.02,12.2,"Complex van bos, rietruigten, gras en water op laa",812,Holenbroeders,"oud bos, dode bomen",Facultatief,0.0,10.0
+12.04,12.4,"Complex van bos, ruigten, gras op kalkrijke gronde",503,Veldleeuwerik-groep,nat tot droog grasland,Facultatief,0.0,0.0
+12.04,12.4,"Complex van bos, ruigten, gras op kalkrijke gronde",711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,0.0,0.0
+12.04,12.4,"Complex van bos, ruigten, gras op kalkrijke gronde",803,Appelvink-groep,opgaand bos met loofbomen,Facultatief,0.0,0.0
+12.05,12.5,"Complex van bos, ruigten en water op zandgronden",503,Veldleeuwerik-groep,nat tot droog grasland,Facultatief,0.0,0.0
+12.05,12.5,"Complex van bos, ruigten en water op zandgronden",603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,0.0,0.0
+12.05,12.5,"Complex van bos, ruigten en water op zandgronden",702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,0.0,0.0
+13.01,13.1,"Grove dennen-Berkenbos op zuur, arm zand",611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,23.933,71.8
+13.01,13.1,"Grove dennen-Berkenbos op zuur, arm zand",711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,14.414,43.24
+13.01,13.1,"Grove dennen-Berkenbos op zuur, arm zand",803,Appelvink-groep,opgaand bos met loofbomen,Standaard,9.181,27.54
+13.01,13.1,"Grove dennen-Berkenbos op zuur, arm zand",812,Holenbroeders,"oud bos, dode bomen",Standaard,44.619,133.86
+13.02,13.2,"Grove dennen-Eikenbos op droog, leemarm zand",611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,15.367,46.1
+13.02,13.2,"Grove dennen-Eikenbos op droog, leemarm zand",711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,8.392,25.18
+13.02,13.2,"Grove dennen-Eikenbos op droog, leemarm zand",803,Appelvink-groep,opgaand bos met loofbomen,Standaard,5.719,17.16
+13.02,13.2,"Grove dennen-Eikenbos op droog, leemarm zand",812,Holenbroeders,"oud bos, dode bomen",Standaard,32.538,97.61
+13.03,13.3,"Grove dennen-Eikenbos op vochtig tot nat, leemarm",611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,15.467,46.4
+13.03,13.3,"Grove dennen-Eikenbos op vochtig tot nat, leemarm",711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,8.308,24.92
+13.03,13.3,"Grove dennen-Eikenbos op vochtig tot nat, leemarm",803,Appelvink-groep,opgaand bos met loofbomen,Standaard,5.677,17.03
+13.03,13.3,"Grove dennen-Eikenbos op vochtig tot nat, leemarm",812,Holenbroeders,"oud bos, dode bomen",Standaard,32.095,96.29
+13.04,13.4,Grove dennen-Eikenbos op zand met cultuur-invloed,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,30.6,91.8
+13.04,13.4,Grove dennen-Eikenbos op zand met cultuur-invloed,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,4.514,13.54
+13.04,13.4,Grove dennen-Eikenbos op zand met cultuur-invloed,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,9.432,28.3
+13.04,13.4,Grove dennen-Eikenbos op zand met cultuur-invloed,812,Holenbroeders,"oud bos, dode bomen",Standaard,42.855,128.57
+13.05,13.5,Grove dennen-Eikenbos met exoten op zand met cultu,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,21.3,63.9
+13.05,13.5,Grove dennen-Eikenbos met exoten op zand met cultu,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,5.458,16.37
+13.05,13.5,Grove dennen-Eikenbos met exoten op zand met cultu,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,9.092,27.28
+13.05,13.5,Grove dennen-Eikenbos met exoten op zand met cultu,812,Holenbroeders,"oud bos, dode bomen",Standaard,49.968,149.9
+13.06,13.6,Wintereiken-Beukenbos op leemhoudend zand,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,25.633,76.9
+13.06,13.6,Wintereiken-Beukenbos op leemhoudend zand,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,3.559,10.68
+13.06,13.6,Wintereiken-Beukenbos op leemhoudend zand,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,9.349,28.05
+13.06,13.6,Wintereiken-Beukenbos op leemhoudend zand,812,Holenbroeders,"oud bos, dode bomen",Standaard,65.395,196.18
+13.07,13.7,Wintereiken-Beukenbos met exoten op leemhoudend za,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,18.6,55.8
+13.07,13.7,Wintereiken-Beukenbos met exoten op leemhoudend za,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,4.655,13.96
+13.07,13.7,Wintereiken-Beukenbos met exoten op leemhoudend za,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,7.178,21.53
+13.07,13.7,Wintereiken-Beukenbos met exoten op leemhoudend za,812,Holenbroeders,"oud bos, dode bomen",Standaard,37.661,112.98
+13.08,13.8,Vochtig Wintereiken-Beukenbos op leemhoudend zand,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,25.633,76.9
+13.08,13.8,Vochtig Wintereiken-Beukenbos op leemhoudend zand,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,3.559,10.68
+13.08,13.8,Vochtig Wintereiken-Beukenbos op leemhoudend zand,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,9.349,28.05
+13.08,13.8,Vochtig Wintereiken-Beukenbos op leemhoudend zand,812,Holenbroeders,"oud bos, dode bomen",Standaard,65.395,196.18
+13.09,13.9,Vochtig Wintereiken-Beukenbos met exoten op leemho,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,20.0,60.0
+13.09,13.9,Vochtig Wintereiken-Beukenbos met exoten op leemho,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,4.985,14.96
+13.09,13.9,Vochtig Wintereiken-Beukenbos met exoten op leemho,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,7.942,23.83
+13.09,13.9,Vochtig Wintereiken-Beukenbos met exoten op leemho,812,Holenbroeders,"oud bos, dode bomen",Standaard,42.553,127.66
+13.10,13.10,Eiken-Haagbeukenbos op natte lemige gronden,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,48.733,146.2
+13.10,13.10,Eiken-Haagbeukenbos op natte lemige gronden,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,15.253,45.76
+13.10,13.10,Eiken-Haagbeukenbos op natte lemige gronden,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,11.65,34.95
+13.10,13.10,Eiken-Haagbeukenbos op natte lemige gronden,812,Holenbroeders,"oud bos, dode bomen",Standaard,71.842,215.53
+13.11,13.11,Essen-Iepenbos op vochtige klei en zavel,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,46.667,140.0
+13.11,13.11,Essen-Iepenbos op vochtige klei en zavel,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,5.484,16.45
+13.11,13.11,Essen-Iepenbos op vochtige klei en zavel,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,7.473,22.42
+13.11,13.11,Essen-Iepenbos op vochtige klei en zavel,812,Holenbroeders,"oud bos, dode bomen",Standaard,75.375,226.13
+13.12,13.12,Essen-Iepenbos met exoten op vochtige  klei en zav,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,55.433,151.2
+13.12,13.12,Essen-Iepenbos met exoten op vochtige  klei en zav,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,5.874,17.62
+13.12,13.12,Essen-Iepenbos met exoten op vochtige  klei en zav,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,10.056,30.17
+13.12,13.12,Essen-Iepenbos met exoten op vochtige  klei en zav,812,Holenbroeders,"oud bos, dode bomen",Standaard,39.402,118.21
+13.13,13.13,Elzen-Wilgenbos op nat veen en klei met cultuurinv,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,62.4,187.2
+13.13,13.13,Elzen-Wilgenbos op nat veen en klei met cultuurinv,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,15.495,46.48
+13.13,13.13,Elzen-Wilgenbos op nat veen en klei met cultuurinv,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,13.968,41.9
+13.13,13.13,Elzen-Wilgenbos op nat veen en klei met cultuurinv,812,Holenbroeders,"oud bos, dode bomen",Standaard,67.758,203.27
+13.14,13.14,Essenbos met exoten op nat veen en klei met cultuu,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,50.4,151.2
+13.14,13.14,Essenbos met exoten op nat veen en klei met cultuu,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,5.874,17.62
+13.14,13.14,Essenbos met exoten op nat veen en klei met cultuu,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,10.056,30.17
+13.14,13.14,Essenbos met exoten op nat veen en klei met cultuu,812,Holenbroeders,"oud bos, dode bomen",Standaard,39.402,118.21
+13.15,13.15,Elzenbos op zeer nat veen met cultuurinvloed,611,Zwartkop-groep,"jong bos, struiklaag in bossen",Standaard,65.3,195.9
+13.15,13.15,Elzenbos op zeer nat veen met cultuurinvloed,711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen,Standaard,12.972,38.92
+13.15,13.15,Elzenbos op zeer nat veen met cultuurinvloed,803,Appelvink-groep,opgaand bos met loofbomen,Standaard,8.037,24.11
+13.15,13.15,Elzenbos op zeer nat veen met cultuurinvloed,812,Holenbroeders,"oud bos, dode bomen",Standaard,27.073,81.22
+14.01,14.1,Rietcultuur,201,Roerdomp-groep,"nat, vnl. overjarig rietland",Standaard,0.0,0.0
+14.01,14.1,Rietcultuur,202,Rietzanger-groep,"zegge-riet, nat tot verlandend. Vnl. overjarig",Facultatief,0.0,0.0
+14.01,14.1,Rietcultuur,203,Porseleinhoen-groep,"natte, lage vegetaties (vnl. zeggen; incl. gemaaid riet) met",Standaard,0.0,0.0
+14.01,14.1,Rietcultuur,402,Wulp-groep,"open heide, al dan niet grenzend aan cultuurland",Facultatief,0.0,0.0
+15.01,15.1,Weidevogelgrasland,501,Zomertaling-groep,"drassig, structuurrijk grasland. Plaatselijk open water",Standaard,3.585,10.75
+15.01,15.1,Weidevogelgrasland,502,Grutto-groep,vochtig tot drassig grasland,Standaard,15.8,47.4
+15.01,15.1,Weidevogelgrasland,503,Veldleeuwerik-groep,nat tot droog grasland,Standaard,12.123,36.37
+15.01,15.1,Weidevogelgrasland,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,10.1
+15.02,15.2,Wintergastenweide,0,,,,0.0,0.0
+16.01,16.1,Akker,306,Kievit-groep,akkers,Standaard,0.0,0.0
+16.01,16.1,Akker,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Facultatief,0.0,5.49
+16.01,16.1,Akker,702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Facultatief,0.0,16.48
+17.01,17.1,Overig water,0,,,,0.0,0.0
+18.01,18.1,"Houtwallen, brede singels en graften",603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,9.272,27.82
+18.01,18.1,"Houtwallen, brede singels en graften",702,Geelgors-groep,"open bos, bosranden, boomgroepen met kale, zandige bodem",Standaard,3.424,10.27
+18.02,18.2,Bloemdijken,603,Grasmus-groep,"struwelen, opslag en zeer jong bos, bosranden met struiken",Standaard,0.0,0.0
+18.02,18.2,Bloemdijken,703,Putter-groep,"bomen en boomgroepen met struwelen, bosranden, (vrij) voedse",Facultatief,0.0,0.0
+19.02,19.2,Overige korte vegetaties,0,,,,0.0,0.0
+20.01,20.1,Knotwilgen en heggen,0,,,,0.0,0.0
+20.02,20.2,Landschappelijke beplantingen en Overige bossen,0,,,,0.0,0.0
+20.03,20.3,Dijken,0,,,,0.0,0.0
+20.04,20.4,Demonstratie kooien,0,,,,0.0,0.0
+20.05,20.5,Rustende eendekooien,0,,,,0.0,0.0
+20.06,20.6,Forten,0,,,,0.0,0.0
+20.08,20.8,Historische tuinen,0,,,,0.0,0.0
+20.09,20.9,Lanen en singels,0,,,,0.0,0.0
+20.10,20.10,Hoogstamboomgaarden,0,,,,0.0,0.0
+99.01,99.1,Erven en ondergrond van gebouwen in eigen beheer,0,,,,0.0,0.0
+99.02,99.2,Ondergrond hunebed e.d.,0,,,,0.0,0.0
+99.03,99.3,"Wegen, paden, parkeerterreinen",0,,,,0.0,0.0
+99.04,99.4,Recreatieweide,0,,,,0.0,0.0
+99.05,99.5,Zandwinputten,0,,,,0.0,0.0
+99.06,99.6,Vuilstorten en vervuilde gronden,0,,,,0.0,0.0
+99.07,99.7,In erfpacht gegeven aan Natuurmonumenten,0,,,,0.0,0.0
+99.08,99.8,In erfpacht gegeven aan Prov. Landschappen,0,,,,0.0,0.0
+99.09,99.9,In erfpacht gegeven aan Recreatieschappen,0,,,,0.0,0.0
+99.10,99.10,Beheer uitbesteed aan SBNL,0,,,,0.0,0.0
+99.11,99.11,Beheer uitbesteed aan andere overheden,0,,,,0.0,0.0

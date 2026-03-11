@@ -1,0 +1,91 @@
+ECOCODE,ECOTOOP
+100,onbegroeid
+110,kaal zand
+120,kaal slik
+130,kaal veen
+200,water
+210,periodiek water
+220,permanent open water
+300,mossen en pioniervegetaties
+310,veenmos
+320,zandige pioniervegetaties
+330,akkers
+331,extensief beheerde akkers
+332,granen extensief
+333,hakvruchten extensief
+334,intensief beheerde akkers
+335,granen intensief
+336,hakvruchten intensief
+337,mais
+400,grazige vegetaties
+401,grasland
+410,intensief beheerd grasland
+420,extensief beheerd grasland
+421,bloemrijk grasland
+422,ruig grasland
+423,natte schraallanden
+424,"vochtig-natte schraallanden (kamgras, etc"
+425,binnendijkse zilte graslanden
+426,droge schraallanden
+427,kalkgrasland
+430,halfnatuurlijk grasland
+431,duingrasland
+432,duinrietveld
+433,heischraal grasland
+434,vergraste heide
+435,helmgras
+500,"dwergstruiken (heide, etc.)"
+510,"kruipwilg, duinroos"
+520,"heide, bosbes"
+521,dopheide
+522,struikheide
+523,kraaiheide
+524,bosbesheide
+530,gagel
+600,verlandingsvegetaties en riet
+610,verlandingsvegetaties
+611,drijvende waterplantenvegetatie
+612,"primaire verlanding (grote zeggen, waterdrieblad)"
+620,riet
+621,waterriet
+622,overjarig hoog riet
+623,overjarig laag/droog riet
+624,veenmosriet
+625,gemaaid riet
+700,ruigten
+710,drooggevallen terrein
+720,natte ruigte
+721,natte ruigte zonder riet
+722,rietruigte
+730,droge ruigte
+731,"kap, brand en- stormvlakte"
+740,braakland
+800,struweel en bos
+810,struweel
+811,struweel zonder bomen
+812,struweel met bomen
+820,open bos
+821,open loofbos
+822,open gemengd bos
+823,open naaldbos
+830,gesloten loofbos
+831,zeer jong loofbos
+832,jong loofbos
+833,middeloud-oud loofbos
+834,oud-bejaard loofbos
+840,gesloten gemengd bos
+841,zeer jong gemengd bos
+842,jong gemend bos
+843,middeloud-oud gemengd bos
+844,oud-bejaard gemengd bos
+850,gesloten naaldbos
+851,zeer jong naaldbos
+852,jong naaldbos
+853,middeloud-oud naaldbos
+854,oud-bejaard naaldbos
+860,lijnvormige opgaande begroeiing
+861,"houtwallen, brede singels en graften"
+862,heggen en hakhoutwallen
+863,lanen en bomenrijen
+900,bebouwing en overig
+910,bebouwing

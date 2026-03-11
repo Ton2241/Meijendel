@@ -1,0 +1,14 @@
+-- Deze query zoekt uit in welke landschapgroepen de soort "Boomleeuwerik" valt.
+-- We koppelen de soort aan de koppeltabel (evg_vogel_landschapgroep) en halen
+-- vervolgens de groepsinformatie op uit evg_vogelgroepen.
+SELECT
+  g.groepsnummer,
+  g.landschap_groep,
+  g.beschrijving_landschap_groep
+FROM evg_vogel_landschapgroep vg
+JOIN soorten s ON s.id = vg.vogel_id
+JOIN evg_vogelgroepen g ON g.groepsnummer = vg.groepsnummer
+-- Alleen de soort met de Nederlandse naam "Boomleeuwerik"
+WHERE s.soort_naam = 'Boomleeuwerik'
+-- Netjes gesorteerd op groepsnummer
+ORDER BY g.groepsnummer;

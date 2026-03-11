@@ -1,0 +1,55 @@
+Uitleg per tabel (officiele bronnen)
+
+Geraadpleegde officiele bestanden (meegeleverd in AVIS MSI):
+- Handleiding_Avis_2.doc
+- Handleiding_Avis_2.PDF
+- Avis_3_toelichting.pdf
+- Broedvogels_en_beheer.pdf
+- Ecologische_profielen_broedvogels.PDF
+- AVIS.HLP
+- AVIS31.HLP
+
+Officieel genoemde tabelcategorieen (uit AVIS help/handleiding):
+- Vogelgroepen en soorten (overzichtstabel genoemd; inhoud niet verder gespecificeerd).
+- Terreintypen en vogelgroepen (overzichtstabel genoemd; inhoud niet verder gespecificeerd).
+- Terreintypen en kenmerkende vogelsoorten (overzichtstabel genoemd; inhoud niet verder gespecificeerd).
+- Referenties en vogelsoorten (overzichtstabel genoemd; inhoud niet verder gespecificeerd).
+- Ornitologisch Basisregister: tabel met detailinformatie per soort; hiermee kunnen ook vogelgroepen worden samengesteld.
+
+Overige officiele tekst die tabellen of resultaten noemt (geen DBF-namen):
+- Arcview-import tabel: per territorium/"stip" staat het bijbehorende (sub)doeltype.
+- Resultatentabel: per subdoeltype/vak/afdeling en per jaar worden analysecijfers getoond; dichtheid wordt vergeleken met referentie/bovengrens.
+- Exporttabel: er is een exportmogelijkheid waarbij soorten kunnen worden geaggregeerd naar vogelgroepen (geschikt voor Arcview).
+
+Conclusie: in de officiele documenten staat geen expliciete data-dictionary met DBF-tabelnamen of veldbeschrijvingen.
+
+Overzicht per DBF-tabel (officiele uitleg):
+- AVISTE2: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- BROEDVOG: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- ECOGROEP: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- ECOTOOP: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- Eco_pop: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- GEBIED: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- Gistest: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- HO9298: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- Hz: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- INDICAT: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- KARAKTER: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- KARTERIN: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- NEDERLND: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- NHLGRP: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- Normgrp: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- OBR: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- OBRTOT: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- PROJECT2: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- REFERENT: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- REFGEB: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- REF_POP: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- RES_KOP: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- RES_ROMP: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- TER_GRO: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- VARIABEL: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- VARNAAM: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- VOGELS: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- Voorbeeld_niet_geteld: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.
+- hz9298: geen expliciete officiele uitleg gevonden in de geraadpleegde documenten.

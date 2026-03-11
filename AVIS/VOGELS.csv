@@ -1,0 +1,282 @@
+EURING,NEDERLANDS,SOORTGROEP,EURNUM
+   70,Dodaars,3,70
+   90,Fuut,3,90
+  100,Roodhalsfuut,0,100
+  110,Kuifduiker,0,110
+  120,Geoorde Fuut,2,120
+  720,Aalscholver,1,720
+  950,Roerdomp,2,950
+  980,Woudaapje,2,980
+ 1040,Kwak,1,1040
+ 1080,Ralreiger,0,1080
+ 1110,Koereiger,0,1110
+ 1190,Kleine Zilverreiger,1,1190
+ 1210,Grote Zilverreiger,1,1210
+ 1220,Blauwe Reiger,1,1220
+ 1240,Purperreiger,1,1240
+ 1310,Zwarte Ooievaar,0,1310
+ 1340,Ooievaar,2,1340
+ 1440,Lepelaar,1,1440
+ 1470,Flamingo,0,1470
+ 1520,Knobbelzwaan,3,1520
+ 1560,Zwaangans,0,1560
+ 1574,Toendrarietgans,0,1574
+ 1590,Kolgans,2,1590
+ 1610,Grauwe Gans,3,1610
+ 1620,Indische Gans,0,1620
+ 1630,Sneeuwgans,0,1630
+ 1660,Grote Canadese Gans,3,1660
+ 1670,Brandgans,2,1670
+ 1700,Nijlgans,3,1700
+ 1710,Casarca,0,1710
+ 1730,Bergeend,3,1730
+ 1750,Muskuseend,0,1750
+ 1770,Carolinaeend,0,1770
+ 1780,Mandarijneend,3,1780
+ 1790,Smient,2,1790
+ 1820,Krakeend,3,1820
+ 1840,Wintertaling,3,1840
+ 1860,Wilde Eend,4,1860
+ 1861,Soepeend,4,1861
+ 1890,Pijlstaart,2,1890
+ 1910,Zomertaling,3,1910
+ 1940,Slobeend,3,1940
+ 1960,Krooneend,2,1960
+ 1980,Tafeleend,3,1980
+ 2020,Witoogeend,0,2020
+ 2030,Kuifeend,3,2030
+ 2040,Toppereend,0,2040
+ 2060,Eider,2,2060
+ 2180,Brilduiker,2,2180
+ 2200,Nonnetje,0,2200
+ 2210,Middelste Zaagbek,2,2210
+ 2230,Grote Zaagbek,0,2230
+ 2250,Rosse Stekelstaart,0,2250
+ 2310,Wespendief,3,2310
+ 2380,Zwarte Wouw,0,2380
+ 2390,Rode Wouw,0,2390
+ 2430,Zeearend,0,2430
+ 2560,Slangenarend,0,2560
+ 2600,Bruine Kiekendief,2,2600
+ 2610,Blauwe Kiekendief,2,2610
+ 2630,Grauwe Kiekendief,2,2630
+ 2670,Havik,3,2670
+ 2690,Sperwer,3,2690
+ 2870,Buizerd,3,2870
+ 2920,Schreeuwarend,0,2920
+ 2930,Bastaardarend,0,2930
+ 2960,Steenarend,0,2960
+ 2980,Dwergarend,0,2980
+ 3010,Visarend,0,3010
+ 3040,Torenvalk,3,3040
+ 3070,Roodpootvalk,0,3070
+ 3100,Boomvalk,3,3100
+ 3200,Slechtvalk,2,3200
+ 3260,Hazelhoen,0,3260
+ 3290,Moerassneeuwhoen,0,3290
+ 3320,Korhoen,2,3320
+ 3350,Auerhoen,0,3350
+ 3580,Rode Patrijs,0,3580
+ 3670,Patrijs,3,3670
+ 3700,Kwartel,3,3700
+ 3940,Fazant,4,3940
+ 4070,Waterral,3,4070
+ 4080,Porseleinhoen,2,4080
+ 4100,Klein Waterhoen,2,4100
+ 4110,Kleinst Waterhoen,2,4110
+ 4210,Kwartelkoning,2,4210
+ 4240,Waterhoen,4,4240
+ 4290,Meerkoet,4,4290
+ 4330,Kraanvogel,2,4330
+ 4420,Kleine Trap,0,4420
+ 4460,Grote Trap,0,4460
+ 4500,Scholekster,3,4500
+ 4550,Steltkluut,2,4550
+ 4560,Kluut,2,4560
+ 4590,Griel,0,4590
+ 4690,Kleine Plevier,3,4690
+ 4700,Bontbekplevier,2,4700
+ 4770,Strandplevier,2,4770
+ 4820,Morinelplevier,0,4820
+ 4850,Goudplevier,0,4850
+ 4930,Kievit,3,4930
+ 5120,Bonte Strandloper,0,5120
+ 5170,Kemphaan,2,5170
+ 5190,Watersnip,3,5190
+ 5200,Poelsnip,0,5200
+ 5290,Houtsnip,3,5290
+ 5320,Grutto,3,5320
+ 5410,Wulp,3,5410
+ 5460,Tureluur,3,5460
+ 5530,Witgatje,0,5530
+ 5540,Bosruiter,0,5540
+ 5560,Oeverloper,2,5560
+ 5750,Zwartkopmeeuw,1,5750
+ 5780,Dwergmeeuw,0,5780
+ 5820,Kokmeeuw,1,5820
+ 5900,Stormmeeuw,1,5900
+ 5910,Kleine Mantelmeeuw,1,5910
+ 5920,Zilvermeeuw,1,5920
+ 5927,Geelpootmeeuw,0,5927
+ 6000,Grote Mantelmeeuw,2,6000
+ 6020,Drieteenmeeuw,0,6020
+ 6050,Lachstern,0,6050
+ 6060,Reuzenstern,0,6060
+ 6110,Grote Stern,1,6110
+ 6150,Visdief,1,6150
+ 6160,Noordse Stern,1,6160
+ 6240,Dwergstern,1,6240
+ 6260,Witwangstern,0,6260
+ 6270,Zwarte Stern,1,6270
+ 6280,Witvleugelstern,0,6280
+ 6650,Rotsduif,0,6650
+ 6680,Holenduif,4,6680
+ 6700,Houtduif,5,6700
+ 6840,Turkse Tortel,4,6840
+ 6870,Zomertortel (Tortelduif),4,6870
+ 7120,Halsbandparkiet,3,7120
+ 7240,Koekoek,4,7240
+ 7350,Kerkuil,3,7350
+ 7390,Dwergooruil,0,7390
+ 7440,Oehoe,2,7440
+ 7510,Dwerguil,0,7510
+ 7570,Steenuil,3,7570
+ 7610,Bosuil,3,7610
+ 7650,Oeraluil,0,7650
+ 7660,Laplanduil,0,7660
+ 7670,Ransuil,3,7670
+ 7680,Velduil,2,7680
+ 7700,Ruigpootuil,0,7700
+ 7780,Nachtzwaluw,2,7780
+ 7950,Gierzwaluw,4,7950
+ 8310,IJsvogel,2,8310
+ 8400,Bijeneter,0,8400
+ 8410,Scharrelaar,0,8410
+ 8460,Hop,0,8460
+ 8480,Draaihals,2,8480
+ 8550,Grijskopspecht,0,8550
+ 8560,Groene Specht,3,8560
+ 8630,Zwarte Specht,3,8630
+ 8760,Grote Bonte Specht,4,8760
+ 8780,Syrische Bonte Specht,0,8780
+ 8830,Middelste Bonte Specht,2,8830
+ 8840,Witrugspecht,0,8840
+ 8870,Kleine Bonte Specht,3,8870
+ 8980,Drieteenspecht,0,8980
+ 9720,Kuifleeuwerik,2,9720
+ 9740,Boomleeuwerik,3,9740
+ 9760,Veldleeuwerik,4,9760
+ 9810,Oeverzwaluw,1,9810
+ 9920,Boerenzwaluw,4,9920
+10010,Huiszwaluw,4,10010
+10050,Duinpieper,2,10050
+10090,Boompieper,4,10090
+10110,Graspieper,4,10110
+10171,Gele Kwikstaart,4,10171
+10172,Engelse Kwikstaart,0,10172
+10190,Grote Gele Kwikstaart,2,10190
+10201,Witte Kwikstaart,4,10201
+10202,Rouwkwikstaart,2,10202
+10480,Pestvogel,0,10480
+10500,Waterspreeuw,0,10500
+10660,Winterkoning,5,10660
+10840,Heggenmus,4,10840
+10990,Roodborst,5,10990
+11030,Noordse Nachtegaal,0,11030
+11040,Nachtegaal,3,11040
+11060,Blauwborst,3,11060
+11210,Zwarte Roodstaart,4,11210
+11220,Gekraagde Roodstaart,4,11220
+11370,Paapje,2,11370
+11390,Roodborsttapuit,3,11390
+11460,Tapuit,3,11460
+11860,Beflijster,0,11860
+11870,Merel,5,11870
+11980,Kramsvogel,2,11980
+12000,Zanglijster,4,12000
+12010,Koperwiek,0,12010
+12020,Grote Lijster,4,12020
+12200,Cetti's Zanger,0,12200
+12260,Graszanger (Waaierstaartzanger),0,12260
+12360,Sprinkhaanzanger,3,12360
+12370,Krekelzanger,0,12370
+12380,Snor,3,12380
+12420,Waterrietzanger,0,12420
+12430,Rietzanger,3,12430
+12470,Veldrietzanger,0,12470
+12480,Struikkarekiet,0,12480
+12500,Bosrietzanger,4,12500
+12510,Kleine Karekiet,4,12510
+12530,Grote Karekiet,2,12530
+12590,Spotvogel,4,12590
+12600,Orpheusspotvogel,0,12600
+12730,Sperwergrasmus,0,12730
+12740,Braamsluiper,4,12740
+12750,Grasmus,4,12750
+12760,Tuinfluiter,4,12760
+12770,Zwartkop,4,12770
+12910,Groene Fitis,0,12910
+13070,Bergfluiter,0,13070
+13080,Fluiter,3,13080
+13110,Tjiftjaf,5,13110
+13120,Fitis,5,13120
+13140,Goudhaan,5,13140
+13150,Vuurgoudhaan,3,13150
+13350,Grauwe Vliegenvanger,4,13350
+13430,Kleine Vliegenvanger,0,13430
+13480,Withalsvliegenvanger,0,13480
+13490,Bonte Vliegenvanger,4,13490
+13640,Baardmannetje,2,13640
+14370,Staartmees,4,14370
+14400,Glanskop,3,14400
+14420,Matkop,4,14420
+14540,Kuifmees,5,14540
+14610,Zwarte Mees,5,14610
+14620,Pimpelmees,5,14620
+14640,Koolmees,5,14640
+14790,Boomklever,3,14790
+14860,Taigaboomkruiper,2,14860
+14870,Boomkruiper,4,14870
+14900,Buidelmees,2,14900
+15080,Wielewaal,3,15080
+15150,Grauwe Klauwier,2,15150
+15200,Klapekster,2,15200
+15230,Roodkopklauwier,0,15230
+15390,Gaai,4,15390
+15490,Ekster,4,15490
+15570,Notenkraker,0,15570
+15600,Kauw,4,15600
+15620,Huiskraai,2,15620
+15630,Roek,1,15630
+15671,Zwarte Kraai,4,15671
+15673,Bonte Kraai,0,15673
+15720,Raaf,2,15720
+15820,Spreeuw,4,15820
+15910,Huismus,5,15910
+15980,Ringmus,5,15980
+16360,Vink,5,16360
+16380,Keep,2,16380
+16400,Europese Kanarie,2,16400
+16490,Groenling,4,16490
+16530,Putter,3,16530
+16540,Sijs,3,16540
+16600,Kneu,4,16600
+16630,Barmsijs,3,16630
+16634,Kleine Barmsijs,0,16634
+16650,Witbandkruisbek,0,16650
+16660,Kruisbek,3,16660
+16680,Grote Kruisbek,0,16680
+16790,Roodmus,2,16790
+17100,Goudvink,4,17100
+17170,Appelvink,3,17170
+18570,Geelgors,3,18570
+18580,Cirlgors,0,18580
+18600,Grijze Gors,0,18600
+18660,Ortolaan,2,18660
+18770,Rietgors,4,18770
+18820,Grauwe Gors,2,18820
+20010,Soepgans,4,20010
+20030,Stadsduif,4,20030
+20040,Zwarte Zwaan,2,20040
+20080,Lachduif,0,20080
+20090,Pauw,0,20090

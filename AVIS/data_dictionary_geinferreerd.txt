@@ -1,0 +1,315 @@
+Inferred data dictionary (from CSV samples).
+Sample size per table: up to 200 rows.
+This is inferred from data patterns; not official definitions.
+
+[AVISTE2.csv]
+- EURING: float; examples: 1730.0, 4500.0, 11390.0
+- SOORT: string; examples: Bergeend, Scholekster, Roodborsttapuit
+- AANTAL: float; examples: 1.0
+- XX: int; examples: 110474, 111097, 110840
+- YY: int; examples: 562698, 564433, 564570
+- ID: float; examples: 10011.1000422, 10011.1000453, 10011.1000459
+- VAK: float; examples: 3.0, 4.0, 0.0
+- AFD: string; examples: G, M, S
+- SDT_NO: float; examples: 5.1, 6.1, 5.4
+- DIG_OPP: float; examples: 4.98091, 64.07441, 47.55881
+- SDT_OPP: float; examples: 110.0706, 345.7091, 17.785
+
+[BROEDVOG.csv]
+- EURING: int; examples: 1730, 1860, 1940
+- AANTAL: int; examples: 7, -1, 12
+- SOV_NDX: int; examples: 1, 2, 3
+
+[ECOGROEP.csv]
+- GROEP: int; examples: 100, 101, 102
+- NAAM: string; examples: Watervogels, Dodaars-groep, Slobeend-groep
+- HABITAT: string; examples: open water, voedselarm-matig voedselrijk open water, kleinschalig, ondiep (matig) voedselrijk open wate
+
+[ECOTOOP.csv]
+- ECOCODE: int; examples: 100, 110, 120
+- ECOTOOP: string; examples: onbegroeid, kaal zand, kaal slik
+
+[Eco_pop.csv]
+- GROEP: int; examples: 100, 101, 102
+- EURING: int; examples: 70, 90, 100
+- VEELEISEND: int; examples: 2, 1, 3
+
+[GEBIED.csv]
+- GEB_CODE: int; examples: 04833382, 04753854
+- GEB_NAAM: string; examples: ganzenreservaat, heggenreservaat
+- GEB_GROOT: float; examples: 66.0, 76.0
+
+[Gistest.csv]
+- EURING: float; examples: 70.0, 90.0, 120.0
+- SOORT: string; examples: Dodaars, Fuut, Geoorde Fuut
+- AANTAL: float; examples: 1.0
+- XX: int; examples: 110191, 110396, 110474
+- YY: int; examples: 559926, 559864, 559340
+- ID: empty; examples: (none)
+- VAK: float; examples: 0.0
+- AFD: empty; examples: (none)
+- SDT_NO: empty; examples: (none)
+- DIG_OPP: float; examples: 0.0
+- SDT_OPP: float; examples: 0.0
+
+[HO9298.csv]
+- EURING: float; examples: 70.0, 120.0, 1700.0
+- JAAR: int; examples: 1992, 1998
+- AA_GEB: string; examples: HO
+- SUBDOELTYP: float; examples: 13.6, 3.3, 5.4
+- AANTAL: float; examples: 1.0, 11.0, 8.0
+- OPPERVLAKT: float; examples: 459.3625, 73.4046, 283.6797
+
+[Hz.csv]
+- EURING: float; examples: 70.0, 1840.0, 1860.0
+- SOORT: empty; examples: (none)
+- AANTAL: float; examples: 1.0, 9.0, 2.0
+- XX: empty; examples: (none)
+- YY: empty; examples: (none)
+- ID: empty; examples: (none)
+- VAK: empty; examples: (none)
+- AFD: empty; examples: (none)
+- SDT_NO: float; examples: 5.4, 13.6, 3.3
+- DIG_OPP: empty; examples: (none)
+- SDT_OPP: float; examples: 18.604, 60.667, 61.508
+- JAAR: int; examples: 1998, 1992
+
+[INDICAT.csv]
+- LANDSCHAP: int; examples: 1000
+- EURING: int; examples: 70, 90, 100
+- CODE: int; examples: 2, 1, 3
+
+[KARAKTER.csv]
+- LANDSCHAP: int; examples: 1000, 1120, 1130
+- EURING: int; examples: 1730, 1790, 1890
+- DREMPEL: int; examples: 0
+- CODE: string; examples: K
+
+[KARTERIN.csv]
+- GEB_CODE: int; examples: 04833382, 04753854
+- SOV_NDX: int; examples: 1, 2
+- JAAR: int; examples: 1999
+
+[NEDERLND.csv]
+- CHANGE: int; examples: 0, 2, 1
+- X: float; examples: 220.0, 0.0, 160.0
+- Y: float; examples: 400.0, 350.0, 300.0
+
+[NHLGRP.csv]
+- SDT_CODE0: float; examples: 01.01, 01.02, 01.03
+- SUBNHL: float; examples: 1.1, 1.2, 1.3
+- OMSCHRIJVI: string; examples: Kwelder, Zee, Stuivend duin
+- ECOGROEP: int; examples: 301, 303, 502
+- GROEPNAAM: string; examples: Strandplevier-groep, Scholekster-groep, Grutto-groep
+- HABITAT: string; examples: schaars begroeide zandplaten, zout tot brak, open pioniervegetaties in kustduinen, vochtig tot drassig grasland
+- STATUS: string; examples: Standaard, Facultatief
+- ONDERGRENS: float; examples: 3.491, 42.647, 6.018
+- REFERENTIE: float; examples: 10.47, 127.94, 18.05
+
+[Normgrp.csv]
+- SUBNHLVOLG: float; examples: 1.0, 4.0, 6.0
+- SUBNHLCODE: float; examples: 1.1, 2.1, 2.3
+- SUBNHLOMS: string; examples: Kwelders, Grote Stuifzanden, Klei-oermoeras
+- GROEPNR: float; examples: 100.0, 102.0, 103.0
+- GROEPNAAM: string; examples: Watervogels, Slobeend-groep, Kuifeend-groep
+- REFERENTIE: float; examples: 0.5924, 0.401, 0.1914
+- ONDERGRENS: float; examples: 0.1955, 0.1323, 0.0632
+- REF_KLAS: float; examples: 0.8, 0.6, 0.2
+- ONDER_KLAS: float; examples: 0.264, 0.198, 0.066
+
+[OBR.csv]
+- EURING: int; examples: 90, 100, 120
+- VOGELNAAM: string; examples: Fuut, Roodhalsfuut, Geoorde Fuut
+- _1: int; examples: 1, 2, 3
+- _2: int; examples: 1, 8, 2
+- _3: string; examples: 7, ?, 8
+- _4: string; examples: 2, 7, 3
+- _5: string; examples: 3, 5b, 7
+- _6: string; examples: 1, 2, 3
+- _7: string; examples: 1;3, 3?, 3
+- _8: string; examples: 1, 3, 3?
+- _9: string; examples: 2, 1, 3
+- _10: string; examples: 4, 3, 2
+- _11: string; examples: 2, 3, 4
+- _12: string; examples: 5, 4, 5?
+- _13: string; examples: x, o, x?
+- _14: string; examples: x, ?, x?
+- _15: string; examples: o, x
+- _16: string; examples: 2, 6, 3
+- _17: string; examples: 1, 2, 4
+- _18: string; examples: 3, 6, 4
+- _19: string; examples: x, 1, 3
+- _20: string; examples: 2, 1, 3
+- _21: string; examples: 1, 2, 3
+- _22: string; examples: 1, 2?, 2
+- _23: int; examples: 1, 2, 3
+- _24: string; examples: 3, 2, x?
+- _25: string; examples: 1, 2, 3
+- _26: string; examples: 3, x, 1?
+- _27: string; examples: 3, 2, x?
+- _28: string; examples: 2, 3, 2?
+- _29: string; examples: 3, x, 2
+- _30: string; examples: 1, x, 4
+- _31: int; examples: 1, 5, 2
+- _32: string; examples: 3, 5, 2
+- _33: int; examples: 1, 2, 0
+- _34: int; examples: 1, 0, 2
+- _35: string; examples: 3, 2, 1
+- _36: string; examples: -, *
+- _37: string; examples: -, *
+- _38: string; examples: -, tz, itz
+- _39: string; examples: *, -
+- _40: string; examples: *, -
+- _41: string; examples: II, III, IV
+- _42: string; examples: 5000, 0, 30
+- _43: string; examples: 7500, 0, 70
+- _44: string; examples: 7000, 0, 30
+- _45: string; examples: 10000, 1, 225
+- _46: string; examples: SDe, Z, S
+- _47: string; examples: WDo, Do, -
+- _48: string; examples: 12, 1, 2
+- _49: int; examples: 1234, 134, 4
+- _50: string; examples: *, i, -
+- _51: string; examples: 762, 3, 56
+- _52: string; examples: d1e, d1, b1b2
+- _53: int; examples: 3, 4, 5
+- _54: int; examples: 7, 6, 9
+- _55: int; examples: 27, 24, 21
+- _56: int; examples: 3, 2, 4
+- _57: int; examples: 4, 5, 1
+- _58: int; examples: 6, 7, 8
+- _59: int; examples: 1, 2, 3
+- _60: int; examples: 1, 2, 3
+- _61: int; examples: 2, 1, 3
+- _62: int; examples: 1, 4, 3
+- _63: string; examples: -, *
+- _64: string; examples: -, *
+- _65: int; examples: 75, 72, 21
+- _66: string; examples: *, -
+- _67: string; examples: -, 2, 4
+- _68: string; examples: 10, -, 20
+- _69: string; examples: -, 88, 77
+- _70: int; examples: 6, 12, 0
+- _71: int; examples: 1110, 834, 358
+- _72: int; examples: 1011, 783, 284
+- _73: int; examples: 198, 175, 134
+- _74: int; examples: 184, 169, 130
+- _75: empty; examples: (none)
+- _76: empty; examples: (none)
+- _77: empty; examples: (none)
+- _78: empty; examples: (none)
+- _79: empty; examples: (none)
+- _80: empty; examples: (none)
+- _81: empty; examples: (none)
+- _82: empty; examples: (none)
+- _83: empty; examples: (none)
+- _84: empty; examples: (none)
+- _85: empty; examples: (none)
+- _86: int; examples: 2, 3, 4
+
+[OBRTOT.csv]
+- EURING: int; examples: 20, 30, 40
+- VARIABELE: string; examples: AORO_LIJST, APBL_LIJST, AQNBP
+- WAARDE: string; examples: -, I, WDo
+- VARNR: int; examples: 36, 37, 38
+
+[PROJECT2.csv]
+- N1: int; examples: 10000001, 10000002, 10000003
+- OOSTERENG_: string; examples: Oostereng BN2, Oostereng BG1, Oostereng BN 3.4
+- N3: int; examples: 110, 17, 12
+- N4: int; examples: 1990
+- N5: int; examples: 2310, 2670, 2690
+- WILDE_EEND: string; examples: Wespendief, Havik, Sperwer
+- N7: int; examples: 1, 2, 3
+
+[REFERENT.csv]
+- LANDSCHAP: int; examples: 1100, 1120, 1130
+- ECOCODE: empty; examples: (none)
+- LAND: string; examples: NL
+- DISTRICT: int; examples: 1, 12, 6
+- PERIODE: int; examples: 1990, 1980
+
+[REFGEB.csv]
+- REFERENTIE: int; examples: 1120, 1130, 1140
+- TERREINTYP: int; examples: 1120, 1134, 1135
+- PLOTNR: float; examples: 1231.0, 1286.0, 14543.0
+- JAAR: int; examples: 1991, 1994, 1995
+- PLOTNAAM: string; examples: Rottumerplaat, Rottumeroog, Vierde duintjes duinen
+- OPPERVLAK: float; examples: 418.1, 275.0, 106.0
+- ECOTOOP: int; examples: 110, 420, 722
+- KWALITEIT: int; examples: 9, 8, 10
+- X: float; examples: 226900.0, 234600.0, 164084.5
+- Y: float; examples: 618000.0, 617500.0, 605354.0
+
+[REF_POP.csv]
+- LANDSCHAP: int; examples: 1120, 1130, 1140
+- LAND: string; examples: NL
+- ECOCODE: empty; examples: (none)
+- DISTRICT: int; examples: 1, 12
+- PERIODE: int; examples: 1990
+- EURING: int; examples: 1730, 1860, 1890
+- MEDIAAN: int; examples: 6, 3, 1
+- MAX_DICHT: float; examples: 13.3, 25.8, 0.4
+- PRESENTIE: int; examples: 86, 100, 6
+
+[RES_KOP.csv]
+- INDEX: int; examples: 1, 2, 3
+- GEB_CODE: int; examples: 04753854, 04833382
+- JAAR: int; examples: 1999
+- LANDSCHAP: int; examples: 6420, 6120
+- ECOCODE: empty; examples: (none)
+- LAND: string; examples: NL
+- DISTRICT: empty; examples: (none)
+- PERIODE: int; examples: 1990
+- GROEP: int; examples: 305, 501, 502
+
+[RES_ROMP.csv]
+- INDEX: int; examples: 1, 2, 3
+- SOM: float; examples: 2.0, 5.0, 1.0
+- SOM_D: float; examples: 18.42, 7.9, 6.58
+- TEL_G: float; examples: 2.0, 5.0, 0.0
+- SOM_G: float; examples: 18.42, 7.9, 0.0
+- TEL_K: float; examples: 1.0, 4.0, 2.0
+- SOM_K: float; examples: 2.63, 4.9, 6.58
+- TEL_G_K: float; examples: 1.0, 4.0, 0.0
+- SOM_D_K: float; examples: 2.63, 4.9, 0.0
+
+[TER_GRO.csv]
+- TERCODE: int; examples: 1000, 1120, 1130
+- GROEP: int; examples: 301, 303, 501
+
+[VARIABEL.csv]
+- VARNR: int; examples: 1, 2, 3
+- VARIABELE: string; examples: Broedvogel, Broed-eco1, Broed-eco2
+- WAARDE: string; examples: 1, 2, 3
+- OMSCHRIJVI: string; examples: regelmatige broedvogel, zeer zeldzame of onregelmatige broedvogel, voormalige broedvogel
+- REKENWAARD: float; examples: 0.0, 2.0, 25.0
+
+[VARNAAM.csv]
+- VARIABELE: string; examples: AORO_LIJST, APBL_LIJST, AQNBP
+- VAR_OMSCHR: string; examples: Rode Lijst, Blauwe Lijst, Natuurbeleidsplan
+- VARNR: int; examples: 36, 37, 38
+
+[VOGELS.csv]
+- EURING: int; examples: 70, 90, 100
+- NEDERLANDS: string; examples: Dodaars, Fuut, Roodhalsfuut
+- SOORTGROEP: int; examples: 3, 0, 2
+- EURNUM: int; examples: 70, 90, 100
+
+[Voorbeeld_niet_geteld.csv]
+- EURING: float; examples: 10990.0
+- SOORT: string; examples: Roodborst
+- AANTAL: float; examples: -1.0
+- XX: empty; examples: (none)
+- YY: empty; examples: (none)
+- SDT_NO: float; examples: 9.2
+- SDT_OPP: float; examples: 30.0
+
+[hz9298.csv]
+- EURING: float; examples: 70.0, 1840.0, 1860.0
+- JAAR: int; examples: 1998, 1992
+- AA_GEB: string; examples: HZ
+- SUBDOELTYP: float; examples: 5.4, 13.6, 3.3
+- AANTAL: float; examples: 1.0, 9.0, 2.0
+- SDT_OPP: float; examples: 18.604, 60.667, 61.508
+- DIG_OPP: empty; examples: (none)

@@ -1,0 +1,529 @@
+Avis voor Windows
+BrowseButtons()
+|CONTEXT
+|CTXOMAP
+|FONT
+|KWBTREE
+|KWDATA
+|KWMAP
+|SYSTEM
+|TOPIC
+|TTLBTREE
+|bm0
+Avis voor windows
+Gebruik van toetsenbord en muis
+Project
+Nieuw
+Open
+Verwijder
+Hernoem
+Herindexeer
+Converteer
+Exporteer
+Importeer
+Kartering   
+Nieuw
+Wijzig
+Gebiedinformatie
+Soortinformatie
+Verwijder
+Print
+Analyse
+Tabellen   
+Vogelgroepen en soorten
+Terreintypen en vogelgroepen
+Terreintypen en kenmerkende vogelsoorten
+Referenties en broedvogels
+Fotos tonen
+Informatie printen
+Vogelgroep toevoegen
+Vogelgroep verwijderen
+Ornitologisch Basisregister
+Opties   
+Veranderen projectdirectorie
+Registratie
+Vragen en opmerkingen
+Staatsbosbeheer
+Importeren Arcviewbestand
+Gebruik van toetsenbord en muis
+In afwijking van de algemene Windowsstandaard worden in een tabel regels geselecteerd met behulp van de spatiebalk of door te dubbelklikken op de eerste kolom.
+Nieuw project
+Project | Nieuw
+Met dit menu-onderdeel kunnen nieuwe projecten worden aangemaakt. Voor de naam van een project kunnen alleen letters, cijfers en het "underscore-teken" ( _ ) worden gebruikt. De naam mag uit maximaal 8 karakters bestaan.
+Project openen
+Project | Open
+Hiermee kunnen bestaande projecten worden geopend.
+Project verwijderen
+Project | Verwijder
+Hiermee kunnen projecten worden verwijderd. 
+Project herno
+emen
+Project | Hernoem
+Hiermee kan de naam van een project gewijzigd worden.
+Zie voor de naamgeving 
+Nieuw project
+Project herindexeren
+Project | Herindexeer
+Wanneer ingevoerde gegevens verdwenen lijken te zijn is het mogelijk, dat er problemen zijn met de indexbestanden. Met deze menu-optie worden deze index-bestanden weer opnieuw aangemaakt.
+Ook wanneer u gegevens importeert kan het soms noodzakelijk zijn het project te herindexeren.
+Converteer een Avis 1.0-project naar Avis 2.x-formaat
+Project | Converteer
+Met het menuonderdeel 'Converteer' kunnen AVIS 1 bestanden worden omgezet naar AVIS 2 bestanden. 
+Het verschil tussen beide bestandversies is, dat in AVIS 1 alle nulwaarnemingen werden opgenomen in het bestand terwijl in AVIS 2 de soorten die niet zijn geteld met de waarde 1 zijn opgenomen in het bestand.  Hierdoor wordt de grootte van de databestanden een flink stuk kleiner.
+De eerste keer dat AVIS 2 wordt opgestart, worden automatisch alle AVIS 1-bestanden op de harde schijf geconverteerd naar het AVIS 2 format. Wanneer u AVIS 1gegevens wilt converteren die op een andere plaats staan, dan er zijn er twee verschillende mogelijkheden te om deze gegevens te converteren: 
+1. plaats de bestanden in een aparte map in de datamap van AVIS. Dan wordt door het programma gevraagd om de map op de geven waar deze bestanden staan. AVIS maakt voor deze gegevens een nieuw project aan, waarvan u zelf de naam kunt wijzigen (met het menuonderdeel Project| Hernoem).
+2. Met behulp van het menu 'Opties | Wijzigen projecten-directory' kunt u de projecten-directory wijzigen. Ga naar de map waarin de gegevens staan die u wilt converteren. Geef vervolgens de naam van de map op die u wilt converteren.
+Project exporteren
+Project | Exporteer 
+Met behulp van dit menu onderdeel kunt u alle gegevens van een project exporteren naar een tekstdocument. Elk getal wordt op een aparte regel gezet. Het tekstdocument kunt u weer inlezen in een database of spreadsheet.
+Om de gegevens weer te kunnen importeren in AVIS moet er eerst een kruistabel van worden gemaakt (zie Project importeren).
+Project importeren
+Project | Importeer 
+Hiermee kunt u gegevens inlezen in een bestaand of nieuw project die bijvoorbeeld in een spreadsheet zijn ingevoerd (zoals het voorbeeld hieronder). 
+Gebiedscode
+Gebiedsnaam
+Oppervlakte
+Euringnummer
+Soort
+1990
+1991
+1992
+10000001
+Oostereng Natuurbos1
+110.4
+2310
+Wespendief
+10000001
+Oostereng Natuurbos1
+110.4
+2670
+Havik
+10000001
+Oostereng Natuurbos1
+110.4
+2690
+Sperwer
+10000001
+Oostereng Natuurbos1
+110.4
+2870
+Buizerd
+10000001
+Oostereng Natuurbos1
+110.4
+3100
+Boomvalk
+10000001
+Oostereng Natuurbos1
+110.4
+5290
+Houtsnip
+10000001
+Oostereng Natuurbos1
+110.4
+7610
+Bosuil
+10000001
+Oostereng Natuurbos1
+110.4
+7670
+Ransuil
+Dit bestand moet eerst worden opgeslagen als een CSV of txt-bestand. Het bestand moet de volgende structuur hebben:
+Gebiedscode, Gebiedsnaam, Oppervlakte, Euringnummer, Soort, Jaar1, Jaar2, Jaar3,etc.
+gegevens gescheiden door komma'saantal paren per jaar per soort
+Een voorbeeld van een import-bestand vindt u hieronder:
+Gebiedscode,Gebiedsnaam,Oppervlakte,Euringnummer,Soort,1990,1991,1992
+10000001,Oostereng Natuurbos1,110.4,2310,Wespendief,1,,1
+10000001,Oostereng Natuurbos1,110.4,2670,Havik,1,1,2
+10000001,Oostereng Natuurbos1,110.4,2690,Sperwer,,1,
+10000001,Oostereng Natuurbos1,110.4,2870,Buizerd,2,1,3
+10000001,Oostereng Natuurbos1,110.4,3100,Boomvalk,,,1
+10000001,Oostereng Natuurbos1,110.4,5290,Houtsnip,1,1,3
+10000001,Oostereng Natuurbos1,110.4,7610,Bosuil,1,,2
+10000001,Oostereng Natuurbos1,110.4,7670,Ransuil,,,1
+U kunt een dergelijk bestand maken door in Excel of Quattro het bestand op te slaan als CSV-bestand.
+In het bestand moet door middel van het getal 1 worden aangegeven welke soorten niet zijn geteld. Het is niet nodig om nullen toe te voegen aan het bestand (mag wel).
+Nieuwe kartering
+Kartering | Nieuw   
+Hiermee kan een nieuwe kartering worden gemaakt. In nieuwe gebieden moeten zowel de gebiedsgegevens als het jaartal worden ingevuld. Bij bestaande gebieden hoeft alleen een jaartal te worden toegevoegd.
+De code van een gebied dient uit maximaal 8 cijfers te bestaa
+Na het klikken op de knop  
+Bewaren
+ verschijnt een invoerscherm voor het invoeren van de vogel gegevens. U kunt de soortnamen sorteren op soortgroep (kolonievogels, zeldzame broedvogels, schaarse broedvogels, etc.), alfabetische volgorde, systematische volgorde en op aantal.
+Door het klikken op de knop 
+Filter
+ kunt u desgewenst soorten tijdelijk toevoegen of onzichtbaar maken in de invoerlijst. Een aantal zeer zeldzame soorten zijn niet standaard opgenomen in de soortenlijst; door te klikken op de knop 'filter' kunt u deze soorten zichtbaar maken.
+Achter elke soort staat standaard een 0. U kunt hier een getal invullen door eerst op de enter-toets te drukken en vervolgens het aantal in te vullen. 
+Niet-getelde soorten worden aangegeven door middel van het getal '-1'. Dit getal wordt automatisch ingevuld wanneer u op de spatiebalk drukt (het is hierbij niet nodig eerst op de enter-toets te drukken).
+Wanneer u klaar bent met invoeren klikt u op de knop 
+Bewaren
+. Op dat moment worden de gegevens toegevoegd aan de database.
+Kartering wijzigen
+Project | Open | <selecteer het project waarin de te wijzigen kartering is opgenomen>   
+De gegevens van de karteringen zijn verdeeld over twee venster. In het linker venster is per regel de gebiedsinformatie van een kartering opgenomen. In het rechter venster staan de gekarteerde soorten vermeld die bij de in het linkervenster geselecteerde kartering horen. 
+Toetsen:
+Wisselen tussen linker (gebiedsinformatie) en rechter (soortgegegevens) venster.
+Enter
+Wijzigen gebiedsinformatie (linker venster) of wijzigen soortinformatie (rechter venster)
+Nieuwe kartering invoeren 
+Spatie
+Selecteer een karteing voor onder andere analyse en printen.
+(De)selecteer een kartering voor verwijdering.
+Muis:
+Enkelklik
+Maak linker of rechter venster actief.
+Dubbelklik
+Wijzig gebiedsinformatie (linker venster) of wijzig soortinformatie (rechts). Met 
+dubbelklik
+ op de allereerst kolom van de tabel in het linker venster wordt een kartering ge(de)selecteerd voor verwijdering, 
+dubbelklikken
+ op de  tweede kolom selecteerd een kartering om  onder andere te kunnen analyseren en printen.
+Zie ook:
+Gebiedsinformatie wijzigen
+Soortinformatie wijzigen
+Gebiedinformatie kartering wijzigen
+Kartering | Wijzig | Gebiedsinformatie   
+Met behulp van dit menu onderdeel kunt u de gebiedinformatie wijzigen. U kunt altijd het gebiedsnummer wijzigen, dus ook wanneer er karteringen zijn ingevoerd (dit in tegenstelling tot AVIS 1).
+U kunt de gebiedinformatie ook wijzigen door te dubbelklikken op de regel die u wilt veranderen
+Soortinformatie kartering wijzigen
+Kartering | Wijzig | Soortinformatie   
+Met behulp van dit menu onderdeel kunt u de soortinformatie van de kartering wijzigen.
+U kunt ook dubbelklikken op het venster met soort gegevens
+Zie verder bij 
+Nieuwe kartering
+Filteren van vogelgroepen
+Om de invoer van de vogelgegevens te vereenvoudigen zijn de vogelsoorten ingedeeld naar talrijkheid. Zeer zeldzame vogels zijn niet standaard opgenomen in de lijst. U kunt deze zichtbaar maken door het vakje voor 
+Overige vogels
+ aan te vinken.
+Karteringen verwijderen
+Kartering | Verwijder   
+Met dit menu onderdeel kunt u een kartering verwijderen uit het projectbestand. De te verwijderen karteringen moet u eerst selecteren door op de <Delete>-toets te drukken of te dubbelklikken op het kruisje voor aan de regel.
+Karteringen printen
+Door op de knop 
+Printen
+ te klikken worden de gegevens van de geselecteerde karteringen afgedrukt of worden weggeschreven naar een text-bestand (SDF bestand) of komma-gescheiden-bestand om in te lezen in een spreadsheet (spreadsheet-bestand). 
+Karteringen analyseren
+Kartering | Analyse   
+Dit menu onderdeel is het hart van het programma. Hier kunt u de gegevens van de kartering vergelijken met de broedvogelgegevens van de referenties.
+Eerst dient u de kartering(en) te selecteren die nu wilt analyseren. U kunt dit doen door het aanklikken  van de verkenner-knop aan de rechterkant. Wanneer er al karteringen geselecteerd zijn voor u het analysescherm opent is de informatie van deze karteringen reeds ingevuld.
+Na selectie van de kartering kunt u een referentie selecteren en/of een vogelgroep. Ook hier voor kunt u selectieschermen oproepen door op de betreffende verkennerknoppen aan de rechterkant te klikken.
+Selecteer karteringen
+Selecteer 
+n of meer dan een karteringen door op de Spatiebalk  te drukken of door te dubbelklikken op de eerste kolom. Klik op 
+Selecteer
+ om terug te keren in het analysescherm: de gegevens van de geselecteerde karteringen zijn nu ingevuld. 
+Selecteer een vogelgroep
+Door te dubbelklikken met de muis of te navigeren met de pijltjestoetsen en de "+"-toets kunt u naar de gewenste vogelgroep gaan. U selecteert de gewenste vogelgroep door op de knop 
+Selecteer
+ te klikken. Hierna komt u weer terug in het analysesch
+erm: de gegevens van de geselecteerde vogelgroep zijn nu ingevuld.
+Door op de knop 
+Verwijder soort
+ te klikken is het mogelijk soorten uit een bepaalde vogelgroep tijdelijk weg te laten uit de analyse (zoals zeer talrijke soorten die sterk van invloed zijn op het resultaat van de analyse). In het rechtervenster kan de soort geselecteerd worden die tijdelijk uitgesloten moet worden van de analyse.
+Voor het uitsluiten van meer dan een soort dient de procedure herhaald te worden.
+Selecteer een referentie
+Door te dubbelklikken met de muis of te navigeren met de pijltjestoetsen en de "+"-toets kunt u naar het gewenste terreintype gaan.  Alle terreintypen waarvoor referenties zijn worden weergegeven met een groen boekje. Door te dubbelklikken op dat terreintype verschijnt de lijst met beschikbare referenties. In de meeste gevallen gaat het om Nederland (NL) rond 1990. U selecteert de gewenste referentie door op de knop 
+Selecteer
+ te klikken. Hierna komt u weer terug in het analysescherm: de gegevens van de geselecteerde referentie zijn nu ingevuld.
+Resultaten van de analyse bekijken
+Na de berekening kunnen de resultaten worden bekeken in het resultaatscherm.  In het bovenste deel van het scherm staan de uitgevoerde berekeningen, in het onderste deel de resultaten van die berekeningen.
+Met "goede soorten" worden kenmerkende, (vrij) kritische soorten bedoeld.
+De resultaten van de analyse kunnen ook in grafiekvorm worden weergegeven. Selecteer 
+n of meerdere analyses met behulp van de spatiebalk of door te dubbelklikken in het open vakje vooraan de regel. Wanneer u dan op de knop 
+Grafieken
+ klikt wordt er een apart programma opgestart waarin de resultaten in grafiekvorm worden weergegeven.
+De resultaten kunnen op twee verschillende manieren worden weergegeven: voor de geselecteerde vogelgroepen of voor de afzonderlijke soorten uit een groep. Wanneer u meer dan 
+n vogelgroep hebt geselecteerd krijgt u automatisch een grafiek met de verschillende vogelgroepen, selecteert u slechts 
+n vogelgroep dan worden de afzonderlijke soorten weergegeven. De grafieken voor de verschillende berekeningen staan op de afzonderlijke tabbladen.
+De gegevens van de kartering worden met groen weergegeven, de gegevens van de referentie in het blauw.
+Printen:
+ Voer de tabel direct uit naar de printer, of schrijf de gegevens weg naar een bestand.
+Grafieken: 
+Presenteer de resultaten in grafieken. Zie ook
+Korte handleiding bij de grafiek-presentatie
+Verwijder:
+ Verwijder 
+n of meer regels uit de tabel met resultaten. Selecteer daartoe eerst de te verwijderen analyses met behulp van de <Delete>-toets of door te dubbelklikken op de eerste kolom.  Het groene kruisje wordt dan rood. 
+Korte handleiding bij de grafiekpresentatie
+Boven de grafiek staat een hele serie knoppen waarmee u de instellingen van de grafiek kunt aanpassen, de grafiek kunt kopi
+ren naar het klembord of de grafiek afdrukken. U kunt hier zelf mee experimenteren.
+Enkele belangrijke 
+knoppen zijn: 
+knop met fotocamera: hiermee kopieert u de grafiek naar het klembord.  Op deze manier kan de grafiek meteen worden ingevoegd in bijvoorbeeld een tekstverwerker of presentatieprogramma.
+ knop met printer: hiermee drukt u de grafiek af.
+ met de volgende zeven knoppen kunt u het grafiektype kiezen.
+ knop met het papiertje: hiermee kan de legenda worden aangepast.
+ knop met de hamer: hiermee kan onder andere de data editor worden opgeroepen.  Op deze manier kunnen de cijfers die gebruikt zijn voor de grafiek worden bekeken en/of aangepast.  Onder "1" staan de resultaten van de kartering, onder "2"staan de gegevens van de referentie.
+ knop met het vergrootglas:  view options.  Hiermee kan onder andere de schaal van de grafiek worden ingesteld door het getal achter "max" te veranderen.
+Door te dubbelklikken op de balken van de grafiek verschijnt informatie over de waarden van deze balk.
+Vogelgroepen en soorten
+Met dit menu onderdeel kan de samenstelling van de vogelgroepen worden bekeken. Wanneer dit scherm actief is kunt u bovendien zelf vogelgroepen samenstellen. Zie hiervoor het menu onderdeel 
+Vogelgroep toevoegen
+Terreintypen en vogelgroepen
+Hier kan worden bekeken welke vogelgroepen kenmerkend zijn bij de verschillende terreintypen. Dit zijn de vogelgroepen die automatisch worden doorgerekend wanneer in de analyse geen vogelgroep wordt geselecteerd.
+Wanneer geen vogelgroepen worden weergegeven zijn deze hetzelfde als de vogelgroepen die staan bij een niveau hoger in de hi
+rarchie.
+Terreintypen en kenmerkende vogelsoorten
+Hier kan worden bekeken wat de kenmerkende soorten zijn van elk terreintype.  Wanneer er geen soorten vermeld staan, zijn dit de soorten die staan bij een niveau hoger in de hi
+rarchie. 
+Referenties en vogelsoorten
+Met behulp van dit menu onderdeel kan de samenstelling van de broedvogelbevolking van alle referenties worden bekeken.  Bovendien kan worden bekeken welke proefvlakken zijn gebruikt om de referentie samen te stellen.
+De terreintypen waar referenties van beschikbaar zijn weergegeven door middel van groene boekjes. Wanneer dit boekje wordt geopend  door er op te dubbelklikken of door de +toets in te drukken verschijnt er een lijst met de beschikbare referenties. Dit is in vrijwel alle gevallen slechts 
+n referentie, namelijk Nederland (NL) rond 1990.  In enkele gevallen heeft de referentie betrekking op een deel van Nederland (broedvogeldistrict).  In de toekomst zal het aantal referenties verder worden uitgebreid. Wanneer u een referentie selecteert verschijnt aan de rechterkant van het scherm de beschrijving van de broedvogelbevolking en een lijst en kaartje van de proefvlakken die gebruikt zijn om deze referentie samen te stellen.
+Door met de muiswijzer op het smalle balkje tussen de verschillende schermonderdelen te gaan staan verandert deze in een dubbele pijl.  Door nu de linker muisknop in te drukken en te slepen kunnen de verschillende schermonderdelen vergroot of verkleind worden.  Met de schuifbalken kan informatie die niet zichtbaar is zichtbaar worden gemaakt. Dit is met name van belang in het veC
+nsteronderdeel waarin de proefvlakken vermeld staan: naast de naam van de proefvlakken zijn hier onder meer oppervlakte, kwaliteit (op een relatieve schaal van 1 10), ecotoop (indien van toepassing) en de ligging in Nederland (met X en Yco
+rdinaten) vermeld.
+Foto's
+Van een aantal terreintypen zijn ook foto's beschikbaar. Deze foto's kunnen worden bekeken door op de knop met het fototoestel te klikken of door het kiezen van het menu onderdeel "foto's tonen". Hoe hoger u staat in de boom met het terreintypen, hoe meer foto's u te zien krijgt.  Wanneer u bijvoorbeeld op het niveau "5000 Moeras" staat, krijgt u alle foto's te zien van moeras. Wanneer u op het niveau  "5700 Laagveenmoeras" staat alleen foto's van laagveenmoerassen.
+Vogelgroep toevoegen
+Tabellen | Vogelgroep toevoegen   
+Dit menu onderdeel is alleen beschikbaar in het venster 
+vogelgroepen en soorten
+. Selecteer 
+rst het hoofdniveau waar de groep onder valt (100 watervogels - 900 vogels van bebouwing/ overig). Kies daarna pas het menu onderdeel 
+Vogelgroep toevoegen
+. Het nummer van de nieuwe vogelgroep is al automatisch in lichtgrijs ingevuld. Selecteer nu de gewenste vogelsoorten voor de nieuwe vogelgroep en geef de groep een naam en een beschrijving van het habitat. Door te klikken op de knop 
+Bewaren
+ wordt de vogelgroep opgeslagen en kan nu gebruikt worden in nieuwe analyses.
+Vogelgroep verwijderen
+Opties | Vogelgroep verwijderen 
+Hiermee kunt u vogelgroepen verwijderen die u zelf heeft samengesteld.  De standaard vogelgroepen van AVIS kunnen niet worden verwijderd. Selecteer eerste de te verwijderen vogelgroep in het venster 
+vogelgroepen en soorten
+ en vervolgens het menu onderdeel 
+Vogelgroep verwijderen
+Het Ornithologisch Basisregister  raadplegen
+Tabellen | Ornithologisch Basisregister   
+In het ornithologisch basisregister is een grote hoeveelheid ecologische informatie per soort opgenomen. De volgende literatuur is hiervoor geraadpleegd: Cramp et al. 197794, Glutz von Blotzheim et al. 196694 en Elseviers broedvogelgids
+De kolommen Rode lijst tot en met Vleugellengte vrouw zijn afkomstig uit BioBase van het Centraal Bureau voor de Statistiek. Voor achtergrondinformatie hierover wordt verwezen naar BioBase (CBS 1997).
+De gegevens in deze tabel kunnen gebruikt worden om meer detailinformatie over afzonderlijke soorten op te zoeken. Bovendien kunnen met de gegevens zelf vogelgroepen worden samengesteld.
+In veel gevallen zult u bij de informatie vraagtekens aantreffen. In de geraadpleegde literatuur is hierover geen of weinig informatie te vinden. 
+Opmerkingen of aanvullingen zijn van harte welkom.
+De soorten en in de lijst kunnen
+ zowel op alfabetische als op systematische volgorde worden getoond door te klikken op de knop met AZ of rechtsonder op Alfabetisch of Systematisch .
+Toelichting op enkele onderdelen: 
+Openheid/kleinschaligheid (grootte open ruimtes) 
+Hiermee wordt aangegeven wat de voorkeuren en toleranties zijn van broedvogelsoorten voor de open en geslotenheid van het landschap.
+Randvogel 
+Vogelsoort van randen/overgangen 
+Pendelaar  
+Vogelsoort heeft (ten dele) gescheiden broed en foerageergebied (pendelt) 
+Kolonievogel 
+Vogelsoort broedt in kolonies
+Territoriumgrootte/grootte leefgebied (gemiddeld, minimaal, maximaal) 
+Grootte van het territorium bij soorten met een. Van soorten die altijd pendelen is de grootte van het leefgebied vermeld.
+De hier gebruikte territoriumgrootte is bepaald aan de hand van dichtheidsgegevens en ge
+nterpreteerde soortkaarten van broedvogelkarteringen. Ze is bedoeld om te bepalen hoeveel paren potentieel aanwezig zouden kunnen zijn in een gebied.
+Van de aantal abiotische parameters worden zowel het optimum als de tolerantie (minimaalmaximaal) aangegeven.
+Vochtbehoefte (optimum, minimaal, maximaal) 
+De genoemde grondwatertrappen geven een globale indicatie en zijn in de praktijk afhankelijk van het bodemtype.
+Zuurgraad (opt, min, max) 
+Voorkeur voor zuur of basisch leefmilieu (water, bodem).
+Voedselrijkdom (opt, min, max) 
+Voorkeur voor voedselrijkdom van het leefmilieu (water, bodem)
+Zoutbehoefte/tolerantie (opt, min, max) 
+Voorkeur en/of tolerantie voor zout
+Stroming (opt, min, max) 
+Voorkeur en/of tolerantie voor stromend water
+Wijzigen projectendirectorie
+Opties | Wijzigen projecten-directory 
+U kunt hier instellen in welke directory de projecten moeten komen of waar u ze heeft opgeslagen. De standaard-directory waarin AVIS de gegevens opslaat is in de map 'Data' in de AVISdirectory.
+Wanneer u met een netwerk werkt is het aan te bevelen de data in een directory op het netwerk te zetten. 
+Registratie
+Met de ongeregistreerde versie van AVIS kunnen geen karteringen worden ingevoerd.
+Door AVIS te registreren ontvangt u een offici
+le versie van het programma waar gegevens mee kunnen worden ingevoerd en een cd-rom met fotos. Bovendien kunt u gebruik maken van de helpdesk.  De kosten bedragen 
+75,-voor particulieren en vogelwerkgroepen en 
+500,- voor organisaties. Meer informatie kunt u krijgen via  of door contact op te nemen met SOVON Vogelonderzoek Nederland, Rijksstraatweg 178, 6573 DG, Beek-Ubbergen, (024) 68 48 111.
+Vragen en opmerkingen
+Wanneer u vragen of opmerkingen heeft over het programma dan kunt u die doorgeven aan  of door contact op te nemen met Henk Sierdsema, SOVON Vogelonderzoek Nederland, Rijksstraatweg 178, 6573 DG, Beek-Ubbergen, (024) 68 48 145
+Importeren Arcview
+bestand 
+Project | Staatsbosbeheer | Analyseer resultaatbestand Arcview 
+Het bestand van Arcview is het resultaat van het op elkaar leggen van een kaart met broedvogeltellingen op een kaart met de Staatsbosbeheer-subdoeltypen. In de tabel is voor iedere stip (gekarteerd terririum) aangegeven tot welk subdoeltype het behoord.
+Per ruimtelijke eenheid (subdoeltype of vak/afdeling) en per jaar worden de aangetroffen vogelsoorten gegroepeerd tot karteringen. 
+Bestaande karteringen in het project worden v
+r de analyse verwijderd. 
+Voer deze analyse dus nooit uit in een geopend project met karteringen die niet verwijderd mogen worden!
+Analyse per
+: in het dialoogvenster moet allereerst opgegeven worden of de analyse per subdoeltype, of per vak/afdeling uitgevoerd moet worden. In het algemeen levert de keuze voor vak/afdeling een groter aantal karteringen op, en dus ook een groter aantal analyses.
+Veldinformatie importbestand Arcview:
+ Hierbij moet worden aangegeven waar de noodzakelijke gegevens zijn opgeslagen in het Arcviewbestand. Avis gaat uit van een aantal standaardveldnamen. Als een bepaalde veldnaam niet is aangetroffen dient u zelf aan te geven in welk veld de desbetreffende informatie is opgeslagen. Onderaan in het scherm wordt een aantal regels uit het resultatenbestand weergegeven. Hierin kan gebladerd worden als hulp voor het maken van een juiste keuze van de velden.
+De veldinformatie voor vak en afdeling kan leeg blijven indien u de analyse op het niveau van subdoeltype wilt uitvoeren. Bij afwezigheid van het jaartal wordt het huidige jaar aangehouden, bij afwezigheid van het aantal het getal 1.
+Klik op 
+ voor het uitvoeren van de analyse.
+Resultaten analyse Arcviewbestand 
+In de tabel wordt per subdoeltype en/of vak/afdeling en per jaar de resultaten van de analyse gepresenteerd. Van belang is hoe de dichtheid van een gekarteerde vogelgroep ligt ten opzichte van de dichtheid van dezelfde vogelgroep in de referentie. Wat in de tabel is aangeduid als Referentie wordt verderop als bovengrens beschouwd.
+Printen:
+ Hiermee kan de resultatentabel naar een printer of een bestand uitgevoerd worden.
+Stippen:
+ Van het ingelezen resultatenbestand van Arcview kan een letterlijke kopie worden gemaakt met extra informatie over tot welke vogelgroep een soort behoord en welke veeleisendheid ze daarin heeft. De uitgevoerde tabel is handig om bijvoorbeeld in Arcview verspreidingsgegevens per soort te aggregeren tot vogelgroepen. 
+Vogelgroep: 
+Per vogelgroep kan een bestand worden gemaakt voor Arcview, waarbij de verhouding van het dichtheden van de gekarteerde vogelgroep ten opzichte van de referentie wordt uitgedrukt in een index waarde.
+De indexwaarde kan varieren van 0 t/m 4.
+0 = de dichtheid van de gekarteerde vogelgroep is 0 (vogelgroep echter wel aangetroffen in de referentie)
+1= de dichtheid van de gekarteerde vogelgroep ligt lager dan de ondergrens van het subdeoeltype (ca. 1/3 van de referentie).
+2 = de dichtheid van de gekarteerde vogelgroep ligt tussen ondergrens en de helft van de referentie min de ondergrens .
+3= de dichtheid van de gekarteerde vogelgroep ligt tussen de helft van de referentie minus ondergrens en de referentie.
+4 = de dichtheid van de gekarteerde vogelgroep is hoger dan de referentiewaarde van het subdoeltype.
+Indexwaarden 0, 1 en 2 vertegenwoordigen een te verbeteren situatie aan, 3 en 4 stellen respectievelijk een aanvaardbare en goede situatie voor.
+Helv
+fotos    380
+Analyse - grafische presentatie
+Analyse kartering
+Analyseresulaten bekijken
+Arcviewbestand importeren
+Bekijken analyseresulaten
+Converteren project
+Exporteer project
+Filteren vogelgroepen
+Fotos tonen
+Gebiedsinformatie wijzigen
+Gebruik van toetsenbord en muis
+Grafische presentatie analyse
+Herindexeren project
+Hernoemen project
+Importeren Arcviewbestand
+Importeren project
+Kartering  wijzig
+Kartering - nieuw
+Kartering analyseren
+Kartering printen
+Kartering selecteren
+Kartering verwijderen
+Muis - gebruik van
+Nieuw project
+Nieuwe kartering
+Open project
+Opmerkingen en vragen
+Ornithologisch Basisregister raadplegen
+Overzichtstabel referenties en vogelsoorten
+Overzichtstabel terreintypen en kenmerkende vogelsoorten
+Overzichtstabel terreintypen en vogelgroepen
+Overzichtstabel vogelgroepen en soorten
+Printen kartering
+Project  importeren
+Project - converteren
+Project - exporteer
+Project - herindexeren
+Project - hernoemen
+Project - nieuw
+Project - open
+Project - verwijderen
+Projectendirectorie wijzigen
+Raadplegen Ornithologisch Basisregister
+Referentie selecteren
+Referenties en vogelsoorten - overzichtstabel
+Registratie
+Resulaten analyse bekijken
+Selecteren referentie
+Selecteren vogelgroep
+Tabel referenties en vogelsoorten
+Tabel terreintypen en kenmerkende vogelsoorten
+Tabel terreintypen en vogelgroepen
+Tabel vogelgroepen en soorten
+Terreintypen en kenmerkende vogelsoorten - overzichtstabel
+Terreintypen en vogelgroepen - overzichtstabel
+Toetsenbord - gebruik van
+Toevoegen vogelgroep
+Tonen fotos
+Verwijderen kartering
+Verwijderen project
+Verwijderen vogelgroep
+Vogelgroep selecteren
+Vogelgroep toevoegen
+Vogelgroep verwijderen
+nties en vogelso
+Vogelgroepen filteren
+Vogelgroepen soorten - overzichtstabel
+Vogels - wijzigen
+Vragen en opmerkingen
+Wijzigen - gebiedsinformatie
+Wijzigen - vogels
+Wijzigen kartering
+Wijzigen projectendirectorie
+Gebiedsinformatie wijzigen
+Gebruik van toetsenbord en muis
+Grafische presentatie analyse
+Herindexeren project
+Hernoemen project
+Importeren Arcviewbestand
+Importeren project
+Kartering  wijzig
+Kartering - nieuw
+Kartering analyseren
+Kartering printen
+Kartering selecteren
+Kartering verwijderen
+Muis - gebruik van
+Nieuw project
+Nieuwe kartering
+Open project
+Opmerkingen en vragen
+Ornithologisch Basisregister raadplegen
+Overzichtstabel referenties en vogelsoorten
+Overzichtstabel terreintypen en kenmerkende vogelsoorten
+Overzichtstabel terreintypen en vogelgroepen
+Overzichtstabel vogelgroepen en soorten
+Printen kartering
+Project  importeren
+Project - converteren
+Project - exporteer
+Project - herindexeren
+Project - hernoemen
+Project - nieuw
+Project - open
+Project - verwijderen
+Projectendirectorie wijzigen
+Raadplegen Ornithologisch Basisregister
+Referentie selecteren
+Referenties en vogelsoorten - overzichtstabel
+Registratie
+Resulaten analyse bekijken
+Selecteren referentie
+Selecteren vogelgroep
+Tabel referenties en vogelsoorten
+Tabel terreintypen en kenmerkende vogelsoorten
+Tabel terreintypen en vogelgroepen
+Tabel vogelgroepen en soorten
+Terreintypen en kenmerkende vogelsoorten - overzichtstabel
+Terreintypen en vogelgroepen - overzichtstabel
+Toetsenbord - gebruik van
+Toevoegen vogelgroep
+Tonen fotos
+Verwijderen kartering
+Verwijderen project
+Verwijderen vogelgroep
+Vogelgroep selecteren
+Vogelgroep toevoegen
+Vogelgroep verwijderen
+nties en vogelso
+Vogelgroepen filteren
+OGELS_FILTER avis.rtf 15
+8F4DADA4 IDH_KARTERING_VERWIJDER 0 IDH_KARTERING_VERWIJDER avis.rtf 16
+A664BA4A IDH_PROJECT_PRINTEN 0 IDH_PROJECT_PRINTEN avis.rtf 17
+IDH_C:\WINDOWS\TEMP\~hc24
+H_PROJECT_ANALYSEER avis.rtf 18
+E38BD5CE IDH_SELECTEER_KARTERING 0 IDH_SELECTEER_KARTERING avis.rtf 19
+FB308AA9 IDH_SELECTEER_VOGELGROEP 0 IDH_SELECTEER_VOGELGROEP avis.rtf 20
+57067382 IDH_SELECTEER_REFERENTIE 0 IDH_SELECTEER_REF
+E av
+|SYSTEM
+|TOPIC
+F988
+|FONT
+|SYSTEM
+|TOPIC
+INE IDH_WIJZIG_VOGELS         15
+#DEFINE IDH_WIJZIG_VOGELS_FILTER  16
+#DEFINE IDH_SELECTEER_VOGELGROEP   28
+#DEFINE IDH_SELECTEER_REFERENTIE   29
+#DEFINE IDH_SBB_ARCVIEW_DIALOOG    30
+#DEFINE IDH_SBB_ARCVIEW_RESULTATEN 31
+#DEFINE IDH_SBB_ARCVIEW_EXPORT_VOGELGROEP 32
+#DEFINE IDH_ANALYSE_GRAFIEKEN 33
+; This file is maintained by HCW. Do not modify this file directly.[OPTIONS]HCW=0COMPRESS=12 Hall ZeckLCID=0x413 0x0 0x0 ;Dutch (Standard)REPORT=YesCONTENTS=IDH_CONTENTSTITLE=Avis voor WindowsHLP=avis31.hlp[FILES]avis.rtf[MAP]#DEFINE IDH_CONTENTS               0#DEFINE IDH_KARTERING_NIEUW        27#DEFINE IDH_PROJECT_ANALYSE_RESULTATEN    19#DEFINE IDH_PROJECT_ANALYSEER     18#DEFINE IDH_PROJECT_CONVERTEER     22#DEFINE IDH_PROJECT_EXPORT         24#DEFINE IDH_PROJECT_HERINDEXEER    4#DEFINE IDH_PROJECT_HERNOEM        3#DEFINE IDH_PROJECT_IMPORT         25#DEFINE IDH_PROJECT_NIEUW          5#DEFINE IDH_PROJECT_OPEN           1#DEFINE IDH_PROJECT_PRINTEN        7#DEFINE IDH_PROJECT_VERWIJDER      2#DEFINE IDH_PROJECT_WIJZIGDIR      23#DEFINE IDH_REGISTER               20#DEFINE IDH_SELECTEER_KARTERING    21#DEFINE IDH_TABELLEN_BROEDVOGELS  10#DEFINE IDH_TABELLEN_OBR          17#DEFINE IDH_TABELLEN_REFERENTIES  11#DEFINE IDH_TABELLEN_TERREINTYPEN  9#DEFINE IDH_TABELLEN_VOGELGROEPEN  8#DEFINE IDH_VOGELGROEP_TOEVOEGEN  12#DEFINE IDH_VOGELGROEP_VERWIJDEREN 26#DEFINE IDH_WIJZIG_GEBIEDSINFO    14#DEFINE IDH_WIJZIG_KARTERING      13#DEFINE IDH_WIJZIG_VOGELS         15#DEFINE IDH_WIJZIG_VOGELS_FILTER  16#DEFINE IDH_SELECTEER_VOGELGROEP   28#DEFINE IDH_SELECTEER_REFERENTIE   29#DEFINE IDH_SBB_ARCVIEW_DIALOOG    30#DEFINE IDH_SBB_ARCVIEW_RESULTATEN 31#DEFINE IDH_SBB_ARCVIEW_EXPORT_VOGELGROEP 32#DEFINE IDH_ANALYSE_GRAFIEKEN 33#DEFINE IDH_GEBRUIK_MUISTOETSENBORD 23[WINDOWS]main="Avis voor Windows",(410,102,604,737),60416,(r12713983)/
+BrowseButtons
+D HP
+G HP
+FPQ
+l RP

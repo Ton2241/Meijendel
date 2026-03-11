@@ -1,0 +1,611 @@
+VARNR,VARIABELE,WAARDE,OMSCHRIJVI,REKENWAARD
+1,Broedvogel,1,regelmatige broedvogel,0.0
+1,Broedvogel,2,zeer zeldzame of onregelmatige broedvogel,0.0
+1,Broedvogel,3,voormalige broedvogel,0.0
+1,Broedvogel,4,(mogelijk) toekomstige broedvogel,0.0
+2,Broed-eco1,1,open water,0.0
+2,Broed-eco1,10,open gebied,0.0
+2,Broed-eco1,2,rietvegetaties,0.0
+2,Broed-eco1,3,ruigten,0.0
+2,Broed-eco1,3b,"zandige, open ruigten; pioniervegetaties",0.0
+2,Broed-eco1,4,heide en stuifzand; veen; open duin,0.0
+2,Broed-eco1,5,grasland,0.0
+2,Broed-eco1,6,akkers,0.0
+2,Broed-eco1,7,struwelen,0.0
+2,Broed-eco1,8,bos,0.0
+2,Broed-eco1,9,bebouwd gebied,0.0
+2,Broed-eco1,x,indifferent,0.0
+3,Broed-eco2,1,open water,0.0
+3,Broed-eco2,10,open gebied,0.0
+3,Broed-eco2,2,rietvegetaties,0.0
+3,Broed-eco2,3,ruigten,0.0
+3,Broed-eco2,3b,"zandige, open ruigten; pioniervegetaties",0.0
+3,Broed-eco2,4,heide en stuifzand; veen; open duin,0.0
+3,Broed-eco2,5,grasland,0.0
+3,Broed-eco2,6,akkers,0.0
+3,Broed-eco2,7,struwelen,0.0
+3,Broed-eco2,8,bos,0.0
+3,Broed-eco2,9,bebouwd gebied,0.0
+3,Broed-eco2,9?,bebouwd gebied ?,0.0
+3,Broed-eco2,?,?,0.0
+4,Nest-pl1,1,onder water,0.0
+4,Nest-pl1,10,gebouwen,0.0
+4,Nest-pl1,11,"holten (vnl. in de bodem, boomstronken)",0.0
+4,Nest-pl1,2,wateroppervlak/waterkant,0.0
+4,Nest-pl1,2?,wateroppervlak/waterkant ?,0.0
+4,Nest-pl1,3,bodem,0.0
+4,Nest-pl1,4,kruidlaag (10 - 50 cm),0.0
+4,Nest-pl1,5,struiklaag (0.5 - 6 m),0.0
+4,Nest-pl1,5a,lage struiklaag (0.5 - 2 m),0.0
+4,Nest-pl1,5b,hoge struiklaag (2 - 6 m),0.0
+4,Nest-pl1,6,stam (holten),0.0
+4,Nest-pl1,7,kroon (hoger dan 6 m),0.0
+4,Nest-pl1,9,riet,0.0
+4,Nest-pl1,?,?,0.0
+4,Nest-pl1,x,indifferent,0.0
+5,Nest-pl2,10,gebouwen,0.0
+5,Nest-pl2,11,"holten (vnl. in de bodem, boomstronken)",0.0
+5,Nest-pl2,11?,"holten (vnl. in de bodem, boomstronken) ?",0.0
+5,Nest-pl2,2,wateroppervlak/waterkant,0.0
+5,Nest-pl2,2?,wateroppervlak/waterkant ?,0.0
+5,Nest-pl2,3,bodem,0.0
+5,Nest-pl2,3?,bodem ?,0.0
+5,Nest-pl2,4,kruidlaag (10 - 50 cm),0.0
+5,Nest-pl2,5,struiklaag (0.5 - 6 m),0.0
+5,Nest-pl2,5a,lage struiklaag (0.5 - 2 m),0.0
+5,Nest-pl2,5b,hoge struiklaag (2 - 6 m),0.0
+5,Nest-pl2,5b?,hoge struiklaag (2 - 6 m) ?,0.0
+5,Nest-pl2,6,stam (holten),0.0
+5,Nest-pl2,7,kroon (hoger dan 6 m),0.0
+5,Nest-pl2,?,?,0.0
+6,Voedsel-eco1,1,open water,0.0
+6,Voedsel-eco1,10,open gebied,0.0
+6,Voedsel-eco1,2,rietvegetaties,0.0
+6,Voedsel-eco1,3,ruigten,0.0
+6,Voedsel-eco1,3?,ruigten ?,0.0
+6,Voedsel-eco1,3b,"zandige, open ruigten; pioniervegetaties",0.0
+6,Voedsel-eco1,4,heide en stuifzand; veen; open duin,0.0
+6,Voedsel-eco1,5,grasland,0.0
+6,Voedsel-eco1,6,akkers,0.0
+6,Voedsel-eco1,7,struwelen,0.0
+6,Voedsel-eco1,8,bos,0.0
+6,Voedsel-eco1,8?,bos ?,0.0
+6,Voedsel-eco1,9,bebouwd gebied,0.0
+7,Voedsel-eco2,1,open water,0.0
+7,Voedsel-eco2,10,open gebied,0.0
+7,Voedsel-eco2,2,rietvegetaties,0.0
+7,Voedsel-eco2,3,ruigten,0.0
+7,Voedsel-eco2,3?,ruigten ?,0.0
+7,Voedsel-eco2,3b,"zandige, open ruigten; pioniervegetaties",0.0
+7,Voedsel-eco2,4,heide en stuifzand; veen; open duin,0.0
+7,Voedsel-eco2,5,grasland,0.0
+7,Voedsel-eco2,6,akkers,0.0
+7,Voedsel-eco2,7,struwelen,0.0
+7,Voedsel-eco2,8,bos,0.0
+7,Voedsel-eco2,9,bebouwd gebied,0.0
+7,Voedsel-eco2,x,indifferent,0.0
+8,Voedsel-pl1,1,onder water,0.0
+8,Voedsel-pl1,2,wateroppervlak/waterkant,0.0
+8,Voedsel-pl1,3,bodem,0.0
+8,Voedsel-pl1,3?,bodem ?,0.0
+8,Voedsel-pl1,4,kruidlaag (10 - 50 cm),0.0
+8,Voedsel-pl1,5,struiklaag (0.5 - 6 m),0.0
+8,Voedsel-pl1,5a,lage struiklaag (0.5 - 2 m),0.0
+8,Voedsel-pl1,5b,hoge struiklaag (2 - 6 m),0.0
+8,Voedsel-pl1,6,stam,0.0
+8,Voedsel-pl1,7,kroon (> 6 m),0.0
+8,Voedsel-pl1,8,lucht,0.0
+8,Voedsel-pl1,9,riet,0.0
+8,Voedsel-pl1,x,indifferent,0.0
+9,Voedsel-pl2,1,onder water,0.0
+9,Voedsel-pl2,10,gebouwen,0.0
+9,Voedsel-pl2,1?,onder water ?,0.0
+9,Voedsel-pl2,2,wateroppervlak/waterkant,0.0
+9,Voedsel-pl2,2?,wateroppervlak/waterkant ?,0.0
+9,Voedsel-pl2,3,bodem,0.0
+9,Voedsel-pl2,3?,bodem ?,0.0
+9,Voedsel-pl2,4,kruidlaag (10 - 50 cm),0.0
+9,Voedsel-pl2,5,struiklaag (0.5 - 6 m),0.0
+9,Voedsel-pl2,5a,lage struiklaag (0.5 - 2 m),0.0
+9,Voedsel-pl2,5b,hoge struiklaag (2 - 6 m),0.0
+9,Voedsel-pl2,6,stam,0.0
+9,Voedsel-pl2,7,kroon (> 6 m),0.0
+9,Voedsel-pl2,7?,kroon (> 6 m) ?,0.0
+9,Voedsel-pl2,8,lucht,0.0
+9,Voedsel-pl2,8?,lucht ?,0.0
+9,Voedsel-pl2,x,indifferent,0.0
+10,Openh-opt.,1,< 2 ha;  zeer gesloten landschap,0.0
+10,Openh-opt.,2,2 - 25 ha; gesloten landschap,0.0
+10,Openh-opt.,2?,2 - 25 ha; gesloten landschap ?,0.0
+10,Openh-opt.,3,25 -100 ha; halfopen landschap,0.0
+10,Openh-opt.,3?,25 -100 ha; halfopen landschap ?,0.0
+10,Openh-opt.,4,100 - 1000 ha; open landschap,0.0
+10,Openh-opt.,4?,100 - 1000 ha; open landschap ?,0.0
+10,Openh-opt.,5,> 1000 ha; zeer open landschap,0.0
+10,Openh-opt.,5?,> 1000 ha; zeer open landschap ?,0.0
+10,Openh-opt.,x,indifferent,0.0
+11,Openh-min,1,< 2 ha;  zeer gesloten landschap,0.0
+11,Openh-min,1?,< 2 ha; zeer gesloten landschap ?,0.0
+11,Openh-min,2,2 - 25 ha; gesloten landschap,2.0
+11,Openh-min,2?,2 - 25 ha; gesloten landschap ?,2.0
+11,Openh-min,3,25 -100 ha; halfopen landschap,25.0
+11,Openh-min,3?,25 -100 ha; halfopen landschap ?,25.0
+11,Openh-min,4,100 - 1000 ha; open landschap,100.0
+11,Openh-min,5,> 1000 ha; zeer open landschap,1000.0
+12,Openh-max,1,< 2 ha;  zeer gesloten landschap,2.0
+12,Openh-max,1?,< 2 ha; zeer gesloten landschap ?,2.0
+12,Openh-max,2,2 - 25 ha; gesloten landschap,25.0
+12,Openh-max,3,25 -100 ha; halfopen landschap,100.0
+12,Openh-max,3?,25 -100 ha; halfopen landschap ?,100.0
+12,Openh-max,4,100 - 1000 ha; open landschap,1000.0
+12,Openh-max,4?,100 - 1000 ha; open landschap ?,1000.0
+12,Openh-max,5,> 1000 ha; zeer open landschap,100000.0
+12,Openh-max,5?,> 1000 ha; zeer open landschap ?,100000.0
+13,Randvogel,o,regelmatig,0.0
+13,Randvogel,x,vrijwel altijd,0.0
+13,Randvogel,x?,vrijwel altijd ?,0.0
+14,Pendelaar,?,?,0.0
+14,Pendelaar,o,regelmatig,0.0
+14,Pendelaar,o?,regelmatig ?,0.0
+14,Pendelaar,x,vrijwel altijd,0.0
+14,Pendelaar,x?,vrijwel altijd ?,0.0
+15,Kolonievogel,o,regelmatig,0.0
+15,Kolonievogel,x,vrijwel altijd,1.0
+16,Ter-gem,1,< 2 ha,1.0
+16,Ter-gem,1?,< 2 ha ?,1.0
+16,Ter-gem,2,2 - 5 ha,3.2
+16,Ter-gem,2?,2 - 5 ha ?,3.2
+16,Ter-gem,3,5 - 25 ha,11.2
+16,Ter-gem,3?,5 - 25 ha ?,11.2
+16,Ter-gem,4,25 - 100 ha,50.0
+16,Ter-gem,4?,25 - 100 ha ?,50.0
+16,Ter-gem,5,100 - 1000 ha,316.0
+16,Ter-gem,5?,100 - 1000 ha ?,316.0
+16,Ter-gem,6,> 1000 ha,1000.0
+16,Ter-gem,6?,> 1000 ha ?,1000.0
+16,Ter-gem,?,?,0.0
+17,Ter-min,1,< 2 ha,0.25
+17,Ter-min,1?,< 2 ha ?,0.25
+17,Ter-min,2,2 - 5 ha,2.0
+17,Ter-min,2?,2 - 5 ha ?,2.0
+17,Ter-min,3,5 - 25 ha,5.0
+17,Ter-min,3?,5 - 25 ha ?,5.0
+17,Ter-min,4,25 - 100 ha,25.0
+17,Ter-min,4?,25 - 100 ha ?,25.0
+17,Ter-min,5,100 - 1000 ha,100.0
+17,Ter-min,6,> 1000 ha,1000.0
+18,Ter-max,2,2 - 5 ha,0.0
+18,Ter-max,2?,2 - 5 ha ?,0.0
+18,Ter-max,3,5 - 25 ha,0.0
+18,Ter-max,3?,5 - 25 ha ?,0.0
+18,Ter-max,4,25 - 100 ha,0.0
+18,Ter-max,4?,25 - 100 ha ?,0.0
+18,Ter-max,5,100 - 1000 ha,0.0
+18,Ter-max,5?,100 - 1000 ha ?,0.0
+18,Ter-max,6,> 1000 ha,0.0
+18,Ter-max,6?,> 1000 ha ?,0.0
+19,Bodem1,1,klei,0.0
+19,Bodem1,2,(hoog)veen,0.0
+19,Bodem1,3,zand,0.0
+19,Bodem1,x,indifferent,0.0
+20,Bodem2,1,klei,0.0
+20,Bodem2,2,(hoog)veen,0.0
+20,Bodem2,3,zand,0.0
+20,Bodem2,x,indifferent,0.0
+21,Vocht-opt,1,open water,0.0
+21,Vocht-opt,2,nat (ca. grondwatertrap 1-2a),0.0
+21,Vocht-opt,3,vochtig (ca. grondwatertrap 2b-3),0.0
+21,Vocht-opt,4,droog (ca. grondwatertrap >=4),0.0
+21,Vocht-opt,4?,droog (ca. grondwatertrap >=4) ?,0.0
+21,Vocht-opt,x,indifferent,0.0
+21,Vocht-opt,x?,indifferent ?,0.0
+22,Vocht-min,1,open water,0.0
+22,Vocht-min,2,nat (ca. grondwatertrap 1-2a),0.0
+22,Vocht-min,2?,nat (ca. grondwatertrap 1-2a) ?,0.0
+22,Vocht-min,3,vochtig (ca. grondwatertrap 2b-3),0.0
+22,Vocht-min,3?,vochtig (ca. grondwatertrap 2b-3) ?,0.0
+22,Vocht-min,4,droog (ca. grondwatertrap >=4),0.0
+22,Vocht-min,x,indifferent,0.0
+23,Vocht-max,1,open water,0.0
+23,Vocht-max,2,nat (ca. grondwatertrap 1-2a),0.0
+23,Vocht-max,3,vochtig (ca. grondwatertrap 2b-3),0.0
+23,Vocht-max,4,droog (ca. grondwatertrap >=4),0.0
+23,Vocht-max,x,indifferent,0.0
+23,Vocht-max,x?,indifferent ?,0.0
+24,Zuur-opt,1,zuur (PH<4.5),0.0
+24,Zuur-opt,1?,zuur (PH<4.5) ?,0.0
+24,Zuur-opt,2,zwak zuur (PH 4.5-7),0.0
+24,Zuur-opt,2?,zwak zuur (PH 4.5-7) ?,0.0
+24,Zuur-opt,3,basisch (PH>7),0.0
+24,Zuur-opt,3?,basisch (PH>7) ?,0.0
+24,Zuur-opt,x,indifferent,0.0
+24,Zuur-opt,x?,indifferent ?,0.0
+25,Zuur-min,1,zuur (PH<4.5),0.0
+25,Zuur-min,1?,zuur (PH<4.5) ?,0.0
+25,Zuur-min,2,zwak zuur (PH 4.5-7),0.0
+25,Zuur-min,2?,zwak zuur (PH 4.5-7) ?,0.0
+25,Zuur-min,3,basisch (PH>7),0.0
+25,Zuur-min,3?,basisch (PH>7) ?,0.0
+25,Zuur-min,x,indifferent,0.0
+26,Zuur-max,1?,zuur (PH<4.5) ?,0.0
+26,Zuur-max,3,basisch (PH>7),0.0
+26,Zuur-max,3?,basisch (PH>7) ?,0.0
+26,Zuur-max,x,indifferent,0.0
+27,Voedselrijk-opt,1,indifferent,0.0
+27,Voedselrijk-opt,2,matig voedselrijk,0.0
+27,Voedselrijk-opt,2?,matig voedselrijk ?,0.0
+27,Voedselrijk-opt,3,voedselrijk,0.0
+27,Voedselrijk-opt,3?,voedselrijk ?,0.0
+27,Voedselrijk-opt,x,indifferent,0.0
+27,Voedselrijk-opt,x?,indifferent ?,0.0
+28,Voedselrijk-min,1,voedselarm,0.0
+28,Voedselrijk-min,1?,voedselarm ?,0.0
+28,Voedselrijk-min,2,matig voedselrijk,0.0
+28,Voedselrijk-min,2?,matig voedselrijk ?,0.0
+28,Voedselrijk-min,3,voedselrijk,0.0
+28,Voedselrijk-min,3?,voedselrijk ?,0.0
+28,Voedselrijk-min,x,indifferent,0.0
+29,Voedselrijk-max,2,matig voedselrijk,0.0
+29,Voedselrijk-max,3,voedselrijk,0.0
+29,Voedselrijk-max,x,indifferent,0.0
+30,Zout-opt,1,zoet,0.0
+30,Zout-opt,1?,zoet ?,0.0
+30,Zout-opt,3,brak,0.0
+30,Zout-opt,4,sterk brak,0.0
+30,Zout-opt,5,zout,0.0
+30,Zout-opt,?,?,0.0
+30,Zout-opt,x,indifferent,0.0
+30,Zout-opt,x?,indifferent ?,0.0
+31,Zout-min,1,zoet,0.0
+31,Zout-min,1?,zoet ?,0.0
+31,Zout-min,2,zwak brak,0.0
+31,Zout-min,4,sterk brak,0.0
+31,Zout-min,5,zout,0.0
+32,Zout-max,1,zoet,0.0
+32,Zout-max,2,zwak brak,0.0
+32,Zout-max,2?,zwak brak ?,0.0
+32,Zout-max,3,brak,0.0
+32,Zout-max,3?,brak ?,0.0
+32,Zout-max,4,sterk brak,0.0
+32,Zout-max,4?,sterk brak ?,0.0
+32,Zout-max,5,zout,0.0
+32,Zout-max,5?,zout ?,0.0
+33,Stroming-max,0,niet van toepassing,0.0
+33,Stroming-max,1,stilstaand,0.0
+33,Stroming-max,1?,stilstaand ?,0.0
+33,Stroming-max,2,langzaam stromend,0.0
+33,Stroming-max,2?,langzaam stromend ?,0.0
+33,Stroming-max,3,(matig) stromend,0.0
+33,Stroming-max,3?,(matig) stromend ?,0.0
+33,Stroming-max,4,snel stromend,0.0
+33,Stroming-max,5,zeer snel stromend,0.0
+34,Stroming-min,0,niet van toepassing,0.0
+34,Stroming-min,1,stilstaand,0.0
+34,Stroming-min,2,langzaam stromend,0.0
+34,Stroming-min,4,snel stromend,0.0
+35,Stroming-opt,0,niet van toepassing,0.0
+35,Stroming-opt,1,stilstaand,0.0
+35,Stroming-opt,2,langzaam stromend,0.0
+35,Stroming-opt,3,(matig) stromend,0.0
+35,Stroming-opt,4,snel stromend,0.0
+35,Stroming-opt,5,zeer snel stromend,0.0
+35,Stroming-opt,x,indifferent,0.0
+41,ATOE_GROEP,I,aan zout water gebonden,0.0
+41,ATOE_GROEP,II,zowel zoet als zout water gebonden,0.0
+41,ATOE_GROEP,III,"reigers, ooievaars, aalscholvers en kraanvoge",0.0
+41,ATOE_GROEP,IV,ganzen en zwanen,0.0
+41,ATOE_GROEP,IX,vogels van open terrein,0.0
+41,ATOE_GROEP,V,roofvogels,0.0
+41,ATOE_GROEP,VI,aan wad en strand gebonden steltlopers,0.0
+41,ATOE_GROEP,VII,min of meer aan water gebonden steltlopers,0.0
+41,ATOE_GROEP,VIII,minder of niet water gebonden steltlopers,0.0
+41,ATOE_GROEP,X,vogels van bosachtig terrein,0.0
+41,ATOE_GROEP,XI,vogels van moerasachtig terrein,0.0
+41,ATOE_GROEP,XII,aan zoet water gebonden meeuwen en sterns,0.0
+46,AYTRST_BR,-,-,0.0
+46,AYTRST_BR,S,standvogel,0.0
+46,AYTRST_BR,SDe,standvogel en deeltrekker,0.0
+46,AYTRST_BR,Z,zomervogel,0.0
+47,AZTRST_NBR,-,-,0.0
+47,AZTRST_NBR,Do,doortrekker,0.0
+47,AZTRST_NBR,W,wintergast,0.0
+47,AZTRST_NBR,WDo,wintergast en doortrekker,0.0
+48,BAWINT_GEB,  1,NW-Europa,0.0
+48,BAWINT_GEB,  2,Zuid-Europa,0.0
+48,BAWINT_GEB,  3,Afrika,0.0
+48,BAWINT_GEB, 12,NW- en Z-Europa,0.0
+48,BAWINT_GEB, 23,Z-Europa en Afrika,0.0
+48,BAWINT_GEB,-,-,0.0
+48,BAWINT_GEB,123,Europa en Afrika,0.0
+49,BBBROEDGEB,-,-,0.0
+49,BBBROEDGEB,1,NW-Europa,0.0
+49,BBBROEDGEB,12,,0.0
+49,BBBROEDGEB,123,,0.0
+49,BBBROEDGEB,1234,,0.0
+49,BBBROEDGEB,124,,0.0
+49,BBBROEDGEB,13,,0.0
+49,BBBROEDGEB,134,,0.0
+49,BBBROEDGEB,14,,0.0
+49,BBBROEDGEB,2,N-Europa,0.0
+49,BBBROEDGEB,23,,0.0
+49,BBBROEDGEB,234,,0.0
+49,BBBROEDGEB,235,,0.0
+49,BBBROEDGEB,3,NO- en 0-Europa,0.0
+49,BBBROEDGEB,34,,0.0
+49,BBBROEDGEB,4,Z-Europa,0.0
+49,BBBROEDGEB,5,Amerika,0.0
+50,BCBRV_NED,*,regelmatige broedvogel,0.0
+50,BCBRV_NED,-,geen broedvogel,0.0
+50,BCBRV_NED,i,incidentele broedvogel,0.0
+50,BCBRV_NED,v,voormalige broedvogel,0.0
+85,Ecogroep,100,Watervogels,0.0
+85,Ecogroep,101,Dodaars-groep,0.0
+85,Ecogroep,102,Slobeend-groep,0.0
+85,Ecogroep,103,Kuifeend-groep,0.0
+85,Ecogroep,104,IJsvogel-groep,0.0
+85,Ecogroep,200,Rietvogels,0.0
+85,Ecogroep,201,Roerdomp-groep,0.0
+85,Ecogroep,202,Rietzanger-groep,0.0
+85,Ecogroep,203,Porseleinhoen-groep,0.0
+85,Ecogroep,204,Blauwborst-groep,0.0
+85,Ecogroep,300,Pioniervogels,0.0
+85,Ecogroep,301,Strandplevier-groep,0.0
+85,Ecogroep,302,Kleine Plevier-groep,0.0
+85,Ecogroep,303,Scholekster-groep,0.0
+85,Ecogroep,304,Tapuit-groep,0.0
+85,Ecogroep,305,Fazant-groep,0.0
+85,Ecogroep,306,Kievit-groep,0.0
+85,Ecogroep,400,Vogels van open heide,0.0
+85,Ecogroep,401,Korhoen-groep,0.0
+85,Ecogroep,402,Wulp-groep,0.0
+85,Ecogroep,500,Weidevogels,0.0
+85,Ecogroep,501,Zomertaling-groep,0.0
+85,Ecogroep,502,Grutto-groep,0.0
+85,Ecogroep,503,Veldleeuwerik-groep,0.0
+85,Ecogroep,600,Struweelvogels,0.0
+85,Ecogroep,601,Rietgors-groep,0.0
+85,Ecogroep,602,Roodborsttapuit-groep,0.0
+85,Ecogroep,603,Grasmus-groep,0.0
+85,Ecogroep,604,Winterkoning-groep,0.0
+85,Ecogroep,700,Bosrandvogels,0.0
+85,Ecogroep,701,Buidelmees-groep,0.0
+85,Ecogroep,702,Geelgors-groep,0.0
+85,Ecogroep,703,Putter-groep,0.0
+85,Ecogroep,711,Bosrandstruweelvogels,0.0
+85,Ecogroep,800,Bosvogels,0.0
+85,Ecogroep,801,Vink-groep,0.0
+85,Ecogroep,802,Kruisbek-groep,0.0
+85,Ecogroep,803,Appelvink-groep,0.0
+85,Ecogroep,804,Grote Bonte Specht-groep,0.0
+85,Ecogroep,805,Kleine Bonte Specht-groep,0.0
+85,Ecogroep,806,Boomklever-groep,0.0
+85,Ecogroep,807,Havik-groep,0.0
+85,Ecogroep,808,Torenvalk-groep,0.0
+85,Ecogroep,811,Loofhoutvogels,0.0
+85,Ecogroep,812,Holenbroeders,0.0
+85,Ecogroep,813,Vogels van oud bos,0.0
+85,Ecogroep,901,Zwarte Roodstaart-groep,0.0
+85,Ecogroep,911,Rode Lijst soorten,0.0
+85,Ecogroep,912,Blauwe Lijst soorten,0.0
+85,Ecogroep,921,Roofvogels,0.0
+85,Ecogroep,999,Overige soorten,0.0
+86,sleutelfactor,1,ondiep open water,
+86,sleutelfactor,2,"open water, vis",
+86,sleutelfactor,3,ondiep open water,
+86,sleutelfactor,4,ondiep open water,
+86,sleutelfactor,5,"open water, vis, bomen",
+86,sleutelfactor,6,nat overjarig riet,
+86,sleutelfactor,7,nat overjarig riet,
+86,sleutelfactor,8,"ondiep open water (stromend), bos, hoge struwelen",
+86,sleutelfactor,9,"ondiep open water, bos, hoge struwelen",
+86,sleutelfactor,10,"ondiep open water, rietland",
+86,sleutelfactor,11,"ondiep water, bos",
+86,sleutelfactor,12,"ondiep open water, rietland",
+86,sleutelfactor,13,"natte ruigten, nat grasland, bos (i.h.b. nat oud loofbos)",
+86,sleutelfactor,14,"natte ruigten, nat grasland, oude dode bomen, kunstnesten",
+86,sleutelfactor,15,"ondiep open water, eilandjes, predatorvrije broedplaats",
+86,sleutelfactor,16,ondiep brak-zout open water,
+86,sleutelfactor,17,open water,
+86,sleutelfactor,18,"open water, rietvegetaties",
+86,sleutelfactor,19,open water,
+86,sleutelfactor,20,"open water, grasland",
+86,sleutelfactor,21,"open water, (konijne)holen, grasland?",
+86,sleutelfactor,22,"open water, (konijne)holen",
+86,sleutelfactor,23,"open water, boomholten, nestkasten",
+86,sleutelfactor,24,ondiep open water,
+86,sleutelfactor,25,"ondiep open water, grasland",
+86,sleutelfactor,26,ondiep open water,
+86,sleutelfactor,27,"water, grasland",
+86,sleutelfactor,28,ondiep open water,
+86,sleutelfactor,29,"ondiep (open) water, nat grasland",
+86,sleutelfactor,30,"ondiep open water, nat grasland",
+86,sleutelfactor,31,ondiep open water,
+86,sleutelfactor,32,(ondiep) open water,
+86,sleutelfactor,33,open water,
+86,sleutelfactor,34,zout water,
+86,sleutelfactor,35,"open water, boomholten, nestkasten",
+86,sleutelfactor,36,open water,
+86,sleutelfactor,37,"oud bos, wespen",
+86,sleutelfactor,38,"open water, bomen",
+86,sleutelfactor,39,"kleinschalig landschap, loofbos?",
+86,sleutelfactor,40,"zeer groot moerasgebied, oud bos, rust!",
+86,sleutelfactor,41,"overjarig riet, rietruigten",
+86,sleutelfactor,42,"pioniervegetaties, grootschalig open",
+86,sleutelfactor,43,"pioniervegetaties, grootschalig open",
+86,sleutelfactor,44,bos,
+86,sleutelfactor,45,bos,
+86,sleutelfactor,46,bos,
+86,sleutelfactor,47,"open water, bomen, bos, rust",
+86,sleutelfactor,48,"ruigten, pioniervegetaties, nestkasten, kraaienesten, hoge gebouwen",
+86,sleutelfactor,49,"open gebied, bij voorkeur met water, bomen, bosrand",
+86,sleutelfactor,50,"grote natuurgebieden, kliffen of bomen",
+86,sleutelfactor,51,"structuurrijke heide, berken en/of jonge dennen, extensief grasland",
+86,sleutelfactor,52,"pioniervegetaties (akkers), grasland, kruidenrijk",
+86,sleutelfactor,53,"pioniervegetaties (akkers), grasland, kruidenrijk",
+86,sleutelfactor,54,"pioniervegetaties (akkers), grasland, kruidenrijk, open",
+86,sleutelfactor,55,voedelrijke ruigten,
+86,sleutelfactor,56,"natte rietruigten, overjarig riet",
+86,sleutelfactor,57,"nat rietland, grote zeggenvegetaties, of  natte ruigten",
+86,sleutelfactor,58,"grote zeggenvegetaties, nat rietland",
+86,sleutelfactor,59,"grote zeggenvegetaties, nat rietland",
+86,sleutelfactor,60,"pioniervegetaties (akkers), grasland, kruidenrijk",
+86,sleutelfactor,61,ondiep water,
+86,sleutelfactor,62,open water,
+86,sleutelfactor,63,"venen en veentjes, rust",
+86,sleutelfactor,64,open gebied,
+86,sleutelfactor,65,"open pioniervegetaties, ondiep open water",
+86,sleutelfactor,66,"open, schrale pioniervegetaties, kruidenrijk, open gebied",
+86,sleutelfactor,67,"zandige pioniervegeties, zandplaten, zoet open water",
+86,sleutelfactor,68,"zandige pioniervegeties, zandplaten, zout open water",
+86,sleutelfactor,69,"zandige pioniervegeties, zandplaten, zout open water",
+86,sleutelfactor,70,"lage pioniervegetaties, open gebied",
+86,sleutelfactor,71,"hoogveen, open gebied",
+86,sleutelfactor,72,open gebied,
+86,sleutelfactor,73,zoute-zilte ruigten en graslanden,
+86,sleutelfactor,74,"structuurijke grazige vegetaties, nat",
+86,sleutelfactor,75,"natte, open pioniervegetaties",
+86,sleutelfactor,76,grote zeggenvegetaties,
+86,sleutelfactor,77,"(loof)bos, humeuze, vochtige bodem, rust",
+86,sleutelfactor,78,"grazige vegetaties, heide, nat",
+86,sleutelfactor,79,"open gebied, ruigten, open pioniervegetaties",
+86,sleutelfactor,80,"grazige vegetaties, bij voorkeur zilt",
+86,sleutelfactor,81,"open bos, water",
+86,sleutelfactor,82,hoogveen,
+86,sleutelfactor,83,"zand en grindstranden, water",
+86,sleutelfactor,84,"open water, eilandjes, zandplaten",
+86,sleutelfactor,85,"ondiep, open water",
+86,sleutelfactor,86,"open water, eilandjes, zandplaten",
+86,sleutelfactor,87,"open water, open, zandige pioniervegetaties",
+86,sleutelfactor,88,"grootschalig open water, open, zandige pioniervegetaties",
+86,sleutelfactor,89,"(grootschalig) open water, open, zandige pioniervegetaties",
+86,sleutelfactor,90,grootschalig open water,
+86,sleutelfactor,91,"grootschalig open water, open, zandige pioniervegetaties",
+86,sleutelfactor,92,"open zee, open, zandige pioniervegetaties",
+86,sleutelfactor,93,"ondiep open water, eilandjes, zandplaten",
+86,sleutelfactor,94,"grootschalig open water, open, zandige pioniervegetaties",
+86,sleutelfactor,95,"grootschalig open water, zandplaten",
+86,sleutelfactor,96,"ondiep open water, eilandjes, zandplaten",
+86,sleutelfactor,97,"ondiep open water, eilandjes, drijvende waterplanten, grote insekten",
+86,sleutelfactor,98,"ondiep open water, eilandjes, drijvende waterplanten, grote insekten",
+86,sleutelfactor,99,"grote holten, oude loofbomen, gebouwen, holen, cultuurgrond",
+86,sleutelfactor,100,"opgaand bos, cultuurgrond",
+86,sleutelfactor,101,"bebouwing, bomen",
+86,sleutelfactor,102,hoge struiken,
+86,sleutelfactor,103,kleine zangvogels,
+86,sleutelfactor,104,"randen, ruigten, overhoeken, grote holten (gebouwenen, nestkasten)",
+86,sleutelfactor,105,oud bos,
+86,sleutelfactor,106,"kleinschalig landschap, holten",
+86,sleutelfactor,107,"oude loofbomen, grote holten",
+86,sleutelfactor,108,opgaand bos,
+86,sleutelfactor,109,"randen, ruigten, overhoeken, grote open natuurgebieden",
+86,sleutelfactor,110,"naaldbos, holten (bomen, nestkasten)",
+86,sleutelfactor,111,"open bos, bosranden met kale bodem, nachtvlinders, rust (verstoringsgevoelig)",
+86,sleutelfactor,112,oude huizen,
+86,sleutelfactor,113,"schoon water, liefst stromend, steile oevers, grote wortelkluiten",
+86,sleutelfactor,114,"steile oevers en wanden, bijen en andere vliegende insekten, droog en warm",
+86,sleutelfactor,115,"ruigten, overhoeken, grote insekten, droog en warm",
+86,sleutelfactor,116,"grote holten (bomen, gebouwen), grote insekten",
+86,sleutelfactor,117,"kale zandige bodem, holten in bomen (berk!), mieren",
+86,sleutelfactor,118,"oud loof- en gemengd bos, dikke loof- en dode naaldbomen",
+86,sleutelfactor,119,"opgaand bos met open plekken, mieren, dikke loof- en dode naaldbomen",
+86,sleutelfactor,120,"opgaand bos, dikke loof- en dode naaldbomen",
+86,sleutelfactor,121,"opgaand bos, dikke en dode bomen",
+86,sleutelfactor,122,(zeer) oud loofbos,
+86,sleutelfactor,123,"loofbos, i.h.b. berk en eik, kwijnende en dode bomen",
+86,sleutelfactor,124,"droge, open schrale vegetaties",
+86,sleutelfactor,125,"kale, zandige vegetaties, verspreide boomgroei, bosranden,open bos",
+86,sleutelfactor,126,"lage vegetaties met open plekken, open gebieden",
+86,sleutelfactor,127,"steile oevers, zanddepots, water in nabijheid",
+86,sleutelfactor,128,"gebouwen in buitengebied, vliegende insekten",
+86,sleutelfactor,129,"gebouwen (bij voorkeur witte dakrand), vochtige leem, klei voor nesten, vliegende insekten",
+86,sleutelfactor,130,"schrale, zandige vegetaties, open gebied",
+86,sleutelfactor,131,"open bos, bosranden, boomgroepen, bomen met open plekken",
+86,sleutelfactor,132,"lage vegetaties met open plekken, open gebied",
+86,sleutelfactor,133,"lage vegetaties met open plekken, vochtig-nat",
+86,sleutelfactor,134,"schoon, stromend water, open holten (boomwortels, bruggen, etc)",
+86,sleutelfactor,135,"kale, open vegetaties, open holten (gebouwen, etc)",
+86,sleutelfactor,136,"schoon, stromend water, open holten (boomwortels, bruggen, etc)",
+86,sleutelfactor,137,"struiken, struwelen",
+86,sleutelfactor,138,"struiken, struwelen, jong bos, geen boomlaag (wel bosrand)",
+86,sleutelfactor,139,"struiken, struwelen, jong bos",
+86,sleutelfactor,140,"struiken, struwelen, basisch, vochtig, nat",
+86,sleutelfactor,141,natte ruigten met struiken,
+86,sleutelfactor,142,gebouwen,
+86,sleutelfactor,143,"open bos, bosranden, open holten (vliegdennen, berken)",
+86,sleutelfactor,144,"bloemrijke ruigten en randen, vochtig tot nat",
+86,sleutelfactor,145,"structuurrijke lage vegetaties, ruigten, uitkijkposten (struiken, paaltjes, etc)",
+86,sleutelfactor,146,"kale, zandige vegetaties, holten, halfholten in bodem",
+86,sleutelfactor,147,"hoge, dichte struiken, bos of bebouwing",
+86,sleutelfactor,148,"bosranden, boomgroepen (loofbos), grazige vegetaties (grasland), (loofbos)",
+86,sleutelfactor,149,"hoge, dichte struiken, huisjesslakken",
+86,sleutelfactor,150,"bosranden, bosjes (loofbomen), grazige vegetaties (grasland)",
+86,sleutelfactor,151,natte struwelen,
+86,sleutelfactor,152,grazige ruigten,
+86,sleutelfactor,153,natte ruigten,
+86,sleutelfactor,154,natte struwelen,
+86,sleutelfactor,155,nat overjarig riet,
+86,sleutelfactor,156,grote zeggenvegetaties,
+86,sleutelfactor,157,(verruigd) overjarig rietland,
+86,sleutelfactor,158,"vochtig, open struweel",
+86,sleutelfactor,159,nat riet,
+86,sleutelfactor,160,nat overjarig riet,
+86,sleutelfactor,161,hoge struwelen,
+86,sleutelfactor,162,"hoge struwelen, open bos",
+86,sleutelfactor,163,struwelen,
+86,sleutelfactor,164,struwelen,
+86,sleutelfactor,165,struwelen,
+86,sleutelfactor,166,"struwelen, bosrand met struiken",
+86,sleutelfactor,167,"struiken, jong bos",
+86,sleutelfactor,168,open bos met ijle struiklaag,
+86,sleutelfactor,169,loofbomen met ijle struiklaag,
+86,sleutelfactor,170,"(open) bos met loofbomen, struwelen met overstaanders, loofhoutstruiklaag",
+86,sleutelfactor,171,"struiken, struwelen, jong bos",
+86,sleutelfactor,172,"naaldbomen, i.h.b. sparren",
+86,sleutelfactor,173,gemengd bos met spar,
+86,sleutelfactor,174,(oude) loofbomen,
+86,sleutelfactor,175,oude loofbomen,
+86,sleutelfactor,176,"overvloed holten, nestkasten, dode berken",
+86,sleutelfactor,177,overjarig rietland,
+86,sleutelfactor,178,struiken,
+86,sleutelfactor,179,"loofbomen, holten",
+86,sleutelfactor,180,"vochtige hoge struwelen, loofhoutstruiklaag",
+86,sleutelfactor,181,"naaldbomen, ihb dennen",
+86,sleutelfactor,182,"naaldbomen, i.h.b. sparren",
+86,sleutelfactor,183,loofhout,
+86,sleutelfactor,184,bomen,
+86,sleutelfactor,185,dikke loofbomen,
+86,sleutelfactor,186,gemengd bos,
+86,sleutelfactor,187,"oudere bomen, holten",
+86,sleutelfactor,188,bomen/struwelen in rietland,
+86,sleutelfactor,189,vochtig hoog loofbos,
+86,sleutelfactor,190,"grote insekten, hagedissen, struweel",
+86,sleutelfactor,191,"grote insekten, hagedissen, open, zandig bos",
+86,sleutelfactor,192,"grote insekten (kevers), hoogstamboomgaarden, open bos, struwelen",
+86,sleutelfactor,193,"bos, oud loofbos",
+86,sleutelfactor,194,menselijke invloeden,
+86,sleutelfactor,195,"grote holten, cultuurgrond",
+86,sleutelfactor,196,"opgaand (loof)bos, vochtig, voedselrijk grasland",
+86,sleutelfactor,197,"bomen, cultuurgrond",
+86,sleutelfactor,198,"bomen, cultuurgrond",
+86,sleutelfactor,199,aas,
+86,sleutelfactor,200,"holten, niet in de grond, grasland",
+86,sleutelfactor,201,bebouwing,
+86,sleutelfactor,202,"kleinschalige bebouwing, cultuurgrond",
+86,sleutelfactor,203,bomen,
+86,sleutelfactor,204,naaldbos met loofbomen,
+86,sleutelfactor,205,"halfopen, rijk gestructureerd landschap",
+86,sleutelfactor,206,"halfopen, rijk gesructureerd landschap",
+86,sleutelfactor,207,"halfopen, rijk gestructureerd landschap",
+86,sleutelfactor,208,naaldbomen,
+86,sleutelfactor,209,"struwelen, kruidenrijke vegetaties",
+86,sleutelfactor,210,"open bos, bosranden, boomgroepen",
+86,sleutelfactor,211,"open bos, bosranden, boomgroepen",
+86,sleutelfactor,212,naaldbomen,
+86,sleutelfactor,213,naaldbomen,
+86,sleutelfactor,214,"bosranden, boomgroepen, natte ruigten, grasland",
+86,sleutelfactor,215,hoge struiken,
+86,sleutelfactor,216,loofbomen,
+86,sleutelfactor,217,"bosranden, boomgroepen, kruidenrijke pioniervegetaties",
+86,sleutelfactor,218,"bosranden, boomgroepen, kruidenrijke pioniervegetaties",
+86,sleutelfactor,219,"riet en rietruigten, natte struwelen, struiken",
+86,sleutelfactor,220,kruidenrijke pioniervegetaties,

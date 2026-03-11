@@ -1,0 +1,56 @@
+GROEP,NAAM,HABITAT
+100,Watervogels,open water
+101,Dodaars-groep,voedselarm-matig voedselrijk open water
+102,Slobeend-groep,"kleinschalig, ondiep (matig) voedselrijk open wate"
+103,Kuifeend-groep,"voedselrijk, open water (met/zonder waterplanten)"
+104,IJsvogel-groep,beken
+200,Rietvogels,rietvegetaties
+201,Roerdomp-groep,"nat, vnl. overjarig rietland"
+202,Rietzanger-groep,zegge-riet (verlandend). Vnl. overjarig
+203,Porseleinhoen-groep,"natte, lage vegetaties met ondiep water"
+204,Blauwborst-groep,verlande rietvegetaties met struiken
+211,Waterrietvogels,natte riet- en verlandingsvegetaties
+300,Vogels van pionierbegroeiingen,"pioniervegetaties, ruigten en akkers"
+301,Strandplevier-groep,"schaars begroeide zandplaten, zout tot brak"
+302,Kleine Plevier-groep,zandplaten en zandstranden bij zoet water
+303,Scholekster-groep,open pioniervegetaties kustduinen
+304,Tapuit-groep,open zandige en/of zeer lage vegetaties
+305,Fazant-groep,"ruigten, vochtig tot nat"
+306,Kievit-groep,akkers
+400,Vogels van open heide,open heide en hoogveen
+401,Korhoen-groep,open structuurrijke heide nabij cultuurland
+402,Wulp-groep,open heide
+500,Weidevogels,grazige vegetaties
+501,Zomertaling-groep,"drassig, structuurrijk grazige vegetaties"
+502,Grutto-groep,vochtige tot drassige grazige vegetaties
+503,Veldleeuwerik-groep,natte tot droge grazige vegetaties
+600,Struweelvogels,struiken en struwelen
+601,Rietgors-groep,ruigtes en lage struwelen (nat tot vochtig)
+602,Roodborsttapuit-groep,lage struwelen en heggen
+603,Grasmus-groep,"struwelen, opslags"
+604,Winterkoning-groep,"jong bos, struiklaag in bossen"
+611,Zwartkop-groep,"jong bos, struiklaag in bossen"
+700,Bosrandvogels,"bosranden, boomgroepen en open bos"
+701,Buidelmees-groep,boomgroepen in rietland; rivierbegeleidend bos
+702,Geelgors-groep,"open bos, bosranden, boomgroepen, kapvlakten"
+703,Putter-groep,bomen en boomgroepen met struiken; bosranden
+711,Bosrandstruweelvogels,bosranden en boomgroepen met struwelen
+800,Bosvogels,bos
+801,Vink-groep,opgaand bos
+802,Kruisbek-groep,opgaand bos met naaldbomen
+803,Appelvink-groep,opgaand bos met loofbomen
+804,Grote Bonte Specht-groep,"oud bos, dood hout (holenbroeders)"
+805,Kleine Bonte Specht-groep,opgaand bos met loofbomen (holenbroeders)
+806,Boomklever-groep,bos met oude loofbomen (holenbroeders)
+807,Havik-groep,roofvogels van bossen
+808,Torenvalk-groep,roofvogels van open gebied met bos
+811,Loofboomvogels,bos met loofbomen
+812,Holenbroeders,"oud bos, dood hout"
+813,Vogels van oud bos,"structuurrijk, oud bos"
+814,Houtduif-groep,opgaand bos nabij cultuurland
+900,Vogels van bebouwing/overige,bebouwing en overige situaties
+901,Zwarte Roodstaart-groep,"erven, bebouwing (in cultuurland)"
+911,Rode Lijst soorten,
+912,Blauwe Lijst soorten,
+921,Roofvogels,
+999,Overige soorten,
