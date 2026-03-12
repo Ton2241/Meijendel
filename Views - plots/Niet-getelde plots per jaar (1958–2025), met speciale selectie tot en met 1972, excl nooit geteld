@@ -1,0 +1,64 @@
+-- Niet-getelde plots per jaar (1958–2025), met speciale selectie tot en met 1972
+-- (nooit-getelde kavels uitgesloten) + aantallen + oppervlak
+WITH RECURSIVE jaren AS (
+  SELECT 1958 AS jaar
+  UNION ALL
+  SELECT jaar + 1 FROM jaren WHERE jaar < 2025
+),
+plots_limited AS (
+  SELECT plot_id, kavel_nummer
+  FROM plots
+  WHERE kavel_nummer IN (
+    '1a','1b','2','3','4-5','6','7','8','9',
+    '10-12-76','12','12a','13','13s','14','15','16','16s','17a'
+  )
+),
+plots_all AS (
+  SELECT plot_id, kavel_nummer
+  FROM plots
+  WHERE kavel_nummer IS NOT NULL
+),
+target_plots AS (
+  -- 1958-1972: alleen 1a..17a (zonder 17b)
+  SELECT j.jaar, p.plot_id, p.kavel_nummer
+  FROM jaren j
+  JOIN plots_limited p ON j.jaar <= 1972
+
+  UNION ALL
+
+  -- 1973-2025: alle plots
+  SELECT j.jaar, p.plot_id, p.kavel_nummer
+  FROM jaren j
+  JOIN plots_all p ON j.jaar >= 1973
+),
+counted AS (
+  SELECT DISTINCT plot_id, jaar
+  FROM territoria
+  WHERE jaar BETWEEN 1958 AND 2025
+),
+never_counted AS (
+  SELECT tp.kavel_nummer
+  FROM (
+    SELECT plot_id, kavel_nummer FROM plots_all
+  ) tp
+  LEFT JOIN counted c
+    ON c.plot_id = tp.plot_id
+  GROUP BY tp.kavel_nummer
+  HAVING SUM(CASE WHEN c.plot_id IS NOT NULL THEN 1 ELSE 0 END) = 0
+)
+SELECT
+  t.jaar,
+  GROUP_CONCAT(t.kavel_nummer ORDER BY t.kavel_nummer SEPARATOR ', ') AS niet_getelde_plots,
+  COUNT(*) AS aantal_niet_getelde_kavels,
+  SUM(pjo.oppervlakte_km2) AS totaal_oppervlakte_km2
+FROM target_plots t
+LEFT JOIN counted c
+  ON c.plot_id = t.plot_id AND c.jaar = t.jaar
+LEFT JOIN never_counted n
+  ON n.kavel_nummer = t.kavel_nummer
+JOIN plot_jaar_oppervlak pjo
+  ON pjo.plot_id = t.plot_id AND pjo.jaar = t.jaar
+WHERE c.plot_id IS NULL
+  AND n.kavel_nummer IS NULL
+GROUP BY t.jaar
+ORDER BY t.jaar;
