@@ -1,0 +1,122 @@
+-- Titel: Doorlopende relatieve trend (1958–2025) met methodenbreuk en km2‑correctie
+
+WITH
+-- Stap 1: Selecteer de gewenste plots (1a t/m 17a, zonder 17b).
+selected_plots AS (
+  SELECT p.plot_id
+  FROM plots p
+  WHERE p.kavel_nummer IN (
+    '1a','1b','2','3','4-5','6','7','8','9',
+    '10-12-76','12','12a','13','13s','14','15','16','16s','17a'
+  )
+),
+
+-- Stap 2: Selecteer vogelsoorten en sluit meeuwen uit.
+selected_species AS (
+  SELECT s.id AS soort_id
+  FROM soorten s
+  WHERE LOWER(s.soort_naam) NOT LIKE '%meeuw%'
+),
+
+-- Stap 3: Filter territoria op jaren, plots en soorten (meeuw‑vrij).
+filtered_territoria AS (
+  SELECT t.soort_id, t.plot_id, t.jaar, t.territoria
+  FROM territoria t
+  JOIN selected_plots sp ON sp.plot_id = t.plot_id
+  JOIN selected_species ss ON ss.soort_id = t.soort_id
+  WHERE t.jaar BETWEEN 1958 AND 2025
+),
+
+-- Stap 4: Bepaal per jaar de getelde km2 op basis van plots met ≥1 territorium.
+surveyed_km2 AS (
+  SELECT
+    f.jaar,
+    SUM(pjo.oppervlakte_km2) AS km2
+  FROM (
+    SELECT DISTINCT plot_id, jaar
+    FROM filtered_territoria
+  ) f
+  JOIN plot_jaar_oppervlak pjo
+    ON pjo.plot_id = f.plot_id
+   AND pjo.jaar = f.jaar
+  GROUP BY f.jaar
+),
+
+-- Stap 5: Totaal territoria per soort per jaar.
+annual_territoria AS (
+  SELECT
+    soort_id,
+    jaar,
+    SUM(territoria) AS terr
+  FROM filtered_territoria
+  GROUP BY soort_id, jaar
+),
+
+-- Stap 6: Dichtheid per km2 per soort per jaar (territoria / getelde km2).
+annual_density AS (
+  SELECT
+    a.soort_id,
+    a.jaar,
+    a.terr / NULLIF(s.km2, 0) AS dens
+  FROM annual_territoria a
+  JOIN surveyed_km2 s ON s.jaar = a.jaar
+),
+
+-- Stap 7: Gemiddelde dichtheid per periode (1958–1983 en 1984–2025).
+period_means AS (
+  SELECT
+    soort_id,
+    AVG(CASE WHEN jaar BETWEEN 1958 AND 1983 THEN dens END) AS mean_pre,
+    AVG(CASE WHEN jaar BETWEEN 1984 AND 2025 THEN dens END) AS mean_post
+  FROM annual_density
+  GROUP BY soort_id
+),
+
+-- Stap 8: Ruwe index (periode‑intern, gemiddelde = 100).
+indexed AS (
+  SELECT
+    d.soort_id,
+    d.jaar,
+    CASE
+      WHEN d.jaar BETWEEN 1958 AND 1983 THEN 100.0 * d.dens / pm.mean_pre
+      WHEN d.jaar BETWEEN 1984 AND 2025 THEN 100.0 * d.dens / pm.mean_post
+    END AS index_raw
+  FROM annual_density d
+  JOIN period_means pm ON pm.soort_id = d.soort_id
+  WHERE
+    (d.jaar BETWEEN 1958 AND 1983 AND pm.mean_pre  IS NOT NULL)
+    OR
+    (d.jaar BETWEEN 1984 AND 2025 AND pm.mean_post IS NOT NULL)
+),
+
+-- Stap 9: Bepaal schaalfactor via brugvenster 1981–1983 vs 1984–1986.
+bridge AS (
+  SELECT
+    soort_id,
+    AVG(CASE WHEN jaar BETWEEN 1981 AND 1983 THEN index_raw END) AS pre_ref,
+    AVG(CASE WHEN jaar BETWEEN 1984 AND 1986 THEN index_raw END) AS post_ref
+  FROM indexed
+  GROUP BY soort_id
+),
+
+-- Stap 10: Pas schaal toe op de tweede periode en maak één doorlopende index.
+spliced AS (
+  SELECT
+    i.soort_id,
+    i.jaar,
+    CASE
+      WHEN i.jaar BETWEEN 1958 AND 1983 THEN i.index_raw
+      WHEN i.jaar BETWEEN 1984 AND 2025 THEN i.index_raw * (b.pre_ref / b.post_ref)
+    END AS index_spliced
+  FROM indexed i
+  JOIN bridge b ON b.soort_id = i.soort_id
+  WHERE b.pre_ref IS NOT NULL AND b.post_ref IS NOT NULL
+)
+
+-- Stap 11: Resultaat: doorlopende relatieve trend per soort per jaar.
+SELECT
+  soort_id,
+  jaar,
+  index_spliced AS relatieve_trend
+FROM spliced
+ORDER BY soort_id, jaar;

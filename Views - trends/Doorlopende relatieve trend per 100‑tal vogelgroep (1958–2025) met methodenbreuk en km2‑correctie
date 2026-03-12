@@ -1,0 +1,154 @@
+-- Titel: Doorlopende relatieve trend per 100‑tal vogelgroep (1958–2025) met methodenbreuk en km2‑correctie
+
+WITH
+-- Stap 1: Selecteer de gewenste plots (1a t/m 17a, zonder 17b).
+selected_plots AS (
+  SELECT p.plot_id
+  FROM plots p
+  WHERE p.kavel_nummer IN (
+    '1a','1b','2','3','4-5','6','7','8','9',
+    '10-12-76','12','12a','13','13s','14','15','16','16s','17a'
+  )
+),
+
+-- Stap 2: Selecteer vogelsoorten en sluit meeuwen uit.
+selected_species AS (
+  SELECT s.id AS soort_id
+  FROM soorten s
+  WHERE LOWER(s.soort_naam) NOT LIKE '%meeuw%'
+),
+
+-- Stap 3: Bepaal per vogel de 100‑tal groepen (dedupe binnen 100‑tal).
+bird_groups AS (
+  SELECT DISTINCT
+    vlg.vogel_id AS soort_id,
+    (FLOOR(vlg.groepsnummer / 100) * 100) AS groep_100
+  FROM evg_vogel_landschapgroep vlg
+),
+
+-- Stap 4: Koppel per 100‑tal een korte beschrijving.
+group_desc AS (
+  SELECT
+    g100.groep_100,
+    COALESCE(
+      MAX(CASE WHEN g.groepsnummer = g100.groep_100 THEN g.landschap_groep END),
+      MIN(g.landschap_groep)
+    ) AS korte_beschrijving
+  FROM (
+    SELECT DISTINCT (FLOOR(groepsnummer / 100) * 100) AS groep_100
+    FROM evg_vogelgroepen
+  ) g100
+  JOIN evg_vogelgroepen g
+    ON (FLOOR(g.groepsnummer / 100) * 100) = g100.groep_100
+  GROUP BY g100.groep_100
+),
+
+-- Stap 5: Filter territoria op jaren, plots, soorten (meeuw‑vrij) en koppel aan 100‑tal groepen.
+filtered_territoria AS (
+  SELECT
+    t.jaar,
+    bg.groep_100,
+    t.plot_id,
+    t.territoria
+  FROM territoria t
+  JOIN selected_plots sp ON sp.plot_id = t.plot_id
+  JOIN selected_species ss ON ss.soort_id = t.soort_id
+  JOIN bird_groups bg ON bg.soort_id = t.soort_id
+  WHERE t.jaar BETWEEN 1958 AND 2025
+),
+
+-- Stap 6: Bepaal per jaar de getelde km2 op basis van plots met ≥1 territorium.
+surveyed_km2 AS (
+  SELECT
+    f.jaar,
+    SUM(pjo.oppervlakte_km2) AS km2
+  FROM (
+    SELECT DISTINCT plot_id, jaar
+    FROM filtered_territoria
+  ) f
+  JOIN plot_jaar_oppervlak pjo
+    ON pjo.plot_id = f.plot_id
+   AND pjo.jaar = f.jaar
+  GROUP BY f.jaar
+),
+
+-- Stap 7: Totaal territoria per 100‑tal groep per jaar.
+annual_territoria AS (
+  SELECT
+    groep_100,
+    jaar,
+    SUM(territoria) AS terr
+  FROM filtered_territoria
+  GROUP BY groep_100, jaar
+),
+
+-- Stap 8: Dichtheid per km2 per 100‑tal groep per jaar (territoria / getelde km2).
+annual_density AS (
+  SELECT
+    a.groep_100,
+    a.jaar,
+    a.terr / NULLIF(s.km2, 0) AS dens
+  FROM annual_territoria a
+  JOIN surveyed_km2 s ON s.jaar = a.jaar
+),
+
+-- Stap 9: Gemiddelde dichtheid per periode (1958–1983 en 1984–2025).
+period_means AS (
+  SELECT
+    groep_100,
+    AVG(CASE WHEN jaar BETWEEN 1958 AND 1983 THEN dens END) AS mean_pre,
+    AVG(CASE WHEN jaar BETWEEN 1984 AND 2025 THEN dens END) AS mean_post
+  FROM annual_density
+  GROUP BY groep_100
+),
+
+-- Stap 10: Ruwe index (periode‑intern, gemiddelde = 100).
+indexed AS (
+  SELECT
+    d.groep_100,
+    d.jaar,
+    CASE
+      WHEN d.jaar BETWEEN 1958 AND 1983 THEN 100.0 * d.dens / pm.mean_pre
+      WHEN d.jaar BETWEEN 1984 AND 2025 THEN 100.0 * d.dens / pm.mean_post
+    END AS index_raw
+  FROM annual_density d
+  JOIN period_means pm ON pm.groep_100 = d.groep_100
+  WHERE
+    (d.jaar BETWEEN 1958 AND 1983 AND pm.mean_pre  IS NOT NULL)
+    OR
+    (d.jaar BETWEEN 1984 AND 2025 AND pm.mean_post IS NOT NULL)
+),
+
+-- Stap 11: Bepaal schaalfactor via brugvenster 1981–1983 vs 1984–1986.
+bridge AS (
+  SELECT
+    groep_100,
+    AVG(CASE WHEN jaar BETWEEN 1981 AND 1983 THEN index_raw END) AS pre_ref,
+    AVG(CASE WHEN jaar BETWEEN 1984 AND 1986 THEN index_raw END) AS post_ref
+  FROM indexed
+  GROUP BY groep_100
+),
+
+-- Stap 12: Pas schaal toe op de tweede periode en maak één doorlopende index.
+spliced AS (
+  SELECT
+    i.groep_100,
+    i.jaar,
+    CASE
+      WHEN i.jaar BETWEEN 1958 AND 1983 THEN i.index_raw
+      WHEN i.jaar BETWEEN 1984 AND 2025 THEN i.index_raw * (b.pre_ref / b.post_ref)
+    END AS index_spliced
+  FROM indexed i
+  JOIN bridge b ON b.groep_100 = i.groep_100
+  WHERE b.pre_ref IS NOT NULL AND b.post_ref IS NOT NULL
+)
+
+-- Stap 13: Resultaat: doorlopende relatieve trend per 100‑tal groep per jaar met korte beschrijving.
+SELECT
+  s.groep_100,
+  gd.korte_beschrijving,
+  s.jaar,
+  s.index_spliced AS relatieve_trend
+FROM spliced s
+JOIN group_desc gd ON gd.groep_100 = s.groep_100
+ORDER BY s.groep_100, s.jaar;
