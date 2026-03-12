@@ -1,0 +1,81 @@
+-- Titel: jaarindex per soort met plot- en km2-correctie (alleen 1a..17a)
+
+WITH
+-- Stap 1: Selecteer uitsluitend de gewenste plots (1a t/m 17a).
+selected_plots AS (
+  SELECT plot_id, kavel_nummer
+  FROM plots
+  WHERE kavel_nummer IN (
+    '1a','1b','2','3','4-5','6','7','8','9',
+    '10-12-76','12','12a','13','13s','14','15','16','16s','17a'
+  )
+),
+
+-- Stap 2: Basisdata: territoria + oppervlakte per plot/jaar.
+-- Hiermee zetten we aantallen om naar dichtheid per km2.
+base AS (
+  SELECT
+    t.soort_id,
+    t.plot_id,
+    t.jaar,
+    t.territoria,
+    pjo.oppervlakte_km2,
+    (t.territoria / NULLIF(pjo.oppervlakte_km2, 0)) AS dens
+  FROM territoria t
+  JOIN selected_plots sp ON sp.plot_id = t.plot_id
+  JOIN plot_jaar_oppervlak pjo
+    ON pjo.plot_id = t.plot_id AND pjo.jaar = t.jaar
+  WHERE t.jaar BETWEEN 1958 AND 2025
+),
+
+-- Stap 3: Plot-effect: “gemiddelde productiviteit” per plot.
+-- We gebruiken een log-gemiddelde om uitschieters te dempen.
+plot_effect AS (
+  SELECT
+    plot_id,
+    EXP(AVG(LOG(dens + 0.1))) AS plot_factor
+  FROM base
+  GROUP BY plot_id
+),
+
+-- Stap 4: Corrigeer de dichtheden per plot met plot_factor.
+-- Dit maakt plots beter vergelijkbaar.
+adjusted AS (
+  SELECT
+    b.soort_id,
+    b.jaar,
+    LOG(b.dens + 0.1) - LOG(pe.plot_factor) AS adj_log_dens
+  FROM base b
+  JOIN plot_effect pe ON pe.plot_id = b.plot_id
+),
+
+-- Stap 5: Jaarindex per soort (log-gemiddelde over plots).
+-- Dit levert één waarde per soort per jaar.
+year_index AS (
+  SELECT
+    soort_id,
+    jaar,
+    EXP(AVG(adj_log_dens)) AS index_raw
+  FROM adjusted
+  GROUP BY soort_id, jaar
+),
+
+-- Stap 6: Normaliseer per soort naar een index met gemiddelde = 100.
+year_index_100 AS (
+  SELECT
+    soort_id,
+    jaar,
+    (index_raw / AVG(index_raw) OVER (PARTITION BY soort_id)) * 100 AS jaarindex_100
+  FROM year_index
+)
+
+-- Stap 7: Eindresultaat met jaar-op-jaar verandering.
+SELECT
+  soort_id,
+  jaar,
+  jaarindex_100,
+  LAG(jaarindex_100) OVER (PARTITION BY soort_id ORDER BY jaar) AS vorig_jaar,
+  (jaarindex_100 / LAG(jaarindex_100) OVER (PARTITION BY soort_id ORDER BY jaar) - 1) * 100
+    AS pct_verandering
+FROM year_index_100
+ORDER BY soort_id, jaar;
