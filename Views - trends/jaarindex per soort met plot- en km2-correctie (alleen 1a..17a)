@@ -69,13 +69,14 @@ year_index_100 AS (
   FROM year_index
 )
 
--- Stap 7: Eindresultaat met jaar-op-jaar verandering.
+-- Stap 7: Eindresultaat met soortnaam i.p.v. soort_id.
 SELECT
-  soort_id,
-  jaar,
-  jaarindex_100,
-  LAG(jaarindex_100) OVER (PARTITION BY soort_id ORDER BY jaar) AS vorig_jaar,
-  (jaarindex_100 / LAG(jaarindex_100) OVER (PARTITION BY soort_id ORDER BY jaar) - 1) * 100
+  s.soort_naam,
+  y.jaar,
+  y.jaarindex_100,
+  LAG(y.jaarindex_100) OVER (PARTITION BY y.soort_id ORDER BY y.jaar) AS vorig_jaar,
+  (y.jaarindex_100 / LAG(y.jaarindex_100) OVER (PARTITION BY y.soort_id ORDER BY y.jaar) - 1) * 100
     AS pct_verandering
-FROM year_index_100
-ORDER BY soort_id, jaar;
+FROM year_index_100 y
+JOIN soorten s ON s.id = y.soort_id
+ORDER BY s.soort_naam, y.jaar;

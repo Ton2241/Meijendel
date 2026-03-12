@@ -1,0 +1,157 @@
+-- Titel: Jaarindex per 100-tal + 7-jarig gemiddelde + trend per groep (trend op 7-jarig gemiddelde)
+
+WITH
+-- Stap 1: Selecteer uitsluitend de gewenste plots (1a t/m 17a).
+selected_plots AS (
+  SELECT plot_id, kavel_nummer
+  FROM plots
+  WHERE kavel_nummer IN (
+    '1a','1b','2','3','4-5','6','7','8','9',
+    '10-12-76','12','12a','13','13s','14','15','16','16s','17a'
+  )
+),
+
+-- Stap 2: Koppel soorten aan 100-tal groepen (subgroepen tellen mee binnen hun 100-tal, dedupe per 100-tal).
+bird_groups AS (
+  SELECT DISTINCT
+    vlg.vogel_id AS soort_id,
+    (FLOOR(vlg.groepsnummer / 100) * 100) AS groep_100
+  FROM evg_vogel_landschapgroep vlg
+),
+
+-- Stap 3: Korte beschrijving per 100-tal groep.
+group_desc AS (
+  SELECT
+    g100.groep_100,
+    COALESCE(
+      MAX(CASE WHEN g.groepsnummer = g100.groep_100 THEN g.landschap_groep END),
+      MIN(g.landschap_groep)
+    ) AS korte_beschrijving
+  FROM (
+    SELECT DISTINCT (FLOOR(groepsnummer / 100) * 100) AS groep_100
+    FROM evg_vogelgroepen
+  ) g100
+  JOIN evg_vogelgroepen g
+    ON (FLOOR(g.groepsnummer / 100) * 100) = g100.groep_100
+  GROUP BY g100.groep_100
+),
+
+-- Stap 4: Basisdata: territoria + oppervlakte per plot/jaar en per 100‑tal groep.
+base AS (
+  SELECT
+    bg.groep_100,
+    t.plot_id,
+    t.jaar,
+    t.territoria,
+    pjo.oppervlakte_km2,
+    (t.territoria / NULLIF(pjo.oppervlakte_km2, 0)) AS dens
+  FROM territoria t
+  JOIN selected_plots sp ON sp.plot_id = t.plot_id
+  JOIN bird_groups bg ON bg.soort_id = t.soort_id
+  JOIN plot_jaar_oppervlak pjo
+    ON pjo.plot_id = t.plot_id AND pjo.jaar = t.jaar
+  WHERE t.jaar BETWEEN 1958 AND 2025
+),
+
+-- Stap 5: Plot-effect: gemiddelde productiviteit per plot.
+plot_effect AS (
+  SELECT
+    plot_id,
+    EXP(AVG(LOG(dens + 0.1))) AS plot_factor
+  FROM base
+  GROUP BY plot_id
+),
+
+-- Stap 6: Corrigeer de dichtheden per plot met plot_factor.
+adjusted AS (
+  SELECT
+    b.groep_100,
+    b.jaar,
+    LOG(b.dens + 0.1) - LOG(pe.plot_factor) AS adj_log_dens
+  FROM base b
+  JOIN plot_effect pe ON pe.plot_id = b.plot_id
+),
+
+-- Stap 7: Jaarindex per 100-tal groep (log-gemiddelde over plots).
+year_index AS (
+  SELECT
+    groep_100,
+    jaar,
+    EXP(AVG(adj_log_dens)) AS index_raw
+  FROM adjusted
+  GROUP BY groep_100, jaar
+),
+
+-- Stap 8: Normaliseer per 100-tal groep naar gemiddelde = 100.
+year_index_100 AS (
+  SELECT
+    groep_100,
+    jaar,
+    (index_raw / AVG(index_raw) OVER (PARTITION BY groep_100)) * 100 AS jaarindex_100
+  FROM year_index
+),
+
+-- Stap 9: 7-jarig gemiddelde (3 jaar ervoor, het jaar, 3 jaar erna).
+year_index_7yr AS (
+  SELECT
+    groep_100,
+    jaar,
+    jaarindex_100,
+    AVG(jaarindex_100) OVER (
+      PARTITION BY groep_100
+      ORDER BY jaar
+      ROWS BETWEEN 3 PRECEDING AND 3 FOLLOWING
+    ) AS jaarindex_7jr
+  FROM year_index_100
+),
+
+-- Stap 10: Trend per groep op basis van het 7-jarig gemiddelde (lineaire regressie op log-schaal, handmatig).
+trend_slopes AS (
+  SELECT
+    groep_100,
+    COUNT(jaarindex_7jr) AS n,
+    SUM(jaar) AS sum_x,
+    SUM(jaar * jaar) AS sum_xx,
+    SUM(LOG(jaarindex_7jr + 0.1)) AS sum_y,
+    SUM(jaar * LOG(jaarindex_7jr + 0.1)) AS sum_xy
+  FROM year_index_7yr
+  WHERE jaarindex_7jr IS NOT NULL
+  GROUP BY groep_100
+),
+
+-- Stap 11: Zet regressiesom om naar procentuele trend per jaar.
+trend_classes AS (
+  SELECT
+    groep_100,
+    CASE
+      WHEN (n * sum_xx - sum_x * sum_x) = 0 THEN NULL
+      ELSE EXP((n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x)) - 1
+    END AS pct_trend_per_jaar,
+    n AS n_jaren,
+    CASE
+      WHEN (n * sum_xx - sum_x * sum_x) = 0 THEN NULL
+      WHEN EXP((n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x)) - 1 > 0.05 THEN 'sterke toename'
+      WHEN EXP((n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x)) - 1 > 0.01 THEN 'toename'
+      WHEN EXP((n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x)) - 1 > -0.01 THEN 'stabiel'
+      WHEN EXP((n * sum_xy - sum_x * sum_y) / (n * sum_xx - sum_x * sum_x)) - 1 > -0.05 THEN 'afname'
+      ELSE 'sterke afname'
+    END AS trendklasse
+  FROM trend_slopes
+)
+
+-- Stap 12: Eindresultaat per jaar per 100-tal + 7-jarig gemiddelde + trendinfo.
+SELECT
+  y.groep_100,
+  gd.korte_beschrijving,
+  y.jaar,
+  y.jaarindex_100,
+  y.jaarindex_7jr,
+  LAG(y.jaarindex_100) OVER (PARTITION BY y.groep_100 ORDER BY y.jaar) AS vorig_jaar,
+  (y.jaarindex_100 / LAG(y.jaarindex_100) OVER (PARTITION BY y.groep_100 ORDER BY y.jaar) - 1) * 100
+    AS pct_verandering,
+  tc.pct_trend_per_jaar,
+  tc.trendklasse
+FROM year_index_7yr y
+LEFT JOIN group_desc gd ON gd.groep_100 = y.groep_100
+LEFT JOIN trend_classes tc ON tc.groep_100 = y.groep_100
+ORDER BY y.groep_100, y.jaar;
