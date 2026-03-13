@@ -2,15 +2,14 @@
 Deze query is bedoeld voor een view/rapport: IBA soorten.
 */
 
--- Stap 1: Uitvoering van een SQL‑statement.
 WITH
--- Stap 1: Kies alleen de 2 gevraagde soorten
+-- Stap 1: Kies alleen de gevraagde soorten
 doelsoorten AS (
     SELECT
         id AS soort_id,
         soort_naam
     FROM soorten
-    WHERE LOWER(soort_naam) IN ('boomleeuwerik', 'tafeleend')
+    WHERE LOWER(soort_naam) IN ('boomleeuwerik', 'tafeleend','blauwborst', 'roerdomp', 'slechtvalk', 'grauwe klauwier', 'nachtzwaluw')
 ),
 
 -- Stap 2: Tel per plot+jaar+soort op, inclusief aparte som voor bron = sovon
@@ -20,10 +19,12 @@ territoria_per_plot AS (
         t.plot_id,
         t.soort_id,
         SUM(t.territoria) AS territoria_plot_totaal,
-        SUM(CASE WHEN t.bron = 'sovon' THEN t.territoria ELSE 0 END) AS territoria_plot_sovon
+        SUM(CASE WHEN b.code = 'sovon' THEN t.territoria ELSE 0 END) AS territoria_plot_sovon
     FROM territoria t
     JOIN doelsoorten d
       ON d.soort_id = t.soort_id
+    JOIN bronnen b
+      ON b.id = t.bron_id
     GROUP BY
         t.jaar,
         t.plot_id,
