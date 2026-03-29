@@ -6,6 +6,7 @@ if (dir.exists(user_lib)) {
 }
 
 suppressPackageStartupMessages(library(rtrim))
+suppressPackageStartupMessages(library(mgcv))
 
 sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql"
 species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/soorten"
@@ -722,6 +723,122 @@ analyse_groups <- function(species_indices, group_mapping) {
   )
 }
 
+fit_gam_msi <- function(msi) {
+  gam_predictions <- list()
+  gam_summary <- list()
+
+  for (g in sort(unique(msi$groep_100))) {
+    df <- msi[msi$groep_100 == g, ]
+    df <- df[order(df$jaar), ]
+    df$post_break <- factor(ifelse(df$jaar >= 1984, "post", "pre"), levels = c("pre", "post"))
+    df$log_msi <- log(df$msi)
+
+    fit <- tryCatch(
+      mgcv::gam(
+        log_msi ~ post_break + s(jaar, by = post_break, k = 8),
+        data = df,
+        method = "REML"
+      ),
+      error = function(e) NULL
+    )
+
+    if (is.null(fit)) {
+      gam_predictions[[as.character(g)]] <- transform(
+        df,
+        gam_fit_log = NA_real_,
+        gam_fit_se = NA_real_,
+        gam_fit_msi = NA_real_,
+        gam_fit_lower = NA_real_,
+        gam_fit_upper = NA_real_
+      )
+
+      gam_summary[[as.character(g)]] <- data.frame(
+        groep_100 = g,
+        groep_titel = df$groep_titel[[1]],
+        n_jaren = nrow(df),
+        deviance_explained = NA_real_,
+        r_sq_adj = NA_real_,
+        aic = NA_real_,
+        edf_pre = NA_real_,
+        p_pre = NA_real_,
+        edf_post = NA_real_,
+        p_post = NA_real_,
+        stringsAsFactors = FALSE
+      )
+      next
+    }
+
+    pred <- predict(fit, newdata = df, se.fit = TRUE, type = "link")
+    df$gam_fit_log <- as.numeric(pred$fit)
+    df$gam_fit_se <- as.numeric(pred$se.fit)
+    df$gam_fit_msi <- exp(df$gam_fit_log)
+    df$gam_fit_lower <- exp(df$gam_fit_log - 1.96 * df$gam_fit_se)
+    df$gam_fit_upper <- exp(df$gam_fit_log + 1.96 * df$gam_fit_se)
+
+    s_table <- summary(fit)$s.table
+    row_pre <- grep("pre", rownames(s_table), fixed = TRUE)
+    row_post <- grep("post", rownames(s_table), fixed = TRUE)
+
+    gam_predictions[[as.character(g)]] <- df
+    gam_summary[[as.character(g)]] <- data.frame(
+      groep_100 = g,
+      groep_titel = df$groep_titel[[1]],
+      n_jaren = nrow(df),
+      deviance_explained = summary(fit)$dev.expl,
+      r_sq_adj = summary(fit)$r.sq,
+      aic = AIC(fit),
+      edf_pre = if (length(row_pre)) s_table[row_pre[1], "edf"] else NA_real_,
+      p_pre = if (length(row_pre)) s_table[row_pre[1], "p-value"] else NA_real_,
+      edf_post = if (length(row_post)) s_table[row_post[1], "edf"] else NA_real_,
+      p_post = if (length(row_post)) s_table[row_post[1], "p-value"] else NA_real_,
+      stringsAsFactors = FALSE
+    )
+  }
+
+  list(
+    predictions = do.call(rbind, gam_predictions),
+    summary = do.call(rbind, gam_summary)
+  )
+}
+
+classify_gam_need <- function(gam_summary) {
+  out <- gam_summary
+  out$max_edf <- pmax(out$edf_pre, out$edf_post, na.rm = TRUE)
+  out$max_edf[!is.finite(out$max_edf)] <- NA_real_
+  out$min_p_smooth <- pmin(out$p_pre, out$p_post, na.rm = TRUE)
+  out$min_p_smooth[!is.finite(out$min_p_smooth)] <- NA_real_
+
+  out$advies <- ifelse(
+    is.na(out$max_edf) | is.na(out$deviance_explained),
+    "GAM niet berekend",
+    ifelse(
+      out$max_edf >= 2 & out$deviance_explained >= 0.7,
+      "GAM aanbevolen",
+      ifelse(
+        out$max_edf > 1.2 & out$deviance_explained >= 0.5,
+        "GAM nuttig",
+        "Lineair meestal voldoende"
+      )
+    )
+  )
+
+  out$toelichting <- ifelse(
+    out$advies == "GAM niet berekend",
+    "Voor deze groep kon geen stabiele GAM-fit worden berekend.",
+    ifelse(
+      out$advies == "GAM aanbevolen",
+      "Duidelijke niet-lineariteit; een rechte lijn verliest belangrijke trendvorm.",
+      ifelse(
+        out$advies == "GAM nuttig",
+        "Enige kromming aanwezig; GAM helpt vooral voor visualisatie en timing van omslagen.",
+        "De trend is grotendeels lineair; een eenvoudige lijn is meestal voldoende."
+      )
+    )
+  )
+
+  out[order(out$groep_100), ]
+}
+
 write_outputs <- function(basis, species_results, group_results) {
   status_samenvatting <- maak_status_samenvatting(species_results$status)
   bruikbaar_status <- species_results$status[species_results$status$analyse_categorie == "brugbare_tijdreeks", ]
@@ -742,6 +859,9 @@ write_outputs <- function(basis, species_results, group_results) {
   write.csv(group_results$composition, file.path(group_dir, "groepssamenstelling_100tal.csv"), row.names = FALSE)
   write.csv(group_results$msi, file.path(group_dir, "msi_per_groep_per_jaar.csv"), row.names = FALSE)
   write.csv(group_results$trends, file.path(group_dir, "trendoverzicht_msi_groepen.csv"), row.names = FALSE)
+  write.csv(group_results$gam_predictions, file.path(group_dir, "gam_voorspellingen_msi_groepen.csv"), row.names = FALSE)
+  write.csv(group_results$gam_summary, file.path(group_dir, "gam_trendanalyse_msi_groepen.csv"), row.names = FALSE)
+  write.csv(group_results$gam_interpretation, file.path(group_dir, "gam_interpretatie_msi_groepen.csv"), row.names = FALSE)
 }
 
 tbls <- parse_tables(sql_path)
@@ -750,6 +870,10 @@ species_matrix <- build_species_matrix(tbls, basis)
 species_results <- analyse_species(species_matrix)
 group_mapping <- build_group_mapping(tbls)
 group_results <- analyse_groups(species_results$indices, group_mapping)
+gam_parts <- fit_gam_msi(group_results$msi)
+group_results$gam_predictions <- gam_parts$predictions
+group_results$gam_summary <- gam_parts$summary
+group_results$gam_interpretation <- classify_gam_need(gam_parts$summary)
 write_outputs(basis, species_results, group_results)
 
 cat("Klaar.\n")
