@@ -134,6 +134,62 @@ function parseCSVText(text){
   });
 }
 
+async function fetchTextFile(path){
+  const res=await fetch(path,{cache:"no-store"});
+  if(!res.ok)throw new Error(`Bestand niet gevonden: ${path}`);
+  return await res.text();
+}
+
+async function tryAutoLoadCsv(paths,type){
+  for(const path of paths){
+    try{
+      const text=await fetchTextFile(path);
+      processMsiCSV(parseCSVText(text),type);
+      return true;
+    }catch(_err){}
+  }
+  return false;
+}
+
+async function tryAutoLoadTrendCsv(paths,type){
+  for(const path of paths){
+    try{
+      const text=await fetchTextFile(path);
+      processTrendCSV(parseCSVText(text),type);
+      return true;
+    }catch(_err){}
+  }
+  return false;
+}
+
+async function autoLoadFromSameFolder(){
+  const sqlCandidates=["Meijendel.sql","meijendel.sql"];
+  let sqlLoaded=false;
+
+  for(const path of sqlCandidates){
+    try{
+      const sqlText=await fetchTextFile(path);
+      setState({status:"loading",error:""});
+      processFile(sqlText);
+      sqlLoaded=true;
+      break;
+    }catch(_err){}
+  }
+
+  await Promise.all([
+    tryAutoLoadTrendCsv(["soortindices_bruikbare_tijdreeks.csv","trim/soorten/soortindices_bruikbare_tijdreeks.csv"],"trim_idx"),
+    tryAutoLoadTrendCsv(["soorten_trendoverzicht_bruikbare_tijdreeks.csv","trim/soorten/soorten_trendoverzicht_bruikbare_tijdreeks.csv"],"trim_trend"),
+    tryAutoLoadCsv(["gam_voorspellingen_per_groep.csv","output_ecologische_groepen/gam_voorspellingen_per_groep.csv"],"voorsp"),
+    tryAutoLoadCsv(["gam_interpretatie_per_groep.csv","output_ecologische_groepen/gam_interpretatie_per_groep.csv"],"interp"),
+    tryAutoLoadCsv(["msi_per_groep_per_jaar.csv","trim_msi_evg/msi_per_groep_per_jaar.csv"],"trim_msi"),
+    tryAutoLoadCsv(["trendoverzicht_msi_groepen.csv","trim_msi_evg/trendoverzicht_msi_groepen.csv"],"trim_trend"),
+    tryAutoLoadCsv(["gam_voorspellingen_msi_groepen.csv","trim_msi_evg/gam_voorspellingen_msi_groepen.csv"],"trim_gam_pred"),
+    tryAutoLoadCsv(["gam_interpretatie_msi_groepen.csv","trim_msi_evg/gam_interpretatie_msi_groepen.csv"],"trim_gam_interp")
+  ]);
+
+  if(!sqlLoaded&&S.status==="idle")render();
+}
+
 function el(tag,attrs,children){
   const e=SVG_TAGS.has(tag)?document.createElementNS(SVG_NS,tag):document.createElement(tag);
   if(attrs)Object.entries(attrs).forEach(([k,v])=>{
@@ -396,6 +452,7 @@ function renderTellersPanel(){const tellers=S.tables["tellers"]?.rows||[],pjt=S.
 function renderSchema(){const d=el("details",{className:"schema-wrap"});d.appendChild(el("summary",{style:{fontSize:"12px",color:"#9ca3af",cursor:"pointer"}},"Herkende tabellen & kolommen"));const body=el("div",{style:{marginTop:"8px"}}),colColors={species:"#d1fae5",year:"#dbeafe",count:"#ffedd5",location:"#fef9c3",id:"#f3f4f6",other:"#f3f4f6"},txtColors={species:"#065f46",year:"#1e40af",count:"#9a3412",location:"#854d0e",id:"#9ca3af",other:"#6b7280"};Object.entries(S.tables).forEach(([name,tbl])=>{const roles=guessRoles(tbl.columns),row=el("div",{className:"schema-tbl"});row.appendChild(el("span",{style:{fontWeight:"600"}},name));row.appendChild(el("span",{style:{color:"#9ca3af",marginLeft:"8px"}},`(${tbl.rows.length} rijen)`));const pills=el("div",{style:{marginTop:"4px"}});tbl.columns.forEach(c=>{const r=roles[c]||"other";pills.appendChild(el("span",{className:"col-pill",style:{background:colColors[r]||"#f3f4f6",color:txtColors[r]||"#6b7280"}},c));});row.appendChild(pills);body.appendChild(row);});d.appendChild(body);return d;}
 function loadFile(file){if(!file)return;setState({status:"loading",error:""});const reader=new FileReader();reader.onload=e=>processFile(e.target.result);reader.onerror=()=>setState({status:"error",error:"Bestand kon niet worden gelezen."});reader.readAsText(file,"utf-8");}
 render();
+autoLoadFromSameFolder();
 </script>
 </body>
 </html>
