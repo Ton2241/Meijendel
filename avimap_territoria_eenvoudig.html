@@ -73,6 +73,12 @@ body{
   align-items:center;
   margin:14px 0 10px;
 }
+.action-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:12px 0 10px;
+}
 .btn,.file-label{
   appearance:none;
   border:none;
@@ -262,6 +268,9 @@ body{
 
       <h2 style="margin-top:22px;">2. Vogelsoorten kiezen</h2>
       <input id="searchInput" class="search" type="text" placeholder="Zoek op vogelnaam">
+      <div class="action-row">
+        <button id="selectAllBtn" class="btn btn-secondary" type="button">Kies alle vogels</button>
+      </div>
       <div id="speciesCount" class="small">Nog geen soorten beschikbaar.</div>
       <div id="speciesList" class="species-list" aria-live="polite"></div>
       <div class="hint">Klik op meerdere soorten om ze samen te vergelijken.</div>
@@ -310,7 +319,8 @@ const state = {
   years: [],
   plotid: null,
   selectedSpecies: [],
-  search: ""
+  search: "",
+  aggregateAllSpecies: false
 };
 
 function el(tag, attrs, children) {
@@ -451,6 +461,7 @@ function renderSpecies() {
       button.style.background = COLORS[state.species.indexOf(name) % COLORS.length];
     }
     button.addEventListener("click", () => {
+      state.aggregateAllSpecies = false;
       if (state.selectedSpecies.includes(name)) {
         state.selectedSpecies = state.selectedSpecies.filter(item => item !== name);
       } else {
@@ -464,6 +475,18 @@ function renderSpecies() {
 }
 
 function groupedData() {
+  if (state.aggregateAllSpecies) {
+    const totals = new Map();
+    state.rows.forEach(row => {
+      totals.set(row.jaar, (totals.get(row.jaar) ?? 0) + row.aantal);
+    });
+    return [{
+      name: "Alle gekozen vogels samen",
+      color: COLORS[0],
+      values: state.years.map(year => totals.get(year) ?? 0)
+    }];
+  }
+
   const map = new Map();
   state.rows.forEach(row => {
     if (!state.selectedSpecies.includes(row.naam)) return;
@@ -600,6 +623,7 @@ function loadRows(rows, sourceLabel) {
   state.plotid = normalized[0] ? normalized[0].plotid : null;
   state.selectedSpecies = [];
   state.search = "";
+  state.aggregateAllSpecies = false;
 
   document.getElementById("searchInput").value = "";
   setStatus(sourceLabel + " geladen: " + normalized.length + " rijen.");
@@ -643,6 +667,14 @@ document.getElementById("searchInput").addEventListener("input", event => {
 
 document.getElementById("clearBtn").addEventListener("click", () => {
   state.selectedSpecies = [];
+  state.aggregateAllSpecies = false;
+  renderSpecies();
+  renderChart();
+});
+
+document.getElementById("selectAllBtn").addEventListener("click", () => {
+  state.selectedSpecies = [...state.species];
+  state.aggregateAllSpecies = true;
   renderSpecies();
   renderChart();
 });
