@@ -298,7 +298,7 @@ body{
             <h2 style="margin:0 0 6px;">Grafiek</h2>
             <div class="small">De y-as toont het aantal territoria. De x-as toont de jaren.</div>
           </div>
-          <button id="clearBtn" class="btn btn-secondary" type="button">Wis selectie</button>
+          <button id="clearBtn" class="btn btn-secondary" type="button">Wis keuze en begin opnieuw</button>
         </div>
         <div id="chart" class="chart-wrap"></div>
         <div id="legend" class="legend"></div>
@@ -668,6 +668,9 @@ document.getElementById("searchInput").addEventListener("input", event => {
 document.getElementById("clearBtn").addEventListener("click", () => {
   state.selectedSpecies = [];
   state.aggregateAllSpecies = false;
+  state.search = "";
+  document.getElementById("searchInput").value = "";
+  setStatus("De keuze is gewist. Je kunt nu een nieuwe selectie maken.");
   renderSpecies();
   renderChart();
 });
