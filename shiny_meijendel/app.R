@@ -21,6 +21,7 @@ ui <- fluidPage(
     sidebarPanel(
       textInput("sql_path", "Pad naar Meijendel.sql", value = default_sql),
       actionButton("load_sql", "SQL laden"),
+      textOutput("load_status"),
       tags$hr(),
       uiOutput("plot_selector_ui"),
       uiOutput("year_selector_ui"),
@@ -78,17 +79,29 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   tbls_rv <- reactiveVal(NULL)
   analyse_rv <- reactiveVal(NULL)
+  load_info_rv <- reactiveVal("Nog geen SQL geladen.")
 
   observeEvent(input$load_sql, {
     req(nzchar(input$sql_path))
     path <- normalizePath(input$sql_path, winslash = "/", mustWork = TRUE)
-    withProgress(message = "SQL wordt gelezen", value = 0.2, {
-      tbls <- parse_meijendel_tables(path)
-      incProgress(0.7)
-      tbls_rv(tbls)
+    cache_path <- file.path(tempdir(), "meijendel_tables_cache.rds")
+    withProgress(message = "SQL wordt gelezen", detail = "Eerste keer kan dit ongeveer 20 seconden duren.", value = 0.1, {
+      loaded <- load_meijendel_tables_cached(path, cache_path = cache_path)
+      incProgress(0.8)
+      tbls_rv(loaded$data)
+      if (loaded$from_cache) {
+        load_info_rv("SQL geladen uit cache. De kavel-lijst zou nu direct zichtbaar moeten zijn.")
+        showNotification("SQL geladen uit cache.", type = "message")
+      } else {
+        load_info_rv("SQL vers ingelezen. Volgende keer gaat dit veel sneller door de cache.")
+        showNotification("SQL geladen. Volgende keer gaat dit sneller.", type = "message")
+      }
     })
-    showNotification("SQL geladen.", type = "message")
   }, ignoreInit = FALSE)
+
+  output$load_status <- renderText({
+    load_info_rv()
+  })
 
   output$plot_selector_ui <- renderUI({
     tbls <- tbls_rv()

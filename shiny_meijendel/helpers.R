@@ -188,6 +188,37 @@ parse_meijendel_tables <- function(path) {
   )
 }
 
+make_cache_signature <- function(path) {
+  info <- file.info(path)
+  paste(
+    normalizePath(path, winslash = "/", mustWork = TRUE),
+    info$size,
+    as.numeric(info$mtime),
+    sep = "|"
+  )
+}
+
+load_meijendel_tables_cached <- function(path, cache_path = NULL) {
+  path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+  if (is.null(cache_path)) {
+    cache_path <- file.path(tempdir(), "meijendel_tables_cache.rds")
+  }
+
+  signature <- make_cache_signature(path)
+
+  if (file.exists(cache_path)) {
+    cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
+    if (!is.null(cache) && identical(cache$signature, signature) && !is.null(cache$data)) {
+      return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
+    }
+  }
+
+  data <- parse_meijendel_tables(path)
+  cache <- list(signature = signature, data = data)
+  saveRDS(cache, cache_path)
+  list(data = data, from_cache = FALSE, cache_path = cache_path)
+}
+
 safe_mean <- function(x) {
   x <- x[is.finite(x)]
   if (!length(x)) return(NA_real_)
