@@ -270,6 +270,38 @@ run_lm_trend <- function(df, value_col) {
   )
 }
 
+fit_gam_curve <- function(df, value_col) {
+  df <- df[is.finite(df[[value_col]]) & df[[value_col]] > 0, , drop = FALSE]
+  if (nrow(df) < 5L || length(unique(df$jaar)) < 5L) {
+    return(NULL)
+  }
+
+  n_years <- length(unique(df$jaar))
+  k_value <- max(4L, min(10L, n_years - 1L))
+
+  fit <- tryCatch(
+    mgcv::gam(stats::as.formula(sprintf("log(%s) ~ s(jaar, k = %d)", value_col, k_value)), data = df, method = "REML"),
+    error = function(e) NULL
+  )
+  if (is.null(fit)) {
+    return(NULL)
+  }
+
+  pred_years <- data.frame(jaar = seq(min(df$jaar), max(df$jaar)))
+  pred <- tryCatch(
+    predict(fit, newdata = pred_years, se.fit = TRUE),
+    error = function(e) NULL
+  )
+  if (is.null(pred)) {
+    return(NULL)
+  }
+
+  pred_years$fit <- exp(pred$fit)
+  pred_years$lower <- exp(pred$fit - 1.96 * pred$se.fit)
+  pred_years$upper <- exp(pred$fit + 1.96 * pred$se.fit)
+  pred_years
+}
+
 make_group_descriptions <- function(evg_vogelgroepen) {
   groep_100 <- unique((evg_vogelgroepen$groepsnummer %/% 100L) * 100L)
   groep_100 <- groep_100[order(groep_100)]
