@@ -86,12 +86,27 @@ Er staat ook een startscript klaar voor Tailscale:
 /Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/start_shiny_tailscale.sh
 ```
 
-Dat script doet twee dingen:
+Dat script doet nu in één keer:
 
 1. het start de Shiny-app lokaal op `127.0.0.1:3867`
-2. het probeert daarna `tailscale serve` te activeren voor die poort
+2. het opent lokaal de app in je browser
+3. het activeert `tailscale serve` voor die poort
+4. het toont de lokale URL en de Tailscale-URL in de Terminal
 
-Daarvoor moet de Tailscale commandoregeltool op jouw Mac wel goed werken. Op dit moment staat de Tailscale-app er wel, maar de CLI gaf tijdens mijn test nog een voorkeurenfout. De voorbereidende bestanden staan nu klaar, maar het echte activeren van `tailscale serve` moet nog even worden afgemaakt zodra de CLI normaal reageert.
+De huidige Tailscale-URL voor deze Mac is:
+
+- `https://imac-van-antonius-2.tailaba97d.ts.net/`
+
+Deze URL werkt alleen zolang:
+
+- Tailscale actief is op deze Mac
+- de Shiny-app draait
+- het apparaat waarmee je kijkt ook in jouw tailnet zit
+
+Praktisch gebruik:
+
+- op de iMac zelf: `http://127.0.0.1:3867`
+- op een ander Tailscale-apparaat: `https://imac-van-antonius-2.tailaba97d.ts.net/`
 
 ## Beperkingen
 
@@ -101,7 +116,6 @@ Er zit nog niet in:
 
 - kaartweergave van kavels
 - meerdere lijnen tegelijk in de soortgrafiek
-- onzekerheidsbanden in de grafieken
 - volledig afgeronde Tailscale-configuratie vanuit de app zelf
 
 Maar methodisch doet deze versie wel al wat nodig is:

@@ -74,7 +74,7 @@ ui <- fluidPage(
         tabPanel(
           "Soorten",
           uiOutput("species_picker_ui"),
-          tags$p(class = "section-note", "Groen: TRIM-index per jaar. Oranje: gladde GAM-lijn over dezelfde reeks."),
+          tags$p(class = "section-note", "Groen: TRIM-index per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
           plotOutput("species_plot", height = "420px"),
           div(class = "download-row",
               downloadButton("download_species_trends", "CSV soorttrends"),
@@ -85,7 +85,7 @@ ui <- fluidPage(
         tabPanel(
           "Groepen",
           uiOutput("group_picker_ui"),
-          tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn over dezelfde reeks."),
+          tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
           plotOutput("group_plot", height = "420px"),
           div(class = "download-row",
               downloadButton("download_group_trends", "CSV groepstrends"),
@@ -277,11 +277,19 @@ server <- function(input, output, session) {
          ylim = c(y_min, y_max),
          main = input$selected_species)
     if (!is.null(gam_curve)) {
+      polygon(
+        c(gam_curve$jaar, rev(gam_curve$jaar)),
+        c(gam_curve$lower, rev(gam_curve$upper)),
+        col = grDevices::adjustcolor("#f59e0b", alpha.f = 0.20),
+        border = NA
+      )
       lines(gam_curve$jaar, gam_curve$fit, col = "#f59e0b", lwd = 3)
     }
     grid()
-    legend("topleft", legend = c("TRIM-index", "GAM"), col = c("#157f3b", "#f59e0b"),
-           lwd = c(2, 3), pch = c(16, NA), bty = "n")
+    legend("topleft",
+           legend = c("TRIM-index", "GAM", "Variatiezone"),
+           col = c("#157f3b", "#f59e0b", grDevices::adjustcolor("#f59e0b", alpha.f = 0.20)),
+           lwd = c(2, 3, 8), pch = c(16, NA, NA), bty = "n")
   })
 
   output$species_table <- renderTable({
@@ -320,11 +328,19 @@ server <- function(input, output, session) {
          ylim = c(y_min, y_max),
          main = paste(input$selected_group, "-", title))
     if (!is.null(gam_curve)) {
+      polygon(
+        c(gam_curve$jaar, rev(gam_curve$jaar)),
+        c(gam_curve$lower, rev(gam_curve$upper)),
+        col = grDevices::adjustcolor("#f59e0b", alpha.f = 0.20),
+        border = NA
+      )
       lines(gam_curve$jaar, gam_curve$fit, col = "#f59e0b", lwd = 3)
     }
     grid()
-    legend("topleft", legend = c("MSI", "GAM"), col = c("#1d4ed8", "#f59e0b"),
-           lwd = c(2, 3), pch = c(16, NA), bty = "n")
+    legend("topleft",
+           legend = c("MSI", "GAM", "Variatiezone"),
+           col = c("#1d4ed8", "#f59e0b", grDevices::adjustcolor("#f59e0b", alpha.f = 0.20)),
+           lwd = c(2, 3, 8), pch = c(16, NA, NA), bty = "n")
   })
 
   output$group_table <- renderTable({
