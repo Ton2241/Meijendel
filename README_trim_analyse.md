@@ -18,7 +18,7 @@ Dit script leest rechtstreeks `Meijendel.sql` in en maakt twee nieuwe outputmapp
 
 ## Waarom geen `post84` als TRIM-covariaat?
 
-De `rtrim`-module accepteert covariaten alleen als site-kenmerk en niet als tijdsafhankelijke variabele per site-jaar. Daarom kan een indicator als `post84` niet rechtstreeks op de door jou voorgestelde manier in één TRIM-model worden opgenomen.
+De `rtrim`-module accepteert covariaten alleen als site-kenmerk en niet als tijdsafhankelijke variabele per site-jaar. Daarom kan een indicator als `post84` niet rechtstreeks in één TRIM-model worden opgenomen.
 
 Daarom gebruikt dit script een verdedigbare alternatieve aanpak:
 
