@@ -2,6 +2,15 @@
 
 Deze repository bevat een MySQL/MariaDB‑dump van de database **Meijendel**.
 
+### Handige werkdocumenten
+
+Voor het dagelijkse werken met de database, de Shiny-app en de HTML zijn deze bestanden het belangrijkst:
+
+- `/Users/ton/Documents/GitHub/Meijendel/EINDHANDLEIDING_html_en_shiny.md`
+- `/Users/ton/Documents/GitHub/Meijendel/README_shiny_meijendel.md`
+- `/Users/ton/Documents/GitHub/Meijendel/README_bmp_meijendel_index.md`
+- `/Users/ton/Documents/GitHub/Meijendel/CONTROLESET_html_shiny.md`
+
 - Bron: TablePlus 6.8.5
 - Generatietijd: 2026-03-09 22:22:45
 - Dumpbestand: `20260309.sql`
