@@ -4,16 +4,11 @@ Dit bestand is een korte gebruiksaanwijzing voor [bmp\_meijendel\_index.html][1]
 
 De HTML is bedoeld om gegevens uit de database Meijendel zichtbaar en begrijpelijk te maken, ook voor gebruikers zonder veel statistische kennis.
 
-## Standaardroute
+De algemene werkwijze voor Shiny + HTML samen staat in:
 
-De handigste volgorde is meestal:
+- `/Users/ton/Documents/GitHub/Meijendel/EINDHANDLEIDING_html_en_shiny.md`
 
-1. analyse draaien in de Shiny-app
-2. daar de uitkomsten controleren
-3. csv-bestanden bewaren als dat nodig is
-4. daarna `bmp_meijendel_index.html` openen voor overzicht en presentatie
-
-De HTML is dus vooral een kijk- en controlebestand, niet de plek waar nieuwe TRIM-berekeningen worden gemaakt.
+De HTML is vooral een kijk- en controlebestand, niet de plek waar nieuwe TRIM-berekeningen worden gemaakt.
 
 ## Tab Trend
 
@@ -93,18 +88,6 @@ De HTML gebruikt dan onder andere:
 - `tellers`
 - `plot_jaar_teller`
 - `plots`
-
-## Welke keuze gebruik je wanneer?
-
-Gebruik `Territoria` als je de ruwe aantallen wilt zien.
-
-Gebruik `Dichtheid (per km²)` als je eerlijke vergelijking wilt maken tussen jaren of gebieden met verschillende oppervlakken.
-
-Gebruik `TRIM-index` als je de meest bruikbare langjarige trend per soort wilt begrijpen.
-
-Gebruik `GAM (dichtheid)` als je een vloeiende groepsontwikkeling wilt zien op basis van dichtheid.
-
-Gebruik `TRIM-MSI` als je een groepsindicator wilt zien die aansluit op de TRIM-analyse van soorten.
 
 ## Belangrijk om te onthouden
 
