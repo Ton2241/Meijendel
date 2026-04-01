@@ -7,6 +7,9 @@ if (!requireNamespace("rtrim", quietly = TRUE)) {
 if (!requireNamespace("mgcv", quietly = TRUE)) {
   stop("Package 'mgcv' is niet geinstalleerd. Installeer het eerst voordat je de app start.")
 }
+if (!requireNamespace("bslib", quietly = TRUE)) {
+  stop("Package 'bslib' is niet geinstalleerd. Installeer het eerst voordat je de app start.")
+}
 
 source("helpers.R", local = TRUE)
 
@@ -60,7 +63,11 @@ ui <- fluidPage(
       tags$hr(),
       h4("Korte uitleg"),
       tags$p("Klik kavels aan om ze toe te voegen aan je selectie. Kies daarna jaren en klik op 'Analyse uitvoeren'."),
-      tags$p("De app maakt dan nieuwe TRIM-berekeningen voor precies die selectie.")
+      tags$p("De app maakt dan nieuwe TRIM-berekeningen voor precies die selectie."),
+      tags$p(
+        class = "section-note",
+        "Bestandsnamen van exports beginnen nu steeds met 'meijendel_shiny_' zodat je ze makkelijker terugvindt."
+      )
     ),
     mainPanel(
       tabsetPanel(
@@ -75,10 +82,11 @@ ui <- fluidPage(
           "Soorten",
           uiOutput("species_picker_ui"),
           tags$p(class = "section-note", "Groen: TRIM-index per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
+          tags$p(class = "section-note", "Download hier de TRIM-uitkomsten per soort: trendoverzicht en indexreeks."),
           plotOutput("species_plot", height = "420px"),
           div(class = "download-row",
-              downloadButton("download_species_trends", "CSV soorttrends"),
-              downloadButton("download_species_indices", "CSV soortindices")),
+              downloadButton("download_species_trends", "CSV TRIM-trends"),
+              downloadButton("download_species_indices", "CSV TRIM-indices")),
           h4("Trend per soort"),
           tableOutput("species_table")
         ),
@@ -86,10 +94,11 @@ ui <- fluidPage(
           "Groepen",
           uiOutput("group_picker_ui"),
           tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
+          tags$p(class = "section-note", "Download hier de groepsuitkomsten: trendoverzicht en MSI per jaar."),
           plotOutput("group_plot", height = "420px"),
           div(class = "download-row",
               downloadButton("download_group_trends", "CSV groepstrends"),
-              downloadButton("download_group_msi", "CSV groep-MSI")),
+              downloadButton("download_group_msi", "CSV MSI per groep")),
           h4("Trend per groep"),
           tableOutput("group_table"),
           h4("Soorten in gekozen groep"),
@@ -97,6 +106,7 @@ ui <- fluidPage(
         ),
         tabPanel(
           "Controle",
+          tags$p(class = "section-note", "Gebruik deze tab om te controleren of de selectie logisch is opgebouwd: dekking per kavel, oppervlak per jaar en modelstatus van soorten."),
           div(class = "download-row",
               downloadButton("download_basis", "CSV analysebasis"),
               downloadButton("download_status", "CSV modelstatus")),
@@ -389,7 +399,7 @@ server <- function(input, output, session) {
 
   output$download_species_trends <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_soorttrends_%s_%s.csv", input$year_from, input$year_to)
+      sprintf("meijendel_shiny_soorttrends_%s_%s.csv", input$year_from, input$year_to)
     },
     content = function(file) {
       analyse <- analyse_rv()
@@ -400,7 +410,7 @@ server <- function(input, output, session) {
 
   output$download_species_indices <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_soortindices_%s_%s.csv", input$year_from, input$year_to)
+      sprintf("meijendel_shiny_soortindices_%s_%s.csv", input$year_from, input$year_to)
     },
     content = function(file) {
       analyse <- analyse_rv()
@@ -411,7 +421,7 @@ server <- function(input, output, session) {
 
   output$download_group_trends <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_groepstrends_%s_%s.csv", input$year_from, input$year_to)
+      sprintf("meijendel_shiny_groepstrends_%s_%s.csv", input$year_from, input$year_to)
     },
     content = function(file) {
       analyse <- analyse_rv()
@@ -422,7 +432,7 @@ server <- function(input, output, session) {
 
   output$download_group_msi <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_groep_msi_%s_%s.csv", input$year_from, input$year_to)
+      sprintf("meijendel_shiny_groep_msi_%s_%s.csv", input$year_from, input$year_to)
     },
     content = function(file) {
       analyse <- analyse_rv()
@@ -433,7 +443,7 @@ server <- function(input, output, session) {
 
   output$download_basis <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_analysebasis_%s_%s.csv", input$year_from, input$year_to)
+      sprintf("meijendel_shiny_analysebasis_%s_%s.csv", input$year_from, input$year_to)
     },
     content = function(file) {
       analyse <- analyse_rv()
@@ -444,7 +454,7 @@ server <- function(input, output, session) {
 
   output$download_status <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_modelstatus_%s_%s.csv", input$year_from, input$year_to)
+      sprintf("meijendel_shiny_modelstatus_%s_%s.csv", input$year_from, input$year_to)
     },
     content = function(file) {
       analyse <- analyse_rv()

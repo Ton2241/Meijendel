@@ -32,6 +32,7 @@ Voor deze app zijn in elk geval nodig:
 - `shiny`
 - `rtrim`
 - `mgcv`
+- `bslib`
 
 ## Starten
 
@@ -67,6 +68,19 @@ Daarna kun je:
 - in `Controle` de analysebasis en modelstatus controleren
 - via de knoppen csv-bestanden downloaden
 
+## Standaardroute
+
+Gebruik bij voorkeur steeds deze vaste route:
+
+1. Start de Shiny-app.
+2. Klik op `SQL laden`.
+3. Kies kavels.
+4. Kies `Van jaar` en `Tot jaar`.
+5. Klik op `Analyse uitvoeren`.
+6. Controleer de uitkomsten in `Soorten`, `Groepen` en `Controle`.
+7. Download de csv-bestanden die je wilt bewaren.
+8. Open daarna pas `bmp_meijendel_index.html` als je de gegevens ook in de standalone HTML wilt bekijken.
+
 ## CSV-export
 
 De app kan nu exporteren naar csv voor:
@@ -77,6 +91,26 @@ De app kan nu exporteren naar csv voor:
 - groep-MSI
 - analysebasis
 - modelstatus
+
+De bestandsnamen beginnen nu steeds met `meijendel_shiny_`.
+Zo kun je Shiny-exports makkelijker onderscheiden van andere csv-bestanden in deze repository.
+
+## Koppeling met de HTML
+
+De Shiny-app en de HTML zijn niet precies hetzelfde.
+
+- De Shiny-app is bedoeld om nieuwe selecties door te rekenen.
+- De HTML is bedoeld om gegevens overzichtelijk te tonen.
+
+Praktisch:
+
+- gebruik de Shiny-app om een selectie te analyseren
+- gebruik de Shiny-csv's om resultaten te controleren of te bewaren
+- gebruik de HTML om `Meijendel.sql` en de vaste TRIM- en MSI-bestanden zichtbaar te maken
+
+Voor een vaste controleset kun je ook kijken in:
+
+- `/Users/ton/Documents/GitHub/Meijendel/CONTROLESET_html_shiny.md`
 
 ## Tailscale voor Shiny
 
