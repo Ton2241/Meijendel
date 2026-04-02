@@ -8,8 +8,9 @@ Open `Ruimtelijke data/01_schema_plot_omgeving.sql` en voer dit bestand uit in d
 
 Hiermee maak je 2 nieuwe tabellen:
 
-- `plot_env_continuous`
-- `plot_landuse`
+- `plot_jaar_ahn_dtm`
+- `plot_jaar_stikstof`
+- `plot_jaar_landgebruik`
 
 Belangrijk:
 
@@ -68,14 +69,10 @@ Maak daarna een CSV met minimaal deze kolommen:
 - `bron`
 - `ahn_mean`
 - `ahn_sd`
-- `stikstof_mean`
-- `stikstof_median`
 
-Voor AHN vul je:
+Voor AHN vul je bijvoorbeeld:
 
-- `bron` bijvoorbeeld met `AHN4`
-- `stikstof_mean` als leeg
-- `stikstof_median` als leeg
+- `bron` met `AHN_DTM`
 
 ## 5. Stikstof per plot
 
@@ -105,16 +102,12 @@ Maak daarna een CSV met minimaal deze kolommen:
 - `plot_id`
 - `jaar`
 - `bron`
-- `ahn_mean`
-- `ahn_sd`
 - `stikstof_mean`
 - `stikstof_median`
 
 Voor stikstof vul je:
 
-- `bron` bijvoorbeeld met `AERIUS_2023`
-- `ahn_mean` als leeg
-- `ahn_sd` als leeg
+- `bron` bijvoorbeeld met `RIVM_HIST_STIKSTOF`
 
 ## 6. Landgebruik per plot
 
@@ -166,11 +159,15 @@ Maak daarna een CSV met deze kolommen:
 
 ## 7. Import in MySQL
 
-Voor `plot_env_continuous`:
+Voor `plot_jaar_ahn_dtm`:
 
 Gebruik het voorbeeld in `Ruimtelijke data/01_schema_plot_omgeving.sql`.
 
-Voor `plot_landuse`:
+Voor `plot_jaar_stikstof`:
+
+Gebruik het voorbeeld in `Ruimtelijke data/01_schema_plot_omgeving.sql`.
+
+Voor `plot_jaar_landgebruik`:
 
 Gebruik ook het voorbeeld in datzelfde SQL-bestand.
 
@@ -200,6 +197,6 @@ Kies dus eerst:
 2. bijpassend AHN-bestand
 3. zonal statistics
 4. export naar CSV
-5. import in `plot_env_continuous`
+5. import in `plot_jaar_ahn_dtm`
 
 Stop daarna en controleer het resultaat voordat je met stikstof verdergaat.
