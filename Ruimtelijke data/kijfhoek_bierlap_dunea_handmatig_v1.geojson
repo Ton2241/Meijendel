@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "name": "kijfhoek_bierlap_dunea_handmatig_v1",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:28992"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Kijfhoek_Bierlap_handmatig_v1",
+        "bron": "DUNEA_KAART_HANDMATIG",
+        "bron_url": "https://www.dunea.nl/duinen/duingebieden/meijendel/kijfhoek-en-bierlap",
+        "kaart_pdf": "https://www.dunea.nl/duinen/-/media/bestanden/duinen/plattegrond-nummerpaaltjes-kijfhoek-en-bierlap.pdf",
+        "opmerking": "Handmatig gedigitaliseerde polygon op basis van Dunea-kaart; niet gegeorefereerd bronbeeld."
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [82450, 464000],
+            [83050, 463300],
+            [83150, 462600],
+            [83350, 461900],
+            [83400, 461250],
+            [83150, 460600],
+            [82750, 459900],
+            [82350, 459250],
+            [82150, 458950],
+            [86475, 458356],
+            [86475, 464392],
+            [82450, 464000]
+          ]
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,300 @@
+{
+  "type": "FeatureCollection",
+  "name": "kijfhoek_bierlap_dunea_handmatig_v2_core",
+  "crs": {
+    "type": "name",
+    "properties": {
+      "name": "EPSG:28992"
+    }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 7",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [83770.98760000001, 461941.6744],
+          [83880.98760000001, 461941.6744],
+          [83880.98760000001, 462051.6744],
+          [83770.98760000001, 462051.6744],
+          [83770.98760000001, 461941.6744]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 71",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [85398.0781117507, 461855.79529026314],
+          [85508.0781117507, 461855.79529026314],
+          [85508.0781117507, 461965.79529026314],
+          [85398.0781117507, 461965.79529026314],
+          [85398.0781117507, 461855.79529026314]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 10-12-76",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84632.3428, 463028.6792],
+          [84742.3428, 463028.6792],
+          [84742.3428, 463138.6792],
+          [84632.3428, 463138.6792],
+          [84632.3428, 463028.6792]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 63",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84172.18805669581, 461415.91524549166],
+          [84258.18805669581, 461415.91524549166],
+          [84258.18805669581, 461501.91524549166],
+          [84172.18805669581, 461501.91524549166],
+          [84172.18805669581, 461415.91524549166]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 64",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84534.95245701703, 461692.70084565686],
+          [84588.95245701703, 461692.70084565686],
+          [84588.95245701703, 461746.70084565686],
+          [84534.95245701703, 461746.70084565686],
+          [84534.95245701703, 461692.70084565686]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 65",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84803.20268636703, 461949.1702291255],
+          [84873.20268636703, 461949.1702291255],
+          [84873.20268636703, 462019.1702291255],
+          [84803.20268636703, 462019.1702291255],
+          [84803.20268636703, 461949.1702291255]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 12a",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84989.876, 462274.2096],
+          [85099.876, 462274.2096],
+          [85099.876, 462384.2096],
+          [84989.876, 462384.2096],
+          [84989.876, 462274.2096]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 62",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "deels_beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84047.22765657213, 461214.35724536364],
+          [84127.22765657213, 461214.35724536364],
+          [84127.22765657213, 461294.35724536364],
+          [84047.22765657213, 461294.35724536364],
+          [84047.22765657213, 461214.35724536364]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 6",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [83094.808, 461668.72599999997],
+          [83204.808, 461668.72599999997],
+          [83204.808, 461778.72599999997],
+          [83094.808, 461778.72599999997],
+          [83094.808, 461668.72599999997]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 61",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [83426.17571198067, 461448.96729096613],
+          [83456.17571198067, 461448.96729096613],
+          [83456.17571198067, 461478.96729096613],
+          [83426.17571198067, 461478.96729096613],
+          [83426.17571198067, 461448.96729096613]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 72",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [85415.42045393471, 462352.3784447609],
+          [85501.42045393471, 462352.3784447609],
+          [85501.42045393471, 462438.3784447609],
+          [85415.42045393471, 462438.3784447609],
+          [85415.42045393471, 462352.3784447609]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 73",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [85763.34685819598, 463224.9232466398],
+          [85873.34685819598, 463224.9232466398],
+          [85873.34685819598, 463334.9232466398],
+          [85763.34685819598, 463334.9232466398],
+          [85763.34685819598, 463224.9232466398]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 74",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [86040.5908, 463438.812],
+          [86150.5908, 463438.812],
+          [86150.5908, 463548.812],
+          [86040.5908, 463548.812],
+          [86040.5908, 463438.812]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 8",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [84084.9428, 462406.38039999997],
+          [84194.9428, 462406.38039999997],
+          [84194.9428, 462516.38039999997],
+          [84084.9428, 462516.38039999997],
+          [84084.9428, 462406.38039999997]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 75",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [85108.17285760643, 463642.124046881],
+          [85218.17285760643, 463642.124046881],
+          [85218.17285760643, 463752.124046881],
+          [85108.17285760643, 463752.124046881],
+          [85108.17285760643, 463642.124046881]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "naam": "Meijendel k 4-5",
+        "bron": "DUNEA_HANDMATIG_CORE_V2",
+        "deelstatus": "deels_beperkt"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [83340, 461290],
+          [83420, 461290],
+          [83420, 461370],
+          [83340, 461370],
+          [83340, 461290]
+        ]]
+      }
+    }
+  ]
+}

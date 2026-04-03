@@ -1,0 +1,37 @@
+locatie_id,jaar,seizoen,dagtype,indicator,waarde,eenheid,bron,herkomst,opmerking
+2,2020,,,parkeer_capaciteit_totaal,200,plaatsen,DUNEA_RAPPORT_2022,tabel,Totaal aantal plekken P2 en P3 De Vallei inclusief motoren personeel en invaliden
+2,2020,,,parkeer_capaciteit_bezoekers,185,plaatsen,DUNEA_RAPPORT_2022,tekst,Aantal bezoekersplekken waarna volmelding en slagboom sluit
+2,2020,naseizoen,,parkeer_bezetting_gemiddeld_pct,54,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+2,2020,naseizoen,,parkeer_dagen_80_90_pct,6,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+2,2020,naseizoen,,parkeer_dagen_90_100_pct,29,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+2,2020,winterseizoen,,parkeer_bezetting_gemiddeld_pct,50,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+2,2020,winterseizoen,,parkeer_dagen_80_90_pct,7,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+2,2020,winterseizoen,,parkeer_dagen_90_100_pct,33,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+2,2021,voorseizoen,,parkeer_bezetting_gemiddeld_pct,58,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+2,2021,voorseizoen,,parkeer_dagen_80_90_pct,13,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+2,2021,voorseizoen,,parkeer_dagen_90_100_pct,23,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+2,2021,hoogseizoen,,parkeer_bezetting_gemiddeld_pct,57,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+2,2021,hoogseizoen,,parkeer_dagen_80_90_pct,10,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+2,2021,hoogseizoen,,parkeer_dagen_90_100_pct,13,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+3,2020,,,parkeer_capaciteit_totaal,276,plaatsen,DUNEA_RAPPORT_2022,tekst,Totaal 260 personenautos inclusief 2 invaliden en 16 paardentrailers
+3,2020,,,parkeer_capaciteit_bezoekers,260,plaatsen,DUNEA_RAPPORT_2022,tekst,Aantal personenautoplekken Kievietstop
+3,2020,naseizoen,,parkeer_bezetting_gemiddeld_pct,23,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+3,2020,naseizoen,,parkeer_dagen_80_90_pct,2,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+3,2020,naseizoen,,parkeer_dagen_90_100_pct,15,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+3,2020,winterseizoen,,parkeer_bezetting_gemiddeld_pct,11,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+3,2020,winterseizoen,,parkeer_dagen_80_90_pct,3,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+3,2020,winterseizoen,,parkeer_dagen_90_100_pct,13,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+3,2021,voorseizoen,,parkeer_bezetting_gemiddeld_pct,25,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+3,2021,voorseizoen,,parkeer_dagen_80_90_pct,4,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+3,2021,voorseizoen,,parkeer_dagen_90_100_pct,3,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+3,2021,hoogseizoen,,parkeer_bezetting_gemiddeld_pct,29,pct_bezetting,DUNEA_RAPPORT_2022,tabel,Hoogste bezetting per dag
+3,2021,hoogseizoen,,parkeer_dagen_80_90_pct,0,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting tussen 80 en 90 procent
+3,2021,hoogseizoen,,parkeer_dagen_90_100_pct,0,dagen,DUNEA_RAPPORT_2022,tabel,Dagen met hoogste dagbezetting boven 90 procent
+1,2021,,,bezoekers_totaal_jaar,700000,bezoekers_per_jaar,DUNEA_RAPPORT_2022,tekst,Bezoekers in De Vallei in 2021
+4,2021,,,autos_per_dag_gemiddeld,800,voertuigen_per_dag,DUNEA_RAPPORT_2022,grafiek,Autoverkeer richting Meijendel op gemiddelde weekdag in 2021 op basis van trendfiguur Meijendelseweg
+4,2021,,,bezoekers_auto_per_dag_gemiddeld,1600,bezoekers_per_dag,DUNEA_RAPPORT_2022,tekst,Afgeleid uit circa 800 voertuigen per dag en gemiddeld 2 personen per auto
+4,2021,,,fietsen_per_dag_gemiddeld,1600,fietspassages_per_dag,DUNEA_RAPPORT_2022,tekst,Fietspassages per gemiddelde weekdag in 2021 op belangrijke fietsaders
+1,2021,,,bezoekers_totaal_duingebied_jaar,1100000,bezoekers_per_jaar,DUNEA_RAPPORT_2022,tekst,Totaal bezoekers Meijendel in 2021
+1,2021,,,aandeel_bezoekers_fiets_pct,53,pct,DUNEA_RAPPORT_2022,tekst,Verdeling vervoerswijze uit rapport
+1,2021,,,aandeel_bezoekers_auto_pct,44,pct,DUNEA_RAPPORT_2022,tekst,Verdeling vervoerswijze uit rapport
+1,2021,,,aandeel_bezoekers_lopend_pct,3,pct,DUNEA_RAPPORT_2022,tekst,Verdeling vervoerswijze uit rapport
