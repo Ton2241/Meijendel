@@ -330,8 +330,36 @@ function parseDump(sql){
 }
 function toYear(v){if(!v)return null;const m=String(v).match(/\b(19|20)\d{2}\b/);return m?parseInt(m[0]):null;}
 function guessRoles(cols){const r={};cols.forEach(c=>{const l=c.toLowerCase();if(/jaar|year/.test(l))r[c]="year";else if(/datum|date/.test(l))r[c]="date";else if(/soort|species|vogel|bird|neder/.test(l))r[c]="species";else if(/territ|aantal|count|total|geteld/.test(l))r[c]="count";else if(/kavel|plot|locatie|hok/.test(l))r[c]="location";else if(/id$/.test(l)||l==="id")r[c]="id";else r[c]="other";});return r;}
-function pickMain(tables){return Object.entries(tables).sort((a,b)=>{const sc=t=>{const r=Object.values(guessRoles(t.columns));return(r.includes("species")?2:0)+(r.includes("year")||r.includes("date")?2:0)+(r.includes("count")?2:0)+t.rows.length*1e-4;};return sc(b[1])-sc(a[1]);})[0];}
-function buildNameMap(tables,mainName){for(const[name,tbl]of Object.entries(tables)){if(name===mainName)continue;const id=tbl.columns.find(c=>/^id$/i.test(c)),nm=tbl.columns.find(c=>/neder|dutch|naam/i.test(c))||tbl.columns.find(c=>/soort|species|vogel/i.test(c));if(id&&nm&&tbl.rows.length){const map={};tbl.rows.forEach(r=>{if(r[id]!=null)map[String(r[id])]=r[nm];});return{map,id,nm,rows:tbl.rows,cols:tbl.columns};}}return null;}
+function pickMain(tables){
+  const territoria=tables["territoria"];
+  if(territoria){
+    const roles=Object.values(guessRoles(territoria.columns));
+    if(roles.includes("species")&&roles.includes("year")&&roles.includes("count"))return["territoria",territoria];
+  }
+  return Object.entries(tables).sort((a,b)=>{const sc=t=>{const r=Object.values(guessRoles(t.columns));return(r.includes("species")?2:0)+(r.includes("year")||r.includes("date")?2:0)+(r.includes("count")?2:0)+t.rows.length*1e-4;};return sc(b[1])-sc(a[1]);})[0];
+}
+function buildNameMap(tables,mainName){
+  const soorten=tables["soorten"];
+  if(soorten){
+    const id=soorten.columns.find(c=>/^id$/i.test(c));
+    const nm=soorten.columns.find(c=>/^soort_naam$/i.test(c))||soorten.columns.find(c=>/neder|dutch|naam/i.test(c));
+    if(id&&nm&&soorten.rows.length){
+      const map={};
+      soorten.rows.forEach(r=>{if(r[id]!=null)map[String(r[id])]=r[nm];});
+      return{map,id,nm,rows:soorten.rows,cols:soorten.columns};
+    }
+  }
+  for(const[name,tbl]of Object.entries(tables)){
+    if(name===mainName)continue;
+    const id=tbl.columns.find(c=>/^id$/i.test(c)),nm=tbl.columns.find(c=>/neder|dutch|naam/i.test(c))||tbl.columns.find(c=>/soort|species|vogel/i.test(c));
+    if(id&&nm&&tbl.rows.length){
+      const map={};
+      tbl.rows.forEach(r=>{if(r[id]!=null)map[String(r[id])]=r[nm];});
+      return{map,id,nm,rows:tbl.rows,cols:tbl.columns};
+    }
+  }
+  return null;
+}
 function buildKavelMap(tables){const t=tables["plots"];if(!t)return null;const id=t.columns.find(c=>/^id$/i.test(c))||t.columns[0],kn=t.columns.find(c=>/kavel_nummer/i.test(c));if(!id||!kn)return null;const map={};t.rows.forEach(r=>{if(r[id]!=null)map[String(r[id])]=r[kn];});return map;}
 function buildPlotChoices(tables){
   const t=tables["plots"];
