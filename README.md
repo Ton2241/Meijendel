@@ -1,129 +1,206 @@
-## Database dump (Meijendel)
+# Meijendel
 
-Deze repository bevat een MySQL/MariaDB‑dump van de database **Meijendel**.
+Deze repository bevat de database en analysemiddelen voor de vogelgegevens van Meijendel.
 
-### Handige werkdocumenten
+De kern van het project bestaat uit:
 
-Voor het dagelijkse werken met de database, de Shiny-app en de HTML zijn deze bestanden het belangrijkst:
+- een MySQL- of MariaDB-dump van de database in `Meijendel.sql`
+- een standalone HTML-overzicht in `bmp_meijendel_index.html`
+- een Shiny-app in `shiny_meijendel/`
+- R-scripts voor TRIM-, MSI- en GAM-analyses in `R/`
+- SQL-views en importbestanden
+- ruimtelijke en recreatieve uitbreidingen in `Ruimtelijke data/` en `Recreatie/`
 
-- `/Users/ton/Documents/GitHub/Meijendel/EINDHANDLEIDING_html_en_shiny.md`
-- `/Users/ton/Documents/GitHub/Meijendel/README_shiny_meijendel.md`
-- `/Users/ton/Documents/GitHub/Meijendel/README_bmp_meijendel_index.md`
-- `/Users/ton/Documents/GitHub/Meijendel/CONTROLESET_html_shiny.md`
+## Waar begin je?
 
-- Bron: TablePlus 6.8.5
-- Generatietijd: 2026-03-09 22:22:45
-- Dumpbestand: `20260309.sql`
-- Charset/collation: `utf8mb4` / `utf8mb4_0900_ai_ci`
-- Bevat `DROP TABLE` + `CREATE TABLE` + `INSERT` statements
+Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgorde:
 
-### Tabellen (31)
-Belangrijke domeinen die in de dump voorkomen:
-- Soorten en taxonomie: `soorten`, `familie`, `soort_familie`, `richtlijnen`, `soort_richtlijn`
-- Habitat/maatregelen: `habitattypen`, `habitattypen_doelstelling`, `soort_habitat`, `maatregelen`, `maatregel_habitat`
-- Plotgegevens en tijdreeksen: `plots`, `plot_jaar_oppervlak`, `plot_jaar_habitat`, `plot_jaar_teller`, `plot_jaar_maatregel`
-- Trends en territoria: `trends`, `territoria`
-- Weerdata: `weer`, `weer_legenda`
-- EVG/vogel/landschap indelingen: `evg_landschapstypen`, `evg_vogelgroepen`, `evg_vogel_landschapgroep`, `evg_vogel_landschapstype`
-- Overig/inputs: `import_waarnemingen_breed`, `import_waarnemingen_lang`, `plotkolom_mapping`, `kernopgaven`, `kernopgave_soort`, `kernopgave_habitat`, `BGgroup`, `vogelstand_1924`
+1. [`MDs/handboek.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md)
+2. [`MDs/EINDHANDLEIDING_html_en_shiny.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/EINDHANDLEIDING_html_en_shiny.md)
+3. [`MDs/CONTROLESET_html_shiny.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/CONTROLESET_html_shiny.md)
+4. [`MDs/README_shiny_meijendel.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/README_shiny_meijendel.md)
+5. [`MDs/README_bmp_meijendel_index.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/README_bmp_meijendel_index.md)
 
-### Inhoud (rij‑aantallen)
-Onderstaande aantallen zijn afgeleid uit het aantal tuples in de `INSERT`‑statements in de dump.
+## Wat staat waar?
 
-| Tabel                       | Rijen  |
-| --------------------------- | -----: |
-| `territoria`                | 70,724 |
-| `weer`                      | 24,837 |
-| `trends`                    | 11,165 |
-| `plot_jaar_oppervlak`       | 5,296  |
-| `plot_jaar_teller`          | 2,378  |
-| `evg_vogel_landschapstype`  | 622    |
-| `soorten`                   | 604    |
-| `evg_vogel_landschapgroep`  | 418    |
-| `tellers`                   | 199    |
-| `soort_familie`             | 181    |
-| `soort_richtlijn`           | 174    |
-| `BGgroup`                   | 163    |
-| `import_waarnemingen_breed` | 156    |
-| `vogelstand_1924`           | 75     |
-| `familie`                   | 71     |
-| `plots`                     | 69     |
-| `plotkolom_mapping`         | 54     |
-| `plot_jaar_habitat`         | 51     |
-| `maatregel_habitat`         | 47     |
-| `evg_vogelgroepen`          | 43     |
-| `import_waarnemingen_lang`  | 28     |
-| `evg_landschapstypen`       | 18     |
-| `soort_habitat`             | 18     |
-| `habitattypen_doelstelling` | 15     |
-| `habitattypen`              | 14     |
-| `kernopgave_soort`          | 11     |
-| `kernopgave_habitat`        | 9      |
-| `maatregelen`               | 9      |
-| `weer_legenda`              | 8      |
-| `richtlijnen`               | 7      |
-| `kernopgaven`               | 4      |
+### Hoofdbestanden
 
-| Tabel                       | Rijen  |
-| --------------------------- | -----: |
-| `territoria`                | 70,724 |
-| `weer`                      | 24,837 |
-| `trends`                    | 11,165 |
-| `plot_jaar_oppervlak`       | 5,296  |
-| `plot_jaar_teller`          | 2,378  |
-| `soorten`                   | 604    |
-| `evg_vogel_landschapstype`  | 622    |
-| `evg_vogel_landschapgroep`  | 418    |
-| `soort_familie`             | 181    |
-| `soort_richtlijn`           | 174    |
-| `BGgroup`                   | 163    |
-| `import_waarnemingen_breed` | 156    |
-| `plots`                     | 69     |
-| `familie`                   | 71     |
-| `vogelstand_1924`           | 75     |
-| `plotkolom_mapping`         | 54     |
-| `plot_jaar_habitat`         | 51     |
-| `evg_vogelgroepen`          | 43     |
-| `maatregel_habitat`         | 47     |
-| `import_waarnemingen_lang`  | 28     |
-| `habitattypen_doelstelling` | 15     |
-| `habitattypen`              | 14     |
-| `kernopgave_soort`          | 11     |
-| `kernopgave_habitat`        | 9      |
-| `maatregelen`               | 9      |
-| `richtlijnen`               | 7      |
-| `kernopgaven`               | 4      |
-| `evg_landschapstypen`       | 18     |
-| `soort_habitat`             | 18     |
-| `weer_legenda`              | 8      |
+- [`Meijendel.sql`](/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql)
+  De actuele SQL-dump van de database.
+- [`bmp_meijendel_index.html`](/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html)
+  Standalone HTML voor overzicht, controle en presentatie.
+- [`README.md`](/Users/ton/Documents/GitHub/Meijendel/README.md)
+  Korte projectingang.
 
-### Foreign keys (uit `Meijendel.dump`)
-- `evg_vogel_landschapgroep.groepsnummer` -\> `evg_vogelgroepen.groepsnummer`
-- `evg_vogel_landschapgroep.vogel_id` -\> `soorten.id`
-- `evg_vogel_landschapstype.landschap_id` -\> `evg_landschapstypen.id`
-- `evg_vogel_landschapstype.soort_id` -\> `soorten.id`
-- `kernopgave_habitat.habitat_id` -\> `habitattypen.id`
-- `kernopgave_habitat.kernopgave_id` -\> `kernopgaven.id`
-- `kernopgave_soort.kernopgave_id` -\> `kernopgaven.id`
-- `kernopgave_soort.soort_id` -\> `soorten.id`
-- `maatregel_habitat.habitat_id` -\> `habitattypen.id`
-- `maatregel_habitat.maatregel_id` -\> `maatregelen.id`
-- `plot_jaar_habitat.habitat_id` -\> `habitattypen.id`
-- `plot_jaar_habitat.plot_id` -\> `plots.plot_id`
-- `plot_jaar_maatregel.maatregel_id` -\> `maatregelen.id`
-- `plot_jaar_maatregel.plot_id` -\> `plots.plot_id`
-- `plot_jaar_oppervlak.plot_id` -\> `plots.plot_id`
-- `plot_jaar_teller.teller_id` -\> `tellers.id`
-- `plot_jaar_teller.plot_id` -\> `plots.plot_id`
-- `plotkolom_mapping.plot_id` -\> `plots.plot_id`
-- `soort_familie.familie_id` -\> `familie.id`
-- `soort_familie.soort_id` -\> `soorten.id`
-- `soort_habitat.habitat_id` -\> `habitattypen.id`
-- `soort_habitat.soort_id` -\> `soorten.id`
-- `soort_richtlijn.richtlijn_id` -\> `richtlijnen.id`
-- `soort_richtlijn.soort_id` -\> `soorten.id`
-- `territoria.plot_id, territoria.jaar` -\> `plot_jaar_oppervlak.plot_id, plot_jaar_oppervlak.jaar`
-- `territoria.plot_id` -\> `plots.plot_id`
-- `territoria.soort_id` -\> `soorten.id`
-- `trends.soort_id` -\> `soorten.id`
-- `vogelstand_1924.soort_id` -\> `soorten.id`
+### Documentatie
+
+Alle actieve projectdocumentatie staat in `MDs/`.
+
+Belangrijke bestanden daar zijn:
+
+- [`MDs/handboek.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md)
+  Doorlopend handboek voor gebruik van de database.
+- [`MDs/EINDHANDLEIDING_html_en_shiny.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/EINDHANDLEIDING_html_en_shiny.md)
+  Korte werkwijze voor HTML en Shiny.
+- [`MDs/CONTROLESET_html_shiny.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/CONTROLESET_html_shiny.md)
+  Vaste controlelijst voor gebruik en wijzigingen.
+- [`MDs/README_trim_analyse.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/README_trim_analyse.md)
+  Uitleg van de hoofd-TRIM-analyse.
+- [`MDs/README_trim_sandra_analyse.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/README_trim_sandra_analyse.md)
+  Uitleg van de Sandra-variant.
+- [`MDs/README_ecologische_groepen.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/README_ecologische_groepen.md)
+  Uitleg van de MSI- en GAM-analyse voor ecologische groepen.
+- [`MDs/import_procedure_territoria.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/import_procedure_territoria.md)
+  Jaarlijkse importprocedure voor territoria.
+
+### Shiny-app
+
+De Shiny-app staat in `shiny_meijendel/`.
+
+Belangrijkste bestanden:
+
+- [`shiny_meijendel/app.R`](/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R)
+- [`shiny_meijendel/helpers.R`](/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/helpers.R)
+- [`shiny_meijendel/start_shiny_local.sh`](/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/start_shiny_local.sh)
+- [`shiny_meijendel/start_shiny_tailscale.sh`](/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/start_shiny_tailscale.sh)
+
+De app is bedoeld voor:
+
+- selectie van kavels
+- keuze van periode
+- TRIM-analyse per soort
+- MSI-analyse per ecologische groep
+- controle van analysebasis en modelstatus
+- export van resultaten naar CSV
+
+### HTML-overzicht
+
+De standalone HTML staat in:
+
+- [`bmp_meijendel_index.html`](/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html)
+
+De HTML bevat momenteel deze hoofdonderdelen:
+
+- `Trend`
+- `Plot`
+- `MSI`
+- `Tellers`
+
+De HTML gebruikt:
+
+- `Meijendel.sql` voor ruwe gegevens
+- extra CSV-bestanden voor TRIM- en MSI-weergaven
+
+### R-analyses
+
+De R-scripts staan in `R/`.
+
+Belangrijkste scripts:
+
+- [`R/trim_soorten_en_msi_evg.R`](/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.R)
+- [`R/trim_sandra_soorten_en_msi_evg.R`](/Users/ton/Documents/GitHub/Meijendel/R/trim_sandra_soorten_en_msi_evg.R)
+- [`R/analyse_ecologische_groepen.R`](/Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.R)
+
+Belangrijkste outputmappen:
+
+- `trim/soorten/`
+- `trim_msi_evg/`
+- `trim/sandra/`
+- `output_ecologische_groepen/`
+
+### SQL-views en hulpmiddelen
+
+De repository bevat veel SQL-bestanden voor:
+
+- analyses per soort
+- analyses per plot
+- trends
+- habitat
+- tellers
+- richtlijnen
+- kernopgaven
+- controle en validatie
+
+Belangrijke mappen:
+
+- `Views - soorten/`
+- `Views - trends/`
+- `Views - plots/`
+- `Views - tellers/`
+- `Views - Habitat/`
+- `Integriteit check/`
+
+### Ruimtelijke en recreatieve data
+
+Ruimtelijke uitbreidingen staan in:
+
+- `Ruimtelijke data/`
+- `Recreatie/`
+
+Daarin staan onder andere:
+
+- import-SQL voor AHN, stikstof en landgebruik
+- Python-scripts voor ruimtelijke samenvattingen per plot
+- bronbestanden uit BGT en OSM
+- importbestanden voor recreatie en toegankelijkheid
+- documentatie over bezoekersdruk en recreatieve infrastructuur
+
+## Wat is de normale werkvolgorde?
+
+De praktische volgorde is:
+
+1. werk vanuit `Meijendel.sql`
+2. gebruik Shiny of R voor nieuwe analyses
+3. controleer de uitkomsten
+4. gebruik de HTML voor overzicht en presentatie
+5. leg wijzigingen vast in Git
+
+Voor alleen bekijken:
+
+1. open `bmp_meijendel_index.html`
+2. laad `Meijendel.sql`
+3. laad waar nodig extra CSV-bestanden
+
+Voor nieuwe analyses:
+
+1. start de Shiny-app
+2. laad `Meijendel.sql`
+3. kies kavels en jaren
+4. voer de analyse uit
+5. controleer de tabs `Soorten`, `Groepen` en `Controle`
+6. exporteer zo nodig CSV-bestanden
+
+## Shiny starten
+
+In R of RStudio:
+
+```r
+setwd("/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel")
+shiny::runApp(host = "127.0.0.1", port = 3867)
+```
+
+Of via Terminal:
+
+```bash
+/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/start_shiny_local.sh
+```
+
+## Belangrijke aandachtspunten
+
+- De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
+- De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.
+- Niet alle documentatie in de repo is even recent; de documenten in `MDs/` zijn nu leidend.
+- De worktree kan lokale, nog niet gecommitte wijzigingen bevatten. Controleer `git status` voordat je bestanden overschrijft of commit.
+
+## Samenvatting
+
+Deze repository is geen losse SQL-dump meer, maar een complete werkomgeving rond de Meijendel-database:
+
+- database
+- documentatie
+- analyses
+- visualisaties
+- ruimtelijke uitbreidingen
+- import- en controlehulpmiddelen
+
+Voor dagelijks gebruik is [`MDs/handboek.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md) nu het beste startpunt.

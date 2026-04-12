@@ -20,6 +20,7 @@ De kern van de database bestaat uit:
 - vogelsoorten
 - plots en kavels
 - territoria per plot en jaar
+- dagbezoeken en dagwaarnemingen
 - oppervlakte per plot en jaar
 - tellers per plot en jaar
 - ecologische vogelgroepen
@@ -34,6 +35,8 @@ Belangrijke hoofdtabellen zijn:
 - `plot_jaar_oppervlak`
 - `plot_jaar_teller`
 - `territoria`
+- `dagbezoeken`
+- `dagwaarnemingen`
 - `evg_vogelgroepen`
 - `evg_vogel_landschapgroep`
 
@@ -42,6 +45,8 @@ Praktisch betekent dit:
 - `plots` zegt waar de gebieden liggen
 - `soorten` zegt om welke vogels het gaat
 - `territoria` bevat de aantallen per plot en jaar
+- `dagbezoeken` bevat gegevens per veldbezoek
+- `dagwaarnemingen` bevat losse waarnemingen per soort, datum en locatie
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
@@ -57,6 +62,7 @@ Belangrijke onderdelen daarin zijn:
 - `trim/` en `trim_msi_evg/`: output van TRIM-analyses
 - `trim/sandra/`: aparte Sandra-variant van de TRIM-analyse
 - `output_ecologische_groepen/`: output van MSI- en GAM-analyses van ecologische groepen
+- in `Meijendel.sql`: onder andere de tabellen `dagbezoeken`, `dagwaarnemingen` en `import_dagwaarnemingen_raw`
 - `Recreatie/` en `Ruimtelijke data/`: uitbreiding met recreatie- en omgevingsgegevens
 
 ## 3. Welke hulpmiddelen gebruik je waarvoor?
@@ -609,7 +615,118 @@ Belangrijk:
 
 Het document over deze procedure bevat nog enkele open plekken met `[AANVULLEN]`. Gebruik die importprocedure dus als raamwerk, maar ga er niet vanuit dat elk detail al volledig is uitgewerkt.
 
-## 16. Hoe werkt ruimtelijke data koppelen aan plots?
+## 16. Wat zijn dagbezoeken en dagwaarnemingen?
+
+Naast de jaarlijkse territoria bevat de database nu ook dagwaarnemingen.
+
+Dat is een belangrijk verschil:
+
+- `territoria` geeft de samengevatte uitkomst per plot en jaar
+- `dagwaarnemingen` bewaart losse waarnemingen per bezoek, soort en datum
+
+Daarmee kun je later veel preciezer terugkijken:
+
+- welke soorten op welke dag zijn gezien
+- hoeveel exemplaren zijn genoteerd
+- welke broedcode is gebruikt
+- of een waarneming binnen of buiten het plot viel
+- waar de waarneming ruimtelijk lag
+
+De belangrijkste tabellen hiervoor zijn:
+
+- `bronnen`
+- `dagbezoeken`
+- `dagwaarnemingen`
+- `import_dagwaarnemingen_raw`
+
+### 16.1 `bronnen`
+
+Deze tabel legt vast uit welke bron een bezoek of waarneming afkomstig is.
+
+Dat is nodig om later te kunnen onderscheiden:
+
+- uit welk systeem een record kwam
+- welke importbron is gebruikt
+
+### 16.2 `dagbezoeken`
+
+`dagbezoeken` bevat de gegevens per veldbezoek.
+
+Daarin staat onder andere:
+
+- `bezoek_id`
+- `plot_id`
+- `jaar`
+- `bezoek_datum`
+- begin- en eindtijd
+- bezoekduur
+- of het een deelbezoek was
+- of de omstandigheden gunstig waren
+- aantallen soorten en records
+- de bron van het bezoek
+
+Praktisch is dit de tabel die één concreet bezoek aan een plot beschrijft.
+
+### 16.3 `dagwaarnemingen`
+
+`dagwaarnemingen` bevat de losse waarnemingen die bij zo'n bezoek horen.
+
+Daarin staat onder andere:
+
+- aan welk bezoek de waarneming hangt
+- voor welk plot en jaar de waarneming geldt
+- welke soort is gezien
+- op welke dag de waarneming viel
+- het aantal
+- de broedcode
+- eventueel geslacht en opmerking
+- of de waarneming in het plot viel
+- de coördinaten en geometrie
+- de bron van de waarneming
+
+Belangrijk:
+
+- elke dagwaarneming hoort bij een bestaand `dagbezoek`
+- elke dagwaarneming hoort ook bij een bestaand `plot_id`, `jaar` en `soort_id`
+- er zit een unieke sleutel op `bron_waarneming_id`, zodat een bronrecord niet dubbel wordt ingeladen
+
+### 16.4 `import_dagwaarnemingen_raw`
+
+Deze tabel is de ruwe importtabel voor dagwaarnemingen.
+
+Gebruik deze tabel als tussenstap:
+
+1. ruwe brondata eerst hier laden
+2. daarna valideren
+3. daarna pas doorzetten naar `dagbezoeken` en `dagwaarnemingen`
+
+Dat is dezelfde veilige werkwijze als bij andere imports in deze database:
+
+- eerst rauw inlezen
+- daarna controleren
+- pas daarna opnemen in de echte productietabellen
+
+### 16.5 Waarom dit nuttig is
+
+De toevoeging van dagwaarnemingen maakt de database inhoudelijk rijker.
+
+Je kunt nu niet alleen meer werken met:
+
+- samenvattingen per plot en jaar
+
+maar ook met:
+
+- losse waarnemingen per dag
+- bezoekinformatie
+- preciezere bronherkomst
+- ruimtelijke waarnemingspunten
+
+Voor een beginner is de belangrijkste praktische les:
+
+- gebruik `territoria` voor overzicht en jaaranalyses
+- gebruik `dagwaarnemingen` als je detailinformatie per bezoek of per losse waarneming nodig hebt
+
+## 17. Hoe werkt ruimtelijke data koppelen aan plots?
 
 Het uitgangspunt is:
 
@@ -652,7 +769,7 @@ Voer eerst alleen AHN uit:
 
 Stop daarna en controleer eerst het resultaat.
 
-## 17. Hoe zit recreatie en infrastructuur in het model?
+## 18. Hoe zit recreatie en infrastructuur in het model?
 
 Voor recreatie en infrastructuur zijn twee soorten gegevens onderscheiden:
 
@@ -692,7 +809,7 @@ Reden:
 - die bron werkt met gebieden, telpunten en parkeerlocaties
 - niet met directe plotwaarden
 
-## 18. Welke bronnen gebruik je voor recreatie?
+## 19. Welke bronnen gebruik je voor recreatie?
 
 ### BGT
 
@@ -722,7 +839,7 @@ Gebruik niet rechtstreeks voor plotafstanden.
 
 Gebruik dit rapport wel later voor een aparte bezoekersdruklaag.
 
-## 19. Hoe verwerk je recreatiedata uit BGT en OSM?
+## 20. Hoe verwerk je recreatiedata uit BGT en OSM?
 
 De basisregel is:
 
@@ -749,7 +866,7 @@ Controleer daarna altijd:
 
 Daarna pas importeer je de output in MySQL.
 
-## 20. Wat zijn de importbestanden voor recreatie?
+## 21. Wat zijn de importbestanden voor recreatie?
 
 Er zijn twee hoofdimportbestanden:
 
@@ -792,7 +909,7 @@ Elke rij moet verwijzen naar een bestaande combinatie van `plot_id` en `jaar` in
 
 Anders krijg je een foreign key-fout.
 
-## 21. Wat is de bezoekersdruklaag?
+## 22. Wat is de bezoekersdruklaag?
 
 Voor bezoekersdruk uit het Dunea-rapport is een apart model ontworpen.
 
@@ -812,7 +929,7 @@ Praktische regel:
 - afstands- en padvariabelen mogen direct per plot
 - bezoekersdruk uit rapport nog niet
 
-## 22. Belangrijke uitzondering: afstand tot hoofdtoegang
+## 23. Belangrijke uitzondering: afstand tot hoofdtoegang
 
 Voor een aantal plots is de gewone berekening van `afstand_hoofdtoegang_m` niet goed genoeg.
 
@@ -847,7 +964,7 @@ Als je later `plot_jaar_infra` opnieuw volledig vult vanuit een ouder importbest
 
 Daarom moet deze uitzondering in toekomstige herberekeningen worden meegenomen.
 
-## 23. Wat zijn de belangrijkste praktische regels?
+## 24. Wat zijn de belangrijkste praktische regels?
 
 Houd deze regels aan:
 
@@ -860,7 +977,7 @@ Houd deze regels aan:
 7. Koppel alleen gegevens direct aan plots als die koppeling verdedigbaar is.
 8. Leg wijzigingen vast in Git.
 
-## 24. Waar moet je extra voorzichtig mee zijn?
+## 25. Waar moet je extra voorzichtig mee zijn?
 
 Extra aandacht is nodig bij:
 
@@ -871,7 +988,7 @@ Extra aandacht is nodig bij:
 - recreatiegegevens die niet direct per plot beschikbaar zijn
 - handmatige uitzonderingen zoals de afstand tot hoofdtoegang
 
-## 25. Welke bestanden zijn het belangrijkst om mee te beginnen?
+## 26. Welke bestanden zijn het belangrijkst om mee te beginnen?
 
 Als je opnieuw instapt in het project, begin dan met:
 
@@ -891,6 +1008,6 @@ Als je daarna een specifiek onderwerp wilt uitwerken, ga dan pas naar:
 - de documenten in `Recreatie/`
 - de documenten in `Ruimtelijke data/`
 
-## 26. Samenvatting in één zin
+## 27. Samenvatting in één zin
 
 De Meijendel-database is een inhoudelijk rijke vogel- en omgevingsdatabase waarbij je de SQL-dump als bron gebruikt, de Shiny-app voor nieuwe analyses, de HTML voor overzicht en presentatie, en QGIS plus aanvullende scripts voor ruimtelijke en recreatieve uitbreidingen.
