@@ -1,8 +1,8 @@
 # Handboek Meijendel-database
 
-Dit handboek is bedoeld voor een gebruiker die inhoudelijk met de Meijendel-database wil werken, maar niet veel ervaring heeft met IT-toepassingen.
+Dit handboek is bedoeld voor een gebruiker die inhoudelijk met de Meijendel-database wil werken.
 
-Het doel van dit handboek is eenvoudig:
+Het doel van dit handboek is:
 
 - uitleggen wat er in de database zit
 - uitleggen waarvoor de verschillende bestanden en hulpmiddelen dienen
@@ -13,7 +13,7 @@ Dit handboek vervangt niet alle losse documenten in de repository, maar brengt d
 
 ## 1. Wat is de Meijendel-database?
 
-De database Meijendel bevat broedvogelgegevens uit het duingebied Meijendel, tussen Scheveningen, Den Haag, Wassenaar, de Wassenaarse Slag en de zee.
+De database Meijendel bevat vogelgegevens uit het duingebied Meijendel, tussen Scheveningen, Den Haag, Wassenaar, de Wassenaarse Slag en de zee.
 
 De kern van de database bestaat uit:
 
@@ -26,7 +26,7 @@ De kern van de database bestaat uit:
 - ecologische vogelgroepen
 - aanvullende gegevens zoals habitat, maatregelen, richtlijnen, recreatie en ruimtelijke omgeving
 
-De repository bevat vooral een MySQL- of MariaDB-dump van de database, in SQL-vorm.
+De repository bevat een MySQL-dump van de database, in SQL-vorm.
 
 Belangrijke hoofdtabellen zijn:
 
@@ -56,18 +56,17 @@ Je werkt in de repository `Ton2241/Meijendel`.
 
 Belangrijke onderdelen daarin zijn:
 
-- `Meijendel.sql` of een andere SQL-dump: de eigenlijke database-export
+- `Meijendel.sql`: de eigenlijke database-export
 - `bmp_meijendel_index.html`: de standalone HTML voor overzicht en presentatie
 - `shiny_meijendel/app.R`: de Shiny-app voor nieuwe selecties en analyses
 - `trim/` en `trim_msi_evg/`: output van TRIM-analyses
 - `trim/sandra/`: aparte Sandra-variant van de TRIM-analyse
 - `output_ecologische_groepen/`: output van MSI- en GAM-analyses van ecologische groepen
-- in `Meijendel.sql`: onder andere de tabellen `dagbezoeken`, `dagwaarnemingen` en `import_dagwaarnemingen_raw`
 - `Recreatie/` en `Ruimtelijke data/`: uitbreiding met recreatie- en omgevingsgegevens
 
 ## 3. Welke hulpmiddelen gebruik je waarvoor?
 
-In dit project gebruik je niet één programma voor alles. Dat is bewust zo.
+In dit project gebruik je niet één programma voor alles.
 
 ### 3.1 De SQL-dump
 
@@ -250,14 +249,14 @@ Dit tabblad is belangrijk. Gebruik het niet als bijzaak, maar als controlepunt v
 
 De Shiny-app maakt onder andere deze bestanden:
 
-| Bestand | Betekenis |
-| --- | --- |
-| `meijendel_shiny_soorttrends_...csv` | trendoverzicht per soort |
-| `meijendel_shiny_soortindices_...csv` | jaarlijkse TRIM-index per soort |
-| `meijendel_shiny_groepstrends_...csv` | trendoverzicht per groep |
-| `meijendel_shiny_groep_msi_...csv` | MSI per groep per jaar |
+| Bestand                               | Betekenis                                           |
+| ------------------------------------- | --------------------------------------------------- |
+| `meijendel_shiny_soorttrends_...csv`  | trendoverzicht per soort                            |
+| `meijendel_shiny_soortindices_...csv` | jaarlijkse TRIM-index per soort                     |
+| `meijendel_shiny_groepstrends_...csv` | trendoverzicht per groep                            |
+| `meijendel_shiny_groep_msi_...csv`    | MSI per groep per jaar                              |
 | `meijendel_shiny_analysebasis_...csv` | controlebestand voor selectie, telling en oppervlak |
-| `meijendel_shiny_modelstatus_...csv` | modelstatus per soort |
+| `meijendel_shiny_modelstatus_...csv`  | modelstatus per soort                               |
 
 Deze bestanden zijn bedoeld voor:
 
