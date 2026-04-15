@@ -9,6 +9,7 @@ De kern van het project bestaat uit:
 - een Shiny-app in `shiny_meijendel/`
 - R-scripts voor TRIM-, MSI- en GAM-analyses in `R/`
 - SQL-views en importbestanden
+- gesplitste dagtabellen voor BMP en WV
 - ruimtelijke en recreatieve uitbreidingen in `Ruimtelijke data/` en `Recreatie/`
 
 ## Waar begin je?
@@ -52,6 +53,30 @@ Belangrijke bestanden daar zijn:
   Uitleg van de MSI- en GAM-analyse voor ecologische groepen.
 - [`MDs/import_procedure_territoria.md`](/Users/ton/Documents/GitHub/Meijendel/MDs/import_procedure_territoria.md)
   Jaarlijkse importprocedure voor territoria.
+
+### Dagbezoeken en dagwaarnemingen
+
+De database gebruikt nu een gesplitst model voor daggegevens:
+
+- `dagbezoeken_bmp`
+- `dagwaarnemingen_bmp`
+- `dagbezoeken_wv`
+- `dagwaarnemingen_wv`
+
+Praktisch betekent dit:
+
+- BMP-daggegevens staan los van WV-daggegevens
+- beide reeksen hebben hun eigen bezoekentabel en waarnemingentabel
+- beide reeksen blijven gekoppeld aan `plots`, `plot_jaar_oppervlak`, `soorten` en `bronnen`
+
+In `dagbezoeken_wv` is bovendien extra WV-specifieke context aanwezig, zoals:
+
+- `telling_id`
+- `tellingtype`
+- `telomschrijving`
+- `waterstand`
+- `sneeuw`
+- `ijs`
 
 ### Shiny-app
 

@@ -20,7 +20,7 @@ De kern van de database bestaat uit:
 - vogelsoorten
 - plots en kavels
 - territoria per plot en jaar
-- dagbezoeken en dagwaarnemingen
+- dagbezoeken en dagwaarnemingen voor BMP en WV
 - oppervlakte per plot en jaar
 - tellers per plot en jaar
 - ecologische vogelgroepen
@@ -35,8 +35,10 @@ Belangrijke hoofdtabellen zijn:
 - `plot_jaar_oppervlak`
 - `plot_jaar_teller`
 - `territoria`
-- `dagbezoeken`
-- `dagwaarnemingen`
+- `dagbezoeken_bmp`
+- `dagwaarnemingen_bmp`
+- `dagbezoeken_wv`
+- `dagwaarnemingen_wv`
 - `evg_vogelgroepen`
 - `evg_vogel_landschapgroep`
 
@@ -45,8 +47,10 @@ Praktisch betekent dit:
 - `plots` zegt waar de gebieden liggen
 - `soorten` zegt om welke vogels het gaat
 - `territoria` bevat de aantallen per plot en jaar
-- `dagbezoeken` bevat gegevens per veldbezoek
-- `dagwaarnemingen` bevat losse waarnemingen per soort, datum en locatie
+- `dagbezoeken_bmp` bevat gegevens per BMP-veldbezoek
+- `dagwaarnemingen_bmp` bevat losse BMP-waarnemingen per soort, datum en locatie
+- `dagbezoeken_wv` bevat gegevens per WV-bezoek
+- `dagwaarnemingen_wv` bevat losse WV-waarnemingen per soort, datum en locatie
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
@@ -621,7 +625,7 @@ Naast de jaarlijkse territoria bevat de database nu ook dagwaarnemingen.
 Dat is een belangrijk verschil:
 
 - `territoria` geeft de samengevatte uitkomst per plot en jaar
-- `dagwaarnemingen` bewaart losse waarnemingen per bezoek, soort en datum
+- `dagwaarnemingen_bmp` en `dagwaarnemingen_wv` bewaren losse waarnemingen per bezoek, soort en datum
 
 Daarmee kun je later veel preciezer terugkijken:
 
@@ -634,9 +638,10 @@ Daarmee kun je later veel preciezer terugkijken:
 De belangrijkste tabellen hiervoor zijn:
 
 - `bronnen`
-- `dagbezoeken`
-- `dagwaarnemingen`
-- `import_dagwaarnemingen_raw`
+- `dagbezoeken_bmp`
+- `dagwaarnemingen_bmp`
+- `dagbezoeken_wv`
+- `dagwaarnemingen_wv`
 
 ### 16.1 `bronnen`
 
@@ -647,9 +652,9 @@ Dat is nodig om later te kunnen onderscheiden:
 - uit welk systeem een record kwam
 - welke importbron is gebruikt
 
-### 16.2 `dagbezoeken`
+### 16.2 `dagbezoeken_bmp`
 
-`dagbezoeken` bevat de gegevens per veldbezoek.
+`dagbezoeken_bmp` bevat de gegevens per BMP-veldbezoek.
 
 Daarin staat onder andere:
 
@@ -664,11 +669,11 @@ Daarin staat onder andere:
 - aantallen soorten en records
 - de bron van het bezoek
 
-Praktisch is dit de tabel die één concreet bezoek aan een plot beschrijft.
+Praktisch is dit de tabel die één concreet BMP-bezoek aan een plot beschrijft.
 
-### 16.3 `dagwaarnemingen`
+### 16.3 `dagwaarnemingen_bmp`
 
-`dagwaarnemingen` bevat de losse waarnemingen die bij zo'n bezoek horen.
+`dagwaarnemingen_bmp` bevat de losse waarnemingen die bij zo'n BMP-bezoek horen.
 
 Daarin staat onder andere:
 
@@ -685,29 +690,40 @@ Daarin staat onder andere:
 
 Belangrijk:
 
-- elke dagwaarneming hoort bij een bestaand `dagbezoek`
-- elke dagwaarneming hoort ook bij een bestaand `plot_id`, `jaar` en `soort_id`
-- er zit een unieke sleutel op `bron_waarneming_id`, zodat een bronrecord niet dubbel wordt ingeladen
+- elke BMP-dagwaarneming hoort bij een bestaand `dagbezoeken_bmp`
+- elke BMP-dagwaarneming hoort ook bij een bestaand `plot_id`, `jaar` en `soort_id`
+- `bron_waarneming_id` voorkomt dubbele bronrecords
 
-### 16.4 `import_dagwaarnemingen_raw`
+### 16.4 `dagbezoeken_wv`
 
-Deze tabel is de ruwe importtabel voor dagwaarnemingen.
+`dagbezoeken_wv` bevat de gegevens per WV-bezoek.
 
-Gebruik deze tabel als tussenstap:
+Deze tabel lijkt op `dagbezoeken_bmp`, maar bevat extra WV-specifieke context:
 
-1. ruwe brondata eerst hier laden
-2. daarna valideren
-3. daarna pas doorzetten naar `dagbezoeken` en `dagwaarnemingen`
+- `telling_id`
+- `tellingtype`
+- `telomschrijving`
+- `waterstand`
+- `sneeuw`
+- `ijs`
 
-Dat is dezelfde veilige werkwijze als bij andere imports in deze database:
+Praktisch is dit de bezoekentabel voor WV met extra informatie over type telling en omstandigheden.
 
-- eerst rauw inlezen
-- daarna controleren
-- pas daarna opnemen in de echte productietabellen
+### 16.5 `dagwaarnemingen_wv`
 
-### 16.5 Waarom dit nuttig is
+`dagwaarnemingen_wv` bevat de losse waarnemingen die bij een WV-bezoek horen.
 
-De toevoeging van dagwaarnemingen maakt de database inhoudelijk rijker.
+De opzet lijkt sterk op `dagwaarnemingen_bmp`, maar deze tabel hoort via `bezoek_id` bij `dagbezoeken_wv`.
+
+Belangrijk:
+
+- elke WV-dagwaarneming hoort bij een bestaand `dagbezoeken_wv`
+- elke WV-dagwaarneming hoort ook bij een bestaand `plot_id`, `jaar` en `soort_id`
+- ook hier voorkomt `bron_waarneming_id` dubbele bronrecords
+
+### 16.6 Waarom dit nuttig is
+
+De toevoeging van gesplitste dagtabellen maakt de database inhoudelijk rijker en ook helderder van opzet.
 
 Je kunt nu niet alleen meer werken met:
 
@@ -715,8 +731,9 @@ Je kunt nu niet alleen meer werken met:
 
 maar ook met:
 
-- losse waarnemingen per dag
-- bezoekinformatie
+- losse BMP-waarnemingen per dag
+- losse WV-waarnemingen per dag
+- bezoekinformatie per meettype
 - preciezere bronherkomst
 - ruimtelijke waarnemingspunten
 
