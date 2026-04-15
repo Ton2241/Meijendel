@@ -620,7 +620,7 @@ Het document over deze procedure bevat nog enkele open plekken met `[AANVULLEN]`
 
 ## 16. Wat zijn dagbezoeken en dagwaarnemingen?
 
-Naast de jaarlijkse territoria bevat de database nu ook dagwaarnemingen.
+Naast de jaarlijkse territoria bevat de database ook dagwaarnemingen.
 
 Dat is een belangrijk verschil:
 
@@ -696,7 +696,7 @@ Belangrijk:
 
 ### 16.4 `dagbezoeken_wv`
 
-`dagbezoeken_wv` bevat de gegevens per WV-bezoek.
+`dagbezoeken_wv` bevat de gegevens per watervogeltelling bezoek.
 
 Deze tabel lijkt op `dagbezoeken_bmp`, maar bevat extra WV-specifieke context:
 
@@ -722,8 +722,6 @@ Belangrijk:
 - ook hier voorkomt `bron_waarneming_id` dubbele bronrecords
 
 ### 16.6 Waarom dit nuttig is
-
-De toevoeging van gesplitste dagtabellen maakt de database inhoudelijk rijker en ook helderder van opzet.
 
 Je kunt nu niet alleen meer werken met:
 
