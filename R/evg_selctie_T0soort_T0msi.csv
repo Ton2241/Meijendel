@@ -1,0 +1,196 @@
+groep_100,groep_titel,soort_id,euring_code,soort_naam,analyse_jaren_n,analyse_jaren_van,analyse_jaren_tot,positieve_jaren,geldige_jaarparen,nul_aandeel,pre_1984_aanwezig,post_1984_aanwezig,t0_soortanalyse,t0_msi,ecologische_beoordeling_t0_msi,ecologische_toelichting_t0_msi,t0_msi_eindselectie
+100,Watervogels,29,1730,Bergeend,68,1958,2025,55,50,0.191176,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,1,70,Dodaars,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,2,90,Fuut,68,1958,2025,62,61,0.088235,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,4,120,Geoorde Fuut,68,1958,2025,56,50,0.176471,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,21,1610,Grauwe Gans,68,1958,2025,30,29,0.558824,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+100,Watervogels,137,8310,IJsvogel,68,1958,2025,14,11,0.794118,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+100,Watervogels,17,1520,Knobbelzwaan,68,1958,2025,50,48,0.264706,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,105,5820,Kokmeeuw,68,1958,2025,14,9,0.794118,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+100,Watervogels,34,1820,Krakeend,68,1958,2025,56,55,0.176471,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,41,1960,Krooneend,68,1958,2025,28,23,0.588235,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+100,Watervogels,44,2030,Kuifeend,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,78,4290,Meerkoet,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,27,1700,Nijlgans,68,1958,2025,49,47,0.279412,TRUE,TRUE,TRUE,TRUE,twijfelgeval,exoot en mogelijk sterk bepaald door recente uitbreiding,FALSE
+100,Watervogels,151,9810,Oeverzwaluw,68,1958,2025,12,4,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+100,Watervogels,40,1940,Slobeend,68,1958,2025,63,60,0.073529,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,42,1980,Tafeleend,68,1958,2025,67,66,0.014706,TRUE,TRUE,TRUE,TRUE,houden,past inhoudelijk bij watervogels,TRUE
+100,Watervogels,116,6150,Visdief,68,1958,2025,8,1,0.882353,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+100,Watervogels,77,4240,Waterhoen,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend als watervogel,TRUE
+100,Watervogels,36,1860,Wilde Eend,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,zeer algemene soort; trend is niet sterk habitatspecifiek,FALSE
+100,Watervogels,35,1840,Wintertaling,68,1958,2025,46,35,0.323529,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend als watervogelindicator,TRUE
+100,Watervogels,39,1910,Zomertaling,68,1958,2025,19,10,0.720588,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,168,11060,Blauwborst,68,1958,2025,37,35,0.455882,FALSE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,189,12530,Grote Karekiet,68,1958,2025,9,1,0.867647,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,188,12510,Kleine Karekiet,68,1958,2025,62,61,0.088235,TRUE,TRUE,TRUE,TRUE,houden,kernsoort van riet/moerasvegetatie,TRUE
+200,Rietvogels,73,4080,Porseleinhoen,68,1958,2025,4,1,0.941176,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,251,18770,Rietgors,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,kernsoort van riet/moerasvegetatie,TRUE
+200,Rietvogels,186,12430,Rietzanger,68,1958,2025,65,63,0.044118,TRUE,TRUE,TRUE,TRUE,houden,kernsoort van riet/moerasvegetatie,TRUE
+200,Rietvogels,7,950,Roerdomp,68,1958,2025,26,22,0.617647,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,184,12380,Snor,68,1958,2025,7,1,0.897059,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,182,12360,Sprinkhaanrietzanger,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,niet exclusief riet; ook open ruigte en struweel,FALSE
+200,Rietvogels,77,4240,Waterhoen,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,"algemene water- en moerasvogel, weinig specifiek voor riet",FALSE
+200,Rietvogels,72,4070,Waterral,68,1958,2025,58,52,0.147059,TRUE,TRUE,TRUE,TRUE,houden,voldoende karakteristiek voor moeras/riet,TRUE
+200,Rietvogels,93,5190,Watersnip,68,1958,2025,3,0,0.955882,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+200,Rietvogels,8,980,Woudaap,68,1958,2025,7,1,0.897059,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,29,1730,Bergeend,68,1958,2025,55,50,0.191176,TRUE,TRUE,TRUE,TRUE,twijfelgeval,"deels passend, maar ook sterk aan water gekoppeld",FALSE
+300,Vogels van pionierbegroeiingen,148,9740,Boomleeuwerik,68,1958,2025,61,58,0.102941,TRUE,TRUE,TRUE,TRUE,houden,goed passend bij open pioniermilieus in duin,TRUE
+300,Vogels van pionierbegroeiingen,159,10172,Engelse Kwikstaart,68,1958,2025,6,2,0.911765,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,158,10170,Gele Kwikstaart,68,1958,2025,12,3,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,71,3940,Gewone Fazant,68,1958,2025,32,28,0.529412,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,156,10110,Graspieper,68,1958,2025,65,61,0.044118,TRUE,TRUE,TRUE,TRUE,houden,goed passend bij open pioniermilieus,TRUE
+300,Vogels van pionierbegroeiingen,122,6680,Holenduif,68,1958,2025,45,43,0.338235,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,224,15600,Kauw,68,1958,2025,59,55,0.132353,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene cultuurvolger; trend is niet pionierspecifiek,FALSE
+300,Vogels van pionierbegroeiingen,88,4930,Kievit,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend bij open pioniermilieus,TRUE
+300,Vogels van pionierbegroeiingen,107,5910,Kleine Mantelmeeuw,68,1958,2025,39,31,0.426471,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,84,4690,Kleine Plevier,68,1958,2025,34,26,0.500000,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,147,9720,Kuifleeuwerik,68,1958,2025,13,6,0.808824,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,70,3700,Kwartel,68,1958,2025,4,1,0.941176,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,151,9810,Oeverzwaluw,68,1958,2025,12,4,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,171,11370,Paapje,68,1958,2025,28,23,0.588235,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,69,3670,Patrijs,68,1958,2025,12,6,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,80,4500,Scholekster,68,1958,2025,60,57,0.117647,TRUE,TRUE,TRUE,TRUE,twijfelgeval,open-terreinsoort maar weinig specifiek voor pionierhabitat,FALSE
+300,Vogels van pionierbegroeiingen,106,5900,Stormmeeuw,68,1958,2025,56,54,0.176471,TRUE,TRUE,TRUE,TRUE,niet_opnemen,kolonie- en kustsoort; zwakke pionierindicator,FALSE
+300,Vogels van pionierbegroeiingen,173,11460,Tapuit,68,1958,2025,48,44,0.294118,TRUE,TRUE,TRUE,TRUE,houden,sterke indicator van open duin en pioniermilieu,TRUE
+300,Vogels van pionierbegroeiingen,150,9760,Veldleeuwerik,68,1958,2025,43,35,0.367647,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,116,6150,Visdief,68,1958,2025,8,1,0.882353,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,93,5190,Watersnip,68,1958,2025,3,0,0.955882,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,162,10201,Witte Kwikstaart,68,1958,2025,65,61,0.044118,TRUE,TRUE,TRUE,TRUE,twijfelgeval,algemene soort van open terrein en bebouwing,FALSE
+300,Vogels van pionierbegroeiingen,97,5410,Wulp,68,1958,2025,42,40,0.382353,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+300,Vogels van pionierbegroeiingen,108,5920,Zilvermeeuw,68,1958,2025,20,15,0.705882,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,29,1730,Bergeend,68,1958,2025,55,50,0.191176,TRUE,TRUE,TRUE,TRUE,niet_opnemen,geen heidespecialist,FALSE
+400,Vogels van open heide,158,10170,Gele Kwikstaart,68,1958,2025,12,3,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,156,10110,Graspieper,68,1958,2025,65,61,0.044118,TRUE,TRUE,TRUE,TRUE,houden,goed passend bij open heide en schraal open terrein,TRUE
+400,Vogels van open heide,88,4930,Kievit,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,eerder open grasland/weide dan heidekern,FALSE
+400,Vogels van open heide,70,3700,Kwartel,68,1958,2025,4,1,0.941176,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,171,11370,Paapje,68,1958,2025,28,23,0.588235,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,69,3670,Patrijs,68,1958,2025,12,6,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,80,4500,Scholekster,68,1958,2025,60,57,0.117647,TRUE,TRUE,TRUE,TRUE,niet_opnemen,geen heidespecialist,FALSE
+400,Vogels van open heide,98,5460,Tureluur,68,1958,2025,24,13,0.647059,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,150,9760,Veldleeuwerik,68,1958,2025,43,35,0.367647,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,93,5190,Watersnip,68,1958,2025,3,0,0.955882,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+400,Vogels van open heide,97,5410,Wulp,68,1958,2025,42,40,0.382353,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,158,10170,Gele Kwikstaart,68,1958,2025,12,3,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,156,10110,Graspieper,68,1958,2025,65,61,0.044118,TRUE,TRUE,TRUE,TRUE,twijfelgeval,eerder breed open terrein dan kern-weidevogel,FALSE
+500,Weidevogels,88,4930,Kievit,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,klassieke weidevogel,TRUE
+500,Weidevogels,34,1820,Krakeend,68,1958,2025,56,55,0.176471,TRUE,TRUE,TRUE,TRUE,twijfelgeval,"wel open nat grasland, maar geen sterke kern-weidevogel",FALSE
+500,Weidevogels,70,3700,Kwartel,68,1958,2025,4,1,0.941176,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,171,11370,Paapje,68,1958,2025,28,23,0.588235,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,69,3670,Patrijs,68,1958,2025,12,6,0.823529,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,80,4500,Scholekster,68,1958,2025,60,57,0.117647,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend als weidevogel,TRUE
+500,Weidevogels,40,1940,Slobeend,68,1958,2025,63,60,0.073529,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend als weidevogel van nat open terrein,TRUE
+500,Weidevogels,98,5460,Tureluur,68,1958,2025,24,13,0.647059,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,150,9760,Veldleeuwerik,68,1958,2025,43,35,0.367647,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,116,6150,Visdief,68,1958,2025,8,1,0.882353,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,93,5190,Watersnip,68,1958,2025,3,0,0.955882,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,36,1860,Wilde Eend,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort voor een specifieke weidevogelindicator,FALSE
+500,Weidevogels,35,1840,Wintertaling,68,1958,2025,46,35,0.323529,TRUE,TRUE,TRUE,TRUE,niet_opnemen,zwakke kernsoort voor broedweidevogel-MSI,FALSE
+500,Weidevogels,97,5410,Wulp,68,1958,2025,42,40,0.382353,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+500,Weidevogels,39,1910,Zomertaling,68,1958,2025,19,10,0.720588,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,168,11060,Blauwborst,68,1958,2025,37,35,0.455882,FALSE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,187,12500,Bosrietzanger,68,1958,2025,62,60,0.088235,TRUE,TRUE,TRUE,TRUE,twijfelgeval,"overgangssoort van riet en struweel, geen kernstruweelsoort",FALSE
+600,Struweelvogels,192,12740,Braamsluiper,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,goede struweelindicator,TRUE
+600,Struweelvogels,200,13120,Fitis,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,te algemeen en niet specifiek voor struweel,FALSE
+600,Struweelvogels,71,3940,Gewone Fazant,68,1958,2025,32,28,0.529412,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,246,17100,Goudvink,68,1958,2025,59,58,0.132353,TRUE,TRUE,TRUE,TRUE,twijfelgeval,meer bos/struweel-generalist dan struweelkernsoort,FALSE
+600,Struweelvogels,193,12750,Grasmus,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,goede struweelindicator,TRUE
+600,Struweelvogels,219,15150,Grauwe Klauwier,68,1958,2025,24,18,0.647059,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,165,10840,Heggenmus,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,algemene tuin- en struweelsoort,FALSE
+600,Struweelvogels,239,16600,Kneu,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend bij struweelrijk open terrein,TRUE
+600,Struweelvogels,209,14420,Matkop,68,1958,2025,35,30,0.485294,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,175,11870,Merel,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort voor specifieke struweelindicator,FALSE
+600,Struweelvogels,167,11040,Nachtegaal,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,sterke indicator van dicht struweel in duin,TRUE
+600,Struweelvogels,171,11370,Paapje,68,1958,2025,28,23,0.588235,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,251,18770,Rietgors,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,eerder rietsoort dan struweelkernsoort,FALSE
+600,Struweelvogels,166,10990,Roodborst,68,1958,2025,65,63,0.044118,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort,FALSE
+600,Struweelvogels,172,11390,Roodborsttapuit,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend bij struweelrijk open terrein,TRUE
+600,Struweelvogels,190,12590,Spotvogel,68,1958,2025,44,34,0.352941,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+600,Struweelvogels,182,12360,Sprinkhaanrietzanger,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,meer ruigte/overgang dan zuiver struweel,FALSE
+600,Struweelvogels,207,14370,Staartmees,68,1958,2025,67,66,0.014706,TRUE,TRUE,TRUE,TRUE,twijfelgeval,algemene soort van struweel en jong bos,FALSE
+600,Struweelvogels,125,6870,Tortelduif,68,1958,2025,57,53,0.161765,TRUE,TRUE,TRUE,TRUE,houden,ecologisch relevant voor struweelrijk landschap,TRUE
+600,Struweelvogels,194,12760,Tuinfluiter,68,1958,2025,65,63,0.044118,TRUE,TRUE,TRUE,TRUE,houden,goede struweelindicator,TRUE
+600,Struweelvogels,164,10660,Winterkoning,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort,FALSE
+600,Struweelvogels,177,12000,Zanglijster,68,1958,2025,66,65,0.029412,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort van bos en struweel,FALSE
+600,Struweelvogels,195,12770,Zwartkop,68,1958,2025,64,62,0.058824,TRUE,TRUE,TRUE,TRUE,twijfelgeval,"breed habitatgebruik, niet specifiek genoeg",FALSE
+700,Bosrandvogels,5,720,Aalscholver,68,1958,2025,32,28,0.529412,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,240,16630,Barmsijs,68,1958,2025,16,12,0.764706,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,11,1220,Blauwe Reiger,68,1958,2025,11,7,0.838235,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,148,9740,Boomleeuwerik,68,1958,2025,61,58,0.102941,TRUE,TRUE,TRUE,TRUE,niet_opnemen,eerder open terrein dan bosrandkernsoort,FALSE
+700,Bosrandvogels,155,10090,Boompieper,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,goed passend bij bosrand en open bos,TRUE
+700,Bosrandvogels,187,12500,Bosrietzanger,68,1958,2025,62,60,0.088235,TRUE,TRUE,TRUE,TRUE,niet_opnemen,geen bosrandkernsoort,FALSE
+700,Bosrandvogels,192,12740,Braamsluiper,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,"wel randgebonden, maar ook breder struweeltype",FALSE
+700,Bosrandvogels,180,12200,Cetti's Zanger,68,1958,2025,8,6,0.882353,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,141,8480,Draaihals,68,1958,2025,5,1,0.926471,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,223,15490,Ekster,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort,FALSE
+700,Bosrandvogels,200,13120,Fitis,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,te algemeen voor een zuivere bosrandindicator,FALSE
+700,Bosrandvogels,249,18570,Geelgors,68,1958,2025,8,6,0.882353,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,170,11220,Gekraagde Roodstaart,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,goede soort van oude bomen en bosranden,TRUE
+700,Bosrandvogels,193,12750,Grasmus,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,meer algemene struweelsoort dan bosrandspecialist,FALSE
+700,Bosrandvogels,219,15150,Grauwe Klauwier,68,1958,2025,24,18,0.647059,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,142,8560,Groene Specht,68,1958,2025,60,56,0.117647,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend bij bosrand en open boslandschap,TRUE
+700,Bosrandvogels,236,16490,Groenling,68,1958,2025,62,59,0.088235,TRUE,TRUE,TRUE,TRUE,twijfelgeval,algemene soort van rand en cultuurlandschap,FALSE
+700,Bosrandvogels,165,10840,Heggenmus,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort,FALSE
+700,Bosrandvogels,239,16600,Kneu,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,eerder open struweel dan bosrandkern,FALSE
+700,Bosrandvogels,176,11980,Kramsvogel,68,1958,2025,5,2,0.926471,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,167,11040,Nachtegaal,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,houden,goed passend bij dichte bosrand/struweelovergang,TRUE
+700,Bosrandvogels,135,7780,Nachtzwaluw,68,1958,2025,9,4,0.867647,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,237,16530,Putter,68,1958,2025,39,29,0.426471,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,172,11390,Roodborsttapuit,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,niet_opnemen,eerder open terrein dan bosrandkernsoort,FALSE
+700,Bosrandvogels,245,16790,Roodmus,68,1958,2025,4,1,0.941176,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,190,12590,Spotvogel,68,1958,2025,44,34,0.352941,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+700,Bosrandvogels,194,12760,Tuinfluiter,68,1958,2025,65,63,0.044118,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend bij bosrandstruweel,TRUE
+700,Bosrandvogels,226,15671,Zwarte Kraai,68,1958,2025,61,59,0.102941,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene soort,FALSE
+800,Bosvogels,248,17170,Appelvink,68,1958,2025,27,20,0.602941,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,215,14790,Boomklever,68,1958,2025,47,43,0.308824,TRUE,TRUE,TRUE,TRUE,houden,goede boskernsoort,TRUE
+800,Bosvogels,217,14870,Boomkruiper,68,1958,2025,51,48,0.250000,TRUE,TRUE,TRUE,TRUE,houden,goede boskernsoort,TRUE
+800,Bosvogels,66,3100,Boomvalk,68,1958,2025,39,31,0.426471,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,131,7610,Bosuil,68,1958,2025,50,48,0.264706,TRUE,TRUE,TRUE,TRUE,houden,goede boskernsoort,TRUE
+800,Bosvogels,62,2870,Buizerd,68,1958,2025,36,34,0.470588,FALSE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,197,13080,Fluiter,68,1958,2025,23,14,0.661765,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,222,15390,Gaai,68,1958,2025,67,66,0.014706,TRUE,TRUE,TRUE,TRUE,twijfelgeval,wel bosgebonden maar ook vrij algemene soort,FALSE
+800,Bosvogels,170,11220,Gekraagde Roodstaart,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,meer bosrand/oude-bomen-soort dan boskern,FALSE
+800,Bosvogels,208,14400,Glanskop,68,1958,2025,58,56,0.147059,TRUE,TRUE,TRUE,TRUE,houden,goede bossoort,TRUE
+800,Bosvogels,201,13140,Goudhaan,68,1958,2025,38,33,0.441176,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,203,13350,Grauwe Vliegenvanger,68,1958,2025,48,39,0.294118,TRUE,TRUE,TRUE,TRUE,twijfelgeval,meer rand- en halfopen bos dan boskern,FALSE
+800,Bosvogels,142,8560,Groene Specht,68,1958,2025,60,56,0.117647,TRUE,TRUE,TRUE,TRUE,twijfelgeval,meer open bos en rand dan boskern,FALSE
+800,Bosvogels,144,8760,Grote Bonte Specht,68,1958,2025,53,52,0.220588,TRUE,TRUE,TRUE,TRUE,houden,goede bossoort,TRUE
+800,Bosvogels,179,12020,Grote Lijster,68,1958,2025,53,43,0.220588,TRUE,TRUE,TRUE,TRUE,twijfelgeval,eerder open bos/parklandschap dan boskern,FALSE
+800,Bosvogels,126,7120,Halsbandparkiet,68,1958,2025,27,26,0.602941,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,60,2670,Havik,68,1958,2025,33,32,0.514706,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,122,6680,Holenduif,68,1958,2025,45,43,0.338235,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,123,6700,Houtduif,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,algemene soort; trend is weinig bosspecifiek,FALSE
+800,Bosvogels,94,5290,Houtsnip,68,1958,2025,58,55,0.147059,TRUE,TRUE,TRUE,TRUE,houden,ecologisch relevant voor bosrijke milieus,TRUE
+800,Bosvogels,224,15600,Kauw,68,1958,2025,59,55,0.132353,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te sterk gekoppeld aan bebouwing en cultuurmilieu,FALSE
+800,Bosvogels,146,8870,Kleine Bonte Specht,68,1958,2025,37,30,0.455882,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,214,14640,Koolmees,68,1958,2025,68,67,0.000000,TRUE,TRUE,TRUE,TRUE,twijfelgeval,te algemene soort voor boskernindicator,FALSE
+800,Bosvogels,243,16660,Kruisbek,68,1958,2025,6,0,0.911765,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,210,14540,Kuifmees,68,1958,2025,52,50,0.235294,TRUE,TRUE,TRUE,TRUE,houden,goede bossoort,TRUE
+800,Bosvogels,213,14620,Pimpelmees,68,1958,2025,61,58,0.102941,TRUE,TRUE,TRUE,TRUE,twijfelgeval,te algemene soort voor boskernindicator,FALSE
+800,Bosvogels,132,7670,Ransuil,68,1958,2025,45,37,0.338235,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,232,15980,Ringmus,68,1958,2025,34,30,0.500000,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,225,15630,Roek,68,1958,2025,8,7,0.882353,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,238,16540,Sijs,68,1958,2025,8,1,0.882353,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,67,3200,Slechtvalk,68,1958,2025,6,5,0.911765,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,61,2690,Sperwer,68,1958,2025,33,28,0.514706,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,229,15820,Spreeuw,68,1958,2025,59,58,0.132353,TRUE,TRUE,TRUE,TRUE,niet_opnemen,te algemene cultuurvolger,FALSE
+800,Bosvogels,198,13110,Tjiftjaf,68,1958,2025,61,56,0.102941,TRUE,TRUE,TRUE,TRUE,twijfelgeval,breed habitatgebruik,FALSE
+800,Bosvogels,64,3040,Torenvalk,68,1958,2025,49,41,0.279412,TRUE,TRUE,TRUE,TRUE,niet_opnemen,geen boskernsoort,FALSE
+800,Bosvogels,233,16360,Vink,68,1958,2025,52,50,0.235294,TRUE,TRUE,TRUE,TRUE,houden,voldoende passend als algemene bossoort,TRUE
+800,Bosvogels,202,13150,Vuurgoudhaan,68,1958,2025,4,0,0.941176,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,53,2310,Wespendief,68,1958,2025,4,1,0.941176,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,218,15080,Wielewaal,68,1958,2025,52,48,0.235294,TRUE,TRUE,TRUE,TRUE,houden,ecologisch relevante soort van oud loofbos/bosranden,TRUE
+800,Bosvogels,212,14610,Zwarte Mees,68,1958,2025,42,33,0.382353,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+800,Bosvogels,143,8630,Zwarte Specht,68,1958,2025,14,12,0.794118,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,152,9920,Boerenzwaluw,68,1958,2025,42,35,0.382353,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,205,13490,Bonte Vliegenvanger,68,1958,2025,19,11,0.720588,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,136,7950,Gierzwaluw,68,1958,2025,3,0,0.955882,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,122,6680,Holenduif,68,1958,2025,45,43,0.338235,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,231,15910,Huismus,68,1958,2025,45,37,0.338235,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,224,15600,Kauw,68,1958,2025,59,55,0.132353,TRUE,TRUE,TRUE,TRUE,houden,passend binnen bebouwing/overige,TRUE
+900,Vogels van bebouwing/overige,128,7350,Kerkuil,68,1958,2025,6,3,0.911765,FALSE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,127,7240,Koekoek,68,1958,2025,62,57,0.088235,TRUE,TRUE,TRUE,TRUE,twijfelgeval,breed habitatgebruik; zwakke indicator voor deze restgroep,FALSE
+900,Vogels van bebouwing/overige,232,15980,Ringmus,68,1958,2025,34,30,0.500000,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,229,15820,Spreeuw,68,1958,2025,59,58,0.132353,TRUE,TRUE,TRUE,TRUE,houden,passend binnen bebouwing/overige,TRUE
+900,Vogels van bebouwing/overige,124,6840,Turkse Tortel,68,1958,2025,45,37,0.338235,TRUE,TRUE,TRUE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE
+900,Vogels van bebouwing/overige,162,10201,Witte Kwikstaart,68,1958,2025,65,61,0.044118,TRUE,TRUE,TRUE,TRUE,houden,passend binnen bebouwing/overige,TRUE
+900,Vogels van bebouwing/overige,169,11210,Zwarte Roodstaart,68,1958,2025,20,8,0.705882,TRUE,TRUE,FALSE,FALSE,niet_technisch_geselecteerd,voldoet niet aan de technische T0-MSI-criteria,FALSE

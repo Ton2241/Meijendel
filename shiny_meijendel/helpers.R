@@ -160,6 +160,10 @@ parse_meijendel_tables <- function(path) {
   territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
   evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
+  pja <- read_insert_table(path, "plot_jaar_ahn_dtm", c("plot_id", "jaar", "bron", "ahn_mean"))
+  pjs <- read_insert_table(path, "plot_jaar_stikstof", c("plot_id", "jaar", "bron", "stikstof_mean"))
+  pji <- read_insert_table(path, "plot_jaar_infra", c("plot_id", "jaar", "bron", "variabele", "waarde"))
+  pjtg <- read_insert_table(path, "plot_jaar_toegankelijkheid", c("plot_id", "jaar", "bron", "status_code"))
 
   plots$plot_id <- to_integer(plots$plot_id)
   soorten$id <- to_integer(soorten$id)
@@ -176,6 +180,17 @@ parse_meijendel_tables <- function(path) {
   evg_groepen$groepsnummer <- to_integer(evg_groepen$groepsnummer)
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
+  pja$plot_id <- to_integer(pja$plot_id)
+  pja$jaar <- to_integer(pja$jaar)
+  pja$ahn_mean <- to_numeric(pja$ahn_mean)
+  pjs$plot_id <- to_integer(pjs$plot_id)
+  pjs$jaar <- to_integer(pjs$jaar)
+  pjs$stikstof_mean <- to_numeric(pjs$stikstof_mean)
+  pji$plot_id <- to_integer(pji$plot_id)
+  pji$jaar <- to_integer(pji$jaar)
+  pji$waarde <- to_numeric(pji$waarde)
+  pjtg$plot_id <- to_integer(pjtg$plot_id)
+  pjtg$jaar <- to_integer(pjtg$jaar)
 
   list(
     plots = plots,
@@ -184,7 +199,11 @@ parse_meijendel_tables <- function(path) {
     plot_jaar_teller = pjt,
     territoria = territoria,
     evg_vogelgroepen = evg_groepen,
-    evg_vogel_landschapgroep = evg_koppeling
+    evg_vogel_landschapgroep = evg_koppeling,
+    plot_jaar_ahn_dtm = pja,
+    plot_jaar_stikstof = pjs,
+    plot_jaar_infra = pji,
+    plot_jaar_toegankelijkheid = pjtg
   )
 }
 
@@ -671,5 +690,542 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
     species_matrix = species_matrix,
     species_results = species_results,
     group_results = group_results
+  )
+}
+
+find_species_by_name <- function(tbls, species_name) {
+  exact <- tbls$soorten[tbls$soorten$soort_naam == species_name, , drop = FALSE]
+  if (nrow(exact) == 1L) {
+    return(exact)
+  }
+  case_insensitive <- tbls$soorten[tolower(tbls$soorten$soort_naam) == tolower(species_name), , drop = FALSE]
+  if (nrow(case_insensitive) == 1L) {
+    return(case_insensitive)
+  }
+  stop(sprintf("Soort niet gevonden: %s", species_name))
+}
+
+pick_nearest_value_by_year <- function(rows, target_year, value_col, allow_past_only = FALSE) {
+  if (!nrow(rows)) {
+    return(NA)
+  }
+  rows <- rows[is.finite(rows$jaar), , drop = FALSE]
+  if (!nrow(rows)) {
+    return(NA)
+  }
+  if (allow_past_only) {
+    rows <- rows[rows$jaar <= target_year, , drop = FALSE]
+    if (!nrow(rows)) {
+      return(NA)
+    }
+    rows <- rows[order(-rows$jaar), , drop = FALSE]
+    return(rows[[value_col]][[1]])
+  }
+  rows$afstand <- abs(rows$jaar - target_year)
+  rows <- rows[order(rows$afstand, -rows$jaar), , drop = FALSE]
+  rows[[value_col]][[1]]
+}
+
+add_numeric_covariate <- function(dat, source_df, value_col, new_col, variabele = NULL) {
+  if (nrow(dat) == 0L) {
+    dat[[new_col]] <- numeric()
+    return(dat)
+  }
+  if (!is.null(variabele)) {
+    source_df <- source_df[source_df$variabele == variabele, , drop = FALSE]
+  }
+  dat[[new_col]] <- vapply(seq_len(nrow(dat)), function(i) {
+    rows <- source_df[source_df$plot_id == dat$plot_id[[i]], , drop = FALSE]
+    val <- pick_nearest_value_by_year(rows, dat$jaar[[i]], value_col)
+    if (length(val) == 0L || is.null(val)) {
+      return(NA_real_)
+    }
+    as.numeric(val)
+  }, numeric(1))
+  dat
+}
+
+add_toegankelijkheid_covariate <- function(dat, source_df, new_col = "toegankelijkheid_status") {
+  if (nrow(dat) == 0L) {
+    dat[[new_col]] <- character()
+    return(dat)
+  }
+  dat[[new_col]] <- vapply(seq_len(nrow(dat)), function(i) {
+    rows <- source_df[source_df$plot_id == dat$plot_id[[i]], , drop = FALSE]
+    val <- pick_nearest_value_by_year(rows, dat$jaar[[i]], "status_code", allow_past_only = TRUE)
+    if (length(val) == 0L || is.null(val) || is.na(val)) {
+      return("onbekend")
+    }
+    as.character(val)
+  }, character(1))
+  dat[[new_col]] <- factor(dat[[new_col]], levels = c("vrij", "beperkt", "afgesloten", "deels beperkt, deels vrij", "deels afgesloten, deels vrij", "onbekend"))
+  dat
+}
+
+build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, species_name) {
+  basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
+  if (!nrow(basis)) {
+    stop("Geen geldige plot-jaar-combinaties voor deze selectie.")
+  }
+
+  species_row <- find_species_by_name(tbls, species_name)
+  counts <- tbls$territoria[
+    tbls$territoria$soort_id == species_row$id[[1]] &
+      tbls$territoria$jaar >= year_from &
+      tbls$territoria$jaar <= year_to,
+    c("plot_id", "jaar", "territoria")
+  ]
+  if (nrow(counts)) {
+    counts <- aggregate(territoria ~ plot_id + jaar, data = counts, FUN = sum, na.rm = TRUE)
+    names(counts)[names(counts) == "territoria"] <- "count"
+  } else {
+    counts <- data.frame(plot_id = integer(), jaar = integer(), count = numeric(), stringsAsFactors = FALSE)
+  }
+
+  dat <- merge(basis, counts, by = c("plot_id", "jaar"), all.x = TRUE)
+  dat$count <- ifelse(dat$geteld & is.na(dat$count), 0, dat$count)
+  dat$count <- ifelse(!dat$geteld, NA_real_, dat$count)
+  dat$log_area <- ifelse(is.finite(dat$oppervlakte_km2) & dat$oppervlakte_km2 > 0, log(dat$oppervlakte_km2), NA_real_)
+  dat$year_c <- dat$jaar - min(dat$jaar, na.rm = TRUE)
+
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_ahn_dtm, "ahn_mean", "ahn_mean")
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_stikstof, "stikstof_mean", "stikstof_mean")
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_pad_m", "afstand_pad_m")
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "padlengte_m_per_ha", "padlengte_m_per_ha")
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_parkeerplaats_m", "afstand_parkeerplaats_m")
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
+  dat <- add_toegankelijkheid_covariate(dat, tbls$plot_jaar_toegankelijkheid)
+
+  dat$soort_id <- species_row$id[[1]]
+  dat$soort_naam <- species_row$soort_naam[[1]]
+  dat$engelse_naam <- species_row$engelse_naam[[1]]
+  dat[order(dat$plot_id, dat$jaar), ]
+}
+
+gee_covariate_specs <- function() {
+  data.frame(
+    code = c(
+      "year_c",
+      "ahn_mean",
+      "stikstof_mean",
+      "afstand_pad_m",
+      "padlengte_m_per_ha",
+      "afstand_parkeerplaats_m",
+      "afstand_hoofdtoegang_m",
+      "toegankelijkheid_status"
+    ),
+    label = c(
+      "Jaar (controlevariabele)",
+      "AHN gemiddelde hoogte",
+      "Stikstof gemiddelde depositie",
+      "Afstand tot pad",
+      "Padlengte per hectare",
+      "Afstand tot parkeerplaats",
+      "Afstand tot hoofdtoegang",
+      "Toegankelijkheidsstatus"
+    ),
+    type = c("numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "factor"),
+    stringsAsFactors = FALSE
+  )
+}
+
+run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, species_name, covariates, gee_corstr = "exchangeable") {
+  if (!requireNamespace("geepack", quietly = TRUE)) {
+    stop("Package 'geepack' is niet beschikbaar.")
+  }
+  if (!requireNamespace("broom", quietly = TRUE)) {
+    stop("Package 'broom' is niet beschikbaar.")
+  }
+  cov_specs <- gee_covariate_specs()
+  chosen <- unique(c("year_c", covariates))
+  chosen <- chosen[chosen %in% cov_specs$code]
+  if (!length(chosen)) {
+    stop("Kies minstens één G.E.E.-covariaat.")
+  }
+
+  dat <- build_gee_dataset(tbls, selected_kavels, year_from, year_to, species_name)
+  dat_model <- dat[!is.na(dat$count) & is.finite(dat$log_area), , drop = FALSE]
+  for (nm in chosen) {
+    if (cov_specs$type[cov_specs$code == nm] == "numeric") {
+      dat_model <- dat_model[is.finite(dat_model[[nm]]), , drop = FALSE]
+    } else {
+      dat_model <- dat_model[!is.na(dat_model[[nm]]) & nzchar(as.character(dat_model[[nm]])), , drop = FALSE]
+    }
+  }
+
+  if (nrow(dat_model) < 20L) {
+    stop("Te weinig bruikbare plot-jaren voor een stabiele G.E.E.-analyse.")
+  }
+  if (length(unique(dat_model$jaar)) < 3L) {
+    stop("Te weinig unieke jaren voor een G.E.E.-analyse.")
+  }
+  if (length(unique(dat_model$plot_id)) < 2L) {
+    stop("Te weinig unieke plots voor een G.E.E.-analyse.")
+  }
+  if (sum(dat_model$count, na.rm = TRUE) <= 0) {
+    stop("Geen territoria voor deze soort in de gekozen selectie.")
+  }
+
+  dat_model <- dat_model[order(dat_model$plot_id, dat_model$jaar), , drop = FALSE]
+  formula_txt <- sprintf("count ~ %s + offset(log_area)", paste(chosen, collapse = " + "))
+  gee_fit <- geepack::geeglm(
+    formula = stats::as.formula(formula_txt),
+    family = stats::poisson(link = "log"),
+    id = plot_id,
+    corstr = gee_corstr,
+    data = dat_model
+  )
+
+  coef_tab <- broom::tidy(gee_fit)
+  coef_tab <- coef_tab[coef_tab$term != "(Intercept)", , drop = FALSE]
+  coef_tab$irr <- exp(coef_tab$estimate)
+  coef_tab$irr_low <- exp(coef_tab$estimate - 1.96 * coef_tab$std.error)
+  coef_tab$irr_high <- exp(coef_tab$estimate + 1.96 * coef_tab$std.error)
+
+  summary_df <- data.frame(
+    soort_naam = unique(dat_model$soort_naam)[1],
+    gee_corstr = gee_corstr,
+    covariaten = paste(chosen, collapse = ", "),
+    n_plots = length(unique(dat_model$plot_id)),
+    n_plot_jaren = nrow(dat_model),
+    eerste_jaar = min(dat_model$jaar, na.rm = TRUE),
+    laatste_jaar = max(dat_model$jaar, na.rm = TRUE),
+    totaal_territoria = sum(dat_model$count, na.rm = TRUE),
+    stringsAsFactors = FALSE
+  )
+
+  list(
+    dataset = dat,
+    model_data = dat_model,
+    coefficients = coef_tab,
+    summary = summary_df,
+    fit = gee_fit,
+    covariates = chosen
+  )
+}
+
+load_t0_msi_selection <- function(path = NULL) {
+  candidates <- if (is.null(path)) {
+    c(
+      "evg_selctie_T0soort_T0msi.csv",
+      file.path("..", "R", "evg_selctie_T0soort_T0msi.csv")
+    )
+  } else {
+    path
+  }
+
+  existing <- candidates[file.exists(candidates)]
+  if (!length(existing)) {
+    return(NULL)
+  }
+
+  df <- utils::read.csv(existing[[1]], stringsAsFactors = FALSE)
+  required <- c("groep_100", "soort_id", "t0_msi_eindselectie")
+  if (!all(required %in% names(df))) {
+    return(NULL)
+  }
+
+  df <- df[df$t0_msi_eindselectie %in% c(TRUE, "TRUE", 1, "1"), required, drop = FALSE]
+  df$groep_100 <- as.integer(df$groep_100)
+  df$soort_id <- as.integer(df$soort_id)
+  unique(df)
+}
+
+classificeer_lambda_status <- function(valid_years, consecutive_pairs, zero_share, positive_years, pre_present, post_present) {
+  if (!is.finite(valid_years) || valid_years < 10L) {
+    return("ongeschikt_voor_T0")
+  }
+  if (!is.finite(consecutive_pairs) || consecutive_pairs < 8L) {
+    return("ongeschikt_voor_T0")
+  }
+  if (!is.finite(zero_share) || zero_share > 0.50) {
+    return("ongeschikt_voor_T0")
+  }
+  if (!is.finite(positive_years) || positive_years < 5L) {
+    return("ongeschikt_voor_T0")
+  }
+  if (valid_years >= 12L &&
+      consecutive_pairs >= 10L &&
+      zero_share <= 0.33 &&
+      isTRUE(pre_present) &&
+      isTRUE(post_present)) {
+    return("geschikt_voor_T0_MSI")
+  }
+  "geschikt_voor_T0_soortanalyse"
+}
+
+bereken_lambda_jaarreeks <- function(df, id_cols, value_col = "count_adjusted") {
+  if (!nrow(df)) {
+    return(df)
+  }
+
+  df <- df[df$jaar != 1958L, , drop = FALSE]
+  if (!nrow(df)) {
+    return(df)
+  }
+
+  df$periode <- ifelse(df$jaar <= 1983L, "1959-1983", "1984-heden")
+  df$voorkeur_t0_jaar <- ifelse(df$periode == "1959-1983", 1959L, 1984L)
+  df$basis_waarde <- df[[value_col]]
+  df$t0_jaar <- NA_integer_
+  df$lambda <- NA_real_
+  df$log_lambda <- NA_real_
+  df$t0_index <- NA_real_
+
+  split_key <- interaction(df[[id_cols[[1]]]], df$periode, drop = TRUE, lex.order = TRUE)
+  parts <- split(df, split_key)
+  out <- vector("list", length(parts))
+
+  for (i in seq_along(parts)) {
+    part <- parts[[i]]
+    part <- part[order(part$jaar), , drop = FALSE]
+
+    prev_year <- c(NA_integer_, head(part$jaar, -1L))
+    prev_value <- c(NA_real_, head(part$basis_waarde, -1L))
+    consecutive <- !is.na(prev_year) & (part$jaar - prev_year == 1L)
+    positive_pair <- consecutive & is.finite(prev_value) & prev_value > 0 & is.finite(part$basis_waarde) & part$basis_waarde > 0
+
+    part$lambda[positive_pair] <- part$basis_waarde[positive_pair] / prev_value[positive_pair]
+    part$log_lambda[positive_pair] <- log(part$lambda[positive_pair])
+
+    voorkeur_t0_jaar <- part$voorkeur_t0_jaar[1]
+    t0_row <- which(part$jaar == voorkeur_t0_jaar & is.finite(part$basis_waarde) & part$basis_waarde > 0)
+    if (length(t0_row)) {
+      t0_row <- t0_row[[1]]
+    } else {
+      t0_row <- which(is.finite(part$basis_waarde) & part$basis_waarde > 0)
+      t0_row <- if (length(t0_row)) t0_row[[1]] else NA_integer_
+    }
+
+    t0_value <- if (is.na(t0_row)) NA_real_ else part$basis_waarde[t0_row]
+    t0_jaar <- if (is.na(t0_row)) NA_integer_ else part$jaar[t0_row]
+    if (is.finite(t0_value) && t0_value > 0) {
+      part$t0_jaar <- t0_jaar
+      part$t0_index <- 100 * part$basis_waarde / t0_value
+    }
+
+    out[[i]] <- part
+  }
+
+  out <- do.call(rbind, out)
+  rownames(out) <- NULL
+  out$basis_waarde <- NULL
+  out[order(out[[id_cols[[1]]]], out$jaar), , drop = FALSE]
+}
+
+analyse_lambda_species_subset <- function(species_matrix) {
+  df <- species_matrix[species_matrix$jaar != 1958L & species_matrix$geteld & is.finite(species_matrix$count_adjusted), c(
+    "soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "count_adjusted"
+  )]
+
+  if (!nrow(df)) {
+    empty_yearly <- data.frame(
+      soort_id = integer(),
+      euring_code = integer(),
+      soort_naam = character(),
+      engelse_naam = character(),
+      jaar = integer(),
+      count_adjusted = numeric(),
+      periode = character(),
+      t0_jaar = integer(),
+      lambda = numeric(),
+      log_lambda = numeric(),
+      t0_index = numeric(),
+      stringsAsFactors = FALSE
+    )
+    empty_summary <- data.frame(
+      soort_id = integer(),
+      euring_code = integer(),
+      soort_naam = character(),
+      engelse_naam = character(),
+      eerste_jaar = integer(),
+      laatste_jaar = integer(),
+      geldige_jaren = integer(),
+      positieve_jaren = integer(),
+      geldige_jaarparen = integer(),
+      nul_aandeel = numeric(),
+      pre_1984_aanwezig = logical(),
+      post_1984_aanwezig = logical(),
+      gemiddeld_lambda = numeric(),
+      gemiddelde_verandering_pct = numeric(),
+      analyse_categorie = character(),
+      stringsAsFactors = FALSE
+    )
+    return(list(yearly = empty_yearly, summary = empty_summary))
+  }
+
+  annual <- aggregate(
+    count_adjusted ~ soort_id + euring_code + soort_naam + engelse_naam + jaar,
+    data = df,
+    FUN = function(x) sum(x, na.rm = TRUE)
+  )
+
+  annual <- bereken_lambda_jaarreeks(
+    annual,
+    id_cols = c("soort_id"),
+    value_col = "count_adjusted"
+  )
+
+  summary_rows <- lapply(split(annual, annual$soort_id), function(part) {
+    positive_years <- sum(is.finite(part$count_adjusted) & part$count_adjusted > 0, na.rm = TRUE)
+    valid_years <- nrow(part)
+    zero_share <- mean(part$count_adjusted <= 0, na.rm = TRUE)
+    consecutive_pairs <- sum(is.finite(part$lambda), na.rm = TRUE)
+    pre_present <- any(part$periode == "1959-1983" & part$count_adjusted > 0, na.rm = TRUE)
+    post_present <- any(part$periode == "1984-heden" & part$count_adjusted > 0, na.rm = TRUE)
+    mean_log_lambda <- safe_mean(part$log_lambda)
+    mean_lambda <- if (is.finite(mean_log_lambda)) exp(mean_log_lambda) else NA_real_
+    pct_change <- if (is.finite(mean_log_lambda)) (exp(mean_log_lambda) - 1) * 100 else NA_real_
+
+    data.frame(
+      soort_id = part$soort_id[[1]],
+      euring_code = part$euring_code[[1]],
+      soort_naam = part$soort_naam[[1]],
+      engelse_naam = part$engelse_naam[[1]],
+      eerste_jaar = min(part$jaar, na.rm = TRUE),
+      laatste_jaar = max(part$jaar, na.rm = TRUE),
+      geldige_jaren = valid_years,
+      positieve_jaren = positive_years,
+      geldige_jaarparen = consecutive_pairs,
+      nul_aandeel = zero_share,
+      pre_1984_aanwezig = pre_present,
+      post_1984_aanwezig = post_present,
+      gemiddeld_lambda = mean_lambda,
+      gemiddelde_verandering_pct = pct_change,
+      analyse_categorie = classificeer_lambda_status(
+        valid_years = valid_years,
+        consecutive_pairs = consecutive_pairs,
+        zero_share = zero_share,
+        positive_years = positive_years,
+        pre_present = pre_present,
+        post_present = post_present
+      ),
+      stringsAsFactors = FALSE
+    )
+  })
+
+  list(
+    yearly = annual,
+    summary = do.call(rbind, summary_rows)
+  )
+}
+
+analyse_lambda_groups_subset <- function(lambda_species, group_mapping, t0_msi_selection = NULL) {
+  summary_df <- lambda_species$summary
+  yearly_df <- lambda_species$yearly
+  empty_index <- data.frame(
+    groep_100 = integer(),
+    groep_titel = character(),
+    jaar = integer(),
+    periode = character(),
+    n_soorten = integer(),
+    t0_index = numeric(),
+    lambda = numeric(),
+    log_lambda = numeric(),
+    stringsAsFactors = FALSE
+  )
+  empty_summary <- data.frame(
+    groep_100 = integer(),
+    groep_titel = character(),
+    eerste_jaar = integer(),
+    laatste_jaar = integer(),
+    n_indexjaren = integer(),
+    geldige_jaarparen = integer(),
+    gemiddeld_lambda = numeric(),
+    gemiddelde_verandering_pct = numeric(),
+    stringsAsFactors = FALSE
+  )
+  empty_comp <- data.frame(
+    groep_100 = integer(),
+    groep_titel = character(),
+    soort_id = integer(),
+    euring_code = integer(),
+    soort_naam = character(),
+    engelse_naam = character(),
+    stringsAsFactors = FALSE
+  )
+  eligible_species <- summary_df$soort_id[summary_df$analyse_categorie == "geschikt_voor_T0_MSI"]
+
+  if (!length(eligible_species)) {
+    return(list(index = empty_index, summary = empty_summary, composition = empty_comp))
+  }
+
+  merged <- merge(
+    yearly_df[yearly_df$soort_id %in% eligible_species & is.finite(yearly_df$t0_index) & yearly_df$t0_index > 0, c(
+      "soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "periode", "t0_index"
+    )],
+    group_mapping,
+    by = "soort_id",
+    all = FALSE
+  )
+
+  if (!is.null(t0_msi_selection) && nrow(t0_msi_selection) > 0) {
+    merged <- merge(
+      merged,
+      t0_msi_selection,
+      by = c("groep_100", "soort_id"),
+      all = FALSE
+    )
+  }
+
+  if (!nrow(merged)) {
+    return(list(index = empty_index, summary = empty_summary, composition = empty_comp))
+  }
+
+  merged$log_t0_index <- log(merged$t0_index)
+  group_index <- aggregate(
+    log_t0_index ~ groep_100 + groep_titel + jaar + periode,
+    data = merged,
+    FUN = mean
+  )
+  n_species <- aggregate(soort_id ~ groep_100 + jaar + periode, data = merged, FUN = function(x) length(unique(x)))
+  names(n_species)[4] <- "n_soorten"
+  group_index <- merge(group_index, n_species, by = c("groep_100", "jaar", "periode"), all.x = TRUE)
+  group_index$t0_index <- exp(group_index$log_t0_index)
+  group_index <- bereken_lambda_jaarreeks(group_index, id_cols = c("groep_100"), value_col = "t0_index")
+
+  summary_rows <- lapply(split(group_index, group_index$groep_100), function(part) {
+    mean_log_lambda <- safe_mean(part$log_lambda)
+    mean_lambda <- if (is.finite(mean_log_lambda)) exp(mean_log_lambda) else NA_real_
+    pct_change <- if (is.finite(mean_log_lambda)) (exp(mean_log_lambda) - 1) * 100 else NA_real_
+
+    data.frame(
+      groep_100 = part$groep_100[[1]],
+      groep_titel = part$groep_titel[[1]],
+      eerste_jaar = min(part$jaar, na.rm = TRUE),
+      laatste_jaar = max(part$jaar, na.rm = TRUE),
+      n_indexjaren = sum(is.finite(part$t0_index), na.rm = TRUE),
+      geldige_jaarparen = sum(is.finite(part$lambda), na.rm = TRUE),
+      gemiddeld_lambda = mean_lambda,
+      gemiddelde_verandering_pct = pct_change,
+      stringsAsFactors = FALSE
+    )
+  })
+
+  composition <- unique(merged[, c("groep_100", "groep_titel", "soort_id", "euring_code", "soort_naam", "engelse_naam")])
+  composition <- composition[order(composition$groep_100, composition$soort_naam), , drop = FALSE]
+
+  list(
+    index = group_index[order(group_index$groep_100, group_index$jaar), , drop = FALSE],
+    summary = do.call(rbind, summary_rows),
+    composition = composition
+  )
+}
+
+analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
+  basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
+  selection_df <- build_species_selection_subset(tbls, selected_kavels, year_from, year_to)
+  species_matrix <- build_species_matrix_subset(tbls, basis, selection_df, year_from, year_to)
+  lambda_species <- analyse_lambda_species_subset(species_matrix)
+  group_mapping <- build_group_mapping(tbls)
+  t0_msi_selection <- load_t0_msi_selection()
+  lambda_groups <- analyse_lambda_groups_subset(lambda_species, group_mapping, t0_msi_selection = t0_msi_selection)
+
+  list(
+    basis = basis,
+    selection = selection_df,
+    species_matrix = species_matrix,
+    species_results = lambda_species,
+    group_results = lambda_groups
   )
 }

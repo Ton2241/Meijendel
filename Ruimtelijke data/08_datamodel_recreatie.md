@@ -38,7 +38,7 @@ Toelichting:
 - `afstand_parkeerplaats_m`: afstand van het plot tot de dichtstbijzijnde parkeerplaats, in meters
 - `afstand_hoofdtoegang_m`: afstand van het plot tot de dichtstbijzijnde hoofdtoegang, in meters
 
-### 2. Toegankelijkheidsstatus in een nieuwe tabel
+### 2. Samenvattende toegankelijkheidsstatus in een aparte tabel
 
 Nieuwe tabel:
 
@@ -64,7 +64,32 @@ Waarom apart:
 - de waarden moeten duidelijk leesbaar blijven
 - dit voorkomt dat tekststatussen in `plot_jaar_infra` terechtkomen
 
-### 3. Bezoekersdruk uit rapport niet direct in `plot_jaar_infra`
+### 3. Deelvlakken voor gedeeltelijke toegankelijkheid
+
+Aanvullende tabel:
+
+- `plot_jaar_toegankelijkheid_deel`
+
+Voorgestelde velden:
+
+- `plot_id`
+- `jaar`
+- `bron`
+- `deel_label`
+- `status_code`
+- `aandeel_pct`
+- `barriere_type`
+- `geom_wkt`
+- `opmerking`
+
+Waarom aanvullend:
+
+- een samenvattende plotstatus is te grof voor kavels met meerdere regimes
+- `deels beperkt, deels vrij` is voor G.E.E. niet goed genoeg als covariaat
+- hiermee kun je exact vastleggen welk deel van een plot onder `afgesloten`, `beperkt` of `vrij` valt
+- hiermee kun je ook hekken, stroomdraden en andere barrières expliciet beschrijven
+
+### 4. Bezoekersdruk uit rapport niet direct in `plot_jaar_infra`
 
 Voor bezoekersaantallen, seizoensverschillen, De Vallei en parkeerdruk is een aparte bronstructuur waarschijnlijk beter.
 Die informatie is niet vanzelfsprekend exact per plot berekend.

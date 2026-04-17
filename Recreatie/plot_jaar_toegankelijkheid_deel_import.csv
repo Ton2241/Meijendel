@@ -1,0 +1,3 @@
+plot_id,jaar,bron,deel_label,status_code,aandeel_pct,barriere_type,geom_wkt,opmerking
+3581,2024,DUNEA_HANDMATIG_CORE_V2,grote plas zone,beperkt,35.00,stroomdraad,"POLYGON((83770.9876 461941.6744,83880.9876 461941.6744,83880.9876 462051.6744,83770.9876 462051.6744,83770.9876 461941.6744))",deelgebied niet toegankelijk tijdens begrazing
+3581,2024,HANDMATIG,resterend deel,vrij,65.00,,,

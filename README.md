@@ -35,9 +35,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 
 ### Documentatie
 
-Alle actieve projectdocumentatie staat in `MDs/`.
+Projectdocumentatie staat vooral in `MDs/`, met scriptspecifieke documentatie in `R/`.
 
-Belangrijke bestanden daar zijn:
+Belangrijke bestanden zijn:
 
 - [`MDs/handboek.md`][9]
   Doorlopend handboek voor gebruik van de database.
@@ -45,11 +45,11 @@ Belangrijke bestanden daar zijn:
   Korte werkwijze voor HTML en Shiny.
 - [`MDs/CONTROLESET_html_shiny.md`][11]
   Vaste controlelijst voor gebruik en wijzigingen.
-- [`MDs/README_trim_analyse.md`][12]
+- [`R/trim_soorten_en_msi_evg.md`][12]
   Uitleg van de hoofd-TRIM-analyse.
-- [`MDs/README_trim_sandra_analyse.md`][13]
+- [`R/trim_sandra_soorten_en_msi_evg.md`][13]
   Uitleg van de Sandra-variant.
-- [`MDs/README_ecologische_groepen.md`][14]
+- [`R/analyse_ecologische_groepen.md`][14]
   Uitleg van de MSI- en GAM-analyse voor ecologische groepen.
 - [`MDs/import_procedure_territoria.md`][15]
   Jaarlijkse importprocedure voor territoria.
@@ -217,9 +217,9 @@ Voor dagelijks gebruik is [`MDs/handboek.md`][24] nu het beste startpunt.
 [9]:	/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md
 [10]:	/Users/ton/Documents/GitHub/Meijendel/MDs/EINDHANDLEIDING_html_en_shiny.md
 [11]:	/Users/ton/Documents/GitHub/Meijendel/MDs/CONTROLESET_html_shiny.md
-[12]:	/Users/ton/Documents/GitHub/Meijendel/MDs/README_trim_analyse.md
-[13]:	/Users/ton/Documents/GitHub/Meijendel/MDs/README_trim_sandra_analyse.md
-[14]:	/Users/ton/Documents/GitHub/Meijendel/MDs/README_ecologische_groepen.md
+[12]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.md
+[13]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_sandra_soorten_en_msi_evg.md
+[14]:	/Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.md
 [15]:	/Users/ton/Documents/GitHub/Meijendel/MDs/import_procedure_territoria.md
 [16]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R
 [17]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/helpers.R

@@ -268,7 +268,66 @@ Deze bestanden zijn bedoeld voor:
 - vergelijking
 - archivering
 
-## 8. Hoe gebruik je de HTML?
+## 8. Hoe verbeter je de Shiny-app veilig?
+
+Werk aan de Shiny-app altijd in deze volgorde:
+
+1. pas lokaal de bestanden in `shiny_meijendel/` aan
+2. test de app eerst lokaal
+3. controleer of de wijziging echt werkt
+4. upload daarna pas opnieuw naar `shinyapps.io`
+
+Praktisch betekent dit:
+
+- verbeter eerst lokaal `app.R`, `helpers.R` of andere bestanden in `shiny_meijendel/`
+- start daarna de app lokaal
+- controleer of de wijziging werkt
+- deploy pas daarna opnieuw de hele app-map
+
+Gebruik dus niet als eerste stap `deployApp()`.
+Eerst lokaal verbeteren en testen is veiliger en voorkomt dat je een kapotte versie online zet.
+
+### 8.1 Lokaal testen van de Shiny-app
+
+Lokaal starten:
+
+```r
+setwd("/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel")
+shiny::runApp(host = "127.0.0.1", port = 3867)
+```
+
+Of via het startscript:
+
+```bash
+/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/start_shiny_local.sh
+```
+
+Controleer daarna in je browser:
+
+- start de app zonder foutmelding
+- werkt `SQL laden`
+- werken je nieuwe of aangepaste onderdelen
+
+### 8.2 Opnieuw uploaden naar shinyapps.io
+
+Als de lokale test goed is, upload je de nieuwe versie met:
+
+```r
+library(rsconnect)
+rsconnect::deployApp('/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel')
+```
+
+Belangrijk:
+
+- deploy altijd de map `shiny_meijendel`
+- controleer of bestanden die online nodig zijn ook echt in die map staan
+- wacht na `deployApp()` tot de melding `Successfully deployed` verschijnt
+- controleer daarna de live app in de browser
+
+De live app is te benaderen via:
+
+- `https://mbsk.shinyapps.io/shiny_meijendel/`
+## 9. Hoe gebruik je de HTML?
 
 De HTML staat in:
 
@@ -396,7 +455,7 @@ De HTML kan ook tellers tonen op basis van:
 - `plot_jaar_teller`
 - `plots`
 
-## 9. Wat is TRIM en waarom gebruik je het?
+## 10. Wat is TRIM en waarom gebruik je het?
 
 TRIM is een analysemethode voor tellingen over de tijd.
 
@@ -413,7 +472,7 @@ Belangrijk om te begrijpen:
 
 Ze beantwoorden verschillende vragen.
 
-## 10. Hoe werkt de hoofd-TRIM-analyse?
+## 11. Hoe werkt de hoofd-TRIM-analyse?
 
 De hoofd-TRIM-analyse leest rechtstreeks `Meijendel.sql` in en maakt nieuwe output in:
 
@@ -814,6 +873,20 @@ Reden:
 
 - dit is een status en geen meetgetal
 
+Voor gedeeltelijke toegankelijkheid bestaat daarnaast:
+
+- `plot_jaar_toegankelijkheid_deel`
+
+Die tabel gebruik je als een plot niet volledig `afgesloten`, `beperkt` of `vrij` is.
+
+Daar leg je per deel vast:
+
+- welk deel het is
+- welke status daar geldt
+- welk percentage van het plot het betreft
+- welk hek, raster of andere barrière relevant is
+- eventueel de geometrie van dat deel
+
 ### 17.3 Bezoekersdruk
 
 Bezoekersdruk uit het Dunea-rapport hoort voorlopig niet direct in `plot_jaar_infra`.
@@ -923,6 +996,46 @@ Elke rij moet verwijzen naar een bestaande combinatie van `plot_id` en `jaar` in
 
 Anders krijg je een foreign key-fout.
 
+### `plot_jaar_toegankelijkheid_deel_import.csv`
+
+Kolommen:
+
+- `plot_id`
+- `jaar`
+- `bron`
+- `deel_label`
+- `status_code`
+- `aandeel_pct`
+- `barriere_type`
+- `geom_wkt`
+- `opmerking`
+
+Gebruik dit bestand voor plots met meerdere toegankelijkheidsdelen.
+
+### `plot_jaar_maatregel_import.csv`
+
+Kolommen:
+
+- `plot_id`
+- `jaar`
+- `bron`
+- `maatregel_id`
+- `intensiteit_code`
+- `uitvoerder_of_diersoort`
+- `deel_label`
+- `dekking_pct`
+- `opmerking`
+
+Gebruik dit bestand voor beheermaatregelen per plot en jaar.
+
+Belangrijk:
+
+- `maatregel_id` verwijst naar `maatregelen`
+- `Begrazing` specificeer je hier verder met:
+  - `intensiteit_code`
+  - `uitvoerder_of_diersoort`
+- hiermee kun je onderscheid maken tussen bijvoorbeeld extensieve en intensieve begrazing en tussen schapen, runderen of paarden
+
 ## 22. Wat is de bezoekersdruklaag?
 
 Voor bezoekersdruk uit het Dunea-rapport is een apart model ontworpen.
@@ -1015,9 +1128,9 @@ Als je opnieuw instapt in het project, begin dan met:
 
 Als je daarna een specifiek onderwerp wilt uitwerken, ga dan pas naar:
 
-- `README_trim_analyse.md`
-- `README_trim_sandra_analyse.md`
-- `README_ecologische_groepen.md`
+- `R/trim_soorten_en_msi_evg.md`
+- `R/trim_sandra_soorten_en_msi_evg.md`
+- `R/analyse_ecologische_groepen.md`
 - `import_procedure_territoria.md`
 - de documenten in `Recreatie/`
 - de documenten in `Ruimtelijke data/`
