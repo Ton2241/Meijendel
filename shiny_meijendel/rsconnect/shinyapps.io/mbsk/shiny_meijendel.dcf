@@ -5,6 +5,6 @@ account: mbsk
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 17151918
-bundleId: 11865941
+bundleId: 11868065
 url: https://mbsk.shinyapps.io/shiny_meijendel/
 version: 1

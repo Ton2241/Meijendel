@@ -160,7 +160,9 @@ parse_meijendel_tables <- function(path) {
   territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
   evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
-  pja <- read_insert_table(path, "plot_jaar_ahn_dtm", c("plot_id", "jaar", "bron", "ahn_mean"))
+  habitattypen <- read_insert_table(path, "habitattypen", c("id", "habitat_code", "habitat_naam"))
+  pjh <- read_insert_table(path, "plot_jaar_habitat", c("plot_id", "jaar", "habitat_id", "aandeel_m2"))
+  pja <- read_insert_table(path, "plot_jaar_ahn_dtm", c("plot_id", "jaar", "bron", "ahn_mean", "ahn_sd"))
   pjs <- read_insert_table(path, "plot_jaar_stikstof", c("plot_id", "jaar", "bron", "stikstof_mean"))
   pji <- read_insert_table(path, "plot_jaar_infra", c("plot_id", "jaar", "bron", "variabele", "waarde"))
   pjtg <- read_insert_table(path, "plot_jaar_toegankelijkheid", c("plot_id", "jaar", "bron", "status_code"))
@@ -180,9 +182,15 @@ parse_meijendel_tables <- function(path) {
   evg_groepen$groepsnummer <- to_integer(evg_groepen$groepsnummer)
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
+  habitattypen$id <- to_integer(habitattypen$id)
+  pjh$plot_id <- to_integer(pjh$plot_id)
+  pjh$jaar <- to_integer(pjh$jaar)
+  pjh$habitat_id <- to_integer(pjh$habitat_id)
+  pjh$aandeel_m2 <- to_numeric(pjh$aandeel_m2)
   pja$plot_id <- to_integer(pja$plot_id)
   pja$jaar <- to_integer(pja$jaar)
   pja$ahn_mean <- to_numeric(pja$ahn_mean)
+  pja$ahn_sd <- to_numeric(pja$ahn_sd)
   pjs$plot_id <- to_integer(pjs$plot_id)
   pjs$jaar <- to_integer(pjs$jaar)
   pjs$stikstof_mean <- to_numeric(pjs$stikstof_mean)
@@ -200,6 +208,8 @@ parse_meijendel_tables <- function(path) {
     territoria = territoria,
     evg_vogelgroepen = evg_groepen,
     evg_vogel_landschapgroep = evg_koppeling,
+    habitattypen = habitattypen,
+    plot_jaar_habitat = pjh,
     plot_jaar_ahn_dtm = pja,
     plot_jaar_stikstof = pjs,
     plot_jaar_infra = pji,
@@ -210,6 +220,7 @@ parse_meijendel_tables <- function(path) {
 make_cache_signature <- function(path) {
   info <- file.info(path)
   paste(
+    MEIJENDEL_PARSER_CACHE_VERSION,
     normalizePath(path, winslash = "/", mustWork = TRUE),
     info$size,
     as.numeric(info$mtime),
@@ -227,7 +238,11 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
 
   if (file.exists(cache_path)) {
     cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
-    if (!is.null(cache) && identical(cache$signature, signature) && !is.null(cache$data)) {
+    cache_valid <- !is.null(cache) &&
+      identical(cache$signature, signature) &&
+      !is.null(cache$data) &&
+      all(c("habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid") %in% names(cache$data))
+    if (cache_valid) {
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
     }
   }
@@ -705,6 +720,15 @@ find_species_by_name <- function(tbls, species_name) {
   stop(sprintf("Soort niet gevonden: %s", species_name))
 }
 
+find_group_by_code <- function(tbls, groep_100) {
+  groups <- make_group_descriptions(tbls$evg_vogelgroepen)
+  row <- groups[groups$groep_100 == as.integer(groep_100), , drop = FALSE]
+  if (nrow(row) == 1L) {
+    return(row)
+  }
+  stop(sprintf("Ecologische vogelgroep niet gevonden: %s", groep_100))
+}
+
 pick_nearest_value_by_year <- function(rows, target_year, value_col, allow_past_only = FALSE) {
   if (!nrow(rows)) {
     return(NA)
@@ -762,19 +786,37 @@ add_toegankelijkheid_covariate <- function(dat, source_df, new_col = "toegankeli
   dat
 }
 
-build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, species_name) {
+build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group"), target_value) {
+  target_type <- match.arg(target_type)
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   if (!nrow(basis)) {
     stop("Geen geldige plot-jaar-combinaties voor deze selectie.")
   }
 
-  species_row <- find_species_by_name(tbls, species_name)
-  counts <- tbls$territoria[
-    tbls$territoria$soort_id == species_row$id[[1]] &
-      tbls$territoria$jaar >= year_from &
-      tbls$territoria$jaar <= year_to,
-    c("plot_id", "jaar", "territoria")
-  ]
+  if (target_type == "species") {
+    species_row <- find_species_by_name(tbls, target_value)
+    counts <- tbls$territoria[
+      tbls$territoria$soort_id == species_row$id[[1]] &
+        tbls$territoria$jaar >= year_from &
+        tbls$territoria$jaar <= year_to,
+      c("plot_id", "jaar", "territoria")
+    ]
+    target_label <- species_row$soort_naam[[1]]
+    target_slug <- tolower(gsub("[^a-z0-9]+", "_", target_label))
+  } else {
+    species_row <- NULL
+    group_row <- find_group_by_code(tbls, target_value)
+    group_mapping <- build_group_mapping(tbls)
+    group_species <- unique(group_mapping$soort_id[group_mapping$groep_100 == group_row$groep_100[[1]]])
+    counts <- tbls$territoria[
+      tbls$territoria$soort_id %in% group_species &
+        tbls$territoria$jaar >= year_from &
+        tbls$territoria$jaar <= year_to,
+      c("plot_id", "jaar", "territoria")
+    ]
+    target_label <- group_row$groep_titel[[1]]
+    target_slug <- paste0("groep_", group_row$groep_100[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
+  }
   if (nrow(counts)) {
     counts <- aggregate(territoria ~ plot_id + jaar, data = counts, FUN = sum, na.rm = TRUE)
     names(counts)[names(counts) == "territoria"] <- "count"
@@ -789,6 +831,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, species
   dat$year_c <- dat$jaar - min(dat$jaar, na.rm = TRUE)
 
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_ahn_dtm, "ahn_mean", "ahn_mean")
+  dat <- add_numeric_covariate(dat, tbls$plot_jaar_ahn_dtm, "ahn_sd", "ahn_sd")
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_stikstof, "stikstof_mean", "stikstof_mean")
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_pad_m", "afstand_pad_m")
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "padlengte_m_per_ha", "padlengte_m_per_ha")
@@ -796,9 +839,22 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, species
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
   dat <- add_toegankelijkheid_covariate(dat, tbls$plot_jaar_toegankelijkheid)
 
-  dat$soort_id <- species_row$id[[1]]
-  dat$soort_naam <- species_row$soort_naam[[1]]
-  dat$engelse_naam <- species_row$engelse_naam[[1]]
+  dat$analyse_niveau <- ifelse(target_type == "species", "Soort", "Ecologische Vogelgroep")
+  dat$doel_label <- target_label
+  dat$doel_slug <- target_slug
+  if (target_type == "species") {
+    dat$soort_id <- species_row$id[[1]]
+    dat$soort_naam <- species_row$soort_naam[[1]]
+    dat$engelse_naam <- species_row$engelse_naam[[1]]
+    dat$groep_100 <- NA_integer_
+    dat$groep_titel <- NA_character_
+  } else {
+    dat$soort_id <- NA_integer_
+    dat$soort_naam <- NA_character_
+    dat$engelse_naam <- NA_character_
+    dat$groep_100 <- as.integer(target_value)
+    dat$groep_titel <- target_label
+  }
   dat[order(dat$plot_id, dat$jaar), ]
 }
 
@@ -806,30 +862,171 @@ gee_covariate_specs <- function() {
   data.frame(
     code = c(
       "year_c",
-      "ahn_mean",
       "stikstof_mean",
-      "afstand_pad_m",
-      "padlengte_m_per_ha",
-      "afstand_parkeerplaats_m",
-      "afstand_hoofdtoegang_m",
       "toegankelijkheid_status"
     ),
     label = c(
       "Jaar (controlevariabele)",
-      "AHN gemiddelde hoogte",
       "Stikstof gemiddelde depositie",
-      "Afstand tot pad",
-      "Padlengte per hectare",
-      "Afstand tot parkeerplaats",
-      "Afstand tot hoofdtoegang",
       "Toegankelijkheidsstatus"
     ),
-    type = c("numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "factor"),
+    type = c("numeric", "numeric", "factor"),
     stringsAsFactors = FALSE
   )
 }
 
-run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, species_name, covariates, gee_corstr = "exchangeable") {
+gee_ahn_covariate_specs <- function() {
+  data.frame(
+    code = c("ahn_mean", "ahn_sd"),
+    label = c("Gemiddelde hoogte", "Standaard deviatie"),
+    type = c("numeric", "numeric"),
+    stringsAsFactors = FALSE
+  )
+}
+
+gee_infra_covariate_specs <- function() {
+  data.frame(
+    code = c("afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m", "afstand_hoofdtoegang_m"),
+    label = c("Afstand tot pad", "Padlengte per hectare", "Afstand tot parkeerplaats", "Afstand tot hoofdtoegang"),
+    type = c("numeric", "numeric", "numeric", "numeric"),
+    stringsAsFactors = FALSE
+  )
+}
+
+gee_habitat_covariate_specs <- function(tbls) {
+  if (is.null(tbls$habitattypen) || !nrow(tbls$habitattypen)) {
+    return(data.frame(code = character(), label = character(), habitat_id = integer(), stringsAsFactors = FALSE))
+  }
+  out <- tbls$habitattypen[, c("id", "habitat_code", "habitat_naam")]
+  out$code <- paste0("habitat_", out$id)
+  out$label <- paste0(out$habitat_code, " - ", out$habitat_naam)
+  names(out)[names(out) == "id"] <- "habitat_id"
+  out[, c("code", "label", "habitat_id")]
+}
+
+build_habitat_share_lookup <- function(tbls) {
+  pjh <- tbls$plot_jaar_habitat
+  if (is.null(pjh) || !nrow(pjh)) {
+    return(data.frame())
+  }
+  opp <- tbls$plot_jaar_oppervlak[, c("plot_id", "jaar", "oppervlakte_km2")]
+  hab <- merge(pjh, opp, by = c("plot_id", "jaar"), all.x = TRUE)
+  hab$share_pct <- ifelse(
+    is.finite(hab$aandeel_m2) & is.finite(hab$oppervlakte_km2) & hab$oppervlakte_km2 > 0,
+    100 * hab$aandeel_m2 / (hab$oppervlakte_km2 * 1000000),
+    NA_real_
+  )
+  hab
+}
+
+add_habitat_covariates <- function(dat, tbls, habitat_codes) {
+  if (!length(habitat_codes) || !nrow(dat)) {
+    return(dat)
+  }
+  specs <- gee_habitat_covariate_specs(tbls)
+  lookup <- build_habitat_share_lookup(tbls)
+  for (code in habitat_codes) {
+    row <- specs[specs$code == code, , drop = FALSE]
+    if (!nrow(row)) next
+    habitat_id <- row$habitat_id[[1]]
+    dat[[code]] <- vapply(seq_len(nrow(dat)), function(i) {
+      rows <- lookup[lookup$plot_id == dat$plot_id[[i]] & lookup$habitat_id == habitat_id, , drop = FALSE]
+      val <- pick_nearest_value_by_year(rows, dat$jaar[[i]], "share_pct")
+      if (length(val) == 0L || is.null(val)) {
+        return(NA_real_)
+      }
+      as.numeric(val)
+    }, numeric(1))
+  }
+  dat
+}
+
+sanitize_gee_design <- function(dat_model, chosen) {
+  dat_model <- droplevels(dat_model)
+  keep <- character()
+  dropped <- character()
+
+  for (nm in chosen) {
+    x <- dat_model[[nm]]
+    if (is.factor(x)) {
+      x <- droplevels(x)
+      dat_model[[nm]] <- x
+      if (nlevels(x) < 2L) {
+        dropped <- c(dropped, nm)
+      } else {
+        keep <- c(keep, nm)
+      }
+    } else {
+      vals <- x[is.finite(x)]
+      if (length(unique(vals)) < 2L) {
+        dropped <- c(dropped, nm)
+      } else {
+        keep <- c(keep, nm)
+      }
+    }
+  }
+
+  if (!length(keep)) {
+    stop("Alle gekozen covariaten vallen weg in deze selectie. Kies minder of andere covariaten.")
+  }
+
+  repeat {
+    rhs <- stats::reformulate(keep)
+    mm <- stats::model.matrix(rhs, data = dat_model)
+    q <- qr(mm)
+    if (q$rank == ncol(mm)) {
+      break
+    }
+    assign_idx <- attr(mm, "assign")
+    term_labels <- attr(stats::terms(rhs), "term.labels")
+    dropped_cols <- setdiff(seq_len(ncol(mm)), q$pivot[seq_len(q$rank)])
+    dropped_terms_idx <- unique(assign_idx[dropped_cols])
+    dropped_terms_idx <- dropped_terms_idx[dropped_terms_idx > 0L]
+    if (!length(dropped_terms_idx)) {
+      break
+    }
+    aliased_terms <- term_labels[dropped_terms_idx]
+    keep <- setdiff(keep, aliased_terms)
+    dropped <- c(dropped, aliased_terms)
+    if (!length(keep)) {
+      stop("De gekozen covariaten zijn lineair afhankelijk in deze selectie. Kies minder of andere covariaten.")
+    }
+  }
+
+  list(
+    data = dat_model,
+    chosen = keep,
+    dropped = unique(dropped)
+  )
+}
+
+precheck_gee_complexity <- function(dat_model, gee_corstr) {
+  cluster_sizes <- as.integer(table(dat_model$plot_id))
+  n_clusters <- length(cluster_sizes)
+  max_cluster <- max(cluster_sizes)
+  n_rows <- nrow(dat_model)
+
+  if (gee_corstr == "unstructured" && max_cluster > 12L) {
+    stop("Correlatiestructuur 'unstructured' is te zwaar voor deze selectie. Kies 'independence' of 'ar1'.")
+  }
+
+  if (gee_corstr == "exchangeable" && max_cluster > 40L && n_clusters > 10L) {
+    stop("Correlatiestructuur 'exchangeable' is te zwaar voor deze selectie. Kies 'independence' of verklein jaren/kavels.")
+  }
+
+  if (gee_corstr == "ar1" && max_cluster > 80L && n_rows > 1500L) {
+    stop("Correlatiestructuur 'ar1' is te zwaar voor deze selectie. Verklein jaren/kavels of kies 'independence'.")
+  }
+
+  invisible(list(
+    n_clusters = n_clusters,
+    max_cluster = max_cluster,
+    n_rows = n_rows
+  ))
+}
+
+run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), gee_corstr = "exchangeable") {
+  target_type <- match.arg(target_type)
   if (!requireNamespace("geepack", quietly = TRUE)) {
     stop("Package 'geepack' is niet beschikbaar.")
   }
@@ -837,16 +1034,31 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, species_na
     stop("Package 'broom' is niet beschikbaar.")
   }
   cov_specs <- gee_covariate_specs()
-  chosen <- unique(c("year_c", covariates))
-  chosen <- chosen[chosen %in% cov_specs$code]
+  ahn_specs <- gee_ahn_covariate_specs()
+  infra_specs <- gee_infra_covariate_specs()
+  habitat_specs <- gee_habitat_covariate_specs(tbls)
+  chosen <- unique(c("year_c", covariates, ahn_covariates, infra_covariates, habitat_covariates))
+  allowed <- unique(c(cov_specs$code, ahn_specs$code, infra_specs$code, habitat_specs$code))
+  chosen <- chosen[chosen %in% allowed]
   if (!length(chosen)) {
     stop("Kies minstens één G.E.E.-covariaat.")
   }
 
-  dat <- build_gee_dataset(tbls, selected_kavels, year_from, year_to, species_name)
+  dat <- build_gee_dataset(tbls, selected_kavels, year_from, year_to, target_type = target_type, target_value = target_value)
+  dat <- add_habitat_covariates(dat, tbls, habitat_covariates)
   dat_model <- dat[!is.na(dat$count) & is.finite(dat$log_area), , drop = FALSE]
   for (nm in chosen) {
-    if (cov_specs$type[cov_specs$code == nm] == "numeric") {
+    type_val <- cov_specs$type[cov_specs$code == nm]
+    if (!length(type_val)) {
+      type_val <- ahn_specs$type[ahn_specs$code == nm]
+    }
+    if (!length(type_val)) {
+      type_val <- infra_specs$type[infra_specs$code == nm]
+    }
+    if (!length(type_val)) {
+      type_val <- "numeric"
+    }
+    if (type_val == "numeric") {
       dat_model <- dat_model[is.finite(dat_model[[nm]]), , drop = FALSE]
     } else {
       dat_model <- dat_model[!is.na(dat_model[[nm]]) & nzchar(as.character(dat_model[[nm]])), , drop = FALSE]
@@ -863,18 +1075,41 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, species_na
     stop("Te weinig unieke plots voor een G.E.E.-analyse.")
   }
   if (sum(dat_model$count, na.rm = TRUE) <= 0) {
-    stop("Geen territoria voor deze soort in de gekozen selectie.")
+    stop("Geen territoria voor deze selectie.")
   }
 
+  design <- sanitize_gee_design(dat_model, chosen)
+  dat_model <- design$data
+  chosen <- design$chosen
+
   dat_model <- dat_model[order(dat_model$plot_id, dat_model$jaar), , drop = FALSE]
+  precheck_gee_complexity(dat_model, gee_corstr)
+  pre_mm <- stats::model.matrix(stats::reformulate(chosen), data = dat_model)
+  pre_qr <- qr(pre_mm)
+  if (pre_qr$rank < ncol(pre_mm)) {
+    stop("De overblijvende covariaten zijn in deze selectie nog lineair afhankelijk. Kies minder habitattypen of minder covariaten tegelijk.")
+  }
   formula_txt <- sprintf("count ~ %s + offset(log_area)", paste(chosen, collapse = " + "))
-  gee_fit <- geepack::geeglm(
-    formula = stats::as.formula(formula_txt),
-    family = stats::poisson(link = "log"),
-    id = plot_id,
-    corstr = gee_corstr,
-    data = dat_model
-  )
+  gee_fit <- tryCatch({
+    setTimeLimit(elapsed = 20, transient = TRUE)
+    on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
+    geepack::geeglm(
+      formula = stats::as.formula(formula_txt),
+      family = stats::poisson(link = "log"),
+      id = plot_id,
+      corstr = gee_corstr,
+      control = geepack::geese.control(maxit = 20, epsilon = 1e-04, trace = FALSE),
+      data = dat_model
+    )
+  }, error = function(e) e)
+
+  if (inherits(gee_fit, "error")) {
+    msg <- conditionMessage(gee_fit)
+    if (grepl("elapsed time limit", msg, fixed = TRUE)) {
+      stop("De G.E.E.-fit duurde te lang. Kies minder jaren, minder kavels of een eenvoudigere correlatiestructuur zoals independence.")
+    }
+    stop(msg)
+  }
 
   coef_tab <- broom::tidy(gee_fit)
   coef_tab <- coef_tab[coef_tab$term != "(Intercept)", , drop = FALSE]
@@ -883,9 +1118,12 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, species_na
   coef_tab$irr_high <- exp(coef_tab$estimate + 1.96 * coef_tab$std.error)
 
   summary_df <- data.frame(
-    soort_naam = unique(dat_model$soort_naam)[1],
+    analyse_niveau = unique(dat_model$analyse_niveau)[1],
+    doel_label = unique(dat_model$doel_label)[1],
+    doel_slug = unique(dat_model$doel_slug)[1],
     gee_corstr = gee_corstr,
     covariaten = paste(chosen, collapse = ", "),
+    covariaten_vervallen = paste(design$dropped, collapse = ", "),
     n_plots = length(unique(dat_model$plot_id)),
     n_plot_jaren = nrow(dat_model),
     eerste_jaar = min(dat_model$jaar, na.rm = TRUE),
@@ -1229,3 +1467,4 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     group_results = lambda_groups
   )
 }
+MEIJENDEL_PARSER_CACHE_VERSION <- 2L

@@ -21,7 +21,7 @@ De Shiny-app heeft nu drie inhoudelijke analysepaden:
 2. `LAMBDA`
 3. `G.E.E.`
 
-`G.E.E.` is nu als eerste werkende versie aanwezig op soortniveau.
+`G.E.E.` is nu als eerste werkende versie aanwezig op soortniveau en groepsniveau.
 
 Voor de verdere uitwerking geldt deze ontwerpregel:
 
@@ -39,6 +39,12 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 - `territoria`
 - `evg_vogelgroepen`
 - `evg_vogel_landschapgroep`
+- `habitattypen`
+- `plot_jaar_habitat`
+- `plot_jaar_ahn_dtm`
+- `plot_jaar_stikstof`
+- `plot_jaar_infra`
+- `plot_jaar_toegankelijkheid`
 
 De parser leest `INSERT`-blokken rechtstreeks uit `Meijendel.sql` en zet die om naar dataframes.
 
@@ -274,12 +280,13 @@ De G.E.E.-berekeningen lopen via:
 De functie is:
 
 - verklarende analyse op soortniveau
+- verklarende analyse op groepsniveau
 - met herhaalde metingen per `plot_id`
 - waarbij `plot_id` de cluster-id is
 
 ### Eerste werkende versie
 
-De eerste versie werkt per gekozen soort met:
+De eerste versie werkt per gekozen analyse-eenheid met:
 
 - responsvariabele: `territoria`
 - linkfunctie: `log`
@@ -287,30 +294,57 @@ De eerste versie werkt per gekozen soort met:
 - offset: `log(oppervlakte_km2)`
 - cluster: `plot_id`
 
+De gebruiker kiest eerst:
+
+- `Soort`
+- `Ecologische Vogelgroep`
+
+Bij soortniveau:
+
+- respons = som territoria van één gekozen soort per `plot_id + jaar`
+
+Bij groepsniveau:
+
+- soorten worden via `evg_vogel_landschapgroep` gekoppeld aan `groep_100`
+- respons = som territoria van alle soorten binnen één gekozen ecologische vogelgroep per `plot_id + jaar`
+
+De groepsrespons is dus een geaggregeerde groepssom, geen MSI en geen TRIM-index.
+
 De formule bevat altijd:
 
 - `year_c` als controlevariabele voor tijd
 
 en daarnaast een door de gebruiker gekozen subset van covariaten.
 
+De app begrenst de `G.E.E.`-fit operationeel:
+
+- `maxit = 20`
+- `epsilon = 1e-04`
+- een elapsed time limit van `20` seconden
+- een voorcontrole op te zware combinaties van correlatiestructuur, aantal plots en aantal jaren per plot
+
+Als de fit daar overheen gaat, stopt de app met een expliciete foutmelding in plaats van eindeloos door te rekenen.
+
 ### Gebruikte covariaten in versie 1
 
 Deze versie gebruikt alleen covariaten die nu al betrouwbaar in de database aanwezig zijn:
 
 - `ahn_mean`
+- `ahn_sd`
 - `stikstof_mean`
 - `afstand_pad_m`
 - `padlengte_m_per_ha`
 - `afstand_parkeerplaats_m`
 - `afstand_hoofdtoegang_m`
 - `toegankelijkheid_status`
+- geselecteerde habitat-aandelen uit `plot_jaar_habitat`
 
 Nog niet meegenomen in deze eerste versie:
 
 - beheermaatregelen
 - deeltoegankelijkheid
 - weeraggregaties
-- habitat- of landgebruikssamenstellingen als afzonderlijke modeltermen
+- landgebruikssamenstellingen als afzonderlijke modeltermen
 
 ### Covariaatkoppeling
 
@@ -323,6 +357,7 @@ Daarbij geldt:
 - niet geteld = `NA`
 - `ahn_mean`, `stikstof_mean` en infra-waarden worden gekoppeld op dichtstbijzijnde beschikbare jaarwaarde per plot
 - `toegankelijkheid_status` gebruikt de laatst bekende status op of vóór het gekozen jaar
+- habitatcovariaten worden gekoppeld als aandeel per geselecteerd habitattype in `plot_jaar_habitat`
 
 ### Modeluitvoer
 
@@ -333,6 +368,7 @@ De app toont in versie 1:
 - `IRR`-waarden (`Incident Rate Ratio`)
 - een effectplot met `IRR` en `95%`-interval
 - de gebruikte modeldataset als controle-export
+- een melding als gekozen covariaten in de actuele selectie vervallen door constante waarden of lineaire afhankelijkheid
 
 ### Statistische aandachtspunten voor review
 
@@ -343,6 +379,8 @@ Een statisticus zou in deze eerste G.E.E.-versie vooral moeten beoordelen:
 - welke correlatiestructuur (`exchangeable`, `ar1`, `independence`, `unstructured`) hier inhoudelijk het meest verdedigbaar is
 - of nearest-year koppeling van ruimtelijke covariaten acceptabel is
 - of in een volgende stap negatieve binomiale of zero-inflation varianten nodig zijn
+- of een ruwe groepssom op EVG-niveau inhoudelijk de juiste respons is, of dat later een andere groepsrespons gewenst is
+- of het automatisch laten vervallen van constante of lineair afhankelijke covariaten statistisch de gewenste werkwijze is
 
 De grafiek zegt:
 

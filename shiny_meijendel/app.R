@@ -21,7 +21,7 @@ default_sql <- normalizePath("Meijendel.sql", winslash = "/", mustWork = FALSE)
 ui <- navbarPage(
   title = "Statistische Analyses Vogeldata",
   theme = bslib::bs_theme(version = 5, bootswatch = "flatly"),
-  tags$head(
+  header = tags$head(
     tags$style(HTML("
       .app-subtitle { color:#4b5563; margin-top:-12px; margin-bottom:18px; }
       .navbar .navbar-nav,
@@ -319,27 +319,37 @@ ui <- navbarPage(
             h3("Selectie"),
             uiOutput("gee_plot_selector_ui"),
             uiOutput("gee_year_selector_ui"),
-            uiOutput("gee_species_picker_ui"),
+            radioButtons(
+              "gee_target_type",
+              "Analyse-niveau",
+              choices = c("Soort" = "species", "Ecologische Vogelgroep" = "group"),
+              selected = "species",
+              inline = TRUE
+            ),
+            uiOutput("gee_target_picker_ui"),
             selectInput(
               "gee_corstr",
               "Correlatiestructuur",
               choices = c(
+                "independence" = "independence",
                 "exchangeable" = "exchangeable",
                 "ar1" = "ar1",
-                "independence" = "independence",
                 "unstructured" = "unstructured"
               ),
-              selected = "exchangeable"
+              selected = "independence"
             ),
             checkboxGroupInput(
               "gee_covariates",
-              "Covariaten",
+              "Vaste Covariaten",
               choices = setNames(
                 gee_covariate_specs()$code,
                 gee_covariate_specs()$label
               ),
-              selected = c("ahn_mean", "stikstof_mean", "afstand_pad_m", "toegankelijkheid_status")
+              selected = c("stikstof_mean", "toegankelijkheid_status")
             ),
+            uiOutput("gee_ahn_covariate_ui"),
+            uiOutput("gee_infra_covariate_ui"),
+            uiOutput("gee_habitat_covariate_ui"),
             actionButton("run_gee_analysis", "Voer G.E.E.-analyse uit", class = "btn-primary")
           )
         ),
@@ -364,6 +374,8 @@ ui <- navbarPage(
             ),
             h4("Coefficienten"),
             tableOutput("gee_coef_table"),
+            h4("Gebruikte kavels"),
+            tableOutput("gee_plot_usage_table"),
             h4("Gebruikte plot-jaren"),
             tableOutput("gee_dataset_table")
           )
@@ -524,9 +536,9 @@ server <- function(input, output, session) {
     kavels <- sort(unique(tbls$plots$kavel_nummer))
     selectizeInput(
       "gee_selected_plots",
-      "Kavels",
+      "Kavel(s)",
       choices = kavels,
-      selected = kavels,
+      selected = character(0),
       multiple = TRUE,
       options = list(plugins = list("remove_button"))
     )
@@ -544,13 +556,63 @@ server <- function(input, output, session) {
     )
   })
 
-  output$gee_species_picker_ui <- renderUI({
+  output$gee_target_picker_ui <- renderUI({
     tbls <- tbls_rv()
     if (is.null(tbls)) {
       return(NULL)
     }
+    if (identical(input$gee_target_type, "group")) {
+      groepen <- build_group_mapping(tbls)
+      groepen <- unique(groepen[, c("groep_100", "groep_titel")])
+      groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
+      choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
+      return(selectizeInput("gee_group", "Ecologische Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+    }
     soorten <- sort(tbls$soorten$soort_naam)
     selectizeInput("gee_species", "Soort", choices = soorten, selected = "Nachtegaal", multiple = FALSE)
+  })
+
+  output$gee_ahn_covariate_ui <- renderUI({
+    specs <- gee_ahn_covariate_specs()
+    selectizeInput(
+      "gee_ahn_covariates",
+      "AHN",
+      choices = setNames(specs$code, specs$label),
+      selected = c("ahn_mean"),
+      multiple = TRUE,
+      options = list(plugins = list("remove_button"))
+    )
+  })
+
+  output$gee_infra_covariate_ui <- renderUI({
+    specs <- gee_infra_covariate_specs()
+    selectizeInput(
+      "gee_infra_covariates",
+      "Infra & recreatie",
+      choices = setNames(specs$code, specs$label),
+      selected = c("afstand_pad_m"),
+      multiple = TRUE,
+      options = list(plugins = list("remove_button"))
+    )
+  })
+
+  output$gee_habitat_covariate_ui <- renderUI({
+    tbls <- tbls_rv()
+    if (is.null(tbls)) {
+      return(NULL)
+    }
+    specs <- gee_habitat_covariate_specs(tbls)
+    if (!nrow(specs)) {
+      return(tags$p(class = "section-note", "Geen habitattypen beschikbaar. Laad de SQL opnieuw zodat de vernieuwde cache wordt opgebouwd."))
+    }
+    selectizeInput(
+      "gee_habitat_covariates",
+      "Habitattypen",
+      choices = setNames(specs$code, specs$label),
+      selected = character(0),
+      multiple = TRUE,
+      options = list(plugins = list("remove_button"))
+    )
   })
 
   observeEvent(input$run_analysis, {
@@ -627,13 +689,21 @@ server <- function(input, output, session) {
 
   observeEvent(input$run_gee_analysis, {
     tbls <- tbls_rv()
-    req(tbls, input$gee_selected_plots, input$gee_year_from, input$gee_year_to, input$gee_species)
+    req(tbls, input$gee_selected_plots, input$gee_year_from, input$gee_year_to, input$gee_target_type)
     if (length(input$gee_selected_plots) == 0) {
       gee_analysis_info_rv("Kies eerst minstens één kavel.")
       showNotification("Kies eerst minstens één kavel.", type = "error", duration = 5)
       return()
     }
-    if (length(input$gee_covariates) == 0) {
+    if (identical(input$gee_target_type, "species")) {
+      req(input$gee_species)
+      target_value <- input$gee_species
+    } else {
+      req(input$gee_group)
+      target_value <- input$gee_group
+    }
+    totaal_covariaten <- c(input$gee_covariates, input$gee_ahn_covariates, input$gee_infra_covariates, input$gee_habitat_covariates)
+    if (length(totaal_covariaten) == 0) {
       gee_analysis_info_rv("Kies eerst minstens één covariaat.")
       showNotification("Kies eerst minstens één covariaat.", type = "error", duration = 5)
       return()
@@ -654,8 +724,12 @@ server <- function(input, output, session) {
           selected_kavels = input$gee_selected_plots,
           year_from = year_from,
           year_to = year_to,
-          species_name = input$gee_species,
+          target_type = input$gee_target_type,
+          target_value = target_value,
           covariates = input$gee_covariates,
+          ahn_covariates = input$gee_ahn_covariates,
+          infra_covariates = input$gee_infra_covariates,
+          habitat_covariates = input$gee_habitat_covariates,
           gee_corstr = input$gee_corstr
         )
         incProgress(0.9)
@@ -706,17 +780,36 @@ server <- function(input, output, session) {
 
   output$gee_selection_summary <- renderText({
     analyse <- gee_analyse_rv()
+    tbls <- tbls_rv()
     if (is.null(analyse)) {
       return("Nog geen G.E.E.-analyse uitgevoerd.")
     }
+    cov_labels <- c(
+      setNames(gee_covariate_specs()$label, gee_covariate_specs()$code),
+      setNames(gee_ahn_covariate_specs()$label, gee_ahn_covariate_specs()$code),
+      setNames(gee_infra_covariate_specs()$label, gee_infra_covariate_specs()$code)
+    )
+    if (!is.null(tbls)) {
+      hab_specs <- gee_habitat_covariate_specs(tbls)
+      cov_labels <- c(cov_labels, setNames(hab_specs$label, hab_specs$code))
+    }
     sam <- analyse$summary[1, , drop = FALSE]
+    cov_names <- trimws(strsplit(sam$covariaten, ",", fixed = TRUE)[[1]])
+    cov_names <- ifelse(cov_names %in% names(cov_labels), unname(cov_labels[cov_names]), cov_names)
+    dropped_names <- character()
+    if (!is.na(sam$covariaten_vervallen) && nzchar(sam$covariaten_vervallen)) {
+      dropped_raw <- trimws(strsplit(sam$covariaten_vervallen, ",", fixed = TRUE)[[1]])
+      dropped_names <- ifelse(dropped_raw %in% names(cov_labels), unname(cov_labels[dropped_raw]), dropped_raw)
+    }
     paste(
-      "Soort:", sam$soort_naam,
+      "Analyse-niveau:", sam$analyse_niveau,
+      "\nDoel:", sam$doel_label,
       "\nPlots:", sam$n_plots,
       "\nPlot-jaren:", sam$n_plot_jaren,
       "\nJaren:", sam$eerste_jaar, "-", sam$laatste_jaar,
       "\nCorrelatiestructuur:", sam$gee_corstr,
-      "\nCovariaten:", sam$covariaten
+      "\nCovariaten:", paste(cov_names, collapse = ", "),
+      if (length(dropped_names)) paste0("\nVervallen covariaten:", " ", paste(dropped_names, collapse = ", ")) else ""
     )
   })
 
@@ -964,12 +1057,36 @@ server <- function(input, output, session) {
 
   output$gee_coef_plot <- renderPlot({
     analyse <- gee_analyse_rv()
+    tbls <- tbls_rv()
     req(analyse)
     coefs <- analyse$coefficients
     validate(need(nrow(coefs) > 0, "Geen coëfficiënten beschikbaar."))
+    term_labels <- c(
+      year_c = "Jaar",
+      ahn_mean = "AHN gemiddelde hoogte",
+      ahn_sd = "AHN standaard deviatie",
+      stikstof_mean = "Stikstof gemiddelde depositie",
+      afstand_pad_m = "Afstand tot pad",
+      padlengte_m_per_ha = "Padlengte per hectare",
+      afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
+      afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
+      toegankelijkheid_statusbeperkt = "Toegankelijkheid: beperkt",
+      toegankelijkheid_statusafgesloten = "Toegankelijkheid: afgesloten",
+      `toegankelijkheid_statusdeels beperkt, deels vrij` = "Toegankelijkheid: deels beperkt/deels vrij",
+      `toegankelijkheid_statusdeels afgesloten, deels vrij` = "Toegankelijkheid: deels afgesloten/deels vrij",
+      toegankelijkheid_statusonbekend = "Toegankelijkheid: onbekend"
+    )
+    if (!is.null(tbls)) {
+      hab_specs <- gee_habitat_covariate_specs(tbls)
+      term_labels <- c(term_labels, setNames(paste0("Habitat: ", hab_specs$label), hab_specs$code))
+    }
+    coefs$term_label <- ifelse(coefs$term %in% names(term_labels), unname(term_labels[coefs$term]), coefs$term)
     coefs <- coefs[order(coefs$irr), , drop = FALSE]
     y <- seq_len(nrow(coefs))
     xlim <- range(c(coefs$irr_low, coefs$irr_high, 1), na.rm = TRUE)
+    old_par <- graphics::par(no.readonly = TRUE)
+    on.exit(graphics::par(old_par), add = TRUE)
+    graphics::par(mar = c(5.1, 20, 4.1, 2.1), xpd = NA)
     plot(coefs$irr, y,
          xlim = xlim,
          yaxt = "n",
@@ -977,10 +1094,10 @@ server <- function(input, output, session) {
          col = "#1d4ed8",
          xlab = "Incident Rate Ratio (IRR)",
          ylab = "",
-         main = paste("G.E.E.-effecten voor", analyse$summary$soort_naam[[1]]))
+         main = paste("G.E.E.-effecten voor", analyse$summary$doel_label[[1]]))
     segments(coefs$irr_low, y, coefs$irr_high, y, col = "#94a3b8", lwd = 2)
     abline(v = 1, lty = 2, col = "#64748b")
-    axis(2, at = y, labels = coefs$term, las = 1)
+    axis(2, at = y, labels = coefs$term_label, las = 1, cex.axis = 0.9)
     grid()
   })
 
@@ -990,19 +1107,52 @@ server <- function(input, output, session) {
     analyse$coefficients[, c("term", "estimate", "std.error", "statistic", "p.value", "irr", "irr_low", "irr_high")]
   }, striped = TRUE)
 
-  output$gee_dataset_table <- renderTable({
+  output$gee_plot_usage_table <- renderTable({
     analyse <- gee_analyse_rv()
     req(analyse)
-    utils::head(analyse$model_data[, c(
-      "plot_id", "kavel_nummer", "jaar", "count", "ahn_mean", "stikstof_mean",
+    out <- aggregate(
+      count ~ plot_id + kavel_nummer,
+      data = analyse$model_data,
+      FUN = function(x) sum(x, na.rm = TRUE)
+    )
+    names(out)[3] <- "totaal_territoria"
+    nrows <- aggregate(
+      jaar ~ plot_id + kavel_nummer,
+      data = analyse$model_data,
+      FUN = length
+    )
+    names(nrows)[3] <- "n_plot_jaren"
+    years <- aggregate(
+      jaar ~ plot_id + kavel_nummer,
+      data = analyse$model_data,
+      FUN = function(x) sprintf("%s-%s", min(x, na.rm = TRUE), max(x, na.rm = TRUE))
+    )
+    names(years)[3] <- "jaarbereik"
+    out <- merge(out, nrows, by = c("plot_id", "kavel_nummer"), all.x = TRUE)
+    out <- merge(out, years, by = c("plot_id", "kavel_nummer"), all.x = TRUE)
+    out <- out[order(out$kavel_nummer, out$plot_id), c("plot_id", "kavel_nummer", "jaarbereik", "n_plot_jaren", "totaal_territoria")]
+    rownames(out) <- NULL
+    out
+  }, striped = TRUE)
+
+  output$gee_dataset_table <- renderTable({
+      analyse <- gee_analyse_rv()
+      req(analyse)
+      out <- analyse$model_data[, c(
+      "plot_id", "kavel_nummer", "jaar", "count", "ahn_mean", "ahn_sd", "stikstof_mean",
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
       "afstand_hoofdtoegang_m", "toegankelijkheid_status"
-    )], 20)
+    )]
+      out <- out[order(out$jaar, out$kavel_nummer, out$plot_id), , drop = FALSE]
+      rownames(out) <- NULL
+      out
   }, striped = TRUE)
 
   output$download_gee_coefficients <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_shiny_gee_coef_%s.csv", tolower(gsub("[^a-z0-9]+", "_", input$gee_species)))
+      analyse <- gee_analyse_rv()
+      req(analyse)
+      sprintf("meijendel_shiny_gee_coef_%s.csv", analyse$summary$doel_slug[[1]])
     },
     content = function(file) {
       analyse <- gee_analyse_rv()
@@ -1012,7 +1162,9 @@ server <- function(input, output, session) {
 
   output$download_gee_dataset <- downloadHandler(
     filename = function() {
-      sprintf("meijendel_shiny_gee_dataset_%s.csv", tolower(gsub("[^a-z0-9]+", "_", input$gee_species)))
+      analyse <- gee_analyse_rv()
+      req(analyse)
+      sprintf("meijendel_shiny_gee_dataset_%s.csv", analyse$summary$doel_slug[[1]])
     },
     content = function(file) {
       analyse <- gee_analyse_rv()
