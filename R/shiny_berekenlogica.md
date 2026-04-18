@@ -48,6 +48,12 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 
 De parser leest `INSERT`-blokken rechtstreeks uit `Meijendel.sql` en zet die om naar dataframes.
 
+Voor `plots` geldt nu extra:
+
+- alleen records met `in_gebruik = 1` worden ingelezen
+- plots met `in_gebruik = 0` worden nergens in de app getoond
+- gekoppelde tabelregels op niet-gebruikte `plot_id` vallen in de parser direct af
+
 ## Analysebasis
 
 De functie `prepare_analysis_basis_subset()` bouwt per selectie van kavels en jaren een basis op van `plot x jaar`.

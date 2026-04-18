@@ -313,14 +313,15 @@ Controleer daarna in je browser:
 Als de lokale test goed is, upload je de nieuwe versie met:
 
 ```r
-library(rsconnect)
-rsconnect::deployApp('/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel')
+setwd("/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel")
+source("deploy_shinyapps.R")
 ```
 
 Belangrijk:
 
-- deploy altijd de map `shiny_meijendel`
-- controleer of bestanden die online nodig zijn ook echt in die map staan
+- de deploy gebruikt altijd `/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql` als bron
+- voor `shinyapps.io` wordt tijdelijk een bundle gemaakt met die root-SQL
+- houd dus geen aparte `Meijendel.sql` meer in `shiny_meijendel/`
 - wacht na `deployApp()` tot de melding `Successfully deployed` verschijnt
 - controleer daarna de live app in de browser
 

@@ -15,7 +15,12 @@ source("helpers.R", local = TRUE)
 
 library(shiny)
 
-default_sql <- normalizePath("Meijendel.sql", winslash = "/", mustWork = FALSE)
+default_sql_candidates <- c("../Meijendel.sql", "Meijendel.sql")
+default_sql <- default_sql_candidates[file.exists(default_sql_candidates)][1]
+if (is.na(default_sql)) {
+  default_sql <- "Meijendel.sql"
+}
+default_sql <- normalizePath(default_sql, winslash = "/", mustWork = FALSE)
 
 
 ui <- navbarPage(
@@ -406,10 +411,10 @@ server <- function(input, output, session) {
         incProgress(0.8)
         tbls_rv(loaded$data)
         if (loaded$from_cache) {
-          load_info_rv("SQL geladen uit cache. De kavel-lijst is direct beschikbaar.")
+          load_info_rv(sprintf("SQL geladen uit cache: %s", path))
           showNotification("SQL geladen uit cache.", type = "message", duration = 4)
         } else {
-          load_info_rv("SQL vers ingelezen. Volgende keer gaat dit veel sneller door de cache.")
+          load_info_rv(sprintf("SQL vers ingelezen: %s", path))
           showNotification("SQL geladen. Volgende keer gaat dit sneller.", type = "message", duration = 4)
         }
       })

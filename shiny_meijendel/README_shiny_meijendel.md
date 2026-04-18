@@ -53,6 +53,23 @@ Daarna open je:
 
 - `http://127.0.0.1:3867`
 
+De app gebruikt lokaal standaard:
+
+- `/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql`
+
+Er hoort dus geen aparte `Meijendel.sql` meer in `shiny_meijendel/` te staan.
+
+## Upload naar shinyapps.io
+
+Gebruik voor deploy niet direct `deployApp()` op de map, maar:
+
+```r
+setwd("/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel")
+source("deploy_shinyapps.R")
+```
+
+Dit script maakt eerst een tijdelijke deploybundle en kopieert daarin de root-versie van `Meijendel.sql`, zodat lokaal en online dezelfde broninhoud gebruiken.
+
 ## Werkwijze in de app
 
 1. Klik op `SQL laden`.

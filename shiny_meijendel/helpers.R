@@ -153,7 +153,7 @@ to_integer <- function(x) as.integer(x)
 to_numeric <- function(x) as.numeric(x)
 
 parse_meijendel_tables <- function(path) {
-  plots <- read_insert_table(path, "plots", c("plot_id", "plot_naam", "kavel_nummer"))
+  plots <- read_insert_table(path, "plots")
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
@@ -168,6 +168,10 @@ parse_meijendel_tables <- function(path) {
   pjtg <- read_insert_table(path, "plot_jaar_toegankelijkheid", c("plot_id", "jaar", "bron", "status_code"))
 
   plots$plot_id <- to_integer(plots$plot_id)
+  plots$in_gebruik <- if ("in_gebruik" %in% names(plots)) to_integer(plots$in_gebruik) else 1L
+  plots <- plots[, c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik")]
+  plots <- plots[plots$in_gebruik == 1L, , drop = FALSE]
+  actieve_plot_ids <- unique(plots$plot_id)
   soorten$id <- to_integer(soorten$id)
   soorten$euring_code <- to_integer(soorten$euring_code)
   pjo$plot_id <- to_integer(pjo$plot_id)
@@ -199,6 +203,15 @@ parse_meijendel_tables <- function(path) {
   pji$waarde <- to_numeric(pji$waarde)
   pjtg$plot_id <- to_integer(pjtg$plot_id)
   pjtg$jaar <- to_integer(pjtg$jaar)
+
+  pjo <- pjo[pjo$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pjt <- pjt[pjt$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  territoria <- territoria[territoria$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pjh <- pjh[pjh$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pja <- pja[pja$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pjs <- pjs[pjs$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pji <- pji[pji$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pjtg <- pjtg[pjtg$plot_id %in% actieve_plot_ids, , drop = FALSE]
 
   list(
     plots = plots,
@@ -1467,4 +1480,4 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     group_results = lambda_groups
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 2L
+MEIJENDEL_PARSER_CACHE_VERSION <- 3L
