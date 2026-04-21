@@ -78,6 +78,6 @@ De werkwijze is geslaagd als:
 
 Als je meer uitleg wilt, kijk dan in:
 
-- `/Users/ton/Documents/GitHub/Meijendel/README_shiny_meijendel.md`
-- `/Users/ton/Documents/GitHub/Meijendel/README_bmp_meijendel_index.md`
-- `/Users/ton/Documents/GitHub/Meijendel/CONTROLESET_html_shiny.md`
+- `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/README_shiny_meijendel.md`
+- `/Users/ton/Documents/GitHub/Meijendel/MDs/README_bmp_meijendel_index.md`
+- `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/CONTROLESET_html_shiny.md`

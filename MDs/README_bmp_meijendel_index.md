@@ -6,7 +6,7 @@ De HTML is bedoeld om gegevens uit de database Meijendel zichtbaar en begrijpeli
 
 De algemene werkwijze voor Shiny + HTML samen staat in:
 
-- `/Users/ton/Documents/GitHub/Meijendel/EINDHANDLEIDING_html_en_shiny.md`
+- `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md`
 
 De HTML is vooral een kijk- en controlebestand, niet de plek waar nieuwe TRIM-berekeningen worden gemaakt.
 
@@ -105,6 +105,6 @@ Daarom is het goed dat ze in de HTML apart zichtbaar blijven.
 
 Voor een vaste controleset kun je ook kijken in:
 
-- `/Users/ton/Documents/GitHub/Meijendel/CONTROLESET_html_shiny.md`
+- `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/CONTROLESET_html_shiny.md`
 
 [1]:	/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html

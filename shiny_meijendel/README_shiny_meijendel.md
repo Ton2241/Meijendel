@@ -87,7 +87,7 @@ Daarna kun je:
 
 De algemene stap-voor-stap werkwijze staat in:
 
-- `/Users/ton/Documents/GitHub/Meijendel/EINDHANDLEIDING_html_en_shiny.md`
+- `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md`
 
 ## CSV-export
 
@@ -112,7 +112,7 @@ De Shiny-app en de HTML zijn niet precies hetzelfde.
 
 Voor een vaste controleset kun je ook kijken in:
 
-- `/Users/ton/Documents/GitHub/Meijendel/CONTROLESET_html_shiny.md`
+- `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/CONTROLESET_html_shiny.md`
 
 ## Tailscale voor Shiny
 

@@ -8,7 +8,14 @@ if (dir.exists(user_lib)) {
 required_packages <- c("geepack", "broom")
 missing_packages <- required_packages[!required_packages %in% rownames(installed.packages())]
 if (length(missing_packages) > 0L) {
-  install.packages(missing_packages)
+  stop(
+    sprintf(
+      "Ontbrekende R-packages: %s. Installeer ze eerst met install.packages(c(%s)).",
+      paste(missing_packages, collapse = ", "),
+      paste(sprintf('"%s"', missing_packages), collapse = ", ")
+    ),
+    call. = FALSE
+  )
 }
 
 suppressPackageStartupMessages(library(geepack))

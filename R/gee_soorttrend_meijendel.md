@@ -54,6 +54,14 @@ Standaardwaarden:
 - `analysis_set`: `uitgebreid`
 - `gee_corstr`: `exchangeable`
 
+## Benodigde packages
+
+Het script installeert packages niet automatisch. Installeer ontbrekende packages vooraf:
+
+```r
+install.packages(c("geepack", "broom"))
+```
+
 ## Uitvoer
 
 Bij uitvoering maakt het script deze bestanden aan in `output_dir`:
