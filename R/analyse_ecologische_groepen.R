@@ -4,7 +4,7 @@ suppressPackageStartupMessages(library(mgcv))
 sql_path <- if (length(args) >= 1) {
   args[[1]]
 } else {
-  "/Users/ton/Documents/GitHub/Meijendel/20260324.sql"
+  "/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql"
 }
 
 output_dir <- if (length(args) >= 2) {

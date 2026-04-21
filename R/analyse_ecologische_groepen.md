@@ -1,6 +1,6 @@
 # MSI-analyse ecologische groepen in R
 
-Dit script leest rechtstreeks de MySQL-dump `20260324.sql` in en vervangt de bestaande outputbestanden in `output_ecologische_groepen` door een MSI-gebaseerde analyse van de ecologische vogelgroepen.
+Dit script leest rechtstreeks de MySQL-dump `Meijendel.sql` in en vervangt de bestaande outputbestanden in `output_ecologische_groepen` door een MSI-gebaseerde analyse van de ecologische vogelgroepen.
 
 De bestandsnamen blijven gelijk, maar de inhoud is nu gebaseerd op de `MSI`:
 
@@ -104,7 +104,7 @@ Met expliciete paden:
 
 ```sh
 Rscript /Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.R \
-  /Users/ton/Documents/GitHub/Meijendel/20260324.sql \
+  /Users/ton/Documents/GitHub/Meijendel/Meijendel.sql \
   /Users/ton/Documents/GitHub/Meijendel/output_ecologische_groepen
 ```
 

@@ -17,9 +17,9 @@ De kern van het project bestaat uit:
 Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgorde:
 
 1. [`MDs/handboek.md`][1]
-2. [`MDs/EINDHANDLEIDING_html_en_shiny.md`][2]
-3. [`MDs/CONTROLESET_html_shiny.md`][3]
-4. [`MDs/README_shiny_meijendel.md`][4]
+2. [`shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md`][2]
+3. [`shiny_meijendel/CONTROLESET_html_shiny.md`][3]
+4. [`shiny_meijendel/README_shiny_meijendel.md`][4]
 5. [`MDs/README_bmp_meijendel_index.md`][5]
 
 ## Wat staat waar?
@@ -41,9 +41,9 @@ Belangrijke bestanden zijn:
 
 - [`MDs/handboek.md`][9]
   Doorlopend handboek voor gebruik van de database.
-- [`MDs/EINDHANDLEIDING_html_en_shiny.md`][10]
+- [`shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md`][10]
   Korte werkwijze voor HTML en Shiny.
-- [`MDs/CONTROLESET_html_shiny.md`][11]
+- [`shiny_meijendel/CONTROLESET_html_shiny.md`][11]
   Vaste controlelijst voor gebruik en wijzigingen.
 - [`R/trim_soorten_en_msi_evg.md`][12]
   Uitleg van de hoofd-TRIM-analyse.
@@ -207,16 +207,16 @@ Deze repository is geen losse SQL-dump meer, maar een complete werkomgeving rond
 Voor dagelijks gebruik is [`MDs/handboek.md`][24] nu het beste startpunt.
 
 [1]:	/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md
-[2]:	/Users/ton/Documents/GitHub/Meijendel/MDs/EINDHANDLEIDING_html_en_shiny.md
-[3]:	/Users/ton/Documents/GitHub/Meijendel/MDs/CONTROLESET_html_shiny.md
-[4]:	/Users/ton/Documents/GitHub/Meijendel/MDs/README_shiny_meijendel.md
+[2]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md
+[3]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/CONTROLESET_html_shiny.md
+[4]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/README_shiny_meijendel.md
 [5]:	/Users/ton/Documents/GitHub/Meijendel/MDs/README_bmp_meijendel_index.md
 [6]:	/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql
 [7]:	/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html
 [8]:	/Users/ton/Documents/GitHub/Meijendel/README.md
 [9]:	/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md
-[10]:	/Users/ton/Documents/GitHub/Meijendel/MDs/EINDHANDLEIDING_html_en_shiny.md
-[11]:	/Users/ton/Documents/GitHub/Meijendel/MDs/CONTROLESET_html_shiny.md
+[10]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/EINDHANDLEIDING_html_en_shiny.md
+[11]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/CONTROLESET_html_shiny.md
 [12]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.md
 [13]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_sandra_soorten_en_msi_evg.md
 [14]:	/Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.md
