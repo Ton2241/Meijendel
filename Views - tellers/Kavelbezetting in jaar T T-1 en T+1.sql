@@ -54,6 +54,8 @@ LEFT JOIN tellers t_prev ON pjt_prev.teller_id = t_prev.id
 LEFT JOIN plot_jaar_teller pjt_next ON p.plot_id = pjt_next.plot_id AND pjt_next.jaar = (@jaar_T + 1)
 LEFT JOIN tellers t_next ON pjt_next.teller_id = t_next.id
 
+WHERE p.in_gebruik = 1
+
 -- Sortering op basis van de kolomvolgorde in de import_waarnemingen_breed tabel
 -- De kolomnaam in plotkolom_mapping bevat waarden zoals 'p_1A', 'p_1B', 'p_2', etc.
 -- Door hierop te sorteren volgen we de logica van de download-bestanden.

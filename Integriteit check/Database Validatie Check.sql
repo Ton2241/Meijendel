@@ -37,6 +37,8 @@ WHERE groepsnummer IS NULL OR vogel_id IS NULL;
 
 
 -- Check 3: Orphaned territoria
+-- Let op: hier bewust GEEN filter op p.in_gebruik = 1.
+-- Dit is een integriteitscontrole; ook niet-actieve plots moeten nog geldig gekoppeld zijn.
 SELECT 
   'Orphaned territoria (geen plot)' as check_naam,
   COUNT(*) as aantal_problemen,
@@ -90,6 +92,8 @@ FROM (
     HAVING ABS(SUM(pjh.aandeel_m2) - (pjo.oppervlakte_km2 * 1000000)) > 1
 ) AS afwijkend
 -- Stap 4: Koppel de plotnaam voor leesbare uitvoer
+-- Let op: hier bewust GEEN filter op p.in_gebruik = 1.
+-- Ook niet-actieve plots kunnen een relevante afwijking in habitat/oppervlakte hebben.
 JOIN plots p ON afwijkend.plot_id = p.plot_id;
 -- Stap 7: Uitvoering van een SQL‑statement.
 

@@ -6,7 +6,8 @@ Deze query is bedoeld voor een view/rapport: Vogeldichtheid per landschapstype %
 WITH geselecteerde_plots AS (
   SELECT plot_id, kavel_nummer
   FROM plots
-  WHERE kavel_nummer REGEXP '^([1-9]|1[0-7])([a-zA-Z])?$'
+  WHERE in_gebruik = 1
+    AND kavel_nummer REGEXP '^([1-9]|1[0-7])([a-zA-Z])?$'
     AND UPPER(kavel_nummer) != '17B'
 ),
 

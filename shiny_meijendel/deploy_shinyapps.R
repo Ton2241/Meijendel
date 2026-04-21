@@ -43,5 +43,6 @@ rsconnect::deployApp(
   appDir = bundle_dir,
   appName = "shiny_meijendel",
   account = "mbsk",
+  forceUpdate = TRUE,
   launch.browser = FALSE
 )

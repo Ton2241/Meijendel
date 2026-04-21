@@ -4,6 +4,8 @@ Dit bestand hoort bij het importproces: 6. Wel in temp maar niet in plot_jaar_op
 
 -- Stap 1: Uitvoering van een SQL‑statement.
 -- Een ontbrekende combinatie blokkeert de INSERT in territoria via de foreign key
+-- Let op: hier bewust GEEN filter op p.in_gebruik = 1.
+-- Ook niet-actieve plots kunnen een ontbrekende plot/jaar-oppervlaktecombinatie verklaren.
 SELECT DISTINCT 
     i.plot_id,
     i.jaar,

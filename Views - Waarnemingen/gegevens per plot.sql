@@ -34,6 +34,8 @@ LEFT JOIN territoria w ON p.plot_id = w.plot_id
     AND w.jaar BETWEEN @start_jaar AND @eind_jaar
     AND (w.jaar = pjt.jaar OR pjt.jaar IS NULL)
 
+WHERE p.in_gebruik = 1
+
 GROUP BY Jaar, p.plot_id, p.kavel_nummer
 -- Filter alleen op de fouten/hiaten
 HAVING Status IN ('❌ GEEN DATA (Wel teller)', '✅ Geen teller (Wel geteld)')

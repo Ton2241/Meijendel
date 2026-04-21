@@ -11,7 +11,7 @@ SELECT
     (pjo.oppervlakte_km2 * 1000000) - SUM(pjh.oppervlakte_m2) AS verschil_m2
 FROM plot_jaar_oppervlak pjo
 JOIN plot_jaar_habitat pjh ON pjo.plot_id = pjh.plot_id AND pjo.jaar = pjh.jaar
-JOIN plots p ON pjo.plot_id = p.plot_id
+JOIN plots p ON pjo.plot_id = p.plot_id AND p.in_gebruik = 1
 WHERE pjo.jaar = 2014
 GROUP BY p.plot_id
 HAVING ABS(verschil_m2) > 1;

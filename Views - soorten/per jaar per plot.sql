@@ -12,5 +12,5 @@ SELECT
     w.territoria
 FROM territoria w
 JOIN soorten s ON w.soort_id = s.id
-JOIN plots p ON w.plot_id = p.plot_id
+JOIN plots p ON w.plot_id = p.plot_id AND p.in_gebruik = 1
 ORDER BY w.jaar DESC, p.plot_naam ASC, s.soort_naam ASC;

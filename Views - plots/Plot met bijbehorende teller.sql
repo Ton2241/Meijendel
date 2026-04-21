@@ -11,7 +11,7 @@ SELECT
 FROM 
     plot_jaar_teller pjt
 JOIN 
-    plots p ON pjt.plot_id = p.plot_id
+    plots p ON pjt.plot_id = p.plot_id AND p.in_gebruik = 1
 JOIN 
     tellers t ON pjt.teller_id = t.id
 WHERE 

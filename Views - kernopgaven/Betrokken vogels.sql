@@ -11,7 +11,8 @@ SELECT
 FROM kernopgave_soort ks
 JOIN soorten s ON ks.soort_id = s.id
 LEFT JOIN territoria w ON s.id = w.soort_id
-LEFT JOIN plots p ON w.plot_id = p.plot_id
+LEFT JOIN plots p ON w.plot_id = p.plot_id AND p.in_gebruik = 1
+WHERE w.plot_id IS NULL OR p.plot_id IS NOT NULL
 GROUP BY 
     s.soort_naam, 
     w.jaar

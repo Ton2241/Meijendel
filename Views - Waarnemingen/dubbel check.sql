@@ -29,6 +29,9 @@ SELECT
             WHERE w.plot_id = p.plot_id AND w.jaar = @zoek_jaar), 'GEEN DATA') AS Gevonden_Soorten
 FROM plots p
 -- Filter op de gewenste kavels
-WHERE p.plot_id IN ('3534', '3531', '3514') 
+WHERE p.in_gebruik = 1
+  AND (
+       p.plot_id IN ('3534', '3531', '3514')
    OR p.kavel_nummer IN ('3534', '3531', '3514')
+  )
 ORDER BY p.kavel_nummer ASC;

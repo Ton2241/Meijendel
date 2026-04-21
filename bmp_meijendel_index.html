@@ -205,11 +205,22 @@ async function tryAutoLoadTrendCsv(paths,type){
   return false;
 }
 
+const AUTOLOAD_PATHS={
+  sql:["Meijendel.sql","meijendel.sql"],
+  trendTrimIndex:["trim/soorten/soortindices_bruikbare_tijdreeks.csv","soortindices_bruikbare_tijdreeks.csv"],
+  trendTrimSummary:["trim/soorten/soorten_trendoverzicht_bruikbare_tijdreeks.csv","soorten_trendoverzicht_bruikbare_tijdreeks.csv"],
+  msiGamPred:["output_ecologische_groepen/gam_voorspellingen_per_groep.csv","gam_voorspellingen_per_groep.csv"],
+  msiGamInterp:["output_ecologische_groepen/gam_interpretatie_per_groep.csv","gam_interpretatie_per_groep.csv"],
+  msiTrim:["trim_msi_evg/msi_per_groep_per_jaar.csv","msi_per_groep_per_jaar.csv"],
+  msiTrimTrend:["trim_msi_evg/trendoverzicht_msi_groepen.csv","trendoverzicht_msi_groepen.csv"],
+  msiTrimGamPred:["trim_msi_evg/gam_voorspellingen_msi_groepen.csv","gam_voorspellingen_msi_groepen.csv"],
+  msiTrimGamInterp:["trim_msi_evg/gam_interpretatie_msi_groepen.csv","gam_interpretatie_msi_groepen.csv"]
+};
+
 async function autoLoadFromSameFolder(){
-  const sqlCandidates=["Meijendel.sql","meijendel.sql"];
   let sqlLoaded=false;
 
-  for(const path of sqlCandidates){
+  for(const path of AUTOLOAD_PATHS.sql){
     try{
       const sqlText=await fetchTextFile(path);
       setState({status:"loading",error:""});
@@ -220,14 +231,14 @@ async function autoLoadFromSameFolder(){
   }
 
   await Promise.all([
-    tryAutoLoadTrendCsv(["soortindices_bruikbare_tijdreeks.csv","trim/soorten/soortindices_bruikbare_tijdreeks.csv"],"trim_idx"),
-    tryAutoLoadTrendCsv(["soorten_trendoverzicht_bruikbare_tijdreeks.csv","trim/soorten/soorten_trendoverzicht_bruikbare_tijdreeks.csv"],"trim_trend"),
-    tryAutoLoadCsv(["gam_voorspellingen_per_groep.csv","output_ecologische_groepen/gam_voorspellingen_per_groep.csv"],"voorsp"),
-    tryAutoLoadCsv(["gam_interpretatie_per_groep.csv","output_ecologische_groepen/gam_interpretatie_per_groep.csv"],"interp"),
-    tryAutoLoadCsv(["msi_per_groep_per_jaar.csv","trim_msi_evg/msi_per_groep_per_jaar.csv"],"trim_msi"),
-    tryAutoLoadCsv(["trendoverzicht_msi_groepen.csv","trim_msi_evg/trendoverzicht_msi_groepen.csv"],"trim_trend"),
-    tryAutoLoadCsv(["gam_voorspellingen_msi_groepen.csv","trim_msi_evg/gam_voorspellingen_msi_groepen.csv"],"trim_gam_pred"),
-    tryAutoLoadCsv(["gam_interpretatie_msi_groepen.csv","trim_msi_evg/gam_interpretatie_msi_groepen.csv"],"trim_gam_interp")
+    tryAutoLoadTrendCsv(AUTOLOAD_PATHS.trendTrimIndex,"trim_idx"),
+    tryAutoLoadTrendCsv(AUTOLOAD_PATHS.trendTrimSummary,"trim_trend"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiGamPred,"voorsp"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiGamInterp,"interp"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrim,"trim_msi"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimTrend,"trim_trend"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimGamPred,"trim_gam_pred"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimGamInterp,"trim_gam_interp")
   ]);
 
   if(!sqlLoaded&&S.status==="idle")render();

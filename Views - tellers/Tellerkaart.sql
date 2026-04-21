@@ -83,7 +83,7 @@ FROM (
            CONCAT(SUM(w.territoria), ' territoria'),
            GROUP_CONCAT(DISTINCT p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ', ')
     FROM territoria w
-    JOIN plots p ON w.plot_id = p.plot_id
+    JOIN plots p ON w.plot_id = p.plot_id AND p.in_gebruik = 1
     WHERE EXISTS (
         SELECT 1 FROM plot_jaar_teller pjt 
         WHERE pjt.plot_id = w.plot_id 

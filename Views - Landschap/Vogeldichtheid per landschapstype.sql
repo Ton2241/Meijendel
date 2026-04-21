@@ -7,7 +7,8 @@ WITH geselecteerde_plots AS (
   -- STAP 1: Filter plots 1-17 (excl. 17B) op basis van kavel_nummer
   SELECT plot_id, kavel_nummer
   FROM plots
-  WHERE kavel_nummer REGEXP '^([1-9]|1[0-7])([a-zA-Z])?$'
+  WHERE in_gebruik = 1
+    AND kavel_nummer REGEXP '^([1-9]|1[0-7])([a-zA-Z])?$'
     AND UPPER(kavel_nummer) != '17B'
 ),
 

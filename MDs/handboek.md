@@ -54,6 +54,33 @@ Praktisch betekent dit:
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
+### 1.1 Hoe gebruik je `plots.in_gebruik`?
+
+In `plots` staat het veld `in_gebruik`.
+
+Werkafspraak:
+
+- `in_gebruik = 1`: het plot is actief en hoort standaard mee te doen in HTML, Shiny en gewone gebruikersviews
+- `in_gebruik = 0`: het plot blijft historisch in de database bestaan, maar hoort standaard niet meer in keuzelijsten, overzichten en reguliere analyses
+
+Gebruik daarom deze regel:
+
+- gebruikersgerichte views, HTML en Shiny: filter standaard op actieve plots
+- import-, controle- en integriteitsqueries: filter meestal niet op `in_gebruik`, omdat je daar juist ook niet-actieve of afwijkende koppelingen wilt kunnen zien
+
+Praktisch SQL-patroon:
+
+```sql
+JOIN plots p ON ... AND p.in_gebruik = 1
+```
+
+of, als je vanuit `plots` start:
+
+```sql
+FROM plots p
+WHERE p.in_gebruik = 1
+```
+
 ## 2. Hoe is de repository opgebouwd?
 
 Je werkt in de repository `Ton2241/Meijendel`.
