@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRIM-GAM MSI clusters vanaf 1975</title>
+<style>
+  :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1f2937;background:#f3f4f6}
+  body{margin:0;padding:24px}
+  main{max-width:1100px;margin:0 auto;background:white;border:1px solid #e5e7eb;border-radius:12px;padding:20px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+  h1{font-size:22px;margin:0 0 6px}
+  p{font-size:13px;color:#6b7280;line-height:1.5;margin:0 0 18px}
+  .chart-wrap{position:relative;width:100%;padding:8px 0 0}
+  .chart-svg{width:100%;height:430px;display:block}
+  .chart-frame{fill:#fff;stroke:#e5e7eb}
+  .chart-grid{stroke:#e5e7eb;stroke-width:1}
+  .chart-axis{stroke:#9ca3af;stroke-width:1.2}
+  .chart-label{fill:#6b7280;font-size:11px}
+  .chart-title{fill:#374151;font-size:12px;font-weight:600}
+  .chart-line{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#374151}
+  .legend-line{width:26px;border-top:3px solid #3498db;display:inline-block}
+  .msg{padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b}
+</style>
+</head>
+<body>
+<main>
+  <h1>vijf geclusterde ecologische groepen</h1>
+  <div id="chart" class="chart-wrap"></div>
+</main>
+<script>
+const CHART_DATA={
+  "labels": [
+    "1975",
+    "1976",
+    "1977",
+    "1978",
+    "1979",
+    "1980",
+    "1981",
+    "1982",
+    "1983",
+    "1984",
+    "1985",
+    "1986",
+    "1987",
+    "1988",
+    "1989",
+    "1990",
+    "1991",
+    "1992",
+    "1993",
+    "1994",
+    "1995",
+    "1996",
+    "1997",
+    "1998",
+    "1999",
+    "2000",
+    "2001",
+    "2002",
+    "2003",
+    "2004",
+    "2005",
+    "2006",
+    "2007",
+    "2008",
+    "2009",
+    "2010",
+    "2011",
+    "2012",
+    "2013",
+    "2014",
+    "2015",
+    "2016",
+    "2017",
+    "2018",
+    "2019",
+    "2020",
+    "2021",
+    "2022",
+    "2023",
+    "2024",
+    "2025"
+  ],
+  "datasets": [
+    {
+      "label": "water en riet",
+      "color": "#0f766e",
+      "data": [
+        100,
+        103.5,
+        107.7,
+        112.8,
+        118.8,
+        125.8,
+        133.6,
+        142.3,
+        151.6,
+        107.4,
+        103.9,
+        101.4,
+        100.1,
+        99.8,
+        100.5,
+        102.1,
+        104.4,
+        107.2,
+        110.4,
+        113.6,
+        116.6,
+        119,
+        120.6,
+        121.2,
+        120.7,
+        119,
+        116.2,
+        112.5,
+        108.2,
+        103.5,
+        98.6,
+        93.8,
+        89.3,
+        85.3,
+        81.7,
+        78.8,
+        76.5,
+        74.7,
+        73.6,
+        73.1,
+        73,
+        73.4,
+        74.3,
+        75.5,
+        77.1,
+        78.9,
+        80.9,
+        83.1,
+        85.5,
+        88,
+        90.5
+      ]
+    },
+    {
+      "label": "struweel en bosrand",
+      "color": "#7c3aed",
+      "data": [
+        100,
+        104.3,
+        108.8,
+        113.5,
+        118.5,
+        123.6,
+        129,
+        134.7,
+        140.6,
+        128.3,
+        128.4,
+        128.5,
+        128.6,
+        128.8,
+        128.9,
+        129.1,
+        129.2,
+        129.4,
+        129.6,
+        129.8,
+        130.1,
+        130.3,
+        130.6,
+        131,
+        131.3,
+        131.8,
+        132.3,
+        132.8,
+        133.4,
+        134.1,
+        134.9,
+        135.7,
+        136.6,
+        137.6,
+        138.7,
+        139.8,
+        141,
+        142.3,
+        143.6,
+        145,
+        146.4,
+        147.8,
+        149.3,
+        150.7,
+        152.2,
+        153.8,
+        155.3,
+        156.8,
+        158.4,
+        159.9,
+        161.5
+      ]
+    },
+    {
+      "label": "bos en bebouwing",
+      "color": "#1d4ed8",
+      "data": [
+        100,
+        104.4,
+        108.6,
+        112.4,
+        115.7,
+        118.4,
+        120.5,
+        121.9,
+        122.7,
+        113.4,
+        108.3,
+        103.4,
+        98.7,
+        94.2,
+        90.1,
+        86.2,
+        82.6,
+        79.4,
+        76.5,
+        74,
+        71.8,
+        70,
+        68.6,
+        67.4,
+        66.6,
+        66,
+        65.7,
+        65.7,
+        65.7,
+        66,
+        66.2,
+        66.5,
+        66.8,
+        67,
+        67.1,
+        67,
+        66.7,
+        66.2,
+        65.5,
+        64.5,
+        63.3,
+        61.9,
+        60.4,
+        58.7,
+        56.9,
+        55.1,
+        53.2,
+        51.4,
+        49.5,
+        47.7,
+        46
+      ]
+    },
+    {
+      "label": "weide",
+      "color": "#65a30d",
+      "data": [
+        100,
+        100.9,
+        101.7,
+        102.6,
+        103.5,
+        104.4,
+        105.3,
+        106.2,
+        107.1,
+        108.1,
+        93.2,
+        80.2,
+        69.1,
+        59.9,
+        52.3,
+        46.3,
+        41.7,
+        38.3,
+        36,
+        34.6,
+        34.1,
+        34.5,
+        35.5,
+        37.2,
+        39.4,
+        42,
+        44.8,
+        47.5,
+        49.7,
+        51.2,
+        51.7,
+        51.1,
+        49.4,
+        46.8,
+        43.5,
+        39.9,
+        36.4,
+        33.2,
+        30.4,
+        28.3,
+        26.8,
+        26,
+        26,
+        26.7,
+        28.2,
+        30.7,
+        34.1,
+        38.5,
+        44.2,
+        51,
+        59.1
+      ]
+    },
+    {
+      "label": "pionier en open",
+      "color": "#d97706",
+      "data": [
+        100,
+        103,
+        106,
+        109.2,
+        112.5,
+        115.8,
+        119.3,
+        122.8,
+        126.5,
+        146,
+        122.1,
+        101.7,
+        84.6,
+        70.6,
+        59.4,
+        50.5,
+        43.6,
+        38.5,
+        34.8,
+        32.3,
+        30.8,
+        30.2,
+        30.4,
+        31.2,
+        32.6,
+        34.6,
+        36.8,
+        39.3,
+        41.6,
+        43.6,
+        44.9,
+        45.4,
+        45,
+        43.7,
+        41.7,
+        39.1,
+        36.3,
+        33.5,
+        31,
+        28.8,
+        27.1,
+        25.9,
+        25.3,
+        25.3,
+        25.8,
+        26.9,
+        28.5,
+        30.7,
+        33.4,
+        36.6,
+        40.1
+      ]
+    }
+  ]
+};
+const SVG_NS="http://www.w3.org/2000/svg";
+const SVG_TAGS=new Set(["svg","line","text","polyline","circle","rect"]);
+
+function el(tag,attrs,children){
+  const e=SVG_TAGS.has(tag)?document.createElementNS(SVG_NS,tag):document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>k==="style"?Object.assign(e.style,v):e.setAttribute(k==="className"?"class":k,v));
+  function append(child){
+    if(child==null)return;
+    if(Array.isArray(child)){child.forEach(append);return;}
+    if(child instanceof Node){e.appendChild(child);return;}
+    e.appendChild(document.createTextNode(String(child)));
+  }
+  append(children);
+  return e;
+}
+
+function renderChart(containerId,config){
+  const container=document.getElementById(containerId);
+  container.innerHTML="";
+  const labels=config.labels||[];
+  const datasets=(config.datasets||[]).filter(ds=>ds.data.some(Number.isFinite));
+  if(!labels.length||!datasets.length){container.appendChild(el("div",{className:"msg"},"Geen gegevens beschikbaar."));return;}
+  const width=980,height=430,margin={top:24,right:24,bottom:58,left:64};
+  const innerW=width-margin.left-margin.right,innerH=height-margin.top-margin.bottom;
+  const values=datasets.flatMap(ds=>ds.data).filter(Number.isFinite);
+  let min=Math.min(...values),max=Math.max(...values);
+  const pad=(max-min||1)*0.08;min-=pad;max+=pad;
+  const xAt=i=>margin.left+(labels.length===1?innerW/2:i*(innerW/(labels.length-1)));
+  const yAt=v=>margin.top+innerH-((v-min)/(max-min))*innerH;
+  const svg=el("svg",{class:"chart-svg",viewBox:`0 0 ${width} ${height}`,preserveAspectRatio:"none"});
+  svg.appendChild(el("rect",{x:margin.left,y:margin.top,width:innerW,height:innerH,rx:8,class:"chart-frame"}));
+  for(let i=0;i<5;i++){
+    const value=min+((max-min)/4)*i,y=yAt(value);
+    svg.appendChild(el("line",{x1:margin.left,y1:y,x2:width-margin.right,y2:y,class:"chart-grid"}));
+    svg.appendChild(el("text",{x:margin.left-8,y:y+4,"text-anchor":"end",class:"chart-label"},value.toLocaleString("nl-NL",{maximumFractionDigits:0})));
+  }
+  svg.appendChild(el("line",{x1:margin.left,y1:margin.top,x2:margin.left,y2:height-margin.bottom,class:"chart-axis"}));
+  svg.appendChild(el("line",{x1:margin.left,y1:height-margin.bottom,x2:width-margin.right,y2:height-margin.bottom,class:"chart-axis"}));
+  const xStep=Math.max(1,Math.ceil(labels.length/10));
+  labels.forEach((label,i)=>{if(i%xStep===0||i===labels.length-1)svg.appendChild(el("text",{x:xAt(i),y:height-margin.bottom+20,"text-anchor":"middle",class:"chart-label"},label));});
+  svg.appendChild(el("text",{x:16,y:height/2,transform:`rotate(-90 16 ${height/2})`,class:"chart-title","text-anchor":"middle"},"Index (1975 = 100)"));
+  datasets.forEach(ds=>{
+    const points=ds.data.map((v,i)=>Number.isFinite(v)?`${xAt(i)},${yAt(v)}`:null).filter(Boolean);
+    svg.appendChild(el("polyline",{points:points.join(" "),class:"chart-line",stroke:ds.color,"stroke-width":"3"}));
+  });
+  container.appendChild(svg);
+  container.appendChild(el("div",{className:"chart-legend"},datasets.map(ds=>el("div",{className:"legend-item"},[
+    el("span",{className:"legend-line",style:{borderTopColor:ds.color}}),
+    el("span",{},ds.label)
+  ]))));
+}
+
+renderChart("chart",CHART_DATA);
+</script>
+</body>
+</html>

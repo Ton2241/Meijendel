@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TRIM-GAM MSI clusters vanaf 1990</title>
+<style>
+  :root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#1f2937;background:#f3f4f6}
+  body{margin:0;padding:24px}
+  main{max-width:1100px;margin:0 auto;background:white;border:1px solid #e5e7eb;border-radius:12px;padding:20px;box-shadow:0 10px 24px rgba(15,23,42,.06)}
+  h1{font-size:22px;margin:0 0 6px}
+  p{font-size:13px;color:#6b7280;line-height:1.5;margin:0 0 18px}
+  .chart-wrap{position:relative;width:100%;padding:8px 0 0}
+  .chart-svg{width:100%;height:430px;display:block}
+  .chart-frame{fill:#fff;stroke:#e5e7eb}
+  .chart-grid{stroke:#e5e7eb;stroke-width:1}
+  .chart-axis{stroke:#9ca3af;stroke-width:1.2}
+  .chart-label{fill:#6b7280;font-size:11px}
+  .chart-title{fill:#374151;font-size:12px;font-weight:600}
+  .chart-line{fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#374151}
+  .legend-line{width:26px;border-top:3px solid #3498db;display:inline-block}
+  .msg{padding:12px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;color:#991b1b}
+</style>
+</head>
+<body>
+<main>
+  <h1>Vijf geclusterde ecologische groepen</h1>
+  <div id="chart" class="chart-wrap"></div>
+</main>
+<script>
+const CHART_DATA={
+  labels:["1990","1991","1992","1993","1994","1995","1996","1997","1998","1999","2000","2001","2002","2003","2004","2005","2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020","2021","2022","2023","2024","2025"],
+  datasets:[
+    {label:"water en riet",color:"#0f766e",data:[100,102.3,105,108.1,111.3,114.2,116.6,118.1,118.7,118.2,116.5,113.8,110.2,106,101.4,96.6,91.9,87.5,83.5,80.1,77.2,74.9,73.2,72.1,71.6,71.5,71.9,72.8,74,75.5,77.3,79.3,81.4,83.7,86.2,88.7]},
+    {label:"struweel en bosrand",color:"#7c3aed",data:[100,100.1,100.3,100.4,100.6,100.8,101,101.2,101.5,101.8,102.1,102.5,102.9,103.4,103.9,104.5,105.1,105.9,106.6,107.4,108.3,109.3,110.2,111.3,112.3,113.4,114.5,115.6,116.8,118,119.1,120.3,121.5,122.7,123.9,125.1]},
+    {label:"bos en bebouwing",color:"#1d4ed8",data:[100,95.9,92.1,88.8,85.9,83.3,81.2,79.5,78.2,77.3,76.6,76.3,76.2,76.3,76.5,76.9,77.2,77.5,77.8,77.8,77.7,77.4,76.8,76,74.8,73.5,71.9,70.1,68.1,66.1,63.9,61.8,59.6,57.5,55.4,53.4]},
+    {label:"weide",color:"#65a30d",data:[100,90,82.7,77.7,74.8,73.7,74.4,76.6,80.2,85,90.7,96.7,102.4,107.3,110.6,111.7,110.4,106.6,100.9,93.9,86.2,78.6,71.6,65.7,61,57.9,56.2,56.1,57.6,60.9,66.2,73.5,83.2,95.4,110.1,127.5]},
+    {label:"pionier en open",color:"#d97706",data:[100,86.5,76.3,69,64,61,59.8,60.1,61.8,64.6,68.5,73,77.8,82.4,86.3,89,90,89.2,86.6,82.5,77.4,71.9,66.4,61.3,57,53.7,51.4,50.1,50,51.1,53.2,56.5,60.8,66.2,72.4,79.5]}
+  ]
+};
+const SVG_NS="http://www.w3.org/2000/svg";
+const SVG_TAGS=new Set(["svg","line","text","polyline","circle","rect"]);
+
+function el(tag,attrs,children){
+  const e=SVG_TAGS.has(tag)?document.createElementNS(SVG_NS,tag):document.createElement(tag);
+  if(attrs)Object.entries(attrs).forEach(([k,v])=>k==="style"?Object.assign(e.style,v):e.setAttribute(k==="className"?"class":k,v));
+  function append(child){
+    if(child==null)return;
+    if(Array.isArray(child)){child.forEach(append);return;}
+    if(child instanceof Node){e.appendChild(child);return;}
+    e.appendChild(document.createTextNode(String(child)));
+  }
+  append(children);
+  return e;
+}
+
+function renderChart(containerId,config){
+  const container=document.getElementById(containerId);
+  container.innerHTML="";
+  const labels=config.labels||[];
+  const datasets=(config.datasets||[]).filter(ds=>ds.data.some(Number.isFinite));
+  if(!labels.length||!datasets.length){container.appendChild(el("div",{className:"msg"},"Geen gegevens beschikbaar."));return;}
+  const width=980,height=430,margin={top:24,right:24,bottom:58,left:64};
+  const innerW=width-margin.left-margin.right,innerH=height-margin.top-margin.bottom;
+  const values=datasets.flatMap(ds=>ds.data).filter(Number.isFinite);
+  let min=Math.min(...values),max=Math.max(...values);
+  const pad=(max-min||1)*0.08;min-=pad;max+=pad;
+  const xAt=i=>margin.left+(labels.length===1?innerW/2:i*(innerW/(labels.length-1)));
+  const yAt=v=>margin.top+innerH-((v-min)/(max-min))*innerH;
+  const svg=el("svg",{class:"chart-svg",viewBox:`0 0 ${width} ${height}`,preserveAspectRatio:"none"});
+  svg.appendChild(el("rect",{x:margin.left,y:margin.top,width:innerW,height:innerH,rx:8,class:"chart-frame"}));
+  for(let i=0;i<5;i++){
+    const value=min+((max-min)/4)*i,y=yAt(value);
+    svg.appendChild(el("line",{x1:margin.left,y1:y,x2:width-margin.right,y2:y,class:"chart-grid"}));
+    svg.appendChild(el("text",{x:margin.left-8,y:y+4,"text-anchor":"end",class:"chart-label"},value.toLocaleString("nl-NL",{maximumFractionDigits:0})));
+  }
+  svg.appendChild(el("line",{x1:margin.left,y1:margin.top,x2:margin.left,y2:height-margin.bottom,class:"chart-axis"}));
+  svg.appendChild(el("line",{x1:margin.left,y1:height-margin.bottom,x2:width-margin.right,y2:height-margin.bottom,class:"chart-axis"}));
+  const xStep=Math.max(1,Math.ceil(labels.length/10));
+  labels.forEach((label,i)=>{if(i%xStep===0||i===labels.length-1)svg.appendChild(el("text",{x:xAt(i),y:height-margin.bottom+20,"text-anchor":"middle",class:"chart-label"},label));});
+  svg.appendChild(el("text",{x:16,y:height/2,transform:`rotate(-90 16 ${height/2})`,class:"chart-title","text-anchor":"middle"},"Index (1990 = 100)"));
+  datasets.forEach(ds=>{
+    const points=ds.data.map((v,i)=>Number.isFinite(v)?`${xAt(i)},${yAt(v)}`:null).filter(Boolean);
+    svg.appendChild(el("polyline",{points:points.join(" "),class:"chart-line",stroke:ds.color,"stroke-width":"3"}));
+  });
+  container.appendChild(svg);
+  container.appendChild(el("div",{className:"chart-legend"},datasets.map(ds=>el("div",{className:"legend-item"},[
+    el("span",{className:"legend-line",style:{borderTopColor:ds.color}}),
+    el("span",{},ds.label)
+  ]))));
+}
+
+renderChart("chart",CHART_DATA);
+</script>
+</body>
+</html>

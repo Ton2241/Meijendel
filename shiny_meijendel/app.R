@@ -24,7 +24,7 @@ default_sql <- normalizePath(default_sql, winslash = "/", mustWork = FALSE)
 
 
 ui <- navbarPage(
-  title = "Statistische Analyses Vogeldata",
+  title = "Statistische Analyses Vogelterritoriadata",
   theme = bslib::bs_theme(version = 5, bootswatch = "flatly"),
   header = tags$head(
     tags$style(HTML("
@@ -66,10 +66,10 @@ ui <- navbarPage(
   tabPanel(
     "Startpagina",
     fluidPage(
-      titlePanel("Statistische Analyses Vogeldata"),
+      titlePanel("Statistische Analyses Vogelterritoriadata"),
       tags$p(
         class = "app-subtitle",
-        "Vogeldata 1958-heden, ruimtelijke data, beheeringrepen, recreatie en weer."
+        "Vogelterritoriadata 1958-heden, ruimtelijke data, beheeringrepen, recreatie en weer."
       ),
       fluidRow(
         column(
