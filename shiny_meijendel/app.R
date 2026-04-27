@@ -224,20 +224,6 @@ ui <- navbarPage(
           )
         )
       ),
-      div(
-        class = "soft-card",
-        h3("Voorgestelde berekeningsstappen"),
-        tags$ol(
-          tags$li("selecteer kavels, jaren en analyse-onderdeel"),
-          tags$li("bouw per soort of groep een T0-genormaliseerde reeks op"),
-          tags$li("bereken daarna de verandering tussen opeenvolgende jaren"),
-          tags$li("toon de uitkomst als groeifactor LAMBDA en eventueel als log-difference")
-        ),
-        tags$p(
-          class = "section-note",
-          "De inhoudelijke basis hiervoor staat in het document 'Brugjaren en T0 reeksen' in de map R."
-        )
-      ),
       sidebarLayout(
         sidebarPanel(
           class = "soft-card",
