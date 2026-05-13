@@ -1,0 +1,6 @@
+2026-04-29 18:14:38.322 UTC [1959] LOG:  starting PostgreSQL 14.22 (Ubuntu 14.22-1.pgdg24.04+1) on aarch64-unknown-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit
+2026-04-29 18:14:38.323 UTC [1959] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2026-04-29 18:14:38.327 UTC [1959] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2026-04-29 18:14:38.343 UTC [2002] LOG:  database system was shut down at 2026-04-29 18:14:37 UTC
+2026-04-29 18:14:38.355 UTC [1959] LOG:  database system is ready to accept connections
+2026-04-29 19:31:17.521 UTC [1959] LOG:  received smart shutdown request

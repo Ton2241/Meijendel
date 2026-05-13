@@ -1,0 +1,125 @@
+soort_naam,ecologische_vogelgroep,dag_bmp,dag_wv,totaal
+"Meerkoet","Watervogels",303,7616,7919
+"Kuifeend","Watervogels",340,3315,3655
+"Grauwe Gans","Watervogels",309,1907,2216
+"Tafeleend","Watervogels",111,1885,1996
+"Krooneend","Watervogels",163,965,1128
+"Koolmees","Bosvogels",323,637,960
+"Krakeend","Watervogels",128,739,867
+"Tjiftjaf","Bosvogels",409,297,706
+"Vink","Bosvogels",257,410,667
+"Pimpelmees","Bosvogels",163,526,689
+"Wilde Eend","Watervogels",133,551,684
+"Winterkoning","Struweelvogels",230,303,533
+"Dodaars","Watervogels",148,369,517
+"Roodborst","Struweelvogels",182,313,495
+"Merel","Struweelvogels",173,291,464
+"Fitis","Struweelvogels",204,91,295
+"Fuut","Watervogels",95,276,371
+"Staartmees","Struweelvogels",37,330,367
+"Zwartkop","Struweelvogels",171,100,271
+"Koperwiek","",0,317,317
+"Gaai","Bosvogels",74,217,291
+"Grote Bonte Specht","Bosvogels",122,145,267
+"Grasmus","Struweelvogels",147,61,208
+"Nachtegaal","Struweelvogels",145,48,193
+"Aalscholver","Bosrandvogels",2,244,246
+"Slobeend","Watervogels",63,140,203
+"Tuinfluiter","Struweelvogels",92,40,132
+"Zwarte Kraai","Bosrandvogels",41,122,163
+"Knobbelzwaan","Watervogels",31,118,149
+"Houtduif","Bosvogels",19,114,133
+"Grote Canadese Gans","",54,70,124
+"Kolgans","Watervogels",0,143,143
+"Zanglijster","Struweelvogels",65,48,113
+"Boomkruiper","Bosvogels",37,76,113
+"Gierzwaluw","Vogels van bebouwing/overige",4,131,135
+"Nijlgans","Watervogels",47,72,119
+"Heggenmus","Struweelvogels",60,29,89
+"Kleine Mantelmeeuw","Vogels van pionierbegroeiingen",19,105,124
+"Spreeuw","Bosvogels",33,80,113
+"Boomleeuwerik","Vogels van pionierbegroeiingen",56,43,99
+"Goudhaan","Bosvogels",9,108,117
+"Grote Zaagbek","",0,106,106
+"Kleine Karekiet","Rietvogels",37,31,68
+"Blauwe Reiger","Bosrandvogels",0,91,91
+"Boompieper","Bosrandvogels",37,20,57
+"Kramsvogel","Bosrandvogels",0,86,86
+"Braamsluiper","Struweelvogels",37,16,53
+"Zilvermeeuw","Vogels van pionierbegroeiingen",25,51,76
+"Buizerd","Bosvogels",14,48,62
+"Cetti's Zanger","Bosrandvogels",20,37,57
+"Glanskop","Bosvogels",6,46,52
+"Waterral","Rietvogels",4,53,57
+"Koekoek","Vogels van bebouwing/overige",23,11,34
+"Gekraagde Roodstaart","Bosrandvogels",23,9,32
+"Roodborsttapuit","Struweelvogels",11,21,32
+"Kleine Plevier","Vogels van pionierbegroeiingen",18,14,32
+"Bosrietzanger","Struweelvogels",12,5,17
+"Rietzanger","Rietvogels",11,10,21
+"Groenling","Bosrandvogels",5,22,27
+"Nonnetje","",0,27,27
+"Sprinkhaanrietzanger","Rietvogels",12,1,13
+"Houtsnip","Bosvogels",2,21,23
+"Rietgors","Rietvogels",13,8,21
+"Barmsijs","Bosrandvogels",0,21,21
+"Visdief","Watervogels",4,16,20
+"Wintertaling","Watervogels",7,13,20
+"Witte Kwikstaart","Vogels van pionierbegroeiingen",5,10,15
+"Goudvink","Struweelvogels",5,10,15
+"IJsvogel","Watervogels",6,8,14
+"Roerdomp","Rietvogels",2,8,10
+"Witgat","",0,17,17
+"Huiszwaluw","Vogels van bebouwing/overige",0,16,16
+"Waterhoen","Watervogels",1,14,15
+"Ekster","Bosrandvogels",9,5,14
+"Keep","Bosvogels",0,14,14
+"Oeverzwaluw","Watervogels",0,13,13
+"Groene Specht","Bosrandvogels",3,7,10
+"Grote Zilverreiger","Rietvogels",0,12,12
+"Smient","Watervogels",0,12,12
+"Brilduiker","",0,11,11
+"Grote Mantelmeeuw","Vogels van pionierbegroeiingen",0,11,11
+"Kievit","Vogels van pionierbegroeiingen",4,6,10
+"Dwergmeeuw","Weidevogels",0,10,10
+"Geoorde Fuut","Watervogels",4,4,8
+"Pijlstaart","Watervogels",0,10,10
+"Boerenzwaluw","Vogels van bebouwing/overige",0,9,9
+"Kleine Bonte Specht","Bosvogels",1,3,4
+"Kneu","Struweelvogels",1,7,8
+"Putter","Bosrandvogels",2,5,7
+"Sperwer","Bosvogels",1,7,8
+"Vuurgoudhaan","Bosvogels",1,7,8
+"Kokmeeuw","Watervogels",0,6,6
+"Appelvink","Bosvogels",0,3,3
+"Graspieper","Vogels van pionierbegroeiingen",0,5,5
+"Boomklever","Bosvogels",1,2,3
+"Holenduif","Vogels van pionierbegroeiingen",1,2,3
+"Oeverloper","Vogels van pionierbegroeiingen",0,4,4
+"Soepeend","",0,4,4
+"Torenvalk","Bosvogels",1,3,4
+"Watersnip","Rietvogels",1,3,4
+"Wielewaal","Bosvogels",2,0,2
+"Bergeend","Watervogels",1,2,3
+"Boomvalk","Bosvogels",1,2,3
+"Soepgans","",0,3,3
+"Zwarte Mees","Bosvogels",1,1,2
+"Bonte Vliegenvanger","Vogels van bebouwing/overige",2,0,2
+"Canadese gans spec.","",0,2,2
+"Grauwe Klauwier","Struweelvogels",1,1,2
+"Grote Lijster","Bosvogels",1,1,2
+"Havik","Bosvogels",0,2,2
+"Lepelaar","Rietvogels",0,2,2
+"Matkop","Struweelvogels",1,0,1
+"Scholekster","Vogels van pionierbegroeiingen",1,1,2
+"Bladkoning","",0,1,1
+"Gele Kwikstaart","Vogels van pionierbegroeiingen",0,1,1
+"Gewone Fazant","Vogels van pionierbegroeiingen",1,0,1
+"Kluut","Vogels van pionierbegroeiingen",0,0,0
+"Meeuw spec.","",0,1,1
+"Smelleken","",0,1,1
+"Stormmeeuw","Vogels van pionierbegroeiingen",0,1,1
+"Turkse Tortel","Vogels van bebouwing/overige",1,0,1
+"Visarend","Bosrandvogels",0,1,1
+"Zomertaling","Watervogels",0,1,1
+"Zwarte Zwaan","",0,1,1

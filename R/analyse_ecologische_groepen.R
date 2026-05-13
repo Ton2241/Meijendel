@@ -179,6 +179,7 @@ read_insert_table <- function(path, table, keep_columns = NULL) {
 
 to_integer <- function(x) as.integer(x)
 to_numeric <- function(x) as.numeric(x)
+normalize_kavel_nummer <- function(x) sub("^M", "", x)
 
 safe_ratio <- function(num, den) {
   ifelse(is.na(num) | is.na(den) | den == 0, NA_real_, num / den)
@@ -194,6 +195,7 @@ calc_pct_trend <- function(slope) {
 
 parse_needed_tables <- function(path) {
   plots <- read_insert_table(path, "plots", c("plot_id", "kavel_nummer"))
+  plots$kavel_nummer <- normalize_kavel_nummer(plots$kavel_nummer)
   soorten <- read_insert_table(path, "soorten", c("id", "soort_naam"))
   evg_vogelgroepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_vogel_landschapgroep <- read_insert_table(

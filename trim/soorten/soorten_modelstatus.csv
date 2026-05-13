@@ -86,7 +86,7 @@
 154,10050,"Duinpieper",2153,1,68,FALSE,FALSE,NA,NA,"te_weinig_data_pre","te_weinig_data_post",NA,NA,0,1,"te_zeldzaam"
 155,10090,"Boompieper",2153,1132,68,TRUE,TRUE,"model3_basis","model3_basis",NA,NA,NA,NA,26,42,"brugbare_tijdreeks"
 156,10110,"Graspieper",2153,575,68,TRUE,TRUE,"model3_basis","model3_basis",NA,NA,NA,NA,23,42,"brugbare_tijdreeks"
-158,10170,"Gele Kwikstaart",2153,13,68,TRUE,TRUE,"model3_basis","model3_basis",NA,NA,NA,NA,5,7,"brugbare_tijdreeks"
+158,10171,"Gele Kwikstaart",2153,13,68,TRUE,TRUE,"model3_basis","model3_basis",NA,NA,NA,NA,5,7,"brugbare_tijdreeks"
 159,10172,"Engelse Kwikstaart",2153,6,68,FALSE,TRUE,NA,"model3_basis","te_weinig_data_pre",NA,NA,NA,2,4,"alleen_post_bruikbaar"
 162,10201,"Witte Kwikstaart",2153,243,68,TRUE,TRUE,"model3_basis","model3_basis",NA,NA,NA,NA,24,41,"brugbare_tijdreeks"
 163,10202,"Rouwkwikstaart",2153,2,68,FALSE,FALSE,NA,NA,"te_weinig_data_pre","te_weinig_data_post",NA,NA,0,2,"te_zeldzaam"

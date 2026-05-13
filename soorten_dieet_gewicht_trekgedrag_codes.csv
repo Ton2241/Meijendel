@@ -1,0 +1,58 @@
+soort_naam,wetenschappelijke_naam,dieet_tabel,voedselgroep_codes_soort_functie_codes,gewicht_man_g,trekgedrag_tabel,migratiegedrag_code
+Blauwborst,Luscinia svecica,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",20,3,M-LONG
+Boomklever,Sitta europaea,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",24,1,M-RES
+Boomkruiper,Certhia brachydactyla,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",10,1,M-RES
+Boomleeuwerik,Lullula arborea,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",30,2,M-SHORT
+Boompieper,Anthus trivialis,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",24,3,M-LONG
+Boomvalk,Falco subbuteo,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",180,3,M-LONG
+Braamsluiper,Curruca curruca,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",12,3,M-LONG
+Fitis,Phylloscopus trochilus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",10,3,M-LONG
+Fluiter,Phylloscopus sibilatrix,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",10,3,M-LONG
+Gekraagde Roodstaart,Phoenicurus phoenicurus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",15,3,M-LONG
+Glanskop,Poecile palustris,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",12,1,M-RES
+Goudhaan,Regulus regulus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",6,1,M-RES
+Grasmus,Curruca communis,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",16,3,M-LONG
+Graspieper,Anthus pratensis,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",19,2,M-SHORT
+Grauwe Vliegenvanger,Muscicapa striata,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",17,3,M-LONG
+Groene Specht,Picus viridis,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",190,1,M-RES
+Grote Bonte Specht,Dendrocopos major,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",85,1,M-RES
+Grote Lijster,Turdus viscivorus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",130,2,M-SHORT
+Heggenmus,Prunella modularis,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",21,1,M-RES
+Kleine Bonte Specht,Dryobates minor,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",21,1,M-RES
+Koekoek,Cuculus canorus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",130,3,M-LONG
+Koolmees,Parus major,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",18,1,M-RES
+Kuifmees,Lophophanes cristatus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",12,1,M-RES
+Merel,Turdus merula,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",100,1,M-RES
+Nachtegaal,Luscinia megarhynchos,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",21,3,M-LONG
+Paapje,Saxicola rubetra,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",17,3,M-LONG
+Patrijs,Perdix perdix,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",390,1,M-RES
+Pimpelmees,Cyanistes caeruleus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",11,1,M-RES
+Roodborst,Erithacus rubecula,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",18,2,M-SHORT
+Roodborsttapuit,Saxicola rubicola,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",15,2,M-SHORT
+Spotvogel,Hippolais icterina,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",13,3,M-LONG
+Spreeuw,Sturnus vulgaris,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",78,2,M-SHORT
+Sprinkhaanzanger,Locustella naevia,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",14,3,M-LONG
+Staartmees,Aegithalos caudatus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",9,1,M-RES
+Tapuit,Oenanthe oenanthe,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",24,3,M-LONG
+Tjiftjaf,Phylloscopus collybita,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",9,3,M-LONG
+Tuinfluiter,Sylvia borin,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",19,3,M-LONG
+Veldleeuwerik,Alauda arvensis,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",42,2,M-SHORT
+Vink,Fringilla coelebs,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",24,2,M-SHORT
+Wielewaal,Oriolus oriolus,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",68,3,M-LONG
+Winterkoning,Troglodytes troglodytes,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",10,1,M-RES
+Witte Kwikstaart,Motacilla alba,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",21,2,M-SHORT
+Wulp,Numenius arquata,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",770,2,M-SHORT
+Zanglijster,Turdus philomelos,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",83,2,M-SHORT
+Zwarte Mees,Periparus ater,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",9,1,M-RES
+Zwartkop,Sylvia atricapilla,insect,"V-INS-B;V-INS-K;V-INS-L;V-INS-S",21,3,M-LONG
+Appelvink,Coccothraustes coccothraustes,zaad,"V-ZAD-B;V-ZAD-O",58,2,M-SHORT
+Goudvink,Pyrrhula pyrrhula,zaad,"V-ZAD-B;V-ZAD-O",21,1,M-RES
+Groenling,Chloris chloris,zaad,"V-ZAD-B;V-ZAD-O",28,2,M-SHORT
+Holenduif,Columba oenas,zaad,"V-ZAD-B;V-ZAD-O",300,2,M-SHORT
+Houtduif,Columba palumbus,zaad,"V-ZAD-B;V-ZAD-O",450,2,M-SHORT
+Kneu,Linaria cannabina,zaad,"V-ZAD-B;V-ZAD-O",19,2,M-SHORT
+Kruisbek,Loxia curvirostra,zaad,"V-ZAD-B;V-ZAD-O",43,2,M-SHORT
+Putter,Carduelis carduelis,zaad,"V-ZAD-B;V-ZAD-O",17,2,M-SHORT
+Ringmus,Passer montanus,zaad,"V-ZAD-B;V-ZAD-O",24,1,M-RES
+Turkse Tortel,Streptopelia decaocto,zaad,"V-ZAD-B;V-ZAD-O",200,1,M-RES
+Zomertortel,Streptopelia turtus,zaad,"V-ZAD-B;V-ZAD-O",140,3,M-LONG

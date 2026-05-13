@@ -1,0 +1,1199 @@
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777546913.801904,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777546913.8022456,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777546913.806072,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777546913.8397453,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777546913.8397586,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777546913.8397608,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777546913.8397624,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777546913.8397634,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777546913.8425019,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777546913.8425207,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777546913.844593,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x27f32b8e1300"}
+{"level":"warn","ts":1777546913.848201,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777546913.8487952,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777546913.8487985,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777546913.8487997,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777546913.8488185,"msg":"serving initial configuration"}
+{"level":"info","ts":1777546913.8558142,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777633313.8558118,"try_again_in":86399.999999708}
+{"level":"info","ts":1777546913.8562968,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777547208.5908766,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777562001.7437181,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777562001.7440155,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777562001.7471867,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777562001.773036,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777562001.7730505,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777562001.7730532,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777562001.7730544,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777562001.7730558,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777562001.775125,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777562001.7751403,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777562001.7757852,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x87ed3224300"}
+{"level":"warn","ts":1777562001.7821772,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777562001.7828357,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777562001.7828407,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777562001.7828424,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777562001.782857,"msg":"serving initial configuration"}
+{"level":"info","ts":1777562001.7848632,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777648401.7848623,"try_again_in":86399.999999708}
+{"level":"info","ts":1777562001.7866755,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777562392.4018357,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.366673042,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.404232,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.364289917,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.404415,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.364084667,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.406496,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.362012792,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4075882,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.360920792,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4088748,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.359636042,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4100716,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.358431875,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4109902,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.357516083,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4137447,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.354762625,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4150097,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.353496,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4155262,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.352975167,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4172378,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.351269042,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4198904,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.348617,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4215698,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.346938292,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.421722,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.34677875,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4254453,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.343061,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.431728,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.336778083,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4318008,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.336698333,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4394815,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.329025958,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4413524,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.327161708,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4413524,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.327160417,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.446958,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.32155925,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4473486,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.321153875,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4475944,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.320907667,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.451711,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.316797417,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4518096,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.316690417,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4536297,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.31488275,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4564378,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.312069875,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.457575,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.310936833,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.459252,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.309254333,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4599476,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.308560458,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4617517,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.306756542,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4646096,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.303903458,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4652116,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.303293,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4667208,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.301784792,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4714732,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.297035292,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777562392.4839623,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.284544583,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777563042.7518723,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777563047.3067148,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563047.307035,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563047.3085787,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563047.3385735,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777563047.3385873,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777563047.3385894,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563047.3385909,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563047.338592,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563047.3407762,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777563047.3407924,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777563047.342879,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x45d2e4597100"}
+{"level":"warn","ts":1777563047.3457868,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777563047.3466945,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777563047.346701,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777563047.3467023,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777563047.34672,"msg":"serving initial configuration"}
+{"level":"info","ts":1777563047.3480108,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777649447.3480096,"try_again_in":86399.99999975}
+{"level":"info","ts":1777563047.348171,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777563098.2869024,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777563103.3204324,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563103.3207152,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563103.3222344,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563103.3515544,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777563103.351569,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777563103.351571,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563103.3515725,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563103.3515737,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563103.3537867,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777563103.3538032,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777563103.3556325,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2c6f965d9d80"}
+{"level":"warn","ts":1777563103.3597612,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777563103.3603978,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777563103.3604057,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777563103.3604074,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777563103.3604329,"msg":"serving initial configuration"}
+{"level":"info","ts":1777563103.3617957,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777649503.3617947,"try_again_in":86399.999999667}
+{"level":"info","ts":1777563103.3619447,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777563339.9795563,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.111676042,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9800484,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.111184667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9805467,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.110683375,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.980808,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.1104215,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.980944,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.11028475,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9819925,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.109249042,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9828198,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.108420667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9847693,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.106471333,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9847867,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.106446458,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9848785,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.106350167,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.986409,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.10482625,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9870157,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.104213833,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9879868,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.103244917,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9886925,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.10253925,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9899983,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.101235875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9900095,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.101229667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.990365,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.10086775,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9907842,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.100449625,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9915352,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.099700875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9915352,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.099697583,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9917765,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.099457625,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9921517,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.099082833,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9926786,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.0985535,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9929283,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.098300458,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.994903,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.096332958,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9954464,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.095782625,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9964147,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.094818167,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.997446,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.093785375,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9976978,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.093531708,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9981852,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.09304475,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9982526,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.092986792,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563339.9994757,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.0917565,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0000875,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.091141583,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0002136,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.091015083,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0020661,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.089168667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0024447,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.088784292,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.00259,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.088638792,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0026865,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.088543792,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0038383,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.087395417,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0047042,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.086541333,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.004952,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.086283625,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0053346,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.085900833,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0056114,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.085622,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0063736,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.08485875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0073447,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.083888208,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0074115,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.08382925,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0105417,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.080695667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0108871,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.080344125,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0124383,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.078797,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0125875,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.0786415,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0127509,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.07847875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0130937,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.078136583,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.013592,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.077646208,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0151296,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.0761155,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0155597,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.075673458,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0167546,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.074480167,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0180855,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.073149917,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0182633,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.072966375,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0331233,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.058114542,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0389705,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.052265667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563340.0441475,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.047088375,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.5267937,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.473718791,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.5299847,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.470535166,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.5433152,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.457200875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.5464969,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.454019791,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.5484915,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.4520225,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.5502608,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.450256583,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.6426156,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.357906291,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.6427298,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.357778708,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.642637,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.357876541,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.6429527,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.357555458,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.8209472,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.179568291,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.8209522,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.179598791,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563343.8237736,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.176760416,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777563692.2769613,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777563696.9601548,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563696.9611561,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563696.9629292,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563696.9943304,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777563696.994344,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777563696.9943461,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563696.9943507,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563696.994352,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563696.999167,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777563696.9991906,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777563697.0008385,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2e074867f400"}
+{"level":"warn","ts":1777563697.0054212,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777563697.0059345,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777563697.0059383,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777563697.0059397,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777563697.0059574,"msg":"serving initial configuration"}
+{"level":"info","ts":1777563697.0072894,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777650097.007289,"try_again_in":86399.999999833}
+{"level":"info","ts":1777563697.007469,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777563900.9681935,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777563905.6509287,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563905.6515734,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563905.6544428,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563905.6881032,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777563905.6881185,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777563905.6881208,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777563905.688122,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777563905.6881235,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777563905.6925557,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777563905.6925755,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777563905.6929033,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x5588b78cdd00"}
+{"level":"warn","ts":1777563905.6986568,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777563905.6991544,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777563905.6991625,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777563905.699164,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777563905.6991837,"msg":"serving initial configuration"}
+{"level":"info","ts":1777563905.7014456,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777650305.7014449,"try_again_in":86399.999999875}
+{"level":"info","ts":1777563905.7016282,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777566609.096647,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777566613.7140112,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777566613.7143161,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777566613.7171564,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777566613.7426178,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777566613.7426348,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777566613.7426374,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777566613.7426388,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777566613.7426398,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777566613.7453034,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777566613.7453244,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777566613.7470565,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0xc75b62e1e80"}
+{"level":"warn","ts":1777566613.7567742,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777566613.7585719,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777566613.758586,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777566613.7585874,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777566613.758603,"msg":"serving initial configuration"}
+{"level":"info","ts":1777566613.7602665,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777653013.760265,"try_again_in":86399.99999975}
+{"level":"info","ts":1777566613.7605984,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777566919.946042,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.751773667,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9466987,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.751109958,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9532459,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.744577,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.953267,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.744545083,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.955912,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.744578,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9563172,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.741495917,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.958381,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.739434958,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9587855,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.739024958,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9593232,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.73848575,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9601636,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.737647083,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9636233,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.734192833,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9638677,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.733940417,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9659376,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.731879,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9664502,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.731361292,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.967749,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.730060417,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9687386,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.729081458,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9693427,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.728467875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9716058,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.726208333,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9718692,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.725952792,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9722533,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.725556125,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9760575,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.721752875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9760835,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.721725625,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9762416,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.721569042,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.980144,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.71767075,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9803555,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.717452875,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9805276,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.717280208,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9806786,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.717130208,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9815648,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.716251083,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9821916,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.715618458,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9830167,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.714794125,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9830348,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.71477425,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9836082,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.7142015,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9843216,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.713494708,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9862921,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.711520958,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9911008,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.706723291,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566919.9911435,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.706671166,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566920.0052013,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.692623291,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777566920.005609,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.692203583,"remote_ip":"192.168.65.1"}
+{"level":"info","ts":1777568992.2667308,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777568997.9637775,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777568997.9641008,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777568997.9681125,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777568998.0018082,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777568998.0018191,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777568998.0018215,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777568998.0018227,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777568998.001824,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777568998.0053992,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777568998.0054119,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777568998.0066838,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2e7cccbf1300"}
+{"level":"warn","ts":1777568998.0118742,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777568998.0130007,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777568998.0130076,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777568998.013009,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777568998.01303,"msg":"serving initial configuration"}
+{"level":"info","ts":1777568998.015233,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777655398.015232,"try_again_in":86399.999999792}
+{"level":"info","ts":1777568998.015579,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777569369.52552,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777569374.6202028,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777569374.6212385,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777569374.6236773,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777569374.6583798,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777569374.6583953,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777569374.6583977,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777569374.6583989,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777569374.6584003,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777569374.6620157,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777569374.6620355,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777569374.6642454,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x10e18ac6b280"}
+{"level":"warn","ts":1777569374.669016,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777569374.669482,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777569374.6694856,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777569374.669487,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777569374.669508,"msg":"serving initial configuration"}
+{"level":"info","ts":1777569374.671228,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777655774.6712272,"try_again_in":86399.999999792}
+{"level":"info","ts":1777569374.671419,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777569604.289726,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777569609.2936745,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777569609.2940009,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777569609.296395,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777569609.3207603,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777569609.3207753,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777569609.3207774,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777569609.3207788,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777569609.32078,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777569609.3243215,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777569609.3243399,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777569609.3255818,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x641cd8d05080"}
+{"level":"warn","ts":1777569609.329681,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777569609.330172,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777569609.3301756,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777569609.3301773,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777569609.3301997,"msg":"serving initial configuration"}
+{"level":"info","ts":1777569609.3316607,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777656009.3316598,"try_again_in":86399.999999666}
+{"level":"info","ts":1777569609.3318055,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777569799.4398022,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777569803.9571197,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777569803.9579828,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777569803.9605513,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777569803.9872098,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777569803.9872212,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777569803.9872234,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777569803.9872246,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777569803.9872255,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777569803.9903183,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777569803.9903345,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777569803.9941566,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2c4dbefe2e80"}
+{"level":"warn","ts":1777569803.99851,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777569803.9990659,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777569803.9990695,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777569803.999071,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777569803.9990928,"msg":"serving initial configuration"}
+{"level":"info","ts":1777569804.0018055,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777656204.001804,"try_again_in":86399.999999541}
+{"level":"info","ts":1777569804.0020084,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777577435.3160446,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777645640.38451,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777645640.3854854,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777645640.3869956,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777645640.4167135,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777645640.416724,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777645640.4167264,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777645640.4167275,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777645640.4167287,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777645640.4194062,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777645640.4194226,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777645640.4197748,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x4272409cc880"}
+{"level":"warn","ts":1777645640.4379456,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777645640.4409533,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777645640.4409652,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777645640.4409664,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777645640.4409864,"msg":"serving initial configuration"}
+{"level":"info","ts":1777645640.4424458,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777732040.442445,"try_again_in":86399.999999875}
+{"level":"info","ts":1777645640.442676,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777645813.1350296,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.660586292,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1373115,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.658304917,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1396813,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.65593375,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1401243,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.655486125,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1402702,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.655339208,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1430502,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.652565625,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1445522,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.651064,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1446798,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.650929833,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1461017,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.649514375,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1462684,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.649341083,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1464942,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.649115333,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1488054,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.646813208,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1506631,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.64495925,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1511033,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.644511792,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1517031,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.643908125,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1546817,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.640936292,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1553838,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.640233042,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1554856,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.640125917,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1553838,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.640231625,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1590154,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.636610333,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.159021,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.636596667,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1592221,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.636387167,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1607068,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.634937125,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1654606,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.630159333,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1656222,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.629988292,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.1744802,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.621136833,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.5274646,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.268152958,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.5275354,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.268096333,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.5280247,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.267586125,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.5663815,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.229235708,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.5666811,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.228928833,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.5675302,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.228083917,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777645813.6989634,"logger":"http.handlers.rate_limit","msg":"rate limit exceeded","zone":"dynamic_zone","wait":0.096652833,"remote_ip":"172.18.0.1"}
+{"level":"info","ts":1777646099.3320947,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777646392.7451336,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777646392.7454913,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777646392.7484987,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777646392.7702787,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777646392.7702909,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777646392.770293,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777646392.7702944,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777646392.7702959,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777646392.7730367,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777646392.7730703,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777646392.775073,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x432324268380"}
+{"level":"warn","ts":1777646392.7780578,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777646392.7785695,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777646392.7785742,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777646392.7785757,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777646392.7786007,"msg":"serving initial configuration"}
+{"level":"info","ts":1777646392.779968,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777732792.7799568,"try_again_in":86399.99999975}
+{"level":"info","ts":1777646392.780284,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777646404.2300603,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777646422.216151,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777646422.2170274,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777646422.2187939,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777646422.2549093,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777646422.2549353,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777646422.2549517,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777646422.2549543,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777646422.254956,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777646422.2579978,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777646422.2580116,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777646422.2600832,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x14290d6e7600"}
+{"level":"warn","ts":1777646422.2631743,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777646422.2638328,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777646422.2638423,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777646422.263844,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777646422.263864,"msg":"serving initial configuration"}
+{"level":"info","ts":1777646422.2654016,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777732822.265401,"try_again_in":86399.99999975}
+{"level":"info","ts":1777646422.265684,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777649225.0659657,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777649464.0150583,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777649464.0154598,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777649464.0200539,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777649464.0491216,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777649464.0491376,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777649464.04914,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777649464.0491414,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777649464.0491428,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777649464.052395,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777649464.0524232,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777649464.053809,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x37a1f399da80"}
+{"level":"warn","ts":1777649464.0596895,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777649464.0604641,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777649464.0604768,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777649464.0604792,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777649464.060503,"msg":"serving initial configuration"}
+{"level":"info","ts":1777649464.0635173,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777735864.0635157,"try_again_in":86399.999999583}
+{"level":"info","ts":1777649464.0637643,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777650018.1914885,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777650023.6896105,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777650023.6901793,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777650023.6941326,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777650023.724722,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777650023.7247367,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777650023.7247393,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777650023.7247505,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777650023.724763,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777650023.7292507,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777650023.7292821,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777650023.7296433,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x694cd55dc480"}
+{"level":"warn","ts":1777650023.734585,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777650023.736219,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777650023.7362297,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777650023.7362313,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777650023.7362576,"msg":"serving initial configuration"}
+{"level":"info","ts":1777650023.737871,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777736423.7378688,"try_again_in":86399.999999458}
+{"level":"info","ts":1777650023.7382932,"logger":"tls","msg":"finished cleaning storage units"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777712047.1961153,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777712047.1965766,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777712047.1998935,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777712047.2365682,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777712047.2365828,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777712047.2366064,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777712047.2366116,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777712047.236613,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777712047.2410498,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777712047.241072,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777712047.2432706,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x78d7467be900"}
+{"level":"warn","ts":1777712047.2498007,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777712047.25102,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777712047.2511022,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777712047.2511113,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777712047.251147,"msg":"serving initial configuration"}
+{"level":"info","ts":1777712047.2536297,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777798447.2536273,"try_again_in":86399.999999625}
+{"level":"info","ts":1777712047.253834,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777712432.2444324,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777712437.1635482,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777712437.164237,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777712437.1680899,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777712437.1939447,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777712437.1939597,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777712437.193963,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777712437.1939642,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777712437.1939657,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777712437.196818,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777712437.1968431,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777712437.200044,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x607a041df500"}
+{"level":"warn","ts":1777712437.2032664,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777712437.2037976,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777712437.2038023,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777712437.2038035,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777712437.2038286,"msg":"serving initial configuration"}
+{"level":"info","ts":1777712437.2057528,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777798837.2057521,"try_again_in":86399.999999708}
+{"level":"info","ts":1777712437.2059844,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777712956.4419193,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777712961.9166253,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777712961.9177809,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777712961.9201407,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777712961.9481094,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777712961.9481368,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777712961.948139,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777712961.9481404,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777712961.9481416,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777712961.9527497,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777712961.9527698,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777712961.954485,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x199c9245c280"}
+{"level":"warn","ts":1777712961.959644,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777712961.9602294,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777712961.9602332,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777712961.9602344,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777712961.9602644,"msg":"serving initial configuration"}
+{"level":"info","ts":1777712961.9616368,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777799361.9616363,"try_again_in":86399.999999833}
+{"level":"info","ts":1777712961.9617946,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777713574.7246132,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777713579.9533877,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777713579.9537807,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777713579.959096,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777713580.0089266,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777713580.0089402,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777713580.0089426,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777713580.0089438,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777713580.0089452,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777713580.0121884,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777713580.0122297,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777713580.0130627,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x117927c9f680"}
+{"level":"warn","ts":1777713580.0241623,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777713580.0246303,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777713580.024634,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777713580.024635,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777713580.0246558,"msg":"serving initial configuration"}
+{"level":"info","ts":1777713580.0274715,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777799980.0274696,"try_again_in":86399.999999584}
+{"level":"info","ts":1777713580.02769,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777720137.5066645,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777720142.5976844,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777720142.5984707,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777720142.600677,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777720142.6283636,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777720142.628382,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777720142.6283844,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777720142.628386,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777720142.6283872,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777720142.633783,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777720142.6338012,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777720142.6357737,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x6cf3eecfe900"}
+{"level":"warn","ts":1777720142.641084,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777720142.6417382,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777720142.6417484,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777720142.6417506,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777720142.6417682,"msg":"serving initial configuration"}
+{"level":"info","ts":1777720142.6431923,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777806542.6431916,"try_again_in":86399.999999791}
+{"level":"info","ts":1777720142.6433456,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777721913.1122162,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777721918.2868183,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777721918.287186,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777721918.2888594,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777721918.3224664,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777721918.322483,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777721918.3224852,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777721918.3224866,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777721918.322488,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777721918.3255847,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777721918.3256044,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777721918.3279266,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x718ef0e4c780"}
+{"level":"warn","ts":1777721918.335044,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777721918.3355658,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777721918.3355694,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777721918.335571,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777721918.3355849,"msg":"serving initial configuration"}
+{"level":"info","ts":1777721918.337331,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777808318.3373296,"try_again_in":86399.999999708}
+{"level":"info","ts":1777721918.337516,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777722399.6167748,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777722404.383956,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777722404.385382,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777722404.3872893,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777722404.414643,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777722404.414661,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777722404.4146633,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777722404.4146652,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777722404.4146667,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777722404.4174545,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777722404.417469,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777722404.4191563,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x419da1ac7480"}
+{"level":"warn","ts":1777722404.4246101,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777722404.4251504,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777722404.4251585,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777722404.42516,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777722404.4251862,"msg":"serving initial configuration"}
+{"level":"info","ts":1777722404.42661,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777808804.426609,"try_again_in":86399.999999875}
+{"level":"info","ts":1777722404.4267817,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777722883.069893,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777722888.26919,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777722888.2696843,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777722888.2725332,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777722888.3164275,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777722888.316447,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777722888.3164496,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777722888.316451,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777722888.3164525,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777722888.3191793,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777722888.319201,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777722888.319504,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x294e1fa73480"}
+{"level":"warn","ts":1777722888.3243043,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777722888.3247952,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777722888.3248036,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777722888.324805,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777722888.3248258,"msg":"serving initial configuration"}
+{"level":"info","ts":1777722888.3262706,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777809288.3262694,"try_again_in":86399.99999975}
+{"level":"info","ts":1777722888.3265173,"logger":"tls","msg":"finished cleaning storage units"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777748202.402658,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777748202.404341,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777748202.4062748,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777748202.433649,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777748202.4336674,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777748202.4336715,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777748202.4336727,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777748202.433674,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777748202.4371402,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777748202.4371557,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777748202.4388933,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x4a5c02974180"}
+{"level":"warn","ts":1777748202.4422545,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777748202.4427605,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777748202.4427702,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777748202.442773,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777748202.442809,"msg":"serving initial configuration"}
+{"level":"info","ts":1777748202.4441607,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777834602.4441602,"try_again_in":86399.999999833}
+{"level":"info","ts":1777748202.4442973,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777749146.8665352,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777749152.0387151,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777749152.039535,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777749152.0432532,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777749152.0706012,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777749152.0706224,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777749152.0706286,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777749152.0706336,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777749152.0706382,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777749152.0779102,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777749152.0779371,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777749152.0784085,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x6368dd402e80"}
+{"level":"warn","ts":1777749152.084332,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777749152.0853548,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777749152.0853648,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777749152.085366,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777749152.085391,"msg":"serving initial configuration"}
+{"level":"info","ts":1777749152.0874138,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777835552.0874126,"try_again_in":86399.99999975}
+{"level":"info","ts":1777749152.0876884,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777749510.2132704,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777749516.00042,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777749516.0008194,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777749516.002339,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777749516.0277717,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777749516.0277817,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777749516.0277836,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777749516.0277846,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777749516.0277863,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777749516.0312757,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777749516.0313158,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777749516.0328515,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2b266a72d500"}
+{"level":"warn","ts":1777749516.0377352,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777749516.0382922,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777749516.038301,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777749516.0383027,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777749516.0383284,"msg":"serving initial configuration"}
+{"level":"info","ts":1777749516.040016,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777835916.0400152,"try_again_in":86399.999999833}
+{"level":"info","ts":1777749516.0401793,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777749772.3061864,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777749776.8347008,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777749776.8350017,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777749776.8365495,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777749776.8635256,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777749776.863539,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777749776.8635414,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777749776.8635428,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777749776.8635442,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777749776.8658812,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777749776.8659027,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777749776.8663642,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x42b4b9811180"}
+{"level":"warn","ts":1777749776.8716533,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777749776.8722186,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777749776.8722258,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777749776.8722289,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777749776.8722506,"msg":"serving initial configuration"}
+{"level":"info","ts":1777749776.873867,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777836176.8738663,"try_again_in":86399.99999975}
+{"level":"info","ts":1777749776.874048,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777754716.591919,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777805960.179779,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777805960.1801736,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777805960.1823266,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777805960.204427,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777805960.2044396,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777805960.204442,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777805960.2044432,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777805960.2044444,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777805960.2070684,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777805960.20709,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777805960.208813,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x68cf587ff500"}
+{"level":"warn","ts":1777805960.2128212,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777805960.2133062,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777805960.2133136,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777805960.213315,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777805960.2133381,"msg":"serving initial configuration"}
+{"level":"info","ts":1777805960.2149346,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777892360.2149327,"try_again_in":86399.99999975}
+{"level":"info","ts":1777805960.2151473,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777806541.2080386,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777806546.2341595,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777806546.2345047,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777806546.235996,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777806546.2759557,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777806546.275975,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777806546.2759774,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777806546.275979,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777806546.27598,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777806546.2796843,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777806546.2797055,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777806546.2819812,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x33a6c8d49a80"}
+{"level":"warn","ts":1777806546.2870383,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777806546.2875752,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777806546.2875793,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777806546.287581,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777806546.2876103,"msg":"serving initial configuration"}
+{"level":"info","ts":1777806546.289154,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777892946.2891533,"try_again_in":86399.999999833}
+{"level":"info","ts":1777806546.2892916,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777810093.9524977,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777810099.6905468,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777810099.6908991,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777810099.69279,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777810099.7215421,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777810099.721556,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777810099.7215579,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777810099.7215593,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777810099.7215605,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777810099.7277143,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777810099.7277431,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777810099.7292135,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x778c558f5500"}
+{"level":"warn","ts":1777810099.740344,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777810099.740952,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777810099.7409642,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777810099.7409656,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777810099.7409942,"msg":"serving initial configuration"}
+{"level":"info","ts":1777810099.7423654,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777896499.7423642,"try_again_in":86399.99999975}
+{"level":"info","ts":1777810099.7425036,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777810829.8202767,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777810834.6046073,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777810834.6050057,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777810834.6067278,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777810834.6388943,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777810834.6389112,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777810834.6389139,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777810834.6389153,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777810834.6389163,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777810834.641959,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777810834.6419802,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777810834.644944,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x399f96a97a80"}
+{"level":"warn","ts":1777810834.648093,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777810834.6486418,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777810834.6486506,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777810834.648652,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777810834.6486766,"msg":"serving initial configuration"}
+{"level":"info","ts":1777810834.6509678,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777897234.6509662,"try_again_in":86399.99999975}
+{"level":"info","ts":1777810834.6512325,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777811114.4570806,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777811120.0931096,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777811120.0934267,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777811120.0949154,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777811120.125921,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777811120.125938,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777811120.1259449,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777811120.1259463,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777811120.1259477,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777811120.128714,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777811120.1287348,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777811120.1299686,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x79b14d658500"}
+{"level":"warn","ts":1777811120.133234,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777811120.1337168,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777811120.1337278,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777811120.1337292,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777811120.1337528,"msg":"serving initial configuration"}
+{"level":"info","ts":1777811120.1362717,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777897520.1362698,"try_again_in":86399.999999625}
+{"level":"info","ts":1777811120.1365888,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777811415.9796486,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777811421.2092965,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777811421.2098782,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777811421.2140083,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777811421.243591,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777811421.2436028,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777811421.2436051,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777811421.2436068,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777811421.243608,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777811421.2490747,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777811421.249114,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777811421.2536645,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x76eb9238a580"}
+{"level":"warn","ts":1777811421.260402,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777811421.261191,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777811421.2611964,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777811421.261198,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777811421.2612228,"msg":"serving initial configuration"}
+{"level":"info","ts":1777811421.2653446,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777897821.2652602,"try_again_in":86399.999999542}
+{"level":"info","ts":1777811421.265824,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777812137.2556891,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777812142.6724157,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777812142.6727903,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777812142.6743436,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777812142.6997106,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777812142.6997292,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777812142.699732,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777812142.6997335,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777812142.6997347,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777812142.70848,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777812142.708522,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777812142.7103837,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0xd5afd9e2980"}
+{"level":"warn","ts":1777812142.7187228,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777812142.7204456,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777812142.7204642,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777812142.7204678,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777812142.720494,"msg":"serving initial configuration"}
+{"level":"info","ts":1777812142.7218764,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777898542.7218757,"try_again_in":86399.999999833}
+{"level":"info","ts":1777812142.7220984,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777812619.8702192,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777812624.5333886,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777812624.5336897,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777812624.5354424,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777812624.5751913,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777812624.5752046,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777812624.5752068,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777812624.575208,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777812624.5752091,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777812624.578175,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777812624.5781906,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777812624.5797374,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x284ab9c18680"}
+{"level":"warn","ts":1777812624.5858715,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777812624.5864384,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777812624.5864465,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777812624.5864482,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777812624.5864742,"msg":"serving initial configuration"}
+{"level":"info","ts":1777812624.588288,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777899024.5882862,"try_again_in":86399.999999708}
+{"level":"info","ts":1777812624.5887616,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777813024.2756505,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777813029.7808533,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813029.7812006,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813029.7828372,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813029.8136005,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777813029.8136194,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777813029.813622,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813029.8136237,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813029.8136249,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813029.8160965,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777813029.816113,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777813029.817736,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x65ee20897a80"}
+{"level":"warn","ts":1777813029.8222437,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777813029.8227565,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777813029.8227658,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777813029.8227673,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777813029.8227859,"msg":"serving initial configuration"}
+{"level":"info","ts":1777813029.8242004,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777899429.8241994,"try_again_in":86399.999999833}
+{"level":"info","ts":1777813029.824379,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777813407.20821,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777813412.3658864,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813412.3664944,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813412.370792,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813412.40292,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777813412.4029393,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777813412.402943,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813412.4029446,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813412.4029458,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813412.4080813,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777813412.4081097,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777813412.4085045,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x25710edf200"}
+{"level":"warn","ts":1777813412.4137237,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777813412.4146743,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777813412.4146812,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777813412.4146824,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777813412.4147005,"msg":"serving initial configuration"}
+{"level":"info","ts":1777813412.4162092,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777899812.416208,"try_again_in":86399.999999833}
+{"level":"info","ts":1777813412.416422,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777813650.0481427,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777813654.7123823,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813654.7128358,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813654.7145665,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813654.748593,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777813654.748609,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777813654.7486112,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813654.7486126,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813654.7486162,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813654.7524533,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777813654.7524757,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777813654.7540436,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x34883926dc00"}
+{"level":"warn","ts":1777813654.7604897,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777813654.761115,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777813654.761121,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777813654.7611225,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777813654.761155,"msg":"serving initial configuration"}
+{"level":"info","ts":1777813654.7623765,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777900054.7623758,"try_again_in":86399.999999792}
+{"level":"info","ts":1777813654.7625055,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777813958.7535503,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777813963.8391528,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813963.839573,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813963.8447351,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813963.9079316,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777813963.9079456,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777813963.9079478,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777813963.907949,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777813963.9079504,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777813963.9160483,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777813963.916074,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777813963.9175603,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x3422cce85680"}
+{"level":"warn","ts":1777813963.9258323,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777813963.9272902,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777813963.9273045,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777813963.927306,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777813963.9273357,"msg":"serving initial configuration"}
+{"level":"info","ts":1777813963.929237,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777900363.929225,"try_again_in":86399.999999833}
+{"level":"info","ts":1777813963.9295442,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777814225.2346838,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777814230.5630693,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777814230.5633984,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777814230.5653496,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777814230.5977519,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777814230.5977745,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777814230.5977817,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777814230.5977836,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777814230.5977871,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777814230.6018088,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777814230.6018338,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777814230.6034272,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x74ba9d5a2a00"}
+{"level":"warn","ts":1777814230.609687,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777814230.6104474,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777814230.610457,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777814230.6104586,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777814230.610482,"msg":"serving initial configuration"}
+{"level":"info","ts":1777814230.6123052,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777900630.6123037,"try_again_in":86399.999999541}
+{"level":"info","ts":1777814230.6125817,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777814929.0605476,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777814934.4178212,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777814934.418297,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777814934.42071,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777814934.4574945,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777814934.457508,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777814934.4575105,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777814934.457512,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777814934.4575133,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777814934.4607131,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777814934.4607315,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777814934.4627757,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2311f32a7b00"}
+{"level":"warn","ts":1777814934.4688208,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777814934.4698803,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777814934.4698994,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777814934.4699028,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777814934.4699376,"msg":"serving initial configuration"}
+{"level":"info","ts":1777814934.471674,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777901334.4716713,"try_again_in":86399.9999995}
+{"level":"info","ts":1777814934.4720252,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777815391.8882184,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777815397.0334148,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777815397.0338604,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777815397.0382946,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777815397.069118,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777815397.0691426,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777815397.0691462,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777815397.069148,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777815397.0691495,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777815397.0728467,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777815397.0728822,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777815397.0746965,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x42988e63e480"}
+{"level":"warn","ts":1777815397.0810025,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777815397.081804,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777815397.0818157,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777815397.0818176,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777815397.0818481,"msg":"serving initial configuration"}
+{"level":"info","ts":1777815397.0844474,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777901797.084445,"try_again_in":86399.999999625}
+{"level":"info","ts":1777815397.084777,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777816094.172623,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777816100.0656486,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816100.066023,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816100.0678144,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816100.1201396,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777816100.1201608,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777816100.1201646,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816100.120166,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816100.1201675,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816100.1259325,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777816100.1259587,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777816100.1282957,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x4882caf2f300"}
+{"level":"warn","ts":1777816100.1406176,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777816100.1428022,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777816100.1428142,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777816100.142816,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777816100.1428506,"msg":"serving initial configuration"}
+{"level":"info","ts":1777816100.1466815,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777902500.1466796,"try_again_in":86399.999999667}
+{"level":"info","ts":1777816100.1469595,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777816363.151809,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777816368.588953,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816368.5893152,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816368.5926018,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816368.6207895,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777816368.6208045,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777816368.620807,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816368.6208084,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816368.6208098,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816368.6296015,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777816368.6296213,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777816368.6305888,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x743612a93b00"}
+{"level":"warn","ts":1777816368.636872,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777816368.6374974,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777816368.6375058,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777816368.6375077,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777816368.6375334,"msg":"serving initial configuration"}
+{"level":"info","ts":1777816368.639344,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777902768.6393423,"try_again_in":86399.999999666}
+{"level":"info","ts":1777816368.6395035,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777816724.2164068,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777816729.1431408,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816729.1436498,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816729.1455996,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816729.185691,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777816729.185711,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777816729.185714,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816729.1857154,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816729.1857207,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816729.1928213,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777816729.192877,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777816729.193318,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2bfa5b87e400"}
+{"level":"warn","ts":1777816729.2029896,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777816729.2038534,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777816729.2038586,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777816729.20386,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777816729.2039008,"msg":"serving initial configuration"}
+{"level":"info","ts":1777816729.2050972,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777903129.2050967,"try_again_in":86399.999999791}
+{"level":"info","ts":1777816729.2052908,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777816964.593088,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777816970.1097324,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816970.1107402,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816970.1126208,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816970.1421902,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777816970.1422036,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777816970.142206,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777816970.1422071,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777816970.1422086,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777816970.1476147,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777816970.147655,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777816970.149421,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x7d9d07ccb500"}
+{"level":"warn","ts":1777816970.1567323,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777816970.1577308,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777816970.1577408,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777816970.1577423,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777816970.1577668,"msg":"serving initial configuration"}
+{"level":"info","ts":1777816970.1610732,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777903370.161072,"try_again_in":86399.999999875}
+{"level":"info","ts":1777816970.1612475,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777817235.0004382,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777817240.3873367,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777817240.3878024,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777817240.3912103,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777817240.4192607,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777817240.419273,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777817240.4192753,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777817240.4192765,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777817240.4192777,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777817240.4259915,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777817240.42602,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777817240.4282923,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x2d45a56f2000"}
+{"level":"warn","ts":1777817240.4359725,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777817240.4365025,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777817240.4365115,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777817240.436513,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777817240.4365435,"msg":"serving initial configuration"}
+{"level":"info","ts":1777817240.4385936,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777903640.4385903,"try_again_in":86399.999999541}
+{"level":"info","ts":1777817240.4389796,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777817579.504484,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777817584.5789137,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777817584.580139,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777817584.5828187,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777817584.6183202,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777817584.6183307,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777817584.6183326,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777817584.6183345,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777817584.6183357,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777817584.62233,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777817584.6223474,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777817584.62457,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x737f5bd1cf00"}
+{"level":"warn","ts":1777817584.6286328,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777817584.6291206,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777817584.6291242,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777817584.6291256,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777817584.6291444,"msg":"serving initial configuration"}
+{"level":"info","ts":1777817584.6310697,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777903984.6310687,"try_again_in":86399.99999975}
+{"level":"info","ts":1777817584.631338,"logger":"tls","msg":"finished cleaning storage units"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777883117.9553108,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777883117.955598,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777883117.9571655,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777883117.9838142,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777883117.9838324,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777883117.9838352,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777883117.9838367,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777883117.9838376,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777883117.987968,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777883117.9879906,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777883117.9894524,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x11ba9243b580"}
+{"level":"warn","ts":1777883117.9935298,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777883117.9941654,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777883117.9941735,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777883117.994175,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777883117.994189,"msg":"serving initial configuration"}
+{"level":"info","ts":1777883117.9954197,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1777969517.9954188,"try_again_in":86399.999999834}
+{"level":"info","ts":1777883117.9955375,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777917879.6437097,"msg":"quitting process immediately","signal":"SIGQUIT"}
+APPSMITH_GIT_ROOT: /appsmith-stacks/git-storage
+{"level":"info","ts":1777971332.9782112,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777971332.9788814,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777971332.9806294,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777971333.0042174,"msg":"maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined"}
+{"level":"info","ts":1777971333.0042293,"msg":"GOMEMLIMIT is updated","GOMEMLIMIT":3697945804,"previous":9223372036854775807}
+{"level":"info","ts":1777971333.0042315,"msg":"using config from file","file":"/tmp/appsmith/Caddyfile"}
+{"level":"warn","ts":1777971333.0042334,"msg":"The nested 'metrics' option inside `servers` is deprecated and will be removed in the next major version. Use the global 'metrics' option instead."}
+{"level":"info","ts":1777971333.0042348,"msg":"adapted config to JSON","adapter":"caddyfile"}
+{"level":"info","ts":1777971333.0072846,"logger":"admin","msg":"admin endpoint started","address":"0.0.0.0:2019","enforce_origin":false,"origins":["//0.0.0.0:2019"]}
+{"level":"warn","ts":1777971333.0073028,"logger":"admin","msg":"admin endpoint on open interface; host checking disabled","address":"0.0.0.0:2019"}
+{"level":"info","ts":1777971333.0076296,"logger":"tls.cache.maintenance","msg":"started background certificate maintenance","cache":"0x4c6dab104880"}
+{"level":"warn","ts":1777971333.012772,"logger":"http.auto_https","msg":"server is listening only on the HTTP port, so no automatic HTTPS will be applied to this server","server_name":"srv0","http_port":80}
+{"level":"warn","ts":1777971333.0132337,"logger":"http","msg":"HTTP/2 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"warn","ts":1777971333.0132365,"logger":"http","msg":"HTTP/3 skipped because it requires TLS","network":"tcp","addr":":80"}
+{"level":"info","ts":1777971333.0132377,"logger":"http.log","msg":"server running","name":"srv0","protocols":["h1","h2","h3"]}
+{"level":"info","ts":1777971333.0132554,"msg":"serving initial configuration"}
+{"level":"info","ts":1777971333.0144846,"logger":"tls","msg":"storage cleaning happened too recently; skipping for now","storage":"FileStorage:/appsmith-stacks/data/caddy","instance":"c1b96387-f781-4d63-bda0-442309f3c4d9","try_again":1778057733.0144842,"try_again_in":86399.999999875}
+{"level":"info","ts":1777971333.0146346,"logger":"tls","msg":"finished cleaning storage units"}
+{"level":"info","ts":1777982508.9286187,"msg":"quitting process immediately","signal":"SIGQUIT"}

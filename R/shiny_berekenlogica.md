@@ -2,31 +2,24 @@
 
 Dit document beschrijft de inhoudelijke berekenroutines van de Shiny-app in:
 
-- [app.R](/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R)
-- [helpers.R](/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/helpers.R)
+- [app.R][1]
+- [helpers.R][2]
 
 Belangrijk:
 
-- de echte broncode staat nu in `shiny_meijendel/helpers.R`
+- de echte broncode staat in `shiny_meijendel/helpers.R`
 - `app.R` bevat vooral interface, selectie, grafieken en exports
 - de inhoudelijke berekeningen zitten vrijwel volledig in `helpers.R`
 
-Dit document is bedoeld om met een statisticus te delen voor commentaar op aannames, drempels en opbouw.
+Dit document is bedoeld voor commentaar op aannames, drempels en opbouw.
 
 ## Hoofdstructuur
 
-De Shiny-app heeft nu drie inhoudelijke analysepaden:
+De Shiny-app heeft drie inhoudelijke analysepaden:
 
 1. `TRIM`
 2. `LAMBDA`
-3. `G.E.E.`
-
-`G.E.E.` is nu als eerste werkende versie aanwezig op soortniveau en groepsniveau.
-
-Voor de verdere uitwerking geldt deze ontwerpregel:
-
-- `G.E.E.` wordt niet gebouwd als extra trendmodule
-- `G.E.E.` wordt gebouwd als verklarende analysemodule voor effecten van beheer, recreatie, habitat, weer en andere covariaten op herhaalde plotmetingen
+3. `G.E.E.` is gebouwd als verklarende analysemodule voor effecten van beheer, recreatie, habitat, weer en andere covariaten op herhaalde plotmetingen
 
 ## Ingelezen tabellen uit `Meijendel.sql`
 
@@ -39,6 +32,8 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 - `territoria`
 - `evg_vogelgroepen`
 - `evg_vogel_landschapgroep`
+- `richtlijnen`
+- `soort_richtlijn`
 - `habitattypen`
 - `plot_jaar_habitat`
 - `plot_jaar_ahn_dtm`
@@ -47,6 +42,25 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 - `plot_jaar_toegankelijkheid`
 
 De parser leest `INSERT`-blokken rechtstreeks uit `Meijendel.sql` en zet die om naar dataframes.
+
+Voor Rode/Oranje Lijst-analyses gebruikt de app:
+
+- `richtlijnen` voor de categorieen
+- `soort_richtlijn` voor de koppeling tussen soorten en richtlijncategorieen
+
+De app gebruikt de volgende richtlijncategorieen:
+
+- `RL: Verdwenen`
+- `RL: Ernstig bedreigd`
+- `RL: Bedreigd`
+- `RL: Kwetsbaar`
+- `RL: Gevoelig`
+- `Oranje Lijst`
+
+Daarnaast maakt de app twee verzamelcategorieen:
+
+- `Rode Lijst Totaal`: alle vijf Rode Lijst-categorieen samen
+- `Rode & Oranjelijst`: `Rode Lijst Totaal` plus `Oranje Lijst`
 
 Voor `plots` geldt nu extra:
 
@@ -62,8 +76,8 @@ Belangrijke stappen:
 
 1. filteren op gekozen kavels en jaren
 2. bepalen of een plot-jaar als `geteld` geldt op basis van:
-   - `plot_jaar_teller`
-   - of aanwezigheid in `territoria`
+   3. `plot_jaar_teller`
+   4. of aanwezigheid in `territoria`
 3. berekenen van een `referentie_oppervlakte_km2` per plot als mediaan
 4. berekenen van een `oppervlakte_factor`:
 
@@ -111,6 +125,7 @@ De TRIM-berekeningen lopen via:
 - `collect_index()`
 - `analyse_species_subset()`
 - `analyse_groups_subset()`
+- `analyse_richtlijnen_subset()`
 - `analyse_subset()`
 
 ### Opzet
@@ -133,7 +148,7 @@ De app probeert meerdere modelconfiguraties, van eenvoudiger naar robuuster.
 - trendduiding
 - modelstatus en eventuele waarschuwingen
 
-### MSI per ecologische vogelgroep
+### MSI per vogelgroep
 
 De groepsanalyse gebruikt de TRIM-indexen per soort.
 
@@ -144,6 +159,21 @@ Stap:
 3. exponent terug naar schaal van de `MSI`
 
 Dat is dus een geometrisch gemiddelde van soortindices.
+
+### MSI per Rode/Oranje Lijst-categorie
+
+De Rode/Oranje Lijst-analyse gebruikt dezelfde TRIM-indexen per soort.
+
+Stap:
+
+1. soorten worden via `soort_richtlijn` gekoppeld aan `richtlijnen`
+2. alleen de vijf Rode Lijst-categorieen en `Oranje Lijst` worden als basiscategorie gebruikt
+3. de twee verzamelcategorieen worden programmatisch opgebouwd
+4. `index_100` per soort gaat naar log-schaal
+5. gemiddelde log-index per `richtlijn_id x jaar`
+6. exponent terug naar schaal van de `MSI`
+
+Ook dit is dus een geometrisch gemiddelde van soortindices.
 
 ## GAM-logica
 
@@ -173,20 +203,16 @@ De LAMBDA-berekeningen lopen via:
 - `bereken_lambda_jaarreeks()`
 - `analyse_lambda_species_subset()`
 - `analyse_lambda_groups_subset()`
+- `analyse_lambda_richtlijnen_subset()`
 - `analyse_lambda_subset()`
 
 ### Methodologische basis
 
-De LAMBDA-aanpak volgt het document:
-
-- [Brugjaren en T0 reeksen.md](/Users/ton/Documents/GitHub/Meijendel/R/Brugjaren%20en%20T0%20reeksen.md)
-
-Belangrijk:
-
 - `1958` wordt genegeerd
-- de methodebreuk in `1984` wordt in `LAMBDA` niet gemodelleerd
-- er worden twee aparte deelreeksen gebruikt:
-  - `1959-1983`
+- methodebreuken tussen deelreeksen worden in `LAMBDA` niet gebrugd
+- er worden drie aparte deelreeksen gebruikt:
+  - `1959-1972`
+  - `1973-1983`
   - `1984-heden`
 
 ### T0-opzet
@@ -195,7 +221,8 @@ Per deelreeks wordt een `T0-index` opgebouwd.
 
 Voorkeurs-T0:
 
-- `1959` voor `1959-1983`
+- `1959` voor `1959-1972`
+- `1973` voor `1973-1983`
 - `1984` voor `1984-heden`
 
 Fallback:
@@ -226,6 +253,13 @@ Uitkomst per jaar:
 - `log_lambda`
 - `t0_index`
 
+Belangrijk voor de interface:
+
+- de app gebruikt `t0_index` nog intern voor aggregatie naar vogelgroepen en Rode/Oranje Lijst-categorieen
+- de LAMBDA-grafieken tonen uitsluitend jaar-op-jaar verandering in procenten:
+
+`(lambda - 1) * 100`
+
 ### Selectiecriteria voor T0-soortanalyse
 
 Een soort wordt voorlopig als `ongeschikt_voor_T0` gemarkeerd als een van de volgende situaties optreedt:
@@ -240,19 +274,18 @@ Een soort is `geschikt_voor_T0_MSI` als bovendien geldt:
 - minimaal `12` geldige jaren
 - minimaal `10` geldige opeenvolgende jaarparen
 - `nul_aandeel <= 33%`
-- aanwezigheid in zowel pre- als post-`1984`
+- positieve aanwezigheid in alle drie T0-perioden:
+  - `1959-1972`
+  - `1973-1983`
+  - `1984-heden`
 
 Overige soorten worden:
 
 - `geschikt_voor_T0_soortanalyse`
 
-### LAMBDA per ecologische vogelgroep
+### LAMBDA per vogelgroep
 
-Voor groepsniveau gebruikt de app niet alleen de technische selectie uit de sessie, maar ook de gecureerde whitelist:
-
-- [evg_selctie_T0soort_T0msi.csv](/Users/ton/Documents/GitHub/Meijendel/R/evg_selctie_T0soort_T0msi.csv)
-
-Daarbij geldt:
+Voor groepsniveau gebruikt de app niet alleen de technische selectie uit de sessie, maar ook de gecureerde whitelist. Daarbij geldt:
 
 - alleen soorten met `t0_msi_eindselectie == TRUE` gaan door naar groepsniveau
 
@@ -263,6 +296,23 @@ Daarna wordt per groep:
 3. exponent terug naar groeps-`t0_index`
 4. opnieuw `lambda` en `log_lambda` berekend op groepsniveau
 
+De grafiek toont daarna de groeps-`lambda` als jaar-op-jaar percentageverschil.
+
+### LAMBDA per Rode/Oranje Lijst-categorie
+
+Voor Rode/Oranje Lijst-niveau gebruikt de app dezelfde technische T0-MSI-selectie als bij vogelgroepen.
+
+Daarna wordt per richtlijncategorie:
+
+1. soorten via `soort_richtlijn` en `richtlijnen` gekoppeld aan categorieen
+2. de twee verzamelcategorieen toegevoegd
+3. log van soort-`t0_index` genomen
+4. gemiddeld per `richtlijn_id x jaar x periode`
+5. exponent terug naar categorie-`t0_index`
+6. opnieuw `lambda` en `log_lambda` berekend op categorieniveau
+
+De grafiek toont vervolgens de categorie-`lambda` als jaar-op-jaar percentageverschil.
+
 ## Waarom kan een soort `ongeschikt_voor_T0` zijn en toch een grafiek hebben?
 
 Dat is een bewuste ontwerpkeuze in de app.
@@ -270,6 +320,17 @@ Dat is een bewuste ontwerpkeuze in de app.
 De status zegt:
 
 - de soort is niet robuust genoeg voor T0-selectie
+
+De grafiek zegt:
+
+- er bestaat wel een berekenbare deelreeks met geldige jaar-op-jaar verandering
+
+Dus:
+
+- `ongeschikt_voor_T0` sluit tonen niet uit
+- het sluit vooral opname in de formele T0-selectie of T0-MSI uit
+
+In de app wordt daarom een toelichting boven de grafiek getoond voor zulke soorten.
 
 ## G.E.E.-logica
 
@@ -287,12 +348,13 @@ De functie is:
 
 - verklarende analyse op soortniveau
 - verklarende analyse op groepsniveau
+- verklarende analyse op Rode/Oranje Lijst-niveau
 - met herhaalde metingen per `plot_id`
 - waarbij `plot_id` de cluster-id is
 
 ### Eerste werkende versie
 
-De eerste versie werkt per gekozen analyse-eenheid met:
+De versie werkt per gekozen analyse-eenheid met:
 
 - responsvariabele: `territoria`
 - linkfunctie: `log`
@@ -303,7 +365,8 @@ De eerste versie werkt per gekozen analyse-eenheid met:
 De gebruiker kiest eerst:
 
 - `Soort`
-- `Ecologische Vogelgroep`
+- `Vogelgroep`
+- `Rode/Oranje Lijst`
 
 Bij soortniveau:
 
@@ -312,9 +375,15 @@ Bij soortniveau:
 Bij groepsniveau:
 
 - soorten worden via `evg_vogel_landschapgroep` gekoppeld aan `groep_100`
-- respons = som territoria van alle soorten binnen één gekozen ecologische vogelgroep per `plot_id + jaar`
+- respons = som territoria van alle soorten binnen één gekozen vogelgroep per `plot_id + jaar`
 
-De groepsrespons is dus een geaggregeerde groepssom, geen MSI en geen TRIM-index.
+Bij Rode/Oranje Lijst-niveau:
+
+- soorten worden via `soort_richtlijn` gekoppeld aan `richtlijnen`
+- de twee verzamelcategorieen worden programmatisch opgebouwd
+- respons = som territoria van alle soorten binnen één gekozen richtlijncategorie per `plot_id + jaar`
+
+De groeps- en richtlijnrespons zijn dus geaggregeerde sommen, geen MSI en geen TRIM-index.
 
 De formule bevat altijd:
 
@@ -351,6 +420,7 @@ Nog niet meegenomen in deze eerste versie:
 - deeltoegankelijkheid
 - weeraggregaties
 - landgebruikssamenstellingen als afzonderlijke modeltermen
+- vogelkenmerken
 
 ### Covariaatkoppeling
 
@@ -376,29 +446,6 @@ De app toont in versie 1:
 - de gebruikte modeldataset als controle-export
 - een melding als gekozen covariaten in de actuele selectie vervallen door constante waarden of lineaire afhankelijkheid
 
-### Statistische aandachtspunten voor review
-
-Een statisticus zou in deze eerste G.E.E.-versie vooral moeten beoordelen:
-
-- of `Poisson + log(offset(area))` passend is
-- of `year_c` altijd als controlevariabele moet blijven staan
-- welke correlatiestructuur (`exchangeable`, `ar1`, `independence`, `unstructured`) hier inhoudelijk het meest verdedigbaar is
-- of nearest-year koppeling van ruimtelijke covariaten acceptabel is
-- of in een volgende stap negatieve binomiale of zero-inflation varianten nodig zijn
-- of een ruwe groepssom op EVG-niveau inhoudelijk de juiste respons is, of dat later een andere groepsrespons gewenst is
-- of het automatisch laten vervallen van constante of lineair afhankelijke covariaten statistisch de gewenste werkwijze is
-
-De grafiek zegt:
-
-- er bestaat wel een berekenbare deelreeks met geldige `t0_index`
-
-Dus:
-
-- `ongeschikt_voor_T0` sluit tonen niet uit
-- het sluit vooral opname in de formele T0-selectie of T0-MSI uit
-
-In de app wordt daarom een toelichting boven de grafiek getoond voor zulke soorten.
-
 ## Huidige outputs in de Shiny-app
 
 ### TRIM
@@ -406,6 +453,7 @@ In de app wordt daarom een toelichting boven de grafiek getoond voor zulke soort
 - selectie-overzicht
 - soortgrafieken
 - groepgrafieken
+- Rode/Oranje Lijst-grafieken
 - trendtabellen
 - controle-overzichten
 - CSV-exports
@@ -413,23 +461,46 @@ In de app wordt daarom een toelichting boven de grafiek getoond voor zulke soort
 ### LAMBDA
 
 - selectie-overzicht
-- soortgrafieken met T0-index per deelreeks
-- groepsgrafieken met T0-index per groep
+- soortgrafieken met jaar-op-jaar verandering in procenten per deelreeks
+- groepsgrafieken met jaar-op-jaar verandering in procenten per groep
+- Rode/Oranje Lijst-grafieken met jaar-op-jaar verandering in procenten per categorie
 - status- en controletabellen
 - CSV-exports
 
+### G.E.E.
+
+- selectie-overzicht
+- effectplot met `IRR` en `95%`-interval
+- coefficiententabel
+- gebruikte kavels
+- gebruikte plot-jaren
+- CSV-export van coefficienten
+- CSV-export van modeldataset
+
 ## Statistische aandachtspunten voor review
 
-Voor commentaar van een statisticus zijn vooral deze punten relevant:
+
+Te beoordelen:
+
+- of `Poisson + log(offset(area))` passend is
+- of `year_c` altijd als controlevariabele moet blijven staan
+- welke correlatiestructuur (`exchangeable`, `ar1`, `independence`, `unstructured`) hier inhoudelijk het meest verdedigbaar is of dat ze allemaal van toepassing zijn
+- of nearest-year koppeling van ruimtelijke covariaten acceptabel is
+- of in een volgende stap negatieve binomiale of zero-inflation varianten nodig zijn
+- of een ruwe groepssom of richtlijnsom inhoudelijk de juiste respons is, of dat later een andere respons gewenst is
+- of het automatisch laten vervallen van constante of lineair afhankelijke covariaten statistisch de gewenste werkwijze is
+
+Voor commentaar: 
 
 1. oppervlakte-correctie via mediane plotoppervlakte
 2. keuze om `1958` volledig uit `LAMBDA` te verwijderen
-3. keuze voor harde T0-splitsing op `1959` en `1984`
+3. keuze voor harde T0-splitsing op `1959`, `1973` en `1984`
 4. fallback naar eerste positieve jaar als `T0`
 5. gebruik van `lambda` en `log_lambda` zonder imputatie over gaten
 6. huidige drempels voor opname in `T0-soortanalyse` en `T0-MSI`
-7. combinatie van technische selectie en ecologische whitelist voor groepsniveau
+7. combinatie van technische selectie en gecureerde whitelist voor vogelgroep- en richtlijnniveau
 8. interpretatie van soorten die wel getoond worden maar `ongeschikt_voor_T0` zijn
+9. interpretatie van Rode/Oranje Lijst-categorieen en verzamelcategorieen als geometrisch gemiddelde bij TRIM/LAMBDA, maar als territoriasom bij G.E.E.
 
 ## Belangrijke projectnotitie
 
@@ -447,3 +518,6 @@ Dat zou snel tot inconsistenties leiden tussen:
 - Shiny-app
 - losse analyse-scripts
 - documentatie
+
+[1]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R
+[2]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/helpers.R

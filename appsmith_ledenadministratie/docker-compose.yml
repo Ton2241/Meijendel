@@ -1,0 +1,10 @@
+services:
+  appsmith:
+    image: index.docker.io/appsmith/appsmith-ce:v1.99
+    container_name: meijendel-appsmith
+    ports:
+      - "8080:80"
+      - "8443:443"
+    volumes:
+      - ./stacks:/appsmith-stacks
+    restart: unless-stopped

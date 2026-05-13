@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0f766e">
+    <title>VWG-M ledenadministratie</title>
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="assets/app.css">
+    <script defer src="assets/app.js"></script>
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="kicker">VWG Meijendel</p>
+        <h1>Ledenadministratie</h1>
+      </div>
+      <div class="status" id="syncStatus">Laden...</div>
+    </header>
+
+    <section class="auth-panel" id="authPanel" hidden>
+      <form class="auth-box" id="loginForm">
+        <h2>Inloggen</h2>
+        <label>
+          E-mailadres
+          <input name="email" type="email" autocomplete="email" required>
+        </label>
+        <button class="primary" type="submit">Stuur inloglink</button>
+        <p id="loginMessage"></p>
+      </form>
+      <form class="auth-box" id="codeForm" hidden>
+        <h2>Fallbackcode</h2>
+        <label>
+          E-mailadres
+          <input name="email" type="email" autocomplete="email" required>
+        </label>
+        <label>
+          Code
+          <input name="code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required>
+        </label>
+        <button class="primary" type="submit">Log in met code</button>
+      </form>
+    </section>
+
+    <main id="appShell" hidden>
+      <section class="stats" id="stats"></section>
+
+      <nav class="tabs" aria-label="Onderdelen">
+        <button class="tab is-active" type="button" data-tab="members">Informatie per lid</button>
+        <button class="tab" type="button" data-tab="history">Telhistorie</button>
+        <button class="tab" type="button" data-tab="active">Actieve tellers per jaar</button>
+        <button class="tab" type="button" data-tab="quality">Datakwaliteit</button>
+      </nav>
+
+      <section class="panel is-active" id="membersPanel">
+        <form class="filters" id="memberFilters">
+          <label>
+            Zoeken
+            <input name="search" type="search" placeholder="Naam, code, email of woonplaats">
+          </label>
+          <label>
+            Lidtype
+            <input name="type" type="search" placeholder="gewoon, aspirant, oudteller">
+          </label>
+          <label>
+            Actief jaar
+            <input name="activeYear" type="number" min="1900" max="2100" placeholder="2025">
+          </label>
+          <label>
+            Woonplaats
+            <input name="city" type="search" placeholder="Woonplaats">
+          </label>
+          <label>
+            Datakwaliteit
+            <select name="quality">
+              <option value="">Alle</option>
+              <option value="compleet">compleet</option>
+              <option value="mist email">mist email</option>
+              <option value="mist mobiel">mist mobiel</option>
+              <option value="mist woonplaats">mist woonplaats</option>
+            </select>
+          </label>
+          <button class="primary" type="submit">Zoek</button>
+          <button type="button" id="exportMembers">Export CSV</button>
+        </form>
+
+        <div class="split">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Naam</th>
+                  <th>Lidtype</th>
+                  <th>Woonplaats</th>
+                  <th>Jaren</th>
+                  <th>Plots</th>
+                  <th>Datakwaliteit</th>
+                </tr>
+              </thead>
+              <tbody id="membersRows"></tbody>
+            </table>
+          </div>
+          <aside class="detail" id="memberDetail">
+            <h2>Selecteer een lid</h2>
+            <p>De detailkaart verschijnt hier.</p>
+          </aside>
+        </div>
+      </section>
+
+      <section class="panel" id="historyPanel">
+        <form class="filters" id="historyFilters">
+          <label>
+            Jaar
+            <input name="year" type="number" min="1900" max="2100" placeholder="bijv. 2025">
+          </label>
+          <label>
+            Zoeken
+            <input name="search" type="search" placeholder="Naam, code of kavel">
+          </label>
+          <button class="primary" type="submit">Zoek</button>
+          <button type="button" id="exportHistory">Export CSV</button>
+        </form>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Naam</th>
+                <th>Jaar</th>
+                <th>Plots in jaar</th>
+                <th>Kavels</th>
+              </tr>
+            </thead>
+            <tbody id="historyRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="activePanel">
+        <div class="table-wrap narrow">
+          <table>
+            <thead>
+              <tr>
+                <th>Jaar</th>
+                <th>Actieve tellers</th>
+                <th>Getelde plots</th>
+                <th>Plotjaren</th>
+              </tr>
+            </thead>
+            <tbody id="activeRows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel" id="qualityPanel">
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Naam</th>
+                <th>Lidtype</th>
+                <th>Aandachtspunt</th>
+              </tr>
+            </thead>
+            <tbody id="qualityRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

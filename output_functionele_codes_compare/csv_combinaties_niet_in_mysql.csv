@@ -1,0 +1,223 @@
+soort_id;soort_naam;kenmerk_type;code;csv_bronkolom
+248;Appelvink;migratiegedrag;M-SHORT;migratiegedrag_code
+248;Appelvink;voedselgroep;V-ZAD-B;meest_toepassend_code
+248;Appelvink;voedselgroep;V-ZAD-O;overige_codes
+168;Blauwborst;migratiegedrag;M-LONG;migratiegedrag_code
+168;Blauwborst;voedselgroep;V-INS-B;meest_toepassend_code
+168;Blauwborst;voedselgroep;V-INS-K;overige_codes
+168;Blauwborst;voedselgroep;V-INS-L;overige_codes
+168;Blauwborst;voedselgroep;V-INS-S;overige_codes
+215;Boomklever;migratiegedrag;M-RES;migratiegedrag_code
+215;Boomklever;voedselgroep;V-INS-B;overige_codes
+215;Boomklever;voedselgroep;V-INS-K;meest_toepassend_code
+215;Boomklever;voedselgroep;V-INS-L;overige_codes
+215;Boomklever;voedselgroep;V-INS-S;overige_codes
+217;Boomkruiper;migratiegedrag;M-RES;migratiegedrag_code
+217;Boomkruiper;voedselgroep;V-INS-B;overige_codes
+217;Boomkruiper;voedselgroep;V-INS-K;meest_toepassend_code
+217;Boomkruiper;voedselgroep;V-INS-L;overige_codes
+217;Boomkruiper;voedselgroep;V-INS-S;overige_codes
+148;Boomleeuwerik;migratiegedrag;M-SHORT;migratiegedrag_code
+148;Boomleeuwerik;voedselgroep;V-INS-B;meest_toepassend_code
+148;Boomleeuwerik;voedselgroep;V-INS-K;overige_codes
+148;Boomleeuwerik;voedselgroep;V-INS-L;overige_codes
+148;Boomleeuwerik;voedselgroep;V-INS-S;overige_codes
+155;Boompieper;voedselgroep;V-INS-K;overige_codes
+155;Boompieper;voedselgroep;V-INS-L;overige_codes
+155;Boompieper;voedselgroep;V-INS-S;overige_codes
+66;Boomvalk;migratiegedrag;M-LONG;migratiegedrag_code
+66;Boomvalk;voedselgroep;V-INS-B;overige_codes
+66;Boomvalk;voedselgroep;V-INS-K;overige_codes
+66;Boomvalk;voedselgroep;V-INS-L;meest_toepassend_code
+66;Boomvalk;voedselgroep;V-INS-S;overige_codes
+192;Braamsluiper;voedselgroep;V-INS-B;overige_codes
+192;Braamsluiper;voedselgroep;V-INS-K;overige_codes
+192;Braamsluiper;voedselgroep;V-INS-L;overige_codes
+200;Fitis;voedselgroep;V-INS-B;overige_codes
+200;Fitis;voedselgroep;V-INS-L;overige_codes
+200;Fitis;voedselgroep;V-INS-S;overige_codes
+197;Fluiter;migratiegedrag;M-LONG;migratiegedrag_code
+197;Fluiter;voedselgroep;V-INS-B;overige_codes
+197;Fluiter;voedselgroep;V-INS-K;meest_toepassend_code
+197;Fluiter;voedselgroep;V-INS-L;overige_codes
+197;Fluiter;voedselgroep;V-INS-S;overige_codes
+170;Gekraagde Roodstaart;migratiegedrag;M-LONG;migratiegedrag_code
+170;Gekraagde Roodstaart;voedselgroep;V-INS-B;overige_codes
+170;Gekraagde Roodstaart;voedselgroep;V-INS-K;overige_codes
+170;Gekraagde Roodstaart;voedselgroep;V-INS-L;meest_toepassend_code
+170;Gekraagde Roodstaart;voedselgroep;V-INS-S;overige_codes
+208;Glanskop;migratiegedrag;M-RES;migratiegedrag_code
+208;Glanskop;voedselgroep;V-INS-B;overige_codes
+208;Glanskop;voedselgroep;V-INS-K;meest_toepassend_code
+208;Glanskop;voedselgroep;V-INS-L;overige_codes
+208;Glanskop;voedselgroep;V-INS-S;overige_codes
+201;Goudhaan;migratiegedrag;M-RES;migratiegedrag_code
+201;Goudhaan;voedselgroep;V-INS-B;overige_codes
+201;Goudhaan;voedselgroep;V-INS-K;meest_toepassend_code
+201;Goudhaan;voedselgroep;V-INS-L;overige_codes
+201;Goudhaan;voedselgroep;V-INS-S;overige_codes
+246;Goudvink;migratiegedrag;M-RES;migratiegedrag_code
+246;Goudvink;voedselgroep;V-ZAD-B;meest_toepassend_code
+246;Goudvink;voedselgroep;V-ZAD-O;overige_codes
+193;Grasmus;voedselgroep;V-INS-B;overige_codes
+193;Grasmus;voedselgroep;V-INS-K;overige_codes
+193;Grasmus;voedselgroep;V-INS-L;overige_codes
+156;Graspieper;voedselgroep;V-INS-K;overige_codes
+156;Graspieper;voedselgroep;V-INS-L;overige_codes
+156;Graspieper;voedselgroep;V-INS-S;overige_codes
+203;Grauwe Vliegenvanger;migratiegedrag;M-LONG;migratiegedrag_code
+203;Grauwe Vliegenvanger;voedselgroep;V-INS-B;overige_codes
+203;Grauwe Vliegenvanger;voedselgroep;V-INS-K;overige_codes
+203;Grauwe Vliegenvanger;voedselgroep;V-INS-L;meest_toepassend_code
+203;Grauwe Vliegenvanger;voedselgroep;V-INS-S;overige_codes
+142;Groene Specht;migratiegedrag;M-RES;migratiegedrag_code
+142;Groene Specht;voedselgroep;V-INS-B;meest_toepassend_code
+142;Groene Specht;voedselgroep;V-INS-K;overige_codes
+142;Groene Specht;voedselgroep;V-INS-L;overige_codes
+142;Groene Specht;voedselgroep;V-INS-S;overige_codes
+236;Groenling;migratiegedrag;M-SHORT;migratiegedrag_code
+236;Groenling;voedselgroep;V-ZAD-O;meest_toepassend_code
+144;Grote Bonte Specht;migratiegedrag;M-RES;migratiegedrag_code
+144;Grote Bonte Specht;voedselgroep;V-INS-B;overige_codes
+144;Grote Bonte Specht;voedselgroep;V-INS-K;meest_toepassend_code
+144;Grote Bonte Specht;voedselgroep;V-INS-L;overige_codes
+144;Grote Bonte Specht;voedselgroep;V-INS-S;overige_codes
+179;Grote Lijster;migratiegedrag;M-SHORT;migratiegedrag_code
+179;Grote Lijster;voedselgroep;V-INS-B;meest_toepassend_code
+179;Grote Lijster;voedselgroep;V-INS-K;overige_codes
+179;Grote Lijster;voedselgroep;V-INS-L;overige_codes
+179;Grote Lijster;voedselgroep;V-INS-S;overige_codes
+165;Heggenmus;migratiegedrag;M-RES;migratiegedrag_code
+165;Heggenmus;voedselgroep;V-INS-B;overige_codes
+165;Heggenmus;voedselgroep;V-INS-K;overige_codes
+165;Heggenmus;voedselgroep;V-INS-L;overige_codes
+165;Heggenmus;voedselgroep;V-INS-S;meest_toepassend_code
+122;Holenduif;migratiegedrag;M-SHORT;migratiegedrag_code
+122;Holenduif;voedselgroep;V-ZAD-B;overige_codes
+122;Holenduif;voedselgroep;V-ZAD-O;meest_toepassend_code
+123;Houtduif;migratiegedrag;M-SHORT;migratiegedrag_code
+123;Houtduif;voedselgroep;V-ZAD-B;overige_codes
+123;Houtduif;voedselgroep;V-ZAD-O;meest_toepassend_code
+146;Kleine Bonte Specht;migratiegedrag;M-RES;migratiegedrag_code
+146;Kleine Bonte Specht;voedselgroep;V-INS-B;overige_codes
+146;Kleine Bonte Specht;voedselgroep;V-INS-K;meest_toepassend_code
+146;Kleine Bonte Specht;voedselgroep;V-INS-L;overige_codes
+146;Kleine Bonte Specht;voedselgroep;V-INS-S;overige_codes
+239;Kneu;migratiegedrag;M-SHORT;migratiegedrag_code
+239;Kneu;voedselgroep;V-ZAD-B;overige_codes
+127;Koekoek;voedselgroep;V-INS-B;overige_codes
+127;Koekoek;voedselgroep;V-INS-K;meest_toepassend_code
+127;Koekoek;voedselgroep;V-INS-L;overige_codes
+214;Koolmees;voedselgroep;V-INS-B;overige_codes
+214;Koolmees;voedselgroep;V-INS-L;overige_codes
+214;Koolmees;voedselgroep;V-INS-S;overige_codes
+243;Kruisbek;migratiegedrag;M-SHORT;migratiegedrag_code
+243;Kruisbek;voedselgroep;V-ZAD-B;meest_toepassend_code
+243;Kruisbek;voedselgroep;V-ZAD-O;overige_codes
+210;Kuifmees;migratiegedrag;M-RES;migratiegedrag_code
+210;Kuifmees;voedselgroep;V-INS-B;overige_codes
+210;Kuifmees;voedselgroep;V-INS-K;meest_toepassend_code
+210;Kuifmees;voedselgroep;V-INS-L;overige_codes
+210;Kuifmees;voedselgroep;V-INS-S;overige_codes
+175;Merel;voedselgroep;V-INS-B;meest_toepassend_code
+175;Merel;voedselgroep;V-INS-K;overige_codes
+175;Merel;voedselgroep;V-INS-L;overige_codes
+175;Merel;voedselgroep;V-INS-S;overige_codes
+167;Nachtegaal;voedselgroep;V-INS-B;overige_codes
+167;Nachtegaal;voedselgroep;V-INS-K;overige_codes
+167;Nachtegaal;voedselgroep;V-INS-L;overige_codes
+171;Paapje;migratiegedrag;M-LONG;migratiegedrag_code
+171;Paapje;voedselgroep;V-INS-B;overige_codes
+171;Paapje;voedselgroep;V-INS-K;overige_codes
+171;Paapje;voedselgroep;V-INS-L;meest_toepassend_code
+171;Paapje;voedselgroep;V-INS-S;overige_codes
+69;Patrijs;migratiegedrag;M-RES;migratiegedrag_code
+69;Patrijs;voedselgroep;V-INS-B;meest_toepassend_code
+69;Patrijs;voedselgroep;V-INS-K;overige_codes
+69;Patrijs;voedselgroep;V-INS-L;overige_codes
+69;Patrijs;voedselgroep;V-INS-S;overige_codes
+213;Pimpelmees;voedselgroep;V-INS-B;overige_codes
+213;Pimpelmees;voedselgroep;V-INS-L;overige_codes
+213;Pimpelmees;voedselgroep;V-INS-S;overige_codes
+237;Putter;migratiegedrag;M-SHORT;migratiegedrag_code
+237;Putter;voedselgroep;V-ZAD-B;overige_codes
+232;Ringmus;voedselgroep;V-ZAD-B;overige_codes
+166;Roodborst;migratiegedrag;M-SHORT;migratiegedrag_code
+166;Roodborst;voedselgroep;V-INS-K;overige_codes
+166;Roodborst;voedselgroep;V-INS-L;overige_codes
+166;Roodborst;voedselgroep;V-INS-S;overige_codes
+172;Roodborsttapuit;migratiegedrag;M-SHORT;migratiegedrag_code
+172;Roodborsttapuit;voedselgroep;V-INS-B;overige_codes
+172;Roodborsttapuit;voedselgroep;V-INS-K;overige_codes
+172;Roodborsttapuit;voedselgroep;V-INS-L;meest_toepassend_code
+172;Roodborsttapuit;voedselgroep;V-INS-S;overige_codes
+190;Spotvogel;migratiegedrag;M-LONG;migratiegedrag_code
+190;Spotvogel;voedselgroep;V-INS-B;overige_codes
+190;Spotvogel;voedselgroep;V-INS-K;meest_toepassend_code
+190;Spotvogel;voedselgroep;V-INS-L;overige_codes
+190;Spotvogel;voedselgroep;V-INS-S;overige_codes
+229;Spreeuw;migratiegedrag;M-SHORT;migratiegedrag_code
+229;Spreeuw;voedselgroep;V-INS-K;overige_codes
+229;Spreeuw;voedselgroep;V-INS-L;overige_codes
+229;Spreeuw;voedselgroep;V-INS-S;overige_codes
+207;Staartmees;migratiegedrag;M-RES;migratiegedrag_code
+207;Staartmees;voedselgroep;V-INS-B;overige_codes
+207;Staartmees;voedselgroep;V-INS-K;meest_toepassend_code
+207;Staartmees;voedselgroep;V-INS-L;overige_codes
+207;Staartmees;voedselgroep;V-INS-S;overige_codes
+173;Tapuit;voedselgroep;V-INS-K;overige_codes
+173;Tapuit;voedselgroep;V-INS-L;overige_codes
+173;Tapuit;voedselgroep;V-INS-S;overige_codes
+198;Tjiftjaf;migratiegedrag;M-LONG;migratiegedrag_code
+198;Tjiftjaf;voedselgroep;V-INS-B;overige_codes
+198;Tjiftjaf;voedselgroep;V-INS-L;overige_codes
+198;Tjiftjaf;voedselgroep;V-INS-S;overige_codes
+194;Tuinfluiter;migratiegedrag;M-LONG;migratiegedrag_code
+194;Tuinfluiter;voedselgroep;V-INS-B;overige_codes
+194;Tuinfluiter;voedselgroep;V-INS-K;overige_codes
+194;Tuinfluiter;voedselgroep;V-INS-L;overige_codes
+194;Tuinfluiter;voedselgroep;V-INS-S;meest_toepassend_code
+124;Turkse Tortel;migratiegedrag;M-RES;migratiegedrag_code
+124;Turkse Tortel;voedselgroep;V-ZAD-B;overige_codes
+124;Turkse Tortel;voedselgroep;V-ZAD-O;meest_toepassend_code
+150;Veldleeuwerik;migratiegedrag;M-SHORT;migratiegedrag_code
+150;Veldleeuwerik;voedselgroep;V-INS-B;meest_toepassend_code
+150;Veldleeuwerik;voedselgroep;V-INS-K;overige_codes
+150;Veldleeuwerik;voedselgroep;V-INS-L;overige_codes
+150;Veldleeuwerik;voedselgroep;V-INS-S;overige_codes
+233;Vink;migratiegedrag;M-SHORT;migratiegedrag_code
+233;Vink;voedselgroep;V-INS-K;overige_codes
+233;Vink;voedselgroep;V-INS-L;overige_codes
+233;Vink;voedselgroep;V-INS-S;overige_codes
+218;Wielewaal;migratiegedrag;M-LONG;migratiegedrag_code
+218;Wielewaal;voedselgroep;V-INS-B;overige_codes
+218;Wielewaal;voedselgroep;V-INS-K;meest_toepassend_code
+218;Wielewaal;voedselgroep;V-INS-L;overige_codes
+218;Wielewaal;voedselgroep;V-INS-S;overige_codes
+164;Winterkoning;voedselgroep;V-INS-B;overige_codes
+164;Winterkoning;voedselgroep;V-INS-K;overige_codes
+164;Winterkoning;voedselgroep;V-INS-L;overige_codes
+162;Witte Kwikstaart;migratiegedrag;M-SHORT;migratiegedrag_code
+162;Witte Kwikstaart;voedselgroep;V-INS-B;meest_toepassend_code
+162;Witte Kwikstaart;voedselgroep;V-INS-K;overige_codes
+162;Witte Kwikstaart;voedselgroep;V-INS-L;overige_codes
+162;Witte Kwikstaart;voedselgroep;V-INS-S;overige_codes
+97;Wulp;migratiegedrag;M-SHORT;migratiegedrag_code
+97;Wulp;voedselgroep;V-INS-B;meest_toepassend_code
+97;Wulp;voedselgroep;V-INS-K;overige_codes
+97;Wulp;voedselgroep;V-INS-L;overige_codes
+97;Wulp;voedselgroep;V-INS-S;overige_codes
+177;Zanglijster;migratiegedrag;M-SHORT;migratiegedrag_code
+177;Zanglijster;voedselgroep;V-INS-K;overige_codes
+177;Zanglijster;voedselgroep;V-INS-L;overige_codes
+177;Zanglijster;voedselgroep;V-INS-S;overige_codes
+212;Zwarte Mees;migratiegedrag;M-RES;migratiegedrag_code
+212;Zwarte Mees;voedselgroep;V-INS-B;overige_codes
+212;Zwarte Mees;voedselgroep;V-INS-K;meest_toepassend_code
+212;Zwarte Mees;voedselgroep;V-INS-L;overige_codes
+212;Zwarte Mees;voedselgroep;V-INS-S;overige_codes
+195;Zwartkop;migratiegedrag;M-LONG;migratiegedrag_code
+195;Zwartkop;voedselgroep;V-INS-B;overige_codes
+195;Zwartkop;voedselgroep;V-INS-K;overige_codes
+195;Zwartkop;voedselgroep;V-INS-L;overige_codes
+195;Zwartkop;voedselgroep;V-INS-S;meest_toepassend_code

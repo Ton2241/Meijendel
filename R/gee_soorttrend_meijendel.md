@@ -95,10 +95,4 @@ Rscript /Users/ton/Documents/GitHub/Meijendel/R/gee_soorttrend_meijendel.R \
 - Het model gebruikt oppervlakte als offset in `km2`, conform de bestaande tabellen.
 - Het script is bewust zelfstandig gehouden en hergebruikt daarom de parserlogica uit de bestaande R-scripts in plaats van een aparte package-helper.
 
-## Nog niet gedaan
-
-Het script is toegevoegd, maar niet gedraaid of gevalideerd op echte uitvoer. Mogelijke vervolgstappen zijn:
-
-- één of twee soorten proefmatig draaien
-- controleren of `predict.geeglm(..., se.fit = TRUE)` in jouw lokale R-setup werkt zoals verwacht
-- beoordelen of voor zeldzame soorten een negatief-binomiaal of eenvoudiger model robuuster is
+## 

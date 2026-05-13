@@ -65,17 +65,6 @@ summary::-webkit-details-marker{display:none}
 .legend-line{width:18px;height:0;border-top:3px solid #000;border-radius:999px}
 .legend-dashed{border-top-style:dashed}
 .chart-frame{fill:#ffffff;stroke:#e5e7eb;stroke-width:1}
-.teller-card{border:1px solid #e5e7eb;border-radius:12px;padding:16px;margin-bottom:12px}
-.teller-name{font-weight:600;font-size:15px;color:#1f2937}
-.teller-code{font-size:12px;color:#9ca3af}
-.teller-contact{font-size:13px;color:#4b5563;margin-top:4px}
-.teller-contact a{color:#15803d}
-table.kavel-tbl{font-size:12px;width:100%;border-collapse:collapse;margin-top:8px}
-table.kavel-tbl th{text-align:left;padding:4px 8px;font-weight:500;color:#6b7280;border-bottom:1px solid #e5e7eb;background:#f9fafb}
-table.kavel-tbl td{padding:4px 8px;border-bottom:1px solid #f3f4f6}
-.kavel-badge{background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:999px;font-size:11px;display:inline-block;margin:2px}
-.search-box{width:100%;max-width:360px;border:1px solid #d1d5db;border-radius:8px;padding:8px 12px;font-size:14px;margin-bottom:6px;outline:none}
-.found-count{font-size:12px;color:#9ca3af;margin-bottom:16px}
 .spinner{text-align:center;padding:80px 0;color:#6b7280}
 .error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:24px;text-align:center}
 .schema-wrap{margin-top:24px}
@@ -128,6 +117,20 @@ table.kavel-tbl td{padding:4px 8px;border-bottom:1px solid #f3f4f6}
 .plot-vogel-stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:12px}
 .plot-vogel-list{font-size:13px;color:#374151;line-height:1.6}
 .plot-note{margin-top:8px;font-size:12px;color:#92400e;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 10px}
+.kenmerk-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.kenmerk-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+.kenmerk-card h3{font-size:14px;font-weight:600;color:#374151;margin-bottom:8px}
+.kenmerk-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:12px 0 16px}
+.kenmerk-summary-card{background:#f9fafb;border:1px solid #e5e7eb;border-radius:10px;padding:12px}
+.kenmerk-summary-label{font-size:11px;color:#9ca3af;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.kenmerk-summary-value{font-size:18px;font-weight:700;color:#1f2937}
+.kenmerk-list{display:grid;gap:8px}
+.kenmerk-item{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:10px 12px}
+.kenmerk-name{font-size:13px;font-weight:600;color:#1f2937;margin-bottom:3px}
+.kenmerk-code{font-size:11px;color:#9ca3af;font-weight:600;margin-left:6px}
+.kenmerk-meta{font-size:11px;color:#0f766e;font-weight:600;margin-top:6px}
+.kenmerk-meta.secondary{color:#92400e}
+.kenmerk-text{font-size:12px;color:#6b7280;line-height:1.5}
 @media (max-width:768px){
   .header{flex-direction:column;align-items:flex-start;gap:12px}
   .stat-cards{grid-template-columns:1fr}
@@ -138,6 +141,8 @@ table.kavel-tbl td{padding:4px 8px;border-bottom:1px solid #f3f4f6}
   .plot-title-head{grid-template-columns:1fr}
   .plot-title-statuscol{align-items:flex-start}
   .plot-title-statusnote{text-align:left}
+  .kenmerk-summary{grid-template-columns:1fr}
+  .kenmerk-grid{grid-template-columns:1fr}
 }
 </style>
 </head>
@@ -147,6 +152,13 @@ table.kavel-tbl td{padding:4px 8px;border-bottom:1px solid #f3f4f6}
 const COLORS=["#2ecc71","#3498db","#e67e22","#9b59b6","#e74c3c","#1abc9c","#f39c12","#16a085","#8e44ad","#d35400","#27ae60","#c0392b"];
 const SVG_NS="http://www.w3.org/2000/svg";
 const SVG_TAGS=new Set(["svg","line","text","polyline","circle","rect","polygon"]);
+const LOCAL_HTTP_PORT="3870";
+if(location.protocol==="file:"){
+  const target=`http://127.0.0.1:${LOCAL_HTTP_PORT}/${encodeURIComponent(location.pathname.split("/").pop())}`;
+  const app=document.getElementById("app");
+  if(app)app.innerHTML=`<div class="idle"><h2>De gegevens worden via de lokale webserver geladen.</h2><p>Doorschakelen naar ${target}</p></div>`;
+  location.replace(target);
+}
 
 function parseCSVText(text){
   const rows=[]; let row=[],cell="",inQuotes=false;
@@ -214,7 +226,8 @@ const AUTOLOAD_PATHS={
   msiTrim:["trim_msi_evg/msi_per_groep_per_jaar.csv","msi_per_groep_per_jaar.csv"],
   msiTrimTrend:["trim_msi_evg/trendoverzicht_msi_groepen.csv","trendoverzicht_msi_groepen.csv"],
   msiTrimGamPred:["trim_msi_evg/gam_voorspellingen_msi_groepen.csv","gam_voorspellingen_msi_groepen.csv"],
-  msiTrimGamInterp:["trim_msi_evg/gam_interpretatie_msi_groepen.csv","gam_interpretatie_msi_groepen.csv"]
+  msiTrimGamInterp:["trim_msi_evg/gam_interpretatie_msi_groepen.csv","gam_interpretatie_msi_groepen.csv"],
+  msiLandelijkGamPred:["trim_msi_evg/gam_voorspellingen_landelijk_msi_groepen.csv","gam_voorspellingen_landelijk_msi_groepen.csv"]
 };
 
 async function autoLoadFromSameFolder(){
@@ -238,7 +251,8 @@ async function autoLoadFromSameFolder(){
     tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrim,"trim_msi"),
     tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimTrend,"trim_trend"),
     tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimGamPred,"trim_gam_pred"),
-    tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimGamInterp,"trim_gam_interp")
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiTrimGamInterp,"trim_gam_interp"),
+    tryAutoLoadCsv(AUTOLOAD_PATHS.msiLandelijkGamPred,"landelijk_gam_pred")
   ]);
 
   if(!sqlLoaded&&S.status==="idle")render();
@@ -272,24 +286,35 @@ function renderSimpleChart(containerId,config){
     container.appendChild(el("div",{className:"chart-empty"},"Geen gegevens beschikbaar voor deze selectie."));
     return;
   }
-  const width=900,height=360,margin={top:20,right:18,bottom:52,left:60};
+  const width=900,height=360,margin={top:20,right:18,bottom:52,left:config.leftMargin||60};
   const innerW=width-margin.left-margin.right,innerH=height-margin.top-margin.bottom;
   const values=datasets.flatMap(ds=>ds.data).filter(v=>typeof v==="number"&&!Number.isNaN(v));
-  let min=Math.min(...values),max=Math.max(...values);
-  if(min===max){const pad=min===0?1:Math.abs(min)*0.1;min-=pad;max+=pad;}
-  const range=max-min;
-  const outerPad=range===0?1:range*0.08;
-  min-=outerPad;
-  max+=outerPad;
   const ticks=5;
+  const yInteger=config.yInteger===true;
+  let min=Math.min(...values),max=Math.max(...values),tickValues=null;
+  if(yInteger){
+    const rawMin=min,rawMax=max;
+    min=rawMin>=0?0:Math.floor(rawMin);
+    max=Math.ceil(rawMax);
+    if(min===max)max=min+1;
+    const step=Math.max(1,Math.ceil((max-min)/(ticks-1)));
+    max=min+(step*(ticks-1));
+    tickValues=Array.from({length:ticks},(_,i)=>min+(step*i));
+  }else{
+    if(min===max){const pad=min===0?1:Math.abs(min)*0.1;min-=pad;max+=pad;}
+    const range=max-min;
+    const outerPad=range===0?1:range*0.08;
+    min-=outerPad;
+    max+=outerPad;
+  }
   const xAt=i=>margin.left+(labels.length===1?innerW/2:(i*(innerW/(labels.length-1))));
   const yAt=v=>margin.top+innerH-((v-min)/(max-min))*innerH;
   const svg=el("svg",{class:"chart-svg",viewBox:`0 0 ${width} ${height}`,preserveAspectRatio:"none"});
   svg.appendChild(el("rect",{x:margin.left,y:margin.top,width:innerW,height:innerH,rx:8,class:"chart-frame"}));
   for(let i=0;i<ticks;i++){
-    const value=min+((max-min)/(ticks-1))*i, y=yAt(value);
+    const value=tickValues?tickValues[i]:min+((max-min)/(ticks-1))*i, y=yAt(value);
     svg.appendChild(el("line",{x1:margin.left,y1:y,x2:width-margin.right,y2:y,class:"chart-grid"}));
-    svg.appendChild(el("text",{x:margin.left-8,y:y+4,"text-anchor":"end",class:"chart-label"},value.toLocaleString("nl-NL",{maximumFractionDigits:3})));
+    svg.appendChild(el("text",{x:margin.left-8,y:y+4,"text-anchor":"end",class:"chart-label"},value.toLocaleString("nl-NL",{maximumFractionDigits:yInteger?0:3})));
   }
   svg.appendChild(el("line",{x1:margin.left,y1:margin.top,x2:margin.left,y2:height-margin.bottom,class:"chart-axis"}));
   svg.appendChild(el("line",{x1:margin.left,y1:height-margin.bottom,x2:width-margin.right,y2:height-margin.bottom,class:"chart-axis"}));
@@ -332,17 +357,38 @@ function renderSimpleChart(containerId,config){
   container.appendChild(legend);
 }
 
-function splitCSV(s){const r=[];let c="",q=false;for(let i=0;i<s.length;i++){const ch=s[i];if(ch==="'"&&s[i-1]!=="\\"){q=!q;c+=ch;}else if(ch===","&&!q){r.push(c);c="";}else c+=ch;}r.push(c);return r;}
+function splitCSV(s){const r=[];let c="",q=false,d=0;for(let i=0;i<s.length;i++){const ch=s[i];if(ch==="'"&&s[i-1]!=="\\"){q=!q;c+=ch;}else if(ch==="("&&!q){d++;c+=ch;}else if(ch===")"&&!q&&d>0){d--;c+=ch;}else if(ch===","&&!q&&d===0){r.push(c);c="";}else c+=ch;}r.push(c);return r;}
 function clean(v){if(v==null)return null;v=v.trim();if(v==="NULL"||v==="null")return null;if(v.startsWith("'")&&v.endsWith("'"))return v.slice(1,-1).replace(/\\'/g,"'");const n=Number(v);return isNaN(n)?v:n;}
+function splitInsertRows(values){
+  const rows=[];let row="",q=false,d=0;
+  for(let i=0;i<values.length;i++){
+    const ch=values[i];
+    if(ch==="'"&&values[i-1]!=="\\"){q=!q;if(d>0)row+=ch;continue;}
+    if(ch==="("&&!q){if(d===0){row="";d=1;continue;}d++;row+=ch;continue;}
+    if(ch===")"&&!q){if(d>1){d--;row+=ch;continue;}if(d===1){rows.push(row);row="";d=0;continue;}}
+    if(d>0)row+=ch;
+  }
+  return rows;
+}
 function parseDump(sql){
   const tables={};
-  const re=/INSERT INTO\s+`?([^`\s(]+)`?\s+\(([^)]+)\)\s+VALUES\s*([\s\S]+?)(?=;\s*(?:INSERT|CREATE|DROP|ALTER|SET|\/\*|--)|;\s*$)/gi;
+  const createRe=/CREATE TABLE\s+`?([^`\s(]+)`?\s*\(([\s\S]*?)\)\s*ENGINE=/gi;
+  let cm;
+  while((cm=createRe.exec(sql))!==null){
+    const tbl=cm[1].toLowerCase();
+    const cols=cm[2].split(/\n/).map(line=>{
+      const m=line.trim().match(/^`([^`]+)`/);
+      return m?m[1]:null;
+    }).filter(Boolean);
+    if(cols.length&&!tables[tbl])tables[tbl]={columns:cols,rows:[]};
+  }
+  const re=/INSERT INTO\s+`?([^`\s(]+)`?(?:\s+\(([^)]+)\))?\s+VALUES\s*([\s\S]+?)(?=;\s*(?:INSERT|CREATE|DROP|ALTER|SET|\/\*|--)|;\s*$)/gi;
   let m;
   while((m=re.exec(sql))!==null){
-    const tbl=m[1].toLowerCase(),cols=m[2].split(",").map(c=>c.trim().replace(/`/g,""));
+    const tbl=m[1].toLowerCase(),cols=m[2]?m[2].split(",").map(c=>c.trim().replace(/`/g,"")):(tables[tbl]?.columns||[]);
+    if(!cols.length)continue;
     if(!tables[tbl])tables[tbl]={columns:cols,rows:[]};
-    const tr=/\(([^)]*(?:'[^']*'[^)]*)*)\)/g;let tv;
-    while((tv=tr.exec(m[3]))!==null){const row={};splitCSV(tv[1]).forEach((v,i)=>{row[cols[i]]=clean(v);});tables[tbl].rows.push(row);}
+    splitInsertRows(m[3]).forEach(values=>{const row={};splitCSV(values).forEach((v,i)=>{row[cols[i]]=clean(v);});tables[tbl].rows.push(row);});
   }
   return tables;
 }
@@ -425,8 +471,6 @@ function getAreaForYear(areaMeta,jaar,selectedPlots){
   if(!yearAreas)return null;
   let plots=Object.keys(yearAreas);
   if(selectedPlots?.length)plots=plots.filter(p=>selectedPlots.includes(String(p)));
-  const counted=areaMeta.countedByYear?.[jaar];
-  if(counted?.size)plots=plots.filter(p=>counted.has(String(p)));
   const total=plots.reduce((sum,p)=>sum+(Number(yearAreas[p])||0),0);
   return total>0?total:null;
 }
@@ -458,7 +502,10 @@ function buildGroepDensity(rows,sc,yc,cc,sel,areaMeta,selectedPlots,yearRange){
   });
   return years.map(y=>{const km2=getAreaForYear(areaMeta,y,selectedPlots);return{jaar:y,val:km2?+(((agg[y]||0))/km2).toFixed(3):null};});
 }
-const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimTrendSummary:null,trimAllSpecies:[],voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotView:{plot:null,jaar:null}};
+function buildGroepTotals(trendData,sel){
+  return trendData.years.map(y=>sel.reduce((sum,s)=>sum+(trendData.agg[y]?.[s]||0),0));
+}
+const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimTrendSummary:null,trimAllSpecies:[],winterMetric:"abs",winterSelected:[],winterSelectedPlots:[],winterSeasonRange:{van:null,tot:null},winterMeta:null,kenmerkenSelected:null,voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,landelijkGamPredData:null,msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotView:{plot:null,jaar:null}};
 function setState(patch){Object.assign(S,patch);render();}
 function processFile(sql){
   const tables=parseDump(sql);
@@ -470,7 +517,9 @@ function processFile(sql){
   const kavelMap=buildKavelMap(tables); if(kavelMap&&pfk){rows=rows.map(r=>({...r,__kv:kavelMap[String(r[pfk])]??r[pfk]}));rpc="__kv";}
   const main={name,tbl:{...tbl,rows},sc:rsc,yc,cc,pc:rpc,nameLookup},groepMap=buildGroepMap(tables,nameLookup),areaMeta=buildAreaMeta(tables,kavelMap),plotChoices=buildPlotChoices(tables);
   const allGroepen=[...new Set(Object.values(groepMap).filter(Boolean))].sort(),allYears=[...new Set(rows.map(r=>toYear(r[yc])).filter(Boolean))].sort(),allPlots=rpc?[...new Set(rows.map(r=>r[rpc]).filter(Boolean))].sort():[],allSpecies=[...new Set(rows.map(r=>r[rsc]).filter(Boolean))].sort();
-  Object.assign(S,{tables,main,groepMap,areaMeta,plotChoices,allGroepen,allYears,allPlots,allSpecies,selected:[],selectedGroep:"",selectedPlots:[],yearRange:{van:allYears[0]||null,tot:allYears[allYears.length-1]||null},status:"ok",plotView:{plot:plotChoices[0]?.value||allPlots[0]||null,jaar:allYears[allYears.length-1]||allYears[0]||null}});
+  Object.assign(S,{tables,main,groepMap,areaMeta,plotChoices,allGroepen,allYears,allPlots,allSpecies,selected:[],selectedGroep:"",selectedPlots:[],kenmerkenSelected:null,yearRange:{van:allYears[0]||null,tot:allYears[allYears.length-1]||null},status:"ok",plotView:{plot:plotChoices[0]?.value||allPlots[0]||null,jaar:allYears[allYears.length-1]||allYears[0]||null}});
+  initWinterMeta();
+  refreshMsiMeta();
   refilter();
 }
 function refilter(){
@@ -522,15 +571,308 @@ function rebaseTrimSeries(rows,years,baseYear){
     return +(value/base*100).toFixed(1);
   });
 }
+function buildTrimGroupSeries(rows,sel){
+  const series=sel.map(s=>rows
+    .filter(r=>r.soort_naam===s)
+    .map(r=>({jaar:Number(r.jaar),waarde:Number(getTrimIndexValue(r))}))
+    .filter(r=>Number.isFinite(r.jaar)&&Number.isFinite(r.waarde)&&r.waarde>0)
+    .sort((a,b)=>a.jaar-b.jaar)
+  ).filter(r=>r.length);
+  const years=[...new Set(series.flatMap(rows=>rows.map(r=>r.jaar)))].sort((a,b)=>a-b);
+  const commonBase=getCommonBaseYear(series.map(rows=>({rows})));
+  const bySpecies=series.map(rows=>{
+    const speciesYears=rows.map(r=>r.jaar);
+    const baseYear=commonBase??speciesYears[0];
+    return new Map(speciesYears.map((y,i)=>[y,rebaseTrimSeries(rows,speciesYears,baseYear)[i]]));
+  });
+  const data=years.map(y=>{
+    const vals=bySpecies.map(m=>m.get(y)).filter(v=>Number.isFinite(v)&&v>0);
+    if(!vals.length)return null;
+    return +(Math.exp(vals.reduce((sum,v)=>sum+Math.log(v),0)/vals.length)).toFixed(1);
+  });
+  return {years,data,baseYear:commonBase};
+}
+const RODE_LIJST_GROEP_CODE="rl";
+const ORANJE_LIJST_GROEP_CODE="ol";
+const RODE_ORANJE_LIJST_GROEP_CODE="rol";
+const ORANJE_LIJST_RICHTLIJN_ID="6";
+const MSI_DEFAULT_START_YEAR=1990;
+function isRodeLijstGroep(groep100){return String(groep100)===RODE_LIJST_GROEP_CODE;}
+function isOranjeLijstGroep(groep100){return String(groep100)===ORANJE_LIJST_GROEP_CODE;}
+function isRodeOranjeLijstGroep(groep100){return String(groep100)===RODE_ORANJE_LIJST_GROEP_CODE;}
+function isLijstGroep(groep100){return isRodeLijstGroep(groep100)||isOranjeLijstGroep(groep100)||isRodeOranjeLijstGroep(groep100);}
+function getRodeLijstRichtlijnIds(){
+  return new Set(getTableRows("richtlijnen")
+    .filter(r=>String(r.naam||"").trim().startsWith("RL:"))
+    .map(r=>String(r.id))
+    .filter(Boolean));
+}
+function getRodeLijstSpeciesIds(){
+  const richtlijnIds=getRodeLijstRichtlijnIds();
+  if(!richtlijnIds.size)return [];
+  return [...new Set(getTableRows("soort_richtlijn")
+    .filter(r=>richtlijnIds.has(String(r.richtlijn_id)))
+    .map(r=>String(r.soort_id))
+    .filter(Boolean))];
+}
+function getOranjeLijstSpeciesIds(){
+  return [...new Set(getTableRows("soort_richtlijn")
+    .filter(r=>String(r.richtlijn_id)===ORANJE_LIJST_RICHTLIJN_ID)
+    .map(r=>String(r.soort_id))
+    .filter(Boolean))];
+}
+function getRodeOranjeLijstSpeciesIds(){
+  return [...new Set([...getRodeLijstSpeciesIds(),...getOranjeLijstSpeciesIds()])];
+}
+function getRodeLijstSpeciesNames(){
+  const lookup=getSoortenLookup();
+  return getRodeLijstSpeciesIds().map(id=>lookup[String(id)]).filter(Boolean).sort();
+}
+function getOranjeLijstSpeciesNames(){
+  const lookup=getSoortenLookup();
+  return getOranjeLijstSpeciesIds().map(id=>lookup[String(id)]).filter(Boolean).sort();
+}
+function getSpeciesNamesForGroup(groep100){
+  const lookup=getSoortenLookup();
+  return getSpeciesIdsForGroup(groep100)
+    .map(id=>lookup[String(id)]||String(id))
+    .filter(Boolean)
+    .sort((a,b)=>String(a).localeCompare(String(b),"nl",{sensitivity:"base"}));
+}
+function renderMsiSpeciesBox(groepNaam){
+  const names=getSpeciesNamesForGroup(S.msiGroep);
+  const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});
+  box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"8px"}},`Vogelsoorten in ${groepNaam||"deze groep"}`));
+  box.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.6"}},names.length?names.join(", "):"Geen vogelsoorten gevonden voor deze groep."));
+  return box;
+}
+function getSpeciesIdsForGroup(groep100){
+  if(isRodeLijstGroep(groep100))return getRodeLijstSpeciesIds();
+  if(isOranjeLijstGroep(groep100))return getOranjeLijstSpeciesIds();
+  if(isRodeOranjeLijstGroep(groep100))return getRodeOranjeLijstSpeciesIds();
+  const rows=getTableRows("evg_vogel_landschapgroep");
+  return [...new Set(rows
+    .filter(r=>Math.floor(Number(r.groepsnummer)/100)*100===Number(groep100))
+    .map(r=>String(r.vogel_id))
+    .filter(Boolean)
+  )];
+}
+function buildRegionalMsiForGroup(groep100,regio){
+  const speciesIds=getSpeciesIdsForGroup(groep100);
+  if(!speciesIds.length)return null;
+  const speciesSet=new Set(speciesIds);
+  const bySpecies=new Map();
+  getTableRows("trends")
+    .filter(r=>speciesSet.has(String(r.soort_id))&&normKey(r.regio)===normKey(regio))
+    .map(r=>({soort_id:String(r.soort_id),jaar:Number(r.jaar),waarde:Number(r.waarde)}))
+    .filter(r=>Number.isFinite(r.jaar)&&Number.isFinite(r.waarde)&&r.waarde>0)
+    .forEach(r=>{
+      if(!bySpecies.has(r.soort_id))bySpecies.set(r.soort_id,[]);
+      bySpecies.get(r.soort_id).push(r);
+    });
+  const series=[...bySpecies.values()].map(rows=>rows.sort((a,b)=>a.jaar-b.jaar)).filter(rows=>rows.length);
+  if(!series.length)return null;
+  const years=[...new Set(series.flatMap(rows=>rows.map(r=>r.jaar)))].sort((a,b)=>a-b);
+  const maps=series.map(rows=>{
+    const speciesYears=rows.map(r=>r.jaar);
+    const baseYear=speciesYears[0];
+    return new Map(speciesYears.map((y,i)=>[y,rebaseTrimSeries(rows,speciesYears,baseYear)[i]]));
+  });
+  const data=years.map(y=>{
+    const vals=maps.map(m=>m.get(y)).filter(v=>Number.isFinite(v)&&v>0);
+    if(!vals.length)return null;
+    return +(Math.exp(vals.reduce((sum,v)=>sum+Math.log(v),0)/vals.length)).toFixed(3);
+  });
+  return {years,data,nSoorten:series.length};
+}
+function getTrimMsiRowsForGroup(groep100){
+  if(isLijstGroep(groep100)){
+    const series=buildTrimGroupSeries(S.trimIndexData||[],getSpeciesNamesForGroup(groep100));
+    return series.years.map((jaar,i)=>({jaar,waarde:series.data[i]}))
+      .filter(r=>Number.isFinite(r.jaar)&&Number.isFinite(r.waarde)&&r.waarde>0)
+      .sort((a,b)=>a.jaar-b.jaar);
+  }
+  const source=S.trimMsiData||S.trimGamPredData;
+  return (source||[])
+    .filter(r=>Number(r.groep_100)===Number(groep100))
+    .map(r=>({jaar:Number(r.jaar),waarde:Number(r.msi)}))
+    .filter(r=>Number.isFinite(r.jaar)&&Number.isFinite(r.waarde)&&r.waarde>0)
+    .sort((a,b)=>a.jaar-b.jaar);
+}
+function rebaseSeriesOnYear(rows,years,baseYear){
+  const map=new Map(rows.map(r=>[Number(r.jaar),Number(r.waarde)]));
+  const base=map.get(Number(baseYear));
+  return years.map(y=>{
+    const value=map.get(Number(y));
+    if(!Number.isFinite(value)||!Number.isFinite(base)||base===0)return null;
+    return +(value/base*100).toFixed(3);
+  });
+}
+function buildMsiComparison(groep100,yearRange){
+  const meijendelRows=getTrimMsiRowsForGroup(groep100);
+  const landelijk=buildRegionalMsiForGroup(groep100,"Landelijk");
+  const landelijkRows=landelijk?(landelijk.years.map((jaar,i)=>({jaar,waarde:landelijk.data[i]})).filter(r=>Number.isFinite(r.waarde)&&r.waarde>0)):[];
+  const allYears=[...new Set([...meijendelRows,...landelijkRows].map(r=>r.jaar))]
+    .filter(y=>(!yearRange?.van||y>=yearRange.van)&&(!yearRange?.tot||y<=yearRange.tot))
+    .sort((a,b)=>a-b);
+  const commonBase=allYears.find(y=>
+    meijendelRows.some(r=>r.jaar===y&&Number.isFinite(r.waarde)&&r.waarde>0)&&
+    landelijkRows.some(r=>r.jaar===y&&Number.isFinite(r.waarde)&&r.waarde>0)
+  );
+  const fallbackBase=meijendelRows.find(r=>allYears.includes(r.jaar))?.jaar??allYears[0]??null;
+  const baseYear=commonBase??fallbackBase;
+  return {
+    years: allYears,
+    baseYear,
+    landelijkN: landelijk?.nSoorten??0,
+    meijendel: rebaseSeriesOnYear(meijendelRows,allYears,baseYear),
+    landelijk: baseYear==null?[]:rebaseSeriesOnYear(landelijkRows,allYears,baseYear)
+  };
+}
+function getGamRowsForGroup(rows,groep100){
+  return (rows||[])
+    .filter(r=>Number(r.groep_100)===Number(groep100))
+    .map(r=>({
+      jaar:Number(r.jaar),
+      fit:Number(r.gam_fit_msi),
+      lower:Number(r.gam_fit_lower),
+      upper:Number(r.gam_fit_upper)
+    }))
+    .filter(r=>Number.isFinite(r.jaar)&&Number.isFinite(r.fit)&&r.fit>0)
+    .sort((a,b)=>a.jaar-b.jaar);
+}
+function rebaseGamRows(rows,years,baseYear){
+  const map=new Map(rows.map(r=>[Number(r.jaar),r]));
+  const base=map.get(Number(baseYear))?.fit;
+  return {
+    fit: years.map(y=>{
+      const row=map.get(Number(y));
+      if(!row||!Number.isFinite(row.fit)||!Number.isFinite(base)||base===0)return null;
+      return +(row.fit/base*100).toFixed(3);
+    }),
+    lower: years.map(y=>{
+      const row=map.get(Number(y));
+      if(!row||!Number.isFinite(row.lower)||!Number.isFinite(base)||base===0)return null;
+      return +(row.lower/base*100).toFixed(3);
+    }),
+    upper: years.map(y=>{
+      const row=map.get(Number(y));
+      if(!row||!Number.isFinite(row.upper)||!Number.isFinite(base)||base===0)return null;
+      return +(row.upper/base*100).toFixed(3);
+    })
+  };
+}
+function buildMsiGamComparison(groep100,yearRange){
+  const meijendelRows=getGamRowsForGroup(S.trimGamPredData,groep100);
+  const landelijkRows=getGamRowsForGroup(S.landelijkGamPredData,groep100);
+  const allYears=[...new Set([...meijendelRows,...landelijkRows].map(r=>r.jaar))]
+    .filter(y=>(!yearRange?.van||y>=yearRange.van)&&(!yearRange?.tot||y<=yearRange.tot))
+    .sort((a,b)=>a-b);
+  const commonBase=allYears.find(y=>
+    meijendelRows.some(r=>r.jaar===y&&Number.isFinite(r.fit)&&r.fit>0)&&
+    landelijkRows.some(r=>r.jaar===y&&Number.isFinite(r.fit)&&r.fit>0)
+  );
+  const fallbackBase=meijendelRows.find(r=>allYears.includes(r.jaar))?.jaar??allYears[0]??null;
+  const baseYear=commonBase??fallbackBase;
+  return {
+    years: allYears,
+    baseYear,
+    meijendel: rebaseGamRows(meijendelRows,allYears,baseYear),
+    landelijk: rebaseGamRows(landelijkRows,allYears,baseYear)
+  };
+}
+function getLijstGroupWeights(groep100){
+  const lijstSpecies=new Set(getSpeciesIdsForGroup(groep100));
+  const counts=new Map();
+  getTableRows("evg_vogel_landschapgroep").forEach(r=>{
+    if(!lijstSpecies.has(String(r.vogel_id)))return;
+    const group100=Math.floor(Number(r.groepsnummer)/100)*100;
+    if(!Number.isFinite(group100))return;
+    counts.set(group100,(counts.get(group100)||0)+1);
+  });
+  return counts;
+}
+function buildWeightedGamRows(rows,weights){
+  const byYear=new Map();
+  (rows||[]).forEach(r=>{
+    const group100=Number(r.groep_100),weight=weights.get(group100);
+    const jaar=Number(r.jaar),fit=Number(r.gam_fit_msi),lower=Number(r.gam_fit_lower),upper=Number(r.gam_fit_upper);
+    const value=fit;
+    if(!weight||!Number.isFinite(jaar)||!Number.isFinite(value)||value<=0)return;
+    if(!byYear.has(jaar))byYear.set(jaar,[]);
+    byYear.get(jaar).push({fit,lower,upper,weight});
+  });
+  return [...byYear.entries()].map(([jaar,vals])=>{
+    const weightSum=vals.reduce((sum,r)=>sum+r.weight,0);
+    const logWeighted=key=>{
+      const usable=vals.filter(r=>Number.isFinite(r[key])&&r[key]>0);
+      if(!usable.length)return null;
+      const wSum=usable.reduce((sum,r)=>sum+r.weight,0);
+      return +Math.exp(usable.reduce((sum,r)=>sum+(Math.log(r[key])*r.weight),0)/wSum).toFixed(3);
+    };
+    return {jaar,fit:logWeighted("fit"),lower:logWeighted("lower"),upper:logWeighted("upper")};
+  }).sort((a,b)=>a.jaar-b.jaar);
+}
+function buildLijstTrimGamComparison(groep100,yearRange){
+  const weights=getLijstGroupWeights(groep100);
+  const meijendelRows=buildWeightedGamRows(S.trimGamPredData,weights);
+  const landelijkRows=buildWeightedGamRows(S.landelijkGamPredData,weights);
+  const allYears=[...new Set([...meijendelRows,...landelijkRows].map(r=>r.jaar))]
+    .filter(y=>(!yearRange?.van||y>=yearRange.van)&&(!yearRange?.tot||y<=yearRange.tot))
+    .sort((a,b)=>a-b);
+  const commonBase=allYears.find(y=>
+    meijendelRows.some(r=>r.jaar===y&&Number.isFinite(r.fit)&&r.fit>0)&&
+    landelijkRows.some(r=>r.jaar===y&&Number.isFinite(r.fit)&&r.fit>0)
+  );
+  const fallbackBase=meijendelRows.find(r=>allYears.includes(r.jaar))?.jaar??allYears[0]??null;
+  const baseYear=commonBase??fallbackBase;
+  return {
+    years:allYears,
+    baseYear,
+    meijendel:rebaseGamRows(meijendelRows,allYears,baseYear),
+    landelijk:rebaseGamRows(landelijkRows,allYears,baseYear)
+  };
+}
+function smoothSeries(vals,windowSize){
+  const half=Math.floor(windowSize/2);
+  return vals.map((v,i)=>{
+    const slice=vals.slice(Math.max(0,i-half),Math.min(vals.length,i+half+1)).filter(x=>Number.isFinite(x));
+    if(!slice.length)return Number.isFinite(v)?v:null;
+    return +(slice.reduce((sum,x)=>sum+x,0)/slice.length).toFixed(3);
+  });
+}
+function buildLijstDensityMsi(groep100,yearRange){
+  if(!S.main||!S.areaMeta)return {years:[],msi:[],gam:[]};
+  const speciesSet=new Set(getSpeciesNamesForGroup(groep100));
+  if(!speciesSet.size)return {years:[],msi:[],gam:[]};
+  const years=(S.allYears||[])
+    .filter(y=>(!yearRange?.van||y>=yearRange.van)&&(!yearRange?.tot||y<=yearRange.tot))
+    .sort((a,b)=>a-b);
+  const density=years.map(y=>{
+    const total=S.main.tbl.rows.reduce((sum,r)=>{
+      if(!speciesSet.has(r[S.main.sc])||toYear(r[S.main.yc])!==y)return sum;
+      return sum+(Number(r[S.main.cc])||0);
+    },0);
+    const km2=getAreaForYear(S.areaMeta,y,[]);
+    return km2?total/km2:null;
+  });
+  const base=density.find(v=>Number.isFinite(v)&&v>0);
+  const msi=density.map(v=>Number.isFinite(v)&&Number.isFinite(base)&&base>0?+(v/base*100).toFixed(3):null);
+  return {years,msi,gam:smoothSeries(msi,5)};
+}
 function refreshMsiMeta(){
   const data=getActiveMsiData();
   const seen=new Map();
   (data||[]).forEach(r=>{const k=Number(r.groep_100);if(!Number.isFinite(k))return;const naam=r.groep_titel||r.korte_beschrijving||String(k);if(!seen.has(k))seen.set(k,naam);});
   S.msiGroepen=[...seen.entries()].sort((a,b)=>a[0]-b[0]).map(([k,v])=>({code:k,naam:v}));
+  if(getRodeLijstSpeciesIds().length)S.msiGroepen.push({code:RODE_LIJST_GROEP_CODE,naam:"Rode Lijst"});
+  if(getOranjeLijstSpeciesIds().length)S.msiGroepen.push({code:ORANJE_LIJST_GROEP_CODE,naam:"Oranje Lijst"});
+  if(getRodeOranjeLijstSpeciesIds().length)S.msiGroepen.push({code:RODE_ORANJE_LIJST_GROEP_CODE,naam:"Rode en Oranjelijst"});
   S.msiAllYears=[...new Set((data||[]).map(r=>Number(r.jaar)).filter(Boolean))].sort((a,b)=>a-b);
-  if(!S.msiGroepen.some(g=>g.code===S.msiGroep))S.msiGroep=S.msiGroepen[0]?.code??null;
+  if(!S.msiGroepen.some(g=>String(g.code)===String(S.msiGroep)))S.msiGroep=S.msiGroepen[0]?.code??null;
   if(S.msiAllYears.length){
-    S.msiYearRange={van:S.msiAllYears[0],tot:S.msiAllYears[S.msiAllYears.length-1]};
+    const defaultStart=S.msiAllYears.find(y=>y>=MSI_DEFAULT_START_YEAR)??S.msiAllYears[0];
+    S.msiYearRange={van:defaultStart,tot:S.msiAllYears[S.msiAllYears.length-1]};
   }else S.msiYearRange={van:null,tot:null};
 }
 function processMsiCSV(data,type){
@@ -540,11 +882,81 @@ function processMsiCSV(data,type){
   else if(type==="trim_trend")S.trimMsiTrendData=data;
   else if(type==="trim_gam_pred")S.trimGamPredData=data;
   else if(type==="trim_gam_interp")S.trimGamInterpData=data;
+  else if(type==="landelijk_gam_pred")S.landelijkGamPredData=data;
   refreshMsiMeta();
   render();
 }
 function getTrendSpeciesOptions(){return S.metric==="trim"&&S.trimAllSpecies.length?S.trimAllSpecies:S.allSpecies;}
 function getTableRows(name){return S.tables?.[name]?.rows||[];}
+const WINTER_SEASON_START_MONTH=9;
+const WINTER_SEASON_END_MONTH=3;
+function getWinterSeasonStart(jaar,maand){const y=Number(jaar),m=Number(maand);if(!Number.isFinite(y)||!Number.isFinite(m))return null;return m>=WINTER_SEASON_START_MONTH?y:y-1;}
+function getWinterSeasonLabel(start){return `${start}-${String(Number(start)+1).padStart(4,"0")}`;}
+function getWinterSeasonShortLabel(start){const y=Number(start);return `${String(y).slice(-2)}/${String(y+1).slice(-2)}`;}
+function isWinterCountMonth(maand){const m=Number(maand);return m>=WINTER_SEASON_START_MONTH||m<=WINTER_SEASON_END_MONTH;}
+function getPlotAreaForYear(areaMeta,jaar,plot){
+  if(!areaMeta)return null;
+  const yearAreas=areaMeta.areasByYear?.[jaar],area=yearAreas?.[String(plot)];
+  return Number.isFinite(Number(area))&&Number(area)>0?Number(area):null;
+}
+function initWinterMeta(){
+  const rows=getTableRows("dagwaarnemingen_wv");
+  if(!rows.length){S.winterMeta=null;return;}
+  const soortenLookup=getSoortenLookup(),kavelMap=buildKavelMap(S.tables);
+  const mapped=rows.map(r=>{
+    const jaar=Number(r.jaar),maand=Number(r.maand),seasonStart=getWinterSeasonStart(jaar,maand);
+    const plot=String(kavelMap?.[String(r.plot_id)]??r.plot_id);
+    return {
+      soort:soortenLookup[String(r.soort_id)]||String(r.soort_id),
+      plot,
+      jaar,
+      maand,
+      dag:Number(r.dag),
+      seizoenStart:seasonStart,
+      seizoen:seasonStart==null?null:getWinterSeasonLabel(seasonStart),
+      aantal:Number(r.aantal)||0
+    };
+  }).filter(r=>r.seizoenStart!=null&&r.seizoenStart>=2000&&r.soort&&Number.isFinite(r.jaar)&&Number.isFinite(r.maand)&&Number.isFinite(r.dag)&&isWinterCountMonth(r.maand));
+  const seasons=[...new Set(mapped.map(r=>r.seizoenStart))].sort((a,b)=>a-b);
+  const plots=[...new Set(mapped.map(r=>r.plot).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"nl",{numeric:true,sensitivity:"base"}));
+  const species=[...new Set(mapped.map(r=>r.soort).filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),"nl",{sensitivity:"base"}));
+  S.winterMeta={rows:mapped,seasons,plots,species};
+  S.winterSelected=[];
+  S.winterSelectedPlots=[];
+  S.winterSeasonRange={van:seasons[0]||null,tot:seasons[seasons.length-1]||null};
+}
+function getFilteredWinterRows(){
+  const meta=S.winterMeta;
+  if(!meta)return[];
+  return meta.rows.filter(r=>{
+    if(S.winterSelectedPlots.length&&!S.winterSelectedPlots.includes(String(r.plot)))return false;
+    if(S.winterSeasonRange.van!=null&&r.seizoenStart<S.winterSeasonRange.van)return false;
+    if(S.winterSeasonRange.tot!=null&&r.seizoenStart>S.winterSeasonRange.tot)return false;
+    return true;
+  });
+}
+function getWinterSeasonLabels(){
+  const meta=S.winterMeta;
+  if(!meta?.seasons.length)return[];
+  const van=S.winterSeasonRange.van??meta.seasons[0],tot=S.winterSeasonRange.tot??meta.seasons[meta.seasons.length-1];
+  return meta.seasons.filter(s=>s>=van&&s<=tot).map(s=>({start:s,label:getWinterSeasonShortLabel(s)}));
+}
+function buildWinterSeries(){
+  const rows=getFilteredWinterRows().filter(r=>S.winterSelected.includes(r.soort));
+  const seasonLabels=getWinterSeasonLabels(),dailyAgg={},agg={};
+  rows.forEach(r=>{
+    const dayKey=`${r.soort}|${r.seizoenStart}|${r.jaar}-${String(r.maand).padStart(2,"0")}-${String(r.dag).padStart(2,"0")}|${r.plot}`;
+    dailyAgg[dayKey]=(dailyAgg[dayKey]||0)+r.aantal;
+  });
+  Object.entries(dailyAgg).forEach(([key,total])=>{
+    const [soort,seizoenStart,date,plot]=key.split("|"),jaar=Number(date.slice(0,4)),km2=getPlotAreaForYear(S.areaMeta,jaar,plot);
+    if(!km2)return;
+    const label=getWinterSeasonShortLabel(Number(seizoenStart));
+    if(!agg[label])agg[label]={};
+    agg[label][soort]=(agg[label][soort]||0)+(Number(total)/km2);
+  });
+  return {labels:seasonLabels.map(s=>s.label),agg};
+}
 function getSelectedPlotRecord(){
   const selected=String(S.plotView.plot??"");
   const rows=getTableRows("plots");
@@ -674,6 +1086,117 @@ function getSoortenLookup(){
   getTableRows("soorten").forEach(r=>{map[String(r.id)]=r.soort_naam;});
   return map;
 }
+const KENMERK_CATEGORIEEN=[
+  ["1","Functionele habitat en foerageerwijze"],
+  ["6","Voedsel van volwassen vogels"],
+  ["2","Voedsel voor jongen"],
+  ["5","Nestplaats en nestbouw"],
+  ["3","Gedrag, ecologie en levenswijze"],
+  ["4","Migratie"]
+];
+function getKenmerkCodeLookup(){
+  const map={};
+  getTableRows("soorten_kenmerken_datadictionary").forEach(r=>{
+    if(r.veld)map[String(r.veld)]={code:String(r.veld),naam:String(r.veld),definitie:r.betekenis_nederlands||""};
+  });
+  return map;
+}
+function getKenmerkCategorieLookup(){
+  const map={};
+  getTableRows("soorten_kenmerken_hoofdcategorien").forEach(r=>{
+    if(r.id!=null)map[String(r.id)]={id:String(r.id),code:String(r.code||""),label:String(r.beschrijving||r.code||r.id)};
+  });
+  return map;
+}
+function getKenmerkValueLabel(v){
+  const n=Number(v);
+  if(n===1)return"Primair / dominant";
+  if(n===2)return"Secundair / aanvullend";
+  if(n===3)return"Incidenteel / ondersteunend";
+  return `Waarde ${v}`;
+}
+function getSoortIdForKenmerkNaam(naam){
+  const key=normKey(naam);
+  const aliases={
+    "baardman":206,
+    "eider":45,
+    "fazant":71,
+    "heggemus":165,
+    "kraanvogel":79,
+    "oehoe":129,
+    "sprinkhaanzanger":182,
+    "zeearend":56
+  };
+  if(aliases[key]!=null)return aliases[key];
+  if(key==="gele kwikstaart")return 158;
+  const exact=getTableRows("soorten").find(r=>normKey(r.soort_naam)===key);
+  return exact?.id??null;
+}
+function getKenmerkRowSoortId(row){
+  const id=String(row?.soort_id??"");
+  if(id)return id;
+  const byName=getSoortIdForKenmerkNaam(row?.soortnaam);
+  return byName!=null?String(byName):null;
+}
+function getKenmerkSpeciesOptions(){
+  const soortenLookup=getSoortenLookup(),seen=new Map();
+  getTableRows("soorten_kenmerken").forEach(r=>{
+    if(!r.soortnaam)return;
+    const id=getKenmerkRowSoortId(r);
+    if(id!=null)seen.set(String(id),soortenLookup[String(id)]||r.soortnaam);
+    else seen.set(`naam:${normKey(r.soortnaam)}`,String(r.soortnaam));
+  });
+  getTableRows("soorten_kenmerken_vogeltypering").forEach(r=>{
+    const id=String(r.soort_id??"");
+    if(id)seen.set(id,soortenLookup[id]||r.soortnaam||id);
+  });
+  return [...seen.entries()]
+    .map(([id,naam])=>({id,naam}))
+    .sort((a,b)=>String(a.naam).localeCompare(String(b.naam),"nl",{sensitivity:"base"}));
+}
+function getKenmerkSelectedNaam(soortId,options){
+  const opt=options.find(o=>String(o.id)===String(soortId));
+  return opt?.naam||String(soortId||"");
+}
+function getKenmerkNameAliases(soortId,soortNaam){
+  const set=new Set([normKey(soortNaam)]);
+  if(String(soortId)==="165")set.add("heggemus");
+  getTableRows("soorten_kenmerken")
+    .filter(r=>String(getKenmerkRowSoortId(r))===String(soortId))
+    .forEach(r=>set.add(normKey(r.soortnaam)));
+  getTableRows("soorten_kenmerken_vogeltypering")
+    .filter(r=>String(r.soort_id)===String(soortId))
+    .forEach(r=>set.add(normKey(r.soortnaam)));
+  return set;
+}
+function getVogelTyperingVoorSoort(soortId,soortNaam){
+  const aliases=getKenmerkNameAliases(soortId,soortNaam);
+  return getTableRows("soorten_kenmerken_vogeltypering")
+    .find(r=>String(r.soort_id)===String(soortId)||aliases.has(normKey(r.soortnaam)))?.vogeltypering||"";
+}
+function getKenmerkenVoorSoort(soortId){
+  const options=getKenmerkSpeciesOptions(),soortNaam=getKenmerkSelectedNaam(soortId,options);
+  const aliases=getKenmerkNameAliases(soortId,soortNaam);
+  const codeLookup=getKenmerkCodeLookup(),groups={};
+  KENMERK_CATEGORIEEN.forEach(([id])=>groups[id]=[]);
+  getTableRows("soorten_kenmerken")
+    .filter(r=>String(getKenmerkRowSoortId(r))===String(soortId)||aliases.has(normKey(r.soortnaam)))
+    .forEach(r=>{
+      const codeInfo=codeLookup[String(r.code)]||{code:String(r.code||""),naam:String(r.code||"-"),definitie:""};
+      const categorie=String(r.hoofdcategorie_id||"");
+      if(!groups[categorie])return;
+      groups[categorie].push({
+        code:codeInfo.code,
+        naam:codeInfo.naam,
+        definitie:codeInfo.definitie,
+        waarde:r.waarde
+      });
+    });
+  Object.keys(groups).forEach(k=>{
+    groups[k].sort((a,b)=>(Number(a.waarde)-Number(b.waarde))||String(a.code).localeCompare(String(b.code),"nl",{sensitivity:"base"}));
+  });
+  return groups;
+}
 function getVogelblok(plotId,jaar){
   const rows=getTableRows("territoria")
     .filter(r=>String(r.plot_id)===String(plotId))
@@ -714,10 +1237,10 @@ function getStatusClass(status){
   if(status==="afgesloten")return"plot-status plot-status-afgesloten";
   return"plot-status plot-status-onbekend";
 }
-function renderCsvUploadRow(label,loadedText,handler){const row=el("div",{className:"upload-row"}),lbl=el("label",{className:"upload-btn"});lbl.appendChild(document.createTextNode(label));const inp=el("input",{type:"file",accept:".csv",style:{display:"none"}});inp.addEventListener("change",e=>{const file=e.target.files[0];if(!file)return;const reader=new FileReader();reader.onload=evt=>handler(parseCSVText(String(evt.target.result||"")));reader.readAsText(file,"utf-8");});lbl.appendChild(inp);row.appendChild(lbl);row.appendChild(el("span",{style:{fontSize:"12px",color:loadedText.loaded?"#16a34a":"#9ca3af"}},loadedText.text));return row;}
+function renderCsvUploadRow(){return document.createDocumentFragment();}
 function renderTrimTrendInfo(){if(!S.trimTrendSummary||S.selected.length!==1)return null;const row=S.trimTrendSummary.find(r=>r.soort_naam===S.selected[0]);if(!row)return null;const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`${row.soort_naam} — TRIM-uitleg`));const grid=el("div",{className:"interp-grid"});[["Categorie",row.analyse_categorie||"-"],["Hele periode",row.overall_uitleg||"-"],["Voor 1984",row.trend_pre_uitleg||"-"],["Vanaf 1984",row.trend_post_uitleg||"-"]].forEach(([l,v])=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},l));cell.appendChild(el("div",{className:"val"},String(v)));grid.appendChild(cell);});box.appendChild(grid);return box;}
-function renderTrendMethodInfo(){const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze drie keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["Territoria","Dit zijn de ruwe aantallen territoria die in een jaar zijn vastgelegd.","Bron: rechtstreeks uit Meijendel.sql"],["Dichtheid (per km²)","Dit zijn de aantallen omgerekend naar oppervlak. Zo kun je jaren of delen van Meijendel eerlijker vergelijken als plots niet even groot zijn.","Bron: Meijendel.sql met oppervlak uit plot_jaar_oppervlak en telling uit plot_jaar_teller"],["TRIM-index","Dit is een trendmethode die beter omgaat met ontbrekende tellingen en de methodebreuk rond 1984. Landelijk wordt per soort herberekend naar hetzelfde basisjaar als de getoonde Meijendel-reeks.","Bron: soortindices_bruikbare_tijdreeks.csv, soorten_trendoverzicht_bruikbare_tijdreeks.csv en tabel trends uit Meijendel.sql"]].forEach(([titel,tekst,bron])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));item.appendChild(el("div",{style:{fontSize:"11px",color:"#0f766e",marginTop:"6px",fontWeight:"600"}},bron));list.appendChild(item);});box.appendChild(list);return box;}
-function renderMsiMethodInfo(){const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze twee keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["GAM (dichtheid)","Dit is een vloeiende trendlijn die is berekend uit MSI-waarden op basis van dichtheid. Handig als je een geleidelijke ontwikkeling wilt zien.","Bron: gam_voorspellingen_per_groep.csv en gam_interpretatie_per_groep.csv"],["TRIM-MSI","Dit is een samengestelde indicator op basis van TRIM-soortindices. Je kunt hier nu zowel de jaarlijkse TRIM-MSI als een GAM-fit met 95%-band bekijken.","Bron: msi_per_groep_per_jaar.csv, trendoverzicht_msi_groepen.csv en eventueel de TRIM-GAM-bestanden"]].forEach(([titel,tekst,bron])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));item.appendChild(el("div",{style:{fontSize:"11px",color:"#0f766e",marginTop:"6px",fontWeight:"600"}},bron));list.appendChild(item);});box.appendChild(list);return box;}
+function renderTrendMethodInfo(){const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze drie keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["Territoria","Dit zijn de ruwe aantallen territoria die in een jaar zijn vastgelegd."],["Dichtheid (per km²)","Dit zijn de aantallen omgerekend naar oppervlak. Zo kun je jaren of delen van Meijendel eerlijker vergelijken als plots niet even groot zijn."],["TRIM-index","Dit is een trendmethode die beter omgaat met ontbrekende tellingen en de methodebreuk rond 1984. Landelijk wordt per soort herberekend naar hetzelfde basisjaar als de getoonde Meijendel-reeks."]].forEach(([titel,tekst])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));list.appendChild(item);});box.appendChild(list);return box;}
+function renderMsiMethodInfo(){const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze twee keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["Dichtheid per km2","Dit is een vloeiende trendlijn die is berekend uit MSI-waarden op basis van dichtheid. Handig als je een geleidelijke ontwikkeling wilt zien."],["TRIM","Dit vergelijkt de Meijendel-TRIM als GAM met 95%-band met een landelijke GAM-lijn zonder band. De landelijke MSI wordt uit de landelijke soortindexen berekend en daarna als GAM gefit."]].forEach(([titel,tekst])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));list.appendChild(item);});box.appendChild(list);return box;}
 
 function render(){
   const app=document.getElementById("app");
@@ -729,12 +1252,12 @@ function render(){
     else if(S.status==="loading")main.appendChild(el("div",{className:"spinner"},[el("p",{},"Bestand verwerken…")]));
     else if(S.status==="error")main.appendChild(renderError());
     else{
-      if(S.status==="ok"&&S.main?.sc&&S.main?.yc&&S.main?.cc)main.appendChild(renderStatCards());
       main.appendChild(renderTabs());
       if(S.activeTab==="trend"&&S.status==="ok")main.appendChild(renderTrendPanel());
+      else if(S.activeTab==="winter"&&S.status==="ok")main.appendChild(renderWinterPanel());
+      else if(S.activeTab==="kenmerken"&&S.status==="ok")main.appendChild(renderKenmerkenPanel());
       else if(S.activeTab==="plot"&&S.status==="ok")main.appendChild(renderPlotPanel());
       else if(S.activeTab==="msi")main.appendChild(renderMsiPanel());
-      else if(S.activeTab==="tellers"&&S.status==="ok")main.appendChild(renderTellersPanel());
       if(S.status==="ok")main.appendChild(renderSchema());
     }
   }catch(err){
@@ -745,13 +1268,73 @@ function render(){
   }
   app.appendChild(main);
   if(S.status==="ok"&&S.activeTab==="trend")setTimeout(renderTrendChart,0);
+  if(S.status==="ok"&&S.activeTab==="winter")setTimeout(renderWinterChart,0);
   if(S.activeTab==="msi"&&((S.msiSource==="gam"&&S.voorspData)||(S.msiSource==="trim"&&(S.trimGamPredData||S.trimMsiData))))setTimeout(renderMsiChartNow,0);
 }
-function renderHeader(){const h=el("div",{className:"header"});h.appendChild(el("div",{},[el("h1",{},"OVERZICHTSPANEEL"),el("p",{},"BMP data Meijendel")]));if(S.status==="ok"){const lbl=el("label",{className:"btn-file"});lbl.appendChild(document.createTextNode("Nieuw bestand"));const inp=el("input",{type:"file",accept:".sql",style:{display:"none"}});inp.addEventListener("change",e=>loadFile(e.target.files[0]));lbl.appendChild(inp);h.appendChild(lbl);}return h;}
-function renderIdle(){const d=el("div",{className:"idle"});d.appendChild(el("h2",{},"Laad je telgegevens"));d.appendChild(el("p",{},"Selecteer het .sql exportbestand van je MySQL-database"));const lbl=el("label",{style:{cursor:"pointer"}}),btn=el("button",{className:"btn-load",type:"button"},"SQL-bestand kiezen"),inp=el("input",{type:"file",accept:".sql",style:{display:"none"}});inp.addEventListener("change",e=>loadFile(e.target.files[0]));btn.addEventListener("click",()=>inp.click());lbl.appendChild(btn);lbl.appendChild(inp);d.appendChild(lbl);return d;}
+function renderHeader(){const h=el("div",{className:"header"});h.appendChild(el("div",{},[el("h1",{},"OVERZICHTSPANEEL"),el("p",{},"Vogeldata Meijendel")]));if(S.status==="ok"){const lbl=el("label",{className:"btn-file"});lbl.appendChild(document.createTextNode("Nieuw bestand"));const inp=el("input",{type:"file",accept:".sql",style:{display:"none"}});inp.addEventListener("change",e=>loadFile(e.target.files[0]));lbl.appendChild(inp);h.appendChild(lbl);}return h;}
+function renderIdle(){const d=el("div",{className:"idle"});d.appendChild(el("h2",{},"De gegevens worden geladen."));return d;}
 function renderError(){const d=el("div",{className:"error-box"});d.appendChild(el("p",{style:{color:"#b91c1c",fontWeight:"500",marginBottom:"12px"}},S.error));const lbl=el("label",{style:{cursor:"pointer"}}),btn=el("button",{className:"btn-load",type:"button"},"Opnieuw"),inp=el("input",{type:"file",accept:".sql",style:{display:"none"}});inp.addEventListener("change",e=>loadFile(e.target.files[0]));btn.addEventListener("click",()=>inp.click());lbl.appendChild(btn);lbl.appendChild(inp);d.appendChild(lbl);return d;}
 function renderStatCards(){const rows=S.main.tbl.rows,total=rows.reduce((s,r)=>s+(Number(r[S.main.cc])||0),0),nSoort=new Set(rows.map(r=>r[S.main.sc]).filter(Boolean)).size,years=[...new Set(rows.map(r=>toYear(r[S.main.yc])).filter(Boolean))].sort(),span=years.length>1?`${years[0]}–${years[years.length-1]}`:years[0]||"?";const cards=el("div",{className:"stat-cards"});[["Soorten",nSoort,"soorten"],["Periode",span,"periode"],["Territoria",total.toLocaleString("nl-NL"),"territoria"]].forEach(([ic,v,l])=>cards.appendChild(el("div",{className:"stat-card"},[el("div",{className:"icon"},ic),el("div",{className:"val"},String(v)),el("div",{className:"lbl"},l)])));return cards;}
-function renderTabs(){const wrap=el("div",{className:"tabs"});[["trend","Trend"],["plot","Plot"],["msi","MSI"],["tellers","Tellers"]].forEach(([id,lbl])=>{const btn=el("button",{className:"tab"+(S.activeTab===id?" active":"")},lbl);btn.addEventListener("click",()=>setState({activeTab:id}));wrap.appendChild(btn);});return wrap;}
+function renderTabs(){const wrap=el("div",{className:"tabs"});[["trend","BMP-Soorten"],["msi","Groepen"],["winter","Wintertellingen"],["kenmerken","Kenmerken"],["plot","Plots"]].forEach(([id,lbl])=>{const btn=el("button",{className:"tab"+(S.activeTab===id?" active":"")},lbl);btn.addEventListener("click",()=>setState({activeTab:id}));wrap.appendChild(btn);});return wrap;}
+function renderKenmerkenPanel(){
+  const p=el("div",{className:"panel"});
+  p.appendChild(el("h2",{},"Kenmerken per vogelsoort"));
+  const options=getKenmerkSpeciesOptions();
+  if(!getTableRows("soorten_kenmerken").length||!getTableRows("soorten_kenmerken_datadictionary").length||!getTableRows("soorten_kenmerken_hoofdcategorien").length){
+    p.appendChild(el("p",{className:"empty-msg"},"Geen kenmerken gevonden."));
+    return p;
+  }
+  const box=el("div",{style:{marginBottom:"16px",padding:"12px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"8px"}});
+  const row=el("div",{className:"year-row"});
+  const wrap=el("div",{style:{minWidth:"260px"}});
+  wrap.appendChild(el("label",{},"Vogelsoort"));
+  const sel=el("select",{});
+  sel.appendChild(el("option",{value:""},"Kies een vogelsoort"));
+  options.forEach(o=>{const opt=el("option",{value:o.id},o.naam);if(String(S.kenmerkenSelected)===String(o.id))opt.selected=true;sel.appendChild(opt);});
+  sel.addEventListener("change",e=>setState({kenmerkenSelected:e.target.value||null}));
+  wrap.appendChild(sel);row.appendChild(wrap);box.appendChild(row);p.appendChild(box);
+  if(!S.kenmerkenSelected){
+    p.appendChild(el("p",{className:"empty-msg"},"Kies een vogelsoort hierboven"));
+    return p;
+  }
+  const soortNaam=getKenmerkSelectedNaam(S.kenmerkenSelected,options);
+  const typering=getVogelTyperingVoorSoort(S.kenmerkenSelected,soortNaam);
+  const groups=getKenmerkenVoorSoort(S.kenmerkenSelected);
+  const categorieLookup=getKenmerkCategorieLookup();
+  const alleItems=Object.values(groups).flat();
+  const primair=alleItems.filter(i=>Number(i.waarde)===1).length;
+  const secundair=alleItems.filter(i=>Number(i.waarde)===2).length;
+  p.appendChild(el("h3",{style:{fontSize:"15px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},soortNaam));
+  if(typering)p.appendChild(el("p",{style:{fontSize:"13px",color:"#374151",lineHeight:"1.5",marginBottom:"12px"}},typering));
+  p.appendChild(el("div",{className:"kenmerk-summary"},[
+    el("div",{className:"kenmerk-summary-card"},[el("div",{className:"kenmerk-summary-label"},"Kenmerken"),el("div",{className:"kenmerk-summary-value"},String(alleItems.length))]),
+    el("div",{className:"kenmerk-summary-card"},[el("div",{className:"kenmerk-summary-label"},"Primair"),el("div",{className:"kenmerk-summary-value"},String(primair))]),
+    el("div",{className:"kenmerk-summary-card"},[el("div",{className:"kenmerk-summary-label"},"Secundair"),el("div",{className:"kenmerk-summary-value"},String(secundair))])
+  ]));
+  p.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},"Onderstaande kaarten komen uit soorten_kenmerken, met uitleg uit de datadictionary en hoofdcategorie uit soorten_kenmerken_hoofdcategorien."));
+  const grid=el("div",{className:"kenmerk-grid"});
+  KENMERK_CATEGORIEEN.forEach(([cat,fallbackLabel])=>{
+    const label=categorieLookup[cat]?.label||fallbackLabel;
+    const card=el("div",{className:"kenmerk-card"});
+    card.appendChild(el("h3",{},label));
+    const items=groups[cat]||[];
+    if(!items.length){
+      card.appendChild(el("p",{className:"kenmerk-text"},"Geen kenmerk vastgelegd."));
+    }else{
+      const list=el("div",{className:"kenmerk-list"});
+      items.forEach(item=>{
+        const block=el("div",{className:"kenmerk-item"});
+        block.appendChild(el("div",{className:"kenmerk-name"},item.definitie||item.code));
+        block.appendChild(el("div",{className:"kenmerk-text"},`(${item.code}, waarde ${item.waarde})`));
+        list.appendChild(block);
+      });
+      card.appendChild(list);
+    }
+    grid.appendChild(card);
+  });
+  p.appendChild(grid);
+  return p;
+}
 function renderPlotPanel(){
   const p=el("div",{className:"panel"});
   p.appendChild(el("h2",{},"Plotoverzicht"));
@@ -807,8 +1390,7 @@ function renderPlotPanel(){
   const kernGrid=el("div",{className:"plot-kern-grid"});
   kernGrid.appendChild(el("div",{className:"plot-kern-card"},[
     el("div",{className:"plot-kern-label"},"Oppervlakte"),
-    el("div",{className:"plot-kern-value"},kc?.oppervlakte?`${formatNumber(kc.oppervlakte.waarde,4)} km²`:"-"),
-    el("div",{className:"plot-kern-meta"},kc?.oppervlakte?`Oppervlakte bronjaar ${kc.oppervlakte.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-value"},kc?.oppervlakte?`${formatNumber(kc.oppervlakte.waarde,4)} km²`:"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card"},[
     el("div",{className:"plot-kern-label"},"AHN"),
@@ -827,33 +1409,27 @@ function renderPlotPanel(){
       el("div",{className:"plot-ahn-item"},[
         el("div",{className:"plot-kern-value"},kc?.ahn?`${formatNumber(kc.ahn.sd,2)} m`:"-")
       ])
-    ]),
-    el("div",{className:"plot-kern-meta"},kc?.ahn?`AHN bronjaar ${kc.ahn.bronjaar}`:"geen data")
+    ])
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.stikstof?.mean)},[
     el("div",{className:"plot-kern-label"},"Stikstof"),
-    el("div",{className:"plot-kern-value"},kc?.stikstof?formatNumber(kc.stikstof.mean,2):"-"),
-    el("div",{className:"plot-kern-meta"},kc?.stikstof?`Stikstof bronjaar ${kc.stikstof.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-value"},kc?.stikstof?formatNumber(kc.stikstof.mean,2):"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.afstandPad?.waarde)},[
     el("div",{className:"plot-kern-label"},"Afstand pad"),
-    el("div",{className:"plot-kern-value"},kc?.afstandPad?`${formatNumber(kc.afstandPad.waarde,1)} m`:"-"),
-    el("div",{className:"plot-kern-meta"},kc?.afstandPad?`bronjaar ${kc.afstandPad.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-value"},kc?.afstandPad?`${formatNumber(kc.afstandPad.waarde,1)} m`:"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.padlengte?.waarde,true)},[
     el("div",{className:"plot-kern-label"},"Padlengte"),
-    el("div",{className:"plot-kern-value"},kc?.padlengte?`${formatNumber(kc.padlengte.waarde,1)} m/ha`:"-"),
-    el("div",{className:"plot-kern-meta"},kc?.padlengte?`bronjaar ${kc.padlengte.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-value"},kc?.padlengte?`${formatNumber(kc.padlengte.waarde,1)} m/ha`:"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.afstandParkeerplaats?.waarde)},[
     el("div",{className:"plot-kern-label"},"Afstand parkeerplaats"),
-    el("div",{className:"plot-kern-value"},kc?.afstandParkeerplaats?`${formatNumber(kc.afstandParkeerplaats.waarde,1)} m`:"-"),
-    el("div",{className:"plot-kern-meta"},kc?.afstandParkeerplaats?`bronjaar ${kc.afstandParkeerplaats.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-value"},kc?.afstandParkeerplaats?`${formatNumber(kc.afstandParkeerplaats.waarde,1)} m`:"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.afstandHoofdtoegang?.waarde)},[
     el("div",{className:"plot-kern-label"},"Afstand hoofdtoegang"),
-    el("div",{className:"plot-kern-value"},kc?.afstandHoofdtoegang?`${formatNumber(kc.afstandHoofdtoegang.waarde,1)} m`:"-"),
-    el("div",{className:"plot-kern-meta"},kc?.afstandHoofdtoegang?`bronjaar ${kc.afstandHoofdtoegang.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-value"},kc?.afstandHoofdtoegang?`${formatNumber(kc.afstandHoofdtoegang.waarde,1)} m`:"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Top 3 habitattypen"),
@@ -872,8 +1448,7 @@ function renderPlotPanel(){
             el("td",{},item.m2)
           ])))
         ])
-      : el("div",{className:"plot-kern-text"},"geen data"),
-    el("div",{className:"plot-kern-meta"},kc?.habitat?.bronjaar?`Habitat bronjaar ${kc.habitat.bronjaar}`:"geen data")
+      : el("div",{className:"plot-kern-text"},"geen data")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Landgebruik"),
@@ -890,13 +1465,11 @@ function renderPlotPanel(){
             el("td",{},`${item.pct}%`)
           ])))
         ])
-      : el("div",{className:"plot-kern-text"},"geen data"),
-    el("div",{className:"plot-kern-meta"},kc?.landgebruik?.bronjaar?`Landgebruik bronjaar ${kc.landgebruik.bronjaar}`:"geen data")
+      : el("div",{className:"plot-kern-text"},"geen data")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Beheer en maatregel"),
-    el("div",{className:"plot-kern-text"},mb?.items?.length?mb.items.join("; "):"geen data"),
-    el("div",{className:"plot-kern-meta"},mb?.bronjaar?`Maatregel bronjaar ${mb.bronjaar}`:"geen data")
+    el("div",{className:"plot-kern-text"},mb?.items?.length?mb.items.join("; "):"geen data")
   ]));
   p.appendChild(kernGrid);
   const vb=plotRec&&S.plotView.jaar!=null?getVogelblok(plotRec.plot_id,S.plotView.jaar):null;
@@ -925,12 +1498,11 @@ function renderPlotPanel(){
   p.appendChild(vogelCard);
   return p;
 }
-function renderTrendPanel(){const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[el("h2",{},"Trend per soort over de jaren"),el("p",{style:{fontSize:"12px",color:"#9ca3af",marginTop:"2px"}},S.metric==="trim"?"TRIM is bedoeld voor langjarige trendduiding, los van ruwe aantallen.":S.metric==="km2"?"Dichtheid gebruikt nu het oppervlak uit plot_jaar_oppervlak; als plot_jaar_teller aanwezig is, telt alleen het bemeten oppervlak mee.":"Selecteer een groep of soorten hieronder")]));const tog=el("div",{className:"metric-toggle",style:{flex:"0 0 auto"}});[["abs","Territoria"],["km2","Dichtheid (per km²)"],["trim","TRIM-index"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.metric===id?" active":"")},lbl);b.addEventListener("click",()=>setState({metric:id}));tog.appendChild(b);});hdr.appendChild(tog);p.appendChild(hdr);if(S.metric==="trim"){p.appendChild(renderCsvUploadRow("TRIM soortindices",{loaded:!!S.trimIndexData,text:S.trimIndexData?`${S.trimIndexData.length} rijen geladen`:"soortindices_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_idx")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimTrendSummary,text:S.trimTrendSummary?`${S.trimTrendSummary.length} rijen geladen`:"soorten_trendoverzicht_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_trend")));}else{if(S.allGroepen.length)p.appendChild(renderGroepFilter());if(S.main.pc&&S.allPlots.length)p.appendChild(renderKavelFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());}
+function renderTrendPanel(){const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[el("h2",{},"Trend per soort over de jaren")]));const tog=el("div",{className:"metric-toggle",style:{flex:"0 0 auto"}});[["abs","Territoria"],["km2","Dichtheid (per km²)"],["trim","TRIM-index"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.metric===id?" active":"")},lbl);b.addEventListener("click",()=>setState({metric:id}));tog.appendChild(b);});hdr.appendChild(tog);p.appendChild(hdr);if(S.metric==="trim"){p.appendChild(renderCsvUploadRow("TRIM soortindices",{loaded:!!S.trimIndexData,text:S.trimIndexData?`${S.trimIndexData.length} rijen geladen`:"soortindices_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_idx")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimTrendSummary,text:S.trimTrendSummary?`${S.trimTrendSummary.length} rijen geladen`:"soorten_trendoverzicht_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_trend")));}else{if(S.main.pc&&S.allPlots.length)p.appendChild(renderKavelFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());}
   p.appendChild(renderSoortFilter());
   if(S.metric==="trim"&&!S.trimIndexData)p.appendChild(el("p",{className:"empty-msg"},"Laad eerst het TRIM-bestand met soortindices om de grafiek te tonen."));
   else if(!S.selected.length)p.appendChild(el("p",{className:"empty-msg"},"Selecteer een soort hierboven"));
   else {p.appendChild(el("div",{className:"chart-wrap",id:"lineChart"}));const info=renderTrimTrendInfo();if(info)p.appendChild(info);}p.appendChild(renderTrendMethodInfo());return p;}
-function renderGroepFilter(){const d=el("details",{className:"filter-blue"}),sm=el("summary",{});sm.appendChild(document.createTextNode("Ecologische vogelgroep"));if(S.selectedGroep)sm.appendChild(el("span",{className:"badge",style:{background:"#1d4ed8",color:"white",marginLeft:"8px",padding:"2px 8px",borderRadius:"999px"}},S.selectedGroep));d.appendChild(sm);const body=el("div",{className:"filter-body"}),pw=el("div",{className:"pill-wrap"}),all=el("button",{className:"pill"+(S.selectedGroep===""?" active-blue":"")},"Alle groepen");all.addEventListener("click",()=>{Object.assign(S,{selectedGroep:"",selected:[]});refilter();});pw.appendChild(all);S.allGroepen.forEach(g=>{const b=el("button",{className:"pill"+(S.selectedGroep===g?" active-blue":"")},g);b.addEventListener("click",()=>{const sel=S.allSpecies.filter(s=>S.groepMap[s]===g);Object.assign(S,{selectedGroep:g,selected:sel});refilter();});pw.appendChild(b);});body.appendChild(pw);d.appendChild(body);return d;}
 function renderKavelFilter(){const d=el("details",{className:"filter-gray"}),sm=el("summary",{});sm.appendChild(document.createTextNode("Kavels filteren"));if(S.selectedPlots.length)sm.appendChild(el("span",{className:"badge badge-green",style:{marginLeft:"8px"}},`${S.selectedPlots.length} geselecteerd`));d.appendChild(sm);const body=el("div",{className:"filter-body"}),rst=el("button",{className:"reset-btn",style:{float:"right"}},"Alle kavels");rst.addEventListener("click",()=>{Object.assign(S,{selectedPlots:[]});refilter();});body.appendChild(rst);const pw=el("div",{className:"pill-wrap",style:{marginTop:"8px"}});S.allPlots.forEach(p=>{const active=S.selectedPlots.includes(String(p)),b=el("button",{className:"pill"+(active?" active-green":"")},String(p));b.addEventListener("click",()=>{const sp=S.selectedPlots.includes(String(p))?S.selectedPlots.filter(x=>x!==String(p)):[...S.selectedPlots,String(p)];Object.assign(S,{selectedPlots:sp});refilter();});pw.appendChild(b);});body.appendChild(pw);d.appendChild(body);return d;}
 function renderJaarFilter(){const d=el("details",{className:"filter-gray"}),sm=el("summary",{});sm.appendChild(document.createTextNode("Periode"));if(S.yearRange.van&&S.yearRange.tot)sm.appendChild(el("span",{className:"badge badge-blue",style:{marginLeft:"8px"}},`${S.yearRange.van} – ${S.yearRange.tot}`));d.appendChild(sm);const body=el("div",{className:"filter-body"}),row=el("div",{className:"year-row"});["van","tot"].forEach(k=>{const wrap=el("div",{});wrap.appendChild(el("label",{},k==="van"?"Van":"Tot"));const sel=el("select",{});S.allYears.forEach(y=>{const o=el("option",{value:y},String(y));if(S.yearRange[k]===y)o.selected=true;sel.appendChild(o);});sel.addEventListener("change",e=>{const yr=Object.assign({},S.yearRange,{[k]:parseInt(e.target.value)});Object.assign(S,{yearRange:yr});refilter();});wrap.appendChild(sel);row.appendChild(wrap);});const rst=el("button",{className:"reset-btn"},"Reset");rst.addEventListener("click",()=>{Object.assign(S,{yearRange:{van:S.allYears[0],tot:S.allYears[S.allYears.length-1]}});refilter();});row.appendChild(rst);body.appendChild(row);d.appendChild(body);return d;}
 function renderSoortFilter(){const soorten=getTrendSpeciesOptions(),d=el("details",{className:"filter-gray"}),sm=el("summary",{});sm.appendChild(document.createTextNode("Soorten selecteren"));if(S.selected.length)sm.appendChild(el("span",{className:"badge badge-green",style:{marginLeft:"8px"}},`${S.selected.length} geselecteerd`));d.appendChild(sm);const body=el("div",{className:"filter-body"}),pw=el("div",{className:"species-pills"});soorten.forEach((s,i)=>{const active=S.selected.includes(s),b=el("button",{className:"pill",style:{background:active?COLORS[i%COLORS.length]:"white",color:active?"white":"#555",borderColor:active?COLORS[i%COLORS.length]:"#d1d5db"}},s);b.addEventListener("click",()=>{const sel=S.selected.includes(s)?S.selected.filter(x=>x!==s):[...S.selected,s];setState({selected:sel});});pw.appendChild(b);});body.appendChild(pw);d.appendChild(body);return d;}
@@ -938,6 +1510,11 @@ function renderTrendChart(){
   if(S.metric==="trim"){
     if(!S.trimIndexData||!S.selected.length)return;
     const rows=S.trimIndexData.filter(r=>S.selected.includes(r.soort_naam));
+    if(S.selectedGroep){
+      const group=buildTrimGroupSeries(rows,S.selected);
+      renderSimpleChart("lineChart",{labels:group.years,datasets:[{label:group.baseYear?`${S.selectedGroep} (${group.baseYear}=100)`:S.selectedGroep,data:group.data,color:COLORS[0],bold:true}],yTitle:"TRIM-index"});
+      return;
+    }
     const allYears=new Set();
     const datasets=[];
     S.selected.forEach((s,i)=>{
@@ -992,18 +1569,136 @@ function renderTrendChart(){
   if(S.metric==="km2"&&S.selectedGroep){
     const gd=buildGroepDensity(S.filteredRows,S.main.sc,S.main.yc,S.main.cc,S.selected,S.areaMeta,S.selectedPlots,S.yearRange);
     renderSimpleChart("lineChart",{labels:gd.map(r=>r.jaar),datasets:[{label:S.selectedGroep,data:gd.map(r=>r.val),color:COLORS[0],bold:true}],yTitle:"Dichtheid (territoria/km²)"});
+  }else if(S.metric==="abs"&&S.selectedGroep){
+    renderSimpleChart("lineChart",{labels:S.trendData.years,datasets:[{label:S.selectedGroep,data:buildGroepTotals(S.trendData,S.selected),color:COLORS[0],bold:true}],yTitle:"Territoria",yInteger:true});
   }else{
     const datasets=S.selected.map((s,i)=>({label:s,data:S.trendData.years.map(y=>{if(S.metric!=="km2")return S.trendData.agg[y]?.[s]||0;const km2=getAreaForYear(S.areaMeta,Number(y),S.selectedPlots);return km2?+(((S.trendData.agg[y]?.[s]||0)/km2).toFixed(3)):null;}),color:COLORS[i%COLORS.length],pointRadius:S.selected.length>4?2.4:3.2}));
-    renderSimpleChart("lineChart",{labels:S.trendData.years,datasets,yTitle:S.metric==="km2"?"Dichtheid (territoria/km²)":"Territoria"});
+    renderSimpleChart("lineChart",{labels:S.trendData.years,datasets,yTitle:S.metric==="km2"?"Dichtheid (territoria/km²)":"Territoria",yInteger:S.metric!=="km2"});
   }
 }
-function renderMsiPanel(){const p=el("div",{className:"panel"});p.appendChild(el("h2",{},"MSI — Multi-Species Index per ecologische groep"));const srcTog=el("div",{className:"metric-toggle",style:{marginBottom:"16px"}});[["gam","GAM (dichtheid)"],["trim","TRIM-MSI"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.msiSource===id?" active":"")},lbl);b.addEventListener("click",()=>{S.msiSource=id;refreshMsiMeta();render();setTimeout(renderMsiChartNow,0);});srcTog.appendChild(b);});p.appendChild(srcTog);if(S.msiSource==="gam"){p.appendChild(renderCsvUploadRow("GAM-voorspellingen",{loaded:!!S.voorspData,text:S.voorspData?`${S.voorspData.length} rijen geladen`:"gam_voorspellingen_per_groep.csv"},data=>processMsiCSV(data,"voorsp")));p.appendChild(renderCsvUploadRow("GAM-interpretatie",{loaded:!!S.interpData,text:S.interpData?`${S.interpData.length} rijen geladen`:"gam_interpretatie_per_groep.csv"},data=>processMsiCSV(data,"interp")));}else{p.appendChild(renderCsvUploadRow("TRIM-MSI per groep",{loaded:!!S.trimMsiData,text:S.trimMsiData?`${S.trimMsiData.length} rijen geladen`:"msi_per_groep_per_jaar.csv"},data=>processMsiCSV(data,"trim_msi")));p.appendChild(renderCsvUploadRow("TRIM-MSI trendoverzicht",{loaded:!!S.trimMsiTrendData,text:S.trimMsiTrendData?`${S.trimMsiTrendData.length} rijen geladen`:"trendoverzicht_msi_groepen.csv"},data=>processMsiCSV(data,"trim_trend")));p.appendChild(renderCsvUploadRow("TRIM-GAM voorspellingen",{loaded:!!S.trimGamPredData,text:S.trimGamPredData?`${S.trimGamPredData.length} rijen geladen`:"gam_voorspellingen_msi_groepen.csv"},data=>processMsiCSV(data,"trim_gam_pred")));p.appendChild(renderCsvUploadRow("TRIM-GAM interpretatie",{loaded:!!S.trimGamInterpData,text:S.trimGamInterpData?`${S.trimGamInterpData.length} rijen geladen`:"gam_interpretatie_msi_groepen.csv"},data=>processMsiCSV(data,"trim_gam_interp")));}const activeData=getActiveMsiData();if(!activeData){p.appendChild(el("p",{className:"empty-msg"},S.msiSource==="trim"?"Laad minimaal het TRIM-MSI bestand of het TRIM-GAM voorspellingenbestand om de grafiek te tonen.":"Laad het GAM-voorspellingenbestand om de grafiek te tonen."));p.appendChild(renderMsiMethodInfo());return p;}const glbl=el("div",{style:{marginBottom:"16px"}});glbl.appendChild(el("label",{style:{fontSize:"12px",fontWeight:"500",color:"#374151",display:"block",marginBottom:"8px"}},"Ecologische groep"));const gpw=el("div",{className:"pill-wrap"});S.msiGroepen.forEach(g=>{const b=el("button",{className:"pill"+(S.msiGroep===g.code?" active-blue":"")},g.naam);b.addEventListener("click",()=>setState({msiGroep:g.code}));gpw.appendChild(b);});glbl.appendChild(gpw);p.appendChild(glbl);if(S.msiAllYears.length){const jd=el("div",{style:{marginBottom:"16px",padding:"12px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"8px"}});jd.appendChild(el("span",{style:{fontSize:"12px",fontWeight:"500",color:"#374151",display:"block",marginBottom:"8px"}},"Periode"));const row=el("div",{className:"year-row"});["van","tot"].forEach(k=>{const wrap=el("div",{});wrap.appendChild(el("label",{},k==="van"?"Van":"Tot"));const sel=el("select",{});S.msiAllYears.forEach(y=>{const o=el("option",{value:y},String(y));if(S.msiYearRange[k]===y)o.selected=true;sel.appendChild(o);});sel.addEventListener("change",e=>{S.msiYearRange=Object.assign({},S.msiYearRange,{[k]:parseInt(e.target.value)});render();setTimeout(renderMsiChartNow,0);});wrap.appendChild(sel);row.appendChild(wrap);});const rst=el("button",{className:"reset-btn"},"Reset");rst.addEventListener("click",()=>{S.msiYearRange={van:S.msiAllYears[0],tot:S.msiAllYears[S.msiAllYears.length-1]};render();setTimeout(renderMsiChartNow,0);});row.appendChild(rst);jd.appendChild(row);p.appendChild(jd);}const groepNaam=S.msiGroepen.find(g=>g.code===S.msiGroep)?.naam||"";const trimHeeftGam=S.msiSource==="trim"&&!!S.trimGamPredData;p.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},`${groepNaam} — ${S.msiSource==="trim"?(trimHeeftGam?"TRIM-MSI + GAM":"TRIM-MSI"):"MSI-trend"}`));p.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},S.msiSource==="trim"?(trimHeeftGam?"Groene stippen = TRIM-MSI · Blauwe lijn = GAM-fit · Gestreept = 95%-banden":"Groene lijn = TRIM-MSI per jaar"):"Rode stippen = MSI · Blauwe lijn = GAM-fit · Gestreept = 95%-banden"));p.appendChild(el("div",{className:"chart-wrap",id:"msiChart"}));if(S.msiSource==="gam"&&S.interpData){const row=S.interpData.find(r=>Number(r.groep_100)===Number(S.msiGroep));if(row){const ip=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});ip.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`GAM-interpretatie — ${groepNaam}`));const grid=el("div",{className:"interp-grid"});[["Verklaarde variantie",row.deviance_explained!=null?`${(row.deviance_explained*100).toFixed(1)}%`:"-"],["EDF voor breuk",row.edf_pre?.toFixed?.(2) ?? "-"],["EDF na breuk",row.edf_post?.toFixed?.(2) ?? "-"],["Min. p-waarde",row.min_p_smooth?.toExponential?.(2) ?? "-"]].forEach(([l,v])=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},l));cell.appendChild(el("div",{className:"val"},String(v)));grid.appendChild(cell);});ip.appendChild(grid);ip.appendChild(el("div",{className:`advies-badge ${row.advies==="GAM aanbevolen"?"advies-gam":"advies-lin"}`},row.advies||"-"));ip.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280",marginBottom:"8px"}},row.toelichting||""));ip.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af"}},"EDF dicht bij 1 = bijna lineaire trend · hogere EDF = meer kromming"));p.appendChild(ip);}}else if(S.msiSource==="trim"&&S.trimGamInterpData){const row=S.trimGamInterpData.find(r=>Number(r.groep_100)===Number(S.msiGroep));if(row){const ip=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});ip.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`TRIM-GAM interpretatie — ${groepNaam}`));const grid=el("div",{className:"interp-grid"});[["Verklaarde variantie",row.deviance_explained!=null?`${(row.deviance_explained*100).toFixed(1)}%`:"-"],["EDF voor breuk",row.edf_pre?.toFixed?.(2) ?? "-"],["EDF na breuk",row.edf_post?.toFixed?.(2) ?? "-"],["Min. p-waarde",row.min_p_smooth?.toExponential?.(2) ?? "-"]].forEach(([l,v])=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},l));cell.appendChild(el("div",{className:"val"},String(v)));grid.appendChild(cell);});ip.appendChild(grid);ip.appendChild(el("div",{className:`advies-badge ${row.advies==="GAM aanbevolen"?"advies-gam":"advies-lin"}`},row.advies||"-"));ip.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280",marginBottom:"8px"}},row.toelichting||""));ip.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af"}},"EDF dicht bij 1 = bijna lineaire trend · hogere EDF = meer kromming"));p.appendChild(ip);}}else if(S.msiSource==="trim"&&S.trimMsiTrendData){const row=S.trimMsiTrendData.find(r=>Number(r.groep_100)===Number(S.msiGroep));if(row){const ip=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});ip.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`TRIM-uitleg — ${groepNaam}`));const grid=el("div",{className:"interp-grid"});[["Hele periode",row.overall_uitleg||"-"],["Voor 1984",row.trend_pre_uitleg||"-"],["Vanaf 1984",row.trend_post_uitleg||"-"],["Gemiddeld aantal soorten",row.gemiddeld_n_soorten??"-"]].forEach(([l,v])=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},l));cell.appendChild(el("div",{className:"val"},String(v)));grid.appendChild(cell);});ip.appendChild(grid);p.appendChild(ip);}}p.appendChild(renderMsiMethodInfo());return p;}
-function renderMsiChartNow(){if(S.msiGroep==null)return;if(S.msiSource==="trim"){if(S.trimGamPredData){const data=S.trimGamPredData.filter(r=>Number(r.groep_100)===Number(S.msiGroep)&&Number(r.jaar)>=(S.msiYearRange.van||0)&&Number(r.jaar)<=(S.msiYearRange.tot||9999)).sort((a,b)=>a.jaar-b.jaar).map(r=>({jaar:String(r.jaar),msi:r.msi!=null?+Number(r.msi).toFixed(3):null,gam:r.gam_fit_msi!=null?+Number(r.gam_fit_msi).toFixed(3):null,upper:r.gam_fit_upper!=null?+Number(r.gam_fit_upper).toFixed(3):null,lower:r.gam_fit_lower!=null?+Number(r.gam_fit_lower).toFixed(3):null}));renderSimpleChart("msiChart",{labels:data.map(r=>r.jaar),bands:[{upper:data.map(r=>r.upper),lower:data.map(r=>r.lower),fill:"rgba(37,99,235,0.14)"}],datasets:[{label:"TRIM-GAM",data:data.map(r=>r.gam),color:"#1d4ed8",showPoints:false,bold:true},{label:"TRIM-MSI",data:data.map(r=>r.msi),color:"#15803d",pointRadius:2.6,showLine:false}],yTitle:"TRIM-MSI"});return;}if(!S.trimMsiData)return;const data=S.trimMsiData.filter(r=>Number(r.groep_100)===Number(S.msiGroep)&&Number(r.jaar)>=(S.msiYearRange.van||0)&&Number(r.jaar)<=(S.msiYearRange.tot||9999)).sort((a,b)=>a.jaar-b.jaar);renderSimpleChart("msiChart",{labels:data.map(r=>String(r.jaar)),datasets:[{label:"TRIM-MSI",data:data.map(r=>r.msi!=null?+Number(r.msi).toFixed(3):null),color:"#15803d",bold:true}],yTitle:"TRIM-MSI"});return;}if(!S.voorspData)return;const data=S.voorspData.filter(r=>Number(r.groep_100)===Number(S.msiGroep)&&Number(r.jaar)>=(S.msiYearRange.van||0)&&Number(r.jaar)<=(S.msiYearRange.tot||9999)).sort((a,b)=>a.jaar-b.jaar).map(r=>({jaar:String(r.jaar),msi:r.msi!=null?+r.msi.toFixed(3):null,gam:r.gam_fit_msi!=null?+r.gam_fit_msi.toFixed(3):null,upper:r.gam_fit_upper!=null?+r.gam_fit_upper.toFixed(3):null,lower:r.gam_fit_lower!=null?+r.gam_fit_lower.toFixed(3):null}));renderSimpleChart("msiChart",{labels:data.map(r=>r.jaar),bands:[{upper:data.map(r=>r.upper),lower:data.map(r=>r.lower),fill:"rgba(37,99,235,0.14)"}],datasets:[{label:"GAM-trend",data:data.map(r=>r.gam),color:"#1d4ed8",showPoints:false,bold:true},{label:"MSI",data:data.map(r=>r.msi),color:"#0f766e",pointRadius:2.6,showLine:false}],yTitle:"MSI"});}
-function renderTellersPanel(){const tellers=S.tables["tellers"]?.rows||[],pjt=S.tables["plot_jaar_teller"]?.rows||[],kavelMap=buildKavelMap(S.tables)||{},p=el("div",{className:"panel"});p.appendChild(el("h2",{},"Telleroverzicht"));if(!tellers.length){p.appendChild(el("p",{style:{color:"#92400e"}},"Tabel 'tellers' niet gevonden."));return p;}const inp=el("input",{type:"text",className:"search-box",placeholder:"Zoek op achternaam…"});p.appendChild(inp);const countEl=el("p",{className:"found-count"},""),listEl=el("div",{});p.appendChild(countEl);p.appendChild(listEl);function renderList(q){const filt=tellers.filter(t=>!q||String(t["achternaam"]||"").toLowerCase().includes(q.toLowerCase())).sort((a,b)=>String(a["achternaam"]||"").localeCompare(String(b["achternaam"]||"")));countEl.textContent=`${filt.length} teller${filt.length!==1?"s":""} gevonden`;listEl.innerHTML="";const tk={};pjt.forEach(r=>{const tid=String(r["teller_id"]),jaar=r["jaar"],kv=kavelMap[String(r["plot_id"])]??r["plot_id"];if(!tk[tid])tk[tid]={};if(!tk[tid][jaar])tk[tid][jaar]=[];if(!tk[tid][jaar].includes(kv))tk[tid][jaar].push(kv);});filt.forEach(t=>{const tid=String(t["id"]),naam=[t["voornaam"],t["tussenvoegsel"],t["achternaam"]].filter(Boolean).join(" "),kavels=tk[tid]||{},jaren=Object.keys(kavels).sort(),card=el("div",{className:"teller-card"}),top=el("div",{style:{display:"flex",flexWrap:"wrap",gap:"16px",marginBottom:"10px"}});top.appendChild(el("div",{},[el("div",{className:"teller-name"},naam),el("div",{className:"teller-code"},`Tellercode: ${t["tellercode"]||"—"}`)]));const cd=el("div",{className:"teller-contact"});if(t["telefoon_vast"])cd.appendChild(el("div",{},`Telefoon: ${t["telefoon_vast"]}`));if(t["telefoon_mobiel"])cd.appendChild(el("div",{},`Mobiel: ${t["telefoon_mobiel"]}`));if(t["email"]){const a=el("a",{href:`mailto:${t["email"]}`},t["email"]),d=el("div",{});d.appendChild(document.createTextNode("E-mail: "));d.appendChild(a);cd.appendChild(d);}top.appendChild(cd);card.appendChild(top);if(jaren.length){const tbl=el("table",{className:"kavel-tbl"});tbl.appendChild(el("thead",{},[el("tr",{},[el("th",{},"Jaar"),el("th",{},"Kavels")])]));const tbody=el("tbody",{});jaren.forEach(j=>{const td=el("td",{});(kavels[j]||[]).sort().forEach(k=>td.appendChild(el("span",{className:"kavel-badge"},String(k))));tbody.appendChild(el("tr",{},[el("td",{style:{fontWeight:"500",color:"#374151",whiteSpace:"nowrap"}},String(j)),td]));});tbl.appendChild(tbody);card.appendChild(tbl);}else card.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af",fontStyle:"italic"}},"Geen kavelgegevens"));listEl.appendChild(card);});if(!filt.length&&q)listEl.appendChild(el("p",{className:"empty-msg"},`Geen tellers gevonden voor "${q}"`));}inp.addEventListener("input",e=>renderList(e.target.value));renderList("");return p;}
+function renderWinterPanel(){
+  const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});
+  hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[el("h2",{},"Wintertellingen per soort per seizoen")]));
+  p.appendChild(hdr);
+  if(!S.winterMeta){
+    p.appendChild(el("p",{className:"empty-msg"},"Geen gegevens gevonden in dagwaarnemingen_wv voor wintertellingen."));
+    return p;
+  }
+  if(S.winterMeta.plots.length)p.appendChild(renderWinterKavelFilter());
+  if(S.winterMeta.seasons.length)p.appendChild(renderWinterSeizoenFilter());
+  p.appendChild(renderWinterSoortFilter());
+  if(!S.winterSelected.length)p.appendChild(el("p",{className:"empty-msg"},"Selecteer een soort hierboven"));
+  else p.appendChild(el("div",{className:"chart-wrap",id:"winterChart"}));
+  p.appendChild(renderWinterMethodInfo());
+  return p;
+}
+function renderWinterKavelFilter(){
+  const d=el("details",{className:"filter-gray"}),sm=el("summary",{});
+  sm.appendChild(document.createTextNode("Kavels filteren"));
+  if(S.winterSelectedPlots.length)sm.appendChild(el("span",{className:"badge badge-green",style:{marginLeft:"8px"}},`${S.winterSelectedPlots.length} geselecteerd`));
+  d.appendChild(sm);
+  const body=el("div",{className:"filter-body"}),rst=el("button",{className:"reset-btn",style:{float:"right"}},"Alle kavels");
+  rst.addEventListener("click",()=>setState({winterSelectedPlots:[]}));
+  body.appendChild(rst);
+  const pw=el("div",{className:"pill-wrap",style:{marginTop:"8px"}});
+  S.winterMeta.plots.forEach(p=>{
+    const active=S.winterSelectedPlots.includes(String(p)),b=el("button",{className:"pill"+(active?" active-green":"")},String(p));
+    b.addEventListener("click",()=>{const sp=active?S.winterSelectedPlots.filter(x=>x!==String(p)):[...S.winterSelectedPlots,String(p)];setState({winterSelectedPlots:sp});});
+    pw.appendChild(b);
+  });
+  body.appendChild(pw);d.appendChild(body);return d;
+}
+function renderWinterSeizoenFilter(){
+  const d=el("details",{className:"filter-gray"}),sm=el("summary",{});
+  sm.appendChild(document.createTextNode("Seizoen"));
+  if(S.winterSeasonRange.van&&S.winterSeasonRange.tot)sm.appendChild(el("span",{className:"badge badge-blue",style:{marginLeft:"8px"}},`${getWinterSeasonShortLabel(S.winterSeasonRange.van)} – ${getWinterSeasonShortLabel(S.winterSeasonRange.tot)}`));
+  d.appendChild(sm);
+  const body=el("div",{className:"filter-body"}),row=el("div",{className:"year-row"});
+  ["van","tot"].forEach(k=>{
+    const wrap=el("div",{});wrap.appendChild(el("label",{},k==="van"?"Van":"Tot"));
+    const sel=el("select",{});
+    S.winterMeta.seasons.forEach(y=>{const o=el("option",{value:y},getWinterSeasonShortLabel(y));if(Number(S.winterSeasonRange[k])===Number(y))o.selected=true;sel.appendChild(o);});
+    sel.addEventListener("change",e=>{const yr=Object.assign({},S.winterSeasonRange,{[k]:parseInt(e.target.value)});setState({winterSeasonRange:yr});});
+    wrap.appendChild(sel);row.appendChild(wrap);
+  });
+  const rst=el("button",{className:"reset-btn"},"Reset");
+  rst.addEventListener("click",()=>setState({winterSeasonRange:{van:S.winterMeta.seasons[0],tot:S.winterMeta.seasons[S.winterMeta.seasons.length-1]}}));
+  row.appendChild(rst);body.appendChild(row);d.appendChild(body);return d;
+}
+function renderWinterSoortFilter(){
+  const d=el("details",{className:"filter-gray"}),sm=el("summary",{});
+  sm.appendChild(document.createTextNode("Soorten selecteren"));
+  if(S.winterSelected.length)sm.appendChild(el("span",{className:"badge badge-green",style:{marginLeft:"8px"}},`${S.winterSelected.length} geselecteerd`));
+  d.appendChild(sm);
+  const body=el("div",{className:"filter-body"}),pw=el("div",{className:"species-pills"});
+  S.winterMeta.species.forEach((s,i)=>{
+    const active=S.winterSelected.includes(s),b=el("button",{className:"pill",style:{background:active?COLORS[i%COLORS.length]:"white",color:active?"white":"#555",borderColor:active?COLORS[i%COLORS.length]:"#d1d5db"}},s);
+    b.addEventListener("click",()=>{const sel=active?S.winterSelected.filter(x=>x!==s):[...S.winterSelected,s];setState({winterSelected:sel});});
+    pw.appendChild(b);
+  });
+  body.appendChild(pw);d.appendChild(body);return d;
+}
+function renderWinterMethodInfo(){
+  const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});
+  box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Hoe wordt deze grafiek berekend?"));
+  const list=el("div",{style:{display:"grid",gap:"10px"}});
+  [["Seizoen","Een punt staat voor september tot en met maart. Het label gebruikt de laatste twee cijfers van de betrokken jaren, bijvoorbeeld 00/01."],["Oppervlakcorrectie","Per soort worden waarnemingen eerst per datum en plot gesommeerd. Dat dag-plottotaal wordt gedeeld door het oppervlak van het plot in dat jaar. Daarna worden alle gecorrigeerde waarden binnen het seizoen opgeteld."]].forEach(([titel,tekst])=>{
+    const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});
+    item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));
+    item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));
+    list.appendChild(item);
+  });
+  box.appendChild(list);return box;
+}
+function renderWinterChart(){
+  if(!S.winterMeta||!S.winterSelected.length)return;
+  const series=buildWinterSeries();
+  const datasets=S.winterSelected.map((s,i)=>({
+    label:s,
+    data:series.labels.map(label=>series.agg[label]?.[s]!=null?+series.agg[label][s].toFixed(3):0),
+    color:COLORS[i%COLORS.length],
+    pointRadius:S.winterSelected.length>4?2.4:3.2
+  }));
+  renderSimpleChart("winterChart",{labels:series.labels,datasets,yTitle:"Gesommeerde aantallen per km²",leftMargin:86});
+}
+function renderMsiPanel(){const p=el("div",{className:"panel"});p.appendChild(el("h2",{},"MSI - Multi Species Indexen"));const srcTog=el("div",{className:"metric-toggle",style:{marginBottom:"16px"}});[["gam","Dichtheid per km2"],["trim","TRIM"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.msiSource===id?" active":"")},lbl);b.addEventListener("click",()=>{S.msiSource=id;refreshMsiMeta();render();setTimeout(renderMsiChartNow,0);});srcTog.appendChild(b);});p.appendChild(srcTog);if(S.msiSource==="gam"){p.appendChild(renderCsvUploadRow("GAM-voorspellingen",{loaded:!!S.voorspData,text:S.voorspData?`${S.voorspData.length} rijen geladen`:"gam_voorspellingen_per_groep.csv"},data=>processMsiCSV(data,"voorsp")));p.appendChild(renderCsvUploadRow("GAM-interpretatie",{loaded:!!S.interpData,text:S.interpData?`${S.interpData.length} rijen geladen`:"gam_interpretatie_per_groep.csv"},data=>processMsiCSV(data,"interp")));}else{p.appendChild(renderCsvUploadRow("TRIM Meijendel",{loaded:!!S.trimMsiData,text:S.trimMsiData?`${S.trimMsiData.length} rijen geladen`:"msi_per_groep_per_jaar.csv"},data=>processMsiCSV(data,"trim_msi")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimMsiTrendData,text:S.trimMsiTrendData?`${S.trimMsiTrendData.length} rijen geladen`:"trendoverzicht_msi_groepen.csv"},data=>processMsiCSV(data,"trim_trend")));p.appendChild(renderCsvUploadRow("TRIM-GAM Meijendel",{loaded:!!S.trimGamPredData,text:S.trimGamPredData?`${S.trimGamPredData.length} rijen geladen`:"gam_voorspellingen_msi_groepen.csv"},data=>processMsiCSV(data,"trim_gam_pred")));p.appendChild(renderCsvUploadRow("TRIM-GAM Landelijk",{loaded:!!S.landelijkGamPredData,text:S.landelijkGamPredData?`${S.landelijkGamPredData.length} rijen geladen`:"gam_voorspellingen_landelijk_msi_groepen.csv"},data=>processMsiCSV(data,"landelijk_gam_pred")));}const activeData=getActiveMsiData();if(!activeData){p.appendChild(el("p",{className:"empty-msg"},S.msiSource==="trim"?"Laad minimaal het TRIM-bestand om de grafiek te tonen.":"Laad het GAM-voorspellingenbestand om de grafiek te tonen."));p.appendChild(renderMsiMethodInfo());return p;}const glbl=el("div",{style:{marginBottom:"16px"}});glbl.appendChild(el("label",{style:{fontSize:"12px",fontWeight:"500",color:"#374151",display:"block",marginBottom:"8px"}},"Ecologische groep, Rode Lijst en Oranje Lijst"));const gpw=el("div",{className:"pill-wrap"});S.msiGroepen.forEach(g=>{const b=el("button",{className:"pill"+(String(S.msiGroep)===String(g.code)?" active-blue":"")},g.naam);b.addEventListener("click",()=>setState({msiGroep:g.code}));gpw.appendChild(b);});glbl.appendChild(gpw);p.appendChild(glbl);if(S.msiAllYears.length){const jd=el("div",{style:{marginBottom:"16px",padding:"12px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"8px"}});jd.appendChild(el("span",{style:{fontSize:"12px",fontWeight:"500",color:"#374151",display:"block",marginBottom:"8px"}},"Periode"));const row=el("div",{className:"year-row"});["van","tot"].forEach(k=>{const wrap=el("div",{});wrap.appendChild(el("label",{},k==="van"?"Van":"Tot"));const sel=el("select",{});S.msiAllYears.forEach(y=>{const o=el("option",{value:y},String(y));if(S.msiYearRange[k]===y)o.selected=true;sel.appendChild(o);});sel.addEventListener("change",e=>{S.msiYearRange=Object.assign({},S.msiYearRange,{[k]:parseInt(e.target.value)});render();setTimeout(renderMsiChartNow,0);});wrap.appendChild(sel);row.appendChild(wrap);});const rst=el("button",{className:"reset-btn"},"Reset");rst.addEventListener("click",()=>{S.msiYearRange={van:(S.msiAllYears.find(y=>y>=MSI_DEFAULT_START_YEAR)??S.msiAllYears[0]),tot:S.msiAllYears[S.msiAllYears.length-1]};render();setTimeout(renderMsiChartNow,0);});row.appendChild(rst);jd.appendChild(row);p.appendChild(jd);}const groepNaam=S.msiGroepen.find(g=>String(g.code)===String(S.msiGroep))?.naam||"";p.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},S.msiSource==="trim"?`${groepNaam} — TRIM Meijendel en Landelijk`:groepNaam));p.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},S.msiSource==="trim"?"Groen = Meijendel · zwart gestreept = landelijk · beide lijnen zijn herijkt op het eerste gemeenschappelijke jaar":"Rode stippen = MSI · Blauwe lijn = GAM-fit · Gestreept = 95%-banden"));p.appendChild(el("div",{className:"chart-wrap",id:"msiChart"}));if(S.msiSource==="gam"&&S.interpData&&!isLijstGroep(S.msiGroep)){const row=S.interpData.find(r=>Number(r.groep_100)===Number(S.msiGroep));if(row){const ip=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});ip.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`GAM-interpretatie — ${groepNaam}`));const grid=el("div",{className:"interp-grid"});[["Verklaarde variantie",row.deviance_explained!=null?`${(row.deviance_explained*100).toFixed(1)}%`:"-"],["EDF voor breuk",row.edf_pre?.toFixed?.(2) ?? "-"],["EDF na breuk",row.edf_post?.toFixed?.(2) ?? "-"],["Min. p-waarde",row.min_p_smooth?.toExponential?.(2) ?? "-"]].forEach(([l,v])=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},l));cell.appendChild(el("div",{className:"val"},String(v)));grid.appendChild(cell);});ip.appendChild(grid);ip.appendChild(el("div",{className:`advies-badge ${row.advies==="GAM aanbevolen"?"advies-gam":"advies-lin"}`},row.advies||"-"));ip.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280",marginBottom:"8px"}},row.toelichting||""));ip.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af"}},"EDF dicht bij 1 = bijna lineaire trend · hogere EDF = meer kromming"));p.appendChild(ip);}}else if(S.msiSource==="trim"&&S.trimMsiTrendData&&!isLijstGroep(S.msiGroep)){const row=S.trimMsiTrendData.find(r=>Number(r.groep_100)===Number(S.msiGroep));if(row){const ip=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});ip.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`TRIM-uitleg — ${groepNaam}`));const grid=el("div",{className:"interp-grid"});[["Hele periode",row.overall_uitleg||"-"],["Voor 1984",row.trend_pre_uitleg||"-"],["Vanaf 1984",row.trend_post_uitleg||"-"],["Gemiddeld aantal soorten",row.gemiddeld_n_soorten??"-"]].forEach(([l,v])=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},l));cell.appendChild(el("div",{className:"val"},String(v)));grid.appendChild(cell);});ip.appendChild(grid);p.appendChild(ip);}}p.appendChild(renderMsiSpeciesBox(groepNaam));p.appendChild(renderMsiMethodInfo());return p;}
+function renderMsiChartNow(){
+  if(S.msiGroep==null)return;
+  if(S.msiSource==="trim"){
+    if(isLijstGroep(S.msiGroep)){
+      const cmp=buildLijstTrimGamComparison(S.msiGroep,S.msiYearRange);
+      renderSimpleChart("msiChart",{labels:cmp.years,datasets:[
+        {label:cmp.baseYear?`Meijendel GAM (${cmp.baseYear}=100)`:"Meijendel GAM",data:cmp.meijendel.fit,color:"#15803d",showPoints:false,bold:true},
+        {label:cmp.baseYear?`Landelijk GAM (${cmp.baseYear}=100)`:"Landelijk GAM",data:cmp.landelijk.fit,color:"#111827",showPoints:false,dashed:true}
+      ],bands:[{upper:cmp.meijendel.upper,lower:cmp.meijendel.lower,fill:"rgba(21,128,61,0.14)"}],yTitle:"TRIM"});
+      return;
+    }
+    const cmp=buildMsiGamComparison(S.msiGroep,S.msiYearRange);
+    const datasets=[
+      {label:cmp.baseYear?`Meijendel GAM (${cmp.baseYear}=100)`:"Meijendel GAM",data:cmp.meijendel.fit,color:"#15803d",showPoints:false,bold:true},
+      {label:cmp.baseYear?`Landelijk GAM (${cmp.baseYear}=100)`:"Landelijk GAM",data:cmp.landelijk.fit,color:"#111827",showPoints:false,dashed:true}
+    ];
+    renderSimpleChart("msiChart",{labels:cmp.years,bands:[{upper:cmp.meijendel.upper,lower:cmp.meijendel.lower,fill:"rgba(21,128,61,0.14)"}],datasets,yTitle:"TRIM"});
+    return;
+  }
+  if(isLijstGroep(S.msiGroep)){
+    const data=buildLijstDensityMsi(S.msiGroep,S.msiYearRange);
+    renderSimpleChart("msiChart",{labels:data.years,datasets:[
+      {label:"Trend",data:data.gam,color:"#1d4ed8",showPoints:false,bold:true},
+      {label:"MSI",data:data.msi,color:"#0f766e",pointRadius:2.6,showLine:false}
+    ],yTitle:"MSI"});
+    return;
+  }
+  if(!S.voorspData)return;
+  const data=S.voorspData.filter(r=>Number(r.groep_100)===Number(S.msiGroep)&&Number(r.jaar)>=(S.msiYearRange.van||0)&&Number(r.jaar)<=(S.msiYearRange.tot||9999)).sort((a,b)=>a.jaar-b.jaar).map(r=>({jaar:String(r.jaar),msi:r.msi!=null?+r.msi.toFixed(3):null,gam:r.gam_fit_msi!=null?+r.gam_fit_msi.toFixed(3):null,upper:r.gam_fit_upper!=null?+r.gam_fit_upper.toFixed(3):null,lower:r.gam_fit_lower!=null?+r.gam_fit_lower.toFixed(3):null}));
+  renderSimpleChart("msiChart",{labels:data.map(r=>r.jaar),bands:[{upper:data.map(r=>r.upper),lower:data.map(r=>r.lower),fill:"rgba(37,99,235,0.14)"}],datasets:[{label:"GAM-trend",data:data.map(r=>r.gam),color:"#1d4ed8",showPoints:false,bold:true},{label:"MSI",data:data.map(r=>r.msi),color:"#0f766e",pointRadius:2.6,showLine:false}],yTitle:"MSI"});
+}
 function renderSchema(){const d=el("details",{className:"schema-wrap"});d.appendChild(el("summary",{style:{fontSize:"12px",color:"#9ca3af",cursor:"pointer"}},"Herkende tabellen & kolommen"));const body=el("div",{style:{marginTop:"8px"}}),colColors={species:"#d1fae5",year:"#dbeafe",count:"#ffedd5",location:"#fef9c3",id:"#f3f4f6",other:"#f3f4f6"},txtColors={species:"#065f46",year:"#1e40af",count:"#9a3412",location:"#854d0e",id:"#9ca3af",other:"#6b7280"};Object.entries(S.tables).forEach(([name,tbl])=>{const roles=guessRoles(tbl.columns),row=el("div",{className:"schema-tbl"});row.appendChild(el("span",{style:{fontWeight:"600"}},name));row.appendChild(el("span",{style:{color:"#9ca3af",marginLeft:"8px"}},`(${tbl.rows.length} rijen)`));const pills=el("div",{style:{marginTop:"4px"}});tbl.columns.forEach(c=>{const r=roles[c]||"other";pills.appendChild(el("span",{className:"col-pill",style:{background:colColors[r]||"#f3f4f6",color:txtColors[r]||"#6b7280"}},c));});row.appendChild(pills);body.appendChild(row);});d.appendChild(body);return d;}
 function loadFile(file){if(!file)return;setState({status:"loading",error:""});const reader=new FileReader();reader.onload=e=>processFile(e.target.result);reader.onerror=()=>setState({status:"error",error:"Bestand kon niet worden gelezen."});reader.readAsText(file,"utf-8");}
-render();
-autoLoadFromSameFolder();
+if(location.protocol!=="file:"){
+  render();
+  autoLoadFromSameFolder();
+}
 </script>
 </body>
 </html>

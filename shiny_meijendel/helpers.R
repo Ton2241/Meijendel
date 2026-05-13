@@ -1,9 +1,31 @@
 extract_columns <- function(header) {
+  if (!grepl("\\) VALUES", header, fixed = FALSE)) {
+    return(character())
+  }
   start <- regexpr("\\(", header)[1]
   end <- regexpr("\\) VALUES", header)[1]
   cols <- substring(header, start + 1L, end - 1L)
   cols <- gsub("`", "", cols, fixed = TRUE)
   trimws(strsplit(cols, ",", fixed = TRUE)[[1]])
+}
+
+extract_create_table_columns <- function(lines, table) {
+  start <- which(grepl(paste0("^CREATE TABLE `", table, "` \\("), lines))
+  if (!length(start)) {
+    return(character())
+  }
+
+  out <- character()
+  pos <- start[1] + 1L
+  while (pos <= length(lines) && !grepl("^\\) ENGINE=", lines[pos])) {
+    m <- regexec("^\\s*`([^`]+)`", lines[pos])
+    hit <- regmatches(lines[pos], m)[[1]]
+    if (length(hit) >= 2L) {
+      out <- c(out, hit[2])
+    }
+    pos <- pos + 1L
+  }
+  out
 }
 
 split_tuples <- function(values_text) {
@@ -103,6 +125,7 @@ read_insert_table <- function(path, table, keep_columns = NULL) {
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   prefix <- paste0("INSERT INTO `", table, "` ")
   starts <- which(startsWith(lines, prefix))
+  create_columns <- extract_create_table_columns(lines, table)
 
   if (!length(starts)) {
     stop(sprintf("Geen INSERT-blokken gevonden voor tabel '%s'.", table))
@@ -122,6 +145,12 @@ read_insert_table <- function(path, table, keep_columns = NULL) {
     block <- paste(block_lines, collapse = "\n")
     header <- sub("\n.*$", "", block)
     columns <- extract_columns(header)
+    if (!length(columns)) {
+      columns <- create_columns
+    }
+    if (!length(columns)) {
+      stop(sprintf("Geen kolommen gevonden voor tabel '%s'.", table))
+    }
     values_text <- sub("^.*?VALUES\\s*", "", block)
     values_text <- sub(";\\s*$", "", values_text)
     tuples <- split_tuples(values_text)
@@ -134,9 +163,25 @@ read_insert_table <- function(path, table, keep_columns = NULL) {
 
     mat <- do.call(rbind, parsed_rows)
     df <- as.data.frame(mat, stringsAsFactors = FALSE)
+    if (ncol(df) != length(columns)) {
+      stop(sprintf(
+        "Aantal waarden (%s) past niet bij aantal kolommen (%s) voor tabel '%s'.",
+        ncol(df),
+        length(columns),
+        table
+      ))
+    }
     names(df) <- columns
 
     if (!is.null(keep_columns)) {
+      missing_columns <- setdiff(keep_columns, names(df))
+      if (length(missing_columns)) {
+        stop(sprintf(
+          "Tabel '%s' mist kolommen: %s.",
+          table,
+          paste(missing_columns, collapse = ", ")
+        ))
+      }
       df <- df[keep_columns]
     }
 
@@ -160,6 +205,8 @@ parse_meijendel_tables <- function(path) {
   territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
   evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
+  richtlijnen <- read_insert_table(path, "richtlijnen", c("id", "naam"))
+  soort_richtlijn <- read_insert_table(path, "soort_richtlijn", c("soort_id", "richtlijn_id"))
   habitattypen <- read_insert_table(path, "habitattypen", c("id", "habitat_code", "habitat_naam"))
   pjh <- read_insert_table(path, "plot_jaar_habitat", c("plot_id", "jaar", "habitat_id", "aandeel_m2"))
   pja <- read_insert_table(path, "plot_jaar_ahn_dtm", c("plot_id", "jaar", "bron", "ahn_mean", "ahn_sd"))
@@ -186,6 +233,9 @@ parse_meijendel_tables <- function(path) {
   evg_groepen$groepsnummer <- to_integer(evg_groepen$groepsnummer)
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
+  richtlijnen$id <- to_integer(richtlijnen$id)
+  soort_richtlijn$soort_id <- to_integer(soort_richtlijn$soort_id)
+  soort_richtlijn$richtlijn_id <- to_integer(soort_richtlijn$richtlijn_id)
   habitattypen$id <- to_integer(habitattypen$id)
   pjh$plot_id <- to_integer(pjh$plot_id)
   pjh$jaar <- to_integer(pjh$jaar)
@@ -221,6 +271,8 @@ parse_meijendel_tables <- function(path) {
     territoria = territoria,
     evg_vogelgroepen = evg_groepen,
     evg_vogel_landschapgroep = evg_koppeling,
+    richtlijnen = richtlijnen,
+    soort_richtlijn = soort_richtlijn,
     habitattypen = habitattypen,
     plot_jaar_habitat = pjh,
     plot_jaar_ahn_dtm = pja,
@@ -254,7 +306,7 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
     cache_valid <- !is.null(cache) &&
       identical(cache$signature, signature) &&
       !is.null(cache$data) &&
-      all(c("habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid") %in% names(cache$data))
+      all(c("richtlijnen", "soort_richtlijn", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid") %in% names(cache$data))
     if (cache_valid) {
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
     }
@@ -659,6 +711,59 @@ build_group_mapping <- function(tbls) {
   merge(mapping, make_group_descriptions(tbls$evg_vogelgroepen), by = "groep_100", all.x = TRUE)
 }
 
+richtlijn_keuzes <- function() {
+  c("RL: Verdwenen", "RL: Ernstig bedreigd", "RL: Bedreigd", "RL: Kwetsbaar", "RL: Gevoelig", "Oranje Lijst")
+}
+
+richtlijn_verzamelcategorieen <- function() {
+  data.frame(
+    richtlijn_id = c(1001L, 1002L),
+    richtlijn_titel = c("Rode Lijst Totaal", "Rode & Oranjelijst"),
+    richtlijn_volgorde = c(7L, 8L),
+    stringsAsFactors = FALSE
+  )
+}
+
+build_richtlijn_mapping <- function(tbls) {
+  richtlijnen <- tbls$richtlijnen[tbls$richtlijnen$naam %in% richtlijn_keuzes(), , drop = FALSE]
+  richtlijnen$richtlijn_volgorde <- match(richtlijnen$naam, richtlijn_keuzes())
+  mapping <- merge(
+    tbls$soort_richtlijn,
+    richtlijnen,
+    by.x = "richtlijn_id",
+    by.y = "id",
+    all = FALSE
+  )
+  mapping <- unique(data.frame(
+    soort_id = mapping$soort_id,
+    richtlijn_id = mapping$richtlijn_id,
+    richtlijn_titel = mapping$naam,
+    richtlijn_volgorde = mapping$richtlijn_volgorde,
+    stringsAsFactors = FALSE
+  ))
+  verzamel <- richtlijn_verzamelcategorieen()
+  rode_lijst_soorten <- unique(mapping$soort_id[mapping$richtlijn_titel %in% richtlijn_keuzes()[1:5]])
+  rode_oranje_soorten <- unique(mapping$soort_id[mapping$richtlijn_titel %in% richtlijn_keuzes()])
+  extra_mapping <- rbind(
+    data.frame(
+      soort_id = rode_lijst_soorten,
+      richtlijn_id = verzamel$richtlijn_id[verzamel$richtlijn_titel == "Rode Lijst Totaal"],
+      richtlijn_titel = "Rode Lijst Totaal",
+      richtlijn_volgorde = verzamel$richtlijn_volgorde[verzamel$richtlijn_titel == "Rode Lijst Totaal"],
+      stringsAsFactors = FALSE
+    ),
+    data.frame(
+      soort_id = rode_oranje_soorten,
+      richtlijn_id = verzamel$richtlijn_id[verzamel$richtlijn_titel == "Rode & Oranjelijst"],
+      richtlijn_titel = "Rode & Oranjelijst",
+      richtlijn_volgorde = verzamel$richtlijn_volgorde[verzamel$richtlijn_titel == "Rode & Oranjelijst"],
+      stringsAsFactors = FALSE
+    )
+  )
+  mapping <- unique(rbind(mapping, extra_mapping))
+  mapping[order(mapping$richtlijn_volgorde, mapping$soort_id), , drop = FALSE]
+}
+
 analyse_groups_subset <- function(species_indices, group_mapping) {
   merged <- merge(
     species_indices[, c("soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "index_100")],
@@ -704,6 +809,89 @@ analyse_groups_subset <- function(species_indices, group_mapping) {
   )
 }
 
+analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping) {
+  empty_msi <- data.frame(
+    richtlijn_id = integer(),
+    richtlijn_titel = character(),
+    richtlijn_volgorde = integer(),
+    jaar = integer(),
+    log_index = numeric(),
+    n_soorten = integer(),
+    msi = numeric(),
+    stringsAsFactors = FALSE
+  )
+  empty_trends <- data.frame(
+    richtlijn_id = integer(),
+    richtlijn_titel = character(),
+    richtlijn_volgorde = integer(),
+    eerste_jaar = integer(),
+    laatste_jaar = integer(),
+    gemiddeld_n_soorten = numeric(),
+    trend_pct_per_jaar = numeric(),
+    trend_p = numeric(),
+    trend_r2 = numeric(),
+    trend_uitleg = character(),
+    stringsAsFactors = FALSE
+  )
+  empty_comp <- data.frame(
+    richtlijn_id = integer(),
+    richtlijn_titel = character(),
+    richtlijn_volgorde = integer(),
+    soort_id = integer(),
+    euring_code = integer(),
+    soort_naam = character(),
+    engelse_naam = character(),
+    stringsAsFactors = FALSE
+  )
+
+  merged <- merge(
+    species_indices[, c("soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "index_100")],
+    richtlijn_mapping,
+    by = "soort_id",
+    all = FALSE
+  )
+
+  merged <- merged[is.finite(merged$index_100) & merged$index_100 > 0, ]
+  if (!nrow(merged)) {
+    return(list(msi = empty_msi, trends = empty_trends, composition = empty_comp))
+  }
+
+  merged$log_index <- log(merged$index_100)
+  msi <- aggregate(log_index ~ richtlijn_id + richtlijn_titel + richtlijn_volgorde + jaar, data = merged, FUN = mean)
+  n_species <- aggregate(soort_id ~ richtlijn_id + jaar, data = merged, FUN = function(x) length(unique(x)))
+  names(n_species)[3] <- "n_soorten"
+  msi <- merge(msi, n_species, by = c("richtlijn_id", "jaar"), all.x = TRUE)
+  msi$msi <- exp(msi$log_index)
+  msi <- msi[order(msi$richtlijn_volgorde, msi$jaar), ]
+
+  trend_rows <- lapply(split(msi, msi$richtlijn_id), function(df) {
+    tr <- run_lm_trend(df, "msi")
+    pct <- calc_pct_trend(tr$slope)
+    data.frame(
+      richtlijn_id = df$richtlijn_id[[1]],
+      richtlijn_titel = df$richtlijn_titel[[1]],
+      richtlijn_volgorde = df$richtlijn_volgorde[[1]],
+      eerste_jaar = min(df$jaar, na.rm = TRUE),
+      laatste_jaar = max(df$jaar, na.rm = TRUE),
+      gemiddeld_n_soorten = mean(df$n_soorten, na.rm = TRUE),
+      trend_pct_per_jaar = pct,
+      trend_p = tr$p,
+      trend_r2 = tr$r2,
+      trend_uitleg = duid_trend(pct, tr$p),
+      stringsAsFactors = FALSE
+    )
+  })
+
+  composition <- unique(merged[, c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde", "soort_id", "euring_code", "soort_naam", "engelse_naam")])
+  composition <- composition[order(composition$richtlijn_volgorde, composition$soort_naam), ]
+
+  list(
+    msi = msi,
+    trends = do.call(rbind, trend_rows),
+    composition = composition
+  )
+}
+
 analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   selection_df <- build_species_selection_subset(tbls, selected_kavels, year_from, year_to)
@@ -711,13 +899,16 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
   species_results <- analyse_species_subset(species_matrix)
   group_mapping <- build_group_mapping(tbls)
   group_results <- analyse_groups_subset(species_results$indices, group_mapping)
+  richtlijn_mapping <- build_richtlijn_mapping(tbls)
+  richtlijn_results <- analyse_richtlijnen_subset(species_results$indices, richtlijn_mapping)
 
   list(
     basis = basis,
     selection = selection_df,
     species_matrix = species_matrix,
     species_results = species_results,
-    group_results = group_results
+    group_results = group_results,
+    richtlijn_results = richtlijn_results
   )
 }
 
@@ -740,6 +931,15 @@ find_group_by_code <- function(tbls, groep_100) {
     return(row)
   }
   stop(sprintf("Ecologische vogelgroep niet gevonden: %s", groep_100))
+}
+
+find_richtlijn_by_id <- function(tbls, richtlijn_id) {
+  mapping <- build_richtlijn_mapping(tbls)
+  row <- unique(mapping[mapping$richtlijn_id == as.integer(richtlijn_id), c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde"), drop = FALSE])
+  if (nrow(row) == 1L) {
+    return(row)
+  }
+  stop(sprintf("Richtlijncategorie niet gevonden: %s", richtlijn_id))
 }
 
 pick_nearest_value_by_year <- function(rows, target_year, value_col, allow_past_only = FALSE) {
@@ -799,7 +999,7 @@ add_toegankelijkheid_covariate <- function(dat, source_df, new_col = "toegankeli
   dat
 }
 
-build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group"), target_value) {
+build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn"), target_value) {
   target_type <- match.arg(target_type)
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   if (!nrow(basis)) {
@@ -816,9 +1016,10 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     ]
     target_label <- species_row$soort_naam[[1]]
     target_slug <- tolower(gsub("[^a-z0-9]+", "_", target_label))
-  } else {
+  } else if (target_type == "group") {
     species_row <- NULL
     group_row <- find_group_by_code(tbls, target_value)
+    richtlijn_row <- NULL
     group_mapping <- build_group_mapping(tbls)
     group_species <- unique(group_mapping$soort_id[group_mapping$groep_100 == group_row$groep_100[[1]]])
     counts <- tbls$territoria[
@@ -829,6 +1030,20 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     ]
     target_label <- group_row$groep_titel[[1]]
     target_slug <- paste0("groep_", group_row$groep_100[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
+  } else {
+    species_row <- NULL
+    group_row <- NULL
+    richtlijn_row <- find_richtlijn_by_id(tbls, target_value)
+    richtlijn_mapping <- build_richtlijn_mapping(tbls)
+    richtlijn_species <- unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]])
+    counts <- tbls$territoria[
+      tbls$territoria$soort_id %in% richtlijn_species &
+        tbls$territoria$jaar >= year_from &
+        tbls$territoria$jaar <= year_to,
+      c("plot_id", "jaar", "territoria")
+    ]
+    target_label <- richtlijn_row$richtlijn_titel[[1]]
+    target_slug <- paste0("richtlijn_", richtlijn_row$richtlijn_id[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
   }
   if (nrow(counts)) {
     counts <- aggregate(territoria ~ plot_id + jaar, data = counts, FUN = sum, na.rm = TRUE)
@@ -852,21 +1067,31 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
   dat <- add_toegankelijkheid_covariate(dat, tbls$plot_jaar_toegankelijkheid)
 
-  dat$analyse_niveau <- ifelse(target_type == "species", "Soort", "Ecologische Vogelgroep")
+  dat$analyse_niveau <- switch(target_type, species = "Soort", group = "Vogelgroep", richtlijn = "Rode/Oranje Lijst")
   dat$doel_label <- target_label
   dat$doel_slug <- target_slug
+  dat$richtlijn_id <- NA_integer_
+  dat$richtlijn_titel <- NA_character_
   if (target_type == "species") {
     dat$soort_id <- species_row$id[[1]]
     dat$soort_naam <- species_row$soort_naam[[1]]
     dat$engelse_naam <- species_row$engelse_naam[[1]]
     dat$groep_100 <- NA_integer_
     dat$groep_titel <- NA_character_
-  } else {
+  } else if (target_type == "group") {
     dat$soort_id <- NA_integer_
     dat$soort_naam <- NA_character_
     dat$engelse_naam <- NA_character_
     dat$groep_100 <- as.integer(target_value)
     dat$groep_titel <- target_label
+  } else {
+    dat$soort_id <- NA_integer_
+    dat$soort_naam <- NA_character_
+    dat$engelse_naam <- NA_character_
+    dat$groep_100 <- NA_integer_
+    dat$groep_titel <- NA_character_
+    dat$richtlijn_id <- as.integer(target_value)
+    dat$richtlijn_titel <- target_label
   }
   dat[order(dat$plot_id, dat$jaar), ]
 }
@@ -1038,7 +1263,7 @@ precheck_gee_complexity <- function(dat_model, gee_corstr) {
   ))
 }
 
-run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), gee_corstr = "exchangeable") {
+run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), gee_corstr = "exchangeable") {
   target_type <- match.arg(target_type)
   if (!requireNamespace("geepack", quietly = TRUE)) {
     stop("Package 'geepack' is niet beschikbaar.")
@@ -1182,7 +1407,18 @@ load_t0_msi_selection <- function(path = NULL) {
   unique(df)
 }
 
-classificeer_lambda_status <- function(valid_years, consecutive_pairs, zero_share, positive_years, pre_present, post_present) {
+lambda_period_specs <- function() {
+  data.frame(
+    periode = c("1959-1972", "1973-1983", "1984-heden"),
+    start_jaar = c(1959L, 1973L, 1984L),
+    eind_jaar = c(1972L, 1983L, Inf),
+    t0_jaar = c(1959L, 1973L, 1984L),
+    kleur = c("#2563eb", "#059669", "#d97706"),
+    stringsAsFactors = FALSE
+  )
+}
+
+classificeer_lambda_status <- function(valid_years, consecutive_pairs, zero_share, positive_years, pre_present = NULL, post_present = NULL, periode_present = NULL) {
   if (!is.finite(valid_years) || valid_years < 10L) {
     return("ongeschikt_voor_T0")
   }
@@ -1195,11 +1431,13 @@ classificeer_lambda_status <- function(valid_years, consecutive_pairs, zero_shar
   if (!is.finite(positive_years) || positive_years < 5L) {
     return("ongeschikt_voor_T0")
   }
+  if (is.null(periode_present)) {
+    periode_present <- c(pre_present, post_present)
+  }
   if (valid_years >= 12L &&
       consecutive_pairs >= 10L &&
       zero_share <= 0.33 &&
-      isTRUE(pre_present) &&
-      isTRUE(post_present)) {
+      all(periode_present %in% TRUE)) {
     return("geschikt_voor_T0_MSI")
   }
   "geschikt_voor_T0_soortanalyse"
@@ -1210,13 +1448,19 @@ bereken_lambda_jaarreeks <- function(df, id_cols, value_col = "count_adjusted") 
     return(df)
   }
 
-  df <- df[df$jaar != 1958L, , drop = FALSE]
+  specs <- lambda_period_specs()
+  df <- df[df$jaar >= min(specs$start_jaar), , drop = FALSE]
   if (!nrow(df)) {
     return(df)
   }
 
-  df$periode <- ifelse(df$jaar <= 1983L, "1959-1983", "1984-heden")
-  df$voorkeur_t0_jaar <- ifelse(df$periode == "1959-1983", 1959L, 1984L)
+  df$periode <- vapply(df$jaar, function(jaar) {
+    hit <- specs$periode[jaar >= specs$start_jaar & jaar <= specs$eind_jaar]
+    if (length(hit)) hit[[1]] else NA_character_
+  }, character(1))
+  df <- df[!is.na(df$periode), , drop = FALSE]
+  df$periode <- factor(df$periode, levels = specs$periode)
+  df$voorkeur_t0_jaar <- specs$t0_jaar[match(as.character(df$periode), specs$periode)]
   df$basis_waarde <- df[[value_col]]
   df$t0_jaar <- NA_integer_
   df$lambda <- NA_real_
@@ -1295,6 +1539,9 @@ analyse_lambda_species_subset <- function(species_matrix) {
       positieve_jaren = integer(),
       geldige_jaarparen = integer(),
       nul_aandeel = numeric(),
+      periode_1959_1972_aanwezig = logical(),
+      periode_1973_1983_aanwezig = logical(),
+      periode_1984_heden_aanwezig = logical(),
       pre_1984_aanwezig = logical(),
       post_1984_aanwezig = logical(),
       gemiddeld_lambda = numeric(),
@@ -1322,8 +1569,11 @@ analyse_lambda_species_subset <- function(species_matrix) {
     valid_years <- nrow(part)
     zero_share <- mean(part$count_adjusted <= 0, na.rm = TRUE)
     consecutive_pairs <- sum(is.finite(part$lambda), na.rm = TRUE)
-    pre_present <- any(part$periode == "1959-1983" & part$count_adjusted > 0, na.rm = TRUE)
-    post_present <- any(part$periode == "1984-heden" & part$count_adjusted > 0, na.rm = TRUE)
+    periode_1959_1972_present <- any(part$periode == "1959-1972" & part$count_adjusted > 0, na.rm = TRUE)
+    periode_1973_1983_present <- any(part$periode == "1973-1983" & part$count_adjusted > 0, na.rm = TRUE)
+    periode_1984_heden_present <- any(part$periode == "1984-heden" & part$count_adjusted > 0, na.rm = TRUE)
+    pre_present <- periode_1959_1972_present || periode_1973_1983_present
+    post_present <- periode_1984_heden_present
     mean_log_lambda <- safe_mean(part$log_lambda)
     mean_lambda <- if (is.finite(mean_log_lambda)) exp(mean_log_lambda) else NA_real_
     pct_change <- if (is.finite(mean_log_lambda)) (exp(mean_log_lambda) - 1) * 100 else NA_real_
@@ -1339,6 +1589,9 @@ analyse_lambda_species_subset <- function(species_matrix) {
       positieve_jaren = positive_years,
       geldige_jaarparen = consecutive_pairs,
       nul_aandeel = zero_share,
+      periode_1959_1972_aanwezig = periode_1959_1972_present,
+      periode_1973_1983_aanwezig = periode_1973_1983_present,
+      periode_1984_heden_aanwezig = periode_1984_heden_present,
       pre_1984_aanwezig = pre_present,
       post_1984_aanwezig = post_present,
       gemiddeld_lambda = mean_lambda,
@@ -1349,7 +1602,8 @@ analyse_lambda_species_subset <- function(species_matrix) {
         zero_share = zero_share,
         positive_years = positive_years,
         pre_present = pre_present,
-        post_present = post_present
+        post_present = post_present,
+        periode_present = c(periode_1959_1972_present, periode_1973_1983_present, periode_1984_heden_present)
       ),
       stringsAsFactors = FALSE
     )
@@ -1463,6 +1717,103 @@ analyse_lambda_groups_subset <- function(lambda_species, group_mapping, t0_msi_s
   )
 }
 
+analyse_lambda_richtlijnen_subset <- function(lambda_species, richtlijn_mapping) {
+  summary_df <- lambda_species$summary
+  yearly_df <- lambda_species$yearly
+  empty_index <- data.frame(
+    richtlijn_id = integer(),
+    richtlijn_titel = character(),
+    richtlijn_volgorde = integer(),
+    jaar = integer(),
+    periode = character(),
+    n_soorten = integer(),
+    t0_index = numeric(),
+    lambda = numeric(),
+    log_lambda = numeric(),
+    stringsAsFactors = FALSE
+  )
+  empty_summary <- data.frame(
+    richtlijn_id = integer(),
+    richtlijn_titel = character(),
+    richtlijn_volgorde = integer(),
+    eerste_jaar = integer(),
+    laatste_jaar = integer(),
+    n_indexjaren = integer(),
+    geldige_jaarparen = integer(),
+    gemiddeld_lambda = numeric(),
+    gemiddelde_verandering_pct = numeric(),
+    stringsAsFactors = FALSE
+  )
+  empty_comp <- data.frame(
+    richtlijn_id = integer(),
+    richtlijn_titel = character(),
+    richtlijn_volgorde = integer(),
+    soort_id = integer(),
+    euring_code = integer(),
+    soort_naam = character(),
+    engelse_naam = character(),
+    stringsAsFactors = FALSE
+  )
+  eligible_species <- summary_df$soort_id[summary_df$analyse_categorie == "geschikt_voor_T0_MSI"]
+
+  if (!length(eligible_species)) {
+    return(list(index = empty_index, summary = empty_summary, composition = empty_comp))
+  }
+
+  merged <- merge(
+    yearly_df[yearly_df$soort_id %in% eligible_species & is.finite(yearly_df$t0_index) & yearly_df$t0_index > 0, c(
+      "soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "periode", "t0_index"
+    )],
+    richtlijn_mapping,
+    by = "soort_id",
+    all = FALSE
+  )
+
+  if (!nrow(merged)) {
+    return(list(index = empty_index, summary = empty_summary, composition = empty_comp))
+  }
+
+  merged$log_t0_index <- log(merged$t0_index)
+  richtlijn_index <- aggregate(
+    log_t0_index ~ richtlijn_id + richtlijn_titel + richtlijn_volgorde + jaar + periode,
+    data = merged,
+    FUN = mean
+  )
+  n_species <- aggregate(soort_id ~ richtlijn_id + jaar + periode, data = merged, FUN = function(x) length(unique(x)))
+  names(n_species)[4] <- "n_soorten"
+  richtlijn_index <- merge(richtlijn_index, n_species, by = c("richtlijn_id", "jaar", "periode"), all.x = TRUE)
+  richtlijn_index$t0_index <- exp(richtlijn_index$log_t0_index)
+  richtlijn_index <- bereken_lambda_jaarreeks(richtlijn_index, id_cols = c("richtlijn_id"), value_col = "t0_index")
+
+  summary_rows <- lapply(split(richtlijn_index, richtlijn_index$richtlijn_id), function(part) {
+    mean_log_lambda <- safe_mean(part$log_lambda)
+    mean_lambda <- if (is.finite(mean_log_lambda)) exp(mean_log_lambda) else NA_real_
+    pct_change <- if (is.finite(mean_log_lambda)) (exp(mean_log_lambda) - 1) * 100 else NA_real_
+
+    data.frame(
+      richtlijn_id = part$richtlijn_id[[1]],
+      richtlijn_titel = part$richtlijn_titel[[1]],
+      richtlijn_volgorde = part$richtlijn_volgorde[[1]],
+      eerste_jaar = min(part$jaar, na.rm = TRUE),
+      laatste_jaar = max(part$jaar, na.rm = TRUE),
+      n_indexjaren = sum(is.finite(part$t0_index), na.rm = TRUE),
+      geldige_jaarparen = sum(is.finite(part$lambda), na.rm = TRUE),
+      gemiddeld_lambda = mean_lambda,
+      gemiddelde_verandering_pct = pct_change,
+      stringsAsFactors = FALSE
+    )
+  })
+
+  composition <- unique(merged[, c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde", "soort_id", "euring_code", "soort_naam", "engelse_naam")])
+  composition <- composition[order(composition$richtlijn_volgorde, composition$soort_naam), , drop = FALSE]
+
+  list(
+    index = richtlijn_index[order(richtlijn_index$richtlijn_volgorde, richtlijn_index$jaar), , drop = FALSE],
+    summary = do.call(rbind, summary_rows),
+    composition = composition
+  )
+}
+
 analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   selection_df <- build_species_selection_subset(tbls, selected_kavels, year_from, year_to)
@@ -1471,13 +1822,16 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
   group_mapping <- build_group_mapping(tbls)
   t0_msi_selection <- load_t0_msi_selection()
   lambda_groups <- analyse_lambda_groups_subset(lambda_species, group_mapping, t0_msi_selection = t0_msi_selection)
+  richtlijn_mapping <- build_richtlijn_mapping(tbls)
+  lambda_richtlijnen <- analyse_lambda_richtlijnen_subset(lambda_species, richtlijn_mapping)
 
   list(
     basis = basis,
     selection = selection_df,
     species_matrix = species_matrix,
     species_results = lambda_species,
-    group_results = lambda_groups
+    group_results = lambda_groups,
+    richtlijn_results = lambda_richtlijnen
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 3L
+MEIJENDEL_PARSER_CACHE_VERSION <- 5L

@@ -1,0 +1,51 @@
+services:
+  db:
+    image: mysql:9.5.0
+    container_name: leden_pwa_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-meijendel}
+    volumes:
+      - leden_pwa_mysql_data:/var/lib/mysql
+      - ${MEIJENDEL_SQL_PATH:-/srv/vwgm/shiny/Meijendel.sql}:/import/Meijendel.sql:ro
+      - ../sql/01_views_ledenadministratie_pwa.sql:/import/01_views_ledenadministratie_pwa.sql:ro
+      - ../sql/02_magic_link_auth.sql:/import/02_magic_link_auth.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: leden_pwa_web
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MEIJENDEL_DB_HOST: db
+      MEIJENDEL_DB_PORT: 3306
+      MEIJENDEL_DB_NAME: ${MYSQL_DATABASE:-meijendel}
+      MEIJENDEL_DB_USER: root
+      MEIJENDEL_DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      APP_BASE_URL: ${APP_BASE_URL:-https://app.vwg-m.nl}
+      AUTH_ENABLED: ${AUTH_ENABLED:-1}
+      MAGIC_LINK_TTL_MINUTES: ${MAGIC_LINK_TTL_MINUTES:-15}
+      MAGIC_CODE_MAX_ATTEMPTS: ${MAGIC_CODE_MAX_ATTEMPTS:-5}
+      COOKIE_SECURE: ${COOKIE_SECURE:-1}
+      MAIL_FROM: ${MAIL_FROM:-noreply@app.vwg-m.nl}
+      MAIL_RETURN_PATH: ${MAIL_RETURN_PATH:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_SECURE: ${SMTP_SECURE:-tls}
+    ports:
+      - "127.0.0.1:${PWA_HTTP_PORT:-8091}:80"
+
+volumes:
+  leden_pwa_mysql_data:

@@ -10,9 +10,9 @@ De algemene werkwijze voor Shiny + HTML samen staat in:
 
 De HTML is vooral een kijk- en controlebestand, niet de plek waar nieuwe TRIM-berekeningen worden gemaakt.
 
-## Tab Trend
+## Tab BMP-Soorten
 
-In `Trend` zijn er drie keuzes.
+In `BMP-Soorten` zijn er drie keuzes.
 
 ### 1. Territoria
 
@@ -52,11 +52,11 @@ Bron:
 - `soortindices_bruikbare_tijdreeks.csv`
 - `soorten_trendoverzicht_bruikbare_tijdreeks.csv`
 
-## Tab MSI
+## Tab Groepen
 
-In `MSI` zijn er twee keuzes.
+In `Groepen` zijn er twee keuzes.
 
-### 1. GAM (dichtheid)
+### 1. Dichtheid per km2
 
 Dit is de bestaande benadering op basis van dichtheid en GAM-trendlijnen.
 Bron:
@@ -64,14 +64,14 @@ Bron:
 - `gam_voorspellingen_per_groep.csv`
 - `gam_interpretatie_per_groep.csv`
 
-### 2. TRIM-MSI
+### 2. TRIM
 
-Dit is de MSI op basis van TRIM-soortindices.
+Dit is de groepsindex op basis van TRIM-soortindices.
 Gebruik deze keuze als je de ontwikkeling van ecologische vogelgroepen wilt bekijken met dezelfde trendlogica als bij TRIM per soort.
 
 Je ziet:
 
-- de TRIM-MSI grafiek
+- de TRIM grafiek
 - een korte uitleg per groep
 
 Bron:
@@ -80,6 +80,44 @@ Bron:
 - `trendoverzicht_msi_groepen.csv`
 - eventueel ook `gam_voorspellingen_msi_groepen.csv`
 - eventueel ook `gam_interpretatie_msi_groepen.csv`
+
+Bij beide keuzes staan naast de ecologische groepen ook de groepen `Rode Lijst`, `Oranje Lijst` en `Rode en Oranjelijst`.
+De `Oranje Lijst` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 6`.
+Bij elke groep toont het dashboard ook een tekstvak met de vogelsoorten die in de gekozen groep zitten.
+
+De standaardperiode voor de groepengrafieken is `1990-2025`. De gebruiker kan deze periode in het dashboard blijven aanpassen.
+
+## Tab Wintertellingen
+
+De wintergrafiek toont per gekozen vogel een lijn met één punt per winterperiode.
+
+### Periode
+
+Een winterperiode loopt van september tot en met maart.
+De labels in de grafiek gebruiken de laatste twee cijfers van de betrokken jaren:
+
+- `00/01`
+- `01/02`
+- `02/03`
+
+April tot en met augustus worden voor deze grafiek niet meegenomen.
+
+### Berekening per punt
+
+Per vogel en per periode wordt als volgt gerekend:
+
+1. Selecteer alle `dagwaarnemingen_wv` voor september t/m maart.
+2. Koppel elke waarneming aan het juiste seizoen via maand en jaar.
+3. Sommeer eerst per combinatie `soort + datum + plot`.
+4. Zoek het plotoppervlak op in `plot_jaar_oppervlak` voor hetzelfde `plot_id + jaar`.
+5. Deel het dag-plottotaal door `oppervlakte_km2`.
+6. Sommeer deze oppervlakgecorrigeerde dag-plotwaarden per seizoen.
+
+De y-as is daardoor:
+
+`gesommeerde aantallen per km2`
+
+Deze aanpak voorkomt dat meerdere records op dezelfde dag en in hetzelfde plot eerst los door het oppervlak worden gedeeld. Eerst wordt binnen datum en plot opgeteld, daarna pas gecorrigeerd voor oppervlak.
 
 ## Tab Tellers
 
@@ -91,7 +129,7 @@ De HTML gebruikt dan onder andere:
 
 ## Belangrijk om te onthouden
 
-`Territoria`, `Dichtheid`, `TRIM-index`, `GAM (dichtheid)` en `TRIM-MSI` zijn niet precies hetzelfde.
+`Territoria`, `Dichtheid`, `TRIM-index`, `Dichtheid per km2`, `TRIM` en de wintertellinggrafiek zijn niet precies hetzelfde.
 
 Ze beantwoorden verschillende vragen:
 
@@ -100,6 +138,7 @@ Ze beantwoorden verschillende vragen:
 - trend per soort
 - vloeiende groepslijn
 - TRIM-gebaseerde groepsindicator
+- winteraantallen gecorrigeerd per plotoppervlak en samengevat per september-maartseizoen
 
 Daarom is het goed dat ze in de HTML apart zichtbaar blijven.
 

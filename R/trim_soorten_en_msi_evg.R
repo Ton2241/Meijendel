@@ -174,9 +174,11 @@ read_insert_table <- function(path, table, keep_columns = NULL) {
 
 to_integer <- function(x) as.integer(x)
 to_numeric <- function(x) as.numeric(x)
+normalize_kavel_nummer <- function(x) sub("^M", "", x)
 
 parse_tables <- function(path) {
   plots <- read_insert_table(path, "plots", c("plot_id", "plot_naam", "kavel_nummer"))
+  plots$kavel_nummer <- normalize_kavel_nummer(plots$kavel_nummer)
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))

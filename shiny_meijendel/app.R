@@ -61,6 +61,75 @@ ui <- navbarPage(
       }
       .section-note { color:#475569; font-size:13px; margin-top:6px; }
       .download-row .btn { margin-right:8px; margin-bottom:8px; }
+      .load-timer {
+        display:inline-block; margin-left:10px; color:#475569; font-size:14px;
+      }
+    "))
+    ,
+    tags$script(HTML("
+      (function() {
+        var timerId = null;
+        var startTime = null;
+
+        function formatElapsed(seconds) {
+          var mins = Math.floor(seconds / 60);
+          var secs = seconds % 60;
+          return mins + ':' + String(secs).padStart(2, '0');
+        }
+
+        function timerEl() {
+          return document.getElementById('sql_load_timer');
+        }
+
+        function setTimerText(text) {
+          var el = timerEl();
+          if (el) el.textContent = text;
+        }
+
+        function startTimer() {
+          if (timerId) window.clearInterval(timerId);
+          startTime = Date.now();
+          setTimerText('laden: 0:00');
+          timerId = window.setInterval(function() {
+            var elapsed = Math.floor((Date.now() - startTime) / 1000);
+            setTimerText('laden: ' + formatElapsed(elapsed));
+          }, 1000);
+        }
+
+        function stopTimer() {
+          if (timerId) window.clearInterval(timerId);
+          timerId = null;
+          var elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+          setTimerText(elapsed > 0 ? 'geladen in ' + formatElapsed(elapsed) : '');
+        }
+
+        document.addEventListener('click', function(event) {
+          if (event.target && event.target.id === 'load_sql') startTimer();
+        });
+
+        new MutationObserver(function() {
+          var status = document.getElementById('load_status');
+          if (!status || !timerId) return;
+          var text = status.textContent || '';
+          if (text.indexOf('SQL geladen') >= 0 || text.indexOf('Fout bij SQL laden') >= 0) {
+            stopTimer();
+          }
+        }).observe(document.body, { childList: true, subtree: true, characterData: true });
+
+        function autoLoadSql() {
+          if (window.__meijendelSqlAutoLoadDone) return;
+          window.__meijendelSqlAutoLoadDone = true;
+          window.setTimeout(function() {
+            var button = document.getElementById('load_sql');
+            if (button) button.click();
+          }, 800);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          window.setTimeout(autoLoadSql, 1500);
+        });
+        document.addEventListener('shiny:connected', autoLoadSql);
+      })();
     "))
   ),
   tabPanel(
@@ -79,6 +148,7 @@ ui <- navbarPage(
             h3("SQL-bron laden"),
             textInput("sql_path", "Pad naar Meijendel.sql", value = default_sql),
             actionButton("load_sql", "SQL laden"),
+            tags$span(id = "sql_load_timer", class = "load-timer"),
             div(class = "status-box",
                 tags$span(class = "status-label", "Status SQL"),
                 textOutput("load_status"))
@@ -90,7 +160,7 @@ ui <- navbarPage(
             class = "soft-card",
             h3("Korte uitleg"),
             tags$p("Op deze startpagina laad je eerst de SQL-bron voor de analyses."),
-            tags$p("Ga daarna naar TRIM, LAMBDA of G.E.E. om de gewenste analyses uit te voeren. Kies daar of je de analyses voor vogelsoorten en/of ecologische vogelgroepen wil doen en selecteer de kavels en jaren."),
+            tags$p("Ga daarna naar TRIM, LAMBDA of G.E.E. om de gewenste analyses uit te voeren. Kies daar of je de analyses voor vogelsoorten en/of vogelgroepen wil doen en selecteer de kavels en jaren."),
             tags$p(
               class = "section-note",
               "Voor meer informatie over TRIM, LAMBDA, G.E.E. en het gebruik van GAM-grafieken zie de tekstblokken hieronder."
@@ -108,18 +178,20 @@ ui <- navbarPage(
               tags$li("LAMBDA"),
               tags$li("G.E.E."),
               tags$li("GAM"),
-              tags$li("Ecologische Vogelgroepen")
+              tags$li("Vogelgroepen")
             ),
             h4("TRIM"),
             tags$p("TRIM (TRends and Indices for Monitoring data) is een door het Centraal Bureau voor de Statistiek ontwikkeld statistisch model voor analyse van telreeksen met ontbrekende waarnemingen. Het zet tellingen om in indexcijfers (basisjaar = 100) en schat ontbrekende waarden op basis van trends in andere meetpunten. De methode corrigeert voor scheve bemonstering en levert robuuste trend- en trendklasse-schattingen. Statistisch is TRIM gebaseerd op loglineaire Poisson-regressie met correctie voor overdispersie en autocorrelatie. Het wordt binnen het Netwerk Ecologische Monitoring gebruikt voor trendanalyse van soorten. Een deel van de territoria data is niet volgens de gestandaardiseerde landelijke SOVON-methode geinterpreteerd. Dit geldt o.a. voor de periode 1958-1983 in Meijendel. In de TRIM analyses wordt, bij gebruik van data voor 1984, gewerkt met brugjaren om de TRIM data vergelijkbaar te maken. Het betreft de jaren 1981-1982-1983 en de jaren 1984-1985-1986."),
             h4("LAMBDA"),
-            tags$p("De LAMBDA-methode beschrijft populatieverandering via de groeifactor λ, gedefinieerd als de verhouding tussen aantallen in opeenvolgende jaren (λ = Nₜ₊₁ / Nₜ). Een waarde λ > 1 duidt op groei, λ < 1 op afname en λ = 1 op stabiliteit. Door λ per jaar te berekenen ontstaat een tijdreeks van relatieve veranderingen, die eenvoudig te middelen of cumuleren is. De methode vereist consistente tellingen en is gevoelig voor nulwaarden en waarnemingsfouten. Om die reden zijn sporadisch verschijnende soorten niet meegenomen in de berekening van de MSI van de ecologische vogelgroepen. In de praktijk wordt vaak gewerkt met log-transformaties van λ om trends statistisch stabieler te analyseren. De methodebreuk in 1984 wordt in LAMBDA niet gemodelleerd. De T0 voor de periode 1958 tot en met 1983 is 1959 (1958 was een testjaar). De T0 voor de SOVON-methode is 1984."),
+            tags$p("De LAMBDA-methode beschrijft populatieverandering via de groeifactor λ, gedefinieerd als de verhouding tussen aantallen in opeenvolgende jaren (λ = Nₜ₊₁ / Nₜ). Een waarde λ > 1 duidt op groei, λ < 1 op afname en λ = 1 op stabiliteit. Door λ per jaar te berekenen ontstaat een tijdreeks van relatieve veranderingen, die eenvoudig te middelen of cumuleren is. De methode vereist consistente tellingen en is gevoelig voor nulwaarden en waarnemingsfouten. Om die reden zijn sporadisch verschijnende soorten niet meegenomen in de berekening van de MSI van de vogelgroepen. In de praktijk wordt vaak gewerkt met log-transformaties van λ om trends statistisch stabieler te analyseren. LAMBDA gebruikt drie T0-perioden: 1959-1972 (T0=1959), 1973-1983 (T0=1973) en 1984-heden (T0=1984)."),
             h4("G.E.E."),
             tags$p("G.E.E. (Generalized Estimating Equations) is een methode voor de analyse van gecorreleerde gegevens, zoals herhaalde metingen in tijd of ruimte. Het model schat gemiddelde effecten op populatieniveau zonder volledige specificatie van de kansverdeling en houdt rekening met afhankelijkheid via een correlatiestructuur. De methode is relatief robuust bij misspecificatie en levert consistente schattingen, ook bij onregelmatige tellingen en ontbrekende waarnemingen. Binnen de app is G.E.E. bedoeld voor verklarende analyse, niet voor trendbeschrijving. Het vormt een derde analysetype naast TRIM en LAMBDA, gericht op het schatten van effecten van covariaten zoals beheer, recreatie, weer en habitat bij herhaalde plotmetingen."),
             h4("GAM"),
             tags$p("In deze app wordt gebruik gemaakt van GAM. GAM (Generalized Additive Model) is een flexibele statistische methode die relaties modelleert zonder een vaste functionele vorm op te leggen. Het model beschrijft de responsvariabele als som van gladde (niet-lineaire) functies van verklarende variabelen. Hiermee kunnen complexe, niet-lineaire trends in tijdreeksen van ecologische data worden geschat en grafisch weergegeven."),
-            h4("Ecologische Vogelgroepen"),
-            tags$p("De ecologische vogelgroepen van Piet Sierdsema zijn een indeling van vogelsoorten op basis van hun habitatvoorkeur en ecologische functie. Soorten worden gegroepeerd in bijvoorbeeld bos-, struweel-, moeras-, weide- en open-landsoorten. Deze indeling maakt het mogelijk om trends niet alleen per soort, maar ook per leefgebied te analyseren. Daardoor kunnen veranderingen in landschap en beheer direct gekoppeld worden aan veranderingen in vogelpopulaties. De methode wordt veel gebruikt binnen monitoringprogramma’s zoals het Netwerk Ecologische Monitoring om beleid te onderbouwen.")
+            h4("Vogelgroepen"),
+            tags$p("De ", tags$strong("ecologische vogelgroepen"), " van Piet Sierdsema zijn een indeling van vogelsoorten op basis van hun habitatvoorkeur en ecologische functie. Soorten worden gegroepeerd in: 100 - Watervogels, 200 - Rietvogels, 300 - Vogels van pionierbegroeiingen, 400 - Vogels van open heide, 500 - Weidevogels, 600 - Struweelvogels, 700 - Bosrandvogels, 800 - Bosvogels, 900 - Vogels van bebouwing/overige."),
+            tags$p("De ", tags$strong("Rode Lijst"), " van Nederlandse broedvogels bevat soorten die bedreigd worden of kwetsbaar zijn. De laatste actualisatie van de Rode Lijst van de Nederlandse broedvogels werd in 2017 vastgesteld door het Ministerie van Landbouw, Natuur en Voedselkwaliteit. De rode lijst wordt verdeeld in vijf categorieën: RL: Verdwenen, RL: Ernstig bedreigd, RL: Bedreigd, RL: Kwetsbaar en RL: Gevoelig."),
+            tags$p("De Rode Lijst wordt eens in de 10 jaar geactualiseerd. Om tussentijds zicht op veranderingen te houden is de ", tags$strong("Oranje Lijst"), " ontwikkeld. Daarop staan 22 soorten die nog niet aan de criteria van de Rode Lijst voldoen maar waarvan wordt aangenomen dat ze dat in de nabije toekomst zullen gaan doen.")
           )
         )
       )
@@ -138,8 +210,8 @@ ui <- navbarPage(
           checkboxGroupInput(
             "analyse_keuze",
             "Wat berekenen",
-            choices = c("Soorten" = "species", "Groepen" = "groups"),
-            selected = c("species", "groups")
+            choices = c("Soorten" = "species", "Vogelgroepen" = "groups", "Rode/Oranje Lijst" = "richtlijnen"),
+            selected = c("species", "groups", "richtlijnen")
           ),
           actionButton("run_analysis", "Analyse uitvoeren", class = "btn-primary"),
           div(class = "status-box",
@@ -186,6 +258,20 @@ ui <- navbarPage(
               tableOutput("group_species_table")
             ),
             tabPanel(
+              "Rode/Oranje Lijst",
+              uiOutput("richtlijn_picker_ui"),
+              tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
+              tags$p(class = "section-note", "Download hier de uitkomsten per Rode/Oranje Lijst-categorie: trendoverzicht en MSI per jaar."),
+              plotOutput("richtlijn_plot", height = "420px"),
+              div(class = "download-row",
+                  downloadButton("download_richtlijn_trends", "CSV richtlijntrends"),
+                  downloadButton("download_richtlijn_msi", "CSV MSI per richtlijn")),
+              h4("Trend per categorie"),
+              tableOutput("richtlijn_table"),
+              h4("Soorten in gekozen categorie"),
+              tableOutput("richtlijn_species_table")
+            ),
+            tabPanel(
               "Controle",
               tags$p(class = "section-note", "Gebruik deze tab om te controleren of de selectie logisch is opgebouwd: dekking per kavel, oppervlak per jaar en modelstatus van soorten."),
               div(class = "download-row",
@@ -230,10 +316,10 @@ ui <- navbarPage(
           uiOutput("lambda_plot_selector_ui"),
           uiOutput("lambda_year_selector_ui"),
           checkboxGroupInput(
-            "lambda_analyse_keuze",
-            "Wat berekenen",
-            choices = c("Vogelsoorten" = "species", "Ecologische vogelgroepen" = "groups"),
-            selected = c("species", "groups")
+              "lambda_analyse_keuze",
+              "Wat berekenen",
+              choices = c("Vogelsoorten" = "species", "Vogelgroepen" = "groups", "Rode/Oranje Lijst" = "richtlijnen"),
+            selected = c("species", "groups", "richtlijnen")
           ),
           actionButton("run_lambda_analysis", "LAMBDA berekenen", class = "btn-primary"),
           div(
@@ -243,8 +329,8 @@ ui <- navbarPage(
           ),
           tags$hr(),
           h4("Korte uitleg"),
-          tags$p("1958 wordt genegeerd. De pre-reeks start op 1959 en de SOVON-reeks op 1984."),
-          tags$p("De methodebreuk in 1984 wordt hier niet gebrugd. De analyse toont dynamiek per deelreeks op basis van T0 en jaar-op-jaar verandering.")
+          tags$p("1958 wordt genegeerd. LAMBDA gebruikt drie T0-perioden: 1959-1972, 1973-1983 en 1984-heden."),
+          tags$p("De methodebreuken tussen deelreeksen worden hier niet gebrugd. De analyse toont dynamiek per deelreeks op basis van T0 en jaar-op-jaar verandering.")
         ),
         mainPanel(
           tabsetPanel(
@@ -258,7 +344,7 @@ ui <- navbarPage(
             tabPanel(
               "Soorten",
               uiOutput("lambda_species_picker_ui"),
-              tags$p(class = "section-note", "Grafiek toont de T0-index per deelreeks. Pre-1984 gebruikt 1959 als T0, post-1984 gebruikt 1984 als T0."),
+              tags$p(class = "section-note", "Grafiek toont de jaar-op-jaar verandering per deelreeks als percentage."),
               uiOutput("lambda_species_note_ui"),
               plotOutput("lambda_species_plot", height = "420px"),
               div(
@@ -272,7 +358,7 @@ ui <- navbarPage(
             tabPanel(
               "Groepen",
               uiOutput("lambda_group_picker_ui"),
-              tags$p(class = "section-note", "Grafiek toont T0-index per ecologische vogelgroep, gebaseerd op soorten die voldoen aan de strengere T0-MSI-selectie."),
+              tags$p(class = "section-note", "Grafiek toont de jaar-op-jaar verandering per vogelgroep als percentage, gebaseerd op soorten die voldoen aan de strengere T0-MSI-selectie."),
               plotOutput("lambda_group_plot", height = "420px"),
               div(
                 class = "download-row",
@@ -283,6 +369,21 @@ ui <- navbarPage(
               tableOutput("lambda_group_table"),
               h4("Soorten in gekozen groep"),
               tableOutput("lambda_group_species_table")
+            ),
+            tabPanel(
+              "Rode/Oranje Lijst",
+              uiOutput("lambda_richtlijn_picker_ui"),
+              tags$p(class = "section-note", "Grafiek toont de jaar-op-jaar verandering per Rode/Oranje Lijst-categorie als percentage, gebaseerd op soorten die voldoen aan de strengere T0-MSI-selectie."),
+              plotOutput("lambda_richtlijn_plot", height = "420px"),
+              div(
+                class = "download-row",
+                downloadButton("download_lambda_richtlijn_years", "CSV LAMBDA richtlijnjaren"),
+                downloadButton("download_lambda_richtlijn_summary", "CSV LAMBDA richtlijnen")
+              ),
+              h4("Categorieoverzicht"),
+              tableOutput("lambda_richtlijn_table"),
+              h4("Soorten in gekozen categorie"),
+              tableOutput("lambda_richtlijn_species_table")
             ),
             tabPanel(
               "Controle",
@@ -313,7 +414,7 @@ ui <- navbarPage(
             radioButtons(
               "gee_target_type",
               "Analyse-niveau",
-              choices = c("Soort" = "species", "Ecologische Vogelgroep" = "group"),
+              choices = c("Soort" = "species", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
               selected = "species",
               inline = TRUE
             ),
@@ -385,6 +486,21 @@ server <- function(input, output, session) {
   analysis_info_rv <- reactiveVal("Nog geen analyse uitgevoerd.")
   lambda_analysis_info_rv <- reactiveVal("Nog geen LAMBDA-analyse uitgevoerd.")
   gee_analysis_info_rv <- reactiveVal("Nog geen G.E.E.-analyse uitgevoerd.")
+
+  draw_lambda_period_lines <- function(idx) {
+    specs <- lambda_period_specs()
+    used_labels <- character()
+    used_cols <- character()
+    for (i in seq_len(nrow(specs))) {
+      part <- idx[idx$periode == specs$periode[[i]], , drop = FALSE]
+      if (nrow(part)) {
+        lines(part$jaar, part$lambda_pct, type = "o", pch = 16, lwd = 2, col = specs$kleur[[i]])
+        used_labels <- c(used_labels, specs$periode[[i]])
+        used_cols <- c(used_cols, specs$kleur[[i]])
+      }
+    }
+    list(labels = c(used_labels, "0% = stabiel"), cols = c(used_cols, "#64748b"))
+  }
 
   observeEvent(input$load_sql, {
     req(nzchar(input$sql_path))
@@ -557,7 +673,14 @@ server <- function(input, output, session) {
       groepen <- unique(groepen[, c("groep_100", "groep_titel")])
       groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
       choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-      return(selectizeInput("gee_group", "Ecologische Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+      return(selectizeInput("gee_group", "Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+    }
+    if (identical(input$gee_target_type, "richtlijn")) {
+      richtlijnen <- build_richtlijn_mapping(tbls)
+      richtlijnen <- unique(richtlijnen[, c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde")])
+      richtlijnen <- richtlijnen[order(richtlijnen$richtlijn_volgorde), , drop = FALSE]
+      choices <- setNames(richtlijnen$richtlijn_id, richtlijnen$richtlijn_titel)
+      return(selectizeInput("gee_richtlijn", "Rode/Oranje Lijst", choices = choices, selected = richtlijnen$richtlijn_id[[1]], multiple = FALSE))
     }
     soorten <- sort(tbls$soorten$soort_naam)
     selectizeInput("gee_species", "Soort", choices = soorten, selected = "Nachtegaal", multiple = FALSE)
@@ -608,8 +731,18 @@ server <- function(input, output, session) {
 
   observeEvent(input$run_analysis, {
     tbls <- tbls_rv()
-    req(tbls, input$selected_plots, input$year_from, input$year_to)
-    if (length(input$selected_plots) == 0) {
+    if (is.null(tbls)) {
+      analysis_info_rv("Laad eerst Meijendel.sql.")
+      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      return()
+    }
+    if (is.null(input$year_from) || is.null(input$year_to)) {
+      analysis_info_rv("Wacht tot de jarenselectie geladen is.")
+      showNotification("Wacht tot de jarenselectie geladen is.", type = "error", duration = 5)
+      return()
+    }
+    selected_plots <- if (is.null(input$selected_plots)) character(0) else input$selected_plots
+    if (length(selected_plots) == 0) {
       analysis_info_rv("Kies eerst minstens één kavel.")
       showNotification("Kies eerst minstens één kavel.", type = "error", duration = 5)
       return()
@@ -626,7 +759,7 @@ server <- function(input, output, session) {
     analysis_info_rv("Analyse draait...")
     tryCatch({
       withProgress(message = "TRIM-analyse draait", detail = "Per soort wordt een model geschat; dit kan even duren.", value = 0.1, {
-        analyse <- analyse_subset(tbls, input$selected_plots, year_from, year_to)
+        analyse <- analyse_subset(tbls, selected_plots, year_from, year_to)
         incProgress(0.9)
         analyse_rv(analyse)
       })
@@ -640,14 +773,24 @@ server <- function(input, output, session) {
 
   observeEvent(input$run_lambda_analysis, {
     tbls <- tbls_rv()
-    req(tbls, input$lambda_selected_plots, input$lambda_year_from, input$lambda_year_to)
-    if (length(input$lambda_selected_plots) == 0) {
+    if (is.null(tbls)) {
+      lambda_analysis_info_rv("Laad eerst Meijendel.sql.")
+      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      return()
+    }
+    if (is.null(input$lambda_year_from) || is.null(input$lambda_year_to)) {
+      lambda_analysis_info_rv("Wacht tot de jarenselectie geladen is.")
+      showNotification("Wacht tot de jarenselectie geladen is.", type = "error", duration = 5)
+      return()
+    }
+    selected_plots <- if (is.null(input$lambda_selected_plots)) character(0) else input$lambda_selected_plots
+    if (length(selected_plots) == 0) {
       lambda_analysis_info_rv("Kies eerst minstens één kavel.")
       showNotification("Kies eerst minstens één kavel.", type = "error", duration = 5)
       return()
     }
     if (length(input$lambda_analyse_keuze) == 0) {
-      lambda_analysis_info_rv("Kies eerst of je vogelsoorten en/of ecologische vogelgroepen wilt analyseren.")
+      lambda_analysis_info_rv("Kies eerst of je vogelsoorten, vogelgroepen en/of Rode/Oranje Lijst wilt analyseren.")
       showNotification("Kies eerst wat je wilt berekenen.", type = "error", duration = 5)
       return()
     }
@@ -663,7 +806,7 @@ server <- function(input, output, session) {
     lambda_analysis_info_rv("LAMBDA-analyse draait...")
     tryCatch({
       withProgress(message = "LAMBDA-analyse draait", detail = "T0-reeksen en jaar-op-jaar veranderingen worden opgebouwd.", value = 0.1, {
-        analyse <- analyse_lambda_subset(tbls, input$lambda_selected_plots, year_from, year_to)
+        analyse <- analyse_lambda_subset(tbls, selected_plots, year_from, year_to)
         if (nrow(analyse$species_results$yearly) == 0) {
           stop("Geen bruikbare LAMBDA-data in deze selectie. Controleer jaren en kavels.")
         }
@@ -680,18 +823,43 @@ server <- function(input, output, session) {
 
   observeEvent(input$run_gee_analysis, {
     tbls <- tbls_rv()
-    req(tbls, input$gee_selected_plots, input$gee_year_from, input$gee_year_to, input$gee_target_type)
-    if (length(input$gee_selected_plots) == 0) {
+    if (is.null(tbls)) {
+      gee_analysis_info_rv("Laad eerst Meijendel.sql.")
+      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      return()
+    }
+    if (is.null(input$gee_year_from) || is.null(input$gee_year_to) || is.null(input$gee_target_type)) {
+      gee_analysis_info_rv("Wacht tot de selectievelden geladen zijn.")
+      showNotification("Wacht tot de selectievelden geladen zijn.", type = "error", duration = 5)
+      return()
+    }
+    selected_plots <- if (is.null(input$gee_selected_plots)) character(0) else input$gee_selected_plots
+    if (length(selected_plots) == 0) {
       gee_analysis_info_rv("Kies eerst minstens één kavel.")
       showNotification("Kies eerst minstens één kavel.", type = "error", duration = 5)
       return()
     }
     if (identical(input$gee_target_type, "species")) {
-      req(input$gee_species)
+      if (is.null(input$gee_species) || !nzchar(input$gee_species)) {
+        gee_analysis_info_rv("Kies eerst een soort.")
+        showNotification("Kies eerst een soort.", type = "error", duration = 5)
+        return()
+      }
       target_value <- input$gee_species
-    } else {
-      req(input$gee_group)
+    } else if (identical(input$gee_target_type, "group")) {
+      if (is.null(input$gee_group) || !nzchar(input$gee_group)) {
+        gee_analysis_info_rv("Kies eerst een vogelgroep.")
+        showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+        return()
+      }
       target_value <- input$gee_group
+    } else {
+      if (is.null(input$gee_richtlijn) || !nzchar(input$gee_richtlijn)) {
+        gee_analysis_info_rv("Kies eerst een Rode/Oranje Lijst-categorie.")
+        showNotification("Kies eerst een Rode/Oranje Lijst-categorie.", type = "error", duration = 5)
+        return()
+      }
+      target_value <- input$gee_richtlijn
     }
     totaal_covariaten <- c(input$gee_covariates, input$gee_ahn_covariates, input$gee_infra_covariates, input$gee_habitat_covariates)
     if (length(totaal_covariaten) == 0) {
@@ -712,7 +880,7 @@ server <- function(input, output, session) {
       withProgress(message = "G.E.E.-analyse draait", detail = "Covariaten worden gekoppeld en het model wordt geschat.", value = 0.1, {
         analyse <- run_gee_subset(
           tbls = tbls,
-          selected_kavels = input$gee_selected_plots,
+          selected_kavels = selected_plots,
           year_from = year_from,
           year_to = year_to,
           target_type = input$gee_target_type,
@@ -874,7 +1042,19 @@ server <- function(input, output, session) {
     }
     groepen <- unique(analyse$group_results$trends[, c("groep_100", "groep_titel")])
     choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-    selectInput("selected_group", "Ecologische groep", choices = choices, selected = groepen$groep_100[1])
+    selectInput("selected_group", "Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
+  })
+
+  output$richtlijn_picker_ui <- renderUI({
+    analyse <- analyse_rv()
+    if (is.null(analyse)) {
+      return(tags$p("Voer eerst een analyse uit."))
+    }
+    richtlijnen <- unique(analyse$richtlijn_results$trends[, c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde")])
+    richtlijnen <- richtlijnen[order(richtlijnen$richtlijn_volgorde), , drop = FALSE]
+    validate(need(nrow(richtlijnen) > 0, "Geen Rode/Oranje Lijst-categorieën beschikbaar in deze selectie."))
+    choices <- setNames(richtlijnen$richtlijn_id, richtlijnen$richtlijn_titel)
+    selectInput("selected_richtlijn", "Rode/Oranje Lijst", choices = choices, selected = richtlijnen$richtlijn_id[1])
   })
 
   output$lambda_species_picker_ui <- renderUI({
@@ -895,25 +1075,25 @@ server <- function(input, output, session) {
     req(analyse, input$lambda_selected_species)
     validate(need("species" %in% input$lambda_analyse_keuze, "Soortniveau is niet geselecteerd."))
     idx <- analyse$species_results$yearly
-    idx <- idx[idx$soort_naam == input$lambda_selected_species & is.finite(idx$t0_index), , drop = FALSE]
-    validate(need(nrow(idx) > 0, "Geen T0-indexgegevens voor deze soort."))
+    idx <- idx[idx$soort_naam == input$lambda_selected_species & is.finite(idx$lambda), , drop = FALSE]
+    validate(need(nrow(idx) > 0, "Geen jaar-op-jaar veranderingen voor deze soort."))
+    idx$lambda_pct <- (idx$lambda - 1) * 100
 
-    y_max <- max(idx$t0_index, na.rm = TRUE)
-    y_min <- min(idx$t0_index, na.rm = TRUE)
-    plot(idx$jaar, idx$t0_index, type = "n",
-         xlab = "Jaar", ylab = "T0-index",
+    y_max <- max(idx$lambda_pct, 0, na.rm = TRUE)
+    y_min <- min(idx$lambda_pct, 0, na.rm = TRUE)
+    plot(idx$jaar, idx$lambda_pct, type = "n",
+         xlab = "Jaar", ylab = "Jaar-op-jaar verandering (%)",
          ylim = c(y_min, y_max),
          main = input$lambda_selected_species)
-    pre <- idx[idx$periode == "1959-1983", , drop = FALSE]
-    post <- idx[idx$periode == "1984-heden", , drop = FALSE]
-    if (nrow(pre)) lines(pre$jaar, pre$t0_index, type = "o", pch = 16, lwd = 2, col = "#2563eb")
-    if (nrow(post)) lines(post$jaar, post$t0_index, type = "o", pch = 16, lwd = 2, col = "#d97706")
-    abline(h = 100, lty = 2, col = "#64748b")
+    legend_info <- draw_lambda_period_lines(idx)
+    abline(h = 0, lty = 2, col = "#64748b")
     grid()
     legend("topleft",
-           legend = c("1959-1983 (T0=1959)", "1984-heden (T0=1984)", "T0 = 100"),
-           col = c("#2563eb", "#d97706", "#64748b"),
-           lwd = c(2, 2, 1), pch = c(16, 16, NA), bty = "n")
+           legend = legend_info$labels,
+           col = legend_info$cols,
+           lwd = c(rep(2, length(legend_info$labels) - 1L), 1),
+           pch = c(rep(16, length(legend_info$labels) - 1L), NA),
+           bty = "n")
   })
 
   output$lambda_species_note_ui <- renderUI({
@@ -928,11 +1108,14 @@ server <- function(input, output, session) {
     }
 
     redenen <- character()
-    if (!isTRUE(info$pre_1984_aanwezig[[1]])) {
-      redenen <- c(redenen, "geen positieve pre-1984 aanwezigheid")
+    if (!isTRUE(info$periode_1959_1972_aanwezig[[1]])) {
+      redenen <- c(redenen, "geen positieve aanwezigheid in 1959-1972")
     }
-    if (!isTRUE(info$post_1984_aanwezig[[1]])) {
-      redenen <- c(redenen, "geen positieve post-1984 aanwezigheid")
+    if (!isTRUE(info$periode_1973_1983_aanwezig[[1]])) {
+      redenen <- c(redenen, "geen positieve aanwezigheid in 1973-1983")
+    }
+    if (!isTRUE(info$periode_1984_heden_aanwezig[[1]])) {
+      redenen <- c(redenen, "geen positieve aanwezigheid in 1984-heden")
     }
     if (is.finite(info$nul_aandeel[[1]]) && info$nul_aandeel[[1]] > 0.50) {
       redenen <- c(redenen, sprintf("nul-aandeel %.1f%%", 100 * info$nul_aandeel[[1]]))
@@ -949,7 +1132,7 @@ server <- function(input, output, session) {
       tags$span(class = "status-label", "Toelichting"),
       tags$span(
         sprintf(
-          "Deze soort is ongeschikt voor T0-selectie (%s), maar de beschikbare deelreeks met geldige T0-index wordt wel getoond.",
+          "Deze soort is ongeschikt voor T0-selectie (%s), maar de beschikbare deelreeks met geldige jaar-op-jaar verandering wordt wel getoond.",
           paste(redenen, collapse = ", ")
         )
       )
@@ -977,7 +1160,7 @@ server <- function(input, output, session) {
     groepen <- unique(analyse$group_results$summary[, c("groep_100", "groep_titel")])
     validate(need(nrow(groepen) > 0, "Geen groepen beschikbaar in deze selectie."))
     choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-    selectInput("lambda_selected_group", "Ecologische groep", choices = choices, selected = groepen$groep_100[1])
+    selectInput("lambda_selected_group", "Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
   })
 
   output$lambda_group_plot <- renderPlot({
@@ -985,26 +1168,26 @@ server <- function(input, output, session) {
     req(analyse, input$lambda_selected_group)
     validate(need("groups" %in% input$lambda_analyse_keuze, "Groepsniveau is niet geselecteerd."))
     idx <- analyse$group_results$index
-    idx <- idx[idx$groep_100 == as.integer(input$lambda_selected_group) & is.finite(idx$t0_index), , drop = FALSE]
-    validate(need(nrow(idx) > 0, "Geen T0-indexgegevens voor deze groep."))
+    idx <- idx[idx$groep_100 == as.integer(input$lambda_selected_group) & is.finite(idx$lambda), , drop = FALSE]
+    validate(need(nrow(idx) > 0, "Geen jaar-op-jaar veranderingen voor deze groep."))
+    idx$lambda_pct <- (idx$lambda - 1) * 100
 
     title <- unique(idx$groep_titel)[1]
-    y_max <- max(idx$t0_index, na.rm = TRUE)
-    y_min <- min(idx$t0_index, na.rm = TRUE)
-    plot(idx$jaar, idx$t0_index, type = "n",
-         xlab = "Jaar", ylab = "T0-index groep",
+    y_max <- max(idx$lambda_pct, 0, na.rm = TRUE)
+    y_min <- min(idx$lambda_pct, 0, na.rm = TRUE)
+    plot(idx$jaar, idx$lambda_pct, type = "n",
+         xlab = "Jaar", ylab = "Jaar-op-jaar verandering (%)",
          ylim = c(y_min, y_max),
          main = paste(input$lambda_selected_group, "-", title))
-    pre <- idx[idx$periode == "1959-1983", , drop = FALSE]
-    post <- idx[idx$periode == "1984-heden", , drop = FALSE]
-    if (nrow(pre)) lines(pre$jaar, pre$t0_index, type = "o", pch = 16, lwd = 2, col = "#2563eb")
-    if (nrow(post)) lines(post$jaar, post$t0_index, type = "o", pch = 16, lwd = 2, col = "#d97706")
-    abline(h = 100, lty = 2, col = "#64748b")
+    legend_info <- draw_lambda_period_lines(idx)
+    abline(h = 0, lty = 2, col = "#64748b")
     grid()
     legend("topleft",
-           legend = c("1959-1983 (T0=1959)", "1984-heden (T0=1984)", "T0 = 100"),
-           col = c("#2563eb", "#d97706", "#64748b"),
-           lwd = c(2, 2, 1), pch = c(16, 16, NA), bty = "n")
+           legend = legend_info$labels,
+           col = legend_info$cols,
+           lwd = c(rep(2, length(legend_info$labels) - 1L), 1),
+           pch = c(rep(16, length(legend_info$labels) - 1L), NA),
+           bty = "n")
   })
 
   output$lambda_group_table <- renderTable({
@@ -1020,6 +1203,68 @@ server <- function(input, output, session) {
     validate(need("groups" %in% input$lambda_analyse_keuze, "Groepsniveau is niet geselecteerd."))
     analyse$group_results$composition[
       analyse$group_results$composition$groep_100 == as.integer(input$lambda_selected_group),
+      c("soort_naam", "engelse_naam", "euring_code")
+    ]
+  }, striped = TRUE)
+
+  output$lambda_richtlijn_picker_ui <- renderUI({
+    analyse <- lambda_analyse_rv()
+    if (is.null(analyse)) {
+      return(tags$p("Voer eerst een LAMBDA-analyse uit."))
+    }
+    if (!("richtlijnen" %in% input$lambda_analyse_keuze)) {
+      return(tags$p("Rode/Oranje Lijst is nu niet geselecteerd."))
+    }
+    richtlijnen <- unique(analyse$richtlijn_results$summary[, c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde")])
+    richtlijnen <- richtlijnen[order(richtlijnen$richtlijn_volgorde), , drop = FALSE]
+    validate(need(nrow(richtlijnen) > 0, "Geen Rode/Oranje Lijst-categorieën beschikbaar in deze selectie."))
+    choices <- setNames(richtlijnen$richtlijn_id, richtlijnen$richtlijn_titel)
+    selectInput("lambda_selected_richtlijn", "Rode/Oranje Lijst", choices = choices, selected = richtlijnen$richtlijn_id[1])
+  })
+
+  output$lambda_richtlijn_plot <- renderPlot({
+    analyse <- lambda_analyse_rv()
+    req(analyse, input$lambda_selected_richtlijn)
+    validate(need("richtlijnen" %in% input$lambda_analyse_keuze, "Rode/Oranje Lijst is niet geselecteerd."))
+    idx <- analyse$richtlijn_results$index
+    idx <- idx[idx$richtlijn_id == as.integer(input$lambda_selected_richtlijn) & is.finite(idx$lambda), , drop = FALSE]
+    validate(need(nrow(idx) > 0, "Geen jaar-op-jaar veranderingen voor deze categorie."))
+    idx$lambda_pct <- (idx$lambda - 1) * 100
+
+    title <- unique(idx$richtlijn_titel)[1]
+    y_max <- max(idx$lambda_pct, 0, na.rm = TRUE)
+    y_min <- min(idx$lambda_pct, 0, na.rm = TRUE)
+    plot(idx$jaar, idx$lambda_pct, type = "n",
+         xlab = "Jaar", ylab = "Jaar-op-jaar verandering (%)",
+         ylim = c(y_min, y_max),
+         main = title)
+    legend_info <- draw_lambda_period_lines(idx)
+    abline(h = 0, lty = 2, col = "#64748b")
+    grid()
+    legend("topleft",
+           legend = legend_info$labels,
+           col = legend_info$cols,
+           lwd = c(rep(2, length(legend_info$labels) - 1L), 1),
+           pch = c(rep(16, length(legend_info$labels) - 1L), NA),
+           bty = "n")
+  })
+
+  output$lambda_richtlijn_table <- renderTable({
+    analyse <- lambda_analyse_rv()
+    req(analyse)
+    validate(need("richtlijnen" %in% input$lambda_analyse_keuze, "Rode/Oranje Lijst is niet geselecteerd."))
+    analyse$richtlijn_results$summary[, c(
+      "richtlijn_titel", "eerste_jaar", "laatste_jaar", "n_indexjaren",
+      "geldige_jaarparen", "gemiddeld_lambda", "gemiddelde_verandering_pct"
+    )]
+  }, striped = TRUE)
+
+  output$lambda_richtlijn_species_table <- renderTable({
+    analyse <- lambda_analyse_rv()
+    req(analyse, input$lambda_selected_richtlijn)
+    validate(need("richtlijnen" %in% input$lambda_analyse_keuze, "Rode/Oranje Lijst is niet geselecteerd."))
+    analyse$richtlijn_results$composition[
+      analyse$richtlijn_results$composition$richtlijn_id == as.integer(input$lambda_selected_richtlijn),
       c("soort_naam", "engelse_naam", "euring_code")
     ]
   }, striped = TRUE)
@@ -1042,7 +1287,8 @@ server <- function(input, output, session) {
     analyse$species_results$summary[, c(
       "soort_naam", "analyse_categorie", "geldige_jaren",
       "geldige_jaarparen", "positieve_jaren", "nul_aandeel",
-      "pre_1984_aanwezig", "post_1984_aanwezig"
+      "periode_1959_1972_aanwezig", "periode_1973_1983_aanwezig",
+      "periode_1984_heden_aanwezig"
     )]
   }, striped = TRUE)
 
@@ -1210,6 +1456,56 @@ server <- function(input, output, session) {
     ]
   }, striped = TRUE)
 
+  output$richtlijn_plot <- renderPlot({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_richtlijn)
+    msi <- analyse$richtlijn_results$msi
+    msi <- msi[msi$richtlijn_id == as.integer(input$selected_richtlijn), ]
+    validate(need(nrow(msi) > 0, "Geen MSI-gegevens voor deze categorie."))
+
+    title <- unique(msi$richtlijn_titel)[1]
+    gam_curve <- fit_gam_curve(msi, "msi")
+    y_max <- max(msi$msi, if (!is.null(gam_curve)) gam_curve$upper else NA_real_, na.rm = TRUE)
+    y_min <- min(msi$msi, if (!is.null(gam_curve)) gam_curve$lower else NA_real_, na.rm = TRUE)
+
+    plot(msi$jaar, msi$msi, type = "o", pch = 16, lwd = 2, col = "#1d4ed8",
+         xlab = "Jaar", ylab = "MSI",
+         ylim = c(y_min, y_max),
+         main = title)
+    if (!is.null(gam_curve)) {
+      polygon(
+        c(gam_curve$jaar, rev(gam_curve$jaar)),
+        c(gam_curve$lower, rev(gam_curve$upper)),
+        col = grDevices::adjustcolor("#f59e0b", alpha.f = 0.20),
+        border = NA
+      )
+      lines(gam_curve$jaar, gam_curve$fit, col = "#f59e0b", lwd = 3)
+    }
+    grid()
+    legend("topleft",
+           legend = c("MSI", "GAM", "Variatiezone"),
+           col = c("#1d4ed8", "#f59e0b", grDevices::adjustcolor("#f59e0b", alpha.f = 0.20)),
+           lwd = c(2, 3, 8), pch = c(16, NA, NA), bty = "n")
+  })
+
+  output$richtlijn_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse)
+    analyse$richtlijn_results$trends[, c(
+      "richtlijn_titel", "eerste_jaar", "laatste_jaar", "gemiddeld_n_soorten",
+      "trend_pct_per_jaar", "trend_p", "trend_r2", "trend_uitleg"
+    )]
+  }, striped = TRUE)
+
+  output$richtlijn_species_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_richtlijn)
+    analyse$richtlijn_results$composition[
+      analyse$richtlijn_results$composition$richtlijn_id == as.integer(input$selected_richtlijn),
+      c("soort_naam", "engelse_naam", "euring_code")
+    ]
+  }, striped = TRUE)
+
   output$coverage_table <- renderTable({
     analyse <- analyse_rv()
     req(analyse)
@@ -1283,6 +1579,28 @@ server <- function(input, output, session) {
     }
   )
 
+  output$download_richtlijn_trends <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_richtlijntrends_%s_%s.csv", input$year_from, input$year_to)
+    },
+    content = function(file) {
+      analyse <- analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$richtlijn_results$trends, file, row.names = FALSE)
+    }
+  )
+
+  output$download_richtlijn_msi <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_richtlijn_msi_%s_%s.csv", input$year_from, input$year_to)
+    },
+    content = function(file) {
+      analyse <- analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$richtlijn_results$msi, file, row.names = FALSE)
+    }
+  )
+
   output$download_basis <- downloadHandler(
     filename = function() {
       sprintf("meijendel_shiny_analysebasis_%s_%s.csv", input$year_from, input$year_to)
@@ -1346,6 +1664,28 @@ server <- function(input, output, session) {
       analyse <- lambda_analyse_rv()
       req(analyse)
       utils::write.csv(analyse$group_results$summary, file, row.names = FALSE)
+    }
+  )
+
+  output$download_lambda_richtlijn_years <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_lambda_richtlijnjaren_%s_%s.csv", input$lambda_year_from, input$lambda_year_to)
+    },
+    content = function(file) {
+      analyse <- lambda_analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$richtlijn_results$index, file, row.names = FALSE)
+    }
+  )
+
+  output$download_lambda_richtlijn_summary <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_lambda_richtlijnen_%s_%s.csv", input$lambda_year_from, input$lambda_year_to)
+    },
+    content = function(file) {
+      analyse <- lambda_analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$richtlijn_results$summary, file, row.names = FALSE)
     }
   )
 }

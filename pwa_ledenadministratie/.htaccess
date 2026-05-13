@@ -1,0 +1,14 @@
+AddType application/manifest+json .webmanifest
+AddType image/svg+xml .svg
+
+<Files "config.php">
+  Require all denied
+</Files>
+
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set Referrer-Policy "same-origin"
+  <FilesMatch "service-worker\.js$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
