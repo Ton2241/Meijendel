@@ -36,8 +36,6 @@ cd /Users/ton/Documents/GitHub/Meijendel
 
 Het script toont aan het einde zelf:
 
-- output van de publieke PWA auth-status
-- aantal regels in databaseview `pwa_teller_stats`
 - checksums van de SQL op Shiny en `www`
 - containerstatus via `docker ps`
 
@@ -46,7 +44,6 @@ Handmatig controleren kan met:
 ```sh
 ssh -i ~/.ssh/vwgm_spectraip_ed25519 ton@45.87.43.90
 docker ps
-curl -sS http://127.0.0.1:8091/api/auth/status.php
 curl -I http://127.0.0.1:3838/
 ```
 
@@ -54,11 +51,10 @@ curl -I http://127.0.0.1:3838/
 
 Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt deze VPS-onderdelen bij:
 
-- Shiny SQL: `/srv/vwgm/shiny/Meijendel.sql`
-- HTML/dashboard SQL: `/srv/vwgm/www/Meijendel.sql`
+- Shiny SQL zonder `tellers`, `appsmith_*` en `pwa_*` objecten: `/srv/vwgm/shiny/Meijendel.sql`
+- HTML/dashboard SQL zonder `tellers`, `appsmith_*` en `pwa_*` objecten: `/srv/vwgm/www/Meijendel.sql`
 - Shiny-app: `/srv/vwgm/shiny/shiny_meijendel/`
 - gedeelde R-code: `/srv/vwgm/shiny/R/`
-- ledenadministratie/PWA-code: `/srv/vwgm/ledenadministratie/`
 - HTML-dashboard: `/srv/vwgm/www/bmp_meijendel_index.html`
 - dashboard-outputmappen:
   - `/srv/vwgm/www/output_ecologische_groepen/`
@@ -66,15 +62,12 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
 
 Daarna voert het script op de VPS uit:
 
-- Docker Compose-stack voor ledenadministratie/PWA rebuilden en starten
-- `Meijendel.sql` opnieuw importeren in `leden_pwa_mysql`
-- PWA-views opnieuw aanmaken/verversen
 - Shiny-container `shiny_meijendel` herstarten
-- publieke PWA auth-status, databaseview `pwa_teller_stats` en Shiny HTTP-endpoint controleren
+- Shiny HTTP-endpoint controleren
 
 Het script maakt geen automatische backup op de VPS.
 
-De oude servermap `/srv/vwgm/ledenadministratie/deploy/sql/` wordt bewust genegeerd. De actuele PWA-views staan in `/srv/vwgm/ledenadministratie/sql/`; de oude map kan op de VPS root-rechten hebben en is niet nodig voor de huidige Docker Compose-config.
+De ledenadministratie/PWA wordt niet meer naar de VPS gedeployed.
 
 ## Voorwaarden
 
@@ -87,8 +80,8 @@ Benodigd:
 - lokale MySQL bereikbaar op `127.0.0.1:3306`; het dump-script gebruikt `mysqldump --no-defaults` om conflicterende opties uit `~/.my.cnf` te negeren
 - de dump wordt gemaakt met kolomnamen in `INSERT`-regels (`--complete-insert`), omdat de R-scripts die kolomnamen gebruiken bij het inlezen
 - GTID-restore-informatie wordt bewust niet meegenomen (`--set-gtid-purged=OFF`) en de dump gebruikt `--single-transaction`
+- de tabel `tellers` wordt niet meegenomen in de deploy-dump
 - lokaal SQL-bestand: `meijendel.sql` in de repo-root
-- lokaal PWA-project: `pwa_ledenadministratie/`
 - op de VPS bestaande Docker/Compose-config onder `/srv/vwgm`
 
 ## Configuratie overschrijven

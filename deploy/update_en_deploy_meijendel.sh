@@ -47,6 +47,7 @@ mysqldump --no-defaults \
   --routines \
   --triggers \
   --events \
+  --ignore-table="$MYSQL_DATABASE.tellers" \
   "$MYSQL_DATABASE" > "$SQL_FILE"
 
 log "Genereer dashboard-output: output_ecologische_groepen"

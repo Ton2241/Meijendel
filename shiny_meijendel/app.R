@@ -163,7 +163,7 @@ ui <- navbarPage(
             tags$p("Ga daarna naar TRIM, LAMBDA of G.E.E. om de gewenste analyses uit te voeren. Kies daar of je de analyses voor vogelsoorten en/of vogelgroepen wil doen en selecteer de kavels en jaren."),
             tags$p(
               class = "section-note",
-              "Voor meer informatie over TRIM, LAMBDA, G.E.E. en het gebruik van GAM-grafieken zie de tekstblokken hieronder."
+              "Meer informatie over TRIM, LAMBDA, G.E.E., GAM-grafieken en de beschrijving van de onderscheiden vogelgroepen vind je in de tekstblokken hieronder."
             )
           )
         )
@@ -185,7 +185,7 @@ ui <- navbarPage(
             h4("LAMBDA"),
             tags$p("De LAMBDA-methode beschrijft populatieverandering via de groeifactor λ, gedefinieerd als de verhouding tussen aantallen in opeenvolgende jaren (λ = Nₜ₊₁ / Nₜ). Een waarde λ > 1 duidt op groei, λ < 1 op afname en λ = 1 op stabiliteit. Door λ per jaar te berekenen ontstaat een tijdreeks van relatieve veranderingen, die eenvoudig te middelen of cumuleren is. De methode vereist consistente tellingen en is gevoelig voor nulwaarden en waarnemingsfouten. Om die reden zijn sporadisch verschijnende soorten niet meegenomen in de berekening van de MSI van de vogelgroepen. In de praktijk wordt vaak gewerkt met log-transformaties van λ om trends statistisch stabieler te analyseren. LAMBDA gebruikt drie T0-perioden: 1959-1972 (T0=1959), 1973-1983 (T0=1973) en 1984-heden (T0=1984)."),
             h4("G.E.E."),
-            tags$p("G.E.E. (Generalized Estimating Equations) is een methode voor de analyse van gecorreleerde gegevens, zoals herhaalde metingen in tijd of ruimte. Het model schat gemiddelde effecten op populatieniveau zonder volledige specificatie van de kansverdeling en houdt rekening met afhankelijkheid via een correlatiestructuur. De methode is relatief robuust bij misspecificatie en levert consistente schattingen, ook bij onregelmatige tellingen en ontbrekende waarnemingen. Binnen de app is G.E.E. bedoeld voor verklarende analyse, niet voor trendbeschrijving. Het vormt een derde analysetype naast TRIM en LAMBDA, gericht op het schatten van effecten van covariaten zoals beheer, recreatie, weer en habitat bij herhaalde plotmetingen."),
+            tags$p("G.E.E. (Generalized Estimating Equations) is een methode voor de analyse van gecorreleerde gegevens. De methode is relatief robuust bij misspecificatie en levert consistente schattingen, ook bij onregelmatige tellingen en ontbrekende waarnemingen. Binnen de app is G.E.E. bedoeld voor verklarende analyse, niet voor trendbeschrijving. Het vormt een derde analysetype naast TRIM en LAMBDA, gericht op het schatten van effecten van covariaten zoals beheer, recreatie, weer en habitat bij herhaalde plotmetingen. In de app kun je kiezen tussen vier verschillende correlatiestructuren (Ar1, exchangeable, unstructured en independence). Voor Meijendel is de praktische aanpak om te starten met Ar1 en daarna vergelijken met exchangeable. Als de resultaten nauwelijks veranderen dan zijn de uitkomsten robuust. Dat kan je dan eventueel nog controleren met independence. Bij de autoregressive 1 variant (Ar1) neemt G.E.E. aan dat de correlatie afneemt met de tijd, wat ecologisch zeer logisch is. Successie verloopt geleidelijk, beheer werkt door en populaties hebben traagheid, dus nabije jaren lijken meer op elkaar dan verre jaren. Bij de exchangeable-variant neemt G.E.E. aan dat alle jaren binnen een plot dezelfde correlatie hebben. Een plot heeft een “algemene kwaliteit”, tijdsafstand maakt niet uit. In de unstructured-variant schat G.E.E. schat elke correlatie afzonderlijk. Je gebruikt het als je alle mogelijke factoren wilt testen, dus ook de factoren die mogelijk geen invloed hebben. In de Independence-variant neemt GEE aan dat alle jaren binnen een plot onafhankelijk zijn. Dat is voor Meijendel ecologisch onrealistisch en te simpel."),
             h4("GAM"),
             tags$p("In deze app wordt gebruik gemaakt van GAM. GAM (Generalized Additive Model) is een flexibele statistische methode die relaties modelleert zonder een vaste functionele vorm op te leggen. Het model beschrijft de responsvariabele als som van gladde (niet-lineaire) functies van verklarende variabelen. Hiermee kunnen complexe, niet-lineaire trends in tijdreeksen van ecologische data worden geschat en grafisch weergegeven."),
             h4("Vogelgroepen"),
@@ -412,36 +412,50 @@ ui <- navbarPage(
             uiOutput("gee_plot_selector_ui"),
             uiOutput("gee_year_selector_ui"),
             radioButtons(
-              "gee_target_type",
-              "Analyse-niveau",
-              choices = c("Soort" = "species", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
-              selected = "species",
-              inline = TRUE
+              "gee_mode",
+              "G.E.E.-modus",
+              choices = c("Reguliere analyse" = "regular", "Kenmerkenanalyse" = "traits"),
+              selected = "regular",
+              inline = FALSE
             ),
-            uiOutput("gee_target_picker_ui"),
+            conditionalPanel(
+              "input.gee_mode == 'regular'",
+              radioButtons(
+                "gee_target_type",
+                "Analyse-niveau",
+                choices = c("Soort" = "species", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
+                selected = "species",
+                inline = TRUE
+              ),
+              uiOutput("gee_target_picker_ui")
+            ),
+            uiOutput("gee_trait_controls_ui"),
             selectInput(
               "gee_corstr",
               "Correlatiestructuur",
               choices = c(
-                "independence" = "independence",
+                "Ar1" = "ar1",
                 "exchangeable" = "exchangeable",
-                "ar1" = "ar1",
+                "independence" = "independence",
                 "unstructured" = "unstructured"
               ),
-              selected = "independence"
+              selected = "ar1"
             ),
-            checkboxGroupInput(
-              "gee_covariates",
-              "Vaste Covariaten",
-              choices = setNames(
-                gee_covariate_specs()$code,
-                gee_covariate_specs()$label
+            conditionalPanel(
+              "input.gee_mode == 'regular'",
+              checkboxGroupInput(
+                "gee_covariates",
+                "Vaste Covariaten",
+                choices = setNames(
+                  gee_covariate_specs()$code,
+                  gee_covariate_specs()$label
+                ),
+                selected = c("stikstof_mean", "toegankelijkheid_status")
               ),
-              selected = c("stikstof_mean", "toegankelijkheid_status")
+              uiOutput("gee_ahn_covariate_ui"),
+              uiOutput("gee_infra_covariate_ui"),
+              uiOutput("gee_habitat_covariate_ui")
             ),
-            uiOutput("gee_ahn_covariate_ui"),
-            uiOutput("gee_infra_covariate_ui"),
-            uiOutput("gee_habitat_covariate_ui"),
             actionButton("run_gee_analysis", "Voer G.E.E.-analyse uit", class = "btn-primary")
           )
         ),
@@ -508,7 +522,7 @@ server <- function(input, output, session) {
     tryCatch({
       path <- normalizePath(input$sql_path, winslash = "/", mustWork = TRUE)
       cache_path <- file.path(tempdir(), "meijendel_tables_cache.rds")
-      withProgress(message = "SQL wordt gelezen", detail = "Eerste keer kan dit ongeveer 20 seconden duren.", value = 0.1, {
+      withProgress(message = "SQL wordt gelezen.", detail = "Dit kan even duren afhankelijk van het werkgeheugen van de server.", value = 0.1, {
         loaded <- load_meijendel_tables_cached(path, cache_path = cache_path)
         incProgress(0.8)
         tbls_rv(loaded$data)
@@ -686,6 +700,55 @@ server <- function(input, output, session) {
     selectizeInput("gee_species", "Soort", choices = soorten, selected = "Nachtegaal", multiple = FALSE)
   })
 
+  output$gee_trait_controls_ui <- renderUI({
+    tbls <- tbls_rv()
+    if (is.null(tbls) || !identical(input$gee_mode, "traits")) {
+      return(NULL)
+    }
+    catalog <- build_soort_kenmerken_catalog(tbls)
+    validate(need(nrow(catalog) > 0, "Geen soortkenmerken beschikbaar in deze SQL."))
+    hoofdcats <- unique(catalog[, c("hoofdcategorie_id", "hoofdcategorie_label")])
+    hoofdcats <- hoofdcats[order(hoofdcats$hoofdcategorie_id), , drop = FALSE]
+    group_mapping <- build_group_mapping(tbls)
+    groepen <- unique(group_mapping[, c("groep_100", "groep_titel")])
+    groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
+    richtlijnen <- build_richtlijn_mapping(tbls)
+    richtlijnen <- unique(richtlijnen[, c("richtlijn_id", "richtlijn_titel", "richtlijn_volgorde")])
+    richtlijnen <- richtlijnen[order(richtlijnen$richtlijn_volgorde), , drop = FALSE]
+    tagList(
+      tags$hr(),
+      h4("Kenmerkenanalyse"),
+      radioButtons(
+        "gee_trait_scope",
+        "Soortselectie",
+        choices = c("Alle soorten" = "all", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
+        selected = "all"
+      ),
+      conditionalPanel(
+        "input.gee_trait_scope == 'group'",
+        selectizeInput("gee_trait_group", "Vogelgroep", choices = setNames(groepen$groep_100, groepen$groep_titel), selected = groepen$groep_100[[1]], multiple = FALSE)
+      ),
+      conditionalPanel(
+        "input.gee_trait_scope == 'richtlijn'",
+        selectizeInput("gee_trait_richtlijn", "Rode/Oranje Lijst", choices = setNames(richtlijnen$richtlijn_id, richtlijnen$richtlijn_titel), selected = richtlijnen$richtlijn_id[[1]], multiple = FALSE)
+      ),
+      selectInput(
+        "gee_trait_hoofdcategorie",
+        "Hoofdcategorie kenmerken",
+        choices = setNames(hoofdcats$hoofdcategorie_id, hoofdcats$hoofdcategorie_label),
+        selected = hoofdcats$hoofdcategorie_id[[1]]
+      ),
+      checkboxGroupInput(
+        "gee_trait_code_types",
+        "Diepgang",
+        choices = c("Hoofdkenmerken" = "main", "Subkenmerken" = "sub", "Detailkenmerken" = "detail"),
+        selected = c("main")
+      ),
+      numericInput("gee_trait_min_species", "Minimum soorten met en zonder kenmerk", value = 5, min = 3, max = 25, step = 1),
+      tags$p(class = "section-note", "De screening toetst per kenmerk de interactie jaar x kenmerk: het verschil in ontwikkeling tussen soorten met en zonder dat kenmerk.")
+    )
+  })
+
   output$gee_ahn_covariate_ui <- renderUI({
     specs <- gee_ahn_covariate_specs()
     selectizeInput(
@@ -728,6 +791,14 @@ server <- function(input, output, session) {
       options = list(plugins = list("remove_button"))
     )
   })
+
+  observeEvent(input$gee_mode, {
+    if (identical(input$gee_mode, "traits")) {
+      updateSelectInput(session, "gee_corstr", selected = "independence")
+    } else if (identical(input$gee_mode, "regular")) {
+      updateSelectInput(session, "gee_corstr", selected = "ar1")
+    }
+  }, ignoreInit = TRUE)
 
   observeEvent(input$run_analysis, {
     tbls <- tbls_rv()
@@ -828,7 +899,8 @@ server <- function(input, output, session) {
       showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
       return()
     }
-    if (is.null(input$gee_year_from) || is.null(input$gee_year_to) || is.null(input$gee_target_type)) {
+    gee_mode <- if (is.null(input$gee_mode)) "regular" else input$gee_mode
+    if (is.null(input$gee_year_from) || is.null(input$gee_year_to)) {
       gee_analysis_info_rv("Wacht tot de selectievelden geladen zijn.")
       showNotification("Wacht tot de selectievelden geladen zijn.", type = "error", duration = 5)
       return()
@@ -837,6 +909,68 @@ server <- function(input, output, session) {
     if (length(selected_plots) == 0) {
       gee_analysis_info_rv("Kies eerst minstens één kavel.")
       showNotification("Kies eerst minstens één kavel.", type = "error", duration = 5)
+      return()
+    }
+    year_from <- as.integer(input$gee_year_from)
+    year_to <- as.integer(input$gee_year_to)
+    if (year_from > year_to) {
+      gee_analysis_info_rv("'Van jaar' moet kleiner of gelijk zijn aan 'Tot jaar'.")
+      showNotification("'Van jaar' moet kleiner of gelijk zijn aan 'Tot jaar'.", type = "error", duration = 5)
+      return()
+    }
+
+    if (identical(gee_mode, "traits")) {
+      if (is.null(input$gee_trait_scope) || is.null(input$gee_trait_hoofdcategorie) || is.null(input$gee_trait_code_types) || !length(input$gee_trait_code_types)) {
+        gee_analysis_info_rv("Kies eerst een kenmerkenselectie.")
+        showNotification("Kies eerst een kenmerkenselectie.", type = "error", duration = 5)
+        return()
+      }
+      scope_value <- NULL
+      if (identical(input$gee_trait_scope, "group")) {
+        scope_value <- input$gee_trait_group
+        if (is.null(scope_value) || !nzchar(scope_value)) {
+          gee_analysis_info_rv("Kies eerst een vogelgroep.")
+          showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+          return()
+        }
+      } else if (identical(input$gee_trait_scope, "richtlijn")) {
+        scope_value <- input$gee_trait_richtlijn
+        if (is.null(scope_value) || !nzchar(scope_value)) {
+          gee_analysis_info_rv("Kies eerst een Rode/Oranje Lijst-categorie.")
+          showNotification("Kies eerst een Rode/Oranje Lijst-categorie.", type = "error", duration = 5)
+          return()
+        }
+      }
+      gee_analysis_info_rv("G.E.E.-kenmerkenanalyse draait...")
+      tryCatch({
+        withProgress(message = "G.E.E.-kenmerkenanalyse draait", detail = "Soortkenmerken worden een voor een getoetst.", value = 0.1, {
+          analyse <- run_gee_trait_screening(
+            tbls = tbls,
+            selected_kavels = selected_plots,
+            year_from = year_from,
+            year_to = year_to,
+            scope_type = input$gee_trait_scope,
+            scope_value = scope_value,
+            hoofdcategorie_id = input$gee_trait_hoofdcategorie,
+            code_types = input$gee_trait_code_types,
+            min_species_per_level = as.integer(input$gee_trait_min_species),
+            gee_corstr = input$gee_corstr
+          )
+          incProgress(0.9)
+          gee_analyse_rv(analyse)
+        })
+        gee_analysis_info_rv("G.E.E.-kenmerkenanalyse gereed.")
+        showNotification("G.E.E.-kenmerkenanalyse gereed.", type = "message", duration = 4)
+      }, error = function(e) {
+        gee_analysis_info_rv(paste("Fout bij G.E.E.-kenmerkenanalyse:", conditionMessage(e)))
+        showNotification(paste("Fout bij G.E.E.-kenmerkenanalyse:", conditionMessage(e)), type = "error", duration = NULL)
+      })
+      return()
+    }
+
+    if (is.null(input$gee_target_type)) {
+      gee_analysis_info_rv("Wacht tot het analyse-niveau geladen is.")
+      showNotification("Wacht tot het analyse-niveau geladen is.", type = "error", duration = 5)
       return()
     }
     if (identical(input$gee_target_type, "species")) {
@@ -867,14 +1001,6 @@ server <- function(input, output, session) {
       showNotification("Kies eerst minstens één covariaat.", type = "error", duration = 5)
       return()
     }
-    year_from <- as.integer(input$gee_year_from)
-    year_to <- as.integer(input$gee_year_to)
-    if (year_from > year_to) {
-      gee_analysis_info_rv("'Van jaar' moet kleiner of gelijk zijn aan 'Tot jaar'.")
-      showNotification("'Van jaar' moet kleiner of gelijk zijn aan 'Tot jaar'.", type = "error", duration = 5)
-      return()
-    }
-
     gee_analysis_info_rv("G.E.E.-analyse draait...")
     tryCatch({
       withProgress(message = "G.E.E.-analyse draait", detail = "Covariaten worden gekoppeld en het model wordt geschat.", value = 0.1, {
@@ -953,6 +1079,20 @@ server <- function(input, output, session) {
       cov_labels <- c(cov_labels, setNames(hab_specs$label, hab_specs$code))
     }
     sam <- analyse$summary[1, , drop = FALSE]
+    if (identical(analyse$analysis_type, "trait_screening")) {
+      return(paste(
+        "Analyse-niveau:", sam$analyse_niveau,
+        "\nSoortselectie:", sam$doel_label,
+        "\nPlots:", sam$n_plots,
+        "\nPlot-jaren:", sam$n_plot_jaren,
+        "\nSoort-plot-jaren:", sam$n_soort_plot_jaren,
+        "\nSoorten:", sam$n_soorten,
+        "\nJaren:", sam$eerste_jaar, "-", sam$laatste_jaar,
+        "\nCorrelatiestructuur:", sam$gee_corstr,
+        "\nGetoetste kenmerken:", sam$n_kenmerken_getoetst,
+        "\nModel:", sam$covariaten
+      ))
+    }
     cov_names <- trimws(strsplit(sam$covariaten, ",", fixed = TRUE)[[1]])
     cov_names <- ifelse(cov_names %in% names(cov_labels), unname(cov_labels[cov_names]), cov_names)
     dropped_names <- character()
@@ -1298,6 +1438,30 @@ server <- function(input, output, session) {
     req(analyse)
     coefs <- analyse$coefficients
     validate(need(nrow(coefs) > 0, "Geen coëfficiënten beschikbaar."))
+    if (identical(analyse$analysis_type, "trait_screening")) {
+      coefs <- coefs[order(coefs$p.value), , drop = FALSE]
+      coefs <- head(coefs, 20)
+      coefs <- coefs[order(coefs$irr_jaar_interactie), , drop = FALSE]
+      y <- seq_len(nrow(coefs))
+      xlim <- range(c(coefs$irr_low, coefs$irr_high, 1), na.rm = TRUE)
+      labels <- paste0(coefs$code, " - ", coefs$kenmerk)
+      old_par <- graphics::par(no.readonly = TRUE)
+      on.exit(graphics::par(old_par), add = TRUE)
+      graphics::par(mar = c(5.1, 22, 4.1, 2.1), xpd = NA)
+      plot(coefs$irr_jaar_interactie, y,
+           xlim = xlim,
+           yaxt = "n",
+           pch = 16,
+           col = "#0f766e",
+           xlab = "IRR voor jaar x kenmerk",
+           ylab = "",
+           main = "G.E.E.-kenmerken: verschil in jaar-op-jaar ontwikkeling")
+      segments(coefs$irr_low, y, coefs$irr_high, y, col = "#94a3b8", lwd = 2)
+      abline(v = 1, lty = 2, col = "#64748b")
+      axis(2, at = y, labels = labels, las = 1, cex.axis = 0.8)
+      grid()
+      return(invisible())
+    }
     term_labels <- c(
       year_c = "Jaar",
       ahn_mean = "AHN gemiddelde hoogte",
@@ -1341,12 +1505,39 @@ server <- function(input, output, session) {
   output$gee_coef_table <- renderTable({
     analyse <- gee_analyse_rv()
     req(analyse)
+    if (identical(analyse$analysis_type, "trait_screening")) {
+      out <- analyse$coefficients[, c(
+        "code", "kenmerk", "hoofdcategorie", "code_type",
+        "n_soorten_met_kenmerk", "n_soorten_zonder_kenmerk",
+        "pct_verschil_trend_per_jaar", "p.value", "p_adj_bh",
+        "irr_jaar_interactie", "irr_low", "irr_high"
+      )]
+      return(head(out, 50))
+    }
     analyse$coefficients[, c("term", "estimate", "std.error", "statistic", "p.value", "irr", "irr_low", "irr_high")]
   }, striped = TRUE)
 
   output$gee_plot_usage_table <- renderTable({
     analyse <- gee_analyse_rv()
     req(analyse)
+    if (identical(analyse$analysis_type, "trait_screening")) {
+      out <- aggregate(
+        count ~ plot_id + kavel_nummer,
+        data = analyse$model_data,
+        FUN = function(x) sum(x, na.rm = TRUE)
+      )
+      names(out)[3] <- "totaal_territoria"
+      nrows <- aggregate(
+        jaar ~ plot_id + kavel_nummer,
+        data = unique(analyse$model_data[, c("plot_id", "kavel_nummer", "jaar")]),
+        FUN = length
+      )
+      names(nrows)[3] <- "n_plot_jaren"
+      out <- merge(out, nrows, by = c("plot_id", "kavel_nummer"), all.x = TRUE)
+      out <- out[order(out$kavel_nummer, out$plot_id), c("plot_id", "kavel_nummer", "n_plot_jaren", "totaal_territoria")]
+      rownames(out) <- NULL
+      return(out)
+    }
     out <- aggregate(
       count ~ plot_id + kavel_nummer,
       data = analyse$model_data,
@@ -1375,6 +1566,12 @@ server <- function(input, output, session) {
   output$gee_dataset_table <- renderTable({
       analyse <- gee_analyse_rv()
       req(analyse)
+      if (identical(analyse$analysis_type, "trait_screening")) {
+        out <- analyse$model_data[, c("plot_id", "kavel_nummer", "jaar", "soort_id", "soort_naam", "count")]
+        out <- out[order(out$jaar, out$kavel_nummer, out$plot_id, out$soort_naam), , drop = FALSE]
+        rownames(out) <- NULL
+        return(head(out, 200))
+      }
       out <- analyse$model_data[, c(
       "plot_id", "kavel_nummer", "jaar", "count", "ahn_mean", "ahn_sd", "stikstof_mean",
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",

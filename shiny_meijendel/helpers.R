@@ -207,6 +207,10 @@ parse_meijendel_tables <- function(path) {
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
   richtlijnen <- read_insert_table(path, "richtlijnen", c("id", "naam"))
   soort_richtlijn <- read_insert_table(path, "soort_richtlijn", c("soort_id", "richtlijn_id"))
+  soorten_kenmerken <- read_insert_table(path, "soorten_kenmerken", c("id", "soort_id", "soortnaam", "hoofdcategorie_id", "code", "waarde"))
+  soorten_kenmerken_datadictionary <- read_insert_table(path, "soorten_kenmerken_datadictionary", c("id", "veld", "betekenis", "betekenis_nederlands", "parent_code", "code_type", "status"))
+  soorten_kenmerken_hoofdcategorien <- read_insert_table(path, "soorten_kenmerken_hoofdcategorien", c("id", "code", "beschrijving"))
+  soorten_kenmerken_vogeltypering <- read_insert_table(path, "soorten_kenmerken_vogeltypering")
   habitattypen <- read_insert_table(path, "habitattypen", c("id", "habitat_code", "habitat_naam"))
   pjh <- read_insert_table(path, "plot_jaar_habitat", c("plot_id", "jaar", "habitat_id", "aandeel_m2"))
   pja <- read_insert_table(path, "plot_jaar_ahn_dtm", c("plot_id", "jaar", "bron", "ahn_mean", "ahn_sd"))
@@ -236,6 +240,15 @@ parse_meijendel_tables <- function(path) {
   richtlijnen$id <- to_integer(richtlijnen$id)
   soort_richtlijn$soort_id <- to_integer(soort_richtlijn$soort_id)
   soort_richtlijn$richtlijn_id <- to_integer(soort_richtlijn$richtlijn_id)
+  soorten_kenmerken$id <- to_integer(soorten_kenmerken$id)
+  soorten_kenmerken$soort_id <- to_integer(soorten_kenmerken$soort_id)
+  soorten_kenmerken$hoofdcategorie_id <- to_integer(soorten_kenmerken$hoofdcategorie_id)
+  soorten_kenmerken$waarde <- to_integer(soorten_kenmerken$waarde)
+  soorten_kenmerken_datadictionary$id <- to_integer(soorten_kenmerken_datadictionary$id)
+  soorten_kenmerken_hoofdcategorien$id <- to_integer(soorten_kenmerken_hoofdcategorien$id)
+  if ("soort_id" %in% names(soorten_kenmerken_vogeltypering)) {
+    soorten_kenmerken_vogeltypering$soort_id <- to_integer(soorten_kenmerken_vogeltypering$soort_id)
+  }
   habitattypen$id <- to_integer(habitattypen$id)
   pjh$plot_id <- to_integer(pjh$plot_id)
   pjh$jaar <- to_integer(pjh$jaar)
@@ -273,6 +286,10 @@ parse_meijendel_tables <- function(path) {
     evg_vogel_landschapgroep = evg_koppeling,
     richtlijnen = richtlijnen,
     soort_richtlijn = soort_richtlijn,
+    soorten_kenmerken = soorten_kenmerken,
+    soorten_kenmerken_datadictionary = soorten_kenmerken_datadictionary,
+    soorten_kenmerken_hoofdcategorien = soorten_kenmerken_hoofdcategorien,
+    soorten_kenmerken_vogeltypering = soorten_kenmerken_vogeltypering,
     habitattypen = habitattypen,
     plot_jaar_habitat = pjh,
     plot_jaar_ahn_dtm = pja,
@@ -306,7 +323,7 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
     cache_valid <- !is.null(cache) &&
       identical(cache$signature, signature) &&
       !is.null(cache$data) &&
-      all(c("richtlijnen", "soort_richtlijn", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid") %in% names(cache$data))
+      all(c("richtlijnen", "soort_richtlijn", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid") %in% names(cache$data))
     if (cache_valid) {
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
     }
@@ -1380,6 +1397,260 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_typ
   )
 }
 
+build_soort_kenmerken_catalog <- function(tbls) {
+  sk <- tbls$soorten_kenmerken
+  dd <- tbls$soorten_kenmerken_datadictionary
+  hc <- tbls$soorten_kenmerken_hoofdcategorien
+  if (is.null(sk) || is.null(dd) || is.null(hc) || !nrow(sk) || !nrow(dd)) {
+    return(data.frame())
+  }
+
+  catalog <- merge(
+    unique(sk[, c("hoofdcategorie_id", "code")]),
+    dd,
+    by.x = "code",
+    by.y = "veld",
+    all.x = TRUE
+  )
+  catalog <- merge(
+    catalog,
+    hc[, c("id", "code", "beschrijving")],
+    by.x = "hoofdcategorie_id",
+    by.y = "id",
+    all.x = TRUE,
+    suffixes = c("", "_hoofdcategorie")
+  )
+  catalog$kenmerk_label <- ifelse(
+    !is.na(catalog$betekenis_nederlands) & nzchar(catalog$betekenis_nederlands),
+    catalog$betekenis_nederlands,
+    ifelse(!is.na(catalog$betekenis) & nzchar(catalog$betekenis), catalog$betekenis, catalog$code)
+  )
+  catalog$hoofdcategorie_label <- ifelse(
+    !is.na(catalog$beschrijving) & nzchar(catalog$beschrijving),
+    paste0(catalog$code_hoofdcategorie, " - ", catalog$beschrijving),
+    as.character(catalog$hoofdcategorie_id)
+  )
+  catalog$status[is.na(catalog$status)] <- "active"
+  catalog$code_type[is.na(catalog$code_type)] <- "detail"
+  catalog <- catalog[catalog$status == "active", , drop = FALSE]
+  catalog[order(catalog$hoofdcategorie_id, catalog$code_type, catalog$kenmerk_label), , drop = FALSE]
+}
+
+select_species_for_gee_trait_scope <- function(tbls, scope_type = c("all", "group", "richtlijn"), scope_value = NULL) {
+  scope_type <- match.arg(scope_type)
+  if (scope_type == "group") {
+    group_row <- find_group_by_code(tbls, scope_value)
+    group_mapping <- build_group_mapping(tbls)
+    return(unique(group_mapping$soort_id[group_mapping$groep_100 == group_row$groep_100[[1]]]))
+  }
+  if (scope_type == "richtlijn") {
+    richtlijn_row <- find_richtlijn_by_id(tbls, scope_value)
+    richtlijn_mapping <- build_richtlijn_mapping(tbls)
+    return(unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]]))
+  }
+  unique(tbls$soorten$id)
+}
+
+trait_scope_label <- function(tbls, scope_type, scope_value) {
+  if (scope_type == "group") {
+    return(find_group_by_code(tbls, scope_value)$groep_titel[[1]])
+  }
+  if (scope_type == "richtlijn") {
+    return(find_richtlijn_by_id(tbls, scope_value)$richtlijn_titel[[1]])
+  }
+  "Alle soorten"
+}
+
+build_gee_trait_dataset <- function(tbls, selected_kavels, year_from, year_to, species_ids) {
+  basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
+  if (!nrow(basis)) {
+    stop("Geen geldige plot-jaar-combinaties voor deze selectie.")
+  }
+  species_ids <- intersect(unique(as.integer(species_ids)), unique(tbls$soorten$id))
+  if (!length(species_ids)) {
+    stop("Geen soorten gevonden binnen deze kenmerkenselectie.")
+  }
+
+  basis$.join_key <- 1L
+  species_df <- data.frame(soort_id = species_ids, .join_key = 1L)
+  dat <- merge(basis, species_df, by = ".join_key", all = TRUE)
+  dat$.join_key <- NULL
+  counts <- tbls$territoria[
+    tbls$territoria$soort_id %in% species_ids &
+      tbls$territoria$jaar >= year_from &
+      tbls$territoria$jaar <= year_to,
+    c("plot_id", "jaar", "soort_id", "territoria")
+  ]
+  if (nrow(counts)) {
+    counts <- aggregate(territoria ~ plot_id + jaar + soort_id, data = counts, FUN = sum, na.rm = TRUE)
+    names(counts)[names(counts) == "territoria"] <- "count"
+  } else {
+    counts <- data.frame(plot_id = integer(), jaar = integer(), soort_id = integer(), count = numeric())
+  }
+
+  dat <- merge(dat, counts, by = c("plot_id", "jaar", "soort_id"), all.x = TRUE)
+  dat$count <- ifelse(dat$geteld & is.na(dat$count), 0, dat$count)
+  dat$count <- ifelse(!dat$geteld, NA_real_, dat$count)
+  dat$log_area <- ifelse(is.finite(dat$oppervlakte_km2) & dat$oppervlakte_km2 > 0, log(dat$oppervlakte_km2), NA_real_)
+  dat$year_c <- dat$jaar - min(dat$jaar, na.rm = TRUE)
+  dat$cluster_id <- interaction(dat$plot_id, dat$soort_id, drop = TRUE)
+  soort_info <- tbls$soorten[, c("id", "euring_code", "soort_naam", "engelse_naam")]
+  names(soort_info)[names(soort_info) == "id"] <- "soort_id"
+  dat <- merge(dat, soort_info, by = "soort_id", all.x = TRUE)
+  dat[order(dat$plot_id, dat$soort_id, dat$jaar), , drop = FALSE]
+}
+
+precheck_gee_trait_complexity <- function(dat_model, gee_corstr) {
+  cluster_sizes <- as.integer(table(dat_model$cluster_id))
+  n_clusters <- length(cluster_sizes)
+  max_cluster <- max(cluster_sizes)
+  n_rows <- nrow(dat_model)
+  if (gee_corstr == "unstructured") {
+    stop("Correlatiestructuur 'unstructured' is te zwaar voor kenmerkenanalyse. Kies ar1, exchangeable of independence.")
+  }
+  if (gee_corstr == "ar1" && (max_cluster > 80L || n_rows > 150000L)) {
+    stop("Correlatiestructuur 'ar1' is te zwaar voor deze kenmerkenanalyse. Kies independence of verklein de selectie.")
+  }
+  invisible(list(n_clusters = n_clusters, max_cluster = max_cluster, n_rows = n_rows))
+}
+
+run_gee_trait_screening <- function(tbls, selected_kavels, year_from, year_to, scope_type = c("all", "group", "richtlijn"), scope_value = NULL, hoofdcategorie_id = NULL, code_types = c("main"), min_species_per_level = 5L, gee_corstr = "independence") {
+  scope_type <- match.arg(scope_type)
+  min_species_per_level <- suppressWarnings(as.integer(min_species_per_level)[1])
+  if (!is.finite(min_species_per_level) || min_species_per_level < 3L) {
+    min_species_per_level <- 5L
+  }
+  if (!requireNamespace("geepack", quietly = TRUE)) {
+    stop("Package 'geepack' is niet beschikbaar.")
+  }
+  if (!requireNamespace("broom", quietly = TRUE)) {
+    stop("Package 'broom' is niet beschikbaar.")
+  }
+
+  catalog <- build_soort_kenmerken_catalog(tbls)
+  if (!nrow(catalog)) {
+    stop("Geen soortkenmerken beschikbaar in de geladen SQL.")
+  }
+  if (!is.null(hoofdcategorie_id) && nzchar(as.character(hoofdcategorie_id))) {
+    catalog <- catalog[catalog$hoofdcategorie_id == as.integer(hoofdcategorie_id), , drop = FALSE]
+  }
+  if (length(code_types)) {
+    catalog <- catalog[catalog$code_type %in% code_types, , drop = FALSE]
+  }
+  if (!nrow(catalog)) {
+    stop("Geen actieve kenmerken beschikbaar voor deze categorie en diepgang.")
+  }
+
+  species_ids <- select_species_for_gee_trait_scope(tbls, scope_type, scope_value)
+  species_ids <- intersect(species_ids, unique(tbls$soorten_kenmerken$soort_id))
+  dat <- build_gee_trait_dataset(tbls, selected_kavels, year_from, year_to, species_ids)
+  dat_model_base <- dat[!is.na(dat$count) & is.finite(dat$log_area), , drop = FALSE]
+  if (nrow(dat_model_base) < 100L) {
+    stop("Te weinig bruikbare soort-plot-jaren voor kenmerkenanalyse.")
+  }
+  if (length(unique(dat_model_base$jaar)) < 3L) {
+    stop("Te weinig unieke jaren voor kenmerkenanalyse.")
+  }
+  if (length(unique(dat_model_base$soort_id)) < (2L * as.integer(min_species_per_level))) {
+    stop("Te weinig soorten voor de gekozen minimale groepsgrootte.")
+  }
+  precheck_gee_trait_complexity(dat_model_base, gee_corstr)
+
+  trait_map <- unique(tbls$soorten_kenmerken[tbls$soorten_kenmerken$waarde %in% c(1L, 2L, 3L), c("soort_id", "code")])
+  code_list <- unique(catalog$code)
+  rows <- vector("list", length(code_list))
+  used <- 0L
+
+  for (code in code_list) {
+    present_species <- unique(trait_map$soort_id[trait_map$code == code])
+    in_scope_species <- unique(dat_model_base$soort_id)
+    n_met <- length(intersect(in_scope_species, present_species))
+    n_zonder <- length(setdiff(in_scope_species, present_species))
+    if (n_met < min_species_per_level || n_zonder < min_species_per_level) {
+      next
+    }
+
+    dat_model <- dat_model_base
+    dat_model$trait_present <- as.integer(dat_model$soort_id %in% present_species)
+    fit <- tryCatch({
+      setTimeLimit(elapsed = 10, transient = TRUE)
+      on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
+      geepack::geeglm(
+        formula = count ~ year_c + trait_present + year_c:trait_present + offset(log_area),
+        family = stats::poisson(link = "log"),
+        id = cluster_id,
+        corstr = gee_corstr,
+        control = geepack::geese.control(maxit = 20, epsilon = 1e-04, trace = FALSE),
+        data = dat_model
+      )
+    }, error = function(e) e)
+    if (inherits(fit, "error")) {
+      next
+    }
+    coef_tab <- broom::tidy(fit)
+    interaction_row <- coef_tab[coef_tab$term == "year_c:trait_present", , drop = FALSE]
+    if (!nrow(interaction_row)) {
+      next
+    }
+    cat_row <- catalog[catalog$code == code, , drop = FALSE][1, , drop = FALSE]
+    used <- used + 1L
+    estimate <- interaction_row$estimate[[1]]
+    se <- interaction_row$std.error[[1]]
+    rows[[used]] <- data.frame(
+      code = code,
+      kenmerk = cat_row$kenmerk_label[[1]],
+      hoofdcategorie = cat_row$hoofdcategorie_label[[1]],
+      code_type = cat_row$code_type[[1]],
+      n_soorten_met_kenmerk = n_met,
+      n_soorten_zonder_kenmerk = n_zonder,
+      estimate = estimate,
+      std.error = se,
+      statistic = interaction_row$statistic[[1]],
+      p.value = interaction_row$p.value[[1]],
+      irr_jaar_interactie = exp(estimate),
+      irr_low = exp(estimate - 1.96 * se),
+      irr_high = exp(estimate + 1.96 * se),
+      pct_verschil_trend_per_jaar = (exp(estimate) - 1) * 100,
+      stringsAsFactors = FALSE
+    )
+  }
+
+  if (!used) {
+    stop("Geen kenmerken konden stabiel worden geschat. Verlaag de minimale groepsgrootte, kies main/sub, of vergroot de selectie.")
+  }
+  results <- do.call(rbind, rows[seq_len(used)])
+  results$p_adj_bh <- stats::p.adjust(results$p.value, method = "BH")
+  results <- results[order(results$p.value), , drop = FALSE]
+
+  summary_df <- data.frame(
+    analyse_niveau = "Soortkenmerken",
+    doel_label = trait_scope_label(tbls, scope_type, scope_value),
+    doel_slug = paste0("kenmerken_", scope_type),
+    gee_corstr = gee_corstr,
+    covariaten = "year_c + kenmerk + year_c:kenmerk",
+    covariaten_vervallen = "",
+    n_plots = length(unique(dat_model_base$plot_id)),
+    n_plot_jaren = length(unique(paste(dat_model_base$plot_id, dat_model_base$jaar))),
+    n_soort_plot_jaren = nrow(dat_model_base),
+    n_soorten = length(unique(dat_model_base$soort_id)),
+    eerste_jaar = min(dat_model_base$jaar, na.rm = TRUE),
+    laatste_jaar = max(dat_model_base$jaar, na.rm = TRUE),
+    totaal_territoria = sum(dat_model_base$count, na.rm = TRUE),
+    n_kenmerken_getoetst = nrow(results),
+    stringsAsFactors = FALSE
+  )
+
+  list(
+    analysis_type = "trait_screening",
+    dataset = dat,
+    model_data = dat_model_base,
+    coefficients = results,
+    summary = summary_df,
+    fit = NULL,
+    covariates = c("year_c", "trait_present", "year_c:trait_present")
+  )
+}
+
 load_t0_msi_selection <- function(path = NULL) {
   candidates <- if (is.null(path)) {
     c(
@@ -1834,4 +2105,4 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     richtlijn_results = lambda_richtlijnen
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 5L
+MEIJENDEL_PARSER_CACHE_VERSION <- 6L

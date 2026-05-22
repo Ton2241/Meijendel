@@ -10,6 +10,40 @@ if (!file.exists(root_sql)) {
   stop(sprintf("Root-SQL niet gevonden: %s", root_sql))
 }
 
+filter_sql_for_deploy <- function(input, output) {
+  awk_program <- "
+    function sensitive(line) {
+      return line ~ /`tellers`/
+    }
+    function section_start(line) {
+      return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) /
+    }
+    {
+      if (section_start($0)) {
+        skip = sensitive($0)
+      }
+      if (!skip) {
+        print
+      }
+    }
+  "
+
+  awk_file <- tempfile(fileext = ".awk")
+  on.exit(unlink(awk_file), add = TRUE)
+  writeLines(awk_program, awk_file, useBytes = TRUE)
+
+  cmd <- sprintf(
+    "LC_ALL=C awk -f %s %s > %s",
+    shQuote(awk_file),
+    shQuote(input),
+    shQuote(output)
+  )
+  status <- system(cmd)
+  if (!identical(status, 0L)) {
+    stop("Kon SQL niet filteren voor shinyapps.io.")
+  }
+}
+
 bundle_dir <- file.path(tempdir(), "shiny_meijendel_bundle")
 if (dir.exists(bundle_dir)) {
   unlink(bundle_dir, recursive = TRUE, force = TRUE)
@@ -32,12 +66,11 @@ if (!all(copied)) {
   stop("Niet alle appbestanden konden naar de tijdelijke deploy-map worden gekopieerd.")
 }
 
-if (!file.copy(root_sql, file.path(bundle_dir, "Meijendel.sql"), overwrite = TRUE)) {
-  stop("Kon de root-SQL niet naar de tijdelijke deploy-map kopieren.")
-}
+bundle_sql <- file.path(bundle_dir, "Meijendel.sql")
+filter_sql_for_deploy(root_sql, bundle_sql)
 
 message(sprintf("Deploybundle gemaakt in: %s", bundle_dir))
-message(sprintf("SQL-bron in bundle: %s", root_sql))
+message(sprintf("SQL-bron in bundle zonder tabel tellers: %s", root_sql))
 
 rsconnect::deployApp(
   appDir = bundle_dir,

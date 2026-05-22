@@ -64,11 +64,11 @@ Er hoort dus geen aparte `Meijendel.sql` meer in `shiny_meijendel/` te staan.
 Gebruik voor deploy niet direct `deployApp()` op de map, maar:
 
 ```r
-setwd("/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel")
-source("deploy_shinyapps.R")
+cd /Users/ton/Documents/GitHub/Meijendel/shiny_meijendel
+Rscript deploy_shinyapps.R
 ```
 
-Dit script maakt eerst een tijdelijke deploybundle en kopieert daarin de root-versie van `Meijendel.sql`, zodat lokaal en online dezelfde broninhoud gebruiken.
+Dit script maakt eerst een tijdelijke deploybundle en zet daarin een gefilterde root-versie van `Meijendel.sql` zonder de tabel `tellers`, zodat tellergegevens niet naar shinyapps.io worden geupload.
 
 ## Werkwijze in de app
 
