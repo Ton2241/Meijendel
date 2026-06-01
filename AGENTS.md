@@ -30,9 +30,22 @@ MySQL:
 - gebruik voor lokale database-acties standaard de lokale MySQL-client
 - voor inloggen is `-u root -p` nodig
 
+GIS / R-spatial:
+- ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`
+- gebruik geen Intel/Rosetta-R, oude Intel-builds of oude QGIS-bundels als basis voor nieuw spatial werk
+- ga ervan uit dat Homebrew en de spatial libraries `gdal`, `geos`, `proj`, `sqlite`, `udunits`, `netcdf` en `cmake` lokaal beschikbaar zijn
+- gebruik voor R-spatial standaard actuele Apple Silicon R/RStudio met o.a. `sf`, `terra`, `stars`, `exactextractr`, `tmap`, `leaflet`, `mapview`, `osmdata`, `tidyverse`, `DBI`, `RPostgres` en `duckdb`
+- verifieer spatial wijzigingen waar logisch met een kleine `sf`-test (`st_read(system.file("shape/nc.shp", package="sf"))`) en/of `terra`-test (`rast(nrows=100, ncols=100)`)
+- werk script-based en reproduceerbaar; vermijd handmatige QGIS -> Excel -> R workflows en analyses buiten scripts
+- gebruik GeoPackage (`.gpkg`) als standaard vectorformaat; vermijd shapefiles als hoofdformaat vanwege kolomnaam-, encoding- en meerbestandsproblemen
+- overweeg PostGIS als volgende stap voor centrale ruimtelijke opslag en queries; koppel waar relevant met MySQL, Shiny/PWA en Leaflet
+- hanteer voor nieuw GIS-werk bij voorkeur deze projectstructuur: `GIS/data_raw/`, `GIS/data_processed/`, `GIS/rasters/`, `GIS/vectors/`, `GIS/scripts/`, `GIS/outputs/`, `GIS/maps/`, `GIS/shiny/`, `GIS/database/`
+- relevante Meijendel-toepassingen zijn o.a. AHN-rasters, stikstofkaarten, beheerpolygonen, afstand tot paden, spatial joins met territoria, NDFF/SOVON-import, plotgewogen indices en interactieve kaarten
+
 VPS / app.vwg-m.nl:
 - Appsmith is niet meer actief op de VPS en is niet relevant voor inloggen of gebruikersbeheer van `app.vwg-m.nl`
-- `app.vwg-m.nl` gebruikt de zelfstandige PWA onder `pwa_ledenadministratie/` met containers `leden_pwa_web` en `leden_pwa_mysql`
-- magic-link-login is nog niet geactiveerd op productie; voorlopig loopt inloggen op `app.vwg-m.nl` nog via gebruikersnaam en wachtwoord
+- `app.vwg-m.nl` bevat op productie alleen het dashboard en de Shiny-app
+- de ledenadministratie/PWA staat niet meer op de VPS; containers `leden_pwa_web` en `leden_pwa_mysql` horen daar niet te draaien
+- toegang tot `app.vwg-m.nl` loopt via Caddy Basic Auth; er is geen PWA-login of magic-link-login op productie
 - behandel `appsmith_ledenadministratie/` als historische/lokale Appsmith-context, niet als actuele productie-inrichting
-- bij vragen over gebruikers of inloggen op `app.vwg-m.nl`: kijk eerst naar de actuele gebruikersnaam/wachtwoord-configuratie en PWA/VPS-configuratie, niet naar Appsmith
+- bij vragen over toegang tot `app.vwg-m.nl`: kijk eerst naar de Caddy Basic Auth-configuratie en de routes voor dashboard en Shiny, niet naar Appsmith of de PWA

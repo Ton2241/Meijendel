@@ -1,4 +1,4 @@
-const CACHE_NAME = 'vwg-m-leden-v1';
+const CACHE_NAME = 'vwg-m-leden-v8';
 const APP_SHELL = [
   './',
   './index.html',

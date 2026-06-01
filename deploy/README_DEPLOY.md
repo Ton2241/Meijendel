@@ -18,11 +18,19 @@ cd /Users/ton/Documents/GitHub/Meijendel
 ./deploy/deploy_meijendel_vps.sh
 ```
 
+Voor het opnieuw installeren van de Caddy-configuratie voor `app.vwg-m.nl`:
+
+```sh
+cd /Users/ton/Documents/GitHub/Meijendel
+./deploy/deploy_caddy_vps.sh
+```
+
 Als het script geen uitvoerrechten heeft:
 
 ```sh
 chmod +x /Users/ton/Documents/GitHub/Meijendel/deploy/update_en_deploy_meijendel.sh
 chmod +x /Users/ton/Documents/GitHub/Meijendel/deploy/deploy_meijendel_vps.sh
+chmod +x /Users/ton/Documents/GitHub/Meijendel/deploy/deploy_caddy_vps.sh
 ```
 
 Daarna opnieuw:
@@ -67,7 +75,50 @@ Daarna voert het script op de VPS uit:
 
 Het script maakt geen automatische backup op de VPS.
 
-De ledenadministratie/PWA wordt niet meer naar de VPS gedeployed.
+De ledenadministratie/PWA wordt niet meer naar de VPS gedeployed en hoort op productie niet te draaien.
+`app.vwg-m.nl` bevat alleen:
+
+- startpagina/app-home
+- dashboard `bmp_meijendel_index.html` met bijbehorende outputbestanden
+- Shiny-app onder `/shiny_meijendel/`
+
+Toegang tot deze onderdelen loopt via Caddy Basic Auth. Er is geen PWA-login, magic-link-login of ledenadministratie-API op productie.
+
+## Caddy en toegang
+
+De Caddy-configuratie staat in de repo als template:
+
+```sh
+deploy/caddy/Caddyfile.template
+```
+
+De template beschermt alle routes van `app.vwg-m.nl`:
+
+- startpagina `/`
+- dashboard `/bmp_meijendel_index.html`
+- SQL-data `/Meijendel.sql` en `/meijendel.sql`
+- Shiny-app `/shiny_meijendel/`
+- dashboard-outputmappen
+
+Na een geldige Basic Auth-login zet Caddy een `vwg_session` cookie. Daardoor hoeven geautoriseerde gebruikers maar één keer in te loggen en werken daarna ook dashboard-`fetch()` requests en Shiny/websocket-verkeer zonder extra loginprompt. Zonder sessie of Basic Auth blijven directe URLs geblokkeerd.
+
+De Basic Auth-accounts en wachtwoord-hashes staan bewust niet in de repo. Ze staan op de VPS in:
+
+```sh
+/etc/caddy/vwg_basic_auth.caddy
+```
+
+`deploy/deploy_caddy_vps.sh`:
+
+- genereert bij elke run een nieuwe sessie-secret
+- maakt `/etc/caddy/vwg_basic_auth.caddy` aan uit de bestaande Caddyfile als die include nog ontbreekt
+- uploadt een tijdelijke Caddyfile
+- valideert de config met `caddy validate`
+- maakt een backup van `/etc/caddy/Caddyfile`
+- herlaadt Caddy
+- controleert dat directe toegang zonder sessie `401` geeft en met sessie `200`
+
+Een normale Meijendel-deploy via `deploy/deploy_meijendel_vps.sh` overschrijft Caddy niet. Gebruik `deploy/deploy_caddy_vps.sh` alleen bij nieuwe VPS-inrichting of bij bewuste wijziging van de Caddy-routes/authenticatie.
 
 ## Voorwaarden
 

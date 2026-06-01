@@ -350,17 +350,19 @@ prepare_trim_period <- function(df) {
     return(list(ok = FALSE, reason = "te_weinig_positieve_jaren"))
   }
 
-  df <- df[df$jaar %in% positive_years, , drop = FALSE]
+  first_positive_year <- min(positive_years)
+  analysis_years <- sort(year_totals$jaar[year_totals$jaar >= first_positive_year])
+  df <- df[df$jaar %in% analysis_years, , drop = FALSE]
   site_totals <- aggregate(count_adjusted ~ plot_id, data = df, FUN = function(x) sum(x, na.rm = TRUE))
   active_sites <- site_totals$plot_id[site_totals$count_adjusted > 0]
-  if (!length(active_sites)) {
-    return(list(ok = FALSE, reason = "geen_actieve_plots"))
+  if (length(active_sites) < 2L) {
+    return(list(ok = FALSE, reason = "te_weinig_actieve_plots"))
   }
   df <- df[df$plot_id %in% active_sites, , drop = FALSE]
 
   year_map <- data.frame(
-    jaar = positive_years,
-    trim_year = seq_along(positive_years),
+    jaar = analysis_years,
+    trim_year = seq_along(analysis_years),
     stringsAsFactors = FALSE
   )
   df <- merge(df, year_map, by = "jaar", all.x = TRUE)
@@ -372,21 +374,23 @@ prepare_trim_period <- function(df) {
 fit_trim_model <- function(df) {
   prepared <- prepare_trim_period(df)
   if (!prepared$ok) {
-    return(list(model = NULL, config = NA_character_, error = prepared$reason, warnings = NA_character_, year_map = NULL))
+    return(list(model = NULL, config = NA_character_, aic = NA_real_, error = prepared$reason, warnings = NA_character_, attempts = NA_character_, year_map = NULL))
   }
 
   df_fit <- prepared$data[, c("plot_id", "trim_year", "count_adjusted")]
   names(df_fit) <- c("site", "year", "count")
 
   configs <- list(
-    list(model = 3, overdisp = FALSE, serialcor = FALSE, label = "model3_basis"),
     list(model = 3, overdisp = TRUE, serialcor = FALSE, label = "model3_overdisp"),
     list(model = 3, overdisp = TRUE, serialcor = TRUE, label = "model3_overdisp_serialcor"),
+    list(model = 3, overdisp = FALSE, serialcor = FALSE, label = "model3_basis"),
     list(model = 2, overdisp = FALSE, serialcor = FALSE, label = "model2_basis")
   )
 
   last_error <- NULL
   last_warnings <- character()
+  selected <- NULL
+  attempts <- character()
 
   for (cfg in configs) {
     warning_messages <- character()
@@ -409,24 +413,60 @@ fit_trim_model <- function(df) {
       error = function(e) e
     )
     if (!inherits(fit, "error")) {
-      return(list(
-        model = fit,
-        config = cfg$label,
-        error = NA_character_,
-        warnings = if (length(warning_messages)) paste(unique(warning_messages), collapse = " | ") else NA_character_,
-        year_map = prepared$year_map
-      ))
+      fit_aic <- tryCatch(AIC(fit), error = function(e) NA_real_)
+      attempts <- c(attempts, sprintf("%s:ok:aic=%s", cfg$label, ifelse(is.finite(fit_aic), round(fit_aic, 3), "NA")))
+      if (is.null(selected)) {
+        selected <- list(
+          model = fit,
+          config = cfg$label,
+          aic = fit_aic,
+          error = NA_character_,
+          warnings = if (length(warning_messages)) paste(unique(warning_messages), collapse = " | ") else NA_character_,
+          year_map = prepared$year_map
+        )
+      }
+      next
     }
     last_error <- conditionMessage(fit)
     last_warnings <- warning_messages
+    attempts <- c(attempts, sprintf("%s:fout:%s", cfg$label, last_error))
+  }
+
+  if (!is.null(selected)) {
+    selected$attempts <- paste(attempts, collapse = " || ")
+    return(selected)
   }
 
   list(
     model = NULL,
     config = NA_character_,
+    aic = NA_real_,
     error = last_error,
     warnings = if (length(last_warnings)) paste(unique(last_warnings), collapse = " | ") else NA_character_,
+    attempts = paste(attempts, collapse = " || "),
     year_map = prepared$year_map
+  )
+}
+
+trim_model_overdisp <- function(model_label) {
+  model_label %in% c("model3_overdisp", "model3_overdisp_serialcor")
+}
+
+trim_model_serialcor <- function(model_label) {
+  identical(model_label, "model3_overdisp_serialcor")
+}
+
+trim_model_fallback_reason <- function(model_label) {
+  if (is.na(model_label) || !nzchar(model_label)) {
+    return("geen_model")
+  }
+  switch(
+    model_label,
+    model3_overdisp = "voorkeursmodel_gekozen",
+    model3_overdisp_serialcor = "model3_overdisp_mislukt_fallback_naar_serialcor",
+    model3_basis = "overdisp_varianten_mislukt_fallback_naar_basis",
+    model2_basis = "model3_varianten_mislukt_fallback_naar_model2",
+    "onbekend"
   )
 }
 
@@ -445,15 +485,19 @@ collect_period_index <- function(fit_obj, soort_id, soort_naam, euring_code, per
   out$soort_naam <- soort_naam
   out$periode <- periode_label
   out$model_config <- fit_obj$config
+  out$model_overdispersion <- trim_model_overdisp(fit_obj$config)
+  out$model_serial_correlation <- trim_model_serialcor(fit_obj$config)
   out$model_warnings <- fit_obj$warnings
+  out$basisjaar_index_100 <- min(out$jaar, na.rm = TRUE)
+  out$basisjaar_toelichting <- "index_100 = eerste analysejaar vanaf eerste positieve jaar binnen deze modelperiode"
   out$trim_year <- NULL
-  out <- out[, c("soort_id", "euring_code", "soort_naam", "periode", "jaar", "trim_index", "trim_se", "model_config", "model_warnings")]
+  out <- out[, c("soort_id", "euring_code", "soort_naam", "periode", "jaar", "basisjaar_index_100", "basisjaar_toelichting", "trim_index", "trim_se", "model_config", "model_overdispersion", "model_serial_correlation", "model_warnings")]
   base_value <- out$trim_index[match(min(out$jaar), out$jaar)]
   out$index_100 <- ifelse(is.finite(out$trim_index) & is.finite(base_value) & base_value > 0, 100 * out$trim_index / base_value, NA_real_)
   out
 }
 
-classificeer_soort_status <- function(pre_ok, post_ok, pre_years, post_years, observed_positive) {
+classificeer_soort_status <- function(pre_ok, post_ok, pre_years, post_years, pre_active_plots, post_active_plots, observed_positive) {
   if (pre_ok && post_ok) {
     return("brugbare_tijdreeks")
   }
@@ -465,6 +509,9 @@ classificeer_soort_status <- function(pre_ok, post_ok, pre_years, post_years, ob
   }
   if (observed_positive <= 2 || max(pre_years, post_years) <= 2) {
     return("te_zeldzaam")
+  }
+  if (max(pre_active_plots, post_active_plots) < 2) {
+    return("lokaal_incidenteel")
   }
   if (pre_years > 0 || post_years > 0) {
     return("te_weinig_data")
@@ -556,14 +603,16 @@ analyse_species <- function(species_matrix) {
 
     pre_positive_years <- length(unique(pre_df$jaar[pre_df$geteld & is.finite(pre_df$count_adjusted) & pre_df$count_adjusted > 0]))
     post_positive_years <- length(unique(post_df$jaar[post_df$geteld & is.finite(post_df$count_adjusted) & post_df$count_adjusted > 0]))
+    pre_active_plots <- length(unique(pre_df$plot_id[pre_df$geteld & is.finite(pre_df$count_adjusted) & pre_df$count_adjusted > 0]))
+    post_active_plots <- length(unique(post_df$plot_id[post_df$geteld & is.finite(post_df$count_adjusted) & post_df$count_adjusted > 0]))
     pre_counted_cells <- sum(pre_df$geteld & is.finite(pre_df$count_adjusted), na.rm = TRUE)
     post_counted_cells <- sum(post_df$geteld & is.finite(post_df$count_adjusted), na.rm = TRUE)
 
-    pre_ok <- pre_positive_years >= 3 && pre_counted_cells >= 3
-    post_ok <- post_positive_years >= 3 && post_counted_cells >= 3
+    pre_ok <- pre_positive_years >= 3 && pre_active_plots >= 2 && pre_counted_cells >= 3
+    post_ok <- post_positive_years >= 3 && post_active_plots >= 2 && post_counted_cells >= 3
 
-    pre_fit <- if (pre_ok) fit_trim_model(pre_df) else list(model = NULL, config = NA_character_, error = "te_weinig_data_pre", warnings = NA_character_, year_map = NULL)
-    post_fit <- if (post_ok) fit_trim_model(post_df) else list(model = NULL, config = NA_character_, error = "te_weinig_data_post", warnings = NA_character_, year_map = NULL)
+    pre_fit <- if (pre_ok) fit_trim_model(pre_df) else list(model = NULL, config = NA_character_, aic = NA_real_, error = "te_weinig_data_pre", warnings = NA_character_, attempts = NA_character_, year_map = NULL)
+    post_fit <- if (post_ok) fit_trim_model(post_df) else list(model = NULL, config = NA_character_, aic = NA_real_, error = "te_weinig_data_post", warnings = NA_character_, attempts = NA_character_, year_map = NULL)
 
     pre_idx <- if (!is.null(pre_fit$model)) collect_period_index(pre_fit, soort_id, soort_naam, euring_code, "1958-1983") else NULL
     post_idx <- if (!is.null(post_fit$model)) collect_period_index(post_fit, soort_id, soort_naam, euring_code, "1984-2025") else NULL
@@ -575,6 +624,8 @@ analyse_species <- function(species_matrix) {
       post_ok = !is.null(post_fit$model),
       pre_years = pre_positive_years,
       post_years = post_positive_years,
+      pre_active_plots = pre_active_plots,
+      post_active_plots = post_active_plots,
       observed_positive = observed_positive
     )
 
@@ -589,12 +640,26 @@ analyse_species <- function(species_matrix) {
       post_model_gelukt = !is.null(post_fit$model),
       pre_model = pre_fit$config,
       post_model = post_fit$config,
+      pre_model_overdispersion = trim_model_overdisp(pre_fit$config),
+      post_model_overdispersion = trim_model_overdisp(post_fit$config),
+      pre_model_serial_correlation = trim_model_serialcor(pre_fit$config),
+      post_model_serial_correlation = trim_model_serialcor(post_fit$config),
+      pre_model_aic = pre_fit$aic,
+      post_model_aic = post_fit$aic,
+      pre_model_fallback_reden = trim_model_fallback_reason(pre_fit$config),
+      post_model_fallback_reden = trim_model_fallback_reason(post_fit$config),
       pre_fout = pre_fit$error,
       post_fout = post_fit$error,
       pre_waarschuwingen = pre_fit$warnings,
       post_waarschuwingen = post_fit$warnings,
+      pre_modelpogingen = pre_fit$attempts,
+      post_modelpogingen = post_fit$attempts,
       pre_positieve_jaren = pre_positive_years,
       post_positieve_jaren = post_positive_years,
+      pre_actieve_plots = pre_active_plots,
+      post_actieve_plots = post_active_plots,
+      n_actieve_plots = length(unique(df$plot_id[df$geteld & is.finite(df$count_adjusted) & df$count_adjusted > 0])),
+      modelselectie_methode = "vaste_voorkeurhierarchie_eerste_werkende_model",
       analyse_categorie = analyse_categorie,
       stringsAsFactors = FALSE
     )
@@ -626,6 +691,8 @@ analyse_species <- function(species_matrix) {
         euring_code = euring_code,
         soort_naam = soort_naam,
         analyse_categorie = analyse_categorie,
+        basisjaar_index_gebrugged = min(series$jaar, na.rm = TRUE),
+        basisjaar_toelichting = "index_gebrugged = 100 in het eerste analysejaar vanaf eerste positieve jaar",
         eerste_jaar = min(series$jaar, na.rm = TRUE),
         laatste_jaar = max(series$jaar, na.rm = TRUE),
         n_jaren_index = nrow(series),
@@ -641,6 +708,7 @@ analyse_species <- function(species_matrix) {
         trend_post_p = tr_post$p,
         trend_post_r2 = tr_post$r2,
         trend_post_uitleg = duid_trend(post_pct, tr_post$p),
+        trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
         brugfactor = bridged$bridge_factor,
         brugmethode = bridged$bridge_method,
         stringsAsFactors = FALSE
@@ -666,7 +734,7 @@ build_group_mapping <- function(tbls) {
   merge(mapping, make_group_descriptions(tbls$evg_vogelgroepen), by = "groep_100", all.x = TRUE)
 }
 
-analyse_groups <- function(species_indices, group_mapping) {
+analyse_groups <- function(species_indices, group_mapping, msi_variant = "volledig") {
   merged <- merge(
     species_indices[!duplicated(species_indices[, c("soort_id", "jaar")]), c("soort_id", "euring_code", "soort_naam", "jaar", "index_gebrugged")],
     group_mapping,
@@ -682,6 +750,7 @@ analyse_groups <- function(species_indices, group_mapping) {
   names(n_species)[3] <- "n_soorten"
   msi <- merge(msi, n_species, by = c("groep_100", "jaar"), all.x = TRUE)
   msi$msi <- exp(msi$log_index)
+  msi$msi_variant <- msi_variant
   msi$periode <- ifelse(msi$jaar <= 1983, "1958-1983", "1984-2025")
   msi <- msi[order(msi$groep_100, msi$jaar), ]
 
@@ -692,13 +761,28 @@ analyse_groups <- function(species_indices, group_mapping) {
     overall_pct <- calc_pct_trend(tr_all$slope)
     pre_pct <- calc_pct_trend(tr_pre$slope)
     post_pct <- calc_pct_trend(tr_post$slope)
+    min_n_soorten <- min(df$n_soorten, na.rm = TRUE)
+    max_n_soorten <- max(df$n_soorten, na.rm = TRUE)
+    cv_n_soorten <- stats::sd(df$n_soorten, na.rm = TRUE) / mean(df$n_soorten, na.rm = TRUE)
+    samenstelling_waarschuwing <- ifelse(
+      is.finite(min_n_soorten) && is.finite(max_n_soorten) && max_n_soorten > 0 && min_n_soorten / max_n_soorten < 0.75,
+      "wisselend_soortenaantal",
+      "stabiel_soortenaantal"
+    )
 
     data.frame(
       groep_100 = df$groep_100[[1]],
       groep_titel = df$groep_titel[[1]],
+      msi_variant = msi_variant,
+      basisjaar = min(df$jaar, na.rm = TRUE),
+      basisjaar_toelichting = "MSI = 100 in het eerste analysejaar met geldige groepsindex",
       eerste_jaar = min(df$jaar, na.rm = TRUE),
       laatste_jaar = max(df$jaar, na.rm = TRUE),
       gemiddeld_n_soorten = mean(df$n_soorten, na.rm = TRUE),
+      min_n_soorten = min_n_soorten,
+      max_n_soorten = max_n_soorten,
+      cv_n_soorten = cv_n_soorten,
+      samenstelling_waarschuwing = samenstelling_waarschuwing,
       overall_trend_pct_per_jaar = overall_pct,
       overall_p = tr_all$p,
       overall_r2 = tr_all$r2,
@@ -711,11 +795,13 @@ analyse_groups <- function(species_indices, group_mapping) {
       trend_post_p = tr_post$p,
       trend_post_r2 = tr_post$r2,
       trend_post_uitleg = duid_trend(post_pct, tr_post$p),
+      trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
       stringsAsFactors = FALSE
     )
   })
 
   composition <- unique(merged[, c("groep_100", "groep_titel", "soort_id", "euring_code", "soort_naam")])
+  composition$msi_variant <- msi_variant
   composition <- composition[order(composition$groep_100, composition$soort_naam), ]
 
   list(
@@ -729,9 +815,17 @@ fit_gam_msi <- function(msi) {
   gam_predictions <- list()
   gam_summary <- list()
 
+  if (!("msi_variant" %in% names(msi))) {
+    msi$msi_variant <- "volledig"
+  }
+  variants <- sort(unique(msi$msi_variant))
+  for (variant in variants) {
   for (g in sort(unique(msi$groep_100))) {
-    df <- msi[msi$groep_100 == g, ]
+    df <- msi[msi$groep_100 == g & msi$msi_variant == variant, ]
     df <- df[order(df$jaar), ]
+    if (nrow(df) < 4L) {
+      next
+    }
     df$post_break <- factor(ifelse(df$jaar >= 1984, "post", "pre"), levels = c("pre", "post"))
     df$log_msi <- log(df$msi)
 
@@ -745,8 +839,9 @@ fit_gam_msi <- function(msi) {
     )
 
     if (is.null(fit)) {
-      gam_predictions[[as.character(g)]] <- transform(
+      gam_predictions[[paste(variant, g, sep = "_")]] <- transform(
         df,
+        msi_variant = variant,
         gam_fit_log = NA_real_,
         gam_fit_se = NA_real_,
         gam_fit_msi = NA_real_,
@@ -754,9 +849,10 @@ fit_gam_msi <- function(msi) {
         gam_fit_upper = NA_real_
       )
 
-      gam_summary[[as.character(g)]] <- data.frame(
+      gam_summary[[paste(variant, g, sep = "_")]] <- data.frame(
         groep_100 = g,
         groep_titel = df$groep_titel[[1]],
+        msi_variant = variant,
         n_jaren = nrow(df),
         deviance_explained = NA_real_,
         r_sq_adj = NA_real_,
@@ -781,10 +877,12 @@ fit_gam_msi <- function(msi) {
     row_pre <- grep("pre", rownames(s_table), fixed = TRUE)
     row_post <- grep("post", rownames(s_table), fixed = TRUE)
 
-    gam_predictions[[as.character(g)]] <- df
-    gam_summary[[as.character(g)]] <- data.frame(
+    df$msi_variant <- variant
+    gam_predictions[[paste(variant, g, sep = "_")]] <- df
+    gam_summary[[paste(variant, g, sep = "_")]] <- data.frame(
       groep_100 = g,
       groep_titel = df$groep_titel[[1]],
+      msi_variant = variant,
       n_jaren = nrow(df),
       deviance_explained = summary(fit)$dev.expl,
       r_sq_adj = summary(fit)$r.sq,
@@ -795,6 +893,7 @@ fit_gam_msi <- function(msi) {
       p_post = if (length(row_post)) s_table[row_post[1], "p-value"] else NA_real_,
       stringsAsFactors = FALSE
     )
+  }
   }
 
   list(
@@ -829,11 +928,11 @@ classify_gam_need <- function(gam_summary) {
     "Voor deze groep kon geen stabiele GAM-fit worden berekend.",
     ifelse(
       out$advies == "GAM aanbevolen",
-      "Duidelijke niet-lineariteit; een rechte lijn verliest belangrijke trendvorm.",
+      "Diagnostische GAM-visualisatie: duidelijke niet-lineariteit; gebruik de lineaire trendclassificatie als primaire duiding.",
       ifelse(
         out$advies == "GAM nuttig",
-        "Enige kromming aanwezig; GAM helpt vooral voor visualisatie en timing van omslagen.",
-        "De trend is grotendeels lineair; een eenvoudige lijn is meestal voldoende."
+        "Diagnostische GAM-visualisatie: enige kromming aanwezig; vooral nuttig voor timing van omslagen.",
+        "Diagnostische GAM-visualisatie: de trend is grotendeels lineair; een eenvoudige lijn is meestal voldoende."
       )
     )
   )
@@ -871,7 +970,15 @@ basis <- prepare_analysis_basis(tbls)
 species_matrix <- build_species_matrix(tbls, basis)
 species_results <- analyse_species(species_matrix)
 group_mapping <- build_group_mapping(tbls)
-group_results <- analyse_groups(species_results$indices, group_mapping)
+full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig")
+robust_ids <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
+robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
+robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust")
+group_results <- list(
+  msi = rbind(full_group_results$msi, robust_group_results$msi),
+  trends = rbind(full_group_results$trends, robust_group_results$trends),
+  composition = rbind(full_group_results$composition, robust_group_results$composition)
+)
 gam_parts <- fit_gam_msi(group_results$msi)
 group_results$gam_predictions <- gam_parts$predictions
 group_results$gam_summary <- gam_parts$summary

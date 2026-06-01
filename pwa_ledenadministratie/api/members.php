@@ -50,6 +50,8 @@ try {
               l.woonplaats,
               l.email,
               l.telefoon_mobiel,
+              l.beheer_status,
+              l.beheer_opmerking,
               l.aantal_jaren_geteld,
               l.aantal_plots,
               l.aantal_plotjaren,

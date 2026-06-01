@@ -1,0 +1,74 @@
+(vwg_app_routes) {
+	handle /Meijendel.sql {
+		root * /srv/vwgm/shiny
+		header Content-Type "text/plain; charset=utf-8"
+		file_server
+	}
+
+	handle /meijendel.sql {
+		root * /srv/vwgm/shiny
+		header Content-Type "text/plain; charset=utf-8"
+		file_server
+	}
+
+	handle /shiny_meijendel* {
+		reverse_proxy 127.0.0.1:3838
+	}
+
+	handle /bmp_meijendel_index.html {
+		root * /srv/vwgm/www
+		file_server
+	}
+
+	handle /trim* {
+		root * /srv/vwgm/www
+		file_server
+	}
+
+	handle /output_ecologische_groepen* {
+		root * /srv/vwgm/www
+		file_server
+	}
+
+	handle /trim_msi_evg* {
+		root * /srv/vwgm/www
+		file_server
+	}
+
+	handle {
+		root * /srv/vwgm/app-home
+		file_server
+	}
+}
+
+:80 {
+	redir https://app.vwg-m.nl{uri} permanent
+}
+
+app.vwg-m.nl {
+	encode gzip zstd
+	log {
+		output file /var/log/caddy/app.vwg-m.nl-access.log {
+			roll_size 20MiB
+			roll_keep 10
+			roll_keep_for 90d
+		}
+		format json {
+			time_format iso8601
+		}
+	}
+	log_append auth_user {http.auth.user.id}
+
+	@vwg_session header Cookie *vwg_session=__VWG_SESSION_SECRET__*
+	handle @vwg_session {
+		import vwg_app_routes
+	}
+
+	handle {
+		route {
+			import /etc/caddy/vwg_basic_auth.caddy
+			header Set-Cookie "vwg_session=__VWG_SESSION_SECRET__; Path=/; Max-Age=28800; Secure; HttpOnly; SameSite=Lax"
+			import vwg_app_routes
+		}
+	}
+}

@@ -62,6 +62,12 @@ log "Upload SQL naar Shiny en www"
 "${rsync_base[@]}" "$SQL_DEPLOY" "$VPS:$REMOTE_WWW/Meijendel.sql"
 
 log "Upload Shiny-app en gedeelde R-code"
+if [ -d "$LOCAL_REPO/deploy/shiny_image" ]; then
+  "${rsync_base[@]}" \
+    "$LOCAL_REPO/deploy/shiny_image/" \
+    "$VPS:$REMOTE_SHINY/"
+fi
+
 if [ -d "$LOCAL_REPO/shiny_meijendel" ]; then
   "${rsync_base[@]}" --delete \
     --exclude 'rsconnect/' \
@@ -122,6 +128,16 @@ ssh -i "$SSH_KEY" "$VPS" "
     fi
     sleep 2
   done
+
+  docker exec shiny_meijendel Rscript -e '
+    pkgs <- c(\"geepack\", \"glmmTMB\", \"vegan\", \"pls\", \"changepoint\", \"strucchange\", \"lavaan\", \"piecewiseSEM\", \"betapart\", \"unmarked\")
+    ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
+    print(data.frame(package = pkgs, beschikbaar = unname(ok)))
+    if (!all(ok)) stop(\"Niet alle analysepackages zijn beschikbaar. Run eerst deploy/rebuild_shiny_image_vps.sh.\")
+    perl <- Sys.which(\"perl\")
+    print(data.frame(system_tool = \"perl\", beschikbaar = nzchar(perl), pad = unname(perl)))
+    if (!nzchar(perl)) stop(\"Perl ontbreekt in de Shiny-container. Run eerst deploy/rebuild_shiny_image_vps.sh.\")
+  '
 
   sha256sum '$REMOTE_SHINY/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql'
   docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'

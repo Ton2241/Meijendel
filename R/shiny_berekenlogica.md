@@ -115,6 +115,19 @@ Daarnaast wordt per cel berekend:
 
 - `count_raw`
 - `count_adjusted = count_raw * oppervlakte_factor`
+- `is_missing`
+- `territorium_vastgesteld`
+- `echte_nul`
+- `observatie_status`
+- `waargenomen_zonder_territorium`
+
+De statusvelden leggen expliciet vast hoe echte nullen worden behandeld:
+
+- `niet_geteld`: geen analysewaarde, blijft `NA`
+- `echte_nul_geen_territorium`: plot-jaar is geteld, maar geen territorium vastgesteld
+- `territorium_vastgesteld`: plot-jaar is geteld en er is minimaal één territorium
+
+`waargenomen_zonder_territorium` is nu nog `NA`, omdat dagwaarnemingen nog niet als aparte respons in de Shiny-analyses worden gebruikt. Dit veld is toegevoegd om later het onderscheid tussen "wel waargenomen maar geen territorium" en "niet waargenomen" structureel te kunnen opnemen.
 
 ## TRIM-logica
 
@@ -133,20 +146,23 @@ De TRIM-berekeningen lopen via:
 Per soort:
 
 1. alleen getelde cellen met geldige waarden worden gebruikt
-2. jaren zonder positieve jaarwaarde vallen af
+2. vanaf het eerste positieve jaar blijven alle getelde jaren in de analyse, inclusief echte nuljaren
 3. alleen actieve plots blijven over
 4. daarna wordt een `rtrim::trim()`-model geschat
 
-De app probeert meerdere modelconfiguraties, van eenvoudiger naar robuuster.
+De app gebruikt oppervlak-gestandaardiseerde aantallen (`count_raw * oppervlakte_factor`) als primaire TRIM-respons, niet dichtheden per km2.
+
+De app probeert meerdere modelconfiguraties in een vaste voorkeurshierarchie en kiest het eerste werkende model. Dit is bewust geen AIC-modelselectie.
 
 ### Uitkomst per soort
 
 - `trim_index`
 - `trim_se`
 - `index_100`
+- basisjaar: index 100 is het eerste analysejaar vanaf het eerste positieve jaar
 - trend in `% per jaar`
-- trendduiding
-- modelstatus en eventuele waarschuwingen
+- eigen trendduiding op basis van de TRIM-index
+- modelstatus, gekozen model, overdispersion ja/nee, serial correlation ja/nee, fallbackreden en eventuele waarschuwingen
 
 ### MSI per vogelgroep
 
@@ -431,9 +447,27 @@ Daarbij geldt:
 - territoria worden geaggregeerd per `plot_id + jaar`
 - wel geteld maar geen territorium = `0`
 - niet geteld = `NA`
+- de statusvelden `is_missing`, `territorium_vastgesteld`, `echte_nul`, `observatie_status` en `waargenomen_zonder_territorium` worden toegevoegd aan de modeldataset
 - `ahn_mean`, `stikstof_mean` en infra-waarden worden gekoppeld op dichtstbijzijnde beschikbare jaarwaarde per plot
 - `toegankelijkheid_status` gebruikt de laatst bekende status op of vóór het gekozen jaar
 - habitatcovariaten worden gekoppeld als aandeel per geselecteerd habitattype in `plot_jaar_habitat`
+
+Deze statusvelden zijn ook beschikbaar in de G.E.E.-kenmerkenanalyse en in GLMM, omdat die dezelfde datasetopbouw gebruiken.
+
+## Voorbereiding toekomstige methoden
+
+Voor toekomstige modules geldt dezelfde basisinterpretatie:
+
+- echte nullen blijven `0`
+- niet-getelde plot-jaren blijven `NA`
+- analyses mogen `NA` niet stilzwijgend naar `0` omzetten
+
+Gevolg per methode:
+
+- `NMDS`, `RDA` en `beta-diversity`: gebruiken een community-matrix met echte nullen; niet-getelde plot-jaren moeten worden uitgesloten of expliciet gefilterd
+- `changepoint`: gebruikt bij voorkeur afgeleide jaarreeksen; ontbrekende jaren mogen niet als nul worden geïnterpreteerd
+- `SEM`: gebruikt echte nullen in afgeleide responsvariabelen, maar behandelt `NA` als echte missing values
+- `occupancy`: kan met de huidige data alleen als territorium-occupancy worden geïnterpreteerd; detectiegecorrigeerde occupancy vraagt aparte detectie-informatie, bijvoorbeeld dagwaarnemingen vanaf 2009
 
 ### Modeluitvoer
 

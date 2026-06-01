@@ -198,6 +198,7 @@ function start_authenticated_session(int $tellerId, string $email): void
     $_SESSION['teller_id'] = $tellerId;
     $_SESSION['email'] = $email;
     $_SESSION['authenticated_at'] = time();
+    $_SESSION['csrf_token'] = random_url_token(32);
 }
 
 function smtp_read($socket): string
@@ -312,9 +313,57 @@ function require_auth(): void
     json_response(['ok' => false, 'error' => 'Inloggen vereist.'], 401);
 }
 
+function is_admin(): bool
+{
+    if (!auth_enabled()) {
+        return true;
+    }
+
+    $config = app_config()['auth'];
+    $email = strtolower((string) ($_SESSION['email'] ?? ''));
+    $tellerId = (int) ($_SESSION['teller_id'] ?? 0);
+    $adminEmails = array_map('strtolower', $config['admin_emails'] ?? []);
+    $adminTellerIds = array_map('intval', $config['admin_teller_ids'] ?? []);
+
+    return ($email !== '' && in_array($email, $adminEmails, true))
+        || ($tellerId > 0 && in_array($tellerId, $adminTellerIds, true));
+}
+
+function require_admin(): void
+{
+    require_auth();
+    if (!is_admin()) {
+        json_response(['ok' => false, 'error' => 'Geen beheerrechten.'], 403);
+    }
+}
+
+function csrf_token(): string
+{
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = random_url_token(32);
+    }
+
+    return (string) $_SESSION['csrf_token'];
+}
+
+function require_csrf(): void
+{
+    $token = (string) ($_POST['csrf_token'] ?? '');
+    if ($token === '' || !hash_equals(csrf_token(), $token)) {
+        json_response(['ok' => false, 'error' => 'Ongeldige sessie. Herlaad de pagina.'], 403);
+    }
+}
+
 function input_string(string $key, int $maxLength = 100): string
 {
     $value = trim((string) ($_GET[$key] ?? ''));
+    return substr($value, 0, $maxLength);
+}
+
+function post_input_string(string $key, int $maxLength = 255): string
+{
+    $value = trim((string) ($_POST[$key] ?? ''));
+
     return substr($value, 0, $maxLength);
 }
 

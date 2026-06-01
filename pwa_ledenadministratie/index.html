@@ -48,7 +48,7 @@
 
       <nav class="tabs" aria-label="Onderdelen">
         <button class="tab is-active" type="button" data-tab="members">Informatie per lid</button>
-        <button class="tab" type="button" data-tab="history">Telhistorie</button>
+        <button class="tab" type="button" data-tab="history">Telhistorie per lid/kavel</button>
         <button class="tab" type="button" data-tab="active">Actieve tellers per jaar</button>
         <button class="tab" type="button" data-tab="quality">Datakwaliteit</button>
       </nav>
@@ -61,7 +61,16 @@
           </label>
           <label>
             Lidtype
-            <input name="type" type="search" placeholder="gewoon, aspirant, oudteller">
+            <select name="type">
+              <option value="">Alle</option>
+              <option value="aspirant">aspirant</option>
+              <option value="gewoon">gewoon</option>
+              <option value="buitengewoon">buitengewoon</option>
+              <option value="ondersteunend">ondersteunend</option>
+              <option value="erelid">erelid</option>
+              <option value="onbekend">onbekend</option>
+              <option value="oudteller">oudteller</option>
+            </select>
           </label>
           <label>
             Actief jaar
@@ -122,21 +131,40 @@
           <button class="primary" type="submit">Zoek</button>
           <button type="button" id="exportHistory">Export CSV</button>
         </form>
+        <form class="filters admin-only" id="historyAddForm" hidden>
+          <label>
+            Teller
+            <input name="teller_code" type="search" list="tellerOptions" placeholder="tellercode of achternaam" required>
+          </label>
+          <label>
+            Jaar
+            <input name="jaar" type="number" min="1900" max="2100" required>
+          </label>
+          <label>
+            Kavel
+            <input name="plot_search" type="search" list="plotOptions" placeholder="kavelnaam of kavelnummer" required>
+          </label>
+          <button class="primary" type="submit">Nieuwe telhistorie-regel</button>
+          <span id="historyEditMessage"></span>
+        </form>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Code</th>
-                <th>Naam</th>
-                <th>Jaar</th>
-                <th>Plots in jaar</th>
-                <th>Kavels</th>
+                <th><button class="sort-button" type="button" data-history-sort="tellercode">Code</button></th>
+                <th><button class="sort-button" type="button" data-history-sort="naam">Naam</button></th>
+                <th><button class="sort-button" type="button" data-history-sort="jaar">Jaar</button></th>
+                <th><button class="sort-button" type="button" data-history-sort="plot_id">Plot-id</button></th>
+                <th><button class="sort-button" type="button" data-history-sort="kavels">Kavels</button></th>
+                <th>Acties</th>
               </tr>
             </thead>
             <tbody id="historyRows"></tbody>
           </table>
         </div>
       </section>
+      <datalist id="tellerOptions"></datalist>
+      <datalist id="plotOptions"></datalist>
 
       <section class="panel" id="activePanel">
         <div class="table-wrap narrow">

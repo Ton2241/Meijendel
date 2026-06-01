@@ -1,0 +1,33 @@
+Package: Meijendel
+Title: Meijendel Shiny Analyseomgeving
+Version: 0.0.0.9000
+Authors@R: person("Ton", role = c("aut", "cre"), email = "ton@example.invalid")
+Description: Lokale projectomgeving voor de Shiny-app met statistische analyses van Meijendel-vogelterritoriadata.
+License: Private
+Encoding: UTF-8
+Depends:
+    R (>= 4.5.3)
+Imports:
+    betapart,
+    broom,
+    broom.mixed,
+    bslib,
+    changepoint,
+    DBI,
+    DHARMa,
+    geepack,
+    glmmTMB,
+    lavaan,
+    lme4,
+    mgcv,
+    pls,
+    piecewiseSEM,
+    renv,
+    rsconnect,
+    rtrim,
+    RSQLite,
+    shiny,
+    strucchange,
+    TMB,
+    unmarked,
+    vegan

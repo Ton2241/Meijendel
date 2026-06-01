@@ -149,6 +149,15 @@ button:hover {
   border-color: var(--accent);
 }
 
+.compact {
+  min-height: 30px;
+  padding: 4px 8px;
+}
+
+.danger {
+  color: var(--bad);
+}
+
 .primary,
 .tab.is-active {
   background: var(--accent);
@@ -186,7 +195,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   width: 100%;
   min-height: 38px;
   padding: 8px 10px;
@@ -196,11 +206,23 @@ select {
   color: var(--text);
 }
 
+.inline-input {
+  min-width: 86px;
+  min-height: 32px;
+  padding: 5px 7px;
+}
+
 input:focus,
 select:focus,
+textarea:focus,
 button:focus {
   outline: 2px solid color-mix(in srgb, var(--accent) 30%, transparent);
   outline-offset: 2px;
+}
+
+textarea {
+  min-height: 86px;
+  resize: vertical;
 }
 
 .split {
@@ -246,6 +268,22 @@ th {
   text-transform: uppercase;
 }
 
+.sort-button {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-transform: inherit;
+}
+
+.sort-button:hover {
+  color: var(--accent);
+  border-color: transparent;
+}
+
 tbody tr {
   cursor: default;
 }
@@ -282,6 +320,40 @@ tbody tr.is-selected {
 .detail dd {
   margin: 0;
   overflow-wrap: anywhere;
+}
+
+.edit-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.edit-form h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.edit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.edit-grid .wide {
+  grid-column: 1 / -1;
+}
+
+.edit-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-actions span {
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .quality-compleet {
@@ -323,6 +395,10 @@ tbody tr.is-selected {
   }
 
   .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-grid {
     grid-template-columns: 1fr;
   }
 }

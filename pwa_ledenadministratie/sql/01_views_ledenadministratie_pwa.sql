@@ -15,6 +15,8 @@ SELECT
   t.email,
   t.telefoon_mobiel,
   t.bandnummer,
+  COALESCE(m.beheer_status, 'actief') AS beheer_status,
+  m.opmerking AS beheer_opmerking,
   COUNT(DISTINCT pjt.jaar) AS aantal_jaren_geteld,
   COUNT(DISTINCT pjt.plot_id) AS aantal_plots,
   COUNT(pjt.id) AS aantal_plotjaren,
@@ -28,6 +30,7 @@ SELECT
   END AS datakwaliteit
 FROM tellers t
 LEFT JOIN plot_jaar_teller pjt ON pjt.teller_id = t.id
+LEFT JOIN pwa_teller_admin_meta m ON m.teller_id = t.id
 GROUP BY
   t.id,
   t.tellercode,
@@ -38,7 +41,9 @@ GROUP BY
   t.woonplaats,
   t.email,
   t.telefoon_mobiel,
-  t.bandnummer;
+  t.bandnummer,
+  m.beheer_status,
+  m.opmerking;
 
 CREATE OR REPLACE VIEW pwa_teller_detail AS
 SELECT
@@ -57,6 +62,8 @@ SELECT
   t.email,
   t.soort_lid,
   t.bandnummer,
+  COALESCE(m.beheer_status, 'actief') AS beheer_status,
+  m.opmerking AS beheer_opmerking,
   COUNT(DISTINCT pjt.jaar) AS aantal_jaren_geteld,
   COUNT(DISTINCT pjt.plot_id) AS aantal_plots,
   COUNT(pjt.id) AS aantal_plotjaren,
@@ -66,6 +73,7 @@ SELECT
 FROM tellers t
 LEFT JOIN plot_jaar_teller pjt ON pjt.teller_id = t.id
 LEFT JOIN plots p ON p.plot_id = pjt.plot_id
+LEFT JOIN pwa_teller_admin_meta m ON m.teller_id = t.id
 GROUP BY
   t.id,
   t.tellercode,
@@ -80,7 +88,9 @@ GROUP BY
   t.telefoon_mobiel,
   t.email,
   t.soort_lid,
-  t.bandnummer;
+  t.bandnummer,
+  m.beheer_status,
+  m.opmerking;
 
 CREATE OR REPLACE VIEW pwa_teller_stats AS
 SELECT 'totaal tellers' AS label, COUNT(*) AS waarde FROM tellers

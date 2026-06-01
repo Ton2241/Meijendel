@@ -23,6 +23,8 @@ return [
         'magic_link_ttl_minutes' => (int) $env('MAGIC_LINK_TTL_MINUTES', '15'),
         'max_code_attempts' => (int) $env('MAGIC_CODE_MAX_ATTEMPTS', '5'),
         'cookie_secure' => $env('COOKIE_SECURE', '1') === '1',
+        'admin_emails' => array_filter(array_map('trim', explode(',', $env('ADMIN_EMAILS', '')))),
+        'admin_teller_ids' => array_filter(array_map('intval', explode(',', $env('ADMIN_TELLER_IDS', '')))),
     ],
     'mail' => [
         'from' => $env('MAIL_FROM', 'noreply@app.vwg-m.nl'),

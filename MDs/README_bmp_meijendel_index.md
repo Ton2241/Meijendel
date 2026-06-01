@@ -51,6 +51,11 @@ Bron:
 
 - `soortindices_bruikbare_tijdreeks.csv`
 - `soorten_trendoverzicht_bruikbare_tijdreeks.csv`
+- aanvullend `soortindices_per_jaar.csv` en `soorten_trendoverzicht.csv` voor soorten met `alleen_post_bruikbaar`
+
+Soorten met `alleen_post_bruikbaar` hebben geen bruikbare reeks voor de periode voor 1984.
+Het dashboard toont voor die soorten wel de Meijendel-TRIM vanaf het eerste bruikbare post-1984 jaar.
+Voor soorten die al in `soortindices_bruikbare_tijdreeks.csv` staan, blijft die volledige reeks leidend.
 
 ## Tab Groepen
 
@@ -68,10 +73,13 @@ Bron:
 
 Dit is de groepsindex op basis van TRIM-soortindices.
 Gebruik deze keuze als je de ontwikkeling van ecologische vogelgroepen wilt bekijken met dezelfde trendlogica als bij TRIM per soort.
+Trendlabels zijn eigen trendduidingen op basis van de TRIM-index; het zijn geen officiële TRIM-classificaties.
+Index 100 betekent per soort het eerste analysejaar vanaf het eerste positieve jaar; soorten kunnen dus verschillende basisjaren hebben.
 
 Je ziet:
 
-- de TRIM grafiek
+- een eerste TRIM-MSI grafiek met `Volledige MSI` en `Robuuste MSI`
+- een tweede grafiek waarin de volledige Meijendel-TRIM-MSI als GAM met 95%-band wordt vergeleken met een landelijke GAM-lijn zonder band
 - een korte uitleg per groep
 
 Bron:
