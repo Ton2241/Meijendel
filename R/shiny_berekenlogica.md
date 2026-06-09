@@ -15,11 +15,22 @@ Dit document is bedoeld voor commentaar op aannames, drempels en opbouw.
 
 ## Hoofdstructuur
 
-De Shiny-app heeft drie inhoudelijke analysepaden:
+De Shiny-app heeft nu de volgende inhoudelijke analysepaden:
 
 1. `TRIM`
 2. `LAMBDA`
-3. `G.E.E.` is gebouwd als verklarende analysemodule voor effecten van beheer, recreatie, habitat, weer en andere covariaten op herhaalde plotmetingen
+3. `Biodiversity`
+4. `Beta-Diversity`
+5. `NMDS`
+6. `Change-point`
+7. `RDA`
+8. `PLS`
+9. `G.E.E.`
+10. `GLMM`
+11. `SEM`
+12. `Occupancy`
+
+De globale analyseketen is: beschrijven, patronen herkennen, omslagmomenten zoeken, verklarende verbanden onderzoeken, hypothesen toetsen en daarna eventueel causale modelstructuren verkennen.
 
 ## Ingelezen tabellen uit `Meijendel.sql`
 

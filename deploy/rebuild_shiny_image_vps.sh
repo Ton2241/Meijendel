@@ -19,10 +19,14 @@ rsync -az --checksum -e "ssh -i $SSH_KEY" \
   "$VPS:$REMOTE_SHINY/"
 
 ssh -i "$SSH_KEY" "$VPS" "
-  set -euo pipefail
-  cd '$REMOTE_SHINY'
-  docker compose build shiny
-  docker compose up -d shiny
+	  set -euo pipefail
+	  cd '$REMOTE_SHINY'
+	  mkdir -p '$REMOTE_SHINY/shiny_meijendel/app_cache/sass'
+	  if ! grep -q '/app_cache:rw' docker-compose.yml; then
+	    perl -0pi -e 's#(      - /srv/vwgm/shiny/shiny_meijendel:/srv/shiny-server/shiny_meijendel:ro\n)#\$1      - /srv/vwgm/shiny/shiny_meijendel/app_cache:/srv/shiny-server/shiny_meijendel/app_cache:rw\n#' docker-compose.yml
+	  fi
+	  docker compose build shiny
+	  docker compose up -d shiny
 
   for attempt in \$(seq 1 30); do
     if curl -fsSI http://127.0.0.1:3838/ >/dev/null; then
@@ -38,13 +42,15 @@ ssh -i "$SSH_KEY" "$VPS" "
     sleep 2
   done
 
-  docker exec shiny_meijendel Rscript -e '
-    pkgs <- c(\"geepack\", \"glmmTMB\", \"vegan\", \"pls\", \"changepoint\", \"strucchange\", \"lavaan\", \"piecewiseSEM\", \"betapart\", \"unmarked\")
-    ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
-    print(data.frame(package = pkgs, beschikbaar = unname(ok)))
-    if (!all(ok)) stop(\"Niet alle analysepackages zijn beschikbaar.\")
+	  docker exec shiny_meijendel Rscript -e '
+	    pkgs <- c(\"geepack\", \"glmmTMB\", \"vegan\", \"pls\", \"changepoint\", \"strucchange\", \"lavaan\", \"piecewiseSEM\", \"indicspecies\", \"betapart\", \"unmarked\")
+	    ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
+	    print(data.frame(package = pkgs, beschikbaar = unname(ok)))
+	    if (!all(ok)) stop(\"Niet alle analysepackages zijn beschikbaar.\")
     perl <- Sys.which(\"perl\")
-    print(data.frame(system_tool = \"perl\", beschikbaar = nzchar(perl), pad = unname(perl)))
-    if (!nzchar(perl)) stop(\"Perl ontbreekt in de Shiny-container.\")
-  '
-"
+	    print(data.frame(system_tool = \"perl\", beschikbaar = nzchar(perl), pad = unname(perl)))
+	    if (!nzchar(perl)) stop(\"Perl ontbreekt in de Shiny-container.\")
+	  '
+
+	  docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e \"source(\\\"helpers.R\\\"); path <- \\\"/srv/shiny-server/Meijendel.sql\\\"; t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\\\"SQL cache: from_cache=%s elapsed=%.3f cache=%s\\\\n\\\", x[[\\\"from_cache\\\"]], unname(t[[\\\"elapsed\\\"]]), x[[\\\"cache_path\\\"]]))\"'
+	"

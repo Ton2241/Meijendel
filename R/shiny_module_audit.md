@@ -583,6 +583,61 @@ De gebruiker ziet:
 - Let op: dit is geen dynamische occupancy; jaarlijkse kolonisatie en extinctie worden nog niet geschat.
 - Let op: bij soortgroepen betekent detectie: detectie van ten minste een soort uit de selectie tijdens een bezoek.
 
+## 5a. Biodiversity
+
+### Implementatie
+
+Belangrijkste functie:
+
+```r
+run_biodiversity_subset()
+```
+
+Package:
+
+```r
+vegan
+```
+
+Hoofdfuncties:
+
+```r
+rowSums(comm > 0)
+vegan::diversity(comm, index = "shannon")
+vegan::diversity(comm, index = "simpson")
+```
+
+### Invoerdata
+
+Biodiversity gebruikt:
+
+- `plotjaar x soort`;
+- territoria per km2;
+- getelde plot-jaren;
+- echte nullen als nul;
+- niet-getelde plot-jaren buiten de analyse.
+
+### Output
+
+De gebruiker ziet:
+
+- gemiddelde jaarlijkse soortenrijkdom;
+- gemiddelde Shannon-diversiteit;
+- gemiddelde Simpson-diversiteit;
+- plotjaar-uitkomsten;
+- diagnostiek;
+- gebruikte plot-jaren;
+- telinspanning/detectie;
+- CSV downloads;
+- R-script export.
+
+### Auditpunten
+
+- Sterk punt: sluit aan op de handleiding als diagnostiek van diversiteit binnen de gemeenschap.
+- Sterk punt: gebruikt dezelfde community-basis als NMDS, RDA, PLS en Beta-Diversity.
+- Let op: dit verklaart geen oorzaken; voor verklarende analyse zijn RDA, GEE, GLMM en SEM nodig.
+- Let op: jaarlijkse gemiddelden zijn gevoelig voor het aantal beschikbare plot-jaren.
+
 ## 6. NMDS
 
 ### Implementatie
@@ -1171,6 +1226,7 @@ Daarin wordt informatie uit dagbezoeken en dagwaarnemingen gebruikt waar beschik
 |---|---|---|
 | TRIM | bruikbaar voor trendindices | eigen trendlabels, modelvolgorde geen AIC-selectie |
 | LAMBDA | bruikbaar voor jaar-op-jaar verandering | gevoelig voor nullen en gaten |
+| Biodiversity | bruikbaar als diversiteitsdiagnostiek | verklaart geen oorzaken; gevoelig voor plotjaardekking |
 | GEE | bruikbaar voor verklarende analyse | Poisson is tekortkoming bij variantie/gemiddelde > 1,5-2 |
 | GLMM | bruikbaar, inclusief Negative Binomial | modelcomplexiteit en convergentie |
 | Occupancy | detectiegecorrigeerd single-season vanaf dagbezoeken | geen dynamische occupancy, vooral vanaf 2009 |

@@ -37,6 +37,9 @@ package_groups <- list(
     "lavaan",
     "piecewiseSEM"
   ),
+  indicator_species = c(
+    "indicspecies"
+  ),
   beta_diversity = c(
     "betapart"
   ),

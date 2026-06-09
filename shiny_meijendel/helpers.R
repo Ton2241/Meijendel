@@ -14,7 +14,7 @@ meijendel_analysis_packages <- function() {
     "shiny", "bslib", "DBI", "RSQLite", "rtrim", "mgcv", "broom",
     "geepack", "broom.mixed", "DHARMa", "glmmTMB", "lme4", "TMB",
     "vegan", "pls", "changepoint", "strucchange", "lavaan", "piecewiseSEM",
-    "betapart", "unmarked"
+    "indicspecies", "betapart", "unmarked"
   )
 }
 
@@ -644,15 +644,36 @@ make_cache_signature <- function(path) {
     MEIJENDEL_PARSER_CACHE_VERSION,
     normalizePath(path, winslash = "/", mustWork = TRUE),
     info$size,
-    as.numeric(info$mtime),
+    unname(tools::md5sum(path)),
     sep = "|"
   )
+}
+
+meijendel_app_cache_dir <- function() {
+  cache_dir <- Sys.getenv("MEIJENDEL_CACHE_DIR", unset = file.path(getwd(), "app_cache"))
+  ok <- dir.exists(cache_dir) || dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+  if (ok) {
+    test_file <- tempfile("write_test_", tmpdir = cache_dir)
+    writable <- tryCatch({
+      file.create(test_file)
+    }, warning = function(e) FALSE, error = function(e) FALSE)
+    if (isTRUE(writable)) {
+      unlink(test_file)
+      return(normalizePath(cache_dir, winslash = "/", mustWork = TRUE))
+    }
+  }
+  tempdir()
+}
+
+meijendel_tables_cache_path <- function(path) {
+  normalizePath(path, winslash = "/", mustWork = TRUE)
+  file.path(meijendel_app_cache_dir(), "meijendel_tables_cache.rds")
 }
 
 load_meijendel_tables_cached <- function(path, cache_path = NULL) {
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
   if (is.null(cache_path)) {
-    cache_path <- file.path(tempdir(), "meijendel_tables_cache.rds")
+    cache_path <- meijendel_tables_cache_path(path)
   }
 
   signature <- make_cache_signature(path)
@@ -671,7 +692,11 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
 
   data <- parse_meijendel_tables(path)
   cache <- list(signature = signature, data = data)
-  saveRDS(cache, cache_path)
+  tryCatch(saveRDS(cache, cache_path), error = function(e) {
+    fallback_cache_path <- file.path(tempdir(), basename(cache_path))
+    saveRDS(cache, fallback_cache_path)
+    cache_path <<- fallback_cache_path
+  })
   list(data = data, from_cache = FALSE, cache_path = cache_path)
 }
 
@@ -1169,6 +1194,25 @@ richtlijn_verzamelcategorieen <- function() {
   )
 }
 
+habitatgroep_richtlijn_id <- function() {
+  7L
+}
+
+build_habitatgroep_mapping <- function(tbls) {
+  mapping <- tbls$soort_richtlijn[
+    tbls$soort_richtlijn$richtlijn_id == habitatgroep_richtlijn_id(),
+    c("soort_id", "richtlijn_id"),
+    drop = FALSE
+  ]
+  unique(data.frame(
+    soort_id = mapping$soort_id,
+    richtlijn_id = habitatgroep_richtlijn_id(),
+    richtlijn_titel = "Habitatgroep",
+    richtlijn_volgorde = 1L,
+    stringsAsFactors = FALSE
+  ))
+}
+
 build_richtlijn_mapping <- function(tbls) {
   richtlijnen <- tbls$richtlijnen[tbls$richtlijnen$naam %in% richtlijn_keuzes(), , drop = FALSE]
   richtlijnen$richtlijn_volgorde <- match(richtlijnen$naam, richtlijn_keuzes())
@@ -1210,6 +1254,51 @@ build_richtlijn_mapping <- function(tbls) {
 }
 
 analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = "volledig") {
+  empty_msi <- data.frame(
+    groep_100 = integer(),
+    groep_titel = character(),
+    jaar = integer(),
+    log_index = numeric(),
+    n_soorten = integer(),
+    msi = numeric(),
+    msi_variant = character(),
+    stringsAsFactors = FALSE
+  )
+  empty_trends <- data.frame(
+    groep_100 = integer(),
+    groep_titel = character(),
+    msi_variant = character(),
+    basisjaar = integer(),
+    basisjaar_toelichting = character(),
+    eerste_jaar = integer(),
+    laatste_jaar = integer(),
+    gemiddeld_n_soorten = numeric(),
+    min_n_soorten = numeric(),
+    max_n_soorten = numeric(),
+    cv_n_soorten = numeric(),
+    samenstelling_waarschuwing = character(),
+    trend_pct_per_jaar = numeric(),
+    trend_p = numeric(),
+    trend_r2 = numeric(),
+    trend_uitleg = character(),
+    trendduiding_type = character(),
+    stringsAsFactors = FALSE
+  )
+  empty_comp <- data.frame(
+    groep_100 = integer(),
+    groep_titel = character(),
+    soort_id = integer(),
+    euring_code = integer(),
+    soort_naam = character(),
+    engelse_naam = character(),
+    msi_variant = character(),
+    stringsAsFactors = FALSE
+  )
+
+  if (!nrow(species_indices)) {
+    return(list(msi = empty_msi, trends = empty_trends, composition = empty_comp))
+  }
+
   merged <- merge(
     species_indices[, c("soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "index_100")],
     group_mapping,
@@ -1218,6 +1307,10 @@ analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = 
   )
 
   merged <- merged[is.finite(merged$index_100) & merged$index_100 > 0, ]
+  if (!nrow(merged)) {
+    return(list(msi = empty_msi, trends = empty_trends, composition = empty_comp))
+  }
+
   merged$log_index <- log(merged$index_100)
 
   msi <- aggregate(log_index ~ groep_100 + groep_titel + jaar, data = merged, FUN = mean)
@@ -1281,19 +1374,28 @@ analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_v
     log_index = numeric(),
     n_soorten = integer(),
     msi = numeric(),
+    msi_variant = character(),
     stringsAsFactors = FALSE
   )
   empty_trends <- data.frame(
     richtlijn_id = integer(),
     richtlijn_titel = character(),
     richtlijn_volgorde = integer(),
+    msi_variant = character(),
+    basisjaar = integer(),
+    basisjaar_toelichting = character(),
     eerste_jaar = integer(),
     laatste_jaar = integer(),
     gemiddeld_n_soorten = numeric(),
+    min_n_soorten = numeric(),
+    max_n_soorten = numeric(),
+    cv_n_soorten = numeric(),
+    samenstelling_waarschuwing = character(),
     trend_pct_per_jaar = numeric(),
     trend_p = numeric(),
     trend_r2 = numeric(),
     trend_uitleg = character(),
+    trendduiding_type = character(),
     stringsAsFactors = FALSE
   )
   empty_comp <- data.frame(
@@ -1304,8 +1406,13 @@ analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_v
     euring_code = integer(),
     soort_naam = character(),
     engelse_naam = character(),
+    msi_variant = character(),
     stringsAsFactors = FALSE
   )
+
+  if (!nrow(species_indices)) {
+    return(list(msi = empty_msi, trends = empty_trends, composition = empty_comp))
+  }
 
   merged <- merge(
     species_indices[, c("soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "index_100")],
@@ -1331,6 +1438,14 @@ analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_v
   trend_rows <- lapply(split(msi, msi$richtlijn_id), function(df) {
     tr <- run_lm_trend(df, "msi")
     pct <- calc_pct_trend(tr$slope)
+    min_n_soorten <- min(df$n_soorten, na.rm = TRUE)
+    max_n_soorten <- max(df$n_soorten, na.rm = TRUE)
+    cv_n_soorten <- stats::sd(df$n_soorten, na.rm = TRUE) / mean(df$n_soorten, na.rm = TRUE)
+    samenstelling_waarschuwing <- ifelse(
+      is.finite(min_n_soorten) && is.finite(max_n_soorten) && max_n_soorten > 0 && min_n_soorten / max_n_soorten < 0.75,
+      "wisselend_soortenaantal",
+      "stabiel_soortenaantal"
+    )
     data.frame(
       richtlijn_id = df$richtlijn_id[[1]],
       richtlijn_titel = df$richtlijn_titel[[1]],
@@ -1341,6 +1456,10 @@ analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_v
       eerste_jaar = min(df$jaar, na.rm = TRUE),
       laatste_jaar = max(df$jaar, na.rm = TRUE),
       gemiddeld_n_soorten = mean(df$n_soorten, na.rm = TRUE),
+      min_n_soorten = min_n_soorten,
+      max_n_soorten = max_n_soorten,
+      cv_n_soorten = cv_n_soorten,
+      samenstelling_waarschuwing = samenstelling_waarschuwing,
       trend_pct_per_jaar = pct,
       trend_p = tr$p,
       trend_r2 = tr$r2,
@@ -1368,7 +1487,8 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
   species_results <- analyse_species_subset(species_matrix)
   group_mapping <- build_group_mapping(tbls)
   full_group_results <- analyse_groups_subset(species_results$indices, group_mapping, msi_variant = "volledig")
-  min_robuuste_jaren <- max(10L, ceiling(0.75 * length(unique(basis$jaar))))
+  n_getelde_jaren <- length(unique(basis$jaar[basis$geteld]))
+  min_robuuste_jaren <- max(10L, ceiling(0.75 * n_getelde_jaren))
   robust_ids <- species_results$status$soort_id[
     species_results$status$analyse_categorie == "trim_bruikbaar" &
       species_results$status$n_jaren_geteld >= min_robuuste_jaren &
@@ -1389,6 +1509,14 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
     trends = rbind(full_richtlijn_results$trends, robust_richtlijn_results$trends),
     composition = rbind(full_richtlijn_results$composition, robust_richtlijn_results$composition)
   )
+  habitatgroep_mapping <- build_habitatgroep_mapping(tbls)
+  full_habitatgroep_results <- analyse_richtlijnen_subset(species_results$indices, habitatgroep_mapping, msi_variant = "volledig")
+  robust_habitatgroep_results <- analyse_richtlijnen_subset(robust_indices, habitatgroep_mapping, msi_variant = "robuust")
+  habitatgroep_results <- list(
+    msi = rbind(full_habitatgroep_results$msi, robust_habitatgroep_results$msi),
+    trends = rbind(full_habitatgroep_results$trends, robust_habitatgroep_results$trends),
+    composition = rbind(full_habitatgroep_results$composition, robust_habitatgroep_results$composition)
+  )
 
   list(
     basis = basis,
@@ -1396,7 +1524,8 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
     species_matrix = species_matrix,
     species_results = species_results,
     group_results = group_results,
-    richtlijn_results = richtlijn_results
+    richtlijn_results = richtlijn_results,
+    habitatgroep_results = habitatgroep_results
   )
 }
 
@@ -1443,6 +1572,9 @@ select_species_for_target <- function(tbls, target_type, target_value) {
     richtlijn_row <- find_richtlijn_by_id(tbls, target_value)
     richtlijn_mapping <- build_richtlijn_mapping(tbls)
     return(unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]]))
+  }
+  if (identical(target_type, "habitatgroep")) {
+    return(unique(build_habitatgroep_mapping(tbls)$soort_id))
   }
   unique(tbls$soorten$id)
 }
@@ -1504,7 +1636,7 @@ add_toegankelijkheid_covariate <- function(dat, source_df, new_col = "toegankeli
   dat
 }
 
-build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn"), target_value) {
+build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn", "habitatgroep"), target_value) {
   target_type <- match.arg(target_type)
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   if (!nrow(basis)) {
@@ -1535,7 +1667,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     ]
     target_label <- group_row$groep_titel[[1]]
     target_slug <- paste0("groep_", group_row$groep_100[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
-  } else {
+  } else if (target_type == "richtlijn") {
     species_row <- NULL
     group_row <- NULL
     richtlijn_row <- find_richtlijn_by_id(tbls, target_value)
@@ -1549,6 +1681,19 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     ]
     target_label <- richtlijn_row$richtlijn_titel[[1]]
     target_slug <- paste0("richtlijn_", richtlijn_row$richtlijn_id[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
+  } else {
+    species_row <- NULL
+    group_row <- NULL
+    richtlijn_row <- NULL
+    habitat_species <- unique(build_habitatgroep_mapping(tbls)$soort_id)
+    counts <- tbls$territoria[
+      tbls$territoria$soort_id %in% habitat_species &
+        tbls$territoria$jaar >= year_from &
+        tbls$territoria$jaar <= year_to,
+      c("plot_id", "jaar", "territoria")
+    ]
+    target_label <- "Habitatgroep"
+    target_slug <- "habitatgroep"
   }
   if (nrow(counts)) {
     counts <- aggregate(territoria ~ plot_id + jaar, data = counts, FUN = sum, na.rm = TRUE)
@@ -1581,7 +1726,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
   dat <- add_toegankelijkheid_covariate(dat, tbls$plot_jaar_toegankelijkheid)
 
-  dat$analyse_niveau <- switch(target_type, species = "Soort", group = "Vogelgroep", richtlijn = "Rode/Oranje Lijst")
+  dat$analyse_niveau <- switch(target_type, species = "Soort", group = "Ec. Vogelgroep", richtlijn = "Rode/Oranje Lijst", habitatgroep = "Habitatgroep")
   dat$doel_label <- target_label
   dat$doel_slug <- target_slug
   dat$richtlijn_id <- NA_integer_
@@ -1598,13 +1743,21 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     dat$engelse_naam <- NA_character_
     dat$groep_100 <- as.integer(target_value)
     dat$groep_titel <- target_label
-  } else {
+  } else if (target_type == "richtlijn") {
     dat$soort_id <- NA_integer_
     dat$soort_naam <- NA_character_
     dat$engelse_naam <- NA_character_
     dat$groep_100 <- NA_integer_
     dat$groep_titel <- NA_character_
     dat$richtlijn_id <- as.integer(target_value)
+    dat$richtlijn_titel <- target_label
+  } else {
+    dat$soort_id <- NA_integer_
+    dat$soort_naam <- NA_character_
+    dat$engelse_naam <- NA_character_
+    dat$groep_100 <- NA_integer_
+    dat$groep_titel <- NA_character_
+    dat$richtlijn_id <- habitatgroep_richtlijn_id()
     dat$richtlijn_titel <- target_label
   }
   dat[order(dat$plot_id, dat$jaar), ]
@@ -1882,7 +2035,7 @@ precheck_gee_complexity <- function(dat_model, gee_corstr) {
   ))
 }
 
-run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), gee_corstr = "exchangeable") {
+run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn", "habitatgroep"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), gee_corstr = "exchangeable") {
   target_type <- match.arg(target_type)
   if (!requireNamespace("geepack", quietly = TRUE)) {
     stop("Package 'geepack' is niet beschikbaar.")
@@ -2314,7 +2467,7 @@ glmm_vif_diagnostic_table <- function(vif_tab) {
   out
 }
 
-run_glmm_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), glmm_family = c("poisson", "nbinom2"), random_effects = c("plot_intercept", "plot_year_intercept", "year_slope_plot")) {
+run_glmm_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn", "habitatgroep"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), glmm_family = c("poisson", "nbinom2"), random_effects = c("plot_intercept", "plot_year_intercept", "year_slope_plot")) {
   target_type <- match.arg(target_type)
   glmm_family <- match.arg(glmm_family)
   random_effects <- match.arg(random_effects)
@@ -2511,7 +2664,7 @@ build_soort_kenmerken_catalog <- function(tbls) {
   catalog[order(catalog$hoofdcategorie_id, catalog$code_type, catalog$kenmerk_label), , drop = FALSE]
 }
 
-select_species_for_gee_trait_scope <- function(tbls, scope_type = c("all", "group", "richtlijn"), scope_value = NULL) {
+select_species_for_gee_trait_scope <- function(tbls, scope_type = c("all", "group", "richtlijn", "habitatgroep"), scope_value = NULL) {
   scope_type <- match.arg(scope_type)
   if (scope_type == "group") {
     group_row <- find_group_by_code(tbls, scope_value)
@@ -2523,6 +2676,9 @@ select_species_for_gee_trait_scope <- function(tbls, scope_type = c("all", "grou
     richtlijn_mapping <- build_richtlijn_mapping(tbls)
     return(unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]]))
   }
+  if (scope_type == "habitatgroep") {
+    return(unique(build_habitatgroep_mapping(tbls)$soort_id))
+  }
   unique(tbls$soorten$id)
 }
 
@@ -2532,6 +2688,9 @@ trait_scope_label <- function(tbls, scope_type, scope_value) {
   }
   if (scope_type == "richtlijn") {
     return(find_richtlijn_by_id(tbls, scope_value)$richtlijn_titel[[1]])
+  }
+  if (scope_type == "habitatgroep") {
+    return("Habitatgroep")
   }
   "Alle soorten"
 }
@@ -2598,7 +2757,7 @@ precheck_gee_trait_complexity <- function(dat_model, gee_corstr) {
   invisible(list(n_clusters = n_clusters, max_cluster = max_cluster, n_rows = n_rows))
 }
 
-run_gee_trait_screening <- function(tbls, selected_kavels, year_from, year_to, scope_type = c("all", "group", "richtlijn"), scope_value = NULL, hoofdcategorie_id = NULL, code_types = c("main"), min_species_per_level = 5L, gee_corstr = "independence") {
+run_gee_trait_screening <- function(tbls, selected_kavels, year_from, year_to, scope_type = c("all", "group", "richtlijn", "habitatgroep"), scope_value = NULL, hoofdcategorie_id = NULL, code_types = c("main"), min_species_per_level = 5L, gee_corstr = "independence") {
   scope_type <- match.arg(scope_type)
   min_species_per_level <- suppressWarnings(as.integer(min_species_per_level)[1])
   if (!is.finite(min_species_per_level) || min_species_per_level < 3L) {
@@ -2743,7 +2902,7 @@ run_gee_trait_screening <- function(tbls, selected_kavels, year_from, year_to, s
   )
 }
 
-run_glmm_trait_screening <- function(tbls, selected_kavels, year_from, year_to, scope_type = c("all", "group", "richtlijn"), scope_value = NULL, hoofdcategorie_id = NULL, code_types = c("main"), min_species_per_level = 5L, glmm_family = c("poisson", "nbinom2")) {
+run_glmm_trait_screening <- function(tbls, selected_kavels, year_from, year_to, scope_type = c("all", "group", "richtlijn", "habitatgroep"), scope_value = NULL, hoofdcategorie_id = NULL, code_types = c("main"), min_species_per_level = 5L, glmm_family = c("poisson", "nbinom2")) {
   scope_type <- match.arg(scope_type)
   glmm_family <- match.arg(glmm_family)
   min_species_per_level <- suppressWarnings(as.integer(min_species_per_level)[1])
@@ -2913,7 +3072,7 @@ nmds_transform_matrix <- function(comm, transform = c("hellinger", "presence_abs
   vegan::decostand(comm, method = "hellinger")
 }
 
-select_species_for_nmds <- function(tbls, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL) {
+select_species_for_nmds <- function(tbls, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL) {
   selection_type <- match.arg(selection_type)
   if (selection_type == "group") {
     group_row <- find_group_by_code(tbls, selection_value)
@@ -2924,6 +3083,9 @@ select_species_for_nmds <- function(tbls, selection_type = c("all", "group", "ri
     richtlijn_row <- find_richtlijn_by_id(tbls, selection_value)
     richtlijn_mapping <- build_richtlijn_mapping(tbls)
     return(unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]]))
+  }
+  if (selection_type == "habitatgroep") {
+    return(unique(build_habitatgroep_mapping(tbls)$soort_id))
   }
   if (selection_type == "trait") {
     sk <- tbls$soorten_kenmerken
@@ -2939,6 +3101,9 @@ nmds_selection_label <- function(tbls, selection_type, selection_value = NULL) {
   if (selection_type == "richtlijn") {
     return(find_richtlijn_by_id(tbls, selection_value)$richtlijn_titel[[1]])
   }
+  if (selection_type == "habitatgroep") {
+    return("Habitatgroep")
+  }
   if (selection_type == "trait") {
     catalog <- build_soort_kenmerken_catalog(tbls)
     row <- catalog[catalog$code == selection_value, , drop = FALSE]
@@ -2950,7 +3115,7 @@ nmds_selection_label <- function(tbls, selection_type, selection_value = NULL) {
   "Alle soorten"
 }
 
-run_nmds_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL, transform = c("hellinger", "presence_absence", "log1p", "raw"), distance = c("bray", "jaccard", "euclidean"), dimensions = c(2L, 3L), trymax = 30L) {
+run_nmds_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, transform = c("hellinger", "presence_absence", "log1p", "raw"), distance = c("bray", "jaccard", "euclidean"), dimensions = c(2L, 3L), trymax = 30L) {
   selection_type <- match.arg(selection_type)
   transform <- match.arg(transform)
   distance <- match.arg(distance)
@@ -3064,7 +3229,7 @@ run_nmds_subset <- function(tbls, selected_kavels, year_from, year_to, selection
   }
 
   summary_df <- data.frame(
-    analyse_niveau = switch(selection_type, all = "Alle soorten", group = "Vogelgroep", richtlijn = "Rode/Oranje Lijst", trait = "Vogelkenmerk"),
+    analyse_niveau = switch(selection_type, all = "Alle soorten", group = "Ec. Vogelgroep", richtlijn = "Rode/Oranje Lijst", habitatgroep = "Habitatgroep", trait = "Vogelkenmerk"),
     doel_label = nmds_selection_label(tbls, selection_type, selection_value),
     doel_slug = paste0("nmds_", selection_type, "_", tolower(gsub("[^a-z0-9]+", "_", nmds_selection_label(tbls, selection_type, selection_value)))),
     transform = transform,
@@ -3105,7 +3270,7 @@ cd_meta_for_nmds <- function(tbls, meta, comm) {
   env_meta
 }
 
-build_community_matrix_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL) {
+build_community_matrix_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL) {
   selection_type <- match.arg(selection_type)
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
   if (!nrow(basis)) {
@@ -3158,7 +3323,7 @@ community_summary_df <- function(prefix, community_data, year_from, year_to) {
   meta <- community_data$meta
   comm <- community_data$community_matrix
   data.frame(
-    analyse_niveau = switch(community_data$selection_type, all = "Alle soorten", group = "Vogelgroep", richtlijn = "Rode/Oranje Lijst", trait = "Vogelkenmerk"),
+    analyse_niveau = switch(community_data$selection_type, all = "Alle soorten", group = "Ec. Vogelgroep", richtlijn = "Rode/Oranje Lijst", habitatgroep = "Habitatgroep", trait = "Vogelkenmerk"),
     doel_label = community_data$selection_label,
     doel_slug = paste0(prefix, "_", community_data$selection_type, "_", tolower(gsub("[^a-z0-9]+", "_", community_data$selection_label))),
     n_plots = length(unique(meta$plot_id)),
@@ -3173,7 +3338,7 @@ community_summary_df <- function(prefix, community_data, year_from, year_to) {
   )
 }
 
-run_rda_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL, transform = c("hellinger", "presence_absence", "log1p", "raw"), condition = c("none", "year")) {
+run_rda_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, transform = c("hellinger", "presence_absence", "log1p", "raw"), condition = c("none", "year")) {
   selection_type <- match.arg(selection_type)
   transform <- match.arg(transform)
   condition <- match.arg(condition)
@@ -3270,7 +3435,7 @@ rbind_fill_base <- function(...) {
   do.call(rbind, parts)
 }
 
-run_pls_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL, transform = c("hellinger", "presence_absence", "log1p", "raw"), ncomp = 2L) {
+run_pls_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, transform = c("hellinger", "presence_absence", "log1p", "raw"), ncomp = 2L) {
   selection_type <- match.arg(selection_type)
   transform <- match.arg(transform)
   ncomp <- as.integer(ncomp)[1]
@@ -3528,7 +3693,7 @@ changepoint_build_series <- function(tbls, selected_kavels, year_from, year_to, 
   list(cd = cd, annual = annual, dataset = trim_results$species_matrix)
 }
 
-run_changepoint_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL, source = c("community", "trim_index", "msi"), metric = c("totaal_territoria_per_km2", "soortenrijkdom", "totaal_territoria"), method = c("level", "trend", "multi"), penalty = c("MBIC", "BIC", "SIC", "AIC")) {
+run_changepoint_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, source = c("community", "trim_index", "msi"), metric = c("totaal_territoria_per_km2", "soortenrijkdom", "totaal_territoria"), method = c("level", "trend", "multi"), penalty = c("MBIC", "BIC", "SIC", "AIC")) {
   selection_type <- match.arg(selection_type)
   source <- match.arg(source)
   metric <- match.arg(metric)
@@ -3664,7 +3829,7 @@ run_changepoint_subset <- function(tbls, selected_kavels, year_from, year_to, se
   list(dataset = series$dataset, annual = annual, candidates = candidates_df[order(candidates_df$rss), , drop = FALSE], diagnostics = summary_df, sensitivity = sensitivity, summary = summary_df, fit = fit)
 }
 
-run_sem_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL) {
+run_sem_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL) {
   selection_type <- match.arg(selection_type)
   if (!requireNamespace("lavaan", quietly = TRUE)) {
     stop("Package 'lavaan' is niet beschikbaar. Installeer het eerst met install.packages('lavaan').")
@@ -3715,7 +3880,179 @@ run_sem_subset <- function(tbls, selected_kavels, year_from, year_to, selection_
   list(dataset = cd$species_matrix, model_data = dat, paths = paths, fit_measures = as.data.frame(as.list(fit_measures)), diagnostics = diagnostics, summary = summary_df, fit = fit)
 }
 
-run_betadiversity_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL, transform = NULL, distance = NULL) {
+run_biodiversity_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL) {
+  selection_type <- match.arg(selection_type)
+  if (!requireNamespace("vegan", quietly = TRUE)) {
+    stop("Package 'vegan' is niet beschikbaar. Installeer het eerst met install.packages('vegan').")
+  }
+  cd <- build_community_matrix_subset(tbls, selected_kavels, year_from, year_to, selection_type, selection_value)
+  comm <- cd$community_matrix
+  meta <- cd$meta
+  richness <- rowSums(comm > 0, na.rm = TRUE)
+  shannon <- vegan::diversity(comm, index = "shannon")
+  simpson <- vegan::diversity(comm, index = "simpson")
+  plotjaar <- cbind(
+    meta[, intersect(c("plot_id", "kavel_nummer", "jaar"), names(meta)), drop = FALSE],
+    data.frame(
+      soortenrijkdom = as.numeric(richness),
+      shannon = as.numeric(shannon),
+      simpson = as.numeric(simpson),
+      totaal_territoria_per_km2 = rowSums(comm, na.rm = TRUE),
+      stringsAsFactors = FALSE
+    )
+  )
+  annual_metric_summary <- function(x) {
+    c(
+      gemiddelde = mean(x, na.rm = TRUE),
+      mediaan = stats::median(x, na.rm = TRUE),
+      min = min(x, na.rm = TRUE),
+      max = max(x, na.rm = TRUE)
+    )
+  }
+  annual_list <- lapply(sort(unique(plotjaar$jaar)), function(yr) {
+    part <- plotjaar[plotjaar$jaar == yr, , drop = FALSE]
+    rich <- annual_metric_summary(part$soortenrijkdom)
+    sha <- annual_metric_summary(part$shannon)
+    sim <- annual_metric_summary(part$simpson)
+    data.frame(
+      jaar = yr,
+      n_plot_jaren = nrow(part),
+      soortenrijkdom_gemiddelde = rich[["gemiddelde"]],
+      soortenrijkdom_mediaan = rich[["mediaan"]],
+      soortenrijkdom_min = rich[["min"]],
+      soortenrijkdom_max = rich[["max"]],
+      shannon_gemiddelde = sha[["gemiddelde"]],
+      shannon_mediaan = sha[["mediaan"]],
+      shannon_min = sha[["min"]],
+      shannon_max = sha[["max"]],
+      simpson_gemiddelde = sim[["gemiddelde"]],
+      simpson_mediaan = sim[["mediaan"]],
+      simpson_min = sim[["min"]],
+      simpson_max = sim[["max"]],
+      interpretatie_voorzichtig = ifelse(nrow(part) < 5L, "ja: minder dan vijf plot-jaren", "nee"),
+      stringsAsFactors = FALSE
+    )
+  })
+  annual <- do.call(rbind, annual_list)
+  summary_df <- community_summary_df("biodiversity", cd, year_from, year_to)
+  summary_df$methode <- "vegan::diversity"
+  summary_df$soortenrijkdom_gemiddelde <- mean(plotjaar$soortenrijkdom, na.rm = TRUE)
+  summary_df$shannon_gemiddelde <- mean(plotjaar$shannon, na.rm = TRUE)
+  summary_df$simpson_gemiddelde <- mean(plotjaar$simpson, na.rm = TRUE)
+  diagnostics <- data.frame(
+    maat = c(
+      "Invoermatrix",
+      "Respons",
+      "Soortenrijkdom",
+      "Shannon",
+      "Simpson",
+      "Jaren met minder dan vijf plot-jaren"
+    ),
+    waarde = c(
+      "plotjaar x soort",
+      "territoria_per_km2",
+      "aantal soorten met territoria_per_km2 > 0",
+      "vegan::diversity(index = 'shannon')",
+      "vegan::diversity(index = 'simpson')",
+      sum(annual$n_plot_jaren < 5L)
+    ),
+    stringsAsFactors = FALSE
+  )
+  list(dataset = cd$species_matrix, community_matrix = comm, plotjaar = plotjaar, annual = annual, meta = meta, diagnostics = diagnostics, summary = summary_df)
+}
+
+indicator_period_factor <- function(years, scheme = c("historisch_4", "voor_na_1984_3", "decennium")) {
+  scheme <- match.arg(scheme)
+  years <- as.integer(years)
+  if (identical(scheme, "historisch_4")) {
+    out <- ifelse(
+      years <= 1975L, "1958-1975",
+      ifelse(years <= 1989L, "1976-1989", ifelse(years <= 2005L, "1990-2005", "2006-heden"))
+    )
+    return(factor(out, levels = c("1958-1975", "1976-1989", "1990-2005", "2006-heden")))
+  }
+  if (identical(scheme, "voor_na_1984_3")) {
+    out <- ifelse(years <= 1983L, "1958-1983", ifelse(years <= 2005L, "1984-2005", "2006-heden"))
+    return(factor(out, levels = c("1958-1983", "1984-2005", "2006-heden")))
+  }
+  decade <- floor(years / 10) * 10
+  factor(paste0(decade, "-", decade + 9L), levels = unique(paste0(sort(unique(decade)), "-", sort(unique(decade)) + 9L)))
+}
+
+run_indicatorspecies_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, period_scheme = c("historisch_4", "voor_na_1984_3", "decennium"), transform = c("presence_absence", "raw"), nperm = 999L, alpha = 0.05) {
+  selection_type <- match.arg(selection_type)
+  period_scheme <- match.arg(period_scheme)
+  transform <- match.arg(transform)
+  nperm <- as.integer(nperm)
+  alpha <- as.numeric(alpha)
+  if (!requireNamespace("indicspecies", quietly = TRUE)) {
+    stop("Package 'indicspecies' is niet beschikbaar. Installeer het eerst met install.packages('indicspecies').")
+  }
+  if (!requireNamespace("permute", quietly = TRUE)) {
+    stop("Package 'permute' is niet beschikbaar. Installeer het eerst met install.packages('permute').")
+  }
+  cd <- build_community_matrix_subset(tbls, selected_kavels, year_from, year_to, selection_type, selection_value)
+  comm <- cd$community_matrix
+  comm <- if (identical(transform, "presence_absence")) ifelse(comm > 0, 1, 0) else comm
+  keep_rows <- rowSums(comm, na.rm = TRUE) > 0
+  keep_cols <- colSums(comm, na.rm = TRUE) > 0
+  comm <- comm[keep_rows, keep_cols, drop = FALSE]
+  meta <- cd$meta[keep_rows, , drop = FALSE]
+  if (nrow(comm) < 4L) {
+    stop("Te weinig plot-jaren met soorten voor Indicator Species Analysis.")
+  }
+  if (ncol(comm) < 2L) {
+    stop("Te weinig soorten met aanwezigheid voor Indicator Species Analysis.")
+  }
+  period <- indicator_period_factor(meta$jaar, period_scheme)
+  period <- droplevels(period)
+  period_counts <- data.frame(periode = names(table(period)), n_plot_jaren = as.integer(table(period)), stringsAsFactors = FALSE)
+  valid_periods <- period_counts$periode[period_counts$n_plot_jaren >= 2L]
+  keep_period <- as.character(period) %in% valid_periods
+  comm <- comm[keep_period, , drop = FALSE]
+  meta <- meta[keep_period, , drop = FALSE]
+  period <- droplevels(period[keep_period])
+  period_counts <- period_counts[period_counts$periode %in% valid_periods, , drop = FALSE]
+  if (nlevels(period) < 2L) {
+    stop("Indicator Species Analysis vereist minstens twee perioden met minimaal twee plot-jaren.")
+  }
+  fit <- indicspecies::multipatt(
+    comm,
+    period,
+    func = "IndVal.g",
+    duleg = TRUE,
+    control = permute::how(nperm = nperm)
+  )
+  sign <- fit$sign
+  sign$soort_id <- rownames(sign)
+  sign$periode <- levels(period)[as.integer(sign$index)]
+  sign$significant <- is.finite(sign$p.value) & sign$p.value <= alpha
+  species_lookup <- unique(cd$species_matrix[, intersect(c("soort_id", "euring_code", "soort_naam", "engelse_naam"), names(cd$species_matrix)), drop = FALSE])
+  species_lookup$soort_id <- as.character(species_lookup$soort_id)
+  indicators <- merge(sign, species_lookup, by = "soort_id", all.x = TRUE, sort = FALSE)
+  indicators <- indicators[order(indicators$p.value, -indicators$stat, indicators$periode), , drop = FALSE]
+  indicators$soort_id <- suppressWarnings(as.integer(indicators$soort_id))
+  indicator_cols <- intersect(c("periode", "soort_id", "soort_naam", "engelse_naam", "euring_code", "stat", "p.value", "significant"), names(indicators))
+  indicators <- indicators[, indicator_cols, drop = FALSE]
+  names(indicators)[names(indicators) == "stat"] <- "indicatorwaarde"
+  names(indicators)[names(indicators) == "p.value"] <- "p_waarde"
+  summary_df <- community_summary_df("indicatorspecies", cd, year_from, year_to)
+  summary_df$methode <- "indicspecies::multipatt"
+  summary_df$transform <- transform
+  summary_df$periodisering <- period_scheme
+  summary_df$n_permutaties <- nperm
+  summary_df$alpha <- alpha
+  summary_df$n_significante_indicatorsoorten <- sum(indicators$significant, na.rm = TRUE)
+  diagnostics <- data.frame(
+    maat = c("Methode", "Functie", "Transformatie", "Periodisering", "Permutaties", "Alpha", "Perioden", "Significante indicatorsoorten"),
+    waarde = c("Indicator Species Analysis", "indicspecies::multipatt(func = 'IndVal.g', duleg = TRUE)", transform, period_scheme, nperm, alpha, paste(period_counts$periode, collapse = ", "), sum(indicators$significant, na.rm = TRUE)),
+    stringsAsFactors = FALSE
+  )
+  meta$periode <- as.character(period)
+  list(dataset = cd$species_matrix, community_matrix = comm, indicators = indicators, period_counts = period_counts, meta = meta, diagnostics = diagnostics, summary = summary_df, fit = fit)
+}
+
+run_betadiversity_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, transform = NULL, distance = NULL) {
   selection_type <- match.arg(selection_type)
   transform <- "presence_absence"
   distance <- "sorensen"
@@ -3731,17 +4068,47 @@ run_betadiversity_subset <- function(tbls, selected_kavels, year_from, year_to, 
   d <- beta_pair$beta.sor
   mat <- as.matrix(d)
   meta <- cd$meta
-  gemiddelde_beta <- mean(mat[lower.tri(mat)], na.rm = TRUE)
   sim_mat <- as.matrix(beta_pair$beta.sim)
   sne_mat <- as.matrix(beta_pair$beta.sne)
-  gemiddelde_turnover <- mean(sim_mat[lower.tri(sim_mat)], na.rm = TRUE)
-  gemiddelde_nestedness <- mean(sne_mat[lower.tri(sne_mat)], na.rm = TRUE)
+  pair_values <- function(x, ids = NULL) {
+    if (!is.null(ids)) {
+      ids <- ids[ids %in% rownames(x)]
+      if (length(ids) < 2L) {
+        return(numeric())
+      }
+      x <- x[ids, ids, drop = FALSE]
+    }
+    vals <- x[lower.tri(x)]
+    vals[is.finite(vals)]
+  }
+  sor_vals <- pair_values(mat)
+  sim_vals <- pair_values(sim_mat)
+  sne_vals <- pair_values(sne_mat)
+  decomp_residuals <- sor_vals - sim_vals - sne_vals
+  gemiddelde_beta <- mean(sor_vals, na.rm = TRUE)
+  gemiddelde_turnover <- mean(sim_vals, na.rm = TRUE)
+  gemiddelde_nestedness <- mean(sne_vals, na.rm = TRUE)
+  max_decompositie_afwijking <- max(abs(decomp_residuals), na.rm = TRUE)
   annual <- lapply(sort(unique(meta$jaar)), function(yr) {
     ids <- rownames(meta)[meta$jaar == yr]
-    val <- if (length(ids) >= 2L) mean(mat[ids, ids][lower.tri(mat[ids, ids])], na.rm = TRUE) else NA_real_
-    sim_val <- if (length(ids) >= 2L) mean(sim_mat[ids, ids][lower.tri(sim_mat[ids, ids])], na.rm = TRUE) else NA_real_
-    sne_val <- if (length(ids) >= 2L) mean(sne_mat[ids, ids][lower.tri(sne_mat[ids, ids])], na.rm = TRUE) else NA_real_
-    data.frame(jaar = yr, beta_sorensen = val, beta_turnover = sim_val, beta_nestedness = sne_val, n_plot_jaren = length(ids))
+    sor_yr <- pair_values(mat, ids)
+    sim_yr <- pair_values(sim_mat, ids)
+    sne_yr <- pair_values(sne_mat, ids)
+    val <- if (length(sor_yr)) mean(sor_yr, na.rm = TRUE) else NA_real_
+    sim_val <- if (length(sim_yr)) mean(sim_yr, na.rm = TRUE) else NA_real_
+    sne_val <- if (length(sne_yr)) mean(sne_yr, na.rm = TRUE) else NA_real_
+    residual <- val - sim_val - sne_val
+    data.frame(
+      jaar = yr,
+      beta_sorensen = val,
+      beta_turnover = sim_val,
+      beta_nestedness = sne_val,
+      beta_turnover_plus_nestedness = sim_val + sne_val,
+      decompositie_afwijking = residual,
+      turnover_aandeel = ifelse(is.finite(val) && val > 0, sim_val / val, NA_real_),
+      nestedness_aandeel = ifelse(is.finite(val) && val > 0, sne_val / val, NA_real_),
+      n_plot_jaren = length(ids)
+    )
   })
   annual <- do.call(rbind, annual)
   summary_df <- community_summary_df("betadiversity", cd, year_from, year_to)
@@ -3751,9 +4118,30 @@ run_betadiversity_subset <- function(tbls, selected_kavels, year_from, year_to, 
   summary_df$gemiddelde_beta <- gemiddelde_beta
   summary_df$gemiddelde_turnover <- gemiddelde_turnover
   summary_df$gemiddelde_nestedness <- gemiddelde_nestedness
+  summary_df$max_decompositie_afwijking <- max_decompositie_afwijking
   diagnostics <- data.frame(
-    maat = c("Methode", "Transformatie", "Afstandsmaat", "Gemiddelde beta Sorensen", "Gemiddelde turnover", "Gemiddelde nestedness"),
-    waarde = c("betapart::beta.pair", transform, distance, gemiddelde_beta, gemiddelde_turnover, gemiddelde_nestedness),
+    maat = c(
+      "Methode",
+      "Transformatie",
+      "Afstandsmaat",
+      "Schaal",
+      "Gemiddelde beta Sorensen",
+      "Gemiddelde turnover",
+      "Gemiddelde nestedness",
+      "Gemiddelde turnover + nestedness",
+      "Maximale decompositie-afwijking"
+    ),
+    waarde = c(
+      "betapart::beta.pair",
+      transform,
+      distance,
+      "alle componenten op schaal 0-1",
+      gemiddelde_beta,
+      gemiddelde_turnover,
+      gemiddelde_nestedness,
+      gemiddelde_turnover + gemiddelde_nestedness,
+      max_decompositie_afwijking
+    ),
     stringsAsFactors = FALSE
   )
   list(dataset = cd$species_matrix, distance_matrix = mat, turnover_matrix = sim_mat, nestedness_matrix = sne_mat, annual = annual, meta = meta, diagnostics = diagnostics, summary = summary_df, beta_pair = beta_pair)
@@ -3923,7 +4311,7 @@ add_detection_effort_to_analysis <- function(analyse, tbls, selected_kavels, yea
   analyse
 }
 
-run_occupancy_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "trait"), selection_value = NULL, min_visits = 2L, detection_covariates = c("dagvanjaar", "bezoekduur_min", "gunstig"), site_covariates = c("year_c")) {
+run_occupancy_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, min_visits = 2L, detection_covariates = c("dagvanjaar", "bezoekduur_min", "gunstig"), site_covariates = c("year_c")) {
   selection_type <- match.arg(selection_type)
   min_visits <- as.integer(min_visits)[1]
   if (!is.finite(min_visits) || min_visits < 2L) {
@@ -4549,6 +4937,8 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
   lambda_groups <- analyse_lambda_groups_subset(lambda_species, group_mapping, t0_msi_selection = t0_msi_selection)
   richtlijn_mapping <- build_richtlijn_mapping(tbls)
   lambda_richtlijnen <- analyse_lambda_richtlijnen_subset(lambda_species, richtlijn_mapping)
+  habitatgroep_mapping <- build_habitatgroep_mapping(tbls)
+  lambda_habitatgroep <- analyse_lambda_richtlijnen_subset(lambda_species, habitatgroep_mapping)
 
   list(
     basis = basis,
@@ -4556,7 +4946,8 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     species_matrix = species_matrix,
     species_results = lambda_species,
     group_results = lambda_groups,
-    richtlijn_results = lambda_richtlijnen
+    richtlijn_results = lambda_richtlijnen,
+    habitatgroep_results = lambda_habitatgroep
   )
 }
 MEIJENDEL_PARSER_CACHE_VERSION <- 6L

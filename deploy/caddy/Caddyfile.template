@@ -15,6 +15,15 @@
 		reverse_proxy 127.0.0.1:3838
 	}
 
+	handle_path /proef-vwg-m-app* {
+		reverse_proxy 127.0.0.1:8091
+	}
+
+	handle_path /proef-vwg-m* {
+		root * /srv/vwgm/vwg-m-proef/public
+		file_server
+	}
+
 	handle /bmp_meijendel_index.html {
 		root * /srv/vwgm/www
 		file_server

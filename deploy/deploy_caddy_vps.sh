@@ -75,11 +75,11 @@ printf 'Backup: %s\n' "$BACKUP"
 systemctl is-active caddy
 
 SESSION_VALUE="$(sudo awk -F'vwg_session=' '/@vwg_session/ { split($2, a, "*"); print a[1] }' /etc/caddy/Caddyfile)"
-for path in / /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/; do
+for path in / /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/ /proef-vwg-m/ /proef-vwg-m-app/welkom/index.asp; do
   code="$(curl -k -sS -o /dev/null -w '%{http_code}' --resolve app.vwg-m.nl:443:127.0.0.1 "https://app.vwg-m.nl$path")"
   printf 'zonder sessie %s %s\n' "$code" "$path"
 done
-for path in / /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/; do
+for path in / /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/ /proef-vwg-m/ /proef-vwg-m-app/welkom/index.asp; do
   code="$(curl -k -sS -o /dev/null -w '%{http_code}' -H "Cookie: vwg_session=$SESSION_VALUE" --resolve app.vwg-m.nl:443:127.0.0.1 "https://app.vwg-m.nl$path")"
   printf 'met sessie %s %s\n' "$code" "$path"
 done

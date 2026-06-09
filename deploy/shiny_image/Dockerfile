@@ -20,4 +20,5 @@ COPY install_shiny_packages.R /tmp/install_shiny_packages.R
 RUN Rscript /tmp/install_shiny_packages.R && rm -f /tmp/install_shiny_packages.R
 
 RUN rm -f /srv/shiny-server/index.html && \
+    mkdir -p /srv/shiny-server/shiny_meijendel/app_cache/sass && \
     chown -R shiny:shiny /srv/shiny-server

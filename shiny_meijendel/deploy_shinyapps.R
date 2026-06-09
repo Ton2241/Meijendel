@@ -22,6 +22,7 @@ required_packages <- c(
   "strucchange",
   "lavaan",
   "piecewiseSEM",
+  "indicspecies",
   "betapart",
   "unmarked"
 )

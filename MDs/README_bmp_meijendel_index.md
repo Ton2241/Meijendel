@@ -89,9 +89,11 @@ Bron:
 - eventueel ook `gam_voorspellingen_msi_groepen.csv`
 - eventueel ook `gam_interpretatie_msi_groepen.csv`
 
-Bij beide keuzes staan naast de ecologische groepen ook de groepen `Rode Lijst`, `Oranje Lijst` en `Rode en Oranjelijst`.
+Bij beide keuzes staan naast de ecologische groepen ook de groepen `Rode Lijst`, `Oranje Lijst`, `Rode en Oranjelijst` en `Vogelrichtlijn`.
 De `Oranje Lijst` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 6`.
+De `Vogelrichtlijn` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 7`.
 Bij elke groep toont het dashboard ook een tekstvak met de vogelsoorten die in de gekozen groep zitten.
+Bij `Groepen` > `TRIM` toont het dashboard naast de directe volledige/robuuste MSI ook twee GAM-vergelijkingen: eerst de robuuste MSI en daarna de volledige MSI. Beide GAM-grafieken worden gevolgd door een eigen TRIM-uitlegblok. De soortenbox splitst de gebruikte soorten uit in `Robuuste MSI` en `Volledige MSI`.
 
 De standaardperiode voor de groepengrafieken is `1990-2025`. De gebruiker kan deze periode in het dashboard blijven aanpassen.
 

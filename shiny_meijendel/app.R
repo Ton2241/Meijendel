@@ -89,7 +89,7 @@ community_analysis_tab <- function(title, prefix, subtitle, button_label, note, 
             radioButtons(
               paste0(prefix, "_selection_type"),
               "Soortselectie",
-              choices = c("Alle soorten" = "all", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Vogelkenmerk" = "trait"),
+              choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep", "Vogelkenmerk" = "trait"),
               selected = "all",
               inline = FALSE
             ),
@@ -295,7 +295,7 @@ ui <- navbarPage(
             class = "soft-card",
             h3("Korte uitleg"),
             tags$p("Op deze startpagina laad je eerst de SQL-bron voor de analyses."),
-            tags$p("Ga daarna naar TRIM, LAMBDA of een van de correlatie analyse methodes om de gewenste analyses uit te voeren. Kies daar of je de analyses voor vogelsoorten, vogelgroepen of vogelkenmerken wil doen en selecteer de kavels en jaren. Meer informatie over TRIM, LAMBDA, de correlatie analyse methodes, GAM-grafieken en de beschrijving van de onderscheiden vogelgroepen vind je in de tekstblokken hieronder.")
+            tags$p("Ga daarna naar TRIM, LAMBDA of een van de analysemodules om de gewenste analyse uit te voeren. De modules volgen grofweg de keten: beschrijven, patronen herkennen, omslagmomenten zoeken, verklarende verbanden onderzoeken, toetsen en causale modellen verkennen. Kies per module of je werkt met vogelsoorten, ec. vogelgroepen, Rode/Oranje Lijst-categorieen, Habitatgroep of vogelkenmerken.")
           )
         )
       ),
@@ -307,43 +307,49 @@ ui <- navbarPage(
             tags$ol(
               tags$li("TRIM"),
               tags$li("LAMBDA"),
-              tags$li("GEE"),
-              tags$li("GLMM"),
+              tags$li("Biodiversity"),
+              tags$li("Beta-Diversity"),
+              tags$li("Indicator Species"),
               tags$li("NMDS"),
+              tags$li("Change-point"),
               tags$li("RDA"),
               tags$li("PLS"),
-              tags$li("Changepoint"),
+              tags$li("GEE"),
+              tags$li("GLMM"),
               tags$li("SEM"),
-              tags$li("Beta-Diversity"),
               tags$li("Occupancy"),
               tags$li("GAM"),
-              tags$li("Vogelgroepen")
+              tags$li("Ec. Vogelgroepen")
             ),
             h4("1. TRIM"),
             tags$p("TRIM (TRends and Indices for Monitoring data) is een door het Centraal Bureau voor de Statistiek ontwikkeld statistisch model voor analyse van telreeksen met ontbrekende waarnemingen. Het zet tellingen om in indexcijfers, waarbij index 100 hier het eerste analysejaar vanaf het eerste positieve jaar betekent. De app kiest het eerste werkende model volgens een vaste voorkeurshierarchie; dit is geen AIC-modelselectie. De trendlabels zijn eigen trendduidingen op basis van de TRIM-index, geen officiële TRIM-classificaties. Een deel van de territoria data is niet volgens de gestandaardiseerde landelijke SOVON-methode geinterpreteerd. Dit geldt o.a. voor de periode 1958-1983 in Meijendel. In de TRIM analyses wordt, bij gebruik van data voor 1984, gewerkt met brugjaren om de TRIM data vergelijkbaar te maken. Het betreft de jaren 1981-1982-1983 en de jaren 1984-1985-1986."),
             h4("2. LAMBDA"),
-            tags$p("De LAMBDA-methode beschrijft populatieverandering via de groeifactor λ, gedefinieerd als de verhouding tussen aantallen in opeenvolgende jaren (λ = Nₜ₊₁ / Nₜ). Een waarde λ > 1 duidt op groei, λ < 1 op afname en λ = 1 op stabiliteit. Door λ per jaar te berekenen ontstaat een tijdreeks van relatieve veranderingen, die eenvoudig te middelen of cumuleren is. De methode vereist consistente tellingen en is gevoelig voor nulwaarden en waarnemingsfouten. Om die reden zijn sporadisch verschijnende soorten niet meegenomen in de berekening van de MSI van de vogelgroepen. In de praktijk wordt vaak gewerkt met log-transformaties van λ om trends statistisch stabieler te analyseren. LAMBDA gebruikt drie T0-perioden: 1959-1972 (T0=1959), 1973-1983 (T0=1973) en 1984-heden (T0=1984)."),
-            h4("3. GEE — Generalized Estimating Equations"),
-            tags$p("Analyseert relaties tussen vogelgegevens en omgevingsfactoren bij herhaalde metingen per plot en jaar. Geschikt voor verklarende analyses van effecten van beheer, recreatie, weer, habitat of stikstof op soorten en soortgroepen. Robuust bij onregelmatige tellingen en ontbrekende waarnemingen. Werkt met verschillende correlatiestructuren. Voor Meijendel is Ar1 meestal ecologisch het meest plausibel, omdat opeenvolgende jaren sterker op elkaar lijken dan jaren die verder uit elkaar liggen."),
-            h4("4. GLMM — Generalized Linear Mixed Models"),
-            tags$p("Geschikt voor analyse van veranderingen in aantallen of territoria per soort in de Meijendel-database. Kan vaste effecten modelleren zoals stikstof, recreatie, vegetatie of beheermaatregelen. Neemt tegelijk random effecten mee voor plot, jaar of teller, waardoor herhaalde metingen correct worden behandeld. Werkt goed bij niet-normale data zoals tellingen met veel nullen of scheve verdelingen. Geschikt voor soortspecifieke trendanalyse en toetsing van causale hypothesen."),
-            h4("5. NMDS — Non-metric Multidimensional Scaling"),
-            tags$p("Ordent vogelgemeenschappen op basis van overeenkomst in soortensamenstelling tussen plots en jaren. Laat zien welke plots ecologisch op elkaar lijken of juist uiteenlopen door beheer of habitatverandering. Gebruikt rangordes van verschillen en is daardoor robuust voor ecologische datasets met veel zeldzame soorten. Kan verschuivingen zichtbaar maken van open duin naar struweel- of bosgemeenschappen. Vooral nuttig als exploratieve analyse van gemeenschapsstructuur."),
-            h4("6. RDA — Redundancy Analysis"),
-            tags$p("Analyseert welke omgevingsfactoren veranderingen in vogelgemeenschappen verklaren. Koppelt soortenpatronen direct aan variabelen zoals begrazing, waterbeheer of recreatiedruk. Geschikt wanneer lineaire relaties vermoed worden tussen milieuvariabelen en soortenrespons. Geeft zowel soort- als plotniveau-informatie in één geïntegreerde analyse. Kan helpen bepalen welke factoren het sterkst samenhangen met biodiversiteitsverandering."),
-            h4("7. PLS — Partial Least Squares Regression"),
-            tags$p("Analyseert samenhang tussen vogelgemeenschappen en omgevingsvariabelen wanneer verklarende variabelen onderling kunnen samenhangen. PLS reduceert de omgevingsvariabelen tot componenten die zo goed mogelijk de variatie in soortensamenstelling verklaren. Binnen de app gebruikt PLS dezelfde community-matrix als NMDS en RDA, op basis van territoria per km2."),
-            h4("8. Changepoint-analyse"),
-            tags$p("Zoekt naar jaren waarin abrupte veranderingen optreden in trends of soortaantallen. Kan omslagpunten detecteren zoals de terugkeer van de vos of veranderingen in infiltratiebeheer. Geschikt voor lange tijdreeksen zoals de historische Meijendel-data sinds 1958. Helpt onderscheid maken tussen geleidelijke trends en plotselinge systeemveranderingen. Nuttig voor koppeling van ecologische veranderingen aan concrete beheer- of landschapsingrepen."),
-            h4("9. SEM — Structural Equation Modelling"),
-            tags$p("Modelleert complexe causale relaties tussen meerdere factoren tegelijk. Kan indirecte effecten zichtbaar maken, bijvoorbeeld: stikstof → vegetatiestructuur → vogelsoorten. Geschikt voor integratie van beheer, habitat, recreatie en predatie binnen één model. Laat onderscheid zien tussen directe en indirecte invloeden op biodiversiteit. Voor Meijendel vooral waardevol als synthese-instrument voor meerdere datasets en hypothesen."),
-            h4("10. Beta-Diversity analyse"),
+            tags$p("De LAMBDA-methode beschrijft populatieverandering via de groeifactor λ, gedefinieerd als de verhouding tussen aantallen in opeenvolgende jaren (λ = Nₜ₊₁ / Nₜ). Een waarde λ > 1 duidt op groei, λ < 1 op afname en λ = 1 op stabiliteit. Door λ per jaar te berekenen ontstaat een tijdreeks van relatieve veranderingen, die eenvoudig te middelen of cumuleren is. De methode vereist consistente tellingen en is gevoelig voor nulwaarden en waarnemingsfouten. Om die reden zijn sporadisch verschijnende soorten niet meegenomen in de berekening van de MSI van de ec. vogelgroepen. In de praktijk wordt vaak gewerkt met log-transformaties van λ om trends statistisch stabieler te analyseren. LAMBDA gebruikt drie T0-perioden: 1959-1972 (T0=1959), 1973-1983 (T0=1973) en 1984-heden (T0=1984)."),
+            h4("3. Biodiversity analyse"),
+            tags$p("Biodiversity onderzoekt de structuur van de vogelgemeenschap binnen een geselecteerde set van plots, jaren en soortselectie. De module werkt met een plotjaar x soort-matrix op basis van territoria per km2 en berekent soortenrijkdom, Shannon-diversiteit en Simpson-diversiteit. Daarmee laat de module zien of de gemeenschap soortenrijker, gelijkmatiger of juist sterker door enkele algemene soorten gedomineerd wordt."),
+            h4("4. Beta-Diversity analyse"),
             tags$p("Meet verschillen in soortensamenstelling tussen plots, habitats of jaren. Kan laten zien of Meijendel ecologisch homogener of juist diverser wordt. Maakt onderscheid tussen soortenverlies en vervanging van soorten door andere soorten. Geschikt voor analyse van verstruweling, successie en habitatfragmentatie. Relevant voor beoordeling van landschappelijke variatie en ecologische veerkracht."),
-            h4("11. Occupancy modelling"),
+            h4("5. Indicator Species Analysis"),
+            tags$p("Indicator Species Analysis toetst welke soorten kenmerkend zijn voor vooraf gekozen perioden. De module gebruikt de plotjaar x soort-matrix en berekent met indicspecies::multipatt een indicatorwaarde en p-waarde per soort. Daarmee ontstaat een ecologische vingerafdruk van bijvoorbeeld historische perioden of decennia."),
+            h4("6. NMDS — Non-metric Multidimensional Scaling"),
+            tags$p("Ordent vogelgemeenschappen op basis van overeenkomst in soortensamenstelling tussen plots en jaren. Laat zien welke plots ecologisch op elkaar lijken of juist uiteenlopen door beheer of habitatverandering. Gebruikt rangordes van verschillen en is daardoor robuust voor ecologische datasets met veel zeldzame soorten. Kan verschuivingen zichtbaar maken van open duin naar struweel- of bosgemeenschappen. Vooral nuttig als exploratieve analyse van gemeenschapsstructuur."),
+            h4("7. RDA — Redundancy Analysis"),
+            tags$p("Analyseert welke omgevingsfactoren veranderingen in vogelgemeenschappen verklaren. Koppelt soortenpatronen direct aan variabelen zoals begrazing, waterbeheer of recreatiedruk. Geschikt wanneer lineaire relaties vermoed worden tussen milieuvariabelen en soortenrespons. Geeft zowel soort- als plotniveau-informatie in één geïntegreerde analyse. Kan helpen bepalen welke factoren het sterkst samenhangen met biodiversiteitsverandering."),
+            h4("8. PLS — Partial Least Squares Regression"),
+            tags$p("Analyseert samenhang tussen vogelgemeenschappen en omgevingsvariabelen wanneer verklarende variabelen onderling kunnen samenhangen. PLS reduceert de omgevingsvariabelen tot componenten die zo goed mogelijk de variatie in soortensamenstelling verklaren. Binnen de app gebruikt PLS dezelfde community-matrix als NMDS en RDA, op basis van territoria per km2."),
+            h4("9. GEE — Generalized Estimating Equations"),
+            tags$p("Analyseert relaties tussen vogelgegevens en omgevingsfactoren bij herhaalde metingen per plot en jaar. Geschikt voor verklarende analyses van effecten van beheer, recreatie, weer, habitat of stikstof op soorten en soortgroepen. Robuust bij onregelmatige tellingen en ontbrekende waarnemingen. Werkt met verschillende correlatiestructuren. Voor Meijendel is Ar1 meestal ecologisch het meest plausibel, omdat opeenvolgende jaren sterker op elkaar lijken dan jaren die verder uit elkaar liggen."),
+            h4("10. GLMM — Generalized Linear Mixed Models"),
+            tags$p("Geschikt voor analyse van veranderingen in aantallen of territoria per soort in de Meijendel-database. Kan vaste effecten modelleren zoals stikstof, recreatie, vegetatie of beheermaatregelen. Neemt tegelijk random effects mee voor plot en eventueel jaar, waardoor herhaalde metingen correct worden behandeld. Werkt goed bij tellingen met veel nullen of scheve verdelingen. Geschikt voor soortspecifieke trendanalyse en toetsing van hypothesen."),
+            h4("11. Changepoint-analyse"),
+            tags$p("Zoekt naar jaren waarin abrupte veranderingen optreden in trends of soortaantallen. Kan omslagpunten detecteren zoals de terugkeer van de vos of veranderingen in infiltratiebeheer. Geschikt voor lange tijdreeksen zoals de historische Meijendel-data sinds 1958. Helpt onderscheid maken tussen geleidelijke trends en plotselinge systeemveranderingen. Nuttig voor koppeling van ecologische veranderingen aan concrete beheer- of landschapsingrepen."),
+            h4("12. SEM — Structural Equation Modelling"),
+            tags$p("Modelleert complexe causale relaties tussen meerdere factoren tegelijk. Kan indirecte effecten zichtbaar maken, bijvoorbeeld: stikstof → vegetatiestructuur → vogelsoorten. Geschikt voor integratie van beheer, habitat, recreatie en predatie binnen één model. Laat onderscheid zien tussen directe en indirecte invloeden op biodiversiteit. Voor Meijendel vooral waardevol als synthese-instrument voor meerdere datasets en hypothesen."),
+            h4("13. Occupancy modelling"),
             tags$p("Schat de kans dat een soort werkelijk aanwezig is, ook wanneer zij niet altijd wordt waargenomen. Corrigeert voor detectieproblemen bij zeldzame of moeilijk waarneembare soorten. Geschikt voor BMP-data waarin afwezigheid soms onzeker is door variërende telinspanning. Kan trends in verspreiding analyseren zonder volledig afhankelijk te zijn van territoriumtellingen. Bijzonder bruikbaar voor Rode Lijst-soorten en soorten met lage detectiekans."),
-            h4("12. GAM"),
+            h4("14. GAM"),
             tags$p("In deze app wordt gebruik gemaakt van GAM. GAM (Generalized Additive Model) is een flexibele statistische methode die relaties modelleert zonder een vaste functionele vorm op te leggen. Het model beschrijft de responsvariabele als som van gladde (niet-lineaire) functies van verklarende variabelen. Hiermee kunnen complexe, niet-lineaire trends in tijdreeksen van ecologische data worden geschat en grafisch weergegeven."),
-            h4("13. Vogelgroepen"),
+            h4("15. Ec. Vogelgroepen"),
             tags$p("De ", tags$strong("ecologische vogelgroepen"), " van Piet Sierdsema zijn een indeling van vogelsoorten op basis van hun habitatvoorkeur en ecologische functie. Soorten worden gegroepeerd in: 100 - Watervogels, 200 - Rietvogels, 300 - Vogels van pionierbegroeiingen, 400 - Vogels van open heide, 500 - Weidevogels, 600 - Struweelvogels, 700 - Bosrandvogels, 800 - Bosvogels, 900 - Vogels van bebouwing/overige."),
             tags$p("De ", tags$strong("Rode Lijst"), " van Nederlandse broedvogels bevat soorten die bedreigd worden of kwetsbaar zijn. De laatste actualisatie van de Rode Lijst van de Nederlandse broedvogels werd in 2017 vastgesteld door het Ministerie van Landbouw, Natuur en Voedselkwaliteit. De rode lijst wordt verdeeld in vijf categorieën: RL: Verdwenen, RL: Ernstig bedreigd, RL: Bedreigd, RL: Kwetsbaar en RL: Gevoelig."),
             tags$p("De Rode Lijst wordt eens in de 10 jaar geactualiseerd. Om tussentijds zicht op veranderingen te houden is de ", tags$strong("Oranje Lijst"), " ontwikkeld. Daarop staan 22 soorten die nog niet aan de criteria van de Rode Lijst voldoen maar waarvan wordt aangenomen dat ze dat in de nabije toekomst zullen gaan doen.")
@@ -368,8 +374,8 @@ ui <- navbarPage(
           checkboxGroupInput(
             "analyse_keuze",
             "Wat berekenen",
-            choices = c("Soorten" = "species", "Vogelgroepen" = "groups", "Rode/Oranje Lijst" = "richtlijnen"),
-            selected = c("species", "groups", "richtlijnen")
+            choices = c("Soorten" = "species", "Ec. Vogelgroepen" = "groups", "Rode/Oranje Lijst" = "richtlijnen", "Habitatgroep" = "habitatgroep"),
+            selected = c("species", "groups", "richtlijnen", "habitatgroep")
           ),
           actionButton("run_analysis", "Analyse uitvoeren", class = "btn-primary"),
           div(class = "download-row",
@@ -433,6 +439,19 @@ ui <- navbarPage(
               tableOutput("richtlijn_species_table")
             ),
             tabPanel(
+              "Habitatgroep",
+              tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
+              tags$p(class = "section-note", "Download hier de uitkomsten voor de Habitatgroep: trendoverzicht en MSI per jaar."),
+              plotOutput("habitatgroep_plot", height = "420px"),
+              div(class = "download-row",
+                  downloadButton("download_habitatgroep_trends", "CSV habitatgroeptrends"),
+                  downloadButton("download_habitatgroep_msi", "CSV MSI habitatgroep")),
+              h4("Trend Habitatgroep"),
+              tableOutput("habitatgroep_table"),
+              h4("Soorten in Habitatgroep"),
+              tableOutput("habitatgroep_species_table")
+            ),
+            tabPanel(
               "Controle",
               tags$p(class = "section-note", "Gebruik deze tab om te controleren of de selectie logisch is opgebouwd: dekking per kavel, oppervlak per jaar en modelstatus van soorten."),
               div(class = "download-row",
@@ -480,8 +499,8 @@ ui <- navbarPage(
           checkboxGroupInput(
               "lambda_analyse_keuze",
               "Wat berekenen",
-              choices = c("Vogelsoorten" = "species", "Vogelgroepen" = "groups", "Rode/Oranje Lijst" = "richtlijnen"),
-            selected = c("species", "groups", "richtlijnen")
+              choices = c("Vogelsoorten" = "species", "Ec. Vogelgroepen" = "groups", "Rode/Oranje Lijst" = "richtlijnen", "Habitatgroep" = "habitatgroep"),
+            selected = c("species", "groups", "richtlijnen", "habitatgroep")
           ),
           actionButton("run_lambda_analysis", "LAMBDA berekenen", class = "btn-primary"),
           div(class = "download-row",
@@ -522,7 +541,7 @@ ui <- navbarPage(
             tabPanel(
               "Groepen",
               uiOutput("lambda_group_picker_ui"),
-              tags$p(class = "section-note", "Grafiek toont de jaar-op-jaar verandering per vogelgroep als percentage, gebaseerd op soorten die voldoen aan de strengere T0-MSI-selectie."),
+              tags$p(class = "section-note", "Grafiek toont de jaar-op-jaar verandering per ec. vogelgroep als percentage, gebaseerd op soorten die voldoen aan de strengere T0-MSI-selectie."),
               plotOutput("lambda_group_plot", height = "420px"),
               div(
                 class = "download-row",
@@ -550,6 +569,20 @@ ui <- navbarPage(
               tableOutput("lambda_richtlijn_species_table")
             ),
             tabPanel(
+              "Habitatgroep",
+              tags$p(class = "section-note", "Grafiek toont de jaar-op-jaar verandering voor de Habitatgroep als percentage, gebaseerd op soorten die voldoen aan de strengere T0-MSI-selectie."),
+              plotOutput("lambda_habitatgroep_plot", height = "420px"),
+              div(
+                class = "download-row",
+                downloadButton("download_lambda_habitatgroep_years", "CSV LAMBDA habitatgroepjaren"),
+                downloadButton("download_lambda_habitatgroep_summary", "CSV LAMBDA habitatgroep")
+              ),
+              h4("Habitatgroepoverzicht"),
+              tableOutput("lambda_habitatgroep_table"),
+              h4("Soorten in Habitatgroep"),
+              tableOutput("lambda_habitatgroep_species_table")
+            ),
+            tabPanel(
               "Controle",
               tags$p(class = "section-note", "Gebruik deze tab om te controleren welke soorten geschikt zijn voor T0-soortanalyse en welke streng genoeg zijn voor T0-MSI."),
               h4("Dekking per kavel"),
@@ -565,6 +598,170 @@ ui <- navbarPage(
   ),
   navbarMenu(
     "Analyses",
+    community_analysis_tab(
+      "Biodiversity", "biodiversity",
+      "Diagnostiek van diversiteit binnen de geselecteerde vogelgemeenschap.",
+      "Voer Biodiversity-analyse uit",
+      "Biodiversity gebruikt een plotjaar x soort-matrix met territoria per km2 en berekent soortenrijkdom, Shannon-diversiteit en Simpson-diversiteit."
+    ),
+    community_analysis_tab(
+      "Beta-diversity", "betadiversity",
+      "Analyse van verschillen in soortensamenstelling tussen plots, jaren of perioden.",
+      "Voer beta-diversity analyse uit",
+      "Beta-diversity gebruikt Sorensen presence/absence op getelde plot-jaren. Echte nullen gelden als afwezigheid; niet-getelde plot-jaren blijven buiten de analyse.",
+      extra_controls = tagList(
+        tags$p(class = "section-note", "Methode: betapart::beta.pair met index.family = 'sorensen'.")
+      )
+    ),
+    community_analysis_tab(
+      "Indicator Species", "indicatorspecies",
+      "Ecologische vingerafdruk van perioden op basis van indicatorsoorten.",
+      "Voer Indicator Species-analyse uit",
+      "Indicator Species gebruikt indicspecies::multipatt en toetst welke soorten kenmerkend zijn voor de gekozen perioden.",
+      extra_controls = tagList(
+        selectInput(
+          "indicatorspecies_period_scheme",
+          "Periodisering",
+          choices = c(
+            "Historisch: 1958-1975, 1976-1989, 1990-2005, 2006-heden" = "historisch_4",
+            "Voor/na 1984: 1958-1983, 1984-2005, 2006-heden" = "voor_na_1984_3",
+            "Decennia" = "decennium"
+          ),
+          selected = "historisch_4"
+        ),
+        selectInput(
+          "indicatorspecies_transform",
+          "Invoerwaarden",
+          choices = c("Aanwezigheid/afwezigheid" = "presence_absence", "Territoria per km2" = "raw"),
+          selected = "presence_absence"
+        ),
+        selectInput(
+          "indicatorspecies_nperm",
+          "Permutaties",
+          choices = c("199" = 199, "499" = 499, "999" = 999),
+          selected = 999
+        )
+      )
+    ),
+    tabPanel(
+    "NMDS",
+    fluidPage(
+      titlePanel("NMDS"),
+      tags$p(class = "app-subtitle", "Exploratieve ordinatie van soortensamenstelling op basis van getelde plot-jaren."),
+      tags$div(class = "method-label", "Exploratieve ordinatie - geen causaliteit"),
+      fluidRow(
+        column(
+          4,
+          div(
+            class = "soft-card",
+            h3("Selectie"),
+            uiOutput("nmds_plot_selector_ui"),
+            uiOutput("nmds_year_selector_ui"),
+            radioButtons(
+              "nmds_selection_type",
+              "Soortselectie",
+              choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep", "Vogelkenmerk" = "trait"),
+              selected = "all",
+              inline = FALSE
+            ),
+            uiOutput("nmds_selection_picker_ui"),
+            selectInput(
+              "nmds_transform",
+              "Transformatie",
+              choices = c("Hellinger" = "hellinger", "Presence/absence" = "presence_absence", "Log1p" = "log1p", "Ruw" = "raw"),
+              selected = "hellinger"
+            ),
+            selectInput(
+              "nmds_distance",
+              "Afstandsmaat",
+              choices = c("Bray-Curtis" = "bray", "Jaccard" = "jaccard", "Euclidean" = "euclidean"),
+              selected = "bray"
+            ),
+            selectInput("nmds_dimensions", "Dimensies", choices = c("2D" = 2, "3D" = 3), selected = 2),
+            checkboxInput("nmds_show_trajectories", "Tijdstrajecten per kavel tonen", value = TRUE),
+            actionButton("run_nmds_analysis", "Voer NMDS-analyse uit", class = "btn-primary"),
+            tags$p(class = "section-note", "NMDS gebruikt getelde plot-jaren. Echte nullen blijven 0; niet-getelde plot-jaren blijven buiten de community-matrix.")
+          )
+        ),
+        column(
+          8,
+          div(
+            class = "soft-card",
+            h3("Modelstatus"),
+            textOutput("nmds_analysis_status"),
+            tags$div(style = "margin-top:12px;"),
+            verbatimTextOutput("nmds_selection_summary")
+          ),
+          div(
+            class = "soft-card",
+            h3("Ordinatie"),
+            tags$p(class = "section-note", "Punten zijn plot-jaren. De kleur geeft het jaar weer; labels tonen de kavel."),
+            plotOutput("nmds_plot", height = "500px"),
+            div(
+              class = "download-row",
+              downloadButton("download_nmds_sites", "CSV NMDS site-scores"),
+              downloadButton("download_nmds_species", "CSV NMDS soort-scores"),
+              downloadButton("download_nmds_matrix", "CSV NMDS matrix"),
+              downloadButton("download_nmds_script", "R-script analyse")
+            ),
+            h4("Site-scores"),
+            tableOutput("nmds_site_table"),
+            h4("Soort-scores"),
+            tableOutput("nmds_species_table"),
+            h4("Envfit"),
+            tableOutput("nmds_envfit_table"),
+            h4("Shepard-diagram"),
+            plotOutput("nmds_shepard_plot", height = "360px"),
+            h4("Gebruikte plot-jaren"),
+            tableOutput("nmds_sample_table"),
+            h4("Telinspanning/detectie"),
+            tableOutput("nmds_detection_effort_table")
+          )
+        )
+      )
+    )
+  ),
+  community_analysis_tab(
+    "Change-point", "changepoint",
+    "Detectie van omslagpunten in ecologische tijdreeksen.",
+    "Voer changepoint-analyse uit",
+    "Changepoint gebruikt jaarlijkse tellingen, TRIM-indexen of MSI als invoer. Niet-getelde jaren worden niet als nul ingevuld; controleer altijd de plotdekking en penaltygevoeligheid.",
+    extra_controls = tagList(
+      selectInput(
+        "changepoint_source",
+        "Invoerbron",
+        choices = c(
+          "Jaarlijkse tellingen" = "community",
+          "TRIM-indexen" = "trim_index",
+          "MSI" = "msi"
+        ),
+        selected = "community"
+      ),
+      selectInput("changepoint_metric", "Reeks", choices = c("Totaal territoria per km2" = "totaal_territoria_per_km2", "Soortenrijkdom" = "soortenrijkdom"), selected = "totaal_territoria_per_km2"),
+      selectInput("changepoint_method", "Methode", choices = c("Niveauverandering enkele knip" = "level", "Trendbreuk enkele knip" = "trend", "Meerdere niveau-omslagpunten PELT" = "multi"), selected = "level"),
+      selectInput("changepoint_penalty", "Penalty PELT", choices = c("MBIC", "BIC", "SIC", "AIC"), selected = "MBIC")
+    )
+  ),
+  community_analysis_tab(
+    "RDA", "rda",
+    "Verklarende ordinatie van soortensamenstelling met omgevingsvariabelen.",
+    "Voer RDA-analyse uit",
+    "RDA gebruikt getelde plot-jaren en koppelt de community-matrix in territoria per km2 aan jaar, stikstof, AHN-hoogte en afstand tot pad.",
+    extra_controls = tagList(
+      selectInput("rda_transform", "Transformatie", choices = c("Hellinger" = "hellinger", "Presence/absence" = "presence_absence", "Log1p" = "log1p", "Ruw" = "raw"), selected = "hellinger"),
+      selectInput("rda_condition", "Partial RDA", choices = c("Geen conditionering" = "none", "Conditioneer voor jaar" = "year"), selected = "none")
+    )
+  ),
+  community_analysis_tab(
+    "PLS", "pls",
+    "Partial Least Squares regressie van soortensamenstelling op omgevingsvariabelen.",
+    "Voer PLS-analyse uit",
+    "PLS gebruikt getelde plot-jaren en koppelt de community-matrix in territoria per km2 aan jaar, stikstof, AHN-hoogte en afstand tot pad.",
+    extra_controls = tagList(
+      selectInput("pls_transform", "Transformatie", choices = c("Hellinger" = "hellinger", "Presence/absence" = "presence_absence", "Log1p" = "log1p", "Ruw" = "raw"), selected = "hellinger"),
+      selectInput("pls_components", "Componenten", choices = c("1" = 1, "2" = 2, "3" = 3, "4" = 4), selected = 2)
+    )
+  ),
     tabPanel(
     "GEE",
     fluidPage(
@@ -591,7 +788,7 @@ ui <- navbarPage(
               radioButtons(
                 "gee_target_type",
                 "Analyse-niveau",
-                choices = c("Soort" = "species", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
+                choices = c("Soort" = "species", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
                 selected = "species",
                 inline = TRUE
               ),
@@ -695,7 +892,7 @@ ui <- navbarPage(
               radioButtons(
                 "glmm_target_type",
                 "Analyse-niveau",
-                choices = c("Soort" = "species", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
+                choices = c("Soort" = "species", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
                 selected = "species",
                 inline = TRUE
               ),
@@ -780,146 +977,6 @@ ui <- navbarPage(
     )
   ),
   community_analysis_tab(
-    "Occupancy", "occupancy",
-    "Analyse van territoriumbezetting; later uitbreidbaar naar detectie/niet-detectie.",
-    "Voer occupancy-analyse uit",
-    "Occupancy gebruikt unmarked en dagbezoeken als herhaalde detectiemomenten. Alleen selecties met voldoende dagbezoeken kunnen detectiegecorrigeerd worden.",
-    extra_controls = tagList(
-      selectInput("occupancy_min_visits", "Minimaal aantal bezoeken per plot-jaar", choices = c("2" = 2, "3" = 3, "4" = 4), selected = 2),
-      checkboxGroupInput(
-        "occupancy_detection_covariates",
-        "Detectiecovariaten",
-        choices = c("Dag in seizoen" = "dagvanjaar", "Bezoekduur" = "bezoekduur_min", "Gunstig bezoek" = "gunstig"),
-        selected = c("dagvanjaar", "bezoekduur_min", "gunstig")
-      ),
-      checkboxGroupInput(
-        "occupancy_site_covariates",
-        "Sitecovariaten",
-        choices = c("Jaar" = "year_c", "Stikstof" = "stikstof_mean", "AHN hoogte" = "ahn_mean", "Afstand tot pad" = "afstand_pad_m"),
-        selected = "year_c"
-      )
-    )
-  ),
-    tabPanel(
-    "NMDS",
-    fluidPage(
-      titlePanel("NMDS"),
-      tags$p(class = "app-subtitle", "Exploratieve ordinatie van soortensamenstelling op basis van getelde plot-jaren."),
-      tags$div(class = "method-label", "Exploratieve ordinatie - geen causaliteit"),
-      fluidRow(
-        column(
-          4,
-          div(
-            class = "soft-card",
-            h3("Selectie"),
-            uiOutput("nmds_plot_selector_ui"),
-            uiOutput("nmds_year_selector_ui"),
-            radioButtons(
-              "nmds_selection_type",
-              "Soortselectie",
-              choices = c("Alle soorten" = "all", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Vogelkenmerk" = "trait"),
-              selected = "all",
-              inline = FALSE
-            ),
-            uiOutput("nmds_selection_picker_ui"),
-            selectInput(
-              "nmds_transform",
-              "Transformatie",
-              choices = c("Hellinger" = "hellinger", "Presence/absence" = "presence_absence", "Log1p" = "log1p", "Ruw" = "raw"),
-              selected = "hellinger"
-            ),
-            selectInput(
-              "nmds_distance",
-              "Afstandsmaat",
-              choices = c("Bray-Curtis" = "bray", "Jaccard" = "jaccard", "Euclidean" = "euclidean"),
-              selected = "bray"
-            ),
-            selectInput("nmds_dimensions", "Dimensies", choices = c("2D" = 2, "3D" = 3), selected = 2),
-            checkboxInput("nmds_show_trajectories", "Tijdstrajecten per kavel tonen", value = TRUE),
-            actionButton("run_nmds_analysis", "Voer NMDS-analyse uit", class = "btn-primary"),
-            tags$p(class = "section-note", "NMDS gebruikt getelde plot-jaren. Echte nullen blijven 0; niet-getelde plot-jaren blijven buiten de community-matrix.")
-          )
-        ),
-        column(
-          8,
-          div(
-            class = "soft-card",
-            h3("Modelstatus"),
-            textOutput("nmds_analysis_status"),
-            tags$div(style = "margin-top:12px;"),
-            verbatimTextOutput("nmds_selection_summary")
-          ),
-          div(
-            class = "soft-card",
-            h3("Ordinatie"),
-            tags$p(class = "section-note", "Punten zijn plot-jaren. De kleur geeft het jaar weer; labels tonen de kavel."),
-            plotOutput("nmds_plot", height = "500px"),
-            div(
-              class = "download-row",
-              downloadButton("download_nmds_sites", "CSV NMDS site-scores"),
-              downloadButton("download_nmds_species", "CSV NMDS soort-scores"),
-              downloadButton("download_nmds_matrix", "CSV NMDS matrix"),
-              downloadButton("download_nmds_script", "R-script analyse")
-            ),
-            h4("Site-scores"),
-            tableOutput("nmds_site_table"),
-            h4("Soort-scores"),
-            tableOutput("nmds_species_table"),
-            h4("Envfit"),
-            tableOutput("nmds_envfit_table"),
-            h4("Shepard-diagram"),
-            plotOutput("nmds_shepard_plot", height = "360px"),
-            h4("Gebruikte plot-jaren"),
-            tableOutput("nmds_sample_table"),
-            h4("Telinspanning/detectie"),
-            tableOutput("nmds_detection_effort_table")
-          )
-        )
-      )
-    )
-  ),
-  community_analysis_tab(
-    "RDA", "rda",
-    "Verklarende ordinatie van soortensamenstelling met omgevingsvariabelen.",
-    "Voer RDA-analyse uit",
-    "RDA gebruikt getelde plot-jaren en koppelt de community-matrix in territoria per km2 aan jaar, stikstof, AHN-hoogte en afstand tot pad.",
-    extra_controls = tagList(
-      selectInput("rda_transform", "Transformatie", choices = c("Hellinger" = "hellinger", "Presence/absence" = "presence_absence", "Log1p" = "log1p", "Ruw" = "raw"), selected = "hellinger"),
-      selectInput("rda_condition", "Partial RDA", choices = c("Geen conditionering" = "none", "Conditioneer voor jaar" = "year"), selected = "none")
-    )
-  ),
-  community_analysis_tab(
-    "PLS", "pls",
-    "Partial Least Squares regressie van soortensamenstelling op omgevingsvariabelen.",
-    "Voer PLS-analyse uit",
-    "PLS gebruikt getelde plot-jaren en koppelt de community-matrix in territoria per km2 aan jaar, stikstof, AHN-hoogte en afstand tot pad.",
-    extra_controls = tagList(
-      selectInput("pls_transform", "Transformatie", choices = c("Hellinger" = "hellinger", "Presence/absence" = "presence_absence", "Log1p" = "log1p", "Ruw" = "raw"), selected = "hellinger"),
-      selectInput("pls_components", "Componenten", choices = c("1" = 1, "2" = 2, "3" = 3, "4" = 4), selected = 2)
-    )
-  ),
-  community_analysis_tab(
-    "Changepoint", "changepoint",
-    "Detectie van omslagpunten in ecologische tijdreeksen.",
-    "Voer changepoint-analyse uit",
-    "Changepoint gebruikt jaarlijkse tellingen, TRIM-indexen of MSI als invoer. Niet-getelde jaren worden niet als nul ingevuld; controleer altijd de plotdekking en penaltygevoeligheid.",
-    extra_controls = tagList(
-      selectInput(
-        "changepoint_source",
-        "Invoerbron",
-        choices = c(
-          "Jaarlijkse tellingen" = "community",
-          "TRIM-indexen" = "trim_index",
-          "MSI" = "msi"
-        ),
-        selected = "community"
-      ),
-      selectInput("changepoint_metric", "Reeks", choices = c("Totaal territoria per km2" = "totaal_territoria_per_km2", "Soortenrijkdom" = "soortenrijkdom"), selected = "totaal_territoria_per_km2"),
-      selectInput("changepoint_method", "Methode", choices = c("Niveauverandering enkele knip" = "level", "Trendbreuk enkele knip" = "trend", "Meerdere niveau-omslagpunten PELT" = "multi"), selected = "level"),
-      selectInput("changepoint_penalty", "Penalty PELT", choices = c("MBIC", "BIC", "SIC", "AIC"), selected = "MBIC")
-    )
-  ),
-  community_analysis_tab(
     "SEM", "sem",
     "SEM-verkenning voor directe en indirecte relaties tussen variabelen.",
     "Voer SEM-verkenning uit",
@@ -947,12 +1004,24 @@ ui <- navbarPage(
     )
   ),
   community_analysis_tab(
-    "Beta-Diversity", "betadiversity",
-    "Analyse van verschillen in soortensamenstelling tussen plots, jaren of perioden.",
-    "Voer beta-diversity analyse uit",
-    "Beta-diversity gebruikt Sorensen presence/absence op getelde plot-jaren. Echte nullen gelden als afwezigheid; niet-getelde plot-jaren blijven buiten de analyse.",
+    "Occupancy", "occupancy",
+    "Analyse van territoriumbezetting; later uitbreidbaar naar detectie/niet-detectie.",
+    "Voer occupancy-analyse uit",
+    "Occupancy gebruikt unmarked en dagbezoeken als herhaalde detectiemomenten. Alleen selecties met voldoende dagbezoeken kunnen detectiegecorrigeerd worden.",
     extra_controls = tagList(
-      tags$p(class = "section-note", "Methode: betapart::beta.pair met index.family = 'sorensen'.")
+      selectInput("occupancy_min_visits", "Minimaal aantal bezoeken per plot-jaar", choices = c("2" = 2, "3" = 3, "4" = 4), selected = 2),
+      checkboxGroupInput(
+        "occupancy_detection_covariates",
+        "Detectiecovariaten",
+        choices = c("Dag in seizoen" = "dagvanjaar", "Bezoekduur" = "bezoekduur_min", "Gunstig bezoek" = "gunstig"),
+        selected = c("dagvanjaar", "bezoekduur_min", "gunstig")
+      ),
+      checkboxGroupInput(
+        "occupancy_site_covariates",
+        "Sitecovariaten",
+        choices = c("Jaar" = "year_c", "Stikstof" = "stikstof_mean", "AHN hoogte" = "ahn_mean", "Afstand tot pad" = "afstand_pad_m"),
+        selected = "year_c"
+      )
     )
   )
   )
@@ -969,6 +1038,8 @@ server <- function(input, output, session) {
   pls_analyse_rv <- reactiveVal(NULL)
   changepoint_analyse_rv <- reactiveVal(NULL)
   sem_analyse_rv <- reactiveVal(NULL)
+  biodiversity_analyse_rv <- reactiveVal(NULL)
+  indicatorspecies_analyse_rv <- reactiveVal(NULL)
   betadiversity_analyse_rv <- reactiveVal(NULL)
   occupancy_analyse_rv <- reactiveVal(NULL)
   load_info_rv <- reactiveVal("Nog geen SQL geladen.")
@@ -981,6 +1052,8 @@ server <- function(input, output, session) {
   pls_analysis_info_rv <- reactiveVal("Nog geen PLS-analyse uitgevoerd.")
   changepoint_analysis_info_rv <- reactiveVal("Nog geen changepoint-analyse uitgevoerd.")
   sem_analysis_info_rv <- reactiveVal("Nog geen SEM-verkenning uitgevoerd.")
+  biodiversity_analysis_info_rv <- reactiveVal("Nog geen Biodiversity-analyse uitgevoerd.")
+  indicatorspecies_analysis_info_rv <- reactiveVal("Nog geen Indicator Species-analyse uitgevoerd.")
   betadiversity_analysis_info_rv <- reactiveVal("Nog geen beta-diversity analyse uitgevoerd.")
   occupancy_analysis_info_rv <- reactiveVal("Nog geen occupancy-analyse uitgevoerd.")
   community_rvs <- list(
@@ -988,6 +1061,8 @@ server <- function(input, output, session) {
     pls = pls_analyse_rv,
     changepoint = changepoint_analyse_rv,
     sem = sem_analyse_rv,
+    biodiversity = biodiversity_analyse_rv,
+    indicatorspecies = indicatorspecies_analyse_rv,
     betadiversity = betadiversity_analyse_rv,
     occupancy = occupancy_analyse_rv
   )
@@ -996,6 +1071,8 @@ server <- function(input, output, session) {
     pls = pls_analysis_info_rv,
     changepoint = changepoint_analysis_info_rv,
     sem = sem_analysis_info_rv,
+    biodiversity = biodiversity_analysis_info_rv,
+    indicatorspecies = indicatorspecies_analysis_info_rv,
     betadiversity = betadiversity_analysis_info_rv,
     occupancy = occupancy_analysis_info_rv
   )
@@ -1020,7 +1097,7 @@ server <- function(input, output, session) {
     load_info_rv("SQL wordt geladen...")
     tryCatch({
       path <- normalizePath(input$sql_path, winslash = "/", mustWork = TRUE)
-      cache_path <- file.path(tempdir(), "meijendel_tables_cache.rds")
+      cache_path <- meijendel_tables_cache_path(path)
       withProgress(message = "SQL wordt gelezen.", detail = "Dit kan even duren afhankelijk van het werkgeheugen van de server.", value = 0.1, {
         loaded <- load_meijendel_tables_cached(path, cache_path = cache_path)
         incProgress(0.8)
@@ -1077,6 +1154,14 @@ server <- function(input, output, session) {
 
   output$sem_analysis_status <- renderText({
     sem_analysis_info_rv()
+  })
+
+  output$biodiversity_analysis_status <- renderText({
+    biodiversity_analysis_info_rv()
+  })
+
+  output$indicatorspecies_analysis_status <- renderText({
+    indicatorspecies_analysis_info_rv()
   })
 
   output$betadiversity_analysis_status <- renderText({
@@ -1218,7 +1303,7 @@ server <- function(input, output, session) {
       groepen <- unique(groepen[, c("groep_100", "groep_titel")])
       groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
       choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-      return(selectizeInput("gee_group", "Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+      return(selectizeInput("gee_group", "Ec. Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
     }
     if (identical(input$gee_target_type, "richtlijn")) {
       richtlijnen <- build_richtlijn_mapping(tbls)
@@ -1226,6 +1311,9 @@ server <- function(input, output, session) {
       richtlijnen <- richtlijnen[order(richtlijnen$richtlijn_volgorde), , drop = FALSE]
       choices <- setNames(richtlijnen$richtlijn_id, richtlijnen$richtlijn_titel)
       return(selectizeInput("gee_richtlijn", "Rode/Oranje Lijst", choices = choices, selected = richtlijnen$richtlijn_id[[1]], multiple = FALSE))
+    }
+    if (identical(input$gee_target_type, "habitatgroep")) {
+      return(tags$p("Analyseert Habitatgroep: alle soorten met richtlijn_id 7 (Vogelrichtlijn)."))
     }
     soorten <- sort(tbls$soorten$soort_naam)
     selectizeInput("gee_species", "Soort", choices = soorten, selected = "Nachtegaal", multiple = FALSE)
@@ -1252,12 +1340,12 @@ server <- function(input, output, session) {
       radioButtons(
         "gee_trait_scope",
         "Soortselectie",
-        choices = c("Alle soorten" = "all", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
+        choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
         selected = "all"
       ),
       conditionalPanel(
         "input.gee_trait_scope == 'group'",
-        selectizeInput("gee_trait_group", "Vogelgroep", choices = setNames(groepen$groep_100, groepen$groep_titel), selected = groepen$groep_100[[1]], multiple = FALSE)
+        selectizeInput("gee_trait_group", "Ec. Vogelgroep", choices = setNames(groepen$groep_100, groepen$groep_titel), selected = groepen$groep_100[[1]], multiple = FALSE)
       ),
       conditionalPanel(
         "input.gee_trait_scope == 'richtlijn'",
@@ -1361,7 +1449,7 @@ server <- function(input, output, session) {
       groepen <- unique(groepen[, c("groep_100", "groep_titel")])
       groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
       choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-      return(selectizeInput("glmm_group", "Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+      return(selectizeInput("glmm_group", "Ec. Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
     }
     if (identical(input$glmm_target_type, "richtlijn")) {
       richtlijnen <- build_richtlijn_mapping(tbls)
@@ -1369,6 +1457,9 @@ server <- function(input, output, session) {
       richtlijnen <- richtlijnen[order(richtlijnen$richtlijn_volgorde), , drop = FALSE]
       choices <- setNames(richtlijnen$richtlijn_id, richtlijnen$richtlijn_titel)
       return(selectizeInput("glmm_richtlijn", "Rode/Oranje Lijst", choices = choices, selected = richtlijnen$richtlijn_id[[1]], multiple = FALSE))
+    }
+    if (identical(input$glmm_target_type, "habitatgroep")) {
+      return(tags$p("Analyseert Habitatgroep: alle soorten met richtlijn_id 7 (Vogelrichtlijn)."))
     }
     soorten <- sort(tbls$soorten$soort_naam)
     selectizeInput("glmm_species", "Soort", choices = soorten, selected = "Nachtegaal", multiple = FALSE)
@@ -1395,12 +1486,12 @@ server <- function(input, output, session) {
       radioButtons(
         "glmm_trait_scope",
         "Soortselectie",
-        choices = c("Alle soorten" = "all", "Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn"),
+        choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
         selected = "all"
       ),
       conditionalPanel(
         "input.glmm_trait_scope == 'group'",
-        selectizeInput("glmm_trait_group", "Vogelgroep", choices = setNames(groepen$groep_100, groepen$groep_titel), selected = groepen$groep_100[[1]], multiple = FALSE)
+        selectizeInput("glmm_trait_group", "Ec. Vogelgroep", choices = setNames(groepen$groep_100, groepen$groep_titel), selected = groepen$groep_100[[1]], multiple = FALSE)
       ),
       conditionalPanel(
         "input.glmm_trait_scope == 'richtlijn'",
@@ -1504,7 +1595,7 @@ server <- function(input, output, session) {
       groepen <- unique(groepen[, c("groep_100", "groep_titel")])
       groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
       choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-      return(selectizeInput("nmds_group", "Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+      return(selectizeInput("nmds_group", "Ec. Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
     }
     if (identical(input$nmds_selection_type, "richtlijn")) {
       richtlijnen <- build_richtlijn_mapping(tbls)
@@ -1543,7 +1634,7 @@ server <- function(input, output, session) {
     tags$p(class = "section-note", "Alle soorten met territoria binnen de geselecteerde kavels en jaren worden meegenomen.")
   })
 
-  for (community_prefix in c("rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
+  for (community_prefix in c("biodiversity", "indicatorspecies", "rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
     local({
       prefix <- community_prefix
       output[[paste0(prefix, "_plot_selector_ui")]] <- renderUI({
@@ -1585,7 +1676,7 @@ server <- function(input, output, session) {
           groepen <- unique(groepen[, c("groep_100", "groep_titel")])
           groepen <- groepen[order(groepen$groep_100), , drop = FALSE]
           choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-          return(selectizeInput(paste0(prefix, "_group"), "Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
+          return(selectizeInput(paste0(prefix, "_group"), "Ec. Vogelgroep", choices = choices, selected = groepen$groep_100[[1]], multiple = FALSE))
         }
         if (identical(selection_type, "richtlijn")) {
           richtlijnen <- build_richtlijn_mapping(tbls)
@@ -1701,7 +1792,7 @@ server <- function(input, output, session) {
       return()
     }
     if (length(input$lambda_analyse_keuze) == 0) {
-      lambda_analysis_info_rv("Kies eerst of je vogelsoorten, vogelgroepen en/of Rode/Oranje Lijst wilt analyseren.")
+      lambda_analysis_info_rv("Kies eerst of je vogelsoorten, ec. vogelgroepen, Habitatgroep en/of Rode/Oranje Lijst wilt analyseren.")
       showNotification("Kies eerst wat je wilt berekenen.", type = "error", duration = 5)
       return()
     }
@@ -1775,8 +1866,8 @@ server <- function(input, output, session) {
       if (identical(input$gee_trait_scope, "group")) {
         scope_value <- input$gee_trait_group
         if (is.null(scope_value) || !nzchar(scope_value)) {
-          gee_analysis_info_rv("Kies eerst een vogelgroep.")
-          showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+          gee_analysis_info_rv("Kies eerst een ec. vogelgroep.")
+          showNotification("Kies eerst een ec. vogelgroep.", type = "error", duration = 5)
           return()
         }
       } else if (identical(input$gee_trait_scope, "richtlijn")) {
@@ -1847,18 +1938,20 @@ server <- function(input, output, session) {
       target_value <- input$gee_species
     } else if (identical(input$gee_target_type, "group")) {
       if (is.null(input$gee_group) || !nzchar(input$gee_group)) {
-        gee_analysis_info_rv("Kies eerst een vogelgroep.")
-        showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+        gee_analysis_info_rv("Kies eerst een ec. vogelgroep.")
+        showNotification("Kies eerst een ec. vogelgroep.", type = "error", duration = 5)
         return()
       }
       target_value <- input$gee_group
-    } else {
+    } else if (identical(input$gee_target_type, "richtlijn")) {
       if (is.null(input$gee_richtlijn) || !nzchar(input$gee_richtlijn)) {
         gee_analysis_info_rv("Kies eerst een Rode/Oranje Lijst-categorie.")
         showNotification("Kies eerst een Rode/Oranje Lijst-categorie.", type = "error", duration = 5)
         return()
       }
       target_value <- input$gee_richtlijn
+    } else {
+      target_value <- NULL
     }
     totaal_covariaten <- c(input$gee_covariates, input$gee_ahn_covariates, input$gee_infra_covariates, input$gee_habitat_covariates)
     if (length(totaal_covariaten) == 0) {
@@ -2022,8 +2115,8 @@ server <- function(input, output, session) {
       if (identical(input$glmm_trait_scope, "group")) {
         scope_value <- input$glmm_trait_group
         if (is.null(scope_value) || !nzchar(scope_value)) {
-          glmm_analysis_info_rv("Kies eerst een vogelgroep.")
-          showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+          glmm_analysis_info_rv("Kies eerst een ec. vogelgroep.")
+          showNotification("Kies eerst een ec. vogelgroep.", type = "error", duration = 5)
           return()
         }
       } else if (identical(input$glmm_trait_scope, "richtlijn")) {
@@ -2094,18 +2187,20 @@ server <- function(input, output, session) {
       target_value <- input$glmm_species
     } else if (identical(input$glmm_target_type, "group")) {
       if (is.null(input$glmm_group) || !nzchar(input$glmm_group)) {
-        glmm_analysis_info_rv("Kies eerst een vogelgroep.")
-        showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+        glmm_analysis_info_rv("Kies eerst een ec. vogelgroep.")
+        showNotification("Kies eerst een ec. vogelgroep.", type = "error", duration = 5)
         return()
       }
       target_value <- input$glmm_group
-    } else {
+    } else if (identical(input$glmm_target_type, "richtlijn")) {
       if (is.null(input$glmm_richtlijn) || !nzchar(input$glmm_richtlijn)) {
         glmm_analysis_info_rv("Kies eerst een Rode/Oranje Lijst-categorie.")
         showNotification("Kies eerst een Rode/Oranje Lijst-categorie.", type = "error", duration = 5)
         return()
       }
       target_value <- input$glmm_richtlijn
+    } else {
+      target_value <- NULL
     }
     totaal_covariaten <- c(input$glmm_covariates, input$glmm_ahn_covariates, input$glmm_infra_covariates, input$glmm_habitat_covariates)
     if (length(totaal_covariaten) == 0) {
@@ -2193,8 +2288,8 @@ server <- function(input, output, session) {
     if (identical(input$nmds_selection_type, "group")) {
       selection_value <- input$nmds_group
       if (is.null(selection_value) || !nzchar(selection_value)) {
-        nmds_analysis_info_rv("Kies eerst een vogelgroep.")
-        showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+        nmds_analysis_info_rv("Kies eerst een ec. vogelgroep.")
+        showNotification("Kies eerst een ec. vogelgroep.", type = "error", duration = 5)
         return()
       }
     } else if (identical(input$nmds_selection_type, "richtlijn")) {
@@ -2256,14 +2351,14 @@ server <- function(input, output, session) {
     })
   })
 
-  for (community_prefix in c("rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
+  for (community_prefix in c("biodiversity", "indicatorspecies", "rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
     local({
       prefix <- community_prefix
       observeEvent(input[[paste0("run_", prefix, "_analysis")]], {
         tbls <- tbls_rv()
         info_rv <- community_infos[[prefix]]
         result_rv <- community_rvs[[prefix]]
-        method_label <- switch(prefix, rda = "RDA", pls = "PLS", changepoint = "changepoint", sem = "SEM", betadiversity = "beta-diversity", occupancy = "occupancy")
+        method_label <- switch(prefix, biodiversity = "Biodiversity", indicatorspecies = "Indicator Species", rda = "RDA", pls = "PLS", changepoint = "changepoint", sem = "SEM", betadiversity = "beta-diversity", occupancy = "occupancy")
         if (is.null(tbls)) {
           info_rv("Laad eerst Meijendel.sql.")
           showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
@@ -2292,8 +2387,8 @@ server <- function(input, output, session) {
         if (identical(selection_type, "group")) {
           selection_value <- input[[paste0(prefix, "_group")]]
           if (is.null(selection_value) || !nzchar(selection_value)) {
-            info_rv("Kies eerst een vogelgroep.")
-            showNotification("Kies eerst een vogelgroep.", type = "error", duration = 5)
+            info_rv("Kies eerst een ec. vogelgroep.")
+            showNotification("Kies eerst een ec. vogelgroep.", type = "error", duration = 5)
             return()
           }
         } else if (identical(selection_type, "richtlijn")) {
@@ -2317,6 +2412,19 @@ server <- function(input, output, session) {
           withProgress(message = paste(method_label, "draait"), detail = "Community-matrix en uitkomsten worden opgebouwd.", value = 0.1, {
             analyse <- switch(
               prefix,
+              biodiversity = run_biodiversity_subset(
+                tbls, selected_plots, year_from, year_to,
+                selection_type = selection_type,
+                selection_value = selection_value
+              ),
+              indicatorspecies = run_indicatorspecies_subset(
+                tbls, selected_plots, year_from, year_to,
+                selection_type = selection_type,
+                selection_value = selection_value,
+                period_scheme = input$indicatorspecies_period_scheme,
+                transform = input$indicatorspecies_transform,
+                nperm = as.integer(input$indicatorspecies_nperm)
+              ),
               rda = run_rda_subset(
                 tbls, selected_plots, year_from, year_to,
                 selection_type = selection_type,
@@ -2369,6 +2477,8 @@ server <- function(input, output, session) {
             )
             export_function <- switch(
               prefix,
+              biodiversity = "run_biodiversity_subset",
+              indicatorspecies = "run_indicatorspecies_subset",
               rda = "run_rda_subset",
               pls = "run_pls_subset",
               changepoint = "run_changepoint_subset",
@@ -2376,7 +2486,11 @@ server <- function(input, output, session) {
               betadiversity = "run_betadiversity_subset",
               occupancy = "run_occupancy_subset"
             )
-            if (identical(prefix, "rda")) {
+            if (identical(prefix, "indicatorspecies")) {
+              export_args$period_scheme <- input$indicatorspecies_period_scheme
+              export_args$transform <- input$indicatorspecies_transform
+              export_args$nperm <- as.integer(input$indicatorspecies_nperm)
+            } else if (identical(prefix, "rda")) {
               export_args$transform <- input$rda_transform
               export_args$condition <- input$rda_condition
             } else if (identical(prefix, "pls")) {
@@ -2590,13 +2704,15 @@ server <- function(input, output, session) {
     )
   })
 
-  for (community_prefix in c("rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
+  for (community_prefix in c("biodiversity", "indicatorspecies", "rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
     local({
       prefix <- community_prefix
       output[[paste0(prefix, "_selection_summary")]] <- renderText({
         analyse <- community_rvs[[prefix]]()
         if (is.null(analyse)) {
           return(switch(prefix,
+            biodiversity = "Nog geen Biodiversity-analyse uitgevoerd.",
+            indicatorspecies = "Nog geen Indicator Species-analyse uitgevoerd.",
             rda = "Nog geen RDA-analyse uitgevoerd.",
             pls = "Nog geen PLS-analyse uitgevoerd.",
             changepoint = "Nog geen changepoint-analyse uitgevoerd.",
@@ -2607,6 +2723,8 @@ server <- function(input, output, session) {
         }
         sam <- analyse$summary[1, , drop = FALSE]
         extra <- switch(prefix,
+          biodiversity = paste("\nSoortenrijkdom gemiddeld:", round(sam$soortenrijkdom_gemiddelde, 3), "\nShannon gemiddeld:", round(sam$shannon_gemiddelde, 3), "\nSimpson gemiddeld:", round(sam$simpson_gemiddelde, 3)),
+          indicatorspecies = paste("\nPeriodisering:", sam$periodisering, "\nTransformatie:", sam$transform, "\nSignificante indicatorsoorten:", sam$n_significante_indicatorsoorten),
           rda = paste("\nVerklaarde variatie:", round(sam$verklaarde_variatie, 4), "\nTransformatie:", sam$transform),
           pls = paste("\nY-variatie verklaard:", round(sam$verklaarde_y_variatie, 4), "\nX-variatie verklaard:", round(sam$verklaarde_x_variatie, 2), "%\nTransformatie:", sam$transform, "\nComponenten:", sam$ncomp),
           changepoint = paste("\nReeks:", sam$metric, "\nKnipjaar:", sam$knip_jaar, "\nVerschil:", round(sam$verschil, 3)),
@@ -2717,7 +2835,7 @@ server <- function(input, output, session) {
     }
     groepen <- unique(analyse$group_results$trends[, c("groep_100", "groep_titel")])
     choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-    selectInput("selected_group", "Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
+    selectInput("selected_group", "Ec. Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
   })
 
   output$richtlijn_picker_ui <- renderUI({
@@ -2815,7 +2933,7 @@ server <- function(input, output, session) {
     groepen <- unique(analyse$group_results$summary[, c("groep_100", "groep_titel")])
     validate(need(nrow(groepen) > 0, "Geen groepen beschikbaar in deze selectie."))
     choices <- setNames(groepen$groep_100, paste0(groepen$groep_100, " - ", groepen$groep_titel))
-    selectInput("lambda_selected_group", "Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
+    selectInput("lambda_selected_group", "Ec. Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
   })
 
   output$lambda_group_plot <- renderPlot({
@@ -2922,6 +3040,49 @@ server <- function(input, output, session) {
       analyse$richtlijn_results$composition$richtlijn_id == as.integer(input$lambda_selected_richtlijn),
       c("soort_naam", "engelse_naam", "euring_code")
     ]
+  }, striped = TRUE)
+
+  output$lambda_habitatgroep_plot <- renderPlot({
+    analyse <- lambda_analyse_rv()
+    req(analyse)
+    validate(need("habitatgroep" %in% input$lambda_analyse_keuze, "Habitatgroep is niet geselecteerd."))
+    idx <- analyse$habitatgroep_results$index
+    idx <- idx[is.finite(idx$lambda), , drop = FALSE]
+    validate(need(nrow(idx) > 0, "Geen jaar-op-jaar veranderingen voor de Habitatgroep."))
+    idx$lambda_pct <- (idx$lambda - 1) * 100
+
+    y_max <- max(idx$lambda_pct, 0, na.rm = TRUE)
+    y_min <- min(idx$lambda_pct, 0, na.rm = TRUE)
+    plot(idx$jaar, idx$lambda_pct, type = "n",
+         xlab = "Jaar", ylab = "Jaar-op-jaar verandering (%)",
+         ylim = c(y_min, y_max),
+         main = "Habitatgroep")
+    legend_info <- draw_lambda_period_lines(idx)
+    abline(h = 0, lty = 2, col = "#64748b")
+    grid()
+    legend("topleft",
+           legend = legend_info$labels,
+           col = legend_info$cols,
+           lwd = c(rep(2, length(legend_info$labels) - 1L), 1),
+           pch = c(rep(16, length(legend_info$labels) - 1L), NA),
+           bty = "n")
+  })
+
+  output$lambda_habitatgroep_table <- renderTable({
+    analyse <- lambda_analyse_rv()
+    req(analyse)
+    validate(need("habitatgroep" %in% input$lambda_analyse_keuze, "Habitatgroep is niet geselecteerd."))
+    analyse$habitatgroep_results$summary[, c(
+      "richtlijn_titel", "eerste_jaar", "laatste_jaar", "n_indexjaren",
+      "geldige_jaarparen", "gemiddeld_lambda", "gemiddelde_verandering_pct"
+    )]
+  }, striped = TRUE)
+
+  output$lambda_habitatgroep_species_table <- renderTable({
+    analyse <- lambda_analyse_rv()
+    req(analyse)
+    validate(need("habitatgroep" %in% input$lambda_analyse_keuze, "Habitatgroep is niet geselecteerd."))
+    analyse$habitatgroep_results$composition[, c("soort_naam", "engelse_naam", "euring_code")]
   }, striped = TRUE)
 
   output$lambda_coverage_table <- renderTable({
@@ -3733,17 +3894,76 @@ server <- function(input, output, session) {
     abline(v = 0, col = "#64748b")
   })
 
+  output$biodiversity_plot <- renderPlot({
+    analyse <- biodiversity_analyse_rv()
+    req(analyse)
+    annual <- analyse$annual
+    validate(need(nrow(annual) > 0, "Geen jaarlijkse biodiversity-uitkomsten beschikbaar."))
+    old_par <- graphics::par(no.readonly = TRUE)
+    on.exit(graphics::par(old_par), add = TRUE)
+    graphics::par(mar = c(5.1, 4.1, 4.1, 4.1))
+    plot(
+      annual$jaar,
+      annual$soortenrijkdom_gemiddelde,
+      type = "o",
+      pch = 16,
+      col = "#2563eb",
+      xlab = "Jaar",
+      ylab = "Gemiddelde soortenrijkdom",
+      main = paste("Biodiversity:", analyse$summary$doel_label[[1]])
+    )
+    grid()
+    graphics::par(new = TRUE)
+    y2_vals <- c(annual$shannon_gemiddelde, annual$simpson_gemiddelde)
+    plot(
+      annual$jaar,
+      annual$shannon_gemiddelde,
+      type = "o",
+      pch = 17,
+      col = "#059669",
+      axes = FALSE,
+      xlab = "",
+      ylab = "",
+      ylim = range(y2_vals, na.rm = TRUE)
+    )
+    lines(annual$jaar, annual$simpson_gemiddelde, type = "o", pch = 15, col = "#d97706")
+    axis(4)
+    mtext("Gemiddelde Shannon / Simpson", side = 4, line = 2.5)
+    legend("topleft", legend = c("Soortenrijkdom", "Shannon", "Simpson"), col = c("#2563eb", "#059669", "#d97706"), pch = c(16, 17, 15), lwd = 2, bty = "n")
+  })
+
+  output$indicatorspecies_plot <- renderPlot({
+    analyse <- indicatorspecies_analyse_rv()
+    req(analyse)
+    indicators <- analyse$indicators
+    indicators <- indicators[indicators$significant %in% TRUE & is.finite(indicators$indicatorwaarde), , drop = FALSE]
+    validate(need(nrow(indicators) > 0, "Geen significante indicatorsoorten bij deze selectie."))
+    indicators <- indicators[order(indicators$p_waarde, -indicators$indicatorwaarde), , drop = FALSE]
+    indicators <- head(indicators, 20)
+    indicators <- indicators[order(indicators$indicatorwaarde), , drop = FALSE]
+    labels <- ifelse(!is.na(indicators$soort_naam) & nzchar(indicators$soort_naam), indicators$soort_naam, as.character(indicators$soort_id))
+    old_par <- graphics::par(no.readonly = TRUE)
+    on.exit(graphics::par(old_par), add = TRUE)
+    graphics::par(mar = c(5.1, 12, 4.1, 2.1))
+    period_levels <- unique(indicators$periode)
+    cols <- grDevices::colorRampPalette(c("#2563eb", "#059669", "#d97706", "#7c3aed"))(max(3L, length(period_levels)))
+    barplot(indicators$indicatorwaarde, names.arg = labels, horiz = TRUE, las = 1, col = cols[match(indicators$periode, period_levels)], xlab = "Indicatorwaarde", main = paste("Indicator Species:", analyse$summary$doel_label[[1]]))
+    legend("bottomright", legend = period_levels, fill = cols[seq_along(period_levels)], bty = "n")
+  })
+
   output$betadiversity_plot <- renderPlot({
     analyse <- betadiversity_analyse_rv()
     req(analyse)
     annual <- analyse$annual
     annual <- annual[is.finite(annual$beta_sorensen), , drop = FALSE]
     validate(need(nrow(annual) > 0, "Geen jaarlijkse beta-diversity beschikbaar."))
-    plot(annual$jaar, annual$beta_sorensen, type = "o", pch = 16, col = "#7c3aed", xlab = "Jaar", ylab = "Beta-diversity (Sorensen)", main = paste("Beta-Diversity:", analyse$summary$doel_label[[1]]))
+    y_vals <- c(annual$beta_sorensen, annual$beta_turnover, annual$beta_nestedness, annual$beta_turnover_plus_nestedness)
+    plot(annual$jaar, annual$beta_sorensen, type = "o", pch = 16, col = "#7c3aed", xlab = "Jaar", ylab = "Beta-diversity (Sorensen, 0-1)", ylim = range(y_vals, na.rm = TRUE), main = paste("Beta-Diversity:", analyse$summary$doel_label[[1]]))
     lines(annual$jaar, annual$beta_turnover, type = "o", pch = 17, col = "#059669")
     lines(annual$jaar, annual$beta_nestedness, type = "o", pch = 15, col = "#d97706")
+    lines(annual$jaar, annual$beta_turnover_plus_nestedness, type = "l", lty = 3, lwd = 2, col = "#111827")
     grid()
-    legend("topleft", legend = c("Sorensen totaal", "Turnover", "Nestedness"), col = c("#7c3aed", "#059669", "#d97706"), pch = c(16, 17, 15), lwd = 2, bty = "n")
+    legend("topleft", legend = c("Sorensen totaal", "Turnover", "Nestedness", "Turnover + nestedness"), col = c("#7c3aed", "#059669", "#d97706", "#111827"), pch = c(16, 17, 15, NA), lwd = 2, lty = c(1, 1, 1, 3), bty = "n")
   })
 
   output$occupancy_plot <- renderPlot({
@@ -3754,13 +3974,15 @@ server <- function(input, output, session) {
     grid()
   })
 
-  for (community_prefix in c("rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
+  for (community_prefix in c("biodiversity", "indicatorspecies", "rda", "pls", "changepoint", "sem", "betadiversity", "occupancy")) {
     local({
       prefix <- community_prefix
       output[[paste0(prefix, "_primary_table")]] <- renderTable({
         analyse <- community_rvs[[prefix]]()
         req(analyse)
         out <- switch(prefix,
+          biodiversity = analyse$annual,
+          indicatorspecies = analyse$indicators,
           rda = analyse$constraints,
           pls = analyse$vip_scores,
           changepoint = head(analyse$candidates, 20),
@@ -3776,6 +3998,8 @@ server <- function(input, output, session) {
         analyse <- community_rvs[[prefix]]()
         req(analyse)
         out <- switch(prefix,
+          biodiversity = analyse$diagnostics,
+          indicatorspecies = analyse$diagnostics,
           rda = analyse$diagnostics,
           pls = {
             rmsep <- analyse$rmsep
@@ -3800,6 +4024,8 @@ server <- function(input, output, session) {
         analyse <- community_rvs[[prefix]]()
         req(analyse)
         out <- switch(prefix,
+          biodiversity = analyse$plotjaar,
+          indicatorspecies = analyse$meta[, intersect(c("plot_id", "kavel_nummer", "jaar", "periode", "soortenrijkdom", "totaal_territoria_per_km2"), names(analyse$meta)), drop = FALSE],
           rda = analyse$meta[, intersect(c("plot_id", "kavel_nummer", "jaar", "soortenrijkdom", "totaal_territoria_per_km2", "stikstof_mean", "ahn_mean", "afstand_pad_m"), names(analyse$meta)), drop = FALSE],
           pls = analyse$meta[, intersect(c("plot_id", "kavel_nummer", "jaar", "soortenrijkdom", "totaal_territoria_per_km2", "stikstof_mean", "ahn_mean", "afstand_pad_m"), names(analyse$meta)), drop = FALSE],
           changepoint = analyse$annual,
@@ -3828,6 +4054,8 @@ server <- function(input, output, session) {
         content = function(file) {
           analyse <- community_rvs[[prefix]]()
           out <- switch(prefix,
+            biodiversity = analyse$annual,
+            indicatorspecies = analyse$indicators,
             rda = analyse$constraints,
             pls = analyse$vip_scores,
             changepoint = analyse$candidates,
@@ -3966,6 +4194,55 @@ server <- function(input, output, session) {
     ]
   }, striped = TRUE)
 
+  output$habitatgroep_plot <- renderPlot({
+    analyse <- analyse_rv()
+    req(analyse)
+    validate(need("habitatgroep" %in% input$analyse_keuze, "Habitatgroep is niet geselecteerd."))
+    msi <- analyse$habitatgroep_results$msi
+    validate(need(nrow(msi) > 0, "Geen MSI-gegevens voor de Habitatgroep."))
+
+    variants <- unique(msi$msi_variant)
+    cols <- c(volledig = "#1d4ed8", robuust = "#15803d")
+    pchs <- c(volledig = 16, robuust = 17)
+    y_max <- max(msi$msi, na.rm = TRUE)
+    y_min <- min(msi$msi, na.rm = TRUE)
+
+    plot(NA, NA,
+         xlab = "Jaar", ylab = "MSI",
+         xlim = range(msi$jaar, na.rm = TRUE),
+         ylim = c(y_min, y_max),
+         main = "Habitatgroep")
+    for (variant in variants) {
+      part <- msi[msi$msi_variant == variant, ]
+      part <- part[order(part$jaar), ]
+      col <- if (variant %in% names(cols)) cols[[variant]] else "#1d4ed8"
+      pch <- if (variant %in% names(pchs)) pchs[[variant]] else 16
+      lines(part$jaar, part$msi, type = "o", pch = pch, lwd = 2, col = col)
+    }
+    grid()
+    legend("topleft",
+           legend = c("Volledige MSI", "Robuuste MSI"),
+           col = c(cols[["volledig"]], cols[["robuust"]]),
+           lwd = 2, pch = c(pchs[["volledig"]], pchs[["robuust"]]), bty = "n")
+  })
+
+  output$habitatgroep_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse)
+    validate(need("habitatgroep" %in% input$analyse_keuze, "Habitatgroep is niet geselecteerd."))
+    analyse$habitatgroep_results$trends[, c(
+      "richtlijn_titel", "msi_variant", "eerste_jaar", "laatste_jaar", "gemiddeld_n_soorten",
+      "trend_pct_per_jaar", "trend_p", "trend_r2", "trend_uitleg", "trendduiding_type"
+    )]
+  }, striped = TRUE)
+
+  output$habitatgroep_species_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse)
+    validate(need("habitatgroep" %in% input$analyse_keuze, "Habitatgroep is niet geselecteerd."))
+    analyse$habitatgroep_results$composition[, c("soort_naam", "engelse_naam", "euring_code")]
+  }, striped = TRUE)
+
   output$coverage_table <- renderTable({
     analyse <- analyse_rv()
     req(analyse)
@@ -4058,6 +4335,28 @@ server <- function(input, output, session) {
       analyse <- analyse_rv()
       req(analyse)
       utils::write.csv(analyse$richtlijn_results$msi, file, row.names = FALSE)
+    }
+  )
+
+  output$download_habitatgroep_trends <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_habitatgroeptrends_%s_%s.csv", input$year_from, input$year_to)
+    },
+    content = function(file) {
+      analyse <- analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$habitatgroep_results$trends, file, row.names = FALSE)
+    }
+  )
+
+  output$download_habitatgroep_msi <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_habitatgroep_msi_%s_%s.csv", input$year_from, input$year_to)
+    },
+    content = function(file) {
+      analyse <- analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$habitatgroep_results$msi, file, row.names = FALSE)
     }
   )
 
@@ -4157,6 +4456,28 @@ server <- function(input, output, session) {
       analyse <- lambda_analyse_rv()
       req(analyse)
       utils::write.csv(analyse$richtlijn_results$summary, file, row.names = FALSE)
+    }
+  )
+
+  output$download_lambda_habitatgroep_years <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_lambda_habitatgroepjaren_%s_%s.csv", input$lambda_year_from, input$lambda_year_to)
+    },
+    content = function(file) {
+      analyse <- lambda_analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$habitatgroep_results$index, file, row.names = FALSE)
+    }
+  )
+
+  output$download_lambda_habitatgroep_summary <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_lambda_habitatgroep_%s_%s.csv", input$lambda_year_from, input$lambda_year_to)
+    },
+    content = function(file) {
+      analyse <- lambda_analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$habitatgroep_results$summary, file, row.names = FALSE)
     }
   )
 
