@@ -104,6 +104,12 @@ if [ -d "$LOCAL_REPO/trim_msi_evg" ]; then
     "$VPS:$REMOTE_WWW/trim_msi_evg/"
 fi
 
+if [ -d "$LOCAL_REPO/groepen_grafieken" ]; then
+  "${rsync_base[@]}" --delete \
+    "$LOCAL_REPO/groepen_grafieken/" \
+    "$VPS:$REMOTE_WWW/groepen_grafieken/"
+fi
+
 if [ -f "$LOCAL_REPO/app-home/index.html" ]; then
   log "Upload app-home"
   "${rsync_base[@]}" "$LOCAL_REPO/app-home/index.html" \

@@ -15,10 +15,11 @@ Bij codewerk:
 - onderzoek eerst kort de bestaande code en volg de bestaande patronen, naamgeving en structuur
 - zoek eerst naar bestaande helpers of utilities voordat je nieuwe toevoegt
 - lever standaard een werkende wijziging op in plaats van alleen een plan, tenzij ik expliciet om analyse of brainstorm vraag
-- creëer geen nieuwe bestanden in de repo tenzij ik daar expliciet om vraag
+- creëer geen nieuwe bestanden in de repo tenzij ik daar expliciet om vraag; uitzondering: bestanden die noodzakelijk zijn om bij een crash van de VPS de volledige omgeving op `app.vwg-m.nl` te herstellen mogen wel in de repo worden gezet
 - wees voorzichtig met bestaande niet-door-jou-gemaakte wijzigingen en draai die nooit terug zonder expliciete instructie
 - benoem aannames, risico's en blockers kort en concreet
 - houd wijzigingen zo klein mogelijk, maar wel volledig genoeg om het probleem echt op te lossen
+- voorkom regressies: laat bij wijzigingen aan dashboard, Shiny-app of VPS-website geen bestaande onderdelen, tekstblokken, grafieken, filters of toelichtingen verdwijnen tenzij daar expliciet om is gevraagd; controleer relevante bestaande UI-elementen na afloop
 - voeg tests of verificatiestappen toe als dat logisch is; als je iets niet kon verifiëren, zeg dat expliciet
 
 Bij communicatie:
@@ -45,7 +46,8 @@ GIS / R-spatial:
 VPS / app.vwg-m.nl:
 - Appsmith is niet meer actief op de VPS en is niet relevant voor inloggen of gebruikersbeheer van `app.vwg-m.nl`
 - `app.vwg-m.nl` bevat op productie alleen het dashboard en de Shiny-app
+- alle grafieken op `app.vwg-m.nl` moeten qua cijfers en opmaak exact overeenkomen met de grafieken in het dashboard; gebruik daarom dezelfde brondata, berekeningslogica, schaal, labels, legenda, kleuren en onzekerheidsweergave
 - de ledenadministratie/PWA staat niet meer op de VPS; containers `leden_pwa_web` en `leden_pwa_mysql` horen daar niet te draaien
-- toegang tot `app.vwg-m.nl` loopt via Caddy Basic Auth; er is geen PWA-login of magic-link-login op productie
+- toegang tot dashboard, SQL, Shiny en dashboard-output op `app.vwg-m.nl` loopt via Caddy `forward_auth` naar de VWG-M ledenlogin; er is geen PWA-login of magic-link-login op productie
 - behandel `appsmith_ledenadministratie/` als historische/lokale Appsmith-context, niet als actuele productie-inrichting
-- bij vragen over toegang tot `app.vwg-m.nl`: kijk eerst naar de Caddy Basic Auth-configuratie en de routes voor dashboard en Shiny, niet naar Appsmith of de PWA
+- bij vragen over toegang tot `app.vwg-m.nl`: kijk eerst naar de Caddy `forward_auth`-configuratie en de routes voor dashboard en Shiny, niet naar Appsmith of de PWA

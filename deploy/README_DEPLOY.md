@@ -46,6 +46,7 @@ Het script toont aan het einde zelf:
 
 - checksums van de SQL op Shiny en `www`
 - containerstatus via `docker ps`
+- SQL-cache-status, bijvoorbeeld `SQL cache: from_cache=TRUE ...`
 
 Handmatig controleren kan met:
 
@@ -67,22 +68,62 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
 - dashboard-outputmappen:
   - `/srv/vwgm/www/output_ecologische_groepen/`
   - `/srv/vwgm/www/trim_msi_evg/`
+- vooraf gegenereerde websitegrafieken voor Groepen:
+  - `/srv/vwgm/www/groepen_grafieken/gam_dashboard_groepen.csv`
+  - `/srv/vwgm/www/groepen_grafieken/groep_soorten.csv`
+  - `/srv/vwgm/www/groepen_grafieken/groep_dichtheid.csv`
 
 Daarna voert het script op de VPS uit:
 
-- Shiny-container `shiny_meijendel` herstarten
+- Shiny `app_cache` behouden en schrijfbaar mounten
+- Shiny-container `shiny_meijendel` via `docker compose up -d shiny` controleren/herstarten
 - Shiny HTTP-endpoint controleren
+- SQL-cache voorverwarmen, zodat de eerste gebruiker niet de volledige SQL-parse hoeft af te wachten
 
 Het script maakt geen automatische backup op de VPS.
 
 De ledenadministratie/PWA wordt niet meer naar de VPS gedeployed en hoort op productie niet te draaien.
-`app.vwg-m.nl` bevat alleen:
+`app.vwg-m.nl` bevat voor productie Meijendel:
 
 - startpagina/app-home
 - dashboard `bmp_meijendel_index.html` met bijbehorende outputbestanden
 - Shiny-app onder `/shiny_meijendel/`
 
-Toegang tot deze onderdelen loopt via Caddy Basic Auth. Er is geen PWA-login, magic-link-login of ledenadministratie-API op productie.
+Daarnaast zijn er op dezelfde VPS proefroutes voor het nabouwen van de VWG-site:
+
+- statische proefsite onder `/proef-vwg-m/` vanuit `/srv/vwgm/vwg-m-proef/public`
+- publieke VWG-M website onder `/` via `127.0.0.1:8091`
+- tijdelijke proefalias onder `/proef-vwg-m-app/` via `127.0.0.1:8091`
+
+De normale Meijendel-deploy raakt `/srv/vwgm/vwg-m-proef/` niet aan.
+
+Toegang tot dashboard, Shiny, SQL en dashboard-output loopt via Caddy `forward_auth` naar de VWG-M ledenlogin. Er is geen PWA-login, magic-link-login of ledenadministratie-API op productie.
+
+## Grafieken op de VWG-site
+
+Alle grafieken op `app.vwg-m.nl` moeten qua cijfers en opmaak gelijk blijven aan de dashboardgrafieken. Gebruik daarom geen losse webberekening en parse `Meijendel.sql` niet per request. De FastAPI/Jinja-site leest vooraf gegenereerde CSV-output:
+
+```sh
+/srv/vwgm/www/groepen_grafieken/gam_dashboard_groepen.csv
+/srv/vwgm/www/groepen_grafieken/groep_soorten.csv
+/srv/vwgm/www/groepen_grafieken/groep_dichtheid.csv
+```
+
+`groep_dichtheid.csv` bevat per `chart_id` de dashboardgelijke dichtheidsreeks: territoria per jaar gedeeld door het Meijendel-oppervlak in dat jaar. Deze CSV is leidend voor de groepsgrafieken op de FastAPI/Jinja-site. `groep_soorten.csv` bevat per `chart_id` de soortnamen die voor de grafiek zijn gebruikt en wordt onder de grafiek op de groepspagina getoond. `gam_dashboard_groepen.csv` blijft beschikbaar als historische/analytische output voor TRIM-GAM, maar wordt niet meer gebruikt voor de groepsgrafieken op de website. De productie-CSV bevat dit voor de ecologische groepen, Rode/Oranjelijstgroepen en Natura 2000-habitatgroepen. De SVG-route is:
+
+```sh
+/groepen/grafiek/{chart_id}.svg
+```
+
+Voor ecologische groepen gebruikt de CSV direct de dashboardbestanden in `trim_msi_evg/`. Voor Rode/Oranje en habitatgroepen volgt de CSV-generator dezelfde dashboardlogica: de Meijendel-lijn wordt opgebouwd uit de TRIM-soortindexbestanden in `trim/soorten/`, habitatsoorten komen uit `soorten_habitattypen` in `Meijendel.sql`, en de landelijke lijn wordt gewogen samengesteld uit `gam_voorspellingen_landelijk_msi_groepen.csv`. Er is dus geen aparte website-GAM of habitat-fallback meer.
+
+De CSV wordt in de standaardroutine gegenereerd door:
+
+```sh
+Rscript R/build_groepen_grafieken_dashboard_csv.R meijendel.sql groepen_grafieken
+```
+
+Daarna uploadt `deploy/deploy_meijendel_vps.sh` de map `groepen_grafieken/` naar `/srv/vwgm/www/groepen_grafieken/`.
 
 ## Caddy en toegang
 
@@ -99,19 +140,17 @@ De template beschermt alle routes van `app.vwg-m.nl`:
 - SQL-data `/Meijendel.sql` en `/meijendel.sql`
 - Shiny-app `/shiny_meijendel/`
 - dashboard-outputmappen
+- publieke website `/`
+- tijdelijke proefroutes `/proef-vwg-m/` en `/proef-vwg-m-app/`
 
-Na een geldige Basic Auth-login zet Caddy een `vwg_session` cookie. Daardoor hoeven geautoriseerde gebruikers maar één keer in te loggen en werken daarna ook dashboard-`fetch()` requests en Shiny/websocket-verkeer zonder extra loginprompt. Zonder sessie of Basic Auth blijven directe URLs geblokkeerd.
+De publieke website op `app.vwg-m.nl` gebruikt geen algemene Basic Auth meer. Het dashboard, de dashboard-outputbestanden, Shiny en de SQL-dump blijven afgeschermd via `forward_auth` naar de VWG-M ledenlogin.
 
-De Basic Auth-accounts en wachtwoord-hashes staan bewust niet in de repo. Ze staan op de VPS in:
-
-```sh
-/etc/caddy/vwg_basic_auth.caddy
-```
+Secrets, sessiesleutels, wachtwoorden en eventuele oude Basic Auth-hashes staan bewust niet in de repo. De oude include `/etc/caddy/vwg_basic_auth.caddy` kan op de server blijven staan voor rollback, maar de actuele template importeert deze niet meer. Noteer geheime waarden alleen in een password manager of server-side secret store; niet in Git.
 
 `deploy/deploy_caddy_vps.sh`:
 
 - genereert bij elke run een nieuwe sessie-secret
-- maakt `/etc/caddy/vwg_basic_auth.caddy` aan uit de bestaande Caddyfile als die include nog ontbreekt
+- valideert en installeert de publieke Caddy-config
 - uploadt een tijdelijke Caddyfile
 - valideert de config met `caddy validate`
 - maakt een backup van `/etc/caddy/Caddyfile`

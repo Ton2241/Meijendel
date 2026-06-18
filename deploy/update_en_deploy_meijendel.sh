@@ -66,6 +66,11 @@ Rscript "$REPO_DIR/R/landelijke_msi_evg.R" \
   "$SQL_FILE" \
   "$REPO_DIR/trim_msi_evg"
 
+log "Genereer dashboardgelijke Groepen-grafieken"
+Rscript "$REPO_DIR/R/build_groepen_grafieken_dashboard_csv.R" \
+  "$SQL_FILE" \
+  "$REPO_DIR/groepen_grafieken"
+
 log "Synchroniseer gedeelde Shiny-selectie-CSV"
 need_file "$REPO_DIR/R/evg_selctie_T0soort_T0msi.csv"
 need_dir "$REPO_DIR/shiny_meijendel"

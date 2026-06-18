@@ -89,10 +89,14 @@ Bron:
 - eventueel ook `gam_voorspellingen_msi_groepen.csv`
 - eventueel ook `gam_interpretatie_msi_groepen.csv`
 
-Bij beide keuzes staan naast de ecologische groepen ook de groepen `Rode Lijst`, `Oranje Lijst`, `Rode en Oranjelijst` en `Vogelrichtlijn`.
+Bij beide keuzes gebruikt het groepsmenu vier hoofdkeuzes: `Alles`, `Lijsten`, `Habitattypen` en `Ecologische Vogelgroepen`.
+`Alles` gebruikt alle soorten.
+Onder `Lijsten` staan `Rode Lijst`, `Oranje Lijst` en `Rode en Oranjelijst`.
 De `Oranje Lijst` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 6`.
-De `Vogelrichtlijn` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 7`.
+Onder `Habitattypen` staan de Natura 2000-habitattypen `2110`, `2120`, `2130`, `2160`, `2180`, `2190`, `3140` en `6430`.
+De habitatgroepen worden afgeleid uit `soorten_habitattypen`; soorten met koppelingsterkte `sterk`, `matig` of `zwak` worden samengenomen per habitatcode.
 Bij elke groep toont het dashboard ook een tekstvak met de vogelsoorten die in de gekozen groep zitten.
+Bij `Groepen` > `Dichtheid per km2` worden geen MSI-waarden meer gebruikt. Per jaar worden de werkelijke territoria van alle soorten in de gekozen groep opgeteld en gedeeld door het beschikbare oppervlak van Meijendel in dat jaar.
 Bij `Groepen` > `TRIM` toont het dashboard naast de directe volledige/robuuste MSI ook twee GAM-vergelijkingen: eerst de robuuste MSI en daarna de volledige MSI. Beide GAM-grafieken worden gevolgd door een eigen TRIM-uitlegblok. De soortenbox splitst de gebruikte soorten uit in `Robuuste MSI` en `Volledige MSI`.
 
 De standaardperiode voor de groepengrafieken is `1990-2025`. De gebruiker kan deze periode in het dashboard blijven aanpassen.

@@ -1,17 +1,26 @@
 (vwg_app_routes) {
 	handle /Meijendel.sql {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		root * /srv/vwgm/shiny
 		header Content-Type "text/plain; charset=utf-8"
 		file_server
 	}
 
 	handle /meijendel.sql {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		root * /srv/vwgm/shiny
 		header Content-Type "text/plain; charset=utf-8"
 		file_server
 	}
 
 	handle /shiny_meijendel* {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		reverse_proxy 127.0.0.1:3838
 	}
 
@@ -25,28 +34,39 @@
 	}
 
 	handle /bmp_meijendel_index.html {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		root * /srv/vwgm/www
 		file_server
 	}
 
 	handle /trim* {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		root * /srv/vwgm/www
 		file_server
 	}
 
 	handle /output_ecologische_groepen* {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		root * /srv/vwgm/www
 		file_server
 	}
 
 	handle /trim_msi_evg* {
+		forward_auth 127.0.0.1:8091 {
+			uri /leden/shiny-auth
+		}
 		root * /srv/vwgm/www
 		file_server
 	}
 
 	handle {
-		root * /srv/vwgm/app-home
-		file_server
+		reverse_proxy 127.0.0.1:8091
 	}
 }
 
@@ -68,16 +88,7 @@ app.vwg-m.nl {
 	}
 	log_append auth_user {http.auth.user.id}
 
-	@vwg_session header Cookie *vwg_session=__VWG_SESSION_SECRET__*
-	handle @vwg_session {
-		import vwg_app_routes
-	}
-
 	handle {
-		route {
-			import /etc/caddy/vwg_basic_auth.caddy
-			header Set-Cookie "vwg_session=__VWG_SESSION_SECRET__; Path=/; Max-Age=28800; Secure; HttpOnly; SameSite=Lax"
-			import vwg_app_routes
-		}
+		import vwg_app_routes
 	}
 }
