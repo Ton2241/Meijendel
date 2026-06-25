@@ -8,8 +8,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 REMOTE_BASE="${REMOTE_BASE:-/srv/vwgm}"
+REMOTE_DATA="$REMOTE_BASE/data"
 REMOTE_SHINY="$REMOTE_BASE/shiny"
 REMOTE_WWW="$REMOTE_BASE/www"
+REMOTE_APP="$REMOTE_BASE/vwg-m-linux-app"
 
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
@@ -57,9 +59,18 @@ LC_ALL=C awk '
   }
 ' "$SQL_LOCAL" > "$SQL_DEPLOY"
 
-log "Upload SQL naar Shiny en www"
-"${rsync_base[@]}" "$SQL_DEPLOY" "$VPS:$REMOTE_SHINY/Meijendel.sql"
-"${rsync_base[@]}" "$SQL_DEPLOY" "$VPS:$REMOTE_WWW/Meijendel.sql"
+log "Upload SQL naar canonieke dataplek"
+ssh -i "$SSH_KEY" "$VPS" "
+  set -euo pipefail
+  mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data'
+"
+"${rsync_base[@]}" "$SQL_DEPLOY" "$VPS:$REMOTE_DATA/Meijendel.sql"
+ssh -i "$SSH_KEY" "$VPS" "
+  set -euo pipefail
+  ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql'
+  ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql'
+  ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'
+"
 
 log "Upload Shiny-app en gedeelde R-code"
 if [ -d "$LOCAL_REPO/deploy/shiny_image" ]; then
@@ -156,7 +167,12 @@ ssh -i "$SSH_KEY" "$VPS" "
 
 	  docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e \"source(\\\"helpers.R\\\"); path <- \\\"/srv/shiny-server/Meijendel.sql\\\"; t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\\\"SQL cache: from_cache=%s elapsed=%.3f cache=%s\\\\n\\\", x[[\\\"from_cache\\\"]], unname(t[[\\\"elapsed\\\"]]), x[[\\\"cache_path\\\"]]))\"'
 
-	  sha256sum '$REMOTE_SHINY/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql'
+	  sha256sum \
+	    '$REMOTE_DATA/Meijendel.sql' \
+	    '$REMOTE_SHINY/Meijendel.sql' \
+	    '$REMOTE_WWW/Meijendel.sql' \
+	    '$REMOTE_APP/data/Meijendel.sql'
+	  find '$REMOTE_BASE' -maxdepth 6 -name Meijendel.sql -type f -print
   docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 "
 

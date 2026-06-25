@@ -60,8 +60,11 @@ curl -I http://127.0.0.1:3838/
 
 Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt deze VPS-onderdelen bij:
 
-- Shiny SQL zonder `tellers`, `appsmith_*` en `pwa_*` objecten: `/srv/vwgm/shiny/Meijendel.sql`
-- HTML/dashboard SQL zonder `tellers`, `appsmith_*` en `pwa_*` objecten: `/srv/vwgm/www/Meijendel.sql`
+- canonieke SQL zonder `tellers`, `appsmith_*` en `pwa_*` objecten: `/srv/vwgm/data/Meijendel.sql`
+- compatibiliteitspaden voor Shiny, dashboard en FastAPI zijn symlinks naar de canonieke SQL:
+  - `/srv/vwgm/shiny/Meijendel.sql`
+  - `/srv/vwgm/www/Meijendel.sql`
+  - `/srv/vwgm/vwg-m-linux-app/data/Meijendel.sql`
 - Shiny-app: `/srv/vwgm/shiny/shiny_meijendel/`
 - gedeelde R-code: `/srv/vwgm/shiny/R/`
 - HTML-dashboard: `/srv/vwgm/www/bmp_meijendel_index.html`
@@ -171,7 +174,7 @@ Benodigd:
 - de dump wordt gemaakt met kolomnamen in `INSERT`-regels (`--complete-insert`), omdat de R-scripts die kolomnamen gebruiken bij het inlezen
 - GTID-restore-informatie wordt bewust niet meegenomen (`--set-gtid-purged=OFF`) en de dump gebruikt `--single-transaction`
 - de tabel `tellers` wordt niet meegenomen in de deploy-dump
-- lokaal SQL-bestand: `meijendel.sql` in de repo-root
+- lokaal SQL-bestand: `meijendel.sql` in de repo-root; op de VPS wordt dit uitsluitend geplaatst als `/srv/vwgm/data/Meijendel.sql`
 - op de VPS bestaande Docker/Compose-config onder `/srv/vwgm`
 
 ## Configuratie overschrijven
