@@ -7,6 +7,7 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - `/Users/ton/Documents/GitHub/Meijendel` bevat `Meijendel.sql`, R-analyses, Shiny, dashboard/HTML-output, GIS-data en analysemiddelen.
 - `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app` bevat de FastAPI/Jinja-site voor `app.vwg-m.nl` en straks `www.vwg-m.nl`.
 - Wijzigingen worden lokaal gemaakt en na controle standaard gecommit in de betreffende repository met een korte, beschrijvende commitmelding.
+- Wijzigingsverzoeken voor `app.vwg-m.nl` of de VPS-site worden zowel lokaal als op de VPS doorgevoerd, met verificatie na deploy.
 
 ## Productie
 
