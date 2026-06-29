@@ -21,6 +21,7 @@ Bij codewerk:
 - houd wijzigingen zo klein mogelijk, maar wel volledig genoeg om het probleem echt op te lossen
 - voorkom regressies: laat bij wijzigingen aan dashboard, Shiny-app of VPS-website geen bestaande onderdelen, tekstblokken, grafieken, filters of toelichtingen verdwijnen tenzij daar expliciet om is gevraagd; controleer relevante bestaande UI-elementen na afloop
 - voeg tests of verificatiestappen toe als dat logisch is; als je iets niet kon verifiëren, zeg dat expliciet
+- commit afgeronde wijzigingen standaard in Git met een korte, beschrijvende commitmelding, tenzij ik expliciet vraag om niet te committen
 
 Bij communicatie:
 - wees direct, feitelijk en beknopt

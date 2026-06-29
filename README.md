@@ -2,6 +2,26 @@
 
 Deze repository bevat de database en analysemiddelen voor de vogelgegevens van Meijendel.
 
+## Projectanker voor nieuwe Codex-draden
+
+Lees bij vervolgwerk eerst deze vier bestanden:
+
+- `README.md`: ingang voor de Meijendel-repo en actuele projectcontext.
+- `ARCHITECTURE.md`: samenhang tussen Meijendel, dashboard, Shiny, FastAPI/Jinja-app, VPS en databases.
+- `TODO.md`: openstaande punten en operationele aandachtspunten.
+- `DECISIONS.md`: gemaakte keuzes die niet opnieuw moeten worden uitgevonden.
+
+Belangrijkste werkpaden:
+
+- Meijendel-bronproject: `/Users/ton/Documents/GitHub/Meijendel`
+- FastAPI/Jinja-site: `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`
+- VPS-app-pad: `/srv/vwgm/vwg-m-linux-app`
+- Canonieke SQL op VPS: `/srv/vwgm/data/Meijendel.sql`
+- Publieke host nu: `app.vwg-m.nl`
+- Voorbereide hoofdhost na DNS-cutover: `www.vwg-m.nl`, met `app.vwg-m.nl` als alias.
+
+Werk bij nieuwe hoofdopdrachten vanuit een nieuwe draad, maar gebruik deze documenten als werkgeheugen. Inspecteer daarna altijd de actuele code en `git status`; neem niet aan dat tijdelijke scripts uit `/private/tmp` nog bestaan. Commit afgeronde wijzigingen standaard met een korte, beschrijvende commitmelding, tenzij expliciet is gevraagd om niet te committen.
+
 De kern van het project bestaat uit:
 
 - een MySQL- of MariaDB-dump van de database in `Meijendel.sql`
@@ -191,7 +211,7 @@ Of via Terminal:
 - De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
 - De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.
 - Niet alle documentatie in de repo is even recent; de documenten in `MDs/` zijn nu leidend.
-- De worktree kan lokale, nog niet gecommitte wijzigingen bevatten. Controleer `git status` voordat je bestanden overschrijft of commit.
+- De worktree kan lokale, nog niet gecommitte wijzigingen bevatten. Controleer `git status` voordat je bestanden overschrijft of commit; commit afgeronde wijzigingen standaard na verificatie.
 
 ## Samenvatting
 
