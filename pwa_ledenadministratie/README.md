@@ -1,5 +1,8 @@
 # PWA ledenadministratie
 
+> Historische status: deze PWA is geen actuele productie-inrichting voor `app.vwg-m.nl`.
+> Gebruik dit document alleen als archiefcontext. Voor actuele toegang, ledenbeheer en productie-inrichting zijn de VWG-M FastAPI/Jinja-app, Caddy `forward_auth` en de actuele runbooks leidend.
+
 Dependency-vrije PWA voor de VWG-M ledenadministratie. De applicatie gebruikt eigen MySQL-views met `pwa_` prefix en heeft geen Appsmith-runtime of Appsmith-views nodig.
 
 ## Onderdelen
