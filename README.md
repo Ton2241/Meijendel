@@ -1,4 +1,5 @@
 # Meijendel
+> Zie voor de overkoepelende projectarchitectuur, ontwikkelworkflow en projectbrede ontwerpkeuzes ook de repository **VWG\_Project**.
 
 Deze repository bevat de database en analysemiddelen voor de vogelgegevens van Meijendel.
 
