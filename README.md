@@ -72,6 +72,33 @@ Resterende risico's: er is nog geen volledige ingelogde browsertest met een gewo
 
 Aanbevolen volgende stap: test met een gewoon telleraccount dat alleen de eigen kavel(s) zichtbaar zijn, dat een kaveltekst kan worden aangepast en dat de publieke kavelpagina daarna de wijziging toont.
 
+Uitgevoerd voor Vogelrichtlijn/groepen:
+
+- dashboard `Groepen > Lijsten` toont nu naast Rode Lijst, Oranje Lijst en Rode en Oranjelijst ook `Vogelrichtlijn`
+- dashboard `Groepen` ondersteunt `Vogelrichtlijn` voor `Dichtheid per km2` en `TRIM`
+- dashboard `Kenmerken` heeft een samengevoegde tegel `Lijsten` met Rode Lijst, Oranje Lijst en Vogelrichtlijn per soort
+- de groepengrafiek-output bevat chart-id `vogelrichtlijn`
+- publieke site toont `Vogelrichtlijn` als knop en subpagina onder `Rode, Oranje en Vogelrichtlijn lijst groepen`
+- de vaste pagina `Vogelrichtlijn` is beschikbaar in `Contentbeheer > Vaste Pagina's > Groepen`
+
+Gewijzigde Meijendel-bestanden:
+
+- `bmp_meijendel_index.html`
+- `R/build_groepen_grafieken_dashboard_csv.R`
+- `groepen_grafieken/gam_dashboard_groepen.csv`
+- `groepen_grafieken/groep_dichtheid.csv`
+- `groepen_grafieken/groep_soorten.csv`
+- `meijendel.sql`
+
+Gewijzigde sitebestanden in `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`:
+
+- `app/main.py`
+- `handleiding_beheer.md`
+
+Resterende risico's: er is nog geen ingelogde CMS-browsertest waarin de vaste pagina `Vogelrichtlijn` als concept wordt aangepast en gepubliceerd; de algemene smoke-test controleert de nieuwe `/groepen/vogelrichtlijn.asp` route en SVG-route nog niet expliciet.
+
+Aanbevolen volgende stap: breid `scripts/smoke_vps.sh` uit met controles voor `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg`, en test een kleine Contentbeheer-publicatie voor de vaste pagina `Vogelrichtlijn`.
+
 De kern van het project bestaat uit:
 
 - een MySQL- of MariaDB-dump van de database in `Meijendel.sql`

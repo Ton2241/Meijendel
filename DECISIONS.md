@@ -20,3 +20,6 @@
 - Gewone leden krijgen alleen beperkte Contentbeheer-toegang als zij in het lopende jaar als BMP- of winterteller aan een kavel zijn gekoppeld; zij zien dan alleen `Kavels` en alleen hun eigen actuele kavelteksten.
 - Niveau 4 en 5 behouden volledige Contentbeheer-toegang tot vaste pagina's, soortteksten en alle kavelteksten.
 - De ledenpagina toont BMP-kavels, winterkavels en PTT-route uit dezelfde actuele jaartoewijzingen als de ledenadministratie; `app.teller_assignments` is de voorkeursbron, met fallback naar oudere app-/legacyvelden.
+- Vogelrichtlijnsoorten worden als lijstgroep gekoppeld via `richtlijn_id = 7`; er komt geen aparte gebieds-/doelentabel voor website- en dashboardgroepen.
+- De publieke Vogelrichtlijn-groepsgrafiek gebruikt dezelfde vooraf gegenereerde CSV-output als andere groepen; `chart_id = vogelrichtlijn` is de vaste sleutel.
+- De vaste tekst van de Vogelrichtlijn-groep wordt beheerd via app-CMS-key `groups:vogelrichtlijn`; oude CMS-content mag de vastgestelde titel/tekst niet stilzwijgend blijven overschrijven na zo'n wijziging.

@@ -67,3 +67,11 @@ Actuele status leden/contentbeheer 2026-06-30:
 - verificatie: gedeployed naar `app.vwg-m.nl`, service herstart, smoke-test groen; gerichte query voor Ton gaf 2026 BMP `M15; M16`, winter `M15; M16`, PTT leeg
 - resterende risico's: nog geen volledige ingelogde browsertest met een gewoon niveau-1 lid dat een eigen kaveltekst opent, wijzigt en publiceert; PTT-routeteksten zijn nog niet geïmplementeerd zolang er geen route-tekstpagina's/module zijn
 - aanbevolen volgende stap: test met een gewoon telleraccount de route `Leden > Contentbeheer > Kavels > eigen kavel bewerken` en controleer daarna de publieke kavelpagina
+
+Actuele status Vogelrichtlijn/groepen 2026-06-30:
+- uitgevoerd: Natura 2000/Vogelrichtlijnsoorten zijn gekoppeld aan `richtlijn_id = 7`; dashboard toont `Vogelrichtlijn` onder `Groepen > Lijsten` voor `Dichtheid per km2` en `TRIM`; `Kenmerken` toont een samengevoegde tegel `Lijsten`; de publieke groepenpagina bevat knop en subpagina `Vogelrichtlijn` met dichtheidsgrafiek, soortenlijst en vaste tekst; `Contentbeheer > Vaste Pagina's > Groepen` bevat de vaste pagina `Vogelrichtlijn`
+- gewijzigde Meijendel-bestanden: `bmp_meijendel_index.html`, `R/build_groepen_grafieken_dashboard_csv.R`, `groepen_grafieken/gam_dashboard_groepen.csv`, `groepen_grafieken/groep_dichtheid.csv`, `groepen_grafieken/groep_soorten.csv`, `meijendel.sql`
+- gewijzigde sitebestanden: `app/main.py`, `handleiding_beheer.md`; productie-CMS-keys `groups:rode-oranje-lijst-groepen` en `groups:vogelrichtlijn` zijn bijgewerkt
+- verificatie: gedeployed naar `app.vwg-m.nl`; `/groepen/index.asp`, `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg` geven 200; VPS smoke-test groen; dashboard/outputdeploy en Shiny-check groen
+- resterende risico's: geen ingelogde CMS-browsertest waarin `Vogelrichtlijn` via Contentbeheer wordt bewerkt en gepubliceerd; website-smoke-test controleert de nieuwe Vogelrichtlijn-route nog niet expliciet
+- aanbevolen volgende stap: voeg `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg` toe aan de smoke-test en test een kleine CMS-concept/publicatie voor de vaste pagina `Vogelrichtlijn`

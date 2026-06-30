@@ -91,8 +91,9 @@ Bron:
 
 Bij beide keuzes gebruikt het groepsmenu vier hoofdkeuzes: `Alles`, `Lijsten`, `Habitattypen` en `Ecologische Vogelgroepen`.
 `Alles` gebruikt alle soorten.
-Onder `Lijsten` staan `Rode Lijst`, `Oranje Lijst` en `Rode en Oranjelijst`.
+Onder `Lijsten` staan `Rode Lijst`, `Oranje Lijst`, `Rode en Oranjelijst` en `Vogelrichtlijn`.
 De `Oranje Lijst` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 6`.
+De `Vogelrichtlijn` wordt afgeleid uit `soort_richtlijn` met `richtlijn_id = 7`.
 Onder `Habitattypen` staan de Natura 2000-habitattypen `2110`, `2120`, `2130`, `2160`, `2180`, `2190`, `3140` en `6430`.
 De habitatgroepen worden afgeleid uit `soorten_habitattypen`; soorten met koppelingsterkte `sterk`, `matig` of `zwak` worden samengenomen per habitatcode.
 Bij elke groep toont het dashboard ook een tekstvak met de vogelsoorten die in de gekozen groep zitten.

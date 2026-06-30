@@ -64,6 +64,20 @@ Aanbevolen volgende stap: voer een ingelogde test uit met een niveau-1 telleracc
 
 Alle grafieken op de FastAPI/Jinja-site moeten exact overeenkomen met het dashboard. Het dashboard is leidend voor brondata, berekening, schaal, labels, legenda, kleuren en onzekerheidsweergave. Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV, niet on-the-fly parsing van `Meijendel.sql`.
 
+Status Vogelrichtlijn/groepen 2026-06-30:
+
+- De Vogelrichtlijn-groep gebruikt dezelfde `richtlijn_id = 7` bron als de Meijendel-database en het dashboard.
+- Dashboardgroepen gebruiken voor `Vogelrichtlijn` dezelfde twee weergaven als andere groepen: `Dichtheid per km2` en `TRIM`.
+- Websitegrafiek `vogelrichtlijn` wordt vooraf gegenereerd via `R/build_groepen_grafieken_dashboard_csv.R` en staat in `groepen_grafieken/groep_dichtheid.csv`, `groepen_grafieken/groep_soorten.csv` en `groepen_grafieken/gam_dashboard_groepen.csv`.
+- De publieke FastAPI/Jinja-site leest deze CSV-output via `/srv/vwgm/www/groepen_grafieken/`; de route `/groepen/grafiek/vogelrichtlijn.svg` bouwt de dichtheidsgrafiek uit `groep_dichtheid.csv`.
+- `Contentbeheer` beheert de tekst via app-CMS-key `groups:vogelrichtlijn`; productie-CMS is bijgewerkt zodat de vaste tekst zichtbaar is.
+
+Gewijzigde bestanden: `bmp_meijendel_index.html`, `R/build_groepen_grafieken_dashboard_csv.R`, `groepen_grafieken/*.csv`, website `app/main.py` en `handleiding_beheer.md`.
+
+Resterende risico's: de route werkt en de algemene smoke-test is groen, maar de smoke-test heeft nog geen expliciete assert voor de Vogelrichtlijnpagina/grafiek en er is nog geen ingelogde CMS-publicatietest voor deze vaste pagina.
+
+Aanbevolen volgende stap: voeg gerichte smoke-testchecks toe voor `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg`.
+
 ## Back-up
 
 Er is een bare-metal back-uproutine op de VPS. De NAS DS225+ haalt de nieuwste back-up rechtstreeks vanaf de VPS naar de gedeelde map `VWG-M-Backups`. Runtime-data hoort in back-ups; secrets, SSH keys en wachtwoorden niet plaintext in Git, maar wel in het herstelrunbook.
