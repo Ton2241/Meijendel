@@ -6,6 +6,7 @@
 - Verifiëren dat archiefdocumenten doorzoekbaar zijn na upload en na herindexering.
 - Archiefupload testen met grote bestanden tot 100 MB.
 - Nieuws/CMS na de wijzigingen van 2026-06-30 nog handmatig end-to-end testen met ingelogde redacteur: concept maken, afbeelding uploaden, preview controleren, publiceren, en resultaat controleren op startpagina, `/nieuws/index.asp` en detailpagina.
+- Leden/contentbeheer na de wijzigingen van 2026-06-30 handmatig end-to-end testen met een gewoon niveau-1 telleraccount: ledenpagina met actuele kavels/routes controleren, Contentbeheer openen, alleen `Kavels` zien, alleen eigen kavel(s) zien, kaveltekst wijzigen/publiceren en publieke kavelpagina controleren.
 - Smoke-test uitbreiden met controles voor nieuwsvolgorde en nieuwsoverzicht: nieuwste item bovenaan, korte tekstsamenvatting zichtbaar, geen begin-afbeelding in de overzichtskaart.
 
 ## Productie en beheer
@@ -32,3 +33,4 @@
 - Voorkom dat dashboard, Shiny of grafiekoutputs divergeren van dezelfde dashboardbron.
 - Rond wijzigingen af met relevante verificatie en commit ze daarna standaard in Git.
 - Recent uitgevoerd voor nieuws/CMS: editor-preview-overlap opgelost, afbeeldinguploads hersteld, publiceren hersteld, nieuwstitels in lijsten gecorrigeerd, nieuwste nieuwsitems bovenaan gesorteerd en `/nieuws/index.asp` omgezet naar korte tekstsamenvattingen met `Lees verder`.
+- Recent uitgevoerd voor leden/contentbeheer: beperkte Contentbeheer-toegang voor actuele BMP-/wintertellers toegevoegd, gewone leden zien daar alleen eigen kavelteksten, en de ledenpagina toont actuele BMP-, winter- en PTT-toewijzingen uit dezelfde bron als de ledenadministratie.

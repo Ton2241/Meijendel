@@ -54,6 +54,24 @@ Resterende risico's: er is nog geen volledige geautomatiseerde ingelogde test vo
 
 Aanbevolen volgende stap: voer een ingelogde redactietest uit met een nieuw nieuwsbericht inclusief afbeelding en controleer startpagina, `/nieuws/index.asp` en de detailpagina.
 
+Uitgevoerd voor leden/contentbeheer:
+
+- leden met een actuele BMP- of winterkavelkoppeling in het lopende jaar krijgen beperkte toegang tot `Contentbeheer`
+- gewone leden zien binnen Contentbeheer alleen `Kavels` en alleen hun eigen actuele kavels
+- niveau 4 en 5 blijven alle contentbeheeronderdelen zien
+- de ledenpagina toont BMP-kavels, winterkavels en PTT-route uit dezelfde actuele jaartoewijzingen als de ledenadministratie
+
+Gewijzigde sitebestanden in `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`:
+
+- `app/main.py`
+- `app/queries.py`
+- `app/templates/member.html`
+- `handleiding_beheer.md`
+
+Resterende risico's: er is nog geen volledige ingelogde browsertest met een gewoon niveau-1 telleraccount voor kaveltekst bewerken/publiceren; PTT-routeteksten zijn nog niet onderdeel van deze module.
+
+Aanbevolen volgende stap: test met een gewoon telleraccount dat alleen de eigen kavel(s) zichtbaar zijn, dat een kaveltekst kan worden aangepast en dat de publieke kavelpagina daarna de wijziging toont.
+
 De kern van het project bestaat uit:
 
 - een MySQL- of MariaDB-dump van de database in `Meijendel.sql`

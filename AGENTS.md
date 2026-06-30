@@ -60,3 +60,10 @@ Actuele status nieuws/CMS 2026-06-30:
 - gewijzigde beheer-/deploybestanden rond uploads en archief/OCR: `app/main.py`, `deploy/README_DEPLOY.md`, `docs/herstelrunbook.md`, `handleiding_beheer.md`, `scripts/backup_baremetal_vps.py`, `deploy/systemd/vwg-m-archive-ocr.service`, `deploy/systemd/vwg-m-archive-ocr.timer`, `scripts/reindex_member_archive_ocr.py`
 - resterende risico's: geen volledige geautomatiseerde ingelogde end-to-end test voor nieuws maken, afbeelding uploaden en publiceren; runtime-map `app/static/uploads/cms` moet bij brede deploys/back-ups als productie-uploaddata worden behandeld; archief/OCR-service en timer alleen activeren na expliciete productiecontrole
 - aanbevolen volgende stap: voer een ingelogde redactietest uit met nieuw nieuwsbericht inclusief afbeelding en controleer daarna startpagina, nieuwsoverzicht en detailpagina
+
+Actuele status leden/contentbeheer 2026-06-30:
+- uitgevoerd: leden met een actuele BMP- of winterkavelkoppeling in het lopende jaar zien `Contentbeheer`, maar daarbinnen alleen `Kavels`; niveau 4/5 houdt volledig contentbeheer; de ledenpagina toont actuele BMP-, winter- en PTT-toewijzingen uit dezelfde bron als de ledenadministratie
+- gewijzigde sitebestanden: `app/main.py`, `app/queries.py`, `app/templates/member.html`, `handleiding_beheer.md`
+- verificatie: gedeployed naar `app.vwg-m.nl`, service herstart, smoke-test groen; gerichte query voor Ton gaf 2026 BMP `M15; M16`, winter `M15; M16`, PTT leeg
+- resterende risico's: nog geen volledige ingelogde browsertest met een gewoon niveau-1 lid dat een eigen kaveltekst opent, wijzigt en publiceert; PTT-routeteksten zijn nog niet geïmplementeerd zolang er geen route-tekstpagina's/module zijn
+- aanbevolen volgende stap: test met een gewoon telleraccount de route `Leden > Contentbeheer > Kavels > eigen kavel bewerken` en controleer daarna de publieke kavelpagina
