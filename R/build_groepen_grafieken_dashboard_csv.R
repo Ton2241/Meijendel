@@ -379,6 +379,10 @@ get_oranje_lijst_species_ids <- function(tbls) {
   unique(as.integer(tbls$soort_richtlijn$soort_id[as.character(tbls$soort_richtlijn$richtlijn_id) == "6"]))
 }
 
+get_vogelrichtlijn_species_ids <- function(tbls) {
+  unique(as.integer(tbls$soort_richtlijn$soort_id[as.character(tbls$soort_richtlijn$richtlijn_id) == "7"]))
+}
+
 get_habitat_species_ids <- function(tbls, soorten_habitattypen, prefix) {
   habitat_codes <- toupper(as.character(tbls$habitattypen$habitat_code))
   habitat_ids <- as.integer(tbls$habitattypen$id[startsWith(habitat_codes, paste0("H", prefix))])
@@ -500,6 +504,7 @@ trim_index_data$jaar <- as.integer(trim_index_data$jaar)
 lijst_specs <- list(
   "oranje-lijst" = list(title = "Oranje Lijst", species_ids = get_oranje_lijst_species_ids(tbls)),
   "rode-lijst" = list(title = "Rode Lijst Totaal", species_ids = get_rode_lijst_species_ids(tbls)),
+  "vogelrichtlijn" = list(title = "Vogelrichtlijn", species_ids = get_vogelrichtlijn_species_ids(tbls)),
   "rode-en-oranje-lijst" = list(
     title = "Rode & Oranjelijst",
     species_ids = union(get_rode_lijst_species_ids(tbls), get_oranje_lijst_species_ids(tbls))

@@ -1237,7 +1237,8 @@ function renderMsiGroupSelector(){
   box.appendChild(renderMsiGroupSection("Lijsten",[
     RODE_LIJST_GROEP_CODE,
     ORANJE_LIJST_GROEP_CODE,
-    RODE_ORANJE_LIJST_GROEP_CODE
+    RODE_ORANJE_LIJST_GROEP_CODE,
+    VOGELRICHTLIJN_GROEP_CODE
   ]));
   box.appendChild(renderMsiGroupSection("Habitattypen",HABITAT_GROEPEN.map(h=>({code:`${HABITAT_GROEP_PREFIX}${h.code}`,naam:h.naam}))));
   box.appendChild(renderMsiGroupSection("Ecologische Vogelgroepen",S.msiGroepen.filter(g=>Number.isFinite(Number(g.code)))));
@@ -1564,23 +1565,42 @@ function getRichtlijnenVoorSoort(soortId){
     .map(r=>({id:String(r.richtlijn_id),naam:richtlijnLookup.get(String(r.richtlijn_id))||String(r.richtlijn_id)}));
   return {
     rode:namen.filter(r=>r.naam.startsWith("RL:")).map(r=>r.naam).sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"})),
-    oranje:namen.filter(r=>r.id===ORANJE_LIJST_RICHTLIJN_ID||normKey(r.naam)==="oranje lijst").map(r=>r.naam).sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"}))
+    oranje:namen.filter(r=>r.id===ORANJE_LIJST_RICHTLIJN_ID||normKey(r.naam)==="oranje lijst").map(r=>r.naam).sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"})),
+    vogelrichtlijn:namen.filter(r=>r.id===VOGELRICHTLIJN_RICHTLIJN_ID||normKey(r.naam)==="vogelrichtlijn").map(r=>r.naam).sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"}))
   };
+}
+function renderLijstenVoorSoort(richtlijnen){
+  const regels=[
+    ["Rode Lijst",richtlijnen.rode],
+    ["Oranje Lijst",richtlijnen.oranje],
+    ["Vogelrichtlijn",richtlijnen.vogelrichtlijn]
+  ];
+  const wrap=el("div",{style:{display:"grid",gap:"6px"}});
+  regels.forEach(([label,values])=>{
+    const row=el("div",{style:{display:"grid",gridTemplateColumns:"120px 1fr",gap:"8px",alignItems:"baseline"}});
+    row.appendChild(el("div",{style:{fontSize:"12px",fontWeight:"600",color:"#6b7280"}},label));
+    row.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",lineHeight:"1.45"}},values.length?values.join("; "):"nee"));
+    wrap.appendChild(row);
+  });
+  return wrap;
 }
 function renderKenmerkenIndeling(soortId){
   const ecologisch=getEcologischeGroepenVoorSoort(soortId);
   const richtlijnen=getRichtlijnenVoorSoort(soortId);
   const items=[
     ["Ecologische vogelgroepen",ecologisch],
-    ["Rode Lijst",richtlijnen.rode],
-    ["Oranje Lijst",richtlijnen.oranje]
+    ["Lijsten",renderLijstenVoorSoort(richtlijnen)]
   ];
   const box=el("div",{className:"kenmerk-summary",style:{marginBottom:"16px"}});
   items.forEach(([label,values])=>{
     const card=el("div",{className:"kenmerk-summary-card"});
     card.appendChild(el("div",{className:"kenmerk-summary-label"},label));
-    const txt=el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",lineHeight:"1.45"}},values.length?values.join("; "):"geen");
-    card.appendChild(txt);
+    if(values instanceof Node){
+      card.appendChild(values);
+    }else{
+      const txt=el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",lineHeight:"1.45"}},values.length?values.join("; "):"geen");
+      card.appendChild(txt);
+    }
     box.appendChild(card);
   });
   return box;
