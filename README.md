@@ -22,6 +22,38 @@ Belangrijkste werkpaden:
 
 Werk bij nieuwe hoofdopdrachten vanuit een nieuwe draad, maar gebruik deze documenten als werkgeheugen. Inspecteer daarna altijd de actuele code en `git status`; neem niet aan dat tijdelijke scripts uit `/private/tmp` nog bestaan. Commit afgeronde wijzigingen standaard met een korte, beschrijvende commitmelding, tenzij expliciet is gevraagd om niet te committen. Als wordt gevraagd een wijziging voor `app.vwg-m.nl` of de VPS-site door te voeren, voer die wijziging zowel lokaal als op de VPS door en controleer de productiepagina of relevante smoke-test na deploy.
 
+## Actuele status app.vwg-m.nl op 2026-06-30
+
+Uitgevoerd voor nieuws/CMS:
+
+- nieuwseditor en preview overlappen niet meer
+- afbeeldingen uploaden in nieuwsberichten werkt en schrijft naar de CMS-mediamap
+- publiceren van nieuwsitems werkt weer
+- nieuwstitels staan weer correct in nieuws- en startpaginalijsten
+- startpagina en nieuwspagina sorteren nieuwsitems op nieuwste item bovenaan
+- `/nieuws/index.asp` toont per item alleen een korte tekstsamenvatting; afbeeldingen aan het begin van een bericht worden in het overzicht overgeslagen en het volledige bericht staat achter `Lees verder`
+
+Gewijzigde sitebestanden in `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`:
+
+- `app/static/site.css`
+- `app/templates/base.html`
+- `app/queries.py`
+- `app/templates/home.html`
+- `app/templates/news_archive.html`
+- `app/templates/news_index.html`
+- `app/main.py`
+- `deploy/README_DEPLOY.md`
+- `docs/herstelrunbook.md`
+- `handleiding_beheer.md`
+- `scripts/backup_baremetal_vps.py`
+- `deploy/systemd/vwg-m-archive-ocr.service`
+- `deploy/systemd/vwg-m-archive-ocr.timer`
+- `scripts/reindex_member_archive_ocr.py`
+
+Resterende risico's: er is nog geen volledige geautomatiseerde ingelogde test voor nieuws maken, afbeeldingen uploaden en publiceren; `app/static/uploads/cms` is runtime-data en mag bij brede deploys niet worden verwijderd; de archief/OCR-service en timer moeten nog apart gecontroleerd worden voordat die als productie-actief worden beschouwd.
+
+Aanbevolen volgende stap: voer een ingelogde redactietest uit met een nieuw nieuwsbericht inclusief afbeelding en controleer startpagina, `/nieuws/index.asp` en de detailpagina.
+
 De kern van het project bestaat uit:
 
 - een MySQL- of MariaDB-dump van de database in `Meijendel.sql`

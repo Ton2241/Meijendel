@@ -7,9 +7,13 @@
 - Autorisatieniveaus: 1 lid, 2 redacteur, 3 bestuurslid, 4 webmaster, 5 systeembeheer.
 - Bestuursleden mogen ledenadministratie en kavelbeheer bewerken, maar rollen/rechten wijzigen blijft voor webmaster en systeembeheer.
 - Runtime-data zoals uploads, archiefdocumenten en productiebeelden gaan niet in Git; Git bevat code, scripts, documentatie en lege mapstructuur waar nodig.
+- CMS-afbeeldingen die vanuit nieuwsberichten worden geupload zijn runtime-data onder `app/static/uploads/cms`; deploys en back-ups moeten deze map behouden.
 - Canoniek SQL-bestand op de VPS is `/srv/vwgm/data/Meijendel.sql`; oude SQL-locaties mogen hoogstens symlink zijn.
 - `www.vwg-m.nl` wordt na DNS-cutover de hoofdhost; `app.vwg-m.nl` blijft voorlopig werkende alias.
 - Algemene publieke zoekfunctie mag geen besloten ledenarchief of andere ledenroutes indexeren of tonen.
 - Nieuwe functionaliteit moet waar relevant zichtbaar worden in auditlogging en in `handleiding_beheer.md`.
 - Afgeronde wijzigingen worden standaard in Git gecommit met een korte, beschrijvende commitmelding, tenzij expliciet anders gevraagd.
 - Als een wijziging voor `app.vwg-m.nl` of de VPS-site wordt gevraagd, is de standaard scope lokaal aanpassen plus deploy naar de VPS en verificatie op productie.
+- Nieuwsoverzichten tonen geen volledige nieuwsitems meer: startpagina en `/nieuws/index.asp` tonen lijsten of korte tekstsamenvattingen, terwijl de detailpagina achter `Lees verder` het volledige bericht toont.
+- Als een nieuwsbericht met een afbeelding begint, wordt die afbeelding in de overzichtssamenvatting overgeslagen; de samenvatting bevat alleen tekst.
+- Gepubliceerde nieuwsitems worden met het nieuwste item bovenaan getoond. Bij gelijke publicatiedatum is de nieuwste database-id de tie-breaker.

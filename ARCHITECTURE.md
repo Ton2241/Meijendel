@@ -23,6 +23,22 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - Ledenomgeving: dashboard, nieuws toevoegen, mediabibliotheek, archief, contentbeheer, administratie, kavelbeheer, systeembeheer, auditlogboek, back-ups en bezoekersstatistiek.
 - Dashboard en Shiny blijven onderdeel van dezelfde productieomgeving, maar zijn afgeschermd via Caddy.
 
+## Nieuws en CMS
+
+Status 2026-06-30:
+
+- Nieuwsitems worden lokaal in de FastAPI/Jinja-site aangepast, gecommit en daarna naar de VPS gedeployed.
+- De nieuwseditor ondersteunt afbeeldinguploads vanuit een nieuwsbericht; productiebeelden zijn runtime-data onder `app/static/uploads/cms`.
+- De startpagina en `/nieuws/index.asp` sorteren gepubliceerde nieuwsitems op nieuwste bovenaan. Bij gelijke publicatiedatum is de nieuwste database-id leidend.
+- `/nieuws/index.asp` toont alleen een korte tekstsamenvatting zonder start-afbeeldingen; de volledige inhoud staat op de detailpagina achter `Lees verder`.
+- De editor-/preview-layout is zo aangepast dat invoertekst en preview niet meer over elkaar heen vallen.
+
+Gewijzigde sitebestanden voor deze nieuws/CMS-ronde: `app/static/site.css`, `app/templates/base.html`, `app/queries.py`, `app/templates/home.html`, `app/templates/news_archive.html`, `app/templates/news_index.html`, `app/main.py`, `deploy/README_DEPLOY.md`, `docs/herstelrunbook.md`, `handleiding_beheer.md`, `scripts/backup_baremetal_vps.py`, `deploy/systemd/vwg-m-archive-ocr.service`, `deploy/systemd/vwg-m-archive-ocr.timer` en `scripts/reindex_member_archive_ocr.py`.
+
+Resterende risico's: de ingelogde nieuwsflow is nog niet volledig geautomatiseerd getest; brede deploys moeten CMS-uploads expliciet behouden; archief/OCR-systemd units moeten apart op productie worden geactiveerd en gecontroleerd als die live gebruikt worden.
+
+Aanbevolen volgende stap: voeg aan de smoke-test of een aparte redactiecheck toe dat een redacteur een nieuwsbericht met afbeelding kan maken, publiceren en terugzien op startpagina, nieuwsoverzicht en detailpagina.
+
 ## Databases
 
 - Lokale live Meijendel-database op iMac: MySQL 9.5.0. Deze is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`.

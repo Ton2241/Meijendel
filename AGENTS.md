@@ -53,3 +53,10 @@ VPS / app.vwg-m.nl:
 - toegang tot dashboard, SQL, Shiny en dashboard-output op `app.vwg-m.nl` loopt via Caddy `forward_auth` naar de VWG-M ledenlogin; er is geen PWA-login of magic-link-login op productie
 - behandel `appsmith_ledenadministratie/` als historische/lokale Appsmith-context, niet als actuele productie-inrichting
 - bij vragen over toegang tot `app.vwg-m.nl`: kijk eerst naar de Caddy `forward_auth`-configuratie en de routes voor dashboard en Shiny, niet naar Appsmith of de PWA
+
+Actuele status nieuws/CMS 2026-06-30:
+- uitgevoerd: overlap tussen nieuwseditor en preview opgelost; upload van afbeeldingen in nieuwsberichten hersteld; publiceren van nieuwsitems hersteld; nieuwstitels weer zichtbaar in lijsten; startpagina en nieuwspagina sorteren nieuwste gepubliceerde items bovenaan; `/nieuws/index.asp` toont alleen een tekstsamenvatting zonder begin-afbeeldingen, met detail via `Lees verder`
+- gewijzigde sitebestanden: `app/static/site.css`, `app/templates/base.html`, `app/queries.py`, `app/templates/home.html`, `app/templates/news_archive.html`, `app/templates/news_index.html`
+- gewijzigde beheer-/deploybestanden rond uploads en archief/OCR: `app/main.py`, `deploy/README_DEPLOY.md`, `docs/herstelrunbook.md`, `handleiding_beheer.md`, `scripts/backup_baremetal_vps.py`, `deploy/systemd/vwg-m-archive-ocr.service`, `deploy/systemd/vwg-m-archive-ocr.timer`, `scripts/reindex_member_archive_ocr.py`
+- resterende risico's: geen volledige geautomatiseerde ingelogde end-to-end test voor nieuws maken, afbeelding uploaden en publiceren; runtime-map `app/static/uploads/cms` moet bij brede deploys/back-ups als productie-uploaddata worden behandeld; archief/OCR-service en timer alleen activeren na expliciete productiecontrole
+- aanbevolen volgende stap: voer een ingelogde redactietest uit met nieuw nieuwsbericht inclusief afbeelding en controleer daarna startpagina, nieuwsoverzicht en detailpagina
