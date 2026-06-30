@@ -64,7 +64,7 @@ ssh -i "$SSH_KEY" "$VPS" "
   set -euo pipefail
   mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data'
 "
-"${rsync_base[@]}" "$SQL_DEPLOY" "$VPS:$REMOTE_DATA/Meijendel.sql"
+"${rsync_base[@]}" --inplace "$SQL_DEPLOY" "$VPS:$REMOTE_DATA/Meijendel.sql"
 ssh -i "$SSH_KEY" "$VPS" "
   set -euo pipefail
   ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql'
@@ -172,7 +172,7 @@ ssh -i "$SSH_KEY" "$VPS" "
 	    '$REMOTE_SHINY/Meijendel.sql' \
 	    '$REMOTE_WWW/Meijendel.sql' \
 	    '$REMOTE_APP/data/Meijendel.sql'
-	  find '$REMOTE_BASE' -maxdepth 6 -name Meijendel.sql -type f -print
+	  find '$REMOTE_BASE' -maxdepth 6 -path '$REMOTE_BASE/meijendel-mysql' -prune -o -name Meijendel.sql -type f -print
   docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 "
 
