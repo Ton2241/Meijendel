@@ -5,10 +5,11 @@ Deze repository bevat de database en analysemiddelen voor de vogelgegevens van M
 
 ## Projectanker voor nieuwe Codex-draden
 
-Lees bij vervolgwerk eerst deze vier bestanden:
+Lees bij vervolgwerk eerst deze vijf bestanden:
 
 - `README.md`: ingang voor de Meijendel-repo en actuele projectcontext.
 - `ARCHITECTURE.md`: samenhang tussen Meijendel, dashboard, Shiny, FastAPI/Jinja-app, VPS en databases.
+- `STATUS.md`: actuele status, resterende risico's en aanbevolen vervolgstappen.
 - `TODO.md`: openstaande punten en operationele aandachtspunten.
 - `DECISIONS.md`: gemaakte keuzes die niet opnieuw moeten worden uitgevonden.
 

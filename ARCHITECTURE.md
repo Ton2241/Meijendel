@@ -6,8 +6,8 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 - `/Users/ton/Documents/GitHub/Meijendel` bevat `Meijendel.sql`, R-analyses, Shiny, dashboard/HTML-output, GIS-data en analysemiddelen.
 - `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app` bevat de FastAPI/Jinja-site voor `app.vwg-m.nl` en straks `www.vwg-m.nl`.
+- Projectbrede afspraken staan in `/Users/ton/Documents/GitHub/VWG_Project`.
 - Wijzigingen worden lokaal gemaakt en na controle standaard gecommit in de betreffende repository met een korte, beschrijvende commitmelding.
-- Wijzigingsverzoeken voor `app.vwg-m.nl` of de VPS-site worden zowel lokaal als op de VPS doorgevoerd, met verificatie na deploy.
 
 ## Productie
 
@@ -23,76 +23,27 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - Ledenomgeving: dashboard, nieuws toevoegen, mediabibliotheek, archief, contentbeheer, administratie, kavelbeheer, systeembeheer, auditlogboek, back-ups en bezoekersstatistiek.
 - Dashboard en Shiny blijven onderdeel van dezelfde productieomgeving, maar zijn afgeschermd via Caddy.
 
-## Soortpagina's
-
-Status 2026-06-30:
-
-- Publieke vogelsoortdetailpagina's combineren legacy/CMS-teksten, vooraf gegenereerde Meijendel-cijfers en read-only Meijendel-kenmerkdata.
-- De kopknoppen verwijzen naar `Beschrijving`, `Voorkomen` en alleen bij beschikbare data naar `Kenmerken`.
-- Het blok `Vogelkenmerken` leest bestaande Meijendel-tabellen voor ecologische vogelgroepen, Rode/Oranje Lijst, Vogelrichtlijn en soortkenmerken, maar schrijft niets terug naar Meijendel of CMS.
-- Kenmerken worden bewust als doorlopende tekst getoond, zonder technische veldcodes of waarde-labels.
-
-Gewijzigde bestanden voor deze ronde: website `app/queries.py`, `app/templates/species_detail.html`, `app/static/site.css` en `handleiding_beheer.md`.
-
-Resterende risico's: er is nog geen uitgebreide visuele regressiecheck over meerdere soorten en viewports; de algemene smoke-test controleert het kenmerkenblok nog niet expliciet.
-
-Aanbevolen volgende stap: voeg gerichte smoke-testchecks toe voor `/soorten/vogel.asp?id=227#kenmerken` of de HTML-inhoud daarvan, plus een soort zonder kenmerken.
-
-## Nieuws en CMS
-
-Status 2026-06-30:
-
-- Nieuwsitems worden lokaal in de FastAPI/Jinja-site aangepast, gecommit en daarna naar de VPS gedeployed.
-- De nieuwseditor ondersteunt afbeeldinguploads vanuit een nieuwsbericht; productiebeelden zijn runtime-data onder `app/static/uploads/cms`.
-- De startpagina en `/nieuws/index.asp` sorteren gepubliceerde nieuwsitems op nieuwste bovenaan. Bij gelijke publicatiedatum is de nieuwste database-id leidend.
-- `/nieuws/index.asp` toont alleen een korte tekstsamenvatting zonder start-afbeeldingen; de volledige inhoud staat op de detailpagina achter `Lees verder`.
-- De editor-/preview-layout is zo aangepast dat invoertekst en preview niet meer over elkaar heen vallen.
-
-Gewijzigde sitebestanden voor deze nieuws/CMS-ronde: `app/static/site.css`, `app/templates/base.html`, `app/queries.py`, `app/templates/home.html`, `app/templates/news_archive.html`, `app/templates/news_index.html`, `app/main.py`, `deploy/README_DEPLOY.md`, `docs/herstelrunbook.md`, `handleiding_beheer.md`, `scripts/backup_baremetal_vps.py`, `deploy/systemd/vwg-m-archive-ocr.service`, `deploy/systemd/vwg-m-archive-ocr.timer` en `scripts/reindex_member_archive_ocr.py`.
-
-Resterende risico's: de ingelogde nieuwsflow is nog niet volledig geautomatiseerd getest; brede deploys moeten CMS-uploads expliciet behouden; archief/OCR-systemd units moeten apart op productie worden geactiveerd en gecontroleerd als die live gebruikt worden.
-
-Aanbevolen volgende stap: voeg aan de smoke-test of een aparte redactiecheck toe dat een redacteur een nieuwsbericht met afbeelding kan maken, publiceren en terugzien op startpagina, nieuwsoverzicht en detailpagina.
-
-## Leden en contentbeheer
-
-Status 2026-06-30:
-
-- Leden met een actuele BMP- of winterkavelkoppeling in `app.teller_assignments` voor het lopende jaar krijgen beperkte toegang tot `Contentbeheer`.
-- Beperkte leden zien binnen Contentbeheer alleen de module `Kavels` en daarna alleen de kavelteksten waarvoor zij in het lopende jaar teller zijn.
-- Niveau 4 en 5 behouden volledige toegang tot vaste pagina's, soortteksten en alle kavelteksten.
-- De ledenpagina `Mijn gegevens en rechten` toont BMP-kavels, winterkavels en PTT-route uit dezelfde actuele jaartoewijzingen als de ledenadministratie, met fallback naar oude app- of legacyvelden.
-
-Gewijzigde sitebestanden voor deze ronde: `app/main.py`, `app/queries.py`, `app/templates/member.html` en `handleiding_beheer.md`.
-
-Resterende risico's: de server-side checks zijn actief en de algemene smoke-test is groen, maar er is nog geen volledige ingelogde browsertest met een gewoon telleraccount voor kaveltekst openen, wijzigen en publiceren. PTT-routeteksten zijn nog niet beschikbaar zolang er geen aparte route-tekstmodule of routepagina's zijn.
-
-Aanbevolen volgende stap: voer een ingelogde test uit met een niveau-1 telleraccount en controleer ledenpagina, Contentbeheer-tegel, kaveltekstlijst, bewerken/publiceren en publieke kavelpagina.
-
 ## Databases
 
-- Lokale live Meijendel-database op iMac: MySQL 9.5.0. Deze is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`.
-- VPS PostgreSQL: operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
+- Lokale live Meijendel-database op iMac: MySQL 9.5.0.
+- Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`.
+- VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `Meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
 
 ## Grafieken
 
-Alle grafieken op de FastAPI/Jinja-site moeten exact overeenkomen met het dashboard. Het dashboard is leidend voor brondata, berekening, schaal, labels, legenda, kleuren en onzekerheidsweergave. Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV, niet on-the-fly parsing van `Meijendel.sql`.
+Alle grafieken op de FastAPI/Jinja-site moeten overeenkomen met het dashboard. Het dashboard is leidend voor brondata, berekening, schaal, labels, legenda, kleuren en onzekerheidsweergave.
 
-Status Vogelrichtlijn/groepen 2026-06-30:
+Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV. Parse `Meijendel.sql` niet per webrequest.
 
-- De Vogelrichtlijn-groep gebruikt dezelfde `richtlijn_id = 7` bron als de Meijendel-database en het dashboard.
-- Dashboardgroepen gebruiken voor `Vogelrichtlijn` dezelfde twee weergaven als andere groepen: `Dichtheid per km2` en `TRIM`.
-- Websitegrafiek `vogelrichtlijn` wordt vooraf gegenereerd via `R/build_groepen_grafieken_dashboard_csv.R` en staat in `groepen_grafieken/groep_dichtheid.csv`, `groepen_grafieken/groep_soorten.csv` en `groepen_grafieken/gam_dashboard_groepen.csv`.
-- De publieke FastAPI/Jinja-site leest deze CSV-output via `/srv/vwgm/www/groepen_grafieken/`; de route `/groepen/grafiek/vogelrichtlijn.svg` bouwt de dichtheidsgrafiek uit `groep_dichtheid.csv`.
-- `Contentbeheer` beheert de tekst via app-CMS-key `groups:vogelrichtlijn`; productie-CMS is bijgewerkt zodat de vaste tekst zichtbaar is.
+## Toegang
 
-Gewijzigde bestanden: `bmp_meijendel_index.html`, `R/build_groepen_grafieken_dashboard_csv.R`, `groepen_grafieken/*.csv`, website `app/main.py` en `handleiding_beheer.md`.
-
-Resterende risico's: de route werkt en de algemene smoke-test is groen, maar de smoke-test heeft nog geen expliciete assert voor de Vogelrichtlijnpagina/grafiek en er is nog geen ingelogde CMS-publicatietest voor deze vaste pagina.
-
-Aanbevolen volgende stap: voeg gerichte smoke-testchecks toe voor `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg`.
+- Toegang tot dashboard, SQL, Shiny en dashboard-output loopt via Caddy `forward_auth` naar de VWG-M ledenlogin.
+- Er is geen Appsmith-, PWA- of magic-link-login voor de actuele productie-inrichting.
+- Appsmith- en PWA-documentatie is historische context, niet leidend voor productie.
 
 ## Back-up
 
-Er is een bare-metal back-uproutine op de VPS. De NAS DS225+ haalt de nieuwste back-up rechtstreeks vanaf de VPS naar de gedeelde map `VWG-M-Backups`. Runtime-data hoort in back-ups; secrets, SSH keys en wachtwoorden niet plaintext in Git, maar wel in het herstelrunbook.
+Er is een bare-metal back-uproutine op de VPS. De NAS DS225+ haalt de nieuwste back-up rechtstreeks vanaf de VPS naar de gedeelde map `VWG-M-Backups`.
+
+Runtime-data hoort in back-ups. Secrets, SSH keys en wachtwoorden horen niet plaintext in Git, maar moeten wel herstelbaar zijn via de afgesproken beheer- en herstelprocedure.
