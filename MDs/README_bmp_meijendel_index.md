@@ -102,6 +102,20 @@ Bij `Groepen` > `TRIM` toont het dashboard naast de directe volledige/robuuste M
 
 De standaardperiode voor de groepengrafieken is `1990-2025`. De gebruiker kan deze periode in het dashboard blijven aanpassen.
 
+## Relatie met publieke soortpagina's
+
+Status 2026-06-30:
+
+- De publieke FastAPI/Jinja-soortpagina's op `app.vwg-m.nl` gebruiken bestaande Meijendel-kenmerkdata als read-only bron voor een aanvullend blok `Vogelkenmerken`.
+- Dat blok is compacter dan de dashboardtab `Kenmerken`: eerst lijsten, daarna hoofdgroepkenmerken als doorlopende tekst.
+- De dashboardweergave in `bmp_meijendel_index.html` blijft de controleweergave voor de volledige kenmerkenstructuur; de publieke site toont alleen een leesbare samenvatting per soort.
+
+Gewijzigde bestanden voor deze website-ronde: geen in de Meijendel-HTML zelf; in de website-repo zijn `app/queries.py`, `app/templates/species_detail.html`, `app/static/site.css` en `handleiding_beheer.md` aangepast.
+
+Resterende risico's: de dashboardtab en publieke samenvatting gebruiken dezelfde brontabellen, maar er is nog geen automatische vergelijkingstest die controleert dat alle publiek getoonde kenmerken uit de dashboardbron komen.
+
+Aanbevolen volgende stap: voeg een kleine controle toe voor enkele voorbeeldsoorten, waarbij dashboardkenmerken en publieke soortpagina-samenvatting op aanwezigheid van dezelfde hoofdgroepen worden vergeleken.
+
 ## Tab Wintertellingen
 
 De wintergrafiek toont per gekozen vogel een lijn met één punt per winterperiode.

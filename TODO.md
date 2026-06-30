@@ -10,6 +10,8 @@
 - Smoke-test uitbreiden met controles voor nieuwsvolgorde en nieuwsoverzicht: nieuwste item bovenaan, korte tekstsamenvatting zichtbaar, geen begin-afbeelding in de overzichtskaart.
 - Smoke-test uitbreiden met controles voor de Vogelrichtlijn-groep: `/groepen/vogelrichtlijn.asp` geeft 200, bevat de vaste tekst en soortenlijst, en `/groepen/grafiek/vogelrichtlijn.svg` geeft `image/svg+xml`.
 - Ingelogde CMS-test uitvoeren voor `Contentbeheer > Vaste Pagina's > Groepen > Vogelrichtlijn`: concept opslaan, preview controleren, publiceren en publieke pagina controleren.
+- Smoke-test uitbreiden met controles voor vogelsoortpagina's: een soort met `Vogelkenmerken` moet 200 geven en het kenmerkenblok tonen; een soort zonder kenmerken mag geen lege knop/blok tonen.
+- Mobiel/tablet visueel controleren of de kopknoppen `Beschrijving`, `Voorkomen` en `Kenmerken` bruikbaar blijven bij lange soortnamen.
 
 ## Productie en beheer
 
@@ -37,3 +39,4 @@
 - Recent uitgevoerd voor nieuws/CMS: editor-preview-overlap opgelost, afbeeldinguploads hersteld, publiceren hersteld, nieuwstitels in lijsten gecorrigeerd, nieuwste nieuwsitems bovenaan gesorteerd en `/nieuws/index.asp` omgezet naar korte tekstsamenvattingen met `Lees verder`.
 - Recent uitgevoerd voor leden/contentbeheer: beperkte Contentbeheer-toegang voor actuele BMP-/wintertellers toegevoegd, gewone leden zien daar alleen eigen kavelteksten, en de ledenpagina toont actuele BMP-, winter- en PTT-toewijzingen uit dezelfde bron als de ledenadministratie.
 - Recent uitgevoerd voor Vogelrichtlijn/groepen: dashboardgroep `Vogelrichtlijn` toegevoegd aan `Groepen > Lijsten`, `Kenmerken` gebruikt één tegel `Lijsten`, websitegroep is hernoemd naar `Rode, Oranje en Vogelrichtlijn lijst groepen`, subpagina `/groepen/vogelrichtlijn.asp` toont grafiek/soorten/tekst, en `groups:vogelrichtlijn` is beschikbaar in Contentbeheer.
+- Recent uitgevoerd voor soortpagina's/vogelkenmerken: kopknoppen op vogelsoortdetailpagina's vervangen door `Beschrijving`, `Voorkomen` en optioneel `Kenmerken`; `Vogelkenmerken` toont bestaande Meijendel-lijsten en hoofdgroepkenmerken als doorlopende tekst; productie is gedeployed en de algemene VPS-smoke-test is groen.

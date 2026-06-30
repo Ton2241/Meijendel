@@ -23,3 +23,6 @@
 - Vogelrichtlijnsoorten worden als lijstgroep gekoppeld via `richtlijn_id = 7`; er komt geen aparte gebieds-/doelentabel voor website- en dashboardgroepen.
 - De publieke Vogelrichtlijn-groepsgrafiek gebruikt dezelfde vooraf gegenereerde CSV-output als andere groepen; `chart_id = vogelrichtlijn` is de vaste sleutel.
 - De vaste tekst van de Vogelrichtlijn-groep wordt beheerd via app-CMS-key `groups:vogelrichtlijn`; oude CMS-content mag de vastgestelde titel/tekst niet stilzwijgend blijven overschrijven na zo'n wijziging.
+- Vogelsoortdetailpagina's mogen Meijendel-kenmerkdata read-only tonen als aanvullend blok `Vogelkenmerken`; dit blok vervangt of overschrijft geen CMS-/legacyteksten voor `Beschrijving` en `Voorkomen`.
+- Publieke kenmerken op soortpagina's worden compact en leesbaar weergegeven als doorlopende tekst; technische veldcodes en primair/secundair-labels blijven uit de publieke tekst.
+- De knop `Kenmerken` verschijnt alleen als er daadwerkelijk kenmerkdata is, zodat soorten zonder kenmerken geen lege navigatie of leeg blok krijgen.

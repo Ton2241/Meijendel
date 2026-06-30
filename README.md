@@ -99,6 +99,26 @@ Resterende risico's: er is nog geen ingelogde CMS-browsertest waarin de vaste pa
 
 Aanbevolen volgende stap: breid `scripts/smoke_vps.sh` uit met controles voor `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg`, en test een kleine Contentbeheer-publicatie voor de vaste pagina `Vogelrichtlijn`.
 
+Uitgevoerd voor soortpagina's/vogelkenmerken:
+
+- publieke vogelsoortdetailpagina's hebben in het kopblok nu compacte ankerknoppen `Beschrijving`, `Voorkomen` en, indien beschikbaar, `Kenmerken`
+- `Vogelkenmerken` verschijnt alleen bij soorten met gekoppelde Meijendel-kenmerkdata
+- het kenmerkenblok toont eerst lijsten en daarna hoofdgroepkenmerken als doorlopende tekst, zonder technische codes zoals veldnamen of primair/secundair-labels
+- bestaande `Beschrijving`- en `Voorkomen`-teksten blijven uit de website/CMS-bron komen en worden niet overschreven
+
+Gewijzigde sitebestanden in `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`:
+
+- `app/queries.py`
+- `app/templates/species_detail.html`
+- `app/static/site.css`
+- `handleiding_beheer.md`
+
+Gewijzigde Meijendel-bestanden: geen; de website gebruikt bestaande Meijendel-data voor soortkoppeling, lijsten en kenmerken.
+
+Resterende risico's: de productiepagina voor Boomleeuwerik en de algemene VPS-smoke-test zijn gecontroleerd, maar er is nog geen brede visuele controle voor soorten met lange namen, soorten zonder kenmerken en mobiele/tabletweergave. De smoke-test heeft nog geen expliciete assert op het nieuwe `Vogelkenmerken`-blok.
+
+Aanbevolen volgende stap: voeg aan `scripts/smoke_vps.sh` checks toe voor een soort met kenmerken en een soort zonder kenmerken, en doe een korte mobiele/tabletcontrole van de kopknoppen.
+
 De kern van het project bestaat uit:
 
 - een MySQL- of MariaDB-dump van de database in `Meijendel.sql`

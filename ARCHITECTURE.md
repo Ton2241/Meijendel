@@ -23,6 +23,21 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - Ledenomgeving: dashboard, nieuws toevoegen, mediabibliotheek, archief, contentbeheer, administratie, kavelbeheer, systeembeheer, auditlogboek, back-ups en bezoekersstatistiek.
 - Dashboard en Shiny blijven onderdeel van dezelfde productieomgeving, maar zijn afgeschermd via Caddy.
 
+## Soortpagina's
+
+Status 2026-06-30:
+
+- Publieke vogelsoortdetailpagina's combineren legacy/CMS-teksten, vooraf gegenereerde Meijendel-cijfers en read-only Meijendel-kenmerkdata.
+- De kopknoppen verwijzen naar `Beschrijving`, `Voorkomen` en alleen bij beschikbare data naar `Kenmerken`.
+- Het blok `Vogelkenmerken` leest bestaande Meijendel-tabellen voor ecologische vogelgroepen, Rode/Oranje Lijst, Vogelrichtlijn en soortkenmerken, maar schrijft niets terug naar Meijendel of CMS.
+- Kenmerken worden bewust als doorlopende tekst getoond, zonder technische veldcodes of waarde-labels.
+
+Gewijzigde bestanden voor deze ronde: website `app/queries.py`, `app/templates/species_detail.html`, `app/static/site.css` en `handleiding_beheer.md`.
+
+Resterende risico's: er is nog geen uitgebreide visuele regressiecheck over meerdere soorten en viewports; de algemene smoke-test controleert het kenmerkenblok nog niet expliciet.
+
+Aanbevolen volgende stap: voeg gerichte smoke-testchecks toe voor `/soorten/vogel.asp?id=227#kenmerken` of de HTML-inhoud daarvan, plus een soort zonder kenmerken.
+
 ## Nieuws en CMS
 
 Status 2026-06-30:

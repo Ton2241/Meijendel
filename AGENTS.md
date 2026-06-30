@@ -75,3 +75,11 @@ Actuele status Vogelrichtlijn/groepen 2026-06-30:
 - verificatie: gedeployed naar `app.vwg-m.nl`; `/groepen/index.asp`, `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg` geven 200; VPS smoke-test groen; dashboard/outputdeploy en Shiny-check groen
 - resterende risico's: geen ingelogde CMS-browsertest waarin `Vogelrichtlijn` via Contentbeheer wordt bewerkt en gepubliceerd; website-smoke-test controleert de nieuwe Vogelrichtlijn-route nog niet expliciet
 - aanbevolen volgende stap: voeg `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg` toe aan de smoke-test en test een kleine CMS-concept/publicatie voor de vaste pagina `Vogelrichtlijn`
+
+Actuele status soortpagina's/vogelkenmerken 2026-06-30:
+- uitgevoerd: publieke vogelsoortdetailpagina's tonen in het kopblok compacte knoppen `Beschrijving`, `Voorkomen` en, indien beschikbaar, `Kenmerken`; het blok `Vogelkenmerken` verschijnt alleen bij soorten met gekoppelde Meijendel-kenmerkdata en toont lijsten plus hoofdgroepkenmerken als doorlopende tekst zonder technische codes/labels
+- gewijzigde sitebestanden: `app/queries.py`, `app/templates/species_detail.html`, `app/static/site.css`, `handleiding_beheer.md`
+- gewijzigde Meijendel-bestanden: geen datamodel- of dashboardwijziging; de website leest bestaande Meijendel-tabellen/views voor koppeling, lijsten en kenmerken
+- verificatie: gedeployed naar `app.vwg-m.nl`; `scripts/smoke_vps.sh` groen; `/soorten/vogel.asp?id=227` geeft 200 en toont `Vogelkenmerken`
+- resterende risico's: nog geen brede visuele controle over meerdere soorten met en zonder kenmerken; smoke-test controleert het nieuwe kenmerkenblok nog niet expliciet; lokale app-runtime kon eerder niet volledig tegen lokale MySQL worden getest
+- aanbevolen volgende stap: voeg gerichte smoke-testchecks toe voor een soort met kenmerken en een soort zonder kenmerken, en controleer mobiel/tablet de navigatieknoppen op enkele lange soortnamen
