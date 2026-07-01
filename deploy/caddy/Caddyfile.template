@@ -70,11 +70,11 @@
 	}
 }
 
-:80 {
-	redir https://app.vwg-m.nl{uri} permanent
+vwg-m.nl {
+	redir https://www.vwg-m.nl{uri} permanent
 }
 
-app.vwg-m.nl {
+www.vwg-m.nl, app.vwg-m.nl {
 	encode gzip zstd
 	log {
 		output file /var/log/caddy/app.vwg-m.nl-access.log {
