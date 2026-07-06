@@ -1,7 +1,7 @@
 # Besluiten
 
 - Het dashboard is leidend voor alle grafieken. De site mag geen eigen afwijkende grafieklogica of cijfers introduceren.
-- Webgrafieken worden gevoed door vooraf gegenereerde dashboard-output/CSV; `Meijendel.sql` wordt niet per request geparsed.
+- Webgrafieken worden gevoed door vooraf gegenereerde dashboard-output/CSV; lokale `meijendel.sql` wordt niet per request geparsed.
 - Dashboard, Shiny, SQL en dashboard-output zijn leden-only via Caddy `forward_auth`.
 - Shiny is toegankelijk vanaf niveau 2; gewone leden niveau 1 zien/activeren Shiny niet.
 - Autorisatieniveaus: 1 lid, 2 redacteur, 3 bestuurslid, 4 webmaster, 5 systeembeheer.

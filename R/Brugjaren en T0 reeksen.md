@@ -461,7 +461,7 @@ Op basis van de huidige repo-inhoud is een eerste selectie doorgerekend voor all
 
 Gebruikte bronbestanden:
 
-- [Meijendel.sql](/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql)
+- [meijendel.sql](/Users/ton/Documents/GitHub/Meijendel/meijendel.sql)
 - [analysebasis_plot_jaar.csv](/Users/ton/Documents/GitHub/Meijendel/trim/soorten/analysebasis_plot_jaar.csv)
 - [groepssamenstelling_100tal.csv](/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg/groepssamenstelling_100tal.csv)
 - [evg_selctie_T0soort_T0msi.csv](/Users/ton/Documents/GitHub/Meijendel/R/evg_selctie_T0soort_T0msi.csv)

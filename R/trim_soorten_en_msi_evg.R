@@ -8,7 +8,7 @@ if (dir.exists(user_lib)) {
 suppressPackageStartupMessages(library(rtrim))
 suppressPackageStartupMessages(library(mgcv))
 
-sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql"
+sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
 species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/soorten"
 group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg"
 

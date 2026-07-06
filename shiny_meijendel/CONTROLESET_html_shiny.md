@@ -11,20 +11,20 @@ Gebruik deze controleset telkens als je iets hebt aangepast aan:
 - `shiny_meijendel/app.R`
 - `shiny_meijendel/helpers.R`
 - `bmp_meijendel_index.html`
-- de structuur van `Meijendel.sql`
+- de structuur van `meijendel.sql`
 
 ## Standaardroute
 
 De eenvoudigste werkroute is:
 
 1. Start de Shiny-app.
-2. Laad `Meijendel.sql`.
+2. Laad `meijendel.sql`.
 3. Kies kavels en jaren.
 4. Klik op `Analyse uitvoeren`.
 5. Controleer de uitkomsten in `Soorten`, `Groepen` en `Controle`.
 6. Exporteer de csv-bestanden die je wilt bewaren of vergelijken.
 7. Open daarna `bmp_meijendel_index.html`.
-8. Laad daar `Meijendel.sql` en zo nodig de extra TRIM- of MSI-csv-bestanden.
+8. Laad daar `meijendel.sql` en zo nodig de extra TRIM- of MSI-csv-bestanden.
 
 ## Vaste controles
 
@@ -131,7 +131,7 @@ Daarom horen de bestanden als volgt bij elkaar:
 
 Belangrijk:
 
-- de HTML kan direct werken met `Meijendel.sql`
+- de HTML kan direct werken met `meijendel.sql`
 - voor TRIM- en MSI-panelen gebruikt de HTML aparte csv-bestanden
 - de Shiny-export is daarom vooral bedoeld voor controle, vergelijking en archivering
 
@@ -139,7 +139,7 @@ Belangrijk:
 
 Na een wijziging is de wijziging pas echt geslaagd als:
 
-1. `Meijendel.sql` zonder fout laadt
+1. `meijendel.sql` zonder fout laadt
 2. een selectie analyseerbaar is
 3. een soortgrafiek logisch oogt
 4. een groepsgrafiek logisch oogt

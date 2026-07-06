@@ -22,7 +22,7 @@ Kort:
 Gebruik meestal deze volgorde:
 
 1. Start de Shiny-app.
-2. Laad `Meijendel.sql`.
+2. Laad `meijendel.sql`.
 3. Kies kavels.
 4. Kies `Van jaar` en `Tot jaar`.
 5. Klik op `Analyse uitvoeren`.
@@ -34,7 +34,7 @@ Gebruik meestal deze volgorde:
 
 Na een analyse kijk je kort of:
 
-- `Meijendel.sql` zonder fout laadt
+- `meijendel.sql` zonder fout laadt
 - de kavellijst zichtbaar is
 - de analyse zonder foutmelding draait
 - in `Soorten` een logische TRIM-grafiek verschijnt
@@ -58,8 +58,8 @@ De Shiny-app maakt onder andere deze bestanden:
 
 In `bmp_meijendel_index.html` gelden deze hoofdregels:
 
-- `Territoria` gebruikt ruwe gegevens uit `Meijendel.sql`
-- `Dichtheid (per km²)` gebruikt `Meijendel.sql` plus oppervlak en tellerinformatie
+- `Territoria` gebruikt ruwe gegevens uit `meijendel.sql`
+- `Dichtheid (per km²)` gebruikt `meijendel.sql` plus oppervlak en tellerinformatie
 - `TRIM-index` gebruikt aparte TRIM-csv-bestanden
 - `GAM (dichtheid)` gebruikt groepsbestanden op basis van dichtheid
 - `TRIM-MSI` gebruikt aparte TRIM-MSI-bestanden

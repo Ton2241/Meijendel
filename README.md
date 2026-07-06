@@ -38,7 +38,7 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 
 ### Hoofdbestanden
 
-- [`Meijendel.sql`][6]
+- [`meijendel.sql`][6]
   De actuele SQL-dump van de database.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
@@ -101,7 +101,7 @@ De HTML bevat momenteel deze hoofdonderdelen:
 
 De HTML gebruikt:
 
-- `Meijendel.sql` voor ruwe gegevens
+- `meijendel.sql` voor ruwe gegevens
 - extra CSV-bestanden voor TRIM- en MSI-weergaven
 
 ### R-analyses
@@ -162,7 +162,7 @@ Daarin staan onder andere:
 
 De praktische volgorde is:
 
-1. werk vanuit `Meijendel.sql`
+1. werk vanuit `meijendel.sql`
 2. gebruik Shiny of R voor nieuwe analyses
 3. controleer de uitkomsten
 4. gebruik de HTML voor overzicht en presentatie
@@ -171,13 +171,13 @@ De praktische volgorde is:
 Voor alleen bekijken:
 
 1. open `bmp_meijendel_index.html`
-2. laad `Meijendel.sql`
+2. laad `meijendel.sql`
 3. laad waar nodig extra CSV-bestanden
 
 Voor nieuwe analyses:
 
 1. start de Shiny-app
-2. laad `Meijendel.sql`
+2. laad `meijendel.sql`
 3. kies kavels en jaren
 4. voer de analyse uit
 5. controleer de tabs `Soorten`, `Groepen` en `Controle`
@@ -223,7 +223,7 @@ Voor dagelijks gebruik is [`MDs/handboek.md`][24] nu het beste startpunt.
 [3]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/CONTROLESET_html_shiny.md
 [4]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/README_shiny_meijendel.md
 [5]:	/Users/ton/Documents/GitHub/Meijendel/MDs/README_bmp_meijendel_index.md
-[6]:	/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql
+[6]:	/Users/ton/Documents/GitHub/Meijendel/meijendel.sql
 [7]:	/Users/ton/Documents/GitHub/Meijendel/bmp_meijendel_index.html
 [8]:	/Users/ton/Documents/GitHub/Meijendel/README.md
 [9]:	/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md

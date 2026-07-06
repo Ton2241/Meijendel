@@ -21,7 +21,7 @@ if (length(missing_packages) > 0L) {
 suppressPackageStartupMessages(library(geepack))
 suppressPackageStartupMessages(library(broom))
 
-sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql"
+sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
 species_name <- if (length(args) >= 2L) args[[2]] else "Nachtegaal"
 output_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/output_gee"
 year_min <- if (length(args) >= 4L) as.integer(args[[4]]) else 1984L

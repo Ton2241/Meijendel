@@ -4,7 +4,7 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 ## Repositories
 
-- `/Users/ton/Documents/GitHub/Meijendel` bevat `Meijendel.sql`, R-analyses, Shiny, dashboard/HTML-output, GIS-data en analysemiddelen.
+- `/Users/ton/Documents/GitHub/Meijendel` bevat `meijendel.sql`, R-analyses, Shiny, dashboard/HTML-output, GIS-data en analysemiddelen.
 - `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app` bevat de FastAPI/Jinja-site voor `app.vwg-m.nl` en straks `www.vwg-m.nl`.
 - Projectbrede afspraken staan in `/Users/ton/Documents/GitHub/VWG_Project`.
 - Wijzigingen worden lokaal gemaakt en na controle standaard gecommit in de betreffende repository met een korte, beschrijvende commitmelding.
@@ -28,13 +28,13 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - Lokale live Meijendel-database op iMac: MySQL 9.5.0.
 - Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`.
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
-- `Meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
+- `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
 
 ## Grafieken
 
 Alle grafieken op de FastAPI/Jinja-site moeten overeenkomen met het dashboard. Het dashboard is leidend voor brondata, berekening, schaal, labels, legenda, kleuren en onzekerheidsweergave.
 
-Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV. Parse `Meijendel.sql` niet per webrequest.
+Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV. Parse `meijendel.sql` niet per webrequest.
 
 ## Toegang
 

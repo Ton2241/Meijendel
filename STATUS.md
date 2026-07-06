@@ -4,6 +4,14 @@ Laatste update: 30 juni 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
+## SQL-naam en historische PWA
+
+Gereed:
+
+- De lokale canonieke SQL-dump heet `meijendel.sql`.
+- Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
+- De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
+
 ## Soortpagina's
 
 Gereed:

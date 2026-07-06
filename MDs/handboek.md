@@ -87,7 +87,7 @@ Je werkt in de repository `Ton2241/Meijendel`.
 
 Belangrijke onderdelen daarin zijn:
 
-- `Meijendel.sql`: de eigenlijke database-export
+- `meijendel.sql`: de eigenlijke database-export
 - `bmp_meijendel_index.html`: de standalone HTML voor overzicht en presentatie
 - `shiny_meijendel/app.R`: de Shiny-app voor nieuwe selecties en analyses
 - `trim/` en `trim_msi_evg/`: output van TRIM-analyses
@@ -184,14 +184,14 @@ De eenvoudigste en veiligste werkvolgorde is:
 Als je alleen resultaten wilt bekijken:
 
 1. open `bmp_meijendel_index.html`
-2. laad `Meijendel.sql`
+2. laad `meijendel.sql`
 3. laad waar nodig extra CSV-bestanden
 4. bekijk de uitkomsten
 
 Als je nieuwe soort- of groepsanalyses wilt maken:
 
 1. start de Shiny-app
-2. laad `Meijendel.sql`
+2. laad `meijendel.sql`
 3. kies kavels
 4. kies begin- en eindjaar
 5. klik op `Analyse uitvoeren`
@@ -346,9 +346,9 @@ source("deploy_shinyapps.R")
 
 Belangrijk:
 
-- de deploy gebruikt altijd `/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql` als bron
+- de deploy gebruikt altijd `/Users/ton/Documents/GitHub/Meijendel/meijendel.sql` als bron
 - voor `shinyapps.io` wordt tijdelijk een bundle gemaakt met die root-SQL
-- houd dus geen aparte `Meijendel.sql` meer in `shiny_meijendel/`
+- houd dus geen aparte `meijendel.sql` meer in `shiny_meijendel/`
 - wacht na `deployApp()` tot de melding `Successfully deployed` verschijnt
 - controleer daarna de live app in de browser
 
@@ -380,7 +380,7 @@ Gebruik dit als je simpel wilt zien hoeveel territoria er in een jaar zijn vastg
 
 Bron:
 
-- rechtstreeks uit `Meijendel.sql`
+- rechtstreeks uit `meijendel.sql`
 
 #### Dichtheid (per km2)
 
@@ -390,7 +390,7 @@ Gebruik dit als je jaren of gebieden eerlijker wilt vergelijken, vooral als plot
 
 Bron:
 
-- `Meijendel.sql`
+- `meijendel.sql`
 - `plot_jaar_oppervlak`
 - `plot_jaar_teller`
 
@@ -502,7 +502,7 @@ Ze beantwoorden verschillende vragen.
 
 ## 11. Hoe werkt de hoofd-TRIM-analyse?
 
-De hoofd-TRIM-analyse leest rechtstreeks `Meijendel.sql` in en maakt nieuwe output in:
+De hoofd-TRIM-analyse leest rechtstreeks `meijendel.sql` in en maakt nieuwe output in:
 
 - `trim/soorten`
 - `trim_msi_evg`
@@ -608,7 +608,7 @@ Doe altijd deze controles:
 
 Controleer of:
 
-- `Meijendel.sql` zonder fout laadt
+- `meijendel.sql` zonder fout laadt
 - de kavellijst verschijnt
 - de jaarkeuze verschijnt
 

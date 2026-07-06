@@ -18,7 +18,7 @@ In `BMP-Soorten` zijn er drie keuzes.
 
 Dit laat de ruwe aantallen territoria per soort of per groep zien.
 Bron:
-rechtstreeks uit `Meijendel.sql`
+rechtstreeks uit `meijendel.sql`
 
 ### 2. Dichtheid (per km²)
 
@@ -26,7 +26,7 @@ Dit laat aantallen per oppervlakte zien.
 De HTML gebruikt hiervoor nu het werkelijke oppervlak uit `plot_jaar_oppervlak`.
 Als `plot_jaar_teller` aanwezig is, wordt alleen het bemeten oppervlak meegenomen.
 Bron:
-`Meijendel.sql`, plus oppervlak uit `plot_jaar_oppervlak` en telling uit `plot_jaar_teller`
+`meijendel.sql`, plus oppervlak uit `plot_jaar_oppervlak` en telling uit `plot_jaar_teller`
 
 ### 3. TRIM-index
 

@@ -15,10 +15,10 @@ source("helpers.R", local = TRUE)
 
 library(shiny)
 
-default_sql_candidates <- c("../Meijendel.sql", "Meijendel.sql")
+default_sql_candidates <- c("../meijendel.sql", "meijendel.sql")
 default_sql <- default_sql_candidates[file.exists(default_sql_candidates)][1]
 if (is.na(default_sql)) {
-  default_sql <- "Meijendel.sql"
+  default_sql <- "meijendel.sql"
 }
 default_sql <- normalizePath(default_sql, winslash = "/", mustWork = FALSE)
 
@@ -281,7 +281,7 @@ ui <- navbarPage(
           div(
             class = "soft-card",
             h3("SQL-bron laden"),
-            textInput("sql_path", "Pad naar Meijendel.sql", value = default_sql),
+            textInput("sql_path", "Pad naar meijendel.sql", value = default_sql),
             actionButton("load_sql", "SQL laden"),
             tags$span(id = "sql_load_timer", class = "load-timer"),
             div(class = "status-box",
@@ -1175,7 +1175,7 @@ server <- function(input, output, session) {
   output$plot_selector_ui <- renderUI({
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      return(tags$p("Laad eerst Meijendel.sql"))
+      return(tags$p("Laad eerst meijendel.sql"))
     }
     kavels <- sort(unique(tbls$plots$kavel_nummer))
     tagList(
@@ -1221,7 +1221,7 @@ server <- function(input, output, session) {
   output$lambda_plot_selector_ui <- renderUI({
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      return(tags$p("Laad eerst Meijendel.sql"))
+      return(tags$p("Laad eerst meijendel.sql"))
     }
     kavels <- sort(unique(tbls$plots$kavel_nummer))
     tagList(
@@ -1268,7 +1268,7 @@ server <- function(input, output, session) {
   output$gee_plot_selector_ui <- renderUI({
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      return(tags$p("Laad eerst Meijendel.sql"))
+      return(tags$p("Laad eerst meijendel.sql"))
     }
     kavels <- sort(unique(tbls$plots$kavel_nummer))
     selectizeInput(
@@ -1414,7 +1414,7 @@ server <- function(input, output, session) {
   output$glmm_plot_selector_ui <- renderUI({
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      return(tags$p("Laad eerst Meijendel.sql"))
+      return(tags$p("Laad eerst meijendel.sql"))
     }
     kavels <- sort(unique(tbls$plots$kavel_nummer))
     selectizeInput(
@@ -1560,7 +1560,7 @@ server <- function(input, output, session) {
   output$nmds_plot_selector_ui <- renderUI({
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      return(tags$p("Laad eerst Meijendel.sql"))
+      return(tags$p("Laad eerst meijendel.sql"))
     }
     kavels <- sort(unique(tbls$plots$kavel_nummer))
     selectizeInput(
@@ -1640,7 +1640,7 @@ server <- function(input, output, session) {
       output[[paste0(prefix, "_plot_selector_ui")]] <- renderUI({
         tbls <- tbls_rv()
         if (is.null(tbls)) {
-          return(tags$p("Laad eerst Meijendel.sql"))
+          return(tags$p("Laad eerst meijendel.sql"))
         }
         kavels <- sort(unique(tbls$plots$kavel_nummer))
         selectizeInput(
@@ -1728,8 +1728,8 @@ server <- function(input, output, session) {
   observeEvent(input$run_analysis, {
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      analysis_info_rv("Laad eerst Meijendel.sql.")
-      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      analysis_info_rv("Laad eerst meijendel.sql.")
+      showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
       return()
     }
     if (is.null(input$year_from) || is.null(input$year_to)) {
@@ -1776,8 +1776,8 @@ server <- function(input, output, session) {
   observeEvent(input$run_lambda_analysis, {
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      lambda_analysis_info_rv("Laad eerst Meijendel.sql.")
-      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      lambda_analysis_info_rv("Laad eerst meijendel.sql.")
+      showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
       return()
     }
     if (is.null(input$lambda_year_from) || is.null(input$lambda_year_to)) {
@@ -1832,8 +1832,8 @@ server <- function(input, output, session) {
   observeEvent(input$run_gee_analysis, {
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      gee_analysis_info_rv("Laad eerst Meijendel.sql.")
-      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      gee_analysis_info_rv("Laad eerst meijendel.sql.")
+      showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
       return()
     }
     gee_mode <- if (is.null(input$gee_mode)) "regular" else input$gee_mode
@@ -2009,8 +2009,8 @@ server <- function(input, output, session) {
   observeEvent(input$run_gee_screening, {
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      gee_analysis_info_rv("Laad eerst Meijendel.sql.")
-      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      gee_analysis_info_rv("Laad eerst meijendel.sql.")
+      showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
       return()
     }
     if (!identical(input$gee_mode, "regular")) {
@@ -2081,8 +2081,8 @@ server <- function(input, output, session) {
   observeEvent(input$run_glmm_analysis, {
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      glmm_analysis_info_rv("Laad eerst Meijendel.sql.")
-      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      glmm_analysis_info_rv("Laad eerst meijendel.sql.")
+      showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
       return()
     }
     glmm_mode <- if (is.null(input$glmm_mode)) "regular" else input$glmm_mode
@@ -2261,8 +2261,8 @@ server <- function(input, output, session) {
   observeEvent(input$run_nmds_analysis, {
     tbls <- tbls_rv()
     if (is.null(tbls)) {
-      nmds_analysis_info_rv("Laad eerst Meijendel.sql.")
-      showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+      nmds_analysis_info_rv("Laad eerst meijendel.sql.")
+      showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
       return()
     }
     if (is.null(input$nmds_year_from) || is.null(input$nmds_year_to)) {
@@ -2360,8 +2360,8 @@ server <- function(input, output, session) {
         result_rv <- community_rvs[[prefix]]
         method_label <- switch(prefix, biodiversity = "Biodiversity", indicatorspecies = "Indicator Species", rda = "RDA", pls = "PLS", changepoint = "changepoint", sem = "SEM", betadiversity = "beta-diversity", occupancy = "occupancy")
         if (is.null(tbls)) {
-          info_rv("Laad eerst Meijendel.sql.")
-          showNotification("Laad eerst Meijendel.sql.", type = "error", duration = 5)
+          info_rv("Laad eerst meijendel.sql.")
+          showNotification("Laad eerst meijendel.sql.", type = "error", duration = 5)
           return()
         }
         if (is.null(input[[paste0(prefix, "_year_from")]]) || is.null(input[[paste0(prefix, "_year_to")]])) {

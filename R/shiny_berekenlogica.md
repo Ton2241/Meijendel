@@ -32,7 +32,7 @@ De Shiny-app heeft nu de volgende inhoudelijke analysepaden:
 
 De globale analyseketen is: beschrijven, patronen herkennen, omslagmomenten zoeken, verklarende verbanden onderzoeken, hypothesen toetsen en daarna eventueel causale modelstructuren verkennen.
 
-## Ingelezen tabellen uit `Meijendel.sql`
+## Ingelezen tabellen uit `meijendel.sql`
 
 De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 
@@ -52,7 +52,7 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 - `plot_jaar_infra`
 - `plot_jaar_toegankelijkheid`
 
-De parser leest `INSERT`-blokken rechtstreeks uit `Meijendel.sql` en zet die om naar dataframes.
+De parser leest `INSERT`-blokken rechtstreeks uit `meijendel.sql` en zet die om naar dataframes.
 
 Voor Rode/Oranje Lijst-analyses gebruikt de app:
 

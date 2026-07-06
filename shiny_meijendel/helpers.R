@@ -101,7 +101,7 @@ analysis_export_script <- function(title, call_expr) {
     "  stop(\"Voer dit script uit vanuit de map shiny_meijendel.\")",
     "}",
     "source(\"helpers.R\")",
-    "sql_path <- \"../Meijendel.sql\"",
+    "sql_path <- \"../meijendel.sql\"",
     "tbls <- load_meijendel_tables_cached(sql_path)$data",
     "",
     paste0("analyse <- ", call_expr),

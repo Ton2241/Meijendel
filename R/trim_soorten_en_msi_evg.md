@@ -1,6 +1,6 @@
 # TRIM-analyse soorten en MSI-ecologische vogelgroepen
 
-Dit script leest rechtstreeks `Meijendel.sql` in en maakt twee nieuwe outputmappen:
+Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmappen:
 
 - `trim/soorten`
 - `trim_msi_evg`
@@ -51,7 +51,7 @@ Met expliciete paden:
 
 ```sh
 Rscript /Users/ton/Documents/GitHub/Meijendel/R/trim_soorten_en_msi_evg.R \
-  /Users/ton/Documents/GitHub/Meijendel/Meijendel.sql \
+  /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
   /Users/ton/Documents/GitHub/Meijendel/trim/soorten \
   /Users/ton/Documents/GitHub/Meijendel/trim_msi_evg
 ```

@@ -16,7 +16,7 @@ De app staat in:
 - duidelijke statusmeldingen tonen bij laden en analyseren
 - een GAM-lijn over de soort- en groepsgrafieken tekenen
 - uitkomsten exporteren naar csv
-- een eenvoudige cache gebruiken zodat het laden van `Meijendel.sql` na de eerste keer sneller gaat
+- een eenvoudige cache gebruiken zodat het laden van `meijendel.sql` na de eerste keer sneller gaat
 
 Tabbladen:
 
@@ -55,9 +55,9 @@ Daarna open je:
 
 De app gebruikt lokaal standaard:
 
-- `/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql`
+- `/Users/ton/Documents/GitHub/Meijendel/meijendel.sql`
 
-Er hoort dus geen aparte `Meijendel.sql` meer in `shiny_meijendel/` te staan.
+Er hoort dus geen aparte `meijendel.sql` meer in `shiny_meijendel/` te staan.
 
 ## Upload naar shinyapps.io
 
@@ -68,7 +68,7 @@ cd /Users/ton/Documents/GitHub/Meijendel/shiny_meijendel
 Rscript deploy_shinyapps.R
 ```
 
-Dit script maakt eerst een tijdelijke deploybundle en zet daarin een gefilterde root-versie van `Meijendel.sql` zonder de tabel `tellers`, zodat tellergegevens niet naar shinyapps.io worden geupload.
+Dit script maakt eerst een tijdelijke deploybundle en zet daarin een gefilterde root-versie van `meijendel.sql` zonder de tabel `tellers`, zodat tellergegevens niet naar shinyapps.io worden geupload.
 
 ## Werkwijze in de app
 

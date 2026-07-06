@@ -42,7 +42,7 @@ if (!nzchar(Sys.which("perl"))) {
 
 app_dir <- normalizePath(getwd(), winslash = "/", mustWork = TRUE)
 root_dir <- normalizePath(file.path(app_dir, ".."), winslash = "/", mustWork = TRUE)
-root_sql <- file.path(root_dir, "Meijendel.sql")
+root_sql <- file.path(root_dir, "meijendel.sql")
 
 if (!file.exists(root_sql)) {
   stop(sprintf("Root-SQL niet gevonden: %s", root_sql))
@@ -115,7 +115,7 @@ writeLines(
   useBytes = TRUE
 )
 
-bundle_sql <- file.path(bundle_dir, "Meijendel.sql")
+bundle_sql <- file.path(bundle_dir, "meijendel.sql")
 filter_sql_for_deploy(root_sql, bundle_sql)
 
 message(sprintf("Deploybundle gemaakt in: %s", bundle_dir))

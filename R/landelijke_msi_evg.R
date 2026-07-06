@@ -7,7 +7,7 @@ if (dir.exists(user_lib)) {
 
 suppressPackageStartupMessages(library(mgcv))
 
-sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql"
+sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
 out_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg"
 
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)

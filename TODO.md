@@ -28,8 +28,8 @@
 
 - Legacy-pagina's gefaseerd per pagina omzetten naar bewerkbare CMS-pagina's.
 - Postgres verder leidend maken voor leden, kavels, routes en tellerkoppelingen vanaf 2026.
-- Historische kavel-/tellerdata uit `Meijendel.sql` en lokale MySQL blijven controleren tegen Postgres.
-- Later procedure bouwen om relevante Postgres-kavel/tellergegevens terug te synchroniseren naar de lokale live MySQL-omgeving.
+- Historische kavel-/tellerdata uit `meijendel.sql` en lokale MySQL blijven controleren tegen Postgres.
+- Kavelbezetting voor een nieuw jaar via de website-CSV exporteren en daarna lokaal met de scriptmatige dry-run/apply-route in de live Meijendel-MySQL verwerken.
 
 ## Kwaliteit
 

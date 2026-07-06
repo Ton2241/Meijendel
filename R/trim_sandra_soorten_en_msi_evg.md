@@ -56,7 +56,7 @@ Met expliciete paden:
 
 ```sh
 Rscript /Users/ton/Documents/GitHub/Meijendel/R/trim_sandra_soorten_en_msi_evg.R \
-  /Users/ton/Documents/GitHub/Meijendel/Meijendel.sql \
+  /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
   /Users/ton/Documents/GitHub/Meijendel/trim/sandra/soorten \
   /Users/ton/Documents/GitHub/Meijendel/trim/sandra/trim_msi_evg
 ```

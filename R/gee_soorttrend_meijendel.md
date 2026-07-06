@@ -1,6 +1,6 @@
 # GEE-soorttrend voor Meijendel
 
-Dit script voert een `GEE`-analyse uit voor één broedvogelsoort op basis van de echte structuur van `Meijendel.sql`.
+Dit script voert een `GEE`-analyse uit voor één broedvogelsoort op basis van de echte structuur van `meijendel.sql`.
 
 - telinspanning wordt afgeleid uit de combinatie van `plot_jaar_teller` en aanwezige records in `territoria`
 - soortnamen komen uit `soorten.id`, `soorten.soort_naam` en `soorten.engelse_naam`
@@ -46,7 +46,7 @@ Volgorde van command line argumenten:
 
 Standaardwaarden:
 
-- `sql_path`: `/Users/ton/Documents/GitHub/Meijendel/Meijendel.sql`
+- `sql_path`: `/Users/ton/Documents/GitHub/Meijendel/meijendel.sql`
 - `species_name`: `Nachtegaal`
 - `output_dir`: `/Users/ton/Documents/GitHub/Meijendel/output_gee`
 - `year_min`: `1984`
@@ -79,7 +79,7 @@ Bij uitvoering maakt het script deze bestanden aan in `output_dir`:
 
 ```sh
 Rscript /Users/ton/Documents/GitHub/Meijendel/R/gee_soorttrend_meijendel.R \
-  /Users/ton/Documents/GitHub/Meijendel/Meijendel.sql \
+  /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
   Nachtegaal \
   /Users/ton/Documents/GitHub/Meijendel/output_gee \
   1984 \
