@@ -173,6 +173,7 @@ ssh -i "$SSH_KEY" "$VPS" "
 	    '$REMOTE_WWW/Meijendel.sql' \
 	    '$REMOTE_APP/data/Meijendel.sql'
 	  find '$REMOTE_BASE' -maxdepth 6 -path '$REMOTE_BASE/meijendel-mysql' -prune -o -name Meijendel.sql -type f -print
+  docker stats --no-stream shiny_meijendel
   docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 "
 

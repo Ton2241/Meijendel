@@ -19,6 +19,13 @@ Gereed:
 - `R/check_dashboard_website_parity.R` controleert de gegenereerde Groepen-output voor websitegebruik: verplichte CSV's, kolommen, chart-id's, numerieke waarden, jaarbereik en aanwezigheid van de Meijendel-serie.
 - `deploy/update_en_deploy_meijendel.sh` voert deze check automatisch uit na `R/build_groepen_grafieken_dashboard_csv.R` en vóór deploy.
 - Websitegrafieken blijven daarmee afgeleid van `groepen_grafieken/groep_dichtheid.csv`; losse websiteberekening blijft uitgesloten.
+- `R/check_shiny_dashboard_parity.R` controleert de Shiny-berekeningskern tegen de dashboard-CSV `trim_msi_evg/msi_per_groep_per_jaar.csv`.
+- De Shiny-deploycontrole toont voortaan ook `docker stats --no-stream shiny_meijendel`; controle op 2026-07-06 gaf `running`, ongeveer 35 MiB geheugen en vrijwel geen CPU.
+
+Open:
+
+- De nieuwe Shiny/dashboard-paritycheck faalt inhoudelijk: zowel `volledig` als `robuust` MSI-groepen wijken af van de dashboard-CSV. Grootste gevonden afwijkingen zitten o.a. bij groep 200 `robuust` en groepen 700/200/100 `volledig`.
+- De check is daarom nog niet als harde deploygate geactiveerd. Eerst moet worden vastgesteld of Shiny of dashboard de gewenste canonieke MSI-definitie gebruikt.
 
 ## Soortpagina's
 
