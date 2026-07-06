@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 30 juni 2026
+Laatste update: 6 juli 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -20,12 +20,16 @@ Gereed:
 - `deploy/update_en_deploy_meijendel.sh` voert deze check automatisch uit na `R/build_groepen_grafieken_dashboard_csv.R` en vóór deploy.
 - Websitegrafieken blijven daarmee afgeleid van `groepen_grafieken/groep_dichtheid.csv`; losse websiteberekening blijft uitgesloten.
 - `R/check_shiny_dashboard_parity.R` controleert de Shiny-berekeningskern tegen de dashboard-CSV `trim_msi_evg/msi_per_groep_per_jaar.csv`.
+- Dashboard-MSI is canoniek voor publicatie en websiteafleiding. Shiny volgt daarom dezelfde MSI-definitie: pre/post-1984 TRIM-modellen, brugfactor op basis van 1981-1983 versus 1984-1986, groeps-MSI op `index_gebrugged`, en `robuust` op soorten met een bruikbare pre- en postreeks.
+- Shiny week eerder af doordat de app één TRIM-model over de gekozen periode gebruikte en voor `robuust` extra filters toepaste op minimaal 75% getelde jaren en minimaal twee actieve plots.
+- `shiny_meijendel/helpers.R` is gelijkgetrokken met de dashboardlogica voor de Shiny-groep-MSI.
+- `deploy/update_en_deploy_meijendel.sh` en `deploy/deploy_meijendel_vps.sh` voeren `R/check_shiny_dashboard_parity.R` nu als harde deploygate uit over 1958-2025 voordat Shiny/de dashboardomgeving naar de VPS gaat.
+- Controle op 2026-07-06: `R/check_shiny_dashboard_parity.R . meijendel.sql trim_msi_evg/msi_per_groep_per_jaar.csv 1958 2025` is OK; 1224 vergelijkingsrijen, maximaal MSI-verschil circa `5e-12`.
 - De Shiny-deploycontrole toont voortaan ook `docker stats --no-stream shiny_meijendel`; controle op 2026-07-06 gaf `running`, ongeveer 35 MiB geheugen en vrijwel geen CPU.
 
 Open:
 
-- De nieuwe Shiny/dashboard-paritycheck faalt inhoudelijk: zowel `volledig` als `robuust` MSI-groepen wijken af van de dashboard-CSV. Grootste gevonden afwijkingen zitten o.a. bij groep 200 `robuust` en groepen 700/200/100 `volledig`.
-- De check is daarom nog niet als harde deploygate geactiveerd. Eerst moet worden vastgesteld of Shiny of dashboard de gewenste canonieke MSI-definitie gebruikt.
+- Shiny blijft relatief zwaar doordat de app TRIM-modellen interactief kan draaien; gebruik blijft daarom bedoeld voor redacteuren/beheerders en niet als publieke rekenservice.
 
 ## Soortpagina's
 

@@ -38,8 +38,18 @@ need_dir() {
 }
 
 need_file "$SQL_LOCAL"
+need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
+need_file "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv"
 
 trap 'rm -f "$SQL_DEPLOY"' EXIT
+
+log "Controleer Shiny/dashboard parity voor MSI-groepen"
+Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
+  "$LOCAL_REPO" \
+  "$SQL_LOCAL" \
+  "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" \
+  1958 \
+  2025
 
 log "Maak VPS-dump zonder ledenadministratie/Appsmith-objecten en tellers"
 LC_ALL=C awk '

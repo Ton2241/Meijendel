@@ -76,6 +76,14 @@ Rscript "$REPO_DIR/R/check_dashboard_website_parity.R" \
   "$REPO_DIR" \
   "$REPO_DIR/groepen_grafieken"
 
+log "Controleer Shiny/dashboard parity voor MSI-groepen"
+Rscript "$REPO_DIR/R/check_shiny_dashboard_parity.R" \
+  "$REPO_DIR" \
+  "$SQL_FILE" \
+  "$REPO_DIR/trim_msi_evg/msi_per_groep_per_jaar.csv" \
+  1958 \
+  2025
+
 log "Synchroniseer gedeelde Shiny-selectie-CSV"
 need_file "$REPO_DIR/R/evg_selctie_T0soort_T0msi.csv"
 need_dir "$REPO_DIR/shiny_meijendel"
