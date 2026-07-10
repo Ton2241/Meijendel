@@ -26,7 +26,7 @@
 - Legacy-pagina's gefaseerd per pagina omzetten naar bewerkbare CMS-pagina's.
 - Postgres verder leidend maken voor leden, kavels, routes en tellerkoppelingen vanaf 2026.
 - Historische kavel-/tellerdata uit `meijendel.sql` en lokale MySQL blijven controleren tegen Postgres; gebruik in `VWG_M` eerst `website/vwg-m-linux-app/scripts/check_teller_migration_readiness.py`.
-- Kavelbezetting voor een nieuw jaar via de website-CSV exporteren en daarna lokaal verwerken met `scripts/apply_website_kavelbezetting.py`; pas `apply` uitvoeren zodra de CSV voor het nieuwe jaar definitief is gecontroleerd.
+- Kavelbezetting via de website-CSV lokaal verwerken met `scripts/apply_website_kavelbezetting.py`; gebruik voor lopende jaren eerst de diff-route en pas `apply`/`diff-apply` uitvoeren nadat de CSV en het SQL-plan zijn gecontroleerd.
 
 ## Kwaliteit
 

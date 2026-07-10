@@ -31,6 +31,17 @@ class MysqlSnapshot:
     existing_for_year: set[tuple[int, int]]
 
 
+@dataclass(frozen=True)
+class DiffPlan:
+    to_insert: set[tuple[int, int]]
+    to_delete: set[tuple[int, int]]
+    unchanged: set[tuple[int, int]]
+
+    @property
+    def affected_plots(self) -> set[int]:
+        return {plot_id for _, plot_id in self.to_insert | self.to_delete}
+
+
 def _mysql(args: argparse.Namespace, sql: str) -> str:
     cmd = [
         "mysql",
@@ -190,6 +201,33 @@ def _sql_plan(assignments: list[Assignment], *, year: int, replace_year: bool) -
     return "\n".join(lines) + "\n"
 
 
+def _sql_diff_plan(diff: DiffPlan, *, year: int) -> str:
+    lines = [
+        "START TRANSACTION;",
+        f"-- Website kavelbezetting diff-import voor jaar {year}.",
+    ]
+    if diff.to_delete:
+        delete_pairs = [
+            f"(teller_id = {teller_id} AND plot_id = {plot_id})"
+            for teller_id, plot_id in sorted(diff.to_delete, key=lambda pair: (pair[1], pair[0]))
+        ]
+        lines.append(
+            f"DELETE FROM plot_jaar_teller WHERE jaar = {year} AND (\n  "
+            + "\n  OR ".join(delete_pairs)
+            + "\n);"
+        )
+    if diff.to_insert:
+        lines.append("INSERT INTO plot_jaar_teller (teller_id, plot_id, jaar) VALUES")
+        values = [
+            f"  ({teller_id}, {plot_id}, {year})"
+            for teller_id, plot_id in sorted(diff.to_insert, key=lambda pair: (pair[1], pair[0]))
+        ]
+        lines.append(",\n".join(values))
+        lines.append("ON DUPLICATE KEY UPDATE teller_id = VALUES(teller_id);")
+    lines.append("COMMIT;")
+    return "\n".join(lines) + "\n"
+
+
 def _summarize(assignments: list[Assignment], warnings: list[str], snapshot: MysqlSnapshot) -> dict[str, Any]:
     pairs = [(assignment.teller_id, assignment.plot_id) for assignment in assignments]
     duplicate_pairs = [pair for pair, count in Counter(pairs).items() if count > 1]
@@ -208,6 +246,16 @@ def _summarize(assignments: list[Assignment], warnings: list[str], snapshot: Mys
     }
 
 
+def _diff(assignments: list[Assignment], snapshot: MysqlSnapshot) -> DiffPlan:
+    desired = {(assignment.teller_id, assignment.plot_id) for assignment in assignments}
+    existing = snapshot.existing_for_year
+    return DiffPlan(
+        to_insert=desired - existing,
+        to_delete=existing - desired,
+        unchanged=desired & existing,
+    )
+
+
 def _print_report(summary: dict[str, Any], warnings: list[str]) -> None:
     print("Kavelbezetting website-CSV -> Meijendel MySQL")
     for key, value in summary.items():
@@ -216,6 +264,22 @@ def _print_report(summary: dict[str, Any], warnings: list[str]) -> None:
         print("\nWaarschuwingen:")
         for warning in warnings:
             print(f"- {warning}")
+
+
+def _print_diff_report(diff: DiffPlan) -> None:
+    print("\nDiff met lokaal Meijendel-MySQL:")
+    print(f"- to_insert: {len(diff.to_insert)}")
+    print(f"- to_delete: {len(diff.to_delete)}")
+    print(f"- unchanged: {len(diff.unchanged)}")
+    print(f"- affected_plots: {len(diff.affected_plots)}")
+    if diff.to_insert:
+        print("\nToe te voegen:")
+        for teller_id, plot_id in sorted(diff.to_insert, key=lambda pair: (pair[1], pair[0])):
+            print(f"- plot_id={plot_id}, teller_id={teller_id}")
+    if diff.to_delete:
+        print("\nTe verwijderen:")
+        for teller_id, plot_id in sorted(diff.to_delete, key=lambda pair: (pair[1], pair[0])):
+            print(f"- plot_id={plot_id}, teller_id={teller_id}")
 
 
 def run(args: argparse.Namespace) -> int:
@@ -232,6 +296,33 @@ def run(args: argparse.Namespace) -> int:
         raise SystemExit("CSV bevat dubbele teller/plot-combinaties; corrigeer eerst de export.")
     if warnings and not args.allow_warnings:
         raise SystemExit("Waarschuwingen gevonden; gebruik --allow-warnings alleen als ze beoordeeld zijn.")
+    if args.command.startswith("diff-"):
+        diff = _diff(assignments, snapshot)
+        _print_diff_report(diff)
+        if args.command == "diff-run":
+            return 0
+        sql = _sql_diff_plan(diff, year=year)
+        if args.plan:
+            Path(args.plan).write_text(sql, encoding="utf-8")
+            print(f"\nSQL-plan geschreven: {args.plan}")
+        if args.command == "diff-plan":
+            return 0
+        if not diff.to_insert and not diff.to_delete:
+            print("\nGeen verschillen; apply niet nodig.")
+            return 0
+        if diff.to_delete and not args.confirm_full_year:
+            raise SystemExit(
+                "Diff bevat verwijderingen. Gebruik --confirm-full-year pas nadat is gecontroleerd "
+                "dat de CSV een complete jaarexport is."
+            )
+        if not args.yes:
+            raise SystemExit("Diff-apply vereist --yes.")
+        _mysql(args, sql)
+        print(
+            f"\nDiff-apply klaar: {len(diff.to_insert)} toegevoegd, "
+            f"{len(diff.to_delete)} verwijderd voor jaar {year}."
+        )
+        return 0
     if args.command == "dry-run":
         return 0
 
@@ -259,7 +350,7 @@ def main() -> int:
         description="Verwerk website-CSV kavelbezetting naar lokale Meijendel-MySQL plot_jaar_teller."
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
-    for command in ("dry-run", "plan", "apply"):
+    for command in ("dry-run", "plan", "apply", "diff-run", "diff-plan", "diff-apply"):
         sub = subparsers.add_parser(command)
         sub.add_argument("--csv", required=True, help="CSV uit /leden/kavels.csv")
         sub.add_argument("--year", type=int, help="Doeljaar; standaard uit CSV afgeleid.")
@@ -267,11 +358,16 @@ def main() -> int:
         sub.add_argument("--database", default="Meijendel")
         sub.add_argument("--allow-warnings", action="store_true")
         sub.add_argument("--replace-year", action="store_true", help="Vervang alle plot_jaar_teller-regels voor dit jaar.")
+        sub.add_argument(
+            "--confirm-full-year",
+            action="store_true",
+            help="Bevestig dat de CSV een complete jaarexport is; verplicht voor diff-apply met verwijderingen.",
+        )
         sub.add_argument("--plan", help="Pad voor SQL-planoutput.")
         sub.add_argument("--yes", action="store_true", help="Verplicht voor apply.")
     args = parser.parse_args()
-    if args.command != "apply" and args.yes:
-        raise SystemExit("--yes is alleen toegestaan bij apply.")
+    if args.command not in {"apply", "diff-apply"} and args.yes:
+        raise SystemExit("--yes is alleen toegestaan bij apply en diff-apply.")
     return run(args)
 
 
