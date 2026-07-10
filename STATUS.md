@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 6 juli 2026
+Laatste update: 10 juli 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -42,11 +42,10 @@ Gereed:
 Resterende risico's:
 
 - Er is nog geen uitgebreide visuele regressiecheck over meerdere soorten en viewports.
-- De algemene smoke-test controleert het kenmerkenblok nog niet expliciet.
 
 Aanbevolen volgende stap:
 
-- Voeg gerichte smoke-testchecks toe voor `/soorten/vogel.asp?id=227#kenmerken` of de HTML-inhoud daarvan, plus een soort zonder kenmerken.
+- Voer een visuele regressiecheck uit over meerdere soorten en viewports.
 
 ## Nieuws en CMS
 
@@ -66,7 +65,7 @@ Resterende risico's:
 
 Aanbevolen volgende stap:
 
-- Voeg aan de smoke-test of een aparte redactiecheck toe dat een redacteur een nieuwsbericht met afbeelding kan maken, publiceren en terugzien op startpagina, nieuwsoverzicht en detailpagina.
+- Voer een ingelogde redactiecheck uit waarin een redacteur een nieuwsbericht met afbeelding maakt, publiceert en terugziet op startpagina, nieuwsoverzicht en detailpagina.
 
 ## Leden en contentbeheer
 
@@ -100,9 +99,8 @@ Gereed:
 Resterende risico's:
 
 - De route werkt en de algemene smoke-test is groen.
-- De smoke-test heeft nog geen expliciete assert voor de Vogelrichtlijnpagina/grafiek.
 - Er is nog geen ingelogde CMS-publicatietest voor deze vaste pagina.
 
 Aanbevolen volgende stap:
 
-- Voeg gerichte smoke-testchecks toe voor `/groepen/vogelrichtlijn.asp` en `/groepen/grafiek/vogelrichtlijn.svg`.
+- Voer een ingelogde CMS-publicatietest uit voor de vaste pagina `Vogelrichtlijn`.

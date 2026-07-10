@@ -7,10 +7,7 @@
 - Archiefupload testen met grote bestanden tot 100 MB.
 - Nieuws/CMS na de wijzigingen van 2026-06-30 nog handmatig end-to-end testen met ingelogde redacteur: concept maken, afbeelding uploaden, preview controleren, publiceren, en resultaat controleren op startpagina, `/nieuws/index.asp` en detailpagina.
 - Leden/contentbeheer na de wijzigingen van 2026-06-30 handmatig end-to-end testen met een gewoon niveau-1 telleraccount: ledenpagina met actuele kavels/routes controleren, Contentbeheer openen, alleen `Kavels` zien, alleen eigen kavel(s) zien, kaveltekst wijzigen/publiceren en publieke kavelpagina controleren.
-- Smoke-test uitbreiden met controles voor nieuwsvolgorde en nieuwsoverzicht: nieuwste item bovenaan, korte tekstsamenvatting zichtbaar, geen begin-afbeelding in de overzichtskaart.
-- Smoke-test uitbreiden met controles voor de Vogelrichtlijn-groep: `/groepen/vogelrichtlijn.asp` geeft 200, bevat de vaste tekst en soortenlijst, en `/groepen/grafiek/vogelrichtlijn.svg` geeft `image/svg+xml`.
 - Ingelogde CMS-test uitvoeren voor `Contentbeheer > Vaste Pagina's > Groepen > Vogelrichtlijn`: concept opslaan, preview controleren, publiceren en publieke pagina controleren.
-- Smoke-test uitbreiden met controles voor vogelsoortpagina's: een soort met `Vogelkenmerken` moet 200 geven en het kenmerkenblok tonen; een soort zonder kenmerken mag geen lege knop/blok tonen.
 - Mobiel/tablet visueel controleren of de kopknoppen `Beschrijving`, `Voorkomen` en `Kenmerken` bruikbaar blijven bij lange soortnamen.
 
 ## Productie en beheer
