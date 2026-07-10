@@ -75,6 +75,7 @@ Gereed:
 - Beperkte leden zien binnen Contentbeheer alleen de module `Kavels` en daarna alleen de kavelteksten waarvoor zij in het lopende jaar teller zijn.
 - Niveau 4 en 5 behouden volledige toegang tot vaste pagina's, soortteksten en alle kavelteksten.
 - De ledenpagina `Mijn gegevens en rechten` toont BMP-kavels, winterkavels en PTT-route uit dezelfde actuele jaartoewijzingen als de ledenadministratie, met fallback naar oude app- of legacyvelden.
+- Kavelbezetting voor een nieuw jaar kan lokaal vanuit de beveiligde website-CSV-export worden gecontroleerd en verwerkt met `scripts/apply_website_kavelbezetting.py` (`dry-run`, `plan`, `apply`).
 
 Resterende risico's:
 
