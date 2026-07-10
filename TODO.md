@@ -36,7 +36,3 @@
 - Smoke-tests blijven uitbreiden voor ledenroutes, archief, CMS, dashboard, SQL, Shiny en host-aliases.
 - Voorkom dat dashboard, Shiny of grafiekoutputs divergeren van dezelfde dashboardbron.
 - Rond wijzigingen af met relevante verificatie en commit ze daarna standaard in Git.
-- Recent uitgevoerd voor nieuws/CMS: editor-preview-overlap opgelost, afbeeldinguploads hersteld, publiceren hersteld, nieuwstitels in lijsten gecorrigeerd, nieuwste nieuwsitems bovenaan gesorteerd en `/nieuws/index.asp` omgezet naar korte tekstsamenvattingen met `Lees verder`.
-- Recent uitgevoerd voor leden/contentbeheer: beperkte Contentbeheer-toegang voor actuele BMP-/wintertellers toegevoegd, gewone leden zien daar alleen eigen kavelteksten, en de ledenpagina toont actuele BMP-, winter- en PTT-toewijzingen uit dezelfde bron als de ledenadministratie.
-- Recent uitgevoerd voor Vogelrichtlijn/groepen: dashboardgroep `Vogelrichtlijn` toegevoegd aan `Groepen > Lijsten`, `Kenmerken` gebruikt één tegel `Lijsten`, websitegroep is hernoemd naar `Rode, Oranje en Vogelrichtlijn lijst groepen`, subpagina `/groepen/vogelrichtlijn.asp` toont grafiek/soorten/tekst, en `groups:vogelrichtlijn` is beschikbaar in Contentbeheer.
-- Recent uitgevoerd voor soortpagina's/vogelkenmerken: kopknoppen op vogelsoortdetailpagina's vervangen door `Beschrijving`, `Voorkomen` en optioneel `Kenmerken`; `Vogelkenmerken` toont bestaande Meijendel-lijsten en hoofdgroepkenmerken als doorlopende tekst; productie is gedeployed en de algemene VPS-smoke-test is groen.
