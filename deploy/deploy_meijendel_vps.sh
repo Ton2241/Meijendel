@@ -3,188 +3,262 @@ set -euo pipefail
 
 VPS="${VPS:-ton@45.87.43.90}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/vwgm_spectraip_ed25519}"
-
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
-
 REMOTE_BASE="${REMOTE_BASE:-/srv/vwgm}"
 REMOTE_DATA="$REMOTE_BASE/data"
 REMOTE_SHINY="$REMOTE_BASE/shiny"
 REMOTE_WWW="$REMOTE_BASE/www"
 REMOTE_APP="$REMOTE_BASE/vwg-m-linux-app"
+STATE_DIR="${MEIJENDEL_DEPLOY_STATE_DIR:-$REMOTE_BASE/deploy-state}"
+STATE_FILE="$STATE_DIR/Meijendel.commit"
+GLOBAL_LOCK="$STATE_DIR/production.lock"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
+APPLY=0
+YES=0
+ALLOW_FAILING_CURRENT_SMOKE=0
+INITIALIZE_STATE=""
+LOCK_HELD=0
+LOCAL_COMMIT=""
+DEPLOYED_COMMIT=""
+SYNC_MODE="dry"
 
-rsync_ssh=(ssh -i "$SSH_KEY")
-rsync_base=(rsync -az --checksum -e "${rsync_ssh[*]}")
+usage() {
+  cat <<'USAGE'
+Gebruik:
+  deploy/deploy_meijendel_vps.sh
+  deploy/deploy_meijendel_vps.sh --apply --yes
+  deploy/deploy_meijendel_vps.sh --initialize-state COMMIT --yes
 
-log() {
-  printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
+Zonder --apply voert het script alleen preflight, manifest, dry-run en huidige
+productiecontroles uit. Productie wordt uitsluitend vanaf schone, actuele main gewijzigd.
+
+Opties:
+  --apply                         voer de deploy uit
+  --yes                           expliciete niet-interactieve bevestiging
+  --allow-failing-current-smoke   alleen voor herstel; vereist --apply --yes
+  --initialize-state COMMIT       registreer eenmalig de bekende productiecommit
+USAGE
 }
 
-need_file() {
-  [ -f "$1" ] || {
-    printf 'FOUT: bestand ontbreekt: %s\n' "$1" >&2
+log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
+die() { printf 'BLOKKADE: %s\n' "$*" >&2; exit 1; }
+need_file() { [[ -f "$1" ]] || die "bestand ontbreekt: $1"; }
+need_dir() { [[ -d "$1" ]] || die "map ontbreekt: $1"; }
+remote() { ssh -i "$SSH_KEY" "$VPS" "$@"; }
+
+release_lock() {
+  if [[ "$LOCK_HELD" -eq 1 ]]; then
+    remote "rmdir '$GLOBAL_LOCK' 2>/dev/null || true" || true
+    LOCK_HELD=0
+  fi
+}
+cleanup() { rm -f "$SQL_DEPLOY"; release_lock; }
+trap cleanup EXIT INT TERM
+
+while (($#)); do
+  case "$1" in
+    --apply) APPLY=1 ;;
+    --yes) YES=1 ;;
+    --allow-failing-current-smoke) ALLOW_FAILING_CURRENT_SMOKE=1 ;;
+    --initialize-state)
+      shift
+      [[ $# -gt 0 ]] || die "--initialize-state vereist een commit."
+      INITIALIZE_STATE="$1"
+      ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "Onbekende optie: $1" >&2; usage >&2; exit 2 ;;
+  esac
+  shift
+done
+
+[[ "$ALLOW_FAILING_CURRENT_SMOKE" -eq 0 || ("$APPLY" -eq 1 && "$YES" -eq 1) ]] || \
+  die "--allow-failing-current-smoke vereist --apply --yes."
+[[ -z "$INITIALIZE_STATE" || "$APPLY" -eq 0 ]] || die "combineer --initialize-state niet met --apply."
+
+cd "$LOCAL_REPO"
+log "Controleer Git-baseline"
+[[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
+[[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."
+git fetch origin --prune
+LOCAL_COMMIT="$(git rev-parse HEAD)"
+[[ "$LOCAL_COMMIT" == "$(git rev-parse origin/main)" ]] || die "lokale main is niet exact gelijk aan origin/main."
+printf 'Main-commit: %s\n' "$LOCAL_COMMIT"
+
+acquire_lock() {
+  if ! remote "mkdir -p '$STATE_DIR' && mkdir '$GLOBAL_LOCK'"; then
+    die "een andere productie-deploy houdt de globale VPS-lock vast: $GLOBAL_LOCK"
+  fi
+  LOCK_HELD=1
+}
+
+write_state() {
+  local commit="$1"
+  remote "tmp='$STATE_FILE.tmp.\$\$'; printf '%s\\n' '$commit' > \"\$tmp\"; mv \"\$tmp\" '$STATE_FILE'"
+}
+
+production_smoke() {
+  remote "bash -s" <<'REMOTE'
+set -euo pipefail
+curl -fsSI http://127.0.0.1:3838/ >/dev/null
+for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/; do
+  code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve app.vwg-m.nl:443:127.0.0.1 "https://app.vwg-m.nl$path")"
+  if [[ "$code" != "401" ]]; then
+    echo "FOUT: verwacht 401 voor $path, kreeg $code" >&2
     exit 1
-  }
+  fi
+done
+REMOTE
 }
 
-need_dir() {
-  [ -d "$1" ] || {
-    printf 'FOUT: map ontbreekt: %s\n' "$1" >&2
-    exit 1
-  }
-}
+if [[ -n "$INITIALIZE_STATE" ]]; then
+  [[ "$YES" -eq 1 ]] || die "--initialize-state vereist --yes en expliciete gebruikersbevestiging."
+  git cat-file -e "$INITIALIZE_STATE^{commit}" 2>/dev/null || die "onbekende initialisatiecommit: $INITIALIZE_STATE"
+  initial_commit="$(git rev-parse "$INITIALIZE_STATE^{commit}")"
+  git merge-base --is-ancestor "$initial_commit" "$LOCAL_COMMIT" || die "initialisatiecommit is geen voorouder van main."
+  log "Controleer huidige productie vóór initialisatie"
+  production_smoke
+  acquire_lock
+  existing="$(remote "cat '$STATE_FILE' 2>/dev/null || true")"
+  [[ -z "$existing" || "$existing" == "$initial_commit" ]] || die "productiestatus bestaat al met andere commit: $existing"
+  write_state "$initial_commit"
+  log "Productiecommit geïnitialiseerd op $initial_commit; geen productiebestanden gewijzigd"
+  exit 0
+fi
+
+DEPLOYED_COMMIT="$(remote "cat '$STATE_FILE' 2>/dev/null || true")"
+[[ "$DEPLOYED_COMMIT" =~ ^[0-9a-f]{40}$ ]] || \
+  die "geldige productiestatus ontbreekt in $STATE_FILE; initialiseer die eerst bewust."
+git cat-file -e "$DEPLOYED_COMMIT^{commit}" 2>/dev/null || die "geregistreerde productiecommit is lokaal onbekend: $DEPLOYED_COMMIT"
+git merge-base --is-ancestor "$DEPLOYED_COMMIT" "$LOCAL_COMMIT" || \
+  die "productiecommit $DEPLOYED_COMMIT is geen voorouder van main $LOCAL_COMMIT."
+printf 'Productiecommit: %s\n' "$DEPLOYED_COMMIT"
 
 need_file "$SQL_LOCAL"
 need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
 need_file "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv"
 
-trap 'rm -f "$SQL_DEPLOY"' EXIT
-
 log "Controleer Shiny/dashboard parity voor MSI-groepen"
 Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
-  "$LOCAL_REPO" \
-  "$SQL_LOCAL" \
-  "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" \
-  1958 \
-  2025
+  "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
 
-log "Maak VPS-dump zonder ledenadministratie/Appsmith-objecten en tellers"
+log "Maak deploydump zonder ledenadministratie/Appsmith-objecten en tellers"
 LC_ALL=C awk '
-  function sensitive(line) {
-    return line ~ /`(appsmith_|pwa_)[^`]*`/ || line ~ /`tellers`/
-  }
-  function section_start(line) {
-    return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) /
-  }
-  {
-    if (section_start($0)) {
-      skip = sensitive($0)
-    }
-    if (!skip) {
-      print
-    }
-  }
+  function sensitive(line) { return line ~ /`(appsmith_|pwa_)[^`]*`/ || line ~ /`tellers`/ }
+  function section_start(line) { return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) / }
+  { if (section_start($0)) skip = sensitive($0); if (!skip) print }
 ' "$SQL_LOCAL" > "$SQL_DEPLOY"
 
-log "Upload SQL naar canonieke dataplek"
-ssh -i "$SSH_KEY" "$VPS" "
-  set -euo pipefail
-  mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data'
-"
-"${rsync_base[@]}" --inplace "$SQL_DEPLOY" "$VPS:$REMOTE_DATA/Meijendel.sql"
-ssh -i "$SSH_KEY" "$VPS" "
-  set -euo pipefail
-  ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql'
-  ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql'
-  ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'
-"
+echo "== Release-/afhankelijkheidsmanifest =="
+printf '%s\n' \
+  "meijendel.sql -> $REMOTE_DATA/Meijendel.sql" \
+  "deploy/shiny_image/ -> $REMOTE_SHINY/" \
+  "shiny_meijendel/ -> $REMOTE_SHINY/shiny_meijendel/" \
+  "R/ -> $REMOTE_SHINY/R/" \
+  "bmp_meijendel_index.html -> $REMOTE_WWW/" \
+  "index.html -> $REMOTE_WWW/" \
+  "output_ecologische_groepen/ -> $REMOTE_WWW/output_ecologische_groepen/" \
+  "trim_msi_evg/ -> $REMOTE_WWW/trim_msi_evg/" \
+  "groepen_grafieken/ -> $REMOTE_WWW/groepen_grafieken/" \
+  "app-home/index.html -> $REMOTE_BASE/app-home/"
 
-log "Upload Shiny-app en gedeelde R-code"
-if [ -d "$LOCAL_REPO/deploy/shiny_image" ]; then
-  "${rsync_base[@]}" \
-    "$LOCAL_REPO/deploy/shiny_image/" \
-    "$VPS:$REMOTE_SHINY/"
+rsync_dry=(rsync -az --checksum --delay-updates --itemize-changes --dry-run -e "ssh -i $SSH_KEY")
+rsync_apply=(rsync -az --checksum --delay-updates --itemize-changes -e "ssh -i $SSH_KEY")
+
+run_rsync() {
+  if [[ "$SYNC_MODE" == "dry" ]]; then
+    "${rsync_dry[@]}" "$@"
+  else
+    "${rsync_apply[@]}" "$@"
+  fi
+}
+
+sync_release() {
+  local sql_remote="$REMOTE_DATA/Meijendel.sql.next-$LOCAL_COMMIT"
+  if [[ "$SYNC_MODE" == "apply" ]]; then
+    remote "mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data' '$REMOTE_BASE/app-home'"
+  fi
+  run_rsync "$SQL_DEPLOY" "$VPS:$sql_remote"
+  if [[ "$SYNC_MODE" == "apply" ]]; then
+    remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
+  fi
+  [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
+  [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
+  [[ ! -d "$LOCAL_REPO/R" ]] || run_rsync --delete-delay "$LOCAL_REPO/R/" "$VPS:$REMOTE_SHINY/R/"
+  [[ ! -f "$LOCAL_REPO/bmp_meijendel_index.html" ]] || run_rsync "$LOCAL_REPO/bmp_meijendel_index.html" "$VPS:$REMOTE_WWW/bmp_meijendel_index.html"
+  [[ ! -f "$LOCAL_REPO/index.html" ]] || run_rsync "$LOCAL_REPO/index.html" "$VPS:$REMOTE_WWW/index.html"
+  [[ ! -d "$LOCAL_REPO/output_ecologische_groepen" ]] || run_rsync --delete-delay "$LOCAL_REPO/output_ecologische_groepen/" "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
+  [[ ! -d "$LOCAL_REPO/trim_msi_evg" ]] || run_rsync --delete-delay "$LOCAL_REPO/trim_msi_evg/" "$VPS:$REMOTE_WWW/trim_msi_evg/"
+  [[ ! -d "$LOCAL_REPO/groepen_grafieken" ]] || run_rsync --delete-delay "$LOCAL_REPO/groepen_grafieken/" "$VPS:$REMOTE_WWW/groepen_grafieken/"
+  [[ ! -f "$LOCAL_REPO/app-home/index.html" ]] || run_rsync "$LOCAL_REPO/app-home/index.html" "$VPS:$REMOTE_BASE/app-home/index.html"
+}
+
+log "Rsync dry-run"
+SYNC_MODE="dry"
+sync_release
+
+log "Controleer huidige productie"
+if ! production_smoke; then
+  [[ "$ALLOW_FAILING_CURRENT_SMOKE" -eq 1 ]] || exit 1
+  echo "WAARSCHUWING: huidige productie faalt; expliciete herstelmodus is actief." >&2
 fi
 
-if [ -d "$LOCAL_REPO/shiny_meijendel" ]; then
-  "${rsync_base[@]}" --delete \
-    --exclude 'rsconnect/' \
-    --exclude 'app_cache/' \
-    "$LOCAL_REPO/shiny_meijendel/" \
-    "$VPS:$REMOTE_SHINY/shiny_meijendel/"
+if [[ "$APPLY" -ne 1 ]]; then
+  log "Preflight klaar; productie is niet aangepast. Gebruik --apply --yes na beoordeling."
+  exit 0
 fi
+[[ "$YES" -eq 1 ]] || die "een productiedeploy vereist --apply --yes."
 
-if [ -d "$LOCAL_REPO/R" ]; then
-  "${rsync_base[@]}" --delete \
-    "$LOCAL_REPO/R/" \
-    "$VPS:$REMOTE_SHINY/R/"
+acquire_lock
+locked_state="$(remote "cat '$STATE_FILE' 2>/dev/null || true")"
+[[ "$locked_state" == "$DEPLOYED_COMMIT" ]] || die "productiestatus veranderde tijdens preflight; begin opnieuw."
+
+log "Voer gecontroleerde release-overdracht uit"
+SYNC_MODE="apply"
+sync_release
+
+log "Herstart Shiny en wacht op gereedheid"
+remote "REMOTE_SHINY='$REMOTE_SHINY' bash -s" <<'REMOTE'
+set -euo pipefail
+mkdir -p "$REMOTE_SHINY/shiny_meijendel/app_cache/sass"
+docker run --rm -v "$REMOTE_SHINY/shiny_meijendel/app_cache:/app_cache" vwgm-shiny:latest chown -R shiny:shiny /app_cache
+cd "$REMOTE_SHINY"
+if ! grep -q '/app_cache:rw' docker-compose.yml; then
+  perl -0pi -e 's#(      - /srv/vwgm/shiny/shiny_meijendel:/srv/shiny-server/shiny_meijendel:ro\n)#$1      - /srv/vwgm/shiny/shiny_meijendel/app_cache:/srv/shiny-server/shiny_meijendel/app_cache:rw\n#' docker-compose.yml
 fi
+docker compose up -d shiny >/dev/null
+for attempt in $(seq 1 30); do
+  if curl -fsSI http://127.0.0.1:3838/ >/dev/null; then
+    echo "Shiny gereed na poging $attempt"
+    exit 0
+  fi
+  sleep 2
+done
+docker ps --filter name=shiny_meijendel
+docker logs --tail 120 shiny_meijendel >&2
+exit 1
+REMOTE
 
-log "Upload HTML-dashboard en outputbestanden"
-if [ -f "$LOCAL_REPO/bmp_meijendel_index.html" ]; then
-  "${rsync_base[@]}" "$LOCAL_REPO/bmp_meijendel_index.html" \
-    "$VPS:$REMOTE_WWW/bmp_meijendel_index.html"
-fi
+log "Controleer analysepackages, cache, checksums en containers"
+remote "REMOTE_BASE='$REMOTE_BASE' REMOTE_DATA='$REMOTE_DATA' REMOTE_SHINY='$REMOTE_SHINY' REMOTE_WWW='$REMOTE_WWW' REMOTE_APP='$REMOTE_APP' bash -s" <<'REMOTE'
+set -euo pipefail
+docker exec shiny_meijendel Rscript -e '
+  pkgs <- c("geepack", "glmmTMB", "vegan", "pls", "changepoint", "strucchange", "lavaan", "piecewiseSEM", "indicspecies", "betapart", "unmarked")
+  ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
+  print(data.frame(package = pkgs, beschikbaar = unname(ok)))
+  if (!all(ok)) stop("Niet alle analysepackages zijn beschikbaar.")
+  if (!nzchar(Sys.which("perl"))) stop("Perl ontbreekt in de Shiny-container.")
+'
+docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- \"/srv/shiny-server/Meijendel.sql\"; t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL cache: from_cache=%s elapsed=%.3f cache=%s\\n\", x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
+sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
+docker stats --no-stream shiny_meijendel
+docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
+REMOTE
 
-if [ -f "$LOCAL_REPO/index.html" ]; then
-  "${rsync_base[@]}" "$LOCAL_REPO/index.html" "$VPS:$REMOTE_WWW/index.html"
-fi
-
-if [ -d "$LOCAL_REPO/output_ecologische_groepen" ]; then
-  "${rsync_base[@]}" --delete \
-    "$LOCAL_REPO/output_ecologische_groepen/" \
-    "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
-fi
-
-if [ -d "$LOCAL_REPO/trim_msi_evg" ]; then
-  "${rsync_base[@]}" --delete \
-    "$LOCAL_REPO/trim_msi_evg/" \
-    "$VPS:$REMOTE_WWW/trim_msi_evg/"
-fi
-
-if [ -d "$LOCAL_REPO/groepen_grafieken" ]; then
-  "${rsync_base[@]}" --delete \
-    "$LOCAL_REPO/groepen_grafieken/" \
-    "$VPS:$REMOTE_WWW/groepen_grafieken/"
-fi
-
-if [ -f "$LOCAL_REPO/app-home/index.html" ]; then
-  log "Upload app-home"
-  "${rsync_base[@]}" "$LOCAL_REPO/app-home/index.html" \
-    "$VPS:$REMOTE_BASE/app-home/index.html"
-fi
-
-log "Herstart Shiny en controleer HTTP"
-ssh -i "$SSH_KEY" "$VPS" "
-	  set -euo pipefail
-
-	  mkdir -p '$REMOTE_SHINY/shiny_meijendel/app_cache/sass'
-	  docker run --rm -v '$REMOTE_SHINY/shiny_meijendel/app_cache:/app_cache' vwgm-shiny:latest \
-	    chown -R shiny:shiny /app_cache
-
-	  cd '$REMOTE_SHINY'
-	  if ! grep -q '/app_cache:rw' docker-compose.yml; then
-	    perl -0pi -e 's#(      - /srv/vwgm/shiny/shiny_meijendel:/srv/shiny-server/shiny_meijendel:ro\n)#\$1      - /srv/vwgm/shiny/shiny_meijendel/app_cache:/srv/shiny-server/shiny_meijendel/app_cache:rw\n#' docker-compose.yml
-	  fi
-	  docker compose up -d shiny >/dev/null
-
-  for attempt in \$(seq 1 30); do
-    if curl -fsSI http://127.0.0.1:3838/ >/dev/null; then
-      printf 'Shiny HTTP-check ok na poging %s\n' \"\$attempt\"
-      break
-    fi
-    if [ \"\$attempt\" -eq 30 ]; then
-      printf 'FOUT: Shiny gaf na 60 seconden nog geen HTTP 200 terug.\n' >&2
-      docker ps --filter name=shiny_meijendel --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}\t{{.Ports}}'
-      docker logs --tail 80 shiny_meijendel >&2
-      exit 1
-    fi
-    sleep 2
-  done
-
-	  docker exec shiny_meijendel Rscript -e '
-	    pkgs <- c(\"geepack\", \"glmmTMB\", \"vegan\", \"pls\", \"changepoint\", \"strucchange\", \"lavaan\", \"piecewiseSEM\", \"indicspecies\", \"betapart\", \"unmarked\")
-	    ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
-	    print(data.frame(package = pkgs, beschikbaar = unname(ok)))
-	    if (!all(ok)) stop(\"Niet alle analysepackages zijn beschikbaar. Run eerst deploy/rebuild_shiny_image_vps.sh.\")
-    perl <- Sys.which(\"perl\")
-	    print(data.frame(system_tool = \"perl\", beschikbaar = nzchar(perl), pad = unname(perl)))
-	    if (!nzchar(perl)) stop(\"Perl ontbreekt in de Shiny-container. Run eerst deploy/rebuild_shiny_image_vps.sh.\")
-	  '
-
-	  docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e \"source(\\\"helpers.R\\\"); path <- \\\"/srv/shiny-server/Meijendel.sql\\\"; t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\\\"SQL cache: from_cache=%s elapsed=%.3f cache=%s\\\\n\\\", x[[\\\"from_cache\\\"]], unname(t[[\\\"elapsed\\\"]]), x[[\\\"cache_path\\\"]]))\"'
-
-	  sha256sum \
-	    '$REMOTE_DATA/Meijendel.sql' \
-	    '$REMOTE_SHINY/Meijendel.sql' \
-	    '$REMOTE_WWW/Meijendel.sql' \
-	    '$REMOTE_APP/data/Meijendel.sql'
-	  find '$REMOTE_BASE' -maxdepth 6 -path '$REMOTE_BASE/meijendel-mysql' -prune -o -name Meijendel.sql -type f -print
-  docker stats --no-stream shiny_meijendel
-  docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
-"
-
-log "Klaar"
+log "Volledige productiecontrole na deploy"
+production_smoke
+write_state "$LOCAL_COMMIT"
+log "Productiecommit geregistreerd: $LOCAL_COMMIT"
+log "Deploy afgerond"

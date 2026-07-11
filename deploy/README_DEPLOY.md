@@ -30,11 +30,20 @@ cd /Users/ton/Documents/GitHub/Meijendel
 ./deploy/update_en_deploy_meijendel.sh
 ```
 
+Dit script genereert en controleert de lokale output, maar deployt niet meer in dezelfde run. Commit en push de gegenereerde bestanden, merge naar `main` en voer daarna vanaf een schone, actuele `main` eerst de deploy-preflight en vervolgens de bevestigde deploy uit.
+
 Voor alleen deployen van al bijgewerkte lokale bestanden:
 
 ```sh
 cd /Users/ton/Documents/GitHub/Meijendel
 ./deploy/deploy_meijendel_vps.sh
+./deploy/deploy_meijendel_vps.sh --apply --yes
+```
+
+Eerste, eenmalige inrichting nadat de werkelijk draaiende productiecommit is vastgesteld en in `main` is geïntegreerd:
+
+```sh
+./deploy/deploy_meijendel_vps.sh --initialize-state VOLLEDIGE_GIT_COMMIT --yes
 ```
 
 Voor het opnieuw installeren van de Caddy-configuratie voor `app.vwg-m.nl`:
@@ -42,6 +51,14 @@ Voor het opnieuw installeren van de Caddy-configuratie voor `app.vwg-m.nl`:
 ```sh
 cd /Users/ton/Documents/GitHub/Meijendel
 ./deploy/deploy_caddy_vps.sh
+./deploy/deploy_caddy_vps.sh --apply --yes
+```
+
+Voor het herbouwen van het Shiny-image geldt dezelfde tweestapswerkwijze:
+
+```sh
+./deploy/rebuild_shiny_image_vps.sh
+./deploy/rebuild_shiny_image_vps.sh --apply --yes
 ```
 
 Als het script geen uitvoerrechten heeft:
@@ -180,6 +197,8 @@ Secrets, sessiesleutels, wachtwoorden en eventuele oude Basic Auth-hashes staan 
 - controleert dat directe toegang zonder sessie `401` geeft en met sessie `200`
 
 Een normale Meijendel-deploy via `deploy/deploy_meijendel_vps.sh` overschrijft Caddy niet. Gebruik `deploy/deploy_caddy_vps.sh` alleen bij nieuwe VPS-inrichting of bij bewuste wijziging van de Caddy-routes/authenticatie.
+
+Zowel de Caddy-deploy als de Shiny-image-rebuild gebruikt dezelfde geregistreerde Meijendel-productiecommit en globale VPS-deploy-lock. Zonder `--apply --yes` voeren deze scripts alleen validatie, manifest/dry-run en huidige productiecontrole uit.
 
 ## Voorwaarden
 

@@ -90,7 +90,6 @@ need_dir "$REPO_DIR/shiny_meijendel"
 cp -p "$REPO_DIR/R/evg_selctie_T0soort_T0msi.csv" \
   "$REPO_DIR/shiny_meijendel/evg_selctie_T0soort_T0msi.csv"
 
-log "Deploy naar VPS"
-"$REPO_DIR/deploy/deploy_meijendel_vps.sh"
-
-log "Klaar"
+log "Generatie en controles zijn klaar. Commit en push de gewijzigde output, merge naar main en voer daarna vanaf schone main uit:"
+log "  deploy/deploy_meijendel_vps.sh"
+log "  deploy/deploy_meijendel_vps.sh --apply --yes"
