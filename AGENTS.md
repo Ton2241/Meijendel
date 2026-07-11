@@ -37,6 +37,7 @@ Bij iedere nieuwe opdrachtdraad en productiedeploy:
 - registreer de nieuwe productiecommit pas na volledig groene nacontrole
 - als het deployscript deze beveiligingen nog niet afdwingt, implementeer ze eerst en voer tot die tijd geen nieuwe productiedeploy uit
 - gebruik herstelmodus alleen na expliciete bevestiging wanneer productie al defect is; ancestrycontrole, deploy-lock, manifest en volledige nacontrole blijven verplicht
+- rond iedere geslaagde productiedeploy af door `/Users/ton/Documents/GitHub/VWG_Project/RELEASE_MANIFEST.yml` bij te werken: lees beide VPS-statebestanden, voeg een nieuwe release toe met exact de geregistreerde `VWG_M`- en `Meijendel`-commits, valideer ancestry en YAML, en commit/push/merge naar `VWG_Project/main`; hergebruik de bestaande commit van een ongewijzigde component en wijzig historische releases nooit
 
 Bij communicatie:
 - wees direct, feitelijk en beknopt

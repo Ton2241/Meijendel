@@ -19,6 +19,18 @@ Na deploy wacht het script met begrensde retries op Shiny en dashboard, controle
 
 Iedere rsync-verwijdering blokkeert `--apply` standaard. Alleen na expliciete beoordeling kan een deploy met verwijderingen worden gestart met `--apply --yes --allow-delete`. Lokale metadata zoals `.DS_Store` wordt altijd uitgesloten.
 
+## Release-manifest afronden
+
+Een geslaagde deploy en groene nacontrole zijn nog niet het einde van de release. Werk daarna het centrale bestand `/Users/ton/Documents/GitHub/VWG_Project/RELEASE_MANIFEST.yml` bij:
+
+1. lees `/srv/vwgm/deploy-state/VWG_M.commit` en `/srv/vwgm/deploy-state/Meijendel.commit`;
+2. controleer dat beide commits voorouders zijn van de respectieve `origin/main`;
+3. voeg een nieuwe, onveranderlijke release toe met exact één commit per repository;
+4. pas `current_release` aan;
+5. valideer YAML en commit/push/merge de wijziging naar `VWG_Project/main`.
+
+Als alleen Meijendel wijzigde, blijft de geregistreerde VWG_M-commit ongewijzigd in de nieuwe release. Een productiedeploy is administratief niet afgerond zolang deze manifeststap ontbreekt.
+
 Als het huidige deployscript een van deze controles nog niet technisch afdwingt, moet die beveiliging eerst worden geïmplementeerd en getest. Voer tot die tijd geen nieuwe productiedeploy uit.
 
 
