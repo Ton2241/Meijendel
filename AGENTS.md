@@ -25,6 +25,19 @@ Bij codewerk:
 - beheer vanaf nu de volledige Git-repository als onderdeel van het werk: controleer `git status`, houd wijzigingen logisch gegroepeerd, commit afgeronde wijzigingen, en laat niet-door-jou-gemaakte wijzigingen ongemoeid tenzij ik expliciet anders vraag
 - als ik vraag een wijziging door te voeren voor `app.vwg-m.nl` of de VPS-site, voer die wijziging zowel lokaal als op de VPS door, inclusief passende verificatie na deploy
 
+Bij iedere nieuwe opdrachtdraad en productiedeploy:
+- controleer eerst werkboom, actieve branch en lokale/remote branches; ga niet automatisch verder op de toevallig actieve branch
+- gebruik een bestaande branch alleen als die aantoonbaar bij de taak past; maak anders vanaf de juiste actuele basis een taakgerichte branch
+- ontwikkel en test op die taakbranch, maar merge vóór productie eerst naar `main`
+- deploy uitsluitend vanaf een schone lokale `main` die exact gelijkloopt met `origin/main`; deploy nooit rechtstreeks vanaf een feature- of fixbranch
+- gebruik uitsluitend het repositoriespecifieke deployscript; geen losse rsync-, SSH-, Docker- of databasewijzigingen als vervanging van de preflight
+- de preflight moet controleren dat de op de VPS geregistreerde Meijendel-productiecommit een voorouder is van de nieuwe `main`, en moet een exclusieve VPS-deploy-lock gebruiken
+- deploy één samenhangende release of een expliciet volledig manifest van afhankelijke SQL-, R-, dashboard-, CSV- en Shiny-bestanden; overschrijf geen gedeeld kernbestand los vanuit een andere branch
+- wacht na herstart met begrensde retries op Shiny/dashboardgereedheid en voer daarna alle relevante rook- en inhoudscontroles uit
+- registreer de nieuwe productiecommit pas na volledig groene nacontrole
+- als het deployscript deze beveiligingen nog niet afdwingt, implementeer ze eerst en voer tot die tijd geen nieuwe productiedeploy uit
+- gebruik herstelmodus alleen na expliciete bevestiging wanneer productie al defect is; ancestrycontrole, deploy-lock, manifest en volledige nacontrole blijven verplicht
+
 Bij communicatie:
 - wees direct, feitelijk en beknopt
 - geef bij grotere wijzigingen een korte samenvatting van wat is aangepast en hoe het is gecontroleerd

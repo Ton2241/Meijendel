@@ -1,5 +1,24 @@
 # Deploy naar VPS
 
+## Verplichte veilige productielijn
+
+Werk op een taakgerichte branch, maar deploy uitsluitend vanaf `main`. De wijziging moet vóór deploy zijn getest, naar `main` gemerged en gepusht. Lokaal `main` moet schoon zijn en exact gelijklopen met `origin/main`; rechtstreeks deployen vanaf een feature- of fixbranch is verboden.
+
+Het deployscript moet vóór iedere productieaanpassing afdwingen:
+
+- de actieve branch is `main` en de werkboom is schoon;
+- lokaal `main` is exact gelijk aan `origin/main`;
+- de op de VPS geregistreerde Meijendel-productiecommit bestaat en is een voorouder van de nieuwe commit;
+- een exclusieve VPS-deploy-lock voorkomt gelijktijdige of overlappende deploys;
+- een dry-run en expliciet manifest tonen alle samenhangende SQL-, R-, Shiny-, dashboard- en CSV-bestanden;
+- de huidige productiecontrole is uitgevoerd en afwijkingen zijn verklaard.
+
+Deploy bij voorkeur naar een release-directory per commit en activeer die atomisch. Waar dit voor gedeelde Meijendel-data nog niet mogelijk is, moet het manifest volledig zijn en moeten tijdelijke bestanden pas na succesvolle validatie atomisch naar hun definitieve pad worden verplaatst. Deploy geen los gedeeld kernbestand vanuit een andere branch.
+
+Na deploy wacht het script met begrensde retries op Shiny en dashboard, controleert checksums, containerstatus, HTTP-routes en relevante grafiekinhoud, en registreert pas daarna de nieuwe productiecommit. Herstelmodus is alleen toegestaan met expliciete bevestiging wanneer productie al defect is; ancestrycontrole, lock, manifest en volledige groene nacontrole blijven verplicht.
+
+Als het huidige deployscript een van deze controles nog niet technisch afdwingt, moet die beveiliging eerst worden geïmplementeerd en getest. Voer tot die tijd geen nieuwe productiedeploy uit.
+
 
 
 ## Uitvoeren
