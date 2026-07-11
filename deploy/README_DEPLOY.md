@@ -17,6 +17,8 @@ Deploy bij voorkeur naar een release-directory per commit en activeer die atomis
 
 Na deploy wacht het script met begrensde retries op Shiny en dashboard, controleert checksums, containerstatus, HTTP-routes en relevante grafiekinhoud, en registreert pas daarna de nieuwe productiecommit. Herstelmodus is alleen toegestaan met expliciete bevestiging wanneer productie al defect is; ancestrycontrole, lock, manifest en volledige groene nacontrole blijven verplicht.
 
+Iedere rsync-verwijdering blokkeert `--apply` standaard. Alleen na expliciete beoordeling kan een deploy met verwijderingen worden gestart met `--apply --yes --allow-delete`. Lokale metadata zoals `.DS_Store` wordt altijd uitgesloten.
+
 Als het huidige deployscript een van deze controles nog niet technisch afdwingt, moet die beveiliging eerst worden geïmplementeerd en getest. Voer tot die tijd geen nieuwe productiedeploy uit.
 
 

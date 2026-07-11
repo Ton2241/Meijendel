@@ -19,11 +19,13 @@ SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
 APPLY=0
 YES=0
 ALLOW_FAILING_CURRENT_SMOKE=0
+ALLOW_DELETE=0
 INITIALIZE_STATE=""
 LOCK_HELD=0
 LOCAL_COMMIT=""
 DEPLOYED_COMMIT=""
 SYNC_MODE="dry"
+DELETE_COUNT=0
 
 usage() {
   cat <<'USAGE'
@@ -39,6 +41,7 @@ Opties:
   --apply                         voer de deploy uit
   --yes                           expliciete niet-interactieve bevestiging
   --allow-failing-current-smoke   alleen voor herstel; vereist --apply --yes
+  --allow-delete                  sta beoordeelde verwijderingen toe; vereist --apply --yes
   --initialize-state COMMIT       registreer eenmalig de bekende productiecommit
 USAGE
 }
@@ -63,6 +66,7 @@ while (($#)); do
     --apply) APPLY=1 ;;
     --yes) YES=1 ;;
     --allow-failing-current-smoke) ALLOW_FAILING_CURRENT_SMOKE=1 ;;
+    --allow-delete) ALLOW_DELETE=1 ;;
     --initialize-state)
       shift
       [[ $# -gt 0 ]] || die "--initialize-state vereist een commit."
@@ -76,6 +80,8 @@ done
 
 [[ "$ALLOW_FAILING_CURRENT_SMOKE" -eq 0 || ("$APPLY" -eq 1 && "$YES" -eq 1) ]] || \
   die "--allow-failing-current-smoke vereist --apply --yes."
+[[ "$ALLOW_DELETE" -eq 0 || ("$APPLY" -eq 1 && "$YES" -eq 1) ]] || \
+  die "--allow-delete vereist --apply --yes."
 [[ -z "$INITIALIZE_STATE" || "$APPLY" -eq 0 ]] || die "combineer --initialize-state niet met --apply."
 
 cd "$LOCAL_REPO"
@@ -169,7 +175,11 @@ rsync_apply=(rsync -az --checksum --delay-updates --itemize-changes -e "ssh -i $
 
 run_rsync() {
   if [[ "$SYNC_MODE" == "dry" ]]; then
-    "${rsync_dry[@]}" "$@"
+    local output count
+    output="$("${rsync_dry[@]}" "$@")"
+    printf '%s\n' "$output"
+    count="$(printf '%s\n' "$output" | grep -c '^\*deleting ' || true)"
+    DELETE_COUNT=$((DELETE_COUNT + count))
   else
     "${rsync_apply[@]}" "$@"
   fi
@@ -185,19 +195,25 @@ sync_release() {
     remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
   fi
   [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
-  [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
-  [[ ! -d "$LOCAL_REPO/R" ]] || run_rsync --delete-delay "$LOCAL_REPO/R/" "$VPS:$REMOTE_SHINY/R/"
+  [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude '.DS_Store' --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
+  [[ ! -d "$LOCAL_REPO/R" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/R/" "$VPS:$REMOTE_SHINY/R/"
   [[ ! -f "$LOCAL_REPO/bmp_meijendel_index.html" ]] || run_rsync "$LOCAL_REPO/bmp_meijendel_index.html" "$VPS:$REMOTE_WWW/bmp_meijendel_index.html"
   [[ ! -f "$LOCAL_REPO/index.html" ]] || run_rsync "$LOCAL_REPO/index.html" "$VPS:$REMOTE_WWW/index.html"
-  [[ ! -d "$LOCAL_REPO/output_ecologische_groepen" ]] || run_rsync --delete-delay "$LOCAL_REPO/output_ecologische_groepen/" "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
-  [[ ! -d "$LOCAL_REPO/trim_msi_evg" ]] || run_rsync --delete-delay "$LOCAL_REPO/trim_msi_evg/" "$VPS:$REMOTE_WWW/trim_msi_evg/"
-  [[ ! -d "$LOCAL_REPO/groepen_grafieken" ]] || run_rsync --delete-delay "$LOCAL_REPO/groepen_grafieken/" "$VPS:$REMOTE_WWW/groepen_grafieken/"
+  [[ ! -d "$LOCAL_REPO/output_ecologische_groepen" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/output_ecologische_groepen/" "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
+  [[ ! -d "$LOCAL_REPO/trim_msi_evg" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/trim_msi_evg/" "$VPS:$REMOTE_WWW/trim_msi_evg/"
+  [[ ! -d "$LOCAL_REPO/groepen_grafieken" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/groepen_grafieken/" "$VPS:$REMOTE_WWW/groepen_grafieken/"
   [[ ! -f "$LOCAL_REPO/app-home/index.html" ]] || run_rsync "$LOCAL_REPO/app-home/index.html" "$VPS:$REMOTE_BASE/app-home/index.html"
 }
 
 log "Rsync dry-run"
 SYNC_MODE="dry"
 sync_release
+if [[ "$DELETE_COUNT" -gt 0 ]]; then
+  echo "WAARSCHUWING: dry-run bevat $DELETE_COUNT verwijdering(en)." >&2
+  if [[ "$APPLY" -eq 1 && "$ALLOW_DELETE" -ne 1 ]]; then
+    die "deploy met verwijderingen vereist na beoordeling ook --allow-delete."
+  fi
+fi
 
 log "Controleer huidige productie"
 if ! production_smoke; then
