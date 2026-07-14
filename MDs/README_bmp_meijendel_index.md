@@ -107,7 +107,7 @@ De standaardperiode voor de groepengrafieken is `1990-2025`. De gebruiker kan de
 Status 2026-06-30:
 
 - De publieke FastAPI/Jinja-soortpagina's op `app.vwg-m.nl` gebruiken bestaande Meijendel-kenmerkdata als read-only bron voor een aanvullend blok `Vogelkenmerken`.
-- Dat blok is compacter dan de dashboardtab `Kenmerken`: eerst lijsten, daarna hoofdgroepkenmerken als doorlopende tekst.
+- Dat blok is compacter dan de dashboardtab `Soort-kenmerken`: eerst lijsten, daarna hoofdgroepkenmerken als doorlopende tekst.
 - De dashboardweergave in `bmp_meijendel_index.html` blijft de controleweergave voor de volledige kenmerkenstructuur; de publieke site toont alleen een leesbare samenvatting per soort.
 
 Gewijzigde bestanden voor deze website-ronde: geen in de Meijendel-HTML zelf; in de website-repo zijn `app/queries.py`, `app/templates/species_detail.html`, `app/static/site.css` en `handleiding_beheer.md` aangepast.
@@ -115,6 +115,20 @@ Gewijzigde bestanden voor deze website-ronde: geen in de Meijendel-HTML zelf; in
 Resterende risico's: de dashboardtab en publieke samenvatting gebruiken dezelfde brontabellen, maar er is nog geen automatische vergelijkingstest die controleert dat alle publiek getoonde kenmerken uit de dashboardbron komen.
 
 Aanbevolen volgende stap: voeg een kleine controle toe voor enkele voorbeeldsoorten, waarbij dashboardkenmerken en publieke soortpagina-samenvatting op aanwezigheid van dezelfde hoofdgroepen worden vergeleken.
+
+## Tab Plots-soorten
+
+Deze tab toont per gekozen plot welke vogels daar ooit met een positief aantal territoria als broedvogel zijn geregistreerd.
+
+De gebruiker kiest:
+
+- één plot;
+- een periode vanaf 1958 tot en met het laatste beschikbare jaar;
+- alfabetische volgorde of volgorde op EURING-code.
+
+De tabel toont aantallen territoria per jaar. Er staan maximaal tien jaren tegelijk in beeld, van oud naar nieuw. De knoppen `Vorige 10 jaar` en `Volgende 10 jaar` bladeren binnen de gekozen periode. Een streepje betekent dat voor die soort en dat jaar geen waarde is geregistreerd.
+
+De eerdere tab `Kenmerken` heet nu `Soort-kenmerken`. De eerdere tab `Plots` heet nu `Plots-kenmerken`.
 
 ## Tab Wintertellingen
 
