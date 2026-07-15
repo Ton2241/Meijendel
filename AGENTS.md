@@ -26,6 +26,10 @@ Bij codewerk:
 - als ik vraag een wijziging door te voeren voor `app.vwg-m.nl` of de VPS-site, voer die wijziging zowel lokaal als op de VPS door, inclusief passende verificatie na deploy
 
 Bij iedere nieuwe opdrachtdraad en productiedeploy:
+- controleer aan het begin én einde `VWG_Project`, `VWG_M` en `Meijendel`: haal remote refs op, meld de actieve branch en eis dat iedere lokale branch gelijkloopt met haar upstream; buiten een expliciet actieve taak hoort iedere werkboom schoon te zijn
+- behandel een vooraf aangetroffen vuile werkboom niet als een normale toestand: stel eerst eigenaar en oorzaak vast; rond de wijziging veilig af en commit/push haar, of vraag de gebruiker als de bedoeling niet betrouwbaar is vast te stellen
+- neem gegenereerde caches, tijdelijke bestanden en runtime-output nooit op in Git; als zo'n bestand al gevolgd wordt, haal het gecontroleerd uit Git en voeg het patroon toe aan `.gitignore`
+- controleer `git worktree list --porcelain` op verwijzingen naar niet-bestaande tijdelijke worktrees en ruim alleen aantoonbaar `prunable` metadata op
 - controleer eerst werkboom, actieve branch en lokale/remote branches; ga niet automatisch verder op de toevallig actieve branch
 - gebruik een bestaande branch alleen als die aantoonbaar bij de taak past; maak anders vanaf de juiste actuele basis een taakgerichte branch
 - ontwikkel en test op die taakbranch, maar merge vóór productie eerst naar `main`
@@ -38,6 +42,7 @@ Bij iedere nieuwe opdrachtdraad en productiedeploy:
 - als het deployscript deze beveiligingen nog niet afdwingt, implementeer ze eerst en voer tot die tijd geen nieuwe productiedeploy uit
 - gebruik herstelmodus alleen na expliciete bevestiging wanneer productie al defect is; ancestrycontrole, deploy-lock, manifest en volledige nacontrole blijven verplicht
 - rond iedere geslaagde productiedeploy af door `/Users/ton/Documents/GitHub/VWG_Project/RELEASE_MANIFEST.yml` bij te werken: lees beide VPS-statebestanden, voeg een nieuwe release toe met exact de geregistreerde `VWG_M`- en `Meijendel`-commits, valideer ancestry en YAML, en commit/push/merge naar `VWG_Project/main`; hergebruik de bestaande commit van een ongewijzigde component en wijzig historische releases nooit
+- meld een opdracht pas als volledig gesynchroniseerd wanneer `main == origin/main` in alle drie repositories, alle actieve taakbranches gelijklopen met hun upstream, de drie werkbomen schoon zijn en het productie-release-manifest overeenkomt met beide VPS-statebestanden
 
 Bij communicatie:
 - wees direct, feitelijk en beknopt

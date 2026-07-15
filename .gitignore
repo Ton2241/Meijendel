@@ -4,3 +4,4 @@ Meijendel.sql
 __pycache__/
 .Rhistory
 .RData
+app_cache/

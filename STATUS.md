@@ -1,8 +1,16 @@
 # Status Meijendel
 
-Laatste update: 10 juli 2026
+Laatste update: 15 juli 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
+
+## Repositoryhygiëne
+
+Gereed:
+
+- Gegenereerde R- en Sass-bestanden onder `app_cache/` worden niet meer door Git gevolgd en zijn projectbreed genegeerd.
+- De Meijendel-deploypreflight controleert na de lokale Shiny/dashboard-pariteitscontrole opnieuw dat de werkboom schoon is.
+- Projectbrede begin- en eindcontrole vereist schone werkbomen, actuele upstreams en opruiming van aantoonbaar verouderde worktreeverwijzingen in alle drie repositories.
 
 ## SQL-naam en historische PWA
 

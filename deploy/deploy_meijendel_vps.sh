@@ -149,6 +149,8 @@ need_file "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv"
 log "Controleer Shiny/dashboard parity voor MSI-groepen"
 Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
   "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
+[[ -z "$(git status --porcelain --untracked-files=all)" ]] || \
+  die "lokale validatie wijzigde de werkboom; ruim gegenereerde bestanden op of commit bedoelde wijzigingen vóór deploy."
 
 log "Maak deploydump zonder ledenadministratie/Appsmith-objecten en tellers"
 LC_ALL=C awk '

@@ -203,7 +203,7 @@ Of via Terminal:
 - De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
 - De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.
 - Niet alle documentatie in de repo is even recent; de documenten in `MDs/` zijn nu leidend.
-- De worktree kan lokale, nog niet gecommitte wijzigingen bevatten. Controleer `git status` voordat je bestanden overschrijft of commit; commit afgeronde wijzigingen standaard na verificatie.
+- De worktree hoort buiten een expliciet actieve taak schoon te zijn. Onderzoek iedere vooraf aangetroffen wijziging, rond bedoelde wijzigingen af met commit/push en haal gegenereerde caches of runtime-output uit Git en zet die in `.gitignore`.
 
 ## Samenvatting
 
