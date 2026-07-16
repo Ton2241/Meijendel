@@ -454,6 +454,19 @@ read_insert_table <- function(path, table, keep_columns = NULL, respect_parens =
   out
 }
 
+read_optional_insert_table <- function(path, table, columns) {
+  lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
+  prefix <- paste0("INSERT INTO \`", table, "\` ")
+  if (!any(startsWith(lines, prefix))) {
+    out <- as.data.frame(
+      setNames(replicate(length(columns), character(), simplify = FALSE), columns),
+      stringsAsFactors = FALSE
+    )
+    return(out)
+  }
+  read_insert_table(path, table, columns)
+}
+
 extract_insert_values_text <- function(path, table, encoding = "UTF-8") {
   lines <- readLines(path, warn = FALSE, encoding = encoding)
   prefix <- paste0("INSERT INTO `", table, "` ")
@@ -555,6 +568,11 @@ parse_meijendel_tables <- function(path) {
   pjs <- read_insert_table(path, "plot_jaar_stikstof", c("plot_id", "jaar", "bron", "stikstof_mean"))
   pji <- read_insert_table(path, "plot_jaar_infra", c("plot_id", "jaar", "bron", "variabele", "waarde"))
   pjtg <- read_insert_table(path, "plot_jaar_toegankelijkheid", c("plot_id", "jaar", "bron", "status_code"))
+  pjv <- read_optional_insert_table(
+    path,
+    "pq_plot_jaar_vegetatie",
+    c("plot_id", "jaar", "n_pq", "n_opnamen", "taxa_aantal", "soortenrijkdom_gem", "bedekking_som_gem", "shannon_gem", "dekking_kwaliteit")
+  )
 
   plots$plot_id <- to_integer(plots$plot_id)
   plots$in_gebruik <- if ("in_gebruik" %in% names(plots)) to_integer(plots$in_gebruik) else 1L
@@ -604,6 +622,14 @@ parse_meijendel_tables <- function(path) {
   pji$waarde <- to_numeric(pji$waarde)
   pjtg$plot_id <- to_integer(pjtg$plot_id)
   pjtg$jaar <- to_integer(pjtg$jaar)
+  pjv$plot_id <- to_integer(pjv$plot_id)
+  pjv$jaar <- to_integer(pjv$jaar)
+  pjv$n_pq <- to_integer(pjv$n_pq)
+  pjv$n_opnamen <- to_integer(pjv$n_opnamen)
+  pjv$taxa_aantal <- to_integer(pjv$taxa_aantal)
+  pjv$soortenrijkdom_gem <- to_numeric(pjv$soortenrijkdom_gem)
+  pjv$bedekking_som_gem <- to_numeric(pjv$bedekking_som_gem)
+  pjv$shannon_gem <- to_numeric(pjv$shannon_gem)
 
   pjo <- pjo[pjo$plot_id %in% actieve_plot_ids, , drop = FALSE]
   pjt <- pjt[pjt$plot_id %in% actieve_plot_ids, , drop = FALSE]
@@ -613,6 +639,7 @@ parse_meijendel_tables <- function(path) {
   pjs <- pjs[pjs$plot_id %in% actieve_plot_ids, , drop = FALSE]
   pji <- pji[pji$plot_id %in% actieve_plot_ids, , drop = FALSE]
   pjtg <- pjtg[pjtg$plot_id %in% actieve_plot_ids, , drop = FALSE]
+  pjv <- pjv[pjv$plot_id %in% actieve_plot_ids, , drop = FALSE]
 
   list(
     plots = plots,
@@ -634,6 +661,7 @@ parse_meijendel_tables <- function(path) {
     plot_jaar_stikstof = pjs,
     plot_jaar_infra = pji,
     plot_jaar_toegankelijkheid = pjtg,
+    pq_plot_jaar_vegetatie = pjv,
     sql_path = normalizePath(path, winslash = "/", mustWork = TRUE)
   )
 }
@@ -683,7 +711,7 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
     cache_valid <- !is.null(cache) &&
       identical(cache$signature, signature) &&
       !is.null(cache$data) &&
-      all(c("richtlijnen", "soort_richtlijn", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid") %in% names(cache$data))
+      all(c("richtlijnen", "soort_richtlijn", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie") %in% names(cache$data))
     if (cache_valid) {
       cache$data$sql_path <- path
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
@@ -1856,6 +1884,9 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_parkeerplaats_m", "afstand_parkeerplaats_m")
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
   dat <- add_toegankelijkheid_covariate(dat, tbls$plot_jaar_toegankelijkheid)
+  dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
+  dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
+  dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
 
   dat$analyse_niveau <- switch(target_type, species = "Soort", group = "Ec. Vogelgroep", richtlijn = "Rode/Oranje Lijst", habitatgroep = "Habitatgroep")
   dat$doel_label <- target_label
@@ -1899,14 +1930,20 @@ gee_covariate_specs <- function() {
     code = c(
       "year_c",
       "stikstof_mean",
-      "toegankelijkheid_status"
+      "toegankelijkheid_status",
+      "vegetatie_soortenrijkdom_gem",
+      "vegetatie_bedekking_som_gem",
+      "vegetatie_shannon_gem"
     ),
     label = c(
       "Jaar (controlevariabele)",
       "Stikstof gemiddelde depositie",
-      "Toegankelijkheidsstatus"
+      "Toegankelijkheidsstatus",
+      "Vegetatie: gemiddelde soortenrijkdom per PQ",
+      "Vegetatie: gemiddelde som van bedekkingspercentages per PQ",
+      "Vegetatie: gemiddelde Shannon-index per PQ"
     ),
-    type = c("numeric", "numeric", "factor"),
+    type = c("numeric", "numeric", "factor", "numeric", "numeric", "numeric"),
     stringsAsFactors = FALSE
   )
 }
@@ -3339,7 +3376,10 @@ run_nmds_subset <- function(tbls, selected_kavels, year_from, year_to, selection
   rownames(sample_totals) <- NULL
 
   envfit_table <- data.frame()
-  envfit_vars <- c("year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m")
+  envfit_vars <- c(
+    "year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m",
+    "vegetatie_soortenrijkdom_gem", "vegetatie_bedekking_som_gem", "vegetatie_shannon_gem"
+  )
   env_meta <- cd_meta_for_nmds(tbls, meta, comm)
   usable_envfit_vars <- intersect(envfit_vars, names(env_meta))
   usable_envfit_vars <- usable_envfit_vars[vapply(env_meta[, usable_envfit_vars, drop = FALSE], function(x) {
@@ -3397,6 +3437,9 @@ cd_meta_for_nmds <- function(tbls, meta, comm) {
   env_meta <- add_numeric_covariate(env_meta, tbls$plot_jaar_ahn_dtm, "ahn_mean", "ahn_mean")
   env_meta <- add_numeric_covariate(env_meta, tbls$plot_jaar_stikstof, "stikstof_mean", "stikstof_mean")
   env_meta <- add_numeric_covariate(env_meta, tbls$plot_jaar_infra, "waarde", "afstand_pad_m", "afstand_pad_m")
+  env_meta <- add_numeric_covariate(env_meta, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
+  env_meta <- add_numeric_covariate(env_meta, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
+  env_meta <- add_numeric_covariate(env_meta, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
   rownames(env_meta) <- rownames(comm)
   env_meta
 }
@@ -3440,6 +3483,9 @@ build_community_matrix_subset <- function(tbls, selected_kavels, year_from, year
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_ahn_dtm, "ahn_mean", "ahn_mean")
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_stikstof, "stikstof_mean", "stikstof_mean")
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "afstand_pad_m", "afstand_pad_m")
+  meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
+  meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
+  meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
   rownames(meta) <- meta$sample_id
   list(
     species_matrix = species_matrix,
@@ -4489,7 +4535,7 @@ run_occupancy_subset <- function(tbls, selected_kavels, year_from, year_to, sele
   site_meta <- unique(visits[, c("site_id", "plot_id", "jaar")])
   site_meta <- merge(
     site_meta,
-    cd$meta[, intersect(c("plot_id", "jaar", "kavel_nummer", "stikstof_mean", "ahn_mean", "afstand_pad_m"), names(cd$meta)), drop = FALSE],
+    cd$meta[, intersect(c("plot_id", "jaar", "kavel_nummer", "stikstof_mean", "ahn_mean", "afstand_pad_m", "vegetatie_soortenrijkdom_gem", "vegetatie_bedekking_som_gem", "vegetatie_shannon_gem"), names(cd$meta)), drop = FALSE],
     by = c("plot_id", "jaar"),
     all.x = TRUE
   )
@@ -4524,7 +4570,7 @@ run_occupancy_subset <- function(tbls, selected_kavels, year_from, year_to, sele
     det_terms <- c(det_terms, "gunstig_bezoek")
   }
   obs_covs_arg <- if (length(obs_covs)) obs_covs else NULL
-  allowed_site_covariates <- c("year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m")
+  allowed_site_covariates <- c("year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m", "vegetatie_soortenrijkdom_gem", "vegetatie_bedekking_som_gem", "vegetatie_shannon_gem")
   site_covariates <- unique(site_covariates[site_covariates %in% allowed_site_covariates])
   if (!length(site_covariates)) {
     site_covariates <- "year_c"

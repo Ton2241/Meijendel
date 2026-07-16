@@ -17,6 +17,7 @@ De app staat in:
 - een GAM-lijn over de soort- en groepsgrafieken tekenen
 - uitkomsten exporteren naar csv
 - een eenvoudige cache gebruiken zodat het laden van `meijendel.sql` na de eerste keer sneller gaat
+- jaarlijkse PQ-vegetatiekenmerken gebruiken als optionele verklarende covariaten, zonder ontbrekende meetjaren in te vullen
 
 Tabbladen:
 
@@ -109,6 +110,8 @@ De Shiny-app en de HTML zijn niet precies hetzelfde.
 
 - De Shiny-app is bedoeld om nieuwe selecties door te rekenen.
 - De HTML is bedoeld om gegevens overzichtelijk te tonen.
+
+De vegetatie-integratie gebruikt uitsluitend de afgeleide tabel `pq_plot_jaar_vegetatie`. Beschikbaar zijn gemiddelde soortenrijkdom per PQ, gemiddelde bedekkingssom per PQ en gemiddelde Shannon-index per PQ. GEE en GLMM bieden deze velden als covariaat; NMDS/envfit en occupancy kunnen dezelfde jaarlijkse plotkenmerken gebruiken. Alleen plot-jaren met een echte PQ-meting hebben een waarde.
 
 Voor een vaste controleset kun je ook kijken in:
 

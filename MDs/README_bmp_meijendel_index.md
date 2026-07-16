@@ -130,6 +130,8 @@ De tabel toont aantallen territoria per jaar. Er staan maximaal tien jaren tegel
 
 De eerdere tab `Kenmerken` heet nu `Soort-kenmerken`. De eerdere tab `Plots` heet nu `Plots-kenmerken`.
 
+In `Plots-kenmerken` staat ook het blok `Vegetatiemeetnet (PQ)`. Het gekozen jaar toont aantal PQ's/opnamen, taxa, gemiddelde soortenrijkdom per PQ, gemiddelde bedekkingssom, Shannon-index en dekkingskwaliteit. Daaronder staat de volledige beschikbare historische meetreeks voor dat plot. Ontbrekende meetjaren blijven ontbrekend; er vindt geen interpolatie plaats.
+
 ## Tab Wintertellingen
 
 De wintergrafiek toont per gekozen vogel een lijn met één punt per winterperiode.

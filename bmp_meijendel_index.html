@@ -1685,6 +1685,17 @@ function getVogelblok(plotId,jaar){
     heeftTerritoria:positieve.length>0
   };
 }
+function getVegetatieJaar(plotId,jaar){
+  return getTableRows("pq_plot_jaar_vegetatie").find(r=>
+    String(r.plot_id)===String(plotId)&&Number(toYear(r.jaar))===Number(jaar)
+  )||null;
+}
+function getVegetatieHistorie(plotId){
+  return getTableRows("pq_plot_jaar_vegetatie")
+    .filter(r=>String(r.plot_id)===String(plotId))
+    .slice()
+    .sort((a,b)=>Number(toYear(b.jaar))-Number(toYear(a.jaar)));
+}
 function getStatusClass(status){
   if(status==="vrij")return"plot-status plot-status-vrij";
   if(status==="beperkt")return"plot-status plot-status-beperkt";
@@ -2059,6 +2070,59 @@ function renderPlotPanel(){
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Beheer en maatregel"),
     el("div",{className:"plot-kern-text"},mb?.items?.length?mb.items.join("; "):"geen data")
+  ]));
+  const vegetatie=plotRec&&S.plotView.jaar!=null?getVegetatieJaar(plotRec.plot_id,S.plotView.jaar):null;
+  const vegetatieHistorie=plotRec?getVegetatieHistorie(plotRec.plot_id):[];
+  kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
+    el("div",{className:"plot-kern-label"},"Vegetatiemeetnet (PQ)"),
+    vegetatie
+      ? el("div",{className:"plot-vogel-grid"},[
+          el("div",{className:"plot-vogel-stat"},[
+            el("div",{className:"plot-kern-label"},"PQ's / opnamen"),
+            el("div",{className:"plot-kern-value"},`${formatNumber(vegetatie.n_pq,0)} / ${formatNumber(vegetatie.n_opnamen,0)}`)
+          ]),
+          el("div",{className:"plot-vogel-stat"},[
+            el("div",{className:"plot-kern-label"},"Taxa in plot-jaar"),
+            el("div",{className:"plot-kern-value"},formatNumber(vegetatie.taxa_aantal,0))
+          ]),
+          el("div",{className:"plot-vogel-stat"},[
+            el("div",{className:"plot-kern-label"},"Soortenrijkdom per PQ"),
+            el("div",{className:"plot-kern-value"},formatNumber(vegetatie.soortenrijkdom_gem,1))
+          ]),
+          el("div",{className:"plot-vogel-stat"},[
+            el("div",{className:"plot-kern-label"},"Bedekkingssom per PQ"),
+            el("div",{className:"plot-kern-value"},formatNumber(vegetatie.bedekking_som_gem,1))
+          ]),
+          el("div",{className:"plot-vogel-stat"},[
+            el("div",{className:"plot-kern-label"},"Shannon-index per PQ"),
+            el("div",{className:"plot-kern-value"},formatNumber(vegetatie.shannon_gem,2))
+          ]),
+          el("div",{className:"plot-vogel-stat"},[
+            el("div",{className:"plot-kern-label"},"Dekkingskwaliteit"),
+            el("div",{className:"plot-kern-value"},String(vegetatie.dekking_kwaliteit||"-"))
+          ])
+        ])
+      : el("div",{className:"plot-kern-text"},"Geen gekoppelde PQ-opname in het gekozen jaar."),
+    vegetatieHistorie.length
+      ? el("div",{style:{maxHeight:"320px",overflow:"auto",marginTop:"12px"}},[
+          el("table",{className:"plot-table"},[
+            el("thead",{},el("tr",{},[
+              el("th",{},"Jaar"),el("th",{},"PQ's"),el("th",{},"Taxa"),
+              el("th",{},"Rijkdom/PQ"),el("th",{},"Bedekkingssom/PQ"),el("th",{},"Shannon"),el("th",{},"Kwaliteit")
+            ])),
+            el("tbody",{},vegetatieHistorie.map(item=>el("tr",{},[
+              el("td",{},String(toYear(item.jaar))),
+              el("td",{},formatNumber(item.n_pq,0)),
+              el("td",{},formatNumber(item.taxa_aantal,0)),
+              el("td",{},formatNumber(item.soortenrijkdom_gem,1)),
+              el("td",{},formatNumber(item.bedekking_som_gem,1)),
+              el("td",{},formatNumber(item.shannon_gem,2)),
+              el("td",{},String(item.dekking_kwaliteit||"-"))
+            ])))
+          ])
+        ])
+      : null,
+    el("div",{className:"plot-note",style:{marginTop:"10px"}},"Historische PQ-geometrie is per opname gekoppeld. Ontbrekende meetjaren zijn niet geïnterpoleerd; verbanden met vogelontwikkeling zijn observationeel.")
   ]));
   p.appendChild(kernGrid);
   const vb=plotRec&&S.plotView.jaar!=null?getVogelblok(plotRec.plot_id,S.plotView.jaar):null;

@@ -1019,7 +1019,15 @@ ui <- navbarPage(
       checkboxGroupInput(
         "occupancy_site_covariates",
         "Sitecovariaten",
-        choices = c("Jaar" = "year_c", "Stikstof" = "stikstof_mean", "AHN hoogte" = "ahn_mean", "Afstand tot pad" = "afstand_pad_m"),
+        choices = c(
+          "Jaar" = "year_c",
+          "Stikstof" = "stikstof_mean",
+          "AHN hoogte" = "ahn_mean",
+          "Afstand tot pad" = "afstand_pad_m",
+          "Vegetatie: soortenrijkdom per PQ" = "vegetatie_soortenrijkdom_gem",
+          "Vegetatie: bedekkingssom per PQ" = "vegetatie_bedekking_som_gem",
+          "Vegetatie: Shannon-index per PQ" = "vegetatie_shannon_gem"
+        ),
         selected = "year_c"
       )
     )

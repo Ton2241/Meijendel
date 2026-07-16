@@ -111,6 +111,20 @@ Controleer:
 - er komt geen onverwachte lege foutpagina
 - tabellen en grafieken geven een begrijpelijke uitkomst of een duidelijke melding
 
+### Controle 6. PQ-vegetatie
+
+Doel:
+Controleren dat historische vegetatie alleen op werkelijk gemeten plot-jaren wordt gekoppeld.
+
+Controleer:
+
+- `pq_plot_jaar_vegetatie` bevat unieke combinaties van `plot_id + jaar`
+- GEE en GLMM bieden soortenrijkdom, bedekkingssom en Shannon-index als optionele covariaten
+- NMDS/envfit en occupancy kunnen dezelfde velden gebruiken
+- een niet-gemeten jaar blijft leeg en wordt niet met het dichtstbijzijnde meetjaar gevuld
+- `Plots-kenmerken` toont voor het gekozen plot het geselecteerde jaar plus de volledige beschikbare meetreeks
+- ruwe taxa, PQ-nummers en coördinaten worden niet in publieke website-output getoond
+
 ## Koppeling tussen Shiny-export en HTML
 
 De Shiny-app en de HTML hebben verschillende rollen.
