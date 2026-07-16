@@ -128,6 +128,8 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
 
 Daarna voert het script op de VPS uit:
 
+- een gedateerde back-up van de bestaande MySQL-database `meijendel` onder `/srv/vwgm/backups/meijendel-mysql/`;
+- import van de gefilterde canonieke SQL in container `meijendel-mysql`, gevolgd door controles op de PQ-tabellen, publieke vegetatieview en historische geometrie; bij import- of validatiefout wordt de zojuist gemaakte databaseback-up automatisch hersteld;
 - Shiny `app_cache` behouden en schrijfbaar mounten
 - Shiny-container `shiny_meijendel` via `docker compose up -d shiny` controleren/herstarten
 - Shiny HTTP-endpoint controleren

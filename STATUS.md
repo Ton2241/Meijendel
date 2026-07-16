@@ -27,6 +27,7 @@ Gereed:
 - Het PQ-vegetatiemeetnet staat in de levende MySQL-database in de `pq_`-tabellen. Historische RD-geometrie blijft per opname bewaard; de repositorydump `meijendel.sql` is hiervoor niet aangepast.
 - `pq_plot_jaar_vegetatie` levert uitsluitend daadwerkelijk gemeten plot-jaren en voedt vegetatiecovariaten in Shiny en het blok `Vegetatiemeetnet (PQ)` onder `Plots-kenmerken` in het dashboard.
 - De publieke website gebruikt alleen de veilige view `website_plot_vegetatie_jaar`; ruwe taxa, PQ-nummers en historische coördinaten blijven intern.
+- De Meijendel-productiedeploy maakt vóór iedere MySQL-import een volledige VPS-databaseback-up, valideert na import de PQ-tabellen/view en historische geometrie en herstelt de back-up automatisch als import of validatie faalt.
 - `R/check_dashboard_website_parity.R` controleert de gegenereerde Groepen-output voor websitegebruik: verplichte CSV's, kolommen, chart-id's, numerieke waarden, jaarbereik en aanwezigheid van de Meijendel-serie.
 - `deploy/update_en_deploy_meijendel.sh` voert deze check automatisch uit na `R/build_groepen_grafieken_dashboard_csv.R` en vóór deploy.
 - Websitegrafieken blijven daarmee afgeleid van `groepen_grafieken/groep_dichtheid.csv`; losse websiteberekening blijft uitgesloten.

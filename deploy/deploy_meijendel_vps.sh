@@ -223,6 +223,22 @@ if ! production_smoke; then
   echo "WAARSCHUWING: huidige productie faalt; expliciete herstelmodus is actief." >&2
 fi
 
+log "Controleer productie-MySQL-deployvoorwaarden"
+remote "REMOTE_BASE='$REMOTE_BASE' bash -s" <<'REMOTE'
+set -euo pipefail
+container="meijendel-mysql"
+docker ps --format '{{.Names}}' | grep -qx "$container"
+command -v gzip >/dev/null
+test -d "$REMOTE_BASE/backups"
+test -w "$REMOTE_BASE/backups"
+docker exec "$container" sh -lc '
+  test -n "$MYSQL_ROOT_PASSWORD"
+  test -n "$MYSQL_DATABASE"
+  mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT 1" "$MYSQL_DATABASE" >/dev/null
+'
+df -Pk "$REMOTE_BASE/backups" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }'
+REMOTE
+
 if [[ "$APPLY" -ne 1 ]]; then
   log "Preflight klaar; productie is niet aangepast. Gebruik --apply --yes na beoordeling."
   exit 0
@@ -236,6 +252,69 @@ locked_state="$(remote "cat '$STATE_FILE' 2>/dev/null || true")"
 log "Voer gecontroleerde release-overdracht uit"
 SYNC_MODE="apply"
 sync_release
+
+log "Maak productie-MySQL-back-up en importeer de canonieke database"
+remote "REMOTE_BASE='$REMOTE_BASE' REMOTE_DATA='$REMOTE_DATA' LOCAL_COMMIT='$LOCAL_COMMIT' bash -s" <<'REMOTE'
+set -euo pipefail
+
+container="meijendel-mysql"
+backup_dir="$REMOTE_BASE/backups/meijendel-mysql"
+backup_file="$backup_dir/meijendel_before_${LOCAL_COMMIT}_$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
+sql_file="$REMOTE_DATA/Meijendel.sql"
+
+docker ps --format '{{.Names}}' | grep -qx "$container"
+test -s "$sql_file"
+grep -q -- '-- Dump completed on ' "$sql_file"
+grep -q 'CREATE TABLE `pq_vegetatie_pq`' "$sql_file"
+grep -q 'VIEW `website_plot_vegetatie_jaar`' "$sql_file"
+mkdir -p "$backup_dir"
+
+docker exec "$container" sh -lc '
+  exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
+    --no-tablespaces --single-transaction --set-gtid-purged=OFF \
+    --routines --triggers --events --add-drop-database --databases "$MYSQL_DATABASE"
+' | gzip -c > "$backup_file.tmp"
+test -s "$backup_file.tmp"
+mv "$backup_file.tmp" "$backup_file"
+chmod 600 "$backup_file"
+echo "Productie-MySQL-back-up: $backup_file"
+
+restore_backup() {
+  echo 'MySQL-import of inhoudscontrole faalde; herstel de zojuist gemaakte productieback-up.' >&2
+  gzip -dc "$backup_file" | docker exec -i "$container" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+}
+
+if ! docker exec -i "$container" sh -lc \
+  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < "$sql_file"; then
+  restore_backup
+  exit 1
+fi
+
+if ! docker exec "$container" sh -lc '
+  set -eu
+  query() { mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "$1" "$MYSQL_DATABASE"; }
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_pq")" -gt 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname")" -gt 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon")" -gt 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming")" -gt 0
+  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar")" -gt 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE ST_SRID(geom) <> 28992 OR YEAR(opname_datum) <> jaar")" -eq 0
+'; then
+  restore_backup
+  exit 1
+fi
+
+docker exec "$container" sh -lc '
+  mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "
+    SELECT CONCAT(\"pq=\", COUNT(*)) FROM pq_vegetatie_pq;
+    SELECT CONCAT(\"opnamen=\", COUNT(*)) FROM pq_vegetatie_opname;
+    SELECT CONCAT(\"taxa=\", COUNT(*)) FROM pq_vegetatie_taxon;
+    SELECT CONCAT(\"waarnemingen=\", COUNT(*)) FROM pq_vegetatie_waarneming;
+    SELECT CONCAT(\"publieke_plot_jaren=\", COUNT(*)) FROM website_plot_vegetatie_jaar;
+  " "$MYSQL_DATABASE"
+'
+REMOTE
 
 log "Herstart Shiny en wacht op gereedheid"
 remote "REMOTE_SHINY='$REMOTE_SHINY' bash -s" <<'REMOTE'
