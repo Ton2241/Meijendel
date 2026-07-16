@@ -58,6 +58,10 @@ De app gebruikt lokaal standaard:
 
 - `/Users/ton/Documents/GitHub/Meijendel/meijendel.sql`
 
+Op de VPS kiest de app automatisch `/srv/shiny-server/Meijendel.sql`. Met de
+optionele omgevingsvariabele `MEIJENDEL_SQL_PATH` kan een afwijkend bestaand pad
+expliciet als eerste keuze worden ingesteld.
+
 Er hoort dus geen aparte `meijendel.sql` meer in `shiny_meijendel/` te staan.
 
 ## Upload naar shinyapps.io

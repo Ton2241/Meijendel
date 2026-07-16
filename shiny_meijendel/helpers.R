@@ -9,6 +9,17 @@ extract_columns <- function(header) {
   trimws(strsplit(cols, ",", fixed = TRUE)[[1]])
 }
 
+resolve_meijendel_sql_path <- function(
+  configured_path = Sys.getenv("MEIJENDEL_SQL_PATH", unset = ""),
+  candidates = c("/srv/shiny-server/Meijendel.sql", "../meijendel.sql", "meijendel.sql")
+) {
+  configured_path <- trimws(configured_path)
+  paths <- unique(c(if (nzchar(configured_path)) configured_path, candidates))
+  existing <- paths[file.exists(paths)]
+  selected <- if (length(existing)) existing[[1]] else paths[[1]]
+  normalizePath(selected, winslash = "/", mustWork = FALSE)
+}
+
 meijendel_analysis_packages <- function() {
   c(
     "shiny", "bslib", "DBI", "RSQLite", "rtrim", "mgcv", "broom",

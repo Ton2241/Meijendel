@@ -15,12 +15,7 @@ source("helpers.R", local = TRUE)
 
 library(shiny)
 
-default_sql_candidates <- c("../meijendel.sql", "meijendel.sql")
-default_sql <- default_sql_candidates[file.exists(default_sql_candidates)][1]
-if (is.na(default_sql)) {
-  default_sql <- "meijendel.sql"
-}
-default_sql <- normalizePath(default_sql, winslash = "/", mustWork = FALSE)
+default_sql <- resolve_meijendel_sql_path()
 
 future_analysis_tab <- function(title, subtitle) {
   tabPanel(

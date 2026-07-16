@@ -36,6 +36,7 @@ Controleren of de database goed wordt ingelezen.
 Controleer:
 
 - de knop `SQL laden` werkt zonder foutmelding
+- het standaardpad is lokaal de repo-dump en op de VPS `/srv/shiny-server/Meijendel.sql`
 - de kavellijst verschijnt
 - de jaarkeuze verschijnt
 - de statusmelding zegt dat de SQL is geladen

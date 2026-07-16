@@ -24,6 +24,7 @@ Gereed:
 
 Gereed:
 
+- Shiny kiest voor `SQL laden` automatisch het bestaande omgevingspad: lokaal de repo-dump en op productie `/srv/shiny-server/Meijendel.sql`; een niet-bestaand relatief standaardpad wordt niet meer vooraf ingevuld.
 - Het PQ-vegetatiemeetnet staat in de levende MySQL-database in de `pq_`-tabellen. Historische RD-geometrie blijft per opname bewaard; de repositorydump `meijendel.sql` is hiervoor niet aangepast.
 - `pq_plot_jaar_vegetatie` levert uitsluitend daadwerkelijk gemeten plot-jaren en voedt vegetatiecovariaten in Shiny en het blok `Vegetatiemeetnet (PQ)` onder `Plots-kenmerken` in het dashboard.
 - De publieke website gebruikt alleen de veilige view `website_plot_vegetatie_jaar`; ruwe taxa, PQ-nummers en historische coördinaten blijven intern.

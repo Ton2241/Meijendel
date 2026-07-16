@@ -348,7 +348,7 @@ docker exec shiny_meijendel Rscript -e '
   if (!all(ok)) stop("Niet alle analysepackages zijn beschikbaar.")
   if (!nzchar(Sys.which("perl"))) stop("Perl ontbreekt in de Shiny-container.")
 '
-docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- \"/srv/shiny-server/Meijendel.sql\"; t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL cache: from_cache=%s elapsed=%.3f cache=%s\\n\", x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
+docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL pad: %s; cache: from_cache=%s elapsed=%.3f cache=%s\\n\", path, x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
 sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
 docker stats --no-stream shiny_meijendel
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
