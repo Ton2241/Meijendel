@@ -304,12 +304,12 @@ if ! docker exec "$container" sh -lc '
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname_plot")" -eq 1336
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie")" -eq 513
   test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar")" -eq 513
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_import WHERE importstatus = 'voorlopig'")" -eq 1
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon WHERE srtnum IS NULL OR taxonlijst_versie = ''")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_import WHERE importstatus = \"voorlopig\"")" -eq 1
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon WHERE srtnum IS NULL OR taxonlijst_versie = \"\"")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE plabed_code IS NULL")" -eq 0
   test "$(query "SELECT COUNT(*) FROM (SELECT taxonlijst_versie, srtnum FROM pq_vegetatie_taxon GROUP BY taxonlijst_versie, srtnum HAVING COUNT(*) > 1) d")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE bodemtype_status = 'te_bevestigen'")" -eq 34
-  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar WHERE bronstatus <> 'voorlopig' OR taxonlijst_versie = ''")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE bodemtype_status = \"te_bevestigen\"")" -eq 34
+  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar WHERE bronstatus <> \"voorlopig\" OR taxonlijst_versie = \"\"")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend")" -eq 513
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend b JOIN pq_plot_jaar_vegetatie p USING (plot_id, jaar) WHERE ABS(b.soortenrijkdom_gem - p.soortenrijkdom_gem) > 0.0005 OR ABS(b.bedekking_som_gem - p.bedekking_som_gem) > 0.0005 OR ABS(b.shannon_gem - p.shannon_gem) > 0.00011")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE ST_SRID(geom) <> 28992 OR YEAR(opname_datum) <> jaar")" -eq 0
