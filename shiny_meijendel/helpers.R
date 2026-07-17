@@ -582,7 +582,7 @@ parse_meijendel_tables <- function(path) {
   pjv <- read_optional_insert_table(
     path,
     "pq_plot_jaar_vegetatie",
-    c("plot_id", "jaar", "n_pq", "n_opnamen", "taxa_aantal", "soortenrijkdom_gem", "bedekking_som_gem", "shannon_gem", "dekking_kwaliteit")
+    c("plot_id", "jaar", "n_pq", "n_opnamen", "taxa_aantal", "soortenrijkdom_gem", "bedekking_som_gem", "shannon_gem", "dekking_kwaliteit", "bronstatus", "bronbestand", "importversie", "taxonlijst_versie")
   )
 
   plots$plot_id <- to_integer(plots$plot_id)
@@ -5138,4 +5138,4 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     habitatgroep_results = lambda_habitatgroep
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 6L
+MEIJENDEL_PARSER_CACHE_VERSION <- 7L

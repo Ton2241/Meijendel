@@ -281,7 +281,8 @@ ui <- navbarPage(
             tags$span(id = "sql_load_timer", class = "load-timer"),
             div(class = "status-box",
                 tags$span(class = "status-label", "Status SQL"),
-                textOutput("load_status"))
+                textOutput("load_status")),
+            uiOutput("pq_source_status")
           )
         ),
         column(
@@ -1121,6 +1122,23 @@ server <- function(input, output, session) {
 
   output$load_status <- renderText({
     load_info_rv()
+  })
+
+  output$pq_source_status <- renderUI({
+    tbls <- tbls_rv()
+    if (is.null(tbls) || !nrow(tbls$pq_plot_jaar_vegetatie)) {
+      return(NULL)
+    }
+    pq <- tbls$pq_plot_jaar_vegetatie[1, , drop = FALSE]
+    tags$p(
+      class = "section-note",
+      sprintf(
+        "PQ-vegetatiebron: %s · import %s · soortenlijst %s.",
+        gsub("_", " ", pq$bronstatus[[1]]),
+        pq$importversie[[1]],
+        pq$taxonlijst_versie[[1]]
+      )
+    )
   })
 
   output$analysis_status <- renderText({

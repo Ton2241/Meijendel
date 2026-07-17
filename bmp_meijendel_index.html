@@ -2073,6 +2073,7 @@ function renderPlotPanel(){
   ]));
   const vegetatie=plotRec&&S.plotView.jaar!=null?getVegetatieJaar(plotRec.plot_id,S.plotView.jaar):null;
   const vegetatieHistorie=plotRec?getVegetatieHistorie(plotRec.plot_id):[];
+  const vegetatieBron=vegetatieHistorie[0]||vegetatie;
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Vegetatiemeetnet (PQ)"),
     vegetatie
@@ -2122,7 +2123,8 @@ function renderPlotPanel(){
           ])
         ])
       : null,
-    el("div",{className:"plot-note",style:{marginTop:"10px"}},"Historische PQ-geometrie is per opname gekoppeld. Ontbrekende meetjaren zijn niet geïnterpoleerd; verbanden met vogelontwikkeling zijn observationeel.")
+    el("div",{className:"plot-note",style:{marginTop:"10px"}},
+      `Bronstatus: ${String(vegetatieBron?.bronstatus||"onbekend").replaceAll("_"," ")} · import ${vegetatieBron?.importversie||"onbekend"} · soortenlijst ${vegetatieBron?.taxonlijst_versie||"onbekend"}. Historische PQ-geometrie is per opname gekoppeld. Ontbrekende meetjaren zijn niet geïnterpoleerd; verbanden met vogelontwikkeling zijn observationeel.`)
   ]));
   p.appendChild(kernGrid);
   const vb=plotRec&&S.plotView.jaar!=null?getVogelblok(plotRec.plot_id,S.plotView.jaar):null;

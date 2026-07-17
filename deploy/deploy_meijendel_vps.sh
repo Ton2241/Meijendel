@@ -266,6 +266,9 @@ docker ps --format '{{.Names}}' | grep -qx "$container"
 test -s "$sql_file"
 grep -q -- '-- Dump completed on ' "$sql_file"
 grep -q 'CREATE TABLE `pq_vegetatie_pq`' "$sql_file"
+grep -q 'CREATE TABLE `pq_vegetatie_import`' "$sql_file"
+grep -q '`srtnum`' "$sql_file"
+grep -q '`plabed_code`' "$sql_file"
 grep -q 'VIEW `website_plot_vegetatie_jaar`' "$sql_file"
 mkdir -p "$backup_dir"
 
@@ -294,11 +297,21 @@ fi
 if ! docker exec "$container" sh -lc '
   set -eu
   query() { mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "$1" "$MYSQL_DATABASE"; }
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_pq")" -gt 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname")" -gt 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon")" -gt 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming")" -gt 0
-  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar")" -gt 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_pq")" -eq 254
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname")" -eq 2007
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon")" -eq 714
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming")" -eq 53122
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname_plot")" -eq 1336
+  test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie")" -eq 513
+  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar")" -eq 513
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_import WHERE importstatus = 'voorlopig'")" -eq 1
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon WHERE srtnum IS NULL OR taxonlijst_versie = ''")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE plabed_code IS NULL")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM (SELECT taxonlijst_versie, srtnum FROM pq_vegetatie_taxon GROUP BY taxonlijst_versie, srtnum HAVING COUNT(*) > 1) d")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE bodemtype_status = 'te_bevestigen'")" -eq 34
+  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar WHERE bronstatus <> 'voorlopig' OR taxonlijst_versie = ''")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend")" -eq 513
+  test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend b JOIN pq_plot_jaar_vegetatie p USING (plot_id, jaar) WHERE ABS(b.soortenrijkdom_gem - p.soortenrijkdom_gem) > 0.0005 OR ABS(b.bedekking_som_gem - p.bedekking_som_gem) > 0.0005 OR ABS(b.shannon_gem - p.shannon_gem) > 0.00011")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE ST_SRID(geom) <> 28992 OR YEAR(opname_datum) <> jaar")" -eq 0
 '; then
   restore_backup
@@ -311,6 +324,9 @@ docker exec "$container" sh -lc '
     SELECT CONCAT(\"opnamen=\", COUNT(*)) FROM pq_vegetatie_opname;
     SELECT CONCAT(\"taxa=\", COUNT(*)) FROM pq_vegetatie_taxon;
     SELECT CONCAT(\"waarnemingen=\", COUNT(*)) FROM pq_vegetatie_waarneming;
+    SELECT CONCAT(\"taxa_met_srtnum=\", COUNT(*)) FROM pq_vegetatie_taxon WHERE srtnum IS NOT NULL;
+    SELECT CONCAT(\"plabed_gevuld=\", COUNT(*)) FROM pq_vegetatie_waarneming WHERE plabed_code IS NOT NULL;
+    SELECT CONCAT(\"bodemcodes_te_bevestigen=\", COUNT(*)) FROM pq_vegetatie_opname WHERE bodemtype_status = \"te_bevestigen\";
     SELECT CONCAT(\"publieke_plot_jaren=\", COUNT(*)) FROM website_plot_vegetatie_jaar;
   " "$MYSQL_DATABASE"
 '

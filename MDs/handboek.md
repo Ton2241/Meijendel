@@ -1125,10 +1125,11 @@ De aangeleverde vegetatiegegevens worden rechtstreeks in de levende MySQL-databa
 
 De genormaliseerde tabellen zijn:
 
-- `pq_vegetatie_pq`: vaste identiteit en meetperiode per PQ
-- `pq_vegetatie_opname`: één regel per opname, inclusief datum en historische RD-geometrie
-- `pq_vegetatie_taxon`: unieke combinatie van Nederlandse en aangeleverde Latijnse naam; officiële taxoncodes blijven apart en mogen pas na broncontrole worden ingevuld
-- `pq_vegetatie_waarneming`: taxon, abundantie en aangeleverde indicatorvelden per opname
+- `pq_vegetatie_import`: versie, SHA-256, voorlopige/definitieve status en tellingen per ontvangen bronbestand
+- `pq_vegetatie_pq`: vaste identiteit en meetperiode per PQ, gekoppeld aan de importbatch
+- `pq_vegetatie_opname`: één regel per opname, inclusief datum en historische RD-geometrie; een afwijkende nieuw aangeleverde bodemcode blijft apart staan tot PZH deze bevestigt
+- `pq_vegetatie_taxon`: aangeleverde `SRTNUM` plus soortenlijstversie en de Nederlandse/Latijnse bronnaam; officiële taxoncodes blijven apart en mogen pas na broncontrole worden ingevuld
+- `pq_vegetatie_waarneming`: taxon, abundantie, ruwe `PLABED`-code en aangeleverde indicatorvelden per opname
 - `pq_vegetatie_opname_plot`: reproduceerbare koppeling van iedere historische opname aan een Avimap-kavel
 - `pq_plot_jaar_vegetatie`: veilige analysekorrel `plot_id + jaar`
 
@@ -1140,6 +1141,8 @@ De afgeleide plot-jaartabel bevat uitsluitend jaren waarin werkelijk PQ's zijn o
 - gemiddelde som van bedekkingspercentages per PQ
 - gemiddelde Shannon-index per PQ
 - dekkingskwaliteit op basis van het aantal PQ's
+
+Soortenrijkdom en Shannon gebruiken `SRTNUM` als stabiele identiteit. De export van 17 juli 2026 is voorlopig zolang PZH en CBS de historische meetnetdata controleren. `PLABED` wordt uitsluitend als ruwe broncode bewaard; de bedekkingssom blijft gebaseerd op `ABUNDANTP`. Trofie-, vocht- en zuurindicatoren worden niet als covariaat gebruikt zolang de bronvelden niet door PZH/CBS zijn bevestigd.
 
 GEE, GLMM, NMDS/envfit en occupancy mogen deze waarden als optionele covariaten gebruiken. Toon bij iedere interpretatie ook het aantal PQ's of de dekkingskwaliteit. De publieke website gebruikt uitsluitend `website_plot_vegetatie_jaar`; ruwe taxa, PQ-nummers en coördinaten blijven intern.
 
