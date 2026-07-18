@@ -2,6 +2,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 repo_dir <- normalizePath(if (length(args) >= 1L) args[[1]] else ".", mustWork = TRUE)
 out_dir <- normalizePath(if (length(args) >= 2L) args[[2]] else file.path(repo_dir, "groepen_grafieken"), mustWork = TRUE)
+source(file.path(repo_dir, "R", "species_name_synonyms.R"))
 
 chart_path <- file.path(out_dir, "gam_dashboard_groepen.csv")
 density_path <- file.path(out_dir, "groep_dichtheid.csv")
@@ -51,6 +52,17 @@ density$chart_id <- as.character(density$chart_id)
 species$chart_id <- as.character(species$chart_id)
 chart$jaar <- as.integer(chart$jaar)
 density$jaar <- as.integer(density$jaar)
+
+unexpected_aliases <- unique(species$soort_naam[
+  tolower(species$soort_naam) %in% tolower(names(SPECIES_NAME_SYNONYMS))
+])
+if (length(unexpected_aliases)) {
+  fail("Niet-gecanonicaliseerde soortnamen in groep_soorten.csv: ", paste(sort(unexpected_aliases), collapse = ", "))
+}
+missing_canonical_names <- setdiff(unname(SPECIES_NAME_SYNONYMS), unique(species$soort_naam))
+if (length(missing_canonical_names)) {
+  fail("Canonieke soortnamen ontbreken in groep_soorten.csv: ", paste(sort(missing_canonical_names), collapse = ", "))
+}
 
 missing_density <- setdiff(required_chart_ids, unique(density$chart_id))
 missing_species <- setdiff(required_chart_ids, unique(species$chart_id))

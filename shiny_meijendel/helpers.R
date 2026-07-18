@@ -1,3 +1,19 @@
+helpers_source_path <- tryCatch(
+  normalizePath(sys.frame(1)$ofile, mustWork = TRUE),
+  error = function(e) ""
+)
+species_synonym_helpers <- c(
+  if (nzchar(helpers_source_path)) file.path(dirname(helpers_source_path), "..", "R", "species_name_synonyms.R"),
+  file.path("R", "species_name_synonyms.R"),
+  file.path("..", "R", "species_name_synonyms.R")
+)
+species_synonym_helper <- species_synonym_helpers[file.exists(species_synonym_helpers)][1]
+if (is.na(species_synonym_helper)) {
+  stop("R/species_name_synonyms.R ontbreekt; soortnamen kunnen niet veilig worden gekoppeld.")
+}
+source(species_synonym_helper)
+rm(helpers_source_path, species_synonym_helpers, species_synonym_helper)
+
 extract_columns <- function(header) {
   if (!grepl("\\) VALUES", header, fixed = FALSE)) {
     return(character())
@@ -1874,13 +1890,10 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
 }
 
 find_species_by_name <- function(tbls, species_name) {
-  exact <- tbls$soorten[tbls$soorten$soort_naam == species_name, , drop = FALSE]
-  if (nrow(exact) == 1L) {
-    return(exact)
-  }
-  case_insensitive <- tbls$soorten[tolower(tbls$soorten$soort_naam) == tolower(species_name), , drop = FALSE]
-  if (nrow(case_insensitive) == 1L) {
-    return(case_insensitive)
+  matches <- find_species_name_matches(tbls$soorten$soort_naam, species_name)
+  if (length(matches) == 1L) return(tbls$soorten[matches, , drop = FALSE])
+  if (length(matches) > 1L) {
+    stop(sprintf("Soortnaam is niet uniek na synoniemkoppeling: %s", species_name))
   }
   stop(sprintf("Soort niet gevonden: %s", species_name))
 }

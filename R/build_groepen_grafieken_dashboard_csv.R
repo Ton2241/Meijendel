@@ -63,6 +63,7 @@ species_rows <- list()
 density_rows <- list()
 
 add_species_rows <- function(chart_id, chart_title, species_names) {
+  species_names <- canonical_species_name(species_names)
   species_names <- sort(unique(species_names[!is.na(species_names) & nzchar(species_names)]))
   if (!length(species_names)) return(invisible(FALSE))
   species_rows[[length(species_rows) + 1L]] <<- data.frame(

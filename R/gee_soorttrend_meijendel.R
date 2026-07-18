@@ -1,5 +1,11 @@
 args <- commandArgs(trailingOnly = TRUE)
 
+cmd_args <- commandArgs(trailingOnly = FALSE)
+file_arg <- grep("^--file=", cmd_args, value = TRUE)
+script_path <- if (length(file_arg)) sub("^--file=", "", file_arg[[1]]) else "R/gee_soorttrend_meijendel.R"
+repo_dir <- normalizePath(file.path(dirname(script_path), ".."), mustWork = TRUE)
+source(file.path(repo_dir, "R", "species_name_synonyms.R"))
+
 user_lib <- file.path(Sys.getenv("HOME"), "Library/R/arm64/4.5/library")
 if (dir.exists(user_lib)) {
   .libPaths(c(user_lib, .libPaths()))
@@ -258,22 +264,9 @@ make_analysis_basis <- function(tbls, year_min, year_max, analysis_set) {
 }
 
 find_species <- function(soorten, species_name) {
-  exact <- soorten[soorten$soort_naam == species_name, , drop = FALSE]
-  if (nrow(exact) == 1L) {
-    return(exact)
-  }
-  if (nrow(exact) > 1L) {
-    stop("Meerdere exacte matches voor soortnaam: ", species_name)
-  }
-
-  case_insensitive <- soorten[tolower(soorten$soort_naam) == tolower(species_name), , drop = FALSE]
-  if (nrow(case_insensitive) == 1L) {
-    return(case_insensitive)
-  }
-  if (nrow(case_insensitive) > 1L) {
-    stop("Meerdere case-insensitive matches voor soortnaam: ", species_name)
-  }
-
+  matches <- find_species_name_matches(soorten$soort_naam, species_name)
+  if (length(matches) == 1L) return(soorten[matches, , drop = FALSE])
+  if (length(matches) > 1L) stop("Meerdere matches na synoniemkoppeling: ", species_name)
   stop("Soort niet gevonden in tabel 'soorten': ", species_name)
 }
 

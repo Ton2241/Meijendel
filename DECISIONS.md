@@ -86,3 +86,8 @@
 - De website toont per functionele groep afzonderlijk de binaire en gewogen
   dashboardreeks. Luchtfoerageerders blijven expliciet exploratief en de
   bodem-insectengroep houdt een zichtbare drempelwaarschuwing.
+- Nederlandse soortnaamsynoniemen voor uitwisseling met de VWG-M-website staan
+  centraal in `R/species_name_synonyms.R`. Analyses en databasekoppelingen blijven
+  op `soort_id` en Euring-code draaien; alleen invoerresolutie en publieke
+  weergavenamen worden gecanonicaliseerd. Soortrecords worden niet samengevoegd,
+  omdat onder meer Barmsijs en Kleine Barmsijs afzonderlijke IDs en taxa hebben.
