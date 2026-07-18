@@ -12,6 +12,8 @@ trim_soorten_dir <- file.path(dirname(out_dir), "trim", "soorten")
 dashboard_msi_path <- file.path(trim_msi_dir, "msi_per_groep_per_jaar.csv")
 dashboard_landelijk_gam_path <- file.path(trim_msi_dir, "gam_voorspellingen_landelijk_msi_groepen.csv")
 dashboard_composition_path <- file.path(trim_msi_dir, "groepssamenstelling_100tal.csv")
+functional_msi_path <- file.path(trim_msi_dir, "functionele_msi_per_groep_per_jaar.csv")
+functional_composition_path <- file.path(trim_msi_dir, "functionele_groepssamenstelling.csv")
 trim_index_base_path <- file.path(trim_soorten_dir, "soortindices_bruikbare_tijdreeks.csv")
 trim_index_post_path <- file.path(trim_soorten_dir, "soortindices_per_jaar.csv")
 out_path <- file.path(out_dir, "gam_dashboard_groepen.csv")
@@ -33,6 +35,8 @@ if (!file.exists(dashboard_landelijk_gam_path)) {
 if (!file.exists(dashboard_composition_path)) {
   stop("Dashboardbestand ontbreekt: ", dashboard_composition_path)
 }
+if (!file.exists(functional_msi_path)) stop("Dashboardbestand ontbreekt: ", functional_msi_path)
+if (!file.exists(functional_composition_path)) stop("Dashboardbestand ontbreekt: ", functional_composition_path)
 if (!file.exists(trim_index_base_path)) {
   stop("Dashboardbestand ontbreekt: ", trim_index_base_path)
 }
@@ -99,6 +103,38 @@ add_density_rows <- function(chart_id, chart_title, tbls, species_ids) {
     jaar = out$jaar,
     dichtheid = round(out$dichtheid, 3),
     territoria = out$territoria,
+    oppervlakte_km2 = out$oppervlakte_km2,
+    stringsAsFactors = FALSE
+  )
+  invisible(TRUE)
+}
+
+add_weighted_density_rows <- function(chart_id, chart_title, tbls, species_weights) {
+  species_weights <- species_weights[is.finite(species_weights$membership_weight) & species_weights$membership_weight > 0, , drop = FALSE]
+  if (!nrow(species_weights)) return(invisible(FALSE))
+  area <- aggregate(oppervlakte_km2 ~ jaar, data = tbls$plot_jaar_oppervlak, FUN = sum, na.rm = TRUE)
+  area$jaar <- as.integer(area$jaar)
+  area <- area[area$jaar >= 1958 & is.finite(area$oppervlakte_km2) & area$oppervlakte_km2 > 0, , drop = FALSE]
+  territory_years <- sort(unique(as.integer(tbls$territoria$jaar)))
+  area <- area[area$jaar %in% territory_years, , drop = FALSE]
+  terr <- merge(
+    tbls$territoria,
+    unique(species_weights[, c("soort_id", "membership_weight")]),
+    by = "soort_id",
+    all = FALSE
+  )
+  terr$gewogen_territoria <- terr$territoria * terr$membership_weight
+  totals <- aggregate(gewogen_territoria ~ jaar, data = terr, FUN = sum, na.rm = TRUE)
+  out <- merge(area, totals, by = "jaar", all.x = TRUE)
+  out$gewogen_territoria[is.na(out$gewogen_territoria)] <- 0
+  out$dichtheid <- out$gewogen_territoria / out$oppervlakte_km2
+  out <- out[is.finite(out$dichtheid), , drop = FALSE]
+  density_rows[[length(density_rows) + 1L]] <<- data.frame(
+    chart_id = as.character(chart_id),
+    chart_title = chart_title,
+    jaar = out$jaar,
+    dichtheid = round(out$dichtheid, 3),
+    territoria = out$gewogen_territoria,
     oppervlakte_km2 = out$oppervlakte_km2,
     stringsAsFactors = FALSE
   )
@@ -493,6 +529,43 @@ for (groep in sort(unique(group_msi$groep_100))) {
   species_part <- group_composition[group_composition$groep_100 == groep, , drop = FALSE]
   add_species_rows(as.character(groep), title, species_part$soort_naam)
   add_density_rows(as.character(groep), title, tbls, species_part$soort_id)
+}
+
+functional_slugs <- c(
+  fg_v1_bodem_insect = "functioneel-bodem-insect",
+  fg_v1_lucht = "functioneel-lucht",
+  fg_v1_grondbroed = "functioneel-grondbroed",
+  fg_v1_holenbroed = "functioneel-holenbroed",
+  fg_v1_lange_trek = "functioneel-lange-trek"
+)
+functional_msi <- read.csv(functional_msi_path, stringsAsFactors = FALSE)
+functional_msi <- functional_msi[functional_msi$msi_variant == "volledig", , drop = FALSE]
+functional_composition <- read.csv(functional_composition_path, stringsAsFactors = FALSE)
+functional_composition <- functional_composition[functional_composition$msi_variant == "volledig", , drop = FALSE]
+for (group_code in names(functional_slugs)) {
+  for (analysis_mode in c("binair", "gewogen")) {
+    part <- functional_msi[
+      functional_msi$group_code == group_code & functional_msi$analysis_mode == analysis_mode,
+      ,
+      drop = FALSE
+    ]
+    if (!nrow(part)) next
+    title <- paste(unique(part$groep_titel)[[1]], if (analysis_mode == "binair") "— binair" else "— gewogen")
+    chart_id <- paste(functional_slugs[[group_code]], analysis_mode, sep = "-")
+    add_meijendel_curve(chart_id, title, part)
+    species_part <- functional_composition[
+      functional_composition$group_code == group_code & functional_composition$analysis_mode == analysis_mode,
+      ,
+      drop = FALSE
+    ]
+    species_part <- unique(species_part[, c("soort_id", "soort_naam", "membership_weight")])
+    add_species_rows(chart_id, title, species_part$soort_naam)
+    if (analysis_mode == "gewogen") {
+      add_weighted_density_rows(chart_id, title, tbls, species_part)
+    } else {
+      add_density_rows(chart_id, title, tbls, species_part$soort_id)
+    }
+  }
 }
 
 trim_base <- read.csv(trim_index_base_path, stringsAsFactors = FALSE)

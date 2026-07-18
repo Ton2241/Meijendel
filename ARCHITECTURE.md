@@ -110,9 +110,17 @@ publicatiestatus en de minimumstatus na weglaten van één soort. Deze views zij
 controle- en analysebronnen; publicatie volgt pas na inhoudelijke accordering en
 pariteit.
 
-Dashboard, Shiny en website schakelen pas om nadat de inhoudelijke beoordeling,
-groepsafleiding en pariteitscontroles groen zijn. De legacytabellen blijven tot na
-die omschakeling read-only beschikbaar.
+Fase D leest de goedgekeurde materialisatie rechtstreeks uit de SQL-dump. De
+canonieke functionele MSI gebruikt dezelfde gebrugde TRIM-soortindices als de
+ecologische groepen en wordt per groep berekend als gewogen geometrisch
+gemiddelde. Er zijn altijd vier varianten: `binair`/`gewogen` ×
+`volledig`/`robuust`. Standalone dashboard en Shiny moeten exact paritair zijn;
+websitegrafieken lezen uitsluitend de vooraf gegenereerde dashboard-CSV.
+
+Dashboard, Shiny en lokale websitecode zijn na groene pariteitscontroles
+aangesloten. Functionele groepen blijven aanvullend; legacytabellen en bestaande
+ecologische groepen blijven read-only beschikbaar. Productie volgt uitsluitend
+via de afzonderlijke deploy-preflight en release-registratie.
 
 ## Grafieken
 

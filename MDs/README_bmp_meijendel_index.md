@@ -358,10 +358,30 @@ De twee nieuwe controleviews zijn:
 - `v_functional_group_summary_v1`: groepsomvang, gewogen omvang,
   gevoeligheidsaantallen, publicatiestatus en leave-one-species-out-minimumstatus.
 
-Fase C levert daarmee reproduceerbare analyselijsten, maar nog geen publieke
-grafiek. Eerst worden de lijsten inhoudelijk geaccordeerd; daarna kunnen de
-binaire en gewogen trendanalyses en de dashboard-/Shiny-pariteitsroute worden
-gebouwd.
+## Functionele vogelgroepen — fase D
+
+Na inhoudelijke accordering maakt `R/trim_soorten_en_msi_evg.R` naast de
+bestaande ecologische output vier functionele MSI-varianten per groep:
+`binair`/`gewogen` × `volledig`/`robuust`. Gewogen MSI gebruikt gewicht `1,0`
+voor primair en `0,5` voor secundair lidmaatschap. Alle varianten gebruiken het
+gewogen geometrische gemiddelde van dezelfde gebrugde TRIM-soortindices.
+
+Nieuwe uitvoer in `trim_msi_evg`:
+
+- `functionele_groepssamenstelling.csv`;
+- `functionele_msi_per_groep_per_jaar.csv`;
+- `functionele_trendoverzicht_msi_groepen.csv`;
+- `functionele_loso_trendgevoeligheid.csv`.
+
+De dashboardcategorie `Functionele Vogelgroepen` en de Shiny-tab `Functionele
+groepen` tonen dezelfde vijf groepen en een binair/gewogen schakelaar. Er wordt
+geen landelijke lijn getoond, omdat geen landelijke bron met exact dezelfde
+traitdefinities en gewichten beschikbaar is. De website-output gebruikt tien
+vaste chart-id's: per groep één binaire en één gewogen reeks.
+
+De lokale paritychecks zijn groen over 1958-2025. Luchtfoerageerders blijven
+uitsluitend exploratief; bij bodem-insecteneters blijft de drempelwaarschuwing
+verplicht. Productie is met deze fase niet automatisch gedeployd.
 
 ## Relatie met publieke soortpagina's
 

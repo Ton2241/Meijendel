@@ -77,3 +77,12 @@
   worden gebruikt. De bodem-insectengroep daalt in de strikte variant naar 16
   soorten en is dus niet drempelrobuust. Geen van de lijsten wordt gepubliceerd
   voordat zij inhoudelijk is geaccordeerd en analysepariteit groen is.
+- Fase D gebruikt voor functionele groepen dezelfde gebrugde TRIM-soortindices
+  en dezelfde volledige/robuuste soortselectie als de bestaande MSI-keten.
+  Binaire en gewogen MSI zijn gewogen geometrische gemiddelden op logschaal.
+- Functionele groepen krijgen geen landelijke vergelijkingslijn zolang geen
+  landelijk bronbestand met exact dezelfde traitdefinities, groepsregels en
+  gewichten beschikbaar is; dashboard en website tonen wel de Meijendel-lijn.
+- De website toont per functionele groep afzonderlijk de binaire en gewogen
+  dashboardreeks. Luchtfoerageerders blijven expliciet exploratief en de
+  bodem-insectengroep houdt een zichtbare drempelwaarschuwing.

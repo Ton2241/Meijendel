@@ -20,7 +20,7 @@ Gereed:
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
 
-## Functionele vogelgroepen — fase A, B en groepsafleiding fase C afgerond
+## Functionele vogelgroepen — fase A tot en met D afgerond
 
 Gereed:
 
@@ -69,8 +69,15 @@ Gereed:
 - Twee controleviews zijn beschikbaar: `v_functional_group_membership_v1` voor
   soortniveau en `v_functional_group_summary_v1` voor omvang, gewicht,
   gevoeligheid en publicatiestatus.
-- Dashboard, Shiny en website zijn nog niet omgeschakeld; eerst volgt
-  inhoudelijke accordering van de groepslijsten.
+- De groepslijsten zijn inhoudelijk geaccordeerd. Dashboard en Shiny tonen de
+  vijf functionele groepen naast legacy; website-output en lokale VWG_M-code
+  bevatten dezelfde nieuwe categorie. Productie is nog niet gedeployd.
+- `R/trim_soorten_en_msi_evg.R` maakt binair/gewogen × volledig/robuust,
+  samenstelling, trendoverzicht en leave-one-species-out-trendgevoeligheid.
+- De lokale uitvoer bevat 1.356 functionele MSI-rijen. Shiny/dashboard-pariteit
+  over 1958-2025 is groen met maximaal absoluut verschil `5,12e-13`.
+- De dashboard/website-paritycheck is groen met 31 chart-id's, waaronder tien
+  functionele reeksen (vijf groepen × binair/gewogen).
 
 Nulmeting van `meijendel.sql`:
 
@@ -110,15 +117,16 @@ Resterende risico's na fase C:
 - De legacy-afwijkingen `F-Mud`, zeven gedenormaliseerde soortnamen en de gelijke
   typering van Orpheusspotvogel/Braamsluiper zijn behouden en zichtbaar gemaakt;
   legacy is niet stilzwijgend gecorrigeerd.
-- De voorlopige legacykandidaten zijn nog geen goedgekeurde groepslijsten.
+- De oude legacykandidaten blijven uitsluitend historische kwaliteitscontext;
+  de goedgekeurde fase-C-materialisatie is leidend voor functionele analyse.
 
-Aanbevolen volgende stap:
+Vervolgbeheer:
 
-- Accordeer de vijf gegenereerde soortenlijsten inhoudelijk. Vier groepen zijn
-  volgens de baseline robuuste hoofdgroepen; de zeven luchtfoerageerders blijven
-  uitsluitend exploratief. De bodem-insectengroep daalt in de strikte variant
-  van 43 naar 16 soorten en is daarmee drempelgevoelig. Schakel daarna pas
-  analyse, dashboard en Shiny om.
+- Houd de luchtgroep uitsluitend exploratief en toon bij bodem-insecteneters de
+  drempelwaarschuwing. Herhaal na iedere bron-, trait-, regel- of
+  soortselectiewijziging alle analyses en paritychecks.
+- Productiedeploy en centrale release-registratie volgen alleen op expliciet
+  verzoek via de verplichte deploy-preflight.
 
 ## Dashboard, websitegrafieken en Shiny
 

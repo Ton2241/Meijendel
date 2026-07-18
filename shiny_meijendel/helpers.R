@@ -567,6 +567,8 @@ parse_meijendel_tables <- function(path) {
   territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
   evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
+  functionele_groepen <- read_insert_table(path, "functional_group_definition", c("id", "group_code", "group_version", "naam_nl", "minimum_exploratief", "minimum_hoofdindicator", "minimum_robuust", "status"))
+  functionele_koppeling <- read_insert_table(path, "functional_group_membership", c("functional_group_definition_id", "soort_id", "binary_membership", "membership_weight", "classification"))
   richtlijnen <- read_insert_table(path, "richtlijnen", c("id", "naam"))
   soort_richtlijn <- read_insert_table(path, "soort_richtlijn", c("soort_id", "richtlijn_id"))
   soorten_kenmerken <- read_insert_table(path, "soorten_kenmerken", c("id", "soort_id", "soortnaam", "hoofdcategorie_id", "code", "waarde"))
@@ -604,6 +606,14 @@ parse_meijendel_tables <- function(path) {
   evg_groepen$groepsnummer <- to_integer(evg_groepen$groepsnummer)
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
+  functionele_groepen$id <- to_integer(functionele_groepen$id)
+  functionele_groepen$minimum_exploratief <- to_integer(functionele_groepen$minimum_exploratief)
+  functionele_groepen$minimum_hoofdindicator <- to_integer(functionele_groepen$minimum_hoofdindicator)
+  functionele_groepen$minimum_robuust <- to_integer(functionele_groepen$minimum_robuust)
+  functionele_koppeling$functional_group_definition_id <- to_integer(functionele_koppeling$functional_group_definition_id)
+  functionele_koppeling$soort_id <- to_integer(functionele_koppeling$soort_id)
+  functionele_koppeling$binary_membership <- to_integer(functionele_koppeling$binary_membership)
+  functionele_koppeling$membership_weight <- to_numeric(functionele_koppeling$membership_weight)
   richtlijnen$id <- to_integer(richtlijnen$id)
   soort_richtlijn$soort_id <- to_integer(soort_richtlijn$soort_id)
   soort_richtlijn$richtlijn_id <- to_integer(soort_richtlijn$richtlijn_id)
@@ -660,6 +670,8 @@ parse_meijendel_tables <- function(path) {
     territoria = territoria,
     evg_vogelgroepen = evg_groepen,
     evg_vogel_landschapgroep = evg_koppeling,
+    functional_group_definition = functionele_groepen,
+    functional_group_membership = functionele_koppeling,
     richtlijnen = richtlijnen,
     soort_richtlijn = soort_richtlijn,
     soorten_kenmerken = soorten_kenmerken,
@@ -722,7 +734,7 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
     cache_valid <- !is.null(cache) &&
       identical(cache$signature, signature) &&
       !is.null(cache$data) &&
-      all(c("richtlijnen", "soort_richtlijn", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie") %in% names(cache$data))
+      all(c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie") %in% names(cache$data))
     if (cache_valid) {
       cache$data$sql_path <- path
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
@@ -1539,6 +1551,146 @@ analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = 
   )
 }
 
+build_functional_group_mapping <- function(tbls) {
+  definitions <- tbls$functional_group_definition
+  definitions <- definitions[definitions$status == "approved" & definitions$group_version == "v1", , drop = FALSE]
+  memberships <- tbls$functional_group_membership
+  memberships <- memberships[memberships$binary_membership == 1L, , drop = FALSE]
+  mapping <- merge(
+    memberships,
+    definitions,
+    by.x = "functional_group_definition_id",
+    by.y = "id",
+    all = FALSE
+  )
+  mapping <- mapping[
+    is.finite(mapping$membership_weight) & mapping$membership_weight > 0,
+    c(
+      "group_code", "group_version", "naam_nl", "soort_id", "binary_membership",
+      "membership_weight", "classification", "minimum_exploratief",
+      "minimum_hoofdindicator", "minimum_robuust"
+    ),
+    drop = FALSE
+  ]
+  mapping[order(mapping$group_code, mapping$soort_id), , drop = FALSE]
+}
+
+functional_publication_status <- function(n_species, minimum_exploratief, minimum_hoofdindicator, minimum_robuust) {
+  if (!is.finite(n_species) || n_species < minimum_exploratief) return("geen_groepsindicator")
+  if (n_species < minimum_hoofdindicator) return("uitsluitend_exploratief")
+  if (n_species < minimum_robuust) return("bruikbaar_met_onzekerheidsanalyse")
+  "robuuste_hoofdgroep"
+}
+
+aggregate_functional_msi <- function(merged) {
+  if (!nrow(merged)) return(data.frame())
+  parts <- split(merged, interaction(merged$group_code, merged$jaar, drop = TRUE))
+  rows <- lapply(parts, function(df) {
+    weight_sum <- sum(df$analysegewicht)
+    data.frame(
+      group_code = df$group_code[[1]],
+      groep_titel = df$naam_nl[[1]],
+      jaar = df$jaar[[1]],
+      log_index = sum(df$log_index * df$analysegewicht) / weight_sum,
+      n_soorten = length(unique(df$soort_id)),
+      gewicht_som = weight_sum,
+      stringsAsFactors = FALSE
+    )
+  })
+  out <- do.call(rbind, rows)
+  out$msi <- exp(out$log_index)
+  out[order(out$group_code, out$jaar), , drop = FALSE]
+}
+
+empty_functional_group_results <- function() {
+  list(
+    msi = data.frame(
+      group_code = character(), groep_titel = character(), jaar = integer(),
+      log_index = numeric(), n_soorten = integer(), gewicht_som = numeric(),
+      msi = numeric(), analysis_mode = character(), msi_variant = character(),
+      stringsAsFactors = FALSE
+    ),
+    trends = data.frame(
+      group_code = character(), groep_titel = character(), analysis_mode = character(),
+      msi_variant = character(), publicatiestatus = character(), basisjaar = integer(),
+      basisjaar_toelichting = character(), eerste_jaar = integer(), laatste_jaar = integer(),
+      n_bruikbare_soorten = integer(), gemiddeld_n_soorten = numeric(), min_n_soorten = integer(),
+      max_n_soorten = integer(), cv_n_soorten = numeric(), samenstelling_waarschuwing = character(),
+      trend_pct_per_jaar = numeric(), trend_p = numeric(), trend_r2 = numeric(),
+      trend_uitleg = character(), trendduiding_type = character(), stringsAsFactors = FALSE
+    ),
+    composition = data.frame(
+      group_code = character(), groep_titel = character(), soort_id = integer(),
+      euring_code = integer(), soort_naam = character(), engelse_naam = character(),
+      classification = character(), binary_membership = integer(), membership_weight = numeric(),
+      analysis_mode = character(), msi_variant = character(), stringsAsFactors = FALSE
+    )
+  )
+}
+
+analyse_functional_groups_subset <- function(species_indices, group_mapping, analysis_mode, msi_variant) {
+  merged <- merge(
+    species_indices[, c("soort_id", "euring_code", "soort_naam", "engelse_naam", "jaar", "index_100")],
+    group_mapping,
+    by = "soort_id",
+    all = FALSE
+  )
+  merged <- merged[is.finite(merged$index_100) & merged$index_100 > 0, , drop = FALSE]
+  if (!nrow(merged)) return(empty_functional_group_results())
+  merged$analysegewicht <- if (analysis_mode == "gewogen") merged$membership_weight else 1
+  merged$log_index <- log(merged$index_100)
+  msi <- aggregate_functional_msi(merged)
+  msi$analysis_mode <- analysis_mode
+  msi$msi_variant <- msi_variant
+
+  trend_rows <- lapply(split(msi, msi$group_code), function(df) {
+    meta <- merged[merged$group_code == df$group_code[[1]], , drop = FALSE][1, , drop = FALSE]
+    tr <- run_lm_trend(df, "msi")
+    n_bruikbare_soorten <- length(unique(merged$soort_id[merged$group_code == df$group_code[[1]]]))
+    min_n <- min(df$n_soorten, na.rm = TRUE)
+    max_n <- max(df$n_soorten, na.rm = TRUE)
+    data.frame(
+      group_code = df$group_code[[1]],
+      groep_titel = df$groep_titel[[1]],
+      analysis_mode = analysis_mode,
+      msi_variant = msi_variant,
+      publicatiestatus = functional_publication_status(
+        n_bruikbare_soorten,
+        meta$minimum_exploratief,
+        meta$minimum_hoofdindicator,
+        meta$minimum_robuust
+      ),
+      basisjaar = min(df$jaar, na.rm = TRUE),
+      basisjaar_toelichting = "MSI = 100 in het eerste analysejaar met geldige functionele groepsindex",
+      eerste_jaar = min(df$jaar, na.rm = TRUE),
+      laatste_jaar = max(df$jaar, na.rm = TRUE),
+      n_bruikbare_soorten = n_bruikbare_soorten,
+      gemiddeld_n_soorten = mean(df$n_soorten, na.rm = TRUE),
+      min_n_soorten = min_n,
+      max_n_soorten = max_n,
+      cv_n_soorten = stats::sd(df$n_soorten, na.rm = TRUE) / mean(df$n_soorten, na.rm = TRUE),
+      samenstelling_waarschuwing = ifelse(max_n > 0 && min_n / max_n < 0.75, "wisselend_soortenaantal", "stabiel_soortenaantal"),
+      trend_pct_per_jaar = calc_pct_trend(tr$slope),
+      trend_p = tr$p,
+      trend_r2 = tr$r2,
+      trend_uitleg = duid_trend(calc_pct_trend(tr$slope), tr$p),
+      trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
+      stringsAsFactors = FALSE
+    )
+  })
+
+  composition <- unique(merged[, c(
+    "group_code", "naam_nl", "soort_id", "euring_code", "soort_naam", "engelse_naam",
+    "classification", "binary_membership", "membership_weight"
+  )])
+  names(composition)[names(composition) == "naam_nl"] <- "groep_titel"
+  composition$analysis_mode <- analysis_mode
+  composition$msi_variant <- msi_variant
+  composition <- composition[order(composition$group_code, composition$soort_naam), , drop = FALSE]
+
+  list(msi = msi, trends = do.call(rbind, trend_rows), composition = composition)
+}
+
 analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_variant = "volledig") {
   empty_msi <- data.frame(
     richtlijn_id = integer(),
@@ -1671,6 +1823,27 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
     trends = rbind(full_group_results$trends, robust_group_results$trends),
     composition = rbind(full_group_results$composition, robust_group_results$composition)
   )
+  functional_group_mapping <- build_functional_group_mapping(tbls)
+  functional_parts <- list()
+  for (analysis_mode in c("binair", "gewogen")) {
+    functional_parts[[paste(analysis_mode, "volledig", sep = "_")]] <- analyse_functional_groups_subset(
+      species_results$indices,
+      functional_group_mapping,
+      analysis_mode,
+      "volledig"
+    )
+    functional_parts[[paste(analysis_mode, "robuust", sep = "_")]] <- analyse_functional_groups_subset(
+      robust_indices,
+      functional_group_mapping,
+      analysis_mode,
+      "robuust"
+    )
+  }
+  functional_group_results <- list(
+    msi = do.call(rbind, lapply(functional_parts, `[[`, "msi")),
+    trends = do.call(rbind, lapply(functional_parts, `[[`, "trends")),
+    composition = do.call(rbind, lapply(functional_parts, `[[`, "composition"))
+  )
   richtlijn_mapping <- build_richtlijn_mapping(tbls)
   full_richtlijn_results <- analyse_richtlijnen_subset(species_results$indices, richtlijn_mapping, msi_variant = "volledig")
   robust_richtlijn_results <- analyse_richtlijnen_subset(robust_indices, richtlijn_mapping, msi_variant = "robuust")
@@ -1694,6 +1867,7 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
     species_matrix = species_matrix,
     species_results = species_results,
     group_results = group_results,
+    functional_group_results = functional_group_results,
     richtlijn_results = richtlijn_results,
     habitatgroep_results = habitatgroep_results
   )
@@ -5138,4 +5312,4 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     habitatgroep_results = lambda_habitatgroep
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 7L
+MEIJENDEL_PARSER_CACHE_VERSION <- 8L

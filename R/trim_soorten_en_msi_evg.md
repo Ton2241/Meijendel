@@ -15,6 +15,10 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
 6. Het draait per soort een `TRIM`-model vóór `1984` en een tweede `TRIM`-model vanaf `1984`.
 7. Het verbindt beide indexreeksen met een brugfactor op basis van `1981-1983` versus `1984-1986`.
 8. Het berekent daarna per ecologische 100-groep een `MSI` als geometrisch gemiddelde van de soortindices.
+9. Het berekent voor de vijf functionele vogelgroepen altijd binair en gewogen
+   (`1,0` primair; `0,5` secundair), zowel volledig als robuust.
+10. Het voert per functionele groep en analysevariant een
+    leave-one-species-out-trendcontrole uit.
 
 ## Waarom geen `post84` als TRIM-covariaat?
 
@@ -38,6 +42,10 @@ Daarom gebruikt dit script een verdedigbare alternatieve aanpak:
 - `groepssamenstelling_100tal.csv`
 - `msi_per_groep_per_jaar.csv`
 - `trendoverzicht_msi_groepen.csv`
+- `functionele_groepssamenstelling.csv`
+- `functionele_msi_per_groep_per_jaar.csv`
+- `functionele_trendoverzicht_msi_groepen.csv`
+- `functionele_loso_trendgevoeligheid.csv`
 
 ## Script uitvoeren
 

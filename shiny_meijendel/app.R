@@ -421,6 +421,27 @@ ui <- navbarPage(
               tableOutput("group_species_table")
             ),
             tabPanel(
+              "Functionele groepen",
+              uiOutput("functional_group_picker_ui"),
+              radioButtons(
+                "functional_analysis_mode",
+                "Analysewijze",
+                choices = c("Binair (iedere opgenomen soort telt gelijk)" = "binair", "Gewogen (primair 1,0; secundair 0,5)" = "gewogen"),
+                selected = "binair",
+                inline = TRUE
+              ),
+              tags$p(class = "section-note", "Blauw: volledige MSI. Groen: robuuste MSI. Functionele groepen zijn aanvullend en niet-exclusief."),
+              tags$p(class = "section-note", "Luchtfoerageerders worden uitsluitend exploratief getoond. De bodem-insectengroep is gevoelig voor de gekozen traitdrempel."),
+              plotOutput("functional_group_plot", height = "420px"),
+              div(class = "download-row",
+                  downloadButton("download_functional_group_trends", "CSV functionele trends"),
+                  downloadButton("download_functional_group_msi", "CSV functionele MSI")),
+              h4("Trend per functionele groep"),
+              tableOutput("functional_group_table"),
+              h4("Soorten in gekozen functionele groep"),
+              tableOutput("functional_group_species_table")
+            ),
+            tabPanel(
               "Rode/Oranje Lijst",
               uiOutput("richtlijn_picker_ui"),
               tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
@@ -2859,6 +2880,17 @@ server <- function(input, output, session) {
     selectInput("selected_group", "Ec. Vogelgroepen", choices = choices, selected = groepen$groep_100[1])
   })
 
+  output$functional_group_picker_ui <- renderUI({
+    analyse <- analyse_rv()
+    if (is.null(analyse)) {
+      return(tags$p("Voer eerst een analyse uit."))
+    }
+    groepen <- unique(analyse$functional_group_results$trends[, c("group_code", "groep_titel")])
+    validate(need(nrow(groepen) > 0, "Geen functionele groepen beschikbaar in deze selectie."))
+    choices <- setNames(groepen$group_code, groepen$groep_titel)
+    selectInput("selected_functional_group", "Functionele vogelgroep", choices = choices, selected = groepen$group_code[1])
+  })
+
   output$richtlijn_picker_ui <- renderUI({
     analyse <- analyse_rv()
     if (is.null(analyse)) {
@@ -4163,6 +4195,67 @@ server <- function(input, output, session) {
     ]
   }, striped = TRUE)
 
+  output$functional_group_plot <- renderPlot({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_functional_group, input$functional_analysis_mode)
+    msi <- analyse$functional_group_results$msi
+    msi <- msi[
+      msi$group_code == input$selected_functional_group &
+        msi$analysis_mode == input$functional_analysis_mode,
+      ,
+      drop = FALSE
+    ]
+    validate(need(nrow(msi) > 0, "Geen MSI-gegevens voor deze functionele groep."))
+    title <- unique(msi$groep_titel)[1]
+    cols <- c(volledig = "#1d4ed8", robuust = "#15803d")
+    pchs <- c(volledig = 16, robuust = 17)
+    plot(
+      NA, NA,
+      xlab = "Jaar", ylab = "MSI",
+      xlim = range(msi$jaar, na.rm = TRUE),
+      ylim = range(msi$msi, na.rm = TRUE),
+      main = paste(title, "-", input$functional_analysis_mode)
+    )
+    for (variant in unique(msi$msi_variant)) {
+      part <- msi[msi$msi_variant == variant, , drop = FALSE]
+      part <- part[order(part$jaar), , drop = FALSE]
+      lines(part$jaar, part$msi, type = "o", pch = pchs[[variant]], lwd = 2, col = cols[[variant]])
+    }
+    grid()
+    legend(
+      "topleft",
+      legend = c("Volledige MSI", "Robuuste MSI"),
+      col = c(cols[["volledig"]], cols[["robuust"]]),
+      lwd = 2,
+      pch = c(pchs[["volledig"]], pchs[["robuust"]]),
+      bty = "n"
+    )
+  })
+
+  output$functional_group_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse, input$functional_analysis_mode)
+    analyse$functional_group_results$trends[
+      analyse$functional_group_results$trends$analysis_mode == input$functional_analysis_mode,
+      ,
+      drop = FALSE
+    ]
+  }, striped = TRUE)
+
+  output$functional_group_species_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_functional_group, input$functional_analysis_mode)
+    rows <- analyse$functional_group_results$composition
+    rows <- rows[
+      rows$group_code == input$selected_functional_group &
+        rows$analysis_mode == input$functional_analysis_mode &
+        rows$msi_variant == "volledig",
+      c("soort_naam", "engelse_naam", "euring_code", "classification", "membership_weight"),
+      drop = FALSE
+    ]
+    unique(rows)
+  }, striped = TRUE)
+
   output$richtlijn_plot <- renderPlot({
     analyse <- analyse_rv()
     req(analyse, input$selected_richtlijn)
@@ -4334,6 +4427,28 @@ server <- function(input, output, session) {
       analyse <- analyse_rv()
       req(analyse)
       utils::write.csv(analyse$group_results$msi, file, row.names = FALSE)
+    }
+  )
+
+  output$download_functional_group_trends <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_functionele_groepstrends_%s_%s.csv", input$year_from, input$year_to)
+    },
+    content = function(file) {
+      analyse <- analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$functional_group_results$trends, file, row.names = FALSE)
+    }
+  )
+
+  output$download_functional_group_msi <- downloadHandler(
+    filename = function() {
+      sprintf("meijendel_shiny_functionele_groep_msi_%s_%s.csv", input$year_from, input$year_to)
+    },
+    content = function(file) {
+      analyse <- analyse_rv()
+      req(analyse)
+      utils::write.csv(analyse$functional_group_results$msi, file, row.names = FALSE)
     }
   )
 

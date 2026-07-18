@@ -12,7 +12,12 @@ required_chart_ids <- c(
   "rode-lijst", "oranje-lijst", "vogelrichtlijn", "rode-en-oranje-lijst",
   "2110-embryonale-wandelende-duinen", "2120-witte-duinen", "2130-grijze-duinen",
   "2160-duindoornstruwelen", "2180-duinbossen", "2190-vochtige-duinvalleien",
-  "3140-kranswierwateren", "6430-ruigten-en-zomen"
+  "3140-kranswierwateren", "6430-ruigten-en-zomen",
+  "functioneel-bodem-insect-binair", "functioneel-bodem-insect-gewogen",
+  "functioneel-lucht-binair", "functioneel-lucht-gewogen",
+  "functioneel-grondbroed-binair", "functioneel-grondbroed-gewogen",
+  "functioneel-holenbroed-binair", "functioneel-holenbroed-gewogen",
+  "functioneel-lange-trek-binair", "functioneel-lange-trek-gewogen"
 )
 
 fail <- function(...) {
