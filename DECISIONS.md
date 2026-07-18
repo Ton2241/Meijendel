@@ -63,3 +63,17 @@
   gemiddeld met Nederlandse informatie. De Nederlandse bron gaat voor; de
   afwijkende mondiale waarde blijft uitsluitend als herleidbare bronwaarde of
   controle behouden.
+- Fase-C-groepsafleiding gebruikt behalve de aandeelgrenzen ook de in fase A
+  verplichte contextgates. Bodem-insecteneters vereisen een passend substraat én
+  grond-/strooiselmethode en sluiten dominante luchtvangst uit;
+  luchtfoerageerders vereisen uitvaljacht of continue luchtjacht. Nest- en
+  trekgroepen vereisen respectievelijk passende nesthoogte/holtetype en een
+  langeafstandswinterregio.
+- De baseline wordt altijd naast een inclusieve drempelverschuiving van −0,10 en
+  een strikte verschuiving van +0,10 opgeslagen. Leave-one-species-out controleert
+  minimaal of de publicatiestatus van de groepsomvang door één soort verandert.
+- De fase-C-baseline levert vier robuuste hoofdgroepen op. De groep
+  luchtfoerageerders telt zeven soorten en mag daarom uitsluitend exploratief
+  worden gebruikt. De bodem-insectengroep daalt in de strikte variant naar 16
+  soorten en is dus niet drempelrobuust. Geen van de lijsten wordt gepubliceerd
+  voordat zij inhoudelijk is geaccordeerd en analysepariteit groen is.

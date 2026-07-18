@@ -583,10 +583,96 @@ WHERE stv.is_preferred = 1
   AND stv.value_type = 'unknown';
 
 SELECT
-  'Fase C is nog niet gestart: geen groepslidmaatschappen' as check_naam,
+  'Fase C bevat exact 5 × 95 groepsclassificaties' as check_naam,
+  ABS((5 * 95) - COUNT(*)) as aantal_problemen,
+  CASE WHEN COUNT(*) = (5 * 95) THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM functional_group_membership;
+
+SELECT
+  'Iedere fase-C-groep bevat exact 95 soorten' as check_naam,
+  ABS(5 - COUNT(*))
+    + COALESCE(SUM(ABS(95 - aantal)), 0) as aantal_problemen,
+  CASE WHEN COUNT(*) = 5 AND MIN(aantal) = 95 AND MAX(aantal) = 95
+    THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM (
+  SELECT functional_group_definition_id, COUNT(*) aantal
+  FROM functional_group_membership
+  GROUP BY functional_group_definition_id
+) groepsomvang;
+
+SELECT
+  'Classificatie, binair lidmaatschap en gewicht zijn consistent' as check_naam,
   COUNT(*) as aantal_problemen,
   CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM functional_group_membership
+WHERE (classification = 'primary' AND (binary_membership <> 1 OR membership_weight <> 1.00))
+   OR (classification = 'secondary' AND (binary_membership <> 1 OR membership_weight <> 0.50))
+   OR (classification = 'excluded' AND (binary_membership <> 0 OR membership_weight <> 0.00))
+   OR (classification = 'unknown' AND (binary_membership <> 0 OR membership_weight IS NOT NULL));
+
+SELECT
+  'Fase C bevat geen onbekende classificaties' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM functional_group_membership
+WHERE classification = 'unknown';
+
+SELECT
+  'Fase C gebruikt één geldige generatiecommit' as check_naam,
+  SUM(generation_commit NOT REGEXP '^[0-9a-f]{40}$')
+    + ABS(1 - COUNT(DISTINCT generation_commit)) as aantal_problemen,
+  CASE
+    WHEN SUM(generation_commit NOT REGEXP '^[0-9a-f]{40}$') = 0
+     AND COUNT(DISTINCT generation_commit) = 1
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status
 FROM functional_group_membership;
+
+SELECT
+  'Rationale bevat per gebruikt trait minimaal één bron' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM functional_group_membership fgm
+JOIN JSON_TABLE(
+  JSON_KEYS(fgm.rationale_json, '$.trait_evidence'),
+  '$[*]' COLUMNS(trait_code VARCHAR(96) PATH '$')
+) jt
+WHERE JSON_LENGTH(JSON_EXTRACT(
+  fgm.rationale_json,
+  CONCAT('$.trait_evidence.', jt.trait_code, '.sources')
+)) = 0;
+
+SELECT
+  'Fase-C-baseline en gevoeligheidsaantallen zijn ongewijzigd' as check_naam,
+  SUM(
+    ABS(v.geselecteerde_soorten - e.baseline)
+    + ABS(v.inclusief_geselecteerd - e.inclusief)
+    + ABS(v.strikt_geselecteerd - e.strikt)
+  ) as aantal_problemen,
+  CASE WHEN SUM(
+    ABS(v.geselecteerde_soorten - e.baseline)
+    + ABS(v.inclusief_geselecteerd - e.inclusief)
+    + ABS(v.strikt_geselecteerd - e.strikt)
+  ) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM v_functional_group_summary_v1 v
+JOIN (
+  SELECT 'fg_v1_bodem_insect' group_code, 43 baseline, 44 inclusief, 16 strikt
+  UNION ALL SELECT 'fg_v1_lucht', 7, 7, 5
+  UNION ALL SELECT 'fg_v1_grondbroed', 40, 40, 34
+  UNION ALL SELECT 'fg_v1_holenbroed', 28, 28, 28
+  UNION ALL SELECT 'fg_v1_lange_trek', 27, 27, 25
+) e ON e.group_code = v.group_code;
+
+SELECT
+  'Leave-one-species-out verandert geen minimumstatus' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM v_functional_group_summary_v1
+WHERE publicatiestatus <> loso_minimumstatus;
+
+SELECT *
+FROM v_functional_group_summary_v1
+ORDER BY group_code;
 
 SELECT
   vervolgstatus,
@@ -603,7 +689,7 @@ FROM v_trait_gap_v1
 GROUP BY trait_code, vervolgstatus
 ORDER BY trait_code, vervolgstatus;
 
-SELECT '=== VOLLEDIGE VALIDATIE INCLUSIEF TR1 AFGEROND ===' as status;
+SELECT '=== VOLLEDIGE VALIDATIE INCLUSIEF TR1 EN FASE C AFGEROND ===' as status;
 
 -- Bewaar dit rapport:
 -- mysql -u root -p Meijendel < validatie.sql > validatie_rapport_$(date +%Y%m%d_%H%M%S).txt

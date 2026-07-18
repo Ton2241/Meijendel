@@ -2,20 +2,22 @@
 
 ## Nu open
 
-### Functionele vogelgroepen — fase C
+### Functionele vogelgroepen — inhoudelijke accordering en fase D
 
-Fase B is afgerond: alle 95 soorten hebben 14 verplichte doeltraits, alle 1.330
-gapcellen staan op `gereed`, geen voorkeurswaarde is nog onbekend en alle 1.505
-eindwaarden hebben herleidbare Nederlandse en fallbackbronnen.
+Fase C is technisch afgerond: 475 classificaties, binaire en gewogen
+lidmaatschappen, soortgebonden rationale/provenance, strikte en inclusieve
+drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
-- Genereer de vijf niet-exclusieve groepslidmaatschappen uit uitsluitend
-  goedgekeurde TR1-voorkeurswaarden.
-- Controleer minimumgroottes en rapporteer per soort de beslisregel, gebruikte
-  waarden, confidence en bronlocators.
-- Voer naast de binaire analyse een gewogen analyse en een gevoeligheidsanalyse
-  rond de drempels uit; besteed extra aandacht aan confidence-2-proxywaarden.
-- Laat de groepslijsten inhoudelijk accorderen voordat dashboard, Shiny of
-  website op de nieuwe laag worden omgeschakeld.
+- Accordeer de vijf soortenlijsten inhoudelijk, met speciale aandacht voor
+  confidence-2-proxywaarden en soorten die in de strikte variant afvallen. De
+  bodem-insectengroep daalt daarbij van 43 naar 16 soorten en van robuust naar
+  bruikbaar met nadrukkelijke onzekerheidsanalyse.
+- Behandel luchtfoerageerders uitsluitend exploratief: 7 geselecteerde soorten,
+  onder de minimumgrens van 10 voor een hoofdindicator.
+- Bouw na accordering de binaire en gewogen trendanalyse voor de vier robuuste
+  hoofdgroepen en de exploratieve luchtgroep.
+- Schakel dashboard, Shiny en website pas om na groene analyse- en
+  pariteitscontroles; legacy blijft in dezelfde release beschikbaar.
 - Behoud `F-Mud`, de zeven afwijkende soortnamen en de dubbele legacytypering als
   zichtbare legacykwaliteitsissues; corrigeer ze alleen gecontroleerd en zonder
   historische data stilzwijgend te herschrijven.

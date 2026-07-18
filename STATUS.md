@@ -20,7 +20,7 @@ Gereed:
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
 
-## Functionele vogelgroepen — fase A en B afgerond
+## Functionele vogelgroepen — fase A, B en groepsafleiding fase C afgerond
 
 Gereed:
 
@@ -59,8 +59,18 @@ Gereed:
   klassen naar analysewaarden vertaald. Die waarden zijn reproduceerbare
   proxies, geen gemeten lokale populatiepercentages; onzekerheid staat in
   `confidence_score` en `evidence_note`.
-- Er zijn nog geen groepslidmaatschappen gegenereerd en dashboard, Shiny en
-  website zijn niet omgeschakeld.
+- Fase C heeft voor iedere combinatie van vijf groepen en 95 scopesoorten een
+  reproduceerbare classificatie gematerialiseerd: 475 rijen met binair
+  lidmaatschap, gewicht, reden, gebruikte traitwaarden, confidence en
+  bronlocators.
+- De selectieregels gebruiken naast de aandelen ook de in fase A verplichte
+  methode- en substraatgates. Daardoor tellen bijvoorbeeld zoekvlucht zonder
+  actieve luchtvangst en luchtjagers zonder bodemfoerageermethode niet mee.
+- Twee controleviews zijn beschikbaar: `v_functional_group_membership_v1` voor
+  soortniveau en `v_functional_group_summary_v1` voor omvang, gewicht,
+  gevoeligheid en publicatiestatus.
+- Dashboard, Shiny en website zijn nog niet omgeschakeld; eerst volgt
+  inhoudelijke accordering van de groepslijsten.
 
 Nulmeting van `meijendel.sql`:
 
@@ -84,14 +94,15 @@ Dekking bij de 95 soorten met een bruikbare lange TRIM-reeks:
 - nestplaats: 88 van 95;
 - voedsel volwassen vogels: 87 van 95.
 
-Resterende risico's na fase B:
+Resterende risico's na fase C:
 
 - Een aanwezige hoofdcategorie betekent niet dat alle voor een groep verplichte
   traits gevuld zijn. Het legacystelsel kan onbekend niet onderscheiden van
   afwezig.
 - Semikwantitatieve aandelen en nesthoogteklassen zijn deels afgeleid uit
-  kwalitatieve Nederlandse tekst. Fase C moet daarom naast de vaste drempels een
-  gevoeligheidsanalyse uitvoeren, vooral voor waarden met confidence 2.
+  kwalitatieve Nederlandse tekst. Fase C rapporteert daarom naast de baseline
+  ook een inclusieve en strikte drempelvariant van respectievelijk −0,10 en
+  +0,10, plus de minimumstatus na leave-one-species-out.
 - Mondiale bronnen bevatten aantoonbaar enkele voor Nederlandse toepassing
   onwaarschijnlijke coderingen. Ze zijn niet blind overgenomen; Nederlandse
   broninformatie gaat voor en Europese/mondiale waarden blijven als herleidbare
@@ -103,9 +114,11 @@ Resterende risico's na fase B:
 
 Aanbevolen volgende stap:
 
-- Start fase C: genereer de vijf niet-exclusieve groepslidmaatschappen uit de
-  goedgekeurde TR1-voorkeurswaarden, controleer minimumgroottes en voer binaire,
-  gewogen en drempelgevoeligheidsanalyses uit voordat publicatie plaatsvindt.
+- Accordeer de vijf gegenereerde soortenlijsten inhoudelijk. Vier groepen zijn
+  volgens de baseline robuuste hoofdgroepen; de zeven luchtfoerageerders blijven
+  uitsluitend exploratief. De bodem-insectengroep daalt in de strikte variant
+  van 43 naar 16 soorten en is daarmee drempelgevoelig. Schakel daarna pas
+  analyse, dashboard en Shiny om.
 
 ## Dashboard, websitegrafieken en Shiny
 

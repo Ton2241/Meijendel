@@ -94,6 +94,22 @@ maken onderscheid tussen directe classificatie en grovere proxy. Categorie
 "niet van toepassing" en onbekend. De gapview aggregeert meerkeuzecategorieën en
 rapporteert alle 1.330 verplichte cellen als `gereed`.
 
+Fase C materialiseert exact één rij per groep en scopesoort in
+`functional_group_membership`, dus 5 × 95 = 475 rijen. De machineleesbare regels
+gebruiken niet alleen de numerieke drempels, maar ook de verplichte
+foerageermethode, het substraat, nesthoogte, holtetype en winterregio. Iedere
+`rationale_json` bevat de beslisreden, gebruikte waarde-id's, confidence,
+bronlocators en de classificatie bij een inclusieve (−0,10) en strikte (+0,10)
+drempel. `generation_commit` verwijst naar de Git-toestand met de goedgekeurde
+fase-B-input.
+
+`v_functional_group_membership_v1` ontsluit de soortclassificaties;
+`v_functional_group_summary_v1` levert primaire/secundaire aantallen, binaire en
+gewogen omvang, gevoeligheidsaantallen én -statussen, minimumconfidence,
+publicatiestatus en de minimumstatus na weglaten van één soort. Deze views zijn
+controle- en analysebronnen; publicatie volgt pas na inhoudelijke accordering en
+pariteit.
+
 Dashboard, Shiny en website schakelen pas om nadat de inhoudelijke beoordeling,
 groepsafleiding en pariteitscontroles groen zijn. De legacytabellen blijven tot na
 die omschakeling read-only beschikbaar.

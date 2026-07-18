@@ -323,6 +323,46 @@ de groepslijsten en voert vanwege de proxies verplicht een gevoeligheidsanalyse
 rond de selectiedrempels uit. Dashboard, Shiny en website zijn nog niet naar de
 nieuwe traitlaag omgeschakeld.
 
+### Uitvoering fase C — 18 juli 2026
+
+De vijf goedgekeurde definities zijn toegepast op uitsluitend de `approved`,
+geprefereerde TR1-doelwaarden binnen `TRIM_BRUIKBAAR_V1`. Naast de numerieke
+drempels worden de verplichte contextgates gebruikt: methode en substraat bij
+foerageergroepen, nesthoogte en holtetype bij broedgroepen en winterregio bij
+langeafstandstrek. Dit voorkomt dat bijvoorbeeld een zoekvlucht zonder actieve
+luchtvangst of een luchtjager zonder bodemfoerageermethode op alleen twee
+proxypercentages wordt geselecteerd.
+
+`functional_group_membership` bevat 475 rijen: iedere soort heeft binnen iedere
+groep exact één classificatie `primary`, `secondary`, `excluded` of `unknown`,
+een binaire waarde en gewicht `1`, `0,5`, `0` of `NULL`. De rationale bevat per
+beslissing de gebruikte traitwaarde-id's, confidence, bronlocators, reden en de
+uitkomst onder inclusieve en strikte drempels. Er zijn geen onbekende
+classificaties. `generation_commit` is voor alle rijen
+`bcdf9052e9a6ad6d8a3bf6a48b325467fbc23f14`, de Git-toestand met de
+goedgekeurde fase-B-input.
+
+| Groep | Primair | Secundair | Binair totaal | Gewogen omvang | Inclusief −0,10 | Strikt +0,10 | Baseline/strikte status |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Bodemfoeragerende insecteneters | 16 | 27 | 43 | 29,5 | 44 | 16 | robuust / bruikbaar met onzekerheidsanalyse |
+| Luchtfoerageerders | 5 | 2 | 7 | 6,0 | 7 | 5 | exploratief / exploratief |
+| Grondbroeders | 34 | 6 | 40 | 37,0 | 40 | 34 | robuust / robuust |
+| Holenbroeders | 28 | 0 | 28 | 28,0 | 28 | 28 | robuust / robuust |
+| Langeafstandstrekkers | 25 | 2 | 27 | 26,0 | 27 | 25 | robuust / robuust |
+
+Bij leave-one-species-out blijft de minimumstatus van alle vijf groepen gelijk.
+De twee nieuwe controleviews zijn:
+
+- `v_functional_group_membership_v1`: soortlijst, classificatie, gewicht,
+  confidence, reden en gevoeligheidsclassificaties;
+- `v_functional_group_summary_v1`: groepsomvang, gewogen omvang,
+  gevoeligheidsaantallen, publicatiestatus en leave-one-species-out-minimumstatus.
+
+Fase C levert daarmee reproduceerbare analyselijsten, maar nog geen publieke
+grafiek. Eerst worden de lijsten inhoudelijk geaccordeerd; daarna kunnen de
+binaire en gewogen trendanalyses en de dashboard-/Shiny-pariteitsroute worden
+gebouwd.
+
 ## Relatie met publieke soortpagina's
 
 Status 2026-06-30:
