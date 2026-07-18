@@ -460,11 +460,11 @@ JOIN trait_analysis_scope tas ON tas.id = tass.scope_id
 WHERE tas.scope_code = 'TRIM_BRUIKBAAR_V1';
 
 SELECT
-  'Vier importbatches aanwezig met kloppende aantallen' as check_naam,
-  ABS(4 - COUNT(*))
+  'Zeven importbatches aanwezig met kloppende aantallen' as check_naam,
+  ABS(7 - COUNT(*))
     + SUM(CASE WHEN werkelijk <> geimporteerde_waarden THEN 1 ELSE 0 END) as aantal_problemen,
   CASE
-    WHEN COUNT(*) = 4
+    WHEN COUNT(*) = 7
      AND SUM(CASE WHEN werkelijk <> geimporteerde_waarden THEN 1 ELSE 0 END) = 0
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
@@ -507,21 +507,86 @@ SELECT
 FROM v_trait_gap_v1;
 
 SELECT
-  'Taxonomische koppelingen per externe bron zijn niet volledig' as check_naam,
-  ABS(3 - COUNT(*))
+  'Taxonomische koppelingen per soortbron zijn niet volledig' as check_naam,
+  ABS(5 - COUNT(*))
     + SUM(CASE WHEN gekoppeld <> 95 THEN ABS(95 - gekoppeld) ELSE 0 END) as aantal_problemen,
   CASE
-    WHEN COUNT(*) = 3 AND MIN(gekoppeld) = 95 AND MAX(gekoppeld) = 95
+    WHEN COUNT(*) = 5 AND MIN(gekoppeld) = 95 AND MAX(gekoppeld) = 95
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
 FROM (
   SELECT ts.source_code, COUNT(*) gekoppeld
   FROM trait_taxon_mapping ttm
   JOIN trait_source ts ON ts.id = ttm.source_id
-  WHERE ts.source_code IN ('ELTONTRAITS_1', 'EU_BIRD_LIFE_HISTORY_2018', 'GLOBAL_NEST_TRAITS_V2')
+  WHERE ts.source_code IN (
+    'ELTONTRAITS_1',
+    'EU_BIRD_LIFE_HISTORY_2018',
+    'GLOBAL_NEST_TRAITS_V2',
+    'NATURALIS_NSR_VOGELTEKSTEN_2023',
+    'VOGELBESCHERMING_VOGELGIDS_2026'
+  )
     AND ttm.status = 'approved'
   GROUP BY ts.source_code
 ) bron;
+
+SELECT
+  'Alle 1.330 verplichte doelcellen zijn gereed' as check_naam,
+  SUM(CASE WHEN vervolgstatus <> 'gereed' THEN 1 ELSE 0 END)
+    + ABS((95 * 14) - COUNT(*)) as aantal_problemen,
+  CASE
+    WHEN COUNT(*) = (95 * 14)
+     AND SUM(CASE WHEN vervolgstatus <> 'gereed' THEN 1 ELSE 0 END) = 0
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status
+FROM v_trait_gap_v1;
+
+SELECT
+  'Alle 95 soorten hebben exact 14 verplichte traits in het eindbatch' as check_naam,
+  ABS(95 - COUNT(*))
+    + SUM(CASE WHEN aantal_traits <> 14 THEN 1 ELSE 0 END) as aantal_problemen,
+  CASE
+    WHEN COUNT(*) = 95 AND MIN(aantal_traits) = 14 AND MAX(aantal_traits) = 14
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status
+FROM (
+  SELECT stv.soort_id, COUNT(DISTINCT td.trait_code) as aantal_traits
+  FROM species_trait_value stv
+  JOIN trait_definition td ON td.id = stv.trait_id
+  JOIN trait_import_batch tib ON tib.id = stv.import_batch_id
+  WHERE tib.batch_code = 'TR1FINAL_20260718'
+    AND td.verplicht_v1 = 1
+  GROUP BY stv.soort_id
+) eindsoorten;
+
+SELECT
+  'Eindwaarden hebben minimaal twee bronkoppelingen' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM (
+  SELECT stv.id
+  FROM species_trait_value stv
+  JOIN trait_import_batch tib ON tib.id = stv.import_batch_id
+  LEFT JOIN species_trait_value_source stvs ON stvs.species_trait_value_id = stv.id
+  WHERE tib.batch_code = 'TR1FINAL_20260718'
+  GROUP BY stv.id
+  HAVING COUNT(DISTINCT stvs.source_id) < 2
+) onvoldoende_bronnen;
+
+SELECT
+  'Geen geprefereerde doelwaarde is nog unknown' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM species_trait_value stv
+JOIN trait_definition td ON td.id = stv.trait_id
+WHERE stv.is_preferred = 1
+  AND td.verplicht_v1 = 1
+  AND stv.value_type = 'unknown';
+
+SELECT
+  'Fase C is nog niet gestart: geen groepslidmaatschappen' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM functional_group_membership;
 
 SELECT
   vervolgstatus,

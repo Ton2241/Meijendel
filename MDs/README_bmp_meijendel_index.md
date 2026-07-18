@@ -253,7 +253,7 @@ Fase B is daarmee de fase waarin ontbrekende broedvogelkenmerken technisch worde
 gematerialiseerd en vervolgens inhoudelijk worden aangevuld. Fase A maakt de
 hiaten zichtbaar en bepaalt wat als voldoende, onvoldoende of onbekend geldt.
 
-### Uitvoering technische fase B — 18 juli 2026
+### Uitvoering fase B — 18 juli 2026
 
 De levende lokale MySQL-database is eerst vergeleken met de repositorydump. De
 relevante legacytabellen waren inhoudelijk rij voor rij gelijk; alleen de
@@ -274,6 +274,9 @@ Geïmporteerde bronnen:
 | EltonTraits 1.0, DOI `10.6084/m9.figshare.3559887.v1` | mondiaal, semikwantitatief dieet en foerageerstratum | `97216eb1797da077169ebb1ebea275db293b09fc62f8bb8911f9beb98c50d321` | 285 |
 | European bird life-history data, DOI `10.5061/dryad.n6k3n` | Europees, soortniveau migratie | `d9ea735c3dba886fe2bc0a9cdaf00662232efcb19a7fb717a02864047357bba5` | 190 |
 | Global Nest Traits v2, DOI `10.5281/zenodo.10128906` | mondiaal, binaire nestkenmerken | `f267ed323fa55abac78a380e0efd581a7d6c5f917c06ae9049aeaac037566ec7` | 456 |
+| Nederlands Soortenregister, vogelsoortteksten | Nederland/NW-Europa, soorttekst en ecologie | `0fe8d4db25768178bf0be6319383aadfd37a953462d1eae0dcb79bcfd0531bb0` | 95 soortrecords; bewijsbron |
+| Vogelbescherming Nederland, online vogelgids | Nederland/NW-Europa, voedsel, broeden en trek | `0fe8d4db25768178bf0be6319383aadfd37a953462d1eae0dcb79bcfd0531bb0` | 95 soortpagina's; bewijsbron |
+| `TR1_DERIVATION_RULES_V1` | vaste bronhiërarchie en omzettingsklassen | intern, versie 1 | bewijsbron |
 
 De bronmetadata bevat versie, DOI/URL, licentie, raadpleegdatum, bestands-SHA en
 importregel. Voor elke externe dataset zijn alle 95 brontaxa expliciet aan een
@@ -282,22 +285,43 @@ European bird life-history data gebruikt de import de oorspronkelijke velden
 `Genus` en `Species`; het meegeleverde veld `scientificNameStd` bevat ten minste
 de foutieve omzetting `Muscicapa striata` naar `Muscicapa atrata`.
 
-Globale en Europese soortwaarden zijn niet als lokale populatiewaarde gebruikt.
-Voor alle 95 × 14 verplichte Nederlandse/NW-Europese doelcontexten is daarom een
-expliciete voorkeurswaarde met status `unknown` vastgelegd. De gapview verdeelt
-de 1.330 cellen als volgt:
+De inhoudelijke bronhiërarchie is Nederland > Europa > mondiaal. Voor alle 95
+soorten zijn daarom eerst de Nederlandse soortteksten beoordeeld. Europese data
+is fallback; mondiale data wordt alleen gebruikt wanneer Nederlandse en Europese
+informatie het gevraagde detail niet leveren, of als controle. Tegenstrijdige
+mondiale coderingen worden niet gemiddeld met de Nederlandse bron. Zo is de
+Nederlandse beschrijving van zwaluwen als luchtjagers leidend boven een afwijkend
+mondiaal grondfoerageerpercentage. De codering behandelt ontkenningen zoals
+`niet-vliegende insecten` expliciet en rekent drijvende vegetatiematten en
+oevernesten conform de fase-A-definitie tot broeden op grond-/waterniveau.
 
-| Vervolgstatus | Aantal |
+Kwalitatieve termen zijn met een vaste rubric omgezet naar categorieën en de
+semikwantitatieve waarden `0`, `0,25`, `0,5`, `0,75` of `1`. Dit zijn
+analyseproxies en geen gemeten lokale populatieaandelen. De onzekerheid is per
+waarde vastgelegd in `confidence_score` en `evidence_note`; de omzettingsregel is
+als aparte bron geregistreerd. Iedere eindwaarde heeft minimaal twee
+bronkoppelingen met een soortpagina-, API-record- of datasetlocator. Van de
+Vogelbescherming-pagina's zijn alleen feiten gecodeerd, geen bronteksten
+gekopieerd.
+
+Het eindbatch `TR1FINAL_20260718` bevat 1.505 goedgekeurde waarden voor 1.330
+verplichte soort-traitcellen. Het verschil ontstaat door de toegestane meerdere
+categorieën bij substraat, methode, holtetype/-oorsprong en winterregio. De vijf
+eerder volledig ontbrekende soorten — Torenvalk, Tortelduif, Boerenzwaluw,
+Barmsijs en Goudvink — hebben nu elk alle 14 verplichte traits. De eindcontrole:
+
+| Controle | Uitkomst |
 |---|---:|
-| `bron_ontbreekt` | 897 |
-| `inhoudelijke_review` | 273 |
-| `contextreview` | 160 |
+| verplichte gapcellen `gereed` | 1.330 / 1.330 |
+| geprefereerde waarden `unknown` | 0 |
+| soorten met niet exact 14 verplichte traits | 0 |
+| eindwaarden met minder dan twee bronkoppelingen | 0 |
+| gegenereerde groepslidmaatschappen | 0 |
 
-De technische fase B is hiermee reproduceerbaar afgerond. De inhoudelijke fase B
-blijft open: broninformatie moet per Nederlandse/NW-Europese broedpopulatie
-worden beoordeeld, waar nodig aangevuld en vervolgens als `approved` of bewust
-`unknown` worden vastgelegd. Tot die beoordeling gereed is, start fase C niet en
-worden geen functionele groepslijsten gepubliceerd.
+Fase B is hiermee inhoudelijk en technisch afgerond. Fase C genereert pas daarna
+de groepslijsten en voert vanwege de proxies verplicht een gevoeligheidsanalyse
+rond de selectiedrempels uit. Dashboard, Shiny en website zijn nog niet naar de
+nieuwe traitlaag omgeschakeld.
 
 ## Relatie met publieke soortpagina's
 

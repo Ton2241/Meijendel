@@ -78,12 +78,21 @@ Belangrijke constraints:
   vastgelegde traitversie.
 
 De nieuwe tabellen staan sinds fase B naast de ongewijzigde legacytabellen. Naast
-de 14 verplichte doeltraits bevat `TR1` acht ondersteunende brontraits waarmee
-globale binaire of semikwantitatieve gegevens zonder schijnprecisie worden
-opgeslagen. Externe waarden behouden hun globale of Europese context en worden
-niet als Nederlandse broedpopulatiewaarde aangewezen. Voor alle verplichte
-doelcontexten is daarom een expliciete voorkeurswaarde `unknown` aangemaakt totdat
-een inhoudelijke beoordeling een lokale waarde kan goedkeuren.
+de 14 verplichte doeltraits bevat `TR1` acht ondersteunende brontraits. De
+bronhiërarchie voor de doelcontext is: Nederlandse soortbron, Europese fallback,
+mondiale fallback. Het Nederlands Soortenregister en de Vogelbescherming-
+vogelgids dekken elk alle 95 scopesoorten; Europese en mondiale waarden behouden
+hun oorspronkelijke context en worden niet stilzwijgend lokaal gemaakt.
+
+Voor alle 95 × 14 doelcontexten is een goedgekeurde voorkeurswaarde vastgelegd.
+Kwalitatieve Nederlandse feiten zijn met vaste klassen omgezet in
+semikwantitatieve analyseproxies. De omzettingsregel is zelf als bron
+`TR1_DERIVATION_RULES_V1` geregistreerd; iedere eindwaarde verwijst daarnaast
+naar minimaal twee inhoudelijke bronnen. `confidence_score` en `evidence_note`
+maken onderscheid tussen directe classificatie en grovere proxy. Categorie
+`not_applicable` maakt bij niet-holenbroeders expliciet onderscheid tussen
+"niet van toepassing" en onbekend. De gapview aggregeert meerkeuzecategorieën en
+rapporteert alle 1.330 verplichte cellen als `gereed`.
 
 Dashboard, Shiny en website schakelen pas om nadat de inhoudelijke beoordeling,
 groepsafleiding en pariteitscontroles groen zijn. De legacytabellen blijven tot na

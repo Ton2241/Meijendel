@@ -50,3 +50,16 @@
 - Technische voltooiing van fase B is geen toestemming voor fase C: pas na
   inhoudelijke beoordeling van de gapmatrix mogen groepslidmaatschappen worden
   gegenereerd.
+- Voor de inhoudelijke fase-B-aanvulling geldt de vaste bronhiërarchie
+  Nederland > Europa > mondiaal. Het Nederlands Soortenregister en de
+  Vogelbescherming-vogelgids zijn voor alle 95 soorten vastgelegd; Europese en
+  mondiale datasets worden alleen als fallback en inhoudelijke controle gebruikt.
+- Kwalitatieve Nederlandse soortteksten mogen via versiegebonden, vaste klassen
+  worden omgezet naar semikwantitatieve analyseproxies. `approved` betekent hier
+  reproduceerbaar en geschikt voor de fase-C-selectieregel, niet dat een lokaal
+  populatieaandeel rechtstreeks is gemeten. Confidence en afleidingsnotitie zijn
+  daarom verplicht en fase C voert drempelgevoeligheidsanalyses uit.
+- Tegenstrijdige of ecologisch onwaarschijnlijke mondiale coderingen worden niet
+  gemiddeld met Nederlandse informatie. De Nederlandse bron gaat voor; de
+  afwijkende mondiale waarde blijft uitsluitend als herleidbare bronwaarde of
+  controle behouden.

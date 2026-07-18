@@ -2,27 +2,23 @@
 
 ## Nu open
 
-### Functionele vogelgroepen — inhoudelijke afronding fase B
+### Functionele vogelgroepen — fase C
 
-- Beoordeel de 1.330 verplichte soort-traitcellen uit `v_trait_gap_v1`: 433
-  hebben al broninformatie voor context- of inhoudelijke review; voor 897
-  ontbreekt nog een directe bron voor de vereiste doelcontext.
-- Prioriteer eerst de traits die het primaire groepslidmaatschap bepalen:
-  prooi- en foerageeraandelen, grond-/holtebroedaandeel en aandeel lange trek.
-- Gebruik soortspecifieke Nederlandse bronnen, Sovon/Vogelatlas, trekatlassen,
-  handboeken en gedocumenteerde Meijendel-expertkennis. Registreer elke lokale
-  conclusie als afzonderlijke bronwaarde; overschrijf mondiale bronwaarden niet.
-- Beoordeel daarna nesthoogte, foerageermethode/-substraat, winterregio en
-  holtetype/-oorsprong. Leg onzekerheid expliciet vast en laat onbekend `unknown`.
-- Los vóór fase C minimaal `F-Mud`, de zeven afwijkende soortnamen en de dubbele
-  vogeltypering Orpheusspotvogel/Braamsluiper op in de gecontroleerde laag zonder
-  legacy stilzwijgend te overschrijven.
-- Laat het uiteindelijke gaprapport inhoudelijk accorderen. Start fase C pas als
-  de verplichte waarden voldoende zijn voor de vastgestelde minimumgroottes.
+Fase B is afgerond: alle 95 soorten hebben 14 verplichte doeltraits, alle 1.330
+gapcellen staan op `gereed`, geen voorkeurswaarde is nog onbekend en alle 1.505
+eindwaarden hebben herleidbare Nederlandse en fallbackbronnen.
 
-Technisch gereed in fase B: live-driftcontrole, lokale back-up, nieuwe tabellen en
-constraints, 95-soortenscope, drie externe imports met provenance en SHA,
-legacyimport, expliciete unknown-matrix en automatische validatiechecks.
+- Genereer de vijf niet-exclusieve groepslidmaatschappen uit uitsluitend
+  goedgekeurde TR1-voorkeurswaarden.
+- Controleer minimumgroottes en rapporteer per soort de beslisregel, gebruikte
+  waarden, confidence en bronlocators.
+- Voer naast de binaire analyse een gewogen analyse en een gevoeligheidsanalyse
+  rond de drempels uit; besteed extra aandacht aan confidence-2-proxywaarden.
+- Laat de groepslijsten inhoudelijk accorderen voordat dashboard, Shiny of
+  website op de nieuwe laag worden omgeschakeld.
+- Behoud `F-Mud`, de zeven afwijkende soortnamen en de dubbele legacytypering als
+  zichtbare legacykwaliteitsissues; corrigeer ze alleen gecontroleerd en zonder
+  historische data stilzwijgend te herschrijven.
 
 - Archiefmodule afronden: aparte uploadpagina, `.doc`-support, PDF-/documentindexering, full-text search, categoriepagina's, uploadrechten vanaf bestuurslidniveau en duidelijke foutafhandeling.
 - Verifiëren dat archiefdocumenten doorzoekbaar zijn na upload en na herindexering.

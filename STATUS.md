@@ -20,7 +20,7 @@ Gereed:
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
 
-## Functionele vogelgroepen — fase A en technische fase B
+## Functionele vogelgroepen — fase A en B afgerond
 
 Gereed:
 
@@ -42,9 +42,23 @@ Gereed:
 - De legacy-import bevat 1.027 waarden; externe imports bevatten 285 Elton-, 190
   Europese life-history- en 456 nesttraitwaarden. Alle 1.958 bronwaarden zijn aan
   hun bron en importbatch gekoppeld.
-- De 95 × 14 verplichte doelcontexten zijn volledig gematerialiseerd als 1.330
-  expliciete `unknown`-voorkeurswaarden. Dit voorkomt dat mondiale of Europese
-  soortgegevens stilzwijgend als Nederlandse broedpopulatiewaarde gelden.
+- Voor alle 95 soorten zijn de 14 verplichte doeltraits inhoudelijk aangevuld:
+  1.330 van 1.330 soort-traitcellen staan in `v_trait_gap_v1` op `gereed` en er
+  resteert geen geprefereerde `unknown`.
+- Het eindbatch `TR1FINAL_20260718` bevat 1.505 goedgekeurde waarden; het aantal
+  is hoger dan 1.330 doordat substraat, methode, holtetype/-oorsprong en
+  winterregio meerkeuzetraits zijn.
+- Nederlandse bronnen zijn leidend: het Nederlands Soortenregister en de
+  Vogelbescherming-vogelgids dekken elk alle 95 soorten. Europese bronnen zijn
+  fallback, mondiale bronnen alleen laatste fallback en controle. Elke
+  eindwaarde heeft minimaal twee bronkoppelingen en de gebruikte soortpagina of
+  datasetlocator is in de database vastgelegd.
+- De eerder volledig ontbrekende Torenvalk, Tortelduif, Boerenzwaluw, Barmsijs
+  en Goudvink hebben nu eveneens alle 14 verplichte traits.
+- Kwalitatieve Nederlandse beschrijvingen zijn met vaste, gedocumenteerde
+  klassen naar analysewaarden vertaald. Die waarden zijn reproduceerbare
+  proxies, geen gemeten lokale populatiepercentages; onzekerheid staat in
+  `confidence_score` en `evidence_note`.
 - Er zijn nog geen groepslidmaatschappen gegenereerd en dashboard, Shiny en
   website zijn niet omgeschakeld.
 
@@ -70,17 +84,18 @@ Dekking bij de 95 soorten met een bruikbare lange TRIM-reeks:
 - nestplaats: 88 van 95;
 - voedsel volwassen vogels: 87 van 95.
 
-Resterende risico's en inhoudelijke fase B:
+Resterende risico's na fase B:
 
 - Een aanwezige hoofdcategorie betekent niet dat alle voor een groep verplichte
   traits gevuld zijn. Het legacystelsel kan onbekend niet onderscheiden van
   afwezig.
-- De gapview classificeert 897 cellen als `bron_ontbreekt`, 273 als
-  `inhoudelijke_review` en 160 als `contextreview`. Een externe soortwaarde kan
-  richting geven, maar vervangt geen beoordeling voor Nederland/NW-Europa.
-- Vooral nesthoogte (95 soorten), migratiestrategie (95 contextreviews),
-  foerageermethode en lokale prooi-/foerageerpercentages vragen aanvullende
-  bronnen of deskundigenbeoordeling.
+- Semikwantitatieve aandelen en nesthoogteklassen zijn deels afgeleid uit
+  kwalitatieve Nederlandse tekst. Fase C moet daarom naast de vaste drempels een
+  gevoeligheidsanalyse uitvoeren, vooral voor waarden met confidence 2.
+- Mondiale bronnen bevatten aantoonbaar enkele voor Nederlandse toepassing
+  onwaarschijnlijke coderingen. Ze zijn niet blind overgenomen; Nederlandse
+  broninformatie gaat voor en Europese/mondiale waarden blijven als herleidbare
+  fallback of controle gekoppeld.
 - De legacy-afwijkingen `F-Mud`, zeven gedenormaliseerde soortnamen en de gelijke
   typering van Orpheusspotvogel/Braamsluiper zijn behouden en zichtbaar gemaakt;
   legacy is niet stilzwijgend gecorrigeerd.
@@ -88,10 +103,9 @@ Resterende risico's en inhoudelijke fase B:
 
 Aanbevolen volgende stap:
 
-- Rond de inhoudelijke fase-B-review af: behandel eerst de 433 cellen waarvoor
-  al context- of inhoudelijke broninformatie beschikbaar is, zoek daarna gericht
-  bronnen voor de 897 overige cellen en leg per doelcontext `approved` of bewust
-  `unknown` vast. Start fase C pas na deze review.
+- Start fase C: genereer de vijf niet-exclusieve groepslidmaatschappen uit de
+  goedgekeurde TR1-voorkeurswaarden, controleer minimumgroottes en voer binaire,
+  gewogen en drempelgevoeligheidsanalyses uit voordat publicatie plaatsvindt.
 
 ## Dashboard, websitegrafieken en Shiny
 
