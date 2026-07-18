@@ -341,7 +341,7 @@ cd "$REMOTE_SHINY"
 if ! grep -q '/app_cache:rw' docker-compose.yml; then
   perl -0pi -e 's#(      - /srv/vwgm/shiny/shiny_meijendel:/srv/shiny-server/shiny_meijendel:ro\n)#$1      - /srv/vwgm/shiny/shiny_meijendel/app_cache:/srv/shiny-server/shiny_meijendel/app_cache:rw\n#' docker-compose.yml
 fi
-docker compose up -d shiny >/dev/null
+docker compose up -d --force-recreate shiny >/dev/null
 for attempt in $(seq 1 30); do
   if curl -fsSI http://127.0.0.1:3838/ >/dev/null; then
     echo "Shiny gereed na poging $attempt"
