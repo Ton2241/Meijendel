@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 16 juli 2026
+Laatste update: 18 juli 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -19,6 +19,60 @@ Gereed:
 - De lokale canonieke SQL-dump heet `meijendel.sql`.
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
+
+## Functionele vogelgroepen — fase A
+
+Gereed:
+
+- Scope versie 1 is vastgesteld op vijf niet-exclusieve groepen:
+  bodemfoeragerende insecteneters, luchtfoerageerders, grondbroeders,
+  holenbroeders en langeafstandstrekkers.
+- Het bestaande traitstelsel is tegen de canonieke lokale SQL-dump geaudit.
+- Het minimale traitwoordenboek, het doelgegevensmodel en de gecontroleerde
+  migratieroute zijn vastgelegd in `MDs/README_bmp_meijendel_index.md` en
+  `ARCHITECTURE.md`.
+- De audit heeft geen MySQL-, dashboard-, Shiny- of productiegegevens gewijzigd.
+
+Nulmeting van `meijendel.sql`:
+
+- `soorten_kenmerken`: 2.437 relaties, 159 soorten en 546 gebruikte codes;
+- waarden: 2.091 primair (`1`), 346 secundair (`2`), geen incidentele waarde
+  (`3`), terwijl het schema `3` wel toestaat;
+- datadictionary: 559 codes, waarvan 545 actief en 14 ongebruikt;
+- één verweesde code door hoofdletterverschil: `F-Mud`;
+- zeven soorten hebben een verouderde, gedenormaliseerde soortnaam in 86
+  kenmerkrijen;
+- één exact dubbele vogeltypering bij Orpheusspotvogel en Braamsluiper;
+- `soorten_kenmerken_voedsel` bevat 808 afgeleide/overlappende regels zonder
+  foreign keys en is geen geschikte nieuwe hoofdbron.
+
+Dekking bij de 95 soorten met een bruikbare lange TRIM-reeks:
+
+- functionele habitat/foerageren: 90 van 95;
+- voedsel voor jongen: 66 van 95;
+- gedrag/ecologie/levenswijze: 60 van 95;
+- migratie: 76 van 95;
+- nestplaats: 88 van 95;
+- voedsel volwassen vogels: 87 van 95.
+
+Resterende risico's:
+
+- Een aanwezige hoofdcategorie betekent niet dat alle voor een groep verplichte
+  traits gevuld zijn. Het legacystelsel kan onbekend niet onderscheiden van
+  afwezig.
+- De nulmeting is uitgevoerd op de repositorydump. Aan het begin van fase B moet
+  een verse, gevalideerde dump van de lokale levende MySQL-database worden
+  vergeleken om drift uit te sluiten.
+- De legacykandidaten suggereren voldoende omvang voor grondbroeders,
+  holenbroeders en langeafstandstrekkers, maar luchtfoerageerders hebben op basis
+  van de direct herkenbare codes slechts zes soorten met bruikbare trend en zijn
+  voorlopig exploratief.
+
+Aanbevolen volgende stap:
+
+- Voer fase B uit: maak eerst een verse live-databasevergelijking, bouw daarna de
+  nieuwe tabellen naast legacy op en vul de verplichte traits brongebaseerd aan,
+  met prioriteit voor de 95 soorten met bruikbare trend.
 
 ## Dashboard, websitegrafieken en Shiny
 

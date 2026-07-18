@@ -2,6 +2,29 @@
 
 ## Nu open
 
+### Functionele vogelgroepen — fase B
+
+- Maak een verse dump van de lokale levende Meijendel-MySQL-database en herhaal
+  de fase-A-audit; verklaar ieder verschil met de repositorydump voordat wordt
+  gemigreerd.
+- Bouw de nieuwe trait-, bron-, import-, legacy-mapping- en
+  groepsdefinitietabellen naast de bestaande `soorten_kenmerken`-tabellen.
+- Vul eerst de verplichte traits aan voor soorten met een bruikbare TRIM-reeks;
+  ontbrekend blijft `unknown` en wordt niet als afwezigheid geïnterpreteerd.
+- Prioritaire structurele hiaten bij 95 bruikbare soorten: 5 zonder
+  foerageercategorie, 8 zonder adult-voedselcategorie, 7 zonder nestcategorie en
+  19 zonder migratiecategorie. Controleer daarna per soort de inhoudelijke
+  volledigheid van de specifieke verplichte traits.
+- Importeer externe bronnen reproduceerbaar met datasetversie, licentie,
+  taxonomie, bestands-SHA en omzettingsregels; voeg lokale Meijendel-/duinkennis
+  als afzonderlijk onderbouwde waarde toe.
+- Los vóór afleiding van groepen minimaal `F-Mud`, de zeven afwijkende
+  soortnamen en de dubbele vogeltypering Orpheusspotvogel/Braamsluiper op in de
+  nieuwe gecontroleerde laag; overschrijf legacy niet stilzwijgend.
+- Lever na inhoudelijke review een gaprapport op waarin iedere verplichte waarde
+  `approved`, `rejected` of `unknown` is. Start fase C pas als dit rapport groen
+  genoeg is voor de vastgestelde minimumgroottes.
+
 - Archiefmodule afronden: aparte uploadpagina, `.doc`-support, PDF-/documentindexering, full-text search, categoriepagina's, uploadrechten vanaf bestuurslidniveau en duidelijke foutafhandeling.
 - Verifiëren dat archiefdocumenten doorzoekbaar zijn na upload en na herindexering.
 - Archiefupload testen met grote bestanden tot 100 MB.

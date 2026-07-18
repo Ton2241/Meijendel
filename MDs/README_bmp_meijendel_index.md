@@ -102,6 +102,157 @@ Bij `Groepen` > `TRIM` toont het dashboard naast de directe volledige/robuuste M
 
 De standaardperiode voor de groepengrafieken is `1990-2025`. De gebruiker kan deze periode in het dashboard blijven aanpassen.
 
+## Functionele vogelgroepen — fase A
+
+Status: vastgesteld op 18 juli 2026. Deze fase beschrijft scope, nulmeting,
+traitwoordenboek, doelmodel en migratie. Er zijn nog geen functionele groepen aan
+het dashboard toegevoegd en er zijn geen databasewaarden gewijzigd.
+
+### Versie 1 en algemene beslisregels
+
+De eerste versie bevat vijf aanvullende groepen:
+
+| Groep-ID | Titel | Primair | Secundair | Belangrijkste uitsluiting |
+|---|---|---|---|---|
+| `fg_v1_bodem_insect` | Bodemfoeragerende insecteneters | minimaal 50% terrestrische ongewervelden én minimaal 50% bodem/strooisel/lage vegetatie | beide minimaal 25% of ordinaal minimaal substantieel | aquatische prooien, incidenteel bodemgebruik of overwegend ander voedsel |
+| `fg_v1_lucht` | Luchtfoerageerders | minimaal 50% vliegende prooien én minimaal 50% actieve luchtvangst | minimaal 25% ecologisch belangrijke luchtvangst | prooi van blad, bodem of water nemen; alleen zoekvlucht |
+| `fg_v1_grondbroed` | Grondbroeders | dominante nestplaats op/direct aan bodem of in vegetatie tot circa 25 cm | substantieel grondnestgebruik in Nederland/Meijendel | ondergrondse holen, struik-, boom- of constructienest als dominante strategie |
+| `fg_v1_holenbroed` | Holenbroeders | omsloten holte is normale/dominante nestplaats | regelmatig maar niet dominant holtegebruik | halfopen nis, richel of incidenteel holtegebruik |
+| `fg_v1_lange_trek` | Langeafstandstrekkers | meer dan 50% Nederlandse broedpopulatie intercontinentaal of bezuiden Sahara | 25–50% of onderbouwde gedeeltelijke langeafstandstrek | stand-, korte- en middellangeafstandstrek |
+
+Soorten mogen in meerdere groepen en subgroepen voorkomen. Primair krijgt in de
+gewogen gevoeligheidsanalyse `1,0`, secundair `0,5`; daarnaast wordt altijd een
+binaire analyse uitgevoerd. Incidenteel gebruik telt niet mee. `NULL` betekent
+onbekend en mag nooit naar `0` worden omgezet.
+
+Publicatiestatus op basis van soorten met een bruikbare trend:
+
+| Aantal | Status |
+|---:|---|
+| minder dan 5 | geen groepsindicator |
+| 5–9 | uitsluitend exploratief |
+| 10–19 | bruikbaar met nadrukkelijke onzekerheidsanalyse |
+| 20 of meer | in beginsel geschikt als robuuste hoofdgroep |
+
+### Minimaal traitwoordenboek `TR1`
+
+Nieuwe codes gebruiken `TR1_*`. Zij vervangen of hernoemen bestaande `F`, `J`,
+`K`, `M`, `N` of `V` niet.
+
+| Traitcode | Datatype | Eenheid/categorie | Context | Gebruik |
+|---|---|---|---|---|
+| `TR1_DIET_TERRESTRIAL_INVERT_SHARE` | decimal | 0–1 | adult, broedseizoen, NL/NW-Europa | verplicht bodem-insect |
+| `TR1_DIET_FLYING_PREY_SHARE` | decimal | 0–1 | adult, broedseizoen, NL/NW-Europa | verplicht lucht |
+| `TR1_FORAGE_GROUND_LOW_SHARE` | decimal | 0–1 | broedseizoen | verplicht bodem-insect |
+| `TR1_FORAGE_AERIAL_CAPTURE_SHARE` | decimal | 0–1 | broedseizoen | verplicht lucht |
+| `TR1_FORAGE_SUBSTRATE` | multi-category | bodem, strooisel, lage vegetatie, struik, boom, water, lucht | broedseizoen | onderbouwing voedselgroepen |
+| `TR1_FORAGE_METHOD` | multi-category | grondpikken, strooiselzoeken, sonderen, uitvaljacht, continue luchtjacht, overige | broedseizoen | onderbouwing voedselgroepen |
+| `TR1_NEST_GROUND_SHARE` | decimal | 0–1 | Nederlandse broedpopulatie | verplicht grondbroed |
+| `TR1_NEST_HEIGHT_M` | decimal | meter | Nederlandse broedpopulatie | grenscontrole grondbroed |
+| `TR1_NEST_CAVITY_SHARE` | decimal | 0–1 | Nederlandse broedpopulatie | verplicht holenbroed |
+| `TR1_NEST_CAVITY_TYPE` | multi-category | boom, bodem/konijn, nestkast, gebouw/constructie | Nederlandse broedpopulatie | subgroepen holenbroed |
+| `TR1_NEST_CAVITY_ORIGIN` | multi-category | zelf uitgehakt, natuurlijk, bestaand spechtenhol, kunstmatig | Nederlandse broedpopulatie | subgroepen holenbroed |
+| `TR1_MIG_LONG_DISTANCE_SHARE` | decimal | 0–1 | Nederlandse/NW-Europese broedpopulatie | verplicht lange trek |
+| `TR1_MIG_WINTER_REGION` | multi-category | Europa, Noord-Afrika/Middellandse Zee, Sahel, Afrika bezuiden Sahara, overig | populatiegebonden | onderbouwing lange trek |
+| `TR1_MIG_STRATEGY` | category | stand, gedeeltelijk, kort/middel, lang, onbekend | populatiegebonden | controle lange trek |
+
+Wanneer een bron alleen `dominant`, `substantieel` of `incidenteel` levert, wordt
+geen kunstmatig percentage ingevuld. De ordinale bronwaarde wordt apart bewaard;
+groepsafleiding gebruikt dan de in de definitieversie vastgelegde ordinale regel.
+
+### Audit van de bestaande kenmerken
+
+De nulmeting gebruikt `meijendel.sql`, de bestaande parser in
+`shiny_meijendel/helpers.R` en
+`trim/soorten/soorten_bruikbare_tijdreeks_selectie.csv`.
+
+| Controle | Uitkomst |
+|---|---:|
+| kenmerkrelaties | 2.437 |
+| soorten met minimaal één kenmerk | 159 |
+| gebruikte codes | 546 |
+| primaire waarden (`1`) | 2.091 |
+| secundaire waarden (`2`) | 346 |
+| incidentele waarden (`3`) | 0 |
+| actieve dictionarycodes | 545 |
+| ongebruikte dictionarycodes | 14 |
+| dubbele soort/categorie/code-sleutels | 0 |
+| ontbrekende Nederlandse dictionarylabels | 0 |
+| ongeldige parentcodes | 0 |
+| verweesde codes | 1: `F-Mud` |
+
+De denormaliseerde kolom `soortnaam` wijkt bij zeven soorten af van de actuele
+stamnaam: Europese Oehoe, Sprinkhaanrietzanger, Baardmannetje, Eidereend,
+Europese Zeearend, Gewone Fazant en Europese Kraanvogel. Dit raakt 86 rijen; de
+`soort_id`-koppeling blijft leidend. Orpheusspotvogel en Braamsluiper hebben exact
+dezelfde vogeltypering, wat inhoudelijk moet worden herbeoordeeld.
+
+#### Hiaten bij soorten met bruikbare trend
+
+| Domein | Gevuld | Ontbrekend |
+|---|---:|---:|
+| functionele habitat en foerageerwijze | 90/95 | 5 |
+| voedsel volwassenen | 87/95 | 8 |
+| nestplaats en nestbouw | 88/95 | 7 |
+| migratie | 76/95 | 19 |
+| voedsel jongen | 66/95 | 29 |
+| gedrag, ecologie en levenswijze | 60/95 | 35 |
+
+Soorten zonder enig functioneel habitat/foerageerkenmerk zijn Torenvalk,
+Tortelduif, Boerenzwaluw, Barmsijs en Goudvink. Dezelfde vijf missen alle
+legacytraits. De hiaten in de voor versie 1 direct relevante legacydomeinen zijn:
+
+- foerageerhabitat/-methode (`F`): Torenvalk, Tortelduif, Boerenzwaluw,
+  Barmsijs en Goudvink;
+- voedsel volwassen vogels (`V`): dezelfde vijf, plus Stormmeeuw, Ransuil en
+  Kuifmees;
+- nestplaats (`N`): dezelfde vijf, plus Turkse Tortel en Koekoek;
+- trek (`M`): Torenvalk, Houtsnip, Stormmeeuw, Holenduif, Tortelduif,
+  Ransuil, Kleine Bonte Specht, Boomleeuwerik, Boerenzwaluw, Boompieper,
+  Paapje, Tapuit, Grauwe Vliegenvanger, Bonte Vliegenvanger, Kuifmees,
+  Zwarte Mees, Wielewaal, Barmsijs en Goudvink.
+
+Dit is alleen een domeindekkingscontrole. Eén bestaande code binnen een domein
+bewijst nog niet dat alle benodigde `TR1_*`-traits voor die soort zijn
+beoordeeld. Fase B maakt daarom eerst een volledige soort-traitmatrix: elke cel
+krijgt een onderbouwde waarde of blijft expliciet `NULL` (onbekend). Een
+ontbrekende rij of `NULL` mag nooit als afwezig of nul worden geïnterpreteerd.
+De lijsten worden bij de verse fase-B-audit opnieuw uit de levende database
+gegenereerd.
+
+De fase-A-codes leveren slechts een indicatie van haalbaarheid: direct herkenbare
+legacycodes geven 54 bruikbare kandidaten voor bodemfoerageren, 6 voor
+luchtfoerageren, 34 voor grondbroeden, 32 voor holenbroeden en 24 voor
+langeafstandstrek. Dit zijn geen goedgekeurde groepslijsten, omdat proporties,
+context en echte onbekenden nog ontbreken.
+
+### Gecontroleerde migratie naar de nieuwe traitlaag
+
+1. Maak aan het begin van fase B een verse dump van de levende lokale
+   Meijendel-database en herhaal de nulmeting.
+2. Maak de nieuwe trait-, bron-, import- en groepstabellen naast legacy; wijzig
+   bestaande tabellen nog niet.
+3. Registreer alle `TR1`-definities, categorieën en bronmetadata met versie.
+4. Vertaal legacycodes alleen via `legacy_trait_mapping`. Niet-eenduidige codes
+   krijgen `needs_review`; `F-Mud` en naamafwijkingen worden niet stilzwijgend
+   gecorrigeerd.
+5. Migreer legacywaarden als `legacy_unvalidated`, zonder ze als voorkeurswaarde
+   voor publicatie te markeren.
+6. Importeer externe basisdata reproduceerbaar en bewaar originele waarde,
+   taxonomie, omzettingsregel, licentie en bestands-SHA.
+7. Vul ontbrekende verplichte traits aan en laat conflicten/lokale afwijkingen
+   inhoudelijk beoordelen.
+8. Ken per soort/trait/context exact één goedgekeurde voorkeurswaarde toe of leg
+   expliciet `unknown` vast.
+9. Genereer de vijf groepslijsten uitsluitend uit de vastgelegde regels en voer
+   binaire, gewogen en leave-one-species-outcontroles uit.
+10. Schakel dashboard en Shiny pas om na inhoudelijke goedkeuring en groene
+    pariteit; verwijder legacy niet in dezelfde release.
+
+Fase B is daarmee de fase waarin ontbrekende broedvogelkenmerken daadwerkelijk
+worden aangevuld. Fase A maakt de hiaten zichtbaar en bepaalt wat als voldoende,
+onvoldoende of onbekend geldt.
+
 ## Relatie met publieke soortpagina's
 
 Status 2026-06-30:
