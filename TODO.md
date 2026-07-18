@@ -2,7 +2,7 @@
 
 ## Nu open
 
-### Functionele vogelgroepen — fase D afgerond
+### Functionele vogelgroepen — fase E afgerond
 
 Fase C is technisch afgerond: 475 classificaties, binaire en gewogen
 lidmaatschappen, soortgebonden rationale/provenance, strikte en inclusieve
@@ -14,8 +14,9 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   bodem-insectengroep altijd de drempelgevoeligheid.
 - Voer bij iedere wijziging van traits, groepsregels of TRIM-soortselectie de
   binaire, gewogen, leave-one-species-out- en beide paritychecks opnieuw uit.
-- Productiedeploy en release-registratie zijn nog niet uitgevoerd; doe dit pas
-  op expliciet verzoek via de verplichte deploy-preflight.
+- De productiepublicatie is uitgevoerd via de verplichte Meijendel- en
+  VWG_M-preflights; vervolgwijzigingen blijven dezelfde release- en
+  paritycontroles doorlopen.
 - Behoud `F-Mud`, de zeven afwijkende soortnamen en de dubbele legacytypering als
   zichtbare legacykwaliteitsissues; corrigeer ze alleen gecontroleerd en zonder
   historische data stilzwijgend te herschrijven.

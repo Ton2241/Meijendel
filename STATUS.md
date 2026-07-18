@@ -20,7 +20,7 @@ Gereed:
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
 
-## Functionele vogelgroepen — fase A tot en met D afgerond
+## Functionele vogelgroepen — fase A tot en met E afgerond
 
 Gereed:
 
@@ -70,8 +70,10 @@ Gereed:
   soortniveau en `v_functional_group_summary_v1` voor omvang, gewicht,
   gevoeligheid en publicatiestatus.
 - De groepslijsten zijn inhoudelijk geaccordeerd. Dashboard en Shiny tonen de
-  vijf functionele groepen naast legacy; website-output en lokale VWG_M-code
-  bevatten dezelfde nieuwe categorie. Productie is nog niet gedeployd.
+  vijf functionele groepen naast legacy; website-output en VWG_M bevatten
+  dezelfde nieuwe categorie. Fase E heeft deze samenhangende release op
+  productie gepubliceerd en met rooktests en een visuele browsercontrole
+  gevalideerd.
 - `R/trim_soorten_en_msi_evg.R` maakt binair/gewogen × volledig/robuust,
   samenstelling, trendoverzicht en leave-one-species-out-trendgevoeligheid.
 - De lokale uitvoer bevat 1.356 functionele MSI-rijen. Shiny/dashboard-pariteit
@@ -125,8 +127,8 @@ Vervolgbeheer:
 - Houd de luchtgroep uitsluitend exploratief en toon bij bodem-insecteneters de
   drempelwaarschuwing. Herhaal na iedere bron-, trait-, regel- of
   soortselectiewijziging alle analyses en paritychecks.
-- Productiedeploy en centrale release-registratie volgen alleen op expliciet
-  verzoek via de verplichte deploy-preflight.
+- Volgende productiedeploys en centrale release-registraties blijven uitsluitend
+  via de verplichte deploy-preflight en het projectbrede release-manifest lopen.
 
 ## Dashboard, websitegrafieken en Shiny
 
