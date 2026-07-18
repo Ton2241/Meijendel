@@ -249,9 +249,55 @@ context en echte onbekenden nog ontbreken.
 10. Schakel dashboard en Shiny pas om na inhoudelijke goedkeuring en groene
     pariteit; verwijder legacy niet in dezelfde release.
 
-Fase B is daarmee de fase waarin ontbrekende broedvogelkenmerken daadwerkelijk
-worden aangevuld. Fase A maakt de hiaten zichtbaar en bepaalt wat als voldoende,
-onvoldoende of onbekend geldt.
+Fase B is daarmee de fase waarin ontbrekende broedvogelkenmerken technisch worden
+gematerialiseerd en vervolgens inhoudelijk worden aangevuld. Fase A maakt de
+hiaten zichtbaar en bepaalt wat als voldoende, onvoldoende of onbekend geldt.
+
+### Uitvoering technische fase B — 18 juli 2026
+
+De levende lokale MySQL-database is eerst vergeleken met de repositorydump. De
+relevante legacytabellen waren inhoudelijk rij voor rij gelijk; alleen de
+weergave van timestamps verschilde door de tijdzone. Voor de migratie is een
+volledige tijdelijke back-up gemaakt.
+
+Naast legacy zijn twaalf genormaliseerde tabellen en de view `v_trait_gap_v1`
+gebouwd. `TR1` bevat 22 definities: 14 verplichte doeltraits en acht
+ondersteunende brontraits. De analysescope `TRIM_BRUIKBAAR_V1` bevat exact 95
+soorten. De vijf groepsdefinities zijn geregistreerd, maar
+`functional_group_membership` is bewust nog leeg.
+
+Geïmporteerde bronnen:
+
+| Bron | Context | Bestand-SHA-256 | Waarden voor scope |
+|---|---|---|---:|
+| legacy `soorten_kenmerken` | lokaal, context grotendeels onbekend; `legacy_unvalidated` | databasebatch | 1.027 |
+| EltonTraits 1.0, DOI `10.6084/m9.figshare.3559887.v1` | mondiaal, semikwantitatief dieet en foerageerstratum | `97216eb1797da077169ebb1ebea275db293b09fc62f8bb8911f9beb98c50d321` | 285 |
+| European bird life-history data, DOI `10.5061/dryad.n6k3n` | Europees, soortniveau migratie | `d9ea735c3dba886fe2bc0a9cdaf00662232efcb19a7fb717a02864047357bba5` | 190 |
+| Global Nest Traits v2, DOI `10.5281/zenodo.10128906` | mondiaal, binaire nestkenmerken | `f267ed323fa55abac78a380e0efd581a7d6c5f917c06ae9049aeaac037566ec7` | 456 |
+
+De bronmetadata bevat versie, DOI/URL, licentie, raadpleegdatum, bestands-SHA en
+importregel. Voor elke externe dataset zijn alle 95 brontaxa expliciet aan een
+Meijendel-soort gekoppeld. Daarbij worden synoniemen zichtbaar bewaard. Voor de
+European bird life-history data gebruikt de import de oorspronkelijke velden
+`Genus` en `Species`; het meegeleverde veld `scientificNameStd` bevat ten minste
+de foutieve omzetting `Muscicapa striata` naar `Muscicapa atrata`.
+
+Globale en Europese soortwaarden zijn niet als lokale populatiewaarde gebruikt.
+Voor alle 95 × 14 verplichte Nederlandse/NW-Europese doelcontexten is daarom een
+expliciete voorkeurswaarde met status `unknown` vastgelegd. De gapview verdeelt
+de 1.330 cellen als volgt:
+
+| Vervolgstatus | Aantal |
+|---|---:|
+| `bron_ontbreekt` | 897 |
+| `inhoudelijke_review` | 273 |
+| `contextreview` | 160 |
+
+De technische fase B is hiermee reproduceerbaar afgerond. De inhoudelijke fase B
+blijft open: broninformatie moet per Nederlandse/NW-Europese broedpopulatie
+worden beoordeeld, waar nodig aangevuld en vervolgens als `approved` of bewust
+`unknown` worden vastgelegd. Tot die beoordeling gereed is, start fase C niet en
+worden geen functionele groepslijsten gepubliceerd.
 
 ## Relatie met publieke soortpagina's
 

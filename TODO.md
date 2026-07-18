@@ -2,28 +2,27 @@
 
 ## Nu open
 
-### Functionele vogelgroepen — fase B
+### Functionele vogelgroepen — inhoudelijke afronding fase B
 
-- Maak een verse dump van de lokale levende Meijendel-MySQL-database en herhaal
-  de fase-A-audit; verklaar ieder verschil met de repositorydump voordat wordt
-  gemigreerd.
-- Bouw de nieuwe trait-, bron-, import-, legacy-mapping- en
-  groepsdefinitietabellen naast de bestaande `soorten_kenmerken`-tabellen.
-- Vul eerst de verplichte traits aan voor soorten met een bruikbare TRIM-reeks;
-  ontbrekend blijft `unknown` en wordt niet als afwezigheid geïnterpreteerd.
-- Prioritaire structurele hiaten bij 95 bruikbare soorten: 5 zonder
-  foerageercategorie, 8 zonder adult-voedselcategorie, 7 zonder nestcategorie en
-  19 zonder migratiecategorie. Controleer daarna per soort de inhoudelijke
-  volledigheid van de specifieke verplichte traits.
-- Importeer externe bronnen reproduceerbaar met datasetversie, licentie,
-  taxonomie, bestands-SHA en omzettingsregels; voeg lokale Meijendel-/duinkennis
-  als afzonderlijk onderbouwde waarde toe.
-- Los vóór afleiding van groepen minimaal `F-Mud`, de zeven afwijkende
-  soortnamen en de dubbele vogeltypering Orpheusspotvogel/Braamsluiper op in de
-  nieuwe gecontroleerde laag; overschrijf legacy niet stilzwijgend.
-- Lever na inhoudelijke review een gaprapport op waarin iedere verplichte waarde
-  `approved`, `rejected` of `unknown` is. Start fase C pas als dit rapport groen
-  genoeg is voor de vastgestelde minimumgroottes.
+- Beoordeel de 1.330 verplichte soort-traitcellen uit `v_trait_gap_v1`: 433
+  hebben al broninformatie voor context- of inhoudelijke review; voor 897
+  ontbreekt nog een directe bron voor de vereiste doelcontext.
+- Prioriteer eerst de traits die het primaire groepslidmaatschap bepalen:
+  prooi- en foerageeraandelen, grond-/holtebroedaandeel en aandeel lange trek.
+- Gebruik soortspecifieke Nederlandse bronnen, Sovon/Vogelatlas, trekatlassen,
+  handboeken en gedocumenteerde Meijendel-expertkennis. Registreer elke lokale
+  conclusie als afzonderlijke bronwaarde; overschrijf mondiale bronwaarden niet.
+- Beoordeel daarna nesthoogte, foerageermethode/-substraat, winterregio en
+  holtetype/-oorsprong. Leg onzekerheid expliciet vast en laat onbekend `unknown`.
+- Los vóór fase C minimaal `F-Mud`, de zeven afwijkende soortnamen en de dubbele
+  vogeltypering Orpheusspotvogel/Braamsluiper op in de gecontroleerde laag zonder
+  legacy stilzwijgend te overschrijven.
+- Laat het uiteindelijke gaprapport inhoudelijk accorderen. Start fase C pas als
+  de verplichte waarden voldoende zijn voor de vastgestelde minimumgroottes.
+
+Technisch gereed in fase B: live-driftcontrole, lokale back-up, nieuwe tabellen en
+constraints, 95-soortenscope, drie externe imports met provenance en SHA,
+legacyimport, expliciete unknown-matrix en automatische validatiechecks.
 
 - Archiefmodule afronden: aparte uploadpagina, `.doc`-support, PDF-/documentindexering, full-text search, categoriepagina's, uploadrechten vanaf bestuurslidniveau en duidelijke foutafhandeling.
 - Verifiëren dat archiefdocumenten doorzoekbaar zijn na upload en na herindexering.

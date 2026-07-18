@@ -37,7 +37,7 @@ De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en
 legacybron. Hun codes worden niet hernoemd: bestaand `F` betekent functionele
 habitat/foerageerwijze en bestaand `V` betekent voedsel van volwassen vogels.
 
-De doelarchitectuur voor de nieuwe traitlaag bestaat uit de volgende onderdelen:
+De in fase B geïmplementeerde traitlaag bestaat uit de volgende onderdelen:
 
 - `trait_definition`: versieerbare definitie, domein, datatype, eenheid,
   levensfase en standaardseizoen van één trait;
@@ -46,6 +46,9 @@ De doelarchitectuur voor de nieuwe traitlaag bestaat uit de volgende onderdelen:
   raadpleegdatum;
 - `trait_import_batch`: reproduceerbare import met bronversie, bestands-SHA en
   gebruikte taxonomie;
+- `trait_taxon_mapping`: expliciete koppeling tussen bronnaam en Meijendel-soort;
+- `trait_analysis_scope` en `trait_analysis_scope_species`: versieerbare
+  afbakening van de 95 soorten met een bruikbare TRIM-reeks;
 - `species_trait_value`: één soortwaarde met afzonderlijke velden voor numeriek,
   boolean of categorie, plus seizoen, levensfase, geografische/populatiecontext,
   kwaliteitsstatus en voorkeursstatus;
@@ -56,10 +59,13 @@ De doelarchitectuur voor de nieuwe traitlaag bestaat uit de volgende onderdelen:
   machineleesbare selectieregel van een afgeleide groep;
 - `functional_group_membership`: reproduceerbare materialisatie per
   groepsversie met binair lidmaatschap, gewicht, onderbouwing en generatiecommit.
+- `v_trait_gap_v1`: controleweergave voor alle 95 × 14 verplichte
+  soort-traitcombinaties en de benodigde vervolgactie.
 
 Belangrijke constraints:
 
-- precies één waardetype per `species_trait_value`;
+- precies één waardetype per niet-onbekende `species_trait_value`; een expliciete
+  `unknown` heeft juist geen numerieke, boolean- of categoriewaarde;
 - onbekend is `NULL` met status `unknown`, nooit automatisch `FALSE` of `0`;
 - proporties liggen tussen 0 en 1;
 - maximaal één voorkeurswaarde per soort, trait, levensfase, seizoen en context
@@ -71,9 +77,17 @@ Belangrijke constraints:
 - afgeleide groepen lezen uitsluitend goedgekeurde voorkeurswaarden van een
   vastgelegde traitversie.
 
-De nieuwe tabellen worden in fase B naast de legacytabellen opgebouwd. Dashboard,
-Shiny en website schakelen pas om nadat migratie-, groeps- en pariteitscontroles
-groen zijn. De legacytabellen blijven tot na die omschakeling read-only beschikbaar.
+De nieuwe tabellen staan sinds fase B naast de ongewijzigde legacytabellen. Naast
+de 14 verplichte doeltraits bevat `TR1` acht ondersteunende brontraits waarmee
+globale binaire of semikwantitatieve gegevens zonder schijnprecisie worden
+opgeslagen. Externe waarden behouden hun globale of Europese context en worden
+niet als Nederlandse broedpopulatiewaarde aangewezen. Voor alle verplichte
+doelcontexten is daarom een expliciete voorkeurswaarde `unknown` aangemaakt totdat
+een inhoudelijke beoordeling een lokale waarde kan goedkeuren.
+
+Dashboard, Shiny en website schakelen pas om nadat de inhoudelijke beoordeling,
+groepsafleiding en pariteitscontroles groen zijn. De legacytabellen blijven tot na
+die omschakeling read-only beschikbaar.
 
 ## Grafieken
 

@@ -20,7 +20,7 @@ Gereed:
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
 
-## Functionele vogelgroepen — fase A
+## Functionele vogelgroepen — fase A en technische fase B
 
 Gereed:
 
@@ -32,6 +32,21 @@ Gereed:
   migratieroute zijn vastgelegd in `MDs/README_bmp_meijendel_index.md` en
   `ARCHITECTURE.md`.
 - De audit heeft geen MySQL-, dashboard-, Shiny- of productiegegevens gewijzigd.
+- De levende lokale database bleek inhoudelijk gelijk aan de fase-A-dump voor de
+  relevante legacytabellen; alleen tijdzoneweergave van timestamps verschilde.
+- De nieuwe traitlaag, bronregistratie, taxonomische mappings, analysescope,
+  groepsdefinities en gapview zijn naast legacy in de lokale MySQL-database gebouwd.
+- Drie externe datasets zijn reproduceerbaar geïmporteerd: EltonTraits 1.0,
+  European bird life-history data en Global Nest Traits v2. Alle drie hebben voor
+  de 95 scopesoorten een expliciet goedgekeurde taxonomische koppeling.
+- De legacy-import bevat 1.027 waarden; externe imports bevatten 285 Elton-, 190
+  Europese life-history- en 456 nesttraitwaarden. Alle 1.958 bronwaarden zijn aan
+  hun bron en importbatch gekoppeld.
+- De 95 × 14 verplichte doelcontexten zijn volledig gematerialiseerd als 1.330
+  expliciete `unknown`-voorkeurswaarden. Dit voorkomt dat mondiale of Europese
+  soortgegevens stilzwijgend als Nederlandse broedpopulatiewaarde gelden.
+- Er zijn nog geen groepslidmaatschappen gegenereerd en dashboard, Shiny en
+  website zijn niet omgeschakeld.
 
 Nulmeting van `meijendel.sql`:
 
@@ -55,24 +70,28 @@ Dekking bij de 95 soorten met een bruikbare lange TRIM-reeks:
 - nestplaats: 88 van 95;
 - voedsel volwassen vogels: 87 van 95.
 
-Resterende risico's:
+Resterende risico's en inhoudelijke fase B:
 
 - Een aanwezige hoofdcategorie betekent niet dat alle voor een groep verplichte
   traits gevuld zijn. Het legacystelsel kan onbekend niet onderscheiden van
   afwezig.
-- De nulmeting is uitgevoerd op de repositorydump. Aan het begin van fase B moet
-  een verse, gevalideerde dump van de lokale levende MySQL-database worden
-  vergeleken om drift uit te sluiten.
-- De legacykandidaten suggereren voldoende omvang voor grondbroeders,
-  holenbroeders en langeafstandstrekkers, maar luchtfoerageerders hebben op basis
-  van de direct herkenbare codes slechts zes soorten met bruikbare trend en zijn
-  voorlopig exploratief.
+- De gapview classificeert 897 cellen als `bron_ontbreekt`, 273 als
+  `inhoudelijke_review` en 160 als `contextreview`. Een externe soortwaarde kan
+  richting geven, maar vervangt geen beoordeling voor Nederland/NW-Europa.
+- Vooral nesthoogte (95 soorten), migratiestrategie (95 contextreviews),
+  foerageermethode en lokale prooi-/foerageerpercentages vragen aanvullende
+  bronnen of deskundigenbeoordeling.
+- De legacy-afwijkingen `F-Mud`, zeven gedenormaliseerde soortnamen en de gelijke
+  typering van Orpheusspotvogel/Braamsluiper zijn behouden en zichtbaar gemaakt;
+  legacy is niet stilzwijgend gecorrigeerd.
+- De voorlopige legacykandidaten zijn nog geen goedgekeurde groepslijsten.
 
 Aanbevolen volgende stap:
 
-- Voer fase B uit: maak eerst een verse live-databasevergelijking, bouw daarna de
-  nieuwe tabellen naast legacy op en vul de verplichte traits brongebaseerd aan,
-  met prioriteit voor de 95 soorten met bruikbare trend.
+- Rond de inhoudelijke fase-B-review af: behandel eerst de 433 cellen waarvoor
+  al context- of inhoudelijke broninformatie beschikbaar is, zoek daarna gericht
+  bronnen voor de 897 overige cellen en leg per doelcontext `approved` of bewust
+  `unknown` vast. Start fase C pas na deze review.
 
 ## Dashboard, websitegrafieken en Shiny
 

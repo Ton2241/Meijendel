@@ -419,10 +419,10 @@ LIMIT 10;
 
 
 -- ============================================================================
--- EINDRAPPORT GENEREREN
+-- BASISRAPPORT GENEREREN
 -- ============================================================================
 
-SELECT '=== VALIDATIE AFGEROND ===' as status;
+SELECT '=== BASISVALIDATIE AFGEROND; TR1-CONTROLES VOLGEN ===' as status;
 -- Stap 35: Leest gegevens uit één of meer tabellen.
 
 SELECT 
@@ -430,6 +430,115 @@ SELECT
   NOW() as timestamp;
 -- Stap 36: Uitvoering van een SQL‑statement.
 
+
+-- Sectie 10: FUNCTIONELE TRAITLAAG (TR1)
+-- ============================================================================
+
+SELECT '=== FUNCTIONELE TRAITLAAG TR1 ===' as checkpoint;
+
+SELECT
+  'TR1-definities en vijf groepsdefinities aanwezig' as check_naam,
+  CASE
+    WHEN (SELECT COUNT(*) FROM trait_definition WHERE trait_version = 'TR1') = 22
+     AND (SELECT COUNT(*) FROM trait_definition WHERE trait_version = 'TR1' AND verplicht_v1 = 1) = 14
+     AND (SELECT COUNT(*) FROM functional_group_definition WHERE group_version = 'v1') = 5
+    THEN 0 ELSE 1
+  END as aantal_problemen,
+  CASE
+    WHEN (SELECT COUNT(*) FROM trait_definition WHERE trait_version = 'TR1') = 22
+     AND (SELECT COUNT(*) FROM trait_definition WHERE trait_version = 'TR1' AND verplicht_v1 = 1) = 14
+     AND (SELECT COUNT(*) FROM functional_group_definition WHERE group_version = 'v1') = 5
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status;
+
+SELECT
+  'Fase-B-scope bevat exact 95 bruikbare trendsoorten' as check_naam,
+  ABS(95 - COUNT(*)) as aantal_problemen,
+  CASE WHEN COUNT(*) = 95 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM trait_analysis_scope_species tass
+JOIN trait_analysis_scope tas ON tas.id = tass.scope_id
+WHERE tas.scope_code = 'TRIM_BRUIKBAAR_V1';
+
+SELECT
+  'Vier importbatches aanwezig met kloppende aantallen' as check_naam,
+  ABS(4 - COUNT(*))
+    + SUM(CASE WHEN werkelijk <> geimporteerde_waarden THEN 1 ELSE 0 END) as aantal_problemen,
+  CASE
+    WHEN COUNT(*) = 4
+     AND SUM(CASE WHEN werkelijk <> geimporteerde_waarden THEN 1 ELSE 0 END) = 0
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status
+FROM (
+  SELECT tib.id, tib.geimporteerde_waarden, COUNT(stv.id) as werkelijk
+  FROM trait_import_batch tib
+  LEFT JOIN species_trait_value stv ON stv.import_batch_id = tib.id
+  GROUP BY tib.id, tib.geimporteerde_waarden
+) batches;
+
+SELECT
+  'Bronwaarden zonder gekoppelde bron' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM species_trait_value stv
+LEFT JOIN species_trait_value_source stvs ON stvs.species_trait_value_id = stv.id
+WHERE stv.import_batch_id IS NOT NULL
+  AND stvs.species_trait_value_id IS NULL;
+
+SELECT
+  'Categorie hoort niet bij de traitdefinitie' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM species_trait_value stv
+JOIN trait_category tc ON tc.id = stv.category_id
+WHERE tc.trait_id <> stv.trait_id;
+
+SELECT
+  'Voorkeurswaarde heeft ongeldige kwaliteitsstatus' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM species_trait_value
+WHERE is_preferred = 1
+  AND quality_status NOT IN ('approved', 'unknown');
+
+SELECT
+  'TR1-gapmatrix mist verplichte soort-traitcombinaties' as check_naam,
+  ABS((95 * 14) - COUNT(*)) as aantal_problemen,
+  CASE WHEN COUNT(*) = (95 * 14) THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM v_trait_gap_v1;
+
+SELECT
+  'Taxonomische koppelingen per externe bron zijn niet volledig' as check_naam,
+  ABS(3 - COUNT(*))
+    + SUM(CASE WHEN gekoppeld <> 95 THEN ABS(95 - gekoppeld) ELSE 0 END) as aantal_problemen,
+  CASE
+    WHEN COUNT(*) = 3 AND MIN(gekoppeld) = 95 AND MAX(gekoppeld) = 95
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status
+FROM (
+  SELECT ts.source_code, COUNT(*) gekoppeld
+  FROM trait_taxon_mapping ttm
+  JOIN trait_source ts ON ts.id = ttm.source_id
+  WHERE ts.source_code IN ('ELTONTRAITS_1', 'EU_BIRD_LIFE_HISTORY_2018', 'GLOBAL_NEST_TRAITS_V2')
+    AND ttm.status = 'approved'
+  GROUP BY ts.source_code
+) bron;
+
+SELECT
+  vervolgstatus,
+  COUNT(*) as aantal_soort_traitcombinaties
+FROM v_trait_gap_v1
+GROUP BY vervolgstatus
+ORDER BY vervolgstatus;
+
+SELECT
+  trait_code,
+  vervolgstatus,
+  COUNT(*) as aantal_soorten
+FROM v_trait_gap_v1
+GROUP BY trait_code, vervolgstatus
+ORDER BY trait_code, vervolgstatus;
+
+SELECT '=== VOLLEDIGE VALIDATIE INCLUSIEF TR1 AFGEROND ===' as status;
 
 -- Bewaar dit rapport:
 -- mysql -u root -p Meijendel < validatie.sql > validatie_rapport_$(date +%Y%m%d_%H%M%S).txt

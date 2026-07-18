@@ -36,3 +36,17 @@
 - De huidige kenmerkdata gelden voor migratie als `legacy_ongevalideerd` zolang bron, context en inhoudelijke controle ontbreken. Afwezigheid van een rij betekent niet dat een eigenschap afwezig is.
 - Aanvullen van ontbrekende soortkenmerken hoort bij fase B. Fase A registreert de hiaten; fase C mag een groep pas afleiden nadat alle verplichte traits zijn aangevuld of expliciet als onbekend zijn beoordeeld.
 - De migratie bouwt een nieuwe traitlaag naast de bestaande tabellen. Bestaande lezers schakelen pas om na inhoudelijke goedkeuring en groene dashboard/Shiny/website-pariteitscontroles.
+- Mondiale of Europese soorttraits worden niet automatisch verheven tot een
+  Nederlandse of Meijendel-broedpopulatiewaarde. Bronwaarden behouden hun eigen
+  geografische, seizoens- en populatiecontext; de vereiste lokale doelcontext
+  blijft `unknown` totdat zij afzonderlijk is goedgekeurd.
+- TR1 bevat naast 14 verplichte doeltraits acht ondersteunende brontraits. Deze
+  bewaren binaire of semikwantitatieve broninformatie zonder een kunstmatig lokaal
+  percentage te construeren.
+- Taxonomische bronkoppelingen worden expliciet en controleerbaar opgeslagen. Bij
+  de Europese life-historydataset wordt voor de import de oorspronkelijke
+  combinatie `Genus` + `Species` gebruikt, omdat het meegeleverde gestandaardiseerde
+  veld aantoonbaar ten minste één foutieve soortomzetting bevat.
+- Technische voltooiing van fase B is geen toestemming voor fase C: pas na
+  inhoudelijke beoordeling van de gapmatrix mogen groepslidmaatschappen worden
+  gegenereerd.
