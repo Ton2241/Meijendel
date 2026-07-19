@@ -578,13 +578,22 @@ function buildGroepTotals(trendData,sel){
 }
 function buildActualGroupDensity(groep100,yearRange){
   if(!S.main||!S.areaMeta)return [];
-  const speciesSet=new Set(getSpeciesNamesForGroup(groep100));
-  if(!speciesSet.size)return [];
+  const speciesWeights=new Map(getSpeciesNamesForGroup(groep100).map(name=>[name,1]));
+  if(isFunctionalGroup(groep100)&&S.functionalMode==="gewogen"){
+    const lookup=getSoortenLookup();
+    getFunctionalGroupMembershipRows(groep100).forEach(r=>{
+      const name=lookup[String(r.soort_id)];
+      const weight=Number(r.membership_weight);
+      if(name&&Number.isFinite(weight)&&weight>0)speciesWeights.set(name,weight);
+    });
+  }
+  if(!speciesWeights.size)return [];
   const totals={};
   S.main.tbl.rows.forEach(r=>{
     const jaar=toYear(r[S.main.yc]);
-    if(!jaar||!speciesSet.has(r[S.main.sc]))return;
-    totals[jaar]=(totals[jaar]||0)+(Number(r[S.main.cc])||0);
+    const weight=speciesWeights.get(r[S.main.sc]);
+    if(!jaar||!Number.isFinite(weight))return;
+    totals[jaar]=(totals[jaar]||0)+((Number(r[S.main.cc])||0)*weight);
   });
   return (S.allYears||[])
     .filter(y=>(!yearRange?.van||y>=yearRange.van)&&(!yearRange?.tot||y<=yearRange.tot))
@@ -886,12 +895,7 @@ function getSpeciesIdsForGroup(groep100){
   if(isRodeOranjeLijstGroep(groep100))return getRodeOranjeLijstSpeciesIds();
   if(isVogelrichtlijnGroep(groep100))return getVogelrichtlijnSpeciesIds();
   if(isHabitatGroep(groep100))return getHabitatSpeciesIds(getHabitatCodeForGroup(groep100));
-  if(isFunctionalGroup(groep100))return [...new Set(getTableRows("functional_group_membership")
-    .filter(r=>Number(r.binary_membership)===1)
-    .filter(r=>{
-      const def=getTableRows("functional_group_definition").find(d=>String(d.id)===String(r.functional_group_definition_id));
-      return def&&String(def.group_code)===String(groep100);
-    })
+  if(isFunctionalGroup(groep100))return [...new Set(getFunctionalGroupMembershipRows(groep100)
     .map(r=>String(r.soort_id))
     .filter(Boolean))];
   const rows=getTableRows("evg_vogel_landschapgroep");
@@ -900,6 +904,14 @@ function getSpeciesIdsForGroup(groep100){
     .map(r=>String(r.vogel_id))
     .filter(Boolean)
   )];
+}
+function getFunctionalGroupMembershipRows(groep100){
+  const definitionIds=new Set(getTableRows("functional_group_definition")
+    .filter(r=>String(r.group_code)===String(groep100))
+    .map(r=>String(r.id)));
+  return getTableRows("functional_group_membership")
+    .filter(r=>definitionIds.has(String(r.functional_group_definition_id)))
+    .filter(r=>Number(r.binary_membership)===1);
 }
 function getEcologischeGroepen(){
   const rows=getTableRows("evg_vogelgroepen");
@@ -1280,7 +1292,7 @@ function refreshMsiMeta(){
   if(getRodeOranjeLijstSpeciesIds().length)S.msiGroepen.push({code:RODE_ORANJE_LIJST_GROEP_CODE,naam:"Rode en Oranjelijst"});
   if(getVogelrichtlijnSpeciesIds().length)S.msiGroepen.push({code:VOGELRICHTLIJN_GROEP_CODE,naam:"Vogelrichtlijn"});
   HABITAT_GROEPEN.forEach(h=>{if(getHabitatSpeciesIds(h.code).length)S.msiGroepen.push({code:`${HABITAT_GROEP_PREFIX}${h.code}`,naam:h.naam});});
-  if(S.msiSource==="trim"&&S.functionalMsiData)S.msiGroepen.push(...getFunctioneleGroepen());
+  S.msiGroepen.push(...getFunctioneleGroepen());
   S.msiAllYears=S.msiSource==="gam"?(S.allYears||[]):[...new Set((data||[]).map(r=>Number(r.jaar)).filter(Boolean))].sort((a,b)=>a-b);
   if(!S.msiGroepen.some(g=>String(g.code)===String(S.msiGroep)))S.msiGroep=S.msiGroepen[0]?.code??null;
   if(S.msiAllYears.length){
@@ -1337,7 +1349,7 @@ function renderMsiGroupSelector(){
   ]));
   box.appendChild(renderMsiGroupSection("Habitattypen",HABITAT_GROEPEN.map(h=>({code:`${HABITAT_GROEP_PREFIX}${h.code}`,naam:h.naam}))));
   box.appendChild(renderMsiGroupSection("Ecologische Vogelgroepen",S.msiGroepen.filter(g=>Number.isFinite(Number(g.code)))));
-  if(S.msiSource==="trim")box.appendChild(renderMsiGroupSection("Functionele Vogelgroepen",getFunctioneleGroepen()));
+  box.appendChild(renderMsiGroupSection("Functionele Vogelgroepen",getFunctioneleGroepen()));
   if(isFunctionalGroup(S.msiGroep)){
     const modeBox=el("div",{style:{marginTop:"12px",padding:"12px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"8px"}});
     modeBox.appendChild(el("div",{style:{fontSize:"12px",fontWeight:"600",color:"#374151",marginBottom:"8px"}},"Analysewijze"));
@@ -2476,7 +2488,7 @@ function renderWinterChart(){
   }));
   renderSimpleChart("winterChart",{labels:series.labels,datasets,yTitle:"Gesommeerde aantallen per km²",leftMargin:86,yDecimals:1,yMinZero:true});
 }
-function renderMsiPanel(){const p=el("div",{className:"panel"});const srcTog=el("div",{className:"metric-toggle",style:{marginBottom:"16px"}});[["gam","Dichtheid per km2"],["trim","TRIM"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.msiSource===id?" active":"")},lbl);b.addEventListener("click",()=>{S.msiSource=id;refreshMsiMeta();render();setTimeout(renderMsiChartNow,0);});srcTog.appendChild(b);});p.appendChild(srcTog);if(S.msiSource==="gam"){p.appendChild(renderCsvUploadRow("GAM-voorspellingen",{loaded:!!S.voorspData,text:S.voorspData?`${S.voorspData.length} rijen geladen`:"gam_voorspellingen_per_groep.csv"},data=>processMsiCSV(data,"voorsp")));p.appendChild(renderCsvUploadRow("GAM-interpretatie",{loaded:!!S.interpData,text:S.interpData?`${S.interpData.length} rijen geladen`:"gam_interpretatie_per_groep.csv"},data=>processMsiCSV(data,"interp")));}else{p.appendChild(renderCsvUploadRow("TRIM Meijendel",{loaded:!!S.trimMsiData,text:S.trimMsiData?`${S.trimMsiData.length} rijen geladen`:"msi_per_groep_per_jaar.csv"},data=>processMsiCSV(data,"trim_msi")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimMsiTrendData,text:S.trimMsiTrendData?`${S.trimMsiTrendData.length} rijen geladen`:"trendoverzicht_msi_groepen.csv"},data=>processMsiCSV(data,"trim_trend")));p.appendChild(renderCsvUploadRow("TRIM-GAM Meijendel",{loaded:!!S.trimGamPredData,text:S.trimGamPredData?`${S.trimGamPredData.length} rijen geladen`:"gam_voorspellingen_msi_groepen.csv"},data=>processMsiCSV(data,"trim_gam_pred")));p.appendChild(renderCsvUploadRow("TRIM-GAM Landelijk",{loaded:!!S.landelijkGamPredData,text:S.landelijkGamPredData?`${S.landelijkGamPredData.length} rijen geladen`:"gam_voorspellingen_landelijk_msi_groepen.csv"},data=>processMsiCSV(data,"landelijk_gam_pred")));}const activeData=getActiveMsiData();if(!activeData){p.appendChild(el("p",{className:"empty-msg"},S.msiSource==="trim"?"Laad minimaal het TRIM-bestand om de grafiek te tonen.":"Laad eerst de gegevens om de dichtheid per km2 te tonen."));p.appendChild(renderMsiMethodInfo());return p;}p.appendChild(renderMsiGroupSelector());if(S.msiAllYears.length){const jd=el("div",{style:{marginBottom:"16px",padding:"12px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"8px"}});jd.appendChild(el("span",{style:{fontSize:"12px",fontWeight:"500",color:"#374151",display:"block",marginBottom:"8px"}},"Periode"));const row=el("div",{className:"year-row"});["van","tot"].forEach(k=>{const wrap=el("div",{});wrap.appendChild(el("label",{},k==="van"?"Van":"Tot"));const sel=el("select",{});S.msiAllYears.forEach(y=>{const o=el("option",{value:y},String(y));if(S.msiYearRange[k]===y)o.selected=true;sel.appendChild(o);});sel.addEventListener("change",e=>{S.msiYearRange=Object.assign({},S.msiYearRange,{[k]:parseInt(e.target.value)});render();setTimeout(renderMsiChartNow,0);});wrap.appendChild(sel);row.appendChild(wrap);});const rst=el("button",{className:"reset-btn"},"Reset");rst.addEventListener("click",()=>{S.msiYearRange={van:(S.msiAllYears.find(y=>y>=MSI_DEFAULT_START_YEAR)??S.msiAllYears[0]),tot:S.msiAllYears[S.msiAllYears.length-1]};render();setTimeout(renderMsiChartNow,0);});row.appendChild(rst);jd.appendChild(row);p.appendChild(jd);}const groepNaam=S.msiGroepen.find(g=>String(g.code)===String(S.msiGroep))?.naam||"";p.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},S.msiSource==="trim"?`${groepNaam} — TRIM-MSI Meijendel`:groepNaam));p.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},S.msiSource==="trim"?"Blauw = Volledige MSI · groen = Robuuste MSI · beide zijn geometrische gemiddelden van TRIM-soortindices":"Werkelijke dichtheid = territoria per km²"));p.appendChild(el("div",{className:"chart-wrap",id:"msiChart"}));p.appendChild(renderMsiSpeciesBox(groepNaam));p.appendChild(renderMsiMethodInfo());return p;}
+function renderMsiPanel(){const p=el("div",{className:"panel"});const srcTog=el("div",{className:"metric-toggle",style:{marginBottom:"16px"}});[["gam","Dichtheid per km2"],["trim","TRIM"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.msiSource===id?" active":"")},lbl);b.addEventListener("click",()=>{S.msiSource=id;refreshMsiMeta();render();setTimeout(renderMsiChartNow,0);});srcTog.appendChild(b);});p.appendChild(srcTog);if(S.msiSource==="gam"){p.appendChild(renderCsvUploadRow("GAM-voorspellingen",{loaded:!!S.voorspData,text:S.voorspData?`${S.voorspData.length} rijen geladen`:"gam_voorspellingen_per_groep.csv"},data=>processMsiCSV(data,"voorsp")));p.appendChild(renderCsvUploadRow("GAM-interpretatie",{loaded:!!S.interpData,text:S.interpData?`${S.interpData.length} rijen geladen`:"gam_interpretatie_per_groep.csv"},data=>processMsiCSV(data,"interp")));}else{p.appendChild(renderCsvUploadRow("TRIM Meijendel",{loaded:!!S.trimMsiData,text:S.trimMsiData?`${S.trimMsiData.length} rijen geladen`:"msi_per_groep_per_jaar.csv"},data=>processMsiCSV(data,"trim_msi")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimMsiTrendData,text:S.trimMsiTrendData?`${S.trimMsiTrendData.length} rijen geladen`:"trendoverzicht_msi_groepen.csv"},data=>processMsiCSV(data,"trim_trend")));p.appendChild(renderCsvUploadRow("TRIM-GAM Meijendel",{loaded:!!S.trimGamPredData,text:S.trimGamPredData?`${S.trimGamPredData.length} rijen geladen`:"gam_voorspellingen_msi_groepen.csv"},data=>processMsiCSV(data,"trim_gam_pred")));p.appendChild(renderCsvUploadRow("TRIM-GAM Landelijk",{loaded:!!S.landelijkGamPredData,text:S.landelijkGamPredData?`${S.landelijkGamPredData.length} rijen geladen`:"gam_voorspellingen_landelijk_msi_groepen.csv"},data=>processMsiCSV(data,"landelijk_gam_pred")));}const activeData=getActiveMsiData();if(!activeData){p.appendChild(el("p",{className:"empty-msg"},S.msiSource==="trim"?"Laad minimaal het TRIM-bestand om de grafiek te tonen.":"Laad eerst de gegevens om de dichtheid per km2 te tonen."));p.appendChild(renderMsiMethodInfo());return p;}p.appendChild(renderMsiGroupSelector());if(S.msiAllYears.length){const jd=el("div",{style:{marginBottom:"16px",padding:"12px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"8px"}});jd.appendChild(el("span",{style:{fontSize:"12px",fontWeight:"500",color:"#374151",display:"block",marginBottom:"8px"}},"Periode"));const row=el("div",{className:"year-row"});["van","tot"].forEach(k=>{const wrap=el("div",{});wrap.appendChild(el("label",{},k==="van"?"Van":"Tot"));const sel=el("select",{});S.msiAllYears.forEach(y=>{const o=el("option",{value:y},String(y));if(S.msiYearRange[k]===y)o.selected=true;sel.appendChild(o);});sel.addEventListener("change",e=>{S.msiYearRange=Object.assign({},S.msiYearRange,{[k]:parseInt(e.target.value)});render();setTimeout(renderMsiChartNow,0);});wrap.appendChild(sel);row.appendChild(wrap);});const rst=el("button",{className:"reset-btn"},"Reset");rst.addEventListener("click",()=>{S.msiYearRange={van:(S.msiAllYears.find(y=>y>=MSI_DEFAULT_START_YEAR)??S.msiAllYears[0]),tot:S.msiAllYears[S.msiAllYears.length-1]};render();setTimeout(renderMsiChartNow,0);});row.appendChild(rst);jd.appendChild(row);p.appendChild(jd);}const groepNaam=S.msiGroepen.find(g=>String(g.code)===String(S.msiGroep))?.naam||"";const densityDescription=isFunctionalGroup(S.msiGroep)&&S.functionalMode==="gewogen"?"Gewogen dichtheid = territoria × lidmaatschapsgewicht per km²":"Werkelijke dichtheid = territoria per km²";p.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},S.msiSource==="trim"?`${groepNaam} — TRIM-MSI Meijendel`:groepNaam));p.appendChild(el("p",{style:{fontSize:"12px",color:"#9ca3af",marginBottom:"12px"}},S.msiSource==="trim"?"Blauw = Volledige MSI · groen = Robuuste MSI · beide zijn geometrische gemiddelden van TRIM-soortindices":densityDescription));p.appendChild(el("div",{className:"chart-wrap",id:"msiChart"}));p.appendChild(renderMsiSpeciesBox(groepNaam));p.appendChild(renderMsiMethodInfo());return p;}
 function renderTrimGamSection(groepNaam,variant){
   const label=variant==="robuust"?"Robuuste MSI":"Volledige MSI";
   const id=variant==="robuust"?"msiGamChartRobust":"msiGamChartFull";
