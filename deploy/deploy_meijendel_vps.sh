@@ -144,11 +144,18 @@ printf 'Productiecommit: %s\n' "$DEPLOYED_COMMIT"
 
 need_file "$SQL_LOCAL"
 need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
+need_file "$LOCAL_REPO/R/check_wintertelling_output.R"
 need_file "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv"
+need_file "$LOCAL_REPO/wintertellingen/winter_jaarindex.csv"
+need_file "$LOCAL_REPO/wintertellingen/winter_maandpatroon.csv"
+need_file "$LOCAL_REPO/wintertellingen/winter_plotgebruik.csv"
+need_file "$LOCAL_REPO/wintertellingen/winter_pilot_besluit.csv"
 
 log "Controleer Shiny/dashboard parity voor MSI-groepen"
 Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
   "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
+log "Controleer wintertellingpilot-output"
+Rscript "$LOCAL_REPO/R/check_wintertelling_output.R" "$LOCAL_REPO/wintertellingen"
 [[ -z "$(git status --porcelain --untracked-files=all)" ]] || \
   die "lokale validatie wijzigde de werkboom; ruim gegenereerde bestanden op of commit bedoelde wijzigingen vóór deploy."
 
@@ -170,6 +177,7 @@ printf '%s\n' \
   "output_ecologische_groepen/ -> $REMOTE_WWW/output_ecologische_groepen/" \
   "trim_msi_evg/ -> $REMOTE_WWW/trim_msi_evg/" \
   "groepen_grafieken/ -> $REMOTE_WWW/groepen_grafieken/" \
+  "wintertellingen/ -> $REMOTE_WWW/wintertellingen/" \
   "app-home/index.html -> $REMOTE_BASE/app-home/"
 
 rsync_dry=(rsync -az --checksum --delay-updates --itemize-changes --dry-run -e "ssh -i $SSH_KEY")
@@ -204,6 +212,7 @@ sync_release() {
   [[ ! -d "$LOCAL_REPO/output_ecologische_groepen" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/output_ecologische_groepen/" "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
   [[ ! -d "$LOCAL_REPO/trim_msi_evg" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/trim_msi_evg/" "$VPS:$REMOTE_WWW/trim_msi_evg/"
   [[ ! -d "$LOCAL_REPO/groepen_grafieken" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/groepen_grafieken/" "$VPS:$REMOTE_WWW/groepen_grafieken/"
+  [[ ! -d "$LOCAL_REPO/wintertellingen" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/wintertellingen/" "$VPS:$REMOTE_WWW/wintertellingen/"
   [[ ! -f "$LOCAL_REPO/app-home/index.html" ]] || run_rsync "$LOCAL_REPO/app-home/index.html" "$VPS:$REMOTE_BASE/app-home/index.html"
 }
 
@@ -366,6 +375,10 @@ docker exec shiny_meijendel Rscript -e '
 '
 docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL pad: %s; cache: from_cache=%s elapsed=%.3f cache=%s\\n\", path, x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
 sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
+test -s "$REMOTE_WWW/wintertellingen/winter_jaarindex.csv"
+test -s "$REMOTE_WWW/wintertellingen/winter_maandpatroon.csv"
+test -s "$REMOTE_WWW/wintertellingen/winter_plotgebruik.csv"
+test -s "$REMOTE_WWW/wintertellingen/winter_pilot_besluit.csv"
 docker stats --no-stream shiny_meijendel
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 REMOTE

@@ -415,7 +415,28 @@ In `Plots-kenmerken` staat ook het blok `Vegetatiemeetnet (PQ)`. Het gekozen jaa
 
 ## Tab Wintertellingen
 
-De wintergrafiek toont per gekozen vogel een lijn met één punt per winterperiode.
+De tab heeft twee afzonderlijke modi.
+
+### Gestandaardiseerde index
+
+Deze modus leest de gevalideerde uitvoer uit `wintertellingen/` en toont voor de
+pilotsoorten met status `betrouwbaar` of `indicatief`:
+
+- de winterindex 2000/01–2024/25 met 95%-onzekerheidsinterval;
+- het maandpatroon september–maart;
+- het aantal geldige bezoeken per winter;
+- de twaalf best gedekte plots met de hoogste waarnemingsfrequentie;
+- het kwaliteitslabel en de methodologische beperking.
+
+Index 100 is de gemiddelde modelwaarde over 2000/01–2004/05. De index is geen
+populatiegrootte of absolute dichtheid. Details staan in
+`MDs/wintertellingen_pilot.md`.
+
+### Ruwe tellingen
+
+De bestaande wintergrafiek blijft beschikbaar en toont per gekozen vogel een
+lijn met één punt per winterperiode. Deze som is uitsluitend beschrijvend en is
+geen gestandaardiseerde trend of dichtheid.
 
 ### Periode
 

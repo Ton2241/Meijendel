@@ -121,6 +121,7 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
 - dashboard-outputmappen:
   - `/srv/vwgm/www/output_ecologische_groepen/`
   - `/srv/vwgm/www/trim_msi_evg/`
+  - `/srv/vwgm/www/wintertellingen/` (gevalideerde winterindices, dekking en besluitstatus)
 - vooraf gegenereerde websitegrafieken voor Groepen:
   - `/srv/vwgm/www/groepen_grafieken/gam_dashboard_groepen.csv`
   - `/srv/vwgm/www/groepen_grafieken/groep_soorten.csv`

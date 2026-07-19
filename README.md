@@ -65,6 +65,10 @@ Belangrijke bestanden zijn:
   Uitleg van de MSI- en GAM-analyse voor ecologische groepen.
 - [`MDs/import_procedure_territoria.md`][15]
   Jaarlijkse importprocedure voor territoria.
+- `MDs/wintertellingen_pilot.md`
+  Methode, audit, resultaten en besluitregels van de wintertellingpilot.
+- `MDs/publieksartikel_25_jaar_wintervogels.md`
+  Publicatieklaar conceptartikel op basis van de gevalideerde pilotresultaten.
 
 ### Shiny-app
 
@@ -99,6 +103,7 @@ De HTML bevat momenteel deze hoofdonderdelen:
 - `Plot`
 - `MSI`
 - `Tellers`
+- `Wintertellingen`, met een gestandaardiseerde pilotindex en een apart gemarkeerde ruwe telling
 
 De HTML gebruikt:
 
@@ -114,6 +119,8 @@ Belangrijkste scripts:
 - [`R/trim_soorten_en_msi_evg.R`][21]
 - [`R/trim_sandra_soorten_en_msi_evg.R`][22]
 - [`R/analyse_ecologische_groepen.R`][23]
+- `R/analyse_wintertellingen_pilot.R`
+- `R/check_wintertelling_output.R`
 
 Belangrijkste outputmappen:
 
@@ -121,6 +128,7 @@ Belangrijkste outputmappen:
 - `trim_msi_evg/`
 - `trim/sandra/`
 - `output_ecologische_groepen/`
+- `wintertellingen/`
 
 ### SQL-views en hulpmiddelen
 

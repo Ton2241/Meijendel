@@ -9,6 +9,7 @@ MYSQL_HOST="${MYSQL_HOST:-127.0.0.1}"
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_DATABASE="${MYSQL_DATABASE:-meijendel}"
+WINTER_MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 
 log() {
   printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
@@ -70,6 +71,14 @@ log "Genereer dashboardgelijke Groepen-grafieken"
 Rscript "$REPO_DIR/R/build_groepen_grafieken_dashboard_csv.R" \
   "$SQL_FILE" \
   "$REPO_DIR/groepen_grafieken"
+
+log "Genereer gevalideerde wintertellingpilot"
+Rscript "$REPO_DIR/R/analyse_wintertellingen_pilot.R" \
+  "$REPO_DIR/wintertellingen" \
+  "${MEIJENDEL_MYSQL_LOGIN_PATH:-meijendel_root}" \
+  "$WINTER_MYSQL_DATABASE"
+Rscript "$REPO_DIR/R/check_wintertelling_output.R" \
+  "$REPO_DIR/wintertellingen"
 
 log "Controleer dashboard/website parity voor Groepen-grafieken"
 Rscript "$REPO_DIR/R/check_dashboard_website_parity.R" \

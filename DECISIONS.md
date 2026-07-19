@@ -91,3 +91,11 @@
   op `soort_id` en Euring-code draaien; alleen invoerresolutie en publieke
   weergavenamen worden gecanonicaliseerd. Soortrecords worden niet samengevoegd,
   omdat onder meer Barmsijs en Kleine Barmsijs afzonderlijke IDs en taxa hebben.
+- Wintertellingindices gebruiken aantallen per volledig en protocolmatig geldig
+  bezoek, met een negatief-binomiaal model en een binaire gevoeligheidsanalyse.
+  Index 100 is het modelgemiddelde over 2000/01–2004/05. Een klassiek occupancy-
+  of N-mixturemodel wordt niet gebruikt omdat vrijwel geen gesloten
+  detectiereplicaten bestaan. Alleen soorten met status `betrouwbaar` of
+  `indicatief` worden als gestandaardiseerde index getoond; de bestaande
+  seizoenssom blijft uitsluitend als duidelijk gewaarschuwde ruwe telling
+  beschikbaar.
