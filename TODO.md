@@ -2,6 +2,17 @@
 
 ## Nu open
 
+### Wintertellingenpilot — gecontroleerde uitbreiding
+
+- De pilotanalyse 2000/01–2024/25, dashboarduitvoer, publieksartikel en
+  besluitnotitie zijn gebouwd voor tien contrasterende soorten.
+- Breid alleen uit met soorten die na inhoudelijke protocoltoekenning dezelfde
+  aantals-, binaire, extremen-, telduur- en convergentiecontroles doorlopen.
+- Vergelijk gevalideerde soortindices waar mogelijk met passende landelijke
+  Sovon-reeksen voordat lokale verklaringen worden gepubliceerd.
+- Bouw nog geen samengestelde wintervogelindicator en voer nog geen causale
+  beheer-, recreatie- of klimaatanalyse uit.
+
 ### Functionele vogelgroepen — fase E afgerond
 
 Fase C is technisch afgerond: 475 classificaties, binaire en gewogen

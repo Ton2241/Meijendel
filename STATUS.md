@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 18 juli 2026
+Laatste update: 19 juli 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -19,6 +19,24 @@ Gereed:
 - De lokale canonieke SQL-dump heet `meijendel.sql`.
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
+
+## Wintertellingpilot 2000/01–2024/25
+
+Gereed:
+
+- De bezoek-, protocol- en nulreconstructie-audit is reproduceerbaar vastgelegd.
+- Voor tien vooraf gekozen soorten zijn parallelle aantals- en binaire modellen,
+  gevoeligheidscontroles, maandpatronen, dekking en plotgebruik uitgevoerd.
+- Tjiftjaf en Kuifeend hebben de status `betrouwbaar`; zeven soorten zijn
+  `indicatief`; Buizerd blijft wegens modelconvergentie `alleen_beschrijvend`.
+- Alle 223 aangetroffen soorten hebben een voorlopige geschiktheidsscan gekregen;
+  uitbreiding vereist per soort eerst een expliciete protocoltoewijzing.
+- Het dashboard bevat een nieuw winteronderdeel met jaarindex, maandindex,
+  geldige bezoeken, ruimtelijke spreiding en een methodologische waarschuwing.
+  De bestaande ruwe wintersom blijft apart beschikbaar en wordt niet als
+  dichtheid of populatie-index gepresenteerd.
+- Methode en besluit staan in `MDs/wintertellingen_pilot.md`; het publieksartikel
+  staat in `MDs/publieksartikel_25_jaar_wintervogels.md`.
 
 ## Functionele vogelgroepen — fase A tot en met E afgerond
 
