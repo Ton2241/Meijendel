@@ -7,6 +7,7 @@ source(file.path(repo_dir, "R", "species_name_synonyms.R"))
 chart_path <- file.path(out_dir, "gam_dashboard_groepen.csv")
 density_path <- file.path(out_dir, "groep_dichtheid.csv")
 species_path <- file.path(out_dir, "groep_soorten.csv")
+dashboard_path <- file.path(repo_dir, "bmp_meijendel_index.html")
 
 required_chart_ids <- c(
   "100", "200", "300", "400", "500", "600", "700", "800", "900",
@@ -46,6 +47,21 @@ species <- read_required_csv(
   species_path,
   c("chart_id", "chart_title", "soort_naam")
 )
+
+if (!file.exists(dashboard_path)) fail("Dashboard ontbreekt: ", dashboard_path)
+dashboard <- paste(readLines(dashboard_path, warn = FALSE, encoding = "UTF-8"), collapse = "\n")
+required_dashboard_fragments <- c(
+  'S.msiGroepen.push(...getFunctioneleGroepen())',
+  'box.appendChild(renderMsiGroupSection("Functionele Vogelgroepen",getFunctioneleGroepen()))',
+  'S.functionalMode==="gewogen"',
+  'Number(r.membership_weight)'
+)
+missing_dashboard_fragments <- required_dashboard_fragments[
+  !vapply(required_dashboard_fragments, grepl, logical(1), x = dashboard, fixed = TRUE)
+]
+if (length(missing_dashboard_fragments)) {
+  fail("Functionele groepen zijn niet volledig beschikbaar in de dashboard-dichtheidsweergave.")
+}
 
 chart$chart_id <- as.character(chart$chart_id)
 density$chart_id <- as.character(density$chart_id)
