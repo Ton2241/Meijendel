@@ -110,7 +110,8 @@ het dashboard toegevoegd en er zijn geen databasewaarden gewijzigd.
 
 ### Versie 1 en algemene beslisregels
 
-De eerste versie bevat vijf aanvullende groepen:
+De eerste versie bevat zes aanvullende groepen. De eerste vijf zijn op 18 juli
+2026 vastgesteld; Zaadeters is op 20 juli 2026 toegevoegd:
 
 | Groep-ID | Titel | Primair | Secundair | Belangrijkste uitsluiting |
 |---|---|---|---|---|
@@ -119,6 +120,7 @@ De eerste versie bevat vijf aanvullende groepen:
 | `fg_v1_grondbroed` | Grondbroeders | dominante nestplaats op/direct aan bodem of in vegetatie tot circa 25 cm | substantieel grondnestgebruik in Nederland/Meijendel | ondergrondse holen, struik-, boom- of constructienest als dominante strategie |
 | `fg_v1_holenbroed` | Holenbroeders | omsloten holte is normale/dominante nestplaats | regelmatig maar niet dominant holtegebruik | halfopen nis, richel of incidenteel holtegebruik |
 | `fg_v1_lange_trek` | Langeafstandstrekkers | meer dan 50% Nederlandse broedpopulatie intercontinentaal of bezuiden Sahara | 25–50% of onderbouwde gedeeltelijke langeafstandstrek | stand-, korte- en middellangeafstandstrek |
+| `fg_v1_zaad` | Zaadeters | minimaal 50% zaden, granen, noten of pitten in het volwassen dieet | minimaal 25% | minder dan 25% of onbekend |
 
 Soorten mogen in meerdere groepen en subgroepen voorkomen. Primair krijgt in de
 gewogen gevoeligheidsanalyse `1,0`, secundair `0,5`; daarnaast wordt altijd een
@@ -143,6 +145,7 @@ Nieuwe codes gebruiken `TR1_*`. Zij vervangen of hernoemen bestaande `F`, `J`,
 |---|---|---|---|---|
 | `TR1_DIET_TERRESTRIAL_INVERT_SHARE` | decimal | 0–1 | adult, broedseizoen, NL/NW-Europa | verplicht bodem-insect |
 | `TR1_DIET_FLYING_PREY_SHARE` | decimal | 0–1 | adult, broedseizoen, NL/NW-Europa | verplicht lucht |
+| `TR1_DIET_SEED_SHARE` | decimal | 0–1 | adult, broedseizoen, NL/NW-Europa | verplicht zaadeters |
 | `TR1_FORAGE_GROUND_LOW_SHARE` | decimal | 0–1 | broedseizoen | verplicht bodem-insect |
 | `TR1_FORAGE_AERIAL_CAPTURE_SHARE` | decimal | 0–1 | broedseizoen | verplicht lucht |
 | `TR1_FORAGE_SUBSTRATE` | multi-category | bodem, strooisel, lage vegetatie, struik, boom, water, lucht | broedseizoen | onderbouwing voedselgroepen |
@@ -244,7 +247,7 @@ context en echte onbekenden nog ontbreken.
    inhoudelijk beoordelen.
 8. Ken per soort/trait/context exact één goedgekeurde voorkeurswaarde toe of leg
    expliciet `unknown` vast.
-9. Genereer de vijf groepslijsten uitsluitend uit de vastgelegde regels en voer
+9. Genereer de zes groepslijsten uitsluitend uit de vastgelegde regels en voer
    binaire, gewogen en leave-one-species-outcontroles uit.
 10. Schakel dashboard en Shiny pas om na inhoudelijke goedkeuring en groene
     pariteit; verwijder legacy niet in dezelfde release.
@@ -378,16 +381,24 @@ gaat voortaan vooraf aan de beoordeling van modelleerbaarheid.
   hebben lagere confidence. Bonte Kraai en Kleine Barmsijs missen in meerdere
   mondiale datasets; hun Nederlandse soortbronnen en de afleidingsregels zijn
   daarom leidend.
-- De doelmatrix bevat 2.226/2.226 gereed-cellen (159 × 14), nul geprefereerde
+- De doelmatrix bevat 2.385/2.385 gereed-cellen (159 × 15), nul geprefereerde
   `unknown`-waarden en nul eindwaarden met minder dan twee bronnen.
-- De vijf functionele groepen bevatten ieder 159 classificaties: 795 totaal,
+- De zes functionele groepen bevatten ieder 159 classificaties: 954 totaal,
   zonder `unknown`. Deze uitbreiding verandert de gegevensbeschikbaarheid; pas
   de daaropvolgende analyse bepaalt welke soortindices bruikbaar zijn.
 
-De Appelvink is een expliciete regressiecontrole: 14 verplichte traits, 16
-doelwaarderegels door meervoudige substraten, en vijf afgeleide
+De Appelvink is een expliciete regressiecontrole: 15 verplichte traits, 17
+doelwaarderegels door meervoudige substraten, en zes afgeleide
 groepsclassificaties. Percentages op de publieke soortpagina zijn als
 `klasseproxy` gelabeld en zijn geen lokaal gemeten populatiepercentages.
+
+De voedseldekking is tegelijk hersteld voor de 29 broedvogels waarvoor in de
+legacykenmerken geen volwassen-voedselcode aanwezig was. Bestaande waarden zijn
+niet overschreven; alleen ontbrekende, gestandaardiseerde `V-*`-codes zijn
+toegevoegd. `TR1_DIET_SEED_SHARE` bevat voor alle 159 soorten een goedgekeurde
+voorkeurswaarde met Nederlandse bron, afleidingsregel en waar beschikbaar een
+EltonTraits-koppeling. De baseline levert 29 primaire en 34 secundaire
+zaadeters op (63 binair; gewogen omvang 46,0).
 
 ## Functionele vogelgroepen — fase D
 
@@ -405,9 +416,9 @@ Nieuwe uitvoer in `trim_msi_evg`:
 - `functionele_loso_trendgevoeligheid.csv`.
 
 De dashboardcategorie `Functionele Vogelgroepen` en de Shiny-tab `Functionele
-groepen` tonen dezelfde vijf groepen en een binair/gewogen schakelaar. Er wordt
+groepen` tonen dezelfde zes groepen en een binair/gewogen schakelaar. Er wordt
 geen landelijke lijn getoond, omdat geen landelijke bron met exact dezelfde
-traitdefinities en gewichten beschikbaar is. De website-output gebruikt tien
+traitdefinities en gewichten beschikbaar is. De website-output gebruikt twaalf
 vaste chart-id's: per groep één binaire en één gewogen reeks.
 
 De lokale paritychecks zijn groen over 1958-2025. Luchtfoerageerders blijven

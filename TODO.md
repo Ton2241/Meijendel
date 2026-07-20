@@ -15,12 +15,12 @@
 
 ### Functionele vogelgroepen — fase E afgerond
 
-Fase C is technisch afgerond: 795 classificaties voor alle 159
+Fase C is technisch afgerond: 954 classificaties voor alle 159
 territoriumhoudende broedvogels, binaire en gewogen
 lidmaatschappen, soortgebonden rationale/provenance, strikte en inclusieve
 drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
-- De vijf soortenlijsten zijn inhoudelijk geaccordeerd en lokaal aangesloten op
+- De zes soortenlijsten, inclusief Zaadeters, zijn inhoudelijk geaccordeerd en lokaal aangesloten op
   dashboard, Shiny en website-output. Legacy blijft daarnaast beschikbaar.
 - Houd luchtfoerageerders uitsluitend exploratief en vermeld bij de
   bodem-insectengroep altijd de drempelgevoeligheid.

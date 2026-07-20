@@ -29,7 +29,7 @@
 - Publieke kenmerken op soortpagina's worden compact en leesbaar weergegeven als doorlopende tekst; technische veldcodes en primair/secundair-labels blijven uit de publieke tekst.
 - De knop `Kenmerken` verschijnt alleen als er daadwerkelijk kenmerkdata is, zodat soorten zonder kenmerken geen lege navigatie of leeg blok krijgen.
 - Functionele vogelgroepen vormen een aanvullende, niet-exclusieve analysedimensie en vervangen de ecologische vogelgroepen van Sierdsema niet.
-- Versie 1 gebruikt vijf groepen: bodemfoeragerende insecteneters, luchtfoerageerders, grondbroeders, holenbroeders en langeafstandstrekkers.
+- Versie 1 gebruikt zes groepen: bodemfoeragerende insecteneters, luchtfoerageerders, grondbroeders, holenbroeders, langeafstandstrekkers en zaadeters.
 - Primair groepslidmaatschap krijgt voor gewogen gevoeligheidsanalyses gewicht `1,0`, secundair substantieel lidmaatschap `0,5`; daarnaast wordt altijd een binaire analyse uitgevoerd. Incidenteel gebruik telt niet mee en onbekend blijft `NULL`.
 - Een hoofdgroep vereist minimaal tien soorten met een bruikbare trend. Vijf tot en met negen soorten is uitsluitend exploratief; minder dan vijf soorten wordt niet als groepsindicator geanalyseerd.
 - Bestaande `F`- en `V`-codes worden niet hernoemd of stilzwijgend geherinterpreteerd. Nieuwe traits gebruiken een versiegebonden namespace `TR1_*` en legacyvertalingen worden afzonderlijk vastgelegd.
@@ -40,9 +40,13 @@
   Nederlandse of Meijendel-broedpopulatiewaarde. Bronwaarden behouden hun eigen
   geografische, seizoens- en populatiecontext; de vereiste lokale doelcontext
   blijft `unknown` totdat zij afzonderlijk is goedgekeurd.
-- TR1 bevat naast 14 verplichte doeltraits acht ondersteunende brontraits. Deze
+- TR1 bevat naast 15 verplichte doeltraits acht ondersteunende brontraits. Deze
   bewaren binaire of semikwantitatieve broninformatie zonder een kunstmatig lokaal
   percentage te construeren.
+- Zaadeters worden bepaald met `TR1_DIET_SEED_SHARE`: primair vanaf `0,50`,
+  secundair vanaf `0,25` en uitgesloten daaronder. De waarde betreft volwassen
+  vogels in het broedseizoen en is een reproduceerbare klasseproxy, geen lokaal
+  gemeten dieetaandeel.
 - Taxonomische bronkoppelingen worden expliciet en controleerbaar opgeslagen. Bij
   de Europese life-historydataset wordt voor de import de oorspronkelijke
   combinatie `Genus` + `Species` gebruikt, omdat het meegeleverde gestandaardiseerde
