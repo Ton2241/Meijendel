@@ -11,6 +11,7 @@
 - Runtime-data zoals uploads, archiefdocumenten en productiebeelden gaan niet in Git; Git bevat code, scripts, documentatie en lege mapstructuur waar nodig.
 - CMS-afbeeldingen die vanuit nieuwsberichten worden geupload zijn runtime-data onder `app/static/uploads/cms`; deploys en back-ups moeten deze map behouden.
 - Canoniek SQL-bestand op de VPS is `/srv/vwgm/data/Meijendel.sql`; oude SQL-locaties mogen hoogstens symlink zijn.
+- MySQL `tellers` bevat uitsluitend `id` en een unieke `tellercode`. Namen, contactgegevens, lidsoort en bandnummer worden alleen in de afgeschermde PostgreSQL-ledenadministratie beheerd en mogen niet terugkeren in `meijendel.sql` of algemene MySQL-back-ups.
 - `www.vwg-m.nl` wordt na DNS-cutover de hoofdhost; `app.vwg-m.nl` blijft voorlopig werkende alias.
 - Algemene publieke zoekfunctie mag geen besloten ledenarchief of andere ledenroutes indexeren of tonen.
 - Nieuwe functionaliteit moet waar relevant zichtbaar worden in auditlogging en in `handleiding_beheer.md`.

@@ -13,15 +13,10 @@ WITH teller_per_plot_jaar AS (
         pjt.plot_id,
         pjt.jaar,
         GROUP_CONCAT(
-            DISTINCT TRIM(CONCAT_WS(
-                ' ',
-                NULLIF(TRIM(t.voornaam), ''),
-                NULLIF(TRIM(t.tussenvoegsel), ''),
-                NULLIF(TRIM(t.achternaam), '')
-            ))
-            ORDER BY t.achternaam, t.voornaam, t.id
+            DISTINCT t.tellercode
+            ORDER BY t.tellercode
             SEPARATOR '; '
-        ) AS teller_namen,
+        ) AS tellercodes,
         GROUP_CONCAT(
             DISTINCT t.id
             ORDER BY t.id
@@ -41,11 +36,11 @@ SELECT
     @jaar_T AS 'Jaar T',
     p.kavel_nummer AS 'kavel_nr',
     p.plot_id,
-    teller_t.teller_namen AS 'Naam teller T',
+    teller_t.tellercodes AS 'Tellercode T',
     teller_t.teller_ids AS 'ID teller T',
-    teller_tm1.teller_namen AS 'Teller T-1',
+    teller_tm1.tellercodes AS 'Tellercode T-1',
     teller_tm1.teller_ids AS 'TellerID T-1',
-    teller_tp1.teller_namen AS 'Teller T+1',
+    teller_tp1.tellercodes AS 'Tellercode T+1',
     teller_tp1.teller_ids AS 'TellerID T+1'
 FROM plots p
 LEFT JOIN plotkolom_mapping m ON m.plot_id = p.plot_id

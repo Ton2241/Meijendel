@@ -6,8 +6,7 @@ Deze query is bedoeld voor een view/rapport: Plot met bijbehorende teller.
 SELECT 
     p.kavel_nummer,
     pjt.jaar,
-    t.tellercode,
-    CONCAT_WS(' ', t.voornaam, t.tussenvoegsel, t.achternaam) AS teller_naam
+    t.tellercode
 FROM 
     plot_jaar_teller pjt
 JOIN 

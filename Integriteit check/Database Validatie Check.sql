@@ -331,12 +331,12 @@ WHERE soort_naam IS NULL OR soort_naam = '';
 
 
 SELECT 
-  'Tellers zonder email' as check_naam,
+  'Tellers zonder tellercode' as check_naam,
   COUNT(*) as aantal,
   CONCAT(ROUND(COUNT(*) * 100.0 / (SELECT COUNT(*) FROM tellers), 1), '%') as percentage,
-  'ℹ️  INFO' as status
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '⚠️  PROBLEEM' END as status
 FROM tellers
-WHERE email IS NULL OR email = '';
+WHERE tellercode IS NULL OR TRIM(tellercode) = '';
 -- Stap 26: Uitvoering van een SQL‑statement.
 
 

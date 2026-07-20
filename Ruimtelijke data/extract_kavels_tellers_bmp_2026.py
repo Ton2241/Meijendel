@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import os
 import re
 import unicodedata
 from pathlib import Path
@@ -15,66 +16,7 @@ CSV_BANDNUMMER_CONTROLE = Path(
     "/Users/ton/Documents/GitHub/Meijendel/kavels_en_tellers_BMP_2026_bandnummer_controle.csv"
 )
 
-TELLERS_DB = [
-    ("Leo Snellink", "167", "LSLK00", "603"),
-    ("Reinder de Boer", "185", "RBOR00", "742"),
-    ("Tim den Outer", "190", "TOTR02", "1169"),
-    ("Andre Leegwater", "37", "ALGR00", "1188"),
-    ("Marianne Geboers", "171", "MGBS00", "1172"),
-    ("Tosca Koster", "189", "TKSR03", "1686"),
-    ("Jennie Schouten", "159", "JSTN14", "1187"),
-    ("Hans van As", "156", "JASQ00", "1511"),
-    ("Frank Regeer", "150", "FRGR00", "1510"),
-    ("Ron Ousen", "187", "ROSN01", "1176"),
-    ("Wim Calame", "194", "WCLE00", "1508"),
-    ("Nora Kösters", "177", "NKRS00", "1175"),
-    ("Krijn Leeuwis", "164", "KLWS00", ""),
-    ("Bart Dijkstra", "35", "ADKA00", "1161"),
-    ("Ton Lansink", "38", "ALNK00", "1199"),
-    ("Paul Willem Wirtz", "183", "PWRZ00", "813"),
-    ("Frans Hooijmans", "149", "FHMS00", "1185"),
-    ("Pamela Rijks", "181", "PRKS04", "1213"),
-    ("Lis Stolp", "168", "LSLP00", "1505"),
-    ("Michan Biesbroek", "170", "MBSK04", ""),
-    ("Vincent van der Spek", "193", "VSEK00", ""),
-    ("Jesse Zwart", "163", "JZRT04", ""),
-    ("Yolande de Kok", "197", "YKOK00", "1500"),
-    ("Huib van der Velde", "155", "HVLE00", "1134"),
-    ("Renee Lankhorst", "186", "RLNT02", "1506"),
-    ("Arja Zandstra", "43", "AZNA00", "1502"),
-    ("Bart Habraken", "143", "BHBN01", ""),
-    ("Reinoud van Bemmelen", "184", "RBMN02", "1504"),
-    ("Floriaan van Bemmelen", "147", "FBMN01", "1503"),
-    ("Frank Brouwer", "148", "FBWR00", "1018"),
-    ("Jo van Buggenum", "198", "JBGM00", "1637"),
-    ("Hanne Kunnen", "153", "HKNN03", "1168"),
-    ("Wim Kooij", "196", "WKOY01", "1184"),
-    ("Michiel van Nesselrooy", "199", "MNSY00", "1639"),
-    ("Hanneke Oltheten", "154", "HOLN00", "1162"),
-    ("Dini Thibaudier", "146", "DTBR00", "1163"),
-    ("Jeroen van der Zwan", "162", "JZAN02", "1670"),
-    ("Nastja van Strien", "180", "NSIN00", "1174"),
-    ("Ton van Strien", "42", "ASIN00", "1173"),
-    ("Ton Schijvens", "192", "TSVS01", "1294"),
-    ("Gert-Jan Spierenburg", "152", "GSRG01", "1298"),
-    ("Dennis van den Bergen", "145", "DBRN01", "719"),
-    ("Wim van der Ham", "195", "WHAM03", "1164"),
-    ("Amy van Nobelen", "40", "ANBN01", ""),
-    ("Lucas Gans", "166", "LGNS00", ""),
-    ("Martin Koole", "172", "MKLE00", "1165"),
-    ("Annemarie Leeuwenburg", "39", "ALWH01", "1671"),
-]
-
-TELLER_NAME_ALIASES = {
-    "André Leegwater": "Andre Leegwater",
-    "Renée Lankhorst": "Renee Lankhorst",
-    "Huib van de Velde": "Huib van der Velde",
-    "Michiel van Nesselrooij": "Michiel van Nesselrooy",
-    "Diny Thibaudier": "Dini Thibaudier",
-    "Gert Spierenburg": "Gert-Jan Spierenburg",
-    "Wim van de Ham": "Wim van der Ham",
-    "Annemarie Leeuwenburgh": "Annemarie Leeuwenburg",
-}
+TELLER_MAPPING_ENV = "MEIJENDEL_TELLER_MAPPING_CSV"
 
 PLOTS_DB = [
     ("999991", "M1"),
@@ -293,18 +235,27 @@ def merge_continuation(row: dict[str, str], text: str, hoofdtellers: list[str]) 
 
 
 def load_tellers_from_database_extract() -> dict[str, dict[str, str]]:
-    by_name: dict[str, dict[str, str]] = {}
-    for naam, teller_id, tellercode, bandnummer in TELLERS_DB:
-        row = {
-            "teller_id": teller_id,
-            "tellercode": tellercode,
-            "bandnummer_db": bandnummer,
-        }
-        by_name[normalize_name(naam)] = row
+    mapping_value = os.environ.get(TELLER_MAPPING_ENV)
+    if not mapping_value:
+        raise RuntimeError(
+            f"Stel {TELLER_MAPPING_ENV} in op een afgeschermd CSV-bestand; "
+            "persoonsgegevens worden niet meer in dit script opgeslagen."
+        )
 
-    for alias, canonical in TELLER_NAME_ALIASES.items():
-        if normalize_name(canonical) in by_name:
-            by_name[normalize_name(alias)] = by_name[normalize_name(canonical)]
+    mapping_path = Path(mapping_value).expanduser()
+    by_name: dict[str, dict[str, str]] = {}
+    with mapping_path.open(newline="", encoding="utf-8-sig") as handle:
+        reader = csv.DictReader(handle)
+        required = {"naam", "teller_id", "tellercode", "bandnummer"}
+        missing = required.difference(reader.fieldnames or [])
+        if missing:
+            raise ValueError(f"Ontbrekende kolommen in tellermapping: {', '.join(sorted(missing))}")
+        for source in reader:
+            by_name[normalize_name(source["naam"])] = {
+                "teller_id": clean_text(source["teller_id"]),
+                "tellercode": clean_text(source["tellercode"]),
+                "bandnummer_db": clean_text(source["bandnummer"]),
+            }
 
     return by_name
 

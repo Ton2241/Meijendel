@@ -26,7 +26,7 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 ## Databases
 
 - Lokale live Meijendel-database op iMac: MySQL 9.5.0.
-- Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`.
+- Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`. `tellers` bevat uitsluitend de pseudonieme technische sleutel `id` en de unieke `tellercode`; persoonsgegevens en weergavenamen komen alleen uit de afgeschermde PostgreSQL-ledenadministratie.
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
 

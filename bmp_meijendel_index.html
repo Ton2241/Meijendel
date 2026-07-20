@@ -1777,7 +1777,7 @@ function getVogelblok(plotId,jaar){
     .filter(r=>Number(toYear(r.jaar))===Number(jaar));
   const tellerLookup={};
   getTableRows("tellers").forEach(r=>{
-    tellerLookup[String(r.id)]=[r.voornaam,r.tussenvoegsel,r.achternaam].filter(Boolean).join(" ");
+    tellerLookup[String(r.id)]=String(r.tellercode||r.id);
   });
   const tellers=[...new Set(tellerRows.map(r=>tellerLookup[String(r.teller_id)]||String(r.teller_id)).filter(Boolean))].sort();
   return {

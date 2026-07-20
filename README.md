@@ -39,7 +39,7 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 ### Hoofdbestanden
 
 - [`meijendel.sql`][6]
-  De actuele SQL-dump van de database.
+  De actuele SQL-dump van de database. De tabel `tellers` bevat daarin alleen `id` en de unieke `tellercode`; persoonsgegevens staan uitsluitend in de afgeschermde PostgreSQL-ledenadministratie.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
@@ -210,6 +210,7 @@ Of via Terminal:
 ## Belangrijke aandachtspunten
 
 - De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
+- Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
 - De PQ-vegetatiebron vormt hierop een expliciete uitzondering: `pq_vegetatie_import`, `pq_vegetatie_pq`, `pq_vegetatie_opname`, `pq_vegetatie_taxon`, `pq_vegetatie_waarneming`, `pq_vegetatie_opname_plot` en `pq_plot_jaar_vegetatie` worden in de levende MySQL-database beheerd. Wijzig deze gegevens niet handmatig in `meijendel.sql`; genereer de dump na databasevalidatie opnieuw.
 - De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.
 - Niet alle documentatie in de repo is even recent; de documenten in `MDs/` zijn nu leidend.

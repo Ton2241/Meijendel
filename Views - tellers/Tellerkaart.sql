@@ -20,22 +20,12 @@ SET SESSION group_concat_max_len = 10000;
 
 SELECT Label, Gegevens, Plots
 FROM (
-    -- SECTIE 1: Persoonlijke gegevens
-    SELECT 1 AS nr, 'Naam' AS Label, CONCAT(voornaam, ' ', IFNULL(tussenvoegsel, ''), ' ', achternaam) AS Gegevens, '' AS Plots FROM tellers WHERE id = @teller_id_intern
+    -- SECTIE 1: Pseudonieme identificatie
+    SELECT 1 AS nr, 'Tellercode' AS Label, tellercode AS Gegevens, '' AS Plots FROM tellers WHERE id = @teller_id_intern
     UNION ALL
-    SELECT 2, 'Adres', CONCAT(straat, ' ', huisnummer), '' FROM tellers WHERE id = @teller_id_intern
+    SELECT 2, 'Intern ID', CAST(id AS CHAR), '' FROM tellers WHERE id = @teller_id_intern
     UNION ALL
-    SELECT 3, 'Woonplaats', CONCAT(postcode, ' ', woonplaats), '' FROM tellers WHERE id = @teller_id_intern
-    UNION ALL
-    SELECT 4, 'Contact', CONCAT(IFNULL(telefoon_mobiel, '-'), ' / ', IFNULL(email, '-')), '' FROM tellers WHERE id = @teller_id_intern
-    UNION ALL
-    SELECT 5, '', '', '' 
-    UNION ALL
-    SELECT 6, 'Tellercode', tellercode, '' FROM tellers WHERE id = @teller_id_intern
-    UNION ALL
-    SELECT 7, 'Bandnummer', IFNULL(CAST(bandnummer AS CHAR), 'onbekend'), '' FROM tellers WHERE id = @teller_id_intern
-    UNION ALL
-    SELECT 8, '', '', '' 
+    SELECT 8, '', '', ''
     
     -- SECTIE 2: Statistieken
     UNION ALL

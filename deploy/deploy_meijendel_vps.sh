@@ -159,9 +159,19 @@ Rscript "$LOCAL_REPO/R/check_wintertelling_output.R" "$LOCAL_REPO/wintertellinge
 [[ -z "$(git status --porcelain --untracked-files=all)" ]] || \
   die "lokale validatie wijzigde de werkboom; ruim gegenereerde bestanden op of commit bedoelde wijzigingen vóór deploy."
 
-log "Maak deploydump zonder ledenadministratie/Appsmith-objecten en tellers"
+log "Controleer dat tellers uitsluitend id en tellercode bevat"
 LC_ALL=C awk '
-  function sensitive(line) { return line ~ /`(appsmith_|pwa_)[^`]*`/ || line ~ /`tellers`/ }
+  /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
+  in_tellers && /`id` int/ { has_id = 1 }
+  in_tellers && /`tellercode` varchar/ { has_code = 1 }
+  in_tellers && /`(voornaam|tussenvoegsel|achternaam|straat|huisnummer|postcode|woonplaats|telefoon_vast|telefoon_mobiel|email|soort_lid|bandnummer)`/ { bad = 1 }
+  in_tellers && /ENGINE=InnoDB/ { done = 1; exit }
+  END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
+' "$SQL_LOCAL" || die "tellers ontbreekt of bevat meer dan id en tellercode."
+
+log "Maak deploydump zonder ledenadministratie/Appsmith-objecten"
+LC_ALL=C awk '
+  function sensitive(line) { return line ~ /`(appsmith_|pwa_)[^`]*`/ }
   function section_start(line) { return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) / }
   { if (section_start($0)) skip = sensitive($0); if (!skip) print }
 ' "$SQL_LOCAL" > "$SQL_DEPLOY"
