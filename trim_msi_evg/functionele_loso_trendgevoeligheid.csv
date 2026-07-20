@@ -1,149 +1,210 @@
 "group_code","groep_titel","analysis_mode","msi_variant","weggelaten_soort_id","weggelaten_soort","baseline_trend_pct_per_jaar","loso_trend_pct_per_jaar","verschil_procentpunt","richtingsomslag"
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",29,"Bergeend",-1.40845871193914,-1.26109399064036,0.147364721298782,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",44,"Kuifeend",-1.40845871193914,-1.38459887944515,0.0238598324939887,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",64,"Torenvalk",-1.40845871193914,-1.26325539988089,0.145203312058251,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",80,"Scholekster",-1.40845871193914,-1.27380330632673,0.134655405612416,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",84,"Kleine Plevier",-1.40845871193914,-1.44411264929868,-0.0356539373595366,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",88,"Kievit",-1.40845871193914,-1.39047077297045,0.0179879389686888,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",94,"Houtsnip",-1.40845871193914,-1.37512025518991,0.0333384567492323,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",97,"Wulp",-1.40845871193914,-0.998925128467942,0.4095335834712,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",122,"Holenduif",-1.40845871193914,-1.34855856234556,0.0599001495935836,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",125,"Tortelduif",-1.40845871193914,-1.26053978823539,0.147918923703749,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",142,"Groene Specht",-1.40845871193914,-1.46468541685553,-0.0562267049163845,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",144,"Grote Bonte Specht",-1.40845871193914,-1.54924466570047,-0.140785953761324,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",148,"Boomleeuwerik",-1.40845871193914,-1.55246343632621,-0.14400472438707,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",150,"Veldleeuwerik",-1.40845871193914,-1.3424632351409,0.0659954767982418,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",155,"Boompieper",-1.40845871193914,-1.43477049012497,-0.026311778185828,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",156,"Graspieper",-1.40845871193914,-1.56474376078259,-0.156285048843452,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",158,"Gele Kwikstaart",-1.40845871193914,-1.37219802757312,0.0362606843660185,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",162,"Witte Kwikstaart",-1.40845871193914,-1.49360191091692,-0.0851431989777773,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",165,"Heggenmus",-1.40845871193914,-1.47884580038068,-0.070387088441537,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",166,"Roodborst",-1.40845871193914,-1.48263163784687,-0.0741729259077228,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",167,"Nachtegaal",-1.40845871193914,-1.46663403892837,-0.0581753269892293,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",170,"Gekraagde Roodstaart",-1.40845871193914,-1.44876399306999,-0.040305281130848,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",171,"Paapje",-1.40845871193914,-1.10037113162378,0.308087580315364,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",172,"Roodborsttapuit",-1.40845871193914,-1.50988736876979,-0.101428656830649,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",173,"Tapuit",-1.40845871193914,-0.996316497317906,0.412142214621236,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",175,"Merel",-1.40845871193914,-1.47903161445576,-0.0705729025166191,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",177,"Zanglijster",-1.40845871193914,-1.54672084326585,-0.138262131326705,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",179,"Grote Lijster",-1.40845871193914,-1.35323000223196,0.055228709707178,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",182,"Sprinkhaanrietzanger",-1.40845871193914,-1.46322233538875,-0.0547636234496052,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",190,"Spotvogel",-1.40845871193914,-1.38786360374722,0.0205951081919231,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",194,"Tuinfluiter",-1.40845871193914,-1.57626936479736,-0.167810652858214,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",195,"Zwartkop",-1.40845871193914,-1.5756243349448,-0.167165623005661,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",198,"Tjiftjaf",-1.40845871193914,-1.63400559390653,-0.225546881967387,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",200,"Fitis",-1.40845871193914,-1.44574893485044,-0.0372902229113015,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",207,"Staartmees",-1.40845871193914,-1.54332378803173,-0.134865076092583,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",219,"Grauwe Klauwier",-1.40845871193914,-1.34927133290741,0.0591873790317332,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",223,"Ekster",-1.40845871193914,-1.45495765385573,-0.046498941916584,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",224,"Kauw",-1.40845871193914,-1.45197040033004,-0.0435116883908959,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",231,"Huismus",-1.40845871193914,-1.39201914780693,0.016439564132209,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",233,"Vink",-1.40845871193914,-1.58579425023234,-0.1773355382932,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",239,"Kneu",-1.40845871193914,-1.43359442867704,-0.0251357167379007,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",240,"Barmsijs",-1.40845871193914,-1.18963791767016,0.218820794268981,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",251,"Rietgors",-1.40845871193914,-1.4389037597649,-0.0304450478257556,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",1,"Dodaars",-1.92123343531646,-2.02254167864182,-0.10130824332536,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",2,"Fuut",-1.92123343531646,-2.06047613459798,-0.139242699281517,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",4,"Geoorde Fuut",-1.92123343531646,-2.04128378775713,-0.12005035244067,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",17,"Knobbelzwaan",-1.92123343531646,-2.07982054074435,-0.158587105427888,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",29,"Bergeend",-1.92123343531646,-1.7702698872087,0.150963548107763,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",34,"Krakeend",-1.92123343531646,-2.02826812284727,-0.107034687530805,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",35,"Wintertaling",-1.92123343531646,-1.81769659831126,0.103536837005203,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",36,"Wilde Eend",-1.92123343531646,-1.91935893199222,0.00187450332423955,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",39,"Zomertaling",-1.92123343531646,-2.00750349187955,-0.086270056563087,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",40,"Slobeend",-1.92123343531646,-1.80174314726913,0.11949028804733,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",42,"Tafeleend",-1.92123343531646,-2.01222729897669,-0.090993863660227,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",44,"Kuifeend",-1.92123343531646,-1.9116758907782,0.00955754453826341,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",77,"Waterhoen",-1.92123343531646,-1.92624919392388,-0.00501575860741843,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",78,"Meerkoet",-1.92123343531646,-1.97997987244739,-0.0587464371309299,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",80,"Scholekster",-1.92123343531646,-1.78392815278623,0.137305282530231,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",84,"Kleine Plevier",-1.92123343531646,-1.97363853941876,-0.0524051041023044,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",88,"Kievit",-1.92123343531646,-1.91442775811608,0.00680567720038328,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",94,"Houtsnip",-1.92123343531646,-1.90003838912235,0.0211950461941113,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",97,"Wulp",-1.92123343531646,-1.47755922273637,0.443674212580092,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",98,"Tureluur",-1.92123343531646,-1.96720051893987,-0.0459670836234105,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",107,"Kleine Mantelmeeuw",-1.92123343531646,-1.49543552627074,0.425797909045722,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",108,"Zilvermeeuw",-1.92123343531646,-1.35810265625773,0.563130779058729,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",132,"Ransuil",-1.92123343531646,-1.83292825440805,0.0883051809084101,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",148,"Boomleeuwerik",-1.92123343531646,-2.09606524270775,-0.174831807391285,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",150,"Veldleeuwerik",-1.92123343531646,-1.86166171499543,0.0595717203210278,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",155,"Boompieper",-1.92123343531646,-1.96492049689302,-0.0436870615765583,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",156,"Graspieper",-1.92123343531646,-2.10926214510254,-0.188028709786081,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",158,"Gele Kwikstaart",-1.92123343531646,-1.88914112507579,0.0320923102406723,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",166,"Roodborst",-1.92123343531646,-2.01823080133148,-0.096997366015017,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",167,"Nachtegaal",-1.92123343531646,-1.99995479411977,-0.0787213588033131,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",170,"Gekraagde Roodstaart",-1.92123343531646,-1.97912265065121,-0.0578892153347499,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",171,"Paapje",-1.92123343531646,-1.58616786373169,0.335065571584769,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",172,"Roodborsttapuit",-1.92123343531646,-2.04870406526323,-0.127470629946769,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",175,"Merel",-1.92123343531646,-2.01500759477646,-0.0937741594600028,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",182,"Sprinkhaanrietzanger",-1.92123343531646,-1.99697294785302,-0.0757395125365545,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",186,"Rietzanger",-1.92123343531646,-2.066789429907,-0.14555599459054,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",198,"Tjiftjaf",-1.92123343531646,-2.18543442643778,-0.264200991121322,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",200,"Fitis",-1.92123343531646,-1.97686968976147,-0.0556362544450129,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",212,"Zwarte Mees",-1.92123343531646,-1.99462057447539,-0.0733871391589314,FALSE
-"fg_v1_grondbroed","Grondbroeders","binair","volledig",251,"Rietgors",-1.92123343531646,-1.9718939214065,-0.0506604860900373,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",27,"Nijlgans",-2.72747041123899,-2.89865764030138,-0.171187229062397,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",29,"Bergeend",-2.72747041123899,-2.55321855127043,0.174251859968555,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",36,"Wilde Eend",-2.72747041123899,-2.74616440205723,-0.0186939908182415,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",64,"Torenvalk",-2.72747041123899,-2.58104447867485,0.146425932564132,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",122,"Holenduif",-2.72747041123899,-2.7304875285885,-0.00301711734951304,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",131,"Bosuil",-2.72747041123899,-2.7777443903485,-0.0502739791095164,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",142,"Groene Specht",-2.72747041123899,-2.85864165339745,-0.131171242158468,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",144,"Grote Bonte Specht",-2.72747041123899,-3.01538020534434,-0.287909794105357,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",146,"Kleine Bonte Specht",-2.72747041123899,-3.0035264272036,-0.27605601596461,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",151,"Oeverzwaluw",-2.72747041123899,-2.80490918673908,-0.0774387755000938,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",162,"Witte Kwikstaart",-2.72747041123899,-2.89321886149122,-0.165748450252234,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",169,"Zwarte Roodstaart",-2.72747041123899,-2.70422471384957,0.023245697389418,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",170,"Gekraagde Roodstaart",-2.72747041123899,-2.84502298363228,-0.117552572393298,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",173,"Tapuit",-2.72747041123899,-2.12057210424856,0.606898306990422,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",203,"Grauwe Vliegenvanger",-2.72747041123899,-2.70574881404168,0.0217215971973106,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",205,"Bonte Vliegenvanger",-2.72747041123899,-2.36179222230011,0.365678188938878,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",208,"Glanskop",-2.72747041123899,-2.88512400024559,-0.157653589006601,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",209,"Matkop",-2.72747041123899,-2.55002715210422,0.177443259134769,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",210,"Kuifmees",-2.72747041123899,-2.73410961557257,-0.00663920433358056,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",212,"Zwarte Mees",-2.72747041123899,-2.89330745311969,-0.165837041880701,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",213,"Pimpelmees",-2.72747041123899,-3.01010877431215,-0.282638363073162,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",214,"Koolmees",-2.72747041123899,-2.87027556765598,-0.142805156416992,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",215,"Boomklever",-2.72747041123899,-2.06627722102278,0.661193190216203,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",217,"Boomkruiper",-2.72747041123899,-3.07618648247235,-0.348716071233368,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",224,"Kauw",-2.72747041123899,-2.83008889110797,-0.102618479868988,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",229,"Spreeuw",-2.72747041123899,-2.76421998981375,-0.0367495785747685,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",231,"Huismus",-2.72747041123899,-2.75147953410678,-0.0240091228677963,FALSE
-"fg_v1_holenbroed","Holenbroeders","binair","volledig",232,"Ringmus",-2.72747041123899,-2.32876334086967,0.39870707036932,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",39,"Zomertaling",-1.28173355742911,-1.39488358009562,-0.113150022666508,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",40,"Slobeend",-1.28173355742911,-1.05993260489682,0.221800952532292,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",66,"Boomvalk",-1.28173355742911,-1.11572097431171,0.166012583117403,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",84,"Kleine Plevier",-1.28173355742911,-1.35916047610869,-0.0774269186795795,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",98,"Tureluur",-1.28173355742911,-1.34682592843169,-0.0650923710025841,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",125,"Tortelduif",-1.28173355742911,-1.00639518952956,0.275338367899547,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",127,"Koekoek",-1.28173355742911,-1.46026685924051,-0.178533301811401,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",151,"Oeverzwaluw",-1.28173355742911,-1.339165622925,-0.0574320654958882,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",152,"Boerenzwaluw",-1.28173355742911,-1.12656673786883,0.155166819560282,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",155,"Boompieper",-1.28173355742911,-1.31999684033951,-0.0382632829104002,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",158,"Gele Kwikstaart",-1.28173355742911,-1.23824401773172,0.0434895396973944,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",167,"Nachtegaal",-1.28173355742911,-1.3731710624685,-0.0914375050393934,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",170,"Gekraagde Roodstaart",-1.28173355742911,-1.342746017089,-0.0610124596598927,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",171,"Paapje",-1.28173355742911,-0.73527450289822,0.54645905453089,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",182,"Sprinkhaanrietzanger",-1.28173355742911,-1.36763895794074,-0.0859054005116322,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",186,"Rietzanger",-1.28173355742911,-1.48460133072978,-0.202867773300675,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",187,"Bosrietzanger",-1.28173355742911,-1.46554751447706,-0.183813957047951,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",188,"Kleine Karekiet",-1.28173355742911,-1.51374867924059,-0.23201512181148,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",190,"Spotvogel",-1.28173355742911,-1.24920818470344,0.0325253727256669,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",192,"Braamsluiper",-1.28173355742911,-1.47824250376688,-0.19650894633777,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",193,"Grasmus",-1.28173355742911,-1.39169739945291,-0.109963842023797,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",194,"Tuinfluiter",-1.28173355742911,-1.56958168398673,-0.287848126557622,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",200,"Fitis",-1.28173355742911,-1.33630769692653,-0.0545741394974208,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",203,"Grauwe Vliegenvanger",-1.28173355742911,-1.17878990726665,0.102943650162457,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",205,"Bonte Vliegenvanger",-1.28173355742911,-0.766951258301407,0.514782299127703,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",218,"Wielewaal",-1.28173355742911,-1.41420314565434,-0.132469588225226,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",219,"Grauwe Klauwier",-1.28173355742911,-1.16622752280514,0.115506034623969,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",66,"Boomvalk",-5.13072172445345,-5.1934650555393,-0.0627433310858576,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",151,"Oeverzwaluw",-5.13072172445345,-5.58896966935936,-0.45824794490591,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",152,"Boerenzwaluw",-5.13072172445345,-5.46503270209205,-0.334310977638609,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",169,"Zwarte Roodstaart",-5.13072172445345,-5.43237599004667,-0.301654265593221,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",203,"Grauwe Vliegenvanger",-5.13072172445345,-5.55757689257453,-0.426855168121088,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",205,"Bonte Vliegenvanger",-5.13072172445345,-3.79696840427597,1.33375332017748,FALSE
-"fg_v1_lucht","Luchtfoerageerders","binair","volledig",219,"Grauwe Klauwier",-5.13072172445345,-4.86784596781182,0.262875756641622,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",8,"Woudaap",-1.57028361760247,-1.54208737066399,0.0281962469384833,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",11,"Blauwe Reiger",-1.57028361760247,-1.45153743300913,0.118746184593344,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",29,"Bergeend",-1.57028361760247,-1.44746378273807,0.122819834864407,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",37,"Soepeend",-1.57028361760247,-1.59298540254822,-0.0227017849457445,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",44,"Kuifeend",-1.57028361760247,-1.53660860792217,0.0336750096803007,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",64,"Torenvalk",-1.57028361760247,-1.45593768239869,0.114345935203786,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",69,"Patrijs",-1.57028361760247,-1.7679002047059,-0.197616587103422,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",70,"Kwartel",-1.57028361760247,-1.5536397566013,0.0166438610011754,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",80,"Scholekster",-1.57028361760247,-1.46524497400111,0.105038643601363,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",84,"Kleine Plevier",-1.57028361760247,-1.61156951070559,-0.0412858931031157,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",88,"Kievit",-1.57028361760247,-1.56165692721711,0.00862669038536046,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",93,"Watersnip",-1.57028361760247,-1.57389926999238,-0.00361565238991002,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",94,"Houtsnip",-1.57028361760247,-1.54582864776973,0.0244549698327434,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",97,"Wulp",-1.57028361760247,-1.22259130820364,0.347692309398839,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",105,"Kokmeeuw",-1.57028361760247,-1.5558308861896,0.0144527314128728,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",122,"Holenduif",-1.57028361760247,-1.52678007661073,0.0435035409917406,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",125,"Tortelduif",-1.57028361760247,-1.44123831585562,0.129045301746855,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",141,"Draaihals",-1.57028361760247,-1.57275029807323,-0.00246668047075849,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",142,"Groene Specht",-1.57028361760247,-1.62193539084334,-0.0516517732408683,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",143,"Zwarte Specht",-1.57028361760247,-1.21358774843294,0.356695869169532,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",144,"Grote Bonte Specht",-1.57028361760247,-1.69721554323053,-0.12693192562806,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",147,"Kuifleeuwerik",-1.57028361760247,-1.59537524522891,-0.025091627626439,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",148,"Boomleeuwerik",-1.57028361760247,-1.69911113697169,-0.128827519369212,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",150,"Veldleeuwerik",-1.57028361760247,-1.51672815100379,0.053555466598687,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",155,"Boompieper",-1.57028361760247,-1.5959901857001,-0.0257065680976276,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",156,"Graspieper",-1.57028361760247,-1.70606518034153,-0.135781562739057,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",158,"Gele Kwikstaart",-1.57028361760247,-1.54465573098943,0.0256278866130444,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",162,"Witte Kwikstaart",-1.57028361760247,-1.64786489852526,-0.0775812809227894,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",165,"Heggenmus",-1.57028361760247,-1.62819554020347,-0.057911922600995,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",166,"Roodborst",-1.57028361760247,-1.63797700125276,-0.0676933836502802,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",167,"Nachtegaal",-1.57028361760247,-1.62298817627917,-0.0527045586766972,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",168,"Blauwborst",-1.57028361760247,-1.66873367210905,-0.0984500545065714,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",170,"Gekraagde Roodstaart",-1.57028361760247,-1.6115225973377,-0.0412389797352253,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",171,"Paapje",-1.57028361760247,-1.31245999895194,0.257823618650532,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",172,"Roodborsttapuit",-1.57028361760247,-1.65604947848059,-0.0857658608781176,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",173,"Tapuit",-1.57028361760247,-1.21448144534524,0.355802172257236,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",175,"Merel",-1.57028361760247,-1.62779066417897,-0.0575070465764993,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",176,"Kramsvogel",-1.57028361760247,-1.54991224778493,0.0203713698175401,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",177,"Zanglijster",-1.57028361760247,-1.69085128356097,-0.120567665958493,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",179,"Grote Lijster",-1.57028361760247,-1.53506573230361,0.035217885298866,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",180,"Cetti's Zanger",-1.57028361760247,-1.59973104936471,-0.0294474317622306,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",182,"Sprinkhaanrietzanger",-1.57028361760247,-1.61747377912077,-0.0471901615182957,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",184,"Snor",-1.57028361760247,-1.55204365187044,0.0182399657320365,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",189,"Grote Karekiet",-1.57028361760247,-1.56347023968733,0.00681337791514913,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",190,"Spotvogel",-1.57028361760247,-1.55894420573028,0.011339411872191,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",194,"Tuinfluiter",-1.57028361760247,-1.71603789385307,-0.145754276250598,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",195,"Zwartkop",-1.57028361760247,-1.71512615264247,-0.144842535039991,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",198,"Tjiftjaf",-1.57028361760247,-1.76553002303454,-0.19524640543207,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",200,"Fitis",-1.57028361760247,-1.60422691020593,-0.0339432926034555,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",207,"Staartmees",-1.57028361760247,-1.68707434860981,-0.116790731007332,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",219,"Grauwe Klauwier",-1.57028361760247,-1.52881493816714,0.0414686794353303,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",223,"Ekster",-1.57028361760247,-1.6058596947013,-0.03557607709882,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",224,"Kauw",-1.57028361760247,-1.60806616296905,-0.0377825453665714,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",231,"Huismus",-1.57028361760247,-1.56144765217947,0.00883596542300413,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",233,"Vink",-1.57028361760247,-1.72976805092154,-0.159484433319068,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",239,"Kneu",-1.57028361760247,-1.59159733433522,-0.0213137167327404,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",240,"Barmsijs",-1.57028361760247,-1.38239063516696,0.187892982435511,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",248,"Appelvink",-1.57028361760247,-1.64836614845015,-0.0780825308476785,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",249,"Geelgors",-1.57028361760247,-1.57196828260721,-0.00168466500473086,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","volledig",251,"Rietgors",-1.57028361760247,-1.58470082822332,-0.0144172106208429,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",1,"Dodaars",-1.24144621969833,-1.30705506530365,-0.065608845605325,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",2,"Fuut",-1.24144621969833,-1.32007526896114,-0.0786290492628128,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",4,"Geoorde Fuut",-1.24144621969833,-1.33021760509461,-0.0887713853962802,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",5,"Aalscholver",-1.24144621969833,-1.46933174131797,-0.227885521619642,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",7,"Roerdomp",-1.24144621969833,-1.30622480302923,-0.0647785833309045,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",17,"Knobbelzwaan",-1.24144621969833,-1.35000714781751,-0.108560928119183,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",21,"Grauwe Gans",-1.24144621969833,-1.36466553498469,-0.12321931528636,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",22,"Soepgans",-1.24144621969833,-1.21696788931113,0.0244783303872009,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",25,"Grote Canadese Gans",-1.24144621969833,-1.31406821322946,-0.0726219935311301,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",29,"Bergeend",-1.24144621969833,-1.11584680871215,0.125599410986177,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",34,"Krakeend",-1.24144621969833,-1.30694531553478,-0.0654990958364521,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",35,"Wintertaling",-1.24144621969833,-1.12920407832416,0.112242141374164,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",36,"Wilde Eend",-1.24144621969833,-1.23135746105383,0.0100887586444998,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",37,"Soepeend",-1.24144621969833,-1.25864135556654,-0.0171951358682088,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",39,"Zomertaling",-1.24144621969833,-1.33218615208707,-0.0907399323887392,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",40,"Slobeend",-1.24144621969833,-1.1357260047025,0.10572021499583,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",41,"Krooneend",-1.24144621969833,-1.368012395645,-0.126566175946674,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",42,"Tafeleend",-1.24144621969833,-1.28933874098639,-0.0478925212880621,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",44,"Kuifeend",-1.24144621969833,-1.18231448391549,0.0591317357828358,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",69,"Patrijs",-1.24144621969833,-1.45512834252068,-0.213682122822356,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",70,"Kwartel",-1.24144621969833,-1.22329599263008,0.0181502270682476,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",71,"Gewone Fazant",-1.24144621969833,-1.07515931769377,0.166286902004553,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",77,"Waterhoen",-1.24144621969833,-1.23039978929709,0.0110464304012403,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",78,"Meerkoet",-1.24144621969833,-1.26318451734531,-0.0217382976469782,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",80,"Scholekster",-1.24144621969833,-1.13831490881491,0.10313131088342,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",84,"Kleine Plevier",-1.24144621969833,-1.28007905483173,-0.0386328351334009,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",88,"Kievit",-1.24144621969833,-1.23022027167735,0.0112259480209764,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",93,"Watersnip",-1.24144621969833,-1.24421909830195,-0.00277287860361852,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",94,"Houtsnip",-1.24144621969833,-1.21177303587247,0.0296731838258624,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",97,"Wulp",-1.24144621969833,-0.896597656264864,0.344848563433464,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",98,"Tureluur",-1.24144621969833,-1.2797117980225,-0.0382655783241703,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",105,"Kokmeeuw",-1.24144621969833,-1.22438169300232,0.017064526696009,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",107,"Kleine Mantelmeeuw",-1.24144621969833,-0.887938590776183,0.353507628922145,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",108,"Zilvermeeuw",-1.24144621969833,-0.797472459163762,0.443973760534566,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",116,"Visdief",-1.24144621969833,-1.22259584563406,0.018850374064272,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",132,"Ransuil",-1.24144621969833,-1.17245260312785,0.0689936165704785,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",135,"Nachtzwaluw",-1.24144621969833,-1.195335940248,0.0461102794503288,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",147,"Kuifleeuwerik",-1.24144621969833,-1.26813460277364,-0.0266883830753128,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",148,"Boomleeuwerik",-1.24144621969833,-1.3631935019638,-0.121747282265472,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",150,"Veldleeuwerik",-1.24144621969833,-1.18091711365069,0.0605291060476354,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",155,"Boompieper",-1.24144621969833,-1.25916931960899,-0.0177230999106603,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",156,"Graspieper",-1.24144621969833,-1.3658386946187,-0.124392474920376,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",158,"Gele Kwikstaart",-1.24144621969833,-1.21317114337004,0.028275076328288,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",166,"Roodborst",-1.24144621969833,-1.30201871166832,-0.0605724919699901,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",167,"Nachtegaal",-1.24144621969833,-1.28577366960869,-0.0443274499103641,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",168,"Blauwborst",-1.24144621969833,-1.33370958640942,-0.0922633667110873,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",170,"Gekraagde Roodstaart",-1.24144621969833,-1.27849980784424,-0.0370535881459078,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",171,"Paapje",-1.24144621969833,-0.986030477527,0.255415742171328,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",172,"Roodborsttapuit",-1.24144621969833,-1.31385049573712,-0.0724042760387955,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",175,"Merel",-1.24144621969833,-1.28387700504938,-0.0424307853510553,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",182,"Sprinkhaanrietzanger",-1.24144621969833,-1.27873536112546,-0.0372891414271326,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",184,"Snor",-1.24144621969833,-1.22383068414735,0.0176155355509744,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",186,"Rietzanger",-1.24144621969833,-1.33731534589084,-0.095869126192516,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",197,"Fluiter",-1.24144621969833,-1.15898657316795,0.0824596465303751,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",198,"Tjiftjaf",-1.24144621969833,-1.42446220809149,-0.183015988393165,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",200,"Fitis",-1.24144621969833,-1.2664118713791,-0.024965651680775,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",212,"Zwarte Mees",-1.24144621969833,-1.286793954955,-0.0453477352566733,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",249,"Geelgors",-1.24144621969833,-1.24199731398168,-0.000551094283351983,FALSE
+"fg_v1_grondbroed","Grondbroeders","binair","volledig",251,"Rietgors",-1.24144621969833,-1.23162887573952,0.00981734395880673,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",27,"Nijlgans",-2.84040601469201,-2.99493812753817,-0.154532112846162,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",29,"Bergeend",-2.84040601469201,-2.68960515655952,0.150800858132494,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",36,"Wilde Eend",-2.84040601469201,-2.86020682616329,-0.0198008114712822,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",64,"Torenvalk",-2.84040601469201,-2.72746478733658,0.112941227355434,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",122,"Holenduif",-2.84040601469201,-2.84595844751996,-0.00555243282794882,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",126,"Halsbandparkiet",-2.84040601469201,-3.03687602585877,-0.196470011166761,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",128,"Kerkuil",-2.84040601469201,-2.91585729438084,-0.0754512796888318,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",131,"Bosuil",-2.84040601469201,-2.88679206757105,-0.0463860528790438,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",136,"Gierzwaluw",-2.84040601469201,-2.82922731625527,0.0111786984367424,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",137,"IJsvogel",-2.84040601469201,-2.9418265879087,-0.101420573216693,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",141,"Draaihals",-2.84040601469201,-2.83859944447629,0.00180657021572328,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",142,"Groene Specht",-2.84040601469201,-2.95461799928375,-0.114211984591739,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",143,"Zwarte Specht",-2.84040601469201,-2.37372064322012,0.466685371471887,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",144,"Grote Bonte Specht",-2.84040601469201,-3.09614702528865,-0.255741010596644,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",146,"Kleine Bonte Specht",-2.84040601469201,-3.08550882646554,-0.245102811773534,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",151,"Oeverzwaluw",-2.84040601469201,-2.91126908177767,-0.070863067085658,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",162,"Witte Kwikstaart",-2.84040601469201,-2.98547935459089,-0.145073339898882,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",169,"Zwarte Roodstaart",-2.84040601469201,-2.83815677568621,0.00224923900580265,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",170,"Gekraagde Roodstaart",-2.84040601469201,-2.94988384854242,-0.109477833850413,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",173,"Tapuit",-2.84040601469201,-2.29799596826936,0.542410046422648,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",203,"Grauwe Vliegenvanger",-2.84040601469201,-2.83204019903885,0.0083658156531552,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",205,"Bonte Vliegenvanger",-2.84040601469201,-2.52404931683363,0.316356697858378,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",208,"Glanskop",-2.84040601469201,-2.97900029178653,-0.138594277094517,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",209,"Matkop",-2.84040601469201,-2.69018740274612,0.150218611945885,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",210,"Kuifmees",-2.84040601469201,-2.85422744806423,-0.0138214333722186,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",212,"Zwarte Mees",-2.84040601469201,-2.98968494543752,-0.149278930745511,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",213,"Pimpelmees",-2.84040601469201,-3.08598700249239,-0.245580987800376,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",214,"Koolmees",-2.84040601469201,-2.94725630763978,-0.106850292947769,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",215,"Boomklever",-2.84040601469201,-2.3033928517939,0.537013162898115,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",217,"Boomkruiper",-2.84040601469201,-3.14909302456999,-0.308687009877984,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",224,"Kauw",-2.84040601469201,-2.92563223434733,-0.0852262196553211,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",229,"Spreeuw",-2.84040601469201,-2.87324388346086,-0.0328378687688535,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",231,"Huismus",-2.84040601469201,-2.86381536379594,-0.0234093491039311,FALSE
+"fg_v1_holenbroed","Holenbroeders","binair","volledig",232,"Ringmus",-2.84040601469201,-2.4880584160356,0.352347598656411,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",8,"Woudaap",-1.41277157013706,-1.37795132218439,0.0348202479526716,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",39,"Zomertaling",-1.41277157013706,-1.55353280591747,-0.140761235780407,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",40,"Slobeend",-1.41277157013706,-1.23028119038394,0.18249037975312,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",53,"Wespendief",-1.41277157013706,-1.40188561623448,0.0108859539025841,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",66,"Boomvalk",-1.41277157013706,-1.29413746009922,0.118634110037841,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",70,"Kwartel",-1.41277157013706,-1.39389172854945,0.0188798415876157,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",84,"Kleine Plevier",-1.41277157013706,-1.49394619266578,-0.0811746225287235,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",93,"Watersnip",-1.41277157013706,-1.41995610106664,-0.0071845309295826,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",98,"Tureluur",-1.41277157013706,-1.47882529270376,-0.0660537225666946,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",116,"Visdief",-1.41277157013706,-1.39669209950373,0.0160794706333345,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",125,"Tortelduif",-1.41277157013706,-1.16586479403565,0.246906776101408,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",127,"Koekoek",-1.41277157013706,-1.55286477221842,-0.140093202081359,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",135,"Nachtzwaluw",-1.41277157013706,-1.35837442536292,0.0543971447741431,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",136,"Gierzwaluw",-1.41277157013706,-1.38858462469419,0.0241869454428723,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",141,"Draaihals",-1.41277157013706,-1.41200129793345,0.00077027220360959,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",151,"Oeverzwaluw",-1.41277157013706,-1.46844781545823,-0.0556762453211679,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",152,"Boerenzwaluw",-1.41277157013706,-1.30097086758545,0.111800702551612,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",155,"Boompieper",-1.41277157013706,-1.44289805117463,-0.0301264810375734,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",158,"Gele Kwikstaart",-1.41277157013706,-1.38185511828232,0.0309164518547456,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",167,"Nachtegaal",-1.41277157013706,-1.4854652215511,-0.0726936514140353,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",168,"Blauwborst",-1.41277157013706,-1.60044950396926,-0.187677933832198,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",170,"Gekraagde Roodstaart",-1.41277157013706,-1.47415615858838,-0.0613845884513187,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",171,"Paapje",-1.41277157013706,-0.978646940542494,0.434124629594568,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",182,"Sprinkhaanrietzanger",-1.41277157013706,-1.47396616813602,-0.0611945979989592,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",184,"Snor",-1.41277157013706,-1.39050215682822,0.0222694133088397,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",186,"Rietzanger",-1.41277157013706,-1.57860452454704,-0.165832954409983,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",187,"Bosrietzanger",-1.41277157013706,-1.54546625811315,-0.132694687976087,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",188,"Kleine Karekiet",-1.41277157013706,-1.58996431147607,-0.177192741339005,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",189,"Grote Karekiet",-1.41277157013706,-1.40457346075393,0.00819810938312848,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",190,"Spotvogel",-1.41277157013706,-1.39397952599524,0.0187920441418243,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",192,"Braamsluiper",-1.41277157013706,-1.54243348929896,-0.129661919161894,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",193,"Grasmus",-1.41277157013706,-1.50375315015097,-0.0909815800139047,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",194,"Tuinfluiter",-1.41277157013706,-1.64319698443393,-0.230425414296864,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",197,"Fluiter",-1.41277157013706,-1.29752264656408,0.115248923572986,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",200,"Fitis",-1.41277157013706,-1.45221672080558,-0.0394451506685156,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",203,"Grauwe Vliegenvanger",-1.41277157013706,-1.34854302978342,0.0642285403536391,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",205,"Bonte Vliegenvanger",-1.41277157013706,-0.986726566227136,0.426045003909925,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",218,"Wielewaal",-1.41277157013706,-1.54638624640783,-0.133614676270766,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","binair","volledig",219,"Grauwe Klauwier",-1.41277157013706,-1.34454026271458,0.0682313074224838,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",61,"Sperwer",-2.48624010095619,-2.99011974585984,-0.503879644903649,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",66,"Boomvalk",-2.48624010095619,-2.29633050328124,0.189909597674953,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",67,"Slechtvalk",-2.48624010095619,-2.62118689893153,-0.134946797975333,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",135,"Nachtzwaluw",-2.48624010095619,-2.58873351696962,-0.102493416013427,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",136,"Gierzwaluw",-2.48624010095619,-2.48990996532888,-0.00366986437269068,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",151,"Oeverzwaluw",-2.48624010095619,-2.60159944148711,-0.115359340530918,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",152,"Boerenzwaluw",-2.48624010095619,-2.38575810100844,0.100481999947755,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",169,"Zwarte Roodstaart",-2.48624010095619,-2.47977671109284,0.00646338986335371,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",197,"Fluiter",-2.48624010095619,-2.53013997297087,-0.0438998720146744,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",201,"Goudhaan",-2.48624010095619,-3.16249941079363,-0.676259309837435,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",202,"Vuurgoudhaan",-2.48624010095619,-2.54764734217107,-0.0614072412148725,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",203,"Grauwe Vliegenvanger",-2.48624010095619,-2.42212474032182,0.0641153606343758,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",205,"Bonte Vliegenvanger",-2.48624010095619,-1.46227252229458,1.02396757866161,FALSE
+"fg_v1_lucht","Luchtfoerageerders","binair","volledig",219,"Grauwe Klauwier",-2.48624010095619,-2.21939439669988,0.266845704256313,FALSE
 "fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","robuust",29,"Bergeend",-1.40845871193914,-1.26109399064036,0.147364721298782,FALSE
 "fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","robuust",44,"Kuifeend",-1.40845871193914,-1.38459887944515,0.0238598324939887,FALSE
 "fg_v1_bodem_insect","Bodemfoeragerende insecteneters","binair","robuust",64,"Torenvalk",-1.40845871193914,-1.26325539988089,0.145203312058251,FALSE
@@ -289,151 +350,212 @@
 "fg_v1_lucht","Luchtfoerageerders","binair","robuust",203,"Grauwe Vliegenvanger",-5.13072172445345,-5.55757689257453,-0.426855168121088,FALSE
 "fg_v1_lucht","Luchtfoerageerders","binair","robuust",205,"Bonte Vliegenvanger",-5.13072172445345,-3.79696840427597,1.33375332017748,FALSE
 "fg_v1_lucht","Luchtfoerageerders","binair","robuust",219,"Grauwe Klauwier",-5.13072172445345,-4.86784596781182,0.262875756641622,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",29,"Bergeend",-1.33090338674074,-1.22178855408572,0.109114832655022,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",44,"Kuifeend",-1.33090338674074,-1.31284736953398,0.018056017206769,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",64,"Torenvalk",-1.33090338674074,-1.22384706491048,0.107056321830268,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",80,"Scholekster",-1.33090338674074,-1.23093833739913,0.0999650493416104,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",84,"Kleine Plevier",-1.33090338674074,-1.38188074099967,-0.0509773542589298,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",88,"Kievit",-1.33090338674074,-1.30113760811219,0.0297657786285543,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",94,"Houtsnip",-1.33090338674074,-1.27885850103472,0.0520448857060263,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",97,"Wulp",-1.33090338674074,-1.03096380121053,0.299939585530218,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",122,"Holenduif",-1.33090338674074,-1.28697286284885,0.0439305238918997,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",125,"Tortelduif",-1.33090338674074,-1.22177113779813,0.109132248942612,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",142,"Groene Specht",-1.33090338674074,-1.37005593304222,-0.0391525463014797,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",144,"Grote Bonte Specht",-1.33090338674074,-1.4319904521644,-0.101087065423655,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",148,"Boomleeuwerik",-1.33090338674074,-1.54105385014855,-0.21015046340781,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",150,"Veldleeuwerik",-1.33090338674074,-1.28137000861149,0.0495333781292517,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",155,"Boompieper",-1.33090338674074,-1.34866211676353,-0.0177587300227877,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",156,"Graspieper",-1.33090338674074,-1.44290107900957,-0.111997692268828,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",158,"Gele Kwikstaart",-1.33090338674074,-1.27661196682634,0.0542914199144096,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",162,"Witte Kwikstaart",-1.33090338674074,-1.45378595704213,-0.122882570301386,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",165,"Heggenmus",-1.33090338674074,-1.43208705110839,-0.101183664367643,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",166,"Roodborst",-1.33090338674074,-1.38325042869899,-0.052347041958245,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",167,"Nachtegaal",-1.33090338674074,-1.37162292001862,-0.0407195332778776,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",170,"Gekraagde Roodstaart",-1.33090338674074,-1.38725843088271,-0.0563550441419647,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",171,"Paapje",-1.33090338674074,-0.877643154014374,0.453260232726371,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",172,"Roodborsttapuit",-1.33090338674074,-1.47857358597739,-0.147670199236649,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",173,"Tapuit",-1.33090338674074,-0.716744730719188,0.614158656021557,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",175,"Merel",-1.33090338674074,-1.3809174020929,-0.0500140153521511,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",177,"Zanglijster",-1.33090338674074,-1.429833361428,-0.0989299746872563,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",179,"Grote Lijster",-1.33090338674074,-1.28938604142133,0.0415173453194195,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",182,"Sprinkhaanrietzanger",-1.33090338674074,-1.40952926435617,-0.0786258776154236,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",190,"Spotvogel",-1.33090338674074,-1.3145375019279,0.0163658848128412,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",194,"Tuinfluiter",-1.33090338674074,-1.45136220395327,-0.120458817212521,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",195,"Zwartkop",-1.33090338674074,-1.45078061189585,-0.119877225155107,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",198,"Tjiftjaf",-1.33090338674074,-1.66121494112532,-0.330311554384577,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",200,"Fitis",-1.33090338674074,-1.38294093872934,-0.0520375519885929,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",207,"Staartmees",-1.33090338674074,-1.5271276238329,-0.196224237092157,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",219,"Grauwe Klauwier",-1.33090338674074,-1.28690259675055,0.0440007899901951,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",223,"Ekster",-1.33090338674074,-1.36349215710934,-0.0325887703685912,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",224,"Kauw",-1.33090338674074,-1.36075223230137,-0.0298488455606205,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",231,"Huismus",-1.33090338674074,-1.30354572807028,0.0273576586704682,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",233,"Vink",-1.33090338674074,-1.45877280886404,-0.127869422123295,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",239,"Kneu",-1.33090338674074,-1.34778905974767,-0.0168856730069278,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",240,"Barmsijs",-1.33090338674074,-1.16993677709815,0.160966609642599,FALSE
-"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",251,"Rietgors",-1.33090338674074,-1.35214366338303,-0.021240276642287,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",1,"Dodaars",-1.92312523953282,-2.03393394298168,-0.110808703448861,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",2,"Fuut",-1.92312523953282,-2.07435725356243,-0.151232014029612,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",4,"Geoorde Fuut",-1.92312523953282,-2.05484940425829,-0.131724164725466,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",17,"Knobbelzwaan",-1.92312523953282,-2.09441199479653,-0.171286755263711,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",29,"Bergeend",-1.92312523953282,-1.84236652734033,0.0807587121924858,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",34,"Krakeend",-1.92312523953282,-2.03878362507232,-0.115658385539497,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",35,"Wintertaling",-1.92312523953282,-1.80980337772052,0.113321861812299,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",36,"Wilde Eend",-1.92312523953282,-1.92165358148652,0.00147165804630367,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",39,"Zomertaling",-1.92312523953282,-2.02030523541872,-0.0971799958858988,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",40,"Slobeend",-1.92312523953282,-1.79328576739379,0.129839472139026,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",42,"Tafeleend",-1.92312523953282,-2.022477620053,-0.099352380520179,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",44,"Kuifeend",-1.92312523953282,-1.91114756971111,0.0119776698217056,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",77,"Waterhoen",-1.92312523953282,-1.92893118463708,-0.00580594510426469,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",78,"Meerkoet",-1.92312523953282,-1.98714050661191,-0.0640152670790872,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",80,"Scholekster",-1.92312523953282,-1.77484159729738,0.148283642235436,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",84,"Kleine Plevier",-1.92312523953282,-1.97888836586237,-0.0557631263295555,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",88,"Kievit",-1.92312523953282,-1.9197926975693,0.00333254196351884,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",94,"Houtsnip",-1.92312523953282,-1.90001694809656,0.0231082914362579,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",97,"Wulp",-1.92312523953282,-1.44007912628,0.483046113252816,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",98,"Tureluur",-1.92312523953282,-1.97274820013646,-0.0496229606036458,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",107,"Kleine Mantelmeeuw",-1.92312523953282,-1.45903841843982,0.464086821093002,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",108,"Zilvermeeuw",-1.92312523953282,-1.30807967085391,0.615045568678907,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",132,"Ransuil",-1.92312523953282,-1.8761967413307,0.0469284982021145,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",148,"Boomleeuwerik",-1.92312523953282,-2.11391055025788,-0.190785310725061,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",150,"Veldleeuwerik",-1.92312523953282,-1.85863763081795,0.0644876087148694,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",155,"Boompieper",-1.92312523953282,-1.97103941168791,-0.0479141721550946,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",156,"Graspieper",-1.92312523953282,-2.12824540948998,-0.205120169957163,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",158,"Gele Kwikstaart",-1.92312523953282,-1.88713611449035,0.0359891250424682,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",166,"Roodborst",-1.92312523953282,-1.97534538087082,-0.0522201413379997,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",167,"Nachtegaal",-1.92312523953282,-2.0092139302348,-0.0860886907019798,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",170,"Gekraagde Roodstaart",-1.92312523953282,-1.95450908794926,-0.0313838484164441,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",171,"Paapje",-1.92312523953282,-1.56016932870003,0.362955910832785,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",172,"Roodborsttapuit",-1.92312523953282,-2.06166223033002,-0.1385369907972,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",175,"Merel",-1.92312523953282,-1.97334753266406,-0.0502222931312413,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",182,"Sprinkhaanrietzanger",-1.92312523953282,-2.00553178851134,-0.0824065489785197,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",186,"Rietzanger",-1.92312523953282,-2.08225126790907,-0.159126028376255,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",198,"Tjiftjaf",-1.92312523953282,-2.21111864625424,-0.287993406721421,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",200,"Fitis",-1.92312523953282,-1.98400258058105,-0.0608773410482266,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",212,"Zwarte Mees",-1.92312523953282,-2.00145059418104,-0.0783253546482232,FALSE
-"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",251,"Rietgors",-1.92312523953282,-1.97704617880939,-0.0539209392765749,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",27,"Nijlgans",-2.72747041123899,-2.89865764030138,-0.171187229062397,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",29,"Bergeend",-2.72747041123899,-2.55321855127043,0.174251859968555,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",36,"Wilde Eend",-2.72747041123899,-2.74616440205723,-0.0186939908182415,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",64,"Torenvalk",-2.72747041123899,-2.58104447867485,0.146425932564132,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",122,"Holenduif",-2.72747041123899,-2.7304875285885,-0.00301711734951304,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",131,"Bosuil",-2.72747041123899,-2.7777443903485,-0.0502739791095164,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",142,"Groene Specht",-2.72747041123899,-2.85864165339745,-0.131171242158468,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",144,"Grote Bonte Specht",-2.72747041123899,-3.01538020534434,-0.287909794105357,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",146,"Kleine Bonte Specht",-2.72747041123899,-3.0035264272036,-0.27605601596461,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",151,"Oeverzwaluw",-2.72747041123899,-2.80490918673908,-0.0774387755000938,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",162,"Witte Kwikstaart",-2.72747041123899,-2.89321886149122,-0.165748450252234,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",169,"Zwarte Roodstaart",-2.72747041123899,-2.70422471384957,0.023245697389418,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",170,"Gekraagde Roodstaart",-2.72747041123899,-2.84502298363228,-0.117552572393298,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",173,"Tapuit",-2.72747041123899,-2.12057210424856,0.606898306990422,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",203,"Grauwe Vliegenvanger",-2.72747041123899,-2.70574881404168,0.0217215971973106,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",205,"Bonte Vliegenvanger",-2.72747041123899,-2.36179222230011,0.365678188938878,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",208,"Glanskop",-2.72747041123899,-2.88512400024559,-0.157653589006601,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",209,"Matkop",-2.72747041123899,-2.55002715210422,0.177443259134769,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",210,"Kuifmees",-2.72747041123899,-2.73410961557257,-0.00663920433358056,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",212,"Zwarte Mees",-2.72747041123899,-2.89330745311969,-0.165837041880701,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",213,"Pimpelmees",-2.72747041123899,-3.01010877431215,-0.282638363073162,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",214,"Koolmees",-2.72747041123899,-2.87027556765598,-0.142805156416992,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",215,"Boomklever",-2.72747041123899,-2.06627722102278,0.661193190216203,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",217,"Boomkruiper",-2.72747041123899,-3.07618648247235,-0.348716071233368,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",224,"Kauw",-2.72747041123899,-2.83008889110797,-0.102618479868988,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",229,"Spreeuw",-2.72747041123899,-2.76421998981375,-0.0367495785747685,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",231,"Huismus",-2.72747041123899,-2.75147953410678,-0.0240091228677963,FALSE
-"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",232,"Ringmus",-2.72747041123899,-2.32876334086967,0.39870707036932,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",39,"Zomertaling",-1.20455895403065,-1.3208105064917,-0.116251552461044,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",40,"Slobeend",-1.20455895403065,-1.09052743095089,0.114031523079761,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",66,"Boomvalk",-1.20455895403065,-1.02953371296572,0.17502524106493,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",84,"Kleine Plevier",-1.20455895403065,-1.28074041594709,-0.0761814619164358,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",98,"Tureluur",-1.20455895403065,-1.23728859568168,-0.0327296416510303,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",125,"Tortelduif",-1.20455895403065,-0.916502444941547,0.288056509089107,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",127,"Koekoek",-1.20455895403065,-1.386433350524,-0.181874396493342,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",151,"Oeverzwaluw",-1.20455895403065,-1.26233340217882,-0.0577744481481623,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",152,"Boerenzwaluw",-1.20455895403065,-1.03946468483016,0.165094269200494,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",155,"Boompieper",-1.20455895403065,-1.24053271143294,-0.0359737574022856,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",158,"Gele Kwikstaart",-1.20455895403065,-1.15743937099331,0.0471195830373472,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",167,"Nachtegaal",-1.20455895403065,-1.29575682319125,-0.0911978691605975,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",170,"Gekraagde Roodstaart",-1.20455895403065,-1.26426387340028,-0.0597049193696297,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",171,"Paapje",-1.20455895403065,-0.637868713977774,0.566690240052881,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",182,"Sprinkhaanrietzanger",-1.20455895403065,-1.28938947305529,-0.0848305190246368,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",186,"Rietzanger",-1.20455895403065,-1.41102930807285,-0.206470354042199,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",187,"Bosrietzanger",-1.20455895403065,-1.39144364726916,-0.186884693238509,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",188,"Kleine Karekiet",-1.20455895403065,-1.44144860100849,-0.236889646977834,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",190,"Spotvogel",-1.20455895403065,-1.16694531797925,0.0376136360514034,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",192,"Braamsluiper",-1.20455895403065,-1.40444908727758,-0.199890133246927,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",193,"Grasmus",-1.20455895403065,-1.31431947892319,-0.109760524892533,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",194,"Tuinfluiter",-1.20455895403065,-1.49886203605639,-0.294303082025738,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",200,"Fitis",-1.20455895403065,-1.25764043395216,-0.0530814799215018,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",203,"Grauwe Vliegenvanger",-1.20455895403065,-1.09390010580348,0.110658848227174,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",205,"Bonte Vliegenvanger",-1.20455895403065,-0.668617070409971,0.535941883620683,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",218,"Wielewaal",-1.20455895403065,-1.33862631256768,-0.134067358537027,FALSE
-"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",219,"Grauwe Klauwier",-1.20455895403065,-1.08287579710464,0.121683156926011,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",66,"Boomvalk",-5.13487204287651,-5.2554941755078,-0.120622132631288,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",151,"Oeverzwaluw",-5.13487204287651,-5.65302545754324,-0.518153414666722,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",152,"Boerenzwaluw",-5.13487204287651,-5.53316888962768,-0.398296846751167,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",169,"Zwarte Roodstaart",-5.13487204287651,-5.30118952506041,-0.166317482183898,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",203,"Grauwe Vliegenvanger",-5.13487204287651,-5.63052213555064,-0.495650092674127,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",205,"Bonte Vliegenvanger",-5.13487204287651,-3.54410111111889,1.59077093175762,FALSE
-"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",219,"Grauwe Klauwier",-5.13487204287651,-4.97812996711864,0.156742075757876,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",8,"Woudaap",-1.66277591897204,-1.62404271640529,0.0387332025667431,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",11,"Blauwe Reiger",-1.66277591897204,-1.5798362692536,0.0829396497184387,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",29,"Bergeend",-1.66277591897204,-1.57632846308623,0.0864474558858075,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",37,"Soepeend",-1.66277591897204,-1.68076066063955,-0.0179847416675094,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",44,"Kuifeend",-1.66277591897204,-1.63892914419097,0.0238467747810667,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",64,"Torenvalk",-1.66277591897204,-1.58319119555408,0.0795847234179581,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",69,"Patrijs",-1.66277591897204,-1.80520103371555,-0.142425114743516,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",70,"Kwartel",-1.66277591897204,-1.65142073965872,0.0113551793133215,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",80,"Scholekster",-1.66277591897204,-1.5897897981847,0.0729861207873328,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",84,"Kleine Plevier",-1.66277591897204,-1.72589695694012,-0.0631210379680835,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",88,"Kievit",-1.66277591897204,-1.6539509143363,0.00882500463573743,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",93,"Watersnip",-1.66277591897204,-1.66749714150788,-0.00472122253584173,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",94,"Houtsnip",-1.66277591897204,-1.63029012906046,0.0324857899115738,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",97,"Wulp",-1.66277591897204,-1.41607848942849,0.246697429543552,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",105,"Kokmeeuw",-1.66277591897204,-1.64086909665127,0.0219068223207719,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",122,"Holenduif",-1.66277591897204,-1.63334641329036,0.0294295056816773,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",125,"Tortelduif",-1.66277591897204,-1.57166613121255,0.0911097877594913,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",141,"Draaihals",-1.66277591897204,-1.66569586770684,-0.00291994873480306,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",142,"Groene Specht",-1.66277591897204,-1.70088764449748,-0.0381117255254471,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",143,"Zwarte Specht",-1.66277591897204,-1.14870601321542,0.51406990575662,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",144,"Grote Bonte Specht",-1.66277591897204,-1.75465852326084,-0.0918826042888066,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",147,"Kuifleeuwerik",-1.66277591897204,-1.69865120342573,-0.0358752844536903,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",148,"Boomleeuwerik",-1.66277591897204,-1.85252015727209,-0.189744238300049,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",150,"Veldleeuwerik",-1.66277591897204,-1.62588007957363,0.0368958393984098,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",155,"Boompieper",-1.66277591897204,-1.68251780880968,-0.0197418898376434,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",156,"Graspieper",-1.66277591897204,-1.76081594212809,-0.0980400231560541,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",158,"Gele Kwikstaart",-1.66277591897204,-1.6268283835438,0.0359475354282379,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",162,"Witte Kwikstaart",-1.66277591897204,-1.7782439706503,-0.115468051678258,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",165,"Heggenmus",-1.66277591897204,-1.74823713192583,-0.0854612129537968,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",166,"Roodborst",-1.66277591897204,-1.71249094918947,-0.0497150302174343,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",167,"Nachtegaal",-1.66277591897204,-1.70171457881697,-0.0389386598449337,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",168,"Blauwborst",-1.66277591897204,-1.80895420978762,-0.14617829081558,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",170,"Gekraagde Roodstaart",-1.66277591897204,-1.72603994921978,-0.063264030247745,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",171,"Paapje",-1.66277591897204,-1.29501697121973,0.367758947752306,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",172,"Roodborsttapuit",-1.66277591897204,-1.78885292815836,-0.126077009186321,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",173,"Tapuit",-1.66277591897204,-1.14855934113272,0.514216577839322,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",175,"Merel",-1.66277591897204,-1.70473717560543,-0.0419612566333938,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",176,"Kramsvogel",-1.66277591897204,-1.63409782635507,0.0286780926169627,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",177,"Zanglijster",-1.66277591897204,-1.75002346823808,-0.0872475492660452,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",179,"Grote Lijster",-1.66277591897204,-1.63982995305516,0.0229459659168763,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",180,"Cetti's Zanger",-1.66277591897204,-1.70726952344789,-0.0444936044758482,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",182,"Sprinkhaanrietzanger",-1.66277591897204,-1.73361588619095,-0.0708399672189164,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",184,"Snor",-1.66277591897204,-1.63763981556785,0.0251361034041886,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",189,"Grote Karekiet",-1.66277591897204,-1.65824294851425,0.00453297045778234,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",190,"Spotvogel",-1.66277591897204,-1.6562232946369,0.00655262433513215,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",194,"Tuinfluiter",-1.66277591897204,-1.76798004286485,-0.10520412389281,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",195,"Zwartkop",-1.66277591897204,-1.76728339210939,-0.10450747313735,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",198,"Tjiftjaf",-1.66277591897204,-1.94782302442819,-0.285047105456149,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",200,"Fitis",-1.66277591897204,-1.71453234850155,-0.0517564295295148,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",207,"Staartmees",-1.66277591897204,-1.83426761372348,-0.171491694751447,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",219,"Grauwe Klauwier",-1.66277591897204,-1.63439891252483,0.0283770064472111,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",223,"Ekster",-1.66277591897204,-1.68906938442658,-0.026293465454541,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",224,"Kauw",-1.66277591897204,-1.69088198210879,-0.0281060631367569,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",231,"Huismus",-1.66277591897204,-1.65324883590425,0.00952708306778405,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",233,"Vink",-1.66277591897204,-1.7780408563109,-0.115264937338866,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",239,"Kneu",-1.66277591897204,-1.67903834476382,-0.0162624257917798,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",240,"Barmsijs",-1.66277591897204,-1.5289697268742,0.133806192097841,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",248,"Appelvink",-1.66277591897204,-1.72033780981308,-0.0575618908410402,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",249,"Geelgors",-1.66277591897204,-1.66365318091383,-0.000877261941789609,FALSE
+"fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","volledig",251,"Rietgors",-1.66277591897204,-1.67332546600942,-0.0105495470373862,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",1,"Dodaars",-1.32733243645838,-1.40058847676247,-0.0732560403040816,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",2,"Fuut",-1.32733243645838,-1.41355217594064,-0.0862197394822517,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",4,"Geoorde Fuut",-1.32733243645838,-1.42595952399442,-0.0986270875360407,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",5,"Aalscholver",-1.32733243645838,-1.44919964741587,-0.121867210957483,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",7,"Roerdomp",-1.32733243645838,-1.39818790491635,-0.0708554684579643,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",17,"Knobbelzwaan",-1.32733243645838,-1.44552134447677,-0.118188908018391,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",21,"Grauwe Gans",-1.32733243645838,-1.46090153373084,-0.133569097272457,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",22,"Soepgans",-1.32733243645838,-1.30160225143404,0.0257301850243419,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",25,"Grote Canadese Gans",-1.32733243645838,-1.4063753373822,-0.0790429009238203,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",29,"Bergeend",-1.32733243645838,-1.26160857401982,0.0657238624385603,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",34,"Krakeend",-1.32733243645838,-1.39935877680967,-0.0720263403512833,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",35,"Wintertaling",-1.32733243645838,-1.20634851594289,0.120983920515494,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",36,"Wilde Eend",-1.32733243645838,-1.3191945012214,0.00813793523698481,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",37,"Soepeend",-1.32733243645838,-1.34657268870592,-0.0192402522475321,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",39,"Zomertaling",-1.32733243645838,-1.4286598199458,-0.101327383487415,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",40,"Slobeend",-1.32733243645838,-1.21576360200146,0.111568834456921,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",41,"Krooneend",-1.32733243645838,-1.46460960731085,-0.137277170852468,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",42,"Tafeleend",-1.32733243645838,-1.38112702825142,-0.0537945917930327,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",44,"Kuifeend",-1.32733243645838,-1.26321029712638,0.0641221393320013,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",69,"Patrijs",-1.32733243645838,-1.56140229874425,-0.234069862285868,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",70,"Kwartel",-1.32733243645838,-1.30815108440305,0.0191813520553308,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",71,"Gewone Fazant",-1.32733243645838,-1.14893304804461,0.178399388413775,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",77,"Waterhoen",-1.32733243645838,-1.31780506965589,0.00952736680249755,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",78,"Meerkoet",-1.32733243645838,-1.35264833381161,-0.0253158973532286,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",80,"Scholekster",-1.32733243645838,-1.21993953350641,0.107392902951975,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",84,"Kleine Plevier",-1.32733243645838,-1.37065396576458,-0.043321529306195,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",88,"Kievit",-1.32733243645838,-1.3227102155419,0.00462222091648368,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",93,"Watersnip",-1.32733243645838,-1.33016416459807,-0.00283172813968502,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",94,"Houtsnip",-1.32733243645838,-1.29752961175275,0.0298028247056381,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",97,"Wulp",-1.32733243645838,-0.958296597873542,0.369035838584841,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",98,"Tureluur",-1.32733243645838,-1.36974830983481,-0.0424158733764224,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",105,"Kokmeeuw",-1.32733243645838,-1.30926757918115,0.0180648572772335,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",107,"Kleine Mantelmeeuw",-1.32733243645838,-0.947916756869283,0.379415679589101,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",108,"Zilvermeeuw",-1.32733243645838,-0.849917630834551,0.477414805623833,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",116,"Visdief",-1.32733243645838,-1.30715599384005,0.020176442618336,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",132,"Ransuil",-1.32733243645838,-1.29207492643788,0.0352575100205033,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",135,"Nachtzwaluw",-1.32733243645838,-1.27841282242435,0.0489196140340376,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",147,"Kuifleeuwerik",-1.32733243645838,-1.35688035464985,-0.0295479181914637,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",148,"Boomleeuwerik",-1.32733243645838,-1.4610231791739,-0.13369074271552,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",150,"Veldleeuwerik",-1.32733243645838,-1.26458372447779,0.0627487119805981,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",155,"Boompieper",-1.32733243645838,-1.34877201288157,-0.0214395764231878,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",156,"Graspieper",-1.32733243645838,-1.46368005830451,-0.136347621846122,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",158,"Gele Kwikstaart",-1.32733243645838,-1.29742763313738,0.0299048033210014,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",166,"Roodborst",-1.32733243645838,-1.36081567141761,-0.0334832349592307,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",167,"Nachtegaal",-1.32733243645838,-1.37747877827682,-0.0501463418184356,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",168,"Blauwborst",-1.32733243645838,-1.42758760620832,-0.100255169749941,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",170,"Gekraagde Roodstaart",-1.32733243645838,-1.34844515010737,-0.0211127136489853,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",171,"Paapje",-1.32733243645838,-1.05514582697364,0.272186609484748,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",172,"Roodborsttapuit",-1.32733243645838,-1.4068236945923,-0.0794912581339124,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",175,"Merel",-1.32733243645838,-1.35079860804297,-0.0234661715845852,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",182,"Sprinkhaanrietzanger",-1.32733243645838,-1.36928794184874,-0.0419555053903564,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",184,"Snor",-1.32733243645838,-1.30852968382684,0.0188027526315415,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",186,"Rietzanger",-1.32733243645838,-1.43330561972608,-0.105973183267694,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",197,"Fluiter",-1.32733243645838,-1.2391960235319,0.0881364129264872,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",198,"Tjiftjaf",-1.32733243645838,-1.52677236638884,-0.199439929930456,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",200,"Fitis",-1.32733243645838,-1.35650885792687,-0.0291764214684909,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",212,"Zwarte Mees",-1.32733243645838,-1.37734709595941,-0.0500146595010298,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",249,"Geelgors",-1.32733243645838,-1.32810382243069,-0.00077138597230908,FALSE
+"fg_v1_grondbroed","Grondbroeders","gewogen","volledig",251,"Rietgors",-1.32733243645838,-1.31676960033063,0.0105628361277588,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",27,"Nijlgans",-2.84040601469201,-2.99493812753817,-0.154532112846162,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",29,"Bergeend",-2.84040601469201,-2.68960515655952,0.150800858132494,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",36,"Wilde Eend",-2.84040601469201,-2.86020682616329,-0.0198008114712822,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",64,"Torenvalk",-2.84040601469201,-2.72746478733658,0.112941227355434,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",122,"Holenduif",-2.84040601469201,-2.84595844751996,-0.00555243282794882,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",126,"Halsbandparkiet",-2.84040601469201,-3.03687602585877,-0.196470011166761,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",128,"Kerkuil",-2.84040601469201,-2.91585729438084,-0.0754512796888318,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",131,"Bosuil",-2.84040601469201,-2.88679206757105,-0.0463860528790438,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",136,"Gierzwaluw",-2.84040601469201,-2.82922731625527,0.0111786984367424,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",137,"IJsvogel",-2.84040601469201,-2.9418265879087,-0.101420573216693,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",141,"Draaihals",-2.84040601469201,-2.83859944447629,0.00180657021572328,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",142,"Groene Specht",-2.84040601469201,-2.95461799928375,-0.114211984591739,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",143,"Zwarte Specht",-2.84040601469201,-2.37372064322012,0.466685371471887,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",144,"Grote Bonte Specht",-2.84040601469201,-3.09614702528865,-0.255741010596644,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",146,"Kleine Bonte Specht",-2.84040601469201,-3.08550882646554,-0.245102811773534,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",151,"Oeverzwaluw",-2.84040601469201,-2.91126908177767,-0.070863067085658,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",162,"Witte Kwikstaart",-2.84040601469201,-2.98547935459089,-0.145073339898882,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",169,"Zwarte Roodstaart",-2.84040601469201,-2.83815677568621,0.00224923900580265,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",170,"Gekraagde Roodstaart",-2.84040601469201,-2.94988384854242,-0.109477833850413,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",173,"Tapuit",-2.84040601469201,-2.29799596826936,0.542410046422648,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",203,"Grauwe Vliegenvanger",-2.84040601469201,-2.83204019903885,0.0083658156531552,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",205,"Bonte Vliegenvanger",-2.84040601469201,-2.52404931683363,0.316356697858378,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",208,"Glanskop",-2.84040601469201,-2.97900029178653,-0.138594277094517,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",209,"Matkop",-2.84040601469201,-2.69018740274612,0.150218611945885,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",210,"Kuifmees",-2.84040601469201,-2.85422744806423,-0.0138214333722186,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",212,"Zwarte Mees",-2.84040601469201,-2.98968494543752,-0.149278930745511,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",213,"Pimpelmees",-2.84040601469201,-3.08598700249239,-0.245580987800376,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",214,"Koolmees",-2.84040601469201,-2.94725630763978,-0.106850292947769,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",215,"Boomklever",-2.84040601469201,-2.3033928517939,0.537013162898115,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",217,"Boomkruiper",-2.84040601469201,-3.14909302456999,-0.308687009877984,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",224,"Kauw",-2.84040601469201,-2.92563223434733,-0.0852262196553211,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",229,"Spreeuw",-2.84040601469201,-2.87324388346086,-0.0328378687688535,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",231,"Huismus",-2.84040601469201,-2.86381536379594,-0.0234093491039311,FALSE
+"fg_v1_holenbroed","Holenbroeders","gewogen","volledig",232,"Ringmus",-2.84040601469201,-2.4880584160356,0.352347598656411,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",8,"Woudaap",-1.3587737009345,-1.3219782972561,0.0367954036784024,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",39,"Zomertaling",-1.3587737009345,-1.50453931686233,-0.145765615927829,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",40,"Slobeend",-1.3587737009345,-1.26531067821132,0.0934630227231836,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",53,"Wespendief",-1.3587737009345,-1.34661796475389,0.0121557361806079,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",66,"Boomvalk",-1.3587737009345,-1.23512263109653,0.123651069837971,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",70,"Kwartel",-1.3587737009345,-1.33818199447877,0.0205917064557304,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",84,"Kleine Plevier",-1.3587737009345,-1.44029950212772,-0.0815258011932163,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",93,"Watersnip",-1.3587737009345,-1.36227311388665,-0.00349941295214595,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",98,"Tureluur",-1.3587737009345,-1.39242975850665,-0.0336560575721512,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",116,"Visdief",-1.3587737009345,-1.34124471340914,0.0175289875253615,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",125,"Tortelduif",-1.3587737009345,-1.10208536753187,0.256688333402633,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",127,"Koekoek",-1.3587737009345,-1.50166625857174,-0.142892557637242,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",135,"Nachtzwaluw",-1.3587737009345,-1.30074748827802,0.0580262126564812,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",136,"Gierzwaluw",-1.3587737009345,-1.33365534364898,0.0251183572855251,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",141,"Draaihals",-1.3587737009345,-1.35818819923567,0.000585501698835422,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",151,"Oeverzwaluw",-1.3587737009345,-1.41514748301133,-0.056373782076824,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",152,"Boerenzwaluw",-1.3587737009345,-1.24091480853293,0.117858892401568,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",155,"Boompieper",-1.3587737009345,-1.38773004787269,-0.0289563469381915,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",158,"Gele Kwikstaart",-1.3587737009345,-1.32585903389391,0.0329146670405955,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",167,"Nachtegaal",-1.3587737009345,-1.43171275291271,-0.0729390519782047,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",168,"Blauwborst",-1.3587737009345,-1.54933378335904,-0.19056008242454,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",170,"Gekraagde Roodstaart",-1.3587737009345,-1.42031764984341,-0.0615439489089042,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",171,"Paapje",-1.3587737009345,-0.911012956638568,0.447760744295933,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",182,"Sprinkhaanrietzanger",-1.3587737009345,-1.41915316521347,-0.0603794642789701,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",184,"Snor",-1.3587737009345,-1.33576085536239,0.0230128455721124,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",186,"Rietzanger",-1.3587737009345,-1.5277581055759,-0.168984404641404,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",187,"Bosrietzanger",-1.3587737009345,-1.49336383175467,-0.134590130820167,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",188,"Kleine Karekiet",-1.3587737009345,-1.5394197487808,-0.1806460478463,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",189,"Grote Karekiet",-1.3587737009345,-1.3501458160827,0.00862788485179733,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",190,"Spotvogel",-1.3587737009345,-1.33709276322853,0.0216809377059701,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",192,"Braamsluiper",-1.3587737009345,-1.48979623802415,-0.131022537089653,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",193,"Grasmus",-1.3587737009345,-1.45004047969866,-0.0912667787641541,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",194,"Tuinfluiter",-1.3587737009345,-1.59415621731436,-0.235382516379856,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",197,"Fluiter",-1.3587737009345,-1.23708011423989,0.121693586694616,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",200,"Fitis",-1.3587737009345,-1.39742948551052,-0.0386557845760138,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",203,"Grauwe Vliegenvanger",-1.3587737009345,-1.29039512580742,0.0683785751270816,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",205,"Bonte Vliegenvanger",-1.3587737009345,-0.917917102638721,0.44085659829578,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",218,"Wielewaal",-1.3587737009345,-1.49542964102646,-0.136655940091956,FALSE
+"fg_v1_lange_trek","Langeafstandstrekkers","gewogen","volledig",219,"Grauwe Klauwier",-1.3587737009345,-1.28772302970447,0.071050671230033,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",61,"Sperwer",-3.154533920608,-3.52214791337128,-0.367613992763272,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",66,"Boomvalk",-3.154533920608,-3.01762884243936,0.136905078168648,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",67,"Slechtvalk",-3.154533920608,-3.26029349600477,-0.105759575396769,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",135,"Nachtzwaluw",-3.154533920608,-3.35684267944126,-0.202308758833258,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",136,"Gierzwaluw",-3.154533920608,-3.17168975898209,-0.0171558383740833,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",151,"Oeverzwaluw",-3.154533920608,-3.3522177342821,-0.197683813674099,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",152,"Boerenzwaluw",-3.154533920608,-3.11778165713738,0.0367522634706297,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",169,"Zwarte Roodstaart",-3.154533920608,-3.17289631617699,-0.0183623955689827,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",197,"Fluiter",-3.154533920608,-3.22339696876862,-0.0688630481606167,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",201,"Goudhaan",-3.154533920608,-3.6370563283765,-0.482522407768493,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",202,"Vuurgoudhaan",-3.154533920608,-3.2283045758763,-0.0737706552682904,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",203,"Grauwe Vliegenvanger",-3.154533920608,-3.1557574260689,-0.00122350546089001,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",205,"Bonte Vliegenvanger",-3.154533920608,-1.84638060797494,1.30815331263306,FALSE
+"fg_v1_lucht","Luchtfoerageerders","gewogen","volledig",219,"Grauwe Klauwier",-3.154533920608,-2.99103699210173,0.163496928506279,FALSE
 "fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","robuust",29,"Bergeend",-1.33090338674074,-1.22178855408572,0.109114832655022,FALSE
 "fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","robuust",44,"Kuifeend",-1.33090338674074,-1.31284736953398,0.018056017206769,FALSE
 "fg_v1_bodem_insect","Bodemfoeragerende insecteneters","gewogen","robuust",64,"Torenvalk",-1.33090338674074,-1.22384706491048,0.107056321830268,FALSE

@@ -358,6 +358,37 @@ De twee nieuwe controleviews zijn:
 - `v_functional_group_summary_v1`: groepsomvang, gewogen omvang,
   gevoeligheidsaantallen, publicatiestatus en leave-one-species-out-minimumstatus.
 
+### Uitbreiding naar alle broedvogels — 20 juli 2026
+
+De eerdere fasering koppelde de traitverrijking ten onrechte aan de vooraf
+geselecteerde 95 lange TRIM-reeksen. Dat is gecorrigeerd: gegevensverzameling
+gaat voortaan vooraf aan de beoordeling van modelleerbaarheid.
+
+- `BROEDVOGELS_MEIJENDEL_V1` bevat alle 159 soorten met sinds 1958 ten minste
+  één positief territorium; de scope is afgeleid uit `territoria` en heeft SHA-256
+  `a428a569770b17958b56b6e671b343342420abd0d6dc1da193d74e4bf9b06350`.
+- `TRIM_BRUIKBAAR_V1` blijft ongewijzigd bestaan als aparte model- en
+  robuustheidsscope van 95 soorten.
+- De 64 aanvullende soorten zijn volgens dezelfde bronhiërarchie, vaste
+  klasseproxy's en V1-regels verrijkt. De nieuwe bronbestanden zijn geregistreerd
+  met SHA-256: EltonTraits `97216eb…d321`, European bird life history
+  `d9ea735c…bba5`, Global Nest Traits v2 `f267ed32…66ec`, Naturalis NSR
+  `69126024…62ab` en Vogelbescherming sitemap `f29ce40a…9aa8`.
+- Exoten en gedomesticeerde vormen zijn zichtbaar aan de stamsoort gekoppeld en
+  hebben lagere confidence. Bonte Kraai en Kleine Barmsijs missen in meerdere
+  mondiale datasets; hun Nederlandse soortbronnen en de afleidingsregels zijn
+  daarom leidend.
+- De doelmatrix bevat 2.226/2.226 gereed-cellen (159 × 14), nul geprefereerde
+  `unknown`-waarden en nul eindwaarden met minder dan twee bronnen.
+- De vijf functionele groepen bevatten ieder 159 classificaties: 795 totaal,
+  zonder `unknown`. Deze uitbreiding verandert de gegevensbeschikbaarheid; pas
+  de daaropvolgende analyse bepaalt welke soortindices bruikbaar zijn.
+
+De Appelvink is een expliciete regressiecontrole: 14 verplichte traits, 16
+doelwaarderegels door meervoudige substraten, en vijf afgeleide
+groepsclassificaties. Percentages op de publieke soortpagina zijn als
+`klasseproxy` gelabeld en zijn geen lokaal gemeten populatiepercentages.
+
 ## Functionele vogelgroepen — fase D
 
 Na inhoudelijke accordering maakt `R/trim_soorten_en_msi_evg.R` naast de

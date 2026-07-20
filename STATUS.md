@@ -98,6 +98,16 @@ Gereed:
   over 1958-2025 is groen met maximaal absoluut verschil `5,12e-13`.
 - De dashboard/website-paritycheck is groen met 31 chart-id's, waaronder tien
   functionele reeksen (vijf groepen × binair/gewogen).
+- Op 20 juli 2026 is de traitscope uitgebreid van de 95 lange TRIM-reeksen naar
+  alle 159 soorten met ten minste één territorium in Meijendel. De oorspronkelijke
+  95 blijven als aparte model-/robuustheidsscope bestaan.
+- De 64 aanvullende soorten hebben ieder alle 14 verplichte TR1-traits, met
+  expliciete taxonmapping, bronlocators, confidence en afleidingsnotitie. De
+  gapmatrix bevat nu 2.226/2.226 gereed-cellen; geen doelwaarde is `unknown` en
+  iedere nieuwe eindwaarde heeft minimaal drie bronkoppelingen.
+- `functional_group_membership` bevat nu 795 rijen (5 × 159), zonder onbekende
+  classificaties. De Appelvink heeft 14/14 traits en valt op basis van de
+  vastgelegde V1-regels secundair onder bodemfoeragerende insecteneters.
 
 Nulmeting van `meijendel.sql`:
 

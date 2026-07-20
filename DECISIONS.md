@@ -91,6 +91,14 @@
   op `soort_id` en Euring-code draaien; alleen invoerresolutie en publieke
   weergavenamen worden gecanonicaliseerd. Soortrecords worden niet samengevoegd,
   omdat onder meer Barmsijs en Kleine Barmsijs afzonderlijke IDs en taxa hebben.
+- Traitverrijking wordt niet langer begrensd door vooraf bepaalde
+  modelleerbaarheid. `BROEDVOGELS_MEIJENDEL_V1` bevat alle 159 soorten met een
+  positief territorium sinds 1958; `TRIM_BRUIKBAAR_V1` blijft uitsluitend een
+  afzonderlijke analyse-/robuustheidsscope van 95 soorten.
+- Voor gedomesticeerde vormen, exoten en taxa zonder volledige externe dekking
+  wordt een expliciete stamsoort-/synoniemmapping en lagere confidence gebruikt.
+  Ontbrekende externe data wordt niet als nul geïnterpreteerd en klasseproxies
+  worden nooit als gemeten Meijendel-populatiepercentages gepresenteerd.
 - Wintertellingindices gebruiken aantallen per volledig en protocolmatig geldig
   bezoek, met een negatief-binomiaal model en een binaire gevoeligheidsanalyse.
   Index 100 is het modelgemiddelde over 2000/01–2004/05. Een klassiek occupancy-

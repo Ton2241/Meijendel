@@ -15,7 +15,8 @@
 
 ### Functionele vogelgroepen — fase E afgerond
 
-Fase C is technisch afgerond: 475 classificaties, binaire en gewogen
+Fase C is technisch afgerond: 795 classificaties voor alle 159
+territoriumhoudende broedvogels, binaire en gewogen
 lidmaatschappen, soortgebonden rationale/provenance, strikte en inclusieve
 drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 

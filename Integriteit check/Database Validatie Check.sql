@@ -460,11 +460,19 @@ JOIN trait_analysis_scope tas ON tas.id = tass.scope_id
 WHERE tas.scope_code = 'TRIM_BRUIKBAAR_V1';
 
 SELECT
-  'Zeven importbatches aanwezig met kloppende aantallen' as check_naam,
-  ABS(7 - COUNT(*))
+  'Trait-scope bevat alle 159 territoriumhoudende broedvogels' as check_naam,
+  ABS(159 - COUNT(*)) as aantal_problemen,
+  CASE WHEN COUNT(*) = 159 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM trait_analysis_scope_species tass
+JOIN trait_analysis_scope tas ON tas.id = tass.scope_id
+WHERE tas.scope_code = 'BROEDVOGELS_MEIJENDEL_V1';
+
+SELECT
+  'Dertien importbatches aanwezig met kloppende aantallen' as check_naam,
+  ABS(13 - COUNT(*))
     + SUM(CASE WHEN werkelijk <> geimporteerde_waarden THEN 1 ELSE 0 END) as aantal_problemen,
   CASE
-    WHEN COUNT(*) = 7
+    WHEN COUNT(*) = 13
      AND SUM(CASE WHEN werkelijk <> geimporteerde_waarden THEN 1 ELSE 0 END) = 0
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
@@ -502,20 +510,26 @@ WHERE is_preferred = 1
 
 SELECT
   'TR1-gapmatrix mist verplichte soort-traitcombinaties' as check_naam,
-  ABS((95 * 14) - COUNT(*)) as aantal_problemen,
-  CASE WHEN COUNT(*) = (95 * 14) THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+  ABS((159 * 14) - COUNT(*)) as aantal_problemen,
+  CASE WHEN COUNT(*) = (159 * 14) THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
 FROM v_trait_gap_v1;
 
 SELECT
   'Taxonomische koppelingen per soortbron zijn niet volledig' as check_naam,
   ABS(5 - COUNT(*))
-    + SUM(CASE WHEN gekoppeld <> 95 THEN ABS(95 - gekoppeld) ELSE 0 END) as aantal_problemen,
+    + SUM(ABS(verwacht - gekoppeld)) as aantal_problemen,
   CASE
-    WHEN COUNT(*) = 5 AND MIN(gekoppeld) = 95 AND MAX(gekoppeld) = 95
+    WHEN COUNT(*) = 5 AND SUM(ABS(verwacht - gekoppeld)) = 0
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
 FROM (
-  SELECT ts.source_code, COUNT(*) gekoppeld
+  SELECT ts.source_code, COUNT(*) gekoppeld,
+    CASE ts.source_code
+      WHEN 'ELTONTRAITS_1' THEN 157
+      WHEN 'EU_BIRD_LIFE_HISTORY_2018' THEN 156
+      WHEN 'GLOBAL_NEST_TRAITS_V2' THEN 155
+      ELSE 159
+    END verwacht
   FROM trait_taxon_mapping ttm
   JOIN trait_source ts ON ts.id = ttm.source_id
   WHERE ts.source_code IN (
@@ -530,22 +544,22 @@ FROM (
 ) bron;
 
 SELECT
-  'Alle 1.330 verplichte doelcellen zijn gereed' as check_naam,
+  'Alle 2.226 verplichte doelcellen zijn gereed' as check_naam,
   SUM(CASE WHEN vervolgstatus <> 'gereed' THEN 1 ELSE 0 END)
-    + ABS((95 * 14) - COUNT(*)) as aantal_problemen,
+    + ABS((159 * 14) - COUNT(*)) as aantal_problemen,
   CASE
-    WHEN COUNT(*) = (95 * 14)
+    WHEN COUNT(*) = (159 * 14)
      AND SUM(CASE WHEN vervolgstatus <> 'gereed' THEN 1 ELSE 0 END) = 0
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
 FROM v_trait_gap_v1;
 
 SELECT
-  'Alle 95 soorten hebben exact 14 verplichte traits in het eindbatch' as check_naam,
-  ABS(95 - COUNT(*))
+  'Alle 159 soorten hebben exact 14 verplichte traits in de eindbatches' as check_naam,
+  ABS(159 - COUNT(*))
     + SUM(CASE WHEN aantal_traits <> 14 THEN 1 ELSE 0 END) as aantal_problemen,
   CASE
-    WHEN COUNT(*) = 95 AND MIN(aantal_traits) = 14 AND MAX(aantal_traits) = 14
+    WHEN COUNT(*) = 159 AND MIN(aantal_traits) = 14 AND MAX(aantal_traits) = 14
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
 FROM (
@@ -553,7 +567,7 @@ FROM (
   FROM species_trait_value stv
   JOIN trait_definition td ON td.id = stv.trait_id
   JOIN trait_import_batch tib ON tib.id = stv.import_batch_id
-  WHERE tib.batch_code = 'TR1FINAL_20260718'
+  WHERE tib.batch_code IN ('TR1FINAL_20260718', 'TR1FINAL_ALLBROED_20260720')
     AND td.verplicht_v1 = 1
   GROUP BY stv.soort_id
 ) eindsoorten;
@@ -567,7 +581,7 @@ FROM (
   FROM species_trait_value stv
   JOIN trait_import_batch tib ON tib.id = stv.import_batch_id
   LEFT JOIN species_trait_value_source stvs ON stvs.species_trait_value_id = stv.id
-  WHERE tib.batch_code = 'TR1FINAL_20260718'
+  WHERE tib.batch_code IN ('TR1FINAL_20260718', 'TR1FINAL_ALLBROED_20260720')
   GROUP BY stv.id
   HAVING COUNT(DISTINCT stvs.source_id) < 2
 ) onvoldoende_bronnen;
@@ -583,16 +597,16 @@ WHERE stv.is_preferred = 1
   AND stv.value_type = 'unknown';
 
 SELECT
-  'Fase C bevat exact 5 × 95 groepsclassificaties' as check_naam,
-  ABS((5 * 95) - COUNT(*)) as aantal_problemen,
-  CASE WHEN COUNT(*) = (5 * 95) THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+  'Fase C bevat exact 5 × 159 groepsclassificaties' as check_naam,
+  ABS((5 * 159) - COUNT(*)) as aantal_problemen,
+  CASE WHEN COUNT(*) = (5 * 159) THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
 FROM functional_group_membership;
 
 SELECT
-  'Iedere fase-C-groep bevat exact 95 soorten' as check_naam,
+  'Iedere fase-C-groep bevat exact 159 soorten' as check_naam,
   ABS(5 - COUNT(*))
-    + COALESCE(SUM(ABS(95 - aantal)), 0) as aantal_problemen,
-  CASE WHEN COUNT(*) = 5 AND MIN(aantal) = 95 AND MAX(aantal) = 95
+    + COALESCE(SUM(ABS(159 - aantal)), 0) as aantal_problemen,
+  CASE WHEN COUNT(*) = 5 AND MIN(aantal) = 159 AND MAX(aantal) = 159
     THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
 FROM (
   SELECT functional_group_definition_id, COUNT(*) aantal
@@ -618,12 +632,12 @@ FROM functional_group_membership
 WHERE classification = 'unknown';
 
 SELECT
-  'Fase C gebruikt één geldige generatiecommit' as check_naam,
+  'Fase C gebruikt twee geldige generatiecommits' as check_naam,
   SUM(generation_commit NOT REGEXP '^[0-9a-f]{40}$')
-    + ABS(1 - COUNT(DISTINCT generation_commit)) as aantal_problemen,
+    + ABS(2 - COUNT(DISTINCT generation_commit)) as aantal_problemen,
   CASE
     WHEN SUM(generation_commit NOT REGEXP '^[0-9a-f]{40}$') = 0
-     AND COUNT(DISTINCT generation_commit) = 1
+     AND COUNT(DISTINCT generation_commit) = 2
     THEN '✓ OK' ELSE '❌ PROBLEEM'
   END as status
 FROM functional_group_membership;
@@ -656,11 +670,11 @@ SELECT
   ) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
 FROM v_functional_group_summary_v1 v
 JOIN (
-  SELECT 'fg_v1_bodem_insect' group_code, 43 baseline, 44 inclusief, 16 strikt
-  UNION ALL SELECT 'fg_v1_lucht', 7, 7, 5
-  UNION ALL SELECT 'fg_v1_grondbroed', 40, 40, 34
-  UNION ALL SELECT 'fg_v1_holenbroed', 28, 28, 28
-  UNION ALL SELECT 'fg_v1_lange_trek', 27, 27, 25
+  SELECT 'fg_v1_bodem_insect' group_code, 76 baseline, 77 inclusief, 36 strikt
+  UNION ALL SELECT 'fg_v1_lucht', 15, 15, 8
+  UNION ALL SELECT 'fg_v1_grondbroed', 69, 69, 62
+  UNION ALL SELECT 'fg_v1_holenbroed', 42, 42, 41
+  UNION ALL SELECT 'fg_v1_lange_trek', 47, 47, 43
 ) e ON e.group_code = v.group_code;
 
 SELECT
