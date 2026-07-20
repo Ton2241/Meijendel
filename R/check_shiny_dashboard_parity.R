@@ -137,7 +137,7 @@ if (!is.finite(functional_max_diff) || functional_max_diff > 1e-8) {
 functional_modes <- unique(functional_merged$analysis_mode)
 functional_groups <- unique(functional_merged$group_code)
 if (!setequal(functional_modes, c("binair", "gewogen"))) fail("Niet beide functionele analysemethoden aanwezig.")
-if (length(functional_groups) != 5L) fail("Verwacht vijf functionele groepen, gevonden: ", length(functional_groups))
+if (length(functional_groups) != 6L) fail("Verwacht zes functionele groepen, gevonden: ", length(functional_groups))
 
 cat("Shiny/dashboard parity-check OK\n")
 cat("Jaren:", year_from, "-", year_to, "\n")

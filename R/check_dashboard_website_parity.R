@@ -19,7 +19,8 @@ required_chart_ids <- c(
   "functioneel-lucht-binair", "functioneel-lucht-gewogen",
   "functioneel-grondbroed-binair", "functioneel-grondbroed-gewogen",
   "functioneel-holenbroed-binair", "functioneel-holenbroed-gewogen",
-  "functioneel-lange-trek-binair", "functioneel-lange-trek-gewogen"
+  "functioneel-lange-trek-binair", "functioneel-lange-trek-gewogen",
+  "functioneel-zaad-binair", "functioneel-zaad-gewogen"
 )
 
 fail <- function(...) {

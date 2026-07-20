@@ -60,7 +60,7 @@ De in fase B geïmplementeerde traitlaag bestaat uit de volgende onderdelen:
   machineleesbare selectieregel van een afgeleide groep;
 - `functional_group_membership`: reproduceerbare materialisatie per
   groepsversie met binair lidmaatschap, gewicht, onderbouwing en generatiecommit.
-- `v_trait_gap_v1`: controleweergave voor alle 159 × 14 verplichte
+- `v_trait_gap_v1`: controleweergave voor alle 159 × 15 verplichte
   soort-traitcombinaties en de benodigde vervolgactie.
 
 Belangrijke constraints:
@@ -79,13 +79,13 @@ Belangrijke constraints:
   vastgelegde traitversie.
 
 De nieuwe tabellen staan sinds fase B naast de ongewijzigde legacytabellen. Naast
-de 14 verplichte doeltraits bevat `TR1` acht ondersteunende brontraits. De
+de 15 verplichte doeltraits bevat `TR1` acht ondersteunende brontraits. De
 bronhiërarchie voor de doelcontext is: Nederlandse soortbron, Europese fallback,
 mondiale fallback. Het Nederlands Soortenregister en de Vogelbescherming-
 vogelgids dekken elk alle 159 scopesoorten; Europese en mondiale waarden behouden
 hun oorspronkelijke context en worden niet stilzwijgend lokaal gemaakt.
 
-Voor alle 159 × 14 doelcontexten is een goedgekeurde voorkeurswaarde vastgelegd.
+Voor alle 159 × 15 doelcontexten is een goedgekeurde voorkeurswaarde vastgelegd.
 Kwalitatieve Nederlandse feiten zijn met vaste klassen omgezet in
 semikwantitatieve analyseproxies. De omzettingsregel is zelf als bron
 `TR1_DERIVATION_RULES_V1` geregistreerd; iedere eindwaarde verwijst daarnaast
@@ -93,10 +93,10 @@ naar minimaal twee inhoudelijke bronnen. `confidence_score` en `evidence_note`
 maken onderscheid tussen directe classificatie en grovere proxy. Categorie
 `not_applicable` maakt bij niet-holenbroeders expliciet onderscheid tussen
 "niet van toepassing" en onbekend. De gapview aggregeert meerkeuzecategorieën en
-rapporteert alle 2.226 verplichte cellen als `gereed`.
+rapporteert alle 2.385 verplichte cellen als `gereed`.
 
 Fase C materialiseert exact één rij per groep en scopesoort in
-`functional_group_membership`, dus 5 × 159 = 795 rijen. De machineleesbare regels
+`functional_group_membership`, dus 6 × 159 = 954 rijen. De machineleesbare regels
 gebruiken niet alleen de numerieke drempels, maar ook de verplichte
 foerageermethode, het substraat, nesthoogte, holtetype en winterregio. Iedere
 `rationale_json` bevat de beslisreden, gebruikte waarde-id's, confidence,
@@ -105,6 +105,11 @@ drempel. `generation_commit` verwijst naar de Git-toestand met de goedgekeurde
 fase-B-input. De traits-scope staat los van modelleerbaarheid: de volledige
 functionele variant kan iedere later modelleerbare soort gebruiken; de robuuste
 variant houdt de afzonderlijke 95-soortenscope aan.
+
+De zesde definitie `fg_v1_zaad` gebruikt het verplichte volwassen-dieettrait
+`TR1_DIET_SEED_SHARE`. De baseline classificeert waarden vanaf `0,50` als
+primair en vanaf `0,25` als secundair; de generieke inclusieve en strikte
+drempelvarianten blijven ook voor deze groep beschikbaar.
 
 `v_functional_group_membership_v1` ontsluit de soortclassificaties;
 `v_functional_group_summary_v1` levert primaire/secundaire aantallen, binaire en

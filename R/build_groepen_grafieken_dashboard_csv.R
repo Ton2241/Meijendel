@@ -537,7 +537,8 @@ functional_slugs <- c(
   fg_v1_lucht = "functioneel-lucht",
   fg_v1_grondbroed = "functioneel-grondbroed",
   fg_v1_holenbroed = "functioneel-holenbroed",
-  fg_v1_lange_trek = "functioneel-lange-trek"
+  fg_v1_lange_trek = "functioneel-lange-trek",
+  fg_v1_zaad = "functioneel-zaad"
 )
 functional_msi <- read.csv(functional_msi_path, stringsAsFactors = FALSE)
 functional_msi <- functional_msi[functional_msi$msi_variant == "volledig", , drop = FALSE]

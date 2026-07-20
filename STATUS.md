@@ -42,9 +42,9 @@ Gereed:
 
 Gereed:
 
-- Scope versie 1 is vastgesteld op vijf niet-exclusieve groepen:
+- Scope versie 1 is vastgesteld op zes niet-exclusieve groepen:
   bodemfoeragerende insecteneters, luchtfoerageerders, grondbroeders,
-  holenbroeders en langeafstandstrekkers.
+  holenbroeders, langeafstandstrekkers en zaadeters.
 - Het bestaande traitstelsel is tegen de canonieke lokale SQL-dump geaudit.
 - Het minimale traitwoordenboek, het doelgegevensmodel en de gecontroleerde
   migratieroute zijn vastgelegd in `MDs/README_bmp_meijendel_index.md` en
@@ -88,28 +88,31 @@ Gereed:
   soortniveau en `v_functional_group_summary_v1` voor omvang, gewicht,
   gevoeligheid en publicatiestatus.
 - De groepslijsten zijn inhoudelijk geaccordeerd. Dashboard en Shiny tonen de
-  vijf functionele groepen naast legacy; website-output en VWG_M bevatten
+  zes functionele groepen naast legacy; website-output en VWG_M bevatten
   dezelfde nieuwe categorie. Fase E heeft deze samenhangende release op
   productie gepubliceerd en met rooktests en een visuele browsercontrole
   gevalideerd.
 - `R/trim_soorten_en_msi_evg.R` maakt binair/gewogen × volledig/robuust,
   samenstelling, trendoverzicht en leave-one-species-out-trendgevoeligheid.
-- De lokale uitvoer bevat 1.356 functionele MSI-rijen. Shiny/dashboard-pariteit
+- De lokale uitvoer bevat 1.628 functionele MSI-rijen. Shiny/dashboard-pariteit
   over 1958-2025 is groen met maximaal absoluut verschil `5,12e-13`.
-- De dashboard/website-paritycheck is groen met 31 chart-id's, waaronder tien
-  functionele reeksen (vijf groepen × binair/gewogen).
+- De dashboard/website-paritycheck is groen met 33 chart-id's, waaronder twaalf
+  functionele reeksen (zes groepen × binair/gewogen).
 - Op 20 juli 2026 is de traitscope uitgebreid van de 95 lange TRIM-reeksen naar
   alle 159 soorten met ten minste één territorium in Meijendel. De oorspronkelijke
   95 blijven als aparte model-/robuustheidsscope bestaan.
-- De 64 aanvullende soorten hebben ieder alle 14 verplichte TR1-traits, met
+- Alle 159 soorten hebben ieder alle 15 verplichte TR1-traits, met
   expliciete taxonmapping, bronlocators, confidence en afleidingsnotitie. De
-  gapmatrix bevat nu 2.226/2.226 gereed-cellen; geen doelwaarde is `unknown` en
+  gapmatrix bevat nu 2.385/2.385 gereed-cellen; geen doelwaarde is `unknown` en
   iedere nieuwe eindwaarde heeft minimaal drie bronkoppelingen.
-- `functional_group_membership` bevat nu 795 rijen (5 × 159), zonder onbekende
-  classificaties. De Appelvink heeft 14/14 traits en valt op basis van de
+- `functional_group_membership` bevat nu 954 rijen (6 × 159), zonder onbekende
+  classificaties. De Appelvink heeft 15/15 traits en valt op basis van de
   vastgelegde V1-regels secundair onder bodemfoeragerende insecteneters.
+- De 29 soorten zonder volwassen-voedselcode zijn aangevuld. De nieuwe
+  zaadtrait bevat 159 goedgekeurde voorkeurswaarden en levert 29 primaire en 34
+  secundaire zaadeters op: 63 binaire leden en een gewogen groepsomvang van 46,0.
 
-Nulmeting van `meijendel.sql`:
+Nulmeting van `meijendel.sql` vóór de voedsel- en zaadaanvulling:
 
 - `soorten_kenmerken`: 2.437 relaties, 159 soorten en 546 gebruikte codes;
 - waarden: 2.091 primair (`1`), 346 secundair (`2`), geen incidentele waarde
@@ -122,7 +125,7 @@ Nulmeting van `meijendel.sql`:
 - `soorten_kenmerken_voedsel` bevat 808 afgeleide/overlappende regels zonder
   foreign keys en is geen geschikte nieuwe hoofdbron.
 
-Dekking bij de 95 soorten met een bruikbare lange TRIM-reeks:
+Dekking in die nulmeting bij de 95 soorten met een bruikbare lange TRIM-reeks:
 
 - functionele habitat/foerageren: 90 van 95;
 - voedsel voor jongen: 66 van 95;
