@@ -40,8 +40,23 @@ dump_database() {
     "$MYSQL_DATABASE" > "$output_file"
 }
 
+validate_tellers_schema() {
+  LC_ALL=C awk '
+    /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
+    in_tellers && /`id` int/ { has_id = 1 }
+    in_tellers && /`tellercode` varchar/ { has_code = 1 }
+    in_tellers && /`(voornaam|tussenvoegsel|achternaam|straat|huisnummer|postcode|woonplaats|telefoon_vast|telefoon_mobiel|email|soort_lid|bandnummer)`/ { bad = 1 }
+    in_tellers && /ENGINE=InnoDB/ { done = 1; exit }
+    END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
+  ' "$1" || {
+    printf 'FOUT: tellers ontbreekt of bevat meer dan id en tellercode: %s\n' "$1" >&2
+    return 1
+  }
+}
+
 printf 'Actualiseer repo-dump...\n'
 dump_database "$REPO_DUMP_FILE"
+validate_tellers_schema "$REPO_DUMP_FILE"
 printf 'Repo-dump geschreven: %s\n' "$REPO_DUMP_FILE"
 shasum -a 256 "$REPO_DUMP_FILE"
 

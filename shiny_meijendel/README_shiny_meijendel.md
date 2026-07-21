@@ -73,7 +73,7 @@ cd /Users/ton/Documents/GitHub/Meijendel/shiny_meijendel
 Rscript deploy_shinyapps.R
 ```
 
-Dit script maakt eerst een tijdelijke deploybundle en zet daarin een gefilterde root-versie van `meijendel.sql` zonder de tabel `tellers`, zodat tellergegevens niet naar shinyapps.io worden geupload.
+Dit script maakt eerst een tijdelijke deploybundle met de root-versie van `meijendel.sql`. De tabel `tellers` wordt meegenomen en bevat uitsluitend de pseudonieme koppelsleutels `id` en `tellercode`; de dump- en deploycontroles blokkeren een uitgebreider schema.
 
 ## Werkwijze in de app
 

@@ -19,7 +19,7 @@ Gereed:
 - De lokale canonieke SQL-dump heet `meijendel.sql`.
 - Scripts en documentatie in deze repo gebruiken lokaal `meijendel.sql`; het productiepad op de VPS blijft `/srv/vwgm/data/Meijendel.sql`.
 - De historische map `pwa_ledenadministratie/` is verwijderd uit de Meijendel-repo.
-- De 15 eerder hernoemde `appsmith_`/`pwa_`-objecten zijn uit de live database verwijderd.
+- De 15 eerder hernoemde objecten van het verlaten ledenadministratieprototype zijn uit de live database verwijderd.
 - MySQL `tellers` en de opnieuw gegenereerde `meijendel.sql` bevatten uitsluitend `id` en de unieke `tellercode`; alle 2.449 historische koppelingen zijn intact en de volledige dumprestore is gecontroleerd.
 - De actuele Git-versie bevat geen oude SQL-back-up meer. Het gedateerde kavelimportscript leest een eventueel persoonsgegeven tellermappingbestand voortaan alleen via `MEIJENDEL_TELLER_MAPPING_CSV` buiten Git.
 

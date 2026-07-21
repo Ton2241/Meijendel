@@ -110,7 +110,7 @@ curl -I http://127.0.0.1:3838/
 
 Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt deze VPS-onderdelen bij:
 
-- canonieke SQL zonder `tellers`, `appsmith_*` en `pwa_*` objecten: `/srv/vwgm/data/Meijendel.sql`
+- canonieke SQL met de veilige koppeltabel `tellers` (`id`, `tellercode`) en zonder historische `pwa_*`-objecten: `/srv/vwgm/data/Meijendel.sql`
 - compatibiliteitspaden voor Shiny, dashboard en FastAPI zijn symlinks naar de canonieke SQL:
   - `/srv/vwgm/shiny/Meijendel.sql`
   - `/srv/vwgm/www/Meijendel.sql`
@@ -229,7 +229,7 @@ Benodigd:
 - lokale MySQL bereikbaar op `127.0.0.1:3306`; het dump-script gebruikt `mysqldump --no-defaults` om conflicterende opties uit `~/.my.cnf` te negeren
 - de dump wordt gemaakt met kolomnamen in `INSERT`-regels (`--complete-insert`), omdat de R-scripts die kolomnamen gebruiken bij het inlezen
 - GTID-restore-informatie wordt bewust niet meegenomen (`--set-gtid-purged=OFF`) en de dump gebruikt `--single-transaction`
-- de tabel `tellers` wordt niet meegenomen in de deploy-dump
+- de tabel `tellers` wordt meegenomen en mag uitsluitend `id` en `tellercode` bevatten; de preflight blokkeert ieder uitgebreider schema
 - lokaal SQL-bestand: `meijendel.sql` in de repo-root; op de VPS wordt dit uitsluitend geplaatst als `/srv/vwgm/data/Meijendel.sql`
 - op de VPS bestaande Docker/Compose-config onder `/srv/vwgm`
 

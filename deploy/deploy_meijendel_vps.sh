@@ -169,9 +169,9 @@ LC_ALL=C awk '
   END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
 ' "$SQL_LOCAL" || die "tellers ontbreekt of bevat meer dan id en tellercode."
 
-log "Maak deploydump zonder ledenadministratie/Appsmith-objecten"
+log "Maak deploydump zonder historische PWA-objecten"
 LC_ALL=C awk '
-  function sensitive(line) { return line ~ /`(appsmith_|pwa_)[^`]*`/ }
+  function sensitive(line) { return line ~ /`pwa_[^`]*`/ }
   function section_start(line) { return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) / }
   { if (section_start($0)) skip = sensitive($0); if (!skip) print }
 ' "$SQL_LOCAL" > "$SQL_DEPLOY"

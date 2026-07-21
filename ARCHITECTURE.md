@@ -139,8 +139,8 @@ Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV. Parse `meijende
 ## Toegang
 
 - Toegang tot dashboard, SQL, Shiny en dashboard-output loopt via Caddy `forward_auth` naar de VWG-M ledenlogin.
-- Er is geen Appsmith-, PWA- of magic-link-login voor de actuele productie-inrichting.
-- Appsmith- en PWA-documentatie is historische context, niet leidend voor productie.
+- Er is geen PWA- of magic-link-login voor de actuele productie-inrichting.
+- PWA-documentatie is historische context, niet leidend voor productie.
 
 ## Back-up
 

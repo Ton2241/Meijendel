@@ -48,8 +48,19 @@ mysqldump --no-defaults \
   --routines \
   --triggers \
   --events \
-  --ignore-table="$MYSQL_DATABASE.tellers" \
   "$MYSQL_DATABASE" > "$SQL_FILE"
+
+LC_ALL=C awk '
+  /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
+  in_tellers && /`id` int/ { has_id = 1 }
+  in_tellers && /`tellercode` varchar/ { has_code = 1 }
+  in_tellers && /`(voornaam|tussenvoegsel|achternaam|straat|huisnummer|postcode|woonplaats|telefoon_vast|telefoon_mobiel|email|soort_lid|bandnummer)`/ { bad = 1 }
+  in_tellers && /ENGINE=InnoDB/ { done = 1; exit }
+  END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
+' "$SQL_FILE" || {
+  printf 'FOUT: tellers ontbreekt of bevat meer dan id en tellercode.\n' >&2
+  exit 1
+}
 
 log "Genereer dashboard-output: output_ecologische_groepen"
 Rscript "$REPO_DIR/R/analyse_ecologische_groepen.R" \
