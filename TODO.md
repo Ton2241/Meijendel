@@ -2,16 +2,16 @@
 
 ## Nu open
 
-### Wintertellingenpilot — gecontroleerde uitbreiding
+### Wintertellingen — geparkeerde vervolgstappen
 
-- De pilotanalyse 2000/01–2024/25, dashboarduitvoer, publieksartikel en
-  besluitnotitie zijn gebouwd voor tien contrasterende soorten.
-- Breid alleen uit met soorten die na inhoudelijke protocoltoekenning dezelfde
-  aantals-, binaire, extremen-, telduur- en convergentiecontroles doorlopen.
-- Vergelijk gevalideerde soortindices waar mogelijk met passende landelijke
-  Sovon-reeksen voordat lokale verklaringen worden gepubliceerd.
-- Bouw nog geen samengestelde wintervogelindicator en voer nog geen causale
-  beheer-, recreatie- of klimaatanalyse uit.
+- Punt 7 (geparkeerd): laat de technische indeling `water_wetland` versus
+  `overige_vogels` en de ecologische interpretatie van de 220 soorten door een
+  soortenexpert nalopen. Deze indeling stuurt alleen het dashboardfilter, niet de
+  geldigheid van nullen.
+- Punt 8 (geparkeerd): vergelijk gevalideerde lokale soortindices met passende
+  landelijke Sovon-reeksen en werk pas daarna verklaringen of een publieksartikel
+  bij. Bouw tot die beoordeling geen samengestelde wintervogelindicator en voer
+  geen causale beheer-, recreatie-, habitat- of klimaatanalyse uit.
 
 ### Functionele vogelgroepen — fase E afgerond
 

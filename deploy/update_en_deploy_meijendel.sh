@@ -83,7 +83,7 @@ Rscript "$REPO_DIR/R/build_groepen_grafieken_dashboard_csv.R" \
   "$SQL_FILE" \
   "$REPO_DIR/groepen_grafieken"
 
-log "Genereer gevalideerde wintertellingpilot"
+log "Genereer gevalideerde wintertellinganalyse voor alle soorten"
 Rscript "$REPO_DIR/R/analyse_wintertellingen_pilot.R" \
   "$REPO_DIR/wintertellingen" \
   "${MEIJENDEL_MYSQL_LOGIN_PATH:-meijendel_root}" \

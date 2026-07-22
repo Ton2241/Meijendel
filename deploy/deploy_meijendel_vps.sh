@@ -150,11 +150,12 @@ need_file "$LOCAL_REPO/wintertellingen/winter_jaarindex.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_maandpatroon.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_plotgebruik.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_pilot_besluit.csv"
+need_file "$LOCAL_REPO/wintertellingen/winter_soortprotocol.csv"
 
 log "Controleer Shiny/dashboard parity voor MSI-groepen"
 Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
   "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
-log "Controleer wintertellingpilot-output"
+log "Controleer wintertellingoutput voor alle soorten"
 Rscript "$LOCAL_REPO/R/check_wintertelling_output.R" "$LOCAL_REPO/wintertellingen"
 [[ -z "$(git status --porcelain --untracked-files=all)" ]] || \
   die "lokale validatie wijzigde de werkboom; ruim gegenereerde bestanden op of commit bedoelde wijzigingen vóór deploy."
@@ -389,6 +390,7 @@ test -s "$REMOTE_WWW/wintertellingen/winter_jaarindex.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_maandpatroon.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_plotgebruik.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_pilot_besluit.csv"
+test -s "$REMOTE_WWW/wintertellingen/winter_soortprotocol.csv"
 docker stats --no-stream shiny_meijendel
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 REMOTE

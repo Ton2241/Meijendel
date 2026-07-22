@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 20 juli 2026
+Laatste update: 22 juli 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -23,23 +23,30 @@ Gereed:
 - MySQL `tellers` en de opnieuw gegenereerde `meijendel.sql` bevatten uitsluitend `id` en de unieke `tellercode`; alle 2.449 historische koppelingen zijn intact en de volledige dumprestore is gecontroleerd.
 - De actuele Git-versie bevat geen oude SQL-back-up meer. Het gedateerde kavelimportscript leest een eventueel persoonsgegeven tellermappingbestand voortaan alleen via `MEIJENDEL_TELLER_MAPPING_CSV` buiten Git.
 
-## Wintertellingpilot 2000/01–2024/25
+## Wintertellingen 2000/01–2024/25
 
 Gereed:
 
-- De bezoek-, protocol- en nulreconstructie-audit is reproduceerbaar vastgelegd.
-- Voor tien vooraf gekozen soorten zijn parallelle aantals- en binaire modellen,
-  gevoeligheidscontroles, maandpatronen, dekking en plotgebruik uitgevoerd.
-- Tjiftjaf en Kuifeend hebben de status `betrouwbaar`; zeven soorten zijn
-  `indicatief`; Buizerd blijft wegens modelconvergentie `alleen_beschrijvend`.
-- Alle 223 aangetroffen soorten hebben een voorlopige geschiktheidsscan gekregen;
-  uitbreiding vereist per soort eerst een expliciete protocoltoewijzing.
+- De bezoek-, protocol-, taxon- en nulreconstructie-audit is reproduceerbaar vastgelegd.
+- De vaste telregel is verwerkt: ieder volledig regulier bezoek registreert alle
+  waargenomen vogels, ook watervogels en wetlandsoorten. Het historische teltype
+  is daarom een modelcovariaat en geen soortspecifieke nulbeperking.
+- De 223 aangetroffen broncodes zijn tot 220 canonieke soorten samengebracht;
+  `Canadese gans spec.` en `Grote Canadese gans (maxima)` vallen onder
+  `Grote Canadese Gans`.
+- Alle 220 soorten hebben jaar-, maand- en plotuitvoer. 77 soorten zijn volledig
+  modelmatig getest: 15 zijn `betrouwbaar`, 45 `indicatief`; in totaal zijn 160
+  soorten uitsluitend `alleen_beschrijvend`.
 - Het dashboard bevat een nieuw winteronderdeel met jaarindex, maandindex,
   geldige bezoeken, ruimtelijke spreiding en een methodologische waarschuwing.
   De bestaande ruwe wintersom blijft apart beschikbaar en wordt niet als
   dichtheid of populatie-index gepresenteerd.
-- Methode en besluit staan in `MDs/wintertellingen_pilot.md`; het publieksartikel
-  staat in `MDs/publieksartikel_25_jaar_wintervogels.md`.
+- Het dashboard toont alle soorten, met filters op kwaliteit en ecologische
+  soortgroep. Beschrijvende soorten krijgen geen modelindex maar geregistreerd
+  gemiddelde per geldig bezoek en waarnemingsfrequentie.
+- Methode en besluit staan in `MDs/wintertellingen_pilot.md`; het bestaande
+  publieksartikel blijft een pilotconcept en wordt pas na inhoudelijke
+  soortbeoordeling geactualiseerd.
 
 ## Functionele vogelgroepen — fase A tot en met E afgerond
 

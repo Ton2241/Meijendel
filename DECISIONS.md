@@ -104,11 +104,20 @@
   wordt een expliciete stamsoort-/synoniemmapping en lagere confidence gebruikt.
   Ontbrekende externe data wordt niet als nul geïnterpreteerd en klasseproxies
   worden nooit als gemeten Meijendel-populatiepercentages gepresenteerd.
-- Wintertellingindices gebruiken aantallen per volledig en protocolmatig geldig
-  bezoek, met een negatief-binomiaal model en een binaire gevoeligheidsanalyse.
+- Bij ieder volledig regulier winterbezoek worden in elk kavel alle waargenomen
+  vogels genoteerd, inclusief water- en wetlandsoorten. Zowel volledige bezoeken
+  `Alle vogelsoorten` als `Watervogels en wetlandsoorten` leveren daarom voor
+  iedere soort geldige nullen; het historische teltype blijft alleen als
+  modelcovariaat aanwezig. Deelbezoeken, soortgerichte en overige tellingen
+  blijven uitgesloten.
+- Wintertellingindices gebruiken aantallen per volledig regulier bezoek, met een
+  negatief-binomiaal model en een binaire gevoeligheidsanalyse.
   Index 100 is het modelgemiddelde over 2000/01–2004/05. Een klassiek occupancy-
   of N-mixturemodel wordt niet gebruikt omdat vrijwel geen gesloten
-  detectiereplicaten bestaan. Alleen soorten met status `betrouwbaar` of
-  `indicatief` worden als gestandaardiseerde index getoond; de bestaande
-  seizoenssom blijft uitsluitend als duidelijk gewaarschuwde ruwe telling
-  beschikbaar.
+  detectiereplicaten bestaan. Alle 220 canonieke geregistreerde soorten staan in
+  het dashboard: `betrouwbaar` en `indicatief` krijgen een gestandaardiseerde
+  index, `alleen_beschrijvend` krijgt uitsluitend geregistreerde gemiddelden en
+  waarnemingsfrequenties. Historische codes `Canadese gans spec.` en `Grote
+  Canadese gans (maxima)` worden onder `Grote Canadese Gans` samengevoegd. De
+  bestaande seizoenssom blijft uitsluitend als duidelijk gewaarschuwde ruwe
+  telling beschikbaar.

@@ -66,7 +66,7 @@ Belangrijke bestanden zijn:
 - [`MDs/import_procedure_territoria.md`][15]
   Jaarlijkse importprocedure voor territoria.
 - `MDs/wintertellingen_pilot.md`
-  Methode, audit, resultaten en besluitregels van de wintertellingpilot.
+  Methode, audit, resultaten en besluitregels van de wintertellinganalyse voor alle soorten.
 - `MDs/publieksartikel_25_jaar_wintervogels.md`
   Publicatieklaar conceptartikel op basis van de gevalideerde pilotresultaten.
 
@@ -103,7 +103,8 @@ De HTML bevat momenteel deze hoofdonderdelen:
 - `Plot`
 - `MSI`
 - `Tellers`
-- `Wintertellingen`, met een gestandaardiseerde pilotindex en een apart gemarkeerde ruwe telling
+- `Wintertellingen`, met alle geregistreerde soorten, kwaliteitslabels,
+  passende model- of beschrijvende reeksen en een apart gemarkeerde ruwe telling
 
 De HTML gebruikt:
 

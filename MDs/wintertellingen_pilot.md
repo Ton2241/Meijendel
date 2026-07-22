@@ -1,34 +1,18 @@
-# Wintertellingenpilot 2000/01–2024/25
+# Wintertellingen 2000/01–2024/25
 
 ## Besluit
 
-De midmaandtellingen zijn bruikbaar voor gestandaardiseerde lokale winterindices,
-maar niet iedere soort levert een even stabiele uitkomst. De pilot publiceert
-uitsluitend soorten met status `betrouwbaar` of `indicatief`. Soorten met status
-`alleen_beschrijvend` blijven beschikbaar in de ruwe tellingen.
+Het dashboard bevat alle 220 canonieke soorten die in de winterdatabase zijn
+geregistreerd. Iedere soort krijgt één van drie kwaliteitslabels:
 
-De analyse schat geen populatiegrootte of absolute dichtheid. De respons is het
-opgetelde geregistreerde aantal per soort en geldig bezoek.
+- `betrouwbaar`: publiceerbare modelindex en groene gevoeligheidscontroles;
+- `indicatief`: modelindex bruikbaar als signaal, maar terughoudend interpreteren;
+- `alleen_beschrijvend`: uitsluitend geregistreerd gemiddelde en
+  waarnemingsfrequentie; geen gestandaardiseerde trend.
 
-## Pilotuitkomst
-
-| Soort | Status | Aantaltrend per jaar | Binaire trend per jaar | Belangrijkste beoordeling |
-|---|---|---:|---:|---|
-| Tjiftjaf | betrouwbaar | +3,85% | +7,78% | richtingvast, robuust voor extremen en recente telduurcontrole |
-| Kuifeend | betrouwbaar | +2,34% | +0,47% | stabiele lange index; binaire ontwikkeling veel vlakker |
-| Koolmees | indicatief | +2,46% | +3,94% | recente telduurperiode wijkt af van lange reeks |
-| Merel | indicatief | −0,99% | −5,06% | afname richtingvast, maar recente helling duidelijk sterker |
-| Houtsnip | indicatief | +1,62% | +2,27% | richtingvast, maar recente periode veel steiler |
-| Koperwiek | indicatief | −1,81% | +0,01% | aantals- en binaire ontwikkeling vertellen niet hetzelfde verhaal |
-| Meerkoet | indicatief | −0,62% | +0,31% | aantallen en waarnemingskans hebben tegengestelde richting |
-| Dodaars | indicatief | +2,31% | +4,24% | lange en recente telduurperiode verschillen van richting |
-| Aalscholver | indicatief | +3,42% | +3,17% | richtingvast, maar recente telduurperiode wijkt af |
-| Buizerd | alleen beschrijvend | — | — | ten minste één kernmodel convergeerde niet betrouwbaar |
-
-De percentages zijn loglineaire samenvattingen over de hele periode. De
-dashboardindex met afzonderlijke winterwaarden is leidend voor de vorm van het
-verloop; een gemiddeld percentage veronderstelt niet dat de ontwikkeling ieder
-jaar gelijk was.
+De analyse schat geen populatiegrootte, absolute dichtheid of aantal unieke
+individuen. De primaire respons is het opgetelde geregistreerde aantal per soort
+en volledig regulier bezoek.
 
 ## Protocol en analyseeenheid
 
@@ -36,48 +20,54 @@ De primaire eenheid is:
 
 `soort × plot × bezoek × datum`
 
+De vaste telregel is dat tijdens ieder volledig regulier winterbezoek in elk
+kavel **alle waargenomen vogels** worden genoteerd. Dat geldt ook voor
+watervogels en wetlandsoorten. Daardoor is een ontbrekende soortregistratie op
+zowel een volledige telling `Alle vogelsoorten` als een volledige telling
+`Watervogels en wetlandsoorten` een geldige nul voor iedere soort.
+
+Onvolledige bezoeken, deelbezoeken, bezoeken voor alleen specifieke soorten en
+overige niet-reguliere teltypen leveren geen nul op en blijven buiten de
+analysetabel. Het historische teltype blijft in de modellen opgenomen als
+controlevariabele voor mogelijke uitvoeringsverschillen, niet als beperking van
+het soortenspectrum. De reproduceerbare protocolmatrix staat in
+`wintertellingen/winter_soortprotocol.csv`.
+
 Meerdere ruimtelijke bronregels voor dezelfde soort binnen hetzelfde bezoek
-worden eerst opgeteld. Ontbrekende soortregels worden alleen nul wanneer het
-bezoek volledig was en de soort binnen het telprotocol viel:
+worden eerst opgeteld. Historische synoniemen worden vóór modellering
+gecanonicaliseerd. In het bijzonder worden broncodes voor `Canadese gans spec.`
+en `Grote Canadese gans (maxima)` samengevoegd met `Grote Canadese Gans`.
 
-| Soortgroep | Alle vogelsoorten | Watervogels/wetlandsoorten | Onvolledig/overig |
-|---|---:|---:|---:|
-| landvogel | geldig | `NA` | `NA` |
-| watervogel | geldig | geldig | `NA` |
+## Analyse en kwaliteitsindeling
 
-De tien protocolgroepen zijn inhoudelijk in
-`R/analyse_wintertellingen_pilot.R` vastgelegd. Uitbreiding naar andere soorten
-vereist eerst dezelfde inhoudelijke indeling.
+Alle soorten krijgen beschrijvende jaar-, maand- en plotuitvoer. Een volledige
+modelvalidatie wordt uitgevoerd bij minimaal vijftien winters en honderd
+positieve bezoeken. Per kandidaat worden gebruikt:
 
-## Modellen
+- een negatief-binomiaal model van het aantal per geldig bezoek;
+- een binomiaal model van de waarnemingskans per geldig bezoek;
+- winter, maand, historisch teltype en een random plotintercept;
+- controles op trendrichting, extreme aantallen, recente telduur,
+  modelconvergentie, Hessiaan en eindige voorspellingen.
 
-Per soort worden twee kernmodellen gebruikt:
+De modelindex wordt genormaliseerd op het modelgemiddelde van
+2000/01–2004/05 (`100`). Een klassiek occupancy- of N-mixturemodel wordt niet
+gebruikt, omdat vrijwel geen gesloten detectiereplicaten bestaan.
 
-- negatief-binomiaal model van het aantal per geldig bezoek;
-- binomiaal model van de waarnemingskans per geldig bezoek.
+## Actuele uitkomst
 
-Beide bevatten winter, maand, telprotocol waar relevant en een random
-plotintercept. De jaarindex gebruikt de gemiddelde modelwaarde voor september
-tot en met maart en wordt genormaliseerd op het gemiddelde van 2000/01–2004/05
-(`100`).
+De gecontroleerde uitvoer bevat 220 soorten en 25 winters:
 
-Aanvullende controles vergelijken:
+- 15 soorten met status `betrouwbaar`;
+- 45 soorten met status `indicatief`;
+- 160 soorten met status `alleen_beschrijvend`;
+- 77 soorten volledig modelmatig getest en 143 uitsluitend beschrijvend.
 
-- aantals- en binaire trendrichting;
-- onbegrensde aantallen met een analyse waarin de hoogste één procent wordt
-  begrensd;
-- de lange reeks met een analyse vanaf 2012 waarin telduur als covariaat wordt
-  opgenomen;
-- modelconvergentie en positieve Hessiaan.
+Deze aantallen zijn uitvoer van de huidige vaste beslisregels en kunnen na een
+nieuwe dataversie wijzigen. Het dashboard toont alle soorten en laat filteren op
+kwaliteitslabel en ecologische soortgroep.
 
-De categorieën zijn:
-
-- `betrouwbaar`: alle kern- en gevoeligheidscriteria groen;
-- `indicatief`: kernmodellen bruikbaar, maar minimaal één gevoeligheidscontrole
-  vraagt terughoudendheid;
-- `alleen_beschrijvend`: geen publiceerbare gestandaardiseerde index.
-
-## Uitvoer
+## Uitvoer en reproductie
 
 De analyse schrijft naar `wintertellingen/`:
 
@@ -87,7 +77,8 @@ De analyse schrijft naar `wintertellingen/`:
 - `winter_dekking.csv`;
 - `winter_pilot_besluit.csv`;
 - `winter_geschiktheid_alle_soorten.csv`;
-- `winter_audit_samenvatting.csv`.
+- `winter_audit_samenvatting.csv`;
+- `winter_soortprotocol.csv`.
 
 Reproduceren en controleren:
 
@@ -96,18 +87,9 @@ Rscript R/analyse_wintertellingen_pilot.R wintertellingen
 Rscript R/check_wintertelling_output.R wintertellingen
 ```
 
-## Go/no-go
+## Publicatiegrens
 
-De pilot is een beperkte **go**:
-
-- de analysekern en dashboardpresentatie zijn bruikbaar;
-- uitbreiding naar meer soorten is verantwoord na inhoudelijke toekenning van
-  protocolgroepen;
-- uitbreiding moet gefaseerd gebeuren en iedere soort behoudt een zichtbaar
-  kwaliteitslabel;
-- een samengestelde wintervogelindicator, causaliteitsanalyse of model voor alle
-  238 soorten is nog niet gerechtvaardigd.
-
-Eerstvolgende uitbreiding: beoordeel de soorten met voorlopige klasse
-`kansrijk` uit `winter_geschiktheid_alle_soorten.csv`, voeg hun protocolgroep
-inhoudelijk toe en voer dezelfde validatie uit.
+Een samengestelde wintervogelindicator en verklarende analyses van beheer,
+recreatie, habitat of klimaat maken geen deel uit van deze release. Vergelijking
+met passende landelijke Sovon-reeksen volgt pas na afzonderlijke inhoudelijke
+beoordeling per soort.
