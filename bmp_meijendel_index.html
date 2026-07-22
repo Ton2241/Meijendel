@@ -166,6 +166,20 @@ summary::-webkit-details-marker{display:none}
 .kenmerk-meta{font-size:11px;color:#0f766e;font-weight:600;margin-top:6px}
 .kenmerk-meta.secondary{color:#92400e}
 .kenmerk-text{font-size:12px;color:#6b7280;line-height:1.5}
+.winter-explanation-btn{cursor:pointer;border:1px solid #16a34a;border-radius:7px;padding:5px 14px;background:white;color:#15803d;font-size:13px;font-weight:600;min-height:30px}
+.winter-explanation-btn:hover{background:#f0fdf4}
+.winter-explanation-btn:focus-visible,.winter-modal-close:focus-visible{outline:3px solid #86efac;outline-offset:2px}
+.winter-modal-backdrop{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(15,23,42,.58)}
+.winter-modal{width:min(760px,100%);max-height:min(86vh,900px);overflow:auto;background:white;border-radius:14px;box-shadow:0 24px 70px rgba(15,23,42,.3)}
+.winter-modal-header{position:sticky;top:0;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 22px;background:white;border-bottom:1px solid #e5e7eb}
+.winter-modal-header h2{font-size:20px;color:#1f2937;margin:0}
+.winter-modal-close{cursor:pointer;border:1px solid #d1d5db;border-radius:7px;padding:6px 12px;background:white;color:#374151;font-size:13px;font-weight:600}
+.winter-modal-body{padding:20px 22px 24px;color:#374151;font-size:14px;line-height:1.65}
+.winter-modal-body p{margin-bottom:14px}
+.winter-modal-body ul{margin:0 0 14px 24px}
+.winter-modal-body li{margin-bottom:5px}
+.winter-modal-question{margin:0 0 14px;padding:12px 14px;border-left:4px solid #16a34a;background:#f0fdf4;font-weight:600;color:#166534}
+.winter-modal-body .winter-modal-important{margin-bottom:0;padding:12px 14px;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;color:#78350f}
 @media (max-width:768px){
   .header{flex-direction:column;align-items:flex-start;gap:12px}
   .stat-cards{grid-template-columns:1fr}
@@ -178,6 +192,9 @@ summary::-webkit-details-marker{display:none}
   .plot-title-statusnote{text-align:left}
   .kenmerk-summary{grid-template-columns:1fr}
   .kenmerk-grid{grid-template-columns:1fr}
+  .winter-modal-backdrop{align-items:flex-end;padding:10px}
+  .winter-modal{max-height:92vh;border-radius:14px 14px 8px 8px}
+  .winter-modal-header,.winter-modal-body{padding-left:16px;padding-right:16px}
 }
 </style>
 </head>
@@ -632,7 +649,7 @@ function buildCoverageRows(){
 }
 const PLOT_SPECIES_START_YEAR=1958;
 const PLOT_SPECIES_PAGE_SIZE=10;
-const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],excludeGulls:false,yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimIndexBaseData:null,trimIndexPostData:null,trimTrendSummary:null,trimTrendSummaryBase:null,trimTrendSummaryAll:null,trimAllSpecies:[],winterMetric:"abs",winterSelected:[],winterSelectedPlots:[],winterSeasonRange:{van:null,tot:null},winterMeta:null,winterView:"index",winterPilotSpecies:"",winterQualityFilter:"alle",winterProtocolFilter:"alle",winterShowAllPlots:false,winterAnnualData:null,winterMonthData:null,winterPlotData:null,winterDecisionData:null,kenmerkenSelected:null,voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,landelijkGamPredData:null,functionalMsiData:null,functionalTrendData:null,functionalMode:"binair",msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotSpeciesView:{plot:null,yearRange:{van:PLOT_SPECIES_START_YEAR,tot:null},sort:"alpha",pageEnd:null},plotView:{plot:null,jaar:null}};
+const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],excludeGulls:false,yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimIndexBaseData:null,trimIndexPostData:null,trimTrendSummary:null,trimTrendSummaryBase:null,trimTrendSummaryAll:null,trimAllSpecies:[],winterMetric:"abs",winterSelected:[],winterSelectedPlots:[],winterSeasonRange:{van:null,tot:null},winterMeta:null,winterView:"index",winterPilotSpecies:"",winterQualityFilter:"alle",winterShowAllPlots:false,winterAnnualData:null,winterMonthData:null,winterPlotData:null,winterDecisionData:null,kenmerkenSelected:null,voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,landelijkGamPredData:null,functionalMsiData:null,functionalTrendData:null,functionalMode:"binair",msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotSpeciesView:{plot:null,yearRange:{van:PLOT_SPECIES_START_YEAR,tot:null},sort:"alpha",pageEnd:null},plotView:{plot:null,jaar:null}};
 function setState(patch){Object.assign(S,patch);render();}
 function processFile(sql){
   const tables=parseDump(sql);
@@ -2337,6 +2354,60 @@ function renderTrendChart(){
     renderSimpleChart("lineChart",{labels:S.trendData.years,datasets,yTitle:S.metric==="km2"?"Dichtheid (territoria/km²)":"Territoria",yInteger:S.metric!=="km2",yDecimals:S.metric==="km2"?1:3,yMinZero:S.metric==="km2"});
   }
 }
+function openWinterExplanation(){
+  const previousFocus=document.activeElement;
+  const previousOverflow=document.body.style.overflow;
+  const overlay=el("div",{className:"winter-modal-backdrop"});
+  const dialog=el("section",{className:"winter-modal",role:"dialog","aria-modal":"true","aria-labelledby":"winterExplanationTitle"});
+  const closeButton=el("button",{className:"winter-modal-close",type:"button","aria-label":"Toelichting sluiten"},"Sluiten");
+  const close=()=>{
+    document.removeEventListener("keydown",onKeydown);
+    document.body.style.overflow=previousOverflow;
+    overlay.remove();
+    if(previousFocus&&typeof previousFocus.focus==="function")previousFocus.focus();
+  };
+  const onKeydown=event=>{
+    if(event.key==="Escape")close();
+    if(event.key==="Tab"){
+      event.preventDefault();
+      closeButton.focus();
+    }
+  };
+  closeButton.addEventListener("click",close);
+  overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
+  dialog.appendChild(el("div",{className:"winter-modal-header"},[
+    el("h2",{id:"winterExplanationTitle"},"Toelichting op de winterindex"),
+    closeButton
+  ]));
+  dialog.appendChild(el("div",{className:"winter-modal-body"},[
+    el("p",{},"De index probeert winters zo gewogen met elkaar te vergelijken."),
+    el("p",{},"De werkelijk getelde aantallen kunnen namelijk niet zonder meer naast elkaar worden gezet. In de ene winter kan vaker zijn geteld in maanden waarin een soort veel voorkomt. Ook kunnen toen toevallig meer vogelrijke kavels zijn bezocht. Daardoor kan het ruwe aantal hoger zijn, zonder dat de soort werkelijk talrijker was in heel Meijendel."),
+    el("p",{},"Het rekenmodel probeert deze verschillen uit elkaar te houden."),
+    el("p",{},"Het kijkt daarvoor naar alle tellingen en onderzoekt onder andere:"),
+    el("ul",{},[
+      el("li",{},"in welke winter is geteld;"),
+      el("li",{},"in welke maand is geteld;"),
+      el("li",{},"in welk kavel is geteld.")
+    ]),
+    el("p",{},"Omdat dezelfde maanden en kavels vaker zijn geteld, kan het model patronen herkennen. Het kan bijvoorbeeld vaststellen dat een soort doorgaans talrijker is in januari dan in september, of vaker wordt gezien in een waterrijk kavel dan in een droog duinkavel."),
+    el("p",{},"Bij het vergelijken van winters laat het model zulke vaste verschillen zo veel mogelijk buiten beschouwing. Het stelt als het ware de vraag:"),
+    el("div",{className:"winter-modal-question"},"Hoe zouden de winters zich tot elkaar verhouden als ze onder vergelijkbare omstandigheden waren geteld?"),
+    el("p",{},"Het resultaat is geen voorspelling van het werkelijke aantal vogels. Het is ook geen telling van unieke individuen en geen dichtheid per vierkante kilometer. Het is een gestandaardiseerd vergelijkingsgetal waarmee de ontwikkeling tussen winters beter kan worden gevolgd."),
+    el("p",{},"De eerste vijf winters, 2000/01 tot en met 2004/05, vormen samen de basis en krijgen gemiddeld de waarde 100."),
+    el("ul",{},[
+      el("li",{},"Een index van 100 betekent: ongeveer gelijk aan de basisperiode."),
+      el("li",{},"Een index van 150 betekent: ongeveer 50% hoger dan de basisperiode."),
+      el("li",{},"Een index van 75 betekent: ongeveer 25% lager dan de basisperiode.")
+    ]),
+    el("p",{},"De gekleurde onzekerheidsband laat zien hoeveel onzekerheid rond de berekende index bestaat. Een brede band betekent dat de precieze waarde minder zeker is."),
+    el("p",{className:"winter-modal-important"},"Belangrijk: het model kan alleen rekening houden met verschillen die in de gegevens herkenbaar zijn. Andere invloeden, zoals weer, ijs, waterstand, verschillen tussen tellers of veranderingen in telgedrag, kunnen nog steeds een rol spelen. De index moet daarom worden gelezen als een zo goed mogelijk gestandaardiseerde ontwikkeling van de geregistreerde aantallen, niet als een exact gemeten populatieontwikkeling.")
+  ]));
+  overlay.appendChild(dialog);
+  document.body.appendChild(overlay);
+  document.body.style.overflow="hidden";
+  document.addEventListener("keydown",onKeydown);
+  closeButton.focus();
+}
 function renderWinterPanel(){
   const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});
   hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[
@@ -2371,16 +2442,17 @@ function renderWinterPanel(){
   }
   const decisions=(S.winterDecisionData||[]);
   const qualityOptions=[["alle","Alle kwaliteitsniveaus"],["betrouwbaar","Betrouwbare index"],["indicatief","Indicatieve index"],["alleen_beschrijvend","Alleen beschrijvend"]];
-  const protocolOptions=[["alle","Alle soortgroepen"],["water_wetland","Water- en wetlandsoorten"],["overige_vogels","Overige vogelsoorten"]];
   const filters=el("div",{className:"year-row",style:{marginBottom:"14px"}});
-  [["Kwaliteit",qualityOptions,"winterQualityFilter"],["Soortgroep",protocolOptions,"winterProtocolFilter"]].forEach(([label,options,key])=>{
-    const wrap=el("div",{});wrap.appendChild(el("label",{},label));const control=el("select",{});
-    options.forEach(([value,text])=>{const option=el("option",{value},text);if(S[key]===value)option.selected=true;control.appendChild(option);});
-    control.addEventListener("change",e=>{S[key]=e.target.value;const available=decisions.filter(r=>(S.winterQualityFilter==="alle"||String(r.advies)===S.winterQualityFilter)&&(S.winterProtocolFilter==="alle"||String(r.soortgroep)===S.winterProtocolFilter)).map(r=>String(r.soort_naam));if(!available.includes(S.winterPilotSpecies))S.winterPilotSpecies=available.sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"}))[0]||"";render();});
-    wrap.appendChild(control);filters.appendChild(wrap);
-  });
+  const qualityWrap=el("div",{});
+  qualityWrap.appendChild(el("label",{},"Kwaliteit"));
+  const qualityControl=el("select",{});
+  qualityOptions.forEach(([value,text])=>{const option=el("option",{value},text);if(S.winterQualityFilter===value)option.selected=true;qualityControl.appendChild(option);});
+  qualityControl.addEventListener("change",e=>{S.winterQualityFilter=e.target.value;const available=decisions.filter(r=>S.winterQualityFilter==="alle"||String(r.advies)===S.winterQualityFilter).map(r=>String(r.soort_naam));if(!available.includes(S.winterPilotSpecies))S.winterPilotSpecies=available.sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"}))[0]||"";render();});
+  qualityWrap.appendChild(qualityControl);
+  filters.appendChild(qualityWrap);
+  filters.appendChild(el("button",{className:"winter-explanation-btn",type:"button",onclick:openWinterExplanation},"Toelichting"));
   p.appendChild(filters);
-  const species=decisions.filter(r=>(S.winterQualityFilter==="alle"||String(r.advies)===S.winterQualityFilter)&&(S.winterProtocolFilter==="alle"||String(r.soortgroep)===S.winterProtocolFilter)).map(r=>String(r.soort_naam)).sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"}));
+  const species=decisions.filter(r=>S.winterQualityFilter==="alle"||String(r.advies)===S.winterQualityFilter).map(r=>String(r.soort_naam)).sort((a,b)=>a.localeCompare(b,"nl",{sensitivity:"base"}));
   if(!species.length){p.appendChild(el("p",{className:"empty-msg"},"Geen soorten binnen deze filters."));return p;}
   if(!species.includes(S.winterPilotSpecies))S.winterPilotSpecies=species[0];
   const selectWrap=el("div",{style:{maxWidth:"420px",marginBottom:"16px"}});
@@ -2407,7 +2479,6 @@ function renderWinterPanel(){
   p.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginTop:"20px",marginBottom:"4px"}},"Aantal geldige bezoeken"));
   p.appendChild(el("div",{className:"chart-wrap",id:"winterCoverageChart"}));
   p.appendChild(renderWinterSpatialTable());
-  p.appendChild(el("p",{style:{padding:"12px 14px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"10px",fontSize:"12px",color:"#475569",lineHeight:"1.55",marginTop:"16px"}},isDescriptive?"Deze beschrijvende reeks gebruikt alle volledige reguliere winterbezoeken. Een gemiddelde per bezoek is geen dichtheid, populatiegrootte, aantal unieke individuen of voor telomstandigheden gecorrigeerde trend.":"Een modelindex vergelijkt het gemiddelde geregistreerde aantal per volledig regulier winterbezoek en corrigeert onder meer voor maand, teltype en plot. 100 is het gemiddelde van 2000/01–2004/05; 150 betekent ongeveer 50% hoger dan die basis, niet 150 vogels. De uitkomst is geen dichtheid, populatiegrootte of aantal unieke individuen."));
   setTimeout(renderWinterPilotCharts,0);
   return p;
 }

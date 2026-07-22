@@ -64,8 +64,9 @@ De gecontroleerde uitvoer bevat 220 soorten en 25 winters:
 - 77 soorten volledig modelmatig getest en 143 uitsluitend beschrijvend.
 
 Deze aantallen zijn uitvoer van de huidige vaste beslisregels en kunnen na een
-nieuwe dataversie wijzigen. Het dashboard toont alle soorten en laat filteren op
-kwaliteitslabel en ecologische soortgroep.
+nieuwe dataversie wijzigen. Het dashboard toont alle soorten, laat filteren op
+kwaliteitslabel en biedt via `Toelichting` een uitleg van index, standaardisatie,
+basisperiode, onzekerheidsband en beperkingen in lekentaal.
 
 ## Uitvoer en reproductie
 

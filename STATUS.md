@@ -41,9 +41,11 @@ Gereed:
   geldige bezoeken, ruimtelijke spreiding en een methodologische waarschuwing.
   De bestaande ruwe wintersom blijft apart beschikbaar en wordt niet als
   dichtheid of populatie-index gepresenteerd.
-- Het dashboard toont alle soorten, met filters op kwaliteit en ecologische
-  soortgroep. Beschrijvende soorten krijgen geen modelindex maar geregistreerd
-  gemiddelde per geldig bezoek en waarnemingsfrequentie.
+- Het dashboard toont alle soorten met een kwaliteitsfilter. De eerdere
+  soortgroepfilter en de herhaalde methodetekst onder iedere soort zijn vervangen
+  door één knop `Toelichting` met een toegankelijke uitleg-pop-up. Beschrijvende
+  soorten krijgen geen modelindex maar geregistreerd gemiddelde per geldig
+  bezoek en waarnemingsfrequentie.
 - Methode en besluit staan in `MDs/wintertellingen_pilot.md`; het bestaande
   publieksartikel blijft een pilotconcept en wordt pas na inhoudelijke
   soortbeoordeling geactualiseerd.
