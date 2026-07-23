@@ -143,6 +143,7 @@ git merge-base --is-ancestor "$DEPLOYED_COMMIT" "$LOCAL_COMMIT" || \
 printf 'Productiecommit: %s\n' "$DEPLOYED_COMMIT"
 
 need_file "$SQL_LOCAL"
+need_file "$LOCAL_REPO/deploy/check_weer_contract.sh"
 need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
 need_file "$LOCAL_REPO/R/check_wintertelling_output.R"
 need_file "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv"
@@ -151,6 +152,9 @@ need_file "$LOCAL_REPO/wintertellingen/winter_maandpatroon.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_plotgebruik.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_pilot_besluit.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_soortprotocol.csv"
+
+log "Controleer weerdata-eenhedencontract"
+"$LOCAL_REPO/deploy/check_weer_contract.sh" "$SQL_LOCAL"
 
 log "Controleer Shiny/dashboard parity voor MSI-groepen"
 Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \

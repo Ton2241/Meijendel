@@ -109,6 +109,27 @@ Gebruik de dump:
 - om gegevens opnieuw in te lezen
 - als basis voor analyses in R, Shiny en HTML
 
+#### Weerdata
+
+Gebruik de ruwe tabel `weer` nooit rechtstreeks voor een analyse. De schaal van
+`TG`, `TN`, `TX` en `RH` verschilt per station:
+
+- Valkenburg (station 210, tot en met 2 mei 2016): vermenigvuldigen met 10;
+- Voorschoten (station 215, vanaf 3 mei 2016): delen door 10.
+
+De verplichte interface is `weer_analyse`. De eenheid staat daar in de
+kolomnaam, bijvoorbeeld `tg_c`, `rh_mm`, `fg_ms` en `pg_hpa`. De vlaggen
+`rh_spoor` en `sq_spoor` onderscheiden KNMI-spoorwaarden van een gemeten nul.
+Voer na een weerimport of wijziging altijd uit:
+
+```bash
+deploy/check_weer_contract.sh meijendel.sql
+```
+
+De controle blokkeert onbekende stations, een ontbrekende view, rechtstreekse
+ruwe weerqueries in de analysemap, een verkeerde schaal rond de stationsbreuk
+en fysisch onwaarschijnlijke genormaliseerde waarden.
+
 ### 3.2 De Shiny-app
 
 De Shiny-app gebruik je als je nieuwe selecties wilt doorrekenen.

@@ -1,6 +1,7 @@
 # Besluiten
 
 - Het dashboard is leidend voor alle grafieken. De site mag geen eigen afwijkende grafieklogica of cijfers introduceren.
+- De tabel `weer` blijft een ruwe bron met stationsafhankelijke schalen. Alle analyses lezen uit `weer_analyse`; die view normaliseert eenheden, bewaart spoorneerslag en spoorzonneschijn als aparte vlaggen en levert bij een onbekend station bewust `NULL` voor stationsafhankelijk genormaliseerde waarden.
 - Het PQ-vegetatiemeetnet wordt rechtstreeks beheerd in de levende MySQL-database en niet handmatig in `meijendel.sql`. De genormaliseerde brontabellen gebruiken het prefix `pq_`; historische geometrie blijft per opname behouden. Dashboard en Shiny lezen alleen de afgeleide korrel `pq_plot_jaar_vegetatie`, de website alleen de veilige view `website_plot_vegetatie_jaar`.
 - Voorlopige PZH-imports worden versieerbaar opgeslagen met bestands-SHA en bronstatus. `SRTNUM` is de interne soortidentiteit binnen de geregistreerde soortenlijstversie; `PLABED` blijft een ruwe broncode. Afwijkende nieuw aangeleverde bodemcodes overschrijven de bestaande waarde pas na bevestiging door PZH.
 - Webgrafieken worden gevoed door vooraf gegenereerde dashboard-output/CSV; lokale `meijendel.sql` wordt niet per request geparsed.

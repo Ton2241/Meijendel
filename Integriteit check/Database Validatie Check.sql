@@ -367,8 +367,88 @@ FROM plot_jaar_oppervlak
 WHERE oppervlakte_km2 <= 0;
 -- Stap 29: Uitvoering van een SQL‑statement.
 
+-- Sectie 8: WEERGEGEVENS EN EENHEDENCONTRACT
+-- ============================================================================
 
--- Sectie 8: NAAMGEVING CONVENTIE CHECK
+SELECT '=== WEERGEGEVENS EN EENHEDENCONTRACT ===' as checkpoint;
+
+-- De ruwe tabel heeft bewust stationsafhankelijke schalen. Een nieuw station
+-- vereist eerst een expliciet profiel in de view `weer_analyse`.
+SELECT
+  'Onbekende stations in weer' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM weer
+WHERE STN NOT IN (210, 215);
+
+-- De view moet elke ruwe dag exact eenmaal ontsluiten.
+SELECT
+  'weer_analyse heeft andere korrel dan weer' as check_naam,
+  ABS(
+    (SELECT COUNT(*) FROM weer)
+    - (SELECT COUNT(*) FROM weer_analyse)
+  ) as aantal_problemen,
+  CASE
+    WHEN (SELECT COUNT(*) FROM weer) = (SELECT COUNT(*) FROM weer_analyse)
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status;
+
+-- Vaste waarden aan weerszijden van de stationsbreuk bewaken de twee
+-- tegengestelde schaalconversies.
+SELECT
+  'Schaalconversie rond stationsbreuk 2016' as check_naam,
+  SUM(
+    CASE
+      WHEN datum = '2016-05-02' AND stn = 210 AND tg_c = 11.0
+        AND tn_c = 1.0 AND tx_c = 17.0 AND rh_mm = 2.0 THEN 0
+      WHEN datum = '2016-05-03' AND stn = 215 AND tg_c = 8.8
+        AND tn_c = 2.9 AND tx_c = 11.9 AND rh_mm = 0.5 THEN 0
+      ELSE 1
+    END
+  ) + ABS(2 - COUNT(*)) as aantal_problemen,
+  CASE
+    WHEN COUNT(*) = 2
+      AND SUM(
+        CASE
+          WHEN datum = '2016-05-02' AND stn = 210 AND tg_c = 11.0
+            AND tn_c = 1.0 AND tx_c = 17.0 AND rh_mm = 2.0 THEN 0
+          WHEN datum = '2016-05-03' AND stn = 215 AND tg_c = 8.8
+            AND tn_c = 2.9 AND tx_c = 11.9 AND rh_mm = 0.5 THEN 0
+          ELSE 1
+        END
+      ) = 0
+    THEN '✓ OK' ELSE '❌ PROBLEEM'
+  END as status
+FROM weer_analyse
+WHERE datum IN ('2016-05-02', '2016-05-03');
+
+-- Fysisch onwaarschijnlijke waarden wijzen meestal op een vergeten of
+-- dubbele schaalconversie.
+SELECT
+  'Genormaliseerde weerwaarden buiten plausibel bereik' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM weer_analyse
+WHERE tg_c NOT BETWEEN -40 AND 45
+   OR tn_c NOT BETWEEN -40 AND 45
+   OR tx_c NOT BETWEEN -40 AND 55
+   OR rh_mm < 0
+   OR fg_ms < 0
+   OR pg_hpa NOT BETWEEN 850 AND 1100
+   OR ug_pct NOT BETWEEN 0 AND 100;
+
+-- KNMI-code -1 wordt nul voor berekeningen, maar blijft via een vlag
+-- onderscheidbaar van een gemeten nul.
+SELECT
+  'Spoorwaarden niet correct bewaard' as check_naam,
+  COUNT(*) as aantal_problemen,
+  CASE WHEN COUNT(*) = 0 THEN '✓ OK' ELSE '❌ PROBLEEM' END as status
+FROM weer w
+JOIN weer_analyse wa ON wa.datum = w.datum
+WHERE (w.RH = -1 AND (wa.rh_mm <> 0 OR wa.rh_spoor <> 1))
+   OR (w.SQ = -1 AND (wa.sq_uur <> 0 OR wa.sq_spoor <> 1));
+
+-- Sectie 9: NAAMGEVING CONVENTIE CHECK
 -- ============================================================================
 
 SELECT '=== NAAMGEVING CONVENTIE ===' as checkpoint;
@@ -387,7 +467,7 @@ WHERE table_schema = 'Meijendel'
 -- Stap 31: Uitvoering van een SQL‑statement.
 
 
--- Sectie 9: SAMENVATTING
+-- Sectie 10: SAMENVATTING
 -- ============================================================================
 
 SELECT '=== ALGEMENE DATABASE STATISTIEKEN ===' as checkpoint;

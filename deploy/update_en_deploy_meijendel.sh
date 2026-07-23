@@ -50,6 +50,10 @@ mysqldump --no-defaults \
   --events \
   "$MYSQL_DATABASE" > "$SQL_FILE"
 
+log "Controleer weerdata-eenhedencontract"
+MEIJENDEL_MYSQL_DATABASE="$MYSQL_DATABASE" \
+  "$REPO_DIR/deploy/check_weer_contract.sh" "$SQL_FILE"
+
 LC_ALL=C awk '
   /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
   in_tellers && /`id` int/ { has_id = 1 }

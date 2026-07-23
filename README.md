@@ -193,6 +193,24 @@ Voor nieuwe analyses:
 5. controleer de tabs `Soorten`, `Groepen` en `Controle`
 6. exporteer zo nodig CSV-bestanden
 
+### Weergegevens: verplicht analysecontract
+
+De tabel `weer` bevat ruwe bronwaarden met een stationsafhankelijke schaal en
+mag daarom niet rechtstreeks in analyses worden gebruikt. Gebruik altijd de
+view `weer_analyse`, met expliciete eenheden in de kolomnamen: `tg_c`, `tn_c`,
+`tx_c`, `rh_mm`, `fg_ms`, `sq_uur`, `pg_hpa` en `ug_pct`.
+
+- station 210 (Valkenburg, tot en met 2 mei 2016): `TG`, `TN`, `TX` en `RH`
+  worden met 10 vermenigvuldigd;
+- station 215 (Voorschoten, vanaf 3 mei 2016): dezelfde ruwe velden worden
+  door 10 gedeeld;
+- `rh_spoor` en `sq_spoor` markeren KNMI-code `-1`; de bijbehorende
+  analysewaarde is dan nul.
+
+Bij een nieuw station of een gewijzigde import moet eerst het profiel in
+`weer_analyse` worden uitgebreid en moeten de weercontroles in
+`Integriteit check/Database Validatie Check.sql` groen zijn.
+
 ## Shiny starten
 
 In R of RStudio:
@@ -211,6 +229,7 @@ Of via Terminal:
 ## Belangrijke aandachtspunten
 
 - De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
+- Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
 - De PQ-vegetatiebron vormt hierop een expliciete uitzondering: `pq_vegetatie_import`, `pq_vegetatie_pq`, `pq_vegetatie_opname`, `pq_vegetatie_taxon`, `pq_vegetatie_waarneming`, `pq_vegetatie_opname_plot` en `pq_plot_jaar_vegetatie` worden in de levende MySQL-database beheerd. Wijzig deze gegevens niet handmatig in `meijendel.sql`; genereer de dump na databasevalidatie opnieuw.
 - De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.

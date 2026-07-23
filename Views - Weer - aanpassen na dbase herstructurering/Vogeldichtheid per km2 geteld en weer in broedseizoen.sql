@@ -9,9 +9,8 @@ Deze query is bedoeld voor een view/rapport: Vogeldichtheid per km2 geteld en we
   gekoppeld aan de gemiddelde temperatuur tijdens de zomer
   (21 juni t/m 21 september).
 
-  Gebruikte weerkolom uit tabel `weer`:
-    TG = etmaalgemiddelde temperatuur in 0,1 °C (zie weer_legenda)
-    Conversie naar Celsius: TG / 10.0
+  Gebruik uitsluitend de genormaliseerde view `weer_analyse`.
+  `tg_c` is voor beide stations al uitgedrukt in graden Celsius.
 */
 
 SELECT
@@ -31,10 +30,6 @@ SELECT
     ) AS dichtheid_per_km2,
 
     -- Stap 4: Gemiddelde zomertemperatuur in °C
-    -- TG staat in 0,1 °C;
--- Stap 2: Uitvoering van een SQL‑statement.
- delen door 10.0 geeft de werkelijke Celsius-waarde
-    -- (Bron: weer_legenda, variabele = 'TG')
     ROUND(weer_zomer.gem_temp_zomer_celsius, 1) AS gem_temp_zomer_celsius
 
 FROM territoria t
@@ -60,13 +55,10 @@ JOIN (
 
 LEFT JOIN (
     -- Subquery B: Gemiddelde temperatuur per jaar over de zomer (21 jun t/m 21 sep)
-    -- TG staat in 0,1 °C;
--- Stap 3: Uitvoering van een SQL‑statement.
- AVG(TG) / 10.0 geeft het gemiddelde in °C
     SELECT
         YEAR(datum)            AS jaar,
-        AVG(TG) / 10.0         AS gem_temp_zomer_celsius
-    FROM weer
+        AVG(tg_c)              AS gem_temp_zomer_celsius
+    FROM weer_analyse
     WHERE
         (MONTH(datum) = 6 AND DAY(datum) >= 21)
         OR (MONTH(datum) = 7)
