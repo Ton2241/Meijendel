@@ -145,37 +145,130 @@ write_csv(protocol_matrix, "winter_soortprotocol.csv")
 visits$protocol <- ifelse(grepl("^Alle vogelsoorten", visits$tellingtype), "alle",
                           ifelse(grepl("^Watervogels", visits$tellingtype), "water", "overig"))
 visits$volledig <- tolower(visits$telomschrijving) == "volledig"
+visits$bezoek_datum <- as.Date(visits$bezoek_datum)
 visits$maand_f <- factor(visits$maand, levels = c(9, 10, 11, 12, 1, 2, 3),
                          labels = c("sep", "okt", "nov", "dec", "jan", "feb", "mrt"))
 visits$seizoen <- factor(visits$seizoen_start, levels = 2000:2024)
 visits$season_c <- visits$seizoen_start - 2000
 visits$plot_id <- factor(visits$plot_id)
 
+# Per kavel en wintermaand telt één regulier volledig analysebezoek mee: het
+# bezoek dat het dichtst bij de 15e ligt. Enkelvoudige tellingen buiten het
+# voorkeursweekend blijven behouden. Bekende bronincidenten worden hieronder
+# expliciet en reproduceerbaar afgehandeld.
+combine_visit_rules <- data.frame(
+  bezoek_id = 8078L,
+  doel_bezoek_id = 8079L,
+  reden = "telefoonuitval; digitale en handmatige delen vormen samen één telling",
+  stringsAsFactors = FALSE
+)
+preferred_visit_rules <- data.frame(
+  bezoek_id = c(4605L, 6036L),
+  reden = c(
+    "latere correctieregistratie van dubbel ingevoerde telling op 2014-10-11",
+    "volledige registratie behouden; bezoek 6037 bevat één dubbele soortregel"
+  ),
+  stringsAsFactors = FALSE
+)
+manual_exclusions <- data.frame(
+  bezoek_id = integer(),
+  reden = character(),
+  stringsAsFactors = FALSE
+)
+
+rule_ids <- unique(c(
+  combine_visit_rules$bezoek_id,
+  combine_visit_rules$doel_bezoek_id,
+  preferred_visit_rules$bezoek_id,
+  manual_exclusions$bezoek_id
+))
+if (length(rule_ids) && !all(rule_ids %in% visits$bezoek_id)) {
+  stop("Minimaal één bezoek-id uit de winterselectieregels ontbreekt in de bron.")
+}
+
+combined_match <- match(counts$bezoek_id, combine_visit_rules$bezoek_id)
+counts$bezoek_id[!is.na(combined_match)] <-
+  combine_visit_rules$doel_bezoek_id[combined_match[!is.na(combined_match)]]
+counts_sum <- aggregate(cbind(aantal, bronregels) ~ bezoek_id + soort_id, data = counts, FUN = sum)
+counts_max <- aggregate(max_bronregel ~ bezoek_id + soort_id, data = counts, FUN = max)
+counts <- merge(counts_sum, counts_max, by = c("bezoek_id", "soort_id"), sort = FALSE)
+
+eligible_visits <- visits[
+  visits$volledig &
+    visits$protocol %in% c("alle", "water") &
+    !visits$bezoek_id %in% combine_visit_rules$bezoek_id &
+    !visits$bezoek_id %in% manual_exclusions$bezoek_id,
+]
+eligible_visits$afstand_maandmidden <-
+  abs(as.integer(format(eligible_visits$bezoek_datum, "%d")) - 15L)
+eligible_visits$selectiesleutel <- paste(
+  eligible_visits$plot_id,
+  eligible_visits$seizoen_start,
+  eligible_visits$maand,
+  sep = ":"
+)
+eligible_visits <- eligible_visits[order(
+  eligible_visits$selectiesleutel,
+  eligible_visits$afstand_maandmidden,
+  eligible_visits$bezoek_datum,
+  eligible_visits$bezoek_id
+), ]
+selected_ids <- eligible_visits$bezoek_id[!duplicated(eligible_visits$selectiesleutel)]
+
+for (preferred_id in preferred_visit_rules$bezoek_id) {
+  preferred_key <- eligible_visits$selectiesleutel[
+    match(preferred_id, eligible_visits$bezoek_id)
+  ]
+  selected_keys <- eligible_visits$selectiesleutel[
+    match(selected_ids, eligible_visits$bezoek_id)
+  ]
+  selected_ids <- c(selected_ids[selected_keys != preferred_key], preferred_id)
+}
+
+visits$analyse_geselecteerd <- visits$bezoek_id %in% selected_ids
+analysis_visits <- visits[visits$analyse_geselecteerd, ]
+expected_incident_selection <- c(4605L, 5382L, 5375L, 5391L, 6036L, 8079L)
+if (!all(expected_incident_selection %in% analysis_visits$bezoek_id)) {
+  stop("De geselecteerde bezoeken voor bekende meervoudige kavelmaanden wijken af.")
+}
+duplicate_groups <- table(eligible_visits$selectiesleutel)
+duplicate_groups <- sum(duplicate_groups > 1L)
+regular_complete_visits <- sum(
+  visits$volledig & visits$protocol %in% c("alle", "water")
+)
+
 audit <- data.frame(
   kenmerk = c(
     "analyseperiode", "bezoeken_wintermaanden", "volledige_bezoeken", "onvolledige_bezoeken",
     "bezoeken_alle_vogels", "bezoeken_waterprotocol", "bezoeken_overig_protocol",
     "bezoeken_zonder_telduur", "eerste_seizoen", "laatste_volledige_seizoen",
+    "volledige_reguliere_bezoeken", "kavelmaanden_met_meerdere_tellingen",
+    "samengevoegde_aanvullingsbezoeken", "niet_geselecteerde_meervoudige_bezoeken",
+    "handmatig_uitgesloten_afwijkende_teldata", "geselecteerde_analysebezoeken",
     "canonieke_soorten", "samengevoegde_broncodes", "modelversie"
   ),
   waarde = c(
     "2000/01-2024/25", nrow(visits), sum(visits$volledig), sum(!visits$volledig),
     sum(visits$protocol == "alle"), sum(visits$protocol == "water"), sum(visits$protocol == "overig"),
     sum(is.na(visits$bezoekduur_min)), min(visits$seizoen_start), max(visits$seizoen_start),
-    nrow(analysis_species), nrow(taxon_map), "winter-alle-soorten-v2"
+    regular_complete_visits, duplicate_groups + nrow(combine_visit_rules),
+    nrow(combine_visit_rules),
+    regular_complete_visits - nrow(combine_visit_rules) - nrow(analysis_visits),
+    nrow(manual_exclusions), nrow(analysis_visits),
+    nrow(analysis_species), nrow(taxon_map), "winter-alle-soorten-v3-maandselectie"
   ),
   stringsAsFactors = FALSE
 )
 write_csv(audit, "winter_audit_samenvatting.csv")
 
 coverage <- aggregate(
-  cbind(geldige_bezoeken = as.integer(visits$volledig & visits$protocol %in% c("alle", "water")),
-        geldige_plots = as.integer(visits$volledig & visits$protocol %in% c("alle", "water"))) ~ seizoen_start + maand,
-  data = visits,
+  cbind(geldige_bezoeken = rep.int(1L, nrow(analysis_visits)),
+        geldige_plots = rep.int(1L, nrow(analysis_visits))) ~ seizoen_start + maand,
+  data = analysis_visits,
   FUN = sum
 )
 plot_coverage <- aggregate(plot_id ~ seizoen_start + maand,
-                           data = visits[visits$volledig & visits$protocol %in% c("alle", "water"), ],
+                           data = analysis_visits,
                            FUN = function(x) length(unique(x)))
 coverage$geldige_plots <- plot_coverage$plot_id[match(
   paste(coverage$seizoen_start, coverage$maand),
@@ -185,10 +278,14 @@ coverage$seizoen <- sprintf("%02d/%02d", coverage$seizoen_start %% 100, (coverag
 write_csv(coverage, "winter_dekking.csv")
 
 positive_scan <- merge(counts, analysis_species[, c("soort_id", "soort_naam", "soortgroep", "protocolgroep")], by = "soort_id", all.x = TRUE)
-positive_scan <- merge(positive_scan, visits[, c("bezoek_id", "seizoen_start", "plot_id")], by = "bezoek_id", all.x = TRUE)
-suitability <- do.call(rbind, lapply(split(positive_scan, positive_scan$soort_id), function(x) {
+positive_scan <- merge(
+  positive_scan,
+  analysis_visits[, c("bezoek_id", "seizoen_start", "plot_id")],
+  by = "bezoek_id"
+)
+positive_stats <- do.call(rbind, lapply(split(positive_scan, positive_scan$soort_id), function(x) {
   data.frame(
-    soort_id = x$soort_id[[1]], soort_naam = x$soort_naam[[1]],
+    soort_id = x$soort_id[[1]],
     winters_met_detectie = length(unique(x$seizoen_start)),
     bezoeken_met_detectie = length(unique(x$bezoek_id)),
     plots_met_detectie = length(unique(x$plot_id)),
@@ -196,6 +293,18 @@ suitability <- do.call(rbind, lapply(split(positive_scan, positive_scan$soort_id
     stringsAsFactors = FALSE
   )
 }))
+suitability <- merge(
+  analysis_species[, c("soort_id", "soort_naam")],
+  positive_stats,
+  by = "soort_id",
+  all.x = TRUE,
+  sort = FALSE
+)
+stat_columns <- c(
+  "winters_met_detectie", "bezoeken_met_detectie", "plots_met_detectie",
+  "totaal_geregistreerd", "maximum_bezoektotaal"
+)
+for (column in stat_columns) suitability[[column]][is.na(suitability[[column]])] <- 0
 suitability$voorlopige_klasse <- with(suitability, ifelse(
   winters_met_detectie >= 20 & bezoeken_met_detectie >= 300 & plots_met_detectie >= 15, "kansrijk",
   ifelse(winters_met_detectie >= 15 & bezoeken_met_detectie >= 100, "nader_beoordelen", "alleen_beschrijvend")
@@ -321,8 +430,7 @@ empty_trend <- c(estimate = NA_real_, lower = NA_real_, upper = NA_real_)
 for (i in seq_len(nrow(analysis_species))) {
   sp <- analysis_species[i, ]
   message(sprintf("Winteranalyse %d/%d: %s", i, nrow(analysis_species), sp$soort_naam))
-  eligible_protocol <- c("alle", "water")
-  dat <- visits[visits$volledig & visits$protocol %in% eligible_protocol, ]
+  dat <- analysis_visits
   cnt <- counts[counts$soort_id == sp$soort_id, c("bezoek_id", "aantal", "bronregels", "max_bronregel")]
   dat <- merge(dat, cnt, by = "bezoek_id", all.x = TRUE, sort = FALSE)
   dat$aantal[is.na(dat$aantal)] <- 0

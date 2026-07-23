@@ -461,14 +461,21 @@ De tab heeft twee afzonderlijke modi.
 
 ### Gestandaardiseerde index
 
-Deze modus leest de gevalideerde uitvoer uit `wintertellingen/` en toont voor de
-pilotsoorten met status `betrouwbaar` of `indicatief`:
+Deze modus leest de gevalideerde uitvoer uit `wintertellingen/` en toont alle
+220 canonieke wintersoorten. Soorten met status `betrouwbaar` of `indicatief`
+krijgen:
 
 - de winterindex 2000/01–2024/25 met 95%-onzekerheidsinterval;
 - het maandpatroon september–maart;
 - het aantal geldige bezoeken per winter;
 - de twaalf best gedekte plots met de hoogste waarnemingsfrequentie;
 - het kwaliteitslabel en de methodologische beperking.
+
+Soorten met status `alleen_beschrijvend` krijgen geen modelindex, maar het
+geregistreerde gemiddelde per geldig bezoek en de waarnemingsfrequentie. Per
+kavel en wintermaand telt maximaal één volledig regulier analysebezoek mee:
+standaard de telling die het dichtst bij de 15e ligt. Bekende aanvullende
+registraties worden eerst samengevoegd.
 
 Index 100 is de gemiddelde modelwaarde over 2000/01–2004/05. De index is geen
 populatiegrootte of absolute dichtheid. Details staan in

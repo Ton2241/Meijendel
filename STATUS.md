@@ -28,6 +28,11 @@ Gereed:
 Gereed:
 
 - De bezoek-, protocol-, taxon- en nulreconstructie-audit is reproduceerbaar vastgelegd.
+- Per kavel en wintermaand gebruikt de analyse maximaal één volledig regulier
+  bezoek: standaard de telling het dichtst bij de 15e. Bekende dubbele,
+  correctie- en aanvullingsregistraties zijn met expliciete bezoek-id-regels
+  afgehandeld; enkelvoudige tellingen buiten het voorkeursweekend blijven
+  behouden tenzij een gemotiveerde uitzondering wordt vastgelegd.
 - De vaste telregel is verwerkt: ieder volledig regulier bezoek registreert alle
   waargenomen vogels, ook watervogels en wetlandsoorten. Het historische teltype
   is daarom een modelcovariaat en geen soortspecifieke nulbeperking.
@@ -35,7 +40,7 @@ Gereed:
   `Canadese gans spec.` en `Grote Canadese gans (maxima)` vallen onder
   `Grote Canadese Gans`.
 - Alle 220 soorten hebben jaar-, maand- en plotuitvoer. 77 soorten zijn volledig
-  modelmatig getest: 15 zijn `betrouwbaar`, 45 `indicatief`; in totaal zijn 160
+  modelmatig getest: 17 zijn `betrouwbaar`, 41 `indicatief`; in totaal zijn 162
   soorten uitsluitend `alleen_beschrijvend`.
 - Het dashboard bevat een nieuw winteronderdeel met jaarindex, maandindex,
   geldige bezoeken, ruimtelijke spreiding en een methodologische waarschuwing.

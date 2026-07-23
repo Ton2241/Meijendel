@@ -18,7 +18,7 @@ en volledig regulier bezoek.
 
 De primaire eenheid is:
 
-`soort × plot × bezoek × datum`
+`soort × plot × geselecteerd maandbezoek × datum`
 
 De vaste telregel is dat tijdens ieder volledig regulier winterbezoek in elk
 kavel **alle waargenomen vogels** worden genoteerd. Dat geldt ook voor
@@ -32,6 +32,15 @@ analysetabel. Het historische teltype blijft in de modellen opgenomen als
 controlevariabele voor mogelijke uitvoeringsverschillen, niet als beperking van
 het soortenspectrum. De reproduceerbare protocolmatrix staat in
 `wintertellingen/winter_soortprotocol.csv`.
+
+Per kavel en wintermaand wordt maximaal één volledig regulier analysebezoek
+gebruikt. Bij meerdere bezoeken wordt standaard het bezoek gekozen waarvan de
+datum het dichtst bij de 15e van de maand ligt. Een gelijke afstand wordt
+deterministisch opgelost op datum en bezoek-id. Bekende dubbele,
+correctie- of aanvullingsregistraties worden met expliciete bezoek-id-regels in
+het analysescript afgehandeld. Tellingen buiten het voorkeursweekend blijven
+behouden zolang er niet meerdere bezoeken in dezelfde kavelmaand zijn; alleen
+een gemotiveerde, vastgelegde uitzondering kan zo'n telling uitsluiten.
 
 Meerdere ruimtelijke bronregels voor dezelfde soort binnen hetzelfde bezoek
 worden eerst opgeteld. Historische synoniemen worden vóór modellering
@@ -58,10 +67,11 @@ gebruikt, omdat vrijwel geen gesloten detectiereplicaten bestaan.
 
 De gecontroleerde uitvoer bevat 220 soorten en 25 winters:
 
-- 15 soorten met status `betrouwbaar`;
-- 45 soorten met status `indicatief`;
-- 160 soorten met status `alleen_beschrijvend`;
-- 77 soorten volledig modelmatig getest en 143 uitsluitend beschrijvend.
+- 17 soorten met status `betrouwbaar`;
+- 41 soorten met status `indicatief`;
+- 162 soorten met status `alleen_beschrijvend`;
+- 77 soorten volledig modelmatig getest en 143 wegens onvoldoende dekking niet
+  modelmatig getest.
 
 Deze aantallen zijn uitvoer van de huidige vaste beslisregels en kunnen na een
 nieuwe dataversie wijzigen. Het dashboard toont alle soorten, laat filteren op
