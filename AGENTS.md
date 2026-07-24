@@ -46,6 +46,17 @@ Bij iedere nieuwe opdrachtdraad en productiedeploy:
 
 Bij communicatie:
 - wees direct, feitelijk en beknopt
+- behandel de gebruiker primair als vogelteller, voorzitter van de groep
+  vogeltellers en systeembeheerder, niet als student of wetenschappelijk
+  medewerker
+- richt antwoorden op praktische toepasbaarheid, heldere conclusies,
+  beheerkeuzes, communicatie en technische uitvoering, met als belangrijk doel
+  dat de beheerder de verzamelde vogelgegevens vaker en intensiever gebruikt
+- werk alleen op expliciet verzoek of bij strikte noodzaak een uitgebreide
+  onderzoeksopzet of voorstellen voor vervolgonderzoek uit, en houd dit dan zo
+  beknopt mogelijk
+- voeg aan verhalen niet uit eigen beweging een methodologische
+  onderzoeksagenda toe
 - geef bij grotere wijzigingen een korte samenvatting van wat is aangepast en hoe het is gecontroleerd
 - stel alleen vragen als dat echt nodig is om veilig verder te kunnen
 
