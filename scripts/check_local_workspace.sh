@@ -29,8 +29,11 @@ check_tree() {
 check_tracked_files() {
   local stats result
 
-  if ! stats="$(git -C "$REPO_DIR" ls-files -z |
-    /usr/bin/xargs -0 /usr/bin/stat -f '%Sf %N' -- 2>&1)"; then
+  if ! stats="$(
+    cd "$REPO_DIR"
+    git ls-files -z |
+      /usr/bin/xargs -0 /usr/bin/stat -f '%Sf %N' -- 2>&1
+  )"; then
     die "gevolgde bestanden konden niet worden gecontroleerd: $stats"
   fi
   result="$(printf '%s\n' "$stats" |

@@ -35,6 +35,9 @@ fi
 [[ "$output" == *"/tmp/voorbeeld-placeholder"* ]] ||
   fail "de blokkerende bestandsnaam ontbreekt in de foutmelding."
 
+(cd / && "$GUARD") ||
+  fail "de controle werkt niet vanuit een andere huidige werkmap."
+
 assert_before "$DEPLOY" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$PRODUCTION_GUARD" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$UPDATE" 'check_local_workspace.sh' 'mysqldump --no-defaults'
