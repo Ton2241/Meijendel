@@ -16,6 +16,7 @@ guard_remote() { ssh -i "$SSH_KEY" "$VPS" "$@"; }
 
 guard_baseline() {
   cd "$LOCAL_REPO"
+  "$LOCAL_REPO/scripts/check_local_workspace.sh"
   [[ -z "$(git status --porcelain)" ]] || guard_die "werkboom is niet schoon."
   [[ "$(git branch --show-current)" == "main" ]] || guard_die "productiedeploy mag alleen vanaf main."
   git fetch origin --prune

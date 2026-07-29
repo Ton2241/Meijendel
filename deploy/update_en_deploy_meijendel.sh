@@ -34,6 +34,7 @@ need_dir "$REPO_DIR/deploy"
 need_file "$REPO_DIR/deploy/deploy_meijendel_vps.sh"
 
 cd "$REPO_DIR"
+"$REPO_DIR/scripts/check_local_workspace.sh"
 
 log "Maak actuele lokale database-dump: $SQL_FILE"
 mysqldump --no-defaults \

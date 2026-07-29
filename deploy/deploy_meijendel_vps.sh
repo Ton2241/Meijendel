@@ -85,6 +85,7 @@ done
 [[ -z "$INITIALIZE_STATE" || "$APPLY" -eq 0 ]] || die "combineer --initialize-state niet met --apply."
 
 cd "$LOCAL_REPO"
+"$LOCAL_REPO/scripts/check_local_workspace.sh"
 log "Controleer Git-baseline"
 [[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
 [[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."
