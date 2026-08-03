@@ -21,6 +21,12 @@ Bij codewerk:
 - houd wijzigingen zo klein mogelijk, maar wel volledig genoeg om het probleem echt op te lossen
 - voorkom regressies: laat bij wijzigingen aan dashboard, Shiny-app of VPS-website geen bestaande onderdelen, tekstblokken, grafieken, filters of toelichtingen verdwijnen tenzij daar expliciet om is gevraagd; controleer relevante bestaande UI-elementen na afloop
 - voeg tests of verificatiestappen toe als dat logisch is; als je iets niet kon verifiëren, zeg dat expliciet
+- voer tests, R/Python-generatie en andere controles die tijdelijke bestanden
+  of caches maken vanaf de eerste poging uit in een lokale uitvoercontext met
+  schrijfbare tijdelijke macOS-mappen; probeer niet eerst dezelfde opdracht in
+  de beperkte Codex-sandbox, omdat `/var/folders/.../T`, `/tmp` en `/var/tmp`
+  daar onschrijfbaar kunnen zijn; gebruik altijd een bestaande
+  repositoriespecifieke controle- of generatiescript als dat beschikbaar is
 - gebruik vóór fetch, lokale generatie en deploy
   `scripts/check_local_workspace.sh`; de vaste deploy- en generatiescripts
   roepen deze controle zelf aan

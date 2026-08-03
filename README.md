@@ -24,6 +24,14 @@ Belangrijkste werkpaden:
 
 Werk bij nieuwe hoofdopdrachten vanuit een nieuwe draad, maar gebruik deze documenten als werkgeheugen. Start en eindig via `../VWG_Project/scripts/workspace_preflight.sh`; dit controleert vóór fetch of `.git` en gevolgde bestanden werkelijk lokaal beschikbaar zijn. Inspecteer daarna altijd de actuele code en `git status`; neem niet aan dat tijdelijke scripts uit `/private/tmp` nog bestaan. De vaste generatie- en deployscripts voeren dezelfde lokale controle zelf uit. Commit afgeronde wijzigingen standaard met een korte, beschrijvende commitmelding, tenzij expliciet is gevraagd om niet te committen. Als wordt gevraagd een wijziging voor `app.vwg-m.nl` of de VPS-site door te voeren, voer die wijziging zowel lokaal als op de VPS door en controleer de productiepagina of relevante smoke-test na deploy.
 
+Codex start tests, R/Python-generatie en andere opdrachten die tijdelijke
+bestanden of caches maken meteen in een lokale uitvoercontext met schrijfbare
+macOS-tijdelijke mappen. Een voorafgaande proef in de beperkte sandbox is niet
+nodig: `/var/folders/.../T`, `/tmp` en `/var/tmp` kunnen daar onschrijfbaar zijn
+en zo een fout veroorzaken voordat de inhoudelijke controle begint. Gebruik
+waar beschikbaar altijd het bestaande repositoriespecifieke controle- of
+generatiescript.
+
 ## Waar begin je?
 
 Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgorde:
