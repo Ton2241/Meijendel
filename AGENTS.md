@@ -11,6 +11,24 @@ Antwoord in het Nederlands, compact en praktisch.
 
 Werk standaard op de lokale iMac M1 in mijn thuismap/projectmap. Ga ervan uit dat projecten lokaal staan tenzij ik expliciet zeg dat bestanden op de Samsung Portable SSD T7, op de NAS DS225+ of op de VPS staan. Vraag eerst om bevestiging voordat je paden op externe opslag of NAS gebruikt. Gebruik voor de NAS standaard Synology DSM via de browser.
 
+## Lokale uitvoercontext is verplicht
+
+- Voer `/Users/ton/Documents/GitHub/VWG_Project/scripts/workspace_preflight.sh`
+  vanaf de eerste poging rechtstreeks uit in de lokale uitvoercontext op de
+  iMac, met toegang tot `.git`, het netwerk en schrijfbare macOS-mappen voor
+  tijdelijke bestanden en caches.
+- Hetzelfde geldt voor Git-controles zoals `git status`, `git fetch`,
+  `git worktree` en upstreamcontroles, en voor repositoryscripts, tests,
+  R/Python-generatie en validatie die tijdelijke bestanden of caches kunnen
+  maken.
+- Probeer zulke opdrachten niet eerst in de beperkte Codex-sandbox. Mappen
+  onder `/var/folders/.../T`, `/tmp` en `/var/tmp` en caches van macOS-tools
+  kunnen daar onschrijfbaar zijn; die bekende uitvoerbeperking is geen
+  project-, Git- of testresultaat.
+- Gebruik de beperkte sandbox alleen voor zuivere bestandslezingen, zoals een
+  gerichte `sed`- of `rg`-inspectie, waarvan vaststaat dat zij geen tijdelijke
+  bestanden of caches maken.
+
 Bij codewerk:
 - onderzoek eerst kort de bestaande code en volg de bestaande patronen, naamgeving en structuur
 - zoek eerst naar bestaande helpers of utilities voordat je nieuwe toevoegt
@@ -23,9 +41,7 @@ Bij codewerk:
 - voeg tests of verificatiestappen toe als dat logisch is; als je iets niet kon verifiëren, zeg dat expliciet
 - voer tests, R/Python-generatie en andere controles die tijdelijke bestanden
   of caches maken vanaf de eerste poging uit in een lokale uitvoercontext met
-  schrijfbare tijdelijke macOS-mappen; probeer niet eerst dezelfde opdracht in
-  de beperkte Codex-sandbox, omdat `/var/folders/.../T`, `/tmp` en `/var/tmp`
-  daar onschrijfbaar kunnen zijn; gebruik altijd een bestaande
+  schrijfbare tijdelijke macOS-mappen; gebruik altijd een bestaande
   repositoriespecifieke controle- of generatiescript als dat beschikbaar is
 - gebruik vóór fetch, lokale generatie en deploy
   `scripts/check_local_workspace.sh`; de vaste deploy- en generatiescripts
