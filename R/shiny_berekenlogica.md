@@ -418,6 +418,15 @@ De formule bevat altijd:
 
 en daarnaast een door de gebruiker gekozen subset van covariaten.
 
+In de reguliere G.E.E.-analyse zijn daarnaast twee optionele longitudinale
+termen beschikbaar:
+
+- `year_c_sq`: de kwadratische tijdscomponent, berekend rond het midden van
+  de geselecteerde jaarreeks en altijd samen met de lineaire tijdsterm;
+- `baseline_log_density`: `log(1 + territoria_per_km2)` uit het eerste getelde
+  jaar per plot. Bij deze correctie wordt de beginrij van ieder plot niet ook
+  als respons gebruikt.
+
 De app begrenst de `G.E.E.`-fit operationeel:
 
 - `maxit = 20`

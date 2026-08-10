@@ -834,6 +834,17 @@ ui <- navbarPage(
                 ),
                 selected = c("stikstof_mean", "toegankelijkheid_status")
               ),
+              checkboxInput(
+                "gee_quadratic_time",
+                "Kwadratische tijdsterm (jaar^2)",
+                value = FALSE
+              ),
+              checkboxInput(
+                "gee_adjust_for_baseline",
+                "Corrigeer voor beginwaarde per kavel",
+                value = FALSE
+              ),
+              helpText("De beginwaarde is log(1 + territoria/km2) in het eerste getelde jaar per kavel; die beginrij wordt niet opnieuw als uitkomst gebruikt."),
               uiOutput("gee_ahn_covariate_ui"),
               uiOutput("gee_infra_covariate_ui"),
               uiOutput("gee_habitat_covariate_ui")
@@ -858,7 +869,7 @@ ui <- navbarPage(
           div(
             class = "soft-card",
             h3("Effectschattingen"),
-            tags$p(class = "section-note", "De grafiek toont Incident Rate Ratios (IRR) met 95%-betrouwbaarheidsinterval. Jaar wordt hier als controlevariabele behandeld, niet als aparte trendmodule."),
+            tags$p(class = "section-note", "De grafiek toont Incident Rate Ratios (IRR) met 95%-betrouwbaarheidsinterval. Jaar wordt hier als controlevariabele behandeld, niet als aparte trendmodule. Bij jaar^2 moeten de lineaire en kwadratische coefficient altijd samen worden geinterpreteerd."),
             plotOutput("gee_coef_plot", height = "420px"),
             div(
               class = "download-row",
@@ -1995,7 +2006,14 @@ server <- function(input, output, session) {
     } else {
       target_value <- NULL
     }
-    totaal_covariaten <- c(input$gee_covariates, input$gee_ahn_covariates, input$gee_infra_covariates, input$gee_habitat_covariates)
+    totaal_covariaten <- c(
+      input$gee_covariates,
+      input$gee_ahn_covariates,
+      input$gee_infra_covariates,
+      input$gee_habitat_covariates,
+      if (isTRUE(input$gee_quadratic_time)) "year_c_sq",
+      if (isTRUE(input$gee_adjust_for_baseline)) "baseline_log_density"
+    )
     if (length(totaal_covariaten) == 0) {
       gee_analysis_info_rv("Kies eerst minstens één covariaat.")
       showNotification("Kies eerst minstens één covariaat.", type = "error", duration = 5)
@@ -2015,6 +2033,8 @@ server <- function(input, output, session) {
           ahn_covariates = input$gee_ahn_covariates,
           infra_covariates = input$gee_infra_covariates,
           habitat_covariates = input$gee_habitat_covariates,
+          quadratic_time = isTRUE(input$gee_quadratic_time),
+          adjust_for_baseline = isTRUE(input$gee_adjust_for_baseline),
           gee_corstr = input$gee_corstr
         )
         analyse <- attach_analysis_export_script(
@@ -2032,6 +2052,8 @@ server <- function(input, output, session) {
             ahn_covariates = input$gee_ahn_covariates,
             infra_covariates = input$gee_infra_covariates,
             habitat_covariates = input$gee_habitat_covariates,
+            quadratic_time = isTRUE(input$gee_quadratic_time),
+            adjust_for_baseline = isTRUE(input$gee_adjust_for_baseline),
             gee_corstr = input$gee_corstr
           )
           )
@@ -2615,7 +2637,9 @@ server <- function(input, output, session) {
     cov_labels <- c(
       setNames(gee_covariate_specs()$label, gee_covariate_specs()$code),
       setNames(gee_ahn_covariate_specs()$label, gee_ahn_covariate_specs()$code),
-      setNames(gee_infra_covariate_specs()$label, gee_infra_covariate_specs()$code)
+      setNames(gee_infra_covariate_specs()$label, gee_infra_covariate_specs()$code),
+      year_c_sq = "Kwadratische tijdsterm",
+      baseline_log_density = "Beginwaarde per kavel"
     )
     if (!is.null(tbls)) {
       hab_specs <- gee_habitat_covariate_specs(tbls)
@@ -2668,6 +2692,8 @@ server <- function(input, output, session) {
       "\nJaren:", sam$eerste_jaar, "-", sam$laatste_jaar,
       "\nCorrelatiestructuur:", sam$gee_corstr,
       "\nCovariaten:", paste(cov_names, collapse = ", "),
+      if (isTRUE(sam$kwadratische_tijd)) paste0("\nTijdsvorm: lineair + kwadratisch (gecentreerd rond ", sam$middenjaar_tijdkwadraat, ")") else "\nTijdsvorm: lineair",
+      if (isTRUE(sam$correctie_beginwaarde)) paste0("\nBeginwaardecorrectie: ", sam$definitie_beginwaarde) else "",
       vif_txt,
       if ("effect_eenheden" %in% names(sam) && !is.na(sam$effect_eenheden) && nzchar(sam$effect_eenheden)) paste0("\nIRR-eenheden: ", sam$effect_eenheden) else "",
       if (length(dropped_names)) paste0("\nVervallen covariaten:", " ", paste(dropped_names, collapse = ", ")) else ""
@@ -3193,6 +3219,8 @@ server <- function(input, output, session) {
     }
     term_labels <- c(
       year_c = "Jaar",
+      year_c_sq = "Jaar^2 (kwadratische component)",
+      baseline_log_density = "Beginwaarde per kavel",
       ahn_mean = "AHN gemiddelde hoogte",
       ahn_sd = "AHN standaard deviatie",
       stikstof_mean = "Stikstof gemiddelde depositie",
@@ -3272,6 +3300,8 @@ server <- function(input, output, session) {
     coefs <- analyse$coefficients
     term_labels <- c(
       year_c = "Jaar",
+      year_c_sq = "Jaar^2 (kwadratische component)",
+      baseline_log_density = "Beginwaarde per kavel",
       ahn_mean = "AHN gemiddelde hoogte",
       ahn_sd = "AHN standaard deviatie",
       stikstof_mean = "Stikstof gemiddelde depositie",
@@ -3338,6 +3368,8 @@ server <- function(input, output, session) {
     vif <- analyse$vif
     term_labels <- c(
       year_c = "Jaar",
+      year_c_sq = "Jaar^2 (kwadratische component)",
+      baseline_log_density = "Beginwaarde per kavel",
       ahn_mean = "AHN gemiddelde hoogte",
       ahn_sd = "AHN standaard deviatie",
       stikstof_mean = "Stikstof gemiddelde depositie",

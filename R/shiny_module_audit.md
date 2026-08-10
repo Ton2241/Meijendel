@@ -344,6 +344,8 @@ Gebruiker kan kiezen:
 - AHN-covariaten;
 - infra-covariaten;
 - habitatcovariaten;
+- optionele kwadratische tijdsterm naast de verplichte lineaire tijdsterm;
+- optionele correctie voor `log(1 + territoria/km2)` in het eerste getelde jaar per plot, waarbij de beginrij uit de respons wordt verwijderd;
 - screening GEE.
 
 Default:
