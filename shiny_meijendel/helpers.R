@@ -2323,6 +2323,7 @@ gee_effect_unit_specs <- function() {
     term = c(
       "year_c",
       "year_c_sq",
+      "baseline_density",
       "baseline_log_density",
       "stikstof_mean",
       "ahn_mean",
@@ -2332,11 +2333,12 @@ gee_effect_unit_specs <- function() {
       "afstand_parkeerplaats_m",
       "afstand_hoofdtoegang_m"
     ),
-    effect_schaal = c(10, 1, 1, 100, 1, 1, 100, 100, 100, 100),
+    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 100),
     effect_eenheid = c(
       "per 10 jaar",
       "kwadratische component per jaar^2",
-      "per 1 log(1 + territoria/km2) beginwaarde",
+      "per 1 territorium/km2 T0-beginwaarde",
+      "per 1 log(1 + territoria/km2) T0-beginwaarde",
       "per 100 mol N/ha/jaar",
       "per 1 m",
       "per 1 m",
@@ -2349,7 +2351,8 @@ gee_effect_unit_specs <- function() {
   )
 }
 
-add_gee_longitudinal_covariates <- function(dat, quadratic_time = FALSE, adjust_for_baseline = FALSE) {
+add_gee_longitudinal_covariates <- function(dat, quadratic_time = FALSE, adjust_for_baseline = FALSE, baseline_year = NULL, baseline_transform = c("raw", "log1p")) {
+  baseline_transform <- match.arg(baseline_transform)
   dat$gee_is_baseline_row <- FALSE
 
   if (isTRUE(quadratic_time)) {
@@ -2363,16 +2366,25 @@ add_gee_longitudinal_covariates <- function(dat, quadratic_time = FALSE, adjust_
   }
 
   if (isTRUE(adjust_for_baseline)) {
-    usable <- is.finite(dat$count) & is.finite(dat$territoria_per_km2)
-    first_year <- tapply(dat$jaar[usable], dat$plot_id[usable], min)
-    baseline_year <- as.integer(first_year[as.character(dat$plot_id)])
-    baseline_density_by_plot <- vapply(names(first_year), function(plot_id) {
-      hit <- usable & as.character(dat$plot_id) == plot_id & dat$jaar == first_year[[plot_id]]
-      dat$territoria_per_km2[which(hit)[[1]]]
-    }, numeric(1))
+    baseline_year <- as.integer(baseline_year)
+    if (length(baseline_year) != 1L || !is.finite(baseline_year)) {
+      stop("Kies een geldig T0-jaar voor de beginwaardecorrectie.")
+    }
+    usable_t0 <- dat$jaar == baseline_year & is.finite(dat$count) & is.finite(dat$territoria_per_km2)
+    baseline_density_by_plot <- tapply(
+      dat$territoria_per_km2[usable_t0],
+      dat$plot_id[usable_t0],
+      function(x) x[[1]]
+    )
+    baseline_density <- as.numeric(baseline_density_by_plot[as.character(dat$plot_id)])
     dat$baseline_year <- baseline_year
-    dat$baseline_log_density <- log1p(as.numeric(baseline_density_by_plot[as.character(dat$plot_id)]))
-    dat$gee_is_baseline_row <- is.finite(dat$baseline_year) & dat$jaar == dat$baseline_year
+    dat$baseline_available <- is.finite(baseline_density)
+    if (identical(baseline_transform, "log1p")) {
+      dat$baseline_log_density <- log1p(baseline_density)
+    } else {
+      dat$baseline_density <- baseline_density
+    }
+    dat$gee_is_baseline_row <- dat$jaar == baseline_year
   }
 
   dat
@@ -2434,8 +2446,9 @@ precheck_gee_complexity <- function(dat_model, gee_corstr) {
   ))
 }
 
-run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn", "habitatgroep"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), quadratic_time = FALSE, adjust_for_baseline = FALSE, gee_corstr = "exchangeable") {
+run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn", "habitatgroep"), target_value, covariates, ahn_covariates = character(), infra_covariates = character(), habitat_covariates = character(), quadratic_time = FALSE, adjust_for_baseline = FALSE, baseline_transform = c("raw", "log1p"), gee_corstr = "exchangeable") {
   target_type <- match.arg(target_type)
+  baseline_transform <- match.arg(baseline_transform)
   if (!requireNamespace("geepack", quietly = TRUE)) {
     stop("Package 'geepack' is niet beschikbaar.")
   }
@@ -2448,10 +2461,11 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_typ
   habitat_specs <- gee_habitat_covariate_specs(tbls)
   extra_covariates <- c(
     if (isTRUE(quadratic_time)) "year_c_sq",
-    if (isTRUE(adjust_for_baseline)) "baseline_log_density"
+    if (isTRUE(adjust_for_baseline) && identical(baseline_transform, "raw")) "baseline_density",
+    if (isTRUE(adjust_for_baseline) && identical(baseline_transform, "log1p")) "baseline_log_density"
   )
   chosen <- unique(c("year_c", extra_covariates, covariates, ahn_covariates, infra_covariates, habitat_covariates))
-  allowed <- unique(c(cov_specs$code, ahn_specs$code, infra_specs$code, habitat_specs$code, "year_c_sq", "baseline_log_density"))
+  allowed <- unique(c(cov_specs$code, ahn_specs$code, infra_specs$code, habitat_specs$code, "year_c_sq", "baseline_density", "baseline_log_density"))
   chosen <- chosen[chosen %in% allowed]
   if (!length(chosen)) {
     stop("Kies minstens één G.E.E.-covariaat.")
@@ -2459,7 +2473,13 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_typ
 
   dat <- build_gee_dataset(tbls, selected_kavels, year_from, year_to, target_type = target_type, target_value = target_value)
   dat <- add_habitat_covariates(dat, tbls, habitat_covariates)
-  dat <- add_gee_longitudinal_covariates(dat, quadratic_time = quadratic_time, adjust_for_baseline = adjust_for_baseline)
+  dat <- add_gee_longitudinal_covariates(
+    dat,
+    quadratic_time = quadratic_time,
+    adjust_for_baseline = adjust_for_baseline,
+    baseline_year = year_from,
+    baseline_transform = baseline_transform
+  )
   dat_model <- dat[!is.na(dat$count) & is.finite(dat$log_area), , drop = FALSE]
   if (isTRUE(adjust_for_baseline)) {
     dat_model <- dat_model[!dat_model$gee_is_baseline_row, , drop = FALSE]
@@ -2544,7 +2564,10 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_typ
     kwadratische_tijd = isTRUE(quadratic_time),
     middenjaar_tijdkwadraat = if (isTRUE(quadratic_time)) mean(range(dat$jaar[is.finite(dat$jaar)])) else NA_real_,
     correctie_beginwaarde = isTRUE(adjust_for_baseline),
-    definitie_beginwaarde = if (isTRUE(adjust_for_baseline)) "log(1 + territoria_per_km2) in eerste getelde jaar per plot; beginrij uitgesloten als respons" else "niet gebruikt",
+    t0_jaar = if (isTRUE(adjust_for_baseline)) as.integer(year_from) else NA_integer_,
+    beginwaarde_transformatie = if (isTRUE(adjust_for_baseline)) baseline_transform else "niet gebruikt",
+    definitie_beginwaarde = if (isTRUE(adjust_for_baseline)) paste0(if (identical(baseline_transform, "log1p")) "log(1 + territoria_per_km2)" else "territoria_per_km2", " in T0 = ", year_from, "; T0-rij uitgesloten als respons") else "niet gebruikt",
+    n_plots_zonder_t0 = if (isTRUE(adjust_for_baseline)) length(setdiff(unique(dat$plot_id[is.finite(dat$count)]), unique(dat$plot_id[dat$baseline_available]))) else 0L,
     effect_eenheden = paste(unique(paste(coef_tab$term, coef_tab$effect_eenheid, sep = " = ")), collapse = "; "),
     n_plots = length(unique(dat_model$plot_id)),
     n_plot_jaren = nrow(dat_model),

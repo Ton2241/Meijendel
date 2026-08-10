@@ -345,7 +345,7 @@ Gebruiker kan kiezen:
 - infra-covariaten;
 - habitatcovariaten;
 - optionele kwadratische tijdsterm naast de verplichte lineaire tijdsterm;
-- optionele correctie voor `log(1 + territoria/km2)` in het eerste getelde jaar per plot, waarbij de beginrij uit de respons wordt verwijderd;
+- optionele correctie voor de T0-beginwaarde (`territoria/km2`) in het gekozen beginjaar, ongetransformeerd of als `log(1 + territoria/km2)`, waarbij de T0-rij uit de respons wordt verwijderd en plots zonder geldige T0-meting afvallen;
 - screening GEE.
 
 Default:

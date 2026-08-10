@@ -841,10 +841,22 @@ ui <- navbarPage(
               ),
               checkboxInput(
                 "gee_adjust_for_baseline",
-                "Corrigeer voor beginwaarde per kavel",
+                "Corrigeer voor T0-beginwaarde per kavel",
                 value = FALSE
               ),
-              helpText("De beginwaarde is log(1 + territoria/km2) in het eerste getelde jaar per kavel; die beginrij wordt niet opnieuw als uitkomst gebruikt."),
+              conditionalPanel(
+                "input.gee_adjust_for_baseline",
+                radioButtons(
+                  "gee_baseline_transform",
+                  "Schaal T0-beginwaarde",
+                  choices = c(
+                    "Ongetransformeerd: territoria/km2" = "raw",
+                    "Logaritmisch: log(1 + territoria/km2)" = "log1p"
+                  ),
+                  selected = "raw"
+                )
+              ),
+              helpText("T0 is het gekozen beginjaar. De T0-rij wordt niet opnieuw als uitkomst gebruikt; kavels zonder geldige T0-meting vallen bij deze correctie af."),
               uiOutput("gee_ahn_covariate_ui"),
               uiOutput("gee_infra_covariate_ui"),
               uiOutput("gee_habitat_covariate_ui")
@@ -2006,13 +2018,14 @@ server <- function(input, output, session) {
     } else {
       target_value <- NULL
     }
+    baseline_transform <- if (is.null(input$gee_baseline_transform)) "raw" else input$gee_baseline_transform
     totaal_covariaten <- c(
       input$gee_covariates,
       input$gee_ahn_covariates,
       input$gee_infra_covariates,
       input$gee_habitat_covariates,
       if (isTRUE(input$gee_quadratic_time)) "year_c_sq",
-      if (isTRUE(input$gee_adjust_for_baseline)) "baseline_log_density"
+      if (isTRUE(input$gee_adjust_for_baseline)) paste0("baseline_", baseline_transform)
     )
     if (length(totaal_covariaten) == 0) {
       gee_analysis_info_rv("Kies eerst minstens één covariaat.")
@@ -2035,6 +2048,7 @@ server <- function(input, output, session) {
           habitat_covariates = input$gee_habitat_covariates,
           quadratic_time = isTRUE(input$gee_quadratic_time),
           adjust_for_baseline = isTRUE(input$gee_adjust_for_baseline),
+          baseline_transform = baseline_transform,
           gee_corstr = input$gee_corstr
         )
         analyse <- attach_analysis_export_script(
@@ -2054,6 +2068,7 @@ server <- function(input, output, session) {
             habitat_covariates = input$gee_habitat_covariates,
             quadratic_time = isTRUE(input$gee_quadratic_time),
             adjust_for_baseline = isTRUE(input$gee_adjust_for_baseline),
+            baseline_transform = baseline_transform,
             gee_corstr = input$gee_corstr
           )
           )
@@ -2639,7 +2654,8 @@ server <- function(input, output, session) {
       setNames(gee_ahn_covariate_specs()$label, gee_ahn_covariate_specs()$code),
       setNames(gee_infra_covariate_specs()$label, gee_infra_covariate_specs()$code),
       year_c_sq = "Kwadratische tijdsterm",
-      baseline_log_density = "Beginwaarde per kavel"
+      baseline_density = "T0-beginwaarde per kavel",
+      baseline_log_density = "T0-beginwaarde per kavel (logaritmisch)"
     )
     if (!is.null(tbls)) {
       hab_specs <- gee_habitat_covariate_specs(tbls)
@@ -2694,6 +2710,7 @@ server <- function(input, output, session) {
       "\nCovariaten:", paste(cov_names, collapse = ", "),
       if (isTRUE(sam$kwadratische_tijd)) paste0("\nTijdsvorm: lineair + kwadratisch (gecentreerd rond ", sam$middenjaar_tijdkwadraat, ")") else "\nTijdsvorm: lineair",
       if (isTRUE(sam$correctie_beginwaarde)) paste0("\nBeginwaardecorrectie: ", sam$definitie_beginwaarde) else "",
+      if (isTRUE(sam$correctie_beginwaarde)) paste0("\nKavels zonder geldige T0-meting: ", sam$n_plots_zonder_t0) else "",
       vif_txt,
       if ("effect_eenheden" %in% names(sam) && !is.na(sam$effect_eenheden) && nzchar(sam$effect_eenheden)) paste0("\nIRR-eenheden: ", sam$effect_eenheden) else "",
       if (length(dropped_names)) paste0("\nVervallen covariaten:", " ", paste(dropped_names, collapse = ", ")) else ""
@@ -3220,7 +3237,8 @@ server <- function(input, output, session) {
     term_labels <- c(
       year_c = "Jaar",
       year_c_sq = "Jaar^2 (kwadratische component)",
-      baseline_log_density = "Beginwaarde per kavel",
+      baseline_density = "T0-beginwaarde per kavel",
+      baseline_log_density = "T0-beginwaarde per kavel (logaritmisch)",
       ahn_mean = "AHN gemiddelde hoogte",
       ahn_sd = "AHN standaard deviatie",
       stikstof_mean = "Stikstof gemiddelde depositie",
@@ -3301,7 +3319,8 @@ server <- function(input, output, session) {
     term_labels <- c(
       year_c = "Jaar",
       year_c_sq = "Jaar^2 (kwadratische component)",
-      baseline_log_density = "Beginwaarde per kavel",
+      baseline_density = "T0-beginwaarde per kavel",
+      baseline_log_density = "T0-beginwaarde per kavel (logaritmisch)",
       ahn_mean = "AHN gemiddelde hoogte",
       ahn_sd = "AHN standaard deviatie",
       stikstof_mean = "Stikstof gemiddelde depositie",
@@ -3369,7 +3388,8 @@ server <- function(input, output, session) {
     term_labels <- c(
       year_c = "Jaar",
       year_c_sq = "Jaar^2 (kwadratische component)",
-      baseline_log_density = "Beginwaarde per kavel",
+      baseline_density = "T0-beginwaarde per kavel",
+      baseline_log_density = "T0-beginwaarde per kavel (logaritmisch)",
       ahn_mean = "AHN gemiddelde hoogte",
       ahn_sd = "AHN standaard deviatie",
       stikstof_mean = "Stikstof gemiddelde depositie",
