@@ -526,6 +526,9 @@ De app toont in versie 1:
 
 - selectie-overzicht
 - effectplot met `IRR` en `95%`-interval
+- dynamische modelvergelijking naast de effectplot, zowel symbolisch als met
+  de geschatte coefficienten; door de oppervlakte-offset wordt deze als
+  verwachte `territoria/km2` weergegeven
 - coefficiententabel
 - gebruikte kavels
 - gebruikte plot-jaren

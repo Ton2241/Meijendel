@@ -2421,6 +2421,103 @@ annotate_gee_effect_units <- function(coef_tab) {
   coef_tab
 }
 
+format_gee_equation_number <- function(x, digits = 4L) {
+  if (!is.finite(x)) {
+    return("NA")
+  }
+  if (x != 0 && abs(x) < 10^(-digits)) {
+    return(trimws(formatC(x, format = "e", digits = 2)))
+  }
+  trimws(formatC(x, format = "fg", digits = digits))
+}
+
+format_gee_equation_year <- function(x) {
+  if (!is.finite(x)) {
+    return("NA")
+  }
+  if (abs(x - round(x)) < 1e-08) {
+    return(as.character(as.integer(round(x))))
+  }
+  trimws(formatC(x, format = "f", digits = 1L))
+}
+
+gee_equation_term_label <- function(term, analysis) {
+  summary_row <- analysis$summary[1, , drop = FALSE]
+  time_origin <- if ("tijd_nulpunt" %in% names(summary_row)) summary_row$tijd_nulpunt[[1]] else min(analysis$model_data$jaar, na.rm = TRUE)
+  time_midpoint <- if ("middenjaar_tijdkwadraat" %in% names(summary_row)) summary_row$middenjaar_tijdkwadraat[[1]] else NA_real_
+
+  if (identical(term, "year_c")) {
+    return(sprintf("(jaar − %s)", format_gee_equation_year(time_origin)))
+  }
+  if (identical(term, "year_c_sq")) {
+    return(sprintf("(jaar − %s)²", format_gee_equation_year(time_midpoint)))
+  }
+  if (identical(term, "baseline_density")) {
+    return("T0_dichtheid")
+  }
+  if (identical(term, "baseline_log_density")) {
+    return("log(1 + T0_dichtheid)")
+  }
+  if (grepl("^toegankelijkheid_status", term)) {
+    level <- sub("^toegankelijkheid_status", "", term)
+    return(paste0("I(toegankelijkheid = ", level, ")"))
+  }
+  if (grepl("^habitat_[0-9]+$", term)) {
+    return(paste0(term, "_aandeel_pct"))
+  }
+  term
+}
+
+format_gee_model_equation <- function(analysis) {
+  if (is.null(analysis$fit)) {
+    return(paste(
+      "Geen enkele modelvergelijking beschikbaar.",
+      "Screening en kenmerkenanalyse schatten afzonderlijke modellen per variabele of kenmerk."
+    ))
+  }
+
+  coefficients <- stats::coef(analysis$fit)
+  coefficients <- coefficients[is.finite(coefficients)]
+  if (!length(coefficients) || !("(Intercept)" %in% names(coefficients))) {
+    return("De modelcoefficienten zijn niet beschikbaar voor een vergelijking.")
+  }
+
+  intercept <- coefficients[["(Intercept)"]]
+  term_names <- setdiff(names(coefficients), "(Intercept)")
+  term_labels <- vapply(term_names, gee_equation_term_label, character(1), analysis = analysis)
+  symbolic_terms <- if (length(term_labels)) {
+    paste0(" + β", seq_along(term_labels), " × ", term_labels, collapse = "")
+  } else {
+    ""
+  }
+  fitted_terms <- if (length(term_labels)) {
+    paste(vapply(seq_along(term_labels), function(i) {
+      value <- coefficients[[term_names[[i]]]]
+      sign <- if (value < 0) " − " else " + "
+      paste0(sign, format_gee_equation_number(abs(value)), " × ", term_labels[[i]])
+    }, character(1)), collapse = "")
+  } else {
+    ""
+  }
+
+  summary_row <- analysis$summary[1, , drop = FALSE]
+  correlation <- if ("gee_corstr" %in% names(summary_row)) summary_row$gee_corstr[[1]] else "onbekend"
+  notes <- c(
+    paste0("Correlatiestructuur: ", correlation, ". Deze staat niet in de vergelijking voor de verwachte dichtheid."),
+    "Factorcoefficienten zijn verschillen ten opzichte van de referentiecategorie."
+  )
+  if ("kwadratische_tijd" %in% names(summary_row) && isTRUE(summary_row$kwadratische_tijd[[1]])) {
+    notes <- c(notes, "Interpreteer de lineaire en kwadratische tijdsterm altijd gezamenlijk.")
+  }
+
+  paste(
+    paste0("Modelvorm:\nVerwachte territoria/km² = exp(β0", symbolic_terms, ")"),
+    paste0("Ingevuld:\nVerwachte territoria/km² = exp(", format_gee_equation_number(intercept), fitted_terms, ")"),
+    paste(notes, collapse = "\n"),
+    sep = "\n\n"
+  )
+}
+
 precheck_gee_complexity <- function(dat_model, gee_corstr) {
   cluster_sizes <- as.integer(table(dat_model$plot_id))
   n_clusters <- length(cluster_sizes)
@@ -2562,6 +2659,7 @@ run_gee_subset <- function(tbls, selected_kavels, year_from, year_to, target_typ
     covariaten = paste(chosen, collapse = ", "),
     covariaten_vervallen = paste(design$dropped, collapse = ", "),
     kwadratische_tijd = isTRUE(quadratic_time),
+    tijd_nulpunt = as.integer(year_from),
     middenjaar_tijdkwadraat = if (isTRUE(quadratic_time)) mean(range(dat$jaar[is.finite(dat$jaar)])) else NA_real_,
     correctie_beginwaarde = isTRUE(adjust_for_baseline),
     t0_jaar = if (isTRUE(adjust_for_baseline)) as.integer(year_from) else NA_integer_,

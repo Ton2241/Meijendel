@@ -358,6 +358,8 @@ Default:
 De gebruiker ziet:
 
 - IRR-grafiek met 95%-betrouwbaarheidsinterval;
+- de symbolische en numeriek ingevulde vergelijking voor de verwachte
+  territoriumdichtheid naast de grafiek;
 - coefficiententabel;
 - overdispersie-diagnose:
 - gemiddelde;

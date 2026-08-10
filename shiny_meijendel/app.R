@@ -191,6 +191,11 @@ ui <- navbarPage(
         padding:9px 11px; margin:8px 0 12px 0; border-radius:6px;
       }
       .download-row .btn { margin-right:8px; margin-bottom:8px; }
+      #gee_model_equation {
+        white-space:pre-wrap; overflow-wrap:anywhere; word-break:normal;
+        background:#f8fafc; border:1px solid #dbe4ef; border-radius:10px;
+        padding:12px; font-size:12px; line-height:1.45;
+      }
       .load-timer {
         display:inline-block; margin-left:10px; color:#475569; font-size:14px;
       }
@@ -882,7 +887,15 @@ ui <- navbarPage(
             class = "soft-card",
             h3("Effectschattingen"),
             tags$p(class = "section-note", "De grafiek toont Incident Rate Ratios (IRR) met 95%-betrouwbaarheidsinterval. Jaar wordt hier als controlevariabele behandeld, niet als aparte trendmodule. Bij jaar^2 moeten de lineaire en kwadratische coefficient altijd samen worden geinterpreteerd."),
-            plotOutput("gee_coef_plot", height = "420px"),
+            fluidRow(
+              column(8, plotOutput("gee_coef_plot", height = "420px")),
+              column(
+                4,
+                h4("Modelvergelijking"),
+                tags$p(class = "section-note", "De formule toont de verwachte territoriumdichtheid. De oppervlakte-offset is hierin verwerkt."),
+                verbatimTextOutput("gee_model_equation", placeholder = TRUE)
+              )
+            ),
             div(
               class = "download-row",
               downloadButton("download_gee_coefficients", "CSV GEE coefs"),
@@ -3278,6 +3291,14 @@ server <- function(input, output, session) {
     abline(v = 1, lty = 2, col = "#64748b")
     axis(2, at = y, labels = coefs$term_label, las = 1, cex.axis = 0.9)
     grid()
+  })
+
+  output$gee_model_equation <- renderText({
+    analyse <- gee_analyse_rv()
+    if (is.null(analyse)) {
+      return("Voer eerst een GEE-analyse uit.")
+    }
+    format_gee_model_equation(analyse)
   })
 
   output$gee_coef_table <- renderTable({
