@@ -111,9 +111,15 @@ production_smoke() {
 set -euo pipefail
 curl -fsSI http://127.0.0.1:3838/ >/dev/null
 for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/; do
-  code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve app.vwg-m.nl:443:127.0.0.1 "https://app.vwg-m.nl$path")"
+  code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve www.vwg-m.nl:443:127.0.0.1 "https://www.vwg-m.nl$path")"
   if [[ "$code" != "401" ]]; then
-    echo "FOUT: verwacht 401 voor $path, kreeg $code" >&2
+    echo "FOUT: verwacht 401 voor https://www.vwg-m.nl$path, kreeg $code" >&2
+    exit 1
+  fi
+  legacy_code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve app.vwg-m.nl:443:127.0.0.1 "https://app.vwg-m.nl$path")"
+  legacy_location="$(curl -ksSI --resolve app.vwg-m.nl:443:127.0.0.1 "https://app.vwg-m.nl$path" | awk 'tolower($1) == "location:" { sub(/\r$/, "", $2); print $2; exit }')"
+  if [[ "$legacy_code" != "308" || "$legacy_location" != "https://www.vwg-m.nl$path" ]]; then
+    echo "FOUT: verwacht 308 van app naar https://www.vwg-m.nl$path; kreeg code=$legacy_code location=$legacy_location" >&2
     exit 1
   fi
 done

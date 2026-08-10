@@ -140,7 +140,7 @@ Daarna voert het script op de VPS uit:
 Het script maakt geen automatische backup op de VPS.
 
 De ledenadministratie/PWA wordt niet meer naar de VPS gedeployed en hoort op productie niet te draaien.
-`app.vwg-m.nl` bevat voor productie Meijendel:
+`www.vwg-m.nl` bevat voor productie Meijendel:
 
 - startpagina/app-home
 - dashboard `bmp_meijendel_index.html` met bijbehorende outputbestanden
@@ -154,7 +154,11 @@ Daarnaast zijn er op dezelfde VPS proefroutes voor het nabouwen van de VWG-site:
 
 De normale Meijendel-deploy raakt `/srv/vwgm/vwg-m-proef/` niet aan.
 
-Toegang tot dashboard, Shiny, SQL en dashboard-output loopt via Caddy `forward_auth` naar de VWG-M ledenlogin. Er is geen PWA-login, magic-link-login of ledenadministratie-API op productie.
+Toegang tot dashboard, Shiny, SQL en dashboard-output loopt op `www.vwg-m.nl`
+via Caddy `forward_auth` naar de VWG-M ledenlogin. De voormalige hoofdhost
+`app.vwg-m.nl` verwijst ieder pad permanent met HTTP 308 naar hetzelfde pad op
+`www.vwg-m.nl`. Er is geen PWA-login, magic-link-login of
+ledenadministratie-API op productie.
 
 ## Grafieken op de VWG-site
 
@@ -190,7 +194,9 @@ De Caddy-configuratie staat in de repo als template:
 deploy/caddy/Caddyfile.template
 ```
 
-De template beschermt alle routes van `app.vwg-m.nl`:
+De actuele productieconfiguratie in de leidende repository `VWG_M` beschermt
+de analyseroutes van `www.vwg-m.nl`; `app.vwg-m.nl` verwijst met HTTP 308 door
+naar de overeenkomstige `www`-route:
 
 - startpagina `/`
 - dashboard `/bmp_meijendel_index.html`

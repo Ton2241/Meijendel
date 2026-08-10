@@ -19,8 +19,8 @@ Belangrijkste werkpaden:
 - FastAPI/Jinja-site: `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`
 - VPS-app-pad: `/srv/vwgm/vwg-m-linux-app`
 - Canonieke SQL op VPS: `/srv/vwgm/data/Meijendel.sql`
-- Publieke host nu: `app.vwg-m.nl`
-- Voorbereide hoofdhost na DNS-cutover: `www.vwg-m.nl`, met `app.vwg-m.nl` als alias.
+- Publieke hoofdhost: `www.vwg-m.nl`.
+- `app.vwg-m.nl` verwijst permanent met HTTP 308 naar hetzelfde pad op `www.vwg-m.nl`.
 
 Werk bij nieuwe hoofdopdrachten vanuit een nieuwe draad, maar gebruik deze documenten als werkgeheugen. Start en eindig via `../VWG_Project/scripts/workspace_preflight.sh`; dit controleert vóór fetch of `.git` en gevolgde bestanden werkelijk lokaal beschikbaar zijn. Inspecteer daarna altijd de actuele code en `git status`; neem niet aan dat tijdelijke scripts uit `/private/tmp` nog bestaan. De vaste generatie- en deployscripts voeren dezelfde lokale controle zelf uit. Commit afgeronde wijzigingen standaard met een korte, beschrijvende commitmelding, tenzij expliciet is gevraagd om niet te committen. Als wordt gevraagd een wijziging voor `app.vwg-m.nl` of de VPS-site door te voeren, voer die wijziging zowel lokaal als op de VPS door en controleer de productiepagina of relevante smoke-test na deploy.
 
