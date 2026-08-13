@@ -16,6 +16,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
+
+if [[ -d /usr/local/mysql/bin ]]; then
+  PATH="/usr/local/mysql/bin:$PATH"
+fi
+
 APPLY=0
 YES=0
 ALLOW_FAILING_CURRENT_SMOKE=0

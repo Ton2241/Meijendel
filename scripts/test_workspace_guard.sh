@@ -40,6 +40,7 @@ fi
 (cd / && "$GUARD") ||
   fail "de controle werkt niet vanuit een andere huidige werkmap."
 
+assert_before "$DEPLOY" 'PATH="/usr/local/mysql/bin:$PATH"' 'check_mysql_version.sh'
 assert_before "$DEPLOY" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$DEPLOY" 'check_mysql_version.sh' 'git status --porcelain'
 assert_before "$PRODUCTION_GUARD" 'check_local_workspace.sh' 'git status --porcelain'
