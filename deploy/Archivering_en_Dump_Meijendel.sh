@@ -13,9 +13,16 @@ MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_DATABASE="${MYSQL_DATABASE:-meijendel}"
 
+if [[ -d /usr/local/mysql/bin ]]; then
+  PATH="/usr/local/mysql/bin:$PATH"
+fi
+
 DUMP_DIR="${DUMP_DIR:-/Volumes/T7 Data/Home_Ton/Prive/Hobbies/IT/Meijendel Database/Archief/SQL exports}"
 ARCHIVE_DUMP_FILE="$DUMP_DIR/meijendel_$(date +%Y%m%d_%H%M%S).sql"
 REPO_DUMP_FILE="$REPO_DIR/meijendel.sql"
+
+"$REPO_DIR/scripts/check_local_workspace.sh"
+"$REPO_DIR/scripts/check_mysql_version.sh"
 
 if [ ! -d "$DUMP_DIR" ]; then
   printf 'FOUT: dumpmap bestaat niet of externe schijf is niet gekoppeld: %s\n' "$DUMP_DIR" >&2

@@ -5,7 +5,7 @@ Hou rekening met de volgende IT-infrastructuur:
 1. iMac M1 8GB Tahoe 26.4 of later Opstart Macintosh HD
 2. Samsung Portable SSD T7 2 terrabyte
 3. NAS DS225+ met 6 GB geheugen
-4. MySQL 9.5.0
+4. MySQL 9.7.1 op iMac en VPS
 
 Antwoord in het Nederlands, compact en praktisch.
 

@@ -86,6 +86,13 @@ done
 
 cd "$LOCAL_REPO"
 "$LOCAL_REPO/scripts/check_local_workspace.sh"
+"$LOCAL_REPO/scripts/check_mysql_version.sh"
+REQUIRED_MYSQL_VERSION="$("$LOCAL_REPO/scripts/check_mysql_version.sh" --required-version)"
+REMOTE_MYSQL_VERSION="$(remote "docker exec meijendel-mysql sh -lc 'mysql -uroot -p\"\$MYSQL_ROOT_PASSWORD\" -NBe \"SELECT VERSION()\"'" 2>/dev/null)" || \
+  die "MySQL-versie op de VPS kon niet worden bepaald."
+[[ "$REMOTE_MYSQL_VERSION" == "$REQUIRED_MYSQL_VERSION" ]] || \
+  die "MySQL op de VPS is $REMOTE_MYSQL_VERSION; vereist is exact $REQUIRED_MYSQL_VERSION."
+printf 'OK: MySQL op de VPS exact %s.\n' "$REQUIRED_MYSQL_VERSION"
 log "Controleer Git-baseline"
 [[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
 [[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."

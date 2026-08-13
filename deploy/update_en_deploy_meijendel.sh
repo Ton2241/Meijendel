@@ -11,6 +11,10 @@ MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_DATABASE="${MYSQL_DATABASE:-meijendel}"
 WINTER_MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 
+if [[ -d /usr/local/mysql/bin ]]; then
+  PATH="/usr/local/mysql/bin:$PATH"
+fi
+
 log() {
   printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"
 }
@@ -35,8 +39,9 @@ need_file "$REPO_DIR/deploy/deploy_meijendel_vps.sh"
 
 cd "$REPO_DIR"
 "$REPO_DIR/scripts/check_local_workspace.sh"
+"$REPO_DIR/scripts/check_mysql_version.sh"
 
-log "Maak actuele lokale database-dump: $SQL_FILE"
+log "Maak actuele lokale database-dump met MySQL 9.7.1: $SQL_FILE"
 mysqldump --no-defaults \
   --no-tablespaces \
   --complete-insert \

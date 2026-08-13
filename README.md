@@ -237,6 +237,7 @@ Of via Terminal:
 ## Belangrijke aandachtspunten
 
 - De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
+- De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.1 gebruiken. Generatie en deploy blokkeren bij een afwijking.
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
 - De PQ-vegetatiebron vormt hierop een expliciete uitzondering: `pq_vegetatie_import`, `pq_vegetatie_pq`, `pq_vegetatie_opname`, `pq_vegetatie_taxon`, `pq_vegetatie_waarneming`, `pq_vegetatie_opname_plot` en `pq_plot_jaar_vegetatie` worden in de levende MySQL-database beheerd. Wijzig deze gegevens niet handmatig in `meijendel.sql`; genereer de dump na databasevalidatie opnieuw.

@@ -233,6 +233,9 @@ Benodigd:
 - SSH-key: `~/.ssh/vwgm_spectraip_ed25519`
 - toegang tot VPS: `ton@45.87.43.90`
 - lokale MySQL bereikbaar op `127.0.0.1:3306`; het dump-script gebruikt `mysqldump --no-defaults` om conflicterende opties uit `~/.my.cnf` te negeren
+- lokale MySQL-server, `mysql`, `mysqldump` en de productiecontainer draaien exact op MySQL 9.7.1; de preflight blokkeert iedere versieafwijking
+- login-path `meijendel_root` is lokaal beschikbaar voor de niet-interactieve versiecontrole; overschrijven kan alleen via `MEIJENDEL_MYSQL_LOGIN_PATH`
+- de versiecontrole gebruikt de tools uit `PATH` en valt bij de officiële macOS-pakketinstallatie terug op `/usr/local/mysql/bin`
 - de dump wordt gemaakt met kolomnamen in `INSERT`-regels (`--complete-insert`), omdat de R-scripts die kolomnamen gebruiken bij het inlezen
 - GTID-restore-informatie wordt bewust niet meegenomen (`--set-gtid-purged=OFF`) en de dump gebruikt `--single-transaction`
 - de tabel `tellers` wordt meegenomen en mag uitsluitend `id` en `tellercode` bevatten; de preflight blokkeert ieder uitgebreider schema

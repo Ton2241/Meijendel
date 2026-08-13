@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 22 juli 2026
+Laatste update: 13 augustus 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -10,6 +10,7 @@ Gereed:
 
 - Gegenereerde R- en Sass-bestanden onder `app_cache/` worden niet meer door Git gevolgd en zijn projectbreed genegeerd.
 - De Meijendel-deploypreflight controleert na de lokale Shiny/dashboard-pariteitscontrole opnieuw dat de werkboom schoon is.
+- Generatie, archivering en deploy controleren fail-fast dat de lokale MySQL-server, `mysql` en `mysqldump` exact 9.7.1 zijn; de deploypreflight vereist daarnaast exact 9.7.1 op de VPS.
 - Projectbrede begin- en eindcontrole vereist schone werkbomen, actuele upstreams en opruiming van aantoonbaar verouderde worktreeverwijzingen in alle drie repositories.
 
 ## SQL-naam en historische PWA
