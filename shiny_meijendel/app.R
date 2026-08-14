@@ -90,9 +90,34 @@ analysis_step_pages <- function(prefix, selection_ui, results_ui) {
   )
 }
 
-community_analysis_tab <- function(title, prefix, subtitle, button_label, note, extra_controls = NULL, plot_output_id = NULL) {
+community_analysis_tab <- function(title, prefix, subtitle, button_label, note, extra_controls = NULL, plot_output_id = NULL, two_column_controls = FALSE) {
   if (is.null(plot_output_id)) {
     plot_output_id <- paste0(prefix, "_plot")
+  }
+  primary_controls <- tagList(
+    uiOutput(paste0(prefix, "_plot_selector_ui")),
+    uiOutput(paste0(prefix, "_year_selector_ui")),
+    radioButtons(
+      paste0(prefix, "_selection_type"),
+      "Soortselectie",
+      choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep", "Vogelkenmerk" = "trait"),
+      selected = "all",
+      inline = FALSE
+    ),
+    uiOutput(paste0(prefix, "_selection_picker_ui"))
+  )
+  secondary_controls <- tagList(
+    extra_controls,
+    actionButton(paste0("run_", prefix, "_analysis"), button_label, class = "btn-primary"),
+    tags$p(class = "section-note", note)
+  )
+  selection_controls <- if (isTRUE(two_column_controls)) {
+    fluidRow(
+      column(6, primary_controls),
+      column(6, secondary_controls)
+    )
+  } else {
+    tagList(primary_controls, secondary_controls)
   }
   tabPanel(
     title,
@@ -107,19 +132,7 @@ community_analysis_tab <- function(title, prefix, subtitle, button_label, note, 
             div(
               class = "soft-card",
               h3("Selectie"),
-              uiOutput(paste0(prefix, "_plot_selector_ui")),
-              uiOutput(paste0(prefix, "_year_selector_ui")),
-              radioButtons(
-                paste0(prefix, "_selection_type"),
-                "Soortselectie",
-                choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep", "Vogelkenmerk" = "trait"),
-                selected = "all",
-                inline = FALSE
-              ),
-              uiOutput(paste0(prefix, "_selection_picker_ui")),
-              extra_controls,
-              actionButton(paste0("run_", prefix, "_analysis"), button_label, class = "btn-primary"),
-              tags$p(class = "section-note", note)
+              selection_controls
             )
           )
         ),
@@ -1093,7 +1106,8 @@ ui <- navbarPage(
         class = "section-note",
         "De module rapporteert gestandaardiseerde paden en fitmaten voor soortenrijkdom en totale territoriumdichtheid."
       )
-    )
+    ),
+    two_column_controls = TRUE
   ),
   community_analysis_tab(
     "Occupancy", "occupancy",
