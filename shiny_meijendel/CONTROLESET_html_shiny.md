@@ -126,6 +126,15 @@ Controleer:
 - `Plots-kenmerken` toont voor het gekozen plot het geselecteerde jaar plus de volledige beschikbare meetreeks
 - ruwe taxa, PQ-nummers en coördinaten worden niet in publieke website-output getoond
 
+### Controle 7. Gescheiden selectie en uitkomsten
+
+Controleer voor iedere module onder `Analyses`:
+
+- vóór uitvoering zijn alleen de selectiemogelijkheden zichtbaar
+- na `Voer ... uit` zijn alleen modelstatus, uitkomsten en `Selectie wijzigen` zichtbaar
+- `Selectie wijzigen` brengt de gebruiker terug met de eerder gekozen invoer intact
+- TRIM en LAMBDA onder `Trends` behouden hun bestaande selectie- en resultaattabbladen
+
 ## Koppeling tussen Shiny-export en HTML
 
 De Shiny-app en de HTML hebben verschillende rollen.

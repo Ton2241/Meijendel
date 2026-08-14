@@ -18,6 +18,7 @@ De app staat in:
 - uitkomsten exporteren naar csv
 - een eenvoudige cache gebruiken zodat het laden van `meijendel.sql` na de eerste keer sneller gaat
 - jaarlijkse PQ-vegetatiekenmerken gebruiken als optionele verklarende covariaten, zonder ontbrekende meetjaren in te vullen
+- buiten `Trends` eerst alleen de selectiemogelijkheden tonen en na `Voer ... uit` alleen modelstatus en uitkomsten; met `Selectie wijzigen` ga je terug zonder de invoer te verliezen
 
 Tabbladen:
 
@@ -89,6 +90,11 @@ Daarna kun je:
 - in `Groepen` de MSI en de GAM-lijn bekijken
 - in `Controle` de analysebasis en modelstatus controleren
 - via de knoppen csv-bestanden downloaden
+
+Voor modules onder `Analyses` vervangt de resultatenpagina na `Voer ... uit` de
+selectiepagina. Gebruik `Selectie wijzigen` om dezelfde selectie aan te passen en
+de analyse opnieuw uit te voeren. De selectie- en resultaattabbladen onder
+`Trends` blijven naast elkaar beschikbaar.
 
 De algemene stap-voor-stap werkwijze staat in:
 
