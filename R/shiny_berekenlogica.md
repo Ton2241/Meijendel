@@ -449,13 +449,16 @@ Deze versie gebruikt alleen covariaten die nu al betrouwbaar in de database aanw
 - `afstand_parkeerplaats_m`
 - `afstand_hoofdtoegang_m`
 - `toegankelijkheid_status`
+- PQ-vegetatiekenmerken: soortenrijkdom, bedekkingssom en Shannon-index
 - geselecteerde habitat-aandelen uit `plot_jaar_habitat`
+- maart-juni-aggregaties uit het verplichte `weer_analyse`-contract:
+  gemiddelde, minimum- en maximumtemperatuur, totale neerslag, gemiddelde wind,
+  totale zonneschijnduur, gemiddelde luchtdruk en gemiddelde luchtvochtigheid
 
 Nog niet meegenomen in deze eerste versie:
 
 - beheermaatregelen
 - deeltoegankelijkheid
-- weeraggregaties
 - landgebruikssamenstellingen als afzonderlijke modeltermen
 - vogelkenmerken
 
@@ -472,6 +475,8 @@ Daarbij geldt:
 - `ahn_mean`, `stikstof_mean` en infra-waarden worden gekoppeld op dichtstbijzijnde beschikbare jaarwaarde per plot
 - `toegankelijkheid_status` gebruikt de laatst bekende status op of vóór het gekozen jaar
 - habitatcovariaten worden gekoppeld als aandeel per geselecteerd habitattype in `plot_jaar_habitat`
+- weer wordt per kalenderjaar gekoppeld als maart-juni-aggregaat; de parser past
+  exact de stationsafhankelijke eenhedenlogica van de SQL-view `weer_analyse` toe
 
 Deze statusvelden zijn ook beschikbaar in de G.E.E.-kenmerkenanalyse en in GLMM, omdat die dezelfde datasetopbouw gebruiken.
 

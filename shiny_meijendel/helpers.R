@@ -494,6 +494,52 @@ read_optional_insert_table <- function(path, table, columns) {
   read_insert_table(path, table, columns)
 }
 
+build_weather_year_covariates <- function(raw_weather) {
+  if (is.null(raw_weather) || !nrow(raw_weather)) {
+    return(data.frame(jaar = integer(), stringsAsFactors = FALSE))
+  }
+
+  weather <- raw_weather
+  weather$datum <- as.Date(weather$datum)
+  weather$stn <- to_integer(weather$STN)
+  for (nm in c("FG", "TG", "TN", "TX", "SQ", "RH", "PG", "UG")) {
+    weather[[nm]] <- to_numeric(weather[[nm]])
+  }
+
+  # Exacte R-equivalent van het verplichte SQL-contract in view weer_analyse.
+  weather$fg_ms <- weather$FG / 10
+  weather$tg_c <- ifelse(weather$stn == 210L, weather$TG * 10, ifelse(weather$stn == 215L, weather$TG / 10, NA_real_))
+  weather$tn_c <- ifelse(weather$stn == 210L, weather$TN * 10, ifelse(weather$stn == 215L, weather$TN / 10, NA_real_))
+  weather$tx_c <- ifelse(weather$stn == 210L, weather$TX * 10, ifelse(weather$stn == 215L, weather$TX / 10, NA_real_))
+  weather$sq_uur <- ifelse(weather$SQ == -1, 0, weather$SQ / 10)
+  weather$rh_mm <- ifelse(weather$RH == -1, 0, ifelse(weather$stn == 210L, weather$RH * 10, ifelse(weather$stn == 215L, weather$RH / 10, NA_real_)))
+  weather$pg_hpa <- weather$PG / 10
+  weather$ug_pct <- weather$UG
+
+  month <- as.integer(format(weather$datum, "%m"))
+  weather <- weather[month >= 3L & month <= 6L, , drop = FALSE]
+  weather$jaar <- as.integer(format(weather$datum, "%Y"))
+  mean_or_na <- function(x) if (any(is.finite(x))) mean(x[is.finite(x)]) else NA_real_
+  sum_or_na <- function(x) if (any(is.finite(x))) sum(x[is.finite(x)]) else NA_real_
+
+  years <- sort(unique(weather$jaar))
+  do.call(rbind, lapply(years, function(year) {
+    part <- weather[weather$jaar == year, , drop = FALSE]
+    data.frame(
+      jaar = year,
+      weer_temperatuur_gem_c = mean_or_na(part$tg_c),
+      weer_temperatuur_min_gem_c = mean_or_na(part$tn_c),
+      weer_temperatuur_max_gem_c = mean_or_na(part$tx_c),
+      weer_neerslag_som_mm = sum_or_na(part$rh_mm),
+      weer_wind_gem_ms = mean_or_na(part$fg_ms),
+      weer_zonneschijn_som_uur = sum_or_na(part$sq_uur),
+      weer_luchtdruk_gem_hpa = mean_or_na(part$pg_hpa),
+      weer_luchtvochtigheid_gem_pct = mean_or_na(part$ug_pct),
+      stringsAsFactors = FALSE
+    )
+  }))
+}
+
 extract_insert_values_text <- function(path, table, encoding = "UTF-8") {
   lines <- readLines(path, warn = FALSE, encoding = encoding)
   prefix <- paste0("INSERT INTO `", table, "` ")
@@ -602,6 +648,12 @@ parse_meijendel_tables <- function(path) {
     "pq_plot_jaar_vegetatie",
     c("plot_id", "jaar", "n_pq", "n_opnamen", "taxa_aantal", "soortenrijkdom_gem", "bedekking_som_gem", "shannon_gem", "dekking_kwaliteit", "bronstatus", "bronbestand", "importversie", "taxonlijst_versie")
   )
+  weather_raw <- read_values_csv_block(
+    extract_insert_values_text(path, "weer"),
+    c("STN", "Naam", "FG", "TG", "TN", "TX", "SQ", "RH", "PG", "UG", "datum"),
+    c("STN", "FG", "TG", "TN", "TX", "SQ", "RH", "PG", "UG", "datum")
+  )
+  weather_year <- build_weather_year_covariates(weather_raw)
 
   plots$plot_id <- to_integer(plots$plot_id)
   plots$in_gebruik <- if ("in_gebruik" %in% names(plots)) to_integer(plots$in_gebruik) else 1L
@@ -701,6 +753,7 @@ parse_meijendel_tables <- function(path) {
     plot_jaar_infra = pji,
     plot_jaar_toegankelijkheid = pjtg,
     pq_plot_jaar_vegetatie = pjv,
+    weer_analyse_jaar = weather_year,
     sql_path = normalizePath(path, winslash = "/", mustWork = TRUE)
   )
 }
@@ -750,7 +803,7 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL) {
     cache_valid <- !is.null(cache) &&
       identical(cache$signature, signature) &&
       !is.null(cache$data) &&
-      all(c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie") %in% names(cache$data))
+      all(c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar") %in% names(cache$data))
     if (cache_valid) {
       cache$data$sql_path <- path
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
@@ -2085,6 +2138,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
   dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
   dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
   dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
+  dat <- add_weather_covariates(dat, tbls$weer_analyse_jaar)
 
   dat$analyse_niveau <- switch(target_type, species = "Soort", group = "Ec. Vogelgroep", richtlijn = "Rode/Oranje Lijst", habitatgroep = "Habitatgroep")
   dat$doel_label <- target_label
@@ -2131,7 +2185,15 @@ gee_covariate_specs <- function() {
       "toegankelijkheid_status",
       "vegetatie_soortenrijkdom_gem",
       "vegetatie_bedekking_som_gem",
-      "vegetatie_shannon_gem"
+      "vegetatie_shannon_gem",
+      "weer_temperatuur_gem_c",
+      "weer_temperatuur_min_gem_c",
+      "weer_temperatuur_max_gem_c",
+      "weer_neerslag_som_mm",
+      "weer_wind_gem_ms",
+      "weer_zonneschijn_som_uur",
+      "weer_luchtdruk_gem_hpa",
+      "weer_luchtvochtigheid_gem_pct"
     ),
     label = c(
       "Jaar (controlevariabele)",
@@ -2139,11 +2201,36 @@ gee_covariate_specs <- function() {
       "Toegankelijkheidsstatus",
       "Vegetatie: gemiddelde soortenrijkdom per PQ",
       "Vegetatie: gemiddelde som van bedekkingspercentages per PQ",
-      "Vegetatie: gemiddelde Shannon-index per PQ"
+      "Vegetatie: gemiddelde Shannon-index per PQ",
+      "Weer maart-juni: gemiddelde temperatuur (°C)",
+      "Weer maart-juni: gemiddelde minimumtemperatuur (°C)",
+      "Weer maart-juni: gemiddelde maximumtemperatuur (°C)",
+      "Weer maart-juni: totale neerslag (mm)",
+      "Weer maart-juni: gemiddelde windsnelheid (m/s)",
+      "Weer maart-juni: totale zonneschijnduur (uur)",
+      "Weer maart-juni: gemiddelde luchtdruk (hPa)",
+      "Weer maart-juni: gemiddelde luchtvochtigheid (%)"
     ),
-    type = c("numeric", "numeric", "factor", "numeric", "numeric", "numeric"),
+    type = c("numeric", "numeric", "factor", rep("numeric", 11)),
     stringsAsFactors = FALSE
   )
+}
+
+add_weather_covariates <- function(dat, weather_year) {
+  if (is.null(weather_year) || !nrow(weather_year) || !nrow(dat)) {
+    return(dat)
+  }
+  merge(dat, weather_year, by = "jaar", all.x = TRUE, sort = FALSE)
+}
+
+sem_covariate_specs <- function(tbls) {
+  base <- gee_covariate_specs()
+  ahn <- gee_ahn_covariate_specs()
+  infra <- gee_infra_covariate_specs()
+  habitat <- gee_habitat_covariate_specs(tbls)
+  habitat$type <- "numeric"
+  habitat <- habitat[, c("code", "label", "type"), drop = FALSE]
+  unique(rbind(base, ahn, infra, habitat))
 }
 
 gee_ahn_covariate_specs <- function() {
@@ -2331,9 +2418,17 @@ gee_effect_unit_specs <- function() {
       "afstand_pad_m",
       "padlengte_m_per_ha",
       "afstand_parkeerplaats_m",
-      "afstand_hoofdtoegang_m"
+      "afstand_hoofdtoegang_m",
+      "weer_temperatuur_gem_c",
+      "weer_temperatuur_min_gem_c",
+      "weer_temperatuur_max_gem_c",
+      "weer_neerslag_som_mm",
+      "weer_wind_gem_ms",
+      "weer_zonneschijn_som_uur",
+      "weer_luchtdruk_gem_hpa",
+      "weer_luchtvochtigheid_gem_pct"
     ),
-    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 100),
+    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 100, 1, 1, 1, 10, 1, 10, 10, 10),
     effect_eenheid = c(
       "per 10 jaar",
       "kwadratische component per jaar^2",
@@ -2345,7 +2440,15 @@ gee_effect_unit_specs <- function() {
       "per 100 m",
       "per 100 m/ha",
       "per 100 m",
-      "per 100 m"
+      "per 100 m",
+      "per 1 °C",
+      "per 1 °C",
+      "per 1 °C",
+      "per 10 mm",
+      "per 1 m/s",
+      "per 10 uur",
+      "per 10 hPa",
+      "per 10 procentpunt"
     ),
     stringsAsFactors = FALSE
   )
@@ -3845,11 +3948,17 @@ build_community_matrix_subset <- function(tbls, selected_kavels, year_from, year
   meta$soortenrijkdom <- rowSums(comm > 0)
   meta$year_c <- meta$jaar - min(meta$jaar, na.rm = TRUE)
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_ahn_dtm, "ahn_mean", "ahn_mean")
+  meta <- add_numeric_covariate(meta, tbls$plot_jaar_ahn_dtm, "ahn_sd", "ahn_sd")
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_stikstof, "stikstof_mean", "stikstof_mean")
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "afstand_pad_m", "afstand_pad_m")
+  meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "padlengte_m_per_ha", "padlengte_m_per_ha")
+  meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "afstand_parkeerplaats_m", "afstand_parkeerplaats_m")
+  meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
+  meta <- add_toegankelijkheid_covariate(meta, tbls$plot_jaar_toegankelijkheid)
   meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
   meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
   meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
+  meta <- add_weather_covariates(meta, tbls$weer_analyse_jaar)
   rownames(meta) <- meta$sample_id
   list(
     species_matrix = species_matrix,
@@ -4370,21 +4479,45 @@ run_changepoint_subset <- function(tbls, selected_kavels, year_from, year_to, se
   list(dataset = series$dataset, annual = annual, candidates = candidates_df[order(candidates_df$rss), , drop = FALSE], diagnostics = summary_df, sensitivity = sensitivity, summary = summary_df, fit = fit)
 }
 
-run_sem_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL) {
+run_sem_subset <- function(tbls, selected_kavels, year_from, year_to, selection_type = c("all", "group", "richtlijn", "habitatgroep", "trait"), selection_value = NULL, covariates = c("year_c", "stikstof_mean", "weer_temperatuur_gem_c", "weer_neerslag_som_mm", "ahn_mean", "afstand_pad_m")) {
   selection_type <- match.arg(selection_type)
   if (!requireNamespace("lavaan", quietly = TRUE)) {
     stop("Package 'lavaan' is niet beschikbaar. Installeer het eerst met install.packages('lavaan').")
   }
   cd <- build_community_matrix_subset(tbls, selected_kavels, year_from, year_to, selection_type, selection_value)
   dat <- cd$meta
-  vars <- c("soortenrijkdom", "totaal_territoria_per_km2", "year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m")
+  sem_specs <- sem_covariate_specs(tbls)
+  allowed <- sem_specs$code
+  covariates <- unique(covariates[covariates %in% allowed])
+  if (!length(covariates)) {
+    stop("Kies minstens één SEM-covariaat.")
+  }
+  selected_covariates <- covariates
+  habitat_codes <- gee_habitat_covariate_specs(tbls)$code
+  dat <- add_habitat_covariates(dat, tbls, intersect(covariates, habitat_codes))
+  vars <- c("soortenrijkdom", "totaal_territoria_per_km2", covariates)
   dat <- dat[stats::complete.cases(dat[, vars, drop = FALSE]), , drop = FALSE]
   if (nrow(dat) < 10L) {
     stop("Te weinig complete plot-jaren voor SEM-verkenning.")
   }
+  factor_covariates <- intersect(covariates, sem_specs$code[sem_specs$type == "factor"])
+  expanded_factors <- character()
+  for (nm in factor_covariates) {
+    values <- droplevels(factor(dat[[nm]]))
+    if (nlevels(values) < 2L) next
+    mm <- stats::model.matrix(~ values)[, -1, drop = FALSE]
+    mm_names <- paste0(nm, "_", make.names(levels(values)[-1]))
+    colnames(mm) <- mm_names
+    dat[mm_names] <- mm
+    expanded_factors <- c(expanded_factors, mm_names)
+  }
+  covariates <- c(setdiff(covariates, factor_covariates), expanded_factors)
+  if (!length(covariates)) {
+    stop("De gekozen categorische SEM-covariaat heeft in deze selectie geen variatie.")
+  }
   dat$log1p_totaal_territoria_per_km2 <- log1p(dat$totaal_territoria_per_km2)
-  sem_dat <- dat[, c("soortenrijkdom", "log1p_totaal_territoria_per_km2", "year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m"), drop = FALSE]
-  usable_predictors <- c("year_c", "stikstof_mean", "ahn_mean", "afstand_pad_m")
+  sem_dat <- dat[, c("soortenrijkdom", "log1p_totaal_territoria_per_km2", covariates), drop = FALSE]
+  usable_predictors <- covariates
   usable_predictors <- usable_predictors[vapply(sem_dat[usable_predictors], function(x) {
     vals <- x[is.finite(x)]
     length(vals) >= 3L && stats::var(vals) > 0
@@ -4409,6 +4542,8 @@ run_sem_subset <- function(tbls, selected_kavels, year_from, year_to, selection_
   summary_df <- community_summary_df("sem", cd, year_from, year_to)
   summary_df$modeltype <- "lavaan_sem_verkenning"
   summary_df$n_complete_plot_jaren <- nrow(dat)
+  summary_df$gekozen_covariaten <- paste(selected_covariates, collapse = ",")
+  summary_df$model_covariaten <- paste(usable_predictors, collapse = ",")
   summary_df$cfi <- unname(fit_measures[["cfi"]])
   summary_df$rmsea <- unname(fit_measures[["rmsea"]])
   summary_df$srmr <- unname(fit_measures[["srmr"]])
@@ -5491,4 +5626,4 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     habitatgroep_results = lambda_habitatgroep
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 8L
+MEIJENDEL_PARSER_CACHE_VERSION <- 9L

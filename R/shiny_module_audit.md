@@ -1072,16 +1072,14 @@ Gebruiker kan kiezen:
 
 - kavels;
 - jaren;
-- alle soorten, vogelgroep, Rode/Oranje Lijst of vogelkenmerk.
+- alle soorten, vogelgroep, Rode/Oranje Lijst of vogelkenmerk;
+- covariaten uit jaar, stikstof, toegankelijkheid, PQ-vegetatie, weer, AHN,
+  infra en beschikbare habitat-aandelen.
 
-De SEM-tab toont daarnaast een uitgeschakelde modeltemplate-keuze:
-
-- verkennende SEM;
-- `Begrazing -> Struweel -> doelsoort`;
-- `Begrazing -> doelsoort`;
-- direct + indirect model.
-
-Alle hypothese-templates behalve de verkennende SEM zijn nog niet actief, omdat begrazing per plot-jaar en struweel/vegetatiestructuur per plot-jaar nog ontbreken.
+De SEM-tab is actief en biedt een multiselect voor de beschikbare covariaten.
+Alleen de gekozen covariaten bepalen de complete-case selectie en de
+verklarende termen. Categorische toegankelijkheid wordt intern met
+dummyvariabelen ten opzichte van een referentieniveau gemodelleerd.
 
 ### Output
 
@@ -1112,7 +1110,8 @@ De tab benoemt alvast de beoogde toekomstige output voor hypothesegedreven SEM:
 ### Auditpunten
 
 - Sterk punt: bruikbaar als SEM-verkenning.
-- Sterk punt: hypothese-templates zijn zichtbaar voorbereid zonder ze inhoudelijk al te activeren.
+- Sterk punt: de gebruiker kan de beschikbare omgevingscovariaten
+  expliciet kiezen en de selectie wordt in de reproduceerbare export vastgelegd.
 - Let op: dit is nog geen hypothesegedreven SEM.
 - Let op: modelstructuur is hard-coded.
 - Let op: hypothesetoetsing met begrazing en struweel is pas verantwoord nadat deze data per plot-jaar beschikbaar zijn.
@@ -1238,7 +1237,7 @@ Daarin wordt informatie uit dagbezoeken en dagwaarnemingen gebruikt waar beschik
 | RDA | bruikbaar met permutatietests en VIF | lineaire aannames, collineariteit |
 | PLS | bruikbaar bij veel/samenhangende covariaten | exploratief/predictief, geen causaliteit |
 | Changepoint | bruikbaar voor niveau-, trendbreuk en multi-PELT | formele onzekerheid en modelvergelijking blijven beperkt |
-| SEM | verkennend, hypothese-templates voorbereid | hypothesemodellen nog niet actief |
+| SEM | actieve verkenning met selecteerbare numerieke covariaten | vaste responsstructuur, geen causale interpretatie |
 | Beta-Diversity | methodologisch helder | presence/absence negeert aantallen |
 
 ## 15. Prioriteiten voor verdere verbetering

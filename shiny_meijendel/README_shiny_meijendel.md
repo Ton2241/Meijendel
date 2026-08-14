@@ -18,6 +18,8 @@ De app staat in:
 - uitkomsten exporteren naar csv
 - een eenvoudige cache gebruiken zodat het laden van `meijendel.sql` na de eerste keer sneller gaat
 - jaarlijkse PQ-vegetatiekenmerken gebruiken als optionele verklarende covariaten, zonder ontbrekende meetjaren in te vullen
+- maart-juni-weercovariaten uit het genormaliseerde `weer_analyse`-contract gebruiken in GEE, GLMM en SEM
+- in SEM covariaten uit weer, vegetatie, stikstof, toegankelijkheid, AHN, infra en habitat selecteren
 - buiten `Trends` eerst alleen de selectiemogelijkheden tonen en na `Voer ... uit` alleen modelstatus en uitkomsten; met `Selectie wijzigen` ga je terug zonder de invoer te verliezen
 
 Tabbladen:

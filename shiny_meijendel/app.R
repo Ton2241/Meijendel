@@ -835,81 +835,80 @@ ui <- navbarPage(
           div(
             class = "soft-card",
             h3("Selectie"),
-            uiOutput("gee_plot_selector_ui"),
-            uiOutput("gee_year_selector_ui"),
-            radioButtons(
-              "gee_mode",
-              "GEE-modus",
-              choices = c("Reguliere analyse" = "regular", "Kenmerkenanalyse" = "traits"),
-              selected = "regular",
-              inline = FALSE
-            ),
-            conditionalPanel(
-              "input.gee_mode == 'regular'",
-              radioButtons(
-                "gee_target_type",
-                "Analyse-niveau",
-                choices = c("Soort" = "species", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
-                selected = "species",
-                inline = TRUE
-              ),
-              uiOutput("gee_target_picker_ui")
-            ),
-            uiOutput("gee_trait_controls_ui"),
-            selectInput(
-              "gee_corstr",
-              "Correlatiestructuur",
-              choices = c(
-                "Ar1" = "ar1",
-                "exchangeable" = "exchangeable",
-                "independence" = "independence",
-                "unstructured" = "unstructured"
-              ),
-              selected = "ar1"
-            ),
-            conditionalPanel(
-              "input.gee_mode == 'regular'",
-              checkboxGroupInput(
-                "gee_covariates",
-                "Vaste Covariaten",
-                choices = setNames(
-                  gee_covariate_specs()$code,
-                  gee_covariate_specs()$label
-                ),
-                selected = c("stikstof_mean", "toegankelijkheid_status")
-              ),
-              checkboxInput(
-                "gee_quadratic_time",
-                "Kwadratische tijdsterm (jaar^2)",
-                value = FALSE
-              ),
-              checkboxInput(
-                "gee_adjust_for_baseline",
-                "Corrigeer voor T0-beginwaarde per kavel",
-                value = FALSE
-              ),
-              conditionalPanel(
-                "input.gee_adjust_for_baseline",
+            fluidRow(
+              column(
+                6,
+                uiOutput("gee_plot_selector_ui"),
+                uiOutput("gee_year_selector_ui"),
                 radioButtons(
-                  "gee_baseline_transform",
-                  "Schaal T0-beginwaarde",
-                  choices = c(
-                    "Ongetransformeerd: territoria/km2" = "raw",
-                    "Logaritmisch: log(1 + territoria/km2)" = "log1p"
+                  "gee_mode",
+                  "GEE-modus",
+                  choices = c("Reguliere analyse" = "regular", "Kenmerkenanalyse" = "traits"),
+                  selected = "regular",
+                  inline = FALSE
+                ),
+                conditionalPanel(
+                  "input.gee_mode == 'regular'",
+                  radioButtons(
+                    "gee_target_type",
+                    "Analyse-niveau",
+                    choices = c("Soort" = "species", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
+                    selected = "species",
+                    inline = TRUE
                   ),
-                  selected = "raw"
+                  uiOutput("gee_target_picker_ui")
+                ),
+                uiOutput("gee_trait_controls_ui"),
+                selectInput(
+                  "gee_corstr",
+                  "Correlatiestructuur",
+                  choices = c(
+                    "Ar1" = "ar1",
+                    "exchangeable" = "exchangeable",
+                    "independence" = "independence",
+                    "unstructured" = "unstructured"
+                  ),
+                  selected = "ar1"
                 )
               ),
-              helpText("T0 is het gekozen beginjaar. De T0-rij wordt niet opnieuw als uitkomst gebruikt; kavels zonder geldige T0-meting vallen bij deze correctie af."),
-              uiOutput("gee_ahn_covariate_ui"),
-              uiOutput("gee_infra_covariate_ui"),
-              uiOutput("gee_habitat_covariate_ui")
-            ),
-            actionButton("run_gee_analysis", "Voer GEE-analyse uit", class = "btn-primary"),
-            conditionalPanel(
-              "input.gee_mode == 'regular'",
-              tags$div(style = "margin-top:8px;"),
-              actionButton("run_gee_screening", "Screening GEE")
+              column(
+                6,
+                conditionalPanel(
+                  "input.gee_mode == 'regular'",
+                  selectizeInput(
+                    "gee_covariates",
+                    "Vaste Covariaten",
+                    choices = setNames(gee_covariate_specs()$code, gee_covariate_specs()$label),
+                    selected = c("stikstof_mean", "toegankelijkheid_status"),
+                    multiple = TRUE,
+                    options = list(plugins = list("remove_button"))
+                  ),
+                  checkboxInput("gee_quadratic_time", "Kwadratische tijdsterm (jaar^2)", value = FALSE),
+                  checkboxInput("gee_adjust_for_baseline", "Corrigeer voor T0-beginwaarde per kavel", value = FALSE),
+                  conditionalPanel(
+                    "input.gee_adjust_for_baseline",
+                    radioButtons(
+                      "gee_baseline_transform",
+                      "Schaal T0-beginwaarde",
+                      choices = c(
+                        "Ongetransformeerd: territoria/km2" = "raw",
+                        "Logaritmisch: log(1 + territoria/km2)" = "log1p"
+                      ),
+                      selected = "raw"
+                    )
+                  ),
+                  helpText("T0 is het gekozen beginjaar. De T0-rij wordt niet opnieuw als uitkomst gebruikt; kavels zonder geldige T0-meting vallen bij deze correctie af."),
+                  uiOutput("gee_ahn_covariate_ui"),
+                  uiOutput("gee_infra_covariate_ui"),
+                  uiOutput("gee_habitat_covariate_ui")
+                ),
+                actionButton("run_gee_analysis", "Voer GEE-analyse uit", class = "btn-primary"),
+                conditionalPanel(
+                  "input.gee_mode == 'regular'",
+                  tags$div(style = "margin-top:8px;"),
+                  actionButton("run_gee_screening", "Screening GEE")
+                )
+              )
             )
           )
           )
@@ -975,63 +974,65 @@ ui <- navbarPage(
           div(
             class = "soft-card",
             h3("Selectie"),
-            uiOutput("glmm_plot_selector_ui"),
-            uiOutput("glmm_year_selector_ui"),
-            radioButtons(
-              "glmm_mode",
-              "GLMM-modus",
-              choices = c("Reguliere analyse" = "regular", "Kenmerkenanalyse" = "traits"),
-              selected = "regular",
-              inline = FALSE
-            ),
-            conditionalPanel(
-              "input.glmm_mode == 'regular'",
-              radioButtons(
-                "glmm_target_type",
-                "Analyse-niveau",
-                choices = c("Soort" = "species", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
-                selected = "species",
-                inline = TRUE
-              ),
-              uiOutput("glmm_target_picker_ui")
-            ),
-            uiOutput("glmm_trait_controls_ui"),
-            selectInput(
-              "glmm_family",
-              "Verdeling",
-              choices = c("Poisson" = "poisson", "Negative binomial" = "nbinom2"),
-              selected = "nbinom2"
-            ),
-            conditionalPanel(
-              "input.glmm_mode == 'regular'",
-              selectInput(
-                "glmm_random_effects",
-                "Random effects",
-                choices = c(
-                  "Plot-intercept (1 | plot)" = "plot_intercept",
-                  "Plot + jaar-intercept (1 | plot) + (1 | jaar)" = "plot_year_intercept",
-                  "Jaar-slope per plot (year | plot)" = "year_slope_plot"
+            fluidRow(
+              column(
+                6,
+                uiOutput("glmm_plot_selector_ui"),
+                uiOutput("glmm_year_selector_ui"),
+                radioButtons(
+                  "glmm_mode",
+                  "GLMM-modus",
+                  choices = c("Reguliere analyse" = "regular", "Kenmerkenanalyse" = "traits"),
+                  selected = "regular",
+                  inline = FALSE
                 ),
-                selected = "plot_intercept"
+                conditionalPanel(
+                  "input.glmm_mode == 'regular'",
+                  radioButtons(
+                    "glmm_target_type",
+                    "Analyse-niveau",
+                    choices = c("Soort" = "species", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep"),
+                    selected = "species",
+                    inline = TRUE
+                  ),
+                  uiOutput("glmm_target_picker_ui")
+                ),
+                uiOutput("glmm_trait_controls_ui"),
+                selectInput("glmm_family", "Verdeling", choices = c("Poisson" = "poisson", "Negative binomial" = "nbinom2"), selected = "nbinom2"),
+                conditionalPanel(
+                  "input.glmm_mode == 'regular'",
+                  selectInput(
+                    "glmm_random_effects",
+                    "Random effects",
+                    choices = c(
+                      "Plot-intercept (1 | plot)" = "plot_intercept",
+                      "Plot + jaar-intercept (1 | plot) + (1 | jaar)" = "plot_year_intercept",
+                      "Jaar-slope per plot (year | plot)" = "year_slope_plot"
+                    ),
+                    selected = "plot_intercept"
+                  )
+                )
+              ),
+              column(
+                6,
+                conditionalPanel(
+                  "input.glmm_mode == 'regular'",
+                  selectizeInput(
+                    "glmm_covariates",
+                    "Vaste Covariaten",
+                    choices = setNames(gee_covariate_specs()$code, gee_covariate_specs()$label),
+                    selected = c("stikstof_mean", "toegankelijkheid_status"),
+                    multiple = TRUE,
+                    options = list(plugins = list("remove_button"))
+                  ),
+                  uiOutput("glmm_ahn_covariate_ui"),
+                  uiOutput("glmm_infra_covariate_ui"),
+                  uiOutput("glmm_habitat_covariate_ui")
+                ),
+                actionButton("run_glmm_analysis", "Voer GLMM-analyse uit", class = "btn-primary"),
+                tags$p(class = "section-note", "GLMM gebruikt in reguliere analyse vaste covariaten plus random intercept voor plot. In kenmerkenanalyse wordt per vogelkenmerk de interactie jaar x kenmerk getoetst met random intercepts voor plot en soort.")
               )
-            ),
-            conditionalPanel(
-              "input.glmm_mode == 'regular'",
-              checkboxGroupInput(
-                "glmm_covariates",
-                "Vaste Covariaten",
-                choices = setNames(
-                  gee_covariate_specs()$code,
-                  gee_covariate_specs()$label
-                ),
-                selected = c("stikstof_mean", "toegankelijkheid_status")
-              ),
-              uiOutput("glmm_ahn_covariate_ui"),
-              uiOutput("glmm_infra_covariate_ui"),
-              uiOutput("glmm_habitat_covariate_ui")
-            ),
-            actionButton("run_glmm_analysis", "Voer GLMM-analyse uit", class = "btn-primary"),
-            tags$p(class = "section-note", "GLMM gebruikt in reguliere analyse vaste covariaten plus random intercept voor plot. In kenmerkenanalyse wordt per vogelkenmerk de interactie jaar x kenmerk getoetst met random intercepts voor plot en soort.")
+            )
           )
           )
         ),
@@ -1078,28 +1079,19 @@ ui <- navbarPage(
   ),
   community_analysis_tab(
     "SEM", "sem",
-    "SEM-verkenning voor directe en indirecte relaties tussen variabelen.",
-    "Voer SEM-verkenning uit",
-    "SEM gebruikt nu alleen het verkennende model. Hypothese-templates zijn voorbereid, maar worden pas actief zodra begrazing- en struweeldata beschikbaar zijn.",
+    "Actieve SEM-verkenning voor directe en indirecte relaties tussen variabelen.",
+    "Voer SEM-analyse uit",
+    "Kies beschikbare covariaten voor een verkennend padmodel. Categorische toegankelijkheid wordt met dummyvariabelen gemodelleerd. De uitkomst is associatief en niet zonder vooraf gespecificeerde hypothese als causaal bewijs te gebruiken.",
     extra_controls = tagList(
-      tags$label(`for` = "sem_template_disabled", "SEM-modeltemplate"),
-      tags$select(
-        id = "sem_template_disabled",
-        class = "form-select",
-        disabled = "disabled",
-        tags$option("Verkennende SEM (actief)"),
-        tags$option("Begrazing -> Struweel -> doelsoort (vereist begrazing- en struweeldata)"),
-        tags$option("Begrazing -> doelsoort (vereist begrazingsdata)"),
-        tags$option("Direct + indirect model (vereist begrazing- en struweeldata)")
-      ),
+      uiOutput("sem_covariates_ui"),
       tags$div(
         class = "method-warning",
-        tags$strong("Voorbereid, nog niet actief. "),
-        "Voor hypothesegedreven SEM zijn minimaal begrazing per plot-jaar, struweel/vegetatiestructuur per plot-jaar en een doelsoortrespons nodig."
+        tags$strong("Verkennend model. "),
+        "Selecteer alleen inhoudelijk verdedigbare covariaten en controleer dekking en modelschattingen. Sterk samenhangende covariaten kunnen het model instabiel maken."
       ),
       tags$p(
         class = "section-note",
-        "Geplande output: directe effecten, indirecte effecten, totaal effect, gestandaardiseerde effecten, fitmaten, modelvergelijking en een padendiagram."
+        "De module rapporteert gestandaardiseerde paden en fitmaten voor soortenrijkdom en totale territoriumdichtheid."
       )
     )
   ),
@@ -1712,6 +1704,25 @@ server <- function(input, output, session) {
       "Habitattypen",
       choices = setNames(specs$code, specs$label),
       selected = character(0),
+      multiple = TRUE,
+      options = list(plugins = list("remove_button"))
+    )
+  })
+
+  output$sem_covariates_ui <- renderUI({
+    tbls <- tbls_rv()
+    if (is.null(tbls)) {
+      return(tags$p(class = "section-note", "Laad eerst meijendel.sql om de SEM-covariaten te tonen."))
+    }
+    specs <- sem_covariate_specs(tbls)
+    selectizeInput(
+      "sem_covariates",
+      "Covariaten",
+      choices = setNames(specs$code, specs$label),
+      selected = intersect(
+        c("year_c", "stikstof_mean", "weer_temperatuur_gem_c", "weer_neerslag_som_mm", "ahn_mean", "afstand_pad_m"),
+        specs$code
+      ),
       multiple = TRUE,
       options = list(plugins = list("remove_button"))
     )
@@ -2625,7 +2636,8 @@ server <- function(input, output, session) {
               sem = run_sem_subset(
                 tbls, selected_plots, year_from, year_to,
                 selection_type = selection_type,
-                selection_value = selection_value
+                selection_value = selection_value,
+                covariates = input$sem_covariates
               ),
               betadiversity = run_betadiversity_subset(
                 tbls, selected_plots, year_from, year_to,
@@ -2675,6 +2687,8 @@ server <- function(input, output, session) {
               export_args$metric <- input$changepoint_metric
               export_args$method <- input$changepoint_method
               export_args$penalty <- input$changepoint_penalty
+            } else if (identical(prefix, "sem")) {
+              export_args$covariates <- input$sem_covariates
             } else if (identical(prefix, "occupancy")) {
               export_args$min_visits <- as.integer(input$occupancy_min_visits)
               export_args$detection_covariates <- input$occupancy_detection_covariates
