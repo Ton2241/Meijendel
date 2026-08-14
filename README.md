@@ -9,6 +9,8 @@ Lees bij vervolgwerk eerst deze vijf bestanden:
 
 - `README.md`: ingang voor de Meijendel-repo en actuele projectcontext.
 - `ARCHITECTURE.md`: samenhang tussen Meijendel, dashboard, Shiny, FastAPI/Jinja-app, VPS en databases.
+- `docs/vps_productie.md`: actuele VPS-componenten, softwareversies,
+  MySQL-/Shiny-paden en Docker-retentie.
 - `STATUS.md`: actuele status, resterende risico's en aanbevolen vervolgstappen.
 - `TODO.md`: openstaande punten en operationele aandachtspunten.
 - `DECISIONS.md`: gemaakte keuzes die niet opnieuw moeten worden uitgevonden.
@@ -19,6 +21,8 @@ Belangrijkste werkpaden:
 - FastAPI/Jinja-site: `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`
 - VPS-app-pad: `/srv/vwgm/vwg-m-linux-app`
 - Canonieke SQL op VPS: `/srv/vwgm/data/Meijendel.sql`
+- Canonieke gedeelde hostinventaris:
+  `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`
 - Publieke hoofdhost: `www.vwg-m.nl`.
 - `app.vwg-m.nl` verwijst permanent met HTTP 308 naar hetzelfde pad op `www.vwg-m.nl`.
 

@@ -12,6 +12,9 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 ## Productie
 
 - VPS: `45.87.43.90`.
+- Actuele versies, containerpaden en retentie:
+  `docs/vps_productie.md`; gedeelde canonieke hostinventaris:
+  `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
 - App-pad: `/srv/vwgm/vwg-m-linux-app`.
 - Runtime-data: onder meer `/srv/vwgm/www`, uploads, archiefdocumenten, dashboard/grafiekoutput en back-ups.
 - Canonieke SQL: `/srv/vwgm/data/Meijendel.sql`.

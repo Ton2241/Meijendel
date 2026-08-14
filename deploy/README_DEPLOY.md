@@ -1,5 +1,9 @@
 # Deploy naar VPS
 
+Lees vóór VPS-werk `../docs/vps_productie.md` en de gedeelde canonieke
+momentopname in
+`/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
+
 ## Verplichte veilige productielijn
 
 Werk op een taakgerichte branch, maar deploy uitsluitend vanaf `main`. De wijziging moet vóór deploy zijn getest, naar `main` gemerged en gepusht. Lokaal `main` moet schoon zijn en exact gelijklopen met `origin/main`; rechtstreeks deployen vanaf een feature- of fixbranch is verboden.
@@ -12,6 +16,12 @@ Het deployscript moet vóór iedere productieaanpassing afdwingen:
 - een exclusieve VPS-deploy-lock voorkomt gelijktijdige of overlappende deploys;
 - een dry-run en expliciet manifest tonen alle samenhangende SQL-, R-, Shiny-, dashboard- en CSV-bestanden;
 - de huidige productiecontrole is uitgevoerd en afwijkingen zijn verklaard.
+
+Na een Shiny-imagebuild mag herbouwbare Docker-buildcache ontstaan. De log- en
+kwetsbaarheidmonitor rapporteert de omvang, ongebruikte images/containers en
+trialdatamappen afzonderlijk. Zij verwijdert niets zelf en mag de actieve
+MySQL-9.7.1-datamap of de bewust behouden MySQL-9.5-rollback nooit als cache
+behandelen.
 
 Deploy bij voorkeur naar een release-directory per commit en activeer die atomisch. Waar dit voor gedeelde Meijendel-data nog niet mogelijk is, moet het manifest volledig zijn en moeten tijdelijke bestanden pas na succesvolle validatie atomisch naar hun definitieve pad worden verplaatst. Deploy geen los gedeeld kernbestand vanuit een andere branch.
 
