@@ -64,6 +64,32 @@ future_analysis_tab <- function(title, subtitle) {
   )
 }
 
+analysis_step_pages <- function(prefix, selection_ui, results_ui) {
+  tabsetPanel(
+    id = paste0(prefix, "_analysis_step"),
+    type = "hidden",
+    selected = "selectie",
+    tabPanel(
+      "Selectie",
+      value = "selectie",
+      selection_ui
+    ),
+    tabPanel(
+      "Resultaten",
+      value = "resultaten",
+      div(
+        class = "analysis-results-toolbar",
+        actionButton(
+          paste0("edit_", prefix, "_selection"),
+          "Selectie wijzigen",
+          icon = icon("arrow-left")
+        )
+      ),
+      results_ui
+    )
+  )
+}
+
 community_analysis_tab <- function(title, prefix, subtitle, button_label, note, extra_controls = NULL, plot_output_id = NULL) {
   if (is.null(plot_output_id)) {
     plot_output_id <- paste0(prefix, "_plot")
@@ -73,54 +99,59 @@ community_analysis_tab <- function(title, prefix, subtitle, button_label, note, 
     fluidPage(
       titlePanel(title),
       tags$p(class = "app-subtitle", subtitle),
-      fluidRow(
-        column(
-          4,
-          div(
-            class = "soft-card",
-            h3("Selectie"),
-            uiOutput(paste0(prefix, "_plot_selector_ui")),
-            uiOutput(paste0(prefix, "_year_selector_ui")),
-            radioButtons(
-              paste0(prefix, "_selection_type"),
-              "Soortselectie",
-              choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep", "Vogelkenmerk" = "trait"),
-              selected = "all",
-              inline = FALSE
-            ),
-            uiOutput(paste0(prefix, "_selection_picker_ui")),
-            extra_controls,
-            actionButton(paste0("run_", prefix, "_analysis"), button_label, class = "btn-primary"),
-            tags$p(class = "section-note", note)
+      analysis_step_pages(
+        prefix,
+        fluidRow(
+          column(
+            12,
+            div(
+              class = "soft-card",
+              h3("Selectie"),
+              uiOutput(paste0(prefix, "_plot_selector_ui")),
+              uiOutput(paste0(prefix, "_year_selector_ui")),
+              radioButtons(
+                paste0(prefix, "_selection_type"),
+                "Soortselectie",
+                choices = c("Alle soorten" = "all", "Ec. Vogelgroep" = "group", "Rode/Oranje Lijst" = "richtlijn", "Habitatgroep" = "habitatgroep", "Vogelkenmerk" = "trait"),
+                selected = "all",
+                inline = FALSE
+              ),
+              uiOutput(paste0(prefix, "_selection_picker_ui")),
+              extra_controls,
+              actionButton(paste0("run_", prefix, "_analysis"), button_label, class = "btn-primary"),
+              tags$p(class = "section-note", note)
+            )
           )
         ),
-        column(
-          8,
-          div(
-            class = "soft-card",
-            h3("Modelstatus"),
-            textOutput(paste0(prefix, "_analysis_status")),
-            tags$div(style = "margin-top:12px;"),
-            verbatimTextOutput(paste0(prefix, "_selection_summary"))
-          ),
-          div(
-            class = "soft-card",
-            h3("Uitkomsten"),
-            plotOutput(plot_output_id, height = "500px"),
+        fluidRow(
+          column(
+            12,
             div(
-              class = "download-row",
-              downloadButton(paste0("download_", prefix, "_primary"), "CSV hoofdresultaat"),
-              downloadButton(paste0("download_", prefix, "_dataset"), "CSV dataset"),
-              downloadButton(paste0("download_", prefix, "_script"), "R-script analyse")
+              class = "soft-card",
+              h3("Modelstatus"),
+              textOutput(paste0(prefix, "_analysis_status")),
+              tags$div(style = "margin-top:12px;"),
+              verbatimTextOutput(paste0(prefix, "_selection_summary"))
             ),
-            h4("Hoofdresultaat"),
-            tableOutput(paste0(prefix, "_primary_table")),
-            h4("Diagnostiek"),
-            tableOutput(paste0(prefix, "_diagnostics_table")),
-            h4("Gebruikte plot-jaren"),
-            tableOutput(paste0(prefix, "_sample_table")),
-            h4("Telinspanning/detectie"),
-            tableOutput(paste0(prefix, "_detection_effort_table"))
+            div(
+              class = "soft-card",
+              h3("Uitkomsten"),
+              plotOutput(plot_output_id, height = "500px"),
+              div(
+                class = "download-row",
+                downloadButton(paste0("download_", prefix, "_primary"), "CSV hoofdresultaat"),
+                downloadButton(paste0("download_", prefix, "_dataset"), "CSV dataset"),
+                downloadButton(paste0("download_", prefix, "_script"), "R-script analyse")
+              ),
+              h4("Hoofdresultaat"),
+              tableOutput(paste0(prefix, "_primary_table")),
+              h4("Diagnostiek"),
+              tableOutput(paste0(prefix, "_diagnostics_table")),
+              h4("Gebruikte plot-jaren"),
+              tableOutput(paste0(prefix, "_sample_table")),
+              h4("Telinspanning/detectie"),
+              tableOutput(paste0(prefix, "_detection_effort_table"))
+            )
           )
         )
       )
@@ -191,6 +222,7 @@ ui <- navbarPage(
         padding:9px 11px; margin:8px 0 12px 0; border-radius:6px;
       }
       .download-row .btn { margin-right:8px; margin-bottom:8px; }
+      .analysis-results-toolbar { margin-bottom:14px; }
       #gee_model_equation {
         white-space:pre-wrap; overflow-wrap:anywhere; word-break:normal;
         background:#f8fafc; border:1px solid #dbe4ef; border-radius:10px;
@@ -671,9 +703,11 @@ ui <- navbarPage(
       titlePanel("NMDS"),
       tags$p(class = "app-subtitle", "Exploratieve ordinatie van soortensamenstelling op basis van getelde plot-jaren."),
       tags$div(class = "method-label", "Exploratieve ordinatie - geen causaliteit"),
-      fluidRow(
-        column(
-          4,
+      analysis_step_pages(
+        "nmds",
+        fluidRow(
+          column(
+          12,
           div(
             class = "soft-card",
             h3("Selectie"),
@@ -704,9 +738,11 @@ ui <- navbarPage(
             actionButton("run_nmds_analysis", "Voer NMDS-analyse uit", class = "btn-primary"),
             tags$p(class = "section-note", "NMDS gebruikt getelde plot-jaren. Echte nullen blijven 0; niet-getelde plot-jaren blijven buiten de community-matrix.")
           )
+          )
         ),
-        column(
-          8,
+        fluidRow(
+          column(
+          12,
           div(
             class = "soft-card",
             h3("Modelstatus"),
@@ -738,6 +774,7 @@ ui <- navbarPage(
             tableOutput("nmds_sample_table"),
             h4("Telinspanning/detectie"),
             tableOutput("nmds_detection_effort_table")
+          )
           )
         )
       )
@@ -790,9 +827,11 @@ ui <- navbarPage(
       titlePanel("GEE"),
       tags$p(class = "app-subtitle", "Verklarende analyse van covariaten op herhaalde plotmetingen."),
       tags$div(class = "method-label", "Verklarend populatiegemiddeld telmodel"),
-      fluidRow(
-        column(
-          4,
+      analysis_step_pages(
+        "gee",
+        fluidRow(
+          column(
+          12,
           div(
             class = "soft-card",
             h3("Selectie"),
@@ -873,9 +912,11 @@ ui <- navbarPage(
               actionButton("run_gee_screening", "Screening GEE")
             )
           )
+          )
         ),
-        column(
-          8,
+        fluidRow(
+          column(
+          12,
           div(
             class = "soft-card",
             h3("Modelstatus"),
@@ -915,6 +956,7 @@ ui <- navbarPage(
             h4("Gebruikte plot-jaren"),
             tableOutput("gee_dataset_table")
           )
+          )
         )
       )
     )
@@ -925,9 +967,11 @@ ui <- navbarPage(
       titlePanel("GLMM"),
       tags$p(class = "app-subtitle", "Verklarende analyse met random intercept voor plot."),
       tags$div(class = "method-label", "Verklarend mixed telmodel"),
-      fluidRow(
-        column(
-          4,
+      analysis_step_pages(
+        "glmm",
+        fluidRow(
+          column(
+          12,
           div(
             class = "soft-card",
             h3("Selectie"),
@@ -989,9 +1033,11 @@ ui <- navbarPage(
             actionButton("run_glmm_analysis", "Voer GLMM-analyse uit", class = "btn-primary"),
             tags$p(class = "section-note", "GLMM gebruikt in reguliere analyse vaste covariaten plus random intercept voor plot. In kenmerkenanalyse wordt per vogelkenmerk de interactie jaar x kenmerk getoetst met random intercepts voor plot en soort.")
           )
+          )
         ),
-        column(
-          8,
+        fluidRow(
+          column(
+          12,
           div(
             class = "soft-card",
             h3("Modelstatus"),
@@ -1024,6 +1070,7 @@ ui <- navbarPage(
             tableOutput("glmm_plot_usage_table"),
             h4("Gebruikte plot-jaren"),
             tableOutput("glmm_dataset_table")
+          )
           )
         )
       )
@@ -1136,6 +1183,41 @@ server <- function(input, output, session) {
     indicatorspecies = indicatorspecies_analysis_info_rv,
     betadiversity = betadiversity_analysis_info_rv,
     occupancy = occupancy_analysis_info_rv
+  )
+
+  analysis_step_prefixes <- c(
+    "biodiversity", "betadiversity", "indicatorspecies", "nmds",
+    "changepoint", "rda", "pls", "gee", "glmm", "sem", "occupancy"
+  )
+  for (analysis_step_prefix in analysis_step_prefixes) {
+    local({
+      prefix <- analysis_step_prefix
+      observeEvent(
+        input[[paste0("run_", prefix, "_analysis")]],
+        updateTabsetPanel(
+          session,
+          inputId = paste0(prefix, "_analysis_step"),
+          selected = "resultaten"
+        ),
+        ignoreInit = TRUE,
+        priority = 100
+      )
+      observeEvent(
+        input[[paste0("edit_", prefix, "_selection")]],
+        updateTabsetPanel(
+          session,
+          inputId = paste0(prefix, "_analysis_step"),
+          selected = "selectie"
+        ),
+        ignoreInit = TRUE
+      )
+    })
+  }
+  observeEvent(
+    input$run_gee_screening,
+    updateTabsetPanel(session, inputId = "gee_analysis_step", selected = "resultaten"),
+    ignoreInit = TRUE,
+    priority = 100
   )
 
   draw_lambda_period_lines <- function(idx) {
