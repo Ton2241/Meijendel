@@ -5,11 +5,24 @@
 ### NDFF/FFV-waarnemingen — ontwerp en proefimport
 
 - Download vogelgegevens niet opnieuw via FFV; gebruik alleen de niet-vogelgroepen.
-- Vraag bronbestanden als `GeoPackage RD` aan met alle niet-vogelgroepen die
-  binnen de selectie passen. Bundel een beperkt aantal hokken tot maximaal
-  circa 80.000 waarnemingen; splits eerst op hokken en zo nodig aanvullend op
-  soortgroep. Houd rekening met maximaal 100.000 waarnemingen per aanvraag en
-  maximaal vijf aanvragen per uur.
+- Vraag bronbestanden als `GeoPackage RD` aan, steeds voor één niet-vogelgroep.
+  Bundel een beperkt aantal hokken tot maximaal circa 80.000 waarnemingen en
+  splits een bundel zo nodig verder op. Houd rekening met maximaal 100.000
+  waarnemingen per aanvraag en maximaal vijf aanvragen per uur.
+- De FFV-interface kan bij `Waarnemingen` niet meerdere soortgroepen selecteren:
+  alleen alle soortgroepen samen of één afzonderlijke FFV-soortgroep. Omdat
+  `alle soortgroepen` ook Vogels bevat en vaak boven 100.000 uitkomt, moet de
+  definitieve reeks per FFV-soortgroep en per bundel van maximaal twaalf hokken
+  worden aangevraagd. Voor 26 niet-vogelgroepen en drie ruimtelijke bundels is
+  de voorlopige basisraming 78 unieke aanvragen. De eerdere raming van circa 23
+  aanvragen is daardoor niet meer geldig; bepaal het uiteindelijke aantal uit
+  de feitelijke resultaataantallen en benodigde extra splitsingen.
+- Aanvraagstand 15 augustus 2026, eerste uurreeks: Eencelligen is voor alle 34
+  hokken afgedekt in drie ruimtelijke bundels; bundel 2 is door de eenmalige
+  e-mailbevestigingsstap dubbel geleverd maar bevat in beide bestanden exact
+  dezelfde 57 `Identiteit`-waarden. Geleedpotigen (overig) bundel 1 is afgedekt;
+  begin de volgende uurreeks met bundels 2 en 3. Er zijn vijf succesvolle
+  aanvragen gedaan en de FFV-uurlimiet is daarna bevestigd.
 - Beperk alle definitieve aanvragen tot en met 31 december 2025. Gebruik de
   Amfibieën-proef met eindjaar 2026 alleen voor schema- en kwaliteitscontrole en
   vraag die selectie opnieuw aan voor de definitieve reeks.
@@ -22,10 +35,9 @@
   schimmels, amfibieën/reptielen, zoogdieren, waterorganismen en overige
   ongewervelden.
 - Gebruik voor de planning 34 kilometerhokken die de actuele kavelpolygonen
-  raken en circa 20-25 aanvragen (werkgetal 23). Controleer voor iedere aanvraag
-  het actuele FFV-resultaataantal; voer niet blind een vaste bundeling uit. Tel
-  de reeds verzonden Amfibieën-proef voor hok 83-461 niet als volledige dekking
-  van dat hok.
+  raken. Controleer voor iedere aanvraag het actuele FFV-resultaataantal; voer
+  niet blind een vaste bundeling uit. Tel de reeds verzonden Amfibieën-proef voor
+  hok 83-461 niet als volledige dekking van dat hok.
 - Ontwerp per hoofdgroep een eigen waarnemingstabel plus een reproduceerbare
   koppeling naar `plots`; ondersteun meerdere kavelkoppelingen bij overlappende
   NDFF-vlakken en bewaar overlapoppervlak/-aandeel.

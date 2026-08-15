@@ -933,17 +933,24 @@ periode 1950-2026:
 - hok 84-462: 142.854 waarnemingen totaal, waarvan 110.208 vogels en dus 32.646
   niet-vogelwaarnemingen.
 
-Op basis van deze twee dichtheden is **circa 20 tot 25 aanvragen** een
-bruikbare eerste raming voor alle 34 hokken; gebruik 23 als werkgetal. Het
-werkelijke aantal wordt tijdens de selectie bepaald door hokken te bundelen tot
-circa 80.000 waarnemingen. Een conservatieve uitvoering met een aanvraag per
-hok vraagt 34 aanvragen, behalve wanneer een afzonderlijk hok al boven 100.000
-niet-vogelwaarnemingen uitkomt; dat hok moet dan ook naar soortgroep worden
-gesplitst. Omdat FFV maximaal vijf aanvragen per uur toestaat, vergt de geraamde
-reeks minimaal vier tot vijf aanvraaguren. De al verzonden Amfibieën-aanvraag
-voor hok 83-461 is een proeflevering en vervangt geen volledige niet-vogel-export
-voor dat hok. Reken daarom op ongeveer 23 nog te plannen volledige aanvragen en
-circa 24 downloadmails in totaal, inclusief de proeflevering.
+De oorspronkelijke raming van **circa 20 tot 25 aanvragen** ging ervan uit dat
+alle niet-vogelgroepen samen konden worden geselecteerd. Controle in FFV-versie
+1.3.2 op 15 augustus 2026 wees uit dat het downloadvenster alleen alle
+soortgroepen samen of één afzonderlijke FFV-soortgroep aanbiedt. `Alle
+soortgroepen` bevat ook Vogels en overschrijdt in drukke hokken de grens van
+100.000. De definitieve reeks moet daarom per FFV-soortgroep worden aangevraagd,
+verdeeld over maximaal twaalf 1x1-kilometerhokken en waar nodig verder gesplitst
+om onder circa 80.000 te blijven. De raming van 23 is vervallen; leid het actuele
+aantal af uit de werkelijk benodigde soortgroep-bundels. Met 26 niet-vogelgroepen
+en drie ruimtelijke bundels is de voorlopige basisraming 78 unieke aanvragen,
+vóór eventuele extra splitsingen van omvangrijke selecties. FFV staat maximaal
+vijf aanvragen per voortschrijdend uur toe.
+
+De eerste uurreeks op 15 augustus 2026 dekte Eencelligen voor alle 34 hokken in
+drie bundels en Geleedpotigen (overig) voor de eerste twaalf hokken. Door de
+eenmalige bevestiging van het e-mailadres is Eencelligen-bundel 2 dubbel
+geleverd. Beide leveringen hebben 57 records en exact dezelfde 57 waarden van
+`Identiteit`; behandel dit als exportoverlap en niet als twee waarnemingssets.
 
 ### Relatie met kavels
 
