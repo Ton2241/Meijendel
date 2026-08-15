@@ -122,3 +122,28 @@
   Canadese gans (maxima)` worden onder `Grote Canadese Gans` samengevoegd. De
   bestaande seizoenssom blijft uitsluitend als duidelijk gewaarschuwde ruwe
   telling beschikbaar.
+- NDFF/FFV-waarnemingen vormen een afzonderlijke bronlaag en worden nooit
+  vermengd met `territoria`, `dagwaarnemingen_bmp`, `dagwaarnemingen_wv` of de
+  PQ-vegetatietabellen. Eigen gestandaardiseerde tellingen blijven leidend voor
+  trends, aantallen en afwezigheidsinformatie.
+- FFV-downloads slaan vogelgegevens over. De bronbestanden worden per
+  samenhangende hoofdgroep als `GeoPackage RD` aangevraagd en behouden de
+  oorspronkelijke soortgroep, geometrie, datum, vervaging, bronhouder, protocol
+  en overige herkomstvelden voor zover de FFV die levert.
+- Iedere NDFF-hoofdgroep krijgt een eigen waarnemingstabel, vergelijkbaar in
+  functie met `territoria` en de dagwaarnemingstabellen. De eerste hoofdindeling
+  is: insecten, mossen, korstmossen, vaatplanten, schimmels,
+  amfibieën/reptielen, zoogdieren, waterorganismen en overige ongewervelden.
+  De oorspronkelijke FFV-soortgroep blijft daarnaast ongewijzigd opgeslagen;
+  definitieve tabelnamen en groepsmapping worden voor de eerste import
+  gevalideerd.
+- Alle NDFF-waarnemingen moeten reproduceerbaar aan de Meijendel-kavelindeling
+  kunnen worden gerelateerd. Een waarnemingsvlak dat meerdere kavels raakt
+  wordt niet kunstmatig aan een kavel toegewezen: de koppeling bewaart per
+  geraakt `plot_id` de ruimtelijke methode en waar mogelijk het overlapoppervlak
+  en overlapaandeel.
+- Elke NDFF-import bewaart minimaal downloadmoment, selectieperiode,
+  kilometerhokken, categorie, bestandsnaam, SHA-256, FFV-peildatum,
+  recordaantal, vervagingsinformatie en de meegeleverde NDFF-bronvermelding.
+  Herimport moet idempotent zijn en correcties of verwijderingen uit latere
+  bronleveringen zichtbaar kunnen verwerken.

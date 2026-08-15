@@ -2,6 +2,30 @@
 
 ## Nu open
 
+### NDFF/FFV-waarnemingen — ontwerp en proefimport
+
+- Download vogelgegevens niet opnieuw via FFV; gebruik alleen de niet-vogelgroepen.
+- Vraag bronbestanden per samenhangende hoofdgroep aan als `GeoPackage RD` en
+  houd rekening met maximaal 100.000 waarnemingen per aanvraag en maximaal vijf
+  aanvragen per uur.
+- Ontvang en valideer eerst de proeflevering `Amfibieën`, hok `83-461`,
+  periode `1950-2026`; controleer lagen, velden, taxonsleutels, geometrie,
+  vervaging, datumprecisie, bronhouder, protocol en standaardbronvermelding.
+- Leg daarna de definitieve mapping vast van alle FFV-soortgroepen naar de
+  afgesproken hoofdtabellen: insecten, mossen, korstmossen, vaatplanten,
+  schimmels, amfibieën/reptielen, zoogdieren, waterorganismen en overige
+  ongewervelden.
+- Ontwerp per hoofdgroep een eigen waarnemingstabel plus een reproduceerbare
+  koppeling naar `plots`; ondersteun meerdere kavelkoppelingen bij overlappende
+  NDFF-vlakken en bewaar overlapoppervlak/-aandeel.
+- Ontwerp een gedeelde importadministratie met selectie, SHA-256, peildatum,
+  bronvermelding, recordtellingen, idempotente herimport en herkenbare
+  correctie-/verwijderstatus.
+- Voer pas na inhoudelijke goedkeuring van schema, mapping en proefresultaat een
+  import in de levende MySQL-database uit. Tot dat moment blijven de downloads
+  losse bronbestanden en worden `meijendel.sql`, dashboard, Shiny en productie
+  niet gewijzigd.
+
 ### Wintertellingen — geparkeerde vervolgstappen
 
 - Punt 7 (geparkeerd): laat de technische indeling `water_wetland` versus

@@ -848,6 +848,73 @@ Voor een beginner is de belangrijkste praktische les:
 - gebruik `territoria` voor overzicht en jaaranalyses
 - gebruik `dagwaarnemingen` als je detailinformatie per bezoek of per losse waarneming nodig hebt
 
+## 16A. Hoe worden NDFF/FFV-waarnemingen toegevoegd?
+
+NDFF-waarnemingen zijn een aanvullende externe bron. Zij worden niet opgenomen
+in `territoria`, `dagwaarnemingen_bmp`, `dagwaarnemingen_wv` of de
+PQ-vegetatietabellen. Daardoor blijven de eigen gestandaardiseerde tellingen en
+de externe aanwezigheidssignalen methodisch gescheiden.
+
+### Downloadafspraken
+
+- sla de soortgroep Vogels over;
+- download losse `Waarnemingen`, niet alleen de geaggregeerde `Soortenlijst`;
+- gebruik `GeoPackage RD` zodat de oorspronkelijke NDFF-vlakgeometrie behouden
+  blijft en direct aansluit op EPSG:28992 van de Meijendel-kavels;
+- download per samenhangende hoofdgroep en splits zo nodig verder bij de
+  FFV-grens van 100.000 waarnemingen;
+- bewaar het ongewijzigde bronbestand met downloadmoment, selectieperiode,
+  kilometerhokken, FFV-peildatum, SHA-256 en standaardbronvermelding.
+
+De eerste hoofdindeling is:
+
+- insecten: onder andere dag-, nacht- en microvlinders, libellen, kevers,
+  sprinkhanen, snavelinsecten, vliegen/muggen en vliesvleugeligen;
+- mossen;
+- korstmossen;
+- vaatplanten;
+- schimmels;
+- amfibieën en reptielen;
+- zoogdieren, inclusief vleermuizen;
+- waterorganismen: onder andere vissen, kreeftachtigen, weekdieren en
+  kranswieren/wieren/algen;
+- overige ongewervelden en eencelligen.
+
+Iedere hoofdgroep krijgt een eigen waarnemingstabel. De oorspronkelijke
+FFV-soortgroep wordt altijd als bronwaarde bewaard, zodat een latere wijziging
+van de hoofdindeling geen informatieverlies veroorzaakt. Gebruik Nederlandse
+soortnamen niet als unieke sleutel; taxoncodes of stabiele bronidentificaties
+gaan voor, met de wetenschappelijke naam als controleveld.
+
+### Relatie met kavels
+
+Het doel is dat iedere NDFF-waarneming net als territoria en dagwaarnemingen via
+`plot_id` in analyses per Meijendel-kavel kan worden gebruikt. NDFF-locaties zijn
+echter vaak vlakken en kunnen meerdere kavels raken. Daarom geldt:
+
+1. bewaar altijd de oorspronkelijke geometrie en het vervagingsniveau;
+2. bereken de koppeling reproduceerbaar tegen de versie van de
+   Meijendel-plotpolygonen die bij de import is vastgelegd;
+3. bewaar iedere geraakte `plot_id` in een koppeltabel met ruimtelijke methode,
+   overlapoppervlak en waar mogelijk overlapaandeel;
+4. wijs een waarneming alleen rechtstreeks aan een enkel plot toe als de
+   geometrie dat eenduidig ondersteunt;
+5. presenteer een vervaagd kilometerhok nooit als een exacte vindplaats.
+
+Deze koppeling maakt selectie per kavel mogelijk, maar verandert een losse
+NDFF-waarneming niet in een gestandaardiseerde telling. Niet waargenomen of niet
+gemeld blijft onbekend en wordt niet als nul opgeslagen.
+
+### Importvolgorde
+
+1. valideer bestand, laag, CRS, velden en recordaantal;
+2. registreer de importbatch en bestands-SHA;
+3. laad eerst in een staginglaag zonder bronvelden te verliezen;
+4. valideer taxon- en categorie-mapping;
+5. laad de goedgekeurde hoofdgroeptabel;
+6. bereken en controleer de kavelkoppelingen;
+7. publiceer of analyseer pas na integriteitscontroles.
+
 ## 17. Hoe werkt ruimtelijke data koppelen aan plots?
 
 Het uitgangspunt is:
