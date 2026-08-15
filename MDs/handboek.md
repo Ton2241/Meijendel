@@ -946,11 +946,14 @@ en drie ruimtelijke bundels is de voorlopige basisraming 78 unieke aanvragen,
 vóór eventuele extra splitsingen van omvangrijke selecties. FFV staat maximaal
 vijf aanvragen per voortschrijdend uur toe.
 
-De eerste uurreeks op 15 augustus 2026 dekte Eencelligen voor alle 34 hokken in
-drie bundels en Geleedpotigen (overig) voor de eerste twaalf hokken. Door de
-eenmalige bevestiging van het e-mailadres is Eencelligen-bundel 2 dubbel
-geleverd. Beide leveringen hebben 57 records en exact dezelfde 57 waarden van
-`Identiteit`; behandel dit als exportoverlap en niet als twee waarnemingssets.
+De aanvragen op 15 augustus 2026 dekten Eencelligen en Geleedpotigen (overig)
+voor alle 34 hokken en Insecten (overig) voor de eerste twaalf hokken. Door
+vertraagde e-mailbevestigingen zijn Eencelligen-bundel 2,
+Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
+respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
+`Identiteit`-waarden. Behandel deze leveringen als exportoverlap en niet als
+afzonderlijke waarnemingssets. Controleer na iedere verzending zowel de
+pagina-status als Gmail voordat een aanvraag wordt herhaald.
 
 ### Relatie met kavels
 
