@@ -861,8 +861,14 @@ de externe aanwezigheidssignalen methodisch gescheiden.
 - download losse `Waarnemingen`, niet alleen de geaggregeerde `Soortenlijst`;
 - gebruik `GeoPackage RD` zodat de oorspronkelijke NDFF-vlakgeometrie behouden
   blijft en direct aansluit op EPSG:28992 van de Meijendel-kavels;
-- download per samenhangende hoofdgroep en splits zo nodig verder bij de
-  FFV-grens van 100.000 waarnemingen;
+- selecteer in een export alle gewenste niet-vogelgroepen tegelijk als het
+  recordaantal dit toelaat; de export hoeft dus niet per latere hoofd- of
+  databasetabel te worden aangevraagd;
+- combineer een beperkt aantal kilometerhokken per aanvraag en houd als
+  operationele streefgrens maximaal circa 80.000 waarnemingen aan, ruim onder de
+  FFV-grens van 100.000;
+- splits eerst op kilometerhokken en alleen waar nodig daarnaast op een of meer
+  soortgroepen;
 - bewaar het ongewijzigde bronbestand met downloadmoment, selectieperiode,
   kilometerhokken, FFV-peildatum, SHA-256 en standaardbronvermelding.
 
@@ -885,6 +891,33 @@ FFV-soortgroep wordt altijd als bronwaarde bewaard, zodat een latere wijziging
 van de hoofdindeling geen informatieverlies veroorzaakt. Gebruik Nederlandse
 soortnamen niet als unieke sleutel; taxoncodes of stabiele bronidentificaties
 gaan voor, met de wetenschappelijke naam als controleveld.
+
+De exportbestanden worden na validatie dus naar deze hoofdtabellen gerouteerd.
+Een bestand met meerdere FFV-soortgroepen wordt daarbij opgesplitst zonder de
+ongewijzigde bronlevering te verwijderen of te veranderen.
+
+### Raming van het aantal aanvragen
+
+De 55 kavelpolygonen uit de actuele lokale shapefile raken 34 verschillende
+1x1-kilometerhokken. Een FFV-peiling op 15 augustus 2026 gaf voor de gehele
+periode 1950-2026:
+
+- hok 83-461: 209.898 waarnemingen totaal, waarvan 135.243 vogels en dus 74.655
+  niet-vogelwaarnemingen;
+- hok 84-462: 142.854 waarnemingen totaal, waarvan 110.208 vogels en dus 32.646
+  niet-vogelwaarnemingen.
+
+Op basis van deze twee dichtheden is **circa 20 tot 25 aanvragen** een
+bruikbare eerste raming voor alle 34 hokken; gebruik 23 als werkgetal. Het
+werkelijke aantal wordt tijdens de selectie bepaald door hokken te bundelen tot
+circa 80.000 waarnemingen. Een conservatieve uitvoering met een aanvraag per
+hok vraagt 34 aanvragen, behalve wanneer een afzonderlijk hok al boven 100.000
+niet-vogelwaarnemingen uitkomt; dat hok moet dan ook naar soortgroep worden
+gesplitst. Omdat FFV maximaal vijf aanvragen per uur toestaat, vergt de geraamde
+reeks minimaal vier tot vijf aanvraaguren. De al verzonden Amfibieën-aanvraag
+voor hok 83-461 is een proeflevering en vervangt geen volledige niet-vogel-export
+voor dat hok. Reken daarom op ongeveer 23 nog te plannen volledige aanvragen en
+circa 24 downloadmails in totaal, inclusief de proeflevering.
 
 ### Relatie met kavels
 

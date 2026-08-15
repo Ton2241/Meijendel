@@ -126,10 +126,15 @@
   vermengd met `territoria`, `dagwaarnemingen_bmp`, `dagwaarnemingen_wv` of de
   PQ-vegetatietabellen. Eigen gestandaardiseerde tellingen blijven leidend voor
   trends, aantallen en afwezigheidsinformatie.
-- FFV-downloads slaan vogelgegevens over. De bronbestanden worden per
-  samenhangende hoofdgroep als `GeoPackage RD` aangevraagd en behouden de
-  oorspronkelijke soortgroep, geometrie, datum, vervaging, bronhouder, protocol
-  en overige herkomstvelden voor zover de FFV die levert.
+- FFV-downloads slaan vogelgegevens over. Een export mag alle overige
+  soortgroepen en meerdere kilometerhokken bevatten; exportindeling en latere
+  tabelindeling zijn nadrukkelijk niet hetzelfde. Vraag als `GeoPackage RD` aan
+  en splits de selectie alleen om ruim onder de FFV-grens van 100.000
+  waarnemingen te blijven. De operationele streefgrens is maximaal circa 80.000
+  waarnemingen per aanvraag. Splits eerst ruimtelijk in hokken en zo nodig
+  aanvullend op soortgroep. Behoud de oorspronkelijke soortgroep, geometrie,
+  datum, vervaging, bronhouder, protocol en overige herkomstvelden voor zover de
+  FFV die levert.
 - Iedere NDFF-hoofdgroep krijgt een eigen waarnemingstabel, vergelijkbaar in
   functie met `territoria` en de dagwaarnemingstabellen. De eerste hoofdindeling
   is: insecten, mossen, korstmossen, vaatplanten, schimmels,

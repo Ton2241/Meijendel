@@ -5,9 +5,11 @@
 ### NDFF/FFV-waarnemingen — ontwerp en proefimport
 
 - Download vogelgegevens niet opnieuw via FFV; gebruik alleen de niet-vogelgroepen.
-- Vraag bronbestanden per samenhangende hoofdgroep aan als `GeoPackage RD` en
-  houd rekening met maximaal 100.000 waarnemingen per aanvraag en maximaal vijf
-  aanvragen per uur.
+- Vraag bronbestanden als `GeoPackage RD` aan met alle niet-vogelgroepen die
+  binnen de selectie passen. Bundel een beperkt aantal hokken tot maximaal
+  circa 80.000 waarnemingen; splits eerst op hokken en zo nodig aanvullend op
+  soortgroep. Houd rekening met maximaal 100.000 waarnemingen per aanvraag en
+  maximaal vijf aanvragen per uur.
 - Ontvang en valideer eerst de proeflevering `Amfibieën`, hok `83-461`,
   periode `1950-2026`; controleer lagen, velden, taxonsleutels, geometrie,
   vervaging, datumprecisie, bronhouder, protocol en standaardbronvermelding.
@@ -15,6 +17,11 @@
   afgesproken hoofdtabellen: insecten, mossen, korstmossen, vaatplanten,
   schimmels, amfibieën/reptielen, zoogdieren, waterorganismen en overige
   ongewervelden.
+- Gebruik voor de planning 34 kilometerhokken die de actuele kavelpolygonen
+  raken en circa 20-25 aanvragen (werkgetal 23). Controleer voor iedere aanvraag
+  het actuele FFV-resultaataantal; voer niet blind een vaste bundeling uit. Tel
+  de reeds verzonden Amfibieën-proef voor hok 83-461 niet als volledige dekking
+  van dat hok.
 - Ontwerp per hoofdgroep een eigen waarnemingstabel plus een reproduceerbare
   koppeling naar `plots`; ondersteun meerdere kavelkoppelingen bij overlappende
   NDFF-vlakken en bewaar overlapoppervlak/-aandeel.
