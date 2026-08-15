@@ -135,6 +135,15 @@
   aanvullend op soortgroep. Behoud de oorspronkelijke soortgroep, geometrie,
   datum, vervaging, bronhouder, protocol en overige herkomstvelden voor zover de
   FFV die levert.
+- De definitieve NDFF-downloadreeks loopt tot en met 31 december 2025. De
+  proeflevering met eindjaar 2026 wordt alleen voor schema- en kwaliteitsanalyse
+  gebruikt en telt niet als definitieve bronlevering.
+- Rond eerst alle FFV-aanvragen af. Bouw daarna uit de ongewijzigd bewaarde
+  bronbestanden één geïntegreerde stagingdataset en verwijder exportoverlap
+  primair op de stabiele bronwaarde `Identiteit`. Als de stabiliteit daarvan bij
+  een overlappende proef niet bevestigd wordt, is aanvullende samengestelde
+  matching en handmatige controle vereist; records mogen niet alleen op
+  soortnaam, datum of geometrie worden samengevoegd.
 - Iedere NDFF-hoofdgroep krijgt een eigen waarnemingstabel, vergelijkbaar in
   functie met `territoria` en de dagwaarnemingstabellen. De eerste hoofdindeling
   is: insecten, mossen, korstmossen, vaatplanten, schimmels,
@@ -147,6 +156,13 @@
   wordt niet kunstmatig aan een kavel toegewezen: de koppeling bewaart per
   geraakt `plot_id` de ruimtelijke methode en waar mogelijk het overlapoppervlak
   en overlapaandeel.
+- De geïntegreerde stagingdataset blijft als controleerbaar tussenproduct
+  beschikbaar. Alleen records waarvan de brongeometrie minimaal één vastgelegde
+  SOVON-plotpolygoon raakt, zijn kandidaat voor database-import. Records zonder
+  plotintersectie blijven uitsluitend in bronbestanden en uitsluitingsaudit en
+  worden niet in de Meijendel-database opgenomen. Een intersectie alleen bewijst
+  geen aanwezigheid in een plot: vervaagde of grote geometrieën krijgen geen
+  exacte plottoewijzing en worden standaard uitgesloten van analyses per plot.
 - Elke NDFF-import bewaart minimaal downloadmoment, selectieperiode,
   kilometerhokken, categorie, bestandsnaam, SHA-256, FFV-peildatum,
   recordaantal, vervagingsinformatie en de meegeleverde NDFF-bronvermelding.

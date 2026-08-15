@@ -10,9 +10,13 @@
   circa 80.000 waarnemingen; splits eerst op hokken en zo nodig aanvullend op
   soortgroep. Houd rekening met maximaal 100.000 waarnemingen per aanvraag en
   maximaal vijf aanvragen per uur.
-- Ontvang en valideer eerst de proeflevering `Amfibieën`, hok `83-461`,
-  periode `1950-2026`; controleer lagen, velden, taxonsleutels, geometrie,
-  vervaging, datumprecisie, bronhouder, protocol en standaardbronvermelding.
+- Beperk alle definitieve aanvragen tot en met 31 december 2025. Gebruik de
+  Amfibieën-proef met eindjaar 2026 alleen voor schema- en kwaliteitscontrole en
+  vraag die selectie opnieuw aan voor de definitieve reeks.
+- De proeflevering `Amfibieën`, hok `83-461`, periode `1950-2026`, is
+  gevalideerd: schema, CRS, bronvelden en geometrieën zijn bruikbaar, maar
+  taxoncode ontbreekt en vervaagde/grote geometrieën vereisen een ruimtelijke
+  kwaliteitsklasse. Gebruik de proef niet als definitieve levering.
 - Leg daarna de definitieve mapping vast van alle FFV-soortgroepen naar de
   afgesproken hoofdtabellen: insecten, mossen, korstmossen, vaatplanten,
   schimmels, amfibieën/reptielen, zoogdieren, waterorganismen en overige
@@ -25,6 +29,14 @@
 - Ontwerp per hoofdgroep een eigen waarnemingstabel plus een reproduceerbare
   koppeling naar `plots`; ondersteun meerdere kavelkoppelingen bij overlappende
   NDFF-vlakken en bewaar overlapoppervlak/-aandeel.
+- Rond eerst alle aanvragen af; bouw daarna één geïntegreerde stagingdataset en
+  ontdubbel primair op `Identiteit`. Test met een overlappende herdownload of die
+  waarde tussen leveringen stabiel blijft en leg een conservatieve fallback voor
+  twijfelgevallen vast.
+- Filter de database-import tegen één geversioneerde SOVON-plotlaag. Neem
+  records zonder plotintersectie niet op in de database, maar registreer ze in
+  de uitsluitingsaudit. Behandel vervaagde, grote en meerplot-geometrieën niet
+  automatisch als aanwezigheid per geraakt plot.
 - Ontwerp een gedeelde importadministratie met selectie, SHA-256, peildatum,
   bronvermelding, recordtellingen, idempotente herimport en herkenbare
   correctie-/verwijderstatus.

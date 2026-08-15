@@ -858,6 +858,7 @@ de externe aanwezigheidssignalen methodisch gescheiden.
 ### Downloadafspraken
 
 - sla de soortgroep Vogels over;
+- gebruik als vaste periode 1 januari 1950 tot en met 31 december 2025;
 - download losse `Waarnemingen`, niet alleen de geaggregeerde `Soortenlijst`;
 - gebruik `GeoPackage RD` zodat de oorspronkelijke NDFF-vlakgeometrie behouden
   blijft en direct aansluit op EPSG:28992 van de Meijendel-kavels;
@@ -871,6 +872,11 @@ de externe aanwezigheidssignalen methodisch gescheiden.
   soortgroepen;
 - bewaar het ongewijzigde bronbestand met downloadmoment, selectieperiode,
   kilometerhokken, FFV-peildatum, SHA-256 en standaardbronvermelding.
+
+De eerdere Amfibieën-proef met eindjaar 2026 blijft uitsluitend een
+schema- en kwaliteitsproef. Neem die niet op in de definitieve geïntegreerde
+dataset; vraag de betreffende selectie opnieuw aan met einddatum 31 december
+2025.
 
 De eerste hoofdindeling is:
 
@@ -895,6 +901,26 @@ gaan voor, met de wetenschappelijke naam als controleveld.
 De exportbestanden worden na validatie dus naar deze hoofdtabellen gerouteerd.
 Een bestand met meerdere FFV-soortgroepen wordt daarbij opgesplitst zonder de
 ongewijzigde bronlevering te verwijderen of te veranderen.
+
+### Eerst compleet downloaden, daarna integreren
+
+Rond eerst de volledige reeks aanvragen af. Maak daarna twee reproduceerbare
+producten:
+
+1. een geïntegreerde stagingdataset met alle ontvangen niet-vogelrecords tot en
+   met 31 december 2025, na verwijdering van exportoverlap;
+2. een database-importselectie met alleen de records die aan de vastgelegde
+   ruimtelijke toelatingsregels voor de SOVON-plots voldoen.
+
+Ontdubbel primair op `Identiteit`, maar bevestig eerst met een kleine
+overlappende herdownload dat deze bronwaarde tussen leveringen stabiel blijft.
+Als dat niet zo is, gebruik dan een conservatieve samengestelde vergelijking van
+onder andere soort, periode, bronhouder, protocol, aantal en genormaliseerde
+geometrie, gevolgd door controle van twijfelgevallen. Voeg niet samen op alleen
+soort, datum of geometrie: dat kan echte afzonderlijke waarnemingen verwijderen.
+
+Bewaar alle oorspronkelijke GeoPackages ongewijzigd met hun SHA-256. De
+geïntegreerde stagingdataset vervangt de bronbestanden dus niet.
 
 ### Raming van het aantal aanvragen
 
@@ -934,19 +960,39 @@ echter vaak vlakken en kunnen meerdere kavels raken. Daarom geldt:
    geometrie dat eenduidig ondersteunt;
 5. presenteer een vervaagd kilometerhok nooit als een exacte vindplaats.
 
+Pas daarna de ruimtelijke toelating toe tegen één vastgelegde versie van de
+SOVON-plotlaag:
+
+- geen intersectie met een SOVON-plot: niet opnemen in de database; registreer
+  de uitsluitingsreden en aantallen wel in de importaudit;
+- één voldoende precieze, eenduidige plotintersectie: kandidaat voor directe
+  `plot_id`-koppeling;
+- meerdere plotintersecties, grote tel-/zoekpolygonen of 1 km/5 km-vervaging:
+  bewaar hoogstens als onzeker kandidaatrecord met alle geraakte plots en
+  overlapmaten, maar gebruik het standaard niet als aanwezigheid per plot;
+- leg versie en SHA van de gebruikte SOVON-plotlaag vast, zodat de selectie
+  reproduceerbaar kan worden herhaald.
+
+Deze aanpak verwijdert waarnemingen buiten de plots uit de database, maar een
+geometrische intersectie alleen lost de onzekerheid van vervaagde of grote
+polygonen niet op. Daarvoor blijft de ruimtelijke kwaliteitsklasse noodzakelijk.
+
 Deze koppeling maakt selectie per kavel mogelijk, maar verandert een losse
 NDFF-waarneming niet in een gestandaardiseerde telling. Niet waargenomen of niet
 gemeld blijft onbekend en wordt niet als nul opgeslagen.
 
 ### Importvolgorde
 
-1. valideer bestand, laag, CRS, velden en recordaantal;
-2. registreer de importbatch en bestands-SHA;
-3. laad eerst in een staginglaag zonder bronvelden te verliezen;
-4. valideer taxon- en categorie-mapping;
-5. laad de goedgekeurde hoofdgroeptabel;
-6. bereken en controleer de kavelkoppelingen;
-7. publiceer of analyseer pas na integriteitscontroles.
+1. rond alle aanvragen voor 1950 tot en met 2025 af;
+2. valideer ieder bestand, laag, CRS, velden en recordaantal;
+3. registreer alle bronbestanden en SHA-waarden;
+4. bouw de geïntegreerde stagingdataset en ontdubbel controleerbaar;
+5. valideer taxon- en categorie-mapping;
+6. bereken plotintersecties en ruimtelijke kwaliteitsklassen;
+7. sluit records zonder SOVON-plotintersectie uit en registreer de uitsluiting;
+8. laad pas daarna de goedgekeurde records in de hoofdgroeptabellen en
+   plotkoppeltabel;
+9. publiceer of analyseer pas na integriteitscontroles.
 
 ## 17. Hoe werkt ruimtelijke data koppelen aan plots?
 

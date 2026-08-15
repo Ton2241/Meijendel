@@ -252,6 +252,11 @@ Of via Terminal:
   vermeng ze niet met territoria, dagwaarnemingen of PQ-data en leg de
   reproduceerbare veel-op-veelkoppeling met de Meijendel-kavels vast zoals
   beschreven in hoofdstuk 16A van `MDs/handboek.md`.
+- De definitieve NDFF-reeks eindigt op 31 december 2025. Ontdubbel pas na
+  afronding van alle aanvragen in een geïntegreerde stagingdataset; importeer
+  alleen ruimtelijk toegelaten records die een geversioneerde SOVON-plotlaag
+  raken. Een intersectie van een vervaagd of groot vlak is niet automatisch een
+  betrouwbare aanwezigheid per plot.
 - De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.
 - Niet alle documentatie in de repo is even recent; de documenten in `MDs/` zijn nu leidend.
 - De worktree hoort buiten een expliciet actieve taak schoon te zijn. Onderzoek iedere vooraf aangetroffen wijziging, rond bedoelde wijzigingen af met commit/push en haal gegenereerde caches of runtime-output uit Git en zet die in `.gitignore`.
