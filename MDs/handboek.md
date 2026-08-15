@@ -977,6 +977,70 @@ Deze aanpak verwijdert waarnemingen buiten de plots uit de database, maar een
 geometrische intersectie alleen lost de onzekerheid van vervaagde of grote
 polygonen niet op. Daarvoor blijft de ruimtelijke kwaliteitsklasse noodzakelijk.
 
+### Voorgestelde databasestructuur voor ruimtelijke zekerheid
+
+Gebruik een gedeelde technische kern en houd de biologische waarnemingen per
+hoofdgroep gescheiden:
+
+- `ndff_import`: één rij per ontvangen GeoPackage met bestandsnaam, SHA-256,
+  aanvraagfilters, periode, FFV-peildatum, bronvermelding en recordtellingen;
+- `ndff_waarneming_register`: één globale `ndff_id` per ontdubbeld bronrecord,
+  met `Identiteit`, oorspronkelijke FFV-soortgroep en toegewezen hoofdgroep;
+- `ndff_import_record`: veel-op-veelherkomst tussen `import_id` en `ndff_id`, met
+  het oorspronkelijke record-/FID-nummer, zodat zichtbaar blijft in welke
+  GeoPackages hetzelfde record voorkwam;
+- `ndff_<hoofdgroep>_waarneming`: de biologische en temporele velden per
+  hoofdgroep, bijvoorbeeld `ndff_amfibie_waarneming`, met `ndff_id` als
+  foreign key naar het register;
+- `ndff_waarneming_geometrie`: één canonieke brongeometrie per `ndff_id` in
+  EPSG:28992, met oppervlakte en de berekende ruimtelijke hoofdklasse;
+- `ndff_waarneming_plot`: uitsluitend ruimtelijk voldoende betrouwbare relaties
+  tussen `ndff_id` en `plot_id`, met methode, overlapoppervlak, overlapaandeel en
+  versie van de SOVON-plotlaag;
+- `ndff_vervaagde_waarneming`: aparte één-op-éénuitbreiding voor 1 km-, 5 km- en
+  eventuele andere vervagingsniveaus, met vervagingsniveau, reden voor zover
+  aangeleverd en het toegestane gebruik `alleen_grove_schaal`;
+- `ndff_gebiedswaarneming`: aparte één-op-éénuitbreiding voor niet-vervaagde,
+  maar niet eenduidig aan één plot toe te wijzen bronpolygonen;
+- `ndff_onzekere_plot_overlap`: optionele kandidaatkoppelingen voor vervaagde en
+  gebiedswaarnemingen, met overlapmaten en expliciet
+  `is_aanwezigheid_per_plot = 0`.
+
+De vervaagde en gebiedstabellen bevatten geen tweede kopie van soort, datum,
+bronhouder of geometrie: die blijven respectievelijk in de hoofdgroeptabel en
+`ndff_waarneming_geometrie`. De uitzonderingslagen bevatten alleen aanvullende
+ruimtelijke status en kwaliteitskenmerken. Daarmee blijven categorieën apart
+analyseerbaar zonder dezelfde bronwaarneming dubbel op te slaan.
+
+Classificeer iedere ontdubbelde waarneming in deze volgorde:
+
+1. `Vervaging` gevuld: registreer in `ndff_vervaagde_waarneming`; maak geen
+   reguliere plotkoppeling;
+2. niet vervaagd en geen intersectie met de SOVON-plotunie: niet importeren en
+   alleen als telling per uitsluitingsreden in de importaudit opnemen;
+3. niet vervaagd en volledig/eenduidig binnen één plot: reguliere koppeling in
+   `ndff_waarneming_plot` met methode `binnen_een_plot`;
+4. niet vervaagd en meerdere of gedeeltelijke plotintersecties: bereken
+   geometrieoppervlak, aantal plots, centroidplot, totaal overlapaandeel en het
+   hoogste overlapaandeel per plot;
+5. alleen na validatie van een nog vast te stellen dominante-overlapregel mag
+   zo'n record een reguliere plotkoppeling krijgen; anders registreer het in
+   `ndff_gebiedswaarneming` en hoogstens in
+   `ndff_onzekere_plot_overlap`.
+
+Stel de dominante-overlapdrempel niet vooraf willekeurig vast. Toets bijvoorbeeld
+een startvoorstel van 90% overlap plus centroid in hetzelfde plot op de volledige
+geïntegreerde dataset en controleer grensgevallen visueel. Geometrieoppervlak moet
+worden beoordeeld ten opzichte van de plotgrootte en bronmethode; een vaste
+oppervlaktedrempel voor alle soortgroepen is niet verdedigbaar.
+
+Voor de 558 niet-vervaagde geometrieën uit de Amfibieën-proef die buiten hok
+83-461 doorlopen geldt daarom: dit feit alleen zegt niet dat ze onbruikbaar zijn.
+Het hok was de zoekselectie. De records worden op bovenstaande regels getoetst;
+eenduidige geometrieën krijgen een plotkoppeling, ambigue of grote polygonen gaan
+naar `ndff_gebiedswaarneming`, en geometrieën zonder SOVON-plotintersectie worden
+niet geïmporteerd.
+
 Deze koppeling maakt selectie per kavel mogelijk, maar verandert een losse
 NDFF-waarneming niet in een gestandaardiseerde telling. Niet waargenomen of niet
 gemeld blijft onbekend en wordt niet als nul opgeslagen.

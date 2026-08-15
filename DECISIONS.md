@@ -163,6 +163,22 @@
   worden niet in de Meijendel-database opgenomen. Een intersectie alleen bewijst
   geen aanwezigheid in een plot: vervaagde of grote geometrieën krijgen geen
   exacte plottoewijzing en worden standaard uitgesloten van analyses per plot.
+- De NDFF-databaseopslag scheidt biologische hoofdgroepen van ruimtelijke
+  betrouwbaarheid. Een gedeeld `ndff_waarneming_register` beheert bronidentiteit
+  en hoofdgroep; `ndff_import_record` bewaart alle bronbestanden waarin hetzelfde
+  ontdubbelde record voorkwam en `ndff_waarneming_geometrie` bewaart de canonieke
+  brongeometrie. Iedere hoofdgroep krijgt de afgesproken eigen waarnemingstabel.
+  Betrouwbare plotrelaties komen uitsluitend in
+  `ndff_waarneming_plot`. Vervaagde records komen daarnaast in
+  `ndff_vervaagde_waarneming` en niet-vervaagde maar ruimtelijk ambigue
+  gebiedsgeometrieën in `ndff_gebiedswaarneming`. Eventuele kandidaatoverlappen
+  worden apart opgeslagen en zijn geen aanwezigheid per plot.
+- Het buiten het aangevraagde kilometerhok doorlopen van een niet-vervaagde
+  geometrie is op zichzelf geen uitsluitingsgrond: het aanvraaghok is een
+  selectiefilter, niet de werkelijke begrenzing van een brongeometrie. Classificeer
+  zulke records op vervaging, plotintersectie, aantal geraakte plots,
+  overlapoppervlak/-aandeel en geometrieschaal. Zonder voldoende eenduidigheid
+  blijven zij een gebiedswaarneming en krijgen zij geen reguliere plotkoppeling.
 - Elke NDFF-import bewaart minimaal downloadmoment, selectieperiode,
   kilometerhokken, categorie, bestandsnaam, SHA-256, FFV-peildatum,
   recordaantal, vervagingsinformatie en de meegeleverde NDFF-bronvermelding.

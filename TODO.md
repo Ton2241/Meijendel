@@ -37,6 +37,15 @@
   records zonder plotintersectie niet op in de database, maar registreer ze in
   de uitsluitingsaudit. Behandel vervaagde, grote en meerplot-geometrieën niet
   automatisch als aanwezigheid per geraakt plot.
+- Werk het voorgestelde NDFF-schema uit en toets het lokaal zonder import:
+  `ndff_import`, `ndff_waarneming_register`, hoofdgroeptabellen,
+  `ndff_import_record`, `ndff_waarneming_geometrie`,
+  `ndff_waarneming_plot`, `ndff_vervaagde_waarneming`,
+  `ndff_gebiedswaarneming` en eventueel `ndff_onzekere_plot_overlap`.
+- Bepaal pas op de geïntegreerde dataset of een dominante-overlapregel
+  verantwoord is. Test als startpunt 90% overlap plus centroid in hetzelfde plot,
+  rapporteer aantallen/grensgevallen en laat de regel inhoudelijk goedkeuren
+  voordat meerplot-geometrieën als reguliere plotwaarneming worden toegelaten.
 - Ontwerp een gedeelde importadministratie met selectie, SHA-256, peildatum,
   bronvermelding, recordtellingen, idempotente herimport en herkenbare
   correctie-/verwijderstatus.
