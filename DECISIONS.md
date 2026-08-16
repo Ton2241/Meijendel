@@ -144,13 +144,32 @@
   een overlappende proef niet bevestigd wordt, is aanvullende samengestelde
   matching en handmatige controle vereist; records mogen niet alleen op
   soortnaam, datum of geometrie worden samengevoegd.
-- Iedere NDFF-hoofdgroep krijgt een eigen waarnemingstabel, vergelijkbaar in
-  functie met `territoria` en de dagwaarnemingstabellen. De eerste hoofdindeling
-  is: insecten, mossen, korstmossen, vaatplanten, schimmels,
-  amfibieën/reptielen, zoogdieren, waterorganismen en overige ongewervelden.
-  De oorspronkelijke FFV-soortgroep blijft daarnaast ongewijzigd opgeslagen;
-  definitieve tabelnamen en groepsmapping worden voor de eerste import
+- Iedere oorspronkelijke FFV-soortgroep krijgt een eigen NDFF-waarnemingstabel,
+  vergelijkbaar in functie met `territoria` en de dagwaarnemingstabellen maar
+  nadrukkelijk zonder de NDFF-records als territoria te interpreteren. De vaste
+  naamconventie is `ndff_<soortgroep>` met een genormaliseerde ASCII-naam in
+  `snake_case`, bijvoorbeeld `ndff_kreeftachtigen`,
+  `ndff_kranswieren_wieren_algen`, `ndff_korstmossen` en `ndff_amfibieen`.
+  Exportbundeling verandert deze tabelindeling niet. De oorspronkelijke
+  FFV-soortgroep blijft daarnaast ongewijzigd als bronwaarde opgeslagen en de
+  volledige mapping van FFV-label naar tabelnaam wordt vóór de eerste import
   gevalideerd.
+- Gebruik voor iedere NDFF-waarneming afzonderlijke velden voor de vraag of zij
+  vervaagd is en voor het vervagingsniveau. Bewaar daarnaast de oorspronkelijke
+  FFV-waarde. Vervaging is een eigenschap van het record en niet uitsluitend van
+  de soort: in de huidige gevalideerde deelset hebben 314 van de 344 taxa met
+  vervaagde records zowel vervaagde als niet-vervaagde waarnemingen en komt dit
+  bij 257 taxa binnen hetzelfde kalenderjaar voor. Bereken daarom pas afgeleid
+  per soort welk aandeel ruimtelijk nauwkeurig genoeg is voor een betrouwbare
+  SOVON-plotkoppeling.
+- De voorkeur is om de bestaande tabel `soorten` ook als registratie van
+  NDFF-taxa te gebruiken, maar uitsluitend als dit zonder verstoring van de
+  bestaande vogeldata, foreign keys, imports, analyses, dashboard en Shiny kan.
+  De huidige tabel is vogelgericht en vereist een unieke niet-lege
+  `euring_code`; voeg daarom nog geen NDFF-taxa toe. Voer vóór het definitieve
+  ontwerp een schema-, query- en regressietoets uit. Als veilig generiek maken
+  niet aantoonbaar mogelijk is, gebruik dan een afzonderlijke NDFF-taxontabel
+  met een expliciete koppeling naar `soorten` voor taxa die daar al voorkomen.
 - Alle NDFF-waarnemingen moeten reproduceerbaar aan de Meijendel-kavelindeling
   kunnen worden gerelateerd. Een waarnemingsvlak dat meerdere kavels raakt
   wordt niet kunstmatig aan een kavel toegewezen: de koppeling bewaart per
@@ -163,11 +182,12 @@
   worden niet in de Meijendel-database opgenomen. Een intersectie alleen bewijst
   geen aanwezigheid in een plot: vervaagde of grote geometrieën krijgen geen
   exacte plottoewijzing en worden standaard uitgesloten van analyses per plot.
-- De NDFF-databaseopslag scheidt biologische hoofdgroepen van ruimtelijke
+- De NDFF-databaseopslag scheidt biologische FFV-soortgroepen van ruimtelijke
   betrouwbaarheid. Een gedeeld `ndff_waarneming_register` beheert bronidentiteit
   en hoofdgroep; `ndff_import_record` bewaart alle bronbestanden waarin hetzelfde
   ontdubbelde record voorkwam en `ndff_waarneming_geometrie` bewaart de canonieke
-  brongeometrie. Iedere hoofdgroep krijgt de afgesproken eigen waarnemingstabel.
+  brongeometrie. Iedere FFV-soortgroep krijgt de afgesproken eigen
+  `ndff_<soortgroep>`-waarnemingstabel.
   Betrouwbare plotrelaties komen uitsluitend in
   `ndff_waarneming_plot`. Vervaagde records komen daarnaast in
   `ndff_vervaagde_waarneming` en niet-vervaagde maar ruimtelijk ambigue

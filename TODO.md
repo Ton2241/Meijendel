@@ -35,16 +35,16 @@
   gevalideerd: schema, CRS, bronvelden en geometrieën zijn bruikbaar, maar
   taxoncode ontbreekt en vervaagde/grote geometrieën vereisen een ruimtelijke
   kwaliteitsklasse. Gebruik de proef niet als definitieve levering.
-- Leg daarna de definitieve mapping vast van alle FFV-soortgroepen naar de
-  afgesproken hoofdtabellen: insecten, mossen, korstmossen, vaatplanten,
-  schimmels, amfibieën/reptielen, zoogdieren, waterorganismen en overige
-  ongewervelden.
+- Leg daarna de definitieve één-op-éénmapping vast van ieder FFV-soortgroeplabel
+  naar een eigen tabel `ndff_<soortgroep>` met een genormaliseerde ASCII-naam in
+  `snake_case`.
 - Gebruik voor de planning 34 kilometerhokken die de actuele kavelpolygonen
   raken. Controleer voor iedere aanvraag het actuele FFV-resultaataantal; voer
   niet blind een vaste bundeling uit. Tel de reeds verzonden Amfibieën-proef voor
   hok 83-461 niet als volledige dekking van dat hok.
-- Ontwerp per hoofdgroep een eigen waarnemingstabel plus een reproduceerbare
-  koppeling naar `plots`; ondersteun meerdere kavelkoppelingen bij overlappende
+- Ontwerp per FFV-soortgroep een eigen `ndff_<soortgroep>`-waarnemingstabel plus
+  een reproduceerbare koppeling naar `plots`; ondersteun meerdere
+  kavelkoppelingen bij overlappende
   NDFF-vlakken en bewaar overlapoppervlak/-aandeel.
 - Rond eerst alle aanvragen af; bouw daarna één geïntegreerde stagingdataset en
   ontdubbel primair op `Identiteit`. Test met een overlappende herdownload of die
@@ -55,10 +55,20 @@
   de uitsluitingsaudit. Behandel vervaagde, grote en meerplot-geometrieën niet
   automatisch als aanwezigheid per geraakt plot.
 - Werk het voorgestelde NDFF-schema uit en toets het lokaal zonder import:
-  `ndff_import`, `ndff_waarneming_register`, hoofdgroeptabellen,
+  `ndff_import`, `ndff_waarneming_register`, de tabellen per FFV-soortgroep,
   `ndff_import_record`, `ndff_waarneming_geometrie`,
   `ndff_waarneming_plot`, `ndff_vervaagde_waarneming`,
   `ndff_gebiedswaarneming` en eventueel `ndff_onzekere_plot_overlap`.
+- Bewaar per waarneming zowel een afzonderlijke vervagingsstatus als het
+  vervagingsniveau en behoud de ruwe FFV-waarde. Bereken het bruikbare aandeel
+  voor SOVON-plotkoppeling pas afgeleid per soort; veronderstel niet dat alle
+  records van één soort dezelfde vervaging hebben.
+- Onderzoek vóór het schema-ontwerp of de bestaande vogelgerichte tabel
+  `soorten` veilig generiek kan worden gemaakt voor NDFF-taxa. Toets minimaal de
+  verplichte unieke `euring_code`, alle foreign keys, importprocedures,
+  bestaande queries, dashboard en Shiny. Wijzig de levende database niet. Kies
+  bij onvoldoende veiligheid een afzonderlijke NDFF-taxontabel met een
+  expliciete koppeling naar bestaande `soorten`.
 - Bepaal pas op de geïntegreerde dataset of een dominante-overlapregel
   verantwoord is. Test als startpunt 90% overlap plus centroid in hetzelfde plot,
   rapporteer aantallen/grensgevallen en laat de regel inhoudelijk goedkeuren

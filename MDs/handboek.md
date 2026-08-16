@@ -878,29 +878,24 @@ schema- en kwaliteitsproef. Neem die niet op in de definitieve geïntegreerde
 dataset; vraag de betreffende selectie opnieuw aan met einddatum 31 december
 2025.
 
-De eerste hoofdindeling is:
+Iedere oorspronkelijke FFV-soortgroep krijgt een eigen waarnemingstabel. De
+naamconventie is `ndff_<soortgroep>`, waarbij het FFV-label reproduceerbaar naar
+een ASCII-naam in `snake_case` wordt genormaliseerd. Voorbeelden zijn
+`ndff_kreeftachtigen`, `ndff_kranswieren_wieren_algen`,
+`ndff_korstmossen` en `ndff_amfibieen`. Deze tabellen zijn functioneel
+vergelijkbaar met `territoria`, maar bevatten losse externe NDFF-waarnemingen en
+geen territoria of gestandaardiseerde tellingen. De oorspronkelijke
+FFV-soortgroep wordt altijd ongewijzigd als bronwaarde bewaard.
 
-- insecten: onder andere dag-, nacht- en microvlinders, libellen, kevers,
-  sprinkhanen, snavelinsecten, vliegen/muggen en vliesvleugeligen;
-- mossen;
-- korstmossen;
-- vaatplanten;
-- schimmels;
-- amfibieën en reptielen;
-- zoogdieren, inclusief vleermuizen;
-- waterorganismen: onder andere vissen, kreeftachtigen, weekdieren en
-  kranswieren/wieren/algen;
-- overige ongewervelden en eencelligen.
-
-Iedere hoofdgroep krijgt een eigen waarnemingstabel. De oorspronkelijke
-FFV-soortgroep wordt altijd als bronwaarde bewaard, zodat een latere wijziging
-van de hoofdindeling geen informatieverlies veroorzaakt. Gebruik Nederlandse
-soortnamen niet als unieke sleutel; taxoncodes of stabiele bronidentificaties
-gaan voor, met de wetenschappelijke naam als controleveld.
-
-De exportbestanden worden na validatie dus naar deze hoofdtabellen gerouteerd.
-Een bestand met meerdere FFV-soortgroepen wordt daarbij opgesplitst zonder de
-ongewijzigde bronlevering te verwijderen of te veranderen.
+Gebruik Nederlandse soortnamen niet als unieke sleutel; taxoncodes of stabiele
+bronidentificaties gaan voor, met de wetenschappelijke naam als controleveld.
+De voorkeur is om taxa in de bestaande tabel `soorten` te registreren, maar
+alleen als die tabel veilig generiek kan worden gemaakt. Zij is nu vogelgericht
+en vereist voor iedere rij een unieke `euring_code`. Toets daarom eerst alle
+foreign keys, imports, queries, dashboard- en Shiny-afhankelijkheden zonder de
+levende database te wijzigen. Als veilig hergebruik niet aantoonbaar is, gebruik
+dan een afzonderlijke NDFF-taxontabel en koppel die expliciet aan `soorten` voor
+reeds aanwezige taxa.
 
 ### Eerst compleet downloaden, daarna integreren
 
@@ -1009,7 +1004,8 @@ Het doel is dat iedere NDFF-waarneming net als territoria en dagwaarnemingen via
 `plot_id` in analyses per Meijendel-kavel kan worden gebruikt. NDFF-locaties zijn
 echter vaak vlakken en kunnen meerdere kavels raken. Daarom geldt:
 
-1. bewaar altijd de oorspronkelijke geometrie en het vervagingsniveau;
+1. bewaar altijd de oorspronkelijke geometrie, de ruwe FFV-vervagingswaarde,
+   een afzonderlijke vervagingsstatus en het vervagingsniveau;
 2. bereken de koppeling reproduceerbaar tegen de versie van de
    Meijendel-plotpolygonen die bij de import is vastgelegd;
 3. bewaar iedere geraakte `plot_id` in een koppeltabel met ruimtelijke methode,
@@ -1038,7 +1034,7 @@ polygonen niet op. Daarvoor blijft de ruimtelijke kwaliteitsklasse noodzakelijk.
 ### Voorgestelde databasestructuur voor ruimtelijke zekerheid
 
 Gebruik een gedeelde technische kern en houd de biologische waarnemingen per
-hoofdgroep gescheiden:
+oorspronkelijke FFV-soortgroep gescheiden:
 
 - `ndff_import`: één rij per ontvangen GeoPackage met bestandsnaam, SHA-256,
   aanvraagfilters, periode, FFV-peildatum, bronvermelding en recordtellingen;
@@ -1047,9 +1043,9 @@ hoofdgroep gescheiden:
 - `ndff_import_record`: veel-op-veelherkomst tussen `import_id` en `ndff_id`, met
   het oorspronkelijke record-/FID-nummer, zodat zichtbaar blijft in welke
   GeoPackages hetzelfde record voorkwam;
-- `ndff_<hoofdgroep>_waarneming`: de biologische en temporele velden per
-  hoofdgroep, bijvoorbeeld `ndff_amfibie_waarneming`, met `ndff_id` als
-  foreign key naar het register;
+- `ndff_<soortgroep>`: de biologische en temporele velden per oorspronkelijke
+  FFV-soortgroep, bijvoorbeeld `ndff_amfibieen`, met `ndff_id` als foreign key
+  naar het register;
 - `ndff_waarneming_geometrie`: één canonieke brongeometrie per `ndff_id` in
   EPSG:28992, met oppervlakte en de berekende ruimtelijke hoofdklasse;
 - `ndff_waarneming_plot`: uitsluitend ruimtelijk voldoende betrouwbare relaties
@@ -1112,7 +1108,7 @@ gemeld blijft onbekend en wordt niet als nul opgeslagen.
 5. valideer taxon- en categorie-mapping;
 6. bereken plotintersecties en ruimtelijke kwaliteitsklassen;
 7. sluit records zonder SOVON-plotintersectie uit en registreer de uitsluiting;
-8. laad pas daarna de goedgekeurde records in de hoofdgroeptabellen en
+8. laad pas daarna de goedgekeurde records in de tabellen per FFV-soortgroep en
    plotkoppeltabel;
 9. publiceer of analyseer pas na integriteitscontroles.
 
