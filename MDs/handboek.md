@@ -970,6 +970,19 @@ Dagvlinders voor bundels 1 en 2. De vijf GeoPackages hebben eveneens de laag
 - Dagvlinders bundel 1: `19a0991c2243ee38f65770315e468ae82a7a7d2fb5b7da8f8086ce5615c55f22`;
 - Dagvlinders bundel 2: `7a32f5e55e045ab935f3c72a0c1605074d82dc21d636c1847c8414d85c9fe806`.
 
+De volgende ronde op 16 augustus 2026 dekte Dagvlinders bundel 3 en
+Korstmossen volledig, plus Kranswieren, wieren en algen bundel 1. De vijf
+GeoPackages hebben de laag `waarnemingen`, CRS EPSG:28992 en bevatten
+respectievelijk 14.437, 11.720, 8.740, 10.823 en 227 records. De tellingen komen
+exact overeen met de vooraf gecontroleerde FFV-resultaten. De
+SHA-256-controlesommen zijn:
+
+- Dagvlinders bundel 3: `42b3cf5ff62a7e26f00546bee05596bb94746242a68835a35c09cdf79d961634`;
+- Korstmossen bundel 1: `b27f678b1ecb961fcddb8ef28adada32b8f567198869053bee812c9d9fb8b0ee`;
+- Korstmossen bundel 2: `7697e7df7facb2979e4879f5a82b07855713a6361f1836614b931f03951a09d2`;
+- Korstmossen bundel 3: `ac58d8b6c31c4f99c4bf958973fe16e6a225423f57cda6a78e0f44fc7953e22a`;
+- Kranswieren, wieren en algen bundel 1: `1d5ef92ed1bf90f36ebbfc6976c205fda1a33cdf8eea75ac45c0b38f641ccd55`.
+
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
 respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde

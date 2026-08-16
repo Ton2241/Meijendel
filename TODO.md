@@ -18,10 +18,11 @@
   aanvragen is daardoor niet meer geldig; bepaal het uiteindelijke aantal uit
   de feitelijke resultaataantallen en benodigde extra splitsingen.
 - Aanvraagstand 16 augustus 2026: Eencelligen, Geleedpotigen (overig), Insecten
-  (overig), Kevers en Amfibieën zijn voor alle 34 hokken afgedekt en
-  gevalideerd. Dagvlinders is voor bundels 1 en 2 afgedekt; begin de volgende
-  uurreeks met Dagvlinders bundel 3 en daarna de eerstvolgende nog niet
-  afgedekte FFV-soortgroep.
+  (overig), Kevers, Amfibieën, Dagvlinders en Korstmossen zijn voor alle 34
+  hokken afgedekt en gevalideerd. Van Kranswieren, wieren en algen is bundel 1
+  afgedekt en gevalideerd; begin de volgende uurreeks met bundels 2 en 3 van
+  deze soortgroep en daarna de eerstvolgende nog niet afgedekte
+  FFV-soortgroep.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
