@@ -20,12 +20,12 @@
 - Aanvraagstand 16 augustus 2026: Eencelligen, Geleedpotigen (overig), Insecten
   (overig), Kevers, Amfibieën, Dagvlinders en Korstmossen zijn voor alle 34
   hokken afgedekt en gevalideerd. Ook Kranswieren, wieren en algen en
-  Kreeftachtigen, Libellen, Microvlinders, Mossen en Nachtvlinders zijn nu voor
-  alle drie bundels afgedekt en gevalideerd. Van Ongewervelden (overig) is
-  bundel 1 afgedekt en gevalideerd. Begin de volgende uurreeks met
-  Ongewervelden (overig) bundels 2 en 3 en vul ieder vrijvallend uur daarna aan
-  tot maximaal vijf unieke, vooraf op recordaantal gecontroleerde aanvragen
-  uit de actuele FFV-soortgroepenlijst.
+  Kreeftachtigen, Libellen, Microvlinders, Mossen, Nachtvlinders,
+  Ongewervelden (overig) en Reptielen zijn nu voor alle drie bundels afgedekt
+  en gevalideerd. Begin de volgende uurreeks met Schimmels bundels 1, 2 en 3
+  en vul haar aan met Snavelinsecten bundels 1 en 2, steeds na controle van het
+  actuele recordaantal. Benut ieder vrijvallend uur met maximaal vijf unieke,
+  vooraf gecontroleerde aanvragen uit de actuele FFV-soortgroepenlijst.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden

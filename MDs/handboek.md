@@ -1035,10 +1035,24 @@ SHA-256-controlesommen zijn:
 - Nachtvlinders bundel 3: `f39e8a738a8c36ac75f04defc14e9a21d467c0e0a3a326e765ac8b5563039033`;
 - Ongewervelden (overig) bundel 1: `c693439320f3c44a0f94dcf3a18454438945c03caeaa6f91a84c3ef0b6b31f99`.
 
-Ongewervelden (overig) bundels 2 en 3 resteren voor de eerstvolgende
-vrijvallende uurreeks. Ieder vrijvallend uur wordt, na controle van de
-voortschrijdende limiet en de resultaataantallen, tot maximaal vijf unieke
-aanvragen benut.
+De ronde van 16 augustus 2026 tussen 17:53 en 17:57 uur lokale tijd dekte
+Ongewervelden (overig) en Reptielen volledig af. Ongewervelden (overig)
+bundels 2 en 3 bevatten respectievelijk 691 en 302 records. Reptielen bundels
+1, 2 en 3 bevatten respectievelijk 1.528, 1.585 en 874 records. Alle vijf
+bestanden hebben de laag `waarnemingen`, CRS EPSG:28992 en een selectie-URL die
+exact overeenkomt met de aangevraagde hokkenbundel. De
+SHA-256-controlesommen zijn:
+
+- Ongewervelden (overig) bundel 2: `5ae74dea1087abddbfa3511c1015a2315d902f964aa97c1e9cf9e2df8c8609a5`;
+- Ongewervelden (overig) bundel 3: `fdd598dde6f44d91aaf98836c451d1eca3234d642341dc084e6f8fb8169d7df5`;
+- Reptielen bundel 1: `c6ae0c63e6e413ed56cdd90ca0837a48cae2d692b6e2c2450a0f72cd3a855d58`;
+- Reptielen bundel 2: `0cec8456a98bf2b7e0959afd519a4e1417875ca58302a796c5a88d35047df26f`;
+- Reptielen bundel 3: `fe7188851cd5320be3d74b976a964ac244e83861e2c2b98bf80b0cb1b3c073be`.
+
+De eerstvolgende vrijvallende uurreeks begint met Schimmels bundels 1, 2 en 3
+en wordt, als de gecontroleerde resultaataantallen dit toelaten, aangevuld met
+Snavelinsecten bundels 1 en 2. Ieder vrijvallend uur wordt tot maximaal vijf
+unieke aanvragen benut.
 
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
