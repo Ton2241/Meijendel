@@ -1077,16 +1077,26 @@ aangevraagde hokkenbundel. De SHA-256-controlesommen zijn:
 - Spinachtigen bundel 3: `84c09c0c51d34a37dc9ca543e69c5060545c061058e5aab0653a567689b1d077`;
 - Sprinkhanen en krekels bundel 1: `3704c69a5f10aebb81a9ee0cd776515de03d60e7bfacdb4c886c71955ee76401`.
 
-De eerstvolgende vrijvallende uurreeks begint met Sprinkhanen en krekels
-bundels 2 en 3, met respectievelijk 2.745 en 2.206 records. Daarna volgen
-Vaatplanten deelbundels 1A, 1B en 2A met respectievelijk 36.343, 79.031 en
-56.188 records. Vaatplanten bundels 1 en 2 bevatten ongesplitst respectievelijk
-108.977 en 95.819 records en zijn daarom elk in twee vaste ruimtelijke
-deelbundels gesplitst. Deelbundel 1A omvat de eerste zes hokken van bundel 1 en
-deelbundel 1B de laatste zes; hetzelfde geldt voor 2A en 2B. Deelbundel 2B
-bevat 49.090 records en volgt in een latere ronde. Controleer ook Vaatplanten
-bundel 3 en splits deze wanneer hij boven circa 80.000 uitkomt. Ieder
-vrijvallend uur wordt tot maximaal vijf unieke aanvragen benut.
+De ronde van 16 augustus 2026 tussen 21:36 en 21:41 uur lokale tijd maakte
+Sprinkhanen en krekels volledig en dekte Vaatplanten deelbundels 1A, 1B en 2A
+af. Sprinkhanen en krekels bundels 2 en 3 bevatten respectievelijk 2.745 en
+2.206 records; Vaatplanten deelbundels 1A, 1B en 2A bevatten respectievelijk
+36.343, 79.031 en 56.188 records. Alle vijf bestanden hebben de laag
+`waarnemingen`, CRS EPSG:28992 en een selectie-URL die exact overeenkomt met de
+aangevraagde hokkenbundel. De SHA-256-controlesommen zijn:
+
+- Sprinkhanen en krekels bundel 2: `f61680be5d341c72a4162d82b3f32eee585d6523a9c79d657663091fe9adf3f2`;
+- Sprinkhanen en krekels bundel 3: `bd19a35e0b032ea33b80c42efd586ef40b60f83ca7466b06379d71e53512f3bb`;
+- Vaatplanten deelbundel 1A: `8dbdee642a1df83d05313198dd108299cc4fc96efb702901479dd71a0edf53f1`;
+- Vaatplanten deelbundel 1B: `fc08112f6bcff2b5acc5cd7b460da1e3cfebfe1a5190d27a2f229403ff598e59`;
+- Vaatplanten deelbundel 2A: `8d6e2d9578f7eace6c6646a7cee57ccdd38c4caa3fc0a09f034f8827289690f4`.
+
+De eerstvolgende vrijvallende uurreeks begint met Vaatplanten deelbundels 2B,
+3A en 3B, met respectievelijk 49.090, 49.175 en 47.415 records. Vaatplanten
+bundel 3 bevat ongesplitst 90.202 records en is daarom in twee vaste ruimtelijke
+deelbundels gesplitst: 3A omvat de eerste vijf hokken en 3B de laatste vijf.
+Daarna volgen Vissen bundels 1 en 2 met respectievelijk 654 en 441 records.
+Ieder vrijvallend uur wordt tot maximaal vijf unieke aanvragen benut.
 
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
@@ -1099,7 +1109,7 @@ Archiveer NDFF-downloadberichten uit de Gmail-inbox zodra de selectie-URL is
 gecontroleerd en het bijbehorende GeoPackage is gedownload en gevalideerd.
 Archiveren betekent alleen het label `INBOX` verwijderen: het bericht blijft
 doorzoekbaar in Gmail en wordt niet naar de prullenbak verplaatst. Op 16
-augustus 2026 zijn de 52 tot dan toe volledig verwerkte NDFF-downloadberichten
+augustus 2026 zijn de 57 tot dan toe volledig verwerkte NDFF-downloadberichten
 op deze manier uit de inbox gearchiveerd.
 
 ### Relatie met kavels
