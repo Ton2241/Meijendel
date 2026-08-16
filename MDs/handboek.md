@@ -1063,9 +1063,29 @@ SHA-256-controlesommen zijn:
 - Snavelinsecten bundel 1: `89a9824edbf5c6debfc403e9398ba9c531c1c97a35576930ce3a2b9ae812e330`;
 - Snavelinsecten bundel 2: `26c25cff0ff114c389d0475802751f11c0ee38b707751815eef07f954e6c9002`.
 
-De eerstvolgende vrijvallende uurreeks begint met Snavelinsecten bundel 3 en
-wordt, als de gecontroleerde resultaataantallen dit toelaten, aangevuld met
-Spinachtigen bundels 1, 2 en 3 en Sprinkhanen en krekels bundel 1. Ieder
+De ronde van 16 augustus 2026 tussen 20:26 en 20:30 uur lokale tijd maakte
+Snavelinsecten en Spinachtigen volledig en dekte Sprinkhanen en krekels bundel
+1 af. Snavelinsecten bundel 3 bevat 2.304 records; Spinachtigen bundels 1, 2 en
+3 bevatten respectievelijk 1.087, 857 en 706 records; Sprinkhanen en krekels
+bundel 1 bevat 4.766 records. Alle vijf bestanden hebben de laag
+`waarnemingen`, CRS EPSG:28992 en een selectie-URL die exact overeenkomt met de
+aangevraagde hokkenbundel. De SHA-256-controlesommen zijn:
+
+- Snavelinsecten bundel 3: `95f7b5fbd9d9dad6a1608a1e2a94e5ebc92cc5a7d2cf0ce004eda762da6d39a6`;
+- Spinachtigen bundel 1: `2359bc1c88540d3edb58fb1b24b1bf5f5a561398bfee0d9c350a62e530fb31a0`;
+- Spinachtigen bundel 2: `2038a60207d6cb3d5b9b7592e880680e1721b80d47be73268028d0219280d60d`;
+- Spinachtigen bundel 3: `84c09c0c51d34a37dc9ca543e69c5060545c061058e5aab0653a567689b1d077`;
+- Sprinkhanen en krekels bundel 1: `3704c69a5f10aebb81a9ee0cd776515de03d60e7bfacdb4c886c71955ee76401`.
+
+De eerstvolgende vrijvallende uurreeks begint met Sprinkhanen en krekels
+bundels 2 en 3, met respectievelijk 2.745 en 2.206 records. Daarna volgen
+Vaatplanten deelbundels 1A, 1B en 2A met respectievelijk 36.343, 79.031 en
+56.188 records. Vaatplanten bundels 1 en 2 bevatten ongesplitst respectievelijk
+108.977 en 95.819 records en zijn daarom elk in twee vaste ruimtelijke
+deelbundels gesplitst. Deelbundel 1A omvat de eerste zes hokken van bundel 1 en
+deelbundel 1B de laatste zes; hetzelfde geldt voor 2A en 2B. Deelbundel 2B
+bevat 49.090 records en volgt in een latere ronde. Controleer ook Vaatplanten
+bundel 3 en splits deze wanneer hij boven circa 80.000 uitkomt. Ieder
 vrijvallend uur wordt tot maximaal vijf unieke aanvragen benut.
 
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,

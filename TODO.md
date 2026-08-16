@@ -21,18 +21,24 @@
   (overig), Kevers, Amfibieën, Dagvlinders en Korstmossen zijn voor alle 34
   hokken afgedekt en gevalideerd. Ook Kranswieren, wieren en algen en
   Kreeftachtigen, Libellen, Microvlinders, Mossen, Nachtvlinders,
-  Ongewervelden (overig), Reptielen en Schimmels zijn nu voor alle drie bundels
-  afgedekt en gevalideerd. Snavelinsecten is voor bundels 1 en 2 afgedekt en
-  gevalideerd. Begin de volgende uurreeks met Snavelinsecten bundel 3,
-  Spinachtigen bundels 1, 2 en 3 en Sprinkhanen en krekels bundel 1, steeds na
-  controle van het actuele recordaantal. Benut ieder vrijvallend uur met
+  Ongewervelden (overig), Reptielen, Schimmels, Snavelinsecten en Spinachtigen
+  zijn nu voor alle drie bundels afgedekt en gevalideerd. Sprinkhanen en
+  krekels is voor bundel 1 afgedekt en gevalideerd. Begin de volgende uurreeks
+  met Sprinkhanen en krekels bundels 2 en 3 (2.745 en 2.206 records), daarna
+  Vaatplanten deelbundels 1A, 1B en 2A (36.343, 79.031 en 56.188 records).
+  Vaatplanten bundels 1 en 2 bevatten ongesplitst 108.977 en 95.819 records en
+  zijn daarom elk in twee vaste ruimtelijke deelbundels gesplitst; deelbundel
+  2B bevat 49.090 records en volgt in een latere ronde. Controleer ook
+  Vaatplanten bundel 3 en splits die wanneer hij boven circa 80.000 uitkomt.
+  Benut ieder vrijvallend uur met
   maximaal vijf unieke, vooraf gecontroleerde aanvragen uit de actuele
   FFV-soortgroepenlijst.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
   inhoudelijk eenmaal. Controleer daarom na iedere verzending eerst de pagina
-  én Gmail en herhaal een aanvraag niet zolang de bevestiging nog vertraagd kan zijn.
+  én Gmail en herhaal een aanvraag niet zolang de bevestiging nog vertraagd kan
+  zijn.
 - Beperk alle definitieve aanvragen tot en met 31 december 2025. Gebruik de
   Amfibieën-proef met eindjaar 2026 alleen voor schema- en kwaliteitscontrole en
   vraag die selectie opnieuw aan voor de definitieve reeks.
