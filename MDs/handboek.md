@@ -1099,6 +1099,32 @@ Deze koppeling maakt selectie per kavel mogelijk, maar verandert een losse
 NDFF-waarneming niet in een gestandaardiseerde telling. Niet waargenomen of niet
 gemeld blijft onbekend en wordt niet als nul opgeslagen.
 
+### Beslisfase voor vervaging en waarnemingsmethode
+
+Neem het definitieve besluit over vervaagde waarnemingen pas nadat alle
+GeoPackages zijn ontvangen, gevalideerd, geïntegreerd en ontdubbeld. Beoordeel
+dan niet alleen het vervagingspercentage, maar per soortgroep, soort en tijdvak:
+
+- de verdeling tussen niet vervaagd, 1 km, 5 km en eventuele andere niveaus;
+- `Protocol`, `Telonderwerp`, `Schaal (telmethode)`, `Determinatiemethode`,
+  `Zoek- of vangmethode`, `Bronhouder` en ruimtelijke nauwkeurigheid;
+- ontbrekende methodevelden en veranderingen in bron, protocol of methode door
+  de tijd;
+- of de gegevens aantoonbaar eenmalige losse meldingen, periodieke maar
+  niet-gestandaardiseerde waarnemingen of structurele protocolreeksen zijn;
+- welke analyse op grond daarvan verantwoord is: alleen regionale aanwezigheid,
+  beschrijvende frequentie, plotkoppeling of een eventueel gestandaardiseerde
+  tijdreeks.
+
+Herhaling alleen bewijst geen structurele monitoring: daarvoor zijn een
+herhaalbaar protocol, bekende ruimtelijke dekking en informatie over
+waarnemingsinspanning nodig. Beoordeel de kwaliteit van waarnemers of
+determinaties alleen als de levering expliciete kwaliteits-, validatie- of
+expertisegegevens bevat. Als die ontbreken, registreer de kwaliteit als
+`niet_beoordeelbaar` en maak geen afgeleide rangschikking op basis van aantallen
+of zeldzaamheid. Leg het uiteindelijke inclusie-, uitsluitings- of
+beperkingsbesluit per analysetype reproduceerbaar vast vóór database-import.
+
 ### Importvolgorde
 
 1. rond alle aanvragen voor 1950 tot en met 2025 af;
@@ -1106,11 +1132,13 @@ gemeld blijft onbekend en wordt niet als nul opgeslagen.
 3. registreer alle bronbestanden en SHA-waarden;
 4. bouw de geïntegreerde stagingdataset en ontdubbel controleerbaar;
 5. valideer taxon- en categorie-mapping;
-6. bereken plotintersecties en ruimtelijke kwaliteitsklassen;
-7. sluit records zonder SOVON-plotintersectie uit en registreer de uitsluiting;
-8. laad pas daarna de goedgekeurde records in de tabellen per FFV-soortgroep en
+6. analyseer vervaging, methode, methodewisselingen en onderzoeksstructuur en
+   leg het definitieve gebruiksbesluit per analysetype vast;
+7. bereken plotintersecties en ruimtelijke kwaliteitsklassen;
+8. sluit records zonder SOVON-plotintersectie uit en registreer de uitsluiting;
+9. laad pas daarna de goedgekeurde records in de tabellen per FFV-soortgroep en
    plotkoppeltabel;
-9. publiceer of analyseer pas na integriteitscontroles.
+10. publiceer of analyseer pas na integriteitscontroles.
 
 ## 17. Hoe werkt ruimtelijke data koppelen aan plots?
 

@@ -63,6 +63,16 @@
   vervagingsniveau en behoud de ruwe FFV-waarde. Bereken het bruikbare aandeel
   voor SOVON-plotkoppeling pas afgeleid per soort; veronderstel niet dat alle
   records van één soort dezelfde vervaging hebben.
+- Voer na voltooiing van alle downloads op de geïntegreerde stagingdataset een
+  beslisanalyse uit voordat vervaagde records worden toegelaten of uitgesloten.
+  Rapporteer per soortgroep, soort en tijdvak de vervagingsverdeling,
+  vaststellings-/telmethode, protocol, bronhouder, ontbrekende methodevelden en
+  methodewisselingen. Classificeer de gegevens waar aantoonbaar mogelijk als
+  eenmalige melding, periodieke niet-gestandaardiseerde reeks of structurele
+  protocolreeks. Beoordeel waarnemerskwaliteit alleen met expliciete
+  validatie-/kwaliteitsvelden; registreer `niet_beoordeelbaar` als zulke
+  informatie ontbreekt. Leg daarna per analysetype het definitieve besluit en
+  de onderbouwing vast.
 - Onderzoek vóór het schema-ontwerp of de bestaande vogelgerichte tabel
   `soorten` veilig generiek kan worden gemaakt voor NDFF-taxa. Toets minimaal de
   verplichte unieke `euring_code`, alle foreign keys, importprocedures,

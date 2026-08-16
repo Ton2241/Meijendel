@@ -162,6 +162,21 @@
   bij 257 taxa binnen hetzelfde kalenderjaar voor. Bereken daarom pas afgeleid
   per soort welk aandeel ruimtelijk nauwkeurig genoeg is voor een betrouwbare
   SOVON-plotkoppeling.
+- Neem pas nadat alle downloads zijn voltooid en de geïntegreerde stagingdataset
+  is opgebouwd een definitief besluit of en hoe vervaagde waarnemingen worden
+  opgenomen en geanalyseerd. Die beoordeling combineert vervagingsniveau en
+  plotbetrouwbaarheid met de vaststellingsmethode en onderzoeksstructuur. Breng
+  per soortgroep en tijdvak minimaal `Protocol`, `Telonderwerp`,
+  `Schaal (telmethode)`, `Determinatiemethode`, `Zoek- of vangmethode`,
+  `Bronhouder` en de ruimtelijke nauwkeurigheid in beeld, inclusief ontbrekende
+  waarden en methodewisselingen door de tijd. Classificeer vervolgens, voor
+  zover de bronvelden dit toelaten, eenmalige losse meldingen, herhaalde maar
+  niet-gestandaardiseerde meldingen en structurele/protocolgebonden reeksen.
+  Beoordeel waarnemerskwaliteit uitsluitend op controleerbare meegeleverde
+  kwaliteits- of validatiekenmerken; leid haar niet af uit aantallen,
+  soortnamen of herhaling. Zonder informatie over inspanning of herhaalbare
+  methode mogen aantallen meldingen niet als populatietrend of afwezigheid
+  worden geïnterpreteerd.
 - De voorkeur is om de bestaande tabel `soorten` ook als registratie van
   NDFF-taxa te gebruiken, maar uitsluitend als dit zonder verstoring van de
   bestaande vogeldata, foreign keys, imports, analyses, dashboard en Shiny kan.
