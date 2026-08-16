@@ -946,9 +946,20 @@ en drie ruimtelijke bundels is de voorlopige basisraming 78 unieke aanvragen,
 vóór eventuele extra splitsingen van omvangrijke selecties. FFV staat maximaal
 vijf aanvragen per voortschrijdend uur toe.
 
-De aanvragen op 15 augustus 2026 dekten Eencelligen en Geleedpotigen (overig)
-voor alle 34 hokken en Insecten (overig) voor de eerste twaalf hokken. Door
-vertraagde e-mailbevestigingen zijn Eencelligen-bundel 2,
+Per 16 augustus 2026 zijn Eencelligen, Geleedpotigen (overig), Insecten
+(overig) en Kevers voor alle 34 hokken afgedekt en gevalideerd. De op die dag
+ontvangen nieuwe GeoPackages bevatten 585 en 698 records voor Insecten (overig)
+bundels 2 en 3, en 3.765, 2.653 en 2.275 records voor Kevers bundels 1, 2 en 3.
+Alle vijf hebben de laag `waarnemingen`; de tellingen komen exact overeen met
+de vooraf gecontroleerde FFV-resultaten. De SHA-256-controlesommen zijn:
+
+- Insecten (overig) bundel 2: `3065324c8ad42f24e161a0360f3aedd403966954f2bc01a48dea9e947bc87740`;
+- Insecten (overig) bundel 3: `cd494a1881fbebf7a9a4789dbba6dff62f771de989b8f8c49341da5caf30fd47`;
+- Kevers bundel 1: `88e03860e921a201e3d13456deb061402b8ead563b8d8f1752986feb63e056fc`;
+- Kevers bundel 2: `52ffb2b05b3cf2b4b9b7eeff69ef7602de4dca63fb5bebe4db0bf5233ced48af`;
+- Kevers bundel 3: `c8a42315233c08fb140a582240ad3bf1933d007520050f61f5d0799c2d2647bd`.
+
+Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
 respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
 `Identiteit`-waarden. Behandel deze leveringen als exportoverlap en niet als

@@ -17,14 +17,14 @@
   de voorlopige basisraming 78 unieke aanvragen. De eerdere raming van circa 23
   aanvragen is daardoor niet meer geldig; bepaal het uiteindelijke aantal uit
   de feitelijke resultaataantallen en benodigde extra splitsingen.
-- Aanvraagstand 15 augustus 2026: Eencelligen en Geleedpotigen (overig) zijn voor
-  alle 34 hokken afgedekt. Insecten (overig) is alleen voor bundel 1 afgedekt;
-  begin de volgende uurreeks met bundels 2 en 3. Eencelligen-bundel 2,
-  Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door vertraagde
-  e-mailbevestigingen elk dubbel geleverd. De paren bevatten respectievelijk
-  exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden inhoudelijk
-  eenmaal. Controleer daarom na iedere verzending eerst de pagina én Gmail en
-  herhaal een aanvraag niet zolang de bevestiging nog vertraagd kan zijn.
+- Aanvraagstand 16 augustus 2026: Eencelligen, Geleedpotigen (overig), Insecten
+  (overig) en Kevers zijn voor alle 34 hokken afgedekt en gevalideerd. Begin de
+  volgende uurreeks met de eerstvolgende nog niet afgedekte FFV-soortgroep.
+  Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
+  vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
+  respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
+  inhoudelijk eenmaal. Controleer daarom na iedere verzending eerst de pagina
+  én Gmail en herhaal een aanvraag niet zolang de bevestiging nog vertraagd kan zijn.
 - Beperk alle definitieve aanvragen tot en met 31 december 2025. Gebruik de
   Amfibieën-proef met eindjaar 2026 alleen voor schema- en kwaliteitscontrole en
   vraag die selectie opnieuw aan voor de definitieve reeks.
