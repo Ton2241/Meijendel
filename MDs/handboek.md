@@ -983,6 +983,19 @@ SHA-256-controlesommen zijn:
 - Korstmossen bundel 3: `ac58d8b6c31c4f99c4bf958973fe16e6a225423f57cda6a78e0f44fc7953e22a`;
 - Kranswieren, wieren en algen bundel 1: `1d5ef92ed1bf90f36ebbfc6976c205fda1a33cdf8eea75ac45c0b38f641ccd55`.
 
+De daaropvolgende ronde op 16 augustus 2026 voltooide Kranswieren, wieren en
+algen met bundels 2 en 3 en dekte Kreeftachtigen volledig. De vijf
+GeoPackages hebben de laag `waarnemingen`, CRS EPSG:28992 en bevatten
+respectievelijk 224, 145, 1.183, 776 en 372 records. De tellingen komen exact
+overeen met de vooraf gecontroleerde FFV-resultaten. De
+SHA-256-controlesommen zijn:
+
+- Kranswieren, wieren en algen bundel 2: `8e48dc0fc5190eeb55d2e2366562453943eef6f19218d494aab81ce44180e041`;
+- Kranswieren, wieren en algen bundel 3: `1fb7975af262d1b6593f51e9f78ac00c09c002654f0f56fec1a1c190eb4b5e65`;
+- Kreeftachtigen bundel 1: `7678685c284f609bbb1b7661457064bbd6f2700e862ac02897e525ecf4895837`;
+- Kreeftachtigen bundel 2: `a7c5b6b28ba9a32485bff7ac1f892d3a4124010b8cbe68d5254387ff88fe6f32`;
+- Kreeftachtigen bundel 3: `934be675d8680f0e9904fb075a9b7f8646abadedeefeb88cef030523cd0ffb95`.
+
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
 respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
