@@ -1020,9 +1020,25 @@ SHA-256-controlesommen zijn:
 - Mossen bundel 1: `d5521f4a55f5de4eea00970f51cb9d8b4f6826a292be459fc2f8596162569842`;
 - Mossen bundel 2: `815ff4a1c04cfa1fe1e5b986ad16fe0519b501490266c9fe65db33bb872aac57`.
 
-Mossen bundel 3 resteert voor de eerstvolgende vrijvallende uurreeks. Vanaf
-deze ronde wordt ieder vrijvallend uur, na controle van de voortschrijdende
-limiet en de resultaataantallen, tot maximaal vijf unieke aanvragen benut.
+De volgende ronde op 16 augustus 2026 tussen 16:35 en 16:40 uur lokale tijd
+benutte opnieuw alle vijf beschikbare aanvragen. Mossen bundel 3 bevat 10.459
+records, waardoor Mossen volledig is afgedekt. Nachtvlinders is met drie
+GeoPackages van respectievelijk 22.599, 23.228 en 29.147 records eveneens
+volledig afgedekt. Ongewervelden (overig) bundel 1 bevat 938 records. Alle vijf
+bestanden hebben de laag `waarnemingen`, CRS EPSG:28992 en een selectie-URL die
+exact overeenkomt met de aangevraagde hokkenbundel. De
+SHA-256-controlesommen zijn:
+
+- Mossen bundel 3: `86e5171a46561f44e747dc42b240f028672116f3992665c9dac4dba8f851cb83`;
+- Nachtvlinders bundel 1: `538038b37e5fae0e6c761e9bbafaf4bdd2fdd16a2b6667a0371ca9eb7abe2c3f`;
+- Nachtvlinders bundel 2: `8fc7f4c72da77411feaa87ef172c86987d68f864dc3952e61ca7b0e4073e1098`;
+- Nachtvlinders bundel 3: `f39e8a738a8c36ac75f04defc14e9a21d467c0e0a3a326e765ac8b5563039033`;
+- Ongewervelden (overig) bundel 1: `c693439320f3c44a0f94dcf3a18454438945c03caeaa6f91a84c3ef0b6b31f99`.
+
+Ongewervelden (overig) bundels 2 en 3 resteren voor de eerstvolgende
+vrijvallende uurreeks. Ieder vrijvallend uur wordt, na controle van de
+voortschrijdende limiet en de resultaataantallen, tot maximaal vijf unieke
+aanvragen benut.
 
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
