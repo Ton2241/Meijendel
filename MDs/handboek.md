@@ -1001,6 +1001,29 @@ zijn:
 - Libellen bundel 2: `f26b0ce7aef112d1443af03bc6bd1a2ea5bdbce5f82207cff49872e23d6b5858`;
 - Libellen bundel 3: `17c27e4174f25936972d0646eb0329d4b4b018c915665ed678039786d4782bee`.
 
+De ronde van 16 augustus 2026 tussen 15:05 en 15:10 uur lokale tijd benutte
+alle vijf beschikbare aanvragen. Microvlinders is volledig afgedekt. De drie
+GeoPackages hebben de laag `waarnemingen`, CRS EPSG:28992 en bevatten
+respectievelijk 6.295, 7.796 en 9.609 records. De selectie-URL's in Gmail komen
+exact overeen met de drie vaste hokkenbundels. De SHA-256-controlesommen zijn:
+
+- Microvlinders bundel 1: `961f7da54888c231a409da6182b928fca8fa3d8806a680a0bc03678c7cbf2b93`;
+- Microvlinders bundel 2: `ee240b11ee492aaf0a0e95bec725f0904380faab377c2cf767b0e3b63f1b7175`;
+- Microvlinders bundel 3: `0115ac8bd8bb0f40fc5539639fa0dd59ccc044dd5e3cce9b2dc548d0bb22fcb1`.
+
+De twee resterende plaatsen in die ronde zijn gebruikt voor Mossen bundels 1
+en 2. Ook deze GeoPackages hebben de laag `waarnemingen` en CRS EPSG:28992; ze
+bevatten respectievelijk 11.922 en 11.916 records. De selectie-URL's in Gmail
+komen exact overeen met de eerste twee vaste hokkenbundels. De
+SHA-256-controlesommen zijn:
+
+- Mossen bundel 1: `d5521f4a55f5de4eea00970f51cb9d8b4f6826a292be459fc2f8596162569842`;
+- Mossen bundel 2: `815ff4a1c04cfa1fe1e5b986ad16fe0519b501490266c9fe65db33bb872aac57`.
+
+Mossen bundel 3 resteert voor de eerstvolgende vrijvallende uurreeks. Vanaf
+deze ronde wordt ieder vrijvallend uur, na controle van de voortschrijdende
+limiet en de resultaataantallen, tot maximaal vijf unieke aanvragen benut.
+
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
 respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
