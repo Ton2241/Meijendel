@@ -20,7 +20,8 @@
 - Aanvraagstand 16 augustus 2026: Eencelligen, Geleedpotigen (overig), Insecten
   (overig), Kevers, Amfibieën, Dagvlinders en Korstmossen zijn voor alle 34
   hokken afgedekt en gevalideerd. Ook Kranswieren, wieren en algen en
-  Kreeftachtigen zijn nu voor alle drie bundels afgedekt en gevalideerd. Begin
+  Kreeftachtigen en Libellen zijn nu voor alle drie bundels afgedekt en
+  gevalideerd. Begin
   de volgende uurreeks met de eerstvolgende nog niet afgedekte FFV-soortgroep
   uit de actuele FFV-soortgroepenlijst.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door

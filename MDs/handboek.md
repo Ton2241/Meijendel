@@ -991,6 +991,16 @@ SHA-256-controlesommen zijn:
 - Kreeftachtigen bundel 2: `a7c5b6b28ba9a32485bff7ac1f892d3a4124010b8cbe68d5254387ff88fe6f32`;
 - Kreeftachtigen bundel 3: `934be675d8680f0e9904fb075a9b7f8646abadedeefeb88cef030523cd0ffb95`.
 
+De daaropvolgende ronde op 16 augustus 2026 dekte Libellen volledig. De drie
+GeoPackages hebben de laag `waarnemingen`, CRS EPSG:28992 en bevatten
+respectievelijk 14.239, 7.873 en 12.277 records. De selectie-URL's in Gmail
+komen exact overeen met de drie vaste hokkenbundels. De SHA-256-controlesommen
+zijn:
+
+- Libellen bundel 1: `bc165d7308415fed15c5be5e3306ca749f916655950e0b76813115d6ca570a27`;
+- Libellen bundel 2: `f26b0ce7aef112d1443af03bc6bd1a2ea5bdbce5f82207cff49872e23d6b5858`;
+- Libellen bundel 3: `17c27e4174f25936972d0646eb0329d4b4b018c915665ed678039786d4782bee`.
+
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
 respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
