@@ -959,6 +959,17 @@ de vooraf gecontroleerde FFV-resultaten. De SHA-256-controlesommen zijn:
 - Kevers bundel 2: `52ffb2b05b3cf2b4b9b7eeff69ef7602de4dca63fb5bebe4db0bf5233ced48af`;
 - Kevers bundel 3: `c8a42315233c08fb140a582240ad3bf1933d007520050f61f5d0799c2d2647bd`.
 
+De daaropvolgende ronde op 16 augustus 2026 dekte Amfibieën volledig en
+Dagvlinders voor bundels 1 en 2. De vijf GeoPackages hebben eveneens de laag
+`waarnemingen` en bevatten respectievelijk 7.283, 3.584, 3.412, 45.010 en
+76.799 records. De SHA-256-controlesommen zijn:
+
+- Amfibieën bundel 1: `3bb2542c9366a4d36bfb7d20316ab97d4c4736ec77e49449662f81bd2abfb230`;
+- Amfibieën bundel 2: `53e4cae22002b08706a295ee6ee8ad9125eee30a7c9b2351b76f5e7cc24740ff`;
+- Amfibieën bundel 3: `7b162dd123d238a7f48215207b7d567199f2bf0235e78539b9d037852c2e0e91`;
+- Dagvlinders bundel 1: `19a0991c2243ee38f65770315e468ae82a7a7d2fb5b7da8f8086ce5615c55f22`;
+- Dagvlinders bundel 2: `7a32f5e55e045ab935f3c72a0c1605074d82dc21d636c1847c8414d85c9fe806`.
+
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
 respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
