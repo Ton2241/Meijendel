@@ -1095,6 +1095,13 @@ respectievelijk 57, 75 en 702 records en binnen ieder paar exact dezelfde
 afzonderlijke waarnemingssets. Controleer na iedere verzending zowel de
 pagina-status als Gmail voordat een aanvraag wordt herhaald.
 
+Archiveer NDFF-downloadberichten uit de Gmail-inbox zodra de selectie-URL is
+gecontroleerd en het bijbehorende GeoPackage is gedownload en gevalideerd.
+Archiveren betekent alleen het label `INBOX` verwijderen: het bericht blijft
+doorzoekbaar in Gmail en wordt niet naar de prullenbak verplaatst. Op 16
+augustus 2026 zijn de 52 tot dan toe volledig verwerkte NDFF-downloadberichten
+op deze manier uit de inbox gearchiveerd.
+
 ### Relatie met kavels
 
 Het doel is dat iedere NDFF-waarneming net als territoria en dagwaarnemingen via

@@ -38,7 +38,9 @@
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
   inhoudelijk eenmaal. Controleer daarom na iedere verzending eerst de pagina
   én Gmail en herhaal een aanvraag niet zolang de bevestiging nog vertraagd kan
-  zijn.
+  zijn. Archiveer een NDFF-bevestiging pas uit de Gmail-inbox nadat de
+  selectie-URL is gecontroleerd en het bijbehorende GeoPackage is gedownload en
+  gevalideerd; verplaats deze berichten niet naar de prullenbak.
 - Beperk alle definitieve aanvragen tot en met 31 december 2025. Gebruik de
   Amfibieën-proef met eindjaar 2026 alleen voor schema- en kwaliteitscontrole en
   vraag die selectie opnieuw aan voor de definitieve reeks.
