@@ -1091,12 +1091,24 @@ aangevraagde hokkenbundel. De SHA-256-controlesommen zijn:
 - Vaatplanten deelbundel 1B: `fc08112f6bcff2b5acc5cd7b460da1e3cfebfe1a5190d27a2f229403ff598e59`;
 - Vaatplanten deelbundel 2A: `8d6e2d9578f7eace6c6646a7cee57ccdd38c4caa3fc0a09f034f8827289690f4`.
 
-De eerstvolgende vrijvallende uurreeks begint met Vaatplanten deelbundels 2B,
-3A en 3B, met respectievelijk 49.090, 49.175 en 47.415 records. Vaatplanten
-bundel 3 bevat ongesplitst 90.202 records en is daarom in twee vaste ruimtelijke
-deelbundels gesplitst: 3A omvat de eerste vijf hokken en 3B de laatste vijf.
-Daarna volgen Vissen bundels 1 en 2 met respectievelijk 654 en 441 records.
-Ieder vrijvallend uur wordt tot maximaal vijf unieke aanvragen benut.
+De ronde van 16 augustus 2026 tussen 22:51 en 22:54 uur lokale tijd maakte
+Vaatplanten volledig en dekte Vissen bundels 1 en 2 af. Vaatplanten
+deelbundels 2B, 3A en 3B bevatten respectievelijk 49.090, 49.175 en 47.415
+records; Vissen bundels 1 en 2 bevatten respectievelijk 654 en 441 records.
+Alle vijf bestanden hebben de laag `waarnemingen`, CRS EPSG:28992 en een
+selectie-URL die exact overeenkomt met de aangevraagde hokkenbundel. De
+SHA-256-controlesommen zijn:
+
+- Vaatplanten deelbundel 2B: `8205178004560378a896d20e267a7ad7d9aef391e43100824f35f08381a14ea8`;
+- Vaatplanten deelbundel 3A: `00ca551b72b6eff02eab5dbd994308721e9b3169ce054ac35d2071a34fd18555`;
+- Vaatplanten deelbundel 3B: `22580c2bbb6e4e5c21a4960fee7c80c9c90fb6ed99ec50437ac1f61fe14194a1`;
+- Vissen bundel 1: `6a916ebc0d7b2d034b02a2cd9c0ef373e326b28ecba48e97c90deea280efc665`;
+- Vissen bundel 2: `a9e1add63d9d73c9f07771a999953e7073632433d0dbbedc7060be58699d531f`.
+
+De eerstvolgende vrijvallende uurreeks begint met Vissen bundel 3 (277
+records), Vleermuizen bundels 1, 2 en 3 (5.876, 3.834 en 4.305 records) en
+Vliegen en muggen bundel 1 (5.351 records). Ieder vrijvallend uur wordt tot
+maximaal vijf unieke aanvragen benut.
 
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
@@ -1109,7 +1121,7 @@ Archiveer NDFF-downloadberichten uit de Gmail-inbox zodra de selectie-URL is
 gecontroleerd en het bijbehorende GeoPackage is gedownload en gevalideerd.
 Archiveren betekent alleen het label `INBOX` verwijderen: het bericht blijft
 doorzoekbaar in Gmail en wordt niet naar de prullenbak verplaatst. Op 16
-augustus 2026 zijn de 57 tot dan toe volledig verwerkte NDFF-downloadberichten
+augustus 2026 zijn de 62 tot dan toe volledig verwerkte NDFF-downloadberichten
 op deze manier uit de inbox gearchiveerd.
 
 ### Relatie met kavels

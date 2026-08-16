@@ -23,13 +23,12 @@
   Kreeftachtigen, Libellen, Microvlinders, Mossen, Nachtvlinders,
   Ongewervelden (overig), Reptielen, Schimmels, Snavelinsecten en Spinachtigen
   zijn nu voor alle drie bundels afgedekt en gevalideerd. Ook Sprinkhanen en
-  krekels is nu volledig afgedekt. Van Vaatplanten zijn deelbundels 1A, 1B en
-  2A afgedekt en gevalideerd. Begin de volgende uurreeks met Vaatplanten
-  deelbundels 2B, 3A en 3B (49.090, 49.175 en 47.415 records), gevolgd door
-  Vissen bundels 1 en 2 (654 en 441 records). Vaatplanten bundel 3 bevat
-  ongesplitst 90.202 records en is daarom in twee vaste ruimtelijke
-  deelbundels gesplitst. Benut ieder vrijvallend uur met maximaal vijf unieke,
-  vooraf gecontroleerde aanvragen uit de actuele FFV-soortgroepenlijst.
+  krekels en Vaatplanten zijn nu volledig afgedekt. Vissen bundels 1 en 2 zijn
+  eveneens afgedekt en gevalideerd. Begin de volgende uurreeks met Vissen
+  bundel 3 (277 records), Vleermuizen bundels 1, 2 en 3 (5.876, 3.834 en 4.305
+  records) en Vliegen en muggen bundel 1 (5.351 records). Benut ieder
+  vrijvallend uur met maximaal vijf unieke, vooraf gecontroleerde aanvragen
+  uit de actuele FFV-soortgroepenlijst.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
