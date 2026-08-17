@@ -177,14 +177,26 @@
   soortnamen of herhaling. Zonder informatie over inspanning of herhaalbare
   methode mogen aantallen meldingen niet als populatietrend of afwezigheid
   worden geïnterpreteerd.
-- De voorkeur is om de bestaande tabel `soorten` ook als registratie van
-  NDFF-taxa te gebruiken, maar uitsluitend als dit zonder verstoring van de
-  bestaande vogeldata, foreign keys, imports, analyses, dashboard en Shiny kan.
-  De huidige tabel is vogelgericht en vereist een unieke niet-lege
-  `euring_code`; voeg daarom nog geen NDFF-taxa toe. Voer vóór het definitieve
-  ontwerp een schema-, query- en regressietoets uit. Als veilig generiek maken
-  niet aantoonbaar mogelijk is, gebruik dan een afzonderlijke NDFF-taxontabel
-  met een expliciete koppeling naar `soorten` voor taxa die daar al voorkomen.
+- NDFF-taxa worden geregistreerd in een afzonderlijke tabel `ndff_soorten`.
+  De bestaande vogelgerichte tabel `soorten` blijft ongewijzigd. Bewaar in
+  `ndff_soorten` minimaal de oorspronkelijke en wetenschappelijke NDFF-naam,
+  soortgroep, geaccepteerde naam/status en de gebruikte taxonomische versie.
+  Leg overeenkomsten met de PQ-taxonomie afzonderlijk en controleerbaar vast
+  via een vertaaltabel naar `pq_vegetatie_taxon.SRTNUM`; een naamsovereenkomst
+  alleen mag geen bestaande taxoncode overschrijven.
+- Controleer vóór import of NDFF-vaatplantwaarnemingen geheel of gedeeltelijk
+  afkomstig zijn uit dezelfde opnamen als de bestaande PQ-waarnemingen. Maak
+  eerst kandidaten op basis van bronhouder en vegetatieprotocol en vergelijk
+  daarna per opname datum, ruimtelijke afstand, gekoppeld taxon, soortenlijst
+  als opnamevingerafdruk en waar mogelijk bedekking of Braun-Blanquetwaarde.
+  Classificeer iedere kandidaat als `exact`,
+  `waarschijnlijk_dezelfde_opname`, `mogelijk`, `onafhankelijk` of
+  `niet_beoordeelbaar`. Bewaar de controle in een audittabel
+  `ndff_pq_koppeling`, inclusief afstand, datumverschil, taxonmatchmethode,
+  soortenlijst-overlap, abundantiecompatibiliteit, bron/protocolcompatibiliteit
+  en beslisregelversie. Verwijder de NDFF-bronwaarneming niet, maar tel een
+  bevestigde gedeelde opname in analyses niet nogmaals als onafhankelijke
+  waarneming wanneer de PQ-opname al wordt gebruikt.
 - Alle NDFF-waarnemingen moeten reproduceerbaar aan de Meijendel-kavelindeling
   kunnen worden gerelateerd. Een waarnemingsvlak dat meerdere kavels raakt
   wordt niet kunstmatig aan een kavel toegewezen: de koppeling bewaart per

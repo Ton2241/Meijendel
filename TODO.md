@@ -59,6 +59,18 @@
   ontdubbel primair op `Identiteit`. Test met een overlappende herdownload of die
   waarde tussen leveringen stabiel blijft en leg een conservatieve fallback voor
   twijfelgevallen vast.
+- Maak vóór de import een afzonderlijke tabel `ndff_soorten`; wijzig de
+  vogelgerichte tabel `soorten` niet. Leg de taxonomische vertaling naar
+  `pq_vegetatie_taxon.SRTNUM` vast in een aparte, controleerbare vertaaltabel.
+- Onderzoek daarna binnen de geïntegreerde stagingdataset of NDFF-vaatplanten
+  dezelfde bronopnamen bevatten als de bestaande PQ-waarnemingen. Selecteer
+  kandidaten op bronhouder/protocol en vergelijk per opname datum, afstand,
+  taxon, volledige soortenlijst en waar mogelijk bedekking. Registreer de
+  uitkomst in `ndff_pq_koppeling` als `exact`,
+  `waarschijnlijk_dezelfde_opname`, `mogelijk`, `onafhankelijk` of
+  `niet_beoordeelbaar`; valideer per klasse een handmatige steekproef. Behoud
+  beide bronrecords, maar voorkom dat een bevestigde gedeelde opname in analyses
+  dubbel als onafhankelijke waarneming meetelt.
 - Filter de database-import tegen één geversioneerde SOVON-plotlaag. Neem
   records zonder plotintersectie niet op in de database, maar registreer ze in
   de uitsluitingsaudit. Behandel vervaagde, grote en meerplot-geometrieën niet
@@ -82,12 +94,6 @@
   validatie-/kwaliteitsvelden; registreer `niet_beoordeelbaar` als zulke
   informatie ontbreekt. Leg daarna per analysetype het definitieve besluit en
   de onderbouwing vast.
-- Onderzoek vóór het schema-ontwerp of de bestaande vogelgerichte tabel
-  `soorten` veilig generiek kan worden gemaakt voor NDFF-taxa. Toets minimaal de
-  verplichte unieke `euring_code`, alle foreign keys, importprocedures,
-  bestaande queries, dashboard en Shiny. Wijzig de levende database niet. Kies
-  bij onvoldoende veiligheid een afzonderlijke NDFF-taxontabel met een
-  expliciete koppeling naar bestaande `soorten`.
 - Bepaal pas op de geïntegreerde dataset of een dominante-overlapregel
   verantwoord is. Test als startpunt 90% overlap plus centroid in hetzelfde plot,
   rapporteer aantallen/grensgevallen en laat de regel inhoudelijk goedkeuren
