@@ -1105,10 +1105,24 @@ SHA-256-controlesommen zijn:
 - Vissen bundel 1: `6a916ebc0d7b2d034b02a2cd9c0ef373e326b28ecba48e97c90deea280efc665`;
 - Vissen bundel 2: `a9e1add63d9d73c9f07771a999953e7073632433d0dbbedc7060be58699d531f`.
 
-De eerstvolgende vrijvallende uurreeks begint met Vissen bundel 3 (277
-records), Vleermuizen bundels 1, 2 en 3 (5.876, 3.834 en 4.305 records) en
-Vliegen en muggen bundel 1 (5.351 records). Ieder vrijvallend uur wordt tot
-maximaal vijf unieke aanvragen benut.
+De ronde van 17 augustus 2026 tussen 08:42 en 08:46 uur lokale tijd maakte
+Vissen en Vleermuizen volledig en dekte Vliegen en muggen bundel 1 af. Vissen
+bundel 3 bevat 277 records; Vleermuizen bundels 1, 2 en 3 bevatten
+respectievelijk 5.876, 3.834 en 4.305 records; Vliegen en muggen bundel 1 bevat
+5.351 records. Alle vijf bestanden hebben de laag `waarnemingen`, CRS
+EPSG:28992 en een selectie-URL die exact overeenkomt met de aangevraagde
+hokkenbundel. De SHA-256-controlesommen zijn:
+
+- Vissen bundel 3: `e28e5445d0b937f89e8582f1d3be77cecdfd2a6d06e1b815301c5c7674092f02`;
+- Vleermuizen bundel 1: `bbe50f1bda35ba05b075f0d5391bed0eac6f2b3a30844f71a3ccb3f81d4db646`;
+- Vleermuizen bundel 2: `5fffdf4cbde63ed19b62af0f1124334aadc676e1bcca1116f78efd0f6b27e5fe`;
+- Vleermuizen bundel 3: `a371f09b186cf276028e68e137336bfd919bf4a13cae13a444184dfb3f683bdb`;
+- Vliegen en muggen bundel 1: `2654819301babe7da484b0f46f8f1418fec479aca298bc49e02e96950043088c`.
+
+De eerstvolgende vrijvallende uurreeks begint met Vliegen en muggen bundels 2
+en 3 (2.989 en 2.927 records) en Vliesvleugeligen bundels 1, 2 en 3 (5.898,
+5.098 en 2.668 records). Ieder vrijvallend uur wordt tot maximaal vijf unieke
+aanvragen benut.
 
 Door vertraagde e-mailbevestigingen zijn eerder Eencelligen-bundel 2,
 Geleedpotigen-bundel 3 en Insecten-bundel 1 dubbel geleverd. De paren hebben
@@ -1120,8 +1134,8 @@ pagina-status als Gmail voordat een aanvraag wordt herhaald.
 Archiveer NDFF-downloadberichten uit de Gmail-inbox zodra de selectie-URL is
 gecontroleerd en het bijbehorende GeoPackage is gedownload en gevalideerd.
 Archiveren betekent alleen het label `INBOX` verwijderen: het bericht blijft
-doorzoekbaar in Gmail en wordt niet naar de prullenbak verplaatst. Op 16
-augustus 2026 zijn de 62 tot dan toe volledig verwerkte NDFF-downloadberichten
+doorzoekbaar in Gmail en wordt niet naar de prullenbak verplaatst. Op 17
+augustus 2026 zijn de 67 tot dan toe volledig verwerkte NDFF-downloadberichten
 op deze manier uit de inbox gearchiveerd.
 
 ### Relatie met kavels

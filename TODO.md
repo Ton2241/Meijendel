@@ -17,18 +17,18 @@
   de voorlopige basisraming 78 unieke aanvragen. De eerdere raming van circa 23
   aanvragen is daardoor niet meer geldig; bepaal het uiteindelijke aantal uit
   de feitelijke resultaataantallen en benodigde extra splitsingen.
-- Aanvraagstand 16 augustus 2026: Eencelligen, Geleedpotigen (overig), Insecten
+- Aanvraagstand 17 augustus 2026: Eencelligen, Geleedpotigen (overig), Insecten
   (overig), Kevers, Amfibieën, Dagvlinders en Korstmossen zijn voor alle 34
   hokken afgedekt en gevalideerd. Ook Kranswieren, wieren en algen en
   Kreeftachtigen, Libellen, Microvlinders, Mossen, Nachtvlinders,
   Ongewervelden (overig), Reptielen, Schimmels, Snavelinsecten en Spinachtigen
   zijn nu voor alle drie bundels afgedekt en gevalideerd. Ook Sprinkhanen en
-  krekels en Vaatplanten zijn nu volledig afgedekt. Vissen bundels 1 en 2 zijn
-  eveneens afgedekt en gevalideerd. Begin de volgende uurreeks met Vissen
-  bundel 3 (277 records), Vleermuizen bundels 1, 2 en 3 (5.876, 3.834 en 4.305
-  records) en Vliegen en muggen bundel 1 (5.351 records). Benut ieder
-  vrijvallend uur met maximaal vijf unieke, vooraf gecontroleerde aanvragen
-  uit de actuele FFV-soortgroepenlijst.
+  krekels, Vaatplanten, Vissen en Vleermuizen zijn nu volledig afgedekt.
+  Vliegen en muggen bundel 1 is eveneens afgedekt en gevalideerd. Begin de
+  volgende uurreeks met Vliegen en muggen bundels 2 en 3 (2.989 en 2.927
+  records) en Vliesvleugeligen bundels 1, 2 en 3 (5.898, 5.098 en 2.668
+  records). Benut ieder vrijvallend uur met maximaal vijf unieke, vooraf
+  gecontroleerde aanvragen uit de actuele FFV-soortgroepenlijst.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
