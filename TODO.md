@@ -78,6 +78,11 @@
   `niet_beoordeelbaar`; valideer per klasse een handmatige steekproef. Behoud
   beide bronrecords, maar voorkom dat een bevestigde gedeelde opname in analyses
   dubbel als onafhankelijke waarneming meetelt.
+  De eerste exacte kandidaatmatching is afgerond: 22.015 NDFF-records matchen
+  21.929 PQ-waarnemingen uit 907 opnamen op datum, taxon en locatie; bij 616
+  opnamen matcht minstens 90% van de soortenlijst. Leg deze kandidaten nog vast
+  in `ndff_pq_koppeling`, controleer abundantie/Braun-Blanquet en voer de
+  afgesproken handmatige steekproef uit voordat `exact` definitief wordt.
 - Filter de database-import tegen één geversioneerde SOVON-plotlaag. Neem
   records zonder plotintersectie niet op in de database, maar registreer ze in
   de uitsluitingsaudit. Behandel vervaagde, grote en meerplot-geometrieën niet
@@ -101,6 +106,12 @@
   validatie-/kwaliteitsvelden; registreer `niet_beoordeelbaar` als zulke
   informatie ontbreekt. Leg daarna per analysetype het definitieve besluit en
   de onderbouwing vast.
+  De beschrijvende basisanalyse is afgerond en reproduceerbaar vastgelegd in
+  `gis/scripts/analyse_ndff_kwaliteit.py`: ruimtelijke schaal, vervaging,
+  protocolstructuur, methodeverschuiving en ontbrekende methodevelden zijn voor
+  de complete stagingdataset berekend. Open blijven de SOVON-plotintersectie,
+  de beoordeling van structurele reeksen per protocol en de definitieve
+  toelatingsregels per analysetype.
 - Bepaal pas op de geïntegreerde dataset of een dominante-overlapregel
   verantwoord is. Test als startpunt 90% overlap plus centroid in hetzelfde plot,
   rapporteer aantallen/grensgevallen en laat de regel inhoudelijk goedkeuren

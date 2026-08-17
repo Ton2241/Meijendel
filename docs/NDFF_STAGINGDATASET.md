@@ -83,6 +83,29 @@ PYTHONDONTWRITEBYTECODE=1 python3 gis/scripts/build_ndff_staging.py \
   --replace
 ```
 
-De volgende fase is analyse van vervaging, vaststellingsmethode,
-onderzoeksstructuur en mogelijke PQ-herkomst. Pas daarna volgen het definitieve
-databaseschema, de SOVON-plotkoppeling en een eventuele import.
+## Kwaliteitsanalyse 17 augustus 2026
+
+De volledige stagingdataset is beschrijvend geanalyseerd met
+`gis/scripts/analyse_ndff_kwaliteit.py`. De life-database is daarbij uitsluitend
+gelezen voor de PQ-vergelijking en niet gewijzigd.
+
+- 554.438 records (68,38%) zijn voorlopige ruimtelijke kandidaten: niet
+  vervaagd en met een brongeometrie kleiner dan 1 km². Dit is nog geen
+  plottoewijzing.
+- 209.747 records (25,87%) zijn niet vervaagd maar hebben een geometrie van
+  minstens 1 km²; 46.645 records (5,75%) zijn vervaagd.
+- 430.166 records (53,05%) zijn losse waarnemingen. De protocolmix verandert
+  sterk door de tijd; ruwe jaartotalen zijn daarom geen populatietrend.
+- Van 9.828 taxoncombinaties zijn er 1.991 met zowel vervaagde als onvervaagde
+  records en 208 uitsluitend met vervaagde records.
+- 22.015 NDFF-records matchen op datum, taxon en locatie met 21.929 bestaande
+  PQ-waarnemingen uit 907 PQ-opnamen. Bij 616 opnamen matcht minstens 90% van de
+  soortenlijst. Abundantie-/Braun-Blanquetcompatibiliteit moet nog worden
+  gecontroleerd voordat een match definitief `exact` heet.
+- 233 canonieke records behoren via hun bronbestanden tot twee aangevraagde
+  FFV-soortgroepen. Het databaseschema moet groepslidmaatschap daarom als een
+  many-to-many-relatie vastleggen.
+
+De volgende fase is de geversioneerde SOVON-plotintersectie, de inhoudelijke
+PQ-audit en het vaststellen van toelatingsregels per analysetype. Pas daarna
+volgen het definitieve databaseschema en een eventuele import.

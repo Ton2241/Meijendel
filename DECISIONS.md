@@ -220,6 +220,18 @@
   `ndff_vervaagde_waarneming` en niet-vervaagde maar ruimtelijk ambigue
   gebiedsgeometrieën in `ndff_gebiedswaarneming`. Eventuele kandidaatoverlappen
   worden apart opgeslagen en zijn geen aanwezigheid per plot.
+- FFV-soortgroep is geen uniek kenmerk van een canonieke waarneming. In de
+  complete stagingdataset komen 233 `Identiteit`-waarden via verschillende
+  bronbestanden in twee aanvraagsoortgroepen voor. Leg daarom alle
+  groepslidmaatschappen vast in een aparte many-to-many-koppeling
+  `ndff_waarneming_soortgroep`; dupliceer de biologische waarneming niet en
+  dwing geen willekeurige hoofdgroep af.
+- De exacte PQ-kandidaatmatching op datum, genormaliseerde taxonnaam en locatie
+  bevestigt substantiële bronoverlap: 22.015 NDFF-records koppelen aan 21.929
+  PQ-waarnemingen uit 907 opnamen. Bewaar beide bronregistraties, leg de relatie
+  vast in `ndff_pq_koppeling` en tel bevestigde gedeelde opnamen analytisch niet
+  dubbel. De status `exact` wordt pas definitief na controle van abundantie- of
+  Braun-Blanquetcompatibiliteit en een handmatige steekproef.
 - Het buiten het aangevraagde kilometerhok doorlopen van een niet-vervaagde
   geometrie is op zichzelf geen uitsluitingsgrond: het aanvraaghok is een
   selectiefilter, niet de werkelijke begrenzing van een brongeometrie. Classificeer
