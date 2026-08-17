@@ -226,12 +226,18 @@
   groepslidmaatschappen vast in een aparte many-to-many-koppeling
   `ndff_waarneming_soortgroep`; dupliceer de biologische waarneming niet en
   dwing geen willekeurige hoofdgroep af.
-- De exacte PQ-kandidaatmatching op datum, genormaliseerde taxonnaam en locatie
-  bevestigt substantiële bronoverlap: 22.015 NDFF-records koppelen aan 21.929
-  PQ-waarnemingen uit 907 opnamen. Bewaar beide bronregistraties, leg de relatie
-  vast in `ndff_pq_koppeling` en tel bevestigde gedeelde opnamen analytisch niet
-  dubbel. De status `exact` wordt pas definitief na controle van abundantie- of
-  Braun-Blanquetcompatibiliteit en een handmatige steekproef.
+- De PQ-kandidaatmatching op datum, genormaliseerde taxonnaam en locatie moet
+  minimaal de gestructureerde NDFF-protocollen `12.007 Vegetatieopnamen` en
+  `12.202 Landelijk Meetnet Flora- Milieu- en Natuurkwaliteit (NEM)` omvatten.
+  Samen maken zij 1.039 van 2.007 PQ-opnamen herkenbaar en koppelen zij 24.804
+  van 53.122 PQ-soortwaarnemingen. De levering is selectief naar tijd en
+  locatie: 70,40% van de opnamen uit 1981-2017 versus 15,09% uit 2018-2025, en
+  vóór 2018 zijn 149 locaties steeds, 38 wisselend en 66 nooit herkenbaar.
+  Overige protocollen zijn alleen een ruime bovengrens en geen bewijs van
+  gedeelde bronopnamen. Bewaar beide bronregistraties, leg de relatie vast in
+  `ndff_pq_koppeling` en tel alleen bevestigde gedeelde opnamen analytisch niet
+  dubbel. De status `exact` volgt pas na taxonomische vergelijking,
+  abundantie-/Braun-Blanquetcompatibiliteit en een handmatige steekproef.
 - Het buiten het aangevraagde kilometerhok doorlopen van een niet-vervaagde
   geometrie is op zichzelf geen uitsluitingsgrond: het aanvraaghok is een
   selectiefilter, niet de werkelijke begrenzing van een brongeometrie. Classificeer

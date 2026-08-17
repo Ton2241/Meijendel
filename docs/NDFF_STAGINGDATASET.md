@@ -98,10 +98,24 @@ gelezen voor de PQ-vergelijking en niet gewijzigd.
   sterk door de tijd; ruwe jaartotalen zijn daarom geen populatietrend.
 - Van 9.828 taxoncombinaties zijn er 1.991 met zowel vervaagde als onvervaagde
   records en 208 uitsluitend met vervaagde records.
-- 22.015 NDFF-records matchen op datum, taxon en locatie met 21.929 bestaande
-  PQ-waarnemingen uit 907 PQ-opnamen. Bij 616 opnamen matcht minstens 90% van de
-  soortenlijst. Abundantie-/Braun-Blanquetcompatibiliteit moet nog worden
-  gecontroleerd voordat een match definitief `exact` heet.
+- Onder de gezamenlijke gestructureerde protocollen `12.007 Vegetatieopnamen`
+  en `12.202 Landelijk Meetnet Flora- Milieu- en Natuurkwaliteit (NEM)` zijn
+  1.039 van 2.007 PQ-opnamen (51,77%) herkenbaar via minstens één datum-, taxon-
+  en locatiematch. Dit betreft 24.804 van 53.122 PQ-soortwaarnemingen (46,69%).
+  Bij 650 opnamen matcht minstens 90% van de soortenlijst en bij 147 alle nu
+  herkenbare namen. Abundantie-/Braun-Blanquetcompatibiliteit en taxonomische
+  synoniemen moeten nog worden gecontroleerd voordat een match definitief
+  `exact` heet.
+- De PQ-dekking is selectief: 937 van 1.331 opnamen uit 1981-2017 zijn
+  herkenbaar (70,40%), tegenover 102 van 676 uit 2018-2025 (15,09%). Voor 2025
+  is onder de twee gestructureerde protocollen geen PQ-opname gevonden. Van de
+  253 vóór 2018 bemonsterde PQ-locaties zijn er 149 steeds, 38 wisselend en 66
+  nooit herkenbaar. Alle gestructureerde kandidaatmatches hebben bronhouder
+  `Zuid-Holland (provincie)`.
+- Alle overige protocollen samen verhogen de ruime bovengrens slechts tot
+  1.067 herkenbare opnamen (53,16%). Losse meldingen, ObsIdentify en
+  collectierecords gelden niet als bewijs dat dezelfde PQ-bronopname is
+  overgenomen.
 - 233 canonieke records behoren via hun bronbestanden tot twee aangevraagde
   FFV-soortgroepen. Het databaseschema moet groepslidmaatschap daarom als een
   many-to-many-relatie vastleggen.

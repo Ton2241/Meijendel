@@ -57,8 +57,12 @@ def analyse_pq_overlap(
     mysql_client: Path,
     mysql_database: str,
 ) -> dict[str, Any]:
+    vegetation_protocol = "12.007 Vegetatieopnamen"
+    nem_protocol = "12.202 Landelijk Meetnet Flora- Milieu- en Natuurkwaliteit (NEM)"
+    structured_protocols = [vegetation_protocol, nem_protocol]
     query = (
-        "SELECT o.opname_id,o.opname_datum,o.x_rd,o.y_rd,w.waarneming_id,"
+        "SELECT o.opname_id,o.pq_nummer,o.jaar,o.opname_datum,o.x_rd,o.y_rd,"
+        "w.waarneming_id,"
         "t.nederlandse_naam,COALESCE(NULLIF(t.wetenschappelijke_naam_officieel,''),"
         "t.latijnse_naam_bron) "
         "FROM pq_vegetatie_opname o "
@@ -80,33 +84,52 @@ def analyse_pq_overlap(
 
     by_scientific: dict[tuple[str, str], dict[int, tuple[Any, ...]]] = defaultdict(dict)
     by_dutch: dict[tuple[str, str], dict[int, tuple[Any, ...]]] = defaultdict(dict)
-    pq_total_by_recording: Counter[int] = Counter()
+    recording_observations: dict[int, set[int]] = defaultdict(set)
+    recording_meta: dict[int, dict[str, Any]] = {}
+    observation_year: dict[int, int] = {}
+    observation_recording: dict[int, int] = {}
     pq_row_count = 0
     for line in result.stdout.splitlines():
         values = line.split("\t")
-        if len(values) != 7:
+        if len(values) != 9:
             continue
-        opname_id, opname_date, x_rd, y_rd, observation_id, dutch, scientific = values
+        (
+            opname_id,
+            pq_number,
+            year,
+            opname_date,
+            x_rd,
+            y_rd,
+            observation_id,
+            dutch,
+            scientific,
+        ) = values
         record = (
             int(opname_id),
-            date.fromisoformat(opname_date),
+            int(pq_number),
+            int(year),
             float(x_rd),
             float(y_rd),
             int(observation_id),
         )
-        by_scientific[(opname_date, normalized_name(scientific))][record[4]] = record
-        by_dutch[(opname_date, normalized_name(dutch))][record[4]] = record
-        pq_total_by_recording[record[0]] += 1
+        recording_meta[record[0]] = {
+            "pq_number": record[1],
+            "year": record[2],
+            "date": opname_date,
+        }
+        recording_observations[record[0]].add(record[5])
+        observation_year[record[5]] = record[2]
+        observation_recording[record[5]] = record[0]
+        by_scientific[(opname_date, normalized_name(scientific))][record[5]] = record
+        by_dutch[(opname_date, normalized_name(dutch))][record[5]] = record
         pq_row_count += 1
 
     layer = dataset.GetLayerByName("ndff_waarnemingen")
-    layer.SetAttributeFilter("Protocol = '12.007 Vegetatieopnamen'")
-    ndff_vegetation_count = layer.GetFeatureCount()
-    matched_ndff: set[str] = set()
-    matched_pq_observations: set[int] = set()
-    matched_pq_by_recording: dict[int, set[int]] = defaultdict(set)
-    source_holders: Counter[str] = Counter()
-    match_years: Counter[int] = Counter()
+    matched_observations_by_protocol: dict[str, set[int]] = defaultdict(set)
+    matched_recordings_by_protocol: dict[str, set[int]] = defaultdict(set)
+    matched_ndff_by_protocol: dict[str, set[str]] = defaultdict(set)
+    source_holders_by_protocol: dict[str, Counter[str]] = defaultdict(Counter)
+    areas_by_protocol: dict[str, Counter[str]] = defaultdict(Counter)
     ambiguous_ndff = 0
 
     for feature in layer:
@@ -127,53 +150,171 @@ def analyse_pq_overlap(
         matches: list[tuple[Any, ...]] = []
         for candidate in candidates.values():
             point = ogr.Geometry(ogr.wkbPoint)
-            point.AddPoint_2D(candidate[2], candidate[3])
+            point.AddPoint_2D(candidate[3], candidate[4])
             if geometry is not None and geometry.Distance(point) <= 1e-8:
                 matches.append(candidate)
         if not matches:
             continue
-        matched_ndff.add(str(feature.GetField("Identiteit")))
-        source_holders[str(feature.GetField("Bronhouder"))] += 1
-        match_years[observed_date.year] += 1
+        protocol = str(feature.GetField("Protocol"))
+        matched_ndff_by_protocol[protocol].add(str(feature.GetField("Identiteit")))
+        source_holders_by_protocol[protocol][str(feature.GetField("Bronhouder"))] += 1
+        area = geometry.GetArea() if geometry is not None else 0
+        area_class = "<1 ha" if area < 10_000 else "1-99 ha" if area < 1_000_000 else ">=1 km2"
+        areas_by_protocol[protocol][area_class] += 1
         ambiguous_ndff += int(len(matches) > 1)
         for candidate in matches:
-            matched_pq_observations.add(candidate[4])
-            matched_pq_by_recording[candidate[0]].add(candidate[4])
+            matched_observations_by_protocol[protocol].add(candidate[5])
+            matched_recordings_by_protocol[protocol].add(candidate[0])
 
-    layer.SetAttributeFilter(None)
-    coverage = {
-        opname_id: len(observation_ids) / pq_total_by_recording[opname_id]
-        for opname_id, observation_ids in matched_pq_by_recording.items()
-    }
-    coverage_classes = Counter(
-        "100%"
-        if value == 1
-        else "90-99%"
-        if value >= 0.9
-        else "50-89%"
-        if value >= 0.5
-        else "<50%"
-        for value in coverage.values()
-    )
+    def union_summary(protocols: list[str]) -> dict[str, Any]:
+        observations = set().union(
+            *(matched_observations_by_protocol[protocol] for protocol in protocols)
+        )
+        matched_by_recording: dict[int, set[int]] = defaultdict(set)
+        for observation_id in observations:
+            matched_by_recording[observation_recording[observation_id]].add(observation_id)
+
+        coverage = {
+            recording_id: len(observation_ids) / len(recording_observations[recording_id])
+            for recording_id, observation_ids in matched_by_recording.items()
+        }
+        coverage_classes = Counter(
+            "100%"
+            if value == 1
+            else "90-99%"
+            if value >= 0.9
+            else "50-89%"
+            if value >= 0.5
+            else "<50%"
+            for value in coverage.values()
+        )
+
+        years: list[dict[str, Any]] = []
+        for year in sorted({meta["year"] for meta in recording_meta.values()}):
+            recording_ids = [
+                recording_id
+                for recording_id, meta in recording_meta.items()
+                if meta["year"] == year
+            ]
+            total_observations = sum(
+                len(recording_observations[recording_id]) for recording_id in recording_ids
+            )
+            matched_recording_ids = [
+                recording_id for recording_id in recording_ids if recording_id in matched_by_recording
+            ]
+            matched_observations = sum(
+                len(matched_by_recording.get(recording_id, ()))
+                for recording_id in recording_ids
+            )
+            years.append(
+                {
+                    "year": year,
+                    "recordings": len(recording_ids),
+                    "matched_recordings": len(matched_recording_ids),
+                    "recording_pct": round(
+                        100 * len(matched_recording_ids) / len(recording_ids), 2
+                    ),
+                    "observations": total_observations,
+                    "matched_observations": matched_observations,
+                    "observation_pct": round(
+                        100 * matched_observations / total_observations, 2
+                    ),
+                }
+            )
+
+        periods: list[dict[str, Any]] = []
+        for label, start_year, stop_year in [
+            ("1981-2017", 1981, 2017),
+            ("2018-2025", 2018, 2025),
+        ]:
+            rows = [row for row in years if start_year <= row["year"] <= stop_year]
+            total_recordings = sum(row["recordings"] for row in rows)
+            matched_recordings = sum(row["matched_recordings"] for row in rows)
+            total_observations = sum(row["observations"] for row in rows)
+            matched_observations = sum(row["matched_observations"] for row in rows)
+            periods.append(
+                {
+                    "period": label,
+                    "recordings": total_recordings,
+                    "matched_recordings": matched_recordings,
+                    "recording_pct": round(100 * matched_recordings / total_recordings, 2),
+                    "observations": total_observations,
+                    "matched_observations": matched_observations,
+                    "observation_pct": round(100 * matched_observations / total_observations, 2),
+                }
+            )
+
+        pre2018_locations: dict[int, dict[str, int]] = defaultdict(
+            lambda: {"recordings": 0, "matched": 0}
+        )
+        for recording_id, meta in recording_meta.items():
+            if meta["year"] > 2017:
+                continue
+            bucket = pre2018_locations[meta["pq_number"]]
+            bucket["recordings"] += 1
+            bucket["matched"] += int(recording_id in matched_by_recording)
+        location_classes = Counter(
+            "altijd"
+            if values["matched"] == values["recordings"]
+            else "nooit"
+            if values["matched"] == 0
+            else "wisselend"
+            for values in pre2018_locations.values()
+        )
+
+        return {
+            "protocols": protocols,
+            "matched_pq_observations": len(observations),
+            "matched_pq_recordings": len(matched_by_recording),
+            "matched_pq_observation_share": len(observations) / pq_row_count,
+            "matched_pq_recording_share": len(matched_by_recording) / len(recording_meta),
+            "recordings_at_least_90_pct": sum(value >= 0.9 for value in coverage.values()),
+            "recordings_100_pct": sum(value == 1 for value in coverage.values()),
+            "coverage_classes": dict(sorted(coverage_classes.items())),
+            "periods": periods,
+            "years": years,
+            "pre2018_locations": len(pre2018_locations),
+            "pre2018_location_classes": dict(sorted(location_classes.items())),
+        }
+
+    protocol_breakdown: list[dict[str, Any]] = []
+    for protocol, observations in matched_observations_by_protocol.items():
+        years = [observation_year[observation_id] for observation_id in observations]
+        protocol_breakdown.append(
+            {
+                "protocol": protocol,
+                "matched_pq_observations": len(observations),
+                "matched_pq_recordings": len(matched_recordings_by_protocol[protocol]),
+                "matched_ndff_records": len(matched_ndff_by_protocol[protocol]),
+                "post2017_observations": sum(year >= 2018 for year in years),
+                "first_year": min(years),
+                "last_year": max(years),
+                "geometry_area_classes": dict(sorted(areas_by_protocol[protocol].items())),
+                "source_holders": dict(sorted(source_holders_by_protocol[protocol].items())),
+            }
+        )
+    protocol_breakdown.sort(key=lambda row: row["matched_pq_observations"], reverse=True)
+
+    vegetation_only = union_summary([vegetation_protocol])
+    structured = union_summary(structured_protocols)
+    all_protocols = union_summary(list(matched_observations_by_protocol))
     return {
         "mysql_query": query,
         "pq_observations_total": pq_row_count,
-        "pq_recordings_total": len(pq_total_by_recording),
-        "ndff_vegetation_protocol_records": ndff_vegetation_count,
-        "matched_ndff_records": len(matched_ndff),
-        "matched_pq_observations": len(matched_pq_observations),
-        "matched_pq_recordings": len(coverage),
-        "matched_pq_observation_share": len(matched_pq_observations) / pq_row_count,
-        "matched_pq_recording_share": len(coverage) / len(pq_total_by_recording),
-        "recordings_at_least_90_pct": sum(value >= 0.9 for value in coverage.values()),
-        "coverage_classes": dict(sorted(coverage_classes.items())),
-        "match_source_holders": dict(source_holders),
-        "match_first_year": min(match_years) if match_years else None,
-        "match_last_year": max(match_years) if match_years else None,
+        "pq_recordings_total": len(recording_meta),
+        "vegetation_protocol_only": vegetation_only,
+        "structured_protocols": structured,
+        "all_protocols_upper_bound": all_protocols,
+        "protocol_breakdown": protocol_breakdown,
         "ambiguous_ndff_matches": ambiguous_ndff,
         "match_rule": (
             "gelijke datum en genormaliseerde Nederlandse of wetenschappelijke naam, "
             "waarbij het PQ-punt afstand 0 tot de NDFF-geometrie heeft"
+        ),
+        "interpretation": (
+            "Vegetatieopnamen plus NEM is de primaire gestructureerde kandidaatset. "
+            "Alle protocollen vormen alleen een bovengrens; losse meldingen en grove "
+            "geometrie kunnen toevallig datum, taxon en locatie delen."
         ),
     }
 
@@ -550,7 +691,7 @@ def source_specs(created_at: str, pq_query: str) -> list[dict[str, Any]]:
             "query": {
                 "engine": "MySQL plus OGR",
                 "sql": pq_query,
-                "description": "Exacte matching op datum, taxonnaam en ruimtelijke afstand nul",
+                "description": "Kandidaatmatching op datum, taxonnaam en ruimtelijke afstand nul, uitgesplitst naar protocol",
                 "executed_at": created_at,
                 "language": "SQL en Python/OGR",
                 "tables_used": [
@@ -559,9 +700,13 @@ def source_specs(created_at: str, pq_query: str) -> list[dict[str, Any]]:
                     "Meijendel.pq_vegetatie_taxon",
                     "ndff_waarnemingen",
                 ],
-                "filters": ["NDFF Protocol = 12.007 Vegetatieopnamen"],
+                "filters": [
+                    "primaire kandidaatset: 12.007 Vegetatieopnamen plus 12.202 NEM",
+                    "overige protocollen uitsluitend als bovengrens",
+                ],
                 "metric_definitions": [
-                    "Exacte match: gelijke datum en Nederlandse of wetenschappelijke taxonnaam, met PQ-punt op afstand 0 van de NDFF-geometrie"
+                    "Herkenbare PQ-opname: minstens één gelijke datum en Nederlandse of wetenschappelijke taxonnaam, met PQ-punt op afstand 0 van de NDFF-geometrie",
+                    "Bijna volledig: minstens 90% van de PQ-soortenlijst heeft een kandidaatmatch",
                 ],
             },
         },
@@ -571,10 +716,14 @@ def source_specs(created_at: str, pq_query: str) -> list[dict[str, Any]]:
 def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
     created_at = result["created_utc"]
     headline = dict(result["headline"])
+    pq_structured = result["pq_overlap"]["structured_protocols"]
     headline.update(
         {
-            "pq_matches": result["pq_overlap"]["matched_ndff_records"],
-            "pq_match_share": result["pq_overlap"]["matched_pq_observation_share"],
+            "pq_recording_coverage": pq_structured["matched_pq_recording_share"],
+            "pq_high_coverage_share": (
+                pq_structured["recordings_at_least_90_pct"]
+                / result["pq_overlap"]["pq_recordings_total"]
+            ),
         }
     )
     sources = source_specs(created_at, result["pq_overlap"]["mysql_query"])
@@ -604,10 +753,12 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
         },
         {
             "id": "pq-matches",
-            "description": "NDFF-records met exacte datum-, taxon- en locatiematch met PQ",
+            "description": "PQ-opnamen met minstens één kandidaatmatch onder Vegetatieopnamen of NEM",
             "dataset": "headline",
             "sourceId": PQ_SOURCE_ID,
-            "metrics": [{"label": "Exacte PQ-matches", "field": "pq_matches", "format": "compact"}],
+            "metrics": [
+                {"label": "Herkenbare PQ-opnamen", "field": "pq_recording_coverage", "format": "percent"}
+            ],
         },
     ]
 
@@ -763,8 +914,8 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
             "type": "markdown",
             "sourceId": PQ_SOURCE_ID,
             "body": (
-                "**Overlap met de bestaande PQ-data is bevestigd.** Er zijn 22.015 NDFF-records met dezelfde datum, soort en locatie als 21.929 PQ-waarnemingen. "
-                "Deze matches omvatten 907 PQ-opnamen uit 1981-2017; bij 616 opnamen matcht minstens 90% van de soortenlijst. Deze records mogen niet dubbel als onafhankelijke vegetatie-informatie worden gebruikt."
+                "**De NDFF bevat een selectieve, geen volledige kopie van de bestaande PQ-data.** Onder de gestructureerde protocollen Vegetatieopnamen en NEM is 1.039 van 2.007 PQ-opnamen (51,77%) herkenbaar via minstens één gelijke datum-, taxon- en locatiematch; 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) matchen. "
+                "Bij 650 opnamen matcht minstens 90% van de soortenlijst. De dekking daalt van 70,40% van de opnamen in 1981-2017 naar 15,09% in 2018-2025; voor 2025 is onder deze protocollen geen opname gevonden."
             ),
         },
         {"id": "headline-metrics", "type": "metric-strip", "cardIds": ["records", "plot-candidates", "loose", "pq-matches"]},
@@ -808,10 +959,10 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
             "type": "markdown",
             "sourceId": PQ_SOURCE_ID,
             "body": (
-                "## De NDFF bevat een substantieel deel van de bestaande PQ-opnamen\n\n"
-                "De exacte matching koppelt 41,28% van alle PQ-soortwaarnemingen en 45,19% van alle PQ-opnamen aan NDFF-records van bronhouder Zuid-Holland (provincie). "
-                "De overeenkomst is te sterk voor toeval: datum, taxon en locatie zijn gelijk en de soortenlijst is per opname grotendeels compleet. "
-                "Voor definitieve classificatie als `exact` moet nog worden gecontroleerd of de Braun-Blanquet-/bedekkingswaarden compatibel zijn; tot die tijd blijven beide bronnen bewaard maar worden matches analytisch niet dubbel geteld."
+                "## De PQ-dekking in de NDFF is tijdsgebonden én selectief per locatie\n\n"
+                "Alle gestructureerde kandidaatmatches hebben bronhouder Zuid-Holland (provincie). Van de 253 PQ-locaties die vóór 2018 zijn bemonsterd, zijn er 149 bij iedere opname herkenbaar, 38 slechts in sommige jaren en 66 nooit. Het protocol Vegetatieopnamen stopt voor deze overlap na 2017; NEM levert daarna nog een beperkte selectie. "
+                "Zelfs wanneer ook losse meldingen, ObsIdentify en collectierecords als ruime bovengrens meetellen, stijgt het aandeel herkenbare PQ-opnamen slechts van 51,77% naar 53,16%. Dat bevestigt een selectieve provinciale levering, niet een tekort in de complete Meijendel-PQ-database. "
+                "Voor classificatie als `exact` moeten taxonomische synoniemen en Braun-Blanquet-/bedekkingswaarden nog worden gecontroleerd; tot die tijd blijven beide bronnen bewaard en worden alleen bevestigde gedeelde opnamen analytisch niet dubbel geteld."
             ),
         },
         {
@@ -832,7 +983,7 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
                 "1. Ruimtelijke voorselectie op de ruwe NDFF-vervagingsstatus en geometrieoppervlakte.\n"
                 "2. Classificatie van protocollen als losse melding, ObsIdentify, NEM, vegetatieopname of overig protocol.\n"
                 "3. Vergelijking van protocolmix en ontbrekende methode-informatie per tijdvak.\n"
-                "4. PQ-kandidaten op exacte datum en genormaliseerde taxonnaam, gevolgd door afstand nul tussen PQ-punt en NDFF-geometrie.\n\n"
+                "4. PQ-kandidaten in alle NDFF-protocollen op gelijke datum en genormaliseerde taxonnaam, gevolgd door afstand nul tussen PQ-punt en NDFF-geometrie. Vegetatieopnamen plus NEM vormen de primaire gestructureerde kandidaatset; overige protocollen uitsluitend een bovengrens.\n\n"
                 "Deze stappen zijn beschrijvend en controleren herkomst en bruikbaarheid; zij leveren geen populatietrends of causale conclusies."
             ),
         },
@@ -844,7 +995,8 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
                 "- De grens van 1 km² is een conservatieve voorselectie, geen definitieve plotregel.\n"
                 "- 5.336 bronintervallen beginnen vóór 1950 en 10.323 duren langer dan één jaar; zij mogen niet als exacte jaarwaarnemingen worden behandeld.\n"
                 "- `Determinatiemethode` is bij 48,12% `onbekend`; zoek-/vangmethode ontbreekt bij 39,88% en apparatuur bij 86,08%.\n"
-                "- Exacte PQ-matches zijn sterk bewijs van gedeelde opnamen, maar abundantiecompatibiliteit en resterende taxonomische synoniemen zijn nog niet gecontroleerd.\n"
+                "- Een gelijke datum, taxonnaam en locatie is een kandidaatmatch, geen definitief bewijs van dezelfde bronopname. Abundantiecompatibiliteit en resterende taxonomische synoniemen zijn nog niet gecontroleerd.\n"
+                "- De PQ-dekking is selectief: 650 van 2.007 opnamen hebben minstens 90% soortenlijstdekking en 147 matchen volledig op de nu beschikbare namen. Naamverschillen kunnen dit onderschatten.\n"
                 "- De SOVON-plotintersectie en beoordeling van meerplot-geometrieën zijn nog niet uitgevoerd."
             ),
         },
@@ -853,7 +1005,7 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
             "type": "markdown",
             "body": (
                 "## Aanbevolen vervolgstappen\n\n"
-                "1. Bouw de audittabel `ndff_pq_koppeling` voor de 22.015 exacte kandidaten en toets abundantie-/Braun-Blanquetcompatibiliteit.\n"
+                "1. Bouw `ndff_pq_koppeling` voor de 1.039 herkenbare PQ-opnamen onder Vegetatieopnamen plus NEM, beginnend met de 650 opnamen met minstens 90% soortenlijstdekking; toets taxonomie en abundantie-/Braun-Blanquetcompatibiliteit.\n"
                 "2. Koppel alle geometrieën aan één geversioneerde SOVON-plotlaag en registreer per intersectie overlapoppervlak, overlapaandeel en aantal geraakte plots.\n"
                 "3. Voeg een many-to-many groepslidmaatschap toe voor de 233 records die door twee FFV-soortgroepen worden geleverd.\n"
                 "4. Beslis daarna per analysetype welke vervaagde, grote en methodearme records worden toegelaten, beperkt gebruikt of uitgesloten.\n"
@@ -867,8 +1019,9 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
                 "## Open vragen\n\n"
                 "- Welke SOVON-plotlaag en versie wordt de vaste ruimtelijke referentie?\n"
                 "- Welke dominante-overlapregel blijkt na de echte intersectie verdedigbaar?\n"
-                "- Welke niet-PQ-protocollen hebben aantoonbaar vaste inspanning en herhaling?\n"
-                "- Kunnen de resterende PQ-overeenkomsten via taxonomische synoniemen of bedekkingswaarden worden herkend?"
+                "- Waardoor begrenst de provinciale NDFF-levering sommige PQ-locaties structureel en andere wisselend?\n"
+                "- Kunnen de resterende PQ-overeenkomsten via taxonomische synoniemen of bedekkingswaarden worden herkend?\n"
+                "- Welke niet-PQ-protocollen hebben aantoonbaar vaste inspanning en herhaling?"
             ),
         },
     ]
@@ -878,7 +1031,7 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
         "manifest": {
             "version": 1,
             "surface": "report",
-        "title": "NDFF Meijendel 1950-2025",
+            "title": "Kwaliteitsanalyse NDFF Meijendel 1950-2025",
             "description": "Ruimtelijke bruikbaarheid, methodeverschillen, vervaging en PQ-overlap",
             "generatedAt": created_at,
             "cards": cards,
@@ -932,7 +1085,9 @@ def main() -> int:
                 "artifact": str(artifact_path),
                 "records": result["headline"]["records"],
                 "plot_candidate_share": result["headline"]["plot_candidate_share"],
-                "pq_matches": result["pq_overlap"]["matched_ndff_records"],
+                "pq_recordings_recognized": result["pq_overlap"]["structured_protocols"][
+                    "matched_pq_recordings"
+                ],
             },
             ensure_ascii=False,
             indent=2,

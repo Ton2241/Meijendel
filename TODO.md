@@ -78,11 +78,17 @@
   `niet_beoordeelbaar`; valideer per klasse een handmatige steekproef. Behoud
   beide bronrecords, maar voorkom dat een bevestigde gedeelde opname in analyses
   dubbel als onafhankelijke waarneming meetelt.
-  De eerste exacte kandidaatmatching is afgerond: 22.015 NDFF-records matchen
-  21.929 PQ-waarnemingen uit 907 opnamen op datum, taxon en locatie; bij 616
-  opnamen matcht minstens 90% van de soortenlijst. Leg deze kandidaten nog vast
-  in `ndff_pq_koppeling`, controleer abundantie/Braun-Blanquet en voer de
-  afgesproken handmatige steekproef uit voordat `exact` definitief wordt.
+  De uitgebreide kandidaatmatching is afgerond. Gebruik voor de primaire audit
+  gezamenlijk `12.007 Vegetatieopnamen` en `12.202 Landelijk Meetnet Flora-
+  Milieu- en Natuurkwaliteit (NEM)`: 1.039 van 2.007 PQ-opnamen zijn herkenbaar,
+  waaronder 650 met minstens 90% soortenlijstdekking. Begin de handmatige en
+  abundantie-/Braun-Blanquetcontrole met die 650 opnamen en leg alle relaties
+  vast in `ndff_pq_koppeling`. Behandel matches uit Losse waarnemingen,
+  ObsIdentify en collecties alleen als bovengrens of nader te onderzoeken
+  kandidaten. Leg per opname ook vast of zij valt in de sterke dekking van
+  1981-2017, de beperkte dekking van 2018-2025 en een steeds, wisselend of nooit
+  vertegenwoordigde PQ-locatie. Ken `exact` pas toe na taxonomische,
+  soortenlijst- en abundantiecontrole.
 - Filter de database-import tegen één geversioneerde SOVON-plotlaag. Neem
   records zonder plotintersectie niet op in de database, maar registreer ze in
   de uitsluitingsaudit. Behandel vervaagde, grote en meerplot-geometrieën niet
