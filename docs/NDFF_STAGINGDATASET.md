@@ -123,3 +123,24 @@ gelezen voor de PQ-vergelijking en niet gewijzigd.
 De volgende fase is de geversioneerde SOVON-plotintersectie, de inhoudelijke
 PQ-audit en het vaststellen van toelatingsregels per analysetype. Pas daarna
 volgen het definitieve databaseschema en een eventuele import.
+
+## Protocolaudit 17 augustus 2026
+
+De protocoltoets per FFV-soortgroep is afgerond en reproduceerbaar vastgelegd in
+`gis/scripts/analyse_ndff_protocollen.py` en `docs/NDFF_PROTOCOLAUDIT.md`.
+
+- De staging bevat 54 protocolnamen in 26 aanvraagsoortgroepen.
+- 130.064 records (16,04%) behoren tot een voor de soortgroep passend
+  doelgericht meetnet; dit zijn alleen kandidaten om de volledige brondata op
+  te vragen, geen direct trendklare FFV-regels.
+- 6.273 records (0,77%) behoren tot SNL-gebiedsmonitoring en zijn hoogstens
+  kandidaat voor periodieke toestand-/beheeranalyse na ontvangst van volledige
+  meetronden.
+- 97.318 records (12,00%) vallen onder de conservatieve PQ-blokkade voor
+  `12.007` of `12.202` en worden niet als zelfstandige telling toegelaten.
+- Voor 11 soortgroepen ontbreekt in deze levering een passend doelmeetnet; zij
+  worden niet voor trends in de life-database opgenomen.
+
+Geen enkele FFV-waarnemingsregel wordt op protocolnaam alleen geïmporteerd.
+Vereist zijn de volledige telobjecten, bezoeken, inspanning, protocolversie en
+afleidbare nullen, gevolgd door lokale dekkings-, ruimte- en methodecontrole.

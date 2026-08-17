@@ -249,3 +249,14 @@
   recordaantal, vervagingsinformatie en de meegeleverde NDFF-bronvermelding.
   Herimport moet idempotent zijn en correcties of verwijderingen uit latere
   bronleveringen zichtbaar kunnen verwerken.
+- De protocolaudit van de complete stagingdataset is leidend voor de
+  wetenschappelijke toelating. Een NDFF-validatie of protocolnaam alleen maakt
+  een FFV-waarnemingsregel niet trendklaar. Losse meldingen, automatische
+  herkenning, collecties, literatuur en atlasrecords blijven uitsluitend
+  externe verspreidingscontext. Bij een voor de soortgroep passend doelmeetnet
+  worden eerst de volledige brondata met telobject, bezoek, inspanning,
+  protocolversie en afleidbare nullen opgevraagd. SNL-records zijn alleen
+  kandidaat voor periodieke gebiedstoestand, niet automatisch voor een
+  jaarlijkse trend. `12.007` en `12.202` blijven onder de PQ-blokkade totdat
+  `ndff_pq_koppeling` de opname-identiteit heeft vastgesteld. Zie
+  `docs/NDFF_PROTOCOLAUDIT.md`.

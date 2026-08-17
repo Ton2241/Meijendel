@@ -118,6 +118,19 @@
   de complete stagingdataset berekend. Open blijven de SOVON-plotintersectie,
   de beoordeling van structurele reeksen per protocol en de definitieve
   toelatingsregels per analysetype.
+- Afgerond: voer de protocolaudit uit voor alle 26 FFV-soortgroepen. De
+  volledige matrix staat in `docs/NDFF_PROTOCOLAUDIT.md` en wordt gegenereerd
+  met `gis/scripts/analyse_ndff_protocollen.py`. Geen enkele FFV-regel is direct
+  trendklaar; 10 groepen hebben een passend doelmeetnet waarvoor volledige
+  brondata moeten worden opgevraagd, 4 vegetatiegroepen blijven eerst onder de
+  PQ-blokkade, Sprinkhanen en krekels is alleen kandidaat voor periodieke
+  SNL-gebiedstoestand en 11 groepen worden niet voor trends opgenomen.
+- Vraag per kansrijk doelmeetnet bij de beheerder de volledige telobject-,
+  bezoek-, inspannings-, protocolversie- en nulwaarnemingsdata op. Begin met
+  Dagvlinders, Zoogdieren (overig), Vleermuizen, Amfibieen en Libellen vanwege
+  hun combinatie van protocolvolume en potentiële ecologische relevantie.
+  Ontwerp nog geen import voordat lokale dekking, continuiteit, methodebreuken,
+  SOVON-plotrelatie en eventuele PQ-overlap per bron zijn beoordeeld.
 - Bepaal pas op de geïntegreerde dataset of een dominante-overlapregel
   verantwoord is. Test als startpunt 90% overlap plus centroid in hetzelfde plot,
   rapporteer aantallen/grensgevallen en laat de regel inhoudelijk goedkeuren
