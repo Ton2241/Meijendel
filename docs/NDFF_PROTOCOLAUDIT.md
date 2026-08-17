@@ -95,7 +95,7 @@ tellingen worden nooit automatisch als nul of met machine learning ingevuld.
 ## Reproduceerbare bestanden
 
 - script: `gis/scripts/analyse_ndff_protocollen.py`;
-- rapport: `/Users/ton/Library/Mobile Documents/com~apple~CloudDocs/Downloads/ndff_protocolaudit_1950_2025/ndff_protocolaudit_meijendel_1950_2025.html`;
+- rapport: `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/ndff_protocolaudit_1950_2025/ndff_protocolaudit_meijendel_1950_2025.html`;
 - soortgroepsamenvatting: dezelfde map, `ndff_protocolaudit_soortgroepen.csv`;
 - volledige protocolmatrix: dezelfde map, `ndff_protocolaudit_protocolmatrix.csv`;
 - alle berekeningen en bronnen: dezelfde map, `ndff_protocolaudit_resultaten.json`.

@@ -260,3 +260,9 @@
   jaarlijkse trend. `12.007` en `12.202` blijven onder de PQ-blokkade totdat
   `ndff_pq_koppeling` de opname-identiteit heeft vastgesteld. Zie
   `docs/NDFF_PROTOCOLAUDIT.md`.
+- De canonieke bestandsopslag voor dit NDFF-traject is
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. Bewaar daar de ongewijzigde
+  GeoPackages, de geïntegreerde stagingdataset, manifesten en analyserapporten.
+  Downloads is alleen een tijdelijke ontvangstlocatie. Bouw- en analysewerk mag
+  niet stil naar een lokale vervangingsmap uitwijken wanneer de T7 niet gemount
+  is; stop dan met een duidelijke melding.

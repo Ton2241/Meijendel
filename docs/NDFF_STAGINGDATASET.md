@@ -6,7 +6,9 @@ De geïntegreerde, ontdubbelde stagingdataset voor alle 26 niet-vogelgroepen is
 op 17 augustus 2026 gebouwd en gevalideerd. De life Meijendel-database is niet
 gewijzigd.
 
-- GeoPackage: `/Users/ton/Library/Mobile Documents/com~apple~CloudDocs/Downloads/ndff_meijendel_staging_1950_2025.gpkg`
+- canonieke opslagmap: `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`
+- opslag- en verplaatsingsnotitie: `README_NDFF_OPSLAG.md` in die map
+- GeoPackage: `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/ndff_meijendel_staging_1950_2025.gpkg`
 - manifest en bouwrapport: hetzelfde pad met extensie `.json`
 - bouwscript: `gis/scripts/build_ndff_staging.py`
 - selectie: 34 hokken, periode 1950–2025, GeoPackage RD (EPSG:28992), geen Vogels
@@ -78,10 +80,18 @@ worden samengevoegd.
 
 ```bash
 PYTHONDONTWRITEBYTECODE=1 python3 gis/scripts/build_ndff_staging.py \
-  --source-dir '/Users/ton/Library/Mobile Documents/com~apple~CloudDocs/Downloads' \
-  --output '/Users/ton/Library/Mobile Documents/com~apple~CloudDocs/Downloads/ndff_meijendel_staging_1950_2025.gpkg' \
+  --source-dir '/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF' \
+  --output '/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/ndff_meijendel_staging_1950_2025.gpkg' \
   --replace
 ```
+
+Voer dit commando alleen uit wanneer de Samsung T7 gemount is. Downloads is
+geen blijvende bronlocatie meer.
+
+Het bestaande bouwmanifest `ndff_meijendel_staging_1950_2025.json` behoudt
+bewust de oorspronkelijke waarden van `source_directory` en `output`. Dit zijn
+historische bouwgegevens, geen actuele opslagverwijzingen. De actuele locatie
+staat hierboven en in `README_NDFF_OPSLAG.md` op de T7.
 
 ## Kwaliteitsanalyse 17 augustus 2026
 

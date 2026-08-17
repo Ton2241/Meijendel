@@ -873,6 +873,12 @@ de externe aanwezigheidssignalen methodisch gescheiden.
 - bewaar het ongewijzigde bronbestand met downloadmoment, selectieperiode,
   kilometerhokken, FFV-peildatum, SHA-256 en standaardbronvermelding.
 
+Alle NDFF-bronbestanden, stagingdatasets en analyserapporten worden canoniek
+bewaard in `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. Controleer vóór
+iedere bouw- of analyseopdracht dat de Samsung T7 is gemount en deze map
+bereikbaar is. Downloads is alleen een tijdelijke ontvangstlocatie en geen
+blijvende gegevensbron.
+
 De eerdere Amfibieën-proef met eindjaar 2026 blijft uitsluitend een
 schema- en kwaliteitsproef. Neem die niet op in de definitieve geïntegreerde
 dataset; vraag de betreffende selectie opnieuw aan met einddatum 31 december

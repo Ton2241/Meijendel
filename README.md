@@ -253,6 +253,10 @@ Of via Terminal:
   vermeng ze niet met territoria, dagwaarnemingen of PQ-data en leg de
   reproduceerbare veel-op-veelkoppeling met de Meijendel-kavels vast zoals
   beschreven in hoofdstuk 16A van `MDs/handboek.md`.
+- De canonieke lokale opslag voor alle NDFF-bronbestanden, stagingdatasets en
+  analyserapporten is `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. Voer
+  NDFF-verwerking alleen uit wanneer deze T7-map gemount en bereikbaar is;
+  gebruik Downloads niet als permanente bronlocatie.
 - De definitieve NDFF-reeks eindigt op 31 december 2025. Ontdubbel pas na
   afronding van alle aanvragen in een geïntegreerde stagingdataset; importeer
   alleen ruimtelijk toegelaten records die een geversioneerde SOVON-plotlaag
