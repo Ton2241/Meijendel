@@ -26,11 +26,11 @@
   krekels, Vaatplanten, Vissen, Vleermuizen, Vliegen en muggen en
   Vliesvleugeligen en Weekdieren zijn nu volledig afgedekt en gevalideerd.
   Weekdieren bundels 1, 2 en 3 bevatten respectievelijk 7.117, 3.845 en 3.045
-  records. Van Zoogdieren (overig) zijn bundels 1 en 2 eveneens afgedekt en
-  gevalideerd, met respectievelijk 19.082 en 9.538 records. Alleen Zoogdieren
-  (overig) bundel 3 resteert nog als laatste unieke basisaanvraag. Controleer
-  vóór verzending opnieuw het actuele FFV-resultaataantal en splits alleen
-  verder boven circa 80.000 records.
+  records. Ook Zoogdieren (overig) is voor alle drie bundels afgedekt en
+  gevalideerd, met respectievelijk 19.082, 9.538 en 12.985 records. Daarmee zijn
+  alle 26 niet-vogelgroepen voor alle 34 hokken compleet en gevalideerd. De
+  aanvraagfase is afgerond; de volgende fase begint met de geïntegreerde,
+  ontdubbelde stagingdataset uit de bewaarde bronbestanden.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
