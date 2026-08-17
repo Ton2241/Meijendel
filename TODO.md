@@ -29,8 +29,11 @@
   records. Ook Zoogdieren (overig) is voor alle drie bundels afgedekt en
   gevalideerd, met respectievelijk 19.082, 9.538 en 12.985 records. Daarmee zijn
   alle 26 niet-vogelgroepen voor alle 34 hokken compleet en gevalideerd. De
-  aanvraagfase is afgerond; de volgende fase begint met de geïntegreerde,
-  ontdubbelde stagingdataset uit de bewaarde bronbestanden.
+  aanvraagfase is afgerond. De geïntegreerde, ontdubbelde stagingdataset is op
+  17 augustus 2026 gebouwd en gevalideerd: 886.762 fysieke bronrecords leveren
+  810.830 unieke `Identiteit`-waarden op; 75.932 extra exportvoorkomens zijn
+  verwijderd zonder verlies van herkomst. Er zijn geen echte inhouds- of
+  geometrieconflicten. Zie `docs/NDFF_STAGINGDATASET.md`.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
@@ -57,10 +60,12 @@
   een reproduceerbare koppeling naar `plots`; ondersteun meerdere
   kavelkoppelingen bij overlappende
   NDFF-vlakken en bewaar overlapoppervlak/-aandeel.
-- Rond eerst alle aanvragen af; bouw daarna één geïntegreerde stagingdataset en
-  ontdubbel primair op `Identiteit`. Test met een overlappende herdownload of die
-  waarde tussen leveringen stabiel blijft en leg een conservatieve fallback voor
-  twijfelgevallen vast.
+- Afgerond: alle aanvragen zijn geïntegreerd en primair op `Identiteit`
+  ontdubbeld. `Identiteit` bleek stabiel. Bij 74.896 extra bronvoorkomens
+  verschilt uitsluitend het exportcontextveld `Hoknummer`; alle overige velden
+  en de geometrie zijn gelijk. Ieder fysiek voorkomen blijft controleerbaar in
+  de herkomstlaag; eventuele toekomstige echte conflicten worden apart
+  geregistreerd en nooit stil samengevoegd.
 - Maak vóór de import een afzonderlijke tabel `ndff_soorten`; wijzig de
   vogelgerichte tabel `soorten` niet. Leg de taxonomische vertaling naar
   `pq_vegetatie_taxon.SRTNUM` vast in een aparte, controleerbare vertaaltabel.
