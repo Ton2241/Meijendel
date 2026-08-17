@@ -24,15 +24,13 @@
   Ongewervelden (overig), Reptielen, Schimmels, Snavelinsecten en Spinachtigen
   zijn nu voor alle drie bundels afgedekt en gevalideerd. Ook Sprinkhanen en
   krekels, Vaatplanten, Vissen, Vleermuizen, Vliegen en muggen en
-  Vliesvleugeligen zijn nu volledig afgedekt en gevalideerd. Voor de op 17
-  augustus verzonden laatste vijf aanvragen bevatten Vliegen en muggen bundels
-  2 en 3 respectievelijk 2.989 en 2.927 records en Vliesvleugeligen bundels 1,
-  2 en 3 respectievelijk 5.898, 5.098 en 2.668 records. Alleen Weekdieren en
-  Zoogdieren (overig) resteren nog, ieder over drie hokkenbundels: zes unieke
-  basisaanvragen. Begin de volgende uurreeks met Weekdieren bundels 1, 2 en 3 en
-  daarna Zoogdieren (overig) bundels 1 en 2; controleer vóór iedere verzending
-  opnieuw het actuele FFV-resultaataantal en splits alleen verder boven circa
-  80.000 records.
+  Vliesvleugeligen en Weekdieren zijn nu volledig afgedekt en gevalideerd.
+  Weekdieren bundels 1, 2 en 3 bevatten respectievelijk 7.117, 3.845 en 3.045
+  records. Van Zoogdieren (overig) zijn bundels 1 en 2 eveneens afgedekt en
+  gevalideerd, met respectievelijk 19.082 en 9.538 records. Alleen Zoogdieren
+  (overig) bundel 3 resteert nog als laatste unieke basisaanvraag. Controleer
+  vóór verzending opnieuw het actuele FFV-resultaataantal en splits alleen
+  verder boven circa 80.000 records.
   Eencelligen-bundel 2, Geleedpotigen-bundel 3 en Insecten-bundel 1 zijn door
   vertraagde e-mailbevestigingen elk dubbel geleverd. De paren bevatten
   respectievelijk exact dezelfde 57, 75 en 702 `Identiteit`-waarden en gelden
