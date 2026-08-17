@@ -245,6 +245,13 @@ Of via Terminal:
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
 - De PQ-vegetatiebron vormt hierop een expliciete uitzondering: `pq_vegetatie_import`, `pq_vegetatie_pq`, `pq_vegetatie_opname`, `pq_vegetatie_taxon`, `pq_vegetatie_waarneming`, `pq_vegetatie_opname_plot` en `pq_plot_jaar_vegetatie` worden in de levende MySQL-database beheerd. Wijzig deze gegevens niet handmatig in `meijendel.sql`; genereer de dump na databasevalidatie opnieuw.
+- Bewaar iedere externe database of gegevenslevering die kandidaat is voor
+  import in de levende Meijendel-database, ongeacht formaat zoals Excel, CSV,
+  GeoPackage of SQL, duurzaam onder
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/`. Bepaal vóór iedere nieuwe bron
+  welke bestaande submap inhoudelijk passend is of maak een nieuwe, herkenbare
+  submap en leg het gekozen canonieke pad vast in de bijbehorende
+  importdocumentatie. Gebruik Downloads alleen als tijdelijke ontvangstlocatie.
 - NDFF/FFV-waarnemingen blijven een afzonderlijke externe bronlaag: sla vogels
   over, vraag de FFV-soortgroepen en kilometerhokken als `GeoPackage RD` aan en
   blijf met circa 80.000 records ruim onder de FFV-grens. Routeer de records pas

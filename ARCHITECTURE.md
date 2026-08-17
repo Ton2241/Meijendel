@@ -33,6 +33,11 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`. `tellers` bevat uitsluitend de pseudonieme technische sleutel `id` en de unieke `tellercode`; persoonsgegevens en weergavenamen komen alleen uit de afgeschermde PostgreSQL-ledenadministratie.
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
+- Externe databases en gegevensleveringen die kandidaat zijn voor import in de
+  levende Meijendel-database worden buiten Git duurzaam bewaard onder
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/`. Iedere bron of levering krijgt
+  een vooraf gekozen, inhoudelijk passende bestaande of nieuwe submap; de
+  betreffende importdocumentatie registreert dat canonieke pad.
 
 ## Functionele vogelgroepen en traits
 

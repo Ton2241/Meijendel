@@ -10,6 +10,13 @@
 - Autorisatieniveaus: 1 lid, 2 redacteur, 3 bestuurslid, 4 webmaster, 5 systeembeheer.
 - Bestuursleden mogen ledenadministratie en kavelbeheer bewerken, maar rollen/rechten wijzigen blijft voor webmaster en systeembeheer.
 - Runtime-data zoals uploads, archiefdocumenten en productiebeelden gaan niet in Git; Git bevat code, scripts, documentatie en lege mapstructuur waar nodig.
+- Externe databases en gegevensbestanden die mogelijk in de levende
+  Meijendel-database worden geïmporteerd, worden ongeacht hun formaat duurzaam
+  bewaard onder `/Volumes/T7 Data/Home_Ton/Meijendel data/`. Voor iedere nieuwe
+  bron of levering wordt vooraf bepaald welke bestaande submap passend is of
+  welke nieuwe, herkenbare submap nodig is. Het gekozen canonieke pad wordt in
+  de bijbehorende import- of datasetdocumentatie vastgelegd; Downloads is alleen
+  een tijdelijke ontvangstlocatie.
 - CMS-afbeeldingen die vanuit nieuwsberichten worden geupload zijn runtime-data onder `app/static/uploads/cms`; deploys en back-ups moeten deze map behouden.
 - Canoniek SQL-bestand op de VPS is `/srv/vwgm/data/Meijendel.sql`; oude SQL-locaties mogen hoogstens symlink zijn.
 - MySQL `tellers` bevat uitsluitend `id` en een unieke `tellercode`. Namen, contactgegevens, lidsoort en bandnummer worden alleen in de afgeschermde PostgreSQL-ledenadministratie beheerd en mogen niet terugkeren in `meijendel.sql` of algemene MySQL-back-ups.
