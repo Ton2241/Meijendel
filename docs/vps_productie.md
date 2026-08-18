@@ -1,6 +1,6 @@
 # Actuele VPS-productie voor Meijendel
 
-Momentopname: **18 augustus 2026, 11:12 CEST**. De volledige gedeelde hostinventaris staat
+Momentopname: **18 augustus 2026, 12:36 CEST**. De volledige gedeelde hostinventaris staat
 canoniek in `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
 Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 
@@ -15,7 +15,7 @@ Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 | Buildx | 0.36.1 |
 | MySQL | exact 9.7.1 |
 | MySQL-image | `sha256:7a3fab78504a0ed4fb7abda10761e5335d7c1c0228ef09fdafe1cac29c764784` |
-| Shiny | container `shiny_meijendel`, image `vwgm-shiny:latest` |
+| Shiny | container `shiny_meijendel`, image `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906` |
 | R in Shiny | 4.6.0 |
 | Caddy | 2.11.4 |
 | PostgreSQL | 16.14, voor de VWG-M-app en ledenrechten |
@@ -32,7 +32,7 @@ als versiegescheiden rollback. Dit is herstelcapaciteit, geen afval. De
 rollback wordt uiterlijk 25 augustus opnieuw beoordeeld volgens `TODO.md`.
 
 Actieve Meijendel-productiecommit:
-`34c6648c36890bca822ef9ca9cf9a086061f442b`.
+`e22e54227abd0b388bec27bc911c747aa496eea0`.
 
 ## Opslag en containers
 
@@ -49,7 +49,8 @@ de drie bijbehorende canoniek getagde images. Het rapporteert 0 B ongebruikte
 image-opslag, 0 B buildcache en geen volumes. Het rootfilesystem gebruikt 23
 van 77 GB (30%). Een volgende
 Shiny-imagebuild kan hierdoor langer duren, maar is volledig reproduceerbaar
-uit `deploy/shiny_image/`.
+uit `deploy/shiny_image/`. De multi-stagebuild houdt compilers, ontwikkelheaders
+en `linux-libc-dev` buiten de runtime; de actieve image bevat 275 OS-pakketten.
 
 ## Beveiliging en beheer
 
@@ -60,7 +61,7 @@ uit `deploy/shiny_image/`.
 - UFW laat alleen SSH, HTTP en HTTPS toe.
 - Ubuntu Pro is gekoppeld met alleen `esm-apps`; APT heeft 0 open updates en
   er is geen reboot nodig.
-- De bare-metalback-up van 18 augustus 11:11 CEST is checksumgeldig en bevat
+- De bare-metalback-up van 18 augustus 12:36 CEST is checksumgeldig en bevat
   uitsluitend de drie toegestane images, een volledig proefherstelde dump en
   179 archieffoto's.
 
@@ -93,10 +94,10 @@ test-, preflight- en deploylijn verplicht.
 De eerste volledige imagescan van 18 augustus 2026 vond in Shiny 17
 `CRITICAL`/233 `HIGH`, in actieve MySQL 1/27 en in de 9.5-rollback 1/88. De
 daaropvolgende kandidaatbuilds zijn exact gescand en geïsoleerd getest en onder
-de deploylock geactiveerd. Actief zijn Shiny `sha256:3846e58a...` met 0
-`CRITICAL`/43 `HIGH` zonder fix, MySQL 9.7.1 `sha256:7a3fab78...` met 0/0 en
-de MySQL-9.5-rollback `sha256:d15ac8c7...` met 0/0. De resterende
-Shiny-meldingen zitten uitsluitend in `linux-libc-dev 6.8.0-137.137`.
+de deploylock geactiveerd. De eerste runtimekandidaat bevatte nog
+`linux-libc-dev`; de definitieve multi-stagebuild verwijdert alle bouwpakketten.
+Actief zijn Shiny `sha256:478ed47b...`, MySQL 9.7.1 `sha256:7a3fab78...` en de
+MySQL-9.5-rollback `sha256:d15ac8c7...`, alle met 0 `CRITICAL`/0 `HIGH`.
 Na de afsluitende opruiming bleven de exacte scan en volledige
 multi-hostrooktest groen; herstelbewijs staat in scans, back-up en release, niet
 in extra gestopte containers.
