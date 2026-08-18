@@ -188,7 +188,7 @@ docker exec "$CANDIDATE_CONTAINER" Rscript -e '
   stopifnot(nzchar(Sys.which("perl")))
 '
 docker exec "$CANDIDATE_CONTAINER" sh -lc '
-  for package in cmake g++ make linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
+  for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
     ! dpkg-query -W "$package" >/dev/null 2>&1
   done
   ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec ldd {} \; | grep -F "not found"

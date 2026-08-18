@@ -34,12 +34,32 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libuv1t64 \
     libxml2 \
     perl \
+    && apt-mark manual \
+      libcurl4t64 libgfortran5 libglpk40 libgmp10 libssl3t64 libstdc++6 \
+      libudunits2-0 libuv1t64 libxml2 perl \
+    && apt-get purge -y --auto-remove \
+      build-essential \
+      cmake \
+      g++ \
+      gcc \
+      gfortran \
+      libc6-dev \
+      libcurl4-openssl-dev \
+      libglpk-dev \
+      libgmp3-dev \
+      libssl-dev \
+      libudunits2-dev \
+      libxml2-dev \
+      linux-libc-dev \
+      make \
+      r-base-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=builder /usr/local/lib/R/site-library/ /usr/local/lib/R/site-library/
 
 RUN set -eu; \
-    for package in cmake g++ make linux-libc-dev libcurl4-openssl-dev \
+    for package in build-essential cmake g++ gcc gfortran make r-base-dev \
+      libc6-dev linux-libc-dev libcurl4-openssl-dev \
       libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do \
       if dpkg-query -W "$package" >/dev/null 2>&1; then \
         echo "Bouwpakket hoort niet in de runtime: $package" >&2; \

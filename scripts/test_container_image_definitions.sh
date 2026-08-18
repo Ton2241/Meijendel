@@ -15,14 +15,16 @@ grep -Fq 'Bouwpakket hoort niet in de runtime' "$shiny"
 grep -Fq -- "-name '*.so' -exec ldd" "$shiny"
 
 runtime_stage="$(sed -n '/ AS runtime$/,$p' "$shiny")"
-runtime_packages="$(printf '%s\n' "$runtime_stage" | sed -n '/^RUN apt-get update/,/rm -rf/p')"
-for package in cmake g++ make linux-libc-dev libcurl4-openssl-dev libglpk-dev \
-  libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
+runtime_packages="$(printf '%s\n' "$runtime_stage" | sed -n '/^RUN apt-get update/,/&& apt-mark manual/p')"
+for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev \
+  linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev \
+  libudunits2-dev libxml2-dev; do
   if printf '%s\n' "$runtime_packages" | grep -Fq "    $package"; then
     printf 'FOUT: bouwpakket staat in de Shiny-runtimefase: %s.\n' "$package" >&2
     exit 1
   fi
 done
+grep -Fq 'apt-get purge -y --auto-remove' "$shiny"
 for package in libcurl4t64 libgfortran5 libglpk40 libgmp10 libssl3t64 \
   libstdc++6 libudunits2-0 libuv1t64 libxml2 perl; do
   printf '%s\n' "$runtime_packages" | grep -Fq "    $package"
