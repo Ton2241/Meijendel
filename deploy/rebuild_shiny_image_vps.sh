@@ -160,8 +160,18 @@ candidate_label="kandidaat-${candidate_short:0:12}"
 grep -Fq "SAMENVATTING|$candidate_label|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
   <<<"$candidate_audit" || guard_die "kandidaat heeft HIGH/CRITICAL-bevindingen of is niet exact gescand."
 if [[ "$candidate_audit_status" -ne 0 ]]; then
-  grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' \
-    <<<"$candidate_audit" || guard_die "kandidaataudit faalde buiten de bekende oude Shiny-baseline."
+  unexpected_tags="$(grep '^AANDACHT|container-hygiene|onverwachte-imagetag=' <<<"$candidate_audit" || true)"
+  expected_candidate_tag="AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"
+  if grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' \
+      <<<"$candidate_audit"; then
+    : # Alleen de gedocumenteerde oude productie-image mag nog 0/43 opleveren.
+  elif [[ "$unexpected_tags" == "$expected_candidate_tag" ]] &&
+       ! grep -Eq '^SAMENVATTING\|.*\|(critical|high)=[1-9][0-9]*' <<<"$candidate_audit" &&
+       ! grep -Eq '^(URGENT|BLOKKADE)\|' <<<"$candidate_audit"; then
+    : # De expliciet gescande tijdelijke kandidaattag staat bewust niet in de productie-allowlist.
+  else
+    guard_die "kandidaataudit faalde buiten de bekende oude Shiny-baseline of de ene expliciete kandidaattag."
+  fi
 fi
 
 echo "== Test kandidaat geïsoleerd op 127.0.0.1:3839 =="

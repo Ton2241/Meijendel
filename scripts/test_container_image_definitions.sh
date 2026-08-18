@@ -41,6 +41,8 @@ grep -Fq 'chown -R "$(id -u):$(id -g)" /app_cache' "$shiny_rebuild"
 grep -Fq 'docker image rm "$OLD_IMAGE_ID"' "$shiny_rebuild"
 grep -Fq 'SWITCH_STARTED=0' "$shiny_rebuild"
 grep -Fq 'docker image inspect "$OLD_IMAGE_ID"' "$shiny_rebuild"
+grep -Fq 'expected_candidate_tag="AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"' "$shiny_rebuild"
+grep -Fq 'unexpected_tags" == "$expected_candidate_tag' "$shiny_rebuild"
 grep -Fq 'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl' "$shiny_rebuild"
 
 for file in "$mysql_971" "$mysql_950"; do
