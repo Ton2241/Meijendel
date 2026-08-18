@@ -39,6 +39,8 @@ grep -Fq '127.0.0.1:3839:3838' "$shiny_rebuild"
 grep -Fq 'remote_cleanup_or_rollback' "$shiny_rebuild"
 grep -Fq 'chown -R "$(id -u):$(id -g)" /app_cache' "$shiny_rebuild"
 grep -Fq 'docker image rm "$OLD_IMAGE_ID"' "$shiny_rebuild"
+grep -Fq 'SWITCH_STARTED=0' "$shiny_rebuild"
+grep -Fq 'docker image inspect "$OLD_IMAGE_ID"' "$shiny_rebuild"
 grep -Fq 'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl' "$shiny_rebuild"
 
 for file in "$mysql_971" "$mysql_950"; do

@@ -106,7 +106,7 @@ set -e
 printf '%s\n' "$baseline_output"
 if [[ "$baseline_status" -ne 0 ]] && \
    ! grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' <<<"$baseline_output"; then
-  guard_die "baseline-audit wijkt af van de gedocumenteerde 0 CRITICAL/43 HIGH zonder fix."
+  guard_die "baseline-audit bevat andere HIGH/CRITICAL-bevindingen dan de gedocumenteerde oude Shiny-baseline."
 fi
 
 if [[ "$APPLY" -ne 1 ]]; then
@@ -233,13 +233,18 @@ REMOTE
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$SMOKE_SCRIPT"
 
 echo "== Verwijder exact de taakartefacten en oude niet-aangewezen Shiny-image =="
+# Productie is nu functioneel bewezen. Een fout in de uitsluitend administratieve
+# opruiming mag vanaf dit punt geen rollback naar de oude image meer starten.
+SWITCH_STARTED=0
 ssh -i "$SSH_KEY" "$VPS" \
   "CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' bash -s" <<'REMOTE'
 set -euo pipefail
 [[ "$(docker inspect --format '{{.Image}}' shiny_meijendel)" == "$CANDIDATE_ID" ]]
 docker image rm "$CANDIDATE_TAG"
 docker image rm "$PREVIOUS_TAG"
-docker image rm "$OLD_IMAGE_ID"
+if docker image inspect "$OLD_IMAGE_ID" >/dev/null 2>&1; then
+  docker image rm "$OLD_IMAGE_ID"
+fi
 docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
 test "$(docker ps -a --format '{{.Names}}' | wc -l)" -eq 3
 test "$(docker images --format '{{.Repository}}:{{.Tag}}' | wc -l)" -eq 3
