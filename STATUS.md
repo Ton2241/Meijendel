@@ -22,8 +22,11 @@ Gereed:
   scans, geïsoleerde tests, preflight, deploylock en rooktest. Actieve MySQL
   9.7.1 en de MySQL-9.5-rollback staan op 0 `CRITICAL`/0 `HIGH`; Shiny staat op
   0 `CRITICAL`/43 `HIGH`, alle zonder beschikbare fix in
-  `linux-libc-dev 6.8.0-137.137`. De vorige containers/images blijven tijdelijk
-  als herstelbewijs behouden; opruiming is afzonderlijk werk.
+  `linux-libc-dev 6.8.0-137.137`. Alle kandidaat-, `previous`- en mislukte
+  container- en imageartefacten zijn daarna gecontroleerd verwijderd. Docker
+  bevat exact actieve MySQL/Shiny en de aangewezen gestopte MySQL-9.5-rollback,
+  met 0 B ongebruikte images en 0 B buildcache. De verse checksumgeldige
+  bare-metalback-up en volledige rooktest zijn groen.
 
 ## SQL-naam en historische PWA
 

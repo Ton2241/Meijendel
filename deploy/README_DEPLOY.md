@@ -23,6 +23,17 @@ trialdatamappen afzonderlijk. Zij verwijdert niets zelf en mag de actieve
 MySQL-9.7.1-datamap of de bewust behouden MySQL-9.5-rollback nooit als cache
 behandelen.
 
+De toegestane eindsituatie bestaat uit de actieve containers
+`meijendel-mysql` en `shiny_meijendel` plus uitsluitend de aangewezen gestopte
+rollback `meijendel-mysql-95-rollback-20260813T104315Z`. De canonieke imagetags
+zijn `vwgm-mysql:9.7.1`, `vwgm-mysql:9.5.0-rollback` en
+`vwgm-shiny:latest`. Kandidaat-, test-, `previous`- en mislukte containers,
+redundante tags, ongebruikte images en herbouwbare taakcache horen na groene
+activering niet in de eindsituatie. Controleer exacte targets en mounts en ruim
+de tijdens de taak gemaakte artefacten als afsluitstap van dezelfde taak op.
+Verwijder een bestaande rollbackcontainer of -datamap alleen na afzonderlijke
+expliciete beoordeling.
+
 Voer vóór iedere MySQL-imagewisseling of Shiny-imagebuild en opnieuw op de
 kandidaat vóór activering de vaste containercontrole uit:
 
@@ -103,7 +114,10 @@ De Shiny-basisimage staat in `deploy/shiny_image/Dockerfile` vast op een
 multi-platformdigest. Maak bij beveiligingsonderhoud eerst een kandidaat met
 `--pull --no-cache`, scan de exacte resulterende image-ID en start hem op een
 afwijkende localhostpoort met dezelfde read-only mounts. Activeer hem pas na de
-package-, cache- en readinesscontroles. Bewaar de vorige image-ID als rollback.
+package-, cache- en readinesscontroles. Houd de vorige image-ID alleen tijdens
+de gecontroleerde activering en directe rollbackperiode beschikbaar. Leg het
+bewijs daarna vast in scanuitvoer en het release-manifest en verwijder de oude
+container, tag en image als zij niet de expliciet aangewezen rollback zijn.
 
 De versievaste MySQL-afgeleiden staan in `deploy/mysql_image/`. Zij werken
 Oracle Linux-pakketten bij, maar schakelen de MySQL-repositories tijdens die
@@ -121,8 +135,15 @@ Voor iedere MySQL-kandidaat geldt:
 4. test 9.5.0 tegen een tijdelijke fysieke kopie van uitsluitend zijn eigen,
    gestopte 9.5-datamap;
 5. voer de wissel onder `/srv/vwgm/deploy-state/production.lock` uit, behoud de
-   vorige containers en image-ID's en draai readiness en de volledige rooktest;
+   vorige containers en image-ID's uitsluitend gedurende activering en directe
+   rollbackcontrole en draai readiness en de volledige rooktest;
 6. wijzig de herstelimage-ID en het centrale release-manifest mee.
+
+Na een groene wissel worden alle in deze taak gemaakte kandidaten en de niet als
+rollback aangewezen vorige containers, tags en images exact verwijderd. Toon
+daarna `docker ps -a`, `docker images`, `docker system df`, de exacte image-scan,
+back-upstatus en de volledige rooktest. Een volgende taak mag niet beginnen met
+onverklaarde tijdelijke Docker-artefacten.
 
 Een 9.7-datamap mag nooit met 9.5 worden gestart. Kandidaatdatamappen en
 testcontainers zijn tijdelijk; actieve en rollbackdatamappen worden niet

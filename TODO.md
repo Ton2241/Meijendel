@@ -44,6 +44,10 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Productie en beheer
 
+- Beoordeel de aangewezen MySQL-9.5-rollback uiterlijk op 25 augustus 2026.
+  Verwijder container, image en versiegescheiden datamap pas nadat een verse
+  back-up van de actieve 9.7.1-productie checksumgeldig en proefhersteld is en
+  de observatieperiode zonder MySQL-regressie is afgerond.
 - Container-CVE's blijven wekelijks monitoren. De remediatie van 18 augustus
   2026 is afgerond: beide MySQL-images zijn 0 `CRITICAL`/0 `HIGH`; Shiny heeft
   nog 43 `HIGH` zonder beschikbare fix. Bouw en activeer een nieuwe kandidaat

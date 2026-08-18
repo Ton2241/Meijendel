@@ -68,6 +68,16 @@ Bij iedere nieuwe opdrachtdraad en productiedeploy:
 - gebruik herstelmodus alleen na expliciete bevestiging wanneer productie al defect is; ancestrycontrole, deploy-lock, manifest en volledige nacontrole blijven verplicht
 - rond iedere geslaagde productiedeploy af door `/Users/ton/Documents/GitHub/VWG_Project/RELEASE_MANIFEST.yml` bij te werken: lees beide VPS-statebestanden, voeg een nieuwe release toe met exact de geregistreerde `VWG_M`- en `Meijendel`-commits, valideer ancestry en YAML, en commit/push/merge naar `VWG_Project/main`; hergebruik de bestaande commit van een ongewijzigde component en wijzig historische releases nooit
 - meld een opdracht pas als volledig gesynchroniseerd wanneer `main == origin/main` in alle drie repositories, alle actieve taakbranches gelijklopen met hun upstream, de drie werkbomen schoon zijn en het productie-release-manifest overeenkomt met beide VPS-statebestanden
+- rond imagebuilds en containerwissels pas af nadat alle in die taak gemaakte
+  kandidaat-, test-, `previous`- en mislukte containers, tags en images exact
+  zijn beoordeeld en na groene nacontrole zijn verwijderd; behoud uitsluitend
+  actieve productie en de expliciet gedocumenteerde rollback
+- gebruik gestopte containers niet als herstelbewijs: bewaar bewijs in exacte
+  image-ID's, scanuitvoer, checksums, back-ups en het release-manifest; iedere
+  rollback heeft een doel, laatste test en verwijdercriterium of beoordelingsdatum
+- controleer vóór verwijdering altijd containerstatus, imageverwijzingen en
+  mounts; bestaande rollbackdata verwijderen blijft een afzonderlijk expliciet
+  beoordeelde handeling en een ongerichte Docker-prune is niet toegestaan
 
 Bij communicatie:
 - wees direct, feitelijk en beknopt
