@@ -44,6 +44,10 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Productie en beheer
 
+- Container-CVE's: bouw of haal actuele kandidaatimages op voor Shiny, MySQL
+  9.7 en de MySQL-9.5-rollback, scan hun exacte image-ID's en beoordeel werkelijk
+  runtimegebruik en blootstelling. Activeer alleen na volledige tests,
+  deploypreflight en rooktest; voer geen automatische image-upgrade uit.
 - Bij elke functionele wijziging `handleiding_beheer.md` en auditlogging bijwerken waar relevant.
 - Bij verzoeken om wijzigingen aan `app.vwg-m.nl` of de VPS-site: lokaal aanpassen, committen, naar de VPS deployen en productie verifiëren.
 - Bij brede deploys controleren dat `app/static/uploads/cms` op de VPS behouden blijft; dit is runtime-uploaddata en mag niet door een schone rsync worden verwijderd.

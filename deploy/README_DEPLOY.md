@@ -23,6 +23,20 @@ trialdatamappen afzonderlijk. Zij verwijdert niets zelf en mag de actieve
 MySQL-9.7.1-datamap of de bewust behouden MySQL-9.5-rollback nooit als cache
 behandelen.
 
+Voer vóór iedere MySQL-imagewisseling of Shiny-imagebuild en opnieuw op de
+kandidaat vóór activering de vaste containercontrole uit:
+
+```sh
+cd /Users/ton/Documents/GitHub/VWG_Project
+scripts/vulnerability_audit_vps.sh --containers-only
+scripts/vulnerability_audit_vps.sh --containers-only --image sha256:VOLLEDIGE_IMAGE_ID
+```
+
+De scan gebruikt exacte image-ID's en rapporteert `HIGH` en `CRITICAL` met de
+beschikbare fix. Zij past geen image of container aan. Een noodzakelijke fix
+wordt afzonderlijk gebouwd, getest en uitsluitend via deze veilige
+productielijn geactiveerd.
+
 Deploy bij voorkeur naar een release-directory per commit en activeer die atomisch. Waar dit voor gedeelde Meijendel-data nog niet mogelijk is, moet het manifest volledig zijn en moeten tijdelijke bestanden pas na succesvolle validatie atomisch naar hun definitieve pad worden verplaatst. Deploy geen los gedeeld kernbestand vanuit een andere branch.
 
 Na deploy wacht het script met begrensde retries op Shiny en dashboard, controleert checksums, containerstatus, HTTP-routes en relevante grafiekinhoud, en registreert pas daarna de nieuwe productiecommit. Herstelmodus is alleen toegestaan met expliciete bevestiging wanneer productie al defect is; ancestrycontrole, lock, manifest en volledige groene nacontrole blijven verplicht.

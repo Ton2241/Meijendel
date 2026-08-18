@@ -67,6 +67,8 @@ uit `deploy/shiny_image/`.
 De log- en kwetsbaarheidmonitor controleert voortaan ook:
 
 - exacte MySQL-versie en image-ID;
+- Trivy-scan van de exacte image-ID's van actieve MySQL en Shiny en de bewust
+  behouden MySQL-9.5-rollbackcontainer;
 - actieve versus gestopte containers en hun mounts;
 - Shiny/R-versie en HTTP-readiness;
 - Docker buildcache, ongebruikte images/containers/volumes en tijdelijke
@@ -77,3 +79,19 @@ De log- en kwetsbaarheidmonitor controleert voortaan ook:
 
 De monitor rapporteert read-only. Verwijderen gebeurt alleen na expliciete
 opdracht en na controle van exacte targets en mounts.
+De scan wordt wekelijks en vóór iedere MySQL-imagewisseling of Shiny-imagebuild
+uitgevoerd via
+`VWG_Project/scripts/vulnerability_audit_vps.sh --containers-only`. Scan een
+al op de VPS aanwezige kandidaat vóór activering aanvullend met
+`--image sha256:...`. Rapporteer iedere `CRITICAL`- en `HIGH`-bevinding met
+geïnstalleerde versie en beschikbare fix. Een bevinding leidt nooit automatisch
+tot pull, rebuild, containerwissel of herstart; daarvoor blijft de normale
+test-, preflight- en deploylijn verplicht.
+
+De eerste volledige imagescan van 18 augustus 2026 vond in de actieve
+Shiny-image 17 `CRITICAL` en 233 `HIGH` meldingen (207 met fix), grotendeels in
+`linux-libc-dev 6.8.0-110.110`. De actieve MySQL-9.7.1-image bevatte 1
+`CRITICAL` en 27 `HIGH` meldingen, alle met fix; de gestopte
+MySQL-9.5-rollbackimage 1 `CRITICAL` en 88 `HIGH`, eveneens alle met fix. Dit is
+een open aandachtspunt voor afzonderlijke kandidaatbuilds en gecontroleerde
+imagevervanging; de monitor zelf voert die wijziging niet uit.
