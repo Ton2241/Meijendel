@@ -67,7 +67,8 @@ RUN set -eu; \
         exit 1; \
       fi; \
     done; \
-    if find /usr/local/lib/R/site-library -type f -name '*.so' -exec ldd {} \; | \
+    if find /usr/local/lib/R/site-library -type f -name '*.so' \
+      -exec env LD_LIBRARY_PATH=/usr/local/lib/R/lib ldd {} \; | \
       grep -F 'not found'; then \
       echo 'Een R-package mist een gekoppelde runtimebibliotheek.' >&2; \
       exit 1; \

@@ -191,7 +191,7 @@ docker exec "$CANDIDATE_CONTAINER" sh -lc '
   for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
     ! dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | grep -q '^ii'
   done
-  ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec ldd {} \; | grep -F "not found"
+  ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec env LD_LIBRARY_PATH=/usr/local/lib/R/lib ldd {} \; | grep -F "not found"
 '
 docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
 docker rm -f "$CANDIDATE_CONTAINER" >/dev/null
