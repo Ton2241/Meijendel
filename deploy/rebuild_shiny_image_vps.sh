@@ -193,7 +193,7 @@ docker exec "$CANDIDATE_CONTAINER" Rscript -e '
 '
 docker exec "$CANDIDATE_CONTAINER" sh -lc '
   for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
-    ! dpkg-query -s "$package" 2>/dev/null | grep -q '^Status: install ok installed$'
+    ! dpkg-query -s "$package" 2>/dev/null | grep -q "^Status: install ok installed$"
   done
   ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec env LD_LIBRARY_PATH=/usr/local/lib/R/lib ldd {} \; | grep -F "not found"
 '
