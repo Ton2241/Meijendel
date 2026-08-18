@@ -111,10 +111,20 @@ Voor het herbouwen van het Shiny-image geldt dezelfde tweestapswerkwijze:
 ```
 
 De Shiny-basisimage staat in `deploy/shiny_image/Dockerfile` vast op een
-multi-platformdigest. Maak bij beveiligingsonderhoud eerst een kandidaat met
-`--pull --no-cache`, scan de exacte resulterende image-ID en start hem op een
+multi-platformdigest. De Dockerfile is multi-stage: de builder bevat de
+compilers, headers en `*-dev`-pakketten; de uiteindelijke runtime bevat alleen
+de expliciete uitvoerbibliotheken en de gekopieerde R-packages. De
+definitietest blokkeert onder meer `linux-libc-dev`, compilers en ontwikkel-
+packages in de runtime.
+
+`rebuild_shiny_image_vps.sh` maakt bij beveiligingsonderhoud eerst een
+kandidaat met `--pull --no-cache`, scant de exacte resulterende image-ID en
+start hem op een
 afwijkende localhostpoort met dezelfde read-only mounts. Activeer hem pas na de
-package-, cache- en readinesscontroles. Houd de vorige image-ID alleen tijdens
+package-, ontbrekende-library-, cache- en readinesscontroles. Een kandidaat
+met een `CRITICAL`- of `HIGH`-bevinding wordt niet geactiveerd. Bij een fout
+na het begin van de wissel zet het script de vorige exacte image-ID automatisch
+terug. Houd de vorige image-ID alleen tijdens
 de gecontroleerde activering en directe rollbackperiode beschikbaar. Leg het
 bewijs daarna vast in scanuitvoer en het release-manifest en verwijder de oude
 container, tag en image als zij niet de expliciet aangewezen rollback zijn.

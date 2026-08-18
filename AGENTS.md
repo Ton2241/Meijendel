@@ -72,6 +72,13 @@ Bij iedere nieuwe opdrachtdraad en productiedeploy:
   kandidaat-, test-, `previous`- en mislukte containers, tags en images exact
   zijn beoordeeld en na groene nacontrole zijn verwijderd; behoud uitsluitend
   actieve productie en de expliciet gedocumenteerde rollback
+- bouw het Shiny-image altijd multi-stage: compilers, headers,
+  `linux-libc-dev` en overige `*-dev`-pakketten horen uitsluitend in de
+  builder; de runtime bevat alleen aantoonbaar gekoppelde uitvoerbibliotheken
+- gebruik voor iedere Shiny-rebuild de vaste kandidaatpoort: verse no-cache
+  build met exacte image-ID, 0 `CRITICAL`/0 `HIGH`, geïsoleerde proefcontainer
+  op localhostpoort 3839 met productiemounts, package/cache/readinesscontrole,
+  automatische rollback en daarna de volledige multi-hostrooktest
 - gebruik gestopte containers niet als herstelbewijs: bewaar bewijs in exacte
   image-ID's, scanuitvoer, checksums, back-ups en het release-manifest; iedere
   rollback heeft een doel, laatste test en verwijdercriterium of beoordelingsdatum
