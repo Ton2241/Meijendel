@@ -61,8 +61,8 @@ RUN set -eu; \
     for package in build-essential cmake g++ gcc gfortran make r-base-dev \
       libc6-dev linux-libc-dev libcurl4-openssl-dev \
       libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do \
-      if dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | \
-        grep -q '^ii'; then \
+      if dpkg-query -s "$package" 2>/dev/null | \
+        grep -q '^Status: install ok installed$'; then \
         echo "Bouwpakket hoort niet in de runtime: $package" >&2; \
         exit 1; \
       fi; \
