@@ -88,10 +88,10 @@ geïnstalleerde versie en beschikbare fix. Een bevinding leidt nooit automatisch
 tot pull, rebuild, containerwissel of herstart; daarvoor blijft de normale
 test-, preflight- en deploylijn verplicht.
 
-De eerste volledige imagescan van 18 augustus 2026 vond in de actieve
-Shiny-image 17 `CRITICAL` en 233 `HIGH` meldingen (207 met fix), grotendeels in
-`linux-libc-dev 6.8.0-110.110`. De actieve MySQL-9.7.1-image bevatte 1
-`CRITICAL` en 27 `HIGH` meldingen, alle met fix; de gestopte
-MySQL-9.5-rollbackimage 1 `CRITICAL` en 88 `HIGH`, eveneens alle met fix. Dit is
-een open aandachtspunt voor afzonderlijke kandidaatbuilds en gecontroleerde
-imagevervanging; de monitor zelf voert die wijziging niet uit.
+De eerste volledige imagescan van 18 augustus 2026 vond in Shiny 17
+`CRITICAL`/233 `HIGH`, in actieve MySQL 1/27 en in de 9.5-rollback 1/88. De
+daaropvolgende kandidaatbuilds zijn exact gescand en geïsoleerd getest en onder
+de deploylock geactiveerd. Actief zijn Shiny `sha256:3846e58a...` met 0
+`CRITICAL`/43 `HIGH` zonder fix, MySQL 9.7.1 `sha256:7a3fab78...` met 0/0 en
+de MySQL-9.5-rollback `sha256:d15ac8c7...` met 0/0. De resterende
+Shiny-meldingen zitten uitsluitend in `linux-libc-dev 6.8.0-137.137`.

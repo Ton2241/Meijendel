@@ -18,11 +18,12 @@ Gereed:
   zijn verwijderd. Alleen actieve MySQL/Shiny en de bewust behouden
   versiegescheiden MySQL-9.5-rollbackcontainer blijven aanwezig; Docker heeft
   geen ongebruikte volumes of buildcache.
-- De vaste read-only kwetsbaarheidsaudit is ingericht en als nulmeting
-  uitgevoerd. Python is groen; de actieve Shiny-image meldt 17 `CRITICAL` en
-  233 `HIGH`, actieve MySQL 1/27 en de gestopte MySQL-9.5-rollback 1/88. De
-  monitor wijzigt niets automatisch; kandidaatimages moeten afzonderlijk via
-  scan, tests, preflight en rooktest worden beoordeeld.
+- De containerremediatie is uitgevoerd met digestvaste kandidaatbuilds, exacte
+  scans, geïsoleerde tests, preflight, deploylock en rooktest. Actieve MySQL
+  9.7.1 en de MySQL-9.5-rollback staan op 0 `CRITICAL`/0 `HIGH`; Shiny staat op
+  0 `CRITICAL`/43 `HIGH`, alle zonder beschikbare fix in
+  `linux-libc-dev 6.8.0-137.137`. De vorige containers/images blijven tijdelijk
+  als herstelbewijs behouden; opruiming is afzonderlijk werk.
 
 ## SQL-naam en historische PWA
 
