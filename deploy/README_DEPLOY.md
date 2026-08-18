@@ -99,6 +99,35 @@ Voor het herbouwen van het Shiny-image geldt dezelfde tweestapswerkwijze:
 ./deploy/rebuild_shiny_image_vps.sh --apply --yes
 ```
 
+De Shiny-basisimage staat in `deploy/shiny_image/Dockerfile` vast op een
+multi-platformdigest. Maak bij beveiligingsonderhoud eerst een kandidaat met
+`--pull --no-cache`, scan de exacte resulterende image-ID en start hem op een
+afwijkende localhostpoort met dezelfde read-only mounts. Activeer hem pas na de
+package-, cache- en readinesscontroles. Bewaar de vorige image-ID als rollback.
+
+De versievaste MySQL-afgeleiden staan in `deploy/mysql_image/`. Zij werken
+Oracle Linux-pakketten bij, maar schakelen de MySQL-repositories tijdens die
+update uit. Daardoor blijven server en clients exact 9.7.1 respectievelijk
+9.5.0. De niet gebruikte `mysql-shell` wordt verwijderd. `gosu` 1.19 wordt
+vanaf commit `6456aaa0f3c854d199d0f037f068eb97515b7513` opnieuw gebouwd met de
+digestvaste Go 1.25.13-builder en functioneel getest.
+
+Voor iedere MySQL-kandidaat geldt:
+
+1. bouw vanaf de passende Dockerfile en leg de volledige image-ID vast;
+2. scan die ID met `VWG_Project/scripts/vulnerability_audit_vps.sh --image`;
+3. test 9.7.1 via een verse logische dump/import, exacte rijtellingen en
+   `CHECK TABLE ... EXTENDED` op een afwijkende localhostpoort;
+4. test 9.5.0 tegen een tijdelijke fysieke kopie van uitsluitend zijn eigen,
+   gestopte 9.5-datamap;
+5. voer de wissel onder `/srv/vwgm/deploy-state/production.lock` uit, behoud de
+   vorige containers en image-ID's en draai readiness en de volledige rooktest;
+6. wijzig de herstelimage-ID en het centrale release-manifest mee.
+
+Een 9.7-datamap mag nooit met 9.5 worden gestart. Kandidaatdatamappen en
+testcontainers zijn tijdelijk; actieve en rollbackdatamappen worden niet
+opgeruimd als onderdeel van imageonderhoud.
+
 Als het script geen uitvoerrechten heeft:
 
 ```sh

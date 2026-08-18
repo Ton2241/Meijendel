@@ -1,4 +1,4 @@
-FROM rocker/shiny:latest
+FROM rocker/shiny@sha256:70d09e27b5b9fe7aeeb4aa132f6dae39c84eb80cf10bd6638b6719be7c9f8c5a
 
 ENV CRAN=https://p3m.dev/cran/__linux__/noble/latest
 
