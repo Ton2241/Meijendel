@@ -189,7 +189,7 @@ docker exec "$CANDIDATE_CONTAINER" Rscript -e '
 '
 docker exec "$CANDIDATE_CONTAINER" sh -lc '
   for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
-    ! dpkg-query -W "$package" >/dev/null 2>&1
+    ! dpkg-query -W -f='${db:Status-Abbrev}' "$package" 2>/dev/null | grep -q '^ii'
   done
   ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec ldd {} \; | grep -F "not found"
 '

@@ -12,6 +12,7 @@ grep -Eq '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS builder$' "$shiny"
 grep -Eq '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS runtime$' "$shiny"
 grep -Fq 'COPY --from=builder /usr/local/lib/R/site-library/' "$shiny"
 grep -Fq 'Bouwpakket hoort niet in de runtime' "$shiny"
+grep -Fq -- "-f='\${db:Status-Abbrev}'" "$shiny"
 grep -Fq -- "-name '*.so' -exec ldd" "$shiny"
 
 runtime_stage="$(sed -n '/ AS runtime$/,$p' "$shiny")"
