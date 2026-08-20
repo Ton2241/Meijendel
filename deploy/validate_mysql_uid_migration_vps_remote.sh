@@ -40,7 +40,9 @@ inventory() {
   while IFS=$'\t' read -r table type; do
     [[ "$type" == "BASE TABLE" ]] || continue
     quoted="${table//\`/\`\`}"
-    count="$(mysql_query "$container" "SELECT COUNT(*) FROM \`$quoted\`")"
+    if ! count="$(mysql_query "$container" "SELECT COUNT(*) FROM \`$quoted\`")"; then
+      fail "rijtelling faalde voor $container:$table"
+    fi
     printf '%s\t%s\n' "$table" "$count" >> "$tmp_dir/$prefix.rows"
   done < "$tmp_dir/$prefix.objects"
   docker exec "$container" sh -c \
@@ -53,20 +55,23 @@ inventory() {
 
 inventory "$SOURCE_CONTAINER" source
 inventory "$TARGET_CONTAINER" target
-diff -u "$tmp_dir/source.objects" "$tmp_dir/target.objects" >/dev/null ||
-  fail "objectinventaris wijkt af"
-diff -u "$tmp_dir/source.rows" "$tmp_dir/target.rows" >/dev/null ||
-  fail "exacte rijtellingen wijken af"
-diff -u "$tmp_dir/source.schema.sql" "$tmp_dir/target.schema.sql" >/dev/null ||
-  fail "schemastructuur wijkt af"
-diff -u "$tmp_dir/source.settings" "$tmp_dir/target.settings" >/dev/null ||
-  fail "serverinstellingen wijken af"
+compare() {
+  local source="$1" target="$2" label="$3"
+  if ! diff -u "$source" "$target" > "$tmp_dir/compare.diff"; then
+    sed -n '1,160p' "$tmp_dir/compare.diff" >&2
+    fail "$label wijkt af"
+  fi
+}
+compare "$tmp_dir/source.objects" "$tmp_dir/target.objects" objectinventaris
+compare "$tmp_dir/source.rows" "$tmp_dir/target.rows" "exacte rijtellingen"
+compare "$tmp_dir/source.schema.sql" "$tmp_dir/target.schema.sql" schemastructuur
+compare "$tmp_dir/source.settings" "$tmp_dir/target.settings" serverinstellingen
 
 mysql_user="$(docker exec "$TARGET_CONTAINER" printenv MYSQL_USER)"
 mysql_database="$(docker exec "$TARGET_CONTAINER" printenv MYSQL_DATABASE)"
 [[ "$mysql_user" =~ ^[A-Za-z0-9_]+$ && "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] ||
   fail "onveilige MySQL-envnaam"
-read -r privilege_count unexpected_count < <(
+if ! read -r privilege_count unexpected_count < <(
   docker exec "$TARGET_CONTAINER" sh -c \
     'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD"' <<SQL
 SELECT COUNT(*), COALESCE(SUM(PRIVILEGE_TYPE <> 'SELECT'), 0)
@@ -74,7 +79,9 @@ FROM information_schema.SCHEMA_PRIVILEGES
 WHERE GRANTEE = CONCAT(QUOTE('$mysql_user'), '@', QUOTE('%'))
   AND TABLE_SCHEMA = '$mysql_database';
 SQL
-)
+); then
+  fail "rechteninventaris kon niet worden gelezen"
+fi
 [[ "$privilege_count" -eq 1 && "$unexpected_count" -eq 0 ]] ||
   fail "leesaccount heeft niet exact één SELECT-schemarecht"
 docker exec "$TARGET_CONTAINER" sh -c \
@@ -82,9 +89,12 @@ docker exec "$TARGET_CONTAINER" sh -c \
   grep -qx 1 || fail "leesaccount kan de kandidaatdatabase niet lezen"
 
 check_count=0
-while IFS=$'\t' read -r table _type; do
+while IFS=$'\t' read -r table type; do
+  [[ "$type" == "BASE TABLE" ]] || continue
   quoted="${table//\`/\`\`}"
-  output="$(mysql_query "$TARGET_CONTAINER" "CHECK TABLE \`$quoted\` EXTENDED")"
+  if ! output="$(mysql_query "$TARGET_CONTAINER" "CHECK TABLE \`$quoted\` EXTENDED")"; then
+    fail "CHECK TABLE EXTENDED kon niet worden uitgevoerd voor $table"
+  fi
   printf '%s\n' "$output" | awk -F '\t' 'END { exit !($3 == "status" && $4 == "OK") }' ||
     fail "CHECK TABLE EXTENDED faalde voor $table"
   check_count=$((check_count + 1))
