@@ -225,8 +225,11 @@ docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
   --env-file "$MYSQL_ENV" -p 127.0.0.1:3308:3306 \
   -v "$NEW_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 >/dev/null
 for attempt in $(seq 1 120); do
-  if docker exec "$CANDIDATE_CONTAINER" sh -c \
-      'mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1; then
+  candidate_version="$(docker exec "$CANDIDATE_CONTAINER" sh -c \
+      'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT VERSION()"' 2>/dev/null || true)"
+  if [[ "$candidate_version" == 9.7.1 ]] &&
+      docker logs "$CANDIDATE_CONTAINER" 2>&1 | grep -Fq \
+        'MySQL init process done. Ready for start up.'; then
     break
   fi
   [[ "$attempt" -lt 120 ]] || { docker logs --tail 160 "$CANDIDATE_CONTAINER" >&2; exit 1; }
