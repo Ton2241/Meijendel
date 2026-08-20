@@ -71,7 +71,7 @@ mysql_user="$(docker exec "$TARGET_CONTAINER" printenv MYSQL_USER)"
 mysql_database="$(docker exec "$TARGET_CONTAINER" printenv MYSQL_DATABASE)"
 [[ "$mysql_user" =~ ^[A-Za-z0-9_]+$ && "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] ||
   fail "onveilige MySQL-envnaam"
-if ! read -r privilege_count unexpected_count < <(
+if ! privilege_inventory="$(
   docker exec "$TARGET_CONTAINER" sh -c \
     'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD"' <<SQL
 SELECT COUNT(*), COALESCE(SUM(PRIVILEGE_TYPE <> 'SELECT'), 0)
@@ -79,9 +79,12 @@ FROM information_schema.SCHEMA_PRIVILEGES
 WHERE GRANTEE = CONCAT(QUOTE('$mysql_user'), '@', QUOTE('%'))
   AND TABLE_SCHEMA = '$mysql_database';
 SQL
-); then
+)"; then
   fail "rechteninventaris kon niet worden gelezen"
 fi
+read -r privilege_count unexpected_count <<< "$privilege_inventory"
+[[ "$privilege_count" =~ ^[0-9]+$ && "$unexpected_count" =~ ^[0-9]+$ ]] ||
+  fail "rechteninventaris heeft een onverwacht formaat"
 [[ "$privilege_count" -eq 1 && "$unexpected_count" -eq 0 ]] ||
   fail "leesaccount heeft niet exact één SELECT-schemarecht"
 docker exec "$TARGET_CONTAINER" sh -c \
