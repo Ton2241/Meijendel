@@ -137,7 +137,24 @@ REMOTE
 
 "$ISOLATION_SCRIPT"
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$SMOKE_SCRIPT"
-"$AUDIT_SCRIPT" --containers-only
+set +e
+baseline_audit="$("$AUDIT_SCRIPT" --containers-only 2>&1)"
+baseline_status=$?
+set -e
+printf '%s\n' "$baseline_audit"
+if [[ "$baseline_status" -ne 0 ]]; then
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
+    <<<"$baseline_audit" || guard_die "actieve MySQL-baselinescan wijkt af van de beoordeelde 0/8 curl/libcurl-bevinding."
+  grep -Fq 'SAMENVATTING|meijendel-mysql-95-rollback-20260813T104315Z|critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
+    <<<"$baseline_audit" || guard_die "oude rollbackscan wijkt af van de beoordeelde 0/8 curl/libcurl-bevinding."
+  grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
+    <<<"$baseline_audit" || guard_die "Shiny-baselinescan wijkt af."
+  ! grep -Eq '^(URGENT|BLOKKADE)\|' <<<"$baseline_audit" ||
+    guard_die "baselinescan bevat een urgente blokkade."
+  ! grep -Fq 'AANDACHT|container-hygiene|' <<<"$baseline_audit" ||
+    guard_die "baselinescan bevat onverwachte Docker-artefacten."
+  printf 'AANDACHT: uitsluitend de beoordeelde oude MySQL 0/8-baseline is toegestaan; de kandidaat moet 0/0 zijn.\n'
+fi
 
 if [[ "$APPLY" -ne 1 ]]; then
   echo "Preflight klaar; productie is niet gewijzigd. Gebruik --apply --yes na beoordeling."
