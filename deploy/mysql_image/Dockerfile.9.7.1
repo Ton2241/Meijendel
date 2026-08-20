@@ -9,7 +9,12 @@ RUN git clone https://github.com/tianon/gosu.git /src \
 FROM mysql@sha256:cbade841779f1661300e705721f9d2ff159865cc7a8a291affbff43ac6ec7f1d
 
 USER root
-RUN microdnf remove -y mysql-shell \
+ARG MYSQL_UID=1999
+ARG MYSQL_GID=1999
+RUN groupmod --gid "$MYSQL_GID" mysql \
+    && usermod --uid "$MYSQL_UID" --gid "$MYSQL_GID" mysql \
+    && find /var/lib/mysql /var/run/mysqld -xdev -user 999 -exec chown "$MYSQL_UID:$MYSQL_GID" {} + \
+    && microdnf remove -y mysql-shell \
     && microdnf \
        --disablerepo=mysql-tools-community \
        --disablerepo=mysql9.7-server-minimal \
@@ -19,4 +24,6 @@ RUN microdnf remove -y mysql-shell \
 COPY --from=gosu-builder /gosu /usr/local/bin/gosu
 RUN gosu --version \
     && gosu nobody id -u | grep -qx 65534 \
+    && test "$(id -u mysql)" -eq "$MYSQL_UID" \
+    && test "$(id -g mysql)" -eq "$MYSQL_GID" \
     && mysql --version | grep -Fq 'Ver 9.7.1 '

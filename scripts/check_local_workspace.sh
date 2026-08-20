@@ -46,9 +46,13 @@ if [[ -n "${VWG_LOCAL_CHECK_FORCE_DATALLESS:-}" ]]; then
 fi
 
 [[ "$(uname -s)" == "Darwin" ]] || exit 0
-[[ -d "$REPO_DIR/.git" ]] || die "geen Git-metadata gevonden in $REPO_DIR"
+[[ "$(git -C "$REPO_DIR" rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]] ||
+  die "geen geldige Git-worktree gevonden in $REPO_DIR"
+GIT_DIR="$(git -C "$REPO_DIR" rev-parse --absolute-git-dir 2>/dev/null)" ||
+  die "Git-metadata kon niet worden bepaald voor $REPO_DIR"
 
 check_tree "$REPO_DIR/.git"
+[[ "$GIT_DIR" == "$REPO_DIR/.git" ]] || check_tree "$GIT_DIR"
 check_tracked_files
 
 for extra_path in "$@"; do

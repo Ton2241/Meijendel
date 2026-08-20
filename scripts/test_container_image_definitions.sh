@@ -56,6 +56,12 @@ done
 grep -Eq '^FROM mysql@sha256:[0-9a-f]{64}$' "$mysql_971"
 grep -Fq -- '--disablerepo=mysql9.7-server-minimal' "$mysql_971"
 grep -Fq "mysql --version | grep -Fq 'Ver 9.7.1 '" "$mysql_971"
+grep -Fq 'ARG MYSQL_UID=1999' "$mysql_971"
+grep -Fq 'ARG MYSQL_GID=1999' "$mysql_971"
+grep -Fq 'groupmod --gid "$MYSQL_GID" mysql' "$mysql_971"
+grep -Fq 'usermod --uid "$MYSQL_UID" --gid "$MYSQL_GID" mysql' "$mysql_971"
+grep -Fq 'test "$(id -u mysql)" -eq "$MYSQL_UID"' "$mysql_971"
+grep -Fq 'test "$(id -g mysql)" -eq "$MYSQL_GID"' "$mysql_971"
 
 grep -Eq '^FROM mysql@sha256:[0-9a-f]{64}$' "$mysql_950"
 grep -Fq -- '--disablerepo=mysqlinnovation-server-minimal' "$mysql_950"
