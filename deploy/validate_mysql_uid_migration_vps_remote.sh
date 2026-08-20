@@ -72,7 +72,7 @@ mysql_database="$(docker exec "$TARGET_CONTAINER" printenv MYSQL_DATABASE)"
 [[ "$mysql_user" =~ ^[A-Za-z0-9_]+$ && "$mysql_database" =~ ^[A-Za-z0-9_]+$ ]] ||
   fail "onveilige MySQL-envnaam"
 if ! privilege_inventory="$(
-  docker exec "$TARGET_CONTAINER" sh -c \
+  docker exec -i "$TARGET_CONTAINER" sh -c \
     'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD"' <<SQL
 SELECT COUNT(*), COALESCE(SUM(PRIVILEGE_TYPE <> 'SELECT'), 0)
 FROM information_schema.SCHEMA_PRIVILEGES
