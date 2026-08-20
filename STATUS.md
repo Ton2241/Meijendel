@@ -1,12 +1,24 @@
 # Status Meijendel
 
-Laatste update: 18 augustus 2026
+Laatste update: 20 augustus 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
 ## Repositoryhygiëne
 
 Gereed:
+
+- Caddy/MySQL-servicescheiding fase 1B is uitgevoerd. De digestvaste MySQL
+  9.7.1-image gebruikt UID/GID 1999 en de nieuwe datamap
+  `/srv/vwgm/meijendel-mysql-971-uid1999/data`; Caddy blijft UID 999. De
+  logische migratie vergeleek 92 objecten, exacte rijtellingen, schema en
+  instellingen; 79 basistabellen slaagden voor `CHECK TABLE EXTENDED` en de
+  websiteaccount heeft uitsluitend `SELECT`. De exacte kandidaat-ID
+  `sha256:873c4256d9805230476bdfa09d9a578e73aaa507a39cc54b46d29fe0797b85fe`
+  is 0 `CRITICAL`/0 `HIGH` gescand. Cutover, tweede databasevalidatie,
+  Caddy-isolatie, volledige multi-hostrooktest en de verse checksumgeldige
+  herstelback-up waren groen. De vorige 9.7.1/UID-999-container is gestopt als
+  directe rollback; de oudere 9.5-rollback is in deze taak niet verwijderd.
 
 - Gegenereerde R- en Sass-bestanden onder `app_cache/` worden niet meer door Git gevolgd en zijn projectbreed genegeerd.
 - De Meijendel-deploypreflight controleert na de lokale Shiny/dashboard-pariteitscontrole opnieuw dat de werkboom schoon is.
@@ -18,15 +30,15 @@ Gereed:
   zijn verwijderd. Alleen actieve MySQL/Shiny en de bewust behouden
   versiegescheiden MySQL-9.5-rollbackcontainer blijven aanwezig; Docker heeft
   geen ongebruikte volumes of buildcache.
-- De containerremediatie is uitgevoerd met digestvaste kandidaatbuilds, exacte
-  scans, geïsoleerde tests, preflight, deploylock en rooktest. Actieve MySQL
-  9.7.1 en de MySQL-9.5-rollback staan op 0 `CRITICAL`/0 `HIGH`; Shiny staat op
-  0 `CRITICAL`/43 `HIGH`, alle zonder beschikbare fix in
-  `linux-libc-dev 6.8.0-137.137`. Alle kandidaat-, `previous`- en mislukte
-  container- en imageartefacten zijn daarna gecontroleerd verwijderd. Docker
-  bevat exact actieve MySQL/Shiny en de aangewezen gestopte MySQL-9.5-rollback,
-  met 0 B ongebruikte images en 0 B buildcache. De verse checksumgeldige
-  bare-metalback-up en volledige rooktest zijn groen.
+- De containerremediatie en fase-1B-build zijn uitgevoerd met digestvaste
+  kandidaten, exacte scans, geïsoleerde tests, preflight, deploylock en
+  rooktest. Actieve MySQL 9.7.1/UID-1999 en Shiny staan op 0 `CRITICAL`/0
+  `HIGH`. De gestopte directe UID-999-rollback en oudere 9.5-rollback hadden op
+  20 augustus elk 0 `CRITICAL`/8 `HIGH` in curl/libcurl met beschikbare fix.
+  Alle tijdelijke kandidaat-, test- en mislukte artefacten zijn gecontroleerd
+  verwijderd; de twee rollbacks blijven uitsluitend voor afzonderlijk te
+  beoordelen herstelretentie. De verse checksumgeldige bare-metalback-up en
+  volledige rooktest zijn groen.
 
 ## SQL-naam en historische PWA
 

@@ -1,6 +1,6 @@
 # Actuele VPS-productie voor Meijendel
 
-Momentopname: **18 augustus 2026, 12:36 CEST**. De volledige gedeelde hostinventaris staat
+Momentopname: **20 augustus 2026, 21:57 CEST**. De volledige gedeelde hostinventaris staat
 canoniek in `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
 Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 
@@ -14,7 +14,8 @@ Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 | Docker Compose | 5.4.0 |
 | Buildx | 0.36.1 |
 | MySQL | exact 9.7.1 |
-| MySQL-image | `sha256:7a3fab78504a0ed4fb7abda10761e5335d7c1c0228ef09fdafe1cac29c764784` |
+| MySQL-image | `sha256:873c4256d9805230476bdfa09d9a578e73aaa507a39cc54b46d29fe0797b85fe` |
+| MySQL service-identiteit | UID/GID 1999; Caddy UID 999 |
 | Shiny | container `shiny_meijendel`, image `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906` |
 | R in Shiny | 4.6.0 |
 | Caddy | 2.11.4 |
@@ -22,31 +23,37 @@ Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 
 De actieve MySQL-container is `meijendel-mysql`. De datamap staat
 versiegescheiden onder
-`/srv/vwgm/meijendel-mysql-971-cutover-20260813T104315Z/data`. De canonieke
+`/srv/vwgm/meijendel-mysql-971-uid1999/data`. De canonieke
 SQL-dump staat in `/srv/vwgm/data/Meijendel.sql`; Shiny en websitepaden wijzen
 naar die gecontroleerde bron.
 
-De gestopte container `meijendel-mysql-95-rollback-20260813T104315Z`, het
-MySQL-9.5-image en `/srv/vwgm/meijendel-mysql/data` blijven bewust beschikbaar
+De directe gestopte rollback is
+`meijendel-mysql-971-uid999-rollback-20260820` met de vorige 9.7.1-image en
+datamap. Daarnaast blijven de gestopte container
+`meijendel-mysql-95-rollback-20260813T104315Z`, het
+MySQL-9.5-image en `/srv/vwgm/meijendel-mysql/data` bewust beschikbaar
 als versiegescheiden rollback. Dit is herstelcapaciteit, geen afval. De
 rollback wordt uiterlijk 25 augustus opnieuw beoordeeld volgens `TODO.md`.
 
 Actieve Meijendel-productiecommit:
-`e22e54227abd0b388bec27bc911c747aa496eea0`.
+`21f6b38b67d8742b8d683653b8159c7b12d9fd04`.
 
 ## Opslag en containers
 
-Na gecontroleerde opschoning zijn alleen drie containers aanwezig:
+Na gecontroleerde opschoning zijn vier verklaarde containers aanwezig:
 
 - actief: `meijendel-mysql`;
 - actief: `shiny_meijendel`;
+- gestopt en bewust behouden als directe fase-1B-rollback:
+  `meijendel-mysql-971-uid999-rollback-20260820`;
 - gestopt en bewust behouden: `meijendel-mysql-95-rollback-20260813T104315Z`.
 
-Op 18 augustus zijn na controle van mounts en imageverwijzingen alle
-kandidaat-, `previous`- en mislukte container- en imageartefacten plus de
-herbouwbare buildcache verwijderd. Docker bevat exact deze drie containers en
-de drie bijbehorende canoniek getagde images. Het rapporteert 0 B ongebruikte
-image-opslag, 0 B buildcache en geen volumes. Het rootfilesystem gebruikt 23
+Op 20 augustus zijn na controle van mounts en imageverwijzingen alle
+fase-1B-kandidaat-, test- en mislukte container- en imageartefacten plus de
+herbouwbare buildcache verwijderd. Docker bevat exact de twee actieve en twee
+hierboven verklaarde rollbackcontainers met hun vier canoniek getagde images.
+Het rapporteert 0 B ongebruikte image-opslag, 0 B buildcache en geen volumes.
+Het rootfilesystem gebruikt 23
 van 77 GB (30%). Een volgende
 Shiny-imagebuild kan hierdoor langer duren, maar is volledig reproduceerbaar
 uit `deploy/shiny_image/`. De multi-stagebuild houdt compilers, ontwikkelheaders
@@ -56,22 +63,26 @@ en `linux-libc-dev` buiten de runtime; de actieve image bevat 275 OS-pakketten.
 
 - MySQL is niet publiek bereikbaar en `meijendel_read` heeft uitsluitend
   `SELECT` op het Meijendel-schema.
+- De actieve MySQL-identiteit UID/GID 1999 is gescheiden van Caddy UID 999;
+  de Caddy-checker test actieve en rollbackdatamappen in de live namespace.
 - Dashboard, Shiny, SQL en vereiste output lopen via Caddy `forward_auth` naar
   de VWG-M-login.
 - UFW laat alleen SSH, HTTP en HTTPS toe.
 - Ubuntu Pro is gekoppeld met alleen `esm-apps`; APT heeft 0 open updates en
   er is geen reboot nodig.
-- De bare-metalback-up van 18 augustus 12:36 CEST is checksumgeldig en bevat
-  uitsluitend de drie toegestane images, een volledig proefherstelde dump en
-  179 archieffoto's.
+- De bare-metalback-up van 20 augustus 21:56 CEST is checksumgeldig, 2.944.952.539
+  bytes groot en heeft SHA-256
+  `09d82dfa829da5dad47b4654d5a782112c360b479b9391536ba69c2cb6ef182f`.
+  Het manifest bevat de actieve MySQL-image met UID/GID 1999 en een volledig
+  gevalideerde dump.
 
 ## Monitor- en retentieafspraak
 
 De log- en kwetsbaarheidmonitor controleert voortaan ook:
 
 - exacte MySQL-versie en image-ID;
-- Trivy-scan van de exacte image-ID's van actieve MySQL en Shiny en de bewust
-  behouden MySQL-9.5-rollbackcontainer;
+- Trivy-scan van de exacte image-ID's van actieve MySQL en Shiny en alle bewust
+  behouden MySQL-rollbackcontainers;
 - actieve versus gestopte containers en hun mounts;
 - Shiny/R-versie en HTTP-readiness;
 - Docker buildcache, ongebruikte images/containers/volumes en tijdelijke
@@ -96,8 +107,9 @@ De eerste volledige imagescan van 18 augustus 2026 vond in Shiny 17
 daaropvolgende kandidaatbuilds zijn exact gescand en geïsoleerd getest en onder
 de deploylock geactiveerd. De eerste runtimekandidaat bevatte nog
 `linux-libc-dev`; de definitieve multi-stagebuild verwijdert alle bouwpakketten.
-Actief zijn Shiny `sha256:478ed47b...`, MySQL 9.7.1 `sha256:7a3fab78...` en de
-MySQL-9.5-rollback `sha256:d15ac8c7...`, alle met 0 `CRITICAL`/0 `HIGH`.
-Na de afsluitende opruiming bleven de exacte scan en volledige
-multi-hostrooktest groen; herstelbewijs staat in scans, back-up en release, niet
-in extra gestopte containers.
+Actief zijn Shiny `sha256:478ed47b...` en MySQL 9.7.1/UID-1999
+`sha256:873c4256...`, beide met 0 `CRITICAL`/0 `HIGH`. De directe
+UID-999-rollback `sha256:7a3fab78...` en de 9.5-rollback
+`sha256:d15ac8c7...` hadden op 20 augustus elk 0 `CRITICAL`/8 `HIGH` in
+curl/libcurl met beschikbare fix. Zij zijn gestopt en niet publiek bereikbaar;
+retentie en eventuele verwijdering worden afzonderlijk beoordeeld.

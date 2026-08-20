@@ -24,9 +24,13 @@ MySQL-9.7.1-datamap of de bewust behouden MySQL-9.5-rollback nooit als cache
 behandelen.
 
 De toegestane eindsituatie bestaat uit de actieve containers
-`meijendel-mysql` en `shiny_meijendel` plus uitsluitend de aangewezen gestopte
-rollback `meijendel-mysql-95-rollback-20260813T104315Z`. De canonieke imagetags
-zijn `vwgm-mysql:9.7.1`, `vwgm-mysql:9.5.0-rollback` en
+`meijendel-mysql` en `shiny_meijendel`. Na fase 1B zijn tijdelijk twee exact
+aangewezen gestopte rollbacks toegestaan:
+`meijendel-mysql-971-uid999-rollback-20260820` voor directe terugkeer en
+`meijendel-mysql-95-rollback-20260813T104315Z` voor de oudere versierollback.
+Beoordeel hun retentie afzonderlijk; fase 1B verwijdert ze niet. De canonieke
+imagetags zijn `vwgm-mysql:9.7.1`, `vwgm-mysql:9.7.1-uid999-rollback`,
+`vwgm-mysql:9.5.0-rollback` en
 `vwgm-shiny:latest`. Kandidaat-, test-, `previous`- en mislukte containers,
 redundante tags, ongebruikte images en herbouwbare taakcache horen na groene
 activering niet in de eindsituatie. Controleer exacte targets en mounts en ruim
@@ -148,6 +152,18 @@ Voor iedere MySQL-kandidaat geldt:
    vorige containers en image-ID's uitsluitend gedurende activering en directe
    rollbackcontrole en draai readiness en de volledige rooktest;
 6. wijzig de herstelimage-ID en het centrale release-manifest mee.
+
+De duurzame UID-scheiding wordt uitsluitend uitgevoerd met:
+
+```sh
+deploy/migrate_mysql_uid_vps.sh
+deploy/migrate_mysql_uid_vps.sh --apply --yes
+```
+
+Dit script migreert logisch naar een verse UID/GID-1999-datamap, scant de
+exacte kandidaat-ID, vergelijkt objecten/rijtellingen/schema/settings/grants,
+controleert alle basistabellen en rolt automatisch terug zolang back-up,
+Caddy-isolatie, smoke en productie-state niet volledig groen zijn.
 
 Na een groene wissel worden alle in deze taak gemaakte kandidaten en de niet als
 rollback aangewezen vorige containers, tags en images exact verwijderd. Toon
