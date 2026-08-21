@@ -17,7 +17,7 @@ Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 | MySQL-image | `sha256:873c4256d9805230476bdfa09d9a578e73aaa507a39cc54b46d29fe0797b85fe` |
 | MySQL service-identiteit | UID/GID 1999; Caddy UID 999 |
 | Shiny | container `shiny_meijendel`, image `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906` |
-| R in Shiny | 4.6.0 |
+| R in Shiny | 4.6.1 |
 | Caddy | 2.11.4 |
 | PostgreSQL | 16.14, voor de VWG-M-app en ledenrechten |
 
@@ -53,11 +53,13 @@ fase-1B-kandidaat-, test- en mislukte container- en imageartefacten plus de
 herbouwbare buildcache verwijderd. Docker bevat exact de twee actieve en twee
 hierboven verklaarde rollbackcontainers met hun vier canoniek getagde images.
 Het rapporteert 0 B ongebruikte image-opslag, 0 B buildcache en geen volumes.
-Het rootfilesystem gebruikt 23
-van 77 GB (30%). Een volgende
-Shiny-imagebuild kan hierdoor langer duren, maar is volledig reproduceerbaar
-uit `deploy/shiny_image/`. De multi-stagebuild houdt compilers, ontwikkelheaders
-en `linux-libc-dev` buiten de runtime; de actieve image bevat 275 OS-pakketten.
+Het rootfilesystem gebruikt 23 van 77 GB (30%). Een volgende Shiny-imagebuild
+kan hierdoor langer duren. De lokale fase-8-voorbereiding gebruikt R 4.6.1,
+de vaste P3M-snapshot van 18 augustus 2026 en een gesloten restore van exact
+190 packages uit `renv.lock`. De multi-stagebuild houdt compilers,
+ontwikkelheaders en `linux-libc-dev` buiten de runtime en kan een gevalideerde
+CycloneDX-SBOM maken. De actieve productie-image is door deze lokale
+voorbereiding niet gewijzigd en bevat 275 OS-pakketten.
 
 ## Beveiliging en beheer
 

@@ -8,6 +8,8 @@ REMOTE_SHINY="${REMOTE_SHINY:-$REMOTE_BASE/shiny}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 LOCAL_IMAGE_DIR="$LOCAL_REPO/deploy/shiny_image"
+LOCAL_LOCKFILE="$LOCAL_REPO/renv.lock"
+LOCAL_DESCRIPTION="$LOCAL_REPO/DESCRIPTION"
 VWG_PROJECT="${VWG_PROJECT:-$LOCAL_REPO/../VWG_Project}"
 VWG_M="${VWG_M:-$LOCAL_REPO/../VWG_M}"
 AUDIT_SCRIPT="$VWG_PROJECT/scripts/vulnerability_audit_vps.sh"
@@ -81,6 +83,8 @@ finish() {
 trap finish EXIT INT TERM
 
 [[ -d "$LOCAL_IMAGE_DIR" ]] || guard_die "map ontbreekt: $LOCAL_IMAGE_DIR"
+[[ -f "$LOCAL_LOCKFILE" ]] || guard_die "lockfile ontbreekt: $LOCAL_LOCKFILE"
+[[ -f "$LOCAL_DESCRIPTION" ]] || guard_die "DESCRIPTION ontbreekt: $LOCAL_DESCRIPTION"
 [[ -x "$AUDIT_SCRIPT" ]] || guard_die "audit ontbreekt of is niet uitvoerbaar: $AUDIT_SCRIPT"
 [[ -x "$SMOKE_SCRIPT" ]] || guard_die "rooktest ontbreekt of is niet uitvoerbaar: $SMOKE_SCRIPT"
 guard_baseline
@@ -96,6 +100,8 @@ echo "== Shiny-image manifest en rsync dry-run =="
 echo "deploy/shiny_image/ -> $REMOTE_SHINY/"
 rsync -az --checksum --delay-updates --itemize-changes --dry-run \
   -e "ssh -i $SSH_KEY" "$LOCAL_IMAGE_DIR/" "$VPS:$REMOTE_SHINY/"
+rsync -az --checksum --delay-updates --itemize-changes --dry-run \
+  -e "ssh -i $SSH_KEY" "$LOCAL_LOCKFILE" "$LOCAL_DESCRIPTION" "$VPS:$REMOTE_SHINY/"
 ssh -i "$SSH_KEY" "$VPS" "curl -fsSI http://127.0.0.1:3838/ >/dev/null"
 
 echo "== Baseline container-image-audit =="
@@ -118,6 +124,8 @@ guard_acquire_lock
 
 rsync -az --checksum --delay-updates --itemize-changes \
   -e "ssh -i $SSH_KEY" "$LOCAL_IMAGE_DIR/" "$VPS:$REMOTE_SHINY/"
+rsync -az --checksum --delay-updates --itemize-changes \
+  -e "ssh -i $SSH_KEY" "$LOCAL_LOCKFILE" "$LOCAL_DESCRIPTION" "$VPS:$REMOTE_SHINY/"
 
 OLD_IMAGE_ID="$(ssh -i "$SSH_KEY" "$VPS" \
   "docker inspect --format '{{.Image}}' shiny_meijendel")"
@@ -201,6 +209,9 @@ docker exec "$CANDIDATE_CONTAINER" Rscript -e '
   stopifnot(all(vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)))
   stopifnot(nzchar(Sys.which("perl")))
 '
+docker exec "$CANDIDATE_CONTAINER" Rscript \
+  /opt/vwgm-build/install_shiny_packages.R \
+  /opt/vwgm-build/renv.lock /opt/vwgm-build/DESCRIPTION validate
 docker exec "$CANDIDATE_CONTAINER" sh -lc '
   for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
     ! dpkg-query -s "$package" 2>/dev/null | grep -q "^Status: install ok installed$"
@@ -237,6 +248,9 @@ docker exec shiny_meijendel Rscript -e '
   stopifnot(all(vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)))
   stopifnot(nzchar(Sys.which("perl")))
 '
+docker exec shiny_meijendel Rscript \
+  /opt/vwgm-build/install_shiny_packages.R \
+  /opt/vwgm-build/renv.lock /opt/vwgm-build/DESCRIPTION validate
 docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
 REMOTE
 

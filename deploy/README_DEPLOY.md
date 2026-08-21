@@ -114,10 +114,26 @@ Voor het herbouwen van het Shiny-image geldt dezelfde tweestapswerkwijze:
 ./deploy/rebuild_shiny_image_vps.sh --apply --yes
 ```
 
+Bereid een kandidaat eerst volledig lokaal voor:
+
+```sh
+scripts/build_shiny_image_local.sh
+scripts/test_shiny_reproducibility.sh --image vwgm-shiny:phase8-local
+```
+
+De lokale build gebruikt standaard `--pull --no-cache`, activeert niets en
+maakt naast de kandidaattag een CycloneDX-SBOM. `renv.lock` is canoniek voor
+R 4.6.1 en gebruikt uitsluitend de vaste P3M-snapshot
+`https://p3m.dev/cran/__linux__/noble/2026-08-18`. Builder en runtime moeten
+exact dezelfde 190 lockpackages bevatten; niet-vergrendelde sitepackages
+blokkeren de build.
+
 De Shiny-basisimage staat in `deploy/shiny_image/Dockerfile` vast op een
 multi-platformdigest. De Dockerfile is multi-stage: de builder bevat de
 compilers, headers en `*-dev`-pakketten; de uiteindelijke runtime bevat alleen
-de expliciete uitvoerbibliotheken en de gekopieerde R-packages. De
+de expliciete uitvoerbibliotheken en de gekopieerde R-packages. Beide
+site-libraries worden vóór restore of kopiëren geleegd, zodat packages uit de
+basisimage de lock niet ongemerkt aanvullen. De
 definitietest blokkeert onder meer `linux-libc-dev`, compilers en ontwikkel-
 packages in de runtime.
 

@@ -6,7 +6,7 @@ Description: Lokale projectomgeving voor de Shiny-app met statistische analyses 
 License: Private
 Encoding: UTF-8
 Depends:
-    R (>= 4.5.3)
+    R (>= 4.6.1)
 Imports:
     betapart,
     broom,

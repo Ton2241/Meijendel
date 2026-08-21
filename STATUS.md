@@ -225,10 +225,22 @@ Gereed:
 - `deploy/update_en_deploy_meijendel.sh` en `deploy/deploy_meijendel_vps.sh` voeren `R/check_shiny_dashboard_parity.R` nu als harde deploygate uit over 1958-2025 voordat Shiny/de dashboardomgeving naar de VPS gaat.
 - De paritycontrole tussen Shiny en dashboard is actueel groen.
 - De Shiny-deploycontrole toont voortaan ook containerstatus en resourcegebruik.
+- Fase 8 is lokaal voorbereid: `renv.lock` en `DESCRIPTION` gebruiken R 4.6.1,
+  de pakketbron is vastgezet op P3M-snapshot `2026-08-18` en de multi-stagebuild
+  herstelt een gesloten set van exact 190 lockpackages.
+- De lokale cachevrije `linux/amd64`-kandidaat
+  `sha256:11ed229ef53495d156d8cee32283b3d1c8145f70d0b298aa71a7fd85342041f5`
+  is op R-, package-, runtime-library- en SBOM-inhoud gevalideerd. De
+  CycloneDX-proef bevat 863 componenten, waaronder 211 geïnstalleerde
+  R-componenten en alle 190 lockrecords. Deze kandidaat is niet naar de VPS
+  gekopieerd, niet op productie getest en niet geactiveerd.
 
 Open:
 
 - Shiny blijft relatief zwaar doordat de app TRIM-modellen interactief kan draaien; gebruik blijft daarom bedoeld voor redacteuren/beheerders en niet als publieke rekenservice.
+- Voor productie resteert een afzonderlijke uitvoeringsopdracht: exacte
+  kwetsbaarheidsscan, geïsoleerde poort-3839-test met productiemounts,
+  pariteits-/cache-/rooktests en pas daarna een expliciet activeringsbesluit.
 
 ## Soortpagina's
 

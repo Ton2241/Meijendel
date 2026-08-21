@@ -1,6 +1,7 @@
 FROM rocker/shiny@sha256:70d09e27b5b9fe7aeeb4aa132f6dae39c84eb80cf10bd6638b6719be7c9f8c5a AS builder
 
-ENV CRAN=https://p3m.dev/cran/__linux__/noble/latest
+ENV CRAN=https://p3m.dev/cran/__linux__/noble/2026-08-18 \
+    RENV_CONFIG_REPOS_OVERRIDE=https://p3m.dev/cran/__linux__/noble/2026-08-18
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     cmake \
@@ -16,12 +17,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     perl \
     && rm -rf /var/lib/apt/lists/*
 
-COPY install_shiny_packages.R /tmp/install_shiny_packages.R
-RUN Rscript /tmp/install_shiny_packages.R && rm -f /tmp/install_shiny_packages.R
+COPY renv.lock DESCRIPTION install_shiny_packages.R /tmp/shiny-build/
+RUN Rscript /tmp/shiny-build/install_shiny_packages.R \
+      /tmp/shiny-build/renv.lock /tmp/shiny-build/DESCRIPTION restore && \
+    rm -rf /tmp/shiny-build /tmp/renv-bootstrap
 
 FROM rocker/shiny@sha256:70d09e27b5b9fe7aeeb4aa132f6dae39c84eb80cf10bd6638b6719be7c9f8c5a AS runtime
 
-ENV CRAN=https://p3m.dev/cran/__linux__/noble/latest
+ENV CRAN=https://p3m.dev/cran/__linux__/noble/2026-08-18 \
+    RENV_CONFIG_REPOS_OVERRIDE=https://p3m.dev/cran/__linux__/noble/2026-08-18
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libcurl4t64 \
@@ -55,7 +59,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
       r-base-dev \
     && rm -rf /var/lib/apt/lists/*
 
+RUN rm -rf /usr/local/lib/R/site-library/*
+
 COPY --from=builder /usr/local/lib/R/site-library/ /usr/local/lib/R/site-library/
+COPY renv.lock DESCRIPTION install_shiny_packages.R /opt/vwgm-build/
+
+RUN Rscript /opt/vwgm-build/install_shiny_packages.R \
+      /opt/vwgm-build/renv.lock /opt/vwgm-build/DESCRIPTION validate
 
 RUN set -eu; \
     for package in build-essential cmake g++ gcc gfortran make r-base-dev \
