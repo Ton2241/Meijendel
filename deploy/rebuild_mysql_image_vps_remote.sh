@@ -126,7 +126,7 @@ trap rollback_or_cleanup EXIT INT TERM
 [[ -f "$MYSQL_ENV" && -d "$MYSQL_DATA" ]] || fail "MySQL-env of datamap ontbreekt"
 [[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]] || fail "actieve MySQL draait niet"
 [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$EXPECTED_OLD_IMAGE" ]] || fail "actieve image veranderde"
-[[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"
+[[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"
 [[ "$(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "$ACTIVE_CONTAINER")" == "unless-stopped" ]] || fail "restartbeleid wijkt af"
 docker port "$ACTIVE_CONTAINER" 3306/tcp | grep -Fxq '127.0.0.1:3307' || fail "poortbinding wijkt af"
 [[ "$(docker exec "$ACTIVE_CONTAINER" id -u mysql)" == 1999 && "$(docker exec "$ACTIVE_CONTAINER" id -g mysql)" == 1999 ]] || fail "MySQL UID/GID wijkt af"
@@ -188,7 +188,7 @@ docker run -d --name "$ACTIVE_CONTAINER" --restart unless-stopped \
   -v "$MYSQL_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 >/dev/null
 wait_mysql "$ACTIVE_CONTAINER" || fail "nieuwe actieve MySQL werd niet gereed"
 [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$CANDIDATE_ID" ]] || fail "actieve image wijkt af"
-[[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"
+[[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"
 bash "$REMOTE_STAGE/validate-mysql" "$ACTIVE_CONTAINER" "$ACTIVE_CONTAINER" 1999 1999
 /usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl \
@@ -203,7 +203,7 @@ grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || f
 echo "== Verwijder uitsluitend exacte taakartefacten en oude image =="
 [[ "$(docker inspect --format '{{.State.Status}}' "$PREVIOUS_CONTAINER")" == "exited" ]] || fail "vorige container is niet gestopt"
 [[ "$(docker inspect --format '{{.Image}}' "$PREVIOUS_CONTAINER")" == "$EXPECTED_OLD_IMAGE" ]] || fail "vorige containerimage wijkt af"
-[[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}' "$PREVIOUS_CONTAINER")" == "$MYSQL_DATA" ]] || fail "vorige containermount wijkt af"
+[[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$PREVIOUS_CONTAINER")" == "$MYSQL_DATA" ]] || fail "vorige containermount wijkt af"
 docker rm "$PREVIOUS_CONTAINER" >/dev/null
 docker image rm "$CANDIDATE_TAG" >/dev/null
 docker image rm "$PREVIOUS_TAG" >/dev/null
