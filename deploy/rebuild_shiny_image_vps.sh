@@ -135,8 +135,7 @@ rsync -az --checksum --delay-updates --itemize-changes \
 
 if [[ "$CANDIDATE_ONLY" -eq 1 ]]; then
   echo "== Bouw, scan en test kandidaat zonder productieactivering =="
-  ssh -tt -i "$SSH_KEY" "$VPS" \
-    "sudo env REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' MEIJENDEL_COMMIT='$DEPLOY_LOCAL_COMMIT' bash -s" <<'REMOTE'
+  candidate_remote_script="$(base64 <<'REMOTE' | tr -d '\n'
 set -euo pipefail
 
 ACTIVE_CONTAINER="shiny_meijendel"
@@ -350,6 +349,10 @@ printf 'GROEN|phase8-kandidaat|image=%s|productie=ongewijzigd|bewijs=%s\n' \
   "$CANDIDATE_ID" "$EVIDENCE_DIR"
 docker system df
 REMOTE
+)"
+  remote_candidate_helper="/tmp/vwgm-shiny-candidate-${short_commit}-$$.sh"
+  ssh -tt -i "$SSH_KEY" "$VPS" \
+    "umask 077; printf '%s' '$candidate_remote_script' | base64 -d > '$remote_candidate_helper'; chmod 0700 '$remote_candidate_helper'; sudo env REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' MEIJENDEL_COMMIT='$DEPLOY_LOCAL_COMMIT' bash '$remote_candidate_helper'; status=\$?; rm -f '$remote_candidate_helper'; exit \$status"
   SUCCESS=1
   echo "Kandidaat gebouwd, gescand en geïsoleerd getest; productie is niet geactiveerd."
   exit 0
