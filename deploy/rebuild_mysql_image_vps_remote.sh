@@ -45,6 +45,15 @@ wait_mysql() {
   docker logs --tail 160 "$container" >&2 || true
   return 1
 }
+smoke_status() {
+  local label="$1" host="$2" path="$3" expected="$4" actual
+  actual="$(curl --silent --show-error --insecure --output /dev/null \
+    --write-out '%{http_code}' --resolve "$host:443:127.0.0.1" \
+    "https://$host$path")"
+  [[ "$actual" == "$expected" ]] ||
+    fail "rooktest $label verwachtte $expected maar kreeg $actual"
+  printf 'GROEN|mysql-image-rooktest|%s|status=%s\n' "$label" "$actual"
+}
 validate_backup() {
   cd "$BACKUP_DIR"
   sha256sum -c vwg-m-baremetal-latest.tar.gz.sha256
@@ -193,8 +202,12 @@ wait_mysql "$ACTIVE_CONTAINER" || fail "nieuwe actieve MySQL werd niet gereed"
 [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"
 bash "$REMOTE_STAGE/validate-mysql" "$ACTIVE_CONTAINER" "$ACTIVE_CONTAINER" 1999 1999
 /usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation
-VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl \
-  /srv/vwgm/vwg-m-linux-app/scripts/smoke_vps.sh
+smoke_status publieke-home www.vwg-m.nl /welkom/index.asp 200
+smoke_status mysql-soortpagina www.vwg-m.nl '/soorten/vogel.asp?id=90' 200
+smoke_status leden-afgeschermd www.vwg-m.nl /leden/member-auth 401
+smoke_status shiny-afgeschermd www.vwg-m.nl /shiny_meijendel/ 401
+smoke_status app-redirect app.vwg-m.nl '/welkom/index.asp?bron=app' 308
+smoke_status hoofddomein-redirect vwg-m.nl /welkom/index.asp 301
 
 echo "== Exacte actieve scan en herstelbewijs vóór opruiming =="
 audit_active_with_previous
