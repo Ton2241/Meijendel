@@ -12,9 +12,10 @@ for marker in \
   'critical=0|high=2|fix_beschikbaar=2|zonder_fix=0' \
   'sqlite-libs|installed=3.34.1-10.el9_8|fixed=3.34.1-11.el9_8' \
   'vulnerability-audit-root.*non-zero exit status 1' \
+  '--finalize' 'FINALIZE_ONLY' \
   'ssh -tt' 'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
   'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl'; do
-  grep -Fq "$marker" "$local_script"
+  grep -Fq -- "$marker" "$local_script"
 done
 for marker in \
   '--pull --no-cache --load' 'vulnerability-audit-root --image' \
@@ -29,6 +30,8 @@ for marker in \
   'Meijendel.commit'; do
   grep -Fq -- "$marker" "$remote_script"
 done
+grep -Fq 'finalize_current' "$remote_script"
+grep -Fq 'docker image inspect "$EXPECTED_OLD_IMAGE"' "$remote_script"
 grep -Fq 'CHECK TABLE' "$repo/deploy/validate_mysql_uid_migration_vps_remote.sh"
 [[ "$(grep -Fc -- "--format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}'" "$remote_script")" -eq 3 ]]
 ! grep -Fq -- '\"/var/lib/mysql\"' "$remote_script"

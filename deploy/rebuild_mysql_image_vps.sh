@@ -15,14 +15,16 @@ VALIDATE_HELPER="$SCRIPT_DIR/validate_mysql_uid_migration_vps_remote.sh"
 ACTIVE_CONTAINER="meijendel-mysql"
 APPLY=0
 YES=0
+FINALIZE=0
 REMOTE_STAGE=""
 
 while (($#)); do
   case "$1" in
     --apply) APPLY=1 ;;
+    --finalize) APPLY=1; FINALIZE=1 ;;
     --yes) YES=1 ;;
     -h|--help)
-      echo "Gebruik: deploy/rebuild_mysql_image_vps.sh [--apply --yes]"
+      echo "Gebruik: deploy/rebuild_mysql_image_vps.sh [--apply --yes | --finalize --yes]"
       exit 0
       ;;
     *) echo "Onbekende optie: $1" >&2; exit 2 ;;
@@ -92,6 +94,15 @@ baseline_audit="$("$AUDIT_SCRIPT" --containers-only 2>&1)"
 baseline_status=$?
 set -e
 printf '%s\n' "$baseline_audit"
+if [[ "$FINALIZE" -eq 1 ]]; then
+  [[ "$baseline_status" -eq 0 ]] || guard_die "finalisatiescan is niet volledig groen."
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
+    <<< "$baseline_audit" || guard_die "MySQL-finalisatiescan wijkt af."
+  grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
+    <<< "$baseline_audit" || guard_die "Shiny-finalisatiescan wijkt af."
+  ! grep -Eq '^(URGENT|BLOKKADE|AANDACHT)\|' <<< "$baseline_audit" ||
+    guard_die "finalisatiescan bevat een afwijking."
+else
 [[ "$baseline_status" -eq 1 ]] || guard_die "uitgangsscan heeft niet uitsluitend de verwachte aandachtstatus."
 grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=2|fix_beschikbaar=2|zonder_fix=0' \
   <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/2 repareerbare HIGH."
@@ -107,12 +118,13 @@ baseline_blockades="$(grep -c '^BLOKKADE|' <<< "$baseline_audit" || true)"
 grep -Eq "^BLOKKADE\|vwgm-admin\|.*vulnerability-audit-root.*non-zero exit status 1" \
   <<< "$baseline_audit" ||
   guard_die "uitgangsscan bevat een andere blokkade dan de verwachte gateway-wrapper."
+fi
 
 if [[ "$APPLY" -ne 1 ]]; then
   echo "Preflight klaar; image en productie zijn niet gewijzigd. Gebruik --apply --yes na beoordeling."
   exit 0
 fi
-[[ "$YES" -eq 1 ]] || guard_die "MySQL-image-update vereist --apply --yes."
+[[ "$YES" -eq 1 ]] || guard_die "MySQL-image-update vereist --apply --yes of --finalize --yes."
 
 guard_acquire_lock
 REMOTE_STAGE="/tmp/vwgm-mysql-image-stage-$$"
@@ -122,7 +134,7 @@ scp -i "$SSH_KEY" "$REMOTE_HELPER" "$VPS:$REMOTE_STAGE/rebuild-mysql"
 scp -i "$SSH_KEY" "$VALIDATE_HELPER" "$VPS:$REMOTE_STAGE/validate-mysql"
 
 ssh -tt -i "$SSH_KEY" "$VPS" \
-  "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' NEW_COMMIT='$DEPLOY_LOCAL_COMMIT' SHORT_COMMIT='$short_commit' bash '$REMOTE_STAGE/rebuild-mysql'"
+  "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' NEW_COMMIT='$DEPLOY_LOCAL_COMMIT' SHORT_COMMIT='$short_commit' FINALIZE_ONLY='$FINALIZE' bash '$REMOTE_STAGE/rebuild-mysql'"
 
 echo "== Onafhankelijke nacontrole =="
 VWG_ADMIN_GATEWAY=1 "$VWG_M/website/vwg-m-linux-app/scripts/check_caddy_mysql_isolation_vps.sh"
@@ -131,4 +143,4 @@ VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$SMOKE_SCRIPT"
 remote_state="$(ssh -i "$SSH_KEY" "$VPS" "cat '$DEPLOY_STATE_FILE'")"
 [[ "$remote_state" == "$DEPLOY_LOCAL_COMMIT" ]] || guard_die "Meijendel-productiestatus is niet bijgewerkt."
 
-echo "MySQL-image-update afgerond; productiecommit geregistreerd: $DEPLOY_LOCAL_COMMIT"
+echo "MySQL-image-update/finalisatie afgerond; productiecommit geregistreerd: $DEPLOY_LOCAL_COMMIT"

@@ -8,6 +8,7 @@ set -euo pipefail
 : "${EXPECTED_OLD_IMAGE:?}"
 : "${NEW_COMMIT:?}"
 : "${SHORT_COMMIT:?}"
+FINALIZE_ONLY="${FINALIZE_ONLY:-0}"
 
 ACTIVE_CONTAINER="meijendel-mysql"
 PREVIOUS_CONTAINER="meijendel-mysql-previous-$SHORT_COMMIT"
@@ -124,12 +125,52 @@ rollback_or_cleanup() {
 }
 trap rollback_or_cleanup EXIT INT TERM
 
+finalize_current() {
+  CANDIDATE_ID="$EXPECTED_OLD_IMAGE"
+  [[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]] || fail "actieve MySQL draait niet"
+  [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$CANDIDATE_ID" ]] || fail "actieve eindimage wijkt af"
+  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"
+  [[ "$(docker inspect --format '{{.HostConfig.RestartPolicy.Name}}' "$ACTIVE_CONTAINER")" == "unless-stopped" ]] || fail "restartbeleid wijkt af"
+  docker port "$ACTIVE_CONTAINER" 3306/tcp | grep -Fxq '127.0.0.1:3307' || fail "poortbinding wijkt af"
+  [[ "$(docker exec "$ACTIVE_CONTAINER" id -u mysql)" == 1999 && "$(docker exec "$ACTIVE_CONTAINER" id -g mysql)" == 1999 ]] || fail "MySQL UID/GID wijkt af"
+  wait_mysql "$ACTIVE_CONTAINER" || fail "actieve MySQL werd niet gereed"
+  [[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
+  [[ "$(docker images --format '{{.Repository}}:{{.Tag}}' | sort | tr '\n' ' ')" == "vwgm-mysql:9.7.1 vwgm-shiny:latest " ]] || fail "image-eindsituatie wijkt af"
+
+  final_audit="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root)"
+  printf '%s\n' "$final_audit"
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$final_audit" || fail "actieve MySQL-eindscan is niet 0/0"
+  grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$final_audit" || fail "Shiny-eindscan wijkt af"
+  ! grep -Eq '^(URGENT|BLOKKADE|AANDACHT)\|' <<< "$final_audit" || fail "eindaudit bevat een afwijking"
+  /usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation
+  smoke_status publieke-home www.vwg-m.nl /welkom/index.asp 200
+  smoke_status mysql-soortpagina www.vwg-m.nl '/soorten/vogel.asp?id=90' 200
+  smoke_status leden-afgeschermd www.vwg-m.nl /leden/member-auth 401
+  smoke_status shiny-afgeschermd www.vwg-m.nl /shiny_meijendel/ 401
+
+  /usr/local/sbin/vwgm-baremetal-backup >/tmp/vwgm-mysql-finalize-backup.json
+  validate_backup
+  grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up mist nieuwe image"
+  tmp_state="$STATE_FILE.tmp.$$"
+  printf '%s\n' "$NEW_COMMIT" > "$tmp_state"
+  mv "$tmp_state" "$STATE_FILE"
+  rm -f /tmp/vwgm-mysql-finalize-backup.json
+  SUCCESS=1
+  printf 'GROEN|mysql-image-finalisatie|image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|commit=%s\n' \
+    "$CANDIDATE_ID" "$NEW_COMMIT"
+}
+
 [[ "$(hash_file "$REMOTE_STAGE/Dockerfile.9.7.1")" == "$DOCKERFILE_HASH" ]] || fail "Dockerfilehash wijkt af"
 [[ "$(hash_file "$REMOTE_STAGE/rebuild-mysql")" == "$HELPER_HASH" ]] || fail "helperhash wijkt af"
 [[ "$(hash_file "$REMOTE_STAGE/validate-mysql")" == "$VALIDATOR_HASH" ]] || fail "validatorhash wijkt af"
 [[ "$EXPECTED_OLD_IMAGE" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "oude image-ID is ongeldig"
 [[ "$NEW_COMMIT" =~ ^[0-9a-f]{40}$ && "$SHORT_COMMIT" == "${NEW_COMMIT:0:12}" ]] || fail "commitbinding wijkt af"
 [[ -d "$LOCK" ]] || fail "gedeelde productielock ontbreekt"
+if [[ "$FINALIZE_ONLY" == 1 ]]; then
+  finalize_current
+  exit 0
+fi
+[[ "$FINALIZE_ONLY" == 0 ]] || fail "ongeldige finalisatiemodus"
 [[ ! -e "$TASK_ROOT" ]] || fail "taakmap bestaat al"
 ! docker inspect "$PREVIOUS_CONTAINER" >/dev/null 2>&1 || fail "previous-container bestaat al"
 ! docker inspect "$CANDIDATE_CONTAINER" >/dev/null 2>&1 || fail "kandidaatcontainer bestaat al"
@@ -222,7 +263,9 @@ echo "== Verwijder uitsluitend exacte taakartefacten en oude image =="
 docker rm "$PREVIOUS_CONTAINER" >/dev/null
 docker image rm "$CANDIDATE_TAG" >/dev/null
 docker image rm "$PREVIOUS_TAG" >/dev/null
-docker image rm "$EXPECTED_OLD_IMAGE" >/dev/null
+if docker image inspect "$EXPECTED_OLD_IMAGE" >/dev/null 2>&1; then
+  docker image rm "$EXPECTED_OLD_IMAGE" >/dev/null
+fi
 SWITCH_STARTED=0
 
 final_audit="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root)"
