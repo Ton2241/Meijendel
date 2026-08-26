@@ -6,6 +6,7 @@ shiny="$repo/deploy/shiny_image/Dockerfile"
 shiny_rebuild="$repo/deploy/rebuild_shiny_image_vps.sh"
 mysql_971="$repo/deploy/mysql_image/Dockerfile.9.7.1"
 mysql_950="$repo/deploy/mysql_image/Dockerfile.9.5.0"
+mysql_rebuild="$repo/deploy/rebuild_mysql_image_vps.sh"
 
 [[ "$(grep -Ec '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS (builder|runtime)$' "$shiny")" -eq 2 ]]
 grep -Eq '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS builder$' "$shiny"
@@ -69,6 +70,8 @@ grep -Fq 'groupmod --gid "$MYSQL_GID" mysql' "$mysql_971"
 grep -Fq 'usermod --uid "$MYSQL_UID" --gid "$MYSQL_GID" mysql' "$mysql_971"
 grep -Fq 'test "$(id -u mysql)" -eq "$MYSQL_UID"' "$mysql_971"
 grep -Fq 'test "$(id -g mysql)" -eq "$MYSQL_GID"' "$mysql_971"
+[[ -x "$mysql_rebuild" ]]
+grep -Fq 'rebuild_mysql_image_vps.sh' "$repo/deploy/README_DEPLOY.md"
 
 grep -Eq '^FROM mysql@sha256:[0-9a-f]{64}$' "$mysql_950"
 grep -Fq -- '--disablerepo=mysqlinnovation-server-minimal' "$mysql_950"

@@ -169,6 +169,21 @@ Voor iedere MySQL-kandidaat geldt:
    rollbackcontrole en draai readiness en de volledige rooktest;
 6. wijzig de herstelimage-ID en het centrale release-manifest mee.
 
+De begrensde image-only beveiligingsupdate gebruikt uitsluitend:
+
+```sh
+deploy/rebuild_mysql_image_vps.sh
+deploy/rebuild_mysql_image_vps.sh --apply --yes
+```
+
+De helper bouwt zonder cache terwijl de MySQL-repositories uitgeschakeld
+blijven, scant de exacte kandidaat-ID, voert een logische proefimport met
+object-, rij-, schema-, rechten- en `CHECK TABLE EXTENDED`-vergelijking uit en
+valideert vóór en na de wissel een volledige herstelback-up. De actieve
+UID/GID-1999-datamap blijft ongewijzigd. Na groene rooktest en eindscan worden
+uitsluitend de exact benoemde kandidaat-, `previous`- en oude imageartefacten
+verwijderd; een algemene Docker-prune is verboden.
+
 De duurzame UID-scheiding wordt uitsluitend uitgevoerd met:
 
 ```sh
