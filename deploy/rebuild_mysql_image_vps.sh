@@ -99,8 +99,14 @@ grep -Fq 'pakket=sqlite-libs|installed=3.34.1-10.el9_8|fixed=3.34.1-11.el9_8' \
   <<< "$baseline_audit" || guard_die "sqlite-libs-uitgangsversie of fixversie wijkt af."
 grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   <<< "$baseline_audit" || guard_die "Shiny-uitgangsscan wijkt af."
-! grep -Eq '^(URGENT|BLOKKADE)\|' <<< "$baseline_audit" ||
-  guard_die "uitgangsscan bevat een urgente blokkade."
+! grep -Eq '^URGENT\|' <<< "$baseline_audit" ||
+  guard_die "uitgangsscan bevat een urgente scannerfout."
+baseline_blockades="$(grep -c '^BLOKKADE|' <<< "$baseline_audit" || true)"
+[[ "$baseline_blockades" -eq 1 ]] ||
+  guard_die "uitgangsscan bevat een onverwacht aantal blokkaderegels."
+grep -Eq "^BLOKKADE\|vwgm-admin\|.*vulnerability-audit-root.*non-zero exit status 1" \
+  <<< "$baseline_audit" ||
+  guard_die "uitgangsscan bevat een andere blokkade dan de verwachte gateway-wrapper."
 
 if [[ "$APPLY" -ne 1 ]]; then
   echo "Preflight klaar; image en productie zijn niet gewijzigd. Gebruik --apply --yes na beoordeling."

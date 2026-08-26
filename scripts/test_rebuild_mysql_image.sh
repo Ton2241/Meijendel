@@ -11,6 +11,7 @@ for marker in \
   'guard_baseline' 'guard_acquire_lock' 'container-status' 'backup-status' \
   'critical=0|high=2|fix_beschikbaar=2|zonder_fix=0' \
   'sqlite-libs|installed=3.34.1-10.el9_8|fixed=3.34.1-11.el9_8' \
+  'vulnerability-audit-root.*non-zero exit status 1' \
   'ssh -tt' 'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
   'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl'; do
   grep -Fq "$marker" "$local_script"
