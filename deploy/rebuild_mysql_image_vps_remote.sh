@@ -32,10 +32,12 @@ SUCCESS=0
 fail() { printf 'BLOKKADE|mysql-image-update|%s\n' "$*" >&2; exit 1; }
 hash_file() { sha256sum "$1" | awk '{print $1}'; }
 wait_mysql() {
-  local container="$1" attempt
+  local container="$1" attempt version
   for attempt in $(seq 1 120); do
-    if docker exec "$container" sh -c \
-        'mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1; then
+    version="$(docker exec "$container" sh -c \
+      'mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD" -e "SELECT VERSION()"' \
+      2>/dev/null || true)"
+    if [[ "$version" == "9.7.1" ]]; then
       return 0
     fi
     sleep 2
