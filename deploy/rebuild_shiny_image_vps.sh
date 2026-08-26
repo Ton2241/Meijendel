@@ -182,6 +182,11 @@ CANDIDATE_ID="$(docker image inspect --format '{{.Id}}' "$CANDIDATE_TAG")"
 printf 'KANDIDAAT|phase8|commit=%s|image=%s|actief_ongewijzigd=%s\n' \
   "$MEIJENDEL_COMMIT" "$CANDIDATE_ID" "$ACTIVE_IMAGE_ID"
 
+# De integrale audit moet alleen de bewust behouden kandidaattag zien.
+# BuildKit is na --load niet meer nodig en zou anders valse hygiene-aandacht geven.
+docker buildx rm "$BUILDER_NAME" >/dev/null
+docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
+
 set +e
 AUDIT_OUTPUT="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root --image "$CANDIDATE_ID" 2>&1)"
 AUDIT_STATUS=$?

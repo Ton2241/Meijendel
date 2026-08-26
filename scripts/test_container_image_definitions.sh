@@ -65,6 +65,9 @@ grep -Fq 'GROEN|phase8-sbom|componenten=' "$shiny_rebuild"
 grep -Fq 'check_shiny_dashboard_parity.R' "$shiny_rebuild"
 grep -Fq 'cache=eerste-load-en-hergebruik' "$shiny_rebuild"
 grep -Fq '[[ "$(docker inspect --format' "$shiny_rebuild"
+candidate_scan_prelude="$(sed -n '/^CANDIDATE_ID=.*docker image inspect/,/^AUDIT_OUTPUT=/p' "$shiny_rebuild")"
+grep -Fq 'docker buildx rm "$BUILDER_NAME"' <<<"$candidate_scan_prelude"
+grep -Fq 'docker image rm moby/buildkit:buildx-stable-1' <<<"$candidate_scan_prelude"
 
 for file in "$mysql_971" "$mysql_950"; do
   grep -Eq '^FROM golang@sha256:[0-9a-f]{64} AS gosu-builder$' "$file"
