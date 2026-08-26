@@ -111,8 +111,20 @@ Voor het herbouwen van het Shiny-image geldt dezelfde tweestapswerkwijze:
 
 ```sh
 ./deploy/rebuild_shiny_image_vps.sh
+./deploy/rebuild_shiny_image_vps.sh --candidate-only
+./deploy/rebuild_shiny_image_vps.sh --candidate-only --apply --yes
 ./deploy/rebuild_shiny_image_vps.sh --apply --yes
 ```
+
+Gebruik `--candidate-only --apply --yes` voor de verplichte afzonderlijke
+productiekandidaat. Deze route vraagt één zichtbare sudo-authenticatie, bouwt
+cachevrij op de VPS, scant de exacte image-ID, test packages, runtimebibliotheken,
+eerste load, cachehergebruik en Shiny/dashboardpariteit op localhostpoort 3839,
+en schrijft een aan commit en image-ID gekoppelde CycloneDX-SBOM en scanbewijs
+onder `/srv/vwgm/shiny/evidence/`. De actieve container, `vwgm-shiny:latest` en
+het Meijendel-statebestand blijven ongewijzigd. De kandidaattag blijft alleen
+staan in afwachting van het afzonderlijke activeringsbesluit; verwijderen of
+activeren volgt als eigen gecontroleerde stap, nooit via een algemene prune.
 
 Bereid een kandidaat eerst volledig lokaal voor:
 

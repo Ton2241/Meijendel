@@ -16,6 +16,7 @@ AUDIT_SCRIPT="$VWG_PROJECT/scripts/vulnerability_audit_vps.sh"
 SMOKE_SCRIPT="$VWG_M/website/vwg-m-linux-app/scripts/smoke_vps.sh"
 APPLY=0
 YES=0
+CANDIDATE_ONLY=0
 SUCCESS=0
 SWITCH_STARTED=0
 CANDIDATE_ID=""
@@ -29,8 +30,9 @@ while (($#)); do
   case "$1" in
     --apply) APPLY=1 ;;
     --yes) YES=1 ;;
+    --candidate-only) CANDIDATE_ONLY=1 ;;
     -h|--help)
-      echo "Gebruik: deploy/rebuild_shiny_image_vps.sh [--apply --yes]"
+      echo "Gebruik: deploy/rebuild_shiny_image_vps.sh [--candidate-only] [--apply --yes]"
       exit 0
       ;;
     *) echo "Onbekende optie: $1" >&2; exit 2 ;;
@@ -116,7 +118,11 @@ if [[ "$baseline_status" -ne 0 ]] && \
 fi
 
 if [[ "$APPLY" -ne 1 ]]; then
-  echo "Preflight klaar; image is niet gewijzigd. Gebruik --apply --yes na beoordeling."
+  if [[ "$CANDIDATE_ONLY" -eq 1 ]]; then
+    echo "Preflight klaar; image is niet gewijzigd. Gebruik --candidate-only --apply --yes na beoordeling."
+  else
+    echo "Preflight klaar; image is niet gewijzigd. Gebruik --apply --yes na beoordeling."
+  fi
   exit 0
 fi
 [[ "$YES" -eq 1 ]] || guard_die "image-rebuild vereist --apply --yes."
@@ -126,6 +132,228 @@ rsync -az --checksum --delay-updates --itemize-changes \
   -e "ssh -i $SSH_KEY" "$LOCAL_IMAGE_DIR/" "$VPS:$REMOTE_SHINY/"
 rsync -az --checksum --delay-updates --itemize-changes \
   -e "ssh -i $SSH_KEY" "$LOCAL_LOCKFILE" "$LOCAL_DESCRIPTION" "$VPS:$REMOTE_SHINY/"
+
+if [[ "$CANDIDATE_ONLY" -eq 1 ]]; then
+  echo "== Bouw, scan en test kandidaat zonder productieactivering =="
+  ssh -tt -i "$SSH_KEY" "$VPS" \
+    "sudo env REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' MEIJENDEL_COMMIT='$DEPLOY_LOCAL_COMMIT' bash -s" <<'REMOTE'
+set -euo pipefail
+
+ACTIVE_CONTAINER="shiny_meijendel"
+BUILDER_NAME="vwgm-shiny-candidate-${MEIJENDEL_COMMIT:0:12}"
+EVIDENCE_DIR="$REMOTE_SHINY/evidence/phase8-${MEIJENDEL_COMMIT}"
+WORK_DIR="$(mktemp -d /tmp/vwgm-shiny-candidate.XXXXXX)"
+CANDIDATE_ID=""
+ACTIVE_IMAGE_ID="$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")"
+
+cleanup() {
+  status=$?
+  trap - EXIT INT TERM
+  docker rm -f "$CANDIDATE_CONTAINER" >/dev/null 2>&1 || true
+  rm -rf -- "$CANDIDATE_CACHE" "$WORK_DIR"
+  docker buildx rm "$BUILDER_NAME" >/dev/null 2>&1 || true
+  docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
+  if [[ "$status" -ne 0 && -n "$CANDIDATE_ID" ]]; then
+    docker image rm "$CANDIDATE_TAG" >/dev/null 2>&1 || true
+    if [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER" 2>/dev/null || true)" != "$CANDIDATE_ID" ]]; then
+      docker image rm "$CANDIDATE_ID" >/dev/null 2>&1 || true
+    fi
+    rm -rf -- "$EVIDENCE_DIR"
+  fi
+  exit "$status"
+}
+trap cleanup EXIT INT TERM
+
+[[ "$ACTIVE_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]]
+[[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]]
+test ! -e "$CANDIDATE_CACHE"
+test ! -e "$EVIDENCE_DIR"
+if docker image inspect "$CANDIDATE_TAG" >/dev/null 2>&1; then
+  echo "BLOKKADE: kandidaattag bestaat al: $CANDIDATE_TAG" >&2
+  exit 1
+fi
+
+cd "$REMOTE_SHINY"
+docker buildx create --name "$BUILDER_NAME" --driver docker-container >/dev/null
+docker buildx build --builder "$BUILDER_NAME" --platform linux/amd64 \
+  --pull --no-cache --load --tag "$CANDIDATE_TAG" .
+CANDIDATE_ID="$(docker image inspect --format '{{.Id}}' "$CANDIDATE_TAG")"
+[[ "$CANDIDATE_ID" =~ ^sha256:[0-9a-f]{64}$ ]]
+[[ "$CANDIDATE_ID" != "$ACTIVE_IMAGE_ID" ]]
+printf 'KANDIDAAT|phase8|commit=%s|image=%s|actief_ongewijzigd=%s\n' \
+  "$MEIJENDEL_COMMIT" "$CANDIDATE_ID" "$ACTIVE_IMAGE_ID"
+
+set +e
+AUDIT_OUTPUT="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root --image "$CANDIDATE_ID" 2>&1)"
+AUDIT_STATUS=$?
+set -e
+printf '%s\n' "$AUDIT_OUTPUT"
+CANDIDATE_SHORT="${CANDIDATE_ID#sha256:}"
+grep -Fq "SAMENVATTING|kandidaat-${CANDIDATE_SHORT:0:12}|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
+  <<<"$AUDIT_OUTPUT"
+! grep -Eq '^(URGENT|BLOKKADE)\|' <<<"$AUDIT_OUTPUT"
+if [[ "$AUDIT_STATUS" -ne 0 ]]; then
+  EXPECTED_TAG="AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"
+  UNEXPECTED_TAGS="$(grep '^AANDACHT|container-hygiene|onverwachte-imagetag=' <<<"$AUDIT_OUTPUT" || true)"
+  [[ "$UNEXPECTED_TAGS" == "$EXPECTED_TAG" ]]
+fi
+
+mkdir -p "$CANDIDATE_CACHE/sass"
+docker run --rm -v "$CANDIDATE_CACHE:/app_cache" "$CANDIDATE_ID" \
+  chown -R shiny:shiny /app_cache
+docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
+  -p 127.0.0.1:3839:3838 \
+  --mount type=bind,src="$REMOTE_SHINY/shiny_meijendel",dst=/srv/shiny-server/shiny_meijendel,readonly \
+  --mount type=bind,src="$CANDIDATE_CACHE",dst=/srv/shiny-server/shiny_meijendel/app_cache \
+  --mount type=bind,src="$REMOTE_SHINY/Meijendel.sql",dst=/srv/shiny-server/Meijendel.sql,readonly \
+  --mount type=bind,src="$REMOTE_SHINY/R",dst=/srv/shiny-server/R,readonly \
+  --mount type=bind,src="$REMOTE_SHINY/shiny_meijendel",dst=/workspace/shiny_meijendel,readonly \
+  --mount type=bind,src="$CANDIDATE_CACHE",dst=/workspace/shiny_meijendel/app_cache \
+  --mount type=bind,src="$REMOTE_SHINY/R",dst=/workspace/R,readonly \
+  --mount type=bind,src="$REMOTE_SHINY/Meijendel.sql",dst=/workspace/meijendel.sql,readonly \
+  --mount type=bind,src="$(dirname "$REMOTE_SHINY")/www/trim_msi_evg",dst=/workspace/trim_msi_evg,readonly \
+  "$CANDIDATE_ID" >/dev/null
+for attempt in $(seq 1 30); do
+  if curl -fsSI http://127.0.0.1:3839/ >/dev/null; then
+    printf 'GROEN|phase8-kandidaat|readiness=poging-%s\n' "$attempt"
+    break
+  fi
+  [[ "$attempt" -lt 30 ]] || {
+    docker logs --tail 120 "$CANDIDATE_CONTAINER" >&2
+    exit 1
+  }
+  sleep 2
+done
+
+docker exec "$CANDIDATE_CONTAINER" Rscript \
+  /opt/vwgm-build/install_shiny_packages.R \
+  /opt/vwgm-build/renv.lock /opt/vwgm-build/DESCRIPTION validate
+docker exec "$CANDIDATE_CONTAINER" sh -lc '
+  for package in build-essential cmake g++ gcc gfortran make r-base-dev libc6-dev linux-libc-dev libcurl4-openssl-dev libglpk-dev libgmp3-dev libssl-dev libudunits2-dev libxml2-dev; do
+    ! dpkg-query -s "$package" 2>/dev/null | grep -q "^Status: install ok installed$"
+  done
+  ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec env LD_LIBRARY_PATH=/usr/local/lib/R/lib ldd {} \; | grep -F "not found"
+'
+find "$CANDIDATE_CACHE" -mindepth 1 -maxdepth 1 ! -name sass -exec rm -rf -- {} +
+docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); first <- load_meijendel_tables_cached(path); second <- load_meijendel_tables_cached(path); stopifnot(!isTRUE(first[[\"from_cache\"]]), isTRUE(second[[\"from_cache\"]]), file.exists(second[[\"cache_path\"]])); cat(\"GROEN|phase8-kandidaat|cache=eerste-load-en-hergebruik\\n\")"'
+docker exec -u shiny "$CANDIDATE_CONTAINER" Rscript \
+  /workspace/R/check_shiny_dashboard_parity.R \
+  /workspace /workspace/meijendel.sql \
+  /workspace/trim_msi_evg/msi_per_groep_per_jaar.csv 1958 2025
+
+docker run --rm --entrypoint sh "$CANDIDATE_ID" -lc \
+  'dpkg-query -W -f="${binary:Package}\t${Version}\n"' > "$WORK_DIR/os-packages.tsv"
+docker run --rm --entrypoint Rscript "$CANDIDATE_ID" -e '
+  packages <- installed.packages()
+  write.table(packages[, c("Package", "Version"), drop = FALSE], stdout(),
+    sep = "\t", row.names = FALSE, col.names = FALSE, quote = FALSE)
+' > "$WORK_DIR/r-packages.tsv"
+docker run --rm --entrypoint cat "$CANDIDATE_ID" \
+  /opt/vwgm-build/renv.lock > "$WORK_DIR/renv.lock"
+
+mkdir -p "$EVIDENCE_DIR"
+python3 - "$WORK_DIR/os-packages.tsv" "$WORK_DIR/r-packages.tsv" \
+  "$WORK_DIR/renv.lock" "$EVIDENCE_DIR/candidate.cdx.json" \
+  "$CANDIDATE_ID" "$MEIJENDEL_COMMIT" <<'PY'
+import datetime
+import json
+import sys
+import urllib.parse
+import uuid
+
+os_path, r_path, lock_path, output_path, image_id, commit = sys.argv[1:]
+with open(lock_path, encoding="utf-8") as handle:
+    lock = json.load(handle)
+
+components = [
+    {
+        "type": "container",
+        "bom-ref": image_id,
+        "name": "vwgm-shiny-phase8-candidate",
+        "version": image_id.removeprefix("sha256:")[:12],
+        "properties": [
+            {"name": "vwg:image-id", "value": image_id},
+            {"name": "vwg:meijendel-commit", "value": commit},
+        ],
+    }
+]
+
+def add_packages(path, ecosystem, purl_prefix):
+    with open(path, encoding="utf-8") as handle:
+        for line in handle:
+            name, version = line.rstrip("\n").split("\t", 1)
+            purl = f"{purl_prefix}/{urllib.parse.quote(name, safe='')}@{urllib.parse.quote(version, safe='')}"
+            components.append(
+                {
+                    "type": "library",
+                    "bom-ref": purl,
+                    "name": name,
+                    "version": version,
+                    "purl": purl,
+                    "properties": [{"name": "vwg:ecosystem", "value": ecosystem}],
+                }
+            )
+
+add_packages(os_path, "Ubuntu", "pkg:deb/ubuntu")
+add_packages(r_path, "R", "pkg:cran")
+present_r = {
+    (component["name"], component["version"])
+    for component in components
+    if component["properties"][0]["value"] == "R"
+}
+locked = {(name, record["Version"]) for name, record in lock["Packages"].items()}
+missing = sorted(locked - present_r)
+if missing:
+    raise SystemExit("Lockpackages ontbreken in SBOM: " + repr(missing))
+if len(lock["Packages"]) != 190:
+    raise SystemExit("Lockfile bevat niet exact 190 packages")
+
+bom = {
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.5",
+    "serialNumber": f"urn:uuid:{uuid.UUID(image_id.removeprefix('sha256:')[:32])}",
+    "version": 1,
+    "metadata": {
+        "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "component": components[0],
+        "properties": [
+            {"name": "vwg:renv-lock-count", "value": "190"},
+            {"name": "vwg:renv-repository", "value": lock["R"]["Repositories"][0]["URL"]},
+        ],
+    },
+    "components": components[1:],
+}
+with open(output_path, "w", encoding="utf-8") as handle:
+    json.dump(bom, handle, ensure_ascii=False, indent=2, sort_keys=True)
+    handle.write("\n")
+print(f"GROEN|phase8-sbom|componenten={len(components)}|lockpackages=190")
+PY
+printf '%s\n' "$AUDIT_OUTPUT" > "$EVIDENCE_DIR/vulnerability-scan.txt"
+sha256sum "$EVIDENCE_DIR/candidate.cdx.json" \
+  "$EVIDENCE_DIR/vulnerability-scan.txt" > "$EVIDENCE_DIR/SHA256SUMS"
+cat > "$EVIDENCE_DIR/manifest.txt" <<EOF
+commit=$MEIJENDEL_COMMIT
+candidate_image=$CANDIDATE_ID
+candidate_tag=$CANDIDATE_TAG
+active_image_unchanged=$ACTIVE_IMAGE_ID
+production_activated=no
+EOF
+chmod 0644 "$EVIDENCE_DIR"/*
+
+docker rm -f "$CANDIDATE_CONTAINER" >/dev/null
+rm -rf -- "$CANDIDATE_CACHE"
+[[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$ACTIVE_IMAGE_ID" ]]
+[[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]]
+docker buildx rm "$BUILDER_NAME" >/dev/null
+docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
+printf 'GROEN|phase8-kandidaat|image=%s|productie=ongewijzigd|bewijs=%s\n' \
+  "$CANDIDATE_ID" "$EVIDENCE_DIR"
+docker system df
+REMOTE
+  SUCCESS=1
+  echo "Kandidaat gebouwd, gescand en geïsoleerd getest; productie is niet geactiveerd."
+  exit 0
+fi
 
 OLD_IMAGE_ID="$(ssh -i "$SSH_KEY" "$VPS" \
   "docker inspect --format '{{.Image}}' shiny_meijendel")"
