@@ -240,10 +240,31 @@ docker exec "$CANDIDATE_CONTAINER" sh -lc '
 '
 find "$CANDIDATE_CACHE" -mindepth 1 -maxdepth 1 ! -name sass -exec rm -rf -- {} +
 docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); first <- load_meijendel_tables_cached(path); second <- load_meijendel_tables_cached(path); stopifnot(!isTRUE(first[[\"from_cache\"]]), isTRUE(second[[\"from_cache\"]]), file.exists(second[[\"cache_path\"]])); cat(\"GROEN|phase8-kandidaat|cache=eerste-load-en-hergebruik\\n\")"'
-docker exec -u shiny "$CANDIDATE_CONTAINER" Rscript \
-  /workspace/R/check_shiny_dashboard_parity.R \
-  /workspace /workspace/meijendel.sql \
-  /workspace/trim_msi_evg/msi_per_groep_per_jaar.csv 1958 2025
+PARITY_LOG="$WORK_DIR/shiny-dashboard-parity.log"
+PARITY_STARTED=$SECONDS
+set +e
+timeout --signal=TERM --kill-after=30s 3600s \
+  docker exec -u shiny "$CANDIDATE_CONTAINER" Rscript \
+    /workspace/R/check_shiny_dashboard_parity.R \
+    /workspace /workspace/meijendel.sql \
+    /workspace/trim_msi_evg/msi_per_groep_per_jaar.csv 1958 2025 \
+    >"$PARITY_LOG" 2>&1 &
+PARITY_PID=$!
+while kill -0 "$PARITY_PID" 2>/dev/null; do
+  printf 'VOORTGANG|phase8-kandidaat|pariteit|verstreken_seconden=%s\n' \
+    "$((SECONDS - PARITY_STARTED))"
+  sleep 30
+done
+wait "$PARITY_PID"
+PARITY_STATUS=$?
+set -e
+cat "$PARITY_LOG"
+if [[ "$PARITY_STATUS" -eq 124 ]]; then
+  echo "BLOKKADE|phase8-kandidaat|pariteit-timeout-na-3600-seconden" >&2
+fi
+[[ "$PARITY_STATUS" -eq 0 ]]
+printf 'GROEN|phase8-kandidaat|pariteit|verstreken_seconden=%s\n' \
+  "$((SECONDS - PARITY_STARTED))"
 
 docker run --rm --entrypoint sh "$CANDIDATE_ID" -lc \
   'dpkg-query -W -f="${binary:Package}\t${Version}\n"' > "$WORK_DIR/os-packages.tsv"
@@ -356,7 +377,8 @@ docker system df
 REMOTE
 )"
   remote_candidate_helper="/tmp/vwgm-shiny-candidate-${short_commit}-$$.sh"
-  ssh -tt -i "$SSH_KEY" "$VPS" \
+  ssh -tt -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
+    -i "$SSH_KEY" "$VPS" \
     "umask 077; printf '%s' '$candidate_remote_script' | base64 -d > '$remote_candidate_helper'; chmod 0700 '$remote_candidate_helper'; sudo env REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' MEIJENDEL_COMMIT='$DEPLOY_LOCAL_COMMIT' bash '$remote_candidate_helper'; status=\$?; rm -f '$remote_candidate_helper'; exit \$status"
   SUCCESS=1
   echo "Kandidaat gebouwd, gescand en geïsoleerd getest; productie is niet geactiveerd."
