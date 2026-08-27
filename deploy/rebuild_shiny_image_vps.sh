@@ -17,6 +17,9 @@ SMOKE_SCRIPT="$VWG_M/website/vwg-m-linux-app/scripts/smoke_vps.sh"
 APPLY=0
 YES=0
 CANDIDATE_ONLY=0
+ACTIVATE_EXISTING=0
+CANDIDATE_SOURCE_COMMIT=""
+EXPECTED_CANDIDATE_ID=""
 SUCCESS=0
 SWITCH_STARTED=0
 CANDIDATE_ID=""
@@ -31,8 +34,13 @@ while (($#)); do
     --apply) APPLY=1 ;;
     --yes) YES=1 ;;
     --candidate-only) CANDIDATE_ONLY=1 ;;
+    --activate-candidate=*)
+      ACTIVATE_EXISTING=1
+      CANDIDATE_SOURCE_COMMIT="${1#*=}"
+      ;;
+    --candidate-image=*) EXPECTED_CANDIDATE_ID="${1#*=}" ;;
     -h|--help)
-      echo "Gebruik: deploy/rebuild_shiny_image_vps.sh [--candidate-only] [--apply --yes]"
+      echo "Gebruik: deploy/rebuild_shiny_image_vps.sh [--candidate-only | --activate-candidate=COMMIT --candidate-image=SHA256] [--apply --yes]"
       exit 0
       ;;
     *) echo "Onbekende optie: $1" >&2; exit 2 ;;
@@ -42,10 +50,21 @@ done
 
 source "$SCRIPT_DIR/production_guard.sh"
 
+[[ "$CANDIDATE_ONLY" -eq 0 || "$ACTIVATE_EXISTING" -eq 0 ]] || \
+  guard_die "combineer --candidate-only niet met --activate-candidate."
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  [[ "$CANDIDATE_SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ ]] || \
+    guard_die "--activate-candidate vereist een volledige commit."
+  [[ "$EXPECTED_CANDIDATE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || \
+    guard_die "--activate-candidate vereist --candidate-image=sha256:..."
+elif [[ -n "$EXPECTED_CANDIDATE_ID" ]]; then
+  guard_die "--candidate-image hoort uitsluitend bij --activate-candidate."
+fi
+
 remote_cleanup_or_rollback() {
   [[ -n "$CANDIDATE_ID" ]] || return 0
   ssh -i "$SSH_KEY" "$VPS" \
-    "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' SWITCH_STARTED='$SWITCH_STARTED' bash -s" <<'REMOTE'
+    "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' SWITCH_STARTED='$SWITCH_STARTED' PRESERVE_CANDIDATE='$ACTIVATE_EXISTING' bash -s" <<'REMOTE'
 set -euo pipefail
 docker rm -f "$CANDIDATE_CONTAINER" >/dev/null 2>&1 || true
 if [[ -d "$CANDIDATE_CACHE" ]]; then
@@ -63,9 +82,14 @@ if [[ "$SWITCH_STARTED" -eq 1 ]]; then
     sleep 2
   done
 fi
-docker image rm "$CANDIDATE_TAG" >/dev/null 2>&1 || true
+if [[ "$PRESERVE_CANDIDATE" -eq 1 ]]; then
+  docker tag "$CANDIDATE_ID" "$CANDIDATE_TAG"
+else
+  docker image rm "$CANDIDATE_TAG" >/dev/null 2>&1 || true
+fi
 docker image rm "$PREVIOUS_TAG" >/dev/null 2>&1 || true
-if [[ "$(docker inspect --format '{{.Image}}' shiny_meijendel)" != "$CANDIDATE_ID" ]]; then
+if [[ "$PRESERVE_CANDIDATE" -eq 0 ]] && \
+   [[ "$(docker inspect --format '{{.Image}}' shiny_meijendel)" != "$CANDIDATE_ID" ]]; then
   docker image rm "$CANDIDATE_ID" >/dev/null 2>&1 || true
 fi
 docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
@@ -92,9 +116,24 @@ trap finish EXIT INT TERM
 guard_baseline
 "$LOCAL_REPO/scripts/test_container_image_definitions.sh"
 
-short_commit="${DEPLOY_LOCAL_COMMIT:0:12}"
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  git cat-file -e "$CANDIDATE_SOURCE_COMMIT^{commit}" 2>/dev/null || \
+    guard_die "kandidaatcommit is lokaal onbekend."
+  git merge-base --is-ancestor "$CANDIDATE_SOURCE_COMMIT" "$DEPLOY_LOCAL_COMMIT" || \
+    guard_die "kandidaatcommit is geen voorouder van actuele main."
+  git diff --quiet "$CANDIDATE_SOURCE_COMMIT" "$DEPLOY_LOCAL_COMMIT" -- \
+    deploy/shiny_image renv.lock DESCRIPTION || \
+    guard_die "image-, lock- of pakketdefinities zijn sinds de kandidaat gewijzigd."
+  short_commit="${CANDIDATE_SOURCE_COMMIT:0:12}"
+else
+  short_commit="${DEPLOY_LOCAL_COMMIT:0:12}"
+fi
 CANDIDATE_TAG="vwgm-shiny:candidate-$short_commit"
-PREVIOUS_TAG="vwgm-shiny:previous-$short_commit"
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  PREVIOUS_TAG="vwgm-shiny:rollback-$short_commit"
+else
+  PREVIOUS_TAG="vwgm-shiny:previous-$short_commit"
+fi
 CANDIDATE_CONTAINER="shiny_meijendel_candidate_$short_commit"
 CANDIDATE_CACHE="$REMOTE_SHINY/.candidate-cache-$short_commit"
 
@@ -117,21 +156,52 @@ if [[ "$baseline_status" -ne 0 ]] && \
   guard_die "baseline-audit bevat andere HIGH/CRITICAL-bevindingen dan de gedocumenteerde oude Shiny-baseline."
 fi
 
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  echo "== Verifieer bestaande kandidaat en checksummed bewijs =="
+  existing_output="$(ssh -i "$SSH_KEY" "$VPS" \
+    "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' ROLLBACK_TAG='$PREVIOUS_TAG' CANDIDATE_COMMIT='$CANDIDATE_SOURCE_COMMIT' EXPECTED_CANDIDATE_ID='$EXPECTED_CANDIDATE_ID' bash -s" <<'REMOTE'
+set -euo pipefail
+evidence_dir="$REMOTE_SHINY/evidence/phase8-$CANDIDATE_COMMIT"
+test -d "$evidence_dir"
+cd "$evidence_dir"
+sha256sum -c SHA256SUMS
+grep -Fxq "commit=$CANDIDATE_COMMIT" manifest.txt
+grep -Fxq "candidate_image=$EXPECTED_CANDIDATE_ID" manifest.txt
+grep -Fxq "candidate_tag=$CANDIDATE_TAG" manifest.txt
+grep -Fxq 'production_activated=no' manifest.txt
+candidate_id="$(docker image inspect --format '{{.Id}}' "$CANDIDATE_TAG")"
+[[ "$candidate_id" == "$EXPECTED_CANDIDATE_ID" ]]
+[[ "$(docker inspect --format '{{.Image}}' shiny_meijendel)" != "$candidate_id" ]]
+! docker image inspect "$ROLLBACK_TAG" >/dev/null 2>&1
+printf 'CANDIDATE_ID=%s\nGROEN|phase8-promotie|bewijs-en-image=exact\n' "$candidate_id"
+REMOTE
+)"
+  printf '%s\n' "$existing_output"
+  CANDIDATE_ID="$(sed -n 's/^CANDIDATE_ID=//p' <<<"$existing_output" | tail -n 1)"
+  [[ "$CANDIDATE_ID" == "$EXPECTED_CANDIDATE_ID" ]] || \
+    guard_die "bestaande kandidaat wijkt af van het verwachte image-ID."
+fi
+
 if [[ "$APPLY" -ne 1 ]]; then
   if [[ "$CANDIDATE_ONLY" -eq 1 ]]; then
     echo "Preflight klaar; image is niet gewijzigd. Gebruik --candidate-only --apply --yes na beoordeling."
+  elif [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+    echo "Preflight klaar; bestaande kandidaat is exact geverifieerd en niet geactiveerd. Gebruik dezelfde opdracht met --apply --yes."
   else
     echo "Preflight klaar; image is niet gewijzigd. Gebruik --apply --yes na beoordeling."
   fi
+  SUCCESS=1
   exit 0
 fi
 [[ "$YES" -eq 1 ]] || guard_die "image-rebuild vereist --apply --yes."
 guard_acquire_lock
 
-rsync -az --checksum --delay-updates --itemize-changes \
-  -e "ssh -i $SSH_KEY" "$LOCAL_IMAGE_DIR/" "$VPS:$REMOTE_SHINY/"
-rsync -az --checksum --delay-updates --itemize-changes \
-  -e "ssh -i $SSH_KEY" "$LOCAL_LOCKFILE" "$LOCAL_DESCRIPTION" "$VPS:$REMOTE_SHINY/"
+if [[ "$ACTIVATE_EXISTING" -eq 0 ]]; then
+  rsync -az --checksum --delay-updates --itemize-changes \
+    -e "ssh -i $SSH_KEY" "$LOCAL_IMAGE_DIR/" "$VPS:$REMOTE_SHINY/"
+  rsync -az --checksum --delay-updates --itemize-changes \
+    -e "ssh -i $SSH_KEY" "$LOCAL_LOCKFILE" "$LOCAL_DESCRIPTION" "$VPS:$REMOTE_SHINY/"
+fi
 
 if [[ "$CANDIDATE_ONLY" -eq 1 ]]; then
   echo "== Bouw, scan en test kandidaat zonder productieactivering =="
@@ -387,8 +457,9 @@ OLD_IMAGE_ID="$(ssh -i "$SSH_KEY" "$VPS" \
   "docker inspect --format '{{.Image}}' shiny_meijendel")"
 [[ "$OLD_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || guard_die "ongeldige actieve Shiny-image-ID."
 
-echo "== Bouw verse geïsoleerde kandidaat =="
-build_output="$(ssh -i "$SSH_KEY" "$VPS" \
+if [[ "$ACTIVATE_EXISTING" -eq 0 ]]; then
+  echo "== Bouw verse geïsoleerde kandidaat =="
+  build_output="$(ssh -i "$SSH_KEY" "$VPS" \
   "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' BUILDER_NAME='vwgm-shiny-$short_commit' bash -s" <<'REMOTE'
 set -euo pipefail
 cd "$REMOTE_SHINY"
@@ -409,8 +480,11 @@ candidate_id="$(docker image inspect --format '{{.Id}}' "$CANDIDATE_TAG")"
 printf 'CANDIDATE_ID=%s\n' "$candidate_id"
 REMOTE
 )"
-printf '%s\n' "$build_output"
-CANDIDATE_ID="$(sed -n 's/^CANDIDATE_ID=//p' <<<"$build_output" | tail -n 1)"
+  printf '%s\n' "$build_output"
+  CANDIDATE_ID="$(sed -n 's/^CANDIDATE_ID=//p' <<<"$build_output" | tail -n 1)"
+else
+  echo "== Gebruik exact de vooraf bewezen bestaande kandidaat =="
+fi
 [[ "$CANDIDATE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || guard_die "kandidaat-image-ID ontbreekt."
 
 echo "== Scan exacte kandidaat-image-ID =="
@@ -512,27 +586,37 @@ REMOTE
 
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$SMOKE_SCRIPT"
 
-echo "== Verwijder exact de taakartefacten en oude niet-aangewezen Shiny-image =="
-# Productie is nu functioneel bewezen. Een fout in de uitsluitend administratieve
-# opruiming mag vanaf dit punt geen rollback naar de oude image meer starten.
-SWITCH_STARTED=0
+echo "== Rond taakartefacten en expliciete rollback exact af =="
 ssh -i "$SSH_KEY" "$VPS" \
-  "CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' bash -s" <<'REMOTE'
+  "CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' KEEP_ROLLBACK='$ACTIVATE_EXISTING' bash -s" <<'REMOTE'
 set -euo pipefail
 [[ "$(docker inspect --format '{{.Image}}' shiny_meijendel)" == "$CANDIDATE_ID" ]]
 docker image rm "$CANDIDATE_TAG"
-docker image rm "$PREVIOUS_TAG"
-if docker image inspect "$OLD_IMAGE_ID" >/dev/null 2>&1; then
-  docker image rm "$OLD_IMAGE_ID"
+if [[ "$KEEP_ROLLBACK" -eq 1 ]]; then
+  [[ "$(docker image inspect --format '{{.Id}}' "$PREVIOUS_TAG")" == "$OLD_IMAGE_ID" ]]
+  printf 'GROEN|phase8-rollback|tag=%s|image=%s|bewaard\n' "$PREVIOUS_TAG" "$OLD_IMAGE_ID"
+else
+  docker image rm "$PREVIOUS_TAG"
+  if docker image inspect "$OLD_IMAGE_ID" >/dev/null 2>&1; then
+    docker image rm "$OLD_IMAGE_ID"
+  fi
 fi
 docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
-test "$(docker ps -a --format '{{.Names}}' | wc -l)" -eq 3
-test "$(docker images --format '{{.Repository}}:{{.Tag}}' | wc -l)" -eq 3
+[[ "$(docker ps -a --format '{{.Names}}' | sort)" == $'meijendel-mysql\nshiny_meijendel' ]]
+expected_images=2
+[[ "$KEEP_ROLLBACK" -eq 0 ]] || expected_images=3
+test "$(docker images --format '{{.Repository}}:{{.Tag}}' | wc -l)" -eq "$expected_images"
 docker ps -a --no-trunc
 docker images --no-trunc
 docker system df
 REMOTE
 
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  ssh -i "$SSH_KEY" "$VPS" \
+    "evidence_dir='$REMOTE_SHINY/evidence/phase8-$CANDIDATE_SOURCE_COMMIT'; umask 022; printf '%s\n' 'candidate_commit=$CANDIDATE_SOURCE_COMMIT' 'activation_commit=$DEPLOY_LOCAL_COMMIT' 'candidate_image=$CANDIDATE_ID' 'rollback_image=$OLD_IMAGE_ID' 'rollback_tag=$PREVIOUS_TAG' 'production_activated=yes' > \"\$evidence_dir/activation-manifest.txt\"; cd \"\$evidence_dir\"; sha256sum activation-manifest.txt > activation-manifest.txt.sha256"
+fi
+
 guard_write_state
+SWITCH_STARTED=0
 SUCCESS=1
 echo "Image-rebuild afgerond; productiecommit geregistreerd: $DEPLOY_LOCAL_COMMIT"

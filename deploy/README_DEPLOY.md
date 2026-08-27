@@ -113,6 +113,10 @@ Voor het herbouwen van het Shiny-image geldt dezelfde tweestapswerkwijze:
 ./deploy/rebuild_shiny_image_vps.sh
 ./deploy/rebuild_shiny_image_vps.sh --candidate-only
 ./deploy/rebuild_shiny_image_vps.sh --candidate-only --apply --yes
+./deploy/rebuild_shiny_image_vps.sh --activate-candidate=<volledige-commit> \
+  --candidate-image=sha256:<volledige-image-id>
+./deploy/rebuild_shiny_image_vps.sh --activate-candidate=<volledige-commit> \
+  --candidate-image=sha256:<volledige-image-id> --apply --yes
 ./deploy/rebuild_shiny_image_vps.sh --apply --yes
 ```
 
@@ -125,6 +129,13 @@ onder `/srv/vwgm/shiny/evidence/`. De actieve container, `vwgm-shiny:latest` en
 het Meijendel-statebestand blijven ongewijzigd. De kandidaattag blijft alleen
 staan in afwachting van het afzonderlijke activeringsbesluit; verwijderen of
 activeren volgt als eigen gecontroleerde stap, nooit via een algemene prune.
+Gebruik voor een al bewezen kandidaat uitsluitend `--activate-candidate` met
+de volledige kandidaatcommit en `--candidate-image` met het exacte image-ID.
+Deze route valideert de checksums en het kandidaatmanifest opnieuw, blokkeert
+als image-, lock- of pakketdefinities intussen zijn gewijzigd en herhaalt scan,
+isolatietest en volledige rooktest. De vorige actieve image blijft na een
+groene wissel onder één expliciete `vwgm-shiny:rollback-*`-tag beschikbaar;
+verwijdering daarvan is een latere, afzonderlijk beoordeelde handeling.
 
 Bereid een kandidaat eerst volledig lokaal voor:
 
