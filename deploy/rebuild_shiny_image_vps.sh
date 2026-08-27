@@ -146,8 +146,12 @@ rsync -az --checksum --delay-updates --itemize-changes --dry-run \
 ssh -i "$SSH_KEY" "$VPS" "curl -fsSI http://127.0.0.1:3838/ >/dev/null"
 
 echo "== Baseline container-image-audit =="
+baseline_args=(--containers-only)
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  baseline_args+=(--image "$EXPECTED_CANDIDATE_ID" --allow-image-tag "$CANDIDATE_TAG")
+fi
 set +e
-baseline_output="$("$AUDIT_SCRIPT" --containers-only 2>&1)"
+baseline_output="$("$AUDIT_SCRIPT" "${baseline_args[@]}" 2>&1)"
 baseline_status=$?
 set -e
 printf '%s\n' "$baseline_output"
@@ -258,7 +262,8 @@ docker buildx rm "$BUILDER_NAME" >/dev/null
 docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
 
 set +e
-AUDIT_OUTPUT="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root --image "$CANDIDATE_ID" 2>&1)"
+AUDIT_OUTPUT="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root \
+  --image "$CANDIDATE_ID" --allow-image-tag "$CANDIDATE_TAG" 2>&1)"
 AUDIT_STATUS=$?
 set -e
 printf '%s\n' "$AUDIT_OUTPUT"
@@ -489,7 +494,8 @@ fi
 
 echo "== Scan exacte kandidaat-image-ID =="
 set +e
-candidate_audit="$("$AUDIT_SCRIPT" --containers-only --image "$CANDIDATE_ID" 2>&1)"
+candidate_audit="$("$AUDIT_SCRIPT" --containers-only --image "$CANDIDATE_ID" \
+  --allow-image-tag "$CANDIDATE_TAG" 2>&1)"
 candidate_audit_status=$?
 set -e
 printf '%s\n' "$candidate_audit"
