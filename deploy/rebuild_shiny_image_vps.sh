@@ -266,8 +266,8 @@ fi
 printf 'GROEN|phase8-kandidaat|pariteit|verstreken_seconden=%s\n' \
   "$((SECONDS - PARITY_STARTED))"
 
-docker run --rm --entrypoint sh "$CANDIDATE_ID" -lc \
-  'dpkg-query -W -f="${binary:Package}\t${Version}\n"' > "$WORK_DIR/os-packages.tsv"
+docker run --rm --entrypoint dpkg-query "$CANDIDATE_ID" \
+  -W '-f=${binary:Package}\t${Version}\n' > "$WORK_DIR/os-packages.tsv"
 docker run --rm --entrypoint Rscript "$CANDIDATE_ID" -e '
   packages <- installed.packages()
   write.table(packages[, c("Package", "Version"), drop = FALSE], stdout(),
