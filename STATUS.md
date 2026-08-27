@@ -234,13 +234,25 @@ Gereed:
   CycloneDX-proef bevat 863 componenten, waaronder 211 geïnstalleerde
   R-componenten en alle 190 lockrecords. Deze kandidaat is niet naar de VPS
   gekopieerd, niet op productie getest en niet geactiveerd.
+- Op 27 augustus 2026 is vanaf schone `main`-commit
+  `d5727109be34a81c65993cff9bc878ba06ab829c` ook de cachevrije VPS-kandidaat
+  `sha256:2f08b3042813f4bb337a8b8272cac9eb5807eea4eb85d5af88732a488f8b68bf`
+  gebouwd. De exacte image heeft 0 `CRITICAL` en 0 `HIGH`, draait met R 4.6.1
+  en exact 190 lockpackages en doorstond readiness, eerste-load/cachehergebruik
+  en Shiny/dashboard-pariteit over 55 kavels, 1.224 MSI-rijen en 1.628
+  functionele MSI-rijen. De CycloneDX-SBOM bevat 510 componenten en alle 190
+  lockrecords; manifest en scan zijn met geldige SHA-256-checksums vastgelegd
+  onder `/srv/vwgm/shiny/evidence/phase8-d5727109be34a81c65993cff9bc878ba06ab829c`.
+  De volledige productierooktest is groen. Productie bleef bewust op image
+  `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906`;
+  er zijn geen tijdelijke containers, volumes of buildcache achtergebleven.
 
 Open:
 
 - Shiny blijft relatief zwaar doordat de app TRIM-modellen interactief kan draaien; gebruik blijft daarom bedoeld voor redacteuren/beheerders en niet als publieke rekenservice.
-- Voor productie resteert een afzonderlijke uitvoeringsopdracht: exacte
-  kwetsbaarheidsscan, geïsoleerde poort-3839-test met productiemounts,
-  pariteits-/cache-/rooktests en pas daarna een expliciet activeringsbesluit.
+- Voor productie resteert uitsluitend een afzonderlijk expliciet besluit om
+  de bewezen kandidaattag te activeren of gecontroleerd te verwijderen. Tot
+  dat besluit blijft het productie-image ongewijzigd.
 
 ## Soortpagina's
 
