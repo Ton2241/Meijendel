@@ -369,8 +369,6 @@ docker rm -f "$CANDIDATE_CONTAINER" >/dev/null
 rm -rf -- "$CANDIDATE_CACHE"
 [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$ACTIVE_IMAGE_ID" ]]
 [[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]]
-docker buildx rm "$BUILDER_NAME" >/dev/null
-docker image rm moby/buildkit:buildx-stable-1 >/dev/null 2>&1 || true
 printf 'GROEN|phase8-kandidaat|image=%s|productie=ongewijzigd|bewijs=%s\n' \
   "$CANDIDATE_ID" "$EVIDENCE_DIR"
 docker system df
