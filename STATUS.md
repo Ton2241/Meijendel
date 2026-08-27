@@ -250,17 +250,29 @@ Gereed:
   applicatiepackage dit vereist. Deze kandidaat is daarom afgekeurd en mag niet
   worden geactiveerd. De brondefinitie en lockfile zijn lokaal gecorrigeerd naar
   191 packages; een nieuwe kandidaat moet nog worden gebouwd, exact gescand en
-  volledig getest. Productie bleef op image
+  volledig getest. De afgekeurde image en kandidaattag zijn daarna exact
+  verwijderd; de checksummed bewijsmap is voor de audit behouden. Productie
+  bleef op image
   `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906`;
   er zijn geen tijdelijke containers, volumes of buildcache achtergebleven.
+- De vervangende cachevrije VPS-kandidaat van schone `main`-commit
+  `e54a49a5966bc31fba65cd53adc29f1e995ea603` is image
+  `sha256:c7c181a76a5119ca9315739eb2834cb50f0d1d5c286e48f803c435d0a00174ff`.
+  De scan meldt 0 `CRITICAL` en 0 `HIGH`; R 4.6.1, de vastgepinde
+  P3M-snapshot en alle 191 lockpackages zijn exact gevalideerd. Readiness,
+  eerste-load/cachehergebruik en Shiny/dashboard-pariteit zijn groen over 55
+  kavels, 1.224 MSI-rijen en 1.628 functionele MSI-rijen. De CycloneDX-SBOM
+  bevat 511 componenten. Manifest, SBOM en scan zijn checksummed vastgelegd
+  onder `/srv/vwgm/shiny/evidence/phase8-e54a49a5966bc31fba65cd53adc29f1e995ea603`.
+  Productie is niet geactiveerd en bleef op de hierboven genoemde bestaande
+  image; er zijn geen tijdelijke containers, volumes of buildcache aanwezig.
 
 Open:
 
 - Shiny blijft relatief zwaar doordat de app TRIM-modellen interactief kan draaien; gebruik blijft daarom bedoeld voor redacteuren/beheerders en niet als publieke rekenservice.
-- Voor productie resteert een nieuwe reproduceerbare kandidaatbuild met alle
-  191 packages, gevolgd door scan, geïsoleerde runtimecontrole, pariteitstest en
-  een afzonderlijke gecontroleerde activering. Tot die volledig groene keten
-  blijft het productie-image ongewijzigd.
+- Voor productie resteert uitsluitend de afzonderlijk goed te keuren,
+  gecontroleerde activering van de groene 191-packagekandidaat, met behoud van
+  de huidige image als rollback, volledige rooktest en gebruikerscontrole.
 
 ## Soortpagina's
 
