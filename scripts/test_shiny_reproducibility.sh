@@ -26,8 +26,13 @@ stopifnot(identical(
   lock$R$Repositories[[1L]]$URL,
   "https://p3m.dev/cran/__linux__/noble/2026-08-18"
 ))
-stopifnot(length(lock_versions) == 190L)
+stopifnot(length(lock_versions) == 191L)
 stopifnot(length(setdiff(imports, names(lock_versions))) == 0L)
+runtime_required <- c(
+  "geepack", "glmmTMB", "vegan", "pls", "changepoint", "strucchange",
+  "lavaan", "piecewiseSEM", "indicspecies", "betapart", "unmarked"
+)
+stopifnot(length(setdiff(runtime_required, imports)) == 0L)
 stopifnot(all(vapply(lock$Packages, function(record) {
   identical(record$Source, "Repository") && identical(record$Repository, "CRAN")
 }, logical(1L))))

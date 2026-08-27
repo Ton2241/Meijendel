@@ -3587,6 +3587,12 @@
       "Maintainer": "Kirill Müller <kirill@cynkra.com>",
       "Repository": "CRAN"
     },
+    "indicspecies": {
+      "Package": "indicspecies",
+      "Version": "1.8.0",
+      "Source": "Repository",
+      "Repository": "CRAN"
+    },
     "insight": {
       "Package": "insight",
       "Version": "1.5.1",

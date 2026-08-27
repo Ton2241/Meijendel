@@ -227,7 +227,9 @@ Gereed:
 - De Shiny-deploycontrole toont voortaan ook containerstatus en resourcegebruik.
 - Fase 8 is lokaal voorbereid: `renv.lock` en `DESCRIPTION` gebruiken R 4.6.1,
   de pakketbron is vastgezet op P3M-snapshot `2026-08-18` en de multi-stagebuild
-  herstelt een gesloten set van exact 190 lockpackages.
+  herstelt een gesloten set van exact 191 lockpackages. De runtime-verplichte
+  package `indicspecies` is daarbij expliciet opgenomen en door een
+  regressietest aan zowel `DESCRIPTION` als de lockfile gebonden.
 - De lokale cachevrije `linux/amd64`-kandidaat
   `sha256:11ed229ef53495d156d8cee32283b3d1c8145f70d0b298aa71a7fd85342041f5`
   is op R-, package-, runtime-library- en SBOM-inhoud gevalideerd. De
@@ -243,16 +245,22 @@ Gereed:
   functionele MSI-rijen. De CycloneDX-SBOM bevat 510 componenten en alle 190
   lockrecords; manifest en scan zijn met geldige SHA-256-checksums vastgelegd
   onder `/srv/vwgm/shiny/evidence/phase8-d5727109be34a81c65993cff9bc878ba06ab829c`.
-  De volledige productierooktest is groen. Productie bleef bewust op image
+  Een aangescherpte hercontrole op 27 augustus stelde vóór productieactivering
+  vast dat `indicspecies` niet in deze kandidaat aanwezig was, hoewel de
+  applicatiepackage dit vereist. Deze kandidaat is daarom afgekeurd en mag niet
+  worden geactiveerd. De brondefinitie en lockfile zijn lokaal gecorrigeerd naar
+  191 packages; een nieuwe kandidaat moet nog worden gebouwd, exact gescand en
+  volledig getest. Productie bleef op image
   `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906`;
   er zijn geen tijdelijke containers, volumes of buildcache achtergebleven.
 
 Open:
 
 - Shiny blijft relatief zwaar doordat de app TRIM-modellen interactief kan draaien; gebruik blijft daarom bedoeld voor redacteuren/beheerders en niet als publieke rekenservice.
-- Voor productie resteert uitsluitend een afzonderlijk expliciet besluit om
-  de bewezen kandidaattag te activeren of gecontroleerd te verwijderen. Tot
-  dat besluit blijft het productie-image ongewijzigd.
+- Voor productie resteert een nieuwe reproduceerbare kandidaatbuild met alle
+  191 packages, gevolgd door scan, geïsoleerde runtimecontrole, pariteitstest en
+  een afzonderlijke gecontroleerde activering. Tot die volledig groene keten
+  blijft het productie-image ongewijzigd.
 
 ## Soortpagina's
 

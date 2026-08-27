@@ -407,8 +407,8 @@ locked = {(name, record["Version"]) for name, record in lock["Packages"].items()
 missing = sorted(locked - present_r)
 if missing:
     raise SystemExit("Lockpackages ontbreken in SBOM: " + repr(missing))
-if len(lock["Packages"]) != 190:
-    raise SystemExit("Lockfile bevat niet exact 190 packages")
+if len(lock["Packages"]) != 191:
+    raise SystemExit("Lockfile bevat niet exact 191 packages")
 
 bom = {
     "bomFormat": "CycloneDX",
@@ -419,7 +419,7 @@ bom = {
         "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "component": components[0],
         "properties": [
-            {"name": "vwg:renv-lock-count", "value": "190"},
+            {"name": "vwg:renv-lock-count", "value": "191"},
             {"name": "vwg:renv-repository", "value": lock["R"]["Repositories"][0]["URL"]},
         ],
     },
@@ -428,7 +428,7 @@ bom = {
 with open(output_path, "w", encoding="utf-8") as handle:
     json.dump(bom, handle, ensure_ascii=False, indent=2, sort_keys=True)
     handle.write("\n")
-print(f"GROEN|phase8-sbom|componenten={len(components)}|lockpackages=190")
+print(f"GROEN|phase8-sbom|componenten={len(components)}|lockpackages=191")
 PY
 printf '%s\n' "$AUDIT_OUTPUT" > "$EVIDENCE_DIR/vulnerability-scan.txt"
 sha256sum "$EVIDENCE_DIR/candidate.cdx.json" \

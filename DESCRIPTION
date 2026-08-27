@@ -17,6 +17,7 @@ Imports:
     DHARMa,
     geepack,
     glmmTMB,
+    indicspecies,
     lavaan,
     lme4,
     mgcv,

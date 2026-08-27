@@ -148,7 +148,7 @@ De lokale build gebruikt standaard `--pull --no-cache`, activeert niets en
 maakt naast de kandidaattag een CycloneDX-SBOM. `renv.lock` is canoniek voor
 R 4.6.1 en gebruikt uitsluitend de vaste P3M-snapshot
 `https://p3m.dev/cran/__linux__/noble/2026-08-18`. Builder en runtime moeten
-exact dezelfde 190 lockpackages bevatten; niet-vergrendelde sitepackages
+exact dezelfde 191 lockpackages bevatten; niet-vergrendelde sitepackages
 blokkeren de build.
 
 De Shiny-basisimage staat in `deploy/shiny_image/Dockerfile` vast op een
