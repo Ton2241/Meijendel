@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 20 augustus 2026
+Laatste update: 27 augustus 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -264,15 +264,21 @@ Gereed:
   kavels, 1.224 MSI-rijen en 1.628 functionele MSI-rijen. De CycloneDX-SBOM
   bevat 511 componenten. Manifest, SBOM en scan zijn checksummed vastgelegd
   onder `/srv/vwgm/shiny/evidence/phase8-e54a49a5966bc31fba65cd53adc29f1e995ea603`.
-  Productie is niet geactiveerd en bleef op de hierboven genoemde bestaande
-  image; er zijn geen tijdelijke containers, volumes of buildcache aanwezig.
+  Deze kandidaat is daarna gecontroleerd geactiveerd. De exacte scan,
+  checksums, geisoleerde runtime- en cachetest en Shiny/dashboard-pariteit
+  waren groen. Na omschakeling waren ook de volledige multi-hostrooktest en de
+  handmatige Shiny-gebruikerscontrole groen. De geregistreerde
+  productiecommit is `f74c24ad440c0185c94763c51f27f4663ec41599`. De vorige
+  productie-image
+  `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906`
+  blijft exact beschikbaar als rollbacktag `vwgm-shiny:rollback-e54a49a5966b`.
+  Er zijn geen tijdelijke containers, volumes of buildcache aanwezig.
 
 Open:
 
 - Shiny blijft relatief zwaar doordat de app TRIM-modellen interactief kan draaien; gebruik blijft daarom bedoeld voor redacteuren/beheerders en niet als publieke rekenservice.
-- Voor productie resteert uitsluitend de afzonderlijk goed te keuren,
-  gecontroleerde activering van de groene 191-packagekandidaat, met behoud van
-  de huidige image als rollback, volledige rooktest en gebruikerscontrole.
+- Fase 8 heeft geen open productieactie meer. De gedocumenteerde rollback blijft
+  bewaard totdat retentie later afzonderlijk wordt beoordeeld.
 
 ## Soortpagina's
 
