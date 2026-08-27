@@ -28,6 +28,7 @@ CANDIDATE_TAG=""
 PREVIOUS_TAG=""
 CANDIDATE_CONTAINER=""
 CANDIDATE_CACHE=""
+GATEWAY="/usr/local/sbin/vwgm-admin"
 
 while (($#)); do
   case "$1" in
@@ -61,8 +62,20 @@ elif [[ -n "$EXPECTED_CANDIDATE_ID" ]]; then
   guard_die "--candidate-image hoort uitsluitend bij --activate-candidate."
 fi
 
+phase8_gateway() {
+  local stage="$1"
+  ssh -i "$SSH_KEY" "$VPS" \
+    "sudo -n '$GATEWAY' phase8-promote '$stage' '$CANDIDATE_SOURCE_COMMIT' '$DEPLOY_LOCAL_COMMIT' '$CANDIDATE_ID' '$OLD_IMAGE_ID'"
+}
+
 remote_cleanup_or_rollback() {
   [[ -n "$CANDIDATE_ID" ]] || return 0
+  if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+    if [[ "$SWITCH_STARTED" -eq 1 ]]; then
+      phase8_gateway rollback
+    fi
+    return 0
+  fi
   ssh -i "$SSH_KEY" "$VPS" \
     "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' SWITCH_STARTED='$SWITCH_STARTED' PRESERVE_CANDIDATE='$ACTIVATE_EXISTING' bash -s" <<'REMOTE'
 set -euo pipefail
@@ -161,25 +174,14 @@ if [[ "$baseline_status" -ne 0 ]] && \
 fi
 
 if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  container_status="$(ssh -i "$SSH_KEY" "$VPS" \
+    "sudo -n '$GATEWAY' container-status shiny_meijendel")"
+  OLD_IMAGE_ID="$(awk -F'|' '$1 == "/shiny_meijendel" && $3 == "running" {print $2}' <<<"$container_status")"
+  [[ "$OLD_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || \
+    guard_die "ongeldige of niet-draaiende actieve Shiny-container."
+  CANDIDATE_ID="$EXPECTED_CANDIDATE_ID"
   echo "== Verifieer bestaande kandidaat en checksummed bewijs =="
-  existing_output="$(ssh -i "$SSH_KEY" "$VPS" \
-    "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_TAG='$CANDIDATE_TAG' ROLLBACK_TAG='$PREVIOUS_TAG' CANDIDATE_COMMIT='$CANDIDATE_SOURCE_COMMIT' EXPECTED_CANDIDATE_ID='$EXPECTED_CANDIDATE_ID' bash -s" <<'REMOTE'
-set -euo pipefail
-evidence_dir="$REMOTE_SHINY/evidence/phase8-$CANDIDATE_COMMIT"
-test -d "$evidence_dir"
-cd "$evidence_dir"
-sha256sum -c SHA256SUMS
-grep -Fxq "commit=$CANDIDATE_COMMIT" manifest.txt
-grep -Fxq "candidate_image=$EXPECTED_CANDIDATE_ID" manifest.txt
-grep -Fxq "candidate_tag=$CANDIDATE_TAG" manifest.txt
-grep -Fxq 'production_activated=no' manifest.txt
-candidate_id="$(docker image inspect --format '{{.Id}}' "$CANDIDATE_TAG")"
-[[ "$candidate_id" == "$EXPECTED_CANDIDATE_ID" ]]
-[[ "$(docker inspect --format '{{.Image}}' shiny_meijendel)" != "$candidate_id" ]]
-! docker image inspect "$ROLLBACK_TAG" >/dev/null 2>&1
-printf 'CANDIDATE_ID=%s\nGROEN|phase8-promotie|bewijs-en-image=exact\n' "$candidate_id"
-REMOTE
-)"
+  existing_output="$(phase8_gateway verify)"
   printf '%s\n' "$existing_output"
   CANDIDATE_ID="$(sed -n 's/^CANDIDATE_ID=//p' <<<"$existing_output" | tail -n 1)"
   [[ "$CANDIDATE_ID" == "$EXPECTED_CANDIDATE_ID" ]] || \
@@ -458,9 +460,11 @@ REMOTE
   exit 0
 fi
 
-OLD_IMAGE_ID="$(ssh -i "$SSH_KEY" "$VPS" \
-  "docker inspect --format '{{.Image}}' shiny_meijendel")"
-[[ "$OLD_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || guard_die "ongeldige actieve Shiny-image-ID."
+if [[ "$ACTIVATE_EXISTING" -eq 0 ]]; then
+  OLD_IMAGE_ID="$(ssh -i "$SSH_KEY" "$VPS" \
+    "docker inspect --format '{{.Image}}' shiny_meijendel")"
+  [[ "$OLD_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]] || guard_die "ongeldige actieve Shiny-image-ID."
+fi
 
 if [[ "$ACTIVATE_EXISTING" -eq 0 ]]; then
   echo "== Bouw verse geïsoleerde kandidaat =="
@@ -519,6 +523,9 @@ if [[ "$candidate_audit_status" -ne 0 ]]; then
 fi
 
 echo "== Test kandidaat geïsoleerd op 127.0.0.1:3839 =="
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  phase8_gateway test
+else
 ssh -i "$SSH_KEY" "$VPS" \
   "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_ID='$CANDIDATE_ID' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' bash -s" <<'REMOTE'
 set -euo pipefail
@@ -560,9 +567,13 @@ docker run --rm -v "$CANDIDATE_CACHE:/app_cache" "$CANDIDATE_ID" \
   chown -R "$(id -u):$(id -g)" /app_cache >/dev/null
 rm -rf -- "$CANDIDATE_CACHE"
 REMOTE
+fi
 
 echo "== Activeer kandidaat met automatische rollbackbeveiliging =="
 SWITCH_STARTED=1
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  phase8_gateway activate
+else
 ssh -i "$SSH_KEY" "$VPS" \
   "REMOTE_SHINY='$REMOTE_SHINY' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_ID='$CANDIDATE_ID' PREVIOUS_TAG='$PREVIOUS_TAG' bash -s" <<'REMOTE'
 set -euo pipefail
@@ -589,10 +600,14 @@ docker exec shiny_meijendel Rscript \
   /opt/vwgm-build/renv.lock /opt/vwgm-build/DESCRIPTION validate
 docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
 REMOTE
+fi
 
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$SMOKE_SCRIPT"
 
 echo "== Rond taakartefacten en expliciete rollback exact af =="
+if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
+  phase8_gateway finalize
+else
 ssh -i "$SSH_KEY" "$VPS" \
   "CANDIDATE_ID='$CANDIDATE_ID' OLD_IMAGE_ID='$OLD_IMAGE_ID' CANDIDATE_TAG='$CANDIDATE_TAG' PREVIOUS_TAG='$PREVIOUS_TAG' KEEP_ROLLBACK='$ACTIVATE_EXISTING' bash -s" <<'REMOTE'
 set -euo pipefail
@@ -616,10 +631,6 @@ docker ps -a --no-trunc
 docker images --no-trunc
 docker system df
 REMOTE
-
-if [[ "$ACTIVATE_EXISTING" -eq 1 ]]; then
-  ssh -i "$SSH_KEY" "$VPS" \
-    "evidence_dir='$REMOTE_SHINY/evidence/phase8-$CANDIDATE_SOURCE_COMMIT'; umask 022; printf '%s\n' 'candidate_commit=$CANDIDATE_SOURCE_COMMIT' 'activation_commit=$DEPLOY_LOCAL_COMMIT' 'candidate_image=$CANDIDATE_ID' 'rollback_image=$OLD_IMAGE_ID' 'rollback_tag=$PREVIOUS_TAG' 'production_activated=yes' > \"\$evidence_dir/activation-manifest.txt\"; cd \"\$evidence_dir\"; sha256sum activation-manifest.txt > activation-manifest.txt.sha256"
 fi
 
 guard_write_state
