@@ -9,6 +9,27 @@
   of Samsung T7 zonder expliciete toestemming en een afzonderlijke
   architectuurbeslissing. Een blijvend `.duckdb`-, Parquet- of
   GeoParquet-bestand vereist vooraf een bewust gekozen pad en toestemming.
+- Externe bestanden die kandidaat zijn voor import in de life-database worden
+  duurzaam opgeslagen onder `/Volumes/T7 Data/Home_Ton/Meijendel data/`; per
+  levering wordt een herkenbare submap vastgelegd. Downloads is uitsluitend een
+  tijdelijke ontvangstlocatie.
+- Open FFV-data en beveiligde onvervaagde NDFF-data blijven strikt gescheiden.
+  Ticket 58679 gebruikt lokaal `NDFF/secure/ticket_58679`; de oorspronkelijke
+  levering blijft ongewijzigd, krijgt een SHA-256-manifest en wordt niet
+  opgenomen in Git, de gewone `Meijendel.sql`, algemene Shiny-caches of
+  webpaden. Op uitdrukkelijk besluit van de eigenaar wordt op de fysiek
+  beveiligde Samsung T7 geen extra versleutelde ontvangstzone gebruikt.
+- De beveiligde NDFF-data krijgt later uitsluitend na inhoudelijke toelating
+  een apart MySQL-schema `Meijendel_ndff_secure`. De bestaande vogelgerichte
+  tabel `soorten` blijft ongewijzigd; NDFF-taxa komen in `ndff_soorten` en iedere
+  oorspronkelijke FFV-soortgroep krijgt een eigen tabel `ndff_<soortgroep>`.
+  Exacte geometrie en plotkoppeling blijven lokaal. Alleen afzonderlijk
+  goedgekeurde, niet-herleidbare analyseresultaten mogen naar de VPS.
+- Een exacte, onvervaagde locatie verbetert de ruimtelijke toewijzing maar maakt
+  een positieve FFV-waarneming niet trendklaar. Voor trends blijven volledige
+  telbezoeken, inspanning, protocolversies en afleidbare nullen vereist; de
+  bestaande PQ-reeks blijft leidend totdat de afzonderlijke PQ-overlapaudit is
+  afgerond.
 - De tabel `weer` blijft een ruwe bron met stationsafhankelijke schalen. Alle analyses lezen uit `weer_analyse`; die view normaliseert eenheden, bewaart spoorneerslag en spoorzonneschijn als aparte vlaggen en levert bij een onbekend station bewust `NULL` voor stationsafhankelijk genormaliseerde waarden.
 - Het PQ-vegetatiemeetnet wordt rechtstreeks beheerd in de levende MySQL-database en niet handmatig in `meijendel.sql`. De genormaliseerde brontabellen gebruiken het prefix `pq_`; historische geometrie blijft per opname behouden. Dashboard en Shiny lezen alleen de afgeleide korrel `pq_plot_jaar_vegetatie`, de website alleen de veilige view `website_plot_vegetatie_jaar`.
 - Voorlopige PZH-imports worden versieerbaar opgeslagen met bestands-SHA en bronstatus. `SRTNUM` is de interne soortidentiteit binnen de geregistreerde soortenlijstversie; `PLABED` blijft een ruwe broncode. Afwijkende nieuw aangeleverde bodemcodes overschrijven de bestaande waarde pas na bevestiging door PZH.

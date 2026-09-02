@@ -180,6 +180,15 @@ Daarin staan onder andere:
 - importbestanden voor recreatie en toegankelijkheid
 - documentatie over bezoekersdruk en recreatieve infrastructuur
 
+### NDFF-data
+
+De open FFV-bronbestanden, stagingdataset en rapporten staan uitsluitend op de
+Samsung T7 onder `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. De toekomstige
+onvervaagde levering voor ticket 58679 staat daar fysiek gescheiden onder
+`secure/ticket_58679` en komt niet in Git, `meijendel.sql`, de gewone Shiny-app
+of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
+`docs/NDFF_SECURE_ONTVANGST.md`.
+
 ## Wat is de normale werkvolgorde?
 
 De praktische volgorde is:

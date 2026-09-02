@@ -2,6 +2,23 @@
 
 ## Nu open
 
+### NDFF ticket 58679 - beveiligde levering
+
+- Wacht op de gezipte shapefile, Excel en standaardcitatie van de NDFF.
+- Sla de ongewijzigde bestanden op in
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679/original`.
+- Maak en controleer vóór inhoudelijk gebruik het ontvangstmanifest met
+  `gis/scripts/validate_ndff_secure_delivery.py`.
+- Vergelijk de NDFF-identiteiten met de open staging; overschrijf de open
+  geometrie niet en bewaar de exacte geometrie uitsluitend in de beveiligde
+  lokale laag.
+- Koppel exact aan de 55 geversioneerde SOVON-plots en classificeer iedere
+  waarneming als `single`, `multiple` of `outside`; forceer geen keuze bij de 77
+  bekende overlappende plotparen.
+- Rond daarna de PQ-overlapaudit en toelatingsbeslissing per analysetype af.
+- Beoordeel en voer `gis/database/ndff_secure_schema.sql` pas uit na validatie
+  van het werkelijke leveringsschema; wijzig de life-database nog niet.
+
 ### Wintertellingen — geparkeerde vervolgstappen
 
 - Punt 7 (geparkeerd): laat de technische indeling `water_wetland` versus

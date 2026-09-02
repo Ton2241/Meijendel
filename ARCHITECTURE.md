@@ -34,6 +34,23 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
 
+### Beveiligde NDFF-laag
+
+De onvervaagde levering voor NDFF-ticket 58679 blijft een afzonderlijke lokale
+bronlaag. De originele ZIP en Excel, exacte geometrie, NDFF-identiteiten en de
+ruimtelijke koppeling worden op de Samsung T7 beheerd onder
+`/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
+
+Een eventuele import gebruikt een afzonderlijk lokaal MySQL-schema
+`Meijendel_ndff_secure`, een eigen `ndff_soorten`-tabel en fysieke
+`ndff_<soortgroep>`-tabellen. Het algemene account `meijendel_read` krijgt geen
+rechten op dit schema. De gewone `meijendel.sql`, website, algemene Shiny-app en
+VPS ontvangen geen ruwe beveiligde regels, exacte geometrie of NDFF-identiteit.
+Alleen later afzonderlijk goedgekeurde, niet-herleidbare analyses mogen worden
+gepubliceerd. Het voorbereidende schema staat in
+`gis/database/ndff_secure_schema.sql` en wordt pas na controle van de ontvangen
+kolommen uitgevoerd.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en
