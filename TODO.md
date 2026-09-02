@@ -16,6 +16,12 @@
   waarneming als `single`, `multiple` of `outside`; forceer geen keuze bij de 77
   bekende overlappende plotparen.
 - Rond daarna de PQ-overlapaudit en toelatingsbeslissing per analysetype af.
+  Ken iedere NDFF-waarneming een expliciete PQ-status en beslisregelversie toe;
+  een ontbrekende of `niet_beoordeelbaar` status blijft geblokkeerd waar
+  onafhankelijkheid relevant is.
+- Voeg aan iedere latere NDFF-analyse een verplichte controletabel toe met
+  aantallen per PQ-status, uitgesloten records en beslisregelversie. Alleen
+  `onafhankelijk` en `niet_van_toepassing` mogen zelfstandig meetellen.
 - Beoordeel en voer `gis/database/ndff_secure_schema.sql` pas uit na validatie
   van het werkelijke leveringsschema; wijzig de life-database nog niet.
 

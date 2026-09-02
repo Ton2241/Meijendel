@@ -30,6 +30,19 @@
   telbezoeken, inspanning, protocolversies en afleidbare nullen vereist; de
   bestaande PQ-reeks blijft leidend totdat de afzonderlijke PQ-overlapaudit is
   afgerond.
+- Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
+  NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
+  (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open
+  NDFF-staging herkenbaar zijn, met een sterke daling van de dekking vanaf 2018.
+  Iedere NDFF-waarneming krijgt vóór analyse een
+  auditeerbare status `exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk`,
+  `onafhankelijk`, `niet_beoordeelbaar` of `niet_van_toepassing`, met een
+  versie van de beslisregel. Alleen `onafhankelijk` en `niet_van_toepassing`
+  mogen als zelfstandige NDFF-informatie meetellen. De overige statussen mogen
+  hoogstens als gelabelde context worden getoond en leveren geen extra telling,
+  soortenrijkdom, aanwezigheid, trend- of inspanningsbewijs naast de bestaande
+  PQ-opname. Iedere analyse-uitvoer rapporteert de aantallen per status en de
+  gebruikte beslisregelversie; ontbreken van deze controle blokkeert publicatie.
 - De tabel `weer` blijft een ruwe bron met stationsafhankelijke schalen. Alle analyses lezen uit `weer_analyse`; die view normaliseert eenheden, bewaart spoorneerslag en spoorzonneschijn als aparte vlaggen en levert bij een onbekend station bewust `NULL` voor stationsafhankelijk genormaliseerde waarden.
 - Het PQ-vegetatiemeetnet wordt rechtstreeks beheerd in de levende MySQL-database en niet handmatig in `meijendel.sql`. De genormaliseerde brontabellen gebruiken het prefix `pq_`; historische geometrie blijft per opname behouden. Dashboard en Shiny lezen alleen de afgeleide korrel `pq_plot_jaar_vegetatie`, de website alleen de veilige view `website_plot_vegetatie_jaar`.
 - Voorlopige PZH-imports worden versieerbaar opgeslagen met bestands-SHA en bronstatus. `SRTNUM` is de interne soortidentiteit binnen de geregistreerde soortenlijstversie; `PLABED` blijft een ruwe broncode. Afwijkende nieuw aangeleverde bodemcodes overschrijven de bestaande waarde pas na bevestiging door PZH.

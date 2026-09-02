@@ -71,6 +71,13 @@ bijvangst voor die soortgroep en tellen daarom niet als trendmeetnet.
    `ndff_pq_koppeling` de bronopname heeft beoordeeld. De bestaande PQ-reeks
    blijft leidend.
 
+De PQ-regel geldt niet alleen voor trendanalyse. Ook bij aanwezigheid,
+verspreiding, soortenrijkdom, multivariate analyse en inspanningsmaten mogen
+`exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk` en
+`niet_beoordeelbaar` niet als zelfstandige NDFF-evidentie naast de bestaande
+PQ-opname worden geteld. Iedere analyse controleert en rapporteert daarom de
+PQ-status en beslisregelversie.
+
 ## Minimale acceptatietoets voor brondata
 
 Een meetnetdeel wordt pas kandidaat voor een `ndff_<soortgroep>`-tabel als alle

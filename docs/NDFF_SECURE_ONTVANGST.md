@@ -73,6 +73,12 @@ kolommen dit toelaten - aansluiting op de aangevraagde doelsoorten.
    - `outside`: geen plot, dus buiten de database-inname.
 5. Beoordeel daarna vervaging, PQ-overlap en protocolkwaliteit per analysetype.
 
+Geen NDFF-record wordt voor analyse vrijgegeven zonder expliciete PQ-status.
+Alleen `onafhankelijk` en `niet_van_toepassing` mogen zelfstandig meetellen;
+de overige statussen blijven geblokkeerd als extra evidentie naast de bestaande
+PQ-opnamen. Iedere analyse-uitvoer bevat aantallen per status en de gebruikte
+beslisregelversie.
+
 De 77 bekende overlappende plotparen verhinderen dat een geometrische
 intersectie automatisch aan één plot wordt toegewezen.
 

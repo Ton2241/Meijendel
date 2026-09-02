@@ -140,6 +140,23 @@ gelezen voor de PQ-vergelijking en niet gewijzigd.
   FFV-soortgroepen. Het databaseschema moet groepslidmaatschap daarom als een
   many-to-many-relatie vastleggen.
 
+### Verplichte NDFF/PQ-analysepoort
+
+De NDFF bevat dus aantoonbaar een omvangrijke maar selectieve afspiegeling van
+de bestaande PQ-reeks. De Meijendel-PQ-database blijft de gezaghebbende bron.
+Geen enkele analyse mag NDFF-records zonder expliciete PQ-status als
+onafhankelijke informatie behandelen.
+
+Voor iedere NDFF-waarneming wordt vóór analyse `ndff_pq_koppeling` geraadpleegd
+met status `exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk`,
+`onafhankelijk`, `niet_beoordeelbaar` of `niet_van_toepassing`. Alleen de
+laatste twee onafhankelijke categorieën `onafhankelijk` en
+`niet_van_toepassing` mogen zelfstandig meetellen. Alle andere categorieën
+leveren naast de bestaande PQ-opname geen extra telling, soortenrijkdom,
+aanwezigheid, trend- of inspanningsbewijs. Iedere uitvoer vermeldt aantallen per
+status, uitgesloten records en de beslisregelversie; zonder die audit is de
+analyse niet vrijgegeven.
+
 De volgende fase is de geversioneerde SOVON-plotintersectie, de inhoudelijke
 PQ-audit en het vaststellen van toelatingsregels per analysetype. Pas daarna
 volgen het definitieve databaseschema en een eventuele import.

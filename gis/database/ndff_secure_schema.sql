@@ -167,7 +167,7 @@ CREATE TABLE IF NOT EXISTS ndff_waarneming_uitsluiting (
 CREATE TABLE IF NOT EXISTS ndff_pq_koppeling (
   ndff_waarneming_id BIGINT UNSIGNED NOT NULL,
   pq_opname_id BIGINT UNSIGNED NULL,
-  classificatie ENUM('exact','waarschijnlijk_dezelfde_opname','mogelijk','onafhankelijk','niet_beoordeelbaar') NOT NULL,
+  classificatie ENUM('exact','waarschijnlijk_dezelfde_opname','mogelijk','onafhankelijk','niet_beoordeelbaar','niet_van_toepassing') NOT NULL,
   datum_match TINYINT(1) NULL,
   taxon_match TINYINT(1) NULL,
   afstand_meter DECIMAL(12,3) NULL,
