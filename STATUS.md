@@ -1,12 +1,25 @@
 # Status Meijendel
 
-Laatste update: 27 augustus 2026
+Laatste update: 5 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
 ## Repositoryhygiëne
 
 Gereed:
+
+- De provider-onafhankelijke bare-metal restore-rehearsal is op 5 september
+  volledig groen uitgevoerd op een tijdelijke Scaleway DEV1-M in AMS 1 met
+  Ubuntu 24.04 en 100 GB block storage. Vanuit de NAS-back-up van 4 september
+  23:15 UTC (SHA-256
+  `6952f9e50ea94a25967579cffefb2e96708530c6bff89ff39d60af1082bff1fc`)
+  zijn onder de centrale e-mailblokkade PostgreSQL, MySQL 9.7.1, de VWG-M-app,
+  Shiny en Caddy hersteld. De exacte MySQL-image en UID/GID 1999, lokale
+  HTTPS-eindstatus 200 en vier uitgeschakelde productietimers zijn bevestigd;
+  productie-DNS bleef op `45.87.43.90` en beide productiehosts eindigden op
+  HTTP 200. Na vastlegging zijn de exacte testinstance, 100-GB-schijf, IPv4,
+  Security Group, Private Network en VPC verwijderd; AMS 1 toont nul Instances,
+  Flexible IPs en Block Storage-volumes voor deze proef.
 
 - Caddy/MySQL-servicescheiding fase 1B is uitgevoerd. De digestvaste MySQL
   9.7.1-image gebruikt UID/GID 1999 en de nieuwe datamap

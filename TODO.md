@@ -81,7 +81,9 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 - DNS-cutover voorbereiden en pas uitvoeren op het afgesproken moment: `www.vwg-m.nl` wordt hoofdhost, `app.vwg-m.nl` blijft alias.
 - Caddyconfig na DNS-cutover valideren voor `www.vwg-m.nl`, `vwg-m.nl` en `app.vwg-m.nl`.
 - NAS-pullscript later bijwerken als de NAS-kopie expliciet de nieuwe canonieke SQL-check moet afdwingen.
-- Restoreprocedure testen op een lege server of tijdelijke VPS.
+- De restoreprocedure is op 5 september 2026 volledig groen getest op een lege,
+  tijdelijke externe VPS. Herhaal dit voortaan periodiek en na materiële
+  wijzigingen aan back-upformaat, databaseversies of herstelcode.
 - Archief/OCR-service en timer pas als productie-actief beschouwen nadat installatie, rechten, logging en herindexering op de VPS expliciet zijn gecontroleerd.
 
 ## Datamigratie

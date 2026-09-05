@@ -1,8 +1,23 @@
 # Actuele VPS-productie voor Meijendel
 
-Momentopname: **20 augustus 2026, 21:57 CEST**. De volledige gedeelde hostinventaris staat
+Momentopname: **5 september 2026**. De volledige gedeelde hostinventaris staat
 canoniek in `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
 Controleer live voordat een versieclaim opnieuw wordt gebruikt.
+
+## Extern herstelbewijs
+
+Op 5 september 2026 is de provider-onafhankelijke bare-metal
+restore-rehearsal volledig groen uitgevoerd op een lege Scaleway DEV1-M in
+AMS 1 met Ubuntu 24.04 en 100 GB block storage. De NAS-back-up van 4 september
+23:15 UTC (SHA-256
+`6952f9e50ea94a25967579cffefb2e96708530c6bff89ff39d60af1082bff1fc`)
+herstelde PostgreSQL, de vastgepinde MySQL 9.7.1-image met UID/GID 1999, Shiny,
+de VWG-M-app en Caddy. De lokale HTTPS-keten eindigde op 200; e-mail en vier
+productietimers bleven geblokkeerd. Productie-DNS en productie zijn read-only
+gecontroleerd en ongewijzigd gezond gebleven. Daarna zijn de exacte tijdelijke
+instance, 100-GB-schijf, IPv4, Security Group, Private Network en VPC
+verwijderd; AMS 1 toont nul bijbehorende Instances, Flexible IPs en Block
+Storage-volumes.
 
 ## Actieve componenten
 
