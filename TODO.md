@@ -67,10 +67,6 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Productie en beheer
 
-- Beoordeel de aangewezen MySQL-9.5-rollback uiterlijk op 25 augustus 2026.
-  Verwijder container, image en versiegescheiden datamap pas nadat een verse
-  back-up van de actieve 9.7.1-productie checksumgeldig en proefhersteld is en
-  de observatieperiode zonder MySQL-regressie is afgerond.
 - Container-CVE's blijven wekelijks monitoren. De remediatie van 18 augustus
   2026 is afgerond: beide MySQL-images en de minimale Shiny-runtime zijn 0
   `CRITICAL`/0 `HIGH`. Blijf nieuwe kandidaten vóór activering exact scannen en
@@ -78,8 +74,9 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 - Bij elke functionele wijziging `handleiding_beheer.md` en auditlogging bijwerken waar relevant.
 - Bij verzoeken om wijzigingen aan `app.vwg-m.nl` of de VPS-site: lokaal aanpassen, committen, naar de VPS deployen en productie verifiëren.
 - Bij brede deploys controleren dat `app/static/uploads/cms` op de VPS behouden blijft; dit is runtime-uploaddata en mag niet door een schone rsync worden verwijderd.
-- DNS-cutover voorbereiden en pas uitvoeren op het afgesproken moment: `www.vwg-m.nl` wordt hoofdhost, `app.vwg-m.nl` blijft alias.
-- Caddyconfig na DNS-cutover valideren voor `www.vwg-m.nl`, `vwg-m.nl` en `app.vwg-m.nl`.
+- Na iedere toekomstige Caddy- of DNS-wijziging de configuratie en volledige
+  multi-hostrooktest voor `www.vwg-m.nl`, `vwg-m.nl` en `app.vwg-m.nl`
+  opnieuw valideren. De DNS-cutover zelf is afgerond.
 - NAS-pullscript later bijwerken als de NAS-kopie expliciet de nieuwe canonieke SQL-check moet afdwingen.
 - De restoreprocedure is op 5 september 2026 volledig groen getest op een lege,
   tijdelijke externe VPS. Herhaal dit voortaan periodiek en na materiële
