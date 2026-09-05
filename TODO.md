@@ -81,6 +81,15 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 - De restoreprocedure is op 5 september 2026 volledig groen getest op een lege,
   tijdelijke externe VPS. Herhaal dit voortaan periodiek en na materiële
   wijzigingen aan back-upformaat, databaseversies of herstelcode.
+- De geteste herstelverbeteringen zijn op 5 september via de normale
+  VWG_M-productiepreflight uitgerold als commit
+  `0377210908cf70f38dcbacbc50a3d13b1a2ecde8`. Alle 754 tests en acht
+  finance-integratietests slaagden zonder skips; de aansluitende verse
+  bare-metalback-up is 2.743.074.285 bytes groot en heeft SHA-256
+  `7d66ad014fd12d7be74d0fc517be009380bf28c9b550aa3acbd58fdbeb47f133`.
+  De handmatig gestarte NAS-pull is daarna inclusief forced read-only
+  sleutelproef, checksum en volledige inhoudscontrole groen afgerond; alleen de
+  bekende niet-blokkerende lokale `pg_restore`-versiewaarschuwing bleef staan.
 - Archief/OCR-service en timer pas als productie-actief beschouwen nadat installatie, rechten, logging en herindexering op de VPS expliciet zijn gecontroleerd.
 
 ## Datamigratie
