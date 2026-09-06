@@ -99,6 +99,13 @@ Bij communicatie:
   beknopt mogelijk
 - voeg aan verhalen niet uit eigen beweging een methodologische
   onderzoeksagenda toe
+- toets ieder nieuw of gewijzigd Meijendel-verhaal aan het actuele
+  Natuurbeheerplan Zuid-Holland, het Natura 2000-beheerplan voor Meijendel &
+  Berkheide en de nadere beleids- en beheerinvulling van Dunea; raadpleeg
+  hiervoor de lokale Zotero-bibliotheek en daarnaast altijd actuele
+  internetbronnen, met voorkeur voor primaire en officiële bronnen, onderscheid
+  vastgesteld beleid, ontwerpplannen, beheerambities en concrete maatregelen,
+  en gebruik alleen aantoonbaar relevante informatie
 - geef bij grotere wijzigingen een korte samenvatting van wat is aangepast en hoe het is gecontroleerd
 - stel alleen vragen als dat echt nodig is om veilig verder te kunnen
 
