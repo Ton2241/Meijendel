@@ -12,7 +12,9 @@
   voordat een leeg sampling event als nulwaarneming wordt gebruikt.
 - Ontwerp pas daarna afzonderlijke tabellen voor vangblikken, sampling events,
   vangsten en kwaliteitsvlaggen en koppel de geversioneerde locaties aan de
-  SOVON-plots. Wijzig de life database nog niet.
+  SOVON-plots. Wijzig de life database nog niet. Voer de uiteindelijke import
+  samen met de toegelaten NDFF-levering uit als één gecontroleerde migratie,
+  met afzonderlijke bronlagen en één gezamenlijke preflight en rollback.
 
 ### NDFF ticket 58679 - beveiligde levering
 

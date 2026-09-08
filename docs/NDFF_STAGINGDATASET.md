@@ -208,3 +208,10 @@ conserveermiddel, verplaatsing van blikken 7-18 in 1955 en een methodevergelijki
 met dertig extra blikken in 1959. De huidige EML vermeldt CC BY-NC 4.0; die
 restrictievere licentie blijft leidend zolang de afwijkende CC0-vermelding in
 het datapaper niet is opgehelderd.
+
+De vangblikreeks wordt niet vooruitlopend op de NDFF-levering in de life
+database gezet. Na de afzonderlijke kwaliteits- en toelatingsbesluiten worden
+de toegelaten GBIF- en NDFF-gegevens in één gezamenlijke, gecontroleerde
+databasemigratie opgenomen. Dit is één uitvoeringsmoment, geen vermenging van
+de bronnen: herkomst, sleutels, meetstructuur en kwaliteitsstatus blijven per
+bron gescheiden en auditeerbaar.

@@ -27,6 +27,10 @@
   komt pas in aanmerking voor de life database na oplossing of expliciete
   uitsluiting van verweesde occurrences, soortspecifieke archiefonvolledigheid,
   predatierisico, methodevergelijking in 1959 en de licentie-inconsistentie.
+  De uiteindelijke databaseopname wordt niet afzonderlijk uitgevoerd, maar
+  tegelijk met de toegelaten delen van de definitieve NDFF-levering in één
+  gecontroleerde en terugdraaibare migratie. De afzonderlijke bronidentiteit
+  en meetstructuur blijven daarbij volledig behouden.
 - De beveiligde NDFF-data krijgt later uitsluitend na inhoudelijke toelating
   een apart MySQL-schema `Meijendel_ndff_secure`. De bestaande vogelgerichte
   tabel `soorten` blijft ongewijzigd; NDFF-taxa komen in `ndff_soorten` en iedere
