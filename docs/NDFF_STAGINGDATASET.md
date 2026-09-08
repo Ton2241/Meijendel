@@ -181,3 +181,30 @@ De protocoltoets per FFV-soortgroep is afgerond en reproduceerbaar vastgelegd in
 Geen enkele FFV-waarnemingsregel wordt op protocolnaam alleen geïmporteerd.
 Vereist zijn de volledige telobjecten, bezoeken, inspanning, protocolversie en
 afleidbare nullen, gevolgd door lokale dekkings-, ruimte- en methodecontrole.
+
+## Afzonderlijke GBIF-vangblikreeks 1953-1960
+
+Op 8 september 2026 is versie 1.7 van de openbare GBIF Sampling Event Dataset
+`Meijendel research 1953-1960` (DOI `10.15468/adsbxs`) afzonderlijk opgeslagen
+onder:
+
+`/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/external_gbif/meijendel_vangblikken_1953_1960`
+
+Deze bron hoort niet bij de positieve FFV-staging. Zij bevat 37.770 unieke
+sampling events, 60.560 unieke occurrenceregels, 275 taxa en 99.652 getelde
+individuen. De eventstructuur bewaart vangblik, lichtingsdatum, duur en exacte
+locatie. Daardoor is zij methodisch kansrijker dan losse NDFF-records, maar nog
+niet zonder kwaliteitsregels trendklaar.
+
+De actuele open NDFF-staging bevat nul keverrecords uit 1953-1960 en geen
+record met dezelfde combinatie van wetenschappelijke naam en datum als een
+GBIF-vangst. De historische vangblikreeks is dus niet herkenbaar in de open
+NDFF-levering aanwezig en wordt als zelfstandige bron behandeld.
+
+Voor toelating gelden minimaal de volgende blokkades: twee occurrences zonder
+bijbehorend event, mogelijk onvolledige soortmappen waardoor lege events geen
+algemene harde nullen zijn, minimumvangsten door predatie in blikken zonder
+conserveermiddel, verplaatsing van blikken 7-18 in 1955 en een methodevergelijking
+met dertig extra blikken in 1959. De huidige EML vermeldt CC BY-NC 4.0; die
+restrictievere licentie blijft leidend zolang de afwijkende CC0-vermelding in
+het datapaper niet is opgehelderd.

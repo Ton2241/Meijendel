@@ -19,6 +19,14 @@
   opgenomen in Git, de gewone `Meijendel.sql`, algemene Shiny-caches of
   webpaden. Op uitdrukkelijk besluit van de eigenaar wordt op de fysiek
   beveiligde Samsung T7 geen extra versleutelde ontvangstzone gebruikt.
+- De openbare GBIF Sampling Event Dataset `Meijendel research 1953-1960`
+  (versie 1.7, DOI `10.15468/adsbxs`) blijft een derde, afzonderlijke bronlaag
+  onder `NDFF/external_gbif/meijendel_vangblikken_1953_1960`. Zij wordt niet
+  tot positieve NDFF-waarnemingen afgevlakt: sampling events, vangblikken,
+  inspanning, verplaatsingen en kwaliteitsvlaggen blijven behouden. De reeks
+  komt pas in aanmerking voor de life database na oplossing of expliciete
+  uitsluiting van verweesde occurrences, soortspecifieke archiefonvolledigheid,
+  predatierisico, methodevergelijking in 1959 en de licentie-inconsistentie.
 - De beveiligde NDFF-data krijgt later uitsluitend na inhoudelijke toelating
   een apart MySQL-schema `Meijendel_ndff_secure`. De bestaande vogelgerichte
   tabel `soorten` blijft ongewijzigd; NDFF-taxa komen in `ndff_soorten` en iedere

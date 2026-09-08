@@ -2,6 +2,18 @@
 
 ## Nu open
 
+### GBIF-vangblikken Meijendel 1953-1960
+
+- Bevestig bij de bronhouder waarom versie 1.7 in EML en GBIF CC BY-NC 4.0
+  vermeldt terwijl het datapaper CC0 noemt; hanteer tot die tijd CC BY-NC 4.0.
+- Vraag correctie of duiding voor de twee occurrences onder ontbrekend event
+  `Meij-05August1959pf207`.
+- Stel per taxon vast over welke jaren de oorspronkelijke soortmap volledig is
+  voordat een leeg sampling event als nulwaarneming wordt gebruikt.
+- Ontwerp pas daarna afzonderlijke tabellen voor vangblikken, sampling events,
+  vangsten en kwaliteitsvlaggen en koppel de geversioneerde locaties aan de
+  SOVON-plots. Wijzig de life database nog niet.
+
 ### NDFF ticket 58679 - beveiligde levering
 
 - Wacht op de gezipte shapefile, Excel en standaardcitatie van de NDFF.
