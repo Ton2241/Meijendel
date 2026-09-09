@@ -30,6 +30,12 @@ Werk standaard op de lokale iMac M1 in mijn thuismap/projectmap. Ga ervan uit da
   bestanden of caches maken.
 
 Bij codewerk:
+- bepaal bij iedere wijziging die gevolgen heeft voor de VWG-M-website welke
+  gebruikers- en beheerhandleidingen geraakt worden; werk via `VWG_M` in
+  dezelfde wijziging generatorbron, DOCX, HTML, eventuele PDF en e-mailbijlage
+  bij en controleer ook verwijzingen, inhoudsopgaven, versiedatum,
+  beheerhandleiding en regressietests; rond de wijziging niet af zolang deze
+  teksten inhoudelijk verschillen
 - onderzoek eerst kort de bestaande code en volg de bestaande patronen, naamgeving en structuur
 - zoek eerst naar bestaande helpers of utilities voordat je nieuwe toevoegt
 - lever standaard een werkende wijziging op in plaats van alleen een plan, tenzij ik expliciet om analyse of brainstorm vraag
