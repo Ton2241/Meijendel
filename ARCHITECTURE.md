@@ -36,6 +36,22 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 ### Beveiligde NDFF-laag
 
+### Openbare NDFF- en vangblikbronnen
+
+De geïntegreerde openbare FFV-staging en de openbare GBIF-vangblikreeks
+1953-1960 staan sinds 10 september 2026 in nieuwe brontabellen van de lokale
+`Meijendel`-database. Dit zijn bronregistraties naast, niet in, de bestaande
+vogel- en provinciale PQ-tabellen. `ndff_open_waarneming` bewaart 810.830
+ontdubbelde FFV-regels met de openbare geometrie en `ndff_soorten` 9.828 taxa;
+fysieke `ndff_<soortgroep>`-tabellen verwijzen genormaliseerd naar deze regels.
+
+De vangblikreeks behoudt haar eigen korrel in `vangblik_locatieversie`,
+`vangblik_event`, `vangblik_soorten` en `vangblik_vangst`. De 55 openbare
+geversioneerde SOVON-plotgrenzen staan in `ndff_sovon_plot`; alle 37.770 events
+zijn eenduidig aan één versie-2025-plot gekoppeld. Geen openbare FFV-regel en
+geen vangst is door deze technische opname automatisch toegelaten voor trend-,
+abundantie-, afwezigheids- of beheer-effectanalyse.
+
 De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
 blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
 geometrie, NDFF-identiteiten en de
@@ -58,6 +74,9 @@ gepubliceerd. Het voorbereidende schema staat in
 ticket 58679 is op 10 september 2026 uitgevoerd: alle 14.573 bronrecords zijn
 als beveiligde bronregistratie opgenomen, 8.494 daarvan zijn uitsluitend voor
 verspreidingscontext toegelaten en geen enkel NDFF-PQ-bronrecord is toegelaten.
+Van deze regels koppelen 14.420 via de reeds gehashte openbare FFV-identiteit;
+153 beveiligde regels hebben geen openbare tegenhanger. Deze koppeltabel staat
+uitsluitend in `Meijendel_ndff_secure`.
 
 ## Functionele vogelgroepen en traits
 

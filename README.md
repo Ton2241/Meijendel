@@ -189,6 +189,13 @@ onvervaagde levering voor ticket 58679 staat daar fysiek gescheiden onder
 of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
 `docs/NDFF_SECURE_ONTVANGST.md`.
 
+De openbare FFV-staging en historische GBIF-vangblikreeks zijn lokaal als
+afzonderlijke bronregistraties in nieuwe tabellen van `Meijendel` opgenomen.
+Zij wijzigen de bestaande vogel- en provinciale PQ-tabellen niet en zijn niet
+automatisch voor trendanalyse toegelaten. De beveiligde levering blijft in
+`Meijendel_ndff_secure`; alleen daar staat de koppeling tussen beveiligde en
+openbare records.
+
 ## Wat is de normale werkvolgorde?
 
 De praktische volgorde is:

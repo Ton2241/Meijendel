@@ -219,6 +219,22 @@ CREATE TABLE IF NOT EXISTS ndff_retentie_log (
   CHECK (bevat_beveiligde_data IN (0,1))
 ) ENGINE=InnoDB;
 
+-- De koppeling met de openbare bron staat alleen in dit beveiligde schema.
+-- open_waarneming_id is bewust geen cross-schema foreign key: het openbare
+-- schema blijft zelfstandig herstelbaar en bevat geen verwijzing terug.
+CREATE TABLE IF NOT EXISTS ndff_open_secure_koppeling (
+  secure_waarneming_id BIGINT UNSIGNED NOT NULL,
+  open_identity_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  open_waarneming_id BIGINT UNSIGNED NOT NULL,
+  koppelmethode VARCHAR(64) NOT NULL,
+  gekoppeld_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (secure_waarneming_id),
+  UNIQUE KEY uq_ndff_secure_open_hash (open_identity_sha256),
+  UNIQUE KEY uq_ndff_secure_open_id (open_waarneming_id),
+  CONSTRAINT fk_ndff_secure_open_waarneming FOREIGN KEY (secure_waarneming_id)
+    REFERENCES ndff_waarneming_register (waarneming_id)
+) ENGINE=InnoDB;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.

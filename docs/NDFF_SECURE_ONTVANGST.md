@@ -160,14 +160,22 @@ gereconstrueerd; pas daarna volgt een geversioneerde plotrelatie. Het
 definitieve databaseschema voor surveys wordt daarom pas vastgesteld na
 ontvangst van minstens één representatieve bronlevering.
 
-De import is reproduceerbaar uitgevoerd met
+De beveiligde import is reproduceerbaar uitgevoerd met
 `gis/scripts/import_ndff_secure_delivery.py`. Het veilige importmanifest staat
 op de T7 onder `secure/ticket_58679/manifests/mysql_import_manifest.json` en
 bevat alleen aantallen en hashes. De MySQL-controle bevestigt 14.573 records,
 158 taxa, 8.494 verspreidingskandidaten, 1.274 nog niet trendklare kandidaten,
 162 exacte en 163 niet-beoordeelbare PQ-records. Alle 325 PQ-bronrecords zijn
 als secundaire controlebron vastgelegd en geen daarvan is toegelaten. De
-life-database is ongewijzigd gebleven.
+life-database is tijdens deze beveiligde import ongewijzigd gebleven.
+
+Later op 10 september 2026 zijn de openbare FFV-staging en de historische
+GBIF-vangblikreeks wel in afzonderlijke nieuwe brontabellen van `Meijendel`
+opgenomen. Beveiligde datum/geometrie/payload blijven in dit schema. De
+koppeling omvat 14.420 regels en staat uitsluitend in
+`ndff_open_secure_koppeling`; 153 beveiligde regels zijn secure-only. Deze
+technische bronopname verandert niets aan de bestaande analysepoort, PQ-regel
+of beveiliging.
 
 ## Beëindiging
 

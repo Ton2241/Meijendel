@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Importeer ticket 58679 reproduceerbaar in een afzonderlijk lokaal MySQL-schema en ontsluit uitsluitend veilige analyseviews in een lokaal activeerbaar Shiny-profiel.
+**Goal:** Importeer de openbare FFV-staging en historische GBIF-vangblikreeks reproduceerbaar in `Meijendel`, behoud ticket 58679 in `Meijendel_ndff_secure` en ontsluit uitsluitend veilige analyseviews.
 
-**Architecture:** De originele GeoPackage en afgeleide recordstatussen blijven op de T7. Een Python-importeur vult `Meijendel_ndff_secure` met bronregistratie, exacte geometrie, plotkoppelingen, PQ-status en analysetoelating. Een afzonderlijke R-module leest uitsluitend vooraf toegestane views via een lokaal MySQL-login-path; de module is standaard en op productie uitgeschakeld.
+**Architecture:** De originele bronbestanden blijven op de T7. Open FFV- en GBIF-data worden in nieuwe, brongetrouwe tabellen binnen `Meijendel` opgenomen; beveiligde exacte NDFF-data blijven fysiek en logisch gescheiden in `Meijendel_ndff_secure`. Een hashkoppeling in het beveiligde schema verbindt de beveiligde verrijking aan de openbare bron zonder gevoelige velden naar `Meijendel` te kopieren.
 
 **Tech Stack:** Python 3, GDAL/OGR, MySQL 9.7.1, R 4.6.1, Shiny, DBI/RMariaDB of lokale MySQL-client, shelltests.
 
@@ -12,7 +12,7 @@
 
 ## Global Constraints
 
-- Wijzig de gewone `Meijendel.sql` en de bestaande life-tabellen niet.
+- Wijzig bestaande vogel- en provinciale PQ-tabellen niet; voeg alleen nieuwe openbare brontabellen aan `Meijendel` toe.
 - Zet geen beveiligde NDFF-data, exacte geometrie, recordidentiteit of afgeleide detaildata in Git.
 - Bewaar alle beveiligde bestanden onder `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679` met bestandenmodus `0600`.
 - Geef `meijendel_read` geen rechten op `Meijendel_ndff_secure`.
@@ -21,6 +21,8 @@
 - Label positieve NDFF-regels niet als nul, afwezigheid, dichtheid of populatietrend.
 - Behandel Provincie Zuid-Holland als oorspronkelijke en gezaghebbende PQ-bron; registreer NDFF-PQ uitsluitend als secundaire controlebron en blokkeer die records uit alle analyseviews.
 - Voer geen VPS-deploy uit.
+- Open FFV-records blijven positieve bronregistraties en krijgen standaard geen toelating voor trend, abundantie, afwezigheid of beheer-effectanalyse.
+- De GBIF-vangblikreeks bewaart events, vangsten, locaties, inspanning en kwaliteitsvlaggen afzonderlijk; verweesde occurrences blijven bewaard maar uitgesloten.
 
 ---
 
@@ -107,3 +109,54 @@
 - [x] Voer alle Python- en R-contracttests, schema-uitvoering, Shiny-startcontrole en `git diff --check` uit.
 - [x] Controleer bestandsrechten en hashes op de T7.
 - [x] Voer workspace-preflight uit, commit en push naar de bestaande featurebranch.
+
+### Task 6: Openbare FFV- en GBIF-schema's in Meijendel
+
+**Files:**
+- Create: `gis/database/ndff_public_schema.sql`
+- Create: `gis/scripts/test_ndff_public_schema_contract.py`
+
+**Interfaces:**
+- Consumes: openbare FFV-staging, GBIF Darwin Core event/occurrence en de bestaande `Meijendel.plots`.
+- Produces: genormaliseerde openbare brontabellen, fysieke soortgroeptabellen en analysepoorten zonder wijziging van bestaande tabellen.
+
+- [x] Schrijf een contracttest die de databasescheiding, bronkorrel, kwaliteitsvlaggen en standaarduitsluitingen afdwingt.
+- [x] Voer de test uit en controleer dat deze faalt omdat het schema ontbreekt.
+- [x] Implementeer het minimale idempotente schema.
+- [x] Voer de contracttest opnieuw uit en controleer dat deze slaagt.
+
+### Task 7: Reproduceerbare openbare bulkimport
+
+**Files:**
+- Create: `gis/scripts/import_ndff_public_gbif.py`
+- Create: `gis/scripts/test_import_ndff_public_gbif.py`
+- Modify: `gis/database/ndff_secure_schema.sql`
+
+**Interfaces:**
+- Consumes: 810.830 FFV-records, 9.828 FFV-taxa, 37.770 GBIF-events en 60.560 GBIF-occurrences.
+- Produces: transactionele bronimport, beveiligde hashkoppeling en een niet-gevoelig importmanifest.
+
+- [x] Schrijf synthetische tests voor soortgroeptoewijzing, verplaatste blikken, vergelijkingsblikken, lege events, verweesde occurrences en beveiligde hashkoppeling.
+- [x] Voer de tests uit en controleer dat zij op de ontbrekende implementatie falen.
+- [x] Implementeer streaming TSV-generatie en gecontroleerde MySQL-bulkimport.
+- [x] Voer de tests opnieuw uit en controleer dat zij slagen.
+
+### Task 8: Volledige lokale inname en bewijs
+
+**Files:**
+- Modify: `ARCHITECTURE.md`
+- Modify: `DECISIONS.md`
+- Modify: `TODO.md`
+- Modify: `STATUS.md`
+- Modify: `docs/NDFF_STAGINGDATASET.md`
+- Modify: `docs/NDFF_SECURE_ONTVANGST.md`
+- Create: `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/manifests/full_mysql_import_manifest.json`
+
+**Interfaces:**
+- Consumes: groen geteste schema's en importeur.
+- Produces: controleerbare lokale import en actuele projectdocumentatie.
+
+- [x] Importeer alle openbare FFV- en GBIF-rijen en maak de beveiligde hashkoppeling.
+- [x] Controleer exacte aantallen, unieke sleutels, quarantaineregels, bronhashes en onveranderde bestaande PQ-/vogeltabellen.
+- [x] Werk documentatie en manifest bij met de feitelijke uitkomst en analysebeperkingen.
+- [x] Voer alle gerichte tests, `git diff --check` en de afsluitende workspace-preflight uit; commit en push de afgeronde wijziging.

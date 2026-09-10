@@ -227,7 +227,15 @@ Gereed:
   `Meijendel_ndff_secure`: 14.573 bronrecords, 158 taxa, 8.494 uitsluitend voor
   verspreidingscontext toegelaten records en 1.274 nog niet trendklare
   brondatakandidaten. Alle 325 NDFF-PQ-risicorecords zijn als secundaire bron
-  geregistreerd en analytisch geblokkeerd; de life-database is niet gewijzigd.
+  geregistreerd en analytisch geblokkeerd.
+- De openbare life-database bevat daarnaast, uitsluitend in nieuwe
+  brontabellen, 810.830 ontdubbelde FFV-records en de volledige historische
+  vangblikreeks (37.770 events, 60.560 vangsten, 275 taxa en 99.652
+  individuen). Alle FFV-regels en vangsten zijn standaard niet analytisch
+  toegelaten; twee verweesde vangsten zijn uitgesloten en lege events zijn geen
+  harde nul. Alle vangblikevents koppelen eenduidig aan de openbare
+  SOVON-plotversie 2025. Bestaande vogel- en provinciale PQ-tabellen zijn
+  onveranderd.
 - De lokale Shiny-code bevat een standaard uitgeschakelde NDFF-module die alleen
   met `NDFF_SECURE_LOCAL=1` en uitsluitend buiten productie drie geaggregeerde
   beveiligde views kan lezen. De module bevat geen downloadfunctie en weigert

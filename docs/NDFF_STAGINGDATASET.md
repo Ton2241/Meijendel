@@ -189,7 +189,8 @@ De protocoltoets per FFV-soortgroep is afgerond en reproduceerbaar vastgelegd in
 - Voor 11 soortgroepen ontbreekt in deze levering een passend doelmeetnet; zij
   worden niet voor trends in de life-database opgenomen.
 
-Geen enkele FFV-waarnemingsregel wordt op protocolnaam alleen geïmporteerd.
+Geen enkele FFV-waarnemingsregel wordt op protocolnaam alleen analytisch
+toegelaten.
 Vereist zijn de volledige telobjecten, bezoeken, inspanning, protocolversie en
 afleidbare nullen, gevolgd door lokale dekkings-, ruimte- en methodecontrole.
 
@@ -220,9 +221,22 @@ met dertig extra blikken in 1959. De huidige EML vermeldt CC BY-NC 4.0; die
 restrictievere licentie blijft leidend zolang de afwijkende CC0-vermelding in
 het datapaper niet is opgehelderd.
 
-De vangblikreeks wordt niet vooruitlopend op de NDFF-levering in de life
-database gezet. Na de afzonderlijke kwaliteits- en toelatingsbesluiten worden
-de toegelaten GBIF- en NDFF-gegevens in één gezamenlijke, gecontroleerde
-databasemigratie opgenomen. Dit is één uitvoeringsmoment, geen vermenging van
-de bronnen: herkomst, sleutels, meetstructuur en kwaliteitsstatus blijven per
+Op uitdrukkelijk besluit van 10 september 2026 is de volledige reeks als
+bronregistratie in afzonderlijke tabellen van de lokale life-database gezet.
+Dat lost de kwaliteitsblokkades niet op: de twee verweesde occurrences zijn
+uitgesloten, lege events zijn `geen_harde_nul`, aantallen blijven mogelijke
+minimumvangsten en methode-/verplaatsingsvlaggen zijn behouden. Alle 37.770
+events zijn met de geversioneerde plotlaag 2025 eenduidig aan één SOVON-plot
+gekoppeld. Herkomst, sleutels, meetstructuur en kwaliteitsstatus blijven per
 bron gescheiden en auditeerbaar.
+
+## Lokale openbare database-import 10 september 2026
+
+`gis/scripts/import_ndff_public_gbif.py` importeert reproduceerbaar in
+`Meijendel`: 810.830 FFV-waarnemingen, 9.828 FFV-taxa, 811.063
+soortgroepkoppelingen, 37.770 vangblikevents, 60.560 vangsten, 275 vangbliktaxa
+en 55 geversioneerde SOVON-plots. Alle FFV-regels staan standaard op
+`bronregistratie_niet_toegelaten`. De 14.420 matches met ticket 58679 worden
+alleen in `Meijendel_ndff_secure.ndff_open_secure_koppeling` vastgelegd; 153
+beveiligde records hebben geen openbare match. Het controlemanifest staat op
+de T7 onder `NDFF/manifests/full_mysql_import_manifest.json`.

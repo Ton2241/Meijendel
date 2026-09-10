@@ -55,11 +55,13 @@
   route-, water-, proefvlak- of hokstructuren in een te vroeg generiek schema
   verloren gaan.
 - Van de 8.494 ruimtelijke verspreidingskandidaten gaan alleen de 1.274
-  passende meetnet-/gebiedsmonitoringrecords door naar de brondata-opvraag. De
-  overige 7.220 positieve records blijven uitsluitend beveiligde externe
-  staging en worden niet in de life-database opgenomen zolang geen
-  wetenschappelijk verantwoord analysetype en voldoende waarnemingsinspanning
-  zijn aangetoond.
+  passende meetnet-/gebiedsmonitoringrecords door naar de brondata-opvraag.
+  Op uitdrukkelijk besluit van 10 september 2026 mogen alle openbare FFV-regels
+  wel als duidelijk gelabelde bronregistratie in nieuwe `ndff_`-tabellen van de
+  life-database staan. Databaseopname is geen analysetoelating: zonder
+  wetenschappelijk verantwoord analysetype en voldoende inspanningsinformatie
+  blijven zij standaard uitgesloten van trend, abundantie, afwezigheid en
+  beheer-effectanalyse.
 - De voorlopige PQ-audit van ticket 58679 bevat 162 exacte positieve dubbels en
   163 niet-beoordeelbare risicorecords. Beide categorieën tellen niet als
   zelfstandige NDFF-evidentie. De door Provincie Zuid-Holland aangeleverde
@@ -77,13 +79,12 @@
   onder `NDFF/external_gbif/meijendel_vangblikken_1953_1960`. Zij wordt niet
   tot positieve NDFF-waarnemingen afgevlakt: sampling events, vangblikken,
   inspanning, verplaatsingen en kwaliteitsvlaggen blijven behouden. De reeks
-  komt pas in aanmerking voor de life database na oplossing of expliciete
-  uitsluiting van verweesde occurrences, soortspecifieke archiefonvolledigheid,
-  predatierisico, methodevergelijking in 1959 en de licentie-inconsistentie.
-  De uiteindelijke databaseopname wordt niet afzonderlijk uitgevoerd, maar
-  tegelijk met de toegelaten delen van de definitieve NDFF-levering in één
-  gecontroleerde en terugdraaibare migratie. De afzonderlijke bronidentiteit
-  en meetstructuur blijven daarbij volledig behouden.
+  is op uitdrukkelijk besluit van 10 september 2026 als volledige maar nog niet
+  analytisch toegelaten bronreeks in de life-database opgenomen. De twee
+  verweesde occurrences zijn bewaard en uitgesloten; lege events zijn geen
+  harde nul; predatie-/zoogdierrisico, verplaatsing en vergelijking in 1959
+  zijn gelabeld. CC BY-NC 4.0 blijft voorlopig leidend. De afzonderlijke
+  bronidentiteit en meetstructuur blijven volledig behouden.
 - De beveiligde NDFF-data is op 10 september 2026 in een apart lokaal
   MySQL-schema `Meijendel_ndff_secure` opgenomen. Alle 14.573 regels blijven
   daarin als beveiligde bronregistratie bewaard; 8.494 regels zijn uitsluitend
@@ -94,7 +95,10 @@
   oorspronkelijke FFV-soortgroep krijgt een eigen tabel `ndff_<soortgroep>`.
   Exacte geometrie en plotkoppeling blijven lokaal. Alleen afzonderlijk
   goedgekeurde, niet-herleidbare analyseresultaten mogen naar de VPS. De gewone
-  life-database is bij deze import niet gewijzigd.
+  life-database is bij deze beveiligde import niet gewijzigd. Later op dezelfde
+  datum zijn de openbare FFV- en GBIF-bronnen wel in afzonderlijke nieuwe
+  tabellen van `Meijendel` opgenomen; bestaande vogel- en PQ-tabellen bleven
+  exact ongewijzigd.
 - Een exacte, onvervaagde locatie verbetert de ruimtelijke toewijzing maar maakt
   een positieve FFV-waarneming niet trendklaar. Voor trends blijven volledige
   telbezoeken, inspanning, protocolversies en afleidbare nullen vereist; de

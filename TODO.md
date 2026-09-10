@@ -10,11 +10,9 @@
   `Meij-05August1959pf207`.
 - Stel per taxon vast over welke jaren de oorspronkelijke soortmap volledig is
   voordat een leeg sampling event als nulwaarneming wordt gebruikt.
-- Ontwerp pas daarna afzonderlijke tabellen voor vangblikken, sampling events,
-  vangsten en kwaliteitsvlaggen en koppel de geversioneerde locaties aan de
-  SOVON-plots. Wijzig de life database nog niet. Voer de uiteindelijke import
-  samen met de toegelaten NDFF-levering uit als één gecontroleerde migratie,
-  met afzonderlijke bronlagen en één gezamenlijke preflight en rollback.
+- De volledige bronreeks is op 10 september 2026 in afzonderlijke tabellen
+  geïmporteerd en alle events zijn aan de geversioneerde SOVON-plots gekoppeld.
+  Laat de analyseblokkades staan totdat bovenstaande bronvragen zijn opgelost.
 
 ### NDFF ticket 58679 - beveiligde levering
 
@@ -25,14 +23,16 @@
   `Meijendel_ndff_secure`: 14.573 records en 158 taxa. Van deze records zijn
   8.494 uitsluitend voor positieve verspreidingscontext toegelaten; 1.274 zijn
   gelabeld als wachtend op volledige brondata en blijven buiten trendanalyse.
-  De life-database is niet gewijzigd.
+  De beveiligde import heeft de bestaande life-tabellen niet gewijzigd. De
+  openbare FFV- en GBIF-bronnen zijn later wel in nieuwe brontabellen van
+  `Meijendel` opgenomen; vogel- en provinciale PQ-tabellen bleven ongewijzigd.
 - De open koppeling via `Identiteit = SHA-256(obs_uri)` en de koppeling aan de
   55 geversioneerde SOVON-plots zijn uitgevoerd. Behoud de afgeleide
   recordstatussen en forceer geen plot bij `multiple`, `outside` of
   `single_deels`.
 - Beoordeel per soortgroep welke van de 8.494 voorlopige
-  verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor opname in
-  het afzonderlijke beveiligde schema; zij zijn niet trendklaar.
+  verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor verdere
+  analyse; zij zijn niet trendklaar.
 - Vraag voor de 1.274 ruimtelijk geschikte meetnet-/gebiedsmonitoringrecords de
   volledige native meetreeksen rechtstreeks op bij de bronorganisaties, niet
   opnieuw bij NDFF. Start met Zoogdiervereniging (572
@@ -61,9 +61,10 @@
   aantallen per PQ-status, uitgesloten records en beslisregelversie. Alleen
   `onafhankelijk` en `niet_van_toepassing` mogen alleen zelfstandig meetellen
   als het record geen PQ-bronrecord is.
-- Behoud de lokale import en de drie veilige views afgescheiden van de gewone
-  life-database en VPS. Het localhost-only Shiny-login-path is ingericht en
-  getest; verleen geen bredere schemarechten.
+- Behoud uitsluitend de beveiligde levering en drie veilige views afgescheiden
+  in `Meijendel_ndff_secure`; openbare bronregistraties horen in `Meijendel`.
+  Het localhost-only Shiny-login-path is ingericht en getest; verleen geen
+  bredere rechten op het beveiligde schema.
 
 ### Wintertellingen — geparkeerde vervolgstappen
 
