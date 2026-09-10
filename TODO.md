@@ -65,6 +65,11 @@
   in `Meijendel_ndff_secure`; openbare bronregistraties horen in `Meijendel`.
   Het localhost-only Shiny-login-path is ingericht en getest; verleen geen
   bredere rechten op het beveiligde schema.
+- De veilige hotspotanalyse per SOVON-plot en vijf tijdvakken is lokaal
+  uitgevoerd. Beoordeel de zes meerbronnen-signalen in 2015-2025 inhoudelijk op
+  karakteristieke duinsoorten en koppel pas daarna een geversioneerde beheerlaag.
+  Houd iedere ecologische kaart gekoppeld aan de brondekkingskaart en gebruik
+  NDFF-verandering uitsluitend als registratiecontext, niet als trend.
 
 ### Wintertellingen — geparkeerde vervolgstappen
 
