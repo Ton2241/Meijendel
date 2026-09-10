@@ -106,4 +106,4 @@
 - [x] Documenteer schema, importcommand, featureflag, veilige views en resterende wetenschappelijke beperkingen.
 - [x] Voer alle Python- en R-contracttests, schema-uitvoering, Shiny-startcontrole en `git diff --check` uit.
 - [x] Controleer bestandsrechten en hashes op de T7.
-- [ ] Voer workspace-preflight uit, commit en push naar de bestaande featurebranch.
+- [x] Voer workspace-preflight uit, commit en push naar de bestaande featurebranch.
