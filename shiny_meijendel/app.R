@@ -12,6 +12,7 @@ if (!requireNamespace("bslib", quietly = TRUE)) {
 }
 
 source("helpers.R", local = TRUE)
+source("ndff_local.R", local = TRUE)
 
 library(shiny)
 
@@ -1138,10 +1139,14 @@ ui <- navbarPage(
       )
     )
   )
-  )
+  ),
+  if (ndff_local_enabled()) ndff_local_tab() else NULL
 )
 
 server <- function(input, output, session) {
+  if (ndff_local_enabled()) {
+    ndff_local_server(input, output, session)
+  }
   tbls_rv <- reactiveVal(NULL)
   analyse_rv <- reactiveVal(NULL)
   lambda_analyse_rv <- reactiveVal(NULL)

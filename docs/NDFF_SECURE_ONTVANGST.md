@@ -114,11 +114,15 @@ Deze stappen zijn uitgevoerd met regelversie `ndff-secure-58679-v1`:
 - de 158 taxa overlappen niet met de 275 taxa van de afzonderlijke
   GBIF-vangblikreeks 1953-1960.
 
-Geen NDFF-record wordt voor analyse vrijgegeven zonder expliciete PQ-status.
-Alleen `onafhankelijk` en `niet_van_toepassing` mogen zelfstandig meetellen;
-de overige statussen blijven geblokkeerd als extra evidentie naast de bestaande
-PQ-opnamen. Iedere analyse-uitvoer bevat aantallen per status en de gebruikte
-beslisregelversie.
+De door Provincie Zuid-Holland aangeleverde PQ-reeks in de life-database is de
+oorspronkelijke en gezaghebbende bron. NDFF-PQ is alleen een secundaire
+controlebron en mag die reeks nooit aanvullen, wijzigen, overschrijven of
+dubbel tellen. Geen NDFF-record wordt voor analyse vrijgegeven zonder
+expliciete PQ-status én bronvlag. Alleen `onafhankelijk` en
+`niet_van_toepassing` mogen zelfstandig meetellen als het record geen
+PQ-bronrecord is; alle NDFF-PQ-bronrecords en de overige statussen blijven
+geblokkeerd. Iedere analyse-uitvoer bevat aantallen per status, bronrol en de
+gebruikte beslisregelversie.
 
 De 77 bekende overlappende plotparen verhinderen dat een geometrische
 intersectie automatisch aan één plot wordt toegewezen.
@@ -126,9 +130,10 @@ intersectie automatisch aan één plot wordt toegewezen.
 ## Database- en analysegate
 
 `gis/database/ndff_secure_schema.sql` is aangepast aan het werkelijke
-GeoPackage-schema, maar blijft uitsluitend een voorbereid ontwerp. Uitvoering
-volgt pas na de inhoudelijke toelatingsbeslissing per soortgroep en analysetype.
-Daarbij blijven gelden:
+GeoPackage-schema en op 10 september 2026 uitsluitend lokaal uitgevoerd. Alle
+14.573 records zijn als beveiligde bronregistratie opgenomen; 8.494 zijn alleen
+voor positieve verspreidingscontext toegelaten en 1.274 zijn uitsluitend
+gelabeld als wachtend op volledige brondata. Daarbij blijven gelden:
 
 - `ndff_soorten` in plaats van de bestaande vogelgerichte `soorten`;
 - één fysieke `ndff_<soortgroep>`-tabel per oorspronkelijke FFV-soortgroep;
@@ -136,7 +141,8 @@ Daarbij blijven gelden:
 - geen opname in de gewone `Meijendel.sql`;
 - geen trendclaim op basis van positieve waarnemingen zonder volledige
   bezoeken, inspanning, protocolversies en afleidbare nullen;
-- bestaande volledige PQ-opnamen blijven leidend.
+- de provinciale volledige PQ-opnamen blijven als primaire bron leidend;
+  NDFF-PQ blijft uitsluitend secundair QA-materiaal.
 
 De surveystructuur wordt niet opnieuw bij NDFF opgevraagd: NDFF heeft gemeld
 dat zij naast de geleverde waarnemingsinformatie geen aanvullende
@@ -154,12 +160,14 @@ gereconstrueerd; pas daarna volgt een geversioneerde plotrelatie. Het
 definitieve databaseschema voor surveys wordt daarom pas vastgesteld na
 ontvangst van minstens één representatieve bronlevering.
 
-De aan het werkelijke GeoPackage aangepaste ontwerpversie is op 10 september
-2026 syntactisch uitgevoerd in een uitsluitend voor deze test aangemaakte lokale
-MySQL 9.7.1-database. Daarbij ontstonden 37 tabellen, waaronder alle 26
-soortgroeptabellen, 36 foreign keys en één onderzoeksview. De tijdelijke
-testdatabase is daarna verwijderd; het echte schema `Meijendel_ndff_secure` is
-niet aanwezig. De life-database is ongewijzigd gebleven.
+De import is reproduceerbaar uitgevoerd met
+`gis/scripts/import_ndff_secure_delivery.py`. Het veilige importmanifest staat
+op de T7 onder `secure/ticket_58679/manifests/mysql_import_manifest.json` en
+bevat alleen aantallen en hashes. De MySQL-controle bevestigt 14.573 records,
+158 taxa, 8.494 verspreidingskandidaten, 1.274 nog niet trendklare kandidaten,
+162 exacte en 163 niet-beoordeelbare PQ-records. Alle 325 PQ-bronrecords zijn
+als secundaire controlebron vastgelegd en geen daarvan is toegelaten. De
+life-database is ongewijzigd gebleven.
 
 ## Beëindiging
 

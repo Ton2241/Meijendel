@@ -57,8 +57,10 @@ CREATE TABLE IF NOT EXISTS ndff_waarneming_register (
   bron_record_id BIGINT NULL,
   periode_start DATE NOT NULL,
   periode_stop DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
   bronhouder VARCHAR(255) NULL,
   validatiestatus VARCHAR(128) NULL,
+  protocol VARCHAR(255) NULL,
   bron_locatietype VARCHAR(32) NULL,
   bron_centrum_x_rd INT NULL,
   bron_centrum_y_rd INT NULL,
@@ -69,7 +71,13 @@ CREATE TABLE IF NOT EXISTS ndff_waarneming_register (
   exacte_geometrie GEOMETRY NOT NULL SRID 28992,
   exacte_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
   ruimtelijke_klasse ENUM('nog_niet_bepaald','single','multiple','outside','ongeldig') NOT NULL DEFAULT 'nog_niet_bepaald',
+  toewijzingskwaliteit ENUM('nog_niet_bepaald','single_volledig_binnen','single_deels','multiple','outside','ongeldig') NOT NULL DEFAULT 'nog_niet_bepaald',
   plot_match_count SMALLINT UNSIGNED NULL,
+  protocol_auditklasse VARCHAR(128) NOT NULL,
+  verspreidingscontext_status ENUM('niet_beoordeeld','kandidaat_verspreidingscontext','uitgesloten_ruimtelijk','uitgesloten_pq') NOT NULL DEFAULT 'niet_beoordeeld',
+  trend_status ENUM('niet_beoordeeld','trendkandidaat_wacht_op_brondata','niet_trendklaar') NOT NULL DEFAULT 'niet_beoordeeld',
+  analyse_poort_versie VARCHAR(64) NOT NULL,
+  is_pq_bronrecord TINYINT(1) NOT NULL DEFAULT 0,
   inname_status ENUM('staging','toegelaten','uitgesloten','vernietigd') NOT NULL DEFAULT 'staging',
   inname_reden VARCHAR(255) NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -79,12 +87,15 @@ CREATE TABLE IF NOT EXISTS ndff_waarneming_register (
   KEY ix_ndff_register_batch (batch_id),
   KEY ix_ndff_register_soort_datum (ndff_soort_id, periode_start),
   KEY ix_ndff_register_ruimte (ruimtelijke_klasse, inname_status),
+  KEY ix_ndff_register_analyse (verspreidingscontext_status, trend_status, jaar),
   SPATIAL KEY sx_ndff_exacte_geometrie (exacte_geometrie),
   CONSTRAINT fk_ndff_register_batch FOREIGN KEY (batch_id)
     REFERENCES ndff_import_batch (batch_id),
   CONSTRAINT fk_ndff_register_soort FOREIGN KEY (ndff_soort_id)
     REFERENCES ndff_soorten (ndff_soort_id),
   CHECK (periode_stop >= periode_start),
+  CHECK (jaar = YEAR(periode_start)),
+  CHECK (is_pq_bronrecord IN (0,1)),
   CHECK (plot_match_count IS NULL OR
     (ruimtelijke_klasse = 'single' AND plot_match_count = 1) OR
     (ruimtelijke_klasse = 'multiple' AND plot_match_count > 1) OR
@@ -180,6 +191,8 @@ CREATE TABLE IF NOT EXISTS ndff_pq_koppeling (
   soortenlijst_overlap DECIMAL(9,8) NULL,
   abundantie_compatibel TINYINT(1) NULL,
   bronhouder_match TINYINT(1) NULL,
+  ndff_bronrol ENUM('secundaire_controlebron','niet_van_toepassing') NOT NULL,
+  primaire_pq_bron ENUM('provincie_zuid_holland','niet_van_toepassing') NOT NULL,
   beslisregel_versie VARCHAR(64) NOT NULL,
   beoordeeld_op DATETIME(6) NOT NULL,
   toelichting VARCHAR(500) NULL,
@@ -288,6 +301,81 @@ ALTER TABLE ndff_zoogdieren_overig ADD CONSTRAINT fk_ndff_zoogdieren FOREIGN KEY
 
 DROP TABLE ndff_soortgroep_template;
 
+-- Uitsluitend lokaal analyseoverzicht. De view bevat geen dagdatum,
+-- geometrie, coördinaten, bronpayload of herleidbare NDFF-identiteit.
+CREATE OR REPLACE VIEW v_ndff_lokale_overzicht AS
+SELECT
+  s.oorspronkelijke_ffv_soortgroep AS soortgroep,
+  w.verspreidingscontext_status,
+  w.trend_status,
+  p.classificatie AS pq_status,
+  COUNT(DISTINCT w.waarneming_id) AS positieve_waarnemingen
+FROM ndff_waarneming_register AS w
+JOIN ndff_soorten AS s
+  ON s.ndff_soort_id = w.ndff_soort_id
+JOIN ndff_pq_koppeling AS p
+  ON p.ndff_waarneming_id = w.waarneming_id
+GROUP BY
+  s.oorspronkelijke_ffv_soortgroep,
+  w.verspreidingscontext_status,
+  w.trend_status,
+  p.classificatie;
+
+-- Positieve aanwezigheid per plot, jaar en taxon. Dit is nadrukkelijk geen
+-- nul-, dichtheids- of trendtabel.
+CREATE OR REPLACE VIEW v_ndff_lokale_plot_jaar_taxon AS
+SELECT
+  wp.plotversie_id,
+  wp.plot_id,
+  w.jaar,
+  w.ndff_soort_id,
+  s.oorspronkelijke_ffv_soortgroep AS soortgroep,
+  s.wetenschappelijke_naam,
+  s.nederlandse_naam,
+  w.protocol_auditklasse,
+  w.trend_status,
+  COUNT(DISTINCT w.waarneming_id) AS positieve_waarnemingen
+FROM ndff_waarneming_register AS w
+JOIN ndff_waarneming_plot AS wp
+  ON wp.waarneming_id = w.waarneming_id
+JOIN ndff_soorten AS s
+  ON s.ndff_soort_id = w.ndff_soort_id
+JOIN ndff_pq_koppeling AS p
+  ON p.ndff_waarneming_id = w.waarneming_id
+WHERE w.toewijzingskwaliteit = 'single_volledig_binnen'
+  AND w.verspreidingscontext_status = 'kandidaat_verspreidingscontext'
+  AND p.classificatie IN ('onafhankelijk','niet_van_toepassing')
+  AND w.is_pq_bronrecord = 0
+  AND wp.is_aanwezigheid_per_plot = 1
+GROUP BY
+  wp.plotversie_id,
+  wp.plot_id,
+  w.jaar,
+  w.ndff_soort_id,
+  s.oorspronkelijke_ffv_soortgroep,
+  s.wetenschappelijke_naam,
+  s.nederlandse_naam,
+  w.protocol_auditklasse,
+  w.trend_status;
+
+CREATE OR REPLACE VIEW v_ndff_lokale_protocolstatus AS
+SELECT
+  s.oorspronkelijke_ffv_soortgroep AS soortgroep,
+  w.protocol,
+  w.protocol_auditklasse,
+  w.verspreidingscontext_status,
+  w.trend_status,
+  COUNT(DISTINCT w.waarneming_id) AS positieve_waarnemingen
+FROM ndff_waarneming_register AS w
+JOIN ndff_soorten AS s
+  ON s.ndff_soort_id = w.ndff_soort_id
+GROUP BY
+  s.oorspronkelijke_ffv_soortgroep,
+  w.protocol,
+  w.protocol_auditklasse,
+  w.verspreidingscontext_status,
+  w.trend_status;
+
 -- Interne onderzoeksvw: geen exacte geometrie, dagdatum, NDFF-identiteit of
 -- bronpayload. Dit is nog geen toestemming voor VPS- of algemene Shiny-toegang.
 CREATE OR REPLACE VIEW v_ndff_plot_jaar_taxon_research AS
@@ -307,6 +395,7 @@ JOIN ndff_soorten AS s
   ON s.ndff_soort_id = w.ndff_soort_id
 WHERE w.ruimtelijke_klasse = 'single'
   AND w.inname_status = 'toegelaten'
+  AND w.is_pq_bronrecord = 0
   AND wp.is_aanwezigheid_per_plot = 1
 GROUP BY
   wp.plotversie_id,

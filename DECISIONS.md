@@ -62,7 +62,13 @@
   zijn aangetoond.
 - De voorlopige PQ-audit van ticket 58679 bevat 162 exacte positieve dubbels en
   163 niet-beoordeelbare risicorecords. Beide categorieën tellen niet als
-  zelfstandige NDFF-evidentie. Tussen de 158 geleverde NDFF-taxa en de 275 taxa
+  zelfstandige NDFF-evidentie. De door Provincie Zuid-Holland aangeleverde
+  PQ-reeks in de life-database is de oorspronkelijke, gezaghebbende bron.
+  Iedere uit NDFF afkomstige PQ-regel is per definitie slechts een secundaire
+  controlebron en mag de provinciale reeks nooit aanvullen, wijzigen,
+  overschrijven of als extra waarneming meetellen, ook niet wanneer een
+  overlapclassificatie `onafhankelijk` zou luiden. Tussen de 158 geleverde
+  NDFF-taxa en de 275 taxa
   van de afzonderlijke GBIF-vangblikreeks is geen taxonomische overlap; beide
   bronlagen behouden desondanks hun eigen structuur in de later gezamenlijke
   migratie.
@@ -78,12 +84,17 @@
   tegelijk met de toegelaten delen van de definitieve NDFF-levering in één
   gecontroleerde en terugdraaibare migratie. De afzonderlijke bronidentiteit
   en meetstructuur blijven daarbij volledig behouden.
-- De beveiligde NDFF-data krijgt later uitsluitend na inhoudelijke toelating
-  een apart MySQL-schema `Meijendel_ndff_secure`. De bestaande vogelgerichte
+- De beveiligde NDFF-data is op 10 september 2026 in een apart lokaal
+  MySQL-schema `Meijendel_ndff_secure` opgenomen. Alle 14.573 regels blijven
+  daarin als beveiligde bronregistratie bewaard; 8.494 regels zijn uitsluitend
+  als positieve verspreidingscontext toegelaten en 1.274 daarvan zijn gelabeld
+  als trendkandidaat die op volledige brondata wacht. Dit label is geen
+  trendtoelating. De bestaande vogelgerichte
   tabel `soorten` blijft ongewijzigd; NDFF-taxa komen in `ndff_soorten` en iedere
   oorspronkelijke FFV-soortgroep krijgt een eigen tabel `ndff_<soortgroep>`.
   Exacte geometrie en plotkoppeling blijven lokaal. Alleen afzonderlijk
-  goedgekeurde, niet-herleidbare analyseresultaten mogen naar de VPS.
+  goedgekeurde, niet-herleidbare analyseresultaten mogen naar de VPS. De gewone
+  life-database is bij deze import niet gewijzigd.
 - Een exacte, onvervaagde locatie verbetert de ruimtelijke toewijzing maar maakt
   een positieve FFV-waarneming niet trendklaar. Voor trends blijven volledige
   telbezoeken, inspanning, protocolversies en afleidbare nullen vereist; de
@@ -97,7 +108,8 @@
   auditeerbare status `exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk`,
   `onafhankelijk`, `niet_beoordeelbaar` of `niet_van_toepassing`, met een
   versie van de beslisregel. Alleen `onafhankelijk` en `niet_van_toepassing`
-  mogen als zelfstandige NDFF-informatie meetellen. De overige statussen mogen
+  mogen als zelfstandige NDFF-informatie meetellen wanneer het record tevens
+  geen PQ-bronrecord is. De overige statussen en alle NDFF-PQ-bronrecords mogen
   hoogstens als gelabelde context worden getoond en leveren geen extra telling,
   soortenrijkdom, aanwezigheid, trend- of inspanningsbewijs naast de bestaande
   PQ-opname. Iedere analyse-uitvoer rapporteert de aantallen per status en de

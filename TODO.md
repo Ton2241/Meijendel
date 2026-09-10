@@ -21,6 +21,11 @@
 - Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
   groene ontvangst-/analysemanifesten staan onder
   `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
+- De afgescheiden lokale bronregistratie is afgerond in
+  `Meijendel_ndff_secure`: 14.573 records en 158 taxa. Van deze records zijn
+  8.494 uitsluitend voor positieve verspreidingscontext toegelaten; 1.274 zijn
+  gelabeld als wachtend op volledige brondata en blijven buiten trendanalyse.
+  De life-database is niet gewijzigd.
 - De open koppeling via `Identiteit = SHA-256(obs_uri)` en de koppeling aan de
   55 geversioneerde SOVON-plots zijn uitgevoerd. Behoud de afgeleide
   recordstatussen en forceer geen plot bij `multiple`, `outside` of
@@ -48,13 +53,17 @@
   vast na ontvangst van minstens één representatieve bronlevering.
 - Onderzoek de herkomst van de 163 PQ-risicorecords met status
   `niet_beoordeelbaar`; de 162 exacte PQ-dubbels blijven uitgesloten als
-  zelfstandige NDFF-evidentie.
+  zelfstandige NDFF-evidentie. Behandel de provinciale PQ-reeks in de
+  life-database altijd als oorspronkelijke, gezaghebbende bron en NDFF-PQ
+  uitsluitend als secundaire QA-bron; gebruik NDFF-PQ nooit als aanvulling of
+  vervanging, ongeacht de overlapstatus.
 - Voeg aan iedere latere NDFF-analyse een verplichte controletabel toe met
   aantallen per PQ-status, uitgesloten records en beslisregelversie. Alleen
-  `onafhankelijk` en `niet_van_toepassing` mogen zelfstandig meetellen.
-- Beoordeel `gis/database/ndff_secure_schema.sql` na de inhoudelijke
-  toelatingsbeslissing en voer het pas daarna gecontroleerd uit; wijzig de
-  life-database nu nog niet.
+  `onafhankelijk` en `niet_van_toepassing` mogen alleen zelfstandig meetellen
+  als het record geen PQ-bronrecord is.
+- Behoud de lokale import en de drie veilige views afgescheiden van de gewone
+  life-database en VPS. Het localhost-only Shiny-login-path is ingericht en
+  getest; verleen geen bredere schemarechten.
 
 ### Wintertellingen — geparkeerde vervolgstappen
 

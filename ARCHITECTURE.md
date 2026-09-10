@@ -42,15 +42,22 @@ geometrie, NDFF-identiteiten en de
 ruimtelijke koppeling worden op de Samsung T7 beheerd onder
 `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
 
-Een eventuele import gebruikt een afzonderlijk lokaal MySQL-schema
+De lokale import gebruikt het afzonderlijke MySQL-schema
 `Meijendel_ndff_secure`, een eigen `ndff_soorten`-tabel en fysieke
 `ndff_<soortgroep>`-tabellen. Het algemene account `meijendel_read` krijgt geen
 rechten op dit schema. De gewone `meijendel.sql`, website, algemene Shiny-app en
 VPS ontvangen geen ruwe beveiligde regels, exacte geometrie of NDFF-identiteit.
+De provinciale PQ-reeks in de life-database is de oorspronkelijke en
+gezaghebbende PQ-bron. NDFF-PQ wordt in het beveiligde schema alleen als
+secundaire controlebron geregistreerd en is door een afzonderlijke bronvlag
+uit alle analyseviews geblokkeerd; zij kan de provinciale reeks niet aanvullen,
+wijzigen of overschrijven.
 Alleen later afzonderlijk goedgekeurde, niet-herleidbare analyses mogen worden
 gepubliceerd. Het voorbereidende schema staat in
-`gis/database/ndff_secure_schema.sql`, is aan de ontvangen kolommen aangepast
-en wordt pas na de inhoudelijke toelatingsbeslissing uitgevoerd.
+`gis/database/ndff_secure_schema.sql`. De eerste gecontroleerde import van
+ticket 58679 is op 10 september 2026 uitgevoerd: alle 14.573 bronrecords zijn
+als beveiligde bronregistratie opgenomen, 8.494 daarvan zijn uitsluitend voor
+verspreidingscontext toegelaten en geen enkel NDFF-PQ-bronrecord is toegelaten.
 
 ## Functionele vogelgroepen en traits
 

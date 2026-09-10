@@ -57,6 +57,28 @@ Daarna open je:
 
 - `http://127.0.0.1:3867`
 
+### Afzonderlijk lokaal NDFF-profiel
+
+De beveiligde NDFF-laag is standaard uitgeschakeld en mag niet op de VPS
+worden geactiveerd. Start haar lokaal op een afzonderlijke poort met:
+
+```bash
+/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/start_shiny_ndff_local.sh
+```
+
+Daarna staat de app op `http://127.0.0.1:3868`. Het profiel gebruikt
+`NDFF_SECURE_LOCAL=1`, weigert een productieruntime en leest via login-path
+`meijendel_ndff_shiny` uitsluitend de drie geaggregeerde views:
+
+- `v_ndff_lokale_overzicht`;
+- `v_ndff_lokale_plot_jaar_taxon`;
+- `v_ndff_lokale_protocolstatus`.
+
+De module biedt geen ruwe download en leest geen exacte geometrie,
+coördinaten, dagdatum, bronpayload of NDFF-identiteit. De provinciale PQ-reeks
+in de life-database blijft de gezaghebbende bron; NDFF-PQ is in deze views als
+secundaire controlebron geblokkeerd.
+
 De app gebruikt lokaal standaard:
 
 - `/Users/ton/Documents/GitHub/Meijendel/meijendel.sql`

@@ -147,7 +147,9 @@ gelezen voor de PQ-vergelijking en niet gewijzigd.
 ### Verplichte NDFF/PQ-analysepoort
 
 De NDFF bevat dus aantoonbaar een omvangrijke maar selectieve afspiegeling van
-de bestaande PQ-reeks. De Meijendel-PQ-database blijft de gezaghebbende bron.
+de bestaande PQ-reeks. De door Provincie Zuid-Holland aangeleverde PQ-reeks in
+de Meijendel-database is de oorspronkelijke, gezaghebbende bron; NDFF-PQ is
+uitsluitend een secundaire controlebron.
 Geen enkele analyse mag NDFF-records zonder expliciete PQ-status als
 onafhankelijke informatie behandelen.
 
@@ -155,7 +157,8 @@ Voor iedere NDFF-waarneming wordt vóór analyse `ndff_pq_koppeling` geraadpleeg
 met status `exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk`,
 `onafhankelijk`, `niet_beoordeelbaar` of `niet_van_toepassing`. Alleen de
 laatste twee onafhankelijke categorieën `onafhankelijk` en
-`niet_van_toepassing` mogen zelfstandig meetellen. Alle andere categorieën
+`niet_van_toepassing` mogen zelfstandig meetellen als het record geen
+PQ-bronrecord is. Alle NDFF-PQ-bronrecords en alle andere categorieën
 leveren naast de bestaande PQ-opname geen extra telling, soortenrijkdom,
 aanwezigheid, trend- of inspanningsbewijs. Iedere uitvoer vermeldt aantallen per
 status, uitgesloten records en de beslisregelversie; zonder die audit is de

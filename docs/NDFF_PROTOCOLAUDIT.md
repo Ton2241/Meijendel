@@ -121,8 +121,10 @@ bijvangst voor die soortgroep en tellen daarom niet als trendmeetnet.
    niet automatisch als jaarlijkse trend.
 5. **PQ-overlap eerst uitsluiten:** records uit `12.007 Vegetatieopnamen` en
    `12.202 LMF-M&N` blijven buiten de life-tabellen totdat
-   `ndff_pq_koppeling` de bronopname heeft beoordeeld. De bestaande PQ-reeks
-   blijft leidend.
+   `ndff_pq_koppeling` de bronopname heeft beoordeeld. De door Provincie
+   Zuid-Holland aangeleverde PQ-reeks in de life-database is de oorspronkelijke
+   en gezaghebbende bron. NDFF-PQ blijft uitsluitend secundair QA-materiaal en
+   mag de provinciale reeks nooit aanvullen, wijzigen of dubbel tellen.
 
 De PQ-regel geldt niet alleen voor trendanalyse. Ook bij aanwezigheid,
 verspreiding, soortenrijkdom, multivariate analyse en inspanningsmaten mogen

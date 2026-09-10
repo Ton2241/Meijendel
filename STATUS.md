@@ -223,8 +223,20 @@ Vervolgbeheer:
 
 Gereed:
 
+- Ticket 58679 is lokaal en afgescheiden geïmporteerd in
+  `Meijendel_ndff_secure`: 14.573 bronrecords, 158 taxa, 8.494 uitsluitend voor
+  verspreidingscontext toegelaten records en 1.274 nog niet trendklare
+  brondatakandidaten. Alle 325 NDFF-PQ-risicorecords zijn als secundaire bron
+  geregistreerd en analytisch geblokkeerd; de life-database is niet gewijzigd.
+- De lokale Shiny-code bevat een standaard uitgeschakelde NDFF-module die alleen
+  met `NDFF_SECURE_LOCAL=1` en uitsluitend buiten productie drie geaggregeerde
+  beveiligde views kan lezen. De module bevat geen downloadfunctie en weigert
+  exacte geometrie, coördinaten, dagdatums, bronpayload en NDFF-identiteiten.
 - Shiny kiest voor `SQL laden` automatisch het bestaande omgevingspad: lokaal de repo-dump en op productie `/srv/shiny-server/Meijendel.sql`; een niet-bestaand relatief standaardpad wordt niet meer vooraf ingevuld.
 - Het PQ-vegetatiemeetnet staat in de levende MySQL-database in de `pq_`-tabellen. De voorlopige PZH-export van 17 juli 2026 voegt `SRTNUM`, soortenlijstversie, `PLABED` en reproduceerbare importprovenance toe; historische RD-geometrie blijft per opname bewaard. De repositorydump wordt uitsluitend uit de gevalideerde levende database gegenereerd.
+- De provinciale PQ-reeks in deze `pq_`-tabellen is de oorspronkelijke,
+  gezaghebbende bron. NDFF-PQ geldt uitsluitend als secundaire controlebron en
+  mag de life-reeks niet aanvullen, wijzigen, overschrijven of dubbel tellen.
 - Vierendertig afwijkende nieuw aangeleverde bodemcodes zijn per opname als `te_bevestigen` vastgelegd zonder de bestaande canonieke bodemcode te overschrijven. `PLABED` en de nog inconsistente milieu-indicatorvelden worden niet als analysecovariaat gebruikt.
 - `pq_plot_jaar_vegetatie` levert uitsluitend daadwerkelijk gemeten plot-jaren en voedt vegetatiecovariaten in Shiny en het blok `Vegetatiemeetnet (PQ)` onder `Plots-kenmerken` in het dashboard.
 - De publieke website gebruikt alleen de veilige view `website_plot_vegetatie_jaar`; ruwe taxa, PQ-nummers en historische coördinaten blijven intern.
