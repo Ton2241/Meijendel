@@ -18,26 +18,28 @@
 
 ### NDFF ticket 58679 - beveiligde levering
 
-- Wacht op de gezipte shapefile, Excel en standaardcitatie van de NDFF.
-- Sla de ongewijzigde bestanden op in
-  `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679/original`.
-- Maak en controleer vóór inhoudelijk gebruik het ontvangstmanifest met
-  `gis/scripts/validate_ndff_secure_delivery.py`.
-- Vergelijk de NDFF-identiteiten met de open staging; overschrijf de open
-  geometrie niet en bewaar de exacte geometrie uitsluitend in de beveiligde
-  lokale laag.
-- Koppel exact aan de 55 geversioneerde SOVON-plots en classificeer iedere
-  waarneming als `single`, `multiple` of `outside`; forceer geen keuze bij de 77
-  bekende overlappende plotparen.
-- Rond daarna de PQ-overlapaudit en toelatingsbeslissing per analysetype af.
-  Ken iedere NDFF-waarneming een expliciete PQ-status en beslisregelversie toe;
-  een ontbrekende of `niet_beoordeelbaar` status blijft geblokkeerd waar
-  onafhankelijkheid relevant is.
+- Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
+  groene ontvangst-/analysemanifesten staan onder
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
+- De open koppeling via `Identiteit = SHA-256(obs_uri)` en de koppeling aan de
+  55 geversioneerde SOVON-plots zijn uitgevoerd. Behoud de afgeleide
+  recordstatussen en forceer geen plot bij `multiple`, `outside` of
+  `single_deels`.
+- Beoordeel per soortgroep welke van de 8.494 voorlopige
+  verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor opname in
+  het afzonderlijke beveiligde schema; zij zijn niet trendklaar.
+- Vraag voor de 1.274 ruimtelijk geschikte meetnet-/gebiedsmonitoringrecords
+  waar mogelijk volledige telobjecten, bezoeken, inspanning, protocolversies
+  en afleidbare nullen op.
+- Onderzoek de herkomst van de 163 PQ-risicorecords met status
+  `niet_beoordeelbaar`; de 162 exacte PQ-dubbels blijven uitgesloten als
+  zelfstandige NDFF-evidentie.
 - Voeg aan iedere latere NDFF-analyse een verplichte controletabel toe met
   aantallen per PQ-status, uitgesloten records en beslisregelversie. Alleen
   `onafhankelijk` en `niet_van_toepassing` mogen zelfstandig meetellen.
-- Beoordeel en voer `gis/database/ndff_secure_schema.sql` pas uit na validatie
-  van het werkelijke leveringsschema; wijzig de life-database nog niet.
+- Beoordeel `gis/database/ndff_secure_schema.sql` na de inhoudelijke
+  toelatingsbeslissing en voer het pas daarna gecontroleerd uit; wijzig de
+  life-database nu nog niet.
 
 ### Wintertellingen — geparkeerde vervolgstappen
 

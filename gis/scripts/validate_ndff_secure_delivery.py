@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Valideer een beveiligde NDFF-levering zonder bronbestanden te wijzigen.
 
-Het script schrijft uitsluitend een JSON-ontvangstmanifest. Het pakt de ZIP niet
-uit en neemt geen waarnemingswaarden of geometrieën in het manifest op.
+Het script ondersteunt zowel de eerder verwachte combinatie van een gezipte
+shapefile en Excel als een rechtstreeks geleverd GeoPackage. Het schrijft
+uitsluitend een JSON-ontvangstmanifest en neemt geen waarnemingswaarden of
+geometrieën in het manifest op.
 """
 
 from __future__ import annotations
@@ -11,6 +13,7 @@ import argparse
 import hashlib
 import json
 import re
+import sqlite3
 import sys
 import zipfile
 from datetime import datetime, timezone
@@ -21,7 +24,7 @@ from xml.etree import ElementTree as ET
 from osgeo import ogr
 
 
-VERSION = "1.0"
+VERSION = "1.1"
 XLSX_NS = "http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 REL_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 EXPECTED_CELLS = [
@@ -281,6 +284,98 @@ def inspect_shapefile_zip(path: Path, expected_crs: int) -> tuple[dict[str, Any]
     return {"filename": path.name, "members": len(members), "layers": layers}, issues, scientific_names
 
 
+def inspect_geopackage(path: Path, expected_crs: int) -> tuple[dict[str, Any], list[dict[str, str]], set[str]]:
+    issues: list[dict[str, str]] = []
+    scientific_names: set[str] = set()
+    with sqlite3.connect(f"file:{path.resolve()}?mode=ro", uri=True) as connection:
+        integrity_rows = [row[0] for row in connection.execute("PRAGMA integrity_check")]
+    integrity_ok = integrity_rows == ["ok"]
+    if not integrity_ok:
+        issues.append({"level": "error", "code": "sqlite_integrity_failed", "detail": f"{path.name}: {integrity_rows[:3]}"})
+    ogr.UseExceptions()
+    dataset = ogr.Open(str(path.resolve()), 0)
+    layers: list[dict[str, Any]] = []
+    if dataset is None:
+        issues.append({"level": "error", "code": "ogr_open_failed", "detail": f"GDAL kan {path.name} niet openen"})
+        return {"filename": path.name, "sqlite_integrity_check": integrity_rows, "layers": layers}, issues, scientific_names
+
+    for layer_index in range(dataset.GetLayerCount()):
+        layer = dataset.GetLayerByIndex(layer_index)
+        definition = layer.GetLayerDefn()
+        fields = [definition.GetFieldDefn(i).GetName() for i in range(definition.GetFieldCount())]
+        field_lookup = {normalized(name): name for name in fields}
+        identity_field = next(
+            (field_lookup[key] for key in ("identiteit", "ndffidentity", "obsuri") if key in field_lookup),
+            None,
+        )
+        scientific_field = next(
+            (
+                original
+                for key, original in field_lookup.items()
+                if key.startswith("wetensch") or key in {"scientific", "scientificname", "soortwet"}
+            ),
+            None,
+        )
+        srs = layer.GetSpatialRef()
+        authority = None
+        if srs is not None:
+            try:
+                srs.AutoIdentifyEPSG()
+            except RuntimeError:
+                pass
+            authority = srs.GetAuthorityCode(None) or srs.GetAuthorityCode("PROJCS")
+        if str(authority or "") != str(expected_crs):
+            issues.append({"level": "error", "code": "unexpected_crs", "detail": f"Laag {layer.GetName()}: {authority!r}, verwacht {expected_crs}"})
+        if identity_field is None:
+            issues.append({"level": "error", "code": "missing_identity", "detail": f"Laag {layer.GetName()}: geen Identiteit of obs_uri"})
+
+        empty = invalid = null_identity = duplicate_identity = 0
+        identities: set[str] = set()
+        for feature in layer:
+            geometry = feature.GetGeometryRef()
+            if geometry is None or geometry.IsEmpty():
+                empty += 1
+            elif not geometry.IsValid():
+                invalid += 1
+            if identity_field:
+                identity = str(feature.GetField(identity_field) or "").strip()
+                if not identity:
+                    null_identity += 1
+                elif identity in identities:
+                    duplicate_identity += 1
+                else:
+                    identities.add(identity)
+            if scientific_field:
+                value = str(feature.GetField(scientific_field) or "").casefold().strip()
+                if value:
+                    scientific_names.add(value)
+        if empty:
+            issues.append({"level": "error", "code": "empty_geometry", "detail": f"Laag {layer.GetName()}: {empty}"})
+        if invalid:
+            issues.append({"level": "error", "code": "invalid_geometry", "detail": f"Laag {layer.GetName()}: {invalid}"})
+        if null_identity:
+            issues.append({"level": "error", "code": "null_identity", "detail": f"Laag {layer.GetName()}: {null_identity}"})
+        if duplicate_identity:
+            issues.append({"level": "error", "code": "duplicate_identity", "detail": f"Laag {layer.GetName()}: {duplicate_identity}"})
+        layers.append(
+            {
+                "name": layer.GetName(),
+                "records": layer.GetFeatureCount(),
+                "geometry_type": ogr.GeometryTypeToName(definition.GetGeomType()),
+                "crs_authority": authority,
+                "fields": fields,
+                "identity_field": identity_field,
+                "scientific_name_field": scientific_field,
+                "empty_geometries": empty,
+                "invalid_geometries": invalid,
+                "null_identities": null_identity,
+                "duplicate_identities": duplicate_identity,
+            }
+        )
+    dataset = None
+    return {"filename": path.name, "sqlite_integrity_check": integrity_rows, "layers": layers}, issues, scientific_names
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--delivery-dir", type=Path, required=True)
@@ -304,16 +399,16 @@ def main() -> int:
     files = sorted(path for path in delivery_dir.iterdir() if path.is_file() and not path.name.startswith("."))
     zip_files = [path for path in files if path.suffix.casefold() == ".zip"]
     xlsx_files = [path for path in files if path.suffix.casefold() == ".xlsx"]
-    if not zip_files:
-        issues.append({"level": "error", "code": "missing_zip", "detail": "Geen gezipte shapefile ontvangen"})
-    if not xlsx_files:
-        issues.append({"level": "error", "code": "missing_xlsx", "detail": "Geen Excel ontvangen"})
+    gpkg_files = [path for path in files if path.suffix.casefold() == ".gpkg"]
+    if not zip_files and not gpkg_files:
+        issues.append({"level": "error", "code": "missing_spatial_delivery", "detail": "Geen GeoPackage of gezipte shapefile ontvangen"})
     if len(zip_files) > 1:
         issues.append({"level": "warning", "code": "multiple_zip", "detail": f"{len(zip_files)} ZIP-bestanden"})
     if len(xlsx_files) > 1:
         issues.append({"level": "warning", "code": "multiple_xlsx", "detail": f"{len(xlsx_files)} Excelbestanden"})
 
     zip_reports: list[dict[str, Any]] = []
+    gpkg_reports: list[dict[str, Any]] = []
     delivered_scientific: set[str] = set()
     for path in zip_files:
         try:
@@ -323,6 +418,15 @@ def main() -> int:
             delivered_scientific.update(names)
         except (RuntimeError, zipfile.BadZipFile) as exc:
             issues.append({"level": "error", "code": "invalid_zip", "detail": f"{path.name}: {exc}"})
+
+    for path in gpkg_files:
+        try:
+            report, gpkg_issues, names = inspect_geopackage(path, args.expected_crs)
+            gpkg_reports.append(report)
+            issues.extend(gpkg_issues)
+            delivered_scientific.update(names)
+        except (RuntimeError, sqlite3.Error) as exc:
+            issues.append({"level": "error", "code": "invalid_geopackage", "detail": f"{path.name}: {exc}"})
 
     xlsx_reports: list[dict[str, Any]] = []
     for path in xlsx_files:
@@ -342,8 +446,11 @@ def main() -> int:
                 issues.append({"level": "error", "code": "empty_target_list", "detail": "Geen wetenschappelijke namen gevonden"})
 
     unexpected_species = delivered_scientific - expected_species if expected_species else set()
+    missing_species = expected_species - delivered_scientific if expected_species else set()
     if unexpected_species:
         issues.append({"level": "error", "code": "unexpected_species", "detail": f"{len(unexpected_species)} taxa buiten doelsoortenlijst"})
+    if missing_species:
+        issues.append({"level": "warning", "code": "target_species_without_records", "detail": f"{len(missing_species)} aangevraagde taxa zonder geleverd record"})
     if expected_species and not delivered_scientific:
         issues.append({"level": "warning", "code": "species_fields_not_detected", "detail": "Geen herkenbare wetenschappelijke-naamkolom in levering"})
 
@@ -373,11 +480,13 @@ def main() -> int:
             for path in files
         ],
         "shapefile_archives": zip_reports,
+        "geopackages": gpkg_reports,
         "excel_workbooks": xlsx_reports,
         "species_check": {
             "expected_scientific_names": len(expected_species),
             "delivered_scientific_names_detected": len(delivered_scientific),
             "unexpected_count": len(unexpected_species),
+            "target_species_without_records_count": len(missing_species),
         },
         "citation": citation_report,
         "issues": issues,

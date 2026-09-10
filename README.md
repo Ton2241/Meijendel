@@ -183,7 +183,7 @@ Daarin staan onder andere:
 ### NDFF-data
 
 De open FFV-bronbestanden, stagingdataset en rapporten staan uitsluitend op de
-Samsung T7 onder `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. De toekomstige
+Samsung T7 onder `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. De ontvangen
 onvervaagde levering voor ticket 58679 staat daar fysiek gescheiden onder
 `secure/ticket_58679` en komt niet in Git, `meijendel.sql`, de gewone Shiny-app
 of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en

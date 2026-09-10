@@ -73,6 +73,29 @@ def write_shapefile_zip(path: Path, workdir: Path) -> None:
             archive.write(component, component.name)
 
 
+def write_geopackage(path: Path) -> None:
+    driver = ogr.GetDriverByName("GPKG")
+    dataset = driver.CreateDataSource(str(path))
+    spatial_reference = osr.SpatialReference()
+    spatial_reference.ImportFromEPSG(28992)
+    layer = dataset.CreateLayer("waarnemingen", spatial_reference, ogr.wkbPolygon)
+    layer.CreateField(ogr.FieldDefn("obs_uri", ogr.OFTString))
+    layer.CreateField(ogr.FieldDefn("soort_wet", ogr.OFTString))
+    for index, name in enumerate(("Taxon alpha", "Taxon beta"), 1):
+        feature = ogr.Feature(layer.GetLayerDefn())
+        feature.SetField("obs_uri", f"https://example.test/observation/{index}")
+        feature.SetField("soort_wet", name)
+        ring = ogr.Geometry(ogr.wkbLinearRing)
+        x, y = 80000 + index, 460000 + index
+        for dx, dy in ((0, 0), (1, 0), (1, 1), (0, 1), (0, 0)):
+            ring.AddPoint_2D(x + dx, y + dy)
+        geometry = ogr.Geometry(ogr.wkbPolygon)
+        geometry.AddGeometry(ring)
+        feature.SetGeometry(geometry)
+        layer.CreateFeature(feature)
+    dataset = None
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory(prefix="ndff secure test ") as temporary:
         root = Path(temporary)
@@ -112,6 +135,34 @@ def main() -> int:
         assert report["shapefile_archives"][0]["layers"][0]["records"] == 2
         assert report["excel_workbooks"][0]["sheets"][0]["data_rows"] == 2
         assert report["species_check"]["unexpected_count"] == 0
+
+        gpkg_original = root / "gpkg_original"
+        gpkg_original.mkdir()
+        write_geopackage(gpkg_original / "levering.gpkg")
+        gpkg_target = root / "gpkg_doelsoorten.xlsx"
+        write_xlsx(
+            gpkg_target,
+            [["wetenschappelijke_naam"], ["Taxon alpha"], ["Taxon beta"], ["Taxon gamma"]],
+        )
+        gpkg_manifest = root / "gpkg_manifest.json"
+        gpkg_result = subprocess.run(
+            [
+                sys.executable,
+                str(SCRIPT),
+                "--delivery-dir", str(gpkg_original),
+                "--manifest", str(gpkg_manifest),
+                "--expected-species-xlsx", str(gpkg_target),
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if gpkg_result.returncode != 0:
+            raise AssertionError(gpkg_result.stdout + gpkg_result.stderr)
+        gpkg_report = json.loads(gpkg_manifest.read_text(encoding="utf-8"))
+        assert gpkg_report["status"] == "PASS"
+        assert gpkg_report["geopackages"][0]["layers"][0]["records"] == 2
+        assert gpkg_report["species_check"]["target_species_without_records_count"] == 1
 
         unsafe_original = root / "unsafe_original"
         unsafe_original.mkdir()

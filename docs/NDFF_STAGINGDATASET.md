@@ -96,12 +96,16 @@ staat hierboven en in `README_NDFF_OPSLAG.md` op de T7.
 
 ## Beveiligde levering ticket 58679
 
-De toekomstige onvervaagde levering staat los van deze open FFV-staging. De
-ongewijzigde ZIP en Excel komen uitsluitend onder
-`NDFF/secure/ticket_58679/original`; manifesten onder `manifests` en afgeleide
-lokale bestanden onder `derived`. De bestanden gaan niet in Git, de gewone
-`Meijendel.sql`, algemene Shiny-caches of webpaden. De exacte geometrie wordt
-alleen lokaal aan de geversioneerde SOVON-plotlaag gekoppeld.
+De op 10 september 2026 ontvangen onvervaagde levering staat los van deze open
+FFV-staging. Het ongewijzigde GeoPackage staat uitsluitend onder
+`NDFF/secure/ticket_58679/original`; manifesten staan onder `manifests` en
+afgeleide lokale bestanden onder `derived`. De bestanden gaan niet in Git, de
+gewone `Meijendel.sql`, algemene Shiny-caches of webpaden.
+
+De open en beveiligde recordidentiteit zijn exact te koppelen met
+`open Identiteit = SHA-256(beveiligde obs_uri)`. Daarmee matchen 14.420 van de
+14.573 geleverde records. De beveiligde geometrie vervangt de openbare
+geometrie niet; beide blijven als afzonderlijke bronwaarden controleerbaar.
 
 ## Kwaliteitsanalyse 17 augustus 2026
 
@@ -157,9 +161,13 @@ aanwezigheid, trend- of inspanningsbewijs. Iedere uitvoer vermeldt aantallen per
 status, uitgesloten records en de beslisregelversie; zonder die audit is de
 analyse niet vrijgegeven.
 
-De volgende fase is de geversioneerde SOVON-plotintersectie, de inhoudelijke
-PQ-audit en het vaststellen van toelatingsregels per analysetype. Pas daarna
-volgen het definitieve databaseschema en een eventuele import.
+De geversioneerde SOVON-plotintersectie en eerste PQ-audit zijn op 10 september
+2026 voor de beveiligde levering uitgevoerd. Van 14.573 records liggen 8.777
+geometrieën volledig binnen precies één plot; na PQ-blokkade blijven 8.494
+voorlopige kandidaten voor uitsluitend verspreidingscontext. Er zijn 162 exacte
+PQ-dubbels en 163 niet-beoordeelbare PQ-risicorecords. Het definitieve
+toelatingsbesluit per soortgroep en analysetype en de brondata-aanvraag voor
+meetnetten gaan vooraf aan een eventuele import.
 
 ## Protocolaudit 17 augustus 2026
 

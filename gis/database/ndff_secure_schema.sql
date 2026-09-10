@@ -1,6 +1,6 @@
 -- Voorbereidend schema voor beveiligde NDFF-data, ticket 58679.
--- NIET uitvoeren voordat de ontvangen ZIP en Excel groen zijn gevalideerd en
--- de kolomkoppeling expliciet is beoordeeld.
+-- Het ontvangen GeoPackage is groen gevalideerd; NIET uitvoeren voordat de
+-- inhoudelijke toelating per soortgroep en analysetype expliciet is beoordeeld.
 -- Dit schema blijft buiten de gewone Meijendel.sql en krijgt geen rechten voor
 -- meijendel_read.
 
@@ -16,10 +16,9 @@ CREATE TABLE IF NOT EXISTS ndff_import_batch (
   ontvangen_op DATETIME(6) NOT NULL,
   periode_start SMALLINT UNSIGNED NOT NULL,
   periode_einde SMALLINT UNSIGNED NOT NULL,
-  originele_zip VARCHAR(255) NOT NULL,
-  originele_zip_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
-  origineel_excel VARCHAR(255) NOT NULL,
-  origineel_excel_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  origineel_bestand VARCHAR(255) NOT NULL,
+  origineel_formaat ENUM('gpkg','zip_shapefile','xlsx','overig') NOT NULL,
+  origineel_bestand_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
   manifest_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
   standaardcitatie TEXT NOT NULL,
   gebruiksstatus ENUM('ontvangen','gevalideerd','toegelaten','afgesloten','vernietigd') NOT NULL DEFAULT 'ontvangen',
@@ -28,7 +27,7 @@ CREATE TABLE IF NOT EXISTS ndff_import_batch (
   vernietigd_op DATETIME(6) NULL,
   opmerkingen TEXT NULL,
   PRIMARY KEY (batch_id),
-  UNIQUE KEY uq_ndff_batch_zip_hash (originele_zip_sha256),
+  UNIQUE KEY uq_ndff_batch_bestand_hash (origineel_bestand_sha256),
   CHECK (periode_start = 1950),
   CHECK (periode_einde = 2025),
   CHECK (vernietigd_op IS NULL OR gebruiksstatus = 'vernietigd')
@@ -54,10 +53,16 @@ CREATE TABLE IF NOT EXISTS ndff_waarneming_register (
   batch_id BIGINT UNSIGNED NOT NULL,
   ndff_soort_id BIGINT UNSIGNED NOT NULL,
   ndff_identity VARCHAR(512) NOT NULL,
+  open_identity_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bron_record_id BIGINT NULL,
   periode_start DATE NOT NULL,
   periode_stop DATE NOT NULL,
   bronhouder VARCHAR(255) NULL,
   validatiestatus VARCHAR(128) NULL,
+  bron_locatietype VARCHAR(32) NULL,
+  bron_centrum_x_rd INT NULL,
+  bron_centrum_y_rd INT NULL,
+  bron_oppervlakte_m2 DECIMAL(18,6) NULL,
   publieke_vervaging_raw VARCHAR(128) NULL,
   publieke_vervagingsniveau_km DECIMAL(6,2) NULL,
   openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NULL,
@@ -70,6 +75,7 @@ CREATE TABLE IF NOT EXISTS ndff_waarneming_register (
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (waarneming_id),
   UNIQUE KEY uq_ndff_identity (ndff_identity),
+  UNIQUE KEY uq_ndff_open_identity (open_identity_sha256),
   KEY ix_ndff_register_batch (batch_id),
   KEY ix_ndff_register_soort_datum (ndff_soort_id, periode_start),
   KEY ix_ndff_register_ruimte (ruimtelijke_klasse, inname_status),

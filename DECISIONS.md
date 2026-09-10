@@ -19,6 +19,29 @@
   opgenomen in Git, de gewone `Meijendel.sql`, algemene Shiny-caches of
   webpaden. Op uitdrukkelijk besluit van de eigenaar wordt op de fysiek
   beveiligde Samsung T7 geen extra versleutelde ontvangstzone gebruikt.
+- De op 10 september 2026 ontvangen GeoPackage voor ticket 58679 is technisch
+  gevalideerd: 14.573 unieke betrouwbare records, 158 taxa met records en geen
+  ongeldige geometrieën. De open FFV-identiteit is reproduceerbaar koppelbaar
+  als `SHA-256(obs_uri)`; 14.420 records matchen. Exacte datum en geometrie uit
+  de beveiligde levering vervangen de open waarden niet maar worden als
+  afzonderlijke beveiligde bronlaag bewaard.
+- Een NDFF-geometrie is alleen een voorlopige plotkandidaat wanneer zij volledig
+  binnen precies één geversioneerd SOVON-plot ligt. Alleen een intersectie of
+  een enkel geraakt plot is onvoldoende. Van de levering voldoen 8.777 records
+  aan deze ruimtelijke regel; na de PQ-poort resteren 8.494 kandidaten voor
+  uitsluitend verspreidingscontext. `Multiple`, `outside` en `single_deels`
+  tellen niet als aanwezigheid per plot.
+- De beveiligde levering maakt geen record direct trendklaar. Van 1.931 records
+  uit doelgerichte meetnetten of gebiedsmonitoring zijn 1.274 ruimtelijk en qua
+  PQ-status geschikt voor een gerichte brondata-aanvraag. Zonder telobjecten,
+  bezoeken, inspanning, protocolversies en afleidbare nullen blijven ook deze
+  buiten trend-, abundantie- en afwezigheidsanalyses.
+- De voorlopige PQ-audit van ticket 58679 bevat 162 exacte positieve dubbels en
+  163 niet-beoordeelbare risicorecords. Beide categorieën tellen niet als
+  zelfstandige NDFF-evidentie. Tussen de 158 geleverde NDFF-taxa en de 275 taxa
+  van de afzonderlijke GBIF-vangblikreeks is geen taxonomische overlap; beide
+  bronlagen behouden desondanks hun eigen structuur in de later gezamenlijke
+  migratie.
 - De openbare GBIF Sampling Event Dataset `Meijendel research 1953-1960`
   (versie 1.7, DOI `10.15468/adsbxs`) blijft een derde, afzonderlijke bronlaag
   onder `NDFF/external_gbif/meijendel_vangblikken_1953_1960`. Zij wordt niet

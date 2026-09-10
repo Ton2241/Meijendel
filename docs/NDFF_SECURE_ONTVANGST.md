@@ -2,9 +2,16 @@
 
 ## Doel en status
 
-Dit runbook bereidt de ontvangst voor van de door NDFF toegezegde gezipte
-shapefile, Excel en standaardcitatie met onvervaagde gegevens voor 1950-2025.
-Het maakt nog geen import in de life-database en verandert de VPS of Shiny niet.
+De levering voor ticket 58679 is op 10 september 2026 ontvangen als één
+GeoPackage met alle aanwezige en gevalideerde records van de aangeleverde lijst
+van 191 soorten binnen het organisatie-werkgebied en de periode 1950-2025. De
+ontvangst en eerste kwaliteitsanalyse zijn groen afgerond. Er is nog niets in de
+life-database geïmporteerd en VPS en Shiny zijn niet gewijzigd.
+
+De verplichte citatie is:
+
+> Nationale Databank Flora en Fauna/NDFF. https://ndff.nl/citation/mwl/58679
+> (geraadpleegd 9-9-2026)
 
 De Samsung T7 is door de eigenaar aangemerkt als fysiek beveiligde opslag achter
 de iMac. Daarom wordt geen aanvullende versleutelde ontvangstzone gebruikt.
@@ -35,8 +42,8 @@ getekende voorwaarden staan in `manifests/expected_scope.json`.
 
 ## Ontvangstprocedure
 
-1. Download ZIP en Excel tijdelijk en verplaats ze direct, zonder hernoemen of
-   openen, naar `secure/ticket_58679/original`.
+1. Plaats de gedownloade levering zonder hernoemen of inhoudelijke wijziging in
+   `secure/ticket_58679/original`.
 2. Bewaar de meegeleverde standaardcitatie als apart bestand onder `manifests`
    of als correspondentie bij ticket 58679.
 3. Maak het ontvangstmanifest:
@@ -55,14 +62,30 @@ PYTHONDONTWRITEBYTECODE=1 python3 gis/scripts/validate_ndff_secure_delivery.py \
    hashes, aantallen en leesbaarheid zijn gecontroleerd. Bewaar de inhoudelijke
    correspondentie zonder dubbele databijlage.
 
-Het validatiescript wijzigt en pakt de bronbestanden niet uit. Het controleert
-SHA-256, ZIP-veiligheid en shapefile-onderdelen, laag- en recordaantallen,
-EPSG:28992, lege/ongeldige geometrieën, identiteit, Excelstructuur en - waar de
-kolommen dit toelaten - aansluiting op de aangevraagde doelsoorten.
+Het validatiescript wijzigt de bronbestanden niet. Het ondersteunt zowel de
+eerder verwachte combinatie ZIP/Excel als het daadwerkelijk geleverde
+GeoPackage. Het controleert SHA-256, laag- en recordaantallen, EPSG:28992,
+lege/ongeldige geometrieën, identiteit en aansluiting op de aangevraagde
+doelsoorten.
+
+## Ontvangstresultaat 10 september 2026
+
+- origineel: `ndff_mwl_z58679_Meijendel.gpkg`;
+- SHA-256: `bc33f14ae413169873adbb396cbcf3ac9708a02dccbeb7902e9685d0e9b8cc73`;
+- één polygonenlaag in EPSG:28992 met 14.573 records;
+- 14.573 unieke `obs_uri`-waarden, geen lege of ongeldige geometrieën;
+- 158 taxa met records; 33 van de 191 aangevraagde taxa zonder record;
+- alle records hebben NDFF-kwaliteit `betrouwbaar` en leveringswaarde
+  `onvervaagd`.
+
+`Onvervaagd` betekent uitsluitend dat de privacyvervaging is opgeheven. Het is
+geen garantie voor puntnauwkeurigheid: 3.456 brongeometrieën zijn minstens
+1 km².
 
 ## Vervolg na een groene ontvangst
 
-1. Koppel de geleverde `Identiteit` aan de open, ontdubbelde FFV-staging.
+1. Koppel `obs_uri` aan de open staging met
+   `Identiteit = SHA-256(obs_uri)`.
 2. Bewaar exacte geometrie naast, en nooit in plaats van, de openbare
    brongeometrie.
 3. Koppel lokaal aan de geversioneerde laag
@@ -72,6 +95,24 @@ kolommen dit toelaten - aansluiting op de aangevraagde doelsoorten.
    - `multiple`: meer dan één plot, dus ruimtelijk ambigu;
    - `outside`: geen plot, dus buiten de database-inname.
 5. Beoordeel daarna vervaging, PQ-overlap en protocolkwaliteit per analysetype.
+
+Deze stappen zijn uitgevoerd met regelversie `ndff-secure-58679-v1`:
+
+- 14.420 records (98,95%) koppelen exact aan de open staging; 10.271 daarvan
+  waren openbaar vervaagd op 1, 5 of 10 km;
+- 9.157 records raken één plot, 4.590 meerdere plots en 826 geen plot;
+- van de enkelvoudige matches liggen 8.777 geometrieën volledig binnen het
+  plot en 380 slechts gedeeltelijk;
+- na ruimtelijke en PQ-controle blijven 8.494 voorlopige kandidaten voor
+  uitsluitend verspreidingscontext;
+- 162 records matchen exact met een bestaande PQ-soortwaarneming en 163
+  PQ-risicorecords blijven `niet_beoordeelbaar`;
+- 1.931 records horen bij een doelgericht meetnet of gebiedsmonitoring, maar
+  slechts 1.274 liggen volledig in één plot zonder PQ-blokkade;
+- nul records zijn met de geleverde positieve recordstructuur direct geschikt
+  voor trendanalyse;
+- de 158 taxa overlappen niet met de 275 taxa van de afzonderlijke
+  GBIF-vangblikreeks 1953-1960.
 
 Geen NDFF-record wordt voor analyse vrijgegeven zonder expliciete PQ-status.
 Alleen `onafhankelijk` en `niet_van_toepassing` mogen zelfstandig meetellen;
@@ -84,9 +125,10 @@ intersectie automatisch aan één plot wordt toegewezen.
 
 ## Database- en analysegate
 
-`gis/database/ndff_secure_schema.sql` is uitsluitend een voorbereid ontwerp.
-Uitvoering volgt pas nadat het werkelijke leveringsschema is gevalideerd en de
-kolomkoppeling is beoordeeld. Daarbij blijven gelden:
+`gis/database/ndff_secure_schema.sql` is aangepast aan het werkelijke
+GeoPackage-schema, maar blijft uitsluitend een voorbereid ontwerp. Uitvoering
+volgt pas na de inhoudelijke toelatingsbeslissing per soortgroep en analysetype.
+Daarbij blijven gelden:
 
 - `ndff_soorten` in plaats van de bestaande vogelgerichte `soorten`;
 - één fysieke `ndff_<soortgroep>`-tabel per oorspronkelijke FFV-soortgroep;
@@ -96,16 +138,20 @@ kolomkoppeling is beoordeeld. Daarbij blijven gelden:
   bezoeken, inspanning, protocolversies en afleidbare nullen;
 - bestaande volledige PQ-opnamen blijven leidend.
 
-Het ontwerp is op 2 september 2026 syntactisch uitgevoerd in een uitsluitend
-voor deze test aangemaakte lokale MySQL 9.7.1-database. Daarbij ontstonden 36
-basistabellen, waaronder alle 26 soortgroeptabellen, 36 foreign keys en één
-onderzoeksview. De tijdelijke testdatabase is daarna verwijderd; het echte
-schema `Meijendel_ndff_secure` is niet aangemaakt.
+De aan het werkelijke GeoPackage aangepaste ontwerpversie is op 10 september
+2026 syntactisch uitgevoerd in een uitsluitend voor deze test aangemaakte lokale
+MySQL 9.7.1-database. Daarbij ontstonden 37 tabellen, waaronder alle 26
+soortgroeptabellen, 36 foreign keys en één onderzoeksview. De tijdelijke
+testdatabase is daarna verwijderd; het echte schema `Meijendel_ndff_secure` is
+niet aanwezig. De life-database is ongewijzigd gebleven.
 
 ## Beëindiging
 
-Leg per levering de gebruiksstatus, laatste toegestane gebruiksdatum en
-uiteindelijke vernietigingsdatum vast. Vernietiging omvat originele bestanden,
-afgeleide beveiligde bestanden, databasekopieën, tijdelijke extracties en
-back-ups die de beveiligde data bevatten. Het ontvangstmanifest en een
-niet-inhoudelijk vernietigingsbewijs kunnen behouden blijven.
+De ondertekende voorwaarden noemen geen vaste einddatum. Zij beperken het
+gebruik tot project 58679, verbieden delen of publiceren van de beveiligde data
+en verplichten vernietiging na gebruik. Leg daarom per levering de
+gebruiksstatus en, zodra het projectgebruik eindigt, de vastgestelde
+vernietigingsdatum vast. Vernietiging omvat originele bestanden, afgeleide
+beveiligde bestanden, databasekopieën, tijdelijke extracties en back-ups die de
+beveiligde data bevatten. Het ontvangstmanifest en een niet-inhoudelijk
+vernietigingsbewijs kunnen behouden blijven.

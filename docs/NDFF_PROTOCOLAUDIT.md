@@ -15,6 +15,17 @@ protocollen met goede metadata afleidbaar en beperkt toegankelijk zijn. CBS
 beoordeelt NEM-kwaliteit bovendien per meetprogramma en meetdoel; een landelijke
 kwaliteitsbeoordeling is geen automatische lokale Meijendeltrend.
 
+## Toepassing op beveiligde levering 58679
+
+De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
+14.573 positieve records vallen 1.926 onder een passend doelgericht meetnet en
+5 onder gebiedsmonitoring. Na de strenge SOVON-plottoewijzing en PQ-poort zijn
+1.274 daarvan ruimtelijk geschikt voor een gerichte aanvraag van volledige
+brondata. De GeoPackage bevat zelf geen telobjecten, bezoekstructuur,
+inspanning, protocolversies of afleidbare nullen; `zoid` en `sessionid` zijn in
+alle records 0. Daarom zijn ook in de beveiligde levering nul records direct
+trendklaar.
+
 ## Uitkomst per soortgroep
 
 | Soortgroep | Records | Doelmeetnet | SNL | PQ-risico | Advies |

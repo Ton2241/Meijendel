@@ -36,8 +36,9 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 ### Beveiligde NDFF-laag
 
-De onvervaagde levering voor NDFF-ticket 58679 blijft een afzonderlijke lokale
-bronlaag. De originele ZIP en Excel, exacte geometrie, NDFF-identiteiten en de
+De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
+blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
+geometrie, NDFF-identiteiten en de
 ruimtelijke koppeling worden op de Samsung T7 beheerd onder
 `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
 
@@ -48,8 +49,8 @@ rechten op dit schema. De gewone `meijendel.sql`, website, algemene Shiny-app en
 VPS ontvangen geen ruwe beveiligde regels, exacte geometrie of NDFF-identiteit.
 Alleen later afzonderlijk goedgekeurde, niet-herleidbare analyses mogen worden
 gepubliceerd. Het voorbereidende schema staat in
-`gis/database/ndff_secure_schema.sql` en wordt pas na controle van de ontvangen
-kolommen uitgevoerd.
+`gis/database/ndff_secure_schema.sql`, is aan de ontvangen kolommen aangepast
+en wordt pas na de inhoudelijke toelatingsbeslissing uitgevoerd.
 
 ## Functionele vogelgroepen en traits
 
