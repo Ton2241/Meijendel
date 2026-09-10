@@ -26,6 +26,48 @@ inspanning, protocolversies of afleidbare nullen; `zoid` en `sessionid` zijn in
 alle records 0. Daarom zijn ook in de beveiligde levering nul records direct
 trendklaar.
 
+## Reconstructie van de surveystructuur
+
+De mededeling van NDFF dat de GeoPackage alle beschikbare informatie per
+waarneming bevat, betekent dat de ontbrekende surveystructuur niet opnieuw bij
+NDFF wordt gevraagd. De openbare handleidingen van de meetnetbeheerders zijn
+wel voldoende om het **bedoelde ontwerp** te reconstrueren. De feitelijk
+uitgevoerde routes, bezoeken, inspanning, doelsoorten, nulresultaten en
+historische wijzigingen moeten rechtstreeks bij de oorspronkelijke
+bronorganisatie worden opgevraagd.
+
+De 1.274 vervolgkandidaten bestaan uit tien protocol-broncombinaties:
+
+| Protocol | Records | Bronorganisatie | Native telobject | Prioriteit |
+|---|---:|---|---|---:|
+| Vleermuistransecttelling (NEM) | 572 | Zoogdiervereniging | vaste route/transect | 1 |
+| LMF-a | 478 | Dunea en FLORON | vaste looproute in kilometerhok | 1 |
+| Slakken van de Habitatrichtlijn | 112 | Stichting ANEMOON | zoek-/proefvlak of monsterlocatie | 2 |
+| Monitoring amfibieën (NEM) | 72 | RAVON | telgebied met genummerde wateren | 1 |
+| Korstmossen op steen, heiden en stuifzanden | 20 | BLWG | permanent proefvlak | 2 |
+| Het Nieuwe Strepen | 12 | FLORON | complete kilometerhokinventarisatie | 3 |
+| SNL/N2000-gebiedsmonitoring | 5 | Staatsbosbeheer/opdrachtgever | beheer- of karteringsgebied | 3 |
+| Meetnet mossen | 1 | BLWG | geselecteerd kilometerhok | 4 |
+| Landelijk Meetnet Vlinders | 1 | De Vlinderstichting | vaste route met secties | 3 |
+| RAVON Meetnet Natura 2000 | 1 | RAVON/opdrachtgever | meetpunt, water of traject | 4 |
+
+Prioriteit 1 wordt als eerste opgevraagd. Prioriteit 2 is voorwaardelijk
+kansrijk. Prioriteit 3 is vooral bruikbaar binnen het eigen meetnetmodel of
+voor periodieke toestand. Prioriteit 4 is in deze levering te klein voor een
+lokale trend, tenzij de bronhouder een veel completere reeks kan leveren.
+
+Het native telobject blijft altijd leidend. Dat een afzonderlijke NDFF-
+waarneming volledig binnen één SOVON-plot ligt, bewijst niet dat de volledige
+route, het water, proefvlak, kilometerhok of karteringsgebied binnen dat plot
+ligt. Eerst worden telobject en volledige bezoeken gereconstrueerd. Daarna
+wordt de geversioneerde relatie met SOVON-plots vastgelegd. Een route of gebied
+wordt niet kunstmatig over vogelplots verdeeld zonder sectiegeometrie en
+bijbehorende inspanning.
+
+Voor LMF-a noemen openbare bronnen zowel een drie- als vierjarige cyclus. Dat
+is een concrete methodebreuk die vóór analyse moet worden opgelost met
+protocolversies, routeversies, doelsoortenlijsten en feitelijke bezoeken.
+
 ## Uitkomst per soortgroep
 
 | Soortgroep | Records | Doelmeetnet | SNL | PQ-risico | Advies |
@@ -128,3 +170,11 @@ tellingen worden nooit automatisch als nul of met machine learning ingevuld.
 - [NDFF LMF-a](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/12-211-landelijk-meetnet-flora-aandachtssoorten-lmf-a/)
 - [CBS Kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/)
 - [CBS methode kwaliteitsbeoordeling](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/kwaliteitsbeoordeling/)
+- [Zoogdiervereniging Vleermuistransecttelling](https://www.zoogdiervereniging.nl/sites/default/files/2024-10/Handleiding%20Vleermuis%20transecttellingen.pdf)
+- [FLORON Het Nieuwe Strepen](https://www.floron.nl/meedoen/het-nieuwe-strepen)
+- [RAVON monitoring amfibieën](https://www.ravon.nl/publicaties/handleiding-voor-het-monitoren-van-amfibieen-in-nederland/)
+- [RAVON Meetnet Natura 2000](https://www.ravon.nl/publicaties/handleiding-meetnet-amfibieen-en-vissen-in-natura-2000-gebieden/)
+- [ANEMOON HabSlak-protocollen](https://www.anemoon.org/projecten/natura2000/habslak-protocollen)
+- [BLWG Meetnet korstmossen](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
+- [De Vlinderstichting vlinderroute](https://vlinderstichting.nl/wat-kan-jij-doen/tellen/meetnetten/een-route-tellen/vlinderroute-tellen/)
+- [BIJ12 Werkwijze Monitoring en Beoordeling Natuurkwaliteit](https://www.bij12.nl/wp-content/uploads/2023/11/WW-00-TEXT-%E2%80%93-Monitoring-en-Beoordeling-Natuurkwaliteit-EHS-en-Natura-2000.pdf)

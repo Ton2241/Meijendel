@@ -28,9 +28,24 @@
 - Beoordeel per soortgroep welke van de 8.494 voorlopige
   verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor opname in
   het afzonderlijke beveiligde schema; zij zijn niet trendklaar.
-- Vraag voor de 1.274 ruimtelijk geschikte meetnet-/gebiedsmonitoringrecords
-  waar mogelijk volledige telobjecten, bezoeken, inspanning, protocolversies
-  en afleidbare nullen op.
+- Vraag voor de 1.274 ruimtelijk geschikte meetnet-/gebiedsmonitoringrecords de
+  volledige native meetreeksen rechtstreeks op bij de bronorganisaties, niet
+  opnieuw bij NDFF. Start met Zoogdiervereniging (572
+  vleermuistransectrecords), Dunea/FLORON (478 LMF-a-records) en RAVON (72
+  reguliere amfibieënrecords). Vraag daarna ANEMOON (112 slakken), BLWG (21
+  korstmos-/mosrecords), FLORON (12 Het Nieuwe Strepen),
+  Staatsbosbeheer/opdrachtgever (5 SNL-records), De Vlinderstichting (1) en
+  RAVON/opdrachtgever (1 Natura 2000-record).
+- Vraag per bron minstens: stabiele telobject-ID en alle geometrieversies; alle
+  geplande, uitgevoerde en niet-uitgevoerde bezoeken; bezoek-ID; duur,
+  route/lengte/oppervlakte, methode en apparatuur; volledige doelsoortenlijst;
+  positieve en nulresultaten; protocolversies; kwaliteits- en
+  wijzigingsmetadata. Los bij LMF-a expliciet de openbare drie-/vierjarige
+  cyclusinconsistentie op.
+- Leg eerst de native surveystructuur vast en koppel die daarna geversioneerd
+  aan SOVON-plots. Splits routes of gebieden niet over plots zonder
+  sectiegeometrie én sectie-inspanning. Stel het definitieve surveyschema pas
+  vast na ontvangst van minstens één representatieve bronlevering.
 - Onderzoek de herkomst van de 163 PQ-risicorecords met status
   `niet_beoordeelbaar`; de 162 exacte PQ-dubbels blijven uitgesloten als
   zelfstandige NDFF-evidentie.

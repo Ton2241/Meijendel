@@ -36,6 +36,30 @@
   PQ-status geschikt voor een gerichte brondata-aanvraag. Zonder telobjecten,
   bezoeken, inspanning, protocolversies en afleidbare nullen blijven ook deze
   buiten trend-, abundantie- en afwezigheidsanalyses.
+- NDFF wordt niet opnieuw om de ontbrekende surveystructuur gevraagd, omdat
+  NDFF heeft aangegeven die niet te kunnen leveren. Voor de 1.274 geschikte
+  vervolgkandidaten wordt de verwachte meetopzet uit officiële protocollen
+  gereconstrueerd en worden de feitelijke native meetreeksen rechtstreeks bij
+  Zoogdiervereniging, Dunea/FLORON, RAVON, ANEMOON, BLWG, De
+  Vlinderstichting en Staatsbosbeheer/opdrachtgever opgevraagd. Openbare
+  protocollen bewijzen het ontwerp, niet welke bezoeken werkelijk zijn
+  uitgevoerd.
+- De native survey-eenheid blijft behouden: route, water, permanent proefvlak,
+  kilometerhok, meettraject of karteringsgebied. De ruimtelijke ligging van één
+  positieve NDFF-regel is onvoldoende om de hele survey aan een SOVON-plot toe
+  te wijzen. Relatie met geversioneerde vogelplots volgt pas na reconstructie
+  van telobject, bezoeken en inspanning; kunstmatig splitsen is alleen
+  toegestaan als sectiegeometrie en sectie-inspanning beschikbaar zijn.
+- Het definitieve relationele survey-schema wordt pas vastgesteld na ontvangst
+  van minstens één representatieve bronlevering. Daarmee wordt voorkomen dat
+  route-, water-, proefvlak- of hokstructuren in een te vroeg generiek schema
+  verloren gaan.
+- Van de 8.494 ruimtelijke verspreidingskandidaten gaan alleen de 1.274
+  passende meetnet-/gebiedsmonitoringrecords door naar de brondata-opvraag. De
+  overige 7.220 positieve records blijven uitsluitend beveiligde externe
+  staging en worden niet in de life-database opgenomen zolang geen
+  wetenschappelijk verantwoord analysetype en voldoende waarnemingsinspanning
+  zijn aangetoond.
 - De voorlopige PQ-audit van ticket 58679 bevat 162 exacte positieve dubbels en
   163 niet-beoordeelbare risicorecords. Beide categorieën tellen niet als
   zelfstandige NDFF-evidentie. Tussen de 158 geleverde NDFF-taxa en de 275 taxa

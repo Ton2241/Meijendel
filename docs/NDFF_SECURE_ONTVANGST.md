@@ -138,6 +138,22 @@ Daarbij blijven gelden:
   bezoeken, inspanning, protocolversies en afleidbare nullen;
 - bestaande volledige PQ-opnamen blijven leidend.
 
+De surveystructuur wordt niet opnieuw bij NDFF opgevraagd: NDFF heeft gemeld
+dat zij naast de geleverde waarnemingsinformatie geen aanvullende
+surveystructuur kan leveren. Voor de 1.274 geschikte vervolgkandidaten is het
+bedoelde meetontwerp gereconstrueerd uit de officiële protocollen. De
+feitelijke telobjecten, alle bezoeken, inspanning, doelsoorten, nulresultaten,
+protocolversies en kwaliteitsmetadata worden rechtstreeks bij de
+meetnetbeheerder opgevraagd: Zoogdiervereniging, Dunea/FLORON, RAVON, ANEMOON,
+BLWG, De Vlinderstichting en Staatsbosbeheer/opdrachtgever.
+
+De oorspronkelijke meeteenheid blijft behouden. Een losse waarneming binnen
+één SOVON-plot is onvoldoende om een route, water, proefvlak, kilometerhok of
+karteringsgebied aan dat plot toe te wijzen. Eerst wordt de native survey
+gereconstrueerd; pas daarna volgt een geversioneerde plotrelatie. Het
+definitieve databaseschema voor surveys wordt daarom pas vastgesteld na
+ontvangst van minstens één representatieve bronlevering.
+
 De aan het werkelijke GeoPackage aangepaste ontwerpversie is op 10 september
 2026 syntactisch uitgevoerd in een uitsluitend voor deze test aangemaakte lokale
 MySQL 9.7.1-database. Daarbij ontstonden 37 tabellen, waaronder alle 26
