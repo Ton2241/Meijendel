@@ -320,6 +320,23 @@ analysetype kandidaat zijn. Alle 810.983 records blijven aangemerkt als
 aanvullend te valideren. De view is het standaardstartpunt om vóór een analyse
 de beschikbare omvang en beperkingen te beoordelen.
 
+De beschrijvende jaarniveau-views van stap 3 zijn eveneens beschikbaar:
+
+- `v_ndff_soortenrijkdom_plot_jaar`: 12.611 plot-jaar-soortgroepregels en
+  105.999 positieve taxonsignalen;
+- `v_ndff_eerste_laatste_plot_taxon`: 42.714 reeksen van eerste tot laatste
+  positieve registratie, zonder deze jaren als vestiging of verdwijning te
+  duiden;
+- `v_ndff_verspreidingsverandering_taxon_jaar`: 33.022 registratiejaarregels;
+  8.059 vergelijkingen springen over een of meer ontbrekende jaren en zijn via
+  `aansluitend_jaar = 0` herkenbaar;
+- `v_ndff_dekking_intensiteit_plot_jaar_soortgroep`: 12.611 dekkingsregels uit
+  303.319 bronrecords, waarvan 201.372 losse en 101.947 protocolgebonden
+  registraties.
+
+Ontbrekende jaren worden niet toegevoegd en nergens als nulwaarneming of
+afwezigheid geïnterpreteerd. Ook deze views blijven lokaal zonder extra grants.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

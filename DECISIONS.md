@@ -182,6 +182,13 @@
   overige records blijven afzonderlijk zichtbaar per uitsluitingsreden. Dit is
   het standaardoverzicht om vóór iedere analyse de beschikbare omvang en
   beperkingen per soortgroep en protocol vast te stellen.
+- De resterende beschrijvende analyses werken op jaarniveau en vullen ontbrekende
+  jaren nooit met nul. Eerste en laatste registraties zijn geen vestigings- of
+  verdwijnjaren. Verandering in het aantal plots wordt alleen als jaar-op-jaar
+  gelezen wanneer `aansluitend_jaar = 1`; bij een grotere `jaarafstand` is het
+  uitsluitend een vergelijking tussen twee registratiejaren. Soortenrijkdom en
+  waarnemingsintensiteit blijven naast elkaar zichtbaar om veranderende
+  zoekinspanning niet voor ecologische verandering aan te zien.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

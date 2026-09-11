@@ -182,6 +182,63 @@ def main() -> int:
         assert forbidden_field not in gebruik, (
             f"gebruiksdekking lekt detailveld {forbidden_field}"
         )
+
+    afgeleide_views = {
+        "v_ndff_soortenrijkdom_plot_jaar": (
+            "v_ndff_verspreiding_plot_jaar_taxon",
+            "geregistreerde_taxa",
+            "bronrecords_ter_controle",
+            "kwaliteitsmelding",
+            "group by",
+        ),
+        "v_ndff_eerste_laatste_plot_taxon": (
+            "v_ndff_verspreiding_plot_jaar_taxon",
+            "eerste_geregistreerde_jaar",
+            "laatste_geregistreerde_jaar",
+            "jaren_met_registratie",
+            "kwaliteitsmelding",
+            "group by",
+        ),
+        "v_ndff_verspreidingsverandering_taxon_jaar": (
+            "v_ndff_verspreiding_plot_jaar_taxon",
+            "plots_met_registratie",
+            "vorig_geregistreerd_jaar",
+            "vorige_plots_met_registratie",
+            "jaarafstand",
+            "aansluitend_jaar",
+            "verschil_plots_met_registratie",
+            "lag(",
+            "kwaliteitsmelding",
+        ),
+        "v_ndff_dekking_intensiteit_plot_jaar_soortgroep": (
+            "v_ndff_analyse_record",
+            "bronrecords_ter_controle",
+            "losse_bronrecords",
+            "protocol_bronrecords",
+            "geregistreerde_taxa",
+            "gebruikte_protocollen",
+            "kwaliteitsmelding",
+            "group by",
+        ),
+    }
+    for view_name, required_fields in afgeleide_views.items():
+        body = view_body(sql, view_name)
+        for required in required_fields:
+            assert required in body, f"{view_name} mist {required}"
+        for forbidden_field in (
+            "canonieke_identiteit_sha256",
+            "open_waarneming_id",
+            "secure_waarneming_id",
+            "exacte_geometrie",
+            "analyse_geometrie",
+            "periode_start",
+            "periode_stop",
+            "raw_payload",
+            "ndff_identity",
+        ):
+            assert forbidden_field not in body, (
+                f"{view_name} lekt detailveld {forbidden_field}"
+            )
     print("OK: NDFF secure schemacontract")
     return 0
 

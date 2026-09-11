@@ -139,6 +139,16 @@ doelrelaties, kandidaattypen, uitsluitingsredenen, beveiligde records en nog te
 valideren records. Zij bevat geen jaar, plot, taxon of bronidentiteit en krijgt
 geen extra grants.
 
+Stap 3 gebruikt daarnaast vier jaarniveau-views. `v_ndff_soortenrijkdom_plot_jaar`
+en `v_ndff_dekking_intensiteit_plot_jaar_soortgroep` hebben dezelfde
+plot-jaar-soortgroepkorrel, zodat rijkdom en waarnemingsintensiteit rechtstreeks
+kunnen worden gecontroleerd. `v_ndff_eerste_laatste_plot_taxon` beschrijft
+uitsluitend eerste en laatste positieve registratie. De view
+`v_ndff_verspreidingsverandering_taxon_jaar` vergelijkt alleen jaren waarin een
+taxon is geregistreerd en geeft met `jaarafstand` en `aansluitend_jaar`
+expliciet aan of werkelijk sprake is van opeenvolgende jaren. Geen enkele view
+maakt nulwaarnemingen of afwezigheid aan.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

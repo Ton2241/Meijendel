@@ -571,6 +571,143 @@ GROUP BY
   soortgroep_raw,
   protocol_sleutel;
 
+-- Positieve geregistreerde soortenrijkdom. Afwezigheid en niet-bezochte jaren
+-- worden niet afgeleid of aangevuld.
+CREATE OR REPLACE VIEW v_ndff_soortenrijkdom_plot_jaar AS
+SELECT
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  COUNT(*) AS geregistreerde_taxa,
+  SUM(bronrecords_ter_controle) AS bronrecords_ter_controle,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Geregistreerde positieve soortenrijkdom. Niet-bezochte jaren en ontbrekende soorten zijn geen nulwaarnemingen. Raadpleeg gegevensgeschiktheid.'
+    AS kwaliteitsmelding
+FROM v_ndff_verspreiding_plot_jaar_taxon
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw;
+
+-- Eerste en laatste positieve registratie binnen de beschikbare en
+-- voorgeselecteerde NDFF-laag. Dit zijn geen vestigings- of verdwijnjaren.
+CREATE OR REPLACE VIEW v_ndff_eerste_laatste_plot_taxon AS
+SELECT
+  plot_id,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  MIN(jaar) AS eerste_geregistreerde_jaar,
+  MAX(jaar) AS laatste_geregistreerde_jaar,
+  COUNT(DISTINCT jaar) AS jaren_met_registratie,
+  SUM(bronrecords_ter_controle) AS bronrecords_ter_controle,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Eerste en laatste geregistreerde positieve waarneming in deze selectie. Dit zijn geen bewezen vestigings- of verdwijnjaren.'
+    AS kwaliteitsmelding
+FROM v_ndff_verspreiding_plot_jaar_taxon
+GROUP BY
+  plot_id,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam;
+
+-- Verandering in het aantal plots met een positieve registratie tussen twee
+-- opeenvolgende jaren waarin het taxon daadwerkelijk is geregistreerd. Het
+-- expliciete vorige jaar voorkomt dat een ontbrekend jaar als nul wordt gezien.
+CREATE OR REPLACE VIEW v_ndff_verspreidingsverandering_taxon_jaar AS
+WITH jaarbasis AS (
+  SELECT
+    jaar,
+    soortgroep_raw,
+    wetenschappelijke_naam,
+    nederlandse_naam,
+    COUNT(DISTINCT plot_id) AS plots_met_registratie,
+    SUM(bronrecords_ter_controle) AS bronrecords_ter_controle,
+    CASE
+      WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+      WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+      WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+      ELSE 'geschikt'
+    END AS gegevensgeschiktheid
+  FROM v_ndff_verspreiding_plot_jaar_taxon
+  GROUP BY
+    jaar,
+    soortgroep_raw,
+    wetenschappelijke_naam,
+    nederlandse_naam
+), met_vorig AS (
+  SELECT
+    jaarbasis.*,
+    LAG(jaar) OVER (
+      PARTITION BY soortgroep_raw,wetenschappelijke_naam,nederlandse_naam
+      ORDER BY jaar
+    ) AS vorig_geregistreerd_jaar,
+    LAG(plots_met_registratie) OVER (
+      PARTITION BY soortgroep_raw,wetenschappelijke_naam,nederlandse_naam
+      ORDER BY jaar
+    ) AS vorige_plots_met_registratie
+  FROM jaarbasis
+)
+SELECT
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  plots_met_registratie,
+  vorig_geregistreerd_jaar,
+  vorige_plots_met_registratie,
+  jaar-vorig_geregistreerd_jaar AS jaarafstand,
+  (vorig_geregistreerd_jaar=jaar-1) AS aansluitend_jaar,
+  plots_met_registratie-vorige_plots_met_registratie
+    AS verschil_plots_met_registratie,
+  bronrecords_ter_controle,
+  gegevensgeschiktheid,
+  'Vergelijking tussen jaren met een positieve registratie. Gebruik aansluitend_jaar voor jaar-op-jaarvergelijking. Verschillen kunnen waarnemingsinspanning weerspiegelen.'
+    AS kwaliteitsmelding
+FROM met_vorig;
+
+-- Afzonderlijke waarnemingsdekking en meldingsintensiteit. De aantallen zijn
+-- controlevariabelen voor waarnemingsinspanning en nooit populatieaantallen.
+CREATE OR REPLACE VIEW v_ndff_dekking_intensiteit_plot_jaar_soortgroep AS
+SELECT
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  COUNT(*) AS bronrecords_ter_controle,
+  SUM(protocol_sleutel='LOS') AS losse_bronrecords,
+  SUM(protocol_sleutel<>'LOS') AS protocol_bronrecords,
+  COUNT(DISTINCT COALESCE(NULLIF(wetenschappelijke_naam,''),
+    CONCAT('NL:',COALESCE(nederlandse_naam,'[onbekend]')))) AS geregistreerde_taxa,
+  COUNT(DISTINCT protocol_sleutel) AS gebruikte_protocollen,
+  SUM(bevat_beveiligde_details=1) AS beveiligde_records,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Dekking en meldingsintensiteit van positieve registraties. Bronrecords zijn geen individuen en ontbrekende registraties zijn geen afwezigheid.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+WHERE record_selectiestatus='voorlopig_bruikbaar'
+  AND FIND_IN_SET('V',protocol_kandidaattypen)>0
+  AND plot_id IS NOT NULL
+  AND jaar IS NOT NULL
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.

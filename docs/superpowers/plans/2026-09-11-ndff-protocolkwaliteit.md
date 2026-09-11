@@ -126,10 +126,11 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
 2. **Centrale gebruiksselectie per record — gereed.** De interne view
    `v_ndff_analyse_record` combineert alle actuele analysepoorten en de
    verplichte kwaliteitsmelding.
-3. **Direct bruikbare analyseviews — gedeeltelijk gereed.** Positieve
-   aanwezigheid en protocolmatige trendkandidaten zijn gereed. Soortenrijkdom,
-   eerste/laatste registratie, verandering in verspreiding en afzonderlijke
-   dekking/waarnemingsintensiteit moeten nog worden toegevoegd.
+3. **Direct bruikbare analyseviews — gereed.** Positieve aanwezigheid,
+   soortenrijkdom, eerste/laatste registratie, verspreidingsverandering,
+   afzonderlijke dekking/waarnemingsintensiteit en protocolmatige
+   trendkandidaten zijn op jaarniveau beschikbaar. Ontbrekende jaren worden
+   nergens als nul of afwezigheid ingevuld.
 4. **Dagvlinderproef — technisch gereed.** Ontdubbeling, protocollen,
    plotkoppeling, waarschuwingen en reproduceerbare selectie zijn gecontroleerd.
    Native route-identiteiten blijven onderdeel van latere bronvalidatie.
@@ -140,6 +141,7 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
 6. **Resterende protocolafbakening — gedeeltelijk en geparkeerd.** SNL-overlap
    is voorlopig geclassificeerd; verdere SNL-, eDNA-, florakarterings- en
    vleermuisafbakening heeft lagere prioriteit.
-7. **Database formeel gereed verklaren — nog niet.** Eerst moeten de resterende
-   analyseviews, eindtotalen, reproduceerbaarheid en documentatie worden
-   afgerond; daarna start de afzonderlijke bronvalidatiefase.
+7. **Database formeel gereed verklaren — nog niet.** De analyseviews zijn
+   afgerond; nu resteren de eindcontrole van totalen, beveiliging,
+   reproduceerbaarheid en documentatie en het vastleggen van de vaste
+   regelversie. Daarna start de afzonderlijke bronvalidatiefase.

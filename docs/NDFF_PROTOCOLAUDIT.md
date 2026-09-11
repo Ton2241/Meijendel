@@ -225,6 +225,17 @@ in selecties, maar niet worden opgeteld omdat één record meerdere kandidaattyp
 kan ondersteunen. Voor alle records blijft aanvullende gegevensvalidatie
 wenselijk.
 
+De vier aanvullende jaarniveau-views maken stap 3 compleet. De
+soortenrijkdoms- en dekkingsviews bevatten beide 12.611 sluitend vergelijkbare
+plot-jaar-soortgroepregels; zij omvatten 105.999 positieve taxonsignalen en
+303.319 bronrecords. Daarvan zijn 201.372 records losse waarnemingen en 101.947
+protocolgebonden. De eerste/laatste-view bevat 42.714 plot-taxonreeksen. De
+verspreidingsveranderingsview bevat 33.022 taxon-jaarregels. Van de mogelijke
+jaarvergelijkingen springen 8.059 over minstens één ontbrekend jaar; die zijn
+expliciet gemarkeerd met `aansluitend_jaar = 0` en mogen niet als jaar-op-jaar
+worden gerapporteerd. Alle views beschrijven geregistreerde positieve
+aanwezigheid en produceren geen nulwaarnemingen.
+
 ### Doelsoorten en bijvangsten
 
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol

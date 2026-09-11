@@ -182,6 +182,13 @@ MySQL:
   `Meijendel_ndff_secure.v_ndff_gebruiksdekking_soortgroep_protocol` voor de
   sluitende omvang per soortgroep, protocol, kandidaat-analysetype,
   uitsluitingsreden, beveiligingsstatus en resterende validatiebehoefte
+- gebruik voor beschrijvende jaarniveau-analyses uitsluitend de views
+  `v_ndff_soortenrijkdom_plot_jaar`, `v_ndff_eerste_laatste_plot_taxon`,
+  `v_ndff_verspreidingsverandering_taxon_jaar` en
+  `v_ndff_dekking_intensiteit_plot_jaar_soortgroep`. Interpreteer eerste/laatste
+  registratie nooit als vestiging/verdwijning, gebruik voor jaar-op-jaar alleen
+  `aansluitend_jaar = 1` en behandel ontbrekende jaren nooit als nul of
+  afwezigheid
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks
