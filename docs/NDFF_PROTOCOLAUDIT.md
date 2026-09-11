@@ -29,6 +29,53 @@ inspanning, protocolversies of afleidbare nullen; `zoid` en `sessionid` zijn in
 alle records 0. Daarom zijn ook in de beveiligde levering nul records direct
 trendklaar.
 
+## Prioriteit aanvullende validatie op de volledige canonieke laag
+
+De eerdere vervolgselectie van 1.274 records was uitsluitend gebaseerd op de
+beveiligde levering van 191 soorten. Zij is geen rangorde voor alle NDFF-data.
+Na voltooiing van `ndff-analyseketen-v1` is de prioriteit opnieuw bepaald op de
+810.983 unieke canonieke records. Daarvan zijn 65.044 records voorlopig
+kandidaat voor minstens één protocolmatig gebruikstype buiten uitsluitend
+positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft voor al
+deze records `niet_beoordeeld`.
+
+De eerste validatieronde richt zich op herhaalde, doelgerichte meetreeksen:
+
+| Volgorde | Protocol | Kandidaten | Registratiejaren | Geraakte SOVON-plots | Eerste bronhouder |
+|---:|---|---:|---:|---:|---|
+| 1 | `03.201` Landelijk Meetnet Vlinders | 50.211 | 36 | 20 | De Vlinderstichting |
+| 2 | `12.211` LMF-a | 4.071 | 11 | 43 | FLORON en Dunea |
+| 3 | `01.201` Monitoring amfibieën | 1.382 | 23 | 13 | RAVON |
+| 4 | `07.201` Landelijk Meetnet Libellen | 710 | 12 | 4 | De Vlinderstichting |
+| 5 | `17.208` Vleermuistransecttelling | 583 | 11 | 17 | Zoogdiervereniging |
+| 6 | `02.202` Meetnet korstmossen | 372 | 8 | 4 | BLWG |
+| 7 | `11.201` Meetnet Bospaddenstoelen | 212 | 18 | 2 | NMV |
+| 8 | `10.201` Monitoring reptielen | 96 | 7 | 7 | RAVON |
+| 9 | `17.201` Wintertellingen vleermuizen | 58 | 32 | 7 | Bronhouder in NDFF onbekend; eerst herkomst vaststellen |
+
+De aantallen zijn aantallen canonieke positieve NDFF-records die de bestaande
+protocol-, doelsoort-, ruimtelijke en PQ-poorten passeren. Het aantal geraakte
+SOVON-plots bewijst niet dat een native route of ander telobject geheel binnen
+die plots ligt. Ook mogen recordaantallen niet als aantallen bezoeken,
+individuen of populatieomvang worden geïnterpreteerd.
+
+Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
+`04.004` (1.282), `12.001` (1.150), `12.204` (929), `07.001` (850) en `12.006`
+(661). Deze krijgen een tweede validatieronde gericht op complete soortenlijsten,
+bezoekduur en onderzochte eenheid. Zij kunnen vooral inventarisatie- en
+verspreidingsanalyses verbeteren; hun omvang maakt ze niet automatisch geschikt
+voor aantalstrends.
+
+De eerste praktische opvraag combineert bij De Vlinderstichting `03.201`,
+`03.001` en `07.201`. Daarmee kunnen ruim 52.000 kandidaten in één broncontact
+worden onderzocht. Gevraagd worden alleen de onderdelen die noodzakelijk zijn
+om de oorspronkelijke meeteenheid te herstellen: route- en sectie-ID's met
+geversioneerde begrenzingen, volledige uitgevoerde bezoeken, complete
+sectieresultaten waaruit niet-detecties verantwoord kunnen worden afgeleid,
+de bezoekcondities die protocolgeldigheid bepalen en wijzigingen van route of
+methode. Als een volledige levering niet direct mogelijk is, wordt eerst één
+representatieve Meijendelroute als proef gevraagd.
+
 ## Reconstructie van de surveystructuur
 
 De mededeling van NDFF dat de GeoPackage alle beschikbare informatie per

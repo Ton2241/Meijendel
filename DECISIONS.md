@@ -54,8 +54,19 @@
   van minstens één representatieve bronlevering. Daarmee wordt voorkomen dat
   route-, water-, proefvlak- of hokstructuren in een te vroeg generiek schema
   verloren gaan.
-- Van de 8.494 ruimtelijke verspreidingskandidaten gaan alleen de 1.274
-  passende meetnet-/gebiedsmonitoringrecords door naar de brondata-opvraag.
+- De aanvullende bronvalidatie wordt vanaf 11 september 2026 geprioriteerd op
+  de volledige canonieke laag van 810.983 records, niet op alleen de 1.274
+  kandidaten uit de beveiligde 191-soortenlevering. De eerste opvraag gaat naar
+  De Vlinderstichting en combineert `03.201`, `03.001` en `07.201`; deze bron
+  omvat ruim 52.000 voorlopig geschikte kandidaten. EIS Nederland en NMV zijn
+  als aanvullende bronorganisaties aan de eerdere lijst toegevoegd. Deze
+  prioritering verandert `ndff-analyseketen-v1` en de bestaande
+  analysetoelatingen niet.
+- Binnen de beveiligde 191-soortenlevering gaan van de 8.494 ruimtelijke
+  verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords door
+  naar de brondata-opvraag. Dit is een deelsom; de validatieprioriteit voor de
+  volledige NDFF-set wordt bepaald vanuit de 65.044 canonieke kandidaten voor
+  minstens één gebruikstype buiten uitsluitend `V`.
   Op uitdrukkelijk besluit van 10 september 2026 mogen alle openbare FFV-regels
   wel als duidelijk gelabelde bronregistratie in nieuwe `ndff_`-tabellen van de
   life-database staan. Databaseopname is geen analysetoelating: zonder

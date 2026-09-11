@@ -27,9 +27,14 @@
   records hebben precies één `protocol_id`. Expliciete codes en expliciete losse
   waarnemingen zijn afzonderlijk gelabeld; geen lege waarde is als `LOS`
   geïnterpreteerd. Dit verandert de analysebesluiten niet.
-- Bepaal als afzonderlijke volgende stap welke vlinderreeks als eerste voor
-  reconstructie van telobjecten, bezoeken, inspanning en niet-detecties wordt
-  gekozen. Deze taak heeft bewust nog geen survey- of routetabellen toegevoegd.
+- Start de aanvullende bronvalidatie met De Vlinderstichting voor protocollen
+  `03.201`, `03.001` en `07.201`. In de volledige canonieke laag gaat het om
+  respectievelijk 50.211, 1.834 en 710 voorlopig geschikte records buiten
+  uitsluitend `V`. Vraag eerst de oorspronkelijke route-/sectiestructuur,
+  volledige uitgevoerde bezoeken, sectieresultaten inclusief reconstrueerbare
+  nullen, noodzakelijke bezoekcondities en geversioneerde routewijzigingen op.
+  Voeg nog geen survey- of routetabellen toe voordat minstens één
+  representatieve levering is ontvangen en beoordeeld.
 
 - Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
   groene ontvangst-/analysemanifesten staan onder
@@ -48,20 +53,23 @@
 - Beoordeel per soortgroep welke van de 8.494 voorlopige
   verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor verdere
   analyse; zij zijn niet trendklaar.
-- Vraag voor de 1.274 ruimtelijk geschikte meetnet-/gebiedsmonitoringrecords de
-  volledige native meetreeksen rechtstreeks op bij de bronorganisaties, niet
-  opnieuw bij NDFF. Start met Zoogdiervereniging (572
-  vleermuistransectrecords), Dunea/FLORON (478 LMF-a-records) en RAVON (72
-  reguliere amfibieënrecords). Vraag daarna ANEMOON (112 slakken), BLWG (21
-  korstmos-/mosrecords), FLORON (12 Het Nieuwe Strepen),
-  Staatsbosbeheer/opdrachtgever (5 SNL-records), De Vlinderstichting (1) en
-  RAVON/opdrachtgever (1 Natura 2000-record).
-- Vraag per bron minstens: stabiele telobject-ID en alle geometrieversies; alle
-  geplande, uitgevoerde en niet-uitgevoerde bezoeken; bezoek-ID; duur,
-  route/lengte/oppervlakte, methode en apparatuur; volledige doelsoortenlijst;
-  positieve en nulresultaten; protocolversies; kwaliteits- en
-  wijzigingsmetadata. Los bij LMF-a expliciet de openbare drie-/vierjarige
-  cyclusinconsistentie op.
+- Baseer de bronvalidatie niet langer uitsluitend op de 1.274 kandidaten uit
+  de beveiligde 191-soortenlevering. Over de volledige canonieke laag zijn
+  65.044 unieke records kandidaat voor minstens één gebruikstype buiten `V`.
+  Behandel de oude 1.274 uitsluitend als beveiligde deelsom. De eerste
+  validatieronde bestaat uit: De Vlinderstichting (`03.201`, `03.001` en
+  `07.201`), FLORON/Dunea (`12.211`), RAVON (`01.201`), Zoogdiervereniging
+  (`17.208` en zo mogelijk herkomst `17.201`), BLWG (`02.202`) en NMV
+  (`11.201`). Inventarisatieprotocollen van FLORON, ANEMOON en EIS volgen
+  daarna voor verspreidings- en detectieanalyse; zij zijn niet automatisch
+  kandidaten voor aantalsontwikkeling.
+- Bepaal per protocol de kleinst noodzakelijke opvraag. Vraag in beginsel:
+  stabiele telobject-ID's en geometrieversies, alle uitgevoerde bezoeken,
+  complete resultaten waaruit niet-detecties kunnen worden afgeleid, de
+  bezoekgegevens die protocolgeldigheid bepalen en methodewijzigingen. Vraag
+  geplande of uitgevallen bezoeken, apparatuur en aanvullende metadata alleen
+  wanneer het betreffende protocol of analysemodel die werkelijk nodig heeft.
+  Los bij LMF-a expliciet de openbare drie-/vierjarige cyclusinconsistentie op.
 - Leg eerst de native surveystructuur vast en koppel die daarna geversioneerd
   aan SOVON-plots. Splits routes of gebieden niet over plots zonder
   sectiegeometrie én sectie-inspanning. Stel het definitieve surveyschema pas
