@@ -236,6 +236,26 @@ expliciet gemarkeerd met `aansluitend_jaar = 0` en mogen niet als jaar-op-jaar
 worden gerapporteerd. Alle views beschrijven geregistreerde positieve
 aanwezigheid en produceren geen nulwaarnemingen.
 
+## Formele gereedstatus analyseketen
+
+De lokale databaseketen is op 11 september 2026 vastgezet als
+`ndff-analyseketen-v1`. De reproduceerbare eindaudit controleert in één opdracht
+de canonieke representaties, dubbele sleutels, verplichte velden,
+recordstatussen, alle afgeleide viewtotalen, tijdsaansluitingen en ongewenste
+grants:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-live
+```
+
+De gecontroleerde audit slaagt met 810.983 unieke canonieke records, nul
+dubbelen, nul ontbrekende kernstatussen, nul afwijkende ketenversies en nul
+grants op de nieuwe interne views voor gewone of Shiny-accounts. Daarmee is de
+keten gereed voor verkennende analyses van geregistreerde aanwezigheid en
+verspreiding. Zij is niet formeel gereed voor populatietrends, abundantie,
+afwezigheid of causale effectanalyse. Daarvoor begint nu de afzonderlijke fase
+van aanvullende bron- en surveyvalidatie.
+
 ### Doelsoorten en bijvangsten
 
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol

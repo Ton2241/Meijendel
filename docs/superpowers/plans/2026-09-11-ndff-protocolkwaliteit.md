@@ -141,7 +141,10 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
 6. **Resterende protocolafbakening — gedeeltelijk en geparkeerd.** SNL-overlap
    is voorlopig geclassificeerd; verdere SNL-, eDNA-, florakarterings- en
    vleermuisafbakening heeft lagere prioriteit.
-7. **Database formeel gereed verklaren — nog niet.** De analyseviews zijn
-   afgerond; nu resteren de eindcontrole van totalen, beveiliging,
-   reproduceerbaarheid en documentatie en het vastleggen van de vaste
-   regelversie. Daarna start de afzonderlijke bronvalidatiefase.
+7. **Database formeel gereed verklaren — gereed voor verkennende analyse.**
+   De vaste versie `ndff-analyseketen-v1` is in alle analyseviews opgenomen.
+   De reproduceerbare live-audit controleert totalen, dubbelen, kernstatussen,
+   jaargaten, beveiliging en grants en is op 11 september 2026 volledig
+   geslaagd. Dit is geen gereedverklaring voor populatietrends, abundantie,
+   afwezigheid of causale effectanalyse; daarvoor begint nu de afzonderlijke
+   bronvalidatiefase.

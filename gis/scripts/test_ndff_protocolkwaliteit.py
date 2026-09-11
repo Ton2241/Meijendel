@@ -97,6 +97,7 @@ def main() -> int:
     assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
     assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
     assert module.SNL_OVERLAP_RULE_VERSION == "ndff-snl-overlap-v1"
+    assert module.ANALYSIS_CHAIN_VERSION == "ndff-analyseketen-v1"
     parsed = module.read_seed(SEED)
     assert len(parsed) == 54
     assert module.protocol_key("Geen code") == "LOS"
@@ -193,6 +194,40 @@ def main() -> int:
     assert "niet_van_toepassing" in public_pq_sql
     assert "'exact'" not in public_pq_sql
     assert "'onafhankelijk'" not in public_pq_sql
+    chain_sql = module.analysis_chain_validation_sql().casefold()
+    for required in (
+        "v_ndff_canonieke_waarneming",
+        "v_ndff_analyse_record",
+        "v_ndff_verspreiding_plot_jaar_taxon",
+        "v_ndff_trendkandidaat_plot_jaar_taxon",
+        "v_ndff_gebruiksdekking_soortgroep_protocol",
+        "v_ndff_soortenrijkdom_plot_jaar",
+        "v_ndff_eerste_laatste_plot_taxon",
+        "v_ndff_verspreidingsverandering_taxon_jaar",
+        "v_ndff_dekking_intensiteit_plot_jaar_soortgroep",
+        "information_schema.table_privileges",
+        "ndff-analyseketen-v1",
+    ):
+        assert required in chain_sql, required
+    module.validate_analysis_chain_metrics(dict(module.ANALYSIS_CHAIN_EXPECTED))
+    assert module.parse_analysis_chain_output(
+        '{"canonical_records": 810983}\n{"canonical_duplicates": 0}'
+    ) == {"canonical_records": 810983, "canonical_duplicates": 0}
+    try:
+        module.parse_analysis_chain_output('{"duplicate": 1}\n{"duplicate": 1}')
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Dubbele auditmetriek is niet geblokkeerd")
+    broken_chain = dict(module.ANALYSIS_CHAIN_EXPECTED)
+    broken_chain["canonical_duplicates"] = 1
+    try:
+        module.validate_analysis_chain_metrics(broken_chain)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende analyseketen is niet geblokkeerd")
+    assert "--audit-live" in IMPORTER.read_text(encoding="utf-8")
     scope_sql = module.protocol_scope_sql().casefold()
     assert "ndff_protocol_soortgroep_geschiktheid" in scope_sql
     assert "ndff_protocol_soort_geschiktheid" in scope_sql
@@ -292,6 +327,8 @@ def main() -> int:
         "overlap_mogelijk",
         "geen_overlap_gevonden",
         "onvoldoende_onderzocht",
+        "ndff-analyseketen-v1",
+        "--audit-live",
     ):
         assert required_text in documentation, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

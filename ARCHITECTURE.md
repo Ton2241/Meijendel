@@ -149,6 +149,14 @@ taxon is geregistreerd en geeft met `jaarafstand` en `aansluitend_jaar`
 expliciet aan of werkelijk sprake is van opeenvolgende jaren. Geen enkele view
 maakt nulwaarnemingen of afwezigheid aan.
 
+De volledige lokale keten is vastgezet als `ndff-analyseketen-v1`. Deze versie
+staat in de centrale analysepoort en alle afgeleide analyseviews. De alleen-
+lezen eindaudit in `import_ndff_protocolkwaliteit.py --audit-live` controleert
+het vaste recordprofiel, unieke sleutels, statusaansluitingen, afgeleide
+totalen, jaargaten en grants. Een geslaagde audit verklaart de keten uitsluitend
+gereed voor verkennende verspreidingsanalyse; surveygeschiktheid en
+trendvalidatie blijven een afzonderlijke vervolgfase.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

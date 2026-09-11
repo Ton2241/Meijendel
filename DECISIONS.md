@@ -189,6 +189,14 @@
   uitsluitend een vergelijking tussen twee registratiejaren. Soortenrijkdom en
   waarnemingsintensiteit blijven naast elkaar zichtbaar om veranderende
   zoekinspanning niet voor ecologische verandering aan te zien.
+- Op 11 september 2026 is de lokale analyseketen formeel vastgezet als
+  `ndff-analyseketen-v1`. De status **gereed** betekent uitsluitend: canonieke
+  ontdubbeling, selectiepoorten, beveiliging, documentatie en reproduceerbare
+  beschrijvende views zijn technisch gecontroleerd voor verkennende
+  verspreidingsanalyse. Zij betekent niet dat surveystructuur, nulwaarnemingen,
+  inspanning of trendgeschiktheid zijn gevalideerd. De afzonderlijke
+  bronvalidatiefase mag deze versie alleen via een nieuwe expliciete
+  ketenversie wijzigen.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

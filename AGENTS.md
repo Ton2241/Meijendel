@@ -189,6 +189,12 @@ MySQL:
   registratie nooit als vestiging/verdwijning, gebruik voor jaar-op-jaar alleen
   `aansluitend_jaar = 1` en behandel ontbrekende jaren nooit als nul of
   afwezigheid
+- gebruik uitsluitend de vaste lokale ketenversie `ndff-analyseketen-v1` en
+  voer vóór formele analyserapportage de alleen-lezen controle uit met
+  `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-live`. Een
+  geslaagde audit bewijst technische reproduceerbaarheid voor verkennende
+  verspreidingsanalyse, niet dat protocolkandidaten al trendklaar zijn. Leg
+  iedere latere inhoudelijke wijziging vast onder een nieuwe ketenversie
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks

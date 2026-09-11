@@ -422,6 +422,7 @@ WITH basis AS (
   FROM basis
 )
 SELECT
+  'ndff-analyseketen-v1' AS analyseketenversie,
   canonieke_identiteit_sha256,
   open_waarneming_id,
   secure_waarneming_id,
@@ -458,6 +459,7 @@ FROM recordbesluit;
 -- bronrecords dient alleen voor kwaliteitscontrole en is geen abundantie.
 CREATE OR REPLACE VIEW v_ndff_verspreiding_plot_jaar_taxon AS
 SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
   plot_id,
   jaar,
   soortgroep_raw,
@@ -492,6 +494,7 @@ GROUP BY
 -- surveystructuur blijft zichtbaar en verbiedt interpretatie als trenduitkomst.
 CREATE OR REPLACE VIEW v_ndff_trendkandidaat_plot_jaar_taxon AS
 SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
   plot_id,
   jaar,
   soortgroep_raw,
@@ -536,6 +539,7 @@ GROUP BY
 -- huidige recordpoorten als voorlopig bruikbaar passeren.
 CREATE OR REPLACE VIEW v_ndff_gebruiksdekking_soortgroep_protocol AS
 SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
   soortgroep_raw,
   protocol_sleutel,
   COUNT(*) AS canonieke_records,
@@ -575,6 +579,7 @@ GROUP BY
 -- worden niet afgeleid of aangevuld.
 CREATE OR REPLACE VIEW v_ndff_soortenrijkdom_plot_jaar AS
 SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
   plot_id,
   jaar,
   soortgroep_raw,
@@ -598,6 +603,7 @@ GROUP BY
 -- voorgeselecteerde NDFF-laag. Dit zijn geen vestigings- of verdwijnjaren.
 CREATE OR REPLACE VIEW v_ndff_eerste_laatste_plot_taxon AS
 SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
   plot_id,
   soortgroep_raw,
   wetenschappelijke_naam,
@@ -627,6 +633,7 @@ GROUP BY
 CREATE OR REPLACE VIEW v_ndff_verspreidingsverandering_taxon_jaar AS
 WITH jaarbasis AS (
   SELECT
+    MAX(analyseketenversie) AS analyseketenversie,
     jaar,
     soortgroep_raw,
     wetenschappelijke_naam,
@@ -659,6 +666,7 @@ WITH jaarbasis AS (
   FROM jaarbasis
 )
 SELECT
+  analyseketenversie,
   jaar,
   soortgroep_raw,
   wetenschappelijke_naam,
@@ -680,6 +688,7 @@ FROM met_vorig;
 -- controlevariabelen voor waarnemingsinspanning en nooit populatieaantallen.
 CREATE OR REPLACE VIEW v_ndff_dekking_intensiteit_plot_jaar_soortgroep AS
 SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
   plot_id,
   jaar,
   soortgroep_raw,

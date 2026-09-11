@@ -337,6 +337,20 @@ De beschrijvende jaarniveau-views van stap 3 zijn eveneens beschikbaar:
 Ontbrekende jaren worden niet toegevoegd en nergens als nulwaarneming of
 afwezigheid geïnterpreteerd. Ook deze views blijven lokaal zonder extra grants.
 
+De keten is op 11 september 2026 formeel vastgezet als
+`ndff-analyseketen-v1` en gereed verklaard voor **verkennende
+verspreidingsanalyse**. De reproduceerbare, alleen-lezen eindaudit is:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-live
+```
+
+De audit controleert 810.983 unieke canonieke records, alle status- en
+viewtotalen, jaargaten, ontbrekende velden en ongewenste grants. Een geslaagde
+audit maakt de gegevens niet automatisch trendklaar. Alle 810.983 records
+behouden in deze versie aanvullende validatiebehoefte; trend-, abundantie- en
+afwezigheidsanalyse vereisen de later afgesproken bronvalidatie.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

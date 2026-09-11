@@ -76,6 +76,8 @@ def main() -> int:
 
     analysis = view_body(sql, "v_ndff_analyse_record")
     for required in (
+        "analyseketenversie",
+        "ndff-analyseketen-v1",
         "protocol_sleutel",
         "doelrelatie_record",
         "protocol_kandidaattypen",
@@ -132,6 +134,7 @@ def main() -> int:
         assert required in trend, f"trendkandidaatview mist {required}"
     assert "find_in_set('i',protocol_kandidaattypen)" in trend.replace(" ", "")
     for safe_view in (verspreiding, trend):
+        assert "analyseketenversie" in safe_view
         for forbidden_field in (
             "canonieke_identiteit_sha256",
             "open_waarneming_id",
@@ -182,6 +185,7 @@ def main() -> int:
         assert forbidden_field not in gebruik, (
             f"gebruiksdekking lekt detailveld {forbidden_field}"
         )
+    assert "analyseketenversie" in gebruik
 
     afgeleide_views = {
         "v_ndff_soortenrijkdom_plot_jaar": (
@@ -223,6 +227,7 @@ def main() -> int:
     }
     for view_name, required_fields in afgeleide_views.items():
         body = view_body(sql, view_name)
+        assert "analyseketenversie" in body, f"{view_name} mist ketenversie"
         for required in required_fields:
             assert required in body, f"{view_name} mist {required}"
         for forbidden_field in (

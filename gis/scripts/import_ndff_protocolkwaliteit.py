@@ -23,9 +23,50 @@ SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
 DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
 SNL_OVERLAP_RULE_VERSION = "ndff-snl-overlap-v1"
 PUBLIC_PQ_RULE_VERSION = "ndff-open-pq-poort-v1"
+ANALYSIS_CHAIN_VERSION = "ndff-analyseketen-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
+ANALYSIS_CHAIN_EXPECTED = {
+    "canonical_records": 810983,
+    "canonical_duplicates": 0,
+    "only_public": 796410,
+    "secure_replaces_public": 14420,
+    "only_secure": 153,
+    "representation_invalid": 0,
+    "analysis_records": 810983,
+    "analysis_duplicates": 0,
+    "analysis_missing_fields": 0,
+    "wrong_chain_version": 0,
+    "preliminarily_usable": 303319,
+    "overlap_warning": 4,
+    "excluded_pq": 97333,
+    "excluded_spatial": 410327,
+    "excluded_overlap": 0,
+    "unvalidated_records": 810983,
+    "secure_detail_records": 14573,
+    "distribution_rows": 105999,
+    "distribution_sources": 303319,
+    "trend_rows": 11083,
+    "trend_sources": 65044,
+    "trend_loose": 0,
+    "usage_rows": 142,
+    "usage_records": 810983,
+    "usage_mismatch": 0,
+    "richness_rows": 12611,
+    "richness_signals": 105999,
+    "first_last_rows": 42714,
+    "first_last_invalid": 0,
+    "change_rows": 33022,
+    "change_adjacent": 18458,
+    "change_gap": 8059,
+    "change_first": 6505,
+    "change_partition_mismatch": 0,
+    "coverage_rows": 12611,
+    "coverage_sources": 303319,
+    "coverage_split_mismatch": 0,
+    "analysis_view_grants": 0,
+}
 
 GENERAL_SOURCE_PROTOCOLS = {"102.004", "102.006", "104.000", "105.000"}
 BYCATCH_COMBINATIONS = {
@@ -846,6 +887,110 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("De openbare PQ-poort wijkt af van het gecontroleerde Meijendel-profiel.")
 
 
+def analysis_chain_validation_sql() -> str:
+    """Alleen-lezen eindaudit van de vaste lokale NDFF-analyseketen."""
+    protected_views = ",".join(sql_text(name) for name in (
+        "v_ndff_canonieke_waarneming",
+        "v_ndff_analyse_record",
+        "v_ndff_verspreiding_plot_jaar_taxon",
+        "v_ndff_trendkandidaat_plot_jaar_taxon",
+        "v_ndff_gebruiksdekking_soortgroep_protocol",
+        "v_ndff_soortenrijkdom_plot_jaar",
+        "v_ndff_eerste_laatste_plot_taxon",
+        "v_ndff_verspreidingsverandering_taxon_jaar",
+        "v_ndff_dekking_intensiteit_plot_jaar_soortgroep",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'canonical_records',COUNT(*),
+  'canonical_duplicates',COUNT(*)-COUNT(DISTINCT canonieke_identiteit_sha256),
+  'only_public',SUM(representatie='alleen_openbaar'),
+  'secure_replaces_public',SUM(representatie='secure_vervangt_open'),
+  'only_secure',SUM(representatie='alleen_beveiligd'),
+  'representation_invalid',SUM(representatie NOT IN ('alleen_openbaar','secure_vervangt_open','alleen_beveiligd'))
+) FROM Meijendel_ndff_secure.v_ndff_canonieke_waarneming;
+SELECT JSON_OBJECT(
+  'analysis_records',COUNT(*),
+  'analysis_duplicates',COUNT(*)-COUNT(DISTINCT canonieke_identiteit_sha256),
+  'analysis_missing_fields',SUM(protocol_id IS NULL OR protocol_sleutel IS NULL OR protocol_kandidaattypen IS NULL OR protocol_kandidaattypen='' OR ruimtelijk_toelaatbaar IS NULL OR pq_status IS NULL OR snl_overlap_status IS NULL OR record_selectiestatus IS NULL OR gegevensgeschiktheid IS NULL OR kwaliteitsmelding IS NULL),
+  'wrong_chain_version',SUM(analyseketenversie<>{sql_text(ANALYSIS_CHAIN_VERSION)}),
+  'preliminarily_usable',SUM(record_selectiestatus='voorlopig_bruikbaar'),
+  'overlap_warning',SUM(record_selectiestatus='voorlopig_met_overlapwaarschuwing'),
+  'excluded_pq',SUM(record_selectiestatus='uitgesloten_pq'),
+  'excluded_spatial',SUM(record_selectiestatus='uitgesloten_ruimtelijk'),
+  'excluded_overlap',SUM(record_selectiestatus='uitgesloten_overlap'),
+  'unvalidated_records',SUM(gegevensgeschiktheid<>'geschikt'),
+  'secure_detail_records',SUM(bevat_beveiligde_details=1)
+) FROM Meijendel_ndff_secure.v_ndff_analyse_record;
+SELECT JSON_OBJECT(
+  'distribution_rows',COUNT(*),
+  'distribution_sources',COALESCE(SUM(bronrecords_ter_controle),0)
+) FROM Meijendel_ndff_secure.v_ndff_verspreiding_plot_jaar_taxon;
+SELECT JSON_OBJECT(
+  'trend_rows',COUNT(*),
+  'trend_sources',COALESCE(SUM(bronrecords_ter_controle),0),
+  'trend_loose',SUM(protocol_sleutel='LOS')
+) FROM Meijendel_ndff_secure.v_ndff_trendkandidaat_plot_jaar_taxon;
+SELECT JSON_OBJECT(
+  'usage_rows',COUNT(*),
+  'usage_records',COALESCE(SUM(canonieke_records),0),
+  'usage_mismatch',SUM(canonieke_records<>(voorlopig_bruikbaar+overlapwaarschuwing+uitgesloten_pq+uitgesloten_ruimtelijk+uitgesloten_overlap))
+) FROM Meijendel_ndff_secure.v_ndff_gebruiksdekking_soortgroep_protocol;
+SELECT JSON_OBJECT(
+  'richness_rows',COUNT(*),
+  'richness_signals',COALESCE(SUM(geregistreerde_taxa),0)
+) FROM Meijendel_ndff_secure.v_ndff_soortenrijkdom_plot_jaar;
+SELECT JSON_OBJECT(
+  'first_last_rows',COUNT(*),
+  'first_last_invalid',SUM(eerste_geregistreerde_jaar>laatste_geregistreerde_jaar)
+) FROM Meijendel_ndff_secure.v_ndff_eerste_laatste_plot_taxon;
+SELECT JSON_OBJECT(
+  'change_rows',COUNT(*),
+  'change_adjacent',SUM(aansluitend_jaar=1),
+  'change_gap',SUM(aansluitend_jaar=0),
+  'change_first',SUM(aansluitend_jaar IS NULL),
+  'change_partition_mismatch',ABS(COUNT(*)-SUM(CASE WHEN aansluitend_jaar=1 OR aansluitend_jaar=0 OR aansluitend_jaar IS NULL THEN 1 ELSE 0 END))
+) FROM Meijendel_ndff_secure.v_ndff_verspreidingsverandering_taxon_jaar;
+SELECT JSON_OBJECT(
+  'coverage_rows',COUNT(*),
+  'coverage_sources',COALESCE(SUM(bronrecords_ter_controle),0),
+  'coverage_split_mismatch',SUM(losse_bronrecords+protocol_bronrecords<>bronrecords_ter_controle)
+) FROM Meijendel_ndff_secure.v_ndff_dekking_intensiteit_plot_jaar_soortgroep;
+SELECT JSON_OBJECT(
+  'analysis_view_grants',COUNT(*)
+) FROM information_schema.TABLE_PRIVILEGES
+WHERE LOWER(TABLE_SCHEMA)='meijendel_ndff_secure'
+  AND TABLE_NAME IN ({protected_views})
+  AND (GRANTEE LIKE '''ndff_shiny_read''@%' OR GRANTEE LIKE '''meijendel_read''@%');
+"""
+
+
+def parse_analysis_chain_output(output: str) -> dict[str, int]:
+    """Voeg de compacte JSON-resultaten van de live-audit samen."""
+    metrics: dict[str, int] = {}
+    for line in output.splitlines():
+        values = json.loads(line)
+        overlap = set(metrics) & set(values)
+        if overlap:
+            raise ValueError(f"Dubbele auditmetrieken: {sorted(overlap)}")
+        metrics.update({key: int(value) for key, value in values.items()})
+    return metrics
+
+
+def validate_analysis_chain_metrics(metrics: dict[str, int]) -> None:
+    """Blokkeer gereedverklaring zodra het vaste controleprofiel afwijkt."""
+    if set(metrics) != set(ANALYSIS_CHAIN_EXPECTED):
+        difference = sorted(set(metrics) ^ set(ANALYSIS_CHAIN_EXPECTED))
+        raise ValueError(f"Onvolledige analyseketenaudit: {difference}")
+    differences = {
+        key: (ANALYSIS_CHAIN_EXPECTED[key], metrics[key])
+        for key in ANALYSIS_CHAIN_EXPECTED
+        if metrics[key] != ANALYSIS_CHAIN_EXPECTED[key]
+    }
+    if differences:
+        raise ValueError(f"Analyseketen wijkt af van het vaste profiel: {differences}")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=Path, default=DEFAULT_SEED)
@@ -853,7 +998,9 @@ def main() -> int:
     parser.add_argument("--login-path", default="meijendel_root")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=3306)
-    parser.add_argument("--dry-run", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--dry-run", action="store_true")
+    mode.add_argument("--audit-live", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -863,8 +1010,21 @@ def main() -> int:
         print(f"OK: {len(rows)} protocollen, bronhashes en invoercontract gevalideerd")
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql()))
     client_args = mysql_args(args.login_path, args.host, args.port)
+    if args.audit_live:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            analysis_chain_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_analysis_chain_metrics(metrics)
+        print(f"OK: lokale NDFF-analyseketen {ANALYSIS_CHAIN_VERSION} gereed")
+        print(output)
+        return 0
+
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql()))
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)
     metrics = {key: int(value) for key, value in (line.split("\t", 1) for line in output.splitlines())}
