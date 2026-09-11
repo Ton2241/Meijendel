@@ -167,11 +167,25 @@ Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast met:
 - `ndff_protocol`: 54 gestandaardiseerde protocollen;
 - `ndff_protocol_mapping`: 91 gecontroleerde tekstkoppelingen uit openbare en
   beveiligde NDFF-records, zonder ongemapte protocoltekst;
+- `ndff_open_waarneming_protocol`: precies één protocolkoppeling voor alle
+  810.830 openbare records;
+- `Meijendel_ndff_secure.ndff_waarneming_protocol`: precies één
+  protocolkoppeling voor alle 14.573 beveiligde records;
 - `ndff_protocol_gebruik`: 54 wetenschappelijke gebruiksregels;
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
   analysetype.
+
+De recordkoppelingen gebruiken `protocol_id` uitsluitend als interne foreign
+key. `protocol_sleutel` blijft de stabiele identificatie. Van de openbare
+records hebben 380.664 bewijsmethode `expliciete_code` en 430.166
+`expliciet_losse_waarneming`; bij de beveiligde records zijn dit respectievelijk
+4.913 en 9.660. De laatste categorie verwijst naar sleutel `LOS` en is geen
+onderzoeksprotocol. De import blokkeert lege protocolwaarden in plaats van deze
+stilzwijgend als losse waarneming te classificeren. `analyse_status` is geen
+protocolstatus; wetenschappelijke toelating blijft uitsluitend via de aparte
+analysebesluiten, ruimtelijke toets en PQ-poort verlopen.
 
 Van de openbare records zijn 365.854 onvervaagde geometrieën volledig binnen
 precies één plot gelegen. Dit is uitsluitend een ruimtelijke toelatingsvoorwaarde

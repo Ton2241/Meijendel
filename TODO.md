@@ -23,6 +23,10 @@
   openbare records en zowel de openbare als beveiligde protocolteksten. De
   huidige analysebesluiten laten uitsluitend positieve verspreidingscontext
   toe na ruimtelijke en PQ-toets; trend- en effectgebruik blijft geblokkeerd.
+- De recordkoppeling is afgerond: alle 810.830 openbare en 14.573 beveiligde
+  records hebben precies één `protocol_id`. Expliciete codes en expliciete losse
+  waarnemingen zijn afzonderlijk gelabeld; geen lege waarde is als `LOS`
+  geïnterpreteerd. Dit verandert de analysebesluiten niet.
 - Bepaal als afzonderlijke volgende stap welke vlinderreeks als eerste voor
   reconstructie van telobjecten, bezoeken, inspanning en niet-detecties wordt
   gekozen. Deze taak heeft bewust nog geen survey- of routetabellen toegevoegd.

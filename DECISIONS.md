@@ -116,6 +116,15 @@
   `TK`-combinaties staan op `wacht_op_brondata`; niet-onderbouwde combinaties
   zijn uitgesloten. Geen van beide statussen is analysetoelating. De nieuwe
   tabellen wijzigen geen bronrecord en bevatten geen beveiligde geometrie.
+- Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
+  recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
+  interne foreign key; `protocol_sleutel` is de stabiele betekenisvolle sleutel.
+  Een expliciete NDFF-code krijgt bewijsmethode `expliciete_code`; uitsluitend
+  de letterlijk aangeleverde waarde `Losse waarnemingen` krijgt
+  `expliciet_losse_waarneming` en sleutel `LOS`. Een lege waarde is nooit bewijs
+  voor `LOS`. Protocolkwalificatie wordt niet in analysevelden opgeslagen:
+  `analyse_status` is geen protocolstatus en de beveiligde verspreidings-,
+  trend- en innamepoorten behouden hun eigen betekenis.
 - Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
   NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
   (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open

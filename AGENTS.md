@@ -118,6 +118,19 @@ Bij communicatie:
 MySQL:
 - gebruik voor lokale database-acties standaard de lokale MySQL-client
 - voor inloggen is `-u root -p` nodig
+- koppel ieder NDFF-record via een afzonderlijke recordkoppeling aan precies één
+  interne `protocol_id`; gebruik `ndff_open_waarneming_protocol` voor openbare
+  records en `Meijendel_ndff_secure.ndff_waarneming_protocol` voor beveiligde
+  records
+- behandel `protocol_sleutel` als de stabiele betekenisvolle identificatie en
+  het numerieke `protocol_id` uitsluitend als foreign key
+- registreer een aangeleverde protocolcode als `expliciete_code` en uitsluitend
+  de letterlijke bronwaarde `Losse waarnemingen` als
+  `expliciet_losse_waarneming` met sleutel `LOS`; leid `LOS` nooit af uit een
+  lege of onbekende waarde
+- houd protocolkwalificatie strikt gescheiden van analysetoelating:
+  `analyse_status` is geen protocolstatus en beveiligde verspreidings-, trend-
+  en innamevelden mogen hiervoor niet worden hergebruikt
 
 GIS / R-spatial:
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`

@@ -13,6 +13,11 @@ ROOT = Path(__file__).parents[2]
 SCHEMA = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_schema.sql"
 SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
 IMPORTER = ROOT / "gis" / "scripts" / "import_ndff_protocolkwaliteit.py"
+README = ROOT / "README.md"
+DECISIONS = ROOT / "DECISIONS.md"
+AUDIT = ROOT / "docs" / "NDFF_PROTOCOLAUDIT.md"
+WORK_INSTRUCTION = ROOT / "AGENTS.md"
+ARCHITECTURE = ROOT / "ARCHITECTURE.md"
 
 
 def load_importer():
@@ -34,6 +39,9 @@ def main() -> int:
         "ndff_analysebesluit",
     ):
         assert f"create table if not exists {table}" in folded, table
+    assert "create table if not exists meijendel.ndff_open_waarneming_protocol" in folded
+    assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
+    assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
 
     for required in (
         "regelversie",
@@ -81,13 +89,27 @@ def main() -> int:
     assert module.protocol_key("Geen code") == "LOS"
     assert module.protocol_key("03.201") == "03.201"
     assert module.protocol_code_from_raw("03.201 Landelijk Meetnet Vlinders (NEM)") == "03.201"
-    assert module.protocol_code_from_raw(None) == "LOS"
-    assert module.protocol_code_from_raw("") == "LOS"
     assert module.protocol_code_from_raw("Losse waarnemingen") == "LOS"
+    for missing in (None, ""):
+        try:
+            module.protocol_code_from_raw(missing)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Een lege protocolwaarde mag niet als LOS worden behandeld")
     assert module.conditional_types("TV / TA met volledige geschikte bezoekgegevens") == {"TV", "TA"}
     assert module.conditional_types(None) == set()
     assert module.sql_text("", empty_as_null=False) == "''"
     assert "not exists" in module.spatial_sql().casefold()
+    mapping_sql = module.mapping_sql().casefold()
+    assert "expliciet_losse_waarneming" in mapping_sql
+    assert "expliciete_code" in mapping_sql
+    assert "coalesce(nullif(trim(protocol),''),'losse waarnemingen')" not in mapping_sql
+    record_link_sql = module.record_protocol_link_sql().casefold()
+    assert "insert into meijendel.ndff_open_waarneming_protocol" in record_link_sql
+    assert "insert into meijendel_ndff_secure.ndff_waarneming_protocol" in record_link_sql
+    assert "analyse_status" not in record_link_sql
+    assert "on duplicate key update" in record_link_sql
     decision_sql = module.decisions_sql().casefold()
     assert "then 'wacht_op_brondata'" in decision_sql
     assert "on duplicate key update" in decision_sql
@@ -99,6 +121,16 @@ def main() -> int:
         "unmapped_open": 0,
         "unmapped_secure": 0,
         "open_records": 810830,
+        "secure_records": 14573,
+        "open_protocol_links": 810830,
+        "secure_protocol_links": 14573,
+        "open_loose_records": 430166,
+        "open_loose_links": 430166,
+        "secure_loose_records": 9660,
+        "secure_loose_links": 9660,
+        "blank_open_protocol": 0,
+        "blank_secure_protocol": 0,
+        "invalid_protocol_evidence": 0,
         "spatial": 810830,
         "decisions": 1040,
         "admitted_non_distribution": 0,
@@ -107,7 +139,12 @@ def main() -> int:
         module.validate_metrics({
             "protocols": 54, "uses": 54, "mappings": 90,
             "unmapped_open": 1, "unmapped_secure": 0,
-            "open_records": 810830, "spatial": 810829,
+            "open_records": 810830, "secure_records": 14573,
+            "open_protocol_links": 810829, "secure_protocol_links": 14573,
+            "open_loose_records": 430166, "open_loose_links": 430165,
+            "secure_loose_records": 9660, "secure_loose_links": 9660,
+            "blank_open_protocol": 1, "blank_secure_protocol": 0,
+            "invalid_protocol_evidence": 1, "spatial": 810829,
             "decisions": 1040, "admitted_non_distribution": 0,
         })
     except ValueError:
@@ -121,6 +158,23 @@ def main() -> int:
     assert "FROM ndff_protocol WHERE protocol_sleutel='01.201' AS nieuw" not in insert_sql
     assert "bronregistratie_niet_toegelaten" not in insert_sql
     assert "ndff-protocolkwaliteit-v1" in insert_sql
+
+    documentation = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (README, DECISIONS, AUDIT, WORK_INSTRUCTION)
+    )
+    for required_text in (
+        "ndff_open_waarneming_protocol",
+        "Meijendel_ndff_secure.ndff_waarneming_protocol",
+        "expliciete_code",
+        "expliciet_losse_waarneming",
+        "protocol_sleutel",
+    ):
+        assert required_text in documentation, required_text
+    assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")
+    architecture = ARCHITECTURE.read_text(encoding="utf-8")
+    assert "ndff_open_waarneming_protocol" in architecture
+    assert "Meijendel_ndff_secure.ndff_waarneming_protocol" in architecture
     print("OK: NDFF-protocolkwaliteitscontract")
     return 0
 

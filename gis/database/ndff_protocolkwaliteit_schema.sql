@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS ndff_protocol_mapping (
   bron_scope ENUM('openbaar','beveiligd') NOT NULL,
   protocol_raw VARCHAR(500) NOT NULL,
   protocol_id SMALLINT UNSIGNED NOT NULL,
-  mapping_methode ENUM('exacte_code','losse_waarneming') NOT NULL,
+  mapping_methode ENUM('expliciete_code','expliciet_losse_waarneming') NOT NULL,
   regelversie VARCHAR(64) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (mapping_id),
@@ -34,6 +34,51 @@ CREATE TABLE IF NOT EXISTS ndff_protocol_mapping (
   KEY ix_ndff_protocol_mapping_protocol (protocol_id),
   CONSTRAINT fk_ndff_protocol_mapping_protocol FOREIGN KEY (protocol_id)
     REFERENCES ndff_protocol (protocol_id)
+) ENGINE=InnoDB;
+
+-- Gecontroleerde woordenlijstcorrectie voor reeds lokaal toegepaste versie v1.
+ALTER TABLE ndff_protocol_mapping
+  MODIFY mapping_methode ENUM(
+    'exacte_code','losse_waarneming',
+    'expliciete_code','expliciet_losse_waarneming'
+  ) NOT NULL;
+UPDATE ndff_protocol_mapping
+SET mapping_methode = CASE mapping_methode
+  WHEN 'exacte_code' THEN 'expliciete_code'
+  WHEN 'losse_waarneming' THEN 'expliciet_losse_waarneming'
+  ELSE mapping_methode
+END;
+ALTER TABLE ndff_protocol_mapping
+  MODIFY mapping_methode ENUM(
+    'expliciete_code','expliciet_losse_waarneming'
+  ) NOT NULL;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_open_waarneming_protocol (
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  protocol_id SMALLINT UNSIGNED NOT NULL,
+  bewijsmethode ENUM('expliciete_code','expliciet_losse_waarneming') NOT NULL,
+  regelversie VARCHAR(64) NOT NULL,
+  gekoppeld_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (waarneming_id),
+  KEY ix_ndff_open_protocol_id (protocol_id),
+  CONSTRAINT fk_ndff_open_protocol_waarneming FOREIGN KEY (waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_open_protocol_protocol FOREIGN KEY (protocol_id)
+    REFERENCES Meijendel.ndff_protocol (protocol_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel_ndff_secure.ndff_waarneming_protocol (
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  protocol_id SMALLINT UNSIGNED NOT NULL,
+  bewijsmethode ENUM('expliciete_code','expliciet_losse_waarneming') NOT NULL,
+  regelversie VARCHAR(64) NOT NULL,
+  gekoppeld_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (waarneming_id),
+  KEY ix_ndff_secure_protocol_id (protocol_id),
+  CONSTRAINT fk_ndff_secure_protocol_waarneming FOREIGN KEY (waarneming_id)
+    REFERENCES Meijendel_ndff_secure.ndff_waarneming_register (waarneming_id),
+  CONSTRAINT fk_ndff_secure_protocol_protocol FOREIGN KEY (protocol_id)
+    REFERENCES Meijendel.ndff_protocol (protocol_id)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS ndff_protocol_gebruik (

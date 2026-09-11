@@ -52,6 +52,15 @@ zijn eenduidig aan één versie-2025-plot gekoppeld. Geen openbare FFV-regel en
 geen vangst is door deze technische opname automatisch toegelaten voor trend-,
 abundantie-, afwezigheids- of beheer-effectanalyse.
 
+Protocolkwalificatie is een genormaliseerde afleidingslaag naast de bronregels.
+`Meijendel.ndff_open_waarneming_protocol` koppelt ieder openbaar record aan één
+interne `protocol_id`; `Meijendel_ndff_secure.ndff_waarneming_protocol` doet
+hetzelfde binnen de beveiligde laag. Beide verwijzen naar de niet-gevoelige
+catalogus `Meijendel.ndff_protocol`. De stabiele functionele sleutel is
+`protocol_sleutel`; de recordkoppeling onderscheidt `expliciete_code` van
+`expliciet_losse_waarneming`. Deze metadata verleent geen analysetoegang en
+wijzigt geen analyse-, verspreidings-, trend- of innamestatus.
+
 De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
 blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
 geometrie, NDFF-identiteiten en de

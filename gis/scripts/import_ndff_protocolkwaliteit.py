@@ -39,7 +39,9 @@ def protocol_key(code: str | None) -> str:
 
 def protocol_code_from_raw(value: str | None) -> str:
     raw = str(value or "").strip()
-    if not raw or raw.casefold() == "losse waarnemingen":
+    if not raw:
+        raise ValueError("Een lege protocolwaarde is geen bewijs voor een losse waarneming.")
+    if raw.casefold() == "losse waarnemingen":
         return "LOS"
     match = re.match(r"^(\d{2,3}\.\d{3})(?:\s|$)", raw)
     if not match:
@@ -116,24 +118,61 @@ def catalog_insert_sql(rows: Iterable[dict[str, str]], source_hash: str) -> str:
 
 def mapping_sql() -> str:
     return f"""
-INSERT IGNORE INTO ndff_protocol_mapping
+INSERT INTO ndff_protocol_mapping
   (bron_scope,protocol_raw,protocol_id,mapping_methode,regelversie)
 SELECT bron_scope, protocol_raw, p.protocol_id,
-       IF(protocol_sleutel='LOS','losse_waarneming','exacte_code'), {sql_text(RULE_VERSION)}
+       IF(protocol_sleutel='LOS','expliciet_losse_waarneming','expliciete_code'), {sql_text(RULE_VERSION)}
 FROM (
   SELECT DISTINCT 'openbaar' AS bron_scope,
-    COALESCE(NULLIF(TRIM(protocol),''),'Losse waarnemingen') AS protocol_raw,
-    CASE WHEN COALESCE(NULLIF(TRIM(protocol),''),'Losse waarnemingen')='Losse waarnemingen'
+    TRIM(protocol) AS protocol_raw,
+    CASE WHEN TRIM(protocol)='Losse waarnemingen'
          THEN 'LOS' ELSE SUBSTRING_INDEX(TRIM(protocol),' ',1) END AS protocol_sleutel
   FROM ndff_open_waarneming
+  WHERE protocol IS NOT NULL AND TRIM(protocol)<>''
   UNION
   SELECT DISTINCT 'beveiligd' AS bron_scope,
-    COALESCE(NULLIF(TRIM(protocol),''),'Losse waarnemingen') AS protocol_raw,
-    CASE WHEN COALESCE(NULLIF(TRIM(protocol),''),'Losse waarnemingen')='Losse waarnemingen'
+    TRIM(protocol) AS protocol_raw,
+    CASE WHEN TRIM(protocol)='Losse waarnemingen'
          THEN 'LOS' ELSE SUBSTRING_INDEX(TRIM(protocol),' ',1) END AS protocol_sleutel
   FROM Meijendel_ndff_secure.ndff_waarneming_register
+  WHERE protocol IS NOT NULL AND TRIM(protocol)<>''
 ) AS bron
-JOIN ndff_protocol AS p USING (protocol_sleutel);
+JOIN ndff_protocol AS p USING (protocol_sleutel)
+ON DUPLICATE KEY UPDATE
+  protocol_id=VALUES(protocol_id),
+  mapping_methode=VALUES(mapping_methode);
+"""
+
+
+def record_protocol_link_sql() -> str:
+    return f"""
+INSERT INTO Meijendel.ndff_open_waarneming_protocol
+  (waarneming_id,protocol_id,bewijsmethode,regelversie)
+SELECT w.waarneming_id,m.protocol_id,m.mapping_methode,{sql_text(RULE_VERSION)}
+FROM Meijendel.ndff_open_waarneming AS w
+JOIN Meijendel.ndff_protocol_mapping AS m
+  ON m.bron_scope='openbaar'
+ AND m.protocol_raw=TRIM(w.protocol)
+ AND m.regelversie={sql_text(RULE_VERSION)}
+WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>''
+ON DUPLICATE KEY UPDATE
+  protocol_id=VALUES(protocol_id),
+  bewijsmethode=VALUES(bewijsmethode),
+  regelversie=VALUES(regelversie);
+
+INSERT INTO Meijendel_ndff_secure.ndff_waarneming_protocol
+  (waarneming_id,protocol_id,bewijsmethode,regelversie)
+SELECT w.waarneming_id,m.protocol_id,m.mapping_methode,{sql_text(RULE_VERSION)}
+FROM Meijendel_ndff_secure.ndff_waarneming_register AS w
+JOIN Meijendel.ndff_protocol_mapping AS m
+  ON m.bron_scope='beveiligd'
+ AND m.protocol_raw=TRIM(w.protocol)
+ AND m.regelversie={sql_text(RULE_VERSION)}
+WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>''
+ON DUPLICATE KEY UPDATE
+  protocol_id=VALUES(protocol_id),
+  bewijsmethode=VALUES(bewijsmethode),
+  regelversie=VALUES(regelversie);
 """
 
 
@@ -197,17 +236,19 @@ SELECT c.bron_scope,c.soortgroep_raw,m.protocol_id,a.analysetype,
        {sql_text(RULE_VERSION)},'2026-09-11'
 FROM (
   SELECT 'openbaar' AS bron_scope,soortgroep_raw,
-         COALESCE(NULLIF(TRIM(protocol),''),'Losse waarnemingen') AS protocol_raw,
+         TRIM(protocol) AS protocol_raw,
          COUNT(*) AS recordaantal
   FROM ndff_open_waarneming
-  GROUP BY soortgroep_raw,COALESCE(NULLIF(TRIM(protocol),''),'Losse waarnemingen')
+  WHERE protocol IS NOT NULL AND TRIM(protocol)<>''
+  GROUP BY soortgroep_raw,TRIM(protocol)
   UNION ALL
   SELECT 'beveiligd' AS bron_scope,s.oorspronkelijke_ffv_soortgroep,
-         COALESCE(NULLIF(TRIM(w.protocol),''),'Losse waarnemingen') AS protocol_raw,
+         TRIM(w.protocol) AS protocol_raw,
          COUNT(*) AS recordaantal
   FROM Meijendel_ndff_secure.ndff_waarneming_register AS w
   JOIN Meijendel_ndff_secure.ndff_soorten AS s ON s.ndff_soort_id=w.ndff_soort_id
-  GROUP BY s.oorspronkelijke_ffv_soortgroep,COALESCE(NULLIF(TRIM(w.protocol),''),'Losse waarnemingen')
+  WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>''
+  GROUP BY s.oorspronkelijke_ffv_soortgroep,TRIM(w.protocol)
 ) AS c
 JOIN ndff_protocol_mapping AS m
   ON m.bron_scope=c.bron_scope AND m.protocol_raw=c.protocol_raw AND m.regelversie={sql_text(RULE_VERSION)}
@@ -243,9 +284,25 @@ def validation_sql() -> str:
 SELECT 'protocols',COUNT(*) FROM Meijendel.ndff_protocol;
 SELECT 'uses',COUNT(*) FROM Meijendel.ndff_protocol_gebruik WHERE regelversie={sql_text(RULE_VERSION)};
 SELECT 'mappings',COUNT(*) FROM Meijendel.ndff_protocol_mapping WHERE regelversie={sql_text(RULE_VERSION)};
-SELECT 'unmapped_open',COUNT(*) FROM (SELECT DISTINCT COALESCE(NULLIF(TRIM(w.protocol),''),'Losse waarnemingen') raw_protocol FROM Meijendel.ndff_open_waarneming w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='openbaar' AND m.protocol_raw=COALESCE(NULLIF(TRIM(w.protocol),''),'Losse waarnemingen') AND m.regelversie={sql_text(RULE_VERSION)} WHERE m.mapping_id IS NULL) q;
-SELECT 'unmapped_secure',COUNT(*) FROM (SELECT DISTINCT COALESCE(NULLIF(TRIM(w.protocol),''),'Losse waarnemingen') raw_protocol FROM Meijendel_ndff_secure.ndff_waarneming_register w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='beveiligd' AND m.protocol_raw=COALESCE(NULLIF(TRIM(w.protocol),''),'Losse waarnemingen') AND m.regelversie={sql_text(RULE_VERSION)} WHERE m.mapping_id IS NULL) q;
+SELECT 'unmapped_open',COUNT(*) FROM (SELECT DISTINCT TRIM(w.protocol) raw_protocol FROM Meijendel.ndff_open_waarneming w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='openbaar' AND m.protocol_raw=TRIM(w.protocol) AND m.regelversie={sql_text(RULE_VERSION)} WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>'' AND m.mapping_id IS NULL) q;
+SELECT 'unmapped_secure',COUNT(*) FROM (SELECT DISTINCT TRIM(w.protocol) raw_protocol FROM Meijendel_ndff_secure.ndff_waarneming_register w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='beveiligd' AND m.protocol_raw=TRIM(w.protocol) AND m.regelversie={sql_text(RULE_VERSION)} WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>'' AND m.mapping_id IS NULL) q;
 SELECT 'open_records',COUNT(*) FROM Meijendel.ndff_open_waarneming;
+SELECT 'secure_records',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register;
+SELECT 'open_protocol_links',COUNT(*) FROM Meijendel.ndff_open_waarneming_protocol WHERE regelversie={sql_text(RULE_VERSION)};
+SELECT 'secure_protocol_links',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_protocol WHERE regelversie={sql_text(RULE_VERSION)};
+SELECT 'open_loose_records',COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE TRIM(protocol)='Losse waarnemingen';
+SELECT 'open_loose_links',COUNT(*) FROM Meijendel.ndff_open_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id WHERE l.regelversie={sql_text(RULE_VERSION)} AND p.protocol_sleutel='LOS' AND l.bewijsmethode='expliciet_losse_waarneming';
+SELECT 'secure_loose_records',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE TRIM(protocol)='Losse waarnemingen';
+SELECT 'secure_loose_links',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id WHERE l.regelversie={sql_text(RULE_VERSION)} AND p.protocol_sleutel='LOS' AND l.bewijsmethode='expliciet_losse_waarneming';
+SELECT 'blank_open_protocol',COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol IS NULL OR TRIM(protocol)='';
+SELECT 'blank_secure_protocol',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE protocol IS NULL OR TRIM(protocol)='';
+SELECT 'invalid_protocol_evidence',COUNT(*) FROM (
+  SELECT l.waarneming_id FROM Meijendel.ndff_open_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
+  WHERE (p.protocol_sleutel='LOS')<>(l.bewijsmethode='expliciet_losse_waarneming')
+  UNION ALL
+  SELECT l.waarneming_id FROM Meijendel_ndff_secure.ndff_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
+  WHERE (p.protocol_sleutel='LOS')<>(l.bewijsmethode='expliciet_losse_waarneming')
+) q;
 SELECT 'spatial',COUNT(*) FROM Meijendel.ndff_open_ruimtelijke_beoordeling WHERE regelversie={sql_text(RULE_VERSION)};
 SELECT 'decisions',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(RULE_VERSION)};
 SELECT 'admitted_non_distribution',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(RULE_VERSION)} AND analysetype<>'V' AND eindbesluit='toegelaten';
@@ -255,7 +312,10 @@ SELECT 'admitted_non_distribution',COUNT(*) FROM Meijendel.ndff_analysebesluit W
 def validate_metrics(metrics: dict[str, int]) -> None:
     required = {
         "protocols", "uses", "mappings", "unmapped_open", "unmapped_secure",
-        "open_records", "spatial", "decisions", "admitted_non_distribution",
+        "open_records", "secure_records", "open_protocol_links", "secure_protocol_links",
+        "open_loose_records", "open_loose_links", "secure_loose_records", "secure_loose_links",
+        "blank_open_protocol", "blank_secure_protocol", "invalid_protocol_evidence",
+        "spatial", "decisions", "admitted_non_distribution",
     }
     if set(metrics) != required:
         raise ValueError(f"Onvolledige validatie-uitvoer: {sorted(set(metrics) ^ required)}")
@@ -263,6 +323,14 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocolcatalogus, gebruiksmatrix of tekstkoppeling is onvolledig.")
     if metrics["unmapped_open"] or metrics["unmapped_secure"]:
         raise ValueError("Niet alle NDFF-protocolteksten zijn gekoppeld.")
+    if metrics["blank_open_protocol"] or metrics["blank_secure_protocol"]:
+        raise ValueError("Een lege protocolwaarde mag niet stilzwijgend als LOS worden gekwalificeerd.")
+    if metrics["open_protocol_links"] != metrics["open_records"] or metrics["secure_protocol_links"] != metrics["secure_records"]:
+        raise ValueError("Niet ieder NDFF-record heeft precies één protocolkoppeling.")
+    if metrics["open_loose_links"] != metrics["open_loose_records"] or metrics["secure_loose_links"] != metrics["secure_loose_records"]:
+        raise ValueError("Niet iedere expliciete losse waarneming is aan LOS gekoppeld.")
+    if metrics["invalid_protocol_evidence"]:
+        raise ValueError("Protocol_sleutel en bewijsmethode zijn niet consistent.")
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
     if metrics["decisions"] == 0 or metrics["admitted_non_distribution"]:
@@ -286,7 +354,7 @@ def main() -> int:
         print(f"OK: {len(rows)} protocollen, bronhashes en invoercontract gevalideerd")
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), spatial_sql(), decisions_sql()))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), decisions_sql()))
     client_args = mysql_args(args.login_path, args.host, args.port)
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)

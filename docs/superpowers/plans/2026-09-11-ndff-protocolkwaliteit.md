@@ -24,3 +24,29 @@ MySQL-login-path.
 - [x] Voer unit- en contracttests uit.
 - [x] Pas de migratie lokaal toe en controleer aantallen, referentiële integriteit, dekking en herhaalbaarheid.
 - [x] Werk de NDFF-documentatie bij, commit en push de taakbranch.
+
+## Vervolgtaak: protocol per waarnemingsrecord
+
+**Doel:** materialiseer voor ieder openbaar en beveiligd NDFF-record precies
+één interne `protocol_id`, zonder protocolidentiteit en analysegeschiktheid te
+vermengen.
+
+**Ontwerp:** de betekenisvolle sleutel blijft `ndff_protocol.protocol_sleutel`.
+De openbare en beveiligde bronrecords worden niet gewijzigd. Nieuwe
+recordkoppeltabellen bewaren uitsluitend `waarneming_id`, `protocol_id`,
+`bewijsmethode` en `regelversie`. Een expliciete NDFF-code krijgt
+`expliciete_code`; de letterlijk aangeleverde waarde `Losse waarnemingen`
+krijgt `expliciet_losse_waarneming` en protocol_sleutel `LOS`. Een lege of
+onbekende waarde wordt nooit stilzwijgend als `LOS` behandeld.
+
+- [x] Breid de contracttest eerst uit met beide recordkoppeltabellen, foreign
+  keys, toegestane bewijsmethoden en een verbod op wijziging van
+  `analyse_status`.
+- [x] Controleer dat de nieuwe test om de ontbrekende functionaliteit faalt.
+- [x] Breid schema en idempotente import uit en corrigeer de gecontroleerde
+  woordenlijst van `ndff_protocol_mapping`.
+- [x] Valideer één koppeling per 810.830 openbare en 14.573 beveiligde records,
+  volledige dekking van expliciete losse waarnemingen en nul inconsistenties.
+- [x] Werk README, besluiten, protocolaudit en werkinstructie bij.
+- [x] Voer regressietests en de idempotente lokale migratie uit.
+- [x] Commit en push de afgeronde featurebranch.

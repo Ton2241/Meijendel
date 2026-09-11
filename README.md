@@ -230,6 +230,17 @@ gebruiksmatrix, een ruimtelijke beoordeling van alle 810.830 openbare
 FFV-records en conservatieve analysebesluiten. De bronrecords zelf zijn niet
 gewijzigd.
 
+Ieder NDFF-record heeft daarnaast precies één genormaliseerde
+protocolkoppeling. Openbare koppelingen staan in
+`ndff_open_waarneming_protocol`; beveiligde koppelingen staan uitsluitend in
+`Meijendel_ndff_secure.ndff_waarneming_protocol`. Een aangeleverde NDFF-code
+krijgt bewijsmethode `expliciete_code`. De letterlijke waarde
+`Losse waarnemingen` krijgt `expliciet_losse_waarneming` en de stabiele
+`protocol_sleutel` `LOS`. Het numerieke `protocol_id` is alleen een interne
+foreign key. `analyse_status` is geen protocolstatus en blijft een afzonderlijke
+toelatingspoort voor analyses. Lege protocolwaarden mogen nooit automatisch als
+`LOS` worden behandeld.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht. Geen enkele
