@@ -123,6 +123,15 @@ toegekend. `protocol_kandidaattypen` beschrijft alleen wat het protocol in
 beginsel kan ondersteunen; `gegevensgeschiktheid` blijft `niet_beoordeeld`
 totdat de ontbrekende surveystructuur later afzonderlijk is gevalideerd.
 
+Twee afgeleide interne views bieden een veilige analysekorrel zonder dagdatum,
+geometrie of bronidentiteit. `v_ndff_verspreiding_plot_jaar_taxon` reduceert
+voorlopig bruikbare V-records tot positieve aanwezigheid per plot, jaar en
+taxon. `v_ndff_trendkandidaat_plot_jaar_taxon` bevat alleen records met een
+protocolmatige kandidaatstatus voor I, TV, TA of TK, per plot, jaar, taxon en
+protocol. De kolom `bronrecords_ter_controle` is uitsluitend diagnostisch en
+mag nooit als abundantie worden gebruikt. Beide views blijven lokaal en hebben
+vooralsnog geen extra MySQL-grants.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

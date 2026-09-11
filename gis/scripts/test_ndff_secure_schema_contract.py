@@ -100,6 +100,52 @@ def main() -> int:
         "ndff_identity",
     ):
         assert forbidden_field not in analysis, f"analyseview lekt {forbidden_field}"
+
+    verspreiding = view_body(sql, "v_ndff_verspreiding_plot_jaar_taxon")
+    for required in (
+        "v_ndff_analyse_record",
+        "record_selectiestatus = 'voorlopig_bruikbaar'",
+        "find_in_set('v',protocol_kandidaattypen)",
+        "aanwezig",
+        "bronrecords_ter_controle",
+        "protocol_sleutels",
+        "kwaliteitsmelding",
+        "group by",
+    ):
+        assert required.replace(" ", "") in verspreiding.replace(" ", ""), (
+            f"verspreidingsview mist {required}"
+        )
+
+    trend = view_body(sql, "v_ndff_trendkandidaat_plot_jaar_taxon")
+    for required in (
+        "v_ndff_analyse_record",
+        "record_selectiestatus = 'voorlopig_bruikbaar'",
+        "kandidaat_i",
+        "kandidaat_tv",
+        "kandidaat_ta",
+        "kandidaat_tk",
+        "gegevensgeschiktheid",
+        "bronrecords_ter_controle",
+        "kwaliteitsmelding",
+        "group by",
+    ):
+        assert required in trend, f"trendkandidaatview mist {required}"
+    assert "find_in_set('i',protocol_kandidaattypen)" in trend.replace(" ", "")
+    for safe_view in (verspreiding, trend):
+        for forbidden_field in (
+            "canonieke_identiteit_sha256",
+            "open_waarneming_id",
+            "secure_waarneming_id",
+            "exacte_geometrie",
+            "analyse_geometrie",
+            "periode_start",
+            "periode_stop",
+            "raw_payload",
+            "ndff_identity",
+        ):
+            assert forbidden_field not in safe_view, (
+                f"veilige analyseview lekt {forbidden_field}"
+            )
     print("OK: NDFF secure schemacontract")
     return 0
 

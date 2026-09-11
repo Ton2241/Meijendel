@@ -295,6 +295,21 @@ niet als definitief gevalideerde trenddata presenteren. De view bevat geen
 geometrie of exacte datum, maar blijft intern en is niet aan de Shiny-account
 toegekend.
 
+Voor analyse zijn daarboven twee lokale, geaggregeerde views beschikbaar:
+
+- `v_ndff_verspreiding_plot_jaar_taxon`: 105.999 positieve
+  plot-jaar-taxonsignalen, gebaseerd op 303.319 voorlopig bruikbare
+  bronrecords;
+- `v_ndff_trendkandidaat_plot_jaar_taxon`: 11.083
+  plot-jaar-taxon-protocolcombinaties, gebaseerd op 65.044 records waarvan het
+  protocol naast `V` minimaal één kandidaatmogelijkheid `I`, `TV`, `TA` of
+  `TK` ondersteunt.
+
+Beide views bevatten `gegevensgeschiktheid` en een verplichte
+`kwaliteitsmelding`. `bronrecords_ter_controle` is geen abundantie. Losse
+waarnemingen ontbreken volledig uit de trendkandidaatview. De views bevatten
+geen geometrie, dagdatum of bronidentiteit en hebben nog geen extra grants.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

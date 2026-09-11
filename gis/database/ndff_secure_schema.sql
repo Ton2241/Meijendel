@@ -454,6 +454,83 @@ SELECT
     AS kwaliteitsmelding
 FROM recordbesluit;
 
+-- Veilige positieve-aanwezigheidslaag op plot-jaar-taxonkorrel. Het aantal
+-- bronrecords dient alleen voor kwaliteitscontrole en is geen abundantie.
+CREATE OR REPLACE VIEW v_ndff_verspreiding_plot_jaar_taxon AS
+SELECT
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  1 AS aanwezig,
+  COUNT(*) AS bronrecords_ter_controle,
+  GROUP_CONCAT(DISTINCT protocol_sleutel
+    ORDER BY protocol_sleutel SEPARATOR ',') AS protocol_sleutels,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Positieve, voorlopig bruikbare geregistreerde aanwezigheid. bronrecords_ter_controle is geen abundantie. Raadpleeg altijd gegevensgeschiktheid.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+WHERE record_selectiestatus = 'voorlopig_bruikbaar'
+  AND FIND_IN_SET('V',protocol_kandidaattypen)>0
+  AND plot_id IS NOT NULL
+  AND jaar IS NOT NULL
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam;
+
+-- Protocolmatige trendkandidaten op plot-jaar-taxon-protocolkorrel. Deze view
+-- selecteert uitsluitend het mogelijke protocolbereik; ontbrekende
+-- surveystructuur blijft zichtbaar en verbiedt interpretatie als trenduitkomst.
+CREATE OR REPLACE VIEW v_ndff_trendkandidaat_plot_jaar_taxon AS
+SELECT
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  protocol_sleutel,
+  doelrelatie_record,
+  MAX(FIND_IN_SET('I',protocol_kandidaattypen)>0) AS kandidaat_i,
+  MAX(FIND_IN_SET('TV',protocol_kandidaattypen)>0) AS kandidaat_tv,
+  MAX(FIND_IN_SET('TA',protocol_kandidaattypen)>0) AS kandidaat_ta,
+  MAX(FIND_IN_SET('TK',protocol_kandidaattypen)>0) AS kandidaat_tk,
+  COUNT(*) AS bronrecords_ter_controle,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Protocolmatige trendkandidaat. Raadpleeg gegevensgeschiktheid en surveystructuur. Dit is geen trendresultaat.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+WHERE record_selectiestatus = 'voorlopig_bruikbaar'
+  AND (
+    FIND_IN_SET('I',protocol_kandidaattypen)>0
+    OR FIND_IN_SET('TV',protocol_kandidaattypen)>0
+    OR FIND_IN_SET('TA',protocol_kandidaattypen)>0
+    OR FIND_IN_SET('TK',protocol_kandidaattypen)>0
+  )
+  AND plot_id IS NOT NULL
+  AND jaar IS NOT NULL
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  protocol_sleutel,
+  doelrelatie_record;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.

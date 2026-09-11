@@ -204,6 +204,17 @@ kandidaattype `V`. Alle records behouden
 verplichte `kwaliteitsmelding` en is geen verklaring dat trendgebruik al
 volledig is gevalideerd.
 
+Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
+`v_ndff_verspreiding_plot_jaar_taxon` bevat 105.999 positieve
+plot-jaar-taxonsignalen uit 303.319 voorlopig bruikbare bronrecords.
+`v_ndff_trendkandidaat_plot_jaar_taxon` bevat 11.083
+plot-jaar-taxon-protocolcombinaties uit 65.044 bronrecords met minimaal één
+protocolmatige kandidaatmogelijkheid buiten `V`. Alle 11.083 combinaties
+behouden momenteel `gegevensgeschiktheid = niet_beoordeeld`; zij zijn dus een
+prioriteiten- en selectielaag, geen berekende trend. De dagvlindercontrole vond
+binnen de kandidaatview 5.161 combinaties voor protocollen `03.001`, `03.201`,
+`102.005` en `102.007`; protocol `LOS` komt er nul keer in voor.
+
 ### Doelsoorten en bijvangsten
 
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol

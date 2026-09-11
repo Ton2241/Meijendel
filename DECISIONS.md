@@ -168,6 +168,14 @@
   `gegevensgeschiktheid = niet_beoordeeld` moet iedere uitvoer de meegeleverde
   `kwaliteitsmelding` tonen en mogen ruwe aantallen meldingen niet als
   populatietrend worden uitgelegd.
+- Voor reguliere verkennende selecties worden twee afgeleide interne views
+  gebruikt. `v_ndff_verspreiding_plot_jaar_taxon` levert uitsluitend positieve
+  aanwezigheid op plot-jaar-taxonkorrel;
+  `v_ndff_trendkandidaat_plot_jaar_taxon` levert protocolmatige kandidaten op
+  plot-jaar-taxon-protocolkorrel. `bronrecords_ter_controle` is in beide views
+  geen maat voor aantal individuen, dichtheid of populatieontwikkeling. De
+  kandidaatview wordt niet als trenddataset benoemd of gepubliceerd zolang
+  `gegevensgeschiktheid` en surveystructuur niet aanvullend zijn beoordeeld.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

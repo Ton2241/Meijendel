@@ -170,6 +170,14 @@ MySQL:
   validatiestatus en toon bij ieder resultaat de `kwaliteitsmelding`. De view
   bevat geen geometrie of exacte datum maar blijft intern en krijgt geen
   gewone of Shiny-rechten
+- gebruik voor positieve verspreidingssignalen de reeds gefilterde view
+  `Meijendel_ndff_secure.v_ndff_verspreiding_plot_jaar_taxon` en voor selectie
+  van protocolmatige trendkandidaten
+  `Meijendel_ndff_secure.v_ndff_trendkandidaat_plot_jaar_taxon`. Interpreteer
+  `bronrecords_ter_controle` uitsluitend als herkomstcontrole, nooit als
+  abundantie of trend. Neem de velden `gegevensgeschiktheid` en
+  `kwaliteitsmelding` zichtbaar mee in iedere afgeleide uitvoer. Verleen deze
+  views niet aan extra accounts zonder afzonderlijke beoordeling
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks
