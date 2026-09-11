@@ -2,7 +2,8 @@
 
 ## Besluit
 
-De 810.830 unieke FFV-waarnemingsregels zijn **niet rechtstreeks trendklaar**.
+De 810.830 unieke FFV-waarnemingsregels zijn **niet als één ongestructureerde
+set rechtstreeks trendklaar**.
 Een gevalideerde waarneming en een geregistreerde protocolnaam bewijzen nog niet
 dat de FFV-export alle telbezoeken, inspanning, telobjecten en afleidbare
 nulwaarnemingen bevat. Protocolmatig passende gegevens mogen daarom wel
@@ -11,12 +12,29 @@ afzonderlijk `niet_beoordeeld` blijft. Iedere uitkomst vermeldt deze beperking;
 voorlopige toelating is geen definitieve trendvalidatie.
 
 Alleen records uit een voor de soortgroep passend doelgericht meetnet zijn
-kandidaat voor vervolg. Daarvoor worden eerst de volledige brondata bij de
-meetnetbeheerder opgevraagd. NDFF noemt protocollen gestandaardiseerde
-telmethoden, maar vermeldt ook dat bruikbare nullen alleen uit sterke
-protocollen met goede metadata afleidbaar en beperkt toegankelijk zijn. CBS
-beoordeelt NEM-kwaliteit bovendien per meetprogramma en meetdoel; een landelijke
-kwaliteitsbeoordeling is geen automatische lokale Meijendeltrend.
+kandidaat voor protocolgebonden trendinvoer. Bij een expliciete NEM-code wordt
+uitgegaan van een protocolgeldig positief bezoek. De native meeteenheid en
+bezoekmatrix moeten nog wel per protocol worden gereconstrueerd. Bruikbare
+nullen worden uitsluitend afgeleid binnen de doelsoorten en bezochte
+meeteenheden van dat protocol; nooit voor bijvangsten.
+
+### Uitgevoerde reconstructie `03.201`
+
+Voor het Landelijk Meetnet Dagvlinders is bevestigd dat iedere `03.201`-regel
+uit een geldig NEM-bezoek komt, dat de bezoekmomenten volledig aanwezig zijn en
+dat er geen volledig vlinderloze bezoeken ontbreken. Uit tijd en geometrische
+samenhang zijn onder regel `ndff-vlinderroute-v1` 3.169 bezoeken en 11
+routefamilies gereconstrueerd. De matrix voor de 34 aangetroffen
+dagvlindertaxa bevat 107.746 bezoek-soortregels: 20.075 positief en 87.671 echte
+nullen. De 1.535 vliesvleugeligen en 556 nachtvlinders zijn bijvangst en blijven
+positieve voorkomensinformatie.
+
+Van de bezoeken zijn er 2.935 aan een waarschijnlijke route gekoppeld. Eén
+ruimtelijk uitgerekte familie omvat 172 bezoeken en blijft gemarkeerd voor
+handmatige controle. Voor 62 bezoeken met 184 bronrecords kon uit de aanwezige
+geometrie geen route worden hersteld. De afgeleide tabellen staan uitsluitend
+in `Meijendel_ndff_secure`; `--audit-vlinders` controleert aantallen,
+matrixconsistentie en afwezigheid van gewone of Shiny-rechten.
 
 ## Toepassing op beveiligde levering 58679
 
@@ -26,38 +44,45 @@ De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
 1.274 daarvan ruimtelijk geschikt voor een gerichte aanvraag van volledige
 brondata. De GeoPackage bevat zelf geen telobjecten, bezoekstructuur,
 inspanning, protocolversies of afleidbare nullen; `zoid` en `sessionid` zijn in
-alle records 0. Daarom zijn ook in de beveiligde levering nul records direct
-trendklaar.
+alle records 0. Daarom waren in de beveiligde levering op zichzelf nul records
+direct trendklaar. Dit sluit latere reconstructie met de volledige openbare
+reeks en de officiële protocolregels niet uit; `03.201` is inmiddels zo
+uitgewerkt.
 
-## Prioriteit aanvullende validatie op de volledige canonieke laag
+## NEM-reconstructie op de volledige canonieke laag
 
 De eerdere vervolgselectie van 1.274 records was uitsluitend gebaseerd op de
 beveiligde levering van 191 soorten. Zij is geen rangorde voor alle NDFF-data.
 Na voltooiing van `ndff-analyseketen-v1` is de prioriteit opnieuw bepaald op de
 810.983 unieke canonieke records. Daarvan zijn 65.044 records voorlopig
 kandidaat voor minstens één protocolmatig gebruikstype buiten uitsluitend
-positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft voor al
-deze records `niet_beoordeeld`.
+positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft in de
+algemene analysepoort `niet_beoordeeld`; een voltooide protocolreconstructie
+krijgt daarnaast haar eigen, strengere matrix en audit.
 
-De eerste validatieronde richt zich op herhaalde, doelgerichte meetreeksen:
+| Protocol | Records | Bezoeken | Jaren | Stand |
+|---|---:|---:|---|---|
+| `03.201` Dagvlinders | 82.533 | 3.169 | 1990-2025 | gereconstrueerd |
+| `07.201` Libellen | 3.280 | 461 | 2007-2021 | volgende routeketen |
+| `10.201` Reptielen | 957 | 684 | 1990-2025 | daarna route/gebied reconstrueren |
+| `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
+| `17.208` Vleermuistransect | 2.624 | 85 | 2013-2025 | transect en vier doelsoorten reconstrueren |
+| `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |
+| `11.202` Zeereeppaddenstoelen | 3.738 | 83 | 2014-2025 | zes doelsoorten en vaste plots reconstrueren |
+| `02.202` Korstmossen | 384 | 15 | 2000-2025 | proefvlakken en doelsoortenlijst reconstrueren |
+| `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
+| `11.201` Bospaddenstoelen | 982 | 216 | 1999-2016 | vaste plots; soort- en habitatgeschiktheid behouden |
+| `12.204` Het Nieuwe Strepen | 4.569 | 1.145 | 2012-2024 | onafhankelijke hokbezoeken eerst onderscheiden |
+| `17.204` DAZ-BMP | 10.670 | 1.681 | 1994-2022 | doelsoorten en overlap met vogelreeks toetsen |
+| `03.203` Nachtvlinders | 596 | 4 | 2019-2025 | geen nullen uit huidige NDFF-regels afleiden |
+| `11.204` Bospaddenstoelen verspreiding | 14 | 2 | 2017 | te klein voor lokale trend |
+| `13.201` Beek- en poldervissen | 20 | 6 | 2014 | te klein voor lokale tijdreeks |
+| `17.207` Bever en otter | 3 | 3 | 2024 | te klein en slechts één lokaal taxon |
+| `12.202` LMF-M&N | 15.129 | 329 | 1981-2024 | niet naast provinciale PQ gebruiken |
 
-| Volgorde | Protocol | Kandidaten | Registratiejaren | Geraakte SOVON-plots | Eerste bronhouder |
-|---:|---|---:|---:|---:|---|
-| 1 | `03.201` Landelijk Meetnet Vlinders | 50.211 | 36 | 20 | De Vlinderstichting |
-| 2 | `12.211` LMF-a | 4.071 | 11 | 43 | FLORON en Dunea |
-| 3 | `01.201` Monitoring amfibieën | 1.382 | 23 | 13 | RAVON |
-| 4 | `07.201` Landelijk Meetnet Libellen | 710 | 12 | 4 | De Vlinderstichting |
-| 5 | `17.208` Vleermuistransecttelling | 583 | 11 | 17 | Zoogdiervereniging |
-| 6 | `02.202` Meetnet korstmossen | 372 | 8 | 4 | BLWG |
-| 7 | `11.201` Meetnet Bospaddenstoelen | 212 | 18 | 2 | NMV |
-| 8 | `10.201` Monitoring reptielen | 96 | 7 | 7 | RAVON |
-| 9 | `17.201` Wintertellingen vleermuizen | 58 | 32 | 7 | Bronhouder in NDFF onbekend; eerst herkomst vaststellen |
-
-De aantallen zijn aantallen canonieke positieve NDFF-records die de bestaande
-protocol-, doelsoort-, ruimtelijke en PQ-poorten passeren. Het aantal geraakte
-SOVON-plots bewijst niet dat een native route of ander telobject geheel binnen
-die plots ligt. Ook mogen recordaantallen niet als aantallen bezoeken,
-individuen of populatieomvang worden geïnterpreteerd.
+Record- en bezoekaantallen zijn bron- en reconstructiecontroles, geen
+populatieomvang. Per protocol worden vóór nullen de native meeteenheid, het
+volledige doelsoortenbereik en eventuele overlap met primaire bronnen getoetst.
 
 Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
 `04.004` (1.282), `12.001` (1.150), `12.204` (929), `07.001` (850) en `12.006`
@@ -66,25 +91,19 @@ bezoekduur en onderzochte eenheid. Zij kunnen vooral inventarisatie- en
 verspreidingsanalyses verbeteren; hun omvang maakt ze niet automatisch geschikt
 voor aantalstrends.
 
-De eerste praktische opvraag combineert bij De Vlinderstichting `03.201`,
-`03.001` en `07.201`. Daarmee kunnen ruim 52.000 kandidaten in één broncontact
-worden onderzocht. Gevraagd worden alleen de onderdelen die noodzakelijk zijn
-om de oorspronkelijke meeteenheid te herstellen: route- en sectie-ID's met
-geversioneerde begrenzingen, volledige uitgevoerde bezoeken, complete
-sectieresultaten waaruit niet-detecties verantwoord kunnen worden afgeleid,
-de bezoekcondities die protocolgeldigheid bepalen en wijzigingen van route of
-methode. Als een volledige levering niet direct mogelijk is, wordt eerst één
-representatieve Meijendelroute als proef gevraagd.
+Aanvullende bronvragen worden pas gesteld wanneer tijd, geometrie en de
+officiële protocolomschrijving een noodzakelijke sleutel niet kunnen leveren.
+Zij blokkeren de technisch verantwoorde reconstructies niet.
 
 ## Reconstructie van de surveystructuur
 
 De mededeling van NDFF dat de GeoPackage alle beschikbare informatie per
 waarneming bevat, betekent dat de ontbrekende surveystructuur niet opnieuw bij
-NDFF wordt gevraagd. De openbare handleidingen van de meetnetbeheerders zijn
-wel voldoende om het **bedoelde ontwerp** te reconstrueren. De feitelijk
-uitgevoerde routes, bezoeken, inspanning, doelsoorten, nulresultaten en
-historische wijzigingen moeten rechtstreeks bij de oorspronkelijke
-bronorganisatie worden opgevraagd.
+NDFF wordt gevraagd. De openbare handleidingen van de meetnetbeheerders bepalen
+het bedoelde ontwerp. Feitelijke bezoeken worden waar mogelijk uit gelijke
+begin- en eindtijden gereconstrueerd en meeteenheden uit geometrische samenhang.
+Alleen niet-reconstrueerbare sleutels of historische wijzigingen worden later
+gericht bij de bronorganisatie nagevraagd.
 
 De 1.274 vervolgkandidaten bestaan uit tien protocol-broncombinaties:
 
@@ -452,6 +471,10 @@ Het schema en de reproduceerbare invoer staan in:
 - [NDFF LMF-a](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/12-211-landelijk-meetnet-flora-aandachtssoorten-lmf-a/)
 - [CBS Kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/)
 - [CBS methode kwaliteitsbeoordeling](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/kwaliteitsbeoordeling/)
+- [Netwerk Ecologische Monitoring - kwaliteit](https://www.netwerkecologischemonitoring.nl/)
+- [NDFF 03.201 Landelijk Meetnet Dagvlinders](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/3-201-landelijk-meetnet-vlinders-nem/)
+- [NDFF 07.201 Landelijk Meetnet Libellen](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/7-201-landelijk-meetnet-libellen-nem/)
+- [NDFF 03.203 Landelijk Meetprogramma Nachtvlinders](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/3-203-landelijk-meetprogramma-nachtvlinders-nem/)
 - [Zoogdiervereniging Vleermuistransecttelling](https://www.zoogdiervereniging.nl/sites/default/files/2024-10/Handleiding%20Vleermuis%20transecttellingen.pdf)
 - [FLORON Het Nieuwe Strepen](https://www.floron.nl/meedoen/het-nieuwe-strepen)
 - [RAVON monitoring amfibieën](https://www.ravon.nl/publicaties/handleiding-voor-het-monitoren-van-amfibieen-in-nederland/)

@@ -46,6 +46,15 @@ def main() -> int:
         assert f"create table if not exists {table}" in folded, table
     assert "create table if not exists meijendel.ndff_open_waarneming_protocol" in folded
     assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
+    for table in (
+        "meijendel_ndff_secure.ndff_vlinder_routefamilie",
+        "meijendel_ndff_secure.ndff_vlinder_routegeometrie",
+        "meijendel_ndff_secure.ndff_vlinder_bezoek",
+        "meijendel_ndff_secure.ndff_vlinder_bezoek_taxon",
+    ):
+        assert f"create table if not exists {table}" in folded, table
+    assert "enum('waargenomen','echte_nul')" in folded
+    assert "ndff-vlinderroute-v1" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
     assert "'voorlopig_toegelaten'" in folded
     assert "wetenschappelijke_naam varchar(255) not null" in folded
@@ -114,6 +123,77 @@ def main() -> int:
     assert module.conditional_types("TV / TA met volledige geschikte bezoekgegevens") == {"TV", "TA"}
     assert module.conditional_types(None) == set()
     assert module.sql_text("", empty_as_null=False) == "''"
+
+    # Een routeversie mag alleen aan een andere versie worden gekoppeld als
+    # minstens de helft van de kleinste geometrieset ruimtelijk overeenkomt.
+    # Eén nabij kruispunt tussen twee routes mag ze niet samenvoegen.
+    route_rows = []
+    for visit, year, prefix, offset in (
+        ("a-2020", 2020, "a", 0.0),
+        ("a-2021", 2021, "a", 0.0),
+        ("a-2022", 2022, "a2", 0.5),
+        ("b-2020", 2020, "b", 1000.0),
+    ):
+        for section in range(1, 5):
+            route_rows.append({
+                "visit": visit,
+                "geometry": f"{prefix}-{section}",
+                "x": offset + section * 50.0,
+                "y": 0.0,
+                "area": 500.0,
+                "year": year,
+                "records": 1,
+            })
+    # Eén punt van route C ligt vlak bij route A, de overige punten niet.
+    for section, x in enumerate((200.0, 2000.0, 2050.0, 2100.0), 1):
+        route_rows.append({
+            "visit": "c-2020", "geometry": f"c-{section}", "x": x,
+            "y": 0.0, "area": 500.0, "year": 2020, "records": 1,
+        })
+    route_rows.append({
+        "visit": "coarse-only", "geometry": "km", "x": 0.0, "y": 0.0,
+        "area": 1_000_000.0, "year": 2020, "records": 3,
+    })
+    reconstruction = module.reconstruct_route_families(route_rows)
+    assert reconstruction["family_count"] == 3
+    assert reconstruction["component_count"] == 4
+    assert reconstruction["fine_visit_count"] == 5
+    assert reconstruction["coarse_only_visit_count"] == 1
+    assert reconstruction["coarse_only_record_count"] == 3
+    assert reconstruction["visit_to_family"]["a-2020"] == reconstruction["visit_to_family"]["a-2022"]
+    assert reconstruction["visit_to_family"]["a-2020"] != reconstruction["visit_to_family"]["c-2020"]
+
+    matrix = module.build_visit_taxon_matrix(
+        visits={"v1": 1, "v2": None},
+        target_taxa=("Aglais urticae", "Pieris napi"),
+        observations={
+            ("v1", "Aglais urticae"): 3,
+            ("v2", "Pieris napi"): 2,
+        },
+    )
+    assert len(matrix) == 4
+    assert {(row["visit"], row["taxon"]): (row["count"], row["status"])
+            for row in matrix} == {
+        ("v1", "Aglais urticae"): (3, "waargenomen"),
+        ("v1", "Pieris napi"): (0, "echte_nul"),
+        ("v2", "Aglais urticae"): (0, "echte_nul"),
+        ("v2", "Pieris napi"): (2, "waargenomen"),
+    }
+    assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v1"
+    importer_text = IMPORTER.read_text(encoding="utf-8")
+    assert "--reconstruct-vlinders" in importer_text
+    assert "--audit-vlinders" in importer_text
+    assert "03.201" in importer_text
+    assert "soortgroep_raw='Dagvlinders'" in importer_text
+    module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
+    broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
+    broken_vlinder["zero_rows"] -= 1
+    try:
+        module.validate_vlinder_reconstruction(broken_vlinder)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende vlinderreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

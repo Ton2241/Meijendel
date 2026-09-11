@@ -7,8 +7,10 @@ import argparse
 import csv
 import hashlib
 import json
+import math
 import re
 import subprocess
+from collections import defaultdict
 from pathlib import Path
 from typing import Iterable
 
@@ -27,6 +29,24 @@ ANALYSIS_CHAIN_VERSION = "ndff-analyseketen-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
+VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
+VLINDER_RECONSTRUCTION_EXPECTED = {
+    "source_records": 82533,
+    "visits": 3169,
+    "route_families": 11,
+    "route_components": 24,
+    "fine_geometries": 456,
+    "fine_visits": 3107,
+    "coarse_only_visits": 62,
+    "coarse_only_records": 184,
+    "target_taxa": 34,
+    "matrix_rows": 107746,
+    "positive_rows": 20075,
+    "zero_rows": 87671,
+    "invalid_matrix_rows": 0,
+    "manual_review_visits": 172,
+    "forbidden_grants": 0,
+}
 ANALYSIS_CHAIN_EXPECTED = {
     "canonical_records": 810983,
     "canonical_duplicates": 0,
@@ -67,6 +87,177 @@ ANALYSIS_CHAIN_EXPECTED = {
     "coverage_split_mismatch": 0,
     "analysis_view_grants": 0,
 }
+
+
+def reconstruct_route_families(
+    rows: Iterable[dict[str, object]],
+    *,
+    coarse_area_m2: float = 900_000.0,
+    version_match_distance_m: float = 10.0,
+    version_match_fraction: float = 0.5,
+) -> dict[str, object]:
+    """Reconstructeer routefamilies uit gezamenlijke bezoeken en geometrieën."""
+    visits: dict[str, set[str]] = defaultdict(set)
+    geometry: dict[str, tuple[float, float, float]] = {}
+    geometry_years: dict[str, set[int]] = defaultdict(set)
+    geometry_visits: dict[str, set[str]] = defaultdict(set)
+    fine_pair_records: dict[tuple[str, str], int] = defaultdict(int)
+    coarse_visit_records: dict[str, int] = defaultdict(int)
+
+    for row in rows:
+        visit = str(row["visit"])
+        geometry_key = str(row["geometry"])
+        area = float(row["area"])
+        records = int(row["records"])
+        if area >= coarse_area_m2:
+            coarse_visit_records[visit] += records
+            continue
+        visits[visit].add(geometry_key)
+        geometry[geometry_key] = (float(row["x"]), float(row["y"]), area)
+        geometry_years[geometry_key].add(int(row["year"]))
+        geometry_visits[geometry_key].add(visit)
+        fine_pair_records[(visit, geometry_key)] += records
+
+    parent = {key: key for key in geometry}
+    rank = {key: 0 for key in geometry}
+
+    def find(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    def union(left: str, right: str) -> None:
+        left_root, right_root = find(left), find(right)
+        if left_root == right_root:
+            return
+        if rank[left_root] < rank[right_root]:
+            left_root, right_root = right_root, left_root
+        parent[right_root] = left_root
+        if rank[left_root] == rank[right_root]:
+            rank[left_root] += 1
+
+    for member_set in visits.values():
+        ordered = sorted(member_set)
+        for geometry_key in ordered[1:]:
+            union(ordered[0], geometry_key)
+
+    components_by_root: dict[str, set[str]] = defaultdict(set)
+    for geometry_key in geometry:
+        components_by_root[find(geometry_key)].add(geometry_key)
+    components = sorted(components_by_root.values(), key=lambda members: sorted(members))
+
+    component_parent = list(range(len(components)))
+
+    def component_find(index: int) -> int:
+        while component_parent[index] != index:
+            component_parent[index] = component_parent[component_parent[index]]
+            index = component_parent[index]
+        return index
+
+    def component_union(left: int, right: int) -> None:
+        left_root, right_root = component_find(left), component_find(right)
+        if left_root != right_root:
+            component_parent[right_root] = left_root
+
+    for left_index, left in enumerate(components):
+        for right_index in range(left_index + 1, len(components)):
+            right = components[right_index]
+            smaller, other = (left, right) if len(left) <= len(right) else (right, left)
+            near = sum(
+                min(
+                    math.hypot(
+                        geometry[item][0] - geometry[candidate][0],
+                        geometry[item][1] - geometry[candidate][1],
+                    )
+                    for candidate in other
+                ) <= version_match_distance_m
+                for item in smaller
+            )
+            if near / len(smaller) >= version_match_fraction:
+                component_union(left_index, right_index)
+
+    family_component_indexes: dict[int, set[int]] = defaultdict(set)
+    for index in range(len(components)):
+        family_component_indexes[component_find(index)].add(index)
+
+    family_rows = []
+    for component_indexes in family_component_indexes.values():
+        members = set().union(*(components[index] for index in component_indexes))
+        family_visits = set().union(*(geometry_visits[key] for key in members))
+        years = set().union(*(geometry_years[key] for key in members))
+        fine_records = sum(
+            records for (visit, key), records in fine_pair_records.items() if key in members
+        )
+        linked_coarse_records = sum(coarse_visit_records[visit] for visit in family_visits)
+        xs = [geometry[key][0] for key in members]
+        ys = [geometry[key][1] for key in members]
+        family_rows.append({
+            "visits": family_visits,
+            "geometries": members,
+            "component_indexes": component_indexes,
+            "first_year": min(years),
+            "last_year": max(years),
+            "year_count": len(years),
+            "fine_record_count": fine_records,
+            "linked_coarse_record_count": linked_coarse_records,
+            "record_count": fine_records + linked_coarse_records,
+            "extent_m": math.hypot(max(xs) - min(xs), max(ys) - min(ys)),
+        })
+    family_rows.sort(
+        key=lambda row: (-len(row["visits"]), -int(row["record_count"]), sorted(row["geometries"]))
+    )
+
+    geometry_to_family: dict[str, int] = {}
+    visit_to_family: dict[str, int] = {}
+    for family_id, family in enumerate(family_rows, 1):
+        family["family_id"] = family_id
+        for geometry_key in family["geometries"]:
+            geometry_to_family[geometry_key] = family_id
+        for visit in family["visits"]:
+            existing = visit_to_family.get(visit)
+            if existing is not None and existing != family_id:
+                raise ValueError(f"Bezoek {visit} valt in meerdere routefamilies")
+            visit_to_family[visit] = family_id
+
+    coarse_only_visits = set(coarse_visit_records) - set(visits)
+    return {
+        "family_count": len(family_rows),
+        "component_count": len(components),
+        "fine_geometry_count": len(geometry),
+        "fine_visit_count": len(visits),
+        "coarse_only_visit_count": len(coarse_only_visits),
+        "coarse_only_record_count": sum(coarse_visit_records[visit] for visit in coarse_only_visits),
+        "families": family_rows,
+        "geometry_to_family": geometry_to_family,
+        "visit_to_family": visit_to_family,
+    }
+
+
+def build_visit_taxon_matrix(
+    *,
+    visits: dict[str, int | None],
+    target_taxa: Iterable[str],
+    observations: dict[tuple[str, str], int],
+) -> list[dict[str, object]]:
+    """Maak een volledige bezoek-taxonmatrix voor bevestigde NEM-doelsoorten."""
+    taxa = sorted(set(target_taxa))
+    matrix: list[dict[str, object]] = []
+    for visit in sorted(visits):
+        for taxon in taxa:
+            count = observations.get((visit, taxon), 0)
+            if count < 0:
+                raise ValueError(f"Negatief aantal voor {visit}, {taxon}")
+            matrix.append({
+                "visit": visit,
+                "taxon": taxon,
+                "count": count,
+                "status": "waargenomen" if count > 0 else "echte_nul",
+            })
+    unknown = set(observations) - {(visit, taxon) for visit in visits for taxon in taxa}
+    if unknown:
+        raise ValueError(f"Waarnemingen buiten bezoek-doelsoortbereik: {len(unknown)}")
+    return matrix
 
 GENERAL_SOURCE_PROTOCOLS = {"102.004", "102.006", "104.000", "105.000"}
 BYCATCH_COMBINATIONS = {
@@ -722,6 +913,215 @@ def run_mysql(client: Path, args: list[str], sql: str, capture: bool = False) ->
     return result.stdout.strip() if capture else ""
 
 
+def vlinder_source_sql() -> str:
+    """Lees protocol 03.201 met beveiligde geometrie waar die beschikbaar is."""
+    return """
+SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),o.jaar,
+       CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie_sha256
+            ELSE s.exacte_geometrie_sha256 END,
+       ST_X(ST_Centroid(CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie
+                             ELSE s.exacte_geometrie END)),
+       ST_Y(ST_Centroid(CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie
+                             ELSE s.exacte_geometrie END)),
+       ST_Area(CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie
+                    ELSE s.exacte_geometrie END),COUNT(*)
+FROM Meijendel.ndff_open_waarneming o
+LEFT JOIN Meijendel_ndff_secure.ndff_open_secure_koppeling k
+  ON k.open_waarneming_id=o.waarneming_id
+LEFT JOIN Meijendel_ndff_secure.ndff_waarneming_register s
+  ON s.waarneming_id=k.secure_waarneming_id
+WHERE o.protocol LIKE '03.201%'
+GROUP BY o.periode_start,o.periode_stop,o.jaar,4,5,6,7
+ORDER BY o.periode_start,o.periode_stop,4;
+"""
+
+
+def vlinder_observation_sql() -> str:
+    return """
+SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
+       wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED))
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '03.201%'
+  AND soortgroep_raw='Dagvlinders'
+  AND aantal_raw REGEXP '^[0-9]+$'
+GROUP BY periode_start,periode_stop,wetenschappelijke_naam
+ORDER BY periode_start,periode_stop,wetenschappelijke_naam;
+"""
+
+
+def _batched_insert(table: str, columns: str, values: list[str], size: int = 1000) -> list[str]:
+    return [
+        f"INSERT INTO {table} ({columns}) VALUES " + ",".join(values[index:index + size]) + ";"
+        for index in range(0, len(values), size)
+    ]
+
+
+def reconstruct_vlinders(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw lokaal de 03.201-route-, bezoek- en dagvlindermatrix opnieuw op."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    source_output = run_mysql(mysql_client, query_args, vlinder_source_sql(), capture=True)
+    route_rows: list[dict[str, object]] = []
+    visits_meta: dict[str, tuple[str, str, int]] = {}
+    visit_record_count: dict[str, int] = defaultdict(int)
+    geometry_meta: dict[str, tuple[float, float, float]] = {}
+    for line in source_output.splitlines():
+        start, stop, year, geometry_key, x, y, area, records = line.split("\t")
+        visit = f"{start}|{stop}"
+        visits_meta[visit] = (start, stop, int(year))
+        visit_record_count[visit] += int(records)
+        geometry_meta[geometry_key] = (float(x), float(y), float(area))
+        route_rows.append({
+            "visit": visit, "geometry": geometry_key, "x": float(x), "y": float(y),
+            "area": float(area), "year": int(year), "records": int(records),
+        })
+    if sum(visit_record_count.values()) != 82_533 or len(visits_meta) != 3_169:
+        raise ValueError("De 03.201-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    reconstruction = reconstruct_route_families(route_rows)
+    observation_output = run_mysql(mysql_client, query_args, vlinder_observation_sql(), capture=True)
+    observations: dict[tuple[str, str], int] = {}
+    target_taxa: set[str] = set()
+    for line in observation_output.splitlines():
+        start, stop, taxon, count = line.split("\t")
+        visit = f"{start}|{stop}"
+        target_taxa.add(taxon)
+        observations[(visit, taxon)] = int(count)
+    if len(target_taxa) != 34:
+        raise ValueError("De doelsoortenlijst van protocol 03.201 bevat niet exact 34 dagvlindertaxa.")
+    if set(visits_meta) != {visit for visit, _taxon in observations}:
+        raise ValueError("Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen.")
+    matrix = build_visit_taxon_matrix(
+        visits={visit: reconstruction["visit_to_family"].get(visit) for visit in visits_meta},
+        target_taxa=target_taxa,
+        observations=observations,
+    )
+
+    family_values: list[str] = []
+    family_status: dict[int, str] = {}
+    for family in reconstruction["families"]:
+        family_id = int(family["family_id"])
+        status = "handmatige_controle" if float(family["extent_m"]) > 3_000 else "waarschijnlijk"
+        family_status[family_id] = status
+        family_values.append(
+            f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{family_id},'03.201',{sql_text(status)},"
+            f"{len(family['visits'])},{len(family['geometries'])},{len(family['component_indexes'])},"
+            f"{int(family['record_count'])},{int(family['first_year'])},{int(family['last_year'])},"
+            f"{int(family['year_count'])},{float(family['extent_m']):.3f})"
+        )
+
+    geometry_values: list[str] = []
+    for geometry_key, family_id in sorted(reconstruction["geometry_to_family"].items()):
+        x, y, area = geometry_meta[geometry_key]
+        geometry_values.append(
+            f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{sql_text(geometry_key)},{family_id},"
+            f"{x:.3f},{y:.3f},{area:.6f})"
+        )
+
+    visit_keys = {visit: hashlib.sha256(visit.encode("utf-8")).hexdigest() for visit in visits_meta}
+    visit_values: list[str] = []
+    for visit, (start, stop, year) in sorted(visits_meta.items()):
+        family_id = reconstruction["visit_to_family"].get(visit)
+        if family_id is None:
+            status = "geen_route"
+            family_sql = "NULL"
+        else:
+            status = "handmatige_controle" if family_status[int(family_id)] == "handmatige_controle" else "gereconstrueerd"
+            family_sql = str(family_id)
+        visit_values.append(
+            f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{sql_text(visit_keys[visit])},"
+            f"{sql_text(start)},{sql_text(stop)},{year},{family_sql},{sql_text(status)},"
+            f"{visit_record_count[visit]})"
+        )
+
+    matrix_values = [
+        f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{sql_text(visit_keys[str(row['visit'])])},"
+        f"{sql_text(str(row['taxon']))},{int(row['count'])},{sql_text(str(row['status']))},"
+        "'Niet gemeld binnen een bevestigd volledig NEM-dagvlinderbezoek; echte nul voor de doelsoort.')"
+        for row in matrix
+    ]
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_routegeometrie WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_routefamilie WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        "Meijendel_ndff_secure.ndff_vlinder_routefamilie",
+        "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus,bezoekaantal,geometrieaantal,componentaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m",
+        family_values,
+    )
+    statements += _batched_insert(
+        "Meijendel_ndff_secure.ndff_vlinder_routegeometrie",
+        "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
+        geometry_values,
+    )
+    statements += _batched_insert(
+        "Meijendel_ndff_secure.ndff_vlinder_bezoek",
+        "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus,bronrecordaantal",
+        visit_values,
+    )
+    statements += _batched_insert(
+        "Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon",
+        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,waarnemingsstatus,nulregel",
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    return {
+        "source_records": sum(visit_record_count.values()),
+        "visits": len(visits_meta),
+        "route_families": int(reconstruction["family_count"]),
+        "route_components": int(reconstruction["component_count"]),
+        "fine_geometries": int(reconstruction["fine_geometry_count"]),
+        "fine_visits": int(reconstruction["fine_visit_count"]),
+        "coarse_only_visits": int(reconstruction["coarse_only_visit_count"]),
+        "coarse_only_records": int(reconstruction["coarse_only_record_count"]),
+        "target_taxa": len(target_taxa),
+        "matrix_rows": len(matrix),
+        "positive_rows": sum(row["status"] == "waargenomen" for row in matrix),
+        "zero_rows": sum(row["status"] == "echte_nul" for row in matrix),
+    }
+
+
+def vlinder_validation_sql() -> str:
+    version = sql_text(VLINDER_ROUTE_RULE_VERSION)
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT SUM(bronrecordaantal) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version}),
+  'route_families',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_routefamilie WHERE reconstructieversie={version}),
+  'route_components',(SELECT SUM(componentaantal) FROM Meijendel_ndff_secure.ndff_vlinder_routefamilie WHERE reconstructieversie={version}),
+  'fine_geometries',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_routegeometrie WHERE reconstructieversie={version}),
+  'fine_visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND routefamilie_id IS NOT NULL),
+  'coarse_only_visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
+  'coarse_only_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
+  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND aantal=0) OR (waarnemingsstatus='echte_nul' AND aantal<>0))),
+  'manual_review_visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='handmatige_controle'),
+  'forbidden_grants',(SELECT COUNT(*) FROM information_schema.table_privileges WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name LIKE 'ndff_vlinder_%' AND (grantee LIKE '''ndff_shiny_read''@%' OR grantee LIKE '''meijendel_read''@%'))
+);
+"""
+
+
+def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (VLINDER_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(VLINDER_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != VLINDER_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Vlinderreconstructie wijkt af van het vaste profiel: {differences}")
+
+
 def validation_sql() -> str:
     return f"""
 SELECT 'protocols',COUNT(*) FROM Meijendel.ndff_protocol;
@@ -1001,6 +1401,8 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--audit-live", action="store_true")
+    mode.add_argument("--reconstruct-vlinders", action="store_true")
+    mode.add_argument("--audit-vlinders", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -1011,6 +1413,23 @@ def main() -> int:
         return 0
 
     client_args = mysql_args(args.login_path, args.host, args.port)
+    if args.reconstruct_vlinders:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_vlinders(args.mysql_client, client_args)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_vlinders:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            vlinder_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_vlinder_reconstruction(metrics)
+        print(f"OK: lokale dagvlinderreconstructie {VLINDER_ROUTE_RULE_VERSION} gereed")
+        print(output)
+        return 0
     if args.audit_live:
         output = run_mysql(
             args.mysql_client,

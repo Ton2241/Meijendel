@@ -266,3 +266,81 @@ ALTER TABLE ndff_analysebesluit
     'wacht_op_brondata','alleen_na_doelsoortselectie',
     'wacht_op_doelsoortafbakening','uitgesloten_huidige_levering'
   ) NOT NULL;
+
+-- Lokale reconstructie van NEM-dagvlinderroutes uit protocol 03.201. Deze
+-- afgeleide tabellen blijven in het beveiligde schema: zij bevatten exacte
+-- bezoektijden en ruimtelijk herleidbare routeonderdelen. Bronrecords blijven
+-- ongewijzigd; iedere afleiding is reproduceerbaar via reconstructieversie.
+-- Eerste vastgelegde reconstructieregel: ndff-vlinderroute-v1.
+CREATE TABLE IF NOT EXISTS Meijendel_ndff_secure.ndff_vlinder_routefamilie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '03.201',
+  reconstructiestatus ENUM('waarschijnlijk','handmatige_controle') NOT NULL,
+  bezoekaantal INT UNSIGNED NOT NULL,
+  geometrieaantal INT UNSIGNED NOT NULL,
+  componentaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaaraantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_omvang_m DECIMAL(12,3) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, routefamilie_id),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel_ndff_secure.ndff_vlinder_routegeometrie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  centrum_x_rd DECIMAL(14,3) NOT NULL,
+  centrum_y_rd DECIMAL(14,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(18,6) NOT NULL,
+  PRIMARY KEY (reconstructieversie, geometrie_sha256),
+  KEY ix_ndff_vlinder_geometrie_route
+    (reconstructieversie, routefamilie_id),
+  CONSTRAINT fk_ndff_vlinder_geometrie_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel_ndff_secure.ndff_vlinder_routefamilie
+      (reconstructieversie, routefamilie_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel_ndff_secure.ndff_vlinder_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NULL,
+  reconstructiestatus ENUM(
+    'gereconstrueerd','handmatige_controle','geen_route'
+  ) NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  KEY ix_ndff_vlinder_bezoek_route
+    (reconstructieversie, routefamilie_id, jaar),
+  CONSTRAINT fk_ndff_vlinder_bezoek_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel_ndff_secure.ndff_vlinder_routefamilie
+      (reconstructieversie, routefamilie_id),
+  CHECK (periode_stop >= periode_start),
+  CHECK (jaar = YEAR(periode_start))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  aantal INT UNSIGNED NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  nulregel VARCHAR(255) NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_vlinder_taxon_jaar (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_vlinder_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel_ndff_secure.ndff_vlinder_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK ((waarnemingsstatus='waargenomen' AND aantal > 0) OR
+         (waarnemingsstatus='echte_nul' AND aantal = 0))
+) ENGINE=InnoDB;

@@ -201,6 +201,23 @@ MySQL:
   meldingsintensiteit of associatie. Gebruik zonder aanvullende validatie nooit
   de kwalificaties gevalideerde populatietrend, abundantie, afwezigheid of
   causaal beheereffect
+- behandel een expliciete NEM-protocolcode als bewijs dat de positieve regel
+  uit een protocolgeldig bezoek komt. Reconstrueer vóór trendanalyse wel de
+  native meeteenheid en de bezoekmatrix. Leid echte nullen uitsluitend af voor
+  de doelsoorten en bezochte meeteenheden die het betreffende NEM-protocol
+  volledig bestrijkt; leid nooit nullen af voor bijvangsten
+- gebruik voor dagvlinderprotocol `03.201` de lokale reconstructieversie
+  `ndff-vlinderroute-v1`. De tabellen
+  `Meijendel_ndff_secure.ndff_vlinder_routefamilie`,
+  `ndff_vlinder_routegeometrie`, `ndff_vlinder_bezoek` en
+  `ndff_vlinder_bezoek_taxon` bevatten de afgeleide route-, bezoek- en
+  doelsoortmatrix. Sluit `geen_route` uit van routeanalyses en behandel
+  `handmatige_controle` afzonderlijk. Controleer de laag vóór gebruik met
+  `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-vlinders`
+- interpreteer NEM-protocolkwaliteit niet als toestemming om willekeurige
+  positieve NDFF-regels rechtstreeks aan TRIM te voeren. TRIM krijgt pas een
+  matrix nadat meeteenheid, bezoeken, doelsoorten, tellingen en geldige echte
+  nullen protocolconform zijn gereconstrueerd
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks

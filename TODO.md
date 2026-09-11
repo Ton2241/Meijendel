@@ -27,14 +27,17 @@
   records hebben precies één `protocol_id`. Expliciete codes en expliciete losse
   waarnemingen zijn afzonderlijk gelabeld; geen lege waarde is als `LOS`
   geïnterpreteerd. Dit verandert de analysebesluiten niet.
-- Start de aanvullende bronvalidatie met De Vlinderstichting voor protocollen
-  `03.201`, `03.001` en `07.201`. In de volledige canonieke laag gaat het om
-  respectievelijk 50.211, 1.834 en 710 voorlopig geschikte records buiten
-  uitsluitend `V`. Vraag eerst de oorspronkelijke route-/sectiestructuur,
-  volledige uitgevoerde bezoeken, sectieresultaten inclusief reconstrueerbare
-  nullen, noodzakelijke bezoekcondities en geversioneerde routewijzigingen op.
-  Voeg nog geen survey- of routetabellen toe voordat minstens één
-  representatieve levering is ontvangen en beoordeeld.
+- Dagvlinderprotocol `03.201` is lokaal gereconstrueerd als
+  `ndff-vlinderroute-v1`. Controleer handmatig de ene ruimtelijk uitgerekte
+  routefamilie (172 bezoeken); houd de 62 bezoeken zonder route buiten
+  routeanalyse. De 2.935 overige routebezoeken en hun bezoek-soortmatrix zijn
+  beschikbaar voor protocolgebonden analyse met zichtbare reconstructiestatus.
+- Pas hetzelfde beoordelingspatroon achtereenvolgens toe op de overige zestien
+  aangewezen NEM-reeksen. Begin met `07.201` (vaste libellenroutes), daarna
+  `10.201`, `01.201`, `17.208` en `17.209`. Ken pas nullen toe nadat per
+  protocol meeteenheid, volledig bezoek en doelsoortenbereik vaststaan.
+- Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
+  PQ-reeks: de provincie blijft de gezaghebbende bron.
 
 - Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
   groene ontvangst-/analysemanifesten staan onder
@@ -53,27 +56,27 @@
 - Beoordeel per soortgroep welke van de 8.494 voorlopige
   verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor verdere
   analyse; zij zijn niet trendklaar.
-- Baseer de bronvalidatie niet langer uitsluitend op de 1.274 kandidaten uit
+- Baseer de latere aanvullende bronvalidatie niet uitsluitend op de 1.274 kandidaten uit
   de beveiligde 191-soortenlevering. Over de volledige canonieke laag zijn
   65.044 unieke records kandidaat voor minstens één gebruikstype buiten `V`.
-  Behandel de oude 1.274 uitsluitend als beveiligde deelsom. De eerste
-  validatieronde bestaat uit: De Vlinderstichting (`03.201`, `03.001` en
-  `07.201`), FLORON/Dunea (`12.211`), RAVON (`01.201`), Zoogdiervereniging
+  Behandel de oude 1.274 uitsluitend als beveiligde deelsom. Rond eerst de
+  NEM-reconstructies af. Vraag daarna alleen nog ontbrekende sleutels op bij:
+  De Vlinderstichting (`03.001` en zo nodig `07.201`), FLORON/Dunea (`12.211`), RAVON (`01.201`), Zoogdiervereniging
   (`17.208` en zo mogelijk herkomst `17.201`), BLWG (`02.202`) en NMV
   (`11.201`). Inventarisatieprotocollen van FLORON, ANEMOON en EIS volgen
   daarna voor verspreidings- en detectieanalyse; zij zijn niet automatisch
   kandidaten voor aantalsontwikkeling.
-- Bepaal per protocol de kleinst noodzakelijke opvraag. Vraag in beginsel:
+- Bepaal per protocol pas na de reconstructiepoging de kleinst noodzakelijke opvraag. Vraag zo nodig:
   stabiele telobject-ID's en geometrieversies, alle uitgevoerde bezoeken,
   complete resultaten waaruit niet-detecties kunnen worden afgeleid, de
   bezoekgegevens die protocolgeldigheid bepalen en methodewijzigingen. Vraag
   geplande of uitgevallen bezoeken, apparatuur en aanvullende metadata alleen
   wanneer het betreffende protocol of analysemodel die werkelijk nodig heeft.
   Los bij LMF-a expliciet de openbare drie-/vierjarige cyclusinconsistentie op.
-- Leg eerst de native surveystructuur vast en koppel die daarna geversioneerd
+- Leg de gereconstrueerde native surveystructuur vast en koppel die daarna geversioneerd
   aan SOVON-plots. Splits routes of gebieden niet over plots zonder
-  sectiegeometrie én sectie-inspanning. Stel het definitieve surveyschema pas
-  vast na ontvangst van minstens één representatieve bronlevering.
+  sectiegeometrie én sectie-inspanning. Houd per protocol een eigen
+  reconstructieversie en onzekerheidsstatus bij.
 - Onderzoek de herkomst van de 163 PQ-risicorecords met status
   `niet_beoordeelbaar`; de 162 exacte PQ-dubbels blijven uitgesloten als
   zelfstandige NDFF-evidentie. Behandel de provinciale PQ-reeks in de

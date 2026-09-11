@@ -41,27 +41,46 @@
   vervolgkandidaten wordt de verwachte meetopzet uit officiële protocollen
   gereconstrueerd en worden de feitelijke native meetreeksen rechtstreeks bij
   Zoogdiervereniging, Dunea/FLORON, RAVON, ANEMOON, BLWG, De
-  Vlinderstichting en Staatsbosbeheer/opdrachtgever opgevraagd. Openbare
-  protocollen bewijzen het ontwerp, niet welke bezoeken werkelijk zijn
-  uitgevoerd.
+  Vlinderstichting en Staatsbosbeheer/opdrachtgever opgevraagd wanneer een
+  noodzakelijke sleutel niet kan worden gereconstrueerd. Voor expliciete
+  NEM-codes geldt de later vastgelegde uitzondering: de code bewijst een
+  protocolgeldig positief bezoek; begin- en eindtijd groeperen de aanwezige
+  positieve regels tot dat bezoek.
 - De native survey-eenheid blijft behouden: route, water, permanent proefvlak,
   kilometerhok, meettraject of karteringsgebied. De ruimtelijke ligging van één
   positieve NDFF-regel is onvoldoende om de hele survey aan een SOVON-plot toe
   te wijzen. Relatie met geversioneerde vogelplots volgt pas na reconstructie
   van telobject, bezoeken en inspanning; kunstmatig splitsen is alleen
   toegestaan als sectiegeometrie en sectie-inspanning beschikbaar zijn.
-- Het definitieve relationele survey-schema wordt pas vastgesteld na ontvangst
-  van minstens één representatieve bronlevering. Daarmee wordt voorkomen dat
-  route-, water-, proefvlak- of hokstructuren in een te vroeg generiek schema
-  verloren gaan.
-- De aanvullende bronvalidatie wordt vanaf 11 september 2026 geprioriteerd op
+- Surveystructuren worden protocol voor protocol vastgelegd en niet in één te
+  vroeg generiek schema gedwongen. `03.201` vormt de eerste gerealiseerde
+  routeketen; water-, proefvlak-, hok- en transectprotocollen krijgen pas hun
+  eigen structuur nadat hun reconstructieregels zijn getoetst.
+- Voor expliciet als NEM gecodeerde NDFF-regels geldt vanaf 11 september 2026
+  dat de protocolcode een protocolgeldig positief bezoek bewijst. Ontbrekende
+  survey-ID's worden waar verantwoord uit tijd, geometrie en protocolbereik
+  gereconstrueerd. Echte nullen worden uitsluitend gevormd binnen bevestigde
+  bezoeken voor de doelsoorten van dat protocol; bijvangsten krijgen nooit een
+  afgeleide nul. Iedere reconstructie houdt haar onzekerheid en regelversie.
+- Voor `03.201` is deze reconstructie vastgelegd als
+  `ndff-vlinderroute-v1`: 82.533 bronrecords vormen 3.169 bezoeken en 11
+  waarschijnlijke routefamilies. De volledige matrix voor 34 aangetroffen
+  dagvlindertaxa bevat 107.746 regels, waarvan 20.075 positieve bezoek-soort-
+  combinaties en 87.671 echte nullen. De 2.091 bijvangstrecords van
+  nachtvlinders en vliesvleugeligen leveren geen nullen. Eén ruimtelijk
+  uitgerekte routefamilie met 172 bezoeken vereist handmatige controle; 62
+  bezoeken met 184 records hebben geen reconstrueerbare route en blijven
+  buiten routegebonden trendanalyse.
+- `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
+  secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
+  PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
+- De reconstructie en latere aanvullende bronvalidatie worden vanaf 11 september 2026 geprioriteerd op
   de volledige canonieke laag van 810.983 records, niet op alleen de 1.274
   kandidaten uit de beveiligde 191-soortenlevering. De eerste opvraag gaat naar
-  De Vlinderstichting en combineert `03.201`, `03.001` en `07.201`; deze bron
-  omvat ruim 52.000 voorlopig geschikte kandidaten. EIS Nederland en NMV zijn
-  als aanvullende bronorganisaties aan de eerdere lijst toegevoegd. Deze
-  prioritering verandert `ndff-analyseketen-v1` en de bestaande
-  analysetoelatingen niet.
+  `03.201` is als eerste lokaal gereconstrueerd; `07.201` volgt. EIS Nederland
+  en NMV blijven mogelijke aanvullende bronorganisaties als na reconstructie
+  noodzakelijke sleutels ontbreken. Dit verandert `ndff-analyseketen-v1` en de
+  bestaande algemene analysetoelatingen niet.
 - Binnen de beveiligde 191-soortenlevering gaan van de 8.494 ruimtelijke
   verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords door
   naar de brondata-opvraag. Dit is een deelsom; de validatieprioriteit voor de
@@ -111,8 +130,9 @@
   tabellen van `Meijendel` opgenomen; bestaande vogel- en PQ-tabellen bleven
   exact ongewijzigd.
 - Een exacte, onvervaagde locatie verbetert de ruimtelijke toewijzing maar maakt
-  een positieve FFV-waarneming niet trendklaar. Voor trends blijven volledige
-  telbezoeken, inspanning, protocolversies en afleidbare nullen vereist; de
+  een positieve FFV-waarneming op zichzelf niet trendklaar. Voor trends blijven
+  gereconstrueerde telbezoeken, meeteenheden, protocolbereik en afleidbare
+  nullen vereist; de
   bestaande PQ-reeks blijft leidend totdat de afzonderlijke PQ-overlapaudit is
   afgerond.
 - Protocolgeschiktheid en geschiktheid van de feitelijk geleverde gegevens
