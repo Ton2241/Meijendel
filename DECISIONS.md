@@ -104,6 +104,18 @@
   telbezoeken, inspanning, protocolversies en afleidbare nullen vereist; de
   bestaande PQ-reeks blijft leidend totdat de afzonderlijke PQ-overlapaudit is
   afgerond.
+- Protocolgeschiktheid en geschiktheid van de feitelijk geleverde gegevens
+  blijven twee afzonderlijke beoordelingen. De lokale life-database bevat
+  daarom vanaf regelversie `ndff-protocolkwaliteit-v1` een niet-gevoelige
+  protocolcatalogus, de wetenschappelijke gebruiksmatrix, een afzonderlijke
+  ruimtelijke beoordeling van alle 810.830 openbare FFV-records en
+  analysebesluiten per bron, soortgroep, protocol en analysetype. Alleen 365.854
+  onvervaagde geometrieën die volledig binnen precies één SOVON-plot liggen
+  zijn ruimtelijk kandidaat voor plotcontext; ook deze toelating blijft
+  afhankelijk van de PQ-poort. Protocolmatig passende `I`, `TV`, `TA` en
+  `TK`-combinaties staan op `wacht_op_brondata`; niet-onderbouwde combinaties
+  zijn uitgesloten. Geen van beide statussen is analysetoelating. De nieuwe
+  tabellen wijzigen geen bronrecord en bevatten geen beveiligde geometrie.
 - Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
   NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
   (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open

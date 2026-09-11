@@ -154,6 +154,41 @@ Pas daarna volgt per soort en meetnet een dekkingstabel `plot x jaar`, controle
 op methodebreuken en een modelkeuze die bij het protocol hoort. Ontbrekende
 tellingen worden nooit automatisch als nul of met machine learning ingevuld.
 
+## Geïmplementeerde protocolkwaliteitslaag
+
+De beoordeelde matrix staat tevens in
+`Natuurprotocollen/Natuurprotocollen_gebruiksmatrix.xlsx`; de inhoudelijke
+onderbouwing staat in
+`Natuurprotocollen/Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx`.
+De gebruikte bestanden zijn met SHA-256 vastgezet in de importeur.
+
+Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast met:
+
+- `ndff_protocol`: 54 gestandaardiseerde protocollen;
+- `ndff_protocol_mapping`: 91 gecontroleerde tekstkoppelingen uit openbare en
+  beveiligde NDFF-records, zonder ongemapte protocoltekst;
+- `ndff_protocol_gebruik`: 54 wetenschappelijke gebruiksregels;
+- `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
+  SOVON-plotlaag 2025;
+- `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
+  analysetype.
+
+Van de openbare records zijn 365.854 onvervaagde geometrieën volledig binnen
+precies één plot gelegen. Dit is uitsluitend een ruimtelijke toelatingsvoorwaarde
+voor positieve verspreidingscontext. `Single_deels`, `multiple`, `outside` en
+alle vervaagde geometrieën zijn ruimtelijk geblokkeerd. De PQ-poort blijft een
+afzonderlijke verplichte voorwaarde. Geen huidig besluit voor inventarisatie,
+verspreidingstrend, aantalsindex of kwaliteitstrend is toegelaten, omdat de
+feitelijke surveystructuur ontbreekt.
+
+Het schema en de reproduceerbare invoer staan in:
+
+- `gis/database/ndff_protocolkwaliteit_schema.sql`;
+- `gis/database/ndff_protocolkwaliteit_seed.csv`;
+- `gis/scripts/build_ndff_protocolkwaliteit_seed.py`;
+- `gis/scripts/import_ndff_protocolkwaliteit.py`;
+- `gis/scripts/test_ndff_protocolkwaliteit.py`.
+
 ## Reproduceerbare bestanden
 
 - script: `gis/scripts/analyse_ndff_protocollen.py`;

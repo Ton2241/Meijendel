@@ -221,6 +221,29 @@ Voor nieuwe analyses:
 5. controleer de tabs `Soorten`, `Groepen` en `Controle`
 6. exporteer zo nodig CSV-bestanden
 
+### NDFF-protocolkwaliteit
+
+De lokale database bewaart de wetenschappelijke protocolbeoordeling los van de
+geschiktheid van de geleverde waarnemingsregels. Regelversie
+`ndff-protocolkwaliteit-v1` bestaat uit een catalogus van 54 protocollen, een
+gebruiksmatrix, een ruimtelijke beoordeling van alle 810.830 openbare
+FFV-records en conservatieve analysebesluiten. De bronrecords zelf zijn niet
+gewijzigd.
+
+Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
+openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
+SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht. Geen enkele
+huidige NDFF-reeks is door deze technische kwaliteitslaag toegelaten voor
+trend-, abundantie-, afwezigheids- of beheereffectanalyse.
+
+Reproduceerbare controle en lokale toepassing:
+
+```bash
+python3 gis/scripts/test_ndff_protocolkwaliteit.py
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --dry-run
+python3 gis/scripts/import_ndff_protocolkwaliteit.py
+```
+
 ### Weergegevens: verplicht analysecontract
 
 De tabel `weer` bevat ruwe bronwaarden met een stationsafhankelijke schaal en

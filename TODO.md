@@ -16,6 +16,17 @@
 
 ### NDFF ticket 58679 - beveiligde levering
 
+- De kwaliteitsmetadata is lokaal geïmplementeerd als
+  `ndff_protocol`, `ndff_protocol_mapping`, `ndff_protocol_gebruik`,
+  `ndff_open_ruimtelijke_beoordeling` en `ndff_analysebesluit`. Regelversie
+  `ndff-protocolkwaliteit-v1` dekt alle 54 protocolwaarden, alle 810.830
+  openbare records en zowel de openbare als beveiligde protocolteksten. De
+  huidige analysebesluiten laten uitsluitend positieve verspreidingscontext
+  toe na ruimtelijke en PQ-toets; trend- en effectgebruik blijft geblokkeerd.
+- Bepaal als afzonderlijke volgende stap welke vlinderreeks als eerste voor
+  reconstructie van telobjecten, bezoeken, inspanning en niet-detecties wordt
+  gekozen. Deze taak heeft bewust nog geen survey- of routetabellen toegevoegd.
+
 - Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
   groene ontvangst-/analysemanifesten staan onder
   `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
