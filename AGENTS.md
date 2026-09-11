@@ -131,12 +131,24 @@ MySQL:
 - houd protocolkwalificatie strikt gescheiden van analysetoelating:
   `analyse_status` is geen protocolstatus en beveiligde verspreidings-, trend-
   en innamevelden mogen hiervoor niet worden hergebruikt
+- gebruik voor nieuwe NDFF-analyses uitsluitend regelversie
+  `ndff-analysebesluit-v3` en doelbereikversie `ndff-protocolbereik-v1`; oudere
+  versies zijn alleen historische auditlagen
 - behandel `ndff_analysebesluit.eindbesluit = voorlopig_toegelaten` als
   toestemming voor uitsluitend verkennend gebruik op basis van
   protocolgeschiktheid; houd `gegevensgeschiktheid = niet_beoordeeld` totdat
   telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden zijn
   onderzocht en toon bij ieder resultaat verplicht de kwaliteitsvermelding uit
   `ndff_analysebesluit.reden`
+- gebruik bij `alleen_na_doelsoortselectie` verplicht
+  `ndff_protocol_soort_geschiktheid` en selecteer uitsluitend
+  `doelrelatie='doelsoort'`; behandel iedere overige soort als bijvangst en dus
+  alleen als positieve voorkomensinformatie (`V`)
+- gebruik combinaties met `wacht_op_doelsoortafbakening` voorlopig uitsluitend
+  voor `V`; een protocolcode alleen bewijst daar niet dat het record een
+  doelsoort betreft
+- laat bijvangst en `algemene_bron` nooit een niet-V-analysetype erven van het
+  bijbehorende protocol
 
 GIS / R-spatial:
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`

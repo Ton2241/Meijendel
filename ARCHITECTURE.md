@@ -61,6 +61,13 @@ catalogus `Meijendel.ndff_protocol`. De stabiele functionele sleutel is
 `expliciet_losse_waarneming`. Deze metadata verleent geen analysetoegang en
 wijzigt geen analyse-, verspreidings-, trend- of innamestatus.
 
+De inhoudelijke doelbereiklaag staat in
+`Meijendel.ndff_protocol_soortgroep_geschiktheid`. Gemengde combinaties worden
+in `Meijendel.ndff_protocol_soort_geschiktheid` verder uitgesplitst tot
+doelsoort of bijvangst. Nieuwe analyses gebruiken deze tabellen vóór het
+analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
+alleen de protocolcode.
+
 De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
 blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
 geometrie, NDFF-identiteiten en de

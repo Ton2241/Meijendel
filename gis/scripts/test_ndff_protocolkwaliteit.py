@@ -35,6 +35,8 @@ def main() -> int:
         "ndff_protocol",
         "ndff_protocol_mapping",
         "ndff_protocol_gebruik",
+        "ndff_protocol_soortgroep_geschiktheid",
+        "ndff_protocol_soort_geschiktheid",
         "ndff_open_ruimtelijke_beoordeling",
         "ndff_analysebesluit",
     ):
@@ -43,6 +45,7 @@ def main() -> int:
     assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
     assert "'voorlopig_toegelaten'" in folded
+    assert "wetenschappelijke_naam varchar(255) not null" in folded
 
     for required in (
         "regelversie",
@@ -86,7 +89,8 @@ def main() -> int:
 
     module = load_importer()
     assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
-    assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v2"
+    assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v1"
+    assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v3"
     parsed = module.read_seed(SEED)
     assert len(parsed) == 54
     assert module.protocol_key("Geen code") == "LOS"
@@ -103,6 +107,34 @@ def main() -> int:
     assert module.conditional_types("TV / TA met volledige geschikte bezoekgegevens") == {"TV", "TA"}
     assert module.conditional_types(None) == set()
     assert module.sql_text("", empty_as_null=False) == "''"
+
+    # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
+    # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
+    assert module.classify_protocol_group("03.201", "Dagvlinders")["doelrelatie"] == "doelgroep"
+    assert module.classify_protocol_group("03.201", "Vliesvleugeligen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("03.201", "Nachtvlinders")["toegestane_typen"] == "V"
+    assert module.classify_protocol_group("14.204", "Zoogdieren (overig)")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("17.204", "Vleermuizen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("17.204", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("17.209", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("102.006", "Vaatplanten")["doelrelatie"] == "algemene_bron"
+    assert module.classify_protocol_group("04.006", "Weekdieren")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("13.202", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
+
+    daz_target = module.classify_protocol_species("17.204", "Oryctolagus cuniculus")
+    daz_bycatch = module.classify_protocol_species("17.204", "Dama dama")
+    rabbit_target = module.classify_protocol_species("17.209", "Oryctolagus cuniculus")
+    rabbit_bycatch = module.classify_protocol_species("17.209", "Capreolus capreolus")
+    assert daz_target["doelrelatie"] == "doelsoort" and "TA" in daz_target["toegestane_typen"]
+    assert daz_bycatch == {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
+    assert rabbit_target["doelrelatie"] == "doelsoort" and "TA" in rabbit_target["toegestane_typen"]
+    assert rabbit_bycatch == {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
+    try:
+        module.classify_protocol_species("03.201", "Oryctolagus cuniculus")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Soortclassificatie mag alleen voor gemengde protocollen worden gebruikt")
     assert "not exists" in module.spatial_sql().casefold()
     mapping_sql = module.mapping_sql().casefold()
     assert "expliciet_losse_waarneming" in mapping_sql
@@ -115,10 +147,15 @@ def main() -> int:
     assert "on duplicate key update" in record_link_sql
     decision_sql = module.decisions_sql().casefold()
     assert "then 'voorlopig_toegelaten'" in decision_sql
+    assert "alleen_na_doelsoortselectie" in decision_sql
+    assert "ndff_protocol_soortgroep_geschiktheid" in decision_sql
     assert "'niet_beoordeeld'" in decision_sql
     assert "wacht_op_brondata" not in decision_sql
     assert "on duplicate key update" in decision_sql
-    assert "ndff-analysebesluit-v2" in decision_sql
+    assert "ndff-analysebesluit-v3" in decision_sql
+    scope_sql = module.protocol_scope_sql().casefold()
+    assert "ndff_protocol_soortgroep_geschiktheid" in scope_sql
+    assert "ndff_protocol_soort_geschiktheid" in scope_sql
     legacy_sql = module.restore_legacy_decisions_sql().casefold()
     assert "ndff-protocolkwaliteit-v1" in legacy_sql
     assert "wacht_op_brondata" in legacy_sql
@@ -143,6 +180,9 @@ def main() -> int:
         "blank_secure_protocol": 0,
         "invalid_protocol_evidence": 0,
         "spatial": 810830,
+        "scope_combinations": 114,
+        "mixed_species": 32,
+        "scope_missing": 0,
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,
         "validatie_niet_geparkeerd": 0,
@@ -157,6 +197,7 @@ def main() -> int:
             "secure_loose_records": 9660, "secure_loose_links": 9660,
             "blank_open_protocol": 1, "blank_secure_protocol": 0,
             "invalid_protocol_evidence": 1, "spatial": 810829,
+            "scope_combinations": 113, "mixed_species": 31, "scope_missing": 1,
             "decisions": 1040, "protocolbesluit_mismatch": 1,
             "validatie_niet_geparkeerd": 1,
         })

@@ -167,9 +167,9 @@ De gebruikte bestanden zijn met SHA-256 vastgezet in de importeur.
 
 Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast voor de
 protocolcatalogus, recordkoppelingen en ruimtelijke beoordeling. De actuele
-voorlopige analysebesluiten gebruiken de afzonderlijke regelversie
-`ndff-analysebesluit-v2`; de oorspronkelijke v1-besluiten blijven als
-historische auditlaag beschikbaar. De laag bevat:
+voorlopige analysebesluiten gebruiken na de doelbereiktoets de afzonderlijke
+regelversie `ndff-analysebesluit-v3`; de oorspronkelijke v1- en v2-besluiten
+blijven als historische auditlaag beschikbaar. De laag bevat:
 
 - `ndff_protocol`: 54 gestandaardiseerde protocollen;
 - `ndff_protocol_mapping`: 91 gecontroleerde tekstkoppelingen uit openbare en
@@ -179,10 +179,53 @@ historische auditlaag beschikbaar. De laag bevat:
 - `Meijendel_ndff_secure.ndff_waarneming_protocol`: precies één
   protocolkoppeling voor alle 14.573 beveiligde records;
 - `ndff_protocol_gebruik`: 54 wetenschappelijke gebruiksregels;
+- `ndff_protocol_soortgroep_geschiktheid`: 114 doelbereikbesluiten op het
+  werkelijk voorkomende protocol-soortgroepniveau;
+- `ndff_protocol_soort_geschiktheid`: 32 protocol-taxonbesluiten voor de twee
+  gemengde zoogdiercombinaties;
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
   analysetype.
+
+### Doelsoorten en bijvangsten
+
+De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol
+en een FFV-soortgroep zijn onder `ndff-protocolbereik-v1` volledig beoordeeld:
+
+- 52 combinaties (`269.250` records) vallen als geheel binnen de doelgroep;
+- 4 combinaties (`2.158` records) zijn bijvangst: Nachtvlinders en
+  Vliesvleugeligen binnen `03.201`, overige zoogdieren binnen vogelprotocol
+  `14.204`, en Vleermuizen binnen DAZ-BMP `17.204`;
+- 37 combinaties (`78.158` records) zijn algemene bron-, literatuur-,
+  collectie- of appregistraties en ondersteunen alleen `V`;
+- 19 combinaties (`14.636` records) gebruiken een beperkte of
+  projectspecifieke doelsoortenafbakening die niet per NDFF-record is
+  meegeleverd; ook daar is voorlopig alleen `V` toegestaan;
+- 2 combinaties (`16.462` records) zijn gemengd en zijn daarom ook per taxon
+  beoordeeld.
+
+Binnen de twee gemengde zoogdiercombinaties zijn 32 aanwezige
+protocol-taxoncombinaties (23 unieke taxa) vastgelegd: 7 doelsoortbesluiten met
+samen 15.604 records en 25 bijvangstbesluiten met samen 858 records. Voor
+DAZ-BMP gelden op basis van de CBS-doelafbakening konijn, haas,
+vos, ree, eekhoorn, egel en muskusrat als doelsoorten. In de huidige Meijendel-
+records komt muskusrat niet in deze combinatie voor. Voor `17.209` is alleen
+konijn doelsoort. Deze soortindeling staat in
+`ndff_protocol_soort_geschiktheid`; de groepsindeling staat in
+`ndff_protocol_soortgroep_geschiktheid`.
+
+Voor niet-V-analyses gelden hierdoor drie verschillende uitkomsten:
+
+- `voorlopig_toegelaten`: de gehele soortgroep valt binnen het doelbereik;
+- `alleen_na_doelsoortselectie`: gebruik uitsluitend expliciet geregistreerde
+  doelsoorten uit de soorttabel;
+- `wacht_op_doelsoortafbakening`: de doelstatus is nog niet uit het record of
+  een voldoende specifieke bronlijst afleidbaar; alleen `V` is nu bruikbaar.
+
+Deze doelbereiktoets vervangt de latere leveringsvalidatie niet.
+`gegevensgeschiktheid` blijft voor alle v3-besluiten `niet_beoordeeld` en de
+kwaliteitsmelding blijft verplicht bij iedere uitkomst.
 
 De recordkoppelingen gebruiken `protocol_id` uitsluitend als interne foreign
 key. `protocol_sleutel` blijft de stabiele identificatie. Van de openbare

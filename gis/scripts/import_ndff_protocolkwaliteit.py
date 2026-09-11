@@ -19,10 +19,74 @@ DEFAULT_SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
 SOURCE_XLSX = ROOT / "Natuurprotocollen" / "Natuurprotocollen_gebruiksmatrix.xlsx"
 SOURCE_DOCX = ROOT / "Natuurprotocollen" / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
 RULE_VERSION = "ndff-protocolkwaliteit-v1"
-DECISION_RULE_VERSION = "ndff-analysebesluit-v2"
+SCOPE_RULE_VERSION = "ndff-protocolbereik-v1"
+DECISION_RULE_VERSION = "ndff-analysebesluit-v3"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
+
+GENERAL_SOURCE_PROTOCOLS = {"102.004", "102.006", "104.000", "105.000"}
+BYCATCH_COMBINATIONS = {
+    ("03.201", "Nachtvlinders"),
+    ("03.201", "Vliesvleugeligen"),
+    ("14.204", "Zoogdieren (overig)"),
+    ("17.204", "Vleermuizen"),
+}
+MIXED_COMBINATIONS = {
+    ("17.204", "Zoogdieren (overig)"),
+    ("17.209", "Zoogdieren (overig)"),
+}
+TARGET_DEPENDENT_COMBINATIONS = {
+    ("02.204", "Mossen"),
+    ("04.006", "Weekdieren"),
+    ("10.002", "Amfibieën"),
+    ("11.201", "Schimmels"),
+    ("11.202", "Schimmels"),
+    ("12.015", "Kranswieren, wieren en algen"),
+    ("12.205", "Dagvlinders"),
+    ("12.205", "Korstmossen"),
+    ("12.205", "Kranswieren, wieren en algen"),
+    ("12.205", "Libellen"),
+    ("12.205", "Mossen"),
+    ("12.205", "Sprinkhanen en krekels"),
+    ("12.205", "Vaatplanten"),
+    ("13.201", "Vissen"),
+    ("13.202", "Amfibieën"),
+    ("13.202", "Vissen"),
+    ("17.202", "Vleermuizen"),
+    ("17.505", "Vleermuizen"),
+    ("17.506", "Vleermuizen"),
+}
+DAZ_TARGET_SPECIES = {
+    "Oryctolagus cuniculus", "Lepus europaeus", "Vulpes vulpes",
+    "Capreolus capreolus", "Sciurus vulgaris", "Erinaceus europaeus",
+    "Ondatra zibethicus",
+}
+RABBIT_TARGET_SPECIES = {"Oryctolagus cuniculus"}
+CBS_DAZ_URL = "https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/"
+NDFF_PROTOCOL_URL = "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/"
+
+
+def classify_protocol_group(protocol_sleutel: str, soortgroep_raw: str) -> dict[str, str]:
+    key = (protocol_sleutel, soortgroep_raw)
+    if protocol_sleutel in GENERAL_SOURCE_PROTOCOLS:
+        return {"doelrelatie": "algemene_bron", "toegestane_typen": "V"}
+    if key in BYCATCH_COMBINATIONS:
+        return {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
+    if key in MIXED_COMBINATIONS:
+        return {"doelrelatie": "gemengd", "toegestane_typen": "V"}
+    if key in TARGET_DEPENDENT_COMBINATIONS:
+        return {"doelrelatie": "doelsoortafhankelijk", "toegestane_typen": "V"}
+    return {"doelrelatie": "doelgroep", "toegestane_typen": "PROTOCOL"}
+
+
+def classify_protocol_species(protocol_sleutel: str, scientific_name: str) -> dict[str, str]:
+    if protocol_sleutel not in {"17.204", "17.209"}:
+        raise ValueError(f"Geen soortclassificatie voor niet-gemengd protocol {protocol_sleutel}")
+    targets = DAZ_TARGET_SPECIES if protocol_sleutel == "17.204" else RABBIT_TARGET_SPECIES
+    if scientific_name in targets:
+        return {"doelrelatie": "doelsoort", "toegestane_typen": "V,TA"}
+    return {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
 
 
 def sha256_file(path: Path) -> str:
@@ -212,6 +276,100 @@ GROUP BY w.waarneming_id;
 """
 
 
+def _pair_condition(protocol_alias: str, group_alias: str, pairs: set[tuple[str, str]]) -> str:
+    return " OR ".join(
+        f"({protocol_alias}={sql_text(protocol)} AND {group_alias}={sql_text(group)})"
+        for protocol, group in sorted(pairs)
+    ) or "FALSE"
+
+
+def _protocol_types_sql(gebruik_alias: str = "g") -> str:
+    return "CONCAT_WS(','," + ",".join(
+        f"IF({sql_text(kind)}='V' OR {gebruik_alias}.hoofdtype={sql_text(kind)} "
+        f"OR FIND_IN_SET({sql_text(kind)},{gebruik_alias}.aanvullende_typen)>0,{sql_text(kind)},NULL)"
+        for kind in ANALYSIS_TYPES
+    ) + ")"
+
+
+def protocol_scope_sql() -> str:
+    general_codes = ",".join(sql_text(value) for value in sorted(GENERAL_SOURCE_PROTOCOLS))
+    bycatch = _pair_condition("p.protocol_sleutel", "c.soortgroep_raw", BYCATCH_COMBINATIONS)
+    mixed = _pair_condition("p.protocol_sleutel", "c.soortgroep_raw", MIXED_COMBINATIONS)
+    dependent = _pair_condition("p.protocol_sleutel", "c.soortgroep_raw", TARGET_DEPENDENT_COMBINATIONS)
+    protocol_types = _protocol_types_sql()
+    daz_targets = ",".join(sql_text(value) for value in sorted(DAZ_TARGET_SPECIES))
+    rabbit_targets = ",".join(sql_text(value) for value in sorted(RABBIT_TARGET_SPECIES))
+    return f"""
+INSERT INTO ndff_protocol_soortgroep_geschiktheid
+  (protocol_id,soortgroep_raw,doelrelatie,toegestane_typen,
+   recordaantal_bij_classificatie,reden,bron_urls,regelversie,beoordeeld_op)
+SELECT p.protocol_id,c.soortgroep_raw,
+       CASE WHEN p.protocol_sleutel IN ({general_codes}) THEN 'algemene_bron'
+            WHEN {bycatch} THEN 'bijvangst'
+            WHEN {mixed} THEN 'gemengd'
+            WHEN {dependent} THEN 'doelsoortafhankelijk'
+            ELSE 'doelgroep' END,
+       CASE WHEN p.protocol_sleutel IN ({general_codes}) OR {bycatch} OR {mixed} OR {dependent}
+            THEN 'V' ELSE {protocol_types} END,
+       c.recordaantal,
+       CASE WHEN p.protocol_sleutel IN ({general_codes})
+              THEN 'De protocolwaarde duidt een algemene bron, app of publicatievorm aan en niet een afgebakende doelsoortensurvey. Alleen positieve voorkomensinformatie (V) is op protocolbasis toegestaan.'
+            WHEN {bycatch}
+              THEN 'Deze soortgroep valt buiten het doelbereik van het opgegeven protocol. De records zijn bijvangst en ondersteunen alleen positieve voorkomensinformatie (V).'
+            WHEN {mixed}
+              THEN 'Deze combinatie bevat zowel doelsoorten als bijvangsten. Niet-V-analyses vereisen de afzonderlijke soortclassificatie.'
+            WHEN {dependent}
+              THEN 'Dit protocol werkt met een beperkte of projectspecifieke doelsoortenlijst die niet per NDFF-record is meegeleverd. Voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
+            ELSE 'De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid.' END,
+       CASE WHEN {mixed} THEN JSON_ARRAY({sql_text(CBS_DAZ_URL)},{sql_text(NDFF_PROTOCOL_URL)})
+            ELSE p.bron_urls END,
+       {sql_text(SCOPE_RULE_VERSION)},'2026-09-11'
+FROM (
+  SELECT soortgroep_raw,TRIM(protocol) AS protocol_raw,COUNT(*) AS recordaantal
+  FROM Meijendel.ndff_open_waarneming
+  WHERE protocol IS NOT NULL AND TRIM(protocol)<>'' AND TRIM(protocol)<>'Losse waarnemingen'
+  GROUP BY soortgroep_raw,TRIM(protocol)
+) AS c
+JOIN ndff_protocol_mapping AS m
+  ON m.bron_scope='openbaar' AND m.protocol_raw=c.protocol_raw AND m.regelversie={sql_text(RULE_VERSION)}
+JOIN ndff_protocol AS p ON p.protocol_id=m.protocol_id
+JOIN ndff_protocol_gebruik AS g
+  ON g.protocol_id=p.protocol_id AND g.regelversie={sql_text(RULE_VERSION)}
+ON DUPLICATE KEY UPDATE
+  doelrelatie=VALUES(doelrelatie),toegestane_typen=VALUES(toegestane_typen),
+  recordaantal_bij_classificatie=VALUES(recordaantal_bij_classificatie),
+  reden=VALUES(reden),bron_urls=VALUES(bron_urls),beoordeeld_op=VALUES(beoordeeld_op);
+
+INSERT INTO ndff_protocol_soort_geschiktheid
+  (protocol_id,soortgroep_raw,wetenschappelijke_naam,doelrelatie,
+   toegestane_typen,recordaantal_bij_classificatie,reden,regelversie,beoordeeld_op)
+SELECT p.protocol_id,w.soortgroep_raw,w.wetenschappelijke_naam,
+       CASE WHEN (p.protocol_sleutel='17.204' AND w.wetenschappelijke_naam IN ({daz_targets}))
+                  OR (p.protocol_sleutel='17.209' AND w.wetenschappelijke_naam IN ({rabbit_targets}))
+            THEN 'doelsoort' ELSE 'bijvangst' END,
+       CASE WHEN (p.protocol_sleutel='17.204' AND w.wetenschappelijke_naam IN ({daz_targets}))
+                  OR (p.protocol_sleutel='17.209' AND w.wetenschappelijke_naam IN ({rabbit_targets}))
+            THEN 'V,TA' ELSE 'V' END,
+       COUNT(*),
+       CASE WHEN (p.protocol_sleutel='17.204' AND w.wetenschappelijke_naam IN ({daz_targets}))
+                  OR (p.protocol_sleutel='17.209' AND w.wetenschappelijke_naam IN ({rabbit_targets}))
+            THEN 'De soort behoort tot de expliciete doelsoorten van dit telprogramma; TA blijft voorlopig toegestaan onder de algemene validatievoorbehouden.'
+            ELSE 'De soort is binnen dit protocol bijvangst en ondersteunt alleen positieve voorkomensinformatie (V).' END,
+       {sql_text(SCOPE_RULE_VERSION)},'2026-09-11'
+FROM Meijendel.ndff_open_waarneming AS w
+JOIN Meijendel.ndff_open_waarneming_protocol AS l
+  ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
+JOIN Meijendel.ndff_protocol AS p ON p.protocol_id=l.protocol_id
+WHERE (p.protocol_sleutel='17.204' AND w.soortgroep_raw='Zoogdieren (overig)')
+   OR (p.protocol_sleutel='17.209' AND w.soortgroep_raw='Zoogdieren (overig)')
+GROUP BY p.protocol_id,p.protocol_sleutel,w.soortgroep_raw,w.wetenschappelijke_naam
+ON DUPLICATE KEY UPDATE
+  doelrelatie=VALUES(doelrelatie),toegestane_typen=VALUES(toegestane_typen),
+  recordaantal_bij_classificatie=VALUES(recordaantal_bij_classificatie),
+  reden=VALUES(reden),beoordeeld_op=VALUES(beoordeeld_op);
+"""
+
+
 def decisions_sql() -> str:
     type_rows = " UNION ALL ".join(f"SELECT {sql_text(value)} AS analysetype" for value in ANALYSIS_TYPES)
     return f"""
@@ -220,18 +378,31 @@ INSERT IGNORE INTO ndff_analysebesluit
    gegevensgeschiktheid,eindbesluit,vereist_ruimtelijke_toets,vereist_pq_toets,
    recordaantal_bij_besluit,reden,regelversie,besloten_op)
 SELECT c.bron_scope,c.soortgroep_raw,m.protocol_id,a.analysetype,
-       CASE WHEN a.analysetype=g.hoofdtype THEN 'primair'
-            WHEN a.analysetype='V' OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0 THEN 'voorwaardelijk'
+       CASE WHEN COALESCE(s.doelrelatie,'algemene_bron')='doelgroep' AND a.analysetype=g.hoofdtype THEN 'primair'
+            WHEN a.analysetype='V' THEN 'voorwaardelijk'
+            WHEN COALESCE(s.doelrelatie,'algemene_bron') IN ('doelgroep','gemengd','doelsoortafhankelijk')
+                 AND (a.analysetype=g.hoofdtype OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0)
+              THEN 'voorwaardelijk'
             ELSE 'niet_onderbouwd' END,
        'niet_beoordeeld',
-       CASE WHEN a.analysetype=g.hoofdtype OR a.analysetype='V'
-                  OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0
+       CASE WHEN a.analysetype='V' THEN 'voorlopig_toegelaten'
+            WHEN COALESCE(s.doelrelatie,'algemene_bron')='doelgroep'
+                 AND FIND_IN_SET(a.analysetype,s.toegestane_typen)>0
               THEN 'voorlopig_toegelaten'
+            WHEN s.doelrelatie='gemengd'
+                 AND (a.analysetype=g.hoofdtype OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0)
+              THEN 'alleen_na_doelsoortselectie'
+            WHEN s.doelrelatie='doelsoortafhankelijk'
+                 AND (a.analysetype=g.hoofdtype OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0)
+              THEN 'wacht_op_doelsoortafbakening'
             ELSE 'uitgesloten_huidige_levering' END,
        1,1,c.recordaantal,
-       CASE WHEN a.analysetype=g.hoofdtype OR a.analysetype='V'
-                  OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0
-              THEN 'Voorlopig resultaat op basis van protocolgeschiktheid. De leveringsgeschiktheid (telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden) en verdere validatie zijn nog niet beoordeeld. Gebruik de uitkomst daarom verkennend en niet als definitief bewijs van trend, afwezigheid of beheereffect.'
+       CASE WHEN a.analysetype='V' OR (s.doelrelatie='doelgroep' AND FIND_IN_SET(a.analysetype,s.toegestane_typen)>0)
+              THEN CONCAT('Voorlopig resultaat op basis van protocolgeschiktheid en doelbereik. ',COALESCE(s.reden,'Losse waarneming of algemene bron: alleen positieve voorkomensinformatie. '),' De leveringsgeschiktheid (telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden) en verdere validatie zijn nog niet beoordeeld. Gebruik de uitkomst daarom verkennend en niet als definitief bewijs van trend, afwezigheid of beheereffect.')
+            WHEN s.doelrelatie='gemengd'
+              THEN 'De combinatie bevat doelsoorten en bijvangsten. Gebruik voor niet-V-analyses uitsluitend soorten die in ndff_protocol_soort_geschiktheid als doelsoort zijn vastgelegd; de leveringsgeschiktheid blijft niet beoordeeld.'
+            WHEN s.doelrelatie='doelsoortafhankelijk'
+              THEN 'De doelsoortstatus is niet uit het NDFF-record afleidbaar. Alleen V is nu bruikbaar; andere analysetypen wachten op een gezaghebbende doelsoortenafbakening.'
             ELSE 'Het protocol onderbouwt dit analysetype niet voor de huidige levering.' END,
        {sql_text(DECISION_RULE_VERSION)},'2026-09-11'
 FROM (
@@ -254,6 +425,9 @@ JOIN ndff_protocol_mapping AS m
   ON m.bron_scope=c.bron_scope AND m.protocol_raw=c.protocol_raw AND m.regelversie={sql_text(RULE_VERSION)}
 JOIN ndff_protocol_gebruik AS g
   ON g.protocol_id=m.protocol_id AND g.regelversie={sql_text(RULE_VERSION)}
+LEFT JOIN ndff_protocol_soortgroep_geschiktheid AS s
+  ON s.protocol_id=m.protocol_id AND s.soortgroep_raw=c.soortgroep_raw
+ AND s.regelversie={sql_text(SCOPE_RULE_VERSION)}
 CROSS JOIN ({type_rows}) AS a
 WHERE 1=1
 ON DUPLICATE KEY UPDATE
@@ -322,11 +496,24 @@ SELECT 'invalid_protocol_evidence',COUNT(*) FROM (
   WHERE (p.protocol_sleutel='LOS')<>(l.bewijsmethode='expliciet_losse_waarneming')
 ) q;
 SELECT 'spatial',COUNT(*) FROM Meijendel.ndff_open_ruimtelijke_beoordeling WHERE regelversie={sql_text(RULE_VERSION)};
+SELECT 'scope_combinations',COUNT(*) FROM Meijendel.ndff_protocol_soortgroep_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)};
+SELECT 'mixed_species',COUNT(*) FROM Meijendel.ndff_protocol_soort_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)};
+SELECT 'scope_missing',COUNT(*) FROM (
+  SELECT DISTINCT l.protocol_id,w.soortgroep_raw
+  FROM Meijendel.ndff_open_waarneming w
+  JOIN Meijendel.ndff_open_waarneming_protocol l ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
+  JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
+  LEFT JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid s
+    ON s.protocol_id=l.protocol_id AND s.soortgroep_raw=w.soortgroep_raw AND s.regelversie={sql_text(SCOPE_RULE_VERSION)}
+  WHERE p.protocol_sleutel<>'LOS' AND s.protocol_soortgroep_id IS NULL
+) q;
 SELECT 'decisions',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(DECISION_RULE_VERSION)};
 SELECT 'protocolbesluit_mismatch',COUNT(*) FROM Meijendel.ndff_analysebesluit
 WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND (
-  (protocolgeschiktheid IN ('primair','voorwaardelijk') AND eindbesluit<>'voorlopig_toegelaten') OR
-  (protocolgeschiktheid='niet_onderbouwd' AND eindbesluit<>'uitgesloten_huidige_levering')
+  (analysetype='V' AND eindbesluit<>'voorlopig_toegelaten') OR
+  (protocolgeschiktheid='niet_onderbouwd' AND analysetype<>'V' AND eindbesluit<>'uitgesloten_huidige_levering') OR
+  (protocolgeschiktheid IN ('primair','voorwaardelijk') AND analysetype<>'V'
+    AND eindbesluit NOT IN ('voorlopig_toegelaten','alleen_na_doelsoortselectie','wacht_op_doelsoortafbakening'))
 );
 SELECT 'validatie_niet_geparkeerd',COUNT(*) FROM Meijendel.ndff_analysebesluit
 WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND gegevensgeschiktheid<>'niet_beoordeeld';
@@ -339,7 +526,8 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "open_records", "secure_records", "open_protocol_links", "secure_protocol_links",
         "open_loose_records", "open_loose_links", "secure_loose_records", "secure_loose_links",
         "blank_open_protocol", "blank_secure_protocol", "invalid_protocol_evidence",
-        "spatial", "decisions", "protocolbesluit_mismatch", "validatie_niet_geparkeerd",
+        "spatial", "scope_combinations", "mixed_species", "scope_missing",
+        "decisions", "protocolbesluit_mismatch", "validatie_niet_geparkeerd",
     }
     if set(metrics) != required:
         raise ValueError(f"Onvolledige validatie-uitvoer: {sorted(set(metrics) ^ required)}")
@@ -357,6 +545,8 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol_sleutel en bewijsmethode zijn niet consistent.")
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
+    if metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 32 or metrics["scope_missing"]:
+        raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
     if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
     if metrics["validatie_niet_geparkeerd"]:
@@ -380,7 +570,7 @@ def main() -> int:
         print(f"OK: {len(rows)} protocollen, bronhashes en invoercontract gevalideerd")
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), restore_legacy_decisions_sql(), decisions_sql()))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), restore_legacy_decisions_sql(), decisions_sql()))
     client_args = mysql_args(args.login_path, args.host, args.port)
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)

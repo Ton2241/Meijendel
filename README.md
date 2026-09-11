@@ -228,8 +228,19 @@ geschiktheid van de geleverde waarnemingsregels. Regelversie
 `ndff-protocolkwaliteit-v1` bevat de catalogus van 54 protocollen, de
 gebruiksmatrix en de ruimtelijke beoordeling van alle 810.830 openbare
 FFV-records. De actuele voorlopige analysebesluiten staan afzonderlijk onder
-`ndff-analysebesluit-v2`; de oorspronkelijke v1-besluiten blijven als
+`ndff-analysebesluit-v3`; de oorspronkelijke v1- en v2-besluiten blijven als
 historische auditlaag bewaard. De bronrecords zelf zijn niet gewijzigd.
+
+De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
+soortgroep zijn onder `ndff-protocolbereik-v1` ingedeeld in
+`ndff_protocol_soortgroep_geschiktheid`. De klassen zijn `doelgroep`,
+`bijvangst`, `algemene_bron`, `doelsoortafhankelijk` en `gemengd`. Bij de twee
+gemengde zoogdiercombinaties (DAZ-BMP en Konijnen in de duinen) staat de
+verdere indeling per aangetroffen taxon in
+`ndff_protocol_soort_geschiktheid`. Bijvangst en algemene bronnen ondersteunen
+uitsluitend positieve voorkomensinformatie (`V`). Een gemengde combinatie mag
+voor een ander analysetype alleen na een expliciete selectie van de daar als
+`doelsoort` geregistreerde taxa worden gebruikt.
 
 Ieder NDFF-record heeft daarnaast precies één genormaliseerde
 protocolkoppeling. Openbare koppelingen staan in
@@ -245,12 +256,14 @@ toelatingspoort voor analyses. Lege protocolwaarden mogen nooit automatisch als
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.
-Protocolmatig passende analysetypen krijgen `voorlopig_toegelaten`; de
-leveringsgeschiktheid blijft afzonderlijk `niet_beoordeeld`. Deze status maakt
-verkennend gebruik mogelijk, maar is geen bevestiging dat een trend,
-afwezigheid, abundantie of beheereffect al voldoende is gevalideerd. Iedere
-uitvoer moet daarom de kwaliteitsvermelding uit `ndff_analysebesluit.reden`
-tonen.
+Protocolmatig passende analysetypen krijgen `voorlopig_toegelaten`. Gemengde
+combinaties krijgen voor niet-V-gebruik `alleen_na_doelsoortselectie` en een
+nog niet uit het record afleidbare doelsoortenlijst krijgt
+`wacht_op_doelsoortafbakening`. De leveringsgeschiktheid blijft afzonderlijk
+`niet_beoordeeld`. Deze statussen maken gecontroleerd verkennend gebruik
+mogelijk, maar bevestigen niet dat een trend, afwezigheid, abundantie of
+beheereffect al voldoende is gevalideerd. Iedere uitvoer moet daarom de
+kwaliteitsvermelding uit `ndff_analysebesluit.reden` tonen.
 
 Reproduceerbare controle en lokale toepassing:
 

@@ -102,6 +102,50 @@ CREATE TABLE IF NOT EXISTS ndff_protocol_gebruik (
   CHECK (aanvullende_typen REGEXP '^$|^(V|I|TV|TA|TK)(,(V|I|TV|TA|TK))*$')
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS ndff_protocol_soortgroep_geschiktheid (
+  protocol_soortgroep_id SMALLINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  protocol_id SMALLINT UNSIGNED NOT NULL,
+  soortgroep_raw VARCHAR(255) NOT NULL,
+  doelrelatie ENUM(
+    'doelgroep','gemengd','bijvangst','algemene_bron','doelsoortafhankelijk'
+  ) NOT NULL,
+  toegestane_typen VARCHAR(32) CHARACTER SET ascii NOT NULL,
+  recordaantal_bij_classificatie BIGINT UNSIGNED NOT NULL,
+  reden VARCHAR(1000) NOT NULL,
+  bron_urls JSON NOT NULL,
+  regelversie VARCHAR(64) NOT NULL,
+  beoordeeld_op DATE NOT NULL,
+  PRIMARY KEY (protocol_soortgroep_id),
+  UNIQUE KEY uq_ndff_protocol_soortgroep
+    (protocol_id, soortgroep_raw, regelversie),
+  KEY ix_ndff_protocol_soortgroep_selectie
+    (doelrelatie, regelversie),
+  CONSTRAINT fk_ndff_protocol_soortgroep_protocol FOREIGN KEY (protocol_id)
+    REFERENCES ndff_protocol (protocol_id),
+  CHECK (toegestane_typen REGEXP '^(V|I|TV|TA|TK)(,(V|I|TV|TA|TK))*$')
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS ndff_protocol_soort_geschiktheid (
+  protocol_soort_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  protocol_id SMALLINT UNSIGNED NOT NULL,
+  soortgroep_raw VARCHAR(255) NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  toegestane_typen VARCHAR(32) CHARACTER SET ascii NOT NULL,
+  recordaantal_bij_classificatie BIGINT UNSIGNED NOT NULL,
+  reden VARCHAR(1000) NOT NULL,
+  regelversie VARCHAR(64) NOT NULL,
+  beoordeeld_op DATE NOT NULL,
+  PRIMARY KEY (protocol_soort_id),
+  UNIQUE KEY uq_ndff_protocol_soort
+    (protocol_id, soortgroep_raw, wetenschappelijke_naam, regelversie),
+  KEY ix_ndff_protocol_soort_selectie
+    (doelrelatie, regelversie),
+  CONSTRAINT fk_ndff_protocol_soort_protocol FOREIGN KEY (protocol_id)
+    REFERENCES ndff_protocol (protocol_id),
+  CHECK (toegestane_typen REGEXP '^(V|I|TV|TA|TK)(,(V|I|TV|TA|TK))*$')
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS ndff_open_ruimtelijke_beoordeling (
   waarneming_id BIGINT UNSIGNED NOT NULL,
   regelversie VARCHAR(64) NOT NULL,
@@ -163,5 +207,6 @@ CREATE TABLE IF NOT EXISTS ndff_analysebesluit (
 ALTER TABLE ndff_analysebesluit
   MODIFY eindbesluit ENUM(
     'toegelaten','voorlopig_toegelaten','alleen_verspreidingscontext',
-    'wacht_op_brondata','uitgesloten_huidige_levering'
+    'wacht_op_brondata','alleen_na_doelsoortselectie',
+    'wacht_op_doelsoortafbakening','uitgesloten_huidige_levering'
   ) NOT NULL;

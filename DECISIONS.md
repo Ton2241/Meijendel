@@ -112,19 +112,20 @@
   analysebesluiten per bron, soortgroep, protocol en analysetype. Alleen 365.854
   onvervaagde geometrieën die volledig binnen precies één SOVON-plot liggen
   zijn ruimtelijk kandidaat voor plotcontext; ook deze toelating blijft
-  afhankelijk van de PQ-poort. Protocolmatig passende combinaties voor `V`,
-  `I`, `TV`, `TA` en `TK` staan op `voorlopig_toegelaten`; niet-onderbouwde
-  combinaties blijven uitgesloten. De afzonderlijke
-  `gegevensgeschiktheid` blijft `niet_beoordeeld` totdat telobjecten, bezoeken,
+  afhankelijk van de PQ-poort. Protocolmatig passende doelgroepen voor `V`,
+  `I`, `TV`, `TA` en `TK` staan op `voorlopig_toegelaten`; gemengde en
+  doelsoortafhankelijke combinaties vereisen eerst de hieronder beschreven
+  doelsoortselectie en niet-onderbouwde combinaties blijven uitgesloten. De
+  afzonderlijke `gegevensgeschiktheid` blijft `niet_beoordeeld` totdat telobjecten, bezoeken,
   inspanning, nulwaarnemingen en meeteenheden zijn onderzocht. Voorlopige
   toelating maakt verkennend gebruik mogelijk, maar is geen definitieve
   validatie. Iedere analyse-uitvoer toont verplicht de kwaliteitsvermelding uit
   `ndff_analysebesluit.reden`. De nieuwe tabellen wijzigen geen bronrecord en
   bevatten geen beveiligde geometrie.
-- De gewijzigde voorlopige toelating wordt als afzonderlijke regelversie
-  `ndff-analysebesluit-v2` opgeslagen. De eerdere besluiten onder
-  `ndff-protocolkwaliteit-v1` blijven als historische auditlaag bewaard en
-  worden niet stilzwijgend herschreven.
+- De verfijnde voorlopige toelating wordt als afzonderlijke regelversie
+  `ndff-analysebesluit-v3` opgeslagen. De eerdere besluiten onder
+  `ndff-protocolkwaliteit-v1` en `ndff-analysebesluit-v2` blijven als
+  historische auditlagen bewaard en worden niet stilzwijgend herschreven.
 - Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
   recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
   interne foreign key; `protocol_sleutel` is de stabiele betekenisvolle sleutel.
@@ -134,6 +135,24 @@
   voor `LOS`. Protocolkwalificatie wordt niet in analysevelden opgeslagen:
   `analyse_status` is geen protocolstatus en de beveiligde verspreidings-,
   trend- en innamepoorten behouden hun eigen betekenis.
+- De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
+  soortgroep zijn volledig en versieerbaar geclassificeerd onder
+  `ndff-protocolbereik-v1`. `ndff_protocol_soortgroep_geschiktheid` is de poort
+  voor het inhoudelijke doelbereik: een volledige doelgroep mag de passende
+  protocoltypen behouden; bijvangst en algemene bron-/apprecords uitsluitend
+  `V`; een doelsoortafhankelijke combinatie uitsluitend `V` totdat een
+  gezaghebbende doelsoortenlijst beschikbaar is.
+- DAZ-BMP met overige zoogdieren en Konijnen in de duinen met overige
+  zoogdieren zijn gemengde combinaties. Alle 32 daarin aangetroffen
+  protocol-taxoncombinaties (23 unieke taxa) zijn daarom afzonderlijk
+  vastgelegd in `ndff_protocol_soort_geschiktheid`.
+  Niet-V-gebruik vereist een expliciete match met `doelrelatie='doelsoort'`;
+  bijvangsten mogen nooit door overerving van het groepsprotocol als trenddata
+  worden geselecteerd.
+- `alleen_na_doelsoortselectie` is een uitvoerbare soortfilteropdracht, terwijl
+  `wacht_op_doelsoortafbakening` betekent dat voorlopig alleen `V` gebruikt mag
+  worden. In alle gevallen blijft `gegevensgeschiktheid='niet_beoordeeld'`
+  totdat de surveystructuur is onderzocht.
 - Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
   NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
   (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open
