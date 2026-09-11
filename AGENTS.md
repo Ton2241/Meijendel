@@ -132,7 +132,7 @@ MySQL:
   `analyse_status` is geen protocolstatus en beveiligde verspreidings-, trend-
   en innamevelden mogen hiervoor niet worden hergebruikt
 - gebruik voor nieuwe NDFF-analyses uitsluitend regelversie
-  `ndff-analysebesluit-v3` en doelbereikversie `ndff-protocolbereik-v1`; oudere
+  `ndff-analysebesluit-v4` en doelbereikversie `ndff-protocolbereik-v2`; oudere
   versies zijn alleen historische auditlagen
 - behandel `ndff_analysebesluit.eindbesluit = voorlopig_toegelaten` als
   toestemming voor uitsluitend verkennend gebruik op basis van
@@ -144,6 +144,9 @@ MySQL:
   `ndff_protocol_soort_geschiktheid` en selecteer uitsluitend
   `doelrelatie='doelsoort'`; behandel iedere overige soort als bijvangst en dus
   alleen als positieve voorkomensinformatie (`V`)
+- behandel `doelrelatie='onbepaald'` eveneens uitsluitend als `V`; deze klasse
+  betekent dat de aangeleverde taxonnaam zowel een doelsoort als een
+  niet-doelsoort kan omvatten
 - gebruik combinaties met `wacht_op_doelsoortafbakening` voorlopig uitsluitend
   voor `V`; een protocolcode alleen bewijst daar niet dat het record een
   doelsoort betreft

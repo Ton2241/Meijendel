@@ -46,6 +46,7 @@ def main() -> int:
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
     assert "'voorlopig_toegelaten'" in folded
     assert "wetenschappelijke_naam varchar(255) not null" in folded
+    assert "enum('doelsoort','bijvangst','onbepaald')" in folded
 
     for required in (
         "regelversie",
@@ -89,8 +90,8 @@ def main() -> int:
 
     module = load_importer()
     assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
-    assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v1"
-    assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v3"
+    assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
+    assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
     parsed = module.read_seed(SEED)
     assert len(parsed) == 54
     assert module.protocol_key("Geen code") == "LOS"
@@ -118,8 +119,14 @@ def main() -> int:
     assert module.classify_protocol_group("17.204", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("17.209", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("102.006", "Vaatplanten")["doelrelatie"] == "algemene_bron"
-    assert module.classify_protocol_group("04.006", "Weekdieren")["doelrelatie"] == "doelsoortafhankelijk"
-    assert module.classify_protocol_group("13.202", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("02.204", "Mossen")["doelrelatie"] == "doelgroep"
+    assert module.classify_protocol_group("04.006", "Weekdieren")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("13.202", "Amfibieën")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("10.002", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("12.205", "Dagvlinders")["doelrelatie"] == "doelsoortafhankelijk"
+    assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 11
+    assert len(module.MIXED_COMBINATIONS) == 9
+    assert len(module.BOSPADDENSTOEL_TARGET_SPECIES) == 49
 
     daz_target = module.classify_protocol_species("17.204", "Oryctolagus cuniculus")
     daz_bycatch = module.classify_protocol_species("17.204", "Dama dama")
@@ -129,6 +136,18 @@ def main() -> int:
     assert daz_bycatch == {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
     assert rabbit_target["doelrelatie"] == "doelsoort" and "TA" in rabbit_target["toegestane_typen"]
     assert rabbit_bycatch == {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
+    assert module.classify_protocol_species("04.006", "Vertigo angustior", "Weekdieren")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("04.006", "Punctum pygmaeum", "Weekdieren")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("11.201", "Amanita citrina", "Schimmels")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("11.201", "Fungi sp. indet.", "Schimmels")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("11.202", "Psathyrella ammophila", "Schimmels")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("11.202", "Tulostoma brumale", "Schimmels")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("13.201", "Cobitis taenia", "Vissen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("13.201", "Perca fluviatilis", "Vissen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("13.202", "Triturus cristatus", "Amfibieën")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("13.202", "Bufo bufo", "Amfibieën")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("17.202", "Plecotus auritus/austriacus", "Vleermuizen")["doelrelatie"] == "onbepaald"
+    assert module.classify_protocol_species("17.202", "Pipistrellus", "Vleermuizen")["doelrelatie"] == "bijvangst"
     try:
         module.classify_protocol_species("03.201", "Oryctolagus cuniculus")
     except ValueError:
@@ -152,10 +171,12 @@ def main() -> int:
     assert "'niet_beoordeeld'" in decision_sql
     assert "wacht_op_brondata" not in decision_sql
     assert "on duplicate key update" in decision_sql
-    assert "ndff-analysebesluit-v3" in decision_sql
+    assert "ndff-analysebesluit-v4" in decision_sql
     scope_sql = module.protocol_scope_sql().casefold()
     assert "ndff_protocol_soortgroep_geschiktheid" in scope_sql
     assert "ndff_protocol_soort_geschiktheid" in scope_sql
+    assert "handleiding-paddenstoelen.pdf" in scope_sql
+    assert "handleiding-meetnet-amfibieen-en-vissen" in scope_sql
     legacy_sql = module.restore_legacy_decisions_sql().casefold()
     assert "ndff-protocolkwaliteit-v1" in legacy_sql
     assert "wacht_op_brondata" in legacy_sql
@@ -181,7 +202,11 @@ def main() -> int:
         "invalid_protocol_evidence": 0,
         "spatial": 810830,
         "scope_combinations": 114,
-        "mixed_species": 32,
+        "mixed_species": 606,
+        "dependent_combinations": 11,
+        "mixed_species_missing": 0,
+        "secure_mixed_species_missing": 0,
+        "ambiguous_species": 1,
         "scope_missing": 0,
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,
@@ -197,7 +222,10 @@ def main() -> int:
             "secure_loose_records": 9660, "secure_loose_links": 9660,
             "blank_open_protocol": 1, "blank_secure_protocol": 0,
             "invalid_protocol_evidence": 1, "spatial": 810829,
-            "scope_combinations": 113, "mixed_species": 31, "scope_missing": 1,
+            "scope_combinations": 113, "mixed_species": 605, "scope_missing": 1,
+            "dependent_combinations": 12, "mixed_species_missing": 1,
+            "secure_mixed_species_missing": 1,
+            "ambiguous_species": 0,
             "decisions": 1040, "protocolbesluit_mismatch": 1,
             "validatie_niet_geparkeerd": 1,
         })

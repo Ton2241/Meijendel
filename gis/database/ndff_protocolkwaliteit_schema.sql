@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS ndff_protocol_soort_geschiktheid (
   protocol_id SMALLINT UNSIGNED NOT NULL,
   soortgroep_raw VARCHAR(255) NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
-  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst','onbepaald') NOT NULL,
   toegestane_typen VARCHAR(32) CHARACTER SET ascii NOT NULL,
   recordaantal_bij_classificatie BIGINT UNSIGNED NOT NULL,
   reden VARCHAR(1000) NOT NULL,
@@ -145,6 +145,10 @@ CREATE TABLE IF NOT EXISTS ndff_protocol_soort_geschiktheid (
     REFERENCES ndff_protocol (protocol_id),
   CHECK (toegestane_typen REGEXP '^(V|I|TV|TA|TK)(,(V|I|TV|TA|TK))*$')
 ) ENGINE=InnoDB;
+
+-- v2 kent ook taxa die zowel een doelsoort als een niet-doelsoort omvatten.
+ALTER TABLE ndff_protocol_soort_geschiktheid
+  MODIFY doelrelatie ENUM('doelsoort','bijvangst','onbepaald') NOT NULL;
 
 CREATE TABLE IF NOT EXISTS ndff_open_ruimtelijke_beoordeling (
   waarneming_id BIGINT UNSIGNED NOT NULL,

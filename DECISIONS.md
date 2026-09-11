@@ -123,8 +123,9 @@
   `ndff_analysebesluit.reden`. De nieuwe tabellen wijzigen geen bronrecord en
   bevatten geen beveiligde geometrie.
 - De verfijnde voorlopige toelating wordt als afzonderlijke regelversie
-  `ndff-analysebesluit-v3` opgeslagen. De eerdere besluiten onder
-  `ndff-protocolkwaliteit-v1` en `ndff-analysebesluit-v2` blijven als
+  `ndff-analysebesluit-v4` opgeslagen. De eerdere besluiten onder
+  `ndff-protocolkwaliteit-v1`, `ndff-analysebesluit-v2` en
+  `ndff-analysebesluit-v3` blijven als
   historische auditlagen bewaard en worden niet stilzwijgend herschreven.
 - Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
   recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
@@ -137,18 +138,23 @@
   trend- en innamepoorten behouden hun eigen betekenis.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
-  `ndff-protocolbereik-v1`. `ndff_protocol_soortgroep_geschiktheid` is de poort
+  `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort
   voor het inhoudelijke doelbereik: een volledige doelgroep mag de passende
   protocoltypen behouden; bijvangst en algemene bron-/apprecords uitsluitend
   `V`; een doelsoortafhankelijke combinatie uitsluitend `V` totdat een
   gezaghebbende doelsoortenlijst beschikbaar is.
-- DAZ-BMP met overige zoogdieren en Konijnen in de duinen met overige
-  zoogdieren zijn gemengde combinaties. Alle 32 daarin aangetroffen
-  protocol-taxoncombinaties (23 unieke taxa) zijn daarom afzonderlijk
-  vastgelegd in `ndff_protocol_soort_geschiktheid`.
+- Negen combinaties zijn gemengd: HabSlak, Meetnet Bospaddenstoelen,
+  Zeereeppaddenstoelen, Beek- en poldervissen, Natura 2000-amfibieën en -vissen,
+  zoldertellingen vleermuizen, DAZ-BMP en Konijnen in de duinen. Alle 606 daarin
+  aangetroffen protocol-taxoncombinaties zijn daarom afzonderlijk vastgelegd in
+  `ndff_protocol_soort_geschiktheid`.
   Niet-V-gebruik vereist een expliciete match met `doelrelatie='doelsoort'`;
-  bijvangsten mogen nooit door overerving van het groepsprotocol als trenddata
-  worden geselecteerd.
+  bijvangsten en taxonomisch onbepaalde records mogen nooit door overerving van
+  het groepsprotocol als trenddata worden geselecteerd.
+- Acht van de 19 eerdere doelsoortafhankelijke combinaties zijn met officiële
+  protocolinformatie opgelost. De elf resterende combinaties blijven onder
+  `wacht_op_doelsoortafbakening`: eDNA `10.002`, florakartering `12.015`, zeven
+  SNL-combinaties `12.205` en de Vleermuisprotocollen `17.505` en `17.506`.
 - `alleen_na_doelsoortselectie` is een uitvoerbare soortfilteropdracht, terwijl
   `wacht_op_doelsoortafbakening` betekent dat voorlopig alleen `V` gebruikt mag
   worden. In alle gevallen blijft `gegevensgeschiktheid='niet_beoordeeld'`

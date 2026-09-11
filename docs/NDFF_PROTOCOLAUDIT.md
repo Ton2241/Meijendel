@@ -168,7 +168,7 @@ De gebruikte bestanden zijn met SHA-256 vastgezet in de importeur.
 Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast voor de
 protocolcatalogus, recordkoppelingen en ruimtelijke beoordeling. De actuele
 voorlopige analysebesluiten gebruiken na de doelbereiktoets de afzonderlijke
-regelversie `ndff-analysebesluit-v3`; de oorspronkelijke v1- en v2-besluiten
+regelversie `ndff-analysebesluit-v4`; de oorspronkelijke v1-, v2- en v3-besluiten
 blijven als historische auditlaag beschikbaar. De laag bevat:
 
 - `ndff_protocol`: 54 gestandaardiseerde protocollen;
@@ -181,8 +181,8 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
 - `ndff_protocol_gebruik`: 54 wetenschappelijke gebruiksregels;
 - `ndff_protocol_soortgroep_geschiktheid`: 114 doelbereikbesluiten op het
   werkelijk voorkomende protocol-soortgroepniveau;
-- `ndff_protocol_soort_geschiktheid`: 32 protocol-taxonbesluiten voor de twee
-  gemengde zoogdiercombinaties;
+- `ndff_protocol_soort_geschiktheid`: 606 protocol-taxonbesluiten voor negen
+  gemengde combinaties;
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
@@ -191,29 +191,60 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
 ### Doelsoorten en bijvangsten
 
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol
-en een FFV-soortgroep zijn onder `ndff-protocolbereik-v1` volledig beoordeeld:
+en een FFV-soortgroep zijn onder `ndff-protocolbereik-v2` volledig beoordeeld:
 
-- 52 combinaties (`269.250` records) vallen als geheel binnen de doelgroep;
+- 53 combinaties (`269.627` records) vallen als geheel binnen de doelgroep;
 - 4 combinaties (`2.158` records) zijn bijvangst: Nachtvlinders en
   Vliesvleugeligen binnen `03.201`, overige zoogdieren binnen vogelprotocol
   `14.204`, en Vleermuizen binnen DAZ-BMP `17.204`;
 - 37 combinaties (`78.158` records) zijn algemene bron-, literatuur-,
   collectie- of appregistraties en ondersteunen alleen `V`;
-- 19 combinaties (`14.636` records) gebruiken een beperkte of
+- 11 combinaties (`6.673` records) gebruiken een beperkte of
   projectspecifieke doelsoortenafbakening die niet per NDFF-record is
   meegeleverd; ook daar is voorlopig alleen `V` toegestaan;
-- 2 combinaties (`16.462` records) zijn gemengd en zijn daarom ook per taxon
+- 9 combinaties (`24.048` records) zijn gemengd en zijn daarom ook per taxon
   beoordeeld.
 
-Binnen de twee gemengde zoogdiercombinaties zijn 32 aanwezige
-protocol-taxoncombinaties (23 unieke taxa) vastgelegd: 7 doelsoortbesluiten met
-samen 15.604 records en 25 bijvangstbesluiten met samen 858 records. Voor
-DAZ-BMP gelden op basis van de CBS-doelafbakening konijn, haas,
-vos, ree, eekhoorn, egel en muskusrat als doelsoorten. In de huidige Meijendel-
-records komt muskusrat niet in deze combinatie voor. Voor `17.209` is alleen
-konijn doelsoort. Deze soortindeling staat in
+Binnen de negen gemengde combinaties zijn 606 aanwezige
+protocol-taxoncombinaties vastgelegd: 66 doelsoortbesluiten met samen 16.963
+records, 539 bijvangstbesluiten met samen 7.081 records en één taxonomisch
+onbepaald besluit met 4 records. Die laatste categorie betreft
+`Plecotus auritus/austriacus`: de naam omvat zowel een doelsoort als een
+niet-doelsoort van de zoldertelling en ondersteunt daarom alleen `V`.
+Deze soortindeling staat in
 `ndff_protocol_soort_geschiktheid`; de groepsindeling staat in
 `ndff_protocol_soortgroep_geschiktheid`.
+
+### Uitwerking van de 19 doelsoortafhankelijke combinaties
+
+De officiële protocolbronnen leveren de volgende beslissingen op:
+
+| Protocol en soortgroep | Besluit v2 | Vastgestelde doelafbakening |
+|---|---|---|
+| `02.204` Mossen | doelgroep | Het gekozen kilometerhok wordt zo volledig mogelijk op mossen geïnventariseerd; alle gemelde mossen vallen binnen het doelbereik. |
+| `04.006` Weekdieren | gemengd | Nauwe korfslak (`Vertigo angustior`), Zeggekorfslak (`V. moulinsiana`) en Platte schijfhoren (`Anisus vorticulus`); overige weekdieren zijn bijvangst. |
+| `10.002` Amfibieën | blijft afhankelijk | eDNA is een techniek; de doelsoort volgt uit het project of de gebruikte assay en ontbreekt in de levering. |
+| `11.201` Schimmels | gemengd | De officiële historische lijst omvat 110 telsoorten. Van de aangetroffen taxa zijn 49 gecontroleerd aan die lijst gekoppeld; `Fungi sp. indet.` is geen doelsoort. |
+| `11.202` Schimmels | gemengd | Duinfranjehoed, Zeeduinchampignon, Duinstinkzwam, Duinveldridderzwam, Helmharpoenzwam en Zandtulpje; overige schimmels zijn begeleidende soorten/bijvangst. |
+| `12.015` Kranswieren, wieren en algen | blijft afhankelijk | De doelsoortenlijst hoort bij de concrete Staatsbosbeheer-karteringsopdracht en is niet uit het record afleidbaar. |
+| `12.205` zeven soortgroepen | blijft afhankelijk | Kwalificerende soorten verschillen per SNL-beheertype en versie. Beheertype en versie ontbreken in de records. |
+| `13.201` Vissen | gemengd | Beekprik, beekdonderpad, bittervoorn, grote en kleine modderkruiper, rivierdonderpad en rivierprik; overige vissen zijn bijvangst. |
+| `13.202` Amfibieën en Vissen | gemengd | Kamsalamander, beekprik, rivierdonderpad, bittervoorn, kleine en grote modderkruiper; andere amfibieën en vissen zijn bijvangst. |
+| `17.202` Vleermuizen | gemengd | Voor populatietrend zijn Ingekorven vleermuis en Grijze grootoorvleermuis doelsoort; overige zolderwaarnemingen zijn verspreidingsinformatie. |
+| `17.505` en `17.506` Vleermuizen | blijft afhankelijk | Doelsoort en onderzochte functie volgen uit het projectplan; de protocolcode alleen legt die niet vast. |
+
+Daarmee zijn acht van de negentien combinaties opgelost. Elf blijven bewust
+`doelsoortafhankelijk`: één eDNA-combinatie, één florakartering, zeven
+SNL-combinaties en twee Vleermuisprotocol-combinaties. Dit is geen ontbrekende
+algemene handleiding, maar ontbrekende projectcontext. Gokken op basis van de
+aangetroffen soort is niet toegestaan.
+
+Gebruikte primaire bronnen zijn onder meer [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx),
+[ANEMOON HabSlak](https://www.anemoon.org/projecten/natura2000/habslak-protocollen),
+[NDFF-protocollen](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/),
+[RAVON Natura 2000](https://www.ravon.nl/publicaties/handleiding-meetnet-amfibieen-en-vissen-in-natura-2000-gebieden/),
+[BIJ12 SNL](https://www.bij12.nl/onderwerp/natuurinformatie/monitoring-en-natuurinformatie/werkwijze-monitoring-beoordeling-natuurnetwerk-natura-2000/)
+en de handleidingen van NMV en Zoogdiervereniging in de protocoldocumentatie.
 
 Voor niet-V-analyses gelden hierdoor drie verschillende uitkomsten:
 
@@ -224,7 +255,7 @@ Voor niet-V-analyses gelden hierdoor drie verschillende uitkomsten:
   een voldoende specifieke bronlijst afleidbaar; alleen `V` is nu bruikbaar.
 
 Deze doelbereiktoets vervangt de latere leveringsvalidatie niet.
-`gegevensgeschiktheid` blijft voor alle v3-besluiten `niet_beoordeeld` en de
+`gegevensgeschiktheid` blijft voor alle v4-besluiten `niet_beoordeeld` en de
 kwaliteitsmelding blijft verplicht bij iedere uitkomst.
 
 De recordkoppelingen gebruiken `protocol_id` uitsluitend als interne foreign

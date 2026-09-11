@@ -19,8 +19,8 @@ DEFAULT_SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
 SOURCE_XLSX = ROOT / "Natuurprotocollen" / "Natuurprotocollen_gebruiksmatrix.xlsx"
 SOURCE_DOCX = ROOT / "Natuurprotocollen" / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
 RULE_VERSION = "ndff-protocolkwaliteit-v1"
-SCOPE_RULE_VERSION = "ndff-protocolbereik-v1"
-DECISION_RULE_VERSION = "ndff-analysebesluit-v3"
+SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
+DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
@@ -33,15 +33,18 @@ BYCATCH_COMBINATIONS = {
     ("17.204", "Vleermuizen"),
 }
 MIXED_COMBINATIONS = {
+    ("04.006", "Weekdieren"),
+    ("11.201", "Schimmels"),
+    ("11.202", "Schimmels"),
+    ("13.201", "Vissen"),
+    ("13.202", "Amfibieën"),
+    ("13.202", "Vissen"),
+    ("17.202", "Vleermuizen"),
     ("17.204", "Zoogdieren (overig)"),
     ("17.209", "Zoogdieren (overig)"),
 }
 TARGET_DEPENDENT_COMBINATIONS = {
-    ("02.204", "Mossen"),
-    ("04.006", "Weekdieren"),
     ("10.002", "Amfibieën"),
-    ("11.201", "Schimmels"),
-    ("11.202", "Schimmels"),
     ("12.015", "Kranswieren, wieren en algen"),
     ("12.205", "Dagvlinders"),
     ("12.205", "Korstmossen"),
@@ -50,10 +53,6 @@ TARGET_DEPENDENT_COMBINATIONS = {
     ("12.205", "Mossen"),
     ("12.205", "Sprinkhanen en krekels"),
     ("12.205", "Vaatplanten"),
-    ("13.201", "Vissen"),
-    ("13.202", "Amfibieën"),
-    ("13.202", "Vissen"),
-    ("17.202", "Vleermuizen"),
     ("17.505", "Vleermuizen"),
     ("17.506", "Vleermuizen"),
 }
@@ -63,8 +62,89 @@ DAZ_TARGET_SPECIES = {
     "Ondatra zibethicus",
 }
 RABBIT_TARGET_SPECIES = {"Oryctolagus cuniculus"}
-CBS_DAZ_URL = "https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/"
-NDFF_PROTOCOL_URL = "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/"
+HABSLAK_TARGET_SPECIES = {"Vertigo angustior", "Vertigo moulinsiana", "Anisus vorticulus"}
+BOSPADDENSTOEL_TARGET_SPECIES = {
+    "Amanita citrina", "Amanita fulva", "Amanita muscaria", "Amanita rubescens",
+    "Auriscalpium vulgare", "Boletus edulis sl, incl. reticulatus, pinophilus",
+    "Cantharellus cibarius", "Chroogomphus rutilus", "Clitocybe clavipes",
+    "Clitocybe nebularis", "Clitocybe odora", "Clitocybe vibecina",
+    "Coltricia perennis", "Cortinarius semisanguineus", "Crepidotus mollis",
+    "Cystoderma amianthinum sl,", "Elaphocordyceps ophioglossoides",
+    "Entoloma cetratum", "Geastrum fimbriatum", "Gymnopus androsaceus",
+    "Gymnopus confluens", "Helvella lacunosa", "Hygrophoropsis aurantiaca",
+    "Hypholoma capnoides", "Imleria badia", "Ischnoderma benzoinum",
+    "Laccaria amethystina", "Lactarius chrysorrheus", "Lactarius hepaticus",
+    "Lactarius necator", "Lactarius rufus", "Leotia lubrica", "Lepiota cristata",
+    "Lepista flaccida", "Lepista nuda", "Leucocoprinus brebissonii",
+    "Mycena clavicularis", "Mycena pura", "Mycena sanguinolenta",
+    "Paxillus involutus", "Piptoporus betulinus", "Rhodocollybia maculata",
+    "Russula claroflava", "Russula nigricans", "Russula ochroleuca",
+    "Russula sardonia", "Suillus variegatus", "Trichaptum abietinum",
+    "Tricholomopsis rutilans",
+}
+ZEEREEP_TARGET_SPECIES = {
+    "Psathyrella ammophila", "Agaricus devoniensis", "Phallus hadriani",
+    "Melanoleuca cinereifolia", "Hohenbuehelia culmicola", "Peziza ammophila",
+}
+BEEK_POLDERVIS_TARGET_SPECIES = {
+    "Lampetra planeri", "Cottus gobio", "Cottus rhenanus", "Rhodeus amarus",
+    "Misgurnus fossilis", "Cobitis taenia", "Cottus perifretum", "Lampetra fluviatilis",
+}
+N2000_AMFIBIE_TARGET_SPECIES = {"Triturus cristatus"}
+N2000_VIS_TARGET_SPECIES = {
+    "Lampetra planeri", "Cottus gobio", "Cottus rhenanus", "Cottus perifretum",
+    "Rhodeus amarus", "Cobitis taenia", "Misgurnus fossilis",
+}
+ZOLDER_TARGET_SPECIES = {"Myotis emarginatus", "Plecotus austriacus"}
+TARGET_SPECIES_BY_COMBINATION = {
+    ("04.006", "Weekdieren"): HABSLAK_TARGET_SPECIES,
+    ("11.201", "Schimmels"): BOSPADDENSTOEL_TARGET_SPECIES,
+    ("11.202", "Schimmels"): ZEEREEP_TARGET_SPECIES,
+    ("13.201", "Vissen"): BEEK_POLDERVIS_TARGET_SPECIES,
+    ("13.202", "Amfibieën"): N2000_AMFIBIE_TARGET_SPECIES,
+    ("13.202", "Vissen"): N2000_VIS_TARGET_SPECIES,
+    ("17.202", "Vleermuizen"): ZOLDER_TARGET_SPECIES,
+    ("17.204", "Zoogdieren (overig)"): DAZ_TARGET_SPECIES,
+    ("17.209", "Zoogdieren (overig)"): RABBIT_TARGET_SPECIES,
+}
+AMBIGUOUS_SPECIES_BY_COMBINATION = {
+    ("17.202", "Vleermuizen"): {"Plecotus auritus/austriacus"},
+}
+TARGET_TYPES_BY_COMBINATION = {
+    ("04.006", "Weekdieren"): "V,TV,TA",
+    ("11.201", "Schimmels"): "V,TA",
+    ("11.202", "Schimmels"): "V,TV",
+    ("13.201", "Vissen"): "V,TV",
+    ("13.202", "Amfibieën"): "V,TV,TA",
+    ("13.202", "Vissen"): "V,TV,TA",
+    ("17.202", "Vleermuizen"): "V,I,TA",
+    ("17.204", "Zoogdieren (overig)"): "V,TA",
+    ("17.209", "Zoogdieren (overig)"): "V,TA",
+}
+ADDITIONAL_SCOPE_SOURCE_URLS = {
+    ("02.204", "Mossen"): (
+        "https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx",
+    ),
+    ("04.006", "Weekdieren"): (
+        "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/4-006-slakken-van-de-habitatrichtlijn/",
+        "https://www.anemoon.org/projecten/natura2000/habslak-protocollen",
+    ),
+    ("11.201", "Schimmels"): (
+        "https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2017/08/Handleiding-paddenstoelen.pdf",
+    ),
+    ("11.202", "Schimmels"): (
+        "https://www.mycologen.nl/onderzoek/meetnet/zeereep-concept/typische-soorten/",
+    ),
+    ("13.202", "Amfibieën"): (
+        "https://www.ravon.nl/publicaties/handleiding-meetnet-amfibieen-en-vissen-in-natura-2000-gebieden/",
+    ),
+    ("13.202", "Vissen"): (
+        "https://www.ravon.nl/publicaties/handleiding-meetnet-amfibieen-en-vissen-in-natura-2000-gebieden/",
+    ),
+    ("17.202", "Vleermuizen"): (
+        "https://www.zoogdiervereniging.nl/sites/default/files/2023-05/Handleiding%20NEM%20Meetprogramma%20Zoldertellingen%202023.pdf",
+    ),
+}
 
 
 def classify_protocol_group(protocol_sleutel: str, soortgroep_raw: str) -> dict[str, str]:
@@ -80,12 +160,19 @@ def classify_protocol_group(protocol_sleutel: str, soortgroep_raw: str) -> dict[
     return {"doelrelatie": "doelgroep", "toegestane_typen": "PROTOCOL"}
 
 
-def classify_protocol_species(protocol_sleutel: str, scientific_name: str) -> dict[str, str]:
-    if protocol_sleutel not in {"17.204", "17.209"}:
-        raise ValueError(f"Geen soortclassificatie voor niet-gemengd protocol {protocol_sleutel}")
-    targets = DAZ_TARGET_SPECIES if protocol_sleutel == "17.204" else RABBIT_TARGET_SPECIES
+def classify_protocol_species(
+    protocol_sleutel: str, scientific_name: str, soortgroep_raw: str | None = None
+) -> dict[str, str]:
+    if soortgroep_raw is None and protocol_sleutel in {"17.204", "17.209"}:
+        soortgroep_raw = "Zoogdieren (overig)"
+    key = (protocol_sleutel, soortgroep_raw or "")
+    if key not in TARGET_SPECIES_BY_COMBINATION:
+        raise ValueError(f"Geen soortclassificatie voor niet-gemengde combinatie {key}")
+    if scientific_name in AMBIGUOUS_SPECIES_BY_COMBINATION.get(key, set()):
+        return {"doelrelatie": "onbepaald", "toegestane_typen": "V"}
+    targets = TARGET_SPECIES_BY_COMBINATION[key]
     if scientific_name in targets:
-        return {"doelrelatie": "doelsoort", "toegestane_typen": "V,TA"}
+        return {"doelrelatie": "doelsoort", "toegestane_typen": TARGET_TYPES_BY_COMBINATION[key]}
     return {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
 
 
@@ -291,14 +378,56 @@ def _protocol_types_sql(gebruik_alias: str = "g") -> str:
     ) + ")"
 
 
+def _species_condition(
+    protocol_alias: str,
+    group_alias: str,
+    species_alias: str,
+    mapping: dict[tuple[str, str], set[str]],
+) -> str:
+    clauses = []
+    for (protocol, group), species in sorted(mapping.items()):
+        names = ",".join(sql_text(value) for value in sorted(species))
+        clauses.append(
+            f"({protocol_alias}={sql_text(protocol)} AND {group_alias}={sql_text(group)} "
+            f"AND {species_alias} IN ({names}))"
+        )
+    return " OR ".join(clauses) or "FALSE"
+
+
+def _target_types_case(protocol_alias: str, group_alias: str) -> str:
+    branches = " ".join(
+        f"WHEN {protocol_alias}={sql_text(protocol)} AND {group_alias}={sql_text(group)} "
+        f"THEN {sql_text(types)}"
+        for (protocol, group), types in sorted(TARGET_TYPES_BY_COMBINATION.items())
+    )
+    return f"CASE {branches} ELSE 'V' END"
+
+
+def _scope_sources_case(protocol_alias: str, group_alias: str) -> str:
+    branches = " ".join(
+        f"WHEN {protocol_alias}={sql_text(protocol)} AND {group_alias}={sql_text(group)} "
+        "THEN JSON_ARRAY(" + ",".join(sql_text(url) for url in urls) + ")"
+        for (protocol, group), urls in sorted(ADDITIONAL_SCOPE_SOURCE_URLS.items())
+    )
+    return f"CASE {branches} ELSE p.bron_urls END"
+
+
 def protocol_scope_sql() -> str:
     general_codes = ",".join(sql_text(value) for value in sorted(GENERAL_SOURCE_PROTOCOLS))
     bycatch = _pair_condition("p.protocol_sleutel", "c.soortgroep_raw", BYCATCH_COMBINATIONS)
     mixed = _pair_condition("p.protocol_sleutel", "c.soortgroep_raw", MIXED_COMBINATIONS)
     dependent = _pair_condition("p.protocol_sleutel", "c.soortgroep_raw", TARGET_DEPENDENT_COMBINATIONS)
     protocol_types = _protocol_types_sql()
-    daz_targets = ",".join(sql_text(value) for value in sorted(DAZ_TARGET_SPECIES))
-    rabbit_targets = ",".join(sql_text(value) for value in sorted(RABBIT_TARGET_SPECIES))
+    target_species = _species_condition(
+        "p.protocol_sleutel", "w.soortgroep_raw", "w.wetenschappelijke_naam",
+        TARGET_SPECIES_BY_COMBINATION,
+    )
+    ambiguous_species = _species_condition(
+        "p.protocol_sleutel", "w.soortgroep_raw", "w.wetenschappelijke_naam",
+        AMBIGUOUS_SPECIES_BY_COMBINATION,
+    )
+    target_types = _target_types_case("p.protocol_sleutel", "w.soortgroep_raw")
+    scope_sources = _scope_sources_case("p.protocol_sleutel", "c.soortgroep_raw")
     return f"""
 INSERT INTO ndff_protocol_soortgroep_geschiktheid
   (protocol_id,soortgroep_raw,doelrelatie,toegestane_typen,
@@ -318,11 +447,12 @@ SELECT p.protocol_id,c.soortgroep_raw,
               THEN 'Deze soortgroep valt buiten het doelbereik van het opgegeven protocol. De records zijn bijvangst en ondersteunen alleen positieve voorkomensinformatie (V).'
             WHEN {mixed}
               THEN 'Deze combinatie bevat zowel doelsoorten als bijvangsten. Niet-V-analyses vereisen de afzonderlijke soortclassificatie.'
+            WHEN {dependent} AND p.protocol_sleutel='12.205'
+              THEN 'De SNL-doelsoorten zijn afhankelijk van beheertype en protocolversie. Deze sleutels ontbreken in de NDFF-records; voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
             WHEN {dependent}
-              THEN 'Dit protocol werkt met een beperkte of projectspecifieke doelsoortenlijst die niet per NDFF-record is meegeleverd. Voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
+              THEN 'De doelsoorten zijn project- of locatieafhankelijk en de noodzakelijke projectafbakening ontbreekt in de NDFF-records. Voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
             ELSE 'De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid.' END,
-       CASE WHEN {mixed} THEN JSON_ARRAY({sql_text(CBS_DAZ_URL)},{sql_text(NDFF_PROTOCOL_URL)})
-            ELSE p.bron_urls END,
+       {scope_sources},
        {sql_text(SCOPE_RULE_VERSION)},'2026-09-11'
 FROM (
   SELECT soortgroep_raw,TRIM(protocol) AS protocol_raw,COUNT(*) AS recordaantal
@@ -344,24 +474,21 @@ INSERT INTO ndff_protocol_soort_geschiktheid
   (protocol_id,soortgroep_raw,wetenschappelijke_naam,doelrelatie,
    toegestane_typen,recordaantal_bij_classificatie,reden,regelversie,beoordeeld_op)
 SELECT p.protocol_id,w.soortgroep_raw,w.wetenschappelijke_naam,
-       CASE WHEN (p.protocol_sleutel='17.204' AND w.wetenschappelijke_naam IN ({daz_targets}))
-                  OR (p.protocol_sleutel='17.209' AND w.wetenschappelijke_naam IN ({rabbit_targets}))
-            THEN 'doelsoort' ELSE 'bijvangst' END,
-       CASE WHEN (p.protocol_sleutel='17.204' AND w.wetenschappelijke_naam IN ({daz_targets}))
-                  OR (p.protocol_sleutel='17.209' AND w.wetenschappelijke_naam IN ({rabbit_targets}))
-            THEN 'V,TA' ELSE 'V' END,
+       CASE WHEN {ambiguous_species} THEN 'onbepaald'
+            WHEN {target_species} THEN 'doelsoort' ELSE 'bijvangst' END,
+       CASE WHEN {target_species} THEN {target_types} ELSE 'V' END,
        COUNT(*),
-       CASE WHEN (p.protocol_sleutel='17.204' AND w.wetenschappelijke_naam IN ({daz_targets}))
-                  OR (p.protocol_sleutel='17.209' AND w.wetenschappelijke_naam IN ({rabbit_targets}))
-            THEN 'De soort behoort tot de expliciete doelsoorten van dit telprogramma; TA blijft voorlopig toegestaan onder de algemene validatievoorbehouden.'
+       CASE WHEN {ambiguous_species}
+            THEN 'Het taxon omvat zowel een doelsoort als een niet-doelsoort en kan zonder nadere determinatie niet veilig worden ingedeeld; alleen V is toegestaan.'
+            WHEN {target_species}
+            THEN 'De soort behoort tot de officieel afgebakende doelsoorten van dit protocol; de protocoltypen blijven voorlopig toegestaan onder de algemene validatievoorbehouden.'
             ELSE 'De soort is binnen dit protocol bijvangst en ondersteunt alleen positieve voorkomensinformatie (V).' END,
        {sql_text(SCOPE_RULE_VERSION)},'2026-09-11'
 FROM Meijendel.ndff_open_waarneming AS w
 JOIN Meijendel.ndff_open_waarneming_protocol AS l
   ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
 JOIN Meijendel.ndff_protocol AS p ON p.protocol_id=l.protocol_id
-WHERE (p.protocol_sleutel='17.204' AND w.soortgroep_raw='Zoogdieren (overig)')
-   OR (p.protocol_sleutel='17.209' AND w.soortgroep_raw='Zoogdieren (overig)')
+WHERE {_pair_condition('p.protocol_sleutel', 'w.soortgroep_raw', MIXED_COMBINATIONS)}
 GROUP BY p.protocol_id,p.protocol_sleutel,w.soortgroep_raw,w.wetenschappelijke_naam
 ON DUPLICATE KEY UPDATE
   doelrelatie=VALUES(doelrelatie),toegestane_typen=VALUES(toegestane_typen),
@@ -498,6 +625,34 @@ SELECT 'invalid_protocol_evidence',COUNT(*) FROM (
 SELECT 'spatial',COUNT(*) FROM Meijendel.ndff_open_ruimtelijke_beoordeling WHERE regelversie={sql_text(RULE_VERSION)};
 SELECT 'scope_combinations',COUNT(*) FROM Meijendel.ndff_protocol_soortgroep_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)};
 SELECT 'mixed_species',COUNT(*) FROM Meijendel.ndff_protocol_soort_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)};
+SELECT 'dependent_combinations',COUNT(*) FROM Meijendel.ndff_protocol_soortgroep_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)} AND doelrelatie='doelsoortafhankelijk';
+SELECT 'mixed_species_missing',COUNT(*) FROM (
+  SELECT DISTINCT l.protocol_id,w.soortgroep_raw,w.wetenschappelijke_naam
+  FROM Meijendel.ndff_open_waarneming w
+  JOIN Meijendel.ndff_open_waarneming_protocol l ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
+  JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid g
+    ON g.protocol_id=l.protocol_id AND g.soortgroep_raw=w.soortgroep_raw
+   AND g.regelversie={sql_text(SCOPE_RULE_VERSION)} AND g.doelrelatie='gemengd'
+  LEFT JOIN Meijendel.ndff_protocol_soort_geschiktheid s
+    ON s.protocol_id=l.protocol_id AND s.soortgroep_raw=w.soortgroep_raw
+   AND s.wetenschappelijke_naam=w.wetenschappelijke_naam AND s.regelversie={sql_text(SCOPE_RULE_VERSION)}
+  WHERE s.protocol_soort_id IS NULL
+) q;
+SELECT 'secure_mixed_species_missing',COUNT(*) FROM (
+  SELECT DISTINCT l.protocol_id,s.oorspronkelijke_ffv_soortgroep,s.wetenschappelijke_naam
+  FROM Meijendel_ndff_secure.ndff_waarneming_register w
+  JOIN Meijendel_ndff_secure.ndff_waarneming_protocol l
+    ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
+  JOIN Meijendel_ndff_secure.ndff_soorten s ON s.ndff_soort_id=w.ndff_soort_id
+  JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid g
+    ON g.protocol_id=l.protocol_id AND g.soortgroep_raw=s.oorspronkelijke_ffv_soortgroep
+   AND g.regelversie={sql_text(SCOPE_RULE_VERSION)} AND g.doelrelatie='gemengd'
+  LEFT JOIN Meijendel.ndff_protocol_soort_geschiktheid x
+    ON x.protocol_id=l.protocol_id AND x.soortgroep_raw=s.oorspronkelijke_ffv_soortgroep
+   AND x.wetenschappelijke_naam=s.wetenschappelijke_naam AND x.regelversie={sql_text(SCOPE_RULE_VERSION)}
+  WHERE x.protocol_soort_id IS NULL
+) q;
+SELECT 'ambiguous_species',COUNT(*) FROM Meijendel.ndff_protocol_soort_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)} AND doelrelatie='onbepaald';
 SELECT 'scope_missing',COUNT(*) FROM (
   SELECT DISTINCT l.protocol_id,w.soortgroep_raw
   FROM Meijendel.ndff_open_waarneming w
@@ -526,7 +681,8 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "open_records", "secure_records", "open_protocol_links", "secure_protocol_links",
         "open_loose_records", "open_loose_links", "secure_loose_records", "secure_loose_links",
         "blank_open_protocol", "blank_secure_protocol", "invalid_protocol_evidence",
-        "spatial", "scope_combinations", "mixed_species", "scope_missing",
+        "spatial", "scope_combinations", "mixed_species", "dependent_combinations",
+        "mixed_species_missing", "secure_mixed_species_missing", "ambiguous_species", "scope_missing",
         "decisions", "protocolbesluit_mismatch", "validatie_niet_geparkeerd",
     }
     if set(metrics) != required:
@@ -545,7 +701,10 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol_sleutel en bewijsmethode zijn niet consistent.")
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
-    if metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 32 or metrics["scope_missing"]:
+    if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 606
+            or metrics["dependent_combinations"] != 11 or metrics["mixed_species_missing"]
+            or metrics["secure_mixed_species_missing"]
+            or metrics["ambiguous_species"] != 1 or metrics["scope_missing"]):
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
     if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")

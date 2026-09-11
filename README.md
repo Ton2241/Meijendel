@@ -228,19 +228,25 @@ geschiktheid van de geleverde waarnemingsregels. Regelversie
 `ndff-protocolkwaliteit-v1` bevat de catalogus van 54 protocollen, de
 gebruiksmatrix en de ruimtelijke beoordeling van alle 810.830 openbare
 FFV-records. De actuele voorlopige analysebesluiten staan afzonderlijk onder
-`ndff-analysebesluit-v3`; de oorspronkelijke v1- en v2-besluiten blijven als
+`ndff-analysebesluit-v4`; de oorspronkelijke v1-, v2- en v3-besluiten blijven als
 historische auditlaag bewaard. De bronrecords zelf zijn niet gewijzigd.
 
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
-soortgroep zijn onder `ndff-protocolbereik-v1` ingedeeld in
+soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in
 `ndff_protocol_soortgroep_geschiktheid`. De klassen zijn `doelgroep`,
-`bijvangst`, `algemene_bron`, `doelsoortafhankelijk` en `gemengd`. Bij de twee
-gemengde zoogdiercombinaties (DAZ-BMP en Konijnen in de duinen) staat de
-verdere indeling per aangetroffen taxon in
-`ndff_protocol_soort_geschiktheid`. Bijvangst en algemene bronnen ondersteunen
-uitsluitend positieve voorkomensinformatie (`V`). Een gemengde combinatie mag
+`bijvangst`, `algemene_bron`, `doelsoortafhankelijk` en `gemengd`. Voor alle
+negen gemengde combinaties staat de verdere indeling van ieder aangetroffen
+taxon in `ndff_protocol_soort_geschiktheid`: 606 protocol-taxonbesluiten,
+waarvan 66 doelsoort, 539 bijvangst en één taxonomisch onbepaald. Bijvangst en
+algemene bronnen ondersteunen uitsluitend positieve voorkomensinformatie
+(`V`). Een gemengde combinatie mag
 voor een ander analysetype alleen na een expliciete selectie van de daar als
 `doelsoort` geregistreerde taxa worden gebruikt.
+
+Van de 19 eerder doelsoortafhankelijke combinaties zijn er acht opgelost met
+officiële protocolafbakening. Elf blijven afhankelijk van ontbrekende
+projectcontext: eDNA `10.002`, Staatsbosbeheer-florakartering `12.015`, de zeven
+SNL-soortgroepen van `12.205` en de Vleermuisprotocollen `17.505` en `17.506`.
 
 Ieder NDFF-record heeft daarnaast precies één genormaliseerde
 protocolkoppeling. Openbare koppelingen staan in

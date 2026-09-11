@@ -64,7 +64,9 @@ wijzigt geen analyse-, verspreidings-, trend- of innamestatus.
 De inhoudelijke doelbereiklaag staat in
 `Meijendel.ndff_protocol_soortgroep_geschiktheid`. Gemengde combinaties worden
 in `Meijendel.ndff_protocol_soort_geschiktheid` verder uitgesplitst tot
-doelsoort of bijvangst. Nieuwe analyses gebruiken deze tabellen vóór het
+doelsoort, bijvangst of taxonomisch onbepaald. De actuele versies zijn
+`ndff-protocolbereik-v2` en `ndff-analysebesluit-v4`; eerdere versies blijven
+auditspoor. Nieuwe analyses gebruiken deze tabellen vóór het
 analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
 alleen de protocolcode.
 
