@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS ndff_analysebesluit (
   analysetype ENUM('V','I','TV','TA','TK') NOT NULL,
   protocolgeschiktheid ENUM('primair','voorwaardelijk','niet_onderbouwd') NOT NULL,
   gegevensgeschiktheid ENUM('geschikt','voorwaardelijk','onvoldoende','niet_beoordeeld') NOT NULL,
-  eindbesluit ENUM('toegelaten','alleen_verspreidingscontext','wacht_op_brondata','uitgesloten_huidige_levering') NOT NULL,
+  eindbesluit ENUM('toegelaten','voorlopig_toegelaten','alleen_verspreidingscontext','wacht_op_brondata','uitgesloten_huidige_levering') NOT NULL,
   vereist_ruimtelijke_toets TINYINT(1) NOT NULL DEFAULT 1,
   vereist_pq_toets TINYINT(1) NOT NULL DEFAULT 1,
   recordaantal_bij_besluit BIGINT UNSIGNED NOT NULL,
@@ -157,3 +157,11 @@ CREATE TABLE IF NOT EXISTS ndff_analysebesluit (
   CHECK (vereist_ruimtelijke_toets IN (0,1)),
   CHECK (vereist_pq_toets IN (0,1))
 ) ENGINE=InnoDB;
+
+-- Protocolgeschikte gegevens mogen voorlopig worden gebruikt zolang de
+-- leveringsgeschiktheid afzonderlijk als niet beoordeeld herkenbaar blijft.
+ALTER TABLE ndff_analysebesluit
+  MODIFY eindbesluit ENUM(
+    'toegelaten','voorlopig_toegelaten','alleen_verspreidingscontext',
+    'wacht_op_brondata','uitgesloten_huidige_levering'
+  ) NOT NULL;

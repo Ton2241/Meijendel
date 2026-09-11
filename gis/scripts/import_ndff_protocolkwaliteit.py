@@ -19,6 +19,7 @@ DEFAULT_SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
 SOURCE_XLSX = ROOT / "Natuurprotocollen" / "Natuurprotocollen_gebruiksmatrix.xlsx"
 SOURCE_DOCX = ROOT / "Natuurprotocollen" / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
 RULE_VERSION = "ndff-protocolkwaliteit-v1"
+DECISION_RULE_VERSION = "ndff-analysebesluit-v2"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
@@ -222,18 +223,17 @@ SELECT c.bron_scope,c.soortgroep_raw,m.protocol_id,a.analysetype,
        CASE WHEN a.analysetype=g.hoofdtype THEN 'primair'
             WHEN a.analysetype='V' OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0 THEN 'voorwaardelijk'
             ELSE 'niet_onderbouwd' END,
-       CASE WHEN a.analysetype='V' THEN 'voorwaardelijk' ELSE 'onvoldoende' END,
-       CASE WHEN a.analysetype='V' THEN 'alleen_verspreidingscontext'
-            WHEN a.analysetype=g.hoofdtype OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0
-              THEN 'wacht_op_brondata'
+       'niet_beoordeeld',
+       CASE WHEN a.analysetype=g.hoofdtype OR a.analysetype='V'
+                  OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0
+              THEN 'voorlopig_toegelaten'
             ELSE 'uitgesloten_huidige_levering' END,
        1,1,c.recordaantal,
-       CASE WHEN a.analysetype='V'
-            THEN 'Alleen positieve verspreidingscontext na afzonderlijke ruimtelijke en PQ-toets.'
-            WHEN a.analysetype=g.hoofdtype OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0
-              THEN 'Protocol is kandidaat, maar de huidige levering mist volledige telobjecten, bezoeken, inspanning en niet-detecties.'
+       CASE WHEN a.analysetype=g.hoofdtype OR a.analysetype='V'
+                  OR FIND_IN_SET(a.analysetype,g.aanvullende_typen)>0
+              THEN 'Voorlopig resultaat op basis van protocolgeschiktheid. De leveringsgeschiktheid (telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden) en verdere validatie zijn nog niet beoordeeld. Gebruik de uitkomst daarom verkennend en niet als definitief bewijs van trend, afwezigheid of beheereffect.'
             ELSE 'Het protocol onderbouwt dit analysetype niet voor de huidige levering.' END,
-       {sql_text(RULE_VERSION)},'2026-09-11'
+       {sql_text(DECISION_RULE_VERSION)},'2026-09-11'
 FROM (
   SELECT 'openbaar' AS bron_scope,soortgroep_raw,
          TRIM(protocol) AS protocol_raw,
@@ -265,6 +265,24 @@ ON DUPLICATE KEY UPDATE
   recordaantal_bij_besluit=VALUES(recordaantal_bij_besluit),
   reden=VALUES(reden),
   besloten_op=VALUES(besloten_op);
+"""
+
+
+def restore_legacy_decisions_sql() -> str:
+    """Behoud de oorspronkelijke v1-besluiten als historische auditlaag."""
+    return f"""
+UPDATE ndff_analysebesluit
+SET gegevensgeschiktheid=CASE WHEN analysetype='V' THEN 'voorwaardelijk' ELSE 'onvoldoende' END,
+    eindbesluit=CASE
+      WHEN analysetype='V' THEN 'alleen_verspreidingscontext'
+      WHEN protocolgeschiktheid IN ('primair','voorwaardelijk') THEN 'wacht_op_brondata'
+      ELSE 'uitgesloten_huidige_levering' END,
+    reden=CASE
+      WHEN analysetype='V' THEN 'Alleen positieve verspreidingscontext na afzonderlijke ruimtelijke en PQ-toets.'
+      WHEN protocolgeschiktheid IN ('primair','voorwaardelijk')
+        THEN 'Protocol is kandidaat, maar de huidige levering mist volledige telobjecten, bezoeken, inspanning en niet-detecties.'
+      ELSE 'Het protocol onderbouwt dit analysetype niet voor de huidige levering.' END
+WHERE regelversie={sql_text(RULE_VERSION)};
 """
 
 
@@ -304,8 +322,14 @@ SELECT 'invalid_protocol_evidence',COUNT(*) FROM (
   WHERE (p.protocol_sleutel='LOS')<>(l.bewijsmethode='expliciet_losse_waarneming')
 ) q;
 SELECT 'spatial',COUNT(*) FROM Meijendel.ndff_open_ruimtelijke_beoordeling WHERE regelversie={sql_text(RULE_VERSION)};
-SELECT 'decisions',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(RULE_VERSION)};
-SELECT 'admitted_non_distribution',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(RULE_VERSION)} AND analysetype<>'V' AND eindbesluit='toegelaten';
+SELECT 'decisions',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(DECISION_RULE_VERSION)};
+SELECT 'protocolbesluit_mismatch',COUNT(*) FROM Meijendel.ndff_analysebesluit
+WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND (
+  (protocolgeschiktheid IN ('primair','voorwaardelijk') AND eindbesluit<>'voorlopig_toegelaten') OR
+  (protocolgeschiktheid='niet_onderbouwd' AND eindbesluit<>'uitgesloten_huidige_levering')
+);
+SELECT 'validatie_niet_geparkeerd',COUNT(*) FROM Meijendel.ndff_analysebesluit
+WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND gegevensgeschiktheid<>'niet_beoordeeld';
 """
 
 
@@ -315,7 +339,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "open_records", "secure_records", "open_protocol_links", "secure_protocol_links",
         "open_loose_records", "open_loose_links", "secure_loose_records", "secure_loose_links",
         "blank_open_protocol", "blank_secure_protocol", "invalid_protocol_evidence",
-        "spatial", "decisions", "admitted_non_distribution",
+        "spatial", "decisions", "protocolbesluit_mismatch", "validatie_niet_geparkeerd",
     }
     if set(metrics) != required:
         raise ValueError(f"Onvolledige validatie-uitvoer: {sorted(set(metrics) ^ required)}")
@@ -333,8 +357,10 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol_sleutel en bewijsmethode zijn niet consistent.")
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
-    if metrics["decisions"] == 0 or metrics["admitted_non_distribution"]:
-        raise ValueError("Analysebesluiten ontbreken of laten niet-verspreidingsgebruik toe.")
+    if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
+        raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
+    if metrics["validatie_niet_geparkeerd"]:
+        raise ValueError("Leveringsgeschiktheid is ten onrechte als beoordeeld vastgelegd.")
 
 
 def main() -> int:
@@ -354,7 +380,7 @@ def main() -> int:
         print(f"OK: {len(rows)} protocollen, bronhashes en invoercontract gevalideerd")
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), decisions_sql()))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), restore_legacy_decisions_sql(), decisions_sql()))
     client_args = mysql_args(args.login_path, args.host, args.port)
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)

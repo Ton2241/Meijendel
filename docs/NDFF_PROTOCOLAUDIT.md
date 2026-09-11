@@ -5,7 +5,10 @@
 De 810.830 unieke FFV-waarnemingsregels zijn **niet rechtstreeks trendklaar**.
 Een gevalideerde waarneming en een geregistreerde protocolnaam bewijzen nog niet
 dat de FFV-export alle telbezoeken, inspanning, telobjecten en afleidbare
-nulwaarnemingen bevat. De life Meijendel-database blijft daarom ongewijzigd.
+nulwaarnemingen bevat. Protocolmatig passende gegevens mogen daarom wel
+voorlopig en verkennend worden gebruikt, terwijl de leveringsgeschiktheid
+afzonderlijk `niet_beoordeeld` blijft. Iedere uitkomst vermeldt deze beperking;
+voorlopige toelating is geen definitieve trendvalidatie.
 
 Alleen records uit een voor de soortgroep passend doelgericht meetnet zijn
 kandidaat voor vervolg. Daarvoor worden eerst de volledige brondata bij de
@@ -162,7 +165,11 @@ onderbouwing staat in
 `Natuurprotocollen/Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx`.
 De gebruikte bestanden zijn met SHA-256 vastgezet in de importeur.
 
-Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast met:
+Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast voor de
+protocolcatalogus, recordkoppelingen en ruimtelijke beoordeling. De actuele
+voorlopige analysebesluiten gebruiken de afzonderlijke regelversie
+`ndff-analysebesluit-v2`; de oorspronkelijke v1-besluiten blijven als
+historische auditlaag beschikbaar. De laag bevat:
 
 - `ndff_protocol`: 54 gestandaardiseerde protocollen;
 - `ndff_protocol_mapping`: 91 gecontroleerde tekstkoppelingen uit openbare en
@@ -191,9 +198,11 @@ Van de openbare records zijn 365.854 onvervaagde geometrieën volledig binnen
 precies één plot gelegen. Dit is uitsluitend een ruimtelijke toelatingsvoorwaarde
 voor positieve verspreidingscontext. `Single_deels`, `multiple`, `outside` en
 alle vervaagde geometrieën zijn ruimtelijk geblokkeerd. De PQ-poort blijft een
-afzonderlijke verplichte voorwaarde. Geen huidig besluit voor inventarisatie,
-verspreidingstrend, aantalsindex of kwaliteitstrend is toegelaten, omdat de
-feitelijke surveystructuur ontbreekt.
+afzonderlijke verplichte voorwaarde. Protocolmatig passende besluiten voor
+inventarisatie, verspreidingstrend, aantalsindex en kwaliteitstrend zijn
+`voorlopig_toegelaten`. Zij mogen verkennend worden gebruikt, met de verplichte
+melding dat leveringsgeschiktheid en verdere validatie nog niet zijn beoordeeld.
+Niet-onderbouwde protocol–analysetypecombinaties blijven uitgesloten.
 
 Het schema en de reproduceerbare invoer staan in:
 

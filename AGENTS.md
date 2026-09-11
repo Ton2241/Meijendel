@@ -131,6 +131,12 @@ MySQL:
 - houd protocolkwalificatie strikt gescheiden van analysetoelating:
   `analyse_status` is geen protocolstatus en beveiligde verspreidings-, trend-
   en innamevelden mogen hiervoor niet worden hergebruikt
+- behandel `ndff_analysebesluit.eindbesluit = voorlopig_toegelaten` als
+  toestemming voor uitsluitend verkennend gebruik op basis van
+  protocolgeschiktheid; houd `gegevensgeschiktheid = niet_beoordeeld` totdat
+  telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden zijn
+  onderzocht en toon bij ieder resultaat verplicht de kwaliteitsvermelding uit
+  `ndff_analysebesluit.reden`
 
 GIS / R-spatial:
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`

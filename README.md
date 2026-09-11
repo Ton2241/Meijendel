@@ -225,10 +225,11 @@ Voor nieuwe analyses:
 
 De lokale database bewaart de wetenschappelijke protocolbeoordeling los van de
 geschiktheid van de geleverde waarnemingsregels. Regelversie
-`ndff-protocolkwaliteit-v1` bestaat uit een catalogus van 54 protocollen, een
-gebruiksmatrix, een ruimtelijke beoordeling van alle 810.830 openbare
-FFV-records en conservatieve analysebesluiten. De bronrecords zelf zijn niet
-gewijzigd.
+`ndff-protocolkwaliteit-v1` bevat de catalogus van 54 protocollen, de
+gebruiksmatrix en de ruimtelijke beoordeling van alle 810.830 openbare
+FFV-records. De actuele voorlopige analysebesluiten staan afzonderlijk onder
+`ndff-analysebesluit-v2`; de oorspronkelijke v1-besluiten blijven als
+historische auditlaag bewaard. De bronrecords zelf zijn niet gewijzigd.
 
 Ieder NDFF-record heeft daarnaast precies één genormaliseerde
 protocolkoppeling. Openbare koppelingen staan in
@@ -243,9 +244,13 @@ toelatingspoort voor analyses. Lege protocolwaarden mogen nooit automatisch als
 
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
-SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht. Geen enkele
-huidige NDFF-reeks is door deze technische kwaliteitslaag toegelaten voor
-trend-, abundantie-, afwezigheids- of beheereffectanalyse.
+SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.
+Protocolmatig passende analysetypen krijgen `voorlopig_toegelaten`; de
+leveringsgeschiktheid blijft afzonderlijk `niet_beoordeeld`. Deze status maakt
+verkennend gebruik mogelijk, maar is geen bevestiging dat een trend,
+afwezigheid, abundantie of beheereffect al voldoende is gevalideerd. Iedere
+uitvoer moet daarom de kwaliteitsvermelding uit `ndff_analysebesluit.reden`
+tonen.
 
 Reproduceerbare controle en lokale toepassing:
 

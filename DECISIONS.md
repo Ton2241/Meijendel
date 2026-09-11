@@ -112,10 +112,19 @@
   analysebesluiten per bron, soortgroep, protocol en analysetype. Alleen 365.854
   onvervaagde geometrieën die volledig binnen precies één SOVON-plot liggen
   zijn ruimtelijk kandidaat voor plotcontext; ook deze toelating blijft
-  afhankelijk van de PQ-poort. Protocolmatig passende `I`, `TV`, `TA` en
-  `TK`-combinaties staan op `wacht_op_brondata`; niet-onderbouwde combinaties
-  zijn uitgesloten. Geen van beide statussen is analysetoelating. De nieuwe
-  tabellen wijzigen geen bronrecord en bevatten geen beveiligde geometrie.
+  afhankelijk van de PQ-poort. Protocolmatig passende combinaties voor `V`,
+  `I`, `TV`, `TA` en `TK` staan op `voorlopig_toegelaten`; niet-onderbouwde
+  combinaties blijven uitgesloten. De afzonderlijke
+  `gegevensgeschiktheid` blijft `niet_beoordeeld` totdat telobjecten, bezoeken,
+  inspanning, nulwaarnemingen en meeteenheden zijn onderzocht. Voorlopige
+  toelating maakt verkennend gebruik mogelijk, maar is geen definitieve
+  validatie. Iedere analyse-uitvoer toont verplicht de kwaliteitsvermelding uit
+  `ndff_analysebesluit.reden`. De nieuwe tabellen wijzigen geen bronrecord en
+  bevatten geen beveiligde geometrie.
+- De gewijzigde voorlopige toelating wordt als afzonderlijke regelversie
+  `ndff-analysebesluit-v2` opgeslagen. De eerdere besluiten onder
+  `ndff-protocolkwaliteit-v1` blijven als historische auditlaag bewaard en
+  worden niet stilzwijgend herschreven.
 - Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
   recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
   interne foreign key; `protocol_sleutel` is de stabiele betekenisvolle sleutel.

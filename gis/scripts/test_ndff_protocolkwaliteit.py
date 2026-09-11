@@ -42,6 +42,7 @@ def main() -> int:
     assert "create table if not exists meijendel.ndff_open_waarneming_protocol" in folded
     assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
+    assert "'voorlopig_toegelaten'" in folded
 
     for required in (
         "regelversie",
@@ -84,6 +85,8 @@ def main() -> int:
     assert len(loose) == 1 and loose[0]["protocol_code"] == ""
 
     module = load_importer()
+    assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
+    assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v2"
     parsed = module.read_seed(SEED)
     assert len(parsed) == 54
     assert module.protocol_key("Geen code") == "LOS"
@@ -111,9 +114,17 @@ def main() -> int:
     assert "analyse_status" not in record_link_sql
     assert "on duplicate key update" in record_link_sql
     decision_sql = module.decisions_sql().casefold()
-    assert "then 'wacht_op_brondata'" in decision_sql
+    assert "then 'voorlopig_toegelaten'" in decision_sql
+    assert "'niet_beoordeeld'" in decision_sql
+    assert "wacht_op_brondata" not in decision_sql
     assert "on duplicate key update" in decision_sql
-    assert "analysetype<>'v' and eindbesluit='toegelaten'" in module.validation_sql().casefold()
+    assert "ndff-analysebesluit-v2" in decision_sql
+    legacy_sql = module.restore_legacy_decisions_sql().casefold()
+    assert "ndff-protocolkwaliteit-v1" in legacy_sql
+    assert "wacht_op_brondata" in legacy_sql
+    validation_sql = module.validation_sql().casefold()
+    assert "protocolbesluit_mismatch" in validation_sql
+    assert "validatie_niet_geparkeerd" in validation_sql
     module.validate_metrics({
         "protocols": 54,
         "uses": 54,
@@ -133,7 +144,8 @@ def main() -> int:
         "invalid_protocol_evidence": 0,
         "spatial": 810830,
         "decisions": 1040,
-        "admitted_non_distribution": 0,
+        "protocolbesluit_mismatch": 0,
+        "validatie_niet_geparkeerd": 0,
     })
     try:
         module.validate_metrics({
@@ -145,7 +157,8 @@ def main() -> int:
             "secure_loose_records": 9660, "secure_loose_links": 9660,
             "blank_open_protocol": 1, "blank_secure_protocol": 0,
             "invalid_protocol_evidence": 1, "spatial": 810829,
-            "decisions": 1040, "admitted_non_distribution": 0,
+            "decisions": 1040, "protocolbesluit_mismatch": 1,
+            "validatie_niet_geparkeerd": 1,
         })
     except ValueError:
         pass
