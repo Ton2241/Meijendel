@@ -108,6 +108,12 @@ datum, validatiestatus en exacte geometrie de openbare representatie vervangen,
 en 153 uitsluitend beveiligde records. De view blijft vanwege de exacte
 geometrie buiten alle gewone en Shiny-rechten.
 
+De niet-gevoelige tabel `Meijendel.ndff_open_pq_koppeling` vormt de
+geversioneerde PQ-poort voor alle openbare records. Versie
+`ndff-open-pq-poort-v1` markeert 97.318 records van protocollen `12.007` en
+`12.202` als secundaire controlebron en 713.512 records als niet van
+toepassing. De bronhouder wordt niet zelfstandig als PQ-bewijs gebruikt.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

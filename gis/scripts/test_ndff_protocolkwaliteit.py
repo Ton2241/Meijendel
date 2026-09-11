@@ -39,6 +39,7 @@ def main() -> int:
         "ndff_protocol_soortgroep_geschiktheid",
         "ndff_protocol_soort_geschiktheid",
         "ndff_open_ruimtelijke_beoordeling",
+        "ndff_open_pq_koppeling",
         "ndff_snl_waarneming_context",
         "ndff_analysebesluit",
     ):
@@ -183,6 +184,15 @@ def main() -> int:
     assert "else 'geen_overlap_gevonden'" in snl_overlap_sql
     assert "overlap_bevestigd" in snl_overlap_sql
     assert "onafhankelijk" not in snl_overlap_sql
+    public_pq_sql = module.public_pq_gate_sql().casefold()
+    assert "insert into meijendel.ndff_open_pq_koppeling" in public_pq_sql
+    assert "update meijendel.ndff_open_waarneming" not in public_pq_sql
+    assert "12.007" in public_pq_sql and "12.202" in public_pq_sql
+    assert "bronhouder" not in public_pq_sql
+    assert "niet_beoordeelbaar" in public_pq_sql
+    assert "niet_van_toepassing" in public_pq_sql
+    assert "'exact'" not in public_pq_sql
+    assert "'onafhankelijk'" not in public_pq_sql
     scope_sql = module.protocol_scope_sql().casefold()
     assert "ndff_protocol_soortgroep_geschiktheid" in scope_sql
     assert "ndff_protocol_soort_geschiktheid" in scope_sql
@@ -229,6 +239,9 @@ def main() -> int:
         "snl_geen_overlap_gevonden": 6176,
         "snl_onvoldoende_onderzocht": 0,
         "snl_overlap_ongeldig": 0,
+        "open_pq_blocked": 97318,
+        "open_pq_not_applicable": 713512,
+        "open_pq_unassessed": 0,
     })
     try:
         module.validate_metrics({
@@ -250,6 +263,8 @@ def main() -> int:
             "snl_overlap_bevestigd": 0, "snl_overlap_mogelijk": 97,
             "snl_geen_overlap_gevonden": 6175,
             "snl_onvoldoende_onderzocht": 0, "snl_overlap_ongeldig": 1,
+            "open_pq_blocked": 97317, "open_pq_not_applicable": 713512,
+            "open_pq_unassessed": 1,
         })
     except ValueError:
         pass

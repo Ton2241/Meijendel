@@ -180,6 +180,32 @@ CREATE TABLE IF NOT EXISTS ndff_open_ruimtelijke_beoordeling (
          (vervaagd = 0 AND toewijzingskwaliteit = 'single_volledig_binnen'))
 ) ENGINE=InnoDB;
 
+-- De provinciale PQ-reeks is de gezaghebbende primaire bron. Deze afleidingslaag
+-- voorkomt dat herkenbare NDFF-PQ-bronrecords als aanvullende waarnemingen
+-- worden geteld en laat latere, fijnere matching als nieuwe regelversie toe.
+CREATE TABLE IF NOT EXISTS ndff_open_pq_koppeling (
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  classificatie ENUM(
+    'exact','waarschijnlijk_dezelfde_opname','mogelijk','onafhankelijk',
+    'niet_beoordeelbaar','niet_van_toepassing'
+  ) NOT NULL,
+  ndff_bronrol ENUM('secundaire_controlebron','niet_van_toepassing') NOT NULL,
+  primaire_pq_bron ENUM('provincie_zuid_holland','niet_van_toepassing') NOT NULL,
+  reden VARCHAR(500) NOT NULL,
+  regelversie VARCHAR(64) NOT NULL,
+  beoordeeld_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (waarneming_id, regelversie),
+  KEY ix_ndff_open_pq_selectie (regelversie, classificatie, ndff_bronrol),
+  CONSTRAINT fk_ndff_open_pq_waarneming FOREIGN KEY (waarneming_id)
+    REFERENCES ndff_open_waarneming (waarneming_id),
+  CHECK ((classificatie='niet_van_toepassing'
+          AND ndff_bronrol='niet_van_toepassing'
+          AND primaire_pq_bron='niet_van_toepassing') OR
+         (classificatie<>'niet_van_toepassing'
+          AND ndff_bronrol='secundaire_controlebron'
+          AND primaire_pq_bron='provincie_zuid_holland'))
+) ENGINE=InnoDB;
+
 -- SNL is een beoordelings- en subsidiecontext, geen bewijs dat een record een
 -- zelfstandige gegevensbron is. Deze laag registreert daarom uitsluitend wat
 -- de huidige vergelijking met andere openbare NDFF-records over overlap zegt.

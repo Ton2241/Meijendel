@@ -22,6 +22,7 @@ RULE_VERSION = "ndff-protocolkwaliteit-v1"
 SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
 DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
 SNL_OVERLAP_RULE_VERSION = "ndff-snl-overlap-v1"
+PUBLIC_PQ_RULE_VERSION = "ndff-open-pq-poort-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
@@ -551,6 +552,34 @@ ON DUPLICATE KEY UPDATE
 """
 
 
+def public_pq_gate_sql() -> str:
+    """Markeer uitsluitend herkenbare PQ-bronrecords; voer geen match afgeleid in."""
+    return f"""
+INSERT INTO Meijendel.ndff_open_pq_koppeling
+  (waarneming_id,classificatie,ndff_bronrol,primaire_pq_bron,reden,
+   regelversie,beoordeeld_op)
+SELECT w.waarneming_id,
+       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+            THEN 'niet_beoordeelbaar' ELSE 'niet_van_toepassing' END,
+       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+            THEN 'secundaire_controlebron' ELSE 'niet_van_toepassing' END,
+       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+            THEN 'provincie_zuid_holland' ELSE 'niet_van_toepassing' END,
+       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+            THEN 'Herkenbaar NDFF-PQ-bronrecord: secundaire controlebron; niet als aanvulling op de gezaghebbende provinciale PQ-reeks tellen.'
+            ELSE 'Geen PQ-bronindicator aangetroffen binnen deze beslisregel.' END,
+       {sql_text(PUBLIC_PQ_RULE_VERSION)},CURRENT_TIMESTAMP(6)
+FROM Meijendel.ndff_open_waarneming AS w
+JOIN Meijendel.ndff_open_waarneming_protocol AS l
+  ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
+JOIN Meijendel.ndff_protocol AS p ON p.protocol_id=l.protocol_id
+ON DUPLICATE KEY UPDATE
+  classificatie=VALUES(classificatie),ndff_bronrol=VALUES(ndff_bronrol),
+  primaire_pq_bron=VALUES(primaire_pq_bron),reden=VALUES(reden),
+  beoordeeld_op=VALUES(beoordeeld_op);
+"""
+
+
 def decisions_sql() -> str:
     type_rows = " UNION ALL ".join(f"SELECT {sql_text(value)} AS analysetype" for value in ANALYSIS_TYPES)
     return f"""
@@ -746,6 +775,19 @@ WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)} AND (
   (overlap_status IN ('geen_overlap_gevonden','onvoldoende_onderzocht') AND kandidaat_aantal<>0) OR
   (overlap_status='overlap_bevestigd' AND bewijsnotitie IS NULL)
 );
+SELECT 'open_pq_blocked',COUNT(*) FROM Meijendel.ndff_open_pq_koppeling
+WHERE regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
+  AND classificatie='niet_beoordeelbaar'
+  AND ndff_bronrol='secundaire_controlebron';
+SELECT 'open_pq_not_applicable',COUNT(*) FROM Meijendel.ndff_open_pq_koppeling
+WHERE regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
+  AND classificatie='niet_van_toepassing'
+  AND ndff_bronrol='niet_van_toepassing';
+SELECT 'open_pq_unassessed',COUNT(*) FROM Meijendel.ndff_open_waarneming w
+LEFT JOIN Meijendel.ndff_open_pq_koppeling p
+  ON p.waarneming_id=w.waarneming_id
+ AND p.regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
+WHERE p.waarneming_id IS NULL;
 """
 
 
@@ -761,6 +803,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "snl_records", "snl_overlap_context", "snl_overlap_bevestigd",
         "snl_overlap_mogelijk", "snl_geen_overlap_gevonden",
         "snl_onvoldoende_onderzocht", "snl_overlap_ongeldig",
+        "open_pq_blocked", "open_pq_not_applicable", "open_pq_unassessed",
     }
     if set(metrics) != required:
         raise ValueError(f"Onvolledige validatie-uitvoer: {sorted(set(metrics) ^ required)}")
@@ -795,6 +838,12 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("De SNL-overlapstatussen sluiten niet aan op het recordaantal.")
     if metrics["snl_overlap_ongeldig"]:
         raise ValueError("Een SNL-overlapstatus mist kandidaten of bewijs.")
+    if metrics["open_pq_blocked"] + metrics["open_pq_not_applicable"] != metrics["open_records"]:
+        raise ValueError("De openbare PQ-poort dekt niet alle NDFF-records.")
+    if metrics["open_pq_unassessed"]:
+        raise ValueError("Een openbaar NDFF-record mist de actuele PQ-poort.")
+    if metrics["open_pq_blocked"] != 97318 or metrics["open_pq_not_applicable"] != 713512:
+        raise ValueError("De openbare PQ-poort wijkt af van het gecontroleerde Meijendel-profiel.")
 
 
 def main() -> int:
@@ -814,7 +863,7 @@ def main() -> int:
         print(f"OK: {len(rows)} protocollen, bronhashes en invoercontract gevalideerd")
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql()))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql()))
     client_args = mysql_args(args.login_path, args.host, args.port)
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)

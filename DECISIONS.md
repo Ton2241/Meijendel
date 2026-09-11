@@ -151,6 +151,13 @@
   Exacte geometrie en preciezere beveiligde datum blijven uitsluitend in het
   beveiligde schema en de view krijgt geen rechten voor gewone of
   Shiny-accounts.
+- De openbare PQ-poort wordt geversioneerd in `ndff_open_pq_koppeling` en
+  wijzigt het bronrecord niet. Onder `ndff-open-pq-poort-v1` worden uitsluitend
+  protocollen `12.007` en `12.202` als secundaire PQ-controlebron geblokkeerd:
+  97.318 records. De overige 713.512 records zijn `niet_van_toepassing`.
+  Bronhouder Provincie Zuid-Holland alleen is geen bewijs dat een record uit
+  een PQ-opname komt; daarmee zouden 16.419 losse waarnemingen en 306
+  epifytenmeetnetrecords ten onrechte zijn geblokkeerd.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

@@ -185,6 +185,8 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
   gemengde combinaties;
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
+- `ndff_open_pq_koppeling`: 810.830 geversioneerde PQ-poortbesluiten, waarvan
+  97.318 secundaire PQ-controlebron en 713.512 niet van toepassing;
 - `ndff_snl_waarneming_context`: recordgebonden bronoverlapstatus voor de
   6.273 openbare records met protocol `12.205`;
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en

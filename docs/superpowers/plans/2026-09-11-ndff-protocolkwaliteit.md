@@ -75,3 +75,23 @@ De view krijgt geen rechten voor gewone of Shiny-accounts.
   records gelijk zijn en beveiligde velden niet in `Meijendel` zijn gekopieerd.
 - [x] Werk architectuur, besluiten en werkinstructie bij; voer regressietests,
   `git diff --check` en workspace-preflight uit; commit en push.
+
+## Vervolgtaak: openbare PQ-analysepoort
+
+**Doel:** voorkom dat de 97.318 herkenbare openbare NDFF-PQ-bronrecords naast
+de gezaghebbende provinciale PQ-reeks worden geteld, zonder de overige 713.512
+records onnodig te blokkeren.
+
+**Ontwerp:** laat het bronrecord ongewijzigd en gebruik de afzonderlijke,
+geversioneerde tabel `ndff_open_pq_koppeling`. Uitsluitend protocol `12.007` en
+protocol `12.202` krijgen
+`niet_beoordeelbaar`; alle overige records krijgen `niet_van_toepassing`.
+De automatische regel kent nooit `exact`, `onafhankelijk` of een andere
+inhoudelijke matchstatus toe.
+
+- [x] Leg de beslisregel en verwachte aantallen eerst vast in de bestaande
+  protocolkwaliteitscontracttest en controleer de verwachte fout.
+- [x] Voeg de idempotente PQ-poort toe aan de bestaande importeur.
+- [x] Pas de poort lokaal toe en valideer 97.318 geblokkeerde, 713.512
+  niet-PQ-records en nul onbeoordeelde records.
+- [x] Werk documentatie en werkinstructie bij; test, commit en push.

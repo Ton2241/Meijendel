@@ -161,6 +161,10 @@ MySQL:
   vervangen daarin hun openbare tegenhanger en mogen nooit als extra record
   worden geteld. Deze interne view bevat exacte geometrie en mag niet aan
   gewone accounts, Shiny, VPS of webexports worden toegekend
+- pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
+  regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
+  zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks
+  meetellen; leid PQ-status nooit uitsluitend uit de bronhouder af
 - laat bijvangst en `algemene_bron` nooit een niet-V-analysetype erven van het
   bijbehorende protocol
 

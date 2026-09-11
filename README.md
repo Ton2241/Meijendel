@@ -275,6 +275,13 @@ de openbare en 153 alleen beveiligd. Omdat de view exacte geometrie bevat,
 blijft zij uitsluitend lokaal in `Meijendel_ndff_secure` en buiten de rechten
 van gewone en Shiny-accounts.
 
+De geversioneerde openbare PQ-poort staat in `ndff_open_pq_koppeling`.
+Regelversie `ndff-open-pq-poort-v1` blokkeert 97.318 records met protocol
+`12.007` of `12.202` als secundaire controlebron naast de provinciale PQ-reeks;
+713.512 records zijn expliciet `niet_van_toepassing` en geen record blijft
+onbeoordeeld. Alleen Provincie Zuid-Holland als bronhouder is niet voldoende
+voor een PQ-classificatie.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.
