@@ -58,6 +58,21 @@ def main() -> int:
     assert "positieve_waarnemingen" in plot_view
     assert "nulwaarneming" not in plot_view
     assert "trendklaar" not in plot_view
+
+    canonical = view_body(sql, "v_ndff_canonieke_waarneming")
+    for required in (
+        "canonieke_identiteit_sha256",
+        "secure_vervangt_open",
+        "alleen_openbaar",
+        "alleen_beveiligd",
+        "union all",
+        "exacte_geometrie",
+        "openbare_geometrie",
+        "open_identity_sha256",
+    ):
+        assert required in canonical, f"canonieke view mist {required}"
+    assert "raw_payload" not in canonical
+    assert "ndff_identity" not in canonical
     print("OK: NDFF secure schemacontract")
     return 0
 

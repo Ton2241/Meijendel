@@ -156,6 +156,11 @@ MySQL:
   `geen_overlap_gevonden` en `onvoldoende_onderzocht`. Alleen
   `overlap_bevestigd` betekent aangetoonde dubbeling; `geen_overlap_gevonden`
   betekent nadrukkelijk niet dat onafhankelijkheid bewezen is
+- gebruik voor gecombineerde lokale NDFF-analyse uitsluitend
+  `Meijendel_ndff_secure.v_ndff_canonieke_waarneming`: beveiligde matches
+  vervangen daarin hun openbare tegenhanger en mogen nooit als extra record
+  worden geteld. Deze interne view bevat exacte geometrie en mag niet aan
+  gewone accounts, Shiny, VPS of webexports worden toegekend
 - laat bijvangst en `algemene_bron` nooit een niet-V-analysetype erven van het
   bijbehorende protocol
 

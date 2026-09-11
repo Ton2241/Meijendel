@@ -50,3 +50,28 @@ onbekende waarde wordt nooit stilzwijgend als `LOS` behandeld.
 - [x] Werk README, besluiten, protocolaudit en werkinstructie bij.
 - [x] Voer regressietests en de idempotente lokale migratie uit.
 - [x] Commit en push de afgeronde featurebranch.
+
+## Vervolgtaak: canonieke openbare en beveiligde waarnemingslaag
+
+**Doel:** bied lokaal precies één logisch record per NDFF-identiteit, waarbij
+de beveiligde levering de openbare representatie vervangt en beveiligde
+details uitsluitend in `Meijendel_ndff_secure` blijven.
+
+**Ontwerp:** de interne view `v_ndff_canonieke_waarneming` gebruikt
+`open_identity_sha256`/`identiteit_sha256` als stabiele canonieke sleutel.
+Gekoppelde beveiligde records leveren datum, validatiestatus en exacte
+geometrie; niet-gekoppelde openbare records behouden hun openbare gegevens en
+153 beveiligde records zonder openbare tegenhanger worden eenmaal toegevoegd.
+De view krijgt geen rechten voor gewone of Shiny-accounts.
+
+- [x] Breid eerst `test_ndff_secure_schema_contract.py` uit met het canonieke
+  viewcontract en controleer de verwachte fout omdat de view ontbreekt.
+- [x] Voeg de minimale interne view toe aan `ndff_secure_schema.sql` zonder
+  bronrecords of bestaande veilige views te wijzigen.
+- [x] Pas alleen de nieuwe viewdefinitie lokaal toe.
+- [x] Valideer 810.983 unieke canonieke sleutels: 796.410 alleen openbaar,
+  14.420 beveiligd in plaats van openbaar en 153 alleen beveiligd.
+- [x] Controleer dat geen geometrie ontbreekt, protocol/taxon bij gekoppelde
+  records gelijk zijn en beveiligde velden niet in `Meijendel` zijn gekopieerd.
+- [x] Werk architectuur, besluiten en werkinstructie bij; voer regressietests,
+  `git diff --check` en workspace-preflight uit; commit en push.

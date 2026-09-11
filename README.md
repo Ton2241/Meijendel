@@ -268,6 +268,13 @@ subsidiecontext; bevestigde dubbelen tellen niet als zelfstandige evidentie.
 De eerste toets vond 97 mogelijke overlaps en bij 6.176 records geen overlap;
 geen van beide uitkomsten bewijst zelfstandig verzamelde trenddata.
 
+De interne beveiligde view `v_ndff_canonieke_waarneming` combineert beide
+NDFF-leveringen zonder dubbeltelling. Zij bevat 810.983 unieke waarnemingen:
+796.410 alleen openbaar, 14.420 met de beveiligde representatie in plaats van
+de openbare en 153 alleen beveiligd. Omdat de view exacte geometrie bevat,
+blijft zij uitsluitend lokaal in `Meijendel_ndff_secure` en buiten de rechten
+van gewone en Shiny-accounts.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

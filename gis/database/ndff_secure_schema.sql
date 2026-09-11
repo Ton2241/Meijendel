@@ -235,6 +235,69 @@ CREATE TABLE IF NOT EXISTS ndff_open_secure_koppeling (
     REFERENCES ndff_waarneming_register (waarneming_id)
 ) ENGINE=InnoDB;
 
+-- Interne canonieke bronlaag. Deze view bevat exacte beveiligde geometrie en
+-- mag daarom nooit aan meijendel_read, Shiny, de VPS of webexports worden
+-- toegekend. Gekoppelde beveiligde records vervangen hun openbare versie;
+-- niet-gekoppelde records uit beide bronnen blijven eenmaal aanwezig.
+CREATE OR REPLACE VIEW v_ndff_canonieke_waarneming AS
+SELECT
+  o.identiteit_sha256 AS canonieke_identiteit_sha256,
+  o.waarneming_id AS open_waarneming_id,
+  s.waarneming_id AS secure_waarneming_id,
+  CASE WHEN s.waarneming_id IS NULL
+    THEN 'alleen_openbaar' ELSE 'secure_vervangt_open' END AS representatie,
+  (s.waarneming_id IS NOT NULL) AS bevat_beveiligde_details,
+  COALESCE(ss.oorspronkelijke_ffv_soortgroep,o.soortgroep_raw) AS soortgroep_raw,
+  COALESCE(ss.wetenschappelijke_naam,o.wetenschappelijke_naam) AS wetenschappelijke_naam,
+  COALESCE(ss.nederlandse_naam,o.nederlandse_naam) AS nederlandse_naam,
+  CASE WHEN s.waarneming_id IS NULL THEN o.periode_start
+    ELSE CAST(s.periode_start AS DATETIME) END AS periode_start,
+  CASE WHEN s.waarneming_id IS NULL THEN o.periode_stop
+    ELSE CAST(s.periode_stop AS DATETIME) END AS periode_stop,
+  CASE WHEN s.waarneming_id IS NULL THEN o.jaar ELSE s.jaar END AS jaar,
+  CASE WHEN s.waarneming_id IS NULL THEN o.protocol ELSE s.protocol END AS protocol,
+  CASE WHEN s.waarneming_id IS NULL THEN o.bronhouder ELSE s.bronhouder END AS bronhouder,
+  s.validatiestatus,
+  CASE WHEN s.waarneming_id IS NULL
+    THEN o.openbare_geometrie ELSE s.exacte_geometrie END AS analyse_geometrie,
+  CASE WHEN s.waarneming_id IS NULL
+    THEN 'openbare_geometrie' ELSE 'exacte_geometrie' END AS geometrie_bron,
+  o.vervaging_raw AS publieke_vervaging_raw,
+  o.vervagingsniveau_km AS publieke_vervagingsniveau_km
+FROM Meijendel.ndff_open_waarneming AS o
+LEFT JOIN ndff_open_secure_koppeling AS k
+  ON k.open_waarneming_id=o.waarneming_id
+LEFT JOIN ndff_waarneming_register AS s
+  ON s.waarneming_id=k.secure_waarneming_id
+LEFT JOIN ndff_soorten AS ss
+  ON ss.ndff_soort_id=s.ndff_soort_id
+UNION ALL
+SELECT
+  s.open_identity_sha256 AS canonieke_identiteit_sha256,
+  CAST(NULL AS UNSIGNED) AS open_waarneming_id,
+  s.waarneming_id AS secure_waarneming_id,
+  'alleen_beveiligd' AS representatie,
+  1 AS bevat_beveiligde_details,
+  ss.oorspronkelijke_ffv_soortgroep AS soortgroep_raw,
+  ss.wetenschappelijke_naam,
+  ss.nederlandse_naam,
+  CAST(s.periode_start AS DATETIME) AS periode_start,
+  CAST(s.periode_stop AS DATETIME) AS periode_stop,
+  s.jaar,
+  s.protocol,
+  s.bronhouder,
+  s.validatiestatus,
+  s.exacte_geometrie AS analyse_geometrie,
+  'exacte_geometrie' AS geometrie_bron,
+  s.publieke_vervaging_raw,
+  s.publieke_vervagingsniveau_km
+FROM ndff_waarneming_register AS s
+JOIN ndff_soorten AS ss
+  ON ss.ndff_soort_id=s.ndff_soort_id
+LEFT JOIN ndff_open_secure_koppeling AS k
+  ON k.secure_waarneming_id=s.waarneming_id
+WHERE k.secure_waarneming_id IS NULL;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.

@@ -101,6 +101,13 @@ Van deze regels koppelen 14.420 via de reeds gehashte openbare FFV-identiteit;
 153 beveiligde regels hebben geen openbare tegenhanger. Deze koppeltabel staat
 uitsluitend in `Meijendel_ndff_secure`.
 
+De interne view `Meijendel_ndff_secure.v_ndff_canonieke_waarneming` vormt
+daaruit één lokale bronlaag met 810.983 unieke logische waarnemingen. Zij bevat
+796.410 uitsluitend openbare records, 14.420 records waarbij de beveiligde
+datum, validatiestatus en exacte geometrie de openbare representatie vervangen,
+en 153 uitsluitend beveiligde records. De view blijft vanwege de exacte
+geometrie buiten alle gewone en Shiny-rechten.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

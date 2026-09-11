@@ -143,6 +143,14 @@
   `geen_overlap_gevonden` en `onvoldoende_onderzocht`. De derde status bewijst
   geen onafhankelijkheid; daarvoor blijft bevestiging via bronhouder,
   inventarisatieronde of bezoekidentiteit nodig.
+- Openbare en beveiligde NDFF-records worden voor lokale analyse ontsloten via
+  `Meijendel_ndff_secure.v_ndff_canonieke_waarneming`. Een beveiligde match
+  vervangt de openbare representatie en wordt niet toegevoegd als tweede
+  telling; 153 beveiligde records zonder openbare match worden eenmaal
+  toegevoegd. De stabiele sleutel is de SHA-256 van de openbare NDFF-identiteit.
+  Exacte geometrie en preciezere beveiligde datum blijven uitsluitend in het
+  beveiligde schema en de view krijgt geen rechten voor gewone of
+  Shiny-accounts.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort
