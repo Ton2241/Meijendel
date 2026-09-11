@@ -161,6 +161,15 @@ MySQL:
   vervangen daarin hun openbare tegenhanger en mogen nooit als extra record
   worden geteld. Deze interne view bevat exacte geometrie en mag niet aan
   gewone accounts, Shiny, VPS of webexports worden toegekend
+- laat iedere nieuwe selectie voor inhoudelijke analyse vervolgens via
+  `Meijendel_ndff_secure.v_ndff_analyse_record` lopen. Selecteer alleen records
+  met `record_selectiestatus = 'voorlopig_bruikbaar'`; behandel
+  `voorlopig_met_overlapwaarschuwing` afzonderlijk en sluit alle
+  `uitgesloten_*`-statussen uit. Gebruik alleen een analysetype dat voorkomt in
+  `protocol_kandidaattypen`, behoud `gegevensgeschiktheid` als afzonderlijke
+  validatiestatus en toon bij ieder resultaat de `kwaliteitsmelding`. De view
+  bevat geen geometrie of exacte datum maar blijft intern en krijgt geen
+  gewone of Shiny-rechten
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks

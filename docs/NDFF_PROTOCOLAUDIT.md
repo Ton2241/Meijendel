@@ -192,6 +192,18 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
   analysetype.
 
+De interne view `Meijendel_ndff_secure.v_ndff_analyse_record` materialiseert
+deze regels niet, maar brengt ze bij raadpleging samen tot één analysebesluit
+per canonieke waarneming. De livecontrole omvat 810.983 unieke records zonder
+ontbrekende protocol-, ruimtelijke, PQ- of gegevensgeschiktheidsstatus. Daarvan
+zijn 303.319 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
+overlapwaarschuwing, 97.333 uitgesloten via de PQ-poort en 410.327 ruimtelijk
+uitgesloten. De 430.263 expliciet losse waarnemingen hebben uitsluitend
+kandidaattype `V`. Alle records behouden
+`gegevensgeschiktheid = niet_beoordeeld`; de view levert daarom tevens een
+verplichte `kwaliteitsmelding` en is geen verklaring dat trendgebruik al
+volledig is gevalideerd.
+
 ### Doelsoorten en bijvangsten
 
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol

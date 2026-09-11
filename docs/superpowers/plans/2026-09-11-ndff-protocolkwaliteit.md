@@ -95,3 +95,25 @@ inhoudelijke matchstatus toe.
 - [x] Pas de poort lokaal toe en valideer 97.318 geblokkeerde, 713.512
   niet-PQ-records en nul onbeoordeelde records.
 - [x] Werk documentatie en werkinstructie bij; test, commit en push.
+
+## Vervolgtaak: centrale analysepoort per canoniek record
+
+**Doel:** maak voor iedere canonieke NDFF-waarneming direct zichtbaar welk
+gebruik protocolmatig kandidaat is en welke ruimtelijke, PQ-, overlap- en
+validatiebeperkingen gelden.
+
+**Ontwerp:** de interne view `v_ndff_analyse_record` bevat één rij per
+canonieke identiteit en geen geometrie of exacte datum. Zij combineert de
+actuele protocol-, doelsoort-, ruimtelijke, PQ- en SNL-regelversies. De
+protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
+`niet_beoordeeld` tot de latere surveyvalidatie.
+
+- [x] Breid eerst het beveiligde schemacontract uit en controleer de verwachte
+  fout omdat de view ontbreekt.
+- [x] Voeg de minimale interne view toe zonder bestaande bron- of analysevelden
+  te wijzigen.
+- [x] Pas alleen de nieuwe viewdefinitie lokaal toe en valideer precies 810.983
+  unieke records en volledige protocol-, ruimtelijke en PQ-dekking.
+- [x] Controleer uitsluitingsredenen en kandidaat-analysetypen op dagvlinders
+  en op losse waarnemingen.
+- [x] Werk documentatie bij; voer regressietests uit; commit en push.

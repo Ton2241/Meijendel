@@ -158,6 +158,16 @@
   Bronhouder Provincie Zuid-Holland alleen is geen bewijs dat een record uit
   een PQ-opname komt; daarmee zouden 16.419 losse waarnemingen en 306
   epifytenmeetnetrecords ten onrechte zijn geblokkeerd.
+- Iedere nieuwe lokale NDFF-analyse begint bij
+  `Meijendel_ndff_secure.v_ndff_analyse_record`. Deze centrale analysepoort
+  combineert per canonieke waarneming de actuele protocol-, doelsoort-,
+  ruimtelijke, PQ- en SNL-besluiten zonder bronrecords te wijzigen. Records met
+  `uitgesloten_pq`, `uitgesloten_ruimtelijk` of `uitgesloten_overlap` tellen
+  niet mee; `voorlopig_met_overlapwaarschuwing` blijft afzonderlijk herkenbaar.
+  `protocol_kandidaattypen` is geen eindvalidatie: zolang
+  `gegevensgeschiktheid = niet_beoordeeld` moet iedere uitvoer de meegeleverde
+  `kwaliteitsmelding` tonen en mogen ruwe aantallen meldingen niet als
+  populatietrend worden uitgelegd.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

@@ -282,6 +282,19 @@ Regelversie `ndff-open-pq-poort-v1` blokkeert 97.318 records met protocol
 onbeoordeeld. Alleen Provincie Zuid-Holland als bronhouder is niet voldoende
 voor een PQ-classificatie.
 
+De centrale lokale analysepoort is
+`Meijendel_ndff_secure.v_ndff_analyse_record`. Deze view bevat 810.983 unieke
+canonieke records en brengt per record de protocolkandidaten en de ruimtelijke,
+PQ- en SNL-poorten samen. De actuele verdeling is 303.319
+`voorlopig_bruikbaar`, 4 `voorlopig_met_overlapwaarschuwing`, 97.333
+`uitgesloten_pq` en 410.327 `uitgesloten_ruimtelijk`. Alle 430.263 records met
+protocol `LOS` ondersteunen alleen voorkomens- en verspreidingsinformatie
+(`V`). `gegevensgeschiktheid` is voor alle records nog `niet_beoordeeld`:
+iedere uitvoer moet daarom `kwaliteitsmelding` tonen en mag de kandidaattypen
+niet als definitief gevalideerde trenddata presenteren. De view bevat geen
+geometrie of exacte datum, maar blijft intern en is niet aan de Shiny-account
+toegekend.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

@@ -73,6 +73,33 @@ def main() -> int:
         assert required in canonical, f"canonieke view mist {required}"
     assert "raw_payload" not in canonical
     assert "ndff_identity" not in canonical
+
+    analysis = view_body(sql, "v_ndff_analyse_record")
+    for required in (
+        "protocol_sleutel",
+        "doelrelatie_record",
+        "protocol_kandidaattypen",
+        "ruimtelijk_toelaatbaar",
+        "pq_status",
+        "snl_overlap_status",
+        "record_selectiestatus",
+        "gegevensgeschiktheid",
+        "kwaliteitsmelding",
+        "ndff_open_pq_koppeling",
+        "ndff_snl_waarneming_context",
+        "ndff_analysebesluit",
+    ):
+        assert required in analysis, f"analyseview mist {required}"
+    for forbidden_field in (
+        "analyse_geometrie",
+        "exacte_geometrie",
+        "openbare_geometrie",
+        "periode_start",
+        "periode_stop",
+        "raw_payload",
+        "ndff_identity",
+    ):
+        assert forbidden_field not in analysis, f"analyseview lekt {forbidden_field}"
     print("OK: NDFF secure schemacontract")
     return 0
 

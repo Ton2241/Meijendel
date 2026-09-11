@@ -114,6 +114,15 @@ geversioneerde PQ-poort voor alle openbare records. Versie
 `12.202` als secundaire controlebron en 713.512 records als niet van
 toepassing. De bronhouder wordt niet zelfstandig als PQ-bewijs gebruikt.
 
+De interne view `Meijendel_ndff_secure.v_ndff_analyse_record` is de centrale
+analysepoort boven op de canonieke bronlaag. Zij bevat precies één regel per
+canonieke identiteit en combineert protocolbereik, doelsoortrelatie,
+ruimtelijke toelating, PQ-status en SNL-overlapstatus. De view bevat bewust
+geen geometrie of exacte datum en wordt evenmin aan gewone of Shiny-accounts
+toegekend. `protocol_kandidaattypen` beschrijft alleen wat het protocol in
+beginsel kan ondersteunen; `gegevensgeschiktheid` blijft `niet_beoordeeld`
+totdat de ontbrekende surveystructuur later afzonderlijk is gevalideerd.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

@@ -298,6 +298,162 @@ LEFT JOIN ndff_open_secure_koppeling AS k
   ON k.secure_waarneming_id=s.waarneming_id
 WHERE k.secure_waarneming_id IS NULL;
 
+-- Interne analysepoort zonder geometrie of exacte datum. De view maakt de
+-- reeds vastgelegde kwalificaties uitvoerbaar, maar promoveert
+-- protocolgeschiktheid nooit tot voltooide leveringsvalidatie.
+CREATE OR REPLACE VIEW v_ndff_analyse_record AS
+WITH basis AS (
+  SELECT
+    c.canonieke_identiteit_sha256,
+    c.open_waarneming_id,
+    c.secure_waarneming_id,
+    c.representatie,
+    c.bevat_beveiligde_details,
+    c.soortgroep_raw,
+    c.wetenschappelijke_naam,
+    c.nederlandse_naam,
+    c.jaar,
+    p.protocol_id,
+    p.protocol_sleutel,
+    CASE
+      WHEN p.protocol_sleutel='LOS' THEN 'losse_waarneming'
+      WHEN g.doelrelatie='gemengd' THEN COALESCE(ps.doelrelatie,'onbepaald')
+      ELSE COALESCE(g.doelrelatie,'onbepaald')
+    END AS doelrelatie_record,
+    CASE WHEN c.secure_waarneming_id IS NOT NULL
+      THEN (sr.toewijzingskwaliteit='single_volledig_binnen')
+      ELSE COALESCE(orr.is_plotcontext_ruimtelijk_toelaatbaar,0)
+    END AS ruimtelijk_toelaatbaar,
+    CASE WHEN c.secure_waarneming_id IS NOT NULL
+      THEN sp.plot_id ELSE CAST(orr.eenduidig_plot_id AS CHAR) END AS plot_id,
+    CASE WHEN c.secure_waarneming_id IS NOT NULL
+      THEN spq.classificatie ELSE opq.classificatie END AS pq_status,
+    CASE
+      WHEN p.protocol_sleutel<>'12.205' THEN 'niet_van_toepassing'
+      ELSE COALESCE(snl.overlap_status,'onvoldoende_onderzocht')
+    END AS snl_overlap_status,
+    dv.eindbesluit AS besluit_v,
+    di.eindbesluit AS besluit_i,
+    dtv.eindbesluit AS besluit_tv,
+    dta.eindbesluit AS besluit_ta,
+    dtk.eindbesluit AS besluit_tk,
+    dv.gegevensgeschiktheid,
+    dv.reden AS kwaliteitsmelding
+  FROM v_ndff_canonieke_waarneming AS c
+  LEFT JOIN Meijendel.ndff_open_waarneming_protocol AS opl
+    ON opl.waarneming_id=c.open_waarneming_id
+   AND opl.regelversie='ndff-protocolkwaliteit-v1'
+  LEFT JOIN ndff_waarneming_protocol AS spl
+    ON spl.waarneming_id=c.secure_waarneming_id
+   AND spl.regelversie='ndff-protocolkwaliteit-v1'
+  JOIN Meijendel.ndff_protocol AS p
+    ON p.protocol_id=COALESCE(spl.protocol_id,opl.protocol_id)
+  LEFT JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid AS g
+    ON g.protocol_id=p.protocol_id
+   AND g.soortgroep_raw=c.soortgroep_raw
+   AND g.regelversie='ndff-protocolbereik-v2'
+  LEFT JOIN Meijendel.ndff_protocol_soort_geschiktheid AS ps
+    ON ps.protocol_id=p.protocol_id
+   AND ps.soortgroep_raw=c.soortgroep_raw
+   AND ps.wetenschappelijke_naam=c.wetenschappelijke_naam
+   AND ps.regelversie='ndff-protocolbereik-v2'
+  LEFT JOIN Meijendel.ndff_open_ruimtelijke_beoordeling AS orr
+    ON orr.waarneming_id=c.open_waarneming_id
+   AND orr.regelversie='ndff-protocolkwaliteit-v1'
+  LEFT JOIN ndff_waarneming_register AS sr
+    ON sr.waarneming_id=c.secure_waarneming_id
+  LEFT JOIN (
+    SELECT waarneming_id,MAX(plot_id) AS plot_id
+    FROM ndff_waarneming_plot
+    WHERE is_aanwezigheid_per_plot=1
+    GROUP BY waarneming_id
+  ) AS sp ON sp.waarneming_id=c.secure_waarneming_id
+  LEFT JOIN Meijendel.ndff_open_pq_koppeling AS opq
+    ON opq.waarneming_id=c.open_waarneming_id
+   AND opq.regelversie='ndff-open-pq-poort-v1'
+  LEFT JOIN ndff_pq_koppeling AS spq
+    ON spq.ndff_waarneming_id=c.secure_waarneming_id
+   AND spq.beslisregel_versie='ndff-secure-58679-v1'
+  LEFT JOIN Meijendel.ndff_snl_waarneming_context AS snl
+    ON snl.waarneming_id=c.open_waarneming_id
+   AND snl.regelversie='ndff-snl-overlap-v1'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dv
+    ON dv.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                          THEN 'openbaar' ELSE 'beveiligd' END
+   AND dv.soortgroep_raw=c.soortgroep_raw AND dv.protocol_id=p.protocol_id
+   AND dv.analysetype='V' AND dv.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS di
+    ON di.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                          THEN 'openbaar' ELSE 'beveiligd' END
+   AND di.soortgroep_raw=c.soortgroep_raw AND di.protocol_id=p.protocol_id
+   AND di.analysetype='I' AND di.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dtv
+    ON dtv.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                           THEN 'openbaar' ELSE 'beveiligd' END
+   AND dtv.soortgroep_raw=c.soortgroep_raw AND dtv.protocol_id=p.protocol_id
+   AND dtv.analysetype='TV' AND dtv.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dta
+    ON dta.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                           THEN 'openbaar' ELSE 'beveiligd' END
+   AND dta.soortgroep_raw=c.soortgroep_raw AND dta.protocol_id=p.protocol_id
+   AND dta.analysetype='TA' AND dta.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dtk
+    ON dtk.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                           THEN 'openbaar' ELSE 'beveiligd' END
+   AND dtk.soortgroep_raw=c.soortgroep_raw AND dtk.protocol_id=p.protocol_id
+   AND dtk.analysetype='TK' AND dtk.regelversie='ndff-analysebesluit-v4'
+), recordbesluit AS (
+  SELECT basis.*,
+    CONCAT_WS(',',
+      CASE WHEN besluit_v='voorlopig_toegelaten' THEN 'V' END,
+      CASE WHEN besluit_i='voorlopig_toegelaten'
+             OR (besluit_i='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'I' END,
+      CASE WHEN besluit_tv='voorlopig_toegelaten'
+             OR (besluit_tv='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'TV' END,
+      CASE WHEN besluit_ta='voorlopig_toegelaten'
+             OR (besluit_ta='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'TA' END,
+      CASE WHEN besluit_tk='voorlopig_toegelaten'
+             OR (besluit_tk='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'TK' END
+    ) AS protocol_kandidaattypen
+  FROM basis
+)
+SELECT
+  canonieke_identiteit_sha256,
+  open_waarneming_id,
+  secure_waarneming_id,
+  representatie,
+  bevat_beveiligde_details,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  jaar,
+  protocol_id,
+  protocol_sleutel,
+  doelrelatie_record,
+  protocol_kandidaattypen,
+  ruimtelijk_toelaatbaar,
+  plot_id,
+  pq_status,
+  snl_overlap_status,
+  CASE
+    WHEN pq_status NOT IN ('onafhankelijk','niet_van_toepassing')
+      THEN 'uitgesloten_pq'
+    WHEN ruimtelijk_toelaatbaar=0 THEN 'uitgesloten_ruimtelijk'
+    WHEN snl_overlap_status='overlap_bevestigd' THEN 'uitgesloten_overlap'
+    WHEN snl_overlap_status IN ('overlap_mogelijk','onvoldoende_onderzocht')
+      THEN 'voorlopig_met_overlapwaarschuwing'
+    ELSE 'voorlopig_bruikbaar'
+  END AS record_selectiestatus,
+  gegevensgeschiktheid,
+  CONCAT(kwaliteitsmelding,
+    ' Protocoltypen zijn kandidaten; ruwe meldingsaantallen zijn geen populatietrend.')
+    AS kwaliteitsmelding
+FROM recordbesluit;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.
