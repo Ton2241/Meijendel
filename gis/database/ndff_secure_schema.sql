@@ -451,7 +451,7 @@ SELECT
   END AS record_selectiestatus,
   gegevensgeschiktheid,
   CONCAT(kwaliteitsmelding,
-    ' Protocoltypen zijn kandidaten; ruwe meldingsaantallen zijn geen populatietrend.')
+    ' Protocoltypen zijn kandidaten. Verkennende berekeningen zijn toegestaan met deze kwaliteitsmelding. Ruwe meldingsaantallen zijn geen gevalideerde populatietrend.')
     AS kwaliteitsmelding
 FROM recordbesluit;
 
@@ -475,7 +475,7 @@ SELECT
     WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
     ELSE 'geschikt'
   END AS gegevensgeschiktheid,
-  'Positieve, voorlopig bruikbare geregistreerde aanwezigheid. bronrecords_ter_controle is geen abundantie. Raadpleeg altijd gegevensgeschiktheid.'
+  'Positieve, voorlopig bruikbare geregistreerde aanwezigheid. Verkennende ruimtelijke berekeningen zijn toegestaan. bronrecords_ter_controle is geen abundantie. Raadpleeg altijd gegevensgeschiktheid.'
     AS kwaliteitsmelding
 FROM v_ndff_analyse_record
 WHERE record_selectiestatus = 'voorlopig_bruikbaar'
@@ -513,7 +513,7 @@ SELECT
     WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
     ELSE 'geschikt'
   END AS gegevensgeschiktheid,
-  'Protocolmatige trendkandidaat. Raadpleeg gegevensgeschiktheid en surveystructuur. Dit is geen trendresultaat.'
+  'Protocolmatige trendkandidaat. Een verkennende trendberekening van registraties is toegestaan. Raadpleeg gegevensgeschiktheid en surveystructuur. Dit is geen gevalideerde populatietrend.'
     AS kwaliteitsmelding
 FROM v_ndff_analyse_record
 WHERE record_selectiestatus = 'voorlopig_bruikbaar'
@@ -568,7 +568,7 @@ SELECT
   SUM(record_selectiestatus='uitgesloten_overlap') AS uitgesloten_overlap,
   SUM(bevat_beveiligde_details=1) AS beveiligde_records,
   SUM(gegevensgeschiktheid<>'geschikt') AS aanvullende_validatie_nodig,
-  'Kandidaataantallen zijn protocolmatig en ruimtelijk voorgeselecteerd. Raadpleeg gegevensgeschiktheid. Ruwe meldingsaantallen zijn geen populatietrend.'
+  'Kandidaataantallen zijn protocolmatig en ruimtelijk voorgeselecteerd. Verkennende berekeningen zijn toegestaan. Raadpleeg gegevensgeschiktheid. Ruwe meldingsaantallen zijn geen gevalideerde populatietrend.'
     AS kwaliteitsmelding
 FROM v_ndff_analyse_record
 GROUP BY
@@ -591,7 +591,7 @@ SELECT
     WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
     ELSE 'geschikt'
   END AS gegevensgeschiktheid,
-  'Geregistreerde positieve soortenrijkdom. Niet-bezochte jaren en ontbrekende soorten zijn geen nulwaarnemingen. Raadpleeg gegevensgeschiktheid.'
+  'Geregistreerde positieve soortenrijkdom voor verkennende berekeningen. Niet-bezochte jaren en ontbrekende soorten zijn geen nulwaarnemingen. Raadpleeg gegevensgeschiktheid.'
     AS kwaliteitsmelding
 FROM v_ndff_verspreiding_plot_jaar_taxon
 GROUP BY
@@ -618,7 +618,7 @@ SELECT
     WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
     ELSE 'geschikt'
   END AS gegevensgeschiktheid,
-  'Eerste en laatste geregistreerde positieve waarneming in deze selectie. Dit zijn geen bewezen vestigings- of verdwijnjaren.'
+  'Eerste en laatste geregistreerde positieve waarneming voor verkennende berekeningen. Dit zijn geen bewezen vestigings- of verdwijnjaren.'
     AS kwaliteitsmelding
 FROM v_ndff_verspreiding_plot_jaar_taxon
 GROUP BY
@@ -680,7 +680,7 @@ SELECT
     AS verschil_plots_met_registratie,
   bronrecords_ter_controle,
   gegevensgeschiktheid,
-  'Vergelijking tussen jaren met een positieve registratie. Gebruik aansluitend_jaar voor jaar-op-jaarvergelijking. Verschillen kunnen waarnemingsinspanning weerspiegelen.'
+  'Verkennende vergelijking tussen jaren met een positieve registratie. Gebruik aansluitend_jaar voor jaar-op-jaarvergelijking. Verschillen kunnen waarnemingsinspanning weerspiegelen en zijn geen gevalideerde populatietrend.'
     AS kwaliteitsmelding
 FROM met_vorig;
 
@@ -705,7 +705,7 @@ SELECT
     WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
     ELSE 'geschikt'
   END AS gegevensgeschiktheid,
-  'Dekking en meldingsintensiteit van positieve registraties. Bronrecords zijn geen individuen en ontbrekende registraties zijn geen afwezigheid.'
+  'Dekking en meldingsintensiteit voor verkennende berekeningen. Bronrecords zijn geen individuen en ontbrekende registraties zijn geen gevalideerde afwezigheid.'
     AS kwaliteitsmelding
 FROM v_ndff_analyse_record
 WHERE record_selectiestatus='voorlopig_bruikbaar'

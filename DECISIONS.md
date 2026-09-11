@@ -197,6 +197,14 @@
   inspanning of trendgeschiktheid zijn gevalideerd. De afzonderlijke
   bronvalidatiefase mag deze versie alleen via een nieuwe expliciete
   ketenversie wijzigen.
+- Verkennende berekeningen van registratiepatronen zijn binnen
+  `ndff-analyseketen-v1` toegestaan wanneer selectiepoort,
+  `gegevensgeschiktheid` en `kwaliteitsmelding` zichtbaar blijven. De
+  presentatie gebruikt termen als *geregistreerde aanwezigheid*, *verandering
+  in registraties*, *meldingsintensiteit* en *associatie met beheer*. Zonder
+  aanvullende validatie worden de uitkomsten niet aangeduid als gevalideerde
+  populatietrend, abundantie, afwezigheid of causaal beheereffect. Een
+  waarschuwing maakt een ontbrekende surveystructuur niet alsnog beschikbaar.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

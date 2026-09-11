@@ -145,6 +145,8 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
    De vaste versie `ndff-analyseketen-v1` is in alle analyseviews opgenomen.
    De reproduceerbare live-audit controleert totalen, dubbelen, kernstatussen,
    jaargaten, beveiliging en grants en is op 11 september 2026 volledig
-   geslaagd. Dit is geen gereedverklaring voor populatietrends, abundantie,
-   afwezigheid of causale effectanalyse; daarvoor begint nu de afzonderlijke
-   bronvalidatiefase.
+   geslaagd. Verkennende berekeningen van registraties, verspreiding en
+   associaties zijn toegestaan met de verplichte kwaliteitsmelding. Zonder
+   aanvullende validatie worden zij niet gepresenteerd als gevalideerde
+   populatietrends, abundantie, afwezigheid of causale effectanalyse; daarvoor
+   begint nu de afzonderlijke bronvalidatiefase.

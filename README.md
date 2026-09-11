@@ -348,8 +348,12 @@ python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-live
 De audit controleert 810.983 unieke canonieke records, alle status- en
 viewtotalen, jaargaten, ontbrekende velden en ongewenste grants. Een geslaagde
 audit maakt de gegevens niet automatisch trendklaar. Alle 810.983 records
-behouden in deze versie aanvullende validatiebehoefte; trend-, abundantie- en
-afwezigheidsanalyse vereisen de later afgesproken bronvalidatie.
+behouden in deze versie aanvullende validatiebehoefte. Verkennende berekeningen
+van registratie- en verspreidingspatronen, meldingsintensiteit en associaties
+met beheer zijn wel toegestaan wanneer de kwaliteitsmelding wordt getoond.
+Zonder de later afgesproken bronvalidatie mogen deze uitkomsten niet als een
+gevalideerde populatietrend, abundantie, afwezigheid of causaal beheereffect
+worden gepresenteerd.
 
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd

@@ -102,6 +102,7 @@ def main() -> int:
         "ndff_identity",
     ):
         assert forbidden_field not in analysis, f"analyseview lekt {forbidden_field}"
+    assert "verkennende berekeningen" in analysis
 
     verspreiding = view_body(sql, "v_ndff_verspreiding_plot_jaar_taxon")
     for required in (
@@ -133,6 +134,7 @@ def main() -> int:
     ):
         assert required in trend, f"trendkandidaatview mist {required}"
     assert "find_in_set('i',protocol_kandidaattypen)" in trend.replace(" ", "")
+    assert "verkennende trendberekening" in trend
     for safe_view in (verspreiding, trend):
         assert "analyseketenversie" in safe_view
         for forbidden_field in (

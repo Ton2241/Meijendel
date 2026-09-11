@@ -252,9 +252,13 @@ De gecontroleerde audit slaagt met 810.983 unieke canonieke records, nul
 dubbelen, nul ontbrekende kernstatussen, nul afwijkende ketenversies en nul
 grants op de nieuwe interne views voor gewone of Shiny-accounts. Daarmee is de
 keten gereed voor verkennende analyses van geregistreerde aanwezigheid en
-verspreiding. Zij is niet formeel gereed voor populatietrends, abundantie,
-afwezigheid of causale effectanalyse. Daarvoor begint nu de afzonderlijke fase
-van aanvullende bron- en surveyvalidatie.
+verspreiding. Ook verkennende berekeningen van verandering, meldingsintensiteit
+en associaties met beheer zijn toegestaan wanneer de selectieregels en
+kwaliteitsmelding zichtbaar blijven. Zonder aanvullende bron- en
+surveyvalidatie worden de resultaten niet gepresenteerd als een gevalideerde
+populatietrend, abundantie, afwezigheid of causaal beheereffect. De afzonderlijke
+validatiefase is nodig om te bepalen welke kandidaten later wel zo kunnen worden
+gebruikt.
 
 ### Doelsoorten en bijvangsten
 

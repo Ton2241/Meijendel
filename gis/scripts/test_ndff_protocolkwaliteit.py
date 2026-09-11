@@ -317,6 +317,7 @@ def main() -> int:
         path.read_text(encoding="utf-8")
         for path in (README, DECISIONS, AUDIT, WORK_INSTRUCTION)
     )
+    documentation_normalized = " ".join(documentation.split())
     for required_text in (
         "ndff_open_waarneming_protocol",
         "Meijendel_ndff_secure.ndff_waarneming_protocol",
@@ -329,8 +330,10 @@ def main() -> int:
         "onvoldoende_onderzocht",
         "ndff-analyseketen-v1",
         "--audit-live",
+        "verkennende berekeningen",
+        "niet als een gevalideerde populatietrend",
     ):
-        assert required_text in documentation, required_text
+        assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")
     architecture = ARCHITECTURE.read_text(encoding="utf-8")
     assert "ndff_open_waarneming_protocol" in architecture

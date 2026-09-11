@@ -157,6 +157,12 @@ totalen, jaargaten en grants. Een geslaagde audit verklaart de keten uitsluitend
 gereed voor verkennende verspreidingsanalyse; surveygeschiktheid en
 trendvalidatie blijven een afzonderlijke vervolgfase.
 
+Deze status staat verkennende berekeningen nadrukkelijk toe. De views leveren
+registratie-, verspreidings-, rijkdoms- en intensiteitsmaten en protocolmatige
+trendkandidaten. De verplichte kwaliteitsmelding begrenst de interpretatie:
+zonder aanvullende surveyvalidatie zijn dit geen gevalideerde
+populatietrends, abundanties, afwezigheden of causale beheereffecten.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

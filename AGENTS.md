@@ -195,6 +195,12 @@ MySQL:
   geslaagde audit bewijst technische reproduceerbaarheid voor verkennende
   verspreidingsanalyse, niet dat protocolkandidaten al trendklaar zijn. Leg
   iedere latere inhoudelijke wijziging vast onder een nieuwe ketenversie
+- verkennende berekeningen zijn toegestaan met de voorgeselecteerde views,
+  mits `gegevensgeschiktheid` en `kwaliteitsmelding` zichtbaar blijven. Benoem
+  resultaten als geregistreerde aanwezigheid, verandering in registraties,
+  meldingsintensiteit of associatie. Gebruik zonder aanvullende validatie nooit
+  de kwalificaties gevalideerde populatietrend, abundantie, afwezigheid of
+  causaal beheereffect
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks
