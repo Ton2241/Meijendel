@@ -23,18 +23,27 @@ meeteenheden van dat protocol; nooit voor bijvangsten.
 Voor het Landelijk Meetnet Dagvlinders is bevestigd dat iedere `03.201`-regel
 uit een geldig NEM-bezoek komt, dat de bezoekmomenten volledig aanwezig zijn en
 dat er geen volledig vlinderloze bezoeken ontbreken. Uit tijd en geometrische
-samenhang zijn onder regel `ndff-vlinderroute-v1` 3.169 bezoeken en 11
+samenhang zijn onder regel `ndff-vlinderroute-v1` 3.126 bezoeken en 11
 routefamilies gereconstrueerd. De matrix voor de 34 aangetroffen
-dagvlindertaxa bevat 107.746 bezoek-soortregels: 20.075 positief en 87.671 echte
-nullen. De 1.535 vliesvleugeligen en 556 nachtvlinders zijn bijvangst en blijven
-positieve voorkomensinformatie.
+dagvlindertaxa bevat 106.284 bezoek-soortregels: 20.075 positief en 86.209 echte
+nullen. De 556 nachtvlinderrecords zijn bijvangst en blijven positieve
+voorkomensinformatie.
 
-Van de bezoeken zijn er 2.935 aan een waarschijnlijke route gekoppeld. Eén
+Van de bezoeken zijn er 2.891 aan een waarschijnlijke route gekoppeld. Eén
 ruimtelijk uitgerekte familie omvat 172 bezoeken en blijft gemarkeerd voor
-handmatige controle. Voor 62 bezoeken met 184 bronrecords kon uit de aanwezige
-geometrie geen route worden hersteld. De afgeleide tabellen staan uitsluitend
-in `Meijendel_ndff_secure`; `--audit-vlinders` controleert aantallen,
-matrixconsistentie en afwezigheid van gewone of Shiny-rechten.
+handmatige controle. Voor 63 bezoeken met 185 bronrecords kon uit de aanwezige
+geometrie geen route worden hersteld. De afgeleide tabellen staan in
+`Meijendel`; `--audit-vlinders` controleert aantallen, matrixconsistentie en
+dat geen oude afgeleide vlindertabellen in het beveiligde schema achterblijven.
+
+De 1.535 vliesvleugelrecords onder hetzelfde protocol zijn geen bijvangst maar
+een zelfstandige NEM-deelreeks. `ndff-vliesvleugelroute-v1` omvat 217 bezoeken
+in 2018-2025 en zes gevolgde taxa. De matrix bevat 1.302 regels: 365 positieve
+bezoek-taxoncombinaties en 937 echte nullen. Alleen tijdstippen met minstens één
+vliesvleugelrecord tellen als bezoek voor deze deelreeks. Daardoor blijven de
+43 uitsluitend op vliesvleugeligen gerichte bezoeken buiten de
+dagvlindermatrix, terwijl alle 217 vliesvleugelbezoeken in hun eigen matrix
+vallen. Controle vindt plaats met `--audit-vliesvleugelen`.
 
 ## Toepassing op beveiligde levering 58679
 
@@ -54,7 +63,7 @@ uitgewerkt.
 De eerdere vervolgselectie van 1.274 records was uitsluitend gebaseerd op de
 beveiligde levering van 191 soorten. Zij is geen rangorde voor alle NDFF-data.
 Na voltooiing van `ndff-analyseketen-v1` is de prioriteit opnieuw bepaald op de
-810.983 unieke canonieke records. Daarvan zijn 65.044 records voorlopig
+810.983 unieke canonieke records. Daarvan zijn 66.169 records voorlopig
 kandidaat voor minstens één protocolmatig gebruikstype buiten uitsluitend
 positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft in de
 algemene analysepoort `niet_beoordeeld`; een voltooide protocolreconstructie
@@ -62,7 +71,8 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 
 | Protocol | Records | Bezoeken | Jaren | Stand |
 |---|---:|---:|---|---|
-| `03.201` Dagvlinders | 82.533 | 3.169 | 1990-2025 | gereconstrueerd |
+| `03.201` Dagvlinders | 82.217 | 3.126 | 1990-2025 | gereconstrueerd |
+| `03.201` Vliesvleugeligen | 1.535 | 217 | 2018-2025 | zelfstandige NEM-deelreeks gereconstrueerd |
 | `07.201` Libellen | 3.280 | 461 | 2007-2021 | volgende routeketen |
 | `10.201` Reptielen | 957 | 684 | 1990-2025 | daarna route/gebied reconstrueren |
 | `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
@@ -331,10 +341,10 @@ gebruikt.
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol
 en een FFV-soortgroep zijn onder `ndff-protocolbereik-v2` volledig beoordeeld:
 
-- 53 combinaties (`269.627` records) vallen als geheel binnen de doelgroep;
-- 4 combinaties (`2.158` records) zijn bijvangst: Nachtvlinders en
-  Vliesvleugeligen binnen `03.201`, overige zoogdieren binnen vogelprotocol
-  `14.204`, en Vleermuizen binnen DAZ-BMP `17.204`;
+- 54 combinaties (`271.162` records) vallen als geheel binnen de doelgroep;
+- 3 combinaties (`623` records) zijn bijvangst: Nachtvlinders binnen `03.201`,
+  overige zoogdieren binnen vogelprotocol `14.204`, en Vleermuizen binnen
+  DAZ-BMP `17.204`;
 - 37 combinaties (`78.158` records) zijn algemene bron-, literatuur-,
   collectie- of appregistraties en ondersteunen alleen `V`;
 - 11 combinaties (`6.673` records) gebruiken een beperkte of

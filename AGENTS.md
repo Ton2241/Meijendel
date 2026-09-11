@@ -207,13 +207,26 @@ MySQL:
   de doelsoorten en bezochte meeteenheden die het betreffende NEM-protocol
   volledig bestrijkt; leid nooit nullen af voor bijvangsten
 - gebruik voor dagvlinderprotocol `03.201` de lokale reconstructieversie
-  `ndff-vlinderroute-v1`. De tabellen
-  `Meijendel_ndff_secure.ndff_vlinder_routefamilie`,
+  `ndff-vlinderroute-v1`. De tabellen in `Meijendel`, te beginnen met
+  `Meijendel.ndff_vlinder_routefamilie`,
   `ndff_vlinder_routegeometrie`, `ndff_vlinder_bezoek` en
   `ndff_vlinder_bezoek_taxon` bevatten de afgeleide route-, bezoek- en
   doelsoortmatrix. Sluit `geen_route` uit van routeanalyses en behandel
   `handmatige_controle` afzonderlijk. Controleer de laag vóór gebruik met
   `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-vlinders`
+- behandel de binnen `03.201` geregistreerde Vliesvleugeligen als een
+  zelfstandige NEM-deelreeks, niet als bijvangst. Gebruik reconstructieversie
+  `ndff-vliesvleugelroute-v1` en de vier tabellen
+  `Meijendel.ndff_vliesvleugel_*`. Een bezoek telt voor deze deelreeks alleen
+  als op dat tijdstip minstens één vliesvleugelige is geregistreerd; alleen
+  binnen die bezoeken mogen nullen voor de zes gevolgde taxa worden afgeleid.
+  Controleer met `--audit-vliesvleugelen`
+- sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
+  op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
+  bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie
+  daadwerkelijk is vervaagd, met de bijbehorende onvervaagde leveringsdetails.
+  Iedere nieuwe tabel, view of gegevensklasse in dit beveiligde schema vereist
+  voorafgaande uitdrukkelijke toestemming van de eigenaar
 - interpreteer NEM-protocolkwaliteit niet als toestemming om willekeurige
   positieve NDFF-regels rechtstreeks aan TRIM te voeren. TRIM krijgt pas een
   matrix nadat meeteenheid, bezoeken, doelsoorten, tellingen en geldige echte

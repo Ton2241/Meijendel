@@ -30,22 +30,42 @@ SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
 VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
+VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
+VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
+VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 VLINDER_RECONSTRUCTION_EXPECTED = {
-    "source_records": 82533,
-    "visits": 3169,
+    "source_records": 82217,
+    "visits": 3126,
     "route_families": 11,
-    "route_components": 24,
-    "fine_geometries": 456,
-    "fine_visits": 3107,
-    "coarse_only_visits": 62,
-    "coarse_only_records": 184,
+    "route_components": 23,
+    "fine_geometries": 455,
+    "fine_visits": 3063,
+    "coarse_only_visits": 63,
+    "coarse_only_records": 185,
     "target_taxa": 34,
-    "matrix_rows": 107746,
+    "matrix_rows": 106284,
     "positive_rows": 20075,
-    "zero_rows": 87671,
+    "zero_rows": 86209,
     "invalid_matrix_rows": 0,
     "manual_review_visits": 172,
-    "forbidden_grants": 0,
+    "legacy_secure_tables": 0,
+}
+VLIESVLEUGEL_RECONSTRUCTION_EXPECTED = {
+    "source_records": 1535,
+    "visits": 217,
+    "route_families": 2,
+    "route_components": 2,
+    "fine_geometries": 40,
+    "fine_visits": 217,
+    "coarse_only_visits": 0,
+    "coarse_only_records": 0,
+    "target_taxa": 6,
+    "matrix_rows": 1302,
+    "positive_rows": 365,
+    "zero_rows": 937,
+    "invalid_matrix_rows": 0,
+    "manual_review_visits": 0,
+    "legacy_secure_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
     "canonical_records": 810983,
@@ -67,8 +87,8 @@ ANALYSIS_CHAIN_EXPECTED = {
     "secure_detail_records": 14573,
     "distribution_rows": 105999,
     "distribution_sources": 303319,
-    "trend_rows": 11083,
-    "trend_sources": 65044,
+    "trend_rows": 11162,
+    "trend_sources": 66169,
     "trend_loose": 0,
     "usage_rows": 142,
     "usage_records": 810983,
@@ -262,7 +282,6 @@ def build_visit_taxon_matrix(
 GENERAL_SOURCE_PROTOCOLS = {"102.004", "102.006", "104.000", "105.000"}
 BYCATCH_COMBINATIONS = {
     ("03.201", "Nachtvlinders"),
-    ("03.201", "Vliesvleugeligen"),
     ("14.204", "Zoogdieren (overig)"),
     ("17.204", "Vleermuizen"),
 }
@@ -914,24 +933,24 @@ def run_mysql(client: Path, args: list[str], sql: str, capture: bool = False) ->
 
 
 def vlinder_source_sql() -> str:
-    """Lees protocol 03.201 met beveiligde geometrie waar die beschikbaar is."""
+    """Lees protocol 03.201 uitsluitend uit de openbare NDFF-bron."""
     return """
 SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
        DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),o.jaar,
-       CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie_sha256
-            ELSE s.exacte_geometrie_sha256 END,
-       ST_X(ST_Centroid(CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie
-                             ELSE s.exacte_geometrie END)),
-       ST_Y(ST_Centroid(CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie
-                             ELSE s.exacte_geometrie END)),
-       ST_Area(CASE WHEN s.waarneming_id IS NULL THEN o.openbare_geometrie
-                    ELSE s.exacte_geometrie END),COUNT(*)
+       o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),COUNT(*)
 FROM Meijendel.ndff_open_waarneming o
-LEFT JOIN Meijendel_ndff_secure.ndff_open_secure_koppeling k
-  ON k.open_waarneming_id=o.waarneming_id
-LEFT JOIN Meijendel_ndff_secure.ndff_waarneming_register s
-  ON s.waarneming_id=k.secure_waarneming_id
 WHERE o.protocol LIKE '03.201%'
+  AND EXISTS (
+    SELECT 1
+    FROM Meijendel.ndff_open_waarneming doel
+    WHERE doel.protocol LIKE '03.201%'
+      AND doel.soortgroep_raw='Dagvlinders'
+      AND doel.periode_start=o.periode_start
+      AND doel.periode_stop=o.periode_stop
+  )
 GROUP BY o.periode_start,o.periode_stop,o.jaar,4,5,6,7
 ORDER BY o.periode_start,o.periode_stop,4;
 """
@@ -951,6 +970,45 @@ ORDER BY periode_start,periode_stop,wetenschappelijke_naam;
 """
 
 
+def vliesvleugel_source_sql() -> str:
+    """Lees alleen geometrieën van bevestigde 03.201-vliesvleugelbezoeken."""
+    return """
+SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),o.jaar,
+       o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),COUNT(*)
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '03.201%'
+  AND o.soortgroep_raw='Vliesvleugeligen'
+  AND EXISTS (
+    SELECT 1
+    FROM Meijendel.ndff_open_waarneming doel
+    WHERE doel.protocol LIKE '03.201%'
+      AND doel.soortgroep_raw='Vliesvleugeligen'
+      AND doel.periode_start=o.periode_start
+      AND doel.periode_stop=o.periode_stop
+  )
+GROUP BY o.periode_start,o.periode_stop,o.jaar,4,5,6,7
+ORDER BY o.periode_start,o.periode_stop,4;
+"""
+
+
+def vliesvleugel_observation_sql() -> str:
+    return """
+SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
+       wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED))
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '03.201%'
+  AND soortgroep_raw='Vliesvleugeligen'
+  AND aantal_raw REGEXP '^[0-9]+$'
+GROUP BY periode_start,periode_stop,wetenschappelijke_naam
+ORDER BY periode_start,periode_stop,wetenschappelijke_naam;
+"""
+
+
 def _batched_insert(table: str, columns: str, values: list[str], size: int = 1000) -> list[str]:
     return [
         f"INSERT INTO {table} ({columns}) VALUES " + ",".join(values[index:index + size]) + ";"
@@ -961,10 +1019,28 @@ def _batched_insert(table: str, columns: str, values: list[str], size: int = 100
 def reconstruct_vlinders(
     mysql_client: Path,
     client_args: list[str],
+    *,
+    doelgroep: str = "Dagvlinders",
 ) -> dict[str, int]:
-    """Bouw lokaal de 03.201-route-, bezoek- en dagvlindermatrix opnieuw op."""
+    """Bouw een openbare 03.201-route-, bezoek- en doelsoortmatrix opnieuw op."""
+    if doelgroep == "Dagvlinders":
+        source_sql = vlinder_source_sql()
+        observation_sql = vlinder_observation_sql()
+        expected_source = (82_217, 3_126, 34)
+        version = VLINDER_ROUTE_RULE_VERSION
+        table_prefix = VLINDER_TABLE_PREFIX
+        nulregel = "Niet gemeld binnen een bevestigd volledig NEM-dagvlinderbezoek; echte nul voor de doelsoort."
+    elif doelgroep == "Vliesvleugeligen":
+        source_sql = vliesvleugel_source_sql()
+        observation_sql = vliesvleugel_observation_sql()
+        expected_source = (1_535, 217, 6)
+        version = VLIESVLEUGEL_ROUTE_RULE_VERSION
+        table_prefix = VLIESVLEUGEL_TABLE_PREFIX
+        nulregel = "Niet gemeld binnen een bevestigd NEM-vliesvleugelbezoek; echte nul voor het binnen deze deelreeks gevolgde taxon."
+    else:
+        raise ValueError(f"Onbekende 03.201-doelgroep: {doelgroep}")
     query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
-    source_output = run_mysql(mysql_client, query_args, vlinder_source_sql(), capture=True)
+    source_output = run_mysql(mysql_client, query_args, source_sql, capture=True)
     route_rows: list[dict[str, object]] = []
     visits_meta: dict[str, tuple[str, str, int]] = {}
     visit_record_count: dict[str, int] = defaultdict(int)
@@ -979,11 +1055,11 @@ def reconstruct_vlinders(
             "visit": visit, "geometry": geometry_key, "x": float(x), "y": float(y),
             "area": float(area), "year": int(year), "records": int(records),
         })
-    if sum(visit_record_count.values()) != 82_533 or len(visits_meta) != 3_169:
-        raise ValueError("De 03.201-bronselectie wijkt af van het gecontroleerde profiel.")
+    if (sum(visit_record_count.values()), len(visits_meta)) != expected_source[:2]:
+        raise ValueError(f"De 03.201-bronselectie voor {doelgroep} wijkt af van het gecontroleerde profiel.")
 
     reconstruction = reconstruct_route_families(route_rows)
-    observation_output = run_mysql(mysql_client, query_args, vlinder_observation_sql(), capture=True)
+    observation_output = run_mysql(mysql_client, query_args, observation_sql, capture=True)
     observations: dict[tuple[str, str], int] = {}
     target_taxa: set[str] = set()
     for line in observation_output.splitlines():
@@ -991,10 +1067,8 @@ def reconstruct_vlinders(
         visit = f"{start}|{stop}"
         target_taxa.add(taxon)
         observations[(visit, taxon)] = int(count)
-    if len(target_taxa) != 34:
-        raise ValueError("De doelsoortenlijst van protocol 03.201 bevat niet exact 34 dagvlindertaxa.")
-    if set(visits_meta) != {visit for visit, _taxon in observations}:
-        raise ValueError("Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen.")
+    if len(target_taxa) != expected_source[2]:
+        raise ValueError(f"De doelsoortenlijst van protocol 03.201 bevat niet exact {expected_source[2]} taxa voor {doelgroep}.")
     matrix = build_visit_taxon_matrix(
         visits={visit: reconstruction["visit_to_family"].get(visit) for visit in visits_meta},
         target_taxa=target_taxa,
@@ -1008,7 +1082,7 @@ def reconstruct_vlinders(
         status = "handmatige_controle" if float(family["extent_m"]) > 3_000 else "waarschijnlijk"
         family_status[family_id] = status
         family_values.append(
-            f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{family_id},'03.201',{sql_text(status)},"
+            f"({sql_text(version)},{family_id},'03.201',{sql_text(status)},"
             f"{len(family['visits'])},{len(family['geometries'])},{len(family['component_indexes'])},"
             f"{int(family['record_count'])},{int(family['first_year'])},{int(family['last_year'])},"
             f"{int(family['year_count'])},{float(family['extent_m']):.3f})"
@@ -1018,7 +1092,7 @@ def reconstruct_vlinders(
     for geometry_key, family_id in sorted(reconstruction["geometry_to_family"].items()):
         x, y, area = geometry_meta[geometry_key]
         geometry_values.append(
-            f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{sql_text(geometry_key)},{family_id},"
+            f"({sql_text(version)},{sql_text(geometry_key)},{family_id},"
             f"{x:.3f},{y:.3f},{area:.6f})"
         )
 
@@ -1033,41 +1107,41 @@ def reconstruct_vlinders(
             status = "handmatige_controle" if family_status[int(family_id)] == "handmatige_controle" else "gereconstrueerd"
             family_sql = str(family_id)
         visit_values.append(
-            f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{sql_text(visit_keys[visit])},"
+            f"({sql_text(version)},{sql_text(visit_keys[visit])},"
             f"{sql_text(start)},{sql_text(stop)},{year},{family_sql},{sql_text(status)},"
             f"{visit_record_count[visit]})"
         )
 
     matrix_values = [
-        f"({sql_text(VLINDER_ROUTE_RULE_VERSION)},{sql_text(visit_keys[str(row['visit'])])},"
+        f"({sql_text(version)},{sql_text(visit_keys[str(row['visit'])])},"
         f"{sql_text(str(row['taxon']))},{int(row['count'])},{sql_text(str(row['status']))},"
-        "'Niet gemeld binnen een bevestigd volledig NEM-dagvlinderbezoek; echte nul voor de doelsoort.')"
+        f"{sql_text(nulregel)})"
         for row in matrix
     ]
     statements = [
         "START TRANSACTION;",
-        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
-        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
-        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_routegeometrie WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
-        f"DELETE FROM Meijendel_ndff_secure.ndff_vlinder_routefamilie WHERE reconstructieversie={sql_text(VLINDER_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={sql_text(version)};",
+        f"DELETE FROM {table_prefix}_bezoek WHERE reconstructieversie={sql_text(version)};",
+        f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={sql_text(version)};",
+        f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={sql_text(version)};",
     ]
     statements += _batched_insert(
-        "Meijendel_ndff_secure.ndff_vlinder_routefamilie",
+        f"{table_prefix}_routefamilie",
         "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus,bezoekaantal,geometrieaantal,componentaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m",
         family_values,
     )
     statements += _batched_insert(
-        "Meijendel_ndff_secure.ndff_vlinder_routegeometrie",
+        f"{table_prefix}_routegeometrie",
         "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
         geometry_values,
     )
     statements += _batched_insert(
-        "Meijendel_ndff_secure.ndff_vlinder_bezoek",
+        f"{table_prefix}_bezoek",
         "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus,bronrecordaantal",
         visit_values,
     )
     statements += _batched_insert(
-        "Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon",
+        f"{table_prefix}_bezoek_taxon",
         "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,waarnemingsstatus,nulregel",
         matrix_values,
     )
@@ -1089,27 +1163,46 @@ def reconstruct_vlinders(
     }
 
 
-def vlinder_validation_sql() -> str:
-    version = sql_text(VLINDER_ROUTE_RULE_VERSION)
+def reconstruct_vliesvleugelen(mysql_client: Path, client_args: list[str]) -> dict[str, int]:
+    """Bouw de zelfstandige 03.201-NEM-deelreeks voor vliesvleugeligen."""
+    return reconstruct_vlinders(mysql_client, client_args, doelgroep="Vliesvleugeligen")
+
+
+def nem_subseries_validation_sql(table_prefix: str, rule_version: str) -> str:
+    version = sql_text(rule_version)
+    base_name = table_prefix.split(".", 1)[1]
+    legacy_tables = ",".join(sql_text(f"{base_name}_{suffix}") for suffix in (
+        "routefamilie", "routegeometrie", "bezoek", "bezoek_taxon"
+    ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT SUM(bronrecordaantal) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version}),
-  'visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version}),
-  'route_families',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_routefamilie WHERE reconstructieversie={version}),
-  'route_components',(SELECT SUM(componentaantal) FROM Meijendel_ndff_secure.ndff_vlinder_routefamilie WHERE reconstructieversie={version}),
-  'fine_geometries',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_routegeometrie WHERE reconstructieversie={version}),
-  'fine_visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND routefamilie_id IS NOT NULL),
-  'coarse_only_visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
-  'coarse_only_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
-  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version}),
-  'matrix_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version}),
-  'positive_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
-  'zero_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND aantal=0) OR (waarnemingsstatus='echte_nul' AND aantal<>0))),
-  'manual_review_visits',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_vlinder_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='handmatige_controle'),
-  'forbidden_grants',(SELECT COUNT(*) FROM information_schema.table_privileges WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name LIKE 'ndff_vlinder_%' AND (grantee LIKE '''ndff_shiny_read''@%' OR grantee LIKE '''meijendel_read''@%'))
+  'source_records',(SELECT SUM(bronrecordaantal) FROM {table_prefix}_bezoek WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version}),
+  'route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version}),
+  'route_components',(SELECT SUM(componentaantal) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version}),
+  'fine_geometries',(SELECT COUNT(*) FROM {table_prefix}_routegeometrie WHERE reconstructieversie={version}),
+  'fine_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND routefamilie_id IS NOT NULL),
+  'coarse_only_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
+  'coarse_only_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
+  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'zero_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND aantal=0) OR (waarnemingsstatus='echte_nul' AND aantal<>0))),
+  'manual_review_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='handmatige_controle'),
+  'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({legacy_tables}))
 );
 """
+
+
+def vlinder_validation_sql() -> str:
+    return nem_subseries_validation_sql(VLINDER_TABLE_PREFIX, VLINDER_ROUTE_RULE_VERSION)
+
+
+def vliesvleugel_validation_sql() -> str:
+    return nem_subseries_validation_sql(
+        VLIESVLEUGEL_TABLE_PREFIX, VLIESVLEUGEL_ROUTE_RULE_VERSION
+    )
 
 
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
@@ -1120,6 +1213,16 @@ def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != VLINDER_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Vlinderreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_vliesvleugel_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != VLIESVLEUGEL_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (VLIESVLEUGEL_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(VLIESVLEUGEL_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != VLIESVLEUGEL_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Vliesvleugelreconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -1403,6 +1506,8 @@ def main() -> int:
     mode.add_argument("--audit-live", action="store_true")
     mode.add_argument("--reconstruct-vlinders", action="store_true")
     mode.add_argument("--audit-vlinders", action="store_true")
+    mode.add_argument("--reconstruct-vliesvleugelen", action="store_true")
+    mode.add_argument("--audit-vliesvleugelen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -1428,6 +1533,23 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_vlinder_reconstruction(metrics)
         print(f"OK: lokale dagvlinderreconstructie {VLINDER_ROUTE_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_vliesvleugelen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_vliesvleugelen(args.mysql_client, client_args)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_vliesvleugelen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            vliesvleugel_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_vliesvleugel_reconstruction(metrics)
+        print(f"OK: lokale vliesvleugelreconstructie {VLIESVLEUGEL_ROUTE_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

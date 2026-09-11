@@ -19,6 +19,14 @@
   opgenomen in Git, de gewone `Meijendel.sql`, algemene Shiny-caches of
   webpaden. Op uitdrukkelijk besluit van de eigenaar wordt op de fysiek
   beveiligde Samsung T7 geen extra versleutelde ontvangstzone gebruikt.
+- De databasegrens is vanaf 11 september 2026 aangescherpt: openbare NDFF-data
+  en alle daaruit afgeleide reconstructies staan standaard in `Meijendel`.
+  `Meijendel_ndff_secure` bevat uitsluitend individuele waarnemingen waarvan de
+  locatie in de openbare NDFF daadwerkelijk is vervaagd, plus de bijbehorende
+  onvervaagde leveringsdetails. Afgeleide bezoeken, routes, matrices en
+  analyse-uitkomsten zijn niet automatisch beveiligd. Iedere uitbreiding van
+  het beveiligde schema vereist voorafgaande uitdrukkelijke toestemming van de
+  eigenaar.
 - De op 10 september 2026 ontvangen GeoPackage voor ticket 58679 is technisch
   gevalideerd: 14.573 unieke betrouwbare records, 158 taxa met records en geen
   ongeldige geometrieën. De open FFV-identiteit is reproduceerbaar koppelbaar
@@ -63,14 +71,20 @@
   bezoeken voor de doelsoorten van dat protocol; bijvangsten krijgen nooit een
   afgeleide nul. Iedere reconstructie houdt haar onzekerheid en regelversie.
 - Voor `03.201` is deze reconstructie vastgelegd als
-  `ndff-vlinderroute-v1`: 82.533 bronrecords vormen 3.169 bezoeken en 11
+  `ndff-vlinderroute-v1`: 82.217 bronrecords vormen 3.126 bezoeken en 11
   waarschijnlijke routefamilies. De volledige matrix voor 34 aangetroffen
-  dagvlindertaxa bevat 107.746 regels, waarvan 20.075 positieve bezoek-soort-
-  combinaties en 87.671 echte nullen. De 2.091 bijvangstrecords van
-  nachtvlinders en vliesvleugeligen leveren geen nullen. Eén ruimtelijk
-  uitgerekte routefamilie met 172 bezoeken vereist handmatige controle; 62
-  bezoeken met 184 records hebben geen reconstrueerbare route en blijven
+  dagvlindertaxa bevat 106.284 regels, waarvan 20.075 positieve bezoek-soort-
+  combinaties en 86.209 echte nullen. De 556 nachtvlinderrecords blijven
+  bijvangst en leveren geen nullen. Eén ruimtelijk uitgerekte routefamilie met
+  172 bezoeken vereist handmatige controle; 63 bezoeken met 185 records
+  hebben geen reconstrueerbare route en blijven
   buiten routegebonden trendanalyse.
+- De 1.535 vliesvleugelrecords onder `03.201` vormen vanaf 11 september 2026
+  een eigen NEM-deelreeks `ndff-vliesvleugelroute-v1`, niet een bijvangstreeks.
+  Zij omvat 217 bevestigde bezoeken en zes gevolgde taxa. De matrix bevat
+  1.302 bezoek-taxonregels: 365 positief en 937 echte nullen. Daarvan vallen
+  174 bezoeken samen met een dagvlinderbezoek en 43 bezoeken zijn uitsluitend
+  op vliesvleugeligen gericht; de reeksen worden niet met elkaar vermengd.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
@@ -84,7 +98,7 @@
 - Binnen de beveiligde 191-soortenlevering gaan van de 8.494 ruimtelijke
   verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords door
   naar de brondata-opvraag. Dit is een deelsom; de validatieprioriteit voor de
-  volledige NDFF-set wordt bepaald vanuit de 65.044 canonieke kandidaten voor
+  volledige NDFF-set wordt bepaald vanuit de 66.169 canonieke kandidaten voor
   minstens één gebruikstype buiten uitsluitend `V`.
   Op uitdrukkelijk besluit van 10 september 2026 mogen alle openbare FFV-regels
   wel als duidelijk gelabelde bronregistratie in nieuwe `ndff_`-tabellen van de

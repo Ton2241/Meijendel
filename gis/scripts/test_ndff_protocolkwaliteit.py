@@ -47,12 +47,20 @@ def main() -> int:
     assert "create table if not exists meijendel.ndff_open_waarneming_protocol" in folded
     assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
     for table in (
-        "meijendel_ndff_secure.ndff_vlinder_routefamilie",
-        "meijendel_ndff_secure.ndff_vlinder_routegeometrie",
-        "meijendel_ndff_secure.ndff_vlinder_bezoek",
-        "meijendel_ndff_secure.ndff_vlinder_bezoek_taxon",
+        "meijendel.ndff_vlinder_routefamilie",
+        "meijendel.ndff_vlinder_routegeometrie",
+        "meijendel.ndff_vlinder_bezoek",
+        "meijendel.ndff_vlinder_bezoek_taxon",
+        "meijendel.ndff_vliesvleugel_routefamilie",
+        "meijendel.ndff_vliesvleugel_routegeometrie",
+        "meijendel.ndff_vliesvleugel_bezoek",
+        "meijendel.ndff_vliesvleugel_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
+    assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
+    assert "fk_ndff_vliesvleugel_geometrie_route" in folded
+    assert "fk_ndff_vliesvleugel_bezoek_route" in folded
+    assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
     assert "enum('waargenomen','echte_nul')" in folded
     assert "ndff-vlinderroute-v1" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
@@ -164,27 +172,38 @@ def main() -> int:
     assert reconstruction["visit_to_family"]["a-2020"] != reconstruction["visit_to_family"]["c-2020"]
 
     matrix = module.build_visit_taxon_matrix(
-        visits={"v1": 1, "v2": None},
+        visits={"v1": 1, "v2": None, "v3": 2},
         target_taxa=("Aglais urticae", "Pieris napi"),
         observations={
             ("v1", "Aglais urticae"): 3,
             ("v2", "Pieris napi"): 2,
         },
     )
-    assert len(matrix) == 4
+    assert len(matrix) == 6
     assert {(row["visit"], row["taxon"]): (row["count"], row["status"])
             for row in matrix} == {
         ("v1", "Aglais urticae"): (3, "waargenomen"),
         ("v1", "Pieris napi"): (0, "echte_nul"),
         ("v2", "Aglais urticae"): (0, "echte_nul"),
         ("v2", "Pieris napi"): (2, "waargenomen"),
+        ("v3", "Aglais urticae"): (0, "echte_nul"),
+        ("v3", "Pieris napi"): (0, "echte_nul"),
     }
     assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v1"
     importer_text = IMPORTER.read_text(encoding="utf-8")
     assert "--reconstruct-vlinders" in importer_text
     assert "--audit-vlinders" in importer_text
+    assert "--reconstruct-vliesvleugelen" in importer_text
+    assert "--audit-vliesvleugelen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
+    source_sql = " ".join(module.vlinder_source_sql().split())
+    assert "EXISTS ( SELECT 1" in source_sql
+    assert "doel.soortgroep_raw='Dagvlinders'" in source_sql
+    assert "meijendel_ndff_secure.ndff_vlinder_" not in importer_text.casefold()
+    assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
+    assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
+    assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
     broken_vlinder["zero_rows"] -= 1
@@ -194,11 +213,28 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende vlinderreconstructie is niet geblokkeerd")
+    module.validate_vliesvleugel_reconstruction(
+        dict(module.VLIESVLEUGEL_RECONSTRUCTION_EXPECTED)
+    )
+    broken_vliesvleugel = dict(module.VLIESVLEUGEL_RECONSTRUCTION_EXPECTED)
+    broken_vliesvleugel["positive_rows"] -= 1
+    try:
+        module.validate_vliesvleugel_reconstruction(broken_vliesvleugel)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende vliesvleugelreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
     assert module.classify_protocol_group("03.201", "Dagvlinders")["doelrelatie"] == "doelgroep"
-    assert module.classify_protocol_group("03.201", "Vliesvleugeligen")["doelrelatie"] == "bijvangst"
+    vliesvleugelen = module.classify_protocol_group("03.201", "Vliesvleugeligen")
+    assert vliesvleugelen["doelrelatie"] == "doelgroep"
+    assert vliesvleugelen["toegestane_typen"] == "PROTOCOL"
+    vlies_source_sql = " ".join(module.vliesvleugel_source_sql().split())
+    assert "o.soortgroep_raw='Vliesvleugeligen'" in vlies_source_sql
+    assert "doel.soortgroep_raw='Vliesvleugeligen'" in vlies_source_sql
+    assert "doel.soortgroep_raw='Dagvlinders'" not in vlies_source_sql
     assert module.classify_protocol_group("03.201", "Nachtvlinders")["toegestane_typen"] == "V"
     assert module.classify_protocol_group("14.204", "Zoogdieren (overig)")["doelrelatie"] == "bijvangst"
     assert module.classify_protocol_group("17.204", "Vleermuizen")["doelrelatie"] == "bijvangst"
@@ -412,6 +448,8 @@ def main() -> int:
         "--audit-live",
         "verkennende berekeningen",
         "niet als een gevalideerde populatietrend",
+        "zeer hoge uitzondering",
+        "voorafgaande uitdrukkelijke toestemming",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

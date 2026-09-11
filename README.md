@@ -235,10 +235,13 @@ Voor NEM-reeksen wordt nu aanvullend de native bezoekstructuur per protocol
 gereconstrueerd. Een NEM-code geldt als protocolbewijs voor de positieve regel,
 maar trendinvoer ontstaat pas na reconstructie van meeteenheid, bezoek,
 doelsoorten en echte nullen. Voor `03.201` is dat uitgevoerd onder
-`ndff-vlinderroute-v1`: 3.169 bezoeken, 11 routefamilies en een matrix van
-107.746 bezoek-dagvlindertaxonregels. De afleiding staat uitsluitend lokaal in
-`Meijendel_ndff_secure` en wordt gecontroleerd met
-`python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-vlinders`.
+`ndff-vlinderroute-v1`: 3.126 bezoeken, 11 routefamilies en een matrix van
+106.284 bezoek-dagvlindertaxonregels. De zelfstandige NEM-deelreeks voor de
+binnen hetzelfde protocol getelde vliesvleugeligen staat onder
+`ndff-vliesvleugelroute-v1`: 217 bezoeken, zes taxa en 1.302 matrixregels.
+Beide openbare afleidingen staan in
+`Meijendel` en worden gecontroleerd met
+`--audit-vlinders` respectievelijk `--audit-vliesvleugelen`.
 
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in

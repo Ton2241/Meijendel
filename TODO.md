@@ -29,9 +29,17 @@
   geïnterpreteerd. Dit verandert de analysebesluiten niet.
 - Dagvlinderprotocol `03.201` is lokaal gereconstrueerd als
   `ndff-vlinderroute-v1`. Controleer handmatig de ene ruimtelijk uitgerekte
-  routefamilie (172 bezoeken); houd de 62 bezoeken zonder route buiten
-  routeanalyse. De 2.935 overige routebezoeken en hun bezoek-soortmatrix zijn
+  routefamilie (172 bezoeken); houd de 63 bezoeken zonder route buiten
+  routeanalyse. De 2.891 overige routebezoeken en hun bezoek-soortmatrix zijn
   beschikbaar voor protocolgebonden analyse met zichtbare reconstructiestatus.
+- De `03.201`-vliesvleugelreeks is afzonderlijk gereconstrueerd als
+  `ndff-vliesvleugelroute-v1`: 217 bevestigde bezoeken, zes taxa en 937 echte
+  nullen. Gebruik deze matrix als NEM-deelreeks en niet als dagvlinderbijvangst;
+  controleer haar met `--audit-vliesvleugelen`.
+- De vier afgeleide dagvlindertabellen horen in `Meijendel`. Controleer met
+  `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
+  `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
+  volgende NEM-reconstructie toe.
 - Pas hetzelfde beoordelingspatroon achtereenvolgens toe op de overige zestien
   aangewezen NEM-reeksen. Begin met `07.201` (vaste libellenroutes), daarna
   `10.201`, `01.201`, `17.208` en `17.209`. Ken pas nullen toe nadat per
