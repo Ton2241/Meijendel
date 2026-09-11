@@ -21,6 +21,7 @@ SOURCE_DOCX = ROOT / "Natuurprotocollen" / "Classificatie_natuurprotocollen_wete
 RULE_VERSION = "ndff-protocolkwaliteit-v1"
 SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
 DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
+SNL_OVERLAP_RULE_VERSION = "ndff-snl-overlap-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
@@ -497,6 +498,59 @@ ON DUPLICATE KEY UPDATE
 """
 
 
+def snl_overlap_sql() -> str:
+    """Registreer mogelijke bronoverlap zonder afwezigheid als onafhankelijk te duiden."""
+    return f"""
+INSERT INTO Meijendel.ndff_snl_waarneming_context
+  (waarneming_id,overlap_status,kandidaat_aantal,kandidaat_waarneming_ids,
+   toets_methode,bewijsnotitie,regelversie,beoordeeld_op)
+SELECT s.waarneming_id,
+       CASE
+         WHEN s.soort_key IS NULL OR s.periode_start IS NULL
+              OR s.openbare_geometrie_sha256 IS NULL
+           THEN 'onvoldoende_onderzocht'
+         WHEN COUNT(o.waarneming_id)>0 THEN 'overlap_mogelijk'
+         ELSE 'geen_overlap_gevonden'
+       END,
+       CASE WHEN s.soort_key IS NULL OR s.periode_start IS NULL
+                 OR s.openbare_geometrie_sha256 IS NULL
+            THEN 0 ELSE COUNT(o.waarneming_id) END,
+       CASE WHEN s.soort_key IS NULL OR s.periode_start IS NULL
+                 OR s.openbare_geometrie_sha256 IS NULL
+                 OR COUNT(o.waarneming_id)=0
+            THEN JSON_ARRAY() ELSE JSON_ARRAYAGG(o.waarneming_id) END,
+       'Zelfde soort_key, exact periode_start en dezelfde openbare geometrie; vergelijking met alle records met een andere protocol_sleutel.',
+       NULL,{sql_text(SNL_OVERLAP_RULE_VERSION)},CURRENT_TIMESTAMP(6)
+FROM Meijendel.ndff_open_waarneming AS s
+JOIN Meijendel.ndff_open_waarneming_protocol AS sl
+  ON sl.waarneming_id=s.waarneming_id AND sl.regelversie={sql_text(RULE_VERSION)}
+JOIN Meijendel.ndff_protocol AS sp
+  ON sp.protocol_id=sl.protocol_id AND sp.protocol_sleutel='12.205'
+LEFT JOIN (
+  SELECT w.waarneming_id,w.soort_key,w.periode_start,w.openbare_geometrie_sha256
+  FROM Meijendel.ndff_open_waarneming AS w
+  JOIN Meijendel.ndff_open_waarneming_protocol AS l
+    ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
+  JOIN Meijendel.ndff_protocol AS p
+    ON p.protocol_id=l.protocol_id AND p.protocol_sleutel<>'12.205'
+) AS o
+  ON o.soort_key=s.soort_key
+ AND o.periode_start=s.periode_start
+ AND o.openbare_geometrie_sha256=s.openbare_geometrie_sha256
+GROUP BY s.waarneming_id,s.soort_key,s.periode_start,s.openbare_geometrie_sha256
+ON DUPLICATE KEY UPDATE
+  overlap_status=IF(ndff_snl_waarneming_context.overlap_status='overlap_bevestigd',
+                    ndff_snl_waarneming_context.overlap_status,VALUES(overlap_status)),
+  kandidaat_aantal=IF(ndff_snl_waarneming_context.overlap_status='overlap_bevestigd',
+                      ndff_snl_waarneming_context.kandidaat_aantal,VALUES(kandidaat_aantal)),
+  kandidaat_waarneming_ids=IF(ndff_snl_waarneming_context.overlap_status='overlap_bevestigd',
+                             ndff_snl_waarneming_context.kandidaat_waarneming_ids,
+                             VALUES(kandidaat_waarneming_ids)),
+  toets_methode=VALUES(toets_methode),
+  beoordeeld_op=VALUES(beoordeeld_op);
+"""
+
+
 def decisions_sql() -> str:
     type_rows = " UNION ALL ".join(f"SELECT {sql_text(value)} AS analysetype" for value in ANALYSIS_TYPES)
     return f"""
@@ -672,6 +726,26 @@ WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND (
 );
 SELECT 'validatie_niet_geparkeerd',COUNT(*) FROM Meijendel.ndff_analysebesluit
 WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND gegevensgeschiktheid<>'niet_beoordeeld';
+SELECT 'snl_records',COUNT(*)
+FROM Meijendel.ndff_open_waarneming_protocol l
+JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
+WHERE l.regelversie={sql_text(RULE_VERSION)} AND p.protocol_sleutel='12.205';
+SELECT 'snl_overlap_context',COUNT(*) FROM Meijendel.ndff_snl_waarneming_context
+WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)};
+SELECT 'snl_overlap_bevestigd',COUNT(*) FROM Meijendel.ndff_snl_waarneming_context
+WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)} AND overlap_status='overlap_bevestigd';
+SELECT 'snl_overlap_mogelijk',COUNT(*) FROM Meijendel.ndff_snl_waarneming_context
+WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)} AND overlap_status='overlap_mogelijk';
+SELECT 'snl_geen_overlap_gevonden',COUNT(*) FROM Meijendel.ndff_snl_waarneming_context
+WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)} AND overlap_status='geen_overlap_gevonden';
+SELECT 'snl_onvoldoende_onderzocht',COUNT(*) FROM Meijendel.ndff_snl_waarneming_context
+WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)} AND overlap_status='onvoldoende_onderzocht';
+SELECT 'snl_overlap_ongeldig',COUNT(*) FROM Meijendel.ndff_snl_waarneming_context
+WHERE regelversie={sql_text(SNL_OVERLAP_RULE_VERSION)} AND (
+  (overlap_status IN ('overlap_bevestigd','overlap_mogelijk') AND kandidaat_aantal=0) OR
+  (overlap_status IN ('geen_overlap_gevonden','onvoldoende_onderzocht') AND kandidaat_aantal<>0) OR
+  (overlap_status='overlap_bevestigd' AND bewijsnotitie IS NULL)
+);
 """
 
 
@@ -684,6 +758,9 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "spatial", "scope_combinations", "mixed_species", "dependent_combinations",
         "mixed_species_missing", "secure_mixed_species_missing", "ambiguous_species", "scope_missing",
         "decisions", "protocolbesluit_mismatch", "validatie_niet_geparkeerd",
+        "snl_records", "snl_overlap_context", "snl_overlap_bevestigd",
+        "snl_overlap_mogelijk", "snl_geen_overlap_gevonden",
+        "snl_onvoldoende_onderzocht", "snl_overlap_ongeldig",
     }
     if set(metrics) != required:
         raise ValueError(f"Onvolledige validatie-uitvoer: {sorted(set(metrics) ^ required)}")
@@ -710,6 +787,14 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
     if metrics["validatie_niet_geparkeerd"]:
         raise ValueError("Leveringsgeschiktheid is ten onrechte als beoordeeld vastgelegd.")
+    if metrics["snl_overlap_context"] != metrics["snl_records"]:
+        raise ValueError("Niet ieder SNL-record heeft precies één actuele overlapstatus.")
+    if (metrics["snl_overlap_bevestigd"] + metrics["snl_overlap_mogelijk"]
+            + metrics["snl_geen_overlap_gevonden"]
+            + metrics["snl_onvoldoende_onderzocht"] != metrics["snl_records"]):
+        raise ValueError("De SNL-overlapstatussen sluiten niet aan op het recordaantal.")
+    if metrics["snl_overlap_ongeldig"]:
+        raise ValueError("Een SNL-overlapstatus mist kandidaten of bewijs.")
 
 
 def main() -> int:
@@ -729,7 +814,7 @@ def main() -> int:
         print(f"OK: {len(rows)} protocollen, bronhashes en invoercontract gevalideerd")
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), restore_legacy_decisions_sql(), decisions_sql()))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql()))
     client_args = mysql_args(args.login_path, args.host, args.port)
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)

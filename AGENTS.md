@@ -150,6 +150,12 @@ MySQL:
 - gebruik combinaties met `wacht_op_doelsoortafbakening` voorlopig uitsluitend
   voor `V`; een protocolcode alleen bewijst daar niet dat het record een
   doelsoort betreft
+- behandel SNL-protocol `12.205` als beoordelings- en subsidiecontext, niet als
+  bewijs van een onafhankelijke bron. Gebruik recordstatussen uit
+  `ndff_snl_waarneming_context`: `overlap_bevestigd`, `overlap_mogelijk`,
+  `geen_overlap_gevonden` en `onvoldoende_onderzocht`. Alleen
+  `overlap_bevestigd` betekent aangetoonde dubbeling; `geen_overlap_gevonden`
+  betekent nadrukkelijk niet dat onafhankelijkheid bewezen is
 - laat bijvangst en `algemene_bron` nooit een niet-V-analysetype erven van het
   bijbehorende protocol
 

@@ -31,6 +31,7 @@ def load_importer():
 def main() -> int:
     sql = SCHEMA.read_text(encoding="utf-8")
     folded = " ".join(sql.casefold().split())
+    compact = "".join(sql.casefold().split())
     for table in (
         "ndff_protocol",
         "ndff_protocol_mapping",
@@ -38,6 +39,7 @@ def main() -> int:
         "ndff_protocol_soortgroep_geschiktheid",
         "ndff_protocol_soort_geschiktheid",
         "ndff_open_ruimtelijke_beoordeling",
+        "ndff_snl_waarneming_context",
         "ndff_analysebesluit",
     ):
         assert f"create table if not exists {table}" in folded, table
@@ -47,6 +49,7 @@ def main() -> int:
     assert "'voorlopig_toegelaten'" in folded
     assert "wetenschappelijke_naam varchar(255) not null" in folded
     assert "enum('doelsoort','bijvangst','onbepaald')" in folded
+    assert "enum('overlap_bevestigd','overlap_mogelijk','geen_overlap_gevonden','onvoldoende_onderzocht')" in compact
 
     for required in (
         "regelversie",
@@ -92,6 +95,7 @@ def main() -> int:
     assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
     assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
     assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
+    assert module.SNL_OVERLAP_RULE_VERSION == "ndff-snl-overlap-v1"
     parsed = module.read_seed(SEED)
     assert len(parsed) == 54
     assert module.protocol_key("Geen code") == "LOS"
@@ -172,6 +176,13 @@ def main() -> int:
     assert "wacht_op_brondata" not in decision_sql
     assert "on duplicate key update" in decision_sql
     assert "ndff-analysebesluit-v4" in decision_sql
+    snl_overlap_sql = module.snl_overlap_sql().casefold()
+    assert "ndff_snl_waarneming_context" in snl_overlap_sql
+    assert "then 'overlap_mogelijk'" in snl_overlap_sql
+    assert "then 'onvoldoende_onderzocht'" in snl_overlap_sql
+    assert "else 'geen_overlap_gevonden'" in snl_overlap_sql
+    assert "overlap_bevestigd" in snl_overlap_sql
+    assert "onafhankelijk" not in snl_overlap_sql
     scope_sql = module.protocol_scope_sql().casefold()
     assert "ndff_protocol_soortgroep_geschiktheid" in scope_sql
     assert "ndff_protocol_soort_geschiktheid" in scope_sql
@@ -211,6 +222,13 @@ def main() -> int:
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,
         "validatie_niet_geparkeerd": 0,
+        "snl_records": 6273,
+        "snl_overlap_context": 6273,
+        "snl_overlap_bevestigd": 0,
+        "snl_overlap_mogelijk": 97,
+        "snl_geen_overlap_gevonden": 6176,
+        "snl_onvoldoende_onderzocht": 0,
+        "snl_overlap_ongeldig": 0,
     })
     try:
         module.validate_metrics({
@@ -228,6 +246,10 @@ def main() -> int:
             "ambiguous_species": 0,
             "decisions": 1040, "protocolbesluit_mismatch": 1,
             "validatie_niet_geparkeerd": 1,
+            "snl_records": 6273, "snl_overlap_context": 6272,
+            "snl_overlap_bevestigd": 0, "snl_overlap_mogelijk": 97,
+            "snl_geen_overlap_gevonden": 6175,
+            "snl_onvoldoende_onderzocht": 0, "snl_overlap_ongeldig": 1,
         })
     except ValueError:
         pass
@@ -251,6 +273,10 @@ def main() -> int:
         "expliciete_code",
         "expliciet_losse_waarneming",
         "protocol_sleutel",
+        "overlap_bevestigd",
+        "overlap_mogelijk",
+        "geen_overlap_gevonden",
+        "onvoldoende_onderzocht",
     ):
         assert required_text in documentation, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

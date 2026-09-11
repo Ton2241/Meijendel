@@ -185,6 +185,8 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
   gemengde combinaties;
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
+- `ndff_snl_waarneming_context`: recordgebonden bronoverlapstatus voor de
+  6.273 openbare records met protocol `12.205`;
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
   analysetype.
 
@@ -238,6 +240,35 @@ Daarmee zijn acht van de negentien combinaties opgelost. Elf blijven bewust
 SNL-combinaties en twee Vleermuisprotocol-combinaties. Dit is geen ontbrekende
 algemene handleiding, maar ontbrekende projectcontext. Gokken op basis van de
 aangetroffen soort is niet toegestaan.
+
+### SNL is context, geen automatische onafhankelijke bron
+
+SNL staat voor Subsidiestelsel Natuur en Landschap. Kwalificerende soorten
+worden gebruikt bij beoordeling van natuurkwaliteit en kunnen mede relevant
+zijn voor subsidiëring. Protocolcode `12.205` bewijst daarom niet dat een record
+uit een zelfstandige inventarisatie komt; dezelfde onderliggende waarneming kan
+ook onder een andere bron of protocolregistratie voorkomen.
+
+Regelversie `ndff-snl-overlap-v1` gebruikt vier statussen:
+
+- `overlap_bevestigd`: dezelfde onderliggende waarneming is met bewijs
+  vastgesteld; niet zelfstandig meetellen;
+- `overlap_mogelijk`: dezelfde soort, exacte starttijd en openbare geometrie
+  komen ook onder een ander protocol voor; handmatige of broncontrole nodig;
+- `geen_overlap_gevonden`: binnen deze toets is geen kandidaat gevonden, maar
+  onafhankelijkheid is niet bewezen;
+- `onvoldoende_onderzocht`: de noodzakelijke sleutelvelden of toetsing
+  ontbreken.
+
+Een bevestigde onafhankelijke inventarisatie vergt aanvullende herkomst-,
+bezoek- of telronde-informatie en wordt daarom niet als vijfde automatische
+status ingevoerd.
+
+De eerste toepassing op alle 6.273 SNL-records leverde 97 keer
+`overlap_mogelijk` en 6.176 keer `geen_overlap_gevonden` op. Er zijn nog geen
+records als `overlap_bevestigd` aangemerkt en geen record kreeg
+`onvoldoende_onderzocht`. De mogelijke matches zijn kandidaten voor nadere
+controle en worden niet automatisch als dubbel verwijderd.
 
 Gebruikte primaire bronnen zijn onder meer [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx),
 [ANEMOON HabSlak](https://www.anemoon.org/projecten/natura2000/habslak-protocollen),

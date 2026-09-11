@@ -259,6 +259,15 @@ foreign key. `analyse_status` is geen protocolstatus en blijft een afzonderlijke
 toelatingspoort voor analyses. Lege protocolwaarden mogen nooit automatisch als
 `LOS` worden behandeld.
 
+Voor de 6.273 openbare records met SNL-protocol `12.205` staat de afzonderlijke
+bronoverlaptoets in `ndff_snl_waarneming_context`. De statussen zijn
+`overlap_bevestigd`, `overlap_mogelijk`, `geen_overlap_gevonden` en
+`onvoldoende_onderzocht`. Afwezigheid van een gevonden match wordt nooit als
+bewezen onafhankelijkheid uitgelegd. SNL blijft een natuurkwaliteits- en
+subsidiecontext; bevestigde dubbelen tellen niet als zelfstandige evidentie.
+De eerste toets vond 97 mogelijke overlaps en bij 6.176 records geen overlap;
+geen van beide uitkomsten bewijst zelfstandig verzamelde trenddata.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

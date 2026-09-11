@@ -180,6 +180,32 @@ CREATE TABLE IF NOT EXISTS ndff_open_ruimtelijke_beoordeling (
          (vervaagd = 0 AND toewijzingskwaliteit = 'single_volledig_binnen'))
 ) ENGINE=InnoDB;
 
+-- SNL is een beoordelings- en subsidiecontext, geen bewijs dat een record een
+-- zelfstandige gegevensbron is. Deze laag registreert daarom uitsluitend wat
+-- de huidige vergelijking met andere openbare NDFF-records over overlap zegt.
+CREATE TABLE IF NOT EXISTS ndff_snl_waarneming_context (
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  overlap_status ENUM(
+    'overlap_bevestigd','overlap_mogelijk',
+    'geen_overlap_gevonden','onvoldoende_onderzocht'
+  ) NOT NULL,
+  kandidaat_aantal INT UNSIGNED NOT NULL DEFAULT 0,
+  kandidaat_waarneming_ids JSON NOT NULL,
+  toets_methode VARCHAR(500) NOT NULL,
+  bewijsnotitie VARCHAR(1000) NULL,
+  regelversie VARCHAR(64) NOT NULL,
+  beoordeeld_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (waarneming_id, regelversie),
+  KEY ix_ndff_snl_overlap (regelversie, overlap_status),
+  CONSTRAINT fk_ndff_snl_context_waarneming FOREIGN KEY (waarneming_id)
+    REFERENCES ndff_open_waarneming (waarneming_id),
+  CHECK ((overlap_status IN ('overlap_bevestigd','overlap_mogelijk')
+          AND kandidaat_aantal > 0)
+      OR (overlap_status IN ('geen_overlap_gevonden','onvoldoende_onderzocht')
+          AND kandidaat_aantal = 0)),
+  CHECK (overlap_status <> 'overlap_bevestigd' OR bewijsnotitie IS NOT NULL)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS ndff_analysebesluit (
   analysebesluit_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   bron_scope ENUM('openbaar','beveiligd') NOT NULL,

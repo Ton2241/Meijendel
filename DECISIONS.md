@@ -136,6 +136,13 @@
   voor `LOS`. Protocolkwalificatie wordt niet in analysevelden opgeslagen:
   `analyse_status` is geen protocolstatus en de beveiligde verspreidings-,
   trend- en innamepoorten behouden hun eigen betekenis.
+- Records met protocol `12.205` krijgen daarnaast een geversioneerde
+  recordtoets in `ndff_snl_waarneming_context`. SNL wordt geïnterpreteerd als
+  natuurkwaliteits- en subsidiecontext en niet automatisch als zelfstandige
+  bron. De statussen zijn `overlap_bevestigd`, `overlap_mogelijk`,
+  `geen_overlap_gevonden` en `onvoldoende_onderzocht`. De derde status bewijst
+  geen onafhankelijkheid; daarvoor blijft bevestiging via bronhouder,
+  inventarisatieronde of bezoekidentiteit nodig.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

@@ -70,6 +70,11 @@ auditspoor. Nieuwe analyses gebruiken deze tabellen vóór het
 analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
 alleen de protocolcode.
 
+Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
+overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of
+bevestigde dubbeling met andere protocolregistraties vast, maar kent op basis
+van alleen een ontbrekende match nooit de eigenschap `onafhankelijk` toe.
+
 De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
 blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
 geometrie, NDFF-identiteiten en de
