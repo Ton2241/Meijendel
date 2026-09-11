@@ -310,6 +310,16 @@ Beide views bevatten `gegevensgeschiktheid` en een verplichte
 waarnemingen ontbreken volledig uit de trendkandidaatview. De views bevatten
 geen geometrie, dagdatum of bronidentiteit en hebben nog geen extra grants.
 
+Het compacte selectieoverzicht
+`v_ndff_gebruiksdekking_soortgroep_protocol` bevat 142 sluitende combinaties
+uit 28 soortgroepen en alle 54 aanwezige protocolwaarden. De subtotalen sluiten
+aan op 810.983 canonieke records. Daarbinnen zijn momenteel 303.319 records
+kandidaat voor `V`, 6.133 voor `I`, 60.015 voor `TV`, 57.605 voor `TA` en
+4.727 voor `TK`. Deze categorieën overlappen: één record kan voor meer dan één
+analysetype kandidaat zijn. Alle 810.983 records blijven aangemerkt als
+aanvullend te valideren. De view is het standaardstartpunt om vóór een analyse
+de beschikbare omvang en beperkingen te beoordelen.
+
 Een record kan alleen kandidaat zijn voor positieve plotcontext wanneer de
 openbare geometrie onvervaagd en volledig binnen precies één geversioneerd
 SOVON-plot ligt. Daarna blijft de afzonderlijke PQ-toets verplicht.

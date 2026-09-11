@@ -117,3 +117,29 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
 - [x] Controleer uitsluitingsredenen en kandidaat-analysetypen op dagvlinders
   en op losse waarnemingen.
 - [x] Werk documentatie bij; voer regressietests uit; commit en push.
+
+## Voortgang geprioriteerde gebruiksketen
+
+1. **Canonieke NDFF-waarnemingslaag — gereed.** Openbare en beveiligde
+   representaties zijn ontdubbeld; beveiligde details blijven lokaal en PQ- en
+   SNL-regels blijven herkenbaar.
+2. **Centrale gebruiksselectie per record — gereed.** De interne view
+   `v_ndff_analyse_record` combineert alle actuele analysepoorten en de
+   verplichte kwaliteitsmelding.
+3. **Direct bruikbare analyseviews — gedeeltelijk gereed.** Positieve
+   aanwezigheid en protocolmatige trendkandidaten zijn gereed. Soortenrijkdom,
+   eerste/laatste registratie, verandering in verspreiding en afzonderlijke
+   dekking/waarnemingsintensiteit moeten nog worden toegevoegd.
+4. **Dagvlinderproef — technisch gereed.** Ontdubbeling, protocollen,
+   plotkoppeling, waarschuwingen en reproduceerbare selectie zijn gecontroleerd.
+   Native route-identiteiten blijven onderdeel van latere bronvalidatie.
+5. **Toepassing op alle soortgroepen — administratief gereed.** De view
+   `v_ndff_gebruiksdekking_soortgroep_protocol` omvat 28 soortgroepen, 54
+   protocollen en 142 sluitende combinaties. Inhoudelijke aanvullende validatie
+   blijft apart zichtbaar.
+6. **Resterende protocolafbakening — gedeeltelijk en geparkeerd.** SNL-overlap
+   is voorlopig geclassificeerd; verdere SNL-, eDNA-, florakarterings- en
+   vleermuisafbakening heeft lagere prioriteit.
+7. **Database formeel gereed verklaren — nog niet.** Eerst moeten de resterende
+   analyseviews, eindtotalen, reproduceerbaarheid en documentatie worden
+   afgerond; daarna start de afzonderlijke bronvalidatiefase.

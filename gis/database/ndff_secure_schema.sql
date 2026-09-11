@@ -531,6 +531,46 @@ GROUP BY
   protocol_sleutel,
   doelrelatie_record;
 
+-- Compacte dekkingsadministratie voor het kiezen van gegevens per soortgroep
+-- en protocol. Kandidaataantallen tellen uitsluitend records die ook alle
+-- huidige recordpoorten als voorlopig bruikbaar passeren.
+CREATE OR REPLACE VIEW v_ndff_gebruiksdekking_soortgroep_protocol AS
+SELECT
+  soortgroep_raw,
+  protocol_sleutel,
+  COUNT(*) AS canonieke_records,
+  SUM(doelrelatie_record='doelgroep') AS doelgroep_records,
+  SUM(doelrelatie_record='doelsoort') AS doelsoort_records,
+  SUM(doelrelatie_record='bijvangst') AS bijvangst_records,
+  SUM(doelrelatie_record='losse_waarneming') AS losse_records,
+  SUM(doelrelatie_record='algemene_bron') AS algemene_bron_records,
+  SUM(doelrelatie_record IN ('onbepaald','doelsoortafhankelijk'))
+    AS doelbereik_nog_onbepaald,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('V',protocol_kandidaattypen)>0) AS kandidaat_v,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('I',protocol_kandidaattypen)>0) AS kandidaat_i,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('TV',protocol_kandidaattypen)>0) AS kandidaat_tv,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('TA',protocol_kandidaattypen)>0) AS kandidaat_ta,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('TK',protocol_kandidaattypen)>0) AS kandidaat_tk,
+  SUM(record_selectiestatus='voorlopig_bruikbaar') AS voorlopig_bruikbaar,
+  SUM(record_selectiestatus='voorlopig_met_overlapwaarschuwing')
+    AS overlapwaarschuwing,
+  SUM(record_selectiestatus='uitgesloten_pq') AS uitgesloten_pq,
+  SUM(record_selectiestatus='uitgesloten_ruimtelijk') AS uitgesloten_ruimtelijk,
+  SUM(record_selectiestatus='uitgesloten_overlap') AS uitgesloten_overlap,
+  SUM(bevat_beveiligde_details=1) AS beveiligde_records,
+  SUM(gegevensgeschiktheid<>'geschikt') AS aanvullende_validatie_nodig,
+  'Kandidaataantallen zijn protocolmatig en ruimtelijk voorgeselecteerd. Raadpleeg gegevensgeschiktheid. Ruwe meldingsaantallen zijn geen populatietrend.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+GROUP BY
+  soortgroep_raw,
+  protocol_sleutel;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.

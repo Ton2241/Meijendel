@@ -215,6 +215,16 @@ prioriteiten- en selectielaag, geen berekende trend. De dagvlindercontrole vond
 binnen de kandidaatview 5.161 combinaties voor protocollen `03.001`, `03.201`,
 `102.005` en `102.007`; protocol `LOS` komt er nul keer in voor.
 
+De aanvullende view `v_ndff_gebruiksdekking_soortgroep_protocol` maakt de
+selectiestatus direct raadpleegbaar voor 142 combinaties van 28 soortgroepen en
+54 protocollen. De som van alle statuskolommen sluit per combinatie en over het
+geheel exact aan op 810.983 canonieke records. Er zijn 303.319 voorlopig
+bruikbare V-kandidaten, 6.133 I-kandidaten, 60.015 TV-kandidaten, 57.605
+TA-kandidaten en 4.727 TK-kandidaten. Deze aantallen mogen worden gecombineerd
+in selecties, maar niet worden opgeteld omdat één record meerdere kandidaattypen
+kan ondersteunen. Voor alle records blijft aanvullende gegevensvalidatie
+wenselijk.
+
 ### Doelsoorten en bijvangsten
 
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol

@@ -132,6 +132,13 @@ protocol. De kolom `bronrecords_ter_controle` is uitsluitend diagnostisch en
 mag nooit als abundantie worden gebruikt. Beide views blijven lokaal en hebben
 vooralsnog geen extra MySQL-grants.
 
+`v_ndff_gebruiksdekking_soortgroep_protocol` vormt de sluitende
+dekkingsadministratie boven deze lagen. De view bevat 142 combinaties uit 28
+soortgroepen en 54 protocollen en telt per combinatie de canonieke records,
+doelrelaties, kandidaattypen, uitsluitingsredenen, beveiligde records en nog te
+valideren records. Zij bevat geen jaar, plot, taxon of bronidentiteit en krijgt
+geen extra grants.
+
 ## Functionele vogelgroepen en traits
 
 De bestaande tabellen `soorten_kenmerken`, `soorten_kenmerken_datadictionary` en

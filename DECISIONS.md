@@ -176,6 +176,12 @@
   geen maat voor aantal individuen, dichtheid of populatieontwikkeling. De
   kandidaatview wordt niet als trenddataset benoemd of gepubliceerd zolang
   `gegevensgeschiktheid` en surveystructuur niet aanvullend zijn beoordeeld.
+- Het centrale gebruiksoverzicht is
+  `v_ndff_gebruiksdekking_soortgroep_protocol`. Kandidaataantallen in deze view
+  tellen alleen records met `record_selectiestatus = voorlopig_bruikbaar`; de
+  overige records blijven afzonderlijk zichtbaar per uitsluitingsreden. Dit is
+  het standaardoverzicht om vóór iedere analyse de beschikbare omvang en
+  beperkingen per soortgroep en protocol vast te stellen.
 - De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
   soortgroep zijn volledig en versieerbaar geclassificeerd onder
   `ndff-protocolbereik-v2`. `ndff_protocol_soortgroep_geschiktheid` is de poort

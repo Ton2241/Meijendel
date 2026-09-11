@@ -146,6 +146,42 @@ def main() -> int:
             assert forbidden_field not in safe_view, (
                 f"veilige analyseview lekt {forbidden_field}"
             )
+
+    gebruik = view_body(sql, "v_ndff_gebruiksdekking_soortgroep_protocol")
+    for required in (
+        "v_ndff_analyse_record",
+        "canonieke_records",
+        "kandidaat_v",
+        "kandidaat_i",
+        "kandidaat_tv",
+        "kandidaat_ta",
+        "kandidaat_tk",
+        "voorlopig_bruikbaar",
+        "overlapwaarschuwing",
+        "uitgesloten_pq",
+        "uitgesloten_ruimtelijk",
+        "uitgesloten_overlap",
+        "beveiligde_records",
+        "aanvullende_validatie_nodig",
+        "kwaliteitsmelding",
+        "group by",
+    ):
+        assert required in gebruik, f"gebruiksdekking mist {required}"
+    for forbidden_field in (
+        "canonieke_identiteit_sha256",
+        "open_waarneming_id",
+        "secure_waarneming_id",
+        "plot_id",
+        "jaar",
+        "exacte_geometrie",
+        "periode_start",
+        "periode_stop",
+        "raw_payload",
+        "ndff_identity",
+    ):
+        assert forbidden_field not in gebruik, (
+            f"gebruiksdekking lekt detailveld {forbidden_field}"
+        )
     print("OK: NDFF secure schemacontract")
     return 0
 

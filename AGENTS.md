@@ -178,6 +178,10 @@ MySQL:
   abundantie of trend. Neem de velden `gegevensgeschiktheid` en
   `kwaliteitsmelding` zichtbaar mee in iedere afgeleide uitvoer. Verleen deze
   views niet aan extra accounts zonder afzonderlijke beoordeling
+- raadpleeg vóór iedere nieuwe NDFF-analyse
+  `Meijendel_ndff_secure.v_ndff_gebruiksdekking_soortgroep_protocol` voor de
+  sluitende omvang per soortgroep, protocol, kandidaat-analysetype,
+  uitsluitingsreden, beveiligingsstatus en resterende validatiebehoefte
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
   regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
   zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks
