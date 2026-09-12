@@ -213,6 +213,23 @@ def main() -> int:
     assert module.conditional_types(None) == set()
     assert module.sql_text("", empty_as_null=False) == "''"
 
+    # Gemengde atlas- en verspreidingsleveringen blijven positieve
+    # verspreidingsbronnen: indicatieve veranderingen mogen worden berekend,
+    # maar de levering onderbouwt geen nullen, abundantie of trend.
+    assert module.protocol_delivery_assessment("04.004", "V") == (
+        "voorwaardelijk", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("07.001", "I") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("04.004", "TV") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("07.001", "TA") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("04.006", "V") is None
+
     # Een routeversie mag alleen aan een andere versie worden gekoppeld als
     # minstens de helft van de kleinste geometrieset ruimtelijk overeenkomt.
     # Eén nabij kruispunt tussen twee routes mag ze niet samenvoegen.
@@ -980,7 +997,9 @@ def main() -> int:
     assert "wacht_op_brondata" in legacy_sql
     validation_sql = module.validation_sql().casefold()
     assert "protocolbesluit_mismatch" in validation_sql
-    assert "validatie_niet_geparkeerd" in validation_sql
+    assert "leveringsbeoordelingen" in validation_sql
+    assert "leveringsbeoordeling_onverwacht" in validation_sql
+    assert "leveringsbeoordeling_ongeldig" in validation_sql
     module.validate_metrics({
         "protocols": 54,
         "uses": 54,
@@ -1008,7 +1027,9 @@ def main() -> int:
         "scope_missing": 0,
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,
-        "validatie_niet_geparkeerd": 0,
+        "leveringsbeoordelingen": 15,
+        "leveringsbeoordeling_onverwacht": 0,
+        "leveringsbeoordeling_ongeldig": 0,
         "snl_records": 6273,
         "snl_overlap_context": 6273,
         "snl_overlap_bevestigd": 0,
@@ -1035,7 +1056,9 @@ def main() -> int:
             "secure_mixed_species_missing": 1,
             "ambiguous_species": 0,
             "decisions": 1040, "protocolbesluit_mismatch": 1,
-            "validatie_niet_geparkeerd": 1,
+            "leveringsbeoordelingen": 14,
+            "leveringsbeoordeling_onverwacht": 1,
+            "leveringsbeoordeling_ongeldig": 1,
             "snl_records": 6273, "snl_overlap_context": 6272,
             "snl_overlap_bevestigd": 0, "snl_overlap_mogelijk": 97,
             "snl_geen_overlap_gevonden": 6175,

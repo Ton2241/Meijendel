@@ -285,7 +285,8 @@
   doelsoortafhankelijke combinaties vereisen eerst de hieronder beschreven
   doelsoortselectie en niet-onderbouwde combinaties blijven uitgesloten. De
   afzonderlijke `gegevensgeschiktheid` blijft `niet_beoordeeld` totdat telobjecten, bezoeken,
-  inspanning, nulwaarnemingen en meeteenheden zijn onderzocht. Voorlopige
+  inspanning, nulwaarnemingen en meeteenheden voor het betreffende protocol
+  zijn onderzocht. Voorlopige
   toelating maakt verkennend gebruik mogelijk, maar is geen definitieve
   validatie. Iedere analyse-uitvoer toont verplicht de kwaliteitsvermelding uit
   `ndff_analysebesluit.reden`. De nieuwe tabellen wijzigen geen bronrecord en
@@ -295,6 +296,14 @@
   `ndff-protocolkwaliteit-v1`, `ndff-analysebesluit-v2` en
   `ndff-analysebesluit-v3` blijven als
   historische auditlagen bewaard en worden niet stilzwijgend herschreven.
+- Voor `04.004` en `07.001` is de leveringsgeschiktheid onderzocht. Beide
+  leveringen mengen volledige inventarisaties met losse of secundaire
+  registraties zonder onderscheidende bezoek- of lijst-ID. Daarom is `V`
+  `voorwaardelijk`; `I` en `TV` blijven alleen indicatief toegestaan met
+  `gegevensgeschiktheid='onvoldoende'`; `TA` en `TK` zijn uitgesloten. Er
+  worden geen nullen of kunstmatige bezoeken afgeleid. De betekenis per
+  analysetype staat in `ndff_analysebesluit`; de algemene status in
+  `v_ndff_analyse_record` volgt voor compatibiliteit de V-beslissing.
 - Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
   recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
   interne foreign key; `protocol_sleutel` is de stabiele betekenisvolle sleutel.
@@ -396,7 +405,8 @@
 - `alleen_na_doelsoortselectie` is een uitvoerbare soortfilteropdracht, terwijl
   `wacht_op_doelsoortafbakening` betekent dat voorlopig alleen `V` gebruikt mag
   worden. In alle gevallen blijft `gegevensgeschiktheid='niet_beoordeeld'`
-  totdat de surveystructuur is onderzocht.
+  totdat de surveystructuur is onderzocht; `04.004` en `07.001` vormen de
+  inmiddels expliciet beoordeelde uitzondering.
 - Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
   NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
   (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open

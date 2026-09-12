@@ -8,7 +8,8 @@ Een gevalideerde waarneming en een geregistreerde protocolnaam bewijzen nog niet
 dat de FFV-export alle telbezoeken, inspanning, telobjecten en afleidbare
 nulwaarnemingen bevat. Protocolmatig passende gegevens mogen daarom wel
 voorlopig en verkennend worden gebruikt, terwijl de leveringsgeschiktheid
-afzonderlijk `niet_beoordeeld` blijft. Iedere uitkomst vermeldt deze beperking;
+afzonderlijk `niet_beoordeeld` blijft totdat de betreffende levering inhoudelijk
+is onderzocht. Iedere uitkomst vermeldt deze beperking;
 voorlopige toelating is geen definitieve trendvalidatie.
 
 Alleen records uit een voor de soortgroep passend doelgericht meetnet zijn
@@ -400,11 +401,31 @@ Methodische grondslag: [NDFF protocol 12.001](https://ndff.nl/natuurdata/waarnem
 [FLORON kilometerhokinventarisatie](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren)
 en [FLORON inventarisatiehandleiding](https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf).
 
+### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
+
+Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat
+2.762 libellenrecords. Daarvan zijn respectievelijk 1.282 en 850 records
+ruimtelijk bruikbaar voor plotcontext. De ANM-bron combineert
+gebiedsinventarisaties met historische, literatuur- en collectieregistraties.
+Protocol `07.001` accepteert zowel gebiedsinventarisaties als losse
+waarnemingen. De NDFF-levering bevat voor geen van beide protocollen een
+onderscheidende lijst-, bezoek- of inspanningssleutel.
+
+Daarom worden geen bezoeken, complete soortenlijsten of nullen gereconstrueerd.
+`V` heeft leveringsstatus `voorwaardelijk`. `I` en `TV` behouden hun
+protocolmatige kandidaatstatus, maar hebben leveringsstatus `onvoldoende` en
+mogen alleen als indicatieve verandering in geregistreerde aanwezigheid worden
+berekend. `TA` en `TK` zijn voor deze levering uitgesloten. Aangeleverde
+aantallen blijven broninformatie en worden niet over records geaggregeerd.
+De 199 openbaar vervaagde `04.004`-records worden niet naar een openbare
+afgeleide tabel gekopieerd. De beoordeling is vastgelegd in de bestaande
+`ndff_analysebesluit`-regels; er zijn geen kunstmatige bezoekmatrices gebouwd.
+
+Methodische grondslag: [NDFF protocol 04.004](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/4-004-atlasproject-nederlandse-mollusken/)
+en [NDFF protocol 07.001](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/7-001-verspreidingsonderzoek-libellen/).
+
 Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
-`04.004` (1.282), `12.204` (929), `07.001` (850) en `12.006`
-(661). Deze krijgen een tweede validatieronde gericht op complete soortenlijsten,
-bezoekduur en onderzochte eenheid. Zij kunnen vooral inventarisatie- en
-verspreidingsanalyses verbeteren; hun omvang maakt ze niet automatisch geschikt
+`12.204` (929) en `12.006` (661). Hun omvang maakt ze niet automatisch geschikt
 voor aantalstrends.
 
 Aanvullende bronvragen worden pas gesteld wanneer tijd, geometrie en de
@@ -581,8 +602,10 @@ ontbrekende protocol-, ruimtelijke, PQ- of gegevensgeschiktheidsstatus. Daarvan
 zijn 303.319 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
 overlapwaarschuwing, 97.333 uitgesloten via de PQ-poort en 410.327 ruimtelijk
 uitgesloten. De 430.263 expliciet losse waarnemingen hebben uitsluitend
-kandidaattype `V`. Alle records behouden
-`gegevensgeschiktheid = niet_beoordeeld`; de view levert daarom tevens een
+kandidaattype `V`. Van de canonieke records behouden 805.984
+`gegevensgeschiktheid = niet_beoordeeld`. De 4.999 records onder `04.004` en
+`07.001` hebben na leveringsonderzoek de algemene V-status `voorwaardelijk`;
+hun I- en TV-besluiten staan afzonderlijk op `onvoldoende`. De view levert een
 verplichte `kwaliteitsmelding` en is geen verklaring dat trendgebruik al
 volledig is gevalideerd.
 
@@ -591,9 +614,9 @@ Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
 plot-jaar-taxonsignalen uit 303.319 voorlopig bruikbare bronrecords.
 `v_ndff_trendkandidaat_plot_jaar_taxon` bevat 11.138
 plot-jaar-taxon-protocolcombinaties uit 66.125 bronrecords met minimaal één
-protocolmatige kandidaatmogelijkheid buiten `V`. Alle 11.138 combinaties
-behouden momenteel `gegevensgeschiktheid = niet_beoordeeld`; zij zijn dus een
-prioriteiten- en selectielaag, geen berekende trend. De dagvlindercontrole vond
+protocolmatige kandidaatmogelijkheid buiten `V`. Zij blijven een prioriteiten-
+en selectielaag, geen berekende trend; per analysetype is
+`ndff_analysebesluit` leidend voor de leveringsstatus. De dagvlindercontrole vond
 binnen de kandidaatview 5.161 combinaties voor protocollen `03.001`, `03.201`,
 `102.005` en `102.007`; protocol `LOS` komt er nul keer in voor.
 
@@ -737,9 +760,10 @@ Voor niet-V-analyses gelden hierdoor drie verschillende uitkomsten:
 - `wacht_op_doelsoortafbakening`: de doelstatus is nog niet uit het record of
   een voldoende specifieke bronlijst afleidbaar; alleen `V` is nu bruikbaar.
 
-Deze doelbereiktoets vervangt de latere leveringsvalidatie niet.
-`gegevensgeschiktheid` blijft voor alle v4-besluiten `niet_beoordeeld` en de
-kwaliteitsmelding blijft verplicht bij iedere uitkomst.
+Deze doelbereiktoets vervangt de leveringsvalidatie niet.
+`Gegevensgeschiktheid` blijft per v4-besluit `niet_beoordeeld` totdat het
+betreffende protocol is onderzocht. Voor `04.004` en `07.001` is die beoordeling
+inmiddels vastgelegd; de kwaliteitsmelding blijft verplicht bij iedere uitkomst.
 
 De recordkoppelingen gebruiken `protocol_id` uitsluitend als interne foreign
 key. `protocol_sleutel` blijft de stabiele identificatie. Van de openbare

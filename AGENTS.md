@@ -140,6 +140,14 @@ MySQL:
   telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden zijn
   onderzocht en toon bij ieder resultaat verplicht de kwaliteitsvermelding uit
   `ndff_analysebesluit.reden`
+- behandel protocollen `04.004` en `07.001` als gemengde positieve leveringen.
+  Gebruik `V` voorwaardelijk na de ruimtelijke en PQ-poort. Gebruik `I` en `TV`
+  uitsluitend voor indicatieve verandering in geregistreerde aanwezigheid met
+  `gegevensgeschiktheid='onvoldoende'`; gebruik ze niet als gevalideerde trend.
+  `TA` en `TK` zijn uitgesloten. Reconstrueer geen bezoeken, complete lijsten of
+  nullen en aggregeer aangeleverde aantallen niet over records. Raadpleeg voor
+  de status per analysetype altijd `ndff_analysebesluit`; de algemene
+  `gegevensgeschiktheid` in `v_ndff_analyse_record` volgt de V-beslissing
 - gebruik bij `alleen_na_doelsoortselectie` verplicht
   `ndff_protocol_soort_geschiktheid` en selecteer uitsluitend
   `doelrelatie='doelsoort'`; behandel iedere overige soort als bijvangst en dus

@@ -415,8 +415,11 @@ PQ- en SNL-poorten samen. De actuele verdeling is 303.319
 `voorlopig_bruikbaar`, 4 `voorlopig_met_overlapwaarschuwing`, 97.333
 `uitgesloten_pq` en 410.327 `uitgesloten_ruimtelijk`. Alle 430.263 records met
 protocol `LOS` ondersteunen alleen voorkomens- en verspreidingsinformatie
-(`V`). `gegevensgeschiktheid` is voor alle records nog `niet_beoordeeld`:
-iedere uitvoer moet daarom `kwaliteitsmelding` tonen en mag de kandidaattypen
+(`V`). Voor 805.984 records is `gegevensgeschiktheid` nog `niet_beoordeeld`.
+De 4.999 records onder `04.004` en `07.001` zijn inmiddels als gemengde
+positieve levering beoordeeld: V is voorwaardelijk bruikbaar, I en TV zijn
+alleen indicatief en onvoldoende voor een gevalideerde trend. Iedere uitvoer
+moet daarom `kwaliteitsmelding` tonen en mag de kandidaattypen
 niet als definitief gevalideerde trenddata presenteren. De view bevat geen
 geometrie of exacte datum, maar blijft intern en is niet aan de Shiny-account
 toegekend.
@@ -488,7 +491,7 @@ Protocolmatig passende analysetypen krijgen `voorlopig_toegelaten`. Gemengde
 combinaties krijgen voor niet-V-gebruik `alleen_na_doelsoortselectie` en een
 nog niet uit het record afleidbare doelsoortenlijst krijgt
 `wacht_op_doelsoortafbakening`. De leveringsgeschiktheid blijft afzonderlijk
-`niet_beoordeeld`. Deze statussen maken gecontroleerd verkennend gebruik
+`niet_beoordeeld` totdat het betreffende protocol is onderzocht. Deze statussen maken gecontroleerd verkennend gebruik
 mogelijk, maar bevestigen niet dat een trend, afwezigheid, abundantie of
 beheereffect al voldoende is gevalideerd. Iedere uitvoer moet daarom de
 kwaliteitsvermelding uit `ndff_analysebesluit.reden` tonen.

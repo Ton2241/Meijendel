@@ -1649,6 +1649,81 @@ ON DUPLICATE KEY UPDATE
 """
 
 
+def protocol_delivery_assessment(
+    protocol_sleutel: str, analysetype: str
+) -> tuple[str, str] | None:
+    """Beoordeel gemengde positieve atlas-/verspreidingsleveringen.
+
+    De ontvangen regels van 04.004 en 07.001 onderscheiden geen volledige
+    gebiedsinventarisaties van losse, historische, collectie- of
+    literatuurregistraties. V blijft daarom voorwaardelijk bruikbaar. I en TV
+    mogen alleen als indicatieve verandering in registraties worden berekend;
+    TA en TK worden door deze levering niet ondersteund.
+    """
+    if protocol_sleutel not in {"04.004", "07.001"}:
+        return None
+    if analysetype == "V":
+        return "voorwaardelijk", "voorlopig_toegelaten"
+    if analysetype in {"I", "TV"}:
+        return "onvoldoende", "voorlopig_toegelaten"
+    return "onvoldoende", "uitgesloten_huidige_levering"
+
+
+def delivery_assessment_sql() -> str:
+    """Leg de beoordeelde leveringskwaliteit van 04.004 en 07.001 vast."""
+    positive_reason = (
+        "De NDFF-levering combineert volledige gebiedsinventarisaties met "
+        "losse, historische, collectie- of literatuurregistraties zonder "
+        "onderscheidende lijst-, bezoek- of inspanningssleutel. Positieve "
+        "verspreidingsinformatie is na ruimtelijke en PQ-toets bruikbaar."
+    )
+    indicative_reason = (
+        "De protocolcode ondersteunt in beginsel vergelijking door de tijd, "
+        "maar de ontvangen levering scheidt volledige inventarisaties niet "
+        "van losse of secundaire registraties. Alleen indicatieve verandering "
+        "in geregistreerde aanwezigheid is toegestaan; niet presenteren als "
+        "populatietrend, abundantie, afwezigheid of causaal beheereffect."
+    )
+    excluded_reason = (
+        "De ontvangen gemengde atlas-/verspreidingslevering bevat geen "
+        "onderscheidende telobjecten, volledige bezoeken, inspanning of "
+        "nulwaarnemingen en onderbouwt dit analysetype daarom niet."
+    )
+    assessment_rows: list[str] = []
+    for protocol_sleutel in ("04.004", "07.001"):
+        for analysetype in ANALYSIS_TYPES:
+            assessment = protocol_delivery_assessment(protocol_sleutel, analysetype)
+            if assessment is None:
+                continue
+            gegevensgeschiktheid, eindbesluit = assessment
+            if analysetype == "V":
+                reason = positive_reason
+            elif analysetype in {"I", "TV"}:
+                reason = indicative_reason
+            else:
+                reason = excluded_reason
+            assessment_rows.append(
+                "SELECT "
+                f"{sql_text(protocol_sleutel)} AS protocol_sleutel,"
+                f"{sql_text(analysetype)} AS analysetype,"
+                f"{sql_text(gegevensgeschiktheid)} AS gegevensgeschiktheid,"
+                f"{sql_text(eindbesluit)} AS eindbesluit,"
+                f"{sql_text(reason)} AS reden"
+            )
+    assessment_sql = " UNION ALL ".join(assessment_rows)
+    return f"""
+UPDATE Meijendel.ndff_analysebesluit AS d
+JOIN Meijendel.ndff_protocol AS p ON p.protocol_id=d.protocol_id
+JOIN ({assessment_sql}) AS a
+  ON a.protocol_sleutel=p.protocol_sleutel AND a.analysetype=d.analysetype
+SET d.gegevensgeschiktheid=a.gegevensgeschiktheid,
+    d.eindbesluit=a.eindbesluit,
+    d.reden=a.reden,
+    d.besloten_op='2026-09-12'
+WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)};
+"""
+
+
 def restore_legacy_decisions_sql() -> str:
     """Behoud de oorspronkelijke v1-besluiten als historische auditlaag."""
     return f"""
@@ -5644,8 +5719,27 @@ WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND (
   (protocolgeschiktheid IN ('primair','voorwaardelijk') AND analysetype<>'V'
     AND eindbesluit NOT IN ('voorlopig_toegelaten','alleen_na_doelsoortselectie','wacht_op_doelsoortafbakening'))
 );
-SELECT 'validatie_niet_geparkeerd',COUNT(*) FROM Meijendel.ndff_analysebesluit
-WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND gegevensgeschiktheid<>'niet_beoordeeld';
+SELECT 'leveringsbeoordelingen',COUNT(*) FROM Meijendel.ndff_analysebesluit d
+JOIN Meijendel.ndff_protocol p ON p.protocol_id=d.protocol_id
+WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)}
+  AND d.gegevensgeschiktheid<>'niet_beoordeeld';
+SELECT 'leveringsbeoordeling_onverwacht',COUNT(*) FROM Meijendel.ndff_analysebesluit d
+JOIN Meijendel.ndff_protocol p ON p.protocol_id=d.protocol_id
+WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)}
+  AND d.gegevensgeschiktheid<>'niet_beoordeeld'
+  AND p.protocol_sleutel NOT IN ('04.004','07.001');
+SELECT 'leveringsbeoordeling_ongeldig',COUNT(*) FROM Meijendel.ndff_analysebesluit d
+JOIN Meijendel.ndff_protocol p ON p.protocol_id=d.protocol_id
+WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)}
+  AND p.protocol_sleutel IN ('04.004','07.001')
+  AND NOT (
+    (d.analysetype='V' AND d.gegevensgeschiktheid='voorwaardelijk'
+      AND d.eindbesluit='voorlopig_toegelaten')
+    OR (d.analysetype IN ('I','TV') AND d.gegevensgeschiktheid='onvoldoende'
+      AND d.eindbesluit='voorlopig_toegelaten')
+    OR (d.analysetype IN ('TA','TK') AND d.gegevensgeschiktheid='onvoldoende'
+      AND d.eindbesluit='uitgesloten_huidige_levering')
+  );
 SELECT 'snl_records',COUNT(*)
 FROM Meijendel.ndff_open_waarneming_protocol l
 JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
@@ -5690,7 +5784,8 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "blank_open_protocol", "blank_secure_protocol", "invalid_protocol_evidence",
         "spatial", "scope_combinations", "mixed_species", "dependent_combinations",
         "mixed_species_missing", "secure_mixed_species_missing", "ambiguous_species", "scope_missing",
-        "decisions", "protocolbesluit_mismatch", "validatie_niet_geparkeerd",
+        "decisions", "protocolbesluit_mismatch", "leveringsbeoordelingen",
+        "leveringsbeoordeling_onverwacht", "leveringsbeoordeling_ongeldig",
         "snl_records", "snl_overlap_context", "snl_overlap_bevestigd",
         "snl_overlap_mogelijk", "snl_geen_overlap_gevonden",
         "snl_onvoldoende_onderzocht", "snl_overlap_ongeldig",
@@ -5719,8 +5814,10 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
     if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
-    if metrics["validatie_niet_geparkeerd"]:
-        raise ValueError("Leveringsgeschiktheid is ten onrechte als beoordeeld vastgelegd.")
+    if (metrics["leveringsbeoordelingen"] != 15
+            or metrics["leveringsbeoordeling_onverwacht"]
+            or metrics["leveringsbeoordeling_ongeldig"]):
+        raise ValueError("De beoordeelde atlas-/verspreidingsleveringen wijken af.")
     if metrics["snl_overlap_context"] != metrics["snl_records"]:
         raise ValueError("Niet ieder SNL-record heeft precies één actuele overlapstatus.")
     if (metrics["snl_overlap_bevestigd"] + metrics["snl_overlap_mogelijk"]
@@ -6149,7 +6246,7 @@ def main() -> int:
         print(output)
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql()))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql(), delivery_assessment_sql()))
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)
     metrics = {key: int(value) for key, value in (line.split("\t", 1) for line in output.splitlines())}
