@@ -99,6 +99,11 @@ def main() -> int:
         "meijendel.ndff_korstmos_recordselectie",
         "meijendel.ndff_korstmos_doelbereik",
         "meijendel.ndff_korstmos_bezoek_taxon",
+        "meijendel.ndff_mos_inventarisatie",
+        "meijendel.ndff_mos_datumcluster",
+        "meijendel.ndff_mos_recordselectie",
+        "meijendel.ndff_mos_doelbereik",
+        "meijendel.ndff_mos_inventarisatie_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -112,6 +117,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
     assert "meijendel_ndff_secure.ndff_hns_" not in folded
     assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
+    assert "meijendel_ndff_secure.ndff_mos_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -288,6 +294,8 @@ def main() -> int:
     assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
     assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v1"
     assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.ndff_korstmos"
+    assert module.MOS_RULE_VERSION == "ndff-mos-v1"
+    assert module.MOS_TABLE_PREFIX == "Meijendel.ndff_mos"
 
     korstmos_records = module.classify_korstmos_records([
         {"observation_id": 1, "visit": "v1", "taxon": "Taxon a",
@@ -326,6 +334,49 @@ def main() -> int:
     assert korstmos_by_key[("v2", "Taxon a")]["bedekkingsrang"] == 2
     assert korstmos_by_key[("v2", "Taxon b")]["status"] == "echte_nul"
     assert korstmos_by_key[("v2", "Taxon b")]["bedekkingsrang"] == 0
+
+    mos_records = module.classify_mos_records([
+        {"observation_id": 1, "inventory": "i1", "taxon": "Taxon a",
+         "scale": "BLWG-aantalsklassen", "abundance": "2.0 - 5.0"},
+        {"observation_id": 2, "inventory": "i1", "taxon": "Taxon a",
+         "scale": "BLWG-aantalsklassen", "abundance": "2.0 - 5.0"},
+        {"observation_id": 3, "inventory": "i1", "taxon": "Taxon b",
+         "scale": "BLWG-aantalsklassen", "abundance": "1.0"},
+        {"observation_id": 4, "inventory": "i1", "taxon": "Taxon b",
+         "scale": "BLWG-aantalsklassen", "abundance": "minimaal 6.0"},
+        {"observation_id": 5, "inventory": "i2", "taxon": "Taxon a",
+         "scale": "aanwezig", "abundance": "minimaal 1.0"},
+    ])
+    assert mos_records[1]["selectiestatus"] == "opgenomen"
+    assert mos_records[2]["selectiestatus"] == "dubbele_registratie_onderdrukt"
+    assert mos_records[2]["canonieke_waarneming_id"] == 1
+    assert mos_records[3]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert mos_records[4]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert mos_records[5]["selectiestatus"] == "opgenomen"
+
+    mos_matrix = module.build_mos_inventory_matrix(
+        inventories={"i1", "i2"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"inventory": "i1", "taxon": "Taxon a",
+             "scale": "BLWG-aantalsklassen", "abundance": "2.0 - 5.0"},
+            {"inventory": "i1", "taxon": "Taxon b",
+             "scale": "BLWG-aantalsklassen", "abundance": "1.0"},
+            {"inventory": "i1", "taxon": "Taxon b",
+             "scale": "BLWG-aantalsklassen", "abundance": "minimaal 6.0"},
+            {"inventory": "i2", "taxon": "Taxon a",
+             "scale": "aanwezig", "abundance": "minimaal 1.0"},
+        ],
+    )
+    mos_by_key = {(row["inventory"], row["taxon"]): row for row in mos_matrix}
+    assert mos_by_key[("i1", "Taxon a")]["status"] == "waargenomen_aantalsklasse"
+    assert mos_by_key[("i1", "Taxon a")]["aantalsrang"] == 2
+    assert mos_by_key[("i1", "Taxon b")]["status"] == "waargenomen_abundantieconflict"
+    assert mos_by_key[("i1", "Taxon b")]["aantalsrang"] is None
+    assert mos_by_key[("i2", "Taxon a")]["status"] == "waargenomen_presentie"
+    assert mos_by_key[("i2", "Taxon a")]["aantalsrang"] is None
+    assert mos_by_key[("i2", "Taxon b")]["status"] == "echte_nul"
+    assert mos_by_key[("i2", "Taxon b")]["aantalsrang"] == 0
 
     hns_rows = [
         {
@@ -624,6 +675,13 @@ def main() -> int:
     assert "o.soortgroep_raw='Korstmossen'" in korstmos_source_sql
     assert "o.vervaagd=0" in korstmos_source_sql
     assert "Meijendel_ndff_secure" not in korstmos_source_sql
+    mos_source_sql = " ".join(module.mos_source_sql().split())
+    assert "o.protocol LIKE '02.204%'" in mos_source_sql
+    assert "o.soortgroep_raw='Mossen'" in mos_source_sql
+    assert "o.vervaagd=0" in mos_source_sql
+    assert "Meijendel_ndff_secure" not in mos_source_sql
+    assert "o.determinatiemethode" not in mos_source_sql
+    assert "o.biotoop" not in mos_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -737,6 +795,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende korstmosreconstructie is niet geblokkeerd")
+    module.validate_mos_reconstruction(dict(module.MOS_RECONSTRUCTION_EXPECTED))
+    broken_mos = dict(module.MOS_RECONSTRUCTION_EXPECTED)
+    broken_mos["true_zero_rows"] -= 1
+    try:
+        module.validate_mos_reconstruction(broken_mos)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende mosreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -985,6 +1052,8 @@ def main() -> int:
         "--audit-hns",
         "ndff-korstmos-v1",
         "--audit-korstmossen",
+        "ndff-mos-v1",
+        "--audit-mossen",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

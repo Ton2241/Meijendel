@@ -315,6 +315,16 @@ abundantieconflict. De twintig vervaagde Saucijs-baardmosrecords blijven alleen
 in de beveiligde bronlaag. Gebruik de twee grove FFV-bedekkingsklassen slechts
 ordinaal en controleer de reconstructie met `--audit-korstmossen`.
 
+Mossenprotocol `02.204` staat onder `ndff-mos-v1` in vijf openbare
+`Meijendel.ndff_mos_*`-tabellen. De 376 onvervaagde bronregels vormen zeven
+volledige kilometerhokinventarisaties en een matrix voor 111 taxa met 354
+positieve combinaties en 423 echte nullen. De 21 bronperioden zijn onderdelen
+van de hoklijsten, geen onafhankelijke herhaaltellingen. Er zijn 21 gelijke
+parallelle registraties onderdrukt en één abundantieconflict gemarkeerd. Omdat
+geen hok is herhaald, ondersteunt deze lokale selectie geen tijdtrend per hok.
+Gebruik talrijkheidsklassen alleen ordinaal, koppel hoknullen niet door naar
+SOVON-plots en controleer de laag met `--audit-mossen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

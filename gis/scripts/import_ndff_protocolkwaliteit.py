@@ -42,6 +42,7 @@ ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
 KORSTMOS_RULE_VERSION = "ndff-korstmos-v1"
+MOS_RULE_VERSION = "ndff-mos-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -54,6 +55,7 @@ ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
 KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
+MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -311,6 +313,37 @@ KORSTMOS_RECONSTRUCTION_EXPECTED = {
     "true_zero_rows": 673,
     "single_plot_records": 352,
     "multiple_plot_records": 12,
+    "invalid_source_measurements": 0,
+    "invalid_matrix_rows": 0,
+    "matrix_size_mismatch": 0,
+    "positive_source_mismatch": 0,
+    "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+}
+MOS_RECONSTRUCTION_EXPECTED = {
+    "source_records": 376,
+    "excluded_blurred_records": 1,
+    "inventories": 7,
+    "single_year_inventories": 6,
+    "cross_year_inventories": 1,
+    "date_clusters": 21,
+    "day_clusters": 19,
+    "year_clusters": 2,
+    "single_date_inventories": 4,
+    "multiple_date_inventories": 3,
+    "target_taxa": 111,
+    "recordselection_rows": 376,
+    "selected_records": 353,
+    "suppressed_duplicate_records": 21,
+    "abundance_conflict_records": 2,
+    "matrix_rows": 777,
+    "positive_rows": 354,
+    "abundance_positive_rows": 312,
+    "presence_positive_rows": 41,
+    "conflict_positive_rows": 1,
+    "true_zero_rows": 423,
+    "single_plot_source_records": 52,
+    "multiple_plot_source_records": 324,
     "invalid_source_measurements": 0,
     "invalid_matrix_rows": 0,
     "matrix_size_mismatch": 0,
@@ -3709,6 +3742,113 @@ ORDER BY o.waarneming_id;
 """
 
 
+def mos_abundance_rank(raw: str) -> int:
+    """Vertaal de drie BLWG-talrijkheidsklassen zonder schijnprecisie."""
+    mapping = {"1.0": 1, "2.0 - 5.0": 2, "minimaal 6.0": 3}
+    try:
+        return mapping[raw]
+    except KeyError as error:
+        raise ValueError(f"Onbekende BLWG-aantalsklasse: {raw!r}") from error
+
+
+def classify_mos_records(
+    rows: Iterable[dict[str, object]],
+) -> dict[int, dict[str, object]]:
+    """Ontdubbel per hokinventarisatie en taxon; bewaar meetconflicten."""
+    grouped: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for source_row in rows:
+        row = dict(source_row)
+        grouped[(str(row["inventory"]), str(row["taxon"]))].append(row)
+
+    result: dict[int, dict[str, object]] = {}
+    for group_rows in grouped.values():
+        ordered = sorted(group_rows, key=lambda row: int(row["observation_id"]))
+        measurements = {
+            (str(row["scale"]), str(row["abundance"])) for row in ordered
+        }
+        if len(measurements) > 1:
+            for row in ordered:
+                result[int(row["observation_id"])] = {
+                    "selectiestatus": "abundantieconflict_bewaard",
+                    "canonieke_waarneming_id": None,
+                }
+            continue
+        canonical_id = int(ordered[0]["observation_id"])
+        for index, row in enumerate(ordered):
+            result[int(row["observation_id"])] = {
+                "selectiestatus": (
+                    "opgenomen" if index == 0 else "dubbele_registratie_onderdrukt"
+                ),
+                "canonieke_waarneming_id": canonical_id,
+            }
+    return result
+
+
+def build_mos_inventory_matrix(
+    *,
+    inventories: set[str],
+    target_taxa: set[str],
+    records: Iterable[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Maak per volledige hokinventarisatie positieve resultaten en echte nullen."""
+    positives: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for source_row in records:
+        row = dict(source_row)
+        positives[(str(row["inventory"]), str(row["taxon"]))].append(row)
+
+    matrix: list[dict[str, object]] = []
+    for inventory in sorted(inventories):
+        for taxon in sorted(target_taxa):
+            source_rows = positives.get((inventory, taxon), [])
+            measurements = {
+                (str(row["scale"]), str(row["abundance"])) for row in source_rows
+            }
+            if not source_rows:
+                status, scale, raw, rank = "echte_nul", None, None, 0
+            elif len(measurements) > 1:
+                status, scale, raw, rank = (
+                    "waargenomen_abundantieconflict", None, None, None
+                )
+            else:
+                scale, raw = next(iter(measurements))
+                if scale == "BLWG-aantalsklassen":
+                    status, rank = "waargenomen_aantalsklasse", mos_abundance_rank(raw)
+                elif scale in {"aanwezig", "voorkomen"} and raw == "minimaal 1.0":
+                    status, rank = "waargenomen_presentie", None
+                else:
+                    raise ValueError(f"Onbekende 02.204-meetwaarde: {scale!r}, {raw!r}")
+            matrix.append({
+                "inventory": inventory,
+                "taxon": taxon,
+                "status": status,
+                "scale": scale,
+                "aantalsklasse_raw": raw,
+                "aantalsrang": rank,
+                "source_count": len(source_rows),
+            })
+    return matrix
+
+
+def mos_source_sql() -> str:
+    """Lees 02.204 uitsluitend uit de openbare, onvervaagde bronlaag."""
+    return f"""
+SELECT o.waarneming_id,o.identiteit_sha256,o.hoknummer,
+       DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
+       DATE_FORMAT(DATE(o.periode_stop),'%Y-%m-%d'),o.jaar,
+       o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw,
+       o.openbare_geometrie_sha256,r.ruimtelijke_klasse,
+       r.toewijzingskwaliteit
+FROM Meijendel.ndff_open_waarneming o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
+  ON r.waarneming_id=o.waarneming_id
+ AND r.regelversie={sql_text(RULE_VERSION)}
+WHERE o.protocol LIKE '02.204%'
+  AND o.soortgroep_raw='Mossen'
+  AND o.vervaagd=0
+ORDER BY o.hoknummer,o.periode_start,o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -4385,6 +4525,207 @@ def reconstruct_korstmossen(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_mossen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw zeven volledige 02.204-hokinventarisaties met echte nullen."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, mos_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        (observation_id, identity, hok, start, stop, year, taxon, scale,
+         abundance, geometry, spatial_class, assignment_quality) = line.split("\t")
+        start_date, stop_date = date.fromisoformat(start), date.fromisoformat(stop)
+        duration_days = (stop_date - start_date).days
+        if duration_days == 1:
+            time_precision = "dag"
+        elif (
+            start_date.month == start_date.day == 1
+            and stop_date == date(start_date.year + 1, 1, 1)
+        ):
+            time_precision = "jaar"
+        else:
+            raise ValueError(f"Onbekende 02.204-tijdprecisie: {start} tot {stop}")
+        inventory = hashlib.sha256(f"02.204|{hok}".encode("utf-8")).hexdigest()
+        date_cluster = hashlib.sha256(
+            f"{inventory}|{start}|{stop}".encode("utf-8")
+        ).hexdigest()
+        records.append({
+            "observation_id": int(observation_id), "identity": identity,
+            "hok": hok, "start": start, "stop": stop, "year": int(year),
+            "taxon": taxon, "scale": scale, "abundance": abundance,
+            "geometry": geometry, "spatial_class": spatial_class,
+            "assignment_quality": assignment_quality,
+            "time_precision": time_precision, "inventory": inventory,
+            "date_cluster": date_cluster,
+        })
+    if len(records) != MOS_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError(
+            "De onvervaagde 02.204-bronselectie wijkt af van het gecontroleerde profiel."
+        )
+    for row in records:
+        scale, raw = str(row["scale"]), str(row["abundance"])
+        if scale == "BLWG-aantalsklassen":
+            mos_abundance_rank(raw)
+        elif scale not in {"aanwezig", "voorkomen"} or raw != "minimaal 1.0":
+            raise ValueError(f"Onbekende 02.204-meetwaarde: {scale!r}, {raw!r}")
+
+    inventories: dict[str, dict[str, object]] = {}
+    date_clusters: dict[str, dict[str, object]] = {}
+    for row in records:
+        inventory = str(row["inventory"])
+        info = inventories.setdefault(inventory, {
+            "hok": str(row["hok"]), "starts": set(), "stops": set(),
+            "years": set(), "date_clusters": set(), "rows": [], "taxa": set(),
+        })
+        for key, value in (
+            ("starts", str(row["start"])), ("stops", str(row["stop"])),
+            ("years", int(row["year"])), ("date_clusters", str(row["date_cluster"])),
+            ("taxa", str(row["taxon"])),
+        ):
+            values = info[key]
+            assert isinstance(values, set)
+            values.add(value)
+        info_rows = info["rows"]
+        assert isinstance(info_rows, list)
+        info_rows.append(row)
+
+        cluster = date_clusters.setdefault(str(row["date_cluster"]), {
+            "inventory": inventory, "start": str(row["start"]),
+            "stop": str(row["stop"]), "time_precision": str(row["time_precision"]),
+            "rows": [], "taxa": set(), "geometries": set(),
+        })
+        cluster_rows = cluster["rows"]
+        cluster_taxa, cluster_geometries = cluster["taxa"], cluster["geometries"]
+        assert isinstance(cluster_rows, list)
+        assert isinstance(cluster_taxa, set) and isinstance(cluster_geometries, set)
+        cluster_rows.append(row)
+        cluster_taxa.add(str(row["taxon"]))
+        cluster_geometries.add(str(row["geometry"]))
+
+    selection = classify_mos_records(records)
+    target_taxa = {str(row["taxon"]) for row in records}
+    matrix = build_mos_inventory_matrix(
+        inventories=set(inventories), target_taxa=target_taxa, records=records,
+    )
+
+    inventory_note = (
+        "Native 02.204-meeteenheid: één zo volledig mogelijk geïnventariseerd RD-"
+        "kilometerhok. De protocolcode onderbouwt de volledige lijst; BLWG-lijst-ID, "
+        "waarnemer en verplichte bezoekduur zijn niet in de FFV-export opgenomen. Het "
+        "kilometerhok wordt niet als waarneming in ieder geraakt SOVON-plot geïnterpreteerd."
+    )
+    inventory_values: list[str] = []
+    for inventory, info in sorted(inventories.items(), key=lambda item: str(item[1]["hok"])):
+        starts, stops, years = info["starts"], info["stops"], info["years"]
+        clusters, rows, taxa = info["date_clusters"], info["rows"], info["taxa"]
+        assert all(isinstance(value, set) for value in (starts, stops, years, clusters, taxa))
+        assert isinstance(rows, list)
+        first_year, last_year = min(years), max(years)
+        year_status = "binnen_een_jaar" if first_year == last_year else "overspant_jaargrens"
+        inventory_values.append(
+            f"({sql_text(MOS_RULE_VERSION)},{sql_text(inventory)},'02.204',"
+            f"{sql_text(str(info['hok']))},{sql_text(min(starts))},{sql_text(max(stops))},"
+            f"{first_year},{last_year},{sql_text(year_status)},{len(clusters)},"
+            f"{len(rows)},{len(taxa)},'volledige_soortenlijst_protocolconform',"
+            "'protocolconform_bezoekduur_niet_meegeleverd',"
+            f"'kilometerhok_niet_naar_sovonplot_toegewezen',{sql_text(inventory_note)})"
+        )
+
+    cluster_note = (
+        "Bronperiode binnen één volledige kilometerhokinventarisatie. Dit is geen "
+        "zelfstandig herhaalbezoek en levert daarom niet afzonderlijk echte nullen."
+    )
+    cluster_values: list[str] = []
+    for cluster_key, info in sorted(
+        date_clusters.items(), key=lambda item: (str(item[1]["inventory"]), str(item[1]["start"]))
+    ):
+        rows, taxa, geometries = info["rows"], info["taxa"], info["geometries"]
+        assert isinstance(rows, list)
+        assert isinstance(taxa, set) and isinstance(geometries, set)
+        cluster_values.append(
+            f"({sql_text(MOS_RULE_VERSION)},{sql_text(cluster_key)},"
+            f"{sql_text(str(info['inventory']))},{sql_text(str(info['start']))},"
+            f"{sql_text(str(info['stop']))},{sql_text(str(info['time_precision']))},"
+            f"{len(rows)},{len(taxa)},{len(geometries)},"
+            "'onderdeel_kilometerhokinventarisatie_geen_zelfstandig_bezoek',"
+            f"{sql_text(cluster_note)})"
+        )
+
+    selection_values: list[str] = []
+    for row in records:
+        selected = selection[int(row["observation_id"])]
+        status = str(selected["selectiestatus"])
+        canonical = selected["canonieke_waarneming_id"]
+        if status == "opgenomen":
+            reason = "Canonieke positieve registratie binnen kilometerhok en taxon."
+        elif status == "dubbele_registratie_onderdrukt":
+            reason = (
+                "Dezelfde meetklasse is binnen de hokinventarisatie meermaals geregistreerd; "
+                "de bronregel blijft traceerbaar maar telt niet als extra resultaat."
+            )
+        else:
+            reason = (
+                "Verschillende aantalsklassen binnen dezelfde hokinventarisatie en hetzelfde "
+                "taxon; bronregels blijven bewaard en de afgeleide abundantie is onbekend."
+            )
+        canonical_sql = "NULL" if canonical is None else str(int(canonical))
+        selection_values.append(
+            f"({sql_text(MOS_RULE_VERSION)},{int(row['observation_id'])},{canonical_sql},"
+            f"{sql_text(str(row['inventory']))},{sql_text(str(row['date_cluster']))},"
+            f"{sql_text(status)},{sql_text(reason)})"
+        )
+
+    scope_values: list[str] = []
+    for taxon in sorted(target_taxa):
+        taxon_rows = [row for row in records if str(row["taxon"]) == taxon]
+        positive_inventories = {str(row["inventory"]) for row in taxon_rows}
+        years = {int(row["year"]) for row in taxon_rows}
+        scope_values.append(
+            f"({sql_text(MOS_RULE_VERSION)},{sql_text(taxon)},"
+            "'openbaar_taxon_waargenomen_in_02_204_inventarisatie',"
+            f"{min(years)},{max(years)},{len(positive_inventories)})"
+        )
+
+    matrix_note = (
+        "Echte nul wanneer dit openbare 02.204-doeltaxon niet is gemeld op de complete "
+        "kilometerhoklijst. Talrijkheid is uitsluitend de ordinale BLWG-klasse 1-3. "
+        "Presentieregels zonder aantalsklasse en conflicten blijven daarvan gescheiden."
+    )
+    matrix_values: list[str] = []
+    for row in matrix:
+        rank_sql = "NULL" if row["aantalsrang"] is None else str(row["aantalsrang"])
+        matrix_values.append(
+            f"({sql_text(MOS_RULE_VERSION)},{sql_text(str(row['inventory']))},"
+            f"{sql_text(str(row['taxon']))},{sql_text(str(row['status']))},"
+            f"{sql_text(row['scale'])},{sql_text(row['aantalsklasse_raw'])},{rank_sql},"
+            f"{int(row['source_count'])},'niet_gemeld_op_volledige_02_204_soortenlijst',"
+            f"{sql_text(matrix_note)})"
+        )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_inventarisatie_taxon WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_doelbereik WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_datumcluster WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_inventarisatie WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{MOS_TABLE_PREFIX}_inventarisatie", "reconstructieversie,inventarisatie_sleutel,protocol_sleutel,hoknummer,begindatum,einddatum,eerste_jaar,laatste_jaar,jaarstatus,datumclusteraantal,bronrecordaantal,geregistreerde_taxa,lijststatus,inspanningstatus,plotstatus,kwaliteitsnotitie", inventory_values),
+        (f"{MOS_TABLE_PREFIX}_datumcluster", "reconstructieversie,datumcluster_sleutel,inventarisatie_sleutel,periode_start,periode_stop,tijdprecisie,bronrecordaantal,geregistreerde_taxa,brongeometrieaantal,clusterstatus,kwaliteitsnotitie", cluster_values),
+        (f"{MOS_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,canonieke_waarneming_id,inventarisatie_sleutel,datumcluster_sleutel,selectiestatus,selectiereden", selection_values),
+        (f"{MOS_TABLE_PREFIX}_doelbereik", "reconstructieversie,wetenschappelijke_naam,afleidingsregel,eerste_jaar,laatste_jaar,positieve_inventarisatieaantal", scope_values),
+        (f"{MOS_TABLE_PREFIX}_inventarisatie_taxon", "reconstructieversie,inventarisatie_sleutel,wetenschappelijke_naam,waarnemingsstatus,bron_schaal,aantalsklasse_raw,aantalsrang,bronrecordaantal,nulregel,kwaliteitsnotitie", matrix_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, mos_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -4733,6 +5074,47 @@ SELECT JSON_OBJECT(
 """
 
 
+def mos_validation_sql() -> str:
+    version = sql_text(MOS_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_mos_{suffix}") for suffix in (
+        "inventarisatie", "datumcluster", "recordselectie", "doelbereik",
+        "inventarisatie_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0),
+  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=1),
+  'inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version}),
+  'single_year_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='binnen_een_jaar'),
+  'cross_year_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='overspant_jaargrens'),
+  'date_clusters',(SELECT COUNT(*) FROM Meijendel.ndff_mos_datumcluster WHERE reconstructieversie={version}),
+  'day_clusters',(SELECT COUNT(*) FROM Meijendel.ndff_mos_datumcluster WHERE reconstructieversie={version} AND tijdprecisie='dag'),
+  'year_clusters',(SELECT COUNT(*) FROM Meijendel.ndff_mos_datumcluster WHERE reconstructieversie={version} AND tijdprecisie='jaar'),
+  'single_date_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND datumclusteraantal=1),
+  'multiple_date_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND datumclusteraantal>1),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_mos_doelbereik WHERE reconstructieversie={version}),
+  'recordselection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version}),
+  'selected_records',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
+  'suppressed_duplicate_records',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='dubbele_registratie_onderdrukt'),
+  'abundance_conflict_records',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='abundantieconflict_bewaard'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
+  'abundance_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_aantalsklasse'),
+  'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_presentie'),
+  'conflict_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_abundantieconflict'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'single_plot_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
+  'multiple_plot_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
+  'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0 AND NOT ((schaal_telmethode='BLWG-aantalsklassen' AND aantal_raw IN ('1.0','2.0 - 5.0','minimaal 6.0')) OR (schaal_telmethode IN ('aanwezig','voorkomen') AND aantal_raw='minimaal 1.0'))),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen_aantalsklasse' AND (bron_schaal<>'BLWG-aantalsklassen' OR aantalsklasse_raw IS NULL OR aantalsrang NOT IN (1,2,3) OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_presentie' AND (bron_schaal NOT IN ('aanwezig','voorkomen') OR aantalsklasse_raw<>'minimaal 1.0' OR aantalsrang IS NOT NULL OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_abundantieconflict' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang IS NOT NULL OR bronrecordaantal<2)) OR (waarnemingsstatus='echte_nul' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang<>0 OR bronrecordaantal<>0)))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_mos_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_mos_inventarisatie i LEFT JOIN Meijendel.ndff_mos_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version})),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_mos_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -4855,6 +5237,16 @@ def validate_korstmos_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != KORSTMOS_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Korstmossenreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_mos_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != MOS_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (MOS_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(MOS_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != MOS_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Mossenreconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -5160,6 +5552,8 @@ def main() -> int:
     mode.add_argument("--audit-hns", action="store_true")
     mode.add_argument("--reconstruct-korstmossen", action="store_true")
     mode.add_argument("--audit-korstmossen", action="store_true")
+    mode.add_argument("--reconstruct-mossen", action="store_true")
+    mode.add_argument("--audit-mossen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -5379,6 +5773,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_korstmos_reconstruction(metrics)
         print(f"OK: lokale korstmossenreconstructie {KORSTMOS_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_mossen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_mossen(args.mysql_client, client_args)
+        validate_mos_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_mossen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            mos_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_mos_reconstruction(metrics)
+        print(f"OK: lokale mossenreconstructie {MOS_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

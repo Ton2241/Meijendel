@@ -123,6 +123,13 @@ en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen
 echte nullen. Gelijke parallelle registraties worden niet dubbel geteld en
 tegenstrijdige grove bedekkingsklassen blijven zichtbaar. Vervaagde records
 worden niet naar deze openbare afgeleide laag gekopieerd.
+`ndff_mos_*` reconstrueert protocol `02.204` onder `ndff-mos-v1` in
+`Meijendel`: zeven kilometerhokinventarisaties, 21 onderliggende tijdclusters,
+recordselectie, lokaal doelbereik en een inventarisatie-soortmatrix. Echte
+nullen gelden uitsluitend voor de volledige hoklijst, nooit voor ieder
+datumcluster of geraakt SOVON-plot. De laag bewaart jaarprecisie, een
+jaargrensoverschrijdende inventarisatie, presentiewaarden zonder aantalsklasse,
+dubbelen en abundantieconflicten afzonderlijk.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

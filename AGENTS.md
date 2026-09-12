@@ -322,6 +322,16 @@ MySQL:
   ordinaal. Kopieer de twintig vervaagde Saucijs-baardmosrecords niet naar de
   openbare afgeleide tabellen en controleer vóór gebruik met
   `--audit-korstmossen`
+- gebruik voor mossenprotocol `02.204` reconstructieversie `ndff-mos-v1` en de
+  vijf openbare tabellen `Meijendel.ndff_mos_*`. De native meeteenheid is het
+  volledige kilometerhok. Behandel de 21 bronperioden als onderdelen van zeven
+  hokinventarisaties, nooit als onafhankelijke herhaaltellingen. Leid echte
+  nullen alleen af op hokniveau binnen de 111 openbare taxa; verdeel een
+  hokuitkomst niet over geraakte SOVON-plots. Gebruik de drie BLWG-klassen
+  uitsluitend ordinaal, houd presentiewaarden en abundantieconflicten apart en
+  leid geen lokale tijdtrend af omdat geen hok is herhaald. Kopieer het ene
+  vervaagde record niet naar de openbare afgeleide tabellen en controleer vóór
+  gebruik met `--audit-mossen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

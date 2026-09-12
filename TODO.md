@@ -57,7 +57,13 @@
   FFV-bedekkingsklassen alleen ordinaal en sluit de tien conflictcombinaties uit
   van abundantievergelijking. Vraag BLWG later alleen om oorspronkelijke
   locatie-ID's, geometrieversies en de zesdelige abundantieklasse wanneer dat
-  voor een verdiepende analyse nodig blijkt. Ga nu verder met `02.204` Mossen.
+  voor een verdiepende analyse nodig blijkt.
+- `02.204` bevat onder `ndff-mos-v1` zeven volledige
+  kilometerhokinventarisaties en 777 inventarisatie-taxonregels. Gebruik de 423
+  echte nullen alleen op kilometerhokniveau. Behandel de 21 tijdclusters niet
+  als onafhankelijke bezoeken en leid geen plotnullen of lokale tijdtrend af.
+  Vraag BLWG later alleen om lijst-ID's, bezoekduur en waarnemer wanneer een
+  verdiepende validatie dat nodig maakt.
 - `12.204` bevat onder `ndff-hns-v1` 23 aannemelijk volledige
   inventarisaties en drie fragmenten. Gebruik de 16.169
   inventarisatie-taxonregels voorlopig voor verspreidings-/occupancyanalyse;

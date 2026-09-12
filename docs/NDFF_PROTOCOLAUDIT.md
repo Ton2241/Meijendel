@@ -271,7 +271,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |
 | `11.202` Zeereeppaddenstoelen | 3.738 | 161 | 2014-2025 | 21 kilometerhokken en bezoek-soortmatrix gereconstrueerd; 9 vervaagde records uitgesloten |
 | `02.202` Korstmossen | 384 | 32 | 2000-2025 | 12 proefvlakken en bezoek-soortmatrix gereconstrueerd; 20 vervaagde records uitgesloten |
-| `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
+| `02.204` Mossen | 377 | 7 hokken | 2000-2011 | 7 volledige hokinventarisaties en inventarisatie-soortmatrix gereconstrueerd; 1 vervaagd record uitgesloten |
 | `11.201` Bospaddenstoelen | 982 | 110 | 1999-2016 | drie vaste meetpunten, bezoekmatrix en jaarlijkse maxima gereconstrueerd; 473 parallelle presentieregels onderdrukt |
 | `12.204` Het Nieuwe Strepen | 4.569 | 23 lijstkandidaten | 2012-2024 | bezoekmatrix gereconstrueerd; onafhankelijkheid herhalingen nog niet bevestigd |
 | `17.204` DAZ-BMP | 10.670 | 1.475 bevestigd | 1994-2022 | gekoppeld aan BMP; doelsoortmatrix met taxonspecifieke ambiguïteitsblokkade |
@@ -339,6 +339,35 @@ nullen. Controleer de laag vóór gebruik met `--audit-korstmossen`.
 Methodische grondslag: [NDFF protocol 02.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/2-202-korstmossen-op-steen-heiden-en-stuifzanden-nem/),
 [BLWG meetnet](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
 en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/korstmossen).
+
+### Meetnet mossen (`02.204`)
+
+Regelversie `ndff-mos-v1` reconstrueert 376 onvervaagde openbare bronregels
+tot zeven volledige kilometerhokinventarisaties. De 21 bronperioden daarbinnen
+zijn negentien dagclusters en twee jaarintervallen; zij worden niet als 21
+onafhankelijke bezoeken behandeld. Eén inventarisatie overspant de jaargrens
+2010-2011. Geen kilometerhok is in de lokale levering in een latere meetronde
+herhaald, zodat deze selectie zelfstandig geen lokale tijdtrend ondersteunt.
+
+Het uit de openbare records aantoonbare lokale doelbereik omvat 111 taxa. De
+inventarisatie-soortmatrix bevat 354 positieve combinaties en 423 echte nullen.
+Van de positieve combinaties hebben er 312 een BLWG-talrijkheidsklasse 1-3 en
+41 alleen een presentiewaarde. Eén combinatie heeft conflicterende
+talrijkheidsklassen. Daarnaast blijven 21 gelijke parallelle bronregels in het
+auditspoor staan, maar zij tellen niet als extra resultaat.
+
+Het protocol vereist een zo volledig mogelijke soortenlijst per geselecteerd
+kilometerhok, minimaal acht mensuren, alle relevante biotopen en een
+talrijkheidsklasse per soort. De FFV-export bevat geen BLWG-lijst-ID,
+waarnemer of bezoekduur; deze ontbrekende metadata blijven als
+kwaliteitswaarschuwing zichtbaar. Een kilometerhok wordt niet als aanwezigheid
+of nul in ieder geraakt SOVON-plot geïnterpreteerd. Eén vervaagd record wordt
+niet naar openbare afgeleide tabellen gekopieerd. Controleer de laag vóór
+gebruik met `--audit-mossen`.
+
+Methodische grondslag: [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx),
+[BLWG Inventarisatiehandleiding](https://www.blwg.nl/wp-content/uploads/2025/08/BLWG-Inventarisatiehandleiding.pdf)
+en [GBIF-beschrijving protocol 02.204](https://www.gbif.org/dataset/2d1a33c3-f278-40d2-a662-e0d3369658e2).
 
 Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
 `04.004` (1.282), `12.001` (1.150), `12.204` (929), `07.001` (850) en `12.006`

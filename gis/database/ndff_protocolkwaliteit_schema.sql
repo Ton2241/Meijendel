@@ -1473,3 +1473,136 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
       AND bedekkingsrang=0 AND bronrecordaantal=0)
   )
 ) ENGINE=InnoDB;
+
+-- Reconstructie van 02.204 Meetnet mossen (NEM). De native meeteenheid is
+-- een volledig geïnventariseerd RD-kilometerhok. Datumclusters binnen hetzelfde
+-- hok zijn onderdelen van één inventarisatie en worden niet als onafhankelijke
+-- herhaaltellingen behandeld.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '02.204',
+  hoknummer VARCHAR(16) CHARACTER SET ascii NOT NULL,
+  begindatum DATE NOT NULL,
+  einddatum DATE NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaarstatus ENUM('binnen_een_jaar','overspant_jaargrens') NOT NULL,
+  datumclusteraantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  lijststatus ENUM('volledige_soortenlijst_protocolconform') NOT NULL,
+  inspanningstatus ENUM('protocolconform_bezoekduur_niet_meegeleverd') NOT NULL,
+  plotstatus ENUM('kilometerhok_niet_naar_sovonplot_toegewezen') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, inventarisatie_sleutel),
+  UNIQUE KEY uq_ndff_mos_hok (reconstructieversie, hoknummer),
+  CHECK (einddatum >= begindatum),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_datumcluster (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  datumcluster_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  periode_start DATE NOT NULL,
+  periode_stop DATE NOT NULL,
+  tijdprecisie ENUM('dag','jaar') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  brongeometrieaantal SMALLINT UNSIGNED NOT NULL,
+  clusterstatus ENUM('onderdeel_kilometerhokinventarisatie_geen_zelfstandig_bezoek') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, datumcluster_sleutel),
+  UNIQUE KEY uq_ndff_mos_inventarisatie_periode
+    (reconstructieversie, inventarisatie_sleutel, periode_start, periode_stop),
+  CONSTRAINT fk_ndff_mos_datumcluster_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_mos_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel),
+  CHECK (periode_stop > periode_start)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  canonieke_waarneming_id BIGINT UNSIGNED NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  datumcluster_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM(
+    'opgenomen','dubbele_registratie_onderdrukt','abundantieconflict_bewaard'
+  ) NOT NULL,
+  selectiereden VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_mos_selectie_canoniek
+    (reconstructieversie, canonieke_waarneming_id),
+  CONSTRAINT fk_ndff_mos_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_mos_selectie_canoniek FOREIGN KEY
+    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_mos_selectie_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_mos_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel),
+  CONSTRAINT fk_ndff_mos_selectie_datumcluster FOREIGN KEY
+    (reconstructieversie, datumcluster_sleutel)
+    REFERENCES Meijendel.ndff_mos_datumcluster
+      (reconstructieversie, datumcluster_sleutel),
+  CHECK (
+    (selectiestatus IN ('opgenomen','dubbele_registratie_onderdrukt')
+      AND canonieke_waarneming_id IS NOT NULL)
+    OR (selectiestatus='abundantieconflict_bewaard'
+      AND canonieke_waarneming_id IS NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_doelbereik (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  afleidingsregel ENUM('openbaar_taxon_waargenomen_in_02_204_inventarisatie') NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  positieve_inventarisatieaantal SMALLINT UNSIGNED NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, wetenschappelijke_naam),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen_aantalsklasse','waargenomen_presentie',
+    'waargenomen_abundantieconflict','echte_nul'
+  ) NOT NULL,
+  bron_schaal VARCHAR(64) NULL,
+  aantalsklasse_raw VARCHAR(64) NULL,
+  aantalsrang TINYINT UNSIGNED NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulregel ENUM('niet_gemeld_op_volledige_02_204_soortenlijst') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, inventarisatie_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_mos_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_mos_taxon_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_mos_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen_aantalsklasse'
+      AND bron_schaal='BLWG-aantalsklassen' AND aantalsklasse_raw IS NOT NULL
+      AND aantalsrang IN (1,2,3) AND bronrecordaantal>0)
+    OR (waarnemingsstatus='waargenomen_presentie'
+      AND bron_schaal IN ('aanwezig','voorkomen') AND aantalsklasse_raw='minimaal 1.0'
+      AND aantalsrang IS NULL AND bronrecordaantal>0)
+    OR (waarnemingsstatus='waargenomen_abundantieconflict'
+      AND bron_schaal IS NULL AND aantalsklasse_raw IS NULL
+      AND aantalsrang IS NULL AND bronrecordaantal>1)
+    OR (waarnemingsstatus='echte_nul' AND bron_schaal IS NULL
+      AND aantalsklasse_raw IS NULL AND aantalsrang=0 AND bronrecordaantal=0)
+  )
+) ENGINE=InnoDB;

@@ -189,6 +189,15 @@
   blijven conflict. De twee FFV-klassen zijn alleen ordinaal bruikbaar. De
   twintig vervaagde Saucijs-baardmosrecords blijven uitsluitend in de
   beveiligde bronlaag en krijgen geen openbare afleiding.
+- Protocol `02.204` wordt onder `ndff-mos-v1` gereconstrueerd met het
+  kilometerhok als native inventarisatie-eenheid. De 21 bronperioden binnen de
+  zeven hokken zijn geen onafhankelijke herhaaltellingen en krijgen daarom geen
+  afzonderlijke nullen. De volledige hoklijsten ondersteunen wel echte nullen
+  binnen het conservatieve lokale doelbereik van 111 openbare taxa. Gelijke
+  parallelle registraties tellen eenmaal; presentiewaarden zonder
+  talrijkheidsklasse en één abundantieconflict blijven afzonderlijk. Omdat geen
+  hok in een volgende ronde is herhaald, wordt geen lokale tijdtrend afgeleid.
+  Kilometerhokresultaten worden niet naar afzonderlijke SOVON-plots verdeeld.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
