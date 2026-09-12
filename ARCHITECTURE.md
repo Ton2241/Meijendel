@@ -105,6 +105,12 @@ kalenderdatum. De zes typische doelsoorten vormen een volledige bezoekmatrix;
 NMV-vindplaatsklassen blijven ordinale klassen. Vervaagde records worden niet
 tot bezoeken gemaakt en seizoenstatus, ontbrekende bezoektijd en nog niet
 gevalideerde waarnemersbekwaamheid blijven expliciet zichtbaar.
+`ndff_bospaddenstoel_*` reconstrueert het historische protocol `11.201` in
+`Meijendel`: drie vaste meetpuntfamilies, de zes brongeometrieën, een
+recordselectie die exacte tellingen boven parallelle presentie kiest, een
+conservatief meetpunt-doelbereik, bezoeken, bezoek-soortmatrix en jaarlijkse
+maximumtelling. De keten bewaart echte nullen alleen binnen aantoonbaar gevolgde
+telsoorten en houdt `11.201` volledig gescheiden van opvolger `11.204`.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

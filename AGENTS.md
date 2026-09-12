@@ -291,6 +291,18 @@ MySQL:
   analyse dat bezoektijd en waarnemersbekwaamheid nog niet uit de NDFF-export
   zijn gevalideerd. Controleer vóór gebruik met
   `--audit-zeereeppaddenstoelen`
+- gebruik voor het historische bospaddenstoelenprotocol `11.201`
+  reconstructieversie `ndff-bospaddenstoel-v1` en de zeven openbare tabellen
+  `Meijendel.ndff_bospaddenstoel_*`. Gebruik de recordselectie om 473 parallelle
+  presentieregels niet naast hun exacte vruchtlichaamtelling mee te tellen.
+  Leid bezoeknullen alleen af voor telsoorten die op hetzelfde vaste meetpunt
+  ooit positief zijn gemeld; dit is het conservatief aantoonbare minimum van het
+  oorspronkelijke doelbereik. Een nul betreft vruchtlichamen op één bezoek,
+  niet afwezigheid van mycelium of geschiktheid van de habitat. Gebruik voor een
+  jaar het hoogste dagtotaal uit `ndff_bospaddenstoel_jaar_taxon`, nooit de som
+  van bezoeken, en vul geen volledig negatieve ontbrekende bezoeken aan. Houd
+  `11.201` gescheiden van `11.204` en controleer vóór gebruik met
+  `--audit-bospaddenstoelen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

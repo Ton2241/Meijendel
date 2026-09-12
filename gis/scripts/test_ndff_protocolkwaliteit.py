@@ -82,6 +82,13 @@ def main() -> int:
         "meijendel.ndff_zeereep_kilometerhok",
         "meijendel.ndff_zeereep_bezoek",
         "meijendel.ndff_zeereep_bezoek_taxon",
+        "meijendel.ndff_bospaddenstoel_meetpunt",
+        "meijendel.ndff_bospaddenstoel_geometrie",
+        "meijendel.ndff_bospaddenstoel_recordselectie",
+        "meijendel.ndff_bospaddenstoel_doelbereik",
+        "meijendel.ndff_bospaddenstoel_bezoek",
+        "meijendel.ndff_bospaddenstoel_bezoek_taxon",
+        "meijendel.ndff_bospaddenstoel_jaar_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -92,6 +99,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_konijn_" not in folded
     assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
+    assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -272,6 +280,27 @@ def main() -> int:
     assert module.classify_zeereep_abundance("voorkomen", "minimaal 1.0") == "aanwezig"
     assert module.classify_zeereep_abundance("exact aantal", "1") == "exact_1"
 
+    assert module.normalize_bospaddenstoel_date(
+        "exact aantal", "1999-08-26 22:00:00", "1999-08-27 22:00:00"
+    ) == "1999-08-27"
+    assert module.normalize_bospaddenstoel_date(
+        "voorkomen", "1999-08-27 00:00:00", "1999-08-28 00:00:00"
+    ) == "1999-08-27"
+    assert module.parse_bospaddenstoel_count("exact aantal", "78") == 78
+    assert module.parse_bospaddenstoel_count("voorkomen", "minimaal 1.0") is None
+    bospaddenstoel_selection = module.select_bospaddenstoel_records([
+        {"identity": "exact", "plot": 1, "date": "1999-08-27", "taxon": "Taxon a",
+         "scale": "exact aantal", "raw": "5"},
+        {"identity": "presence", "plot": 1, "date": "1999-08-27", "taxon": "Taxon a",
+         "scale": "voorkomen", "raw": "minimaal 1.0"},
+        {"identity": "presence-only", "plot": 1, "date": "1999-09-27", "taxon": "Taxon b",
+         "scale": "voorkomen", "raw": "minimaal 1.0"},
+    ])
+    assert bospaddenstoel_selection["exact"]["selectiestatus"] == "opgenomen_exact"
+    assert bospaddenstoel_selection["presence"]["selectiestatus"] == "dubbele_presentie_onderdrukt"
+    assert bospaddenstoel_selection["presence"]["canonieke_identiteit"] == "exact"
+    assert bospaddenstoel_selection["presence-only"]["selectiestatus"] == "opgenomen_presentie"
+
     assert module.classify_rabbit_season("2020-03-15") == "voorjaar_huidig_venster"
     assert module.classify_rabbit_season("2020-04-07") == "voorjaar_huidig_venster"
     assert module.classify_rabbit_season("2020-09-15") == "najaar_huidig_venster"
@@ -406,6 +435,8 @@ def main() -> int:
     assert "--audit-daz-bmp" in importer_text
     assert "--reconstruct-zeereeppaddenstoelen" in importer_text
     assert "--audit-zeereeppaddenstoelen" in importer_text
+    assert "--reconstruct-bospaddenstoelen" in importer_text
+    assert "--audit-bospaddenstoelen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -458,6 +489,11 @@ def main() -> int:
     assert "o.soortgroep_raw='Schimmels'" in zeereep_source_sql
     assert "o.vervaagd=0" in zeereep_source_sql
     assert "Meijendel_ndff_secure" not in zeereep_source_sql
+    bospaddenstoel_source_sql = " ".join(module.bospaddenstoel_source_sql().split())
+    assert "o.protocol LIKE '11.201%'" in bospaddenstoel_source_sql
+    assert "o.soortgroep_raw='Schimmels'" in bospaddenstoel_source_sql
+    assert "o.vervaagd=0" in bospaddenstoel_source_sql
+    assert "Meijendel_ndff_secure" not in bospaddenstoel_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -542,6 +578,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende zeereeppaddenstoelenreconstructie is niet geblokkeerd")
+    module.validate_bospaddenstoel_reconstruction(
+        dict(module.BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED)
+    )
+    broken_bospaddenstoel = dict(module.BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED)
+    broken_bospaddenstoel["duplicate_presence_records"] -= 1
+    try:
+        module.validate_bospaddenstoel_reconstruction(broken_bospaddenstoel)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende bospaddenstoelenreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

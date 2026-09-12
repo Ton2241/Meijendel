@@ -1070,3 +1070,162 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_bezoek_taxon (
       AND hoogste_nmv_klasse='geen')
   )
 ) ENGINE=InnoDB;
+
+-- Reconstructie van het historische NEM 11.201 Meetnet Bospaddenstoelen.
+-- De zes brongeometrieen zijn technische representaties van drie vaste
+-- meetpunten. Exacte vruchtlichaamtellingen zijn canoniek boven de parallelle
+-- presentieregels. Het doelbereik is conservatief: alleen telsoorten die op een
+-- meetpunt ten minste eenmaal zijn gemeld, gelden daar aantoonbaar als gevolgd.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_meetpunt (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  meetpunt_id SMALLINT UNSIGNED NOT NULL,
+  meetpunt_sleutel VARCHAR(32) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '11.201',
+  centrum_x_rd DECIMAL(10,2) NOT NULL,
+  centrum_y_rd DECIMAL(10,2) NOT NULL,
+  geometrieaantal SMALLINT UNSIGNED NOT NULL,
+  bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaaraantal SMALLINT UNSIGNED NOT NULL,
+  doelbereikstatus ENUM('conservatief_afgeleid_uit_ooit_waargenomen_telsoorten') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, meetpunt_id),
+  UNIQUE KEY uq_ndff_bospaddenstoel_meetpunt_sleutel
+    (reconstructieversie, meetpunt_sleutel),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_geometrie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  meetpunt_id SMALLINT UNSIGNED NOT NULL,
+  representatietype ENUM('exact_aantal_vlak','presentie_vlak') NOT NULL,
+  centrum_x_rd DECIMAL(10,2) NOT NULL,
+  centrum_y_rd DECIMAL(10,2) NOT NULL,
+  oppervlakte_m2 DECIMAL(14,2) NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, geometrie_sha256),
+  KEY ix_ndff_bospaddenstoel_geometrie_meetpunt
+    (reconstructieversie, meetpunt_id),
+  CONSTRAINT fk_ndff_bospaddenstoel_geometrie_meetpunt FOREIGN KEY
+    (reconstructieversie, meetpunt_id)
+    REFERENCES Meijendel.ndff_bospaddenstoel_meetpunt
+      (reconstructieversie, meetpunt_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  canonieke_waarneming_id BIGINT UNSIGNED NOT NULL,
+  meetpunt_id SMALLINT UNSIGNED NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  selectiestatus ENUM(
+    'opgenomen_exact','opgenomen_presentie','dubbele_presentie_onderdrukt'
+  ) NOT NULL,
+  selectiereden VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_bospaddenstoel_selectie_canoniek
+    (reconstructieversie, canonieke_waarneming_id),
+  CONSTRAINT fk_ndff_bospaddenstoel_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_bospaddenstoel_selectie_canoniek FOREIGN KEY
+    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_bospaddenstoel_selectie_meetpunt FOREIGN KEY
+    (reconstructieversie, meetpunt_id)
+    REFERENCES Meijendel.ndff_bospaddenstoel_meetpunt
+      (reconstructieversie, meetpunt_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_doelbereik (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  meetpunt_id SMALLINT UNSIGNED NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  afleidingsregel ENUM('doelsoort_ooit_waargenomen_op_meetpunt') NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  positieve_bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, meetpunt_id, wetenschappelijke_naam),
+  CONSTRAINT fk_ndff_bospaddenstoel_bereik_meetpunt FOREIGN KEY
+    (reconstructieversie, meetpunt_id)
+    REFERENCES Meijendel.ndff_bospaddenstoel_meetpunt
+      (reconstructieversie, meetpunt_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  meetpunt_id SMALLINT UNSIGNED NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  seizoenstatus ENUM('kernseizoen_jul_nov','buiten_kernseizoen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  canonieke_positieve_resultaten SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  inspanningstatus ENUM('bezoek_bevestigd_duur_niet_meegeleverd') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  UNIQUE KEY uq_ndff_bospaddenstoel_meetpunt_datum
+    (reconstructieversie, meetpunt_id, bezoekdatum),
+  CONSTRAINT fk_ndff_bospaddenstoel_bezoek_meetpunt FOREIGN KEY
+    (reconstructieversie, meetpunt_id)
+    REFERENCES Meijendel.ndff_bospaddenstoel_meetpunt
+      (reconstructieversie, meetpunt_id),
+  CHECK (jaar = YEAR(bezoekdatum))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM('waargenomen_exact','waargenomen_presentie','echte_nul') NOT NULL,
+  aantal_vruchtlichamen INT UNSIGNED NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulregel ENUM('aantoonbaar_gevolgde_telsoort_op_bevestigd_bezoek') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_bospaddenstoel_bezoek_taxon_status
+    (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_bospaddenstoel_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_bospaddenstoel_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen_exact' AND aantal_vruchtlichamen>0 AND bronrecordaantal>0)
+    OR (waarnemingsstatus='waargenomen_presentie' AND aantal_vruchtlichamen IS NULL AND bronrecordaantal>0)
+    OR (waarnemingsstatus='echte_nul' AND aantal_vruchtlichamen=0 AND bronrecordaantal=0)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_jaar_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  meetpunt_id SMALLINT UNSIGNED NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  jaarstatus ENUM('maximum_exact','alleen_presentie','echte_nul') NOT NULL,
+  maximum_vruchtlichamen INT UNSIGNED NULL,
+  bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  positief_bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, meetpunt_id, jaar, wetenschappelijke_naam),
+  CONSTRAINT fk_ndff_bospaddenstoel_jaar_meetpunt FOREIGN KEY
+    (reconstructieversie, meetpunt_id)
+    REFERENCES Meijendel.ndff_bospaddenstoel_meetpunt
+      (reconstructieversie, meetpunt_id),
+  CHECK (
+    (jaarstatus='maximum_exact' AND maximum_vruchtlichamen>0 AND positief_bezoekaantal>0)
+    OR (jaarstatus='alleen_presentie' AND maximum_vruchtlichamen IS NULL AND positief_bezoekaantal>0)
+    OR (jaarstatus='echte_nul' AND maximum_vruchtlichamen=0 AND positief_bezoekaantal=0)
+  )
+) ENGINE=InnoDB;

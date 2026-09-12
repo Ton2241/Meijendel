@@ -284,6 +284,18 @@ buiten oktober-december en de nog niet gevalideerde bezoektijd en
 waarnemersbekwaamheid blijven als kwaliteitswaarschuwing aanwezig. Controleer
 de laag met `--audit-zeereeppaddenstoelen`.
 
+Het historische bospaddenstoelenprotocol `11.201` staat onder
+`ndff-bospaddenstoel-v1` in zeven openbare
+`Meijendel.ndff_bospaddenstoel_*`-tabellen. De 982 bronregels blijken 473
+parallelle presentieregels naast een exacte vruchtlichaamtelling te bevatten.
+Na gecontroleerde onderdrukking daarvan blijven 509 unieke positieve
+plot-bezoek-soortresultaten over, verdeeld over drie vaste meetpunten en 110
+bezoeken in 1999-2016. De conservatieve bezoekmatrix bevat 506 positieve
+doelsoortresultaten en 2.428 echte bezoeknullen voor telsoorten die op het
+betreffende meetpunt aantoonbaar ooit zijn gevolgd. De 977 jaarregels gebruiken
+conform het protocol het hoogste dagtotaal, nooit de som van bezoeken. Controleer
+de laag met `--audit-bospaddenstoelen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

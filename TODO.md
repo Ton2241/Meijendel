@@ -40,8 +40,8 @@
   `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
-- De reconstructies van `07.201`, `10.201`, `01.201`, `17.208`, `17.204` en
-  `11.202` zijn afgerond. `11.202` omvat 21 kilometerhokken, 161 bezoeken en
+- De reconstructies van `07.201`, `10.201`, `01.201`, `17.208`, `17.204`,
+  `11.202` en `11.201` zijn afgerond. `11.202` omvat 21 kilometerhokken, 161 bezoeken en
   een matrix voor zes typische zeereeppaddenstoelen; 61 bezoeken buiten het
   kernseizoen en ontbrekende bezoektijd/waarnemersbekwaamheid blijven zichtbaar.
   `17.209` is als positieve sectietelling geclassificeerd, maar kan zonder
@@ -52,6 +52,12 @@
   NEM-reeks op basis van omvang en reconstrueerbaarheid. Ken pas nullen toe
   nadat per protocol meeteenheid, bevestigd bezoek en doelsoortenbereik
   vaststaan.
+- `11.201` bevat na onderdrukking van 473 parallelle presentieregels 509
+  canonieke positieve resultaten, drie vaste meetpunten en 110 bevestigde
+  bezoeken. Gebruik de 2.934 bezoek-taxonregels en 977 jaarlijkse maxima via
+  `ndff-bospaddenstoel-v1`; vul geen geheel negatieve bezoeken aan. Een latere
+  NMV-opvraag kan oorspronkelijke meetpuntnummers, volledig doelbereik en
+  ontbrekende bezoeken valideren, maar blokkeert het voorlopige gebruik niet.
 - Nadat alle NDFF-protocollen technisch zijn bewerkt, downloadt de eigenaar
   opnieuw een volledig BMP/SAP-bestand. Dit bestand moet behalve de
   vogeltellingen ook de tijdens ieder bezoek geregistreerde zoogdierbijvangst

@@ -208,6 +208,34 @@ uitsluitend in `Meijendel`.
 Methodische bronnen: [NDFF 11.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-202-zeereeppaddenstoelen/)
 en [NMV-methodiek Zeereeppaddenstoelen](https://www.mycologen.nl/onderzoek/meetnet/zeereep-concept/zeereep-methodiek/).
 
+Het historische NEM-meetnet Bospaddenstoelen (`11.201`) is onder
+`ndff-bospaddenstoel-v1` gereconstrueerd op vaste meetpunten. De 982 openbare
+bronregels bevatten twee technische representaties. Voor 473
+plot-datum-taxoncombinaties staat een presentieregel naast een regel met het
+exacte vruchtlichaamaantal; de exacte regel is canoniek gemaakt zonder de
+presentieregel uit het auditspoor te verwijderen. Daardoor blijven 509 unieke
+positieve resultaten over op drie meetpunten en 110 bezoeken in 1999-2016.
+
+Het protocol stond per meetpunt registratie van alle telsoorten óf van één of
+enkele telsoorten toe. Daarom omvat het afgeleide doelbereik uitsluitend de 76
+meetpunt-taxoncombinaties die door minstens één positieve melding aantoonbaar
+zijn. De bezoekmatrix telt 2.934 regels: 506 positieve doelsoortresultaten en
+2.428 echte bezoeknullen. De drie positieve regels voor `Fungi sp. indet.` zijn
+bijvangst en krijgen geen nullen. De nul betekent geen vruchtlichaam tijdens dat
+bezoek; zij bewijst geen afwezig mycelium en geen ongeschikte habitat.
+
+De jaarlijkse tabel telt 977 meetpunt-jaar-taxonregels, waarvan 316 met een
+positieve exacte maximumtelling en 661 nullen. Conform de historische
+handleiding is de jaarwaarde het hoogste aantal vruchtlichamen op één teldag,
+niet de som van bezoeken. Zeven bevestigde bezoeken in december staan als
+buiten het historische kernseizoen juli-november gemarkeerd. Volledig negatieve
+bezoeken, oorspronkelijke meetpuntnummers, terreinschetsen en zoektijd ontbreken
+in de NDFF-export en zijn niet aangevuld. Controle vindt plaats met
+`--audit-bospaddenstoelen`; alle zeven afgeleide tabellen staan in `Meijendel`.
+
+Methodische bronnen: [NDFF 11.201](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-201-meetnet-bospaddenstoelen-nem/)
+en de [historische handleiding Paddestoelenmonitoring](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2017/08/Handleiding-paddenstoelen.pdf).
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
@@ -244,7 +272,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `11.202` Zeereeppaddenstoelen | 3.738 | 161 | 2014-2025 | 21 kilometerhokken en bezoek-soortmatrix gereconstrueerd; 9 vervaagde records uitgesloten |
 | `02.202` Korstmossen | 384 | 15 | 2000-2025 | proefvlakken en doelsoortenlijst reconstrueren |
 | `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
-| `11.201` Bospaddenstoelen | 982 | 216 | 1999-2016 | vaste plots; soort- en habitatgeschiktheid behouden |
+| `11.201` Bospaddenstoelen | 982 | 110 | 1999-2016 | drie vaste meetpunten, bezoekmatrix en jaarlijkse maxima gereconstrueerd; 473 parallelle presentieregels onderdrukt |
 | `12.204` Het Nieuwe Strepen | 4.569 | 1.145 | 2012-2024 | onafhankelijke hokbezoeken eerst onderscheiden |
 | `17.204` DAZ-BMP | 10.670 | 1.475 bevestigd | 1994-2022 | gekoppeld aan BMP; doelsoortmatrix met taxonspecifieke ambiguïteitsblokkade |
 | `03.203` Nachtvlinders | 596 | 4 | 2019-2025 | geen nullen uit huidige NDFF-regels afleiden |

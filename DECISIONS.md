@@ -160,6 +160,17 @@
   negen vervaagde records worden niet tot bezoek gemaakt; bezoeken buiten
   oktober-december en ontbrekende bezoektijd/waarnemersbekwaamheid blijven
   verplichte kwaliteitswaarschuwingen.
+- Protocol `11.201` wordt onder `ndff-bospaddenstoel-v1` als historische,
+  afzonderlijke meetreeks gereconstrueerd en niet samengevoegd met `11.204`.
+  Van de 982 bronregels zijn 473 parallelle presentieregels onderdrukt ten
+  gunste van de corresponderende exacte vruchtlichaamtelling; de bronregels
+  blijven in het auditspoor staan. De zes technische geometrieën vormen drie
+  vaste meetpuntfamilies en 110 bevestigde bezoeken. Omdat een meetpunt volgens
+  het protocol alle óf slechts enkele telsoorten kon volgen, wordt het
+  doelbereik conservatief beperkt tot doelsoorten die daar ooit positief zijn
+  gemeld. Een afgeleide nul betekent uitsluitend geen vruchtlichaam op dat
+  bezoek. De jaarlijkse telwaarde is het hoogste dagtotaal en nooit de som van
+  bezoeken. Volledig negatieve ontbrekende bezoeken worden niet aangevuld.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

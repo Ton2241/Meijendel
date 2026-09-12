@@ -39,6 +39,7 @@ BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
+BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -48,6 +49,7 @@ BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
 DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
+BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -229,6 +231,32 @@ ZEEREEP_RECONSTRUCTION_EXPECTED = {
     "target_source_records": 240,
     "off_season_visits": 61,
     "invalid_matrix_rows": 0,
+    "legacy_secure_tables": 0,
+}
+BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED = {
+    "source_records": 982,
+    "exact_source_records": 498,
+    "presence_source_records": 484,
+    "duplicate_presence_records": 473,
+    "canonical_positive_records": 509,
+    "meetpoints": 3,
+    "source_geometries": 6,
+    "visits": 110,
+    "target_scope_rows": 76,
+    "target_taxa": 49,
+    "target_positive_rows": 506,
+    "bycatch_positive_rows": 3,
+    "visit_matrix_rows": 2934,
+    "true_zero_rows": 2428,
+    "annual_rows": 977,
+    "annual_positive_rows": 316,
+    "annual_zero_rows": 661,
+    "off_season_visits": 7,
+    "invalid_source_measurements": 0,
+    "invalid_meetpoint_geometries": 0,
+    "duplicate_target_missing": 0,
+    "invalid_matrix_rows": 0,
+    "invalid_annual_rows": 0,
     "legacy_secure_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -3238,6 +3266,377 @@ def reconstruct_zeereeppaddenstoelen(
     return parse_analysis_chain_output(audit_output)
 
 
+def normalize_bospaddenstoel_date(scale: str, start: str, stop: str) -> str:
+    """Herstel de lokale teldatum uit de twee historische NDFF-representaties."""
+    if scale == "exact aantal":
+        return stop[:10]
+    if scale == "voorkomen":
+        return start[:10]
+    raise ValueError(f"Niet ondersteunde 11.201-meetschaal: {scale!r}")
+
+
+def parse_bospaddenstoel_count(scale: str, raw_value: str) -> int | None:
+    """Lees alleen echte vruchtlichaamtellingen; presentie blijft ongemeten."""
+    if scale == "voorkomen" and raw_value == "minimaal 1.0":
+        return None
+    if scale == "exact aantal" and re.fullmatch(r"[1-9][0-9]*", raw_value):
+        return int(raw_value)
+    raise ValueError(f"Niet ondersteunde 11.201-meetwaarde: {scale!r} / {raw_value!r}")
+
+
+def select_bospaddenstoel_records(
+    rows: Iterable[dict[str, object]],
+) -> dict[str, dict[str, object]]:
+    """Kies per meetpunt, datum en taxon de exacte regel boven presentie."""
+    materialized = [dict(row) for row in rows]
+    grouped: dict[tuple[int, str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in materialized:
+        grouped[(int(row["plot"]), str(row["date"]), str(row["taxon"]))].append(row)
+    selection: dict[str, dict[str, object]] = {}
+    for candidates in grouped.values():
+        exact = [row for row in candidates if row["scale"] == "exact aantal"]
+        presence = [row for row in candidates if row["scale"] == "voorkomen"]
+        if len(exact) > 1 or len(presence) > 1:
+            raise ValueError("Meerdere 11.201-regels van hetzelfde representatietype binnen één resultaat.")
+        canonical = exact[0] if exact else presence[0]
+        canonical_identity = str(canonical["identity"])
+        for row in candidates:
+            identity = str(row["identity"])
+            if row is canonical:
+                status = "opgenomen_exact" if exact else "opgenomen_presentie"
+            else:
+                status = "dubbele_presentie_onderdrukt"
+            selection[identity] = {
+                "selectiestatus": status,
+                "canonieke_identiteit": canonical_identity,
+            }
+    return selection
+
+
+def reconstruct_bospaddenstoel_plot_families(
+    rows: Iterable[dict[str, object]],
+) -> dict[str, int]:
+    """Koppel de exact-aantal- en presentiegeometrie van hetzelfde meetpunt."""
+    geometries: dict[str, dict[str, object]] = {}
+    for row in rows:
+        geometry = str(row["geometry"])
+        info = geometries.setdefault(geometry, {
+            "x": float(row["x"]), "y": float(row["y"]),
+            "scales": set(), "keys": set(),
+        })
+        scales = info["scales"]
+        keys = info["keys"]
+        assert isinstance(scales, set) and isinstance(keys, set)
+        scales.add(str(row["scale"]))
+        keys.add((str(row["date"]), str(row["taxon"])))
+
+    adjacency = {geometry: set() for geometry in geometries}
+    geometry_names = sorted(geometries)
+    for index, left_name in enumerate(geometry_names):
+        left = geometries[left_name]
+        for right_name in geometry_names[index + 1:]:
+            right = geometries[right_name]
+            left_scales, right_scales = left["scales"], right["scales"]
+            left_keys, right_keys = left["keys"], right["keys"]
+            assert isinstance(left_scales, set) and isinstance(right_scales, set)
+            assert isinstance(left_keys, set) and isinstance(right_keys, set)
+            distance = math.hypot(
+                float(left["x"]) - float(right["x"]),
+                float(left["y"]) - float(right["y"]),
+            )
+            if distance <= 160 and left_scales != right_scales and left_keys & right_keys:
+                adjacency[left_name].add(right_name)
+                adjacency[right_name].add(left_name)
+
+    components: list[set[str]] = []
+    unseen = set(geometry_names)
+    while unseen:
+        root = min(unseen)
+        stack = [root]
+        component: set[str] = set()
+        while stack:
+            current = stack.pop()
+            if current in component:
+                continue
+            component.add(current)
+            unseen.discard(current)
+            stack.extend(adjacency[current] - component)
+        components.append(component)
+    components.sort(key=lambda component: (
+        sum(float(geometries[g]["x"]) for g in component) / len(component),
+        sum(float(geometries[g]["y"]) for g in component) / len(component),
+    ))
+    return {
+        geometry: family_id
+        for family_id, component in enumerate(components, start=1)
+        for geometry in component
+    }
+
+
+def bospaddenstoel_source_sql() -> str:
+    """Lees de historische 11.201-reeks uit de niet-gevoelige bronlaag."""
+    return """
+SELECT o.waarneming_id,o.identiteit_sha256,o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw,o.jaar
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '11.201%'
+  AND o.soortgroep_raw='Schimmels'
+  AND o.vervaagd=0
+ORDER BY o.waarneming_id;
+"""
+
+
+def reconstruct_bospaddenstoelen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw meetpunten, bezoeken, echte nullen en jaarlijkse maxima voor 11.201."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, bospaddenstoel_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        (observation_id, identity, geometry, x, y, area, start, stop, taxon,
+         scale, raw, year) = line.split("\t")
+        visit_date = normalize_bospaddenstoel_date(scale, start, stop)
+        records.append({
+            "observation_id": int(observation_id), "identity": identity,
+            "geometry": geometry, "x": float(x), "y": float(y), "area": float(area),
+            "start": start, "stop": stop, "date": visit_date,
+            "taxon": taxon, "scale": scale, "raw": raw, "year": int(visit_date[:4]),
+            "count": parse_bospaddenstoel_count(scale, raw),
+            "relation": "doelsoort" if taxon in BOSPADDENSTOEL_TARGET_SPECIES else "bijvangst",
+        })
+    if len(records) != 982:
+        raise ValueError("De onvervaagde 11.201-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    geometry_to_plot = reconstruct_bospaddenstoel_plot_families(records)
+    for row in records:
+        row["plot"] = geometry_to_plot[str(row["geometry"])]
+    selection = select_bospaddenstoel_records(records)
+    by_identity = {str(row["identity"]): row for row in records}
+    canonical = [
+        row for row in records
+        if selection[str(row["identity"])]["selectiestatus"] != "dubbele_presentie_onderdrukt"
+    ]
+
+    geometry_rows: dict[str, dict[str, object]] = {}
+    for row in records:
+        geometry = str(row["geometry"])
+        info = geometry_rows.setdefault(geometry, {
+            "plot": int(row["plot"]), "x": float(row["x"]), "y": float(row["y"]),
+            "area": float(row["area"]), "scale": str(row["scale"]),
+            "records": 0, "years": set(),
+        })
+        info["records"] = int(info["records"]) + 1
+        years = info["years"]
+        assert isinstance(years, set)
+        years.add(int(row["year"]))
+
+    visits: dict[tuple[int, str], dict[str, object]] = {}
+    for row in records:
+        visit = visits.setdefault((int(row["plot"]), str(row["date"])), {
+            "records": 0, "canonical": 0, "taxa": set(),
+        })
+        visit["records"] = int(visit["records"]) + 1
+    for row in canonical:
+        visit = visits[(int(row["plot"]), str(row["date"]))]
+        visit["canonical"] = int(visit["canonical"]) + 1
+        taxa = visit["taxa"]
+        assert isinstance(taxa, set)
+        taxa.add(str(row["taxon"]))
+
+    plot_scope: dict[int, set[str]] = defaultdict(set)
+    positive_by_visit: dict[tuple[int, str, str], dict[str, object]] = {}
+    bycatch_positive_rows = 0
+    for row in canonical:
+        if row["relation"] == "bijvangst":
+            bycatch_positive_rows += 1
+            continue
+        plot = int(row["plot"])
+        taxon = str(row["taxon"])
+        plot_scope[plot].add(taxon)
+        positive_by_visit[(plot, str(row["date"]), taxon)] = row
+
+    plot_rows: dict[int, dict[str, object]] = {}
+    for row in records:
+        plot = int(row["plot"])
+        info = plot_rows.setdefault(plot, {"records": 0, "years": set(), "geometries": set()})
+        info["records"] = int(info["records"]) + 1
+        years, geometries = info["years"], info["geometries"]
+        assert isinstance(years, set) and isinstance(geometries, set)
+        years.add(int(row["year"]))
+        geometries.add(str(row["geometry"]))
+
+    meetpoint_values: list[str] = []
+    meetpoint_note = (
+        "Meetpuntfamilie gereconstrueerd uit een exact-aantal- en presentiegeometrie met "
+        "dezelfde datum-taxonresultaten. Het oorspronkelijke NMV-meetpuntnummer en de "
+        "terreinschets ontbreken in de NDFF-levering."
+    )
+    for plot, info in sorted(plot_rows.items()):
+        years, geometries = info["years"], info["geometries"]
+        assert isinstance(years, set) and isinstance(geometries, set)
+        x = sum(float(geometry_rows[g]["x"]) for g in geometries) / len(geometries)
+        y = sum(float(geometry_rows[g]["y"]) for g in geometries) / len(geometries)
+        plot_visits = {date_value for plot_id, date_value in visits if plot_id == plot}
+        meetpoint_values.append(
+            f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},{plot},{sql_text(f'MP-{plot:02d}')},"
+            f"'11.201',{x:.2f},{y:.2f},{len(geometries)},{len(plot_visits)},"
+            f"{int(info['records'])},{min(years)},{max(years)},{len(years)},"
+            "'conservatief_afgeleid_uit_ooit_waargenomen_telsoorten',"
+            f"{sql_text(meetpoint_note)})"
+        )
+
+    geometry_values: list[str] = []
+    for geometry, info in sorted(geometry_rows.items()):
+        years = info["years"]
+        assert isinstance(years, set)
+        representation = "exact_aantal_vlak" if info["scale"] == "exact aantal" else "presentie_vlak"
+        geometry_values.append(
+            f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},{sql_text(geometry)},"
+            f"{int(info['plot'])},{sql_text(representation)},{float(info['x']):.2f},"
+            f"{float(info['y']):.2f},{float(info['area']):.2f},{int(info['records'])},"
+            f"{min(years)},{max(years)})"
+        )
+
+    selection_values: list[str] = []
+    for row in records:
+        selected = selection[str(row["identity"])]
+        canonical_row = by_identity[str(selected["canonieke_identiteit"])]
+        reason = (
+            "Parallelle presentieregel onderdrukt ten gunste van de exacte vruchtlichaamtelling."
+            if selected["selectiestatus"] == "dubbele_presentie_onderdrukt"
+            else "Canoniek positief resultaat binnen het gereconstrueerde 11.201-bezoek."
+        )
+        selection_values.append(
+            f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{int(canonical_row['observation_id'])},{int(row['plot'])},{sql_text(str(row['date']))},"
+            f"{sql_text(str(row['relation']))},{sql_text(str(selected['selectiestatus']))},"
+            f"{sql_text(reason)})"
+        )
+
+    scope_values: list[str] = []
+    for plot, taxa in sorted(plot_scope.items()):
+        for taxon in sorted(taxa):
+            positive_dates = sorted(
+                date.fromisoformat(visit_date) for candidate_plot, visit_date, candidate_taxon
+                in positive_by_visit
+                if candidate_plot == plot and candidate_taxon == taxon
+            )
+            scope_values.append(
+                f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},{plot},{sql_text(taxon)},"
+                f"'doelsoort_ooit_waargenomen_op_meetpunt',{positive_dates[0].year},"
+                f"{positive_dates[-1].year},{len(positive_dates)})"
+            )
+
+    visit_keys = {
+        (plot, visit_date): hashlib.sha256(f"{plot}|{visit_date}".encode("utf-8")).hexdigest()
+        for plot, visit_date in visits
+    }
+    visit_values: list[str] = []
+    visit_note = (
+        "Bezoek bevestigd door minimaal één canoniek 11.201-resultaat. Volledig negatieve "
+        "bezoeken en zoektijd zijn niet als afzonderlijke regels door NDFF meegeleverd."
+    )
+    for (plot, visit_date), info in sorted(visits.items()):
+        taxa = info["taxa"]
+        assert isinstance(taxa, set)
+        month = int(visit_date[5:7])
+        season = "kernseizoen_jul_nov" if 7 <= month <= 11 else "buiten_kernseizoen"
+        visit_values.append(
+            f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},{sql_text(visit_keys[(plot, visit_date)])},"
+            f"{plot},{sql_text(visit_date)},{int(visit_date[:4])},{sql_text(season)},"
+            f"{int(info['records'])},{int(info['canonical'])},{len(taxa)},"
+            f"'bezoek_bevestigd_duur_niet_meegeleverd',{sql_text(visit_note)})"
+        )
+
+    matrix_values: list[str] = []
+    matrix_note = (
+        "Protocolafgeleide bezoeknul voor een telsoort die op dit vaste meetpunt aantoonbaar "
+        "tot het gevolgde doelbereik hoorde. De nul geldt voor vruchtlichamen op dit bezoek, "
+        "niet voor afwezigheid van het mycelium of habitatgeschiktheid."
+    )
+    for (plot, visit_date), _info in sorted(visits.items()):
+        for taxon in sorted(plot_scope[plot]):
+            positive = positive_by_visit.get((plot, visit_date, taxon))
+            if positive is None:
+                status, count_value, source_count = "echte_nul", "0", 0
+            elif positive["scale"] == "exact aantal":
+                status, count_value, source_count = (
+                    "waargenomen_exact", str(int(positive["count"])), 1
+                )
+            else:
+                status, count_value, source_count = "waargenomen_presentie", "NULL", 1
+            matrix_values.append(
+                f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},"
+                f"{sql_text(visit_keys[(plot, visit_date)])},{sql_text(taxon)},"
+                f"{sql_text(status)},{count_value},{source_count},"
+                f"'aantoonbaar_gevolgde_telsoort_op_bevestigd_bezoek',{sql_text(matrix_note)})"
+            )
+
+    year_values: list[str] = []
+    annual_note = (
+        "Jaarwaarde volgens het historische 11.201-protocol: het hoogste getelde aantal "
+        "vruchtlichamen op één bezoek, niet de som van bezoeken. Alleen jaren met ten minste "
+        "één uit NDFF reconstrueerbaar bezoek zijn opgenomen."
+    )
+    plot_years = sorted({(plot, int(visit_date[:4])) for plot, visit_date in visits})
+    for plot, year in plot_years:
+        year_visits = sorted(
+            visit_date for candidate_plot, visit_date in visits
+            if candidate_plot == plot and int(visit_date[:4]) == year
+        )
+        for taxon in sorted(plot_scope[plot]):
+            positives = [
+                positive_by_visit[(plot, visit_date, taxon)]
+                for visit_date in year_visits
+                if (plot, visit_date, taxon) in positive_by_visit
+            ]
+            exact_counts = [int(row["count"]) for row in positives if row["count"] is not None]
+            if exact_counts:
+                status, maximum = "maximum_exact", str(max(exact_counts))
+            elif positives:
+                status, maximum = "alleen_presentie", "NULL"
+            else:
+                status, maximum = "echte_nul", "0"
+            year_values.append(
+                f"({sql_text(BOSPADDENSTOEL_RULE_VERSION)},{plot},{year},{sql_text(taxon)},"
+                f"{sql_text(status)},{maximum},{len(year_visits)},{len(positives)},"
+                f"{sql_text(annual_note)})"
+            )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_jaar_taxon WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_doelbereik WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_geometrie WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+        f"DELETE FROM {BOSPADDENSTOEL_TABLE_PREFIX}_meetpunt WHERE reconstructieversie={sql_text(BOSPADDENSTOEL_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_meetpunt", "reconstructieversie,meetpunt_id,meetpunt_sleutel,protocol_sleutel,centrum_x_rd,centrum_y_rd,geometrieaantal,bezoekaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,doelbereikstatus,kwaliteitsnotitie", meetpoint_values),
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_geometrie", "reconstructieversie,geometrie_sha256,meetpunt_id,representatietype,centrum_x_rd,centrum_y_rd,oppervlakte_m2,bronrecordaantal,eerste_jaar,laatste_jaar", geometry_values),
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,canonieke_waarneming_id,meetpunt_id,bezoekdatum,doelrelatie,selectiestatus,selectiereden", selection_values),
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_doelbereik", "reconstructieversie,meetpunt_id,wetenschappelijke_naam,afleidingsregel,eerste_jaar,laatste_jaar,positieve_bezoekaantal", scope_values),
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,meetpunt_id,bezoekdatum,jaar,seizoenstatus,bronrecordaantal,canonieke_positieve_resultaten,geregistreerde_taxa,inspanningstatus,kwaliteitsnotitie", visit_values),
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,waarnemingsstatus,aantal_vruchtlichamen,bronrecordaantal,nulregel,kwaliteitsnotitie", matrix_values),
+        (f"{BOSPADDENSTOEL_TABLE_PREFIX}_jaar_taxon", "reconstructieversie,meetpunt_id,jaar,wetenschappelijke_naam,jaarstatus,maximum_vruchtlichamen,bezoekaantal,positief_bezoekaantal,kwaliteitsnotitie", year_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(
+        mysql_client, query_args, bospaddenstoel_validation_sql(), capture=True,
+    )
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -3476,6 +3875,42 @@ SELECT JSON_OBJECT(
 """
 
 
+def bospaddenstoel_validation_sql() -> str:
+    version = sql_text(BOSPADDENSTOEL_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_bospaddenstoel_{suffix}") for suffix in (
+        "meetpunt", "geometrie", "recordselectie", "doelbereik", "bezoek",
+        "bezoek_taxon", "jaar_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.201%' AND soortgroep_raw='Schimmels' AND vervaagd=0),
+  'exact_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.201%' AND soortgroep_raw='Schimmels' AND vervaagd=0 AND schaal_telmethode='exact aantal'),
+  'presence_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.201%' AND soortgroep_raw='Schimmels' AND vervaagd=0 AND schaal_telmethode='voorkomen'),
+  'duplicate_presence_records',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_recordselectie WHERE reconstructieversie={version} AND selectiestatus='dubbele_presentie_onderdrukt'),
+  'canonical_positive_records',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_recordselectie WHERE reconstructieversie={version} AND selectiestatus<>'dubbele_presentie_onderdrukt'),
+  'meetpoints',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_meetpunt WHERE reconstructieversie={version}),
+  'source_geometries',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_geometrie WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_bezoek WHERE reconstructieversie={version}),
+  'target_scope_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_doelbereik WHERE reconstructieversie={version}),
+  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_bospaddenstoel_doelbereik WHERE reconstructieversie={version}),
+  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus IN ('waargenomen_exact','waargenomen_presentie')),
+  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_recordselectie WHERE reconstructieversie={version} AND doelrelatie='bijvangst' AND selectiestatus<>'dubbele_presentie_onderdrukt'),
+  'visit_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_bezoek_taxon WHERE reconstructieversie={version}),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'annual_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_jaar_taxon WHERE reconstructieversie={version}),
+  'annual_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus<>'echte_nul'),
+  'annual_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='echte_nul'),
+  'off_season_visits',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_bezoek WHERE reconstructieversie={version} AND seizoenstatus='buiten_kernseizoen'),
+  'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.201%' AND soortgroep_raw='Schimmels' AND vervaagd=0 AND NOT ((schaal_telmethode='exact aantal' AND aantal_raw REGEXP '^[1-9][0-9]*$') OR (schaal_telmethode='voorkomen' AND aantal_raw='minimaal 1.0'))),
+  'invalid_meetpoint_geometries',(SELECT COUNT(*) FROM (SELECT meetpunt_id FROM Meijendel.ndff_bospaddenstoel_geometrie WHERE reconstructieversie={version} GROUP BY meetpunt_id HAVING COUNT(*)<>2 OR COUNT(DISTINCT representatietype)<>2) q),
+  'duplicate_target_missing',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_recordselectie d LEFT JOIN Meijendel.ndff_bospaddenstoel_recordselectie c ON c.reconstructieversie=d.reconstructieversie AND c.waarneming_id=d.canonieke_waarneming_id AND c.selectiestatus='opgenomen_exact' WHERE d.reconstructieversie={version} AND d.selectiestatus='dubbele_presentie_onderdrukt' AND c.waarneming_id IS NULL),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen_exact' AND (aantal_vruchtlichamen IS NULL OR aantal_vruchtlichamen=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_presentie' AND (aantal_vruchtlichamen IS NOT NULL OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal_vruchtlichamen<>0 OR bronrecordaantal<>0)))),
+  'invalid_annual_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_jaar_taxon WHERE reconstructieversie={version} AND ((jaarstatus='maximum_exact' AND (maximum_vruchtlichamen IS NULL OR maximum_vruchtlichamen=0 OR positief_bezoekaantal=0)) OR (jaarstatus='alleen_presentie' AND (maximum_vruchtlichamen IS NOT NULL OR positief_bezoekaantal=0)) OR (jaarstatus='echte_nul' AND (maximum_vruchtlichamen<>0 OR positief_bezoekaantal<>0)))),
+  'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -3565,6 +4000,18 @@ def validate_zeereep_reconstruction(metrics: dict[str, int]) -> None:
         }
         raise ValueError(
             f"Zeereeppaddenstoelenreconstructie wijkt af van het vaste profiel: {differences}"
+        )
+
+
+def validate_bospaddenstoel_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"Bospaddenstoelenreconstructie wijkt af van het vaste profiel: {differences}"
         )
 
 
@@ -3865,6 +4312,8 @@ def main() -> int:
     mode.add_argument("--audit-daz-bmp", action="store_true")
     mode.add_argument("--reconstruct-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--audit-zeereeppaddenstoelen", action="store_true")
+    mode.add_argument("--reconstruct-bospaddenstoelen", action="store_true")
+    mode.add_argument("--audit-bospaddenstoelen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -4030,6 +4479,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_zeereep_reconstruction(metrics)
         print(f"OK: lokale zeereeppaddenstoelenreconstructie {ZEEREEP_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_bospaddenstoelen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_bospaddenstoelen(args.mysql_client, client_args)
+        validate_bospaddenstoel_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_bospaddenstoelen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            bospaddenstoel_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_bospaddenstoel_reconstruction(metrics)
+        print(f"OK: lokale bospaddenstoelenreconstructie {BOSPADDENSTOEL_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:
