@@ -121,6 +121,10 @@ def main() -> int:
         "meijendel.ndff_tuintelling_periode_soortgroep",
         "meijendel.ndff_tuintelling_periode_soortgroep_taxon",
         "meijendel.ndff_tuintelling_recordselectie",
+        "meijendel.ndff_liveatlas_bezoek",
+        "meijendel.ndff_liveatlas_bezoek_soortgroep",
+        "meijendel.ndff_liveatlas_bezoek_taxon",
+        "meijendel.ndff_liveatlas_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -139,6 +143,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_habslak_" not in folded
     assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
     assert "meijendel_ndff_secure.ndff_tuintelling_" not in folded
+    assert "meijendel_ndff_secure.ndff_liveatlas_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -601,6 +606,56 @@ def main() -> int:
     )
     assert tuin_matrix[(first_period, "Pieris rapae")]["source_count"] == 0
 
+    liveatlas = module.build_liveatlas_structure([
+        {
+            "observation_id": 1, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 11:00:00", "amount": "2",
+            "scale": "exact aantal", "geometry": "g1",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 2, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 11:00:00", "amount": "3",
+            "scale": "exact aantal", "geometry": "g2",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 3, "group": "Libellen",
+            "taxon": "Ischnura elegans", "start": "2025-05-02 10:00:00",
+            "stop": "2025-05-02 10:20:00", "amount": "1",
+            "scale": "exact aantal", "geometry": "g3",
+            "spatial_quality": "multiple",
+            "plot_version": 1, "plot_id": None,
+        },
+    ])
+    assert len(liveatlas["visits"]) == 2
+    assert len(liveatlas["group_visits"]) == 2
+    assert len(liveatlas["taxa"]) == 2
+    assert len(liveatlas["record_links"]) == 3
+    butterfly_visit = next(
+        row for row in liveatlas["visits"] if row["source_count"] == 2
+    )
+    assert butterfly_visit["spatial_status"] == "single_volledig_binnen"
+    assert butterfly_visit["plot_id"] == 12
+    assert butterfly_visit["duration_minutes"] == 60
+    butterfly_group = next(
+        row for row in liveatlas["group_visits"]
+        if row["group"] == "Dagvlinders"
+    )
+    assert butterfly_group["completeness_status"] == "niet_meegeleverd"
+    butterfly_taxon = next(
+        row for row in liveatlas["taxa"] if row["taxon"] == "Aglais io"
+    )
+    assert butterfly_taxon["source_count"] == 2
+    assert butterfly_taxon["total_count"] == 5
+    assert butterfly_taxon["observation_status"] == "waargenomen"
+    assert butterfly_taxon["zero_rule"] == "geen_nul_afleidbaar"
+    assert all(row["source_count"] > 0 for row in liveatlas["taxa"])
+
     hns_rows = [
         {
             "observation_id": index,
@@ -838,6 +893,8 @@ def main() -> int:
     assert "--audit-braakballen" in importer_text
     assert "--reconstruct-tuintellingen" in importer_text
     assert "--audit-tuintellingen" in importer_text
+    assert "--reconstruct-liveatlas" in importer_text
+    assert "--audit-liveatlas" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -847,6 +904,10 @@ def main() -> int:
     assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
     assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
+    assert module.LIVEATLAS_TABLE_PREFIX == "Meijendel.ndff_liveatlas"
+    liveatlas_source_sql = " ".join(module.liveatlas_source_sql().split())
+    assert "o.protocol LIKE '102.005%'" in liveatlas_source_sql
+    assert "Meijendel_ndff_secure" not in liveatlas_source_sql
     assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
@@ -1077,6 +1138,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende tuintellingreconstructie is niet geblokkeerd")
+    module.validate_liveatlas_reconstruction(
+        dict(module.LIVEATLAS_RECONSTRUCTION_EXPECTED)
+    )
+    broken_liveatlas = dict(module.LIVEATLAS_RECONSTRUCTION_EXPECTED)
+    broken_liveatlas["visits"] -= 1
+    try:
+        module.validate_liveatlas_reconstruction(broken_liveatlas)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende LiveAtlas-reconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

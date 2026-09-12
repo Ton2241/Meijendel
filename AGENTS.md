@@ -407,6 +407,17 @@ MySQL:
   regionale tuincontext en nooit als lokale Meijendelreeks. De levering loopt
   van 2015 tot maart 2022 en bevat geen telling na de vernieuwing van juli
   2022. Controleer vóór gebruik met `--audit-tuintellingen`
+- gebruik voor LiveAtlas `102.005` reconstructieversie `ndff-liveatlas-v1`
+  en uitsluitend de vier openbare tabellen `Meijendel.ndff_liveatlas_*`.
+  Gelijke begin- en eindtijd vormen een afgeleid bezoek, maar niet een bewezen
+  oorspronkelijk bezoek-ID. Behandel de 128 openbare recordgeometrieën nooit
+  als de gelopen route. De FFV-levering bevat evenmin de complete-lijststatus
+  per soortgroep; leid daarom geen nulwaarnemingen af. Gebruik alleen de 169
+  positieve bezoek-soortgroep-taxonuitkomsten voor verspreidingscontext,
+  bezoekintensiteit en indicatieve verandering. Alleen de 12 bezoeken waarvan
+  alle bronregels volledig binnen hetzelfde SOVON-plot liggen hebben een
+  eenduidige bezoekniveau-plotkoppeling. Controleer vóór gebruik met
+  `--audit-liveatlas`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

@@ -62,6 +62,7 @@ BRAAKBAL_RULE_VERSION = "ndff-braakbal-v1"
 BRAAKBAL_MINIMUM_PREY = 150
 TUINTELLING_RULE_VERSION = "ndff-tuintelling-v1"
 TUINTELLING_GEOMETRY_DISTANCE_M = 1.0
+LIVEATLAS_RULE_VERSION = "ndff-liveatlas-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -79,6 +80,7 @@ FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
 HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
 BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
 TUINTELLING_TABLE_PREFIX = "Meijendel.ndff_tuintelling"
+LIVEATLAS_TABLE_PREFIX = "Meijendel.ndff_liveatlas"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -457,6 +459,31 @@ TUINTELLING_RECONSTRUCTION_EXPECTED = {
     "plot_linked_rows": 0,
     "invalid_matrix_rows": 0,
     "matrix_size_mismatch": 0,
+    "positive_source_mismatch": 0,
+    "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+}
+LIVEATLAS_RECONSTRUCTION_EXPECTED = {
+    "source_records": 231,
+    "visits": 64,
+    "group_visits": 87,
+    "taxon_rows": 169,
+    "distinct_taxa": 33,
+    "geometry_versions": 128,
+    "exact_count_source_records": 231,
+    "total_count": 455,
+    "butterfly_visits": 53,
+    "dragonfly_visits": 34,
+    "short_visits": 1,
+    "recommended_duration_visits": 23,
+    "long_visits": 40,
+    "single_plot_visits": 12,
+    "multiple_visits": 35,
+    "outside_visits": 5,
+    "mixed_visits": 12,
+    "completeness_unknown_group_visits": 87,
+    "zero_rows": 0,
+    "invalid_taxon_rows": 0,
     "positive_source_mismatch": 0,
     "unlinked_source_records": 0,
     "secure_derived_tables": 0,
@@ -4504,6 +4531,155 @@ ORDER BY o.jaar,o.waarneming_id;
 """
 
 
+def classify_liveatlas_visit_spatial(
+    records: Iterable[dict[str, object]],
+) -> tuple[str, int | None, int | None]:
+    """Vat recordgeometrieën samen zonder ze als gelopen route te presenteren."""
+    rows = [dict(row) for row in records]
+    if not rows:
+        raise ValueError("Een LiveAtlas-bezoek moet bronrecords bevatten.")
+    qualities = [str(row["spatial_quality"]) for row in rows]
+    plot_pairs = {
+        (int(row["plot_version"]), int(row["plot_id"]))
+        for row in rows
+        if row.get("plot_version") is not None and row.get("plot_id") is not None
+    }
+    if all(value == "single_volledig_binnen" for value in qualities) and len(plot_pairs) == 1:
+        plot_version, plot_id = next(iter(plot_pairs))
+        return "single_volledig_binnen", plot_version, plot_id
+    if all(value == "multiple" for value in qualities):
+        return "multiple", None, None
+    if all(value == "outside" for value in qualities):
+        return "outside", None, None
+    return "gemengd", None, None
+
+
+def build_liveatlas_structure(
+    records: Iterable[dict[str, object]],
+) -> dict[str, list[dict[str, object]]]:
+    """Reconstrueer LiveAtlas-bezoeken, uitsluitend met positieve uitkomsten."""
+    source_rows = [dict(row) for row in records]
+    visits_by_interval: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in source_rows:
+        start = str(row["start"])
+        stop = str(row["stop"])
+        if datetime.fromisoformat(stop) <= datetime.fromisoformat(start):
+            raise ValueError("Een LiveAtlas-bezoek moet een positieve duur hebben.")
+        if not str(row.get("amount") or "").isdigit():
+            raise ValueError(
+                f"LiveAtlas-record {row['observation_id']} heeft geen geheel positief aantal."
+            )
+        if int(str(row["amount"])) <= 0:
+            raise ValueError(
+                f"LiveAtlas-record {row['observation_id']} heeft geen positief aantal."
+            )
+        visits_by_interval[(start, stop)].append(row)
+
+    visits: list[dict[str, object]] = []
+    group_visits: list[dict[str, object]] = []
+    taxa: list[dict[str, object]] = []
+    record_links: list[dict[str, object]] = []
+    for (start, stop), rows in sorted(visits_by_interval.items()):
+        visit_key = hashlib.sha256(
+            f"102.005|bezoek|{start}|{stop}".encode("utf-8")
+        ).hexdigest()
+        duration = int(
+            (datetime.fromisoformat(stop) - datetime.fromisoformat(start)).total_seconds()
+            // 60
+        )
+        if duration < 15:
+            duration_status = "korter_dan_15"
+        elif duration <= 90:
+            duration_status = "binnen_advies_15_90"
+        else:
+            duration_status = "langer_dan_90"
+        spatial_status, plot_version, plot_id = classify_liveatlas_visit_spatial(rows)
+        groups = sorted({str(row["group"]) for row in rows})
+        visits.append({
+            "key": visit_key,
+            "start": start,
+            "stop": stop,
+            "duration_minutes": duration,
+            "duration_status": duration_status,
+            "source_count": len(rows),
+            "geometry_count": len({str(row["geometry"]) for row in rows}),
+            "group_count": len(groups),
+            "spatial_status": spatial_status,
+            "plot_version": plot_version,
+            "plot_id": plot_id,
+        })
+        for row in rows:
+            record_links.append({
+                "observation_id": int(row["observation_id"]),
+                "visit": visit_key,
+                "spatial_quality": str(row["spatial_quality"]),
+                "plot_id": (
+                    int(row["plot_id"]) if row.get("plot_id") is not None else None
+                ),
+            })
+        for group in groups:
+            group_rows = [row for row in rows if str(row["group"]) == group]
+            by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+            for row in group_rows:
+                by_taxon[str(row["taxon"])].append(row)
+            group_visits.append({
+                "visit": visit_key,
+                "group": group,
+                "source_count": len(group_rows),
+                "observed_taxa": len(by_taxon),
+                "completeness_status": "niet_meegeleverd",
+                "zero_status": "geen_nul_afleidbaar",
+            })
+            for taxon, taxon_rows in sorted(by_taxon.items()):
+                measurements = [
+                    {
+                        "waarneming_id": int(row["observation_id"]),
+                        "aantal": int(str(row["amount"])),
+                        "schaal": str(row.get("scale") or ""),
+                        "geometrie": str(row["geometry"]),
+                        "ruimtelijke_kwaliteit": str(row["spatial_quality"]),
+                    }
+                    for row in sorted(
+                        taxon_rows, key=lambda item: int(item["observation_id"])
+                    )
+                ]
+                taxa.append({
+                    "visit": visit_key,
+                    "group": group,
+                    "taxon": taxon,
+                    "observation_status": "waargenomen",
+                    "source_count": len(taxon_rows),
+                    "total_count": sum(item["aantal"] for item in measurements),
+                    "measurements": measurements,
+                    "zero_rule": "geen_nul_afleidbaar",
+                })
+    return {
+        "visits": visits,
+        "group_visits": group_visits,
+        "taxa": taxa,
+        "record_links": record_links,
+    }
+
+
+def liveatlas_source_sql() -> str:
+    """Lees LiveAtlas uit de openbare bron- en ruimtelijke kwaliteitslaag."""
+    return f"""
+SELECT o.waarneming_id,
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       o.soortgroep_raw,o.wetenschappelijke_naam,
+       COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
+       o.openbare_geometrie_sha256,r.toewijzingskwaliteit,
+       r.plotversie_id,r.eenduidig_plot_id
+FROM Meijendel.ndff_open_waarneming o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
+  ON r.waarneming_id=o.waarneming_id
+ AND r.regelversie={sql_text(RULE_VERSION)}
+WHERE o.protocol LIKE '102.005%'
+ORDER BY o.periode_start,o.periode_stop,o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -6040,6 +6216,120 @@ def reconstruct_tuintellingen(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_liveatlas(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw openbare LiveAtlas-bezoeken zonder route- of nulclaims."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, liveatlas_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 11:
+            raise ValueError(f"Onverwachte 102.005-bronregel met {len(fields)} velden.")
+        (observation_id, start, stop, group, taxon, amount, scale, geometry,
+         spatial_quality, plot_version, plot_id) = fields
+        records.append({
+            "observation_id": int(observation_id),
+            "start": start, "stop": stop, "group": group, "taxon": taxon,
+            "amount": amount, "scale": scale, "geometry": geometry,
+            "spatial_quality": spatial_quality,
+            "plot_version": None if plot_version == "NULL" else int(plot_version),
+            "plot_id": None if plot_id == "NULL" else int(plot_id),
+        })
+    if len(records) != LIVEATLAS_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De 102.005-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    structure = build_liveatlas_structure(records)
+    visits = structure["visits"]
+    group_visits = structure["group_visits"]
+    taxa = structure["taxa"]
+    record_links = structure["record_links"]
+
+    visit_note = (
+        "Afgeleid LiveAtlas-bezoek op basis van exact gelijke begin- en eindtijd. "
+        "De gelopen route, het oorspronkelijke bezoek-ID, het aantal waarnemers "
+        "en de complete-lijststatus per soortgroep zijn niet meegeleverd. De "
+        "openbare recordgeometrieën mogen niet als volledige route worden gelezen."
+    )
+    visit_values = [
+        f"({sql_text(LIVEATLAS_RULE_VERSION)},{sql_text(str(row['key']))},'102.005',"
+        f"{sql_text(str(row['start']))},{sql_text(str(row['stop']))},"
+        f"{int(row['duration_minutes'])},{sql_text(str(row['duration_status']))},"
+        f"{int(row['source_count'])},{int(row['geometry_count'])},"
+        f"{int(row['group_count'])},{sql_text(str(row['spatial_status']))},"
+        f"{int(row['plot_version']) if row['plot_version'] is not None else 'NULL'},"
+        f"{int(row['plot_id']) if row['plot_id'] is not None else 'NULL'},"
+        f"'route_niet_meegeleverd',{sql_text(visit_note)})"
+        for row in visits
+    ]
+
+    group_note = (
+        "De positieve regels bewijzen dat deze soortgroep tijdens het afgeleide "
+        "bezoek is geregistreerd. De FFV-levering vermeldt niet of de teller de "
+        "soortgroep als complete lijst heeft afgesloten; ontbrekende soorten zijn "
+        "daarom onbekend en niet nul."
+    )
+    group_values = [
+        f"({sql_text(LIVEATLAS_RULE_VERSION)},{sql_text(str(row['visit']))},"
+        f"{sql_text(str(row['group']))},{int(row['source_count'])},"
+        f"{int(row['observed_taxa'])},'niet_meegeleverd','geen_nul_afleidbaar',"
+        f"{sql_text(group_note)})"
+        for row in group_visits
+    ]
+
+    taxon_note = (
+        "Positieve LiveAtlas-uitkomst. Herhaalde bronregels voor hetzelfde taxon "
+        "binnen het afgeleide bezoek zijn opgeteld en blijven afzonderlijk "
+        "controleerbaar in meetwaarden_json. Er zijn geen nullen afgeleid."
+    )
+    taxon_values: list[str] = []
+    for row in taxa:
+        measurements_json = json.dumps(
+            row["measurements"], ensure_ascii=False, separators=(",", ":")
+        )
+        taxon_values.append(
+            f"({sql_text(LIVEATLAS_RULE_VERSION)},{sql_text(str(row['visit']))},"
+            f"{sql_text(str(row['group']))},{sql_text(str(row['taxon']))},"
+            f"'waargenomen',{int(row['source_count'])},{int(row['total_count'])},"
+            f"{sql_text(measurements_json)},'geen_nul_afleidbaar',"
+            f"{sql_text(taxon_note)})"
+        )
+
+    selection_note = (
+        "Positieve 102.005-bronregel gekoppeld aan een afgeleid bezoek. "
+        "Gebruik de bestaande recordgeometrie voor verspreidingscontext; route en "
+        "complete-lijststatus ontbreken, zodat afwezigheid niet kan worden afgeleid."
+    )
+    selection_values = [
+        f"({sql_text(LIVEATLAS_RULE_VERSION)},{int(row['observation_id'])},"
+        f"{sql_text(str(row['visit']))},{sql_text(str(row['spatial_quality']))},"
+        f"{int(row['plot_id']) if row['spatial_quality']=='single_volledig_binnen' and row['plot_id'] is not None else 'NULL'},"
+        f"'positief_protocolrecord_geen_nulafleiding',{sql_text(selection_note)})"
+        for row in record_links
+    ]
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {LIVEATLAS_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(LIVEATLAS_RULE_VERSION)};",
+        f"DELETE FROM {LIVEATLAS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(LIVEATLAS_RULE_VERSION)};",
+        f"DELETE FROM {LIVEATLAS_TABLE_PREFIX}_bezoek_soortgroep WHERE reconstructieversie={sql_text(LIVEATLAS_RULE_VERSION)};",
+        f"DELETE FROM {LIVEATLAS_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(LIVEATLAS_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{LIVEATLAS_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,protocol_sleutel,periode_start,periode_stop,duur_minuten,duurstatus,bronrecordaantal,geometrieversies,soortgroepen_met_positieve_regels,ruimtelijke_status,plotversie_id,eenduidig_plot_id,routestatus,kwaliteitsnotitie", visit_values),
+        (f"{LIVEATLAS_TABLE_PREFIX}_bezoek_soortgroep", "reconstructieversie,bezoek_sleutel,soortgroep_raw,bronrecordaantal,waargenomen_taxa,volledigheidsstatus,nulstatus,kwaliteitsnotitie", group_values),
+        (f"{LIVEATLAS_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,soortgroep_raw,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,totaal_aantal,meetwaarden_json,nulregel,kwaliteitsnotitie", taxon_values),
+        (f"{LIVEATLAS_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,bezoek_sleutel,ruimtelijke_status,eenduidig_plot_id,selectiestatus,selectiereden", selection_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, liveatlas_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -6553,6 +6843,40 @@ SELECT JSON_OBJECT(
 """
 
 
+def liveatlas_validation_sql() -> str:
+    version = sql_text(LIVEATLAS_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_liveatlas_{suffix}") for suffix in (
+        "bezoek", "bezoek_soortgroep", "bezoek_taxon", "recordselectie",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%'),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version}),
+  'group_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version}),
+  'taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version}),
+  'distinct_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version}),
+  'geometry_versions',(SELECT COUNT(DISTINCT openbare_geometrie_sha256) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%'),
+  'exact_count_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%' AND schaal_telmethode='exact aantal' AND aantal_raw REGEXP '^[0-9]+$'),
+  'total_count',(SELECT COALESCE(SUM(totaal_aantal),0) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version}),
+  'butterfly_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Dagvlinders'),
+  'dragonfly_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Libellen'),
+  'short_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND duurstatus='korter_dan_15'),
+  'recommended_duration_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND duurstatus='binnen_advies_15_90'),
+  'long_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND duurstatus='langer_dan_90'),
+  'single_plot_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND ruimtelijke_status='single_volledig_binnen'),
+  'multiple_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND ruimtelijke_status='multiple'),
+  'outside_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND ruimtelijke_status='outside'),
+  'mixed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek WHERE reconstructieversie={version} AND ruimtelijke_status='gemengd'),
+  'completeness_unknown_group_visits',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_soortgroep WHERE reconstructieversie={version} AND volledigheidsstatus='niet_meegeleverd'),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'waargenomen'),
+  'invalid_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version} AND (bronrecordaantal=0 OR totaal_aantal=0 OR JSON_LENGTH(meetwaarden_json)=0 OR nulregel<>'geen_nul_afleidbaar')),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_liveatlas_bezoek_taxon WHERE reconstructieversie={version})-(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.005%')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_liveatlas_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.005%' AND s.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -6732,6 +7056,18 @@ def validate_tuintelling_reconstruction(metrics: dict[str, int]) -> None:
         }
         raise ValueError(
             f"Tuintellingreconstructie wijkt af van het vaste profiel: {differences}"
+        )
+
+
+def validate_liveatlas_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != LIVEATLAS_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (LIVEATLAS_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(LIVEATLAS_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != LIVEATLAS_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"LiveAtlas-reconstructie wijkt af van het vaste profiel: {differences}"
         )
 
 
@@ -7105,6 +7441,8 @@ def main() -> int:
     mode.add_argument("--audit-braakballen", action="store_true")
     mode.add_argument("--reconstruct-tuintellingen", action="store_true")
     mode.add_argument("--audit-tuintellingen", action="store_true")
+    mode.add_argument("--reconstruct-liveatlas", action="store_true")
+    mode.add_argument("--audit-liveatlas", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -7414,6 +7752,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_tuintelling_reconstruction(metrics)
         print(f"OK: lokale tuintellingreconstructie {TUINTELLING_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_liveatlas:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_liveatlas(args.mysql_client, client_args)
+        validate_liveatlas_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_liveatlas:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            liveatlas_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_liveatlas_reconstruction(metrics)
+        print(f"OK: lokale LiveAtlas-reconstructie {LIVEATLAS_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

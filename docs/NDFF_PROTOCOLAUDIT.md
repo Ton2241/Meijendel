@@ -499,6 +499,45 @@ Methodische grondslag: [NDFF 102.002](https://ndff.nl/natuurdata/waarnemen-en-aa
 [Sovon over de werkwijze](https://www.sovon.nl/tellen/telprojecten/jaarrond-tuintelling)
 en [Sovon over de vernieuwing in 2022](https://www.sovon.nl/actueel/nieuwsberichten/jaarrond-tuintelling-vernieuwd).
 
+### LiveAtlas (`102.005`)
+
+Regelversie `ndff-liveatlas-v1` verwerkt alle 231 openbare bronregels uit 2021
+tot en met september 2025. Zij bevatten uitsluitend exacte positieve aantallen:
+455 getelde exemplaren van 33 taxa, verdeeld over Dagvlinders en Libellen.
+Exact gelijke begin- en eindtijd groeperen de bronregels tot 64 afgeleide
+bezoeken. Deze sleutel is reproduceerbaar, maar is geen oorspronkelijk
+LiveAtlas-bezoek-ID.
+
+De bezoeken vormen 87 bezoek-soortgroepcombinaties: 53 voor Dagvlinders en 34
+voor Libellen. Na samenvoeging van herhaalde taxonregels blijven 169 positieve
+bezoek-soortgroep-taxonuitkomsten over. De oorspronkelijke meetwaarden en
+recordidentiteiten blijven daarbij in `meetwaarden_json` controleerbaar.
+
+Volgens de LiveAtlas-methode worden route, begin- en eindtijd,
+waarnemersinspanning en per soortgroep de keuze compleet of incompleet
+vastgelegd. In de FFV-levering ontbreken echter de route, het oorspronkelijke
+bezoek-ID, het aantal waarnemers en de complete-lijststatus per soortgroep. De
+128 verschillende openbare recordgeometrieën zijn daarom niet als route
+gereconstrueerd. Ook worden geen niet-gemelde soorten als nul aangemerkt: alle
+169 taxonregels zijn positief en dragen `geen_nul_afleidbaar`.
+
+De bezoekduur ligt voor 23 bezoeken binnen de aanbevolen 15-90 minuten; één
+bezoek duurt korter en 40 duren langer. Ruimtelijk zijn 12 bezoeken eenduidig
+aan één SOVON-plot gekoppeld omdat alle bijbehorende bronregels volledig binnen
+hetzelfde plot liggen. Van de overige bezoeken raken er 35 meerdere plots,
+liggen er vijf buiten de plots en hebben twaalf een gemengde status. Ook bij de
+12 eenduidige bezoeken bewijst de recordgeometrie niet de volledige route.
+
+Gebruik deze laag voor positieve verspreidingscontext, bezoekintensiteit en
+indicatieve verandering van geregistreerde aantallen. Gebruik haar niet als
+complete bezoekmatrix en interpreteer een ontbrekend taxon nooit als
+afwezigheid. Alle vier afgeleide tabellen staan in `Meijendel`; er is geen
+LiveAtlas-afleiding in `Meijendel_ndff_secure`. Controleer met
+`--audit-liveatlas`.
+
+Methodische grondslag: [NDFF 102.005](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-005-liveatlas/)
+en de [Sovon-handleiding LiveAtlas](https://stats.sovon.nl/static/publicaties/Handleiding_LiveAtlas_versieAug2023.pdf).
+
 ### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
 
 Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat
@@ -729,7 +768,8 @@ geometrie-jaaraggregaten; deze zijn uitdrukkelijk geen partijen of bezoeken en
 leveren geen nullen of plotkoppelingen. De tuintelling is inmiddels
 gereconstrueerd tot 125 telperioden binnen drie afgeleide tuinvakfamilies, met
 voorlopige nullen uitsluitend binnen positief bevestigde soortgroepen en lokaal
-doelbereik. LiveAtlas bevat 64 gedeelde tijdintervallen;
+doelbereik. LiveAtlas is inmiddels gereconstrueerd tot 64 afgeleide bezoeken,
+87 bezoek-soortgroepcombinaties en 169 uitsluitend positieve taxonuitkomsten;
 de kwartiertellingen bevatten zeventien tijdintervallen van 6-21 minuten. Bij
 beide ontbreken route-ID en complete-lijststatus in FFV; NDFF vermeldt voor
 `102.007` bovendien expliciet dat de routegegevens nog niet worden meegeleverd.
@@ -739,8 +779,8 @@ alleen `TV` indicatief toegestaan; voor `102.002`, `102.005` en `102.007` zijn
 `I` en `TV` indicatief toegestaan. Indicatief betekent hier verandering in
 geregistreerde tellingen met `gegevensgeschiktheid='onvoldoende'`, niet een
 gevalideerde populatietrend. `TA` en `TK` zijn uitgesloten en voor `17.002`
-geldt dat ook voor `I`. Voor LiveAtlas en Kwartiertellingen worden in deze stap
-geen nullen afgeleid. Na de
+geldt dat ook voor `I`. Voor LiveAtlas en Kwartiertellingen worden geen nullen
+afgeleid. Na de
 ruimtelijke en PQ-poorten blijven 13 braakbalrecords, 77 LiveAtlas-records en
 95 kwartiertellingrecords over; alle 309 tuintellingrecords zijn ruimtelijk
 uitgesloten voor een eenduidige Meijendel-plotanalyse.

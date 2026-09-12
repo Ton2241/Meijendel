@@ -370,6 +370,18 @@ alle landelijke tuinsoorten. Omdat 308 bronregels buiten de SOVON-plots liggen
 en één regel meerdere plots raakt, is dit uitsluitend regionale tuincontext en
 geen Meijendel-plotreeks. Controleer met `--audit-tuintellingen`.
 
+LiveAtlas `102.005` staat onder `ndff-liveatlas-v1` in vier openbare
+`Meijendel.ndff_liveatlas_*`-tabellen. De 231 exacte aantalsrecords uit
+2021-2025 vormen 64 afgeleide bezoeken, 87 bezoek-soortgroepcombinaties en 169
+positieve bezoek-soortgroep-taxonuitkomsten voor 33 taxa. De 128 openbare
+recordgeometrieën zijn geen geleverde routes. Ook ontbreekt de
+complete-lijststatus per soortgroep; daarom bevat de reconstructie nul
+afgeleide nulwaarnemingen. Twaalf bezoeken liggen op basis van alle bronregels
+eenduidig binnen één SOVON-plot; 35 raken meerdere plots, vijf liggen erbuiten
+en twaalf hebben een gemengde ruimtelijke status. Gebruik de laag voor
+positieve verspreidingscontext, bezoekintensiteit en indicatieve verandering,
+niet als complete bezoekmatrix. Controleer met `--audit-liveatlas`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

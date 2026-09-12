@@ -93,6 +93,14 @@
   Meijendel-SOVON-plot. Oorspronkelijke tuin-, telling- en gekozen-
   soortgroep-ID's kunnen later bij Jaarrond Tuintelling/Sovon worden
   gevalideerd, maar blokkeren dit voorlopige regionale gebruik niet.
+- `102.005` bevat onder `ndff-liveatlas-v1` 64 afgeleide bezoeken, 87
+  bezoek-soortgroepcombinaties en 169 uitsluitend positieve taxonuitkomsten.
+  Gebruik de 12 eenduidig aan één SOVON-plot gekoppelde bezoeken alleen met de
+  melding dat route, oorspronkelijk bezoek-ID en complete-lijststatus niet zijn
+  meegeleverd. Leid voor geen enkel bezoek nullen af. Vraag Sovon later alleen
+  om de oorspronkelijke bezoek-ID's, routes en de complete-lijstvlag per
+  soortgroep; deze validatie blokkeert positieve verspreidingscontext en
+  indicatieve vergelijking van geregistreerde aantallen niet.
 - `11.201` bevat na onderdrukking van 473 parallelle presentieregels 509
   canonieke positieve resultaten, drie vaste meetpunten en 110 bevestigde
   bezoeken. Gebruik de 2.934 bezoek-taxonregels en 977 jaarlijkse maxima via

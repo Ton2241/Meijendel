@@ -594,3 +594,14 @@
   van de telperioden is aan een Meijendel-SOVON-plot gekoppeld: 308 bronregels
   liggen buiten de plots en één raakt meerdere plots. De zes tabellen staan in
   `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.
+- Voor LiveAtlas `102.005` is vanaf 12 september 2026 reconstructieversie
+  `ndff-liveatlas-v1` vastgesteld. Exact gelijke begin- en eindtijd groeperen
+  de 231 bronregels tot 64 afgeleide bezoeken; dit bewijst geen oorspronkelijk
+  bezoek-ID. De 128 openbare recordgeometrieën worden niet als route opgevat.
+  Omdat de complete-lijststatus per soortgroep ontbreekt, worden uit de 87
+  bezoek-soortgroepcombinaties geen nulwaarnemingen afgeleid. De 169
+  bezoek-soortgroep-taxonregels bevatten uitsluitend positieve exacte
+  aantallen. Alleen 12 bezoeken zijn op bezoekniveau eenduidig aan één
+  SOVON-plot gekoppeld; 35 zijn `multiple`, vijf `outside` en twaalf `gemengd`.
+  De vier tabellen staan in `Meijendel`; `Meijendel_ndff_secure` is niet
+  uitgebreid.

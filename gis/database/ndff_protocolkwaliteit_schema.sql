@@ -2072,3 +2072,112 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_recordselectie (
     REFERENCES Meijendel.ndff_tuintelling_telperiode
       (reconstructieversie, telperiode_sleutel)
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van LiveAtlas 102.005. Gelijke begin- en eindtijd
+-- vormen een afgeleid bezoek. De NDFF-levering bevat geen route-ID, route en
+-- geen complete-lijststatus per soortgroep; daarom worden geen nullen afgeleid.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_liveatlas_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '102.005',
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  duur_minuten SMALLINT UNSIGNED NOT NULL,
+  duurstatus ENUM('korter_dan_15','binnen_advies_15_90','langer_dan_90') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geometrieversies SMALLINT UNSIGNED NOT NULL,
+  soortgroepen_met_positieve_regels SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_status ENUM('single_volledig_binnen','multiple','outside','gemengd') NOT NULL,
+  plotversie_id BIGINT UNSIGNED NULL,
+  eenduidig_plot_id INT NULL,
+  routestatus ENUM('route_niet_meegeleverd') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  UNIQUE KEY uq_ndff_liveatlas_bezoek
+    (reconstructieversie, periode_start, periode_stop),
+  CONSTRAINT fk_ndff_liveatlas_bezoek_plot FOREIGN KEY
+    (plotversie_id, eenduidig_plot_id)
+    REFERENCES Meijendel.ndff_sovon_plot (plotversie_id, plot_id),
+  CHECK (periode_stop > periode_start),
+  CHECK (duur_minuten > 0),
+  CHECK (bronrecordaantal > 0),
+  CHECK (geometrieversies > 0),
+  CHECK (soortgroepen_met_positieve_regels > 0),
+  CHECK (
+    (ruimtelijke_status='single_volledig_binnen'
+      AND plotversie_id IS NOT NULL AND eenduidig_plot_id IS NOT NULL)
+    OR (ruimtelijke_status<>'single_volledig_binnen'
+      AND plotversie_id IS NULL AND eenduidig_plot_id IS NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_liveatlas_bezoek_soortgroep (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  soortgroep_raw VARCHAR(255) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  waargenomen_taxa SMALLINT UNSIGNED NOT NULL,
+  volledigheidsstatus ENUM('niet_meegeleverd') NOT NULL,
+  nulstatus ENUM('geen_nul_afleidbaar') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, soortgroep_raw),
+  CONSTRAINT fk_ndff_liveatlas_soortgroep_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_liveatlas_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (waargenomen_taxa > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_liveatlas_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  soortgroep_raw VARCHAR(255) NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  totaal_aantal INT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM('geen_nul_afleidbaar') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (
+    reconstructieversie, bezoek_sleutel, soortgroep_raw,
+    wetenschappelijke_naam
+  ),
+  KEY ix_ndff_liveatlas_taxon
+    (wetenschappelijke_naam, soortgroep_raw),
+  CONSTRAINT fk_ndff_liveatlas_taxon_soortgroep FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel, soortgroep_raw)
+    REFERENCES Meijendel.ndff_liveatlas_bezoek_soortgroep
+      (reconstructieversie, bezoek_sleutel, soortgroep_raw),
+  CHECK (bronrecordaantal > 0),
+  CHECK (totaal_aantal > 0),
+  CHECK (JSON_LENGTH(meetwaarden_json) > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_liveatlas_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  ruimtelijke_status ENUM('single_volledig_binnen','single_deels','multiple','outside','ongeldig') NOT NULL,
+  eenduidig_plot_id INT NULL,
+  selectiestatus ENUM('positief_protocolrecord_geen_nulafleiding') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_liveatlas_selectie_bezoek
+    (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_ndff_liveatlas_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_liveatlas_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_liveatlas_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (
+    (ruimtelijke_status='single_volledig_binnen' AND eenduidig_plot_id IS NOT NULL)
+    OR (ruimtelijke_status<>'single_volledig_binnen' AND eenduidig_plot_id IS NULL)
+  )
+) ENGINE=InnoDB;
