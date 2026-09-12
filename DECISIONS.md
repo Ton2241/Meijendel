@@ -224,8 +224,8 @@
 - Binnen de beveiligde 191-soortenlevering gaan van de 8.494 ruimtelijke
   verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords door
   naar de brondata-opvraag. Dit is een deelsom; de validatieprioriteit voor de
-  volledige NDFF-set wordt bepaald vanuit de 66.125 canonieke kandidaten voor
-  minstens één gebruikstype buiten uitsluitend `V`.
+  volledige NDFF-set wordt bepaald vanuit de actuele 65.464 canonieke
+  kandidaten voor minstens één gebruikstype buiten uitsluitend `V`.
   Op uitdrukkelijk besluit van 10 september 2026 mogen alle openbare FFV-regels
   wel als duidelijk gelabelde bronregistratie in nieuwe `ndff_`-tabellen van de
   life-database staan. Databaseopname is geen analysetoelating: zonder
@@ -307,6 +307,15 @@
   worden geen nullen of kunstmatige bezoeken afgeleid. De betekenis per
   analysetype staat in `ndff_analysebesluit`; de algemene status in
   `v_ndff_analyse_record` volgt voor compatibiliteit de V-beslissing.
+- De protocollen `12.004`, `12.006`, `17.005`, `17.006`, `102.004`, `102.006`,
+  `104.000` en `105.000` zijn voor de ontvangen NDFF-levering als uitsluitend
+  positieve bronprotocollen gekwalificeerd. De 95.807 openbare records houden
+  hun oorspronkelijke protocolcode en `expliciete_code`; zij worden niet tot
+  `LOS` omgecodeerd. Alleen `V` is voorwaardelijk toegestaan. `I`, `TV`, `TA`
+  en `TK` zijn uitgesloten wegens het ontbreken van complete bezoeken,
+  inspanning, volledige soortenlijsten en afleidbare nullen. `17.002`,
+  `102.002`, `102.005` en `102.007` blijven buiten dit besluit vanwege hun
+  afzonderlijk te beoordelen surveyopzet.
 - Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
   recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
   interne foreign key; `protocol_sleutel` is de stabiele betekenisvolle sleutel.

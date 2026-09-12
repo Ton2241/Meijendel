@@ -233,6 +233,21 @@ def main() -> int:
     assert module.protocol_delivery_assessment("07.001", "TA") == (
         "onvoldoende", "uitgesloten_huidige_levering"
     )
+    assert module.POSITIVE_ONLY_SOURCE_PROTOCOLS == {
+        "12.004", "12.006", "17.005", "17.006",
+        "102.004", "102.006", "104.000", "105.000",
+    }
+    assert module.protocol_delivery_assessment("102.006", "V") == (
+        "voorwaardelijk", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("12.006", "I") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("105.000", "TV") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("17.002", "V") is None
+    assert module.protocol_delivery_assessment("102.002", "V") is None
     assert module.protocol_delivery_assessment("04.006", "V") is None
 
     # Een routeversie mag alleen aan een andere versie worden gekoppeld als
@@ -1010,6 +1025,8 @@ def main() -> int:
     ):
         assert required in chain_sql, required
     module.validate_analysis_chain_metrics(dict(module.ANALYSIS_CHAIN_EXPECTED))
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_rows"] == 10855
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_sources"] == 65464
     assert module.parse_analysis_chain_output(
         '{"canonical_records": 810983}\n{"canonical_duplicates": 0}'
     ) == {"canonical_records": 810983, "canonical_duplicates": 0}
@@ -1038,6 +1055,9 @@ def main() -> int:
     assert "wacht_op_brondata" in legacy_sql
     validation_sql = module.validation_sql().casefold()
     assert "protocolbesluit_mismatch" in validation_sql
+    assert (
+        "d.gegevensgeschiktheid='niet_beoordeeld' and (" in validation_sql
+    ), "De basiscontrole mag beoordeelde leverings-overlays niet opnieuw afkeuren"
     assert "leveringsbeoordelingen" in validation_sql
     assert "leveringsbeoordeling_onverwacht" in validation_sql
     assert "leveringsbeoordeling_ongeldig" in validation_sql
@@ -1068,7 +1088,7 @@ def main() -> int:
         "scope_missing": 0,
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,
-        "leveringsbeoordelingen": 15,
+        "leveringsbeoordelingen": 320,
         "leveringsbeoordeling_onverwacht": 0,
         "leveringsbeoordeling_ongeldig": 0,
         "snl_records": 6273,
@@ -1097,7 +1117,7 @@ def main() -> int:
             "secure_mixed_species_missing": 1,
             "ambiguous_species": 0,
             "decisions": 1040, "protocolbesluit_mismatch": 1,
-            "leveringsbeoordelingen": 14,
+            "leveringsbeoordelingen": 319,
             "leveringsbeoordeling_onverwacht": 1,
             "leveringsbeoordeling_ongeldig": 1,
             "snl_records": 6273, "snl_overlap_context": 6272,

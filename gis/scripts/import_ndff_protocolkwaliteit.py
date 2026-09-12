@@ -30,6 +30,11 @@ ANALYSIS_CHAIN_VERSION = "ndff-analyseketen-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
+MIXED_POSITIVE_PROTOCOLS = {"04.004", "07.001"}
+POSITIVE_ONLY_SOURCE_PROTOCOLS = {
+    "12.004", "12.006", "17.005", "17.006",
+    "102.004", "102.006", "104.000", "105.000",
+}
 VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
@@ -416,8 +421,8 @@ ANALYSIS_CHAIN_EXPECTED = {
     "secure_detail_records": 14573,
     "distribution_rows": 105999,
     "distribution_sources": 303319,
-    "trend_rows": 11138,
-    "trend_sources": 66125,
+    "trend_rows": 10855,
+    "trend_sources": 65464,
     "trend_loose": 0,
     "usage_rows": 142,
     "usage_records": 810983,
@@ -1670,25 +1675,28 @@ ON DUPLICATE KEY UPDATE
 def protocol_delivery_assessment(
     protocol_sleutel: str, analysetype: str
 ) -> tuple[str, str] | None:
-    """Beoordeel gemengde positieve atlas-/verspreidingsleveringen.
+    """Beoordeel gemengde en uitsluitend positieve bronleveringen.
 
     De ontvangen regels van 04.004 en 07.001 onderscheiden geen volledige
     gebiedsinventarisaties van losse, historische, collectie- of
     literatuurregistraties. V blijft daarom voorwaardelijk bruikbaar. I en TV
     mogen alleen als indicatieve verandering in registraties worden berekend;
     TA en TK worden door deze levering niet ondersteund.
+
+    De expliciet positieve bronprotocollen bevatten geen complete bezoeken,
+    inspanning of nullen. Daar blijft alleen V voorwaardelijk bruikbaar.
     """
-    if protocol_sleutel not in {"04.004", "07.001"}:
+    if protocol_sleutel not in MIXED_POSITIVE_PROTOCOLS | POSITIVE_ONLY_SOURCE_PROTOCOLS:
         return None
     if analysetype == "V":
         return "voorwaardelijk", "voorlopig_toegelaten"
-    if analysetype in {"I", "TV"}:
+    if protocol_sleutel in MIXED_POSITIVE_PROTOCOLS and analysetype in {"I", "TV"}:
         return "onvoldoende", "voorlopig_toegelaten"
     return "onvoldoende", "uitgesloten_huidige_levering"
 
 
 def delivery_assessment_sql() -> str:
-    """Leg de beoordeelde leveringskwaliteit van 04.004 en 07.001 vast."""
+    """Leg beoordeelde gemengde en uitsluitend positieve leveringen vast."""
     positive_reason = (
         "De NDFF-levering combineert volledige gebiedsinventarisaties met "
         "losse, historische, collectie- of literatuurregistraties zonder "
@@ -1707,14 +1715,30 @@ def delivery_assessment_sql() -> str:
         "onderscheidende telobjecten, volledige bezoeken, inspanning of "
         "nulwaarnemingen en onderbouwt dit analysetype daarom niet."
     )
+    source_positive_reason = (
+        "Dit bronprotocol levert in de ontvangen NDFF-selectie uitsluitend "
+        "positieve registraties en geen complete bezoeken, onderzoeksinspanning, "
+        "volledige soortenlijst of afleidbare nullen. De registratie is na "
+        "ruimtelijke en PQ-toets bruikbaar als voorkomensinformatie."
+    )
+    source_excluded_reason = (
+        "Dit bronprotocol levert geen complete bezoeken, onderzoeksinspanning, "
+        "volledige soortenlijst of afleidbare nullen. Alleen positieve "
+        "voorkomensinformatie is verantwoord; dit analysetype is uitgesloten."
+    )
     assessment_rows: list[str] = []
-    for protocol_sleutel in ("04.004", "07.001"):
+    assessed_protocols = sorted(MIXED_POSITIVE_PROTOCOLS | POSITIVE_ONLY_SOURCE_PROTOCOLS)
+    for protocol_sleutel in assessed_protocols:
         for analysetype in ANALYSIS_TYPES:
             assessment = protocol_delivery_assessment(protocol_sleutel, analysetype)
             if assessment is None:
                 continue
             gegevensgeschiktheid, eindbesluit = assessment
-            if analysetype == "V":
+            if protocol_sleutel in POSITIVE_ONLY_SOURCE_PROTOCOLS and analysetype == "V":
+                reason = source_positive_reason
+            elif protocol_sleutel in POSITIVE_ONLY_SOURCE_PROTOCOLS:
+                reason = source_excluded_reason
+            elif analysetype == "V":
                 reason = positive_reason
             elif analysetype in {"I", "TV"}:
                 reason = indicative_reason
@@ -5952,6 +5976,13 @@ def validate_habslak_reconstruction(metrics: dict[str, int]) -> None:
 
 
 def validation_sql() -> str:
+    assessed_protocols_sql = ",".join(
+        sql_text(protocol)
+        for protocol in sorted(MIXED_POSITIVE_PROTOCOLS | POSITIVE_ONLY_SOURCE_PROTOCOLS)
+    )
+    positive_only_sql = ",".join(
+        sql_text(protocol) for protocol in sorted(POSITIVE_ONLY_SOURCE_PROTOCOLS)
+    )
     return f"""
 SELECT 'protocols',COUNT(*) FROM Meijendel.ndff_protocol;
 SELECT 'uses',COUNT(*) FROM Meijendel.ndff_protocol_gebruik WHERE regelversie={sql_text(RULE_VERSION)};
@@ -6016,8 +6047,9 @@ SELECT 'scope_missing',COUNT(*) FROM (
   WHERE p.protocol_sleutel<>'LOS' AND s.protocol_soortgroep_id IS NULL
 ) q;
 SELECT 'decisions',COUNT(*) FROM Meijendel.ndff_analysebesluit WHERE regelversie={sql_text(DECISION_RULE_VERSION)};
-SELECT 'protocolbesluit_mismatch',COUNT(*) FROM Meijendel.ndff_analysebesluit
-WHERE regelversie={sql_text(DECISION_RULE_VERSION)} AND (
+SELECT 'protocolbesluit_mismatch',COUNT(*) FROM Meijendel.ndff_analysebesluit AS d
+WHERE regelversie={sql_text(DECISION_RULE_VERSION)}
+  AND d.gegevensgeschiktheid='niet_beoordeeld' AND (
   (analysetype='V' AND eindbesluit<>'voorlopig_toegelaten') OR
   (protocolgeschiktheid='niet_onderbouwd' AND analysetype<>'V' AND eindbesluit<>'uitgesloten_huidige_levering') OR
   (protocolgeschiktheid IN ('primair','voorwaardelijk') AND analysetype<>'V'
@@ -6031,17 +6063,23 @@ SELECT 'leveringsbeoordeling_onverwacht',COUNT(*) FROM Meijendel.ndff_analysebes
 JOIN Meijendel.ndff_protocol p ON p.protocol_id=d.protocol_id
 WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)}
   AND d.gegevensgeschiktheid<>'niet_beoordeeld'
-  AND p.protocol_sleutel NOT IN ('04.004','07.001');
+  AND p.protocol_sleutel NOT IN ({assessed_protocols_sql});
 SELECT 'leveringsbeoordeling_ongeldig',COUNT(*) FROM Meijendel.ndff_analysebesluit d
 JOIN Meijendel.ndff_protocol p ON p.protocol_id=d.protocol_id
 WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)}
-  AND p.protocol_sleutel IN ('04.004','07.001')
+  AND p.protocol_sleutel IN ({assessed_protocols_sql})
   AND NOT (
     (d.analysetype='V' AND d.gegevensgeschiktheid='voorwaardelijk'
       AND d.eindbesluit='voorlopig_toegelaten')
-    OR (d.analysetype IN ('I','TV') AND d.gegevensgeschiktheid='onvoldoende'
+    OR (p.protocol_sleutel IN ('04.004','07.001')
+      AND d.analysetype IN ('I','TV') AND d.gegevensgeschiktheid='onvoldoende'
       AND d.eindbesluit='voorlopig_toegelaten')
-    OR (d.analysetype IN ('TA','TK') AND d.gegevensgeschiktheid='onvoldoende'
+    OR (p.protocol_sleutel IN ('04.004','07.001')
+      AND d.analysetype IN ('TA','TK') AND d.gegevensgeschiktheid='onvoldoende'
+      AND d.eindbesluit='uitgesloten_huidige_levering')
+    OR (p.protocol_sleutel IN ({positive_only_sql})
+      AND d.analysetype IN ('I','TV','TA','TK')
+      AND d.gegevensgeschiktheid='onvoldoende'
       AND d.eindbesluit='uitgesloten_huidige_levering')
   );
 SELECT 'snl_records',COUNT(*)
@@ -6118,7 +6156,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
     if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
-    if (metrics["leveringsbeoordelingen"] != 15
+    if (metrics["leveringsbeoordelingen"] != 320
             or metrics["leveringsbeoordeling_onverwacht"]
             or metrics["leveringsbeoordeling_ongeldig"]):
         raise ValueError("De beoordeelde atlas-/verspreidingsleveringen wijken af.")

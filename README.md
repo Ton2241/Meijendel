@@ -427,7 +427,7 @@ PQ- en SNL-poorten samen. De actuele verdeling is 303.319
 `voorlopig_bruikbaar`, 4 `voorlopig_met_overlapwaarschuwing`, 97.333
 `uitgesloten_pq` en 410.327 `uitgesloten_ruimtelijk`. Alle 430.263 records met
 protocol `LOS` ondersteunen alleen voorkomens- en verspreidingsinformatie
-(`V`). Voor 805.984 records is `gegevensgeschiktheid` nog `niet_beoordeeld`.
+(`V`). Voor 710.140 records is `gegevensgeschiktheid` nog `niet_beoordeeld`.
 De 4.999 records onder `04.004` en `07.001` zijn inmiddels als gemengde
 positieve levering beoordeeld: V is voorwaardelijk bruikbaar, I en TV zijn
 alleen indicatief en onvoldoende voor een gevalideerde trend. Iedere uitvoer
@@ -436,13 +436,25 @@ niet als definitief gevalideerde trenddata presenteren. De view bevat geen
 geometrie of exacte datum, maar blijft intern en is niet aan de Shiny-account
 toegekend.
 
+Daarnaast zijn 95.807 openbare records onder acht uitsluitend positieve
+bronprotocollen beoordeeld: `12.004`, `12.006`, `17.005`, `17.006`, `102.004`,
+`102.006`, `104.000` en `105.000`. Hun oorspronkelijke protocolcode en
+bewijsmethode `expliciete_code` blijven behouden; zij worden niet als `LOS`
+herschreven. Voor deze levering is alleen positieve voorkomensinformatie (`V`)
+voorwaardelijk toegestaan. `I`, `TV`, `TA` en `TK` zijn uitgesloten omdat geen
+complete bezoeken, inspanning, volledige soortenlijsten of afleidbare nullen
+zijn geleverd. Dit besluit betreft 95.844 canonieke records, inclusief de
+beveiligde vervangingen en alleen-beveiligde aanvullingen. Gestructureerde
+protocollen zoals `17.002`, `102.002`, `102.005` en `102.007` vallen bewust
+buiten deze classificatie en worden afzonderlijk beoordeeld.
+
 Voor analyse zijn daarboven twee lokale, geaggregeerde views beschikbaar:
 
 - `v_ndff_verspreiding_plot_jaar_taxon`: 105.999 positieve
   plot-jaar-taxonsignalen, gebaseerd op 303.319 voorlopig bruikbare
   bronrecords;
-- `v_ndff_trendkandidaat_plot_jaar_taxon`: 11.138
-  plot-jaar-taxon-protocolcombinaties, gebaseerd op 66.125 records waarvan het
+- `v_ndff_trendkandidaat_plot_jaar_taxon`: 10.855
+  plot-jaar-taxon-protocolcombinaties, gebaseerd op 65.464 records waarvan het
   protocol naast `V` minimaal één kandidaatmogelijkheid `I`, `TV`, `TA` of
   `TK` ondersteunt.
 

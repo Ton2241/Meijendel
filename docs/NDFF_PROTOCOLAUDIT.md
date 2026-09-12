@@ -255,7 +255,7 @@ uitgewerkt.
 De eerdere vervolgselectie van 1.274 records was uitsluitend gebaseerd op de
 beveiligde levering van 191 soorten. Zij is geen rangorde voor alle NDFF-data.
 Na voltooiing van `ndff-analyseketen-v1` is de prioriteit opnieuw bepaald op de
-810.983 unieke canonieke records. Daarvan zijn 66.125 records voorlopig
+810.983 unieke canonieke records. Daarvan zijn 65.464 records voorlopig
 kandidaat voor minstens één protocolmatig gebruikstype buiten uitsluitend
 positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft in de
 algemene analysepoort `niet_beoordeeld`; een voltooide protocolreconstructie
@@ -632,18 +632,34 @@ ontbrekende protocol-, ruimtelijke, PQ- of gegevensgeschiktheidsstatus. Daarvan
 zijn 303.319 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
 overlapwaarschuwing, 97.333 uitgesloten via de PQ-poort en 410.327 ruimtelijk
 uitgesloten. De 430.263 expliciet losse waarnemingen hebben uitsluitend
-kandidaattype `V`. Van de canonieke records behouden 805.984
+kandidaattype `V`. Van de canonieke records behouden 710.140
 `gegevensgeschiktheid = niet_beoordeeld`. De 4.999 records onder `04.004` en
 `07.001` hebben na leveringsonderzoek de algemene V-status `voorwaardelijk`;
 hun I- en TV-besluiten staan afzonderlijk op `onvoldoende`. De view levert een
 verplichte `kwaliteitsmelding` en is geen verklaring dat trendgebruik al
 volledig is gevalideerd.
 
+Acht andere bronprotocollen zijn voor de huidige NDFF-levering expliciet als
+uitsluitend positieve registratiebron beoordeeld: `12.004` (6.864 openbare
+records), `12.006` (10.670), `17.005` (79), `17.006` (36), `102.004` (178),
+`102.006` (73.844), `104.000` (382) en `105.000` (3.754). Samen betreft dit
+95.807 openbare bronrecords en 95.844 canonieke records na toepassing van de
+beveiligde vervangingslaag. De broncode blijft als `protocol_sleutel` behouden
+met bewijsmethode `expliciete_code`; deze regels worden niet tot `LOS`
+omgecodeerd. `V` is `voorwaardelijk` en `voorlopig_toegelaten`; `I`, `TV`,
+`TA` en `TK` zijn `onvoldoende` en `uitgesloten_huidige_levering`. De reden is
+dat deze leveringen geen complete bezoeken, onderzoeksinspanning, volledige
+soortenlijst of afleidbare nullen bevatten. De classificatie zegt dus iets
+over verantwoord gebruik van de levering en wist de historische bronbetekenis
+niet uit. `17.002`, `102.002`, `102.005` en `102.007` zijn niet meegenomen,
+omdat zij een afzonderlijk te beoordelen, mogelijk gestructureerde
+surveyopzet hebben.
+
 Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
 `v_ndff_verspreiding_plot_jaar_taxon` bevat 105.999 positieve
 plot-jaar-taxonsignalen uit 303.319 voorlopig bruikbare bronrecords.
-`v_ndff_trendkandidaat_plot_jaar_taxon` bevat 11.138
-plot-jaar-taxon-protocolcombinaties uit 66.125 bronrecords met minimaal één
+`v_ndff_trendkandidaat_plot_jaar_taxon` bevat 10.855
+plot-jaar-taxon-protocolcombinaties uit 65.464 bronrecords met minimaal één
 protocolmatige kandidaatmogelijkheid buiten `V`. Zij blijven een prioriteiten-
 en selectielaag, geen berekende trend; per analysetype is
 `ndff_analysebesluit` leidend voor de leveringsstatus. De dagvlindercontrole vond

@@ -152,6 +152,14 @@ MySQL:
   nullen en aggregeer aangeleverde aantallen niet over records. Raadpleeg voor
   de status per analysetype altijd `ndff_analysebesluit`; de algemene
   `gegevensgeschiktheid` in `v_ndff_analyse_record` volgt de V-beslissing
+- behandel `12.004`, `12.006`, `17.005`, `17.006`, `102.004`, `102.006`,
+  `104.000` en `105.000` als uitsluitend positieve bronprotocollen. Behoud de
+  oorspronkelijke `protocol_sleutel` en bewijsmethode `expliciete_code`; zet
+  deze records niet om naar `LOS`. Alleen `V` is voorwaardelijk toegestaan na
+  de ruimtelijke en PQ-poort. `I`, `TV`, `TA` en `TK` zijn voor de huidige
+  levering uitgesloten, omdat complete bezoeken, inspanning, volledige
+  soortenlijsten en afleidbare nullen ontbreken. Raadpleeg altijd het besluit
+  per analysetype in `ndff_analysebesluit`
 - gebruik bij `alleen_na_doelsoortselectie` verplicht
   `ndff_protocol_soort_geschiktheid` en selecteer uitsluitend
   `doelrelatie='doelsoort'`; behandel iedere overige soort als bijvangst en dus
