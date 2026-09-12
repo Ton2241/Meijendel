@@ -41,7 +41,7 @@
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
 - De reconstructies van `07.201`, `10.201`, `01.201`, `17.208`, `17.204`,
-  `11.202`, `11.201` en `12.204` zijn afgerond. `11.202` omvat 21 kilometerhokken, 161 bezoeken en
+  `11.202`, `11.201`, `12.204` en `02.202` zijn afgerond. `11.202` omvat 21 kilometerhokken, 161 bezoeken en
   een matrix voor zes typische zeereeppaddenstoelen; 61 bezoeken buiten het
   kernseizoen en ontbrekende bezoektijd/waarnemersbekwaamheid blijven zichtbaar.
   `17.209` is als positieve sectietelling geclassificeerd, maar kan zonder
@@ -52,6 +52,12 @@
   NEM-reeks op basis van omvang en reconstrueerbaarheid. Ken pas nullen toe
   nadat per protocol meeteenheid, bevestigd bezoek en doelsoortenbereik
   vaststaan.
+- `02.202` bevat onder `ndff-korstmos-v1` twaalf proefvlakken en 32 bezoeken.
+  Gebruik de 960 bezoek-taxonregels voor presentie/occupancy; behandel de twee
+  FFV-bedekkingsklassen alleen ordinaal en sluit de tien conflictcombinaties uit
+  van abundantievergelijking. Vraag BLWG later alleen om oorspronkelijke
+  locatie-ID's, geometrieversies en de zesdelige abundantieklasse wanneer dat
+  voor een verdiepende analyse nodig blijkt. Ga nu verder met `02.204` Mossen.
 - `12.204` bevat onder `ndff-hns-v1` 23 aannemelijk volledige
   inventarisaties en drie fragmenten. Gebruik de 16.169
   inventarisatie-taxonregels voorlopig voor verspreidings-/occupancyanalyse;

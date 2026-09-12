@@ -180,6 +180,15 @@
   positieve verspreidingsinformatie. Herhaalde lijsten blijven gemarkeerd als
   niet bewezen onafhankelijk zolang FLORON-lijst- of waarnemer-ID ontbreekt.
   Aantallen en dubbele vindplaatsen worden niet als plantenabundantie gebruikt.
+- Protocol `02.202` wordt onder `ndff-korstmos-v1` gereconstrueerd uit uitsluitend
+  de 364 onvervaagde openbare regels. De twaalf geometrieën gelden als
+  proefvlakken en gelijke geometrie plus datum als bezoek. Omdat het landelijke
+  protocol complete soortenlijsten voorschrijft, worden binnen 32 bevestigde
+  bezoeken echte nullen afgeleid voor de dertig openbare taxa. Gelijke
+  parallelle registraties tellen eenmaal; tegenstrijdige bedekkingsklassen
+  blijven conflict. De twee FFV-klassen zijn alleen ordinaal bruikbaar. De
+  twintig vervaagde Saucijs-baardmosrecords blijven uitsluitend in de
+  beveiligde bronlaag en krijgen geen openbare afleiding.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

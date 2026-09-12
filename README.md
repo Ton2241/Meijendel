@@ -306,6 +306,15 @@ tellers, omdat lijst- en waarnemer-ID ontbreken. Gebruik deze laag daarom voor
 voorlopige verspreidings-/occupancyanalyse, nooit voor plantenabundantie, en
 controleer haar vooraf met `--audit-hns`.
 
+Korstmossenprotocol `02.202` staat onder `ndff-korstmos-v1` in vijf openbare
+`Meijendel.ndff_korstmos_*`-tabellen. De 364 onvervaagde bronregels vormen
+twaalf proefvlakken, 32 bezoeken en een matrix voor dertig taxa met 287
+positieve combinaties en 673 echte nullen. Van de bronregels worden 67 gelijke
+parallelle registraties onderdrukt; tien bezoek-taxoncombinaties behouden een
+abundantieconflict. De twintig vervaagde Saucijs-baardmosrecords blijven alleen
+in de beveiligde bronlaag. Gebruik de twee grove FFV-bedekkingsklassen slechts
+ordinaal en controleer de reconstructie met `--audit-korstmossen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

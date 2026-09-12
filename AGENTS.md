@@ -313,6 +313,15 @@ MySQL:
   bewezen onafhankelijke tellers zolang lijst- en waarnemer-ID ontbreken. Tel
   aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
   vóór gebruik met `--audit-hns`
+- gebruik voor korstmossenprotocol `02.202` reconstructieversie
+  `ndff-korstmos-v1` en de vijf openbare tabellen `Meijendel.ndff_korstmos_*`.
+  Leid echte nullen alleen af binnen de 32 bevestigde bezoeken en de dertig
+  openbare taxa. Tel 67 gelijke parallelle registraties niet dubbel; sluit de
+  tien bezoek-taxoncombinaties met tegenstrijdige bedekkingsklasse uit van
+  abundantievergelijking. Behandel de twee FFV-bedekkingsklassen uitsluitend
+  ordinaal. Kopieer de twintig vervaagde Saucijs-baardmosrecords niet naar de
+  openbare afgeleide tabellen en controleer vóór gebruik met
+  `--audit-korstmossen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

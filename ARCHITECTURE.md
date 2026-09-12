@@ -117,6 +117,12 @@ en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
 `ndff-hns-v1` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
 De laag bewaart onafhankelijkheid van herhaalde clusters als afzonderlijke,
 nog niet bevestigde eigenschap en gebruikt bron-aantallen niet als abundantie.
+`ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v1` in
+`Meijendel`: openbare proefvlakken, bezoeken, recordselectie, lokaal doelbereik
+en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen
+echte nullen. Gelijke parallelle registraties worden niet dubbel geteld en
+tegenstrijdige grove bedekkingsklassen blijven zichtbaar. Vervaagde records
+worden niet naar deze openbare afgeleide laag gekopieerd.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

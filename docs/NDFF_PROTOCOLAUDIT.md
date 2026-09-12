@@ -270,7 +270,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `17.208` Vleermuistransect | 2.624 | 44 | 2013-2025 | twee meetreeksen en bezoek-soortmatrix gereconstrueerd; 73 dubbelen onderdrukt |
 | `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |
 | `11.202` Zeereeppaddenstoelen | 3.738 | 161 | 2014-2025 | 21 kilometerhokken en bezoek-soortmatrix gereconstrueerd; 9 vervaagde records uitgesloten |
-| `02.202` Korstmossen | 384 | 15 | 2000-2025 | proefvlakken en doelsoortenlijst reconstrueren |
+| `02.202` Korstmossen | 384 | 32 | 2000-2025 | 12 proefvlakken en bezoek-soortmatrix gereconstrueerd; 20 vervaagde records uitgesloten |
 | `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
 | `11.201` Bospaddenstoelen | 982 | 110 | 1999-2016 | drie vaste meetpunten, bezoekmatrix en jaarlijkse maxima gereconstrueerd; 473 parallelle presentieregels onderdrukt |
 | `12.204` Het Nieuwe Strepen | 4.569 | 23 lijstkandidaten | 2012-2024 | bezoekmatrix gereconstrueerd; onafhankelijkheid herhalingen nog niet bevestigd |
@@ -316,6 +316,29 @@ Methodische grondslag: [FLORON Het Nieuwe Strepen](https://www.floron.nl/Meedoen
 [FLORON protocol 2019](https://www.floron.nl/Portals/1/Downloads/Protocol%20Het%20Nieuwe%20Strepen%202019_papierenstreeplijst_mei2019.pdf),
 [NEM Flora](https://www.netwerkecologischemonitoring.nl/meetprogrammas/flora)
 en [CBS Meetprogramma's 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
+### Korstmossen op steen, heiden en stuifzanden (`02.202`)
+
+Regelversie `ndff-korstmos-v1` reconstrueert 364 onvervaagde openbare
+bronregels tot twaalf proefvlakken en 32 bezoeken in 2000-2025. Vier vaste
+proefvlakken zijn in zes meetjaren herhaald; acht proefvlakken hebben één
+bevestigd bezoek. Het openbare lokale doelbereik omvat dertig taxa. Omdat het
+protocol per bezoek een complete soortenlijst voorschrijft, bevat de
+bezoek-soortmatrix 287 positieve combinaties en 673 echte nullen.
+
+De bron bevat 67 gelijke parallelle registraties, die traceerbaar blijven maar
+niet dubbel meetellen. Bij tien bezoek-taxoncombinaties spreken twee grove
+NDFF-bedekkingsklassen elkaar tegen; die twintig bronregels blijven als
+abundantieconflict bewaard. De FFV-levering bevat slechts twee ordinale klassen,
+terwijl de oorspronkelijke BLWG-methode zes klassen onderscheidt. Gebruik de
+matrix daarom voor presentie/occupancy en de grove rang alleen als ordinale
+indicator, niet als exacte bedekking. Twintig vervaagde Saucijs-baardmosrecords
+worden niet naar openbare afgeleide tabellen gekopieerd en leveren daar ook geen
+nullen. Controleer de laag vóór gebruik met `--audit-korstmossen`.
+
+Methodische grondslag: [NDFF protocol 02.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/2-202-korstmossen-op-steen-heiden-en-stuifzanden-nem/),
+[BLWG meetnet](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
+en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/korstmossen).
 
 Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
 `04.004` (1.282), `12.001` (1.150), `12.204` (929), `07.001` (850) en `12.006`

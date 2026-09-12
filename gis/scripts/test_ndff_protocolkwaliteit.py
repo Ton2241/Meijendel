@@ -94,6 +94,11 @@ def main() -> int:
         "meijendel.ndff_hns_doelbereik",
         "meijendel.ndff_hns_inventarisatie_taxon",
         "meijendel.ndff_hns_hok_jaar_taxon",
+        "meijendel.ndff_korstmos_meetlocatie",
+        "meijendel.ndff_korstmos_bezoek",
+        "meijendel.ndff_korstmos_recordselectie",
+        "meijendel.ndff_korstmos_doelbereik",
+        "meijendel.ndff_korstmos_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -106,6 +111,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
     assert "meijendel_ndff_secure.ndff_hns_" not in folded
+    assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -280,6 +286,46 @@ def main() -> int:
     assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v1"
     assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
     assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
+    assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v1"
+    assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.ndff_korstmos"
+
+    korstmos_records = module.classify_korstmos_records([
+        {"observation_id": 1, "visit": "v1", "taxon": "Taxon a",
+         "abundance": "0.01 - 0.1"},
+        {"observation_id": 2, "visit": "v1", "taxon": "Taxon a",
+         "abundance": "0.01 - 0.1"},
+        {"observation_id": 3, "visit": "v1", "taxon": "Taxon b",
+         "abundance": "0.01 - 0.1"},
+        {"observation_id": 4, "visit": "v1", "taxon": "Taxon b",
+         "abundance": "minimaal 0.1"},
+        {"observation_id": 5, "visit": "v2", "taxon": "Taxon a",
+         "abundance": "minimaal 0.1"},
+    ])
+    assert korstmos_records[1]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[2]["selectiestatus"] == "dubbele_registratie_onderdrukt"
+    assert korstmos_records[2]["canonieke_waarneming_id"] == 1
+    assert korstmos_records[3]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert korstmos_records[4]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert korstmos_records[5]["selectiestatus"] == "opgenomen"
+
+    korstmos_matrix = module.build_korstmos_visit_matrix(
+        visits={"v1", "v2"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"visit": "v1", "taxon": "Taxon a", "abundance": "0.01 - 0.1"},
+            {"visit": "v1", "taxon": "Taxon b", "abundance": "0.01 - 0.1"},
+            {"visit": "v1", "taxon": "Taxon b", "abundance": "minimaal 0.1"},
+            {"visit": "v2", "taxon": "Taxon a", "abundance": "minimaal 0.1"},
+        ],
+    )
+    korstmos_by_key = {(row["visit"], row["taxon"]): row for row in korstmos_matrix}
+    assert korstmos_by_key[("v1", "Taxon a")]["status"] == "waargenomen"
+    assert korstmos_by_key[("v1", "Taxon a")]["bedekkingsrang"] == 1
+    assert korstmos_by_key[("v1", "Taxon b")]["status"] == "waargenomen_abundantieconflict"
+    assert korstmos_by_key[("v1", "Taxon b")]["bedekkingsrang"] is None
+    assert korstmos_by_key[("v2", "Taxon a")]["bedekkingsrang"] == 2
+    assert korstmos_by_key[("v2", "Taxon b")]["status"] == "echte_nul"
+    assert korstmos_by_key[("v2", "Taxon b")]["bedekkingsrang"] == 0
 
     hns_rows = [
         {
@@ -573,6 +619,11 @@ def main() -> int:
     assert "o.protocol LIKE '12.204%'" in hns_source_sql
     assert "o.soortgroep_raw='Vaatplanten'" in hns_source_sql
     assert "Meijendel_ndff_secure" not in hns_source_sql
+    korstmos_source_sql = " ".join(module.korstmos_source_sql().split())
+    assert "o.protocol LIKE '02.202%'" in korstmos_source_sql
+    assert "o.soortgroep_raw='Korstmossen'" in korstmos_source_sql
+    assert "o.vervaagd=0" in korstmos_source_sql
+    assert "Meijendel_ndff_secure" not in korstmos_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -677,6 +728,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende HNS-reconstructie is niet geblokkeerd")
+    module.validate_korstmos_reconstruction(dict(module.KORSTMOS_RECONSTRUCTION_EXPECTED))
+    broken_korstmos = dict(module.KORSTMOS_RECONSTRUCTION_EXPECTED)
+    broken_korstmos["true_zero_rows"] -= 1
+    try:
+        module.validate_korstmos_reconstruction(broken_korstmos)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende korstmosreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -923,6 +983,8 @@ def main() -> int:
         "--audit-zeereeppaddenstoelen",
         "ndff-hns-v1",
         "--audit-hns",
+        "ndff-korstmos-v1",
+        "--audit-korstmossen",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

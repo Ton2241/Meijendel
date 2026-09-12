@@ -1346,3 +1346,130 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_hok_jaar_taxon (
   ),
   CHECK (inventarisatieaantal >= positief_inventarisatieaantal)
 ) ENGINE=InnoDB;
+
+-- Reconstructie van 02.202 Korstmossen op steen, heiden en stuifzanden (NEM).
+-- Alleen onvervaagde openbare records worden afgeleid. De landelijke methode
+-- werkt met complete soortenlijsten per vast proefvlak; daarom mag een niet
+-- gemeld taxon binnen een bevestigd bezoek als echte nul worden vastgelegd.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_meetlocatie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  meetlocatie_id SMALLINT UNSIGNED NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '02.202',
+  centrum_x_rd DECIMAL(10,2) NOT NULL,
+  centrum_y_rd DECIMAL(10,2) NOT NULL,
+  oppervlakte_m2 DECIMAL(14,2) NOT NULL,
+  ruimtelijke_klasse ENUM('eenduidig_plot','meerdere_plots') NOT NULL,
+  sovon_plot_id INT NULL,
+  herhaalstatus ENUM('herhaald_vast_proefvlak','eenmalig_proefvlak') NOT NULL,
+  bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  kwaliteitsnotitie VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, meetlocatie_id),
+  UNIQUE KEY uq_ndff_korstmos_geometrie (reconstructieversie, geometrie_sha256),
+  CHECK (
+    (ruimtelijke_klasse='eenduidig_plot' AND sovon_plot_id IS NOT NULL)
+    OR (ruimtelijke_klasse='meerdere_plots' AND sovon_plot_id IS NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  meetlocatie_id SMALLINT UNSIGNED NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  lijststatus ENUM('volledige_soortenlijst_protocolconform') NOT NULL,
+  registratiestatus ENUM('geen_dubbelen','parallelle_registraties','abundantieconflict') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  UNIQUE KEY uq_ndff_korstmos_locatie_datum
+    (reconstructieversie, meetlocatie_id, bezoekdatum),
+  CONSTRAINT fk_ndff_korstmos_bezoek_meetlocatie FOREIGN KEY
+    (reconstructieversie, meetlocatie_id)
+    REFERENCES Meijendel.ndff_korstmos_meetlocatie
+      (reconstructieversie, meetlocatie_id),
+  CHECK (jaar = YEAR(bezoekdatum))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  canonieke_waarneming_id BIGINT UNSIGNED NULL,
+  meetlocatie_id SMALLINT UNSIGNED NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM(
+    'opgenomen','dubbele_registratie_onderdrukt','abundantieconflict_bewaard'
+  ) NOT NULL,
+  selectiereden VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_korstmos_selectie_canoniek
+    (reconstructieversie, canonieke_waarneming_id),
+  CONSTRAINT fk_ndff_korstmos_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_korstmos_selectie_canoniek FOREIGN KEY
+    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_korstmos_selectie_meetlocatie FOREIGN KEY
+    (reconstructieversie, meetlocatie_id)
+    REFERENCES Meijendel.ndff_korstmos_meetlocatie
+      (reconstructieversie, meetlocatie_id),
+  CONSTRAINT fk_ndff_korstmos_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_korstmos_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (
+    (selectiestatus IN ('opgenomen','dubbele_registratie_onderdrukt')
+      AND canonieke_waarneming_id IS NOT NULL)
+    OR (selectiestatus='abundantieconflict_bewaard'
+      AND canonieke_waarneming_id IS NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_doelbereik (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  afleidingsregel ENUM('openbaar_taxon_waargenomen_op_02_202_bezoek') NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  positieve_bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, wetenschappelijke_naam),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen','waargenomen_abundantieconflict','echte_nul'
+  ) NOT NULL,
+  bedekkingsklasse_raw VARCHAR(64) NULL,
+  bedekkingsrang TINYINT UNSIGNED NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulregel ENUM('niet_gemeld_op_volledige_02_202_soortenlijst') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_korstmos_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_korstmos_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_korstmos_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND bedekkingsklasse_raw IS NOT NULL
+      AND bedekkingsrang IN (1,2) AND bronrecordaantal>0)
+    OR (waarnemingsstatus='waargenomen_abundantieconflict'
+      AND bedekkingsklasse_raw IS NULL AND bedekkingsrang IS NULL
+      AND bronrecordaantal>1)
+    OR (waarnemingsstatus='echte_nul' AND bedekkingsklasse_raw IS NULL
+      AND bedekkingsrang=0 AND bronrecordaantal=0)
+  )
+) ENGINE=InnoDB;
