@@ -348,6 +348,17 @@ levering geen voorlopige protocolnullen oplevert. Begeleidende soorten blijven
 altijd positieve informatie; hun ontbreken is geen nul. Controleer de laag met
 `--audit-habslak`.
 
+Braakbalprotocol `17.002` staat onder `ndff-braakbal-v1` in drie openbare
+`Meijendel.ndff_braakbal_*`-tabellen. Alle 389 positieve bronregels zijn
+gekoppeld aan 37 openbare geometrie-jaaraggregaten en 226 positieve
+taxoncombinaties. Van de bronregels zijn er 387 tot 10 x 10 km vervaagd; twee
+onvervaagde regels zijn losse protocolregistraties en geen volledige partijen.
+Achttien aggregaten hebben een opgetelde prooisom van minimaal 150, maar door
+het ontbreken van partij- en nest-ID's kan die som meerdere partijen omvatten.
+Daarom bevat deze laag geen afgeleide nullen of SOVON-plotkoppelingen. Gebruik
+haar uitsluitend voor regionale positieve samenstelling en indicatieve
+verandering in registraties en controleer met `--audit-braakballen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

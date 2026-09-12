@@ -431,6 +431,35 @@ Methodische grondslag: [NDFF protocol 04.006](https://ndff.nl/natuurdata/waarnem
 en de openbare handleiding
 [Slakken van de Habitatrichtlijn waarnemen](https://www.ndff.nl/wp-content/uploads/2015/12/04.006-Handleiding-Slakken-van-de-Habitatrichtlijn-waarnemen.pdf).
 
+### Braakbalonderzoek (`17.002`)
+
+Regelversie `ndff-braakbal-v1` koppelt alle 389 positieve openbare bronregels
+aan 37 geometrie-jaaraggregaten en 226 positieve taxoncombinaties voor veertien
+taxa. De aangeleverde aantallen omvatten samen 9.381 prooidieren, waaronder
+3.424 Veldmuizen. Herhaalde taxonregels binnen hetzelfde jaar en dezelfde
+geometrie worden transparant samengevoegd, maar de som wordt niet als lokale
+abundantie geïnterpreteerd.
+
+Van de 389 regels zijn er 387 tot een openbaar 10 x 10 km-vlak vervaagd. De
+twee onvervaagde regels betreffen één Mol en één Konijn en vormen geen
+volledige braakbalpartij. De bron bevat geen oorspronkelijke partij-, nest- of
+locatie-ID's. Daardoor kan één geometrie-jaaraggregaat meerdere partijen en
+vindplaatsen omvatten. Achttien aggregaten hebben een som van minimaal 150
+prooidieren, maar krijgen juist daarom de voorzichtige status
+`som_minimaal_150_partij_onbekend`: de gebruikelijke omvangsdrempel kan niet
+aan één oorspronkelijke partij worden toegeschreven.
+
+De laag bevat daarom nul afgeleide nullen en nul SOVON-plotkoppelingen. Zij is
+alleen geschikt voor positieve regionale taxonsamenstelling en indicatieve
+verandering in registraties, steeds met de ruimtelijke en
+partij-onzekerheidsmelding. Alle afgeleide tabellen staan in `Meijendel`; er is
+geen braakbalafleiding in `Meijendel_ndff_secure`. Controleer de laag met
+`--audit-braakballen`.
+
+Methodische grondslag: [NDFF 17.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-002-braakbalonderzoek-nem/),
+de [methodische rapportage van de Zoogdiervereniging](https://www.zoogdiervereniging.nl/sites/default/files/publications/2009.05%20Verspreidingsonderzoek%20muizen%20en%20spitsmuizen%20in%202008_0.pdf)
+en de [CBS-kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
 ### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
 
 Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat
@@ -656,9 +685,9 @@ niet uit.
 De afzonderlijke beoordeling van de resterende gestructureerde protocollen
 omvat 1.031 records: `17.002` Braakbalonderzoek (389), `102.002` Jaarrond
 Tuintelling (309), `102.005` LiveAtlas (231) en `102.007` Kwartiertellingen
-(102). De braakbalregels vormen 38 zichtbare tijd-ruimteclusters op acht
-geometrieën, maar bevatten meerdere gelijksoortige regels binnen hetzelfde
-cluster en geen oorspronkelijke partij- of monster-ID. De tuintelling bevat
+(102). De braakbalregels zijn inmiddels conservatief gereconstrueerd tot 37
+geometrie-jaaraggregaten; deze zijn uitdrukkelijk geen partijen of bezoeken en
+leveren geen nullen of plotkoppelingen. De tuintelling bevat
 125 zichtbare tuin-periodeclusters op zes geometrieën en mengt weektotalen,
 dagperioden en één korte telling. LiveAtlas bevat 64 gedeelde tijdintervallen;
 de kwartiertellingen bevatten zeventien tijdintervallen van 6-21 minuten. Bij

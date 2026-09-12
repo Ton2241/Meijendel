@@ -112,6 +112,9 @@ def main() -> int:
         "meijendel.ndff_habslak_recordselectie",
         "meijendel.ndff_habslak_monster_taxon",
         "meijendel.ndff_habslak_hokjaar",
+        "meijendel.ndff_braakbal_hokjaar",
+        "meijendel.ndff_braakbal_recordselectie",
+        "meijendel.ndff_braakbal_hokjaar_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -128,6 +131,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_mos_" not in folded
     assert "meijendel_ndff_secure.ndff_florbase_" not in folded
     assert "meijendel_ndff_secure.ndff_habslak_" not in folded
+    assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -492,6 +496,54 @@ def main() -> int:
     assert habslak_matrix[0]["source_count"] == 2
     assert len(habslak_matrix[0]["measurements"]) == 2
 
+    assert module.classify_braakbal_period("2011-03-14", "2011-03-15") == (
+        "gedateerde_registratie"
+    )
+    assert module.classify_braakbal_period("2024-01-01", "2025-01-01") == (
+        "jaaraggregaat"
+    )
+    assert module.classify_braakbal_period("2022-01-01", "2024-01-01") == (
+        "meerjaaraggregaat"
+    )
+    assert module.classify_braakbal_inspanning(149) == "som_minder_dan_150"
+    assert module.classify_braakbal_inspanning(150) == (
+        "som_minimaal_150_partij_onbekend"
+    )
+    braakbal = module.build_braakbal_positive_aggregates([
+        {
+            "observation_id": 1, "year": 2020, "geometry": "g1",
+            "taxon": "Microtus arvalis", "count": 100,
+            "start": "2020-01-01", "stop": "2021-01-01",
+            "blurred": True, "blur_level": 10, "x": 85_000.0,
+            "y": 460_000.0, "area": 100_000_000.0,
+        },
+        {
+            "observation_id": 2, "year": 2020, "geometry": "g1",
+            "taxon": "Microtus arvalis", "count": 60,
+            "start": "2020-01-01", "stop": "2021-01-01",
+            "blurred": True, "blur_level": 10, "x": 85_000.0,
+            "y": 460_000.0, "area": 100_000_000.0,
+        },
+        {
+            "observation_id": 3, "year": 2020, "geometry": "g1",
+            "taxon": "Sorex araneus", "count": 5,
+            "start": "2020-01-01", "stop": "2021-01-01",
+            "blurred": True, "blur_level": 10, "x": 85_000.0,
+            "y": 460_000.0, "area": 100_000_000.0,
+        },
+    ])
+    assert len(braakbal["hokyears"]) == 1
+    assert braakbal["hokyears"][0]["prey_sum"] == 165
+    assert braakbal["hokyears"][0]["effort_status"] == (
+        "som_minimaal_150_partij_onbekend"
+    )
+    assert braakbal["hokyears"][0]["zero_status"] == "geen_nul_afleidbaar"
+    assert len(braakbal["taxa"]) == 2
+    braakbal_taxa = {row["taxon"]: row for row in braakbal["taxa"]}
+    assert braakbal_taxa["Microtus arvalis"]["source_count"] == 2
+    assert braakbal_taxa["Microtus arvalis"]["total_count"] == 160
+    assert all(row["status"] == "waargenomen" for row in braakbal["taxa"])
+
     hns_rows = [
         {
             "observation_id": index,
@@ -725,6 +777,8 @@ def main() -> int:
     assert "--audit-hns" in importer_text
     assert "--reconstruct-habslak" in importer_text
     assert "--audit-habslak" in importer_text
+    assert "--reconstruct-braakballen" in importer_text
+    assert "--audit-braakballen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -942,6 +996,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende HabSlak-reconstructie is niet geblokkeerd")
+    module.validate_braakbal_reconstruction(
+        dict(module.BRAAKBAL_RECONSTRUCTION_EXPECTED)
+    )
+    broken_braakbal = dict(module.BRAAKBAL_RECONSTRUCTION_EXPECTED)
+    broken_braakbal["hok_years"] -= 1
+    try:
+        module.validate_braakbal_reconstruction(broken_braakbal)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende braakbalreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

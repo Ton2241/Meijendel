@@ -58,6 +58,8 @@ FLORBASE_RULE_VERSION = "ndff-florbase-v1"
 FLORBASE_COMPLETENESS_THRESHOLD = 50
 HABSLAK_RULE_VERSION = "ndff-habslak-v1"
 HABSLAK_MINIMUM_SAMPLE_LOCATIONS = 15
+BRAAKBAL_RULE_VERSION = "ndff-braakbal-v1"
+BRAAKBAL_MINIMUM_PREY = 150
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -73,6 +75,7 @@ KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
 MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
 FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
 HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
+BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -404,6 +407,28 @@ HABSLAK_RECONSTRUCTION_EXPECTED = {
     "target_positive_square_years": 40,
     "preliminary_zero_square_years": 0,
     "invalid_sample_rows": 0,
+    "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+}
+BRAAKBAL_RECONSTRUCTION_EXPECTED = {
+    "source_records": 389,
+    "blurred_source_records": 387,
+    "unblurred_source_records": 2,
+    "hok_years": 37,
+    "taxon_rows": 226,
+    "distinct_taxa": 14,
+    "total_prey_count": 9381,
+    "field_mouse_count": 3424,
+    "minimum_150_party_unknown": 18,
+    "under_150": 19,
+    "annual_aggregates": 34,
+    "dated_registrations": 2,
+    "mixed_period_aggregates": 1,
+    "multi_year_aggregates": 0,
+    "other_interval_aggregates": 0,
+    "inferred_zero_rows": 0,
+    "plot_linked_rows": 0,
+    "invalid_hokyear_rows": 0,
     "unlinked_source_records": 0,
     "secure_derived_tables": 0,
 }
@@ -4184,6 +4209,113 @@ ORDER BY o.waarneming_id;
 """
 
 
+def classify_braakbal_period(start: str, stop: str) -> str:
+    """Classificeer het aangeleverde broninterval zonder een bezoek te veronderstellen."""
+    start_date = date.fromisoformat(start)
+    stop_date = date.fromisoformat(stop)
+    days = (stop_date - start_date).days
+    if days < 1:
+        raise ValueError("Een braakbal-broninterval moet een positieve duur hebben.")
+    if days == 1:
+        return "gedateerde_registratie"
+    if days in {365, 366}:
+        return "jaaraggregaat"
+    if 730 <= days <= 732:
+        return "meerjaaraggregaat"
+    return "overig_interval"
+
+
+def classify_braakbal_inspanning(prey_sum: int) -> str:
+    """Markeer alleen de somdrempel; de oorspronkelijke partij blijft onbekend."""
+    if prey_sum < 1:
+        raise ValueError("Een braakbalaggregaat moet minstens één prooidier bevatten.")
+    if prey_sum >= BRAAKBAL_MINIMUM_PREY:
+        return "som_minimaal_150_partij_onbekend"
+    return "som_minder_dan_150"
+
+
+def build_braakbal_positive_aggregates(
+    records: Iterable[dict[str, object]],
+) -> dict[str, list[dict[str, object]]]:
+    """Bundel uitsluitend positieve bronregels per openbare geometrie en jaar."""
+    groups: dict[tuple[int, str], list[dict[str, object]]] = defaultdict(list)
+    for source_row in records:
+        row = dict(source_row)
+        count = int(row["count"])
+        if count < 1:
+            raise ValueError("Braakbalregels zonder positief aantal zijn niet geldig.")
+        groups[(int(row["year"]), str(row["geometry"]))].append(row)
+
+    hokyears: list[dict[str, object]] = []
+    taxa: list[dict[str, object]] = []
+    for (year, geometry), source_rows in sorted(groups.items()):
+        first = source_rows[0]
+        invariant = (
+            bool(first["blurred"]), first.get("blur_level"), float(first["x"]),
+            float(first["y"]), float(first["area"]),
+        )
+        if any(
+            (
+                bool(row["blurred"]), row.get("blur_level"), float(row["x"]),
+                float(row["y"]), float(row["area"]),
+            ) != invariant
+            for row in source_rows
+        ):
+            raise ValueError(f"Inconsistente braakbal-geometriecontext: {year}|{geometry}")
+
+        prey_sum = sum(int(row["count"]) for row in source_rows)
+        field_mouse_count = sum(
+            int(row["count"])
+            for row in source_rows
+            if str(row["taxon"]) == "Microtus arvalis"
+        )
+        period_types = {
+            classify_braakbal_period(str(row["start"]), str(row["stop"]))
+            for row in source_rows
+        }
+        period_status = next(iter(period_types)) if len(period_types) == 1 else "gemengd"
+        key = hashlib.sha256(f"17.002|{year}|{geometry}".encode("utf-8")).hexdigest()
+        hokyears.append({
+            "key": key, "year": year, "geometry": geometry,
+            "x": float(first["x"]), "y": float(first["y"]),
+            "area": float(first["area"]), "blurred": bool(first["blurred"]),
+            "blur_level": first.get("blur_level"), "period_status": period_status,
+            "source_count": len(source_rows),
+            "taxon_count": len({str(row["taxon"]) for row in source_rows}),
+            "prey_sum": prey_sum, "field_mouse_count": field_mouse_count,
+            "field_mouse_share": field_mouse_count / prey_sum,
+            "effort_status": classify_braakbal_inspanning(prey_sum),
+            "zero_status": "geen_nul_afleidbaar",
+        })
+        by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for row in source_rows:
+            by_taxon[str(row["taxon"])].append(row)
+        for taxon, taxon_rows in sorted(by_taxon.items()):
+            total = sum(int(row["count"]) for row in taxon_rows)
+            taxa.append({
+                "key": key, "taxon": taxon, "status": "waargenomen",
+                "source_count": len(taxon_rows), "total_count": total,
+                "share": total / prey_sum,
+            })
+    return {"hokyears": hokyears, "taxa": taxa}
+
+
+def braakbal_source_sql() -> str:
+    """Lees protocol 17.002 uitsluitend uit de openbare bronlaag."""
+    return """
+SELECT o.waarneming_id,o.jaar,o.openbare_geometrie_sha256,
+       o.wetenschappelijke_naam,CAST(o.aantal_raw AS UNSIGNED),
+       DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
+       DATE_FORMAT(DATE(o.periode_stop),'%Y-%m-%d'),
+       o.vervaagd,COALESCE(o.vervagingsniveau_km,0),
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),ST_Area(o.openbare_geometrie)
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '17.002%'
+ORDER BY o.jaar,o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -5414,6 +5546,114 @@ def reconstruct_habslak(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_braakballen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw een conservatieve regionale positieve laag voor protocol 17.002."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, braakbal_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 12:
+            raise ValueError(f"Onverwachte 17.002-bronregel met {len(fields)} velden.")
+        (observation_id, year, geometry, taxon, count, start, stop, blurred,
+         blur_level, x, y, area) = fields
+        records.append({
+            "observation_id": int(observation_id), "year": int(year),
+            "geometry": geometry, "taxon": taxon, "count": int(count),
+            "start": start, "stop": stop, "blurred": blurred == "1",
+            "blur_level": int(blur_level) or None,
+            "x": float(x), "y": float(y), "area": float(area),
+        })
+    if len(records) != BRAAKBAL_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De 17.002-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    result = build_braakbal_positive_aggregates(records)
+    hokyears = result["hokyears"]
+    taxa = result["taxa"]
+    key_by_group = {
+        (int(row["year"]), str(row["geometry"])): str(row["key"])
+        for row in hokyears
+    }
+    common_note = (
+        "Openbare reconstructie van braakbalprotocol 17.002. De meeste regels zijn "
+        "tot een 10 x 10 km-vlak vervaagd en oorspronkelijke partij- en nest-ID's "
+        "ontbreken. De prooisom kan daarom meerdere partijen omvatten. Ook bij een "
+        "som van minimaal 150 worden geen echte nullen, lokale bezoeken of "
+        "SOVON-plotkoppelingen afgeleid. Alleen positieve regionale samenstelling "
+        "en indicatieve verandering in registraties zijn toegestaan."
+    )
+    hokyear_values: list[str] = []
+    for row in hokyears:
+        blurred = bool(row["blurred"])
+        spatial_status = "vervaagd_10km" if blurred else "onvervaagd_bronvlak"
+        blur_level = row["blur_level"] if blurred else None
+        hokyear_values.append(
+            f"({sql_text(BRAAKBAL_RULE_VERSION)},{sql_text(str(row['key']))},'17.002',"
+            f"{int(row['year'])},{sql_text(str(row['geometry']))},"
+            f"{float(row['x']):.3f},{float(row['y']):.3f},{float(row['area']):.3f},"
+            f"{1 if blurred else 0},{int(blur_level) if blur_level is not None else 'NULL'},"
+            f"{sql_text(str(row['period_status']))},{int(row['source_count'])},"
+            f"{int(row['taxon_count'])},{int(row['prey_sum'])},"
+            f"{int(row['field_mouse_count'])},{float(row['field_mouse_share']):.8f},"
+            f"{sql_text(str(row['effort_status']))},{sql_text(spatial_status)},"
+            f"'geen_nul_afleidbaar','niet_gekoppeld_grove_brongeometrie',"
+            f"{sql_text(common_note)})"
+        )
+
+    selection_values: list[str] = []
+    for row in records:
+        key = key_by_group[(int(row["year"]), str(row["geometry"]))]
+        if bool(row["blurred"]):
+            status = "vervaagd_regionale_positieve_context"
+            reason = (
+                "Positieve bronregel binnen een vervaagd 10 x 10 km-hok; alleen "
+                "regionale samenstelling, geen lokale aanwezigheid of plottoewijzing."
+            )
+        else:
+            status = "onvervaagd_losse_protocolregistratie"
+            reason = (
+                "Onvervaagde positieve protocolregel zonder volledige "
+                "braakbalpartij; geen bezoek-, nul- of inspanningsafleiding."
+            )
+        selection_values.append(
+            f"({sql_text(BRAAKBAL_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{sql_text(key)},{sql_text(status)},{sql_text(reason)})"
+        )
+
+    taxon_note = (
+        "Positieve taxonsamenstelling per openbaar bronvlak en jaar. Herhaalde "
+        "taxonregels zijn samengevoegd; aantallen gelden niet als lokale abundantie "
+        "omdat oorspronkelijke braakbalpartijen niet kunnen worden onderscheiden."
+    )
+    taxon_values = [
+        f"({sql_text(BRAAKBAL_RULE_VERSION)},{sql_text(str(row['key']))},"
+        f"{sql_text(str(row['taxon']))},'waargenomen',{int(row['source_count'])},"
+        f"{int(row['total_count'])},{float(row['share']):.8f},"
+        f"'niet_van_toepassing_positief',{sql_text(taxon_note)})"
+        for row in taxa
+    ]
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {BRAAKBAL_TABLE_PREFIX}_hokjaar_taxon WHERE reconstructieversie={sql_text(BRAAKBAL_RULE_VERSION)};",
+        f"DELETE FROM {BRAAKBAL_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(BRAAKBAL_RULE_VERSION)};",
+        f"DELETE FROM {BRAAKBAL_TABLE_PREFIX}_hokjaar WHERE reconstructieversie={sql_text(BRAAKBAL_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{BRAAKBAL_TABLE_PREFIX}_hokjaar", "reconstructieversie,hokjaar_sleutel,protocol_sleutel,jaar,openbare_geometrie_sha256,centroide_x_rd,centroide_y_rd,oppervlakte_m2,vervaagd,vervagingsniveau_km,bronperiodestatus,bronrecordaantal,geregistreerde_taxa,som_prooidieren,veldmuis_aantal,veldmuis_aandeel,inspanningsstatus,ruimtelijke_status,nulstatus,plotstatus,kwaliteitsnotitie", hokyear_values),
+        (f"{BRAAKBAL_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,hokjaar_sleutel,selectiestatus,selectiereden", selection_values),
+        (f"{BRAAKBAL_TABLE_PREFIX}_hokjaar_taxon", "reconstructieversie,hokjaar_sleutel,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,totaal_aantal,aandeel_prooidieren,nulstatus,kwaliteitsnotitie", taxon_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, braakbal_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -5860,6 +6100,37 @@ SELECT JSON_OBJECT(
 """
 
 
+def braakbal_validation_sql() -> str:
+    version = sql_text(BRAAKBAL_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_braakbal_{suffix}") for suffix in (
+        "hokjaar", "recordselectie", "hokjaar_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '17.002%'),
+  'blurred_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '17.002%' AND vervaagd=1),
+  'unblurred_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '17.002%' AND vervaagd=0),
+  'hok_years',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version}),
+  'taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar_taxon WHERE reconstructieversie={version}),
+  'distinct_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_braakbal_hokjaar_taxon WHERE reconstructieversie={version}),
+  'total_prey_count',(SELECT COALESCE(SUM(som_prooidieren),0) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version}),
+  'field_mouse_count',(SELECT COALESCE(SUM(veldmuis_aantal),0) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version}),
+  'minimum_150_party_unknown',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND inspanningsstatus='som_minimaal_150_partij_onbekend'),
+  'under_150',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND inspanningsstatus='som_minder_dan_150'),
+  'annual_aggregates',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND bronperiodestatus='jaaraggregaat'),
+  'dated_registrations',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND bronperiodestatus='gedateerde_registratie'),
+  'mixed_period_aggregates',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND bronperiodestatus='gemengd'),
+  'multi_year_aggregates',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND bronperiodestatus='meerjaaraggregaat'),
+  'other_interval_aggregates',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND bronperiodestatus='overig_interval'),
+  'inferred_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND nulstatus<>'geen_nul_afleidbaar'),
+  'plot_linked_rows',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar WHERE reconstructieversie={version} AND plotstatus<>'niet_gekoppeld_grove_brongeometrie'),
+  'invalid_hokyear_rows',(SELECT COUNT(*) FROM Meijendel.ndff_braakbal_hokjaar h WHERE h.reconstructieversie={version} AND (h.bronrecordaantal=0 OR h.geregistreerde_taxa=0 OR h.som_prooidieren=0 OR ABS(h.veldmuis_aandeel*h.som_prooidieren-h.veldmuis_aantal)>0.00002)),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_braakbal_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '17.002%' AND s.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -6015,6 +6286,18 @@ def validate_habslak_reconstruction(metrics: dict[str, int]) -> None:
         }
         raise ValueError(
             f"HabSlak-reconstructie wijkt af van het vaste profiel: {differences}"
+        )
+
+
+def validate_braakbal_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != BRAAKBAL_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (BRAAKBAL_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(BRAAKBAL_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != BRAAKBAL_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"Braakbalreconstructie wijkt af van het vaste profiel: {differences}"
         )
 
 
@@ -6384,6 +6667,8 @@ def main() -> int:
     mode.add_argument("--audit-florbase", action="store_true")
     mode.add_argument("--reconstruct-habslak", action="store_true")
     mode.add_argument("--audit-habslak", action="store_true")
+    mode.add_argument("--reconstruct-braakballen", action="store_true")
+    mode.add_argument("--audit-braakballen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -6657,6 +6942,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_habslak_reconstruction(metrics)
         print(f"OK: lokale HabSlak-reconstructie {HABSLAK_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_braakballen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_braakballen(args.mysql_client, client_args)
+        validate_braakbal_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_braakballen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            braakbal_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_braakbal_reconstruction(metrics)
+        print(f"OK: lokale braakbalreconstructie {BRAAKBAL_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

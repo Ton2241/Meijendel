@@ -1830,3 +1830,100 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_hokjaar (
     OR (bemonsteringsstatus='onvoldoende_minder_dan_15' AND unieke_monsterlocaties<15)
   )
 ) ENGINE=InnoDB;
+
+-- Conservatieve openbare reconstructie van braakbalprotocol 17.002. De
+-- brongeometrie is meestal tot 10 x 10 km vervaagd en oorspronkelijke
+-- partij-/nest-ID's ontbreken. Daarom zijn dit uitsluitend positieve,
+-- regionale hok-jaaraggregaten: geen bezoekmatrix, nullen of plotkoppelingen.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_braakbal_hokjaar (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '17.002',
+  jaar SMALLINT UNSIGNED NOT NULL,
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  centroide_x_rd DECIMAL(12,3) NOT NULL,
+  centroide_y_rd DECIMAL(12,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(20,3) NOT NULL,
+  vervaagd BOOLEAN NOT NULL,
+  vervagingsniveau_km TINYINT UNSIGNED NULL,
+  bronperiodestatus ENUM(
+    'gedateerde_registratie','jaaraggregaat','meerjaaraggregaat','gemengd',
+    'overig_interval'
+  ) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  som_prooidieren INT UNSIGNED NOT NULL,
+  veldmuis_aantal INT UNSIGNED NOT NULL,
+  veldmuis_aandeel DECIMAL(9,8) NOT NULL,
+  inspanningsstatus ENUM(
+    'som_minimaal_150_partij_onbekend','som_minder_dan_150'
+  ) NOT NULL,
+  ruimtelijke_status ENUM('vervaagd_10km','onvervaagd_bronvlak') NOT NULL,
+  nulstatus ENUM('geen_nul_afleidbaar') NOT NULL,
+  plotstatus ENUM('niet_gekoppeld_grove_brongeometrie') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel),
+  UNIQUE KEY uq_ndff_braakbal_hokjaar
+    (reconstructieversie, jaar, openbare_geometrie_sha256),
+  CHECK (bronrecordaantal > 0),
+  CHECK (geregistreerde_taxa > 0),
+  CHECK (som_prooidieren > 0),
+  CHECK (veldmuis_aantal <= som_prooidieren),
+  CHECK (veldmuis_aandeel >= 0 AND veldmuis_aandeel <= 1),
+  CHECK (
+    (vervaagd=1 AND ruimtelijke_status='vervaagd_10km'
+      AND vervagingsniveau_km=10)
+    OR (vervaagd=0 AND ruimtelijke_status='onvervaagd_bronvlak'
+      AND vervagingsniveau_km IS NULL)
+  ),
+  CHECK (
+    (inspanningsstatus='som_minimaal_150_partij_onbekend'
+      AND som_prooidieren>=150)
+    OR (inspanningsstatus='som_minder_dan_150' AND som_prooidieren<150)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_braakbal_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM(
+    'vervaagd_regionale_positieve_context',
+    'onvervaagd_losse_protocolregistratie'
+  ) NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_braakbal_selectie_hokjaar
+    (reconstructieversie, hokjaar_sleutel),
+  CONSTRAINT fk_ndff_braakbal_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_braakbal_selectie_hokjaar FOREIGN KEY
+    (reconstructieversie, hokjaar_sleutel)
+    REFERENCES Meijendel.ndff_braakbal_hokjaar
+      (reconstructieversie, hokjaar_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_braakbal_hokjaar_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  totaal_aantal INT UNSIGNED NOT NULL,
+  aandeel_prooidieren DECIMAL(9,8) NOT NULL,
+  nulstatus ENUM('niet_van_toepassing_positief') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_braakbal_taxon_status
+    (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_braakbal_taxon_hokjaar FOREIGN KEY
+    (reconstructieversie, hokjaar_sleutel)
+    REFERENCES Meijendel.ndff_braakbal_hokjaar
+      (reconstructieversie, hokjaar_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (totaal_aantal > 0),
+  CHECK (aandeel_prooidieren > 0 AND aandeel_prooidieren <= 1)
+) ENGINE=InnoDB;

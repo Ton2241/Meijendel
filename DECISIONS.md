@@ -572,3 +572,14 @@
   en dus nul voorlopige nullen. De 143 vervaagde records worden niet naar
   openbare monsters gekopieerd. De vier afgeleide tabellen staan in
   `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.
+- Voor braakbalprotocol `17.002` is vanaf 12 september 2026 reconstructieversie
+  `ndff-braakbal-v1` vastgesteld. Alle 389 positieve bronregels zijn
+  traceerbaar via drie openbare `Meijendel.ndff_braakbal_*`-tabellen. De 387
+  vervaagde regels worden uitsluitend per openbaar 10 x 10 km-vlak en jaar
+  samengevat; de twee onvervaagde regels blijven losse protocolregistraties.
+  De 37 geometrie-jaaraggregaten bevatten 226 positieve taxonregels. Achttien
+  prooisommen halen minimaal 150, maar krijgen status
+  `som_minimaal_150_partij_onbekend`, omdat oorspronkelijke partij- en
+  nest-ID's ontbreken en meerdere partijen in één openbaar aggregaat kunnen
+  vallen. Er worden geen echte nullen, bezoeken of SOVON-plotkoppelingen
+  afgeleid. `Meijendel_ndff_secure` is niet uitgebreid.

@@ -383,6 +383,17 @@ MySQL:
   monsterlocaties zijn gereconstrueerd en geen positieve doelsoortmelding
   aanwezig is. Kopieer geen exacte beveiligde vindplaats naar de openbare
   afgeleide tabellen en controleer vóór gebruik met `--audit-habslak`
+- gebruik voor braakbalprotocol `17.002` reconstructieversie
+  `ndff-braakbal-v1` en uitsluitend de drie openbare tabellen
+  `Meijendel.ndff_braakbal_*`. Groepeer de positieve bronregels per jaar en
+  openbare geometrie, maar noem dit geen partij of bezoek. Van de 389 regels
+  zijn er 387 tot 10 x 10 km vervaagd; oorspronkelijke partij- en nest-ID's
+  ontbreken. Ook wanneer de opgetelde prooisom minimaal 150 is, betekent dit
+  daarom uitsluitend `som_minimaal_150_partij_onbekend`. Leid geen echte
+  nullen of SOVON-plotkoppelingen af en gebruik aantallen niet als lokale
+  abundantie. Gebruik de laag alleen voor positieve regionale samenstelling en
+  indicatieve verandering in registraties; controleer haar met
+  `--audit-braakballen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie
