@@ -171,6 +171,15 @@
   gemeld. Een afgeleide nul betekent uitsluitend geen vruchtlichaam op dat
   bezoek. De jaarlijkse telwaarde is het hoogste dagtotaal en nooit de som van
   bezoeken. Volledig negatieve ontbrekende bezoeken worden niet aangevuld.
+- Protocol `12.204` wordt onder `ndff-hns-v1` gereconstrueerd naar
+  datum/ruimteclusters met een waarschijnlijk doelkilometerhok. De 1.145
+  verschillende bronintervallen zijn uitdrukkelijk geen bezoeken. Alleen 23
+  binnen het veldseizoen gelegen clusters met minimaal 50 taxa en minimaal 80%
+  concentratie in één doelhok gelden als aannemelijk volledige lijsten en
+  leveren echte nullen; drie fragmenten en 39 vervaagde jaarregels blijven
+  positieve verspreidingsinformatie. Herhaalde lijsten blijven gemarkeerd als
+  niet bewezen onafhankelijk zolang FLORON-lijst- of waarnemer-ID ontbreekt.
+  Aantallen en dubbele vindplaatsen worden niet als plantenabundantie gebruikt.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

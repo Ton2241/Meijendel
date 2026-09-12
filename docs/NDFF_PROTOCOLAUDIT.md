@@ -273,7 +273,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `02.202` Korstmossen | 384 | 15 | 2000-2025 | proefvlakken en doelsoortenlijst reconstrueren |
 | `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
 | `11.201` Bospaddenstoelen | 982 | 110 | 1999-2016 | drie vaste meetpunten, bezoekmatrix en jaarlijkse maxima gereconstrueerd; 473 parallelle presentieregels onderdrukt |
-| `12.204` Het Nieuwe Strepen | 4.569 | 1.145 | 2012-2024 | onafhankelijke hokbezoeken eerst onderscheiden |
+| `12.204` Het Nieuwe Strepen | 4.569 | 23 lijstkandidaten | 2012-2024 | bezoekmatrix gereconstrueerd; onafhankelijkheid herhalingen nog niet bevestigd |
 | `17.204` DAZ-BMP | 10.670 | 1.475 bevestigd | 1994-2022 | gekoppeld aan BMP; doelsoortmatrix met taxonspecifieke ambiguïteitsblokkade |
 | `03.203` Nachtvlinders | 596 | 4 | 2019-2025 | geen nullen uit huidige NDFF-regels afleiden |
 | `11.204` Bospaddenstoelen verspreiding | 14 | 2 | 2017 | te klein voor lokale trend |
@@ -284,6 +284,38 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 Record- en bezoekaantallen zijn bron- en reconstructiecontroles, geen
 populatieomvang. Per protocol worden vóór nullen de native meeteenheid, het
 volledige doelsoortenbereik en eventuele overlap met primaire bronnen getoetst.
+
+### Het Nieuwe Strepen (`12.204`)
+
+De eerdere telling van 1.145 verschillende begin-/eindtijdcombinaties was geen
+bezoektelling. Bij app-invoer heeft vrijwel iedere plantwaarneming haar eigen
+tijdstip. Regelversie `ndff-hns-v1` groepeert de 4.569 openbare bronregels
+daarom op kalenderdatum en ruimtelijk samenhangende RD-kilometerhokken. Het hok
+met minimaal 80% van de regels geldt als waarschijnlijk doelhok. Een cluster
+geldt als `volledige_lijst_aannemelijk` wanneer het binnen 27 april-30 september
+ligt en ten minste 50 taxa bevat. Dit zijn transparante, conservatieve
+reconstructiedrempels en geen landelijke FLORON-protocolnormen.
+
+De reconstructie bevat 26 datum/ruimteclusters: 23 aannemelijk volledige
+inventarisaties met 4.524 bronregels en drie fragmenten met samen zes regels.
+Daarnaast blijven 39 openbaar vervaagde jaarregels positief beschikbaar, maar
+zonder koppeling aan een bezoek. Het uit de volledige lijsten aantoonbare lokale
+doelbereik omvat 703 taxa. De bezoekmatrix bevat 4.439 positieve combinaties en
+11.730 echte nullen; het hok-jaarbestand bevat 3.269 positieve combinaties en
+5.167 nullen over twaalf hok-jaren.
+
+De NDFF-export bevat geen FLORON-lijst-ID, teller of deelnemersaantal. Van tien
+hok-jaren zijn herhaalde datumclusters aanwezig; 21 inventarisaties krijgen
+daarom de status `herhaling_aanwezig_onafhankelijkheid_niet_bevestigd`. Twee
+clusters binnen veertien dagen kunnen twee onafhankelijke tellers zijn, maar ook
+velddagen van één inventarisatie. Gebruik de matrix voorlopig voor
+verspreidings-/occupancyanalyse met deze waarschuwing; voer aantallen en dubbele
+vindplaatsen niet als plantenabundantie in. Controleer de laag met `--audit-hns`.
+
+Methodische grondslag: [FLORON Het Nieuwe Strepen](https://www.floron.nl/Meedoen/Het-Nieuwe-Strepen),
+[FLORON protocol 2019](https://www.floron.nl/Portals/1/Downloads/Protocol%20Het%20Nieuwe%20Strepen%202019_papierenstreeplijst_mei2019.pdf),
+[NEM Flora](https://www.netwerkecologischemonitoring.nl/meetprogrammas/flora)
+en [CBS Meetprogramma's 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
 
 Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
 `04.004` (1.282), `12.001` (1.150), `12.204` (929), `07.001` (850) en `12.006`

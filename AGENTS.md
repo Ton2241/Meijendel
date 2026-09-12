@@ -303,6 +303,16 @@ MySQL:
   van bezoeken, en vul geen volledig negatieve ontbrekende bezoeken aan. Houd
   `11.201` gescheiden van `11.204` en controleer vóór gebruik met
   `--audit-bospaddenstoelen`
+- gebruik voor Het Nieuwe Strepen-protocol `12.204` reconstructieversie
+  `ndff-hns-v1` en de vijf openbare tabellen `Meijendel.ndff_hns_*`. Behandel
+  de 1.145 verschillende bronintervallen niet als bezoeken. Leid echte nullen
+  uitsluitend af binnen de 23 als `volledige_lijst_aannemelijk`
+  geclassificeerde datum/ruimteclusters en het daaruit aantoonbare lokale
+  doelbereik. Kleine fragmenten en vervaagde jaarregels blijven uitsluitend
+  positieve verspreidingsinformatie. Beschouw herhaalde datumclusters niet als
+  bewezen onafhankelijke tellers zolang lijst- en waarnemer-ID ontbreken. Tel
+  aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
+  vóór gebruik met `--audit-hns`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

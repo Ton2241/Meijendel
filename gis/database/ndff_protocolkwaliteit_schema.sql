@@ -1229,3 +1229,120 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_jaar_taxon (
     OR (jaarstatus='echte_nul' AND maximum_vruchtlichamen=0 AND positief_bezoekaantal=0)
   )
 ) ENGINE=InnoDB;
+
+-- Reconstructie van 12.204 Het Nieuwe Strepen. De NDFF-regels bevatten geen
+-- lijst- of waarnemer-ID. Een inventarisatie is daarom een controleerbare
+-- datum/ruimtedagcluster; onafhankelijkheid van herhaalbezoeken blijft apart
+-- van de waargenomen soorten en echte nullen vastgelegd.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '12.204',
+  doelhok VARCHAR(16) CHARACTER SET ascii NOT NULL,
+  begindatum DATE NOT NULL,
+  einddatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  lijststatus ENUM('volledige_lijst_aannemelijk','fragment') NOT NULL,
+  seizoenstatus ENUM('binnen_veldseizoen','buiten_veldseizoen') NOT NULL,
+  inspanningstatus ENUM(
+    'datum_bekend_duur_onbekend','duur_binnen_4_12_uur',
+    'mogelijke_meerdageninventarisatie_binnen_14_dagen',
+    'duur_buiten_protocol_of_onvolledig'
+  ) NOT NULL,
+  herhaalstatus ENUM(
+    'enkele_inventarisatie','herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'
+  ) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  doelhok_aandeel DECIMAL(6,5) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, inventarisatie_sleutel),
+  KEY ix_ndff_hns_hok_jaar (doelhok, jaar, lijststatus),
+  CHECK (einddatum >= begindatum),
+  CHECK (jaar = YEAR(begindatum)),
+  CHECK (doelhok_aandeel BETWEEN 0 AND 1)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NULL,
+  selectiestatus ENUM(
+    'opgenomen_volledige_lijst','opgenomen_fragment',
+    'vervaagd_jaarrecord_niet_toegewezen'
+  ) NOT NULL,
+  selectiereden VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_hns_selectie_inventarisatie
+    (reconstructieversie, inventarisatie_sleutel),
+  CONSTRAINT fk_ndff_hns_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_hns_selectie_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_hns_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel),
+  CHECK (
+    (selectiestatus='vervaagd_jaarrecord_niet_toegewezen'
+      AND inventarisatie_sleutel IS NULL)
+    OR
+    (selectiestatus<>'vervaagd_jaarrecord_niet_toegewezen'
+      AND inventarisatie_sleutel IS NOT NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_doelbereik (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  afleidingsregel ENUM('waargenomen_op_aannemelijk_volledige_hns_lijst') NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  positieve_inventarisatieaantal SMALLINT UNSIGNED NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, wetenschappelijke_naam),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulregel ENUM('niet_gemeld_op_aannemelijk_volledige_hns_lijst') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, inventarisatie_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_hns_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_hns_taxon_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_hns_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND bronrecordaantal>0)
+    OR (waarnemingsstatus='echte_nul' AND bronrecordaantal=0)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_hok_jaar_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  doelhok VARCHAR(16) CHARACTER SET ascii NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  jaarstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  inventarisatieaantal SMALLINT UNSIGNED NOT NULL,
+  positief_inventarisatieaantal SMALLINT UNSIGNED NOT NULL,
+  onafhankelijkheidsstatus ENUM(
+    'niet_van_toepassing_een_inventarisatie',
+    'herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'
+  ) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, doelhok, jaar, wetenschappelijke_naam),
+  CHECK (
+    (jaarstatus='waargenomen' AND positief_inventarisatieaantal>0)
+    OR (jaarstatus='echte_nul' AND positief_inventarisatieaantal=0)
+  ),
+  CHECK (inventarisatieaantal >= positief_inventarisatieaantal)
+) ENGINE=InnoDB;

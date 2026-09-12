@@ -89,6 +89,11 @@ def main() -> int:
         "meijendel.ndff_bospaddenstoel_bezoek",
         "meijendel.ndff_bospaddenstoel_bezoek_taxon",
         "meijendel.ndff_bospaddenstoel_jaar_taxon",
+        "meijendel.ndff_hns_inventarisatie",
+        "meijendel.ndff_hns_recordselectie",
+        "meijendel.ndff_hns_doelbereik",
+        "meijendel.ndff_hns_inventarisatie_taxon",
+        "meijendel.ndff_hns_hok_jaar_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -100,6 +105,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
+    assert "meijendel_ndff_secure.ndff_hns_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -273,6 +279,73 @@ def main() -> int:
     assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
     assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v1"
     assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
+    assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
+
+    hns_rows = [
+        {
+            "observation_id": index,
+            "date": "2024-07-18",
+            "stop_date": "2024-07-18",
+            "hok": "82 - 462",
+            "taxon": f"Taxon {index:02d}",
+            "blurred": False,
+        }
+        for index in range(1, 56)
+    ]
+    hns_rows += [
+        {
+            "observation_id": 56,
+            "date": "2024-07-18",
+            "stop_date": "2024-07-18",
+            "hok": "82 - 461",
+            "taxon": "Taxon spillover",
+            "blurred": False,
+        },
+        {
+            "observation_id": 57,
+            "date": "2024-01-01",
+            "stop_date": "2025-01-01",
+            "hok": "82 - 462",
+            "taxon": "Taxon vervaagd",
+            "blurred": True,
+        },
+        {
+            "observation_id": 58,
+            "date": "2024-09-19",
+            "stop_date": "2024-09-19",
+            "hok": "86 - 463",
+            "taxon": "Taxon fragment",
+            "blurred": False,
+        },
+    ]
+    hns = module.reconstruct_hns_candidates(hns_rows)
+    assert len(hns["inventories"]) == 2
+    complete = next(
+        inventory for inventory in hns["inventories"].values()
+        if inventory["status"] == "volledige_lijst_aannemelijk"
+    )
+    assert complete["target_hok"] == "82 - 462"
+    assert complete["taxa_count"] == 56
+    assert complete["source_record_count"] == 56
+    fragment = next(
+        inventory for inventory in hns["inventories"].values()
+        if inventory["status"] == "fragment"
+    )
+    assert fragment["source_record_count"] == 1
+    assert hns["record_status"][57] == "vervaagd_jaarrecord_niet_toegewezen"
+    assert hns["record_inventory"][1] in hns["inventories"]
+    assert hns["record_inventory"][57] is None
+
+    hns_matrix = module.build_hns_visit_matrix(
+        complete_inventories={"visit-a": {"Taxon a"}, "visit-b": {"Taxon b"}},
+        target_taxa={"Taxon a", "Taxon b"},
+    )
+    assert hns_matrix == [
+        {"visit": "visit-a", "taxon": "Taxon a", "status": "waargenomen"},
+        {"visit": "visit-a", "taxon": "Taxon b", "status": "echte_nul"},
+        {"visit": "visit-b", "taxon": "Taxon a", "status": "echte_nul"},
+        {"visit": "visit-b", "taxon": "Taxon b", "status": "waargenomen"},
+    ]
 
     assert module.classify_zeereep_abundance("NMV-aantalsklassen", "1.0 - 3.0") == "klasse_1_3"
     assert module.classify_zeereep_abundance("NMV-aantalsklassen", "4.0 - 20.0") == "klasse_4_20"
@@ -437,6 +510,8 @@ def main() -> int:
     assert "--audit-zeereeppaddenstoelen" in importer_text
     assert "--reconstruct-bospaddenstoelen" in importer_text
     assert "--audit-bospaddenstoelen" in importer_text
+    assert "--reconstruct-hns" in importer_text
+    assert "--audit-hns" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -494,6 +569,10 @@ def main() -> int:
     assert "o.soortgroep_raw='Schimmels'" in bospaddenstoel_source_sql
     assert "o.vervaagd=0" in bospaddenstoel_source_sql
     assert "Meijendel_ndff_secure" not in bospaddenstoel_source_sql
+    hns_source_sql = " ".join(module.hns_source_sql().split())
+    assert "o.protocol LIKE '12.204%'" in hns_source_sql
+    assert "o.soortgroep_raw='Vaatplanten'" in hns_source_sql
+    assert "Meijendel_ndff_secure" not in hns_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -589,6 +668,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende bospaddenstoelenreconstructie is niet geblokkeerd")
+    module.validate_hns_reconstruction(dict(module.HNS_RECONSTRUCTION_EXPECTED))
+    broken_hns = dict(module.HNS_RECONSTRUCTION_EXPECTED)
+    broken_hns["true_zero_rows"] -= 1
+    try:
+        module.validate_hns_reconstruction(broken_hns)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende HNS-reconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -833,6 +921,8 @@ def main() -> int:
         "73",
         "ndff-zeereep-v1",
         "--audit-zeereeppaddenstoelen",
+        "ndff-hns-v1",
+        "--audit-hns",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

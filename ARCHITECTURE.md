@@ -111,6 +111,12 @@ recordselectie die exacte tellingen boven parallelle presentie kiest, een
 conservatief meetpunt-doelbereik, bezoeken, bezoek-soortmatrix en jaarlijkse
 maximumtelling. De keten bewaart echte nullen alleen binnen aantoonbaar gevolgde
 telsoorten en houdt `11.201` volledig gescheiden van opvolger `11.204`.
+`ndff_hns_*` reconstrueert protocol `12.204` in `Meijendel` als
+inventarisaties, recordselectie, lokaal doelbereik, inventarisatie-taxonmatrix
+en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
+`ndff-hns-v1` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
+De laag bewaart onafhankelijkheid van herhaalde clusters als afzonderlijke,
+nog niet bevestigde eigenschap en gebruikt bron-aantallen niet als abundantie.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

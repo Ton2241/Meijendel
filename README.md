@@ -296,6 +296,16 @@ betreffende meetpunt aantoonbaar ooit zijn gevolgd. De 977 jaarregels gebruiken
 conform het protocol het hoogste dagtotaal, nooit de som van bezoeken. Controleer
 de laag met `--audit-bospaddenstoelen`.
 
+Vaatplantenprotocol `12.204` (Het Nieuwe Strepen) staat onder `ndff-hns-v1`
+in vijf openbare `Meijendel.ndff_hns_*`-tabellen. De 4.569 bronregels vormen
+23 aannemelijk volledige inventarisaties en drie kleine fragmenten; 39
+vervaagde jaarregels zijn niet aan een bezoek toegewezen. De bezoekmatrix voor
+703 lokaal aantoonbare HNS-taxa bevat 4.439 positieve combinaties en 11.730
+echte nullen. Herhaalde datumclusters zijn nog niet aantoonbaar onafhankelijke
+tellers, omdat lijst- en waarnemer-ID ontbreken. Gebruik deze laag daarom voor
+voorlopige verspreidings-/occupancyanalyse, nooit voor plantenabundantie, en
+controleer haar vooraf met `--audit-hns`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

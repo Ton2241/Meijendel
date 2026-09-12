@@ -11,7 +11,7 @@ import math
 import re
 import subprocess
 from collections import Counter, defaultdict
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 from typing import Iterable
 
@@ -40,6 +40,7 @@ RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
+HNS_RULE_VERSION = "ndff-hns-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -50,6 +51,7 @@ RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
 DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
+HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -257,6 +259,33 @@ BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED = {
     "duplicate_target_missing": 0,
     "invalid_matrix_rows": 0,
     "invalid_annual_rows": 0,
+    "legacy_secure_tables": 0,
+}
+HNS_RECONSTRUCTION_EXPECTED = {
+    "source_records": 4569,
+    "year_aggregate_records": 39,
+    "linked_source_records": 4569,
+    "inventories": 26,
+    "complete_inventories": 23,
+    "fragment_inventories": 3,
+    "complete_source_records": 4524,
+    "fragment_source_records": 6,
+    "target_taxa": 703,
+    "visit_matrix_rows": 16169,
+    "positive_rows": 4439,
+    "true_zero_rows": 11730,
+    "hok_years": 12,
+    "annual_rows": 8436,
+    "annual_positive_rows": 3269,
+    "annual_zero_rows": 5167,
+    "repeated_hok_years": 10,
+    "independence_unconfirmed_visits": 21,
+    "invalid_matrix_rows": 0,
+    "matrix_size_mismatch": 0,
+    "positive_source_mismatch": 0,
+    "selection_status_mismatch": 0,
+    "invalid_annual_rows": 0,
+    "unlinked_source_records": 0,
     "legacy_secure_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -3390,6 +3419,170 @@ ORDER BY o.waarneming_id;
 """
 
 
+def parse_hns_hoks(raw_hok: str) -> tuple[str, ...]:
+    """Lees de door de openbare bronlaag geraakte RD-kilometerhokken."""
+    hoks: list[str] = []
+    for part in raw_hok.split("|"):
+        match = re.fullmatch(r"\s*(\d+)\s*-\s*(\d+)\s*", part)
+        if not match:
+            raise ValueError(f"Niet ondersteund HNS-hoknummer: {raw_hok!r}")
+        hoks.append(f"{int(match.group(1))} - {int(match.group(2))}")
+    return tuple(sorted(set(hoks)))
+
+
+def _hns_hok_xy(hok: str) -> tuple[int, int]:
+    x, y = hok.split(" - ")
+    return int(x), int(y)
+
+
+def _hns_year_aggregate(row: dict[str, object]) -> bool:
+    start = date.fromisoformat(str(row["date"]))
+    stop = date.fromisoformat(str(row["stop_date"]))
+    return bool(row["blurred"]) and start.month == start.day == 1 and (
+        stop.year == start.year + 1 and stop.month == stop.day == 1
+    )
+
+
+def reconstruct_hns_candidates(
+    rows: Iterable[dict[str, object]],
+    *,
+    minimum_taxa: int = 50,
+    minimum_dominant_share: float = 0.8,
+) -> dict[str, object]:
+    """Vorm controleerbare HNS-dagclusters zonder lijst-ID's te verzinnen.
+
+    Naburige hokken op dezelfde datum worden als één ruimtelijk cluster gezien;
+    het hok met veruit de meeste bronregels wordt het waarschijnlijke doelhok.
+    De drempels herkennen volledige lijsten, maar blijven expliciet een
+    reconstructieregel en geen eigenschap van het landelijke HNS-protocol.
+    """
+    materialized = [dict(row) for row in rows]
+    record_status: dict[int, str] = {}
+    record_inventory: dict[int, str | None] = {}
+    dated: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for row in materialized:
+        observation_id = int(row["observation_id"])
+        if _hns_year_aggregate(row):
+            record_status[observation_id] = "vervaagd_jaarrecord_niet_toegewezen"
+            record_inventory[observation_id] = None
+            continue
+        row["hoks"] = parse_hns_hoks(str(row["hok"]))
+        dated[str(row["date"])].append(row)
+
+    inventories: dict[str, dict[str, object]] = {}
+    for visit_date, date_rows in sorted(dated.items()):
+        unique_hoks = sorted({hok for row in date_rows for hok in row["hoks"]})
+        adjacency = {hok: set() for hok in unique_hoks}
+        for index, left in enumerate(unique_hoks):
+            lx, ly = _hns_hok_xy(left)
+            for right in unique_hoks[index + 1:]:
+                rx, ry = _hns_hok_xy(right)
+                if max(abs(lx - rx), abs(ly - ry)) <= 1:
+                    adjacency[left].add(right)
+                    adjacency[right].add(left)
+
+        components: list[set[str]] = []
+        unseen = set(unique_hoks)
+        while unseen:
+            root = min(unseen)
+            stack = [root]
+            component: set[str] = set()
+            while stack:
+                current = stack.pop()
+                if current in component:
+                    continue
+                component.add(current)
+                unseen.discard(current)
+                stack.extend(adjacency[current] - component)
+            components.append(component)
+
+        for component in components:
+            component_rows = [
+                row for row in date_rows if set(row["hoks"]) & component
+            ]
+            score = Counter(
+                hok for row in component_rows for hok in row["hoks"] if hok in component
+            )
+            target_hok, _ = sorted(score.items(), key=lambda item: (-item[1], item[0]))[0]
+            target_rows = sum(target_hok in row["hoks"] for row in component_rows)
+            share = target_rows / len(component_rows)
+            taxa = {str(row["taxon"]) for row in component_rows}
+            visit_day = date.fromisoformat(visit_date)
+            in_season = date(visit_day.year, 4, 27) <= visit_day <= date(
+                visit_day.year, 9, 30
+            )
+            complete = (
+                len(taxa) >= minimum_taxa
+                and share >= minimum_dominant_share
+                and in_season
+            )
+            status = "volledige_lijst_aannemelijk" if complete else "fragment"
+            key_material = f"{target_hok}|{visit_date}|{'/'.join(sorted(component))}"
+            inventory_key = hashlib.sha256(key_material.encode("utf-8")).hexdigest()
+            inventories[inventory_key] = {
+                "target_hok": target_hok,
+                "date": visit_date,
+                "stop_date": max(str(row["stop_date"]) for row in component_rows),
+                "status": status,
+                "season_status": (
+                    "binnen_veldseizoen" if in_season else "buiten_veldseizoen"
+                ),
+                "source_record_count": len(component_rows),
+                "taxa_count": len(taxa),
+                "dominant_share": share,
+                "taxa": taxa,
+                "rows": component_rows,
+            }
+            selection_status = (
+                "opgenomen_volledige_lijst" if complete else "opgenomen_fragment"
+            )
+            for row in component_rows:
+                observation_id = int(row["observation_id"])
+                if observation_id in record_status:
+                    raise ValueError("Een HNS-record is aan meerdere inventarisaties gekoppeld.")
+                record_status[observation_id] = selection_status
+                record_inventory[observation_id] = inventory_key
+
+    if len(record_status) != len(materialized):
+        raise ValueError("Niet alle HNS-bronrecords kregen een selectiestatus.")
+    return {
+        "inventories": inventories,
+        "record_status": record_status,
+        "record_inventory": record_inventory,
+    }
+
+
+def build_hns_visit_matrix(
+    *,
+    complete_inventories: dict[str, set[str]],
+    target_taxa: set[str],
+) -> list[dict[str, str]]:
+    """Maak presentie/nullen uitsluitend voor aannemelijk volledige lijsten."""
+    return [
+        {
+            "visit": visit,
+            "taxon": taxon,
+            "status": "waargenomen" if taxon in observed else "echte_nul",
+        }
+        for visit, observed in sorted(complete_inventories.items())
+        for taxon in sorted(target_taxa)
+    ]
+
+
+def hns_source_sql() -> str:
+    """Lees 12.204 uitsluitend uit de openbare bronlaag."""
+    return """
+SELECT o.waarneming_id,o.identiteit_sha256,
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       o.hoknummer,o.wetenschappelijke_naam,o.vervaagd,o.oorsprong
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '12.204%'
+  AND o.soortgroep_raw='Vaatplanten'
+ORDER BY o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -3634,6 +3827,209 @@ def reconstruct_bospaddenstoelen(
     audit_output = run_mysql(
         mysql_client, query_args, bospaddenstoel_validation_sql(), capture=True,
     )
+    return parse_analysis_chain_output(audit_output)
+
+
+def _hns_effort_status(rows: list[dict[str, object]]) -> str:
+    starts = [datetime.fromisoformat(str(row["start"])) for row in rows]
+    stops = [datetime.fromisoformat(str(row["stop"])) for row in rows]
+    first, last = min(starts), max(stops)
+    all_midnight = all(value.time().isoformat() == "00:00:00" for value in starts + stops)
+    elapsed_minutes = (last - first).total_seconds() / 60
+    if all_midnight and elapsed_minutes <= 24 * 60:
+        return "datum_bekend_duur_onbekend"
+    if first.date() != last.date() and elapsed_minutes <= 14 * 24 * 60:
+        return "mogelijke_meerdageninventarisatie_binnen_14_dagen"
+    if first.date() == last.date() and 4 * 60 <= elapsed_minutes <= 12 * 60:
+        return "duur_binnen_4_12_uur"
+    return "duur_buiten_protocol_of_onvolledig"
+
+
+def reconstruct_hns(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw voorlopige HNS-lijsten, echte nullen en hok-jaaruitkomsten."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, hns_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        observation_id, identity, start, stop, hok, taxon, blurred, origin = line.split("\t")
+        records.append({
+            "observation_id": int(observation_id),
+            "identity": identity,
+            "start": start,
+            "stop": stop,
+            "date": start[:10],
+            "stop_date": stop[:10],
+            "hok": hok,
+            "taxon": taxon,
+            "blurred": blurred == "1",
+            "origin": origin,
+        })
+    if len(records) != 4569:
+        raise ValueError("De openbare 12.204-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    reconstruction = reconstruct_hns_candidates(records)
+    inventories = reconstruction["inventories"]
+    record_status = reconstruction["record_status"]
+    record_inventory = reconstruction["record_inventory"]
+    assert (
+        isinstance(inventories, dict)
+        and isinstance(record_status, dict)
+        and isinstance(record_inventory, dict)
+    )
+    complete = {
+        key: info for key, info in inventories.items()
+        if info["status"] == "volledige_lijst_aannemelijk"
+    }
+    target_taxa = {
+        str(taxon) for info in complete.values() for taxon in info["taxa"]
+    }
+    repetitions = Counter(
+        (str(info["target_hok"]), int(str(info["date"])[:4]))
+        for info in complete.values()
+    )
+
+    inventory_values: list[str] = []
+    inventory_note = (
+        "Inventarisatie uit openbare NDFF-regels gereconstrueerd. FLORON-lijst-ID, "
+        "waarnemer en deelnemersaantal ontbreken; herhaalde datumclusters zijn daarom "
+        "niet bewezen onafhankelijk. De lijststatus gebruikt regelversie ndff-hns-v1."
+    )
+    for key, info in sorted(inventories.items()):
+        rows = info["rows"]
+        assert isinstance(rows, list)
+        target_year = int(str(info["date"])[:4])
+        repeat_status = (
+            "herhaling_aanwezig_onafhankelijkheid_niet_bevestigd"
+            if info["status"] == "volledige_lijst_aannemelijk"
+            and repetitions[(str(info["target_hok"]), target_year)] > 1
+            else "enkele_inventarisatie"
+        )
+        info["repeat_status"] = repeat_status
+        info["effort_status"] = _hns_effort_status(rows)
+        inventory_values.append(
+            f"({sql_text(HNS_RULE_VERSION)},{sql_text(key)},'12.204',"
+            f"{sql_text(str(info['target_hok']))},{sql_text(str(info['date']))},"
+            f"{sql_text(str(info['stop_date']))},{target_year},"
+            f"{sql_text(str(info['status']))},{sql_text(str(info['season_status']))},"
+            f"{sql_text(str(info['effort_status']))},{sql_text(repeat_status)},"
+            f"{int(info['source_record_count'])},{int(info['taxa_count'])},"
+            f"{float(info['dominant_share']):.5f},{sql_text(inventory_note)})"
+        )
+
+    selection_values: list[str] = []
+    for row in records:
+        observation_id = int(row["observation_id"])
+        status = str(record_status[observation_id])
+        inventory_key = record_inventory[observation_id]
+        if status == "vervaagd_jaarrecord_niet_toegewezen":
+            reason = (
+                "Openbare vervaging heeft de bezoekdatum vervangen door een jaarinterval; "
+                "de positieve waarneming blijft bruikbaar op hok-jaarniveau maar niet voor "
+                "de bezoekmatrix."
+            )
+            inventory_sql = "NULL"
+        elif status == "opgenomen_fragment":
+            reason = (
+                "Datumcluster bevat te weinig taxa, ligt buiten het veldseizoen of heeft "
+                "onvoldoende concentratie in één doelhok; alleen positieve aanwezigheid."
+            )
+            inventory_sql = sql_text(str(inventory_key))
+        else:
+            reason = (
+                "Onderdeel van een aannemelijk volledige HNS-lijst; aantallen en dubbele "
+                "vindplaatsen worden voor HNS-aanwezigheid samengenomen."
+            )
+            inventory_sql = sql_text(str(inventory_key))
+        selection_values.append(
+            f"({sql_text(HNS_RULE_VERSION)},{observation_id},{inventory_sql},"
+            f"{sql_text(status)},{sql_text(reason)})"
+        )
+
+    scope_info: dict[str, dict[str, object]] = {}
+    positive_counts: Counter[tuple[str, str]] = Counter()
+    for key, info in complete.items():
+        seen: set[str] = set()
+        for row in info["rows"]:
+            taxon = str(row["taxon"])
+            positive_counts[(key, taxon)] += 1
+            seen.add(taxon)
+        for taxon in seen:
+            entry = scope_info.setdefault(taxon, {"years": set(), "visits": 0})
+            years = entry["years"]
+            assert isinstance(years, set)
+            years.add(int(str(info["date"])[:4]))
+            entry["visits"] = int(entry["visits"]) + 1
+    scope_values = [
+        f"({sql_text(HNS_RULE_VERSION)},{sql_text(taxon)},"
+        f"'waargenomen_op_aannemelijk_volledige_hns_lijst',"
+        f"{min(info['years'])},{max(info['years'])},{int(info['visits'])})"
+        for taxon, info in sorted(scope_info.items())
+    ]
+
+    complete_taxa = {
+        key: {str(taxon) for taxon in info["taxa"]}
+        for key, info in complete.items()
+    }
+    matrix = build_hns_visit_matrix(
+        complete_inventories=complete_taxa, target_taxa=target_taxa
+    )
+    matrix_note = (
+        "Echte nul: taxon niet gemeld op een onder ndff-hns-v1 als aannemelijk "
+        "volledig geclassificeerde HNS-lijst. De bezoekeenheid en onafhankelijkheid "
+        "zijn uit NDFF-regels gereconstrueerd en nog niet door FLORON bevestigd."
+    )
+    matrix_values = [
+        f"({sql_text(HNS_RULE_VERSION)},{sql_text(row['visit'])},"
+        f"{sql_text(row['taxon'])},{sql_text(row['status'])},"
+        f"{positive_counts[(row['visit'], row['taxon'])]},"
+        f"'niet_gemeld_op_aannemelijk_volledige_hns_lijst',{sql_text(matrix_note)})"
+        for row in matrix
+    ]
+
+    by_hok_year: dict[tuple[str, int], list[str]] = defaultdict(list)
+    for key, info in complete.items():
+        by_hok_year[(str(info["target_hok"]), int(str(info["date"])[:4]))].append(key)
+    year_note = (
+        "Hok-jaaruitkomst uit aannemelijk volledige HNS-lijsten. Herhaalbezoeken zijn "
+        "niet automatisch onafhankelijke tellers; gebruik de onafhankelijkheidsstatus."
+    )
+    year_values: list[str] = []
+    for (target_hok, year), visit_keys in sorted(by_hok_year.items()):
+        independence = (
+            "herhaling_aanwezig_onafhankelijkheid_niet_bevestigd"
+            if len(visit_keys) > 1 else "niet_van_toepassing_een_inventarisatie"
+        )
+        for taxon in sorted(target_taxa):
+            positive_visits = sum(taxon in complete_taxa[key] for key in visit_keys)
+            status = "waargenomen" if positive_visits else "echte_nul"
+            year_values.append(
+                f"({sql_text(HNS_RULE_VERSION)},{sql_text(target_hok)},{year},"
+                f"{sql_text(taxon)},{sql_text(status)},{len(visit_keys)},"
+                f"{positive_visits},{sql_text(independence)},{sql_text(year_note)})"
+            )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {HNS_TABLE_PREFIX}_hok_jaar_taxon WHERE reconstructieversie={sql_text(HNS_RULE_VERSION)};",
+        f"DELETE FROM {HNS_TABLE_PREFIX}_inventarisatie_taxon WHERE reconstructieversie={sql_text(HNS_RULE_VERSION)};",
+        f"DELETE FROM {HNS_TABLE_PREFIX}_doelbereik WHERE reconstructieversie={sql_text(HNS_RULE_VERSION)};",
+        f"DELETE FROM {HNS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(HNS_RULE_VERSION)};",
+        f"DELETE FROM {HNS_TABLE_PREFIX}_inventarisatie WHERE reconstructieversie={sql_text(HNS_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{HNS_TABLE_PREFIX}_inventarisatie", "reconstructieversie,inventarisatie_sleutel,protocol_sleutel,doelhok,begindatum,einddatum,jaar,lijststatus,seizoenstatus,inspanningstatus,herhaalstatus,bronrecordaantal,geregistreerde_taxa,doelhok_aandeel,kwaliteitsnotitie", inventory_values),
+        (f"{HNS_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,inventarisatie_sleutel,selectiestatus,selectiereden", selection_values),
+        (f"{HNS_TABLE_PREFIX}_doelbereik", "reconstructieversie,wetenschappelijke_naam,afleidingsregel,eerste_jaar,laatste_jaar,positieve_inventarisatieaantal", scope_values),
+        (f"{HNS_TABLE_PREFIX}_inventarisatie_taxon", "reconstructieversie,inventarisatie_sleutel,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,nulregel,kwaliteitsnotitie", matrix_values),
+        (f"{HNS_TABLE_PREFIX}_hok_jaar_taxon", "reconstructieversie,doelhok,jaar,wetenschappelijke_naam,jaarstatus,inventarisatieaantal,positief_inventarisatieaantal,onafhankelijkheidsstatus,kwaliteitsnotitie", year_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, hns_validation_sql(), capture=True)
     return parse_analysis_chain_output(audit_output)
 
 
@@ -3911,6 +4307,43 @@ SELECT JSON_OBJECT(
 """
 
 
+def hns_validation_sql() -> str:
+    version = sql_text(HNS_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_hns_{suffix}") for suffix in (
+        "inventarisatie", "recordselectie", "doelbereik",
+        "inventarisatie_taxon", "hok_jaar_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.204%' AND soortgroep_raw='Vaatplanten'),
+  'year_aggregate_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='vervaagd_jaarrecord_niet_toegewezen'),
+  'linked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version}),
+  'inventories',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version}),
+  'complete_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'fragment_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
+  'complete_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst'),
+  'fragment_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_fragment'),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_hns_doelbereik WHERE reconstructieversie={version}),
+  'visit_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'hok_years',(SELECT COUNT(*) FROM (SELECT doelhok,jaar FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} GROUP BY doelhok,jaar) q),
+  'annual_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version}),
+  'annual_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='waargenomen'),
+  'annual_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='echte_nul'),
+  'repeated_hok_years',(SELECT COUNT(*) FROM (SELECT doelhok,jaar FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk' GROUP BY doelhok,jaar HAVING COUNT(*)>1) q),
+  'independence_unconfirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND herhaalstatus='herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND bronrecordaantal=0) OR (waarnemingsstatus='echte_nul' AND bronrecordaantal<>0))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_hns_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_hns_inventarisatie i LEFT JOIN Meijendel.ndff_hns_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} AND i.lijststatus='volledige_lijst_aannemelijk' GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst')),
+  'selection_status_mismatch',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie s JOIN Meijendel.ndff_hns_inventarisatie i ON i.reconstructieversie=s.reconstructieversie AND i.inventarisatie_sleutel=s.inventarisatie_sleutel WHERE s.reconstructieversie={version} AND ((s.selectiestatus='opgenomen_volledige_lijst' AND i.lijststatus<>'volledige_lijst_aannemelijk') OR (s.selectiestatus='opgenomen_fragment' AND i.lijststatus<>'fragment'))),
+  'invalid_annual_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} AND ((jaarstatus='waargenomen' AND (positief_inventarisatieaantal=0 OR positief_inventarisatieaantal>inventarisatieaantal)) OR (jaarstatus='echte_nul' AND positief_inventarisatieaantal<>0))),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_hns_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.204%' AND o.soortgroep_raw='Vaatplanten' AND s.waarneming_id IS NULL),
+  'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -4013,6 +4446,16 @@ def validate_bospaddenstoel_reconstruction(metrics: dict[str, int]) -> None:
         raise ValueError(
             f"Bospaddenstoelenreconstructie wijkt af van het vaste profiel: {differences}"
         )
+
+
+def validate_hns_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != HNS_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (HNS_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(HNS_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != HNS_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"HNS-reconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -4314,6 +4757,8 @@ def main() -> int:
     mode.add_argument("--audit-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--reconstruct-bospaddenstoelen", action="store_true")
     mode.add_argument("--audit-bospaddenstoelen", action="store_true")
+    mode.add_argument("--reconstruct-hns", action="store_true")
+    mode.add_argument("--audit-hns", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -4497,6 +4942,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_bospaddenstoel_reconstruction(metrics)
         print(f"OK: lokale bospaddenstoelenreconstructie {BOSPADDENSTOEL_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_hns:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_hns(args.mysql_client, client_args)
+        validate_hns_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_hns:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            hns_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_hns_reconstruction(metrics)
+        print(f"OK: lokale HNS-reconstructie {HNS_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:
