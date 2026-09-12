@@ -32,9 +32,11 @@ ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
 VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
+REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
+REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -91,6 +93,29 @@ LIBEL_RECONSTRUCTION_EXPECTED = {
     "source_payload_invalid": 0,
     "positive_mismatch": 0,
     "zero_outside_general": 0,
+    "legacy_secure_tables": 0,
+}
+REPTILE_RECONSTRUCTION_EXPECTED = {
+    "source_records": 957,
+    "visits": 660,
+    "route_families": 14,
+    "historical_geometries": 15,
+    "exact_geometries": 56,
+    "route_visits": 648,
+    "coarse_only_visits": 12,
+    "coarse_only_records": 12,
+    "target_taxa": 2,
+    "matrix_rows": 1320,
+    "positive_rows": 661,
+    "zero_rows": 659,
+    "adult_count": 6286,
+    "subadult_count": 64,
+    "juvenile_count": 761,
+    "unknown_stage_count": 0,
+    "invalid_matrix_rows": 0,
+    "zandhagedis_zero_rows": 0,
+    "fully_negative_visits": 0,
+    "invalid_effort_claims": 0,
     "legacy_secure_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -277,6 +302,113 @@ def reconstruct_route_families(
         "families": family_rows,
         "geometry_to_family": geometry_to_family,
         "visit_to_family": visit_to_family,
+    }
+
+
+def reconstruct_reptile_route_families(
+    rows: Iterable[dict[str, object]],
+    *,
+    small_to_anchor: dict[str, str],
+    historical_area_m2: float = 2_000.0,
+    coarse_area_m2: float = 900_000.0,
+    maximum_route_link_m: float = 2_000.0,
+    minimum_shared_dates: int = 10,
+) -> dict[str, object]:
+    """Koppel historische trajectvlakken en latere exacte locaties.
+
+    Alleen historische geometrieën die op dezelfde kalenderdag zijn gebruikt
+    én hoogstens twee kilometer uiteen liggen vormen samen één routefamilie.
+    Daarmee wordt een gedeeld tijdstip van ruimtelijk verschillende routes niet
+    ten onrechte als één bezoek behandeld.
+    """
+    geometry: dict[str, tuple[float, float, float]] = {}
+    geometry_years: dict[str, set[int]] = defaultdict(set)
+    geometry_dates: dict[str, set[str]] = defaultdict(set)
+    geometry_records: dict[str, int] = defaultdict(int)
+    for row in rows:
+        key = str(row["geometry"])
+        area = float(row["area"])
+        geometry[key] = (float(row["x"]), float(row["y"]), area)
+        geometry_years[key].add(int(row["year"]))
+        geometry_dates[key].add(str(row["date"]))
+        geometry_records[key] += int(row["records"])
+
+    anchors = {
+        key for key, (_, _, area) in geometry.items()
+        if historical_area_m2 <= area < coarse_area_m2
+    }
+    parent = {key: key for key in anchors}
+
+    def find(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    def union(left: str, right: str) -> None:
+        left_root, right_root = find(left), find(right)
+        if left_root != right_root:
+            parent[right_root] = left_root
+
+    ordered = sorted(anchors)
+    for index, left in enumerate(ordered):
+        for right in ordered[index + 1:]:
+            if len(geometry_dates[left] & geometry_dates[right]) < minimum_shared_dates:
+                continue
+            distance = math.hypot(
+                geometry[left][0] - geometry[right][0],
+                geometry[left][1] - geometry[right][1],
+            )
+            if distance <= maximum_route_link_m:
+                union(left, right)
+
+    groups: dict[str, set[str]] = defaultdict(set)
+    for key in anchors:
+        groups[find(key)].add(key)
+    family_rows: list[dict[str, object]] = []
+    for members in groups.values():
+        xs = [geometry[key][0] for key in members]
+        ys = [geometry[key][1] for key in members]
+        years = set().union(*(geometry_years[key] for key in members))
+        family_rows.append({
+            "anchor_geometries": members,
+            "first_year": min(years),
+            "last_year": max(years),
+            "year_count": len(years),
+            "extent_m": math.hypot(max(xs) - min(xs), max(ys) - min(ys)),
+        })
+    family_rows.sort(key=lambda row: (row["first_year"], sorted(row["anchor_geometries"])))
+
+    geometry_to_family: dict[str, int] = {}
+    for family_id, family in enumerate(family_rows, 1):
+        family["family_id"] = family_id
+        for key in family["anchor_geometries"]:
+            geometry_to_family[key] = family_id
+    for small, anchor in small_to_anchor.items():
+        if small in geometry and anchor in geometry_to_family:
+            geometry_to_family[small] = geometry_to_family[anchor]
+
+    for family in family_rows:
+        family_id = int(family["family_id"])
+        members = {key for key, value in geometry_to_family.items() if value == family_id}
+        years = set().union(*(geometry_years[key] for key in members))
+        xs = [geometry[key][0] for key in members]
+        ys = [geometry[key][1] for key in members]
+        family["geometries"] = members
+        family["first_year"] = min(years)
+        family["last_year"] = max(years)
+        family["year_count"] = len(years)
+        family["record_count"] = sum(geometry_records[key] for key in members)
+        family["extent_m"] = math.hypot(max(xs) - min(xs), max(ys) - min(ys))
+
+    return {
+        "family_count": len(family_rows),
+        "families": family_rows,
+        "geometry_to_family": geometry_to_family,
+        "historical_geometry_count": len(anchors),
+        "exact_geometry_count": sum(
+            area < historical_area_m2 for _, _, area in geometry.values()
+        ),
     }
 
 
@@ -1068,6 +1200,79 @@ ORDER BY periode_start,periode_stop,wetenschappelijke_naam;
 """
 
 
+def reptile_source_sql() -> str:
+    """Lees het openbare 10.201-profiel per datum en geometrie."""
+    return """
+SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),COUNT(*)
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '10.201%'
+  AND o.soortgroep_raw='Reptielen'
+GROUP BY o.periode_start,o.periode_stop,DATE(o.periode_start),o.jaar,5,6,7,8
+ORDER BY DATE(o.periode_start),o.periode_start,5;
+"""
+
+
+def reptile_geometry_match_sql() -> str:
+    """Koppel exacte locaties aan het beste historische trajectvlak."""
+    return """
+WITH geometrie AS (
+  SELECT openbare_geometrie_sha256 AS geometrie_sha256,
+         ANY_VALUE(openbare_geometrie) AS geometrie,
+         ST_Area(ANY_VALUE(openbare_geometrie)) AS oppervlakte_m2
+  FROM Meijendel.ndff_open_waarneming
+  WHERE protocol LIKE '10.201%' AND soortgroep_raw='Reptielen'
+  GROUP BY openbare_geometrie_sha256
+), klein AS (
+  SELECT * FROM geometrie WHERE oppervlakte_m2 < 2000
+), anker AS (
+  SELECT * FROM geometrie WHERE oppervlakte_m2 >= 2000 AND oppervlakte_m2 < 900000
+), kandidaten AS (
+  SELECT klein.geometrie_sha256 AS kleine_geometrie_sha256,
+         anker.geometrie_sha256 AS anker_geometrie_sha256,
+         ST_Intersects(klein.geometrie,anker.geometrie) AS raakt,
+         ST_Area(anker.geometrie) AS anker_oppervlakte_m2,
+         ST_Distance(ST_Centroid(klein.geometrie),ST_Centroid(anker.geometrie)) AS afstand_m,
+         ROW_NUMBER() OVER (
+           PARTITION BY klein.geometrie_sha256
+           ORDER BY ST_Intersects(klein.geometrie,anker.geometrie) DESC,
+             CASE WHEN ST_Intersects(klein.geometrie,anker.geometrie)
+                  THEN ST_Area(anker.geometrie)
+                  ELSE ST_Distance(ST_Centroid(klein.geometrie),ST_Centroid(anker.geometrie)) END,
+             anker.geometrie_sha256
+         ) AS rang
+  FROM klein CROSS JOIN anker
+)
+SELECT kleine_geometrie_sha256,anker_geometrie_sha256
+FROM kandidaten
+WHERE rang=1 AND (raakt=1 OR afstand_m<=2000)
+ORDER BY kleine_geometrie_sha256;
+"""
+
+
+def reptile_observation_sql() -> str:
+    return """
+SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(DATE(periode_start),'%Y-%m-%d'),
+       openbare_geometrie_sha256,wetenschappelijke_naam,stadium,
+       SUM(CAST(aantal_raw AS UNSIGNED))
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '10.201%'
+  AND soortgroep_raw='Reptielen'
+  AND aantal_raw REGEXP '^[0-9]+$'
+GROUP BY periode_start,periode_stop,DATE(periode_start),
+         openbare_geometrie_sha256,wetenschappelijke_naam,stadium
+ORDER BY DATE(periode_start),periode_start,openbare_geometrie_sha256,
+         wetenschappelijke_naam,stadium;
+"""
+
+
 def _batched_insert(table: str, columns: str, values: list[str], size: int = 1000) -> list[str]:
     return [
         f"INSERT INTO {table} ({columns}) VALUES " + ",".join(values[index:index + size]) + ";"
@@ -1287,6 +1492,206 @@ def reconstruct_libellen(mysql_client: Path, client_args: list[str]) -> dict[str
     return reconstruct_vlinders(mysql_client, client_args, doelgroep="Libellen")
 
 
+def reconstruct_reptielen(mysql_client: Path, client_args: list[str]) -> dict[str, int]:
+    """Bouw openbare 10.201-routes, route-datumbezoeken en stadiumaantallen."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    source_output = run_mysql(mysql_client, query_args, reptile_source_sql(), capture=True)
+    source_rows: list[dict[str, object]] = []
+    geometry_meta: dict[str, tuple[float, float, float]] = {}
+    for line in source_output.splitlines():
+        start, stop, date, year, geometry_key, x, y, area, records = line.split("\t")
+        row = {
+            "start": start, "stop": stop, "date": date, "year": int(year),
+            "geometry": geometry_key, "x": float(x), "y": float(y),
+            "area": float(area), "records": int(records),
+        }
+        source_rows.append(row)
+        geometry_meta[geometry_key] = (float(x), float(y), float(area))
+    if sum(int(row["records"]) for row in source_rows) != 957:
+        raise ValueError("De 10.201-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    match_output = run_mysql(
+        mysql_client, query_args, reptile_geometry_match_sql(), capture=True
+    )
+    small_to_anchor = {
+        small: anchor for small, anchor in
+        (line.split("\t") for line in match_output.splitlines())
+    }
+    reconstruction = reconstruct_reptile_route_families(
+        source_rows, small_to_anchor=small_to_anchor
+    )
+    geometry_to_family = reconstruction["geometry_to_family"]
+
+    def native_visit(date: str, start: str, stop: str, geometry_key: str) -> str:
+        family_id = geometry_to_family.get(geometry_key)
+        if family_id is not None:
+            return f"route:{family_id}|datum:{date}"
+        return f"geen_route|{start}|{stop}|{geometry_key}"
+
+    visit_meta: dict[str, dict[str, object]] = {}
+    for row in source_rows:
+        visit = native_visit(
+            str(row["date"]), str(row["start"]), str(row["stop"]),
+            str(row["geometry"]),
+        )
+        meta = visit_meta.setdefault(visit, {
+            "date": str(row["date"]), "start": str(row["start"]),
+            "stop": str(row["stop"]), "year": int(row["year"]),
+            "family_id": geometry_to_family.get(str(row["geometry"])),
+            "records": 0,
+        })
+        meta["start"] = min(str(meta["start"]), str(row["start"]))
+        meta["stop"] = max(str(meta["stop"]), str(row["stop"]))
+        meta["records"] = int(meta["records"]) + int(row["records"])
+
+    observation_output = run_mysql(
+        mysql_client, query_args, reptile_observation_sql(), capture=True
+    )
+    stage_counts: dict[tuple[str, str, str], int] = defaultdict(int)
+    target_taxa: set[str] = set()
+    for line in observation_output.splitlines():
+        start, stop, date, geometry_key, taxon, stage, count = line.split("\t")
+        visit = native_visit(date, start, stop, geometry_key)
+        target_taxa.add(taxon)
+        stage_counts[(visit, taxon, stage)] += int(count)
+    expected_taxa = {"Lacerta agilis", "Anguis fragilis"}
+    if target_taxa != expected_taxa:
+        raise ValueError(f"Onverwacht doelsoortenbereik voor 10.201: {sorted(target_taxa)}")
+
+    family_visits: dict[int, set[str]] = defaultdict(set)
+    for visit, meta in visit_meta.items():
+        family_id = meta["family_id"]
+        if family_id is not None:
+            family_visits[int(family_id)].add(visit)
+    family_values: list[str] = []
+    family_status: dict[int, str] = {}
+    for family in reconstruction["families"]:
+        family_id = int(family["family_id"])
+        status = "handmatige_controle" if float(family["extent_m"]) > 3_000 else "waarschijnlijk"
+        family_status[family_id] = status
+        family_values.append(
+            f"({sql_text(REPTILE_ROUTE_RULE_VERSION)},{family_id},'10.201',"
+            f"{sql_text(status)},{len(family_visits[family_id])},"
+            f"{len(family['geometries'])},{int(family['record_count'])},"
+            f"{int(family['first_year'])},{int(family['last_year'])},"
+            f"{int(family['year_count'])},{float(family['extent_m']):.3f})"
+        )
+
+    geometry_values: list[str] = []
+    for geometry_key, family_id in sorted(geometry_to_family.items()):
+        x, y, area = geometry_meta[geometry_key]
+        role = "historisch_traject" if area >= 2_000 else "exacte_locatie"
+        anchor = small_to_anchor.get(geometry_key)
+        geometry_values.append(
+            f"({sql_text(REPTILE_ROUTE_RULE_VERSION)},{sql_text(geometry_key)},"
+            f"{family_id},{sql_text(role)},{sql_text(anchor)},"
+            f"{x:.3f},{y:.3f},{area:.6f})"
+        )
+
+    visit_keys = {
+        visit: hashlib.sha256(visit.encode("utf-8")).hexdigest()
+        for visit in visit_meta
+    }
+    visit_values: list[str] = []
+    for visit, meta in sorted(visit_meta.items()):
+        family_id = meta["family_id"]
+        if family_id is None:
+            family_sql, status = "NULL", "geen_route"
+        else:
+            family_sql = str(family_id)
+            status = (
+                "handmatige_controle"
+                if family_status[int(family_id)] == "handmatige_controle"
+                else "gereconstrueerd"
+            )
+        visit_values.append(
+            f"({sql_text(REPTILE_ROUTE_RULE_VERSION)},{sql_text(visit_keys[visit])},"
+            f"{sql_text(str(meta['date']))},{sql_text(str(meta['start']))},"
+            f"{sql_text(str(meta['stop']))},{int(meta['year'])},{family_sql},"
+            f"{sql_text(status)},'alleen_positieve_bezoeken','niet_afleidbaar',"
+            f"{int(meta['records'])})"
+        )
+
+    matrix_values: list[str] = []
+    for visit in sorted(visit_meta):
+        for taxon in sorted(target_taxa):
+            counts = {
+                stage: stage_counts.get((visit, taxon, stage), 0)
+                for stage in ("adult", "subadult", "juveniel")
+            }
+            unknown = sum(
+                count for (item_visit, item_taxon, stage), count in stage_counts.items()
+                if item_visit == visit and item_taxon == taxon
+                and stage not in counts
+            )
+            total = sum(counts.values()) + unknown
+            if total:
+                status = "waargenomen"
+                rule = "Positief resultaat binnen een gereconstrueerd 10.201-routebezoek."
+            elif taxon == "Anguis fragilis" and sum(
+                stage_counts.get((visit, "Lacerta agilis", stage), 0)
+                for stage in ("adult", "subadult", "juveniel")
+            ) > 0:
+                status = "echte_nul"
+                rule = "Niet gemeld tijdens een bevestigd reptielenbezoek met een andere reptielsoort; echte nul binnen het protocolbereik."
+            else:
+                continue
+            matrix_values.append(
+                f"({sql_text(REPTILE_ROUTE_RULE_VERSION)},{sql_text(visit_keys[visit])},"
+                f"{sql_text(taxon)},{total},{counts['adult']},{counts['subadult']},"
+                f"{counts['juveniel']},{unknown},{sql_text(status)},{sql_text(rule)})"
+            )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_routegeometrie WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_routefamilie WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        f"{REPTILE_TABLE_PREFIX}_routefamilie",
+        "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus,bezoekaantal,geometrieaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m",
+        family_values,
+    )
+    statements += _batched_insert(
+        f"{REPTILE_TABLE_PREFIX}_routegeometrie",
+        "reconstructieversie,geometrie_sha256,routefamilie_id,geometrierol,anker_geometrie_sha256,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
+        geometry_values,
+    )
+    statements += _batched_insert(
+        f"{REPTILE_TABLE_PREFIX}_bezoek",
+        "reconstructieversie,bezoek_sleutel,bezoekdatum,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus,bezoekdekkingstatus,inspanningstatus,bronrecordaantal",
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{REPTILE_TABLE_PREFIX}_bezoek_taxon",
+        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,adult_aantal,subadult_aantal,juveniel_aantal,onbekend_stadium_aantal,waarnemingsstatus,nulregel",
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+
+    return {
+        "source_records": sum(int(meta["records"]) for meta in visit_meta.values()),
+        "visits": len(visit_meta),
+        "route_families": int(reconstruction["family_count"]),
+        "historical_geometries": int(reconstruction["historical_geometry_count"]),
+        "exact_geometries": int(reconstruction["exact_geometry_count"]),
+        "route_visits": sum(meta["family_id"] is not None for meta in visit_meta.values()),
+        "coarse_only_visits": sum(meta["family_id"] is None for meta in visit_meta.values()),
+        "coarse_only_records": sum(int(meta["records"]) for meta in visit_meta.values() if meta["family_id"] is None),
+        "target_taxa": len(target_taxa),
+        "matrix_rows": len(matrix_values),
+        "positive_rows": sum("'waargenomen'" in value for value in matrix_values),
+        "zero_rows": sum("'echte_nul'" in value for value in matrix_values),
+        "adult_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage == "adult"),
+        "subadult_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage == "subadult"),
+        "juvenile_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage == "juveniel"),
+        "unknown_stage_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage not in {"adult", "subadult", "juveniel"}),
+    }
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -1344,6 +1749,38 @@ def libel_validation_sql() -> str:
     )
 
 
+def reptile_validation_sql() -> str:
+    version = sql_text(REPTILE_ROUTE_RULE_VERSION)
+    legacy_tables = ",".join(sql_text(f"ndff_reptiel_{suffix}") for suffix in (
+        "routefamilie", "routegeometrie", "bezoek", "bezoek_taxon"
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version}),
+  'route_families',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_routefamilie WHERE reconstructieversie={version}),
+  'historical_geometries',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_routegeometrie WHERE reconstructieversie={version} AND geometrierol='historisch_traject'),
+  'exact_geometries',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_routegeometrie WHERE reconstructieversie={version} AND geometrierol='exacte_locatie'),
+  'route_visits',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version} AND routefamilie_id IS NOT NULL),
+  'coarse_only_visits',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
+  'coarse_only_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='geen_route'),
+  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'adult_count',(SELECT SUM(adult_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
+  'subadult_count',(SELECT SUM(subadult_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
+  'juvenile_count',(SELECT SUM(juveniel_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
+  'unknown_stage_count',(SELECT SUM(onbekend_stadium_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND (aantal<>adult_aantal+subadult_aantal+juveniel_aantal+onbekend_stadium_aantal OR (waarnemingsstatus='waargenomen' AND aantal=0) OR (waarnemingsstatus='echte_nul' AND aantal<>0))),
+  'zandhagedis_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND wetenschappelijke_naam='Lacerta agilis' AND waarnemingsstatus='echte_nul'),
+  'fully_negative_visits',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek b WHERE b.reconstructieversie={version} AND NOT EXISTS (SELECT 1 FROM Meijendel.ndff_reptiel_bezoek_taxon t WHERE t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel AND t.waarnemingsstatus='waargenomen')),
+  'invalid_effort_claims',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version} AND (bezoekdekkingstatus<>'alleen_positieve_bezoeken' OR inspanningstatus<>'niet_afleidbaar')),
+  'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({legacy_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -1372,6 +1809,16 @@ def validate_libel_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != LIBEL_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Libellenreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_reptile_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != REPTILE_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (REPTILE_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(REPTILE_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != REPTILE_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Reptielenreconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -1659,6 +2106,8 @@ def main() -> int:
     mode.add_argument("--audit-vliesvleugelen", action="store_true")
     mode.add_argument("--reconstruct-libellen", action="store_true")
     mode.add_argument("--audit-libellen", action="store_true")
+    mode.add_argument("--reconstruct-reptielen", action="store_true")
+    mode.add_argument("--audit-reptielen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -1718,6 +2167,23 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_libel_reconstruction(metrics)
         print(f"OK: lokale libellenreconstructie {LIBEL_ROUTE_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_reptielen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_reptielen(args.mysql_client, client_args)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_reptielen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            reptile_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_reptile_reconstruction(metrics)
+        print(f"OK: lokale reptielenreconstructie {REPTILE_ROUTE_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

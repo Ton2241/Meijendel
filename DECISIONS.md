@@ -93,6 +93,16 @@
   geometrie blijven `onbepaald` en leveren buiten de gemelde soort geen nul.
   Alle vier `ndff_libel_*`-tabellen staan in `Meijendel`; er is geen afgeleide
   libellenstructuur in `Meijendel_ndff_secure`.
+- Voor `10.201` is vanaf 12 september 2026 de openbare reptielenreeks
+  vastgelegd als `ndff-reptielroute-v1`. De 957 bronrecords vormen 14
+  routefamilies en 660 route-datumbezoeken. Opeenvolgende trajectsegmenten die
+  op minstens tien gezamenlijke datums zijn geteld en ruimtelijk maximaal twee
+  kilometer uiteen liggen, gelden als één route; incidenteel gelijktijdig
+  getelde routes niet. De matrix bevat 661 positieve regels en 659 echte nullen
+  voor Hazelworm. Voor Zandhagedis en voor geheel ontbrekende bezoeken worden
+  geen nullen afgeleid. Inspanning blijft `niet_afleidbaar` en de brondekking
+  `alleen_positieve_bezoeken`. Alle vier `ndff_reptiel_*`-tabellen staan in
+  `Meijendel`, niet in `Meijendel_ndff_secure`.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

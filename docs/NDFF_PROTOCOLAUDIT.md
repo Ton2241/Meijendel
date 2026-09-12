@@ -60,6 +60,24 @@ afwezig ingevuld. De vier `Meijendel.ndff_libel_*`-tabellen worden met
 `--audit-libellen` gecontroleerd; er staan geen afgeleide libellengegevens in
 het beveiligde schema.
 
+Het NEM-Meetprogramma Reptielen (`10.201`) is onder
+`ndff-reptielroute-v1` uit uitsluitend openbare records gereconstrueerd. De 957
+bronrecords uit 1990-2025 vormen 14 routefamilies en 660 route-datumbezoeken.
+Van die bezoeken zijn er 648 aan een route gekoppeld; twaalf bezoeken hebben
+alleen een grof kilometerhok. De 15 historische trajectgeometrieën vormen de
+routeankers; 56 latere exacte locaties zijn aan het best passende anker
+gekoppeld. Alleen twee protocoltaxa komen voor: Zandhagedis en Hazelworm.
+
+De bezoek-soortmatrix bevat 1.320 regels: 661 positieve combinaties en 659
+echte nullen voor Hazelworm. Ieder aangeleverd bezoek bevat minstens een
+positieve Zandhagediswaarneming. De FFV-bron bevat dus geen volledig negatieve
+reptielenbezoeken; ontbrekende Zandhagedisbezoeken of -nullen worden niet
+gereconstrueerd. De 6.286 adulte, 64 subadulte en 761 juveniele dieren blijven
+afzonderlijk optelbaar. Begin- en eindtijden worden bewaard, maar de feitelijke
+inspanning is `niet_afleidbaar`. De vier `Meijendel.ndff_reptiel_*`-tabellen
+worden met `--audit-reptielen` gecontroleerd en staan niet in het beveiligde
+schema.
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
@@ -89,7 +107,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `03.201` Dagvlinders | 82.217 | 3.126 | 1990-2025 | gereconstrueerd |
 | `03.201` Vliesvleugeligen | 1.535 | 217 | 2018-2025 | zelfstandige NEM-deelreeks gereconstrueerd |
 | `07.201` Libellen | 3.280 | 461 | 2007-2021 | negen routefamilies en bezoek-soortmatrix gereconstrueerd |
-| `10.201` Reptielen | 957 | 684 | 1990-2025 | daarna route/gebied reconstrueren |
+| `10.201` Reptielen | 957 | 660 | 1990-2025 | 14 routefamilies en bezoek-soortmatrix gereconstrueerd |
 | `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
 | `17.208` Vleermuistransect | 2.624 | 85 | 2013-2025 | transect en vier doelsoorten reconstrueren |
 | `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |

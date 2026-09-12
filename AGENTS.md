@@ -228,6 +228,15 @@ MySQL:
   positieve telling staan. Grove geometrie zonder routefamilie mag een geldig
   bezoek blijven, maar niet als exacte route worden geïnterpreteerd. Controleer
   vóór gebruik met `--audit-libellen`
+- gebruik voor reptielenprotocol `10.201` reconstructieversie
+  `ndff-reptielroute-v1` en de vier openbare tabellen
+  `Meijendel.ndff_reptiel_*`. Een bezoek is routefamilie plus kalenderdatum;
+  gebruik de ruwe begin- en eindtijd niet als inspanning. De FFV-laag bevat
+  alleen bezoeken met minstens één positieve reptielenwaarneming. Gebruik de
+  afgeleide echte nullen uitsluitend voor Hazelworm binnen deze bevestigde
+  bezoeken; leid geen Zandhagedisnullen of geheel ontbrekende bezoeken af.
+  Sluit `geen_route` uit van routeanalyse en controleer vóór gebruik met
+  `--audit-reptielen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

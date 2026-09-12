@@ -243,8 +243,14 @@ Voor `07.201` staat de libellenreconstructie onder `ndff-libellenroute-v1`:
 461 bezoeken, negen routefamilies, 29 taxa en 13.173 matrixregels. Van 454
 bezoeken is het algemene doelbereik vastgesteld; zeven grove eensoortbezoeken
 behouden alleen hun positieve telling en krijgen geen afgeleide nullen. Alle
-openbare afleidingen staan in `Meijendel` en worden gecontroleerd met
-`--audit-vlinders`, `--audit-vliesvleugelen` en `--audit-libellen`.
+openbare afleidingen staan in `Meijendel`. Voor `10.201` staat daarnaast
+`ndff-reptielroute-v1`: 957 bronrecords zijn samengebracht tot 14
+routefamilies en 660 route-datumbezoeken. De matrix telt 1.320 regels: 661
+positieve resultaten en 659 echte nullen voor Hazelworm. Volledig negatieve
+bezoeken en de feitelijke inspanning ontbreken in de FFV-bron; voor
+Zandhagedis worden daarom geen nullen aangevuld. Controleer de reconstructies
+met `--audit-vlinders`, `--audit-vliesvleugelen`, `--audit-libellen` en
+`--audit-reptielen`.
 
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in

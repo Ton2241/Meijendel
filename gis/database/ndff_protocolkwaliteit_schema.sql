@@ -501,3 +501,89 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_libel_bezoek_taxon (
   CHECK ((waarnemingsstatus='waargenomen' AND aantal > 0) OR
          (waarnemingsstatus='echte_nul' AND aantal = 0))
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van het NEM-Meetprogramma Reptielen (10.201).
+-- Een bezoek wordt gevormd per routefamilie en kalenderdatum. De FFV-bron
+-- bevat geen bezoeken zonder enige reptielenwaarneming; die dekking en de niet
+-- afleidbare inspanning blijven daarom expliciet zichtbaar.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_routefamilie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '10.201',
+  reconstructiestatus ENUM('waarschijnlijk','handmatige_controle') NOT NULL,
+  bezoekaantal INT UNSIGNED NOT NULL,
+  geometrieaantal INT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaaraantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_omvang_m DECIMAL(12,3) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, routefamilie_id),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_routegeometrie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  geometrierol ENUM('historisch_traject','exacte_locatie') NOT NULL,
+  anker_geometrie_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  centrum_x_rd DECIMAL(14,3) NOT NULL,
+  centrum_y_rd DECIMAL(14,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(18,6) NOT NULL,
+  PRIMARY KEY (reconstructieversie, geometrie_sha256),
+  KEY ix_ndff_reptiel_geometrie_route (reconstructieversie, routefamilie_id),
+  CONSTRAINT fk_ndff_reptiel_geometrie_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel.ndff_reptiel_routefamilie
+      (reconstructieversie, routefamilie_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NULL,
+  reconstructiestatus ENUM(
+    'gereconstrueerd','handmatige_controle','geen_route'
+  ) NOT NULL,
+  bezoekdekkingstatus ENUM('alleen_positieve_bezoeken') NOT NULL,
+  inspanningstatus ENUM('niet_afleidbaar') NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  KEY ix_ndff_reptiel_bezoek_route
+    (reconstructieversie, routefamilie_id, jaar),
+  CONSTRAINT fk_ndff_reptiel_bezoek_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel.ndff_reptiel_routefamilie
+      (reconstructieversie, routefamilie_id),
+  CHECK (periode_stop >= periode_start),
+  CHECK (jaar = YEAR(bezoekdatum))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  aantal INT UNSIGNED NOT NULL,
+  adult_aantal INT UNSIGNED NOT NULL,
+  subadult_aantal INT UNSIGNED NOT NULL,
+  juveniel_aantal INT UNSIGNED NOT NULL,
+  onbekend_stadium_aantal INT UNSIGNED NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  nulregel VARCHAR(255) NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_reptiel_taxon_jaar
+    (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_reptiel_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_reptiel_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (aantal=adult_aantal+subadult_aantal+juveniel_aantal+onbekend_stadium_aantal),
+  CHECK ((waarnemingsstatus='waargenomen' AND aantal > 0) OR
+         (waarnemingsstatus='echte_nul' AND aantal = 0))
+) ENGINE=InnoDB;

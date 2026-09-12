@@ -59,16 +59,26 @@ def main() -> int:
         "meijendel.ndff_libel_routegeometrie",
         "meijendel.ndff_libel_bezoek",
         "meijendel.ndff_libel_bezoek_taxon",
+        "meijendel.ndff_reptiel_routefamilie",
+        "meijendel.ndff_reptiel_routegeometrie",
+        "meijendel.ndff_reptiel_bezoek",
+        "meijendel.ndff_reptiel_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
     assert "meijendel_ndff_secure.ndff_libel_" not in folded
+    assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
     assert "fk_ndff_libel_geometrie_route" in folded
     assert "fk_ndff_libel_bezoek_route" in folded
     assert "fk_ndff_libel_taxon_bezoek" in folded
+    assert "fk_ndff_reptiel_geometrie_route" in folded
+    assert "fk_ndff_reptiel_bezoek_route" in folded
+    assert "fk_ndff_reptiel_taxon_bezoek" in folded
+    assert "alleen_positieve_bezoeken" in folded
+    assert "niet_afleidbaar" in folded
     assert "enum('waargenomen','echte_nul')" in folded
     assert "ndff-vlinderroute-v1" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
@@ -216,6 +226,25 @@ def main() -> int:
     )
     assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v1"
     assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
+    assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v1"
+    repeated_pair = [
+        {"date": f"2020-05-{day:02d}", "geometry": geometry, "x": x, "y": 0.0, "area": area, "year": 2020, "records": 1}
+        for day in range(1, 11)
+        for geometry, x, area in (("a", 0.0, 10_000.0), ("b", 750.0, 12_000.0))
+    ]
+    reptile_routes = module.reconstruct_reptile_route_families(
+        repeated_pair + [
+            {"date": "2020-05-01", "geometry": "c", "x": 4_000.0, "y": 0.0, "area": 11_000.0, "year": 2020, "records": 1},
+            {"date": "2021-05-01", "geometry": "p", "x": 10.0, "y": 0.0, "area": 25.0, "year": 2021, "records": 1},
+            {"date": "2021-05-02", "geometry": "km", "x": 0.0, "y": 0.0, "area": 1_000_000.0, "year": 2021, "records": 1},
+        ],
+        small_to_anchor={"p": "a"},
+    )
+    assert reptile_routes["family_count"] == 2
+    assert reptile_routes["geometry_to_family"]["a"] == reptile_routes["geometry_to_family"]["b"]
+    assert reptile_routes["geometry_to_family"]["a"] != reptile_routes["geometry_to_family"]["c"]
+    assert reptile_routes["geometry_to_family"]["p"] == reptile_routes["geometry_to_family"]["a"]
+    assert "km" not in reptile_routes["geometry_to_family"]
     importer_text = IMPORTER.read_text(encoding="utf-8")
     assert "--reconstruct-vlinders" in importer_text
     assert "--audit-vlinders" in importer_text
@@ -223,6 +252,8 @@ def main() -> int:
     assert "--audit-vliesvleugelen" in importer_text
     assert "--reconstruct-libellen" in importer_text
     assert "--audit-libellen" in importer_text
+    assert "--reconstruct-reptielen" in importer_text
+    assert "--audit-reptielen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -232,10 +263,16 @@ def main() -> int:
     assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
     assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
+    assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
     assert "Meijendel_ndff_secure" not in libel_source_sql
+    reptile_source_sql = " ".join(module.reptile_source_sql().split())
+    assert "o.protocol LIKE '10.201%'" in reptile_source_sql
+    assert "o.soortgroep_raw='Reptielen'" in reptile_source_sql
+    assert "Meijendel_ndff_secure" not in reptile_source_sql
+    assert "DATE(o.periode_start)" in reptile_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -266,6 +303,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende libellenreconstructie is niet geblokkeerd")
+    module.validate_reptile_reconstruction(dict(module.REPTILE_RECONSTRUCTION_EXPECTED))
+    broken_reptile = dict(module.REPTILE_RECONSTRUCTION_EXPECTED)
+    broken_reptile["zero_rows"] -= 1
+    try:
+        module.validate_reptile_reconstruction(broken_reptile)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende reptielenreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -494,6 +540,8 @@ def main() -> int:
         "voorafgaande uitdrukkelijke toestemming",
         "ndff-libellenroute-v1",
         "--audit-libellen",
+        "ndff-reptielroute-v1",
+        "--audit-reptielen",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")
@@ -501,6 +549,7 @@ def main() -> int:
     assert "ndff_open_waarneming_protocol" in architecture
     assert "Meijendel_ndff_secure.ndff_waarneming_protocol" in architecture
     assert "ndff_libel_*" in architecture
+    assert "ndff_reptiel_*" in architecture
     print("OK: NDFF-protocolkwaliteitscontract")
     return 0
 
