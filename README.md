@@ -274,6 +274,16 @@ doelsoortenbereik van de betreffende meetreeks zijn afgeleid. Akoestische
 detecties zijn geen aantallen individuele vleermuizen. Controleer deze laag
 met `--audit-vleermuizen`.
 
+Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
+openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
+1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn
+exacte sectietellingen, maar de FFV-export bevat geen route- of sectie-id en
+alle 11 kilometerhokken raken meerdere SOVON-plots. Daarom worden gelijke
+waarden niet automatisch ontdubbeld, kilometerhok-datumcombinaties niet als
+bezoek beschouwd en geen nullen afgeleid. De 11 exacte overeenkomsten met
+DAZ-BMP (`17.204`) zijn alleen als mogelijke overlap gemarkeerd. Controleer de
+laag met `--audit-konijnen`.
+
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in
 `ndff_protocol_soortgroep_geschiktheid`. De klassen zijn `doelgroep`,

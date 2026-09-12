@@ -88,6 +88,11 @@ De vleermuisketen houdt NEM-VTT-auto en vleerMUS-fiets als twee routefamilies
 gescheiden, bewaart de selectie van dubbele bronregels en telt akoestische
 detecties nooit als individuele dieren. De doelsoortenlijst verschilt per
 methodevariant; echte nullen ontstaan alleen binnen dat eigen bereik.
+`ndff_konijn_*` is bewust geen bezoekmatrix. De bron bevat exacte positieve
+sectietellingen van `17.209`, maar geen route- of sectie-id; de tabellen bewaren
+daarom een recordclassificatie en een uitsluitend diagnostische
+hok-datum-taxonsamenvatting. Geen daarvan is een native NEM-meeteenheid en er
+worden geen nullen of routegebonden trends uit afgeleid.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

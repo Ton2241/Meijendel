@@ -125,6 +125,15 @@
   overige taxa blijven bijvangst. De vijf `ndff_vleermuis_*`-tabellen staan in
   `Meijendel`; er zijn geen afgeleide vleermuistabellen in
   `Meijendel_ndff_secure`.
+- Voor `17.209` is vanaf 12 september 2026 de openbare konijnenreeks
+  vastgelegd als `ndff-konijnentelling-v1`. De 5.809 positieve records zijn
+  exacte sectietellingen, maar de FFV-export bevat geen route- of sectie-id.
+  Daarom worden geen routebezoeken of nullen gereconstrueerd en worden 142
+  records met een gelijke hok-datum-taxon-telwaarde niet automatisch als
+  dubbel verwijderd. De 11 exacte overeenkomsten met `17.204` zijn alleen
+  mogelijke overlap. `ndff_konijn_hokdatum_taxon` is een diagnostische proxy,
+  geen NEM-meeteenheid. Beide `ndff_konijn_*`-tabellen staan in `Meijendel`;
+  `Meijendel_ndff_secure` is niet uitgebreid.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

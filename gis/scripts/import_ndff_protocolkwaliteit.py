@@ -10,7 +10,7 @@ import json
 import math
 import re
 import subprocess
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date
 from pathlib import Path
 from typing import Iterable
@@ -36,12 +36,14 @@ LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
 REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
 AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
+RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
 REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
+RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -166,6 +168,27 @@ BAT_RECONSTRUCTION_EXPECTED = {
     "repeat_window_review_visits": 6,
     "invalid_matrix_rows": 0,
     "duplicate_target_missing": 0,
+    "secure_derived_tables": 0,
+}
+RABBIT_RECONSTRUCTION_EXPECTED = {
+    "source_records": 5809,
+    "target_records": 5095,
+    "bycatch_records": 714,
+    "target_count_sum": 43850,
+    "bycatch_count_sum": 1049,
+    "dates": 812,
+    "grids": 11,
+    "grid_date_taxon_rows": 5084,
+    "spring_window_records": 2526,
+    "autumn_window_records": 2789,
+    "off_window_records": 494,
+    "exact_duplicate_groups": 71,
+    "exact_duplicate_members": 142,
+    "multi_record_grid_date_taxon_groups": 725,
+    "possible_daz_overlap_records": 11,
+    "derived_zero_rows": 0,
+    "multiple_plot_records": 5809,
+    "secure_source_records": 0,
     "secure_derived_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -647,6 +670,31 @@ def bat_target_taxa(methodevariant: str) -> set[str]:
     raise ValueError(f"Onbekende vleermuismethodevariant: {methodevariant}")
 
 
+def classify_rabbit_season(visit_date: str) -> str:
+    """Toets een teldatum aan de huidige landelijke telvensters.
+
+    Historische afwijkingen blijven behouden: buiten het huidige venster is
+    een controlesignaal en geen uitsluiting.
+    """
+    month_day = visit_date[5:10]
+    if "03-15" <= month_day <= "04-07":
+        return "voorjaar_huidig_venster"
+    if "09-15" <= month_day <= "10-15":
+        return "najaar_huidig_venster"
+    return "buiten_huidig_venster"
+
+
+def classify_rabbit_record_signal(
+    grid_date_taxon_count: int, exact_value_count: int
+) -> str:
+    """Markeer samenlopende sectieregels zonder ze als dubbel te verwijderen."""
+    if exact_value_count > 1:
+        return "gelijke_telwaarde_binnen_hokdatum_taxon"
+    if grid_date_taxon_count > 1:
+        return "meerdere_sectieregels_binnen_hokdatum_taxon"
+    return "uniek_binnen_hokdatum_taxon"
+
+
 def classify_bat_records(
     rows: Iterable[dict[str, object]],
 ) -> dict[str, dict[str, object]]:
@@ -842,6 +890,11 @@ ADDITIONAL_SCOPE_SOURCE_URLS = {
         "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-208-vleermuistransecttelling-nem/",
         "https://www.zoogdiervereniging.nl/sites/default/files/2024-10/Handleiding%20Vleermuis%20transecttellingen.pdf",
         "https://www.zoogdiervereniging.nl/sites/default/files/2025-03/n2023009_algemene_praktische_handleiding_uitvoering_vleermus.pdf",
+    ),
+    ("17.209", "Zoogdieren (overig)"): (
+        "https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren",
+        "https://www.zoogdiervereniging.nl/sites/default/files/2019-10/2016.36%20Zoogdieren%20in%20Zuid-Holland.pdf",
+        "https://www.zoogdiervereniging.nl/sites/default/files/2026-04/telganger_2023-2_0-24-29_konijnentellingen.pdf",
     ),
 }
 
@@ -1396,6 +1449,35 @@ WHERE o.protocol LIKE '17.208%'
   AND o.vervaagd=0
 ORDER BY o.periode_start,o.openbare_geometrie_sha256,
          o.wetenschappelijke_naam,o.waarneming_id;
+"""
+
+
+def rabbit_source_sql() -> str:
+    """Lees de openbare positieve sectietellingen van protocol 17.209."""
+    return """
+SELECT o.waarneming_id,DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       o.openbare_geometrie_sha256,o.hoknummer,o.wetenschappelijke_naam,
+       o.aantal_raw,o.schaal_telmethode,o.telonderwerp,
+       o.determinatiemethode,o.bronhouder,o.vervaagd,
+       r.ruimtelijke_klasse,r.toewijzingskwaliteit
+FROM Meijendel.ndff_open_waarneming AS o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling AS r
+  ON r.waarneming_id=o.waarneming_id
+WHERE o.protocol LIKE '17.209%'
+  AND o.soortgroep_raw='Zoogdieren (overig)'
+ORDER BY o.periode_start,o.openbare_geometrie_sha256,
+         o.wetenschappelijke_naam,o.waarneming_id;
+"""
+
+
+def daz_exact_keys_sql() -> str:
+    """Lees alleen sleutels voor een voorzichtig 17.204-overlapsignaal."""
+    return """
+SELECT DISTINCT DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
+       o.openbare_geometrie_sha256,o.wetenschappelijke_naam,o.aantal_raw
+FROM Meijendel.ndff_open_waarneming AS o
+WHERE o.protocol LIKE '17.204%'
+  AND o.soortgroep_raw='Zoogdieren (overig)';
 """
 
 
@@ -2556,6 +2638,133 @@ def reconstruct_vleermuizen(
     }
 
 
+def reconstruct_konijnen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Classificeer 17.209 zonder ontbrekende route- of sectie-ID's te raden."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, rabbit_source_sql(), capture=True)
+    rows: list[dict[str, object]] = []
+    for line in output.splitlines():
+        (observation_id, visit_date, year, geometry, grid, taxon, raw_count,
+         scale, subject, determination, holder, blurred, spatial_class,
+         assignment_quality) = line.split("\t")
+        if (not raw_count.isdigit() or int(raw_count) <= 0
+                or scale != "exact aantal" or subject != "levend exemplaar"
+                or determination != "gezien" or holder != "Zoogdiervereniging"
+                or blurred != "0"):
+            raise ValueError("Een 17.209-record wijkt af van het gecontroleerde telprofiel.")
+        if spatial_class != "multiple" or assignment_quality != "multiple":
+            raise ValueError("Een 17.209-kilometerhok heeft onverwacht geen multiple-plotstatus.")
+        rows.append({
+            "observation_id": int(observation_id), "visit_date": visit_date,
+            "year": int(year), "geometry": geometry, "grid": grid,
+            "taxon": taxon, "count": int(raw_count),
+        })
+    if len(rows) != 5_809 or len({int(row["observation_id"]) for row in rows}) != len(rows):
+        raise ValueError("De 17.209-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    daz_output = run_mysql(mysql_client, query_args, daz_exact_keys_sql(), capture=True)
+    daz_keys = {
+        (visit_date, geometry, taxon, int(raw_count))
+        for visit_date, geometry, taxon, raw_count in
+        (line.split("\t") for line in daz_output.splitlines())
+        if raw_count.isdigit()
+    }
+    grid_date_taxon_counts: Counter[tuple[str, str, str]] = Counter()
+    exact_counts: Counter[tuple[str, str, str, int]] = Counter()
+    aggregate: dict[tuple[str, str, str], dict[str, object]] = {}
+    for row in rows:
+        group_key = (str(row["visit_date"]), str(row["geometry"]), str(row["taxon"]))
+        exact_key = (*group_key, int(row["count"]))
+        grid_date_taxon_counts[group_key] += 1
+        exact_counts[exact_key] += 1
+        item = aggregate.setdefault(group_key, {
+            "year": int(row["year"]), "grid": str(row["grid"]),
+            "counts": [],
+        })
+        item["counts"].append(int(row["count"]))  # type: ignore[union-attr]
+
+    selection_values: list[str] = []
+    for row in rows:
+        group_key = (str(row["visit_date"]), str(row["geometry"]), str(row["taxon"]))
+        exact_key = (*group_key, int(row["count"]))
+        target = str(row["taxon"]) == "Oryctolagus cuniculus"
+        overlap = exact_key in daz_keys
+        note = (
+            "Exacte positieve sectietelling uit NEM 17.209. De FFV-export bevat geen route- of sectie-id; "
+            "het kilometerhok kan meerdere secties en SOVON-plots omvatten. Gelijke waarden blijven "
+            "afzonderlijke bronrecords en zijn niet automatisch dubbelen. Geen nul of routetrend afleiden."
+        )
+        selection_values.append(
+            f"({sql_text(RABBIT_COUNT_RULE_VERSION)},{int(row['observation_id'])},'17.209',"
+            f"{sql_text('doelsoort' if target else 'bijvangst')},{int(row['count'])},"
+            f"{sql_text(classify_rabbit_season(str(row['visit_date'])))},"
+            f"{sql_text(classify_rabbit_record_signal(grid_date_taxon_counts[group_key], exact_counts[exact_key]))},"
+            f"{grid_date_taxon_counts[group_key]},{exact_counts[exact_key]},"
+            f"{sql_text('mogelijke_overlap_17_204' if overlap else 'geen_exacte_match')},"
+            "'kilometerhok_meerdere_sovonplots','sectie_zonder_route_of_sectie_id',"
+            f"'wacht_op_route_sectie_koppeling',{sql_text(note)})"
+        )
+
+    aggregate_values: list[str] = []
+    for (visit_date, geometry, taxon), item in sorted(aggregate.items()):
+        counts = list(item["counts"])  # type: ignore[arg-type]
+        key = hashlib.sha256(f"{visit_date}|{geometry}|{taxon}".encode("utf-8")).hexdigest()
+        aggregate_values.append(
+            f"({sql_text(RABBIT_COUNT_RULE_VERSION)},{sql_text(key)},"
+            f"{sql_text(visit_date)},{int(item['year'])},{sql_text(geometry)},"
+            f"{sql_text(str(item['grid']))},{sql_text(taxon)},"
+            f"{sql_text('doelsoort' if taxon == 'Oryctolagus cuniculus' else 'bijvangst')},"
+            f"{len(counts)},{sum(counts)},{min(counts)},{max(counts)},"
+            "'diagnostische_proxy_geen_meeteenheid','niet_afleidbaar')"
+        )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {RABBIT_TABLE_PREFIX}_hokdatum_taxon WHERE reconstructieversie={sql_text(RABBIT_COUNT_RULE_VERSION)};",
+        f"DELETE FROM {RABBIT_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(RABBIT_COUNT_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        f"{RABBIT_TABLE_PREFIX}_recordselectie",
+        "reconstructieversie,waarneming_id,protocol_sleutel,doelrelatie,aantal_exact,seizoenstatus,recordgroepstatus,hokdatum_taxon_groepsgrootte,exactgelijke_groepsgrootte,daz_overlapstatus,ruimtelijke_status,meeteenheidstatus,trendgebruik,kwaliteitsnotitie",
+        selection_values,
+    )
+    statements += _batched_insert(
+        f"{RABBIT_TABLE_PREFIX}_hokdatum_taxon",
+        "reconstructieversie,hokdatum_taxon_sleutel,teldatum,jaar,openbare_geometrie_sha256,hoknummer,wetenschappelijke_naam,doelrelatie,bronrecordaantal,aantal_som,aantal_min,aantal_max,aggregatiestatus,nulstatus",
+        aggregate_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+
+    target_rows = [row for row in rows if row["taxon"] == "Oryctolagus cuniculus"]
+    bycatch_rows = [row for row in rows if row["taxon"] != "Oryctolagus cuniculus"]
+    season_counts = Counter(classify_rabbit_season(str(row["visit_date"])) for row in rows)
+    return {
+        "source_records": len(rows), "target_records": len(target_rows),
+        "bycatch_records": len(bycatch_rows),
+        "target_count_sum": sum(int(row["count"]) for row in target_rows),
+        "bycatch_count_sum": sum(int(row["count"]) for row in bycatch_rows),
+        "dates": len({row["visit_date"] for row in rows}),
+        "grids": len({row["geometry"] for row in rows}),
+        "grid_date_taxon_rows": len(aggregate),
+        "spring_window_records": season_counts["voorjaar_huidig_venster"],
+        "autumn_window_records": season_counts["najaar_huidig_venster"],
+        "off_window_records": season_counts["buiten_huidig_venster"],
+        "exact_duplicate_groups": sum(count > 1 for count in exact_counts.values()),
+        "exact_duplicate_members": sum(count for count in exact_counts.values() if count > 1),
+        "multi_record_grid_date_taxon_groups": sum(count > 1 for count in grid_date_taxon_counts.values()),
+        "possible_daz_overlap_records": sum(
+            (str(row["visit_date"]), str(row["geometry"]), str(row["taxon"]), int(row["count"])) in daz_keys
+            for row in rows
+        ),
+        "derived_zero_rows": 0, "multiple_plot_records": len(rows),
+        "secure_source_records": 0, "secure_derived_tables": 0,
+    }
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -2709,6 +2918,36 @@ SELECT JSON_OBJECT(
 """
 
 
+def rabbit_validation_sql() -> str:
+    version = sql_text(RABBIT_COUNT_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_konijn_{suffix}") for suffix in (
+        "recordselectie", "hokdatum_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version}),
+  'target_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'bycatch_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'target_count_sum',(SELECT SUM(aantal_exact) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'bycatch_count_sum',(SELECT SUM(aantal_exact) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'dates',(SELECT COUNT(DISTINCT teldatum) FROM Meijendel.ndff_konijn_hokdatum_taxon WHERE reconstructieversie={version}),
+  'grids',(SELECT COUNT(DISTINCT openbare_geometrie_sha256) FROM Meijendel.ndff_konijn_hokdatum_taxon WHERE reconstructieversie={version}),
+  'grid_date_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_hokdatum_taxon WHERE reconstructieversie={version}),
+  'spring_window_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND seizoenstatus='voorjaar_huidig_venster'),
+  'autumn_window_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND seizoenstatus='najaar_huidig_venster'),
+  'off_window_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND seizoenstatus='buiten_huidig_venster'),
+  'exact_duplicate_groups',(SELECT ROUND(SUM(1.0/exactgelijke_groepsgrootte)) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND exactgelijke_groepsgrootte>1),
+  'exact_duplicate_members',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND recordgroepstatus='gelijke_telwaarde_binnen_hokdatum_taxon'),
+  'multi_record_grid_date_taxon_groups',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_hokdatum_taxon WHERE reconstructieversie={version} AND bronrecordaantal>1),
+  'possible_daz_overlap_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND daz_overlapstatus='mogelijke_overlap_17_204'),
+  'derived_zero_rows',0,
+  'multiple_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_konijn_recordselectie WHERE reconstructieversie={version} AND ruimtelijke_status='kilometerhok_meerdere_sovonplots'),
+  'secure_source_records',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_zoogdieren_overig WHERE protocol='17.209'),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -2767,6 +3006,16 @@ def validate_bat_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != BAT_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Vleermuisreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_rabbit_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != RABBIT_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (RABBIT_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(RABBIT_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != RABBIT_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Konijnentellingclassificatie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -3060,6 +3309,8 @@ def main() -> int:
     mode.add_argument("--audit-amfibieen", action="store_true")
     mode.add_argument("--reconstruct-vleermuizen", action="store_true")
     mode.add_argument("--audit-vleermuizen", action="store_true")
+    mode.add_argument("--reconstruct-konijnen", action="store_true")
+    mode.add_argument("--audit-konijnen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -3171,6 +3422,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_bat_reconstruction(metrics)
         print(f"OK: lokale vleermuisreconstructie {BAT_TRANSECT_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_konijnen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_konijnen(args.mysql_client, client_args)
+        validate_rabbit_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_konijnen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            rabbit_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_rabbit_reconstruction(metrics)
+        print(f"OK: lokale konijnentellingclassificatie {RABBIT_COUNT_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

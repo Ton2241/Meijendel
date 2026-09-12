@@ -161,3 +161,10 @@ bezoek-soortmatrix met methodegebonden doelsoorten en echte nullen. Van 2.624
 bronregels zijn 73 aantoonbare dubbele aanleveringen uit 2019 onderdrukt; 2.551
 akoestische detecties blijven behouden. Alle afleidingen staan in `Meijendel`;
 `Meijendel_ndff_secure` is niet uitgebreid.
+
+Protocol `17.209` is vervolgens geclassificeerd als
+`ndff-konijnentelling-v1`. Omdat de FFV-export geen route- of sectie-id bevat,
+is geen bezoekmatrix of nulreeks geconstrueerd. De 5.809 positieve
+sectietellingen blijven afzonderlijk bewaard met doelsoort-, seizoen-,
+ruimtelijke en overlapsignalen; de hok-datum-taxonsamenvatting is uitsluitend
+diagnostisch. Beide afgeleide tabellen staan in `Meijendel`.

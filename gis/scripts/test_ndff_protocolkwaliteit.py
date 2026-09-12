@@ -73,6 +73,8 @@ def main() -> int:
         "meijendel.ndff_vleermuis_routegeometrie",
         "meijendel.ndff_vleermuis_bezoek",
         "meijendel.ndff_vleermuis_bezoek_taxon",
+        "meijendel.ndff_konijn_recordselectie",
+        "meijendel.ndff_konijn_hokdatum_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -80,6 +82,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
     assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
     assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
+    assert "meijendel_ndff_secure.ndff_konijn_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -249,6 +252,16 @@ def main() -> int:
     assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v1"
     assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v1"
     assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
+    assert module.RABBIT_COUNT_RULE_VERSION == "ndff-konijnentelling-v1"
+
+    assert module.classify_rabbit_season("2020-03-15") == "voorjaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-04-07") == "voorjaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-09-15") == "najaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-10-15") == "najaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-04-08") == "buiten_huidig_venster"
+    assert module.classify_rabbit_record_signal(1, 1) == "uniek_binnen_hokdatum_taxon"
+    assert module.classify_rabbit_record_signal(2, 1) == "meerdere_sectieregels_binnen_hokdatum_taxon"
+    assert module.classify_rabbit_record_signal(2, 2) == "gelijke_telwaarde_binnen_hokdatum_taxon"
 
     assert module.classify_bat_route(83_999.0) == {
         "routefamilie_id": 2,
@@ -354,6 +367,8 @@ def main() -> int:
     assert "--audit-amfibieen" in importer_text
     assert "--reconstruct-vleermuizen" in importer_text
     assert "--audit-vleermuizen" in importer_text
+    assert "--reconstruct-konijnen" in importer_text
+    assert "--audit-konijnen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -366,6 +381,7 @@ def main() -> int:
     assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
+    assert module.RABBIT_TABLE_PREFIX == "Meijendel.ndff_konijn"
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -389,6 +405,10 @@ def main() -> int:
     assert "o.soortgroep_raw='Vleermuizen'" in bat_source_sql
     assert "o.vervaagd=0" in bat_source_sql
     assert "Meijendel_ndff_secure" not in bat_source_sql
+    rabbit_source_sql = " ".join(module.rabbit_source_sql().split())
+    assert "o.protocol LIKE '17.209%'" in rabbit_source_sql
+    assert "o.soortgroep_raw='Zoogdieren (overig)'" in rabbit_source_sql
+    assert "Meijendel_ndff_secure" not in rabbit_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -446,6 +466,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende vleermuisreconstructie is niet geblokkeerd")
+    module.validate_rabbit_reconstruction(dict(module.RABBIT_RECONSTRUCTION_EXPECTED))
+    broken_rabbit = dict(module.RABBIT_RECONSTRUCTION_EXPECTED)
+    broken_rabbit["derived_zero_rows"] += 1
+    try:
+        module.validate_rabbit_reconstruction(broken_rabbit)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende konijnentellingclassificatie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -683,6 +712,9 @@ def main() -> int:
         "--audit-amfibieen",
         "ndff-vleermuistransect-v1",
         "--audit-vleermuizen",
+        "ndff-konijnentelling-v1",
+        "--audit-konijnen",
+        "geen route- of sectie-id",
         "akoestische detecties",
         "73",
     ):
@@ -694,6 +726,7 @@ def main() -> int:
     assert "ndff_libel_*" in architecture
     assert "ndff_reptiel_*" in architecture
     assert "ndff_vleermuis_*" in architecture
+    assert "ndff_konijn_*" in architecture
     print("OK: NDFF-protocolkwaliteitscontract")
     return 0
 

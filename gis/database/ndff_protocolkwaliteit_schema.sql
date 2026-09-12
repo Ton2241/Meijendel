@@ -829,3 +829,64 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_bezoek_taxon (
       AND doelrelatie='doelsoort')
   )
 ) ENGINE=InnoDB;
+
+-- Openbare kwaliteitslaag voor protocol 17.209 (Konijnen in de duinen).
+-- De FFV-export bevat exacte positieve sectietellingen, maar geen route- of
+-- sectie-id. Kilometerhok, datum en taxon zijn daarom nadrukkelijk geen
+-- gereconstrueerd bezoek en er worden geen nullen afgeleid.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_konijn_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '17.209',
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  aantal_exact INT UNSIGNED NOT NULL,
+  seizoenstatus ENUM(
+    'voorjaar_huidig_venster','najaar_huidig_venster','buiten_huidig_venster'
+  ) NOT NULL,
+  recordgroepstatus ENUM(
+    'uniek_binnen_hokdatum_taxon',
+    'meerdere_sectieregels_binnen_hokdatum_taxon',
+    'gelijke_telwaarde_binnen_hokdatum_taxon'
+  ) NOT NULL,
+  hokdatum_taxon_groepsgrootte SMALLINT UNSIGNED NOT NULL,
+  exactgelijke_groepsgrootte SMALLINT UNSIGNED NOT NULL,
+  daz_overlapstatus ENUM('mogelijke_overlap_17_204','geen_exacte_match') NOT NULL,
+  ruimtelijke_status ENUM('kilometerhok_meerdere_sovonplots') NOT NULL,
+  meeteenheidstatus ENUM('sectie_zonder_route_of_sectie_id') NOT NULL,
+  trendgebruik ENUM('wacht_op_route_sectie_koppeling') NOT NULL,
+  kwaliteitsnotitie VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_konijn_doel_seizoen
+    (doelrelatie, seizoenstatus, daz_overlapstatus),
+  CONSTRAINT fk_ndff_konijn_selectie_bron FOREIGN KEY (waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CHECK (aantal_exact > 0),
+  CHECK (exactgelijke_groepsgrootte <= hokdatum_taxon_groepsgrootte)
+) ENGINE=InnoDB;
+
+-- Diagnostische samenvatting. Een hok-datum-taxoncombinatie kan meerdere
+-- onbekende routesecties bevatten en is dus geen native NEM-meeteenheid.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_konijn_hokdatum_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokdatum_taxon_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  teldatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  hoknummer VARCHAR(64) NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  aantal_som INT UNSIGNED NOT NULL,
+  aantal_min INT UNSIGNED NOT NULL,
+  aantal_max INT UNSIGNED NOT NULL,
+  aggregatiestatus ENUM('diagnostische_proxy_geen_meeteenheid') NOT NULL,
+  nulstatus ENUM('niet_afleidbaar') NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokdatum_taxon_sleutel),
+  KEY ix_ndff_konijn_hokdatum_taxon
+    (wetenschappelijke_naam, jaar, teldatum),
+  CHECK (jaar = YEAR(teldatum)),
+  CHECK (bronrecordaantal > 0),
+  CHECK (aantal_som >= aantal_max AND aantal_max >= aantal_min AND aantal_min > 0)
+) ENGINE=InnoDB;

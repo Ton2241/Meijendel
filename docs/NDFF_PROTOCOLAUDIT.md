@@ -125,6 +125,33 @@ gemarkeerd. De vijf `Meijendel.ndff_vleermuis_*`-tabellen worden gecontroleerd
 met `--audit-vleermuizen`; er staan geen afgeleide vleermuisgegevens in het
 beveiligde schema.
 
+Het konijnentelprotocol (`17.209`) is onder `ndff-konijnentelling-v1`
+geclassificeerd uit 5.809 onvervaagde openbare records uit 1984-2023. Daarvan
+zijn 5.095 positieve Konijnrecords en 714 positieve bijvangsten. Alle waarden
+zijn exacte tellingen van levende, geziene dieren en de bronhouder is de
+Zoogdiervereniging. De huidige landelijke methode telt een vaste route in
+secties, in voor- en najaar, vier tot acht keer per seizoen. De ontvangen
+FFV-laag bevat echter geen route- of sectie-id: elf kilometerhokken, 812
+kalenderdatums en 5.084 hok-datum-taxoncombinaties kunnen daardoor niet tot
+native bezoeken worden teruggebracht.
+
+Er zijn 725 hok-datum-taxoncombinaties met meerdere sectieregels. In 71 groepen
+hebben twee records ook dezelfde telwaarde; de 142 betrokken records blijven
+allemaal behouden, omdat gelijke sectietellingen geen bewezen dubbelen zijn.
+Elf records hebben een exacte datum-hok-taxon-waardeovereenkomst met DAZ-BMP
+(`17.204`) en zijn alleen als mogelijke overlap gemarkeerd. Alle 5.809
+kilometerhokgeometrieën raken meerdere SOVON-plots. Daarom bevat
+`ndff_konijn_recordselectie` de kwaliteitsstatus per bronrecord en is
+`ndff_konijn_hokdatum_taxon` uitsluitend een diagnostische proxy. Er worden
+geen routebezoeken, nullen of TRIM-invoer afgeleid. Voor trendgebruik is een
+vertaaltabel van NDFF-record naar oorspronkelijke route en sectie nodig. De
+twee openbare tabellen worden gecontroleerd met `--audit-konijnen`; er staan
+geen afgeleide konijnentabellen in het beveiligde schema.
+
+Methodische bronnen: [NEM Meetprogramma's Zoogdieren](https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren),
+[Zoogdieren in Zuid-Holland](https://www.zoogdiervereniging.nl/sites/default/files/2019-10/2016.36%20Zoogdieren%20in%20Zuid-Holland.pdf)
+en [Telganger Konijnentellingen](https://www.zoogdiervereniging.nl/sites/default/files/2026-04/telganger_2023-2_0-24-29_konijnentellingen.pdf).
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de

@@ -256,6 +256,15 @@ MySQL:
   nooit als aantallen individuen. Behoud de 73 onderdrukte dubbele
   vleerMUS-aanleveringen uit 2019 in de recordselectie voor het auditspoor.
   Controleer vóór gebruik met `--audit-vleermuizen`
+- gebruik voor konijnentelprotocol `17.209` reconstructieversie
+  `ndff-konijnentelling-v1` en de twee openbare tabellen
+  `Meijendel.ndff_konijn_*`. De FFV-export bevat exacte positieve
+  sectietellingen maar geen route- of sectie-id. Behandel een kilometerhok,
+  kalenderdatum of hok-datum-taxonaggregaat nooit als native route, sectie of
+  bezoek. Onderdruk gelijke telwaarden niet als dubbel en leid geen nul af.
+  Sluit de 11 als `mogelijke_overlap_17_204` gemarkeerde regels niet zonder
+  aanvullende bronkoppeling samen met DAZ-BMP in één telling. Controleer vóór
+  gebruik met `--audit-konijnen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie
