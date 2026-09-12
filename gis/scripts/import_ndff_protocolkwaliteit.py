@@ -60,6 +60,8 @@ HABSLAK_RULE_VERSION = "ndff-habslak-v1"
 HABSLAK_MINIMUM_SAMPLE_LOCATIONS = 15
 BRAAKBAL_RULE_VERSION = "ndff-braakbal-v1"
 BRAAKBAL_MINIMUM_PREY = 150
+TUINTELLING_RULE_VERSION = "ndff-tuintelling-v1"
+TUINTELLING_GEOMETRY_DISTANCE_M = 1.0
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -76,6 +78,7 @@ MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
 FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
 HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
 BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
+TUINTELLING_TABLE_PREFIX = "Meijendel.ndff_tuintelling"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -429,6 +432,32 @@ BRAAKBAL_RECONSTRUCTION_EXPECTED = {
     "inferred_zero_rows": 0,
     "plot_linked_rows": 0,
     "invalid_hokyear_rows": 0,
+    "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+}
+TUINTELLING_RECONSTRUCTION_EXPECTED = {
+    "source_records": 309,
+    "geometry_versions": 6,
+    "garden_area_families": 3,
+    "periods": 125,
+    "weekly_periods": 119,
+    "day_periods": 5,
+    "point_periods": 1,
+    "other_periods": 0,
+    "group_periods": 213,
+    "local_target_taxa": 33,
+    "matrix_rows": 1645,
+    "positive_rows": 308,
+    "preliminary_zero_rows": 1337,
+    "exact_count_source_records": 288,
+    "presence_source_records": 21,
+    "outside_source_records": 308,
+    "multiple_source_records": 1,
+    "post_renewal_periods": 0,
+    "plot_linked_rows": 0,
+    "invalid_matrix_rows": 0,
+    "matrix_size_mismatch": 0,
+    "positive_source_mismatch": 0,
     "unlinked_source_records": 0,
     "secure_derived_tables": 0,
 }
@@ -4316,6 +4345,165 @@ ORDER BY o.jaar,o.waarneming_id;
 """
 
 
+def classify_tuintelling_period(start: str, stop: str) -> str:
+    """Classificeer het aangeleverde telinterval van Jaarrond Tuintelling."""
+    start_time = datetime.fromisoformat(start)
+    stop_time = datetime.fromisoformat(stop)
+    minutes = int((stop_time - start_time).total_seconds() // 60)
+    if minutes < 1:
+        raise ValueError("Een tuintellingperiode moet een positieve duur hebben.")
+    if minutes <= 15:
+        return "tijdstiptelling"
+    if minutes == 24 * 60:
+        return "dagperiode"
+    if minutes == 7 * 24 * 60:
+        return "weektelling"
+    return "overige_periode"
+
+
+def reconstruct_tuinvakfamilies(
+    geometries: Iterable[dict[str, object]],
+    *,
+    distance_m: float = TUINTELLING_GEOMETRY_DISTANCE_M,
+) -> dict[str, str]:
+    """Bundel vrijwel gelijke openbare tuinvakken zonder een tuin-ID te claimen."""
+    if distance_m <= 0:
+        raise ValueError("De afstandsdrempel voor tuinvakken moet positief zijn.")
+    by_geometry: dict[str, tuple[float, float]] = {}
+    for source_row in geometries:
+        row = dict(source_row)
+        geometry = str(row["geometry"])
+        point = (float(row["x"]), float(row["y"]))
+        if geometry in by_geometry and by_geometry[geometry] != point:
+            raise ValueError(f"Inconsistente centroide voor tuingeometrie {geometry}.")
+        by_geometry[geometry] = point
+
+    remaining = set(by_geometry)
+    mapping: dict[str, str] = {}
+    while remaining:
+        seed = min(remaining)
+        component = {seed}
+        frontier = [seed]
+        remaining.remove(seed)
+        while frontier:
+            current = frontier.pop()
+            x1, y1 = by_geometry[current]
+            neighbours = {
+                candidate for candidate in remaining
+                if math.hypot(x1 - by_geometry[candidate][0], y1 - by_geometry[candidate][1])
+                <= distance_m
+            }
+            component.update(neighbours)
+            frontier.extend(sorted(neighbours))
+            remaining.difference_update(neighbours)
+        family = hashlib.sha256(
+            ("102.002|tuinvakfamilie|" + "|".join(sorted(component))).encode("utf-8")
+        ).hexdigest()
+        for geometry in component:
+            mapping[geometry] = family
+    return mapping
+
+
+def build_tuintelling_structure(
+    records: Iterable[dict[str, object]],
+    geometry_to_family: dict[str, str],
+) -> dict[str, list[dict[str, object]]]:
+    """Bouw telperioden en een lokaal begrensde soortgroepmatrix."""
+    source_rows = [dict(row) for row in records]
+    local_targets: dict[str, set[str]] = defaultdict(set)
+    periods: dict[tuple[str, str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in source_rows:
+        geometry = str(row["geometry"])
+        if geometry not in geometry_to_family:
+            raise ValueError(f"Tuintellinggeometrie zonder tuinvakfamilie: {geometry}")
+        group = str(row["group"])
+        taxon = str(row["taxon"])
+        local_targets[group].add(taxon)
+        period_key = (
+            geometry_to_family[geometry], str(row["start"]), str(row["stop"])
+        )
+        periods[period_key].append(row)
+
+    period_rows: list[dict[str, object]] = []
+    group_period_rows: list[dict[str, object]] = []
+    matrix_rows: list[dict[str, object]] = []
+    for (family, start, stop), rows in sorted(periods.items()):
+        period = hashlib.sha256(
+            f"102.002|{family}|{start}|{stop}".encode("utf-8")
+        ).hexdigest()
+        groups = sorted({str(row["group"]) for row in rows})
+        period_rows.append({
+            "key": period, "family": family, "start": start, "stop": stop,
+            "period_type": classify_tuintelling_period(start, stop),
+            "source_count": len(rows), "group_count": len(groups),
+            "spatial_statuses": sorted({str(row.get("spatial_status") or "onbekend") for row in rows}),
+        })
+        for group in groups:
+            group_rows = [row for row in rows if str(row["group"]) == group]
+            by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+            for row in group_rows:
+                by_taxon[str(row["taxon"])].append(row)
+            group_period_rows.append({
+                "period": period, "group": group,
+                "source_count": len(group_rows),
+                "observed_taxa": len(by_taxon),
+                "local_target_taxa": len(local_targets[group]),
+            })
+            for taxon in sorted(local_targets[group]):
+                taxon_rows = by_taxon.get(taxon, [])
+                measurements = [
+                    {
+                        "schaal": str(row.get("scale") or ""),
+                        "waarde": str(row.get("amount") or ""),
+                        "stadium": str(row.get("stage") or ""),
+                        "sekse": str(row.get("sex") or ""),
+                    }
+                    for row in sorted(
+                        taxon_rows,
+                        key=lambda item: (
+                            str(item.get("stage") or ""),
+                            str(item.get("sex") or ""),
+                            int(item["observation_id"]),
+                        ),
+                    )
+                ]
+                matrix_rows.append({
+                    "period": period, "group": group, "taxon": taxon,
+                    "status": (
+                        "waargenomen" if taxon_rows
+                        else "protocolnul_binnen_lokaal_doelbereik"
+                    ),
+                    "source_count": len(taxon_rows),
+                    "measurements": measurements,
+                })
+    return {
+        "periods": period_rows,
+        "group_periods": group_period_rows,
+        "matrix": matrix_rows,
+    }
+
+
+def tuintelling_source_sql() -> str:
+    """Lees 102.002 uit de openbare bron- en ruimtelijke laag."""
+    return f"""
+SELECT o.waarneming_id,o.jaar,o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),ST_Area(o.openbare_geometrie),
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       o.soortgroep_raw,o.wetenschappelijke_naam,
+       COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
+       COALESCE(o.stadium,''),COALESCE(o.sekse,''),
+       r.ruimtelijke_klasse,r.toewijzingskwaliteit
+FROM Meijendel.ndff_open_waarneming o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
+  ON r.waarneming_id=o.waarneming_id
+ AND r.regelversie={sql_text(RULE_VERSION)}
+WHERE o.protocol LIKE '102.002%'
+ORDER BY o.jaar,o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -5654,6 +5842,204 @@ def reconstruct_braakballen(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_tuintellingen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw openbare tuinvlak-, telperiode- en lokaal begrensde nulstructuur."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, tuintelling_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 16:
+            raise ValueError(f"Onverwachte 102.002-bronregel met {len(fields)} velden.")
+        (observation_id, year, geometry, x, y, area, start, stop, group, taxon,
+         amount, scale, stage, sex, spatial_class, assignment_quality) = fields
+        records.append({
+            "observation_id": int(observation_id), "year": int(year),
+            "geometry": geometry, "x": float(x), "y": float(y),
+            "area": float(area), "start": start, "stop": stop,
+            "group": group, "taxon": taxon, "amount": amount,
+            "scale": scale, "stage": stage, "sex": sex,
+            "spatial_class": spatial_class,
+            "spatial_status": assignment_quality,
+        })
+    if len(records) != TUINTELLING_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De 102.002-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    geometry_to_family = reconstruct_tuinvakfamilies(records)
+    structure = build_tuintelling_structure(records, geometry_to_family)
+    periods = structure["periods"]
+    group_periods = structure["group_periods"]
+    matrix = structure["matrix"]
+    period_key_by_source = {
+        (str(row["family"]), str(row["start"]), str(row["stop"])): str(row["key"])
+        for row in periods
+    }
+
+    common_note = (
+        "Openbare reconstructie van protocol 102.002. Bij iedere telling kiest de "
+        "teller soortgroepen en meldt daarbinnen alle waargenomen soorten. Een "
+        "positieve regel bewijst daarom alleen dat die soortgroep in deze periode "
+        "is geteld. Oorspronkelijke tuin- en telling-ID's ontbreken; openbare "
+        "250 m-geometrieën zijn geen bewezen tuinen. Alle records liggen buiten "
+        "een eenduidig Meijendel-SOVON-plot."
+    )
+    geometries: dict[str, dict[str, object]] = {}
+    families: dict[str, dict[str, object]] = {}
+    for row in records:
+        geometry = str(row["geometry"])
+        family = geometry_to_family[geometry]
+        geom = geometries.setdefault(geometry, {
+            "family": family, "x": float(row["x"]), "y": float(row["y"]),
+            "area": float(row["area"]), "years": set(), "rows": [],
+            "statuses": set(),
+        })
+        invariant = (geom["family"], geom["x"], geom["y"], geom["area"])
+        if invariant != (family, float(row["x"]), float(row["y"]), float(row["area"])):
+            raise ValueError(f"Inconsistente 102.002-geometriecontext: {geometry}")
+        geom_years, geom_rows, geom_statuses = geom["years"], geom["rows"], geom["statuses"]
+        assert isinstance(geom_years, set) and isinstance(geom_rows, list)
+        assert isinstance(geom_statuses, set)
+        geom_years.add(int(row["year"]))
+        geom_rows.append(row)
+        geom_statuses.add(str(row["spatial_status"]))
+
+        family_info = families.setdefault(family, {
+            "geometries": set(), "starts": [], "stops": [], "rows": [],
+        })
+        family_geometries = family_info["geometries"]
+        family_starts, family_stops, family_rows = (
+            family_info["starts"], family_info["stops"], family_info["rows"]
+        )
+        assert isinstance(family_geometries, set)
+        assert isinstance(family_starts, list) and isinstance(family_stops, list)
+        assert isinstance(family_rows, list)
+        family_geometries.add(geometry)
+        family_starts.append(str(row["start"]))
+        family_stops.append(str(row["stop"]))
+        family_rows.append(row)
+
+    family_values: list[str] = []
+    for family, info in sorted(families.items()):
+        family_geometries, family_starts, family_stops, family_rows = (
+            info["geometries"], info["starts"], info["stops"], info["rows"]
+        )
+        assert isinstance(family_geometries, set)
+        assert isinstance(family_starts, list) and isinstance(family_stops, list)
+        assert isinstance(family_rows, list)
+        family_values.append(
+            f"({sql_text(TUINTELLING_RULE_VERSION)},{sql_text(family)},'102.002',"
+            f"{len(family_geometries)},{sql_text(min(family_starts))},"
+            f"{sql_text(max(family_stops))},{len(family_rows)},"
+            f"'afgeleid_binnen_1_meter_geen_tuin_id',{sql_text(common_note)})"
+        )
+
+    geometry_values: list[str] = []
+    for geometry, info in sorted(geometries.items()):
+        years, geom_rows, statuses = info["years"], info["rows"], info["statuses"]
+        assert isinstance(years, set) and isinstance(geom_rows, list)
+        assert isinstance(statuses, set)
+        spatial_status = next(iter(statuses)) if len(statuses) == 1 else "gemengd"
+        geometry_values.append(
+            f"({sql_text(TUINTELLING_RULE_VERSION)},{sql_text(geometry)},"
+            f"{sql_text(str(info['family']))},{float(info['x']):.3f},"
+            f"{float(info['y']):.3f},{float(info['area']):.3f},"
+            f"{min(years)},{max(years)},{len(geom_rows)},"
+            f"{sql_text(spatial_status)},{sql_text(common_note)})"
+        )
+
+    period_note = (
+        "Gereconstrueerde telperiode op basis van tuinvakfamilie plus exact "
+        "broninterval. Dit is geen oorspronkelijk telling-ID. De levering eindigt "
+        "voor de vernieuwing van Jaarrond Tuintelling in juli 2022."
+    )
+    period_values = [
+        f"({sql_text(TUINTELLING_RULE_VERSION)},{sql_text(str(row['key']))},"
+        f"{sql_text(str(row['family']))},{sql_text(str(row['start']))},"
+        f"{sql_text(str(row['stop']))},{sql_text(str(row['period_type']))},"
+        f"'voor_vernieuwing_2022',{int(row['source_count'])},"
+        f"{int(row['group_count'])},'niet_gekoppeld_geen_meijendelplot',"
+        f"{sql_text(period_note)})"
+        for row in periods
+    ]
+
+    group_note = (
+        "Minstens één positieve regel bevestigt dat deze soortgroep tijdens de "
+        "telperiode is geteld. Het doelbereik omvat voorlopig alleen de taxa die "
+        "ergens in deze lokale 102.002-levering zijn aangetroffen."
+    )
+    group_values = [
+        f"({sql_text(TUINTELLING_RULE_VERSION)},{sql_text(str(row['period']))},"
+        f"{sql_text(str(row['group']))},{int(row['source_count'])},"
+        f"{int(row['observed_taxa'])},{int(row['local_target_taxa'])},"
+        f"'positieve_regel_bevestigt_getelde_soortgroep',"
+        f"'alleen_lokaal_aangetroffen_taxa',{sql_text(group_note)})"
+        for row in group_periods
+    ]
+
+    matrix_note = (
+        "Een nul betekent uitsluitend: niet gemeld binnen een door een positieve "
+        "regel bevestigde soortgroeptelling en binnen het lokale doelbereik. De nul "
+        "geldt niet voor alle landelijke tuinsoorten en niet voor een Meijendel-plot."
+    )
+    matrix_values: list[str] = []
+    for row in matrix:
+        is_positive = str(row["status"]) == "waargenomen"
+        measurements_json = json.dumps(
+            row["measurements"], ensure_ascii=False, separators=(",", ":")
+        )
+        null_rule = (
+            "niet_van_toepassing" if is_positive
+            else "niet_gemeld_binnen_positief_bevestigde_soortgroeptelling"
+        )
+        matrix_values.append(
+            f"({sql_text(TUINTELLING_RULE_VERSION)},{sql_text(str(row['period']))},"
+            f"{sql_text(str(row['group']))},{sql_text(str(row['taxon']))},"
+            f"{sql_text(str(row['status']))},{int(row['source_count'])},"
+            f"{sql_text(measurements_json)},{sql_text(null_rule)},"
+            f"{sql_text(matrix_note)})"
+        )
+
+    selection_reason = (
+        "Bronregel gekoppeld aan een gereconstrueerde regionale telperiode. De "
+        "openbare locatie valt niet eenduidig binnen een Meijendel-SOVON-plot."
+    )
+    selection_values: list[str] = []
+    for row in records:
+        family = geometry_to_family[str(row["geometry"])]
+        period = period_key_by_source[(family, str(row["start"]), str(row["stop"]))]
+        selection_values.append(
+            f"({sql_text(TUINTELLING_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{sql_text(period)},'regionale_protocolcontext_geen_meijendelplot',"
+            f"{sql_text(selection_reason)})"
+        )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {TUINTELLING_TABLE_PREFIX}_periode_soortgroep_taxon WHERE reconstructieversie={sql_text(TUINTELLING_RULE_VERSION)};",
+        f"DELETE FROM {TUINTELLING_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(TUINTELLING_RULE_VERSION)};",
+        f"DELETE FROM {TUINTELLING_TABLE_PREFIX}_periode_soortgroep WHERE reconstructieversie={sql_text(TUINTELLING_RULE_VERSION)};",
+        f"DELETE FROM {TUINTELLING_TABLE_PREFIX}_telperiode WHERE reconstructieversie={sql_text(TUINTELLING_RULE_VERSION)};",
+        f"DELETE FROM {TUINTELLING_TABLE_PREFIX}_geometrie WHERE reconstructieversie={sql_text(TUINTELLING_RULE_VERSION)};",
+        f"DELETE FROM {TUINTELLING_TABLE_PREFIX}_tuinvakfamilie WHERE reconstructieversie={sql_text(TUINTELLING_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{TUINTELLING_TABLE_PREFIX}_tuinvakfamilie", "reconstructieversie,tuinvakfamilie_sleutel,protocol_sleutel,geometrieversies,eerste_periode,laatste_periode,bronrecordaantal,identificatiestatus,kwaliteitsnotitie", family_values),
+        (f"{TUINTELLING_TABLE_PREFIX}_geometrie", "reconstructieversie,openbare_geometrie_sha256,tuinvakfamilie_sleutel,centroide_x_rd,centroide_y_rd,oppervlakte_m2,eerste_jaar,laatste_jaar,bronrecordaantal,ruimtelijke_status,kwaliteitsnotitie", geometry_values),
+        (f"{TUINTELLING_TABLE_PREFIX}_telperiode", "reconstructieversie,telperiode_sleutel,tuinvakfamilie_sleutel,periode_start,periode_stop,teltype,methodeversie,bronrecordaantal,getelde_soortgroepen,plotstatus,kwaliteitsnotitie", period_values),
+        (f"{TUINTELLING_TABLE_PREFIX}_periode_soortgroep", "reconstructieversie,telperiode_sleutel,soortgroep_raw,bronrecordaantal,waargenomen_taxa,lokale_doelsoorten,selectiebewijs,doelbereikstatus,kwaliteitsnotitie", group_values),
+        (f"{TUINTELLING_TABLE_PREFIX}_periode_soortgroep_taxon", "reconstructieversie,telperiode_sleutel,soortgroep_raw,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,meetwaarden_json,nulregel,kwaliteitsnotitie", matrix_values),
+        (f"{TUINTELLING_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,telperiode_sleutel,selectiestatus,selectiereden", selection_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, tuintelling_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -6131,6 +6517,42 @@ SELECT JSON_OBJECT(
 """
 
 
+def tuintelling_validation_sql() -> str:
+    version = sql_text(TUINTELLING_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_tuintelling_{suffix}") for suffix in (
+        "tuinvakfamilie", "geometrie", "telperiode", "periode_soortgroep",
+        "periode_soortgroep_taxon", "recordselectie",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%'),
+  'geometry_versions',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_geometrie WHERE reconstructieversie={version}),
+  'garden_area_families',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_tuinvakfamilie WHERE reconstructieversie={version}),
+  'periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version}),
+  'weekly_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND teltype='weektelling'),
+  'day_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND teltype='dagperiode'),
+  'point_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND teltype='tijdstiptelling'),
+  'other_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND teltype='overige_periode'),
+  'group_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep WHERE reconstructieversie={version}),
+  'local_target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'preliminary_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='protocolnul_binnen_lokaal_doelbereik'),
+  'exact_count_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%' AND schaal_telmethode='exact aantal'),
+  'presence_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%' AND schaal_telmethode='voorkomen'),
+  'outside_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '102.002%' AND r.toewijzingskwaliteit='outside'),
+  'multiple_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '102.002%' AND r.toewijzingskwaliteit='multiple'),
+  'post_renewal_periods',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND periode_start>='2022-07-07'),
+  'plot_linked_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_telperiode WHERE reconstructieversie={version} AND plotstatus<>'niet_gekoppeld_geen_meijendelplot'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR JSON_LENGTH(meetwaarden_json)=0 OR nulregel<>'niet_van_toepassing')) OR (waarnemingsstatus='protocolnul_binnen_lokaal_doelbereik' AND (bronrecordaantal<>0 OR JSON_LENGTH(meetwaarden_json)<>0 OR nulregel<>'niet_gemeld_binnen_positief_bevestigde_soortgroeptelling')))),
+  'matrix_size_mismatch',ABS((SELECT COUNT(*) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version})-(SELECT COALESCE(SUM(lokale_doelsoorten),0) FROM Meijendel.ndff_tuintelling_periode_soortgroep WHERE reconstructieversie={version})),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_tuintelling_periode_soortgroep_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.002%')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_tuintelling_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.002%' AND s.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -6298,6 +6720,18 @@ def validate_braakbal_reconstruction(metrics: dict[str, int]) -> None:
         }
         raise ValueError(
             f"Braakbalreconstructie wijkt af van het vaste profiel: {differences}"
+        )
+
+
+def validate_tuintelling_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != TUINTELLING_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (TUINTELLING_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(TUINTELLING_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != TUINTELLING_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"Tuintellingreconstructie wijkt af van het vaste profiel: {differences}"
         )
 
 
@@ -6669,6 +7103,8 @@ def main() -> int:
     mode.add_argument("--audit-habslak", action="store_true")
     mode.add_argument("--reconstruct-braakballen", action="store_true")
     mode.add_argument("--audit-braakballen", action="store_true")
+    mode.add_argument("--reconstruct-tuintellingen", action="store_true")
+    mode.add_argument("--audit-tuintellingen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -6960,6 +7396,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_braakbal_reconstruction(metrics)
         print(f"OK: lokale braakbalreconstructie {BRAAKBAL_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_tuintellingen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_tuintellingen(args.mysql_client, client_args)
+        validate_tuintelling_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_tuintellingen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            tuintelling_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_tuintelling_reconstruction(metrics)
+        print(f"OK: lokale tuintellingreconstructie {TUINTELLING_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

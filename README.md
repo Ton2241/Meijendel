@@ -359,6 +359,17 @@ Daarom bevat deze laag geen afgeleide nullen of SOVON-plotkoppelingen. Gebruik
 haar uitsluitend voor regionale positieve samenstelling en indicatieve
 verandering in registraties en controleer met `--audit-braakballen`.
 
+Jaarrond Tuintelling `102.002` staat onder `ndff-tuintelling-v1` in zes
+openbare `Meijendel.ndff_tuintelling_*`-tabellen. De 309 bronrecords uit
+2015-maart 2022 vormen zes openbare geometrieversies, drie afgeleide
+tuinvakfamilies en 125 telperioden: 119 weektellingen, vijf dagperioden en één
+tijdstiptelling. Binnen 213 positief bevestigde soortgroeptellingen bevat de
+lokale matrix 1.645 regels voor 33 aangetroffen taxa: 308 positieve combinaties
+en 1.337 `protocolnul_binnen_lokaal_doelbereik`. Deze nullen gelden niet voor
+alle landelijke tuinsoorten. Omdat 308 bronregels buiten de SOVON-plots liggen
+en één regel meerdere plots raakt, is dit uitsluitend regionale tuincontext en
+geen Meijendel-plotreeks. Controleer met `--audit-tuintellingen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

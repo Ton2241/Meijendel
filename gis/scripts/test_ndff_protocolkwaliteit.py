@@ -115,6 +115,12 @@ def main() -> int:
         "meijendel.ndff_braakbal_hokjaar",
         "meijendel.ndff_braakbal_recordselectie",
         "meijendel.ndff_braakbal_hokjaar_taxon",
+        "meijendel.ndff_tuintelling_tuinvakfamilie",
+        "meijendel.ndff_tuintelling_geometrie",
+        "meijendel.ndff_tuintelling_telperiode",
+        "meijendel.ndff_tuintelling_periode_soortgroep",
+        "meijendel.ndff_tuintelling_periode_soortgroep_taxon",
+        "meijendel.ndff_tuintelling_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -132,6 +138,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_florbase_" not in folded
     assert "meijendel_ndff_secure.ndff_habslak_" not in folded
     assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
+    assert "meijendel_ndff_secure.ndff_tuintelling_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -544,6 +551,56 @@ def main() -> int:
     assert braakbal_taxa["Microtus arvalis"]["total_count"] == 160
     assert all(row["status"] == "waargenomen" for row in braakbal["taxa"])
 
+    assert module.classify_tuintelling_period(
+        "2015-10-24 21:00:00", "2015-10-24 21:05:00"
+    ) == "tijdstiptelling"
+    assert module.classify_tuintelling_period(
+        "2016-05-08 00:00:00", "2016-05-09 00:00:00"
+    ) == "dagperiode"
+    assert module.classify_tuintelling_period(
+        "2016-05-09 00:00:00", "2016-05-16 00:00:00"
+    ) == "weektelling"
+    tuin_families = module.reconstruct_tuinvakfamilies([
+        {"geometry": "a", "x": 100.0, "y": 200.0},
+        {"geometry": "b", "x": 100.4, "y": 200.3},
+        {"geometry": "c", "x": 120.0, "y": 220.0},
+    ])
+    assert len(set(tuin_families.values())) == 2
+    assert tuin_families["a"] == tuin_families["b"]
+    assert tuin_families["a"] != tuin_families["c"]
+    tuintelling = module.build_tuintelling_structure(
+        [
+            {
+                "observation_id": 1, "geometry": "a", "group": "Dagvlinders",
+                "taxon": "Aglais io", "start": "2020-07-06 00:00:00",
+                "stop": "2020-07-13 00:00:00", "scale": "exact aantal",
+                "amount": "2", "stage": "adult", "sex": "",
+            },
+            {
+                "observation_id": 2, "geometry": "a", "group": "Dagvlinders",
+                "taxon": "Pieris rapae", "start": "2020-07-13 00:00:00",
+                "stop": "2020-07-20 00:00:00", "scale": "exact aantal",
+                "amount": "1", "stage": "adult", "sex": "",
+            },
+        ],
+        tuin_families,
+    )
+    assert len(tuintelling["periods"]) == 2
+    assert len(tuintelling["group_periods"]) == 2
+    assert len(tuintelling["matrix"]) == 4
+    tuin_matrix = {
+        (row["period"], row["taxon"]): row for row in tuintelling["matrix"]
+    }
+    first_period = next(
+        row["period"] for row in tuintelling["matrix"]
+        if row["taxon"] == "Aglais io" and row["status"] == "waargenomen"
+    )
+    assert tuin_matrix[(first_period, "Aglais io")]["status"] == "waargenomen"
+    assert tuin_matrix[(first_period, "Pieris rapae")]["status"] == (
+        "protocolnul_binnen_lokaal_doelbereik"
+    )
+    assert tuin_matrix[(first_period, "Pieris rapae")]["source_count"] == 0
+
     hns_rows = [
         {
             "observation_id": index,
@@ -779,6 +836,8 @@ def main() -> int:
     assert "--audit-habslak" in importer_text
     assert "--reconstruct-braakballen" in importer_text
     assert "--audit-braakballen" in importer_text
+    assert "--reconstruct-tuintellingen" in importer_text
+    assert "--audit-tuintellingen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -1007,6 +1066,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende braakbalreconstructie is niet geblokkeerd")
+    module.validate_tuintelling_reconstruction(
+        dict(module.TUINTELLING_RECONSTRUCTION_EXPECTED)
+    )
+    broken_tuintelling = dict(module.TUINTELLING_RECONSTRUCTION_EXPECTED)
+    broken_tuintelling["periods"] -= 1
+    try:
+        module.validate_tuintelling_reconstruction(broken_tuintelling)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende tuintellingreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

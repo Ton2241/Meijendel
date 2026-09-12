@@ -583,3 +583,14 @@
   nest-ID's ontbreken en meerdere partijen in één openbaar aggregaat kunnen
   vallen. Er worden geen echte nullen, bezoeken of SOVON-plotkoppelingen
   afgeleid. `Meijendel_ndff_secure` is niet uitgebreid.
+- Voor Jaarrond Tuintelling `102.002` is vanaf 12 september 2026
+  reconstructieversie `ndff-tuintelling-v1` vastgesteld. Zes openbare
+  geometrieversies worden met een afstandsdrempel van één meter tot drie
+  tuinvakfamilies gegroepeerd; dit zijn nadrukkelijk geen oorspronkelijke
+  tuin-ID's. De 309 bronregels leveren 125 telperioden en 213 door minstens één
+  positieve regel bevestigde soortgroeptellingen. Alleen daarbinnen zijn voor
+  de 33 lokaal aangetroffen taxa 1.337 voorlopige protocolnullen afgeleid,
+  naast 308 positieve combinaties. Het doelbereik is lokaal en onvolledig. Geen
+  van de telperioden is aan een Meijendel-SOVON-plot gekoppeld: 308 bronregels
+  liggen buiten de plots en één raakt meerdere plots. De zes tabellen staan in
+  `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.

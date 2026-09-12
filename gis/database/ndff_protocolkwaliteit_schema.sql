@@ -1927,3 +1927,148 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_braakbal_hokjaar_taxon (
   CHECK (totaal_aantal > 0),
   CHECK (aandeel_prooidieren > 0 AND aandeel_prooidieren <= 1)
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van Jaarrond Tuintelling 102.002. De 250 m-vakken
+-- zijn privacygeometrieën en geen bewezen tuin-ID's. Alleen een positieve regel
+-- bewijst dat de betreffende soortgroep in die periode is geteld.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_tuinvakfamilie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  tuinvakfamilie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '102.002',
+  geometrieversies SMALLINT UNSIGNED NOT NULL,
+  eerste_periode DATETIME NOT NULL,
+  laatste_periode DATETIME NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  identificatiestatus ENUM('afgeleid_binnen_1_meter_geen_tuin_id') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, tuinvakfamilie_sleutel),
+  CHECK (geometrieversies > 0),
+  CHECK (bronrecordaantal > 0),
+  CHECK (laatste_periode >= eerste_periode)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_geometrie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  tuinvakfamilie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  centroide_x_rd DECIMAL(12,3) NOT NULL,
+  centroide_y_rd DECIMAL(12,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(20,3) NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_status ENUM('outside','multiple','gemengd') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, openbare_geometrie_sha256),
+  KEY ix_ndff_tuintelling_geometrie_familie
+    (reconstructieversie, tuinvakfamilie_sleutel),
+  CONSTRAINT fk_ndff_tuintelling_geometrie_familie FOREIGN KEY
+    (reconstructieversie, tuinvakfamilie_sleutel)
+    REFERENCES Meijendel.ndff_tuintelling_tuinvakfamilie
+      (reconstructieversie, tuinvakfamilie_sleutel),
+  CHECK (oppervlakte_m2 > 0),
+  CHECK (laatste_jaar >= eerste_jaar),
+  CHECK (bronrecordaantal > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_telperiode (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  telperiode_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  tuinvakfamilie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  teltype ENUM('weektelling','dagperiode','tijdstiptelling','overige_periode') NOT NULL,
+  methodeversie ENUM('voor_vernieuwing_2022') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  getelde_soortgroepen SMALLINT UNSIGNED NOT NULL,
+  plotstatus ENUM('niet_gekoppeld_geen_meijendelplot') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, telperiode_sleutel),
+  UNIQUE KEY uq_ndff_tuintelling_telperiode
+    (reconstructieversie, tuinvakfamilie_sleutel, periode_start, periode_stop),
+  CONSTRAINT fk_ndff_tuintelling_periode_familie FOREIGN KEY
+    (reconstructieversie, tuinvakfamilie_sleutel)
+    REFERENCES Meijendel.ndff_tuintelling_tuinvakfamilie
+      (reconstructieversie, tuinvakfamilie_sleutel),
+  CHECK (periode_stop > periode_start),
+  CHECK (bronrecordaantal > 0),
+  CHECK (getelde_soortgroepen > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_periode_soortgroep (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  telperiode_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  soortgroep_raw VARCHAR(255) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  waargenomen_taxa SMALLINT UNSIGNED NOT NULL,
+  lokale_doelsoorten SMALLINT UNSIGNED NOT NULL,
+  selectiebewijs ENUM('positieve_regel_bevestigt_getelde_soortgroep') NOT NULL,
+  doelbereikstatus ENUM('alleen_lokaal_aangetroffen_taxa') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, telperiode_sleutel, soortgroep_raw),
+  CONSTRAINT fk_ndff_tuintelling_groep_periode FOREIGN KEY
+    (reconstructieversie, telperiode_sleutel)
+    REFERENCES Meijendel.ndff_tuintelling_telperiode
+      (reconstructieversie, telperiode_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (waargenomen_taxa > 0),
+  CHECK (lokale_doelsoorten >= waargenomen_taxa)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_periode_soortgroep_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  telperiode_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  soortgroep_raw VARCHAR(255) NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen','protocolnul_binnen_lokaal_doelbereik'
+  ) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM(
+    'niet_van_toepassing',
+    'niet_gemeld_binnen_positief_bevestigde_soortgroeptelling'
+  ) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (
+    reconstructieversie, telperiode_sleutel, soortgroep_raw,
+    wetenschappelijke_naam
+  ),
+  KEY ix_ndff_tuintelling_taxon_status
+    (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_tuintelling_taxon_groep FOREIGN KEY
+    (reconstructieversie, telperiode_sleutel, soortgroep_raw)
+    REFERENCES Meijendel.ndff_tuintelling_periode_soortgroep
+      (reconstructieversie, telperiode_sleutel, soortgroep_raw),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND bronrecordaantal>0
+      AND JSON_LENGTH(meetwaarden_json)>0
+      AND nulregel='niet_van_toepassing')
+    OR (waarnemingsstatus='protocolnul_binnen_lokaal_doelbereik'
+      AND bronrecordaantal=0 AND JSON_LENGTH(meetwaarden_json)=0
+      AND nulregel='niet_gemeld_binnen_positief_bevestigde_soortgroeptelling')
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  telperiode_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM('regionale_protocolcontext_geen_meijendelplot') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_tuintelling_selectie_periode
+    (reconstructieversie, telperiode_sleutel),
+  CONSTRAINT fk_ndff_tuintelling_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_tuintelling_selectie_periode FOREIGN KEY
+    (reconstructieversie, telperiode_sleutel)
+    REFERENCES Meijendel.ndff_tuintelling_telperiode
+      (reconstructieversie, telperiode_sleutel)
+) ENGINE=InnoDB;

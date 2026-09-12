@@ -460,6 +460,45 @@ Methodische grondslag: [NDFF 17.002](https://ndff.nl/natuurdata/waarnemen-en-aan
 de [methodische rapportage van de Zoogdiervereniging](https://www.zoogdiervereniging.nl/sites/default/files/publications/2009.05%20Verspreidingsonderzoek%20muizen%20en%20spitsmuizen%20in%202008_0.pdf)
 en de [CBS-kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
 
+### Jaarrond Tuintelling (`102.002`)
+
+Regelversie `ndff-tuintelling-v1` verwerkt alle 309 openbare bronregels uit
+2015 tot en met 7 maart 2022. De zes openbare geometrieversies vormen bij een
+afstandsdrempel van één meter drie tuinvakfamilies. Deze afleiding herkent
+kleine geometrieverschuivingen door de jaren heen, maar bewijst geen
+oorspronkelijke tuin-ID.
+
+Er zijn 125 telperioden gereconstrueerd: 119 weektellingen, vijf dagperioden en
+één tijdstiptelling van vijf minuten. Per telling kiest een deelnemer volgens
+het protocol de getelde soortgroepen en meldt daarbinnen alle waargenomen
+soorten. De FFV-export bevat de oorspronkelijke keuzevlag niet. Daarom geldt
+een soortgroep alleen als geteld wanneer in dezelfde tuinvakfamilie en periode
+minstens één positieve regel voor die groep aanwezig is. Dit levert 213
+bevestigde periode-soortgroepcombinaties.
+
+Binnen het beperkte doelbereik van 33 taxa die ergens in deze lokale levering
+positief zijn aangetroffen, bevat de matrix 1.645 regels: 308 positieve
+periode-soortgroep-taxoncombinaties en 1.337
+`protocolnul_binnen_lokaal_doelbereik`. De 309e positieve bronregel betreft een
+tweede levensstadium van Bruine kikker binnen dezelfde combinatie en blijft als
+afzonderlijke meetwaarde behouden. Een voorlopige nul betekent uitsluitend dat
+het taxon niet is gemeld binnen een positief bevestigde soortgroeptelling. Zij
+geldt niet voor alle landelijke tuinsoorten en niet voor een niet-getelde
+soortgroep.
+
+Ruimtelijk vormt de reeks geen Meijendelmeting: 308 bronregels liggen buiten de
+SOVON-plots en één regel raakt meerdere plots. Geen telperiode krijgt daarom
+een plotkoppeling. Ook bevat de levering geen record na de vernieuwing van de
+Jaarrond-Tuintellingwerkwijze in juli 2022. Gebruik de matrix uitsluitend als
+regionale tuincontext en niet voor een lokale Meijendeltrend. Alle zes
+afgeleide tabellen staan in `Meijendel`; er is geen afleiding in
+`Meijendel_ndff_secure`. Controleer met `--audit-tuintellingen`.
+
+Methodische grondslag: [NDFF 102.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-002-jaarrond-tuintelling/),
+[Jaarrond Tuintelling](https://tuintelling.sovon.nl/),
+[Sovon over de werkwijze](https://www.sovon.nl/tellen/telprojecten/jaarrond-tuintelling)
+en [Sovon over de vernieuwing in 2022](https://www.sovon.nl/actueel/nieuwsberichten/jaarrond-tuintelling-vernieuwd).
+
 ### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
 
 Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat
@@ -687,9 +726,10 @@ omvat 1.031 records: `17.002` Braakbalonderzoek (389), `102.002` Jaarrond
 Tuintelling (309), `102.005` LiveAtlas (231) en `102.007` Kwartiertellingen
 (102). De braakbalregels zijn inmiddels conservatief gereconstrueerd tot 37
 geometrie-jaaraggregaten; deze zijn uitdrukkelijk geen partijen of bezoeken en
-leveren geen nullen of plotkoppelingen. De tuintelling bevat
-125 zichtbare tuin-periodeclusters op zes geometrieën en mengt weektotalen,
-dagperioden en één korte telling. LiveAtlas bevat 64 gedeelde tijdintervallen;
+leveren geen nullen of plotkoppelingen. De tuintelling is inmiddels
+gereconstrueerd tot 125 telperioden binnen drie afgeleide tuinvakfamilies, met
+voorlopige nullen uitsluitend binnen positief bevestigde soortgroepen en lokaal
+doelbereik. LiveAtlas bevat 64 gedeelde tijdintervallen;
 de kwartiertellingen bevatten zeventien tijdintervallen van 6-21 minuten. Bij
 beide ontbreken route-ID en complete-lijststatus in FFV; NDFF vermeldt voor
 `102.007` bovendien expliciet dat de routegegevens nog niet worden meegeleverd.
@@ -699,7 +739,8 @@ alleen `TV` indicatief toegestaan; voor `102.002`, `102.005` en `102.007` zijn
 `I` en `TV` indicatief toegestaan. Indicatief betekent hier verandering in
 geregistreerde tellingen met `gegevensgeschiktheid='onvoldoende'`, niet een
 gevalideerde populatietrend. `TA` en `TK` zijn uitgesloten en voor `17.002`
-geldt dat ook voor `I`. Er worden in deze stap geen nullen afgeleid. Na de
+geldt dat ook voor `I`. Voor LiveAtlas en Kwartiertellingen worden in deze stap
+geen nullen afgeleid. Na de
 ruimtelijke en PQ-poorten blijven 13 braakbalrecords, 77 LiveAtlas-records en
 95 kwartiertellingrecords over; alle 309 tuintellingrecords zijn ruimtelijk
 uitgesloten voor een eenduidige Meijendel-plotanalyse.

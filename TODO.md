@@ -85,6 +85,14 @@
   geen nullen, bezoeken of SOVON-plotkoppelingen af. Alleen oorspronkelijke
   partij- en nest-ID's van de Zoogdiervereniging kunnen dit later verbeteren;
   deze validatie blokkeert het voorlopige regionale gebruik niet.
+- `102.002` bevat onder `ndff-tuintelling-v1` drie afgeleide
+  tuinvakfamilies, 125 telperioden en 1.645 periode-soortgroep-taxonregels.
+  Gebruik de 1.337 voorlopige nullen alleen binnen de 213 positief bevestigde
+  soortgroeptellingen en het lokale doelbereik van 33 taxa. Gebruik deze reeks
+  uitsluitend als regionale tuincontext: geen record ligt eenduidig in een
+  Meijendel-SOVON-plot. Oorspronkelijke tuin-, telling- en gekozen-
+  soortgroep-ID's kunnen later bij Jaarrond Tuintelling/Sovon worden
+  gevalideerd, maar blokkeren dit voorlopige regionale gebruik niet.
 - `11.201` bevat na onderdrukking van 473 parallelle presentieregels 509
   canonieke positieve resultaten, drie vaste meetpunten en 110 bevestigde
   bezoeken. Gebruik de 2.934 bezoek-taxonregels en 977 jaarlijkse maxima via

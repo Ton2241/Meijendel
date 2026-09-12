@@ -394,6 +394,19 @@ MySQL:
   abundantie. Gebruik de laag alleen voor positieve regionale samenstelling en
   indicatieve verandering in registraties; controleer haar met
   `--audit-braakballen`
+- gebruik voor Jaarrond Tuintelling `102.002` reconstructieversie
+  `ndff-tuintelling-v1` en uitsluitend de zes openbare tabellen
+  `Meijendel.ndff_tuintelling_*`. Behandel de drie uit zes geometrieversies
+  afgeleide tuinvakfamilies niet als oorspronkelijke tuin-ID's. Een positieve
+  regel bewijst dat de betreffende soortgroep in die telperiode is geteld.
+  Leid alleen binnen zo'n bevestigde soortgroep en uitsluitend voor de 33 in
+  deze lokale levering aangetroffen taxa
+  `protocolnul_binnen_lokaal_doelbereik` af. Presenteer deze nullen nooit als
+  volledig landelijk doelbereik. Alle 309 bronrecords vallen buiten een
+  eenduidig Meijendel-SOVON-plot; gebruik de reconstructie dus alleen als
+  regionale tuincontext en nooit als lokale Meijendelreeks. De levering loopt
+  van 2015 tot maart 2022 en bevat geen telling na de vernieuwing van juli
+  2022. Controleer vóór gebruik met `--audit-tuintellingen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie
