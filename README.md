@@ -284,6 +284,18 @@ bezoek beschouwd en geen nullen afgeleid. De 11 exacte overeenkomsten met
 DAZ-BMP (`17.204`) zijn alleen als mogelijke overlap gemarkeerd. Controleer de
 laag met `--audit-konijnen`.
 
+DAZ-BMP-protocol `17.204` staat onder `ndff-daz-bmp-v1` in vier openbare
+`Meijendel.ndff_daz_bmp_*`-tabellen. Het betreft zoogdierregistraties door het
+deel van de BMP-vogeltellers dat aan DAZ deelnam, niet vogelwaarnemingen. Van
+10.670 bronrecords koppelen 3.171 eenduidig aan 1.475 bestaande BMP-bezoeken
+in 49 SOVON-plots. Voor die bevestigde bezoeken bevat de matrix 10.325 regels
+voor zeven DAZ-doelsoorten: 2.681 positieve regels, 7.552 echte nullen en 92
+onbesliste regels doordat een record meerdere bezoeken kan betreffen. De 161
+bijvangst-bronrecords krijgen uitsluitend positieve voorkomensstatus; 50
+daarvan koppelen eenduidig en vormen 49 bezoek-taxonregels. Overige
+BMP-bezoeken worden niet als DAZ-bezoek verondersteld. Controleer de laag met
+`--audit-daz-bmp`.
+
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in
 `ndff_protocol_soortgroep_geschiktheid`. De klassen zijn `doelgroep`,

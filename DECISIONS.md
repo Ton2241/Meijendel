@@ -134,6 +134,18 @@
   mogelijke overlap. `ndff_konijn_hokdatum_taxon` is een diagnostische proxy,
   geen NEM-meeteenheid. Beide `ndff_konijn_*`-tabellen staan in `Meijendel`;
   `Meijendel_ndff_secure` is niet uitgebreid.
+- Voor `17.204` is vanaf 12 september 2026 de openbare DAZ-BMP-reeks
+  vastgelegd als `ndff-daz-bmp-v1`. De zoogdieren zijn nevenregistraties
+  tijdens BMP-bezoeken door uitsluitend de deelnemende vogeltellers. Een
+  positieve regel bevestigt deelname; het ontbreken van 17.204 bij een ander
+  BMP-bezoek bewijst geen deelname. Van 10.670 bronrecords koppelen 3.171
+  eenduidig aan 1.475 BMP-bezoeken in 49 plots; 1.026 hebben meerdere mogelijke
+  bezoeken en 6.473 geen passend bezoek in de lokale BMP-laag. Binnen de
+  bevestigde bezoeken zijn 7.552 echte nullen voor zeven DAZ-doelsoorten
+  afgeleid. Voor 92 bezoek-taxoncombinaties blokkeert ruimtelijke ambiguïteit
+  een nul. Bijvangsten krijgen alleen positieve regels. Alle vier
+  `ndff_daz_bmp_*`-tabellen staan in `Meijendel`; het beveiligde schema is niet
+  uitgebreid.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

@@ -152,6 +152,30 @@ Methodische bronnen: [NEM Meetprogramma's Zoogdieren](https://www.netwerkecologi
 [Zoogdieren in Zuid-Holland](https://www.zoogdiervereniging.nl/sites/default/files/2019-10/2016.36%20Zoogdieren%20in%20Zuid-Holland.pdf)
 en [Telganger Konijnentellingen](https://www.zoogdiervereniging.nl/sites/default/files/2026-04/telganger_2023-2_0-24-29_konijnentellingen.pdf).
 
+Het DAZ-BMP-protocol (`17.204`) is onder `ndff-daz-bmp-v1` gekoppeld aan de
+bestaande BMP-bezoeken. De NDFF-regels bevatten uitsluitend zoogdieren; zij
+zijn nevenregistraties van het deel van de BMP-vogeltellers dat aan DAZ deelnam
+en alle tijdens zo'n bezoek waargenomen zoogdieren noteerde. Daarom bewijst een
+eenduidig gekoppeld positief 17.204-record deelname van dat bezoek. Het
+ontbreken van zo'n record bij een ander BMP-bezoek bewijst geen deelname en
+levert dus geen volledig negatief DAZ-bezoek op.
+
+Van de 10.670 openbare records koppelen 3.171 op datum en precies één geraakt
+SOVON-plot eenduidig aan 1.475 BMP-bezoeken in 49 plots (2005-2022). Voor deze
+bezoeken is een matrix gemaakt voor Konijn, Haas, Vos, Ree, Eekhoorn, Egel en
+Muskusrat. Zij bevat 10.325 doelsoortregels: 2.681 positieve tellingen, 7.552
+echte nullen en 92 onbesliste regels. Die 92 worden niet als nul gebruikt,
+omdat een positief record van hetzelfde taxon meerdere BMP-bezoeken kan
+betreffen. Van de 161 positieve bijvangstrecords koppelen er 50 eenduidig; zij
+vormen 49 positieve bezoek-taxonregels en krijgen nooit nullen. De overige
+1.026 meervoudig koppelbare en 6.473 niet koppelbare bronrecords blijven
+zichtbaar in de recordselectie. De vier tabellen worden gecontroleerd met
+`--audit-daz-bmp`; er staan geen afgeleide DAZ-tabellen in het beveiligde
+schema.
+
+Methodische grondslag: [NEM Meetprogramma Zoogdieren](https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren)
+en [Kwaliteitsrapportage NEM 2024](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2025/05/meetprogrammasvoorfloraenfauna2024.pdf).
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
@@ -190,7 +214,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
 | `11.201` Bospaddenstoelen | 982 | 216 | 1999-2016 | vaste plots; soort- en habitatgeschiktheid behouden |
 | `12.204` Het Nieuwe Strepen | 4.569 | 1.145 | 2012-2024 | onafhankelijke hokbezoeken eerst onderscheiden |
-| `17.204` DAZ-BMP | 10.670 | 1.681 | 1994-2022 | doelsoorten en overlap met vogelreeks toetsen |
+| `17.204` DAZ-BMP | 10.670 | 1.475 bevestigd | 1994-2022 | gekoppeld aan BMP; doelsoortmatrix met taxonspecifieke ambiguïteitsblokkade |
 | `03.203` Nachtvlinders | 596 | 4 | 2019-2025 | geen nullen uit huidige NDFF-regels afleiden |
 | `11.204` Bospaddenstoelen verspreiding | 14 | 2 | 2017 | te klein voor lokale trend |
 | `13.201` Beek- en poldervissen | 20 | 6 | 2014 | te klein voor lokale tijdreeks |

@@ -37,6 +37,7 @@ REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
 AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
+DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -44,6 +45,7 @@ REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
+DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -190,6 +192,27 @@ RABBIT_RECONSTRUCTION_EXPECTED = {
     "multiple_plot_records": 5809,
     "secure_source_records": 0,
     "secure_derived_tables": 0,
+}
+DAZ_BMP_RECONSTRUCTION_EXPECTED = {
+    "source_records": 10670,
+    "unique_link_records": 3171,
+    "multiple_link_records": 1026,
+    "unlinked_records": 6473,
+    "candidate_links": 5404,
+    "confirmed_visits": 1475,
+    "confirmed_plots": 49,
+    "target_matrix_rows": 10325,
+    "target_positive_rows": 2681,
+    "true_zero_rows": 7552,
+    "ambiguous_target_rows": 92,
+    "target_count_sum": 12685,
+    "bycatch_positive_rows": 49,
+    "bycatch_positive_records": 50,
+    "ambiguous_confirmed_visits": 159,
+    "secure_source_records": 58,
+    "secure_linked_to_public": 58,
+    "secure_derived_tables": 0,
+    "invalid_matrix_rows": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
     "canonical_records": 810983,
@@ -695,6 +718,62 @@ def classify_rabbit_record_signal(
     return "uniek_binnen_hokdatum_taxon"
 
 
+def build_daz_bmp_matrix(
+    confirmed_visits: set[int],
+    positive_counts: dict[tuple[int, str], tuple[int, int]],
+    ambiguous_counts: dict[tuple[int, str], int],
+) -> list[dict[str, object]]:
+    """Bouw de DAZ-matrix voor aantoonbaar deelnemende BMP-bezoeken.
+
+    Een eenduidig gekoppelde positieve 17.204-regel bewijst deelname. Voor de
+    zeven DAZ-doelsoorten is ontbreken dan een echte nul, behalve als een
+    meervoudig koppelbaar record van hetzelfde taxon die nul onzeker maakt.
+    Bijvangsten krijgen uitsluitend positieve regels en nooit afgeleide nullen.
+    """
+    rows: list[dict[str, object]] = []
+    for visit_id in sorted(confirmed_visits):
+        for taxon in sorted(DAZ_TARGET_SPECIES):
+            count, source_records = positive_counts.get((visit_id, taxon), (0, 0))
+            ambiguous = ambiguous_counts.get((visit_id, taxon), 0)
+            if count > 0:
+                status = "waargenomen"
+                value_status = "minimum_door_ambiguiteit" if ambiguous else "exact"
+                value: int | None = count
+                zero_rule = "bevestigde_daz_deelname"
+            elif ambiguous:
+                status = "onbepaald_ambigu"
+                value_status = "niet_toewijsbaar"
+                value = None
+                zero_rule = "geblokkeerd_door_ambigu_record"
+            else:
+                status = "echte_nul"
+                value_status = "echte_nul"
+                value = 0
+                zero_rule = "bevestigde_daz_deelname"
+            rows.append({
+                "visit_id": visit_id, "taxon": taxon, "relation": "doelsoort",
+                "status": status, "count": value, "source_records": source_records,
+                "ambiguous_records": ambiguous, "value_status": value_status,
+                "zero_rule": zero_rule,
+            })
+
+        bycatch_taxa = sorted({
+            taxon for candidate_visit, taxon in positive_counts
+            if candidate_visit == visit_id and taxon not in DAZ_TARGET_SPECIES
+        })
+        for taxon in bycatch_taxa:
+            count, source_records = positive_counts[(visit_id, taxon)]
+            ambiguous = ambiguous_counts.get((visit_id, taxon), 0)
+            rows.append({
+                "visit_id": visit_id, "taxon": taxon, "relation": "bijvangst",
+                "status": "waargenomen", "count": count,
+                "source_records": source_records, "ambiguous_records": ambiguous,
+                "value_status": "minimum_door_ambiguiteit" if ambiguous else "exact",
+                "zero_rule": "niet_van_toepassing_bijvangst",
+            })
+    return rows
+
+
 def classify_bat_records(
     rows: Iterable[dict[str, object]],
 ) -> dict[str, dict[str, object]]:
@@ -890,6 +969,10 @@ ADDITIONAL_SCOPE_SOURCE_URLS = {
         "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-208-vleermuistransecttelling-nem/",
         "https://www.zoogdiervereniging.nl/sites/default/files/2024-10/Handleiding%20Vleermuis%20transecttellingen.pdf",
         "https://www.zoogdiervereniging.nl/sites/default/files/2025-03/n2023009_algemene_praktische_handleiding_uitvoering_vleermus.pdf",
+    ),
+    ("17.204", "Zoogdieren (overig)"): (
+        "https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren",
+        "https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2025/05/meetprogrammasvoorfloraenfauna2024.pdf",
     ),
     ("17.209", "Zoogdieren (overig)"): (
         "https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren",
@@ -1478,6 +1561,36 @@ SELECT DISTINCT DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
 FROM Meijendel.ndff_open_waarneming AS o
 WHERE o.protocol LIKE '17.204%'
   AND o.soortgroep_raw='Zoogdieren (overig)';
+"""
+
+
+def daz_bmp_source_sql() -> str:
+    """Lees alle openbare positieve zoogdierregistraties van NEM 17.204."""
+    return """
+SELECT o.waarneming_id,DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       o.wetenschappelijke_naam,o.aantal_raw,o.schaal_telmethode,
+       o.telonderwerp,o.determinatiemethode,o.bronhouder,o.vervaagd
+FROM Meijendel.ndff_open_waarneming AS o
+WHERE o.protocol LIKE '17.204%'
+ORDER BY o.waarneming_id;
+"""
+
+
+def daz_bmp_candidate_sql() -> str:
+    """Koppel 17.204-records aan ruimtelijk mogelijke BMP-bezoeken op datum."""
+    return """
+SELECT o.waarneming_id,b.bezoek_id,b.plot_id,
+       DATE_FORMAT(b.bezoek_datum,'%Y-%m-%d'),
+       COUNT(*) OVER (PARTITION BY o.waarneming_id) AS kandidaat_bezoekaantal
+FROM Meijendel.ndff_open_waarneming AS o
+JOIN Meijendel.ndff_sovon_plot AS p
+  ON p.plotversie_id=1
+ AND ST_Intersects(o.openbare_geometrie,p.plot_geometrie)
+JOIN Meijendel.dagbezoeken_bmp AS b
+  ON b.plot_id=p.plot_id
+ AND b.bezoek_datum=DATE(o.periode_start)
+WHERE o.protocol LIKE '17.204%'
+ORDER BY o.waarneming_id,b.bezoek_id;
 """
 
 
@@ -2765,6 +2878,184 @@ def reconstruct_konijnen(
     }
 
 
+def reconstruct_daz_bmp(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Reconstructeer DAZ-deelname en echte nullen binnen bekende BMP-bezoeken."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    source_output = run_mysql(mysql_client, query_args, daz_bmp_source_sql(), capture=True)
+    source: dict[int, dict[str, object]] = {}
+    for line in source_output.splitlines():
+        (observation_id, visit_date, year, taxon, raw_count, scale, subject,
+         determination, holder, blurred) = line.split("\t")
+        if (not raw_count.isdigit() or int(raw_count) <= 0
+                or scale != "exact aantal" or subject != "levend exemplaar"
+                or determination != "gezien" or holder != "Zoogdiervereniging"
+                or blurred != "0"):
+            raise ValueError("Een 17.204-record wijkt af van het gecontroleerde DAZ-profiel.")
+        observation = int(observation_id)
+        source[observation] = {
+            "date": visit_date, "year": int(year), "taxon": taxon,
+            "count": int(raw_count),
+        }
+    if len(source) != 10_670:
+        raise ValueError("De 17.204-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    candidate_output = run_mysql(mysql_client, query_args, daz_bmp_candidate_sql(), capture=True)
+    candidates: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for line in candidate_output.splitlines():
+        observation_id, visit_id, plot_id, visit_date, candidate_count = line.split("\t")
+        observation = int(observation_id)
+        if observation not in source:
+            raise ValueError("DAZ-kandidaatkoppeling verwijst naar een record buiten 17.204.")
+        candidates[observation].append({
+            "visit_id": int(visit_id), "plot_id": int(plot_id),
+            "date": visit_date, "candidate_count": int(candidate_count),
+        })
+    if any(len(items) != int(items[0]["candidate_count"]) for items in candidates.values()):
+        raise ValueError("Inconsistente kandidaat-aantallen in DAZ-BMP-koppeling.")
+
+    unique_links = {
+        observation: items[0]
+        for observation, items in candidates.items()
+        if len(items) == 1
+    }
+    confirmed_visits = {int(item["visit_id"]) for item in unique_links.values()}
+    visit_meta: dict[int, dict[str, object]] = {}
+    positive_counts: dict[tuple[int, str], tuple[int, int]] = {}
+    unique_records_by_visit: Counter[int] = Counter()
+    for observation, item in unique_links.items():
+        visit_id = int(item["visit_id"])
+        visit_meta[visit_id] = item
+        unique_records_by_visit[visit_id] += 1
+        taxon = str(source[observation]["taxon"])
+        count, records = positive_counts.get((visit_id, taxon), (0, 0))
+        positive_counts[(visit_id, taxon)] = (
+            count + int(source[observation]["count"]), records + 1,
+        )
+
+    ambiguous_counts: Counter[tuple[int, str]] = Counter()
+    ambiguous_records_by_visit: Counter[int] = Counter()
+    for observation, items in candidates.items():
+        if len(items) <= 1:
+            continue
+        taxon = str(source[observation]["taxon"])
+        for item in items:
+            visit_id = int(item["visit_id"])
+            if visit_id in confirmed_visits:
+                ambiguous_counts[(visit_id, taxon)] += 1
+                ambiguous_records_by_visit[visit_id] += 1
+
+    matrix = build_daz_bmp_matrix(
+        confirmed_visits,
+        positive_counts,
+        dict(ambiguous_counts),
+    )
+
+    visit_values: list[str] = []
+    visit_note = (
+        "DAZ-deelname is bevestigd door minimaal één eenduidig aan dit BMP-bezoek "
+        "gekoppeld positief 17.204-record. Niet-bevestigde BMP-bezoeken worden niet "
+        "als DAZ-bezoek gebruikt. BMP-bezoektijd is bekend; afzonderlijke DAZ-inspanning niet."
+    )
+    for visit_id in sorted(confirmed_visits):
+        meta = visit_meta[visit_id]
+        visit_values.append(
+            f"({sql_text(DAZ_BMP_RULE_VERSION)},{visit_id},{int(meta['plot_id'])},"
+            f"{sql_text(str(meta['date']))},{int(str(meta['date'])[:4])},"
+            "'bevestigd_door_positieve_17_204',"
+            f"{unique_records_by_visit[visit_id]},{ambiguous_records_by_visit[visit_id]},"
+            "'zeven_daz_doelsoorten','bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk',"
+            f"{sql_text(visit_note)})"
+        )
+
+    selection_values: list[str] = []
+    for observation, row in sorted(source.items()):
+        items = candidates.get(observation, [])
+        if len(items) == 1:
+            link_status = "eenduidig_bmp_bezoek"
+            visit_sql = str(int(items[0]["visit_id"]))
+            use_status = "opgenomen_in_bezoekmatrix"
+        elif items:
+            link_status = "meerdere_bmp_bezoeken"
+            visit_sql = "NULL"
+            use_status = "alleen_bronrecord"
+        else:
+            link_status = "geen_bmp_bezoek"
+            visit_sql = "NULL"
+            use_status = "alleen_bronrecord"
+        relation = "doelsoort" if str(row["taxon"]) in DAZ_TARGET_SPECIES else "bijvangst"
+        note = (
+            "Openbare 17.204-registratie. Een eenduidige koppeling vereist dezelfde datum "
+            "en precies één door het kilometerhok geraakt SOVON-plot met een BMP-bezoek."
+        )
+        selection_values.append(
+            f"({sql_text(DAZ_BMP_RULE_VERSION)},{observation},'17.204',"
+            f"{sql_text(str(row['taxon']))},{sql_text(relation)},{int(row['count'])},"
+            f"{len(items)},{sql_text(link_status)},{visit_sql},{sql_text(use_status)},"
+            f"{sql_text(note)})"
+        )
+
+    candidate_values: list[str] = []
+    for observation, items in sorted(candidates.items()):
+        for item in items:
+            candidate_values.append(
+                f"({sql_text(DAZ_BMP_RULE_VERSION)},{observation},{int(item['visit_id'])},"
+                f"{int(item['plot_id'])},{sql_text(str(item['date']))})"
+            )
+
+    matrix_values: list[str] = []
+    for row in matrix:
+        count_sql = "NULL" if row["count"] is None else str(int(row["count"]))
+        note = (
+            "Echte nul uitsluitend voor een DAZ-doelsoort binnen een bevestigd deelnemend "
+            "BMP-bezoek. Een meervoudig koppelbaar record van hetzelfde taxon blokkeert de nul."
+        )
+        matrix_values.append(
+            f"({sql_text(DAZ_BMP_RULE_VERSION)},{int(row['visit_id'])},"
+            f"{sql_text(str(row['taxon']))},{sql_text(str(row['relation']))},"
+            f"{sql_text(str(row['status']))},{count_sql},{int(row['source_records'])},"
+            f"{int(row['ambiguous_records'])},{sql_text(str(row['value_status']))},"
+            f"{sql_text(str(row['zero_rule']))},{sql_text(note)})"
+        )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {DAZ_BMP_TABLE_PREFIX}_recordkandidaat WHERE reconstructieversie={sql_text(DAZ_BMP_RULE_VERSION)};",
+        f"DELETE FROM {DAZ_BMP_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(DAZ_BMP_RULE_VERSION)};",
+        f"DELETE FROM {DAZ_BMP_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(DAZ_BMP_RULE_VERSION)};",
+        f"DELETE FROM {DAZ_BMP_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(DAZ_BMP_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        f"{DAZ_BMP_TABLE_PREFIX}_bezoek",
+        "reconstructieversie,bezoek_id,plot_id,bezoekdatum,jaar,deelnamestatus,eenduidig_bronrecordaantal,ambigu_kandidaatrecordaantal,nulbereikstatus,inspanningstatus,kwaliteitsnotitie",
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{DAZ_BMP_TABLE_PREFIX}_recordselectie",
+        "reconstructieversie,waarneming_id,protocol_sleutel,wetenschappelijke_naam,doelrelatie,aantal_exact,kandidaat_bezoekaantal,koppelstatus,bezoek_id,gebruiksstatus,kwaliteitsnotitie",
+        selection_values,
+    )
+    statements += _batched_insert(
+        f"{DAZ_BMP_TABLE_PREFIX}_recordkandidaat",
+        "reconstructieversie,waarneming_id,bezoek_id,plot_id,bezoekdatum",
+        candidate_values,
+    )
+    statements += _batched_insert(
+        f"{DAZ_BMP_TABLE_PREFIX}_bezoek_taxon",
+        "reconstructieversie,bezoek_id,wetenschappelijke_naam,doelrelatie,waarnemingsstatus,aantal,bronrecordaantal,ambigu_recordaantal,telwaardestatus,nulregel,kwaliteitsnotitie",
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+
+    audit_output = run_mysql(
+        mysql_client, query_args, daz_bmp_validation_sql(), capture=True,
+    )
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -2948,6 +3239,36 @@ SELECT JSON_OBJECT(
 """
 
 
+def daz_bmp_validation_sql() -> str:
+    version = sql_text(DAZ_BMP_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_daz_bmp_{suffix}") for suffix in (
+        "recordselectie", "recordkandidaat", "bezoek", "bezoek_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version}),
+  'unique_link_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='eenduidig_bmp_bezoek'),
+  'multiple_link_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='meerdere_bmp_bezoeken'),
+  'unlinked_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='geen_bmp_bezoek'),
+  'candidate_links',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordkandidaat WHERE reconstructieversie={version}),
+  'confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version}),
+  'confirmed_plots',(SELECT COUNT(DISTINCT plot_id) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version}),
+  'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'ambiguous_target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='onbepaald_ambigu'),
+  'target_count_sum',(SELECT SUM(aantal) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'bycatch_positive_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'ambiguous_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version} AND ambigu_kandidaatrecordaantal>0),
+  'secure_source_records',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE protocol LIKE '17.204%'),
+  'secure_linked_to_public',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register r JOIN Meijendel_ndff_secure.ndff_open_secure_koppeling k ON k.secure_waarneming_id=r.waarneming_id WHERE r.protocol LIKE '17.204%' AND k.open_waarneming_id IS NOT NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables})),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -3016,6 +3337,16 @@ def validate_rabbit_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != RABBIT_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Konijnentellingclassificatie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_daz_bmp_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != DAZ_BMP_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (DAZ_BMP_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(DAZ_BMP_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != DAZ_BMP_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"DAZ-BMP-reconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -3311,6 +3642,8 @@ def main() -> int:
     mode.add_argument("--audit-vleermuizen", action="store_true")
     mode.add_argument("--reconstruct-konijnen", action="store_true")
     mode.add_argument("--audit-konijnen", action="store_true")
+    mode.add_argument("--reconstruct-daz-bmp", action="store_true")
+    mode.add_argument("--audit-daz-bmp", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -3440,6 +3773,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_rabbit_reconstruction(metrics)
         print(f"OK: lokale konijnentellingclassificatie {RABBIT_COUNT_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_daz_bmp:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_daz_bmp(args.mysql_client, client_args)
+        validate_daz_bmp_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_daz_bmp:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            daz_bmp_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_daz_bmp_reconstruction(metrics)
+        print(f"OK: lokale DAZ-BMP-reconstructie {DAZ_BMP_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

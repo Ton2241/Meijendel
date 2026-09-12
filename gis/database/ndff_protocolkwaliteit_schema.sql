@@ -890,3 +890,108 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_konijn_hokdatum_taxon (
   CHECK (bronrecordaantal > 0),
   CHECK (aantal_som >= aantal_max AND aantal_max >= aantal_min AND aantal_min > 0)
 ) ENGINE=InnoDB;
+
+-- Reconstructie van NEM 17.204 (Dagactieve Zoogdieren binnen BMP).
+-- De zoogdieren zijn tijdens BMP-bezoeken als afzonderlijke nevenregistratie
+-- verzameld. Alleen een eenduidig aan een BMP-bezoek gekoppeld positief record
+-- bewijst dat de teller aan DAZ deelnam. Andere BMP-bezoeken blijven onbekend.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_id INT NOT NULL,
+  plot_id INT NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  deelnamestatus ENUM('bevestigd_door_positieve_17_204') NOT NULL,
+  eenduidig_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ambigu_kandidaatrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulbereikstatus ENUM('zeven_daz_doelsoorten') NOT NULL,
+  inspanningstatus ENUM('bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk') NOT NULL,
+  kwaliteitsnotitie VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_id),
+  KEY ix_ndff_daz_bmp_bezoek_plot_jaar (plot_id, jaar, bezoekdatum),
+  CONSTRAINT fk_ndff_daz_bmp_bezoek_bron FOREIGN KEY (bezoek_id)
+    REFERENCES Meijendel.dagbezoeken_bmp (bezoek_id),
+  CHECK (jaar = YEAR(bezoekdatum)),
+  CHECK (eenduidig_bronrecordaantal > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '17.204',
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  aantal_exact INT UNSIGNED NOT NULL,
+  kandidaat_bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  koppelstatus ENUM('eenduidig_bmp_bezoek','meerdere_bmp_bezoeken','geen_bmp_bezoek') NOT NULL,
+  bezoek_id INT DEFAULT NULL,
+  gebruiksstatus ENUM('opgenomen_in_bezoekmatrix','alleen_bronrecord') NOT NULL,
+  kwaliteitsnotitie VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_daz_bmp_selectie_status (koppelstatus, doelrelatie),
+  KEY ix_ndff_daz_bmp_selectie_bezoek (reconstructieversie, bezoek_id),
+  CONSTRAINT fk_ndff_daz_bmp_selectie_bron FOREIGN KEY (waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_daz_bmp_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_id)
+    REFERENCES Meijendel.ndff_daz_bmp_bezoek (reconstructieversie, bezoek_id),
+  CHECK (aantal_exact > 0),
+  CHECK (
+    (koppelstatus='eenduidig_bmp_bezoek' AND bezoek_id IS NOT NULL
+      AND gebruiksstatus='opgenomen_in_bezoekmatrix')
+    OR
+    (koppelstatus<>'eenduidig_bmp_bezoek' AND bezoek_id IS NULL
+      AND gebruiksstatus='alleen_bronrecord')
+  )
+) ENGINE=InnoDB;
+
+-- Alle ruimtelijk en temporeel mogelijke record-bezoekkoppelingen blijven
+-- bewaard. Zo blijft zichtbaar waarom een record eenduidig of ambigu is.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordkandidaat (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  bezoek_id INT NOT NULL,
+  plot_id INT NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id, bezoek_id),
+  KEY ix_ndff_daz_bmp_kandidaat_bezoek (reconstructieversie, bezoek_id),
+  CONSTRAINT fk_ndff_daz_bmp_kandidaat_selectie FOREIGN KEY
+    (reconstructieversie, waarneming_id)
+    REFERENCES Meijendel.ndff_daz_bmp_recordselectie
+      (reconstructieversie, waarneming_id),
+  CONSTRAINT fk_ndff_daz_bmp_kandidaat_bezoek FOREIGN KEY (bezoek_id)
+    REFERENCES Meijendel.dagbezoeken_bmp (bezoek_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_id INT NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul','onbepaald_ambigu') NOT NULL,
+  aantal INT UNSIGNED DEFAULT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ambigu_recordaantal SMALLINT UNSIGNED NOT NULL,
+  telwaardestatus ENUM('exact','minimum_door_ambiguiteit','echte_nul','niet_toewijsbaar') NOT NULL,
+  nulregel ENUM('bevestigde_daz_deelname','niet_van_toepassing_bijvangst','geblokkeerd_door_ambigu_record') NOT NULL,
+  kwaliteitsnotitie VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_id, wetenschappelijke_naam),
+  KEY ix_ndff_daz_bmp_taxon_status
+    (wetenschappelijke_naam, doelrelatie, waarnemingsstatus),
+  CONSTRAINT fk_ndff_daz_bmp_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_id)
+    REFERENCES Meijendel.ndff_daz_bmp_bezoek (reconstructieversie, bezoek_id),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND aantal>0 AND bronrecordaantal>0)
+    OR
+    (waarnemingsstatus='echte_nul' AND aantal=0 AND bronrecordaantal=0
+      AND ambigu_recordaantal=0 AND doelrelatie='doelsoort')
+    OR
+    (waarnemingsstatus='onbepaald_ambigu' AND aantal IS NULL
+      AND bronrecordaantal=0 AND ambigu_recordaantal>0 AND doelrelatie='doelsoort')
+  )
+) ENGINE=InnoDB;

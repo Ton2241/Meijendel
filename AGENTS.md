@@ -265,6 +265,16 @@ MySQL:
   Sluit de 11 als `mogelijke_overlap_17_204` gemarkeerde regels niet zonder
   aanvullende bronkoppeling samen met DAZ-BMP in één telling. Controleer vóór
   gebruik met `--audit-konijnen`
+- gebruik voor DAZ-BMP-protocol `17.204` reconstructieversie
+  `ndff-daz-bmp-v1` en de vier openbare tabellen
+  `Meijendel.ndff_daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van
+  de BMP-vogeltellers dat aan DAZ deelnam; het zijn geen vogelwaarnemingen.
+  Beschouw een BMP-bezoek alleen als deelnemend wanneer minstens één
+  17.204-record eenduidig op datum en SOVON-plot aan dat bezoek is gekoppeld.
+  Leid alleen binnen zo'n bevestigd bezoek echte nullen af voor de zeven
+  DAZ-doelsoorten. Een meervoudig koppelbaar record van hetzelfde taxon
+  blokkeert die nul. Leid nooit nullen af voor bijvangsten of voor overige
+  BMP-bezoeken. Controleer vóór gebruik met `--audit-daz-bmp`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

@@ -40,13 +40,15 @@
   `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
-- De reconstructies van `07.201`, `10.201`, `01.201` en `17.208` zijn afgerond.
+- De reconstructies van `07.201`, `10.201`, `01.201`, `17.208` en `17.204` zijn afgerond.
   `17.209` is als positieve sectietelling geclassificeerd, maar kan zonder
   route- en sectie-ID's niet tot native bezoeken of nullen worden
-  gereconstrueerd. Ga bij de overige aangewezen NEM-reeksen verder met
-  `17.204` (DAZ-BMP), mede om de 11 mogelijke overlapsignalen met `17.209` te
-  beoordelen. Ken pas nullen toe nadat per protocol meeteenheid, bevestigd
-  bezoek en doelsoortenbereik vaststaan.
+  gereconstrueerd. DAZ-BMP bevat 1.475 bevestigde bezoeken en 7.552 echte
+  doelsoortnullen; de 11 mogelijke overlapsignalen met `17.209` blijven zonder
+  oorspronkelijke route-/sectiesleutel onbeslist. Ga nu verder met de volgende
+  NEM-reeks op basis van omvang en reconstrueerbaarheid. Ken pas nullen toe
+  nadat per protocol meeteenheid, bevestigd bezoek en doelsoortenbereik
+  vaststaan.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
   PQ-reeks: de provincie blijft de gezaghebbende bron.
 

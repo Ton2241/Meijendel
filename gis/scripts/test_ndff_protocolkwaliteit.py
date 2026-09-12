@@ -75,6 +75,10 @@ def main() -> int:
         "meijendel.ndff_vleermuis_bezoek_taxon",
         "meijendel.ndff_konijn_recordselectie",
         "meijendel.ndff_konijn_hokdatum_taxon",
+        "meijendel.ndff_daz_bmp_recordselectie",
+        "meijendel.ndff_daz_bmp_recordkandidaat",
+        "meijendel.ndff_daz_bmp_bezoek",
+        "meijendel.ndff_daz_bmp_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -83,6 +87,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
     assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
     assert "meijendel_ndff_secure.ndff_konijn_" not in folded
+    assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -253,6 +258,7 @@ def main() -> int:
     assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v1"
     assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
     assert module.RABBIT_COUNT_RULE_VERSION == "ndff-konijnentelling-v1"
+    assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
 
     assert module.classify_rabbit_season("2020-03-15") == "voorjaar_huidig_venster"
     assert module.classify_rabbit_season("2020-04-07") == "voorjaar_huidig_venster"
@@ -262,6 +268,21 @@ def main() -> int:
     assert module.classify_rabbit_record_signal(1, 1) == "uniek_binnen_hokdatum_taxon"
     assert module.classify_rabbit_record_signal(2, 1) == "meerdere_sectieregels_binnen_hokdatum_taxon"
     assert module.classify_rabbit_record_signal(2, 2) == "gelijke_telwaarde_binnen_hokdatum_taxon"
+
+    daz_matrix = module.build_daz_bmp_matrix(
+        confirmed_visits={101, 102},
+        positive_counts={(101, "Oryctolagus cuniculus"): (3, 1),
+                         (101, "Dama dama"): (2, 1)},
+        ambiguous_counts={(101, "Oryctolagus cuniculus"): 1,
+                          (102, "Lepus europaeus"): 2},
+    )
+    daz_by_key = {(row["visit_id"], row["taxon"]): row for row in daz_matrix}
+    assert daz_by_key[(101, "Oryctolagus cuniculus")]["status"] == "waargenomen"
+    assert daz_by_key[(101, "Oryctolagus cuniculus")]["value_status"] == "minimum_door_ambiguiteit"
+    assert daz_by_key[(101, "Dama dama")]["relation"] == "bijvangst"
+    assert (102, "Dama dama") not in daz_by_key
+    assert daz_by_key[(102, "Lepus europaeus")]["status"] == "onbepaald_ambigu"
+    assert daz_by_key[(102, "Capreolus capreolus")]["status"] == "echte_nul"
 
     assert module.classify_bat_route(83_999.0) == {
         "routefamilie_id": 2,
@@ -369,6 +390,8 @@ def main() -> int:
     assert "--audit-vleermuizen" in importer_text
     assert "--reconstruct-konijnen" in importer_text
     assert "--audit-konijnen" in importer_text
+    assert "--reconstruct-daz-bmp" in importer_text
+    assert "--audit-daz-bmp" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -382,6 +405,7 @@ def main() -> int:
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
     assert module.RABBIT_TABLE_PREFIX == "Meijendel.ndff_konijn"
+    assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.ndff_daz_bmp"
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -409,6 +433,12 @@ def main() -> int:
     assert "o.protocol LIKE '17.209%'" in rabbit_source_sql
     assert "o.soortgroep_raw='Zoogdieren (overig)'" in rabbit_source_sql
     assert "Meijendel_ndff_secure" not in rabbit_source_sql
+    daz_source_sql = " ".join(module.daz_bmp_source_sql().split())
+    assert "o.protocol LIKE '17.204%'" in daz_source_sql
+    assert "Meijendel_ndff_secure" not in daz_source_sql
+    daz_candidate_sql = " ".join(module.daz_bmp_candidate_sql().split())
+    assert "Meijendel.dagbezoeken_bmp" in daz_candidate_sql
+    assert "ST_Intersects" in daz_candidate_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -475,6 +505,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende konijnentellingclassificatie is niet geblokkeerd")
+    module.validate_daz_bmp_reconstruction(dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED))
+    broken_daz = dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED)
+    broken_daz["true_zero_rows"] -= 1
+    try:
+        module.validate_daz_bmp_reconstruction(broken_daz)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende DAZ-BMP-reconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
