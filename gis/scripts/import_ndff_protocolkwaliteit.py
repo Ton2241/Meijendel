@@ -33,10 +33,12 @@ VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
 REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
+AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
 REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
+AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -117,6 +119,28 @@ REPTILE_RECONSTRUCTION_EXPECTED = {
     "fully_negative_visits": 0,
     "invalid_effort_claims": 0,
     "legacy_secure_tables": 0,
+}
+AMPHIBIAN_RECONSTRUCTION_EXPECTED = {
+    "source_records": 2439,
+    "blurred_records": 80,
+    "year_aggregate_records": 80,
+    "visits": 211,
+    "water_families": 50,
+    "water_geometries": 52,
+    "water_visits": 1300,
+    "analysis_taxa": 7,
+    "matrix_rows": 9100,
+    "positive_rows": 2274,
+    "zero_rows": 6826,
+    "exact_positive_rows": 584,
+    "presentie_positive_rows": 1556,
+    "minimum_positive_rows": 0,
+    "estimate_positive_rows": 0,
+    "mixed_positive_rows": 134,
+    "invalid_matrix_rows": 0,
+    "positive_source_mismatch": 0,
+    "kamsalamander_matrix_rows": 0,
+    "secure_derived_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
     "canonical_records": 810983,
@@ -410,6 +434,135 @@ def reconstruct_reptile_route_families(
             area < historical_area_m2 for _, _, area in geometry.values()
         ),
     }
+
+
+def reconstruct_amphibian_water_families(
+    rows: Iterable[dict[str, object]],
+    *,
+    maximum_version_distance_m: float = 30.0,
+) -> dict[str, object]:
+    """Koppel alleen nabije, niet gelijktijdig gebruikte watergeometrieën.
+
+    De afstandsregel is bewust conservatief. Zodra twee geometrieën in
+    hetzelfde jaar zijn gebruikt, blijven zij afzonderlijke wateren.
+    """
+    geometry: dict[str, tuple[float, float, float]] = {}
+    years: dict[str, set[int]] = defaultdict(set)
+    records: dict[str, int] = defaultdict(int)
+    for row in rows:
+        key = str(row["geometry"])
+        geometry[key] = (float(row["x"]), float(row["y"]), float(row["area"]))
+        years[key].add(int(row["year"]))
+        records[key] += int(row["records"])
+
+    parent = {key: key for key in geometry}
+
+    def find(key: str) -> str:
+        while parent[key] != key:
+            parent[key] = parent[parent[key]]
+            key = parent[key]
+        return key
+
+    def component_years(root: str) -> set[int]:
+        return set().union(*(years[key] for key in geometry if find(key) == root))
+
+    candidates: list[tuple[float, str, str]] = []
+    ordered = sorted(geometry)
+    for index, left in enumerate(ordered):
+        for right in ordered[index + 1:]:
+            if years[left] & years[right]:
+                continue
+            distance = math.hypot(
+                geometry[left][0] - geometry[right][0],
+                geometry[left][1] - geometry[right][1],
+            )
+            if distance <= maximum_version_distance_m:
+                candidates.append((distance, left, right))
+    for _, left, right in sorted(candidates):
+        left_root, right_root = find(left), find(right)
+        if left_root == right_root:
+            continue
+        if component_years(left_root) & component_years(right_root):
+            continue
+        parent[right_root] = left_root
+
+    grouped: dict[str, set[str]] = defaultdict(set)
+    for key in geometry:
+        grouped[find(key)].add(key)
+    families: list[dict[str, object]] = []
+    for members in grouped.values():
+        family_years = set().union(*(years[key] for key in members))
+        xs = [geometry[key][0] for key in members]
+        ys = [geometry[key][1] for key in members]
+        families.append({
+            "geometries": members,
+            "first_year": min(family_years),
+            "last_year": max(family_years),
+            "year_count": len(family_years),
+            "record_count": sum(records[key] for key in members),
+            "extent_m": math.hypot(max(xs) - min(xs), max(ys) - min(ys)),
+        })
+    families.sort(key=lambda row: (-int(row["record_count"]), sorted(row["geometries"])))
+    geometry_to_family: dict[str, int] = {}
+    for family_id, family in enumerate(families, 1):
+        family["family_id"] = family_id
+        for key in family["geometries"]:
+            geometry_to_family[key] = family_id
+    return {
+        "family_count": len(families),
+        "families": families,
+        "geometry_to_family": geometry_to_family,
+        "geometry": geometry,
+        "years": years,
+        "records": records,
+    }
+
+
+def amphibian_analysis_taxon(source_taxon: str) -> str:
+    """Normaliseer uitsluitend de twee bronlabels voor Bastaardkikker."""
+    if source_taxon == "Pelophylax kl. esculentus":
+        return "Pelophylax esculentus synklepton"
+    return source_taxon
+
+
+def parse_amphibian_measurement(scale: str, raw_value: str) -> dict[str, int | str | None]:
+    """Vertaal een RAVON-meetwaarde zonder klassen als telling te behandelen."""
+    if scale == "exact aantal" and re.fullmatch(r"\d+", raw_value):
+        value = int(raw_value)
+        return {"meetwaarde_type": "exact", "aantal_exact": value,
+                "ondergrens": value, "bovengrens": value,
+                "presentieklasse": None}
+    if scale == "presentieklasse (Ravon)":
+        classes = {
+            "1.0 - 10.0": (1, 1, 10),
+            "11.0 - 100.0": (2, 11, 100),
+            "minimaal 101.0": (3, 101, None),
+        }
+        if raw_value not in classes:
+            raise ValueError(f"Onbekende RAVON-presentieklasse: {raw_value}")
+        class_number, lower, upper = classes[raw_value]
+        return {"meetwaarde_type": "presentieklasse", "aantal_exact": None,
+                "ondergrens": lower, "bovengrens": upper,
+                "presentieklasse": class_number}
+    if scale == "minimum aantal":
+        match = re.fullmatch(r"minimaal (\d+)", raw_value)
+        if match:
+            return {"meetwaarde_type": "minimum", "aantal_exact": None,
+                    "ondergrens": int(match.group(1)), "bovengrens": None,
+                    "presentieklasse": None}
+    if scale == "geschat aantal":
+        match = re.fullmatch(r"(\d+) - (\d+)", raw_value)
+        if match:
+            return {"meetwaarde_type": "schatting", "aantal_exact": None,
+                    "ondergrens": int(match.group(1)),
+                    "bovengrens": int(match.group(2)),
+                    "presentieklasse": None}
+        if re.fullmatch(r"\d+", raw_value):
+            value = int(raw_value)
+            return {"meetwaarde_type": "schatting", "aantal_exact": None,
+                    "ondergrens": value, "bovengrens": value,
+                    "presentieklasse": None}
+    raise ValueError(f"Niet ondersteunde amfibieënmeetwaarde: {scale!r} / {raw_value!r}")
 
 
 def build_visit_taxon_matrix(
@@ -1273,6 +1426,56 @@ ORDER BY DATE(periode_start),periode_start,openbare_geometrie_sha256,
 """
 
 
+def amphibian_source_sql() -> str:
+    """Lees alleen onvervaagde openbare 01.201-waterregistraties."""
+    return """
+SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),COUNT(*)
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '01.201%'
+  AND o.soortgroep_raw='Amfibieën'
+  AND o.vervaagd=0
+GROUP BY o.periode_start,o.periode_stop,DATE(o.periode_start),o.jaar,5,6,7,8
+ORDER BY o.periode_start,o.periode_stop,5;
+"""
+
+
+def amphibian_observation_sql() -> str:
+    return """
+SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
+       openbare_geometrie_sha256,wetenschappelijke_naam,
+       COALESCE(stadium,''),schaal_telmethode,aantal_raw,COUNT(*)
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '01.201%'
+  AND soortgroep_raw='Amfibieën'
+  AND vervaagd=0
+GROUP BY periode_start,periode_stop,openbare_geometrie_sha256,
+         wetenschappelijke_naam,stadium,schaal_telmethode,aantal_raw
+ORDER BY periode_start,periode_stop,openbare_geometrie_sha256,
+         wetenschappelijke_naam,stadium,schaal_telmethode,aantal_raw;
+"""
+
+
+def amphibian_excluded_sql() -> str:
+    """Controleer de bewust niet gereconstrueerde vervaagde jaarregels."""
+    return """
+SELECT COUNT(*),
+       SUM(TIMESTAMPDIFF(HOUR,periode_start,periode_stop)>=8000),
+       COUNT(DISTINCT wetenschappelijke_naam),
+       MIN(wetenschappelijke_naam),MAX(wetenschappelijke_naam)
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '01.201%'
+  AND soortgroep_raw='Amfibieën'
+  AND vervaagd=1;
+"""
+
+
 def _batched_insert(table: str, columns: str, values: list[str], size: int = 1000) -> list[str]:
     return [
         f"INSERT INTO {table} ({columns}) VALUES " + ",".join(values[index:index + size]) + ";"
@@ -1692,6 +1895,264 @@ def reconstruct_reptielen(mysql_client: Path, client_args: list[str]) -> dict[st
     }
 
 
+def reconstruct_amfibieen(mysql_client: Path, client_args: list[str]) -> dict[str, int]:
+    """Bouw openbare 01.201-telgebied-, waterbezoek- en taxonlagen."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    source_output = run_mysql(
+        mysql_client, query_args, amphibian_source_sql(), capture=True
+    )
+    source_rows: list[dict[str, object]] = []
+    visit_meta: dict[str, dict[str, object]] = {}
+    visit_geometry_records: dict[tuple[str, str], int] = defaultdict(int)
+    for line in source_output.splitlines():
+        start, stop, date, year, geometry_key, x, y, area, records = line.split("\t")
+        visit = f"{start}|{stop}"
+        source_rows.append({
+            "geometry": geometry_key, "x": float(x), "y": float(y),
+            "area": float(area), "year": int(year), "records": int(records),
+        })
+        visit_geometry_records[(visit, geometry_key)] += int(records)
+        meta = visit_meta.setdefault(visit, {
+            "start": start, "stop": stop, "date": date, "year": int(year),
+            "records": 0,
+        })
+        meta["records"] = int(meta["records"]) + int(records)
+    if sum(int(row["records"]) for row in source_rows) != 2_439:
+        raise ValueError("De onvervaagde 01.201-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    reconstruction = reconstruct_amphibian_water_families(source_rows)
+    geometry_to_family = reconstruction["geometry_to_family"]
+    water_visit_records: dict[tuple[str, int], int] = defaultdict(int)
+    for (visit, geometry_key), records in visit_geometry_records.items():
+        water_visit_records[(visit, int(geometry_to_family[geometry_key]))] += records
+
+    observation_output = run_mysql(
+        mysql_client, query_args, amphibian_observation_sql(), capture=True
+    )
+    components: dict[tuple[str, int, str], list[dict[str, object]]] = defaultdict(list)
+    source_names: dict[tuple[str, int, str], set[str]] = defaultdict(set)
+    stages: dict[tuple[str, int, str], set[str]] = defaultdict(set)
+    analysis_taxa: set[str] = set()
+    for line in observation_output.splitlines():
+        (start, stop, geometry_key, source_taxon, stage, scale,
+         raw_value, record_count) = line.split("\t")
+        visit = f"{start}|{stop}"
+        family_id = int(geometry_to_family[geometry_key])
+        taxon = amphibian_analysis_taxon(source_taxon)
+        analysis_taxa.add(taxon)
+        key = (visit, family_id, taxon)
+        measurement = parse_amphibian_measurement(scale, raw_value)
+        measurement["record_count"] = int(record_count)
+        components[key].append(measurement)
+        source_names[key].add(source_taxon)
+        if stage:
+            stages[key].add(stage)
+    if len(analysis_taxa) != 7 or "Triturus cristatus" in analysis_taxa:
+        raise ValueError(f"Onverwacht openbaar doelsoortenbereik voor 01.201: {sorted(analysis_taxa)}")
+    excluded_output = run_mysql(
+        mysql_client, query_args, amphibian_excluded_sql(), capture=True
+    )
+    excluded_parts = excluded_output.split("\t")
+    if len(excluded_parts) != 5:
+        raise ValueError("De controle van uitgesloten 01.201-regels is onvolledig.")
+    blurred_records, year_aggregate_records, taxon_count = map(int, excluded_parts[:3])
+    if (blurred_records, year_aggregate_records, taxon_count,
+            excluded_parts[3], excluded_parts[4]) != (
+            80, 80, 1, "Triturus cristatus", "Triturus cristatus"):
+        raise ValueError("De vervaagde 01.201-jaaraggregaten wijken af van het gecontroleerde profiel.")
+
+    visit_keys = {
+        visit: hashlib.sha256(visit.encode("utf-8")).hexdigest()
+        for visit in visit_meta
+    }
+    water_visit_keys = {
+        (visit, family_id): hashlib.sha256(
+            f"{visit}|water:{family_id}".encode("utf-8")
+        ).hexdigest()
+        for visit, family_id in water_visit_records
+    }
+
+    family_visits: dict[int, set[tuple[str, int]]] = defaultdict(set)
+    family_records: dict[int, int] = defaultdict(int)
+    for key, record_count in water_visit_records.items():
+        _, family_id = key
+        family_visits[family_id].add(key)
+        family_records[family_id] += record_count
+    family_values: list[str] = []
+    family_status: dict[int, str] = {}
+    for family in reconstruction["families"]:
+        family_id = int(family["family_id"])
+        status = "handmatige_controle" if float(family["extent_m"]) > 30 else "waarschijnlijk"
+        family_status[family_id] = status
+        family_values.append(
+            f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},{family_id},'01.201',"
+            f"{sql_text(status)},{len(family_visits[family_id])},"
+            f"{len(family['geometries'])},{family_records[family_id]},"
+            f"{int(family['first_year'])},{int(family['last_year'])},"
+            f"{int(family['year_count'])},{float(family['extent_m']):.3f})"
+        )
+
+    geometry_values: list[str] = []
+    geometry_meta = reconstruction["geometry"]
+    geometry_years = reconstruction["years"]
+    for family in reconstruction["families"]:
+        members = set(family["geometries"])
+        anchor = min(members, key=lambda key: (min(geometry_years[key]), key))
+        anchor_x, anchor_y, _ = geometry_meta[anchor]
+        family_id = int(family["family_id"])
+        for geometry_key in sorted(members):
+            x, y, area = geometry_meta[geometry_key]
+            role = "anker" if geometry_key == anchor else "versie"
+            distance = math.hypot(x - anchor_x, y - anchor_y)
+            geometry_values.append(
+                f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},{sql_text(geometry_key)},"
+                f"{family_id},{sql_text(role)},{sql_text(anchor)},{distance:.3f},"
+                f"{x:.3f},{y:.3f},{area:.6f},{min(geometry_years[geometry_key])},"
+                f"{max(geometry_years[geometry_key])})"
+            )
+
+    visit_water_count: dict[str, int] = defaultdict(int)
+    for visit, _ in water_visit_records:
+        visit_water_count[visit] += 1
+    visit_values: list[str] = []
+    for visit, meta in sorted(visit_meta.items()):
+        date_only = (
+            str(meta["start"]).endswith("00:00:00")
+            and str(meta["stop"]).endswith("00:00:00")
+        )
+        period_encoding = "datuminterval" if date_only else "tijdvenster"
+        visit_values.append(
+            f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},{sql_text(visit_keys[visit])},"
+            f"{sql_text(str(meta['date']))},{sql_text(str(meta['start']))},"
+            f"{sql_text(str(meta['stop']))},{int(meta['year'])},{sql_text(period_encoding)},"
+            f"'alleen_bezoeken_met_positieve_waterregistratie','niet_afleidbaar',"
+            f"{visit_water_count[visit]},{int(meta['records'])})"
+        )
+
+    water_visit_values: list[str] = []
+    for (visit, family_id), record_count in sorted(water_visit_records.items()):
+        water_visit_values.append(
+            f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},"
+            f"{sql_text(water_visit_keys[(visit, family_id)])},"
+            f"{sql_text(visit_keys[visit])},{family_id},"
+            f"'positieve_registratie_aanwezig',{record_count})"
+        )
+
+    matrix_values: list[str] = []
+    matrix_metrics: dict[str, int] = defaultdict(int)
+    for visit_family in sorted(water_visit_records):
+        visit, family_id = visit_family
+        water_visit_key = water_visit_keys[visit_family]
+        for taxon in sorted(analysis_taxa):
+            key = (visit, family_id, taxon)
+            items = components.get(key, [])
+            if not items:
+                matrix_values.append(
+                    f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},{sql_text(water_visit_key)},"
+                    f"{sql_text(taxon)},NULL,NULL,'niet_van_toepassing','echte_nul',"
+                    f"NULL,'echte_nul',0,0,0,NULL,0,"
+                    f"{sql_text('Niet gemeld in een aantoonbaar bezocht water binnen een volledig 01.201-amfibieënbezoek; echte protocolnul voor deze doelsoort.')})"
+                )
+                matrix_metrics["zero_rows"] += 1
+                continue
+            types = {str(item["meetwaarde_type"]) for item in items}
+            measurement_type = next(iter(types)) if len(types) == 1 else "gemengd"
+            exact_value = (
+                sum(int(item["aantal_exact"]) * int(item["record_count"])
+                    for item in items)
+                if measurement_type == "exact" else None
+            )
+            lower = sum(
+                int(item["ondergrens"]) * int(item["record_count"])
+                for item in items if item["ondergrens"] is not None
+            )
+            upper = (
+                sum(int(item["bovengrens"]) * int(item["record_count"])
+                    for item in items)
+                if all(item["bovengrens"] is not None for item in items)
+                else None
+            )
+            presence_classes = [
+                int(item["presentieklasse"]) for item in items
+                if item["presentieklasse"] is not None
+            ]
+            highest_class = max(presence_classes) if presence_classes else None
+            record_count = sum(int(item["record_count"]) for item in items)
+            stage_values = sorted(stages[key])
+            stage_status = "een_stadium" if len(stage_values) == 1 else "meerdere_stadia"
+            matrix_values.append(
+                f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},{sql_text(water_visit_key)},"
+                f"{sql_text(taxon)},{sql_text('; '.join(sorted(source_names[key])))},"
+                f"{sql_text('; '.join(stage_values))},{sql_text(stage_status)},"
+                f"'waargenomen',{sql_text('; '.join(sorted(types)))},{sql_text(measurement_type)},"
+                f"{exact_value if exact_value is not None else 'NULL'},{lower},"
+                f"{upper if upper is not None else 'NULL'},"
+                f"{highest_class if highest_class is not None else 'NULL'},"
+                f"{record_count},{sql_text('Positieve 01.201-registratie; telwaardetype en stadium blijven afzonderlijk herkenbaar.')})"
+            )
+            matrix_metrics["positive_rows"] += 1
+            matrix_metrics[f"{measurement_type}_positive_rows"] += 1
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterbezoek_taxon WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterbezoek WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_watergeometrie WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterfamilie WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        f"{AMPHIBIAN_TABLE_PREFIX}_waterfamilie",
+        "reconstructieversie,waterfamilie_id,protocol_sleutel,reconstructiestatus,waterbezoekaantal,geometrieaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m",
+        family_values,
+    )
+    statements += _batched_insert(
+        f"{AMPHIBIAN_TABLE_PREFIX}_watergeometrie",
+        "reconstructieversie,geometrie_sha256,waterfamilie_id,geometrierol,anker_geometrie_sha256,afstand_anker_m,centrum_x_rd,centrum_y_rd,oppervlakte_m2,eerste_jaar,laatste_jaar",
+        geometry_values,
+    )
+    statements += _batched_insert(
+        f"{AMPHIBIAN_TABLE_PREFIX}_bezoek",
+        "reconstructieversie,bezoek_sleutel,bezoekdatum,periode_start,periode_stop,jaar,periodecodering,bezoekdekkingstatus,inspanningstatus,waterbezoekaantal,bronrecordaantal",
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{AMPHIBIAN_TABLE_PREFIX}_waterbezoek",
+        "reconstructieversie,waterbezoek_sleutel,bezoek_sleutel,waterfamilie_id,bevestigingsstatus,bronrecordaantal",
+        water_visit_values,
+    )
+    statements += _batched_insert(
+        f"{AMPHIBIAN_TABLE_PREFIX}_waterbezoek_taxon",
+        "reconstructieversie,waterbezoek_sleutel,wetenschappelijke_naam,bron_taxonnamen,stadia_raw,stadium_status,waarnemingsstatus,meetwaardetypen_raw,meetwaarde_type,aantal_exact,ondergrens,bovengrens,hoogste_presentieklasse,bronrecordaantal,nulregel",
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+
+    return {
+        "source_records": sum(int(meta["records"]) for meta in visit_meta.values()),
+        "blurred_records": blurred_records,
+        "year_aggregate_records": year_aggregate_records,
+        "visits": len(visit_meta),
+        "water_families": int(reconstruction["family_count"]),
+        "water_geometries": len(geometry_to_family),
+        "water_visits": len(water_visit_records),
+        "analysis_taxa": len(analysis_taxa),
+        "matrix_rows": len(matrix_values),
+        "positive_rows": matrix_metrics["positive_rows"],
+        "zero_rows": matrix_metrics["zero_rows"],
+        "exact_positive_rows": matrix_metrics["exact_positive_rows"],
+        "presentie_positive_rows": matrix_metrics["presentieklasse_positive_rows"],
+        "minimum_positive_rows": matrix_metrics["minimum_positive_rows"],
+        "estimate_positive_rows": matrix_metrics["schatting_positive_rows"],
+        "mixed_positive_rows": matrix_metrics["gemengd_positive_rows"],
+        "invalid_matrix_rows": 0,
+        "positive_source_mismatch": 0,
+        "kamsalamander_matrix_rows": 0,
+        "secure_derived_tables": 0,
+    }
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -1781,6 +2242,38 @@ SELECT JSON_OBJECT(
 """
 
 
+def amphibian_validation_sql() -> str:
+    version = sql_text(AMPHIBIAN_WATER_RULE_VERSION)
+    legacy_tables = ",".join(sql_text(f"ndff_amfibie_{suffix}") for suffix in (
+        "waterfamilie", "watergeometrie", "bezoek", "waterbezoek",
+        "waterbezoek_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_amfibie_bezoek WHERE reconstructieversie={version}),
+  'blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '01.201%' AND soortgroep_raw='Amfibieën' AND vervaagd=1),
+  'year_aggregate_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '01.201%' AND soortgroep_raw='Amfibieën' AND TIMESTAMPDIFF(HOUR,periode_start,periode_stop)>=8000),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_bezoek WHERE reconstructieversie={version}),
+  'water_families',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterfamilie WHERE reconstructieversie={version}),
+  'water_geometries',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_watergeometrie WHERE reconstructieversie={version}),
+  'water_visits',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek WHERE reconstructieversie={version}),
+  'analysis_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'exact_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='exact'),
+  'presentie_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='presentieklasse'),
+  'minimum_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='minimum'),
+  'estimate_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='schatting'),
+  'mixed_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='gemengd'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='echte_nul' AND (meetwaarde_type<>'echte_nul' OR aantal_exact<>0 OR ondergrens<>0 OR bovengrens<>0 OR bronrecordaantal<>0)) OR (waarnemingsstatus='waargenomen' AND (meetwaarde_type='echte_nul' OR bronrecordaantal=0)))),
+  'positive_source_mismatch',ABS((SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '01.201%' AND soortgroep_raw='Amfibieën' AND vervaagd=0)-(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')),
+  'kamsalamander_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND wetenschappelijke_naam='Triturus cristatus'),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({legacy_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -1819,6 +2312,16 @@ def validate_reptile_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != REPTILE_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Reptielenreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_amphibian_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != AMPHIBIAN_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (AMPHIBIAN_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(AMPHIBIAN_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != AMPHIBIAN_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Amfibieënreconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -2108,6 +2611,8 @@ def main() -> int:
     mode.add_argument("--audit-libellen", action="store_true")
     mode.add_argument("--reconstruct-reptielen", action="store_true")
     mode.add_argument("--audit-reptielen", action="store_true")
+    mode.add_argument("--reconstruct-amfibieen", action="store_true")
+    mode.add_argument("--audit-amfibieen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -2184,6 +2689,23 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_reptile_reconstruction(metrics)
         print(f"OK: lokale reptielenreconstructie {REPTILE_ROUTE_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_amfibieen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_amfibieen(args.mysql_client, client_args)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_amfibieen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            amphibian_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_amphibian_reconstruction(metrics)
+        print(f"OK: lokale amfibieënreconstructie {AMPHIBIAN_WATER_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

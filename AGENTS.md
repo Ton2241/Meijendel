@@ -237,6 +237,16 @@ MySQL:
   bezoeken; leid geen Zandhagedisnullen of geheel ontbrekende bezoeken af.
   Sluit `geen_route` uit van routeanalyse en controleer vóór gebruik met
   `--audit-reptielen`
+- gebruik voor amfibieënprotocol `01.201` reconstructieversie
+  `ndff-amfibiewater-v1` en de vijf openbare tabellen
+  `Meijendel.ndff_amfibie_*`. Een telgebiedbezoek kan meerdere bevestigde
+  waterbezoeken bevatten. Leid echte nullen alleen af voor de zeven openbare
+  analysetaxa binnen een water met minstens één positieve 01.201-registratie;
+  interpreteer zo'n nul als niet aangetroffen tijdens dat bezoek, niet als
+  biologische afwezigheid. Houd exacte aantallen, presentieklassen,
+  minimumaantallen, schattingen en gemengde waarden gescheiden. Leid geen
+  waterkoppeling of nul af voor de 80 vervaagde, jaarlijks geaggregeerde
+  Kamsalamanderrecords. Controleer vóór gebruik met `--audit-amfibieen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

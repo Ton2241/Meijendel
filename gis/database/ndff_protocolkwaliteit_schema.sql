@@ -587,3 +587,121 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_bezoek_taxon (
   CHECK ((waarnemingsstatus='waargenomen' AND aantal > 0) OR
          (waarnemingsstatus='echte_nul' AND aantal = 0))
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van NEM-amfibieënprotocol 01.201. Een telgebiedbezoek
+-- kan meerdere afzonderlijke wateren omvatten. Alleen wateren met minstens
+-- één positieve bronregel gelden aantoonbaar als bezocht. Presentieklassen,
+-- schattingen en minimumaantallen blijven onderscheiden van exacte aantallen.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_waterfamilie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waterfamilie_id SMALLINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '01.201',
+  reconstructiestatus ENUM('waarschijnlijk','handmatige_controle') NOT NULL,
+  waterbezoekaantal INT UNSIGNED NOT NULL,
+  geometrieaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaaraantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_omvang_m DECIMAL(12,3) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waterfamilie_id),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_watergeometrie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  waterfamilie_id SMALLINT UNSIGNED NOT NULL,
+  geometrierol ENUM('anker','versie') NOT NULL,
+  anker_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  afstand_anker_m DECIMAL(10,3) NOT NULL,
+  centrum_x_rd DECIMAL(14,3) NOT NULL,
+  centrum_y_rd DECIMAL(14,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(18,6) NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, geometrie_sha256),
+  KEY ix_ndff_amfibie_geometrie_water
+    (reconstructieversie, waterfamilie_id),
+  CONSTRAINT fk_ndff_amfibie_geometrie_water FOREIGN KEY
+    (reconstructieversie, waterfamilie_id)
+    REFERENCES Meijendel.ndff_amfibie_waterfamilie
+      (reconstructieversie, waterfamilie_id),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  periodecodering ENUM('tijdvenster','datuminterval') NOT NULL,
+  bezoekdekkingstatus ENUM('alleen_bezoeken_met_positieve_waterregistratie') NOT NULL,
+  inspanningstatus ENUM('niet_afleidbaar') NOT NULL,
+  waterbezoekaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  KEY ix_ndff_amfibie_bezoek_jaar (jaar, bezoekdatum),
+  CHECK (periode_stop >= periode_start),
+  CHECK (jaar = YEAR(bezoekdatum))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_waterbezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waterbezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  waterfamilie_id SMALLINT UNSIGNED NOT NULL,
+  bevestigingsstatus ENUM('positieve_registratie_aanwezig') NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, waterbezoek_sleutel),
+  UNIQUE KEY uq_ndff_amfibie_waterbezoek
+    (reconstructieversie, bezoek_sleutel, waterfamilie_id),
+  CONSTRAINT fk_ndff_amfibie_waterbezoek_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_amfibie_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_ndff_amfibie_waterbezoek_water FOREIGN KEY
+    (reconstructieversie, waterfamilie_id)
+    REFERENCES Meijendel.ndff_amfibie_waterfamilie
+      (reconstructieversie, waterfamilie_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_waterbezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waterbezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  bron_taxonnamen VARCHAR(1000) NULL,
+  stadia_raw VARCHAR(1000) NULL,
+  stadium_status ENUM('niet_van_toepassing','een_stadium','meerdere_stadia') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  meetwaardetypen_raw VARCHAR(255) NULL,
+  meetwaarde_type ENUM(
+    'exact','presentieklasse','minimum','schatting','gemengd','echte_nul'
+  ) NOT NULL,
+  aantal_exact INT UNSIGNED NULL,
+  ondergrens INT UNSIGNED NULL,
+  bovengrens INT UNSIGNED NULL,
+  hoogste_presentieklasse TINYINT UNSIGNED NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  nulregel VARCHAR(500) NOT NULL,
+  PRIMARY KEY (
+    reconstructieversie, waterbezoek_sleutel, wetenschappelijke_naam
+  ),
+  KEY ix_ndff_amfibie_taxon_status
+    (wetenschappelijke_naam, waarnemingsstatus, meetwaarde_type),
+  CONSTRAINT fk_ndff_amfibie_taxon_waterbezoek FOREIGN KEY
+    (reconstructieversie, waterbezoek_sleutel)
+    REFERENCES Meijendel.ndff_amfibie_waterbezoek
+      (reconstructieversie, waterbezoek_sleutel),
+  CHECK (
+    (waarnemingsstatus='echte_nul' AND meetwaarde_type='echte_nul'
+      AND aantal_exact=0 AND ondergrens=0 AND bovengrens=0
+      AND bronrecordaantal=0)
+    OR
+    (waarnemingsstatus='waargenomen' AND meetwaarde_type<>'echte_nul'
+      AND bronrecordaantal>0)
+  )
+) ENGINE=InnoDB;

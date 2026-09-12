@@ -71,15 +71,19 @@ analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
 alleen de protocolcode.
 
 De gereconstrueerde openbare NEM-routeketens staan eveneens in `Meijendel`.
-`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `ndff_libel_*` en `ndff_reptiel_*` bewaren per
-geversioneerde reconstructie routefamilies, brongeometrieën, bezoeken en de
-bezoek-soortmatrix. De libellenketen bewaart aanvullend `doelbereikstatus`,
+`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `ndff_libel_*`, `ndff_reptiel_*` en
+`ndff_amfibie_*` bewaren per geversioneerde reconstructie meeteenheden,
+brongeometrieën, bezoeken en de bezoek-soortmatrix. De libellenketen bewaart aanvullend `doelbereikstatus`,
 zodat echte nullen alleen ontstaan bij een aantoonbaar algemene route en niet
 bij een grof eensoortbezoek met onbekend bereik.
 De reptielenketen gebruikt route plus kalenderdatum als bezoekeenheid en
 behoudt expliciet dat volledig negatieve bezoeken en feitelijke inspanning niet
 uit de FFV-levering kunnen worden hersteld. Alleen Hazelworm krijgt binnen een
 bevestigd positief reptielenbezoek een afgeleide echte nul.
+De amfibieënketen onderscheidt telgebiedbezoek en bevestigd waterbezoek. Zij
+houdt exacte aantallen, presentieklassen en gemengde telwaarden uit elkaar en
+leidt geen waterbezoeken of nullen af voor de vervaagde, jaarlijks
+geaggregeerde Kamsalamanderrecords.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

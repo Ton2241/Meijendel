@@ -252,6 +252,16 @@ Zandhagedis worden daarom geen nullen aangevuld. Controleer de reconstructies
 met `--audit-vlinders`, `--audit-vliesvleugelen`, `--audit-libellen` en
 `--audit-reptielen`.
 
+Amfibieënprotocol `01.201` staat onder `ndff-amfibiewater-v1` in vijf
+openbare `Meijendel.ndff_amfibie_*`-tabellen. De 2.439 onvervaagde bronrecords
+uit 2003-2025 vormen 211 telgebiedbezoeken, 50 waterfamilies en 1.300
+aantoonbaar bezochte wateren. De matrix bevat 9.100 waterbezoek-taxonregels:
+2.274 positieve registraties en 6.826 echte protocolnullen voor zeven taxa.
+Exacte aantallen, presentieklassen en gemengde telwaarden blijven
+onderscheiden. De 80 jaarlijks geaggregeerde, vervaagde Kamsalamanderrecords
+krijgen geen openbare waterkoppeling of afgeleide nul. Controleer deze laag met
+`--audit-amfibieen`.
+
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in
 `ndff_protocol_soortgroep_geschiktheid`. De klassen zijn `doelgroep`,

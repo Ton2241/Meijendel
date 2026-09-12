@@ -78,6 +78,31 @@ inspanning is `niet_afleidbaar`. De vier `Meijendel.ndff_reptiel_*`-tabellen
 worden met `--audit-reptielen` gecontroleerd en staan niet in het beveiligde
 schema.
 
+NEM-amfibieënprotocol `01.201` is onder `ndff-amfibiewater-v1` uit de 2.439
+onvervaagde openbare records uit 2003-2025 gereconstrueerd. De 52 openbare
+watergeometrieën vormen 50 conservatief gekoppelde waterfamilies, 211
+telgebiedbezoeken en 1.300 waterbezoeken met minstens één positieve
+registratie. Geometrieën worden alleen als versies van hetzelfde water
+gekoppeld wanneer hun gebruiksjaren niet overlappen en hun middelpunten
+hoogstens 30 meter uiteen liggen.
+
+De matrix bevat 9.100 waterbezoek-taxonregels: 2.274 positief en 6.826 echte
+protocolnullen voor zeven openbaar reconstrueerbare taxa. Een echte nul
+betekent hier uitsluitend: niet gemeld in een water dat door minstens één
+positieve amfibieënregistratie aantoonbaar is bezocht. Volledig negatieve
+water- of telgebiedbezoeken kunnen uit de positieve FFV-export niet worden
+hersteld. Exacte aantallen, RAVON-presentieklassen, minimumaantallen,
+schattingen en gemengde telwaarden blijven afzonderlijk herkenbaar;
+presentieklassen worden nooit als exacte aantallen opgeteld. De twee
+Bastaardkikkerlabels zijn alleen voor analyse genormaliseerd, met behoud van
+beide bronlabels.
+
+De 80 vervaagde Kamsalamanderrecords zijn jaarlijkse aggregaten en vormen geen
+reconstrueerbare openbare waterbezoeken. Zij blijven in de bestaande
+beveiligde bronlaag; er zijn geen afgeleide `ndff_amfibie_*`-tabellen in
+`Meijendel_ndff_secure` en er worden geen Kamsalamandernullen afgeleid. De vijf
+openbare tabellen worden gecontroleerd met `--audit-amfibieen`.
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de

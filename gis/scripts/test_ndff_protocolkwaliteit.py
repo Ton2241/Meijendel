@@ -63,11 +63,17 @@ def main() -> int:
         "meijendel.ndff_reptiel_routegeometrie",
         "meijendel.ndff_reptiel_bezoek",
         "meijendel.ndff_reptiel_bezoek_taxon",
+        "meijendel.ndff_amfibie_waterfamilie",
+        "meijendel.ndff_amfibie_watergeometrie",
+        "meijendel.ndff_amfibie_bezoek",
+        "meijendel.ndff_amfibie_waterbezoek",
+        "meijendel.ndff_amfibie_waterbezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
     assert "meijendel_ndff_secure.ndff_libel_" not in folded
     assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
+    assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -77,6 +83,10 @@ def main() -> int:
     assert "fk_ndff_reptiel_geometrie_route" in folded
     assert "fk_ndff_reptiel_bezoek_route" in folded
     assert "fk_ndff_reptiel_taxon_bezoek" in folded
+    assert "fk_ndff_amfibie_geometrie_water" in folded
+    assert "fk_ndff_amfibie_waterbezoek_bezoek" in folded
+    assert "fk_ndff_amfibie_waterbezoek_water" in folded
+    assert "fk_ndff_amfibie_taxon_waterbezoek" in folded
     assert "alleen_positieve_bezoeken" in folded
     assert "niet_afleidbaar" in folded
     assert "enum('waargenomen','echte_nul')" in folded
@@ -227,6 +237,42 @@ def main() -> int:
     assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v1"
     assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
     assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v1"
+    assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v1"
+
+    # Alleen nabijgelegen geometrieversies met niet-overlappende gebruiksjaren
+    # vormen één waterfamilie. Nabije gelijktijdig gebruikte wateren blijven
+    # afzonderlijke meeteenheden.
+    amphibian_waters = module.reconstruct_amphibian_water_families([
+        {"geometry": "oud", "x": 100.0, "y": 100.0, "area": 25.0,
+         "year": 2010, "records": 2},
+        {"geometry": "nieuw", "x": 112.0, "y": 100.0, "area": 30.0,
+         "year": 2012, "records": 3},
+        {"geometry": "buur", "x": 120.0, "y": 100.0, "area": 20.0,
+         "year": 2012, "records": 1},
+    ])
+    assert amphibian_waters["family_count"] == 2
+    assert amphibian_waters["geometry_to_family"]["oud"] == amphibian_waters["geometry_to_family"]["nieuw"]
+    assert amphibian_waters["geometry_to_family"]["oud"] != amphibian_waters["geometry_to_family"]["buur"]
+
+    assert module.parse_amphibian_measurement("exact aantal", "17") == {
+        "meetwaarde_type": "exact", "aantal_exact": 17,
+        "ondergrens": 17, "bovengrens": 17, "presentieklasse": None,
+    }
+    assert module.parse_amphibian_measurement(
+        "presentieklasse (Ravon)", "11.0 - 100.0"
+    ) == {
+        "meetwaarde_type": "presentieklasse", "aantal_exact": None,
+        "ondergrens": 11, "bovengrens": 100, "presentieklasse": 2,
+    }
+    assert module.parse_amphibian_measurement("minimum aantal", "minimaal 20") == {
+        "meetwaarde_type": "minimum", "aantal_exact": None,
+        "ondergrens": 20, "bovengrens": None, "presentieklasse": None,
+    }
+    assert module.parse_amphibian_measurement("geschat aantal", "8 - 12") == {
+        "meetwaarde_type": "schatting", "aantal_exact": None,
+        "ondergrens": 8, "bovengrens": 12, "presentieklasse": None,
+    }
+    assert module.amphibian_analysis_taxon("Pelophylax kl. esculentus") == "Pelophylax esculentus synklepton"
     repeated_pair = [
         {"date": f"2020-05-{day:02d}", "geometry": geometry, "x": x, "y": 0.0, "area": area, "year": 2020, "records": 1}
         for day in range(1, 11)
@@ -254,6 +300,8 @@ def main() -> int:
     assert "--audit-libellen" in importer_text
     assert "--reconstruct-reptielen" in importer_text
     assert "--audit-reptielen" in importer_text
+    assert "--reconstruct-amfibieen" in importer_text
+    assert "--audit-amfibieen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -264,6 +312,7 @@ def main() -> int:
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
     assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
     assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
+    assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -273,6 +322,15 @@ def main() -> int:
     assert "o.soortgroep_raw='Reptielen'" in reptile_source_sql
     assert "Meijendel_ndff_secure" not in reptile_source_sql
     assert "DATE(o.periode_start)" in reptile_source_sql
+    amphibian_source_sql = " ".join(module.amphibian_source_sql().split())
+    assert "o.protocol LIKE '01.201%'" in amphibian_source_sql
+    assert "o.soortgroep_raw='Amfibieën'" in amphibian_source_sql
+    assert "o.vervaagd=0" in amphibian_source_sql
+    assert "Meijendel_ndff_secure" not in amphibian_source_sql
+    amphibian_excluded_sql = " ".join(module.amphibian_excluded_sql().split())
+    assert "o.vervaagd=0" not in amphibian_excluded_sql
+    assert "vervaagd=1" in amphibian_excluded_sql
+    assert "TIMESTAMPDIFF(HOUR,periode_start,periode_stop)>=8000" in amphibian_excluded_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -312,6 +370,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende reptielenreconstructie is niet geblokkeerd")
+    module.validate_amphibian_reconstruction(dict(module.AMPHIBIAN_RECONSTRUCTION_EXPECTED))
+    broken_amphibian = dict(module.AMPHIBIAN_RECONSTRUCTION_EXPECTED)
+    broken_amphibian["year_aggregate_records"] -= 1
+    try:
+        module.validate_amphibian_reconstruction(broken_amphibian)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende amfibieënreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -542,6 +609,8 @@ def main() -> int:
         "--audit-libellen",
         "ndff-reptielroute-v1",
         "--audit-reptielen",
+        "ndff-amfibiewater-v1",
+        "--audit-amfibieen",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

@@ -40,10 +40,10 @@
   `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
-- Pas hetzelfde beoordelingspatroon achtereenvolgens toe op de overige zestien
-  aangewezen NEM-reeksen. Begin met `07.201` (vaste libellenroutes), daarna
-  `10.201`, `01.201`, `17.208` en `17.209`. Ken pas nullen toe nadat per
-  protocol meeteenheid, volledig bezoek en doelsoortenbereik vaststaan.
+- De reconstructies van `07.201`, `10.201` en `01.201` zijn afgerond. Ga bij de
+  overige aangewezen NEM-reeksen verder met `17.208` en `17.209`. Ken pas
+  nullen toe nadat per protocol meeteenheid, bevestigd bezoek en
+  doelsoortenbereik vaststaan.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
   PQ-reeks: de provincie blijft de gezaghebbende bron.
 

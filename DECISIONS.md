@@ -103,6 +103,17 @@
   geen nullen afgeleid. Inspanning blijft `niet_afleidbaar` en de brondekking
   `alleen_positieve_bezoeken`. Alle vier `ndff_reptiel_*`-tabellen staan in
   `Meijendel`, niet in `Meijendel_ndff_secure`.
+- Voor `01.201` is vanaf 12 september 2026 de openbare amfibieënreeks
+  vastgelegd als `ndff-amfibiewater-v1`. De 2.439 onvervaagde bronrecords
+  vormen 211 telgebiedbezoeken, 50 waterfamilies en 1.300 bevestigde
+  waterbezoeken. De matrix bevat 2.274 positieve regels en 6.826 echte
+  protocolnullen voor zeven taxa. Alleen een water met minstens één positieve
+  registratie geldt aantoonbaar als bezocht. Presentieklassen en overige
+  niet-exacte telwaarden worden niet als aantallen opgeteld. De 80 vervaagde,
+  jaarlijks geaggregeerde Kamsalamanderrecords blijven buiten deze openbare
+  reconstructie; daarvoor worden geen waterkoppelingen of nullen afgeleid.
+  Alle vijf `ndff_amfibie_*`-tabellen staan in `Meijendel`; er zijn geen
+  afgeleide amfibieëntabellen in `Meijendel_ndff_secure`.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
