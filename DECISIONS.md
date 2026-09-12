@@ -85,13 +85,21 @@
   1.302 bezoek-taxonregels: 365 positief en 937 echte nullen. Daarvan vallen
   174 bezoeken samen met een dagvlinderbezoek en 43 bezoeken zijn uitsluitend
   op vliesvleugeligen gericht; de reeksen worden niet met elkaar vermengd.
+- Voor `07.201` is vanaf 12 september 2026 de openbare libellenreeks vastgelegd
+  als `ndff-libellenroute-v1`. De 3.280 bronrecords vormen 461 bezoeken en
+  negen routefamilies. De matrix bevat 13.173 bezoek-taxonregels voor 29 taxa:
+  2.170 positief en 11.003 echte nullen. Voor 454 bezoeken is een algemeen
+  doelbereik aantoonbaar; zeven eensoortbezoeken met uitsluitend grove
+  geometrie blijven `onbepaald` en leveren buiten de gemelde soort geen nul.
+  Alle vier `ndff_libel_*`-tabellen staan in `Meijendel`; er is geen afgeleide
+  libellenstructuur in `Meijendel_ndff_secure`.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
 - De reconstructie en latere aanvullende bronvalidatie worden vanaf 11 september 2026 geprioriteerd op
   de volledige canonieke laag van 810.983 records, niet op alleen de 1.274
-  kandidaten uit de beveiligde 191-soortenlevering. De eerste opvraag gaat naar
-  `03.201` is als eerste lokaal gereconstrueerd; `07.201` volgt. EIS Nederland
+  kandidaten uit de beveiligde 191-soortenlevering. `03.201` en `07.201` zijn
+  inmiddels lokaal gereconstrueerd. EIS Nederland
   en NMV blijven mogelijke aanvullende bronorganisaties als na reconstructie
   noodzakelijke sleutels ontbreken. Dit verandert `ndff-analyseketen-v1` en de
   bestaande algemene analysetoelatingen niet.

@@ -18,7 +18,7 @@ bezoekmatrix moeten nog wel per protocol worden gereconstrueerd. Bruikbare
 nullen worden uitsluitend afgeleid binnen de doelsoorten en bezochte
 meeteenheden van dat protocol; nooit voor bijvangsten.
 
-### Uitgevoerde reconstructie `03.201`
+### Uitgevoerde reconstructies `03.201` en `07.201`
 
 Voor het Landelijk Meetnet Dagvlinders is bevestigd dat iedere `03.201`-regel
 uit een geldig NEM-bezoek komt, dat de bezoekmomenten volledig aanwezig zijn en
@@ -44,6 +44,21 @@ vliesvleugelrecord tellen als bezoek voor deze deelreeks. Daardoor blijven de
 43 uitsluitend op vliesvleugeligen gerichte bezoeken buiten de
 dagvlindermatrix, terwijl alle 217 vliesvleugelbezoeken in hun eigen matrix
 vallen. Controle vindt plaats met `--audit-vliesvleugelen`.
+
+Het Landelijk Meetnet Libellen (`07.201`) is onder
+`ndff-libellenroute-v1` uit uitsluitend openbare records gereconstrueerd. De
+3.280 bronrecords uit 2007-2021 vormen 461 bezoeken, negen routefamilies en 29
+taxa. De bezoek-soortmatrix bevat 13.173 regels: 2.170 positieve combinaties en
+11.003 echte nullen. Alle negen routefamilies bevatten door de jaren heen meer
+dan één protocoltaxon en zijn daarom als algemene route gekwalificeerd.
+
+Van 60 bezoeken is alleen een grof vlak beschikbaar. Bij 53 daarvan bewijzen
+meerdere getelde taxa eveneens het algemene doelbereik. Zeven grove bezoeken
+bevatten slechts één taxon; hun doelbereik blijft `onbepaald`. Voor deze zeven
+wordt alleen de positieve telling bewaard en worden geen andere soorten als
+afwezig ingevuld. De vier `Meijendel.ndff_libel_*`-tabellen worden met
+`--audit-libellen` gecontroleerd; er staan geen afgeleide libellengegevens in
+het beveiligde schema.
 
 ## Toepassing op beveiligde levering 58679
 
@@ -73,7 +88,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 |---|---:|---:|---|---|
 | `03.201` Dagvlinders | 82.217 | 3.126 | 1990-2025 | gereconstrueerd |
 | `03.201` Vliesvleugeligen | 1.535 | 217 | 2018-2025 | zelfstandige NEM-deelreeks gereconstrueerd |
-| `07.201` Libellen | 3.280 | 461 | 2007-2021 | volgende routeketen |
+| `07.201` Libellen | 3.280 | 461 | 2007-2021 | negen routefamilies en bezoek-soortmatrix gereconstrueerd |
 | `10.201` Reptielen | 957 | 684 | 1990-2025 | daarna route/gebied reconstrueren |
 | `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
 | `17.208` Vleermuistransect | 2.624 | 85 | 2013-2025 | transect en vier doelsoorten reconstrueren |

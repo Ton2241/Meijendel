@@ -239,9 +239,12 @@ doelsoorten en echte nullen. Voor `03.201` is dat uitgevoerd onder
 106.284 bezoek-dagvlindertaxonregels. De zelfstandige NEM-deelreeks voor de
 binnen hetzelfde protocol getelde vliesvleugeligen staat onder
 `ndff-vliesvleugelroute-v1`: 217 bezoeken, zes taxa en 1.302 matrixregels.
-Beide openbare afleidingen staan in
-`Meijendel` en worden gecontroleerd met
-`--audit-vlinders` respectievelijk `--audit-vliesvleugelen`.
+Voor `07.201` staat de libellenreconstructie onder `ndff-libellenroute-v1`:
+461 bezoeken, negen routefamilies, 29 taxa en 13.173 matrixregels. Van 454
+bezoeken is het algemene doelbereik vastgesteld; zeven grove eensoortbezoeken
+behouden alleen hun positieve telling en krijgen geen afgeleide nullen. Alle
+openbare afleidingen staan in `Meijendel` en worden gecontroleerd met
+`--audit-vlinders`, `--audit-vliesvleugelen` en `--audit-libellen`.
 
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in

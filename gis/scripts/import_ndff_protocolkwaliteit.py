@@ -31,8 +31,10 @@ SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
 VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
+LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
+LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -65,6 +67,30 @@ VLIESVLEUGEL_RECONSTRUCTION_EXPECTED = {
     "zero_rows": 937,
     "invalid_matrix_rows": 0,
     "manual_review_visits": 0,
+    "legacy_secure_tables": 0,
+}
+LIBEL_RECONSTRUCTION_EXPECTED = {
+    "source_records": 3280,
+    "visits": 461,
+    "route_families": 9,
+    "route_components": 13,
+    "fine_geometries": 18,
+    "fine_visits": 401,
+    "coarse_only_visits": 60,
+    "coarse_only_records": 351,
+    "target_taxa": 29,
+    "matrix_rows": 13173,
+    "positive_rows": 2170,
+    "zero_rows": 11003,
+    "invalid_matrix_rows": 0,
+    "manual_review_visits": 0,
+    "general_route_families": 9,
+    "unknown_route_families": 0,
+    "general_visits": 454,
+    "unknown_scope_visits": 7,
+    "source_payload_invalid": 0,
+    "positive_mismatch": 0,
+    "zero_outside_general": 0,
     "legacy_secure_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -259,12 +285,14 @@ def build_visit_taxon_matrix(
     visits: dict[str, int | None],
     target_taxa: Iterable[str],
     observations: dict[tuple[str, str], int],
+    visit_target_taxa: dict[str, set[str]] | None = None,
 ) -> list[dict[str, object]]:
     """Maak een volledige bezoek-taxonmatrix voor bevestigde NEM-doelsoorten."""
     taxa = sorted(set(target_taxa))
     matrix: list[dict[str, object]] = []
     for visit in sorted(visits):
-        for taxon in taxa:
+        applicable_taxa = taxa if visit_target_taxa is None else sorted(visit_target_taxa[visit])
+        for taxon in applicable_taxa:
             count = observations.get((visit, taxon), 0)
             if count < 0:
                 raise ValueError(f"Negatief aantal voor {visit}, {taxon}")
@@ -1009,6 +1037,37 @@ ORDER BY periode_start,periode_stop,wetenschappelijke_naam;
 """
 
 
+def libel_source_sql() -> str:
+    """Lees protocol 07.201 uitsluitend uit de openbare NDFF-bron."""
+    return """
+SELECT DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),o.jaar,
+       o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),COUNT(*)
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '07.201%'
+  AND o.soortgroep_raw='Libellen'
+GROUP BY o.periode_start,o.periode_stop,o.jaar,4,5,6,7
+ORDER BY o.periode_start,o.periode_stop,4;
+"""
+
+
+def libel_observation_sql() -> str:
+    return """
+SELECT DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s'),
+       wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED))
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '07.201%'
+  AND soortgroep_raw='Libellen'
+  AND aantal_raw REGEXP '^[0-9]+$'
+GROUP BY periode_start,periode_stop,wetenschappelijke_naam
+ORDER BY periode_start,periode_stop,wetenschappelijke_naam;
+"""
+
+
 def _batched_insert(table: str, columns: str, values: list[str], size: int = 1000) -> list[str]:
     return [
         f"INSERT INTO {table} ({columns}) VALUES " + ",".join(values[index:index + size]) + ";"
@@ -1022,7 +1081,7 @@ def reconstruct_vlinders(
     *,
     doelgroep: str = "Dagvlinders",
 ) -> dict[str, int]:
-    """Bouw een openbare 03.201-route-, bezoek- en doelsoortmatrix opnieuw op."""
+    """Bouw een openbare NEM-route-, bezoek- en doelsoortmatrix opnieuw op."""
     if doelgroep == "Dagvlinders":
         source_sql = vlinder_source_sql()
         observation_sql = vlinder_observation_sql()
@@ -1037,8 +1096,15 @@ def reconstruct_vlinders(
         version = VLIESVLEUGEL_ROUTE_RULE_VERSION
         table_prefix = VLIESVLEUGEL_TABLE_PREFIX
         nulregel = "Niet gemeld binnen een bevestigd NEM-vliesvleugelbezoek; echte nul voor het binnen deze deelreeks gevolgde taxon."
+    elif doelgroep == "Libellen":
+        source_sql = libel_source_sql()
+        observation_sql = libel_observation_sql()
+        expected_source = (3_280, 461, 29)
+        version = LIBEL_ROUTE_RULE_VERSION
+        table_prefix = LIBEL_TABLE_PREFIX
+        nulregel = "Niet gemeld binnen het vastgestelde doelbereik van een bevestigd NEM-libellenbezoek; echte nul voor de doelsoort."
     else:
-        raise ValueError(f"Onbekende 03.201-doelgroep: {doelgroep}")
+        raise ValueError(f"Onbekende NEM-routegroep: {doelgroep}")
     query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
     source_output = run_mysql(mysql_client, query_args, source_sql, capture=True)
     route_rows: list[dict[str, object]] = []
@@ -1056,23 +1122,52 @@ def reconstruct_vlinders(
             "area": float(area), "year": int(year), "records": int(records),
         })
     if (sum(visit_record_count.values()), len(visits_meta)) != expected_source[:2]:
-        raise ValueError(f"De 03.201-bronselectie voor {doelgroep} wijkt af van het gecontroleerde profiel.")
+        raise ValueError(f"De NEM-bronselectie voor {doelgroep} wijkt af van het gecontroleerde profiel.")
 
     reconstruction = reconstruct_route_families(route_rows)
     observation_output = run_mysql(mysql_client, query_args, observation_sql, capture=True)
     observations: dict[tuple[str, str], int] = {}
     target_taxa: set[str] = set()
+    visit_observed_taxa: dict[str, set[str]] = defaultdict(set)
     for line in observation_output.splitlines():
         start, stop, taxon, count = line.split("\t")
         visit = f"{start}|{stop}"
         target_taxa.add(taxon)
+        visit_observed_taxa[visit].add(taxon)
         observations[(visit, taxon)] = int(count)
     if len(target_taxa) != expected_source[2]:
-        raise ValueError(f"De doelsoortenlijst van protocol 03.201 bevat niet exact {expected_source[2]} taxa voor {doelgroep}.")
+        raise ValueError(f"De doelsoortenlijst bevat niet exact {expected_source[2]} taxa voor {doelgroep}.")
+    family_scope: dict[int, str] = {}
+    visit_scope: dict[str, str] = {}
+    visit_target_taxa: dict[str, set[str]] | None = None
+    if doelgroep == "Libellen":
+        family_taxa: dict[int, set[str]] = defaultdict(set)
+        for visit, taxa_for_visit in visit_observed_taxa.items():
+            family_id = reconstruction["visit_to_family"].get(visit)
+            if family_id is not None:
+                family_taxa[int(family_id)].update(taxa_for_visit)
+        family_scope = {
+            int(family["family_id"]): (
+                "algemene_route"
+                if len(family_taxa[int(family["family_id"])]) > 1
+                else "onbepaald"
+            )
+            for family in reconstruction["families"]
+        }
+        visit_target_taxa = {}
+        for visit, observed_taxa in visit_observed_taxa.items():
+            family_id = reconstruction["visit_to_family"].get(visit)
+            if family_id is not None:
+                scope = family_scope[int(family_id)]
+            else:
+                scope = "algemene_route" if len(observed_taxa) > 1 else "onbepaald"
+            visit_scope[visit] = scope
+            visit_target_taxa[visit] = set(target_taxa) if scope == "algemene_route" else set(observed_taxa)
     matrix = build_visit_taxon_matrix(
         visits={visit: reconstruction["visit_to_family"].get(visit) for visit in visits_meta},
         target_taxa=target_taxa,
         observations=observations,
+        visit_target_taxa=visit_target_taxa,
     )
 
     family_values: list[str] = []
@@ -1081,8 +1176,10 @@ def reconstruct_vlinders(
         family_id = int(family["family_id"])
         status = "handmatige_controle" if float(family["extent_m"]) > 3_000 else "waarschijnlijk"
         family_status[family_id] = status
+        protocol_key = "07.201" if doelgroep == "Libellen" else "03.201"
+        scope_sql = f",{sql_text(family_scope[family_id])}" if doelgroep == "Libellen" else ""
         family_values.append(
-            f"({sql_text(version)},{family_id},'03.201',{sql_text(status)},"
+            f"({sql_text(version)},{family_id},{sql_text(protocol_key)},{sql_text(status)}{scope_sql},"
             f"{len(family['visits'])},{len(family['geometries'])},{len(family['component_indexes'])},"
             f"{int(family['record_count'])},{int(family['first_year'])},{int(family['last_year'])},"
             f"{int(family['year_count'])},{float(family['extent_m']):.3f})"
@@ -1106,9 +1203,10 @@ def reconstruct_vlinders(
         else:
             status = "handmatige_controle" if family_status[int(family_id)] == "handmatige_controle" else "gereconstrueerd"
             family_sql = str(family_id)
+        scope_sql = f",{sql_text(visit_scope[visit])}" if doelgroep == "Libellen" else ""
         visit_values.append(
             f"({sql_text(version)},{sql_text(visit_keys[visit])},"
-            f"{sql_text(start)},{sql_text(stop)},{year},{family_sql},{sql_text(status)},"
+            f"{sql_text(start)},{sql_text(stop)},{year},{family_sql},{sql_text(status)}{scope_sql},"
             f"{visit_record_count[visit]})"
         )
 
@@ -1125,9 +1223,13 @@ def reconstruct_vlinders(
         f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={sql_text(version)};",
         f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={sql_text(version)};",
     ]
+    family_columns = "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus"
+    if doelgroep == "Libellen":
+        family_columns += ",doelbereikstatus"
+    family_columns += ",bezoekaantal,geometrieaantal,componentaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m"
     statements += _batched_insert(
         f"{table_prefix}_routefamilie",
-        "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus,bezoekaantal,geometrieaantal,componentaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m",
+        family_columns,
         family_values,
     )
     statements += _batched_insert(
@@ -1135,9 +1237,13 @@ def reconstruct_vlinders(
         "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
         geometry_values,
     )
+    visit_columns = "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus"
+    if doelgroep == "Libellen":
+        visit_columns += ",doelbereikstatus"
+    visit_columns += ",bronrecordaantal"
     statements += _batched_insert(
         f"{table_prefix}_bezoek",
-        "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus,bronrecordaantal",
+        visit_columns,
         visit_values,
     )
     statements += _batched_insert(
@@ -1147,7 +1253,7 @@ def reconstruct_vlinders(
     )
     statements.append("COMMIT;")
     run_mysql(mysql_client, client_args, "\n".join(statements))
-    return {
+    metrics = {
         "source_records": sum(visit_record_count.values()),
         "visits": len(visits_meta),
         "route_families": int(reconstruction["family_count"]),
@@ -1161,6 +1267,14 @@ def reconstruct_vlinders(
         "positive_rows": sum(row["status"] == "waargenomen" for row in matrix),
         "zero_rows": sum(row["status"] == "echte_nul" for row in matrix),
     }
+    if doelgroep == "Libellen":
+        metrics.update({
+            "general_route_families": sum(scope == "algemene_route" for scope in family_scope.values()),
+            "unknown_route_families": sum(scope == "onbepaald" for scope in family_scope.values()),
+            "general_visits": sum(scope == "algemene_route" for scope in visit_scope.values()),
+            "unknown_scope_visits": sum(scope == "onbepaald" for scope in visit_scope.values()),
+        })
+    return metrics
 
 
 def reconstruct_vliesvleugelen(mysql_client: Path, client_args: list[str]) -> dict[str, int]:
@@ -1168,12 +1282,31 @@ def reconstruct_vliesvleugelen(mysql_client: Path, client_args: list[str]) -> di
     return reconstruct_vlinders(mysql_client, client_args, doelgroep="Vliesvleugeligen")
 
 
-def nem_subseries_validation_sql(table_prefix: str, rule_version: str) -> str:
+def reconstruct_libellen(mysql_client: Path, client_args: list[str]) -> dict[str, int]:
+    """Bouw de openbare 07.201-NEM-libellenreeks op."""
+    return reconstruct_vlinders(mysql_client, client_args, doelgroep="Libellen")
+
+
+def nem_subseries_validation_sql(
+    table_prefix: str,
+    rule_version: str,
+    *,
+    include_libel_scope: bool = False,
+) -> str:
     version = sql_text(rule_version)
     base_name = table_prefix.split(".", 1)[1]
     legacy_tables = ",".join(sql_text(f"{base_name}_{suffix}") for suffix in (
         "routefamilie", "routegeometrie", "bezoek", "bezoek_taxon"
     ))
+    scope_metrics = """
+  ,'general_route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND doelbereikstatus='algemene_route')
+  ,'unknown_route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND doelbereikstatus='onbepaald')
+  ,'general_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='algemene_route')
+  ,'unknown_scope_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='onbepaald')
+  ,'source_payload_invalid',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' AND (vervaagd<>0 OR stadium<>'imago (adult)' OR schaal_telmethode<>'exact aantal' OR aantal_raw NOT REGEXP '^[0-9]+$'))
+  ,'positive_mismatch',(SELECT COUNT(*) FROM (SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' GROUP BY periode_start,periode_stop,wetenschappelijke_naam) bron LEFT JOIN {table_prefix}_bezoek_taxon t ON t.reconstructieversie={version} AND t.bezoek_sleutel=bron.bezoek_sleutel AND t.wetenschappelijke_naam=bron.wetenschappelijke_naam WHERE t.bezoek_sleutel IS NULL OR t.waarnemingsstatus<>'waargenomen' OR t.aantal<>bron.aantal)
+  ,'zero_outside_general',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t JOIN {table_prefix}_bezoek b ON b.reconstructieversie=t.reconstructieversie AND b.bezoek_sleutel=t.bezoek_sleutel WHERE t.reconstructieversie={version} AND t.waarnemingsstatus='echte_nul' AND b.doelbereikstatus<>'algemene_route')
+""".format(table_prefix=table_prefix, version=version) if include_libel_scope else ""
     return f"""
 SELECT JSON_OBJECT(
   'source_records',(SELECT SUM(bronrecordaantal) FROM {table_prefix}_bezoek WHERE reconstructieversie={version}),
@@ -1189,7 +1322,7 @@ SELECT JSON_OBJECT(
   'positive_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
   'zero_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
   'invalid_matrix_rows',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND aantal=0) OR (waarnemingsstatus='echte_nul' AND aantal<>0))),
-  'manual_review_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='handmatige_controle'),
+  'manual_review_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND reconstructiestatus='handmatige_controle'){scope_metrics},
   'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({legacy_tables}))
 );
 """
@@ -1202,6 +1335,12 @@ def vlinder_validation_sql() -> str:
 def vliesvleugel_validation_sql() -> str:
     return nem_subseries_validation_sql(
         VLIESVLEUGEL_TABLE_PREFIX, VLIESVLEUGEL_ROUTE_RULE_VERSION
+    )
+
+
+def libel_validation_sql() -> str:
+    return nem_subseries_validation_sql(
+        LIBEL_TABLE_PREFIX, LIBEL_ROUTE_RULE_VERSION, include_libel_scope=True
     )
 
 
@@ -1223,6 +1362,16 @@ def validate_vliesvleugel_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != VLIESVLEUGEL_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Vliesvleugelreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_libel_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != LIBEL_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (LIBEL_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(LIBEL_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != LIBEL_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Libellenreconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -1508,6 +1657,8 @@ def main() -> int:
     mode.add_argument("--audit-vlinders", action="store_true")
     mode.add_argument("--reconstruct-vliesvleugelen", action="store_true")
     mode.add_argument("--audit-vliesvleugelen", action="store_true")
+    mode.add_argument("--reconstruct-libellen", action="store_true")
+    mode.add_argument("--audit-libellen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -1550,6 +1701,23 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_vliesvleugel_reconstruction(metrics)
         print(f"OK: lokale vliesvleugelreconstructie {VLIESVLEUGEL_ROUTE_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_libellen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_libellen(args.mysql_client, client_args)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_libellen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            libel_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_libel_reconstruction(metrics)
+        print(f"OK: lokale libellenreconstructie {LIBEL_ROUTE_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

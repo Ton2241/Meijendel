@@ -221,6 +221,13 @@ MySQL:
   als op dat tijdstip minstens één vliesvleugelige is geregistreerd; alleen
   binnen die bezoeken mogen nullen voor de zes gevolgde taxa worden afgeleid.
   Controleer met `--audit-vliesvleugelen`
+- gebruik voor libellenprotocol `07.201` reconstructieversie
+  `ndff-libellenroute-v1` en de vier openbare tabellen
+  `Meijendel.ndff_libel_*`. Gebruik uitsluitend `doelbereikstatus =
+  'algemene_route'` voor afgeleide nullen. Bij `onbepaald` blijft alleen de
+  positieve telling staan. Grove geometrie zonder routefamilie mag een geldig
+  bezoek blijven, maar niet als exacte route worden geïnterpreteerd. Controleer
+  vóór gebruik met `--audit-libellen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

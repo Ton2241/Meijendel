@@ -55,12 +55,20 @@ def main() -> int:
         "meijendel.ndff_vliesvleugel_routegeometrie",
         "meijendel.ndff_vliesvleugel_bezoek",
         "meijendel.ndff_vliesvleugel_bezoek_taxon",
+        "meijendel.ndff_libel_routefamilie",
+        "meijendel.ndff_libel_routegeometrie",
+        "meijendel.ndff_libel_bezoek",
+        "meijendel.ndff_libel_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
+    assert "meijendel_ndff_secure.ndff_libel_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
+    assert "fk_ndff_libel_geometrie_route" in folded
+    assert "fk_ndff_libel_bezoek_route" in folded
+    assert "fk_ndff_libel_taxon_bezoek" in folded
     assert "enum('waargenomen','echte_nul')" in folded
     assert "ndff-vlinderroute-v1" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
@@ -189,12 +197,32 @@ def main() -> int:
         ("v3", "Aglais urticae"): (0, "echte_nul"),
         ("v3", "Pieris napi"): (0, "echte_nul"),
     }
+    scoped_matrix = module.build_visit_taxon_matrix(
+        visits={"algemeen": 1, "onbepaald": None},
+        target_taxa=("Aeshna mixta", "Sympetrum vulgatum"),
+        observations={
+            ("algemeen", "Aeshna mixta"): 2,
+            ("onbepaald", "Sympetrum vulgatum"): 1,
+        },
+        visit_target_taxa={
+            "algemeen": {"Aeshna mixta", "Sympetrum vulgatum"},
+            "onbepaald": {"Sympetrum vulgatum"},
+        },
+    )
+    assert len(scoped_matrix) == 3
+    assert not any(
+        row["visit"] == "onbepaald" and row["taxon"] == "Aeshna mixta"
+        for row in scoped_matrix
+    )
     assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v1"
+    assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
     importer_text = IMPORTER.read_text(encoding="utf-8")
     assert "--reconstruct-vlinders" in importer_text
     assert "--audit-vlinders" in importer_text
     assert "--reconstruct-vliesvleugelen" in importer_text
     assert "--audit-vliesvleugelen" in importer_text
+    assert "--reconstruct-libellen" in importer_text
+    assert "--audit-libellen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -203,6 +231,11 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_vlinder_" not in importer_text.casefold()
     assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
+    assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
+    libel_source_sql = " ".join(module.libel_source_sql().split())
+    assert "o.protocol LIKE '07.201%'" in libel_source_sql
+    assert "o.soortgroep_raw='Libellen'" in libel_source_sql
+    assert "Meijendel_ndff_secure" not in libel_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -224,6 +257,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende vliesvleugelreconstructie is niet geblokkeerd")
+    module.validate_libel_reconstruction(dict(module.LIBEL_RECONSTRUCTION_EXPECTED))
+    broken_libel = dict(module.LIBEL_RECONSTRUCTION_EXPECTED)
+    broken_libel["coarse_only_visits"] -= 1
+    try:
+        module.validate_libel_reconstruction(broken_libel)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende libellenreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -450,12 +492,15 @@ def main() -> int:
         "niet als een gevalideerde populatietrend",
         "zeer hoge uitzondering",
         "voorafgaande uitdrukkelijke toestemming",
+        "ndff-libellenroute-v1",
+        "--audit-libellen",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")
     architecture = ARCHITECTURE.read_text(encoding="utf-8")
     assert "ndff_open_waarneming_protocol" in architecture
     assert "Meijendel_ndff_secure.ndff_waarneming_protocol" in architecture
+    assert "ndff_libel_*" in architecture
     print("OK: NDFF-protocolkwaliteitscontract")
     return 0
 
