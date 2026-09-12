@@ -104,6 +104,10 @@ def main() -> int:
         "meijendel.ndff_mos_recordselectie",
         "meijendel.ndff_mos_doelbereik",
         "meijendel.ndff_mos_inventarisatie_taxon",
+        "meijendel.ndff_florbase_inventarisatie",
+        "meijendel.ndff_florbase_recordselectie",
+        "meijendel.ndff_florbase_doelbereik",
+        "meijendel.ndff_florbase_inventarisatie_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -118,6 +122,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_hns_" not in folded
     assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
     assert "meijendel_ndff_secure.ndff_mos_" not in folded
+    assert "meijendel_ndff_secure.ndff_florbase_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -377,6 +382,33 @@ def main() -> int:
     assert mos_by_key[("i2", "Taxon a")]["aantalsrang"] is None
     assert mos_by_key[("i2", "Taxon b")]["status"] == "echte_nul"
     assert mos_by_key[("i2", "Taxon b")]["aantalsrang"] == 0
+
+    assert module.classify_florbase_inventory(49) == "fragment"
+    assert module.classify_florbase_inventory(50) == "volledige_lijst_aannemelijk"
+    florbase_matrix = module.build_florbase_inventory_matrix(
+        inventories={"i1", "i2"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"inventory": "i1", "taxon": "Taxon a", "scale": "voorkomen",
+             "abundance": "minimaal 1.0"},
+            {"inventory": "i1", "taxon": "Taxon a", "scale": "voorkomen",
+             "abundance": "minimaal 1.0"},
+            {"inventory": "i2", "taxon": "Taxon b",
+             "scale": "FLORON-aantalsklassen", "abundance": "6.0 - 25.0"},
+        ],
+    )
+    florbase_by_key = {
+        (row["inventory"], row["taxon"]): row for row in florbase_matrix
+    }
+    assert florbase_by_key[("i1", "Taxon a")]["status"] == "waargenomen"
+    assert florbase_by_key[("i1", "Taxon a")]["measurement_status"] == "alleen_presentie"
+    assert florbase_by_key[("i1", "Taxon a")]["source_count"] == 2
+    assert florbase_by_key[("i1", "Taxon b")]["status"] == (
+        "protocolnul_onder_volledigheidsaanname"
+    )
+    assert florbase_by_key[("i2", "Taxon b")]["measurement_status"] == (
+        "aantalsinformatie_niet_aggregeerbaar"
+    )
 
     hns_rows = [
         {
@@ -804,6 +836,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende mosreconstructie is niet geblokkeerd")
+    module.validate_florbase_reconstruction(
+        dict(module.FLORBASE_RECONSTRUCTION_EXPECTED)
+    )
+    broken_florbase = dict(module.FLORBASE_RECONSTRUCTION_EXPECTED)
+    broken_florbase["preliminary_zero_rows"] -= 1
+    try:
+        module.validate_florbase_reconstruction(broken_florbase)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende FLORBASE-reconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -1054,6 +1097,8 @@ def main() -> int:
         "--audit-korstmossen",
         "ndff-mos-v1",
         "--audit-mossen",
+        "ndff-florbase-v1",
+        "--audit-florbase",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

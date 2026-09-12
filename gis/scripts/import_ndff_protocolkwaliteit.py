@@ -43,6 +43,8 @@ BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
 KORSTMOS_RULE_VERSION = "ndff-korstmos-v1"
 MOS_RULE_VERSION = "ndff-mos-v1"
+FLORBASE_RULE_VERSION = "ndff-florbase-v1"
+FLORBASE_COMPLETENESS_THRESHOLD = 50
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -56,6 +58,7 @@ BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
 KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
 MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
+FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -349,6 +352,30 @@ MOS_RECONSTRUCTION_EXPECTED = {
     "matrix_size_mismatch": 0,
     "positive_source_mismatch": 0,
     "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+}
+FLORBASE_RECONSTRUCTION_EXPECTED = {
+    "source_records": 21161,
+    "excluded_blurred_records": 213,
+    "inventories": 183,
+    "complete_inventories": 118,
+    "fragment_inventories": 65,
+    "complete_source_records": 20174,
+    "fragment_source_records": 987,
+    "complete_hoks": 33,
+    "all_hoks": 36,
+    "target_taxa": 857,
+    "matrix_rows": 101126,
+    "positive_rows": 19405,
+    "presence_positive_rows": 18731,
+    "amount_positive_rows": 674,
+    "preliminary_zero_rows": 81721,
+    "invalid_matrix_rows": 0,
+    "matrix_size_mismatch": 0,
+    "positive_source_mismatch": 0,
+    "unlinked_source_records": 0,
+    "pq_non_applicable_records": 21374,
+    "pq_other_records": 0,
     "secure_derived_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -3849,6 +3876,81 @@ ORDER BY o.hoknummer,o.periode_start,o.waarneming_id;
 """
 
 
+def classify_florbase_inventory(taxon_count: int) -> str:
+    """Classificeer een 12.001-hokjaar met een transparante voorlopige drempel."""
+    if taxon_count < 0:
+        raise ValueError("Een taxonaantal kan niet negatief zijn.")
+    return (
+        "volledige_lijst_aannemelijk"
+        if taxon_count >= FLORBASE_COMPLETENESS_THRESHOLD
+        else "fragment"
+    )
+
+
+def build_florbase_inventory_matrix(
+    *,
+    inventories: set[str],
+    target_taxa: set[str],
+    records: Iterable[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Bouw positieve regels en voorlopige protocolnullen per volledig hokjaar."""
+    positives: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for source_row in records:
+        row = dict(source_row)
+        positives[(str(row["inventory"]), str(row["taxon"]))].append(row)
+
+    matrix: list[dict[str, object]] = []
+    for inventory in sorted(inventories):
+        for taxon in sorted(target_taxa):
+            source_rows = positives.get((inventory, taxon), [])
+            if source_rows:
+                measurements = sorted({
+                    (str(row["scale"]), str(row["abundance"]))
+                    for row in source_rows
+                })
+                presence_only = all(
+                    scale in {"aanwezig", "voorkomen"}
+                    and abundance == "minimaal 1.0"
+                    for scale, abundance in measurements
+                )
+                status = "waargenomen"
+                measurement_status = (
+                    "alleen_presentie"
+                    if presence_only
+                    else "aantalsinformatie_niet_aggregeerbaar"
+                )
+            else:
+                measurements = []
+                status = "protocolnul_onder_volledigheidsaanname"
+                measurement_status = "niet_van_toepassing"
+            matrix.append({
+                "inventory": inventory,
+                "taxon": taxon,
+                "status": status,
+                "measurement_status": measurement_status,
+                "measurements": measurements,
+                "source_count": len(source_rows),
+            })
+    return matrix
+
+
+def florbase_source_sql() -> str:
+    """Lees 12.001 uitsluitend uit de openbare, onvervaagde bronlaag."""
+    return """
+SELECT o.waarneming_id,o.identiteit_sha256,
+       FLOOR(ST_X(ST_Centroid(o.openbare_geometrie))/1000),
+       FLOOR(ST_Y(ST_Centroid(o.openbare_geometrie))/1000),
+       o.jaar,DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
+       DATE_FORMAT(DATE(o.periode_stop),'%Y-%m-%d'),
+       o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '12.001%'
+  AND o.soortgroep_raw='Vaatplanten'
+  AND o.vervaagd=0
+ORDER BY o.jaar,o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -4726,6 +4828,182 @@ def reconstruct_mossen(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_florbase(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw voorlopige 12.001-hokjaarlijsten en een presentiematrix."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, florbase_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        (observation_id, identity, hok_x, hok_y, year, start, stop, taxon,
+         scale, abundance) = line.split("\t")
+        if not taxon or not scale or not abundance:
+            raise ValueError(f"Onvolledige 12.001-bronregel: {observation_id}")
+        x, y, inventory_year = int(hok_x), int(hok_y), int(year)
+        inventory = hashlib.sha256(
+            f"12.001|{x}|{y}|{inventory_year}".encode("utf-8")
+        ).hexdigest()
+        records.append({
+            "observation_id": int(observation_id), "identity": identity,
+            "hok_x": x, "hok_y": y, "hok": f"{x}-{y}",
+            "year": inventory_year, "start": start, "stop": stop,
+            "taxon": taxon, "scale": scale, "abundance": abundance,
+            "inventory": inventory,
+        })
+    if len(records) != FLORBASE_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError(
+            "De onvervaagde 12.001-bronselectie wijkt af van het gecontroleerde profiel."
+        )
+
+    inventories: dict[str, dict[str, object]] = {}
+    for row in records:
+        inventory = str(row["inventory"])
+        info = inventories.setdefault(inventory, {
+            "hok_x": int(row["hok_x"]), "hok_y": int(row["hok_y"]),
+            "hok": str(row["hok"]), "year": int(row["year"]),
+            "starts": set(), "stops": set(), "dates": set(),
+            "rows": [], "taxa": set(),
+        })
+        starts, stops, dates, taxa = (
+            info["starts"], info["stops"], info["dates"], info["taxa"]
+        )
+        assert all(isinstance(value, set) for value in (starts, stops, dates, taxa))
+        starts.add(str(row["start"]))
+        stops.add(str(row["stop"]))
+        dates.add(str(row["start"]))
+        taxa.add(str(row["taxon"]))
+        info_rows = info["rows"]
+        assert isinstance(info_rows, list)
+        info_rows.append(row)
+
+    complete_inventories: set[str] = set()
+    complete_records: list[dict[str, object]] = []
+    for inventory, info in inventories.items():
+        taxa, info_rows = info["taxa"], info["rows"]
+        assert isinstance(taxa, set) and isinstance(info_rows, list)
+        info["list_status"] = classify_florbase_inventory(len(taxa))
+        if info["list_status"] == "volledige_lijst_aannemelijk":
+            complete_inventories.add(inventory)
+            complete_records.extend(info_rows)
+
+    target_taxa = {str(row["taxon"]) for row in complete_records}
+    matrix = build_florbase_inventory_matrix(
+        inventories=complete_inventories,
+        target_taxa=target_taxa,
+        records=complete_records,
+    )
+
+    inventory_note = (
+        "Native 12.001-meeteenheid: één RD-kilometerhok per jaar. De FFV-export "
+        "bevat geen FLORON-lijst-ID, bezoekduur of oorspronkelijke volledigheidsvlag. "
+        "Minimaal 50 geregistreerde taxa geldt daarom uitsluitend als transparante, "
+        "voorlopige aanwijzing voor een volledige lijst en niet als officiële FLORON-"
+        "norm. Het hok wordt niet naar afzonderlijke SOVON-plots verdeeld."
+    )
+    inventory_values: list[str] = []
+    for inventory, info in sorted(
+        inventories.items(),
+        key=lambda item: (int(item[1]["year"]), int(item[1]["hok_x"]), int(item[1]["hok_y"])),
+    ):
+        starts, stops, dates, rows, taxa = (
+            info["starts"], info["stops"], info["dates"], info["rows"], info["taxa"]
+        )
+        assert all(isinstance(value, set) for value in (starts, stops, dates, taxa))
+        assert isinstance(rows, list)
+        list_status = str(info["list_status"])
+        completeness = (
+            "afgeleid_minimaal_50_taxa"
+            if list_status == "volledige_lijst_aannemelijk"
+            else "onvoldoende_voor_nulafleiding"
+        )
+        inventory_values.append(
+            f"({sql_text(FLORBASE_RULE_VERSION)},{sql_text(inventory)},'12.001',"
+            f"{int(info['hok_x'])},{int(info['hok_y'])},{sql_text(str(info['hok']))},"
+            f"{int(info['year'])},{sql_text(min(starts))},{sql_text(max(stops))},"
+            f"{len(dates)},{len(rows)},{len(taxa)},{sql_text(list_status)},"
+            f"{FLORBASE_COMPLETENESS_THRESHOLD},{sql_text(completeness)},"
+            "'bezoekduur_en_volledigheidsvlag_niet_meegeleverd',"
+            f"'kilometerhok_niet_naar_sovonplot_toegewezen',{sql_text(inventory_note)})"
+        )
+
+    selection_values: list[str] = []
+    for row in records:
+        list_status = str(inventories[str(row["inventory"])]["list_status"])
+        if list_status == "volledige_lijst_aannemelijk":
+            status = "opgenomen_volledige_lijst"
+            reason = (
+                "Positieve bronregel in een hokjaar met minimaal 50 geregistreerde taxa; "
+                "opgenomen in de voorlopige inventarisatiematrix."
+            )
+        else:
+            status = "opgenomen_fragment"
+            reason = (
+                "Positieve bronregel in een hokjaar met minder dan 50 geregistreerde taxa; "
+                "bewaard als fragment en niet gebruikt om nullen af te leiden."
+            )
+        selection_values.append(
+            f"({sql_text(FLORBASE_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{sql_text(str(row['inventory']))},{sql_text(status)},{sql_text(reason)})"
+        )
+
+    scope_values: list[str] = []
+    for taxon in sorted(target_taxa):
+        taxon_rows = [row for row in complete_records if str(row["taxon"]) == taxon]
+        years = {int(row["year"]) for row in taxon_rows}
+        positive_inventories = {str(row["inventory"]) for row in taxon_rows}
+        scope_values.append(
+            f"({sql_text(FLORBASE_RULE_VERSION)},{sql_text(taxon)},"
+            "'openbaar_taxon_waargenomen_op_aannemelijk_volledige_12_001_lijst',"
+            f"{min(years)},{max(years)},{len(positive_inventories)},"
+            "'historische_checklistversies_niet_meegeleverd')"
+        )
+
+    matrix_note = (
+        "Een niet-gemeld taxon is alleen een voorlopige protocolnul onder de aanname "
+        "dat een hokjaar met minimaal 50 taxa een volledige 12.001-streeplijst is. "
+        "De oorspronkelijke volledigheidsvlag, inspanning en historische checklistversie "
+        "ontbreken. Positieve aantalsinformatie wordt niet over vindplaatsen opgeteld."
+    )
+    matrix_values: list[str] = []
+    for row in matrix:
+        is_zero = row["status"] == "protocolnul_onder_volledigheidsaanname"
+        null_rule = (
+            "niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa"
+            if is_zero else "niet_van_toepassing"
+        )
+        measurements_json = json.dumps([
+            {"schaal": scale, "waarde": abundance}
+            for scale, abundance in row["measurements"]
+        ], ensure_ascii=False, separators=(",", ":"))
+        matrix_values.append(
+            f"({sql_text(FLORBASE_RULE_VERSION)},{sql_text(str(row['inventory']))},"
+            f"{sql_text(str(row['taxon']))},{sql_text(str(row['status']))},"
+            f"{sql_text(str(row['measurement_status']))},{int(row['source_count'])},"
+            f"{sql_text(measurements_json)},{sql_text(null_rule)},{sql_text(matrix_note)})"
+        )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {FLORBASE_TABLE_PREFIX}_inventarisatie_taxon WHERE reconstructieversie={sql_text(FLORBASE_RULE_VERSION)};",
+        f"DELETE FROM {FLORBASE_TABLE_PREFIX}_doelbereik WHERE reconstructieversie={sql_text(FLORBASE_RULE_VERSION)};",
+        f"DELETE FROM {FLORBASE_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(FLORBASE_RULE_VERSION)};",
+        f"DELETE FROM {FLORBASE_TABLE_PREFIX}_inventarisatie WHERE reconstructieversie={sql_text(FLORBASE_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{FLORBASE_TABLE_PREFIX}_inventarisatie", "reconstructieversie,inventarisatie_sleutel,protocol_sleutel,hok_x,hok_y,hoknummer,jaar,begindatum,einddatum,datumclusteraantal,bronrecordaantal,geregistreerde_taxa,lijststatus,volledigheidsdrempel_taxa,volledigheidsstatus,inspanningstatus,plotstatus,kwaliteitsnotitie", inventory_values),
+        (f"{FLORBASE_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,inventarisatie_sleutel,selectiestatus,selectiereden", selection_values),
+        (f"{FLORBASE_TABLE_PREFIX}_doelbereik", "reconstructieversie,wetenschappelijke_naam,afleidingsregel,eerste_jaar,laatste_jaar,positieve_inventarisatieaantal,taxonomiestatus", scope_values),
+        (f"{FLORBASE_TABLE_PREFIX}_inventarisatie_taxon", "reconstructieversie,inventarisatie_sleutel,wetenschappelijke_naam,waarnemingsstatus,meetwaardestatus,bronrecordaantal,meetwaarden_json,nulregel,kwaliteitsnotitie", matrix_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, florbase_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -5115,6 +5393,39 @@ SELECT JSON_OBJECT(
 """
 
 
+def florbase_validation_sql() -> str:
+    version = sql_text(FLORBASE_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_florbase_{suffix}") for suffix in (
+        "inventarisatie", "recordselectie", "doelbereik", "inventarisatie_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.001%' AND soortgroep_raw='Vaatplanten' AND vervaagd=0),
+  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.001%' AND soortgroep_raw='Vaatplanten' AND vervaagd=1),
+  'inventories',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version}),
+  'complete_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'fragment_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
+  'complete_source_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'fragment_source_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
+  'complete_hoks',(SELECT COUNT(DISTINCT CONCAT(hok_x,'-',hok_y)) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'all_hoks',(SELECT COUNT(DISTINCT CONCAT(hok_x,'-',hok_y)) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version}),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_doelbereik WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaardestatus='alleen_presentie'),
+  'amount_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaardestatus='aantalsinformatie_niet_aggregeerbaar'),
+  'preliminary_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='protocolnul_onder_volledigheidsaanname'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR meetwaardestatus='niet_van_toepassing' OR nulregel<>'niet_van_toepassing' OR JSON_LENGTH(meetwaarden_json)=0)) OR (waarnemingsstatus='protocolnul_onder_volledigheidsaanname' AND (bronrecordaantal<>0 OR meetwaardestatus<>'niet_van_toepassing' OR nulregel<>'niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa' OR JSON_LENGTH(meetwaarden_json)<>0)))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_florbase_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_florbase_inventarisatie i LEFT JOIN Meijendel.ndff_florbase_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} AND i.lijststatus='volledige_lijst_aannemelijk' GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.ndff_florbase_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_florbase_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'pq_non_applicable_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_pq_koppeling p ON p.waarneming_id=o.waarneming_id AND p.regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)} WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND p.classificatie='niet_van_toepassing'),
+  'pq_other_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_pq_koppeling p ON p.waarneming_id=o.waarneming_id AND p.regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)} WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND p.classificatie<>'niet_van_toepassing'),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -5247,6 +5558,18 @@ def validate_mos_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != MOS_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Mossenreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_florbase_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != FLORBASE_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (FLORBASE_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(FLORBASE_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != FLORBASE_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"FLORBASE-reconstructie wijkt af van het vaste profiel: {differences}"
+        )
 
 
 def validation_sql() -> str:
@@ -5554,6 +5877,8 @@ def main() -> int:
     mode.add_argument("--audit-korstmossen", action="store_true")
     mode.add_argument("--reconstruct-mossen", action="store_true")
     mode.add_argument("--audit-mossen", action="store_true")
+    mode.add_argument("--reconstruct-florbase", action="store_true")
+    mode.add_argument("--audit-florbase", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -5791,6 +6116,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_mos_reconstruction(metrics)
         print(f"OK: lokale mossenreconstructie {MOS_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_florbase:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_florbase(args.mysql_client, client_args)
+        validate_florbase_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_florbase:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            florbase_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_florbase_reconstruction(metrics)
+        print(f"OK: lokale FLORBASE-reconstructie {FLORBASE_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

@@ -64,6 +64,13 @@
   als onafhankelijke bezoeken en leid geen plotnullen of lokale tijdtrend af.
   Vraag BLWG later alleen om lijst-ID's, bezoekduur en waarnemer wanneer een
   verdiepende validatie dat nodig maakt.
+- `12.001` bevat onder `ndff-florbase-v1` 118 aannemelijk volledige
+  kilometerhok-jaarlijsten en 65 fragmenten. Gebruik de 101.126 matrixregels
+  voorlopig voor verspreidings- en inventarisatievergelijkingen; de 81.721
+  nullen blijven expliciet afhankelijk van de ≥50-taxa-aanname. Vraag FLORON
+  later gericht om lijst-ID, oorspronkelijke volledigheidsvlag, bezoekduur en
+  gebruikte checklistversie. Deze validatie blokkeert het voorlopige gebruik
+  niet.
 - `12.204` bevat onder `ndff-hns-v1` 23 aannemelijk volledige
   inventarisaties en drie fragmenten. Gebruik de 16.169
   inventarisatie-taxonregels voorlopig voor verspreidings-/occupancyanalyse;

@@ -198,6 +198,16 @@
   talrijkheidsklasse en één abundantieconflict blijven afzonderlijk. Omdat geen
   hok in een volgende ronde is herhaald, wordt geen lokale tijdtrend afgeleid.
   Kilometerhokresultaten worden niet naar afzonderlijke SOVON-plots verdeeld.
+- Protocol `12.001` wordt onder `ndff-florbase-v1` per RD-kilometerhok en jaar
+  gereconstrueerd. Een hokjaar met minimaal 50 geregistreerde taxa krijgt de
+  transparante status `volledige_lijst_aannemelijk`; dit is geen officiële
+  FLORON-norm. Alleen deze lijsten leveren
+  `protocolnul_onder_volledigheidsaanname`. Kleinere lijsten blijven positieve
+  fragmenten. De oorspronkelijke volledigheidsvlag, bezoekduur en historische
+  checklistversie ontbreken en blijven verplichte kwaliteitswaarschuwingen.
+  Aantalsklassen of meerdere vindplaatsen worden niet tot abundantie opgeteld.
+  De native meeteenheid blijft het kilometerhok en wordt niet naar SOVON-plots
+  verdeeld. De 213 vervaagde records krijgen geen openbare afleiding.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

@@ -130,6 +130,13 @@ nullen gelden uitsluitend voor de volledige hoklijst, nooit voor ieder
 datumcluster of geraakt SOVON-plot. De laag bewaart jaarprecisie, een
 jaargrensoverschrijdende inventarisatie, presentiewaarden zonder aantalsklasse,
 dubbelen en abundantieconflicten afzonderlijk.
+`ndff_florbase_*` reconstrueert protocol `12.001` onder `ndff-florbase-v1` in
+`Meijendel`: kilometerhok-jaarinventarisaties, volledige recordselectie, lokaal
+doelbereik en een inventarisatie-taxonmatrix. Alleen hok-jaren met minimaal 50
+taxa leveren voorlopige protocolnullen; fragmenten blijven positieve
+broninformatie. Volledigheid, inspanning en historische checklistversie blijven
+afzonderlijke onzekerheden en kilometerhokresultaten worden niet naar
+SOVON-plots verdeeld.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

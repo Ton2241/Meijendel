@@ -1606,3 +1606,112 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie_taxon (
       AND aantalsklasse_raw IS NULL AND aantalsrang=0 AND bronrecordaantal=0)
   )
 ) ENGINE=InnoDB;
+
+-- Reconstructie van 12.001 FLORON-streeplijsten. De native meeteenheid is
+-- een RD-kilometerhok per inventarisatiejaar. Omdat de FFV-export het
+-- oorspronkelijke veld 'volledigheid onderzoek' niet bevat, worden nullen
+-- uitsluitend afgeleid voor hok-jaren met minimaal 50 geregistreerde taxa en
+-- blijven zij expliciet voorlopig.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '12.001',
+  hok_x SMALLINT UNSIGNED NOT NULL,
+  hok_y SMALLINT UNSIGNED NOT NULL,
+  hoknummer VARCHAR(16) CHARACTER SET ascii NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  begindatum DATE NOT NULL,
+  einddatum DATE NOT NULL,
+  datumclusteraantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  lijststatus ENUM('volledige_lijst_aannemelijk','fragment') NOT NULL,
+  volledigheidsdrempel_taxa SMALLINT UNSIGNED NOT NULL DEFAULT 50,
+  volledigheidsstatus ENUM(
+    'afgeleid_minimaal_50_taxa','onvoldoende_voor_nulafleiding'
+  ) NOT NULL,
+  inspanningstatus ENUM('bezoekduur_en_volledigheidsvlag_niet_meegeleverd') NOT NULL,
+  plotstatus ENUM('kilometerhok_niet_naar_sovonplot_toegewezen') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1600) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, inventarisatie_sleutel),
+  UNIQUE KEY uq_ndff_florbase_hokjaar
+    (reconstructieversie, hok_x, hok_y, jaar),
+  CHECK (einddatum >= begindatum),
+  CHECK (volledigheidsdrempel_taxa = 50),
+  CHECK (
+    (lijststatus='volledige_lijst_aannemelijk'
+      AND geregistreerde_taxa>=volledigheidsdrempel_taxa
+      AND volledigheidsstatus='afgeleid_minimaal_50_taxa')
+    OR (lijststatus='fragment'
+      AND geregistreerde_taxa<volledigheidsdrempel_taxa
+      AND volledigheidsstatus='onvoldoende_voor_nulafleiding')
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM('opgenomen_volledige_lijst','opgenomen_fragment') NOT NULL,
+  selectiereden VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_florbase_selectie_inventarisatie
+    (reconstructieversie, inventarisatie_sleutel),
+  CONSTRAINT fk_ndff_florbase_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_florbase_selectie_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_florbase_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_doelbereik (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  afleidingsregel ENUM(
+    'openbaar_taxon_waargenomen_op_aannemelijk_volledige_12_001_lijst'
+  ) NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  positieve_inventarisatieaantal SMALLINT UNSIGNED NOT NULL,
+  taxonomiestatus ENUM('historische_checklistversies_niet_meegeleverd') NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, wetenschappelijke_naam),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen','protocolnul_onder_volledigheidsaanname'
+  ) NOT NULL,
+  meetwaardestatus ENUM(
+    'alleen_presentie','aantalsinformatie_niet_aggregeerbaar','niet_van_toepassing'
+  ) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM(
+    'niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa',
+    'niet_van_toepassing'
+  ) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, inventarisatie_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_florbase_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_florbase_taxon_inventarisatie FOREIGN KEY
+    (reconstructieversie, inventarisatie_sleutel)
+    REFERENCES Meijendel.ndff_florbase_inventarisatie
+      (reconstructieversie, inventarisatie_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND bronrecordaantal>0
+      AND meetwaardestatus<>'niet_van_toepassing'
+      AND nulregel='niet_van_toepassing')
+    OR (waarnemingsstatus='protocolnul_onder_volledigheidsaanname'
+      AND bronrecordaantal=0 AND meetwaardestatus='niet_van_toepassing'
+      AND nulregel='niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa')
+  )
+) ENGINE=InnoDB;

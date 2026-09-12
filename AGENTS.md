@@ -332,6 +332,18 @@ MySQL:
   leid geen lokale tijdtrend af omdat geen hok is herhaald. Kopieer het ene
   vervaagde record niet naar de openbare afgeleide tabellen en controleer vóór
   gebruik met `--audit-mossen`
+- gebruik voor FLORBASE-protocol `12.001` reconstructieversie
+  `ndff-florbase-v1` en de vier openbare tabellen
+  `Meijendel.ndff_florbase_*`. Groepeer per werkelijk RD-kilometerhok en jaar.
+  Behandel alleen hok-jaren met minimaal 50 geregistreerde taxa als
+  `volledige_lijst_aannemelijk`; dit is een voorlopige reconstructieregel en
+  geen officiële FLORON-norm. Leid uitsluitend daar
+  `protocolnul_onder_volledigheidsaanname` af. Houd kleinere lijsten als
+  positieve fragmenten, aggregeer aantalsinformatie niet, verdeel geen
+  hokuitkomsten over SOVON-plots en toon altijd dat volledigheidsvlag,
+  bezoekduur en historische checklistversie ontbreken. Kopieer de 213
+  vervaagde records niet naar de openbare afgeleide tabellen en controleer vóór
+  gebruik met `--audit-florbase`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

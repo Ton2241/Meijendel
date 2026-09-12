@@ -369,8 +369,39 @@ Methodische grondslag: [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/p
 [BLWG Inventarisatiehandleiding](https://www.blwg.nl/wp-content/uploads/2025/08/BLWG-Inventarisatiehandleiding.pdf)
 en [GBIF-beschrijving protocol 02.204](https://www.gbif.org/dataset/2d1a33c3-f278-40d2-a662-e0d3369658e2).
 
+### FLORBASE-streeplijsten (`12.001`)
+
+Regelversie `ndff-florbase-v1` groepeert 21.161 onvervaagde openbare
+bronregels per werkelijk RD-kilometerhok en jaar. Dat levert 183 hok-jaren in
+36 hokken op. De 118 hok-jaren in 33 hokken met minimaal vijftig geregistreerde
+taxa gelden als `volledige_lijst_aannemelijk`; de overige 65 blijven fragment.
+De grens van vijftig taxa is een transparante lokale reconstructiedrempel en
+geen officiële FLORON-protocolnorm.
+
+Het uit de aannemelijk volledige lijsten aangetoonde lokale doelbereik omvat
+857 taxa. De inventarisatie-taxonmatrix bevat 19.405 positieve combinaties en
+81.721 `protocolnul_onder_volledigheidsaanname`. Van de positieve combinaties
+hebben 18.731 alleen presentie-informatie en 674 ook aantalsinformatie. Deze
+aantallen of meerdere vindplaatsen worden niet geaggregeerd tot lokale
+abundantie. De 987 bronregels uit fragmenten blijven als positieve informatie
+traceerbaar maar leveren geen nullen.
+
+FLORON registreert op de oorspronkelijke streeplijst of het onderzoek volledig
+was, naast bezoekdata en bezoekduur. Die volledigheidsvlag, de lijst-ID,
+bezoekduur en historische checklistversie ontbreken in de FFV-export. Daarom
+zijn de afgeleide nullen geschikt voor voorlopige inventarisatie- en
+verspreidingsvergelijkingen, maar niet zonder waarschuwing voor een definitieve
+trendclaim. De native meeteenheid is het kilometerhok; geen aanwezigheid of nul
+wordt naar ieder geraakt SOVON-plot doorgezet. De 213 vervaagde records worden
+niet naar deze openbare afgeleide laag gekopieerd. Controleer de laag met
+`--audit-florbase`.
+
+Methodische grondslag: [NDFF protocol 12.001](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/12-001-totaalproject-floron/),
+[FLORON kilometerhokinventarisatie](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren)
+en [FLORON inventarisatiehandleiding](https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf).
+
 Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
-`04.004` (1.282), `12.001` (1.150), `12.204` (929), `07.001` (850) en `12.006`
+`04.004` (1.282), `12.204` (929), `07.001` (850) en `12.006`
 (661). Deze krijgen een tweede validatieronde gericht op complete soortenlijsten,
 bezoekduur en onderzochte eenheid. Zij kunnen vooral inventarisatie- en
 verspreidingsanalyses verbeteren; hun omvang maakt ze niet automatisch geschikt

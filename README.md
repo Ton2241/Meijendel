@@ -325,6 +325,17 @@ geen hok is herhaald, ondersteunt deze lokale selectie geen tijdtrend per hok.
 Gebruik talrijkheidsklassen alleen ordinaal, koppel hoknullen niet door naar
 SOVON-plots en controleer de laag met `--audit-mossen`.
 
+FLORBASE-protocol `12.001` staat onder `ndff-florbase-v1` in vier openbare
+`Meijendel.ndff_florbase_*`-tabellen. De 21.161 onvervaagde bronregels vormen
+183 kilometerhok-jaarcombinaties. Daarvan gelden 118 hok-jaren met minimaal
+50 taxa als `volledige_lijst_aannemelijk`; 65 kleinere lijsten blijven
+fragment. De matrix voor 857 lokaal aangetoonde taxa bevat 19.405 positieve
+combinaties en 81.721 `protocolnul_onder_volledigheidsaanname`. Die nullen zijn
+voorlopig omdat de FFV-export de oorspronkelijke volledigheidsvlag, bezoekduur
+en historische checklistversie niet bevat. Gebruik ze alleen op
+kilometerhokniveau, nooit als nul per SOVON-plot, en controleer de laag met
+`--audit-florbase`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn
