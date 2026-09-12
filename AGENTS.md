@@ -247,6 +247,15 @@ MySQL:
   minimumaantallen, schattingen en gemengde waarden gescheiden. Leid geen
   waterkoppeling of nul af voor de 80 vervaagde, jaarlijks geaggregeerde
   Kamsalamanderrecords. Controleer vóór gebruik met `--audit-amfibieen`
+- gebruik voor vleermuistransectprotocol `17.208` reconstructieversie
+  `ndff-vleermuistransect-v1` en de vijf openbare tabellen
+  `Meijendel.ndff_vleermuis_*`. Houd de NEM-VTT-autoroute en vleerMUS-fietsroute
+  als afzonderlijke meetreeksen. Gebruik alleen de doelsoortenlijst van de
+  betreffende methodevariant voor afgeleide nullen; overige positieve taxa
+  zijn bijvangst. Interpreteer `detectieaantal` als akoestische detecties en
+  nooit als aantallen individuen. Behoud de 73 onderdrukte dubbele
+  vleerMUS-aanleveringen uit 2019 in de recordselectie voor het auditspoor.
+  Controleer vóór gebruik met `--audit-vleermuizen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

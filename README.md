@@ -262,13 +262,24 @@ onderscheiden. De 80 jaarlijks geaggregeerde, vervaagde Kamsalamanderrecords
 krijgen geen openbare waterkoppeling of afgeleide nul. Controleer deze laag met
 `--audit-amfibieen`.
 
+Vleermuistransectprotocol `17.208` staat onder
+`ndff-vleermuistransect-v1` in vijf openbare `Meijendel.ndff_vleermuis_*`-
+tabellen. De 2.624 bronrecords uit 2013-2025 bevatten twee afzonderlijke
+meetreeksen: 26 bezoeken van de noordelijke NEM-VTT-autoroute en 18 bezoeken
+van de zuidelijke vleerMUS-fietsroute. Na onderdrukking van 73 aantoonbare
+dubbele aanleveringen uit 2019 blijven 2.551 akoestische detecties over: 2.410
+van protocol-doelsoorten en 141 positieve bijvangsten. De bezoek-soortmatrix
+bevat 242 regels, waaronder 32 echte nullen die uitsluitend binnen het
+doelsoortenbereik van de betreffende meetreeks zijn afgeleid. Akoestische
+detecties zijn geen aantallen individuele vleermuizen. Controleer deze laag
+met `--audit-vleermuizen`.
+
 De 114 daadwerkelijk voorkomende niet-LOS-combinaties van protocol en
 soortgroep zijn onder `ndff-protocolbereik-v2` ingedeeld in
 `ndff_protocol_soortgroep_geschiktheid`. De klassen zijn `doelgroep`,
 `bijvangst`, `algemene_bron`, `doelsoortafhankelijk` en `gemengd`. Voor alle
-negen gemengde combinaties staat de verdere indeling van ieder aangetroffen
-taxon in `ndff_protocol_soort_geschiktheid`: 606 protocol-taxonbesluiten,
-waarvan 66 doelsoort, 539 bijvangst en één taxonomisch onbepaald. Bijvangst en
+gemengde combinaties staat de verdere indeling van ieder aangetroffen taxon in
+`ndff_protocol_soort_geschiktheid`: 620 protocol-taxonbesluiten. Bijvangst en
 algemene bronnen ondersteunen uitsluitend positieve voorkomensinformatie
 (`V`). Een gemengde combinatie mag
 voor een ander analysetype alleen na een expliciete selectie van de daar als
@@ -331,8 +342,8 @@ Voor analyse zijn daarboven twee lokale, geaggregeerde views beschikbaar:
 - `v_ndff_verspreiding_plot_jaar_taxon`: 105.999 positieve
   plot-jaar-taxonsignalen, gebaseerd op 303.319 voorlopig bruikbare
   bronrecords;
-- `v_ndff_trendkandidaat_plot_jaar_taxon`: 11.083
-  plot-jaar-taxon-protocolcombinaties, gebaseerd op 65.044 records waarvan het
+- `v_ndff_trendkandidaat_plot_jaar_taxon`: 11.138
+  plot-jaar-taxon-protocolcombinaties, gebaseerd op 66.125 records waarvan het
   protocol naast `V` minimaal één kandidaatmogelijkheid `I`, `TV`, `TA` of
   `TK` ondersteunt.
 

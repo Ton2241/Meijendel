@@ -71,8 +71,8 @@ analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
 alleen de protocolcode.
 
 De gereconstrueerde openbare NEM-routeketens staan eveneens in `Meijendel`.
-`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `ndff_libel_*`, `ndff_reptiel_*` en
-`ndff_amfibie_*` bewaren per geversioneerde reconstructie meeteenheden,
+`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `ndff_libel_*`, `ndff_reptiel_*`,
+`ndff_amfibie_*` en `ndff_vleermuis_*` bewaren per geversioneerde reconstructie meeteenheden,
 brongeometrieën, bezoeken en de bezoek-soortmatrix. De libellenketen bewaart aanvullend `doelbereikstatus`,
 zodat echte nullen alleen ontstaan bij een aantoonbaar algemene route en niet
 bij een grof eensoortbezoek met onbekend bereik.
@@ -84,6 +84,10 @@ De amfibieënketen onderscheidt telgebiedbezoek en bevestigd waterbezoek. Zij
 houdt exacte aantallen, presentieklassen en gemengde telwaarden uit elkaar en
 leidt geen waterbezoeken of nullen af voor de vervaagde, jaarlijks
 geaggregeerde Kamsalamanderrecords.
+De vleermuisketen houdt NEM-VTT-auto en vleerMUS-fiets als twee routefamilies
+gescheiden, bewaart de selectie van dubbele bronregels en telt akoestische
+detecties nooit als individuele dieren. De doelsoortenlijst verschilt per
+methodevariant; echte nullen ontstaan alleen binnen dat eigen bereik.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

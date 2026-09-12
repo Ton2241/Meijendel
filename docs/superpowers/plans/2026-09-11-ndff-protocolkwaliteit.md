@@ -139,8 +139,9 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
    protocollen en 142 sluitende combinaties. Inhoudelijke aanvullende validatie
    blijft apart zichtbaar.
 6. **Resterende protocolafbakening — gedeeltelijk en geparkeerd.** SNL-overlap
-   is voorlopig geclassificeerd; verdere SNL-, eDNA-, florakarterings- en
-   vleermuisafbakening heeft lagere prioriteit.
+   is voorlopig geclassificeerd; verdere SNL-, eDNA- en
+   florakarteringsafbakening heeft lagere prioriteit. Vleermuistransectprotocol
+   `17.208` is inmiddels in de vervolguitvoering gereconstrueerd.
 7. **Database formeel gereed verklaren — gereed voor verkennende analyse.**
    De vaste versie `ndff-analyseketen-v1` is in alle analyseviews opgenomen.
    De reproduceerbare live-audit controleert totalen, dubbelen, kernstatussen,
@@ -150,3 +151,13 @@ protocoltypen blijven kandidaten; `gegevensgeschiktheid` blijft
    aanvullende validatie worden zij niet gepresenteerd als gevalideerde
    populatietrends, abundantie, afwezigheid of causale effectanalyse; daarvoor
    begint nu de afzonderlijke bronvalidatiefase.
+
+## Vervolguitvoering 12 september 2026
+
+Protocol `17.208` is na dit oorspronkelijke plan aanvullend gereconstrueerd als
+`ndff-vleermuistransect-v1`. De openbare laag in `Meijendel` onderscheidt de
+NEM-VTT-autoroute van de vleerMUS-fietsroute, bewaart 44 bezoeken en een
+bezoek-soortmatrix met methodegebonden doelsoorten en echte nullen. Van 2.624
+bronregels zijn 73 aantoonbare dubbele aanleveringen uit 2019 onderdrukt; 2.551
+akoestische detecties blijven behouden. Alle afleidingen staan in `Meijendel`;
+`Meijendel_ndff_secure` is niet uitgebreid.

@@ -705,3 +705,127 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_waterbezoek_taxon (
       AND bronrecordaantal>0)
   )
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van protocol 17.208. De records zijn akoestische
+-- detecties en uitdrukkelijk geen aantallen individuele vleermuizen. De ene
+-- NEM-VTT-autoroute en de ene vleerMUS-fietsroute blijven methodisch gescheiden.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_routefamilie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '17.208',
+  routecode VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  methodevariant ENUM('nem_vtt_auto','vleermus_fiets') NOT NULL,
+  vervoerswijze ENUM('auto','fiets') NOT NULL,
+  reconstructiestatus ENUM('waarschijnlijk','handmatige_controle') NOT NULL,
+  bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  geometrieaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaaraantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_omvang_m DECIMAL(12,3) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, routefamilie_id),
+  UNIQUE KEY uq_ndff_vleermuis_routecode (reconstructieversie, routecode),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_routegeometrie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  geometrierol ENUM('positieve_detectielocatie') NOT NULL,
+  centrum_x_rd DECIMAL(14,3) NOT NULL,
+  centrum_y_rd DECIMAL(14,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(18,6) NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, geometrie_sha256),
+  KEY ix_ndff_vleermuis_geometrie_route
+    (reconstructieversie, routefamilie_id),
+  CONSTRAINT fk_ndff_vleermuis_geometrie_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel.ndff_vleermuis_routefamilie
+      (reconstructieversie, routefamilie_id),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  ronde_binnen_jaar TINYINT UNSIGNED NOT NULL,
+  methodevariant ENUM('nem_vtt_auto','vleermus_fiets') NOT NULL,
+  reconstructiestatus ENUM('gereconstrueerd','handmatige_controle') NOT NULL,
+  datumvenster_status ENUM('binnen_huidig_protocol','buiten_huidig_protocol') NOT NULL,
+  herhalingsvenster_status ENUM('binnen_huidig_protocol','handmatige_controle') NOT NULL,
+  bezoekdekkingstatus ENUM('alleen_bezoeken_met_positieve_detectie') NOT NULL,
+  inspanningstatus ENUM('protocolmatig_gestandaardiseerd_metadata_ontbreekt') NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  UNIQUE KEY uq_ndff_vleermuis_bezoek
+    (reconstructieversie, routefamilie_id, bezoekdatum),
+  KEY ix_ndff_vleermuis_bezoek_route
+    (reconstructieversie, routefamilie_id, jaar),
+  CONSTRAINT fk_ndff_vleermuis_bezoek_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel.ndff_vleermuis_routefamilie
+      (reconstructieversie, routefamilie_id),
+  CHECK (jaar = YEAR(bezoekdatum))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  canonieke_waarneming_id BIGINT UNSIGNED NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  bronsysteem ENUM('nem_vtt','vleermus','vttvleermus') NOT NULL,
+  selectiestatus ENUM('opgenomen','dubbele_aanlevering_onderdrukt') NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  selectiereden VARCHAR(500) NOT NULL,
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_vleermuis_selectie_route
+    (reconstructieversie, routefamilie_id, selectiestatus),
+  KEY ix_ndff_vleermuis_selectie_bezoek
+    (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_ndff_vleermuis_selectie_bron FOREIGN KEY (waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_vleermuis_selectie_canoniek FOREIGN KEY
+    (canonieke_waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_vleermuis_selectie_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel.ndff_vleermuis_routefamilie
+      (reconstructieversie, routefamilie_id),
+  CONSTRAINT fk_ndff_vleermuis_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_vleermuis_bezoek
+      (reconstructieversie, bezoek_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  detectieaantal INT UNSIGNED NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  meeteenheid ENUM('akoestische_detectie') NOT NULL,
+  nulregel VARCHAR(500) NOT NULL,
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_vleermuis_taxon_status
+    (wetenschappelijke_naam, doelrelatie, waarnemingsstatus),
+  CONSTRAINT fk_ndff_vleermuis_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_vleermuis_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND detectieaantal>0)
+    OR
+    (waarnemingsstatus='echte_nul' AND detectieaantal=0
+      AND doelrelatie='doelsoort')
+  )
+) ENGINE=InnoDB;

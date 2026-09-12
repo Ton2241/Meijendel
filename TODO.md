@@ -40,8 +40,8 @@
   `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
-- De reconstructies van `07.201`, `10.201` en `01.201` zijn afgerond. Ga bij de
-  overige aangewezen NEM-reeksen verder met `17.208` en `17.209`. Ken pas
+- De reconstructies van `07.201`, `10.201`, `01.201` en `17.208` zijn afgerond.
+  Ga bij de overige aangewezen NEM-reeksen verder met `17.209`. Ken pas
   nullen toe nadat per protocol meeteenheid, bevestigd bezoek en
   doelsoortenbereik vaststaan.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
@@ -66,11 +66,11 @@
   analyse; zij zijn niet trendklaar.
 - Baseer de latere aanvullende bronvalidatie niet uitsluitend op de 1.274 kandidaten uit
   de beveiligde 191-soortenlevering. Over de volledige canonieke laag zijn
-  65.044 unieke records kandidaat voor minstens één gebruikstype buiten `V`.
+  66.125 unieke records kandidaat voor minstens één gebruikstype buiten `V`.
   Behandel de oude 1.274 uitsluitend als beveiligde deelsom. Rond eerst de
   NEM-reconstructies af. Vraag daarna alleen nog ontbrekende sleutels op bij:
   De Vlinderstichting (`03.001` en zo nodig `07.201`), FLORON/Dunea (`12.211`), RAVON (`01.201`), Zoogdiervereniging
-  (`17.208` en zo mogelijk herkomst `17.201`), BLWG (`02.202`) en NMV
+  (zo nodig nadere validatie `17.208` en herkomst `17.201`), BLWG (`02.202`) en NMV
   (`11.201`). Inventarisatieprotocollen van FLORON, ANEMOON en EIS volgen
   daarna voor verspreidings- en detectieanalyse; zij zijn niet automatisch
   kandidaten voor aantalsontwikkeling.

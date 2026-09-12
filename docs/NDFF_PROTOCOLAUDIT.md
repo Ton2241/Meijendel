@@ -103,6 +103,28 @@ beveiligde bronlaag; er zijn geen afgeleide `ndff_amfibie_*`-tabellen in
 `Meijendel_ndff_secure` en er worden geen Kamsalamandernullen afgeleid. De vijf
 openbare tabellen worden gecontroleerd met `--audit-amfibieen`.
 
+Het Vleermuistransectprotocol (`17.208`) is onder
+`ndff-vleermuistransect-v1` uit uitsluitend onvervaagde openbare records
+gereconstrueerd. De 2.624 bronrecords uit 2013-2025 bestaan uit twee
+zelfstandige meetreeksen: 26 bezoeken van een noordelijke NEM-VTT-autoroute en
+18 bezoeken van een zuidelijke vleerMUS-fietsroute. In 2019 zijn 73 oude
+vleerMUS-regels op middernacht aantoonbaar dubbel aangeleverd naast een
+overeenkomende regel met werkelijk tijdstip; de oude regels blijven in de
+recordselectie zichtbaar maar tellen niet mee. Daardoor blijven 2.551
+akoestische detecties over, niet 2.551 individuele vleermuizen.
+
+De NEM-VTT-route heeft vier doelsoorten: Gewone dwergvleermuis, Ruige
+dwergvleermuis, Laatvlieger en Rosse vleermuis. De vleerMUS-route heeft de
+eerste drie als doelsoort; Rosse vleermuis en overige taxa zijn daar
+bijvangst. De matrix bevat 242 bezoek-taxonregels: 126 positieve
+doelsoortregels, 32 echte nullen binnen het geldige methodebereik en 84
+positieve bijvangstregels. Negen bezoeken vallen buiten het huidige
+methodeseizoen en zes bezoeken hebben een herhalingsinterval dat volgens de
+huidige handleiding nadere controle verdient. Ze blijven bewaard en zichtbaar
+gemarkeerd. De vijf `Meijendel.ndff_vleermuis_*`-tabellen worden gecontroleerd
+met `--audit-vleermuizen`; er staan geen afgeleide vleermuisgegevens in het
+beveiligde schema.
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
@@ -121,7 +143,7 @@ uitgewerkt.
 De eerdere vervolgselectie van 1.274 records was uitsluitend gebaseerd op de
 beveiligde levering van 191 soorten. Zij is geen rangorde voor alle NDFF-data.
 Na voltooiing van `ndff-analyseketen-v1` is de prioriteit opnieuw bepaald op de
-810.983 unieke canonieke records. Daarvan zijn 66.169 records voorlopig
+810.983 unieke canonieke records. Daarvan zijn 66.125 records voorlopig
 kandidaat voor minstens één protocolmatig gebruikstype buiten uitsluitend
 positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft in de
 algemene analysepoort `niet_beoordeeld`; een voltooide protocolreconstructie
@@ -134,7 +156,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `07.201` Libellen | 3.280 | 461 | 2007-2021 | negen routefamilies en bezoek-soortmatrix gereconstrueerd |
 | `10.201` Reptielen | 957 | 660 | 1990-2025 | 14 routefamilies en bezoek-soortmatrix gereconstrueerd |
 | `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
-| `17.208` Vleermuistransect | 2.624 | 85 | 2013-2025 | transect en vier doelsoorten reconstrueren |
+| `17.208` Vleermuistransect | 2.624 | 44 | 2013-2025 | twee meetreeksen en bezoek-soortmatrix gereconstrueerd; 73 dubbelen onderdrukt |
 | `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |
 | `11.202` Zeereeppaddenstoelen | 3.738 | 83 | 2014-2025 | zes doelsoorten en vaste plots reconstrueren |
 | `02.202` Korstmossen | 384 | 15 | 2000-2025 | proefvlakken en doelsoortenlijst reconstrueren |
@@ -315,7 +337,7 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
 - `ndff_protocol_gebruik`: 54 wetenschappelijke gebruiksregels;
 - `ndff_protocol_soortgroep_geschiktheid`: 114 doelbereikbesluiten op het
   werkelijk voorkomende protocol-soortgroepniveau;
-- `ndff_protocol_soort_geschiktheid`: 606 protocol-taxonbesluiten voor negen
+- `ndff_protocol_soort_geschiktheid`: 620 protocol-taxonbesluiten voor tien
   gemengde combinaties;
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
@@ -341,9 +363,9 @@ volledig is gevalideerd.
 Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
 `v_ndff_verspreiding_plot_jaar_taxon` bevat 105.999 positieve
 plot-jaar-taxonsignalen uit 303.319 voorlopig bruikbare bronrecords.
-`v_ndff_trendkandidaat_plot_jaar_taxon` bevat 11.083
-plot-jaar-taxon-protocolcombinaties uit 65.044 bronrecords met minimaal één
-protocolmatige kandidaatmogelijkheid buiten `V`. Alle 11.083 combinaties
+`v_ndff_trendkandidaat_plot_jaar_taxon` bevat 11.138
+plot-jaar-taxon-protocolcombinaties uit 66.125 bronrecords met minimaal één
+protocolmatige kandidaatmogelijkheid buiten `V`. Alle 11.138 combinaties
 behouden momenteel `gegevensgeschiktheid = niet_beoordeeld`; zij zijn dus een
 prioriteiten- en selectielaag, geen berekende trend. De dagvlindercontrole vond
 binnen de kandidaatview 5.161 combinaties voor protocollen `03.001`, `03.201`,
@@ -399,7 +421,7 @@ gebruikt.
 De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol
 en een FFV-soortgroep zijn onder `ndff-protocolbereik-v2` volledig beoordeeld:
 
-- 54 combinaties (`271.162` records) vallen als geheel binnen de doelgroep;
+- 53 combinaties (`268.538` records) vallen als geheel binnen de doelgroep;
 - 3 combinaties (`623` records) zijn bijvangst: Nachtvlinders binnen `03.201`,
   overige zoogdieren binnen vogelprotocol `14.204`, en Vleermuizen binnen
   DAZ-BMP `17.204`;
@@ -408,12 +430,12 @@ en een FFV-soortgroep zijn onder `ndff-protocolbereik-v2` volledig beoordeeld:
 - 11 combinaties (`6.673` records) gebruiken een beperkte of
   projectspecifieke doelsoortenafbakening die niet per NDFF-record is
   meegeleverd; ook daar is voorlopig alleen `V` toegestaan;
-- 9 combinaties (`24.048` records) zijn gemengd en zijn daarom ook per taxon
+- 10 combinaties (`26.672` records) zijn gemengd en zijn daarom ook per taxon
   beoordeeld.
 
-Binnen de negen gemengde combinaties zijn 606 aanwezige
-protocol-taxoncombinaties vastgelegd: 66 doelsoortbesluiten met samen 16.963
-records, 539 bijvangstbesluiten met samen 7.081 records en één taxonomisch
+Binnen de tien gemengde combinaties zijn 620 aanwezige
+protocol-taxoncombinaties vastgelegd: 70 doelsoortbesluiten met samen 19.447
+records, 549 bijvangstbesluiten met samen 7.221 records en één taxonomisch
 onbepaald besluit met 4 records. Die laatste categorie betreft
 `Plecotus auritus/austriacus`: de naam omvat zowel een doelsoort als een
 niet-doelsoort van de zoldertelling en ondersteunt daarom alleen `V`.

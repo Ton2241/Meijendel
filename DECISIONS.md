@@ -114,6 +114,17 @@
   reconstructie; daarvoor worden geen waterkoppelingen of nullen afgeleid.
   Alle vijf `ndff_amfibie_*`-tabellen staan in `Meijendel`; er zijn geen
   afgeleide amfibieëntabellen in `Meijendel_ndff_secure`.
+- Voor `17.208` is vanaf 12 september 2026 de openbare vleermuisreeks
+  vastgelegd als `ndff-vleermuistransect-v1`. Het zijn twee zelfstandige
+  meetreeksen: 26 bezoeken van de noordelijke NEM-VTT-autoroute en 18 bezoeken
+  van de zuidelijke vleerMUS-fietsroute. Van 2.624 bronrecords zijn 73
+  aantoonbare dubbele vleerMUS-aanleveringen uit 2019 onderdrukt. De 2.551
+  behouden regels zijn akoestische detecties, geen aantallen individuen.
+  Alleen de vier NEM-VTT-doelsoorten respectievelijk drie vleerMUS-doelsoorten
+  krijgen binnen bevestigde bezoeken echte nullen; positieve registraties van
+  overige taxa blijven bijvangst. De vijf `ndff_vleermuis_*`-tabellen staan in
+  `Meijendel`; er zijn geen afgeleide vleermuistabellen in
+  `Meijendel_ndff_secure`.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
@@ -127,7 +138,7 @@
 - Binnen de beveiligde 191-soortenlevering gaan van de 8.494 ruimtelijke
   verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords door
   naar de brondata-opvraag. Dit is een deelsom; de validatieprioriteit voor de
-  volledige NDFF-set wordt bepaald vanuit de 66.169 canonieke kandidaten voor
+  volledige NDFF-set wordt bepaald vanuit de 66.125 canonieke kandidaten voor
   minstens één gebruikstype buiten uitsluitend `V`.
   Op uitdrukkelijk besluit van 10 september 2026 mogen alle openbare FFV-regels
   wel als duidelijk gelabelde bronregistratie in nieuwe `ndff_`-tabellen van de
@@ -286,9 +297,10 @@
   protocoltypen behouden; bijvangst en algemene bron-/apprecords uitsluitend
   `V`; een doelsoortafhankelijke combinatie uitsluitend `V` totdat een
   gezaghebbende doelsoortenlijst beschikbaar is.
-- Negen combinaties zijn gemengd: HabSlak, Meetnet Bospaddenstoelen,
+- Tien combinaties zijn gemengd: HabSlak, Meetnet Bospaddenstoelen,
   Zeereeppaddenstoelen, Beek- en poldervissen, Natura 2000-amfibieën en -vissen,
-  zoldertellingen vleermuizen, DAZ-BMP en Konijnen in de duinen. Alle 606 daarin
+  zoldertellingen vleermuizen, DAZ-BMP, Vleermuistransecttelling en Konijnen in
+  de duinen. Alle 620 daarin
   aangetroffen protocol-taxoncombinaties zijn daarom afzonderlijk vastgelegd in
   `ndff_protocol_soort_geschiktheid`.
   Niet-V-gebruik vereist een expliciete match met `doelrelatie='doelsoort'`;

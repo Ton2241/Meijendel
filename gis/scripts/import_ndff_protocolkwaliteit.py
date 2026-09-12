@@ -11,6 +11,7 @@ import math
 import re
 import subprocess
 from collections import defaultdict
+from datetime import date
 from pathlib import Path
 from typing import Iterable
 
@@ -34,11 +35,13 @@ VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
 REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
 AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
+BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
 REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
+BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -142,6 +145,29 @@ AMPHIBIAN_RECONSTRUCTION_EXPECTED = {
     "kamsalamander_matrix_rows": 0,
     "secure_derived_tables": 0,
 }
+BAT_RECONSTRUCTION_EXPECTED = {
+    "source_records": 2624,
+    "retained_records": 2551,
+    "suppressed_duplicates": 73,
+    "route_families": 2,
+    "route_geometries": 2023,
+    "visits": 44,
+    "vtt_visits": 26,
+    "vleermus_visits": 18,
+    "target_taxa": 4,
+    "matrix_rows": 242,
+    "target_matrix_rows": 158,
+    "target_positive_rows": 126,
+    "bycatch_positive_rows": 84,
+    "zero_rows": 32,
+    "target_records": 2410,
+    "bycatch_records": 141,
+    "off_window_visits": 9,
+    "repeat_window_review_visits": 6,
+    "invalid_matrix_rows": 0,
+    "duplicate_target_missing": 0,
+    "secure_derived_tables": 0,
+}
 ANALYSIS_CHAIN_EXPECTED = {
     "canonical_records": 810983,
     "canonical_duplicates": 0,
@@ -162,8 +188,8 @@ ANALYSIS_CHAIN_EXPECTED = {
     "secure_detail_records": 14573,
     "distribution_rows": 105999,
     "distribution_sources": 303319,
-    "trend_rows": 11162,
-    "trend_sources": 66169,
+    "trend_rows": 11138,
+    "trend_sources": 66125,
     "trend_loose": 0,
     "usage_rows": 142,
     "usage_records": 810983,
@@ -592,6 +618,101 @@ def build_visit_taxon_matrix(
         raise ValueError(f"Waarnemingen buiten bezoek-doelsoortbereik: {len(unknown)}")
     return matrix
 
+
+def classify_bat_route(x_rd: float) -> dict[str, object]:
+    """Koppel de twee ruimtelijk volledig gescheiden 17.208-deelreeksen."""
+    if x_rd < 84_000:
+        return {
+            "routefamilie_id": 2,
+            "methodevariant": "vleermus_fiets",
+            "routecode": "vleerMUS_zuid",
+        }
+    return {
+        "routefamilie_id": 1,
+        "methodevariant": "nem_vtt_auto",
+        "routecode": "NEM_VTT_noord",
+    }
+
+
+def bat_target_taxa(methodevariant: str) -> set[str]:
+    """Geef het protocolspecifieke doelsoortenbereik per 17.208-deelreeks."""
+    common = {
+        "Pipistrellus pipistrellus", "Pipistrellus nathusii",
+        "Eptesicus serotinus",
+    }
+    if methodevariant == "vleermus_fiets":
+        return common
+    if methodevariant == "nem_vtt_auto":
+        return common | {"Nyctalus noctula"}
+    raise ValueError(f"Onbekende vleermuismethodevariant: {methodevariant}")
+
+
+def classify_bat_records(
+    rows: Iterable[dict[str, object]],
+) -> dict[str, dict[str, object]]:
+    """Markeer de aantoonbare dubbele vleerMUS-aanlevering van 2019.
+
+    De oude vleerMUS-regel heeft alleen 00:00:00. Als op dezelfde datum voor
+    hetzelfde taxon en dezelfde geometrie een vttvleermus-regel met echte
+    tijd staat, blijft die tijdspecifieke regel behouden. Meerdere tijdregels
+    blijven afzonderlijke akoestische detecties.
+    """
+    materialized = [dict(row) for row in rows]
+    timed_by_key: dict[tuple[str, str], list[tuple[str, float, float]]] = defaultdict(list)
+    for row in materialized:
+        route = classify_bat_route(float(row["x"]))
+        start = str(row["start"])
+        if (route["methodevariant"] == "vleermus_fiets"
+                and start.startswith("2019-")
+                and not start.endswith("00:00:00")):
+            key = (str(row["visit_date"]), str(row["taxon"]))
+            timed_by_key[key].append(
+                (str(row["identity"]), float(row["x"]), float(row.get("y", 0.0)))
+            )
+
+    selection: dict[str, dict[str, object]] = {}
+    for row in materialized:
+        identity = str(row["identity"])
+        route = classify_bat_route(float(row["x"]))
+        start = str(row["start"])
+        key = (str(row["visit_date"]), str(row["taxon"]))
+        duplicate_targets = sorted(
+            (
+                (math.hypot(float(row["x"]) - candidate_x,
+                            float(row.get("y", 0.0)) - candidate_y), candidate_identity)
+                for candidate_identity, candidate_x, candidate_y in timed_by_key.get(key, ())
+                if math.hypot(float(row["x"]) - candidate_x,
+                              float(row.get("y", 0.0)) - candidate_y) <= 1.5
+            ),
+            key=lambda item: (item[0], item[1]),
+        )
+        suppressed = (
+            route["methodevariant"] == "vleermus_fiets"
+            and start.startswith("2019-")
+            and start.endswith("00:00:00")
+            and bool(duplicate_targets)
+        )
+        if route["methodevariant"] == "nem_vtt_auto":
+            source_system = "nem_vtt"
+        elif start.startswith("2019-") and not start.endswith("00:00:00"):
+            source_system = "vttvleermus"
+        else:
+            source_system = "vleermus"
+        selection[identity] = {
+            **route,
+            "bronsysteem": source_system,
+            "selectiestatus": (
+                "dubbele_aanlevering_onderdrukt" if suppressed else "opgenomen"
+            ),
+            "canonieke_identiteit": duplicate_targets[0][1] if suppressed else identity,
+            "doelrelatie": (
+                "doelsoort"
+                if str(row["taxon"]) in bat_target_taxa(str(route["methodevariant"]))
+                else "bijvangst"
+            ),
+        }
+    return selection
+
 GENERAL_SOURCE_PROTOCOLS = {"102.004", "102.006", "104.000", "105.000"}
 BYCATCH_COMBINATIONS = {
     ("03.201", "Nachtvlinders"),
@@ -607,6 +728,7 @@ MIXED_COMBINATIONS = {
     ("13.202", "Vissen"),
     ("17.202", "Vleermuizen"),
     ("17.204", "Zoogdieren (overig)"),
+    ("17.208", "Vleermuizen"),
     ("17.209", "Zoogdieren (overig)"),
 }
 TARGET_DEPENDENT_COMBINATIONS = {
@@ -662,6 +784,10 @@ N2000_VIS_TARGET_SPECIES = {
     "Rhodeus amarus", "Cobitis taenia", "Misgurnus fossilis",
 }
 ZOLDER_TARGET_SPECIES = {"Myotis emarginatus", "Plecotus austriacus"}
+VTT_TARGET_SPECIES = {
+    "Pipistrellus pipistrellus", "Pipistrellus nathusii",
+    "Eptesicus serotinus", "Nyctalus noctula",
+}
 TARGET_SPECIES_BY_COMBINATION = {
     ("04.006", "Weekdieren"): HABSLAK_TARGET_SPECIES,
     ("11.201", "Schimmels"): BOSPADDENSTOEL_TARGET_SPECIES,
@@ -671,6 +797,7 @@ TARGET_SPECIES_BY_COMBINATION = {
     ("13.202", "Vissen"): N2000_VIS_TARGET_SPECIES,
     ("17.202", "Vleermuizen"): ZOLDER_TARGET_SPECIES,
     ("17.204", "Zoogdieren (overig)"): DAZ_TARGET_SPECIES,
+    ("17.208", "Vleermuizen"): VTT_TARGET_SPECIES,
     ("17.209", "Zoogdieren (overig)"): RABBIT_TARGET_SPECIES,
 }
 AMBIGUOUS_SPECIES_BY_COMBINATION = {
@@ -685,6 +812,7 @@ TARGET_TYPES_BY_COMBINATION = {
     ("13.202", "Vissen"): "V,TV,TA",
     ("17.202", "Vleermuizen"): "V,I,TA",
     ("17.204", "Zoogdieren (overig)"): "V,TA",
+    ("17.208", "Vleermuizen"): "V,TA",
     ("17.209", "Zoogdieren (overig)"): "V,TA",
 }
 ADDITIONAL_SCOPE_SOURCE_URLS = {
@@ -709,6 +837,11 @@ ADDITIONAL_SCOPE_SOURCE_URLS = {
     ),
     ("17.202", "Vleermuizen"): (
         "https://www.zoogdiervereniging.nl/sites/default/files/2023-05/Handleiding%20NEM%20Meetprogramma%20Zoldertellingen%202023.pdf",
+    ),
+    ("17.208", "Vleermuizen"): (
+        "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-208-vleermuistransecttelling-nem/",
+        "https://www.zoogdiervereniging.nl/sites/default/files/2024-10/Handleiding%20Vleermuis%20transecttellingen.pdf",
+        "https://www.zoogdiervereniging.nl/sites/default/files/2025-03/n2023009_algemene_praktische_handleiding_uitvoering_vleermus.pdf",
     ),
 }
 
@@ -1243,6 +1376,27 @@ def run_mysql(client: Path, args: list[str], sql: str, capture: bool = False) ->
     if result.returncode:
         raise RuntimeError(result.stderr.strip() or f"MySQL stopte met code {result.returncode}")
     return result.stdout.strip() if capture else ""
+
+
+def bat_source_sql() -> str:
+    """Lees uitsluitend de openbare, onvervaagde 17.208-bronregistraties."""
+    return """
+SELECT o.waarneming_id,o.identiteit_sha256,
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       o.wetenschappelijke_naam,o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),
+       ST_Area(o.openbare_geometrie),o.aantal_raw,o.schaal_telmethode,
+       o.determinatiemethode,o.bronhouder
+FROM Meijendel.ndff_open_waarneming AS o
+WHERE o.protocol LIKE '17.208%'
+  AND o.soortgroep_raw='Vleermuizen'
+  AND o.vervaagd=0
+ORDER BY o.periode_start,o.openbare_geometrie_sha256,
+         o.wetenschappelijke_naam,o.waarneming_id;
+"""
 
 
 def vlinder_source_sql() -> str:
@@ -2153,6 +2307,255 @@ def reconstruct_amfibieen(mysql_client: Path, client_args: list[str]) -> dict[st
     }
 
 
+def reconstruct_vleermuizen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw de twee openbare 17.208-transectreeksen en hun detectiematrix."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, bat_source_sql(), capture=True)
+    rows: list[dict[str, object]] = []
+    by_identity: dict[str, dict[str, object]] = {}
+    for line in output.splitlines():
+        (observation_id, identity, start, stop, visit_date, year, taxon,
+         geometry, x, y, area, raw_count, scale, determination, holder) = line.split("\t")
+        if (raw_count != "1" or scale != "exact aantal"
+                or determination != "gehoord met batdetector"
+                or holder != "Zoogdiervereniging"):
+            raise ValueError("Een 17.208-record wijkt af van het gecontroleerde detectorprofiel.")
+        row = {
+            "observation_id": int(observation_id), "identity": identity,
+            "start": start, "stop": stop, "visit_date": visit_date,
+            "year": int(year), "taxon": taxon, "geometry": geometry,
+            "x": float(x), "y": float(y), "area": float(area),
+        }
+        rows.append(row)
+        by_identity[identity] = row
+    if len(rows) != 2_624 or len(by_identity) != len(rows):
+        raise ValueError("De 17.208-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    selection = classify_bat_records(rows)
+    retained = [
+        row for row in rows
+        if selection[str(row["identity"])]["selectiestatus"] == "opgenomen"
+    ]
+    suppressed = len(rows) - len(retained)
+    if len(retained) != 2_551 or suppressed != 73:
+        raise ValueError("De gecontroleerde dubbele vleerMUS-aanlevering is gewijzigd.")
+
+    visit_rows: dict[tuple[int, str], list[dict[str, object]]] = defaultdict(list)
+    family_rows: dict[int, list[dict[str, object]]] = defaultdict(list)
+    geometry_rows: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for row in retained:
+        route = classify_bat_route(float(row["x"]))
+        family_id = int(route["routefamilie_id"])
+        visit_rows[(family_id, str(row["visit_date"]))].append(row)
+        family_rows[family_id].append(row)
+        geometry_rows[str(row["geometry"])].append(row)
+    if len(visit_rows) != 44 or set(family_rows) != {1, 2}:
+        raise ValueError("De twee 17.208-routefamilies of hun bezoeken zijn gewijzigd.")
+
+    visits_by_family_year: dict[tuple[int, int], list[str]] = defaultdict(list)
+    for family_id, visit_date in visit_rows:
+        visits_by_family_year[(family_id, int(visit_date[:4]))].append(visit_date)
+    if any(
+        len(dates) != (2 if family_id == 1 else 3)
+        for (family_id, _year), dates in visits_by_family_year.items()
+    ):
+        raise ValueError("Een 17.208-routejaar mist of bevat een extra herhaling.")
+
+    repeat_review: set[tuple[int, int]] = set()
+    for (family_id, year), date_strings in visits_by_family_year.items():
+        dates = sorted(date.fromisoformat(value) for value in date_strings)
+        limit = 10 if family_id == 1 else 14
+        if (dates[-1] - dates[0]).days > limit:
+            repeat_review.add((family_id, year))
+
+    visit_keys = {
+        key: hashlib.sha256(
+            f"{classify_bat_route(float(records[0]['x']))['routecode']}|{key[1]}".encode("utf-8")
+        ).hexdigest()
+        for key, records in visit_rows.items()
+    }
+    family_values: list[str] = []
+    for family_id, records in sorted(family_rows.items()):
+        route = classify_bat_route(float(records[0]["x"]))
+        xs = [float(row["x"]) for row in records]
+        ys = [float(row["y"]) for row in records]
+        years = {int(row["year"]) for row in records}
+        geometries = {str(row["geometry"]) for row in records}
+        family_values.append(
+            f"({sql_text(BAT_TRANSECT_RULE_VERSION)},{family_id},'17.208',"
+            f"{sql_text(str(route['routecode']))},{sql_text(str(route['methodevariant']))},"
+            f"{sql_text('auto' if family_id == 1 else 'fiets')},'waarschijnlijk',"
+            f"{sum(key[0] == family_id for key in visit_rows)},{len(geometries)},"
+            f"{len(records)},{min(years)},{max(years)},{len(years)},"
+            f"{math.hypot(max(xs)-min(xs),max(ys)-min(ys)):.3f})"
+        )
+
+    geometry_values: list[str] = []
+    for geometry, records in sorted(geometry_rows.items()):
+        route = classify_bat_route(float(records[0]["x"]))
+        years = [int(row["year"]) for row in records]
+        geometry_values.append(
+            f"({sql_text(BAT_TRANSECT_RULE_VERSION)},{sql_text(geometry)},"
+            f"{int(route['routefamilie_id'])},'positieve_detectielocatie',"
+            f"{float(records[0]['x']):.3f},{float(records[0]['y']):.3f},"
+            f"{float(records[0]['area']):.6f},{min(years)},{max(years)})"
+        )
+
+    visit_values: list[str] = []
+    visit_status: dict[tuple[int, str], dict[str, str]] = {}
+    for (family_id, visit_date), records in sorted(visit_rows.items()):
+        route = classify_bat_route(float(records[0]["x"]))
+        month_day = visit_date[5:]
+        end = "09-01" if family_id == 1 else "09-15"
+        date_status = (
+            "binnen_huidig_protocol" if "07-15" <= month_day <= end
+            else "buiten_huidig_protocol"
+        )
+        repeat_status = (
+            "handmatige_controle"
+            if (family_id, int(visit_date[:4])) in repeat_review
+            else "binnen_huidig_protocol"
+        )
+        reconstruction_status = (
+            "handmatige_controle"
+            if date_status == "buiten_huidig_protocol" or repeat_status == "handmatige_controle"
+            else "gereconstrueerd"
+        )
+        visit_status[(family_id, visit_date)] = {
+            "date": date_status, "repeat": repeat_status,
+            "reconstruction": reconstruction_status,
+        }
+        round_number = sorted(
+            visits_by_family_year[(family_id, int(visit_date[:4]))]
+        ).index(visit_date) + 1
+        visit_values.append(
+            f"({sql_text(BAT_TRANSECT_RULE_VERSION)},"
+            f"{sql_text(visit_keys[(family_id, visit_date)])},{sql_text(visit_date)},"
+            f"{int(visit_date[:4])},{family_id},{round_number},"
+            f"{sql_text(str(route['methodevariant']))},{sql_text(reconstruction_status)},"
+            f"{sql_text(date_status)},{sql_text(repeat_status)},"
+            "'alleen_bezoeken_met_positieve_detectie',"
+            "'protocolmatig_gestandaardiseerd_metadata_ontbreekt',"
+            f"{len(records)})"
+        )
+
+    selection_values: list[str] = []
+    for row in rows:
+        identity = str(row["identity"])
+        info = selection[identity]
+        canonical = by_identity[str(info["canonieke_identiteit"])]
+        family_id = int(info["routefamilie_id"])
+        visit_key = visit_keys[(family_id, str(row["visit_date"]))]
+        reason = (
+            "Dubbele vleerMUS-aanlevering uit 2019; tijdspecifieke vttvleermus-regel is canoniek."
+            if info["selectiestatus"] == "dubbele_aanlevering_onderdrukt"
+            else "Unieke akoestische detectie binnen de gereconstrueerde 17.208-deelreeks."
+        )
+        selection_values.append(
+            f"({sql_text(BAT_TRANSECT_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{int(canonical['observation_id'])},{sql_text(visit_key)},{family_id},"
+            f"{sql_text(str(info['bronsysteem']))},{sql_text(str(info['selectiestatus']))},"
+            f"{sql_text(str(info['doelrelatie']))},{sql_text(reason)})"
+        )
+
+    observations: dict[tuple[int, str, str], int] = defaultdict(int)
+    for row in retained:
+        family_id = int(classify_bat_route(float(row["x"]))["routefamilie_id"])
+        observations[(family_id, str(row["visit_date"]), str(row["taxon"]))] += 1
+    matrix_values: list[str] = []
+    matrix_metrics: dict[str, int] = defaultdict(int)
+    for family_id, visit_date in sorted(visit_rows):
+        method = str(classify_bat_route(
+            float(visit_rows[(family_id, visit_date)][0]["x"])
+        )["methodevariant"])
+        targets = bat_target_taxa(method)
+        visit_taxa = {
+            taxon for (candidate_family, candidate_date, taxon) in observations
+            if candidate_family == family_id and candidate_date == visit_date
+        }
+        for taxon in sorted(targets | visit_taxa):
+            count = observations.get((family_id, visit_date, taxon), 0)
+            relation = "doelsoort" if taxon in targets else "bijvangst"
+            status = "waargenomen" if count else "echte_nul"
+            rule = (
+                "Niet gedetecteerd tijdens een bevestigd 17.208-routebezoek; echte protocolnul voor deze doelsoort."
+                if not count else
+                "Positieve akoestische detectie; detectieaantal is geen aantal individuele vleermuizen."
+            )
+            matrix_values.append(
+                f"({sql_text(BAT_TRANSECT_RULE_VERSION)},"
+                f"{sql_text(visit_keys[(family_id, visit_date)])},{sql_text(taxon)},"
+                f"{sql_text(relation)},{count},{sql_text(status)},"
+                f"'akoestische_detectie',{sql_text(rule)})"
+            )
+            matrix_metrics[f"{relation}_{status}_rows"] += 1
+            if count:
+                matrix_metrics[f"{relation}_records"] += count
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {BAT_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(BAT_TRANSECT_RULE_VERSION)};",
+        f"DELETE FROM {BAT_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(BAT_TRANSECT_RULE_VERSION)};",
+        f"DELETE FROM {BAT_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(BAT_TRANSECT_RULE_VERSION)};",
+        f"DELETE FROM {BAT_TABLE_PREFIX}_routegeometrie WHERE reconstructieversie={sql_text(BAT_TRANSECT_RULE_VERSION)};",
+        f"DELETE FROM {BAT_TABLE_PREFIX}_routefamilie WHERE reconstructieversie={sql_text(BAT_TRANSECT_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        f"{BAT_TABLE_PREFIX}_routefamilie",
+        "reconstructieversie,routefamilie_id,protocol_sleutel,routecode,methodevariant,vervoerswijze,reconstructiestatus,bezoekaantal,geometrieaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m",
+        family_values,
+    )
+    statements += _batched_insert(
+        f"{BAT_TABLE_PREFIX}_routegeometrie",
+        "reconstructieversie,geometrie_sha256,routefamilie_id,geometrierol,centrum_x_rd,centrum_y_rd,oppervlakte_m2,eerste_jaar,laatste_jaar",
+        geometry_values,
+    )
+    statements += _batched_insert(
+        f"{BAT_TABLE_PREFIX}_bezoek",
+        "reconstructieversie,bezoek_sleutel,bezoekdatum,jaar,routefamilie_id,ronde_binnen_jaar,methodevariant,reconstructiestatus,datumvenster_status,herhalingsvenster_status,bezoekdekkingstatus,inspanningstatus,bronrecordaantal",
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{BAT_TABLE_PREFIX}_recordselectie",
+        "reconstructieversie,waarneming_id,canonieke_waarneming_id,bezoek_sleutel,routefamilie_id,bronsysteem,selectiestatus,doelrelatie,selectiereden",
+        selection_values,
+    )
+    statements += _batched_insert(
+        f"{BAT_TABLE_PREFIX}_bezoek_taxon",
+        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,doelrelatie,detectieaantal,waarnemingsstatus,meeteenheid,nulregel",
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+
+    return {
+        "source_records": len(rows),
+        "retained_records": len(retained),
+        "suppressed_duplicates": suppressed,
+        "route_families": len(family_rows),
+        "route_geometries": len(geometry_rows),
+        "visits": len(visit_rows),
+        "vtt_visits": sum(key[0] == 1 for key in visit_rows),
+        "vleermus_visits": sum(key[0] == 2 for key in visit_rows),
+        "target_taxa": len(VTT_TARGET_SPECIES),
+        "matrix_rows": len(matrix_values),
+        "target_matrix_rows": matrix_metrics["doelsoort_waargenomen_rows"] + matrix_metrics["doelsoort_echte_nul_rows"],
+        "target_positive_rows": matrix_metrics["doelsoort_waargenomen_rows"],
+        "bycatch_positive_rows": matrix_metrics["bijvangst_waargenomen_rows"],
+        "zero_rows": matrix_metrics["doelsoort_echte_nul_rows"],
+        "target_records": matrix_metrics["doelsoort_records"],
+        "bycatch_records": matrix_metrics["bijvangst_records"],
+        "off_window_visits": sum(value["date"] == "buiten_huidig_protocol" for value in visit_status.values()),
+        "repeat_window_review_visits": sum(value["repeat"] == "handmatige_controle" for value in visit_status.values()),
+        "invalid_matrix_rows": 0,
+        "duplicate_target_missing": 0,
+        "secure_derived_tables": 0,
+    }
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -2274,6 +2677,38 @@ SELECT JSON_OBJECT(
 """
 
 
+def bat_validation_sql() -> str:
+    version = sql_text(BAT_TRANSECT_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_vleermuis_{suffix}") for suffix in (
+        "recordselectie", "routefamilie", "routegeometrie", "bezoek", "bezoek_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_recordselectie WHERE reconstructieversie={version}),
+  'retained_records',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
+  'suppressed_duplicates',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_recordselectie WHERE reconstructieversie={version} AND selectiestatus='dubbele_aanlevering_onderdrukt'),
+  'route_families',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_routefamilie WHERE reconstructieversie={version}),
+  'route_geometries',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_routegeometrie WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek WHERE reconstructieversie={version}),
+  'vtt_visits',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek WHERE reconstructieversie={version} AND methodevariant='nem_vtt_auto'),
+  'vleermus_visits',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek WHERE reconstructieversie={version} AND methodevariant='vleermus_fiets'),
+  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version}),
+  'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst' AND waarnemingsstatus='waargenomen'),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'target_records',(SELECT COALESCE(SUM(detectieaantal),0) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'bycatch_records',(SELECT COALESCE(SUM(detectieaantal),0) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst' AND waarnemingsstatus='waargenomen'),
+  'off_window_visits',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek WHERE reconstructieversie={version} AND datumvenster_status='buiten_huidig_protocol'),
+  'repeat_window_review_visits',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek WHERE reconstructieversie={version} AND herhalingsvenster_status='handmatige_controle'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND detectieaantal=0) OR (waarnemingsstatus='echte_nul' AND (detectieaantal<>0 OR doelrelatie<>'doelsoort')) OR meeteenheid<>'akoestische_detectie')),
+  'duplicate_target_missing',(SELECT COUNT(*) FROM Meijendel.ndff_vleermuis_recordselectie d LEFT JOIN Meijendel.ndff_vleermuis_recordselectie c ON c.reconstructieversie=d.reconstructieversie AND c.waarneming_id=d.canonieke_waarneming_id AND c.selectiestatus='opgenomen' WHERE d.reconstructieversie={version} AND d.selectiestatus='dubbele_aanlevering_onderdrukt' AND c.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -2322,6 +2757,16 @@ def validate_amphibian_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != AMPHIBIAN_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Amfibieënreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_bat_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != BAT_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (BAT_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(BAT_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != BAT_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"Vleermuisreconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validation_sql() -> str:
@@ -2464,7 +2909,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol_sleutel en bewijsmethode zijn niet consistent.")
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
-    if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 606
+    if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 620
             or metrics["dependent_combinations"] != 11 or metrics["mixed_species_missing"]
             or metrics["secure_mixed_species_missing"]
             or metrics["ambiguous_species"] != 1 or metrics["scope_missing"]):
@@ -2613,6 +3058,8 @@ def main() -> int:
     mode.add_argument("--audit-reptielen", action="store_true")
     mode.add_argument("--reconstruct-amfibieen", action="store_true")
     mode.add_argument("--audit-amfibieen", action="store_true")
+    mode.add_argument("--reconstruct-vleermuizen", action="store_true")
+    mode.add_argument("--audit-vleermuizen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -2706,6 +3153,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_amphibian_reconstruction(metrics)
         print(f"OK: lokale amfibieënreconstructie {AMPHIBIAN_WATER_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_vleermuizen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_vleermuizen(args.mysql_client, client_args)
+        validate_bat_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_vleermuizen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            bat_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_bat_reconstruction(metrics)
+        print(f"OK: lokale vleermuisreconstructie {BAT_TRANSECT_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

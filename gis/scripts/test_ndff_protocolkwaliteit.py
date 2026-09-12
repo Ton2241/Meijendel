@@ -68,12 +68,18 @@ def main() -> int:
         "meijendel.ndff_amfibie_bezoek",
         "meijendel.ndff_amfibie_waterbezoek",
         "meijendel.ndff_amfibie_waterbezoek_taxon",
+        "meijendel.ndff_vleermuis_recordselectie",
+        "meijendel.ndff_vleermuis_routefamilie",
+        "meijendel.ndff_vleermuis_routegeometrie",
+        "meijendel.ndff_vleermuis_bezoek",
+        "meijendel.ndff_vleermuis_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
     assert "meijendel_ndff_secure.ndff_libel_" not in folded
     assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
     assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
+    assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -87,6 +93,10 @@ def main() -> int:
     assert "fk_ndff_amfibie_waterbezoek_bezoek" in folded
     assert "fk_ndff_amfibie_waterbezoek_water" in folded
     assert "fk_ndff_amfibie_taxon_waterbezoek" in folded
+    assert "fk_ndff_vleermuis_selectie_route" in folded
+    assert "fk_ndff_vleermuis_geometrie_route" in folded
+    assert "fk_ndff_vleermuis_bezoek_route" in folded
+    assert "fk_ndff_vleermuis_taxon_bezoek" in folded
     assert "alleen_positieve_bezoeken" in folded
     assert "niet_afleidbaar" in folded
     assert "enum('waargenomen','echte_nul')" in folded
@@ -238,6 +248,46 @@ def main() -> int:
     assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
     assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v1"
     assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v1"
+    assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
+
+    assert module.classify_bat_route(83_999.0) == {
+        "routefamilie_id": 2,
+        "methodevariant": "vleermus_fiets",
+        "routecode": "vleerMUS_zuid",
+    }
+    assert module.classify_bat_route(84_000.0) == {
+        "routefamilie_id": 1,
+        "methodevariant": "nem_vtt_auto",
+        "routecode": "NEM_VTT_noord",
+    }
+    assert module.bat_target_taxa("nem_vtt_auto") == {
+        "Pipistrellus pipistrellus", "Pipistrellus nathusii",
+        "Eptesicus serotinus", "Nyctalus noctula",
+    }
+    assert module.bat_target_taxa("vleermus_fiets") == {
+        "Pipistrellus pipistrellus", "Pipistrellus nathusii",
+        "Eptesicus serotinus",
+    }
+    bat_rows = [
+        {"identity": "midnight", "taxon": "Pipistrellus pipistrellus",
+         "start": "2019-09-09 00:00:00", "visit_date": "2019-09-09",
+         "geometry": "g1", "x": 82_000.0},
+        {"identity": "timed-a", "taxon": "Pipistrellus pipistrellus",
+         "start": "2019-09-09 21:45:00", "visit_date": "2019-09-09",
+         "geometry": "g1", "x": 82_000.0},
+        {"identity": "timed-b", "taxon": "Pipistrellus pipistrellus",
+         "start": "2019-09-09 21:46:00", "visit_date": "2019-09-09",
+         "geometry": "g1", "x": 82_000.0},
+        {"identity": "north", "taxon": "Nyctalus noctula",
+         "start": "2019-07-23 00:00:00", "visit_date": "2019-07-23",
+         "geometry": "g2", "x": 86_000.0},
+    ]
+    bat_selection = module.classify_bat_records(bat_rows)
+    assert bat_selection["midnight"]["selectiestatus"] == "dubbele_aanlevering_onderdrukt"
+    assert bat_selection["midnight"]["canonieke_identiteit"] == "timed-a"
+    assert bat_selection["timed-a"]["selectiestatus"] == "opgenomen"
+    assert bat_selection["timed-b"]["selectiestatus"] == "opgenomen"
+    assert bat_selection["north"]["selectiestatus"] == "opgenomen"
 
     # Alleen nabijgelegen geometrieversies met niet-overlappende gebruiksjaren
     # vormen één waterfamilie. Nabije gelijktijdig gebruikte wateren blijven
@@ -302,6 +352,8 @@ def main() -> int:
     assert "--audit-reptielen" in importer_text
     assert "--reconstruct-amfibieen" in importer_text
     assert "--audit-amfibieen" in importer_text
+    assert "--reconstruct-vleermuizen" in importer_text
+    assert "--audit-vleermuizen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -313,6 +365,7 @@ def main() -> int:
     assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
     assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
+    assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -331,6 +384,11 @@ def main() -> int:
     assert "o.vervaagd=0" not in amphibian_excluded_sql
     assert "vervaagd=1" in amphibian_excluded_sql
     assert "TIMESTAMPDIFF(HOUR,periode_start,periode_stop)>=8000" in amphibian_excluded_sql
+    bat_source_sql = " ".join(module.bat_source_sql().split())
+    assert "o.protocol LIKE '17.208%'" in bat_source_sql
+    assert "o.soortgroep_raw='Vleermuizen'" in bat_source_sql
+    assert "o.vervaagd=0" in bat_source_sql
+    assert "Meijendel_ndff_secure" not in bat_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -379,6 +437,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende amfibieënreconstructie is niet geblokkeerd")
+    module.validate_bat_reconstruction(dict(module.BAT_RECONSTRUCTION_EXPECTED))
+    broken_bats = dict(module.BAT_RECONSTRUCTION_EXPECTED)
+    broken_bats["suppressed_duplicates"] -= 1
+    try:
+        module.validate_bat_reconstruction(broken_bats)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende vleermuisreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -395,6 +462,7 @@ def main() -> int:
     assert module.classify_protocol_group("17.204", "Vleermuizen")["doelrelatie"] == "bijvangst"
     assert module.classify_protocol_group("17.204", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("17.209", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("17.208", "Vleermuizen")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("102.006", "Vaatplanten")["doelrelatie"] == "algemene_bron"
     assert module.classify_protocol_group("02.204", "Mossen")["doelrelatie"] == "doelgroep"
     assert module.classify_protocol_group("04.006", "Weekdieren")["doelrelatie"] == "gemengd"
@@ -402,7 +470,7 @@ def main() -> int:
     assert module.classify_protocol_group("10.002", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_group("12.205", "Dagvlinders")["doelrelatie"] == "doelsoortafhankelijk"
     assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 11
-    assert len(module.MIXED_COMBINATIONS) == 9
+    assert len(module.MIXED_COMBINATIONS) == 10
     assert len(module.BOSPADDENSTOEL_TARGET_SPECIES) == 49
 
     daz_target = module.classify_protocol_species("17.204", "Oryctolagus cuniculus")
@@ -425,6 +493,8 @@ def main() -> int:
     assert module.classify_protocol_species("13.202", "Bufo bufo", "Amfibieën")["doelrelatie"] == "bijvangst"
     assert module.classify_protocol_species("17.202", "Plecotus auritus/austriacus", "Vleermuizen")["doelrelatie"] == "onbepaald"
     assert module.classify_protocol_species("17.202", "Pipistrellus", "Vleermuizen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("17.208", "Nyctalus noctula", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.208", "Myotis daubentonii", "Vleermuizen")["doelrelatie"] == "bijvangst"
     try:
         module.classify_protocol_species("03.201", "Oryctolagus cuniculus")
     except ValueError:
@@ -529,7 +599,7 @@ def main() -> int:
         "invalid_protocol_evidence": 0,
         "spatial": 810830,
         "scope_combinations": 114,
-        "mixed_species": 606,
+        "mixed_species": 620,
         "dependent_combinations": 11,
         "mixed_species_missing": 0,
         "secure_mixed_species_missing": 0,
@@ -611,6 +681,10 @@ def main() -> int:
         "--audit-reptielen",
         "ndff-amfibiewater-v1",
         "--audit-amfibieen",
+        "ndff-vleermuistransect-v1",
+        "--audit-vleermuizen",
+        "akoestische detecties",
+        "73",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")
@@ -619,6 +693,7 @@ def main() -> int:
     assert "Meijendel_ndff_secure.ndff_waarneming_protocol" in architecture
     assert "ndff_libel_*" in architecture
     assert "ndff_reptiel_*" in architecture
+    assert "ndff_vleermuis_*" in architecture
     print("OK: NDFF-protocolkwaliteitscontract")
     return 0
 
