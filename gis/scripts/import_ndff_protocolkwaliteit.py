@@ -35,6 +35,12 @@ POSITIVE_ONLY_SOURCE_PROTOCOLS = {
     "12.004", "12.006", "17.005", "17.006",
     "102.004", "102.006", "104.000", "105.000",
 }
+STRUCTURED_INCOMPLETE_PROTOCOLS = {
+    "17.002": {"TV"},
+    "102.002": {"I", "TV"},
+    "102.005": {"I", "TV"},
+    "102.007": {"I", "TV"},
+}
 VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
@@ -1686,11 +1692,18 @@ def protocol_delivery_assessment(
     De expliciet positieve bronprotocollen bevatten geen complete bezoeken,
     inspanning of nullen. Daar blijft alleen V voorwaardelijk bruikbaar.
     """
-    if protocol_sleutel not in MIXED_POSITIVE_PROTOCOLS | POSITIVE_ONLY_SOURCE_PROTOCOLS:
+    assessed_protocols = (
+        MIXED_POSITIVE_PROTOCOLS
+        | POSITIVE_ONLY_SOURCE_PROTOCOLS
+        | set(STRUCTURED_INCOMPLETE_PROTOCOLS)
+    )
+    if protocol_sleutel not in assessed_protocols:
         return None
     if analysetype == "V":
         return "voorwaardelijk", "voorlopig_toegelaten"
     if protocol_sleutel in MIXED_POSITIVE_PROTOCOLS and analysetype in {"I", "TV"}:
+        return "onvoldoende", "voorlopig_toegelaten"
+    if analysetype in STRUCTURED_INCOMPLETE_PROTOCOLS.get(protocol_sleutel, set()):
         return "onvoldoende", "voorlopig_toegelaten"
     return "onvoldoende", "uitgesloten_huidige_levering"
 
@@ -1726,15 +1739,45 @@ def delivery_assessment_sql() -> str:
         "volledige soortenlijst of afleidbare nullen. Alleen positieve "
         "voorkomensinformatie is verantwoord; dit analysetype is uitgesloten."
     )
+    structured_positive_reason = (
+        "De protocolcode en de ontvangen datum-, duur-, locatie- en telvelden "
+        "tonen een gestructureerde bronregistratie. Positieve voorkomensinformatie "
+        "is na ruimtelijke en PQ-toets bruikbaar."
+    )
+    structured_indicative_reason = (
+        "Het protocol ondersteunt dit analysetype in beginsel en de ontvangen "
+        "regels bevatten herhaalde of getimede registraties. De oorspronkelijke "
+        "tuin-, route-, lijst- of monster-ID en volledigheidsmetadata ontbreken "
+        "echter. Alleen indicatieve verandering in geregistreerde tellingen is "
+        "toegestaan; niet presenteren als gevalideerde populatietrend."
+    )
+    structured_excluded_reason = (
+        "De gestructureerde bron is herkenbaar, maar de huidige levering bevat "
+        "niet de volledige meeteenheid-, bezoek-, lijst- of monsterstructuur die "
+        "voor dit analysetype nodig is."
+    )
     assessment_rows: list[str] = []
-    assessed_protocols = sorted(MIXED_POSITIVE_PROTOCOLS | POSITIVE_ONLY_SOURCE_PROTOCOLS)
+    assessed_protocols = sorted(
+        MIXED_POSITIVE_PROTOCOLS
+        | POSITIVE_ONLY_SOURCE_PROTOCOLS
+        | set(STRUCTURED_INCOMPLETE_PROTOCOLS)
+    )
     for protocol_sleutel in assessed_protocols:
         for analysetype in ANALYSIS_TYPES:
             assessment = protocol_delivery_assessment(protocol_sleutel, analysetype)
             if assessment is None:
                 continue
             gegevensgeschiktheid, eindbesluit = assessment
-            if protocol_sleutel in POSITIVE_ONLY_SOURCE_PROTOCOLS and analysetype == "V":
+            if protocol_sleutel in STRUCTURED_INCOMPLETE_PROTOCOLS and analysetype == "V":
+                reason = structured_positive_reason
+            elif (
+                protocol_sleutel in STRUCTURED_INCOMPLETE_PROTOCOLS
+                and analysetype in STRUCTURED_INCOMPLETE_PROTOCOLS[protocol_sleutel]
+            ):
+                reason = structured_indicative_reason
+            elif protocol_sleutel in STRUCTURED_INCOMPLETE_PROTOCOLS:
+                reason = structured_excluded_reason
+            elif protocol_sleutel in POSITIVE_ONLY_SOURCE_PROTOCOLS and analysetype == "V":
                 reason = source_positive_reason
             elif protocol_sleutel in POSITIVE_ONLY_SOURCE_PROTOCOLS:
                 reason = source_excluded_reason
@@ -5976,12 +6019,26 @@ def validate_habslak_reconstruction(metrics: dict[str, int]) -> None:
 
 
 def validation_sql() -> str:
+    structured_protocols = set(STRUCTURED_INCOMPLETE_PROTOCOLS)
     assessed_protocols_sql = ",".join(
         sql_text(protocol)
-        for protocol in sorted(MIXED_POSITIVE_PROTOCOLS | POSITIVE_ONLY_SOURCE_PROTOCOLS)
+        for protocol in sorted(
+            MIXED_POSITIVE_PROTOCOLS
+            | POSITIVE_ONLY_SOURCE_PROTOCOLS
+            | structured_protocols
+        )
     )
     positive_only_sql = ",".join(
         sql_text(protocol) for protocol in sorted(POSITIVE_ONLY_SOURCE_PROTOCOLS)
+    )
+    structured_protocols_sql = ",".join(
+        sql_text(protocol) for protocol in sorted(structured_protocols)
+    )
+    structured_indicative_sql = " OR ".join(
+        "(p.protocol_sleutel=" + sql_text(protocol)
+        + " AND d.analysetype IN ("
+        + ",".join(sql_text(kind) for kind in sorted(kinds)) + "))"
+        for protocol, kinds in sorted(STRUCTURED_INCOMPLETE_PROTOCOLS.items())
     )
     return f"""
 SELECT 'protocols',COUNT(*) FROM Meijendel.ndff_protocol;
@@ -6081,6 +6138,13 @@ WHERE d.regelversie={sql_text(DECISION_RULE_VERSION)}
       AND d.analysetype IN ('I','TV','TA','TK')
       AND d.gegevensgeschiktheid='onvoldoende'
       AND d.eindbesluit='uitgesloten_huidige_levering')
+    OR (({structured_indicative_sql})
+      AND d.gegevensgeschiktheid='onvoldoende'
+      AND d.eindbesluit='voorlopig_toegelaten')
+    OR (p.protocol_sleutel IN ({structured_protocols_sql})
+      AND d.analysetype<>'V' AND NOT ({structured_indicative_sql})
+      AND d.gegevensgeschiktheid='onvoldoende'
+      AND d.eindbesluit='uitgesloten_huidige_levering')
   );
 SELECT 'snl_records',COUNT(*)
 FROM Meijendel.ndff_open_waarneming_protocol l
@@ -6156,7 +6220,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
     if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
-    if (metrics["leveringsbeoordelingen"] != 320
+    if (metrics["leveringsbeoordelingen"] != 400
             or metrics["leveringsbeoordeling_onverwacht"]
             or metrics["leveringsbeoordeling_ongeldig"]):
         raise ValueError("De beoordeelde atlas-/verspreidingsleveringen wijken af.")

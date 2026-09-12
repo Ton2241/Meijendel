@@ -246,8 +246,30 @@ def main() -> int:
     assert module.protocol_delivery_assessment("105.000", "TV") == (
         "onvoldoende", "uitgesloten_huidige_levering"
     )
-    assert module.protocol_delivery_assessment("17.002", "V") is None
-    assert module.protocol_delivery_assessment("102.002", "V") is None
+    assert module.STRUCTURED_INCOMPLETE_PROTOCOLS == {
+        "17.002": {"TV"},
+        "102.002": {"I", "TV"},
+        "102.005": {"I", "TV"},
+        "102.007": {"I", "TV"},
+    }
+    assert module.protocol_delivery_assessment("17.002", "V") == (
+        "voorwaardelijk", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("17.002", "TV") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("17.002", "I") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("102.002", "I") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("102.005", "TV") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("102.007", "TA") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
     assert module.protocol_delivery_assessment("04.006", "V") is None
 
     # Een routeversie mag alleen aan een andere versie worden gekoppeld als
@@ -1088,7 +1110,7 @@ def main() -> int:
         "scope_missing": 0,
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,
-        "leveringsbeoordelingen": 320,
+        "leveringsbeoordelingen": 400,
         "leveringsbeoordeling_onverwacht": 0,
         "leveringsbeoordeling_ongeldig": 0,
         "snl_records": 6273,
@@ -1117,7 +1139,7 @@ def main() -> int:
             "secure_mixed_species_missing": 1,
             "ambiguous_species": 0,
             "decisions": 1040, "protocolbesluit_mismatch": 1,
-            "leveringsbeoordelingen": 319,
+            "leveringsbeoordelingen": 399,
             "leveringsbeoordeling_onverwacht": 1,
             "leveringsbeoordeling_ongeldig": 1,
             "snl_records": 6273, "snl_overlap_context": 6272,

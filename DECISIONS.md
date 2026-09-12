@@ -313,9 +313,16 @@
   hun oorspronkelijke protocolcode en `expliciete_code`; zij worden niet tot
   `LOS` omgecodeerd. Alleen `V` is voorwaardelijk toegestaan. `I`, `TV`, `TA`
   en `TK` zijn uitgesloten wegens het ontbreken van complete bezoeken,
-  inspanning, volledige soortenlijsten en afleidbare nullen. `17.002`,
-  `102.002`, `102.005` en `102.007` blijven buiten dit besluit vanwege hun
-  afzonderlijk te beoordelen surveyopzet.
+  inspanning, volledige soortenlijsten en afleidbare nullen.
+- `17.002`, `102.002`, `102.005` en `102.007` zijn afzonderlijk beoordeeld als
+  gestructureerde protocollen waarvan de FFV-levering de oorspronkelijke
+  monster-, tuin-, route- of lijststructuur niet volledig bevat. Hun 1.031
+  records behouden de protocolcode. `V` is voorwaardelijk toegestaan;
+  `17.002` krijgt alleen indicatief `TV` en de drie `102.*`-protocollen krijgen
+  indicatief `I` en `TV`, steeds met `gegevensgeschiktheid='onvoldoende'`.
+  `TA` en `TK` zijn uitgesloten en voor `17.002` geldt dat ook voor `I`.
+  Zonder afzonderlijke reconstructie worden geen nullen afgeleid. De bestaande
+  ruimtelijke en PQ-poorten blijven onverkort gelden.
 - Iedere openbare en beveiligde NDFF-waarneming krijgt precies één afzonderlijke
   recordkoppeling met `ndff_protocol`. Het numerieke `protocol_id` is alleen de
   interne foreign key; `protocol_sleutel` is de stabiele betekenisvolle sleutel.

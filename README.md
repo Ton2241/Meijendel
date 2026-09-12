@@ -427,7 +427,7 @@ PQ- en SNL-poorten samen. De actuele verdeling is 303.319
 `voorlopig_bruikbaar`, 4 `voorlopig_met_overlapwaarschuwing`, 97.333
 `uitgesloten_pq` en 410.327 `uitgesloten_ruimtelijk`. Alle 430.263 records met
 protocol `LOS` ondersteunen alleen voorkomens- en verspreidingsinformatie
-(`V`). Voor 710.140 records is `gegevensgeschiktheid` nog `niet_beoordeeld`.
+(`V`). Voor 709.109 records is `gegevensgeschiktheid` nog `niet_beoordeeld`.
 De 4.999 records onder `04.004` en `07.001` zijn inmiddels als gemengde
 positieve levering beoordeeld: V is voorwaardelijk bruikbaar, I en TV zijn
 alleen indicatief en onvoldoende voor een gevalideerde trend. Iedere uitvoer
@@ -444,9 +444,20 @@ herschreven. Voor deze levering is alleen positieve voorkomensinformatie (`V`)
 voorwaardelijk toegestaan. `I`, `TV`, `TA` en `TK` zijn uitgesloten omdat geen
 complete bezoeken, inspanning, volledige soortenlijsten of afleidbare nullen
 zijn geleverd. Dit besluit betreft 95.844 canonieke records, inclusief de
-beveiligde vervangingen en alleen-beveiligde aanvullingen. Gestructureerde
-protocollen zoals `17.002`, `102.002`, `102.005` en `102.007` vallen bewust
-buiten deze classificatie en worden afzonderlijk beoordeeld.
+beveiligde vervangingen en alleen-beveiligde aanvullingen.
+
+De 1.031 records onder `17.002`, `102.002`, `102.005` en `102.007` zijn
+afzonderlijk beoordeeld als gestructureerde maar in FFV onvolledig geleverde
+reeksen. De protocolcode en aanwezige datum-, duur-, locatie- en telvelden
+bewijzen meer dan een losse waarneming, maar de oorspronkelijke monster-,
+tuin-, route- of lijst-ID en volledigheidsmetadata ontbreken. `V` is daarom
+voorwaardelijk toegestaan. Voor `17.002` is alleen `TV` indicatief toegestaan;
+voor de drie `102.*`-protocollen zijn `I` en `TV` indicatief toegestaan. Deze
+besluiten blijven `onvoldoende` en zijn geen gevalideerde populatietrend. `TA`
+en `TK` zijn uitgesloten; voor `17.002` geldt dat ook voor `I`. Na ruimtelijke
+en PQ-selectie blijven 13 braakbalrecords, 77 LiveAtlas-records en 95
+kwartiertellingrecords in de kandidaatlaag. De 309 tuintellingrecords raken
+geen Meijendel-SOVON-plot eenduidig en worden daardoor ruimtelijk uitgesloten.
 
 Voor analyse zijn daarboven twee lokale, geaggregeerde views beschikbaar:
 

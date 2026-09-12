@@ -160,6 +160,15 @@ MySQL:
   levering uitgesloten, omdat complete bezoeken, inspanning, volledige
   soortenlijsten en afleidbare nullen ontbreken. Raadpleeg altijd het besluit
   per analysetype in `ndff_analysebesluit`
+- behandel `17.002`, `102.002`, `102.005` en `102.007` als gestructureerde
+  maar in de FFV-levering onvolledige protocollen. `V` is voorwaardelijk
+  toegestaan. Voor `17.002` is alleen `TV` indicatief toegestaan; voor de drie
+  `102.*`-protocollen zijn `I` en `TV` indicatief toegestaan. Deze indicatieve
+  typen houden `gegevensgeschiktheid='onvoldoende'` en mogen niet als
+  gevalideerde populatietrend worden gepresenteerd. `TA` en `TK` zijn
+  uitgesloten; voor `17.002` geldt dat ook voor `I`. Leid pas echte nullen af
+  nadat de ontbrekende tuin-, route-, lijst- of monsterstructuur afzonderlijk
+  is gereconstrueerd en gevalideerd
 - gebruik bij `alleen_na_doelsoortselectie` verplicht
   `ndff_protocol_soort_geschiktheid` en selecteer uitsluitend
   `doelrelatie='doelsoort'`; behandel iedere overige soort als bijvangst en dus

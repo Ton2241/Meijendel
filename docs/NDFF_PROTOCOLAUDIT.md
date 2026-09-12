@@ -632,7 +632,7 @@ ontbrekende protocol-, ruimtelijke, PQ- of gegevensgeschiktheidsstatus. Daarvan
 zijn 303.319 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
 overlapwaarschuwing, 97.333 uitgesloten via de PQ-poort en 410.327 ruimtelijk
 uitgesloten. De 430.263 expliciet losse waarnemingen hebben uitsluitend
-kandidaattype `V`. Van de canonieke records behouden 710.140
+kandidaattype `V`. Van de canonieke records behouden 709.109
 `gegevensgeschiktheid = niet_beoordeeld`. De 4.999 records onder `04.004` en
 `07.001` hebben na leveringsonderzoek de algemene V-status `voorwaardelijk`;
 hun I- en TV-besluiten staan afzonderlijk op `onvoldoende`. De view levert een
@@ -651,9 +651,35 @@ omgecodeerd. `V` is `voorwaardelijk` en `voorlopig_toegelaten`; `I`, `TV`,
 dat deze leveringen geen complete bezoeken, onderzoeksinspanning, volledige
 soortenlijst of afleidbare nullen bevatten. De classificatie zegt dus iets
 over verantwoord gebruik van de levering en wist de historische bronbetekenis
-niet uit. `17.002`, `102.002`, `102.005` en `102.007` zijn niet meegenomen,
-omdat zij een afzonderlijk te beoordelen, mogelijk gestructureerde
-surveyopzet hebben.
+niet uit.
+
+De afzonderlijke beoordeling van de resterende gestructureerde protocollen
+omvat 1.031 records: `17.002` Braakbalonderzoek (389), `102.002` Jaarrond
+Tuintelling (309), `102.005` LiveAtlas (231) en `102.007` Kwartiertellingen
+(102). De braakbalregels vormen 38 zichtbare tijd-ruimteclusters op acht
+geometrieën, maar bevatten meerdere gelijksoortige regels binnen hetzelfde
+cluster en geen oorspronkelijke partij- of monster-ID. De tuintelling bevat
+125 zichtbare tuin-periodeclusters op zes geometrieën en mengt weektotalen,
+dagperioden en één korte telling. LiveAtlas bevat 64 gedeelde tijdintervallen;
+de kwartiertellingen bevatten zeventien tijdintervallen van 6-21 minuten. Bij
+beide ontbreken route-ID en complete-lijststatus in FFV; NDFF vermeldt voor
+`102.007` bovendien expliciet dat de routegegevens nog niet worden meegeleverd.
+
+Daarom is `V` voor alle vier voorwaardelijk toegestaan. Voor `17.002` is
+alleen `TV` indicatief toegestaan; voor `102.002`, `102.005` en `102.007` zijn
+`I` en `TV` indicatief toegestaan. Indicatief betekent hier verandering in
+geregistreerde tellingen met `gegevensgeschiktheid='onvoldoende'`, niet een
+gevalideerde populatietrend. `TA` en `TK` zijn uitgesloten en voor `17.002`
+geldt dat ook voor `I`. Er worden in deze stap geen nullen afgeleid. Na de
+ruimtelijke en PQ-poorten blijven 13 braakbalrecords, 77 LiveAtlas-records en
+95 kwartiertellingrecords over; alle 309 tuintellingrecords zijn ruimtelijk
+uitgesloten voor een eenduidige Meijendel-plotanalyse.
+
+Methodische grondslag: [NDFF 17.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-002-braakbalonderzoek-nem/),
+[NDFF 102.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-002-jaarrond-tuintelling/),
+[NDFF 102.005](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-005-liveatlas/),
+[NDFF 102.007](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-007-kwartiertellingen-dagvlinders-nachtvlinders-libellen-en-sprinkhanen/)
+en de [CBS-kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
 
 Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
 `v_ndff_verspreiding_plot_jaar_taxon` bevat 105.999 positieve
