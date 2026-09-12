@@ -7,6 +7,10 @@ Hou rekening met de volgende IT-infrastructuur:
 3. NAS DS225+ met 6 GB geheugen
 4. MySQL 9.7.1 op iMac en VPS
 
+Op de lokale iMac staat `innodb_redo_log_capacity` persistent op 512 MiB. De
+eerdere standaardwaarde van 100 MiB liet de server bij omvangrijke lokale
+NDFF-bewerkingen vastlopen. Verlaag deze waarde niet zonder nieuwe meting.
+
 Antwoord in het Nederlands, compact en praktisch.
 
 Werk standaard op de lokale iMac M1 in mijn thuismap/projectmap. Ga ervan uit dat projecten lokaal staan tenzij ik expliciet zeg dat bestanden op de Samsung Portable SSD T7, op de NAS DS225+ of op de VPS staan. Vraag eerst om bevestiging voordat je paden op externe opslag of NAS gebruikt. Gebruik voor de NAS standaard Synology DSM via de browser.
@@ -352,6 +356,16 @@ MySQL:
   bezoekduur en historische checklistversie ontbreken. Kopieer de 213
   vervaagde records niet naar de openbare afgeleide tabellen en controleer vóór
   gebruik met `--audit-florbase`
+- gebruik voor HabSlak-protocol `04.006` reconstructieversie
+  `ndff-habslak-v1` en uitsluitend de vier openbare tabellen
+  `Meijendel.ndff_habslak_*`. Groepeer onvervaagde records per kalenderdatum en
+  openbare geometrie; bewaar verschillende telonderwerpen afzonderlijk en tel
+  ze niet op. Behandel begeleidende soorten alleen als positieve waarneming.
+  Leid voor Nauwe korfslak uitsluitend op kilometerhok-jaar een voorlopige
+  `protocolnul_onder_doelbereikaanname` af wanneer minimaal 15 unieke kansrijke
+  monsterlocaties zijn gereconstrueerd en geen positieve doelsoortmelding
+  aanwezig is. Kopieer geen exacte beveiligde vindplaats naar de openbare
+  afgeleide tabellen en controleer vóór gebruik met `--audit-habslak`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

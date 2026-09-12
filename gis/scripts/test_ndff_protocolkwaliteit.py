@@ -108,6 +108,10 @@ def main() -> int:
         "meijendel.ndff_florbase_recordselectie",
         "meijendel.ndff_florbase_doelbereik",
         "meijendel.ndff_florbase_inventarisatie_taxon",
+        "meijendel.ndff_habslak_monster",
+        "meijendel.ndff_habslak_recordselectie",
+        "meijendel.ndff_habslak_monster_taxon",
+        "meijendel.ndff_habslak_hokjaar",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -123,6 +127,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
     assert "meijendel_ndff_secure.ndff_mos_" not in folded
     assert "meijendel_ndff_secure.ndff_florbase_" not in folded
+    assert "meijendel_ndff_secure.ndff_habslak_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -426,6 +431,29 @@ def main() -> int:
     assert florbase_by_key[("i2", "Taxon b")]["measurement_status"] == (
         "aantalsinformatie_niet_aggregeerbaar"
     )
+    assert module.classify_habslak_hokjaar(15, 0) == (
+        "protocolnul_onder_doelbereikaanname"
+    )
+    assert module.classify_habslak_hokjaar(14, 0) == (
+        "niet_beoordeelbaar_onvoldoende_bemonsterd"
+    )
+    assert module.classify_habslak_hokjaar(15, 1) == "waargenomen"
+    habslak_matrix = module.build_habslak_positive_matrix([
+        {
+            "sample": "m1", "taxon": "Vertigo pygmaea", "scale": "exact aantal",
+            "abundance": "2", "subject": "levend exemplaar",
+            "determination": "onderzoek",
+        },
+        {
+            "sample": "m1", "taxon": "Vertigo pygmaea", "scale": "exact aantal",
+            "abundance": "1", "subject": "huisje zonder vleesresten",
+            "determination": "onderzoek",
+        },
+    ])
+    assert len(habslak_matrix) == 1
+    assert habslak_matrix[0]["status"] == "waargenomen"
+    assert habslak_matrix[0]["source_count"] == 2
+    assert len(habslak_matrix[0]["measurements"]) == 2
 
     hns_rows = [
         {
@@ -658,6 +686,8 @@ def main() -> int:
     assert "--audit-bospaddenstoelen" in importer_text
     assert "--reconstruct-hns" in importer_text
     assert "--audit-hns" in importer_text
+    assert "--reconstruct-habslak" in importer_text
+    assert "--audit-habslak" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -864,6 +894,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende FLORBASE-reconstructie is niet geblokkeerd")
+    module.validate_habslak_reconstruction(
+        dict(module.HABSLAK_RECONSTRUCTION_EXPECTED)
+    )
+    broken_habslak = dict(module.HABSLAK_RECONSTRUCTION_EXPECTED)
+    broken_habslak["sample_events"] -= 1
+    try:
+        module.validate_habslak_reconstruction(broken_habslak)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende HabSlak-reconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

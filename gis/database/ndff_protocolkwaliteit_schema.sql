@@ -1715,3 +1715,118 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie_taxon (
       AND nulregel='niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa')
   )
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van HabSlak-protocol 04.006. Een monster is een
+-- unieke combinatie van kalenderdatum en onvervaagde openbare geometrie.
+-- Beschermde exacte vindplaatsen worden niet naar deze tabellen gekopieerd.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_monster (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  monster_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '04.006',
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  hoknummer VARCHAR(64) NULL,
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  centroide_x_rd DECIMAL(12,3) NOT NULL,
+  centroide_y_rd DECIMAL(12,3) NOT NULL,
+  oppervlakte_m2 DECIMAL(20,3) NOT NULL,
+  eenduidig_plot_id INT NULL,
+  plotstatus ENUM(
+    'single_volledig_binnen','single_deels','multiple','outside','ongeldig'
+  ) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  doelbereikstatus ENUM('monstertype_niet_meegeleverd') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, monster_sleutel),
+  UNIQUE KEY uq_ndff_habslak_monster
+    (reconstructieversie, bezoekdatum, openbare_geometrie_sha256),
+  KEY ix_ndff_habslak_monster_hokjaar (hoknummer, jaar),
+  CHECK (bronrecordaantal > 0),
+  CHECK (geregistreerde_taxa > 0),
+  CHECK (
+    (plotstatus='single_volledig_binnen' AND eenduidig_plot_id IS NOT NULL)
+    OR (plotstatus<>'single_volledig_binnen' AND eenduidig_plot_id IS NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  monster_sleutel CHAR(64) CHARACTER SET ascii NULL,
+  selectiestatus ENUM(
+    'opgenomen_monstercontext','vervaagde_doelsoort_alleen_hokjaar',
+    'vervaagde_bijvangst_alleen_positief'
+  ) NOT NULL,
+  doelrelatie ENUM('doelsoort','begeleidende_soort') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_habslak_selectie_monster
+    (reconstructieversie, monster_sleutel),
+  CONSTRAINT fk_ndff_habslak_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_habslak_selectie_monster FOREIGN KEY
+    (reconstructieversie, monster_sleutel)
+    REFERENCES Meijendel.ndff_habslak_monster
+      (reconstructieversie, monster_sleutel),
+  CHECK (
+    (selectiestatus='opgenomen_monstercontext' AND monster_sleutel IS NOT NULL)
+    OR (selectiestatus<>'opgenomen_monstercontext' AND monster_sleutel IS NULL)
+  )
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_monster_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  monster_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','begeleidende_soort') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulstatus ENUM('niet_van_toepassing') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, monster_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_habslak_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_habslak_taxon_monster FOREIGN KEY
+    (reconstructieversie, monster_sleutel)
+    REFERENCES Meijendel.ndff_habslak_monster
+      (reconstructieversie, monster_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (JSON_LENGTH(meetwaarden_json) > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_hokjaar (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '04.006',
+  hoknummer VARCHAR(64) NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  doelsoort VARCHAR(255) NOT NULL DEFAULT 'Vertigo angustior',
+  monsteraantal SMALLINT UNSIGNED NOT NULL,
+  unieke_monsterlocaties SMALLINT UNSIGNED NOT NULL,
+  minimale_monsterlocaties SMALLINT UNSIGNED NOT NULL DEFAULT 15,
+  bemonsteringsstatus ENUM('voldoende_minimaal_15','onvoldoende_minder_dan_15') NOT NULL,
+  doelsoort_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  doelsoortstatus ENUM(
+    'waargenomen','protocolnul_onder_doelbereikaanname',
+    'niet_beoordeelbaar_onvoldoende_bemonsterd'
+  ) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel),
+  UNIQUE KEY uq_ndff_habslak_hokjaar
+    (reconstructieversie, hoknummer, jaar, doelsoort),
+  CHECK (monsteraantal >= unieke_monsterlocaties),
+  CHECK (minimale_monsterlocaties = 15),
+  CHECK (
+    (doelsoortstatus='waargenomen' AND doelsoort_bronrecordaantal>0)
+    OR (doelsoortstatus<>'waargenomen' AND doelsoort_bronrecordaantal=0)
+  ),
+  CHECK (
+    (bemonsteringsstatus='voldoende_minimaal_15' AND unieke_monsterlocaties>=15)
+    OR (bemonsteringsstatus='onvoldoende_minder_dan_15' AND unieke_monsterlocaties<15)
+  )
+) ENGINE=InnoDB;

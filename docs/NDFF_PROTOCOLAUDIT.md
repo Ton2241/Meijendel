@@ -401,6 +401,36 @@ Methodische grondslag: [NDFF protocol 12.001](https://ndff.nl/natuurdata/waarnem
 [FLORON kilometerhokinventarisatie](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren)
 en [FLORON inventarisatiehandleiding](https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf).
 
+### HabSlak (`04.006`)
+
+Regelversie `ndff-habslak-v1` groepeert 2.629 onvervaagde openbare records per
+kalenderdatum en openbare geometrie tot 251 monsters. Dat levert 1.730
+positieve monster-taxoncombinaties voor 51 taxa. Verschillende telonderwerpen,
+zoals levende dieren en lege huisjes, blijven afzonderlijke meetwaarden in JSON
+en worden niet bij elkaar opgeteld. De oorspronkelijke monster-ID en het
+monstertype zijn niet meegeleverd.
+
+De handleiding noemt Nauwe korfslak, Zeggekorfslak en Platte schijfhoren als
+doelsoorten, maar in deze Meijendel-selectie is alleen Nauwe korfslak als
+doelsoort aangetroffen. Voor die soort geldt een kilometerhok als voldoende
+onderzocht bij minimaal vijftien kansrijke monsterlocaties. Van 66 bemonsterde
+hok-jaren voldoen er vier aan die drempel; alle vier hebben een positieve
+melding. Er worden daarom nu geen voorlopige nullen afgeleid. De reconstructie
+kan bij een toekomstige volledige selectie alleen
+`protocolnul_onder_doelbereikaanname` vormen, omdat doelbereik per veldformulier
+ontbreekt. Voor begeleidende soorten wordt afwezigheid nooit afgeleid.
+
+De 143 vervaagde openbare records blijven traceerbaar in de recordselectie maar
+worden niet aan openbare monsters of exacte locaties gekoppeld. Een openbare
+positieve doelsoortmelding mag alleen de reeds openbare hokjaarstatus bepalen.
+Alle vier afgeleide tabellen staan in `Meijendel`; er is geen nieuwe tabel in
+`Meijendel_ndff_secure`. Controleer de laag met `--audit-habslak`.
+
+Methodische grondslag: [NDFF protocol 04.006](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/4-006-slakken-van-de-habitatrichtlijn/),
+[ANEMOON HabSlak](https://www.anemoon.org/projecten/natura2000/habslak-protocollen)
+en de openbare handleiding
+[Slakken van de Habitatrichtlijn waarnemen](https://www.ndff.nl/wp-content/uploads/2015/12/04.006-Handleiding-Slakken-van-de-Habitatrichtlijn-waarnemen.pdf).
+
 ### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
 
 Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat

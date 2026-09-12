@@ -336,6 +336,18 @@ en historische checklistversie niet bevat. Gebruik ze alleen op
 kilometerhokniveau, nooit als nul per SOVON-plot, en controleer de laag met
 `--audit-florbase`.
 
+HabSlak-protocol `04.006` staat onder `ndff-habslak-v1` in vier openbare
+`Meijendel.ndff_habslak_*`-tabellen. De 2.629 onvervaagde bronregels vormen
+251 datum-geometriemonsters en 1.730 positieve monster-taxoncombinaties. De
+143 vervaagde openbare regels worden niet aan een openbaar monster gekoppeld;
+positieve Nauwe-korfslakmeldingen tellen alleen mee op het reeds openbare
+kilometerhok-jaar. Volgens de handleiding is zo'n hok voldoende onderzocht bij
+minimaal 15 kansrijke monsterlocaties. Vier van de 66 hok-jaren voldoen aan die
+drempel en alle vier bevatten al een positieve Nauwe korfslak, zodat deze
+levering geen voorlopige protocolnullen oplevert. Begeleidende soorten blijven
+altijd positieve informatie; hun ontbreken is geen nul. Controleer de laag met
+`--audit-habslak`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

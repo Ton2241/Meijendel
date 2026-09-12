@@ -45,6 +45,8 @@ KORSTMOS_RULE_VERSION = "ndff-korstmos-v1"
 MOS_RULE_VERSION = "ndff-mos-v1"
 FLORBASE_RULE_VERSION = "ndff-florbase-v1"
 FLORBASE_COMPLETENESS_THRESHOLD = 50
+HABSLAK_RULE_VERSION = "ndff-habslak-v1"
+HABSLAK_MINIMUM_SAMPLE_LOCATIONS = 15
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -59,6 +61,7 @@ HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
 KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
 MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
 FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
+HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -376,6 +379,21 @@ FLORBASE_RECONSTRUCTION_EXPECTED = {
     "unlinked_source_records": 0,
     "pq_non_applicable_records": 21374,
     "pq_other_records": 0,
+    "secure_derived_tables": 0,
+}
+HABSLAK_RECONSTRUCTION_EXPECTED = {
+    "source_records": 2772,
+    "unblurred_source_records": 2629,
+    "blurred_source_records": 143,
+    "sample_events": 251,
+    "positive_event_taxa": 1730,
+    "square_years": 66,
+    "sufficient_square_years": 4,
+    "insufficient_square_years": 62,
+    "target_positive_square_years": 40,
+    "preliminary_zero_square_years": 0,
+    "invalid_sample_rows": 0,
+    "unlinked_source_records": 0,
     "secure_derived_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
@@ -4026,6 +4044,79 @@ ORDER BY o.jaar,o.waarneming_id;
 """
 
 
+def classify_habslak_hokjaar(
+    unique_sample_locations: int,
+    target_source_count: int,
+) -> str:
+    """Classificeer Nauwe-korfslakstatus volgens de openbare HabSlak-handleiding."""
+    if unique_sample_locations < 0 or target_source_count < 0:
+        raise ValueError("HabSlak-aantallen kunnen niet negatief zijn.")
+    if target_source_count > 0:
+        return "waargenomen"
+    if unique_sample_locations >= HABSLAK_MINIMUM_SAMPLE_LOCATIONS:
+        return "protocolnul_onder_doelbereikaanname"
+    return "niet_beoordeelbaar_onvoldoende_bemonsterd"
+
+
+def build_habslak_positive_matrix(
+    records: Iterable[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Bundel positieve monster-taxonregels zonder aantallen op te tellen."""
+    grouped: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for source_row in records:
+        row = dict(source_row)
+        grouped[(str(row["sample"]), str(row["taxon"]))].append(row)
+
+    matrix: list[dict[str, object]] = []
+    for (sample, taxon), source_rows in sorted(grouped.items()):
+        measurements = [
+            {
+                "schaal": str(row.get("scale") or ""),
+                "waarde": str(row.get("abundance") or ""),
+                "telonderwerp": str(row.get("subject") or ""),
+                "determinatiemethode": str(row.get("determination") or ""),
+            }
+            for row in sorted(
+                source_rows,
+                key=lambda item: (
+                    str(item.get("subject") or ""),
+                    str(item.get("abundance") or ""),
+                    str(item.get("determination") or ""),
+                ),
+            )
+        ]
+        matrix.append({
+            "sample": sample,
+            "taxon": taxon,
+            "status": "waargenomen",
+            "source_count": len(source_rows),
+            "measurements": measurements,
+        })
+    return matrix
+
+
+def habslak_source_sql() -> str:
+    """Lees 04.006 uitsluitend uit de openbare bron- en ruimtelijke laag."""
+    return f"""
+SELECT o.waarneming_id,o.identiteit_sha256,COALESCE(o.hoknummer,''),
+       DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       o.wetenschappelijke_naam,o.openbare_geometrie_sha256,
+       ST_X(ST_Centroid(o.openbare_geometrie)),
+       ST_Y(ST_Centroid(o.openbare_geometrie)),ST_Area(o.openbare_geometrie),
+       COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
+       COALESCE(o.telonderwerp,''),COALESCE(o.determinatiemethode,''),
+       COALESCE(o.bronhouder,''),o.vervaagd,r.ruimtelijke_klasse,
+       r.toewijzingskwaliteit,COALESCE(r.eenduidig_plot_id,0)
+FROM Meijendel.ndff_open_waarneming o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
+  ON r.waarneming_id=o.waarneming_id
+ AND r.regelversie={sql_text(RULE_VERSION)}
+WHERE o.protocol LIKE '04.006%'
+  AND o.soortgroep_raw='Weekdieren'
+ORDER BY o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -5079,6 +5170,183 @@ def reconstruct_florbase(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_habslak(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw openbare HabSlak-monsters en een voorlopige Nauwe-korfslak-hokjaarlaag."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, habslak_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 19:
+            raise ValueError(f"Onverwachte 04.006-bronregel met {len(fields)} velden.")
+        (observation_id, identity, hok, visit_date, year, taxon, geometry,
+         x, y, area, abundance, scale, subject, determination, source, blurred,
+         spatial_class, assignment_quality, plot_id) = fields
+        is_blurred = blurred == "1"
+        sample = None if is_blurred else hashlib.sha256(
+            f"04.006|{visit_date}|{geometry}".encode("utf-8")
+        ).hexdigest()
+        records.append({
+            "observation_id": int(observation_id), "identity": identity,
+            "hok": hok, "date": visit_date, "year": int(year), "taxon": taxon,
+            "geometry": geometry, "x": float(x), "y": float(y), "area": float(area),
+            "abundance": abundance, "scale": scale, "subject": subject,
+            "determination": determination, "source": source,
+            "blurred": is_blurred, "spatial_class": spatial_class,
+            "assignment_quality": assignment_quality, "plot_id": int(plot_id),
+            "sample": sample,
+        })
+    if len(records) != HABSLAK_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De 04.006-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    unblurred = [row for row in records if not bool(row["blurred"])]
+    samples: dict[str, dict[str, object]] = {}
+    for row in unblurred:
+        sample = str(row["sample"])
+        info = samples.setdefault(sample, {
+            "date": str(row["date"]), "year": int(row["year"]),
+            "hok": str(row["hok"]), "geometry": str(row["geometry"]),
+            "x": float(row["x"]), "y": float(row["y"]), "area": float(row["area"]),
+            "assignment_quality": str(row["assignment_quality"]),
+            "plot_id": int(row["plot_id"]), "rows": [], "taxa": set(),
+        })
+        invariant = (
+            str(row["date"]), int(row["year"]), str(row["hok"]),
+            str(row["geometry"]), str(row["assignment_quality"]), int(row["plot_id"]),
+        )
+        expected = (
+            info["date"], info["year"], info["hok"], info["geometry"],
+            info["assignment_quality"], info["plot_id"],
+        )
+        if invariant != expected:
+            raise ValueError(f"Inconsistente 04.006-monstercontext: {sample}")
+        sample_rows, taxa = info["rows"], info["taxa"]
+        assert isinstance(sample_rows, list) and isinstance(taxa, set)
+        sample_rows.append(row)
+        taxa.add(str(row["taxon"]))
+
+    matrix = build_habslak_positive_matrix(unblurred)
+    target = "Vertigo angustior"
+    target_counts: Counter[tuple[str, int]] = Counter(
+        (str(row["hok"]), int(row["year"]))
+        for row in records if str(row["taxon"]) == target
+    )
+    hokyears: dict[tuple[str, int], dict[str, object]] = {}
+    for sample, info in samples.items():
+        key = (str(info["hok"]), int(info["year"]))
+        item = hokyears.setdefault(key, {"samples": set(), "geometries": set()})
+        item_samples, item_geometries = item["samples"], item["geometries"]
+        assert isinstance(item_samples, set) and isinstance(item_geometries, set)
+        item_samples.add(sample)
+        item_geometries.add(str(info["geometry"]))
+
+    common_note = (
+        "Openbare reconstructie van protocol 04.006. Een monster is afgeleid uit "
+        "kalenderdatum en onvervaagde openbare geometrie. De export bevat geen "
+        "oorspronkelijk monster-ID, monstertype of doelsoort per veldformulier. "
+        "Meetwaarden met verschillende telonderwerpen blijven afzonderlijk in JSON "
+        "en worden niet opgeteld. Exacte beschermde vindplaatsen zijn niet gekopieerd."
+    )
+    sample_values: list[str] = []
+    for sample, info in sorted(samples.items(), key=lambda item: (item[1]["date"], item[0])):
+        sample_rows, taxa = info["rows"], info["taxa"]
+        assert isinstance(sample_rows, list) and isinstance(taxa, set)
+        quality = str(info["assignment_quality"])
+        plot_id = int(info["plot_id"]) if quality == "single_volledig_binnen" else 0
+        sample_values.append(
+            f"({sql_text(HABSLAK_RULE_VERSION)},{sql_text(sample)},'04.006',"
+            f"{sql_text(str(info['date']))},{int(info['year'])},{sql_text(str(info['hok']))},"
+            f"{sql_text(str(info['geometry']))},{float(info['x']):.3f},{float(info['y']):.3f},"
+            f"{float(info['area']):.3f},{plot_id if plot_id else 'NULL'},"
+            f"{sql_text(quality)},{len(sample_rows)},{len(taxa)},"
+            f"'monstertype_niet_meegeleverd',{sql_text(common_note)})"
+        )
+
+    selection_values: list[str] = []
+    for row in records:
+        is_target = str(row["taxon"]) in HABSLAK_TARGET_SPECIES
+        relation = "doelsoort" if is_target else "begeleidende_soort"
+        if not bool(row["blurred"]):
+            status = "opgenomen_monstercontext"
+            reason = "Onvervaagde openbare positieve bronregel, gekoppeld aan datum-geometriemonster."
+        elif is_target:
+            status = "vervaagde_doelsoort_alleen_hokjaar"
+            reason = "Vervaagde openbare doelsoortregel; uitsluitend gebruikt als positieve hokjaarstatus."
+        else:
+            status = "vervaagde_bijvangst_alleen_positief"
+            reason = "Vervaagde begeleidende soort; alleen positieve verspreidingsinformatie, geen monster- of nulafleiding."
+        selection_values.append(
+            f"({sql_text(HABSLAK_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{sql_text(str(row['sample'])) if row['sample'] else 'NULL'},"
+            f"{sql_text(status)},{sql_text(relation)},{sql_text(reason)})"
+        )
+
+    matrix_note = (
+        "Positieve soortregistratie binnen een gereconstrueerd openbaar HabSlak-monster. "
+        "Niet-gemelde begeleidende soorten zijn onbekend en worden nooit als nul ingevuld."
+    )
+    matrix_values: list[str] = []
+    for row in matrix:
+        relation = "doelsoort" if str(row["taxon"]) in HABSLAK_TARGET_SPECIES else "begeleidende_soort"
+        measurements_json = json.dumps(
+            row["measurements"], ensure_ascii=False, separators=(",", ":")
+        )
+        matrix_values.append(
+            f"({sql_text(HABSLAK_RULE_VERSION)},{sql_text(str(row['sample']))},"
+            f"{sql_text(str(row['taxon']))},{sql_text(relation)},'waargenomen',"
+            f"{int(row['source_count'])},{sql_text(measurements_json)},"
+            f"'niet_van_toepassing',{sql_text(matrix_note)})"
+        )
+
+    hokyear_note = (
+        "Volgens de openbare HabSlak-handleiding geldt een kilometerhok voor Nauwe "
+        "korfslak als voldoende onderzocht bij minimaal 15 kansrijke monsterlocaties. "
+        "Omdat doelbereik en oorspronkelijke formulieren ontbreken, is een niet-detectie "
+        "hoogstens een protocolnul onder doelbereikaanname. Begeleidende soorten krijgen "
+        "geen nullen."
+    )
+    hokyear_values: list[str] = []
+    for (hok, year), info in sorted(hokyears.items(), key=lambda item: (item[0][1], item[0][0])):
+        sample_set, geometry_set = info["samples"], info["geometries"]
+        assert isinstance(sample_set, set) and isinstance(geometry_set, set)
+        count = target_counts[(hok, year)]
+        status = classify_habslak_hokjaar(len(geometry_set), count)
+        sampling = (
+            "voldoende_minimaal_15"
+            if len(geometry_set) >= HABSLAK_MINIMUM_SAMPLE_LOCATIONS
+            else "onvoldoende_minder_dan_15"
+        )
+        key = hashlib.sha256(f"04.006|{hok}|{year}|{target}".encode("utf-8")).hexdigest()
+        hokyear_values.append(
+            f"({sql_text(HABSLAK_RULE_VERSION)},{sql_text(key)},'04.006',"
+            f"{sql_text(hok)},{year},{sql_text(target)},{len(sample_set)},"
+            f"{len(geometry_set)},{HABSLAK_MINIMUM_SAMPLE_LOCATIONS},"
+            f"{sql_text(sampling)},{count},{sql_text(status)},{sql_text(hokyear_note)})"
+        )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster_taxon WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_hokjaar WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{HABSLAK_TABLE_PREFIX}_monster", "reconstructieversie,monster_sleutel,protocol_sleutel,bezoekdatum,jaar,hoknummer,openbare_geometrie_sha256,centroide_x_rd,centroide_y_rd,oppervlakte_m2,eenduidig_plot_id,plotstatus,bronrecordaantal,geregistreerde_taxa,doelbereikstatus,kwaliteitsnotitie", sample_values),
+        (f"{HABSLAK_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,monster_sleutel,selectiestatus,doelrelatie,selectiereden", selection_values),
+        (f"{HABSLAK_TABLE_PREFIX}_monster_taxon", "reconstructieversie,monster_sleutel,wetenschappelijke_naam,doelrelatie,waarnemingsstatus,bronrecordaantal,meetwaarden_json,nulstatus,kwaliteitsnotitie", matrix_values),
+        (f"{HABSLAK_TABLE_PREFIX}_hokjaar", "reconstructieversie,hokjaar_sleutel,protocol_sleutel,hoknummer,jaar,doelsoort,monsteraantal,unieke_monsterlocaties,minimale_monsterlocaties,bemonsteringsstatus,doelsoort_bronrecordaantal,doelsoortstatus,kwaliteitsnotitie", hokyear_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, habslak_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -5501,6 +5769,30 @@ SELECT JSON_OBJECT(
 """
 
 
+def habslak_validation_sql() -> str:
+    version = sql_text(HABSLAK_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_habslak_{suffix}") for suffix in (
+        "monster", "recordselectie", "monster_taxon", "hokjaar",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '04.006%' AND soortgroep_raw='Weekdieren'),
+  'unblurred_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '04.006%' AND soortgroep_raw='Weekdieren' AND vervaagd=0),
+  'blurred_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '04.006%' AND soortgroep_raw='Weekdieren' AND vervaagd=1),
+  'sample_events',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_monster WHERE reconstructieversie={version}),
+  'positive_event_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_monster_taxon WHERE reconstructieversie={version}),
+  'square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version}),
+  'sufficient_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND bemonsteringsstatus='voldoende_minimaal_15'),
+  'insufficient_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND bemonsteringsstatus='onvoldoende_minder_dan_15'),
+  'target_positive_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND doelsoortstatus='waargenomen'),
+  'preliminary_zero_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND doelsoortstatus='protocolnul_onder_doelbereikaanname'),
+  'invalid_sample_rows',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_monster m WHERE m.reconstructieversie={version} AND ((m.plotstatus='single_volledig_binnen' AND m.eenduidig_plot_id IS NULL) OR (m.plotstatus<>'single_volledig_binnen' AND m.eenduidig_plot_id IS NOT NULL) OR m.bronrecordaantal=0 OR m.geregistreerde_taxa=0)),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_habslak_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '04.006%' AND o.soortgroep_raw='Weekdieren' AND s.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -5644,6 +5936,18 @@ def validate_florbase_reconstruction(metrics: dict[str, int]) -> None:
         }
         raise ValueError(
             f"FLORBASE-reconstructie wijkt af van het vaste profiel: {differences}"
+        )
+
+
+def validate_habslak_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != HABSLAK_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (HABSLAK_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(HABSLAK_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != HABSLAK_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"HabSlak-reconstructie wijkt af van het vaste profiel: {differences}"
         )
 
 
@@ -5976,6 +6280,8 @@ def main() -> int:
     mode.add_argument("--audit-mossen", action="store_true")
     mode.add_argument("--reconstruct-florbase", action="store_true")
     mode.add_argument("--audit-florbase", action="store_true")
+    mode.add_argument("--reconstruct-habslak", action="store_true")
+    mode.add_argument("--audit-habslak", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -6231,6 +6537,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_florbase_reconstruction(metrics)
         print(f"OK: lokale FLORBASE-reconstructie {FLORBASE_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_habslak:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_habslak(args.mysql_client, client_args)
+        validate_habslak_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_habslak:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            habslak_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_habslak_reconstruction(metrics)
+        print(f"OK: lokale HabSlak-reconstructie {HABSLAK_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

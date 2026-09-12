@@ -1,6 +1,9 @@
 # Besluiten
 
 - Het dashboard is leidend voor alle grafieken. De site mag geen eigen afwijkende grafieklogica of cijfers introduceren.
+- De lokale MySQL 9.7.1 gebruikt vanaf 12 september 2026 persistent 512 MiB
+  `innodb_redo_log_capacity`. De eerdere 100 MiB raakte bij omvangrijke
+  NDFF-bewerkingen vol, waarna de server geen verbindingen meer aannam.
 - DuckDB 1.5.5 is op de lokale Apple-Silicon-iMac beschikbaar als aanvullende
   analyselaag voor grote bestanden, staging, ruimtelijke koppelingen en zware
   aggregaties. MySQL 9.7.1 blijft de canonieke schrijfbron en DuckDB vervangt
@@ -542,3 +545,14 @@
   Canadese gans (maxima)` worden onder `Grote Canadese Gans` samengevoegd. De
   bestaande seizoenssom blijft uitsluitend als duidelijk gewaarschuwde ruwe
   telling beschikbaar.
+- Voor HabSlak-protocol `04.006` is vanaf 12 september 2026 de openbare
+  reconstructie `ndff-habslak-v1` vastgesteld. De 2.629 onvervaagde records
+  vormen 251 datum-geometriemonsters en 1.730 positieve
+  monster-taxoncombinaties. Verschillende telonderwerpen worden niet opgeteld.
+  Begeleidende soorten leveren uitsluitend positieve informatie. Alleen voor
+  Nauwe korfslak kan op kilometerhok-jaar een voorlopige protocolnul worden
+  afgeleid wanneer minimaal 15 unieke kansrijke monsterlocaties aanwezig zijn;
+  de huidige 66 hok-jaren bevatten vier voldoende bemonsterde positieve jaren
+  en dus nul voorlopige nullen. De 143 vervaagde records worden niet naar
+  openbare monsters gekopieerd. De vier afgeleide tabellen staan in
+  `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.
