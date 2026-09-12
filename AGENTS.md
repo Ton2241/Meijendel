@@ -275,6 +275,22 @@ MySQL:
   DAZ-doelsoorten. Een meervoudig koppelbaar record van hetzelfde taxon
   blokkeert die nul. Leid nooit nullen af voor bijvangsten of voor overige
   BMP-bezoeken. Controleer vóór gebruik met `--audit-daz-bmp`
+- behandel `ndff-daz-bmp-v1` als tijdelijke reconstructie totdat na afronding
+  van alle NDFF-protocolbewerkingen een nieuw volledig BMP/SAP-bestand met
+  zoogdierbijvangst per telling is ontvangen. Geef dan de primaire BMP/SAP-
+  registratie voor bezoekdeelname, telling, nul en eventuele exacte locatie
+  voorrang; behoud NDFF als secundaire controlebron en voer de verbetering uit
+  onder een nieuwe reconstructieversie
+- gebruik voor zeereeppaddenstoelenprotocol `11.202` reconstructieversie
+  `ndff-zeereep-v1` en de drie openbare tabellen `Meijendel.ndff_zeereep_*`.
+  De native meeteenheid is het RD-kilometerhok en een bezoek is hok plus
+  kalenderdatum. Gebruik alleen onvervaagde records voor de bezoekmatrix en
+  leid nullen uitsluitend af voor de zes typische doelsoorten. Behoud
+  NMV-aantalsklassen als vindplaatsklassen; tel ze nooit op als aantallen
+  vruchtlichamen. Markeer bezoeken buiten oktober-december en vermeld bij
+  analyse dat bezoektijd en waarnemersbekwaamheid nog niet uit de NDFF-export
+  zijn gevalideerd. Controleer vóór gebruik met
+  `--audit-zeereeppaddenstoelen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

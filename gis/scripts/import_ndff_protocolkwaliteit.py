@@ -38,6 +38,7 @@ AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
+ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -46,6 +47,7 @@ AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
 DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
+ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -213,6 +215,21 @@ DAZ_BMP_RECONSTRUCTION_EXPECTED = {
     "secure_linked_to_public": 58,
     "secure_derived_tables": 0,
     "invalid_matrix_rows": 0,
+}
+ZEEREEP_RECONSTRUCTION_EXPECTED = {
+    "source_records": 3738,
+    "reconstructable_records": 3729,
+    "excluded_blurred_records": 9,
+    "kilometer_squares": 21,
+    "visits": 161,
+    "target_taxa": 6,
+    "observed_target_rows": 224,
+    "true_zero_rows": 742,
+    "matrix_rows": 966,
+    "target_source_records": 240,
+    "off_season_visits": 61,
+    "invalid_matrix_rows": 0,
+    "legacy_secure_tables": 0,
 }
 ANALYSIS_CHAIN_EXPECTED = {
     "canonical_records": 810983,
@@ -3056,6 +3073,171 @@ def reconstruct_daz_bmp(
     return parse_analysis_chain_output(audit_output)
 
 
+def classify_zeereep_abundance(scale: str, raw_value: str) -> str:
+    """Behoud de NMV-siteklasse zonder die als vruchtlichaamaantal te lezen."""
+    mapping = {
+        ("NMV-aantalsklassen", "1.0 - 3.0"): "klasse_1_3",
+        ("NMV-aantalsklassen", "4.0 - 20.0"): "klasse_4_20",
+        ("NMV-aantalsklassen", "minimaal 21.0"): "klasse_21_plus",
+        ("voorkomen", "minimaal 1.0"): "aanwezig",
+        ("exact aantal", "1"): "exact_1",
+    }
+    try:
+        return mapping[(scale, raw_value)]
+    except KeyError as exc:
+        raise ValueError(f"Niet ondersteunde 11.202-meetwaarde: {scale!r} / {raw_value!r}") from exc
+
+
+def zeereep_source_sql() -> str:
+    """Lees 11.202 uitsluitend uit de openbare, niet-vervaagde bronlaag."""
+    return """
+SELECT o.waarneming_id,DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),o.jaar,
+       FLOOR(ST_X(ST_Centroid(o.openbare_geometrie))/1000),
+       FLOOR(ST_Y(ST_Centroid(o.openbare_geometrie))/1000),
+       o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '11.202%'
+  AND o.soortgroep_raw='Schimmels'
+  AND o.vervaagd=0
+ORDER BY DATE(o.periode_start),4,5,o.wetenschappelijke_naam,o.waarneming_id;
+"""
+
+
+def reconstruct_zeereeppaddenstoelen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw kilometerhokbezoeken en een matrix voor zes typische soorten."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, zeereep_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        observation_id, visit_date, year, x_km, y_km, taxon, scale, raw = line.split("\t")
+        records.append({
+            "observation_id": int(observation_id), "date": visit_date,
+            "year": int(year), "x_km": int(x_km), "y_km": int(y_km),
+            "taxon": taxon, "abundance": classify_zeereep_abundance(scale, raw),
+        })
+    if len(records) != 3_729:
+        raise ValueError("De onvervaagde 11.202-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    visits: dict[tuple[str, str], dict[str, object]] = {}
+    hoks: dict[str, dict[str, object]] = {}
+    abundance_rank = {
+        "aanwezig": 1, "exact_1": 2, "klasse_1_3": 3,
+        "klasse_4_20": 4, "klasse_21_plus": 5,
+    }
+    positives: dict[tuple[str, str], dict[str, object]] = {}
+    for row in records:
+        hok = f"{row['x_km']}-{row['y_km']}"
+        visit_id = f"{hok}|{row['date']}"
+        visit = visits.setdefault((hok, str(row["date"])), {
+            "id": visit_id, "year": int(row["year"]), "records": 0, "taxa": set(),
+        })
+        visit["records"] = int(visit["records"]) + 1
+        cast_taxa = visit["taxa"]
+        assert isinstance(cast_taxa, set)
+        cast_taxa.add(str(row["taxon"]))
+        hok_row = hoks.setdefault(hok, {
+            "x_km": int(row["x_km"]), "y_km": int(row["y_km"]),
+            "records": 0, "visits": set(), "years": set(),
+        })
+        hok_row["records"] = int(hok_row["records"]) + 1
+        cast_visits = hok_row["visits"]
+        cast_years = hok_row["years"]
+        assert isinstance(cast_visits, set) and isinstance(cast_years, set)
+        cast_visits.add(visit_id)
+        cast_years.add(int(row["year"]))
+        taxon = str(row["taxon"])
+        if taxon in ZEEREEP_TARGET_SPECIES:
+            key = (visit_id, taxon)
+            current = positives.get(key)
+            if current is None:
+                positives[key] = {"records": 1, "abundance": str(row["abundance"])}
+            else:
+                current["records"] = int(current["records"]) + 1
+                if abundance_rank[str(row["abundance"])] > abundance_rank[str(current["abundance"])]:
+                    current["abundance"] = str(row["abundance"])
+
+    visit_keys = {
+        str(meta["id"]): hashlib.sha256(str(meta["id"]).encode("utf-8")).hexdigest()
+        for meta in visits.values()
+    }
+    hok_values: list[str] = []
+    for hok, row in sorted(hoks.items()):
+        years = row["years"]
+        visit_set = row["visits"]
+        assert isinstance(years, set) and isinstance(visit_set, set)
+        hok_values.append(
+            f"({sql_text(ZEEREEP_RULE_VERSION)},{sql_text(hok)},{int(row['x_km'])},"
+            f"{int(row['y_km'])},'11.202',{len(visit_set)},{int(row['records'])},"
+            f"{min(years)},{max(years)},{len(years)})"
+        )
+
+    visit_values: list[str] = []
+    visit_note = (
+        "Bezoek gereconstrueerd uit minimaal één onvervaagd 11.202-record in hetzelfde "
+        "RD-kilometerhok op dezelfde datum. Bezoektijd en waarnemersbekwaamheid zijn niet meegeleverd."
+    )
+    for (hok, visit_date), row in sorted(visits.items()):
+        taxa = row["taxa"]
+        assert isinstance(taxa, set)
+        season = "kernseizoen_okt_dec" if int(visit_date[5:7]) in (10, 11, 12) else "buiten_kernseizoen"
+        visit_values.append(
+            f"({sql_text(ZEEREEP_RULE_VERSION)},{sql_text(visit_keys[str(row['id'])])},"
+            f"{sql_text(hok)},{sql_text(visit_date)},{int(row['year'])},{sql_text(season)},"
+            f"{int(row['records'])},{len(taxa)},'bezoek_bevestigd_inspanning_niet_meegeleverd',"
+            f"{sql_text(visit_note)})"
+        )
+
+    matrix_values: list[str] = []
+    matrix_note = (
+        "Protocolafgeleide nul binnen een bevestigd 11.202-hokbezoek en de zes typische "
+        "doelsoorten. Gebruik als NEM-trendinvoer met de expliciete waarschuwing dat "
+        "waarnemersbekwaamheid en volledige bezoektijd nog niet uit de NDFF-levering zijn gevalideerd."
+    )
+    for row in sorted(visits.values(), key=lambda item: str(item["id"])):
+        visit_id = str(row["id"])
+        for taxon in sorted(ZEEREEP_TARGET_SPECIES):
+            positive = positives.get((visit_id, taxon))
+            status = "waargenomen" if positive else "echte_nul"
+            source_count = int(positive["records"]) if positive else 0
+            abundance = str(positive["abundance"]) if positive else "geen"
+            matrix_values.append(
+                f"({sql_text(ZEEREEP_RULE_VERSION)},{sql_text(visit_keys[visit_id])},"
+                f"{sql_text(taxon)},'typische_doelsoort',{sql_text(status)},{source_count},"
+                f"{sql_text(abundance)},'bevestigd_11_202_hokbezoek',{sql_text(matrix_note)})"
+            )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {ZEEREEP_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(ZEEREEP_RULE_VERSION)};",
+        f"DELETE FROM {ZEEREEP_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(ZEEREEP_RULE_VERSION)};",
+        f"DELETE FROM {ZEEREEP_TABLE_PREFIX}_kilometerhok WHERE reconstructieversie={sql_text(ZEEREEP_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        f"{ZEEREEP_TABLE_PREFIX}_kilometerhok",
+        "reconstructieversie,hok_sleutel,x_km,y_km,protocol_sleutel,bezoekaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal",
+        hok_values,
+    )
+    statements += _batched_insert(
+        f"{ZEEREEP_TABLE_PREFIX}_bezoek",
+        "reconstructieversie,bezoek_sleutel,hok_sleutel,bezoekdatum,jaar,seizoenstatus,bronrecordaantal,geregistreerde_taxa,inspanningstatus,kwaliteitsnotitie",
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{ZEEREEP_TABLE_PREFIX}_bezoek_taxon",
+        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,doelrelatie,waarnemingsstatus,bronrecordaantal,hoogste_nmv_klasse,nulregel,kwaliteitsnotitie",
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(
+        mysql_client, query_args, zeereep_validation_sql(), capture=True,
+    )
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -3269,6 +3451,31 @@ SELECT JSON_OBJECT(
 """
 
 
+def zeereep_validation_sql() -> str:
+    version = sql_text(ZEEREEP_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_zeereep_{suffix}") for suffix in (
+        "kilometerhok", "bezoek", "bezoek_taxon",
+    ))
+    target_list = ",".join(sql_text(name) for name in sorted(ZEEREEP_TARGET_SPECIES))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.202%' AND soortgroep_raw='Schimmels'),
+  'reconstructable_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_zeereep_bezoek WHERE reconstructieversie={version}),
+  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.202%' AND soortgroep_raw='Schimmels' AND vervaagd=1),
+  'kilometer_squares',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_kilometerhok WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek WHERE reconstructieversie={version}),
+  'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version}),
+  'observed_target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version}),
+  'target_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.202%' AND soortgroep_raw='Schimmels' AND vervaagd=0 AND wetenschappelijke_naam IN ({target_list})),
+  'off_season_visits',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek WHERE reconstructieversie={version} AND seizoenstatus='buiten_kernseizoen'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR hoogste_nmv_klasse='geen')) OR (waarnemingsstatus='echte_nul' AND (bronrecordaantal<>0 OR hoogste_nmv_klasse<>'geen')))),
+  'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -3347,6 +3554,18 @@ def validate_daz_bmp_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != DAZ_BMP_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"DAZ-BMP-reconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_zeereep_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != ZEEREEP_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (ZEEREEP_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(ZEEREEP_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != ZEEREEP_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"Zeereeppaddenstoelenreconstructie wijkt af van het vaste profiel: {differences}"
+        )
 
 
 def validation_sql() -> str:
@@ -3644,6 +3863,8 @@ def main() -> int:
     mode.add_argument("--audit-konijnen", action="store_true")
     mode.add_argument("--reconstruct-daz-bmp", action="store_true")
     mode.add_argument("--audit-daz-bmp", action="store_true")
+    mode.add_argument("--reconstruct-zeereeppaddenstoelen", action="store_true")
+    mode.add_argument("--audit-zeereeppaddenstoelen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -3791,6 +4012,24 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_daz_bmp_reconstruction(metrics)
         print(f"OK: lokale DAZ-BMP-reconstructie {DAZ_BMP_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_zeereeppaddenstoelen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_zeereeppaddenstoelen(args.mysql_client, client_args)
+        validate_zeereep_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_zeereeppaddenstoelen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            zeereep_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_zeereep_reconstruction(metrics)
+        print(f"OK: lokale zeereeppaddenstoelenreconstructie {ZEEREEP_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.audit_live:

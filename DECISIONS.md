@@ -146,6 +146,20 @@
   een nul. Bijvangsten krijgen alleen positieve regels. Alle vier
   `ndff_daz_bmp_*`-tabellen staan in `Meijendel`; het beveiligde schema is niet
   uitgebreid.
+- De huidige `ndff-daz-bmp-v1`-koppeling is nadrukkelijk tijdelijk ten opzichte
+  van de primaire BMP/SAP-bron. Na afronding van alle NDFF-bewerkingen wordt
+  een nieuw volledig BMP/SAP-bestand gedownload met de zoogdierbijvangst per
+  telling en zo mogelijk de oorspronkelijke locaties. Die primaire registratie
+  krijgt voor bezoekdeelname, telling en nulwaarneming voorrang boven de uit
+  openbare NDFF-kilometerhokken gereconstrueerde koppeling. De vervanging wordt
+  geversioneerd en laat de oorspronkelijke NDFF-records als controlebron intact.
+- Protocol `11.202` wordt onder `ndff-zeereep-v1` op RD-kilometerhok en
+  kalenderdatum gereconstrueerd. Alleen de zes typische doelsoorten krijgen
+  binnen de 161 bevestigde bezoeken een volledige aanwezig/nul-matrix.
+  NMV-klassen blijven vindplaatsklassen en geen vruchtlichaamaantallen. De
+  negen vervaagde records worden niet tot bezoek gemaakt; bezoeken buiten
+  oktober-december en ontbrekende bezoektijd/waarnemersbekwaamheid blijven
+  verplichte kwaliteitswaarschuwingen.
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.

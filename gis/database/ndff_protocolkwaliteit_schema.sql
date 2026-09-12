@@ -995,3 +995,78 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek_taxon (
       AND bronrecordaantal=0 AND ambigu_recordaantal>0 AND doelrelatie='doelsoort')
   )
 ) ENGINE=InnoDB;
+
+-- Openbare reconstructie van NEM 11.202 (Zeereeppaddenstoelen).
+-- De oorspronkelijke meeteenheid is een RD-kilometerhok. Alleen onvervaagde
+-- records worden tot bezoeken gereconstrueerd; de zes typische doelsoorten
+-- vormen de bezoek-soortmatrix. NMV-aantalsklassen blijven klassen en worden
+-- nooit opgeteld als aantallen vruchtlichamen.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_kilometerhok (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hok_sleutel VARCHAR(32) CHARACTER SET ascii NOT NULL,
+  x_km SMALLINT UNSIGNED NOT NULL,
+  y_km SMALLINT UNSIGNED NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '11.202',
+  bezoekaantal SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal INT UNSIGNED NOT NULL,
+  eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  jaaraantal SMALLINT UNSIGNED NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hok_sleutel),
+  UNIQUE KEY uq_ndff_zeereep_hok_xy (reconstructieversie, x_km, y_km),
+  CHECK (laatste_jaar >= eerste_jaar)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  hok_sleutel VARCHAR(32) CHARACTER SET ascii NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  seizoenstatus ENUM('kernseizoen_okt_dec','buiten_kernseizoen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
+  inspanningstatus ENUM('bezoek_bevestigd_inspanning_niet_meegeleverd') NOT NULL,
+  kwaliteitsnotitie VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  UNIQUE KEY uq_ndff_zeereep_hok_datum
+    (reconstructieversie, hok_sleutel, bezoekdatum),
+  KEY ix_ndff_zeereep_bezoek_jaar (jaar, bezoekdatum),
+  CONSTRAINT fk_ndff_zeereep_bezoek_hok FOREIGN KEY
+    (reconstructieversie, hok_sleutel)
+    REFERENCES Meijendel.ndff_zeereep_kilometerhok
+      (reconstructieversie, hok_sleutel),
+  CHECK (jaar = YEAR(bezoekdatum)),
+  CHECK (bronrecordaantal > 0 AND geregistreerde_taxa > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('typische_doelsoort') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  hoogste_nmv_klasse ENUM(
+    'geen','aanwezig','exact_1','klasse_1_3','klasse_4_20','klasse_21_plus'
+  ) NOT NULL,
+  nulregel ENUM('bevestigd_11_202_hokbezoek') NOT NULL,
+  kwaliteitsnotitie VARCHAR(750) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_zeereep_taxon_status
+    (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_zeereep_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_zeereep_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (
+    (waarnemingsstatus='waargenomen' AND bronrecordaantal>0
+      AND hoogste_nmv_klasse<>'geen')
+    OR
+    (waarnemingsstatus='echte_nul' AND bronrecordaantal=0
+      AND hoogste_nmv_klasse='geen')
+  )
+) ENGINE=InnoDB;

@@ -176,6 +176,38 @@ schema.
 Methodische grondslag: [NEM Meetprogramma Zoogdieren](https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren)
 en [Kwaliteitsrapportage NEM 2024](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2025/05/meetprogrammasvoorfloraenfauna2024.pdf).
 
+Na afronding van alle NDFF-protocolbewerkingen wordt een nieuw volledig
+BMP/SAP-bestand gedownload. Naar verwachting bevat dit de primaire
+zoogdierregistraties per BMP-telling en mogelijk de oorspronkelijke locaties.
+Daarmee kan `ndff-daz-bmp-v1` onder een nieuwe reconstructieversie worden
+verbeterd: oorspronkelijke bezoekkoppelingen gaan vóór de huidige afleiding uit
+datum en openbaar kilometerhok, volledig negatieve deelnemende bezoeken kunnen
+worden toegevoegd en de nu ambigue of niet koppelbare NDFF-records kunnen
+opnieuw worden beoordeeld. NDFF blijft daarbij als secundaire controlebron
+behouden.
+
+Het NEM-meetnet Zeereeppaddenstoelen (`11.202`) is onder
+`ndff-zeereep-v1` gereconstrueerd op zijn oorspronkelijke meeteenheid: het
+RD-kilometerhok. De 3.729 onvervaagde openbare records vormen 161 bevestigde
+hok-datumbezoeken in 21 kilometerhokken, verspreid over 2014-2025. Negen
+vervaagde records zijn niet als bezoek gebruikt. De bezoek-soortmatrix omvat
+de zes typische doelsoorten en bevat 966 regels: 224 positieve combinaties en
+742 protocolafgeleide echte nullen. Eén doelsoort is in geen enkel bezoek
+gemeld en blijft daardoor als nulreeks expliciet zichtbaar.
+
+De bronwaarden blijven inhoudelijk intact: `1-3`, `4-20` en `21 of meer` zijn
+NMV-klassen van vindplaatsen en geen aantallen vruchtlichamen. Honderd bezoeken
+vallen in het aanbevolen kernseizoen oktober-december; 61 bezoeken staan
+afzonderlijk gemarkeerd als buiten dat venster. De NDFF-export bevat geen
+bezoektijd of waarnemersbekwaamheid. Daarom zijn de nullen protocolmatig
+bruikbaar voor een voorlopige bezettingsanalyse, maar iedere uitkomst vermeldt
+dat deze twee leveringskenmerken nog niet zijn gevalideerd. Controle vindt
+plaats met `--audit-zeereeppaddenstoelen`; de drie afgeleide tabellen staan
+uitsluitend in `Meijendel`.
+
+Methodische bronnen: [NDFF 11.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-202-zeereeppaddenstoelen/)
+en [NMV-methodiek Zeereeppaddenstoelen](https://www.mycologen.nl/onderzoek/meetnet/zeereep-concept/zeereep-methodiek/).
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
@@ -209,7 +241,7 @@ krijgt daarnaast haar eigen, strengere matrix en audit.
 | `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
 | `17.208` Vleermuistransect | 2.624 | 44 | 2013-2025 | twee meetreeksen en bezoek-soortmatrix gereconstrueerd; 73 dubbelen onderdrukt |
 | `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |
-| `11.202` Zeereeppaddenstoelen | 3.738 | 83 | 2014-2025 | zes doelsoorten en vaste plots reconstrueren |
+| `11.202` Zeereeppaddenstoelen | 3.738 | 161 | 2014-2025 | 21 kilometerhokken en bezoek-soortmatrix gereconstrueerd; 9 vervaagde records uitgesloten |
 | `02.202` Korstmossen | 384 | 15 | 2000-2025 | proefvlakken en doelsoortenlijst reconstrueren |
 | `02.204` Mossen | 377 | 22 | 2000-2011 | meeteenheid en doelsoortenlijst reconstrueren |
 | `11.201` Bospaddenstoelen | 982 | 216 | 1999-2016 | vaste plots; soort- en habitatgeschiktheid behouden |

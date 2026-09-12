@@ -274,6 +274,16 @@ doelsoortenbereik van de betreffende meetreeks zijn afgeleid. Akoestische
 detecties zijn geen aantallen individuele vleermuizen. Controleer deze laag
 met `--audit-vleermuizen`.
 
+Zeereeppaddenstoelenprotocol `11.202` staat onder `ndff-zeereep-v1` in drie
+openbare `Meijendel.ndff_zeereep_*`-tabellen. De 3.729 onvervaagde records
+vormen 161 hok-datumbezoeken in 21 RD-kilometerhokken. De matrix voor zes
+typische doelsoorten bevat 224 positieve combinaties en 742 protocolafgeleide
+nullen. NMV-vindplaatsklassen blijven ordinaal en worden niet als aantallen
+vruchtlichamen opgeteld. Negen vervaagde records zijn uitgesloten; 61 bezoeken
+buiten oktober-december en de nog niet gevalideerde bezoektijd en
+waarnemersbekwaamheid blijven als kwaliteitswaarschuwing aanwezig. Controleer
+de laag met `--audit-zeereeppaddenstoelen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

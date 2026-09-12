@@ -100,6 +100,11 @@ Alleen voor zulke bezoeken bevat `ndff_daz_bmp_bezoek_taxon` een volledige
 matrix voor de zeven DAZ-doelsoorten. Meervoudig koppelbare records blijven in
 de kandidaatbrug en blokkeren taxonspecifiek een nul. Niet-bevestigde
 BMP-bezoeken en bijvangsten krijgen nooit een afgeleide nul.
+`ndff_zeereep_*` reconstrueert protocol `11.202` op RD-kilometerhok en
+kalenderdatum. De zes typische doelsoorten vormen een volledige bezoekmatrix;
+NMV-vindplaatsklassen blijven ordinale klassen. Vervaagde records worden niet
+tot bezoeken gemaakt en seizoenstatus, ontbrekende bezoektijd en nog niet
+gevalideerde waarnemersbekwaamheid blijven expliciet zichtbaar.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

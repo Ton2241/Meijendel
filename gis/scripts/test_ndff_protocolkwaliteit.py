@@ -79,6 +79,9 @@ def main() -> int:
         "meijendel.ndff_daz_bmp_recordkandidaat",
         "meijendel.ndff_daz_bmp_bezoek",
         "meijendel.ndff_daz_bmp_bezoek_taxon",
+        "meijendel.ndff_zeereep_kilometerhok",
+        "meijendel.ndff_zeereep_bezoek",
+        "meijendel.ndff_zeereep_bezoek_taxon",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -88,6 +91,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
     assert "meijendel_ndff_secure.ndff_konijn_" not in folded
     assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
+    assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -259,6 +263,14 @@ def main() -> int:
     assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
     assert module.RABBIT_COUNT_RULE_VERSION == "ndff-konijnentelling-v1"
     assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
+    assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v1"
+    assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
+
+    assert module.classify_zeereep_abundance("NMV-aantalsklassen", "1.0 - 3.0") == "klasse_1_3"
+    assert module.classify_zeereep_abundance("NMV-aantalsklassen", "4.0 - 20.0") == "klasse_4_20"
+    assert module.classify_zeereep_abundance("NMV-aantalsklassen", "minimaal 21.0") == "klasse_21_plus"
+    assert module.classify_zeereep_abundance("voorkomen", "minimaal 1.0") == "aanwezig"
+    assert module.classify_zeereep_abundance("exact aantal", "1") == "exact_1"
 
     assert module.classify_rabbit_season("2020-03-15") == "voorjaar_huidig_venster"
     assert module.classify_rabbit_season("2020-04-07") == "voorjaar_huidig_venster"
@@ -392,6 +404,8 @@ def main() -> int:
     assert "--audit-konijnen" in importer_text
     assert "--reconstruct-daz-bmp" in importer_text
     assert "--audit-daz-bmp" in importer_text
+    assert "--reconstruct-zeereeppaddenstoelen" in importer_text
+    assert "--audit-zeereeppaddenstoelen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -439,6 +453,11 @@ def main() -> int:
     daz_candidate_sql = " ".join(module.daz_bmp_candidate_sql().split())
     assert "Meijendel.dagbezoeken_bmp" in daz_candidate_sql
     assert "ST_Intersects" in daz_candidate_sql
+    zeereep_source_sql = " ".join(module.zeereep_source_sql().split())
+    assert "o.protocol LIKE '11.202%'" in zeereep_source_sql
+    assert "o.soortgroep_raw='Schimmels'" in zeereep_source_sql
+    assert "o.vervaagd=0" in zeereep_source_sql
+    assert "Meijendel_ndff_secure" not in zeereep_source_sql
     assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
     module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
     broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
@@ -514,6 +533,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende DAZ-BMP-reconstructie is niet geblokkeerd")
+    module.validate_zeereep_reconstruction(dict(module.ZEEREEP_RECONSTRUCTION_EXPECTED))
+    broken_zeereep = dict(module.ZEEREEP_RECONSTRUCTION_EXPECTED)
+    broken_zeereep["true_zero_rows"] -= 1
+    try:
+        module.validate_zeereep_reconstruction(broken_zeereep)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende zeereeppaddenstoelenreconstructie is niet geblokkeerd")
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
@@ -756,6 +784,8 @@ def main() -> int:
         "geen route- of sectie-id",
         "akoestische detecties",
         "73",
+        "ndff-zeereep-v1",
+        "--audit-zeereeppaddenstoelen",
     ):
         assert required_text in documentation_normalized, required_text
     assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")

@@ -40,7 +40,10 @@
   `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
-- De reconstructies van `07.201`, `10.201`, `01.201`, `17.208` en `17.204` zijn afgerond.
+- De reconstructies van `07.201`, `10.201`, `01.201`, `17.208`, `17.204` en
+  `11.202` zijn afgerond. `11.202` omvat 21 kilometerhokken, 161 bezoeken en
+  een matrix voor zes typische zeereeppaddenstoelen; 61 bezoeken buiten het
+  kernseizoen en ontbrekende bezoektijd/waarnemersbekwaamheid blijven zichtbaar.
   `17.209` is als positieve sectietelling geclassificeerd, maar kan zonder
   route- en sectie-ID's niet tot native bezoeken of nullen worden
   gereconstrueerd. DAZ-BMP bevat 1.475 bevestigde bezoeken en 7.552 echte
@@ -49,6 +52,17 @@
   NEM-reeks op basis van omvang en reconstrueerbaarheid. Ken pas nullen toe
   nadat per protocol meeteenheid, bevestigd bezoek en doelsoortenbereik
   vaststaan.
+- Nadat alle NDFF-protocollen technisch zijn bewerkt, downloadt de eigenaar
+  opnieuw een volledig BMP/SAP-bestand. Dit bestand moet behalve de
+  vogeltellingen ook de tijdens ieder bezoek geregistreerde zoogdierbijvangst
+  bevatten en, indien beschikbaar, de oorspronkelijke locaties. Vergelijk die
+  primaire BMP/SAP-regels met `ndff_daz_bmp_*` en vervang daarna de huidige
+  voorzichtige datum-/plotreconstructie door de oorspronkelijke koppeling per
+  telling. Vul dan ook deelnemende bezoeken zonder zoogdierwaarneming aan,
+  herbereken echte nullen en beoordeel de 1.026 meervoudige en 6.473 nu niet
+  koppelbare NDFF-records opnieuw. Behoud NDFF als secundaire bron en voer deze
+  verbetering pas uit na bronhash, schema-audit, overlapcontrole en een nieuwe
+  reconstructieversie.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
   PQ-reeks: de provincie blijft de gezaghebbende bron.
 
