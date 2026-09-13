@@ -126,6 +126,12 @@
   Bezoeken zonder zoogdierregel blijven buiten de DAZ-matrix omdat de export
   geen afzonderlijke deelnamevlag bevat. De vogelafwijkingen zijn alleen
   gerapporteerd en niet in de database gecorrigeerd.
+- Afgerond op 13 september 2026: de vogeltabellen zijn tot en met 2025 uit de
+  primaire SOVON-download aangevuld met 303.867 waarnemingen, 7.228 bezoeken en
+  260 territoriumresultaten. Rechtstreeks overeenkomende bronregels zijn
+  gecorrigeerd; 2.521 bestaande territoriumregels zonder exportregel, waaronder
+  handmatige aanvullingen, zijn behouden. Een herhaalde synchronisatie gaf nul
+  toevoegingen en nul correcties.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
   PQ-reeks: de provincie blijft de gezaghebbende bron.
 - Afgerond op 13 september 2026: de resterende NEM-batch `03.203`, `11.204`,

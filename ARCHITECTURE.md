@@ -109,7 +109,11 @@ bezoekmetadata. `sovon-avimap-daz-v1` is de leidende DAZ-matrix;
 `ndff-daz-bmp-v1` blijft secundair auditspoor. De koppelstatus voorkomt dat een
 NDFF-regel naast een primaire SOVON-tegenhanger wordt geteld en bewaart
 afwijkende telwaarden als zichtbaar bronconflict. Vogelbronregels worden niet in
-deze laag opgeslagen en de bestaande vogeltabellen worden er niet door gewijzigd.
+deze laag opgeslagen. Zij worden via een afzonderlijke, geauditeerde
+vogelsynchronisatie tot en met 2025 toegevoegd aan en gecorrigeerd in
+`dagbezoeken_bmp`, `dagwaarnemingen_bmp` en `territoria`. Alleen rechtstreeks
+overeenkomende SOVON-regels worden gewijzigd; databasegegevens zonder
+bronregel, waaronder handmatige aanvullingen, worden niet verwijderd.
 `ndff_zeereep_*` reconstrueert protocol `11.202` op RD-kilometerhok en
 kalenderdatum. De zes typische doelsoorten vormen een volledige bezoekmatrix;
 NMV-vindplaatsklassen blijven ordinale klassen. Vervaagde records worden niet

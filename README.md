@@ -203,14 +203,24 @@ De primaire SOVON/AVIMAP-export van project 252 is aanvullend vastgelegd in
 niet-vogelregels en de daarvoor benodigde bezoekstructuur. Voor DAZ-analyses is
 `sovon-avimap-daz-v1` leidend; overlappende `17.204`-regels uit NDFF zijn alleen
 secundair auditspoor en mogen niet dubbel worden geteld. Records uit het lopende
-jaar zijn herkenbaar aan `lopend_jaar=1`. De meegeleverde vogelregels zijn wel
-gecontroleerd maar niet in de vogeltabellen geïmporteerd of gewijzigd.
+jaar zijn herkenbaar aan `lopend_jaar=1`. De meegeleverde vogelregels worden na
+het afzonderlijke eigenaarsbesluit tot en met 2025 aanvullend en corrigerend
+gesynchroniseerd. Handmatige en andere bestaande gegevens die niet in de
+export staan, blijven behouden. De analyseviews
+`v_sovon_avimap_niet_vogel_analyse` en `v_sovon_avimap_daz_analyse` maken de
+toegestane positieve aanwezigheid en voorwaardelijke DAZ-telanalyses expliciet.
+Een bronbezoek met een onzekere duur boven 24 uur krijgt daarin
+`handmatige_controle_bezoekduur` en wordt niet ongemerkt als normale inspanning
+gebruikt.
 De herhaalbare lokale import leest de oorspronkelijke SHP en XLSX rechtstreeks:
 
 ```bash
 python3 gis/scripts/import_ndff_protocolkwaliteit.py \
   --import-sovon-avimap --sovon-source-dir "/pad/naar/Sovon_avimap_252_diversen__resultaten"
 python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-sovon-avimap
+python3 gis/scripts/import_ndff_protocolkwaliteit.py \
+  --sync-sovon-avimap-vogels --sovon-source-dir "/pad/naar/Sovon_avimap_252_diversen__resultaten"
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-sovon-avimap-vogels
 ```
 
 ## Wat is de normale werkvolgorde?

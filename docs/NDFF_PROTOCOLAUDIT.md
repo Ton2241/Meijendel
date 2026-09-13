@@ -327,6 +327,39 @@ geen resultaten of territoriapunten voor 2008 en slechts een beperkte set voor
 2007. Daarom zijn de vogeltabellen niet gewijzigd; deze afwijkingen vragen een
 afzonderlijke vogelbronbeslissing.
 
+Die bronbeslissing is op 13 september 2026 genomen. De primaire download is
+voor aanwezige SOVON-regels leidend en wordt tot en met 2025 aanvullend en
+corrigerend verwerkt. Ontbrekende vogelregels, bezoeken en
+territoriumresultaten worden toegevoegd. Bij dezelfde bron-ID worden de actuele
+SOVON-velden overgenomen, waaronder `in_plot`, bezoektekst en bezoekduur; bij
+dezelfde plot-soort-jaarcombinatie wordt het territoriumaantal bijgewerkt. Er
+worden geen bestaande gegevens verwijderd alleen omdat zij in de export
+ontbreken. Dat beschermt handmatige aanvullingen en is noodzakelijk omdat de
+export geen resultaten voor 2008 en slechts een beperkte set voor 2007 bevat.
+Jaar 2026 blijft geheel buiten deze vogelsynchronisatie. De reproduceerbare
+commando's zijn `--sync-sovon-avimap-vogels` en
+`--audit-sovon-avimap-vogels`.
+
+De uitvoering voegde 303.867 vogelwaarnemingen, 7.228 bezoeken en 260
+territoriumresultaten toe. Zij corrigeerde bij rechtstreeks overeenkomende
+bronregels 155 `in_plot`-waarden, 297 bezoekteksten, 165 bezoekduren en 53
+territoriumaantallen. Van de bezoekduren bevatten 47 bronwaarden een aantoonbaar
+geheel-etmaalartefact; alleen die waarden zijn uit begin- en eindtijd herleid.
+Eén bezoek uit 2023 houdt bronconform een duur boven 24 uur en een expliciete
+correctie-opmerking. De drie positieve niet-vogelregels en zeven DAZ-matrixregels
+van dat bezoek hebben daarom status `handmatige_controle_bezoekduur`. De 2.521
+bestaande territoriumregels zonder exportregel bleven ongewijzigd. Een tweede
+volledige synchronisatie leverde nul toevoegingen en nul correcties op.
+
+Voor statistisch gebruik staan de primaire niet-vogelregels expliciet in
+`v_sovon_avimap_niet_vogel_analyse`. Alleen de zeven DAZ-doelsoorten krijgen
+protocolkandidaattypen `V,TA`; gebruik voor tellingen de afzonderlijke
+bezoek-taxonmatrix `v_sovon_avimap_daz_analyse`. Overige zoogdieren en de
+amfibieën-, reptielen-, mieren- en dagvlinderbijvangsten zijn uitsluitend
+positieve aanwezigheidsinformatie (`V`). Ontbreken is daar geen nul en de
+ruwe aantallen zijn geen populatietrend. Het lopende jaar blijft afzonderlijk
+als uitgesloten gemarkeerd.
+
 ### Het Nieuwe Strepen (`12.204`)
 
 De eerdere telling van 1.145 verschillende begin-/eindtijdcombinaties was geen

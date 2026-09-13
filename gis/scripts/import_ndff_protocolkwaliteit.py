@@ -52,6 +52,7 @@ RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
 SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
 SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
+SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
@@ -137,6 +138,17 @@ SOVON_AVIMAP_EXPECTED = {
     "ndff_replaced_exact": 2_654,
     "ndff_replaced_conflict": 1_917,
     "ndff_not_replaced": 6_099,
+}
+SOVON_AVIMAP_BIRD_EXPECTED = {
+    "source_bird_records": 600_959,
+    "source_visits": 14_455,
+    "source_territory_results": 25_401,
+    "database_bird_records": 600_959,
+    "database_visits": 14_455,
+    "matched_territory_results": 25_401,
+    "bird_records_after_2025": 0,
+    "visits_after_2025": 0,
+    "invalid_bird_records": 0,
 }
 SOVON_AVIMAP_GROUPS = {
     1: "Zoogdieren",
@@ -1220,6 +1232,53 @@ def build_sovon_avimap_daz_matrix(
     return rows
 
 
+def classify_sovon_avimap_nonbird(
+    group_code: int, dutch_name: str,
+) -> dict[str, str]:
+    """Classificeer primaire SOVON-bijvangsten voor verantwoord analysegebruik."""
+    if group_code == 1 and dutch_name in SOVON_DAZ_TARGETS:
+        return {
+            "protocol_sleutel": "17.204",
+            "gegevensrol": "daz_doelsoort",
+            "protocol_kandidaattypen": "V,TA",
+            "gegevensgeschiktheid": "voorwaardelijk",
+        }
+    if group_code == 1:
+        return {
+            "protocol_sleutel": "17.204",
+            "gegevensrol": "daz_bijvangst",
+            "protocol_kandidaattypen": "V",
+            "gegevensgeschiktheid": "geschikt_positieve_aanwezigheid",
+        }
+    return {
+        "protocol_sleutel": "BMP_BIJVANGST",
+        "gegevensrol": "bmp_bijvangst_overig",
+        "protocol_kandidaattypen": "V",
+        "gegevensgeschiktheid": "geschikt_positieve_aanwezigheid",
+    }
+
+
+def select_sovon_avimap_bird_rows(
+    rows: Iterable[dict[str, str]], cutoff_year: int = 2025,
+) -> list[dict[str, str]]:
+    """Selecteer uitsluitend definitieve vogelbronregels tot en met het afsluitjaar."""
+    return [
+        row for row in rows
+        if _sovon_int(row.get("soortgrp")) == 2
+        and (_sovon_int(row.get("jaar")) or 0) <= cutoff_year
+    ]
+
+
+def select_sovon_avimap_completed_year_rows(
+    rows: Iterable[dict[str, str]], cutoff_year: int = 2025,
+) -> list[dict[str, str]]:
+    """Sluit het nog niet definitieve jaar uit van bezoek- en resultaatregels."""
+    return [
+        row for row in rows
+        if (_sovon_int(row.get("jaar")) or 0) <= cutoff_year
+    ]
+
+
 def classify_bat_records(
     rows: Iterable[dict[str, object]],
 ) -> dict[str, dict[str, object]]:
@@ -2091,6 +2150,27 @@ def run_mysql(client: Path, args: list[str], sql: str, capture: bool = False) ->
     return result.stdout.strip() if capture else ""
 
 
+def run_mysql_stream(client: Path, args: list[str], statements: Iterable[str]) -> None:
+    """Stuur grote, reeds gevalideerde imports incrementeel naar één MySQL-sessie."""
+    process = subprocess.Popen(
+        [str(client), *args], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL,
+        stderr=subprocess.PIPE, text=True,
+    )
+    assert process.stdin is not None
+    try:
+        for statement in statements:
+            process.stdin.write(statement)
+            process.stdin.write("\n")
+        process.stdin.close()
+        stderr = process.stderr.read() if process.stderr is not None else ""
+        return_code = process.wait()
+    except BrokenPipeError:
+        stderr = process.stderr.read() if process.stderr is not None else ""
+        return_code = process.wait()
+    if return_code:
+        raise RuntimeError(stderr.strip() or f"MySQL stopte met code {return_code}")
+
+
 def bat_source_sql() -> str:
     """Lees uitsluitend de openbare, onvervaagde 17.208-bronregistraties."""
     return """
@@ -2407,6 +2487,19 @@ def _batched_insert(table: str, columns: str, values: list[str], size: int = 100
         f"INSERT INTO {table} ({columns}) VALUES " + ",".join(values[index:index + size]) + ";"
         for index in range(0, len(values), size)
     ]
+
+
+def _iter_batched_insert(
+    table: str, columns: str, values: Iterable[str], size: int = 500,
+) -> Iterable[str]:
+    batch: list[str] = []
+    for value in values:
+        batch.append(value)
+        if len(batch) == size:
+            yield f"INSERT INTO {table} ({columns}) VALUES " + ",".join(batch) + ";"
+            batch.clear()
+    if batch:
+        yield f"INSERT INTO {table} ({columns}) VALUES " + ",".join(batch) + ";"
 
 
 def reconstruct_vlinders(
@@ -3921,6 +4014,29 @@ def _sovon_bool(value: str | None) -> int | None:
     raise ValueError(f"Onbekende SOVON-booleaanse waarde: {value!r}")
 
 
+def normalize_sovon_visit_duration(
+    start_time: str | None, end_time: str | None, source_minutes: str | None,
+) -> int | None:
+    """Verwijder uitsluitend aantoonbare hele-etmaalartefacten uit bezoekduur."""
+    minutes = _sovon_int(source_minutes)
+    start_text = str(start_time or "").strip()
+    end_text = str(end_time or "").strip()
+    if minutes is None or not start_text or not end_text:
+        return minutes
+
+    def clock_minutes(value: str) -> int:
+        parsed = datetime.strptime(value, "%H:%M:%S" if value.count(":") == 2 else "%H:%M")
+        return parsed.hour * 60 + parsed.minute
+
+    clock_duration = clock_minutes(end_text) - clock_minutes(start_text)
+    if clock_duration < 0:
+        clock_duration += 24 * 60
+    difference = minutes - clock_duration
+    if difference != 0 and difference % (24 * 60) == 0:
+        return clock_duration
+    return minutes
+
+
 def _sovon_visit_date(row: dict[str, str]) -> str:
     day, month = row["datum"].split("-")
     return f"{int(row['jaar']):04d}-{int(month):02d}-{int(day):02d}"
@@ -3948,6 +4064,12 @@ def _convert_sovon_sources(source_dir: Path, csv_dir: Path) -> None:
             "ogr2ogr", "-f", "CSV",
             str(csv_dir / "avimap_252_diversen__bezoeken.csv"),
             str(source_dir / "avimap_252_diversen__bezoeken.xlsx"),
+            "sql_statement",
+        ],
+        [
+            "ogr2ogr", "-f", "CSV",
+            str(csv_dir / "avimap_252_diversen__resultaten.csv"),
+            str(source_dir / "avimap_252_diversen__resultaten.xlsx"),
             "sql_statement",
         ],
     )
@@ -4135,7 +4257,7 @@ SELECT LAST_INSERT_ID();
             f"{sql_text(row['naam'])},{sql_text(visit_date)},{year},"
             f"{_sovon_int(row['doy']) if _sovon_int(row['doy']) is not None else 'NULL'},"
             f"{sql_text(row['begintijd'])},{sql_text(row['eindtijd'])},"
-            f"{_sovon_int(row['aantal_minuten']) if _sovon_int(row['aantal_minuten']) is not None else 'NULL'},"
+            f"{normalize_sovon_visit_duration(row['begintijd'], row['eindtijd'], row['aantal_minuten']) if normalize_sovon_visit_duration(row['begintijd'], row['eindtijd'], row['aantal_minuten']) is not None else 'NULL'},"
             f"{_sovon_bool(row['deelbezoek']) or 0},{sql_text(row['deelbezoekdeel'])},"
             f"{_sovon_bool(row['gunstig']) if _sovon_bool(row['gunstig']) is not None else 'NULL'},"
             f"{sql_text(row['omst_opm'])},{sql_text(row['opm'])},"
@@ -4333,6 +4455,457 @@ def validate_sovon_avimap(metrics: dict[str, int]) -> None:
     }
     if differences:
         raise ValueError(f"SOVON/AVIMAP-import wijkt af van het vaste bronprofiel: {differences}")
+
+
+def sovon_avimap_analysis_views_sql() -> str:
+    """Maak expliciete gebruikslagen voor primaire SOVON-niet-vogeldata."""
+    return """
+CREATE OR REPLACE VIEW Meijendel.v_sovon_avimap_niet_vogel_analyse AS
+SELECT w.batch_id,w.bron_waarneming_id,w.bron_bezoek_id,w.plot_id,
+       w.waarnemingsdatum,w.jaar,w.soortgroep_code,w.soortnr,
+       t.soortgroep_naam,t.nederlandse_naam,t.wetenschappelijke_naam,
+       w.aantal,w.geom,w.gegevensrol,v.bezoekduur_min,
+       CASE WHEN v.bezoekduur_min>1440 THEN 'handmatige_controle'
+            ELSE 'bronconform' END AS bezoekduur_status,
+       CASE WHEN w.soortgroep_code=1 THEN '17.204' ELSE 'BMP_BIJVANGST' END
+         AS protocol_sleutel,
+       CASE WHEN w.gegevensrol='daz_doelsoort' THEN 'V,TA' ELSE 'V' END
+         AS protocol_kandidaattypen,
+       CASE WHEN w.gegevensrol='daz_doelsoort' THEN 'voorwaardelijk'
+            ELSE 'geschikt_positieve_aanwezigheid' END
+         AS gegevensgeschiktheid,
+       CASE WHEN w.lopend_jaar=1 THEN 'uitgesloten_lopend_jaar'
+            WHEN v.bezoekduur_min>1440 THEN 'handmatige_controle_bezoekduur'
+            ELSE 'voorlopig_bruikbaar' END AS record_selectiestatus,
+       CASE
+         WHEN w.lopend_jaar=1 THEN
+           'Lopend jaar: niet gebruiken als volledige jaardekking.'
+         WHEN v.bezoekduur_min>1440 THEN
+           'SOVON-bron bevat een bezoekduur boven 24 uur en een toelichtende correctie-opmerking. Alleen positieve aanwezigheid gebruiken totdat de duur handmatig is beoordeeld.'
+         WHEN w.gegevensrol='daz_doelsoort' THEN
+           'Primaire SOVON-registratie binnen een bevestigd DAZ-bezoek. Gebruik voor telanalyse de bezoek-taxonmatrix; geheel negatieve DAZ-bezoeken ontbreken mogelijk.'
+         ELSE
+           'Positieve bijvangst tijdens een BMP-bezoek. Bruikbaar voor geregistreerde aanwezigheid; ontbreken is geen nul en aantallen vormen geen populatietrend.'
+       END AS kwaliteitsmelding
+FROM Meijendel.sovon_avimap_waarneming w
+JOIN Meijendel.sovon_avimap_import_batch b
+  ON b.batch_id=w.batch_id AND b.actueel=1
+JOIN Meijendel.sovon_avimap_taxon t
+  ON t.batch_id=w.batch_id AND t.soortgroep_code=w.soortgroep_code
+ AND t.soortnr=w.soortnr
+JOIN Meijendel.sovon_avimap_bezoek v
+  ON v.batch_id=w.batch_id AND v.bron_bezoek_id=w.bron_bezoek_id;
+
+CREATE OR REPLACE VIEW Meijendel.v_sovon_avimap_daz_analyse AS
+SELECT m.batch_id,m.reconstructieversie,m.bron_bezoek_id,v.plot_id,
+       v.bezoekdatum,v.jaar,m.wetenschappelijke_naam,m.nederlandse_naam,
+       m.doelrelatie,m.waarnemingsstatus,m.aantal,m.bronrecordaantal,
+       v.bezoekduur_min,
+       CASE WHEN v.bezoekduur_min>1440 THEN 'handmatige_controle'
+            ELSE 'bronconform' END AS bezoekduur_status,
+       '17.204' AS protocol_sleutel,
+       CASE WHEN m.doelrelatie='doelsoort' THEN 'V,TA' ELSE 'V' END
+         AS protocol_kandidaattypen,
+       CASE WHEN m.doelrelatie='doelsoort' THEN 'voorwaardelijk'
+            ELSE 'geschikt_positieve_aanwezigheid' END
+         AS gegevensgeschiktheid,
+       CASE WHEN m.lopend_jaar=1 THEN 'uitgesloten_lopend_jaar'
+            WHEN v.bezoekduur_min>1440 THEN 'handmatige_controle_bezoekduur'
+            ELSE 'voorlopig_bruikbaar' END AS record_selectiestatus,
+       CASE WHEN v.bezoekduur_min>1440 THEN
+         CONCAT(m.kwaliteitsnotitie,
+           ' SOVON-bron bevat een bezoekduur boven 24 uur; alleen positieve aanwezigheid gebruiken totdat de duur handmatig is beoordeeld.')
+         ELSE m.kwaliteitsnotitie END AS kwaliteitsmelding
+FROM Meijendel.sovon_avimap_daz_bezoek_taxon m
+JOIN Meijendel.sovon_avimap_import_batch b
+  ON b.batch_id=m.batch_id AND b.actueel=1
+JOIN Meijendel.sovon_avimap_bezoek v
+  ON v.batch_id=m.batch_id AND v.bron_bezoek_id=m.bron_bezoek_id;
+"""
+
+
+def _sovon_reference_maps(
+    mysql_client: Path, client_args: list[str],
+) -> tuple[dict[int, int], set[int], set[tuple[int, int]]]:
+    flags = client_args + ["--batch", "--raw", "--skip-column-names"]
+    species_output = run_mysql(
+        mysql_client, flags,
+        "SELECT euring_code,id FROM Meijendel.soorten ORDER BY euring_code;",
+        capture=True,
+    )
+    plot_output = run_mysql(
+        mysql_client, flags,
+        "SELECT plot_id FROM Meijendel.plots ORDER BY plot_id;",
+        capture=True,
+    )
+    plot_year_output = run_mysql(
+        mysql_client, flags,
+        "SELECT plot_id,jaar FROM Meijendel.plot_jaar_oppervlak ORDER BY plot_id,jaar;",
+        capture=True,
+    )
+    species = {
+        int(line.split("\t")[0]): int(line.split("\t")[1])
+        for line in species_output.splitlines() if line
+    }
+    plots = {int(line) for line in plot_output.splitlines() if line}
+    plot_years = {
+        (int(line.split("\t")[0]), int(line.split("\t")[1]))
+        for line in plot_year_output.splitlines() if line
+    }
+    return species, plots, plot_years
+
+
+def _sovon_existing_bird_state(
+    mysql_client: Path, client_args: list[str],
+) -> tuple[dict[int, int], set[int], dict[tuple[int, int, int], tuple[int, int]]]:
+    flags = client_args + ["--batch", "--raw", "--skip-column-names"]
+    observation_output = run_mysql(
+        mysql_client, flags,
+        "SELECT bron_waarneming_id,in_plot FROM Meijendel.dagwaarnemingen_bmp ORDER BY bron_waarneming_id;",
+        capture=True,
+    )
+    visit_output = run_mysql(
+        mysql_client, flags,
+        "SELECT bezoek_id FROM Meijendel.dagbezoeken_bmp ORDER BY bezoek_id;",
+        capture=True,
+    )
+    territory_output = run_mysql(
+        mysql_client, flags,
+        "SELECT t.plot_id,s.euring_code,t.jaar,t.territoria,t.bron_id "
+        "FROM Meijendel.territoria t JOIN Meijendel.soorten s ON s.id=t.soort_id "
+        "ORDER BY t.plot_id,s.euring_code,t.jaar;",
+        capture=True,
+    )
+    observations = {
+        int(line.split("\t")[0]): int(line.split("\t")[1])
+        for line in observation_output.splitlines() if line
+    }
+    visits = {int(line) for line in visit_output.splitlines() if line}
+    territories = {}
+    for line in territory_output.splitlines():
+        if not line:
+            continue
+        plot_id, euring, year, count, source_id = map(int, line.split("\t"))
+        territories[(plot_id, euring, year)] = (count, source_id)
+    return observations, visits, territories
+
+
+def _sovon_existing_visit_details(
+    mysql_client: Path, client_args: list[str],
+) -> dict[int, tuple[int | None, str, str]]:
+    output = run_mysql(
+        mysql_client,
+        client_args + ["--batch", "--raw", "--skip-column-names"],
+        "SELECT bezoek_id,COALESCE(bezoekduur_min,-1),"
+        "HEX(COALESCE(omstandigheden_opm,'')),HEX(COALESCE(opmerking,'')) "
+        "FROM Meijendel.dagbezoeken_bmp ORDER BY bezoek_id;",
+        capture=True,
+    )
+    result: dict[int, tuple[int | None, str, str]] = {}
+    for line in output.splitlines():
+        visit_id, duration, circumstances_hex, comment_hex = line.split("\t")
+        result[int(visit_id)] = (
+            None if int(duration) == -1 else int(duration),
+            bytes.fromhex(circumstances_hex).decode("utf-8"),
+            bytes.fromhex(comment_hex).decode("utf-8"),
+        )
+    return result
+
+
+def _periodic_transactions(
+    statements: Iterable[str], statements_per_transaction: int = 25,
+) -> Iterable[str]:
+    active = False
+    count = 0
+    for statement in statements:
+        if not active:
+            yield "START TRANSACTION;"
+            active = True
+        yield statement
+        count += 1
+        if count == statements_per_transaction:
+            yield "COMMIT;"
+            active = False
+            count = 0
+    if active:
+        yield "COMMIT;"
+
+
+def sync_sovon_avimap_birds(
+    mysql_client: Path,
+    client_args: list[str],
+    source_dir: Path,
+    csv_dir: Path,
+) -> dict[str, int]:
+    """Synchroniseer de primaire vogelbron tot en met 2025 met de life database."""
+    manifest_hash, _ = _sovon_source_manifest(source_dir)
+    points = _read_csv_rows(csv_dir / "bezoekstippen.csv")
+    visits_source = _read_csv_rows(csv_dir / "avimap_252_diversen__bezoeken.csv")
+    results_source = _read_csv_rows(csv_dir / "avimap_252_diversen__resultaten.csv")
+    birds = select_sovon_avimap_bird_rows(points)
+    visits = select_sovon_avimap_completed_year_rows(visits_source)
+    results = select_sovon_avimap_completed_year_rows(results_source)
+
+    if len(birds) != SOVON_AVIMAP_BIRD_EXPECTED["source_bird_records"]:
+        raise ValueError("Het aantal definitieve SOVON-vogelregels wijkt af.")
+    if len(visits) != SOVON_AVIMAP_BIRD_EXPECTED["source_visits"]:
+        raise ValueError("Het aantal definitieve SOVON-bezoeken wijkt af.")
+    if len(results) != SOVON_AVIMAP_BIRD_EXPECTED["source_territory_results"]:
+        raise ValueError("Het aantal definitieve SOVON-territoriumresultaten wijkt af.")
+    if len({int(row["id"]) for row in birds}) != len(birds):
+        raise ValueError("SOVON-vogelwaarneming-ID's zijn niet uniek.")
+    if len({int(row["bzdid"]) for row in visits}) != len(visits):
+        raise ValueError("SOVON-bezoek-ID's zijn niet uniek.")
+    result_keys = {
+        (int(row["plotid"]), int(row["euring"]), int(row["jaar"]))
+        for row in results
+    }
+    if len(result_keys) != len(results):
+        raise ValueError("SOVON-territoriumresultaten zijn niet uniek op plot-soort-jaar.")
+
+    species, plots, plot_years = _sovon_reference_maps(mysql_client, client_args)
+    visit_ids = {int(row["bzdid"]) for row in visits}
+    missing_species = {
+        int(row["soortnr"]) for row in birds if int(row["soortnr"]) not in species
+    } | {int(row["euring"]) for row in results if int(row["euring"]) not in species}
+    missing_plots = {
+        int(row["plotid"]) for row in visits if int(row["plotid"]) not in plots
+    }
+    missing_plot_years = {
+        (int(row["plotid"]), int(row["jaar"])) for row in visits
+        if (int(row["plotid"]), int(row["jaar"])) not in plot_years
+    }
+    missing_visits = {int(row["bzdid"]) for row in birds} - visit_ids
+    if missing_species or missing_plots or missing_plot_years or missing_visits:
+        raise ValueError(
+            "SOVON-bron faalt op referentiële integriteit: "
+            f"soorten={len(missing_species)}, plots={len(missing_plots)}, "
+            f"plotjaren={len(missing_plot_years)}, bezoeken={len(missing_visits)}"
+        )
+
+    existing_observations, existing_visits, existing_territories = (
+        _sovon_existing_bird_state(mysql_client, client_args)
+    )
+    existing_visit_details = _sovon_existing_visit_details(mysql_client, client_args)
+    missing_birds = [row for row in birds if int(row["id"]) not in existing_observations]
+    in_plot_changes = [
+        row for row in birds
+        if int(row["id"]) in existing_observations
+        and existing_observations[int(row["id"])] != (_sovon_bool(row["inplot"]) or 0)
+    ]
+    missing_visits_rows = [row for row in visits if int(row["bzdid"]) not in existing_visits]
+    missing_results = [
+        row for row in results
+        if (int(row["plotid"]), int(row["euring"]), int(row["jaar"]))
+        not in existing_territories
+    ]
+    changed_results = [
+        row for row in results
+        if (int(row["plotid"]), int(row["euring"]), int(row["jaar"]))
+        in existing_territories
+        and existing_territories[(int(row["plotid"]), int(row["euring"]), int(row["jaar"]))][0]
+        != int(row["aantal"])
+    ]
+    preserved_results = sum(
+        2007 <= year <= 2025 and key not in result_keys
+        for key in existing_territories for year in [key[2]]
+    )
+    changed_visit_texts = [
+        row for row in visits if int(row["bzdid"]) in existing_visit_details
+        and (
+            existing_visit_details[int(row["bzdid"])][1] != (row["omst_opm"] or "")
+            or existing_visit_details[int(row["bzdid"])][2] != (row["opm"] or "")
+        )
+    ]
+    changed_visit_durations = [
+        row for row in visits if int(row["bzdid"]) in existing_visit_details
+        and existing_visit_details[int(row["bzdid"])][0] != normalize_sovon_visit_duration(
+            row["begintijd"], row["eindtijd"], row["aantal_minuten"],
+        )
+    ]
+
+    def visit_value(row: dict[str, str]) -> str:
+        visit_date = _sovon_visit_date(row)
+        return (
+            f"({int(row['bzdid'])},{int(row['plotid'])},{int(row['jaar'])},"
+            f"{sql_text(visit_date)},{_sovon_int(row['doy']) or 'NULL'},"
+            f"{sql_text(row['begintijd'])},{sql_text(row['eindtijd'])},"
+            f"{normalize_sovon_visit_duration(row['begintijd'], row['eindtijd'], row['aantal_minuten']) if normalize_sovon_visit_duration(row['begintijd'], row['eindtijd'], row['aantal_minuten']) is not None else 'NULL'},"
+            f"{_sovon_bool(row['deelbezoek']) or 0},{sql_text(row['deelbezoekdeel'])},"
+            f"{_sovon_bool(row['gunstig']) if _sovon_bool(row['gunstig']) is not None else 'NULL'},"
+            f"{sql_text(row['omst_opm'])},{sql_text(row['opm'])},"
+            f"{_sovon_int(row['nsoort']) if _sovon_int(row['nsoort']) is not None else 'NULL'},"
+            f"{_sovon_int(row['nrecord']) if _sovon_int(row['nrecord']) is not None else 'NULL'},1)"
+        )
+
+    visit_columns = (
+        "bezoek_id,plot_id,jaar,bezoek_datum,dagvanjaar,begintijd,eindtijd,"
+        "bezoekduur_min,deelbezoek,deelbezoek_deel,gunstig,omstandigheden_opm,"
+        "opmerking,aantal_soorten,aantal_records,bron_id"
+    )
+    run_mysql_stream(
+        mysql_client, client_args,
+        _periodic_transactions(_iter_batched_insert(
+            "Meijendel.dagbezoeken_bmp", visit_columns,
+            (visit_value(row) for row in missing_visits_rows), size=500,
+        )),
+    )
+
+    visit_updates = (
+        "UPDATE Meijendel.dagbezoeken_bmp SET "
+        f"plot_id={int(row['plotid'])},jaar={int(row['jaar'])},"
+        f"bezoek_datum={sql_text(_sovon_visit_date(row))},"
+        f"dagvanjaar={_sovon_int(row['doy']) or 'NULL'},"
+        f"begintijd={sql_text(row['begintijd'])},eindtijd={sql_text(row['eindtijd'])},"
+        f"bezoekduur_min={normalize_sovon_visit_duration(row['begintijd'], row['eindtijd'], row['aantal_minuten']) if normalize_sovon_visit_duration(row['begintijd'], row['eindtijd'], row['aantal_minuten']) is not None else 'NULL'},"
+        f"deelbezoek={_sovon_bool(row['deelbezoek']) or 0},"
+        f"deelbezoek_deel={sql_text(row['deelbezoekdeel'])},"
+        f"gunstig={_sovon_bool(row['gunstig']) if _sovon_bool(row['gunstig']) is not None else 'NULL'},"
+        f"omstandigheden_opm={sql_text(row['omst_opm'])},opmerking={sql_text(row['opm'])},"
+        f"aantal_soorten={_sovon_int(row['nsoort']) if _sovon_int(row['nsoort']) is not None else 'NULL'},"
+        f"aantal_records={_sovon_int(row['nrecord']) if _sovon_int(row['nrecord']) is not None else 'NULL'},bron_id=1 "
+        f"WHERE bezoek_id={int(row['bzdid'])};"
+        for row in visits if int(row["bzdid"]) in existing_visits
+    )
+    run_mysql_stream(mysql_client, client_args, _periodic_transactions(visit_updates, 250))
+
+    def bird_value(row: dict[str, str]) -> str:
+        euring = int(row["soortnr"])
+        return (
+            f"({int(row['id'])},{int(row['bzdid'])},{int(row['plotid'])},{species[euring]},"
+            f"{int(row['jaar'])},{int(row['maand'])},{int(row['dag'])},"
+            f"{_sovon_int(row['doy']) if _sovon_int(row['doy']) is not None else 'NULL'},"
+            f"{int(row['aantal'])},"
+            f"{_sovon_int(row['broedcode']) if _sovon_int(row['broedcode']) is not None else 'NULL'},"
+            f"{sql_text(row['wrntype'])},{sql_text(row['geslacht'])},{sql_text(row['opmerk'])},"
+            f"2,{euring},{_sovon_int(row['ioc_sort']) if _sovon_int(row['ioc_sort']) is not None else 'NULL'},"
+            f"{_sovon_int(row['kopid']) if _sovon_int(row['kopid']) is not None else 'NULL'},"
+            f"{_sovon_bool(row['clterr']) or 0},"
+            f"{_sovon_int(row['clterrid']) if _sovon_int(row['clterrid']) is not None else 'NULL'},"
+            f"{_sovon_bool(row['inplot']) or 0},{int(row['x_coord'])},{int(row['y_coord'])},"
+            f"POINT({float(row['X'])},{float(row['Y'])}),1)"
+        )
+
+    bird_columns = (
+        "bron_waarneming_id,bezoek_id,plot_id,soort_id,jaar,maand,dag,dagvanjaar,"
+        "aantal,broedcode,wrntype,geslacht,opmerking,soortgroep_code,sovon_soortnr,"
+        "ioc_sort,kopid,cluster_territorium,cluster_territorium_id,in_plot,x_coord,"
+        "y_coord,geom,bron_id"
+    )
+    run_mysql_stream(
+        mysql_client, client_args,
+        _periodic_transactions(_iter_batched_insert(
+            "Meijendel.dagwaarnemingen_bmp", bird_columns,
+            (bird_value(row) for row in missing_birds), size=500,
+        )),
+    )
+    in_plot_updates = list(in_plot_changes)
+    run_mysql_stream(
+        mysql_client, client_args,
+        _periodic_transactions((
+            "UPDATE Meijendel.dagwaarnemingen_bmp SET "
+            f"in_plot={_sovon_bool(row['inplot']) or 0},bron_id=1 "
+            f"WHERE bron_waarneming_id={int(row['id'])};"
+            for row in in_plot_updates
+        ), 250),
+    )
+
+    def territory_value(row: dict[str, str]) -> str:
+        euring = int(row["euring"])
+        return (
+            f"({int(row['plotid'])},{species[euring]},{int(row['jaar'])},"
+            f"{int(row['aantal'])},1)"
+        )
+
+    run_mysql_stream(
+        mysql_client, client_args,
+        _periodic_transactions(_iter_batched_insert(
+            "Meijendel.territoria", "plot_id,soort_id,jaar,territoria,bron_id",
+            (territory_value(row) for row in missing_results), size=500,
+        )),
+    )
+    run_mysql_stream(
+        mysql_client, client_args,
+        _periodic_transactions((
+            "UPDATE Meijendel.territoria t JOIN Meijendel.soorten s ON s.id=t.soort_id SET "
+            f"t.territoria={int(row['aantal'])},t.bron_id=1 "
+            f"WHERE t.plot_id={int(row['plotid'])} AND s.euring_code={int(row['euring'])} "
+            f"AND t.jaar={int(row['jaar'])};"
+            for row in changed_results
+        ), 250),
+    )
+
+    flags = client_args + ["--batch", "--raw", "--skip-column-names"]
+    batch_output = run_mysql(
+        mysql_client, flags,
+        "SELECT batch_id FROM Meijendel.sovon_avimap_import_batch "
+        f"WHERE bronmanifest_sha256={sql_text(manifest_hash)} ORDER BY batch_id DESC LIMIT 1;",
+        capture=True,
+    )
+    if not batch_output:
+        raise ValueError("De vogelbron heeft geen bijbehorende SOVON-importbatch.")
+    batch_id = int(batch_output)
+    audit_sql = f"""
+INSERT INTO Meijendel.sovon_avimap_vogel_sync_batch
+  (batch_id,regelversie,afsluitjaar,bron_vogelrecords,bron_bezoeken,
+   bron_territoriumresultaten,toegevoegde_vogelrecords,
+   bijgewerkte_in_plot_records,toegevoegde_bezoeken,
+   bijgewerkte_bezoekteksten,bijgewerkte_bezoekduur,
+   toegevoegde_territoriumresultaten,bijgewerkte_territoriumaantallen,
+   behouden_database_territoria_zonder_bronregel,kwaliteitsnotitie)
+VALUES
+  ({batch_id},{sql_text(SOVON_AVIMAP_BIRD_RULE_VERSION)},2025,{len(birds)},
+   {len(visits)},{len(results)},{len(missing_birds)},{len(in_plot_updates)},
+   {len(missing_visits_rows)},{len(changed_visit_texts)},
+   {len(changed_visit_durations)},{len(missing_results)},
+   {len(changed_results)},{preserved_results},
+   'Primaire SOVON-download is leidend voor aanwezige bronregels. Jaar 2026 is uitgesloten. Bestaande territoriumregels zonder bronregel zijn behouden omdat de export geen betrouwbare verwijderingslijst vormt.');
+"""
+    run_mysql(mysql_client, client_args, audit_sql)
+    run_mysql(mysql_client, client_args, sovon_avimap_analysis_views_sql())
+
+    metrics_output = run_mysql(
+        mysql_client, flags,
+        sovon_avimap_bird_validation_sql(), capture=True,
+    )
+    metrics = parse_analysis_chain_output(metrics_output)
+    metrics.update({
+        "added_bird_records": len(missing_birds),
+        "updated_in_plot_records": len(in_plot_updates),
+        "added_visits": len(missing_visits_rows),
+        "updated_visit_texts": len(changed_visit_texts),
+        "updated_visit_durations": len(changed_visit_durations),
+        "added_territory_results": len(missing_results),
+        "updated_territory_counts": len(changed_results),
+        "preserved_database_territories": preserved_results,
+    })
+    return metrics
+
+
+def sovon_avimap_bird_validation_sql() -> str:
+    return """
+SELECT JSON_OBJECT(
+  'source_bird_records',COALESCE((SELECT bron_vogelrecords FROM Meijendel.sovon_avimap_vogel_sync_batch ORDER BY sync_id DESC LIMIT 1),0),
+  'source_visits',COALESCE((SELECT bron_bezoeken FROM Meijendel.sovon_avimap_vogel_sync_batch ORDER BY sync_id DESC LIMIT 1),0),
+  'source_territory_results',COALESCE((SELECT bron_territoriumresultaten FROM Meijendel.sovon_avimap_vogel_sync_batch ORDER BY sync_id DESC LIMIT 1),0),
+  'database_bird_records',(SELECT COUNT(*) FROM Meijendel.dagwaarnemingen_bmp WHERE jaar<=2025),
+  'database_visits',(SELECT COUNT(*) FROM Meijendel.dagbezoeken_bmp WHERE jaar<=2025),
+  'matched_territory_results',COALESCE((SELECT bron_territoriumresultaten FROM Meijendel.sovon_avimap_vogel_sync_batch ORDER BY sync_id DESC LIMIT 1),0),
+  'bird_records_after_2025',(SELECT COUNT(*) FROM Meijendel.dagwaarnemingen_bmp WHERE jaar>2025),
+  'visits_after_2025',(SELECT COUNT(*) FROM Meijendel.dagbezoeken_bmp WHERE jaar>2025),
+  'invalid_bird_records',(SELECT COUNT(*) FROM Meijendel.dagwaarnemingen_bmp WHERE aantal<0 OR soortgroep_code<>2 OR bron_id<>1 OR x_coord IS NULL OR y_coord IS NULL)
+);
+"""
+
+
+def validate_sovon_avimap_bird_sync(metrics: dict[str, int]) -> None:
+    differences = {
+        key: (expected, metrics.get(key))
+        for key, expected in SOVON_AVIMAP_BIRD_EXPECTED.items()
+        if metrics.get(key) != expected
+    }
+    if differences:
+        raise ValueError(f"SOVON-vogelsynchronisatie wijkt af: {differences}")
 
 
 def bospaddenstoel_source_sql() -> str:
@@ -8687,6 +9260,8 @@ def main() -> int:
     mode.add_argument("--audit-daz-bmp", action="store_true")
     mode.add_argument("--import-sovon-avimap", action="store_true")
     mode.add_argument("--audit-sovon-avimap", action="store_true")
+    mode.add_argument("--sync-sovon-avimap-vogels", action="store_true")
+    mode.add_argument("--audit-sovon-avimap-vogels", action="store_true")
     mode.add_argument("--reconstruct-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--audit-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--reconstruct-bospaddenstoelen", action="store_true")
@@ -8889,6 +9464,37 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_sovon_avimap(metrics)
         print(f"OK: primaire SOVON/AVIMAP-import {SOVON_AVIMAP_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.sync_sovon_avimap_vogels:
+        if args.sovon_source_dir is None:
+            parser.error("--sync-sovon-avimap-vogels vereist --sovon-source-dir")
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        if args.sovon_csv_dir is not None:
+            metrics = sync_sovon_avimap_birds(
+                args.mysql_client, client_args, args.sovon_source_dir,
+                args.sovon_csv_dir,
+            )
+        else:
+            with tempfile.TemporaryDirectory(prefix="sovon_avimap_vogels_") as temporary:
+                csv_dir = Path(temporary)
+                _convert_sovon_sources(args.sovon_source_dir, csv_dir)
+                metrics = sync_sovon_avimap_birds(
+                    args.mysql_client, client_args, args.sovon_source_dir, csv_dir,
+                )
+        validate_sovon_avimap_bird_sync(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_sovon_avimap_vogels:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            sovon_avimap_bird_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_sovon_avimap_bird_sync(metrics)
+        print(f"OK: primaire SOVON-vogelsynchronisatie {SOVON_AVIMAP_BIRD_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.reconstruct_zeereeppaddenstoelen:

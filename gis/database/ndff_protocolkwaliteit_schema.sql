@@ -2731,3 +2731,33 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_daz_bezoek_taxon (
       AND aantal=0 AND bronrecordaantal=0)),
   CHECK (lopend_jaar IN (0,1))
 ) ENGINE=InnoDB;
+
+-- De actuele SOVON-export kan langere bezoeknotities bevatten dan het
+-- historische importschema. Bewaar de primaire tekst zonder afkappen.
+ALTER TABLE Meijendel.dagbezoeken_bmp
+  MODIFY opmerking VARCHAR(1000) NULL;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_vogel_sync_batch (
+  sync_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  batch_id BIGINT UNSIGNED NOT NULL,
+  regelversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  afsluitjaar SMALLINT UNSIGNED NOT NULL,
+  bron_vogelrecords INT UNSIGNED NOT NULL,
+  bron_bezoeken INT UNSIGNED NOT NULL,
+  bron_territoriumresultaten INT UNSIGNED NOT NULL,
+  toegevoegde_vogelrecords INT UNSIGNED NOT NULL,
+  bijgewerkte_in_plot_records INT UNSIGNED NOT NULL,
+  toegevoegde_bezoeken INT UNSIGNED NOT NULL,
+  bijgewerkte_bezoekteksten INT UNSIGNED NOT NULL,
+  bijgewerkte_bezoekduur INT UNSIGNED NOT NULL,
+  toegevoegde_territoriumresultaten INT UNSIGNED NOT NULL,
+  bijgewerkte_territoriumaantallen INT UNSIGNED NOT NULL,
+  behouden_database_territoria_zonder_bronregel INT UNSIGNED NOT NULL,
+  kwaliteitsnotitie VARCHAR(1500) NOT NULL,
+  uitgevoerd_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (sync_id),
+  KEY ix_sovon_avimap_vogel_sync_batch (batch_id, afsluitjaar, uitgevoerd_op),
+  CONSTRAINT fk_sovon_avimap_vogel_sync_batch FOREIGN KEY (batch_id)
+    REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
+  CHECK (afsluitjaar <= 2025)
+) ENGINE=InnoDB;

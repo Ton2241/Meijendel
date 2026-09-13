@@ -316,6 +316,13 @@ MySQL:
   jaardekking. Wijzig vogelgegevens uit deze export nooit zonder een afzonderlijk
   besluit van de eigenaar; rapporteer afwijkingen eerst. Controleer met
   `--audit-sovon-avimap`
+- synchroniseer de vogelregels uit dezelfde primaire SOVON/AVIMAP-download
+  uitsluitend met `--sync-sovon-avimap-vogels` en afsluitjaar 2025. Voeg
+  ontbrekende bron-ID's, bezoeken en territoriumresultaten toe en corrigeer
+  bestaande regels alleen wanneer dezelfde bron-ID of dezelfde
+  plot-soort-jaarcombinatie in de download staat. Verwijder nooit handmatige of
+  andere bestaande regels omdat zij in deze export ontbreken. Controleer met
+  `--audit-sovon-avimap-vogels`
 - gebruik voor zeereeppaddenstoelenprotocol `11.202` reconstructieversie
   `ndff-zeereep-v1` en de drie openbare tabellen `Meijendel.ndff_zeereep_*`.
   De native meeteenheid is het RD-kilometerhok en een bezoek is hok plus

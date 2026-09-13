@@ -169,6 +169,15 @@
   Bij een afwijkende telwaarde is SOVON leidend en blijft het conflict expliciet
   zichtbaar. De 807 niet-vogelregels uit het lopende jaar 2026 zijn bewaard met
   `lopend_jaar=1` en mogen nog niet als volledig jaar worden geïnterpreteerd.
+- De vogelbron uit dezelfde download wordt tot en met 2025 aanvullend en
+  corrigerend gesynchroniseerd. Bestaande regels worden alleen gewijzigd bij
+  dezelfde SOVON-bron-ID of dezelfde plot-soort-jaarcombinatie. Ontbreken in de
+  export is geen verwijderingsopdracht: handmatige gegevens en overige
+  databasegegevens blijven staan. Jaar 2026 blijft buiten de vogeltabellen.
+  Aantoonbare gehele-etmaalartefacten in `aantal_minuten` worden uitsluitend
+  herleid uit de bijbehorende begin- en eindtijd. Een overige bronduur boven
+  24 uur blijft bewaard maar wordt in analyseviews apart gemarkeerd voor
+  handmatige controle.
 - Protocol `11.202` wordt onder `ndff-zeereep-v1` op RD-kilometerhok en
   kalenderdatum gereconstrueerd. Alleen de zes typische doelsoorten krijgen
   binnen de 161 bevestigde bezoeken een volledige aanwezig/nul-matrix.

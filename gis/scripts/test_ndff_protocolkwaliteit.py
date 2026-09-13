@@ -873,6 +873,44 @@ def main() -> int:
     assert (12, "Damhert") not in sovon_by_key
     assert len(sovon_matrix) == 15
 
+    assert module.classify_sovon_avimap_nonbird(1, "Konijn") == {
+        "protocol_sleutel": "17.204",
+        "gegevensrol": "daz_doelsoort",
+        "protocol_kandidaattypen": "V,TA",
+        "gegevensgeschiktheid": "voorwaardelijk",
+    }
+    assert module.classify_sovon_avimap_nonbird(1, "Damhert") == {
+        "protocol_sleutel": "17.204",
+        "gegevensrol": "daz_bijvangst",
+        "protocol_kandidaattypen": "V",
+        "gegevensgeschiktheid": "geschikt_positieve_aanwezigheid",
+    }
+    assert module.classify_sovon_avimap_nonbird(3, "Gewone pad") == {
+        "protocol_sleutel": "BMP_BIJVANGST",
+        "gegevensrol": "bmp_bijvangst_overig",
+        "protocol_kandidaattypen": "V",
+        "gegevensgeschiktheid": "geschikt_positieve_aanwezigheid",
+    }
+
+    bird_rows = module.select_sovon_avimap_bird_rows([
+        {"id": "1", "soortgrp": "2", "jaar": "2025"},
+        {"id": "2", "soortgrp": "2", "jaar": "2026"},
+        {"id": "3", "soortgrp": "1", "jaar": "2025"},
+    ])
+    assert [row["id"] for row in bird_rows] == ["1"]
+    assert module.select_sovon_avimap_completed_year_rows([
+        {"id": "10", "jaar": "2024"},
+        {"id": "11", "jaar": "2025"},
+        {"id": "12", "jaar": "2026"},
+    ]) == [
+        {"id": "10", "jaar": "2024"},
+        {"id": "11", "jaar": "2025"},
+    ]
+    assert module.normalize_sovon_visit_duration("07:43:00", "11:05:00", "207562") == 202
+    assert module.normalize_sovon_visit_duration("12:33:00", "21:56:00", "17843") == 563
+    assert module.normalize_sovon_visit_duration("06:15:00", "08:47:00", "151") == 151
+    assert module.normalize_sovon_visit_duration("23:30:00", "00:15:00", "1485") == 45
+
     assert module.classify_bat_route(83_999.0) == {
         "routefamilie_id": 2,
         "methodevariant": "vleermus_fiets",
@@ -1034,6 +1072,10 @@ def main() -> int:
     assert module.SOVON_AVIMAP_TABLE_PREFIX == "Meijendel.sovon_avimap"
     assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
     assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"
+    assert module.SOVON_AVIMAP_BIRD_RULE_VERSION == "sovon-avimap-vogels-v1"
+    sovon_views = module.sovon_avimap_analysis_views_sql().casefold()
+    assert "bezoekduur_status" in sovon_views
+    assert "handmatige_controle_bezoekduur" in sovon_views
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -1552,6 +1594,8 @@ def main() -> int:
         "--audit-konijnen",
         "sovon-avimap-daz-v1",
         "--audit-sovon-avimap",
+        "--sync-sovon-avimap-vogels",
+        "--audit-sovon-avimap-vogels",
         "geen route- of sectie-id",
         "akoestische detecties",
         "73",
