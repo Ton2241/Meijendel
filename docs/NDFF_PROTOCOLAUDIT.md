@@ -713,6 +713,33 @@ Aanvullende bronvragen worden pas gesteld wanneer tijd, geometrie en de
 officiële protocolomschrijving een noodzakelijke sleutel niet kunnen leveren.
 Zij blokkeren de technisch verantwoorde reconstructies niet.
 
+### Verzonden bronvragen
+
+Ton Lansink heeft op 13 september 2026 alle zeven geselecteerde
+bronorganisaties per e-mail aangeschreven. Daarbij zijn de in dit traject per
+organisatie opgestelde verzoekteksten gebruikt. De verzoeken plaatsen de
+aanvullende gegevensvraag in het kader van zeventig jaar vogeltellingen in 2028
+en de voorgenomen ecologische geschiedenis van Meijendel. Zij vermelden dat de
+relevante NDFF-data, inclusief de geleverde onvervaagde records, al beschikbaar
+zijn en dat uitsluitend aanvullende meetstructuur wordt gevraagd voor
+statistisch verantwoord gebruik.
+
+| Organisatie | Gebruikt e-mailadres |
+|---|---|
+| De Vlinderstichting | `meetnet@vlinderstichting.nl` |
+| Zoogdiervereniging | `info@zoogdiervereniging.nl` |
+| RAVON | `info@ravon.nl` |
+| FLORON | `info@floron.nl` |
+| BLWG | `henk-jan@blwg.nl` |
+| Stichting ANEMOON | `anemoon@cistron.nl` |
+| Staatsbosbeheer | `info@staatsbosbeheer.nl` |
+
+Ontvangen reacties en bronbestanden worden per organisatie afzonderlijk
+geregistreerd. Een primaire bronlevering wordt eerst op herkomst, dekking,
+telobjecten, bezoeken, doelsoorten, nullen, inspanning, methodewijzigingen en
+gebruiksvoorwaarden gecontroleerd voordat de classificatie of analyseviews
+worden aangepast.
+
 ## Reconstructie van de surveystructuur
 
 De mededeling van NDFF dat de GeoPackage alle beschikbare informatie per

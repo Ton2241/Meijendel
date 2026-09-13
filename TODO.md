@@ -175,6 +175,17 @@
   geplande of uitgevallen bezoeken, apparatuur en aanvullende metadata alleen
   wanneer het betreffende protocol of analysemodel die werkelijk nodig heeft.
   Los bij LMF-a expliciet de openbare drie-/vierjarige cyclusinconsistentie op.
+- Uitgevoerd op 13 september 2026: alle zeven bronorganisaties zijn door Ton
+  Lansink aangeschreven met de per organisatie opgestelde verzoektekst om de
+  ontbrekende meetstructuur voor statistisch verantwoord gebruik aan te vullen:
+  De Vlinderstichting (`meetnet@vlinderstichting.nl`), Zoogdiervereniging
+  (`info@zoogdiervereniging.nl`), RAVON (`info@ravon.nl`), FLORON
+  (`info@floron.nl`), BLWG (`henk-jan@blwg.nl`), Stichting ANEMOON
+  (`anemoon@cistron.nl`) en Staatsbosbeheer
+  (`info@staatsbosbeheer.nl`). Volgende actie is iedere reactie of levering
+  afzonderlijk registreren, veilig opslaan, inhoudelijk beoordelen en aan de
+  bestaande NDFF-records koppelen. Voor 24 september 2026 om 09:00 uur is een
+  eenmalige controleherinnering gepland.
 - Leg de gereconstrueerde native surveystructuur vast en koppel die daarna geversioneerd
   aan SOVON-plots. Splits routes of gebieden niet over plots zonder
   sectiegeometrie én sectie-inspanning. Houd per protocol een eigen
