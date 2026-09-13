@@ -286,6 +286,47 @@ Record- en bezoekaantallen zijn bron- en reconstructiecontroles, geen
 populatieomvang. Per protocol worden vóór nullen de native meeteenheid, het
 volledige doelsoortenbereik en eventuele overlap met primaire bronnen getoetst.
 
+### Primaire SOVON/AVIMAP-bron voor DAZ en overige bijvangsten
+
+Op 13 september 2026 is de volledige export van SOVON/AVIMAP-project 252
+gecontroleerd. De puntlaag telt 660.688 unieke bron-ID's. Daarvan zijn 19.960
+niet-vogelregels uit 4.364 bezoeken geïmporteerd: 19.877 zoogdierregels
+(2009-2026), 75 amfibie-/reptielregels (2009-2026), vier mierenregels
+(2017-2019) en vier dagvlinderregels (2015-2017). De 35 taxa zijn gekoppeld aan
+`ndff_soorten` waar de naam eenduidig overeenkomt; zeven resterende taxa hebben
+een expliciete handmatige taxonreferentie. De 807 regels uit 2026 zijn als
+lopend, mogelijk onvolledig jaar gemarkeerd.
+
+De primaire DAZ-matrix `sovon-avimap-daz-v1` omvat 4.354 bezoeken, 30.478
+bezoek-doelsoortcombinaties, 6.859 positieve uitkomsten en 23.619 echte nullen.
+Daarnaast zijn 179 uitsluitend positieve bijvangst-uitkomsten bewaard. Een
+echte nul wordt alleen afgeleid binnen een bezoek waarin minimaal één zoogdier
+in de oorspronkelijke SOVON-bron staat; bezoeken zonder zoogdierregel hebben
+geen aantoonbare DAZ-deelname en blijven buiten de matrix.
+
+De vergelijking met alle 10.670 openbare `17.204`-regels gebeurt op datum,
+taxon en RD-kilometerhok. Voor 2.654 NDFF-regels is ook de totale telwaarde
+gelijk; 1.917 overlappende regels hebben een telwaardeconflict. In beide
+gevallen is de primaire SOVON-bron leidend en wordt NDFF niet daarnaast geteld.
+De overige 6.099 NDFF-regels hebben geen tegenhanger in deze SOVON-export en
+blijven herkenbaar als uitsluitend secundaire bron. Geen ruwe NDFF-regel is
+fysiek verwijderd.
+
+De meegeleverde vogelgegevens zijn uitsluitend-lezen vergeleken. Alle 297.092
+bestaande dagwaarneming-ID's en alle 7.227 bestaande bezoek-ID's komen in de
+SOVON-export voor. De export bevat daarnaast tot en met 2025 respectievelijk
+303.867 vogelregels en 7.228 bezoeken die niet in de database staan. Bij de
+gemeenschappelijke dagregels zijn datum, soort, aantal, coördinaten en overige
+inhoudelijke velden gelijk, behalve 155 inmiddels als buiten het plot gemarkeerde
+regels; lege versus nulwaarden verklaren de schijnverschillen in broedcode en
+cluster-ID. Vrije bezoektekst wijkt bij 297 bezoeken af en bezoekduur bij 17
+bezoeken na afronding op hele minuten. Voor territoria zijn 260 bronresultaten
+niet in de database aanwezig, staan 104 database-uitkomsten uit 2009-2025 niet
+in deze export en verschillen 53 gemeenschappelijke aantallen. De export bevat
+geen resultaten of territoriapunten voor 2008 en slechts een beperkte set voor
+2007. Daarom zijn de vogeltabellen niet gewijzigd; deze afwijkingen vragen een
+afzonderlijke vogelbronbeslissing.
+
 ### Het Nieuwe Strepen (`12.204`)
 
 De eerdere telling van 1.145 verschillende begin-/eindtijdcombinaties was geen

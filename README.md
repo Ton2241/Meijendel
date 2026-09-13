@@ -196,6 +196,23 @@ automatisch voor trendanalyse toegelaten. De beveiligde levering blijft in
 `Meijendel_ndff_secure`; alleen daar staat de koppeling tussen beveiligde en
 openbare records.
 
+De primaire SOVON/AVIMAP-export van project 252 is aanvullend vastgelegd in
+`sovon_avimap_import_batch`, `sovon_avimap_taxon`, `sovon_avimap_bezoek`,
+`sovon_avimap_waarneming`, `sovon_avimap_ndff_daz_koppeling` en
+`sovon_avimap_daz_bezoek_taxon`. Deze tabellen bevatten uitsluitend de
+niet-vogelregels en de daarvoor benodigde bezoekstructuur. Voor DAZ-analyses is
+`sovon-avimap-daz-v1` leidend; overlappende `17.204`-regels uit NDFF zijn alleen
+secundair auditspoor en mogen niet dubbel worden geteld. Records uit het lopende
+jaar zijn herkenbaar aan `lopend_jaar=1`. De meegeleverde vogelregels zijn wel
+gecontroleerd maar niet in de vogeltabellen geïmporteerd of gewijzigd.
+De herhaalbare lokale import leest de oorspronkelijke SHP en XLSX rechtstreeks:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py \
+  --import-sovon-avimap --sovon-source-dir "/pad/naar/Sovon_avimap_252_diversen__resultaten"
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-sovon-avimap
+```
+
 ## Wat is de normale werkvolgorde?
 
 De praktische volgorde is:

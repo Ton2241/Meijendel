@@ -10,6 +10,7 @@ import json
 import math
 import re
 import subprocess
+import tempfile
 from collections import Counter, defaultdict
 from datetime import date, datetime
 from pathlib import Path
@@ -49,6 +50,8 @@ AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
+SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
+SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
@@ -76,6 +79,7 @@ AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
 DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
+SOVON_AVIMAP_TABLE_PREFIX = "Meijendel.sovon_avimap"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
@@ -117,6 +121,58 @@ RESTERENDE_NEM_RECONSTRUCTION_EXPECTED = {
     "unlinked_source_records": 0,
     "secure_derived_tables": 0,
     "lmf_ndff_derived_tables": 0,
+}
+SOVON_AVIMAP_EXPECTED = {
+    "source_records": 19_960,
+    "source_visits": 4_364,
+    "source_taxa": 35,
+    "mammal_records": 19_877,
+    "daz_visits": 4_354,
+    "daz_target_rows": 30_478,
+    "daz_target_positive_rows": 6_859,
+    "daz_true_zero_rows": 23_619,
+    "daz_bycatch_rows": 179,
+    "current_year_records": 807,
+    "ndff_daz_records": 10_670,
+    "ndff_replaced_exact": 2_654,
+    "ndff_replaced_conflict": 1_917,
+    "ndff_not_replaced": 6_099,
+}
+SOVON_AVIMAP_GROUPS = {
+    1: "Zoogdieren",
+    3: "Amfibieën en reptielen",
+    5: "Mieren",
+    6: "Dagvlinders",
+}
+SOVON_DAZ_TARGETS = {
+    "Konijn": "Oryctolagus cuniculus",
+    "Haas": "Lepus europaeus",
+    "Vos": "Vulpes vulpes",
+    "Ree": "Capreolus capreolus",
+    "Eekhoorn": "Sciurus vulgaris",
+    "Egel": "Erinaceus europaeus",
+    "Muskusrat": "Ondatra zibethicus",
+}
+SOVON_TAXON_ALIASES = {
+    "Gewone Dwergvleermuis": "Gewone dwergvleermuis",
+    "Gewone Pad": "Gewone pad",
+    "Gewone Zeehond": "Gewone zeehond",
+    "Huismuis (zoogdier)": "Huismuis",
+    "Rosse Woelmuis": "Rosse woelmuis",
+    "Steen/Boommarter": "Steen-/Boommarter",
+    "bosspitsmuis spec.": "Gewone/Tweekleurige bosspitsmuis",
+    "katten sp. indet.": "Kat (soort onbekend)",
+    "spitsmuis spec.": "Spitsmuis (onbekend)",
+    "vleermuis spec.": "Vleermuizen",
+}
+SOVON_MANUAL_SCIENTIFIC_NAMES = {
+    "Boomkikker": "Hyla arborea",
+    "Behaarde Rode Bosmier": "Formica rufa",
+    "groene kikker-complex": "Pelophylax esculentus synklepton",
+    "Veldmuis/Aardmuis": "Microtus arvalis/agrestis",
+    "marter spec": "Martes",
+    "Heckrund": "Bos taurus",
+    "Konikpaard": "Equus ferus caballus",
 }
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
@@ -1105,6 +1161,60 @@ def build_daz_bmp_matrix(
                 "status": "waargenomen", "count": count,
                 "source_records": source_records, "ambiguous_records": ambiguous,
                 "value_status": "minimum_door_ambiguiteit" if ambiguous else "exact",
+                "zero_rule": "niet_van_toepassing_bijvangst",
+            })
+    return rows
+
+
+def build_sovon_avimap_daz_matrix(
+    observations: Iterable[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Bouw de primaire DAZ-matrix uit originele SOVON-bezoekregels.
+
+    Ieder bezoek met minimaal één zoogdierregel geldt als aantoonbaar
+    deelnemend DAZ-bezoek. Binnen zo'n bezoek is een niet-gemelde doelsoort een
+    echte nul. Niet-doelsoorten blijven uitsluitend positieve bijvangsten.
+    """
+    positive: dict[tuple[int, str], tuple[int, int]] = {}
+    visits: set[int] = set()
+    for observation in observations:
+        visit_id = int(observation["visit_id"])
+        taxon = str(observation["taxon"])
+        count = int(observation["count"])
+        if count <= 0:
+            raise ValueError("Een SOVON-DAZ-bronregel moet een positief aantal hebben.")
+        visits.add(visit_id)
+        total, records = positive.get((visit_id, taxon), (0, 0))
+        positive[(visit_id, taxon)] = (total + count, records + 1)
+
+    rows: list[dict[str, object]] = []
+    for visit_id in sorted(visits):
+        for dutch_name, scientific_name in sorted(SOVON_DAZ_TARGETS.items()):
+            count, source_records = positive.get((visit_id, dutch_name), (0, 0))
+            rows.append({
+                "visit_id": visit_id,
+                "taxon": dutch_name,
+                "scientific_name": scientific_name,
+                "relation": "doelsoort",
+                "status": "waargenomen" if count else "echte_nul",
+                "count": count,
+                "source_records": source_records,
+                "zero_rule": "volledige_daz_soortenlijst_binnen_bevestigd_bezoek",
+            })
+        bycatch = sorted({
+            taxon for candidate_visit, taxon in positive
+            if candidate_visit == visit_id and taxon not in SOVON_DAZ_TARGETS
+        })
+        for dutch_name in bycatch:
+            count, source_records = positive[(visit_id, dutch_name)]
+            rows.append({
+                "visit_id": visit_id,
+                "taxon": dutch_name,
+                "scientific_name": "",
+                "relation": "bijvangst",
+                "status": "waargenomen",
+                "count": count,
+                "source_records": source_records,
                 "zero_rule": "niet_van_toepassing_bijvangst",
             })
     return rows
@@ -3793,6 +3903,436 @@ def reconstruct_bospaddenstoel_plot_families(
         for family_id, component in enumerate(components, start=1)
         for geometry in component
     }
+
+
+def _sovon_int(value: str | None) -> int | None:
+    text = str(value or "").strip()
+    return None if not text else int(float(text))
+
+
+def _sovon_bool(value: str | None) -> int | None:
+    text = str(value or "").strip().casefold()
+    if not text:
+        return None
+    if text in {"1", "true", "ja"}:
+        return 1
+    if text in {"0", "false", "nee"}:
+        return 0
+    raise ValueError(f"Onbekende SOVON-booleaanse waarde: {value!r}")
+
+
+def _sovon_visit_date(row: dict[str, str]) -> str:
+    day, month = row["datum"].split("-")
+    return f"{int(row['jaar']):04d}-{int(month):02d}-{int(day):02d}"
+
+
+def _sovon_taxon_name(value: str) -> str:
+    canonical = SOVON_TAXON_ALIASES.get(value.strip(), value.strip())
+    return canonical.casefold()
+
+
+def _read_csv_rows(path: Path) -> list[dict[str, str]]:
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        return list(csv.DictReader(handle))
+
+
+def _convert_sovon_sources(source_dir: Path, csv_dir: Path) -> None:
+    """Maak reproduceerbare CSV-staging rechtstreeks uit SHP en XLSX."""
+    commands = (
+        [
+            "ogr2ogr", "-f", "CSV", str(csv_dir / "bezoekstippen.csv"),
+            str(source_dir / "avimap_252_diversen__bezoekstippen.shp"),
+            "-lco", "GEOMETRY=AS_XY",
+        ],
+        [
+            "ogr2ogr", "-f", "CSV",
+            str(csv_dir / "avimap_252_diversen__bezoeken.csv"),
+            str(source_dir / "avimap_252_diversen__bezoeken.xlsx"),
+            "sql_statement",
+        ],
+    )
+    for command in commands:
+        result = subprocess.run(command, text=True, capture_output=True, check=False)
+        if result.returncode:
+            raise RuntimeError(result.stderr.strip() or "ogr2ogr-conversie is mislukt")
+
+
+def _sovon_source_manifest(source_dir: Path) -> tuple[str, str]:
+    files = sorted(
+        path for path in source_dir.iterdir()
+        if path.is_file() and path.name.startswith("avimap_252_diversen__")
+    )
+    if not files:
+        raise ValueError("De SOVON-bronmap bevat geen bestanden.")
+    entries = [{"bestand": path.name, "sha256": sha256_file(path)} for path in files]
+    payload = json.dumps(entries, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest(), payload
+
+
+def _sovon_ndff_taxa(
+    mysql_client: Path, client_args: list[str],
+) -> dict[str, list[tuple[int, str]]]:
+    sql = """
+SELECT ndff_soort_id,nederlandse_naam,COALESCE(wetenschappelijke_naam,'')
+FROM Meijendel.ndff_soorten
+WHERE nederlandse_naam IS NOT NULL
+ORDER BY ndff_soort_id;
+"""
+    output = run_mysql(
+        mysql_client,
+        client_args + ["--batch", "--raw", "--skip-column-names"],
+        sql,
+        capture=True,
+    )
+    result: dict[str, list[tuple[int, str]]] = defaultdict(list)
+    for line in output.splitlines():
+        taxon_id, dutch_name, scientific_name = line.split("\t")
+        result[dutch_name.casefold()].append((int(taxon_id), scientific_name))
+    return result
+
+
+def _sovon_ndff_daz_rows(
+    mysql_client: Path, client_args: list[str],
+) -> list[dict[str, object]]:
+    sql = """
+SELECT o.waarneming_id,DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
+       o.nederlandse_naam,o.aantal_raw,
+       ROUND(ST_X(ST_Centroid(o.openbare_geometrie))),
+       ROUND(ST_Y(ST_Centroid(o.openbare_geometrie)))
+FROM Meijendel.ndff_open_waarneming AS o
+WHERE o.protocol LIKE '17.204%'
+ORDER BY o.waarneming_id;
+"""
+    output = run_mysql(
+        mysql_client,
+        client_args + ["--batch", "--raw", "--skip-column-names"],
+        sql,
+        capture=True,
+    )
+    rows: list[dict[str, object]] = []
+    for line in output.splitlines():
+        observation_id, visit_date, taxon, count, center_x, center_y = line.split("\t")
+        rows.append({
+            "observation_id": int(observation_id),
+            "date": visit_date,
+            "taxon": taxon,
+            "count": int(count),
+            "x_km": (int(center_x) - 500) // 1000,
+            "y_km": (int(center_y) - 500) // 1000,
+        })
+    return rows
+
+
+def import_sovon_avimap_nonbirds(
+    mysql_client: Path,
+    client_args: list[str],
+    source_dir: Path,
+    csv_dir: Path,
+) -> dict[str, int]:
+    """Importeer uitsluitend primaire niet-vogelregels uit SOVON project 252."""
+    manifest_hash, manifest_json = _sovon_source_manifest(source_dir)
+    points = _read_csv_rows(csv_dir / "bezoekstippen.csv")
+    visits_source = _read_csv_rows(csv_dir / "avimap_252_diversen__bezoeken.csv")
+    nonbirds = [row for row in points if _sovon_int(row["soortgrp"]) != 2]
+    if any(_sovon_int(row["projectid"]) != 252 for row in nonbirds):
+        raise ValueError("Een niet-vogelregel valt buiten SOVON-project 252.")
+    if len(nonbirds) != SOVON_AVIMAP_EXPECTED["source_records"]:
+        raise ValueError("Het aantal primaire SOVON-niet-vogelregels wijkt af.")
+    observation_ids = [_sovon_int(row["id"]) for row in nonbirds]
+    if None in observation_ids or len(observation_ids) != len(set(observation_ids)):
+        raise ValueError("SOVON-bronwaarneming-ID's zijn leeg of niet uniek.")
+    if any((_sovon_int(row["aantal"]) or 0) <= 0 for row in nonbirds):
+        raise ValueError("De SOVON-bron bevat een niet-positieve niet-vogelregel.")
+    if any((_sovon_int(row["x_coord"]), _sovon_int(row["y_coord"])) !=
+           (round(float(row["X"])), round(float(row["Y"]))) for row in nonbirds):
+        raise ValueError("Afgeronde RD-coördinaten wijken af van de puntgeometrie.")
+
+    visit_ids = {_sovon_int(row["bzdid"]) for row in nonbirds}
+    visits_all = {_sovon_int(row["bzdid"]): row for row in visits_source}
+    if None in visit_ids or not visit_ids <= set(visits_all):
+        raise ValueError("Een SOVON-niet-vogelregel mist zijn oorspronkelijke bezoek.")
+    visits = {visit_id: visits_all[visit_id] for visit_id in visit_ids}
+    if len(visits) != SOVON_AVIMAP_EXPECTED["source_visits"]:
+        raise ValueError("Het aantal SOVON-bezoeken met niet-vogels wijkt af.")
+
+    taxa_rows: dict[tuple[int, int], dict[str, str]] = {}
+    for row in nonbirds:
+        key = (_sovon_int(row["soortgrp"]), _sovon_int(row["soortnr"]))
+        if None in key:
+            raise ValueError("Een SOVON-taxon mist soortgroep of soortnummer.")
+        current = taxa_rows.setdefault(key, row)
+        if current["naam"] != row["naam"]:
+            raise ValueError("Eén SOVON-soortcode verwijst naar meerdere namen.")
+    if len(taxa_rows) != SOVON_AVIMAP_EXPECTED["source_taxa"]:
+        raise ValueError("Het aantal SOVON-niet-vogeltaxa wijkt af.")
+
+    ndff_taxa = _sovon_ndff_taxa(mysql_client, client_args)
+    taxon_metadata: dict[tuple[int, int], dict[str, object]] = {}
+    for key, row in taxa_rows.items():
+        source_name = row["naam"].strip()
+        canonical_name = SOVON_TAXON_ALIASES.get(source_name, source_name)
+        matches = ndff_taxa.get(canonical_name.casefold(), [])
+        if len(matches) == 1:
+            ndff_id, scientific_name = matches[0]
+            status = "exact_ndff"
+        else:
+            ndff_id = None
+            scientific_name = SOVON_MANUAL_SCIENTIFIC_NAMES.get(source_name, "")
+            status = "handmatig_referentie" if scientific_name else "niet_eenduidig"
+        taxon_metadata[key] = {
+            "source_name": source_name,
+            "scientific_name": scientific_name,
+            "status": status,
+            "ndff_id": ndff_id,
+        }
+
+    file_json_sql = sql_text(manifest_json)
+    batch_sql = f"""
+INSERT INTO {SOVON_AVIMAP_TABLE_PREFIX}_import_batch
+  (regelversie,bronproject_id,bronmap,bronmanifest_sha256,bronbestanden_json,
+   ontvangen_op,actueel,niet_vogel_records,niet_vogel_bezoeken,niet_vogel_taxa,
+   kwaliteitsnotitie)
+VALUES ({sql_text(SOVON_AVIMAP_RULE_VERSION)},252,{sql_text(str(source_dir))},
+        {sql_text(manifest_hash)},CAST({file_json_sql} AS JSON),'2026-09-13',0,
+        {len(nonbirds)},{len(visits)},{len(taxa_rows)},
+        'Primaire SOVON/AVIMAP-export. Alleen niet-vogelregels zijn geïmporteerd; vogelgegevens zijn uitsluitend gecontroleerd.')
+AS nieuw
+ON DUPLICATE KEY UPDATE batch_id=LAST_INSERT_ID(batch_id),
+  bronmap=nieuw.bronmap,bronbestanden_json=nieuw.bronbestanden_json,
+  ontvangen_op=nieuw.ontvangen_op,
+  niet_vogel_records=nieuw.niet_vogel_records,
+  niet_vogel_bezoeken=nieuw.niet_vogel_bezoeken,
+  niet_vogel_taxa=nieuw.niet_vogel_taxa,
+  kwaliteitsnotitie=nieuw.kwaliteitsnotitie;
+SELECT LAST_INSERT_ID();
+"""
+    batch_output = run_mysql(
+        mysql_client,
+        client_args + ["--batch", "--raw", "--skip-column-names"],
+        batch_sql,
+        capture=True,
+    )
+    batch_id = int(batch_output.splitlines()[-1])
+
+    taxon_values: list[str] = []
+    for (group_code, species_number), meta in sorted(taxon_metadata.items()):
+        taxon_values.append(
+            f"({batch_id},{group_code},{species_number},"
+            f"{sql_text(SOVON_AVIMAP_GROUPS[group_code])},"
+            f"{sql_text(str(meta['source_name']))},"
+            f"{sql_text(str(meta['scientific_name']))},"
+            f"{sql_text(str(meta['status']))},"
+            f"{meta['ndff_id'] if meta['ndff_id'] is not None else 'NULL'})"
+        )
+
+    nonbird_count_by_visit = Counter(_sovon_int(row["bzdid"]) for row in nonbirds)
+    visit_values: list[str] = []
+    for visit_id, row in sorted(visits.items()):
+        visit_date = _sovon_visit_date(row)
+        year = int(row["jaar"])
+        visit_values.append(
+            f"({batch_id},{visit_id},{int(row['projectid'])},{int(row['plotid'])},"
+            f"{sql_text(row['naam'])},{sql_text(visit_date)},{year},"
+            f"{_sovon_int(row['doy']) if _sovon_int(row['doy']) is not None else 'NULL'},"
+            f"{sql_text(row['begintijd'])},{sql_text(row['eindtijd'])},"
+            f"{_sovon_int(row['aantal_minuten']) if _sovon_int(row['aantal_minuten']) is not None else 'NULL'},"
+            f"{_sovon_bool(row['deelbezoek']) or 0},{sql_text(row['deelbezoekdeel'])},"
+            f"{_sovon_bool(row['gunstig']) if _sovon_bool(row['gunstig']) is not None else 'NULL'},"
+            f"{sql_text(row['omst_opm'])},{sql_text(row['opm'])},"
+            f"{_sovon_int(row['nsoort']) if _sovon_int(row['nsoort']) is not None else 'NULL'},"
+            f"{_sovon_int(row['nrecord']) if _sovon_int(row['nrecord']) is not None else 'NULL'},"
+            f"{nonbird_count_by_visit[visit_id]},{int(year == 2026)})"
+        )
+
+    observation_values: list[str] = []
+    mammal_observations: list[dict[str, object]] = []
+    source_daz_groups: dict[tuple[str, str, int, int], list[dict[str, object]]] = defaultdict(list)
+    for row in sorted(nonbirds, key=lambda item: int(item["id"])):
+        group_code = int(row["soortgrp"])
+        species_number = int(row["soortnr"])
+        visit_id = int(row["bzdid"])
+        year, month, day = int(row["jaar"]), int(row["maand"]), int(row["dag"])
+        visit_date = f"{year:04d}-{month:02d}-{day:02d}"
+        source_name = row["naam"].strip()
+        if group_code == 1:
+            role = "daz_doelsoort" if source_name in SOVON_DAZ_TARGETS else "daz_bijvangst"
+            mammal_observations.append({
+                "visit_id": visit_id, "taxon": source_name, "count": int(row["aantal"]),
+            })
+            if year <= 2025:
+                key = (visit_date, _sovon_taxon_name(source_name),
+                       int(row["x_coord"]) // 1000, int(row["y_coord"]) // 1000)
+                source_daz_groups[key].append({
+                    "id": int(row["id"]), "count": int(row["aantal"]),
+                })
+        else:
+            role = "bmp_bijvangst_overig"
+        observation_values.append(
+            f"({batch_id},{int(row['id'])},{visit_id},{int(row['projectid'])},"
+            f"{_sovon_int(row['kopid']) if _sovon_int(row['kopid']) is not None else 'NULL'},"
+            f"{int(row['plotid'])},{sql_text(row['telgeb'])},{group_code},{species_number},"
+            f"{int(row['aantal'])},{sql_text(visit_date)},{year},{month},{day},"
+            f"{_sovon_int(row['doy']) if _sovon_int(row['doy']) is not None else 'NULL'},"
+            f"{sql_text(row['wrntype'])},"
+            f"{_sovon_int(row['broedcode']) if _sovon_int(row['broedcode']) is not None else 'NULL'},"
+            f"{sql_text(row['opmerk'])},{_sovon_bool(row['clterr']) or 0},"
+            f"{_sovon_int(row['clterrid']) if _sovon_int(row['clterrid']) is not None else 'NULL'},"
+            f"{_sovon_bool(row['inplot']) or 0},"
+            f"{_sovon_int(row['ioc_sort']) if _sovon_int(row['ioc_sort']) is not None else 'NULL'},"
+            f"{sql_text(row['geslacht'])},{int(row['x_coord'])},{int(row['y_coord'])},"
+            f"ST_SRID(POINT({float(row['X'])},{float(row['Y'])}),28992),"
+            f"{sql_text(role)},'primaire_sovon_bron',{int(year == 2026)})"
+        )
+
+    matrix = build_sovon_avimap_daz_matrix(mammal_observations)
+    scientific_by_dutch = {
+        str(meta["source_name"]): str(meta["scientific_name"])
+        for meta in taxon_metadata.values()
+    }
+    visit_year = {visit_id: int(row["jaar"]) for visit_id, row in visits.items()}
+    matrix_values: list[str] = []
+    for row in matrix:
+        dutch_name = str(row["taxon"])
+        scientific_name = str(row["scientific_name"] or scientific_by_dutch[dutch_name])
+        matrix_values.append(
+            f"({batch_id},{sql_text(SOVON_AVIMAP_DAZ_RULE_VERSION)},"
+            f"{int(row['visit_id'])},{sql_text(scientific_name)},{sql_text(dutch_name)},"
+            f"{sql_text(str(row['relation']))},{sql_text(str(row['status']))},"
+            f"{int(row['count'])},{int(row['source_records'])},"
+            f"{sql_text(str(row['zero_rule']))},{int(visit_year[int(row['visit_id'])] == 2026)},"
+            f"'Primaire SOVON/AVIMAP-bezoekstructuur; een echte nul geldt alleen binnen een door een zoogdierregel bevestigd DAZ-bezoek en voor de zeven DAZ-doelsoorten.')"
+        )
+
+    ndff_rows = _sovon_ndff_daz_rows(mysql_client, client_args)
+    ndff_groups: dict[tuple[str, str, int, int], list[dict[str, object]]] = defaultdict(list)
+    for row in ndff_rows:
+        key = (str(row["date"]), _sovon_taxon_name(str(row["taxon"])),
+               int(row["x_km"]), int(row["y_km"]))
+        ndff_groups[key].append(row)
+    coupling_values: list[str] = []
+    coupling_counts: Counter[str] = Counter()
+    for key, rows in ndff_groups.items():
+        source_rows = source_daz_groups.get(key, [])
+        source_sum = sum(int(row["count"]) for row in source_rows)
+        ndff_sum = sum(int(row["count"]) for row in rows)
+        if not source_rows:
+            status = "geen_sovon_overlap"
+            note = "Geen primaire SOVON-regel met dezelfde datum, hetzelfde taxon en hetzelfde kilometerhok; NDFF blijft hier de beschikbare secundaire bron."
+        elif source_sum == ndff_sum:
+            status = "sovon_vervangt_ndff_exact"
+            note = "Primaire SOVON-regels hebben dezelfde datum, hetzelfde taxon, hetzelfde kilometerhok en dezelfde totale telwaarde; gebruik SOVON en tel NDFF niet mee."
+        else:
+            status = "sovon_vervangt_ndff_telconflict"
+            note = "Primaire SOVON-regels hebben dezelfde datum, hetzelfde taxon en hetzelfde kilometerhok maar een andere totale telwaarde; SOVON is leidend en het conflict blijft zichtbaar."
+        ids_json = json.dumps(sorted(int(row["id"]) for row in source_rows))
+        link_key = hashlib.sha256("|".join(map(str, key)).encode("utf-8")).hexdigest()
+        for ndff_row in rows:
+            coupling_counts[status] += 1
+            coupling_values.append(
+                f"({batch_id},{int(ndff_row['observation_id'])},{sql_text(link_key)},"
+                f"{sql_text(status)},{len(source_rows)},"
+                f"{source_sum if source_rows else 'NULL'},{len(rows)},{ndff_sum},"
+                f"CAST({sql_text(ids_json)} AS JSON),{sql_text(note)})"
+            )
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon WHERE batch_id={batch_id};",
+        f"DELETE FROM {SOVON_AVIMAP_TABLE_PREFIX}_ndff_daz_koppeling WHERE batch_id={batch_id};",
+        f"DELETE FROM {SOVON_AVIMAP_TABLE_PREFIX}_waarneming WHERE batch_id={batch_id};",
+        f"DELETE FROM {SOVON_AVIMAP_TABLE_PREFIX}_bezoek WHERE batch_id={batch_id};",
+        f"DELETE FROM {SOVON_AVIMAP_TABLE_PREFIX}_taxon WHERE batch_id={batch_id};",
+    ]
+    statements += _batched_insert(
+        f"{SOVON_AVIMAP_TABLE_PREFIX}_taxon",
+        "batch_id,soortgroep_code,soortnr,soortgroep_naam,nederlandse_naam,wetenschappelijke_naam,taxon_mapping_status,ndff_soort_id",
+        taxon_values,
+    )
+    statements += _batched_insert(
+        f"{SOVON_AVIMAP_TABLE_PREFIX}_bezoek",
+        "batch_id,bron_bezoek_id,bronproject_id,plot_id,plotnaam,bezoekdatum,jaar,dagvanjaar,begintijd,eindtijd,bezoekduur_min,deelbezoek,deelbezoek_deel,gunstig,omstandigheden_opm,opmerking,bron_aantal_soorten,bron_aantal_records,niet_vogel_recordaantal,lopend_jaar",
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{SOVON_AVIMAP_TABLE_PREFIX}_waarneming",
+        "batch_id,bron_waarneming_id,bron_bezoek_id,bronproject_id,kopid,plot_id,telgebied,soortgroep_code,soortnr,aantal,waarnemingsdatum,jaar,maand,dag,dagvanjaar,wrntype,broedcode,opmerking,cluster_territorium,cluster_territorium_id,in_plot,ioc_sort,geslacht,x_coord,y_coord,geom,gegevensrol,bronstatus,lopend_jaar",
+        observation_values,
+        size=500,
+    )
+    statements += _batched_insert(
+        f"{SOVON_AVIMAP_TABLE_PREFIX}_ndff_daz_koppeling",
+        "batch_id,ndff_waarneming_id,koppel_sleutel,koppelstatus,sovon_bronrecordaantal,sovon_aantal_som,ndff_recordaantal,ndff_aantal_som,sovon_bron_waarneming_ids,kwaliteitsnotitie",
+        coupling_values,
+        size=500,
+    )
+    statements += _batched_insert(
+        f"{SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon",
+        "batch_id,reconstructieversie,bron_bezoek_id,wetenschappelijke_naam,nederlandse_naam,doelrelatie,waarnemingsstatus,aantal,bronrecordaantal,nulregel,lopend_jaar,kwaliteitsnotitie",
+        matrix_values,
+        size=500,
+    )
+    statements += [
+        f"UPDATE {SOVON_AVIMAP_TABLE_PREFIX}_import_batch SET actueel=0 WHERE batch_id<>{batch_id};",
+        f"UPDATE {SOVON_AVIMAP_TABLE_PREFIX}_import_batch SET actueel=1 WHERE batch_id={batch_id};",
+        "COMMIT;",
+    ]
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+
+    return {
+        "batch_id": batch_id,
+        "source_records": len(nonbirds),
+        "source_visits": len(visits),
+        "source_taxa": len(taxa_rows),
+        "mammal_records": len(mammal_observations),
+        "daz_visits": len({int(row["visit_id"]) for row in mammal_observations}),
+        "daz_target_rows": sum(row["relation"] == "doelsoort" for row in matrix),
+        "daz_target_positive_rows": sum(
+            row["relation"] == "doelsoort" and row["status"] == "waargenomen"
+            for row in matrix
+        ),
+        "daz_true_zero_rows": sum(row["status"] == "echte_nul" for row in matrix),
+        "daz_bycatch_rows": sum(row["relation"] == "bijvangst" for row in matrix),
+        "current_year_records": sum(int(row["jaar"]) == 2026 for row in nonbirds),
+        "ndff_daz_records": len(ndff_rows),
+        "ndff_replaced_exact": coupling_counts["sovon_vervangt_ndff_exact"],
+        "ndff_replaced_conflict": coupling_counts["sovon_vervangt_ndff_telconflict"],
+        "ndff_not_replaced": coupling_counts["geen_sovon_overlap"],
+    }
+
+
+def sovon_avimap_validation_sql() -> str:
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_waarneming w JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=w.batch_id AND b.actueel=1),
+  'source_visits',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_bezoek v JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=v.batch_id AND b.actueel=1),
+  'source_taxa',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_taxon t JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=t.batch_id AND b.actueel=1),
+  'mammal_records',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_waarneming w JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=w.batch_id AND b.actueel=1 WHERE w.soortgroep_code=1),
+  'daz_visits',(SELECT COUNT(DISTINCT m.bron_bezoek_id) FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon m JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=m.batch_id AND b.actueel=1),
+  'daz_target_rows',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon m JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=m.batch_id AND b.actueel=1 WHERE m.doelrelatie='doelsoort'),
+  'daz_target_positive_rows',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon m JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=m.batch_id AND b.actueel=1 WHERE m.doelrelatie='doelsoort' AND m.waarnemingsstatus='waargenomen'),
+  'daz_true_zero_rows',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon m JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=m.batch_id AND b.actueel=1 WHERE m.waarnemingsstatus='echte_nul'),
+  'daz_bycatch_rows',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon m JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=m.batch_id AND b.actueel=1 WHERE m.doelrelatie='bijvangst'),
+  'current_year_records',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_waarneming w JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=w.batch_id AND b.actueel=1 WHERE w.lopend_jaar=1),
+  'ndff_daz_records',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_ndff_daz_koppeling k JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=k.batch_id AND b.actueel=1),
+  'ndff_replaced_exact',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_ndff_daz_koppeling k JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=k.batch_id AND b.actueel=1 WHERE k.koppelstatus='sovon_vervangt_ndff_exact'),
+  'ndff_replaced_conflict',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_ndff_daz_koppeling k JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=k.batch_id AND b.actueel=1 WHERE k.koppelstatus='sovon_vervangt_ndff_telconflict'),
+  'ndff_not_replaced',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_ndff_daz_koppeling k JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=k.batch_id AND b.actueel=1 WHERE k.koppelstatus='geen_sovon_overlap'),
+  'invalid_observations',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_waarneming w JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=w.batch_id AND b.actueel=1 WHERE w.soortgroep_code=2 OR w.aantal=0 OR w.jaar<>YEAR(w.waarnemingsdatum) OR ST_SRID(w.geom)<>28992),
+  'invalid_daz_rows',(SELECT COUNT(*) FROM {SOVON_AVIMAP_TABLE_PREFIX}_daz_bezoek_taxon m JOIN {SOVON_AVIMAP_TABLE_PREFIX}_import_batch b ON b.batch_id=m.batch_id AND b.actueel=1 WHERE (m.waarnemingsstatus='echte_nul' AND (m.aantal<>0 OR m.bronrecordaantal<>0 OR m.doelrelatie<>'doelsoort')) OR (m.waarnemingsstatus='waargenomen' AND (m.aantal=0 OR m.bronrecordaantal=0)))
+);
+"""
+
+
+def validate_sovon_avimap(metrics: dict[str, int]) -> None:
+    expected = dict(SOVON_AVIMAP_EXPECTED)
+    if "invalid_observations" in metrics or "invalid_daz_rows" in metrics:
+        expected.update({"invalid_observations": 0, "invalid_daz_rows": 0})
+    differences = {
+        key: (expected[key], metrics.get(key))
+        for key in expected if metrics.get(key) != expected[key]
+    }
+    if differences:
+        raise ValueError(f"SOVON/AVIMAP-import wijkt af van het vaste bronprofiel: {differences}")
 
 
 def bospaddenstoel_source_sql() -> str:
@@ -8124,6 +8664,8 @@ def main() -> int:
     parser.add_argument("--login-path", default="meijendel_root")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=3306)
+    parser.add_argument("--sovon-source-dir", type=Path)
+    parser.add_argument("--sovon-csv-dir", type=Path)
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--audit-live", action="store_true")
@@ -8143,6 +8685,8 @@ def main() -> int:
     mode.add_argument("--audit-konijnen", action="store_true")
     mode.add_argument("--reconstruct-daz-bmp", action="store_true")
     mode.add_argument("--audit-daz-bmp", action="store_true")
+    mode.add_argument("--import-sovon-avimap", action="store_true")
+    mode.add_argument("--audit-sovon-avimap", action="store_true")
     mode.add_argument("--reconstruct-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--audit-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--reconstruct-bospaddenstoelen", action="store_true")
@@ -8314,6 +8858,37 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_daz_bmp_reconstruction(metrics)
         print(f"OK: lokale DAZ-BMP-reconstructie {DAZ_BMP_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.import_sovon_avimap:
+        if args.sovon_source_dir is None:
+            parser.error("--import-sovon-avimap vereist --sovon-source-dir")
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        if args.sovon_csv_dir is not None:
+            metrics = import_sovon_avimap_nonbirds(
+                args.mysql_client, client_args, args.sovon_source_dir,
+                args.sovon_csv_dir,
+            )
+        else:
+            with tempfile.TemporaryDirectory(prefix="sovon_avimap_") as temporary:
+                csv_dir = Path(temporary)
+                _convert_sovon_sources(args.sovon_source_dir, csv_dir)
+                metrics = import_sovon_avimap_nonbirds(
+                    args.mysql_client, client_args, args.sovon_source_dir, csv_dir,
+                )
+        validate_sovon_avimap({key: value for key, value in metrics.items() if key != "batch_id"})
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_sovon_avimap:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            sovon_avimap_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_sovon_avimap(metrics)
+        print(f"OK: primaire SOVON/AVIMAP-import {SOVON_AVIMAP_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.reconstruct_zeereeppaddenstoelen:

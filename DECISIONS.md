@@ -156,6 +156,19 @@
   krijgt voor bezoekdeelname, telling en nulwaarneming voorrang boven de uit
   openbare NDFF-kilometerhokken gereconstrueerde koppeling. De vervanging wordt
   geversioneerd en laat de oorspronkelijke NDFF-records als controlebron intact.
+- Op 13 september 2026 is die primaire bron ontvangen als volledige
+  SOVON/AVIMAP-export van project 252. Alleen de 19.960 niet-vogelregels zijn
+  geïmporteerd in `Meijendel.sovon_avimap_*`; `dagwaarnemingen_bmp`,
+  `dagbezoeken_bmp`, `territoria` en `soorten` zijn niet gewijzigd.
+  `sovon-avimap-daz-v1` is vanaf nu de leidende DAZ-bezoekmatrix. Een bezoek
+  telt als bevestigd DAZ-bezoek wanneer de primaire bron daar minstens één
+  zoogdierregel bevat; uitsluitend binnen zo'n bezoek worden nullen voor de
+  zeven DAZ-doelsoorten afgeleid. Overlappende `17.204`-records blijven fysiek
+  bewaard als secundair auditspoor, maar `sovon_avimap_ndff_daz_koppeling`
+  bepaalt dat zij niet naast hun primaire SOVON-tegenhanger worden geteld.
+  Bij een afwijkende telwaarde is SOVON leidend en blijft het conflict expliciet
+  zichtbaar. De 807 niet-vogelregels uit het lopende jaar 2026 zijn bewaard met
+  `lopend_jaar=1` en mogen nog niet als volledig jaar worden geïnterpreteerd.
 - Protocol `11.202` wordt onder `ndff-zeereep-v1` op RD-kilometerhok en
   kalenderdatum gereconstrueerd. Alleen de zes typische doelsoorten krijgen
   binnen de 161 bevestigde bezoeken een volledige aanwezig/nul-matrix.

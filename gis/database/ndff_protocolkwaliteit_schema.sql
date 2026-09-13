@@ -2550,3 +2550,184 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_otter_bever_recordselectie (
     REFERENCES Meijendel.ndff_otter_bever_hokjaar
       (reconstructieversie, hokjaar_sleutel)
 ) ENGINE=InnoDB;
+
+-- Primaire SOVON/AVIMAP-bron voor niet-vogelwaarnemingen tijdens BMP-bezoeken.
+-- Deze laag staat in Meijendel. Alleen vogelbronregels worden niet geïmporteerd;
+-- de afzonderlijke vogelaudit blijft uitsluitend-lezen.
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_import_batch (
+  batch_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  regelversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bronproject_id INT NOT NULL,
+  bronmap VARCHAR(1000) NOT NULL,
+  bronmanifest_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bronbestanden_json JSON NOT NULL,
+  ontvangen_op DATE NOT NULL,
+  actueel TINYINT(1) NOT NULL DEFAULT 1,
+  niet_vogel_records INT UNSIGNED NOT NULL,
+  niet_vogel_bezoeken INT UNSIGNED NOT NULL,
+  niet_vogel_taxa SMALLINT UNSIGNED NOT NULL,
+  kwaliteitsnotitie VARCHAR(1500) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (batch_id),
+  UNIQUE KEY uq_sovon_avimap_manifest (bronmanifest_sha256),
+  KEY ix_sovon_avimap_batch_actueel (actueel, ontvangen_op),
+  CHECK (actueel IN (0,1)),
+  CHECK (niet_vogel_records > 0 AND niet_vogel_bezoeken > 0 AND niet_vogel_taxa > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_taxon (
+  batch_id BIGINT UNSIGNED NOT NULL,
+  soortgroep_code INT NOT NULL,
+  soortnr INT NOT NULL,
+  soortgroep_naam VARCHAR(100) NOT NULL,
+  nederlandse_naam VARCHAR(255) NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NULL,
+  taxon_mapping_status ENUM('exact_ndff','handmatig_referentie','niet_eenduidig') NOT NULL,
+  ndff_soort_id BIGINT UNSIGNED NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (batch_id, soortgroep_code, soortnr),
+  KEY ix_sovon_avimap_taxon_naam (nederlandse_naam),
+  KEY ix_sovon_avimap_taxon_ndff (ndff_soort_id),
+  CONSTRAINT fk_sovon_avimap_taxon_batch FOREIGN KEY (batch_id)
+    REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
+  CONSTRAINT fk_sovon_avimap_taxon_ndff FOREIGN KEY (ndff_soort_id)
+    REFERENCES Meijendel.ndff_soorten (ndff_soort_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_bezoek (
+  batch_id BIGINT UNSIGNED NOT NULL,
+  bron_bezoek_id INT NOT NULL,
+  bronproject_id INT NOT NULL,
+  plot_id INT NOT NULL,
+  plotnaam VARCHAR(255) NOT NULL,
+  bezoekdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  dagvanjaar SMALLINT UNSIGNED NULL,
+  begintijd TIME NULL,
+  eindtijd TIME NULL,
+  bezoekduur_min SMALLINT UNSIGNED NULL,
+  deelbezoek TINYINT(1) NOT NULL DEFAULT 0,
+  deelbezoek_deel VARCHAR(50) NULL,
+  gunstig TINYINT(1) NULL,
+  omstandigheden_opm VARCHAR(1000) NULL,
+  opmerking VARCHAR(1000) NULL,
+  bron_aantal_soorten SMALLINT UNSIGNED NULL,
+  bron_aantal_records INT UNSIGNED NULL,
+  niet_vogel_recordaantal SMALLINT UNSIGNED NOT NULL,
+  lopend_jaar TINYINT(1) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (batch_id, bron_bezoek_id),
+  KEY ix_sovon_avimap_bezoek_plot_jaar (plot_id, jaar, bezoekdatum),
+  CONSTRAINT fk_sovon_avimap_bezoek_batch FOREIGN KEY (batch_id)
+    REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
+  CHECK (jaar = YEAR(bezoekdatum)),
+  CHECK (niet_vogel_recordaantal > 0),
+  CHECK (deelbezoek IN (0,1) AND (gunstig IS NULL OR gunstig IN (0,1))
+    AND lopend_jaar IN (0,1))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_waarneming (
+  batch_id BIGINT UNSIGNED NOT NULL,
+  bron_waarneming_id INT NOT NULL,
+  bron_bezoek_id INT NOT NULL,
+  bronproject_id INT NOT NULL,
+  kopid INT NULL,
+  plot_id INT NOT NULL,
+  telgebied VARCHAR(255) NOT NULL,
+  soortgroep_code INT NOT NULL,
+  soortnr INT NOT NULL,
+  aantal INT UNSIGNED NOT NULL,
+  waarnemingsdatum DATE NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  maand TINYINT UNSIGNED NOT NULL,
+  dag TINYINT UNSIGNED NOT NULL,
+  dagvanjaar SMALLINT UNSIGNED NULL,
+  wrntype VARCHAR(10) NULL,
+  broedcode SMALLINT UNSIGNED NULL,
+  opmerking VARCHAR(1000) NULL,
+  cluster_territorium TINYINT(1) NOT NULL,
+  cluster_territorium_id INT NULL,
+  in_plot TINYINT(1) NOT NULL,
+  ioc_sort INT NULL,
+  geslacht VARCHAR(10) NULL,
+  x_coord INT NOT NULL,
+  y_coord INT NOT NULL,
+  geom POINT NOT NULL SRID 28992,
+  gegevensrol ENUM('daz_doelsoort','daz_bijvangst','bmp_bijvangst_overig') NOT NULL,
+  bronstatus ENUM('primaire_sovon_bron') NOT NULL,
+  lopend_jaar TINYINT(1) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (batch_id, bron_waarneming_id),
+  KEY ix_sovon_avimap_waarneming_bezoek (batch_id, bron_bezoek_id),
+  KEY ix_sovon_avimap_waarneming_taxon
+    (batch_id, soortgroep_code, soortnr, jaar),
+  KEY ix_sovon_avimap_waarneming_plot_jaar (plot_id, jaar),
+  SPATIAL KEY sx_sovon_avimap_waarneming_geom (geom),
+  CONSTRAINT fk_sovon_avimap_waarneming_batch FOREIGN KEY (batch_id)
+    REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
+  CONSTRAINT fk_sovon_avimap_waarneming_bezoek FOREIGN KEY
+    (batch_id, bron_bezoek_id)
+    REFERENCES Meijendel.sovon_avimap_bezoek (batch_id, bron_bezoek_id),
+  CONSTRAINT fk_sovon_avimap_waarneming_taxon FOREIGN KEY
+    (batch_id, soortgroep_code, soortnr)
+    REFERENCES Meijendel.sovon_avimap_taxon (batch_id, soortgroep_code, soortnr),
+  CHECK (aantal > 0),
+  CHECK (jaar = YEAR(waarnemingsdatum)),
+  CHECK (cluster_territorium IN (0,1) AND in_plot IN (0,1)
+    AND lopend_jaar IN (0,1))
+) ENGINE=InnoDB;
+
+-- Een NDFF-regel wordt alleen vervangen als in de primaire SOVON-bron
+-- dezelfde datum, hetzelfde taxon en hetzelfde kilometerhok voorkomen.
+-- Een verschil in telwaarde blijft expliciet zichtbaar als bronconflict.
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_ndff_daz_koppeling (
+  batch_id BIGINT UNSIGNED NOT NULL,
+  ndff_waarneming_id BIGINT UNSIGNED NOT NULL,
+  koppel_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  koppelstatus ENUM('sovon_vervangt_ndff_exact','sovon_vervangt_ndff_telconflict','geen_sovon_overlap') NOT NULL,
+  sovon_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  sovon_aantal_som INT UNSIGNED NULL,
+  ndff_recordaantal SMALLINT UNSIGNED NOT NULL,
+  ndff_aantal_som INT UNSIGNED NOT NULL,
+  sovon_bron_waarneming_ids JSON NOT NULL,
+  kwaliteitsnotitie VARCHAR(1500) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (batch_id, ndff_waarneming_id),
+  KEY ix_sovon_avimap_ndff_status (koppelstatus),
+  CONSTRAINT fk_sovon_avimap_ndff_batch FOREIGN KEY (batch_id)
+    REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
+  CONSTRAINT fk_sovon_avimap_ndff_waarneming FOREIGN KEY (ndff_waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CHECK (ndff_recordaantal > 0 AND ndff_aantal_som > 0),
+  CHECK ((koppelstatus='geen_sovon_overlap' AND sovon_bronrecordaantal=0
+      AND sovon_aantal_som IS NULL AND JSON_LENGTH(sovon_bron_waarneming_ids)=0)
+    OR (koppelstatus<>'geen_sovon_overlap' AND sovon_bronrecordaantal>0
+      AND sovon_aantal_som>0 AND JSON_LENGTH(sovon_bron_waarneming_ids)>0))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_daz_bezoek_taxon (
+  batch_id BIGINT UNSIGNED NOT NULL,
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bron_bezoek_id INT NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  nederlandse_naam VARCHAR(255) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  aantal INT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulregel ENUM('volledige_daz_soortenlijst_binnen_bevestigd_bezoek','niet_van_toepassing_bijvangst') NOT NULL,
+  lopend_jaar TINYINT(1) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1500) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (batch_id, reconstructieversie, bron_bezoek_id, wetenschappelijke_naam),
+  KEY ix_sovon_avimap_daz_taxon
+    (wetenschappelijke_naam, waarnemingsstatus, doelrelatie),
+  CONSTRAINT fk_sovon_avimap_daz_batch FOREIGN KEY (batch_id)
+    REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
+  CONSTRAINT fk_sovon_avimap_daz_bezoek FOREIGN KEY (batch_id, bron_bezoek_id)
+    REFERENCES Meijendel.sovon_avimap_bezoek (batch_id, bron_bezoek_id),
+  CHECK ((waarnemingsstatus='waargenomen' AND aantal>0 AND bronrecordaantal>0)
+    OR (waarnemingsstatus='echte_nul' AND doelrelatie='doelsoort'
+      AND aantal=0 AND bronrecordaantal=0)),
+  CHECK (lopend_jaar IN (0,1))
+) ENGINE=InnoDB;

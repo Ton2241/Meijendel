@@ -115,17 +115,17 @@
   `ndff-bospaddenstoel-v1`; vul geen geheel negatieve bezoeken aan. Een latere
   NMV-opvraag kan oorspronkelijke meetpuntnummers, volledig doelbereik en
   ontbrekende bezoeken valideren, maar blokkeert het voorlopige gebruik niet.
-- Nadat alle NDFF-protocollen technisch zijn bewerkt, downloadt de eigenaar
-  opnieuw een volledig BMP/SAP-bestand. Dit bestand moet behalve de
-  vogeltellingen ook de tijdens ieder bezoek geregistreerde zoogdierbijvangst
-  bevatten en, indien beschikbaar, de oorspronkelijke locaties. Vergelijk die
-  primaire BMP/SAP-regels met `ndff_daz_bmp_*` en vervang daarna de huidige
-  voorzichtige datum-/plotreconstructie door de oorspronkelijke koppeling per
-  telling. Vul dan ook deelnemende bezoeken zonder zoogdierwaarneming aan,
-  herbereken echte nullen en beoordeel de 1.026 meervoudige en 6.473 nu niet
-  koppelbare NDFF-records opnieuw. Behoud NDFF als secundaire bron en voer deze
-  verbetering pas uit na bronhash, schema-audit, overlapcontrole en een nieuwe
-  reconstructieversie.
+- Afgerond op 13 september 2026: de volledige SOVON/AVIMAP-download van project
+  252 is gehasht en gecontroleerd. De 19.960 primaire niet-vogelregels, 4.364
+  bijbehorende bezoeken en 35 taxa staan onder `sovon_avimap_*` in `Meijendel`.
+  De nieuwe primaire DAZ-matrix bevat 4.354 bevestigde bezoeken, 6.859 positieve
+  doelsoort-uitkomsten en 23.619 echte nullen. `sovon-avimap-daz-v1` is leidend
+  boven de tijdelijke `ndff-daz-bmp-v1`-reconstructie. Van de 10.670
+  NDFF-DAZ-regels worden er 2.654 exact en 1.917 met een zichtbaar telconflict
+  door SOVON vervangen; 6.099 blijven alleen als secundaire NDFF-bron bestaan.
+  Bezoeken zonder zoogdierregel blijven buiten de DAZ-matrix omdat de export
+  geen afzonderlijke deelnamevlag bevat. De vogelafwijkingen zijn alleen
+  gerapporteerd en niet in de database gecorrigeerd.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
   PQ-reeks: de provincie blijft de gezaghebbende bron.
 - Afgerond op 13 september 2026: de resterende NEM-batch `03.203`, `11.204`,

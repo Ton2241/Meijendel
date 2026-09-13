@@ -79,6 +79,12 @@ def main() -> int:
         "meijendel.ndff_daz_bmp_recordkandidaat",
         "meijendel.ndff_daz_bmp_bezoek",
         "meijendel.ndff_daz_bmp_bezoek_taxon",
+        "meijendel.sovon_avimap_import_batch",
+        "meijendel.sovon_avimap_taxon",
+        "meijendel.sovon_avimap_bezoek",
+        "meijendel.sovon_avimap_waarneming",
+        "meijendel.sovon_avimap_ndff_daz_koppeling",
+        "meijendel.sovon_avimap_daz_bezoek_taxon",
         "meijendel.ndff_zeereep_kilometerhok",
         "meijendel.ndff_zeereep_bezoek",
         "meijendel.ndff_zeereep_bezoek_taxon",
@@ -853,6 +859,20 @@ def main() -> int:
     assert daz_by_key[(102, "Lepus europaeus")]["status"] == "onbepaald_ambigu"
     assert daz_by_key[(102, "Capreolus capreolus")]["status"] == "echte_nul"
 
+    sovon_matrix = module.build_sovon_avimap_daz_matrix([
+        {"visit_id": 11, "taxon": "Konijn", "count": 2},
+        {"visit_id": 11, "taxon": "Konijn", "count": 3},
+        {"visit_id": 11, "taxon": "Damhert", "count": 4},
+        {"visit_id": 12, "taxon": "Vos", "count": 1},
+    ])
+    sovon_by_key = {(row["visit_id"], row["taxon"]): row for row in sovon_matrix}
+    assert sovon_by_key[(11, "Konijn")]["status"] == "waargenomen"
+    assert sovon_by_key[(11, "Konijn")]["count"] == 5
+    assert sovon_by_key[(11, "Haas")]["status"] == "echte_nul"
+    assert sovon_by_key[(11, "Damhert")]["relation"] == "bijvangst"
+    assert (12, "Damhert") not in sovon_by_key
+    assert len(sovon_matrix) == 15
+
     assert module.classify_bat_route(83_999.0) == {
         "routefamilie_id": 2,
         "methodevariant": "vleermus_fiets",
@@ -1011,6 +1031,9 @@ def main() -> int:
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
     assert module.RABBIT_TABLE_PREFIX == "Meijendel.ndff_konijn"
     assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.ndff_daz_bmp"
+    assert module.SOVON_AVIMAP_TABLE_PREFIX == "Meijendel.sovon_avimap"
+    assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
+    assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -1527,6 +1550,8 @@ def main() -> int:
         "--audit-vleermuizen",
         "ndff-konijnentelling-v1",
         "--audit-konijnen",
+        "sovon-avimap-daz-v1",
+        "--audit-sovon-avimap",
         "geen route- of sectie-id",
         "akoestische detecties",
         "73",
@@ -1550,6 +1575,7 @@ def main() -> int:
     assert "ndff_reptiel_*" in architecture
     assert "ndff_vleermuis_*" in architecture
     assert "ndff_konijn_*" in architecture
+    assert "sovon_avimap_waarneming" in architecture
     print("OK: NDFF-protocolkwaliteitscontract")
     return 0
 

@@ -304,12 +304,18 @@ MySQL:
   DAZ-doelsoorten. Een meervoudig koppelbaar record van hetzelfde taxon
   blokkeert die nul. Leid nooit nullen af voor bijvangsten of voor overige
   BMP-bezoeken. Controleer vóór gebruik met `--audit-daz-bmp`
-- behandel `ndff-daz-bmp-v1` als tijdelijke reconstructie totdat na afronding
-  van alle NDFF-protocolbewerkingen een nieuw volledig BMP/SAP-bestand met
-  zoogdierbijvangst per telling is ontvangen. Geef dan de primaire BMP/SAP-
-  registratie voor bezoekdeelname, telling, nul en eventuele exacte locatie
-  voorrang; behoud NDFF als secundaire controlebron en voer de verbetering uit
-  onder een nieuwe reconstructieversie
+- gebruik vanaf 13 september 2026 voor DAZ-BMP primair de originele
+  SOVON/AVIMAP-laag `sovon_avimap_*` met regelversie
+  `sovon-avimap-daz-v1`. `ndff-daz-bmp-v1` blijft alleen een historische,
+  secundaire reconstructie. Tel een `17.204`-NDFF-record niet mee wanneer
+  `sovon_avimap_ndff_daz_koppeling.koppelstatus` begint met
+  `sovon_vervangt_ndff`; bij `sovon_vervangt_ndff_telconflict` blijft SOVON
+  leidend en moet het conflict worden vermeld. Leid alleen echte nullen af voor
+  de zeven DAZ-doelsoorten en alleen binnen een bezoek met minimaal één
+  oorspronkelijke zoogdierregel. Behandel `lopend_jaar=1` als onvolledige
+  jaardekking. Wijzig vogelgegevens uit deze export nooit zonder een afzonderlijk
+  besluit van de eigenaar; rapporteer afwijkingen eerst. Controleer met
+  `--audit-sovon-avimap`
 - gebruik voor zeereeppaddenstoelenprotocol `11.202` reconstructieversie
   `ndff-zeereep-v1` en de drie openbare tabellen `Meijendel.ndff_zeereep_*`.
   De native meeteenheid is het RD-kilometerhok en een bezoek is hok plus

@@ -100,6 +100,16 @@ Alleen voor zulke bezoeken bevat `ndff_daz_bmp_bezoek_taxon` een volledige
 matrix voor de zeven DAZ-doelsoorten. Meervoudig koppelbare records blijven in
 de kandidaatbrug en blokkeren taxonspecifiek een nul. Niet-bevestigde
 BMP-bezoeken en bijvangsten krijgen nooit een afgeleide nul.
+De primaire opvolger staat sinds 13 september 2026 in
+`sovon_avimap_import_batch`, `sovon_avimap_taxon`, `sovon_avimap_bezoek`,
+`sovon_avimap_waarneming`, `sovon_avimap_ndff_daz_koppeling` en
+`sovon_avimap_daz_bezoek_taxon`. Deze openbare tabellen bevatten alleen de
+oorspronkelijke niet-vogelregels van SOVON-project 252 en hun benodigde
+bezoekmetadata. `sovon-avimap-daz-v1` is de leidende DAZ-matrix;
+`ndff-daz-bmp-v1` blijft secundair auditspoor. De koppelstatus voorkomt dat een
+NDFF-regel naast een primaire SOVON-tegenhanger wordt geteld en bewaart
+afwijkende telwaarden als zichtbaar bronconflict. Vogelbronregels worden niet in
+deze laag opgeslagen en de bestaande vogeltabellen worden er niet door gewijzigd.
 `ndff_zeereep_*` reconstrueert protocol `11.202` op RD-kilometerhok en
 kalenderdatum. De zes typische doelsoorten vormen een volledige bezoekmatrix;
 NMV-vindplaatsklassen blijven ordinale klassen. Vervaagde records worden niet
