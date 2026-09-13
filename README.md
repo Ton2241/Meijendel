@@ -382,6 +382,18 @@ en twaalf hebben een gemengde ruimtelijke status. Gebruik de laag voor
 positieve verspreidingscontext, bezoekintensiteit en indicatieve verandering,
 niet als complete bezoekmatrix. Controleer met `--audit-liveatlas`.
 
+Kwartiertellingen `102.007` staan onder `ndff-kwartiertelling-v1` in vier
+openbare `Meijendel.ndff_kwartiertelling_*`-tabellen. De 102 exacte
+aantalsrecords uit 2023-2025 vormen 17 afgeleide telintervallen, 18
+interval-soortgroepcombinaties en 49 positieve taxonuitkomsten voor 19 taxa.
+Veertien intervallen liggen op basis van alle bronregels eenduidig binnen één
+SOVON-plot; één raakt meerdere plots en twee hebben een gemengde ruimtelijke
+status. De 87 recordgeometrieën zijn geen geleverde looproute. Omdat de
+levering een complete soortenlijst niet onderscheidt van een soortgerichte
+telling, worden geen nullen afgeleid. Gebruik de laag voor positieve
+verspreidingscontext, telintervalcontext en indicatieve verandering in
+geregistreerde aantallen. Controleer met `--audit-kwartiertellingen`.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

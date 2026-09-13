@@ -125,6 +125,10 @@ def main() -> int:
         "meijendel.ndff_liveatlas_bezoek_soortgroep",
         "meijendel.ndff_liveatlas_bezoek_taxon",
         "meijendel.ndff_liveatlas_recordselectie",
+        "meijendel.ndff_kwartiertelling_telinterval",
+        "meijendel.ndff_kwartiertelling_interval_soortgroep",
+        "meijendel.ndff_kwartiertelling_interval_taxon",
+        "meijendel.ndff_kwartiertelling_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -144,6 +148,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
     assert "meijendel_ndff_secure.ndff_tuintelling_" not in folded
     assert "meijendel_ndff_secure.ndff_liveatlas_" not in folded
+    assert "meijendel_ndff_secure.ndff_kwartiertelling_" not in folded
     assert "fk_ndff_vliesvleugel_geometrie_route" in folded
     assert "fk_ndff_vliesvleugel_bezoek_route" in folded
     assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
@@ -656,6 +661,68 @@ def main() -> int:
     assert butterfly_taxon["zero_rule"] == "geen_nul_afleidbaar"
     assert all(row["source_count"] > 0 for row in liveatlas["taxa"])
 
+    kwartiertelling = module.build_kwartiertelling_structure([
+        {
+            "observation_id": 1, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 10:15:00", "amount": "1",
+            "scale": "exact aantal", "geometry": "g1",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 2, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 10:15:00", "amount": "2",
+            "scale": "exact aantal", "geometry": "g2",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 3, "group": "Nachtvlinders",
+            "taxon": "Autographa gamma", "start": "2025-05-02 10:00:00",
+            "stop": "2025-05-02 10:21:00", "amount": "1",
+            "scale": "exact aantal", "geometry": "g3",
+            "spatial_quality": "multiple", "plot_version": None,
+            "plot_id": None,
+        },
+    ])
+    assert len(kwartiertelling["intervals"]) == 2
+    assert len(kwartiertelling["group_intervals"]) == 2
+    assert len(kwartiertelling["taxa"]) == 2
+    assert len(kwartiertelling["record_links"]) == 3
+    first_interval = next(
+        row for row in kwartiertelling["intervals"] if row["source_count"] == 2
+    )
+    assert first_interval["duration_status"] == "protocolconform_15_minuten"
+    assert first_interval["spatial_status"] == "single_volledig_binnen"
+    assert first_interval["plot_id"] == 12
+    long_interval = next(
+        row for row in kwartiertelling["intervals"] if row["source_count"] == 1
+    )
+    assert long_interval["duration_status"] == "bronafwijking_boven_15_minuten"
+    assert long_interval["spatial_status"] == "multiple"
+    butterfly_group = next(
+        row for row in kwartiertelling["group_intervals"]
+        if row["group"] == "Dagvlinders"
+    )
+    assert butterfly_group["completeness_status"] == (
+        "niet_meegeleverd_ononderscheidbaar_soortgericht"
+    )
+    butterfly_taxon = next(
+        row for row in kwartiertelling["taxa"] if row["taxon"] == "Aglais io"
+    )
+    assert butterfly_taxon["source_count"] == 2
+    assert butterfly_taxon["total_count"] == 3
+    assert butterfly_taxon["zero_rule"] == "geen_nul_afleidbaar"
+    assert all(row["observation_status"] == "waargenomen"
+               for row in kwartiertelling["taxa"])
+    assert module.classify_kwartiertelling_duration(6) == "korter_dan_15_toegestaan"
+    assert module.classify_kwartiertelling_duration(15) == "protocolconform_15_minuten"
+    assert module.classify_kwartiertelling_duration(16) == (
+        "bronafwijking_boven_15_minuten"
+    )
+
     hns_rows = [
         {
             "observation_id": index,
@@ -895,6 +962,8 @@ def main() -> int:
     assert "--audit-tuintellingen" in importer_text
     assert "--reconstruct-liveatlas" in importer_text
     assert "--audit-liveatlas" in importer_text
+    assert "--reconstruct-kwartiertellingen" in importer_text
+    assert "--audit-kwartiertellingen" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -905,9 +974,15 @@ def main() -> int:
     assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
     assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
     assert module.LIVEATLAS_TABLE_PREFIX == "Meijendel.ndff_liveatlas"
+    assert module.KWARTIERTELLING_TABLE_PREFIX == "Meijendel.ndff_kwartiertelling"
     liveatlas_source_sql = " ".join(module.liveatlas_source_sql().split())
     assert "o.protocol LIKE '102.005%'" in liveatlas_source_sql
     assert "Meijendel_ndff_secure" not in liveatlas_source_sql
+    kwartiertelling_source_sql = " ".join(
+        module.kwartiertelling_source_sql().split()
+    )
+    assert "o.protocol LIKE '102.007%'" in kwartiertelling_source_sql
+    assert "Meijendel_ndff_secure" not in kwartiertelling_source_sql
     assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
@@ -1149,6 +1224,19 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende LiveAtlas-reconstructie is niet geblokkeerd")
+    module.validate_kwartiertelling_reconstruction(
+        dict(module.KWARTIERTELLING_RECONSTRUCTION_EXPECTED)
+    )
+    broken_kwartiertelling = dict(module.KWARTIERTELLING_RECONSTRUCTION_EXPECTED)
+    broken_kwartiertelling["intervals"] -= 1
+    try:
+        module.validate_kwartiertelling_reconstruction(broken_kwartiertelling)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(
+            "Een afwijkende kwartiertellingreconstructie is niet geblokkeerd"
+        )
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.

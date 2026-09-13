@@ -538,6 +538,42 @@ LiveAtlas-afleiding in `Meijendel_ndff_secure`. Controleer met
 Methodische grondslag: [NDFF 102.005](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-005-liveatlas/)
 en de [Sovon-handleiding LiveAtlas](https://stats.sovon.nl/static/publicaties/Handleiding_LiveAtlas_versieAug2023.pdf).
 
+### Kwartiertellingen (`102.007`)
+
+Regelversie `ndff-kwartiertelling-v1` verwerkt alle 102 openbare bronregels
+uit 2023-2025. Zij bevatten exacte positieve aantallen van 19 taxa: 100
+dagvlinderregels en twee nachtvlinderregels. Exact gelijke begin- en eindtijd
+groeperen de regels tot 17 afgeleide telintervallen. Dit is een reproduceerbare
+groepering, geen oorspronkelijk tel-ID.
+
+De intervallen vormen 18 interval-soortgroepcombinaties en 49 positieve
+interval-soortgroep-taxonuitkomsten. Herhaalde regels voor hetzelfde taxon
+worden opgeteld, terwijl iedere oorspronkelijke meetwaarde en recordidentiteit
+in `meetwaarden_json` behouden blijft. Drie intervallen duren korter dan 15
+minuten, zeven exact 15 minuten en zeven 16-21 minuten. Korter stoppen is
+volgens het protocol mogelijk; duren boven 15 minuten blijven als
+`bronafwijking_boven_15_minuten` bewaard voor latere controle en worden niet
+automatisch verwijderd.
+
+De oorspronkelijke ButterflyCount-registratie bevat route en getelde tijd en
+kan een complete soortenlijst of een soortgerichte telling betreffen. De FFV-
+levering bevat route, oorspronkelijk tel-ID en dit lijsttype niet. Daarom zijn
+de 87 recordgeometrieën niet tot route samengevoegd en zijn geen nullen
+afgeleid. Alle 49 taxonregels zijn positief en dragen
+`geen_nul_afleidbaar`.
+
+Veertien intervallen zijn eenduidig aan één SOVON-plot gekoppeld omdat alle
+bronregels volledig binnen hetzelfde plot liggen. Eén interval raakt meerdere
+plots en twee hebben een gemengde ruimtelijke status. Gebruik deze laag voor
+positieve verspreidingscontext, telintervalcontext en indicatieve verandering
+in geregistreerde aantallen; gebruik haar niet voor afwezigheid of als
+volledige trendmatrix. Alle vier afgeleide tabellen staan in `Meijendel`; er is
+geen afleiding in `Meijendel_ndff_secure`. Controleer met
+`--audit-kwartiertellingen`.
+
+Methodische grondslag: [NDFF 102.007](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-007-kwartiertellingen-dagvlinders-nachtvlinders-libellen-en-sprinkhanen/)
+en de [korte handleiding ButterflyCount](https://assets.vlinderstichting.nl/docs/0c3f0890-915f-452f-bbcd-b67b873dc191.pdf).
+
 ### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
 
 Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat
@@ -769,8 +805,9 @@ leveren geen nullen of plotkoppelingen. De tuintelling is inmiddels
 gereconstrueerd tot 125 telperioden binnen drie afgeleide tuinvakfamilies, met
 voorlopige nullen uitsluitend binnen positief bevestigde soortgroepen en lokaal
 doelbereik. LiveAtlas is inmiddels gereconstrueerd tot 64 afgeleide bezoeken,
-87 bezoek-soortgroepcombinaties en 169 uitsluitend positieve taxonuitkomsten;
-de kwartiertellingen bevatten zeventien tijdintervallen van 6-21 minuten. Bij
+87 bezoek-soortgroepcombinaties en 169 uitsluitend positieve taxonuitkomsten.
+De kwartiertellingen zijn gereconstrueerd tot 17 afgeleide telintervallen, 18
+interval-soortgroepcombinaties en 49 uitsluitend positieve taxonuitkomsten. Bij
 beide ontbreken route-ID en complete-lijststatus in FFV; NDFF vermeldt voor
 `102.007` bovendien expliciet dat de routegegevens nog niet worden meegeleverd.
 

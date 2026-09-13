@@ -63,6 +63,7 @@ BRAAKBAL_MINIMUM_PREY = 150
 TUINTELLING_RULE_VERSION = "ndff-tuintelling-v1"
 TUINTELLING_GEOMETRY_DISTANCE_M = 1.0
 LIVEATLAS_RULE_VERSION = "ndff-liveatlas-v1"
+KWARTIERTELLING_RULE_VERSION = "ndff-kwartiertelling-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -81,6 +82,7 @@ HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
 BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
 TUINTELLING_TABLE_PREFIX = "Meijendel.ndff_tuintelling"
 LIVEATLAS_TABLE_PREFIX = "Meijendel.ndff_liveatlas"
+KWARTIERTELLING_TABLE_PREFIX = "Meijendel.ndff_kwartiertelling"
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -482,6 +484,31 @@ LIVEATLAS_RECONSTRUCTION_EXPECTED = {
     "outside_visits": 5,
     "mixed_visits": 12,
     "completeness_unknown_group_visits": 87,
+    "zero_rows": 0,
+    "invalid_taxon_rows": 0,
+    "positive_source_mismatch": 0,
+    "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+}
+KWARTIERTELLING_RECONSTRUCTION_EXPECTED = {
+    "source_records": 102,
+    "intervals": 17,
+    "group_intervals": 18,
+    "taxon_rows": 49,
+    "distinct_taxa": 19,
+    "geometry_versions": 87,
+    "exact_count_source_records": 102,
+    "total_count": 102,
+    "butterfly_intervals": 17,
+    "moth_intervals": 1,
+    "short_intervals": 3,
+    "protocol_duration_intervals": 7,
+    "overlong_intervals": 7,
+    "single_plot_intervals": 14,
+    "multiple_intervals": 1,
+    "outside_intervals": 0,
+    "mixed_intervals": 2,
+    "completeness_unknown_group_intervals": 18,
     "zero_rows": 0,
     "invalid_taxon_rows": 0,
     "positive_source_mismatch": 0,
@@ -4680,6 +4707,136 @@ ORDER BY o.periode_start,o.periode_stop,o.waarneming_id;
 """
 
 
+def classify_kwartiertelling_duration(duration_minutes: int) -> str:
+    """Classificeer de aangeleverde duur zonder geldige korte tellingen uit te sluiten."""
+    if duration_minutes <= 0:
+        raise ValueError("Een kwartiertelling moet een positieve duur hebben.")
+    if duration_minutes < 15:
+        return "korter_dan_15_toegestaan"
+    if duration_minutes == 15:
+        return "protocolconform_15_minuten"
+    return "bronafwijking_boven_15_minuten"
+
+
+def build_kwartiertelling_structure(
+    records: Iterable[dict[str, object]],
+) -> dict[str, list[dict[str, object]]]:
+    """Reconstrueer kwartiertelintervallen zonder route-, lijst- of nulclaims."""
+    source_rows = [dict(row) for row in records]
+    rows_by_interval: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in source_rows:
+        start = str(row["start"])
+        stop = str(row["stop"])
+        duration = int(
+            (datetime.fromisoformat(stop) - datetime.fromisoformat(start)).total_seconds()
+            // 60
+        )
+        classify_kwartiertelling_duration(duration)
+        if not str(row.get("amount") or "").isdigit() or int(str(row["amount"])) <= 0:
+            raise ValueError(
+                f"Kwartiertellingrecord {row['observation_id']} heeft geen geheel positief aantal."
+            )
+        rows_by_interval[(start, stop)].append(row)
+
+    intervals: list[dict[str, object]] = []
+    group_intervals: list[dict[str, object]] = []
+    taxa: list[dict[str, object]] = []
+    record_links: list[dict[str, object]] = []
+    for (start, stop), rows in sorted(rows_by_interval.items()):
+        interval_key = hashlib.sha256(
+            f"102.007|telinterval|{start}|{stop}".encode("utf-8")
+        ).hexdigest()
+        duration = int(
+            (datetime.fromisoformat(stop) - datetime.fromisoformat(start)).total_seconds()
+            // 60
+        )
+        spatial_status, plot_version, plot_id = classify_liveatlas_visit_spatial(rows)
+        groups = sorted({str(row["group"]) for row in rows})
+        intervals.append({
+            "key": interval_key,
+            "start": start,
+            "stop": stop,
+            "duration_minutes": duration,
+            "duration_status": classify_kwartiertelling_duration(duration),
+            "source_count": len(rows),
+            "geometry_count": len({str(row["geometry"]) for row in rows}),
+            "group_count": len(groups),
+            "spatial_status": spatial_status,
+            "plot_version": plot_version,
+            "plot_id": plot_id,
+        })
+        for row in rows:
+            record_links.append({
+                "observation_id": int(row["observation_id"]),
+                "interval": interval_key,
+                "spatial_quality": str(row["spatial_quality"]),
+                "plot_id": int(row["plot_id"]) if row.get("plot_id") is not None else None,
+            })
+        for group in groups:
+            group_rows = [row for row in rows if str(row["group"]) == group]
+            by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+            for row in group_rows:
+                by_taxon[str(row["taxon"])].append(row)
+            group_intervals.append({
+                "interval": interval_key,
+                "group": group,
+                "source_count": len(group_rows),
+                "observed_taxa": len(by_taxon),
+                "completeness_status": (
+                    "niet_meegeleverd_ononderscheidbaar_soortgericht"
+                ),
+                "zero_status": "geen_nul_afleidbaar",
+            })
+            for taxon, taxon_rows in sorted(by_taxon.items()):
+                measurements = [
+                    {
+                        "waarneming_id": int(row["observation_id"]),
+                        "aantal": int(str(row["amount"])),
+                        "schaal": str(row.get("scale") or ""),
+                        "geometrie": str(row["geometry"]),
+                        "ruimtelijke_kwaliteit": str(row["spatial_quality"]),
+                    }
+                    for row in sorted(
+                        taxon_rows, key=lambda item: int(item["observation_id"])
+                    )
+                ]
+                taxa.append({
+                    "interval": interval_key,
+                    "group": group,
+                    "taxon": taxon,
+                    "observation_status": "waargenomen",
+                    "source_count": len(taxon_rows),
+                    "total_count": sum(item["aantal"] for item in measurements),
+                    "measurements": measurements,
+                    "zero_rule": "geen_nul_afleidbaar",
+                })
+    return {
+        "intervals": intervals,
+        "group_intervals": group_intervals,
+        "taxa": taxa,
+        "record_links": record_links,
+    }
+
+
+def kwartiertelling_source_sql() -> str:
+    """Lees kwartiertellingen uit de openbare bron- en ruimtelijke kwaliteitslaag."""
+    return f"""
+SELECT o.waarneming_id,
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),
+       o.soortgroep_raw,o.wetenschappelijke_naam,
+       COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
+       o.openbare_geometrie_sha256,r.toewijzingskwaliteit,
+       r.plotversie_id,r.eenduidig_plot_id
+FROM Meijendel.ndff_open_waarneming o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
+  ON r.waarneming_id=o.waarneming_id
+ AND r.regelversie={sql_text(RULE_VERSION)}
+WHERE o.protocol LIKE '102.007%'
+ORDER BY o.periode_start,o.periode_stop,o.waarneming_id;
+"""
+
+
 def reconstruct_bospaddenstoelen(
     mysql_client: Path,
     client_args: list[str],
@@ -6330,6 +6487,111 @@ def reconstruct_liveatlas(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_kwartiertellingen(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw openbare kwartiertelintervallen zonder route- of nulclaims."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, kwartiertelling_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 11:
+            raise ValueError(f"Onverwachte 102.007-bronregel met {len(fields)} velden.")
+        (observation_id, start, stop, group, taxon, amount, scale, geometry,
+         spatial_quality, plot_version, plot_id) = fields
+        records.append({
+            "observation_id": int(observation_id),
+            "start": start, "stop": stop, "group": group, "taxon": taxon,
+            "amount": amount, "scale": scale, "geometry": geometry,
+            "spatial_quality": spatial_quality,
+            "plot_version": None if plot_version == "NULL" else int(plot_version),
+            "plot_id": None if plot_id == "NULL" else int(plot_id),
+        })
+    if len(records) != KWARTIERTELLING_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De 102.007-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    structure = build_kwartiertelling_structure(records)
+    interval_note = (
+        "Afgeleid kwartiertelinterval op basis van exact gelijke begin- en eindtijd. "
+        "De oorspronkelijke route, het tel-ID en het lijsttype zijn niet meegeleverd. "
+        "Een duur boven vijftien minuten blijft bewaard als te controleren bronafwijking."
+    )
+    interval_values = [
+        f"({sql_text(KWARTIERTELLING_RULE_VERSION)},{sql_text(str(row['key']))},"
+        f"'102.007',{sql_text(str(row['start']))},{sql_text(str(row['stop']))},"
+        f"{int(row['duration_minutes'])},{sql_text(str(row['duration_status']))},"
+        f"{int(row['source_count'])},{int(row['geometry_count'])},"
+        f"{int(row['group_count'])},{sql_text(str(row['spatial_status']))},"
+        f"{int(row['plot_version']) if row['plot_version'] is not None else 'NULL'},"
+        f"{int(row['plot_id']) if row['plot_id'] is not None else 'NULL'},"
+        f"'route_niet_meegeleverd',{sql_text(interval_note)})"
+        for row in structure["intervals"]
+    ]
+    group_note = (
+        "Positieve regels bewijzen registratie van deze soortgroep binnen het "
+        "afgeleide interval. De levering onderscheidt een complete soortenlijst "
+        "niet van een soortgerichte telling; niet-gemelde soorten zijn daarom onbekend."
+    )
+    group_values = [
+        f"({sql_text(KWARTIERTELLING_RULE_VERSION)},"
+        f"{sql_text(str(row['interval']))},{sql_text(str(row['group']))},"
+        f"{int(row['source_count'])},{int(row['observed_taxa'])},"
+        f"'niet_meegeleverd_ononderscheidbaar_soortgericht',"
+        f"'geen_nul_afleidbaar',{sql_text(group_note)})"
+        for row in structure["group_intervals"]
+    ]
+    taxon_note = (
+        "Positieve uitkomst binnen een afgeleid kwartiertelinterval. Bronregels "
+        "voor hetzelfde taxon zijn opgeteld en blijven afzonderlijk controleerbaar "
+        "in meetwaarden_json; er zijn geen nullen afgeleid."
+    )
+    taxon_values = [
+        f"({sql_text(KWARTIERTELLING_RULE_VERSION)},"
+        f"{sql_text(str(row['interval']))},{sql_text(str(row['group']))},"
+        f"{sql_text(str(row['taxon']))},'waargenomen',{int(row['source_count'])},"
+        f"{int(row['total_count'])},"
+        f"{sql_text(json.dumps(row['measurements'], ensure_ascii=False, separators=(',', ':')))},"
+        f"'geen_nul_afleidbaar',{sql_text(taxon_note)})"
+        for row in structure["taxa"]
+    ]
+    selection_note = (
+        "Positieve 102.007-bronregel gekoppeld aan een afgeleid telinterval. "
+        "Gebruik de recordgeometrie alleen voor verspreidingscontext; route, "
+        "complete-lijststatus en soortgerichte status ontbreken."
+    )
+    selection_values = [
+        f"({sql_text(KWARTIERTELLING_RULE_VERSION)},"
+        f"{int(row['observation_id'])},{sql_text(str(row['interval']))},"
+        f"{sql_text(str(row['spatial_quality']))},"
+        f"{int(row['plot_id']) if row['spatial_quality']=='single_volledig_binnen' and row['plot_id'] is not None else 'NULL'},"
+        f"'positief_protocolrecord_geen_nulafleiding',{sql_text(selection_note)})"
+        for row in structure["record_links"]
+    ]
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {KWARTIERTELLING_TABLE_PREFIX}_interval_taxon WHERE reconstructieversie={sql_text(KWARTIERTELLING_RULE_VERSION)};",
+        f"DELETE FROM {KWARTIERTELLING_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(KWARTIERTELLING_RULE_VERSION)};",
+        f"DELETE FROM {KWARTIERTELLING_TABLE_PREFIX}_interval_soortgroep WHERE reconstructieversie={sql_text(KWARTIERTELLING_RULE_VERSION)};",
+        f"DELETE FROM {KWARTIERTELLING_TABLE_PREFIX}_telinterval WHERE reconstructieversie={sql_text(KWARTIERTELLING_RULE_VERSION)};",
+    ]
+    for table, columns, values in (
+        (f"{KWARTIERTELLING_TABLE_PREFIX}_telinterval", "reconstructieversie,interval_sleutel,protocol_sleutel,periode_start,periode_stop,duur_minuten,duurstatus,bronrecordaantal,geometrieversies,soortgroepen_met_positieve_regels,ruimtelijke_status,plotversie_id,eenduidig_plot_id,routestatus,kwaliteitsnotitie", interval_values),
+        (f"{KWARTIERTELLING_TABLE_PREFIX}_interval_soortgroep", "reconstructieversie,interval_sleutel,soortgroep_raw,bronrecordaantal,waargenomen_taxa,volledigheidsstatus,nulstatus,kwaliteitsnotitie", group_values),
+        (f"{KWARTIERTELLING_TABLE_PREFIX}_interval_taxon", "reconstructieversie,interval_sleutel,soortgroep_raw,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,totaal_aantal,meetwaarden_json,nulregel,kwaliteitsnotitie", taxon_values),
+        (f"{KWARTIERTELLING_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,interval_sleutel,ruimtelijke_status,eenduidig_plot_id,selectiestatus,selectiereden", selection_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(
+        mysql_client, query_args, kwartiertelling_validation_sql(), capture=True
+    )
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -6877,6 +7139,43 @@ SELECT JSON_OBJECT(
 """
 
 
+def kwartiertelling_validation_sql() -> str:
+    version = sql_text(KWARTIERTELLING_RULE_VERSION)
+    secure_tables = ",".join(
+        sql_text(f"ndff_kwartiertelling_{suffix}")
+        for suffix in (
+            "telinterval", "interval_soortgroep", "interval_taxon", "recordselectie",
+        )
+    )
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%'),
+  'intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version}),
+  'group_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version}),
+  'taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version}),
+  'distinct_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version}),
+  'geometry_versions',(SELECT COUNT(DISTINCT openbare_geometrie_sha256) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%'),
+  'exact_count_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%' AND schaal_telmethode='exact aantal' AND aantal_raw REGEXP '^[0-9]+$'),
+  'total_count',(SELECT COALESCE(SUM(totaal_aantal),0) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version}),
+  'butterfly_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Dagvlinders'),
+  'moth_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version} AND soortgroep_raw='Nachtvlinders'),
+  'short_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND duurstatus='korter_dan_15_toegestaan'),
+  'protocol_duration_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND duurstatus='protocolconform_15_minuten'),
+  'overlong_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND duurstatus='bronafwijking_boven_15_minuten'),
+  'single_plot_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND ruimtelijke_status='single_volledig_binnen'),
+  'multiple_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND ruimtelijke_status='multiple'),
+  'outside_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND ruimtelijke_status='outside'),
+  'mixed_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_telinterval WHERE reconstructieversie={version} AND ruimtelijke_status='gemengd'),
+  'completeness_unknown_group_intervals',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_soortgroep WHERE reconstructieversie={version} AND volledigheidsstatus='niet_meegeleverd_ononderscheidbaar_soortgericht'),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'waargenomen'),
+  'invalid_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version} AND (bronrecordaantal=0 OR totaal_aantal=0 OR JSON_LENGTH(meetwaarden_json)=0 OR nulregel<>'geen_nul_afleidbaar')),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_kwartiertelling_interval_taxon WHERE reconstructieversie={version})-(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '102.007%')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_kwartiertelling_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '102.007%' AND s.waarneming_id IS NULL),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -7068,6 +7367,21 @@ def validate_liveatlas_reconstruction(metrics: dict[str, int]) -> None:
         }
         raise ValueError(
             f"LiveAtlas-reconstructie wijkt af van het vaste profiel: {differences}"
+        )
+
+
+def validate_kwartiertelling_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != KWARTIERTELLING_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (KWARTIERTELLING_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(
+                set(metrics) | set(KWARTIERTELLING_RECONSTRUCTION_EXPECTED)
+            )
+            if metrics.get(key) != KWARTIERTELLING_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            "Kwartiertellingreconstructie wijkt af van het vaste profiel: "
+            f"{differences}"
         )
 
 
@@ -7443,6 +7757,8 @@ def main() -> int:
     mode.add_argument("--audit-tuintellingen", action="store_true")
     mode.add_argument("--reconstruct-liveatlas", action="store_true")
     mode.add_argument("--audit-liveatlas", action="store_true")
+    mode.add_argument("--reconstruct-kwartiertellingen", action="store_true")
+    mode.add_argument("--audit-kwartiertellingen", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -7770,6 +8086,27 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_liveatlas_reconstruction(metrics)
         print(f"OK: lokale LiveAtlas-reconstructie {LIVEATLAS_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_kwartiertellingen:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_kwartiertellingen(args.mysql_client, client_args)
+        validate_kwartiertelling_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_kwartiertellingen:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            kwartiertelling_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_kwartiertelling_reconstruction(metrics)
+        print(
+            "OK: lokale kwartiertellingreconstructie "
+            f"{KWARTIERTELLING_RULE_VERSION} gereed"
+        )
         print(output)
         return 0
     if args.audit_live:

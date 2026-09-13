@@ -605,3 +605,14 @@
   SOVON-plot gekoppeld; 35 zijn `multiple`, vijf `outside` en twaalf `gemengd`.
   De vier tabellen staan in `Meijendel`; `Meijendel_ndff_secure` is niet
   uitgebreid.
+- Voor Kwartiertellingen `102.007` is vanaf 13 september 2026
+  reconstructieversie `ndff-kwartiertelling-v1` vastgesteld. Exact gelijke
+  begin- en eindtijd groeperen 102 bronregels tot 17 afgeleide telintervallen;
+  dit bewijst geen oorspronkelijk tel-ID. De 18 interval-soortgroepcombinaties
+  leveren 49 uitsluitend positieve taxonuitkomsten voor 19 taxa. Route en het
+  onderscheid tussen complete lijst en soortgerichte telling ontbreken;
+  daarom worden geen routes of nullen afgeleid. Drie intervallen duren korter
+  dan 15 minuten, zeven exact 15 minuten en zeven langer; de laatste blijven
+  herkenbaar als bronafwijking. Veertien intervallen zijn eenduidig aan één
+  SOVON-plot gekoppeld, één is `multiple` en twee zijn `gemengd`. De vier
+  tabellen staan in `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.

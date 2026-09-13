@@ -418,6 +418,18 @@ MySQL:
   alle bronregels volledig binnen hetzelfde SOVON-plot liggen hebben een
   eenduidige bezoekniveau-plotkoppeling. Controleer vóór gebruik met
   `--audit-liveatlas`
+- gebruik voor Kwartiertellingen `102.007` reconstructieversie
+  `ndff-kwartiertelling-v1` en uitsluitend de vier openbare tabellen
+  `Meijendel.ndff_kwartiertelling_*`. Gelijke begin- en eindtijd vormen een
+  afgeleid telinterval, niet een bewezen oorspronkelijk tel-ID. Behandel de 87
+  openbare recordgeometrieën niet als looproute. Omdat de levering een complete
+  soortenlijst niet onderscheidt van een soortgerichte telling, mogen geen
+  nullen worden afgeleid. Bewaar intervallen boven 15 minuten met status
+  `bronafwijking_boven_15_minuten`; sluit ze niet stilzwijgend uit. Gebruik de
+  49 positieve taxonuitkomsten voor verspreidingscontext, telintervalcontext
+  en indicatieve verandering. Alleen de 14 intervallen waarvan alle bronregels
+  volledig binnen hetzelfde SOVON-plot liggen hebben een eenduidige
+  intervalniveau-plotkoppeling. Controleer met `--audit-kwartiertellingen`
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

@@ -101,6 +101,14 @@
   om de oorspronkelijke bezoek-ID's, routes en de complete-lijstvlag per
   soortgroep; deze validatie blokkeert positieve verspreidingscontext en
   indicatieve vergelijking van geregistreerde aantallen niet.
+- `102.007` bevat onder `ndff-kwartiertelling-v1` 17 afgeleide
+  telintervallen, 18 interval-soortgroepcombinaties en 49 uitsluitend positieve
+  taxonuitkomsten. Gebruik de 14 eenduidig aan één SOVON-plot gekoppelde
+  intervallen met de melding dat route, oorspronkelijk tel-ID en het onderscheid
+  tussen complete lijst en soortgerichte telling ontbreken. Leid geen nullen
+  af. Vraag De Vlinderstichting later alleen om de oorspronkelijke tel-ID's,
+  routes en lijsttypevlag; dit blokkeert positieve verspreidingscontext en
+  indicatieve vergelijking van geregistreerde aantallen niet.
 - `11.201` bevat na onderdrukking van 473 parallelle presentieregels 509
   canonieke positieve resultaten, drie vaste meetpunten en 110 bevestigde
   bezoeken. Gebruik de 2.934 bezoek-taxonregels en 977 jaarlijkse maxima via
