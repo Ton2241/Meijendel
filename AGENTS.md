@@ -430,6 +430,20 @@ MySQL:
   en indicatieve verandering. Alleen de 14 intervallen waarvan alle bronregels
   volledig binnen hetzelfde SOVON-plot liggen hebben een eenduidige
   intervalniveau-plotkoppeling. Controleer met `--audit-kwartiertellingen`
+- gebruik voor de resterende NEM-batch de versies `ndff-nachtvlinder-v1`,
+  `ndff-bospaddenstoel-verspreiding-v1`, `ndff-poldervis-v1` en
+  `ndff-otter-bever-v1` en uitsluitend de openbare tabellen
+  `Meijendel.ndff_nachtvlinder_*`,
+  `Meijendel.ndff_bospaddenstoel_verspreiding_*`,
+  `Meijendel.ndff_poldervis_*` en `Meijendel.ndff_otter_bever_*`. Leid voor
+  `03.203`, `11.204` en `17.207` geen nullen af. Leg bij `13.201` een ontbrekende
+  lokale doelsoort alleen vast als `doelsoort_niet_gemeld` met nulregel
+  `geen_nul_doelmethode_onbekend`; dit is onbekend en geen echte nul. Noem
+  geaggregeerde positieve telwaarden geregistreerde aantallen, niet abundantie.
+  Controleer de vier reeksen samen met `--audit-resterende-nem`
+- reconstrueer protocol `12.202` niet als afzonderlijke NDFF-meetreeks. De
+  provinciale PQ-tabellen zijn gezaghebbend; NDFF-PQ blijft uitsluitend
+  secundaire overlap- en herkomstcontrole
 - sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
   op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
   bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie

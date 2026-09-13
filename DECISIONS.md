@@ -616,3 +616,18 @@
   herkenbaar als bronafwijking. Veertien intervallen zijn eenduidig aan één
   SOVON-plot gekoppeld, één is `multiple` en twee zijn `gemengd`. De vier
   tabellen staan in `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.
+- De resterende NEM-batch is vanaf 13 september 2026 gereconstrueerd als vier
+  afzonderlijke openbare structuren in `Meijendel`: `03.203` onder
+  `ndff-nachtvlinder-v1` (596 bronrecords, vijf geometrie-jaren, 84 positieve
+  taxonregels, geregistreerde som 878), `11.204` onder
+  `ndff-bospaddenstoel-verspreiding-v1` (14 records, twee bezoeken, 14 positieve
+  taxonregels), `13.201` onder `ndff-poldervis-v1` (20 records, drie
+  waterlocatieproxy's, zes bezoeken, 17 positieve taxonregels en twee
+  `doelsoort_niet_gemeld`-regels) en `17.207` onder `ndff-otter-bever-v1`
+  (drie positieve Otterrecords in één kilometerhok-jaar). Geen van deze vier
+  reeksen bevat een afgeleide echte nul. Bij `13.201` blijft niet gemelde Kleine
+  modderkruiper onbekend doordat submethode en doelbereik ontbreken. Het
+  beveiligde schema is niet uitgebreid.
+- Protocol `12.202` krijgt geen afzonderlijke NDFF-reconstructie. De provinciale
+  PQ-reeks blijft gezaghebbend en NDFF dient daar alleen als secundaire
+  overlap- en herkomstcontrole.

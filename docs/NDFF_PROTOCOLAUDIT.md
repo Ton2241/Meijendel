@@ -574,6 +574,40 @@ geen afleiding in `Meijendel_ndff_secure`. Controleer met
 Methodische grondslag: [NDFF 102.007](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-007-kwartiertellingen-dagvlinders-nachtvlinders-libellen-en-sprinkhanen/)
 en de [korte handleiding ButterflyCount](https://assets.vlinderstichting.nl/docs/0c3f0890-915f-452f-bbcd-b67b873dc191.pdf).
 
+### Resterende NEM-reeksen (`03.203`, `11.204`, `13.201`, `17.207`)
+
+De laatste vier NEM-protocollen zijn op 13 september 2026 in één transactie
+gereconstrueerd. Alle 633 bronrecords hebben precies één recordkoppeling en de
+vaste audit vindt geen afgeleide tabel in `Meijendel_ndff_secure`.
+
+| Protocol | Bronrecords | Gereconstrueerde eenheid | Taxonregels | Afgeleide echte nullen |
+|---|---:|---|---:|---:|
+| `03.203` Nachtvlinders | 596 | 5 openbare geometrie-jaren | 84 positief | 0 |
+| `11.204` Bospaddenstoelen | 14 | 2 afgeleide bezoeken | 14 positief | 0 |
+| `13.201` Beek- en poldervissen | 20 | 3 waterproxy's, 6 bezoeken | 17 positief + 2 niet gemeld | 0 |
+| `17.207` Bever en Otter | 3 | 1 kilometerhok-jaar | 1 positief | 0 |
+
+Bij `03.203` zijn alle openbare regels tot één kilometer vervaagd en op
+jaarniveau geleverd. De som 878 wordt daarom alleen als geregistreerd aantal
+bewaard. Bij `11.204` blijven de NMV-aantalsklassen intact; omdat de teller
+alleen herkende soorten hoeft te melden, is de lijst niet bewezen compleet.
+Bij `13.201` is Kleine modderkruiper de lokaal aangetroffen doelsoort. Op twee
+bezoeken ontbreekt deze soort, maar zonder submethode en doelbereik heet dat
+`doelsoort_niet_gemeld`, niet nul. Bij `17.207` behouden drie positieve
+Otterpunten hun recordniveau-plotcontext; het kilometerhok raakt meerdere plots
+en ontbrekende Bever bewijst geen afwezigheid.
+
+De tabellen staan onder `Meijendel.ndff_nachtvlinder_*`,
+`Meijendel.ndff_bospaddenstoel_verspreiding_*`,
+`Meijendel.ndff_poldervis_*` en `Meijendel.ndff_otter_bever_*`. Controleer met
+`--audit-resterende-nem`. Protocol `12.202` is bewust niet opnieuw opgebouwd:
+de provinciale PQ-reeks blijft de gezaghebbende bron.
+
+Methodische grondslag: [NDFF 03.203](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/3-203-landelijk-meetprogramma-nachtvlinders-nem/),
+[NMV-methodiek](https://www.mycologen.nl/onderzoek/meetnet/bospaddenstoelen/methodiek/),
+[NDFF 13.201](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/13-201-meetnet-beek-en-poldervissen-nem-3/)
+en [NDFF 17.207](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-207-verspreidingsonderzoek-bever-en-otter-nem/).
+
 ### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
 
 Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat

@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 5 september 2026
+Laatste update: 13 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -236,6 +236,13 @@ Gereed:
   harde nul. Alle vangblikevents koppelen eenduidig aan de openbare
   SOVON-plotversie 2025. Bestaande vogel- en provinciale PQ-tabellen zijn
   onveranderd.
+- De vier resterende openbare NEM-reeksen zijn lokaal gereconstrueerd en
+  gecontroleerd: 633 bronrecords in dertien nieuwe tabellen voor nachtvlinders
+  (`03.203`), verspreidingsonderzoek bospaddenstoelen (`11.204`), beek- en
+  poldervissen (`13.201`) en Bever/Otter (`17.207`). Alle bronrecords zijn
+  gekoppeld, er zijn geen echte nullen afgeleid en het beveiligde schema is
+  niet uitgebreid. Protocol `12.202` blijft geblokkeerd als secundaire
+  PQ-controlebron naast de provinciale reeks.
 - De lokale Shiny-code bevat een standaard uitgeschakelde NDFF-module die alleen
   met `NDFF_SECURE_LOCAL=1` en uitsluitend buiten productie drie geaggregeerde
   beveiligde views kan lezen. De module bevat geen downloadfunctie en weigert

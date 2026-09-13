@@ -128,6 +128,12 @@
   reconstructieversie.
 - Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
   PQ-reeks: de provincie blijft de gezaghebbende bron.
+- Afgerond op 13 september 2026: de resterende NEM-batch `03.203`, `11.204`,
+  `13.201` en `17.207` staat in dertien openbare `Meijendel.ndff_*`-tabellen en
+  is reproduceerbaar controleerbaar met `--audit-resterende-nem`. Alle 633
+  bronrecords zijn gekoppeld; er zijn geen echte nullen afgeleid. `12.202` is
+  door een vaste auditpoort buiten een afzonderlijke NDFF-reconstructie
+  gehouden.
 
 - Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
   groene ontvangst-/analysemanifesten staan onder

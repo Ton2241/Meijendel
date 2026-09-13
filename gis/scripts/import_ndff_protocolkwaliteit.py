@@ -64,6 +64,10 @@ TUINTELLING_RULE_VERSION = "ndff-tuintelling-v1"
 TUINTELLING_GEOMETRY_DISTANCE_M = 1.0
 LIVEATLAS_RULE_VERSION = "ndff-liveatlas-v1"
 KWARTIERTELLING_RULE_VERSION = "ndff-kwartiertelling-v1"
+NACHTVLINDER_RULE_VERSION = "ndff-nachtvlinder-v1"
+BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION = "ndff-bospaddenstoel-verspreiding-v1"
+POLDERVIS_RULE_VERSION = "ndff-poldervis-v1"
+OTTER_BEVER_RULE_VERSION = "ndff-otter-bever-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
 LIBEL_TABLE_PREFIX = "Meijendel.ndff_libel"
@@ -83,6 +87,37 @@ BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
 TUINTELLING_TABLE_PREFIX = "Meijendel.ndff_tuintelling"
 LIVEATLAS_TABLE_PREFIX = "Meijendel.ndff_liveatlas"
 KWARTIERTELLING_TABLE_PREFIX = "Meijendel.ndff_kwartiertelling"
+NACHTVLINDER_TABLE_PREFIX = "Meijendel.ndff_nachtvlinder"
+BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX = (
+    "Meijendel.ndff_bospaddenstoel_verspreiding"
+)
+POLDERVIS_TABLE_PREFIX = "Meijendel.ndff_poldervis"
+OTTER_BEVER_TABLE_PREFIX = "Meijendel.ndff_otter_bever"
+RESTERENDE_NEM_RECONSTRUCTION_EXPECTED = {
+    "source_records": 633,
+    "nachtvlinder_source_records": 596,
+    "nachtvlinder_hokyears": 5,
+    "nachtvlinder_taxon_rows": 84,
+    "nachtvlinder_total_registered": 878,
+    "bospaddenstoel_source_records": 14,
+    "bospaddenstoel_visits": 2,
+    "bospaddenstoel_taxon_rows": 14,
+    "poldervis_source_records": 20,
+    "poldervis_locations": 3,
+    "poldervis_visits": 6,
+    "poldervis_taxon_rows": 19,
+    "poldervis_positive_rows": 17,
+    "poldervis_missing_target_rows": 2,
+    "poldervis_total_registered": 83,
+    "otter_bever_source_records": 3,
+    "otter_bever_hokyears": 1,
+    "otter_bever_taxon_rows": 1,
+    "otter_bever_total_registered": 3,
+    "zero_rows": 0,
+    "unlinked_source_records": 0,
+    "secure_derived_tables": 0,
+    "lmf_ndff_derived_tables": 0,
+}
 VLINDER_RECONSTRUCTION_EXPECTED = {
     "source_records": 82217,
     "visits": 3126,
@@ -6592,6 +6627,310 @@ def reconstruct_kwartiertellingen(
     return parse_analysis_chain_output(audit_output)
 
 
+def resterende_nem_source_sql() -> str:
+    """Lees de vier resterende openbare NEM-reeksen; 12.202/PQ blijft erbuiten."""
+    return f"""
+SELECT SUBSTRING_INDEX(o.protocol,' ',1),o.waarneming_id,
+       DATE_FORMAT(o.periode_start,'%Y-%m-%d %H:%i:%s'),
+       DATE_FORMAT(o.periode_stop,'%Y-%m-%d %H:%i:%s'),o.jaar,
+       o.soortgroep_raw,o.wetenschappelijke_naam,
+       COALESCE(o.aantal_raw,''),COALESCE(o.schaal_telmethode,''),
+       o.openbare_geometrie_sha256,COALESCE(o.hoknummer,''),o.vervaagd,
+       COALESCE(o.vervagingsniveau_km,0),r.toewijzingskwaliteit,
+       r.plotversie_id,COALESCE(r.eenduidig_plot_id,0)
+FROM Meijendel.ndff_open_waarneming o
+JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
+  ON r.waarneming_id=o.waarneming_id
+ AND r.regelversie={sql_text(RULE_VERSION)}
+WHERE o.protocol LIKE '03.203%'
+   OR o.protocol LIKE '11.204%'
+   OR o.protocol LIKE '13.201%'
+   OR o.protocol LIKE '17.207%'
+ORDER BY SUBSTRING_INDEX(o.protocol,' ',1),o.periode_start,o.waarneming_id;
+"""
+
+
+def _parse_resterende_nem_rows(output: str) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 16:
+            raise ValueError(f"Onverwachte resterende-NEM-bronregel met {len(fields)} velden.")
+        (protocol, observation_id, start, stop, year, group, taxon, amount,
+         scale, geometry, grid, blurred, blur_level, spatial, plot_version,
+         plot_id) = fields
+        rows.append({
+            "protocol": protocol, "observation_id": int(observation_id),
+            "start": start, "stop": stop, "year": int(year), "group": group,
+            "taxon": taxon, "amount": amount, "scale": scale,
+            "geometry": geometry, "grid": grid, "blurred": int(blurred),
+            "blur_level": int(blur_level), "spatial": spatial,
+            "plot_version": int(plot_version),
+            "plot_id": int(plot_id) or None,
+        })
+    return rows
+
+
+def _positive_measurements(rows: list[dict[str, object]]) -> tuple[int, list[dict[str, object]]]:
+    measurements: list[dict[str, object]] = []
+    total = 0
+    for row in sorted(rows, key=lambda item: int(item["observation_id"])):
+        raw = str(row["amount"])
+        if not raw.isdigit() or int(raw) <= 0:
+            raise ValueError(
+                f"Record {row['observation_id']} heeft geen geheel positief exact aantal."
+            )
+        value = int(raw)
+        total += value
+        measurements.append({
+            "waarneming_id": int(row["observation_id"]),
+            "aantal": value, "schaal": str(row["scale"]),
+            "geometrie": str(row["geometry"]),
+        })
+    return total, measurements
+
+
+def reconstruct_resterende_nem(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Reconstrueer 03.203, 11.204, 13.201 en 17.207 in één transactie."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, resterende_nem_source_sql(), capture=True)
+    records = _parse_resterende_nem_rows(output)
+    if len(records) != RESTERENDE_NEM_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De resterende NEM-bronselectie wijkt af van het gecontroleerde profiel.")
+    by_protocol: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for row in records:
+        by_protocol[str(row["protocol"])].append(row)
+
+    statements = ["START TRANSACTION;"]
+    for table in (
+        f"{NACHTVLINDER_TABLE_PREFIX}_hokjaar_taxon",
+        f"{NACHTVLINDER_TABLE_PREFIX}_recordselectie",
+        f"{NACHTVLINDER_TABLE_PREFIX}_hokjaar",
+        f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_bezoek_taxon",
+        f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_recordselectie",
+        f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_bezoek",
+        f"{POLDERVIS_TABLE_PREFIX}_bezoek_taxon",
+        f"{POLDERVIS_TABLE_PREFIX}_recordselectie",
+        f"{POLDERVIS_TABLE_PREFIX}_bezoek",
+        f"{POLDERVIS_TABLE_PREFIX}_waterlocatie",
+        f"{OTTER_BEVER_TABLE_PREFIX}_hokjaar_taxon",
+        f"{OTTER_BEVER_TABLE_PREFIX}_recordselectie",
+        f"{OTTER_BEVER_TABLE_PREFIX}_hokjaar",
+    ):
+        version = (
+            NACHTVLINDER_RULE_VERSION if "nachtvlinder" in table
+            else BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION if "bospaddenstoel_verspreiding" in table
+            else POLDERVIS_RULE_VERSION if "poldervis" in table
+            else OTTER_BEVER_RULE_VERSION
+        )
+        statements.append(f"DELETE FROM {table} WHERE reconstructieversie={sql_text(version)};")
+
+    # 03.203: de openbare levering bestaat uitsluitend uit vervaagde jaaraggregaten.
+    night_rows = by_protocol["03.203"]
+    night_units: dict[tuple[str, int], list[dict[str, object]]] = defaultdict(list)
+    for row in night_rows:
+        if not row["blurred"] or row["spatial"] != "multiple" or row["scale"] != "exact aantal":
+            raise ValueError("03.203 bevat een onverwachte ruimtelijke of telwaardevariant.")
+        night_units[(str(row["geometry"]), int(row["year"]))].append(row)
+    night_unit_values, night_taxon_values, night_selection_values = [], [], []
+    night_note = (
+        "Openbaar vervaagd geometrie-jaar uit 03.203. De FFV-levering bevat geen "
+        "val-, bezoek- of inspanningsstructuur; sommen zijn geregistreerde aantallen, "
+        "geen abundantie en ontbrekende soorten zijn geen nullen."
+    )
+    for (geometry, year), unit_rows in sorted(night_units.items()):
+        key = hashlib.sha256(f"03.203|{geometry}|{year}".encode()).hexdigest()
+        grids = sorted({str(row["grid"]) for row in unit_rows if row["grid"]})
+        night_unit_values.append(
+            f"({sql_text(NACHTVLINDER_RULE_VERSION)},{sql_text(key)},'03.203',"
+            f"{sql_text(geometry)},{sql_text(grids[0] if len(grids)==1 else '')},"
+            f"{year},{len(unit_rows)},'multiple','positieve_jaargegevens_geen_bezoekstructuur',"
+            f"{sql_text(night_note)})"
+        )
+        by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for row in unit_rows:
+            by_taxon[str(row["taxon"])].append(row)
+            night_selection_values.append(
+                f"({sql_text(NACHTVLINDER_RULE_VERSION)},{int(row['observation_id'])},"
+                f"{sql_text(key)},'vervaagd_positief_hokjaar',{sql_text(night_note)})"
+            )
+        for taxon, taxon_rows in sorted(by_taxon.items()):
+            total, measurements = _positive_measurements(taxon_rows)
+            night_taxon_values.append(
+                f"({sql_text(NACHTVLINDER_RULE_VERSION)},{sql_text(key)},"
+                f"{sql_text(taxon)},'waargenomen',{len(taxon_rows)},{total},"
+                f"{sql_text(json.dumps(measurements, ensure_ascii=False, separators=(',', ':')))},"
+                f"'geen_nul_afleidbaar',{sql_text(night_note)})"
+            )
+
+    # 11.204: twee positieve inventarisaties; NMV-klassen blijven ongewijzigd.
+    fungus_rows = by_protocol["11.204"]
+    fungus_visits: dict[tuple[str, str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in fungus_rows:
+        fungus_visits[(str(row["geometry"]), str(row["start"]), str(row["stop"]))].append(row)
+    fungus_visit_values, fungus_taxon_values, fungus_selection_values = [], [], []
+    fungus_note = (
+        "Afgeleid bezoek uit 11.204. De NMV-aantalsklasse blijft bronwaarde. "
+        "Omdat deelnemers alleen soorten mogen invoeren die zij herkennen, is dit "
+        "geen bewezen complete lijst en worden geen nullen afgeleid."
+    )
+    for (geometry, start, stop), visit_rows in sorted(fungus_visits.items()):
+        key = hashlib.sha256(f"11.204|{geometry}|{start}|{stop}".encode()).hexdigest()
+        grids = sorted({str(row["grid"]) for row in visit_rows if row["grid"]})
+        fungus_visit_values.append(
+            f"({sql_text(BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION)},{sql_text(key)},"
+            f"'11.204',{sql_text(geometry)},{sql_text(grids[0] if len(grids)==1 else '')},"
+            f"{sql_text(start)},{sql_text(stop)},{len(visit_rows)},'multiple',"
+            f"'waarnemerskennis_onbekend_geen_complete_lijst',{sql_text(fungus_note)})"
+        )
+        by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for row in visit_rows:
+            by_taxon[str(row["taxon"])].append(row)
+            fungus_selection_values.append(
+                f"({sql_text(BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION)},"
+                f"{int(row['observation_id'])},{sql_text(key)},"
+                f"'positief_bezoek_geen_nulafleiding',{sql_text(fungus_note)})"
+            )
+        for taxon, taxon_rows in sorted(by_taxon.items()):
+            measurements = [{
+                "waarneming_id": int(row["observation_id"]),
+                "waarde": str(row["amount"]), "schaal": str(row["scale"]),
+            } for row in sorted(taxon_rows, key=lambda item: int(item["observation_id"]))]
+            fungus_taxon_values.append(
+                f"({sql_text(BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION)},"
+                f"{sql_text(key)},{sql_text(taxon)},'waargenomen',{len(taxon_rows)},"
+                f"{sql_text(json.dumps(measurements, ensure_ascii=False, separators=(',', ':')))},"
+                f"'geen_nul_afleidbaar',{sql_text(fungus_note)})"
+            )
+
+    # 13.201: geometrie is waterproxy; alleen Kleine modderkruiper is lokaal doelsoort.
+    fish_rows = by_protocol["13.201"]
+    fish_locations: dict[str, list[dict[str, object]]] = defaultdict(list)
+    fish_visits: dict[tuple[str, str, str], list[dict[str, object]]] = defaultdict(list)
+    for row in fish_rows:
+        fish_locations[str(row["geometry"])].append(row)
+        fish_visits[(str(row["geometry"]), str(row["start"]), str(row["stop"]))].append(row)
+    fish_location_values, fish_visit_values, fish_taxon_values, fish_selection_values = [], [], [], []
+    fish_note = (
+        "Afgeleid 13.201-bezoek. Exacte telwaarden blijven geregistreerde aantallen. "
+        "Submethode, doelbereik en inspanning ontbreken; niet-gemelde Kleine "
+        "modderkruiper is daarom onbekend en nadrukkelijk geen nul."
+    )
+    for geometry, location_rows in sorted(fish_locations.items()):
+        location_key = hashlib.sha256(f"13.201|water|{geometry}".encode()).hexdigest()
+        statuses = {str(row["spatial"]) for row in location_rows}
+        if len(statuses) != 1 or next(iter(statuses)) not in {"single_volledig_binnen", "outside"}:
+            raise ValueError("13.201-waterlocatie heeft een onverwachte ruimtelijke status.")
+        status = next(iter(statuses))
+        plots = {int(row["plot_id"]) for row in location_rows if row["plot_id"] is not None}
+        versions = {int(row["plot_version"]) for row in location_rows}
+        plot_id = next(iter(plots)) if status == "single_volledig_binnen" and len(plots)==1 else None
+        plot_version = next(iter(versions)) if plot_id is not None and len(versions)==1 else None
+        fish_location_values.append(
+            f"({sql_text(POLDERVIS_RULE_VERSION)},{sql_text(location_key)},'13.201',"
+            f"{sql_text(geometry)},{len(location_rows)},{sql_text(status)},"
+            f"{plot_version if plot_version is not None else 'NULL'},"
+            f"{plot_id if plot_id is not None else 'NULL'},"
+            f"'openbare_geometrie_als_waterproxy',{sql_text(fish_note)})"
+        )
+    for (geometry, start, stop), visit_rows in sorted(fish_visits.items()):
+        location_key = hashlib.sha256(f"13.201|water|{geometry}".encode()).hexdigest()
+        visit_key = hashlib.sha256(f"13.201|visit|{geometry}|{start}|{stop}".encode()).hexdigest()
+        fish_visit_values.append(
+            f"({sql_text(POLDERVIS_RULE_VERSION)},{sql_text(visit_key)},"
+            f"{sql_text(location_key)},{sql_text(start)},{sql_text(stop)},"
+            f"{len(visit_rows)},'submethode_en_inspanning_niet_meegeleverd',"
+            f"{sql_text(fish_note)})"
+        )
+        by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for row in visit_rows:
+            by_taxon[str(row["taxon"])].append(row)
+            fish_selection_values.append(
+                f"({sql_text(POLDERVIS_RULE_VERSION)},{int(row['observation_id'])},"
+                f"{sql_text(visit_key)},'positief_protocolrecord',{sql_text(fish_note)})"
+            )
+        for taxon, taxon_rows in sorted(by_taxon.items()):
+            total, measurements = _positive_measurements(taxon_rows)
+            relation = "doelsoort" if taxon == "Cobitis taenia" else "bijvangst"
+            fish_taxon_values.append(
+                f"({sql_text(POLDERVIS_RULE_VERSION)},{sql_text(visit_key)},"
+                f"{sql_text(taxon)},{sql_text(relation)},'waargenomen',"
+                f"{len(taxon_rows)},{total},"
+                f"{sql_text(json.dumps(measurements, ensure_ascii=False, separators=(',', ':')))},"
+                f"'niet_van_toepassing',{sql_text(fish_note)})"
+            )
+        if "Cobitis taenia" not in by_taxon:
+            fish_taxon_values.append(
+                f"({sql_text(POLDERVIS_RULE_VERSION)},{sql_text(visit_key)},"
+                f"'Cobitis taenia','doelsoort','doelsoort_niet_gemeld',0,NULL,"
+                f"JSON_ARRAY(),'geen_nul_doelmethode_onbekend',{sql_text(fish_note)})"
+            )
+
+    # 17.207: positief Ottersignaal op recordniveau; hokjaar is geen enkel plot.
+    mammal_rows = by_protocol["17.207"]
+    mammal_units: dict[tuple[str, int], list[dict[str, object]]] = defaultdict(list)
+    for row in mammal_rows:
+        mammal_units[(str(row["grid"]), int(row["year"]))].append(row)
+    mammal_unit_values, mammal_taxon_values, mammal_selection_values = [], [], []
+    mammal_note = (
+        "Openbaar 17.207-hokjaar met positieve Otterregistraties. De afzonderlijke "
+        "punten behouden hun plotcontext, maar het kilometerhok omvat meerdere plots. "
+        "Ontbrekende Bever is geen nul zonder waarnemersdekking."
+    )
+    for (grid, year), unit_rows in sorted(mammal_units.items()):
+        key = hashlib.sha256(f"17.207|{grid}|{year}".encode()).hexdigest()
+        mammal_unit_values.append(
+            f"({sql_text(OTTER_BEVER_RULE_VERSION)},{sql_text(key)},'17.207',"
+            f"{sql_text(grid)},{year},{len(unit_rows)},'meerdere_plots_binnen_hok',"
+            f"'alleen_positieve_records_geen_waarnemersdekking',{sql_text(mammal_note)})"
+        )
+        by_taxon: dict[str, list[dict[str, object]]] = defaultdict(list)
+        for row in unit_rows:
+            if row["plot_id"] is None:
+                raise ValueError("17.207-positief record mist de verwachte plotcontext.")
+            by_taxon[str(row["taxon"])].append(row)
+            mammal_selection_values.append(
+                f"({sql_text(OTTER_BEVER_RULE_VERSION)},{int(row['observation_id'])},"
+                f"{sql_text(key)},{int(row['plot_id'])},"
+                f"'positieve_puntcontext_geen_hoknul',{sql_text(mammal_note)})"
+            )
+        for taxon, taxon_rows in sorted(by_taxon.items()):
+            total, measurements = _positive_measurements(taxon_rows)
+            mammal_taxon_values.append(
+                f"({sql_text(OTTER_BEVER_RULE_VERSION)},{sql_text(key)},"
+                f"{sql_text(taxon)},'doelsoort','waargenomen',{len(taxon_rows)},"
+                f"{total},{sql_text(json.dumps(measurements, ensure_ascii=False, separators=(',', ':')))},"
+                f"'geen_nul_afleidbaar',{sql_text(mammal_note)})"
+            )
+
+    inserts = (
+        (f"{NACHTVLINDER_TABLE_PREFIX}_hokjaar", "reconstructieversie,hokjaar_sleutel,protocol_sleutel,openbare_geometrie_sha256,hoknummer,jaar,bronrecordaantal,ruimtelijke_status,telstatus,kwaliteitsnotitie", night_unit_values),
+        (f"{NACHTVLINDER_TABLE_PREFIX}_hokjaar_taxon", "reconstructieversie,hokjaar_sleutel,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,geregistreerd_aantal,meetwaarden_json,nulregel,kwaliteitsnotitie", night_taxon_values),
+        (f"{NACHTVLINDER_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,hokjaar_sleutel,selectiestatus,selectiereden", night_selection_values),
+        (f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,protocol_sleutel,openbare_geometrie_sha256,hoknummer,periode_start,periode_stop,bronrecordaantal,ruimtelijke_status,volledigheidsstatus,kwaliteitsnotitie", fungus_visit_values),
+        (f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,meetwaarden_json,nulregel,kwaliteitsnotitie", fungus_taxon_values),
+        (f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,bezoek_sleutel,selectiestatus,selectiereden", fungus_selection_values),
+        (f"{POLDERVIS_TABLE_PREFIX}_waterlocatie", "reconstructieversie,waterlocatie_sleutel,protocol_sleutel,openbare_geometrie_sha256,bronrecordaantal,ruimtelijke_status,plotversie_id,eenduidig_plot_id,identificatiestatus,kwaliteitsnotitie", fish_location_values),
+        (f"{POLDERVIS_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,waterlocatie_sleutel,periode_start,periode_stop,bronrecordaantal,methodestatus,kwaliteitsnotitie", fish_visit_values),
+        (f"{POLDERVIS_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,doelrelatie,waarnemingsstatus,bronrecordaantal,geregistreerd_aantal,meetwaarden_json,nulregel,kwaliteitsnotitie", fish_taxon_values),
+        (f"{POLDERVIS_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,bezoek_sleutel,selectiestatus,selectiereden", fish_selection_values),
+        (f"{OTTER_BEVER_TABLE_PREFIX}_hokjaar", "reconstructieversie,hokjaar_sleutel,protocol_sleutel,hoknummer,jaar,bronrecordaantal,ruimtelijke_status,volledigheidsstatus,kwaliteitsnotitie", mammal_unit_values),
+        (f"{OTTER_BEVER_TABLE_PREFIX}_hokjaar_taxon", "reconstructieversie,hokjaar_sleutel,wetenschappelijke_naam,doelrelatie,waarnemingsstatus,bronrecordaantal,geregistreerd_aantal,meetwaarden_json,nulregel,kwaliteitsnotitie", mammal_taxon_values),
+        (f"{OTTER_BEVER_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,hokjaar_sleutel,eenduidig_plot_id,selectiestatus,selectiereden", mammal_selection_values),
+    )
+    for table, columns, values in inserts:
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(
+        mysql_client, query_args, resterende_nem_validation_sql(), capture=True
+    )
+    return parse_analysis_chain_output(audit_output)
+
+
 def nem_subseries_validation_sql(
     table_prefix: str,
     rule_version: str,
@@ -7176,6 +7515,61 @@ SELECT JSON_OBJECT(
 """
 
 
+def resterende_nem_validation_sql() -> str:
+    night = sql_text(NACHTVLINDER_RULE_VERSION)
+    fungus = sql_text(BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION)
+    fish = sql_text(POLDERVIS_RULE_VERSION)
+    mammal = sql_text(OTTER_BEVER_RULE_VERSION)
+    secure_tables = ",".join(sql_text(name) for name in (
+        "ndff_nachtvlinder_hokjaar", "ndff_nachtvlinder_hokjaar_taxon",
+        "ndff_nachtvlinder_recordselectie",
+        "ndff_bospaddenstoel_verspreiding_bezoek",
+        "ndff_bospaddenstoel_verspreiding_bezoek_taxon",
+        "ndff_bospaddenstoel_verspreiding_recordselectie",
+        "ndff_poldervis_waterlocatie", "ndff_poldervis_bezoek",
+        "ndff_poldervis_bezoek_taxon", "ndff_poldervis_recordselectie",
+        "ndff_otter_bever_hokjaar", "ndff_otter_bever_hokjaar_taxon",
+        "ndff_otter_bever_recordselectie",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '03.203%' OR protocol LIKE '11.204%' OR protocol LIKE '13.201%' OR protocol LIKE '17.207%'),
+  'nachtvlinder_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '03.203%'),
+  'nachtvlinder_hokyears',(SELECT COUNT(*) FROM Meijendel.ndff_nachtvlinder_hokjaar WHERE reconstructieversie={night}),
+  'nachtvlinder_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_nachtvlinder_hokjaar_taxon WHERE reconstructieversie={night}),
+  'nachtvlinder_total_registered',(SELECT SUM(geregistreerd_aantal) FROM Meijendel.ndff_nachtvlinder_hokjaar_taxon WHERE reconstructieversie={night}),
+  'bospaddenstoel_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.204%'),
+  'bospaddenstoel_visits',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_verspreiding_bezoek WHERE reconstructieversie={fungus}),
+  'bospaddenstoel_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_verspreiding_bezoek_taxon WHERE reconstructieversie={fungus}),
+  'poldervis_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '13.201%'),
+  'poldervis_locations',(SELECT COUNT(*) FROM Meijendel.ndff_poldervis_waterlocatie WHERE reconstructieversie={fish}),
+  'poldervis_visits',(SELECT COUNT(*) FROM Meijendel.ndff_poldervis_bezoek WHERE reconstructieversie={fish}),
+  'poldervis_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_poldervis_bezoek_taxon WHERE reconstructieversie={fish}),
+  'poldervis_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_poldervis_bezoek_taxon WHERE reconstructieversie={fish} AND waarnemingsstatus='waargenomen'),
+  'poldervis_missing_target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_poldervis_bezoek_taxon WHERE reconstructieversie={fish} AND waarnemingsstatus='doelsoort_niet_gemeld' AND nulregel='geen_nul_doelmethode_onbekend'),
+  'poldervis_total_registered',(SELECT SUM(geregistreerd_aantal) FROM Meijendel.ndff_poldervis_bezoek_taxon WHERE reconstructieversie={fish} AND waarnemingsstatus='waargenomen'),
+  'otter_bever_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '17.207%'),
+  'otter_bever_hokyears',(SELECT COUNT(*) FROM Meijendel.ndff_otter_bever_hokjaar WHERE reconstructieversie={mammal}),
+  'otter_bever_taxon_rows',(SELECT COUNT(*) FROM Meijendel.ndff_otter_bever_hokjaar_taxon WHERE reconstructieversie={mammal}),
+  'otter_bever_total_registered',(SELECT SUM(geregistreerd_aantal) FROM Meijendel.ndff_otter_bever_hokjaar_taxon WHERE reconstructieversie={mammal}),
+  'zero_rows',(
+      (SELECT COUNT(*) FROM Meijendel.ndff_nachtvlinder_hokjaar_taxon WHERE reconstructieversie={night} AND waarnemingsstatus<>'waargenomen')+
+      (SELECT COUNT(*) FROM Meijendel.ndff_bospaddenstoel_verspreiding_bezoek_taxon WHERE reconstructieversie={fungus} AND waarnemingsstatus<>'waargenomen')+
+      (SELECT COUNT(*) FROM Meijendel.ndff_otter_bever_hokjaar_taxon WHERE reconstructieversie={mammal} AND waarnemingsstatus<>'waargenomen')+
+      (SELECT COUNT(*) FROM Meijendel.ndff_poldervis_bezoek_taxon WHERE reconstructieversie={fish} AND waarnemingsstatus NOT IN ('waargenomen','doelsoort_niet_gemeld'))
+  ),
+  'unlinked_source_records',(
+      (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_nachtvlinder_recordselectie s ON s.reconstructieversie={night} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '03.203%' AND s.waarneming_id IS NULL)+
+      (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_bospaddenstoel_verspreiding_recordselectie s ON s.reconstructieversie={fungus} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '11.204%' AND s.waarneming_id IS NULL)+
+      (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_poldervis_recordselectie s ON s.reconstructieversie={fish} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '13.201%' AND s.waarneming_id IS NULL)+
+      (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_otter_bever_recordselectie s ON s.reconstructieversie={mammal} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '17.207%' AND s.waarneming_id IS NULL)
+  ),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables})),
+  'lmf_ndff_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema) IN ('meijendel','meijendel_ndff_secure') AND LOWER(table_name) LIKE 'ndff_lmf%')
+);
+"""
+
+
 def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
@@ -7382,6 +7776,18 @@ def validate_kwartiertelling_reconstruction(metrics: dict[str, int]) -> None:
         raise ValueError(
             "Kwartiertellingreconstructie wijkt af van het vaste profiel: "
             f"{differences}"
+        )
+
+
+def validate_resterende_nem_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != RESTERENDE_NEM_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (RESTERENDE_NEM_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(RESTERENDE_NEM_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != RESTERENDE_NEM_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"Resterende NEM-reconstructie wijkt af van het vaste profiel: {differences}"
         )
 
 
@@ -7759,6 +8165,8 @@ def main() -> int:
     mode.add_argument("--audit-liveatlas", action="store_true")
     mode.add_argument("--reconstruct-kwartiertellingen", action="store_true")
     mode.add_argument("--audit-kwartiertellingen", action="store_true")
+    mode.add_argument("--reconstruct-resterende-nem", action="store_true")
+    mode.add_argument("--audit-resterende-nem", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -8109,6 +8517,24 @@ def main() -> int:
         )
         print(output)
         return 0
+    if args.reconstruct_resterende_nem:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_resterende_nem(args.mysql_client, client_args)
+        validate_resterende_nem_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_resterende_nem:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            resterende_nem_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_resterende_nem_reconstruction(metrics)
+        print("OK: vier resterende openbare NEM-reeksen gecontroleerd")
+        print(output)
+        return 0
     if args.audit_live:
         output = run_mysql(
             args.mysql_client,
@@ -8118,8 +8544,19 @@ def main() -> int:
         )
         metrics = parse_analysis_chain_output(output)
         validate_analysis_chain_metrics(metrics)
+        remaining_output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            resterende_nem_validation_sql(),
+            capture=True,
+        )
+        validate_resterende_nem_reconstruction(
+            parse_analysis_chain_output(remaining_output)
+        )
         print(f"OK: lokale NDFF-analyseketen {ANALYSIS_CHAIN_VERSION} gereed")
         print(output)
+        print("OK: vier resterende openbare NEM-reeksen gecontroleerd")
+        print(remaining_output)
         return 0
 
     sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql(), delivery_assessment_sql()))

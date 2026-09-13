@@ -2301,3 +2301,252 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_kwartiertelling_recordselectie (
     OR (ruimtelijke_status<>'single_volledig_binnen' AND eenduidig_plot_id IS NULL)
   )
 ) ENGINE=InnoDB;
+
+-- Resterende NEM-reeksen. Deze tabellen bewaren de native, uit de openbare
+-- levering reconstrueerbare eenheid. Alleen bij 13.201 wordt een niet-gemelde
+-- doelsoort vastgelegd; dat is nadrukkelijk geen protocolnul.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_nachtvlinder_hokjaar (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '03.203',
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  hoknummer VARCHAR(64) NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_status ENUM('multiple') NOT NULL,
+  telstatus ENUM('positieve_jaargegevens_geen_bezoekstructuur') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel),
+  UNIQUE KEY uq_ndff_nachtvlinder_hokjaar
+    (reconstructieversie, openbare_geometrie_sha256, jaar),
+  CHECK (bronrecordaantal > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_nachtvlinder_hokjaar_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(500) NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerd_aantal INT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM('geen_nul_afleidbaar') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel, wetenschappelijke_naam),
+  CONSTRAINT fk_ndff_nachtvlinder_taxon_hokjaar FOREIGN KEY
+    (reconstructieversie, hokjaar_sleutel)
+    REFERENCES Meijendel.ndff_nachtvlinder_hokjaar
+      (reconstructieversie, hokjaar_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (geregistreerd_aantal > 0),
+  CHECK (JSON_LENGTH(meetwaarden_json) > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_nachtvlinder_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM('vervaagd_positief_hokjaar') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  CONSTRAINT fk_ndff_nachtvlinder_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_nachtvlinder_selectie_hokjaar FOREIGN KEY
+    (reconstructieversie, hokjaar_sleutel)
+    REFERENCES Meijendel.ndff_nachtvlinder_hokjaar
+      (reconstructieversie, hokjaar_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_verspreiding_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '11.204',
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  hoknummer VARCHAR(64) NULL,
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_status ENUM('multiple') NOT NULL,
+  volledigheidsstatus ENUM('waarnemerskennis_onbekend_geen_complete_lijst') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  CHECK (periode_stop > periode_start),
+  CHECK (bronrecordaantal > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_verspreiding_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(500) NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM('geen_nul_afleidbaar') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  CONSTRAINT fk_ndff_bospaddenstoel_verspreiding_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_bospaddenstoel_verspreiding_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (JSON_LENGTH(meetwaarden_json) > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_verspreiding_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM('positief_bezoek_geen_nulafleiding') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  CONSTRAINT fk_ndff_bospaddenstoel_verspreiding_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_bospaddenstoel_verspreiding_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_bospaddenstoel_verspreiding_bezoek
+      (reconstructieversie, bezoek_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_waterlocatie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waterlocatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '13.201',
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_status ENUM('single_volledig_binnen','outside') NOT NULL,
+  plotversie_id BIGINT UNSIGNED NULL,
+  eenduidig_plot_id INT NULL,
+  identificatiestatus ENUM('openbare_geometrie_als_waterproxy') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waterlocatie_sleutel),
+  CONSTRAINT fk_ndff_poldervis_waterlocatie_plot FOREIGN KEY
+    (plotversie_id, eenduidig_plot_id)
+    REFERENCES Meijendel.ndff_sovon_plot (plotversie_id, plot_id),
+  CHECK (bronrecordaantal > 0),
+  CHECK ((ruimtelijke_status='single_volledig_binnen' AND eenduidig_plot_id IS NOT NULL)
+    OR (ruimtelijke_status='outside' AND eenduidig_plot_id IS NULL))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  waterlocatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  periode_start DATETIME NOT NULL,
+  periode_stop DATETIME NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  methodestatus ENUM('submethode_en_inspanning_niet_meegeleverd') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_ndff_poldervis_bezoek_water FOREIGN KEY
+    (reconstructieversie, waterlocatie_sleutel)
+    REFERENCES Meijendel.ndff_poldervis_waterlocatie
+      (reconstructieversie, waterlocatie_sleutel),
+  CHECK (periode_stop > periode_start),
+  CHECK (bronrecordaantal > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(500) NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen','doelsoort_niet_gemeld') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerd_aantal INT UNSIGNED NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM('niet_van_toepassing','geen_nul_doelmethode_onbekend') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  CONSTRAINT fk_ndff_poldervis_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_poldervis_bezoek
+      (reconstructieversie, bezoek_sleutel),
+  CHECK ((waarnemingsstatus='waargenomen' AND bronrecordaantal>0
+      AND geregistreerd_aantal>0 AND JSON_LENGTH(meetwaarden_json)>0
+      AND nulregel='niet_van_toepassing')
+    OR (waarnemingsstatus='doelsoort_niet_gemeld' AND doelrelatie='doelsoort'
+      AND bronrecordaantal=0 AND geregistreerd_aantal IS NULL
+      AND JSON_LENGTH(meetwaarden_json)=0
+      AND nulregel='geen_nul_doelmethode_onbekend'))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM('positief_protocolrecord') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  CONSTRAINT fk_ndff_poldervis_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_poldervis_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_poldervis_bezoek
+      (reconstructieversie, bezoek_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_otter_bever_hokjaar (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '17.207',
+  hoknummer VARCHAR(64) NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  ruimtelijke_status ENUM('meerdere_plots_binnen_hok') NOT NULL,
+  volledigheidsstatus ENUM('alleen_positieve_records_geen_waarnemersdekking') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel),
+  UNIQUE KEY uq_ndff_otter_bever_hokjaar
+    (reconstructieversie, hoknummer, jaar),
+  CHECK (bronrecordaantal > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_otter_bever_hokjaar_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(500) NOT NULL,
+  doelrelatie ENUM('doelsoort') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerd_aantal INT UNSIGNED NOT NULL,
+  meetwaarden_json JSON NOT NULL,
+  nulregel ENUM('geen_nul_afleidbaar') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, hokjaar_sleutel, wetenschappelijke_naam),
+  CONSTRAINT fk_ndff_otter_bever_taxon_hokjaar FOREIGN KEY
+    (reconstructieversie, hokjaar_sleutel)
+    REFERENCES Meijendel.ndff_otter_bever_hokjaar
+      (reconstructieversie, hokjaar_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (geregistreerd_aantal > 0),
+  CHECK (JSON_LENGTH(meetwaarden_json) > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_otter_bever_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  eenduidig_plot_id INT NOT NULL,
+  selectiestatus ENUM('positieve_puntcontext_geen_hoknul') NOT NULL,
+  selectiereden VARCHAR(1400) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  CONSTRAINT fk_ndff_otter_bever_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_otter_bever_selectie_hokjaar FOREIGN KEY
+    (reconstructieversie, hokjaar_sleutel)
+    REFERENCES Meijendel.ndff_otter_bever_hokjaar
+      (reconstructieversie, hokjaar_sleutel)
+) ENGINE=InnoDB;

@@ -394,6 +394,26 @@ telling, worden geen nullen afgeleid. Gebruik de laag voor positieve
 verspreidingscontext, telintervalcontext en indicatieve verandering in
 geregistreerde aantallen. Controleer met `--audit-kwartiertellingen`.
 
+De vier resterende openbare NEM-reeksen zijn in één gecontroleerde batch
+vastgelegd en worden gezamenlijk gecontroleerd met `--audit-resterende-nem`:
+
+- `03.203` bevat 596 vervaagde nachtvlinderrecords in vijf geometrie-jaren en
+  84 positieve taxonregels. De som van 878 heet uitsluitend geregistreerd
+  aantal; bezoekstructuur, inspanning en nullen ontbreken.
+- `11.204` bevat 14 positieve bospaddenstoelrecords in twee afgeleide bezoeken.
+  NMV-aantalsklassen blijven bronwaarden; herkenningsniveau en complete lijst
+  zijn onbekend, zodat geen nullen worden afgeleid.
+- `13.201` bevat 20 visrecords op drie waterlocatieproxy's en zes bezoeken. De
+  matrix heeft 17 positieve regels en twee regels `doelsoort_niet_gemeld` voor
+  Kleine modderkruiper. Die laatste zijn onbekend en nadrukkelijk geen nul.
+- `17.207` bevat drie positieve Otterrecords in één kilometerhok-jaar. De
+  puntrecords behouden hun plotcontext, maar het hokjaar is geen enkel plot en
+  het ontbreken van Bever is geen nul.
+
+Alle dertien afgeleide tabellen staan in `Meijendel`; het beveiligde schema is
+niet uitgebreid. Protocol `12.202` wordt niet opnieuw gereconstrueerd, omdat de
+provinciale PQ-reeks voor dit project de gezaghebbende bron blijft.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

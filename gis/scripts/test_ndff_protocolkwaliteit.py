@@ -129,6 +129,19 @@ def main() -> int:
         "meijendel.ndff_kwartiertelling_interval_soortgroep",
         "meijendel.ndff_kwartiertelling_interval_taxon",
         "meijendel.ndff_kwartiertelling_recordselectie",
+        "meijendel.ndff_nachtvlinder_hokjaar",
+        "meijendel.ndff_nachtvlinder_hokjaar_taxon",
+        "meijendel.ndff_nachtvlinder_recordselectie",
+        "meijendel.ndff_bospaddenstoel_verspreiding_bezoek",
+        "meijendel.ndff_bospaddenstoel_verspreiding_bezoek_taxon",
+        "meijendel.ndff_bospaddenstoel_verspreiding_recordselectie",
+        "meijendel.ndff_poldervis_waterlocatie",
+        "meijendel.ndff_poldervis_bezoek",
+        "meijendel.ndff_poldervis_bezoek_taxon",
+        "meijendel.ndff_poldervis_recordselectie",
+        "meijendel.ndff_otter_bever_hokjaar",
+        "meijendel.ndff_otter_bever_hokjaar_taxon",
+        "meijendel.ndff_otter_bever_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
@@ -964,6 +977,8 @@ def main() -> int:
     assert "--audit-liveatlas" in importer_text
     assert "--reconstruct-kwartiertellingen" in importer_text
     assert "--audit-kwartiertellingen" in importer_text
+    assert "--reconstruct-resterende-nem" in importer_text
+    assert "--audit-resterende-nem" in importer_text
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -975,6 +990,14 @@ def main() -> int:
     assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
     assert module.LIVEATLAS_TABLE_PREFIX == "Meijendel.ndff_liveatlas"
     assert module.KWARTIERTELLING_TABLE_PREFIX == "Meijendel.ndff_kwartiertelling"
+    assert module.NACHTVLINDER_TABLE_PREFIX == "Meijendel.ndff_nachtvlinder"
+    assert module.BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX == (
+        "Meijendel.ndff_bospaddenstoel_verspreiding"
+    )
+    assert module.POLDERVIS_TABLE_PREFIX == "Meijendel.ndff_poldervis"
+    assert module.OTTER_BEVER_TABLE_PREFIX == "Meijendel.ndff_otter_bever"
+    assert "Meijendel_ndff_secure" not in module.resterende_nem_source_sql().casefold()
+    assert "12.202" not in module.resterende_nem_source_sql()
     liveatlas_source_sql = " ".join(module.liveatlas_source_sql().split())
     assert "o.protocol LIKE '102.005%'" in liveatlas_source_sql
     assert "Meijendel_ndff_secure" not in liveatlas_source_sql
@@ -1237,6 +1260,23 @@ def main() -> int:
         raise AssertionError(
             "Een afwijkende kwartiertellingreconstructie is niet geblokkeerd"
         )
+    module.validate_resterende_nem_reconstruction(
+        dict(module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED)
+    )
+    broken_resterende_nem = dict(module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED)
+    broken_resterende_nem["poldervis_missing_target_rows"] -= 1
+    try:
+        module.validate_resterende_nem_reconstruction(broken_resterende_nem)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(
+            "Een afwijkende reconstructie van resterende NEM-reeksen is niet geblokkeerd"
+        )
+    assert module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED["zero_rows"] == 0
+    assert module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED[
+        "poldervis_missing_target_rows"
+    ] == 2
 
     # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
     # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
