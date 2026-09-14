@@ -170,6 +170,21 @@
      ontbreekt en vraag uitsluitend die informatie gericht aan NDFF;
   3. beoordeel pas na het NDFF-antwoord of een nieuwe, minimale vraag aan een
      of meer bronhouders noodzakelijk is.
+- Afgerond op 14 september 2026: de reeds geleverde, niet-ruimtelijke metadata
+  uit ticket 58679 is gekoppeld aan 14.420 openbare records in
+  `Meijendel.ndff_open_leveringsverrijking`. De live-audit telt 14.420 unieke
+  koppelingen, nul verweesde sleutels en nul ongeldige aantalsintervallen.
+- Vraag NDFF in de volgende stap uitsluitend gericht:
+  1. welke dataset-, onderzoek-, opname-, bezoek- of sessie-entiteiten voor de
+     betreffende waarnemingen bestaan en exporteerbaar zijn;
+  2. hoe de verkorte velden `sessionid`, `datm_dkkng` en `opp_dkkng` precies
+     moeten worden gelezen en waarom ze in ticket 58679 nul of leeg zijn;
+  3. waarom de exacte leveringsgeometrie bij 1.828 gekoppelde records afwijkt
+     terwijl de openbare vlag `vervaagd=0` is;
+  4. of hetzelfde rijkere, niet-ruimtelijke gegevensmodel voor alle relevante
+     niet-vogelwaarnemingen uit 1950-2025 kan worden geleverd.
+  Vraag niet opnieuw naar informatie die al in het openbare NDFF-woordenboek
+  of de ontvangen bestanden staat.
 - Historische status: Ton Lansink heeft op 13 september 2026 zeven
   bronorganisaties aangeschreven en deze verzoeken op 14 september 2026 weer
   ingetrokken. De Vlinderstichting, Zoogdiervereniging, RAVON, FLORON, BLWG,

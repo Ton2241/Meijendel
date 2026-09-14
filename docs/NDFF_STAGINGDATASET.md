@@ -240,3 +240,16 @@ en 55 geversioneerde SOVON-plots. Alle FFV-regels staan standaard op
 alleen in `Meijendel_ndff_secure.ndff_open_secure_koppeling` vastgelegd; 153
 beveiligde records hebben geen openbare match. Het controlemanifest staat op
 de T7 onder `NDFF/manifests/full_mysql_import_manifest.json`.
+
+Sinds 14 september 2026 bevat `Meijendel.ndff_open_leveringsverrijking` voor
+de 14.420 gekoppelde regels ook de reeds ontvangen niet-ruimtelijke metadata
+uit ticket 58679. Exacte geometrie, centroid en oppervlakte blijven buiten
+deze tabel. De koppeling is één-op-één en wordt bewaakt met
+`SHA-256(obs_uri)`. Alle gekoppelde regels hebben het NDFF-oordeel
+`betrouwbaar`; dat oordeel geldt voor de positieve waarneming en bewijst geen
+complete survey of trendgeschikte meetreeks.
+
+Van de 4.149 gekoppelde openbare records met `vervaagd=0` blijken er 1.828 toch
+een andere leveringsgeometrie te hebben. Daarom wordt de openbare vervagingsvlag
+niet als bewijs van geometrische gelijkheid gebruikt en blijft alle exacte
+leveringsgeometrie voorlopig beveiligd.

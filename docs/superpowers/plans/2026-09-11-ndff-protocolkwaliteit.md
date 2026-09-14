@@ -76,6 +76,25 @@ De view krijgt geen rechten voor gewone of Shiny-accounts.
 - [x] Werk architectuur, besluiten en werkinstructie bij; voer regressietests,
   `git diff --check` en workspace-preflight uit; commit en push.
 
+## Vervolgtaak: metadata uit de projectlevering benutten
+
+**Doel:** benut alle reeds ontvangen niet-ruimtelijke kwaliteits- en
+bronmetadata voordat NDFF of een bronhouder om aanvullende informatie wordt
+gevraagd, zonder beveiligde geometrie naar `Meijendel` te kopiëren.
+
+- [x] Voeg `Meijendel.ndff_open_leveringsverrijking` toe met een één-op-één-
+  koppeling via `SHA-256(obs_uri)`.
+- [x] Bewaar data-eigenaar, kwaliteit, gestructureerde aantallen en locatietype,
+  maar geen exacte geometrie, centroid of oppervlakte.
+- [x] Houd openbare `bronhouder` en `dataeigenaar_uri` uit de projectlevering
+  semantisch gescheiden in de canonieke view.
+- [x] Valideer 14.420 unieke koppelingen, nul verweesde sleutels en nul
+  ongeldige aantalsintervallen.
+- [x] Leg vast dat `zoid` en `sessionid` overal nul en de twee dekkingsvelden
+  overal leeg zijn; maak daarvan geen survey-ID's.
+- [x] Leg vast dat 1.828 openbare niet-vervaagde records toch geometrisch
+  verschillen en behoud daarom voorlopig alle exacte geometrie beveiligd.
+
 ## Vervolgtaak: openbare PQ-analysepoort
 
 **Doel:** voorkom dat de 97.318 herkenbare openbare NDFF-PQ-bronrecords naast

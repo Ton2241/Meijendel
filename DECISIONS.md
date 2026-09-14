@@ -36,6 +36,21 @@
   als `SHA-256(obs_uri)`; 14.420 records matchen. Exacte datum en geometrie uit
   de beveiligde levering vervangen de open waarden niet maar worden als
   afzonderlijke beveiligde bronlaag bewaard.
+- Niet-ruimtelijke metadata uit ticket 58679 wordt voor de 14.420 gekoppelde
+  openbare records ook in `Meijendel.ndff_open_leveringsverrijking` bewaard.
+  Dit omvat `obs_uri`, data-eigenaar, kwaliteit, gestructureerde aantallen en
+  locatietype, maar nooit de exacte leveringsgeometrie, centroid of oppervlakte.
+  `bronhouder` uit de openbare export en `dataeigenaar_uri` uit de
+  projectlevering blijven afzonderlijke begrippen. Het oordeel `betrouwbaar`
+  geldt voor de waarneming en is geen bewijs van een volledige of voor trends
+  geschikte survey.
+- De beveiligingsgrens wordt niet alleen op de openbare vlag `vervaagd`
+  gebaseerd. Bij 1.828 van de 4.149 gekoppelde records met `vervaagd=0` wijkt
+  de leveringsgeometrie af van de openbare geometrie. Tot NDFF de oorzaak en
+  betekenis heeft toegelicht, blijven alle exacte geometrieën van ticket 58679
+  in `Meijendel_ndff_secure`. Dit is een tijdelijke, aantoonbaar noodzakelijke
+  uitzondering op het voorkeursbesluit dat alleen werkelijk vervaagde
+  waarnemingen daar horen.
 - Een NDFF-geometrie is alleen een voorlopige plotkandidaat wanneer zij volledig
   binnen precies één geversioneerd SOVON-plot ligt. Alleen een intersectie of
   een enkel geraakt plot is onvoldoende. Van de levering voldoen 8.777 records

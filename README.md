@@ -192,9 +192,13 @@ of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
 De openbare FFV-staging en historische GBIF-vangblikreeks zijn lokaal als
 afzonderlijke bronregistraties in nieuwe tabellen van `Meijendel` opgenomen.
 Zij wijzigen de bestaande vogel- en provinciale PQ-tabellen niet en zijn niet
-automatisch voor trendanalyse toegelaten. De beveiligde levering blijft in
-`Meijendel_ndff_secure`; alleen daar staat de koppeling tussen beveiligde en
-openbare records.
+automatisch voor trendanalyse toegelaten. Niet-ruimtelijke metadata uit de
+projectlevering is voor de 14.420 gekoppelde openbare records vastgelegd in
+`ndff_open_leveringsverrijking`. Deze tabel bevat onder meer de onveranderde
+`obs_uri`, data-eigenaar, kwaliteitsstatus, gestructureerde aantallen en het
+locatietype, maar geen exacte geometrie, centroid of oppervlakte. De
+beveiligde levering en de koppeling met de exacte geometrie blijven in
+`Meijendel_ndff_secure`.
 
 De primaire SOVON/AVIMAP-export van project 252 is aanvullend vastgelegd in
 `sovon_avimap_import_batch`, `sovon_avimap_taxon`, `sovon_avimap_bezoek`,
@@ -505,6 +509,22 @@ NDFF-leveringen zonder dubbeltelling. Zij bevat 810.983 unieke waarnemingen:
 de openbare en 153 alleen beveiligd. Omdat de view exacte geometrie bevat,
 blijft zij uitsluitend lokaal in `Meijendel_ndff_secure` en buiten de rechten
 van gewone en Shiny-accounts.
+
+In de canonieke view zijn `bronhouder` en `dataeigenaar_uri` afzonderlijke
+begrippen. `bronhouder` komt uit de openbare FFV-export; `dataeigenaar_uri`
+komt uit de projectlevering. Alle 14.420 gekoppelde records hebben daarin het
+kwaliteitsoordeel `betrouwbaar`. Dit oordeel betreft de individuele positieve
+waarneming en bewijst niet dat de bovenliggende surveystructuur compleet of de
+reeks zonder meer trendgeschikt is. `zoid` en `sessionid` zijn in deze levering
+overal nul; `datm_dkkng` en `opp_dkkng` zijn overal leeg en leveren dus geen
+bruikbare inventarisatie- of bezoekkoppeling.
+
+De projectgeometrie is ook bij 1.828 van 4.149 openbaar als niet-vervaagd
+gemarkeerde gekoppelde records niet geometrisch gelijk aan de openbare
+geometrie. Daarom wordt niet aangenomen dat `vervaagd=0` betekent dat beide
+geometrieën identiek zijn. Tot NDFF dit verschil heeft verklaard, blijven alle
+exacte projectgeometrieën beveiligd opgeslagen en wordt niets naar de gewone
+database verplaatst.
 
 De geversioneerde openbare PQ-poort staat in `ndff_open_pq_koppeling`.
 Regelversie `ndff-open-pq-poort-v1` blokkeert 97.318 records met protocol

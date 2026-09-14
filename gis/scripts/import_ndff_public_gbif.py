@@ -452,6 +452,71 @@ JOIN Meijendel.ndff_open_waarneming o ON o.identiteit_sha256=s.open_identity_sha
 """
 
 
+def secure_metadata_enrichment_sql() -> str:
+    """Koppel uitsluitend niet-ruimtelijke leveringsmetadata aan openbare records."""
+    return """
+INSERT INTO Meijendel.ndff_open_leveringsverrijking (
+  waarneming_id,ticketnummer,leveringsregel_id,obs_uri,obs_uri_sha256,dataeigenaar_uri,
+  kwaliteitsstatus_raw,oorspronkelijke_aantal_raw,aantal_min,aantal_max,
+  eenheid_raw,locatie_type_raw,zoid_raw,sessionid_raw,datumdekking_raw,
+  oppervlaktedekking_raw,leveringsgeometrie_gelijk_aan_openbaar,
+  leveringsperiode_gelijk_aan_openbaar,koppelmethode,bronrecord_sha256
+)
+SELECT
+  o.waarneming_id,
+  '58679',
+  CAST(NULLIF(CAST(b.raw_payload->>'$.id' AS CHAR),'') AS UNSIGNED),
+  s.ndff_identity,
+  SHA2(s.ndff_identity,256),
+  NULLIF(b.raw_payload->>'$.dataeigenr',''),
+  NULLIF(b.raw_payload->>'$.kwliteit',''),
+  NULLIF(b.raw_payload->>'$.orig_aant',''),
+  CAST(NULLIF(CAST(b.raw_payload->>'$.aantal_min' AS CHAR),'') AS DECIMAL(20,6)),
+  CASE
+    WHEN JSON_TYPE(JSON_EXTRACT(b.raw_payload,'$.aantal_max'))='NULL' THEN NULL
+    ELSE CAST(NULLIF(CAST(b.raw_payload->>'$.aantal_max' AS CHAR),'') AS DECIMAL(20,6))
+  END,
+  NULLIF(b.raw_payload->>'$.eenheid',''),
+  NULLIF(b.raw_payload->>'$.loc_type',''),
+  NULLIF(CAST(b.raw_payload->>'$.zoid' AS CHAR),''),
+  NULLIF(CAST(b.raw_payload->>'$.sessionid' AS CHAR),''),
+  NULLIF(b.raw_payload->>'$.datm_dkkng',''),
+  NULLIF(b.raw_payload->>'$.opp_dkkng',''),
+  ST_Equals(o.openbare_geometrie,s.exacte_geometrie),
+  (DATE(o.periode_start)=s.periode_start AND DATE(o.periode_stop)=s.periode_stop),
+  k.koppelmethode,
+  b.bronrecord_sha256
+FROM Meijendel_ndff_secure.ndff_open_secure_koppeling AS k
+JOIN Meijendel.ndff_open_waarneming AS o
+  ON o.waarneming_id=k.open_waarneming_id
+JOIN Meijendel_ndff_secure.ndff_waarneming_register AS s
+  ON s.waarneming_id=k.secure_waarneming_id
+JOIN Meijendel_ndff_secure.ndff_waarneming_bron AS b
+  ON b.waarneming_id=s.waarneming_id
+ON DUPLICATE KEY UPDATE
+  ticketnummer=VALUES(ticketnummer),
+  leveringsregel_id=VALUES(leveringsregel_id),
+  obs_uri=VALUES(obs_uri),
+  obs_uri_sha256=VALUES(obs_uri_sha256),
+  dataeigenaar_uri=VALUES(dataeigenaar_uri),
+  kwaliteitsstatus_raw=VALUES(kwaliteitsstatus_raw),
+  oorspronkelijke_aantal_raw=VALUES(oorspronkelijke_aantal_raw),
+  aantal_min=VALUES(aantal_min),
+  aantal_max=VALUES(aantal_max),
+  eenheid_raw=VALUES(eenheid_raw),
+  locatie_type_raw=VALUES(locatie_type_raw),
+  zoid_raw=VALUES(zoid_raw),
+  sessionid_raw=VALUES(sessionid_raw),
+  datumdekking_raw=VALUES(datumdekking_raw),
+  oppervlaktedekking_raw=VALUES(oppervlaktedekking_raw),
+  leveringsgeometrie_gelijk_aan_openbaar=VALUES(leveringsgeometrie_gelijk_aan_openbaar),
+  leveringsperiode_gelijk_aan_openbaar=VALUES(leveringsperiode_gelijk_aan_openbaar),
+  koppelmethode=VALUES(koppelmethode),
+  bronrecord_sha256=VALUES(bronrecord_sha256),
+  verrijkt_op=CURRENT_TIMESTAMP(6);
+"""
+
+
 def repair_open_identity_hash_sql() -> str:
     return """
 USE Meijendel;
@@ -498,6 +563,7 @@ def validation(client: Path, mysql_args: list[str]) -> dict[str, int]:
         "sovon_plot_count": "SELECT COUNT(*) FROM Meijendel.ndff_sovon_plot",
         "secure_records": "SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register",
         "secure_open_links": "SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_open_secure_koppeling",
+        "open_enriched_records": "SELECT COUNT(*) FROM Meijendel.ndff_open_leveringsverrijking",
     }
     return {name: int(mysql_scalar(client, mysql_args, sql)) for name, sql in queries.items()}
 
@@ -518,6 +584,7 @@ def assert_expected(counts: dict[str, int]) -> None:
         "sovon_plot_count": 55,
         "secure_records": 14573,
         "secure_open_links": 14420,
+        "open_enriched_records": 14420,
     }
     differences = {name: (counts.get(name), value) for name, value in expected.items() if counts.get(name) != value}
     if differences:
@@ -537,11 +604,29 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=3306)
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument(
+        "--sync-secure-metadata",
+        action="store_true",
+        help="Verrijk gekoppelde openbare records met niet-ruimtelijke metadata uit ticket 58679.",
+    )
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    mysql_args = mysql_connection_args(args.login_path, args.host, args.port)
+    if args.sync_secure_metadata:
+        run_mysql(args.mysql_client, mysql_args, SCHEMA.read_text(encoding="utf-8"))
+        run_mysql(args.mysql_client, mysql_args, secure_metadata_enrichment_sql())
+        count = int(mysql_scalar(
+            args.mysql_client,
+            mysql_args,
+            "SELECT COUNT(*) FROM Meijendel.ndff_open_leveringsverrijking",
+        ))
+        if count != 14420:
+            raise ValueError(f"Aantal verrijkte openbare NDFF-records wijkt af: {count}")
+        print(json.dumps({"status": "PASS", "open_enriched_records": count}))
+        return 0
     for path in (args.open_gpkg, args.gbif_root / "event.txt", args.gbif_root / "occurrence.txt", args.plot_gpkg, SCHEMA, SECURE_SCHEMA):
         if not path.is_file():
             raise SystemExit(f"Ontbrekend bestand: {path}")
@@ -553,7 +638,6 @@ def main() -> int:
         print(json.dumps({"mode": "dry-run", "open_sha256": open_hash, "event_sha256": event_hash, "occurrence_sha256": occurrence_hash, "plot_sha256": plot_hash}, indent=2))
         return 0
 
-    mysql_args = mysql_connection_args(args.login_path, args.host, args.port)
     run_mysql(args.mysql_client, mysql_args, SCHEMA.read_text(encoding="utf-8"))
     run_mysql(args.mysql_client, mysql_args, secure_link_schema_sql())
     old_local_infile = mysql_scalar(args.mysql_client, mysql_args, "SELECT @@GLOBAL.local_infile")
@@ -573,6 +657,7 @@ def main() -> int:
             run_mysql(args.mysql_client, mysql_args, gbif_plot_link_sql())
             run_mysql(args.mysql_client, mysql_args, repair_open_identity_hash_sql())
             run_mysql(args.mysql_client, mysql_args, secure_link_sql())
+            run_mysql(args.mysql_client, mysql_args, secure_metadata_enrichment_sql())
     finally:
         if old_local_infile == "0":
             run_mysql(args.mysql_client, mysql_args, "SET GLOBAL local_infile=OFF")

@@ -97,6 +97,43 @@ CREATE TABLE IF NOT EXISTS ndff_open_waarneming (
   CHECK (periode_stop IS NULL OR periode_start IS NULL OR periode_stop >= periode_start)
 ) ENGINE=InnoDB;
 
+-- Niet-ruimtelijke verrijking uit een projectgebonden NDFF-levering. Exacte
+-- geometrie, centroiden en oppervlakte uit de beveiligde levering worden hier
+-- bewust niet opgeslagen. De openbare waarneming blijft de zelfstandig
+-- herstelbare bronregistratie.
+CREATE TABLE IF NOT EXISTS ndff_open_leveringsverrijking (
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  ticketnummer VARCHAR(32) NOT NULL,
+  leveringsregel_id BIGINT UNSIGNED NOT NULL,
+  obs_uri VARCHAR(1024) NOT NULL,
+  obs_uri_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  dataeigenaar_uri VARCHAR(1024) NULL,
+  kwaliteitsstatus_raw VARCHAR(128) NULL,
+  oorspronkelijke_aantal_raw VARCHAR(255) NULL,
+  aantal_min DECIMAL(20,6) NULL,
+  aantal_max DECIMAL(20,6) NULL,
+  eenheid_raw VARCHAR(128) NULL,
+  locatie_type_raw VARCHAR(64) NULL,
+  zoid_raw VARCHAR(255) NULL,
+  sessionid_raw VARCHAR(255) NULL,
+  datumdekking_raw VARCHAR(255) NULL,
+  oppervlaktedekking_raw VARCHAR(255) NULL,
+  leveringsgeometrie_gelijk_aan_openbaar TINYINT(1) NOT NULL,
+  leveringsperiode_gelijk_aan_openbaar TINYINT(1) NOT NULL,
+  koppelmethode VARCHAR(64) NOT NULL,
+  bronrecord_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  verrijkt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (waarneming_id),
+  UNIQUE KEY uq_ndff_open_verrijking_ticketregel (ticketnummer, leveringsregel_id),
+  UNIQUE KEY uq_ndff_open_verrijking_obs_uri (obs_uri_sha256),
+  KEY ix_ndff_open_verrijking_kwaliteit (kwaliteitsstatus_raw),
+  CONSTRAINT fk_ndff_open_verrijking_waarneming FOREIGN KEY (waarneming_id)
+    REFERENCES ndff_open_waarneming (waarneming_id),
+  CHECK (leveringsgeometrie_gelijk_aan_openbaar IN (0,1)),
+  CHECK (leveringsperiode_gelijk_aan_openbaar IN (0,1)),
+  CHECK (aantal_max IS NULL OR aantal_min IS NULL OR aantal_max >= aantal_min)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS ndff_open_soortgroep_koppeling (
   waarneming_id BIGINT UNSIGNED NOT NULL,
   soortgroep_code VARCHAR(64) NOT NULL,

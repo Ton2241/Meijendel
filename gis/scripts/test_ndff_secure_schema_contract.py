@@ -69,8 +69,12 @@ def main() -> int:
         "exacte_geometrie",
         "openbare_geometrie",
         "open_identity_sha256",
+        "dataeigenaar_uri",
+        "ndff_open_leveringsverrijking",
     ):
         assert required in canonical, f"canonieke view mist {required}"
+    assert "o.bronhouder as bronhouder" in " ".join(canonical.split())
+    assert "s.bronhouder as bronhouder" not in " ".join(canonical.split())
     assert "raw_payload" not in canonical
     assert "ndff_identity" not in canonical
 

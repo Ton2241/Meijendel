@@ -159,15 +159,14 @@ van alleen een ontbrekende match nooit de eigenschap `onafhankelijk` toe.
 
 De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
 blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
-geometrie, NDFF-identiteiten en de
-ruimtelijke koppeling worden op de Samsung T7 beheerd onder
+geometrie en de ruimtelijke koppeling worden op de Samsung T7 beheerd onder
 `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
 
 De lokale import gebruikt het afzonderlijke MySQL-schema
 `Meijendel_ndff_secure`, een eigen `ndff_soorten`-tabel en fysieke
 `ndff_<soortgroep>`-tabellen. Het algemene account `meijendel_read` krijgt geen
 rechten op dit schema. De gewone `meijendel.sql`, website, algemene Shiny-app en
-VPS ontvangen geen ruwe beveiligde regels, exacte geometrie of NDFF-identiteit.
+VPS ontvangen geen ruwe beveiligde regels of exacte geometrie.
 De provinciale PQ-reeks in de life-database is de oorspronkelijke en
 gezaghebbende PQ-bron. NDFF-PQ wordt in het beveiligde schema alleen als
 secundaire controlebron geregistreerd en is door een afzonderlijke bronvlag
@@ -183,12 +182,27 @@ Van deze regels koppelen 14.420 via de reeds gehashte openbare FFV-identiteit;
 153 beveiligde regels hebben geen openbare tegenhanger. Deze koppeltabel staat
 uitsluitend in `Meijendel_ndff_secure`.
 
+De tabel `Meijendel.ndff_open_leveringsverrijking` bewaart voor de 14.420
+gekoppelde openbare regels uitsluitend niet-ruimtelijke metadata uit ticket
+58679: `obs_uri`, data-eigenaar, kwaliteit, gestructureerde aantallen,
+locatietype en technische controlevelden. Exacte geometrie, centroid en
+oppervlakte ontbreken bewust. `SHA-256(obs_uri)` dwingt een unieke koppeling af.
+De openbare bronhouder en de data-eigenaar van de projectlevering blijven
+afzonderlijk benoemd. Een kwaliteitsstatus op recordniveau verandert de
+protocol- en surveytoelating niet.
+
+Bij 1.828 van de 4.149 gekoppelde records met de openbare vlag `vervaagd=0`
+wijkt de projectgeometrie toch af van de openbare geometrie. Daarom blijft alle
+exacte geometrie voorlopig in het beveiligde schema. Pas na een verklaring van
+NDFF kan per record worden beslist of verplaatsing naar `Meijendel` veilig is.
+
 De interne view `Meijendel_ndff_secure.v_ndff_canonieke_waarneming` vormt
 daaruit één lokale bronlaag met 810.983 unieke logische waarnemingen. Zij bevat
 796.410 uitsluitend openbare records, 14.420 records waarbij de beveiligde
 datum, validatiestatus en exacte geometrie de openbare representatie vervangen,
-en 153 uitsluitend beveiligde records. De view blijft vanwege de exacte
-geometrie buiten alle gewone en Shiny-rechten.
+en 153 uitsluitend beveiligde records. De view toont `bronhouder` en
+`dataeigenaar_uri` afzonderlijk en blijft vanwege de exacte geometrie buiten
+alle gewone en Shiny-rechten.
 
 De niet-gevoelige tabel `Meijendel.ndff_open_pq_koppeling` vormt de
 geversioneerde PQ-poort voor alle openbare records. Versie

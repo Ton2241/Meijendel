@@ -256,8 +256,9 @@ SELECT
     ELSE CAST(s.periode_stop AS DATETIME) END AS periode_stop,
   CASE WHEN s.waarneming_id IS NULL THEN o.jaar ELSE s.jaar END AS jaar,
   CASE WHEN s.waarneming_id IS NULL THEN o.protocol ELSE s.protocol END AS protocol,
-  CASE WHEN s.waarneming_id IS NULL THEN o.bronhouder ELSE s.bronhouder END AS bronhouder,
-  s.validatiestatus,
+  o.bronhouder AS bronhouder,
+  e.dataeigenaar_uri AS dataeigenaar_uri,
+  COALESCE(e.kwaliteitsstatus_raw,s.validatiestatus) AS validatiestatus,
   CASE WHEN s.waarneming_id IS NULL
     THEN o.openbare_geometrie ELSE s.exacte_geometrie END AS analyse_geometrie,
   CASE WHEN s.waarneming_id IS NULL
@@ -271,6 +272,8 @@ LEFT JOIN ndff_waarneming_register AS s
   ON s.waarneming_id=k.secure_waarneming_id
 LEFT JOIN ndff_soorten AS ss
   ON ss.ndff_soort_id=s.ndff_soort_id
+LEFT JOIN Meijendel.ndff_open_leveringsverrijking AS e
+  ON e.waarneming_id=o.waarneming_id
 UNION ALL
 SELECT
   s.open_identity_sha256 AS canonieke_identiteit_sha256,
@@ -285,7 +288,8 @@ SELECT
   CAST(s.periode_stop AS DATETIME) AS periode_stop,
   s.jaar,
   s.protocol,
-  s.bronhouder,
+  NULL AS bronhouder,
+  s.bronhouder AS dataeigenaar_uri,
   s.validatiestatus,
   s.exacte_geometrie AS analyse_geometrie,
   'exacte_geometrie' AS geometrie_bron,

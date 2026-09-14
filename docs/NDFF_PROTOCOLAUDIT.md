@@ -749,6 +749,23 @@ Een eventuele latere bronlevering wordt vóór iedere databasewijziging op
 herkomst, dekking, koppelsleutels, gebruiksvoorwaarden en overlap met NDFF
 gecontroleerd.
 
+De eerste databaseverbetering uit deze nieuwe volgorde is op 14 september
+uitgevoerd. Voor 14.420 gekoppelde records zijn de bruikbare niet-ruimtelijke
+velden uit ticket 58679 opgenomen in
+`Meijendel.ndff_open_leveringsverrijking`. De publieke `bronhouder` en de
+`dataeigenaar_uri` uit de projectlevering blijven daarbij afzonderlijk. Alle
+gekoppelde regels zijn door NDFF als `betrouwbaar` beoordeeld, maar dit
+recordoordeel verandert de eerder vastgelegde protocolgeschiktheid en
+surveybeperkingen niet.
+
+Er zijn geen fictieve datasets, onderzoeken, bezoeken of sessies aangemaakt.
+De velden `zoid` en `sessionid` zijn overal nul en `datm_dkkng` en `opp_dkkng`
+overal leeg. De volgende externe stap is daarom een kleine, gerichte vraag aan
+NDFF over de werkelijk aanwezige en exporteerbare bovenliggende entiteiten.
+Een tweede gerichte vraag betreft de geometrie: 1.828 gekoppelde records met
+de openbare vlag `vervaagd=0` hebben toch een andere leveringsgeometrie. Tot de
+betekenis daarvan vaststaat, blijft de exacte geometrie beveiligd.
+
 ## Reconstructie van de surveystructuur
 
 De GeoPackage bevat niet alle bovenliggende survey-entiteiten die in het

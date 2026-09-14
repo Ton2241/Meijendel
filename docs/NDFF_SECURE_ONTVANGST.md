@@ -180,6 +180,28 @@ koppeling omvat 14.420 regels en staat uitsluitend in
 technische bronopname verandert niets aan de bestaande analysepoort, PQ-regel
 of beveiliging.
 
+Op 14 september 2026 zijn de niet-ruimtelijke velden uit de projectlevering
+voor alle 14.420 gekoppelde records aanvullend vastgelegd in
+`Meijendel.ndff_open_leveringsverrijking`. De tabel bevat geen exacte
+geometrie, centroid of oppervlakte. De koppeling is één-op-één, heeft geen
+verweesde sleutels en gebruikt `SHA-256(obs_uri)` als unieke controlewaarde.
+De openbare `bronhouder` en de in de projectlevering opgenomen
+`dataeigenaar_uri` worden niet meer als hetzelfde veld gepresenteerd.
+
+Alle gekoppelde records hebben het oordeel `betrouwbaar`; dit is uitsluitend
+een kwaliteitskenmerk van de positieve waarneming. Het vervangt geen
+informatie over telobject, bezoek, inspanning, nulwaarnemingen of
+protocolversie. `zoid` en `sessionid` zijn in alle 14.573 leveringsregels nul;
+`datm_dkkng` en `opp_dkkng` zijn overal leeg. Deze velden zijn daarom niet als
+kunstmatige survey- of bezoeksleutel gebruikt.
+
+Een geometriecontrole toont bovendien dat bij 1.828 van de 4.149 gekoppelde
+records waarvoor de openbare export `vervaagd=0` vermeldt, de geometrie uit de
+projectlevering toch afwijkt. Bij de overige 2.321 zijn de geometrieën gelijk.
+De vlag `vervaagd=0` is dus onvoldoende om geometrische gelijkheid te bewijzen.
+Alle exacte leveringsgeometrieën blijven daarom voorlopig in
+`Meijendel_ndff_secure`, totdat NDFF het verschil heeft verklaard.
+
 ## Biodiversiteitssignalen door de tijd
 
 Op 10 september 2026 is een eerste reproduceerbare, uitsluitend lokale
