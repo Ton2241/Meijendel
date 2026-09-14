@@ -47,16 +47,18 @@
   PQ-status geschikt voor een gerichte brondata-aanvraag. Zonder telobjecten,
   bezoeken, inspanning, protocolversies en afleidbare nullen blijven ook deze
   buiten trend-, abundantie- en afwezigheidsanalyses.
-- NDFF wordt niet opnieuw om de ontbrekende surveystructuur gevraagd, omdat
-  NDFF heeft aangegeven die niet te kunnen leveren. Voor de 1.274 geschikte
-  vervolgkandidaten wordt de verwachte meetopzet uit officiële protocollen
-  gereconstrueerd en worden de feitelijke native meetreeksen rechtstreeks bij
-  Zoogdiervereniging, Dunea/FLORON, RAVON, ANEMOON, BLWG, De
-  Vlinderstichting en Staatsbosbeheer/opdrachtgever opgevraagd wanneer een
-  noodzakelijke sleutel niet kan worden gereconstrueerd. Voor expliciete
-  NEM-codes geldt de later vastgelegde uitzondering: de code bewijst een
-  protocolgeldig positief bezoek; begin- en eindtijd groeperen de aanwezige
-  positieve regels tot dat bezoek.
+- De vervolgstappen voor ontbrekende NDFF-meetstructuur volgen vanaf 14
+  september 2026 een vaste, zuinige informatieketen. Eerst wordt de bestaande
+  Meijendel-database verbeterd op basis van de reeds ontvangen openbare en
+  beveiligde NDFF-velden en de officiële documentatie. Daarna wordt NDFF
+  uitsluitend gericht gevraagd welke nog ontbrekende dataset-, onderzoek-,
+  opname-, bezoek- of sessiegegevens beschikbaar en exporteerbaar zijn. Pas na
+  dat antwoord wordt per protocol vastgesteld of een nieuwe, minimale vraag
+  aan een bronhouder noodzakelijk is. De zeven op 13 september verzonden
+  verzoeken zijn door Ton Lansink ingetrokken en gelden niet meer als
+  openstaande acties. Voor expliciete NEM-codes geldt de later vastgelegde
+  uitzondering: de code bewijst een protocolgeldig positief bezoek; begin- en
+  eindtijd groeperen de aanwezige positieve regels tot dat bezoek.
 - De native survey-eenheid blijft behouden: route, water, permanent proefvlak,
   kilometerhok, meettraject of karteringsgebied. De ruimtelijke ligging van één
   positieve NDFF-regel is onvoldoende om de hele survey aan een SOVON-plot toe
@@ -243,9 +245,11 @@
   en NMV blijven mogelijke aanvullende bronorganisaties als na reconstructie
   noodzakelijke sleutels ontbreken. Dit verandert `ndff-analyseketen-v1` en de
   bestaande algemene analysetoelatingen niet.
-- Binnen de beveiligde 191-soortenlevering gaan van de 8.494 ruimtelijke
-  verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords door
-  naar de brondata-opvraag. Dit is een deelsom; de validatieprioriteit voor de
+- Binnen de beveiligde 191-soortenlevering vormen van de 8.494 ruimtelijke
+  verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords een
+  afzonderlijke validatiedeelsom. Deze records gaan niet rechtstreeks naar een
+  bronhouderopvraag; eerst volgen databaseverbetering en de gerichte NDFF-vraag.
+  De validatieprioriteit voor de
   volledige NDFF-set wordt bepaald vanuit de actuele 65.464 canonieke
   kandidaten voor minstens één gebruikstype buiten uitsluitend `V`.
   Op uitdrukkelijk besluit van 10 september 2026 mogen alle openbare FFV-regels

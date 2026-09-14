@@ -158,34 +158,33 @@
 - Beoordeel per soortgroep welke van de 8.494 voorlopige
   verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor verdere
   analyse; zij zijn niet trendklaar.
-- Baseer de latere aanvullende bronvalidatie niet uitsluitend op de 1.274 kandidaten uit
+- Baseer de latere aanvullende validatie niet uitsluitend op de 1.274 kandidaten uit
   de beveiligde 191-soortenlevering. Over de volledige canonieke laag zijn
   66.125 unieke records kandidaat voor minstens één gebruikstype buiten `V`.
-  Behandel de oude 1.274 uitsluitend als beveiligde deelsom. Rond eerst de
-  NEM-reconstructies af. Vraag daarna alleen nog ontbrekende sleutels op bij:
-  De Vlinderstichting (`03.001` en zo nodig `07.201`), FLORON/Dunea (`12.211`), RAVON (`01.201`), Zoogdiervereniging
-  (zo nodig nadere validatie `17.208` en herkomst `17.201`), BLWG (`02.202`) en NMV
-  (`11.201`). Inventarisatieprotocollen van FLORON, ANEMOON en EIS volgen
-  daarna voor verspreidings- en detectieanalyse; zij zijn niet automatisch
-  kandidaten voor aantalsontwikkeling.
-- Bepaal per protocol pas na de reconstructiepoging de kleinst noodzakelijke opvraag. Vraag zo nodig:
-  stabiele telobject-ID's en geometrieversies, alle uitgevoerde bezoeken,
-  complete resultaten waaruit niet-detecties kunnen worden afgeleid, de
-  bezoekgegevens die protocolgeldigheid bepalen en methodewijzigingen. Vraag
-  geplande of uitgevallen bezoeken, apparatuur en aanvullende metadata alleen
-  wanneer het betreffende protocol of analysemodel die werkelijk nodig heeft.
-  Los bij LMF-a expliciet de openbare drie-/vierjarige cyclusinconsistentie op.
-- Uitgevoerd op 13 september 2026: alle zeven bronorganisaties zijn door Ton
-  Lansink aangeschreven met de per organisatie opgestelde verzoektekst om de
-  ontbrekende meetstructuur voor statistisch verantwoord gebruik aan te vullen:
-  De Vlinderstichting (`meetnet@vlinderstichting.nl`), Zoogdiervereniging
-  (`info@zoogdiervereniging.nl`), RAVON (`info@ravon.nl`), FLORON
-  (`info@floron.nl`), BLWG (`henk-jan@blwg.nl`), Stichting ANEMOON
-  (`anemoon@cistron.nl`) en Staatsbosbeheer
-  (`info@staatsbosbeheer.nl`). Volgende actie is iedere reactie of levering
-  afzonderlijk registreren, veilig opslaan, inhoudelijk beoordelen en aan de
-  bestaande NDFF-records koppelen. Voor 24 september 2026 om 09:00 uur is een
-  eenmalige controleherinnering gepland.
+  Behandel de oude 1.274 uitsluitend als beveiligde deelsom.
+- Voer de vervolgstappen in deze vaste volgorde uit:
+  1. verbeter eerst de Meijendel-database op basis van de reeds ontvangen
+     openbare en beveiligde NDFF-velden, het NDFF-woordenboek en de overige
+     officiële documentatie;
+  2. bepaal daarna per protocol en entiteit precies welke informatie nog
+     ontbreekt en vraag uitsluitend die informatie gericht aan NDFF;
+  3. beoordeel pas na het NDFF-antwoord of een nieuwe, minimale vraag aan een
+     of meer bronhouders noodzakelijk is.
+- Historische status: Ton Lansink heeft op 13 september 2026 zeven
+  bronorganisaties aangeschreven en deze verzoeken op 14 september 2026 weer
+  ingetrokken. De Vlinderstichting, Zoogdiervereniging, RAVON, FLORON, BLWG,
+  Stichting ANEMOON en Staatsbosbeheer hebben daarom geen openstaand verzoek
+  meer van dit project. Stuur geen herinnering of vervolgbericht. De eerder
+  geplande controle op 24 september 2026 is vervallen.
+- Als na het NDFF-antwoord toch broninformatie nodig blijft, bepaal dan per
+  protocol de kleinst noodzakelijke opvraag. Vraag alleen om de concrete
+  sleutels of velden die niet uit de database, de NDFF-leveringen of officiële
+  documentatie kunnen worden afgeleid. Mogelijke onderdelen zijn stabiele
+  telobject-ID's en geometrieversies, uitgevoerde bezoeken, complete resultaten
+  waaruit niet-detecties kunnen worden afgeleid, gegevens die
+  protocolgeldigheid bepalen en methodewijzigingen. Vraag geplande of
+  uitgevallen bezoeken, apparatuur en andere metadata alleen wanneer het
+  gekozen analysemodel die werkelijk nodig heeft.
 - Leg de gereconstrueerde native surveystructuur vast en koppel die daarna geversioneerd
   aan SOVON-plots. Splits routes of gebieden niet over plots zonder
   sectiegeometrie én sectie-inspanning. Houd per protocol een eigen

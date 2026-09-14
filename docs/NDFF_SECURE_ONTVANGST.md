@@ -146,14 +146,15 @@ gelabeld als wachtend op volledige brondata. Daarbij blijven gelden:
 - de provinciale volledige PQ-opnamen blijven als primaire bron leidend;
   NDFF-PQ blijft uitsluitend secundair QA-materiaal.
 
-De surveystructuur wordt niet opnieuw bij NDFF opgevraagd: NDFF heeft gemeld
-dat zij naast de geleverde waarnemingsinformatie geen aanvullende
-surveystructuur kan leveren. Voor de 1.274 geschikte vervolgkandidaten is het
-bedoelde meetontwerp gereconstrueerd uit de officiële protocollen. De
-feitelijke telobjecten, alle bezoeken, inspanning, doelsoorten, nulresultaten,
-protocolversies en kwaliteitsmetadata worden rechtstreeks bij de
-meetnetbeheerder opgevraagd: Zoogdiervereniging, Dunea/FLORON, RAVON, ANEMOON,
-BLWG, De Vlinderstichting en Staatsbosbeheer/opdrachtgever.
+De eerdere conclusie dat NDFF geen aanvullende surveystructuur kan leveren was
+te breed. Vaststaat alleen dat die structuur niet in de ontvangen exports zat.
+Daarom wordt eerst de Meijendel-database verbeterd met alle reeds geleverde
+velden en de officiële NDFF-documentatie. Vervolgens wordt NDFF gericht gevraagd
+welke nog ontbrekende dataset-, onderzoek-, opname-, bezoek- of sessiegegevens
+voor deze records beschikbaar en exporteerbaar zijn. Pas na dat antwoord wordt
+vastgesteld of voor een concreet protocol nog een minimale vraag aan de
+meetnetbeheerder nodig is. De zeven eerder verzonden bronhouderverzoeken zijn op
+14 september 2026 ingetrokken.
 
 De oorspronkelijke meeteenheid blijft behouden. Een losse waarneming binnen
 één SOVON-plot is onvoldoende om een route, water, proefvlak, kilometerhok of

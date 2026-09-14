@@ -713,7 +713,7 @@ Aanvullende bronvragen worden pas gesteld wanneer tijd, geometrie en de
 officiële protocolomschrijving een noodzakelijke sleutel niet kunnen leveren.
 Zij blokkeren de technisch verantwoorde reconstructies niet.
 
-### Verzonden bronvragen
+### Ingetrokken bronvragen en vervolgvolgorde
 
 Ton Lansink heeft op 13 september 2026 alle zeven geselecteerde
 bronorganisaties per e-mail aangeschreven. Daarbij zijn de in dit traject per
@@ -734,21 +734,32 @@ statistisch verantwoord gebruik.
 | Stichting ANEMOON | `anemoon@cistron.nl` |
 | Staatsbosbeheer | `info@staatsbosbeheer.nl` |
 
-Ontvangen reacties en bronbestanden worden per organisatie afzonderlijk
-geregistreerd. Een primaire bronlevering wordt eerst op herkomst, dekking,
-telobjecten, bezoeken, doelsoorten, nullen, inspanning, methodewijzigingen en
-gebruiksvoorwaarden gecontroleerd voordat de classificatie of analyseviews
-worden aangepast.
+Ton Lansink heeft deze zeven verzoeken op 14 september 2026 ingetrokken. Zij
+zijn niet langer openstaand en krijgen geen herinnering of vervolgbericht. De
+nieuwe vaste volgorde is:
+
+1. eerst de Meijendel-database verbeteren met de informatie die al in de
+   openbare en beveiligde NDFF-leveringen en de officiële documentatie staat;
+2. daarna exact vaststellen welke gegevens nog ontbreken en NDFF daarover
+   gericht bevragen;
+3. pas na het NDFF-antwoord beoordelen of voor een specifiek protocol nog een
+   kleine, gerichte vraag aan een bronhouder nodig is.
+
+Een eventuele latere bronlevering wordt vóór iedere databasewijziging op
+herkomst, dekking, koppelsleutels, gebruiksvoorwaarden en overlap met NDFF
+gecontroleerd.
 
 ## Reconstructie van de surveystructuur
 
-De mededeling van NDFF dat de GeoPackage alle beschikbare informatie per
-waarneming bevat, betekent dat de ontbrekende surveystructuur niet opnieuw bij
-NDFF wordt gevraagd. De openbare handleidingen van de meetnetbeheerders bepalen
-het bedoelde ontwerp. Feitelijke bezoeken worden waar mogelijk uit gelijke
-begin- en eindtijden gereconstrueerd en meeteenheden uit geometrische samenhang.
-Alleen niet-reconstrueerbare sleutels of historische wijzigingen worden later
-gericht bij de bronorganisatie nagevraagd.
+De GeoPackage bevat niet alle bovenliggende survey-entiteiten die in het
+NDFF-gegevensmodel worden onderscheiden. Daarom wordt de database eerst
+verbeterd met alle reeds geleverde velden en de officiële documentatie. De
+openbare handleidingen van de meetnetbeheerders bepalen het bedoelde ontwerp.
+Feitelijke bezoeken worden waar verantwoord uit tijd en geometrische samenhang
+gereconstrueerd. Daarna wordt NDFF gericht gevraagd welke ontbrekende dataset-,
+onderzoek-, opname-, bezoek- of sessiegegevens beschikbaar en exporteerbaar
+zijn. Alleen wat na het NDFF-antwoord noodzakelijk blijft, kan aanleiding zijn
+voor een nieuwe, minimale bronhoudervraag.
 
 De 1.274 vervolgkandidaten bestaan uit tien protocol-broncombinaties:
 
@@ -765,10 +776,13 @@ De 1.274 vervolgkandidaten bestaan uit tien protocol-broncombinaties:
 | Landelijk Meetnet Vlinders | 1 | De Vlinderstichting | vaste route met secties | 3 |
 | RAVON Meetnet Natura 2000 | 1 | RAVON/opdrachtgever | meetpunt, water of traject | 4 |
 
-Prioriteit 1 wordt als eerste opgevraagd. Prioriteit 2 is voorwaardelijk
-kansrijk. Prioriteit 3 is vooral bruikbaar binnen het eigen meetnetmodel of
-voor periodieke toestand. Prioriteit 4 is in deze levering te klein voor een
-lokale trend, tenzij de bronhouder een veel completere reeks kan leveren.
+De prioriteiten in deze tabel zijn inhoudelijke validatieprioriteiten, geen
+actieve volgorde voor externe verzoeken. Eerst worden database en NDFF-
+gegevensmodel benut. Prioriteit 1 verdient daarna als eerste een gerichte
+NDFF-controle. Prioriteit 2 is voorwaardelijk kansrijk. Prioriteit 3 is vooral
+bruikbaar binnen het eigen meetnetmodel of voor periodieke toestand. Prioriteit
+4 is in deze levering te klein voor een lokale trend, tenzij later een veel
+completere reeks beschikbaar blijkt.
 
 Het native telobject blijft altijd leidend. Dat een afzonderlijke NDFF-
 waarneming volledig binnen één SOVON-plot ligt, bewijst niet dat de volledige
