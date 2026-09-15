@@ -271,12 +271,17 @@ ALTER TABLE ndff_analysebesluit
 -- afgeleide tabellen staan in de life-database: zij zijn uitsluitend uit de
 -- openbare NDFF-bron gereconstrueerd. Bronrecords blijven ongewijzigd; iedere
 -- afleiding is reproduceerbaar via reconstructieversie.
--- Eerste vastgelegde reconstructieregel: ndff-vlinderroute-v1.
+-- Actuele reconstructieregel: ndff-vlinderroute-v2. Versie 1 wordt bij de
+-- gecontroleerde herbouw vervangen; de oorspronkelijke NDFF-records blijven.
 CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_routefamilie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   routefamilie_id SMALLINT UNSIGNED NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '03.201',
   reconstructiestatus ENUM('waarschijnlijk','handmatige_controle') NOT NULL,
+  routetype ENUM('algemene_route','soortgerichte_route','onbepaald')
+    NOT NULL DEFAULT 'onbepaald',
+  doelsoort VARCHAR(255) NULL,
+  routetype_bewijs VARCHAR(128) NOT NULL DEFAULT 'onbepaald',
   bezoekaantal INT UNSIGNED NOT NULL,
   geometrieaantal INT UNSIGNED NOT NULL,
   componentaantal SMALLINT UNSIGNED NOT NULL,
@@ -316,6 +321,12 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_bezoek (
   reconstructiestatus ENUM(
     'gereconstrueerd','handmatige_controle','geen_route'
   ) NOT NULL,
+  doelbereikstatus ENUM(
+    'algemene_route','algemene_route_aannemelijk',
+    'soortgerichte_route','onbepaald'
+  ) NOT NULL DEFAULT 'onbepaald',
+  doelsoort VARCHAR(255) NULL,
+  doelbereik_bewijs VARCHAR(128) NOT NULL DEFAULT 'onbepaald',
   bronrecordaantal INT UNSIGNED NOT NULL,
   PRIMARY KEY (reconstructieversie, bezoek_sleutel),
   KEY ix_ndff_vlinder_bezoek_route
@@ -335,6 +346,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_bezoek_taxon (
   aantal INT UNSIGNED NOT NULL,
   waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
   nulregel VARCHAR(255) NOT NULL,
+  bewijsgrond VARCHAR(128) NOT NULL DEFAULT 'niet_van_toepassing',
   PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
   KEY ix_ndff_vlinder_taxon_jaar (wetenschappelijke_naam, waarnemingsstatus),
   CONSTRAINT fk_ndff_vlinder_taxon_bezoek FOREIGN KEY

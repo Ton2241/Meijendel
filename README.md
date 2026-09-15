@@ -266,12 +266,12 @@ Voor NEM-reeksen wordt nu aanvullend de native bezoekstructuur per protocol
 gereconstrueerd. Een NEM-code geldt als protocolbewijs voor de positieve regel,
 maar trendinvoer ontstaat pas na reconstructie van meeteenheid, bezoek,
 doelsoorten en echte nullen. Voor `03.201` is dat uitgevoerd onder
-`ndff-vlinderroute-v1`: 3.126 bezoeken, 11 routefamilies en een matrix van
-106.284 bezoek-dagvlindertaxonregels. Herbeoordeling met de officiële
-Vlinderstichting-handleidingen heeft aangetoond dat deze versie voorlopig is:
-minimaal 3.795 afgeleide nullen vallen buiten een bewezen algemeen
-doelbereik. Positieve tellingen blijven geldig; nul- en trendselecties wachten
-op `ndff-vlinderroute-v2`. De afzonderlijk gevolgde *Bombus*-reeks voor de
+`ndff-vlinderroute-v2`: 3.126 bezoeken, 11 routefamilies en een matrix van
+102.489 bezoek-dagvlindertaxonregels. Daarvan zijn 20.075 positief en 82.414
+een protocolnul met vastgelegde bewijsgrond. De routefamilie met 87 bezoeken in
+16 jaren en uitsluitend Groot dikkopje is soortgericht; 28 eensoortbezoeken zonder aantoonbare route leveren geen
+nullen voor andere taxa. De eerdere v1-afleiding is verwijderd. De
+afzonderlijk gevolgde *Bombus*-reeks voor de
 binnen hetzelfde protocol getelde vliesvleugeligen staat onder
 `ndff-vliesvleugelroute-v1`: 217 bezoeken, zes taxa en 1.302 matrixregels. De
 937 afgeleide soortnullen worden niet gebruikt zolang deelnamevlag en

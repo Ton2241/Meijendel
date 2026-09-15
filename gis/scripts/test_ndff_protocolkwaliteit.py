@@ -188,7 +188,7 @@ def main() -> int:
     assert "alleen_positieve_bezoeken" in folded
     assert "niet_afleidbaar" in folded
     assert "enum('waargenomen','echte_nul')" in folded
-    assert "ndff-vlinderroute-v1" in folded
+    assert "ndff-vlinderroute-v2" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
     assert "'voorlopig_toegelaten'" in folded
     assert "wetenschappelijke_naam varchar(255) not null" in folded
@@ -386,7 +386,105 @@ def main() -> int:
         row["visit"] == "onbepaald" and row["taxon"] == "Aeshna mixta"
         for row in scoped_matrix
     )
-    assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v1"
+    soortgerichte_bezoeken = {f"soortgericht-{index}" for index in range(87)}
+    vlinder_bezoektaxa = {
+        "algemeen": {"Aglais urticae", "Pieris napi"},
+        "zonder-route-een-soort": {"Pieris napi"},
+        "zonder-route-meer-soorten": {"Aglais urticae", "Pieris napi"},
+        **{visit: {"Ochlodes sylvanus"} for visit in soortgerichte_bezoeken},
+    }
+    vlinder_scope = module.classify_vlinder_visit_scopes(
+        families=[
+            {"family_id": 1, "visits": {"algemeen"}, "year_count": 2},
+            {"family_id": 42, "visits": soortgerichte_bezoeken, "year_count": 16},
+        ],
+        visit_to_family={
+            "algemeen": 1,
+            **{visit: 42 for visit in soortgerichte_bezoeken},
+        },
+        visit_observed_taxa=vlinder_bezoektaxa,
+        target_taxa={"Aglais urticae", "Ochlodes sylvanus", "Pieris napi"},
+    )
+    assert vlinder_scope["family_scope"][1] == {
+        "routetype": "algemene_route",
+        "doelsoort": None,
+        "bewijsgrond": "meerdere_doelsoorten_over_routefamilie",
+    }
+    assert vlinder_scope["family_scope"][42] == {
+        "routetype": "soortgerichte_route",
+        "doelsoort": "Ochlodes sylvanus",
+        "bewijsgrond": "87_bezoeken_16_jaren_uitsluitend_groot_dikkopje",
+    }
+    assert vlinder_scope["visit_scope"]["zonder-route-een-soort"] == {
+        "doelbereikstatus": "onbepaald",
+        "doelsoort": None,
+        "bewijsgrond": "geen_route_een_waargenomen_taxon",
+    }
+    assert vlinder_scope["visit_target_taxa"]["zonder-route-een-soort"] == {"Pieris napi"}
+    assert vlinder_scope["visit_scope"]["zonder-route-meer-soorten"]["doelbereikstatus"] == "algemene_route_aannemelijk"
+    assert vlinder_scope["visit_target_taxa"]["zonder-route-meer-soorten"] == {
+        "Aglais urticae", "Ochlodes sylvanus", "Pieris napi"
+    }
+    try:
+        module.classify_vlinder_visit_scopes(
+            families=[{"family_id": 9, "visits": {"een"}, "year_count": 1}],
+            visit_to_family={"een": 9},
+            visit_observed_taxa={"een": {"Ochlodes sylvanus"}},
+            target_taxa={"Ochlodes sylvanus"},
+        )
+    except ValueError as exc:
+        assert "exact één soortgerichte Groot dikkopje-route" in str(exc)
+    else:
+        raise AssertionError("Een ongeldige soortgerichte familiesignatuur werd geaccepteerd")
+    schema_statements = module.vlinder_v2_schema_statements({
+        "ndff_vlinder_routefamilie": set(),
+        "ndff_vlinder_bezoek": set(),
+        "ndff_vlinder_bezoek_taxon": set(),
+    })
+    assert len(schema_statements) == 7
+    assert any("ADD COLUMN routetype " in statement for statement in schema_statements)
+    assert any("ADD COLUMN doelsoort " in statement for statement in schema_statements)
+    assert any("ADD COLUMN routetype_bewijs " in statement for statement in schema_statements)
+    assert any("ADD COLUMN doelbereikstatus " in statement for statement in schema_statements)
+    assert any("ADD COLUMN doelbereik_bewijs " in statement for statement in schema_statements)
+    assert any("ADD COLUMN bewijsgrond " in statement for statement in schema_statements)
+    complete_columns = {
+        "ndff_vlinder_routefamilie": {"routetype", "doelsoort", "routetype_bewijs"},
+        "ndff_vlinder_bezoek": {"doelbereikstatus", "doelsoort", "doelbereik_bewijs"},
+        "ndff_vlinder_bezoek_taxon": {"bewijsgrond"},
+    }
+    assert module.vlinder_v2_schema_statements(complete_columns) == []
+    assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v2"
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["matrix_rows"] == 102_489
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_rows"] == 20_075
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["zero_rows"] == 82_414
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_families"] == 1
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_visits"] == 87
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["unknown_scope_visits"] == 28
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["legacy_v1_rows"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_source_missing"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_matrix_extra"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_invalid_zero"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["evidence_scope_mismatch"] == 0
+    vlinder_audit_sql = module.vlinder_validation_sql()
+    assert "'legacy_v1_rows'" in vlinder_audit_sql
+    assert "'zero_outside_scope'" in vlinder_audit_sql
+    assert "'invalid_scope_rows'" in vlinder_audit_sql
+    assert "'positive_source_missing'" in vlinder_audit_sql
+    assert "'positive_matrix_extra'" in vlinder_audit_sql
+    assert "'species_route_invalid_zero'" in vlinder_audit_sql
+    assert "'evidence_scope_mismatch'" in vlinder_audit_sql
+    module.validate_vlinder_prewrite_metrics(
+        dict(module.VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED)
+    )
+    invalid_prewrite = dict(module.VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED)
+    invalid_prewrite["zero_rows"] += 1
+    try:
+        module.validate_vlinder_prewrite_metrics(invalid_prewrite)
+    except ValueError as exc:
+        assert "vóór schrijven" in str(exc)
+    else:
+        raise AssertionError("Afwijkende v2-matrix werd vóór schrijven geaccepteerd")
     assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
     assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v1"
     assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v1"

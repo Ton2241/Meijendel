@@ -42,7 +42,8 @@ STRUCTURED_INCOMPLETE_PROTOCOLS = {
     "102.005": {"I", "TV"},
     "102.007": {"I", "TV"},
 }
-VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v1"
+VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v2"
+VLINDER_LEGACY_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
 REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
@@ -196,12 +197,38 @@ VLINDER_RECONSTRUCTION_EXPECTED = {
     "coarse_only_visits": 63,
     "coarse_only_records": 185,
     "target_taxa": 34,
-    "matrix_rows": 106284,
+    "matrix_rows": 102489,
     "positive_rows": 20075,
-    "zero_rows": 86209,
+    "zero_rows": 82414,
     "invalid_matrix_rows": 0,
     "manual_review_visits": 172,
+    "general_route_families": 10,
+    "species_route_families": 1,
+    "unknown_route_families": 0,
+    "general_route_visits": 2976,
+    "species_route_visits": 87,
+    "assumed_general_visits": 35,
+    "unknown_scope_visits": 28,
+    "zero_outside_scope": 0,
+    "invalid_scope_rows": 0,
+    "positive_source_missing": 0,
+    "positive_matrix_extra": 0,
+    "species_route_invalid_zero": 0,
+    "evidence_scope_mismatch": 0,
+    "legacy_v1_rows": 0,
     "legacy_secure_tables": 0,
+}
+VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED = {
+    key: VLINDER_RECONSTRUCTION_EXPECTED[key]
+    for key in (
+        "source_records", "visits", "route_families", "route_components",
+        "fine_geometries", "fine_visits", "coarse_only_visits",
+        "coarse_only_records", "target_taxa", "matrix_rows", "positive_rows",
+        "zero_rows", "general_route_families", "species_route_families",
+        "unknown_route_families", "general_route_visits",
+        "species_route_visits", "assumed_general_visits",
+        "unknown_scope_visits",
+    )
 }
 VLIESVLEUGEL_RECONSTRUCTION_EXPECTED = {
     "source_records": 1535,
@@ -1067,6 +1094,175 @@ def build_visit_taxon_matrix(
     if unknown:
         raise ValueError(f"Waarnemingen buiten bezoek-doelsoortbereik: {len(unknown)}")
     return matrix
+
+
+def classify_vlinder_visit_scopes(
+    *,
+    families: Iterable[dict[str, object]],
+    visit_to_family: dict[str, int],
+    visit_observed_taxa: dict[str, set[str]],
+    target_taxa: set[str],
+) -> dict[str, dict]:
+    """Bepaal per dagvlinderroute en bezoek het aantoonbare doelbereik.
+
+    De gecontroleerde levering bevat één soortgerichte route voor Groot
+    dikkopje: 87 bezoeken in 16 jaren bevatten uitsluitend die doelsoort.
+    Andere routefamilies gelden alleen als algemeen wanneer daar meerdere
+    dagvlindertaxa positief zijn geregistreerd. Een bezoek zonder route met één
+    taxon bewijst geen algemeen doelbereik en levert daarom geen andere nullen.
+    """
+    family_scope: dict[int, dict[str, str | None]] = {}
+    observed_by_family = {
+        int(family["family_id"]): set().union(*(
+            visit_observed_taxa.get(str(visit), set())
+            for visit in family["visits"]
+        ))
+        for family in families
+    }
+    species_route_candidates = [
+        int(family["family_id"])
+        for family in families
+        if observed_by_family[int(family["family_id"])] == {"Ochlodes sylvanus"}
+        and len(family["visits"]) == 87
+        and int(family["year_count"]) == 16
+    ]
+    if len(species_route_candidates) != 1:
+        raise ValueError(
+            "De reconstructie bevat niet exact één soortgerichte Groot "
+            "dikkopje-route met 87 bezoeken in 16 jaren."
+        )
+    species_route_family = species_route_candidates[0]
+    for family in families:
+        family_id = int(family["family_id"])
+        observed = observed_by_family[family_id]
+        designated_target = (
+            "Ochlodes sylvanus" if family_id == species_route_family else None
+        )
+        if designated_target is not None:
+            if observed != {designated_target}:
+                raise ValueError(
+                    f"Soortgerichte vlinderroute {family_id} wijkt af van het "
+                    f"vastgestelde doelbereik: {sorted(observed)}"
+                )
+            scope = {
+                "routetype": "soortgerichte_route",
+                "doelsoort": designated_target,
+                "bewijsgrond": "87_bezoeken_16_jaren_uitsluitend_groot_dikkopje",
+            }
+        elif len(observed) > 1:
+            scope = {
+                "routetype": "algemene_route",
+                "doelsoort": None,
+                "bewijsgrond": "meerdere_doelsoorten_over_routefamilie",
+            }
+        else:
+            scope = {
+                "routetype": "onbepaald",
+                "doelsoort": None,
+                "bewijsgrond": "onvoldoende_taxonomisch_bereik_routefamilie",
+            }
+        family_scope[family_id] = scope
+
+    visit_scope: dict[str, dict[str, str | None]] = {}
+    visit_target_taxa: dict[str, set[str]] = {}
+    for visit, observed in visit_observed_taxa.items():
+        family_id = visit_to_family.get(visit)
+        if family_id is not None:
+            family = family_scope[int(family_id)]
+            route_type = str(family["routetype"])
+            status = {
+                "algemene_route": "algemene_route",
+                "soortgerichte_route": "soortgerichte_route",
+                "onbepaald": "onbepaald",
+            }[route_type]
+            scope = {
+                "doelbereikstatus": status,
+                "doelsoort": family["doelsoort"],
+                "bewijsgrond": family["bewijsgrond"],
+            }
+        elif len(observed) > 1:
+            scope = {
+                "doelbereikstatus": "algemene_route_aannemelijk",
+                "doelsoort": None,
+                "bewijsgrond": "geen_route_meerdere_waargenomen_taxa",
+            }
+        else:
+            scope = {
+                "doelbereikstatus": "onbepaald",
+                "doelsoort": None,
+                "bewijsgrond": "geen_route_een_waargenomen_taxon",
+            }
+        visit_scope[visit] = scope
+        if scope["doelbereikstatus"] in {"algemene_route", "algemene_route_aannemelijk"}:
+            visit_target_taxa[visit] = set(target_taxa)
+        elif scope["doelbereikstatus"] == "soortgerichte_route":
+            visit_target_taxa[visit] = {str(scope["doelsoort"])}
+        else:
+            visit_target_taxa[visit] = set(observed)
+    return {
+        "family_scope": family_scope,
+        "visit_scope": visit_scope,
+        "visit_target_taxa": visit_target_taxa,
+    }
+
+
+def vlinder_v2_schema_statements(
+    columns_by_table: dict[str, set[str]],
+) -> list[str]:
+    """Geef uitsluitend de ontbrekende, idempotente v2-kolommigraties terug."""
+    definitions = {
+        "ndff_vlinder_routefamilie": (
+            ("routetype", "ENUM('algemene_route','soortgerichte_route','onbepaald') NOT NULL DEFAULT 'onbepaald' AFTER reconstructiestatus"),
+            ("doelsoort", "VARCHAR(255) NULL AFTER routetype"),
+            ("routetype_bewijs", "VARCHAR(128) NOT NULL DEFAULT 'onbepaald' AFTER doelsoort"),
+        ),
+        "ndff_vlinder_bezoek": (
+            ("doelbereikstatus", "ENUM('algemene_route','algemene_route_aannemelijk','soortgerichte_route','onbepaald') NOT NULL DEFAULT 'onbepaald' AFTER reconstructiestatus"),
+            ("doelsoort", "VARCHAR(255) NULL AFTER doelbereikstatus"),
+            ("doelbereik_bewijs", "VARCHAR(128) NOT NULL DEFAULT 'onbepaald' AFTER doelsoort"),
+        ),
+        "ndff_vlinder_bezoek_taxon": (
+            ("bewijsgrond", "VARCHAR(128) NOT NULL DEFAULT 'niet_van_toepassing' AFTER nulregel"),
+        ),
+    }
+    statements: list[str] = []
+    for table, columns in definitions.items():
+        existing = columns_by_table.get(table, set())
+        for name, definition in columns:
+            if name not in existing:
+                statements.append(
+                    f"ALTER TABLE Meijendel.{table} ADD COLUMN {name} {definition};"
+                )
+    return statements
+
+
+def ensure_vlinder_v2_schema(
+    mysql_client: Path, client_args: list[str],
+) -> None:
+    """Verrijk bestaande v1-tabellen veilig met de v2-kolommen."""
+    query = """
+SELECT TABLE_NAME,COLUMN_NAME
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA='Meijendel'
+  AND TABLE_NAME IN (
+    'ndff_vlinder_routefamilie','ndff_vlinder_bezoek',
+    'ndff_vlinder_bezoek_taxon'
+  )
+ORDER BY TABLE_NAME,ORDINAL_POSITION;
+"""
+    output = run_mysql(
+        mysql_client,
+        client_args + ["--batch", "--raw", "--skip-column-names"],
+        query,
+        capture=True,
+    )
+    columns_by_table: dict[str, set[str]] = defaultdict(set)
+    for line in output.splitlines():
+        table, column = line.split("\t")
+        columns_by_table[table].add(column)
+    statements = vlinder_v2_schema_statements(columns_by_table)
+    if statements:
+        run_mysql(mysql_client, client_args, "\n".join(statements))
 
 
 def classify_bat_route(x_rd: float) -> dict[str, object]:
@@ -2532,6 +2728,8 @@ def reconstruct_vlinders(
         nulregel = "Niet gemeld binnen het vastgestelde doelbereik van een bevestigd NEM-libellenbezoek; echte nul voor de doelsoort."
     else:
         raise ValueError(f"Onbekende NEM-routegroep: {doelgroep}")
+    if doelgroep == "Dagvlinders":
+        ensure_vlinder_v2_schema(mysql_client, client_args)
     query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
     source_output = run_mysql(mysql_client, query_args, source_sql, capture=True)
     route_rows: list[dict[str, object]] = []
@@ -2567,7 +2765,19 @@ def reconstruct_vlinders(
     family_scope: dict[int, str] = {}
     visit_scope: dict[str, str] = {}
     visit_target_taxa: dict[str, set[str]] | None = None
-    if doelgroep == "Libellen":
+    vlinder_family_scope: dict[int, dict[str, str | None]] = {}
+    vlinder_visit_scope: dict[str, dict[str, str | None]] = {}
+    if doelgroep == "Dagvlinders":
+        scopes = classify_vlinder_visit_scopes(
+            families=reconstruction["families"],
+            visit_to_family=reconstruction["visit_to_family"],
+            visit_observed_taxa=visit_observed_taxa,
+            target_taxa=target_taxa,
+        )
+        vlinder_family_scope = scopes["family_scope"]
+        vlinder_visit_scope = scopes["visit_scope"]
+        visit_target_taxa = scopes["visit_target_taxa"]
+    elif doelgroep == "Libellen":
         family_taxa: dict[int, set[str]] = defaultdict(set)
         for visit, taxa_for_visit in visit_observed_taxa.items():
             family_id = reconstruction["visit_to_family"].get(visit)
@@ -2604,7 +2814,16 @@ def reconstruct_vlinders(
         status = "handmatige_controle" if float(family["extent_m"]) > 3_000 else "waarschijnlijk"
         family_status[family_id] = status
         protocol_key = "07.201" if doelgroep == "Libellen" else "03.201"
-        scope_sql = f",{sql_text(family_scope[family_id])}" if doelgroep == "Libellen" else ""
+        if doelgroep == "Dagvlinders":
+            scope = vlinder_family_scope[family_id]
+            scope_sql = (
+                f",{sql_text(str(scope['routetype']))},{sql_text(scope['doelsoort'])},"
+                f"{sql_text(str(scope['bewijsgrond']))}"
+            )
+        elif doelgroep == "Libellen":
+            scope_sql = f",{sql_text(family_scope[family_id])}"
+        else:
+            scope_sql = ""
         family_values.append(
             f"({sql_text(version)},{family_id},{sql_text(protocol_key)},{sql_text(status)}{scope_sql},"
             f"{len(family['visits'])},{len(family['geometries'])},{len(family['component_indexes'])},"
@@ -2630,56 +2849,47 @@ def reconstruct_vlinders(
         else:
             status = "handmatige_controle" if family_status[int(family_id)] == "handmatige_controle" else "gereconstrueerd"
             family_sql = str(family_id)
-        scope_sql = f",{sql_text(visit_scope[visit])}" if doelgroep == "Libellen" else ""
+        if doelgroep == "Dagvlinders":
+            scope = vlinder_visit_scope[visit]
+            scope_sql = (
+                f",{sql_text(str(scope['doelbereikstatus']))},{sql_text(scope['doelsoort'])},"
+                f"{sql_text(str(scope['bewijsgrond']))}"
+            )
+        elif doelgroep == "Libellen":
+            scope_sql = f",{sql_text(visit_scope[visit])}"
+        else:
+            scope_sql = ""
         visit_values.append(
             f"({sql_text(version)},{sql_text(visit_keys[visit])},"
             f"{sql_text(start)},{sql_text(stop)},{year},{family_sql},{sql_text(status)}{scope_sql},"
             f"{visit_record_count[visit]})"
         )
 
-    matrix_values = [
-        f"({sql_text(version)},{sql_text(visit_keys[str(row['visit'])])},"
-        f"{sql_text(str(row['taxon']))},{int(row['count'])},{sql_text(str(row['status']))},"
-        f"{sql_text(nulregel)})"
-        for row in matrix
-    ]
-    statements = [
-        "START TRANSACTION;",
-        f"DELETE FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={sql_text(version)};",
-        f"DELETE FROM {table_prefix}_bezoek WHERE reconstructieversie={sql_text(version)};",
-        f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={sql_text(version)};",
-        f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={sql_text(version)};",
-    ]
-    family_columns = "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus"
-    if doelgroep == "Libellen":
-        family_columns += ",doelbereikstatus"
-    family_columns += ",bezoekaantal,geometrieaantal,componentaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m"
-    statements += _batched_insert(
-        f"{table_prefix}_routefamilie",
-        family_columns,
-        family_values,
-    )
-    statements += _batched_insert(
-        f"{table_prefix}_routegeometrie",
-        "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
-        geometry_values,
-    )
-    visit_columns = "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus"
-    if doelgroep == "Libellen":
-        visit_columns += ",doelbereikstatus"
-    visit_columns += ",bronrecordaantal"
-    statements += _batched_insert(
-        f"{table_prefix}_bezoek",
-        visit_columns,
-        visit_values,
-    )
-    statements += _batched_insert(
-        f"{table_prefix}_bezoek_taxon",
-        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,waarnemingsstatus,nulregel",
-        matrix_values,
-    )
-    statements.append("COMMIT;")
-    run_mysql(mysql_client, client_args, "\n".join(statements))
+    matrix_values: list[str] = []
+    for row in matrix:
+        row_nulregel = nulregel
+        bewijsgrond = "positieve_ndff_waarneming"
+        if doelgroep == "Dagvlinders" and row["status"] == "echte_nul":
+            scope_status = str(vlinder_visit_scope[str(row["visit"])]["doelbereikstatus"])
+            if scope_status == "algemene_route":
+                bewijsgrond = "niet_gemeld_binnen_algemene_route"
+                row_nulregel = "Niet gemeld binnen een gereconstrueerde algemene NEM-dagvlinderroute."
+            elif scope_status == "algemene_route_aannemelijk":
+                bewijsgrond = "niet_gemeld_binnen_aannemelijk_algemeen_bezoek"
+                row_nulregel = "Niet gemeld tijdens een bezoek zonder route-ID waarop meerdere dagvlindertaxa zijn geregistreerd; algemene telling aannemelijk."
+            elif scope_status == "soortgerichte_route":
+                bewijsgrond = "niet_gemeld_binnen_soortgerichte_route"
+                row_nulregel = "Niet gemeld voor de vastgestelde doelsoort van de soortgerichte route."
+            else:
+                raise ValueError("Een bezoek met onbepaald doelbereik mag geen echte nul opleveren.")
+        if row["status"] == "waargenomen":
+            row_nulregel = "Niet van toepassing: positieve waarneming."
+        suffix = f",{sql_text(bewijsgrond)}" if doelgroep == "Dagvlinders" else ""
+        matrix_values.append(
+            f"({sql_text(version)},{sql_text(visit_keys[str(row['visit'])])},"
+            f"{sql_text(str(row['taxon']))},{int(row['count'])},{sql_text(str(row['status']))},"
+            f"{sql_text(row_nulregel)}{suffix})"
+        )
     metrics = {
         "source_records": sum(visit_record_count.values()),
         "visits": len(visits_meta),
@@ -2701,6 +2911,104 @@ def reconstruct_vlinders(
             "general_visits": sum(scope == "algemene_route" for scope in visit_scope.values()),
             "unknown_scope_visits": sum(scope == "onbepaald" for scope in visit_scope.values()),
         })
+    elif doelgroep == "Dagvlinders":
+        metrics.update({
+            "general_route_families": sum(
+                scope["routetype"] == "algemene_route"
+                for scope in vlinder_family_scope.values()
+            ),
+            "species_route_families": sum(
+                scope["routetype"] == "soortgerichte_route"
+                for scope in vlinder_family_scope.values()
+            ),
+            "unknown_route_families": sum(
+                scope["routetype"] == "onbepaald"
+                for scope in vlinder_family_scope.values()
+            ),
+            "general_route_visits": sum(
+                scope["doelbereikstatus"] == "algemene_route"
+                for scope in vlinder_visit_scope.values()
+            ),
+            "species_route_visits": sum(
+                scope["doelbereikstatus"] == "soortgerichte_route"
+                for scope in vlinder_visit_scope.values()
+            ),
+            "assumed_general_visits": sum(
+                scope["doelbereikstatus"] == "algemene_route_aannemelijk"
+                for scope in vlinder_visit_scope.values()
+            ),
+            "unknown_scope_visits": sum(
+                scope["doelbereikstatus"] == "onbepaald"
+                for scope in vlinder_visit_scope.values()
+            ),
+        })
+        validate_vlinder_prewrite_metrics(metrics)
+
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={sql_text(version)};",
+        f"DELETE FROM {table_prefix}_bezoek WHERE reconstructieversie={sql_text(version)};",
+        f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={sql_text(version)};",
+        f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={sql_text(version)};",
+    ]
+    family_columns = "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus"
+    if doelgroep == "Dagvlinders":
+        family_columns += ",routetype,doelsoort,routetype_bewijs"
+    elif doelgroep == "Libellen":
+        family_columns += ",doelbereikstatus"
+    family_columns += ",bezoekaantal,geometrieaantal,componentaantal,bronrecordaantal,eerste_jaar,laatste_jaar,jaaraantal,ruimtelijke_omvang_m"
+    statements += _batched_insert(
+        f"{table_prefix}_routefamilie",
+        family_columns,
+        family_values,
+    )
+    statements += _batched_insert(
+        f"{table_prefix}_routegeometrie",
+        "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
+        geometry_values,
+    )
+    visit_columns = "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus"
+    if doelgroep == "Dagvlinders":
+        visit_columns += ",doelbereikstatus,doelsoort,doelbereik_bewijs"
+    elif doelgroep == "Libellen":
+        visit_columns += ",doelbereikstatus"
+    visit_columns += ",bronrecordaantal"
+    statements += _batched_insert(
+        f"{table_prefix}_bezoek",
+        visit_columns,
+        visit_values,
+    )
+    statements += _batched_insert(
+        f"{table_prefix}_bezoek_taxon",
+        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,waarnemingsstatus,nulregel"
+        + (",bewijsgrond" if doelgroep == "Dagvlinders" else ""),
+        matrix_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    if doelgroep == "Dagvlinders":
+        audit_output = run_mysql(
+            mysql_client, query_args, vlinder_validation_sql(), capture=True
+        )
+        validate_vlinder_reconstruction(
+            parse_analysis_chain_output(audit_output), allow_legacy_v1=True
+        )
+
+        legacy = sql_text(VLINDER_LEGACY_RULE_VERSION)
+        cleanup = [
+            "START TRANSACTION;",
+            f"DELETE FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={legacy};",
+            f"DELETE FROM {table_prefix}_bezoek WHERE reconstructieversie={legacy};",
+            f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={legacy};",
+            f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={legacy};",
+            "COMMIT;",
+        ]
+        run_mysql(mysql_client, client_args, "\n".join(cleanup))
+        final_output = run_mysql(
+            mysql_client, query_args, vlinder_validation_sql(), capture=True
+        )
+        metrics = parse_analysis_chain_output(final_output)
+        validate_vlinder_reconstruction(metrics)
     return metrics
 
 
@@ -8049,6 +8357,7 @@ def nem_subseries_validation_sql(
     rule_version: str,
     *,
     include_libel_scope: bool = False,
+    include_vlinder_scope: bool = False,
 ) -> str:
     version = sql_text(rule_version)
     base_name = table_prefix.split(".", 1)[1]
@@ -8064,6 +8373,71 @@ def nem_subseries_validation_sql(
   ,'positive_mismatch',(SELECT COUNT(*) FROM (SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen' GROUP BY periode_start,periode_stop,wetenschappelijke_naam) bron LEFT JOIN {table_prefix}_bezoek_taxon t ON t.reconstructieversie={version} AND t.bezoek_sleutel=bron.bezoek_sleutel AND t.wetenschappelijke_naam=bron.wetenschappelijke_naam WHERE t.bezoek_sleutel IS NULL OR t.waarnemingsstatus<>'waargenomen' OR t.aantal<>bron.aantal)
   ,'zero_outside_general',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t JOIN {table_prefix}_bezoek b ON b.reconstructieversie=t.reconstructieversie AND b.bezoek_sleutel=t.bezoek_sleutel WHERE t.reconstructieversie={version} AND t.waarnemingsstatus='echte_nul' AND b.doelbereikstatus<>'algemene_route')
 """.format(table_prefix=table_prefix, version=version) if include_libel_scope else ""
+    if include_vlinder_scope:
+        legacy = sql_text(VLINDER_LEGACY_RULE_VERSION)
+        scope_metrics = """
+  ,'general_route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND routetype='algemene_route')
+  ,'species_route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND routetype='soortgerichte_route')
+  ,'unknown_route_families',(SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND routetype='onbepaald')
+  ,'general_route_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='algemene_route')
+  ,'species_route_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='soortgerichte_route')
+  ,'assumed_general_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='algemene_route_aannemelijk')
+  ,'unknown_scope_visits',(SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND doelbereikstatus='onbepaald')
+  ,'zero_outside_scope',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t JOIN {table_prefix}_bezoek b ON b.reconstructieversie=t.reconstructieversie AND b.bezoek_sleutel=t.bezoek_sleutel WHERE t.reconstructieversie={version} AND t.waarnemingsstatus='echte_nul' AND b.doelbereikstatus='onbepaald')
+  ,'invalid_scope_rows',(
+      (SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={version} AND ((routetype='soortgerichte_route' AND doelsoort IS NULL) OR (routetype<>'soortgerichte_route' AND doelsoort IS NOT NULL) OR routetype_bewijs='onbepaald'))+
+      (SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={version} AND ((doelbereikstatus='soortgerichte_route' AND doelsoort IS NULL) OR (doelbereikstatus<>'soortgerichte_route' AND doelsoort IS NOT NULL) OR doelbereik_bewijs='onbepaald'))+
+      (SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND bewijsgrond<>'positieve_ndff_waarneming') OR (waarnemingsstatus='echte_nul' AND bewijsgrond NOT IN ('niet_gemeld_binnen_algemene_route','niet_gemeld_binnen_aannemelijk_algemeen_bezoek','niet_gemeld_binnen_soortgerichte_route'))))
+  )
+  ,'positive_source_missing',(SELECT COUNT(*) FROM (
+      SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,
+             wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal
+      FROM Meijendel.ndff_open_waarneming
+      WHERE protocol LIKE '03.201%' AND soortgroep_raw='Dagvlinders'
+        AND aantal_raw REGEXP '^[0-9]+$'
+      GROUP BY periode_start,periode_stop,wetenschappelijke_naam
+    ) bron LEFT JOIN {table_prefix}_bezoek_taxon t
+      ON t.reconstructieversie={version}
+     AND t.bezoek_sleutel=bron.bezoek_sleutel
+     AND t.wetenschappelijke_naam=bron.wetenschappelijke_naam
+    WHERE t.bezoek_sleutel IS NULL OR t.waarnemingsstatus<>'waargenomen' OR t.aantal<>bron.aantal)
+  ,'positive_matrix_extra',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t
+    LEFT JOIN (
+      SELECT SHA2(CONCAT(DATE_FORMAT(periode_start,'%Y-%m-%d %H:%i:%s'),'|',DATE_FORMAT(periode_stop,'%Y-%m-%d %H:%i:%s')),256) bezoek_sleutel,
+             wetenschappelijke_naam,SUM(CAST(aantal_raw AS UNSIGNED)) aantal
+      FROM Meijendel.ndff_open_waarneming
+      WHERE protocol LIKE '03.201%' AND soortgroep_raw='Dagvlinders'
+        AND aantal_raw REGEXP '^[0-9]+$'
+      GROUP BY periode_start,periode_stop,wetenschappelijke_naam
+    ) bron ON bron.bezoek_sleutel=t.bezoek_sleutel
+          AND bron.wetenschappelijke_naam=t.wetenschappelijke_naam
+    WHERE t.reconstructieversie={version} AND t.waarnemingsstatus='waargenomen'
+      AND (bron.bezoek_sleutel IS NULL OR bron.aantal<>t.aantal))
+  ,'species_route_invalid_zero',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t
+    JOIN {table_prefix}_bezoek b
+      ON b.reconstructieversie=t.reconstructieversie
+     AND b.bezoek_sleutel=t.bezoek_sleutel
+    WHERE t.reconstructieversie={version}
+      AND b.doelbereikstatus='soortgerichte_route'
+      AND t.waarnemingsstatus='echte_nul'
+      AND t.wetenschappelijke_naam<>b.doelsoort)
+  ,'evidence_scope_mismatch',(SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon t
+    JOIN {table_prefix}_bezoek b
+      ON b.reconstructieversie=t.reconstructieversie
+     AND b.bezoek_sleutel=t.bezoek_sleutel
+    WHERE t.reconstructieversie={version} AND t.waarnemingsstatus='echte_nul'
+      AND NOT (
+        (b.doelbereikstatus='algemene_route' AND t.bewijsgrond='niet_gemeld_binnen_algemene_route') OR
+        (b.doelbereikstatus='algemene_route_aannemelijk' AND t.bewijsgrond='niet_gemeld_binnen_aannemelijk_algemeen_bezoek') OR
+        (b.doelbereikstatus='soortgerichte_route' AND t.bewijsgrond='niet_gemeld_binnen_soortgerichte_route' AND t.wetenschappelijke_naam=b.doelsoort)
+      ))
+  ,'legacy_v1_rows',(
+      (SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={legacy})+
+      (SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={legacy})+
+      (SELECT COUNT(*) FROM {table_prefix}_routegeometrie WHERE reconstructieversie={legacy})+
+      (SELECT COUNT(*) FROM {table_prefix}_routefamilie WHERE reconstructieversie={legacy})
+  )
+""".format(table_prefix=table_prefix, version=version, legacy=legacy)
     return f"""
 SELECT JSON_OBJECT(
   'source_records',(SELECT SUM(bronrecordaantal) FROM {table_prefix}_bezoek WHERE reconstructieversie={version}),
@@ -8086,7 +8460,11 @@ SELECT JSON_OBJECT(
 
 
 def vlinder_validation_sql() -> str:
-    return nem_subseries_validation_sql(VLINDER_TABLE_PREFIX, VLINDER_ROUTE_RULE_VERSION)
+    return nem_subseries_validation_sql(
+        VLINDER_TABLE_PREFIX,
+        VLINDER_ROUTE_RULE_VERSION,
+        include_vlinder_scope=True,
+    )
 
 
 def vliesvleugel_validation_sql() -> str:
@@ -8683,7 +9061,25 @@ SELECT JSON_OBJECT(
 """
 
 
-def validate_vlinder_reconstruction(metrics: dict[str, int]) -> None:
+def validate_vlinder_prewrite_metrics(metrics: dict[str, int]) -> None:
+    """Blokkeer een afwijkende v2-matrix voordat de database wordt gewijzigd."""
+    if metrics != VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED:
+        differences = {
+            key: (VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED))
+            if metrics.get(key) != VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED.get(key)
+        }
+        raise ValueError(
+            f"Vlinderreconstructie wijkt vóór schrijven af van het vaste profiel: {differences}"
+        )
+
+
+def validate_vlinder_reconstruction(
+    metrics: dict[str, int], *, allow_legacy_v1: bool = False,
+) -> None:
+    if allow_legacy_v1:
+        metrics = dict(metrics)
+        metrics["legacy_v1_rows"] = 0
     if metrics != VLINDER_RECONSTRUCTION_EXPECTED:
         differences = {
             key: (VLINDER_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))

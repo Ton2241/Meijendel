@@ -236,15 +236,19 @@ MySQL:
   de doelsoorten en bezochte meeteenheden die het betreffende NEM-protocol
   volledig bestrijkt; leid nooit nullen af voor bijvangsten
 - gebruik voor dagvlinderprotocol `03.201` de lokale reconstructieversie
-  `ndff-vlinderroute-v1` uitsluitend als voorlopige versie. De tabellen in `Meijendel`, te beginnen met
+  `ndff-vlinderroute-v2`. De eerdere v1-afleiding is vervangen en wordt niet
+  naast v2 bewaard. De tabellen in `Meijendel`, te beginnen met
   `Meijendel.ndff_vlinder_routefamilie`,
   `ndff_vlinder_routegeometrie`, `ndff_vlinder_bezoek` en
   `ndff_vlinder_bezoek_taxon` bevatten de afgeleide route-, bezoek- en
-  doelsoortmatrix. Leid alleen nullen af op een aantoonbaar algemene route.
-  Routefamilie 9 is waarschijnlijk een soortgerichte route voor Groot
-  dikkopje; nullen voor andere taxa zijn daar niet toegestaan. Bij een
-  eensoortbezoek zonder aantoonbaar routetype blijft het doelbereik
-  `onbepaald`. Sluit `geen_route` uit van routeanalyses en behandel
+  doelsoortmatrix. De routefamilie met 87 bezoeken in 16 jaren en uitsluitend
+  Groot dikkopje is als soortgerichte route vastgelegd; nullen voor andere taxa
+  zijn daar niet toegestaan. Bij
+  een eensoortbezoek zonder aantoonbaar routetype blijft het doelbereik
+  `onbepaald` en worden alleen positieve waarnemingen bewaard. Een bezoek
+  zonder route met meerdere positieve dagvlindertaxa krijgt
+  `algemene_route_aannemelijk`; de bewijsgrond blijft per bezoek en nulregel
+  zichtbaar. Sluit `geen_route` uit van routeanalyses en behandel
   `handmatige_controle` afzonderlijk. Controleer de laag vóór gebruik met
   `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-vlinders`
 - behandel de binnen `03.201` geregistreerde Vliesvleugeligen als een

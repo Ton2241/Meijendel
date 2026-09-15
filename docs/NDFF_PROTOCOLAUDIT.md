@@ -39,31 +39,32 @@ Bezoeken zonder waargenomen vlinders moeten eveneens worden ingevoerd. Het
 meetroutenportaal bewaart bovendien route-ID, secties, routewijzigingen en
 beheerinformatie.
 
-Daarmee is de eerdere `ndff-vlinderroute-v1`-matrix niet volledig als bronfeit
-te handhaven. De 80.442 positieve dagvlinderrecords en 20.075 positieve
-bezoek-taxoncombinaties blijven geldig. Van de 86.209 als `echte_nul`
-opgeslagen regels moeten er echter minimaal 3.795 worden teruggezet naar
-`doelbereik_onbepaald` totdat versie 2 is gebouwd:
+Daarom is de eerdere `ndff-vlinderroute-v1`-matrix op 15 september 2026
+vervangen door `ndff-vlinderroute-v2`. De 80.442 positieve dagvlinderrecords en
+20.075 positieve bezoek-taxoncombinaties zijn behouden. Van de 86.209 eerder
+als `echte_nul` opgeslagen regels zijn 3.795 niet-onderbouwde nullen verwijderd:
 
-- routefamilie 9 bevat in 87 bezoeken uitsluitend Groot dikkopje (*Ochlodes
+- één routefamilie bevat in 87 bezoeken en 16 jaren uitsluitend Groot dikkopje (*Ochlodes
   sylvanus*) en volgt het patroon van een soortgerichte route; de 2.871 nullen
   voor de andere 33 taxa vallen buiten het protocolbereik;
 - 28 van de 63 bezoeken zonder routekoppeling bevatten maar één positief taxon;
   hun 924 nullen voor de overige 33 taxa bewijzen geen algemene route.
 
-De overige 82.414 afgeleide dagvlindernullen passen in beginsel bij een
-algemene route. Zij blijven echter afhankelijk van de afzonderlijk vastgelegde
-aanname dat de FFV-levering alle bezoeken bevat, inclusief volledig
-vlinderloze bezoeken. De openbare waarnemingsregels zelf bevatten geen
-route-ID, sectie-ID, algemene/soortgerichte routecode of volledigheidsvlag en
-kunnen die aanname dus niet bewijzen. Tot reconstructieversie 2 gereed is,
-wordt de huidige matrix alleen als voorlopige analysematrix gebruikt. De 556
-nachtvlinderrecords onder `03.201` blijven positieve voorkomensinformatie.
+De overige 82.414 afgeleide dagvlindernullen zijn in v2 behouden. Routetype,
+doelsoort, doelbereik en bewijsgrond zijn nu expliciet opgeslagen. Bij 28
+eensoortbezoeken zonder route blijft het doelbereik `onbepaald` en staan alleen
+de positieve waarnemingen in de matrix. De 35 bezoeken zonder route waarop
+meerdere dagvlindertaxa zijn gemeld hebben de herkenbare status
+`algemene_route_aannemelijk`. De openbare waarnemingsregels bevatten nog steeds
+geen oorspronkelijke route- of sectie-ID; dat blijft een beperking voor
+analyse en publicatie. De 556 nachtvlinderrecords onder `03.201` blijven
+positieve voorkomensinformatie.
 
-Van de bezoeken zijn er 2.891 aan een waarschijnlijke route gekoppeld. Eén
-ruimtelijk uitgerekte familie omvat 172 bezoeken en blijft gemarkeerd voor
-handmatige controle. Voor 63 bezoeken met 185 bronrecords kon uit de aanwezige
-geometrie geen route worden hersteld. De afgeleide tabellen staan in
+Van de bezoeken zijn er 3.063 aan een routefamilie gekoppeld. Daarvan zijn
+2.891 bezoeken direct bruikbaar en blijven 172 bezoeken uit één ruimtelijk
+uitgerekte familie gemarkeerd voor handmatige controle. Voor 63 bezoeken met
+185 bronrecords kon uit de aanwezige geometrie geen route worden hersteld. De
+afgeleide tabellen staan in
 `Meijendel`; `--audit-vlinders` controleert aantallen, matrixconsistentie en
 dat geen oude afgeleide vlindertabellen in het beveiligde schema achterblijven.
 

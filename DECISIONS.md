@@ -91,22 +91,23 @@
   bezoeken voor de doelsoorten van dat protocol; bijvangsten krijgen nooit een
   afgeleide nul. Iedere reconstructie houdt haar onzekerheid en regelversie.
 - Voor `03.201` is deze reconstructie vastgelegd als
-  `ndff-vlinderroute-v1`: 82.217 bronrecords vormen 3.126 bezoeken en 11
+  `ndff-vlinderroute-v2`: 82.217 bronrecords vormen 3.126 bezoeken en 11
   waarschijnlijke routefamilies. De volledige matrix voor 34 aangetroffen
-  dagvlindertaxa bevat 106.284 regels, waarvan 20.075 positieve bezoek-soort-
-  combinaties en 86.209 echte nullen. De 556 nachtvlinderrecords blijven
+  dagvlindertaxa bevat 102.489 regels, waarvan 20.075 positieve bezoek-soort-
+  combinaties en 82.414 protocolnullen met vastgelegde bewijsgrond. De 556
+  nachtvlinderrecords blijven
   bijvangst en leveren geen nullen. Eén ruimtelijk uitgerekte routefamilie met
   172 bezoeken vereist handmatige controle; 63 bezoeken met 185 records
   hebben geen reconstrueerbare route en blijven
   buiten routegebonden trendanalyse.
 - Herbeoordeling met de zeventien officiële Vlinderstichting-handleidingen op
-  15 september 2026 maakt `ndff-vlinderroute-v1` voorlopig: algemene en
-  soortgerichte routes hebben een ander doelbereik. Routefamilie 9 is met 87
-  bezoeken en uitsluitend *Ochlodes sylvanus* vrijwel zeker soortgericht;
-  2.871 nullen voor andere taxa zijn daar niet toegestaan. Bij 28
-  eensoortbezoeken zonder route zijn nog eens 924 nullen niet onderbouwd.
-  Positieve tellingen blijven geldig. Een versie 2 krijgt daarom expliciet
-  routetype, doelsoort en de bewijsgrond voor iedere nul.
+  15 september 2026 heeft de eerdere v1-afleiding vervangen door versie 2.
+  De routefamilie met 87 bezoeken in 16 jaren en uitsluitend *Ochlodes
+  sylvanus* is als soortgericht vastgelegd; de 2.871 voormalige nullen voor andere taxa zijn
+  verwijderd. Bij 28 eensoortbezoeken zonder route zijn nog eens 924
+  niet-onderbouwde nullen verwijderd. Routetype, doelsoort, doelbereik en de
+  bewijsgrond voor iedere nul zijn expliciet opgeslagen. V1 wordt niet naast
+  v2 bewaard.
 - De 1.535 vliesvleugelrecords onder `03.201` vormen vanaf 11 september 2026
   een eigen NEM-deelreeks `ndff-vliesvleugelroute-v1`, niet een bijvangstreeks.
   Zij omvat 217 bevestigde bezoeken en zes gevolgde taxa. De matrix bevat
