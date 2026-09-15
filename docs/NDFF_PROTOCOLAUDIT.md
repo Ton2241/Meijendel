@@ -657,6 +657,44 @@ Methodische grondslag: [NDFF protocol 12.001](https://ndff.nl/natuurdata/waarnem
 [FLORON kilometerhokinventarisatie](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren)
 en [FLORON inventarisatiehandleiding](https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf).
 
+### LMF-A (`12.211`)
+
+Het officiële FLORON-rapport over Berkheide, Meijendel en Solleveld maakt de
+bovenliggende meetstructuur van protocol `12.211` expliciet. Dunea laat per
+kilometerhok een vaste looproute lopen. In het zomerseizoen worden daar 75
+goed herkenbare aandachtssoorten gevolgd, gemiddeld eens per vier jaar. De
+oorspronkelijke uitkomst is per soort één FLORON-abundantieklasse voor de hele
+route; wanneer groeiplaatsen apart zijn ingevoerd, worden exacte aantallen eerst
+opgeteld.
+
+Regelversie `ndff-lmfa-v1` groepeert de 5.980 NDFF-regels tot 30 routes en 124
+routejaren. Van deze routejaren staan er 79 in de rapporttabel voor 1999-2019;
+45 latere of afwijkende hokjaren zijn herkenbaar aan protocol `12.211`, maar
+niet in die rapporttabel bevestigd. De bezoek-soortmatrix telt 9.300 regels:
+1.493 positieve uitkomsten en 7.807 echte nullen. Bij 161 positieve combinaties
+zijn meerdere bronklassen of meetwijzen aanwezig; daarvoor wordt geen
+kunstmatige abundantieklasse berekend.
+
+Het soortenhoofdstuk van het rapport noemt Ruig zoutkruid, maar Tabel 4 met de
+uitdrukkelijke 75 trendsoorten niet. Positieve records van deze en andere
+aanvullende planten blijven bewaard, maar leveren geen nullen. Vervaagde
+bronregels dragen alleen bij aan niet-gevoelige routejaaruitkomsten; hun exacte
+vindplaatsen blijven buiten de openbare tabellen. De analysemethode uit het
+rapport waarbij een ontbrekende meetronde met een eerdere of latere ronde werd
+ingevuld, wordt niet overgenomen: de database bewaart uitsluitend uitgevoerde
+routejaren.
+
+De gerichte plantenprojecten `12.002` en `12.003`, Nectarindex `12.209` en
+LMF-A `12.211` zijn doelsoortafhankelijk geclassificeerd. Voor de negen
+Nectarindexregels uit één datum en één geometrie is geen lokale trend- of
+nulstructuur gemaakt.
+
+Methodische grondslag: [FLORON-rapport LMF-A 1999-2019](https://www.verspreidingsatlas.nl/redactie/pdf/f085962d-9fe4-4c7e-86bf-102fc0d35dea.pdf),
+[FLORON kilometerhokinventarisaties](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren),
+[Het Nieuwe Strepen](https://www.floron.nl/meedoen/het-nieuwe-strepen) en
+[Nectarindex](https://www.floron.nl/nectarindex). De vier officiële PDF's staan
+in Zotero onder parent-item `Meetnetten - FLORON` (`U95RCP8M`).
+
 ### HabSlak (`04.006`)
 
 Regelversie `ndff-habslak-v1` groepeert 2.629 onvervaagde openbare records per

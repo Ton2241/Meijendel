@@ -278,6 +278,17 @@
 - `12.202` blijft, ondanks de NEM-methodiek, voor dit project uitsluitend een
   secundaire NDFF-weergave van PQ-gegevens. De oorspronkelijke provinciale
   PQ-reeks blijft leidend en wordt niet aangevuld of dubbel geteld met NDFF.
+- Protocol `12.211` is het Dunea/FLORON-meetnet LMF-A en wordt onder
+  `ndff-lmfa-v1` als vaste kilometerhokroute gereconstrueerd. Per uitgevoerd
+  routejaar geldt niet-gemeld als echte nul voor de 75 trendsoorten uit Tabel 4
+  van het officiële rapport. Exacte groeiplaatsaantallen mogen worden opgeteld;
+  niet-deterministisch combineerbare klassen blijven onzeker. De in het rapport
+  gebruikte invulling van ontbrekende meetronden met een eerder of later jaar
+  wordt niet in de observatiedatabase overgenomen.
+- De gerichte FLORON-projecten `12.002` en `12.003`, Nectarindex `12.209` en
+  LMF-A `12.211` zijn doelsoortafhankelijk. Een positieve regel blijft
+  voorkomensinformatie; afwezigheid wordt uitsluitend afgeleid binnen een
+  bewezen bezoek en het protocolspecifieke doelbereik.
 - De reconstructie en latere aanvullende bronvalidatie worden vanaf 11 september 2026 geprioriteerd op
   de volledige canonieke laag van 810.983 records, niet op alleen de 1.274
   kandidaten uit de beveiligde 191-soortenlevering. `03.201` en `07.201` zijn

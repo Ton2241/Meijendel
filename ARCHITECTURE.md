@@ -160,6 +160,13 @@ taxa leveren voorlopige protocolnullen; fragmenten blijven positieve
 broninformatie. Volledigheid, inspanning en historische checklistversie blijven
 afzonderlijke onzekerheden en kilometerhokresultaten worden niet naar
 SOVON-plots verdeeld.
+`ndff_lmfa_*` reconstrueert protocol `12.211` onder `ndff-lmfa-v1` in
+`Meijendel`: vaste kilometerhokroutes, routejaren, volledige recordselectie, de
+75 officiële trendsoorten en een routejaar-soortmatrix. Niet-gemeld is binnen
+een uitgevoerd routejaar een echte nul voor deze 75 soorten. Exacte
+groeiplaatsaantallen worden opgeteld; niet-deterministisch combineerbare
+FLORON-klassen blijven onzeker. De afgeleide laag bevat geen exacte gevoelige
+vindplaatsen en vult ontbrekende meetronden niet met een ander jaar.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

@@ -63,6 +63,48 @@ KORSTMOS_RULE_VERSION = "ndff-korstmos-v1"
 MOS_RULE_VERSION = "ndff-mos-v1"
 FLORBASE_RULE_VERSION = "ndff-florbase-v1"
 FLORBASE_COMPLETENESS_THRESHOLD = 50
+LMFA_RULE_VERSION = "ndff-lmfa-v1"
+LMFA_REPORT_URL = (
+    "https://www.verspreidingsatlas.nl/redactie/pdf/"
+    "f085962d-9fe4-4c7e-86bf-102fc0d35dea.pdf"
+)
+LMFA_CONFIRMED_ROUTE_YEARS = {
+    (82, 463, 2003), (82, 463, 2007), (82, 463, 2017), (82, 463, 2019),
+    (83, 463, 2001), (83, 463, 2009), (83, 463, 2013), (83, 463, 2018),
+    (84, 463, 2003), (84, 463, 2007), (84, 463, 2011), (84, 463, 2015),
+    (84, 463, 2017), (84, 463, 2019),
+    (85, 463, 2001), (85, 463, 2005), (85, 463, 2009), (85, 463, 2013),
+    (85, 463, 2017), (85, 463, 2019),
+    (86, 463, 2000), (86, 463, 2003), (86, 463, 2011), (86, 463, 2015),
+    (86, 463, 2019),
+    (82, 462, 2003), (82, 462, 2007), (82, 462, 2011), (82, 462, 2017),
+    (82, 462, 2019),
+    (83, 462, 2002), (83, 462, 2006), (83, 462, 2010), (83, 462, 2014),
+    (83, 462, 2018), (83, 462, 2019),
+    (84, 462, 2003), (84, 462, 2007), (84, 462, 2011), (84, 462, 2015),
+    (85, 462, 2002), (85, 462, 2006), (85, 462, 2018),
+    (81, 461, 2002), (81, 461, 2006), (81, 461, 2010), (81, 461, 2014),
+    (81, 461, 2018),
+    (82, 461, 2001), (82, 461, 2005), (82, 461, 2009), (82, 461, 2013),
+    (82, 461, 2017),
+    (83, 461, 2001), (83, 461, 2005), (83, 461, 2009), (83, 461, 2013),
+    (83, 461, 2017),
+    (84, 461, 2002), (84, 461, 2006), (84, 461, 2010), (84, 461, 2014),
+    (84, 461, 2018),
+    (85, 461, 2003), (85, 461, 2007), (85, 461, 2011),
+    (80, 460, 2000), (80, 460, 2004), (80, 460, 2008), (80, 460, 2012),
+    (81, 460, 2000), (81, 460, 2004), (81, 460, 2008), (81, 460, 2016),
+    (82, 460, 2001), (82, 460, 2005), (82, 460, 2009), (82, 460, 2013),
+    (82, 460, 2017),
+    (79, 459, 2000), (79, 459, 2003), (79, 459, 2011), (79, 459, 2015),
+    (79, 459, 2019),
+    (80, 459, 2002), (80, 459, 2005), (80, 459, 2009), (80, 459, 2013),
+    (80, 459, 2017),
+    (81, 459, 2001), (81, 459, 2005), (81, 459, 2009), (81, 459, 2013),
+    (81, 459, 2017),
+    (82, 459, 2000), (82, 459, 2004), (82, 459, 2008), (82, 459, 2012),
+    (80, 458, 2001), (80, 458, 2005), (80, 458, 2009), (80, 458, 2017),
+}
 HABSLAK_RULE_VERSION = "ndff-habslak-v1"
 HABSLAK_MINIMUM_SAMPLE_LOCATIONS = 15
 BRAAKBAL_RULE_VERSION = "ndff-braakbal-v1"
@@ -92,6 +134,7 @@ HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
 KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
 MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
 FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
+LMFA_TABLE_PREFIX = "Meijendel.ndff_lmfa"
 HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
 BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
 TUINTELLING_TABLE_PREFIX = "Meijendel.ndff_tuintelling"
@@ -550,6 +593,24 @@ FLORBASE_RECONSTRUCTION_EXPECTED = {
     "pq_other_records": 0,
     "secure_derived_tables": 0,
 }
+LMFA_RECONSTRUCTION_EXPECTED = {
+    "source_records": 5980,
+    "routes": 30,
+    "visits": 124,
+    "report_confirmed_visits": 79,
+    "inferred_visits": 45,
+    "target_species": 75,
+    "selection_rows": 5980,
+    "target_source_records": 4761,
+    "outside_target_source_records": 1219,
+    "matrix_rows": 9300,
+    "positive_rows": 1493,
+    "true_zero_rows": 7807,
+    "uncertain_aggregation_rows": 161,
+    "unlinked_source_records": 0,
+    "matrix_size_mismatch": 0,
+    "secure_derived_tables": 0,
+}
 HABSLAK_RECONSTRUCTION_EXPECTED = {
     "source_records": 2772,
     "unblurred_source_records": 2629,
@@ -683,8 +744,8 @@ ANALYSIS_CHAIN_EXPECTED = {
     "secure_detail_records": 14573,
     "distribution_rows": 105999,
     "distribution_sources": 303319,
-    "trend_rows": 10855,
-    "trend_sources": 65464,
+    "trend_rows": 10025,
+    "trend_sources": 61320,
     "trend_loose": 0,
     "usage_rows": 142,
     "usage_records": 810983,
@@ -1736,7 +1797,10 @@ MIXED_COMBINATIONS = {
 }
 TARGET_DEPENDENT_COMBINATIONS = {
     ("10.002", "Amfibieën"),
+    ("12.002", "Vaatplanten"),
+    ("12.003", "Vaatplanten"),
     ("12.015", "Kranswieren, wieren en algen"),
+    ("12.209", "Vaatplanten"),
     ("12.205", "Dagvlinders"),
     ("12.205", "Korstmossen"),
     ("12.205", "Kranswieren, wieren en algen"),
@@ -1744,6 +1808,7 @@ TARGET_DEPENDENT_COMBINATIONS = {
     ("12.205", "Mossen"),
     ("12.205", "Sprinkhanen en krekels"),
     ("12.205", "Vaatplanten"),
+    ("12.211", "Vaatplanten"),
     ("17.505", "Vleermuizen"),
     ("17.506", "Vleermuizen"),
 }
@@ -1753,6 +1818,49 @@ DAZ_TARGET_SPECIES = {
     "Ondatra zibethicus",
 }
 RABBIT_TARGET_SPECIES = {"Oryctolagus cuniculus"}
+LMFA_TARGET_SPECIES = {
+    "Lathyrus tuberosus", "Briza media", "Ophrys apifera", "Orobanche picridis",
+    "Orobanche purpurea", "Eryngium maritimum", "Alyssum alyssoides",
+    "Himantoglossum hircinum", "Dactylorhiza majalis", "Euphorbia cyparissias",
+    "Carlina vulgaris", "Carex trinervis", "Centunculus minimus", "Carex oederi",
+    "Centaurium erythraea", "Centaurium pulchellum", "Linum catharticum",
+    "Glaucium flavum", "Botrychium lunaria", "Agrimonia eupatoria",
+    "Polygala vulgaris", "Hypochaeris glabra", "Lithospermum officinale",
+    "Liparis loeselii", "Centaurea scabiosa", "Neottia ovata", "Anacamptis morio",
+    "Viola canina", "Parietaria judaica", "Cuscuta epithymum", "Rhinanthus minor",
+    "Clinopodium acinos", "Erodium lebelii", "Schoenus nigricans", "Gentiana cruciata",
+    "Eryngium campestre", "Muscari comosum", "Thesium humifusum",
+    "Asparagus officinalis subsp. prostratus", "Pedicularis palustris",
+    "Epipactis palustris", "Allium oleraceum", "Crassula tillaea",
+    "Chenopodiastrum murale", "Silene nutans", "Littorella uniflora", "Silene otites",
+    "Parnassia palustris", "Dactylorhiza praetermissa", "Lonicera xylosteum",
+    "Odontites vernus subsp. serotinus", "Pyrola rotundifolia", "Antennaria dioica",
+    "Campanula trachelium", "Viola hirta",
+    "Arabis hirsuta", "Milium vernale", "Taraxacum sect. Celtica",
+    "Sagina nodosa", "Gentianella amarella", "Baldellia ranunculoides s.s.",
+    "Ballota nigra subsp. meridionalis", "Asplenium scolopendrium",
+    "Dactylorhiza incarnata", "Scrophularia vernalis", "Orobanche caryophyllacea",
+    "Polygonatum odoratum", "Anthyllis vulneraria", "Viola rupestris", "Crambe maritima",
+    "Convolvulus soldanella", "Euphorbia paralias", "Oenanthe lachenalii",
+    "Blackstonia perfoliata subsp. perfoliata", "Asplenium adiantum-nigrum",
+}
+# Het soortenhoofdstuk noemt daarnaast Ruig zoutkruid (Bassia hirsuta), maar
+# Tabel 4 met de expliciete 75 trendsoorten laat deze soort weg. Positieve
+# records blijven bewaard; zonder heldere bevestiging leiden we er geen nul uit af.
+LMFA_SUPPLEMENTARY_SPECIES = {"Bassia hirsuta"}
+LMFA_TARGET_ALIASES = {
+    "Arabis hirsuta subsp. hirsuta": "Arabis hirsuta",
+    "Blackstonia perfoliata": "Blackstonia perfoliata subsp. perfoliata",
+    "Blackstonia perfoliata s.s.": "Blackstonia perfoliata subsp. perfoliata",
+    "Baldellia ranunculoides": "Baldellia ranunculoides s.s.",
+    "Baldellia ranunculoides subsp. ranunculoides": "Baldellia ranunculoides s.s.",
+    "Dactylorhiza incarnata subsp. coccinea": "Dactylorhiza incarnata",
+}
+
+
+def lmfa_target_name(scientific_name: str) -> str | None:
+    canonical = LMFA_TARGET_ALIASES.get(scientific_name, scientific_name)
+    return canonical if canonical in LMFA_TARGET_SPECIES else None
 HABSLAK_TARGET_SPECIES = {"Vertigo angustior", "Vertigo moulinsiana", "Anisus vorticulus"}
 BOSPADDENSTOEL_TARGET_SPECIES = {
     "Amanita citrina", "Amanita fulva", "Amanita muscaria", "Amanita rubescens",
@@ -1798,6 +1906,7 @@ VTT_TARGET_SPECIES = {
     "Eptesicus serotinus", "Nyctalus noctula",
 }
 TARGET_SPECIES_BY_COMBINATION = {
+    ("12.211", "Vaatplanten"): LMFA_TARGET_SPECIES,
     ("04.006", "Weekdieren"): HABSLAK_TARGET_SPECIES,
     ("11.201", "Schimmels"): BOSPADDENSTOEL_TARGET_SPECIES,
     ("11.202", "Schimmels"): ZEEREEP_TARGET_SPECIES,
@@ -1815,6 +1924,7 @@ AMBIGUOUS_SPECIES_BY_COMBINATION = {
     ("17.202", "Vleermuizen"): {"Plecotus auritus/austriacus"},
 }
 TARGET_TYPES_BY_COMBINATION = {
+    ("12.211", "Vaatplanten"): "V,TA,TK",
     ("04.006", "Weekdieren"): "V,TV,TA",
     ("11.201", "Schimmels"): "V,TA",
     ("11.202", "Schimmels"): "V,TV",
@@ -1828,6 +1938,17 @@ TARGET_TYPES_BY_COMBINATION = {
     ("17.209", "Zoogdieren (overig)"): "V,TA",
 }
 ADDITIONAL_SCOPE_SOURCE_URLS = {
+    ("12.002", "Vaatplanten"): (
+        "https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf",
+    ),
+    ("12.003", "Vaatplanten"): (
+        "https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf",
+    ),
+    ("12.209", "Vaatplanten"): (
+        "https://www.floron.nl/nectarindex",
+        "https://www.floron.nl/Portals/1/Zoekkaart%20Nectarindex.pdf",
+    ),
+    ("12.211", "Vaatplanten"): (LMFA_REPORT_URL,),
     ("02.204", "Mossen"): (
         "https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx",
     ),
@@ -1895,7 +2016,11 @@ def classify_protocol_species(
     if scientific_name in AMBIGUOUS_SPECIES_BY_COMBINATION.get(key, set()):
         return {"doelrelatie": "onbepaald", "toegestane_typen": "V"}
     targets = TARGET_SPECIES_BY_COMBINATION[key]
-    if scientific_name in targets:
+    is_target = (
+        lmfa_target_name(scientific_name) is not None
+        if key == ("12.211", "Vaatplanten") else scientific_name in targets
+    )
+    if is_target:
         return {"doelrelatie": "doelsoort", "toegestane_typen": TARGET_TYPES_BY_COMBINATION[key]}
     return {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
 
@@ -5888,6 +6013,95 @@ def build_florbase_inventory_matrix(
     return matrix
 
 
+LMFA_SOURCE_CLASS_RANK = {
+    "1.0": 1,
+    "2.0 - 5.0": 2,
+    "6.0 - 25.0": 3,
+    "26.0 - 50.0": 4,
+    "51.0 - 500.0": 5,
+    "501.0 - 5000.0": 6,
+    "minimaal 5001.0": 7,
+}
+
+
+def lmfa_abundance_class_for_count(count: int) -> int:
+    """Vertaal een opgeteld exact aantal naar de officiële LMF-A-klasse 0–7."""
+    if count < 0:
+        raise ValueError("Een LMF-A-aantal kan niet negatief zijn.")
+    for upper, rank in ((0, 0), (1, 1), (5, 2), (25, 3), (50, 4),
+                        (500, 5), (5000, 6)):
+        if count <= upper:
+            return rank
+    return 7
+
+
+def build_lmfa_visit_matrix(
+    *,
+    visits: set[str],
+    target_taxa: set[str],
+    records: Iterable[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Maak één LMF-A-resultaat per vaste kilometerhokroute, jaar en doelsoort.
+
+    Exacte groeiplaatsaantallen worden volgens het FLORON-rapport opgeteld.
+    Een reeds geaggregeerde bronklasse blijft intact. Meer dan één bronklasse,
+    of een menging van klassen en exacte aantallen, wordt niet schijnprecies
+    samengevoegd omdat het rapport daarvoor geen volledig deterministische regel geeft.
+    """
+    positives: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
+    for source_row in records:
+        row = dict(source_row)
+        positives[(str(row["visit"]), str(row["taxon"]))].append(row)
+
+    matrix: list[dict[str, object]] = []
+    for visit in sorted(visits):
+        for taxon in sorted(target_taxa):
+            source_rows = positives.get((visit, taxon), [])
+            if not source_rows:
+                status, rank, exact_total, raw = "echte_nul", 0, 0, None
+            else:
+                exact = [row for row in source_rows if str(row["scale"]) == "exact aantal"]
+                classes = [row for row in source_rows if str(row["scale"]) == "FLORON-aantalsklassen"]
+                other = [row for row in source_rows if row not in exact and row not in classes]
+                if exact and not classes and not other:
+                    exact_total = sum(int(float(str(row["abundance"]))) for row in exact)
+                    rank = lmfa_abundance_class_for_count(exact_total)
+                    status, raw = "waargenomen_exact_opgeteld", None
+                elif len(classes) == 1 and not exact and not other:
+                    raw = str(classes[0]["abundance"])
+                    rank = LMFA_SOURCE_CLASS_RANK[raw]
+                    exact_total, status = None, "waargenomen_bronklasse"
+                else:
+                    exact_total, rank, raw = None, None, None
+                    status = "waargenomen_aggregatie_onzeker"
+            matrix.append({
+                "visit": visit,
+                "taxon": taxon,
+                "status": status,
+                "abundance_rank": rank,
+                "exact_total": exact_total,
+                "source_class_raw": raw,
+                "source_count": len(source_rows),
+            })
+    return matrix
+
+
+def lmfa_source_sql() -> str:
+    """Lees alle LMF-A-regels; vervaging verandert het routehok niet."""
+    return """
+SELECT o.waarneming_id,o.identiteit_sha256,
+       FLOOR(ST_X(ST_Centroid(o.openbare_geometrie))/1000),
+       FLOOR(ST_Y(ST_Centroid(o.openbare_geometrie))/1000),
+       o.jaar,DATE_FORMAT(DATE(o.periode_start),'%Y-%m-%d'),
+       DATE_FORMAT(DATE(o.periode_stop),'%Y-%m-%d'),
+       o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw,o.vervaagd
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '12.211%'
+  AND o.soortgroep_raw='Vaatplanten'
+ORDER BY o.jaar,o.waarneming_id;
+"""
+
+
 def florbase_source_sql() -> str:
     """Lees 12.001 uitsluitend uit de openbare, onvervaagde bronlaag."""
     return """
@@ -7576,6 +7790,150 @@ def reconstruct_florbase(
     return parse_analysis_chain_output(audit_output)
 
 
+def reconstruct_lmfa(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Bouw de LMF-A-routejaarstructuur volgens het officiële FLORON-rapport."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, lmfa_source_sql(), capture=True)
+    records: list[dict[str, object]] = []
+    for line in output.splitlines():
+        fields = line.split("\t")
+        if len(fields) != 11:
+            raise ValueError(f"Onverwachte 12.211-bronregel met {len(fields)} velden.")
+        (observation_id, identity, hok_x, hok_y, year, start, stop, taxon,
+         scale, abundance, blurred) = fields
+        x, y, visit_year = int(hok_x), int(hok_y), int(year)
+        route = hashlib.sha256(f"12.211|route|{x}|{y}".encode()).hexdigest()
+        visit = hashlib.sha256(f"12.211|routejaar|{x}|{y}|{visit_year}".encode()).hexdigest()
+        records.append({
+            "observation_id": int(observation_id), "identity": identity,
+            "hok_x": x, "hok_y": y, "hok": f"{x}-{y}", "year": visit_year,
+            "start": start, "stop": stop, "taxon": taxon, "scale": scale,
+            "abundance": abundance, "blurred": blurred == "1",
+            "route": route, "visit": visit,
+        })
+
+    routes: dict[str, dict[str, object]] = {}
+    visits: dict[str, dict[str, object]] = {}
+    for row in records:
+        routes.setdefault(str(row["route"]), {
+            "hok_x": row["hok_x"], "hok_y": row["hok_y"], "hok": row["hok"],
+        })
+        info = visits.setdefault(str(row["visit"]), {
+            "route": row["route"], "hok_x": row["hok_x"], "hok_y": row["hok_y"],
+            "year": row["year"], "starts": set(), "stops": set(), "rows": [],
+        })
+        assert isinstance(info["starts"], set) and isinstance(info["stops"], set)
+        assert isinstance(info["rows"], list)
+        info["starts"].add(str(row["start"]))
+        info["stops"].add(str(row["stop"]))
+        info["rows"].append(row)
+
+    target_records = []
+    for source_row in records:
+        canonical_target = lmfa_target_name(str(source_row["taxon"]))
+        if canonical_target is not None:
+            row = dict(source_row)
+            row["taxon"] = canonical_target
+            target_records.append(row)
+    matrix = build_lmfa_visit_matrix(
+        visits=set(visits), target_taxa=LMFA_TARGET_SPECIES, records=target_records,
+    )
+    route_note = (
+        "FLORON beschrijft LMF-A als een vaste looproute per kilometerhok. De exacte "
+        "routegeometrie is niet meegeleverd; het niet-gevoelige kilometerhok is de "
+        "stabiele lokale route-eenheid."
+    )
+    visit_note = (
+        "Eén routejaar is afgeleid uit protocol 12.211 en het kilometerhok. De 75 "
+        "soorten uit Tabel 4 van het FLORON-rapport vormen het nulbereik. Het rapport "
+        "noemt Ruig zoutkruid daarnaast in de soortenbeschrijving, maar niet in deze "
+        "75-soortenmatrix; die soort blijft daarom alleen positief bruikbaar."
+    )
+    matrix_note = (
+        "Niet gemeld binnen een uitgevoerd LMF-A-routejaar geldt als echte nul voor "
+        "de 75 officiële trendsoorten. Exacte groeiplaatsaantallen zijn opgeteld en "
+        "naar klasse A-G (1-7) vertaald. Meerdere bronklassen of gemengde meetwijzen "
+        "blijven aggregatie-onzeker en krijgen geen berekende klasse."
+    )
+    route_values = [
+        f"({sql_text(LMFA_RULE_VERSION)},{sql_text(key)},'12.211',"
+        f"{int(info['hok_x'])},{int(info['hok_y'])},{sql_text(str(info['hok']))},"
+        f"'vaste_lmfa_route_per_kilometerhok',{sql_text(LMFA_REPORT_URL)},"
+        f"{sql_text(route_note)})"
+        for key, info in sorted(routes.items())
+    ]
+    visit_values: list[str] = []
+    for key, info in sorted(visits.items(), key=lambda item: (int(item[1]["year"]), int(item[1]["hok_x"]), int(item[1]["hok_y"]))):
+        rows = info["rows"]
+        starts, stops = info["starts"], info["stops"]
+        assert isinstance(rows, list) and isinstance(starts, set) and isinstance(stops, set)
+        confirmed = (int(info["hok_x"]), int(info["hok_y"]), int(info["year"])) in LMFA_CONFIRMED_ROUTE_YEARS
+        status = (
+            "bevestigd_in_flora_rapport_2021" if confirmed
+            else "afgeleid_uit_12_211_hokjaar_niet_bevestigd_in_rapport"
+        )
+        observed_targets = {
+            target for row in rows
+            if (target := lmfa_target_name(str(row["taxon"]))) is not None
+        }
+        visit_values.append(
+            f"({sql_text(LMFA_RULE_VERSION)},{sql_text(key)},{sql_text(str(info['route']))},"
+            f"{int(info['year'])},{sql_text(min(starts))},{sql_text(max(stops))},"
+            f"{sql_text(status)},{len(rows)},{len(observed_targets)},"
+            f"{sum(bool(row['blurred']) for row in rows)},{sql_text(visit_note)})"
+        )
+    selection_values = []
+    for row in records:
+        target = lmfa_target_name(str(row["taxon"])) is not None
+        status = "opgenomen_doelsoort" if target else "bewaard_buiten_officieel_doelbereik"
+        reason = (
+            "Onderdeel van de 75 LMF-A-trendsoorten; opgenomen in de routejaarmatrix."
+            if target else
+            "Positieve 12.211-regel buiten de 75-soortenlijst van Tabel 4; bewaard, maar niet gebruikt om nullen af te leiden."
+        )
+        selection_values.append(
+            f"({sql_text(LMFA_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{sql_text(str(row['visit']))},{sql_text(status)},{sql_text(reason)})"
+        )
+    target_values = [
+        f"({sql_text(LMFA_RULE_VERSION)},{sql_text(taxon)},"
+        f"'officiele_lmfa_aandachtssoort',{sql_text(LMFA_REPORT_URL)})"
+        for taxon in sorted(LMFA_TARGET_SPECIES)
+    ]
+    matrix_values = []
+    for row in matrix:
+        is_zero = row["status"] == "echte_nul"
+        matrix_values.append(
+            f"({sql_text(LMFA_RULE_VERSION)},{sql_text(str(row['visit']))},"
+            f"{sql_text(str(row['taxon']))},{sql_text(str(row['status']))},"
+            f"{str(row['abundance_rank']) if row['abundance_rank'] is not None else 'NULL'},"
+            f"{str(row['exact_total']) if row['exact_total'] is not None else 'NULL'},"
+            f"{sql_text(row['source_class_raw'])},{int(row['source_count'])},"
+            f"{sql_text('niet_gemeld_binnen_volledige_lmfa_doelsoortenlijst' if is_zero else 'niet_van_toepassing')},"
+            f"{sql_text(matrix_note)})"
+        )
+    statements = ["START TRANSACTION;"]
+    for table in ("bezoek_taxon", "doelsoort", "recordselectie", "bezoek", "route"):
+        statements.append(
+            f"DELETE FROM {LMFA_TABLE_PREFIX}_{table} WHERE reconstructieversie={sql_text(LMFA_RULE_VERSION)};"
+        )
+    for table, columns, values in (
+        (f"{LMFA_TABLE_PREFIX}_route", "reconstructieversie,route_sleutel,protocol_sleutel,hok_x,hok_y,hoknummer,route_status,bron_url,kwaliteitsnotitie", route_values),
+        (f"{LMFA_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,route_sleutel,jaar,begindatum,einddatum,bezoekstatus,bronrecordaantal,geregistreerde_doelsoorten,vervaagd_bronrecordaantal,kwaliteitsnotitie", visit_values),
+        (f"{LMFA_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,bezoek_sleutel,selectiestatus,selectiereden", selection_values),
+        (f"{LMFA_TABLE_PREFIX}_doelsoort", "reconstructieversie,wetenschappelijke_naam,doelstatus,bron_url", target_values),
+        (f"{LMFA_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,waarnemingsstatus,abundantieklasse,exact_totaal,bronklasse_raw,bronrecordaantal,nulregel,kwaliteitsnotitie", matrix_values),
+    ):
+        statements += _batched_insert(table, columns, values)
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    audit_output = run_mysql(mysql_client, query_args, lmfa_validation_sql(), capture=True)
+    return parse_analysis_chain_output(audit_output)
+
+
 def reconstruct_habslak(
     mysql_client: Path,
     client_args: list[str],
@@ -9202,6 +9560,33 @@ SELECT JSON_OBJECT(
 """
 
 
+def lmfa_validation_sql() -> str:
+    version = sql_text(LMFA_RULE_VERSION)
+    secure_tables = ",".join(sql_text(f"ndff_lmfa_{suffix}") for suffix in (
+        "route", "bezoek", "recordselectie", "doelsoort", "bezoek_taxon",
+    ))
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.211%' AND soortgroep_raw='Vaatplanten'),
+  'routes',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_route WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek WHERE reconstructieversie={version}),
+  'report_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek WHERE reconstructieversie={version} AND bezoekstatus='bevestigd_in_flora_rapport_2021'),
+  'inferred_visits',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek WHERE reconstructieversie={version} AND bezoekstatus='afgeleid_uit_12_211_hokjaar_niet_bevestigd_in_rapport'),
+  'target_species',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_doelsoort WHERE reconstructieversie={version}),
+  'selection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_recordselectie WHERE reconstructieversie={version}),
+  'target_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_doelsoort'),
+  'outside_target_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_recordselectie WHERE reconstructieversie={version} AND selectiestatus='bewaard_buiten_officieel_doelbereik'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'uncertain_aggregation_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_aggregatie_onzeker'),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_lmfa_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.211%' AND o.soortgroep_raw='Vaatplanten' AND s.waarneming_id IS NULL),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels FROM Meijendel.ndff_lmfa_bezoek b LEFT JOIN Meijendel.ndff_lmfa_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel HAVING matrixregels<>75) q),
+  'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
+);
+"""
+
+
 def habslak_validation_sql() -> str:
     version = sql_text(HABSLAK_RULE_VERSION)
     secure_tables = ",".join(sql_text(f"ndff_habslak_{suffix}") for suffix in (
@@ -9414,7 +9799,7 @@ SELECT JSON_OBJECT(
       (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_otter_bever_recordselectie s ON s.reconstructieversie={mammal} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '17.207%' AND s.waarneming_id IS NULL)
   ),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables})),
-  'lmf_ndff_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema) IN ('meijendel','meijendel_ndff_secure') AND LOWER(table_name) LIKE 'ndff_lmf%')
+  'lmf_ndff_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema) IN ('meijendel','meijendel_ndff_secure') AND LOWER(table_name) REGEXP '^ndff_lmf_')
 );
 """
 
@@ -9606,6 +9991,16 @@ def validate_florbase_reconstruction(metrics: dict[str, int]) -> None:
         raise ValueError(
             f"FLORBASE-reconstructie wijkt af van het vaste profiel: {differences}"
         )
+
+
+def validate_lmfa_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != LMFA_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (LMFA_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(LMFA_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != LMFA_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"LMF-A-reconstructie wijkt af van het vaste profiel: {differences}")
 
 
 def validate_habslak_reconstruction(metrics: dict[str, int]) -> None:
@@ -9879,7 +10274,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
     if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 632
-            or metrics["dependent_combinations"] != 11 or metrics["mixed_species_missing"]
+            or metrics["dependent_combinations"] != 15 or metrics["mixed_species_missing"]
             or metrics["secure_mixed_species_missing"]
             or metrics["ambiguous_species"] != 2 or metrics["scope_missing"]):
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
@@ -10053,6 +10448,8 @@ def main() -> int:
     mode.add_argument("--audit-mossen", action="store_true")
     mode.add_argument("--reconstruct-florbase", action="store_true")
     mode.add_argument("--audit-florbase", action="store_true")
+    mode.add_argument("--reconstruct-lmfa", action="store_true")
+    mode.add_argument("--audit-lmfa", action="store_true")
     mode.add_argument("--reconstruct-habslak", action="store_true")
     mode.add_argument("--audit-habslak", action="store_true")
     mode.add_argument("--reconstruct-braakballen", action="store_true")
@@ -10404,6 +10801,23 @@ def main() -> int:
         metrics = parse_analysis_chain_output(output)
         validate_florbase_reconstruction(metrics)
         print(f"OK: lokale FLORBASE-reconstructie {FLORBASE_RULE_VERSION} gereed")
+        print(output)
+        return 0
+    if args.reconstruct_lmfa:
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_lmfa(args.mysql_client, client_args)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_lmfa:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            lmfa_validation_sql(),
+            capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_lmfa_reconstruction(metrics)
+        print(f"OK: lokale LMF-A-reconstructie {LMFA_RULE_VERSION} gereed")
         print(output)
         return 0
     if args.reconstruct_habslak:

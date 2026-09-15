@@ -1802,6 +1802,113 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie_taxon (
   )
 ) ENGINE=InnoDB;
 
+-- LMF-A (12.211) is het door Dunea voortgezette FLORON-meetnet met één vaste
+-- looproute per kilometerhok en 75 vooraf bepaalde aandachtssoorten. Exacte
+-- gevoelige vindplaatsen blijven in de beveiligde bronlaag; deze afgeleide
+-- tabellen bevatten alleen het niet-gevoelige routehok en het routejaar.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_route (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  route_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '12.211',
+  hok_x SMALLINT UNSIGNED NOT NULL,
+  hok_y SMALLINT UNSIGNED NOT NULL,
+  hoknummer VARCHAR(16) CHARACTER SET ascii NOT NULL,
+  route_status ENUM('vaste_lmfa_route_per_kilometerhok') NOT NULL,
+  bron_url VARCHAR(1000) NOT NULL,
+  kwaliteitsnotitie VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, route_sleutel),
+  UNIQUE KEY uq_ndff_lmfa_route_hok (reconstructieversie, hok_x, hok_y)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_bezoek (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  route_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  begindatum DATE NOT NULL,
+  einddatum DATE NOT NULL,
+  bezoekstatus ENUM(
+    'bevestigd_in_flora_rapport_2021',
+    'afgeleid_uit_12_211_hokjaar_niet_bevestigd_in_rapport'
+  ) NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  geregistreerde_doelsoorten SMALLINT UNSIGNED NOT NULL,
+  vervaagd_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  kwaliteitsnotitie VARCHAR(1600) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel),
+  UNIQUE KEY uq_ndff_lmfa_routejaar (reconstructieversie, route_sleutel, jaar),
+  CONSTRAINT fk_ndff_lmfa_bezoek_route FOREIGN KEY
+    (reconstructieversie, route_sleutel)
+    REFERENCES Meijendel.ndff_lmfa_route (reconstructieversie, route_sleutel),
+  CHECK (einddatum >= begindatum)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  selectiestatus ENUM('opgenomen_doelsoort','bewaard_buiten_officieel_doelbereik') NOT NULL,
+  selectiereden VARCHAR(1200) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  KEY ix_ndff_lmfa_selectie_bezoek (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_ndff_lmfa_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_lmfa_selectie_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_lmfa_bezoek (reconstructieversie, bezoek_sleutel)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_doelsoort (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  doelstatus ENUM('officiele_lmfa_aandachtssoort') NOT NULL,
+  bron_url VARCHAR(1000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, wetenschappelijke_naam)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_bezoek_taxon (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  wetenschappelijke_naam VARCHAR(255) NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen_exact_opgeteld','waargenomen_bronklasse',
+    'waargenomen_aggregatie_onzeker','echte_nul'
+  ) NOT NULL,
+  abundantieklasse TINYINT UNSIGNED NULL,
+  exact_totaal INT UNSIGNED NULL,
+  bronklasse_raw VARCHAR(64) NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  nulregel ENUM('niet_gemeld_binnen_volledige_lmfa_doelsoortenlijst','niet_van_toepassing') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
+  KEY ix_ndff_lmfa_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_ndff_lmfa_taxon_bezoek FOREIGN KEY
+    (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.ndff_lmfa_bezoek (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_ndff_lmfa_taxon_doelsoort FOREIGN KEY
+    (reconstructieversie, wetenschappelijke_naam)
+    REFERENCES Meijendel.ndff_lmfa_doelsoort (reconstructieversie, wetenschappelijke_naam),
+  CHECK (
+    (waarnemingsstatus='echte_nul' AND abundantieklasse=0 AND exact_totaal=0
+      AND bronklasse_raw IS NULL AND bronrecordaantal=0
+      AND nulregel='niet_gemeld_binnen_volledige_lmfa_doelsoortenlijst')
+    OR (waarnemingsstatus='waargenomen_exact_opgeteld' AND abundantieklasse BETWEEN 1 AND 7
+      AND exact_totaal>0 AND bronklasse_raw IS NULL AND bronrecordaantal>0
+      AND nulregel='niet_van_toepassing')
+    OR (waarnemingsstatus='waargenomen_bronklasse' AND abundantieklasse BETWEEN 1 AND 7
+      AND exact_totaal IS NULL AND bronklasse_raw IS NOT NULL AND bronrecordaantal=1
+      AND nulregel='niet_van_toepassing')
+    OR (waarnemingsstatus='waargenomen_aggregatie_onzeker' AND abundantieklasse IS NULL
+      AND exact_totaal IS NULL AND bronklasse_raw IS NULL AND bronrecordaantal>0
+      AND nulregel='niet_van_toepassing')
+  )
+) ENGINE=InnoDB;
+
 -- Openbare reconstructie van HabSlak-protocol 04.006. Een monster is een
 -- unieke combinatie van kalenderdatum en onvervaagde openbare geometrie.
 -- Beschermde exacte vindplaatsen worden niet naar deze tabellen gekopieerd.

@@ -115,6 +115,11 @@ def main() -> int:
         "meijendel.ndff_florbase_recordselectie",
         "meijendel.ndff_florbase_doelbereik",
         "meijendel.ndff_florbase_inventarisatie_taxon",
+        "meijendel.ndff_lmfa_route",
+        "meijendel.ndff_lmfa_bezoek",
+        "meijendel.ndff_lmfa_recordselectie",
+        "meijendel.ndff_lmfa_doelsoort",
+        "meijendel.ndff_lmfa_bezoek_taxon",
         "meijendel.ndff_habslak_monster",
         "meijendel.ndff_habslak_recordselectie",
         "meijendel.ndff_habslak_monster_taxon",
@@ -643,6 +648,34 @@ def main() -> int:
     assert florbase_by_key[("i2", "Taxon b")]["measurement_status"] == (
         "aantalsinformatie_niet_aggregeerbaar"
     )
+
+    # LMF-A volgt 75 vaste aandachtssoorten per kilometerhokroute. Alleen
+    # exacte groeiplaatsaantallen mogen zonder extra interpretatie worden
+    # opgeteld; meerdere bronklassen blijven daarom expliciet onzeker.
+    assert len(module.LMFA_TARGET_SPECIES) == 75
+    assert module.lmfa_abundance_class_for_count(0) == 0
+    assert module.lmfa_abundance_class_for_count(1) == 1
+    assert module.lmfa_abundance_class_for_count(5) == 2
+    assert module.lmfa_abundance_class_for_count(25) == 3
+    assert module.lmfa_abundance_class_for_count(50) == 4
+    assert module.lmfa_abundance_class_for_count(500) == 5
+    assert module.lmfa_abundance_class_for_count(5000) == 6
+    assert module.lmfa_abundance_class_for_count(5001) == 7
+    lmfa_matrix = module.build_lmfa_visit_matrix(
+        visits={"r1-2023", "r2-2023"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"visit": "r1-2023", "taxon": "Taxon a", "scale": "exact aantal", "abundance": "2"},
+            {"visit": "r1-2023", "taxon": "Taxon a", "scale": "exact aantal", "abundance": "4"},
+            {"visit": "r2-2023", "taxon": "Taxon b", "scale": "FLORON-aantalsklassen", "abundance": "6.0 - 25.0"},
+        ],
+    )
+    lmfa_by_key = {(row["visit"], row["taxon"]): row for row in lmfa_matrix}
+    assert lmfa_by_key[("r1-2023", "Taxon a")]["status"] == "waargenomen_exact_opgeteld"
+    assert lmfa_by_key[("r1-2023", "Taxon a")]["abundance_rank"] == 3
+    assert lmfa_by_key[("r1-2023", "Taxon b")]["status"] == "echte_nul"
+    assert lmfa_by_key[("r2-2023", "Taxon b")]["status"] == "waargenomen_bronklasse"
+    assert lmfa_by_key[("r2-2023", "Taxon b")]["abundance_rank"] == 3
     assert module.classify_habslak_hokjaar(15, 0) == (
         "protocolnul_onder_doelbereikaanname"
     )
@@ -1421,6 +1454,15 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende FLORBASE-reconstructie is niet geblokkeerd")
+    module.validate_lmfa_reconstruction(dict(module.LMFA_RECONSTRUCTION_EXPECTED))
+    broken_lmfa = dict(module.LMFA_RECONSTRUCTION_EXPECTED)
+    broken_lmfa["true_zero_rows"] -= 1
+    try:
+        module.validate_lmfa_reconstruction(broken_lmfa)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende LMF-A-reconstructie is niet geblokkeerd")
     module.validate_habslak_reconstruction(
         dict(module.HABSLAK_RECONSTRUCTION_EXPECTED)
     )
@@ -1519,7 +1561,14 @@ def main() -> int:
     assert module.classify_protocol_group("13.202", "Amfibieën")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("10.002", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_group("12.205", "Dagvlinders")["doelrelatie"] == "doelsoortafhankelijk"
-    assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 11
+    assert module.classify_protocol_group("12.211", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_species("12.211", "Ophrys apifera", "Vaatplanten")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("12.211", "Arabis hirsuta subsp. hirsuta", "Vaatplanten")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("12.211", "Urtica dioica", "Vaatplanten")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("12.002", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("12.003", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("12.209", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 15
     assert len(module.MIXED_COMBINATIONS) == 11
     assert len(module.BOSPADDENSTOEL_TARGET_SPECIES) == 49
 
@@ -1611,8 +1660,8 @@ def main() -> int:
     ):
         assert required in chain_sql, required
     module.validate_analysis_chain_metrics(dict(module.ANALYSIS_CHAIN_EXPECTED))
-    assert module.ANALYSIS_CHAIN_EXPECTED["trend_rows"] == 10855
-    assert module.ANALYSIS_CHAIN_EXPECTED["trend_sources"] == 65464
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_rows"] == 10025
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_sources"] == 61320
     assert module.parse_analysis_chain_output(
         '{"canonical_records": 810983}\n{"canonical_duplicates": 0}'
     ) == {"canonical_records": 810983, "canonical_duplicates": 0}
@@ -1667,7 +1716,7 @@ def main() -> int:
         "spatial": 810830,
         "scope_combinations": 114,
         "mixed_species": 632,
-        "dependent_combinations": 11,
+        "dependent_combinations": 15,
         "mixed_species_missing": 0,
         "secure_mixed_species_missing": 0,
         "ambiguous_species": 2,

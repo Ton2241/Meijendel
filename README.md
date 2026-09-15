@@ -388,6 +388,24 @@ en historische checklistversie niet bevat. Gebruik ze alleen op
 kilometerhokniveau, nooit als nul per SOVON-plot, en controleer de laag met
 `--audit-florbase`.
 
+LMF-A-protocol `12.211` staat onder `ndff-lmfa-v1` in vijf openbare
+`Meijendel.ndff_lmfa_*`-tabellen. Het officiële FLORON-rapport bevestigt dat
+Dunea per kilometerhok een vaste looproute gebruikt en daar gemiddeld eens per
+vier jaar 75 aandachtssoorten telt. De 5.980 bronregels zijn samengevat tot 30
+routes en 124 routejaren. Daarvan zijn 79 routejaren rechtstreeks in het rapport
+1999-2019 bevestigd; 45 zijn uit gelabelde `12.211`-records afgeleid. De matrix
+bevat 1.493 positieve routejaar-soortresultaten en 7.807 echte nullen. Exacte
+groeiplaatsaantallen zijn opgeteld en naar FLORON-klasse A-G vertaald. Bij 161
+combinaties met meerdere klassen of gemengde meetwijzen is geen schijnprecieze
+klasse berekend. Exacte gevoelige vindplaatsen zijn niet naar deze openbare
+afleiding gekopieerd. Controleer de laag met `--audit-lmfa`.
+
+De gerichte projecten `12.002` en `12.003`, Nectarindex `12.209` en LMF-A
+`12.211` zijn doelsoortafhankelijk geclassificeerd. Hun positieve regels blijven
+bruikbaar, maar een niet-gemelde plant is alleen een nul binnen het aantoonbare
+doelbereik van het betreffende protocol. Voor de negen Nectarindexregels uit
+één telling wordt daarom geen tijdtrend of nulmatrix afgeleid.
+
 HabSlak-protocol `04.006` staat onder `ndff-habslak-v1` in vier openbare
 `Meijendel.ndff_habslak_*`-tabellen. De 2.629 onvervaagde bronregels vormen
 251 datum-geometriemonsters en 1.730 positieve monster-taxoncombinaties. De

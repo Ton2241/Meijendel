@@ -419,6 +419,20 @@ MySQL:
   bezoekduur en historische checklistversie ontbreken. Kopieer de 213
   vervaagde records niet naar de openbare afgeleide tabellen en controleer vóór
   gebruik met `--audit-florbase`
+- gebruik voor LMF-A-protocol `12.211` reconstructieversie `ndff-lmfa-v1` en
+  de vijf openbare tabellen `Meijendel.ndff_lmfa_*`. Behandel één
+  kilometerhok en jaar als één bezoek aan de vaste Dunea-looproute. Leid echte
+  nullen alleen af voor de 75 soorten uit Tabel 4 van het officiële
+  FLORON-rapport. Tel uitsluitend exacte groeiplaatsaantallen op; behoud één
+  reeds geaggregeerde FLORON-klasse en zet combinaties van meerdere klassen of
+  gemengde meetwijzen op `waargenomen_aggregatie_onzeker`. Imputeer ontbrekende
+  meetronden nooit met een eerder of later jaar. Bewaar exacte gevoelige
+  geometrie uitsluitend in de beveiligde bronlaag en controleer vóór gebruik
+  met `--audit-lmfa`
+- behandel `12.002`, `12.003`, `12.209` en `12.211` als
+  doelsoortafhankelijke FLORON-protocollen. Leid buiten een expliciet
+  doelsoorten- en bezoekbereik geen nullen af. De enkele Nectarindextelling
+  ondersteunt positieve informatie, maar geen lokale tijdtrend
 - gebruik voor HabSlak-protocol `04.006` reconstructieversie
   `ndff-habslak-v1` en uitsluitend de vier openbare tabellen
   `Meijendel.ndff_habslak_*`. Groepeer onvervaagde records per kalenderdatum en
