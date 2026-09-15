@@ -326,15 +326,15 @@ doelsoortenbereik van de betreffende meetreeks zijn afgeleid. Akoestische
 detecties zijn geen aantallen individuele vleermuizen. Controleer deze laag
 met `--audit-vleermuizen`.
 
-Zeereeppaddenstoelenprotocol `11.202` staat onder `ndff-zeereep-v1` in drie
+Zeereeppaddenstoelenprotocol `11.202` staat onder `ndff-zeereep-v2` in drie
 openbare `Meijendel.ndff_zeereep_*`-tabellen. De 3.729 onvervaagde records
 vormen 161 hok-datumbezoeken in 21 RD-kilometerhokken. De matrix voor zes
-typische doelsoorten bevat 224 positieve combinaties en 742 protocolafgeleide
-nullen. NMV-vindplaatsklassen blijven ordinaal en worden niet als aantallen
-vruchtlichamen opgeteld. Negen vervaagde records zijn uitgesloten; 61 bezoeken
-buiten oktober-december en de nog niet gevalideerde bezoektijd en
-waarnemersbekwaamheid blijven als kwaliteitswaarschuwing aanwezig. Controleer
-de laag met `--audit-zeereeppaddenstoelen`.
+typische doelsoorten bevat 224 positieve combinaties. De overige 742
+combinaties zijn `niet_gemeld_tellerscope_onbekend`, niet een echte nul: de
+NMV-handleiding staat telling van slechts één of enkele bekende soorten toe en
+die tellerscope ontbreekt in NDFF. NMV-vindplaatsklassen blijven ordinaal en
+worden niet als aantallen vruchtlichamen opgeteld. Negen vervaagde records zijn
+uitgesloten. Controleer de laag met `--audit-zeereeppaddenstoelen`.
 
 Het historische bospaddenstoelenprotocol `11.201` staat onder
 `ndff-bospaddenstoel-v1` in zeven openbare

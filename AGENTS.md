@@ -357,10 +357,13 @@ MySQL:
   andere bestaande regels omdat zij in deze export ontbreken. Controleer met
   `--audit-sovon-avimap-vogels`
 - gebruik voor zeereeppaddenstoelenprotocol `11.202` reconstructieversie
-  `ndff-zeereep-v1` en de drie openbare tabellen `Meijendel.ndff_zeereep_*`.
+  `ndff-zeereep-v2` en de drie openbare tabellen `Meijendel.ndff_zeereep_*`.
   De native meeteenheid is het RD-kilometerhok en een bezoek is hok plus
-  kalenderdatum. Gebruik alleen onvervaagde records voor de bezoekmatrix en
-  leid nullen uitsluitend af voor de zes typische doelsoorten. Behoud
+  kalenderdatum. Gebruik alleen onvervaagde records voor de bezoekmatrix.
+  Behandel een niet gemelde typische doelsoort als
+  `niet_gemeld_tellerscope_onbekend`, nooit als echte nul: de NMV-handleiding
+  staat telling van één of enkele bekende soorten toe en de NDFF-export bevat
+  de feitelijke tellerscope niet. Behoud
   NMV-aantalsklassen als vindplaatsklassen; tel ze nooit op als aantallen
   vruchtlichamen. Markeer bezoeken buiten oktober-december en vermeld bij
   analyse dat bezoektijd en waarnemersbekwaamheid nog niet uit de NDFF-export

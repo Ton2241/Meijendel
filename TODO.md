@@ -52,9 +52,10 @@
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
   volgende NEM-reconstructie toe.
 - De reconstructies van `07.201`, `10.201`, `01.201`, `17.208`, `17.204`,
-  `11.202`, `11.201`, `12.204` en `02.202` zijn afgerond. `11.202` omvat 21 kilometerhokken, 161 bezoeken en
-  een matrix voor zes typische zeereeppaddenstoelen; 61 bezoeken buiten het
-  kernseizoen en ontbrekende bezoektijd/waarnemersbekwaamheid blijven zichtbaar.
+  `11.202`, `11.201`, `12.204` en `02.202` zijn afgerond. `11.202` omvat 21
+  kilometerhokken, 161 bezoeken en een matrix voor zes typische
+  zeereeppaddenstoelen. De 742 niet-meldingen zijn onder `ndff-zeereep-v2`
+  geen echte nullen zolang de feitelijke tellerscope ontbreekt.
   `17.209` is als positieve sectietelling geclassificeerd, maar kan zonder
   route- en sectie-ID's niet tot native bezoeken of nullen worden
   gereconstrueerd. DAZ-BMP bevat 1.475 bevestigde bezoeken en 7.552 echte

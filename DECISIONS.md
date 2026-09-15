@@ -220,9 +220,11 @@
   herleid uit de bijbehorende begin- en eindtijd. Een overige bronduur boven
   24 uur blijft bewaard maar wordt in analyseviews apart gemarkeerd voor
   handmatige controle.
-- Protocol `11.202` wordt onder `ndff-zeereep-v1` op RD-kilometerhok en
-  kalenderdatum gereconstrueerd. Alleen de zes typische doelsoorten krijgen
-  binnen de 161 bevestigde bezoeken een volledige aanwezig/nul-matrix.
+- Protocol `11.202` wordt onder `ndff-zeereep-v2` op RD-kilometerhok en
+  kalenderdatum gereconstrueerd. De zes typische doelsoorten krijgen binnen de
+  161 bevestigde bezoeken een aanwezig/niet-gemeld-matrix. Niet-meldingen zijn
+  geen echte nullen, omdat de teller volgens de NMV-handleiding slechts één of
+  enkele bekende soorten mag volgen en de NDFF-export die tellerscope mist.
   NMV-klassen blijven vindplaatsklassen en geen vruchtlichaamaantallen. De
   negen vervaagde records worden niet tot bezoek gemaakt; bezoeken buiten
   oktober-december en ontbrekende bezoektijd/waarnemersbekwaamheid blijven

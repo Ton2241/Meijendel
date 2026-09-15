@@ -533,7 +533,7 @@ def main() -> int:
     assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
     assert module.RABBIT_COUNT_RULE_VERSION == "ndff-konijnentelling-v1"
     assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
-    assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v1"
+    assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v2"
     assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
     assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
     assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v1"
@@ -981,6 +981,18 @@ def main() -> int:
     assert module.classify_zeereep_abundance("NMV-aantalsklassen", "minimaal 21.0") == "klasse_21_plus"
     assert module.classify_zeereep_abundance("voorkomen", "minimaal 1.0") == "aanwezig"
     assert module.classify_zeereep_abundance("exact aantal", "1") == "exact_1"
+    assert module.classify_zeereep_matrix_entry(None) == {
+        "status": "niet_gemeld_tellerscope_onbekend",
+        "bronrecordaantal": 0,
+        "hoogste_nmv_klasse": "geen",
+        "nulregel": "geen_nul_zonder_tellerscope",
+    }
+    assert module.classify_zeereep_matrix_entry({"records": 2, "abundance": "klasse_4_20"}) == {
+        "status": "waargenomen",
+        "bronrecordaantal": 2,
+        "hoogste_nmv_klasse": "klasse_4_20",
+        "nulregel": "niet_van_toepassing",
+    }
 
     assert module.normalize_bospaddenstoel_date(
         "exact aantal", "1999-08-26 22:00:00", "1999-08-27 22:00:00"
@@ -1398,7 +1410,7 @@ def main() -> int:
         raise AssertionError("Een afwijkende DAZ-BMP-reconstructie is niet geblokkeerd")
     module.validate_zeereep_reconstruction(dict(module.ZEEREEP_RECONSTRUCTION_EXPECTED))
     broken_zeereep = dict(module.ZEEREEP_RECONSTRUCTION_EXPECTED)
-    broken_zeereep["true_zero_rows"] -= 1
+    broken_zeereep["unproven_non_detection_rows"] -= 1
     try:
         module.validate_zeereep_reconstruction(broken_zeereep)
     except ValueError:
@@ -1816,7 +1828,7 @@ def main() -> int:
         "geen route- of sectie-id",
         "akoestische detecties",
         "73",
-        "ndff-zeereep-v1",
+        "ndff-zeereep-v2",
         "--audit-zeereeppaddenstoelen",
         "ndff-hns-v1",
         "--audit-hns",

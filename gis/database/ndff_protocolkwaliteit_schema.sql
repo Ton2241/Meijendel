@@ -1085,8 +1085,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek_taxon (
 -- Openbare reconstructie van NEM 11.202 (Zeereeppaddenstoelen).
 -- De oorspronkelijke meeteenheid is een RD-kilometerhok. Alleen onvervaagde
 -- records worden tot bezoeken gereconstrueerd; de zes typische doelsoorten
--- vormen de bezoek-soortmatrix. NMV-aantalsklassen blijven klassen en worden
--- nooit opgeteld als aantallen vruchtlichamen.
+-- vormen de bezoek-soortmatrix. Zonder de niet meegeleverde tellerscope zijn
+-- niet-gemelde soorten geen bewezen nullen. NMV-aantalsklassen blijven klassen
+-- en worden nooit opgeteld als aantallen vruchtlichamen.
 CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_kilometerhok (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   hok_sleutel VARCHAR(32) CHARACTER SET ascii NOT NULL,
@@ -1133,12 +1134,17 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_bezoek_taxon (
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   doelrelatie ENUM('typische_doelsoort') NOT NULL,
-  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen','echte_nul','niet_gemeld_tellerscope_onbekend'
+  ) NOT NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   hoogste_nmv_klasse ENUM(
     'geen','aanwezig','exact_1','klasse_1_3','klasse_4_20','klasse_21_plus'
   ) NOT NULL,
-  nulregel ENUM('bevestigd_11_202_hokbezoek') NOT NULL,
+  nulregel ENUM(
+    'bevestigd_11_202_hokbezoek','niet_van_toepassing',
+    'geen_nul_zonder_tellerscope'
+  ) NOT NULL,
   kwaliteitsnotitie VARCHAR(750) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
@@ -1150,10 +1156,16 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_zeereep_bezoek_taxon (
       (reconstructieversie, bezoek_sleutel),
   CHECK (
     (waarnemingsstatus='waargenomen' AND bronrecordaantal>0
-      AND hoogste_nmv_klasse<>'geen')
+      AND hoogste_nmv_klasse<>'geen'
+      AND nulregel IN ('bevestigd_11_202_hokbezoek','niet_van_toepassing'))
     OR
     (waarnemingsstatus='echte_nul' AND bronrecordaantal=0
-      AND hoogste_nmv_klasse='geen')
+      AND hoogste_nmv_klasse='geen'
+      AND nulregel='bevestigd_11_202_hokbezoek')
+    OR
+    (waarnemingsstatus='niet_gemeld_tellerscope_onbekend'
+      AND bronrecordaantal=0 AND hoogste_nmv_klasse='geen'
+      AND nulregel='geen_nul_zonder_tellerscope')
   )
 ) ENGINE=InnoDB;
 

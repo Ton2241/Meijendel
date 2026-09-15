@@ -124,10 +124,11 @@ vogelsynchronisatie tot en met 2025 toegevoegd aan en gecorrigeerd in
 overeenkomende SOVON-regels worden gewijzigd; databasegegevens zonder
 bronregel, waaronder handmatige aanvullingen, worden niet verwijderd.
 `ndff_zeereep_*` reconstrueert protocol `11.202` op RD-kilometerhok en
-kalenderdatum. De zes typische doelsoorten vormen een volledige bezoekmatrix;
+kalenderdatum. De zes typische doelsoorten vormen een bezoekmatrix, maar een
+niet gemelde soort krijgt de status `niet_gemeld_tellerscope_onbekend` en niet
+`echte_nul`, omdat NDFF de door de teller gekozen soortenscope niet levert.
 NMV-vindplaatsklassen blijven ordinale klassen. Vervaagde records worden niet
-tot bezoeken gemaakt en seizoenstatus, ontbrekende bezoektijd en nog niet
-gevalideerde waarnemersbekwaamheid blijven expliciet zichtbaar.
+tot bezoeken gemaakt.
 `ndff_bospaddenstoel_*` reconstrueert het historische protocol `11.201` in
 `Meijendel`: drie vaste meetpuntfamilies, de zes brongeometrieën, een
 recordselectie die exacte tellingen boven parallelle presentie kiest, een

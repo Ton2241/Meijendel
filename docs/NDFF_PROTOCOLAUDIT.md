@@ -369,24 +369,32 @@ worden toegevoegd en de nu ambigue of niet koppelbare NDFF-records kunnen
 opnieuw worden beoordeeld. NDFF blijft daarbij als secundaire controlebron
 behouden.
 
+### Nederlandse Mycologische Vereniging: toets aan de officiële handleidingen
+
+Op 15 september 2026 zijn drie officiële handleidingen onder Zotero-parentitem
+`Meetnetten - Nederlandse Mycologische Vereniging (NMV)` (`GATY566T`)
+opgenomen: de algemene handleiding 2023, de invoerhandleiding 2022 en de
+historische handleiding Paddestoelenmonitoring.
+
 Het NEM-meetnet Zeereeppaddenstoelen (`11.202`) is onder
-`ndff-zeereep-v1` gereconstrueerd op zijn oorspronkelijke meeteenheid: het
+`ndff-zeereep-v2` gereconstrueerd op zijn oorspronkelijke meeteenheid: het
 RD-kilometerhok. De 3.729 onvervaagde openbare records vormen 161 bevestigde
 hok-datumbezoeken in 21 kilometerhokken, verspreid over 2014-2025. Negen
 vervaagde records zijn niet als bezoek gebruikt. De bezoek-soortmatrix omvat
 de zes typische doelsoorten en bevat 966 regels: 224 positieve combinaties en
-742 protocolafgeleide echte nullen. Eén doelsoort is in geen enkel bezoek
-gemeld en blijft daardoor als nulreeks expliciet zichtbaar.
+742 niet-meldingen. De handleiding staat uitdrukkelijk toe dat een teller
+slechts één of enkele bekende soorten volgt. Omdat de NDFF-export niet vermeldt
+welke soorten per bezoek zijn geteld, hebben de 742 regels de status
+`niet_gemeld_tellerscope_onbekend`; zij zijn geen echte nullen.
 
 De bronwaarden blijven inhoudelijk intact: `1-3`, `4-20` en `21 of meer` zijn
 NMV-klassen van vindplaatsen en geen aantallen vruchtlichamen. Honderd bezoeken
 vallen in het aanbevolen kernseizoen oktober-december; 61 bezoeken staan
-afzonderlijk gemarkeerd als buiten dat venster. De NDFF-export bevat geen
-bezoektijd of waarnemersbekwaamheid. Daarom zijn de nullen protocolmatig
-bruikbaar voor een voorlopige bezettingsanalyse, maar iedere uitkomst vermeldt
-dat deze twee leveringskenmerken nog niet zijn gevalideerd. Controle vindt
-plaats met `--audit-zeereeppaddenstoelen`; de drie afgeleide tabellen staan
-uitsluitend in `Meijendel`.
+afzonderlijk gemarkeerd als buiten dat venster. Zonder aanvullende tellerscope
+zijn alleen de positieve registraties rechtstreeks bruikbaar; de niet-meldingen
+mogen niet in een bezettings- of trendmodel als nul worden ingevoerd. Controle
+vindt plaats met `--audit-zeereeppaddenstoelen`; de drie afgeleide tabellen
+staan uitsluitend in `Meijendel`.
 
 Methodische bronnen: [NDFF 11.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-202-zeereeppaddenstoelen/)
 en [NMV-methodiek Zeereeppaddenstoelen](https://www.mycologen.nl/onderzoek/meetnet/zeereep-concept/zeereep-methodiek/).
@@ -399,8 +407,10 @@ exacte vruchtlichaamaantal; de exacte regel is canoniek gemaakt zonder de
 presentieregel uit het auditspoor te verwijderen. Daardoor blijven 509 unieke
 positieve resultaten over op drie meetpunten en 110 bezoeken in 1999-2016.
 
-Het protocol stond per meetpunt registratie van alle telsoorten óf van één of
-enkele telsoorten toe. Daarom omvat het afgeleide doelbereik uitsluitend de 76
+De historische handleiding stelde per meetpunt een vaste keuze verplicht: alle
+telsoorten óf één of enkele geselecteerde telsoorten; die keuze mocht tijdens
+de reeks niet veranderen en een afwezige geselecteerde soort werd als nul
+ingevuld. Daarom omvat het afgeleide doelbereik uitsluitend de 76
 meetpunt-taxoncombinaties die door minstens één positieve melding aantoonbaar
 zijn. De bezoekmatrix telt 2.934 regels: 506 positieve doelsoortresultaten en
 2.428 echte bezoeknullen. De drie positieve regels voor `Fungi sp. indet.` zijn

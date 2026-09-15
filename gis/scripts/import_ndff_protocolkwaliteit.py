@@ -56,7 +56,7 @@ DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
 SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
 SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
 SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
-ZEEREEP_RULE_VERSION = "ndff-zeereep-v1"
+ZEEREEP_RULE_VERSION = "ndff-zeereep-v2"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
 KORSTMOS_RULE_VERSION = "ndff-korstmos-v1"
@@ -450,7 +450,7 @@ ZEEREEP_RECONSTRUCTION_EXPECTED = {
     "visits": 161,
     "target_taxa": 6,
     "observed_target_rows": 224,
-    "true_zero_rows": 742,
+    "unproven_non_detection_rows": 742,
     "matrix_rows": 966,
     "target_source_records": 240,
     "off_season_visits": 61,
@@ -4404,6 +4404,25 @@ def classify_zeereep_abundance(scale: str, raw_value: str) -> str:
         raise ValueError(f"Niet ondersteunde 11.202-meetwaarde: {scale!r} / {raw_value!r}") from exc
 
 
+def classify_zeereep_matrix_entry(
+    positive: dict[str, object] | None,
+) -> dict[str, object]:
+    """Bewaar niet-melding zonder bekende tellerscope nadrukkelijk als niet-nul."""
+    if positive is None:
+        return {
+            "status": "niet_gemeld_tellerscope_onbekend",
+            "bronrecordaantal": 0,
+            "hoogste_nmv_klasse": "geen",
+            "nulregel": "geen_nul_zonder_tellerscope",
+        }
+    return {
+        "status": "waargenomen",
+        "bronrecordaantal": int(positive["records"]),
+        "hoogste_nmv_klasse": str(positive["abundance"]),
+        "nulregel": "niet_van_toepassing",
+    }
+
+
 def zeereep_source_sql() -> str:
     """Lees 11.202 uitsluitend uit de openbare, niet-vervaagde bronlaag."""
     return """
@@ -4508,24 +4527,25 @@ def reconstruct_zeereeppaddenstoelen(
 
     matrix_values: list[str] = []
     matrix_note = (
-        "Protocolafgeleide nul binnen een bevestigd 11.202-hokbezoek en de zes typische "
-        "doelsoorten. Gebruik als NEM-trendinvoer met de expliciete waarschuwing dat "
-        "waarnemersbekwaamheid en volledige bezoektijd nog niet uit de NDFF-levering zijn gevalideerd."
+        "De NMV-handleiding staat toe dat een teller slechts één of enkele bekende soorten "
+        "volgt. De NDFF-export bevat die tellerscope niet. Een ontbrekende doelsoort is daarom "
+        "geen bewezen nul; alleen positieve registraties zijn zonder aanvullende scope bruikbaar."
     )
     for row in sorted(visits.values(), key=lambda item: str(item["id"])):
         visit_id = str(row["id"])
         for taxon in sorted(ZEEREEP_TARGET_SPECIES):
             positive = positives.get((visit_id, taxon))
-            status = "waargenomen" if positive else "echte_nul"
-            source_count = int(positive["records"]) if positive else 0
-            abundance = str(positive["abundance"]) if positive else "geen"
+            classification = classify_zeereep_matrix_entry(positive)
             matrix_values.append(
                 f"({sql_text(ZEEREEP_RULE_VERSION)},{sql_text(visit_keys[visit_id])},"
-                f"{sql_text(taxon)},'typische_doelsoort',{sql_text(status)},{source_count},"
-                f"{sql_text(abundance)},'bevestigd_11_202_hokbezoek',{sql_text(matrix_note)})"
+                f"{sql_text(taxon)},'typische_doelsoort',{sql_text(str(classification['status']))},"
+                f"{int(classification['bronrecordaantal'])},"
+                f"{sql_text(str(classification['hoogste_nmv_klasse']))},"
+                f"{sql_text(str(classification['nulregel']))},{sql_text(matrix_note)})"
             )
 
     statements = [
+        f"ALTER TABLE {ZEEREEP_TABLE_PREFIX}_bezoek_taxon DROP CHECK ndff_zeereep_bezoek_taxon_chk_1, MODIFY waarnemingsstatus ENUM('waargenomen','echte_nul','niet_gemeld_tellerscope_onbekend') NOT NULL, MODIFY nulregel ENUM('bevestigd_11_202_hokbezoek','niet_van_toepassing','geen_nul_zonder_tellerscope') NOT NULL, ADD CONSTRAINT ndff_zeereep_bezoek_taxon_chk_1 CHECK ((waarnemingsstatus='waargenomen' AND bronrecordaantal>0 AND hoogste_nmv_klasse<>'geen' AND nulregel IN ('bevestigd_11_202_hokbezoek','niet_van_toepassing')) OR (waarnemingsstatus='echte_nul' AND bronrecordaantal=0 AND hoogste_nmv_klasse='geen' AND nulregel='bevestigd_11_202_hokbezoek') OR (waarnemingsstatus='niet_gemeld_tellerscope_onbekend' AND bronrecordaantal=0 AND hoogste_nmv_klasse='geen' AND nulregel='geen_nul_zonder_tellerscope'));",
         "START TRANSACTION;",
         f"DELETE FROM {ZEEREEP_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(ZEEREEP_RULE_VERSION)};",
         f"DELETE FROM {ZEEREEP_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(ZEEREEP_RULE_VERSION)};",
@@ -9366,11 +9386,11 @@ SELECT JSON_OBJECT(
   'visits',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek WHERE reconstructieversie={version}),
   'target_taxa',(SELECT COUNT(DISTINCT wetenschappelijke_naam) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version}),
   'observed_target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'unproven_non_detection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='niet_gemeld_tellerscope_onbekend'),
   'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version}),
   'target_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '11.202%' AND soortgroep_raw='Schimmels' AND vervaagd=0 AND wetenschappelijke_naam IN ({target_list})),
   'off_season_visits',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek WHERE reconstructieversie={version} AND seizoenstatus='buiten_kernseizoen'),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR hoogste_nmv_klasse='geen')) OR (waarnemingsstatus='echte_nul' AND (bronrecordaantal<>0 OR hoogste_nmv_klasse<>'geen')))),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_zeereep_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR hoogste_nmv_klasse='geen' OR nulregel<>'niet_van_toepassing')) OR (waarnemingsstatus='niet_gemeld_tellerscope_onbekend' AND (bronrecordaantal<>0 OR hoogste_nmv_klasse<>'geen' OR nulregel<>'geen_nul_zonder_tellerscope')))),
   'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
