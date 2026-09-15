@@ -527,10 +527,15 @@ algemene bronnen ondersteunen uitsluitend positieve voorkomensinformatie
 voor een ander analysetype alleen na een expliciete selectie van de daar als
 `doelsoort` geregistreerde taxa worden gebruikt.
 
-Van de 19 eerder doelsoortafhankelijke combinaties zijn er acht opgelost met
-officiële protocolafbakening. Elf blijven afhankelijk van ontbrekende
-projectcontext: eDNA `10.002`, Staatsbosbeheer-florakartering `12.015`, de zeven
-SNL-soortgroepen van `12.205` en de Vleermuisprotocollen `17.505` en `17.506`.
+Zestien protocol-soortgroepcombinaties blijven afhankelijk van ontbrekende
+projectcontext. Daaronder vallen beide soortgroepen van
+Staatsbosbeheer-florakartering `12.015` en de zeven SNL-soortgroepen van
+`12.205`. Bij `12.015` wordt de karteerlijst per opdracht vastgesteld; de
+NDFF-regels bevatten die lijst en de opdrachtbegrenzing niet. Daarom zijn alle
+1.083 records voorlopig uitsluitend bruikbaar als positieve
+voorkomensinformatie (`V`). `12.205` blijft afzonderlijk herkenbaar als
+SNL-monitoring; beheertype, protocolversie en doelsoortenbereik ontbreken in de
+levering en mogen niet uit de aangetroffen soorten worden afgeleid.
 
 Ieder NDFF-record heeft daarnaast precies één genormaliseerde
 protocolkoppeling. Openbare koppelingen staan in

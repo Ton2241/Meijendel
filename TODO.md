@@ -70,6 +70,13 @@
   een lokale wintertrend werkelijk prioriteit krijgt. Voor `17.202`, `17.207`
   en `17.210` is geen brede vervolgvraag nodig zolang de kleine positieve
   reeksen niet voor trendanalyse worden geselecteerd.
+- De officiële Staatsbosbeheer- en BIJ12-documentatie is op 15 september 2026
+  gecontroleerd en in Zotero onder `Meetnetten - Staatsbosbeheer` vastgelegd.
+  Protocol `12.015` omvat 1.083 records en is voor beide aangetroffen
+  soortgroepen doelsoortafhankelijk gemaakt: zonder de opdrachtgebonden
+  karteerlijst en begrenzing is alleen positieve voorkomensinformatie (`V`)
+  toegestaan. Protocol `12.205` blijft afzonderlijk als SNL-context behandeld;
+  deze controle verandert de bestaande overlapstatussen niet.
 - `02.202` bevat onder `ndff-korstmos-v1` twaalf proefvlakken en 32 bezoeken.
   Gebruik de 960 bezoek-taxonregels voor presentie/occupancy; behandel de twee
   FFV-bedekkingsklassen alleen ordinaal en sluit de tien conflictcombinaties uit

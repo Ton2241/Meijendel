@@ -1573,6 +1573,15 @@ def main() -> int:
     assert module.classify_protocol_group("13.202", "Amfibieën")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("10.002", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_group("12.205", "Dagvlinders")["doelrelatie"] == "doelsoortafhankelijk"
+    sbb_flora = module.classify_protocol_group("12.015", "Vaatplanten")
+    assert sbb_flora == {
+        "doelrelatie": "doelsoortafhankelijk",
+        "toegestane_typen": "V",
+    }
+    sbb_scope_sql = " ".join(module.protocol_scope_sql().split())
+    assert "De karteerlijst van protocol 12.015 wordt per Staatsbosbeheer-opdracht vastgesteld" in sbb_scope_sql
+    assert "https://www.staatsbosbeheer.nl/-/media/oostvaardersplassen/oostvaardersplassen-beheer/20180509-vegetatie-oostvaardersplassen-2017.pdf" in sbb_scope_sql
+    assert "p.protocol_sleutel IN ('12.015','12.205','17.201') THEN '2026-09-15'" in sbb_scope_sql
     assert module.classify_protocol_group("12.211", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_species("12.211", "Ophrys apifera", "Vaatplanten")["doelrelatie"] == "doelsoort"
     assert module.classify_protocol_species("12.211", "Arabis hirsuta subsp. hirsuta", "Vaatplanten")["doelrelatie"] == "doelsoort"
@@ -1580,7 +1589,11 @@ def main() -> int:
     assert module.classify_protocol_group("12.002", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_group("12.003", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_group("12.209", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
-    assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 15
+    assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 16
+    pair_condition = module._pair_condition("p", "g", {("12.015", "Vaatplanten"), ("12.205", "Vaatplanten")})
+    assert pair_condition.startswith("((") and pair_condition.endswith("))"), (
+        "Een OR-keten moet als geheel tussen haakjes staan voordat een extra AND-voorwaarde wordt toegevoegd"
+    )
     assert len(module.MIXED_COMBINATIONS) == 11
     assert len(module.BOSPADDENSTOEL_TARGET_SPECIES) == 49
 
@@ -1672,8 +1685,8 @@ def main() -> int:
     ):
         assert required in chain_sql, required
     module.validate_analysis_chain_metrics(dict(module.ANALYSIS_CHAIN_EXPECTED))
-    assert module.ANALYSIS_CHAIN_EXPECTED["trend_rows"] == 10025
-    assert module.ANALYSIS_CHAIN_EXPECTED["trend_sources"] == 61320
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_rows"] == 9993
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_sources"] == 61211
     assert module.parse_analysis_chain_output(
         '{"canonical_records": 810983}\n{"canonical_duplicates": 0}'
     ) == {"canonical_records": 810983, "canonical_duplicates": 0}
@@ -1728,7 +1741,7 @@ def main() -> int:
         "spatial": 810830,
         "scope_combinations": 114,
         "mixed_species": 632,
-        "dependent_combinations": 15,
+        "dependent_combinations": 16,
         "mixed_species_missing": 0,
         "secure_mixed_species_missing": 0,
         "ambiguous_species": 2,

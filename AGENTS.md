@@ -185,6 +185,12 @@ MySQL:
   `geen_overlap_gevonden` en `onvoldoende_onderzocht`. Alleen
   `overlap_bevestigd` betekent aangetoonde dubbeling; `geen_overlap_gevonden`
   betekent nadrukkelijk niet dat onafhankelijkheid bewezen is
+- behandel bij Staatsbosbeheer-florakartering `12.015` iedere aangetroffen
+  soortgroep als `doelsoortafhankelijk`. De karteerlijst en begrenzing worden
+  per opdracht vastgesteld en staan niet in de NDFF-regels. Gebruik de records
+  daarom zonder die opdrachtcontext uitsluitend voor positieve
+  voorkomensinformatie (`V`); leid geen volledige soortenlijst, bezoek of echte
+  nul af. Vermeng `12.015` niet met SNL-protocol `12.205`
 - gebruik voor gecombineerde lokale NDFF-analyse uitsluitend
   `Meijendel_ndff_secure.v_ndff_canonieke_waarneming`: beveiligde matches
   vervangen daarin hun openbare tegenhanger en mogen nooit als extra record

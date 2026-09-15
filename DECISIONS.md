@@ -496,10 +496,14 @@
   Niet-V-gebruik vereist een expliciete match met `doelrelatie='doelsoort'`;
   bijvangsten en taxonomisch onbepaalde records mogen nooit door overerving van
   het groepsprotocol als trenddata worden geselecteerd.
-- Acht van de 19 eerdere doelsoortafhankelijke combinaties zijn met officiële
-  protocolinformatie opgelost. De elf resterende combinaties blijven onder
-  `wacht_op_doelsoortafbakening`: eDNA `10.002`, florakartering `12.015`, zeven
-  SNL-combinaties `12.205` en de Vleermuisprotocollen `17.505` en `17.506`.
+- Zestien combinaties blijven onder `wacht_op_doelsoortafbakening`. Voor
+  Staatsbosbeheer-florakartering `12.015` geldt dit zowel voor Vaatplanten als
+  voor Kranswieren, wieren en algen: de concrete karteerlijst en
+  opdrachtbegrenzing staan niet in de NDFF-regels. Alle 1.083 records blijven
+  beschikbaar voor `V`, maar leveren zonder die context geen volledige
+  soortenlijst, bezoek of echte nul. Protocol `12.205` blijft een afzonderlijke
+  SNL-context waarvoor beheertype, protocolversie en doelsoortenbereik nodig
+  zijn.
 - `alleen_na_doelsoortselectie` is een uitvoerbare soortfilteropdracht, terwijl
   `wacht_op_doelsoortafbakening` betekent dat voorlopig alleen `V` gebruikt mag
   worden. In alle gevallen blijft `gegevensgeschiktheid='niet_beoordeeld'`

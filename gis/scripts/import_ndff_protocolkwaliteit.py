@@ -744,8 +744,8 @@ ANALYSIS_CHAIN_EXPECTED = {
     "secure_detail_records": 14573,
     "distribution_rows": 105999,
     "distribution_sources": 303319,
-    "trend_rows": 10025,
-    "trend_sources": 61320,
+    "trend_rows": 9993,
+    "trend_sources": 61211,
     "trend_loose": 0,
     "usage_rows": 142,
     "usage_records": 810983,
@@ -1799,6 +1799,7 @@ TARGET_DEPENDENT_COMBINATIONS = {
     ("10.002", "Amfibieën"),
     ("12.002", "Vaatplanten"),
     ("12.003", "Vaatplanten"),
+    ("12.015", "Vaatplanten"),
     ("12.015", "Kranswieren, wieren en algen"),
     ("12.209", "Vaatplanten"),
     ("12.205", "Dagvlinders"),
@@ -1938,6 +1939,14 @@ TARGET_TYPES_BY_COMBINATION = {
     ("17.209", "Zoogdieren (overig)"): "V,TA",
 }
 ADDITIONAL_SCOPE_SOURCE_URLS = {
+    ("12.015", "Vaatplanten"): (
+        "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/overzicht-waarnemingen-via-protocol/",
+        "https://www.staatsbosbeheer.nl/-/media/oostvaardersplassen/oostvaardersplassen-beheer/20180509-vegetatie-oostvaardersplassen-2017.pdf",
+    ),
+    ("12.015", "Kranswieren, wieren en algen"): (
+        "https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/overzicht-waarnemingen-via-protocol/",
+        "https://www.staatsbosbeheer.nl/-/media/oostvaardersplassen/oostvaardersplassen-beheer/20180509-vegetatie-oostvaardersplassen-2017.pdf",
+    ),
     ("12.002", "Vaatplanten"): (
         "https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf",
     ),
@@ -2213,10 +2222,11 @@ GROUP BY w.waarneming_id;
 
 
 def _pair_condition(protocol_alias: str, group_alias: str, pairs: set[tuple[str, str]]) -> str:
-    return " OR ".join(
+    condition = " OR ".join(
         f"({protocol_alias}={sql_text(protocol)} AND {group_alias}={sql_text(group)})"
         for protocol, group in sorted(pairs)
-    ) or "FALSE"
+    )
+    return f"({condition})" if condition else "FALSE"
 
 
 def _protocol_types_sql(gebruik_alias: str = "g") -> str:
@@ -2298,12 +2308,14 @@ SELECT p.protocol_id,c.soortgroep_raw,
               THEN 'Deze combinatie bevat zowel doelsoorten als bijvangsten. Niet-V-analyses vereisen de afzonderlijke soortclassificatie.'
             WHEN {dependent} AND p.protocol_sleutel='12.205'
               THEN 'De SNL-doelsoorten zijn afhankelijk van beheertype en protocolversie. Deze sleutels ontbreken in de NDFF-records; voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
+            WHEN {dependent} AND p.protocol_sleutel='12.015'
+              THEN 'De karteerlijst van protocol 12.015 wordt per Staatsbosbeheer-opdracht vastgesteld. De gebruikte karteerlijst en opdrachtbegrenzing ontbreken in de NDFF-records; voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
             WHEN {dependent}
               THEN 'De doelsoorten zijn project- of locatieafhankelijk en de noodzakelijke projectafbakening ontbreekt in de NDFF-records. Voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
             ELSE 'De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid.' END,
        {scope_sources},
        {sql_text(SCOPE_RULE_VERSION)},
-       CASE WHEN p.protocol_sleutel='17.201' THEN '2026-09-15' ELSE '2026-09-11' END
+       CASE WHEN p.protocol_sleutel IN ('12.015','12.205','17.201') THEN '2026-09-15' ELSE '2026-09-11' END
 FROM (
   SELECT soortgroep_raw,TRIM(protocol) AS protocol_raw,COUNT(*) AS recordaantal
   FROM Meijendel.ndff_open_waarneming
@@ -10294,7 +10306,7 @@ def validate_metrics(metrics: dict[str, int]) -> None:
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
     if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 632
-            or metrics["dependent_combinations"] != 15 or metrics["mixed_species_missing"]
+            or metrics["dependent_combinations"] != 16 or metrics["mixed_species_missing"]
             or metrics["secure_mixed_species_missing"]
             or metrics["ambiguous_species"] != 2 or metrics["scope_missing"]):
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")

@@ -1307,7 +1307,7 @@ Deze soortindeling staat in
 `ndff_protocol_soort_geschiktheid`; de groepsindeling staat in
 `ndff_protocol_soortgroep_geschiktheid`.
 
-### Uitwerking van de 19 doelsoortafhankelijke combinaties
+### Uitwerking van doelsoortafhankelijke en gemengde combinaties
 
 De officiële protocolbronnen leveren de volgende beslissingen op:
 
@@ -1318,18 +1318,25 @@ De officiële protocolbronnen leveren de volgende beslissingen op:
 | `10.002` Amfibieën | blijft afhankelijk | eDNA is een techniek; de doelsoort volgt uit het project of de gebruikte assay en ontbreekt in de levering. |
 | `11.201` Schimmels | gemengd | De officiële historische lijst omvat 110 telsoorten. Van de aangetroffen taxa zijn 49 gecontroleerd aan die lijst gekoppeld; `Fungi sp. indet.` is geen doelsoort. |
 | `11.202` Schimmels | gemengd | Duinfranjehoed, Zeeduinchampignon, Duinstinkzwam, Duinveldridderzwam, Helmharpoenzwam en Zandtulpje; overige schimmels zijn begeleidende soorten/bijvangst. |
-| `12.015` Kranswieren, wieren en algen | blijft afhankelijk | De doelsoortenlijst hoort bij de concrete Staatsbosbeheer-karteringsopdracht en is niet uit het record afleidbaar. |
+| `12.015` Vaatplanten en Kranswieren, wieren en algen | blijft afhankelijk | De karteerlijst wordt per Staatsbosbeheer-opdracht vastgesteld. De concrete lijst en opdrachtbegrenzing ontbreken in de NDFF-regels; alle 1.083 records ondersteunen daarom voorlopig alleen positieve voorkomensinformatie (`V`). |
 | `12.205` zeven soortgroepen | blijft afhankelijk | Kwalificerende soorten verschillen per SNL-beheertype en versie. Beheertype en versie ontbreken in de records. |
 | `13.201` Vissen | gemengd | Beekprik, beekdonderpad, bittervoorn, grote en kleine modderkruiper, rivierdonderpad en rivierprik; overige vissen zijn bijvangst. |
 | `13.202` Amfibieën en Vissen | gemengd | Kamsalamander, beekprik, rivierdonderpad, bittervoorn, kleine en grote modderkruiper; andere amfibieën en vissen zijn bijvangst. |
 | `17.202` Vleermuizen | gemengd | Voor populatietrend zijn Ingekorven vleermuis en Grijze grootoorvleermuis doelsoort; overige zolderwaarnemingen zijn verspreidingsinformatie. |
 | `17.505` en `17.506` Vleermuizen | blijft afhankelijk | Doelsoort en onderzochte functie volgen uit het projectplan; de protocolcode alleen legt die niet vast. |
 
-Daarmee zijn acht van de negentien combinaties opgelost. Elf blijven bewust
-`doelsoortafhankelijk`: één eDNA-combinatie, één florakartering, zeven
-SNL-combinaties en twee Vleermuisprotocol-combinaties. Dit is geen ontbrekende
-algemene handleiding, maar ontbrekende projectcontext. Gokken op basis van de
-aangetroffen soort is niet toegestaan.
+In de actuele classificatie blijven zestien combinaties bewust
+`doelsoortafhankelijk`. Dit betreft geen algemene twijfel over de protocollen,
+maar ontbrekende context van de concrete opdracht, het beheertype of het
+project. Gokken op basis van de aangetroffen soort is niet toegestaan.
+
+Voor Staatsbosbeheer is een openbaar praktijkrapport gevonden waarin de
+soortkartering met een vooraf vastgestelde, per opdracht aangevulde soortenlijst
+en Tansley Plus/SBB-abundantieklassen wordt beschreven. Dat sluit aan op de
+methoden in de Meijendel-records, maar bewijst niet welke lijst en begrenzing in
+Meijendel zijn gebruikt. Voor SNL is BIJ12 de beheerder van de landelijke
+werkwijze; Staatsbosbeheer is in de levering hoofdzakelijk bronhouder of
+uitvoerder. Die twee protocollen worden daarom niet samengevoegd.
 
 ### SNL is context, geen automatische onafhankelijke bron
 
