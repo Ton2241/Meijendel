@@ -28,14 +28,23 @@
   waarnemingen zijn afzonderlijk gelabeld; geen lege waarde is als `LOS`
   geïnterpreteerd. Dit verandert de analysebesluiten niet.
 - Dagvlinderprotocol `03.201` is lokaal gereconstrueerd als
-  `ndff-vlinderroute-v1`. Controleer handmatig de ene ruimtelijk uitgerekte
-  routefamilie (172 bezoeken); houd de 63 bezoeken zonder route buiten
-  routeanalyse. De 2.891 overige routebezoeken en hun bezoek-soortmatrix zijn
-  beschikbaar voor protocolgebonden analyse met zichtbare reconstructiestatus.
+  `ndff-vlinderroute-v1`, maar de officiële handleidingen vereisen een versie
+  2. Voeg `doelbereikstatus` en doelsoort toe, kwalificeer routefamilie 9 als
+  waarschijnlijk soortgericht voor Groot dikkopje en trek minimaal 2.871
+  ongeldige nullen in. Houd bij de 28 eensoortbezoeken zonder route nog eens
+  924 nullen tegen totdat het routetype bekend is. Controleer daarnaast de ene
+  ruimtelijk uitgerekte routefamilie (172 bezoeken) handmatig.
 - De `03.201`-vliesvleugelreeks is afzonderlijk gereconstrueerd als
-  `ndff-vliesvleugelroute-v1`: 217 bevestigde bezoeken, zes taxa en 937 echte
-  nullen. Gebruik deze matrix als NEM-deelreeks en niet als dagvlinderbijvangst;
-  controleer haar met `--audit-vliesvleugelen`.
+  `ndff-vliesvleugelroute-v1`: 217 bezoeken en zes *Bombus*-taxa. Behoud de
+  365 positieve combinaties, maar gebruik de 937 afgeleide soortnullen niet.
+  Bouw versie 2 met de deelnamevlag en het determinatieniveau (`op soort` of
+  `hommel onbekend`) voordat nul- of trendgebruik wordt toegestaan.
+- Vraag bij een eventuele rijkere centrale NDFF-levering eerst alleen om de
+  native Vlinderstichting-sleutels en context die na deze documentanalyse nog
+  ontbreken: route-/telpuntnummer, routetype en doelsoort, sectienummer,
+  bezoek-ID, bezoekweer en -tellers, deelnamevlaggen, routewijzigingen en voor
+  nachtvlinders val-, lamp- en binnen/buiten-gegevens. Benader De
+  Vlinderstichting pas als NDFF deze concrete velden niet kan leveren.
 - De vier afgeleide dagvlindertabellen horen in `Meijendel`. Controleer met
   `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
   `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere

@@ -236,20 +236,33 @@ MySQL:
   de doelsoorten en bezochte meeteenheden die het betreffende NEM-protocol
   volledig bestrijkt; leid nooit nullen af voor bijvangsten
 - gebruik voor dagvlinderprotocol `03.201` de lokale reconstructieversie
-  `ndff-vlinderroute-v1`. De tabellen in `Meijendel`, te beginnen met
+  `ndff-vlinderroute-v1` uitsluitend als voorlopige versie. De tabellen in `Meijendel`, te beginnen met
   `Meijendel.ndff_vlinder_routefamilie`,
   `ndff_vlinder_routegeometrie`, `ndff_vlinder_bezoek` en
   `ndff_vlinder_bezoek_taxon` bevatten de afgeleide route-, bezoek- en
-  doelsoortmatrix. Sluit `geen_route` uit van routeanalyses en behandel
+  doelsoortmatrix. Leid alleen nullen af op een aantoonbaar algemene route.
+  Routefamilie 9 is waarschijnlijk een soortgerichte route voor Groot
+  dikkopje; nullen voor andere taxa zijn daar niet toegestaan. Bij een
+  eensoortbezoek zonder aantoonbaar routetype blijft het doelbereik
+  `onbepaald`. Sluit `geen_route` uit van routeanalyses en behandel
   `handmatige_controle` afzonderlijk. Controleer de laag vóór gebruik met
   `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-vlinders`
 - behandel de binnen `03.201` geregistreerde Vliesvleugeligen als een
-  zelfstandige NEM-deelreeks, niet als bijvangst. Gebruik reconstructieversie
-  `ndff-vliesvleugelroute-v1` en de vier tabellen
-  `Meijendel.ndff_vliesvleugel_*`. Een bezoek telt voor deze deelreeks alleen
-  als op dat tijdstip minstens één vliesvleugelige is geregistreerd; alleen
-  binnen die bezoeken mogen nullen voor de zes gevolgde taxa worden afgeleid.
+  afzonderlijk gevolgde *Bombus*-reeks. Gebruik reconstructieversie
+  `ndff-vliesvleugelroute-v1` alleen voorlopig en de vier tabellen
+  `Meijendel.ndff_vliesvleugel_*`. De officiële methode staat zowel eigen
+  hommelroutes als optionele telling op dagvlinderroutes toe en kent per bezoek
+  een deelnamevlag en een determinatieniveau. Zonder die twee kenmerken mogen
+  alleen positieve tellingen worden gebruikt en geen soortspecifieke nullen.
   Controleer met `--audit-vliesvleugelen`
+- behandel dagactieve nachtvlinders en nectarplanten op een dagvlinderroute als
+  optionele, per bezoek aangevinkte onderdelen. Leid alleen nullen af wanneer
+  die deelname expliciet is bevestigd. Bewaar nectarplantklassen als ordinale
+  bloeiseenheden per sectie, niet als plantenaantallen
+- behandel `03.203` als een val-telpuntprotocol. Voor trendgebruik zijn minimaal
+  telpunt, bezoeknacht, valtype, lamptype, volledige brandduur en de scheiding
+  binnen/buiten de val nodig. Jaar-hokaggregaten leveren geen bezoeken of
+  nullen
 - gebruik voor libellenprotocol `07.201` reconstructieversie
   `ndff-libellenroute-v1` en de vier openbare tabellen
   `Meijendel.ndff_libel_*`. Gebruik uitsluitend `doelbereikstatus =

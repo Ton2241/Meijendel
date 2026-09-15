@@ -21,14 +21,44 @@ meeteenheden van dat protocol; nooit voor bijvangsten.
 
 ### Uitgevoerde reconstructies `03.201` en `07.201`
 
-Voor het Landelijk Meetnet Dagvlinders is bevestigd dat iedere `03.201`-regel
-uit een geldig NEM-bezoek komt, dat de bezoekmomenten volledig aanwezig zijn en
-dat er geen volledig vlinderloze bezoeken ontbreken. Uit tijd en geometrische
-samenhang zijn onder regel `ndff-vlinderroute-v1` 3.126 bezoeken en 11
-routefamilies gereconstrueerd. De matrix voor de 34 aangetroffen
-dagvlindertaxa bevat 106.284 bezoek-soortregels: 20.075 positief en 86.209 echte
-nullen. De 556 nachtvlinderrecords zijn bijvangst en blijven positieve
-voorkomensinformatie.
+Op 15 september 2026 zijn alle zeventien unieke PDF-downloads van de officiële
+pagina [Handleidingen en telformulieren](https://vlinderstichting.nl/wat-kan-jij-doen/tellen/meetnetten/handleidingen-en-telformulieren/)
+gecontroleerd. Ze zijn als bijlagen opgenomen onder Zotero-item `QBAFD7C6`,
+`Meetnetten Vlinderstichting`. De inhoudelijke hoofdbron is Van Swaay et al.
+(2018), *Handleiding landelijke meetnetten vlinders, libellen en
+nachtvlinders*; de online-invoerhandleiding uit 2023 beschrijft de feitelijke
+route-, bezoek-, sectie- en deelnamevelden.
+
+De handleidingen onderscheiden bij dagvlinders algemene routes, soortgerichte
+routes en drie typen ei-/rupstelplots. Een algemene route telt alle dagvlinders
+per sectie; een soortgerichte route uitsluitend de aangewezen soort. Een route
+is maximaal een kilometer lang, telt maximaal twintig meestal
+vijftig-metersecties en blijft door de jaren gelijk. Iedere ronde is een apart
+bezoek met datum, begin- en eindtijd, weer, tellers en aantallen per sectie.
+Bezoeken zonder waargenomen vlinders moeten eveneens worden ingevoerd. Het
+meetroutenportaal bewaart bovendien route-ID, secties, routewijzigingen en
+beheerinformatie.
+
+Daarmee is de eerdere `ndff-vlinderroute-v1`-matrix niet volledig als bronfeit
+te handhaven. De 80.442 positieve dagvlinderrecords en 20.075 positieve
+bezoek-taxoncombinaties blijven geldig. Van de 86.209 als `echte_nul`
+opgeslagen regels moeten er echter minimaal 3.795 worden teruggezet naar
+`doelbereik_onbepaald` totdat versie 2 is gebouwd:
+
+- routefamilie 9 bevat in 87 bezoeken uitsluitend Groot dikkopje (*Ochlodes
+  sylvanus*) en volgt het patroon van een soortgerichte route; de 2.871 nullen
+  voor de andere 33 taxa vallen buiten het protocolbereik;
+- 28 van de 63 bezoeken zonder routekoppeling bevatten maar één positief taxon;
+  hun 924 nullen voor de overige 33 taxa bewijzen geen algemene route.
+
+De overige 82.414 afgeleide dagvlindernullen passen in beginsel bij een
+algemene route. Zij blijven echter afhankelijk van de afzonderlijk vastgelegde
+aanname dat de FFV-levering alle bezoeken bevat, inclusief volledig
+vlinderloze bezoeken. De openbare waarnemingsregels zelf bevatten geen
+route-ID, sectie-ID, algemene/soortgerichte routecode of volledigheidsvlag en
+kunnen die aanname dus niet bewijzen. Tot reconstructieversie 2 gereed is,
+wordt de huidige matrix alleen als voorlopige analysematrix gebruikt. De 556
+nachtvlinderrecords onder `03.201` blijven positieve voorkomensinformatie.
 
 Van de bezoeken zijn er 2.891 aan een waarschijnlijke route gekoppeld. Eén
 ruimtelijk uitgerekte familie omvat 172 bezoeken en blijft gemarkeerd voor
@@ -37,14 +67,18 @@ geometrie geen route worden hersteld. De afgeleide tabellen staan in
 `Meijendel`; `--audit-vlinders` controleert aantallen, matrixconsistentie en
 dat geen oude afgeleide vlindertabellen in het beveiligde schema achterblijven.
 
-De 1.535 vliesvleugelrecords onder hetzelfde protocol zijn geen bijvangst maar
-een zelfstandige NEM-deelreeks. `ndff-vliesvleugelroute-v1` omvat 217 bezoeken
-in 2018-2025 en zes gevolgde taxa. De matrix bevat 1.302 regels: 365 positieve
-bezoek-taxoncombinaties en 937 echte nullen. Alleen tijdstippen met minstens één
-vliesvleugelrecord tellen als bezoek voor deze deelreeks. Daardoor blijven de
-43 uitsluitend op vliesvleugeligen gerichte bezoeken buiten de
-dagvlindermatrix, terwijl alle 217 vliesvleugelbezoeken in hun eigen matrix
-vallen. Controle vindt plaats met `--audit-vliesvleugelen`.
+De 1.535 vliesvleugelrecords onder hetzelfde protocol betreffen uitsluitend
+taxa van het geslacht *Bombus*. De handleidingen tonen twee mogelijke
+bovenliggende structuren: een eigen hommelroute of de optionele hommeltelling
+op een dagvlinderroute. Het invoerportaal bewaart per bezoek een expliciete
+deelnamevlag; bovendien telt een waarnemer óf alle hommels als `hommel
+onbekend`, óf op soort na afspraak met de coördinator. Die twee kenmerken staan
+niet in de FFV-regels. De 365 positieve bezoek-taxoncombinaties blijven geldig,
+maar de 937 huidige soortspecifieke `echte_nul`-regels zijn daarom voorlopig en
+mogen niet als afwezigheid worden gebruikt. De 43 bezoeken zonder gelijktijdige
+dagvlinderregel zijn waarschijnlijk zelfstandige hommelbezoeken; de 174
+samenvallende bezoeken kunnen optionele medetellingen zijn. Versie 2 moet
+deelname en determinatieniveau expliciet modelleren.
 
 Het Landelijk Meetnet Libellen (`07.201`) is onder
 `ndff-libellenroute-v1` uit uitsluitend openbare records gereconstrueerd. De
@@ -60,6 +94,52 @@ wordt alleen de positieve telling bewaard en worden geen andere soorten als
 afwezig ingevuld. De vier `Meijendel.ndff_libel_*`-tabellen worden met
 `--audit-libellen` gecontroleerd; er staan geen afgeleide libellengegevens in
 het beveiligde schema.
+
+De officiële libellenhandleidingen bevestigen deze scheiding: een algemene
+route telt alle libellen per vaste sectie, een soortgerichte route alleen de
+doelsoort. Route-ID, sectie-ID, routetype, bezoekweer, teller en veranderingen
+zijn native velden maar ontbreken in FFV. De huidige 454 als algemeen
+gekwalificeerde bezoeken zijn protocolmatig bruikbaar; de zeven bezoeken met
+`onbepaald` doelbereik blijven terecht zonder afgeleide nullen. De afzonderlijke
+Riviersluiptelling is geen gewone libellenroute: zij bestaat uit telkens
+vijftien minuten zoeken langs honderd meter rivieroever naar larvenhuidjes, met
+expliciete nultellingen. In de huidige Meijendel-selectie is deze methode niet
+als afzonderlijke NDFF-reeks aangetroffen.
+
+Voor dagactieve nachtvlinders en nectarplanten op een dagvlinderroute geldt een
+afzonderlijke deelnamekeuze per bezoek. Alleen wanneer die keuze aan staat,
+mag een lege soortenlijst als nul gelden. De 556 nachtvlinderregels onder
+`03.201` blijven daarom uitsluitend positieve voorkomensinformatie. In de
+huidige `03.201`-levering zijn geen nectarplantregels aangetroffen.
+
+Het nachtvlinderprotocol `03.203` vereist een vast telpunt, dezelfde val en
+lamp, een volledige nacht, ten minste zes tellingen per jaar en afzonderlijke
+aantallen binnen en buiten de val. De 596 FFV-records zijn echter tot
+jaarperioden en kilometerhokken geaggregeerd; bezoekdatum, telpunt, val, lamp en
+binnen/buiten-status ontbreken. De bestaande kwalificatie als positieve
+hokjaarcontext zonder nullen of trendinvoer blijft daarom juist.
+
+### Benodigde reconstructieversie 2 voor Vlinderstichting-meetnetten
+
+De kleinste verantwoorde vervolgstap is niet één generiek surveyschema, maar een
+uitbreiding van de bestaande protocoltabellen met de werkelijk onderscheiden
+entiteiten:
+
+1. route of telpunt met oorspronkelijk nummer, type, doelsoort en
+   geldigheidsperiode;
+2. vaste secties en geometrieversies;
+3. afzonderlijk bezoek met datum/tijd, teller, weer, volledigheid en
+   methodegeldigheid;
+4. deelname per bezoek aan dagvlinders, dagactieve nachtvlinders, hommels en
+   nectarplanten;
+5. telling per bezoek, sectie, taxon, levensstadium en teleenheid;
+6. route- en beheerwijzigingen;
+7. voor nachtvlinders daarnaast telpunt, valtype, lamptype, brandduur en
+   binnen/buiten de val.
+
+Deze velden worden pas gevuld wanneer zij rechtstreeks aanwezig zijn of onder
+een expliciete, geversioneerde afleidingsregel vallen. Ontbrekende deelname- of
+routetypevelden worden nooit uit een ontbrekende soort afgeleid.
 
 Het NEM-Meetprogramma Reptielen (`10.201`) is onder
 `ndff-reptielroute-v1` uit uitsluitend openbare records gereconstrueerd. De 957
