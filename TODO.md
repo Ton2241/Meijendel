@@ -85,18 +85,23 @@
   pas bij een concrete trendanalyse om de oorspronkelijke monitoringslocaties,
   monster- of sublocatieresultaten en negatieve locaties; deze validatie
   blokkeert positieve verspreidingsanalyse niet.
-- `02.202` bevat onder `ndff-korstmos-v1` twaalf proefvlakken en 32 bezoeken.
-  Gebruik de 960 bezoek-taxonregels voor presentie/occupancy; behandel de twee
-  FFV-bedekkingsklassen alleen ordinaal en sluit de tien conflictcombinaties uit
-  van abundantievergelijking. Vraag BLWG later alleen om oorspronkelijke
-  locatie-ID's, geometrieversies en de zesdelige abundantieklasse wanneer dat
-  voor een verdiepende analyse nodig blijkt.
-- `02.204` bevat onder `ndff-mos-v1` zeven volledige
+- De officiële BLWG-handleidingen zijn in Zotero onder parentitem
+  `Meetnetten - BLWG` (`8E3TCBHW`) opgeslagen.
+- `02.202` bevat onder `ndff-korstmos-v2` twaalf proefvlakken en 32 bezoeken.
+  Gebruik de 960 bezoek-taxonregels voor presentie/occupancy en behandel de twee
+  FFV-bedekkingsklassen alleen ordinaal. Bij twaalf bezoeken zijn twee
+  onafhankelijke tellingen aantoonbaar; bij twintig bezoeken is een tweede
+  telling niet aantoonbaar in de export. Vraag alleen waarnemer- of lijst-ID's
+  als later waarnemerspecifieke detectieanalyse prioriteit krijgt; dit blokkeert
+  de gecombineerde plotanalyse niet.
+- `02.204` bevat onder `ndff-mos-v2` zeven volledige
   kilometerhokinventarisaties en 777 inventarisatie-taxonregels. Gebruik de 423
   echte nullen alleen op kilometerhokniveau. Behandel de 21 tijdclusters niet
   als onafhankelijke bezoeken en leid geen plotnullen of lokale tijdtrend af.
-  Vraag BLWG later alleen om lijst-ID's, bezoekduur en waarnemer wanneer een
-  verdiepende validatie dat nodig maakt.
+  Protocolcode `02.204` onderbouwt de minimale inspanning en habitatdekking.
+  Vraag niet alsnog om bezoekduur of waarnemer om dit opnieuw te bewijzen; vraag
+  alleen een oorspronkelijke lijst-ID als een latere bronaudit die echt nodig
+  maakt.
 - `12.001` bevat onder `ndff-florbase-v1` 118 aannemelijk volledige
   kilometerhok-jaarlijsten en 65 fragmenten. Gebruik de 101.126 matrixregels
   voorlopig voor verspreidings- en inventarisatievergelijkingen; de 81.721

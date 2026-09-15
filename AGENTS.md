@@ -398,15 +398,17 @@ MySQL:
   aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
   vóór gebruik met `--audit-hns`
 - gebruik voor korstmossenprotocol `02.202` reconstructieversie
-  `ndff-korstmos-v1` en de vijf openbare tabellen `Meijendel.ndff_korstmos_*`.
+  `ndff-korstmos-v2` en de vijf openbare tabellen `Meijendel.ndff_korstmos_*`.
   Leid echte nullen alleen af binnen de 32 bevestigde bezoeken en de dertig
-  openbare taxa. Tel 67 gelijke parallelle registraties niet dubbel; sluit de
-  tien bezoek-taxoncombinaties met tegenstrijdige bedekkingsklasse uit van
-  abundantievergelijking. Behandel de twee FFV-bedekkingsklassen uitsluitend
-  ordinaal. Kopieer de twintig vervaagde Saucijs-baardmosrecords niet naar de
-  openbare afgeleide tabellen en controleer vóór gebruik met
+  openbare taxa. Behoud parallelle positieve regels als afzonderlijke
+  waarnemertellingen. Gebruik `registratiestatus` om te onderscheiden of twee
+  onafhankelijke tellingen in de export aantoonbaar zijn; interpreteer
+  `tweede_telling_niet_aantoonbaar_in_export` nooit als één uitgevoerde teller.
+  Behandel de twee FFV-bedekkingsklassen uitsluitend ordinaal. Kopieer de
+  twintig vervaagde Saucijs-baardmosrecords niet naar de openbare afgeleide
+  tabellen en controleer vóór gebruik met
   `--audit-korstmossen`
-- gebruik voor mossenprotocol `02.204` reconstructieversie `ndff-mos-v1` en de
+- gebruik voor mossenprotocol `02.204` reconstructieversie `ndff-mos-v2` en de
   vijf openbare tabellen `Meijendel.ndff_mos_*`. De native meeteenheid is het
   volledige kilometerhok. Behandel de 21 bronperioden als onderdelen van zeven
   hokinventarisaties, nooit als onafhankelijke herhaaltellingen. Leid echte
@@ -414,7 +416,10 @@ MySQL:
   hokuitkomst niet over geraakte SOVON-plots. Gebruik de drie BLWG-klassen
   uitsluitend ordinaal, houd presentiewaarden en abundantieconflicten apart en
   leid geen lokale tijdtrend af omdat geen hok is herhaald. Kopieer het ene
-  vervaagde record niet naar de openbare afgeleide tabellen en controleer vóór
+  vervaagde record niet naar de openbare afgeleide tabellen. Accepteer de
+  expliciete protocolcode als bewijs voor de voorgeschreven minimale inspanning
+  van acht mensuren en dekking van relevante biotopen; vraag die gegevens niet
+  opnieuw op zonder een concrete resterende analysebehoefte. Controleer vóór
   gebruik met `--audit-mossen`
 - gebruik voor FLORBASE-protocol `12.001` reconstructieversie
   `ndff-florbase-v1` en de vier openbare tabellen

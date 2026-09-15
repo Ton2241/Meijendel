@@ -536,10 +536,15 @@ def main() -> int:
     assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v2"
     assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
     assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
-    assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v1"
+    assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v2"
+    assert module.KORSTMOS_LEGACY_RULE_VERSION == "ndff-korstmos-v1"
     assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.ndff_korstmos"
-    assert module.MOS_RULE_VERSION == "ndff-mos-v1"
+    assert module.MOS_RULE_VERSION == "ndff-mos-v2"
+    assert module.MOS_LEGACY_RULE_VERSION == "ndff-mos-v1"
     assert module.MOS_TABLE_PREFIX == "Meijendel.ndff_mos"
+    assert "waargenomen_twee_tellingen_zelfde_klasse" in folded
+    assert "tweede_telling_niet_aantoonbaar_in_export" in folded
+    assert "protocolconforme_minimale_inspanning_aangenomen" in folded
 
     korstmos_records = module.classify_korstmos_records([
         {"observation_id": 1, "visit": "v1", "taxon": "Taxon a",
@@ -554,27 +559,33 @@ def main() -> int:
          "abundance": "minimaal 0.1"},
     ])
     assert korstmos_records[1]["selectiestatus"] == "opgenomen"
-    assert korstmos_records[2]["selectiestatus"] == "dubbele_registratie_onderdrukt"
-    assert korstmos_records[2]["canonieke_waarneming_id"] == 1
-    assert korstmos_records[3]["selectiestatus"] == "abundantieconflict_bewaard"
-    assert korstmos_records[4]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert korstmos_records[2]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[2]["canonieke_waarneming_id"] == 2
+    assert korstmos_records[3]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[4]["selectiestatus"] == "opgenomen"
     assert korstmos_records[5]["selectiestatus"] == "opgenomen"
 
     korstmos_matrix = module.build_korstmos_visit_matrix(
         visits={"v1", "v2"},
-        target_taxa={"Taxon a", "Taxon b"},
+        visits_met_twee_tellingen={"v1"},
+        target_taxa={"Taxon a", "Taxon b", "Taxon c"},
         records=[
             {"visit": "v1", "taxon": "Taxon a", "abundance": "0.01 - 0.1"},
             {"visit": "v1", "taxon": "Taxon b", "abundance": "0.01 - 0.1"},
             {"visit": "v1", "taxon": "Taxon b", "abundance": "minimaal 0.1"},
+            {"visit": "v1", "taxon": "Taxon c", "abundance": "minimaal 0.1"},
+            {"visit": "v1", "taxon": "Taxon c", "abundance": "minimaal 0.1"},
             {"visit": "v2", "taxon": "Taxon a", "abundance": "minimaal 0.1"},
         ],
     )
     korstmos_by_key = {(row["visit"], row["taxon"]): row for row in korstmos_matrix}
-    assert korstmos_by_key[("v1", "Taxon a")]["status"] == "waargenomen"
+    assert korstmos_by_key[("v1", "Taxon a")]["status"] == "waargenomen_een_van_twee_tellingen"
     assert korstmos_by_key[("v1", "Taxon a")]["bedekkingsrang"] == 1
-    assert korstmos_by_key[("v1", "Taxon b")]["status"] == "waargenomen_abundantieconflict"
+    assert korstmos_by_key[("v1", "Taxon b")]["status"] == "waargenomen_twee_tellingen_verschillende_klasse"
     assert korstmos_by_key[("v1", "Taxon b")]["bedekkingsrang"] is None
+    assert korstmos_by_key[("v1", "Taxon c")]["status"] == "waargenomen_twee_tellingen_zelfde_klasse"
+    assert korstmos_by_key[("v1", "Taxon c")]["bedekkingsrang"] == 2
+    assert korstmos_by_key[("v2", "Taxon a")]["status"] == "waargenomen_enkele_exporttelling"
     assert korstmos_by_key[("v2", "Taxon a")]["bedekkingsrang"] == 2
     assert korstmos_by_key[("v2", "Taxon b")]["status"] == "echte_nul"
     assert korstmos_by_key[("v2", "Taxon b")]["bedekkingsrang"] == 0
@@ -1846,9 +1857,9 @@ def main() -> int:
         "--audit-zeereeppaddenstoelen",
         "ndff-hns-v1",
         "--audit-hns",
-        "ndff-korstmos-v1",
+        "ndff-korstmos-v2",
         "--audit-korstmossen",
-        "ndff-mos-v1",
+        "ndff-mos-v2",
         "--audit-mossen",
         "ndff-florbase-v1",
         "--audit-florbase",

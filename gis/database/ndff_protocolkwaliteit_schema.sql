@@ -1483,7 +1483,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek (
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
   lijststatus ENUM('volledige_soortenlijst_protocolconform') NOT NULL,
-  registratiestatus ENUM('geen_dubbelen','parallelle_registraties','abundantieconflict') NOT NULL,
+  registratiestatus ENUM(
+    'geen_dubbelen','parallelle_registraties','abundantieconflict',
+    'twee_onafhankelijke_tellingen_aantoonbaar',
+    'tweede_telling_niet_aantoonbaar_in_export'
+  ) NOT NULL,
   kwaliteitsnotitie VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_sleutel),
@@ -1547,7 +1551,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   waarnemingsstatus ENUM(
-    'waargenomen','waargenomen_abundantieconflict','echte_nul'
+    'waargenomen','waargenomen_abundantieconflict',
+    'waargenomen_enkele_exporttelling',
+    'waargenomen_een_van_twee_tellingen',
+    'waargenomen_twee_tellingen_zelfde_klasse',
+    'waargenomen_twee_tellingen_verschillende_klasse','echte_nul'
   ) NOT NULL,
   bedekkingsklasse_raw VARCHAR(64) NULL,
   bedekkingsrang TINYINT UNSIGNED NULL,
@@ -1567,10 +1575,58 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
     OR (waarnemingsstatus='waargenomen_abundantieconflict'
       AND bedekkingsklasse_raw IS NULL AND bedekkingsrang IS NULL
       AND bronrecordaantal>1)
+    OR (waarnemingsstatus IN (
+          'waargenomen_enkele_exporttelling',
+          'waargenomen_een_van_twee_tellingen'
+        ) AND bedekkingsklasse_raw IS NOT NULL
+      AND bedekkingsrang IN (1,2) AND bronrecordaantal=1)
+    OR (waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse'
+      AND bedekkingsklasse_raw IS NOT NULL AND bedekkingsrang IN (1,2)
+      AND bronrecordaantal=2)
+    OR (waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse'
+      AND bedekkingsklasse_raw IS NULL AND bedekkingsrang IS NULL
+      AND bronrecordaantal=2)
     OR (waarnemingsstatus='echte_nul' AND bedekkingsklasse_raw IS NULL
       AND bedekkingsrang=0 AND bronrecordaantal=0)
   )
 ) ENGINE=InnoDB;
+
+ALTER TABLE Meijendel.ndff_korstmos_bezoek
+  MODIFY registratiestatus ENUM(
+    'geen_dubbelen','parallelle_registraties','abundantieconflict',
+    'twee_onafhankelijke_tellingen_aantoonbaar',
+    'tweede_telling_niet_aantoonbaar_in_export'
+  ) NOT NULL;
+
+ALTER TABLE Meijendel.ndff_korstmos_bezoek_taxon
+  MODIFY waarnemingsstatus ENUM(
+    'waargenomen','waargenomen_abundantieconflict',
+    'waargenomen_enkele_exporttelling',
+    'waargenomen_een_van_twee_tellingen',
+    'waargenomen_twee_tellingen_zelfde_klasse',
+    'waargenomen_twee_tellingen_verschillende_klasse','echte_nul'
+  ) NOT NULL,
+  DROP CHECK ndff_korstmos_bezoek_taxon_chk_1,
+  ADD CONSTRAINT ndff_korstmos_bezoek_taxon_chk_1 CHECK (
+    (waarnemingsstatus='waargenomen' AND bedekkingsklasse_raw IS NOT NULL
+      AND bedekkingsrang IN (1,2) AND bronrecordaantal>0)
+    OR (waarnemingsstatus='waargenomen_abundantieconflict'
+      AND bedekkingsklasse_raw IS NULL AND bedekkingsrang IS NULL
+      AND bronrecordaantal>1)
+    OR (waarnemingsstatus IN (
+          'waargenomen_enkele_exporttelling',
+          'waargenomen_een_van_twee_tellingen'
+        ) AND bedekkingsklasse_raw IS NOT NULL
+      AND bedekkingsrang IN (1,2) AND bronrecordaantal=1)
+    OR (waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse'
+      AND bedekkingsklasse_raw IS NOT NULL AND bedekkingsrang IN (1,2)
+      AND bronrecordaantal=2)
+    OR (waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse'
+      AND bedekkingsklasse_raw IS NULL AND bedekkingsrang IS NULL
+      AND bronrecordaantal=2)
+    OR (waarnemingsstatus='echte_nul' AND bedekkingsklasse_raw IS NULL
+      AND bedekkingsrang=0 AND bronrecordaantal=0)
+  );
 
 -- Reconstructie van 02.204 Meetnet mossen (NEM). De native meeteenheid is
 -- een volledig geïnventariseerd RD-kilometerhok. Datumclusters binnen hetzelfde
@@ -1590,7 +1646,10 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie (
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
   lijststatus ENUM('volledige_soortenlijst_protocolconform') NOT NULL,
-  inspanningstatus ENUM('protocolconform_bezoekduur_niet_meegeleverd') NOT NULL,
+  inspanningstatus ENUM(
+    'protocolconform_bezoekduur_niet_meegeleverd',
+    'protocolconforme_minimale_inspanning_aangenomen'
+  ) NOT NULL,
   plotstatus ENUM('kilometerhok_niet_naar_sovonplot_toegewezen') NOT NULL,
   kwaliteitsnotitie VARCHAR(1400) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -1599,6 +1658,12 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie (
   CHECK (einddatum >= begindatum),
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
+
+ALTER TABLE Meijendel.ndff_mos_inventarisatie
+  MODIFY inspanningstatus ENUM(
+    'protocolconform_bezoekduur_niet_meegeleverd',
+    'protocolconforme_minimale_inspanning_aangenomen'
+  ) NOT NULL;
 
 CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_datumcluster (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,

@@ -586,30 +586,37 @@ en [CBS Meetprogramma's 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-f
 
 ### Korstmossen op steen, heiden en stuifzanden (`02.202`)
 
-Regelversie `ndff-korstmos-v1` reconstrueert 364 onvervaagde openbare
+Regelversie `ndff-korstmos-v2` reconstrueert 364 onvervaagde openbare
 bronregels tot twaalf proefvlakken en 32 bezoeken in 2000-2025. Vier vaste
 proefvlakken zijn in zes meetjaren herhaald; acht proefvlakken hebben één
 bevestigd bezoek. Het openbare lokale doelbereik omvat dertig taxa. Omdat het
 protocol per bezoek een complete soortenlijst voorschrijft, bevat de
 bezoek-soortmatrix 287 positieve combinaties en 673 echte nullen.
 
-De bron bevat 67 gelijke parallelle registraties, die traceerbaar blijven maar
-niet dubbel meetellen. Bij tien bezoek-taxoncombinaties spreken twee grove
-NDFF-bedekkingsklassen elkaar tegen; die twintig bronregels blijven als
-abundantieconflict bewaard. De FFV-levering bevat slechts twee ordinale klassen,
+De officiële methode schrijft per locatie twee onafhankelijke tellingen voor.
+De bron bevat 67 bezoek-taxoncombinaties met twee gelijke klassen en tien met
+twee verschillende klassen. Dit zijn geen technische dubbelen of fouten, maar
+afzonderlijke waarnemertellingen. Bij twaalf bezoeken is de dubbele telling in
+de export aantoonbaar; bij twintig bezoeken is zij niet aantoonbaar. Dat laatste
+bewijst niet dat slechts één teller aanwezig was. De FFV-levering bevat slechts
+twee ordinale klassen,
 terwijl de oorspronkelijke BLWG-methode zes klassen onderscheidt. Gebruik de
 matrix daarom voor presentie/occupancy en de grove rang alleen als ordinale
-indicator, niet als exacte bedekking. Twintig vervaagde Saucijs-baardmosrecords
+indicator, niet als exacte bedekking. Voor waarnemerspecifieke detectieanalyse
+zijn alsnog waarnemer- of lijst-ID's nodig; de gecombineerde plotanalyse wordt
+daardoor niet geblokkeerd. Twintig vervaagde Saucijs-baardmosrecords
 worden niet naar openbare afgeleide tabellen gekopieerd en leveren daar ook geen
 nullen. Controleer de laag vóór gebruik met `--audit-korstmossen`.
 
 Methodische grondslag: [NDFF protocol 02.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/2-202-korstmossen-op-steen-heiden-en-stuifzanden-nem/),
 [BLWG meetnet](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
 en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/korstmossen).
+De beoordeelde BLWG-documenten staan in Zotero onder `Meetnetten - BLWG`
+(`8E3TCBHW`).
 
 ### Meetnet mossen (`02.204`)
 
-Regelversie `ndff-mos-v1` reconstrueert 376 onvervaagde openbare bronregels
+Regelversie `ndff-mos-v2` reconstrueert 376 onvervaagde openbare bronregels
 tot zeven volledige kilometerhokinventarisaties. De 21 bronperioden daarbinnen
 zijn negentien dagclusters en twee jaarintervallen; zij worden niet als 21
 onafhankelijke bezoeken behandeld. Eén inventarisatie overspant de jaargrens
@@ -625,12 +632,13 @@ auditspoor staan, maar zij tellen niet als extra resultaat.
 
 Het protocol vereist een zo volledig mogelijke soortenlijst per geselecteerd
 kilometerhok, minimaal acht mensuren, alle relevante biotopen en een
-talrijkheidsklasse per soort. De FFV-export bevat geen BLWG-lijst-ID,
-waarnemer of bezoekduur; deze ontbrekende metadata blijven als
-kwaliteitswaarschuwing zichtbaar. Een kilometerhok wordt niet als aanwezigheid
-of nul in ieder geraakt SOVON-plot geïnterpreteerd. Eén vervaagd record wordt
-niet naar openbare afgeleide tabellen gekopieerd. Controleer de laag vóór
-gebruik met `--audit-mossen`.
+talrijkheidsklasse per soort. De expliciete protocolcode geldt als bewijs voor
+die minimale inspanning en habitatdekking; een precieze bezoekduur of waarnemer
+hoeft niet opnieuw te worden opgevraagd om de inventarisatie als protocolconform
+te behandelen. De FFV-export bevat geen oorspronkelijk BLWG-lijst-ID. Een
+kilometerhok wordt niet als aanwezigheid of nul in ieder geraakt SOVON-plot
+geïnterpreteerd. Eén vervaagd record wordt niet naar openbare afgeleide tabellen
+gekopieerd. Controleer de laag vóór gebruik met `--audit-mossen`.
 
 Methodische grondslag: [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx),
 [BLWG Inventarisatiehandleiding](https://www.blwg.nl/wp-content/uploads/2025/08/BLWG-Inventarisatiehandleiding.pdf)

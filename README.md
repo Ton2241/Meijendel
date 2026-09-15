@@ -358,24 +358,28 @@ tellers, omdat lijst- en waarnemer-ID ontbreken. Gebruik deze laag daarom voor
 voorlopige verspreidings-/occupancyanalyse, nooit voor plantenabundantie, en
 controleer haar vooraf met `--audit-hns`.
 
-Korstmossenprotocol `02.202` staat onder `ndff-korstmos-v1` in vijf openbare
+Korstmossenprotocol `02.202` staat onder `ndff-korstmos-v2` in vijf openbare
 `Meijendel.ndff_korstmos_*`-tabellen. De 364 onvervaagde bronregels vormen
 twaalf proefvlakken, 32 bezoeken en een matrix voor dertig taxa met 287
-positieve combinaties en 673 echte nullen. Van de bronregels worden 67 gelijke
-parallelle registraties onderdrukt; tien bezoek-taxoncombinaties behouden een
-abundantieconflict. De twintig vervaagde Saucijs-baardmosrecords blijven alleen
-in de beveiligde bronlaag. Gebruik de twee grove FFV-bedekkingsklassen slechts
-ordinaal en controleer de reconstructie met `--audit-korstmossen`.
+positieve combinaties en 673 echte nullen. Bij twaalf bezoeken tonen dubbele
+soortregels de twee onafhankelijke tellingen aan; bij twintig bezoeken is de
+tweede telling in de export niet aantoonbaar. Alle 364 bronregels blijven als
+afzonderlijke waarnemertellingen behouden. De twintig vervaagde
+Saucijs-baardmosrecords blijven alleen in de beveiligde bronlaag. Gebruik de
+twee grove FFV-bedekkingsklassen slechts ordinaal en controleer de reconstructie
+met `--audit-korstmossen`.
 
-Mossenprotocol `02.204` staat onder `ndff-mos-v1` in vijf openbare
+Mossenprotocol `02.204` staat onder `ndff-mos-v2` in vijf openbare
 `Meijendel.ndff_mos_*`-tabellen. De 376 onvervaagde bronregels vormen zeven
 volledige kilometerhokinventarisaties en een matrix voor 111 taxa met 354
 positieve combinaties en 423 echte nullen. De 21 bronperioden zijn onderdelen
 van de hoklijsten, geen onafhankelijke herhaaltellingen. Er zijn 21 gelijke
 parallelle registraties onderdrukt en één abundantieconflict gemarkeerd. Omdat
 geen hok is herhaald, ondersteunt deze lokale selectie geen tijdtrend per hok.
-Gebruik talrijkheidsklassen alleen ordinaal, koppel hoknullen niet door naar
-SOVON-plots en controleer de laag met `--audit-mossen`.
+Protocolcode `02.204` onderbouwt de volledige lijst en de voorgeschreven
+minimale inspanning van acht mensuren. Gebruik talrijkheidsklassen alleen
+ordinaal, koppel hoknullen niet door naar SOVON-plots en controleer de laag met
+`--audit-mossen`.
 
 FLORBASE-protocol `12.001` staat onder `ndff-florbase-v1` in vier openbare
 `Meijendel.ndff_florbase_*`-tabellen. De 21.161 onvervaagde bronregels vormen

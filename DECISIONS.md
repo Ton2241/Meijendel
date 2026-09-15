@@ -249,16 +249,18 @@
   positieve verspreidingsinformatie. Herhaalde lijsten blijven gemarkeerd als
   niet bewezen onafhankelijk zolang FLORON-lijst- of waarnemer-ID ontbreekt.
   Aantallen en dubbele vindplaatsen worden niet als plantenabundantie gebruikt.
-- Protocol `02.202` wordt onder `ndff-korstmos-v1` gereconstrueerd uit uitsluitend
+- Protocol `02.202` wordt onder `ndff-korstmos-v2` gereconstrueerd uit uitsluitend
   de 364 onvervaagde openbare regels. De twaalf geometrieën gelden als
   proefvlakken en gelijke geometrie plus datum als bezoek. Omdat het landelijke
   protocol complete soortenlijsten voorschrijft, worden binnen 32 bevestigde
-  bezoeken echte nullen afgeleid voor de dertig openbare taxa. Gelijke
-  parallelle registraties tellen eenmaal; tegenstrijdige bedekkingsklassen
-  blijven conflict. De twee FFV-klassen zijn alleen ordinaal bruikbaar. De
+  bezoeken echte nullen afgeleid voor de dertig openbare taxa. Alle parallelle
+  regels blijven afzonderlijke waarnemertellingen. Bij twaalf bezoeken zijn
+  twee onafhankelijke tellingen in de export aantoonbaar; bij twintig bezoeken
+  is de tweede telling niet aantoonbaar, wat niet hetzelfde is als afwezig. De
+  twee FFV-klassen zijn alleen ordinaal bruikbaar. De
   twintig vervaagde Saucijs-baardmosrecords blijven uitsluitend in de
   beveiligde bronlaag en krijgen geen openbare afleiding.
-- Protocol `02.204` wordt onder `ndff-mos-v1` gereconstrueerd met het
+- Protocol `02.204` wordt onder `ndff-mos-v2` gereconstrueerd met het
   kilometerhok als native inventarisatie-eenheid. De 21 bronperioden binnen de
   zeven hokken zijn geen onafhankelijke herhaaltellingen en krijgen daarom geen
   afzonderlijke nullen. De volledige hoklijsten ondersteunen wel echte nullen
@@ -267,6 +269,9 @@
   talrijkheidsklasse en één abundantieconflict blijven afzonderlijk. Omdat geen
   hok in een volgende ronde is herhaald, wordt geen lokale tijdtrend afgeleid.
   Kilometerhokresultaten worden niet naar afzonderlijke SOVON-plots verdeeld.
+  De expliciete protocolcode onderbouwt de voorgeschreven minimale inspanning
+  van acht mensuren en inventarisatie van alle relevante biotopen; precieze
+  duur en waarnemer hoeven daarvoor niet opnieuw te worden opgevraagd.
 - Protocol `12.001` wordt onder `ndff-florbase-v1` per RD-kilometerhok en jaar
   gereconstrueerd. Een hokjaar met minimaal 50 geregistreerde taxa krijgt de
   transparante status `volledige_lijst_aannemelijk`; dit is geen officiële

@@ -141,19 +141,21 @@ en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
 `ndff-hns-v1` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
 De laag bewaart onafhankelijkheid van herhaalde clusters als afzonderlijke,
 nog niet bevestigde eigenschap en gebruikt bron-aantallen niet als abundantie.
-`ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v1` in
+`ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v2` in
 `Meijendel`: openbare proefvlakken, bezoeken, recordselectie, lokaal doelbereik
 en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen
-echte nullen. Gelijke parallelle registraties worden niet dubbel geteld en
-tegenstrijdige grove bedekkingsklassen blijven zichtbaar. Vervaagde records
-worden niet naar deze openbare afgeleide laag gekopieerd.
-`ndff_mos_*` reconstrueert protocol `02.204` onder `ndff-mos-v1` in
+echte nullen. Parallelle positieve regels blijven als afzonderlijke
+waarnemertellingen behouden; per bezoek staat expliciet of twee onafhankelijke
+tellingen in de export aantoonbaar zijn. Vervaagde records worden niet naar
+deze openbare afgeleide laag gekopieerd.
+`ndff_mos_*` reconstrueert protocol `02.204` onder `ndff-mos-v2` in
 `Meijendel`: zeven kilometerhokinventarisaties, 21 onderliggende tijdclusters,
 recordselectie, lokaal doelbereik en een inventarisatie-soortmatrix. Echte
 nullen gelden uitsluitend voor de volledige hoklijst, nooit voor ieder
 datumcluster of geraakt SOVON-plot. De laag bewaart jaarprecisie, een
 jaargrensoverschrijdende inventarisatie, presentiewaarden zonder aantalsklasse,
-dubbelen en abundantieconflicten afzonderlijk.
+dubbelen en abundantieconflicten afzonderlijk. De protocolcode geldt als bewijs
+voor de voorgeschreven minimale inspanning en dekking van relevante biotopen.
 `ndff_florbase_*` reconstrueert protocol `12.001` onder `ndff-florbase-v1` in
 `Meijendel`: kilometerhok-jaarinventarisaties, volledige recordselectie, lokaal
 doelbereik en een inventarisatie-taxonmatrix. Alleen hok-jaren met minimaal 50

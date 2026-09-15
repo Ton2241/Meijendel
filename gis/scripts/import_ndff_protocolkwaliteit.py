@@ -59,8 +59,10 @@ SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v2"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
-KORSTMOS_RULE_VERSION = "ndff-korstmos-v1"
-MOS_RULE_VERSION = "ndff-mos-v1"
+KORSTMOS_RULE_VERSION = "ndff-korstmos-v2"
+KORSTMOS_LEGACY_RULE_VERSION = "ndff-korstmos-v1"
+MOS_RULE_VERSION = "ndff-mos-v2"
+MOS_LEGACY_RULE_VERSION = "ndff-mos-v1"
 FLORBASE_RULE_VERSION = "ndff-florbase-v1"
 FLORBASE_COMPLETENESS_THRESHOLD = 50
 LMFA_RULE_VERSION = "ndff-lmfa-v1"
@@ -521,13 +523,14 @@ KORSTMOS_RECONSTRUCTION_EXPECTED = {
     "oneoff_location_visits": 8,
     "target_taxa": 30,
     "recordselection_rows": 364,
-    "selected_records": 277,
-    "suppressed_duplicate_records": 67,
-    "abundance_conflict_records": 20,
+    "selected_records": 364,
+    "visits_with_two_counts": 12,
+    "visits_without_two_counts": 20,
     "matrix_rows": 960,
     "positive_rows": 287,
-    "normal_positive_rows": 277,
-    "conflict_positive_rows": 10,
+    "single_count_positive_rows": 210,
+    "double_same_class_positive_rows": 67,
+    "double_different_class_positive_rows": 10,
     "true_zero_rows": 673,
     "single_plot_records": 352,
     "multiple_plot_records": 12,
@@ -536,6 +539,7 @@ KORSTMOS_RECONSTRUCTION_EXPECTED = {
     "matrix_size_mismatch": 0,
     "positive_source_mismatch": 0,
     "unlinked_source_records": 0,
+    "legacy_versions": 0,
     "secure_derived_tables": 0,
 }
 MOS_RECONSTRUCTION_EXPECTED = {
@@ -567,6 +571,8 @@ MOS_RECONSTRUCTION_EXPECTED = {
     "matrix_size_mismatch": 0,
     "positive_source_mismatch": 0,
     "unlinked_source_records": 0,
+    "invalid_inspanningstatus": 0,
+    "legacy_versions": 0,
     "secure_derived_tables": 0,
 }
 FLORBASE_RECONSTRUCTION_EXPECTED = {
@@ -5796,37 +5802,20 @@ def korstmos_abundance_rank(raw: str) -> int:
 def classify_korstmos_records(
     rows: Iterable[dict[str, object]],
 ) -> dict[int, dict[str, object]]:
-    """Kies canonieke regels en bewaar afwijkende abundantie als conflict."""
-    grouped: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
-    for source_row in rows:
-        row = dict(source_row)
-        grouped[(str(row["visit"]), str(row["taxon"]))].append(row)
-
-    result: dict[int, dict[str, object]] = {}
-    for group_rows in grouped.values():
-        ordered = sorted(group_rows, key=lambda row: int(row["observation_id"]))
-        abundances = {str(row["abundance"]) for row in ordered}
-        if len(abundances) > 1:
-            for row in ordered:
-                result[int(row["observation_id"])] = {
-                    "selectiestatus": "abundantieconflict_bewaard",
-                    "canonieke_waarneming_id": None,
-                }
-            continue
-        canonical_id = int(ordered[0]["observation_id"])
-        for index, row in enumerate(ordered):
-            result[int(row["observation_id"])] = {
-                "selectiestatus": (
-                    "opgenomen" if index == 0 else "dubbele_registratie_onderdrukt"
-                ),
-                "canonieke_waarneming_id": canonical_id,
-            }
-    return result
+    """Behoud iedere 02.202-regel als afzonderlijke waarnemertelling."""
+    return {
+        int(row["observation_id"]): {
+            "selectiestatus": "opgenomen",
+            "canonieke_waarneming_id": int(row["observation_id"]),
+        }
+        for row in rows
+    }
 
 
 def build_korstmos_visit_matrix(
     *,
     visits: set[str],
+    visits_met_twee_tellingen: set[str],
     target_taxa: set[str],
     records: Iterable[dict[str, object]],
 ) -> list[dict[str, object]]:
@@ -5841,20 +5830,34 @@ def build_korstmos_visit_matrix(
         for taxon in sorted(target_taxa):
             source_rows = positives.get((visit, taxon), [])
             abundances = {str(row["abundance"]) for row in source_rows}
+            source_count = len(source_rows)
+            if source_count > 2:
+                raise ValueError("Meer dan twee 02.202-tellingen voor één bezoek en taxon.")
             if not source_rows:
                 status, raw, rank = "echte_nul", None, 0
-            elif len(abundances) > 1:
-                status, raw, rank = "waargenomen_abundantieconflict", None, None
+            elif source_count == 2 and len(abundances) > 1:
+                status, raw, rank = (
+                    "waargenomen_twee_tellingen_verschillende_klasse", None, None
+                )
+            elif source_count == 2:
+                raw = next(iter(abundances))
+                status = "waargenomen_twee_tellingen_zelfde_klasse"
+                rank = korstmos_abundance_rank(raw)
             else:
                 raw = next(iter(abundances))
-                status, rank = "waargenomen", korstmos_abundance_rank(raw)
+                status = (
+                    "waargenomen_een_van_twee_tellingen"
+                    if visit in visits_met_twee_tellingen
+                    else "waargenomen_enkele_exporttelling"
+                )
+                rank = korstmos_abundance_rank(raw)
             matrix.append({
                 "visit": visit,
                 "taxon": taxon,
                 "status": status,
                 "bedekkingsklasse_raw": raw,
                 "bedekkingsrang": rank,
-                "source_count": len(source_rows),
+                "source_count": source_count,
             })
     return matrix
 
@@ -7306,9 +7309,17 @@ def reconstruct_korstmossen(
         rows.append(row)
         taxa.add(str(row["taxon"]))
 
+    visit_taxon_counts = Counter(
+        (str(row["visit"]), str(row["taxon"])) for row in records
+    )
+    visits_met_twee_tellingen = {
+        visit for (visit, _taxon), count in visit_taxon_counts.items() if count == 2
+    }
+
     target_taxa = {str(row["taxon"]) for row in records}
     matrix = build_korstmos_visit_matrix(
-        visits=set(visits), target_taxa=target_taxa, records=records,
+        visits=set(visits), visits_met_twee_tellingen=visits_met_twee_tellingen,
+        target_taxa=target_taxa, records=records,
     )
 
     meetlocation_values: list[str] = []
@@ -7351,16 +7362,11 @@ def reconstruct_korstmossen(
     for visit, info in sorted(visits.items()):
         visit_rows, taxa = info["rows"], info["taxa"]
         assert isinstance(visit_rows, list) and isinstance(taxa, set)
-        statuses = {
-            str(selection[int(row["observation_id"])]["selectiestatus"])
-            for row in visit_rows
-        }
-        if "abundantieconflict_bewaard" in statuses:
-            registration = "abundantieconflict"
-        elif "dubbele_registratie_onderdrukt" in statuses:
-            registration = "parallelle_registraties"
-        else:
-            registration = "geen_dubbelen"
+        registration = (
+            "twee_onafhankelijke_tellingen_aantoonbaar"
+            if visit in visits_met_twee_tellingen
+            else "tweede_telling_niet_aantoonbaar_in_export"
+        )
         visit_values.append(
             f"({sql_text(KORSTMOS_RULE_VERSION)},{sql_text(visit)},"
             f"{int(info['meetlocation'])},{sql_text(str(info['date']))},{int(info['year'])},"
@@ -7373,15 +7379,11 @@ def reconstruct_korstmossen(
         selected = selection[int(row["observation_id"])]
         status = str(selected["selectiestatus"])
         canonical = selected["canonieke_waarneming_id"]
-        if status == "opgenomen":
-            reason = "Canonieke positieve registratie binnen bezoek en taxon."
-        elif status == "dubbele_registratie_onderdrukt":
-            reason = "Gelijke parallelle registratie onderdrukt; bronregel blijft traceerbaar."
-        else:
-            reason = (
-                "Verschillende grove NDFF-bedekkingsklassen binnen hetzelfde bezoek en taxon; "
-                "beide bronregels blijven bewaard en de afgeleide abundantie is onbekend."
-            )
+        reason = (
+            "Afzonderlijke positieve 02.202-waarnemertelling. Parallelle regels op dezelfde "
+            "locatie, datum en soort blijven behouden omdat het protocol met twee "
+            "onafhankelijke waarnemers werkt."
+        )
         canonical_sql = "NULL" if canonical is None else str(int(canonical))
         selection_values.append(
             f"({sql_text(KORSTMOS_RULE_VERSION)},{int(row['observation_id'])},"
@@ -7405,8 +7407,10 @@ def reconstruct_korstmossen(
 
     matrix_note = (
         "Echte nul wanneer dit openbare 02.202-doeltaxon niet is gemeld op een bevestigd "
-        "bezoek met protocolconform complete soortenlijst. De twee NDFF-klassen zijn een "
-        "grovere weergave dan de oorspronkelijke zesdelige BLWG-abundantieschaal."
+        "plotbezoek met protocolconform complete soortenlijst. Eén of twee positieve "
+        "exportregels blijven als afzonderlijke waarnemertellingen herkenbaar; zonder "
+        "waarnemer-ID kan bij een enkele detectie niet worden bepaald welke teller de soort "
+        "zag. De twee NDFF-klassen zijn grover dan de zesdelige BLWG-schaal."
     )
     matrix_values: list[str] = []
     for row in matrix:
@@ -7421,11 +7425,11 @@ def reconstruct_korstmossen(
 
     statements = [
         "START TRANSACTION;",
-        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(KORSTMOS_RULE_VERSION)};",
-        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_doelbereik WHERE reconstructieversie={sql_text(KORSTMOS_RULE_VERSION)};",
-        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(KORSTMOS_RULE_VERSION)};",
-        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(KORSTMOS_RULE_VERSION)};",
-        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_meetlocatie WHERE reconstructieversie={sql_text(KORSTMOS_RULE_VERSION)};",
+        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie IN ({sql_text(KORSTMOS_LEGACY_RULE_VERSION)},{sql_text(KORSTMOS_RULE_VERSION)});",
+        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_doelbereik WHERE reconstructieversie IN ({sql_text(KORSTMOS_LEGACY_RULE_VERSION)},{sql_text(KORSTMOS_RULE_VERSION)});",
+        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie IN ({sql_text(KORSTMOS_LEGACY_RULE_VERSION)},{sql_text(KORSTMOS_RULE_VERSION)});",
+        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_bezoek WHERE reconstructieversie IN ({sql_text(KORSTMOS_LEGACY_RULE_VERSION)},{sql_text(KORSTMOS_RULE_VERSION)});",
+        f"DELETE FROM {KORSTMOS_TABLE_PREFIX}_meetlocatie WHERE reconstructieversie IN ({sql_text(KORSTMOS_LEGACY_RULE_VERSION)},{sql_text(KORSTMOS_RULE_VERSION)});",
     ]
     for table, columns, values in (
         (f"{KORSTMOS_TABLE_PREFIX}_meetlocatie", "reconstructieversie,meetlocatie_id,geometrie_sha256,protocol_sleutel,centrum_x_rd,centrum_y_rd,oppervlakte_m2,ruimtelijke_klasse,sovon_plot_id,herhaalstatus,bezoekaantal,bronrecordaantal,eerste_jaar,laatste_jaar,kwaliteitsnotitie", meetlocation_values),
@@ -7530,8 +7534,9 @@ def reconstruct_mossen(
 
     inventory_note = (
         "Native 02.204-meeteenheid: één zo volledig mogelijk geïnventariseerd RD-"
-        "kilometerhok. De protocolcode onderbouwt de volledige lijst; BLWG-lijst-ID, "
-        "waarnemer en verplichte bezoekduur zijn niet in de FFV-export opgenomen. Het "
+        "kilometerhok. De protocolcode onderbouwt de volledige lijst en de minimaal acht "
+        "mensuren plus dekking van alle relevante biotopen. De precieze bezoekduur en "
+        "waarnemer zijn niet nodig om deze protocolclassificatie opnieuw te bewijzen. Het "
         "kilometerhok wordt niet als waarneming in ieder geraakt SOVON-plot geïnterpreteerd."
     )
     inventory_values: list[str] = []
@@ -7547,7 +7552,7 @@ def reconstruct_mossen(
             f"{sql_text(str(info['hok']))},{sql_text(min(starts))},{sql_text(max(stops))},"
             f"{first_year},{last_year},{sql_text(year_status)},{len(clusters)},"
             f"{len(rows)},{len(taxa)},'volledige_soortenlijst_protocolconform',"
-            "'protocolconform_bezoekduur_niet_meegeleverd',"
+            "'protocolconforme_minimale_inspanning_aangenomen',"
             f"'kilometerhok_niet_naar_sovonplot_toegewezen',{sql_text(inventory_note)})"
         )
 
@@ -7624,11 +7629,11 @@ def reconstruct_mossen(
 
     statements = [
         "START TRANSACTION;",
-        f"DELETE FROM {MOS_TABLE_PREFIX}_inventarisatie_taxon WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
-        f"DELETE FROM {MOS_TABLE_PREFIX}_doelbereik WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
-        f"DELETE FROM {MOS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
-        f"DELETE FROM {MOS_TABLE_PREFIX}_datumcluster WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
-        f"DELETE FROM {MOS_TABLE_PREFIX}_inventarisatie WHERE reconstructieversie={sql_text(MOS_RULE_VERSION)};",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_inventarisatie_taxon WHERE reconstructieversie IN ({sql_text(MOS_LEGACY_RULE_VERSION)},{sql_text(MOS_RULE_VERSION)});",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_doelbereik WHERE reconstructieversie IN ({sql_text(MOS_LEGACY_RULE_VERSION)},{sql_text(MOS_RULE_VERSION)});",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_recordselectie WHERE reconstructieversie IN ({sql_text(MOS_LEGACY_RULE_VERSION)},{sql_text(MOS_RULE_VERSION)});",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_datumcluster WHERE reconstructieversie IN ({sql_text(MOS_LEGACY_RULE_VERSION)},{sql_text(MOS_RULE_VERSION)});",
+        f"DELETE FROM {MOS_TABLE_PREFIX}_inventarisatie WHERE reconstructieversie IN ({sql_text(MOS_LEGACY_RULE_VERSION)},{sql_text(MOS_RULE_VERSION)});",
     ]
     for table, columns, values in (
         (f"{MOS_TABLE_PREFIX}_inventarisatie", "reconstructieversie,inventarisatie_sleutel,protocol_sleutel,hoknummer,begindatum,einddatum,eerste_jaar,laatste_jaar,jaarstatus,datumclusteraantal,bronrecordaantal,geregistreerde_taxa,lijststatus,inspanningstatus,plotstatus,kwaliteitsnotitie", inventory_values),
@@ -9523,20 +9528,22 @@ SELECT JSON_OBJECT(
   'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_doelbereik WHERE reconstructieversie={version}),
   'recordselection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version}),
   'selected_records',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
-  'suppressed_duplicate_records',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='dubbele_registratie_onderdrukt'),
-  'abundance_conflict_records',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='abundantieconflict_bewaard'),
+  'visits_with_two_counts',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek WHERE reconstructieversie={version} AND registratiestatus='twee_onafhankelijke_tellingen_aantoonbaar'),
+  'visits_without_two_counts',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek WHERE reconstructieversie={version} AND registratiestatus='tweede_telling_niet_aantoonbaar_in_export'),
   'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version}),
   'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
-  'normal_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
-  'conflict_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_abundantieconflict'),
+  'single_count_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling')),
+  'double_same_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse'),
+  'double_different_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse'),
   'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
   'single_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
   'multiple_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
   'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0 AND (schaal_telmethode<>'BLWG-bedekkingsklassen' OR aantal_raw NOT IN ('0.01 - 0.1','minimaal 0.1'))),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_abundantieconflict' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang IS NOT NULL OR bronrecordaantal<2)) OR (waarnemingsstatus='echte_nul' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang<>0 OR bronrecordaantal<>0)))),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling') AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>1)) OR (waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse' AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>2)) OR (waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang IS NOT NULL OR bronrecordaantal<>2)) OR (waarnemingsstatus='echte_nul' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang<>0 OR bronrecordaantal<>0)))),
   'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_korstmos_bezoek b LEFT JOIN Meijendel.ndff_korstmos_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel HAVING matrixregels<>doelomvang) q),
   'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version})),
   'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_korstmos_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'legacy_versions',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_meetlocatie WHERE reconstructieversie={sql_text(KORSTMOS_LEGACY_RULE_VERSION)}),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
@@ -9578,6 +9585,8 @@ SELECT JSON_OBJECT(
   'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_mos_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_mos_inventarisatie i LEFT JOIN Meijendel.ndff_mos_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
   'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version})),
   'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_mos_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'invalid_inspanningstatus',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND inspanningstatus<>'protocolconforme_minimale_inspanning_aangenomen'),
+  'legacy_versions',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={sql_text(MOS_LEGACY_RULE_VERSION)}),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
