@@ -215,6 +215,9 @@ VLINDER_RECONSTRUCTION_EXPECTED = {
     "positive_matrix_extra": 0,
     "species_route_invalid_zero": 0,
     "evidence_scope_mismatch": 0,
+    "route_identifications": 11,
+    "route_identification_mismatch": 0,
+    "spatial_outliers": 2,
     "legacy_v1_rows": 0,
     "legacy_secure_tables": 0,
 }
@@ -1224,6 +1227,10 @@ def vlinder_v2_schema_statements(
         "ndff_vlinder_bezoek_taxon": (
             ("bewijsgrond", "VARCHAR(128) NOT NULL DEFAULT 'niet_van_toepassing' AFTER nulregel"),
         ),
+        "ndff_vlinder_routegeometrie": (
+            ("geometrierol", "ENUM('hoofdcomponent','ruimtelijke_uitbijter') NOT NULL DEFAULT 'hoofdcomponent' AFTER oppervlakte_m2"),
+            ("geometrierol_bewijs", "VARCHAR(128) NOT NULL DEFAULT 'reguliere_routegeometrie' AFTER geometrierol"),
+        ),
     }
     statements: list[str] = []
     for table, columns in definitions.items():
@@ -1246,7 +1253,7 @@ FROM information_schema.COLUMNS
 WHERE TABLE_SCHEMA='Meijendel'
   AND TABLE_NAME IN (
     'ndff_vlinder_routefamilie','ndff_vlinder_bezoek',
-    'ndff_vlinder_bezoek_taxon'
+    'ndff_vlinder_bezoek_taxon','ndff_vlinder_routegeometrie'
   )
 ORDER BY TABLE_NAME,ORDINAL_POSITION;
 """
@@ -1263,6 +1270,92 @@ ORDER BY TABLE_NAME,ORDINAL_POSITION;
     statements = vlinder_v2_schema_statements(columns_by_table)
     if statements:
         run_mysql(mysql_client, client_args, "\n".join(statements))
+
+
+def vlinder_route_identifications() -> list[dict[str, object]]:
+    """Koppel v2-families aan gepubliceerde Meijendel-routenummers.
+
+    De koppeling is een interpretatielaag en vervangt de gereconstrueerde
+    routefamilie niet. Lentevreugd ligt buiten de afgesproken selectie.
+    """
+    source = "https://edepot.wur.nl/520426"
+    return [
+        {"routefamilie_id": 1, "officieel_routenummer": 307,
+         "officiele_routenaam": "Het Scheepje", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 1992, "bron_laatste_jaar": 2014, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Beginjaar, ligging en langjarige reeks passen bij Het Scheepje."},
+        {"routefamilie_id": 2, "officieel_routenummer": 117,
+         "officiele_routenaam": "Parnassiapad", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 1990, "bron_laatste_jaar": 2014, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Beginjaar, ligging en langjarige reeks passen bij Parnassiapad."},
+        {"routefamilie_id": 3, "officieel_routenummer": 1844,
+         "officiele_routenaam": "Meijendel", "zekerheidsniveau": "aannemelijk",
+         "bron_eerste_jaar": 2011, "bron_laatste_jaar": 2014, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Startjaar 2011 en ligging passen bij de officiële route Meijendel."},
+        {"routefamilie_id": 4, "officieel_routenummer": 205,
+         "officiele_routenaam": "Hertenkamp", "zekerheidsniveau": "aannemelijk",
+         "bron_eerste_jaar": 1991, "bron_laatste_jaar": 2013, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Startjaar 1991, ligging en gebruiksperiode passen bij Hertenkamp."},
+        {"routefamilie_id": 5, "officieel_routenummer": 206,
+         "officiele_routenaam": "Helmduinen", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 1991, "bron_laatste_jaar": 2011, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Begin- en eindjaar komen exact overeen met Helmduinen; de ligging past."},
+        {"routefamilie_id": 6, "officieel_routenummer": 385,
+         "officiele_routenaam": "Violenwater", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 1995, "bron_laatste_jaar": 2012, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Begin- en eindjaar komen exact overeen met Violenwater; de ligging past."},
+        {"routefamilie_id": 7, "officieel_routenummer": 1764,
+         "officiele_routenaam": "Voorlinden", "zekerheidsniveau": "aannemelijk",
+         "bron_eerste_jaar": 2011, "bron_laatste_jaar": 2014, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Startjaar en hoofdcomponent passen bij Voorlinden; twee noordelijke geometrieën blijven als ruimtelijke uitbijter gemarkeerd."},
+        {"routefamilie_id": 8, "officieel_routenummer": 1871,
+         "officiele_routenaam": "Sprang A", "zekerheidsniveau": "aannemelijk",
+         "bron_eerste_jaar": 2012, "bron_laatste_jaar": 2014, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Startjaar 2012 en ligging passen bij Sprang A."},
+        {"routefamilie_id": 9, "officieel_routenummer": 1767,
+         "officiele_routenaam": "Bierlap (Groot dikkopje)", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 2001, "bron_laatste_jaar": 2014,
+         "doelsoort": "Ochlodes sylvanus", "bewijsbron_uri": source,
+         "bewijsgrond": "Ligging en uitsluitend Groot dikkopje bewijzen de soortgerichte Bierlap-route."},
+        {"routefamilie_id": 10, "officieel_routenummer": 204,
+         "officiele_routenaam": "Kijfhoekhoogte", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 1991, "bron_laatste_jaar": 1996, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Begin- en eindjaar komen exact overeen met Kijfhoekhoogte; de ligging past."},
+        {"routefamilie_id": 11, "officieel_routenummer": 1753,
+         "officiele_routenaam": "De Klip", "zekerheidsniveau": "hoog",
+         "bron_eerste_jaar": 2010, "bron_laatste_jaar": 2012, "doelsoort": None,
+         "bewijsbron_uri": source,
+         "bewijsgrond": "Begin- en eindjaar komen exact overeen met De Klip; de ligging past."},
+    ]
+
+
+def classify_vlinder_geometry_role(
+    routefamilie_id: int, centrum_y_rd: float,
+) -> dict[str, str]:
+    """Markeer uitsluitend de twee noordelijke geometrieën van Voorlinden."""
+    if routefamilie_id == 7 and centrum_y_rd > 463_000:
+        return {
+            "geometrierol": "ruimtelijke_uitbijter",
+            "bewijsgrond": "voorlinden_noordelijke_uitbijter_k78_79",
+        }
+    if routefamilie_id == 7:
+        return {
+            "geometrierol": "hoofdcomponent",
+            "bewijsgrond": "voorlinden_hoofdcomponent",
+        }
+    return {
+        "geometrierol": "hoofdcomponent",
+        "bewijsgrond": "reguliere_routegeometrie",
+    }
 
 
 def classify_bat_route(x_rd: float) -> dict[str, object]:
@@ -2834,10 +2927,33 @@ def reconstruct_vlinders(
     geometry_values: list[str] = []
     for geometry_key, family_id in sorted(reconstruction["geometry_to_family"].items()):
         x, y, area = geometry_meta[geometry_key]
+        geometry_role_sql = ""
+        if doelgroep == "Dagvlinders":
+            geometry_role = classify_vlinder_geometry_role(int(family_id), y)
+            geometry_role_sql = (
+                f",{sql_text(geometry_role['geometrierol'])},"
+                f"{sql_text(geometry_role['bewijsgrond'])}"
+            )
         geometry_values.append(
             f"({sql_text(version)},{sql_text(geometry_key)},{family_id},"
-            f"{x:.3f},{y:.3f},{area:.6f})"
+            f"{x:.3f},{y:.3f},{area:.6f}{geometry_role_sql})"
         )
+
+    identification_values = [
+        "(" + ",".join((
+            sql_text(version),
+            str(int(row["routefamilie_id"])),
+            str(int(row["officieel_routenummer"])),
+            sql_text(str(row["officiele_routenaam"])),
+            sql_text(str(row["zekerheidsniveau"])),
+            str(int(row["bron_eerste_jaar"])),
+            str(int(row["bron_laatste_jaar"])),
+            sql_text(row["doelsoort"]),
+            sql_text(str(row["bewijsbron_uri"])),
+            sql_text(str(row["bewijsgrond"])),
+        )) + ")"
+        for row in vlinder_route_identifications()
+    ] if doelgroep == "Dagvlinders" else []
 
     visit_keys = {visit: hashlib.sha256(visit.encode("utf-8")).hexdigest() for visit in visits_meta}
     visit_values: list[str] = []
@@ -2949,6 +3065,8 @@ def reconstruct_vlinders(
         f"DELETE FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={sql_text(version)};",
         f"DELETE FROM {table_prefix}_bezoek WHERE reconstructieversie={sql_text(version)};",
         f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={sql_text(version)};",
+        *( [f"DELETE FROM {table_prefix}_route_identificatie WHERE reconstructieversie={sql_text(version)};"]
+           if doelgroep == "Dagvlinders" else [] ),
         f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={sql_text(version)};",
     ]
     family_columns = "reconstructieversie,routefamilie_id,protocol_sleutel,reconstructiestatus"
@@ -2962,9 +3080,16 @@ def reconstruct_vlinders(
         family_columns,
         family_values,
     )
+    if doelgroep == "Dagvlinders":
+        statements += _batched_insert(
+            f"{table_prefix}_route_identificatie",
+            "reconstructieversie,routefamilie_id,officieel_routenummer,officiele_routenaam,zekerheidsniveau,bron_eerste_jaar,bron_laatste_jaar,doelsoort,bewijsbron_uri,bewijsgrond",
+            identification_values,
+        )
     statements += _batched_insert(
         f"{table_prefix}_routegeometrie",
-        "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2",
+        "reconstructieversie,geometrie_sha256,routefamilie_id,centrum_x_rd,centrum_y_rd,oppervlakte_m2"
+        + (",geometrierol,geometrierol_bewijs" if doelgroep == "Dagvlinders" else ""),
         geometry_values,
     )
     visit_columns = "reconstructieversie,bezoek_sleutel,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus"
@@ -3000,6 +3125,7 @@ def reconstruct_vlinders(
             f"DELETE FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={legacy};",
             f"DELETE FROM {table_prefix}_bezoek WHERE reconstructieversie={legacy};",
             f"DELETE FROM {table_prefix}_routegeometrie WHERE reconstructieversie={legacy};",
+            f"DELETE FROM {table_prefix}_route_identificatie WHERE reconstructieversie={legacy};",
             f"DELETE FROM {table_prefix}_routefamilie WHERE reconstructieversie={legacy};",
             "COMMIT;",
         ]
@@ -8431,6 +8557,38 @@ def nem_subseries_validation_sql(
         (b.doelbereikstatus='algemene_route_aannemelijk' AND t.bewijsgrond='niet_gemeld_binnen_aannemelijk_algemeen_bezoek') OR
         (b.doelbereikstatus='soortgerichte_route' AND t.bewijsgrond='niet_gemeld_binnen_soortgerichte_route' AND t.wetenschappelijke_naam=b.doelsoort)
       ))
+  ,'route_identifications',(SELECT COUNT(*) FROM {table_prefix}_route_identificatie
+    WHERE reconstructieversie={version})
+  ,'route_identification_mismatch',(
+    (SELECT COUNT(*) FROM {table_prefix}_routefamilie f
+      LEFT JOIN {table_prefix}_route_identificatie i
+        ON i.reconstructieversie=f.reconstructieversie
+       AND i.routefamilie_id=f.routefamilie_id
+      WHERE f.reconstructieversie={version} AND i.routefamilie_id IS NULL)
+    +(SELECT COUNT(*) FROM {table_prefix}_route_identificatie
+      WHERE reconstructieversie={version} AND CONCAT(
+        routefamilie_id,':',officieel_routenummer,':',officiele_routenaam
+      ) NOT IN (
+        '1:307:Het Scheepje','2:117:Parnassiapad','3:1844:Meijendel',
+        '4:205:Hertenkamp','5:206:Helmduinen','6:385:Violenwater',
+        '7:1764:Voorlinden','8:1871:Sprang A',
+        '9:1767:Bierlap (Groot dikkopje)','10:204:Kijfhoekhoogte',
+        '11:1753:De Klip'
+      ))
+    +(SELECT COUNT(*) FROM {table_prefix}_routegeometrie
+      WHERE reconstructieversie={version} AND NOT (
+        (routefamilie_id=7 AND centrum_y_rd>463000
+          AND geometrierol='ruimtelijke_uitbijter'
+          AND geometrierol_bewijs='voorlinden_noordelijke_uitbijter_k78_79')
+        OR (routefamilie_id=7 AND centrum_y_rd<=463000
+          AND geometrierol='hoofdcomponent'
+          AND geometrierol_bewijs='voorlinden_hoofdcomponent')
+        OR (routefamilie_id<>7 AND geometrierol='hoofdcomponent'
+          AND geometrierol_bewijs='reguliere_routegeometrie')
+      ))
+  )
+  ,'spatial_outliers',(SELECT COUNT(*) FROM {table_prefix}_routegeometrie
+    WHERE reconstructieversie={version} AND geometrierol='ruimtelijke_uitbijter')
   ,'legacy_v1_rows',(
       (SELECT COUNT(*) FROM {table_prefix}_bezoek_taxon WHERE reconstructieversie={legacy})+
       (SELECT COUNT(*) FROM {table_prefix}_bezoek WHERE reconstructieversie={legacy})+

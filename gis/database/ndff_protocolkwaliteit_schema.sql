@@ -295,6 +295,32 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_routefamilie (
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
+-- Controleerbare koppeling tussen de gereconstrueerde routefamilies en de
+-- historische officiële routenummers. De technische routefamilie blijft de
+-- primaire reconstructie; deze tabel legt afzonderlijk vast welke naam daar
+-- waarschijnlijk bij hoort en hoe sterk het bewijs daarvoor is.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_route_identificatie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  routefamilie_id SMALLINT UNSIGNED NOT NULL,
+  officieel_routenummer SMALLINT UNSIGNED NOT NULL,
+  officiele_routenaam VARCHAR(128) NOT NULL,
+  zekerheidsniveau ENUM('hoog','aannemelijk') NOT NULL,
+  bron_eerste_jaar SMALLINT UNSIGNED NOT NULL,
+  bron_laatste_jaar SMALLINT UNSIGNED NOT NULL,
+  doelsoort VARCHAR(255) NULL,
+  bewijsbron_uri VARCHAR(500) CHARACTER SET ascii NOT NULL,
+  bewijsgrond VARCHAR(500) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (reconstructieversie, routefamilie_id),
+  UNIQUE KEY uq_ndff_vlinder_officiele_route
+    (reconstructieversie, officieel_routenummer),
+  CONSTRAINT fk_ndff_vlinder_identificatie_route FOREIGN KEY
+    (reconstructieversie, routefamilie_id)
+    REFERENCES Meijendel.ndff_vlinder_routefamilie
+      (reconstructieversie, routefamilie_id),
+  CHECK (bron_laatste_jaar >= bron_eerste_jaar)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_routegeometrie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -302,6 +328,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vlinder_routegeometrie (
   centrum_x_rd DECIMAL(14,3) NOT NULL,
   centrum_y_rd DECIMAL(14,3) NOT NULL,
   oppervlakte_m2 DECIMAL(18,6) NOT NULL,
+  geometrierol ENUM('hoofdcomponent','ruimtelijke_uitbijter')
+    NOT NULL DEFAULT 'hoofdcomponent',
+  geometrierol_bewijs VARCHAR(128) NOT NULL DEFAULT 'reguliere_routegeometrie',
   PRIMARY KEY (reconstructieversie, geometrie_sha256),
   KEY ix_ndff_vlinder_geometrie_route
     (reconstructieversie, routefamilie_id),

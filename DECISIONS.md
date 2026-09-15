@@ -108,6 +108,15 @@
   niet-onderbouwde nullen verwijderd. Routetype, doelsoort, doelbereik en de
   bewijsgrond voor iedere nul zijn expliciet opgeslagen. V1 wordt niet naast
   v2 bewaard.
+- De elf gereconstrueerde dagvlinderfamilies zijn op 15 september 2026 in
+  `ndff_vlinder_route_identificatie` gekoppeld aan de gepubliceerde officiële
+  routes. Routenaam, routenummer, bewijsbron en zekerheidsniveau blijven een
+  afzonderlijke interpretatielaag en vervangen de technische familie-ID niet.
+  Familie 7 is aannemelijk Voorlinden 1764. De 24 geometrieën van de
+  hoofdcomponent en twee noordelijke ruimtelijke uitbijters blijven binnen
+  dezelfde familie, omdat beide componenten op 76 tijdstippen binnen hetzelfde
+  geregistreerde bezoek voorkomen. Lentevreugd is conform besluit niet
+  opgenomen.
 - De 1.535 vliesvleugelrecords onder `03.201` vormen vanaf 11 september 2026
   een eigen NEM-deelreeks `ndff-vliesvleugelroute-v1`, niet een bijvangstreeks.
   Zij omvat 217 bevestigde bezoeken en zes gevolgde taxa. De matrix bevat

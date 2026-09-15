@@ -68,6 +68,31 @@ afgeleide tabellen staan in
 `Meijendel`; `--audit-vlinders` controleert aantallen, matrixconsistentie en
 dat geen oude afgeleide vlindertabellen in het beveiligde schema achterblijven.
 
+De elf routefamilies zijn daarnaast als afzonderlijke interpretatielaag aan de
+gepubliceerde Meijendelroutes gekoppeld. De technische familie-ID blijft
+ongewijzigd; `ndff_vlinder_route_identificatie` bewaart routenummer, naam,
+bewijsbron en zekerheid.
+
+| Familie | Officiële route | Nummer | Zekerheid |
+|---:|---|---:|---|
+| 1 | Het Scheepje | 307 | hoog |
+| 2 | Parnassiapad | 117 | hoog |
+| 3 | Meijendel | 1844 | aannemelijk |
+| 4 | Hertenkamp | 205 | aannemelijk |
+| 5 | Helmduinen | 206 | hoog |
+| 6 | Violenwater | 385 | hoog |
+| 7 | Voorlinden | 1764 | aannemelijk |
+| 8 | Sprang A | 1871 | aannemelijk |
+| 9 | Bierlap (Groot dikkopje) | 1767 | hoog |
+| 10 | Kijfhoekhoogte | 204 | hoog |
+| 11 | De Klip | 1753 | hoog |
+
+Lentevreugd valt buiten de afgesproken selectie. Familie 7 is niet gesplitst:
+24 geometrieën vormen de ruimtelijke hoofdcomponent bij Voorlinden en twee
+noordelijke geometrieën zijn als `ruimtelijke_uitbijter` gemarkeerd. Op 76
+tijdstippen komen beide componenten binnen hetzelfde geregistreerde bezoek
+voor; splitsing zou die bezoeken kunstmatig over twee routes verdelen.
+
 De 1.535 vliesvleugelrecords onder hetzelfde protocol betreffen uitsluitend
 taxa van het geslacht *Bombus*. De handleidingen tonen twee mogelijke
 bovenliggende structuren: een eigen hommelroute of de optionele hommeltelling
@@ -119,6 +144,31 @@ aantallen binnen en buiten de val. De 596 FFV-records zijn echter tot
 jaarperioden en kilometerhokken geaggregeerd; bezoekdatum, telpunt, val, lamp en
 binnen/buiten-status ontbreken. De bestaande kwalificatie als positieve
 hokjaarcontext zonder nullen of trendinvoer blijft daarom juist.
+
+### Wetenschappelijke meerwaarde van ontbrekende Vlinderstichting-velden
+
+De handleidingen maken zichtbaar welke ontbrekende gegevens vooral extra
+ecologische zeggingskracht opleveren:
+
+| Ontbrekend gegeven | Reeks | Wetenschappelijke winst voor Meijendel |
+|---|---|---|
+| Oorspronkelijk route- of telpuntnummer | dagvlinders, hommels, libellen, nachtvlinders | Bevestigt dat dezelfde meeteenheid door de jaren wordt gevolgd en voorkomt dat een verplaatste route als ecologische verandering wordt gezien. |
+| Secties en geometrieversies | dagvlinders en libellen | Maakt verandering binnen een route zichtbaar en koppelt die aan habitat, vegetatie en lokaal beheer. |
+| Routetype en doelsoort | dagvlinders, hommels en libellen | Bepaalt voor welke soorten een niet-melding werkelijk nul is; essentieel voor verspreidings- en trendmodellen. |
+| Volledige bezoekadministratie, inclusief lege bezoeken | alle meetnetten | Onderscheidt echte afwezigheid van niet tellen en maakt detectiekans, bezetting en betrouwbare jaartrends mogelijk. |
+| Deelname per module | hommels, dagactieve nachtvlinders en nectarplanten | Voorkomt dat niet-deelnemen als achteruitgang wordt uitgelegd en maakt trends per soortgroep vergelijkbaar. |
+| Determinatieniveau (`op soort` of verzamelgroep) | hommels en optionele microvlinders | Bepaalt op welk taxonomisch niveau trends verantwoord zijn en voorkomt schijnbare soortafnames door gewijzigde herkenning. |
+| Tellers en aantal deelnemers | routes en telpunten | Maakt correctie mogelijk voor verschillen in ervaring en waarnemingskans; verbetert de vergelijkbaarheid tussen jaren. |
+| Weer, begin-/eindtijd en bezoekduur | dagvlinders, hommels en libellen | Helpt tijdelijke verschillen in activiteit te scheiden van echte ecologische verandering. |
+| Route-, habitat- en beheerwijzigingen | routes | Maakt een onderscheid mogelijk tussen verandering door beheer of vegetatie en verandering door een gewijzigde telling. |
+| Val-, lamp-, brandduur- en binnen/buiteninformatie | nachtvlinders | Maakt vangsten tussen nachten en jaren vergelijkbaar; zonder deze gegevens kan een methodewijziging op een populatieverandering lijken. |
+| Volledige macronachtvlinderlijst en deelname aan microvlinders | nachtvlinders | Levert echte nullen binnen het gekozen taxonomische bereik en voorkomt vertekening door optionele registratie. |
+
+De grootste directe winst komt van route-/telpunt-ID's, volledige bezoeken en
+het doelsoortenbereik. Daarmee veranderen positieve waarnemingen in een
+controleerbare meetreeks met echte nullen. Weer, teller en methodekenmerken
+verhogen daarna de kwaliteit doordat bekende verschillen in detectie en
+telinspanning kunnen worden gecorrigeerd.
 
 ### Benodigde reconstructieversie 2 voor Vlinderstichting-meetnetten
 

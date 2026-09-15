@@ -31,8 +31,11 @@
   `ndff-vlinderroute-v2`. Routetype, doelsoort, doelbereik en nulbewijs zijn
   toegevoegd. De routefamilie met 87 bezoeken in 16 jaren en uitsluitend Groot
   dikkopje is soortgericht; 2.871 nullen voor andere taxa en 924 nullen bij 28 eensoortbezoeken zonder route zijn
-  verwijderd. V1 is niet bewaard. Open blijft alleen de handmatige controle
-  van de ruimtelijk uitgerekte routefamilie met 172 bezoeken.
+  verwijderd. V1 is niet bewaard. Alle elf routefamilies hebben nu een
+  waarschijnlijke officiële identificatie. Familie 7 is gekoppeld aan
+  Voorlinden 1764; twee noordelijke geometrieën blijven zichtbaar als
+  ruimtelijke uitbijter. Controle aan de hand van oorspronkelijke route-ID's
+  blijft wenselijk, maar blokkeert de huidige, duidelijk gelabelde analyse niet.
 - De `03.201`-vliesvleugelreeks is afzonderlijk gereconstrueerd als
   `ndff-vliesvleugelroute-v1`: 217 bezoeken en zes *Bombus*-taxa. Behoud de
   365 positieve combinaties, maar gebruik de 937 afgeleide soortnullen niet.

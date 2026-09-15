@@ -271,6 +271,10 @@ doelsoorten en echte nullen. Voor `03.201` is dat uitgevoerd onder
 een protocolnul met vastgelegde bewijsgrond. De routefamilie met 87 bezoeken in
 16 jaren en uitsluitend Groot dikkopje is soortgericht; 28 eensoortbezoeken zonder aantoonbare route leveren geen
 nullen voor andere taxa. De eerdere v1-afleiding is verwijderd. De
+aparte tabel `ndff_vlinder_route_identificatie` koppelt alle elf families aan
+de gepubliceerde Meijendel-routenummers, met bewijsbron en zekerheidsniveau.
+Familie 7 is aannemelijk Voorlinden; twee noordelijke geometrieën blijven als
+ruimtelijke uitbijter herkenbaar en zijn niet als tweede route afgesplitst. De
 afzonderlijk gevolgde *Bombus*-reeks voor de
 binnen hetzelfde protocol getelde vliesvleugeligen staat onder
 `ndff-vliesvleugelroute-v1`: 217 bezoeken, zes taxa en 1.302 matrixregels. De

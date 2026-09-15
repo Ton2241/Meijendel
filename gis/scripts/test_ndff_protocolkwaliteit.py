@@ -48,6 +48,7 @@ def main() -> int:
     assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
     for table in (
         "meijendel.ndff_vlinder_routefamilie",
+        "meijendel.ndff_vlinder_route_identificatie",
         "meijendel.ndff_vlinder_routegeometrie",
         "meijendel.ndff_vlinder_bezoek",
         "meijendel.ndff_vlinder_bezoek_taxon",
@@ -440,18 +441,22 @@ def main() -> int:
         "ndff_vlinder_routefamilie": set(),
         "ndff_vlinder_bezoek": set(),
         "ndff_vlinder_bezoek_taxon": set(),
+        "ndff_vlinder_routegeometrie": set(),
     })
-    assert len(schema_statements) == 7
+    assert len(schema_statements) == 9
     assert any("ADD COLUMN routetype " in statement for statement in schema_statements)
     assert any("ADD COLUMN doelsoort " in statement for statement in schema_statements)
     assert any("ADD COLUMN routetype_bewijs " in statement for statement in schema_statements)
     assert any("ADD COLUMN doelbereikstatus " in statement for statement in schema_statements)
     assert any("ADD COLUMN doelbereik_bewijs " in statement for statement in schema_statements)
     assert any("ADD COLUMN bewijsgrond " in statement for statement in schema_statements)
+    assert any("ADD COLUMN geometrierol " in statement for statement in schema_statements)
+    assert any("ADD COLUMN geometrierol_bewijs " in statement for statement in schema_statements)
     complete_columns = {
         "ndff_vlinder_routefamilie": {"routetype", "doelsoort", "routetype_bewijs"},
         "ndff_vlinder_bezoek": {"doelbereikstatus", "doelsoort", "doelbereik_bewijs"},
         "ndff_vlinder_bezoek_taxon": {"bewijsgrond"},
+        "ndff_vlinder_routegeometrie": {"geometrierol", "geometrierol_bewijs"},
     }
     assert module.vlinder_v2_schema_statements(complete_columns) == []
     assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v2"
@@ -466,6 +471,33 @@ def main() -> int:
     assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_matrix_extra"] == 0
     assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_invalid_zero"] == 0
     assert module.VLINDER_RECONSTRUCTION_EXPECTED["evidence_scope_mismatch"] == 0
+    route_identifications = module.vlinder_route_identifications()
+    assert len(route_identifications) == 11
+    by_family = {row["routefamilie_id"]: row for row in route_identifications}
+    assert set(by_family) == set(range(1, 12))
+    assert len({row["officieel_routenummer"] for row in route_identifications}) == 11
+    assert all("Lentevreugd" not in row["officiele_routenaam"] for row in route_identifications)
+    assert by_family[1]["officieel_routenummer"] == 307
+    assert by_family[1]["officiele_routenaam"] == "Het Scheepje"
+    assert by_family[2]["officieel_routenummer"] == 117
+    assert by_family[2]["officiele_routenaam"] == "Parnassiapad"
+    assert by_family[3]["officieel_routenummer"] == 1844
+    assert by_family[7]["officieel_routenummer"] == 1764
+    assert by_family[7]["officiele_routenaam"] == "Voorlinden"
+    assert by_family[9]["officieel_routenummer"] == 1767
+    assert by_family[9]["doelsoort"] == "Ochlodes sylvanus"
+    assert module.classify_vlinder_geometry_role(7, 459_500.0) == {
+        "geometrierol": "hoofdcomponent",
+        "bewijsgrond": "voorlinden_hoofdcomponent",
+    }
+    assert module.classify_vlinder_geometry_role(7, 464_078.0) == {
+        "geometrierol": "ruimtelijke_uitbijter",
+        "bewijsgrond": "voorlinden_noordelijke_uitbijter_k78_79",
+    }
+    assert module.classify_vlinder_geometry_role(3, 464_078.0) == {
+        "geometrierol": "hoofdcomponent",
+        "bewijsgrond": "reguliere_routegeometrie",
+    }
     vlinder_audit_sql = module.vlinder_validation_sql()
     assert "'legacy_v1_rows'" in vlinder_audit_sql
     assert "'zero_outside_scope'" in vlinder_audit_sql
@@ -474,6 +506,9 @@ def main() -> int:
     assert "'positive_matrix_extra'" in vlinder_audit_sql
     assert "'species_route_invalid_zero'" in vlinder_audit_sql
     assert "'evidence_scope_mismatch'" in vlinder_audit_sql
+    assert "'route_identifications'" in vlinder_audit_sql
+    assert "'route_identification_mismatch'" in vlinder_audit_sql
+    assert "'spatial_outliers'" in vlinder_audit_sql
     module.validate_vlinder_prewrite_metrics(
         dict(module.VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED)
     )
