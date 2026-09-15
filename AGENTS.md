@@ -312,6 +312,21 @@ MySQL:
   Sluit de 11 als `mogelijke_overlap_17_204` gemarkeerde regels niet zonder
   aanvullende bronkoppeling samen met DAZ-BMP in één telling. Controleer vóór
   gebruik met `--audit-konijnen`
+- behandel wintertelprotocol `17.201` als een gemengd protocolbereik. De
+  actuele NEM-handleiding onderscheidt soorten waarvoor het wintermeetnet in
+  beginsel geschikt is van overige aangetroffen vleermuizen. In
+  `ndff-protocolbereik-v2` zijn 3.786 records doelsoort
+  (`V,TA`), 124 records bijvangst (`V`) en 50 records
+  `Plecotus auritus/austriacus` onbepaald (`V`). De gezamenlijke categorie
+  `Myotis mystacinus/brandtii` is een geldige NEM-telcategorie en blijft
+  doelsoort. Leid uit de NDFF-regels geen objectbezoeken of nullen af zolang
+  object-id, geteld/niet-geteld-status en start-/stopcontext ontbreken
+- behandel zoldertellingen `17.202`, otter/bever `17.207` en
+  meervleermuis-uitvliegtellingen `17.210` voorlopig alleen binnen hun reeds
+  vastgelegde positieve recordcontext. De zeven zolderrecords bevatten geen
+  eenduidige trenddoelsoort, de drie otterrecords bewijzen geen uitgevoerd
+  sporenmeetnet en de vijf meervleermuisrecords missen bezoekdatum en
+  volledigheidsstatus. Leid daaruit geen aanvullende nullen af
 - gebruik voor DAZ-BMP-protocol `17.204` reconstructieversie
   `ndff-daz-bmp-v1` en de vier openbare tabellen
   `Meijendel.ndff_daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van

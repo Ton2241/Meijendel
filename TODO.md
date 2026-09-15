@@ -63,6 +63,12 @@
   NEM-reeks op basis van omvang en reconstrueerbaarheid. Ken pas nullen toe
   nadat per protocol meeteenheid, bevestigd bezoek en doelsoortenbereik
   vaststaan.
+- De Zoogdiervereniging-handleidingen zijn op 15 september 2026 gecontroleerd.
+  `17.201` is op soortniveau gecorrigeerd; vraag later alleen nog om de
+  oorspronkelijke object-, geteld/niet-geteld- en start-/stopcontext wanneer
+  een lokale wintertrend werkelijk prioriteit krijgt. Voor `17.202`, `17.207`
+  en `17.210` is geen brede vervolgvraag nodig zolang de kleine positieve
+  reeksen niet voor trendanalyse worden geselecteerd.
 - `02.202` bevat onder `ndff-korstmos-v1` twaalf proefvlakken en 32 bezoeken.
   Gebruik de 960 bezoek-taxonregels voor presentie/occupancy; behandel de twee
   FFV-bedekkingsklassen alleen ordinaal en sluit de tien conflictcombinaties uit

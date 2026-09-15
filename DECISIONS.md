@@ -705,3 +705,13 @@
 - Protocol `12.202` krijgt geen afzonderlijke NDFF-reconstructie. De provinciale
   PQ-reeks blijft gezaghebbend en NDFF dient daar alleen als secundaire
   overlap- en herkomstcontrole.
+- Voor wintertelprotocol `17.201` geldt vanaf 15 september 2026 een
+  soortspecifieke afbakening onder `ndff-protocolbereik-v2`: 3.786 records van
+  soorten waarvoor het NEM-wintermeetnet in beginsel geschikt is, zijn
+  `doelsoort` met `V,TA`; 124 overige
+  registraties zijn `bijvangst` met alleen `V`, en 50 registraties
+  `Plecotus auritus/austriacus` zijn `onbepaald` met alleen `V`. De categorie
+  `Myotis mystacinus/brandtii` blijft doelsoort omdat de actuele handleiding
+  deze soorten bij wintertellingen bewust samenneemt. Zonder oorspronkelijke
+  object-id's, geteld/niet-geteld-status en start-/stopredenen worden geen
+  winterbezoeken, nullen of lokale trendmatrix afgeleid.

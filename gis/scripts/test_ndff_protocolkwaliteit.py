@@ -1512,6 +1512,7 @@ def main() -> int:
     assert module.classify_protocol_group("17.204", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("17.209", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("17.208", "Vleermuizen")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("17.201", "Vleermuizen")["doelrelatie"] == "gemengd"
     assert module.classify_protocol_group("102.006", "Vaatplanten")["doelrelatie"] == "algemene_bron"
     assert module.classify_protocol_group("02.204", "Mossen")["doelrelatie"] == "doelgroep"
     assert module.classify_protocol_group("04.006", "Weekdieren")["doelrelatie"] == "gemengd"
@@ -1519,7 +1520,7 @@ def main() -> int:
     assert module.classify_protocol_group("10.002", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
     assert module.classify_protocol_group("12.205", "Dagvlinders")["doelrelatie"] == "doelsoortafhankelijk"
     assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 11
-    assert len(module.MIXED_COMBINATIONS) == 10
+    assert len(module.MIXED_COMBINATIONS) == 11
     assert len(module.BOSPADDENSTOEL_TARGET_SPECIES) == 49
 
     daz_target = module.classify_protocol_species("17.204", "Oryctolagus cuniculus")
@@ -1542,6 +1543,16 @@ def main() -> int:
     assert module.classify_protocol_species("13.202", "Bufo bufo", "Amfibieën")["doelrelatie"] == "bijvangst"
     assert module.classify_protocol_species("17.202", "Plecotus auritus/austriacus", "Vleermuizen")["doelrelatie"] == "onbepaald"
     assert module.classify_protocol_species("17.202", "Pipistrellus", "Vleermuizen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("17.201", "Myotis daubentonii", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.201", "Myotis mystacinus/brandtii", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.201", "Plecotus auritus", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.201", "Plecotus auritus/austriacus", "Vleermuizen")["doelrelatie"] == "onbepaald"
+    assert module.classify_protocol_species("17.201", "Chiroptera", "Vleermuizen") == {
+        "doelrelatie": "bijvangst", "toegestane_typen": "V"
+    }
+    assert module.classify_protocol_species("17.201", "Pipistrellus pipistrellus", "Vleermuizen") == {
+        "doelrelatie": "bijvangst", "toegestane_typen": "V"
+    }
     assert module.classify_protocol_species("17.208", "Nyctalus noctula", "Vleermuizen")["doelrelatie"] == "doelsoort"
     assert module.classify_protocol_species("17.208", "Myotis daubentonii", "Vleermuizen")["doelrelatie"] == "bijvangst"
     try:
@@ -1655,11 +1666,11 @@ def main() -> int:
         "invalid_protocol_evidence": 0,
         "spatial": 810830,
         "scope_combinations": 114,
-        "mixed_species": 620,
+        "mixed_species": 632,
         "dependent_combinations": 11,
         "mixed_species_missing": 0,
         "secure_mixed_species_missing": 0,
-        "ambiguous_species": 1,
+        "ambiguous_species": 2,
         "scope_missing": 0,
         "decisions": 1040,
         "protocolbesluit_mismatch": 0,

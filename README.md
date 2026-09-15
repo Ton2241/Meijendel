@@ -466,6 +466,16 @@ Alle dertien afgeleide tabellen staan in `Meijendel`; het beveiligde schema is
 niet uitgebreid. Protocol `12.202` wordt niet opnieuw gereconstrueerd, omdat de
 provinciale PQ-reeks voor dit project de gezaghebbende bron blijft.
 
+Wintertelprotocol `17.201` is vanaf 15 september 2026 ook op soortniveau
+afgebakend. Van de 3.960 positieve records uit 1976-2025 zijn er 3.786 als
+doelsoort van dit meetnet geclassificeerd, 124 als bijvangst en 50 als
+onbepaald omdat
+`Plecotus auritus/austriacus` een doelsoort en een niet-doelsoort combineert.
+De gezamenlijke categorie `Myotis mystacinus/brandtii` is volgens de actuele
+handleiding wel een officiële NEM-telcategorie. Gebruik deze classificatie om
+de juiste records te selecteren; zonder oorspronkelijke object- en
+geteld/niet-geteld-gegevens vormt zij nog geen lokale trendmatrix.
+
 Konijnentelprotocol `17.209` staat onder `ndff-konijnentelling-v1` in twee
 openbare `Meijendel.ndff_konijn_*`-tabellen. De 5.809 positieve records uit
 1984-2023 bevatten 5.095 Konijnrecords en 714 positieve bijvangsten. Het zijn

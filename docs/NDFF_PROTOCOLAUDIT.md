@@ -250,6 +250,42 @@ De actuele protocolbesluiten zijn beschikbaar via
 `Meijendel.v_ndff_analysebesluit_actueel`; deze view voorkomt dat historische
 regelversies in dezelfde analyse worden meegeteld.
 
+### Zoogdiervereniging: toets aan de officiële meetnethandleidingen
+
+De officiële handleidingen voor `17.201`, `17.202`, `17.207`, `17.208`,
+`17.209` en `17.210` zijn op 15 september 2026 onder het Zotero-parentitem
+`Meetnetten - Zoogdiervereniging` geplaatst en met de ontvangen NDFF-regels
+vergeleken. Protocol `17.204` valt buiten deze vergelijking: daarvoor is de
+primaire SOVON/AVIMAP-export leidend.
+
+De inhoudelijke correctie betreft `17.201`. De 3.960 wintertelrecords uit
+1976-2025 bevatten 3.786 registraties van soorten waarvoor het NEM-wintermeetnet
+in beginsel geschikt is, 124 positieve
+bijvangsten en 50 registraties `Plecotus auritus/austriacus` die niet veilig
+aan een trendsoort kunnen worden toegewezen. De gecombineerde categorie
+`Myotis mystacinus/brandtii` is volgens de handleiding juist een officiële
+telcategorie en is als doelsoort behouden. De soortindeling staat in
+`ndff_protocol_soort_geschiktheid` onder `ndff-protocolbereik-v2`.
+
+Deze classificatie maakt de positieve wintertellingen beter selecteerbaar,
+maar reconstrueert nog geen lokale trendmatrix. De NDFF-regels missen het
+vaste object-id, de expliciete status geteld/niet geteld en de start- en
+stopredenen van een object. Juist deze gegevens bepalen volgens de handleiding
+of een ontbrekende telling mag worden bijgeschat of als nul moet gelden.
+
+De vergelijking gaf voor de overige vijf reeksen geen nieuwe noodzakelijke
+databasecorrectie. `17.202` bevat zeven positieve records zonder eenduidige
+trenddoelsoort; `17.207` bevat drie losse positieve Otterregistraties en geen
+bewijs van drie uitgevoerde sporenronden; `17.208` is al naar NEM-VTT en
+VleerMUS gescheiden; `17.209` blijft zonder route- en sectie-id een positieve
+sectietelreeks; `17.210` bevat vijf positieve jaarrecords maar geen concrete
+bezoekdatum of volledigheidsstatus. Voor deze reeksen worden daarom geen
+nieuwe nullen afgeleid.
+
+Bronnen: [NEM-handleiding Wintertellingen vleermuizen 2025](https://www.zodion.nl/sites/default/files/2025-11/handleiding_nem_meetprogramma_wintertellingen_vleermuizen_2025.pdf),
+[NDFF Protocollen](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/)
+en [CBS Meetprogramma's flora en fauna 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
 Het Vleermuistransectprotocol (`17.208`) is onder
 `ndff-vleermuistransect-v1` uit uitsluitend onvervaagde openbare records
 gereconstrueerd. De 2.624 bronrecords uit 2013-2025 bestaan uit twee

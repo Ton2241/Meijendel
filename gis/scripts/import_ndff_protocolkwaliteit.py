@@ -1728,6 +1728,7 @@ MIXED_COMBINATIONS = {
     ("13.201", "Vissen"),
     ("13.202", "Amfibieën"),
     ("13.202", "Vissen"),
+    ("17.201", "Vleermuizen"),
     ("17.202", "Vleermuizen"),
     ("17.204", "Zoogdieren (overig)"),
     ("17.208", "Vleermuizen"),
@@ -1785,6 +1786,12 @@ N2000_VIS_TARGET_SPECIES = {
     "Lampetra planeri", "Cottus gobio", "Cottus rhenanus", "Cottus perifretum",
     "Rhodeus amarus", "Cobitis taenia", "Misgurnus fossilis",
 }
+WINTER_BAT_TARGET_SPECIES = {
+    "Myotis mystacinus", "Myotis brandtii", "Myotis mystacinus/brandtii",
+    "Myotis emarginatus", "Myotis nattereri", "Myotis bechsteinii",
+    "Myotis myotis", "Myotis daubentonii", "Myotis dasycneme",
+    "Plecotus auritus",
+}
 ZOLDER_TARGET_SPECIES = {"Myotis emarginatus", "Plecotus austriacus"}
 VTT_TARGET_SPECIES = {
     "Pipistrellus pipistrellus", "Pipistrellus nathusii",
@@ -1797,12 +1804,14 @@ TARGET_SPECIES_BY_COMBINATION = {
     ("13.201", "Vissen"): BEEK_POLDERVIS_TARGET_SPECIES,
     ("13.202", "Amfibieën"): N2000_AMFIBIE_TARGET_SPECIES,
     ("13.202", "Vissen"): N2000_VIS_TARGET_SPECIES,
+    ("17.201", "Vleermuizen"): WINTER_BAT_TARGET_SPECIES,
     ("17.202", "Vleermuizen"): ZOLDER_TARGET_SPECIES,
     ("17.204", "Zoogdieren (overig)"): DAZ_TARGET_SPECIES,
     ("17.208", "Vleermuizen"): VTT_TARGET_SPECIES,
     ("17.209", "Zoogdieren (overig)"): RABBIT_TARGET_SPECIES,
 }
 AMBIGUOUS_SPECIES_BY_COMBINATION = {
+    ("17.201", "Vleermuizen"): {"Plecotus auritus/austriacus"},
     ("17.202", "Vleermuizen"): {"Plecotus auritus/austriacus"},
 }
 TARGET_TYPES_BY_COMBINATION = {
@@ -1812,6 +1821,7 @@ TARGET_TYPES_BY_COMBINATION = {
     ("13.201", "Vissen"): "V,TV",
     ("13.202", "Amfibieën"): "V,TV,TA",
     ("13.202", "Vissen"): "V,TV,TA",
+    ("17.201", "Vleermuizen"): "V,TA",
     ("17.202", "Vleermuizen"): "V,I,TA",
     ("17.204", "Zoogdieren (overig)"): "V,TA",
     ("17.208", "Vleermuizen"): "V,TA",
@@ -1836,6 +1846,10 @@ ADDITIONAL_SCOPE_SOURCE_URLS = {
     ),
     ("13.202", "Vissen"): (
         "https://www.ravon.nl/publicaties/handleiding-meetnet-amfibieen-en-vissen-in-natura-2000-gebieden/",
+    ),
+    ("17.201", "Vleermuizen"): (
+        "https://www.zodion.nl/wat-we-doen/monitoring/meetprogrammas-nem/nem-meetprogramma-wintertellingen-vleermuizen",
+        "https://www.zodion.nl/sites/default/files/2025-11/handleiding_nem_meetprogramma_wintertellingen_vleermuizen_2025.pdf",
     ),
     ("17.202", "Vleermuizen"): (
         "https://www.zoogdiervereniging.nl/sites/default/files/2023-05/Handleiding%20NEM%20Meetprogramma%20Zoldertellingen%202023.pdf",
@@ -2163,7 +2177,8 @@ SELECT p.protocol_id,c.soortgroep_raw,
               THEN 'De doelsoorten zijn project- of locatieafhankelijk en de noodzakelijke projectafbakening ontbreekt in de NDFF-records. Voorlopig is alleen positieve voorkomensinformatie (V) toegestaan.'
             ELSE 'De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid.' END,
        {scope_sources},
-       {sql_text(SCOPE_RULE_VERSION)},'2026-09-11'
+       {sql_text(SCOPE_RULE_VERSION)},
+       CASE WHEN p.protocol_sleutel='17.201' THEN '2026-09-15' ELSE '2026-09-11' END
 FROM (
   SELECT soortgroep_raw,TRIM(protocol) AS protocol_raw,COUNT(*) AS recordaantal
   FROM Meijendel.ndff_open_waarneming
@@ -2193,7 +2208,8 @@ SELECT p.protocol_id,w.soortgroep_raw,w.wetenschappelijke_naam,
             WHEN {target_species}
             THEN 'De soort behoort tot de officieel afgebakende doelsoorten van dit protocol; de protocoltypen blijven voorlopig toegestaan onder de algemene validatievoorbehouden.'
             ELSE 'De soort is binnen dit protocol bijvangst en ondersteunt alleen positieve voorkomensinformatie (V).' END,
-       {sql_text(SCOPE_RULE_VERSION)},'2026-09-11'
+       {sql_text(SCOPE_RULE_VERSION)},
+       CASE WHEN p.protocol_sleutel='17.201' THEN '2026-09-15' ELSE '2026-09-11' END
 FROM Meijendel.ndff_open_waarneming AS w
 JOIN Meijendel.ndff_open_waarneming_protocol AS l
   ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
@@ -9862,10 +9878,10 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("Protocol_sleutel en bewijsmethode zijn niet consistent.")
     if metrics["spatial"] != metrics["open_records"]:
         raise ValueError("Niet ieder openbaar NDFF-record heeft een ruimtelijke beoordeling.")
-    if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 620
+    if (metrics["scope_combinations"] != 114 or metrics["mixed_species"] != 632
             or metrics["dependent_combinations"] != 11 or metrics["mixed_species_missing"]
             or metrics["secure_mixed_species_missing"]
-            or metrics["ambiguous_species"] != 1 or metrics["scope_missing"]):
+            or metrics["ambiguous_species"] != 2 or metrics["scope_missing"]):
         raise ValueError("Protocol-doelbereik is niet volledig of niet op het verwachte gegevensprofiel gebaseerd.")
     if metrics["decisions"] == 0 or metrics["protocolbesluit_mismatch"]:
         raise ValueError("Analysebesluiten ontbreken of wijken af van de protocolgeschiktheid.")
