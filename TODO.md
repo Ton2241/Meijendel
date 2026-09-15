@@ -77,6 +77,14 @@
   karteerlijst en begrenzing is alleen positieve voorkomensinformatie (`V`)
   toegestaan. Protocol `12.205` blijft afzonderlijk als SNL-context behandeld;
   deze controle verandert de bestaande overlapstatussen niet.
+- De officiële ANEMOON-HabSlak-handleidingen zijn op 15 september 2026
+  gecontroleerd en in Zotero onder `Meetnetten - Stichting ANEMOON`
+  (`BPU2U3KE`) vastgelegd. Gebruik `ndff-habslak-v2`: positieve
+  datum-geometrieclusters blijven bruikbaar, maar alle 66 hok-jaren zijn qua
+  bemonsteringsvolledigheid niet beoordeelbaar en leveren geen nullen op. Vraag
+  pas bij een concrete trendanalyse om de oorspronkelijke monitoringslocaties,
+  monster- of sublocatieresultaten en negatieve locaties; deze validatie
+  blokkeert positieve verspreidingsanalyse niet.
 - `02.202` bevat onder `ndff-korstmos-v1` twaalf proefvlakken en 32 bezoeken.
   Gebruik de 960 bezoek-taxonregels voor presentie/occupancy; behandel de twee
   FFV-bedekkingsklassen alleen ordinaal en sluit de tien conflictcombinaties uit

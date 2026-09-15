@@ -105,8 +105,8 @@ LMFA_CONFIRMED_ROUTE_YEARS = {
     (82, 459, 2000), (82, 459, 2004), (82, 459, 2008), (82, 459, 2012),
     (80, 458, 2001), (80, 458, 2005), (80, 458, 2009), (80, 458, 2017),
 }
-HABSLAK_RULE_VERSION = "ndff-habslak-v1"
-HABSLAK_MINIMUM_SAMPLE_LOCATIONS = 15
+HABSLAK_RULE_VERSION = "ndff-habslak-v2"
+HABSLAK_LEGACY_RULE_VERSION = "ndff-habslak-v1"
 BRAAKBAL_RULE_VERSION = "ndff-braakbal-v1"
 BRAAKBAL_MINIMUM_PREY = 150
 TUINTELLING_RULE_VERSION = "ndff-tuintelling-v1"
@@ -618,10 +618,10 @@ HABSLAK_RECONSTRUCTION_EXPECTED = {
     "sample_events": 251,
     "positive_event_taxa": 1730,
     "square_years": 66,
-    "sufficient_square_years": 4,
-    "insufficient_square_years": 62,
+    "unassessable_square_years": 66,
     "target_positive_square_years": 40,
-    "preliminary_zero_square_years": 0,
+    "target_unknown_square_years": 26,
+    "inferred_zero_square_years": 0,
     "invalid_sample_rows": 0,
     "unlinked_source_records": 0,
     "secure_derived_tables": 0,
@@ -6155,14 +6155,12 @@ def classify_habslak_hokjaar(
     unique_sample_locations: int,
     target_source_count: int,
 ) -> str:
-    """Classificeer Nauwe-korfslakstatus volgens de openbare HabSlak-handleiding."""
+    """Bewaar alleen positieve doelsoortstatus zonder complete HabSlak-monitoringcontext."""
     if unique_sample_locations < 0 or target_source_count < 0:
         raise ValueError("HabSlak-aantallen kunnen niet negatief zijn.")
     if target_source_count > 0:
         return "waargenomen"
-    if unique_sample_locations >= HABSLAK_MINIMUM_SAMPLE_LOCATIONS:
-        return "protocolnul_onder_doelbereikaanname"
-    return "niet_beoordeelbaar_onvoldoende_bemonsterd"
+    return "niet_beoordeelbaar_onvolledige_monitoringcontext"
 
 
 def build_habslak_positive_matrix(
@@ -8098,11 +8096,12 @@ def reconstruct_habslak(
         )
 
     hokyear_note = (
-        "Volgens de openbare HabSlak-handleiding geldt een kilometerhok voor Nauwe "
-        "korfslak als voldoende onderzocht bij minimaal 15 kansrijke monsterlocaties. "
-        "Omdat doelbereik en oorspronkelijke formulieren ontbreken, is een niet-detectie "
-        "hoogstens een protocolnul onder doelbereikaanname. Begeleidende soorten krijgen "
-        "geen nullen."
+        "De soortspecifieke ANEMOON-protocollen uit 2014 onderscheiden vaste "
+        "monitoringslocaties, voorgeschreven monsters of sublocaties en een afzonderlijke "
+        "10x10-km-verspreidingsbeoordeling. De NDFF-export bevat die locatie-, monster-, "
+        "sublocatie- en doelbereikstructuur niet. Daarom bewijst alleen een positieve "
+        "doelsoortmelding aanwezigheid; uit overige recordclusters wordt geen nul en geen "
+        "voldoende bemonsterd hokjaar afgeleid."
     )
     hokyear_values: list[str] = []
     for (hok, year), info in sorted(hokyears.items(), key=lambda item: (item[0][1], item[0][0])):
@@ -8110,25 +8109,50 @@ def reconstruct_habslak(
         assert isinstance(sample_set, set) and isinstance(geometry_set, set)
         count = target_counts[(hok, year)]
         status = classify_habslak_hokjaar(len(geometry_set), count)
-        sampling = (
-            "voldoende_minimaal_15"
-            if len(geometry_set) >= HABSLAK_MINIMUM_SAMPLE_LOCATIONS
-            else "onvoldoende_minder_dan_15"
-        )
+        sampling = "niet_beoordeelbaar_onvolledige_monitoringcontext"
         key = hashlib.sha256(f"04.006|{hok}|{year}|{target}".encode("utf-8")).hexdigest()
         hokyear_values.append(
             f"({sql_text(HABSLAK_RULE_VERSION)},{sql_text(key)},'04.006',"
             f"{sql_text(hok)},{year},{sql_text(target)},{len(sample_set)},"
-            f"{len(geometry_set)},{HABSLAK_MINIMUM_SAMPLE_LOCATIONS},"
+            f"{len(geometry_set)},NULL,"
             f"{sql_text(sampling)},{count},{sql_text(status)},{sql_text(hokyear_note)})"
         )
 
+    obsolete_and_current = ",".join(
+        sql_text(version)
+        for version in (HABSLAK_LEGACY_RULE_VERSION, HABSLAK_RULE_VERSION)
+    )
     statements = [
         "START TRANSACTION;",
-        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster_taxon WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
-        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_recordselectie WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
-        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_hokjaar WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
-        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster WHERE reconstructieversie={sql_text(HABSLAK_RULE_VERSION)};",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster_taxon WHERE reconstructieversie IN ({obsolete_and_current});",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_recordselectie WHERE reconstructieversie IN ({obsolete_and_current});",
+        f"DROP TABLE IF EXISTS {HABSLAK_TABLE_PREFIX}_hokjaar;",
+        f"""CREATE TABLE {HABSLAK_TABLE_PREFIX}_hokjaar (
+          reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+          hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+          protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '04.006',
+          hoknummer VARCHAR(64) NOT NULL,
+          jaar SMALLINT UNSIGNED NOT NULL,
+          doelsoort VARCHAR(255) NOT NULL DEFAULT 'Vertigo angustior',
+          monsteraantal SMALLINT UNSIGNED NOT NULL,
+          unieke_monsterlocaties SMALLINT UNSIGNED NOT NULL,
+          minimale_monsterlocaties SMALLINT UNSIGNED NULL,
+          bemonsteringsstatus ENUM('niet_beoordeelbaar_onvolledige_monitoringcontext') NOT NULL,
+          doelsoort_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+          doelsoortstatus ENUM('waargenomen','niet_beoordeelbaar_onvolledige_monitoringcontext') NOT NULL,
+          kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+          aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+          PRIMARY KEY (reconstructieversie, hokjaar_sleutel),
+          UNIQUE KEY uq_ndff_habslak_hokjaar
+            (reconstructieversie, hoknummer, jaar, doelsoort),
+          CHECK (monsteraantal >= unieke_monsterlocaties),
+          CHECK (minimale_monsterlocaties IS NULL),
+          CHECK (
+            (doelsoortstatus='waargenomen' AND doelsoort_bronrecordaantal>0)
+            OR (doelsoortstatus<>'waargenomen' AND doelsoort_bronrecordaantal=0)
+          )
+        ) ENGINE=InnoDB;""",
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster WHERE reconstructieversie IN ({obsolete_and_current});",
     ]
     for table, columns, values in (
         (f"{HABSLAK_TABLE_PREFIX}_monster", "reconstructieversie,monster_sleutel,protocol_sleutel,bezoekdatum,jaar,hoknummer,openbare_geometrie_sha256,centroide_x_rd,centroide_y_rd,oppervlakte_m2,eenduidig_plot_id,plotstatus,bronrecordaantal,geregistreerde_taxa,doelbereikstatus,kwaliteitsnotitie", sample_values),
@@ -9632,10 +9656,10 @@ SELECT JSON_OBJECT(
   'sample_events',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_monster WHERE reconstructieversie={version}),
   'positive_event_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_monster_taxon WHERE reconstructieversie={version}),
   'square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version}),
-  'sufficient_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND bemonsteringsstatus='voldoende_minimaal_15'),
-  'insufficient_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND bemonsteringsstatus='onvoldoende_minder_dan_15'),
+  'unassessable_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND bemonsteringsstatus='niet_beoordeelbaar_onvolledige_monitoringcontext'),
   'target_positive_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND doelsoortstatus='waargenomen'),
-  'preliminary_zero_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND doelsoortstatus='protocolnul_onder_doelbereikaanname'),
+  'target_unknown_square_years',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_hokjaar WHERE reconstructieversie={version} AND doelsoortstatus='niet_beoordeelbaar_onvolledige_monitoringcontext'),
+  'inferred_zero_square_years',0,
   'invalid_sample_rows',(SELECT COUNT(*) FROM Meijendel.ndff_habslak_monster m WHERE m.reconstructieversie={version} AND ((m.plotstatus='single_volledig_binnen' AND m.eenduidig_plot_id IS NULL) OR (m.plotstatus<>'single_volledig_binnen' AND m.eenduidig_plot_id IS NOT NULL) OR m.bronrecordaantal=0 OR m.geregistreerde_taxa=0)),
   'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_habslak_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '04.006%' AND o.soortgroep_raw='Weekdieren' AND s.waarneming_id IS NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))

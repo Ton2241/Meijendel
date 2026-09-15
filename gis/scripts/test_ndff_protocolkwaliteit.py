@@ -676,13 +676,14 @@ def main() -> int:
     assert lmfa_by_key[("r1-2023", "Taxon b")]["status"] == "echte_nul"
     assert lmfa_by_key[("r2-2023", "Taxon b")]["status"] == "waargenomen_bronklasse"
     assert lmfa_by_key[("r2-2023", "Taxon b")]["abundance_rank"] == 3
-    assert module.classify_habslak_hokjaar(15, 0) == (
-        "protocolnul_onder_doelbereikaanname"
+    assert module.classify_habslak_hokjaar(80, 0) == (
+        "niet_beoordeelbaar_onvolledige_monitoringcontext"
     )
-    assert module.classify_habslak_hokjaar(14, 0) == (
-        "niet_beoordeelbaar_onvoldoende_bemonsterd"
+    assert module.classify_habslak_hokjaar(5, 0) == (
+        "niet_beoordeelbaar_onvolledige_monitoringcontext"
     )
     assert module.classify_habslak_hokjaar(15, 1) == "waargenomen"
+    assert module.HABSLAK_LEGACY_RULE_VERSION == "ndff-habslak-v1"
     habslak_matrix = module.build_habslak_positive_matrix([
         {
             "sample": "m1", "taxon": "Vertigo pygmaea", "scale": "exact aantal",

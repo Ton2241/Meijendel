@@ -2012,12 +2012,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_hokjaar (
   doelsoort VARCHAR(255) NOT NULL DEFAULT 'Vertigo angustior',
   monsteraantal SMALLINT UNSIGNED NOT NULL,
   unieke_monsterlocaties SMALLINT UNSIGNED NOT NULL,
-  minimale_monsterlocaties SMALLINT UNSIGNED NOT NULL DEFAULT 15,
-  bemonsteringsstatus ENUM('voldoende_minimaal_15','onvoldoende_minder_dan_15') NOT NULL,
+  minimale_monsterlocaties SMALLINT UNSIGNED NULL,
+  bemonsteringsstatus ENUM(
+    'niet_beoordeelbaar_onvolledige_monitoringcontext'
+  ) NOT NULL,
   doelsoort_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   doelsoortstatus ENUM(
-    'waargenomen','protocolnul_onder_doelbereikaanname',
-    'niet_beoordeelbaar_onvoldoende_bemonsterd'
+    'waargenomen','niet_beoordeelbaar_onvolledige_monitoringcontext'
   ) NOT NULL,
   kwaliteitsnotitie VARCHAR(1800) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -2025,15 +2026,12 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_hokjaar (
   UNIQUE KEY uq_ndff_habslak_hokjaar
     (reconstructieversie, hoknummer, jaar, doelsoort),
   CHECK (monsteraantal >= unieke_monsterlocaties),
-  CHECK (minimale_monsterlocaties = 15),
+  CHECK (minimale_monsterlocaties IS NULL),
   CHECK (
     (doelsoortstatus='waargenomen' AND doelsoort_bronrecordaantal>0)
     OR (doelsoortstatus<>'waargenomen' AND doelsoort_bronrecordaantal=0)
   ),
-  CHECK (
-    (bemonsteringsstatus='voldoende_minimaal_15' AND unieke_monsterlocaties>=15)
-    OR (bemonsteringsstatus='onvoldoende_minder_dan_15' AND unieke_monsterlocaties<15)
-  )
+  CHECK (bemonsteringsstatus='niet_beoordeelbaar_onvolledige_monitoringcontext')
 ) ENGINE=InnoDB;
 
 -- Conservatieve openbare reconstructie van braakbalprotocol 17.002. De

@@ -644,17 +644,19 @@
   Canadese gans (maxima)` worden onder `Grote Canadese Gans` samengevoegd. De
   bestaande seizoenssom blijft uitsluitend als duidelijk gewaarschuwde ruwe
   telling beschikbaar.
-- Voor HabSlak-protocol `04.006` is vanaf 12 september 2026 de openbare
-  reconstructie `ndff-habslak-v1` vastgesteld. De 2.629 onvervaagde records
+- Voor HabSlak-protocol `04.006` is op 15 september 2026 de openbare
+  reconstructie gecorrigeerd naar `ndff-habslak-v2`. De 2.629 onvervaagde records
   vormen 251 datum-geometriemonsters en 1.730 positieve
   monster-taxoncombinaties. Verschillende telonderwerpen worden niet opgeteld.
-  Begeleidende soorten leveren uitsluitend positieve informatie. Alleen voor
-  Nauwe korfslak kan op kilometerhok-jaar een voorlopige protocolnul worden
-  afgeleid wanneer minimaal 15 unieke kansrijke monsterlocaties aanwezig zijn;
-  de huidige 66 hok-jaren bevatten vier voldoende bemonsterde positieve jaren
-  en dus nul voorlopige nullen. De 143 vervaagde records worden niet naar
-  openbare monsters gekopieerd. De vier afgeleide tabellen staan in
-  `Meijendel`; `Meijendel_ndff_secure` is niet uitgebreid.
+  Begeleidende soorten leveren uitsluitend positieve informatie. De latere
+  soortprotocollen van ANEMOON werken met vaste monitoringslocaties,
+  voorgeschreven monsters of sublocaties en een 10x10-km-beoordeling. Omdat de
+  NDFF-export deze structuur niet bevat, zijn alle 66 hok-jaren qua
+  bemonsteringsvolledigheid niet beoordeelbaar en worden geen nullen afgeleid.
+  De eerdere vier statussen `voldoende_minimaal_15` zijn vervallen. De 143
+  vervaagde records worden niet naar openbare monsters gekopieerd. De vier
+  afgeleide tabellen staan in `Meijendel`; `Meijendel_ndff_secure` is niet
+  uitgebreid.
 - Voor braakbalprotocol `17.002` is vanaf 12 september 2026 reconstructieversie
   `ndff-braakbal-v1` vastgesteld. Alle 389 positieve bronregels zijn
   traceerbaar via drie openbare `Meijendel.ndff_braakbal_*`-tabellen. De 387

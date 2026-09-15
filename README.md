@@ -406,17 +406,17 @@ bruikbaar, maar een niet-gemelde plant is alleen een nul binnen het aantoonbare
 doelbereik van het betreffende protocol. Voor de negen Nectarindexregels uit
 één telling wordt daarom geen tijdtrend of nulmatrix afgeleid.
 
-HabSlak-protocol `04.006` staat onder `ndff-habslak-v1` in vier openbare
+HabSlak-protocol `04.006` staat onder `ndff-habslak-v2` in vier openbare
 `Meijendel.ndff_habslak_*`-tabellen. De 2.629 onvervaagde bronregels vormen
 251 datum-geometriemonsters en 1.730 positieve monster-taxoncombinaties. De
 143 vervaagde openbare regels worden niet aan een openbaar monster gekoppeld;
 positieve Nauwe-korfslakmeldingen tellen alleen mee op het reeds openbare
-kilometerhok-jaar. Volgens de handleiding is zo'n hok voldoende onderzocht bij
-minimaal 15 kansrijke monsterlocaties. Vier van de 66 hok-jaren voldoen aan die
-drempel en alle vier bevatten al een positieve Nauwe korfslak, zodat deze
-levering geen voorlopige protocolnullen oplevert. Begeleidende soorten blijven
-altijd positieve informatie; hun ontbreken is geen nul. Controleer de laag met
-`--audit-habslak`.
+kilometerhok-jaar. De soortprotocollen uit 2014 vereisen vaste
+monitoringslocaties en voorgeschreven monsters of sublocaties binnen een
+10x10-km-hok. Die structuur ontbreekt in de NDFF-export. Daarom zijn alle 66
+hok-jaren qua bemonsteringsvolledigheid niet beoordeelbaar en worden geen
+nullen afgeleid. Begeleidende soorten blijven altijd positieve informatie;
+hun ontbreken is geen nul. Controleer de laag met `--audit-habslak`.
 
 Braakbalprotocol `17.002` staat onder `ndff-braakbal-v1` in drie openbare
 `Meijendel.ndff_braakbal_*`-tabellen. Alle 389 positieve bronregels zijn

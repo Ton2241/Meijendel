@@ -443,15 +443,16 @@ MySQL:
   doelsoorten- en bezoekbereik geen nullen af. De enkele Nectarindextelling
   ondersteunt positieve informatie, maar geen lokale tijdtrend
 - gebruik voor HabSlak-protocol `04.006` reconstructieversie
-  `ndff-habslak-v1` en uitsluitend de vier openbare tabellen
+  `ndff-habslak-v2` en uitsluitend de vier openbare tabellen
   `Meijendel.ndff_habslak_*`. Groepeer onvervaagde records per kalenderdatum en
   openbare geometrie; bewaar verschillende telonderwerpen afzonderlijk en tel
   ze niet op. Behandel begeleidende soorten alleen als positieve waarneming.
-  Leid voor Nauwe korfslak uitsluitend op kilometerhok-jaar een voorlopige
-  `protocolnul_onder_doelbereikaanname` af wanneer minimaal 15 unieke kansrijke
-  monsterlocaties zijn gereconstrueerd en geen positieve doelsoortmelding
-  aanwezig is. Kopieer geen exacte beveiligde vindplaats naar de openbare
-  afgeleide tabellen en controleer vóór gebruik met `--audit-habslak`
+  Behandel de datum-geometrieclusters niet als bewezen vaste HabSlak-
+  monitoringslocaties. De soortprotocollen uit 2014 vereisen locatie-ID's,
+  voorgeschreven monsters of sublocaties en 10x10-km-doelbereik; die ontbreken
+  in de NDFF-export. Leid daarom geen bemonsteringsvolledigheid of nul af.
+  Kopieer geen exacte beveiligde vindplaats naar de openbare afgeleide tabellen
+  en controleer vóór gebruik met `--audit-habslak`
 - gebruik voor braakbalprotocol `17.002` reconstructieversie
   `ndff-braakbal-v1` en uitsluitend de drie openbare tabellen
   `Meijendel.ndff_braakbal_*`. Groepeer de positieve bronregels per jaar en
