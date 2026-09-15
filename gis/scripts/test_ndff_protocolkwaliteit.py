@@ -521,8 +521,10 @@ def main() -> int:
     else:
         raise AssertionError("Afwijkende v2-matrix werd vóór schrijven geaccepteerd")
     assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
-    assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v1"
-    assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v1"
+    assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v2"
+    assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v2"
+    assert module.POLDERVIS_RULE_VERSION == "ndff-poldervis-v2"
+    assert module.RAVON_N2000_RULE_VERSION == "ndff-ravon-n2000-v1"
     assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
     assert module.RABBIT_COUNT_RULE_VERSION == "ndff-konijnentelling-v1"
     assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
@@ -1170,6 +1172,13 @@ def main() -> int:
     assert "--audit-kwartiertellingen" in importer_text
     assert "--reconstruct-resterende-nem" in importer_text
     assert "--audit-resterende-nem" in importer_text
+    assert "--reconstruct-ravon-n2000" in importer_text
+    assert "--audit-ravon-n2000" in importer_text
+    assert "v_ndff_analysebesluit_actueel" in SCHEMA.read_text(encoding="utf-8")
+    assert "niet_gemeld_methode_onbekend" in SCHEMA.read_text(encoding="utf-8")
+    assert "binnen_geleverd_positief_bezoek" in SCHEMA.read_text(encoding="utf-8")
+    assert "monsterlocatieproxy" in SCHEMA.read_text(encoding="utf-8")
+    assert "ndff_ravon_n2000_recordselectie" in SCHEMA.read_text(encoding="utf-8")
     assert "03.201" in importer_text
     assert "soortgroep_raw='Dagvlinders'" in importer_text
     source_sql = " ".join(module.vlinder_source_sql().split())
@@ -1316,6 +1325,17 @@ def main() -> int:
         pass
     else:
         raise AssertionError("Een afwijkende amfibieënreconstructie is niet geblokkeerd")
+    module.validate_ravon_n2000_reconstruction(
+        dict(module.RAVON_N2000_RECONSTRUCTION_EXPECTED)
+    )
+    broken_n2000 = dict(module.RAVON_N2000_RECONSTRUCTION_EXPECTED)
+    broken_n2000["target_rows"] -= 1
+    try:
+        module.validate_ravon_n2000_reconstruction(broken_n2000)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende RAVON Natura 2000-laag is niet geblokkeerd")
     module.validate_bat_reconstruction(dict(module.BAT_RECONSTRUCTION_EXPECTED))
     broken_bats = dict(module.BAT_RECONSTRUCTION_EXPECTED)
     broken_bats["suppressed_duplicates"] -= 1
@@ -1717,10 +1737,14 @@ def main() -> int:
         "voorafgaande uitdrukkelijke toestemming",
         "ndff-libellenroute-v1",
         "--audit-libellen",
-        "ndff-reptielroute-v1",
+        "ndff-reptielroute-v2",
         "--audit-reptielen",
-        "ndff-amfibiewater-v1",
+        "ndff-amfibiewater-v2",
         "--audit-amfibieen",
+        "ndff-ravon-n2000-v1",
+        "--audit-ravon-n2000",
+        "monsterlocatieproxy",
+        "v_ndff_analysebesluit_actueel",
         "ndff-vleermuistransect-v1",
         "--audit-vleermuizen",
         "ndff-konijnentelling-v1",

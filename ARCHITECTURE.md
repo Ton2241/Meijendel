@@ -76,14 +76,23 @@ De gereconstrueerde openbare NEM-routeketens staan eveneens in `Meijendel`.
 brongeometrieën, bezoeken en de bezoek-soortmatrix. De libellenketen bewaart aanvullend `doelbereikstatus`,
 zodat echte nullen alleen ontstaan bij een aantoonbaar algemene route en niet
 bij een grof eensoortbezoek met onbekend bereik.
-De reptielenketen gebruikt route plus kalenderdatum als bezoekeenheid en
+De reptielenketen (`ndff-reptielroute-v2`) gebruikt route plus kalenderdatum
+als bezoekeenheid en
 behoudt expliciet dat volledig negatieve bezoeken en feitelijke inspanning niet
 uit de FFV-levering kunnen worden hersteld. Alleen Hazelworm krijgt binnen een
-bevestigd positief reptielenbezoek een afgeleide echte nul.
-De amfibieënketen onderscheidt telgebiedbezoek en bevestigd waterbezoek. Zij
+bevestigd positief reptielenbezoek een afgeleide nul met expliciet bereik
+`binnen_geleverd_positief_bezoek`; de bronperiode geldt niet als inspanning.
+De amfibieënketen (`ndff-amfibiewater-v2`) onderscheidt telgebiedbezoek en
+bevestigd waterbezoek. Zij
 houdt exacte aantallen, presentieklassen en gemengde telwaarden uit elkaar en
-leidt geen waterbezoeken of nullen af voor de vervaagde, jaarlijks
+classificeert niet-gemelde taxa als `niet_gemeld_methode_onbekend`, niet als
+nul, zolang methode en programmaonderdeel ontbreken. Zij leidt ook geen
+waterbezoeken of nullen af voor de vervaagde, jaarlijks
 geaggregeerde Kamsalamanderrecords.
+Protocol `13.202` heeft bewust alleen een positieve recordselectie en
+monsterlocatieproxy's. Protocol `13.201` gebruikt eveneens
+`monsterlocatieproxy`; geen van beide geometrieën geldt zonder bronsleutel als
+een stabiel waterobject.
 De vleermuisketen houdt NEM-VTT-auto en vleerMUS-fiets als twee routefamilies
 gescheiden, bewaart de selectie van dubbele bronregels en telt akoestische
 detecties nooit als individuele dieren. De doelsoortenlijst verschilt per

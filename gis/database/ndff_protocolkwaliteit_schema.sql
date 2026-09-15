@@ -267,6 +267,13 @@ ALTER TABLE ndff_analysebesluit
     'wacht_op_doelsoortafbakening','uitgesloten_huidige_levering'
   ) NOT NULL;
 
+-- Eén vaste ingang naar uitsluitend de actuele beslisregels. Zo worden oudere
+-- regelversies nooit per ongeluk samen met de huidige classificatie gebruikt.
+CREATE OR REPLACE SQL SECURITY INVOKER VIEW Meijendel.v_ndff_analysebesluit_actueel AS
+SELECT d.*
+FROM Meijendel.ndff_analysebesluit d
+WHERE d.regelversie='ndff-analysebesluit-v4';
+
 -- Lokale reconstructie van NEM-dagvlinderroutes uit protocol 03.201. Deze
 -- afgeleide tabellen staan in de life-database: zij zijn uitsluitend uit de
 -- openbare NDFF-bron gereconstrueerd. Bronrecords blijven ongewijzigd; iedere
@@ -594,6 +601,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_bezoek (
   ) NOT NULL,
   bezoekdekkingstatus ENUM('alleen_positieve_bezoeken') NOT NULL,
   inspanningstatus ENUM('niet_afleidbaar') NOT NULL,
+  periodebetekenis ENUM('bronperiode_geen_inspanning') NOT NULL,
   bronrecordaantal INT UNSIGNED NOT NULL,
   PRIMARY KEY (reconstructieversie, bezoek_sleutel),
   KEY ix_ndff_reptiel_bezoek_route
@@ -616,6 +624,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_bezoek_taxon (
   juveniel_aantal INT UNSIGNED NOT NULL,
   onbekend_stadium_aantal INT UNSIGNED NOT NULL,
   waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  nulbereik ENUM(
+    'niet_van_toepassing','binnen_geleverd_positief_bezoek'
+  ) NOT NULL,
   nulregel VARCHAR(255) NOT NULL,
   PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
   KEY ix_ndff_reptiel_taxon_jaar
@@ -628,6 +639,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_reptiel_bezoek_taxon (
   CHECK ((waarnemingsstatus='waargenomen' AND aantal > 0) OR
          (waarnemingsstatus='echte_nul' AND aantal = 0))
 ) ENGINE=InnoDB;
+
 
 -- Openbare reconstructie van NEM-amfibieënprotocol 01.201. Een telgebiedbezoek
 -- kan meerdere afzonderlijke wateren omvatten. Alleen wateren met minstens
@@ -717,10 +729,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_waterbezoek_taxon (
   bron_taxonnamen VARCHAR(1000) NULL,
   stadia_raw VARCHAR(1000) NULL,
   stadium_status ENUM('niet_van_toepassing','een_stadium','meerdere_stadia') NOT NULL,
-  waarnemingsstatus ENUM('waargenomen','echte_nul') NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen','echte_nul','niet_gemeld_methode_onbekend'
+  ) NOT NULL,
   meetwaardetypen_raw VARCHAR(255) NULL,
   meetwaarde_type ENUM(
-    'exact','presentieklasse','minimum','schatting','gemengd','echte_nul'
+    'exact','presentieklasse','minimum','schatting','gemengd','echte_nul',
+    'niet_bepaald'
   ) NOT NULL,
   aantal_exact INT UNSIGNED NULL,
   ondergrens INT UNSIGNED NULL,
@@ -742,10 +757,40 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_amfibie_waterbezoek_taxon (
       AND aantal_exact=0 AND ondergrens=0 AND bovengrens=0
       AND bronrecordaantal=0)
     OR
+    (waarnemingsstatus='niet_gemeld_methode_onbekend'
+      AND meetwaarde_type='niet_bepaald' AND aantal_exact IS NULL
+      AND ondergrens IS NULL AND bovengrens IS NULL
+      AND bronrecordaantal=0)
+    OR
     (waarnemingsstatus='waargenomen' AND meetwaarde_type<>'echte_nul'
       AND bronrecordaantal>0)
   )
 ) ENGINE=InnoDB;
+
+ALTER TABLE Meijendel.ndff_amfibie_waterbezoek_taxon
+  MODIFY waarnemingsstatus ENUM(
+    'waargenomen','echte_nul','niet_gemeld_methode_onbekend'
+  ) NOT NULL,
+  MODIFY meetwaarde_type ENUM(
+    'exact','presentieklasse','minimum','schatting','gemengd','echte_nul',
+    'niet_bepaald'
+  ) NOT NULL;
+ALTER TABLE Meijendel.ndff_amfibie_waterbezoek_taxon
+  DROP CHECK ndff_amfibie_waterbezoek_taxon_chk_1,
+  ADD CONSTRAINT ndff_amfibie_waterbezoek_taxon_chk_1 CHECK (
+    (waarnemingsstatus='echte_nul' AND meetwaarde_type='echte_nul'
+      AND aantal_exact=0 AND ondergrens=0 AND bovengrens=0
+      AND bronrecordaantal=0)
+    OR
+    (waarnemingsstatus='niet_gemeld_methode_onbekend'
+      AND meetwaarde_type='niet_bepaald' AND aantal_exact IS NULL
+      AND ondergrens IS NULL AND bovengrens IS NULL
+      AND bronrecordaantal=0)
+    OR
+    (waarnemingsstatus='waargenomen'
+      AND meetwaarde_type NOT IN ('echte_nul','niet_bepaald')
+      AND bronrecordaantal>0)
+  );
 
 -- Openbare reconstructie van protocol 17.208. De records zijn akoestische
 -- detecties en uitdrukkelijk geen aantallen individuele vleermuizen. De ene
@@ -2463,7 +2508,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_waterlocatie (
   ruimtelijke_status ENUM('single_volledig_binnen','outside') NOT NULL,
   plotversie_id BIGINT UNSIGNED NULL,
   eenduidig_plot_id INT NULL,
-  identificatiestatus ENUM('openbare_geometrie_als_waterproxy') NOT NULL,
+  meeteenheidstype ENUM('monsterlocatieproxy') NOT NULL,
+  identificatiestatus ENUM(
+    'openbare_geometrie_als_waterproxy',
+    'openbare_geometrie_als_monsterlocatieproxy'
+  ) NOT NULL,
   kwaliteitsnotitie VARCHAR(1800) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waterlocatie_sleutel),
@@ -2473,6 +2522,48 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_waterlocatie (
   CHECK (bronrecordaantal > 0),
   CHECK ((ruimtelijke_status='single_volledig_binnen' AND eenduidig_plot_id IS NOT NULL)
     OR (ruimtelijke_status='outside' AND eenduidig_plot_id IS NULL))
+) ENGINE=InnoDB;
+
+ALTER TABLE Meijendel.ndff_poldervis_waterlocatie
+  MODIFY identificatiestatus ENUM(
+    'openbare_geometrie_als_waterproxy',
+    'openbare_geometrie_als_monsterlocatieproxy'
+  ) NOT NULL;
+
+-- Protocol 13.202 wordt positief en recordgebonden vastgelegd. Zonder methode,
+-- inspanning en expliciete negatieve formulieren worden geen bezoeken of nullen
+-- gereconstrueerd. De geometrie is uitsluitend een monsterlocatieproxy.
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_ravon_n2000_monsterlocatieproxy (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  locatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '13.202',
+  openbare_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bronrecordaantal SMALLINT UNSIGNED NOT NULL,
+  vervaagde_recordaantal SMALLINT UNSIGNED NOT NULL,
+  identificatiestatus ENUM('openbare_geometrie_als_monsterlocatieproxy') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  PRIMARY KEY (reconstructieversie, locatie_sleutel),
+  CHECK (bronrecordaantal > 0),
+  CHECK (vervaagde_recordaantal <= bronrecordaantal)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.ndff_ravon_n2000_recordselectie (
+  reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  locatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
+  doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
+  waarnemingsstatus ENUM('waargenomen') NOT NULL,
+  methodestatus ENUM('onbekend_in_ndff') NOT NULL,
+  bezoekstatus ENUM('geen_bezoek_afleidbaar') NOT NULL,
+  nulstatus ENUM('geen_nul_afleidbaar') NOT NULL,
+  kwaliteitsnotitie VARCHAR(1800) NOT NULL,
+  PRIMARY KEY (reconstructieversie, waarneming_id),
+  CONSTRAINT fk_ndff_ravon_n2000_selectie_waarneming FOREIGN KEY
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+  CONSTRAINT fk_ndff_ravon_n2000_selectie_locatie FOREIGN KEY
+    (reconstructieversie, locatie_sleutel)
+    REFERENCES Meijendel.ndff_ravon_n2000_monsterlocatieproxy
+      (reconstructieversie, locatie_sleutel)
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_bezoek (

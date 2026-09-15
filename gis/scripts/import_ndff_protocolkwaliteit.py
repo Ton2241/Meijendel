@@ -46,8 +46,10 @@ VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v2"
 VLINDER_LEGACY_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
-REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v1"
-AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v1"
+REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v2"
+REPTILE_LEGACY_RULE_VERSION = "ndff-reptielroute-v1"
+AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v2"
+AMPHIBIAN_LEGACY_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
@@ -71,7 +73,9 @@ LIVEATLAS_RULE_VERSION = "ndff-liveatlas-v1"
 KWARTIERTELLING_RULE_VERSION = "ndff-kwartiertelling-v1"
 NACHTVLINDER_RULE_VERSION = "ndff-nachtvlinder-v1"
 BOSPADDENSTOEL_VERSPREIDING_RULE_VERSION = "ndff-bospaddenstoel-verspreiding-v1"
-POLDERVIS_RULE_VERSION = "ndff-poldervis-v1"
+POLDERVIS_RULE_VERSION = "ndff-poldervis-v2"
+POLDERVIS_LEGACY_RULE_VERSION = "ndff-poldervis-v1"
+RAVON_N2000_RULE_VERSION = "ndff-ravon-n2000-v1"
 OTTER_BEVER_RULE_VERSION = "ndff-otter-bever-v1"
 VLINDER_TABLE_PREFIX = "Meijendel.ndff_vlinder"
 VLIESVLEUGEL_TABLE_PREFIX = "Meijendel.ndff_vliesvleugel"
@@ -123,6 +127,15 @@ RESTERENDE_NEM_RECONSTRUCTION_EXPECTED = {
     "unlinked_source_records": 0,
     "secure_derived_tables": 0,
     "lmf_ndff_derived_tables": 0,
+}
+RAVON_N2000_RECONSTRUCTION_EXPECTED = {
+    "source_records": 67,
+    "location_proxies": 25,
+    "target_rows": 14,
+    "bycatch_rows": 53,
+    "blurred_rows": 1,
+    "zero_rows": 0,
+    "unlinked_source_records": 0,
 }
 SOVON_AVIMAP_EXPECTED = {
     "source_records": 19_960,
@@ -287,6 +300,7 @@ REPTILE_RECONSTRUCTION_EXPECTED = {
     "matrix_rows": 1320,
     "positive_rows": 661,
     "zero_rows": 659,
+    "scoped_zero_rows": 659,
     "adult_count": 6286,
     "subadult_count": 64,
     "juvenile_count": 761,
@@ -308,7 +322,8 @@ AMPHIBIAN_RECONSTRUCTION_EXPECTED = {
     "analysis_taxa": 7,
     "matrix_rows": 9100,
     "positive_rows": 2274,
-    "zero_rows": 6826,
+    "zero_rows": 0,
+    "method_unknown_rows": 6826,
     "exact_positive_rows": 584,
     "presentie_positive_rows": 1556,
     "minimum_positive_rows": 0,
@@ -1268,6 +1283,72 @@ ORDER BY TABLE_NAME,ORDINAL_POSITION;
         table, column = line.split("\t")
         columns_by_table[table].add(column)
     statements = vlinder_v2_schema_statements(columns_by_table)
+    if statements:
+        run_mysql(mysql_client, client_args, "\n".join(statements))
+
+
+def ensure_ravon_schema_migrations(
+    mysql_client: Path, client_args: list[str],
+) -> None:
+    """Migreer bestaande RAVON-afleidingstabellen vóór het actuele schema."""
+    query = """
+SELECT TABLE_NAME,COLUMN_NAME
+FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA='Meijendel'
+  AND TABLE_NAME IN (
+    'ndff_reptiel_bezoek','ndff_reptiel_bezoek_taxon',
+    'ndff_amfibie_waterbezoek_taxon','ndff_poldervis_waterlocatie'
+  )
+ORDER BY TABLE_NAME,ORDINAL_POSITION;
+"""
+    output = run_mysql(
+        mysql_client,
+        client_args + ["--batch", "--raw", "--skip-column-names"],
+        query, capture=True,
+    )
+    columns_by_table: dict[str, set[str]] = defaultdict(set)
+    for line in output.splitlines():
+        table, column = line.split("\t")
+        columns_by_table[table].add(column)
+    statements: list[str] = []
+    if (cols := columns_by_table.get("ndff_reptiel_bezoek")) is not None:
+        if "periodebetekenis" not in cols:
+            statements.append(
+                "ALTER TABLE Meijendel.ndff_reptiel_bezoek ADD COLUMN "
+                "periodebetekenis ENUM('bronperiode_geen_inspanning') NOT NULL "
+                "DEFAULT 'bronperiode_geen_inspanning' AFTER inspanningstatus;"
+            )
+    if (cols := columns_by_table.get("ndff_reptiel_bezoek_taxon")) is not None:
+        if "nulbereik" not in cols:
+            statements.append(
+                "ALTER TABLE Meijendel.ndff_reptiel_bezoek_taxon ADD COLUMN "
+                "nulbereik ENUM('niet_van_toepassing','binnen_geleverd_positief_bezoek') "
+                "NOT NULL DEFAULT 'niet_van_toepassing' AFTER waarnemingsstatus;"
+            )
+    if "ndff_amfibie_waterbezoek_taxon" in columns_by_table:
+        statements.extend([
+            "ALTER TABLE Meijendel.ndff_amfibie_waterbezoek_taxon "
+            "MODIFY waarnemingsstatus ENUM('waargenomen','echte_nul','niet_gemeld_methode_onbekend') NOT NULL, "
+            "MODIFY meetwaarde_type ENUM('exact','presentieklasse','minimum','schatting','gemengd','echte_nul','niet_bepaald') NOT NULL;",
+            "ALTER TABLE Meijendel.ndff_amfibie_waterbezoek_taxon "
+            "DROP CHECK ndff_amfibie_waterbezoek_taxon_chk_1, "
+            "ADD CONSTRAINT ndff_amfibie_waterbezoek_taxon_chk_1 CHECK ("
+            "(waarnemingsstatus='echte_nul' AND meetwaarde_type='echte_nul' AND aantal_exact=0 AND ondergrens=0 AND bovengrens=0 AND bronrecordaantal=0) OR "
+            "(waarnemingsstatus='niet_gemeld_methode_onbekend' AND meetwaarde_type='niet_bepaald' AND aantal_exact IS NULL AND ondergrens IS NULL AND bovengrens IS NULL AND bronrecordaantal=0) OR "
+            "(waarnemingsstatus='waargenomen' AND meetwaarde_type NOT IN ('echte_nul','niet_bepaald') AND bronrecordaantal>0));",
+        ])
+    if (cols := columns_by_table.get("ndff_poldervis_waterlocatie")) is not None:
+        if "meeteenheidstype" not in cols:
+            statements.append(
+                "ALTER TABLE Meijendel.ndff_poldervis_waterlocatie ADD COLUMN "
+                "meeteenheidstype ENUM('monsterlocatieproxy') NOT NULL "
+                "DEFAULT 'monsterlocatieproxy' AFTER openbare_geometrie_sha256;"
+            )
+        statements.append(
+            "ALTER TABLE Meijendel.ndff_poldervis_waterlocatie MODIFY "
+            "identificatiestatus ENUM('openbare_geometrie_als_waterproxy',"
+            "'openbare_geometrie_als_monsterlocatieproxy') NOT NULL;"
+        )
     if statements:
         run_mysql(mysql_client, client_args, "\n".join(statements))
 
@@ -3265,6 +3346,7 @@ def reconstruct_reptielen(mysql_client: Path, client_args: list[str]) -> dict[st
             f"{sql_text(str(meta['date']))},{sql_text(str(meta['start']))},"
             f"{sql_text(str(meta['stop']))},{int(meta['year'])},{family_sql},"
             f"{sql_text(status)},'alleen_positieve_bezoeken','niet_afleidbaar',"
+            f"'bronperiode_geen_inspanning',"
             f"{int(meta['records'])})"
         )
 
@@ -3283,27 +3365,30 @@ def reconstruct_reptielen(mysql_client: Path, client_args: list[str]) -> dict[st
             total = sum(counts.values()) + unknown
             if total:
                 status = "waargenomen"
+                zero_scope = "niet_van_toepassing"
                 rule = "Positief resultaat binnen een gereconstrueerd 10.201-routebezoek."
             elif taxon == "Anguis fragilis" and sum(
                 stage_counts.get((visit, "Lacerta agilis", stage), 0)
                 for stage in ("adult", "subadult", "juveniel")
             ) > 0:
                 status = "echte_nul"
+                zero_scope = "binnen_geleverd_positief_bezoek"
                 rule = "Niet gemeld tijdens een bevestigd reptielenbezoek met een andere reptielsoort; echte nul binnen het protocolbereik."
             else:
                 continue
             matrix_values.append(
                 f"({sql_text(REPTILE_ROUTE_RULE_VERSION)},{sql_text(visit_keys[visit])},"
                 f"{sql_text(taxon)},{total},{counts['adult']},{counts['subadult']},"
-                f"{counts['juveniel']},{unknown},{sql_text(status)},{sql_text(rule)})"
+                f"{counts['juveniel']},{unknown},{sql_text(status)},"
+                f"{sql_text(zero_scope)},{sql_text(rule)})"
             )
 
     statements = [
         "START TRANSACTION;",
-        f"DELETE FROM {REPTILE_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
-        f"DELETE FROM {REPTILE_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
-        f"DELETE FROM {REPTILE_TABLE_PREFIX}_routegeometrie WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
-        f"DELETE FROM {REPTILE_TABLE_PREFIX}_routefamilie WHERE reconstructieversie={sql_text(REPTILE_ROUTE_RULE_VERSION)};",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_bezoek_taxon WHERE reconstructieversie IN ({sql_text(REPTILE_LEGACY_RULE_VERSION)},{sql_text(REPTILE_ROUTE_RULE_VERSION)});",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_bezoek WHERE reconstructieversie IN ({sql_text(REPTILE_LEGACY_RULE_VERSION)},{sql_text(REPTILE_ROUTE_RULE_VERSION)});",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_routegeometrie WHERE reconstructieversie IN ({sql_text(REPTILE_LEGACY_RULE_VERSION)},{sql_text(REPTILE_ROUTE_RULE_VERSION)});",
+        f"DELETE FROM {REPTILE_TABLE_PREFIX}_routefamilie WHERE reconstructieversie IN ({sql_text(REPTILE_LEGACY_RULE_VERSION)},{sql_text(REPTILE_ROUTE_RULE_VERSION)});",
     ]
     statements += _batched_insert(
         f"{REPTILE_TABLE_PREFIX}_routefamilie",
@@ -3317,12 +3402,12 @@ def reconstruct_reptielen(mysql_client: Path, client_args: list[str]) -> dict[st
     )
     statements += _batched_insert(
         f"{REPTILE_TABLE_PREFIX}_bezoek",
-        "reconstructieversie,bezoek_sleutel,bezoekdatum,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus,bezoekdekkingstatus,inspanningstatus,bronrecordaantal",
+        "reconstructieversie,bezoek_sleutel,bezoekdatum,periode_start,periode_stop,jaar,routefamilie_id,reconstructiestatus,bezoekdekkingstatus,inspanningstatus,periodebetekenis,bronrecordaantal",
         visit_values,
     )
     statements += _batched_insert(
         f"{REPTILE_TABLE_PREFIX}_bezoek_taxon",
-        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,adult_aantal,subadult_aantal,juveniel_aantal,onbekend_stadium_aantal,waarnemingsstatus,nulregel",
+        "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,aantal,adult_aantal,subadult_aantal,juveniel_aantal,onbekend_stadium_aantal,waarnemingsstatus,nulbereik,nulregel",
         matrix_values,
     )
     statements.append("COMMIT;")
@@ -3341,6 +3426,7 @@ def reconstruct_reptielen(mysql_client: Path, client_args: list[str]) -> dict[st
         "matrix_rows": len(matrix_values),
         "positive_rows": sum("'waargenomen'" in value for value in matrix_values),
         "zero_rows": sum("'echte_nul'" in value for value in matrix_values),
+        "scoped_zero_rows": sum("'binnen_geleverd_positief_bezoek'" in value for value in matrix_values),
         "adult_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage == "adult"),
         "subadult_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage == "subadult"),
         "juvenile_count": sum(count for (visit, taxon, stage), count in stage_counts.items() if stage == "juveniel"),
@@ -3502,11 +3588,12 @@ def reconstruct_amfibieen(mysql_client: Path, client_args: list[str]) -> dict[st
             if not items:
                 matrix_values.append(
                     f"({sql_text(AMPHIBIAN_WATER_RULE_VERSION)},{sql_text(water_visit_key)},"
-                    f"{sql_text(taxon)},NULL,NULL,'niet_van_toepassing','echte_nul',"
-                    f"NULL,'echte_nul',0,0,0,NULL,0,"
-                    f"{sql_text('Niet gemeld in een aantoonbaar bezocht water binnen een volledig 01.201-amfibieënbezoek; echte protocolnul voor deze doelsoort.')})"
+                    f"{sql_text(taxon)},NULL,NULL,'niet_van_toepassing',"
+                    f"'niet_gemeld_methode_onbekend',NULL,'niet_bepaald',"
+                    f"NULL,NULL,NULL,NULL,0,"
+                    f"{sql_text('Niet gemeld in een water met ten minste één positieve 01.201-registratie. Programmaonderdeel, zoekmethode en volledige-lijststatus ontbreken; dit is geen nul.')})"
                 )
-                matrix_metrics["zero_rows"] += 1
+                matrix_metrics["method_unknown_rows"] += 1
                 continue
             types = {str(item["meetwaarde_type"]) for item in items}
             measurement_type = next(iter(types)) if len(types) == 1 else "gemengd"
@@ -3548,11 +3635,11 @@ def reconstruct_amfibieen(mysql_client: Path, client_args: list[str]) -> dict[st
 
     statements = [
         "START TRANSACTION;",
-        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterbezoek_taxon WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
-        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterbezoek WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
-        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_bezoek WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
-        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_watergeometrie WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
-        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterfamilie WHERE reconstructieversie={sql_text(AMPHIBIAN_WATER_RULE_VERSION)};",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterbezoek_taxon WHERE reconstructieversie IN ({sql_text(AMPHIBIAN_LEGACY_RULE_VERSION)},{sql_text(AMPHIBIAN_WATER_RULE_VERSION)});",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterbezoek WHERE reconstructieversie IN ({sql_text(AMPHIBIAN_LEGACY_RULE_VERSION)},{sql_text(AMPHIBIAN_WATER_RULE_VERSION)});",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_bezoek WHERE reconstructieversie IN ({sql_text(AMPHIBIAN_LEGACY_RULE_VERSION)},{sql_text(AMPHIBIAN_WATER_RULE_VERSION)});",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_watergeometrie WHERE reconstructieversie IN ({sql_text(AMPHIBIAN_LEGACY_RULE_VERSION)},{sql_text(AMPHIBIAN_WATER_RULE_VERSION)});",
+        f"DELETE FROM {AMPHIBIAN_TABLE_PREFIX}_waterfamilie WHERE reconstructieversie IN ({sql_text(AMPHIBIAN_LEGACY_RULE_VERSION)},{sql_text(AMPHIBIAN_WATER_RULE_VERSION)});",
     ]
     statements += _batched_insert(
         f"{AMPHIBIAN_TABLE_PREFIX}_waterfamilie",
@@ -3594,6 +3681,7 @@ def reconstruct_amfibieen(mysql_client: Path, client_args: list[str]) -> dict[st
         "matrix_rows": len(matrix_values),
         "positive_rows": matrix_metrics["positive_rows"],
         "zero_rows": matrix_metrics["zero_rows"],
+        "method_unknown_rows": matrix_metrics["method_unknown_rows"],
         "exact_positive_rows": matrix_metrics["exact_positive_rows"],
         "presentie_positive_rows": matrix_metrics["presentieklasse_positive_rows"],
         "minimum_positive_rows": matrix_metrics["minimum_positive_rows"],
@@ -8237,6 +8325,95 @@ def _positive_measurements(rows: list[dict[str, object]]) -> tuple[int, list[dic
     return total, measurements
 
 
+def ravon_n2000_source_sql() -> str:
+    """Lees protocol 13.202 zonder een bezoek- of nulstructuur te veronderstellen."""
+    return """
+SELECT o.waarneming_id,o.openbare_geometrie_sha256,o.vervaagd,
+       o.soortgroep_raw,o.wetenschappelijke_naam,
+       COALESCE(o.zoek_of_vangmethode,'')
+FROM Meijendel.ndff_open_waarneming o
+WHERE o.protocol LIKE '13.202%'
+ORDER BY o.waarneming_id;
+"""
+
+
+def reconstruct_ravon_n2000(
+    mysql_client: Path,
+    client_args: list[str],
+) -> dict[str, int]:
+    """Leg 13.202 positief en recordgebonden vast; leid geen bezoeken of nullen af."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(mysql_client, query_args, ravon_n2000_source_sql(), capture=True)
+    rows: list[dict[str, object]] = []
+    for line in output.splitlines():
+        observation_id, geometry, blurred, group, taxon, method = line.split("\t")
+        if method not in {"", "onbekend"}:
+            raise ValueError("13.202 bevat onverwacht een inhoudelijk gevulde vangmethode.")
+        rows.append({
+            "observation_id": int(observation_id), "geometry": geometry,
+            "blurred": int(blurred), "group": group, "taxon": taxon,
+        })
+    if len(rows) != RAVON_N2000_RECONSTRUCTION_EXPECTED["source_records"]:
+        raise ValueError("De 13.202-bronselectie wijkt af van het gecontroleerde profiel.")
+
+    target_taxa = {"Triturus cristatus", "Cobitis taenia", "Rhodeus amarus"}
+    locations: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for row in rows:
+        locations[str(row["geometry"])].append(row)
+    note = (
+        "Positieve NDFF-regel uit RAVON Natura 2000-protocol 13.202. De openbare "
+        "geometrie is een monsterlocatieproxy. Methode, inspanning, volledig "
+        "bezoek en negatieve formulieren ontbreken; daarom zijn geen bezoeken "
+        "of nullen afgeleid."
+    )
+    location_values: list[str] = []
+    location_keys: dict[str, str] = {}
+    for geometry, location_rows in sorted(locations.items()):
+        key = hashlib.sha256(f"13.202|monsterlocatie|{geometry}".encode()).hexdigest()
+        location_keys[geometry] = key
+        location_values.append(
+            f"({sql_text(RAVON_N2000_RULE_VERSION)},{sql_text(key)},'13.202',"
+            f"{sql_text(geometry)},{len(location_rows)},"
+            f"{sum(int(row['blurred']) for row in location_rows)},"
+            f"'openbare_geometrie_als_monsterlocatieproxy',{sql_text(note)})"
+        )
+    selection_values: list[str] = []
+    for row in rows:
+        relation = "doelsoort" if row["taxon"] in target_taxa else "bijvangst"
+        selection_values.append(
+            f"({sql_text(RAVON_N2000_RULE_VERSION)},{int(row['observation_id'])},"
+            f"{sql_text(location_keys[str(row['geometry'])])},{sql_text(relation)},"
+            f"'waargenomen','onbekend_in_ndff','geen_bezoek_afleidbaar',"
+            f"'geen_nul_afleidbaar',{sql_text(note)})"
+        )
+    statements = [
+        "START TRANSACTION;",
+        f"DELETE FROM Meijendel.ndff_ravon_n2000_recordselectie WHERE reconstructieversie={sql_text(RAVON_N2000_RULE_VERSION)};",
+        f"DELETE FROM Meijendel.ndff_ravon_n2000_monsterlocatieproxy WHERE reconstructieversie={sql_text(RAVON_N2000_RULE_VERSION)};",
+    ]
+    statements += _batched_insert(
+        "Meijendel.ndff_ravon_n2000_monsterlocatieproxy",
+        "reconstructieversie,locatie_sleutel,protocol_sleutel,openbare_geometrie_sha256,bronrecordaantal,vervaagde_recordaantal,identificatiestatus,kwaliteitsnotitie",
+        location_values,
+    )
+    statements += _batched_insert(
+        "Meijendel.ndff_ravon_n2000_recordselectie",
+        "reconstructieversie,waarneming_id,locatie_sleutel,doelrelatie,waarnemingsstatus,methodestatus,bezoekstatus,nulstatus,kwaliteitsnotitie",
+        selection_values,
+    )
+    statements.append("COMMIT;")
+    run_mysql(mysql_client, client_args, "\n".join(statements))
+    return {
+        "source_records": len(rows),
+        "location_proxies": len(locations),
+        "target_rows": sum(row["taxon"] in target_taxa for row in rows),
+        "bycatch_rows": sum(row["taxon"] not in target_taxa for row in rows),
+        "blurred_rows": sum(int(row["blurred"]) for row in rows),
+        "zero_rows": 0,
+        "unlinked_source_records": 0,
+    }
+
+
 def reconstruct_resterende_nem(
     mysql_client: Path,
     client_args: list[str],
@@ -8273,7 +8450,11 @@ def reconstruct_resterende_nem(
             else POLDERVIS_RULE_VERSION if "poldervis" in table
             else OTTER_BEVER_RULE_VERSION
         )
-        statements.append(f"DELETE FROM {table} WHERE reconstructieversie={sql_text(version)};")
+        versions = (
+            f"{sql_text(POLDERVIS_LEGACY_RULE_VERSION)},{sql_text(POLDERVIS_RULE_VERSION)}"
+            if "poldervis" in table else sql_text(version)
+        )
+        statements.append(f"DELETE FROM {table} WHERE reconstructieversie IN ({versions});")
 
     # 03.203: de openbare levering bestaat uitsluitend uit vervaagde jaaraggregaten.
     night_rows = by_protocol["03.203"]
@@ -8353,7 +8534,8 @@ def reconstruct_resterende_nem(
                 f"'geen_nul_afleidbaar',{sql_text(fungus_note)})"
             )
 
-    # 13.201: geometrie is waterproxy; alleen Kleine modderkruiper is lokaal doelsoort.
+    # 13.201: geometrie is een monsterlocatieproxy; alleen Kleine modderkruiper
+    # is lokaal doelsoort. Een stabiel waterobject volgt niet uit de levering.
     fish_rows = by_protocol["13.201"]
     fish_locations: dict[str, list[dict[str, object]]] = defaultdict(list)
     fish_visits: dict[tuple[str, str, str], list[dict[str, object]]] = defaultdict(list)
@@ -8367,7 +8549,7 @@ def reconstruct_resterende_nem(
         "modderkruiper is daarom onbekend en nadrukkelijk geen nul."
     )
     for geometry, location_rows in sorted(fish_locations.items()):
-        location_key = hashlib.sha256(f"13.201|water|{geometry}".encode()).hexdigest()
+        location_key = hashlib.sha256(f"13.201|monsterlocatie|{geometry}".encode()).hexdigest()
         statuses = {str(row["spatial"]) for row in location_rows}
         if len(statuses) != 1 or next(iter(statuses)) not in {"single_volledig_binnen", "outside"}:
             raise ValueError("13.201-waterlocatie heeft een onverwachte ruimtelijke status.")
@@ -8378,13 +8560,13 @@ def reconstruct_resterende_nem(
         plot_version = next(iter(versions)) if plot_id is not None and len(versions)==1 else None
         fish_location_values.append(
             f"({sql_text(POLDERVIS_RULE_VERSION)},{sql_text(location_key)},'13.201',"
-            f"{sql_text(geometry)},{len(location_rows)},{sql_text(status)},"
+            f"{sql_text(geometry)},'monsterlocatieproxy',{len(location_rows)},{sql_text(status)},"
             f"{plot_version if plot_version is not None else 'NULL'},"
             f"{plot_id if plot_id is not None else 'NULL'},"
-            f"'openbare_geometrie_als_waterproxy',{sql_text(fish_note)})"
+            f"'openbare_geometrie_als_monsterlocatieproxy',{sql_text(fish_note)})"
         )
     for (geometry, start, stop), visit_rows in sorted(fish_visits.items()):
-        location_key = hashlib.sha256(f"13.201|water|{geometry}".encode()).hexdigest()
+        location_key = hashlib.sha256(f"13.201|monsterlocatie|{geometry}".encode()).hexdigest()
         visit_key = hashlib.sha256(f"13.201|visit|{geometry}|{start}|{stop}".encode()).hexdigest()
         fish_visit_values.append(
             f"({sql_text(POLDERVIS_RULE_VERSION)},{sql_text(visit_key)},"
@@ -8460,7 +8642,7 @@ def reconstruct_resterende_nem(
         (f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,protocol_sleutel,openbare_geometrie_sha256,hoknummer,periode_start,periode_stop,bronrecordaantal,ruimtelijke_status,volledigheidsstatus,kwaliteitsnotitie", fungus_visit_values),
         (f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,waarnemingsstatus,bronrecordaantal,meetwaarden_json,nulregel,kwaliteitsnotitie", fungus_taxon_values),
         (f"{BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,bezoek_sleutel,selectiestatus,selectiereden", fungus_selection_values),
-        (f"{POLDERVIS_TABLE_PREFIX}_waterlocatie", "reconstructieversie,waterlocatie_sleutel,protocol_sleutel,openbare_geometrie_sha256,bronrecordaantal,ruimtelijke_status,plotversie_id,eenduidig_plot_id,identificatiestatus,kwaliteitsnotitie", fish_location_values),
+        (f"{POLDERVIS_TABLE_PREFIX}_waterlocatie", "reconstructieversie,waterlocatie_sleutel,protocol_sleutel,openbare_geometrie_sha256,meeteenheidstype,bronrecordaantal,ruimtelijke_status,plotversie_id,eenduidig_plot_id,identificatiestatus,kwaliteitsnotitie", fish_location_values),
         (f"{POLDERVIS_TABLE_PREFIX}_bezoek", "reconstructieversie,bezoek_sleutel,waterlocatie_sleutel,periode_start,periode_stop,bronrecordaantal,methodestatus,kwaliteitsnotitie", fish_visit_values),
         (f"{POLDERVIS_TABLE_PREFIX}_bezoek_taxon", "reconstructieversie,bezoek_sleutel,wetenschappelijke_naam,doelrelatie,waarnemingsstatus,bronrecordaantal,geregistreerd_aantal,meetwaarden_json,nulregel,kwaliteitsnotitie", fish_taxon_values),
         (f"{POLDERVIS_TABLE_PREFIX}_recordselectie", "reconstructieversie,waarneming_id,bezoek_sleutel,selectiestatus,selectiereden", fish_selection_values),
@@ -8656,14 +8838,15 @@ SELECT JSON_OBJECT(
   'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
   'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
   'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'scoped_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul' AND nulbereik='binnen_geleverd_positief_bezoek'),
   'adult_count',(SELECT SUM(adult_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
   'subadult_count',(SELECT SUM(subadult_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
   'juvenile_count',(SELECT SUM(juveniel_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
   'unknown_stage_count',(SELECT SUM(onbekend_stadium_aantal) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version}),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND (aantal<>adult_aantal+subadult_aantal+juveniel_aantal+onbekend_stadium_aantal OR (waarnemingsstatus='waargenomen' AND aantal=0) OR (waarnemingsstatus='echte_nul' AND aantal<>0))),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND (aantal<>adult_aantal+subadult_aantal+juveniel_aantal+onbekend_stadium_aantal OR (waarnemingsstatus='waargenomen' AND (aantal=0 OR nulbereik<>'niet_van_toepassing')) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR nulbereik<>'binnen_geleverd_positief_bezoek')))),
   'zandhagedis_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek_taxon WHERE reconstructieversie={version} AND wetenschappelijke_naam='Lacerta agilis' AND waarnemingsstatus='echte_nul'),
   'fully_negative_visits',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek b WHERE b.reconstructieversie={version} AND NOT EXISTS (SELECT 1 FROM Meijendel.ndff_reptiel_bezoek_taxon t WHERE t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel AND t.waarnemingsstatus='waargenomen')),
-  'invalid_effort_claims',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version} AND (bezoekdekkingstatus<>'alleen_positieve_bezoeken' OR inspanningstatus<>'niet_afleidbaar')),
+  'invalid_effort_claims',(SELECT COUNT(*) FROM Meijendel.ndff_reptiel_bezoek WHERE reconstructieversie={version} AND (bezoekdekkingstatus<>'alleen_positieve_bezoeken' OR inspanningstatus<>'niet_afleidbaar' OR periodebetekenis<>'bronperiode_geen_inspanning')),
   'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({legacy_tables}))
 );
 """
@@ -8688,12 +8871,13 @@ SELECT JSON_OBJECT(
   'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version}),
   'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
   'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'method_unknown_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='niet_gemeld_methode_onbekend'),
   'exact_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='exact'),
   'presentie_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='presentieklasse'),
   'minimum_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='minimum'),
   'estimate_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='schatting'),
   'mixed_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaarde_type='gemengd'),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='echte_nul' AND (meetwaarde_type<>'echte_nul' OR aantal_exact<>0 OR ondergrens<>0 OR bovengrens<>0 OR bronrecordaantal<>0)) OR (waarnemingsstatus='waargenomen' AND (meetwaarde_type='echte_nul' OR bronrecordaantal=0)))),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='echte_nul' AND (meetwaarde_type<>'echte_nul' OR aantal_exact<>0 OR ondergrens<>0 OR bovengrens<>0 OR bronrecordaantal<>0)) OR (waarnemingsstatus='niet_gemeld_methode_onbekend' AND (meetwaarde_type<>'niet_bepaald' OR aantal_exact IS NOT NULL OR ondergrens IS NOT NULL OR bovengrens IS NOT NULL OR bronrecordaantal<>0)) OR (waarnemingsstatus='waargenomen' AND (meetwaarde_type IN ('echte_nul','niet_bepaald') OR bronrecordaantal=0)))),
   'positive_source_mismatch',ABS((SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '01.201%' AND soortgroep_raw='Amfibieën' AND vervaagd=0)-(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')),
   'kamsalamander_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_amfibie_waterbezoek_taxon WHERE reconstructieversie={version} AND wetenschappelijke_naam='Triturus cristatus'),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({legacy_tables}))
@@ -9219,6 +9403,21 @@ SELECT JSON_OBJECT(
 """
 
 
+def ravon_n2000_validation_sql() -> str:
+    version = sql_text(RAVON_N2000_RULE_VERSION)
+    return f"""
+SELECT JSON_OBJECT(
+  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '13.202%'),
+  'location_proxies',(SELECT COUNT(*) FROM Meijendel.ndff_ravon_n2000_monsterlocatieproxy WHERE reconstructieversie={version}),
+  'target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_ravon_n2000_recordselectie WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'bycatch_rows',(SELECT COUNT(*) FROM Meijendel.ndff_ravon_n2000_recordselectie WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'blurred_rows',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '13.202%' AND vervaagd=1),
+  'zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_ravon_n2000_recordselectie WHERE reconstructieversie={version} AND waarnemingsstatus<>'waargenomen'),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_ravon_n2000_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '13.202%' AND s.waarneming_id IS NULL)
+);
+"""
+
+
 def validate_vlinder_prewrite_metrics(metrics: dict[str, int]) -> None:
     """Blokkeer een afwijkende v2-matrix voordat de database wordt gewijzigd."""
     if metrics != VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED:
@@ -9285,6 +9484,16 @@ def validate_amphibian_reconstruction(metrics: dict[str, int]) -> None:
             if metrics.get(key) != AMPHIBIAN_RECONSTRUCTION_EXPECTED.get(key)
         }
         raise ValueError(f"Amfibieënreconstructie wijkt af van het vaste profiel: {differences}")
+
+
+def validate_ravon_n2000_reconstruction(metrics: dict[str, int]) -> None:
+    if metrics != RAVON_N2000_RECONSTRUCTION_EXPECTED:
+        differences = {
+            key: (RAVON_N2000_RECONSTRUCTION_EXPECTED.get(key), metrics.get(key))
+            for key in sorted(set(metrics) | set(RAVON_N2000_RECONSTRUCTION_EXPECTED))
+            if metrics.get(key) != RAVON_N2000_RECONSTRUCTION_EXPECTED.get(key)
+        }
+        raise ValueError(f"RAVON Natura 2000-laag wijkt af: {differences}")
 
 
 def validate_bat_reconstruction(metrics: dict[str, int]) -> None:
@@ -9840,6 +10049,8 @@ def main() -> int:
     mode.add_argument("--audit-kwartiertellingen", action="store_true")
     mode.add_argument("--reconstruct-resterende-nem", action="store_true")
     mode.add_argument("--audit-resterende-nem", action="store_true")
+    mode.add_argument("--reconstruct-ravon-n2000", action="store_true")
+    mode.add_argument("--audit-ravon-n2000", action="store_true")
     args = parser.parse_args()
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
@@ -9850,6 +10061,24 @@ def main() -> int:
         return 0
 
     client_args = mysql_args(args.login_path, args.host, args.port)
+    if args.reconstruct_ravon_n2000:
+        ensure_ravon_schema_migrations(args.mysql_client, client_args)
+        run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+        metrics = reconstruct_ravon_n2000(args.mysql_client, client_args)
+        validate_ravon_n2000_reconstruction(metrics)
+        print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_ravon_n2000:
+        output = run_mysql(
+            args.mysql_client,
+            client_args + ["--batch", "--raw", "--skip-column-names"],
+            ravon_n2000_validation_sql(), capture=True,
+        )
+        metrics = parse_analysis_chain_output(output)
+        validate_ravon_n2000_reconstruction(metrics)
+        print(f"OK: lokale RAVON Natura 2000-laag {RAVON_N2000_RULE_VERSION} gereed")
+        print(output)
+        return 0
     if args.reconstruct_vlinders:
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_vlinders(args.mysql_client, client_args)
@@ -9902,6 +10131,7 @@ def main() -> int:
         print(output)
         return 0
     if args.reconstruct_reptielen:
+        ensure_ravon_schema_migrations(args.mysql_client, client_args)
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_reptielen(args.mysql_client, client_args)
         print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
@@ -9919,6 +10149,7 @@ def main() -> int:
         print(output)
         return 0
     if args.reconstruct_amfibieen:
+        ensure_ravon_schema_migrations(args.mysql_client, client_args)
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_amfibieen(args.mysql_client, client_args)
         print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
@@ -10253,6 +10484,7 @@ def main() -> int:
         print(output)
         return 0
     if args.reconstruct_resterende_nem:
+        ensure_ravon_schema_migrations(args.mysql_client, client_args)
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_resterende_nem(args.mysql_client, client_args)
         validate_resterende_nem_reconstruction(metrics)

@@ -193,7 +193,7 @@ een expliciete, geversioneerde afleidingsregel vallen. Ontbrekende deelname- of
 routetypevelden worden nooit uit een ontbrekende soort afgeleid.
 
 Het NEM-Meetprogramma Reptielen (`10.201`) is onder
-`ndff-reptielroute-v1` uit uitsluitend openbare records gereconstrueerd. De 957
+`ndff-reptielroute-v2` uit uitsluitend openbare records gereconstrueerd. De 957
 bronrecords uit 1990-2025 vormen 14 routefamilies en 660 route-datumbezoeken.
 Van die bezoeken zijn er 648 aan een route gekoppeld; twaalf bezoeken hebben
 alleen een grof kilometerhok. De 15 historische trajectgeometrieën vormen de
@@ -201,16 +201,18 @@ routeankers; 56 latere exacte locaties zijn aan het best passende anker
 gekoppeld. Alleen twee protocoltaxa komen voor: Zandhagedis en Hazelworm.
 
 De bezoek-soortmatrix bevat 1.320 regels: 661 positieve combinaties en 659
-echte nullen voor Hazelworm. Ieder aangeleverd bezoek bevat minstens een
+nullen voor Hazelworm met bereik `binnen_geleverd_positief_bezoek`. Ieder
+aangeleverd bezoek bevat minstens een
 positieve Zandhagediswaarneming. De FFV-bron bevat dus geen volledig negatieve
 reptielenbezoeken; ontbrekende Zandhagedisbezoeken of -nullen worden niet
 gereconstrueerd. De 6.286 adulte, 64 subadulte en 761 juveniele dieren blijven
 afzonderlijk optelbaar. Begin- en eindtijden worden bewaard, maar de feitelijke
-inspanning is `niet_afleidbaar`. De vier `Meijendel.ndff_reptiel_*`-tabellen
+inspanning is `niet_afleidbaar`; de bronperiode wordt expliciet niet als
+inspanning geïnterpreteerd. De vier `Meijendel.ndff_reptiel_*`-tabellen
 worden met `--audit-reptielen` gecontroleerd en staan niet in het beveiligde
 schema.
 
-NEM-amfibieënprotocol `01.201` is onder `ndff-amfibiewater-v1` uit de 2.439
+NEM-amfibieënprotocol `01.201` is onder `ndff-amfibiewater-v2` uit de 2.439
 onvervaagde openbare records uit 2003-2025 gereconstrueerd. De 52 openbare
 watergeometrieën vormen 50 conservatief gekoppelde waterfamilies, 211
 telgebiedbezoeken en 1.300 waterbezoeken met minstens één positieve
@@ -218,11 +220,12 @@ registratie. Geometrieën worden alleen als versies van hetzelfde water
 gekoppeld wanneer hun gebruiksjaren niet overlappen en hun middelpunten
 hoogstens 30 meter uiteen liggen.
 
-De matrix bevat 9.100 waterbezoek-taxonregels: 2.274 positief en 6.826 echte
-protocolnullen voor zeven openbaar reconstrueerbare taxa. Een echte nul
-betekent hier uitsluitend: niet gemeld in een water dat door minstens één
-positieve amfibieënregistratie aantoonbaar is bezocht. Volledig negatieve
-water- of telgebiedbezoeken kunnen uit de positieve FFV-export niet worden
+De matrix bevat 9.100 waterbezoek-taxonregels: 2.274 positief en 6.826
+`niet_gemeld_methode_onbekend`. De RAVON-handleiding maakt duidelijk dat een
+nul alleen binnen het juiste programmaonderdeel, seizoen, stadium en de
+gebruikte zoekmethode betekenis heeft. Die informatie ontbreekt in de
+FFV-export; daarom zijn de 6.826 eerdere nullen ingetrokken. Volledig negatieve
+water- of telgebiedbezoeken kunnen uit de positieve FFV-export evenmin worden
 hersteld. Exacte aantallen, RAVON-presentieklassen, minimumaantallen,
 schattingen en gemengde telwaarden blijven afzonderlijk herkenbaar;
 presentieklassen worden nooit als exacte aantallen opgeteld. De twee
@@ -234,6 +237,18 @@ reconstrueerbare openbare waterbezoeken. Zij blijven in de bestaande
 beveiligde bronlaag; er zijn geen afgeleide `ndff_amfibie_*`-tabellen in
 `Meijendel_ndff_secure` en er worden geen Kamsalamandernullen afgeleid. De vijf
 openbare tabellen worden gecontroleerd met `--audit-amfibieen`.
+
+RAVON-protocol `13.202` is apart vastgelegd onder
+`ndff-ravon-n2000-v1`. De 67 positieve records vormen 25
+monsterlocatieproxy's; 14 regels zijn doelsoort en 53 bijvangst. De handleiding
+vereist soortspecifieke methode en inspanning en kent expliciete negatieve
+registratie. Omdat deze context niet in de NDFF-regels staat, zijn geen
+bezoeken of nullen afgeleid. Voor `13.201` is om dezelfde reden de eerdere
+term waterlocatieproxy vervangen door de neutralere `monsterlocatieproxy`.
+
+De actuele protocolbesluiten zijn beschikbaar via
+`Meijendel.v_ndff_analysebesluit_actueel`; deze view voorkomt dat historische
+regelversies in dezelfde analyse worden meegeteld.
 
 Het Vleermuistransectprotocol (`17.208`) is onder
 `ndff-vleermuistransect-v1` uit uitsluitend onvervaagde openbare records

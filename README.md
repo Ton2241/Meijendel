@@ -285,23 +285,34 @@ Voor `07.201` staat de libellenreconstructie onder `ndff-libellenroute-v1`:
 bezoeken is het algemene doelbereik vastgesteld; zeven grove eensoortbezoeken
 behouden alleen hun positieve telling en krijgen geen afgeleide nullen. Alle
 openbare afleidingen staan in `Meijendel`. Voor `10.201` staat daarnaast
-`ndff-reptielroute-v1`: 957 bronrecords zijn samengebracht tot 14
+`ndff-reptielroute-v2`: 957 bronrecords zijn samengebracht tot 14
 routefamilies en 660 route-datumbezoeken. De matrix telt 1.320 regels: 661
-positieve resultaten en 659 echte nullen voor Hazelworm. Volledig negatieve
+positieve resultaten en 659 nullen voor Hazelworm, uitsluitend binnen een
+aangeleverd bezoek met een positieve Zandhagediswaarneming. Volledig negatieve
 bezoeken en de feitelijke inspanning ontbreken in de FFV-bron; voor
 Zandhagedis worden daarom geen nullen aangevuld. Controleer de reconstructies
 met `--audit-vlinders`, `--audit-vliesvleugelen`, `--audit-libellen` en
 `--audit-reptielen`.
 
-Amfibieënprotocol `01.201` staat onder `ndff-amfibiewater-v1` in vijf
+Amfibieënprotocol `01.201` staat onder `ndff-amfibiewater-v2` in vijf
 openbare `Meijendel.ndff_amfibie_*`-tabellen. De 2.439 onvervaagde bronrecords
 uit 2003-2025 vormen 211 telgebiedbezoeken, 50 waterfamilies en 1.300
 aantoonbaar bezochte wateren. De matrix bevat 9.100 waterbezoek-taxonregels:
-2.274 positieve registraties en 6.826 echte protocolnullen voor zeven taxa.
+2.274 positieve registraties en 6.826 keer `niet_gemeld_methode_onbekend`.
+Omdat programmaonderdeel, zoekmethode en volledige-lijststatus ontbreken, zijn
+deze laatste regels nadrukkelijk geen nullen.
 Exacte aantallen, presentieklassen en gemengde telwaarden blijven
 onderscheiden. De 80 jaarlijks geaggregeerde, vervaagde Kamsalamanderrecords
 krijgen geen openbare waterkoppeling of afgeleide nul. Controleer deze laag met
 `--audit-amfibieen`.
+
+RAVON Natura 2000-protocol `13.202` staat positief en recordgebonden in
+`ndff_ravon_n2000_*`: 67 bronregels op 25 monsterlocatieproxy's, waarvan 14
+doelsoortregels en 53 bijvangsten. Er zijn geen bezoeken, inspanning of nullen
+afgeleid. Protocol `13.201` gebruikt vanaf `ndff-poldervis-v2` eveneens de
+neutralere aanduiding `monsterlocatieproxy` in plaats van een verondersteld
+stabiel waterobject. Gebruik `--audit-ravon-n2000` en
+`--audit-resterende-nem` voor controle.
 
 Vleermuistransectprotocol `17.208` staat onder
 `ndff-vleermuistransect-v1` in vijf openbare `Meijendel.ndff_vleermuis_*`-

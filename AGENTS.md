@@ -275,21 +275,22 @@ MySQL:
   bezoek blijven, maar niet als exacte route worden geïnterpreteerd. Controleer
   vóór gebruik met `--audit-libellen`
 - gebruik voor reptielenprotocol `10.201` reconstructieversie
-  `ndff-reptielroute-v1` en de vier openbare tabellen
+  `ndff-reptielroute-v2` en de vier openbare tabellen
   `Meijendel.ndff_reptiel_*`. Een bezoek is routefamilie plus kalenderdatum;
   gebruik de ruwe begin- en eindtijd niet als inspanning. De FFV-laag bevat
   alleen bezoeken met minstens één positieve reptielenwaarneming. Gebruik de
-  afgeleide echte nullen uitsluitend voor Hazelworm binnen deze bevestigde
-  bezoeken; leid geen Zandhagedisnullen of geheel ontbrekende bezoeken af.
+  afgeleide nullen uitsluitend voor Hazelworm binnen deze bevestigde
+  positieve bezoeken en alleen met `nulbereik=binnen_geleverd_positief_bezoek`;
+  leid geen Zandhagedisnullen of geheel ontbrekende bezoeken af.
   Sluit `geen_route` uit van routeanalyse en controleer vóór gebruik met
   `--audit-reptielen`
 - gebruik voor amfibieënprotocol `01.201` reconstructieversie
-  `ndff-amfibiewater-v1` en de vijf openbare tabellen
+  `ndff-amfibiewater-v2` en de vijf openbare tabellen
   `Meijendel.ndff_amfibie_*`. Een telgebiedbezoek kan meerdere bevestigde
-  waterbezoeken bevatten. Leid echte nullen alleen af voor de zeven openbare
-  analysetaxa binnen een water met minstens één positieve 01.201-registratie;
-  interpreteer zo'n nul als niet aangetroffen tijdens dat bezoek, niet als
-  biologische afwezigheid. Houd exacte aantallen, presentieklassen,
+  waterbezoeken bevatten. Classificeer een niet-gemeld taxon als
+  `niet_gemeld_methode_onbekend`, nooit als nul, zolang programmaonderdeel,
+  zoekmethode en volledige-lijststatus ontbreken. Houd exacte aantallen,
+  presentieklassen,
   minimumaantallen, schattingen en gemengde waarden gescheiden. Leid geen
   waterkoppeling of nul af voor de 80 vervaagde, jaarlijks geaggregeerde
   Kamsalamanderrecords. Controleer vóór gebruik met `--audit-amfibieen`
@@ -461,7 +462,7 @@ MySQL:
   volledig binnen hetzelfde SOVON-plot liggen hebben een eenduidige
   intervalniveau-plotkoppeling. Controleer met `--audit-kwartiertellingen`
 - gebruik voor de resterende NEM-batch de versies `ndff-nachtvlinder-v1`,
-  `ndff-bospaddenstoel-verspreiding-v1`, `ndff-poldervis-v1` en
+  `ndff-bospaddenstoel-verspreiding-v1`, `ndff-poldervis-v2` en
   `ndff-otter-bever-v1` en uitsluitend de openbare tabellen
   `Meijendel.ndff_nachtvlinder_*`,
   `Meijendel.ndff_bospaddenstoel_verspreiding_*`,
@@ -471,6 +472,14 @@ MySQL:
   `geen_nul_doelmethode_onbekend`; dit is onbekend en geen echte nul. Noem
   geaggregeerde positieve telwaarden geregistreerde aantallen, niet abundantie.
   Controleer de vier reeksen samen met `--audit-resterende-nem`
+- gebruik voor RAVON Natura 2000-protocol `13.202` uitsluitend
+  `ndff-ravon-n2000-v1` en `Meijendel.ndff_ravon_n2000_*`. De 67 positieve
+  records zijn doelsoort of bijvangst; de 25 geometrieën zijn slechts
+  monsterlocatieproxy's. Leid geen bezoeken, inspanning of nullen af en
+  controleer met `--audit-ravon-n2000`
+- gebruik voor actuele beslisregels uitsluitend
+  `Meijendel.v_ndff_analysebesluit_actueel`; meng oudere regelversies niet in
+  een analyse
 - reconstrueer protocol `12.202` niet als afzonderlijke NDFF-meetreeks. De
   provinciale PQ-tabellen zijn gezaghebbend; NDFF-PQ blijft uitsluitend
   secundaire overlap- en herkomstcontrole

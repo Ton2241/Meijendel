@@ -138,21 +138,22 @@
   Alle vier `ndff_libel_*`-tabellen staan in `Meijendel`; er is geen afgeleide
   libellenstructuur in `Meijendel_ndff_secure`.
 - Voor `10.201` is vanaf 12 september 2026 de openbare reptielenreeks
-  vastgelegd als `ndff-reptielroute-v1`. De 957 bronrecords vormen 14
+  vastgelegd als `ndff-reptielroute-v2`. De 957 bronrecords vormen 14
   routefamilies en 660 route-datumbezoeken. Opeenvolgende trajectsegmenten die
   op minstens tien gezamenlijke datums zijn geteld en ruimtelijk maximaal twee
   kilometer uiteen liggen, gelden als één route; incidenteel gelijktijdig
-  getelde routes niet. De matrix bevat 661 positieve regels en 659 echte nullen
-  voor Hazelworm. Voor Zandhagedis en voor geheel ontbrekende bezoeken worden
-  geen nullen afgeleid. Inspanning blijft `niet_afleidbaar` en de brondekking
+  getelde routes niet. De matrix bevat 661 positieve regels en 659 binnen een
+  geleverd positief bezoek afgeleide nullen voor Hazelworm. Voor Zandhagedis
+  en voor geheel ontbrekende bezoeken worden geen nullen afgeleid. Inspanning
+  blijft `niet_afleidbaar` en de brondekking
   `alleen_positieve_bezoeken`. Alle vier `ndff_reptiel_*`-tabellen staan in
   `Meijendel`, niet in `Meijendel_ndff_secure`.
 - Voor `01.201` is vanaf 12 september 2026 de openbare amfibieënreeks
-  vastgelegd als `ndff-amfibiewater-v1`. De 2.439 onvervaagde bronrecords
+  vastgelegd als `ndff-amfibiewater-v2`. De 2.439 onvervaagde bronrecords
   vormen 211 telgebiedbezoeken, 50 waterfamilies en 1.300 bevestigde
-  waterbezoeken. De matrix bevat 2.274 positieve regels en 6.826 echte
-  protocolnullen voor zeven taxa. Alleen een water met minstens één positieve
-  registratie geldt aantoonbaar als bezocht. Presentieklassen en overige
+  waterbezoeken. De matrix bevat 2.274 positieve regels en 6.826 niet-gemelde
+  taxonregels met onbekende methode; deze zijn geen nullen. Alleen een water
+  met minstens één positieve registratie geldt aantoonbaar als bezocht. Presentieklassen en overige
   niet-exacte telwaarden worden niet als aantallen opgeteld. De 80 vervaagde,
   jaarlijks geaggregeerde Kamsalamanderrecords blijven buiten deze openbare
   reconstructie; daarvoor worden geen waterkoppelingen of nullen afgeleid.
@@ -686,13 +687,21 @@
   `ndff-nachtvlinder-v1` (596 bronrecords, vijf geometrie-jaren, 84 positieve
   taxonregels, geregistreerde som 878), `11.204` onder
   `ndff-bospaddenstoel-verspreiding-v1` (14 records, twee bezoeken, 14 positieve
-  taxonregels), `13.201` onder `ndff-poldervis-v1` (20 records, drie
-  waterlocatieproxy's, zes bezoeken, 17 positieve taxonregels en twee
+  taxonregels), `13.201` onder `ndff-poldervis-v2` (20 records, drie
+  monsterlocatieproxy's, zes bezoeken, 17 positieve taxonregels en twee
   `doelsoort_niet_gemeld`-regels) en `17.207` onder `ndff-otter-bever-v1`
   (drie positieve Otterrecords in één kilometerhok-jaar). Geen van deze vier
   reeksen bevat een afgeleide echte nul. Bij `13.201` blijft niet gemelde Kleine
   modderkruiper onbekend doordat submethode en doelbereik ontbreken. Het
   beveiligde schema is niet uitgebreid.
+- Protocol `13.202` is vanaf 15 september 2026 onder
+  `ndff-ravon-n2000-v1` als positieve recordlaag vastgelegd: 67 bronrecords,
+  25 monsterlocatieproxy's, 14 doelsoortregels en 53 bijvangsten. Omdat methode,
+  inspanning en negatieve formulieren ontbreken, zijn geen bezoeken of nullen
+  afgeleid.
+- Analyses gebruiken vanaf 15 september 2026
+  `v_ndff_analysebesluit_actueel`, zodat oude en actuele beslisregels niet
+  onbedoeld worden gecombineerd.
 - Protocol `12.202` krijgt geen afzonderlijke NDFF-reconstructie. De provinciale
   PQ-reeks blijft gezaghebbend en NDFF dient daar alleen als secundaire
   overlap- en herkomstcontrole.
