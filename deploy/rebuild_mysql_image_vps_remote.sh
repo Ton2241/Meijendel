@@ -60,6 +60,26 @@ validate_backup() {
   sha256sum -c vwg-m-baremetal-latest.tar.gz.sha256
   /srv/vwgm/vwg-m-linux-app/scripts/restore_check_backup.sh "$BACKUP_ARCHIVE"
 }
+validate_image_inventory() {
+  local tag mysql_seen=0 shiny_seen=0
+  while IFS= read -r tag; do
+    case "$tag" in
+      vwgm-mysql:9.7.1)
+        mysql_seen=$((mysql_seen + 1))
+        ;;
+      vwgm-shiny:latest)
+        shiny_seen=$((shiny_seen + 1))
+        ;;
+      vwgm-shiny:rollback-*)
+        ;;
+      *)
+        fail "onverwachte imagetag in eindsituatie: $tag"
+        ;;
+    esac
+  done < <(docker images --format '{{.Repository}}:{{.Tag}}' | sort)
+  [[ "$mysql_seen" -eq 1 && "$shiny_seen" -eq 1 ]] ||
+    fail "verplichte actieve imagetags ontbreken of zijn dubbel"
+}
 audit_candidate() {
   local output status short attention_count
   set +e
@@ -139,7 +159,7 @@ finalize_current() {
   [[ "$(docker exec "$ACTIVE_CONTAINER" id -u mysql)" == 1999 && "$(docker exec "$ACTIVE_CONTAINER" id -g mysql)" == 1999 ]] || fail "MySQL UID/GID wijkt af"
   wait_mysql "$ACTIVE_CONTAINER" || fail "actieve MySQL werd niet gereed"
   [[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
-  [[ "$(docker images --format '{{.Repository}}:{{.Tag}}' | sort | tr '\n' ' ')" == "vwgm-mysql:9.7.1 vwgm-shiny:latest " ]] || fail "image-eindsituatie wijkt af"
+  validate_image_inventory
 
   final_audit="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root)"
   printf '%s\n' "$final_audit"
@@ -285,7 +305,7 @@ grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || f
 ! grep -Fq "$EXPECTED_OLD_IMAGE" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up noemt oude image nog"
 
 [[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
-[[ "$(docker images --format '{{.Repository}}:{{.Tag}}' | sort | tr '\n' ' ')" == "vwgm-mysql:9.7.1 vwgm-shiny:latest " ]] || fail "image-eindsituatie wijkt af"
+validate_image_inventory
 tmp_state="$STATE_FILE.tmp.$$"
 printf '%s\n' "$NEW_COMMIT" > "$tmp_state"
 mv "$tmp_state" "$STATE_FILE"

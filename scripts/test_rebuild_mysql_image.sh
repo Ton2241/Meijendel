@@ -28,6 +28,7 @@ for marker in \
   'smoke_status hoofddomein-redirect' \
   'critical=0|high=18|fix_beschikbaar=18|zonder_fix=0' \
   'critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
+  'validate_image_inventory' 'vwgm-shiny:rollback-*' \
   'docker rm "$PREVIOUS_CONTAINER"' 'docker image rm "$EXPECTED_OLD_IMAGE"' \
   'Meijendel.commit'; do
   grep -Fq -- "$marker" "$remote_script"
@@ -38,6 +39,7 @@ grep -Fq 'CHECK TABLE' "$repo/deploy/validate_mysql_uid_migration_vps_remote.sh"
 [[ "$(grep -Fc -- "--format '{{range .Mounts}}{{if eq .Destination \"/var/lib/mysql\"}}{{.Source}}{{end}}{{end}}'" "$remote_script")" -eq 3 ]]
 ! grep -Fq -- '\"/var/lib/mysql\"' "$remote_script"
 ! grep -Fq 'mysqladmin ping' "$remote_script"
+! grep -Fq '"vwgm-mysql:9.7.1 vwgm-shiny:latest "' "$remote_script"
 ! grep -Fq '/srv/vwgm/vwg-m-linux-app/scripts/smoke_vps.sh' "$remote_script"
 ! grep -Eq 'docker (system|builder|image|container) prune' "$local_script" "$remote_script"
 
