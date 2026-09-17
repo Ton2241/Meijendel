@@ -70,8 +70,12 @@ audit_candidate() {
   short="${CANDIDATE_ID#sha256:}"
   grep -Fq "SAMENVATTING|kandidaat-${short:0:12}|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
     <<< "$output" || fail "kandidaat bevat HIGH/CRITICAL of is niet exact gescand"
-  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=2|fix_beschikbaar=2|zonder_fix=0' \
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=18|fix_beschikbaar=18|zonder_fix=0' \
     <<< "$output" || fail "actieve uitgangsimage wijkt af tijdens kandidaatscan"
+  grep -Fq 'pakket=openssl|installed=1:3.5.5-6.0.1.el9_8|fixed=1:3.5.8-1.0.1.el9_8' \
+    <<< "$output" || fail "openssl-uitgangsversie wijkt af tijdens kandidaatscan"
+  grep -Fq 'pakket=openssl-libs|installed=1:3.5.5-6.0.1.el9_8|fixed=1:3.5.8-1.0.1.el9_8' \
+    <<< "$output" || fail "openssl-libs-uitgangsversie wijkt af tijdens kandidaatscan"
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$output" || fail "Shiny wijkt af tijdens kandidaatscan"
   [[ "$status" -eq 1 ]] || fail "kandidaatscan heeft een onverwachte eindstatus"

@@ -9,8 +9,9 @@ remote_script="$repo/deploy/rebuild_mysql_image_vps_remote.sh"
 bash -n "$local_script" "$remote_script"
 for marker in \
   'guard_baseline' 'guard_acquire_lock' 'container-status' 'backup-status' \
-  'critical=0|high=2|fix_beschikbaar=2|zonder_fix=0' \
-  'sqlite-libs|installed=3.34.1-10.el9_8|fixed=3.34.1-11.el9_8' \
+  'critical=0|high=18|fix_beschikbaar=18|zonder_fix=0' \
+  'openssl|installed=1:3.5.5-6.0.1.el9_8|fixed=1:3.5.8-1.0.1.el9_8' \
+  'openssl-libs|installed=1:3.5.5-6.0.1.el9_8|fixed=1:3.5.8-1.0.1.el9_8' \
   'vulnerability-audit-root.*non-zero exit status 1' \
   '--finalize' 'FINALIZE_ONLY' \
   'ssh -tt' 'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
@@ -25,6 +26,7 @@ for marker in \
   'smoke_status mysql-soortpagina' 'smoke_status leden-afgeschermd' \
   'smoke_status shiny-afgeschermd' 'smoke_status app-redirect' \
   'smoke_status hoofddomein-redirect' \
+  'critical=0|high=18|fix_beschikbaar=18|zonder_fix=0' \
   'critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   'docker rm "$PREVIOUS_CONTAINER"' 'docker image rm "$EXPECTED_OLD_IMAGE"' \
   'Meijendel.commit'; do
