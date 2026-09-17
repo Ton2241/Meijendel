@@ -74,6 +74,30 @@
   openstaande acties. Voor expliciete NEM-codes geldt de later vastgelegde
   uitzondering: de code bewijst een protocolgeldig positief bezoek; begin- en
   eindtijd groeperen de aanwezige positieve regels tot dat bezoek.
+- Telefonische toelichting van NDFF aan Ton Lansink op 17 september 2026 geldt
+  als aanvullend brongegeven voor de interpretatie van de leveringen. NDFF
+  heeft niet alle oorspronkelijke meetgegevens van de bronorganisaties
+  ontvangen. Ontbrekende bezoek-ID's, nulwaarnemingen en inspanningsgegevens
+  zijn daarom niet uitsluitend uit de export weggelaten; een deel is nooit aan
+  NDFF geleverd. Neem niet langer aan dat NDFF deze bovenliggende
+  surveystructuur alsnog kan leveren.
+- De betekenis van een NDFF-polygoon is niet per record vastgesteld. Volgens
+  dezelfde telefonische toelichting kan een polygoon zowel het werkelijk
+  onderzochte gebied als ruimtelijke onzekerheid weergeven; NDFF kon niet
+  aangeven voor welke records welke betekenis geldt. De openbare levering
+  bevat 810.830 unieke niet-vogelrecords uit 1950-2025: 810.828 polygonen en
+  2 multipolygonen. Ticket 58679 bevat 14.573 polygonen voor 191 geselecteerde
+  taxa. Behandel geen van deze geometrieën zonder aanvullend
+  bewijs als exacte vindplaats, telroute of volledig onderzocht gebied. De
+  bestaande voorzichtige ruimtelijke classificatie blijft verplicht.
+- Raadpleeg voor ieder protocol eerst de
+  [officiële NDFF-protocolpagina](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/)
+  en de daar aangeboden handleiding voordat een bronhouder wordt benaderd. De
+  protocolpagina beschrijft methode en protocolbeheerder. Bruikbare nullen zijn
+  volgens NDFF alleen afleidbaar uit sterke protocollen met voldoende metadata.
+  Een handleiding beschrijft wat het protocol in beginsel ondersteunt, maar
+  bewijst niet dat NDFF voor een concrete Meijendel-reeks alle bezoeken,
+  inspanning en nullen heeft ontvangen.
 - De native survey-eenheid blijft behouden: route, water, permanent proefvlak,
   kilometerhok, meettraject of karteringsgebied. De ruimtelijke ligging van één
   positieve NDFF-regel is onvoldoende om de hele survey aan een SOVON-plot toe
