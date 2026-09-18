@@ -9,9 +9,8 @@ remote_script="$repo/deploy/rebuild_mysql_image_vps_remote.sh"
 bash -n "$local_script" "$remote_script"
 for marker in \
   'guard_baseline' 'guard_acquire_lock' 'container-status' 'backup-status' \
-  'critical=0|high=18|fix_beschikbaar=18|zonder_fix=0' \
-  'openssl|installed=1:3.5.5-6.0.1.el9_8|fixed=1:3.5.8-1.0.1.el9_8' \
-  'openssl-libs|installed=1:3.5.5-6.0.1.el9_8|fixed=1:3.5.8-1.0.1.el9_8' \
+  'critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
+  'libevent|installed=2.1.12-8.el9_4|fixed=2.1.13-1.el9_8' \
   'vulnerability-audit-root.*non-zero exit status 1' \
   '--finalize' 'FINALIZE_ONLY' \
   'ssh -tt' 'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
@@ -26,7 +25,7 @@ for marker in \
   'smoke_status mysql-soortpagina' 'smoke_status leden-afgeschermd' \
   'smoke_status shiny-afgeschermd' 'smoke_status app-redirect' \
   'smoke_status hoofddomein-redirect' \
-  'critical=0|high=18|fix_beschikbaar=18|zonder_fix=0' \
+  'critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
   'critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   'validate_image_inventory' 'vwgm-shiny:rollback-*' \
   'docker rm "$PREVIOUS_CONTAINER"' 'docker image rm "$EXPECTED_OLD_IMAGE"' \
@@ -41,6 +40,8 @@ grep -Fq 'CHECK TABLE' "$repo/deploy/validate_mysql_uid_migration_vps_remote.sh"
 ! grep -Fq 'mysqladmin ping' "$remote_script"
 ! grep -Fq '"vwgm-mysql:9.7.1 vwgm-shiny:latest "' "$remote_script"
 ! grep -Fq '/srv/vwgm/vwg-m-linux-app/scripts/smoke_vps.sh' "$remote_script"
+! grep -Fq 'high=18|fix_beschikbaar=18' "$local_script" "$remote_script"
+! grep -Fq 'pakket=openssl|' "$local_script" "$remote_script"
 ! grep -Eq 'docker (system|builder|image|container) prune' "$local_script" "$remote_script"
 
 printf 'OK: MySQL-imagerebuild is begrensd, scanverplicht en automatisch rollbackbaar.\n'
