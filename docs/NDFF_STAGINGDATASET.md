@@ -184,8 +184,13 @@ De protocoltoets per FFV-soortgroep is afgerond en reproduceerbaar vastgelegd in
 - 6.273 records (0,77%) behoren tot SNL-gebiedsmonitoring en zijn hoogstens
   kandidaat voor periodieke toestand-/beheeranalyse na ontvangst van volledige
   meetronden.
-- 97.318 records (12,00%) vallen onder de conservatieve PQ-blokkade voor
-  `12.007` of `12.202` en worden niet als zelfstandige telling toegelaten.
+- 6.326 records met protocol `12.007` uit 1952-1980 zijn historische
+  vegetatiecontext: uitsluitend positieve context (`V`), geen gevalideerde
+  PQ-trendreeks of nulwaarnemingen. Het betreft 5.179 records van Provincie
+  Zuid-Holland en 1.147 van Alterra; 3.160 records zijn ruimtelijk eenduidig
+  bruikbaar en 3.166 blijven door de ruimtelijke poort uitgesloten.
+- 90.992 andere records met `12.007` of `12.202` vallen onder de conservatieve
+  PQ-blokkade en worden niet als zelfstandige telling toegelaten.
 - Voor 11 soortgroepen ontbreekt in deze levering een passend doelmeetnet; zij
   worden niet voor trends in de life-database opgenomen.
 

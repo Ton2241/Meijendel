@@ -330,8 +330,13 @@ WITH basis AS (
     END AS ruimtelijk_toelaatbaar,
     CASE WHEN c.secure_waarneming_id IS NOT NULL
       THEN sp.plot_id ELSE CAST(orr.eenduidig_plot_id AS CHAR) END AS plot_id,
-    CASE WHEN c.secure_waarneming_id IS NOT NULL
-      THEN spq.classificatie ELSE opq.classificatie END AS pq_status,
+    CASE
+      WHEN opq.classificatie='historische_vegetatiecontext'
+        THEN opq.classificatie
+      WHEN c.secure_waarneming_id IS NOT NULL
+        THEN spq.classificatie
+      ELSE opq.classificatie
+    END AS pq_status,
     CASE
       WHEN p.protocol_sleutel<>'12.205' THEN 'niet_van_toepassing'
       ELSE COALESCE(snl.overlap_status,'onvoldoende_onderzocht')
@@ -374,7 +379,7 @@ WITH basis AS (
   ) AS sp ON sp.waarneming_id=c.secure_waarneming_id
   LEFT JOIN Meijendel.ndff_open_pq_koppeling AS opq
     ON opq.waarneming_id=c.open_waarneming_id
-   AND opq.regelversie='ndff-open-pq-poort-v1'
+   AND opq.regelversie='ndff-open-pq-poort-v2'
   LEFT JOIN ndff_pq_koppeling AS spq
     ON spq.ndff_waarneming_id=c.secure_waarneming_id
    AND spq.beslisregel_versie='ndff-secure-58679-v1'
@@ -408,7 +413,9 @@ WITH basis AS (
    AND dtk.analysetype='TK' AND dtk.regelversie='ndff-analysebesluit-v4'
 ), recordbesluit AS (
   SELECT basis.*,
-    CONCAT_WS(',',
+    CASE WHEN basis.pq_status='historische_vegetatiecontext'
+      THEN CASE WHEN besluit_v='voorlopig_toegelaten' THEN 'V' ELSE '' END
+      ELSE CONCAT_WS(',',
       CASE WHEN besluit_v='voorlopig_toegelaten' THEN 'V' END,
       CASE WHEN besluit_i='voorlopig_toegelaten'
              OR (besluit_i='alleen_na_doelsoortselectie'
@@ -422,7 +429,8 @@ WITH basis AS (
       CASE WHEN besluit_tk='voorlopig_toegelaten'
              OR (besluit_tk='alleen_na_doelsoortselectie'
                  AND doelrelatie_record='doelsoort') THEN 'TK' END
-    ) AS protocol_kandidaattypen
+      )
+    END AS protocol_kandidaattypen
   FROM basis
 )
 SELECT
@@ -445,7 +453,7 @@ SELECT
   pq_status,
   snl_overlap_status,
   CASE
-    WHEN pq_status NOT IN ('onafhankelijk','niet_van_toepassing')
+    WHEN pq_status NOT IN ('onafhankelijk','niet_van_toepassing','historische_vegetatiecontext')
       THEN 'uitgesloten_pq'
     WHEN ruimtelijk_toelaatbaar=0 THEN 'uitgesloten_ruimtelijk'
     WHEN snl_overlap_status='overlap_bevestigd' THEN 'uitgesloten_overlap'
@@ -455,6 +463,9 @@ SELECT
   END AS record_selectiestatus,
   gegevensgeschiktheid,
   CONCAT(kwaliteitsmelding,
+    CASE WHEN pq_status='historische_vegetatiecontext'
+      THEN ' Historische vegetatieopname: alleen positieve context, geen gevalideerde PQ-trendreeks.'
+      ELSE '' END,
     ' Protocoltypen zijn kandidaten. Verkennende berekeningen zijn toegestaan met deze kwaliteitsmelding. Ruwe meldingsaantallen zijn geen gevalideerde populatietrend.')
     AS kwaliteitsmelding
 FROM recordbesluit;

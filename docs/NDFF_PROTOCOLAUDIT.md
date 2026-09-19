@@ -1167,7 +1167,8 @@ blijven als historische auditlaag beschikbaar. De laag bevat:
 - `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
   SOVON-plotlaag 2025;
 - `ndff_open_pq_koppeling`: 810.830 geversioneerde PQ-poortbesluiten, waarvan
-  97.318 secundaire PQ-controlebron en 713.512 niet van toepassing;
+  6.326 historische vegetatiecontext, 90.992 secundaire PQ-controlebron en
+  713.512 niet van toepassing;
 - `ndff_snl_waarneming_context`: recordgebonden bronoverlapstatus voor de
   6.273 openbare records met protocol `12.205`;
 - `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
@@ -1177,8 +1178,8 @@ De interne view `Meijendel_ndff_secure.v_ndff_analyse_record` materialiseert
 deze regels niet, maar brengt ze bij raadpleging samen tot één analysebesluit
 per canonieke waarneming. De livecontrole omvat 810.983 unieke records zonder
 ontbrekende protocol-, ruimtelijke, PQ- of gegevensgeschiktheidsstatus. Daarvan
-zijn 303.319 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
-overlapwaarschuwing, 97.333 uitgesloten via de PQ-poort en 410.327 ruimtelijk
+zijn 306.479 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
+overlapwaarschuwing, 91.007 uitgesloten via de PQ-poort en 413.493 ruimtelijk
 uitgesloten. De 430.263 expliciet losse waarnemingen hebben uitsluitend
 kandidaattype `V`. Van de canonieke records behouden 709.109
 `gegevensgeschiktheid = niet_beoordeeld`. De 4.999 records onder `04.004` en
@@ -1186,6 +1187,12 @@ kandidaattype `V`. Van de canonieke records behouden 709.109
 hun I- en TV-besluiten staan afzonderlijk op `onvoldoende`. De view levert een
 verplichte `kwaliteitsmelding` en is geen verklaring dat trendgebruik al
 volledig is gevalideerd.
+
+Binnen de 6.326 historische vegetatieopnamen uit 1952-1980 zijn 5.179 records
+afkomstig van Provincie Zuid-Holland en 1.147 van Alterra. De ruimtelijke poort
+laat 3.160 records toe als positieve context; 3.166 records blijven uitgesloten
+omdat zij niet eenduidig aan één Meijendel-plot zijn gekoppeld. Geen van deze
+records levert een nulwaarneming of een gevalideerde PQ-trend.
 
 Acht andere bronprotocollen zijn voor de huidige NDFF-levering expliciet als
 uitsluitend positieve registratiebron beoordeeld: `12.004` (6.864 openbare
@@ -1234,8 +1241,8 @@ Methodische grondslag: [NDFF 17.002](https://ndff.nl/natuurdata/waarnemen-en-aan
 en de [CBS-kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
 
 Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
-`v_ndff_verspreiding_plot_jaar_taxon` bevat 105.999 positieve
-plot-jaar-taxonsignalen uit 303.319 voorlopig bruikbare bronrecords.
+`v_ndff_verspreiding_plot_jaar_taxon` bevat 106.855 positieve
+plot-jaar-taxonsignalen uit 306.466 voorlopig bruikbare bronrecords.
 `v_ndff_trendkandidaat_plot_jaar_taxon` bevat 10.855
 plot-jaar-taxon-protocolcombinaties uit 65.464 bronrecords met minimaal één
 protocolmatige kandidaatmogelijkheid buiten `V`. Zij blijven een prioriteiten-
@@ -1247,7 +1254,7 @@ binnen de kandidaatview 5.161 combinaties voor protocollen `03.001`, `03.201`,
 De aanvullende view `v_ndff_gebruiksdekking_soortgroep_protocol` maakt de
 selectiestatus direct raadpleegbaar voor 142 combinaties van 28 soortgroepen en
 54 protocollen. De som van alle statuskolommen sluit per combinatie en over het
-geheel exact aan op 810.983 canonieke records. Er zijn 303.319 voorlopig
+geheel exact aan op 810.983 canonieke records. Er zijn 306.479 voorlopig
 bruikbare V-kandidaten, 6.133 I-kandidaten, 60.015 TV-kandidaten, 57.605
 TA-kandidaten en 4.727 TK-kandidaten. Deze aantallen mogen worden gecombineerd
 in selecties, maar niet worden opgeteld omdat één record meerdere kandidaattypen
@@ -1255,12 +1262,12 @@ kan ondersteunen. Voor alle records blijft aanvullende gegevensvalidatie
 wenselijk.
 
 De vier aanvullende jaarniveau-views maken stap 3 compleet. De
-soortenrijkdoms- en dekkingsviews bevatten beide 12.611 sluitend vergelijkbare
-plot-jaar-soortgroepregels; zij omvatten 105.999 positieve taxonsignalen en
-303.319 bronrecords. Daarvan zijn 201.372 records losse waarnemingen en 101.947
-protocolgebonden. De eerste/laatste-view bevat 42.714 plot-taxonreeksen. De
-verspreidingsveranderingsview bevat 33.022 taxon-jaarregels. Van de mogelijke
-jaarvergelijkingen springen 8.059 over minstens één ontbrekend jaar; die zijn
+soortenrijkdoms- en dekkingsviews bevatten beide 12.640 sluitend vergelijkbare
+plot-jaar-soortgroepregels; zij omvatten 106.855 positieve taxonsignalen en
+306.466 bronrecords. Daarvan zijn 201.372 records losse waarnemingen en 105.094
+protocolgebonden. De eerste/laatste-view bevat 42.934 plot-taxonreeksen. De
+verspreidingsveranderingsview bevat 33.356 taxon-jaarregels. Van de mogelijke
+jaarvergelijkingen springen 8.344 over minstens één ontbrekend jaar; die zijn
 expliciet gemarkeerd met `aansluitend_jaar = 0` en mogen niet als jaar-op-jaar
 worden gerapporteerd. Alle views beschrijven geregistreerde positieve
 aanwezigheid en produceren geen nulwaarnemingen.

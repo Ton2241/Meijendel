@@ -225,9 +225,12 @@ alle gewone en Shiny-rechten.
 
 De niet-gevoelige tabel `Meijendel.ndff_open_pq_koppeling` vormt de
 geversioneerde PQ-poort voor alle openbare records. Versie
-`ndff-open-pq-poort-v1` markeert 97.318 records van protocollen `12.007` en
-`12.202` als secundaire controlebron en 713.512 records als niet van
-toepassing. De bronhouder wordt niet zelfstandig als PQ-bewijs gebruikt.
+`ndff-open-pq-poort-v2` markeert 6.326 records met protocol `12.007` uit
+1952-1980 als historische vegetatiecontext, 90.992 andere records van
+protocollen `12.007` en `12.202` als secundaire controlebron en 713.512 records
+als niet van toepassing. Historische context ondersteunt uitsluitend positieve
+context (`V`), geen PQ-trend of nullen. De bronhouder wordt niet zelfstandig
+als PQ-bewijs gebruikt.
 
 De interne view `Meijendel_ndff_secure.v_ndff_analyse_record` is de centrale
 analysepoort boven op de canonieke bronlaag. Zij bevat precies één regel per

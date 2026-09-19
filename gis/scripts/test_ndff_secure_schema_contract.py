@@ -107,6 +107,11 @@ def main() -> int:
     ):
         assert forbidden_field not in analysis, f"analyseview lekt {forbidden_field}"
     assert "verkennende berekeningen" in analysis
+    assert "historische_vegetatiecontext" in analysis
+    assert "when basis.pq_status='historische_vegetatiecontext'" in analysis
+    assert "then 'v'" in analysis
+    assert "geen gevalideerde pq-trendreeks" in analysis
+    assert "('onafhankelijk','niet_van_toepassing','historische_vegetatiecontext')" in analysis.replace(" ", "")
 
     verspreiding = view_body(sql, "v_ndff_verspreiding_plot_jaar_taxon")
     for required in (

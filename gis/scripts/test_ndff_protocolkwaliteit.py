@@ -1676,11 +1676,20 @@ def main() -> int:
     assert "insert into meijendel.ndff_open_pq_koppeling" in public_pq_sql
     assert "update meijendel.ndff_open_waarneming" not in public_pq_sql
     assert "12.007" in public_pq_sql and "12.202" in public_pq_sql
+    assert module.PUBLIC_PQ_RULE_VERSION == "ndff-open-pq-poort-v2"
+    assert "historische_vegetatiecontext" in public_pq_sql
+    assert "historische_contextbron" in public_pq_sql
+    assert "w.jaar between 1952 and 1980" in public_pq_sql
+    assert "historische vegetatieopname" in public_pq_sql
+    assert "geen gevalideerde pq-trendreeks" in public_pq_sql
     assert "bronhouder" not in public_pq_sql
     assert "niet_beoordeelbaar" in public_pq_sql
     assert "niet_van_toepassing" in public_pq_sql
     assert "'exact'" not in public_pq_sql
     assert "'onafhankelijk'" not in public_pq_sql
+    validation_sql = module.validation_sql().casefold()
+    assert "open_pq_historical_context" in validation_sql
+    assert "historische_vegetatiecontext" in validation_sql
     chain_sql = module.analysis_chain_validation_sql().casefold()
     for required in (
         "v_ndff_canonieke_waarneming",
@@ -1770,7 +1779,8 @@ def main() -> int:
         "snl_geen_overlap_gevonden": 6176,
         "snl_onvoldoende_onderzocht": 0,
         "snl_overlap_ongeldig": 0,
-        "open_pq_blocked": 97318,
+        "open_pq_blocked": 90992,
+        "open_pq_historical_context": 6326,
         "open_pq_not_applicable": 713512,
         "open_pq_unassessed": 0,
     })
@@ -1796,7 +1806,9 @@ def main() -> int:
             "snl_overlap_bevestigd": 0, "snl_overlap_mogelijk": 97,
             "snl_geen_overlap_gevonden": 6175,
             "snl_onvoldoende_onderzocht": 0, "snl_overlap_ongeldig": 1,
-            "open_pq_blocked": 97317, "open_pq_not_applicable": 713512,
+            "open_pq_blocked": 90991,
+            "open_pq_historical_context": 6326,
+            "open_pq_not_applicable": 713512,
             "open_pq_unassessed": 1,
         })
     except ValueError:

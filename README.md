@@ -585,18 +585,20 @@ exacte projectgeometrieën beveiligd opgeslagen en wordt niets naar de gewone
 database verplaatst.
 
 De geversioneerde openbare PQ-poort staat in `ndff_open_pq_koppeling`.
-Regelversie `ndff-open-pq-poort-v1` blokkeert 97.318 records met protocol
-`12.007` of `12.202` als secundaire controlebron naast de provinciale PQ-reeks;
-713.512 records zijn expliciet `niet_van_toepassing` en geen record blijft
-onbeoordeeld. Alleen Provincie Zuid-Holland als bronhouder is niet voldoende
-voor een PQ-classificatie.
+Regelversie `ndff-open-pq-poort-v2` classificeert 6.326 records met protocol
+`12.007` uit 1952-1980 als `historische_vegetatiecontext`. Zij ondersteunen
+uitsluitend positieve context (`V`), geen gevalideerde PQ-trend of nullen.
+Daarnaast blijven 90.992 records met protocol `12.007` of `12.202` geblokkeerd
+als secundaire controlebron naast de provinciale PQ-reeks; 713.512 records zijn
+expliciet `niet_van_toepassing`. Alleen Provincie Zuid-Holland als bronhouder
+is niet voldoende voor een PQ-classificatie.
 
 De centrale lokale analysepoort is
 `Meijendel_ndff_secure.v_ndff_analyse_record`. Deze view bevat 810.983 unieke
 canonieke records en brengt per record de protocolkandidaten en de ruimtelijke,
-PQ- en SNL-poorten samen. De actuele verdeling is 303.319
-`voorlopig_bruikbaar`, 4 `voorlopig_met_overlapwaarschuwing`, 97.333
-`uitgesloten_pq` en 410.327 `uitgesloten_ruimtelijk`. Alle 430.263 records met
+PQ- en SNL-poorten samen. De actuele verdeling is 306.479
+`voorlopig_bruikbaar`, 4 `voorlopig_met_overlapwaarschuwing`, 91.007
+`uitgesloten_pq` en 413.493 `uitgesloten_ruimtelijk`. Alle 430.263 records met
 protocol `LOS` ondersteunen alleen voorkomens- en verspreidingsinformatie
 (`V`). Voor 709.109 records is `gegevensgeschiktheid` nog `niet_beoordeeld`.
 De 4.999 records onder `04.004` en `07.001` zijn inmiddels als gemengde
@@ -632,8 +634,8 @@ geen Meijendel-SOVON-plot eenduidig en worden daardoor ruimtelijk uitgesloten.
 
 Voor analyse zijn daarboven twee lokale, geaggregeerde views beschikbaar:
 
-- `v_ndff_verspreiding_plot_jaar_taxon`: 105.999 positieve
-  plot-jaar-taxonsignalen, gebaseerd op 303.319 voorlopig bruikbare
+- `v_ndff_verspreiding_plot_jaar_taxon`: 106.855 positieve
+  plot-jaar-taxonsignalen, gebaseerd op 306.466 voorlopig bruikbare
   bronrecords;
 - `v_ndff_trendkandidaat_plot_jaar_taxon`: 10.855
   plot-jaar-taxon-protocolcombinaties, gebaseerd op 65.464 records waarvan het
@@ -648,7 +650,7 @@ geen geometrie, dagdatum of bronidentiteit en hebben nog geen extra grants.
 Het compacte selectieoverzicht
 `v_ndff_gebruiksdekking_soortgroep_protocol` bevat 142 sluitende combinaties
 uit 28 soortgroepen en alle 54 aanwezige protocolwaarden. De subtotalen sluiten
-aan op 810.983 canonieke records. Daarbinnen zijn momenteel 303.319 records
+aan op 810.983 canonieke records. Daarbinnen zijn momenteel 306.479 records
 kandidaat voor `V`, 6.133 voor `I`, 60.015 voor `TV`, 57.605 voor `TA` en
 4.727 voor `TK`. Deze categorieën overlappen: één record kan voor meer dan één
 analysetype kandidaat zijn. Alle 810.983 records blijven aangemerkt als
@@ -657,16 +659,16 @@ de beschikbare omvang en beperkingen te beoordelen.
 
 De beschrijvende jaarniveau-views van stap 3 zijn eveneens beschikbaar:
 
-- `v_ndff_soortenrijkdom_plot_jaar`: 12.611 plot-jaar-soortgroepregels en
-  105.999 positieve taxonsignalen;
-- `v_ndff_eerste_laatste_plot_taxon`: 42.714 reeksen van eerste tot laatste
+- `v_ndff_soortenrijkdom_plot_jaar`: 12.640 plot-jaar-soortgroepregels en
+  106.855 positieve taxonsignalen;
+- `v_ndff_eerste_laatste_plot_taxon`: 42.934 reeksen van eerste tot laatste
   positieve registratie, zonder deze jaren als vestiging of verdwijning te
   duiden;
-- `v_ndff_verspreidingsverandering_taxon_jaar`: 33.022 registratiejaarregels;
-  8.059 vergelijkingen springen over een of meer ontbrekende jaren en zijn via
+- `v_ndff_verspreidingsverandering_taxon_jaar`: 33.356 registratiejaarregels;
+  8.344 vergelijkingen springen over een of meer ontbrekende jaren en zijn via
   `aansluitend_jaar = 0` herkenbaar;
-- `v_ndff_dekking_intensiteit_plot_jaar_soortgroep`: 12.611 dekkingsregels uit
-  303.319 bronrecords, waarvan 201.372 losse en 101.947 protocolgebonden
+- `v_ndff_dekking_intensiteit_plot_jaar_soortgroep`: 12.640 dekkingsregels uit
+  306.466 bronrecords, waarvan 201.372 losse en 105.094 protocolgebonden
   registraties.
 
 Ontbrekende jaren worden niet toegevoegd en nergens als nulwaarneming of

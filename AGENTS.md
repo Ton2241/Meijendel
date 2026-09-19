@@ -538,9 +538,12 @@ MySQL:
   matrix nadat meeteenheid, bezoeken, doelsoorten, tellingen en geldige echte
   nullen protocolconform zijn gereconstrueerd
 - pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
-  regelversie `ndff-open-pq-poort-v1` toe. Protocollen `12.007` en `12.202`
-  zijn secundaire PQ-controlebron en mogen niet naast de provinciale PQ-reeks
-  meetellen; leid PQ-status nooit uitsluitend uit de bronhouder af
+  regelversie `ndff-open-pq-poort-v2` toe. Records met protocol `12.007` uit
+  1952-1980 hebben classificatie `historische_vegetatiecontext`: gebruik ze
+  uitsluitend als positieve context (`V`), nooit als gevalideerde PQ-trendreeks
+  of bron van nullen. Andere records met `12.007` of `12.202` zijn secundaire
+  PQ-controlebron en mogen niet naast de provinciale PQ-reeks meetellen; leid
+  PQ-status nooit uitsluitend uit de bronhouder af
 - laat bijvangst en `algemene_bron` nooit een niet-V-analysetype erven van het
   bijbehorende protocol
 

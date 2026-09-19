@@ -26,7 +26,7 @@ RULE_VERSION = "ndff-protocolkwaliteit-v1"
 SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
 DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
 SNL_OVERLAP_RULE_VERSION = "ndff-snl-overlap-v1"
-PUBLIC_PQ_RULE_VERSION = "ndff-open-pq-poort-v1"
+PUBLIC_PQ_RULE_VERSION = "ndff-open-pq-poort-v2"
 ANALYSIS_CHAIN_VERSION = "ndff-analyseketen-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
@@ -741,32 +741,32 @@ ANALYSIS_CHAIN_EXPECTED = {
     "analysis_duplicates": 0,
     "analysis_missing_fields": 0,
     "wrong_chain_version": 0,
-    "preliminarily_usable": 303319,
+    "preliminarily_usable": 306479,
     "overlap_warning": 4,
-    "excluded_pq": 97333,
-    "excluded_spatial": 410327,
+    "excluded_pq": 91007,
+    "excluded_spatial": 413493,
     "excluded_overlap": 0,
     "unvalidated_records": 810983,
     "secure_detail_records": 14573,
-    "distribution_rows": 105999,
-    "distribution_sources": 303319,
+    "distribution_rows": 106855,
+    "distribution_sources": 306466,
     "trend_rows": 9993,
     "trend_sources": 61211,
     "trend_loose": 0,
     "usage_rows": 142,
     "usage_records": 810983,
     "usage_mismatch": 0,
-    "richness_rows": 12611,
-    "richness_signals": 105999,
-    "first_last_rows": 42714,
+    "richness_rows": 12640,
+    "richness_signals": 106855,
+    "first_last_rows": 42934,
     "first_last_invalid": 0,
-    "change_rows": 33022,
-    "change_adjacent": 18458,
-    "change_gap": 8059,
-    "change_first": 6505,
+    "change_rows": 33356,
+    "change_adjacent": 18503,
+    "change_gap": 8344,
+    "change_first": 6509,
     "change_partition_mismatch": 0,
-    "coverage_rows": 12611,
-    "coverage_sources": 303319,
+    "coverage_rows": 12640,
+    "coverage_sources": 306466,
     "coverage_split_mismatch": 0,
     "analysis_view_grants": 0,
 }
@@ -2426,13 +2426,21 @@ INSERT INTO Meijendel.ndff_open_pq_koppeling
   (waarneming_id,classificatie,ndff_bronrol,primaire_pq_bron,reden,
    regelversie,beoordeeld_op)
 SELECT w.waarneming_id,
-       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+       CASE WHEN p.protocol_sleutel='12.007' AND w.jaar BETWEEN 1952 AND 1980
+            THEN 'historische_vegetatiecontext'
+            WHEN p.protocol_sleutel IN ('12.007','12.202')
             THEN 'niet_beoordeelbaar' ELSE 'niet_van_toepassing' END,
-       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+       CASE WHEN p.protocol_sleutel='12.007' AND w.jaar BETWEEN 1952 AND 1980
+            THEN 'historische_contextbron'
+            WHEN p.protocol_sleutel IN ('12.007','12.202')
             THEN 'secundaire_controlebron' ELSE 'niet_van_toepassing' END,
-       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+       CASE WHEN p.protocol_sleutel='12.007' AND w.jaar BETWEEN 1952 AND 1980
+            THEN 'niet_van_toepassing'
+            WHEN p.protocol_sleutel IN ('12.007','12.202')
             THEN 'provincie_zuid_holland' ELSE 'niet_van_toepassing' END,
-       CASE WHEN p.protocol_sleutel IN ('12.007','12.202')
+       CASE WHEN p.protocol_sleutel='12.007' AND w.jaar BETWEEN 1952 AND 1980
+            THEN 'Historische vegetatieopname: bruikbaar als positieve context, maar geen gevalideerde PQ-trendreeks.'
+            WHEN p.protocol_sleutel IN ('12.007','12.202')
             THEN 'Herkenbaar NDFF-PQ-bronrecord: secundaire controlebron; niet als aanvulling op de gezaghebbende provinciale PQ-reeks tellen.'
             ELSE 'Geen PQ-bronindicator aangetroffen binnen deze beslisregel.' END,
        {sql_text(PUBLIC_PQ_RULE_VERSION)},CURRENT_TIMESTAMP(6)
@@ -2445,6 +2453,54 @@ ON DUPLICATE KEY UPDATE
   primaire_pq_bron=VALUES(primaire_pq_bron),reden=VALUES(reden),
   beoordeeld_op=VALUES(beoordeeld_op);
 """
+
+
+def ensure_public_pq_v2_schema(mysql_client: Path, client_args: list[str]) -> None:
+    """Maak de bestaande PQ-poort geschikt voor de historische contextklasse."""
+    query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
+    output = run_mysql(
+        mysql_client,
+        query_args,
+        """
+SELECT CONSTRAINT_NAME
+FROM information_schema.TABLE_CONSTRAINTS
+WHERE TABLE_SCHEMA='Meijendel'
+  AND TABLE_NAME='ndff_open_pq_koppeling'
+  AND CONSTRAINT_TYPE='CHECK';
+""",
+        capture=True,
+    )
+    statements = [
+        f"ALTER TABLE Meijendel.ndff_open_pq_koppeling DROP CHECK `{name}`;"
+        for name in output.splitlines() if name.strip()
+    ]
+    statements.extend((
+        """
+ALTER TABLE Meijendel.ndff_open_pq_koppeling
+  MODIFY classificatie ENUM(
+    'exact','waarschijnlijk_dezelfde_opname','mogelijk','onafhankelijk',
+    'niet_beoordeelbaar','historische_vegetatiecontext','niet_van_toepassing'
+  ) NOT NULL,
+  MODIFY ndff_bronrol ENUM(
+    'secundaire_controlebron','historische_contextbron','niet_van_toepassing'
+  ) NOT NULL;
+""",
+        """
+ALTER TABLE Meijendel.ndff_open_pq_koppeling
+  ADD CONSTRAINT ck_ndff_open_pq_status CHECK (
+       (classificatie='niet_van_toepassing'
+        AND ndff_bronrol='niet_van_toepassing'
+        AND primaire_pq_bron='niet_van_toepassing')
+    OR (classificatie='historische_vegetatiecontext'
+        AND ndff_bronrol='historische_contextbron'
+        AND primaire_pq_bron='niet_van_toepassing')
+    OR (classificatie NOT IN ('niet_van_toepassing','historische_vegetatiecontext')
+        AND ndff_bronrol='secundaire_controlebron'
+        AND primaire_pq_bron='provincie_zuid_holland')
+  );
+""",
+    ))
+    run_mysql(mysql_client, client_args, "\n".join(statements))
 
 
 def decisions_sql() -> str:
@@ -10295,6 +10351,10 @@ SELECT 'open_pq_blocked',COUNT(*) FROM Meijendel.ndff_open_pq_koppeling
 WHERE regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
   AND classificatie='niet_beoordeelbaar'
   AND ndff_bronrol='secundaire_controlebron';
+SELECT 'open_pq_historical_context',COUNT(*) FROM Meijendel.ndff_open_pq_koppeling
+WHERE regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
+  AND classificatie='historische_vegetatiecontext'
+  AND ndff_bronrol='historische_contextbron';
 SELECT 'open_pq_not_applicable',COUNT(*) FROM Meijendel.ndff_open_pq_koppeling
 WHERE regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
   AND classificatie='niet_van_toepassing'
@@ -10320,7 +10380,8 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         "snl_records", "snl_overlap_context", "snl_overlap_bevestigd",
         "snl_overlap_mogelijk", "snl_geen_overlap_gevonden",
         "snl_onvoldoende_onderzocht", "snl_overlap_ongeldig",
-        "open_pq_blocked", "open_pq_not_applicable", "open_pq_unassessed",
+        "open_pq_blocked", "open_pq_historical_context",
+        "open_pq_not_applicable", "open_pq_unassessed",
     }
     if set(metrics) != required:
         raise ValueError(f"Onvolledige validatie-uitvoer: {sorted(set(metrics) ^ required)}")
@@ -10357,11 +10418,14 @@ def validate_metrics(metrics: dict[str, int]) -> None:
         raise ValueError("De SNL-overlapstatussen sluiten niet aan op het recordaantal.")
     if metrics["snl_overlap_ongeldig"]:
         raise ValueError("Een SNL-overlapstatus mist kandidaten of bewijs.")
-    if metrics["open_pq_blocked"] + metrics["open_pq_not_applicable"] != metrics["open_records"]:
+    if (metrics["open_pq_blocked"] + metrics["open_pq_historical_context"]
+            + metrics["open_pq_not_applicable"] != metrics["open_records"]):
         raise ValueError("De openbare PQ-poort dekt niet alle NDFF-records.")
     if metrics["open_pq_unassessed"]:
         raise ValueError("Een openbaar NDFF-record mist de actuele PQ-poort.")
-    if metrics["open_pq_blocked"] != 97318 or metrics["open_pq_not_applicable"] != 713512:
+    if (metrics["open_pq_blocked"] != 90992
+            or metrics["open_pq_historical_context"] != 6326
+            or metrics["open_pq_not_applicable"] != 713512):
         raise ValueError("De openbare PQ-poort wijkt af van het gecontroleerde Meijendel-profiel.")
 
 
@@ -11021,7 +11085,11 @@ def main() -> int:
         print(remaining_output)
         return 0
 
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql(), delivery_assessment_sql()))
+    # Maak de tabel eerst aan bij een nieuwe database; migreer daarna een
+    # eventueel bestaand v1-schema voordat de v2-classificatie wordt gevuld.
+    run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
+    ensure_public_pq_v2_schema(args.mysql_client, client_args)
+    sql = "\n".join((catalog_insert_sql(rows, SOURCE_XLSX_SHA256), mapping_sql(), record_protocol_link_sql(), spatial_sql(), protocol_scope_sql(), public_pq_gate_sql(), snl_overlap_sql(), restore_legacy_decisions_sql(), decisions_sql(), delivery_assessment_sql()))
     run_mysql(args.mysql_client, client_args, sql)
     output = run_mysql(args.mysql_client, client_args + ["--batch", "--raw", "--skip-column-names"], validation_sql(), capture=True)
     metrics = {key: int(value) for key, value in (line.split("\t", 1) for line in output.splitlines())}

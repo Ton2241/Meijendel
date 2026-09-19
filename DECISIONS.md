@@ -456,9 +456,12 @@
   beveiligde schema en de view krijgt geen rechten voor gewone of
   Shiny-accounts.
 - De openbare PQ-poort wordt geversioneerd in `ndff_open_pq_koppeling` en
-  wijzigt het bronrecord niet. Onder `ndff-open-pq-poort-v1` worden uitsluitend
-  protocollen `12.007` en `12.202` als secundaire PQ-controlebron geblokkeerd:
-  97.318 records. De overige 713.512 records zijn `niet_van_toepassing`.
+  wijzigt het bronrecord niet. Onder `ndff-open-pq-poort-v2` zijn 6.326 records
+  met protocol `12.007` uit 1952-1980 afzonderlijk vastgelegd als
+  `historische_vegetatiecontext`. Zij ondersteunen uitsluitend positieve
+  context (`V`) en vormen geen gevalideerde PQ-trendreeks. Van de overige
+  records met `12.007` of `12.202` zijn 90.992 records als secundaire
+  PQ-controlebron geblokkeerd; 713.512 records zijn `niet_van_toepassing`.
   Bronhouder Provincie Zuid-Holland alleen is geen bewijs dat een record uit
   een PQ-opname komt; daarmee zouden 16.419 losse waarnemingen en 306
   epifytenmeetnetrecords ten onrechte zijn geblokkeerd.
