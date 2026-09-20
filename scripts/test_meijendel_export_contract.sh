@@ -36,6 +36,7 @@ sql_bytes=$bytes
 base_tables=236
 views=10
 row_counts_sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+table_checksums_sha256=abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789
 dagbezoeken_bmp=14455
 dagwaarnemingen_bmp=600959
 territoria=71155
@@ -45,6 +46,12 @@ EOF
 write_dump
 write_manifest
 "$VALIDATOR" --artifact-only "$dump" "$manifest" >/dev/null
+
+grep -v '^table_checksums_sha256=' "$manifest" > "$manifest.zonder-checksums"
+if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest.zonder-checksums" 2>&1); then
+  fail "manifest zonder inhoudschecksums werd geaccepteerd."
+fi
+[[ "$output" == *"table_checksums_sha256"* ]] || fail "gerichte inhoudschecksumfout ontbreekt."
 
 printf '\n-- gewijzigd\n' >> "$dump"
 if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest" 2>&1); then

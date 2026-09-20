@@ -71,6 +71,7 @@ validate_artifact() {
   [[ "$actual_hash" == "$expected_hash" ]] || die "SHA-256 van SQL-dump wijkt af van exportmanifest."
   [[ "$actual_bytes" == "$expected_bytes" ]] || die "bestandsgrootte van SQL-dump wijkt af van exportmanifest."
   [[ "$(manifest_value row_counts_sha256 "$manifest")" =~ ^[0-9a-f]{64}$ ]] || die "ongeldige tabelrijtellinghash in manifest."
+  [[ "$(manifest_value table_checksums_sha256 "$manifest")" =~ ^[0-9a-f]{64}$ ]] || die "ongeldige tabelinhoudshash in manifest."
   for key in mysql_version base_tables views dagbezoeken_bmp dagwaarnemingen_bmp territoria; do
     manifest_value "$key" "$manifest" >/dev/null
   done
@@ -97,6 +98,17 @@ write_row_counts() {
   "$mysql_bin" "${mysql_args[@]}" --batch --raw < "$sql_file" | LC_ALL=C sort > "$output"
 }
 
+write_table_checksums() {
+  local schema="$1" output="$2" sql_file
+  [[ "$schema" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schemanaam: $schema"
+  sql_file="${output}.sql"
+  query "SELECT CONCAT('CHECKSUM TABLE ', CHAR(96), '$schema', CHAR(96), '.', CHAR(96), REPLACE(table_name, CHAR(96), CONCAT(CHAR(96),CHAR(96))), CHAR(96), ';') FROM information_schema.tables WHERE table_schema='$schema' AND table_type='BASE TABLE' ORDER BY table_name" > "$sql_file"
+  [[ -s "$sql_file" ]] || die "geen basistabellen gevonden voor inhoudschecksums in schema $schema."
+  "$mysql_bin" "${mysql_args[@]}" --batch --raw < "$sql_file" |
+    awk -F '\t' '$1 != "Table" {sub(/^[^.]*\./, "", $1); print $1 "\t" $2}' |
+    LC_ALL=C sort > "$output"
+}
+
 table_count() {
   local schema="$1" table="$2"
   [[ "$schema" =~ ^[A-Za-z0-9_]+$ && "$table" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schema- of tabelnaam."
@@ -104,7 +116,7 @@ table_count() {
 }
 
 write_manifest() {
-  local dump="$1" manifest="$2" candidate="$3" temp_dir live_counts candidate_counts
+  local dump="$1" manifest="$2" candidate="$3" temp_dir live_counts candidate_counts live_checksums candidate_checksums
   [[ "$candidate" =~ ^codex_meijendel_export_check_[0-9]+$ ]] || die "onveilige kandidaatnaam: $candidate"
   validate_dump_structure "$dump"
   temp_dir="$(mktemp -d)"
@@ -114,16 +126,22 @@ write_manifest() {
   write_row_counts "$MYSQL_DATABASE" "$live_counts"
   write_row_counts "$candidate" "$candidate_counts"
   cmp -s "$live_counts" "$candidate_counts" || die "proefimport wijkt af van de levende database op exacte tabelrijtellingen."
+  live_checksums="$temp_dir/live-checksums.tsv"
+  candidate_checksums="$temp_dir/candidate-checksums.tsv"
+  write_table_checksums "$MYSQL_DATABASE" "$live_checksums"
+  write_table_checksums "$candidate" "$candidate_checksums"
+  cmp -s "$live_checksums" "$candidate_checksums" || die "proefimport wijkt inhoudelijk af van de levende database."
   "$mysqlcheck_bin" "${mysql_args[@]}" --check "$candidate" > "$temp_dir/mysqlcheck.txt"
   awk '$NF != "OK" && $0 !~ /^[[:alnum:]_]+\.[[:alnum:]_]+$/ {bad=1} END {exit bad}' "$temp_dir/mysqlcheck.txt" || die "mysqlcheck van proefimport is niet volledig groen."
 
-  local live_base candidate_base live_views candidate_views row_hash temp_manifest
+  local live_base candidate_base live_views candidate_views row_hash table_hash temp_manifest
   live_base="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='BASE TABLE'")"
   candidate_base="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$candidate' AND table_type='BASE TABLE'")"
   live_views="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='VIEW'")"
   candidate_views="$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$candidate' AND table_type='VIEW'")"
   [[ "$live_base" == "$candidate_base" && "$live_views" == "$candidate_views" ]] || die "proefimport wijkt af in objectaantallen."
   row_hash="$(shasum -a 256 "$live_counts" | awk '{print $1}')"
+  table_hash="$(shasum -a 256 "$live_checksums" | awk '{print $1}')"
   temp_manifest="${manifest}.next.$$"
   {
     printf 'format=meijendel-export-v1\n'
@@ -134,6 +152,7 @@ write_manifest() {
     printf 'base_tables=%s\n' "$live_base"
     printf 'views=%s\n' "$live_views"
     printf 'row_counts_sha256=%s\n' "$row_hash"
+    printf 'table_checksums_sha256=%s\n' "$table_hash"
     printf 'dagbezoeken_bmp=%s\n' "$(table_count "$MYSQL_DATABASE" dagbezoeken_bmp)"
     printf 'dagwaarnemingen_bmp=%s\n' "$(table_count "$MYSQL_DATABASE" dagwaarnemingen_bmp)"
     printf 'territoria=%s\n' "$(table_count "$MYSQL_DATABASE" territoria)"
@@ -147,7 +166,7 @@ write_manifest() {
 }
 
 validate_live() {
-  local dump="$1" manifest="$2" temp_dir live_counts row_hash
+  local dump="$1" manifest="$2" temp_dir live_counts live_checksums row_hash table_hash
   "$REPO_DIR/scripts/check_mysql_version.sh" >/dev/null
   validate_artifact "$dump" "$manifest"
   [[ "$(query 'SELECT VERSION()')" == "$(manifest_value mysql_version "$manifest")" ]] || die "MySQL-versie wijkt af van exportmanifest."
@@ -162,6 +181,10 @@ validate_live() {
   write_row_counts "$MYSQL_DATABASE" "$live_counts"
   row_hash="$(shasum -a 256 "$live_counts" | awk '{print $1}')"
   [[ "$row_hash" == "$(manifest_value row_counts_sha256 "$manifest")" ]] || die "levende database wijzigde sinds export op een of meer tabelrijtellingen."
+  live_checksums="$temp_dir/live-checksums.tsv"
+  write_table_checksums "$MYSQL_DATABASE" "$live_checksums"
+  table_hash="$(shasum -a 256 "$live_checksums" | awk '{print $1}')"
+  [[ "$table_hash" == "$(manifest_value table_checksums_sha256 "$manifest")" ]] || die "levende database wijzigde sinds export inhoudelijk."
   rm -rf "$temp_dir"
   trap - RETURN
   printf 'OK: dump, manifest en levende database komen overeen.\n'
