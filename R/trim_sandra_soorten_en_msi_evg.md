@@ -12,6 +12,19 @@ Het script:
 - gebruikt dezelfde verbeterde TRIM-logica als de lange analyse: eerst een volledig model, daarna automatisch eenvoudigere modellen als dat nodig is
 - berekent daarna een MSI per ecologische 100-groep
 
+## Trendcontract `trim-trend-v2`
+
+De soorttrend over `1997-2022` wordt rechtstreeks uit het werkende TRIM-model
+berekend met `rtrim::overall(..., which = "imputed")`. Daardoor worden de
+standaardfout, het 95%-betrouwbaarheidsinterval en de p-waarde afgeleid uit de
+volledige variantie-covariantiematrix van de geschatte jaarindices. De formele
+uitvoer vermeldt ook periode, methode, model en eventuele fallbackreden.
+
+Een ontbrekend model of een niet-aaneengesloten kalenderreeks krijgt geen
+formele onzekerheidsvelden. De MSI per ecologische groep blijft beschrijvend:
+de onzekerheid over de onderliggende soorten wordt in deze release niet naar
+de groepstrend doorgevoerd.
+
 ## Plotselectie
 
 Deze Sandra-variant gebruikt:

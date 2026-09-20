@@ -20,6 +20,23 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
 10. Het voert per functionele groep en analysevariant een
     leave-one-species-out-trendcontrole uit.
 
+## Trendcontract `trim-trend-v2`
+
+De afzonderlijke soortperioden zijn de primaire trendresultaten. Per werkend
+TRIM-model berekent `rtrim::overall(..., which = "imputed")` de jaarlijkse
+trend met de volledige variantie-covariantiematrix. De uitvoer bevat per
+periode minimaal de procentuele verandering per jaar, standaardfout, 95%-BI,
+p-waarde, periode, model en methode. Deze formele berekening is alleen geldig
+voor aaneengesloten kalenderjaren; een ontbrekend model of een jaarhiaat krijgt
+een expliciete niet-formele status.
+
+De gebrugde reeks `1958-2025` combineert de modellen `1958-1983` en
+`1984-2025` met een geschatte brugfactor. Zolang deze volledige keten niet
+wordt gebootstrapt, is de samengevatte langetermijntrend uitsluitend
+beschrijvend. Zij krijgt dus geen formele standaardfout, 95%-BI, p-waarde of
+trendklasse. De groeps-MSI's zijn om dezelfde reden beschrijvend; hun
+jaarwaarden en samenstellingsdiagnostiek blijven wel beschikbaar.
+
 ## Waarom geen `post84` als TRIM-covariaat?
 
 De `rtrim`-module accepteert covariaten alleen als site-kenmerk en niet als tijdsafhankelijke variabele per site-jaar. Daarom kan een indicator als `post84` niet rechtstreeks in één TRIM-model worden opgenomen.
