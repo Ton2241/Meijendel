@@ -126,6 +126,15 @@ REMOTE_MYSQL_VERSION="$(sed -n 's/^MYSQL_VERSION=//p' <<<"$gateway_preflight" | 
 grep -Fqx 'PREFLIGHT_STATUS=ready' <<<"$gateway_preflight" || \
   die "gesloten Meijendel-preflight gaf geen gereedstatus."
 
+SQL_BYTES="$(awk -F= '$1 == "sql_bytes" {print $2}' "$SQL_MANIFEST_LOCAL")"
+[[ "$SQL_BYTES" =~ ^[0-9]+$ ]] || die "exportmanifest bevat geen geldige SQL-bestandsgrootte."
+REQUIRED_FREE_KB=$(( (SQL_BYTES * 4 + 1023) / 1024 + 5 * 1024 * 1024 ))
+REMOTE_FREE_KB="$(remote "df -Pk '$REMOTE_BASE' | awk 'NR == 2 {print \$4}'")"
+[[ "$REMOTE_FREE_KB" =~ ^[0-9]+$ ]] || die "vrije VPS-schijfruimte kon niet worden bepaald."
+[[ "$REMOTE_FREE_KB" -ge "$REQUIRED_FREE_KB" ]] || \
+  die "VPS heeft ${REMOTE_FREE_KB} KiB vrij; minimaal ${REQUIRED_FREE_KB} KiB is vereist voor dump, database, back-up en marge."
+printf 'VPS_FREE_KB=%s\nREQUIRED_FREE_KB=%s\n' "$REMOTE_FREE_KB" "$REQUIRED_FREE_KB"
+
 acquire_lock() {
   if ! remote "mkdir -p '$STATE_DIR' && mkdir '$GLOBAL_LOCK'"; then
     die "een andere productie-deploy houdt de globale VPS-lock vast: $GLOBAL_LOCK"
