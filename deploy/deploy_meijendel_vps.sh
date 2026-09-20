@@ -105,7 +105,6 @@ cd "$LOCAL_REPO"
 REQUIRED_MYSQL_VERSION="$("$LOCAL_REPO/scripts/check_mysql_version.sh" --required-version)"
 need_file "$SQL_LOCAL"
 need_file "$SQL_MANIFEST_LOCAL"
-"$LOCAL_REPO/scripts/validate_meijendel_export.sh" "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL"
 log "Controleer Git-baseline"
 [[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
 [[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."
@@ -113,6 +112,9 @@ git fetch origin --prune
 LOCAL_COMMIT="$(git rev-parse HEAD)"
 [[ "$LOCAL_COMMIT" == "$(git rev-parse origin/main)" ]] || die "lokale main is niet exact gelijk aan origin/main."
 printf 'Main-commit: %s\n' "$LOCAL_COMMIT"
+
+log "Controleer dump, exportmanifest en levende database"
+"$LOCAL_REPO/scripts/validate_meijendel_export.sh" "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL"
 
 log "Controleer gesloten Meijendel-beheerroute en VPS-MySQL"
 gateway_preflight="$(remote "sudo -n '$GATEWAY' meijendel-release preflight '$LOCAL_COMMIT'")" || \
