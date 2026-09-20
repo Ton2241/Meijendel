@@ -118,6 +118,14 @@ Bij communicatie:
 MySQL:
 - gebruik voor lokale database-acties standaard de lokale MySQL-client
 - voor inloggen is `-u root -p` nodig
+- behandel de levende lokale Meijendel-MySQL-database op de iMac als de
+  canonieke schrijfbron
+- genereer `Meijendel.sql` uitsluitend opnieuw uit die gevalideerde database;
+  de dump is een afspiegeling en nooit een zelfstandige bron
+- laat een productieback-up of oudere dump nooit de levende database als
+  inhoudelijke waarheid vervangen
+- blokkeer generatie en deploy wanneer de export niet aantoonbaar overeenkomt
+  met de levende database op schema, kernrijtellingen en publieke selecties
 
 GIS / R-spatial:
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`
