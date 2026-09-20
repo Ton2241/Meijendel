@@ -10,6 +10,10 @@ functional_dashboard_msi_path <- normalizePath(
   file.path(dirname(dashboard_msi_path), "functionele_msi_per_groep_per_jaar.csv"),
   mustWork = TRUE
 )
+dashboard_species_trends_path <- normalizePath(file.path(repo_dir, "trim", "soorten", "soorten_trendoverzicht.csv"), mustWork = TRUE)
+dashboard_species_status_path <- normalizePath(file.path(repo_dir, "trim", "soorten", "soorten_modelstatus.csv"), mustWork = TRUE)
+dashboard_group_trends_path <- normalizePath(file.path(dirname(dashboard_msi_path), "trendoverzicht_msi_groepen.csv"), mustWork = TRUE)
+functional_dashboard_trends_path <- normalizePath(file.path(dirname(dashboard_msi_path), "functionele_trendoverzicht_msi_groepen.csv"), mustWork = TRUE)
 year_from <- if (length(args) >= 4L) as.integer(args[[4]]) else 1958L
 year_to <- if (length(args) >= 5L) as.integer(args[[5]]) else 2025L
 
@@ -22,6 +26,10 @@ source(helpers_path)
 
 fail <- function(...) {
   stop(paste0(...), call. = FALSE)
+}
+
+if (!exists("TRIM_TREND_CONTRACT_VERSION", inherits = TRUE)) {
+  fail("Shiny helpers laden het gedeelde trim-trend-v2-contract niet.")
 }
 
 if (!is.finite(year_from) || !is.finite(year_to) || year_from > year_to) {
@@ -103,6 +111,100 @@ if (!nrow(shiny_result$species_results$status)) fail("Shiny soortstatus is leeg.
 if (!nrow(shiny_result$species_results$indices)) fail("Shiny soortindices zijn leeg.")
 if (!nrow(shiny_result$group_results$trends)) fail("Shiny groepstrends zijn leeg.")
 
+compare_contract_table <- function(dashboard, shiny, key, fields, label, tolerance = 1e-8) {
+  missing_dashboard <- setdiff(c(key, fields), names(dashboard))
+  missing_shiny <- setdiff(c(key, fields), names(shiny))
+  if (length(missing_dashboard)) fail(label, " dashboard mist: ", paste(missing_dashboard, collapse = ", "))
+  if (length(missing_shiny)) fail(label, " Shiny mist: ", paste(missing_shiny, collapse = ", "))
+  if (anyDuplicated(dashboard[key])) fail(label, " dashboard bevat dubbele sleutels.")
+  if (anyDuplicated(shiny[key])) fail(label, " Shiny bevat dubbele sleutels.")
+  merged_contract <- merge(
+    dashboard[, c(key, fields), drop = FALSE],
+    shiny[, c(key, fields), drop = FALSE],
+    by = key,
+    suffixes = c("_dashboard", "_shiny"),
+    all = TRUE
+  )
+  if (nrow(merged_contract) != nrow(dashboard) || nrow(merged_contract) != nrow(shiny)) {
+    fail(label, " heeft verschillende sleutels of aantallen.")
+  }
+  for (field in fields) {
+    dashboard_value <- merged_contract[[paste0(field, "_dashboard")]]
+    shiny_value <- merged_contract[[paste0(field, "_shiny")]]
+    if (is.numeric(dashboard_value) || is.integer(dashboard_value)) {
+      mismatch <- is.na(dashboard_value) != is.na(shiny_value)
+      comparable <- !is.na(dashboard_value) & !is.na(shiny_value)
+      numeric_difference <- abs(as.numeric(dashboard_value[comparable]) - as.numeric(shiny_value[comparable]))
+      numeric_scale <- pmax(
+        abs(as.numeric(dashboard_value[comparable])),
+        abs(as.numeric(shiny_value[comparable])),
+        1
+      )
+      mismatch[comparable] <- mismatch[comparable] | numeric_difference > tolerance * numeric_scale
+    } else {
+      mismatch <- is.na(dashboard_value) != is.na(shiny_value)
+      comparable <- !is.na(dashboard_value) & !is.na(shiny_value)
+      mismatch[comparable] <- mismatch[comparable] | as.character(dashboard_value[comparable]) != as.character(shiny_value[comparable])
+    }
+    if (any(mismatch)) {
+      options(digits = 17)
+      merged_contract[[paste0(field, "_abs_diff")]] <- abs(as.numeric(dashboard_value) - as.numeric(shiny_value))
+      merged_contract[[paste0(field, "_rel_diff")]] <- merged_contract[[paste0(field, "_abs_diff")]] / pmax(abs(as.numeric(dashboard_value)), abs(as.numeric(shiny_value)), 1)
+      print(merged_contract[mismatch, c(key, paste0(field, c("_dashboard", "_shiny"))), drop = FALSE])
+      print(merged_contract[mismatch, c(key, paste0(field, c("_abs_diff", "_rel_diff"))), drop = FALSE])
+      fail(label, " verschilt voor veld ", field, ": ", sum(mismatch), " rijen.")
+    }
+  }
+  invisible(TRUE)
+}
+
+dashboard_species_trends <- read.csv(dashboard_species_trends_path, stringsAsFactors = FALSE, check.names = FALSE)
+species_contract_fields <- c(
+  "analyse_categorie", "trend_contract", "overall_trend_formaliteit", "overall_periode",
+  "overall_eerste_jaar", "overall_laatste_jaar", "overall_trend_pct_per_jaar",
+  "overall_trend_methode", "overall_trend_status",
+  unlist(lapply(c("trend_pre_", "trend_post_"), function(prefix) paste0(prefix, c(
+    "formaliteit", "periode", "eerste_jaar", "laatste_jaar", "n_kalenderjaren",
+    "n_modeltijdpunten", "pct_per_jaar", "se_pct", "ci95_laag_pct",
+    "ci95_hoog_pct", "p", "methode", "status", "klasse", "duiding_type",
+    "model", "model_fallback_reden"
+  ))))
+)
+compare_contract_table(
+  dashboard_species_trends,
+  shiny_result$species_results$trends,
+  "soort_id",
+  species_contract_fields,
+  "Soorttrendpariteit"
+)
+
+dashboard_species_status <- read.csv(dashboard_species_status_path, stringsAsFactors = FALSE, check.names = FALSE)
+compare_contract_table(
+  dashboard_species_status,
+  shiny_result$species_results$status,
+  "soort_id",
+  c("analyse_categorie", "pre_model_gelukt", "post_model_gelukt", "pre_model", "post_model"),
+  "Soortstatuspariteit"
+)
+
+status <- shiny_result$species_results$status
+if (!any(status$pre_model_gelukt & status$post_model_gelukt)) fail("Controlegeval met twee perioden ontbreekt.")
+if (!any(!status$pre_model_gelukt & status$post_model_gelukt)) fail("Controlegeval met alleen post-1984 ontbreekt.")
+if (!any(status$pre_model_fallback_reden != "voorkeursmodel_gekozen" & status$pre_model_gelukt, na.rm = TRUE) &&
+    !any(status$post_model_fallback_reden != "voorkeursmodel_gekozen" & status$post_model_gelukt, na.rm = TRUE)) {
+  fail("Controlegeval met fallbackmodel ontbreekt.")
+}
+if (!any(!status$pre_model_gelukt & !status$post_model_gelukt)) fail("Controlegeval met onvoldoende reeks ontbreekt.")
+
+dashboard_group_trends <- read.csv(dashboard_group_trends_path, stringsAsFactors = FALSE, check.names = FALSE)
+compare_contract_table(
+  dashboard_group_trends,
+  shiny_result$group_results$trends,
+  c("groep_100", "msi_variant"),
+  c("trend_contract", "trend_formaliteit", "trend_status", "trend_methode"),
+  "Ecologische groepsstatuspariteit"
+)
+
 functional_shiny <- shiny_result$functional_group_results$msi
 functional_dashboard <- read.csv(functional_dashboard_msi_path, stringsAsFactors = FALSE)
 functional_cols <- c("group_code", "jaar", "analysis_mode", "msi_variant", "msi")
@@ -138,6 +240,15 @@ functional_modes <- unique(functional_merged$analysis_mode)
 functional_groups <- unique(functional_merged$group_code)
 if (!setequal(functional_modes, c("binair", "gewogen"))) fail("Niet beide functionele analysemethoden aanwezig.")
 if (length(functional_groups) != 6L) fail("Verwacht zes functionele groepen, gevonden: ", length(functional_groups))
+
+functional_dashboard_trends <- read.csv(functional_dashboard_trends_path, stringsAsFactors = FALSE, check.names = FALSE)
+compare_contract_table(
+  functional_dashboard_trends,
+  shiny_result$functional_group_results$trends,
+  c("group_code", "analysis_mode", "msi_variant"),
+  c("trend_contract", "trend_formaliteit", "trend_status", "trend_methode"),
+  "Functionele groepsstatuspariteit"
+)
 
 cat("Shiny/dashboard parity-check OK\n")
 cat("Jaren:", year_from, "-", year_to, "\n")

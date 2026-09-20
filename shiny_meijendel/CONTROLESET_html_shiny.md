@@ -69,8 +69,11 @@ Controleer in `Soorten`:
 - je kunt een soort kiezen
 - de grafiek verschijnt
 - de TRIM-index verandert over de jaren
-- de GAM-lijn sluit logisch aan op de TRIM-punten
-- de tabel toont trenduitleg en analysecategorie
+- de GAM-smooth sluit logisch aan op de TRIM-punten; de 95%-band eromheen is
+  een beschrijvende smoothband en geen volledige TRIM-onzekerheid
+- de tabel toont per formele TRIM-periode schatting, standaardfout, 95%-BI,
+  p-waarde, periode, methode en analysecategorie
+- de gebrugde trend `1958-2025` toont geen formele p-waarde of trendklasse
 
 Exporteer daarna:
 
@@ -87,7 +90,8 @@ Controleer in `Groepen`:
 - je kunt een groep kiezen
 - de MSI-grafiek verschijnt
 - de GAM-lijn sluit logisch aan op de MSI-punten
-- de tabel toont een trendoverzicht
+- de tabel markeert de groepstrend expliciet als beschrijvend en toont geen
+  formele p-waarde of trendklasse
 - de tabel met soorten in de groep is gevuld
 
 Exporteer daarna:

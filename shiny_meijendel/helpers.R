@@ -12,7 +12,17 @@ if (is.na(species_synonym_helper)) {
   stop("R/species_name_synonyms.R ontbreekt; soortnamen kunnen niet veilig worden gekoppeld.")
 }
 source(species_synonym_helper)
-rm(helpers_source_path, species_synonym_helpers, species_synonym_helper)
+trim_trend_helpers <- c(
+  if (nzchar(helpers_source_path)) file.path(dirname(helpers_source_path), "..", "R", "trim_trend_contract.R"),
+  file.path("R", "trim_trend_contract.R"),
+  file.path("..", "R", "trim_trend_contract.R")
+)
+trim_trend_helper <- trim_trend_helpers[file.exists(trim_trend_helpers)][1]
+if (is.na(trim_trend_helper)) {
+  stop("R/trim_trend_contract.R ontbreekt; formele TRIM-trends kunnen niet veilig worden berekend.")
+}
+source(trim_trend_helper)
+rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper)
 
 extract_columns <- function(header) {
   if (!grepl("\\) VALUES", header, fixed = FALSE)) {
@@ -1148,17 +1158,7 @@ trim_model_serialcor <- function(model_label) {
 }
 
 trim_model_fallback_reason <- function(model_label) {
-  if (is.na(model_label) || !nzchar(model_label)) {
-    return("geen_model")
-  }
-  switch(
-    model_label,
-    model3_overdisp = "voorkeursmodel_gekozen",
-    model3_overdisp_serialcor = "model3_overdisp_mislukt_fallback_naar_serialcor",
-    model3_basis = "overdisp_varianten_mislukt_fallback_naar_basis",
-    model2_basis = "model3_varianten_mislukt_fallback_naar_model2",
-    "onbekend"
-  )
+  trim_fallback_reason(model_label)
 }
 
 collect_period_index <- function(fit_obj, soort_id, soort_naam, euring_code, engelse_naam, periode_label) {
@@ -1194,7 +1194,7 @@ collect_period_index <- function(fit_obj, soort_id, soort_naam, euring_code, eng
 
 classificeer_soort_status <- function(pre_ok, post_ok, pre_years, post_years, pre_active_plots, post_active_plots, observed_positive) {
   if (pre_ok && post_ok) {
-    return("trim_bruikbaar")
+    return("brugbare_tijdreeks")
   }
   if (pre_ok && !post_ok) {
     return("alleen_pre_bruikbaar")
@@ -1333,6 +1333,8 @@ analyse_species_subset <- function(species_matrix) {
       post_model_serial_correlation = trim_model_serialcor(post_fit$config),
       pre_model_aic = pre_fit$aic,
       post_model_aic = post_fit$aic,
+      pre_model_fallback_reden = trim_model_fallback_reason(pre_fit$config),
+      post_model_fallback_reden = trim_model_fallback_reason(post_fit$config),
       model = ifelse(!is.na(pre_fit$config) & !is.na(post_fit$config), paste(pre_fit$config, post_fit$config, sep = "+"), ifelse(!is.na(pre_fit$config), pre_fit$config, post_fit$config)),
       model_gelukt = !is.null(pre_fit$model) || !is.null(post_fit$model),
       model_overdispersion = trim_model_overdisp(ifelse(!is.na(post_fit$config), post_fit$config, pre_fit$config)),
@@ -1374,47 +1376,66 @@ analyse_species_subset <- function(species_matrix) {
       index_rows[[counter]] <- series[order(series$jaar), ]
 
       tr_all <- run_lm_trend(series, "index_gebrugged")
-      tr_pre <- run_lm_trend(series, "index_gebrugged", year_max = 1983)
-      tr_post <- run_lm_trend(series, "index_gebrugged", year_min = 1984)
       overall_pct <- calc_pct_trend(tr_all$slope)
-      pre_pct <- calc_pct_trend(tr_pre$slope)
-      post_pct <- calc_pct_trend(tr_post$slope)
+      overall_status <- if (identical(bridged$bridge_method, "1981_1983_naar_1984_1986")) {
+        "gebrugde_reeks_zonder_bootstrap"
+      } else if (identical(bridged$bridge_method, "fallback_1")) {
+        "gebrugde_reeks_fallback_zonder_bootstrap"
+      } else {
+        "onvolledige_langetermijnreeks"
+      }
+      overall_contract <- trim_descriptive_contract(
+        periode = "1958-2025",
+        periode_van = min(series$jaar, na.rm = TRUE),
+        periode_tot = max(series$jaar, na.rm = TRUE),
+        trend_pct_per_jaar = overall_pct,
+        status = overall_status
+      )
+      overall_contract$n_modeltijdpunten <- nrow(series)
+      pre_contract <- trim_overall_contract(
+        pre_fit,
+        periode = "1958-1983",
+        periode_van = 1958L,
+        periode_tot = 1983L
+      )
+      post_contract <- trim_overall_contract(
+        post_fit,
+        periode = "1984-2025",
+        periode_van = 1984L,
+        periode_tot = 2025L
+      )
 
-      trend_rows[[counter]] <- data.frame(
+      trend_rows[[counter]] <- cbind(data.frame(
         soort_id = soort_id,
         euring_code = euring_code,
         soort_naam = soort_naam,
         engelse_naam = engelse_naam,
         analyse_categorie = analyse_categorie,
         basisjaar = min(series$jaar, na.rm = TRUE),
+        basisjaar_index_gebrugged = min(series$jaar, na.rm = TRUE),
         basisjaar_toelichting = "index_100 = index_gebrugged; 100 in het eerste analysejaar vanaf eerste positieve jaar",
         eerste_jaar = min(series$jaar, na.rm = TRUE),
         laatste_jaar = max(series$jaar, na.rm = TRUE),
         n_jaren_index = nrow(series),
-        trend_pct_per_jaar = overall_pct,
-        trend_p = tr_all$p,
-        trend_r2 = tr_all$r2,
-        trend_uitleg = duid_trend(overall_pct, tr_all$p),
-        overall_trend_pct_per_jaar = overall_pct,
-        overall_p = tr_all$p,
-        overall_r2 = tr_all$r2,
-        overall_uitleg = duid_trend(overall_pct, tr_all$p),
-        trend_pre_pct_per_jaar = pre_pct,
-        trend_pre_p = tr_pre$p,
-        trend_pre_r2 = tr_pre$r2,
-        trend_pre_uitleg = duid_trend(pre_pct, tr_pre$p),
-        trend_post_pct_per_jaar = post_pct,
-        trend_post_p = tr_post$p,
-        trend_post_r2 = tr_post$r2,
-        trend_post_uitleg = duid_trend(post_pct, tr_post$p),
-        trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
         model = paste(na.omit(c(pre_fit$config, post_fit$config)), collapse = "+"),
         model_fallback_reden = trim_model_fallback_reason(ifelse(!is.na(post_fit$config), post_fit$config, pre_fit$config)),
         model_fallback_gebruikt = !identical(trim_model_fallback_reason(ifelse(!is.na(post_fit$config), post_fit$config, pre_fit$config)), "voorkeursmodel_gekozen"),
         brugfactor = bridged$bridge_factor,
         brugmethode = bridged$bridge_method,
         stringsAsFactors = FALSE
-      )
+      ), data.frame(
+        trend_contract = overall_contract$trend_contract,
+        overall_trend_formaliteit = overall_contract$trend_formaliteit,
+        overall_periode = overall_contract$periode,
+        overall_eerste_jaar = overall_contract$eerste_jaar,
+        overall_laatste_jaar = overall_contract$laatste_jaar,
+        overall_n_kalenderjaren = overall_contract$n_kalenderjaren,
+        overall_n_modeltijdpunten = overall_contract$n_modeltijdpunten,
+        overall_trend_pct_per_jaar = overall_contract$trend_pct_per_jaar,
+        overall_trend_methode = overall_contract$trend_methode,
+        overall_trend_status = overall_contract$trend_status,
+        stringsAsFactors = FALSE
+      ), trim_prefix_contract(pre_contract, "trend_pre_"), trim_prefix_contract(post_contract, "trend_post_"))
     }
   }
 
@@ -1532,10 +1553,10 @@ analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = 
     max_n_soorten = numeric(),
     cv_n_soorten = numeric(),
     samenstelling_waarschuwing = character(),
-    trend_pct_per_jaar = numeric(),
-    trend_p = numeric(),
-    trend_r2 = numeric(),
-    trend_uitleg = character(),
+    trend_contract = character(), trend_formaliteit = character(),
+    trend_status = character(), trend_methode = character(),
+    overall_trend_pct_per_jaar = numeric(), trend_pre_pct_per_jaar = numeric(),
+    trend_post_pct_per_jaar = numeric(),
     trendduiding_type = character(),
     stringsAsFactors = FALSE
   )
@@ -1577,8 +1598,9 @@ analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = 
   msi <- msi[order(msi$groep_100, msi$jaar), ]
 
   trend_rows <- lapply(split(msi, msi$groep_100), function(df) {
-    tr <- run_lm_trend(df, "msi")
-    pct <- calc_pct_trend(tr$slope)
+    tr_all <- run_lm_trend(df, "msi")
+    tr_pre <- run_lm_trend(df, "msi", year_max = 1983)
+    tr_post <- run_lm_trend(df, "msi", year_min = 1984)
     min_n_soorten <- min(df$n_soorten, na.rm = TRUE)
     max_n_soorten <- max(df$n_soorten, na.rm = TRUE)
     cv_n_soorten <- stats::sd(df$n_soorten, na.rm = TRUE) / mean(df$n_soorten, na.rm = TRUE)
@@ -1600,11 +1622,14 @@ analyse_groups_subset <- function(species_indices, group_mapping, msi_variant = 
       max_n_soorten = max_n_soorten,
       cv_n_soorten = cv_n_soorten,
       samenstelling_waarschuwing = samenstelling_waarschuwing,
-      trend_pct_per_jaar = pct,
-      trend_p = tr$p,
-      trend_r2 = tr$r2,
-      trend_uitleg = duid_trend(pct, tr$p),
-      trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
+      trend_contract = TRIM_TREND_CONTRACT_VERSION,
+      trend_formaliteit = "beschrijvend",
+      trend_status = "groeps_msi_zonder_onzekerheidspropagatie",
+      trend_methode = "loglineaire samenvatting van groeps-MSI; geen formele inferentie",
+      overall_trend_pct_per_jaar = calc_pct_trend(tr_all$slope),
+      trend_pre_pct_per_jaar = calc_pct_trend(tr_pre$slope),
+      trend_post_pct_per_jaar = calc_pct_trend(tr_post$slope),
+      trendduiding_type = "beschrijvend_geen_trendklasse",
       stringsAsFactors = FALSE
     )
   })
@@ -1685,8 +1710,10 @@ empty_functional_group_results <- function() {
       basisjaar_toelichting = character(), eerste_jaar = integer(), laatste_jaar = integer(),
       n_bruikbare_soorten = integer(), gemiddeld_n_soorten = numeric(), min_n_soorten = integer(),
       max_n_soorten = integer(), cv_n_soorten = numeric(), samenstelling_waarschuwing = character(),
-      trend_pct_per_jaar = numeric(), trend_p = numeric(), trend_r2 = numeric(),
-      trend_uitleg = character(), trendduiding_type = character(), stringsAsFactors = FALSE
+      trend_contract = character(), trend_formaliteit = character(),
+      trend_status = character(), trend_methode = character(),
+      overall_trend_pct_per_jaar = numeric(), trend_pre_pct_per_jaar = numeric(),
+      trend_post_pct_per_jaar = numeric(), trendduiding_type = character(), stringsAsFactors = FALSE
     ),
     composition = data.frame(
       group_code = character(), groep_titel = character(), soort_id = integer(),
@@ -1714,7 +1741,9 @@ analyse_functional_groups_subset <- function(species_indices, group_mapping, ana
 
   trend_rows <- lapply(split(msi, msi$group_code), function(df) {
     meta <- merged[merged$group_code == df$group_code[[1]], , drop = FALSE][1, , drop = FALSE]
-    tr <- run_lm_trend(df, "msi")
+    tr_all <- run_lm_trend(df, "msi")
+    tr_pre <- run_lm_trend(df, "msi", year_max = 1983)
+    tr_post <- run_lm_trend(df, "msi", year_min = 1984)
     n_bruikbare_soorten <- length(unique(merged$soort_id[merged$group_code == df$group_code[[1]]]))
     min_n <- min(df$n_soorten, na.rm = TRUE)
     max_n <- max(df$n_soorten, na.rm = TRUE)
@@ -1739,11 +1768,14 @@ analyse_functional_groups_subset <- function(species_indices, group_mapping, ana
       max_n_soorten = max_n,
       cv_n_soorten = stats::sd(df$n_soorten, na.rm = TRUE) / mean(df$n_soorten, na.rm = TRUE),
       samenstelling_waarschuwing = ifelse(max_n > 0 && min_n / max_n < 0.75, "wisselend_soortenaantal", "stabiel_soortenaantal"),
-      trend_pct_per_jaar = calc_pct_trend(tr$slope),
-      trend_p = tr$p,
-      trend_r2 = tr$r2,
-      trend_uitleg = duid_trend(calc_pct_trend(tr$slope), tr$p),
-      trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
+      trend_contract = TRIM_TREND_CONTRACT_VERSION,
+      trend_formaliteit = "beschrijvend",
+      trend_status = "groeps_msi_zonder_onzekerheidspropagatie",
+      trend_methode = "loglineaire samenvatting van functionele groeps-MSI; geen formele inferentie",
+      overall_trend_pct_per_jaar = calc_pct_trend(tr_all$slope),
+      trend_pre_pct_per_jaar = calc_pct_trend(tr_pre$slope),
+      trend_post_pct_per_jaar = calc_pct_trend(tr_post$slope),
+      trendduiding_type = "beschrijvend_geen_trendklasse",
       stringsAsFactors = FALSE
     )
   })
@@ -1786,10 +1818,11 @@ analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_v
     max_n_soorten = numeric(),
     cv_n_soorten = numeric(),
     samenstelling_waarschuwing = character(),
+    trend_contract = character(),
+    trend_formaliteit = character(),
+    trend_status = character(),
+    trend_methode = character(),
     trend_pct_per_jaar = numeric(),
-    trend_p = numeric(),
-    trend_r2 = numeric(),
-    trend_uitleg = character(),
     trendduiding_type = character(),
     stringsAsFactors = FALSE
   )
@@ -1855,11 +1888,12 @@ analyse_richtlijnen_subset <- function(species_indices, richtlijn_mapping, msi_v
       max_n_soorten = max_n_soorten,
       cv_n_soorten = cv_n_soorten,
       samenstelling_waarschuwing = samenstelling_waarschuwing,
+      trend_contract = TRIM_TREND_CONTRACT_VERSION,
+      trend_formaliteit = "beschrijvend",
+      trend_status = "groeps_msi_zonder_onzekerheidspropagatie",
+      trend_methode = "loglineaire samenvatting van groeps-MSI; geen formele inferentie",
       trend_pct_per_jaar = pct,
-      trend_p = tr$p,
-      trend_r2 = tr$r2,
-      trend_uitleg = duid_trend(pct, tr$p),
-      trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
+      trendduiding_type = "beschrijvend_geen_trendklasse",
       stringsAsFactors = FALSE
     )
   })
@@ -1883,7 +1917,7 @@ analyse_subset <- function(tbls, selected_kavels, year_from, year_to) {
   group_mapping <- build_group_mapping(tbls)
   full_group_results <- analyse_groups_subset(species_results$indices, group_mapping, msi_variant = "volledig")
   robust_ids <- species_results$status$soort_id[
-    species_results$status$analyse_categorie == "trim_bruikbaar"
+    species_results$status$analyse_categorie == "brugbare_tijdreeks"
   ]
   robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
   robust_group_results <- analyse_groups_subset(robust_indices, group_mapping, msi_variant = "robuust")

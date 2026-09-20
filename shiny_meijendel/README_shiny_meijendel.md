@@ -13,6 +13,13 @@ De app staat in:
 - een begin- en eindjaar kiezen
 - per soort een nieuwe TRIM-analyse draaien
 - per ecologische groep een nieuwe MSI berekenen
+
+De soortuitvoer volgt `trim-trend-v2`. Afzonderlijke, aaneengesloten
+TRIM-modelperioden tonen trend, standaardfout, 95%-BI, p-waarde, periode en
+methode uit `rtrim::overall()`. Een gebrugde reeks over `1958-2025` is zonder
+bootstrap uitsluitend beschrijvend en heeft geen formele p-waarde of
+trendklasse. Groeps-MSI-trends zijn eveneens beschrijvend; de MSI-jaarwaarden
+en samenstellingsdiagnostiek blijven beschikbaar.
 - duidelijke statusmeldingen tonen bij laden en analyseren
 - een GAM-lijn over de soort- en groepsgrafieken tekenen
 - uitkomsten exporteren naar csv
@@ -110,7 +117,7 @@ Dit script maakt eerst een tijdelijke deploybundle met de root-versie van `meije
 
 Daarna kun je:
 
-- in `Soorten` de TRIM-index en de GAM-lijn bekijken
+- in `Soorten` de TRIM-index, formele periodetrends en de beschrijvende GAM-smooth bekijken
 - in `Groepen` de MSI en de GAM-lijn bekijken
 - in `Controle` de analysebasis en modelstatus controleren
 - via de knoppen csv-bestanden downloaden

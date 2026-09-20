@@ -2748,7 +2748,7 @@ server <- function(input, output, session) {
       "\nJaren:", min(basis$jaar), "-", max(basis$jaar),
       "\nPlot-jaar cellen:", nrow(basis),
       "\nSoorten met territoria:", sum(analyse$selection$in_selectie),
-      "\nSoorten met bruikbaar TRIM-model:", sum(status$analyse_categorie == "trim_bruikbaar"),
+      "\nSoorten met twee formele TRIM-perioden:", sum(status$analyse_categorie == "brugbare_tijdreeks"),
       "\nTe zeldzame soorten:", sum(status$analyse_categorie == "te_zeldzaam")
     )
   })
@@ -3026,7 +3026,7 @@ server <- function(input, output, session) {
     }
     grid()
     legend("topleft",
-           legend = c("TRIM-index", "GAM", "Variatiezone"),
+           legend = c("TRIM-index", "GAM-smooth", "95%-band rond GAM-smooth (beschrijvend)"),
            col = c("#157f3b", "#f59e0b", grDevices::adjustcolor("#f59e0b", alpha.f = 0.20)),
            lwd = c(2, 3, 8), pch = c(16, NA, NA), bty = "n")
   })
@@ -3035,9 +3035,15 @@ server <- function(input, output, session) {
     analyse <- analyse_rv()
     req(analyse)
     analyse$species_results$trends[, c(
-      "soort_naam", "analyse_categorie", "basisjaar", "trend_pct_per_jaar",
-      "trend_uitleg", "trendduiding_type", "n_jaren_index", "model",
-      "model_fallback_reden", "model_fallback_gebruikt"
+      "soort_naam", "analyse_categorie", "basisjaar", "n_jaren_index",
+      "overall_trend_pct_per_jaar", "overall_trend_formaliteit", "overall_trend_status",
+      "trend_pre_periode", "trend_pre_pct_per_jaar", "trend_pre_se_pct",
+      "trend_pre_ci95_laag_pct", "trend_pre_ci95_hoog_pct", "trend_pre_p",
+      "trend_pre_klasse", "trend_pre_model", "trend_pre_model_fallback_reden",
+      "trend_post_periode", "trend_post_pct_per_jaar", "trend_post_se_pct",
+      "trend_post_ci95_laag_pct", "trend_post_ci95_hoog_pct", "trend_post_p",
+      "trend_post_klasse", "trend_post_model", "trend_post_model_fallback_reden",
+      "brugfactor", "brugmethode"
     )]
   }, striped = TRUE)
 
@@ -4483,7 +4489,7 @@ server <- function(input, output, session) {
     analyse$richtlijn_results$trends[, c(
       "richtlijn_titel", "msi_variant", "eerste_jaar", "laatste_jaar", "gemiddeld_n_soorten",
       "min_n_soorten", "max_n_soorten", "samenstelling_waarschuwing",
-      "trend_pct_per_jaar", "trend_p", "trend_r2", "trend_uitleg", "trendduiding_type"
+      "trend_pct_per_jaar", "trend_formaliteit", "trend_status", "trend_methode"
     )]
   }, striped = TRUE)
 
@@ -4534,7 +4540,7 @@ server <- function(input, output, session) {
     validate(need("habitatgroep" %in% input$analyse_keuze, "Habitatgroep is niet geselecteerd."))
     analyse$habitatgroep_results$trends[, c(
       "richtlijn_titel", "msi_variant", "eerste_jaar", "laatste_jaar", "gemiddeld_n_soorten",
-      "trend_pct_per_jaar", "trend_p", "trend_r2", "trend_uitleg", "trendduiding_type"
+      "trend_pct_per_jaar", "trend_formaliteit", "trend_status", "trend_methode"
     )]
   }, striped = TRUE)
 

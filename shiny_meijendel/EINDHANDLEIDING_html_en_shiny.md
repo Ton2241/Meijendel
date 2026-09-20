@@ -51,6 +51,13 @@ De Shiny-app maakt onder andere deze bestanden:
 | `meijendel_shiny_soortindices_...csv` | jaarlijkse TRIM-index per soort |
 | `meijendel_shiny_groepstrends_...csv` | trendoverzicht per groep |
 | `meijendel_shiny_groep_msi_...csv` | MSI per groep per jaar |
+
+Bij de soorttrends zijn alleen de afzonderlijke, aaneengesloten
+TRIM-modelperioden formeel: zij bevatten standaardfout, 95%-BI en p-waarde uit
+`rtrim::overall()`. De gebrugde reeks `1958-2025` en alle groeps-MSI-trends
+zijn zonder bootstrap beschrijvend en bevatten geen formele p-waarde of
+trendklasse. Een GAM-band in de grafiek beschrijft de smooth en is niet het
+volledige onzekerheidsinterval van de TRIM-analyse.
 | `meijendel_shiny_analysebasis_...csv` | controle van selectie, telling en oppervlak |
 | `meijendel_shiny_modelstatus_...csv` | controle welke soorten bruikbaar zijn |
 
