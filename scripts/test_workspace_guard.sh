@@ -45,6 +45,9 @@ fi
 assert_before "$DEPLOY" 'PATH="/usr/local/mysql/bin:$PATH"' 'check_mysql_version.sh'
 assert_before "$DEPLOY" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$DEPLOY" 'check_mysql_version.sh' 'git status --porcelain'
+assert_before "$DEPLOY" 'validate_meijendel_export.sh' 'gateway_preflight='
+assert_before "$DEPLOY" 'REMOTE_SQL_SHA256=' 'meijendel-release apply'
+assert_before "$DEPLOY" 'gateway_apply=' 'Controleer canonieke publieke soortselectie'
 assert_before "$PRODUCTION_GUARD" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$UPDATE" 'PATH="/usr/local/mysql/bin:$PATH"' 'check_mysql_version.sh'
 assert_before "$UPDATE" 'export_meijendel_sql.sh' 'analyse_ecologische_groepen.R'
@@ -58,5 +61,7 @@ grep -qF 'REQUIRED_MYSQL_VERSION=' "$DEPLOY" ||
 [[ -x "$MYSQL_GUARD" ]] || fail "de MySQL-versieguard is niet uitvoerbaar."
 [[ -x "$EXPORTER" ]] || fail "de atomaire exporthelper is niet uitvoerbaar."
 [[ -x "$EXPORT_VALIDATOR" ]] || fail "de exportmanifestvalidator is niet uitvoerbaar."
+grep -qF 'meijendel.sql.manifest' "$DEPLOY" || fail "exportmanifest ontbreekt in de deployoverdracht."
+! grep -qF 'Maak deploydump zonder historische PWA-objecten' "$DEPLOY" || fail "deploy filtert de canonieke dump nog."
 
 printf 'OK: lokale-bestands- en MySQL-versiecontroles zijn fail-fast gekoppeld aan generatie en deploy.\n'

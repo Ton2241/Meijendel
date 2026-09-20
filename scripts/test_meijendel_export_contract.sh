@@ -60,4 +60,12 @@ if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest" 2>&1); then
 fi
 [[ "$output" == *"beveiligde NDFF"* ]] || fail "gerichte beveiligingsfout ontbreekt."
 
+write_dump
+printf 'CREATE TABLE `pwa_legacy` (`id` int);\n' >> "$dump"
+write_manifest
+if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest" 2>&1); then
+  fail "historisch PWA-object werd geaccepteerd."
+fi
+[[ "$output" == *"PWA"* ]] || fail "gerichte PWA-fout ontbreekt."
+
 printf 'OK: dumpmanifest blokkeert gewijzigde en beveiligde SQL-artifacts.\n'

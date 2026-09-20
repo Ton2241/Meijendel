@@ -17,6 +17,7 @@ CANDIDATE_FILE="$STATE_DIR/Meijendel.candidate"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
+SQL_MANIFEST_LOCAL="$LOCAL_REPO/meijendel.sql.manifest"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
 
 if [[ -d /usr/local/mysql/bin ]]; then
@@ -102,6 +103,9 @@ cd "$LOCAL_REPO"
 "$LOCAL_REPO/scripts/check_local_workspace.sh"
 "$LOCAL_REPO/scripts/check_mysql_version.sh"
 REQUIRED_MYSQL_VERSION="$("$LOCAL_REPO/scripts/check_mysql_version.sh" --required-version)"
+need_file "$SQL_LOCAL"
+need_file "$SQL_MANIFEST_LOCAL"
+"$LOCAL_REPO/scripts/validate_meijendel_export.sh" "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL"
 log "Controleer Git-baseline"
 [[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
 [[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."
@@ -152,6 +156,18 @@ done
 REMOTE
 }
 
+canonical_data_smoke() {
+  remote "bash -s" <<'REMOTE'
+set -euo pipefail
+body="$(curl -ksS --resolve www.vwg-m.nl:443:127.0.0.1 https://www.vwg-m.nl/soorten/index.asp)"
+grep -Fq '<strong>153</strong>' <<<"$body"
+for species_id in 3 23 117 199; do
+  grep -Fq "href=\"/soorten/vogel.asp?id=$species_id\"" <<<"$body"
+done
+printf 'CANONICAL_SPECIES_STATUS=ready\n'
+REMOTE
+}
+
 if [[ -n "$INITIALIZE_STATE" ]]; then
   [[ "$YES" -eq 1 ]] || die "--initialize-state vereist --yes en expliciete gebruikersbevestiging."
   git cat-file -e "$INITIALIZE_STATE^{commit}" 2>/dev/null || die "onbekende initialisatiecommit: $INITIALIZE_STATE"
@@ -175,7 +191,6 @@ git merge-base --is-ancestor "$DEPLOYED_COMMIT" "$LOCAL_COMMIT" || \
   die "productiecommit $DEPLOYED_COMMIT is geen voorouder van main $LOCAL_COMMIT."
 printf 'Productiecommit: %s\n' "$DEPLOYED_COMMIT"
 
-need_file "$SQL_LOCAL"
 need_file "$LOCAL_REPO/deploy/check_weer_contract.sh"
 need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
 need_file "$LOCAL_REPO/R/check_wintertelling_output.R"
@@ -217,16 +232,15 @@ LC_ALL=C awk '
   END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
 ' "$SQL_LOCAL" || die "tellers ontbreekt of bevat meer dan id en tellercode."
 
-log "Maak deploydump zonder historische PWA-objecten"
-LC_ALL=C awk '
-  function sensitive(line) { return line ~ /`pwa_[^`]*`/ }
-  function section_start(line) { return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) / }
-  { if (section_start($0)) skip = sensitive($0); if (!skip) print }
-' "$SQL_LOCAL" > "$SQL_DEPLOY"
+log "Maak byte-identieke tijdelijke deploykopie"
+cp -p "$SQL_LOCAL" "$SQL_DEPLOY"
+"$LOCAL_REPO/scripts/validate_meijendel_export.sh" --artifact-only \
+  "$SQL_DEPLOY" "$SQL_MANIFEST_LOCAL"
 
 echo "== Release-/afhankelijkheidsmanifest =="
 printf '%s\n' \
   "meijendel.sql -> $REMOTE_DATA/Meijendel.sql" \
+  "meijendel.sql.manifest -> $REMOTE_DATA/Meijendel.sql.manifest" \
   "deploy/shiny_image/ -> $REMOTE_SHINY/" \
   "shiny_meijendel/ -> $REMOTE_SHINY/shiny_meijendel/" \
   "R/ -> $REMOTE_SHINY/R/" \
@@ -257,12 +271,14 @@ run_rsync() {
 
 sync_release() {
   local sql_remote="$REMOTE_DATA/Meijendel.sql.next-$LOCAL_COMMIT"
+  local manifest_remote="$REMOTE_DATA/Meijendel.sql.manifest.next-$LOCAL_COMMIT"
   if [[ "$SYNC_MODE" == "apply" ]]; then
     remote "mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data' '$REMOTE_BASE/app-home'"
   fi
   run_rsync "$SQL_DEPLOY" "$VPS:$sql_remote"
+  run_rsync "$SQL_MANIFEST_LOCAL" "$VPS:$manifest_remote"
   if [[ "$SYNC_MODE" == "apply" ]]; then
-    remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
+    remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && mv '$manifest_remote' '$REMOTE_DATA/Meijendel.sql.manifest' && chmod 644 '$REMOTE_DATA/Meijendel.sql' '$REMOTE_DATA/Meijendel.sql.manifest' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
   fi
   [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
   [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude '.DS_Store' --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
@@ -307,6 +323,14 @@ log "Voer gecontroleerde release-overdracht uit"
 SYNC_MODE="apply"
 sync_release
 
+EXPECTED_SQL_SHA256="$(awk -F= '$1 == "sql_sha256" {print $2}' "$SQL_MANIFEST_LOCAL")"
+REMOTE_SQL_SHA256="$(remote "sha256sum '$REMOTE_DATA/Meijendel.sql' | awk '{print \$1}'")"
+REMOTE_MANIFEST_SHA256="$(remote "sha256sum '$REMOTE_DATA/Meijendel.sql.manifest' | awk '{print \$1}'")"
+LOCAL_MANIFEST_SHA256="$(shasum -a 256 "$SQL_MANIFEST_LOCAL" | awk '{print $1}')"
+[[ "$REMOTE_SQL_SHA256" == "$EXPECTED_SQL_SHA256" ]] || die "remote SQL-hash wijkt af van exportmanifest."
+[[ "$REMOTE_MANIFEST_SHA256" == "$LOCAL_MANIFEST_SHA256" ]] || die "remote exportmanifest wijkt af van lokaal manifest."
+printf 'REMOTE_SQL_SHA256=%s\n' "$REMOTE_SQL_SHA256"
+
 log "Leg exacte kandidaatcommit vast voor de gesloten releasehelper"
 remote "mkdir -p '$STATE_DIR'; umask 077; tmp='$CANDIDATE_FILE.tmp.\$\$'; printf '%s\n' '$LOCAL_COMMIT' > \"\$tmp\"; mv \"\$tmp\" '$CANDIDATE_FILE'"
 CANDIDATE_STAGED=1
@@ -318,6 +342,9 @@ printf '%s\n' "$gateway_apply"
 grep -Fq 'DATABASE_BACKUP=' <<<"$gateway_apply" || die "releaseactie meldde geen databaseback-up."
 grep -Fqx 'SHINY_STATUS=ready' <<<"$gateway_apply" || die "releaseactie meldde Shiny niet gereed."
 grep -Fqx 'RELEASE_STATUS=ready' <<<"$gateway_apply" || die "releaseactie gaf geen gereedstatus."
+
+log "Controleer canonieke publieke soortselectie"
+canonical_data_smoke
 
 log "Volledige productiecontrole na deploy"
 production_smoke

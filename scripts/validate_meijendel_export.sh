@@ -44,6 +44,9 @@ validate_dump_structure() {
   if LC_ALL=C grep -Eq 'Meijendel_ndff_secure|ndff_open_secure_koppeling|ticket_58679' "$dump"; then
     die "SQL-dump bevat een verwijzing naar beveiligde NDFF-data."
   fi
+  if LC_ALL=C grep -Eq '`pwa_[^`]*`' "$dump"; then
+    die "SQL-dump bevat een historisch PWA-object; corrigeer de levende database in plaats van de publicatie-export te filteren."
+  fi
   LC_ALL=C awk '
     /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
     in_tellers && /`id` int/ { has_id = 1 }
