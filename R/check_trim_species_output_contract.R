@@ -97,3 +97,55 @@ assert_true(all(is.finite(sandra_trends$trend_se_pct) & is.finite(sandra_trends$
 assert_true(all(sandra_trends$model == sandra_status$model[match(sandra_trends$soort_id, sandra_status$soort_id)]), "Sandra-modelkeuzes wijken af van modelstatus")
 
 cat("TRIM-soortuitvoercontract: OK (137 hoofdsoorten; 95 bruikbaar; 110 Sandra, 1997-2022)\n")
+
+assert_descriptive_group_trends <- function(data, expected_rows, label, required_estimates) {
+  assert_true(nrow(data) == expected_rows, sprintf("%s moet %d trendregels bevatten", label, expected_rows))
+  assert_columns(
+    data,
+    c("trend_contract", "trend_formaliteit", "trend_status", "trend_methode", required_estimates),
+    label
+  )
+  assert_true(all(data$trend_contract == "trim-trend-v2"), sprintf("%s heeft verkeerde contractversie", label))
+  assert_true(all(data$trend_formaliteit == "beschrijvend"), sprintf("%s is niet volledig beschrijvend", label))
+  inferential <- grep("(^|_)(p|p_value|p_trend|p_overall_trend|r2|trendklasse|uitleg)($|_)", names(data), value = TRUE)
+  assert_true(!length(inferential), sprintf("%s bevat formele inferentievelden: %s", label, paste(inferential, collapse = ", ")))
+}
+
+ecological_groups <- read_output("trim_msi_evg", "trendoverzicht_msi_groepen.csv")
+functional_groups <- read_output("trim_msi_evg", "functionele_trendoverzicht_msi_groepen.csv")
+sandra_groups <- read_output("trim", "sandra", "trim_msi_evg", "trendoverzicht_msi_groepen.csv")
+alternative_groups <- read_output("output_ecologische_groepen", "trendanalyse_per_groep.csv")
+alternative_periods <- read_output("output_ecologische_groepen", "trendanalyse_los_per_periode.csv")
+
+assert_descriptive_group_trends(
+  ecological_groups,
+  18L,
+  "ecologische TRIM-MSI",
+  c("overall_trend_pct_per_jaar", "trend_pre_pct_per_jaar", "trend_post_pct_per_jaar")
+)
+assert_descriptive_group_trends(
+  functional_groups,
+  24L,
+  "functionele TRIM-MSI",
+  c("overall_trend_pct_per_jaar", "trend_pre_pct_per_jaar", "trend_post_pct_per_jaar")
+)
+assert_descriptive_group_trends(
+  sandra_groups,
+  18L,
+  "Sandra TRIM-MSI",
+  "trend_pct_per_jaar"
+)
+assert_descriptive_group_trends(
+  alternative_groups,
+  9L,
+  "alternatieve ecologische MSI",
+  c("overall_trend_pct_per_jaar", "pre_trend_pct_per_jaar", "post_trend_pct_per_jaar")
+)
+assert_descriptive_group_trends(
+  alternative_periods,
+  18L,
+  "alternatieve ecologische MSI-perioden",
+  "trend_pct_per_jaar"
+)
+
+cat("TRIM-groepsuitvoercontract: OK (18 ecologisch; 24 functioneel; groepen beschrijvend)\n")

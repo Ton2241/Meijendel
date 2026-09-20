@@ -419,12 +419,10 @@ summarise_trends <- function(msi) {
         post_trend_pct_per_jaar = calc_pct_trend(post_slope),
         overall_trend_pct_per_jaar = calc_pct_trend(overall_slope),
         break_level_shift_pct = calc_pct_trend(level_shift),
-        p_pre_slope = coef_break["jaar_c", "Pr(>|t|)"],
-        p_break_shift = coef_break["post_break", "Pr(>|t|)"],
-        p_slope_change = coef_break["jaar_na_break", "Pr(>|t|)"],
-        p_overall_trend = coef_spliced["jaar", "Pr(>|t|)"],
-        r2_break_model = summary(fit_break)$r.squared,
-        r2_spliced_model = summary(fit_spliced)$r.squared,
+        trend_contract = "trim-trend-v2",
+        trend_formaliteit = "beschrijvend",
+        trend_status = "groeps_msi_zonder_onzekerheidspropagatie",
+        trend_methode = "loglineaire samenvatting van ecologische groeps-MSI; geen formele inferentie",
         stringsAsFactors = FALSE
       )
     })
@@ -456,8 +454,10 @@ summarise_period_trends <- function(msi) {
             median_msi = median(df_period$msi, na.rm = TRUE),
             mean_species_contributing = mean(df_period$n_soorten, na.rm = TRUE),
             trend_pct_per_jaar = calc_pct_trend(slope),
-            p_trend = cf["jaar", "Pr(>|t|)"],
-            r2 = summary(fit)$r.squared,
+            trend_contract = "trim-trend-v2",
+            trend_formaliteit = "beschrijvend",
+            trend_status = "groeps_msi_zonder_onzekerheidspropagatie",
+            trend_methode = "loglineaire samenvatting van ecologische groeps-MSI per periode; geen formele inferentie",
             stringsAsFactors = FALSE
           )
         })
@@ -754,7 +754,7 @@ if (sys.nframe() == 0) {
   print(results$trend_summary[, c(
     "groep_100", "korte_beschrijving", "pre_trend_pct_per_jaar",
     "post_trend_pct_per_jaar", "overall_trend_pct_per_jaar",
-    "break_level_shift_pct", "p_slope_change", "mean_species_contributing"
+    "break_level_shift_pct", "trend_formaliteit", "mean_species_contributing"
   )])
 
   cat("\nMSI losse trends per periode:\n")

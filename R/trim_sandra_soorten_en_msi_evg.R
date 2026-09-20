@@ -699,11 +699,12 @@ analyse_groups <- function(species_indices, group_mapping, msi_variant = "volled
       max_n_soorten = max_n_soorten,
       cv_n_soorten = cv_n_soorten,
       samenstelling_waarschuwing = samenstelling_waarschuwing,
+      trend_contract = TRIM_TREND_CONTRACT_VERSION,
+      trend_formaliteit = "beschrijvend",
+      trend_status = "groeps_msi_zonder_onzekerheidspropagatie",
+      trend_methode = "loglineaire samenvatting van groeps-MSI; geen formele inferentie",
       trend_pct_per_jaar = pct,
-      trend_p = tr$p,
-      trend_r2 = tr$r2,
-      trend_uitleg = duid_trend(pct, tr$p),
-      trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
+      trendduiding_type = "beschrijvend_geen_trendklasse",
       stringsAsFactors = FALSE
     )
   })
