@@ -28,6 +28,16 @@ functional_groups <- read.csv(
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
+group_gam_interpretation <- read.csv(
+  file.path(repo_root, "trim_msi_evg", "gam_interpretatie_msi_groepen.csv"),
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
+standalone_gam_interpretation <- read.csv(
+  file.path(repo_root, "output_ecologische_groepen", "gam_interpretatie_per_groep.csv"),
+  stringsAsFactors = FALSE,
+  check.names = FALSE
+)
 
 required_dashboard_fragments <- c(
   "overall_trend_formaliteit",
@@ -63,6 +73,14 @@ assert_true(any(insufficient), "geen dashboardtestsoort met onvoldoende reeks ge
 
 assert_true(all(ecological_groups$trend_formaliteit == "beschrijvend"), "ecologische groepen zijn niet allemaal beschrijvend")
 assert_true(all(functional_groups$trend_formaliteit == "beschrijvend"), "functionele groepen zijn niet allemaal beschrijvend")
+assert_true(
+  !any(grepl("trendclassificatie|betrouwbaar", group_gam_interpretation$toelichting, ignore.case = TRUE)),
+  "GAM-toelichting lange reeks bevat nog formele of betrouwbaarheidsduiding"
+)
+assert_true(
+  !any(grepl("trendclassificatie|betrouwbaar", standalone_gam_interpretation$toelichting, ignore.case = TRUE)),
+  "losse ecologische GAM-toelichting bevat nog formele of betrouwbaarheidsduiding"
+)
 
 cat(sprintf(
   paste0(

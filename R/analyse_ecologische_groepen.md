@@ -119,4 +119,6 @@ De lineaire analyse geeft per periode één gemiddelde helling. De GAM-versie vo
 - niet-lineaire trendvormen
 - zichtbaar maken van pieken, dalen en herstel
 - een aparte gladde curve vóór en ná de breuk
-- onzekerheidsbanden rond de geschatte MSI-trend
+- beschrijvende 95%-banden rond de gladde GAM-lijn; deze banden bevatten niet
+  de onzekerheid van de onderliggende TRIM-soortindices en zijn dus geen
+  volledige onzekerheidsintervallen voor de groeps-MSI

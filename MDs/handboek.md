@@ -607,7 +607,8 @@ De GAM-analyse voegt toe:
 - niet-lineaire trendvormen
 - zichtbare pieken en dalen
 - herstel of kromming in trends
-- onzekerheidsbanden rond de geschatte lijn
+- beschrijvende banden rond de geschatte GAM-lijn; bij groeps-MSI's zijn dit
+  geen volledige TRIM-onzekerheidsintervallen
 
 Let bij GAM vooral op:
 

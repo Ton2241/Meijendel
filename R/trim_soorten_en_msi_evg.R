@@ -1128,7 +1128,7 @@ classify_gam_need <- function(gam_summary) {
     "Voor deze groep kon geen stabiele GAM-fit worden berekend.",
     ifelse(
       out$advies == "GAM aanbevolen",
-      "Diagnostische GAM-visualisatie: duidelijke niet-lineariteit; gebruik de lineaire trendclassificatie als primaire duiding.",
+      "Diagnostische GAM-visualisatie: duidelijke niet-lineariteit; vergelijk dit met de beschrijvende lineaire samenvatting per periode.",
       ifelse(
         out$advies == "GAM nuttig",
         "Diagnostische GAM-visualisatie: enige kromming aanwezig; vooral nuttig voor timing van omslagen.",

@@ -79,7 +79,9 @@ Index 100 betekent per soort het eerste analysejaar vanaf het eerste positieve j
 Je ziet:
 
 - een eerste TRIM-MSI grafiek met `Volledige MSI` en `Robuuste MSI`
-- een tweede grafiek waarin de volledige Meijendel-TRIM-MSI als GAM met 95%-band wordt vergeleken met een landelijke GAM-lijn zonder band
+- een tweede grafiek waarin de volledige Meijendel-TRIM-MSI als GAM met een
+  beschrijvende 95%-band wordt vergeleken met een landelijke GAM-lijn zonder
+  band; de Meijendelband is geen volledige TRIM-onzekerheid voor de groeps-MSI
 - een korte uitleg per groep
 
 Bron:

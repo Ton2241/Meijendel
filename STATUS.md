@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 5 september 2026
+Laatste update: 20 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -63,6 +63,30 @@ Gereed:
 - De 15 eerder hernoemde objecten van het verlaten ledenadministratieprototype zijn uit de live database verwijderd.
 - MySQL `tellers` en de opnieuw gegenereerde `meijendel.sql` bevatten uitsluitend `id` en de unieke `tellercode`; alle 2.449 historische koppelingen zijn intact en de volledige dumprestore is gecontroleerd.
 - De actuele Git-versie bevat geen oude SQL-back-up meer. Het gedateerde kavelimportscript leest een eventueel persoonsgegeven tellermappingbestand voortaan alleen via `MEIJENDEL_TELLER_MAPPING_CSV` buiten Git.
+
+## TRIM-onzekerheid en presentatie
+
+Gereed op de featurebranch:
+
+- De hoofdreeks met 137 soorten over 1958–2025 publiceert de afzonderlijke
+  TRIM-perioden 1958–1983 en 1984–2025 als primaire formele resultaten. Voor
+  ieder werkend model worden jaarlijkse trendschatting, standaardfout,
+  95%-betrouwbaarheidsinterval, p-waarde, periode, model en methode uit
+  `rtrim::overall()` vastgelegd. De selectie van 95 bruikbare lange reeksen is
+  niet gewijzigd.
+- De Sandra-reeks met 110 soorten over 1997–2022 gebruikt hetzelfde formele
+  contract. Een ontbrekend model of een jaarhiaat krijgt expliciet geen
+  formele onzekerheidsvelden.
+- De gebrugde soorttrend 1958–2025 blijft beschrijvend: zonder bootstrap van
+  beide TRIM-modellen en de brugfactor worden geen formele standaardfout,
+  p-waarde of trendklasse gepubliceerd. Bootstrap is vooralsnog gepauzeerd.
+- De 18 ecologische en 24 functionele groepsregels zijn beschrijvend. Hun
+  jaarwaarden en samenstellingsdiagnostiek blijven beschikbaar; een 95%-band
+  rond een groeps-GAM is uitsluitend een band rond de gladde lijn en geen
+  volledige TRIM-onzekerheid.
+- Hoofdscript, Sandra, dashboard en Shiny gebruiken hetzelfde veld- en
+  presentatiecontract. De websitewijzigingen en handleidingen staan in de
+  afzonderlijke VWG_M-featurebranch `feature/trim-overall-onzekerheid`.
 
 ## Wintertellingen 2000/01–2024/25
 

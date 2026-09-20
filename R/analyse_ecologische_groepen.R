@@ -562,11 +562,11 @@ classify_gam_need <- function(gam_summary) {
 
   out$toelichting <- ifelse(
     out$advies == "GAM aanbevolen",
-    "Duidelijke niet-lineariteit; een rechte lijn verliest belangrijke trendvorm.",
+    "Duidelijke niet-lineariteit; een rechte beschrijvende samenvatting verliest belangrijke trendvorm.",
     ifelse(
       out$advies == "GAM nuttig",
       "Enige kromming aanwezig; GAM helpt vooral voor visualisatie en timing van omslagen.",
-      "Trend is grotendeels lineair; lineaire samenvatting is meestal toereikend."
+      "De beschrijvende trendvorm is grotendeels lineair; een lineaire samenvatting is meestal toereikend."
     )
   )
 
