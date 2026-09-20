@@ -7,6 +7,10 @@ if (dir.exists(user_lib)) {
 
 suppressPackageStartupMessages(library(rtrim))
 
+script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1])
+script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
+source(file.path(script_dir, "trim_trend_contract.R"))
+
 sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
 species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/soorten"
 group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/trim_msi_evg"
@@ -497,17 +501,7 @@ trim_model_serialcor <- function(model_label) {
 }
 
 trim_model_fallback_reason <- function(model_label) {
-  if (is.na(model_label) || !nzchar(model_label)) {
-    return("geen_model")
-  }
-  switch(
-    model_label,
-    model3_overdisp = "voorkeursmodel_gekozen",
-    model3_overdisp_serialcor = "model3_overdisp_mislukt_fallback_naar_serialcor",
-    model3_basis = "overdisp_varianten_mislukt_fallback_naar_basis",
-    model2_basis = "model3_varianten_mislukt_fallback_naar_model2",
-    "onbekend"
-  )
+  trim_fallback_reason(model_label)
 }
 
 collect_index <- function(fit_obj, soort_id, soort_naam, euring_code, engelse_naam) {
@@ -624,9 +618,13 @@ analyse_species <- function(species_matrix) {
       index_df <- collect_index(fit, soort_id, soort_naam, euring_code, engelse_naam)
       index_rows[[counter]] <- index_df
 
-      tr <- run_lm_trend(index_df, "index_100")
-      pct <- calc_pct_trend(tr$slope)
-      trend_rows[[counter]] <- data.frame(
+      trend_contract <- trim_overall_contract(
+        fit,
+        periode = "1997-2022",
+        periode_van = 1997L,
+        periode_tot = 2022L
+      )
+      trend_rows[[counter]] <- cbind(data.frame(
         soort_id = soort_id,
         euring_code = euring_code,
         soort_naam = soort_naam,
@@ -634,17 +632,9 @@ analyse_species <- function(species_matrix) {
         analyse_categorie = analyse_categorie,
         basisjaar = min(index_df$jaar, na.rm = TRUE),
         basisjaar_toelichting = "index_100 = eerste analysejaar vanaf eerste positieve jaar",
-        eerste_jaar = min(index_df$jaar, na.rm = TRUE),
-        laatste_jaar = max(index_df$jaar, na.rm = TRUE),
         n_jaren_index = nrow(index_df),
-        trend_pct_per_jaar = pct,
-        trend_p = tr$p,
-        trend_r2 = tr$r2,
-        trend_uitleg = duid_trend(pct, tr$p),
-        trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
-        model = fit$config,
         stringsAsFactors = FALSE
-      )
+      ), trend_contract)
     }
   }
 

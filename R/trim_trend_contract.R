@@ -186,3 +186,23 @@ trim_descriptive_contract <- function(
     trendduiding_type = "beschrijvend_geen_trendklasse"
   )
 }
+
+trim_prefix_contract <- function(contract, prefix) {
+  contract <- contract[, setdiff(names(contract), "trend_contract"), drop = FALSE]
+  short_names <- c(
+    trend_formaliteit = "formaliteit",
+    trend_pct_per_jaar = "pct_per_jaar",
+    trend_se_pct = "se_pct",
+    trend_ci95_laag_pct = "ci95_laag_pct",
+    trend_ci95_hoog_pct = "ci95_hoog_pct",
+    trend_p = "p",
+    trend_methode = "methode",
+    trend_status = "status",
+    trendklasse = "klasse",
+    trendduiding_type = "duiding_type"
+  )
+  names(contract) <- vapply(names(contract), function(name) {
+    paste0(prefix, if (name %in% names(short_names)) short_names[[name]] else name)
+  }, character(1))
+  contract
+}

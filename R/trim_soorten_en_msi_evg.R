@@ -8,6 +8,10 @@ if (dir.exists(user_lib)) {
 suppressPackageStartupMessages(library(rtrim))
 suppressPackageStartupMessages(library(mgcv))
 
+script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1])
+script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
+source(file.path(script_dir, "trim_trend_contract.R"))
+
 sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
 species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/soorten"
 group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg"
@@ -494,17 +498,7 @@ trim_model_serialcor <- function(model_label) {
 }
 
 trim_model_fallback_reason <- function(model_label) {
-  if (is.na(model_label) || !nzchar(model_label)) {
-    return("geen_model")
-  }
-  switch(
-    model_label,
-    model3_overdisp = "voorkeursmodel_gekozen",
-    model3_overdisp_serialcor = "model3_overdisp_mislukt_fallback_naar_serialcor",
-    model3_basis = "overdisp_varianten_mislukt_fallback_naar_basis",
-    model2_basis = "model3_varianten_mislukt_fallback_naar_model2",
-    "onbekend"
-  )
+  trim_fallback_reason(model_label)
 }
 
 collect_period_index <- function(fit_obj, soort_id, soort_naam, euring_code, periode_label) {
@@ -716,14 +710,36 @@ analyse_species <- function(species_matrix) {
       index_rows[[counter]] <- series[order(series$jaar), ]
 
       tr_all <- run_lm_trend(series, "index_gebrugged")
-      tr_pre <- run_lm_trend(series, "index_gebrugged", year_max = 1983)
-      tr_post <- run_lm_trend(series, "index_gebrugged", year_min = 1984)
-
       overall_pct <- calc_pct_trend(tr_all$slope)
-      pre_pct <- calc_pct_trend(tr_pre$slope)
-      post_pct <- calc_pct_trend(tr_post$slope)
+      overall_status <- if (identical(bridged$bridge_method, "1981_1983_naar_1984_1986")) {
+        "gebrugde_reeks_zonder_bootstrap"
+      } else if (identical(bridged$bridge_method, "fallback_1")) {
+        "gebrugde_reeks_fallback_zonder_bootstrap"
+      } else {
+        "onvolledige_langetermijnreeks"
+      }
+      overall_contract <- trim_descriptive_contract(
+        periode = "1958-2025",
+        periode_van = min(series$jaar, na.rm = TRUE),
+        periode_tot = max(series$jaar, na.rm = TRUE),
+        trend_pct_per_jaar = overall_pct,
+        status = overall_status
+      )
+      overall_contract$n_modeltijdpunten <- nrow(series)
+      pre_contract <- trim_overall_contract(
+        pre_fit,
+        periode = "1958-1983",
+        periode_van = 1958L,
+        periode_tot = 1983L
+      )
+      post_contract <- trim_overall_contract(
+        post_fit,
+        periode = "1984-2025",
+        periode_van = 1984L,
+        periode_tot = 2025L
+      )
 
-      trend_rows[[counter]] <- data.frame(
+      trend_rows[[counter]] <- cbind(data.frame(
         soort_id = soort_id,
         euring_code = euring_code,
         soort_naam = soort_naam,
@@ -733,23 +749,22 @@ analyse_species <- function(species_matrix) {
         eerste_jaar = min(series$jaar, na.rm = TRUE),
         laatste_jaar = max(series$jaar, na.rm = TRUE),
         n_jaren_index = nrow(series),
-        overall_trend_pct_per_jaar = overall_pct,
-        overall_p = tr_all$p,
-        overall_r2 = tr_all$r2,
-        overall_uitleg = duid_trend(overall_pct, tr_all$p),
-        trend_pre_pct_per_jaar = pre_pct,
-        trend_pre_p = tr_pre$p,
-        trend_pre_r2 = tr_pre$r2,
-        trend_pre_uitleg = duid_trend(pre_pct, tr_pre$p),
-        trend_post_pct_per_jaar = post_pct,
-        trend_post_p = tr_post$p,
-        trend_post_r2 = tr_post$r2,
-        trend_post_uitleg = duid_trend(post_pct, tr_post$p),
-        trendduiding_type = "eigen_trendduiding_op_basis_van_trim_index",
         brugfactor = bridged$bridge_factor,
         brugmethode = bridged$bridge_method,
         stringsAsFactors = FALSE
-      )
+      ), data.frame(
+        trend_contract = overall_contract$trend_contract,
+        overall_trend_formaliteit = overall_contract$trend_formaliteit,
+        overall_periode = overall_contract$periode,
+        overall_eerste_jaar = overall_contract$eerste_jaar,
+        overall_laatste_jaar = overall_contract$laatste_jaar,
+        overall_n_kalenderjaren = overall_contract$n_kalenderjaren,
+        overall_n_modeltijdpunten = overall_contract$n_modeltijdpunten,
+        overall_trend_pct_per_jaar = overall_contract$trend_pct_per_jaar,
+        overall_trend_methode = overall_contract$trend_methode,
+        overall_trend_status = overall_contract$trend_status,
+        stringsAsFactors = FALSE
+      ), trim_prefix_contract(pre_contract, "trend_pre_"), trim_prefix_contract(post_contract, "trend_post_"))
     }
   }
 
