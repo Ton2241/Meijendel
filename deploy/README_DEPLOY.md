@@ -93,6 +93,16 @@ cd /Users/ton/Documents/GitHub/Meijendel
 ./deploy/deploy_meijendel_vps.sh --apply --yes
 ```
 
+De gewone VPS-gebruiker heeft bewust geen rechtstreekse Docker-toegang. Het
+deployscript gebruikt daarom uitsluitend de gesloten, hashgebonden actie
+`vwgm-admin meijendel-release`: eerst een read-only preflight, daarna bij
+`--apply --yes` een databaseback-up, import, inhoudscontrole, Shiny-herstart en
+eindcontrole. De root-helper accepteert alleen `preflight` of `apply` plus de
+exacte 40-tekencommit. Bij een fout vanaf de database-import wordt de zojuist
+gemaakte back-up automatisch teruggezet. Installeer of actualiseer deze actie
+via `VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh`; voeg de gebruiker
+niet opnieuw toe aan de Docker-groep.
+
 Eerste, eenmalige inrichting nadat de werkelijk draaiende productiecommit is vastgesteld en in `main` is geïntegreerd:
 
 ```sh

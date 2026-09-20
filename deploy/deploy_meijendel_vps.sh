@@ -11,6 +11,8 @@ REMOTE_APP="$REMOTE_BASE/vwg-m-linux-app"
 STATE_DIR="${MEIJENDEL_DEPLOY_STATE_DIR:-$REMOTE_BASE/deploy-state}"
 STATE_FILE="$STATE_DIR/Meijendel.commit"
 GLOBAL_LOCK="$STATE_DIR/production.lock"
+GATEWAY="/usr/local/sbin/vwgm-admin"
+CANDIDATE_FILE="$STATE_DIR/Meijendel.candidate"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -31,6 +33,7 @@ LOCAL_COMMIT=""
 DEPLOYED_COMMIT=""
 SYNC_MODE="dry"
 DELETE_COUNT=0
+CANDIDATE_STAGED=0
 
 usage() {
   cat <<'USAGE'
@@ -63,7 +66,13 @@ release_lock() {
     LOCK_HELD=0
   fi
 }
-cleanup() { rm -f "$SQL_DEPLOY"; release_lock; }
+cleanup() {
+  rm -f "$SQL_DEPLOY"
+  if [[ "$CANDIDATE_STAGED" -eq 1 ]]; then
+    remote "rm -f '$CANDIDATE_FILE'" || true
+  fi
+  release_lock
+}
 trap cleanup EXIT INT TERM
 
 while (($#)); do
@@ -93,11 +102,6 @@ cd "$LOCAL_REPO"
 "$LOCAL_REPO/scripts/check_local_workspace.sh"
 "$LOCAL_REPO/scripts/check_mysql_version.sh"
 REQUIRED_MYSQL_VERSION="$("$LOCAL_REPO/scripts/check_mysql_version.sh" --required-version)"
-REMOTE_MYSQL_VERSION="$(remote "docker exec meijendel-mysql sh -lc 'mysql -uroot -p\"\$MYSQL_ROOT_PASSWORD\" -NBe \"SELECT VERSION()\"'" 2>/dev/null)" || \
-  die "MySQL-versie op de VPS kon niet worden bepaald."
-[[ "$REMOTE_MYSQL_VERSION" == "$REQUIRED_MYSQL_VERSION" ]] || \
-  die "MySQL op de VPS is $REMOTE_MYSQL_VERSION; vereist is exact $REQUIRED_MYSQL_VERSION."
-printf 'OK: MySQL op de VPS exact %s.\n' "$REQUIRED_MYSQL_VERSION"
 log "Controleer Git-baseline"
 [[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
 [[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."
@@ -105,6 +109,16 @@ git fetch origin --prune
 LOCAL_COMMIT="$(git rev-parse HEAD)"
 [[ "$LOCAL_COMMIT" == "$(git rev-parse origin/main)" ]] || die "lokale main is niet exact gelijk aan origin/main."
 printf 'Main-commit: %s\n' "$LOCAL_COMMIT"
+
+log "Controleer gesloten Meijendel-beheerroute en VPS-MySQL"
+gateway_preflight="$(remote "sudo -n '$GATEWAY' meijendel-release preflight '$LOCAL_COMMIT'")" || \
+  die "gesloten Meijendel-preflight op de VPS faalde."
+printf '%s\n' "$gateway_preflight"
+REMOTE_MYSQL_VERSION="$(sed -n 's/^MYSQL_VERSION=//p' <<<"$gateway_preflight" | tail -n 1)"
+[[ "$REMOTE_MYSQL_VERSION" == "$REQUIRED_MYSQL_VERSION" ]] || \
+  die "MySQL op de VPS is $REMOTE_MYSQL_VERSION; vereist is exact $REQUIRED_MYSQL_VERSION."
+grep -Fqx 'PREFLIGHT_STATUS=ready' <<<"$gateway_preflight" || \
+  die "gesloten Meijendel-preflight gaf geen gereedstatus."
 
 acquire_lock() {
   if ! remote "mkdir -p '$STATE_DIR' && mkdir '$GLOBAL_LOCK'"; then
@@ -279,22 +293,6 @@ if ! production_smoke; then
   echo "WAARSCHUWING: huidige productie faalt; expliciete herstelmodus is actief." >&2
 fi
 
-log "Controleer productie-MySQL-deployvoorwaarden"
-remote "REMOTE_BASE='$REMOTE_BASE' bash -s" <<'REMOTE'
-set -euo pipefail
-container="meijendel-mysql"
-docker ps --format '{{.Names}}' | grep -qx "$container"
-command -v gzip >/dev/null
-test -d "$REMOTE_BASE/backups"
-test -w "$REMOTE_BASE/backups"
-docker exec "$container" sh -lc '
-  test -n "$MYSQL_ROOT_PASSWORD"
-  test -n "$MYSQL_DATABASE"
-  mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT 1" "$MYSQL_DATABASE" >/dev/null
-'
-df -Pk "$REMOTE_BASE/backups" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }'
-REMOTE
-
 if [[ "$APPLY" -ne 1 ]]; then
   log "Preflight klaar; productie is niet aangepast. Gebruik --apply --yes na beoordeling."
   exit 0
@@ -309,129 +307,17 @@ log "Voer gecontroleerde release-overdracht uit"
 SYNC_MODE="apply"
 sync_release
 
-log "Maak productie-MySQL-back-up en importeer de canonieke database"
-remote "REMOTE_BASE='$REMOTE_BASE' REMOTE_DATA='$REMOTE_DATA' LOCAL_COMMIT='$LOCAL_COMMIT' bash -s" <<'REMOTE'
-set -euo pipefail
+log "Leg exacte kandidaatcommit vast voor de gesloten releasehelper"
+remote "mkdir -p '$STATE_DIR'; umask 077; tmp='$CANDIDATE_FILE.tmp.\$\$'; printf '%s\n' '$LOCAL_COMMIT' > \"\$tmp\"; mv \"\$tmp\" '$CANDIDATE_FILE'"
+CANDIDATE_STAGED=1
 
-container="meijendel-mysql"
-backup_dir="$REMOTE_BASE/backups/meijendel-mysql"
-backup_file="$backup_dir/meijendel_before_${LOCAL_COMMIT}_$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
-sql_file="$REMOTE_DATA/Meijendel.sql"
-
-docker ps --format '{{.Names}}' | grep -qx "$container"
-test -s "$sql_file"
-grep -q -- '-- Dump completed on ' "$sql_file"
-grep -q 'CREATE TABLE `pq_vegetatie_pq`' "$sql_file"
-grep -q 'CREATE TABLE `pq_vegetatie_import`' "$sql_file"
-grep -q '`srtnum`' "$sql_file"
-grep -q '`plabed_code`' "$sql_file"
-grep -q 'VIEW `website_plot_vegetatie_jaar`' "$sql_file"
-mkdir -p "$backup_dir"
-
-docker exec "$container" sh -lc '
-  exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
-    --no-tablespaces --single-transaction --set-gtid-purged=OFF \
-    --routines --triggers --events --add-drop-database --databases "$MYSQL_DATABASE"
-' | gzip -c > "$backup_file.tmp"
-test -s "$backup_file.tmp"
-mv "$backup_file.tmp" "$backup_file"
-chmod 600 "$backup_file"
-echo "Productie-MySQL-back-up: $backup_file"
-
-restore_backup() {
-  echo 'MySQL-import of inhoudscontrole faalde; herstel de zojuist gemaakte productieback-up.' >&2
-  gzip -dc "$backup_file" | docker exec -i "$container" sh -lc \
-    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
-}
-
-if ! docker exec -i "$container" sh -lc \
-  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < "$sql_file"; then
-  restore_backup
-  exit 1
-fi
-
-if ! docker exec "$container" sh -lc '
-  set -eu
-  query() { mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "$1" "$MYSQL_DATABASE"; }
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_pq")" -eq 254
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname")" -eq 2007
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon")" -eq 714
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming")" -eq 53122
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname_plot")" -eq 1336
-  test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie")" -eq 513
-  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar")" -eq 513
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_import WHERE importstatus = \"voorlopig\"")" -eq 1
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon WHERE srtnum IS NULL OR taxonlijst_versie = \"\"")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE plabed_code IS NULL")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM (SELECT taxonlijst_versie, srtnum FROM pq_vegetatie_taxon GROUP BY taxonlijst_versie, srtnum HAVING COUNT(*) > 1) d")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE bodemtype_status = \"te_bevestigen\"")" -eq 34
-  test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar WHERE bronstatus <> \"voorlopig\" OR taxonlijst_versie = \"\"")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend")" -eq 513
-  test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend b JOIN pq_plot_jaar_vegetatie p USING (plot_id, jaar) WHERE ABS(b.soortenrijkdom_gem - p.soortenrijkdom_gem) > 0.0005 OR ABS(b.bedekking_som_gem - p.bedekking_som_gem) > 0.0005 OR ABS(b.shannon_gem - p.shannon_gem) > 0.00011")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE ST_SRID(geom) <> 28992 OR YEAR(opname_datum) <> jaar")" -eq 0
-'; then
-  restore_backup
-  exit 1
-fi
-
-docker exec "$container" sh -lc '
-  mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "
-    SELECT CONCAT(\"pq=\", COUNT(*)) FROM pq_vegetatie_pq;
-    SELECT CONCAT(\"opnamen=\", COUNT(*)) FROM pq_vegetatie_opname;
-    SELECT CONCAT(\"taxa=\", COUNT(*)) FROM pq_vegetatie_taxon;
-    SELECT CONCAT(\"waarnemingen=\", COUNT(*)) FROM pq_vegetatie_waarneming;
-    SELECT CONCAT(\"taxa_met_srtnum=\", COUNT(*)) FROM pq_vegetatie_taxon WHERE srtnum IS NOT NULL;
-    SELECT CONCAT(\"plabed_gevuld=\", COUNT(*)) FROM pq_vegetatie_waarneming WHERE plabed_code IS NOT NULL;
-    SELECT CONCAT(\"bodemcodes_te_bevestigen=\", COUNT(*)) FROM pq_vegetatie_opname WHERE bodemtype_status = \"te_bevestigen\";
-    SELECT CONCAT(\"publieke_plot_jaren=\", COUNT(*)) FROM website_plot_vegetatie_jaar;
-  " "$MYSQL_DATABASE"
-'
-REMOTE
-
-log "Herstart Shiny en wacht op gereedheid"
-remote "REMOTE_SHINY='$REMOTE_SHINY' bash -s" <<'REMOTE'
-set -euo pipefail
-mkdir -p "$REMOTE_SHINY/shiny_meijendel/app_cache/sass"
-docker run --rm -v "$REMOTE_SHINY/shiny_meijendel/app_cache:/app_cache" vwgm-shiny:latest chown -R shiny:shiny /app_cache
-cd "$REMOTE_SHINY"
-if ! grep -q '/app_cache:rw' docker-compose.yml; then
-  perl -0pi -e 's#(      - /srv/vwgm/shiny/shiny_meijendel:/srv/shiny-server/shiny_meijendel:ro\n)#$1      - /srv/vwgm/shiny/shiny_meijendel/app_cache:/srv/shiny-server/shiny_meijendel/app_cache:rw\n#' docker-compose.yml
-fi
-docker compose up -d --force-recreate shiny >/dev/null
-for attempt in $(seq 1 30); do
-  if curl -fsSI http://127.0.0.1:3838/ >/dev/null; then
-    echo "Shiny gereed na poging $attempt"
-    exit 0
-  fi
-  sleep 2
-done
-docker ps --filter name=shiny_meijendel
-docker logs --tail 120 shiny_meijendel >&2
-exit 1
-REMOTE
-
-log "Controleer analysepackages, cache, checksums en containers"
-remote "REMOTE_BASE='$REMOTE_BASE' REMOTE_DATA='$REMOTE_DATA' REMOTE_SHINY='$REMOTE_SHINY' REMOTE_WWW='$REMOTE_WWW' REMOTE_APP='$REMOTE_APP' bash -s" <<'REMOTE'
-set -euo pipefail
-docker exec shiny_meijendel Rscript -e '
-  pkgs <- c("geepack", "glmmTMB", "vegan", "pls", "changepoint", "strucchange", "lavaan", "piecewiseSEM", "indicspecies", "betapart", "unmarked")
-  ok <- vapply(pkgs, requireNamespace, logical(1), quietly = TRUE)
-  print(data.frame(package = pkgs, beschikbaar = unname(ok)))
-  if (!all(ok)) stop("Niet alle analysepackages zijn beschikbaar.")
-  if (!nzchar(Sys.which("perl"))) stop("Perl ontbreekt in de Shiny-container.")
-'
-docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL pad: %s; cache: from_cache=%s elapsed=%.3f cache=%s\\n\", path, x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
-sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
-test -s "$REMOTE_WWW/trim/soorten/soorten_trendoverzicht.csv"
-test -s "$REMOTE_WWW/trim/sandra/soorten/soorten_trendoverzicht.csv"
-test -s "$REMOTE_WWW/wintertellingen/winter_jaarindex.csv"
-test -s "$REMOTE_WWW/wintertellingen/winter_maandpatroon.csv"
-test -s "$REMOTE_WWW/wintertellingen/winter_plotgebruik.csv"
-test -s "$REMOTE_WWW/wintertellingen/winter_pilot_besluit.csv"
-test -s "$REMOTE_WWW/wintertellingen/winter_soortprotocol.csv"
-docker stats --no-stream shiny_meijendel
-docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
-REMOTE
+log "Maak back-up, importeer MySQL, herstart Shiny en controleer de release via de gesloten gateway"
+gateway_apply="$(remote "sudo -n '$GATEWAY' meijendel-release apply '$LOCAL_COMMIT'")" || \
+  die "gesloten Meijendel-releaseactie faalde; controleer rollbackmelding en productie."
+printf '%s\n' "$gateway_apply"
+grep -Fq 'DATABASE_BACKUP=' <<<"$gateway_apply" || die "releaseactie meldde geen databaseback-up."
+grep -Fqx 'SHINY_STATUS=ready' <<<"$gateway_apply" || die "releaseactie meldde Shiny niet gereed."
+grep -Fqx 'RELEASE_STATUS=ready' <<<"$gateway_apply" || die "releaseactie gaf geen gereedstatus."
 
 log "Volledige productiecontrole na deploy"
 production_smoke

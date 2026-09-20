@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 DEPLOY_SCRIPT="$SCRIPT_DIR/deploy_meijendel_vps.sh"
+REMOTE_HELPER="$SCRIPT_DIR/deploy_meijendel_release_vps_remote.sh"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -15,7 +16,12 @@ need_literal() {
   grep -Fq -- "$literal" "$DEPLOY_SCRIPT" || fail "deployscript mist: $literal"
 }
 
-bash -n "$DEPLOY_SCRIPT"
+need_remote_literal() {
+  local literal="$1"
+  grep -Fq -- "$literal" "$REMOTE_HELPER" || fail "remote releasehelper mist: $literal"
+}
+
+bash -n "$DEPLOY_SCRIPT" "$REMOTE_HELPER"
 
 required_outputs=(
   "trim/soorten/soorten_modelstatus.csv"
@@ -38,8 +44,8 @@ done
 need_literal "trim/soorten/ -> \$REMOTE_WWW/trim/soorten/"
 need_literal "trim/sandra/ -> \$REMOTE_WWW/trim/sandra/"
 need_literal 'run_rsync --delete-delay --exclude '\''.DS_Store'\'' "$LOCAL_REPO/trim/" "$VPS:$REMOTE_WWW/trim/"'
-need_literal 'test -s "$REMOTE_WWW/trim/soorten/soorten_trendoverzicht.csv"'
-need_literal 'test -s "$REMOTE_WWW/trim/sandra/soorten/soorten_trendoverzicht.csv"'
+need_remote_literal '"$REMOTE_WWW/trim/soorten/soorten_trendoverzicht.csv"'
+need_remote_literal '"$REMOTE_WWW/trim/sandra/soorten/soorten_trendoverzicht.csv"'
 need_literal '/trim/soorten/soorten_trendoverzicht.csv'
 
 printf 'TRIM-releasecontract: OK (%d verplichte uitvoerbestanden)\n' "${#required_outputs[@]}"
