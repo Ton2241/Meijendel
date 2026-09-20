@@ -19,7 +19,9 @@ fi
 
 DUMP_DIR="${DUMP_DIR:-/Volumes/T7 Data/Home_Ton/Prive/Hobbies/IT/Meijendel Database/Archief/SQL exports}"
 ARCHIVE_DUMP_FILE="$DUMP_DIR/meijendel_$(date +%Y%m%d_%H%M%S).sql"
+ARCHIVE_MANIFEST_FILE="${ARCHIVE_DUMP_FILE}.manifest"
 REPO_DUMP_FILE="$REPO_DIR/meijendel.sql"
+REPO_MANIFEST_FILE="$REPO_DIR/meijendel.sql.manifest"
 
 "$REPO_DIR/scripts/check_local_workspace.sh"
 "$REPO_DIR/scripts/check_mysql_version.sh"
@@ -29,45 +31,13 @@ if [ ! -d "$DUMP_DIR" ]; then
   exit 1
 fi
 
-dump_database() {
-  local output_file="$1"
-
-  mysqldump --no-defaults \
-    --no-tablespaces \
-    --complete-insert \
-    --single-transaction \
-    --set-gtid-purged=OFF \
-    --protocol=tcp \
-    --host="$MYSQL_HOST" \
-    --port="$MYSQL_PORT" \
-    -u"$MYSQL_USER" -p \
-    --routines \
-    --triggers \
-    --events \
-    "$MYSQL_DATABASE" > "$output_file"
-}
-
-validate_tellers_schema() {
-  LC_ALL=C awk '
-    /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
-    in_tellers && /`id` int/ { has_id = 1 }
-    in_tellers && /`tellercode` varchar/ { has_code = 1 }
-    in_tellers && /`(voornaam|tussenvoegsel|achternaam|straat|huisnummer|postcode|woonplaats|telefoon_vast|telefoon_mobiel|email|soort_lid|bandnummer)`/ { bad = 1 }
-    in_tellers && /ENGINE=InnoDB/ { done = 1; exit }
-    END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
-  ' "$1" || {
-    printf 'FOUT: tellers ontbreekt of bevat meer dan id en tellercode: %s\n' "$1" >&2
-    return 1
-  }
-}
-
 printf 'Actualiseer repo-dump...\n'
-dump_database "$REPO_DUMP_FILE"
-validate_tellers_schema "$REPO_DUMP_FILE"
+"$REPO_DIR/scripts/export_meijendel_sql.sh" "$REPO_DUMP_FILE" "$REPO_MANIFEST_FILE"
 printf 'Repo-dump geschreven: %s\n' "$REPO_DUMP_FILE"
 shasum -a 256 "$REPO_DUMP_FILE"
 
 printf 'Archiveer repo-dump op T7...\n'
 cp -p "$REPO_DUMP_FILE" "$ARCHIVE_DUMP_FILE"
+cp -p "$REPO_MANIFEST_FILE" "$ARCHIVE_MANIFEST_FILE"
 printf 'Archiefdump geschreven: %s\n' "$ARCHIVE_DUMP_FILE"
 shasum -a 256 "$ARCHIVE_DUMP_FILE"

@@ -8,6 +8,8 @@ DEPLOY="$REPO_DIR/deploy/deploy_meijendel_vps.sh"
 PRODUCTION_GUARD="$REPO_DIR/deploy/production_guard.sh"
 UPDATE="$REPO_DIR/deploy/update_en_deploy_meijendel.sh"
 ARCHIVE="$REPO_DIR/deploy/Archivering_en_Dump_Meijendel.sh"
+EXPORTER="$REPO_DIR/scripts/export_meijendel_sql.sh"
+EXPORT_VALIDATOR="$REPO_DIR/scripts/validate_meijendel_export.sh"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -45,15 +47,16 @@ assert_before "$DEPLOY" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$DEPLOY" 'check_mysql_version.sh' 'git status --porcelain'
 assert_before "$PRODUCTION_GUARD" 'check_local_workspace.sh' 'git status --porcelain'
 assert_before "$UPDATE" 'PATH="/usr/local/mysql/bin:$PATH"' 'check_mysql_version.sh'
-assert_before "$UPDATE" 'check_local_workspace.sh' 'mysqldump --no-defaults'
-assert_before "$UPDATE" 'check_mysql_version.sh' 'mysqldump --no-defaults'
+assert_before "$UPDATE" 'export_meijendel_sql.sh' 'analyse_ecologische_groepen.R'
 assert_before "$ARCHIVE" 'PATH="/usr/local/mysql/bin:$PATH"' 'check_mysql_version.sh'
-assert_before "$ARCHIVE" 'check_mysql_version.sh' 'mysqldump --no-defaults'
+assert_before "$ARCHIVE" 'export_meijendel_sql.sh' 'cp -p'
 
 grep -qF 'REMOTE_MYSQL_VERSION=' "$DEPLOY" ||
   fail "de deploypreflight controleert de MySQL-versie op de VPS niet."
 grep -qF 'REQUIRED_MYSQL_VERSION=' "$DEPLOY" ||
   fail "de deploypreflight gebruikt de vereiste MySQL-versie niet."
 [[ -x "$MYSQL_GUARD" ]] || fail "de MySQL-versieguard is niet uitvoerbaar."
+[[ -x "$EXPORTER" ]] || fail "de atomaire exporthelper is niet uitvoerbaar."
+[[ -x "$EXPORT_VALIDATOR" ]] || fail "de exportmanifestvalidator is niet uitvoerbaar."
 
 printf 'OK: lokale-bestands- en MySQL-versiecontroles zijn fail-fast gekoppeld aan generatie en deploy.\n'

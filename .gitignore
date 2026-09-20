@@ -1,5 +1,6 @@
 .DS_Store
 Meijendel.sql
+meijendel.sql.manifest
 .venv*/
 __pycache__/
 .Rhistory

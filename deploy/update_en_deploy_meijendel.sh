@@ -5,10 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SQL_FILE="$REPO_DIR/meijendel.sql"
-MYSQL_HOST="${MYSQL_HOST:-127.0.0.1}"
-MYSQL_PORT="${MYSQL_PORT:-3306}"
-MYSQL_USER="${MYSQL_USER:-root}"
-MYSQL_DATABASE="${MYSQL_DATABASE:-meijendel}"
+SQL_MANIFEST="$REPO_DIR/meijendel.sql.manifest"
+MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 WINTER_MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 
 if [[ -d /usr/local/mysql/bin ]]; then
@@ -41,36 +39,12 @@ cd "$REPO_DIR"
 "$REPO_DIR/scripts/check_local_workspace.sh"
 "$REPO_DIR/scripts/check_mysql_version.sh"
 
-log "Maak actuele lokale database-dump met MySQL 9.7.1: $SQL_FILE"
-mysqldump --no-defaults \
-  --no-tablespaces \
-  --complete-insert \
-  --single-transaction \
-  --set-gtid-purged=OFF \
-  --protocol=tcp \
-  --host="$MYSQL_HOST" \
-  --port="$MYSQL_PORT" \
-  -u"$MYSQL_USER" -p \
-  --routines \
-  --triggers \
-  --events \
-  "$MYSQL_DATABASE" > "$SQL_FILE"
+log "Maak en proefimporteer actuele lokale database-dump met MySQL 9.7.1"
+"$REPO_DIR/scripts/export_meijendel_sql.sh" "$SQL_FILE" "$SQL_MANIFEST"
 
 log "Controleer weerdata-eenhedencontract"
 MEIJENDEL_MYSQL_DATABASE="$MYSQL_DATABASE" \
   "$REPO_DIR/deploy/check_weer_contract.sh" "$SQL_FILE"
-
-LC_ALL=C awk '
-  /^CREATE TABLE `tellers`/ { in_tellers = 1; seen = 1 }
-  in_tellers && /`id` int/ { has_id = 1 }
-  in_tellers && /`tellercode` varchar/ { has_code = 1 }
-  in_tellers && /`(voornaam|tussenvoegsel|achternaam|straat|huisnummer|postcode|woonplaats|telefoon_vast|telefoon_mobiel|email|soort_lid|bandnummer)`/ { bad = 1 }
-  in_tellers && /ENGINE=InnoDB/ { done = 1; exit }
-  END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
-' "$SQL_FILE" || {
-  printf 'FOUT: tellers ontbreekt of bevat meer dan id en tellercode.\n' >&2
-  exit 1
-}
 
 log "Genereer dashboard-output: output_ecologische_groepen"
 Rscript "$REPO_DIR/R/analyse_ecologische_groepen.R" \
