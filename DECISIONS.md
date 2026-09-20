@@ -203,6 +203,13 @@
 - Fase D gebruikt voor functionele groepen dezelfde gebrugde TRIM-soortindices
   en dezelfde volledige/robuuste soortselectie als de bestaande MSI-keten.
   Binaire en gewogen MSI zijn gewogen geometrische gemiddelden op logschaal.
+- Voor de hoofdreeks met 137 soorten over 1958–2025 zijn de afzonderlijke
+  TRIM-perioden 1958–1983 en 1984–2025 de primaire formele resultaten. De
+  gebrugde trend 1958–2025 blijft zonder bootstrap beschrijvend en krijgt geen
+  formele standaardfout, betrouwbaarheidsinterval, p-waarde of trendklasse.
+  Hetzelfde beschrijvende regime geldt voor de 18 ecologische en 24
+  functionele groepsregels; een band rond een groeps-GAM is geen volledige
+  TRIM-onzekerheid.
 - Functionele groepen krijgen geen landelijke vergelijkingslijn zolang geen
   landelijk bronbestand met exact dezelfde traitdefinities, groepsregels en
   gewichten beschikbaar is; dashboard en website tonen wel de Meijendel-lijn.

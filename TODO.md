@@ -98,6 +98,14 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   zichtbare legacykwaliteitsissues; corrigeer ze alleen gecontroleerd en zonder
   historische data stilzwijgend te herschrijven.
 
+### TRIM-bootstrap — gepauzeerd
+
+- Bouw nu geen bootstrap. Heropen dit alleen wanneer één formele trend over
+  1958–2025 of formele groeps-MSI-onzekerheid daadwerkelijk nodig is. Dan moet
+  de afzonderlijke vervolgopdracht de volledige gestratificeerde
+  clusterbootstrap omvatten: beide TRIM-perioden, brugfactoren, soorten en
+  groepen. De huidige periodetrends blijven ook dan de primaire resultaten.
+
 - Archiefmodule afronden: aparte uploadpagina, `.doc`-support, PDF-/documentindexering, full-text search, categoriepagina's, uploadrechten vanaf bestuurslidniveau en duidelijke foutafhandeling.
 - Verifiëren dat archiefdocumenten doorzoekbaar zijn na upload en na herindexering.
 - Archiefupload testen met grote bestanden tot 100 MB.
