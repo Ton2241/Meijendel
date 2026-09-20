@@ -274,6 +274,8 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
 - HTML-dashboard: `/srv/vwgm/www/bmp_meijendel_index.html`
 - dashboard-outputmappen:
   - `/srv/vwgm/www/output_ecologische_groepen/`
+  - `/srv/vwgm/www/trim/soorten/` (137 hoofdsoorten over 1958–2025, inclusief formele periodetrends)
+  - `/srv/vwgm/www/trim/sandra/` (110 bruikbare Sandra-modelreeksen over 1997–2022 en beschrijvende groepsuitvoer)
   - `/srv/vwgm/www/trim_msi_evg/`
   - `/srv/vwgm/www/wintertellingen/` (alle canonieke wintersoorten, protocolmatrix, gevalideerde indices, beschrijvende reeksen, dekking en besluitstatus)
 - vooraf gegenereerde websitegrafieken voor Groepen:

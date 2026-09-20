@@ -122,7 +122,7 @@ production_smoke() {
   remote "bash -s" <<'REMOTE'
 set -euo pipefail
 curl -fsSI http://127.0.0.1:3838/ >/dev/null
-for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/; do
+for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/ /trim/soorten/soorten_trendoverzicht.csv; do
   code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve www.vwg-m.nl:443:127.0.0.1 "https://www.vwg-m.nl$path")"
   if [[ "$code" != "401" ]]; then
     echo "FOUT: verwacht 401 voor https://www.vwg-m.nl$path, kreeg $code" >&2
@@ -165,7 +165,17 @@ need_file "$SQL_LOCAL"
 need_file "$LOCAL_REPO/deploy/check_weer_contract.sh"
 need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
 need_file "$LOCAL_REPO/R/check_wintertelling_output.R"
+need_file "$LOCAL_REPO/trim/soorten/soorten_modelstatus.csv"
+need_file "$LOCAL_REPO/trim/soorten/soortindices_per_jaar.csv"
+need_file "$LOCAL_REPO/trim/soorten/soorten_trendoverzicht.csv"
+need_file "$LOCAL_REPO/trim/soorten/soorten_brugfactoren.csv"
+need_file "$LOCAL_REPO/trim/sandra/soorten/soorten_modelstatus.csv"
+need_file "$LOCAL_REPO/trim/sandra/soorten/soortindices_per_jaar.csv"
+need_file "$LOCAL_REPO/trim/sandra/soorten/soorten_trendoverzicht.csv"
+need_file "$LOCAL_REPO/trim/sandra/trim_msi_evg/trendoverzicht_msi_groepen.csv"
 need_file "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv"
+need_file "$LOCAL_REPO/trim_msi_evg/trendoverzicht_msi_groepen.csv"
+need_file "$LOCAL_REPO/trim_msi_evg/functionele_trendoverzicht_msi_groepen.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_jaarindex.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_maandpatroon.csv"
 need_file "$LOCAL_REPO/wintertellingen/winter_plotgebruik.csv"
@@ -209,6 +219,8 @@ printf '%s\n' \
   "bmp_meijendel_index.html -> $REMOTE_WWW/" \
   "index.html -> $REMOTE_WWW/" \
   "output_ecologische_groepen/ -> $REMOTE_WWW/output_ecologische_groepen/" \
+  "trim/soorten/ -> $REMOTE_WWW/trim/soorten/" \
+  "trim/sandra/ -> $REMOTE_WWW/trim/sandra/" \
   "trim_msi_evg/ -> $REMOTE_WWW/trim_msi_evg/" \
   "groepen_grafieken/ -> $REMOTE_WWW/groepen_grafieken/" \
   "wintertellingen/ -> $REMOTE_WWW/wintertellingen/" \
@@ -244,6 +256,7 @@ sync_release() {
   [[ ! -f "$LOCAL_REPO/bmp_meijendel_index.html" ]] || run_rsync "$LOCAL_REPO/bmp_meijendel_index.html" "$VPS:$REMOTE_WWW/bmp_meijendel_index.html"
   [[ ! -f "$LOCAL_REPO/index.html" ]] || run_rsync "$LOCAL_REPO/index.html" "$VPS:$REMOTE_WWW/index.html"
   [[ ! -d "$LOCAL_REPO/output_ecologische_groepen" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/output_ecologische_groepen/" "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
+  [[ ! -d "$LOCAL_REPO/trim" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/trim/" "$VPS:$REMOTE_WWW/trim/"
   [[ ! -d "$LOCAL_REPO/trim_msi_evg" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/trim_msi_evg/" "$VPS:$REMOTE_WWW/trim_msi_evg/"
   [[ ! -d "$LOCAL_REPO/groepen_grafieken" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/groepen_grafieken/" "$VPS:$REMOTE_WWW/groepen_grafieken/"
   [[ ! -d "$LOCAL_REPO/wintertellingen" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/wintertellingen/" "$VPS:$REMOTE_WWW/wintertellingen/"
@@ -409,6 +422,8 @@ docker exec shiny_meijendel Rscript -e '
 '
 docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL pad: %s; cache: from_cache=%s elapsed=%.3f cache=%s\\n\", path, x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
 sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
+test -s "$REMOTE_WWW/trim/soorten/soorten_trendoverzicht.csv"
+test -s "$REMOTE_WWW/trim/sandra/soorten/soorten_trendoverzicht.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_jaarindex.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_maandpatroon.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_plotgebruik.csv"
