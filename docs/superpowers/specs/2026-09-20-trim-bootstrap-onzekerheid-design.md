@@ -230,6 +230,85 @@ pilot tijd, piekgeheugen, swap, modeluitval en hervatten na onderbreking correct
 rapporteert. Een validatierun van 500 replicaties controleert daarna
 reproduceerbaarheid, intervalberekening en modeluitval.
 
+### 6.1 Optionele NAS- en VPS-workers
+
+De iMac blijft de coördinator en de lokale 1-workeruitvoering blijft de
+referentie. De Synology-NAS en productie-VPS kunnen na een geslaagde
+capaciteits- en gelijkheidsproef én afzonderlijk expliciet akkoord als
+optionele batchworkers worden ingezet. Zij staan standaard uitgeschakeld. De
+volledige productierun moet zonder NAS of VPS lokaal uitvoerbaar blijven. Zij
+vormen geen permanent cluster en schrijven nooit rechtstreeks naar de
+canonieke publicatie-output. Normaal functioneren van NAS en VPS heeft altijd
+voorrang boven verkorting van de rekentijd.
+
+De coördinator maakt per run één onveranderlijk invoerpakket met SQL-hash,
+codecommit, configuratiehash, software- of containerimage-ID, seed en vaste
+replicatienummers. Een batch heeft een uniek, niet-overlappend bereik van
+replicatienummers. De replicatieseed wordt uitsluitend uit run-ID en
+replicatienummer afgeleid, zodat uitkomsten niet afhangen van worker,
+batchvolgorde of parallelisme.
+
+Iedere worker:
+
+- controleert pakket- en configuratiehash vóór de start;
+- werkt in een eigen niet-publieke runmap;
+- verwerkt uitsluitend het toegewezen replicatiebereik;
+- schrijft eerst een tijdelijk resultaat en hernoemt dat pas na volledige
+  afronding atomair;
+- levert resultaatchecksum, runtime, piekgeheugen, swap, foutstatus en
+  software-identiteit terug;
+- kan geen bestaande batch of publicatie-output overschrijven.
+
+De iMac accepteert alleen complete batches met exact hetzelfde run-ID,
+bronhash, configuratiehash, codecommit en software-ID. Ontbrekende,
+overlappende, dubbele of afwijkende replicatienummers blokkeren de merge.
+Een lokale en een externe proefbatch met dezelfde replicatienummers moeten
+bitgelijk zijn voor discrete velden en numeriek gelijk binnen `1e-8` voor
+drijvende-kommagetallen.
+
+De NAS is primair checkpoint- en archiefopslag. Rekenen op de NAS wordt alleen
+geactiveerd wanneer een read-only capaciteitstest bevestigt dat architectuur,
+containerondersteuning, vrije opslag, vrij geheugen en actuele systeembelasting
+voldoen en de gebruiker daarna afzonderlijk akkoord geeft. De worker gebruikt
+maximaal één laaggeprioriteerd rekenproces en pauzeert vóór de volgende
+replicatie tijdens back-up, RAID-scrub, SMART-test of andere zware
+opslagtaken. Als rekenen niet aantoonbaar zonder invloed kan, blijft de NAS
+uitsluitend checkpoint- en archiefopslag.
+
+De productie-VPS gebruikt nooit het actieve Shiny- of MySQL-containerproces.
+Een bootstrapbatch draait uitsluitend in een aparte tijdelijke container op
+hetzelfde gepinde R/package-image, met read-only invoer, aparte uitvoermap,
+CPU-, geheugen-, swap- en proceslimieten en lage CPU/I/O-prioriteit. Voor iedere
+batch controleert de worker dat:
+
+- geen globale productiedeploylock actief is;
+- Shiny en MySQL gezond zijn;
+- voldoende geheugen bovenop de productie-reserve beschikbaar is;
+- geen swapgroei, hoge load of onvoldoende schijfruimte aanwezig is.
+
+De geheugenlimiet is minimaal 125% van het gemeten workerpiekgebruik; daarnaast
+blijft op NAS ten minste 1 GB en op de VPS ten minste 2 GB vrij voor bestaande
+diensten. CPU-gebruik van een externe worker is standaard begrensd op maximaal
+0,5 CPU en krijgt lage CPU- en I/O-prioriteit. Vóór iedere replicatie worden
+load, vrij geheugen, swap, schijfruimte en relevante servicestatus opnieuw
+gecontroleerd. Na iedere replicatie wordt op swapgroei en verslechterde
+servicehealth gecontroleerd. Zodra een grens wordt overschreden, start geen
+nieuwe replicatie. De VPS-bootstraplock is gescheiden van de deploylock; hij
+staat onder `/srv/vwgm/bootstrap`, niet in de productiestaatmap, en voorkomt
+dubbele bootstrapworkers zonder een deploy te blokkeren. De worker leest de
+bestaande productiedeploylock uitsluitend en wijzigt geen deployscript of
+productieguard. Een deploy heeft altijd voorrang en verhindert de start van de
+volgende replicatie.
+
+Activering van een externe worker vereist een afzonderlijke read-only
+capaciteitsrapportage met nulmeting en proefreplicatie. Zonder expliciet akkoord
+op die rapportage blijft `enabled = false`. Veiligheidsgrenzen mogen niet worden
+versoepeld om de productierun sneller af te ronden.
+
+Workerhosts, paden en activering staan in een lokaal, niet-versiebeheerd
+workerconfiguratiebestand. Sleutels, wachtwoorden en NAS- of VPS-credentials
+komen niet in Git, runmanifesten of logbestanden.
+
 ## 7. Opslag en database
 
 De bestaande MySQL-brontabellen worden niet aangepast voor berekeningsoutput.
@@ -340,7 +419,8 @@ opgebouwd; die run vormt daarna de regressiebaseline.
 ## 11. Niet in deze eerste implementatie
 
 - interactieve bootstrapberekeningen in Shiny;
-- inzet van NAS of productie-VPS als rekencluster;
+- een permanent cluster of automatische activering van NAS/VPS zonder groene
+  capaciteitstest en expliciete workerconfiguratie;
 - opslag van iedere replicatie in MySQL;
 - wijziging van de inhoudelijke brugvensters 1981–1983 en 1984–1986;
 - causale interpretatie van trends;
