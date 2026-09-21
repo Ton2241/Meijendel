@@ -143,6 +143,7 @@ finish() {
     restore_backup || rollback_ok=0
     restore_files || rollback_ok=0
     if [[ "$rollback_ok" -eq 1 ]] && restart_shiny; then
+      printf 'ROLLBACK_STATUS=ready\n'
       cleanup_candidates
     else
       printf 'URGENT|meijendel-release|automatische database- of cacherollback mislukt\n' >&2

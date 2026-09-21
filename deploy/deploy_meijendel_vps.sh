@@ -16,6 +16,7 @@ CANDIDATE_FILE="$STATE_DIR/Meijendel.candidate"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
+GATEWAY_RUNNER="${MEIJENDEL_GATEWAY_RUNNER:-$SCRIPT_DIR/run_gateway_job_vps.sh}"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_MANIFEST_LOCAL="$LOCAL_REPO/meijendel.sql.manifest"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
@@ -143,9 +144,15 @@ CACHE_CANDIDATE_FILE="$STATE_DIR/${CACHE_FILE}.candidate-$LOCAL_COMMIT"
 CACHE_MANIFEST_CANDIDATE_FILE="$STATE_DIR/${CACHE_MANIFEST}.candidate-$LOCAL_COMMIT"
 
 log "Controleer gesloten Meijendel-beheerroute en VPS-MySQL"
-gateway_preflight="$(remote "sudo -n '$GATEWAY' meijendel-release preflight '$LOCAL_COMMIT'")" || \
-  die "gesloten Meijendel-preflight op de VPS faalde."
+need_file "$GATEWAY_RUNNER"
+[[ -x "$GATEWAY_RUNNER" ]] || die "gatewayrunner is niet uitvoerbaar: $GATEWAY_RUNNER"
+export VPS SSH_KEY GATEWAY
+set +e
+gateway_preflight="$("$GATEWAY_RUNNER" preflight "$LOCAL_COMMIT")"
+gateway_preflight_rc=$?
+set -e
 printf '%s\n' "$gateway_preflight"
+[[ "$gateway_preflight_rc" -eq 0 ]] || die "gesloten Meijendel-preflight op de VPS faalde."
 REMOTE_MYSQL_VERSION="$(sed -n 's/^MYSQL_VERSION=//p' <<<"$gateway_preflight" | tail -n 1)"
 [[ "$REMOTE_MYSQL_VERSION" == "$REQUIRED_MYSQL_VERSION" ]] || \
   die "MySQL op de VPS is $REMOTE_MYSQL_VERSION; vereist is exact $REQUIRED_MYSQL_VERSION."
@@ -382,9 +389,13 @@ remote "mkdir -p '$STATE_DIR'; umask 077; tmp='$CANDIDATE_FILE.tmp.\$\$'; printf
 CANDIDATE_STAGED=1
 
 log "Maak back-up, importeer MySQL, herstart Shiny en controleer de release via de gesloten gateway"
-gateway_apply="$(remote "sudo -n '$GATEWAY' meijendel-release apply '$LOCAL_COMMIT'")" || \
-  die "gesloten Meijendel-releaseactie faalde; controleer rollbackmelding en productie."
+set +e
+gateway_apply="$("$GATEWAY_RUNNER" apply "$LOCAL_COMMIT")"
+gateway_apply_rc=$?
+set -e
 printf '%s\n' "$gateway_apply"
+[[ "$gateway_apply_rc" -eq 0 ]] || \
+  die "gesloten Meijendel-releaseactie faalde; controleer rollbackmelding en productie."
 grep -Fq 'DATABASE_BACKUP=' <<<"$gateway_apply" || die "releaseactie meldde geen databaseback-up."
 grep -Fqx 'CACHE_CANDIDATE_STATUS=ready' <<<"$gateway_apply" || die "releaseactie bewees de kandidaatcache niet."
 grep -Fqx 'SQL_CACHE=TRUE' <<<"$gateway_apply" || die "releaseactie gebruikte niet aantoonbaar de vooraf gebouwde cache."
