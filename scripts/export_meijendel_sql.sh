@@ -61,6 +61,7 @@ trap cleanup EXIT INT TERM
   --complete-insert \
   --single-transaction \
   --set-gtid-purged=OFF \
+  --skip-dump-date \
   --protocol=tcp \
   --host="$MYSQL_HOST" \
   --port="$MYSQL_PORT" \
@@ -69,6 +70,7 @@ trap cleanup EXIT INT TERM
   --events \
   "$MYSQL_DATABASE" > "$NEXT_DUMP"
 
+printf '\n-- Dump completed on deterministic export\n' >> "$NEXT_DUMP"
 grep -q -- '-- Dump completed on ' "$NEXT_DUMP" || die "nieuwe dump mist de eindmarkering."
 chmod 644 "$NEXT_DUMP"
 

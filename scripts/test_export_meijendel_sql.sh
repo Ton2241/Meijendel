@@ -6,6 +6,7 @@ EXPORTER="$REPO_DIR/scripts/export_meijendel_sql.sh"
 TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
 export MEIJENDEL_TEST_VALIDATOR_LOG="$TEST_DIR/validator.log"
+export MEIJENDEL_TEST_MYSQLDUMP_LOG="$TEST_DIR/mysqldump.log"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -21,7 +22,8 @@ SCRIPT
 
 cat > "$TEST_DIR/bin/mysqldump" <<'SCRIPT'
 #!/usr/bin/env bash
-printf '%s\n' 'CREATE TABLE `voorbeeld` (`id` int);' '-- Dump completed on 2026-09-20 22:42:46'
+printf '%s\n' "$@" > "$MEIJENDEL_TEST_MYSQLDUMP_LOG"
+printf '%s\n' 'CREATE TABLE `voorbeeld` (`id` int);'
 SCRIPT
 
 cat > "$TEST_DIR/bin/mysql" <<'SCRIPT'
@@ -136,7 +138,8 @@ PATH="$TEST_DIR/bin:$PATH" \
   MEIJENDEL_CACHE_BUILDER="$TEST_DIR/bin/cache-builder-ok" \
   "$EXPORTER" "$dump" "$manifest" >/dev/null
 
-grep -q 'Dump completed' "$dump" || fail "gevalideerde nieuwe dump werd niet geactiveerd."
+grep -Fqx -- '-- Dump completed on deterministic export' "$dump" || fail "deterministische eindmarkering ontbreekt."
+grep -Fqx -- '--skip-dump-date' "$MEIJENDEL_TEST_MYSQLDUMP_LOG" || fail "mysqldump-tijdstempel is niet uitgeschakeld."
 grep -q 'candidate=codex_meijendel_export_check_' "$manifest" || fail "nieuw manifest werd niet geactiveerd."
 cache_file="$(awk -F= '$1 == "cache_file" {print $2}' "$manifest")"
 cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
