@@ -5,6 +5,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 EXPORTER="$REPO_DIR/scripts/export_meijendel_sql.sh"
 TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
+export MEIJENDEL_TEST_VALIDATOR_LOG="$TEST_DIR/validator.log"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -36,20 +37,28 @@ SCRIPT
 cat > "$TEST_DIR/bin/validator-ok" <<'SCRIPT'
 #!/usr/bin/env bash
 set -euo pipefail
-[[ "$1" == "--write-manifest" ]]
-dump="$2"
-manifest="$3"
-candidate="$4"
-[[ -s "$dump" && "$candidate" =~ ^codex_meijendel_export_check_[0-9]+$ ]]
-hash="$(shasum -a 256 "$dump" | awk '{print $1}')"
-bytes="$(stat -f '%z' "$dump")"
-cat > "$manifest" <<EOF
+printf '%s\n' "$1" >> "$MEIJENDEL_TEST_VALIDATOR_LOG"
+case "$1" in
+  --write-manifest)
+    dump="$2"
+    manifest="$3"
+    candidate="$4"
+    [[ -s "$dump" && "$candidate" =~ ^codex_meijendel_export_check_[0-9]+$ ]]
+    hash="$(shasum -a 256 "$dump" | awk '{print $1}')"
+    bytes="$(stat -f '%z' "$dump")"
+    cat > "$manifest" <<EOF
 format=meijendel-export-v1
 source_database=Meijendel
 sql_sha256=$hash
 sql_bytes=$bytes
 candidate=$candidate
 EOF
+    ;;
+  --with-cache)
+    [[ $# -eq 4 && -s "$2" && -s "$3" && -d "$4" ]]
+    ;;
+  *) exit 2 ;;
+esac
 SCRIPT
 
 cat > "$TEST_DIR/bin/cache-builder-fail" <<'SCRIPT'
@@ -136,6 +145,7 @@ cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
 [[ -s "$TEST_DIR/$cache_file" ]] || fail "gepubliceerde cache ontbreekt."
 [[ -s "$TEST_DIR/$cache_manifest" ]] || fail "gepubliceerd cachemanifest ontbreekt."
 grep -Fq "cache_sha256=$(shasum -a 256 "$TEST_DIR/$cache_file" | awk '{print $1}')" "$TEST_DIR/$cache_manifest" || fail "cachehash ontbreekt of wijkt af."
+grep -Fqx -- '--with-cache' "$MEIJENDEL_TEST_VALIDATOR_LOG" || fail "export valideerde de gepubliceerde vierdelige artefactset niet."
 compgen -G "$TEST_DIR/Meijendel.sql.next.*" >/dev/null && fail "tijdelijke dump bleef achter."
 compgen -G "$TEST_DIR/*.next.*" >/dev/null && fail "tijdelijk exportartefact bleef achter."
 

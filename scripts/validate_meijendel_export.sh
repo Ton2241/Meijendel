@@ -22,6 +22,7 @@ usage() {
 Gebruik:
   scripts/validate_meijendel_export.sh DUMP MANIFEST
   scripts/validate_meijendel_export.sh --artifact-only DUMP MANIFEST
+  scripts/validate_meijendel_export.sh --with-cache DUMP MANIFEST CACHEMAP
   scripts/validate_meijendel_export.sh --write-manifest DUMP MANIFEST KANDIDAATSCHEMA
 USAGE
 }
@@ -76,6 +77,72 @@ validate_artifact() {
     manifest_value "$key" "$manifest" >/dev/null
   done
   validate_dump_structure "$dump"
+}
+
+validate_cache_artifacts() {
+  local dump="$1" manifest="$2" cache_dir="$3"
+  local cache_file cache_manifest cache_path cache_manifest_path
+  local sql_hash sql_bytes cache_sql_hash cache_sql_bytes parser_version required_parser
+  local filename_sql_hash expected_cache_hash expected_cache_bytes actual_cache_hash actual_cache_bytes source_commit
+
+  validate_artifact "$dump" "$manifest"
+  [[ -d "$cache_dir" && ! -L "$cache_dir" ]] || die "cachemap ontbreekt of is een symlink: $cache_dir"
+  cache_file="$(manifest_value cache_file "$manifest")"
+  cache_manifest="$(manifest_value cache_manifest "$manifest")"
+  [[ "$cache_file" != */* && "$cache_file" != *..* && \
+     "$cache_file" =~ ^meijendel_tables_cache-p([1-9][0-9]*)-([0-9a-f]{64})\.rds$ ]] || \
+    die "cache_file is geen veilige basename."
+  parser_version="${BASH_REMATCH[1]}"
+  filename_sql_hash="${BASH_REMATCH[2]}"
+  [[ "$cache_manifest" == "${cache_file%.rds}.manifest" ]] || \
+    die "cache_manifest is geen veilige basename die bij cache_file hoort."
+
+  sql_hash="$(manifest_value sql_sha256 "$manifest")"
+  sql_bytes="$(manifest_value sql_bytes "$manifest")"
+  [[ "$filename_sql_hash" == "$sql_hash" ]] || die "cachebestandsnaam bevat niet de SQL-hash uit het dumpmanifest."
+
+  cache_path="$cache_dir/$cache_file"
+  cache_manifest_path="$cache_dir/$cache_manifest"
+  [[ -f "$cache_path" && ! -L "$cache_path" && -s "$cache_path" ]] || \
+    die "cachebestand ontbreekt, is leeg of is een symlink: $cache_path"
+  [[ -f "$cache_manifest_path" && ! -L "$cache_manifest_path" && -s "$cache_manifest_path" ]] || \
+    die "cachemanifest ontbreekt, is leeg of is een symlink: $cache_manifest_path"
+
+  [[ "$(manifest_value format "$cache_manifest_path")" == "meijendel-shiny-cache-manifest-v1" ]] || \
+    die "onbekend cachemanifestformaat."
+  cache_sql_hash="$(manifest_value sql_sha256 "$cache_manifest_path")"
+  cache_sql_bytes="$(manifest_value sql_bytes "$cache_manifest_path")"
+  [[ "$cache_sql_hash" == "$sql_hash" ]] || die "SQL-hash in cachemanifest wijkt af van dumpmanifest."
+  [[ "$cache_sql_bytes" == "$sql_bytes" ]] || die "SQL-omvang in cachemanifest wijkt af van dumpmanifest."
+  [[ "$(manifest_value cache_file "$cache_manifest_path")" == "$cache_file" ]] || \
+    die "cachebestand in cachemanifest wijkt af."
+  [[ "$(manifest_value serialization_version "$cache_manifest_path")" == "3" ]] || \
+    die "cachemanifest gebruikt niet serialisatieversie 3."
+  manifest_value r_version "$cache_manifest_path" >/dev/null
+  manifest_value created_at "$cache_manifest_path" >/dev/null
+  source_commit="$(manifest_value source_commit "$cache_manifest_path")"
+  [[ "$source_commit" == "uncommitted" || "$source_commit" =~ ^[0-9a-f]{40}$ ]] || \
+    die "ongeldige source_commit in cachemanifest."
+
+  required_parser="$(Rscript - "$REPO_DIR/shiny_meijendel/helpers.R" <<'RSCRIPT'
+args <- commandArgs(trailingOnly = TRUE)
+source(args[[1L]])
+cat(MEIJENDEL_PARSER_CACHE_VERSION)
+RSCRIPT
+)"
+  [[ "$(manifest_value parser_version "$cache_manifest_path")" == "$required_parser" && "$parser_version" == "$required_parser" ]] || \
+    die "parser-versie in cacheartefacten wijkt af van de Shiny-parser-versie."
+
+  expected_cache_hash="$(manifest_value cache_sha256 "$cache_manifest_path")"
+  expected_cache_bytes="$(manifest_value cache_bytes "$cache_manifest_path")"
+  [[ "$expected_cache_hash" =~ ^[0-9a-f]{64}$ ]] || die "ongeldige cachehash in cachemanifest."
+  [[ "$expected_cache_bytes" =~ ^[0-9]+$ && "$expected_cache_bytes" -gt 0 ]] || \
+    die "ongeldige cacheomvang in cachemanifest."
+  actual_cache_hash="$(shasum -a 256 "$cache_path" | awk '{print $1}')"
+  actual_cache_bytes="$(stat -f '%z' "$cache_path")"
+  [[ "$actual_cache_hash" == "$expected_cache_hash" ]] || die "werkelijke cachehash wijkt af van cachemanifest."
+  [[ "$actual_cache_bytes" == "$expected_cache_bytes" ]] || die "werkelijke cacheomvang wijkt af van cachemanifest."
+  printf 'CACHE_FILE=%s\nCACHE_MANIFEST=%s\nCACHE_STATUS=ready\n' "$cache_file" "$cache_manifest"
 }
 
 mysql_bin="$(command -v mysql 2>/dev/null || true)"
@@ -193,6 +260,7 @@ validate_live() {
 mode="live"
 case "${1:-}" in
   --artifact-only) mode="artifact"; shift ;;
+  --with-cache) mode="cache"; shift ;;
   --write-manifest) mode="write"; shift ;;
 esac
 
@@ -201,6 +269,10 @@ case "$mode" in
     [[ $# -eq 2 ]] || { usage >&2; exit 2; }
     validate_artifact "$1" "$2"
     printf 'OK: SQL-dump komt overeen met het exportmanifest.\n'
+    ;;
+  cache)
+    [[ $# -eq 3 ]] || { usage >&2; exit 2; }
+    validate_cache_artifacts "$1" "$2" "$3"
     ;;
   write)
     [[ $# -eq 3 ]] || { usage >&2; exit 2; }

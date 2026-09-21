@@ -75,4 +75,72 @@ if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest" 2>&1); then
 fi
 [[ "$output" == *"PWA"* ]] || fail "gerichte PWA-fout ontbreekt."
 
-printf 'OK: dumpmanifest blokkeert gewijzigde en beveiligde SQL-artifacts.\n'
+cache_dir="$TEST_DIR/cache"
+mkdir -p "$cache_dir"
+
+write_cache_set() {
+  local sql_hash cache_file cache_manifest cache_hash cache_bytes sql_bytes
+  write_dump
+  write_manifest
+  sql_hash="$(awk -F= '$1 == "sql_sha256" {print $2}' "$manifest")"
+  sql_bytes="$(awk -F= '$1 == "sql_bytes" {print $2}' "$manifest")"
+  cache_file="meijendel_tables_cache-p9-${sql_hash}.rds"
+  cache_manifest="${cache_file%.rds}.manifest"
+  rm -rf "$cache_dir"
+  mkdir -p "$cache_dir"
+  printf 'kleine cachefixture\n' > "$cache_dir/$cache_file"
+  cache_hash="$(shasum -a 256 "$cache_dir/$cache_file" | awk '{print $1}')"
+  cache_bytes="$(stat -f '%z' "$cache_dir/$cache_file")"
+  cat > "$cache_dir/$cache_manifest" <<EOF
+format=meijendel-shiny-cache-manifest-v1
+sql_sha256=$sql_hash
+sql_bytes=$sql_bytes
+parser_version=9
+cache_sha256=$cache_hash
+cache_bytes=$cache_bytes
+r_version=4.6.1
+serialization_version=3
+created_at=2026-09-21T12:00:00+0200
+source_commit=uncommitted
+cache_file=$cache_file
+EOF
+  printf 'cache_file=%s\ncache_manifest=%s\n' "$cache_file" "$cache_manifest" >> "$manifest"
+}
+
+expect_cache_fail() {
+  local expected="$1" output
+  if output=$("$VALIDATOR" --with-cache "$dump" "$manifest" "$cache_dir" 2>&1); then
+    fail "ongeldige cacheset werd geaccepteerd: $expected"
+  fi
+  [[ "$output" == *"$expected"* ]] || fail "gerichte cachefout ontbreekt: $expected; uitvoer=$output"
+}
+
+write_cache_set
+"$VALIDATOR" --with-cache "$dump" "$manifest" "$cache_dir" >/dev/null
+
+write_cache_set
+sed -i '' 's#^cache_file=.*#cache_file=../escape.rds#' "$manifest"
+expect_cache_fail "veilige basename"
+
+write_cache_set
+cache_file="$(awk -F= '$1 == "cache_file" {print $2}' "$manifest")"
+mv "$cache_dir/$cache_file" "$cache_dir/cache-target.rds"
+ln -s cache-target.rds "$cache_dir/$cache_file"
+expect_cache_fail "symlink"
+
+write_cache_set
+cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
+sed -i '' "s/^cache_sha256=.*/cache_sha256=$(printf 'b%.0s' {1..64})/" "$cache_dir/$cache_manifest"
+expect_cache_fail "cachehash"
+
+write_cache_set
+cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
+sed -i '' "s/^sql_sha256=.*/sql_sha256=$(printf 'c%.0s' {1..64})/" "$cache_dir/$cache_manifest"
+expect_cache_fail "SQL-hash"
+
+write_cache_set
+cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
+sed -i '' 's/^parser_version=.*/parser_version=10/' "$cache_dir/$cache_manifest"
+expect_cache_fail "parser-versie"
+
+printf 'OK: dumpmanifest blokkeert gewijzigde SQL en ongeldige gekoppelde cacheartefacten.\n'

@@ -42,6 +42,10 @@ cd "$REPO_DIR"
 log "Maak en proefimporteer actuele lokale database-dump met MySQL 9.7.1"
 "$REPO_DIR/scripts/export_meijendel_sql.sh" "$SQL_FILE" "$SQL_MANIFEST"
 
+log "Controleer gekoppelde dump- en Shiny-cacheartefacten"
+"$REPO_DIR/scripts/validate_meijendel_export.sh" --with-cache \
+  "$SQL_FILE" "$SQL_MANIFEST" "$REPO_DIR"
+
 log "Controleer weerdata-eenhedencontract"
 MEIJENDEL_MYSQL_DATABASE="$MYSQL_DATABASE" \
   "$REPO_DIR/deploy/check_weer_contract.sh" "$SQL_FILE"

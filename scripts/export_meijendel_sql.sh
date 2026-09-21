@@ -27,6 +27,7 @@ CANDIDATE_SCHEMA="codex_meijendel_export_check_$$"
 candidate_created=0
 NEXT_CACHE=""
 NEXT_CACHE_MANIFEST=""
+CACHE_STAGE_DIR=""
 
 die() {
   printf 'BLOKKADE: %s\n' "$*" >&2
@@ -37,6 +38,7 @@ cleanup() {
   rm -f "$NEXT_DUMP" "$NEXT_MANIFEST"
   [[ -z "$NEXT_CACHE" ]] || rm -f "$NEXT_CACHE"
   [[ -z "$NEXT_CACHE_MANIFEST" ]] || rm -f "$NEXT_CACHE_MANIFEST"
+  [[ -z "$CACHE_STAGE_DIR" ]] || rmdir "$CACHE_STAGE_DIR" 2>/dev/null || true
   if [[ "$candidate_created" -eq 1 ]]; then
     "$MYSQL_BIN" --login-path="$MYSQL_LOGIN_PATH" --protocol=tcp \
       --host="$MYSQL_HOST" --port="$MYSQL_PORT" \
@@ -105,8 +107,10 @@ CACHE_FILE="meijendel_tables_cache-p${PARSER_VERSION}-${SQL_SHA256}.rds"
 CACHE_MANIFEST_FILE="${CACHE_FILE%.rds}.manifest"
 CACHE_PATH="$DUMP_DIR/$CACHE_FILE"
 CACHE_MANIFEST_PATH="$DUMP_DIR/$CACHE_MANIFEST_FILE"
-NEXT_CACHE="${CACHE_PATH}.next.$$"
-NEXT_CACHE_MANIFEST="${CACHE_MANIFEST_PATH}.next.$$"
+CACHE_STAGE_DIR="$DUMP_DIR/.meijendel-cache-stage.$$"
+mkdir -m 0700 "$CACHE_STAGE_DIR"
+NEXT_CACHE="$CACHE_STAGE_DIR/$CACHE_FILE"
+NEXT_CACHE_MANIFEST="$CACHE_STAGE_DIR/$CACHE_MANIFEST_FILE"
 SOURCE_COMMIT="$(git -C "$REPO_DIR" rev-parse HEAD 2>/dev/null || printf 'uncommitted')"
 
 cache_reusable=0
@@ -165,10 +169,13 @@ fi
 printf 'cache_file=%s\ncache_manifest=%s\n' "$CACHE_FILE" "$CACHE_MANIFEST_FILE" >> "$NEXT_MANIFEST"
 chmod 644 "$NEXT_MANIFEST"
 chmod 644 "$NEXT_CACHE" "$NEXT_CACHE_MANIFEST"
+"$VALIDATOR" --with-cache "$NEXT_DUMP" "$NEXT_MANIFEST" "$CACHE_STAGE_DIR"
 mv "$NEXT_CACHE" "$CACHE_PATH"
 NEXT_CACHE=""
 mv "$NEXT_CACHE_MANIFEST" "$CACHE_MANIFEST_PATH"
 NEXT_CACHE_MANIFEST=""
+rmdir "$CACHE_STAGE_DIR"
+CACHE_STAGE_DIR=""
 mv "$NEXT_DUMP" "$DUMP_FILE"
 mv "$NEXT_MANIFEST" "$MANIFEST_FILE"
 
