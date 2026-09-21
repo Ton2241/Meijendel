@@ -11,15 +11,26 @@ fail() {
   exit 1
 }
 
+assert_before() {
+  local file="$1" first="$2" second="$3" first_line second_line
+  first_line="$(grep -nF "$first" "$file" | tail -n 1 | cut -d: -f1)"
+  second_line="$(grep -nF "$second" "$file" | tail -n 1 | cut -d: -f1)"
+  [[ "$first_line" =~ ^[0-9]+$ && "$second_line" =~ ^[0-9]+$ && "$first_line" -lt "$second_line" ]] || \
+    fail "onjuiste volgorde: $first moet vóór $second staan in $(basename "$file")"
+}
+
 [[ -x "$REMOTE_HELPER" ]] || fail "gesloten remote releasehelper ontbreekt of is niet uitvoerbaar"
 bash -n "$DEPLOY_SCRIPT" "$REMOTE_HELPER"
 
 for fragment in \
   'GATEWAY="/usr/local/sbin/vwgm-admin"' \
   'GATEWAY_RUNNER=' \
+  'EXPORT_VALIDATOR=' \
+  'RSYNC_BIN=' \
+  'SSH_BIN=' \
   'gateway_preflight="$("$GATEWAY_RUNNER" preflight "$LOCAL_COMMIT")"' \
   'gateway_apply="$("$GATEWAY_RUNNER" apply "$LOCAL_COMMIT")"' \
-  'validate_meijendel_export.sh" --with-cache' \
+  '"$EXPORT_VALIDATOR" --with-cache' \
   'CACHE_CANDIDATE_FILE=' \
   'CACHE_MANIFEST_CANDIDATE_FILE=' \
   'MYSQL_VERSION=' \
@@ -37,6 +48,16 @@ grep -Fq 'meijendel-release "$stage" "$commit"' "$GATEWAY_RUNNER" || \
 if grep -Eq 'remote ".*docker|docker (exec|ps|run|compose|stats)' "$DEPLOY_SCRIPT"; then
   fail "lokaal deployscript bevat nog rechtstreekse Docker-aanroepen"
 fi
+
+assert_before "$DEPLOY_SCRIPT" '"$EXPORT_VALIDATOR" --with-cache' 'sync_release'
+assert_before "$DEPLOY_SCRIPT" 'SYNC_MODE="apply"' 'gateway_apply='
+assert_before "$DEPLOY_SCRIPT" 'gateway_apply=' 'canonical_data_smoke'
+assert_before "$DEPLOY_SCRIPT" 'production_smoke' 'write_state "$LOCAL_COMMIT"'
+assert_before "$REMOTE_HELPER" 'CACHE_CANDIDATE_STATUS=ready' 'DATABASE_BACKUP='
+assert_before "$REMOTE_HELPER" 'DATABASE_BACKUP=' 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+assert_before "$REMOTE_HELPER" 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' 'restart_shiny'
+grep -Fq 'ROLLBACK_STATUS=ready' "$REMOTE_HELPER" || fail "rollback mist expliciete herstelstatus"
+grep -Fq 'release_lock' "$DEPLOY_SCRIPT" || fail "globale releaselock wordt niet via cleanup vrijgegeven"
 if grep -Fq 'remote "sudo -n' "$DEPLOY_SCRIPT"; then
   fail "lokaal deployscript roept de gateway nog rechtstreeks via SSH aan"
 fi

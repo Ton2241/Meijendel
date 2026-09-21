@@ -17,6 +17,9 @@ CANDIDATE_FILE="$STATE_DIR/Meijendel.candidate"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 GATEWAY_RUNNER="${MEIJENDEL_GATEWAY_RUNNER:-$SCRIPT_DIR/run_gateway_job_vps.sh}"
+EXPORT_VALIDATOR="${MEIJENDEL_EXPORT_VALIDATOR:-$LOCAL_REPO/scripts/validate_meijendel_export.sh}"
+RSYNC_BIN="${MEIJENDEL_RSYNC_BIN:-$(command -v rsync 2>/dev/null || true)}"
+SSH_BIN="${MEIJENDEL_SSH_BIN:-$(command -v ssh 2>/dev/null || true)}"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_MANIFEST_LOCAL="$LOCAL_REPO/meijendel.sql.manifest"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
@@ -68,7 +71,7 @@ log() { printf '[%s] %s\n' "$(date '+%Y-%m-%d %H:%M:%S')" "$*"; }
 die() { printf 'BLOKKADE: %s\n' "$*" >&2; exit 1; }
 need_file() { [[ -f "$1" ]] || die "bestand ontbreekt: $1"; }
 need_dir() { [[ -d "$1" ]] || die "map ontbreekt: $1"; }
-remote() { ssh -i "$SSH_KEY" "$VPS" "$@"; }
+remote() { "$SSH_BIN" -i "$SSH_KEY" "$VPS" "$@"; }
 
 release_lock() {
   if [[ "$LOCK_HELD" -eq 1 ]]; then
@@ -109,6 +112,9 @@ done
 [[ -z "$INITIALIZE_STATE" || "$APPLY" -eq 0 ]] || die "combineer --initialize-state niet met --apply."
 
 cd "$LOCAL_REPO"
+[[ -x "$EXPORT_VALIDATOR" ]] || die "exportvalidator is geen bestaand uitvoerbaar bestand: $EXPORT_VALIDATOR"
+[[ -x "$RSYNC_BIN" ]] || die "rsync is geen bestaand uitvoerbaar bestand: $RSYNC_BIN"
+[[ -x "$SSH_BIN" ]] || die "SSH-client is geen bestaand uitvoerbaar bestand: $SSH_BIN"
 "$LOCAL_REPO/scripts/check_local_workspace.sh"
 "$LOCAL_REPO/scripts/check_mysql_version.sh"
 REQUIRED_MYSQL_VERSION="$("$LOCAL_REPO/scripts/check_mysql_version.sh" --required-version)"
@@ -123,8 +129,8 @@ LOCAL_COMMIT="$(git rev-parse HEAD)"
 printf 'Main-commit: %s\n' "$LOCAL_COMMIT"
 
 log "Controleer dump, exportmanifest, cache en levende database"
-"$LOCAL_REPO/scripts/validate_meijendel_export.sh" "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL"
-cache_validation="$("$LOCAL_REPO/scripts/validate_meijendel_export.sh" --with-cache \
+"$EXPORT_VALIDATOR" "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL"
+cache_validation="$("$EXPORT_VALIDATOR" --with-cache \
   "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL" "$LOCAL_REPO")"
 printf '%s\n' "$cache_validation"
 grep -Fqx 'CACHE_STATUS=ready' <<<"$cache_validation" || die "gekoppelde Shiny-cache is niet gereed."
@@ -146,7 +152,7 @@ CACHE_MANIFEST_CANDIDATE_FILE="$STATE_DIR/${CACHE_MANIFEST}.candidate-$LOCAL_COM
 log "Controleer gesloten Meijendel-beheerroute en VPS-MySQL"
 need_file "$GATEWAY_RUNNER"
 [[ -x "$GATEWAY_RUNNER" ]] || die "gatewayrunner is niet uitvoerbaar: $GATEWAY_RUNNER"
-export VPS SSH_KEY GATEWAY
+export VPS SSH_KEY GATEWAY SSH_BIN
 set +e
 gateway_preflight="$("$GATEWAY_RUNNER" preflight "$LOCAL_COMMIT")"
 gateway_preflight_rc=$?
@@ -280,7 +286,7 @@ LC_ALL=C awk '
 
 log "Maak byte-identieke tijdelijke deploykopie"
 cp -p "$SQL_LOCAL" "$SQL_DEPLOY"
-"$LOCAL_REPO/scripts/validate_meijendel_export.sh" --artifact-only \
+"$EXPORT_VALIDATOR" --artifact-only \
   "$SQL_DEPLOY" "$SQL_MANIFEST_LOCAL"
 
 echo "== Release-/afhankelijkheidsmanifest =="
@@ -304,8 +310,8 @@ printf '%s\n' \
   "wintertellingen/ -> $REMOTE_WWW/wintertellingen/" \
   "app-home/index.html -> $REMOTE_BASE/app-home/"
 
-rsync_dry=(rsync -az --checksum --delay-updates --itemize-changes --dry-run -e "ssh -i $SSH_KEY")
-rsync_apply=(rsync -az --checksum --delay-updates --itemize-changes -e "ssh -i $SSH_KEY")
+rsync_dry=("$RSYNC_BIN" -az --checksum --delay-updates --itemize-changes --dry-run -e "$SSH_BIN -i $SSH_KEY")
+rsync_apply=("$RSYNC_BIN" -az --checksum --delay-updates --itemize-changes -e "$SSH_BIN -i $SSH_KEY")
 
 run_rsync() {
   if [[ "$SYNC_MODE" == "dry" ]]; then
