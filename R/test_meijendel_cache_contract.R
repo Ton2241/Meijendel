@@ -109,4 +109,32 @@ stopifnot(!local_result$from_cache, file.exists(local_cache))
 stopifnot(any(grepl(paste0("\\.next\\.", Sys.getpid(), "$"), saved_paths)))
 stopifnot(!any(file.exists(paste0(local_cache, ".next.", Sys.getpid()))))
 
+active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p9-", strrep("a", 64), ".rds"))
+active_cache_object <- list(
+  format = MEIJENDEL_CACHE_FORMAT,
+  identity = identity,
+  data = stats::setNames(lapply(required_names, function(name) data.frame()), required_names)
+)
+base::saveRDS(active_cache_object, active_cache, version = 3)
+active_manifest <- file.path(tmp, "meijendel_tables_cache.active.manifest")
+writeLines(c(
+  "format=meijendel-shiny-cache-manifest-v1",
+  paste0("cache_file=", basename(active_cache)),
+  paste0("cache_sha256=", sha256_file(active_cache)),
+  paste0("cache_bytes=", file.info(active_cache)$size),
+  paste0("sql_sha256=", strrep("a", 64)),
+  "sql_bytes=123",
+  "parser_version=9"
+), active_manifest)
+manifest_result <- load_meijendel_tables_cached(
+  sql_one,
+  sql_manifest_path = manifest,
+  cache_manifest_path = active_manifest,
+  require_prebuilt = TRUE
+)
+stopifnot(
+  manifest_result$from_cache,
+  identical(manifest_result$cache_path, normalizePath(active_cache, winslash = "/", mustWork = TRUE))
+)
+
 cat("OK: Meijendel-cachecontract is padonafhankelijk en productie faalt gesloten.\n")

@@ -19,6 +19,14 @@ LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_MANIFEST_LOCAL="$LOCAL_REPO/meijendel.sql.manifest"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
+CACHE_FILE=""
+CACHE_MANIFEST=""
+CACHE_LOCAL=""
+CACHE_MANIFEST_LOCAL=""
+SQL_CANDIDATE_FILE=""
+SQL_MANIFEST_CANDIDATE_FILE=""
+CACHE_CANDIDATE_FILE=""
+CACHE_MANIFEST_CANDIDATE_FILE=""
 
 if [[ -d /usr/local/mysql/bin ]]; then
   PATH="/usr/local/mysql/bin:$PATH"
@@ -113,8 +121,26 @@ LOCAL_COMMIT="$(git rev-parse HEAD)"
 [[ "$LOCAL_COMMIT" == "$(git rev-parse origin/main)" ]] || die "lokale main is niet exact gelijk aan origin/main."
 printf 'Main-commit: %s\n' "$LOCAL_COMMIT"
 
-log "Controleer dump, exportmanifest en levende database"
+log "Controleer dump, exportmanifest, cache en levende database"
 "$LOCAL_REPO/scripts/validate_meijendel_export.sh" "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL"
+cache_validation="$("$LOCAL_REPO/scripts/validate_meijendel_export.sh" --with-cache \
+  "$SQL_LOCAL" "$SQL_MANIFEST_LOCAL" "$LOCAL_REPO")"
+printf '%s\n' "$cache_validation"
+grep -Fqx 'CACHE_STATUS=ready' <<<"$cache_validation" || die "gekoppelde Shiny-cache is niet gereed."
+CACHE_FILE="$(sed -n 's/^CACHE_FILE=//p' <<<"$cache_validation")"
+CACHE_MANIFEST="$(sed -n 's/^CACHE_MANIFEST=//p' <<<"$cache_validation")"
+[[ "$CACHE_FILE" =~ ^meijendel_tables_cache-p[1-9][0-9]*-[0-9a-f]{64}\.rds$ && "$CACHE_FILE" != */* ]] || \
+  die "validator gaf geen veilige cachebasename."
+[[ "$CACHE_MANIFEST" == "${CACHE_FILE%.rds}.manifest" ]] || \
+  die "validator gaf geen passend cachemanifest."
+CACHE_LOCAL="$LOCAL_REPO/$CACHE_FILE"
+CACHE_MANIFEST_LOCAL="$LOCAL_REPO/$CACHE_MANIFEST"
+need_file "$CACHE_LOCAL"
+need_file "$CACHE_MANIFEST_LOCAL"
+SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.candidate-$LOCAL_COMMIT"
+SQL_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.manifest.candidate-$LOCAL_COMMIT"
+CACHE_CANDIDATE_FILE="$STATE_DIR/${CACHE_FILE}.candidate-$LOCAL_COMMIT"
+CACHE_MANIFEST_CANDIDATE_FILE="$STATE_DIR/${CACHE_MANIFEST}.candidate-$LOCAL_COMMIT"
 
 log "Controleer gesloten Meijendel-beheerroute en VPS-MySQL"
 gateway_preflight="$(remote "sudo -n '$GATEWAY' meijendel-release preflight '$LOCAL_COMMIT'")" || \
@@ -128,7 +154,9 @@ grep -Fqx 'PREFLIGHT_STATUS=ready' <<<"$gateway_preflight" || \
 
 SQL_BYTES="$(awk -F= '$1 == "sql_bytes" {print $2}' "$SQL_MANIFEST_LOCAL")"
 [[ "$SQL_BYTES" =~ ^[0-9]+$ ]] || die "exportmanifest bevat geen geldige SQL-bestandsgrootte."
-REQUIRED_FREE_KB=$(( (SQL_BYTES * 4 + 1023) / 1024 + 5 * 1024 * 1024 ))
+CACHE_BYTES="$(awk -F= '$1 == "cache_bytes" {print $2}' "$CACHE_MANIFEST_LOCAL")"
+[[ "$CACHE_BYTES" =~ ^[0-9]+$ && "$CACHE_BYTES" -gt 0 ]] || die "cachemanifest bevat geen geldige cachebestandsgrootte."
+REQUIRED_FREE_KB=$(( (SQL_BYTES * 4 + CACHE_BYTES * 2 + 1023) / 1024 + 5 * 1024 * 1024 ))
 REMOTE_FREE_KB="$(remote "df -Pk '$REMOTE_BASE' | awk 'NR == 2 {print \$4}'")"
 [[ "$REMOTE_FREE_KB" =~ ^[0-9]+$ ]] || die "vrije VPS-schijfruimte kon niet worden bepaald."
 [[ "$REMOTE_FREE_KB" -ge "$REQUIRED_FREE_KB" ]] || \
@@ -252,6 +280,10 @@ echo "== Release-/afhankelijkheidsmanifest =="
 printf '%s\n' \
   "meijendel.sql -> $REMOTE_DATA/Meijendel.sql" \
   "meijendel.sql.manifest -> $REMOTE_DATA/Meijendel.sql.manifest" \
+  "$CACHE_FILE -> $REMOTE_SHINY/shiny_meijendel/app_cache/$CACHE_FILE" \
+  "$CACHE_MANIFEST -> $REMOTE_SHINY/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest" \
+  "MEIJENDEL_REQUIRE_PREBUILT_CACHE=1 -> Shiny Compose" \
+  "SQL_CACHE=TRUE -> verplichte runtimecontrole" \
   "deploy/shiny_image/ -> $REMOTE_SHINY/" \
   "shiny_meijendel/ -> $REMOTE_SHINY/shiny_meijendel/" \
   "R/ -> $REMOTE_SHINY/R/" \
@@ -281,16 +313,13 @@ run_rsync() {
 }
 
 sync_release() {
-  local sql_remote="$REMOTE_DATA/Meijendel.sql.next-$LOCAL_COMMIT"
-  local manifest_remote="$REMOTE_DATA/Meijendel.sql.manifest.next-$LOCAL_COMMIT"
   if [[ "$SYNC_MODE" == "apply" ]]; then
     remote "mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data' '$REMOTE_BASE/app-home'"
   fi
-  run_rsync "$SQL_DEPLOY" "$VPS:$sql_remote"
-  run_rsync "$SQL_MANIFEST_LOCAL" "$VPS:$manifest_remote"
-  if [[ "$SYNC_MODE" == "apply" ]]; then
-    remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && mv '$manifest_remote' '$REMOTE_DATA/Meijendel.sql.manifest' && chmod 644 '$REMOTE_DATA/Meijendel.sql' '$REMOTE_DATA/Meijendel.sql.manifest' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
-  fi
+  run_rsync "$SQL_DEPLOY" "$VPS:$SQL_CANDIDATE_FILE"
+  run_rsync "$SQL_MANIFEST_LOCAL" "$VPS:$SQL_MANIFEST_CANDIDATE_FILE"
+  run_rsync "$CACHE_LOCAL" "$VPS:$CACHE_CANDIDATE_FILE"
+  run_rsync "$CACHE_MANIFEST_LOCAL" "$VPS:$CACHE_MANIFEST_CANDIDATE_FILE"
   [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
   [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude '.DS_Store' --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
   [[ ! -d "$LOCAL_REPO/R" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/R/" "$VPS:$REMOTE_SHINY/R/"
@@ -335,12 +364,18 @@ SYNC_MODE="apply"
 sync_release
 
 EXPECTED_SQL_SHA256="$(awk -F= '$1 == "sql_sha256" {print $2}' "$SQL_MANIFEST_LOCAL")"
-REMOTE_SQL_SHA256="$(remote "sha256sum '$REMOTE_DATA/Meijendel.sql' | awk '{print \$1}'")"
-REMOTE_MANIFEST_SHA256="$(remote "sha256sum '$REMOTE_DATA/Meijendel.sql.manifest' | awk '{print \$1}'")"
+REMOTE_SQL_SHA256="$(remote "sha256sum '$SQL_CANDIDATE_FILE' | awk '{print \$1}'")"
+REMOTE_MANIFEST_SHA256="$(remote "sha256sum '$SQL_MANIFEST_CANDIDATE_FILE' | awk '{print \$1}'")"
 LOCAL_MANIFEST_SHA256="$(shasum -a 256 "$SQL_MANIFEST_LOCAL" | awk '{print $1}')"
+EXPECTED_CACHE_SHA256="$(awk -F= '$1 == "cache_sha256" {print $2}' "$CACHE_MANIFEST_LOCAL")"
+REMOTE_CACHE_SHA256="$(remote "sha256sum '$CACHE_CANDIDATE_FILE' | awk '{print \$1}'")"
+REMOTE_CACHE_MANIFEST_SHA256="$(remote "sha256sum '$CACHE_MANIFEST_CANDIDATE_FILE' | awk '{print \$1}'")"
+LOCAL_CACHE_MANIFEST_SHA256="$(shasum -a 256 "$CACHE_MANIFEST_LOCAL" | awk '{print $1}')"
 [[ "$REMOTE_SQL_SHA256" == "$EXPECTED_SQL_SHA256" ]] || die "remote SQL-hash wijkt af van exportmanifest."
 [[ "$REMOTE_MANIFEST_SHA256" == "$LOCAL_MANIFEST_SHA256" ]] || die "remote exportmanifest wijkt af van lokaal manifest."
-printf 'REMOTE_SQL_SHA256=%s\n' "$REMOTE_SQL_SHA256"
+[[ "$REMOTE_CACHE_SHA256" == "$EXPECTED_CACHE_SHA256" ]] || die "remote cachehash wijkt af van cachemanifest."
+[[ "$REMOTE_CACHE_MANIFEST_SHA256" == "$LOCAL_CACHE_MANIFEST_SHA256" ]] || die "remote cachemanifest wijkt af van lokaal manifest."
+printf 'REMOTE_SQL_SHA256=%s\nREMOTE_CACHE_SHA256=%s\n' "$REMOTE_SQL_SHA256" "$REMOTE_CACHE_SHA256"
 
 log "Leg exacte kandidaatcommit vast voor de gesloten releasehelper"
 remote "mkdir -p '$STATE_DIR'; umask 077; tmp='$CANDIDATE_FILE.tmp.\$\$'; printf '%s\n' '$LOCAL_COMMIT' > \"\$tmp\"; mv \"\$tmp\" '$CANDIDATE_FILE'"
@@ -351,6 +386,8 @@ gateway_apply="$(remote "sudo -n '$GATEWAY' meijendel-release apply '$LOCAL_COMM
   die "gesloten Meijendel-releaseactie faalde; controleer rollbackmelding en productie."
 printf '%s\n' "$gateway_apply"
 grep -Fq 'DATABASE_BACKUP=' <<<"$gateway_apply" || die "releaseactie meldde geen databaseback-up."
+grep -Fqx 'CACHE_CANDIDATE_STATUS=ready' <<<"$gateway_apply" || die "releaseactie bewees de kandidaatcache niet."
+grep -Fqx 'SQL_CACHE=TRUE' <<<"$gateway_apply" || die "releaseactie gebruikte niet aantoonbaar de vooraf gebouwde cache."
 grep -Fqx 'SHINY_STATUS=ready' <<<"$gateway_apply" || die "releaseactie meldde Shiny niet gereed."
 grep -Fqx 'RELEASE_STATUS=ready' <<<"$gateway_apply" || die "releaseactie gaf geen gereedstatus."
 

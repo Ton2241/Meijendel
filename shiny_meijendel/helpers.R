@@ -835,17 +835,65 @@ meijendel_tables_cache_path <- function(path) {
   file.path(meijendel_app_cache_dir(), "meijendel_tables_cache.rds")
 }
 
+meijendel_cache_path_from_manifest <- function(cache_manifest_path, expected_identity) {
+  cache_manifest_path <- normalizePath(cache_manifest_path, winslash = "/", mustWork = TRUE)
+  manifest <- read_meijendel_manifest(cache_manifest_path)
+  required <- c(
+    "format", "cache_file", "cache_sha256", "cache_bytes",
+    "sql_sha256", "sql_bytes", "parser_version"
+  )
+  missing <- setdiff(required, names(manifest))
+  if (length(missing)) {
+    stop("Cachemanifest mist veld: ", paste(missing, collapse = ", "), call. = FALSE)
+  }
+  if (!identical(unname(manifest[["format"]]), "meijendel-shiny-cache-manifest-v1")) {
+    stop("Onbekend cachemanifestformaat.", call. = FALSE)
+  }
+  cache_file <- unname(manifest[["cache_file"]])
+  if (!grepl("^meijendel_tables_cache-p[1-9][0-9]*-[0-9a-f]{64}\\.rds$", cache_file) ||
+      !identical(basename(cache_file), cache_file)) {
+    stop("Cachemanifest bevat geen veilige cachebasename.", call. = FALSE)
+  }
+  for (field in c("sql_sha256", "sql_bytes", "parser_version")) {
+    if (!identical(unname(manifest[[field]]), expected_identity[[field]])) {
+      stop("Cachemanifest wijkt af voor ", field, ".", call. = FALSE)
+    }
+  }
+  cache_path <- file.path(dirname(cache_manifest_path), cache_file)
+  if (!file.exists(cache_path) || nzchar(Sys.readlink(cache_path))) {
+    stop("Cachebestand uit actief cachemanifest ontbreekt of is een symlink.", call. = FALSE)
+  }
+  expected_bytes <- validate_positive_integer(manifest[["cache_bytes"]], "cache_bytes")
+  actual_bytes <- format(file.info(cache_path)$size, scientific = FALSE)
+  if (!identical(actual_bytes, expected_bytes)) {
+    stop("Cacheomvang wijkt af van actief cachemanifest.", call. = FALSE)
+  }
+  expected_hash <- validate_sha256(manifest[["cache_sha256"]], "cache_sha256")
+  if (!identical(sha256_file(cache_path), expected_hash)) {
+    stop("Cachehash wijkt af van actief cachemanifest.", call. = FALSE)
+  }
+  normalizePath(cache_path, winslash = "/", mustWork = TRUE)
+}
+
 load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_path = NULL,
                                          cache_manifest_path = NULL, require_prebuilt = NULL) {
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-  if (is.null(cache_path)) {
-    cache_path <- meijendel_tables_cache_path(path)
-  }
   if (is.null(require_prebuilt)) {
     require_prebuilt <- identical(Sys.getenv("MEIJENDEL_REQUIRE_PREBUILT_CACHE", unset = "0"), "1")
   }
 
   identity <- meijendel_cache_identity_for_sql(path, sql_manifest_path)
+  if (is.null(cache_manifest_path)) {
+    configured_cache_manifest <- Sys.getenv("MEIJENDEL_CACHE_MANIFEST_PATH", unset = "")
+    if (nzchar(configured_cache_manifest)) cache_manifest_path <- configured_cache_manifest
+  }
+  if (is.null(cache_path)) {
+    cache_path <- if (!is.null(cache_manifest_path)) {
+      meijendel_cache_path_from_manifest(cache_manifest_path, identity)
+    } else {
+      meijendel_tables_cache_path(path)
+    }
+  }
   required_data <- c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar")
 
   if (file.exists(cache_path)) {
