@@ -1,6 +1,6 @@
 # Actuele VPS-productie voor Meijendel
 
-Momentopname: **5 september 2026**. De volledige gedeelde hostinventaris staat
+Momentopname: **21 september 2026**. De volledige gedeelde hostinventaris staat
 canoniek in `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
 Controleer live voordat een versieclaim opnieuw wordt gebruikt.
 
@@ -23,18 +23,18 @@ Storage-volumes.
 
 | Onderdeel | Actieve versie of status |
 |---|---|
-| Ubuntu | 24.04.4 LTS, kernel 6.8.0-137-generic |
-| Docker Engine | 29.7.2 |
+| Ubuntu | 24.04.5 LTS, kernel 6.8.0-139-generic |
+| Docker Engine | 29.8.1 |
 | containerd | 2.3.3 |
 | Docker Compose | 5.4.0 |
 | Buildx | 0.36.1 |
 | MySQL | exact 9.7.1 |
-| MySQL-image | `sha256:873c4256d9805230476bdfa09d9a578e73aaa507a39cc54b46d29fe0797b85fe` |
+| MySQL-image | `sha256:b9b706efada12169e11dc55edc87e8365b98e628d8cb0a56d055394d6f35e93a` |
 | MySQL service-identiteit | UID/GID 1999; Caddy UID 999 |
-| Shiny | container `shiny_meijendel`, image `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906` |
+| Shiny | container `shiny_meijendel`, image `sha256:c7c181a76a5119ca9315739eb2834cb50f0d1d5c286e48f803c435d0a00174ff` |
 | R in Shiny | 4.6.1 |
 | Caddy | 2.11.4 |
-| PostgreSQL | 16.14, voor de VWG-M-app en ledenrechten |
+| PostgreSQL | 16.15, voor de VWG-M-app en ledenrechten |
 
 De actieve MySQL-container is `meijendel-mysql`. De datamap staat
 versiegescheiden onder
@@ -42,15 +42,15 @@ versiegescheiden onder
 SQL-dump staat in `/srv/vwgm/data/Meijendel.sql`; Shiny en websitepaden wijzen
 naar die gecontroleerde bron.
 
-De geteste volgende Meijendel-release levert naast de SQL ook het
+De actieve Meijendel-release levert naast de SQL ook het
 dumpmanifest en een vooraf op de iMac gebouwde inhoudsgebonden Shiny-cache.
 Productie valideert deze kandidaat zonder netwerk en met read-only mounts vóór
 databaseback-up en import; Shiny draait daarna verplicht met
 `MEIJENDEL_REQUIRE_PREBUILT_CACHE=1` en moet `SQL_CACHE=TRUE` melden.
 De VPS bouwt nooit zelf een ontbrekende cache. De actieve plus direct
-voorafgaande cache blijven behouden. Deze code is lokaal volledig groen, maar
-wordt pas na de productie-uitrol en rooktest als actieve productiestatus
-beschouwd.
+voorafgaande cache blijven behouden. De productie-uitrol van 21 september
+meldde `SQL_CACHE=TRUE`; de volledige publieke rooktest en de verse
+bare-metalback-up waren groen.
 
 Langlopende gatewayuitvoer wordt afgesloten opgeslagen onder
 `/srv/vwgm/deploy-state/gateway-jobs/<operation-id>`. De lokale runner
@@ -68,7 +68,7 @@ als versiegescheiden rollback. Dit is herstelcapaciteit, geen afval. De
 rollback wordt uiterlijk 25 augustus opnieuw beoordeeld volgens `TODO.md`.
 
 Actieve Meijendel-productiecommit:
-`21f6b38b67d8742b8d683653b8159c7b12d9fd04`.
+`891ca4e9bd51a2d9bfd825a733c79bb61473b4ee`.
 
 ## Opslag en containers
 

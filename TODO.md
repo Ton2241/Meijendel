@@ -117,11 +117,10 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 ## Productie en beheer
 
 - De automatische lokale Shiny-cachebouw, deterministische dump, afgesloten
-  gatewaylog, hervatting, timeouts en rollbackstatus zijn lokaal geïmplementeerd
-  en volledig getest. Nog open: deze keten via schone `main`, bijgewerkte
-  beheer-gateway, productiepreflight, deploy en rooktest activeren. Pas daarna
-  dit punt sluiten en de productiecommit hier en in `docs/vps_productie.md`
-  actualiseren.
+  gatewaylog, hervatting, timeouts en rollbackstatus zijn op 21 september 2026
+  via schone `main` geactiveerd. Productiecommit
+  `891ca4e9bd51a2d9bfd825a733c79bb61473b4ee` meldde `SQL_CACHE=TRUE`; publieke
+  rooktest, gatewayopruiming en verse bare-metalback-up waren groen.
 - Container-CVE's blijven wekelijks monitoren. De remediatie van 18 augustus
   2026 is afgerond: beide MySQL-images en de minimale Shiny-runtime zijn 0
   `CRITICAL`/0 `HIGH`. Blijf nieuwe kandidaten vóór activering exact scannen en
