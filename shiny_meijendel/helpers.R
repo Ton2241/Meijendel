@@ -22,7 +22,18 @@ if (is.na(trim_trend_helper)) {
   stop("R/trim_trend_contract.R ontbreekt; formele TRIM-trends kunnen niet veilig worden berekend.")
 }
 source(trim_trend_helper)
-rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper)
+cache_contract_helpers <- c(
+  if (nzchar(helpers_source_path)) file.path(dirname(helpers_source_path), "..", "R", "meijendel_cache_contract.R"),
+  file.path("R", "meijendel_cache_contract.R"),
+  file.path("..", "R", "meijendel_cache_contract.R")
+)
+cache_contract_helper <- cache_contract_helpers[file.exists(cache_contract_helpers)][1]
+if (is.na(cache_contract_helper)) {
+  stop("R/meijendel_cache_contract.R ontbreekt; de Shiny-cache kan niet veilig worden gevalideerd.")
+}
+source(cache_contract_helper)
+MEIJENDEL_PARSER_CACHE_VERSION <- 9L
+rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
 extract_columns <- function(header) {
   if (!grepl("\\) VALUES", header, fixed = FALSE)) {
@@ -768,15 +779,39 @@ parse_meijendel_tables <- function(path) {
   )
 }
 
-make_cache_signature <- function(path) {
-  info <- file.info(path)
-  paste(
-    MEIJENDEL_PARSER_CACHE_VERSION,
-    normalizePath(path, winslash = "/", mustWork = TRUE),
-    info$size,
-    unname(tools::md5sum(path)),
-    sep = "|"
+sha256_file <- function(path) {
+  commands <- list(
+    c(Sys.which("shasum"), "-a", "256", path),
+    c(Sys.which("sha256sum"), path)
   )
+  for (command in commands) {
+    if (!nzchar(command[[1L]])) next
+    output <- tryCatch(system2(command[[1L]], command[-1L], stdout = TRUE, stderr = FALSE), error = function(e) character())
+    if (length(output)) {
+      hash <- sub("[[:space:]].*$", "", output[[1L]])
+      if (grepl("^[0-9a-f]{64}$", hash)) return(hash)
+    }
+  }
+  stop("Geen SHA-256-programma beschikbaar voor ", path, ".", call. = FALSE)
+}
+
+default_sql_manifest_path <- function(path) {
+  configured <- Sys.getenv("MEIJENDEL_SQL_MANIFEST_PATH", unset = "")
+  if (nzchar(configured)) return(configured)
+  paste0(path, ".manifest")
+}
+
+meijendel_cache_identity_for_sql <- function(path, sql_manifest_path = NULL) {
+  if (is.null(sql_manifest_path)) sql_manifest_path <- default_sql_manifest_path(path)
+  if (file.exists(sql_manifest_path)) {
+    return(meijendel_cache_identity_from_manifest(sql_manifest_path, MEIJENDEL_PARSER_CACHE_VERSION))
+  }
+  info <- file.info(path)
+  meijendel_cache_identity(sha256_file(path), format(info$size, scientific = FALSE), MEIJENDEL_PARSER_CACHE_VERSION)
+}
+
+make_cache_signature <- function(path) {
+  meijendel_cache_identity_for_sql(normalizePath(path, winslash = "/", mustWork = TRUE))
 }
 
 meijendel_app_cache_dir <- function() {
@@ -800,33 +835,55 @@ meijendel_tables_cache_path <- function(path) {
   file.path(meijendel_app_cache_dir(), "meijendel_tables_cache.rds")
 }
 
-load_meijendel_tables_cached <- function(path, cache_path = NULL) {
+load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_path = NULL,
+                                         cache_manifest_path = NULL, require_prebuilt = NULL) {
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
   if (is.null(cache_path)) {
     cache_path <- meijendel_tables_cache_path(path)
   }
+  if (is.null(require_prebuilt)) {
+    require_prebuilt <- identical(Sys.getenv("MEIJENDEL_REQUIRE_PREBUILT_CACHE", unset = "0"), "1")
+  }
 
-  signature <- make_cache_signature(path)
+  identity <- meijendel_cache_identity_for_sql(path, sql_manifest_path)
+  required_data <- c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar")
 
   if (file.exists(cache_path)) {
     cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
-    cache_valid <- !is.null(cache) &&
-      identical(cache$signature, signature) &&
-      !is.null(cache$data) &&
-      all(c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar") %in% names(cache$data))
-    if (cache_valid) {
+    cache_valid <- tryCatch({
+      validate_meijendel_cache(cache, identity, required_data)
+      TRUE
+    }, error = function(e) FALSE)
+    if (isTRUE(cache_valid)) {
       cache$data$sql_path <- path
       return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
     }
   }
 
+  if (isTRUE(require_prebuilt)) {
+    stop("Vooraf gebouwde Meijendel-cache ontbreekt of past niet.", call. = FALSE)
+  }
+
   data <- parse_meijendel_tables(path)
-  cache <- list(signature = signature, data = data)
-  tryCatch(saveRDS(cache, cache_path), error = function(e) {
-    fallback_cache_path <- file.path(tempdir(), basename(cache_path))
-    saveRDS(cache, fallback_cache_path)
-    cache_path <<- fallback_cache_path
-  })
+  cache <- list(format = MEIJENDEL_CACHE_FORMAT, identity = identity, data = data)
+  write_cache_atomically <- function(target_path) {
+    candidate_path <- paste0(target_path, ".next.", Sys.getpid())
+    on.exit(unlink(candidate_path), add = TRUE)
+    saveRDS(cache, candidate_path, version = 3)
+    validate_meijendel_cache(readRDS(candidate_path), identity, required_data)
+    if (!file.rename(candidate_path, target_path)) {
+      stop("Tijdelijke Shiny-cache kon niet atomisch worden gepubliceerd.", call. = FALSE)
+    }
+    invisible(target_path)
+  }
+  tryCatch(
+    write_cache_atomically(cache_path),
+    error = function(e) {
+      fallback_cache_path <- file.path(tempdir(), basename(cache_path))
+      write_cache_atomically(fallback_cache_path)
+      cache_path <<- fallback_cache_path
+    }
+  )
   list(data = data, from_cache = FALSE, cache_path = cache_path)
 }
 
@@ -5660,4 +5717,3 @@ analyse_lambda_subset <- function(tbls, selected_kavels, year_from, year_to) {
     habitatgroep_results = lambda_habitatgroep
   )
 }
-MEIJENDEL_PARSER_CACHE_VERSION <- 9L
