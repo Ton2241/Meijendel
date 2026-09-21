@@ -38,6 +38,7 @@ had_sql_manifest=0
 had_cache_manifest=0
 previous_cache_file=""
 rollback_uses_candidate_cache=0
+first_cache_migration=0
 
 die() {
   printf 'BLOKKADE|meijendel-release|%s\n' "$*" >&2
@@ -102,7 +103,37 @@ restart_shiny() {
   return 1
 }
 
+install_first_migration_artifacts() {
+  mkdir -p "$APP_CACHE"
+  if [[ -f "$SQL_CANDIDATE_FILE" ]]; then
+    rm -f "$SQL_FILE"
+    mv "$SQL_CANDIDATE_FILE" "$SQL_FILE"
+  fi
+  if [[ -f "$SQL_MANIFEST_CANDIDATE_FILE" ]]; then
+    rm -f "$SQL_MANIFEST_FILE"
+    mv "$SQL_MANIFEST_CANDIDATE_FILE" "$SQL_MANIFEST_FILE"
+  fi
+  if [[ -f "$CACHE_CANDIDATE_FILE" ]]; then
+    rm -f "$APP_CACHE/$cache_file"
+    mv "$CACHE_CANDIDATE_FILE" "$APP_CACHE/$cache_file"
+  fi
+  if [[ -f "$CACHE_MANIFEST_CANDIDATE_FILE" ]]; then
+    rm -f "$ACTIVE_CACHE_MANIFEST"
+    mv "$CACHE_MANIFEST_CANDIDATE_FILE" "$ACTIVE_CACHE_MANIFEST"
+  fi
+  chmod 644 "$SQL_FILE" "$SQL_MANIFEST_FILE" "$APP_CACHE/$cache_file" "$ACTIVE_CACHE_MANIFEST"
+  ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
+  ln -sfn "$SQL_FILE" "$REMOTE_WWW/Meijendel.sql"
+  ln -sfn "$SQL_FILE" "$REMOTE_APP/data/Meijendel.sql"
+  rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest"
+  printf 'ROLLBACK_ARTIFACT_STATUS=deterministic-equivalent\n'
+}
+
 restore_files() {
+  if [[ "$first_cache_migration" -eq 1 ]]; then
+    install_first_migration_artifacts
+    return 0
+  fi
   if [[ "$activation_started" -ne 1 ]]; then
     if [[ "$rollback_uses_candidate_cache" -eq 1 ]]; then
       mkdir -p "$APP_CACHE"
@@ -260,10 +291,18 @@ if [[ -f "$ACTIVE_CACHE_MANIFEST" && ! -L "$ACTIVE_CACHE_MANIFEST" ]]; then
     die "vorige actieve cache hoort niet bij de actieve SQL-dump"
 else
   [[ -f "$SQL_FILE" && ! -L "$SQL_FILE" ]] || die "actieve SQL-dump ontbreekt voor rollback"
-  [[ "$(sha256sum "$SQL_FILE" | awk '{print $1}')" == "$expected_sql_hash" ]] || \
-    die "eerste cacheactivering kan niet verplicht rollbacken: actieve en kandidaatdump verschillen"
+  [[ -f "$SQL_MANIFEST_FILE" && ! -L "$SQL_MANIFEST_FILE" ]] || \
+    die "actief SQL-manifest ontbreekt voor eerste cacheactivering"
+  for identity_key in \
+    source_database mysql_version base_tables views row_counts_sha256 table_checksums_sha256 \
+    dagbezoeken_bmp dagwaarnemingen_bmp territoria; do
+    [[ "$(manifest_value "$identity_key" "$SQL_MANIFEST_FILE")" == \
+       "$(manifest_value "$identity_key" "$SQL_MANIFEST_CANDIDATE_FILE")" ]] || \
+      die "eerste cacheactivering wijzigt database-inhoud volgens manifestveld $identity_key"
+  done
   previous_cache_file="$cache_file"
   rollback_uses_candidate_cache=1
+  first_cache_migration=1
 fi
 
 backup_file="$BACKUP_DIR/meijendel_before_${release_commit}_$(date -u +%Y%m%dT%H%M%SZ).sql.gz"

@@ -1,7 +1,7 @@
 # Ontwerp: lokale Shiny-cache en begrensde gatewayuitvoer
 
-Datum: 21 september 2026  
-Status: ter inhoudelijke goedkeuring  
+Datum: 21 september 2026
+Status: ter inhoudelijke goedkeuring
 Leidende repository: `Meijendel`
 
 ## Aanleiding

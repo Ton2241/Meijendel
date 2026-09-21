@@ -67,6 +67,11 @@ for fragment in \
   'CONTAINER="meijendel-mysql"' \
   'SHINY_CONTAINER="shiny_meijendel"' \
   'restore_backup' \
+  'first_cache_migration=0' \
+  'install_first_migration_artifacts' \
+  'row_counts_sha256' \
+  'table_checksums_sha256' \
+  'ROLLBACK_ARTIFACT_STATUS=deterministic-equivalent' \
   'trap finish EXIT' \
   'trap '\''exit 130'\'' INT' \
   'trap '\''exit 143'\'' TERM' \
@@ -81,6 +86,9 @@ for fragment in \
   'trim/sandra/soorten/soorten_trendoverzicht.csv'; do
   grep -Fq "$fragment" "$REMOTE_HELPER" || fail "remote helper mist veiligheidscontract: $fragment"
 done
+
+assert_before "$REMOTE_HELPER" 'table_checksums_sha256' 'DATABASE_BACKUP='
+assert_before "$REMOTE_HELPER" 'row_counts_sha256' 'DATABASE_BACKUP='
 
 cache_status_line="$(grep -nF 'CACHE_CANDIDATE_STATUS=ready' "$REMOTE_HELPER" | head -n 1 | cut -d: -f1 || true)"
 backup_line="$(grep -nF 'DATABASE_BACKUP=' "$REMOTE_HELPER" | head -n 1 | cut -d: -f1 || true)"
