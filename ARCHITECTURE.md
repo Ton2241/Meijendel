@@ -34,6 +34,25 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
 
+### Export- en Shiny-cacheketen
+
+De iMac maakt bij een databaseverversing vier gekoppelde artefacten:
+`meijendel.sql`, `meijendel.sql.manifest`, de inhoudsgebonden RDS
+`meijendel_tables_cache-p<PARSER>-<SQL_SHA256>.rds` en het gelijknamige
+cachemanifest. Het dumpmanifest koppelt de twee cachenamen; het cachemanifest
+bevat SQL-hash en -omvang, parser-versie, cachehash en -omvang, R-versie,
+serialisatieversie, aanmaaktijd en broncommit. Door `--skip-dump-date` plus
+een vaste eindmarkering blijft de SQL-hash gelijk als de database-inhoud
+gelijk blijft.
+
+Cachebouw vindt alleen lokaal plaats bij een nieuwe SQL-hash of parser-versie.
+De VPS valideert de vier kandidaatbestanden vóór back-up en import in een
+netwerkloze, read-only container en draait Shiny met
+`MEIJENDEL_REQUIRE_PREBUILT_CACHE=1`. Een cachemisser is daar een
+releasefout, geen aanleiding om 2,76 GB SQL op productie te parsen. Productie
+bewaart alleen de actieve en direct voorafgaande inhoudsgebonden cache. De NAS
+DS225+ blijft back-updoel en heeft geen reken- of cachebouwrol.
+
 ### Beveiligde NDFF-laag
 
 ### Openbare NDFF- en vangblikbronnen
@@ -192,6 +211,8 @@ Webgrafieken gebruiken vooraf gegenereerde dashboard-output/CSV. Parse `meijende
 
 ## Back-up
 
-Er is een bare-metal back-uproutine op de VPS. De NAS DS225+ haalt de nieuwste back-up rechtstreeks vanaf de VPS naar de gedeelde map `VWG-M-Backups`.
+Er is een bare-metal back-uproutine op de VPS. De NAS DS225+ haalt de nieuwste
+back-up rechtstreeks vanaf de VPS naar de gedeelde map `VWG-M-Backups`; zij
+is geen rekencluster voor export, analyse of cachebouw.
 
 Runtime-data hoort in back-ups. Secrets, SSH keys en wachtwoorden horen niet plaintext in Git, maar moeten wel herstelbaar zijn via de afgesproken beheer- en herstelprocedure.

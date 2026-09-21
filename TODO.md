@@ -116,19 +116,12 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Productie en beheer
 
-- Vóór de volgende `Meijendel.sql`-verversing de eerste Shiny-cacheopbouw
-  verplaatsen naar de lokale preflight of de SQL-parser beperken tot de
-  benodigde tabellen. Bij release `2026-09-21.1` las R de volledige dump van
-  2.758.897.731 bytes herhaaldelijk: circa 26 minuten, maximaal circa 2,85 GB
-  RAM op de VPS. De persistente cache werkte daarna wel: HTTP 200 in 5,75
-  seconden en 2,8 GB RAM weer beschikbaar. Een volgende dump met gewijzigde
-  hash mag niet opnieuw onbegrensd op de productie-VPS worden geparsed.
-- Vóór de volgende Meijendel-productiedeploy het gatewayresultaat eerst naar
-  een tijdelijk VPS-bestand laten schrijven en pas na beëindiging naar de
-  lokale SSH-client teruglezen. Bij release `2026-09-21.1` was de remote
-  gateway gereed, maar bleef het SSH-uitvoerkanaal open na de Shiny-herstart.
-  Voeg een regressietest en een harde timeout toe; behoud de bestaande
-  back-up-, rollback-, smoke- en gedeelde-lockcontroles.
+- De automatische lokale Shiny-cachebouw, deterministische dump, afgesloten
+  gatewaylog, hervatting, timeouts en rollbackstatus zijn lokaal geïmplementeerd
+  en volledig getest. Nog open: deze keten via schone `main`, bijgewerkte
+  beheer-gateway, productiepreflight, deploy en rooktest activeren. Pas daarna
+  dit punt sluiten en de productiecommit hier en in `docs/vps_productie.md`
+  actualiseren.
 - Container-CVE's blijven wekelijks monitoren. De remediatie van 18 augustus
   2026 is afgerond: beide MySQL-images en de minimale Shiny-runtime zijn 0
   `CRITICAL`/0 `HIGH`. Blijf nieuwe kandidaten vóór activering exact scannen en

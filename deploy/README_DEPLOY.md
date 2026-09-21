@@ -103,6 +103,16 @@ gemaakte back-up automatisch teruggezet. Installeer of actualiseer deze actie
 via `VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh`; voeg de gebruiker
 niet opnieuw toe aan de Docker-groep.
 
+De lokale runner laat de gatewayuitvoer eerst met modus `0700/0600` landen
+onder `/srv/vwgm/deploy-state/gateway-jobs/<operation-id>` en haalt log en
+exitstatus pas na voltooiing apart op. `preflight` is standaard begrensd
+op 300 seconden (toegestaan 60–900), `apply` op 10.800 seconden
+(1.800–14.400) en de TERM→KILL-nalooptijd op 3.600 seconden (600–7.200).
+Bij een verbroken verbinding blijft de 32-teken-operatie-id staan; hervat exact
+die job met `GATEWAY_OPERATION_ID=<id>`. Start nooit op goed geluk een
+tweede import. Timeout na begonnen import is alleen hersteld als de log zowel
+`ROLLBACK|` als `ROLLBACK_STATUS=ready` bevat.
+
 Eerste, eenmalige inrichting nadat de werkelijk draaiende productiecommit is vastgesteld en in `main` is geïntegreerd:
 
 ```sh
@@ -275,6 +285,9 @@ curl -I http://127.0.0.1:3838/
 Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt deze VPS-onderdelen bij:
 
 - canonieke SQL met de veilige koppeltabel `tellers` (`id`, `tellercode`) en zonder historische `pwa_*`-objecten: `/srv/vwgm/data/Meijendel.sql`
+- exportmanifest `/srv/vwgm/data/Meijendel.sql.manifest`;
+- vooraf lokaal gebouwde inhoudsgebonden Shiny-cache plus actief cachemanifest
+  onder `/srv/vwgm/shiny/shiny_meijendel/app_cache/`;
 - compatibiliteitspaden voor Shiny, dashboard en FastAPI zijn symlinks naar de canonieke SQL:
   - `/srv/vwgm/shiny/Meijendel.sql`
   - `/srv/vwgm/www/Meijendel.sql`
@@ -297,11 +310,13 @@ Daarna voert het script op de VPS uit:
 
 - een gedateerde back-up van de bestaande MySQL-database `meijendel` onder `/srv/vwgm/backups/meijendel-mysql/`;
 - import van de gefilterde canonieke SQL in container `meijendel-mysql`, gevolgd door controles op de PQ-tabellen, publieke vegetatieview en historische geometrie; bij import- of validatiefout wordt de zojuist gemaakte databaseback-up automatisch hersteld;
-- Shiny `app_cache` behouden en schrijfbaar mounten
+- Shiny `app_cache` behouden en schrijfbaar mounten; alleen de actieve en
+  direct voorafgaande inhoudsgebonden cache bewaren
 - Shiny-container `shiny_meijendel` na vervanging van de canonieke SQL geforceerd
   opnieuw aanmaken, zodat de bind mount altijd de actuele SQL-inode gebruikt
 - Shiny HTTP-endpoint controleren
-- SQL-cache voorverwarmen, zodat de eerste gebruiker niet de volledige SQL-parse hoeft af te wachten
+- vóór import de kandidaatcache zonder netwerk en met read-only mounts laden,
+  na start exact `SQL_CACHE=TRUE` eisen en nooit op de VPS een cache bouwen
 
 Het script maakt geen automatische backup op de VPS.
 
@@ -403,9 +418,16 @@ Benodigd:
 - login-path `meijendel_root` is lokaal beschikbaar voor de niet-interactieve versiecontrole; overschrijven kan alleen via `MEIJENDEL_MYSQL_LOGIN_PATH`
 - de versiecontrole gebruikt de tools uit `PATH` en valt bij de officiële macOS-pakketinstallatie terug op `/usr/local/mysql/bin`
 - de dump wordt gemaakt met kolomnamen in `INSERT`-regels (`--complete-insert`), omdat de R-scripts die kolomnamen gebruiken bij het inlezen
+- `--skip-dump-date` en een vaste eindmarkering maken de dump reproduceerbaar,
+  zodat ongewijzigde SQL-inhoud niet onnodig een nieuwe cachebouw veroorzaakt
 - GTID-restore-informatie wordt bewust niet meegenomen (`--set-gtid-purged=OFF`) en de dump gebruikt `--single-transaction`
 - de tabel `tellers` wordt meegenomen en mag uitsluitend `id` en `tellercode` bevatten; de preflight blokkeert ieder uitgebreider schema
 - lokaal SQL-bestand: `meijendel.sql` in de repo-root; op de VPS wordt dit uitsluitend geplaatst als `/srv/vwgm/data/Meijendel.sql`
+- lokale cachebouw is eenmalig per gewijzigde SQL-hash of parser-versie. De
+  meting van 21 september 2026 voor 2.758.897.731 bytes duurde 1.418 seconden
+  en piekte op 2.851.733.504 bytes resident geheugen; de cache van 219.585 bytes
+  werd bij de direct volgende identieke export aantoonbaar hergebruikt
+- NAS en VPS hebben geen rekenrol in deze cachebouw
 - op de VPS bestaande Docker/Compose-config onder `/srv/vwgm`
 
 ## Configuratie overschrijven

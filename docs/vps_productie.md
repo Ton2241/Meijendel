@@ -42,6 +42,23 @@ versiegescheiden onder
 SQL-dump staat in `/srv/vwgm/data/Meijendel.sql`; Shiny en websitepaden wijzen
 naar die gecontroleerde bron.
 
+De geteste volgende Meijendel-release levert naast de SQL ook het
+dumpmanifest en een vooraf op de iMac gebouwde inhoudsgebonden Shiny-cache.
+Productie valideert deze kandidaat zonder netwerk en met read-only mounts vóór
+databaseback-up en import; Shiny draait daarna verplicht met
+`MEIJENDEL_REQUIRE_PREBUILT_CACHE=1` en moet `SQL_CACHE=TRUE` melden.
+De VPS bouwt nooit zelf een ontbrekende cache. De actieve plus direct
+voorafgaande cache blijven behouden. Deze code is lokaal volledig groen, maar
+wordt pas na de productie-uitrol en rooktest als actieve productiestatus
+beschouwd.
+
+Langlopende gatewayuitvoer wordt afgesloten opgeslagen onder
+`/srv/vwgm/deploy-state/gateway-jobs/<operation-id>`. De lokale runner
+haalt status en log na voltooiing op; hervatting gebruikt dezelfde
+operatie-id. Standaardtimeouts zijn 300 seconden voor preflight, 10.800
+seconden voor apply en 3.600 seconden tussen TERM en KILL. De NAS heeft
+uitsluitend een back-upfunctie en geen rekenrol.
+
 De directe gestopte rollback is
 `meijendel-mysql-971-uid999-rollback-20260820` met de vorige 9.7.1-image en
 datamap. Daarnaast blijven de gestopte container

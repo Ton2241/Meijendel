@@ -259,6 +259,15 @@ Of via Terminal:
 - De levende lokale Meijendel-MySQL-database op de iMac is de canonieke
   schrijfbron. `Meijendel.sql` wordt uitsluitend uit die gevalideerde database
   gegenereerd en is altijd een afspiegeling, nooit een zelfstandige bron.
+- Iedere export publiceert lokaal één gekoppelde set: `meijendel.sql`,
+  `meijendel.sql.manifest`, een inhoudsgebonden
+  `meijendel_tables_cache-p<PARSER>-<SQL_SHA256>.rds` en het gelijknamige
+  cachemanifest. De dump is deterministisch; bij dezelfde SQL-inhoud en
+  parser-versie wordt de gevalideerde cache hergebruikt.
+- Cachebouw is eenmalige lokale belasting per gewijzigde database-export of
+  parser-versie, niet periodiek en niet continu. De VPS bouwt of repareert geen
+  cache maar weigert Shiny te starten als dump, manifest en vooraf gebouwde
+  cache niet exact bij elkaar horen. De NAS heeft hierin geen rekenrol.
 - De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.1 gebruiken. Generatie en deploy blokkeren bij een afwijking.
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
