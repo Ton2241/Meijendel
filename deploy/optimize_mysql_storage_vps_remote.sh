@@ -39,28 +39,6 @@ validate_backup() {
 }
 
 validate_cleanup_targets() {
-  local file expected_size actual_size small_a small_b large_old retained
-  small_a="$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz"
-  large_old="$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz"
-  small_b="$MYSQL_BACKUP_DIR/meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz"
-  retained="$MYSQL_BACKUP_DIR/meijendel_before_891ca4e9bd51a2d9bfd825a733c79bb61473b4ee_20260921T113001Z.sql.gz"
-  while IFS='|' read -r file expected_size; do
-    [[ -f "$file" && ! -L "$file" ]] || fail "opruimdoel ontbreekt of is symlink: $file"
-    actual_size="$(stat -c %s "$file")"
-    [[ "$actual_size" == "$expected_size" ]] ||
-      fail "omvang wijkt af: $file|verwacht=$expected_size|actueel=$actual_size"
-    gzip -t "$file" || fail "gzipcontrole faalde: $file"
-  done <<EOF
-$small_a|10897010
-$large_old|198382934
-$small_b|10897010
-$retained|198382934
-EOF
-  cmp -s "$small_a" "$small_b" || fail "kleine reserves zijn niet byte-identiek"
-  cmp -s "$large_old" "$retained" || fail "grote oude reserve wijkt af van de te behouden reserve"
-  printf 'GROEN|mysql-opslag|duplicaten-byte-identiek|klein=%s|groot=%s\n' \
-    "$(sha256sum "$small_a" | awk '{print $1}')" \
-    "$(sha256sum "$large_old" | awk '{print $1}')"
   [[ -f "$STALE_SQL" && ! -L "$STALE_SQL" ]] || fail "ongebruikte lowercase SQL ontbreekt of is symlink"
   [[ "$(stat -c %s "$STALE_SQL")" == 82674275 ]] || fail "lowercase SQL-omvang wijkt af"
   [[ "$(sha256sum "$STALE_SQL" | awk '{print $1}')" == 087bd35db85918588c27e3c75bd7275fc78ded65be8f7df063220b843ae74cb4 ]] ||
@@ -111,11 +89,7 @@ apply_changes() {
   after_bytes="$(mysql_query 'SHOW BINARY LOGS' | awk '{sum += $2} END {print sum+0}')"
   (( after_bytes <= before_bytes )) || fail "binlogopslag groeide tijdens purge"
 
-  rm -f -- \
-    "$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz" \
-    "$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz" \
-    "$MYSQL_BACKUP_DIR/meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz" \
-    "$STALE_SQL"
+  rm -f -- "$STALE_SQL"
 
   mysql_query 'SELECT 1' | grep -qx 1 || fail "MySQL-nacontrole faalde"
   smoke_public ||
@@ -124,7 +98,7 @@ apply_changes() {
   validate_backup
   printf 'GROEN|mysql-opslag|structureel-opgelost|retentie=%s|redo=%s|binlog-voor=%s|binlog-na=%s\n' \
     "$retention" "$redo" "$before_bytes" "$after_bytes"
-  printf 'GRENS|mysql-opslag|geen-docker-prune|geen-andere-backups-of-bestanden\n'
+  printf 'GRENS|mysql-opslag|geen-docker-prune|logische-reserves-bewaard|geen-andere-bestanden\n'
 }
 
 if [[ "${VWGM_MYSQL_STORAGE_LIBRARY_ONLY:-0}" == 1 ]]; then

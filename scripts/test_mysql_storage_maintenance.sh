@@ -65,14 +65,14 @@ if (validate_cleanup_targets() { fail 'nagebootste hashfout'; }; apply_changes >
 fi
 [[ ! -s "$mutation_log" ]]
 
-# Groene apply gebruikt exact het live actieve log en de vier vaste doelen.
+# Groene apply gebruikt exact het live actieve log en uitsluitend de ongebruikte lowercase SQL.
 : >"$mutation_log"
 apply_changes >/dev/null
 grep -Fxq "SET|SET PERSIST binlog_expire_logs_seconds=259200; SET PERSIST innodb_redo_log_capacity=536870912" "$mutation_log"
 grep -Fxq "PURGE|PURGE BINARY LOGS TO 'binlog.000028'" "$mutation_log"
-expected_rm="rm|-f|--|$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz|$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz|$MYSQL_BACKUP_DIR/meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz|$STALE_SQL"
+expected_rm="rm|-f|--|$STALE_SQL"
 grep -Fxq "$expected_rm" "$mutation_log"
-! grep -Fq '891ca4e9bd51a2d9bfd825a733c79bb61473b4ee' "$mutation_log"
+! grep -Fq 'meijendel_before_' "$mutation_log"
 [[ "$(grep -c '^rm|' "$mutation_log")" -eq 1 ]]
 [[ "$(grep -c '^backup$' "$mutation_log")" -eq 1 ]]
 ! grep -Eiq 'docker.*prune|system prune|image prune|container prune' "$mutation_log"

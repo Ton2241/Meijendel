@@ -114,8 +114,10 @@ De eenmalige opslagcorrectie loopt uitsluitend via de gesloten gatewayactie
 actuele bare-metalback-up, checksum, volledige restorecheck, MySQL 9.7.1,
 afwezigheid van replicatie en alle exacte opruimdoelen. `apply` stelt de twee
 runtimewaarden persistent in, gebruikt `PURGE BINARY LOGS TO` tot het actuele
-binlog en verwijdert alleen de vooraf gehashte dubbele reserves en de ongebruikte
-lowercase SQL-kopie. Geen algemene Docker- of bestandsopruiming is toegestaan.
+binlog en verwijdert alleen de vooraf gehashte, ongebruikte lowercase SQL-kopie.
+De vier logische reserves blijven bewaard omdat directe vergelijking geen
+byte-identieke duplicaten aantoonde. Geen algemene Docker- of
+bestandsopruiming is toegestaan.
 
 De lokale runner laat de gatewayuitvoer eerst met modus `0700/0600` landen
 onder `/srv/vwgm/deploy-state/gateway-jobs/<operation-id>` en haalt log en

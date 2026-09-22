@@ -34,10 +34,9 @@ grep -Fq 'volledige import zonder binlog is geblokkeerd omdat replicatie actief 
 [[ -x "$mysql_storage" ]]
 [[ -x "$mysql_storage_test" ]]
 bash -n "$mysql_storage"
-grep -Fq 'cmp -s "$small_a" "$small_b"' "$mysql_storage"
-grep -Fq 'cmp -s "$large_old" "$retained"' "$mysql_storage"
-grep -Fq 'duplicaten-byte-identiek' "$mysql_storage"
-! grep -Fq 'gzip -dc "$file"' "$mysql_storage"
+grep -Fq 'rm -f -- "$STALE_SQL"' "$mysql_storage"
+grep -Fq 'logische-reserves-bewaard' "$mysql_storage"
+! grep -Fq 'rm -f -- \\' "$mysql_storage"
 for marker in \
   'EXPECTED_BINLOG_RETENTION=259200' \
   'EXPECTED_REDO_CAPACITY=536870912' \
@@ -46,9 +45,6 @@ for marker in \
   'Binlog Dump GTID' \
   'Innodb_redo_log_resize_status' \
   'vwg-m-baremetal-latest.tar.gz.sha256' \
-  'meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz' \
-  'meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz' \
-  'meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz' \
   '/srv/vwgm/shiny/meijendel.sql' \
   'geen-docker-prune'; do
   grep -Fq -- "$marker" "$mysql_storage"
