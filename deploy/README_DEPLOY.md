@@ -112,12 +112,11 @@ drie dagen binlogretentie en 512 MiB redo-capaciteit vast.
 De eenmalige opslagcorrectie loopt uitsluitend via de gesloten gatewayactie
 `vwgm-admin mysql-storage-maintenance verify|apply`. `verify` controleert de
 actuele bare-metalback-up, checksum, volledige restorecheck, MySQL 9.7.1,
-afwezigheid van replicatie en alle exacte opruimdoelen. `apply` stelt de twee
-runtimewaarden persistent in, gebruikt `PURGE BINARY LOGS TO` tot het actuele
-binlog en verwijdert alleen de vooraf gehashte, ongebruikte lowercase SQL-kopie.
-De vier logische reserves blijven bewaard omdat directe vergelijking geen
-byte-identieke duplicaten aantoonde. Geen algemene Docker- of
-bestandsopruiming is toegestaan.
+afwezigheid van replicatie. `apply` stelt de twee runtimewaarden persistent
+in en gebruikt `PURGE BINARY LOGS TO` tot het actuele binlog. De vier logische
+reserves en beide SQL-kopieën blijven bewaard omdat de inventarisatie geen
+betrouwbare, directe gelijkheid aantoonde. De helper verwijdert daarom geen
+bestanden en voert geen algemene Docker-opruiming uit.
 
 De lokale runner laat de gatewayuitvoer eerst met modus `0700/0600` landen
 onder `/srv/vwgm/deploy-state/gateway-jobs/<operation-id>` en haalt log en

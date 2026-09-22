@@ -5,8 +5,6 @@ stage="${1:-}"
 CONTAINER="meijendel-mysql"
 BACKUP_DIR="/srv/vwgm/backups/vwg-m-baremetal"
 BACKUP_ARCHIVE="$BACKUP_DIR/vwg-m-baremetal-latest.tar.gz"
-MYSQL_BACKUP_DIR="/srv/vwgm/backups/meijendel-mysql"
-STALE_SQL="/srv/vwgm/shiny/meijendel.sql"
 EXPECTED_BINLOG_RETENTION=259200
 EXPECTED_REDO_CAPACITY=536870912
 MAX_BACKUP_AGE=129600
@@ -38,15 +36,6 @@ validate_backup() {
     fail "bare-metalherstelcontrole faalde"
 }
 
-validate_cleanup_targets() {
-  [[ -f "$STALE_SQL" && ! -L "$STALE_SQL" ]] || fail "ongebruikte lowercase SQL ontbreekt of is symlink"
-  [[ "$(stat -c %s "$STALE_SQL")" == 82674275 ]] || fail "lowercase SQL-omvang wijkt af"
-  [[ "$(sha256sum "$STALE_SQL" | awk '{print $1}')" == 087bd35db85918588c27e3c75bd7275fc78ded65be8f7df063220b843ae74cb4 ]] ||
-    fail "lowercase SQL-hash wijkt af"
-  ! docker inspect "$CONTAINER" shiny_meijendel | grep -Fq "$STALE_SQL" ||
-    fail "lowercase SQL is nog als containermount in gebruik"
-}
-
 verify_runtime() {
   local version replica_connections replica_status registered_replicas binlog_dump_threads active_log persisted_load
   docker inspect --format '{{.State.Status}}' "$CONTAINER" | grep -qx running ||
@@ -67,7 +56,6 @@ verify_runtime() {
   active_log="$(mysql_query 'SHOW BINARY LOG STATUS' | awk 'NR==1 {print $1}')"
   [[ "$active_log" =~ ^binlog\.[0-9]{6}$ ]] || fail "actief binlog is ongeldig"
   validate_backup
-  validate_cleanup_targets
   printf 'GROEN|mysql-opslag|startgate|backup-en-restore=groen|replicatie=afwezig|actief-binlog=%s\n' "$active_log"
 }
 
@@ -89,8 +77,6 @@ apply_changes() {
   after_bytes="$(mysql_query 'SHOW BINARY LOGS' | awk '{sum += $2} END {print sum+0}')"
   (( after_bytes <= before_bytes )) || fail "binlogopslag groeide tijdens purge"
 
-  rm -f -- "$STALE_SQL"
-
   mysql_query 'SELECT 1' | grep -qx 1 || fail "MySQL-nacontrole faalde"
   smoke_public ||
     fail "publieke rooktest faalde"
@@ -98,7 +84,7 @@ apply_changes() {
   validate_backup
   printf 'GROEN|mysql-opslag|structureel-opgelost|retentie=%s|redo=%s|binlog-voor=%s|binlog-na=%s\n' \
     "$retention" "$redo" "$before_bytes" "$after_bytes"
-  printf 'GRENS|mysql-opslag|geen-docker-prune|logische-reserves-bewaard|geen-andere-bestanden\n'
+  printf 'GRENS|mysql-opslag|geen-bestandsverwijdering|geen-docker-prune|alle-sql-reserves-bewaard\n'
 }
 
 if [[ "${VWGM_MYSQL_STORAGE_LIBRARY_ONLY:-0}" == 1 ]]; then

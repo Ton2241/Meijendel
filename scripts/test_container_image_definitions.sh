@@ -34,9 +34,9 @@ grep -Fq 'volledige import zonder binlog is geblokkeerd omdat replicatie actief 
 [[ -x "$mysql_storage" ]]
 [[ -x "$mysql_storage_test" ]]
 bash -n "$mysql_storage"
-grep -Fq 'rm -f -- "$STALE_SQL"' "$mysql_storage"
-grep -Fq 'logische-reserves-bewaard' "$mysql_storage"
-! grep -Fq 'rm -f -- \\' "$mysql_storage"
+grep -Fq 'geen-bestandsverwijdering' "$mysql_storage"
+grep -Fq 'alle-sql-reserves-bewaard' "$mysql_storage"
+! grep -Eq '(^|[[:space:]])rm -f' "$mysql_storage"
 for marker in \
   'EXPECTED_BINLOG_RETENTION=259200' \
   'EXPECTED_REDO_CAPACITY=536870912' \
@@ -45,7 +45,6 @@ for marker in \
   'Binlog Dump GTID' \
   'Innodb_redo_log_resize_status' \
   'vwg-m-baremetal-latest.tar.gz.sha256' \
-  '/srv/vwgm/shiny/meijendel.sql' \
   'geen-docker-prune'; do
   grep -Fq -- "$marker" "$mysql_storage"
 done

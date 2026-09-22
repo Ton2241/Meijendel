@@ -15,10 +15,8 @@ docker() {
 }
 
 validate_backup() { :; }
-validate_cleanup_targets() { :; }
 smoke_public() { :; }
 make_baremetal_backup() { printf 'backup\n' >>"$mutation_log"; }
-rm() { { printf 'rm'; printf '|%s' "$@"; printf '\n'; } >>"$mutation_log"; }
 
 mysql_query() {
   case "$1" in
@@ -58,22 +56,12 @@ if (validate_backup() { fail 'nagebootste back-upfout'; }; apply_changes >/dev/n
 fi
 [[ ! -s "$mutation_log" ]]
 
-: >"$mutation_log"
-if (validate_cleanup_targets() { fail 'nagebootste hashfout'; }; apply_changes >/dev/null 2>&1); then
-  printf 'FOUT: apply ging door na falende cleanup-hashgate.\n' >&2
-  exit 1
-fi
-[[ ! -s "$mutation_log" ]]
-
-# Groene apply gebruikt exact het live actieve log en uitsluitend de ongebruikte lowercase SQL.
+# Groene apply gebruikt exact het live actieve log en verwijdert geen bestanden.
 : >"$mutation_log"
 apply_changes >/dev/null
 grep -Fxq "SET|SET PERSIST binlog_expire_logs_seconds=259200; SET PERSIST innodb_redo_log_capacity=536870912" "$mutation_log"
 grep -Fxq "PURGE|PURGE BINARY LOGS TO 'binlog.000028'" "$mutation_log"
-expected_rm="rm|-f|--|$STALE_SQL"
-grep -Fxq "$expected_rm" "$mutation_log"
-! grep -Fq 'meijendel_before_' "$mutation_log"
-[[ "$(grep -c '^rm|' "$mutation_log")" -eq 1 ]]
+! grep -Eq '^rm\||meijendel_before_|/srv/vwgm/shiny/meijendel.sql' "$mutation_log"
 [[ "$(grep -c '^backup$' "$mutation_log")" -eq 1 ]]
 ! grep -Eiq 'docker.*prune|system prune|image prune|container prune' "$mutation_log"
 
