@@ -34,9 +34,10 @@ grep -Fq 'volledige import zonder binlog is geblokkeerd omdat replicatie actief 
 [[ -x "$mysql_storage" ]]
 [[ -x "$mysql_storage_test" ]]
 bash -n "$mysql_storage"
-grep -Fq 'actual_hash="$(sha256sum "$file"' "$mysql_storage"
-! grep -Fq 'actual_hash="$(gzip -dc "$file"' "$mysql_storage"
-grep -Fq 'te behouden actuele logische back-up heeft onverwachte archiefhash' "$mysql_storage"
+grep -Fq 'cmp -s "$small_a" "$small_b"' "$mysql_storage"
+grep -Fq 'cmp -s "$large_old" "$retained"' "$mysql_storage"
+grep -Fq 'duplicaten-byte-identiek' "$mysql_storage"
+! grep -Fq 'gzip -dc "$file"' "$mysql_storage"
 for marker in \
   'EXPECTED_BINLOG_RETENTION=259200' \
   'EXPECTED_REDO_CAPACITY=536870912' \

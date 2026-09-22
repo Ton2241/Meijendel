@@ -39,33 +39,34 @@ validate_backup() {
 }
 
 validate_cleanup_targets() {
-  local file expected_hash expected_size actual_hash actual_size
-  while IFS='|' read -r file expected_size expected_hash; do
+  local file expected_size actual_size small_a small_b large_old retained
+  small_a="$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz"
+  large_old="$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz"
+  small_b="$MYSQL_BACKUP_DIR/meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz"
+  retained="$MYSQL_BACKUP_DIR/meijendel_before_891ca4e9bd51a2d9bfd825a733c79bb61473b4ee_20260921T113001Z.sql.gz"
+  while IFS='|' read -r file expected_size; do
     [[ -f "$file" && ! -L "$file" ]] || fail "opruimdoel ontbreekt of is symlink: $file"
     actual_size="$(stat -c %s "$file")"
     [[ "$actual_size" == "$expected_size" ]] ||
       fail "omvang wijkt af: $file|verwacht=$expected_size|actueel=$actual_size"
     gzip -t "$file" || fail "gzipcontrole faalde: $file"
-    actual_hash="$(sha256sum "$file" | awk '{print $1}')"
-    [[ "$actual_hash" == "$expected_hash" ]] ||
-      fail "archiefhash wijkt af: $file|verwacht=$expected_hash|actueel=$actual_hash|bytes=$actual_size"
   done <<EOF
-$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz|10897010|15ec41838e4cff2b9a344064e201d2f6063a039473ad9af78e63049bcea369c1
-$MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz|198382934|c0824c50f319b86a1cc05e88d2d376d162faba67b495d9463021696a72108ebe
-$MYSQL_BACKUP_DIR/meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz|10897010|15ec41838e4cff2b9a344064e201d2f6063a039473ad9af78e63049bcea369c1
+$small_a|10897010
+$large_old|198382934
+$small_b|10897010
+$retained|198382934
 EOF
+  cmp -s "$small_a" "$small_b" || fail "kleine reserves zijn niet byte-identiek"
+  cmp -s "$large_old" "$retained" || fail "grote oude reserve wijkt af van de te behouden reserve"
+  printf 'GROEN|mysql-opslag|duplicaten-byte-identiek|klein=%s|groot=%s\n' \
+    "$(sha256sum "$small_a" | awk '{print $1}')" \
+    "$(sha256sum "$large_old" | awk '{print $1}')"
   [[ -f "$STALE_SQL" && ! -L "$STALE_SQL" ]] || fail "ongebruikte lowercase SQL ontbreekt of is symlink"
   [[ "$(stat -c %s "$STALE_SQL")" == 82674275 ]] || fail "lowercase SQL-omvang wijkt af"
   [[ "$(sha256sum "$STALE_SQL" | awk '{print $1}')" == 087bd35db85918588c27e3c75bd7275fc78ded65be8f7df063220b843ae74cb4 ]] ||
     fail "lowercase SQL-hash wijkt af"
   ! docker inspect "$CONTAINER" shiny_meijendel | grep -Fq "$STALE_SQL" ||
     fail "lowercase SQL is nog als containermount in gebruik"
-  [[ -s "$MYSQL_BACKUP_DIR/meijendel_before_891ca4e9bd51a2d9bfd825a733c79bb61473b4ee_20260921T113001Z.sql.gz" ]] ||
-    fail "te behouden actuele logische back-up ontbreekt"
-  gzip -t "$MYSQL_BACKUP_DIR/meijendel_before_891ca4e9bd51a2d9bfd825a733c79bb61473b4ee_20260921T113001Z.sql.gz" ||
-    fail "te behouden actuele logische back-up is beschadigd"
-  [[ "$(sha256sum "$MYSQL_BACKUP_DIR/meijendel_before_891ca4e9bd51a2d9bfd825a733c79bb61473b4ee_20260921T113001Z.sql.gz" | awk '{print $1}')" == c0824c50f319b86a1cc05e88d2d376d162faba67b495d9463021696a72108ebe ]] ||
-    fail "te behouden actuele logische back-up heeft onverwachte archiefhash"
 }
 
 verify_runtime() {
