@@ -60,8 +60,9 @@ manifest_value() {
 restore_backup() {
   [[ -s "$backup_file" ]] || return 1
   printf 'ROLLBACK|meijendel-release|database=%s\n' "$backup_file" >&2
-  gzip -dc "$backup_file" | docker exec -i "$CONTAINER" sh -lc \
-    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
+  { printf 'SET SESSION sql_log_bin=0;\n'; gzip -dc "$backup_file"; } |
+    docker exec -i "$CONTAINER" sh -lc \
+      'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 }
 
 ensure_shiny_contract() {
@@ -316,9 +317,19 @@ mv "$backup_file.tmp" "$backup_file"
 chmod 600 "$backup_file"
 printf 'DATABASE_BACKUP=%s\n' "$backup_file"
 
+replica_connections="$(docker exec "$CONTAINER" sh -lc \
+  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT COUNT(*) FROM performance_schema.replication_connection_status"')"
+registered_replicas="$(docker exec "$CONTAINER" sh -lc \
+  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SHOW REPLICAS"')"
+binlog_dump_threads="$(docker exec "$CONTAINER" sh -lc \
+  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT COUNT(*) FROM information_schema.processlist WHERE COMMAND IN (\"Binlog Dump\",\"Binlog Dump GTID\")"')"
+[[ "$replica_connections" == 0 && -z "$registered_replicas" && "$binlog_dump_threads" == 0 ]] ||
+  die "volledige import zonder binlog is geblokkeerd omdat replicatie actief kan zijn"
+
 import_started=1
-docker exec -i "$CONTAINER" sh -lc \
-  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < "$SQL_CANDIDATE_FILE"
+{ printf 'SET SESSION sql_log_bin=0;\n'; cat "$SQL_CANDIDATE_FILE"; } |
+  docker exec -i "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
 
 docker exec "$CONTAINER" sh -lc '
   set -eu

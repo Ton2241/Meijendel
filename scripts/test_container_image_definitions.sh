@@ -8,6 +8,7 @@ mysql_971="$repo/deploy/mysql_image/Dockerfile.9.7.1"
 mysql_950="$repo/deploy/mysql_image/Dockerfile.9.5.0"
 mysql_rebuild="$repo/deploy/rebuild_mysql_image_vps.sh"
 meijendel_release="$repo/deploy/deploy_meijendel_release_vps_remote.sh"
+mysql_storage="$repo/deploy/optimize_mysql_storage_vps_remote.sh"
 
 [[ "$(grep -Ec '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS (builder|runtime)$' "$shiny")" -eq 2 ]]
 grep -Eq '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS builder$' "$shiny"
@@ -27,6 +28,25 @@ grep -Fq -- '--tmpfs /tmp:rw,noexec,nosuid,size=64m' "$meijendel_release"
 grep -Fq -- '-e MEIJENDEL_REQUIRE_PREBUILT_CACHE=1' "$meijendel_release"
 grep -Fq 'CACHE_CANDIDATE_STATUS=ready' "$meijendel_release"
 ! grep -Fq 'parse_meijendel_tables' "$meijendel_release"
+[[ "$(grep -Fc -- 'SET SESSION sql_log_bin=0' "$meijendel_release")" -eq 2 ]]
+grep -Fq 'volledige import zonder binlog is geblokkeerd omdat replicatie actief kan zijn' "$meijendel_release"
+[[ -x "$mysql_storage" ]]
+bash -n "$mysql_storage"
+for marker in \
+  'EXPECTED_BINLOG_RETENTION=259200' \
+  'EXPECTED_REDO_CAPACITY=536870912' \
+  'PURGE BINARY LOGS TO' \
+  'replication_connection_status' \
+  'Binlog Dump GTID' \
+  'Innodb_redo_log_resize_status' \
+  'vwg-m-baremetal-latest.tar.gz.sha256' \
+  'meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz' \
+  'meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz' \
+  'meijendel_before_7fac53274cb06162870f4db7f1453dcb15ae4423_20260920T221324Z.sql.gz' \
+  '/srv/vwgm/shiny/meijendel.sql' \
+  'geen-docker-prune'; do
+  grep -Fq -- "$marker" "$mysql_storage"
+done
 
 runtime_stage="$(sed -n '/ AS runtime$/,$p' "$shiny")"
 runtime_packages="$(printf '%s\n' "$runtime_stage" | sed -n '/^RUN apt-get update/,/&& apt-mark manual/p')"

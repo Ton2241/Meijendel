@@ -223,7 +223,8 @@ chmod 600 "$MIGRATION_DUMP"
 sudo install -d -o "$MYSQL_UID" -g "$MYSQL_GID" -m 0700 "$NEW_DATA"
 docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
   --env-file "$MYSQL_ENV" -p 127.0.0.1:3308:3306 \
-  -v "$NEW_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 >/dev/null
+  -v "$NEW_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 \
+  --binlog-expire-logs-seconds=259200 --innodb-redo-log-capacity=536870912 >/dev/null
 for attempt in $(seq 1 120); do
   candidate_version="$(docker exec "$CANDIDATE_CONTAINER" sh -c \
       'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT VERSION()"' 2>/dev/null || true)"
@@ -265,7 +266,8 @@ docker tag "$OLD_IMAGE_ID" vwgm-mysql:9.7.1-uid999-rollback
 docker tag "$CANDIDATE_ID" vwgm-mysql:9.7.1
 docker run -d --name "$ACTIVE_CONTAINER" --restart unless-stopped \
   --env-file "$MYSQL_ENV" -p 127.0.0.1:3307:3306 \
-  -v "$NEW_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 >/dev/null
+  -v "$NEW_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 \
+  --binlog-expire-logs-seconds=259200 --innodb-redo-log-capacity=536870912 >/dev/null
 for attempt in $(seq 1 60); do
   if docker exec "$ACTIVE_CONTAINER" sh -c \
       'mysqladmin ping -uroot -p"$MYSQL_ROOT_PASSWORD" --silent' >/dev/null 2>&1; then

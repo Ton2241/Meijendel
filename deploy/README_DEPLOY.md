@@ -103,6 +103,20 @@ gemaakte back-up automatisch teruggezet. Installeer of actualiseer deze actie
 via `VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh`; voeg de gebruiker
 niet opnieuw toe aan de Docker-groep.
 
+Volledige database-imports beginnen in dezelfde MySQL-sessie met
+`SET SESSION sql_log_bin=0`. Daardoor veroorzaakt een vervangende import van de
+canonieke iMac-database geen tweede gegevenskopie in de VPS-binlogs; normale
+productiewijzigingen blijven wel gelogd. MySQL-containerstarts leggen daarnaast
+drie dagen binlogretentie en 512 MiB redo-capaciteit vast.
+
+De eenmalige opslagcorrectie loopt uitsluitend via de gesloten gatewayactie
+`vwgm-admin mysql-storage-maintenance verify|apply`. `verify` controleert de
+actuele bare-metalback-up, checksum, volledige restorecheck, MySQL 9.7.1,
+afwezigheid van replicatie en alle exacte opruimdoelen. `apply` stelt de twee
+runtimewaarden persistent in, gebruikt `PURGE BINARY LOGS TO` tot het actuele
+binlog en verwijdert alleen de vooraf gehashte dubbele reserves en de ongebruikte
+lowercase SQL-kopie. Geen algemene Docker- of bestandsopruiming is toegestaan.
+
 De lokale runner laat de gatewayuitvoer eerst met modus `0700/0600` landen
 onder `/srv/vwgm/deploy-state/gateway-jobs/<operation-id>` en haalt log en
 exitstatus pas na voltooiing apart op. `preflight` is standaard begrensd

@@ -235,7 +235,8 @@ docker exec "$ACTIVE_CONTAINER" sh -c '
 install -d -o 1999 -g 1999 -m 0700 "$TEST_DATA"
 docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
   --env-file "$MYSQL_ENV" -p 127.0.0.1:3308:3306 \
-  -v "$TEST_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 >/dev/null
+  -v "$TEST_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 \
+  --binlog-expire-logs-seconds=259200 --innodb-redo-log-capacity=536870912 >/dev/null
 wait_mysql "$CANDIDATE_CONTAINER" || fail "proefcontainer werd niet gereed"
 gzip -dc "$TEST_DUMP" | docker exec -i "$CANDIDATE_CONTAINER" sh -c \
   'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
@@ -259,7 +260,8 @@ docker tag "$EXPECTED_OLD_IMAGE" "$PREVIOUS_TAG"
 docker tag "$CANDIDATE_ID" "$CANONICAL_TAG"
 docker run -d --name "$ACTIVE_CONTAINER" --restart unless-stopped \
   --env-file "$MYSQL_ENV" -p 127.0.0.1:3307:3306 \
-  -v "$MYSQL_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 >/dev/null
+  -v "$MYSQL_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 \
+  --binlog-expire-logs-seconds=259200 --innodb-redo-log-capacity=536870912 >/dev/null
 wait_mysql "$ACTIVE_CONTAINER" || fail "nieuwe actieve MySQL werd niet gereed"
 [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$CANDIDATE_ID" ]] || fail "actieve image wijkt af"
 [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$ACTIVE_CONTAINER")" == "$MYSQL_DATA" ]] || fail "actieve datamount wijkt af"

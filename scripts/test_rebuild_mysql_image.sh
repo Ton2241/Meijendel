@@ -17,6 +17,8 @@ for marker in \
   'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl'; do
   grep -Fq -- "$marker" "$local_script"
 done
+[[ "$(grep -Fc -- '--binlog-expire-logs-seconds=259200' "$remote_script")" -ge 2 ]]
+[[ "$(grep -Fc -- '--innodb-redo-log-capacity=536870912' "$remote_script")" -ge 2 ]]
 for marker in \
   '--pull --no-cache --load' 'vulnerability-audit-root --image' \
   'vwgm-baremetal-backup' 'restore_check_backup.sh' '--single-transaction' \
