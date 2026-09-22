@@ -13,6 +13,14 @@ MAX_BACKUP_AGE=129600
 
 fail() { printf 'BLOKKADE|mysql-opslag|%s\n' "$*" >&2; exit 1; }
 
+make_baremetal_backup() {
+  /usr/local/sbin/vwgm-baremetal-backup >/dev/null
+}
+
+smoke_public() {
+  curl -fsS --max-time 20 https://www.vwg-m.nl/welkom/index.asp >/dev/null
+}
+
 mysql_query() {
   docker exec "$CONTAINER" sh -c \
     'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD" -e "$1"' sh "$1"
@@ -106,14 +114,20 @@ apply_changes() {
     "$STALE_SQL"
 
   mysql_query 'SELECT 1' | grep -qx 1 || fail "MySQL-nacontrole faalde"
-  curl -fsS --max-time 20 https://www.vwg-m.nl/welkom/index.asp >/dev/null ||
+  smoke_public ||
     fail "publieke rooktest faalde"
-  /usr/local/sbin/vwgm-baremetal-backup >/dev/null
+  make_baremetal_backup
   validate_backup
   printf 'GROEN|mysql-opslag|structureel-opgelost|retentie=%s|redo=%s|binlog-voor=%s|binlog-na=%s\n' \
     "$retention" "$redo" "$before_bytes" "$after_bytes"
   printf 'GRENS|mysql-opslag|geen-docker-prune|geen-andere-backups-of-bestanden\n'
 }
+
+if [[ "${VWGM_MYSQL_STORAGE_LIBRARY_ONLY:-0}" == 1 ]]; then
+  [[ "${BASH_SOURCE[0]}" != "$0" && "$EUID" -ne 0 ]] ||
+    fail "testbibliotheekmodus is uitsluitend niet-root en sourced toegestaan"
+  return 0
+fi
 
 case "$stage" in
   verify) verify_runtime ;;

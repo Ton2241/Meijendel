@@ -9,6 +9,7 @@ mysql_950="$repo/deploy/mysql_image/Dockerfile.9.5.0"
 mysql_rebuild="$repo/deploy/rebuild_mysql_image_vps.sh"
 meijendel_release="$repo/deploy/deploy_meijendel_release_vps_remote.sh"
 mysql_storage="$repo/deploy/optimize_mysql_storage_vps_remote.sh"
+mysql_storage_test="$repo/scripts/test_mysql_storage_maintenance.sh"
 
 [[ "$(grep -Ec '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS (builder|runtime)$' "$shiny")" -eq 2 ]]
 grep -Eq '^FROM rocker/shiny@sha256:[0-9a-f]{64} AS builder$' "$shiny"
@@ -31,6 +32,7 @@ grep -Fq 'CACHE_CANDIDATE_STATUS=ready' "$meijendel_release"
 [[ "$(grep -Fc -- 'SET SESSION sql_log_bin=0' "$meijendel_release")" -eq 2 ]]
 grep -Fq 'volledige import zonder binlog is geblokkeerd omdat replicatie actief kan zijn' "$meijendel_release"
 [[ -x "$mysql_storage" ]]
+[[ -x "$mysql_storage_test" ]]
 bash -n "$mysql_storage"
 for marker in \
   'EXPECTED_BINLOG_RETENTION=259200' \
