@@ -39,13 +39,16 @@ validate_backup() {
 }
 
 validate_cleanup_targets() {
-  local file expected_hash expected_size actual_hash
+  local file expected_hash expected_size actual_hash actual_size
   while IFS='|' read -r file expected_size expected_hash; do
     [[ -f "$file" && ! -L "$file" ]] || fail "opruimdoel ontbreekt of is symlink: $file"
-    [[ "$(stat -c %s "$file")" == "$expected_size" ]] || fail "omvang wijkt af: $file"
+    actual_size="$(stat -c %s "$file")"
+    [[ "$actual_size" == "$expected_size" ]] ||
+      fail "omvang wijkt af: $file|verwacht=$expected_size|actueel=$actual_size"
     gzip -t "$file" || fail "gzipcontrole faalde: $file"
     actual_hash="$(gzip -dc "$file" | sha256sum | awk '{print $1}')"
-    [[ "$actual_hash" == "$expected_hash" ]] || fail "inhoudshash wijkt af: $file"
+    [[ "$actual_hash" == "$expected_hash" ]] ||
+      fail "inhoudshash wijkt af: $file|verwacht=$expected_hash|actueel=$actual_hash|bytes=$actual_size"
   done <<EOF
 $MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T185054Z.sql.gz|10897010|15ec41838e4cff2b9a344064e201d2f6063a039473ad9af78e63049bcea369c1
 $MYSQL_BACKUP_DIR/meijendel_before_4d68ffc79047b412c58f7e38974a8d1dedb7a4aa_20260920T193410Z.sql.gz|198382934|c0824c50f319b86a1cc05e88d2d376d162faba67b495d9463021696a72108ebe
