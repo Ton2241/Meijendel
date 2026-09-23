@@ -14,7 +14,8 @@ for marker in \
   'libcurl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
   'vulnerability-audit-root.*non-zero exit status 1' \
   '--finalize' 'FINALIZE_ONLY' \
-  'ssh -tt' 'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
+  'ssh -tt' 'ServerAliveInterval=30' 'ServerAliveCountMax=20' \
+  'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
   'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl'; do
   grep -Fq -- "$marker" "$local_script"
 done
@@ -43,6 +44,8 @@ grep -Fq 'CHECK TABLE' "$repo/deploy/validate_mysql_uid_migration_vps_remote.sh"
 ! grep -Fq 'mysqladmin ping' "$remote_script"
 ! grep -Fq '"vwgm-mysql:9.7.1 vwgm-shiny:latest "' "$remote_script"
 ! grep -Fq '/srv/vwgm/vwg-m-linux-app/scripts/smoke_vps.sh' "$remote_script"
+grep -Fq 'docker image rm "$CANDIDATE_TAG" >/dev/null 2>&1 || true' "$remote_script"
+! grep -Fq '[[ -z "$CANDIDATE_ID" ]] || docker image rm "$CANDIDATE_TAG"' "$remote_script"
 ! grep -Fq 'high=18|fix_beschikbaar=18' "$local_script" "$remote_script"
 ! grep -Fq 'pakket=openssl|' "$local_script" "$remote_script"
 ! grep -Eq 'docker (system|builder|image|container) prune' "$local_script" "$remote_script"

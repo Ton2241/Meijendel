@@ -134,7 +134,7 @@ rollback_or_cleanup() {
       wait_mysql "$ACTIVE_CONTAINER" || true
     fi
     docker rm -f "$CANDIDATE_CONTAINER" >/dev/null 2>&1 || true
-    [[ -z "$CANDIDATE_ID" ]] || docker image rm "$CANDIDATE_TAG" >/dev/null 2>&1 || true
+    docker image rm "$CANDIDATE_TAG" >/dev/null 2>&1 || true
     [[ -z "$CANDIDATE_ID" ]] || {
       if ! docker ps -a --format '{{.Image}}' | grep -Fxq "$CANDIDATE_ID"; then
         docker image rm "$CANDIDATE_ID" >/dev/null 2>&1 || true

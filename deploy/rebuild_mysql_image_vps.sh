@@ -135,7 +135,8 @@ scp -i "$SSH_KEY" "$DOCKERFILE" "$VPS:$REMOTE_STAGE/Dockerfile.9.7.1"
 scp -i "$SSH_KEY" "$REMOTE_HELPER" "$VPS:$REMOTE_STAGE/rebuild-mysql"
 scp -i "$SSH_KEY" "$VALIDATE_HELPER" "$VPS:$REMOTE_STAGE/validate-mysql"
 
-ssh -tt -i "$SSH_KEY" "$VPS" \
+ssh -tt -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
+  -i "$SSH_KEY" "$VPS" \
   "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' NEW_COMMIT='$DEPLOY_LOCAL_COMMIT' SHORT_COMMIT='$short_commit' FINALIZE_ONLY='$FINALIZE' bash '$REMOTE_STAGE/rebuild-mysql'"
 
 echo "== Onafhankelijke nacontrole =="
