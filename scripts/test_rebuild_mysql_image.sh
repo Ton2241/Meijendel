@@ -9,8 +9,9 @@ remote_script="$repo/deploy/rebuild_mysql_image_vps_remote.sh"
 bash -n "$local_script" "$remote_script"
 for marker in \
   'guard_baseline' 'guard_acquire_lock' 'container-status' 'backup-status' \
-  'critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
-  'libevent|installed=2.1.12-8.el9_4|fixed=2.1.13-1.el9_8' \
+  'critical=0|high=4|fix_beschikbaar=4|zonder_fix=0' \
+  'curl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
+  'libcurl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
   'vulnerability-audit-root.*non-zero exit status 1' \
   '--finalize' 'FINALIZE_ONLY' \
   'ssh -tt' 'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
@@ -27,7 +28,7 @@ for marker in \
   'smoke_status mysql-soortpagina' 'smoke_status leden-afgeschermd' \
   'smoke_status shiny-afgeschermd' 'smoke_status app-redirect' \
   'smoke_status hoofddomein-redirect' \
-  'critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
+  'critical=0|high=4|fix_beschikbaar=4|zonder_fix=0' \
   'critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   'validate_image_inventory' 'vwgm-shiny:rollback-*' \
   'docker rm "$PREVIOUS_CONTAINER"' 'docker image rm "$EXPECTED_OLD_IMAGE"' \

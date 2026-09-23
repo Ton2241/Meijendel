@@ -104,10 +104,12 @@ if [[ "$FINALIZE" -eq 1 ]]; then
     guard_die "finalisatiescan bevat een afwijking."
 else
 [[ "$baseline_status" -eq 1 ]] || guard_die "uitgangsscan heeft niet uitsluitend de verwachte aandachtstatus."
-grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=8|fix_beschikbaar=8|zonder_fix=0' \
-  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/8 repareerbare HIGH."
-grep -Fq 'pakket=libevent|installed=2.1.12-8.el9_4|fixed=2.1.13-1.el9_8' \
-  <<< "$baseline_audit" || guard_die "libevent-uitgangsversie of fixversie wijkt af."
+grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=4|fix_beschikbaar=4|zonder_fix=0' \
+  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/4 repareerbare HIGH."
+grep -Fq 'pakket=curl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
+  <<< "$baseline_audit" || guard_die "curl-uitgangsversie of fixversie wijkt af."
+grep -Fq 'pakket=libcurl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
+  <<< "$baseline_audit" || guard_die "libcurl-uitgangsversie of fixversie wijkt af."
 grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   <<< "$baseline_audit" || guard_die "Shiny-uitgangsscan wijkt af."
 ! grep -Eq '^URGENT\|' <<< "$baseline_audit" ||
