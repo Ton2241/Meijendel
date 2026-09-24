@@ -1,5 +1,13 @@
 # Besluiten
 
+- Meijendel gebruikt vanaf 24 september 2026 niet één, maar drie expliciet
+  verschillende ruimtelijke lagen. De ruime, door zee en benoemde wegen
+  begrensde projectlaag bepaalt de ruimtelijke toelating tot de database. De
+  officiële Natura 2000-laag beschrijft de juridische begrenzing. De SOVON-laag
+  beschrijft uitsluitend telplotdekking. Een record hoeft dus niet binnen
+  Natura 2000 of een SOVON-plot te liggen om tot het projectgebied te behoren.
+  Een bronpolygoon die het projectgebied slechts raakt, bewijst geen lokale
+  aanwezigheid en krijgt `ruimtelijk_dubbelzinnig`.
 - Het dashboard is leidend voor alle grafieken. De site mag geen eigen afwijkende grafieklogica of cijfers introduceren.
 - De lokale MySQL 9.7.1 gebruikt vanaf 12 september 2026 persistent 512 MiB
   `innodb_redo_log_capacity`. De eerdere 100 MiB raakte bij omvangrijke

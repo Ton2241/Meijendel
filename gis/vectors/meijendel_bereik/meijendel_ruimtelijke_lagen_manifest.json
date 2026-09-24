@@ -1,0 +1,58 @@
+{
+  "versie": "2026-09-24.1",
+  "aangemaakt_op": "2026-09-24",
+  "crs_epsg": 28992,
+  "projectgebied_oppervlakte_ha": 2382.988756,
+  "natura2000_oppervlakte_ha": 2878.215078,
+  "projectgebied_sha256_wkb": "3009dca51b01d29bc7677c0cb48c2d03942ef8af700865a940119cafddde98e2",
+  "natura2000_sha256_wkb": "eb42147cc1bda5f4e64e961d65af020e729ab73b9993606c6bc66c52266d7d59",
+  "bronnen": {
+    "nwb_wfs": {
+      "url": "https://service.pdok.nl/rws/nationaal-wegenbestand-wegen/wfs/v1_0",
+      "pagina_sha256": [
+        "8be6c85b7283864514e2f23aa2a8c3264a13da0d707065afb2c0e5eea32b8d26",
+        "981c425c00fbbafcceca1a2419704acfd45ff1d6a0b15bb8abad9a534d63545c",
+        "d294773453166cbd9f153b58918a08882c41dd4f34b1138a9461bf1bef778e22",
+        "d64b72c81b907451aa9fe0d7201f933d56eb1645672834d132c638bb4d627ece",
+        "07e10e574d8c841e7e49ff6c14833f97055dde4a78ad510a66788dae8457d3d2",
+        "ccaa685fae862d725e91894099be4a4bfc1ee4d90da30eff43f30ee536fda868",
+        "205372d62ad8c3c5294ee5d55b73886b11d2f9383db5217e3581edb763e8d233"
+      ]
+    },
+    "kustlijn": {
+      "url": "https://api.pdok.nl/kadaster/brt-zeegebieden/ogc/v1/collections/coastline/items",
+      "sha256": "236342ceebc53327411aef1ddb4eeb79a29af596e8e59bcee793a861d73c29ad"
+    },
+    "natura2000": {
+      "url": "https://api.pdok.nl/rvo/natura2000/ogc/v1/collections/natura2000/items",
+      "sha256": "48e66661372ff7f8c6f39c51bd7fd5089763af900d234be8372031905a16c00a",
+      "gebiedsnummer": 97
+    }
+  },
+  "grenswegen": [
+    "De Wassenaarse Slag",
+    "Katwijkseweg",
+    "Storm van 's-Gravesandeweg",
+    "Jagerslaan",
+    "Groot Haesebroekseweg",
+    "Buurtweg",
+    "Landscheidingsweg",
+    "Zwolsestraat",
+    "Groningsestraat",
+    "Gevers Deynootweg"
+  ],
+  "aansluitingen": [
+    {
+      "naam": "aansluiting Groot Haesebroekseweg - Buurtweg",
+      "afstand_m": 20.321
+    },
+    {
+      "naam": "aansluiting Landscheidingsweg - Zwolsestraat",
+      "afstand_m": 1383.968
+    },
+    {
+      "naam": "aansluiting Zwolsestraat - Groningsestraat",
+      "afstand_m": 56.145
+    }
+  ]
+}

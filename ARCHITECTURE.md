@@ -34,6 +34,17 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
 
+### Ruimtelijke afbakening
+
+De database onderscheidt vanaf 24 september 2026 drie onafhankelijke lagen:
+`meijendel_basisgebied` voor de ecologische toelatingspoort,
+`meijendel_natura2000` voor de officiële juridische begrenzing en
+`ndff_sovon_plot` voor de monitoringdekking. Geen van deze lagen vervangt een
+andere. `meijendel_waarneming_ruimtelijke_status` legt per bronrecord en
+regelversie vast of de locatie volledig binnen het projectgebied ligt, alleen
+de grens raakt, erbuiten ligt of niet als geometrie beschikbaar is. Zie
+`docs/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
+
 ### Beveiligde NDFF-laag
 
 ### Openbare NDFF- en vangblikbronnen

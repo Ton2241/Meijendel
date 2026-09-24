@@ -192,6 +192,16 @@ onvervaagde levering voor ticket 58679 staat daar fysiek gescheiden onder
 of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
 `docs/NDFF_SECURE_ONTVANGST.md`.
 
+### Ruimtelijke begrenzingen
+
+De ecologische projectgrens, de officiële Natura 2000-begrenzing en de 55
+SOVON-telplots zijn afzonderlijke, geversioneerde lagen. De projectgrens is de
+toelatingspoort voor gelokaliseerde records; Natura 2000 en SOVON voegen
+juridische respectievelijk monitoringcontext toe. Bouw en import staan in
+`gis/scripts/build_meijendel_ruimtelijke_lagen.py` en
+`gis/scripts/import_meijendel_ruimtelijke_lagen.py`; de werkwijze en
+interpretatieregels staan in `docs/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
+
 ### Duinvalleivegetatie 2001-2018
 
 De openbare Zenodo-reeks `10.5281/zenodo.21796880` staat als zelfstandige

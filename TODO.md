@@ -2,6 +2,18 @@
 
 ## Nu open
 
+### Ruimtelijke afbakening Meijendel
+
+- Afgerond op 24 september 2026: geversioneerde projectgrens, officiële Natura
+  2000-laag en bestaande SOVON-plotlaag zijn als drie onafhankelijke lagen
+  vastgelegd. Regelversie `meijendel-ruimtelijke-poort-v1` classificeert
+  1.649.085 bronrecords of meeteenheden zonder de brondata te wijzigen.
+- Controleer bij een volgende inhoudelijke kaartbespreking de gedocumenteerde
+  rechte aansluiting van 1.383,968 meter tussen Landscheidingsweg en
+  Zwolsestraat. De opgegeven wegassen sluiten daar niet op elkaar aan; de
+  verbinding is daarom zichtbaar als projectgrenssegment en niet als officiële
+  wegas vastgelegd.
+
 ### Toelatingsaudit externe ecologische bronlagen
 
 - Toets de bestaande externe bronlagen reproduceerbaar aan de regel dat iedere
@@ -28,6 +40,15 @@
   Deze tellingen zijn een audituitkomst, geen verwijderbesluit. Stel eerst vast
   of de geversioneerde SOVON-plotlaag ook voor iedere bron de bedoelde
   Meijendelbegrenzing is.
+- De tweede audit gebruikt daarom de nieuwe projectgrens in plaats van de
+  SOVON-laag als toelatingspoort. Van de 810.830 NDFF-records liggen er 591.651
+  geheel binnen, raken 146.320 de grens en liggen 72.859 erbuiten. Van de
+  600.959 BMP-punten liggen 597.888 binnen en 3.071 buiten; voor de 19.960
+  primaire SOVON-niet-vogelpunten zijn dat 19.945 en 15. Van de 2.007
+  provinciale PQ-opnamen liggen 1.363 binnen en 644 buiten. Alle 37.770
+  vangblikevents liggen binnen. Van de 71.155 territoriumregels horen er 66.697
+  bij een volledig binnenliggend plot en 4.458 bij een plot dat de projectgrens
+  kruist. Deze classificatie is nog geen verwijderbesluit.
 - Houd de openbare jachtspinmatrix 1969-1970 buiten de database zolang de 28
   genummerde locaties niet geografisch kunnen worden herleid. Onderzoek alleen
   nog of de oorspronkelijke publicatie, bijlagen of een Leids archief een
