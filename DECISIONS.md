@@ -807,3 +807,14 @@
   deze soorten bij wintertellingen bewust samenneemt. Zonder oorspronkelijke
   object-id's, geteld/niet-geteld-status en start-/stopredenen worden geen
   winterbezoeken, nullen of lokale trendmatrix afgeleid.
+- **24 september 2026 — analytische database en contextbronnen gescheiden.**
+  Meijendel is strikt analytisch. Niet-geolokaliseerbare Meijendelgegevens en
+  het Meijendel-literatuuroverzicht uit Zotero worden beheerd in
+  `Meijendel_bronnen` en mogen niet zonder afzonderlijk promotiebesluit in
+  analyses uit `Meijendel` worden gebruikt. De duinvalleireeks 2001–2018 (488
+  opnamen), `vogelstand_1924` (204 regels) en de jachtspinmatrix 1969–1970 (28
+  genummerde locaties, 3.337 exemplaren) zijn na tel-, hash-, foreign-key- en
+  herstelcontrole naar `Meijendel_bronnen` verplaatst. De Zotero-collectie
+  Meijendel levert 522 actuele Chicago-verwijzingen; bijlagen en lokale paden
+  worden niet opgeslagen. Promotie terug naar `Meijendel` vereist een
+  afzonderlijk besluit en een aantoonbare locatie per waarneming.

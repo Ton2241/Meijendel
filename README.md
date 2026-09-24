@@ -52,6 +52,10 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 
 - [`meijendel.sql`][6]
   De actuele SQL-dump van de database. De tabel `tellers` bevat daarin alleen `id` en de unieke `tellercode`; persoonsgegevens staan uitsluitend in de afgeschermde PostgreSQL-ledenadministratie.
+- `meijendel_bronnen.sql`
+  Afzonderlijke, niet-publieke dump met contextdatasets zonder voldoende
+  waarnemingslocatie en het Meijendel-literatuuroverzicht uit Zotero. Zie
+  [`docs/MEIJENDEL_BRONNEN.md`](docs/MEIJENDEL_BRONNEN.md).
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
@@ -59,6 +63,11 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 - [`kandidaatbronnen/`](kandidaatbronnen/)
   Openbare ecologische bronnen die inhoudelijk relevant zijn, maar nog niet aan
   de ruimtelijke toelatingsregel voor de Meijendel-database voldoen.
+
+Meijendel is strikt analytisch. Niet-geolokaliseerbare Meijendelgegevens en het
+Meijendel-literatuuroverzicht uit Zotero worden beheerd in Meijendel_bronnen en
+mogen niet zonder afzonderlijk promotiebesluit in analyses uit Meijendel worden
+gebruikt.
 
 ### Documentatie
 

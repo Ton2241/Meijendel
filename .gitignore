@@ -1,5 +1,6 @@
 .DS_Store
 Meijendel.sql
+meijendel_bronnen.sql
 .venv*/
 __pycache__/
 .Rhistory

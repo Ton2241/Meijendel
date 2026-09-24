@@ -1214,3 +1214,29 @@ Als je daarna een specifiek onderwerp wilt uitwerken, ga dan pas naar:
 ## 27. Samenvatting in één zin
 
 De Meijendel-database is een inhoudelijk rijke vogel- en omgevingsdatabase waarbij je de SQL-dump als bron gebruikt, de Shiny-app voor nieuwe analyses, de HTML voor overzicht en presentatie, en QGIS plus aanvullende scripts voor ruimtelijke en recreatieve uitbreidingen.
+
+## 28. Welke gegevens staan in Meijendel_bronnen?
+
+Meijendel is strikt analytisch. Niet-geolokaliseerbare Meijendelgegevens en het
+Meijendel-literatuuroverzicht uit Zotero worden beheerd in
+`Meijendel_bronnen` en mogen niet zonder afzonderlijk promotiebesluit in
+analyses uit `Meijendel` worden gebruikt.
+
+De contextdatabase bevat drie soorten informatie:
+
+- contextdatasets met een aantoonbare relatie tot Meijendel, maar zonder een
+  betrouwbare locatie per waarneming;
+- kandidaatbronnen waarvan de locatievertaling mogelijk later nog kan worden
+  gevonden;
+- Chicago-verwijzingen uit de Zotero-collectie `Meijendel`, zonder pdf's,
+  bijlagen of lokale opslagpaden.
+
+Onderzoekers raadplegen via het Analysecentrum alleen drie read-only views. De
+ruwe brontabellen zijn niet voor website- of Shiny-analyses beschikbaar. Een
+dataset kan pas worden gepromoveerd wanneer een afzonderlijk besluit, een
+reproduceerbare locatie-audit, bronherkomst en gebruiksvoorwaarden zijn
+vastgelegd. Synchroniseer Zotero met
+`gis/scripts/sync_zotero_meijendel_bronnen.py`; migreer of promoveer gegevens
+alleen met het gesloten manifest van
+`gis/scripts/migrate_meijendel_bronnen.py`. Beide databases worden afzonderlijk
+gedumpt en gezamenlijk op herstelbaarheid gecontroleerd.

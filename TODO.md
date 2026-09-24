@@ -2,6 +2,21 @@
 
 ## Nu open
 
+### Meijendel_bronnen
+
+- Lokale scheiding afgerond op 24 september 2026: 488 duinvalleiopnamen,
+  204 historische vogelregels en de jachtspinmatrix met 28 niet-herleidbare
+  locaties staan niet langer in de analytische database. De afzonderlijke
+  bron-database bevat daarnaast 522 actuele Zotero-verwijzingen.
+- Productiedeploy en release-registratie volgen pas na merge naar schone,
+  actuele `main`-branches en volledige VPS-preflight.
+- Verwijder eventuele bestaande documenten uit de literatuurcategorie van het
+  productieledenarchief pas nadat ieder bestand op titel of expliciete mapping
+  aan een Zotero-item is gekoppeld en de SHA-256 na de dry-run ongewijzigd is.
+- Een contextdataset wordt alleen naar `Meijendel` gepromoveerd na een apart
+  besluit en bewijs dat iedere waarneming daadwerkelijk in Meijendel ligt en
+  een beschikbare of betrouwbaar herleidbare locatie heeft.
+
 ### Ruimtelijke afbakening Meijendel
 
 - Afgerond op 24 september 2026: geversioneerde projectgrens, het uit officieel
