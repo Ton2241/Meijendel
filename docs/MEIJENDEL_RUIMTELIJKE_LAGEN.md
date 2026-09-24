@@ -6,20 +6,23 @@ De database gebruikt drie ruimtelijke lagen die niet als onderling
 uitwisselbare versies van Meijendel mogen worden behandeld.
 
 1. **Projectgebied.** Dit is de ruime ecologische begrenzing voor toelating tot
-   de Meijendel-database. De grens volgt de zee, De Wassenaarse Slag,
+   de Meijendel-database. De geografische grens volgt de zee, De Wassenaarse Slag,
    Katwijkseweg, Storm van 's-Gravesandeweg, Jagerslaan, Groot
    Haesebroekseweg, Buurtweg, Landscheidingsweg, Van Alkemadelaan, Zwolsestraat,
-   Groningsestraat en Gevers Deynootweg. Bebouwing binnen deze grens hoort bij
-   het onderzoekslandschap, ook wanneer zij buiten Natura 2000 ligt.
+   Groningsestraat en Gevers Deynootweg. Het basisgebied is deze geografische
+   grens verenigd met alle 55 actuele SOVON-kavels. Daardoor wordt geen kavel
+   door de toelatingsgrens afgesneden. Bebouwing binnen deze grens hoort bij het
+   onderzoekslandschap, ook wanneer zij buiten Natura 2000 ligt.
 2. **Natura 2000.** Dit is het Meijendel-deel van de officiële juridische
    begrenzing van gebied 97 Meijendel & Berkheide. De laag is afgeleid als de
-   doorsnede van de officiële PDOK-geometrie met het projectgebied. Berkheide,
-   ten noorden van De Wassenaarse Slag, valt daardoor buiten deze laag. De laag
-   bepaalt niet zelfstandig of een ecologische waarneming tot het project
-   behoort.
+   doorsnede van de officiële PDOK-geometrie met de geografische weg-/kustgrens,
+   dus vóór de plaatselijke verruiming voor SOVON-kavels. Berkheide, ten noorden
+   van De Wassenaarse Slag, valt daardoor buiten deze laag. De laag bepaalt niet
+   zelfstandig of een ecologische waarneming tot het project behoort.
 3. **SOVON-telplots.** Dit zijn geversioneerde onderzoeksgebieden. Zij kunnen
-   Natura 2000 en het projectgebied deels overschrijden. De laag beschrijft
-   monitoringdekking, niet de buitengrens van Meijendel.
+   Natura 2000 overschrijden, maar liggen door de verruiming volledig binnen
+   het projectgebied. De laag beschrijft monitoringdekking; zij bepaalt alleen
+   waar de buitenste toelatingsgrens plaatselijk is verruimd.
 
 ## Toelatingspoort per bronrecord
 
@@ -49,15 +52,21 @@ overschreven of hernoemd.
 
 `gis/scripts/build_meijendel_ruimtelijke_lagen.py` haalt de wegassen uit het
 Nationaal Wegenbestand, de gemiddelde hoogwaterlijn uit de BRT-zeegebieden en
-de officiële Natura 2000-geometrie uit de PDOK-service. Het script begrenst
-gebied 97 vervolgens met de projectgrens, zodat alleen Meijendel ten zuiden van
-De Wassenaarse Slag resteert. De uitvoer staat in:
+de officiële Natura 2000-geometrie uit de PDOK-service. Het leest daarnaast de
+actuele 55 SOVON-kavels uit de canonieke lokale database. Het basisgebied is de
+vereniging van de geografische grens en deze kavels. Gebied 97 wordt alleen met
+de geografische grens begrensd, zodat uitsluitend Meijendel ten zuiden van De
+Wassenaarse Slag resteert. De uitvoer staat in:
 
 `gis/vectors/meijendel_bereik/meijendel_ruimtelijke_lagen.gpkg`
 
 Het manifest naast het GeoPackage bevat de bron- en geometrie-hashes. Alle
-geometrieën gebruiken EPSG:28992. Versie `2026-09-24.2` omvat 2.412,044498 ha
-projectgebied en 1.862,802455 ha Natura 2000 binnen Meijendel. Het volledige
+geometrieën gebruiken EPSG:28992. Versie `2026-09-24.3` omvat 2.412,614256 ha
+projectgebied. Daarvan beslaat de oorspronkelijke geografische weg-/kustgrens
+2.412,044498 ha; de verruiming voor volledige SOVON-kavels voegt netto
+0,569758 ha toe. Een rekenmarge van één centimeter voorkomt dat gedeelde
+grenslijnen door afronding als buiten worden geclassificeerd. De Natura
+2000-laag binnen Meijendel blijft 1.862,802455 ha. Het volledige
 officiële gebied 97 van 2.878,215078 ha blijft uitsluitend als herkomstmaat in
 het manifest staan. De gedocumenteerde aansluitlijnen tussen niet-aansluitende
 wegassen blijven als afzonderlijke laag zichtbaar; zij zijn dus niet verstopt

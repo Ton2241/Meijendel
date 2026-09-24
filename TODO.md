@@ -7,13 +7,16 @@
 - Afgerond op 24 september 2026: geversioneerde projectgrens, het uit officieel
   gebied 97 afgeleide Natura 2000-deel van Meijendel en de bestaande
   SOVON-plotlaag zijn als drie onafhankelijke lagen vastgelegd. In versie
-  `2026-09-24.2` loopt de zuidgrens via Landscheidingsweg, Van Alkemadelaan en
-  Zwolsestraat; Berkheide ten noorden van De Wassenaarse Slag is uit de
-  Meijendel-laag verwijderd. Regelversie `meijendel-ruimtelijke-poort-v2`
-  classificeert dezelfde 1.649.085 bronrecords of meeteenheden opnieuw zonder
-  de brondata te wijzigen. De gewijzigde projectgrens versoepelt de
-  toelatingsstatus van 6.946 records; de afbakening van Natura 2000 wijzigt de
-  Natura-status van 47.755 records. Versie 1 blijft beschikbaar als auditspoor.
+  `2026-09-24.3` loopt de zuidgrens via Landscheidingsweg, Van Alkemadelaan en
+  Zwolsestraat en is de geografische weg-/kustgrens plaatselijk verruimd zodat
+  alle 55 SOVON-kavels volledig binnen het basisgebied liggen. Berkheide ten
+  noorden van De Wassenaarse Slag blijft uit de Meijendel-laag verwijderd.
+  Regelversie `meijendel-ruimtelijke-poort-v3` classificeert dezelfde 1.649.085
+  bronrecords of meeteenheden opnieuw zonder de brondata te wijzigen. Ten
+  opzichte van v2 worden 41 BMP-punten, één winterdagwaarneming, 137 openbare
+  NDFF-records en alle 2.535 voorheen grensrakende territoriumregels toegelaten;
+  265 NDFF-records verschuiven van buiten naar ruimtelijk dubbelzinnig.
+  Versies 1 en 2 blijven beschikbaar als auditspoor.
 
 ### Toelatingsaudit externe ecologische bronlagen
 
@@ -52,18 +55,18 @@
   kruist. Deze classificatie is nog geen verwijderbesluit.
 - **Nog uitvoeren:** breng de life-database in overeenstemming met de regel dat
   alleen aantoonbaar in Meijendel gelokaliseerde waarnemingen worden opgenomen.
-  Regelversie `meijendel-ruimtelijke-poort-v2` bevat nog 72.361 records die
-  aantoonbaar buiten het basisgebied liggen: 70.693 openbare NDFF-records uit
-  1900-2025, 1.009 BMP-dagwaarnemingen uit 2009-2025, 644 provinciale
-  PQ-opnamen uit 1981-2025, 14 primaire SOVON-bijvangsten uit 2009-2024 en één
-  winterdagwaarneming uit 2025. Daarnaast raken 146.337 NDFF-polygonen en 2.535
-  territoriumplots alleen de grens, zodat aanwezigheid binnen Meijendel niet
-  vaststaat. Voor 488 duinvalleiopnamen ontbreekt nog een geometrie; 204 regels
-  uit 1924 blijven uitsluitend historische context. Beoordeel dit eerst per
-  bron. Verplaats aantoonbare buitenliggers en niet-oplosbare dubbelzinnige
-  records daarna naar staging; laat records alleen in de life-database wanneer
-  aanvullende locatiegegevens de ligging binnen Meijendel aantonen. Verwijder
-  of verplaats vóór die bronaudit nog niets.
+  Regelversie `meijendel-ruimtelijke-poort-v3` bevat nog 72.053 records die
+  aantoonbaar buiten het basisgebied liggen: 70.427 openbare NDFF-records uit
+  1900-2025, 968 BMP-dagwaarnemingen uit 2009-2025, 644 provinciale PQ-opnamen
+  uit 1981-2025 en 14 primaire SOVON-bijvangsten uit 2009-2024. Daarnaast raken
+  146.466 NDFF-polygonen alleen de grens, zodat aanwezigheid binnen Meijendel
+  niet vaststaat. Alle territoriumplots liggen nu volledig binnen. Voor 488
+  duinvalleiopnamen ontbreekt nog een geometrie; 204 regels uit 1924 blijven
+  uitsluitend historische context. Beoordeel dit eerst per bron. Verplaats
+  aantoonbare buitenliggers en niet-oplosbare dubbelzinnige records daarna naar
+  staging; laat records alleen in de life-database wanneer aanvullende
+  locatiegegevens de ligging binnen Meijendel aantonen. Verwijder of verplaats
+  vóór die bronaudit nog niets.
 - Houd de openbare jachtspinmatrix 1969-1970 buiten de database zolang de 28
   genummerde locaties niet geografisch kunnen worden herleid. Onderzoek alleen
   nog of de oorspronkelijke publicatie, bijlagen of een Leids archief een

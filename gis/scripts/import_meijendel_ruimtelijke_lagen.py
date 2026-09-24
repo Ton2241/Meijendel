@@ -18,7 +18,7 @@ ROOT = Path(__file__).parents[2]
 DEFAULT_GPKG = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen.gpkg"
 DEFAULT_MANIFEST = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen_manifest.json"
 SCHEMA = ROOT / "gis" / "database" / "meijendel_ruimtelijke_lagen_schema.sql"
-RULE_VERSION = "meijendel-ruimtelijke-poort-v2"
+RULE_VERSION = "meijendel-ruimtelijke-poort-v3"
 
 
 def sha256_file(path: Path) -> str:

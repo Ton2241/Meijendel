@@ -559,13 +559,15 @@ MySQL:
 GIS / R-spatial:
 - gebruik voor ruimtelijke toelating tot de life-database de actuele laag
   `v_meijendel_basisgebied_actueel`; gebruik Natura 2000 niet als vervanging
-  van deze projectgrens en SOVON-plots uitsluitend als monitoringdekking
+  van deze projectgrens en SOVON-plots uitsluitend als monitoringdekking. Het
+  actuele basisgebied is de geografische weg-/kustgrens verenigd met alle 55
+  actuele SOVON-kavels, zodat ieder volledig kavel binnen de toelatingsgrens ligt
 - behandel een bronpolygoon die de projectgrens alleen raakt als
   `ruimtelijk_dubbelzinnig`: de intersectie is geen bewijs dat de soort binnen
   Meijendel is aangetroffen
 - raadpleeg bij gecombineerde analyses eerst
   `meijendel_waarneming_ruimtelijke_status` met regelversie
-  `meijendel-ruimtelijke-poort-v2`; verander de brongeometrie niet om een record
+  `meijendel-ruimtelijke-poort-v3`; verander de brongeometrie niet om een record
   alsnog binnen de grens te laten vallen
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`
 - gebruik geen Intel/Rosetta-R, oude Intel-builds of oude QGIS-bundels als basis voor nieuw spatial werk

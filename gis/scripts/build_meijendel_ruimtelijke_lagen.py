@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """Bouw de geversioneerde project- en Natura 2000-lagen voor Meijendel.
 
-De projectgrens volgt de door de VWG vastgestelde straatnamen en de officiële
-gemiddelde hoogwaterlijn. De Natura 2000-laag voor Meijendel is de doorsnede
-van officieel gebied 97 met dit projectgebied; Berkheide ten noorden van De
-Wassenaarse Slag valt er daardoor buiten. Alle geometrieën worden geschreven
-in EPSG:28992.
+De geografische projectgrens volgt de door de VWG vastgestelde straatnamen en
+de officiële gemiddelde hoogwaterlijn. Het basisgebied is de vereniging van
+die grens met alle actuele SOVON-kavels, zodat geen volledig kavel door de
+toelatingsgrens wordt doorsneden. De Natura 2000-laag voor Meijendel blijft de
+doorsnede van officieel gebied 97 met de geografische projectgrens; Berkheide
+ten noorden van De Wassenaarse Slag valt er daardoor buiten. Alle geometrieën
+worden geschreven in EPSG:28992.
 """
 
 from __future__ import annotations
@@ -15,6 +17,7 @@ import hashlib
 import heapq
 import json
 import math
+import subprocess
 import tempfile
 import urllib.parse
 import urllib.request
@@ -31,7 +34,9 @@ ogr.UseExceptions()
 ROOT = Path(__file__).parents[2]
 DEFAULT_OUTPUT = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen.gpkg"
 DEFAULT_MANIFEST = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen_manifest.json"
-VERSION = "2026-09-24.2"
+VERSION = "2026-09-24.3"
+PLOT_CONTAINMENT_MARGIN_M = 0.01
+BOUNDARY_CONTAINMENT_MARGIN_M = 0.01
 
 BOUNDARY_ROADS = (
     "De Wassenaarse Slag",
@@ -328,6 +333,83 @@ def build_project_boundary(
     return polygon, segment_rows
 
 
+def fetch_active_sovon_plots(mysql: str, login_path: str) -> tuple[list[ogr.Geometry], dict]:
+    """Lees de actuele, geversioneerde SOVON-kavels uit de canonieke database."""
+    query = """
+SELECT p.plot_id,v.plotversie_id,v.versie,v.bronbestand,
+       v.bronbestand_sha256,v.objectaantal,HEX(ST_AsWKB(p.plot_geometrie))
+FROM Meijendel.ndff_sovon_plot p
+JOIN Meijendel.ndff_sovon_plotversie v USING (plotversie_id)
+WHERE p.plotversie_id=(SELECT MAX(plotversie_id) FROM Meijendel.ndff_sovon_plotversie)
+ORDER BY p.plot_id;
+"""
+    result = subprocess.run(
+        [mysql, f"--login-path={login_path}", "--batch", "--raw", "--skip-column-names", "-e", query],
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr or result.stdout)
+    rows = [line.split("\t") for line in result.stdout.splitlines() if line.strip()]
+    if not rows:
+        raise ValueError("Geen actuele SOVON-kavels in Meijendel gevonden")
+    if any(len(row) != 7 for row in rows):
+        raise ValueError("De actuele SOVON-kavels konden niet eenduidig worden gelezen")
+    metadata_values = {tuple(row[1:6]) for row in rows}
+    if len(metadata_values) != 1:
+        raise ValueError("De actuele SOVON-kavels verwijzen niet naar één plotversie")
+    plotversie_id, versie, bronbestand, bronbestand_sha256, objectaantal = next(iter(metadata_values))
+    geometries: list[ogr.Geometry] = []
+    plot_ids: list[int] = []
+    for plot_id, *_metadata, wkb_hex in rows:
+        geometry = ogr.CreateGeometryFromWkb(bytes.fromhex(wkb_hex))
+        if geometry is None or geometry.IsEmpty() or not geometry.IsValid():
+            raise ValueError(f"SOVON-kavel {plot_id} heeft geen geldige geometrie")
+        geometry.AssignSpatialReference(rd_srs())
+        geometries.append(geometry)
+        plot_ids.append(int(plot_id))
+    expected = int(objectaantal)
+    if len(geometries) != expected:
+        raise ValueError(
+            f"Actuele plotversie vermeldt {expected} kavels; gelezen: {len(geometries)}"
+        )
+    return geometries, {
+        "plotversie_id": int(plotversie_id),
+        "versie": versie,
+        "bronbestand": bronbestand,
+        "bronbestand_sha256": bronbestand_sha256,
+        "objectaantal": expected,
+        "plot_ids": plot_ids,
+    }
+
+
+def expand_project_with_plots(
+    geographic_project: ogr.Geometry, plots: list[ogr.Geometry]
+) -> ogr.Geometry:
+    """Verruim de geografische grens tot ieder SOVON-kavel volledig binnen ligt."""
+    # Dezelfde minimale marge maakt ook vlakken die exact de geografische
+    # grens delen aantoonbaar volledig binnen in MySQL.
+    expanded = geographic_project.Buffer(BOUNDARY_CONTAINMENT_MARGIN_M)
+    for plot in plots:
+        # Een marge van één centimeter voorkomt dat rekenkundige restslivers op
+        # een gedeelde grens in MySQL ten onrechte als buiten worden gezien.
+        expanded = expanded.Union(plot.Buffer(PLOT_CONTAINMENT_MARGIN_M))
+        if expanded is None or expanded.IsEmpty():
+            raise ValueError("Vereniging met een SOVON-kavel leverde geen geometrie op")
+    if not expanded.IsValid():
+        expanded = expanded.MakeValid()
+    if expanded.GetGeometryName().upper() == "MULTIPOLYGON" and expanded.GetGeometryCount() == 1:
+        expanded = expanded.GetGeometryRef(0).Clone()
+    expanded.AssignSpatialReference(rd_srs())
+    if expanded.GetGeometryName().upper() != "POLYGON" or not expanded.IsValid():
+        raise ValueError("Het verruimde basisgebied is geen geldige enkelvoudige polygoon")
+    missing = [index for index, plot in enumerate(plots) if not (plot.Within(expanded) or plot.Equals(expanded))]
+    if missing:
+        raise ValueError(f"Niet alle SOVON-kavels liggen volledig binnen het basisgebied: {missing}")
+    return expanded
+
+
 def classify_relation(geometry: ogr.Geometry | None, area: ogr.Geometry) -> str:
     if geometry is None:
         return "geen_geometrie"
@@ -395,7 +477,10 @@ def write_geopackage(
             "versie": VERSION,
             "status": "vastgesteld_projectgebied",
             "oppervlakte_ha": project.GetArea() / 10000.0,
-            "omschrijving": "Ruime ecologische projectgrens; geen juridische of meetkundige telplotgrens.",
+            "omschrijving": (
+                "Ruime ecologische projectgrens: geografische weg-/kustgrens verenigd met "
+                "alle actuele SOVON-kavels; geen juridische grens."
+            ),
         },
         project,
     )
@@ -447,25 +532,35 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--manifest", type=Path, default=DEFAULT_MANIFEST)
+    parser.add_argument("--mysql", default="/usr/local/mysql/bin/mysql")
+    parser.add_argument("--login-path", default="meijendel_root")
     args = parser.parse_args()
 
     roads, road_hashes = fetch_selected_roads()
     coastline, coastline_hash = fetch_coastline()
     natura_officieel, natura_properties, natura_hash = fetch_natura2000()
-    project, segments = build_project_boundary(roads, coastline)
-    natura = clip_natura_to_project(natura_officieel, project)
+    geographic_project, segments = build_project_boundary(roads, coastline)
+    plots, plot_metadata = fetch_active_sovon_plots(args.mysql, args.login_path)
+    natura = clip_natura_to_project(natura_officieel, geographic_project)
+    project = expand_project_with_plots(geographic_project, plots)
     write_geopackage(args.output, project, natura, natura_properties, segments)
 
     manifest = {
         "versie": VERSION,
         "aangemaakt_op": date.today().isoformat(),
         "crs_epsg": 28992,
+        "geografisch_projectgebied_oppervlakte_ha": round(
+            geographic_project.GetArea() / 10000.0, 6
+        ),
         "projectgebied_oppervlakte_ha": round(project.GetArea() / 10000.0, 6),
         "natura2000_oppervlakte_ha": round(natura.GetArea() / 10000.0, 6),
         "natura2000_gebied97_officieel_oppervlakte_ha": round(
             natura_officieel.GetArea() / 10000.0, 6
         ),
         "projectgebied_sha256_wkb": hashlib.sha256(bytes(project.ExportToWkb())).hexdigest(),
+        "geografisch_projectgebied_sha256_wkb": hashlib.sha256(
+            bytes(geographic_project.ExportToWkb())
+        ).hexdigest(),
         "natura2000_sha256_wkb": hashlib.sha256(bytes(natura.ExportToWkb())).hexdigest(),
         "bronnen": {
             "nwb_wfs": {"url": NWB_WFS, "pagina_sha256": road_hashes},
@@ -474,9 +569,17 @@ def main() -> int:
                 "url": NATURA_API,
                 "sha256": natura_hash,
                 "gebiedsnummer": 97,
-                "afleiding": "doorsnede met projectgebied; Berkheide ten noorden van De Wassenaarse Slag uitgesloten",
+                "afleiding": (
+                    "doorsnede met geografische weg-/kustgrens; Berkheide ten "
+                    "noorden van De Wassenaarse Slag uitgesloten"
+                ),
             },
+            "sovon_plots": plot_metadata,
         },
+        "afleiding_basisgebied": (
+            "vereniging van de geografische weg-/kustgrens met alle actuele SOVON-kavels"
+        ),
+        "rekenkundige_containment_marge_m": BOUNDARY_CONTAINMENT_MARGIN_M,
         "grenswegen": list(BOUNDARY_ROADS),
         "aansluitingen": [
             {

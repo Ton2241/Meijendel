@@ -71,7 +71,16 @@ def main() -> int:
     meijendel_natura = module.clip_natura_to_project(official_natura, area)
     assert round(meijendel_natura.GetArea(), 6) == 25.0
     assert meijendel_natura.Within(area)
-    assert module.VERSION == "2026-09-24.2"
+
+    plot_west = polygon(-2, 2, 2, 4)
+    plot_north = polygon(6, 8, 8, 12)
+    expanded = module.expand_project_with_plots(area, [plot_west, plot_north])
+    assert round(area.GetArea(), 6) == 100.0
+    assert 108.0 < expanded.GetArea() < 109.0
+    assert area.Within(expanded)
+    assert plot_west.Within(expanded)
+    assert plot_north.Within(expanded)
+    assert module.VERSION == "2026-09-24.3"
 
     sql = " ".join(SCHEMA.read_text(encoding="utf-8").casefold().split())
     for table in (
@@ -97,12 +106,14 @@ def main() -> int:
     assert "Projectgebied" in documentation
     assert "Natura 2000" in documentation
     assert "SOVON" in documentation
+    assert "alle 55" in documentation
     assert "toelatingspoort" in documentation
     assert "geen bewijs" in documentation
 
     importer = IMPORTER.read_text(encoding="utf-8")
-    assert 'RULE_VERSION = "meijendel-ruimtelijke-poort-v2"' in importer
+    assert 'RULE_VERSION = "meijendel-ruimtelijke-poort-v3"' in importer
     assert "meijendel-ruimtelijke-poort-v1" not in importer
+    assert "meijendel-ruimtelijke-poort-v2" not in importer
     for source in (
         "ndff_open_waarneming",
         "dagwaarnemingen_bmp",
