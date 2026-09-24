@@ -111,6 +111,17 @@ def main() -> int:
         assert sum(1 for _ in tsv["cover"].open(encoding="utf-8")) == 7
         assert sum(1 for _ in tsv["soil"].open(encoding="utf-8")) == 20
 
+        load = module.load_sql(
+            tsv,
+            Path(tmp),
+            {"metadata": "a" * 64, "matrix": "b" * 64, "script": "c" * 64},
+        )
+        assert "USE Meijendel_bronnen" in load
+        assert "USE Meijendel;" not in load
+        assert "bron_id" in load
+        assert "duinvallei-vegetatie-2001-2018" in load
+        assert module.DATABASE == "Meijendel_bronnen"
+
     print("OK: duinvalleivegetatie-importlogica")
     return 0
 

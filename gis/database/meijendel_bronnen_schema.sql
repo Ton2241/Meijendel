@@ -133,6 +133,19 @@ CREATE TABLE IF NOT EXISTS jachtspin_vangst (
     REFERENCES jachtspin_soort (bron_id, soort_code) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS vogelstand_1924 (
+  id INT NOT NULL,
+  bron_id BIGINT UNSIGNED NOT NULL,
+  soort_id_bron INT NULL,
+  soort_naam VARCHAR(100) NULL,
+  latijnse_naam VARCHAR(255) NULL,
+  beschrijving TEXT NOT NULL,
+  PRIMARY KEY (id),
+  KEY ix_vogelstand_1924_bron (bron_id),
+  CONSTRAINT fk_vogelstand_1924_bron FOREIGN KEY (bron_id)
+    REFERENCES bron (bron_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE OR REPLACE VIEW v_bron_catalogus AS
 SELECT
   b.bron_id,

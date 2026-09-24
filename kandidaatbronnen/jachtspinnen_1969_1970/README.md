@@ -29,12 +29,16 @@ afkomstig zijn.
 De packagebestanden zijn ongewijzigd overgenomen uit de officiële CRAN-
 bronpakketten. `SHA256SUMS` legt hun hashes en die van de afgeleide CSV vast.
 
-## Waarom geen database-import
+## Opslag als contextbron
 
 De openbare matrix bevat alleen locatienummers 1-28. Coördinaten, geometrieën
 of een betrouwbare vertaaltabel naar herkenbare plekken in Meijendel ontbreken.
 Daarom is niet per waarneming vast te stellen waar zij in Meijendel is gedaan.
-De bron voldoet niet aan de ruimtelijke toelatingsregel en blijft buiten MySQL.
+De bron voldoet niet aan de ruimtelijke toelatingsregel van de analytische
+database `Meijendel`. De matrix wordt daarom uitsluitend als contextbron in
+`Meijendel_bronnen` opgeslagen. Zij wordt niet opgenomen in analytische views
+en locatienummers mogen niet als ruimtelijke waarnemingen worden behandeld.
 
-Import kan pas opnieuw worden beoordeeld wanneer de oorspronkelijke publicatie,
-bijlagen of een Leids archief de 28 locaties betrouwbaar geografisch ontsluiten.
+Opname in `Meijendel` kan pas opnieuw worden beoordeeld wanneer de
+oorspronkelijke publicatie, bijlagen of een Leids archief de 28 locaties
+betrouwbaar geografisch ontsluiten.

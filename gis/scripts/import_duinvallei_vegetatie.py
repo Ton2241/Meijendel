@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Importeer de openbare duinvalleivegetatiereeks 2001-2018 in Meijendel."""
+"""Importeer de niet-geolokaliseerde duinvalleireeks in Meijendel_bronnen."""
 
 from __future__ import annotations
 
@@ -14,7 +14,10 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
+CORE_SCHEMA = ROOT / "gis" / "database" / "meijendel_bronnen_schema.sql"
 SCHEMA = ROOT / "gis" / "database" / "duinvallei_vegetatie_schema.sql"
+DATABASE = "Meijendel_bronnen"
+BRON_SLEUTEL = "duinvallei-vegetatie-2001-2018"
 IMPORT_VERSION = "duinvallei-vegetatie-v1"
 DATASET_TITLE = "21 years of restoration of dune slack communities after 42 years of river water infiltration in Meijendel, the Netherlands"
 DATASET_DOI = "10.5281/zenodo.21796880"
@@ -229,16 +232,33 @@ def sql_quote(value: str) -> str:
 def load_sql(paths: dict[str, Path], source_dir: Path, hashes: dict[str, str]) -> str:
     files = {key: str(path.resolve()).replace("\\", "\\\\").replace("'", "''") for key, path in paths.items()}
     return f"""
-USE Meijendel;
+USE {DATABASE};
 START TRANSACTION;
+INSERT INTO bron (
+  bron_sleutel,bron_type,titel,omschrijving,bronorganisatie,jaar_van,jaar_tot,
+  soortgroep,geografische_status,geografische_toelichting,analyse_status,
+  rechten_status,regelversie
+) VALUES (
+  {sql_quote(BRON_SLEUTEL)},'dataset','Duinvalleivegetatie Meijendel 2001-2018',
+  'Volledige soortenmatrix en bodemmetingen op 186 stabiele locatiecodes.',
+  'Openbare onderzoeksdataset',2001,2018,'Vaatplanten en vegetatie',
+  'niet_geolokaliseerd',
+  'De 488 opnamen hebben stabiele locatiecodes, maar nog geen geometrie per opname.',
+  'context_alleen','geregistreerde_onderzoekers','meijendel-bronnen-v1'
+)
+ON DUPLICATE KEY UPDATE titel=VALUES(titel),omschrijving=VALUES(omschrijving),
+  geografische_status=VALUES(geografische_status),
+  geografische_toelichting=VALUES(geografische_toelichting),
+  analyse_status=VALUES(analyse_status),regelversie=VALUES(regelversie);
+SET @bron_id = (SELECT bron_id FROM bron WHERE bron_sleutel={sql_quote(BRON_SLEUTEL)});
 INSERT INTO duinvallei_import_batch (
-  dataset_titel,dataset_doi,dataset_publicatiedatum,
+  bron_id,dataset_titel,dataset_doi,dataset_publicatiedatum,
   metadata_bestand,metadata_bronbestand_sha256,
   matrix_bestand,matrix_bronbestand_sha256,
   analysescript_bestand,analysescript_bronbestand_sha256,
   bronopname_aantal,taxon_aantal,importversie
 ) VALUES (
-  {sql_quote(DATASET_TITLE)},{sql_quote(DATASET_DOI)},{sql_quote(DATASET_DATE)},
+  @bron_id,{sql_quote(DATASET_TITLE)},{sql_quote(DATASET_DOI)},{sql_quote(DATASET_DATE)},
   {sql_quote(METADATA_FILE)},{sql_quote(hashes['metadata'])},
   {sql_quote(MATRIX_FILE)},{sql_quote(hashes['matrix'])},
   {sql_quote(SCRIPT_FILE)},{sql_quote(hashes['script'])},
@@ -310,7 +330,7 @@ COMMIT;
 
 def live_counts(client: Path, args: list[str]) -> dict[str, int]:
     query = """
-USE Meijendel;
+USE Meijendel_bronnen;
 SELECT 'batches',COUNT(*) FROM duinvallei_import_batch
 UNION ALL SELECT 'plots',COUNT(*) FROM duinvallei_plot
 UNION ALL SELECT 'observations',COUNT(*) FROM duinvallei_opname
@@ -379,11 +399,12 @@ def main() -> int:
     if options.dry_run:
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0
+    run_mysql(options.mysql_client, connection, CORE_SCHEMA.read_text(encoding="utf-8"))
     run_mysql(options.mysql_client, connection, SCHEMA.read_text(encoding="utf-8"))
     existing = run_mysql(
         options.mysql_client,
         connection,
-        "USE Meijendel; SELECT COUNT(*) FROM duinvallei_import_batch "
+        f"USE {DATABASE}; SELECT COUNT(*) FROM duinvallei_import_batch "
         f"WHERE metadata_bronbestand_sha256={sql_quote(hashes['metadata'])} "
         f"AND matrix_bronbestand_sha256={sql_quote(hashes['matrix'])} "
         f"AND analysescript_bronbestand_sha256={sql_quote(hashes['script'])};",

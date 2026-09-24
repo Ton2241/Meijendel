@@ -1,7 +1,12 @@
-USE Meijendel;
+CREATE DATABASE IF NOT EXISTS Meijendel_bronnen
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_0900_ai_ci;
+
+USE Meijendel_bronnen;
 
 CREATE TABLE IF NOT EXISTS duinvallei_import_batch (
   batch_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  bron_id BIGINT UNSIGNED NOT NULL,
   dataset_titel VARCHAR(500) NOT NULL,
   dataset_doi VARCHAR(128) NOT NULL,
   dataset_publicatiedatum DATE NOT NULL,
@@ -16,11 +21,14 @@ CREATE TABLE IF NOT EXISTS duinvallei_import_batch (
   importversie VARCHAR(64) NOT NULL,
   geimporteerd_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (batch_id),
+  KEY ix_duinvallei_batch_bron (bron_id),
   UNIQUE KEY uq_duinvallei_batch_bron (
     metadata_bronbestand_sha256,
     matrix_bronbestand_sha256,
     analysescript_bronbestand_sha256
-  )
+  ),
+  CONSTRAINT fk_duinvallei_batch_bron FOREIGN KEY (bron_id)
+    REFERENCES bron (bron_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS duinvallei_plot (
