@@ -56,6 +56,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
   Korte projectingang.
+- [`kandidaatbronnen/`](kandidaatbronnen/)
+  Openbare ecologische bronnen die inhoudelijk relevant zijn, maar nog niet aan
+  de ruimtelijke toelatingsregel voor de Meijendel-database voldoen.
 
 ### Documentatie
 

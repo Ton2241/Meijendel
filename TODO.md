@@ -9,6 +9,25 @@
   of betrouwbaar herleidbare locatie moet hebben. Verwijder of verplaats niets
   voordat per bron de gevolgen en aantallen zijn vastgesteld en afzonderlijk
   zijn besloten.
+- Eerste audit op 24 september 2026:
+  - twee vangblikvangsten uit 1959 hebben geen bestaand event en daardoor geen
+    locatie; zij staan al als verweesd en uitgesloten geregistreerd;
+  - 91.726 van 810.830 openbare NDFF-records liggen volgens
+    `ndff-protocolkwaliteit-v1` geheel buiten de geversioneerde SOVON-plotlaag;
+    23.061 raken één plot slechts gedeeltelijk en 330.189 raken meerdere plots;
+  - 2.524 van 600.959 BMP-dagwaarnemingen uit 2009-2025 en 38 van 19.960
+    primaire SOVON-niet-vogelregels uit 2009-2024 liggen met hun punt buiten
+    alle 55 geversioneerde SOVON-plots;
+  - 671 van 2.007 provinciale PQ-opnamen uit 1981-2025, samen goed voor 17.040
+    taxonregels, liggen met hun punt buiten alle 55 geversioneerde SOVON-plots;
+  - de 488 duinvalleiopnamen uit 2001, 2008 en 2018 hebben stabiele plotcodes en
+    een benoemd deelgebied, maar nog geen coördinaten of geometrie in de bron;
+  - `vogelstand_1924` bevat 204 historische soort-/tekstregels en geen
+    gestructureerde locatie per regel. Behandel deze tabel als historische
+    context en niet als genormaliseerde waarnemingslaag.
+  Deze tellingen zijn een audituitkomst, geen verwijderbesluit. Stel eerst vast
+  of de geversioneerde SOVON-plotlaag ook voor iedere bron de bedoelde
+  Meijendelbegrenzing is.
 - Houd de openbare jachtspinmatrix 1969-1970 buiten de database zolang de 28
   genummerde locaties niet geografisch kunnen worden herleid. Onderzoek alleen
   nog of de oorspronkelijke publicatie, bijlagen of een Leids archief een
