@@ -5,10 +5,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SQL_FILE="$REPO_DIR/meijendel.sql"
+SOURCES_SQL_FILE="$REPO_DIR/meijendel_bronnen.sql"
 MYSQL_HOST="${MYSQL_HOST:-127.0.0.1}"
 MYSQL_PORT="${MYSQL_PORT:-3306}"
 MYSQL_USER="${MYSQL_USER:-root}"
 MYSQL_DATABASE="${MYSQL_DATABASE:-meijendel}"
+MYSQL_SOURCES_DATABASE="${MEIJENDEL_SOURCES_MYSQL_DATABASE:-Meijendel_bronnen}"
 WINTER_MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 
 if [[ -d /usr/local/mysql/bin ]]; then
@@ -55,6 +57,33 @@ mysqldump --no-defaults \
   --triggers \
   --events \
   "$MYSQL_DATABASE" > "$SQL_FILE"
+
+log "Maak afzonderlijke bron-dump: $SOURCES_SQL_FILE"
+mysqldump --no-defaults \
+  --no-tablespaces \
+  --complete-insert \
+  --single-transaction \
+  --set-gtid-purged=OFF \
+  --protocol=tcp \
+  --host="$MYSQL_HOST" \
+  --port="$MYSQL_PORT" \
+  -u"$MYSQL_USER" -p \
+  --routines \
+  --triggers \
+  --events \
+  "$MYSQL_SOURCES_DATABASE" > "$SOURCES_SQL_FILE"
+
+for required in \
+  'CREATE TABLE `bron`' \
+  'CREATE TABLE `literatuur`' \
+  'VIEW `v_bron_catalogus`' \
+  'VIEW `v_literatuur_overzicht`' \
+  'VIEW `v_contextdataset_overzicht`'; do
+  grep -qF "$required" "$SOURCES_SQL_FILE" || {
+    printf 'FOUT: vereist bronobject ontbreekt in %s: %s\n' "$SOURCES_SQL_FILE" "$required" >&2
+    exit 1
+  }
+done
 
 log "Controleer weerdata-eenhedencontract"
 MEIJENDEL_MYSQL_DATABASE="$MYSQL_DATABASE" \

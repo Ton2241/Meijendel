@@ -15,7 +15,9 @@ GLOBAL_LOCK="$STATE_DIR/production.lock"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
+SOURCES_SQL_LOCAL="$LOCAL_REPO/meijendel_bronnen.sql"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
+SOURCES_SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_bronnen_deploy_$$.sql"
 
 if [[ -d /usr/local/mysql/bin ]]; then
   PATH="/usr/local/mysql/bin:$PATH"
@@ -63,7 +65,7 @@ release_lock() {
     LOCK_HELD=0
   fi
 }
-cleanup() { rm -f "$SQL_DEPLOY"; release_lock; }
+cleanup() { rm -f "$SQL_DEPLOY" "$SOURCES_SQL_DEPLOY"; release_lock; }
 trap cleanup EXIT INT TERM
 
 while (($#)); do
@@ -135,6 +137,11 @@ for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/; do
     exit 1
   fi
 done
+sources_code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve www.vwg-m.nl:443:127.0.0.1 'https://www.vwg-m.nl/Meijendel_bronnen.sql')"
+if [[ "$sources_code" != "403" && "$sources_code" != "404" ]]; then
+  echo "FOUT: verwacht 403 of 404 voor https://www.vwg-m.nl/Meijendel_bronnen.sql, kreeg $sources_code" >&2
+  exit 1
+fi
 REMOTE
 }
 
@@ -162,6 +169,7 @@ git merge-base --is-ancestor "$DEPLOYED_COMMIT" "$LOCAL_COMMIT" || \
 printf 'Productiecommit: %s\n' "$DEPLOYED_COMMIT"
 
 need_file "$SQL_LOCAL"
+need_file "$SOURCES_SQL_LOCAL"
 need_file "$LOCAL_REPO/deploy/check_weer_contract.sh"
 need_file "$LOCAL_REPO/R/check_shiny_dashboard_parity.R"
 need_file "$LOCAL_REPO/R/check_wintertelling_output.R"
@@ -193,16 +201,29 @@ LC_ALL=C awk '
   END { if (!seen || !done || !has_id || !has_code || bad) exit 1 }
 ' "$SQL_LOCAL" || die "tellers ontbreekt of bevat meer dan id en tellercode."
 
+log "Controleer afzonderlijke bron-dump"
+for required in \
+  'CREATE TABLE `bron`' \
+  'CREATE TABLE `literatuur`' \
+  'VIEW `v_bron_catalogus`' \
+  'VIEW `v_literatuur_overzicht`' \
+  'VIEW `v_contextdataset_overzicht`'; do
+  grep -qF "$required" "$SOURCES_SQL_LOCAL" ||
+    die "vereist bronobject ontbreekt in bron-dump: $required"
+done
+
 log "Maak deploydump zonder historische PWA-objecten"
 LC_ALL=C awk '
   function sensitive(line) { return line ~ /`pwa_[^`]*`/ }
   function section_start(line) { return line ~ /^-- (Table structure for table|Dumping data for table|Temporary view structure for view|Final view structure for view) / }
   { if (section_start($0)) skip = sensitive($0); if (!skip) print }
 ' "$SQL_LOCAL" > "$SQL_DEPLOY"
+cp -p "$SOURCES_SQL_LOCAL" "$SOURCES_SQL_DEPLOY"
 
 echo "== Release-/afhankelijkheidsmanifest =="
 printf '%s\n' \
   "meijendel.sql -> $REMOTE_DATA/Meijendel.sql" \
+  'Meijendel_bronnen.sql -> $REMOTE_DATA/Meijendel_bronnen.sql' \
   "deploy/shiny_image/ -> $REMOTE_SHINY/" \
   "shiny_meijendel/ -> $REMOTE_SHINY/shiny_meijendel/" \
   "R/ -> $REMOTE_SHINY/R/" \
@@ -231,12 +252,14 @@ run_rsync() {
 
 sync_release() {
   local sql_remote="$REMOTE_DATA/Meijendel.sql.next-$LOCAL_COMMIT"
+  local sources_sql_remote="$REMOTE_DATA/Meijendel_bronnen.sql.next-$LOCAL_COMMIT"
   if [[ "$SYNC_MODE" == "apply" ]]; then
     remote "mkdir -p '$REMOTE_DATA' '$REMOTE_SHINY' '$REMOTE_WWW' '$REMOTE_APP/data' '$REMOTE_BASE/app-home'"
   fi
   run_rsync "$SQL_DEPLOY" "$VPS:$sql_remote"
+  run_rsync "$SOURCES_SQL_DEPLOY" "$VPS:$sources_sql_remote"
   if [[ "$SYNC_MODE" == "apply" ]]; then
-    remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
+    remote "mv '$sql_remote' '$REMOTE_DATA/Meijendel.sql' && mv '$sources_sql_remote' '$REMOTE_DATA/Meijendel_bronnen.sql' && chmod 600 '$REMOTE_DATA/Meijendel_bronnen.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_SHINY/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_WWW/Meijendel.sql' && ln -sfn '$REMOTE_DATA/Meijendel.sql' '$REMOTE_APP/data/Meijendel.sql'"
   fi
   [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
   [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude '.DS_Store' --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
@@ -277,6 +300,7 @@ test -w "$REMOTE_BASE/backups"
 docker exec "$container" sh -lc '
   test -n "$MYSQL_ROOT_PASSWORD"
   test -n "$MYSQL_DATABASE"
+  test -n "$MYSQL_USER"
   mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT 1" "$MYSQL_DATABASE" >/dev/null
 '
 df -Pk "$REMOTE_BASE/backups" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }'
@@ -304,22 +328,42 @@ container="meijendel-mysql"
 backup_dir="$REMOTE_BASE/backups/meijendel-mysql"
 backup_file="$backup_dir/meijendel_before_${LOCAL_COMMIT}_$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
 sql_file="$REMOTE_DATA/Meijendel.sql"
+sources_database="Meijendel_bronnen"
+sources_sql_file="$REMOTE_DATA/Meijendel_bronnen.sql"
 
 docker ps --format '{{.Names}}' | grep -qx "$container"
 test -s "$sql_file"
+test -s "$sources_sql_file"
 grep -q -- '-- Dump completed on ' "$sql_file"
 grep -q 'CREATE TABLE `pq_vegetatie_pq`' "$sql_file"
 grep -q 'CREATE TABLE `pq_vegetatie_import`' "$sql_file"
 grep -q '`srtnum`' "$sql_file"
 grep -q '`plabed_code`' "$sql_file"
 grep -q 'VIEW `website_plot_vegetatie_jaar`' "$sql_file"
+grep -q 'CREATE TABLE `bron`' "$sources_sql_file"
+grep -q 'CREATE TABLE `literatuur`' "$sources_sql_file"
+grep -q 'VIEW `v_bron_catalogus`' "$sources_sql_file"
+grep -q 'VIEW `v_literatuur_overzicht`' "$sources_sql_file"
+grep -q 'VIEW `v_contextdataset_overzicht`' "$sources_sql_file"
 mkdir -p "$backup_dir"
 
-docker exec "$container" sh -lc '
-  exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
-    --no-tablespaces --single-transaction --set-gtid-purged=OFF \
-    --routines --triggers --events --add-drop-database --databases "$MYSQL_DATABASE"
-' | gzip -c > "$backup_file.tmp"
+sources_exists="$(docker exec "$container" sh -lc \
+  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT COUNT(*) FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '\''Meijendel_bronnen'\''"')"
+if [[ "$sources_exists" == "1" ]]; then
+  docker exec "$container" sh -lc '
+    exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
+      --no-tablespaces --single-transaction --set-gtid-purged=OFF \
+      --routines --triggers --events --add-drop-database \
+      --databases "$MYSQL_DATABASE" Meijendel_bronnen
+  ' | gzip -c > "$backup_file.tmp"
+else
+  docker exec "$container" sh -lc '
+    exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
+      --no-tablespaces --single-transaction --set-gtid-purged=OFF \
+      --routines --triggers --events --add-drop-database \
+      --databases "$MYSQL_DATABASE"
+  ' | gzip -c > "$backup_file.tmp"
+fi
 test -s "$backup_file.tmp"
 mv "$backup_file.tmp" "$backup_file"
 chmod 600 "$backup_file"
@@ -327,12 +371,22 @@ echo "Productie-MySQL-back-up: $backup_file"
 
 restore_backup() {
   echo 'MySQL-import of inhoudscontrole faalde; herstel de zojuist gemaakte productieback-up.' >&2
+  docker exec "$container" sh -lc \
+    'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS `Meijendel_bronnen`"'
   gzip -dc "$backup_file" | docker exec -i "$container" sh -lc \
     'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
 }
 
 if ! docker exec -i "$container" sh -lc \
   'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' < "$sql_file"; then
+  restore_backup
+  exit 1
+fi
+
+if ! docker exec "$container" sh -lc \
+  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS `Meijendel_bronnen` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"' || \
+  ! docker exec -i "$container" sh -lc \
+  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" Meijendel_bronnen' < "$sources_sql_file"; then
   restore_backup
   exit 1
 fi
@@ -357,6 +411,46 @@ if ! docker exec "$container" sh -lc '
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend b JOIN pq_plot_jaar_vegetatie p USING (plot_id, jaar) WHERE ABS(b.soortenrijkdom_gem - p.soortenrijkdom_gem) > 0.0005 OR ABS(b.bedekking_som_gem - p.bedekking_som_gem) > 0.0005 OR ABS(b.shannon_gem - p.shannon_gem) > 0.00011")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE ST_SRID(geom) <> 28992 OR YEAR(opname_datum) <> jaar")" -eq 0
 '; then
+  restore_backup
+  exit 1
+fi
+
+if ! docker exec -i "$container" sh -s <<'SOURCES_CHECK'
+  set -eu
+  sources_db="Meijendel_bronnen"
+  website_user="$MYSQL_USER"
+  case "$website_user" in
+    *[!A-Za-z0-9_]*|"") echo "ongeldige websitegebruiker" >&2; exit 1 ;;
+  esac
+  root_mysql() { mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "$1"; }
+  source_query() { mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "$1" "$sources_db"; }
+
+  test "$(source_query "SELECT COUNT(*) FROM v_contextdataset_overzicht")" -eq 3
+  test "$(source_query "SELECT COUNT(*) FROM v_literatuur_overzicht")" -gt 0
+  test "$(source_query "SELECT COUNT(*) FROM v_bron_catalogus")" -gt 3
+  test "$(root_mysql "SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = 'Meijendel_bronnen'")" -gt 0
+
+  schema_grants="$(root_mysql "SELECT COUNT(*) FROM information_schema.SCHEMA_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '${website_user}', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = 'Meijendel_bronnen'")"
+  if test "$schema_grants" -gt 0; then
+    root_mysql "REVOKE ALL PRIVILEGES ON \`Meijendel_bronnen\`.* FROM \`${website_user}\`@\`%\`"
+  fi
+  root_mysql "SELECT TABLE_NAME FROM information_schema.TABLE_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '${website_user}', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = 'Meijendel_bronnen'" |
+  while IFS= read -r object_name; do
+    case "$object_name" in
+      *[!A-Za-z0-9_]*) echo "ongeldige objectnaam" >&2; exit 1 ;;
+    esac
+    root_mysql "REVOKE ALL PRIVILEGES ON \`Meijendel_bronnen\`.\`${object_name}\` FROM \`${website_user}\`@\`%\`"
+  done
+
+  root_mysql "GRANT SELECT ON \`Meijendel_bronnen\`.\`v_bron_catalogus\` TO \`${website_user}\`@\`%\`"
+  root_mysql "GRANT SELECT ON \`Meijendel_bronnen\`.\`v_literatuur_overzicht\` TO \`${website_user}\`@\`%\`"
+  root_mysql "GRANT SELECT ON \`Meijendel_bronnen\`.\`v_contextdataset_overzicht\` TO \`${website_user}\`@\`%\`"
+
+  test "$(root_mysql "SELECT COUNT(*) FROM information_schema.SCHEMA_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '${website_user}', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = 'Meijendel_bronnen'")" -eq 0
+  test "$(root_mysql "SELECT COUNT(*) FROM information_schema.TABLE_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '${website_user}', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = 'Meijendel_bronnen' AND PRIVILEGE_TYPE = 'SELECT'")" -eq 3
+  test "$(root_mysql "SELECT COUNT(*) FROM information_schema.TABLE_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '${website_user}', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = 'Meijendel_bronnen' AND TABLE_NAME NOT IN ('v_bron_catalogus','v_literatuur_overzicht','v_contextdataset_overzicht')")" -eq 0
+SOURCES_CHECK
+then
   restore_backup
   exit 1
 fi
@@ -409,6 +503,10 @@ docker exec shiny_meijendel Rscript -e '
 '
 docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); t <- system.time(x <- load_meijendel_tables_cached(path)); cat(sprintf(\"SQL pad: %s; cache: from_cache=%s elapsed=%.3f cache=%s\\n\", path, x[[\"from_cache\"]], unname(t[[\"elapsed\"]]), x[[\"cache_path\"]]))"'
 sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
+sha256sum "$REMOTE_DATA/Meijendel_bronnen.sql"
+test ! -e "$REMOTE_SHINY/Meijendel_bronnen.sql"
+test ! -e "$REMOTE_WWW/Meijendel_bronnen.sql"
+test ! -e "$REMOTE_APP/data/Meijendel_bronnen.sql"
 test -s "$REMOTE_WWW/wintertellingen/winter_jaarindex.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_maandpatroon.csv"
 test -s "$REMOTE_WWW/wintertellingen/winter_plotgebruik.csv"

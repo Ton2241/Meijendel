@@ -93,6 +93,22 @@ cd /Users/ton/Documents/GitHub/Meijendel
 ./deploy/deploy_meijendel_vps.sh --apply --yes
 ```
 
+De generatie- en archiveringsscripts maken twee afzonderlijke dumps:
+
+- `meijendel.sql`: de analytische database; deze blijft beschikbaar voor de
+  bestaande Shiny- en websitefuncties;
+- `meijendel_bronnen.sql`: contextdatasets zonder voldoende
+  waarnemingslocatie en de Zotero-literatuurcatalogus.
+
+`meijendel_bronnen.sql` wordt op de VPS uitsluitend opgeslagen onder
+`/srv/vwgm/data`, met bestandsmodus `0600`. Het bestand krijgt geen symlink
+naar `www`, de website-app of Shiny. De websitegebruiker krijgt in
+`Meijendel_bronnen` alleen `SELECT` op `v_bron_catalogus`,
+`v_literatuur_overzicht` en `v_contextdataset_overzicht`; ruwe brontabellen en
+Shiny krijgen geen toegang. Vóór iedere import wordt één herstelback-up gemaakt
+van de analytische database en, wanneer die al bestaat, `Meijendel_bronnen`.
+Een mislukte import of rechtencontrole herstelt beide databases uit die back-up.
+
 Eerste, eenmalige inrichting nadat de werkelijk draaiende productiecommit is vastgesteld en in `main` is geïntegreerd:
 
 ```sh
