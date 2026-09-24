@@ -7,6 +7,7 @@ import argparse
 import html
 import json
 import re
+import subprocess
 import sys
 from datetime import date
 from html.parser import HTMLParser
@@ -329,6 +330,133 @@ def sync_items(connection, items: list[dict]) -> dict[str, int]:
     return {"actueel": len(items), "niet_meer_in_export_gemarkeerd": marked_stale}
 
 
+def mysql_text_literal(value) -> str:
+    """Codeer tekst zonder afhankelijkheid van SQL-escape-instellingen."""
+    if value is None:
+        return "NULL"
+    encoded = str(value).encode("utf-8").hex()
+    if not encoded:
+        return "''"
+    return f"CONVERT(0x{encoded} USING utf8mb4)"
+
+
+def build_cli_sync_sql(items: list[dict]) -> str:
+    if not items:
+        raise ValueError("Volledige Zotero-export bevat nul bibliografische items")
+    statements = [
+        "SET NAMES utf8mb4;",
+        "START TRANSACTION;",
+        "UPDATE literatuur SET zotero_status='niet_meer_in_export';",
+    ]
+    for item in items:
+        lit = mysql_text_literal
+        statements.append(
+            """
+INSERT INTO bron
+  (bron_sleutel,bron_type,titel,omschrijving,bronorganisatie,jaar_van,jaar_tot,
+   geografische_status,geografische_toelichting,analyse_status,rechten_status,
+   regelversie)
+VALUES
+  ({key},'literatuur',{title},{description},{organization},{year},{year},'nvt',
+   {geo_note},'context_alleen','open_metadata',{rule_version})
+ON DUPLICATE KEY UPDATE
+  bron_id=LAST_INSERT_ID(bron_id),titel=VALUES(titel),omschrijving=VALUES(omschrijving),
+  bronorganisatie=VALUES(bronorganisatie),jaar_van=VALUES(jaar_van),
+  jaar_tot=VALUES(jaar_tot),geografische_status='nvt',
+  geografische_toelichting=VALUES(geografische_toelichting),
+  analyse_status='context_alleen',rechten_status='open_metadata',
+  regelversie=VALUES(regelversie);
+SET @bron_id=LAST_INSERT_ID();
+""".format(
+                key=lit(f"zotero:{item['zotero_item_key']}"),
+                title=lit(item["titel"]),
+                description=lit(item["citation_chicago"]),
+                organization=lit(item["container_titel"]),
+                year="NULL" if item["jaar"] is None else int(item["jaar"]),
+                geo_note=lit("Bibliografische metadata; geen waarnemingslocatie van toepassing."),
+                rule_version=lit(RULE_VERSION),
+            )
+        )
+        statements.append(
+            """
+INSERT INTO literatuur
+  (bron_id,zotero_item_key,citation_key,item_type,publicatiejaar,container_titel,
+   uitgever,volume,nummer,paginas,doi,url,geraadpleegd_op,trefwoorden,
+   citation_chicago,citation_style,zotero_status)
+VALUES
+  (@bron_id,{item_key},{citation_key},{item_type},{year},{container},{publisher},
+   {volume},{issue},{pages},{doi},{url},{accessed},{tags},{citation},{style},'actueel')
+ON DUPLICATE KEY UPDATE citation_key=VALUES(citation_key),item_type=VALUES(item_type),
+  publicatiejaar=VALUES(publicatiejaar),container_titel=VALUES(container_titel),
+  uitgever=VALUES(uitgever),volume=VALUES(volume),nummer=VALUES(nummer),
+  paginas=VALUES(paginas),doi=VALUES(doi),url=VALUES(url),
+  geraadpleegd_op=VALUES(geraadpleegd_op),trefwoorden=VALUES(trefwoorden),
+  citation_chicago=VALUES(citation_chicago),citation_style=VALUES(citation_style),
+  zotero_status='actueel',gesynchroniseerd_op=CURRENT_TIMESTAMP(6);
+DELETE FROM literatuur_auteur WHERE bron_id=@bron_id;
+""".format(
+                item_key=lit(item["zotero_item_key"]),
+                citation_key=lit(item["citation_key"]),
+                item_type=lit(item["item_type"]),
+                year="NULL" if item["jaar"] is None else int(item["jaar"]),
+                container=lit(item["container_titel"]),
+                publisher=lit(item["uitgever"]),
+                volume=lit(item["volume"]),
+                issue=lit(item["nummer"]),
+                pages=lit(item["paginas"]),
+                doi=lit(item["doi"]),
+                url=lit(item["url"]),
+                accessed=lit(item["geraadpleegd_op"]),
+                tags=lit(json.dumps(item["trefwoorden"], ensure_ascii=False)),
+                citation=lit(item["citation_chicago"]),
+                style=lit(STYLE),
+            )
+        )
+        for position, author in enumerate(item["auteurs"], start=1):
+            statements.append(
+                "INSERT INTO literatuur_auteur "
+                "(bron_id,volgnummer,familienaam,voornamen,naam_letterlijk) VALUES "
+                f"(@bron_id,{position},{lit(author['familienaam'])},"
+                f"{lit(author['voornamen'])},{lit(author['naam_letterlijk'])});"
+            )
+    statements.append("COMMIT;")
+    return "\n".join(statements)
+
+
+def sync_items_via_login_path(
+    login_path: str, database: str, items: list[dict]
+) -> dict[str, int]:
+    if not re.fullmatch(r"[A-Za-z0-9_]+", database):
+        raise ValueError(f"Ongeldige databasenaam: {database}")
+    command = [
+        "/usr/local/mysql/bin/mysql",
+        f"--login-path={login_path}",
+        f"--database={database}",
+        "--batch",
+        "--skip-column-names",
+    ]
+    subprocess.run(
+        command,
+        input=build_cli_sync_sql(items),
+        text=True,
+        check=True,
+    )
+    result = subprocess.run(
+        command + [
+            "-e",
+            "SELECT SUM(zotero_status='actueel'),"
+            "SUM(zotero_status='niet_meer_in_export') FROM literatuur",
+        ],
+        text=True,
+        capture_output=True,
+        check=True,
+    ).stdout.strip()
+    active, stale = (int(value or 0) for value in result.split("\t"))
+    if active != len(items):
+        raise ValueError(f"Zotero-sync verwachtte {len(items)} actuele items, vond {active}")
+    return {"actueel": active, "niet_meer_in_export_gemarkeerd": stale}
+
+
 def connect_mysql(options):
     try:
         import pymysql
@@ -352,6 +480,7 @@ def main() -> int:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=3306)
     parser.add_argument("--database", default="Meijendel_bronnen")
+    parser.add_argument("--login-path", default="meijendel_root")
     parser.add_argument("--user")
     parser.add_argument("--password")
     mode = parser.add_mutually_exclusive_group(required=True)
@@ -375,16 +504,21 @@ def main() -> int:
     if options.dry_run:
         print(json.dumps(report, indent=2, ensure_ascii=False))
         return 0
-    if not options.user or options.password is None:
-        parser.error("--execute vereist --user en --password")
-    connection = connect_mysql(options)
-    try:
-        report["database"] = sync_items(connection, items)
-    except Exception:
-        connection.rollback()
-        raise
-    finally:
-        connection.close()
+    if options.user:
+        if options.password is None:
+            parser.error("--user vereist ook --password")
+        connection = connect_mysql(options)
+        try:
+            report["database"] = sync_items(connection, items)
+        except Exception:
+            connection.rollback()
+            raise
+        finally:
+            connection.close()
+    else:
+        report["database"] = sync_items_via_login_path(
+            options.login_path, options.database, items
+        )
     report["status"] = "PASS"
     print(json.dumps(report, indent=2, ensure_ascii=False))
     return 0

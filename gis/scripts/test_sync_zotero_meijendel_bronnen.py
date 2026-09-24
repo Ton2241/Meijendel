@@ -22,6 +22,8 @@ def load_module():
 
 def main() -> int:
     module = load_module()
+    assert module.mysql_text_literal("O'Brien") == "CONVERT(0x4f27427269656e USING utf8mb4)"
+    assert module.mysql_text_literal(None) == "NULL"
     items = json.loads(FIXTURE.read_text(encoding="utf-8"))
     assert module.is_bibliographic(items[0]) is True
     assert module.is_bibliographic(items[2]) is False
@@ -43,6 +45,11 @@ def main() -> int:
     assert article["auteurs"] == [
         {"familienaam": "Teller", "voornamen": "A.", "naam_letterlijk": None}
     ]
+    cli_sql = module.build_cli_sync_sql([article])
+    assert "START TRANSACTION" in cli_sql
+    assert "COMMIT" in cli_sql
+    assert "niet_meer_in_export" in cli_sql
+    assert module.mysql_text_literal("zotero:ABCD1234") in cli_sql
 
     serialized = json.dumps([minimal, article], ensure_ascii=False).casefold()
     assert "/users/" not in serialized
