@@ -50,6 +50,20 @@
   vangblikevents liggen binnen. Van de 71.155 territoriumregels horen er 66.697
   bij een volledig binnenliggend plot en 4.458 bij een plot dat de projectgrens
   kruist. Deze classificatie is nog geen verwijderbesluit.
+- **Nog uitvoeren:** breng de life-database in overeenstemming met de regel dat
+  alleen aantoonbaar in Meijendel gelokaliseerde waarnemingen worden opgenomen.
+  Regelversie `meijendel-ruimtelijke-poort-v2` bevat nog 72.361 records die
+  aantoonbaar buiten het basisgebied liggen: 70.693 openbare NDFF-records uit
+  1900-2025, 1.009 BMP-dagwaarnemingen uit 2009-2025, 644 provinciale
+  PQ-opnamen uit 1981-2025, 14 primaire SOVON-bijvangsten uit 2009-2024 en één
+  winterdagwaarneming uit 2025. Daarnaast raken 146.337 NDFF-polygonen en 2.535
+  territoriumplots alleen de grens, zodat aanwezigheid binnen Meijendel niet
+  vaststaat. Voor 488 duinvalleiopnamen ontbreekt nog een geometrie; 204 regels
+  uit 1924 blijven uitsluitend historische context. Beoordeel dit eerst per
+  bron. Verplaats aantoonbare buitenliggers en niet-oplosbare dubbelzinnige
+  records daarna naar staging; laat records alleen in de life-database wanneer
+  aanvullende locatiegegevens de ligging binnen Meijendel aantonen. Verwijder
+  of verplaats vóór die bronaudit nog niets.
 - Houd de openbare jachtspinmatrix 1969-1970 buiten de database zolang de 28
   genummerde locaties niet geografisch kunnen worden herleid. Onderzoek alleen
   nog of de oorspronkelijke publicatie, bijlagen of een Leids archief een
