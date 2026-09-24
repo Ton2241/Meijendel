@@ -21,7 +21,9 @@ Er komt een afzonderlijke MySQL-database `Meijendel_bronnen`. Deze bewaart:
 
 `Meijendel_bronnen` wordt als afzonderlijke broncatalogus beschikbaar in het
 afgeschermde Analysecentrum. De tegel `Literatuur` verdwijnt uit het
-ledenarchief. Bestaande archiefdocumenten worden daarbij niet verwijderd.
+ledenarchief. De bestaande literatuurdocumenten en hun archiefregistraties
+worden verwijderd nadat is gecontroleerd dat zij in de Zotero-collectie
+`Meijendel` voorkomen.
 
 ## Waarom twee databases
 
@@ -144,10 +146,11 @@ De categorie `Literatuur` verdwijnt uit:
 - het uploadformulier;
 - de omschrijving van het archief op de ledenpagina.
 
-De categoriecode en bestaande documenten blijven intern bestaan, zodat geen
-archiefmateriaal wordt verwijderd en oude directe links controleerbaar blijven.
-Nieuwe literatuurregistraties lopen uitsluitend via Zotero en
-`Meijendel_bronnen`.
+Vooraf wordt per bestaand literatuurdocument vastgelegd met welk Zotero-item
+het overeenkomt. Daarna worden de documenten, zoekindexregels en
+archiefregistraties uit het ledenarchief verwijderd. De lege categoriecode
+`literatuur` blijft niet beschikbaar voor zoeken of uploaden. Nieuwe
+literatuurregistraties lopen uitsluitend via Zotero en `Meijendel_bronnen`.
 
 ## Migratie en kwaliteitscontrole
 
@@ -196,8 +199,10 @@ De wijziging is gereed wanneer aantoonbaar geldt:
 4. Zotero-verwijzingen zijn in Chicago-stijl leesbaar zonder NAS- of
    Zotero-toegang en bevatten geen attachments of lokale paden;
 5. alleen geauthenticeerde Analysecentrumgebruikers bereiken de bronnenpagina;
-6. de literatuurtegel, het literatuurfilter en de uploadkeuze zijn uit het
-   ledenarchief verdwenen, terwijl bestaande bestanden behouden blijven;
+6. ieder bestaand literatuurdocument uit het ledenarchief is vóór verwijdering
+   aan een Zotero-item gekoppeld; daarna zijn documenten, registraties,
+   zoekindexregels, literatuurtegel, literatuurfilter en uploadkeuze uit het
+   ledenarchief verdwenen;
 7. beide dumps kunnen afzonderlijk worden hersteld en hun aantallen en hashes
    komen overeen met de gevalideerde lokale databases;
 8. documentatie, release-manifest en werkinstructies beschrijven de nieuwe
