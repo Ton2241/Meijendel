@@ -189,6 +189,15 @@ onvervaagde levering voor ticket 58679 staat daar fysiek gescheiden onder
 of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
 `docs/NDFF_SECURE_ONTVANGST.md`.
 
+### Duinvalleivegetatie 2001-2018
+
+De openbare Zenodo-reeks `10.5281/zenodo.21796880` staat als zelfstandige
+vegetatiebron in `Meijendel`. Zij bevat 488 opnamen op 186 vaste proefstroken,
+208 taxa, een volledige matrix van 101.504 opname-taxoncombinaties en 855
+bodemmetingen. Analyseviews sluiten één aantoonbaar afwijkende bronregel uit.
+De reeks wordt niet met de gezaghebbende provinciale PQ-reeks vermengd. Zie
+[`docs/DUINVALLEI_VEGETATIE.md`](docs/DUINVALLEI_VEGETATIE.md).
+
 De openbare FFV-staging en historische GBIF-vangblikreeks zijn lokaal als
 afzonderlijke bronregistraties in nieuwe tabellen van `Meijendel` opgenomen.
 Zij wijzigen de bestaande vogel- en provinciale PQ-tabellen niet en zijn niet
@@ -751,7 +760,7 @@ Of via Terminal:
 - De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.1 gebruiken. Generatie en deploy blokkeren bij een afwijking.
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
-- De PQ-vegetatiebron vormt hierop een expliciete uitzondering: `pq_vegetatie_import`, `pq_vegetatie_pq`, `pq_vegetatie_opname`, `pq_vegetatie_taxon`, `pq_vegetatie_waarneming`, `pq_vegetatie_opname_plot` en `pq_plot_jaar_vegetatie` worden in de levende MySQL-database beheerd. Wijzig deze gegevens niet handmatig in `meijendel.sql`; genereer de dump na databasevalidatie opnieuw.
+- De PQ-vegetatiebron en de zelfstandige duinvalleivegetatiereeks vormen hierop expliciete uitzonderingen: hun genormaliseerde tabellen worden in de levende MySQL-database beheerd. Wijzig deze gegevens niet handmatig in `meijendel.sql`; genereer de dump na databasevalidatie opnieuw.
 - De Shiny-app en HTML hebben verschillende rollen: Shiny rekent, HTML presenteert.
 - Niet alle documentatie in de repo is even recent; de documenten in `MDs/` zijn nu leidend.
 - De worktree hoort buiten een expliciet actieve taak schoon te zijn. Onderzoek iedere vooraf aangetroffen wijziging, rond bedoelde wijzigingen af met commit/push en haal gegenereerde caches of runtime-output uit Git en zet die in `.gitignore`.

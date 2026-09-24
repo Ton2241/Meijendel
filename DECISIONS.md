@@ -557,6 +557,16 @@
   gebruikte beslisregelversie; ontbreken van deze controle blokkeert publicatie.
 - De tabel `weer` blijft een ruwe bron met stationsafhankelijke schalen. Alle analyses lezen uit `weer_analyse`; die view normaliseert eenheden, bewaart spoorneerslag en spoorzonneschijn als aparte vlaggen en levert bij een onbekend station bewust `NULL` voor stationsafhankelijk genormaliseerde waarden.
 - Het PQ-vegetatiemeetnet wordt rechtstreeks beheerd in de levende MySQL-database en niet handmatig in `meijendel.sql`. De genormaliseerde brontabellen gebruiken het prefix `pq_`; historische geometrie blijft per opname behouden. Dashboard en Shiny lezen alleen de afgeleide korrel `pq_plot_jaar_vegetatie`, de website alleen de veilige view `website_plot_vegetatie_jaar`.
+- De openbare Zenodo-duinvalleireeks `10.5281/zenodo.21796880` wordt als
+  zelfstandige bron met prefix `duinvallei_` in de levende MySQL-database
+  beheerd. `Site` is de stabiele proefstrooksleutel: 488 opnamen uit 2001,
+  2008 en 2018 behoren tot 186 proefstroken. De volledige lijst van 208 taxa,
+  inclusief 90.515 expliciete nullen, blijft behouden. Bronregel `18I01` blijft
+  traceerbaar maar wordt wegens 159 positieve taxa, tegenover maximaal 40 in
+  iedere andere opname, uit analyseviews geweerd. De reeks wordt niet met de
+  provinciale PQ-tabellen samengevoegd zolang een bewezen ruimtelijke brug
+  ontbreekt. Verschillen tussen locaties of behandelingen worden niet zonder
+  aanvullende onderbouwing causaal geïnterpreteerd.
 - Voorlopige PZH-imports worden versieerbaar opgeslagen met bestands-SHA en bronstatus. `SRTNUM` is de interne soortidentiteit binnen de geregistreerde soortenlijstversie; `PLABED` blijft een ruwe broncode. Afwijkende nieuw aangeleverde bodemcodes overschrijven de bestaande waarde pas na bevestiging door PZH.
 - Webgrafieken worden gevoed door vooraf gegenereerde dashboard-output/CSV; lokale `meijendel.sql` wordt niet per request geparsed.
 - Dashboard, Shiny, SQL en dashboard-output zijn leden-only via Caddy `forward_auth`.
