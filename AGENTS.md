@@ -120,6 +120,15 @@ Bij communicatie:
 - stel alleen vragen als dat echt nodig is om veilig verder te kunnen
 
 MySQL:
+- laat een ecologische waarneming uitsluitend toe tot de Meijendel-database
+  wanneer per waarneming aantoonbaar is dat zij daadwerkelijk binnen Meijendel
+  is gedaan en de waarnemingslocatie beschikbaar is of betrouwbaar kan worden
+  herleid. Een publicatie die alleen vermeldt dat het onderzoek in Meijendel
+  plaatsvond, een kilometerhok dat Meijendel raakt of een niet-lokaliseerbaar
+  locatie- of plotnummer is onvoldoende. Bewaar zulke bronnen buiten de
+  database als kandidaatbron totdat de locatie op waarnemingsniveau is
+  vastgesteld. Pas deze toelatingspoort ook toe voordat bestaande externe
+  bronlagen als Meijendel-waarnemingen worden gebruikt
 - gebruik voor lokale database-acties standaard de lokale MySQL-client
 - voor inloggen is `-u root -p` nodig
 - koppel ieder NDFF-record via een afzonderlijke recordkoppeling aan precies één

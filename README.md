@@ -757,6 +757,11 @@ Of via Terminal:
 ## Belangrijke aandachtspunten
 
 - De SQL-dump is de bron. Werk zorgvuldig als je die wijzigt.
+- Neem ecologische waarnemingen alleen in de Meijendel-database op wanneer per
+  waarneming vaststaat dat zij werkelijk binnen Meijendel is gedaan en de
+  locatie beschikbaar is of betrouwbaar kan worden herleid. Een algemene
+  verwijzing naar Meijendel of een niet-lokaliseerbaar plotnummer is niet
+  voldoende; bewaar zo'n bestand buiten de database als kandidaatbron.
 - De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.1 gebruiken. Generatie en deploy blokkeren bij een afwijking.
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.

@@ -327,6 +327,21 @@
   en NMV blijven mogelijke aanvullende bronorganisaties als na reconstructie
   noodzakelijke sleutels ontbreken. Dit verandert `ndff-analyseketen-v1` en de
   bestaande algemene analysetoelatingen niet.
+- Nieuwe ecologische brongegevens worden alleen in de Meijendel-database
+  opgenomen wanneer per waarneming aantoonbaar is dat zij daadwerkelijk binnen
+  Meijendel is gedaan en de waarnemingslocatie beschikbaar is of betrouwbaar
+  kan worden herleid. Een algemene gebiedsvermelding, een kilometerhok dat
+  Meijendel raakt of een genummerde maar niet-lokaliseerbare onderzoekslocatie
+  voldoet niet. De bron kan dan wel buiten de database als kandidaatbron worden
+  bewaard. Bestaande externe bronlagen worden afzonderlijk aan deze
+  toelatingspoort getoetst; eventuele verwijdering of verplaatsing volgt pas na
+  een reproduceerbare audit en een afzonderlijk besluit.
+- De openbare jachtspinmatrix uit het onderzoek van Van der Aart en
+  Smeenk-Enserink (1969-1970) bevat 3.337 gevangen exemplaren van twaalf soorten
+  op 28 genummerde locaties, maar geen coördinaten of andere betrouwbare
+  locatievertaling. Zij wordt daarom niet in de Meijendel-database geïmporteerd.
+  De bron blijft kandidaat voor opname wanneer de 28 locaties alsnog
+  geografisch kunnen worden herleid.
 - Binnen de beveiligde 191-soortenlevering vormen van de 8.494 ruimtelijke
   verspreidingskandidaten 1.274 passende meetnet-/gebiedsmonitoringrecords een
   afzonderlijke validatiedeelsom. Deze records gaan niet rechtstreeks naar een

@@ -2,6 +2,18 @@
 
 ## Nu open
 
+### Toelatingsaudit externe ecologische bronlagen
+
+- Toets de bestaande externe bronlagen reproduceerbaar aan de regel dat iedere
+  opgenomen waarneming aantoonbaar binnen Meijendel moet liggen en een bekende
+  of betrouwbaar herleidbare locatie moet hebben. Verwijder of verplaats niets
+  voordat per bron de gevolgen en aantallen zijn vastgesteld en afzonderlijk
+  zijn besloten.
+- Houd de openbare jachtspinmatrix 1969-1970 buiten de database zolang de 28
+  genummerde locaties niet geografisch kunnen worden herleid. Onderzoek alleen
+  nog of de oorspronkelijke publicatie, bijlagen of een Leids archief een
+  betrouwbare locatievertaling bevatten.
+
 ### GBIF-vangblikken Meijendel 1953-1960
 
 - Bevestig bij de bronhouder waarom versie 1.7 in EML en GBIF CC BY-NC 4.0
