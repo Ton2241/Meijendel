@@ -3,11 +3,16 @@
 - Meijendel gebruikt vanaf 24 september 2026 niet één, maar drie expliciet
   verschillende ruimtelijke lagen. De ruime, door zee en benoemde wegen
   begrensde projectlaag bepaalt de ruimtelijke toelating tot de database. De
-  officiële Natura 2000-laag beschrijft de juridische begrenzing. De SOVON-laag
-  beschrijft uitsluitend telplotdekking. Een record hoeft dus niet binnen
-  Natura 2000 of een SOVON-plot te liggen om tot het projectgebied te behoren.
-  Een bronpolygoon die het projectgebied slechts raakt, bewijst geen lokale
-  aanwezigheid en krijgt `ruimtelijk_dubbelzinnig`.
+  Natura 2000-laag beschrijft het deel van officieel gebied 97 binnen
+  Meijendel: de officiële PDOK-geometrie doorsneden met het projectgebied,
+  waardoor Berkheide ten noorden van De Wassenaarse Slag buiten beschouwing
+  blijft. De SOVON-laag beschrijft uitsluitend telplotdekking. Een record hoeft
+  dus niet binnen Natura 2000 of een SOVON-plot te liggen om tot het
+  projectgebied te behoren. Een bronpolygoon die het projectgebied slechts
+  raakt, bewijst geen lokale aanwezigheid en krijgt
+  `ruimtelijk_dubbelzinnig`. Geometrieversie `2026-09-24.2` en regelversie
+  `meijendel-ruimtelijke-poort-v2` vervangen versie 1 voor nieuwe analyses;
+  versie 1 blijft auditspoor.
 - Het dashboard is leidend voor alle grafieken. De site mag geen eigen afwijkende grafieklogica of cijfers introduceren.
 - De lokale MySQL 9.7.1 gebruikt vanaf 12 september 2026 persistent 512 MiB
   `innodb_redo_log_capacity`. De eerdere 100 MiB raakte bij omvangrijke

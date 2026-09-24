@@ -565,7 +565,7 @@ GIS / R-spatial:
   Meijendel is aangetroffen
 - raadpleeg bij gecombineerde analyses eerst
   `meijendel_waarneming_ruimtelijke_status` met regelversie
-  `meijendel-ruimtelijke-poort-v1`; verander de brongeometrie niet om een record
+  `meijendel-ruimtelijke-poort-v2`; verander de brongeometrie niet om een record
   alsnog binnen de grens te laten vallen
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`
 - gebruik geen Intel/Rosetta-R, oude Intel-builds of oude QGIS-bundels als basis voor nieuw spatial werk

@@ -2,8 +2,10 @@
 """Bouw de geversioneerde project- en Natura 2000-lagen voor Meijendel.
 
 De projectgrens volgt de door de VWG vastgestelde straatnamen en de officiële
-gemiddelde hoogwaterlijn. De officiële Natura 2000-laag blijft daarvan bewust
-gescheiden. Alle geometrieën worden geschreven in EPSG:28992.
+gemiddelde hoogwaterlijn. De Natura 2000-laag voor Meijendel is de doorsnede
+van officieel gebied 97 met dit projectgebied; Berkheide ten noorden van De
+Wassenaarse Slag valt er daardoor buiten. Alle geometrieën worden geschreven
+in EPSG:28992.
 """
 
 from __future__ import annotations
@@ -29,7 +31,7 @@ ogr.UseExceptions()
 ROOT = Path(__file__).parents[2]
 DEFAULT_OUTPUT = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen.gpkg"
 DEFAULT_MANIFEST = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen_manifest.json"
-VERSION = "2026-09-24.1"
+VERSION = "2026-09-24.2"
 
 BOUNDARY_ROADS = (
     "De Wassenaarse Slag",
@@ -39,6 +41,7 @@ BOUNDARY_ROADS = (
     "Groot Haesebroekseweg",
     "Buurtweg",
     "Landscheidingsweg",
+    "Van Alkemadelaan",
     "Zwolsestraat",
     "Groningsestraat",
     "Gevers Deynootweg",
@@ -337,6 +340,22 @@ def classify_relation(geometry: ogr.Geometry | None, area: ogr.Geometry) -> str:
     return "buiten"
 
 
+def clip_natura_to_project(natura: ogr.Geometry, project: ogr.Geometry) -> ogr.Geometry:
+    """Beperk officieel gebied 97 tot het Meijendel-deel van het projectgebied."""
+    clipped = natura.Intersection(project)
+    if clipped is None or clipped.IsEmpty():
+        raise ValueError("De Natura 2000-geometrie heeft geen overlap met het projectgebied")
+    if not clipped.IsValid():
+        clipped = clipped.MakeValid()
+    name = clipped.GetGeometryName().upper()
+    if name not in {"POLYGON", "MULTIPOLYGON"} or not clipped.IsValid():
+        raise ValueError("De begrensde Natura 2000-laag is geen geldige vlakgeometrie")
+    clipped.AssignSpatialReference(rd_srs())
+    if not (clipped.Within(project) or clipped.Equals(project)):
+        raise ValueError("De begrensde Natura 2000-laag ligt niet volledig binnen het projectgebied")
+    return clipped
+
+
 def add_field(layer: ogr.Layer, name: str, field_type: int, width: int = 0) -> None:
     field = ogr.FieldDefn(name, field_type)
     if width:
@@ -397,7 +416,7 @@ def write_geopackage(
         {
             "versie": VERSION,
             "n2000_nr": int(natura_properties.get("nr", 97)),
-            "naam": natura_properties.get("naam_n2k", "Meijendel & Berkheide"),
+            "naam": "Meijendel (deel van Natura 2000-gebied 97 Meijendel & Berkheide)",
             "oppervlakte_ha": natura_multi.GetArea() / 10000.0,
         },
         natura_multi,
@@ -432,8 +451,9 @@ def main() -> int:
 
     roads, road_hashes = fetch_selected_roads()
     coastline, coastline_hash = fetch_coastline()
-    natura, natura_properties, natura_hash = fetch_natura2000()
+    natura_officieel, natura_properties, natura_hash = fetch_natura2000()
     project, segments = build_project_boundary(roads, coastline)
+    natura = clip_natura_to_project(natura_officieel, project)
     write_geopackage(args.output, project, natura, natura_properties, segments)
 
     manifest = {
@@ -442,12 +462,20 @@ def main() -> int:
         "crs_epsg": 28992,
         "projectgebied_oppervlakte_ha": round(project.GetArea() / 10000.0, 6),
         "natura2000_oppervlakte_ha": round(natura.GetArea() / 10000.0, 6),
+        "natura2000_gebied97_officieel_oppervlakte_ha": round(
+            natura_officieel.GetArea() / 10000.0, 6
+        ),
         "projectgebied_sha256_wkb": hashlib.sha256(bytes(project.ExportToWkb())).hexdigest(),
         "natura2000_sha256_wkb": hashlib.sha256(bytes(natura.ExportToWkb())).hexdigest(),
         "bronnen": {
             "nwb_wfs": {"url": NWB_WFS, "pagina_sha256": road_hashes},
             "kustlijn": {"url": COAST_API, "sha256": coastline_hash},
-            "natura2000": {"url": NATURA_API, "sha256": natura_hash, "gebiedsnummer": 97},
+            "natura2000": {
+                "url": NATURA_API,
+                "sha256": natura_hash,
+                "gebiedsnummer": 97,
+                "afleiding": "doorsnede met projectgebied; Berkheide ten noorden van De Wassenaarse Slag uitgesloten",
+            },
         },
         "grenswegen": list(BOUNDARY_ROADS),
         "aansluitingen": [

@@ -1,11 +1,12 @@
 {
-  "versie": "2026-09-24.1",
+  "versie": "2026-09-24.2",
   "aangemaakt_op": "2026-09-24",
   "crs_epsg": 28992,
-  "projectgebied_oppervlakte_ha": 2382.988756,
-  "natura2000_oppervlakte_ha": 2878.215078,
-  "projectgebied_sha256_wkb": "3009dca51b01d29bc7677c0cb48c2d03942ef8af700865a940119cafddde98e2",
-  "natura2000_sha256_wkb": "eb42147cc1bda5f4e64e961d65af020e729ab73b9993606c6bc66c52266d7d59",
+  "projectgebied_oppervlakte_ha": 2412.044498,
+  "natura2000_oppervlakte_ha": 1862.802455,
+  "natura2000_gebied97_officieel_oppervlakte_ha": 2878.215078,
+  "projectgebied_sha256_wkb": "b0a0d06ec85bfcbeb76d0896de75fa0fd9c6f5989fec1855b03abdfad04f93fb",
+  "natura2000_sha256_wkb": "1a4c9fbe210d162d4ecbb9c346ca5bda76f702823e499d11acd7dc61ccbd4620",
   "bronnen": {
     "nwb_wfs": {
       "url": "https://service.pdok.nl/rws/nationaal-wegenbestand-wegen/wfs/v1_0",
@@ -21,12 +22,13 @@
     },
     "kustlijn": {
       "url": "https://api.pdok.nl/kadaster/brt-zeegebieden/ogc/v1/collections/coastline/items",
-      "sha256": "236342ceebc53327411aef1ddb4eeb79a29af596e8e59bcee793a861d73c29ad"
+      "sha256": "7f2dc271ab8bb53b927607892949f534522239b623b580f47c390808189a689e"
     },
     "natura2000": {
       "url": "https://api.pdok.nl/rvo/natura2000/ogc/v1/collections/natura2000/items",
-      "sha256": "48e66661372ff7f8c6f39c51bd7fd5089763af900d234be8372031905a16c00a",
-      "gebiedsnummer": 97
+      "sha256": "0718aef43825f67b037fc804d47ff2587baadf54069687dbc97c607516230810",
+      "gebiedsnummer": 97,
+      "afleiding": "doorsnede met projectgebied; Berkheide ten noorden van De Wassenaarse Slag uitgesloten"
     }
   },
   "grenswegen": [
@@ -37,6 +39,7 @@
     "Groot Haesebroekseweg",
     "Buurtweg",
     "Landscheidingsweg",
+    "Van Alkemadelaan",
     "Zwolsestraat",
     "Groningsestraat",
     "Gevers Deynootweg"
@@ -47,8 +50,8 @@
       "afstand_m": 20.321
     },
     {
-      "naam": "aansluiting Landscheidingsweg - Zwolsestraat",
-      "afstand_m": 1383.968
+      "naam": "aansluiting Landscheidingsweg - Van Alkemadelaan",
+      "afstand_m": 545.953
     },
     {
       "naam": "aansluiting Zwolsestraat - Groningsestraat",

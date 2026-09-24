@@ -194,7 +194,8 @@ of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
 
 ### Ruimtelijke begrenzingen
 
-De ecologische projectgrens, de officiële Natura 2000-begrenzing en de 55
+De ecologische projectgrens, het uit officieel gebied 97 afgeleide Natura
+2000-deel van Meijendel ten zuiden van De Wassenaarse Slag en de 55
 SOVON-telplots zijn afzonderlijke, geversioneerde lagen. De projectgrens is de
 toelatingspoort voor gelokaliseerde records; Natura 2000 en SOVON voegen
 juridische respectievelijk monitoringcontext toe. Bouw en import staan in

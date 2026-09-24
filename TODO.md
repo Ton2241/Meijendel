@@ -4,15 +4,16 @@
 
 ### Ruimtelijke afbakening Meijendel
 
-- Afgerond op 24 september 2026: geversioneerde projectgrens, officiële Natura
-  2000-laag en bestaande SOVON-plotlaag zijn als drie onafhankelijke lagen
-  vastgelegd. Regelversie `meijendel-ruimtelijke-poort-v1` classificeert
-  1.649.085 bronrecords of meeteenheden zonder de brondata te wijzigen.
-- Controleer bij een volgende inhoudelijke kaartbespreking de gedocumenteerde
-  rechte aansluiting van 1.383,968 meter tussen Landscheidingsweg en
-  Zwolsestraat. De opgegeven wegassen sluiten daar niet op elkaar aan; de
-  verbinding is daarom zichtbaar als projectgrenssegment en niet als officiële
-  wegas vastgelegd.
+- Afgerond op 24 september 2026: geversioneerde projectgrens, het uit officieel
+  gebied 97 afgeleide Natura 2000-deel van Meijendel en de bestaande
+  SOVON-plotlaag zijn als drie onafhankelijke lagen vastgelegd. In versie
+  `2026-09-24.2` loopt de zuidgrens via Landscheidingsweg, Van Alkemadelaan en
+  Zwolsestraat; Berkheide ten noorden van De Wassenaarse Slag is uit de
+  Meijendel-laag verwijderd. Regelversie `meijendel-ruimtelijke-poort-v2`
+  classificeert dezelfde 1.649.085 bronrecords of meeteenheden opnieuw zonder
+  de brondata te wijzigen. De gewijzigde projectgrens versoepelt de
+  toelatingsstatus van 6.946 records; de afbakening van Natura 2000 wijzigt de
+  Natura-status van 47.755 records. Versie 1 blijft beschikbaar als auditspoor.
 
 ### Toelatingsaudit externe ecologische bronlagen
 

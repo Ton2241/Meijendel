@@ -50,6 +50,7 @@ def main() -> int:
         "Groot Haesebroekseweg",
         "Buurtweg",
         "Landscheidingsweg",
+        "Van Alkemadelaan",
         "Zwolsestraat",
         "Groningsestraat",
         "Gevers Deynootweg",
@@ -65,6 +66,12 @@ def main() -> int:
     assert module.classify_relation(crossing, area) == "raakt_grens"
     assert module.classify_relation(outside, area) == "buiten"
     assert module.classify_relation(None, area) == "geen_geometrie"
+
+    official_natura = polygon(5, 5, 15, 15)
+    meijendel_natura = module.clip_natura_to_project(official_natura, area)
+    assert round(meijendel_natura.GetArea(), 6) == 25.0
+    assert meijendel_natura.Within(area)
+    assert module.VERSION == "2026-09-24.2"
 
     sql = " ".join(SCHEMA.read_text(encoding="utf-8").casefold().split())
     for table in (
@@ -94,6 +101,8 @@ def main() -> int:
     assert "geen bewijs" in documentation
 
     importer = IMPORTER.read_text(encoding="utf-8")
+    assert 'RULE_VERSION = "meijendel-ruimtelijke-poort-v2"' in importer
+    assert "meijendel-ruimtelijke-poort-v1" not in importer
     for source in (
         "ndff_open_waarneming",
         "dagwaarnemingen_bmp",

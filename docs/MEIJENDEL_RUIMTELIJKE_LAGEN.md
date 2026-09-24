@@ -8,12 +8,15 @@ uitwisselbare versies van Meijendel mogen worden behandeld.
 1. **Projectgebied.** Dit is de ruime ecologische begrenzing voor toelating tot
    de Meijendel-database. De grens volgt de zee, De Wassenaarse Slag,
    Katwijkseweg, Storm van 's-Gravesandeweg, Jagerslaan, Groot
-   Haesebroekseweg, Buurtweg, Landscheidingsweg, Zwolsestraat,
+   Haesebroekseweg, Buurtweg, Landscheidingsweg, Van Alkemadelaan, Zwolsestraat,
    Groningsestraat en Gevers Deynootweg. Bebouwing binnen deze grens hoort bij
    het onderzoekslandschap, ook wanneer zij buiten Natura 2000 ligt.
-2. **Natura 2000.** Dit is de officiële juridische begrenzing van Meijendel &
-   Berkheide, gebied 97. Zij bepaalt niet zelfstandig of een ecologische
-   waarneming tot het project behoort.
+2. **Natura 2000.** Dit is het Meijendel-deel van de officiële juridische
+   begrenzing van gebied 97 Meijendel & Berkheide. De laag is afgeleid als de
+   doorsnede van de officiële PDOK-geometrie met het projectgebied. Berkheide,
+   ten noorden van De Wassenaarse Slag, valt daardoor buiten deze laag. De laag
+   bepaalt niet zelfstandig of een ecologische waarneming tot het project
+   behoort.
 3. **SOVON-telplots.** Dit zijn geversioneerde onderzoeksgebieden. Zij kunnen
    Natura 2000 en het projectgebied deels overschrijden. De laag beschrijft
    monitoringdekking, niet de buitengrens van Meijendel.
@@ -46,14 +49,19 @@ overschreven of hernoemd.
 
 `gis/scripts/build_meijendel_ruimtelijke_lagen.py` haalt de wegassen uit het
 Nationaal Wegenbestand, de gemiddelde hoogwaterlijn uit de BRT-zeegebieden en
-de officiële Natura 2000-geometrie uit de PDOK-service. De uitvoer staat in:
+de officiële Natura 2000-geometrie uit de PDOK-service. Het script begrenst
+gebied 97 vervolgens met de projectgrens, zodat alleen Meijendel ten zuiden van
+De Wassenaarse Slag resteert. De uitvoer staat in:
 
 `gis/vectors/meijendel_bereik/meijendel_ruimtelijke_lagen.gpkg`
 
 Het manifest naast het GeoPackage bevat de bron- en geometrie-hashes. Alle
-geometrieën gebruiken EPSG:28992. De gedocumenteerde aansluitlijnen tussen
-niet-aansluitende wegassen blijven als afzonderlijke laag zichtbaar; zij zijn
-dus niet verstopt als schijnbaar officiële wegsegmenten.
+geometrieën gebruiken EPSG:28992. Versie `2026-09-24.2` omvat 2.412,044498 ha
+projectgebied en 1.862,802455 ha Natura 2000 binnen Meijendel. Het volledige
+officiële gebied 97 van 2.878,215078 ha blijft uitsluitend als herkomstmaat in
+het manifest staan. De gedocumenteerde aansluitlijnen tussen niet-aansluitende
+wegassen blijven als afzonderlijke laag zichtbaar; zij zijn dus niet verstopt
+als schijnbaar officiële wegsegmenten.
 
 Officiële bronnen:
 

@@ -18,7 +18,7 @@ ROOT = Path(__file__).parents[2]
 DEFAULT_GPKG = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen.gpkg"
 DEFAULT_MANIFEST = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen_manifest.json"
 SCHEMA = ROOT / "gis" / "database" / "meijendel_ruimtelijke_lagen_schema.sql"
-RULE_VERSION = "meijendel-ruimtelijke-poort-v1"
+RULE_VERSION = "meijendel-ruimtelijke-poort-v2"
 
 
 def sha256_file(path: Path) -> str:
@@ -212,14 +212,14 @@ CREATE TEMPORARY TABLE tmp_meijendel_plotmatch (
             classify_temp_sql(source_table, method, reuse_ndff_plot=reuse),
         ))
 
-    parts.append("""
+    parts.append(f"""
 DELETE FROM meijendel_waarneming_ruimtelijke_status
-WHERE bron_tabel='territoria' AND regelversie='meijendel-ruimtelijke-poort-v1';
+WHERE bron_tabel='territoria' AND regelversie={sql_text(RULE_VERSION)};
 INSERT INTO meijendel_waarneming_ruimtelijke_status
   (bron_tabel,bron_record_id,regelversie,basisgebiedversie_id,natura2000versie_id,
    plotversie_id,locatiemethode,basisstatus,natura2000status,sovon_plot_count,
    eenduidig_plot_id,toelatingsstatus,reden)
-SELECT 'territoria',CAST(t.id AS CHAR),'meijendel-ruimtelijke-poort-v1',
+SELECT 'territoria',CAST(t.id AS CHAR),{sql_text(RULE_VERSION)},
        b.basisgebiedversie_id,n.natura2000versie_id,p.plotversie_id,'plotvlak',
        CASE WHEN ST_Within(p.plot_geometrie,b.gebied_geometrie) THEN 'volledig_binnen'
             WHEN ST_Intersects(p.plot_geometrie,b.gebied_geometrie) THEN 'raakt_grens' ELSE 'buiten' END,
