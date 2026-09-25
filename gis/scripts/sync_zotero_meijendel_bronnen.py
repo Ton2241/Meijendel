@@ -138,6 +138,22 @@ def _year(value: str | None) -> int | None:
     return int(match.group(1)) if match else None
 
 
+def _title(data: dict) -> str:
+    for field in ("title", "nameOfAct", "caseName", "subject"):
+        value = str(data.get(field) or "").strip()
+        if value:
+            return value
+    return "Zonder titel"
+
+
+def _date_value(data: dict) -> str | None:
+    for field in ("date", "dateEnacted", "dateDecided", "issueDate", "filingDate"):
+        value = str(data.get(field) or "").strip()
+        if value:
+            return value
+    return None
+
+
 def _citation_key(data: dict) -> str | None:
     if data.get("citationKey"):
         return str(data["citationKey"]).strip() or None
@@ -166,7 +182,7 @@ def _access_date(value: str | None) -> str | None:
 
 def fallback_chicago(data: dict) -> str:
     """Maak alleen bij een lege Zotero-CSL-uitvoer een leesbare verwijzing."""
-    title = str(data.get("title") or "Zonder titel").strip() or "Zonder titel"
+    title = _title(data)
     creators = []
     for creator in data.get("creators") or []:
         literal = (creator.get("name") or "").strip()
@@ -176,8 +192,14 @@ def fallback_chicago(data: dict) -> str:
         if name:
             creators.append(name)
     lead = f"{'; '.join(creators)}. {title}." if creators else f"{title}."
-    publisher = str(data.get("publisher") or data.get("institution") or "").strip()
-    year = _year(data.get("date"))
+    publisher = str(
+        data.get("publisher")
+        or data.get("institution")
+        or data.get("code")
+        or data.get("meetingName")
+        or ""
+    ).strip()
+    year = _year(_date_value(data))
     publication = ", ".join(part for part in (publisher, str(year) if year else "") if part)
     identifier = _doi(data.get("DOI"))
     url = _https_url(data.get("url"))
@@ -192,13 +214,13 @@ def normalize_item(item: dict) -> dict:
     key = str(item.get("key") or data.get("key") or "").strip()
     if not key:
         raise ValueError("Zotero-item zonder item key")
-    title = str(data.get("title") or "Zonder titel").strip() or "Zonder titel"
+    title = _title(data)
     container = next(
         (
             str(data[field]).strip()
             for field in (
                 "publicationTitle", "bookTitle", "proceedingsTitle", "websiteTitle",
-                "repository", "institution",
+                "repository", "institution", "code", "meetingName", "archive",
             )
             if data.get(field)
         ),
@@ -223,7 +245,7 @@ def normalize_item(item: dict) -> dict:
         "citation_key": _citation_key(data),
         "item_type": str(data.get("itemType") or "document"),
         "titel": title,
-        "jaar": _year(data.get("date")),
+        "jaar": _year(_date_value(data)),
         "container_titel": container,
         "uitgever": (str(data.get("publisher") or "").strip() or None),
         "volume": (str(data.get("volume") or "").strip() or None),
