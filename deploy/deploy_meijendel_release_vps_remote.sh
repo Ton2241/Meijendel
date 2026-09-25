@@ -69,7 +69,7 @@ restore_backup() {
   printf 'ROLLBACK|meijendel-release|database=%s\n' "$backup_file" >&2
   if [[ "$had_sources_database" -eq 0 ]]; then
     docker exec "$CONTAINER" sh -lc \
-      'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS `Meijendel_bronnen`"'
+      'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS Meijendel_bronnen"'
   fi
   { printf 'SET SESSION sql_log_bin=0;\n'; gzip -dc "$backup_file"; } |
     docker exec -i "$CONTAINER" sh -lc \
@@ -380,7 +380,7 @@ import_started=1
     'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
 
 docker exec "$CONTAINER" sh -lc \
-  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS `Meijendel_bronnen`; CREATE DATABASE `Meijendel_bronnen` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"'
+  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS Meijendel_bronnen; CREATE DATABASE Meijendel_bronnen CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"'
 { printf 'SET SESSION sql_log_bin=0;\n'; cat "$SOURCES_SQL_CANDIDATE_FILE"; } |
   docker exec -i "$CONTAINER" sh -lc \
     'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" Meijendel_bronnen'

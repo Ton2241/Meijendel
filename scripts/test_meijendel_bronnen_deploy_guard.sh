@@ -43,13 +43,16 @@ fi
 if grep -E 'GRANT SELECT ON [`]?Meijendel_bronnen[`]?\.\*' "$REMOTE_HELPER" >/dev/null; then
   fail 'een brede SELECT-grant op Meijendel_bronnen is verboden.'
 fi
+if grep -F 'DROP DATABASE IF EXISTS `Meijendel_bronnen`' "$REMOTE_HELPER" >/dev/null; then
+  fail 'backticks rond Meijendel_bronnen worden door de remote shell als command substitution uitgevoerd.'
+fi
 
 for fragment in \
   'SOURCES_SQL_CANDIDATE_FILE=' \
   'SOURCES_DATABASE="Meijendel_bronnen"' \
   'SOURCES_DATABASE_BACKUP=' \
   'CHECK TABLE' \
-  'DROP DATABASE IF EXISTS `Meijendel_bronnen`' \
+  'DROP DATABASE IF EXISTS Meijendel_bronnen' \
   'SOURCES_STATUS=ready'; do
   grep -qF "$fragment" "$REMOTE_HELPER" ||
     fail "gesloten bronimport mist veiligheidscontract: $fragment"
