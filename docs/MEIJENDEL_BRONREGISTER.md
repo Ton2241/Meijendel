@@ -214,9 +214,9 @@ kaarten uit `Meijendel` gebruikt.
 
 | Bron | Beheerder | Omvang en periode | Waarde en beperking |
 |---|---|---:|---|
-| Duinvalleivegetatie | Openbare onderzoeksdataset, [Zenodo](https://doi.org/10.5281/zenodo.21796880) | 488 opnamen, 101.504 bedekkingsregels en 855 bodemmetingen; 2001, 2008 en 2018 | De volledige soortenmatrix en echte nullen maken vergelijking tussen de drie jaren mogelijk. De 186 locatiecodes zijn nog niet betrouwbaar aan geometrieën gekoppeld; daarom alleen context voor Meijendel als geheel. |
+| Duinvalleivegetatie | Openbare onderzoeksdataset, [Zenodo](https://doi.org/10.5281/zenodo.21796880) | 488 opnamen en 101.504 bedekkingsregels; 2001, 2008 en 2018. Van de 186 vaste `Site`-codes zijn er 116 driemaal en 70 tweemaal onderzocht. Negen bodemvariabelen zijn voor 45 plots in 2001 en 2018 beschikbaar; bodemvocht alleen voor deze 45 plots in 2018. | De volledige matrix van 208 taxa bevat echte nullen en maakt vergelijking tussen de drie jaren mogelijk. De locatiecodes zijn nog niet betrouwbaar aan geometrieën gekoppeld. Opname `18I01` blijft uitgesloten: daarin zijn 159 taxa geregistreerd, tegenover maximaal 40 in alle overige opnamen. Deze reeks blijft afzonderlijk van de provinciale PQ-reeks. |
 | Vogelstand 1924 | Vogelwerkgroep Meijendel | 204 regels uit 1924 | Historische vogelcontext. Zonder locatie per regel geen kavel- of ruimtelijke analyse. |
-| Jachtspinnen | Van der Aart en Smeenk-Enserink | 3.337 exemplaren, 12 soorten en 28 locaties; 1969–1970 | De vangstmatrix kan inhoudelijk worden onderzocht. De 28 locatienummers zijn nog niet naar werkelijke plaatsen te vertalen en mogen daarom niet als Meijendelwaarnemingen worden geanalyseerd. |
+| Jachtspinnen | Van der Aart en Smeenk-Enserink | 3.337 exemplaren, 12 soorten, 28 locaties en zes milieuvariabelen; 1969–1970 | De samengevoegde vangstmatrix ondersteunt een soorten-milieuanalyse, maar geen ontwikkeling door de tijd. Datums en vangrondes ontbreken. De 28 locatienummers zijn bovendien nog niet naar werkelijke plaatsen te vertalen en mogen daarom niet als Meijendelwaarnemingen worden geanalyseerd. |
 | Literatuuroverzicht | Zotero-collectie `Meijendel` | 522 bibliografische verwijzingen op 25 september 2026 | Zoekingang naar onderzoek en historische context. Dit zijn verwijzingen, geen waarnemingsregels; volledige teksten blijven in Zotero en worden niet op de VPS gekopieerd. |
 
 ## 3. Geïdentificeerde externe kandidaatbronnen
@@ -235,6 +235,9 @@ waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 | [ENDURE helmduinfauna](https://doi.org/10.15468/xx2gcp) | Universiteit Gent en ENDURE | 15 exacte meetpunten in 2018; 14 complete matrices, 71 positieve en 9.001 negatieve taxonuitkomsten | Gestandaardiseerde momentopname van ongewervelden in witte duinen en een herhaalbare nulmeting | Eén event zonder soortenmatrix apart houden; geen tijdtrend afleiden uit één meetjaar |
 | Historische en actuele ringgegevens | Vogeltrekstation/NIOO-KNAW | Biometrie: 100.417 records van 163 soorten, 1963–2023; historische nestjongen: 668 records van 38 soorten, 1928–1957 | Trektijd, conditie, biometrie en vroeg-historische vogelcontext | Vangplaatscodes, locatie-onzekerheid, inspanning en overlap met bestaande vogelgegevens controleren |
 | Bijenmonitoring in vier beheergebieden | EIS Kenniscentrum Insecten | 18 proefvlakken, drie bezoeken per onderzoeksjaar; 162 bezoeken in 2019, 2021 en 2023 | Vergelijking van bijengemeenschappen tussen gebieden en jaren | Tabellen uit rapporten digitaliseren, proefvlakken georefereren en nagaan of 2025 beschikbaar is |
+| [Aquatische macrofauna](https://repository.naturalis.nl/pub/643552/Nieukerken_Doctoraalverslag_Meijendel_1978.pdf) | Rijksuniversiteit Leiden; publicatie via Naturalis | Zeven vaste monsterpunten, vrijwel maandelijks onderzocht van juni 1974 tot juli 1975; de publicaties behandelen onderzoek uit 1970–1977 | Historische reeks van waterorganismen, vegetatie en fysisch-chemische waterkenmerken | De tabellen en grafieken uit 175 gescande pagina's digitaliseren; daarna locatiecodes, complete bemonsteringen en eventuele lege monsters vaststellen |
+| Erosiepinnen in een stuifkuilcomplex | Jungerius en Van der Meulen | 48 erosiepinnen in 12 eenheden, vrijwel wekelijks gemeten gedurende één jaar | Gedetailleerde processtudie van erosie, sedimentatie en vegetatie, maar geen langjarige trend | Oorspronkelijke metingen en pinlocaties vinden en op waarnemingsniveau aan Meijendel koppelen |
+| Langjarige droge-duinvegetatieplots | Historische Meijendel-onderzoekers; later ontsloten via Wageningen University & Research | 41 vaste vegetatieplots, aangelegd in 1952–1953 en gemiddeld ongeveer iedere vier jaar herhaald | Potentieel zeer waardevolle langjarige vegetatiereeks voor successie, begrazing en verandering van grijs duin | Oorspronkelijke plotcodes, opnamen en locaties vinden; overlap met provinciale PQ, NDFF en de Landelijke Vegetatie Databank vaststellen |
 
 ### Afgebakende onderzoeksdatasets
 
@@ -243,7 +246,7 @@ waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 | TERRA-Dunes plant- en bodemmicrobiomen | Onderzoeksteam TERRA-Dunes, [Figshare](https://doi.org/10.6084/m9.figshare.25425601.v1) | 94 proefvlakken; planten 2018–2021 en bacteriën/schimmels 2018–2020 | Geschikt voor samenhang tussen vegetatie en microbiomen. Niet toelaten voordat de proefvlakken geografisch zijn gereconstrueerd. |
 | Rups- en bodemmicrobiomen | Onderzoeksteam, [Dryad](https://doi.org/10.5061/dryad.8cz8w9gnc) | 56 Meijendelse monsters in 2020: 29 rupsen en 27 bodemmonsters; 29 exacte GPS-locaties | Eenmalige genetische en microbiële momentopname. Geen populatietrend, wel lokale ecologische vergelijking na controle van alle monsterlocaties. |
 | Schimmels bij kruipwilg | Onderzoeksteam, [PLOS ONE/ENA](https://doi.org/10.1371/journal.pone.0099852) | Twee proefvlakken, ieder samengesteld uit 20 bodemkernen; maart 2010 | Bruikbaar als lokale microbiële referentie, niet als tijdreeks of gebiedsdekkende inventarisatie. |
-| Bodemvocht en weer | Wageningen University & Research, [DANS](https://doi.org/10.17026/DANS-28X-UT8Q) | 10 bodemvochtloggers en één weerstation; metingen per vijf minuten van juli tot december 2020 | Gedetailleerde korte tijdreeks voor hydrologische processen. Eerst locaties en meetkwaliteit controleren; één halfjaar geeft geen langjarige ontwikkeling. |
+| Plantengroei, bodemvocht en weer | Wageningen University & Research, [DANS](https://doi.org/10.17026/DANS-28X-UT8Q) | 10 bodemvochtloggers op vier diepten en één weerstation, metingen per vijf minuten van juli tot december 2020; daarnaast groei- en biomassametingen aan duinvormende grassen | Gedetailleerde processtudie van de reactie van duingrassen op neerslag en droogte. Eerst locaties en meetkwaliteit controleren; één halfjaar geeft geen langjarige ontwikkeling. |
 | Genetische datasets amfibieën | Verschillende onderzoeksteams, Figshare | Kamsalamander: 22 monsters op 5 locaties; boomkikker: 18 monsters op benoemde locaties | Bruikbaar voor populatiegenetische context. Jaar, locatie en relatie met bestaande RAVON-waarnemingen moeten eerst worden vastgesteld. |
 
 ### Alleen context of nog een onderzoeksaanwijzing
@@ -264,6 +267,12 @@ waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 - **KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en
   hydrologische gegevens. Een afzonderlijke digitale gegevenslevering is nog
   niet gevonden.
+- **Langjarige stuifkuil- en vegetatiemetingen:** publicaties noemen 32–35
+  stuifkuilen die vanaf 1983 tweemaal per jaar zijn gemeten, 19 permanente
+  vegetatieplots en vergelijkingen van luchtfoto's en orthofoto's. De
+  oorspronkelijke tabellen, plot-ID's en digitale kaartlagen zijn nog niet
+  voldoende geïdentificeerd om deze als afzonderlijke gegevensbron toe te
+  laten.
 
 ## 4. Verwachte aanvullingen
 
