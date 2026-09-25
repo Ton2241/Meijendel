@@ -2,18 +2,432 @@
 
 ## Besluit
 
-De 810.830 unieke FFV-waarnemingsregels zijn **niet rechtstreeks trendklaar**.
+De 810.830 unieke FFV-waarnemingsregels zijn **niet als één ongestructureerde
+set rechtstreeks trendklaar**.
 Een gevalideerde waarneming en een geregistreerde protocolnaam bewijzen nog niet
 dat de FFV-export alle telbezoeken, inspanning, telobjecten en afleidbare
-nulwaarnemingen bevat. De life Meijendel-database blijft daarom ongewijzigd.
+nulwaarnemingen bevat. Protocolmatig passende gegevens mogen daarom wel
+voorlopig en verkennend worden gebruikt, terwijl de leveringsgeschiktheid
+afzonderlijk `niet_beoordeeld` blijft totdat de betreffende levering inhoudelijk
+is onderzocht. Iedere uitkomst vermeldt deze beperking;
+voorlopige toelating is geen definitieve trendvalidatie.
 
 Alleen records uit een voor de soortgroep passend doelgericht meetnet zijn
-kandidaat voor vervolg. Daarvoor worden eerst de volledige brondata bij de
-meetnetbeheerder opgevraagd. NDFF noemt protocollen gestandaardiseerde
-telmethoden, maar vermeldt ook dat bruikbare nullen alleen uit sterke
-protocollen met goede metadata afleidbaar en beperkt toegankelijk zijn. CBS
-beoordeelt NEM-kwaliteit bovendien per meetprogramma en meetdoel; een landelijke
-kwaliteitsbeoordeling is geen automatische lokale Meijendeltrend.
+kandidaat voor protocolgebonden trendinvoer. Bij een expliciete NEM-code wordt
+uitgegaan van een protocolgeldig positief bezoek. De native meeteenheid en
+bezoekmatrix moeten nog wel per protocol worden gereconstrueerd. Bruikbare
+nullen worden uitsluitend afgeleid binnen de doelsoorten en bezochte
+meeteenheden van dat protocol; nooit voor bijvangsten.
+
+### Uitgevoerde reconstructies `03.201` en `07.201`
+
+Op 15 september 2026 zijn alle zeventien unieke PDF-downloads van de officiële
+pagina [Handleidingen en telformulieren](https://vlinderstichting.nl/wat-kan-jij-doen/tellen/meetnetten/handleidingen-en-telformulieren/)
+gecontroleerd. Ze zijn als bijlagen opgenomen onder Zotero-item `QBAFD7C6`,
+`Meetnetten Vlinderstichting`. De inhoudelijke hoofdbron is Van Swaay et al.
+(2018), *Handleiding landelijke meetnetten vlinders, libellen en
+nachtvlinders*; de online-invoerhandleiding uit 2023 beschrijft de feitelijke
+route-, bezoek-, sectie- en deelnamevelden.
+
+De handleidingen onderscheiden bij dagvlinders algemene routes, soortgerichte
+routes en drie typen ei-/rupstelplots. Een algemene route telt alle dagvlinders
+per sectie; een soortgerichte route uitsluitend de aangewezen soort. Een route
+is maximaal een kilometer lang, telt maximaal twintig meestal
+vijftig-metersecties en blijft door de jaren gelijk. Iedere ronde is een apart
+bezoek met datum, begin- en eindtijd, weer, tellers en aantallen per sectie.
+Bezoeken zonder waargenomen vlinders moeten eveneens worden ingevoerd. Het
+meetroutenportaal bewaart bovendien route-ID, secties, routewijzigingen en
+beheerinformatie.
+
+Daarom is de eerdere `ndff-vlinderroute-v1`-matrix op 15 september 2026
+vervangen door `ndff-vlinderroute-v2`. De 80.442 positieve dagvlinderrecords en
+20.075 positieve bezoek-taxoncombinaties zijn behouden. Van de 86.209 eerder
+als `echte_nul` opgeslagen regels zijn 3.795 niet-onderbouwde nullen verwijderd:
+
+- één routefamilie bevat in 87 bezoeken en 16 jaren uitsluitend Groot dikkopje (*Ochlodes
+  sylvanus*) en volgt het patroon van een soortgerichte route; de 2.871 nullen
+  voor de andere 33 taxa vallen buiten het protocolbereik;
+- 28 van de 63 bezoeken zonder routekoppeling bevatten maar één positief taxon;
+  hun 924 nullen voor de overige 33 taxa bewijzen geen algemene route.
+
+De overige 82.414 afgeleide dagvlindernullen zijn in v2 behouden. Routetype,
+doelsoort, doelbereik en bewijsgrond zijn nu expliciet opgeslagen. Bij 28
+eensoortbezoeken zonder route blijft het doelbereik `onbepaald` en staan alleen
+de positieve waarnemingen in de matrix. De 35 bezoeken zonder route waarop
+meerdere dagvlindertaxa zijn gemeld hebben de herkenbare status
+`algemene_route_aannemelijk`. De openbare waarnemingsregels bevatten nog steeds
+geen oorspronkelijke route- of sectie-ID; dat blijft een beperking voor
+analyse en publicatie. De 556 nachtvlinderrecords onder `03.201` blijven
+positieve voorkomensinformatie.
+
+Van de bezoeken zijn er 3.063 aan een routefamilie gekoppeld. Daarvan zijn
+2.891 bezoeken direct bruikbaar en blijven 172 bezoeken uit één ruimtelijk
+uitgerekte familie gemarkeerd voor handmatige controle. Voor 63 bezoeken met
+185 bronrecords kon uit de aanwezige geometrie geen route worden hersteld. De
+afgeleide tabellen staan in
+`Meijendel`; `--audit-vlinders` controleert aantallen, matrixconsistentie en
+dat geen oude afgeleide vlindertabellen in het beveiligde schema achterblijven.
+
+De elf routefamilies zijn daarnaast als afzonderlijke interpretatielaag aan de
+gepubliceerde Meijendelroutes gekoppeld. De technische familie-ID blijft
+ongewijzigd; `ndff_vlinder_route_identificatie` bewaart routenummer, naam,
+bewijsbron en zekerheid.
+
+| Familie | Officiële route | Nummer | Zekerheid |
+|---:|---|---:|---|
+| 1 | Het Scheepje | 307 | hoog |
+| 2 | Parnassiapad | 117 | hoog |
+| 3 | Meijendel | 1844 | aannemelijk |
+| 4 | Hertenkamp | 205 | aannemelijk |
+| 5 | Helmduinen | 206 | hoog |
+| 6 | Violenwater | 385 | hoog |
+| 7 | Voorlinden | 1764 | aannemelijk |
+| 8 | Sprang A | 1871 | aannemelijk |
+| 9 | Bierlap (Groot dikkopje) | 1767 | hoog |
+| 10 | Kijfhoekhoogte | 204 | hoog |
+| 11 | De Klip | 1753 | hoog |
+
+Lentevreugd valt buiten de afgesproken selectie. Familie 7 is niet gesplitst:
+24 geometrieën vormen de ruimtelijke hoofdcomponent bij Voorlinden en twee
+noordelijke geometrieën zijn als `ruimtelijke_uitbijter` gemarkeerd. Op 76
+tijdstippen komen beide componenten binnen hetzelfde geregistreerde bezoek
+voor; splitsing zou die bezoeken kunstmatig over twee routes verdelen.
+
+De 1.535 vliesvleugelrecords onder hetzelfde protocol betreffen uitsluitend
+taxa van het geslacht *Bombus*. De handleidingen tonen twee mogelijke
+bovenliggende structuren: een eigen hommelroute of de optionele hommeltelling
+op een dagvlinderroute. Het invoerportaal bewaart per bezoek een expliciete
+deelnamevlag; bovendien telt een waarnemer óf alle hommels als `hommel
+onbekend`, óf op soort na afspraak met de coördinator. Die twee kenmerken staan
+niet in de FFV-regels. De 365 positieve bezoek-taxoncombinaties blijven geldig,
+maar de 937 huidige soortspecifieke `echte_nul`-regels zijn daarom voorlopig en
+mogen niet als afwezigheid worden gebruikt. De 43 bezoeken zonder gelijktijdige
+dagvlinderregel zijn waarschijnlijk zelfstandige hommelbezoeken; de 174
+samenvallende bezoeken kunnen optionele medetellingen zijn. Versie 2 moet
+deelname en determinatieniveau expliciet modelleren.
+
+Het Landelijk Meetnet Libellen (`07.201`) is onder
+`ndff-libellenroute-v1` uit uitsluitend openbare records gereconstrueerd. De
+3.280 bronrecords uit 2007-2021 vormen 461 bezoeken, negen routefamilies en 29
+taxa. De bezoek-soortmatrix bevat 13.173 regels: 2.170 positieve combinaties en
+11.003 echte nullen. Alle negen routefamilies bevatten door de jaren heen meer
+dan één protocoltaxon en zijn daarom als algemene route gekwalificeerd.
+
+Van 60 bezoeken is alleen een grof vlak beschikbaar. Bij 53 daarvan bewijzen
+meerdere getelde taxa eveneens het algemene doelbereik. Zeven grove bezoeken
+bevatten slechts één taxon; hun doelbereik blijft `onbepaald`. Voor deze zeven
+wordt alleen de positieve telling bewaard en worden geen andere soorten als
+afwezig ingevuld. De vier `Meijendel.ndff_libel_*`-tabellen worden met
+`--audit-libellen` gecontroleerd; er staan geen afgeleide libellengegevens in
+het beveiligde schema.
+
+De officiële libellenhandleidingen bevestigen deze scheiding: een algemene
+route telt alle libellen per vaste sectie, een soortgerichte route alleen de
+doelsoort. Route-ID, sectie-ID, routetype, bezoekweer, teller en veranderingen
+zijn native velden maar ontbreken in FFV. De huidige 454 als algemeen
+gekwalificeerde bezoeken zijn protocolmatig bruikbaar; de zeven bezoeken met
+`onbepaald` doelbereik blijven terecht zonder afgeleide nullen. De afzonderlijke
+Riviersluiptelling is geen gewone libellenroute: zij bestaat uit telkens
+vijftien minuten zoeken langs honderd meter rivieroever naar larvenhuidjes, met
+expliciete nultellingen. In de huidige Meijendel-selectie is deze methode niet
+als afzonderlijke NDFF-reeks aangetroffen.
+
+Voor dagactieve nachtvlinders en nectarplanten op een dagvlinderroute geldt een
+afzonderlijke deelnamekeuze per bezoek. Alleen wanneer die keuze aan staat,
+mag een lege soortenlijst als nul gelden. De 556 nachtvlinderregels onder
+`03.201` blijven daarom uitsluitend positieve voorkomensinformatie. In de
+huidige `03.201`-levering zijn geen nectarplantregels aangetroffen.
+
+Het nachtvlinderprotocol `03.203` vereist een vast telpunt, dezelfde val en
+lamp, een volledige nacht, ten minste zes tellingen per jaar en afzonderlijke
+aantallen binnen en buiten de val. De 596 FFV-records zijn echter tot
+jaarperioden en kilometerhokken geaggregeerd; bezoekdatum, telpunt, val, lamp en
+binnen/buiten-status ontbreken. De bestaande kwalificatie als positieve
+hokjaarcontext zonder nullen of trendinvoer blijft daarom juist.
+
+### Wetenschappelijke meerwaarde van ontbrekende Vlinderstichting-velden
+
+De handleidingen maken zichtbaar welke ontbrekende gegevens vooral extra
+ecologische zeggingskracht opleveren:
+
+| Ontbrekend gegeven | Reeks | Wetenschappelijke winst voor Meijendel |
+|---|---|---|
+| Oorspronkelijk route- of telpuntnummer | dagvlinders, hommels, libellen, nachtvlinders | Bevestigt dat dezelfde meeteenheid door de jaren wordt gevolgd en voorkomt dat een verplaatste route als ecologische verandering wordt gezien. |
+| Secties en geometrieversies | dagvlinders en libellen | Maakt verandering binnen een route zichtbaar en koppelt die aan habitat, vegetatie en lokaal beheer. |
+| Routetype en doelsoort | dagvlinders, hommels en libellen | Bepaalt voor welke soorten een niet-melding werkelijk nul is; essentieel voor verspreidings- en trendmodellen. |
+| Volledige bezoekadministratie, inclusief lege bezoeken | alle meetnetten | Onderscheidt echte afwezigheid van niet tellen en maakt detectiekans, bezetting en betrouwbare jaartrends mogelijk. |
+| Deelname per module | hommels, dagactieve nachtvlinders en nectarplanten | Voorkomt dat niet-deelnemen als achteruitgang wordt uitgelegd en maakt trends per soortgroep vergelijkbaar. |
+| Determinatieniveau (`op soort` of verzamelgroep) | hommels en optionele microvlinders | Bepaalt op welk taxonomisch niveau trends verantwoord zijn en voorkomt schijnbare soortafnames door gewijzigde herkenning. |
+| Tellers en aantal deelnemers | routes en telpunten | Maakt correctie mogelijk voor verschillen in ervaring en waarnemingskans; verbetert de vergelijkbaarheid tussen jaren. |
+| Weer, begin-/eindtijd en bezoekduur | dagvlinders, hommels en libellen | Helpt tijdelijke verschillen in activiteit te scheiden van echte ecologische verandering. |
+| Route-, habitat- en beheerwijzigingen | routes | Maakt een onderscheid mogelijk tussen verandering door beheer of vegetatie en verandering door een gewijzigde telling. |
+| Val-, lamp-, brandduur- en binnen/buiteninformatie | nachtvlinders | Maakt vangsten tussen nachten en jaren vergelijkbaar; zonder deze gegevens kan een methodewijziging op een populatieverandering lijken. |
+| Volledige macronachtvlinderlijst en deelname aan microvlinders | nachtvlinders | Levert echte nullen binnen het gekozen taxonomische bereik en voorkomt vertekening door optionele registratie. |
+
+De grootste directe winst komt van route-/telpunt-ID's, volledige bezoeken en
+het doelsoortenbereik. Daarmee veranderen positieve waarnemingen in een
+controleerbare meetreeks met echte nullen. Weer, teller en methodekenmerken
+verhogen daarna de kwaliteit doordat bekende verschillen in detectie en
+telinspanning kunnen worden gecorrigeerd.
+
+### Benodigde reconstructieversie 2 voor Vlinderstichting-meetnetten
+
+De kleinste verantwoorde vervolgstap is niet één generiek surveyschema, maar een
+uitbreiding van de bestaande protocoltabellen met de werkelijk onderscheiden
+entiteiten:
+
+1. route of telpunt met oorspronkelijk nummer, type, doelsoort en
+   geldigheidsperiode;
+2. vaste secties en geometrieversies;
+3. afzonderlijk bezoek met datum/tijd, teller, weer, volledigheid en
+   methodegeldigheid;
+4. deelname per bezoek aan dagvlinders, dagactieve nachtvlinders, hommels en
+   nectarplanten;
+5. telling per bezoek, sectie, taxon, levensstadium en teleenheid;
+6. route- en beheerwijzigingen;
+7. voor nachtvlinders daarnaast telpunt, valtype, lamptype, brandduur en
+   binnen/buiten de val.
+
+Deze velden worden pas gevuld wanneer zij rechtstreeks aanwezig zijn of onder
+een expliciete, geversioneerde afleidingsregel vallen. Ontbrekende deelname- of
+routetypevelden worden nooit uit een ontbrekende soort afgeleid.
+
+Het NEM-Meetprogramma Reptielen (`10.201`) is onder
+`ndff-reptielroute-v2` uit uitsluitend openbare records gereconstrueerd. De 957
+bronrecords uit 1990-2025 vormen 14 routefamilies en 660 route-datumbezoeken.
+Van die bezoeken zijn er 648 aan een route gekoppeld; twaalf bezoeken hebben
+alleen een grof kilometerhok. De 15 historische trajectgeometrieën vormen de
+routeankers; 56 latere exacte locaties zijn aan het best passende anker
+gekoppeld. Alleen twee protocoltaxa komen voor: Zandhagedis en Hazelworm.
+
+De bezoek-soortmatrix bevat 1.320 regels: 661 positieve combinaties en 659
+nullen voor Hazelworm met bereik `binnen_geleverd_positief_bezoek`. Ieder
+aangeleverd bezoek bevat minstens een
+positieve Zandhagediswaarneming. De FFV-bron bevat dus geen volledig negatieve
+reptielenbezoeken; ontbrekende Zandhagedisbezoeken of -nullen worden niet
+gereconstrueerd. De 6.286 adulte, 64 subadulte en 761 juveniele dieren blijven
+afzonderlijk optelbaar. Begin- en eindtijden worden bewaard, maar de feitelijke
+inspanning is `niet_afleidbaar`; de bronperiode wordt expliciet niet als
+inspanning geïnterpreteerd. De vier `Meijendel.ndff_reptiel_*`-tabellen
+worden met `--audit-reptielen` gecontroleerd en staan niet in het beveiligde
+schema.
+
+NEM-amfibieënprotocol `01.201` is onder `ndff-amfibiewater-v2` uit de 2.439
+onvervaagde openbare records uit 2003-2025 gereconstrueerd. De 52 openbare
+watergeometrieën vormen 50 conservatief gekoppelde waterfamilies, 211
+telgebiedbezoeken en 1.300 waterbezoeken met minstens één positieve
+registratie. Geometrieën worden alleen als versies van hetzelfde water
+gekoppeld wanneer hun gebruiksjaren niet overlappen en hun middelpunten
+hoogstens 30 meter uiteen liggen.
+
+De matrix bevat 9.100 waterbezoek-taxonregels: 2.274 positief en 6.826
+`niet_gemeld_methode_onbekend`. De RAVON-handleiding maakt duidelijk dat een
+nul alleen binnen het juiste programmaonderdeel, seizoen, stadium en de
+gebruikte zoekmethode betekenis heeft. Die informatie ontbreekt in de
+FFV-export; daarom zijn de 6.826 eerdere nullen ingetrokken. Volledig negatieve
+water- of telgebiedbezoeken kunnen uit de positieve FFV-export evenmin worden
+hersteld. Exacte aantallen, RAVON-presentieklassen, minimumaantallen,
+schattingen en gemengde telwaarden blijven afzonderlijk herkenbaar;
+presentieklassen worden nooit als exacte aantallen opgeteld. De twee
+Bastaardkikkerlabels zijn alleen voor analyse genormaliseerd, met behoud van
+beide bronlabels.
+
+De 80 vervaagde Kamsalamanderrecords zijn jaarlijkse aggregaten en vormen geen
+reconstrueerbare openbare waterbezoeken. Zij blijven in de bestaande
+beveiligde bronlaag; er zijn geen afgeleide `ndff_amfibie_*`-tabellen in
+`Meijendel_ndff_secure` en er worden geen Kamsalamandernullen afgeleid. De vijf
+openbare tabellen worden gecontroleerd met `--audit-amfibieen`.
+
+RAVON-protocol `13.202` is apart vastgelegd onder
+`ndff-ravon-n2000-v1`. De 67 positieve records vormen 25
+monsterlocatieproxy's; 14 regels zijn doelsoort en 53 bijvangst. De handleiding
+vereist soortspecifieke methode en inspanning en kent expliciete negatieve
+registratie. Omdat deze context niet in de NDFF-regels staat, zijn geen
+bezoeken of nullen afgeleid. Voor `13.201` is om dezelfde reden de eerdere
+term waterlocatieproxy vervangen door de neutralere `monsterlocatieproxy`.
+
+De actuele protocolbesluiten zijn beschikbaar via
+`Meijendel.v_ndff_analysebesluit_actueel`; deze view voorkomt dat historische
+regelversies in dezelfde analyse worden meegeteld.
+
+### Zoogdiervereniging: toets aan de officiële meetnethandleidingen
+
+De officiële handleidingen voor `17.201`, `17.202`, `17.207`, `17.208`,
+`17.209` en `17.210` zijn op 15 september 2026 onder het Zotero-parentitem
+`Meetnetten - Zoogdiervereniging` geplaatst en met de ontvangen NDFF-regels
+vergeleken. Protocol `17.204` valt buiten deze vergelijking: daarvoor is de
+primaire SOVON/AVIMAP-export leidend.
+
+De inhoudelijke correctie betreft `17.201`. De 3.960 wintertelrecords uit
+1976-2025 bevatten 3.786 registraties van soorten waarvoor het NEM-wintermeetnet
+in beginsel geschikt is, 124 positieve
+bijvangsten en 50 registraties `Plecotus auritus/austriacus` die niet veilig
+aan een trendsoort kunnen worden toegewezen. De gecombineerde categorie
+`Myotis mystacinus/brandtii` is volgens de handleiding juist een officiële
+telcategorie en is als doelsoort behouden. De soortindeling staat in
+`ndff_protocol_soort_geschiktheid` onder `ndff-protocolbereik-v2`.
+
+Deze classificatie maakt de positieve wintertellingen beter selecteerbaar,
+maar reconstrueert nog geen lokale trendmatrix. De NDFF-regels missen het
+vaste object-id, de expliciete status geteld/niet geteld en de start- en
+stopredenen van een object. Juist deze gegevens bepalen volgens de handleiding
+of een ontbrekende telling mag worden bijgeschat of als nul moet gelden.
+
+De vergelijking gaf voor de overige vijf reeksen geen nieuwe noodzakelijke
+databasecorrectie. `17.202` bevat zeven positieve records zonder eenduidige
+trenddoelsoort; `17.207` bevat drie losse positieve Otterregistraties en geen
+bewijs van drie uitgevoerde sporenronden; `17.208` is al naar NEM-VTT en
+VleerMUS gescheiden; `17.209` blijft zonder route- en sectie-id een positieve
+sectietelreeks; `17.210` bevat vijf positieve jaarrecords maar geen concrete
+bezoekdatum of volledigheidsstatus. Voor deze reeksen worden daarom geen
+nieuwe nullen afgeleid.
+
+Bronnen: [NEM-handleiding Wintertellingen vleermuizen 2025](https://www.zodion.nl/sites/default/files/2025-11/handleiding_nem_meetprogramma_wintertellingen_vleermuizen_2025.pdf),
+[NDFF Protocollen](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/)
+en [CBS Meetprogramma's flora en fauna 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
+Het Vleermuistransectprotocol (`17.208`) is onder
+`ndff-vleermuistransect-v1` uit uitsluitend onvervaagde openbare records
+gereconstrueerd. De 2.624 bronrecords uit 2013-2025 bestaan uit twee
+zelfstandige meetreeksen: 26 bezoeken van een noordelijke NEM-VTT-autoroute en
+18 bezoeken van een zuidelijke vleerMUS-fietsroute. In 2019 zijn 73 oude
+vleerMUS-regels op middernacht aantoonbaar dubbel aangeleverd naast een
+overeenkomende regel met werkelijk tijdstip; de oude regels blijven in de
+recordselectie zichtbaar maar tellen niet mee. Daardoor blijven 2.551
+akoestische detecties over, niet 2.551 individuele vleermuizen.
+
+De NEM-VTT-route heeft vier doelsoorten: Gewone dwergvleermuis, Ruige
+dwergvleermuis, Laatvlieger en Rosse vleermuis. De vleerMUS-route heeft de
+eerste drie als doelsoort; Rosse vleermuis en overige taxa zijn daar
+bijvangst. De matrix bevat 242 bezoek-taxonregels: 126 positieve
+doelsoortregels, 32 echte nullen binnen het geldige methodebereik en 84
+positieve bijvangstregels. Negen bezoeken vallen buiten het huidige
+methodeseizoen en zes bezoeken hebben een herhalingsinterval dat volgens de
+huidige handleiding nadere controle verdient. Ze blijven bewaard en zichtbaar
+gemarkeerd. De vijf `Meijendel.ndff_vleermuis_*`-tabellen worden gecontroleerd
+met `--audit-vleermuizen`; er staan geen afgeleide vleermuisgegevens in het
+beveiligde schema.
+
+Het konijnentelprotocol (`17.209`) is onder `ndff-konijnentelling-v1`
+geclassificeerd uit 5.809 onvervaagde openbare records uit 1984-2023. Daarvan
+zijn 5.095 positieve Konijnrecords en 714 positieve bijvangsten. Alle waarden
+zijn exacte tellingen van levende, geziene dieren en de bronhouder is de
+Zoogdiervereniging. De huidige landelijke methode telt een vaste route in
+secties, in voor- en najaar, vier tot acht keer per seizoen. De ontvangen
+FFV-laag bevat echter geen route- of sectie-id: elf kilometerhokken, 812
+kalenderdatums en 5.084 hok-datum-taxoncombinaties kunnen daardoor niet tot
+native bezoeken worden teruggebracht.
+
+Er zijn 725 hok-datum-taxoncombinaties met meerdere sectieregels. In 71 groepen
+hebben twee records ook dezelfde telwaarde; de 142 betrokken records blijven
+allemaal behouden, omdat gelijke sectietellingen geen bewezen dubbelen zijn.
+Elf records hebben een exacte datum-hok-taxon-waardeovereenkomst met DAZ-BMP
+(`17.204`) en zijn alleen als mogelijke overlap gemarkeerd. Alle 5.809
+kilometerhokgeometrieën raken meerdere SOVON-plots. Daarom bevat
+`ndff_konijn_recordselectie` de kwaliteitsstatus per bronrecord en is
+`ndff_konijn_hokdatum_taxon` uitsluitend een diagnostische proxy. Er worden
+geen routebezoeken, nullen of TRIM-invoer afgeleid. Voor trendgebruik is een
+vertaaltabel van NDFF-record naar oorspronkelijke route en sectie nodig. De
+twee openbare tabellen worden gecontroleerd met `--audit-konijnen`; er staan
+geen afgeleide konijnentabellen in het beveiligde schema.
+
+Methodische bronnen: [NEM Meetprogramma's Zoogdieren](https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren),
+[Zoogdieren in Zuid-Holland](https://www.zoogdiervereniging.nl/sites/default/files/2019-10/2016.36%20Zoogdieren%20in%20Zuid-Holland.pdf)
+en [Telganger Konijnentellingen](https://www.zoogdiervereniging.nl/sites/default/files/2026-04/telganger_2023-2_0-24-29_konijnentellingen.pdf).
+
+Het DAZ-BMP-protocol (`17.204`) is onder `ndff-daz-bmp-v1` gekoppeld aan de
+bestaande BMP-bezoeken. De NDFF-regels bevatten uitsluitend zoogdieren; zij
+zijn nevenregistraties van het deel van de BMP-vogeltellers dat aan DAZ deelnam
+en alle tijdens zo'n bezoek waargenomen zoogdieren noteerde. Daarom bewijst een
+eenduidig gekoppeld positief 17.204-record deelname van dat bezoek. Het
+ontbreken van zo'n record bij een ander BMP-bezoek bewijst geen deelname en
+levert dus geen volledig negatief DAZ-bezoek op.
+
+Van de 10.670 openbare records koppelen 3.171 op datum en precies één geraakt
+SOVON-plot eenduidig aan 1.475 BMP-bezoeken in 49 plots (2005-2022). Voor deze
+bezoeken is een matrix gemaakt voor Konijn, Haas, Vos, Ree, Eekhoorn, Egel en
+Muskusrat. Zij bevat 10.325 doelsoortregels: 2.681 positieve tellingen, 7.552
+echte nullen en 92 onbesliste regels. Die 92 worden niet als nul gebruikt,
+omdat een positief record van hetzelfde taxon meerdere BMP-bezoeken kan
+betreffen. Van de 161 positieve bijvangstrecords koppelen er 50 eenduidig; zij
+vormen 49 positieve bezoek-taxonregels en krijgen nooit nullen. De overige
+1.026 meervoudig koppelbare en 6.473 niet koppelbare bronrecords blijven
+zichtbaar in de recordselectie. De vier tabellen worden gecontroleerd met
+`--audit-daz-bmp`; er staan geen afgeleide DAZ-tabellen in het beveiligde
+schema.
+
+Methodische grondslag: [NEM Meetprogramma Zoogdieren](https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren)
+en [Kwaliteitsrapportage NEM 2024](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2025/05/meetprogrammasvoorfloraenfauna2024.pdf).
+
+Na afronding van alle NDFF-protocolbewerkingen wordt een nieuw volledig
+BMP/SAP-bestand gedownload. Naar verwachting bevat dit de primaire
+zoogdierregistraties per BMP-telling en mogelijk de oorspronkelijke locaties.
+Daarmee kan `ndff-daz-bmp-v1` onder een nieuwe reconstructieversie worden
+verbeterd: oorspronkelijke bezoekkoppelingen gaan vóór de huidige afleiding uit
+datum en openbaar kilometerhok, volledig negatieve deelnemende bezoeken kunnen
+worden toegevoegd en de nu ambigue of niet koppelbare NDFF-records kunnen
+opnieuw worden beoordeeld. NDFF blijft daarbij als secundaire controlebron
+behouden.
+
+### Nederlandse Mycologische Vereniging: toets aan de officiële handleidingen
+
+Op 15 september 2026 zijn drie officiële handleidingen onder Zotero-parentitem
+`Meetnetten - Nederlandse Mycologische Vereniging (NMV)` (`GATY566T`)
+opgenomen: de algemene handleiding 2023, de invoerhandleiding 2022 en de
+historische handleiding Paddestoelenmonitoring.
+
+Het NEM-meetnet Zeereeppaddenstoelen (`11.202`) is onder
+`ndff-zeereep-v2` gereconstrueerd op zijn oorspronkelijke meeteenheid: het
+RD-kilometerhok. De 3.729 onvervaagde openbare records vormen 161 bevestigde
+hok-datumbezoeken in 21 kilometerhokken, verspreid over 2014-2025. Negen
+vervaagde records zijn niet als bezoek gebruikt. De bezoek-soortmatrix omvat
+de zes typische doelsoorten en bevat 966 regels: 224 positieve combinaties en
+742 niet-meldingen. De handleiding staat uitdrukkelijk toe dat een teller
+slechts één of enkele bekende soorten volgt. Omdat de NDFF-export niet vermeldt
+welke soorten per bezoek zijn geteld, hebben de 742 regels de status
+`niet_gemeld_tellerscope_onbekend`; zij zijn geen echte nullen.
+
+De bronwaarden blijven inhoudelijk intact: `1-3`, `4-20` en `21 of meer` zijn
+NMV-klassen van vindplaatsen en geen aantallen vruchtlichamen. Honderd bezoeken
+vallen in het aanbevolen kernseizoen oktober-december; 61 bezoeken staan
+afzonderlijk gemarkeerd als buiten dat venster. Zonder aanvullende tellerscope
+zijn alleen de positieve registraties rechtstreeks bruikbaar; de niet-meldingen
+mogen niet in een bezettings- of trendmodel als nul worden ingevoerd. Controle
+vindt plaats met `--audit-zeereeppaddenstoelen`; de drie afgeleide tabellen
+staan uitsluitend in `Meijendel`.
+
+Methodische bronnen: [NDFF 11.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-202-zeereeppaddenstoelen/)
+en [NMV-methodiek Zeereeppaddenstoelen](https://www.mycologen.nl/onderzoek/meetnet/zeereep-concept/zeereep-methodiek/).
+
+Het historische NEM-meetnet Bospaddenstoelen (`11.201`) is onder
+`ndff-bospaddenstoel-v1` gereconstrueerd op vaste meetpunten. De 982 openbare
+bronregels bevatten twee technische representaties. Voor 473
+plot-datum-taxoncombinaties staat een presentieregel naast een regel met het
+exacte vruchtlichaamaantal; de exacte regel is canoniek gemaakt zonder de
+presentieregel uit het auditspoor te verwijderen. Daardoor blijven 509 unieke
+positieve resultaten over op drie meetpunten en 110 bezoeken in 1999-2016.
+
+De historische handleiding stelde per meetpunt een vaste keuze verplicht: alle
+telsoorten óf één of enkele geselecteerde telsoorten; die keuze mocht tijdens
+de reeks niet veranderen en een afwezige geselecteerde soort werd als nul
+ingevuld. Daarom omvat het afgeleide doelbereik uitsluitend de 76
+meetpunt-taxoncombinaties die door minstens één positieve melding aantoonbaar
+zijn. De bezoekmatrix telt 2.934 regels: 506 positieve doelsoortresultaten en
+2.428 echte bezoeknullen. De drie positieve regels voor `Fungi sp. indet.` zijn
+bijvangst en krijgen geen nullen. De nul betekent geen vruchtlichaam tijdens dat
+bezoek; zij bewijst geen afwezig mycelium en geen ongeschikte habitat.
+
+De jaarlijkse tabel telt 977 meetpunt-jaar-taxonregels, waarvan 316 met een
+positieve exacte maximumtelling en 661 nullen. Conform de historische
+handleiding is de jaarwaarde het hoogste aantal vruchtlichamen op één teldag,
+niet de som van bezoeken. Zeven bevestigde bezoeken in december staan als
+buiten het historische kernseizoen juli-november gemarkeerd. Volledig negatieve
+bezoeken, oorspronkelijke meetpuntnummers, terreinschetsen en zoektijd ontbreken
+in de NDFF-export en zijn niet aangevuld. Controle vindt plaats met
+`--audit-bospaddenstoelen`; alle zeven afgeleide tabellen staan in `Meijendel`.
+
+Methodische bronnen: [NDFF 11.201](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-201-meetnet-bospaddenstoelen-nem/)
+en de [historische handleiding Paddestoelenmonitoring](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2017/08/Handleiding-paddenstoelen.pdf).
 
 ## Toepassing op beveiligde levering 58679
 
@@ -23,18 +437,585 @@ De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de
 1.274 daarvan ruimtelijk geschikt voor een gerichte aanvraag van volledige
 brondata. De GeoPackage bevat zelf geen telobjecten, bezoekstructuur,
 inspanning, protocolversies of afleidbare nullen; `zoid` en `sessionid` zijn in
-alle records 0. Daarom zijn ook in de beveiligde levering nul records direct
-trendklaar.
+alle records 0. Daarom waren in de beveiligde levering op zichzelf nul records
+direct trendklaar. Dit sluit latere reconstructie met de volledige openbare
+reeks en de officiële protocolregels niet uit; `03.201` is inmiddels zo
+uitgewerkt.
+
+## NEM-reconstructie op de volledige canonieke laag
+
+De eerdere vervolgselectie van 1.274 records was uitsluitend gebaseerd op de
+beveiligde levering van 191 soorten. Zij is geen rangorde voor alle NDFF-data.
+Na voltooiing van `ndff-analyseketen-v1` is de prioriteit opnieuw bepaald op de
+810.983 unieke canonieke records. Daarvan zijn 65.464 records voorlopig
+kandidaat voor minstens één protocolmatig gebruikstype buiten uitsluitend
+positieve voorkomensinformatie (`V`). `Gegevensgeschiktheid` blijft in de
+algemene analysepoort `niet_beoordeeld`; een voltooide protocolreconstructie
+krijgt daarnaast haar eigen, strengere matrix en audit.
+
+| Protocol | Records | Bezoeken | Jaren | Stand |
+|---|---:|---:|---|---|
+| `03.201` Dagvlinders | 82.217 | 3.126 | 1990-2025 | gereconstrueerd |
+| `03.201` Vliesvleugeligen | 1.535 | 217 | 2018-2025 | zelfstandige NEM-deelreeks gereconstrueerd |
+| `07.201` Libellen | 3.280 | 461 | 2007-2021 | negen routefamilies en bezoek-soortmatrix gereconstrueerd |
+| `10.201` Reptielen | 957 | 660 | 1990-2025 | 14 routefamilies en bezoek-soortmatrix gereconstrueerd |
+| `01.201` Amfibieën | 2.519 | 225 | 2003-2025 | eerst deelprotocol per bezoek bepalen |
+| `17.208` Vleermuistransect | 2.624 | 44 | 2013-2025 | twee meetreeksen en bezoek-soortmatrix gereconstrueerd; 73 dubbelen onderdrukt |
+| `17.209` Konijnen in de duinen | 5.809 | 812 | 1984-2023 | eerst overlap met bestaande tellingen toetsen |
+| `11.202` Zeereeppaddenstoelen | 3.738 | 161 | 2014-2025 | 21 kilometerhokken en bezoek-soortmatrix gereconstrueerd; 9 vervaagde records uitgesloten |
+| `02.202` Korstmossen | 384 | 32 | 2000-2025 | 12 proefvlakken en bezoek-soortmatrix gereconstrueerd; 20 vervaagde records uitgesloten |
+| `02.204` Mossen | 377 | 7 hokken | 2000-2011 | 7 volledige hokinventarisaties en inventarisatie-soortmatrix gereconstrueerd; 1 vervaagd record uitgesloten |
+| `11.201` Bospaddenstoelen | 982 | 110 | 1999-2016 | drie vaste meetpunten, bezoekmatrix en jaarlijkse maxima gereconstrueerd; 473 parallelle presentieregels onderdrukt |
+| `12.204` Het Nieuwe Strepen | 4.569 | 23 lijstkandidaten | 2012-2024 | bezoekmatrix gereconstrueerd; onafhankelijkheid herhalingen nog niet bevestigd |
+| `17.204` DAZ-BMP | 10.670 | 1.475 bevestigd | 1994-2022 | gekoppeld aan BMP; doelsoortmatrix met taxonspecifieke ambiguïteitsblokkade |
+| `03.203` Nachtvlinders | 596 | 4 | 2019-2025 | geen nullen uit huidige NDFF-regels afleiden |
+| `11.204` Bospaddenstoelen verspreiding | 14 | 2 | 2017 | te klein voor lokale trend |
+| `13.201` Beek- en poldervissen | 20 | 6 | 2014 | te klein voor lokale tijdreeks |
+| `17.207` Bever en otter | 3 | 3 | 2024 | te klein en slechts één lokaal taxon |
+| `12.202` LMF-M&N | 15.129 | 329 | 1981-2024 | niet naast provinciale PQ gebruiken |
+
+Record- en bezoekaantallen zijn bron- en reconstructiecontroles, geen
+populatieomvang. Per protocol worden vóór nullen de native meeteenheid, het
+volledige doelsoortenbereik en eventuele overlap met primaire bronnen getoetst.
+
+### Primaire SOVON/AVIMAP-bron voor DAZ en overige bijvangsten
+
+Op 13 september 2026 is de volledige export van SOVON/AVIMAP-project 252
+gecontroleerd. De puntlaag telt 660.688 unieke bron-ID's. Daarvan zijn 19.960
+niet-vogelregels uit 4.364 bezoeken geïmporteerd: 19.877 zoogdierregels
+(2009-2026), 75 amfibie-/reptielregels (2009-2026), vier mierenregels
+(2017-2019) en vier dagvlinderregels (2015-2017). De 35 taxa zijn gekoppeld aan
+`ndff_soorten` waar de naam eenduidig overeenkomt; zeven resterende taxa hebben
+een expliciete handmatige taxonreferentie. De 807 regels uit 2026 zijn als
+lopend, mogelijk onvolledig jaar gemarkeerd.
+
+De primaire DAZ-matrix `sovon-avimap-daz-v1` omvat 4.354 bezoeken, 30.478
+bezoek-doelsoortcombinaties, 6.859 positieve uitkomsten en 23.619 echte nullen.
+Daarnaast zijn 179 uitsluitend positieve bijvangst-uitkomsten bewaard. Een
+echte nul wordt alleen afgeleid binnen een bezoek waarin minimaal één zoogdier
+in de oorspronkelijke SOVON-bron staat; bezoeken zonder zoogdierregel hebben
+geen aantoonbare DAZ-deelname en blijven buiten de matrix.
+
+De vergelijking met alle 10.670 openbare `17.204`-regels gebeurt op datum,
+taxon en RD-kilometerhok. Voor 2.654 NDFF-regels is ook de totale telwaarde
+gelijk; 1.917 overlappende regels hebben een telwaardeconflict. In beide
+gevallen is de primaire SOVON-bron leidend en wordt NDFF niet daarnaast geteld.
+De overige 6.099 NDFF-regels hebben geen tegenhanger in deze SOVON-export en
+blijven herkenbaar als uitsluitend secundaire bron. Geen ruwe NDFF-regel is
+fysiek verwijderd.
+
+De meegeleverde vogelgegevens zijn uitsluitend-lezen vergeleken. Alle 297.092
+bestaande dagwaarneming-ID's en alle 7.227 bestaande bezoek-ID's komen in de
+SOVON-export voor. De export bevat daarnaast tot en met 2025 respectievelijk
+303.867 vogelregels en 7.228 bezoeken die niet in de database staan. Bij de
+gemeenschappelijke dagregels zijn datum, soort, aantal, coördinaten en overige
+inhoudelijke velden gelijk, behalve 155 inmiddels als buiten het plot gemarkeerde
+regels; lege versus nulwaarden verklaren de schijnverschillen in broedcode en
+cluster-ID. Vrije bezoektekst wijkt bij 297 bezoeken af en bezoekduur bij 17
+bezoeken na afronding op hele minuten. Voor territoria zijn 260 bronresultaten
+niet in de database aanwezig, staan 104 database-uitkomsten uit 2009-2025 niet
+in deze export en verschillen 53 gemeenschappelijke aantallen. De export bevat
+geen resultaten of territoriapunten voor 2008 en slechts een beperkte set voor
+2007. Daarom zijn de vogeltabellen niet gewijzigd; deze afwijkingen vragen een
+afzonderlijke vogelbronbeslissing.
+
+Die bronbeslissing is op 13 september 2026 genomen. De primaire download is
+voor aanwezige SOVON-regels leidend en wordt tot en met 2025 aanvullend en
+corrigerend verwerkt. Ontbrekende vogelregels, bezoeken en
+territoriumresultaten worden toegevoegd. Bij dezelfde bron-ID worden de actuele
+SOVON-velden overgenomen, waaronder `in_plot`, bezoektekst en bezoekduur; bij
+dezelfde plot-soort-jaarcombinatie wordt het territoriumaantal bijgewerkt. Er
+worden geen bestaande gegevens verwijderd alleen omdat zij in de export
+ontbreken. Dat beschermt handmatige aanvullingen en is noodzakelijk omdat de
+export geen resultaten voor 2008 en slechts een beperkte set voor 2007 bevat.
+Jaar 2026 blijft geheel buiten deze vogelsynchronisatie. De reproduceerbare
+commando's zijn `--sync-sovon-avimap-vogels` en
+`--audit-sovon-avimap-vogels`.
+
+De uitvoering voegde 303.867 vogelwaarnemingen, 7.228 bezoeken en 260
+territoriumresultaten toe. Zij corrigeerde bij rechtstreeks overeenkomende
+bronregels 155 `in_plot`-waarden, 297 bezoekteksten, 165 bezoekduren en 53
+territoriumaantallen. Van de bezoekduren bevatten 47 bronwaarden een aantoonbaar
+geheel-etmaalartefact; alleen die waarden zijn uit begin- en eindtijd herleid.
+Eén bezoek uit 2023 houdt bronconform een duur boven 24 uur en een expliciete
+correctie-opmerking. De drie positieve niet-vogelregels en zeven DAZ-matrixregels
+van dat bezoek hebben daarom status `handmatige_controle_bezoekduur`. De 2.521
+bestaande territoriumregels zonder exportregel bleven ongewijzigd. Een tweede
+volledige synchronisatie leverde nul toevoegingen en nul correcties op.
+
+Voor statistisch gebruik staan de primaire niet-vogelregels expliciet in
+`v_sovon_avimap_niet_vogel_analyse`. Alleen de zeven DAZ-doelsoorten krijgen
+protocolkandidaattypen `V,TA`; gebruik voor tellingen de afzonderlijke
+bezoek-taxonmatrix `v_sovon_avimap_daz_analyse`. Overige zoogdieren en de
+amfibieën-, reptielen-, mieren- en dagvlinderbijvangsten zijn uitsluitend
+positieve aanwezigheidsinformatie (`V`). Ontbreken is daar geen nul en de
+ruwe aantallen zijn geen populatietrend. Het lopende jaar blijft afzonderlijk
+als uitgesloten gemarkeerd.
+
+### Het Nieuwe Strepen (`12.204`)
+
+De eerdere telling van 1.145 verschillende begin-/eindtijdcombinaties was geen
+bezoektelling. Bij app-invoer heeft vrijwel iedere plantwaarneming haar eigen
+tijdstip. Regelversie `ndff-hns-v1` groepeert de 4.569 openbare bronregels
+daarom op kalenderdatum en ruimtelijk samenhangende RD-kilometerhokken. Het hok
+met minimaal 80% van de regels geldt als waarschijnlijk doelhok. Een cluster
+geldt als `volledige_lijst_aannemelijk` wanneer het binnen 27 april-30 september
+ligt en ten minste 50 taxa bevat. Dit zijn transparante, conservatieve
+reconstructiedrempels en geen landelijke FLORON-protocolnormen.
+
+De reconstructie bevat 26 datum/ruimteclusters: 23 aannemelijk volledige
+inventarisaties met 4.524 bronregels en drie fragmenten met samen zes regels.
+Daarnaast blijven 39 openbaar vervaagde jaarregels positief beschikbaar, maar
+zonder koppeling aan een bezoek. Het uit de volledige lijsten aantoonbare lokale
+doelbereik omvat 703 taxa. De bezoekmatrix bevat 4.439 positieve combinaties en
+11.730 echte nullen; het hok-jaarbestand bevat 3.269 positieve combinaties en
+5.167 nullen over twaalf hok-jaren.
+
+De NDFF-export bevat geen FLORON-lijst-ID, teller of deelnemersaantal. Van tien
+hok-jaren zijn herhaalde datumclusters aanwezig; 21 inventarisaties krijgen
+daarom de status `herhaling_aanwezig_onafhankelijkheid_niet_bevestigd`. Twee
+clusters binnen veertien dagen kunnen twee onafhankelijke tellers zijn, maar ook
+velddagen van één inventarisatie. Gebruik de matrix voorlopig voor
+verspreidings-/occupancyanalyse met deze waarschuwing; voer aantallen en dubbele
+vindplaatsen niet als plantenabundantie in. Controleer de laag met `--audit-hns`.
+
+Methodische grondslag: [FLORON Het Nieuwe Strepen](https://www.floron.nl/Meedoen/Het-Nieuwe-Strepen),
+[FLORON protocol 2019](https://www.floron.nl/Portals/1/Downloads/Protocol%20Het%20Nieuwe%20Strepen%202019_papierenstreeplijst_mei2019.pdf),
+[NEM Flora](https://www.netwerkecologischemonitoring.nl/meetprogrammas/flora)
+en [CBS Meetprogramma's 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
+### Korstmossen op steen, heiden en stuifzanden (`02.202`)
+
+Regelversie `ndff-korstmos-v2` reconstrueert 364 onvervaagde openbare
+bronregels tot twaalf proefvlakken en 32 bezoeken in 2000-2025. Vier vaste
+proefvlakken zijn in zes meetjaren herhaald; acht proefvlakken hebben één
+bevestigd bezoek. Het openbare lokale doelbereik omvat dertig taxa. Omdat het
+protocol per bezoek een complete soortenlijst voorschrijft, bevat de
+bezoek-soortmatrix 287 positieve combinaties en 673 echte nullen.
+
+De officiële methode schrijft per locatie twee onafhankelijke tellingen voor.
+De bron bevat 67 bezoek-taxoncombinaties met twee gelijke klassen en tien met
+twee verschillende klassen. Dit zijn geen technische dubbelen of fouten, maar
+afzonderlijke waarnemertellingen. Bij twaalf bezoeken is de dubbele telling in
+de export aantoonbaar; bij twintig bezoeken is zij niet aantoonbaar. Dat laatste
+bewijst niet dat slechts één teller aanwezig was. De FFV-levering bevat slechts
+twee ordinale klassen,
+terwijl de oorspronkelijke BLWG-methode zes klassen onderscheidt. Gebruik de
+matrix daarom voor presentie/occupancy en de grove rang alleen als ordinale
+indicator, niet als exacte bedekking. Voor waarnemerspecifieke detectieanalyse
+zijn alsnog waarnemer- of lijst-ID's nodig; de gecombineerde plotanalyse wordt
+daardoor niet geblokkeerd. Twintig vervaagde Saucijs-baardmosrecords
+worden niet naar openbare afgeleide tabellen gekopieerd en leveren daar ook geen
+nullen. Controleer de laag vóór gebruik met `--audit-korstmossen`.
+
+Methodische grondslag: [NDFF protocol 02.202](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/2-202-korstmossen-op-steen-heiden-en-stuifzanden-nem/),
+[BLWG meetnet](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
+en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/korstmossen).
+De beoordeelde BLWG-documenten staan in Zotero onder `Meetnetten - BLWG`
+(`8E3TCBHW`).
+
+### Meetnet mossen (`02.204`)
+
+Regelversie `ndff-mos-v2` reconstrueert 376 onvervaagde openbare bronregels
+tot zeven volledige kilometerhokinventarisaties. De 21 bronperioden daarbinnen
+zijn negentien dagclusters en twee jaarintervallen; zij worden niet als 21
+onafhankelijke bezoeken behandeld. Eén inventarisatie overspant de jaargrens
+2010-2011. Geen kilometerhok is in de lokale levering in een latere meetronde
+herhaald, zodat deze selectie zelfstandig geen lokale tijdtrend ondersteunt.
+
+Het uit de openbare records aantoonbare lokale doelbereik omvat 111 taxa. De
+inventarisatie-soortmatrix bevat 354 positieve combinaties en 423 echte nullen.
+Van de positieve combinaties hebben er 312 een BLWG-talrijkheidsklasse 1-3 en
+41 alleen een presentiewaarde. Eén combinatie heeft conflicterende
+talrijkheidsklassen. Daarnaast blijven 21 gelijke parallelle bronregels in het
+auditspoor staan, maar zij tellen niet als extra resultaat.
+
+Het protocol vereist een zo volledig mogelijke soortenlijst per geselecteerd
+kilometerhok, minimaal acht mensuren, alle relevante biotopen en een
+talrijkheidsklasse per soort. De expliciete protocolcode geldt als bewijs voor
+die minimale inspanning en habitatdekking; een precieze bezoekduur of waarnemer
+hoeft niet opnieuw te worden opgevraagd om de inventarisatie als protocolconform
+te behandelen. De FFV-export bevat geen oorspronkelijk BLWG-lijst-ID. Een
+kilometerhok wordt niet als aanwezigheid of nul in ieder geraakt SOVON-plot
+geïnterpreteerd. Eén vervaagd record wordt niet naar openbare afgeleide tabellen
+gekopieerd. Controleer de laag vóór gebruik met `--audit-mossen`.
+
+Methodische grondslag: [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx),
+[BLWG Inventarisatiehandleiding](https://www.blwg.nl/wp-content/uploads/2025/08/BLWG-Inventarisatiehandleiding.pdf)
+en [GBIF-beschrijving protocol 02.204](https://www.gbif.org/dataset/2d1a33c3-f278-40d2-a662-e0d3369658e2).
+
+### FLORBASE-streeplijsten (`12.001`)
+
+Regelversie `ndff-florbase-v1` groepeert 21.161 onvervaagde openbare
+bronregels per werkelijk RD-kilometerhok en jaar. Dat levert 183 hok-jaren in
+36 hokken op. De 118 hok-jaren in 33 hokken met minimaal vijftig geregistreerde
+taxa gelden als `volledige_lijst_aannemelijk`; de overige 65 blijven fragment.
+De grens van vijftig taxa is een transparante lokale reconstructiedrempel en
+geen officiële FLORON-protocolnorm.
+
+Het uit de aannemelijk volledige lijsten aangetoonde lokale doelbereik omvat
+857 taxa. De inventarisatie-taxonmatrix bevat 19.405 positieve combinaties en
+81.721 `protocolnul_onder_volledigheidsaanname`. Van de positieve combinaties
+hebben 18.731 alleen presentie-informatie en 674 ook aantalsinformatie. Deze
+aantallen of meerdere vindplaatsen worden niet geaggregeerd tot lokale
+abundantie. De 987 bronregels uit fragmenten blijven als positieve informatie
+traceerbaar maar leveren geen nullen.
+
+FLORON registreert op de oorspronkelijke streeplijst of het onderzoek volledig
+was, naast bezoekdata en bezoekduur. Die volledigheidsvlag, de lijst-ID,
+bezoekduur en historische checklistversie ontbreken in de FFV-export. Daarom
+zijn de afgeleide nullen geschikt voor voorlopige inventarisatie- en
+verspreidingsvergelijkingen, maar niet zonder waarschuwing voor een definitieve
+trendclaim. De native meeteenheid is het kilometerhok; geen aanwezigheid of nul
+wordt naar ieder geraakt SOVON-plot doorgezet. De 213 vervaagde records worden
+niet naar deze openbare afgeleide laag gekopieerd. Controleer de laag met
+`--audit-florbase`.
+
+Methodische grondslag: [NDFF protocol 12.001](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/12-001-totaalproject-floron/),
+[FLORON kilometerhokinventarisatie](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren)
+en [FLORON inventarisatiehandleiding](https://www.floron.nl/Portals/1/Downloads/2022%20handleiding%20inventarisatie-projecten.pdf).
+
+### LMF-A (`12.211`)
+
+Het officiële FLORON-rapport over Berkheide, Meijendel en Solleveld maakt de
+bovenliggende meetstructuur van protocol `12.211` expliciet. Dunea laat per
+kilometerhok een vaste looproute lopen. In het zomerseizoen worden daar 75
+goed herkenbare aandachtssoorten gevolgd, gemiddeld eens per vier jaar. De
+oorspronkelijke uitkomst is per soort één FLORON-abundantieklasse voor de hele
+route; wanneer groeiplaatsen apart zijn ingevoerd, worden exacte aantallen eerst
+opgeteld.
+
+Regelversie `ndff-lmfa-v1` groepeert de 5.980 NDFF-regels tot 30 routes en 124
+routejaren. Van deze routejaren staan er 79 in de rapporttabel voor 1999-2019;
+45 latere of afwijkende hokjaren zijn herkenbaar aan protocol `12.211`, maar
+niet in die rapporttabel bevestigd. De bezoek-soortmatrix telt 9.300 regels:
+1.493 positieve uitkomsten en 7.807 echte nullen. Bij 161 positieve combinaties
+zijn meerdere bronklassen of meetwijzen aanwezig; daarvoor wordt geen
+kunstmatige abundantieklasse berekend.
+
+Het soortenhoofdstuk van het rapport noemt Ruig zoutkruid, maar Tabel 4 met de
+uitdrukkelijke 75 trendsoorten niet. Positieve records van deze en andere
+aanvullende planten blijven bewaard, maar leveren geen nullen. Vervaagde
+bronregels dragen alleen bij aan niet-gevoelige routejaaruitkomsten; hun exacte
+vindplaatsen blijven buiten de openbare tabellen. De analysemethode uit het
+rapport waarbij een ontbrekende meetronde met een eerdere of latere ronde werd
+ingevuld, wordt niet overgenomen: de database bewaart uitsluitend uitgevoerde
+routejaren.
+
+De gerichte plantenprojecten `12.002` en `12.003`, Nectarindex `12.209` en
+LMF-A `12.211` zijn doelsoortafhankelijk geclassificeerd. Voor de negen
+Nectarindexregels uit één datum en één geometrie is geen lokale trend- of
+nulstructuur gemaakt.
+
+Methodische grondslag: [FLORON-rapport LMF-A 1999-2019](https://www.verspreidingsatlas.nl/redactie/pdf/f085962d-9fe4-4c7e-86bf-102fc0d35dea.pdf),
+[FLORON kilometerhokinventarisaties](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren),
+[Het Nieuwe Strepen](https://www.floron.nl/meedoen/het-nieuwe-strepen) en
+[Nectarindex](https://www.floron.nl/nectarindex). De vier officiële PDF's staan
+in Zotero onder parent-item `Meetnetten - FLORON` (`U95RCP8M`).
+
+### HabSlak (`04.006`)
+
+Regelversie `ndff-habslak-v2` groepeert 2.629 onvervaagde openbare records per
+kalenderdatum en openbare geometrie tot 251 monsters. Dat levert 1.730
+positieve monster-taxoncombinaties voor 51 taxa. Verschillende telonderwerpen,
+zoals levende dieren en lege huisjes, blijven afzonderlijke meetwaarden in JSON
+en worden niet bij elkaar opgeteld. De oorspronkelijke monster-ID en het
+monstertype zijn niet meegeleverd.
+
+De handleiding noemt Nauwe korfslak, Zeggekorfslak en Platte schijfhoren als
+doelsoorten, maar in deze Meijendel-selectie is alleen Nauwe korfslak als
+doelsoort aangetroffen. De soortprotocollen uit 2014 onderscheiden monitoring
+op vaste locaties van verspreidingsonderzoek per 10x10-km-hok. Voor monitoring
+zijn per locatie een voorgeschreven monster of meerdere sublocaties nodig. De
+NDFF-export bevat geen oorspronkelijke locatie-ID's, monsteromvang,
+sublocaties, volledige negatieve locaties of doelbereik per veldformulier.
+Daarom zijn alle 66 hok-jaren qua bemonsteringsvolledigheid niet beoordeelbaar.
+Alleen positieve Nauwe-korfslakmeldingen bewijzen aanwezigheid; er worden geen
+nullen afgeleid. Voor begeleidende soorten wordt afwezigheid evenmin afgeleid.
+
+De 143 vervaagde openbare records blijven traceerbaar in de recordselectie maar
+worden niet aan openbare monsters of exacte locaties gekoppeld. Een openbare
+positieve doelsoortmelding mag alleen de reeds openbare hokjaarstatus bepalen.
+Alle vier afgeleide tabellen staan in `Meijendel`; er is geen nieuwe tabel in
+`Meijendel_ndff_secure`. Controleer de laag met `--audit-habslak`.
+
+Methodische grondslag: [NDFF protocol 04.006](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/4-006-slakken-van-de-habitatrichtlijn/),
+[ANEMOON HabSlak](https://www.anemoon.org/projecten/natura2000/habslak-protocollen)
+en de algemene handleiding plus drie soortprotocollen in Zotero onder
+parent-item `Meetnetten - Stichting ANEMOON` (`BPU2U3KE`).
+
+### Braakbalonderzoek (`17.002`)
+
+Regelversie `ndff-braakbal-v1` koppelt alle 389 positieve openbare bronregels
+aan 37 geometrie-jaaraggregaten en 226 positieve taxoncombinaties voor veertien
+taxa. De aangeleverde aantallen omvatten samen 9.381 prooidieren, waaronder
+3.424 Veldmuizen. Herhaalde taxonregels binnen hetzelfde jaar en dezelfde
+geometrie worden transparant samengevoegd, maar de som wordt niet als lokale
+abundantie geïnterpreteerd.
+
+Van de 389 regels zijn er 387 tot een openbaar 10 x 10 km-vlak vervaagd. De
+twee onvervaagde regels betreffen één Mol en één Konijn en vormen geen
+volledige braakbalpartij. De bron bevat geen oorspronkelijke partij-, nest- of
+locatie-ID's. Daardoor kan één geometrie-jaaraggregaat meerdere partijen en
+vindplaatsen omvatten. Achttien aggregaten hebben een som van minimaal 150
+prooidieren, maar krijgen juist daarom de voorzichtige status
+`som_minimaal_150_partij_onbekend`: de gebruikelijke omvangsdrempel kan niet
+aan één oorspronkelijke partij worden toegeschreven.
+
+De laag bevat daarom nul afgeleide nullen en nul SOVON-plotkoppelingen. Zij is
+alleen geschikt voor positieve regionale taxonsamenstelling en indicatieve
+verandering in registraties, steeds met de ruimtelijke en
+partij-onzekerheidsmelding. Alle afgeleide tabellen staan in `Meijendel`; er is
+geen braakbalafleiding in `Meijendel_ndff_secure`. Controleer de laag met
+`--audit-braakballen`.
+
+Methodische grondslag: [NDFF 17.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-002-braakbalonderzoek-nem/),
+de [methodische rapportage van de Zoogdiervereniging](https://www.zoogdiervereniging.nl/sites/default/files/publications/2009.05%20Verspreidingsonderzoek%20muizen%20en%20spitsmuizen%20in%202008_0.pdf)
+en de [CBS-kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
+### Jaarrond Tuintelling (`102.002`)
+
+Regelversie `ndff-tuintelling-v1` verwerkt alle 309 openbare bronregels uit
+2015 tot en met 7 maart 2022. De zes openbare geometrieversies vormen bij een
+afstandsdrempel van één meter drie tuinvakfamilies. Deze afleiding herkent
+kleine geometrieverschuivingen door de jaren heen, maar bewijst geen
+oorspronkelijke tuin-ID.
+
+Er zijn 125 telperioden gereconstrueerd: 119 weektellingen, vijf dagperioden en
+één tijdstiptelling van vijf minuten. Per telling kiest een deelnemer volgens
+het protocol de getelde soortgroepen en meldt daarbinnen alle waargenomen
+soorten. De FFV-export bevat de oorspronkelijke keuzevlag niet. Daarom geldt
+een soortgroep alleen als geteld wanneer in dezelfde tuinvakfamilie en periode
+minstens één positieve regel voor die groep aanwezig is. Dit levert 213
+bevestigde periode-soortgroepcombinaties.
+
+Binnen het beperkte doelbereik van 33 taxa die ergens in deze lokale levering
+positief zijn aangetroffen, bevat de matrix 1.645 regels: 308 positieve
+periode-soortgroep-taxoncombinaties en 1.337
+`protocolnul_binnen_lokaal_doelbereik`. De 309e positieve bronregel betreft een
+tweede levensstadium van Bruine kikker binnen dezelfde combinatie en blijft als
+afzonderlijke meetwaarde behouden. Een voorlopige nul betekent uitsluitend dat
+het taxon niet is gemeld binnen een positief bevestigde soortgroeptelling. Zij
+geldt niet voor alle landelijke tuinsoorten en niet voor een niet-getelde
+soortgroep.
+
+Ruimtelijk vormt de reeks geen Meijendelmeting: 308 bronregels liggen buiten de
+SOVON-plots en één regel raakt meerdere plots. Geen telperiode krijgt daarom
+een plotkoppeling. Ook bevat de levering geen record na de vernieuwing van de
+Jaarrond-Tuintellingwerkwijze in juli 2022. Gebruik de matrix uitsluitend als
+regionale tuincontext en niet voor een lokale Meijendeltrend. Alle zes
+afgeleide tabellen staan in `Meijendel`; er is geen afleiding in
+`Meijendel_ndff_secure`. Controleer met `--audit-tuintellingen`.
+
+Methodische grondslag: [NDFF 102.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-002-jaarrond-tuintelling/),
+[Jaarrond Tuintelling](https://tuintelling.sovon.nl/),
+[Sovon over de werkwijze](https://www.sovon.nl/tellen/telprojecten/jaarrond-tuintelling)
+en [Sovon over de vernieuwing in 2022](https://www.sovon.nl/actueel/nieuwsberichten/jaarrond-tuintelling-vernieuwd).
+
+### LiveAtlas (`102.005`)
+
+Regelversie `ndff-liveatlas-v1` verwerkt alle 231 openbare bronregels uit 2021
+tot en met september 2025. Zij bevatten uitsluitend exacte positieve aantallen:
+455 getelde exemplaren van 33 taxa, verdeeld over Dagvlinders en Libellen.
+Exact gelijke begin- en eindtijd groeperen de bronregels tot 64 afgeleide
+bezoeken. Deze sleutel is reproduceerbaar, maar is geen oorspronkelijk
+LiveAtlas-bezoek-ID.
+
+De bezoeken vormen 87 bezoek-soortgroepcombinaties: 53 voor Dagvlinders en 34
+voor Libellen. Na samenvoeging van herhaalde taxonregels blijven 169 positieve
+bezoek-soortgroep-taxonuitkomsten over. De oorspronkelijke meetwaarden en
+recordidentiteiten blijven daarbij in `meetwaarden_json` controleerbaar.
+
+Volgens de LiveAtlas-methode worden route, begin- en eindtijd,
+waarnemersinspanning en per soortgroep de keuze compleet of incompleet
+vastgelegd. In de FFV-levering ontbreken echter de route, het oorspronkelijke
+bezoek-ID, het aantal waarnemers en de complete-lijststatus per soortgroep. De
+128 verschillende openbare recordgeometrieën zijn daarom niet als route
+gereconstrueerd. Ook worden geen niet-gemelde soorten als nul aangemerkt: alle
+169 taxonregels zijn positief en dragen `geen_nul_afleidbaar`.
+
+De bezoekduur ligt voor 23 bezoeken binnen de aanbevolen 15-90 minuten; één
+bezoek duurt korter en 40 duren langer. Ruimtelijk zijn 12 bezoeken eenduidig
+aan één SOVON-plot gekoppeld omdat alle bijbehorende bronregels volledig binnen
+hetzelfde plot liggen. Van de overige bezoeken raken er 35 meerdere plots,
+liggen er vijf buiten de plots en hebben twaalf een gemengde status. Ook bij de
+12 eenduidige bezoeken bewijst de recordgeometrie niet de volledige route.
+
+Gebruik deze laag voor positieve verspreidingscontext, bezoekintensiteit en
+indicatieve verandering van geregistreerde aantallen. Gebruik haar niet als
+complete bezoekmatrix en interpreteer een ontbrekend taxon nooit als
+afwezigheid. Alle vier afgeleide tabellen staan in `Meijendel`; er is geen
+LiveAtlas-afleiding in `Meijendel_ndff_secure`. Controleer met
+`--audit-liveatlas`.
+
+Methodische grondslag: [NDFF 102.005](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-005-liveatlas/)
+en de [Sovon-handleiding LiveAtlas](https://stats.sovon.nl/static/publicaties/Handleiding_LiveAtlas_versieAug2023.pdf).
+
+### Kwartiertellingen (`102.007`)
+
+Regelversie `ndff-kwartiertelling-v1` verwerkt alle 102 openbare bronregels
+uit 2023-2025. Zij bevatten exacte positieve aantallen van 19 taxa: 100
+dagvlinderregels en twee nachtvlinderregels. Exact gelijke begin- en eindtijd
+groeperen de regels tot 17 afgeleide telintervallen. Dit is een reproduceerbare
+groepering, geen oorspronkelijk tel-ID.
+
+De intervallen vormen 18 interval-soortgroepcombinaties en 49 positieve
+interval-soortgroep-taxonuitkomsten. Herhaalde regels voor hetzelfde taxon
+worden opgeteld, terwijl iedere oorspronkelijke meetwaarde en recordidentiteit
+in `meetwaarden_json` behouden blijft. Drie intervallen duren korter dan 15
+minuten, zeven exact 15 minuten en zeven 16-21 minuten. Korter stoppen is
+volgens het protocol mogelijk; duren boven 15 minuten blijven als
+`bronafwijking_boven_15_minuten` bewaard voor latere controle en worden niet
+automatisch verwijderd.
+
+De oorspronkelijke ButterflyCount-registratie bevat route en getelde tijd en
+kan een complete soortenlijst of een soortgerichte telling betreffen. De FFV-
+levering bevat route, oorspronkelijk tel-ID en dit lijsttype niet. Daarom zijn
+de 87 recordgeometrieën niet tot route samengevoegd en zijn geen nullen
+afgeleid. Alle 49 taxonregels zijn positief en dragen
+`geen_nul_afleidbaar`.
+
+Veertien intervallen zijn eenduidig aan één SOVON-plot gekoppeld omdat alle
+bronregels volledig binnen hetzelfde plot liggen. Eén interval raakt meerdere
+plots en twee hebben een gemengde ruimtelijke status. Gebruik deze laag voor
+positieve verspreidingscontext, telintervalcontext en indicatieve verandering
+in geregistreerde aantallen; gebruik haar niet voor afwezigheid of als
+volledige trendmatrix. Alle vier afgeleide tabellen staan in `Meijendel`; er is
+geen afleiding in `Meijendel_ndff_secure`. Controleer met
+`--audit-kwartiertellingen`.
+
+Methodische grondslag: [NDFF 102.007](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-007-kwartiertellingen-dagvlinders-nachtvlinders-libellen-en-sprinkhanen/)
+en de [korte handleiding ButterflyCount](https://assets.vlinderstichting.nl/docs/0c3f0890-915f-452f-bbcd-b67b873dc191.pdf).
+
+### Resterende NEM-reeksen (`03.203`, `11.204`, `13.201`, `17.207`)
+
+De laatste vier NEM-protocollen zijn op 13 september 2026 in één transactie
+gereconstrueerd. Alle 633 bronrecords hebben precies één recordkoppeling en de
+vaste audit vindt geen afgeleide tabel in `Meijendel_ndff_secure`.
+
+| Protocol | Bronrecords | Gereconstrueerde eenheid | Taxonregels | Afgeleide echte nullen |
+|---|---:|---|---:|---:|
+| `03.203` Nachtvlinders | 596 | 5 openbare geometrie-jaren | 84 positief | 0 |
+| `11.204` Bospaddenstoelen | 14 | 2 afgeleide bezoeken | 14 positief | 0 |
+| `13.201` Beek- en poldervissen | 20 | 3 waterproxy's, 6 bezoeken | 17 positief + 2 niet gemeld | 0 |
+| `17.207` Bever en Otter | 3 | 1 kilometerhok-jaar | 1 positief | 0 |
+
+Bij `03.203` zijn alle openbare regels tot één kilometer vervaagd en op
+jaarniveau geleverd. De som 878 wordt daarom alleen als geregistreerd aantal
+bewaard. Bij `11.204` blijven de NMV-aantalsklassen intact; omdat de teller
+alleen herkende soorten hoeft te melden, is de lijst niet bewezen compleet.
+Bij `13.201` is Kleine modderkruiper de lokaal aangetroffen doelsoort. Op twee
+bezoeken ontbreekt deze soort, maar zonder submethode en doelbereik heet dat
+`doelsoort_niet_gemeld`, niet nul. Bij `17.207` behouden drie positieve
+Otterpunten hun recordniveau-plotcontext; het kilometerhok raakt meerdere plots
+en ontbrekende Bever bewijst geen afwezigheid.
+
+De tabellen staan onder `Meijendel.ndff_nachtvlinder_*`,
+`Meijendel.ndff_bospaddenstoel_verspreiding_*`,
+`Meijendel.ndff_poldervis_*` en `Meijendel.ndff_otter_bever_*`. Controleer met
+`--audit-resterende-nem`. Protocol `12.202` is bewust niet opnieuw opgebouwd:
+de provinciale PQ-reeks blijft de gezaghebbende bron.
+
+Methodische grondslag: [NDFF 03.203](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/3-203-landelijk-meetprogramma-nachtvlinders-nem/),
+[NMV-methodiek](https://www.mycologen.nl/onderzoek/meetnet/bospaddenstoelen/methodiek/),
+[NDFF 13.201](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/13-201-meetnet-beek-en-poldervissen-nem-3/)
+en [NDFF 17.207](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-207-verspreidingsonderzoek-bever-en-otter-nem/).
+
+### Gemengde atlas- en verspreidingsleveringen (`04.004` en `07.001`)
+
+Protocol `04.004` bevat 2.237 canonieke molluskenrecords en `07.001` bevat
+2.762 libellenrecords. Daarvan zijn respectievelijk 1.282 en 850 records
+ruimtelijk bruikbaar voor plotcontext. De ANM-bron combineert
+gebiedsinventarisaties met historische, literatuur- en collectieregistraties.
+Protocol `07.001` accepteert zowel gebiedsinventarisaties als losse
+waarnemingen. De NDFF-levering bevat voor geen van beide protocollen een
+onderscheidende lijst-, bezoek- of inspanningssleutel.
+
+Daarom worden geen bezoeken, complete soortenlijsten of nullen gereconstrueerd.
+`V` heeft leveringsstatus `voorwaardelijk`. `I` en `TV` behouden hun
+protocolmatige kandidaatstatus, maar hebben leveringsstatus `onvoldoende` en
+mogen alleen als indicatieve verandering in geregistreerde aanwezigheid worden
+berekend. `TA` en `TK` zijn voor deze levering uitgesloten. Aangeleverde
+aantallen blijven broninformatie en worden niet over records geaggregeerd.
+De 199 openbaar vervaagde `04.004`-records worden niet naar een openbare
+afgeleide tabel gekopieerd. De beoordeling is vastgelegd in de bestaande
+`ndff_analysebesluit`-regels; er zijn geen kunstmatige bezoekmatrices gebouwd.
+
+Methodische grondslag: [NDFF protocol 04.004](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/4-004-atlasproject-nederlandse-mollusken/)
+en [NDFF protocol 07.001](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/7-001-verspreidingsonderzoek-libellen/).
+
+Daarnaast zijn omvangrijke inventarisatiereeksen aanwezig: `03.001` (1.834),
+`12.204` (929) en `12.006` (661). Hun omvang maakt ze niet automatisch geschikt
+voor aantalstrends.
+
+Aanvullende bronvragen worden pas gesteld wanneer tijd, geometrie en de
+officiële protocolomschrijving een noodzakelijke sleutel niet kunnen leveren.
+Zij blokkeren de technisch verantwoorde reconstructies niet.
+
+### Ingetrokken bronvragen en vervolgvolgorde
+
+Ton Lansink heeft op 13 september 2026 alle zeven geselecteerde
+bronorganisaties per e-mail aangeschreven. Daarbij zijn de in dit traject per
+organisatie opgestelde verzoekteksten gebruikt. De verzoeken plaatsen de
+aanvullende gegevensvraag in het kader van zeventig jaar vogeltellingen in 2028
+en de voorgenomen ecologische geschiedenis van Meijendel. Zij vermelden dat de
+relevante NDFF-data, inclusief de geleverde onvervaagde records, al beschikbaar
+zijn en dat uitsluitend aanvullende meetstructuur wordt gevraagd voor
+statistisch verantwoord gebruik.
+
+| Organisatie | Gebruikt e-mailadres |
+|---|---|
+| De Vlinderstichting | `meetnet@vlinderstichting.nl` |
+| Zoogdiervereniging | `info@zoogdiervereniging.nl` |
+| RAVON | `info@ravon.nl` |
+| FLORON | `info@floron.nl` |
+| BLWG | `henk-jan@blwg.nl` |
+| Stichting ANEMOON | `anemoon@cistron.nl` |
+| Staatsbosbeheer | `info@staatsbosbeheer.nl` |
+
+Ton Lansink heeft deze zeven verzoeken op 14 september 2026 ingetrokken. Zij
+zijn niet langer openstaand en krijgen geen herinnering of vervolgbericht. De
+nieuwe vaste volgorde is:
+
+1. eerst de Meijendel-database verbeteren met de informatie die al in de
+   openbare en beveiligde NDFF-leveringen en de officiële documentatie staat;
+2. daarna exact vaststellen welke gegevens nog ontbreken en NDFF daarover
+   gericht bevragen;
+3. pas na het NDFF-antwoord beoordelen of voor een specifiek protocol nog een
+   kleine, gerichte vraag aan een bronhouder nodig is.
+
+Een eventuele latere bronlevering wordt vóór iedere databasewijziging op
+herkomst, dekking, koppelsleutels, gebruiksvoorwaarden en overlap met NDFF
+gecontroleerd.
+
+De eerste databaseverbetering uit deze nieuwe volgorde is op 14 september
+uitgevoerd. Voor 14.420 gekoppelde records zijn de bruikbare niet-ruimtelijke
+velden uit ticket 58679 opgenomen in
+`Meijendel.ndff_open_leveringsverrijking`. De publieke `bronhouder` en de
+`dataeigenaar_uri` uit de projectlevering blijven daarbij afzonderlijk. Alle
+gekoppelde regels zijn door NDFF als `betrouwbaar` beoordeeld, maar dit
+recordoordeel verandert de eerder vastgelegde protocolgeschiktheid en
+surveybeperkingen niet.
+
+Er zijn geen fictieve datasets, onderzoeken, bezoeken of sessies aangemaakt.
+De velden `zoid` en `sessionid` zijn overal nul en `datm_dkkng` en `opp_dkkng`
+overal leeg. De volgende externe stap is daarom een kleine, gerichte vraag aan
+NDFF over de werkelijk aanwezige en exporteerbare bovenliggende entiteiten.
+Een tweede gerichte vraag betreft de geometrie: 1.828 gekoppelde records met
+de openbare vlag `vervaagd=0` hebben toch een andere leveringsgeometrie. Tot de
+betekenis daarvan vaststaat, blijft de exacte geometrie beveiligd.
 
 ## Reconstructie van de surveystructuur
 
-De mededeling van NDFF dat de GeoPackage alle beschikbare informatie per
-waarneming bevat, betekent dat de ontbrekende surveystructuur niet opnieuw bij
-NDFF wordt gevraagd. De openbare handleidingen van de meetnetbeheerders zijn
-wel voldoende om het **bedoelde ontwerp** te reconstrueren. De feitelijk
-uitgevoerde routes, bezoeken, inspanning, doelsoorten, nulresultaten en
-historische wijzigingen moeten rechtstreeks bij de oorspronkelijke
-bronorganisatie worden opgevraagd.
+De GeoPackage bevat niet alle bovenliggende survey-entiteiten die in het
+NDFF-gegevensmodel worden onderscheiden. Daarom wordt de database eerst
+verbeterd met alle reeds geleverde velden en de officiële documentatie. De
+openbare handleidingen van de meetnetbeheerders bepalen het bedoelde ontwerp.
+Feitelijke bezoeken worden waar verantwoord uit tijd en geometrische samenhang
+gereconstrueerd. Daarna wordt NDFF gericht gevraagd welke ontbrekende dataset-,
+onderzoek-, opname-, bezoek- of sessiegegevens beschikbaar en exporteerbaar
+zijn. Alleen wat na het NDFF-antwoord noodzakelijk blijft, kan aanleiding zijn
+voor een nieuwe, minimale bronhoudervraag.
 
 De 1.274 vervolgkandidaten bestaan uit tien protocol-broncombinaties:
 
@@ -51,10 +1032,13 @@ De 1.274 vervolgkandidaten bestaan uit tien protocol-broncombinaties:
 | Landelijk Meetnet Vlinders | 1 | De Vlinderstichting | vaste route met secties | 3 |
 | RAVON Meetnet Natura 2000 | 1 | RAVON/opdrachtgever | meetpunt, water of traject | 4 |
 
-Prioriteit 1 wordt als eerste opgevraagd. Prioriteit 2 is voorwaardelijk
-kansrijk. Prioriteit 3 is vooral bruikbaar binnen het eigen meetnetmodel of
-voor periodieke toestand. Prioriteit 4 is in deze levering te klein voor een
-lokale trend, tenzij de bronhouder een veel completere reeks kan leveren.
+De prioriteiten in deze tabel zijn inhoudelijke validatieprioriteiten, geen
+actieve volgorde voor externe verzoeken. Eerst worden database en NDFF-
+gegevensmodel benut. Prioriteit 1 verdient daarna als eerste een gerichte
+NDFF-controle. Prioriteit 2 is voorwaardelijk kansrijk. Prioriteit 3 is vooral
+bruikbaar binnen het eigen meetnetmodel of voor periodieke toestand. Prioriteit
+4 is in deze levering te klein voor een lokale trend, tenzij later een veel
+completere reeks beschikbaar blijkt.
 
 Het native telobject blijft altijd leidend. Dat een afzonderlijke NDFF-
 waarneming volledig binnen één SOVON-plot ligt, bewijst niet dat de volledige
@@ -154,6 +1138,299 @@ Pas daarna volgt per soort en meetnet een dekkingstabel `plot x jaar`, controle
 op methodebreuken en een modelkeuze die bij het protocol hoort. Ontbrekende
 tellingen worden nooit automatisch als nul of met machine learning ingevuld.
 
+## Geïmplementeerde protocolkwaliteitslaag
+
+De beoordeelde matrix staat tevens in
+`Natuurprotocollen/Natuurprotocollen_gebruiksmatrix.xlsx`; de inhoudelijke
+onderbouwing staat in
+`Natuurprotocollen/Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx`.
+De gebruikte bestanden zijn met SHA-256 vastgezet in de importeur.
+
+Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast voor de
+protocolcatalogus, recordkoppelingen en ruimtelijke beoordeling. De actuele
+voorlopige analysebesluiten gebruiken na de doelbereiktoets de afzonderlijke
+regelversie `ndff-analysebesluit-v4`; de oorspronkelijke v1-, v2- en v3-besluiten
+blijven als historische auditlaag beschikbaar. De laag bevat:
+
+- `ndff_protocol`: 54 gestandaardiseerde protocollen;
+- `ndff_protocol_mapping`: 91 gecontroleerde tekstkoppelingen uit openbare en
+  beveiligde NDFF-records, zonder ongemapte protocoltekst;
+- `ndff_open_waarneming_protocol`: precies één protocolkoppeling voor alle
+  810.830 openbare records;
+- `Meijendel_ndff_secure.ndff_waarneming_protocol`: precies één
+  protocolkoppeling voor alle 14.573 beveiligde records;
+- `ndff_protocol_gebruik`: 54 wetenschappelijke gebruiksregels;
+- `ndff_protocol_soortgroep_geschiktheid`: 114 doelbereikbesluiten op het
+  werkelijk voorkomende protocol-soortgroepniveau;
+- `ndff_protocol_soort_geschiktheid`: 620 protocol-taxonbesluiten voor tien
+  gemengde combinaties;
+- `ndff_open_ruimtelijke_beoordeling`: 810.830 beoordelingen tegen de
+  SOVON-plotlaag 2025;
+- `ndff_open_pq_koppeling`: 810.830 geversioneerde PQ-poortbesluiten, waarvan
+  6.326 historische vegetatiecontext, 90.992 secundaire PQ-controlebron en
+  713.512 niet van toepassing;
+- `ndff_snl_waarneming_context`: recordgebonden bronoverlapstatus voor de
+  6.273 openbare records met protocol `12.205`;
+- `ndff_analysebesluit`: 1.040 besluiten per bron, soortgroep, protocol en
+  analysetype.
+
+De interne view `Meijendel_ndff_secure.v_ndff_analyse_record` materialiseert
+deze regels niet, maar brengt ze bij raadpleging samen tot één analysebesluit
+per canonieke waarneming. De livecontrole omvat 810.983 unieke records zonder
+ontbrekende protocol-, ruimtelijke, PQ- of gegevensgeschiktheidsstatus. Daarvan
+zijn 306.479 voorlopig bruikbaar, 4 voorlopig bruikbaar met een
+overlapwaarschuwing, 91.007 uitgesloten via de PQ-poort en 413.493 ruimtelijk
+uitgesloten. De 430.263 expliciet losse waarnemingen hebben uitsluitend
+kandidaattype `V`. Van de canonieke records behouden 709.109
+`gegevensgeschiktheid = niet_beoordeeld`. De 4.999 records onder `04.004` en
+`07.001` hebben na leveringsonderzoek de algemene V-status `voorwaardelijk`;
+hun I- en TV-besluiten staan afzonderlijk op `onvoldoende`. De view levert een
+verplichte `kwaliteitsmelding` en is geen verklaring dat trendgebruik al
+volledig is gevalideerd.
+
+Binnen de 6.326 historische vegetatieopnamen uit 1952-1980 zijn 5.179 records
+afkomstig van Provincie Zuid-Holland en 1.147 van Alterra. De ruimtelijke poort
+laat 3.160 records toe als positieve context; 3.166 records blijven uitgesloten
+omdat zij niet eenduidig aan één Meijendel-plot zijn gekoppeld. Geen van deze
+records levert een nulwaarneming of een gevalideerde PQ-trend.
+
+Acht andere bronprotocollen zijn voor de huidige NDFF-levering expliciet als
+uitsluitend positieve registratiebron beoordeeld: `12.004` (6.864 openbare
+records), `12.006` (10.670), `17.005` (79), `17.006` (36), `102.004` (178),
+`102.006` (73.844), `104.000` (382) en `105.000` (3.754). Samen betreft dit
+95.807 openbare bronrecords en 95.844 canonieke records na toepassing van de
+beveiligde vervangingslaag. De broncode blijft als `protocol_sleutel` behouden
+met bewijsmethode `expliciete_code`; deze regels worden niet tot `LOS`
+omgecodeerd. `V` is `voorwaardelijk` en `voorlopig_toegelaten`; `I`, `TV`,
+`TA` en `TK` zijn `onvoldoende` en `uitgesloten_huidige_levering`. De reden is
+dat deze leveringen geen complete bezoeken, onderzoeksinspanning, volledige
+soortenlijst of afleidbare nullen bevatten. De classificatie zegt dus iets
+over verantwoord gebruik van de levering en wist de historische bronbetekenis
+niet uit.
+
+De afzonderlijke beoordeling van de resterende gestructureerde protocollen
+omvat 1.031 records: `17.002` Braakbalonderzoek (389), `102.002` Jaarrond
+Tuintelling (309), `102.005` LiveAtlas (231) en `102.007` Kwartiertellingen
+(102). De braakbalregels zijn inmiddels conservatief gereconstrueerd tot 37
+geometrie-jaaraggregaten; deze zijn uitdrukkelijk geen partijen of bezoeken en
+leveren geen nullen of plotkoppelingen. De tuintelling is inmiddels
+gereconstrueerd tot 125 telperioden binnen drie afgeleide tuinvakfamilies, met
+voorlopige nullen uitsluitend binnen positief bevestigde soortgroepen en lokaal
+doelbereik. LiveAtlas is inmiddels gereconstrueerd tot 64 afgeleide bezoeken,
+87 bezoek-soortgroepcombinaties en 169 uitsluitend positieve taxonuitkomsten.
+De kwartiertellingen zijn gereconstrueerd tot 17 afgeleide telintervallen, 18
+interval-soortgroepcombinaties en 49 uitsluitend positieve taxonuitkomsten. Bij
+beide ontbreken route-ID en complete-lijststatus in FFV; NDFF vermeldt voor
+`102.007` bovendien expliciet dat de routegegevens nog niet worden meegeleverd.
+
+Daarom is `V` voor alle vier voorwaardelijk toegestaan. Voor `17.002` is
+alleen `TV` indicatief toegestaan; voor `102.002`, `102.005` en `102.007` zijn
+`I` en `TV` indicatief toegestaan. Indicatief betekent hier verandering in
+geregistreerde tellingen met `gegevensgeschiktheid='onvoldoende'`, niet een
+gevalideerde populatietrend. `TA` en `TK` zijn uitgesloten en voor `17.002`
+geldt dat ook voor `I`. Voor LiveAtlas en Kwartiertellingen worden geen nullen
+afgeleid. Na de
+ruimtelijke en PQ-poorten blijven 13 braakbalrecords, 77 LiveAtlas-records en
+95 kwartiertellingrecords over; alle 309 tuintellingrecords zijn ruimtelijk
+uitgesloten voor een eenduidige Meijendel-plotanalyse.
+
+Methodische grondslag: [NDFF 17.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/17-002-braakbalonderzoek-nem/),
+[NDFF 102.002](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-002-jaarrond-tuintelling/),
+[NDFF 102.005](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-005-liveatlas/),
+[NDFF 102.007](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/102-007-kwartiertellingen-dagvlinders-nachtvlinders-libellen-en-sprinkhanen/)
+en de [CBS-kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/).
+
+Voor praktisch gebruik zijn twee verder geaggregeerde interne views gebouwd.
+`v_ndff_verspreiding_plot_jaar_taxon` bevat 106.855 positieve
+plot-jaar-taxonsignalen uit 306.466 voorlopig bruikbare bronrecords.
+`v_ndff_trendkandidaat_plot_jaar_taxon` bevat 10.855
+plot-jaar-taxon-protocolcombinaties uit 65.464 bronrecords met minimaal één
+protocolmatige kandidaatmogelijkheid buiten `V`. Zij blijven een prioriteiten-
+en selectielaag, geen berekende trend; per analysetype is
+`ndff_analysebesluit` leidend voor de leveringsstatus. De dagvlindercontrole vond
+binnen de kandidaatview 5.161 combinaties voor protocollen `03.001`, `03.201`,
+`102.005` en `102.007`; protocol `LOS` komt er nul keer in voor.
+
+De aanvullende view `v_ndff_gebruiksdekking_soortgroep_protocol` maakt de
+selectiestatus direct raadpleegbaar voor 142 combinaties van 28 soortgroepen en
+54 protocollen. De som van alle statuskolommen sluit per combinatie en over het
+geheel exact aan op 810.983 canonieke records. Er zijn 306.479 voorlopig
+bruikbare V-kandidaten, 6.133 I-kandidaten, 60.015 TV-kandidaten, 57.605
+TA-kandidaten en 4.727 TK-kandidaten. Deze aantallen mogen worden gecombineerd
+in selecties, maar niet worden opgeteld omdat één record meerdere kandidaattypen
+kan ondersteunen. Voor alle records blijft aanvullende gegevensvalidatie
+wenselijk.
+
+De vier aanvullende jaarniveau-views maken stap 3 compleet. De
+soortenrijkdoms- en dekkingsviews bevatten beide 12.640 sluitend vergelijkbare
+plot-jaar-soortgroepregels; zij omvatten 106.855 positieve taxonsignalen en
+306.466 bronrecords. Daarvan zijn 201.372 records losse waarnemingen en 105.094
+protocolgebonden. De eerste/laatste-view bevat 42.934 plot-taxonreeksen. De
+verspreidingsveranderingsview bevat 33.356 taxon-jaarregels. Van de mogelijke
+jaarvergelijkingen springen 8.344 over minstens één ontbrekend jaar; die zijn
+expliciet gemarkeerd met `aansluitend_jaar = 0` en mogen niet als jaar-op-jaar
+worden gerapporteerd. Alle views beschrijven geregistreerde positieve
+aanwezigheid en produceren geen nulwaarnemingen.
+
+## Formele gereedstatus analyseketen
+
+De lokale databaseketen is op 11 september 2026 vastgezet als
+`ndff-analyseketen-v1`. De reproduceerbare eindaudit controleert in één opdracht
+de canonieke representaties, dubbele sleutels, verplichte velden,
+recordstatussen, alle afgeleide viewtotalen, tijdsaansluitingen en ongewenste
+grants:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-live
+```
+
+De gecontroleerde audit slaagt met 810.983 unieke canonieke records, nul
+dubbelen, nul ontbrekende kernstatussen, nul afwijkende ketenversies en nul
+grants op de nieuwe interne views voor gewone of Shiny-accounts. Daarmee is de
+keten gereed voor verkennende analyses van geregistreerde aanwezigheid en
+verspreiding. Ook verkennende berekeningen van verandering, meldingsintensiteit
+en associaties met beheer zijn toegestaan wanneer de selectieregels en
+kwaliteitsmelding zichtbaar blijven. Zonder aanvullende bron- en
+surveyvalidatie worden de resultaten niet gepresenteerd als een gevalideerde
+populatietrend, abundantie, afwezigheid of causaal beheereffect. De afzonderlijke
+validatiefase is nodig om te bepalen welke kandidaten later wel zo kunnen worden
+gebruikt.
+
+### Doelsoorten en bijvangsten
+
+De 114 werkelijk voorkomende openbare combinaties van een gecodeerd protocol
+en een FFV-soortgroep zijn onder `ndff-protocolbereik-v2` volledig beoordeeld:
+
+- 53 combinaties (`268.538` records) vallen als geheel binnen de doelgroep;
+- 3 combinaties (`623` records) zijn bijvangst: Nachtvlinders binnen `03.201`,
+  overige zoogdieren binnen vogelprotocol `14.204`, en Vleermuizen binnen
+  DAZ-BMP `17.204`;
+- 37 combinaties (`78.158` records) zijn algemene bron-, literatuur-,
+  collectie- of appregistraties en ondersteunen alleen `V`;
+- 11 combinaties (`6.673` records) gebruiken een beperkte of
+  projectspecifieke doelsoortenafbakening die niet per NDFF-record is
+  meegeleverd; ook daar is voorlopig alleen `V` toegestaan;
+- 10 combinaties (`26.672` records) zijn gemengd en zijn daarom ook per taxon
+  beoordeeld.
+
+Binnen de tien gemengde combinaties zijn 620 aanwezige
+protocol-taxoncombinaties vastgelegd: 70 doelsoortbesluiten met samen 19.447
+records, 549 bijvangstbesluiten met samen 7.221 records en één taxonomisch
+onbepaald besluit met 4 records. Die laatste categorie betreft
+`Plecotus auritus/austriacus`: de naam omvat zowel een doelsoort als een
+niet-doelsoort van de zoldertelling en ondersteunt daarom alleen `V`.
+Deze soortindeling staat in
+`ndff_protocol_soort_geschiktheid`; de groepsindeling staat in
+`ndff_protocol_soortgroep_geschiktheid`.
+
+### Uitwerking van doelsoortafhankelijke en gemengde combinaties
+
+De officiële protocolbronnen leveren de volgende beslissingen op:
+
+| Protocol en soortgroep | Besluit v2 | Vastgestelde doelafbakening |
+|---|---|---|
+| `02.204` Mossen | doelgroep | Het gekozen kilometerhok wordt zo volledig mogelijk op mossen geïnventariseerd; alle gemelde mossen vallen binnen het doelbereik. |
+| `04.006` Weekdieren | gemengd | Nauwe korfslak (`Vertigo angustior`), Zeggekorfslak (`V. moulinsiana`) en Platte schijfhoren (`Anisus vorticulus`); overige weekdieren zijn bijvangst. |
+| `10.002` Amfibieën | blijft afhankelijk | eDNA is een techniek; de doelsoort volgt uit het project of de gebruikte assay en ontbreekt in de levering. |
+| `11.201` Schimmels | gemengd | De officiële historische lijst omvat 110 telsoorten. Van de aangetroffen taxa zijn 49 gecontroleerd aan die lijst gekoppeld; `Fungi sp. indet.` is geen doelsoort. |
+| `11.202` Schimmels | gemengd | Duinfranjehoed, Zeeduinchampignon, Duinstinkzwam, Duinveldridderzwam, Helmharpoenzwam en Zandtulpje; overige schimmels zijn begeleidende soorten/bijvangst. |
+| `12.015` Vaatplanten en Kranswieren, wieren en algen | blijft afhankelijk | De karteerlijst wordt per Staatsbosbeheer-opdracht vastgesteld. De concrete lijst en opdrachtbegrenzing ontbreken in de NDFF-regels; alle 1.083 records ondersteunen daarom voorlopig alleen positieve voorkomensinformatie (`V`). |
+| `12.205` zeven soortgroepen | blijft afhankelijk | Kwalificerende soorten verschillen per SNL-beheertype en versie. Beheertype en versie ontbreken in de records. |
+| `13.201` Vissen | gemengd | Beekprik, beekdonderpad, bittervoorn, grote en kleine modderkruiper, rivierdonderpad en rivierprik; overige vissen zijn bijvangst. |
+| `13.202` Amfibieën en Vissen | gemengd | Kamsalamander, beekprik, rivierdonderpad, bittervoorn, kleine en grote modderkruiper; andere amfibieën en vissen zijn bijvangst. |
+| `17.202` Vleermuizen | gemengd | Voor populatietrend zijn Ingekorven vleermuis en Grijze grootoorvleermuis doelsoort; overige zolderwaarnemingen zijn verspreidingsinformatie. |
+| `17.505` en `17.506` Vleermuizen | blijft afhankelijk | Doelsoort en onderzochte functie volgen uit het projectplan; de protocolcode alleen legt die niet vast. |
+
+In de actuele classificatie blijven zestien combinaties bewust
+`doelsoortafhankelijk`. Dit betreft geen algemene twijfel over de protocollen,
+maar ontbrekende context van de concrete opdracht, het beheertype of het
+project. Gokken op basis van de aangetroffen soort is niet toegestaan.
+
+Voor Staatsbosbeheer is een openbaar praktijkrapport gevonden waarin de
+soortkartering met een vooraf vastgestelde, per opdracht aangevulde soortenlijst
+en Tansley Plus/SBB-abundantieklassen wordt beschreven. Dat sluit aan op de
+methoden in de Meijendel-records, maar bewijst niet welke lijst en begrenzing in
+Meijendel zijn gebruikt. Voor SNL is BIJ12 de beheerder van de landelijke
+werkwijze; Staatsbosbeheer is in de levering hoofdzakelijk bronhouder of
+uitvoerder. Die twee protocollen worden daarom niet samengevoegd.
+
+### SNL is context, geen automatische onafhankelijke bron
+
+SNL staat voor Subsidiestelsel Natuur en Landschap. Kwalificerende soorten
+worden gebruikt bij beoordeling van natuurkwaliteit en kunnen mede relevant
+zijn voor subsidiëring. Protocolcode `12.205` bewijst daarom niet dat een record
+uit een zelfstandige inventarisatie komt; dezelfde onderliggende waarneming kan
+ook onder een andere bron of protocolregistratie voorkomen.
+
+Regelversie `ndff-snl-overlap-v1` gebruikt vier statussen:
+
+- `overlap_bevestigd`: dezelfde onderliggende waarneming is met bewijs
+  vastgesteld; niet zelfstandig meetellen;
+- `overlap_mogelijk`: dezelfde soort, exacte starttijd en openbare geometrie
+  komen ook onder een ander protocol voor; handmatige of broncontrole nodig;
+- `geen_overlap_gevonden`: binnen deze toets is geen kandidaat gevonden, maar
+  onafhankelijkheid is niet bewezen;
+- `onvoldoende_onderzocht`: de noodzakelijke sleutelvelden of toetsing
+  ontbreken.
+
+Een bevestigde onafhankelijke inventarisatie vergt aanvullende herkomst-,
+bezoek- of telronde-informatie en wordt daarom niet als vijfde automatische
+status ingevoerd.
+
+De eerste toepassing op alle 6.273 SNL-records leverde 97 keer
+`overlap_mogelijk` en 6.176 keer `geen_overlap_gevonden` op. Er zijn nog geen
+records als `overlap_bevestigd` aangemerkt en geen record kreeg
+`onvoldoende_onderzocht`. De mogelijke matches zijn kandidaten voor nadere
+controle en worden niet automatisch als dubbel verwijderd.
+
+Gebruikte primaire bronnen zijn onder meer [BLWG Meetnet Mossen](https://www.verspreidingsatlas.nl/projecten/blwg/meetnetmossen.aspx),
+[ANEMOON HabSlak](https://www.anemoon.org/projecten/natura2000/habslak-protocollen),
+[NDFF-protocollen](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/),
+[RAVON Natura 2000](https://www.ravon.nl/publicaties/handleiding-meetnet-amfibieen-en-vissen-in-natura-2000-gebieden/),
+[BIJ12 SNL](https://www.bij12.nl/onderwerp/natuurinformatie/monitoring-en-natuurinformatie/werkwijze-monitoring-beoordeling-natuurnetwerk-natura-2000/)
+en de handleidingen van NMV en Zoogdiervereniging in de protocoldocumentatie.
+
+Voor niet-V-analyses gelden hierdoor drie verschillende uitkomsten:
+
+- `voorlopig_toegelaten`: de gehele soortgroep valt binnen het doelbereik;
+- `alleen_na_doelsoortselectie`: gebruik uitsluitend expliciet geregistreerde
+  doelsoorten uit de soorttabel;
+- `wacht_op_doelsoortafbakening`: de doelstatus is nog niet uit het record of
+  een voldoende specifieke bronlijst afleidbaar; alleen `V` is nu bruikbaar.
+
+Deze doelbereiktoets vervangt de leveringsvalidatie niet.
+`Gegevensgeschiktheid` blijft per v4-besluit `niet_beoordeeld` totdat het
+betreffende protocol is onderzocht. Voor `04.004` en `07.001` is die beoordeling
+inmiddels vastgelegd; de kwaliteitsmelding blijft verplicht bij iedere uitkomst.
+
+De recordkoppelingen gebruiken `protocol_id` uitsluitend als interne foreign
+key. `protocol_sleutel` blijft de stabiele identificatie. Van de openbare
+records hebben 380.664 bewijsmethode `expliciete_code` en 430.166
+`expliciet_losse_waarneming`; bij de beveiligde records zijn dit respectievelijk
+4.913 en 9.660. De laatste categorie verwijst naar sleutel `LOS` en is geen
+onderzoeksprotocol. De import blokkeert lege protocolwaarden in plaats van deze
+stilzwijgend als losse waarneming te classificeren. `analyse_status` is geen
+protocolstatus; wetenschappelijke toelating blijft uitsluitend via de aparte
+analysebesluiten, ruimtelijke toets en PQ-poort verlopen.
+
+Van de openbare records zijn 365.854 onvervaagde geometrieën volledig binnen
+precies één plot gelegen. Dit is uitsluitend een ruimtelijke toelatingsvoorwaarde
+voor positieve verspreidingscontext. `Single_deels`, `multiple`, `outside` en
+alle vervaagde geometrieën zijn ruimtelijk geblokkeerd. De PQ-poort blijft een
+afzonderlijke verplichte voorwaarde. Protocolmatig passende besluiten voor
+inventarisatie, verspreidingstrend, aantalsindex en kwaliteitstrend zijn
+`voorlopig_toegelaten`. Zij mogen verkennend worden gebruikt, met de verplichte
+melding dat leveringsgeschiktheid en verdere validatie nog niet zijn beoordeeld.
+Niet-onderbouwde protocol–analysetypecombinaties blijven uitgesloten.
+
+Het schema en de reproduceerbare invoer staan in:
+
+- `gis/database/ndff_protocolkwaliteit_schema.sql`;
+- `gis/database/ndff_protocolkwaliteit_seed.csv`;
+- `gis/scripts/build_ndff_protocolkwaliteit_seed.py`;
+- `gis/scripts/import_ndff_protocolkwaliteit.py`;
+- `gis/scripts/test_ndff_protocolkwaliteit.py`.
+
 ## Reproduceerbare bestanden
 
 - script: `gis/scripts/analyse_ndff_protocollen.py`;
@@ -172,6 +1449,10 @@ tellingen worden nooit automatisch als nul of met machine learning ingevuld.
 - [NDFF LMF-a](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/12-211-landelijk-meetnet-flora-aandachtssoorten-lmf-a/)
 - [CBS Kwaliteitsrapportage NEM 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/meetprogrammas/)
 - [CBS methode kwaliteitsbeoordeling](https://longreads.cbs.nl/meetprogrammas-flora-en-fauna-2025/kwaliteitsbeoordeling/)
+- [Netwerk Ecologische Monitoring - kwaliteit](https://www.netwerkecologischemonitoring.nl/)
+- [NDFF 03.201 Landelijk Meetnet Dagvlinders](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/3-201-landelijk-meetnet-vlinders-nem/)
+- [NDFF 07.201 Landelijk Meetnet Libellen](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/7-201-landelijk-meetnet-libellen-nem/)
+- [NDFF 03.203 Landelijk Meetprogramma Nachtvlinders](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/3-203-landelijk-meetprogramma-nachtvlinders-nem/)
 - [Zoogdiervereniging Vleermuistransecttelling](https://www.zoogdiervereniging.nl/sites/default/files/2024-10/Handleiding%20Vleermuis%20transecttellingen.pdf)
 - [FLORON Het Nieuwe Strepen](https://www.floron.nl/meedoen/het-nieuwe-strepen)
 - [RAVON monitoring amfibieën](https://www.ravon.nl/publicaties/handleiding-voor-het-monitoren-van-amfibieen-in-nederland/)

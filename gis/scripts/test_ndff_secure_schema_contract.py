@@ -58,6 +58,203 @@ def main() -> int:
     assert "positieve_waarnemingen" in plot_view
     assert "nulwaarneming" not in plot_view
     assert "trendklaar" not in plot_view
+
+    canonical = view_body(sql, "v_ndff_canonieke_waarneming")
+    for required in (
+        "canonieke_identiteit_sha256",
+        "secure_vervangt_open",
+        "alleen_openbaar",
+        "alleen_beveiligd",
+        "union all",
+        "exacte_geometrie",
+        "openbare_geometrie",
+        "open_identity_sha256",
+        "dataeigenaar_uri",
+        "ndff_open_leveringsverrijking",
+    ):
+        assert required in canonical, f"canonieke view mist {required}"
+    assert "o.bronhouder as bronhouder" in " ".join(canonical.split())
+    assert "s.bronhouder as bronhouder" not in " ".join(canonical.split())
+    assert "raw_payload" not in canonical
+    assert "ndff_identity" not in canonical
+
+    analysis = view_body(sql, "v_ndff_analyse_record")
+    for required in (
+        "analyseketenversie",
+        "ndff-analyseketen-v1",
+        "protocol_sleutel",
+        "doelrelatie_record",
+        "protocol_kandidaattypen",
+        "ruimtelijk_toelaatbaar",
+        "pq_status",
+        "snl_overlap_status",
+        "record_selectiestatus",
+        "gegevensgeschiktheid",
+        "kwaliteitsmelding",
+        "ndff_open_pq_koppeling",
+        "ndff_snl_waarneming_context",
+        "ndff_analysebesluit",
+    ):
+        assert required in analysis, f"analyseview mist {required}"
+    for forbidden_field in (
+        "analyse_geometrie",
+        "exacte_geometrie",
+        "openbare_geometrie",
+        "periode_start",
+        "periode_stop",
+        "raw_payload",
+        "ndff_identity",
+    ):
+        assert forbidden_field not in analysis, f"analyseview lekt {forbidden_field}"
+    assert "verkennende berekeningen" in analysis
+    assert "historische_vegetatiecontext" in analysis
+    assert "when basis.pq_status='historische_vegetatiecontext'" in analysis
+    assert "then 'v'" in analysis
+    assert "geen gevalideerde pq-trendreeks" in analysis
+    assert "('onafhankelijk','niet_van_toepassing','historische_vegetatiecontext')" in analysis.replace(" ", "")
+
+    verspreiding = view_body(sql, "v_ndff_verspreiding_plot_jaar_taxon")
+    for required in (
+        "v_ndff_analyse_record",
+        "record_selectiestatus = 'voorlopig_bruikbaar'",
+        "find_in_set('v',protocol_kandidaattypen)",
+        "aanwezig",
+        "bronrecords_ter_controle",
+        "protocol_sleutels",
+        "kwaliteitsmelding",
+        "group by",
+    ):
+        assert required.replace(" ", "") in verspreiding.replace(" ", ""), (
+            f"verspreidingsview mist {required}"
+        )
+
+    trend = view_body(sql, "v_ndff_trendkandidaat_plot_jaar_taxon")
+    for required in (
+        "v_ndff_analyse_record",
+        "record_selectiestatus = 'voorlopig_bruikbaar'",
+        "kandidaat_i",
+        "kandidaat_tv",
+        "kandidaat_ta",
+        "kandidaat_tk",
+        "gegevensgeschiktheid",
+        "bronrecords_ter_controle",
+        "kwaliteitsmelding",
+        "group by",
+    ):
+        assert required in trend, f"trendkandidaatview mist {required}"
+    assert "find_in_set('i',protocol_kandidaattypen)" in trend.replace(" ", "")
+    assert "verkennende trendberekening" in trend
+    for safe_view in (verspreiding, trend):
+        assert "analyseketenversie" in safe_view
+        for forbidden_field in (
+            "canonieke_identiteit_sha256",
+            "open_waarneming_id",
+            "secure_waarneming_id",
+            "exacte_geometrie",
+            "analyse_geometrie",
+            "periode_start",
+            "periode_stop",
+            "raw_payload",
+            "ndff_identity",
+        ):
+            assert forbidden_field not in safe_view, (
+                f"veilige analyseview lekt {forbidden_field}"
+            )
+
+    gebruik = view_body(sql, "v_ndff_gebruiksdekking_soortgroep_protocol")
+    for required in (
+        "v_ndff_analyse_record",
+        "canonieke_records",
+        "kandidaat_v",
+        "kandidaat_i",
+        "kandidaat_tv",
+        "kandidaat_ta",
+        "kandidaat_tk",
+        "voorlopig_bruikbaar",
+        "overlapwaarschuwing",
+        "uitgesloten_pq",
+        "uitgesloten_ruimtelijk",
+        "uitgesloten_overlap",
+        "beveiligde_records",
+        "aanvullende_validatie_nodig",
+        "kwaliteitsmelding",
+        "group by",
+    ):
+        assert required in gebruik, f"gebruiksdekking mist {required}"
+    for forbidden_field in (
+        "canonieke_identiteit_sha256",
+        "open_waarneming_id",
+        "secure_waarneming_id",
+        "plot_id",
+        "jaar",
+        "exacte_geometrie",
+        "periode_start",
+        "periode_stop",
+        "raw_payload",
+        "ndff_identity",
+    ):
+        assert forbidden_field not in gebruik, (
+            f"gebruiksdekking lekt detailveld {forbidden_field}"
+        )
+    assert "analyseketenversie" in gebruik
+
+    afgeleide_views = {
+        "v_ndff_soortenrijkdom_plot_jaar": (
+            "v_ndff_verspreiding_plot_jaar_taxon",
+            "geregistreerde_taxa",
+            "bronrecords_ter_controle",
+            "kwaliteitsmelding",
+            "group by",
+        ),
+        "v_ndff_eerste_laatste_plot_taxon": (
+            "v_ndff_verspreiding_plot_jaar_taxon",
+            "eerste_geregistreerde_jaar",
+            "laatste_geregistreerde_jaar",
+            "jaren_met_registratie",
+            "kwaliteitsmelding",
+            "group by",
+        ),
+        "v_ndff_verspreidingsverandering_taxon_jaar": (
+            "v_ndff_verspreiding_plot_jaar_taxon",
+            "plots_met_registratie",
+            "vorig_geregistreerd_jaar",
+            "vorige_plots_met_registratie",
+            "jaarafstand",
+            "aansluitend_jaar",
+            "verschil_plots_met_registratie",
+            "lag(",
+            "kwaliteitsmelding",
+        ),
+        "v_ndff_dekking_intensiteit_plot_jaar_soortgroep": (
+            "v_ndff_analyse_record",
+            "bronrecords_ter_controle",
+            "losse_bronrecords",
+            "protocol_bronrecords",
+            "geregistreerde_taxa",
+            "gebruikte_protocollen",
+            "kwaliteitsmelding",
+            "group by",
+        ),
+    }
+    for view_name, required_fields in afgeleide_views.items():
+        body = view_body(sql, view_name)
+        assert "analyseketenversie" in body, f"{view_name} mist ketenversie"
+        for required in required_fields:
+            assert required in body, f"{view_name} mist {required}"
+        for forbidden_field in (
+            "canonieke_identiteit_sha256",
+            "open_waarneming_id",
+            "secure_waarneming_id",
+            "exacte_geometrie",
+            "analyse_geometrie",
+            "periode_start",
+            "periode_stop",
+            "raw_payload",
+            "ndff_identity",
+        ):
+            assert forbidden_field not in body, (
+                f"{view_name} lekt detailveld {forbidden_field}"
+            )
     print("OK: NDFF secure schemacontract")
     return 0
 

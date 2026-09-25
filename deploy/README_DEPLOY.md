@@ -128,6 +128,15 @@ die job met `GATEWAY_OPERATION_ID=<id>`. Start nooit op goed geluk een
 tweede import. Timeout na begonnen import is alleen hersteld als de log zowel
 `ROLLBACK|` als `ROLLBACK_STATUS=ready` bevat.
 
+De generatie- en archiveringsscripts maken daarnaast een afzonderlijke dump
+`meijendel_bronnen.sql`. Die bevat niet-geolokaliseerbare contextdatasets en de
+Zotero-literatuurcatalogus. De gesloten releasehelper importeert `Meijendel` en
+`Meijendel_bronnen` onder één back-up- en rollbackcontract. Op de VPS staat de
+bron-dump alleen als bestand met modus `0600` onder `/srv/vwgm/data`; er is geen
+symlink naar web- of Shiny-paden. De websitegebruiker krijgt uitsluitend
+`SELECT` op `v_bron_catalogus`, `v_literatuur_overzicht` en
+`v_contextdataset_overzicht`, nooit op de ruwe brontabellen of het hele schema.
+
 Eerste, eenmalige inrichting nadat de werkelijk draaiende productiecommit is vastgesteld en in `main` is geïntegreerd:
 
 ```sh

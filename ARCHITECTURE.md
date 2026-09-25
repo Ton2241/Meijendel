@@ -33,6 +33,25 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 - Lokale MySQL is bron voor historische/controlerende gegevens zoals `tellers`, `plots` en `plot_jaar_teller`. `tellers` bevat uitsluitend de pseudonieme technische sleutel `id` en de unieke `tellercode`; persoonsgegevens en weergavenamen komen alleen uit de afgeschermde PostgreSQL-ledenadministratie.
 - VPS PostgreSQL is operationele bron voor ledenadministratie, CMS, nieuws, archief, kavelbeheer, auditlogging en back-upmetadata.
 - `meijendel.sql` is data-/importbron en back-upformaat, niet bedoeld voor snelle webrequests.
+- `Meijendel` is strikt analytisch. `Meijendel_bronnen` bevat uitsluitend
+  contextdatasets die niet per waarneming betrouwbaar binnen Meijendel kunnen
+  worden gelokaliseerd en bibliografische metadata uit de Zotero-collectie
+  `Meijendel`.
+- De VPS bewaart `/srv/vwgm/data/Meijendel_bronnen.sql` zonder publieke,
+  website- of Shiny-symlink. Het websiteaccount leest alleen de drie views
+  `v_bron_catalogus`, `v_literatuur_overzicht` en
+  `v_contextdataset_overzicht`; de ruwe tabellen blijven ontoegankelijk.
+
+### Ruimtelijke afbakening
+
+De database onderscheidt vanaf 24 september 2026 drie onafhankelijke lagen:
+`meijendel_basisgebied` voor de ecologische toelatingspoort,
+`meijendel_natura2000` voor de officiële juridische begrenzing en
+`ndff_sovon_plot` voor de monitoringdekking. Geen van deze lagen vervangt een
+andere. `meijendel_waarneming_ruimtelijke_status` legt per bronrecord en
+regelversie vast of de locatie volledig binnen het projectgebied ligt, alleen
+de grens raakt, erbuiten ligt of niet als geometrie beschikbaar is. Zie
+`docs/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
 
 ### Export- en Shiny-cacheketen
 
@@ -71,17 +90,140 @@ zijn eenduidig aan één versie-2025-plot gekoppeld. Geen openbare FFV-regel en
 geen vangst is door deze technische opname automatisch toegelaten voor trend-,
 abundantie-, afwezigheids- of beheer-effectanalyse.
 
+Protocolkwalificatie is een genormaliseerde afleidingslaag naast de bronregels.
+`Meijendel.ndff_open_waarneming_protocol` koppelt ieder openbaar record aan één
+interne `protocol_id`; `Meijendel_ndff_secure.ndff_waarneming_protocol` doet
+hetzelfde binnen de beveiligde laag. Beide verwijzen naar de niet-gevoelige
+catalogus `Meijendel.ndff_protocol`. De stabiele functionele sleutel is
+`protocol_sleutel`; de recordkoppeling onderscheidt `expliciete_code` van
+`expliciet_losse_waarneming`. Deze metadata verleent geen analysetoegang en
+wijzigt geen analyse-, verspreidings-, trend- of innamestatus.
+
+De inhoudelijke doelbereiklaag staat in
+`Meijendel.ndff_protocol_soortgroep_geschiktheid`. Gemengde combinaties worden
+in `Meijendel.ndff_protocol_soort_geschiktheid` verder uitgesplitst tot
+doelsoort, bijvangst of taxonomisch onbepaald. De actuele versies zijn
+`ndff-protocolbereik-v2` en `ndff-analysebesluit-v4`; eerdere versies blijven
+auditspoor. Nieuwe analyses gebruiken deze tabellen vóór het
+analysebesluit, zodat een niet-doelsoort geen trendgeschiktheid kan erven van
+alleen de protocolcode.
+
+De gereconstrueerde openbare NEM-routeketens staan eveneens in `Meijendel`.
+`ndff_vlinder_*`, `ndff_vliesvleugel_*`, `ndff_libel_*`, `ndff_reptiel_*`,
+`ndff_amfibie_*` en `ndff_vleermuis_*` bewaren per geversioneerde reconstructie meeteenheden,
+brongeometrieën, bezoeken en de bezoek-soortmatrix. De libellenketen bewaart aanvullend `doelbereikstatus`,
+zodat echte nullen alleen ontstaan bij een aantoonbaar algemene route en niet
+bij een grof eensoortbezoek met onbekend bereik.
+De reptielenketen (`ndff-reptielroute-v2`) gebruikt route plus kalenderdatum
+als bezoekeenheid en
+behoudt expliciet dat volledig negatieve bezoeken en feitelijke inspanning niet
+uit de FFV-levering kunnen worden hersteld. Alleen Hazelworm krijgt binnen een
+bevestigd positief reptielenbezoek een afgeleide nul met expliciet bereik
+`binnen_geleverd_positief_bezoek`; de bronperiode geldt niet als inspanning.
+De amfibieënketen (`ndff-amfibiewater-v2`) onderscheidt telgebiedbezoek en
+bevestigd waterbezoek. Zij
+houdt exacte aantallen, presentieklassen en gemengde telwaarden uit elkaar en
+classificeert niet-gemelde taxa als `niet_gemeld_methode_onbekend`, niet als
+nul, zolang methode en programmaonderdeel ontbreken. Zij leidt ook geen
+waterbezoeken of nullen af voor de vervaagde, jaarlijks
+geaggregeerde Kamsalamanderrecords.
+Protocol `13.202` heeft bewust alleen een positieve recordselectie en
+monsterlocatieproxy's. Protocol `13.201` gebruikt eveneens
+`monsterlocatieproxy`; geen van beide geometrieën geldt zonder bronsleutel als
+een stabiel waterobject.
+De vleermuisketen houdt NEM-VTT-auto en vleerMUS-fiets als twee routefamilies
+gescheiden, bewaart de selectie van dubbele bronregels en telt akoestische
+detecties nooit als individuele dieren. De doelsoortenlijst verschilt per
+methodevariant; echte nullen ontstaan alleen binnen dat eigen bereik.
+`ndff_konijn_*` is bewust geen bezoekmatrix. De bron bevat exacte positieve
+sectietellingen van `17.209`, maar geen route- of sectie-id; de tabellen bewaren
+daarom een recordclassificatie en een uitsluitend diagnostische
+hok-datum-taxonsamenvatting. Geen daarvan is een native NEM-meeteenheid en er
+worden geen nullen of routegebonden trends uit afgeleid.
+`ndff_daz_bmp_*` koppelt openbare `17.204`-zoogdierregistraties op datum en
+SOVON-plot aan de bestaande `dagbezoeken_bmp`. Een eenduidige positieve
+koppeling bevestigt dat de teller tijdens dat BMP-bezoek aan DAZ deelnam.
+Alleen voor zulke bezoeken bevat `ndff_daz_bmp_bezoek_taxon` een volledige
+matrix voor de zeven DAZ-doelsoorten. Meervoudig koppelbare records blijven in
+de kandidaatbrug en blokkeren taxonspecifiek een nul. Niet-bevestigde
+BMP-bezoeken en bijvangsten krijgen nooit een afgeleide nul.
+De primaire opvolger staat sinds 13 september 2026 in
+`sovon_avimap_import_batch`, `sovon_avimap_taxon`, `sovon_avimap_bezoek`,
+`sovon_avimap_waarneming`, `sovon_avimap_ndff_daz_koppeling` en
+`sovon_avimap_daz_bezoek_taxon`. Deze openbare tabellen bevatten alleen de
+oorspronkelijke niet-vogelregels van SOVON-project 252 en hun benodigde
+bezoekmetadata. `sovon-avimap-daz-v1` is de leidende DAZ-matrix;
+`ndff-daz-bmp-v1` blijft secundair auditspoor. De koppelstatus voorkomt dat een
+NDFF-regel naast een primaire SOVON-tegenhanger wordt geteld en bewaart
+afwijkende telwaarden als zichtbaar bronconflict. Vogelbronregels worden niet in
+deze laag opgeslagen. Zij worden via een afzonderlijke, geauditeerde
+vogelsynchronisatie tot en met 2025 toegevoegd aan en gecorrigeerd in
+`dagbezoeken_bmp`, `dagwaarnemingen_bmp` en `territoria`. Alleen rechtstreeks
+overeenkomende SOVON-regels worden gewijzigd; databasegegevens zonder
+bronregel, waaronder handmatige aanvullingen, worden niet verwijderd.
+`ndff_zeereep_*` reconstrueert protocol `11.202` op RD-kilometerhok en
+kalenderdatum. De zes typische doelsoorten vormen een bezoekmatrix, maar een
+niet gemelde soort krijgt de status `niet_gemeld_tellerscope_onbekend` en niet
+`echte_nul`, omdat NDFF de door de teller gekozen soortenscope niet levert.
+NMV-vindplaatsklassen blijven ordinale klassen. Vervaagde records worden niet
+tot bezoeken gemaakt.
+`ndff_bospaddenstoel_*` reconstrueert het historische protocol `11.201` in
+`Meijendel`: drie vaste meetpuntfamilies, de zes brongeometrieën, een
+recordselectie die exacte tellingen boven parallelle presentie kiest, een
+conservatief meetpunt-doelbereik, bezoeken, bezoek-soortmatrix en jaarlijkse
+maximumtelling. De keten bewaart echte nullen alleen binnen aantoonbaar gevolgde
+telsoorten en houdt `11.201` volledig gescheiden van opvolger `11.204`.
+`ndff_hns_*` reconstrueert protocol `12.204` in `Meijendel` als
+inventarisaties, recordselectie, lokaal doelbereik, inventarisatie-taxonmatrix
+en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
+`ndff-hns-v1` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
+De laag bewaart onafhankelijkheid van herhaalde clusters als afzonderlijke,
+nog niet bevestigde eigenschap en gebruikt bron-aantallen niet als abundantie.
+`ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v2` in
+`Meijendel`: openbare proefvlakken, bezoeken, recordselectie, lokaal doelbereik
+en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen
+echte nullen. Parallelle positieve regels blijven als afzonderlijke
+waarnemertellingen behouden; per bezoek staat expliciet of twee onafhankelijke
+tellingen in de export aantoonbaar zijn. Vervaagde records worden niet naar
+deze openbare afgeleide laag gekopieerd.
+`ndff_mos_*` reconstrueert protocol `02.204` onder `ndff-mos-v2` in
+`Meijendel`: zeven kilometerhokinventarisaties, 21 onderliggende tijdclusters,
+recordselectie, lokaal doelbereik en een inventarisatie-soortmatrix. Echte
+nullen gelden uitsluitend voor de volledige hoklijst, nooit voor ieder
+datumcluster of geraakt SOVON-plot. De laag bewaart jaarprecisie, een
+jaargrensoverschrijdende inventarisatie, presentiewaarden zonder aantalsklasse,
+dubbelen en abundantieconflicten afzonderlijk. De protocolcode geldt als bewijs
+voor de voorgeschreven minimale inspanning en dekking van relevante biotopen.
+`ndff_florbase_*` reconstrueert protocol `12.001` onder `ndff-florbase-v1` in
+`Meijendel`: kilometerhok-jaarinventarisaties, volledige recordselectie, lokaal
+doelbereik en een inventarisatie-taxonmatrix. Alleen hok-jaren met minimaal 50
+taxa leveren voorlopige protocolnullen; fragmenten blijven positieve
+broninformatie. Volledigheid, inspanning en historische checklistversie blijven
+afzonderlijke onzekerheden en kilometerhokresultaten worden niet naar
+SOVON-plots verdeeld.
+`ndff_lmfa_*` reconstrueert protocol `12.211` onder `ndff-lmfa-v1` in
+`Meijendel`: vaste kilometerhokroutes, routejaren, volledige recordselectie, de
+75 officiële trendsoorten en een routejaar-soortmatrix. Niet-gemeld is binnen
+een uitgevoerd routejaar een echte nul voor deze 75 soorten. Exacte
+groeiplaatsaantallen worden opgeteld; niet-deterministisch combineerbare
+FLORON-klassen blijven onzeker. De afgeleide laag bevat geen exacte gevoelige
+vindplaatsen en vult ontbrekende meetronden niet met een ander jaar.
+
+Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
+overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of
+bevestigde dubbeling met andere protocolregistraties vast, maar kent op basis
+van alleen een ontbrekende match nooit de eigenschap `onafhankelijk` toe.
+
 De op 10 september 2026 ontvangen onvervaagde levering voor NDFF-ticket 58679
 blijft een afzonderlijke lokale bronlaag. Het originele GeoPackage, de exacte
-geometrie, NDFF-identiteiten en de
-ruimtelijke koppeling worden op de Samsung T7 beheerd onder
+geometrie en de ruimtelijke koppeling worden op de Samsung T7 beheerd onder
 `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/secure/ticket_58679`.
 
 De lokale import gebruikt het afzonderlijke MySQL-schema
 `Meijendel_ndff_secure`, een eigen `ndff_soorten`-tabel en fysieke
 `ndff_<soortgroep>`-tabellen. Het algemene account `meijendel_read` krijgt geen
 rechten op dit schema. De gewone `meijendel.sql`, website, algemene Shiny-app en
-VPS ontvangen geen ruwe beveiligde regels, exacte geometrie of NDFF-identiteit.
+VPS ontvangen geen ruwe beveiligde regels of exacte geometrie.
 De provinciale PQ-reeks in de life-database is de oorspronkelijke en
 gezaghebbende PQ-bron. NDFF-PQ wordt in het beveiligde schema alleen als
 secundaire controlebron geregistreerd en is door een afzonderlijke bronvlag
@@ -96,6 +238,86 @@ verspreidingscontext toegelaten en geen enkel NDFF-PQ-bronrecord is toegelaten.
 Van deze regels koppelen 14.420 via de reeds gehashte openbare FFV-identiteit;
 153 beveiligde regels hebben geen openbare tegenhanger. Deze koppeltabel staat
 uitsluitend in `Meijendel_ndff_secure`.
+
+De tabel `Meijendel.ndff_open_leveringsverrijking` bewaart voor de 14.420
+gekoppelde openbare regels uitsluitend niet-ruimtelijke metadata uit ticket
+58679: `obs_uri`, data-eigenaar, kwaliteit, gestructureerde aantallen,
+locatietype en technische controlevelden. Exacte geometrie, centroid en
+oppervlakte ontbreken bewust. `SHA-256(obs_uri)` dwingt een unieke koppeling af.
+De openbare bronhouder en de data-eigenaar van de projectlevering blijven
+afzonderlijk benoemd. Een kwaliteitsstatus op recordniveau verandert de
+protocol- en surveytoelating niet.
+
+Bij 1.828 van de 4.149 gekoppelde records met de openbare vlag `vervaagd=0`
+wijkt de projectgeometrie toch af van de openbare geometrie. Daarom blijft alle
+exacte geometrie voorlopig in het beveiligde schema. Pas na een verklaring van
+NDFF kan per record worden beslist of verplaatsing naar `Meijendel` veilig is.
+
+De interne view `Meijendel_ndff_secure.v_ndff_canonieke_waarneming` vormt
+daaruit één lokale bronlaag met 810.983 unieke logische waarnemingen. Zij bevat
+796.410 uitsluitend openbare records, 14.420 records waarbij de beveiligde
+datum, validatiestatus en exacte geometrie de openbare representatie vervangen,
+en 153 uitsluitend beveiligde records. De view toont `bronhouder` en
+`dataeigenaar_uri` afzonderlijk en blijft vanwege de exacte geometrie buiten
+alle gewone en Shiny-rechten.
+
+De niet-gevoelige tabel `Meijendel.ndff_open_pq_koppeling` vormt de
+geversioneerde PQ-poort voor alle openbare records. Versie
+`ndff-open-pq-poort-v2` markeert 6.326 records met protocol `12.007` uit
+1952-1980 als historische vegetatiecontext, 90.992 andere records van
+protocollen `12.007` en `12.202` als secundaire controlebron en 713.512 records
+als niet van toepassing. Historische context ondersteunt uitsluitend positieve
+context (`V`), geen PQ-trend of nullen. De bronhouder wordt niet zelfstandig
+als PQ-bewijs gebruikt.
+
+De interne view `Meijendel_ndff_secure.v_ndff_analyse_record` is de centrale
+analysepoort boven op de canonieke bronlaag. Zij bevat precies één regel per
+canonieke identiteit en combineert protocolbereik, doelsoortrelatie,
+ruimtelijke toelating, PQ-status en SNL-overlapstatus. De view bevat bewust
+geen geometrie of exacte datum en wordt evenmin aan gewone of Shiny-accounts
+toegekend. `protocol_kandidaattypen` beschrijft alleen wat het protocol in
+beginsel kan ondersteunen; `gegevensgeschiktheid` blijft `niet_beoordeeld`
+totdat de ontbrekende surveystructuur later afzonderlijk is gevalideerd.
+
+Twee afgeleide interne views bieden een veilige analysekorrel zonder dagdatum,
+geometrie of bronidentiteit. `v_ndff_verspreiding_plot_jaar_taxon` reduceert
+voorlopig bruikbare V-records tot positieve aanwezigheid per plot, jaar en
+taxon. `v_ndff_trendkandidaat_plot_jaar_taxon` bevat alleen records met een
+protocolmatige kandidaatstatus voor I, TV, TA of TK, per plot, jaar, taxon en
+protocol. De kolom `bronrecords_ter_controle` is uitsluitend diagnostisch en
+mag nooit als abundantie worden gebruikt. Beide views blijven lokaal en hebben
+vooralsnog geen extra MySQL-grants.
+
+`v_ndff_gebruiksdekking_soortgroep_protocol` vormt de sluitende
+dekkingsadministratie boven deze lagen. De view bevat 142 combinaties uit 28
+soortgroepen en 54 protocollen en telt per combinatie de canonieke records,
+doelrelaties, kandidaattypen, uitsluitingsredenen, beveiligde records en nog te
+valideren records. Zij bevat geen jaar, plot, taxon of bronidentiteit en krijgt
+geen extra grants.
+
+Stap 3 gebruikt daarnaast vier jaarniveau-views. `v_ndff_soortenrijkdom_plot_jaar`
+en `v_ndff_dekking_intensiteit_plot_jaar_soortgroep` hebben dezelfde
+plot-jaar-soortgroepkorrel, zodat rijkdom en waarnemingsintensiteit rechtstreeks
+kunnen worden gecontroleerd. `v_ndff_eerste_laatste_plot_taxon` beschrijft
+uitsluitend eerste en laatste positieve registratie. De view
+`v_ndff_verspreidingsverandering_taxon_jaar` vergelijkt alleen jaren waarin een
+taxon is geregistreerd en geeft met `jaarafstand` en `aansluitend_jaar`
+expliciet aan of werkelijk sprake is van opeenvolgende jaren. Geen enkele view
+maakt nulwaarnemingen of afwezigheid aan.
+
+De volledige lokale keten is vastgezet als `ndff-analyseketen-v1`. Deze versie
+staat in de centrale analysepoort en alle afgeleide analyseviews. De alleen-
+lezen eindaudit in `import_ndff_protocolkwaliteit.py --audit-live` controleert
+het vaste recordprofiel, unieke sleutels, statusaansluitingen, afgeleide
+totalen, jaargaten en grants. Een geslaagde audit verklaart de keten uitsluitend
+gereed voor verkennende verspreidingsanalyse; surveygeschiktheid en
+trendvalidatie blijven een afzonderlijke vervolgfase.
+
+Deze status staat verkennende berekeningen nadrukkelijk toe. De views leveren
+registratie-, verspreidings-, rijkdoms- en intensiteitsmaten en protocolmatige
+trendkandidaten. De verplichte kwaliteitsmelding begrenst de interpretatie:
+zonder aanvullende surveyvalidatie zijn dit geen gevalideerde
+populatietrends, abundanties, afwezigheden of causale beheereffecten.
 
 ## Functionele vogelgroepen en traits
 

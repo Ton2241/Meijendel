@@ -184,8 +184,13 @@ De protocoltoets per FFV-soortgroep is afgerond en reproduceerbaar vastgelegd in
 - 6.273 records (0,77%) behoren tot SNL-gebiedsmonitoring en zijn hoogstens
   kandidaat voor periodieke toestand-/beheeranalyse na ontvangst van volledige
   meetronden.
-- 97.318 records (12,00%) vallen onder de conservatieve PQ-blokkade voor
-  `12.007` of `12.202` en worden niet als zelfstandige telling toegelaten.
+- 6.326 records met protocol `12.007` uit 1952-1980 zijn historische
+  vegetatiecontext: uitsluitend positieve context (`V`), geen gevalideerde
+  PQ-trendreeks of nulwaarnemingen. Het betreft 5.179 records van Provincie
+  Zuid-Holland en 1.147 van Alterra; 3.160 records zijn ruimtelijk eenduidig
+  bruikbaar en 3.166 blijven door de ruimtelijke poort uitgesloten.
+- 90.992 andere records met `12.007` of `12.202` vallen onder de conservatieve
+  PQ-blokkade en worden niet als zelfstandige telling toegelaten.
 - Voor 11 soortgroepen ontbreekt in deze levering een passend doelmeetnet; zij
   worden niet voor trends in de life-database opgenomen.
 
@@ -240,3 +245,16 @@ en 55 geversioneerde SOVON-plots. Alle FFV-regels staan standaard op
 alleen in `Meijendel_ndff_secure.ndff_open_secure_koppeling` vastgelegd; 153
 beveiligde records hebben geen openbare match. Het controlemanifest staat op
 de T7 onder `NDFF/manifests/full_mysql_import_manifest.json`.
+
+Sinds 14 september 2026 bevat `Meijendel.ndff_open_leveringsverrijking` voor
+de 14.420 gekoppelde regels ook de reeds ontvangen niet-ruimtelijke metadata
+uit ticket 58679. Exacte geometrie, centroid en oppervlakte blijven buiten
+deze tabel. De koppeling is één-op-één en wordt bewaakt met
+`SHA-256(obs_uri)`. Alle gekoppelde regels hebben het NDFF-oordeel
+`betrouwbaar`; dat oordeel geldt voor de positieve waarneming en bewijst geen
+complete survey of trendgeschikte meetreeks.
+
+Van de 4.149 gekoppelde openbare records met `vervaagd=0` blijken er 1.828 toch
+een andere leveringsgeometrie te hebben. Daarom wordt de openbare vervagingsvlag
+niet als bewijs van geometrische gelijkheid gebruikt en blijft alle exacte
+leveringsgeometrie voorlopig beveiligd.

@@ -22,7 +22,10 @@ RSYNC_BIN="${MEIJENDEL_RSYNC_BIN:-$(command -v rsync 2>/dev/null || true)}"
 SSH_BIN="${MEIJENDEL_SSH_BIN:-$(command -v ssh 2>/dev/null || true)}"
 SQL_LOCAL="$LOCAL_REPO/meijendel.sql"
 SQL_MANIFEST_LOCAL="$LOCAL_REPO/meijendel.sql.manifest"
+SOURCES_SQL_LOCAL="$LOCAL_REPO/meijendel_bronnen.sql"
 SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_deploy_$$.sql"
+SOURCES_SQL_DEPLOY="${TMPDIR:-/tmp}/meijendel_bronnen_deploy_$$.sql"
+SOURCES_MANIFEST_DEPLOY="${TMPDIR:-/tmp}/meijendel_bronnen_deploy_$$.manifest"
 CACHE_FILE=""
 CACHE_MANIFEST=""
 CACHE_LOCAL=""
@@ -31,6 +34,8 @@ SQL_CANDIDATE_FILE=""
 SQL_MANIFEST_CANDIDATE_FILE=""
 CACHE_CANDIDATE_FILE=""
 CACHE_MANIFEST_CANDIDATE_FILE=""
+SOURCES_SQL_CANDIDATE_FILE=""
+SOURCES_MANIFEST_CANDIDATE_FILE=""
 
 if [[ -d /usr/local/mysql/bin ]]; then
   PATH="/usr/local/mysql/bin:$PATH"
@@ -80,9 +85,9 @@ release_lock() {
   fi
 }
 cleanup() {
-  rm -f "$SQL_DEPLOY"
+  rm -f "$SQL_DEPLOY" "$SOURCES_SQL_DEPLOY" "$SOURCES_MANIFEST_DEPLOY"
   if [[ "$CANDIDATE_STAGED" -eq 1 ]]; then
-    remote "rm -f '$CANDIDATE_FILE'" || true
+    remote "rm -f '$CANDIDATE_FILE' '$SOURCES_SQL_CANDIDATE_FILE' '$SOURCES_MANIFEST_CANDIDATE_FILE'" || true
   fi
   release_lock
 }
@@ -120,6 +125,7 @@ cd "$LOCAL_REPO"
 REQUIRED_MYSQL_VERSION="$("$LOCAL_REPO/scripts/check_mysql_version.sh" --required-version)"
 need_file "$SQL_LOCAL"
 need_file "$SQL_MANIFEST_LOCAL"
+need_file "$SOURCES_SQL_LOCAL"
 log "Controleer Git-baseline"
 [[ -z "$(git status --porcelain)" ]] || die "werkboom is niet schoon."
 [[ "$(git branch --show-current)" == "main" ]] || die "productiedeploy mag alleen vanaf main."
@@ -148,6 +154,8 @@ SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.candidate-$LOCAL_COMMIT"
 SQL_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.manifest.candidate-$LOCAL_COMMIT"
 CACHE_CANDIDATE_FILE="$STATE_DIR/${CACHE_FILE}.candidate-$LOCAL_COMMIT"
 CACHE_MANIFEST_CANDIDATE_FILE="$STATE_DIR/${CACHE_MANIFEST}.candidate-$LOCAL_COMMIT"
+SOURCES_SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel_bronnen.sql.candidate-$LOCAL_COMMIT"
+SOURCES_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel_bronnen.sql.manifest.candidate-$LOCAL_COMMIT"
 
 log "Controleer gesloten Meijendel-beheerroute en VPS-MySQL"
 need_file "$GATEWAY_RUNNER"
@@ -169,7 +177,9 @@ SQL_BYTES="$(awk -F= '$1 == "sql_bytes" {print $2}' "$SQL_MANIFEST_LOCAL")"
 [[ "$SQL_BYTES" =~ ^[0-9]+$ ]] || die "exportmanifest bevat geen geldige SQL-bestandsgrootte."
 CACHE_BYTES="$(awk -F= '$1 == "cache_bytes" {print $2}' "$CACHE_MANIFEST_LOCAL")"
 [[ "$CACHE_BYTES" =~ ^[0-9]+$ && "$CACHE_BYTES" -gt 0 ]] || die "cachemanifest bevat geen geldige cachebestandsgrootte."
-REQUIRED_FREE_KB=$(( (SQL_BYTES * 4 + CACHE_BYTES * 2 + 1023) / 1024 + 5 * 1024 * 1024 ))
+SOURCES_SQL_BYTES="$(stat -f '%z' "$SOURCES_SQL_LOCAL")"
+[[ "$SOURCES_SQL_BYTES" =~ ^[0-9]+$ && "$SOURCES_SQL_BYTES" -gt 0 ]] || die "bron-dump heeft geen geldige bestandsgrootte."
+REQUIRED_FREE_KB=$(( (SQL_BYTES * 4 + CACHE_BYTES * 2 + SOURCES_SQL_BYTES * 4 + 1023) / 1024 + 5 * 1024 * 1024 ))
 REMOTE_FREE_KB="$(remote "df -Pk '$REMOTE_BASE' | awk 'NR == 2 {print \$4}'")"
 [[ "$REMOTE_FREE_KB" =~ ^[0-9]+$ ]] || die "vrije VPS-schijfruimte kon niet worden bepaald."
 [[ "$REMOTE_FREE_KB" -ge "$REQUIRED_FREE_KB" ]] || \
@@ -205,6 +215,11 @@ for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/ /trim/soo
     exit 1
   fi
 done
+sources_code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve www.vwg-m.nl:443:127.0.0.1 'https://www.vwg-m.nl/Meijendel_bronnen.sql')"
+[[ "$sources_code" == "403" || "$sources_code" == "404" ]] || {
+  echo "FOUT: verwacht 403 of 404 voor de afgeschermde bron-dump, kreeg $sources_code" >&2
+  exit 1
+}
 REMOTE
 }
 
@@ -289,10 +304,26 @@ cp -p "$SQL_LOCAL" "$SQL_DEPLOY"
 "$EXPORT_VALIDATOR" --artifact-only \
   "$SQL_DEPLOY" "$SQL_MANIFEST_LOCAL"
 
+log "Controleer en kopieer afzonderlijke bron-dump"
+for required in \
+  'CREATE TABLE `bron`' \
+  'CREATE TABLE `literatuur`' \
+  'VIEW `v_bron_catalogus`' \
+  'VIEW `v_literatuur_overzicht`' \
+  'VIEW `v_contextdataset_overzicht`'; do
+  grep -qF "$required" "$SOURCES_SQL_LOCAL" || die "bron-dump mist vereist object: $required"
+done
+cp -p "$SOURCES_SQL_LOCAL" "$SOURCES_SQL_DEPLOY"
+sources_sha256="$(shasum -a 256 "$SOURCES_SQL_DEPLOY" | awk '{print $1}')"
+sources_bytes="$(stat -f '%z' "$SOURCES_SQL_DEPLOY")"
+printf 'format=meijendel-bronnen-manifest-v1\nsql_sha256=%s\nsql_bytes=%s\n' \
+  "$sources_sha256" "$sources_bytes" > "$SOURCES_MANIFEST_DEPLOY"
+
 echo "== Release-/afhankelijkheidsmanifest =="
 printf '%s\n' \
   "meijendel.sql -> $REMOTE_DATA/Meijendel.sql" \
   "meijendel.sql.manifest -> $REMOTE_DATA/Meijendel.sql.manifest" \
+  'Meijendel_bronnen.sql -> $REMOTE_DATA/Meijendel_bronnen.sql' \
   "$CACHE_FILE -> $REMOTE_SHINY/shiny_meijendel/app_cache/$CACHE_FILE" \
   "$CACHE_MANIFEST -> $REMOTE_SHINY/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest" \
   "MEIJENDEL_REQUIRE_PREBUILT_CACHE=1 -> Shiny Compose" \
@@ -333,6 +364,8 @@ sync_release() {
   run_rsync "$SQL_MANIFEST_LOCAL" "$VPS:$SQL_MANIFEST_CANDIDATE_FILE"
   run_rsync "$CACHE_LOCAL" "$VPS:$CACHE_CANDIDATE_FILE"
   run_rsync "$CACHE_MANIFEST_LOCAL" "$VPS:$CACHE_MANIFEST_CANDIDATE_FILE"
+  run_rsync "$SOURCES_SQL_DEPLOY" "$VPS:$SOURCES_SQL_CANDIDATE_FILE"
+  run_rsync "$SOURCES_MANIFEST_DEPLOY" "$VPS:$SOURCES_MANIFEST_CANDIDATE_FILE"
   [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
   [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude '.DS_Store' --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
   [[ ! -d "$LOCAL_REPO/R" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/R/" "$VPS:$REMOTE_SHINY/R/"
@@ -384,11 +417,17 @@ EXPECTED_CACHE_SHA256="$(awk -F= '$1 == "cache_sha256" {print $2}' "$CACHE_MANIF
 REMOTE_CACHE_SHA256="$(remote "sha256sum '$CACHE_CANDIDATE_FILE' | awk '{print \$1}'")"
 REMOTE_CACHE_MANIFEST_SHA256="$(remote "sha256sum '$CACHE_MANIFEST_CANDIDATE_FILE' | awk '{print \$1}'")"
 LOCAL_CACHE_MANIFEST_SHA256="$(shasum -a 256 "$CACHE_MANIFEST_LOCAL" | awk '{print $1}')"
+REMOTE_SOURCES_SHA256="$(remote "sha256sum '$SOURCES_SQL_CANDIDATE_FILE' | awk '{print \\$1}'")"
+REMOTE_SOURCES_MANIFEST_SHA256="$(remote "sha256sum '$SOURCES_MANIFEST_CANDIDATE_FILE' | awk '{print \\$1}'")"
+LOCAL_SOURCES_MANIFEST_SHA256="$(shasum -a 256 "$SOURCES_MANIFEST_DEPLOY" | awk '{print $1}')"
 [[ "$REMOTE_SQL_SHA256" == "$EXPECTED_SQL_SHA256" ]] || die "remote SQL-hash wijkt af van exportmanifest."
 [[ "$REMOTE_MANIFEST_SHA256" == "$LOCAL_MANIFEST_SHA256" ]] || die "remote exportmanifest wijkt af van lokaal manifest."
 [[ "$REMOTE_CACHE_SHA256" == "$EXPECTED_CACHE_SHA256" ]] || die "remote cachehash wijkt af van cachemanifest."
 [[ "$REMOTE_CACHE_MANIFEST_SHA256" == "$LOCAL_CACHE_MANIFEST_SHA256" ]] || die "remote cachemanifest wijkt af van lokaal manifest."
-printf 'REMOTE_SQL_SHA256=%s\nREMOTE_CACHE_SHA256=%s\n' "$REMOTE_SQL_SHA256" "$REMOTE_CACHE_SHA256"
+[[ "$REMOTE_SOURCES_SHA256" == "$sources_sha256" ]] || die "remote bron-dump wijkt af van lokaal bestand."
+[[ "$REMOTE_SOURCES_MANIFEST_SHA256" == "$LOCAL_SOURCES_MANIFEST_SHA256" ]] || die "remote bronmanifest wijkt af van lokaal manifest."
+printf 'REMOTE_SQL_SHA256=%s\nREMOTE_CACHE_SHA256=%s\nREMOTE_SOURCES_SHA256=%s\n' \
+  "$REMOTE_SQL_SHA256" "$REMOTE_CACHE_SHA256" "$REMOTE_SOURCES_SHA256"
 
 log "Leg exacte kandidaatcommit vast voor de gesloten releasehelper"
 remote "mkdir -p '$STATE_DIR'; umask 077; tmp='$CANDIDATE_FILE.tmp.\$\$'; printf '%s\n' '$LOCAL_COMMIT' > \"\$tmp\"; mv \"\$tmp\" '$CANDIDATE_FILE'"
@@ -403,6 +442,8 @@ printf '%s\n' "$gateway_apply"
 [[ "$gateway_apply_rc" -eq 0 ]] || \
   die "gesloten Meijendel-releaseactie faalde; controleer rollbackmelding en productie."
 grep -Fq 'DATABASE_BACKUP=' <<<"$gateway_apply" || die "releaseactie meldde geen databaseback-up."
+grep -Fq 'SOURCES_DATABASE_BACKUP=' <<<"$gateway_apply" || die "releaseactie meldde geen status van de bronback-up."
+grep -Fqx 'SOURCES_STATUS=ready' <<<"$gateway_apply" || die "releaseactie meldde de bron-database niet gereed."
 grep -Fqx 'CACHE_CANDIDATE_STATUS=ready' <<<"$gateway_apply" || die "releaseactie bewees de kandidaatcache niet."
 grep -Fqx 'SQL_CACHE=TRUE' <<<"$gateway_apply" || die "releaseactie gebruikte niet aantoonbaar de vooraf gebouwde cache."
 grep -Fqx 'SHINY_STATUS=ready' <<<"$gateway_apply" || die "releaseactie meldde Shiny niet gereed."

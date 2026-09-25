@@ -7,6 +7,10 @@ Hou rekening met de volgende IT-infrastructuur:
 3. NAS DS225+ met 6 GB geheugen
 4. MySQL 9.7.1 op iMac en VPS
 
+Op de lokale iMac staat `innodb_redo_log_capacity` persistent op 512 MiB. De
+eerdere standaardwaarde van 100 MiB liet de server bij omvangrijke lokale
+NDFF-bewerkingen vastlopen. Verlaag deze waarde niet zonder nieuwe meting.
+
 Antwoord in het Nederlands, compact en praktisch.
 
 Werk standaard op de lokale iMac M1 in mijn thuismap/projectmap. Ga ervan uit dat projecten lokaal staan tenzij ik expliciet zeg dat bestanden op de Samsung Portable SSD T7, op de NAS DS225+ of op de VPS staan. Vraag eerst om bevestiging voordat je paden op externe opslag of NAS gebruikt. Gebruik voor de NAS standaard Synology DSM via de browser.
@@ -116,6 +120,15 @@ Bij communicatie:
 - stel alleen vragen als dat echt nodig is om veilig verder te kunnen
 
 MySQL:
+- laat een ecologische waarneming uitsluitend toe tot de Meijendel-database
+  wanneer per waarneming aantoonbaar is dat zij daadwerkelijk binnen Meijendel
+  is gedaan en de waarnemingslocatie beschikbaar is of betrouwbaar kan worden
+  herleid. Een publicatie die alleen vermeldt dat het onderzoek in Meijendel
+  plaatsvond, een kilometerhok dat Meijendel raakt of een niet-lokaliseerbaar
+  locatie- of plotnummer is onvoldoende. Bewaar zulke bronnen buiten de
+  database als kandidaatbron totdat de locatie op waarnemingsniveau is
+  vastgesteld. Pas deze toelatingspoort ook toe voordat bestaande externe
+  bronlagen als Meijendel-waarnemingen worden gebruikt
 - gebruik voor lokale database-acties standaard de lokale MySQL-client
 - voor inloggen is `-u root -p` nodig
 - behandel de levende lokale Meijendel-MySQL-database op de iMac als de
@@ -126,8 +139,444 @@ MySQL:
   inhoudelijke waarheid vervangen
 - blokkeer generatie en deploy wanneer de export niet aantoonbaar overeenkomt
   met de levende database op schema, kernrijtellingen en publieke selecties
+- koppel ieder NDFF-record via een afzonderlijke recordkoppeling aan precies één
+  interne `protocol_id`; gebruik `ndff_open_waarneming_protocol` voor openbare
+  records en `Meijendel_ndff_secure.ndff_waarneming_protocol` voor beveiligde
+  records
+- behandel `protocol_sleutel` als de stabiele betekenisvolle identificatie en
+  het numerieke `protocol_id` uitsluitend als foreign key
+- registreer een aangeleverde protocolcode als `expliciete_code` en uitsluitend
+  de letterlijke bronwaarde `Losse waarnemingen` als
+  `expliciet_losse_waarneming` met sleutel `LOS`; leid `LOS` nooit af uit een
+  lege of onbekende waarde
+- houd protocolkwalificatie strikt gescheiden van analysetoelating:
+  `analyse_status` is geen protocolstatus en beveiligde verspreidings-, trend-
+  en innamevelden mogen hiervoor niet worden hergebruikt
+- gebruik voor nieuwe NDFF-analyses uitsluitend regelversie
+  `ndff-analysebesluit-v4` en doelbereikversie `ndff-protocolbereik-v2`; oudere
+  versies zijn alleen historische auditlagen
+- behandel `ndff_analysebesluit.eindbesluit = voorlopig_toegelaten` als
+  toestemming voor uitsluitend verkennend gebruik op basis van
+  protocolgeschiktheid; houd `gegevensgeschiktheid = niet_beoordeeld` totdat
+  telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden zijn
+  onderzocht en toon bij ieder resultaat verplicht de kwaliteitsvermelding uit
+  `ndff_analysebesluit.reden`
+- behandel protocollen `04.004` en `07.001` als gemengde positieve leveringen.
+  Gebruik `V` voorwaardelijk na de ruimtelijke en PQ-poort. Gebruik `I` en `TV`
+  uitsluitend voor indicatieve verandering in geregistreerde aanwezigheid met
+  `gegevensgeschiktheid='onvoldoende'`; gebruik ze niet als gevalideerde trend.
+  `TA` en `TK` zijn uitgesloten. Reconstrueer geen bezoeken, complete lijsten of
+  nullen en aggregeer aangeleverde aantallen niet over records. Raadpleeg voor
+  de status per analysetype altijd `ndff_analysebesluit`; de algemene
+  `gegevensgeschiktheid` in `v_ndff_analyse_record` volgt de V-beslissing
+- behandel `12.004`, `12.006`, `17.005`, `17.006`, `102.004`, `102.006`,
+  `104.000` en `105.000` als uitsluitend positieve bronprotocollen. Behoud de
+  oorspronkelijke `protocol_sleutel` en bewijsmethode `expliciete_code`; zet
+  deze records niet om naar `LOS`. Alleen `V` is voorwaardelijk toegestaan na
+  de ruimtelijke en PQ-poort. `I`, `TV`, `TA` en `TK` zijn voor de huidige
+  levering uitgesloten, omdat complete bezoeken, inspanning, volledige
+  soortenlijsten en afleidbare nullen ontbreken. Raadpleeg altijd het besluit
+  per analysetype in `ndff_analysebesluit`
+- behandel `17.002`, `102.002`, `102.005` en `102.007` als gestructureerde
+  maar in de FFV-levering onvolledige protocollen. `V` is voorwaardelijk
+  toegestaan. Voor `17.002` is alleen `TV` indicatief toegestaan; voor de drie
+  `102.*`-protocollen zijn `I` en `TV` indicatief toegestaan. Deze indicatieve
+  typen houden `gegevensgeschiktheid='onvoldoende'` en mogen niet als
+  gevalideerde populatietrend worden gepresenteerd. `TA` en `TK` zijn
+  uitgesloten; voor `17.002` geldt dat ook voor `I`. Leid pas echte nullen af
+  nadat de ontbrekende tuin-, route-, lijst- of monsterstructuur afzonderlijk
+  is gereconstrueerd en gevalideerd
+- gebruik bij `alleen_na_doelsoortselectie` verplicht
+  `ndff_protocol_soort_geschiktheid` en selecteer uitsluitend
+  `doelrelatie='doelsoort'`; behandel iedere overige soort als bijvangst en dus
+  alleen als positieve voorkomensinformatie (`V`)
+- behandel `doelrelatie='onbepaald'` eveneens uitsluitend als `V`; deze klasse
+  betekent dat de aangeleverde taxonnaam zowel een doelsoort als een
+  niet-doelsoort kan omvatten
+- gebruik combinaties met `wacht_op_doelsoortafbakening` voorlopig uitsluitend
+  voor `V`; een protocolcode alleen bewijst daar niet dat het record een
+  doelsoort betreft
+- behandel SNL-protocol `12.205` als beoordelings- en subsidiecontext, niet als
+  bewijs van een onafhankelijke bron. Gebruik recordstatussen uit
+  `ndff_snl_waarneming_context`: `overlap_bevestigd`, `overlap_mogelijk`,
+  `geen_overlap_gevonden` en `onvoldoende_onderzocht`. Alleen
+  `overlap_bevestigd` betekent aangetoonde dubbeling; `geen_overlap_gevonden`
+  betekent nadrukkelijk niet dat onafhankelijkheid bewezen is
+- behandel bij Staatsbosbeheer-florakartering `12.015` iedere aangetroffen
+  soortgroep als `doelsoortafhankelijk`. De karteerlijst en begrenzing worden
+  per opdracht vastgesteld en staan niet in de NDFF-regels. Gebruik de records
+  daarom zonder die opdrachtcontext uitsluitend voor positieve
+  voorkomensinformatie (`V`); leid geen volledige soortenlijst, bezoek of echte
+  nul af. Vermeng `12.015` niet met SNL-protocol `12.205`
+- gebruik voor gecombineerde lokale NDFF-analyse uitsluitend
+  `Meijendel_ndff_secure.v_ndff_canonieke_waarneming`: beveiligde matches
+  vervangen daarin hun openbare tegenhanger en mogen nooit als extra record
+  worden geteld. Deze interne view bevat exacte geometrie en mag niet aan
+  gewone accounts, Shiny, VPS of webexports worden toegekend
+- laat iedere nieuwe selectie voor inhoudelijke analyse vervolgens via
+  `Meijendel_ndff_secure.v_ndff_analyse_record` lopen. Selecteer alleen records
+  met `record_selectiestatus = 'voorlopig_bruikbaar'`; behandel
+  `voorlopig_met_overlapwaarschuwing` afzonderlijk en sluit alle
+  `uitgesloten_*`-statussen uit. Gebruik alleen een analysetype dat voorkomt in
+  `protocol_kandidaattypen`, behoud `gegevensgeschiktheid` als afzonderlijke
+  validatiestatus en toon bij ieder resultaat de `kwaliteitsmelding`. De view
+  bevat geen geometrie of exacte datum maar blijft intern en krijgt geen
+  gewone of Shiny-rechten
+- gebruik voor positieve verspreidingssignalen de reeds gefilterde view
+  `Meijendel_ndff_secure.v_ndff_verspreiding_plot_jaar_taxon` en voor selectie
+  van protocolmatige trendkandidaten
+  `Meijendel_ndff_secure.v_ndff_trendkandidaat_plot_jaar_taxon`. Interpreteer
+  `bronrecords_ter_controle` uitsluitend als herkomstcontrole, nooit als
+  abundantie of trend. Neem de velden `gegevensgeschiktheid` en
+  `kwaliteitsmelding` zichtbaar mee in iedere afgeleide uitvoer. Verleen deze
+  views niet aan extra accounts zonder afzonderlijke beoordeling
+- raadpleeg vóór iedere nieuwe NDFF-analyse
+  `Meijendel_ndff_secure.v_ndff_gebruiksdekking_soortgroep_protocol` voor de
+  sluitende omvang per soortgroep, protocol, kandidaat-analysetype,
+  uitsluitingsreden, beveiligingsstatus en resterende validatiebehoefte
+- gebruik voor beschrijvende jaarniveau-analyses uitsluitend de views
+  `v_ndff_soortenrijkdom_plot_jaar`, `v_ndff_eerste_laatste_plot_taxon`,
+  `v_ndff_verspreidingsverandering_taxon_jaar` en
+  `v_ndff_dekking_intensiteit_plot_jaar_soortgroep`. Interpreteer eerste/laatste
+  registratie nooit als vestiging/verdwijning, gebruik voor jaar-op-jaar alleen
+  `aansluitend_jaar = 1` en behandel ontbrekende jaren nooit als nul of
+  afwezigheid
+- gebruik uitsluitend de vaste lokale ketenversie `ndff-analyseketen-v1` en
+  voer vóór formele analyserapportage de alleen-lezen controle uit met
+  `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-live`. Een
+  geslaagde audit bewijst technische reproduceerbaarheid voor verkennende
+  verspreidingsanalyse, niet dat protocolkandidaten al trendklaar zijn. Leg
+  iedere latere inhoudelijke wijziging vast onder een nieuwe ketenversie
+- verkennende berekeningen zijn toegestaan met de voorgeselecteerde views,
+  mits `gegevensgeschiktheid` en `kwaliteitsmelding` zichtbaar blijven. Benoem
+  resultaten als geregistreerde aanwezigheid, verandering in registraties,
+  meldingsintensiteit of associatie. Gebruik zonder aanvullende validatie nooit
+  de kwalificaties gevalideerde populatietrend, abundantie, afwezigheid of
+  causaal beheereffect
+- behandel een expliciete NEM-protocolcode als bewijs dat de positieve regel
+  uit een protocolgeldig bezoek komt. Reconstrueer vóór trendanalyse wel de
+  native meeteenheid en de bezoekmatrix. Leid echte nullen uitsluitend af voor
+  de doelsoorten en bezochte meeteenheden die het betreffende NEM-protocol
+  volledig bestrijkt; leid nooit nullen af voor bijvangsten
+- gebruik voor dagvlinderprotocol `03.201` de lokale reconstructieversie
+  `ndff-vlinderroute-v2`. De eerdere v1-afleiding is vervangen en wordt niet
+  naast v2 bewaard. De tabellen in `Meijendel`, te beginnen met
+  `Meijendel.ndff_vlinder_routefamilie`,
+  `ndff_vlinder_routegeometrie`, `ndff_vlinder_bezoek` en
+  `ndff_vlinder_bezoek_taxon` bevatten de afgeleide route-, bezoek- en
+  doelsoortmatrix. De routefamilie met 87 bezoeken in 16 jaren en uitsluitend
+  Groot dikkopje is als soortgerichte route vastgelegd; nullen voor andere taxa
+  zijn daar niet toegestaan. Bij
+  een eensoortbezoek zonder aantoonbaar routetype blijft het doelbereik
+  `onbepaald` en worden alleen positieve waarnemingen bewaard. Een bezoek
+  zonder route met meerdere positieve dagvlindertaxa krijgt
+  `algemene_route_aannemelijk`; de bewijsgrond blijft per bezoek en nulregel
+  zichtbaar. Sluit `geen_route` uit van routeanalyses en behandel
+  `handmatige_controle` afzonderlijk. Controleer de laag vóór gebruik met
+  `python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-vlinders`
+- behandel de binnen `03.201` geregistreerde Vliesvleugeligen als een
+  afzonderlijk gevolgde *Bombus*-reeks. Gebruik reconstructieversie
+  `ndff-vliesvleugelroute-v1` alleen voorlopig en de vier tabellen
+  `Meijendel.ndff_vliesvleugel_*`. De officiële methode staat zowel eigen
+  hommelroutes als optionele telling op dagvlinderroutes toe en kent per bezoek
+  een deelnamevlag en een determinatieniveau. Zonder die twee kenmerken mogen
+  alleen positieve tellingen worden gebruikt en geen soortspecifieke nullen.
+  Controleer met `--audit-vliesvleugelen`
+- behandel dagactieve nachtvlinders en nectarplanten op een dagvlinderroute als
+  optionele, per bezoek aangevinkte onderdelen. Leid alleen nullen af wanneer
+  die deelname expliciet is bevestigd. Bewaar nectarplantklassen als ordinale
+  bloeiseenheden per sectie, niet als plantenaantallen
+- behandel `03.203` als een val-telpuntprotocol. Voor trendgebruik zijn minimaal
+  telpunt, bezoeknacht, valtype, lamptype, volledige brandduur en de scheiding
+  binnen/buiten de val nodig. Jaar-hokaggregaten leveren geen bezoeken of
+  nullen
+- gebruik voor libellenprotocol `07.201` reconstructieversie
+  `ndff-libellenroute-v1` en de vier openbare tabellen
+  `Meijendel.ndff_libel_*`. Gebruik uitsluitend `doelbereikstatus =
+  'algemene_route'` voor afgeleide nullen. Bij `onbepaald` blijft alleen de
+  positieve telling staan. Grove geometrie zonder routefamilie mag een geldig
+  bezoek blijven, maar niet als exacte route worden geïnterpreteerd. Controleer
+  vóór gebruik met `--audit-libellen`
+- gebruik voor reptielenprotocol `10.201` reconstructieversie
+  `ndff-reptielroute-v2` en de vier openbare tabellen
+  `Meijendel.ndff_reptiel_*`. Een bezoek is routefamilie plus kalenderdatum;
+  gebruik de ruwe begin- en eindtijd niet als inspanning. De FFV-laag bevat
+  alleen bezoeken met minstens één positieve reptielenwaarneming. Gebruik de
+  afgeleide nullen uitsluitend voor Hazelworm binnen deze bevestigde
+  positieve bezoeken en alleen met `nulbereik=binnen_geleverd_positief_bezoek`;
+  leid geen Zandhagedisnullen of geheel ontbrekende bezoeken af.
+  Sluit `geen_route` uit van routeanalyse en controleer vóór gebruik met
+  `--audit-reptielen`
+- gebruik voor amfibieënprotocol `01.201` reconstructieversie
+  `ndff-amfibiewater-v2` en de vijf openbare tabellen
+  `Meijendel.ndff_amfibie_*`. Een telgebiedbezoek kan meerdere bevestigde
+  waterbezoeken bevatten. Classificeer een niet-gemeld taxon als
+  `niet_gemeld_methode_onbekend`, nooit als nul, zolang programmaonderdeel,
+  zoekmethode en volledige-lijststatus ontbreken. Houd exacte aantallen,
+  presentieklassen,
+  minimumaantallen, schattingen en gemengde waarden gescheiden. Leid geen
+  waterkoppeling of nul af voor de 80 vervaagde, jaarlijks geaggregeerde
+  Kamsalamanderrecords. Controleer vóór gebruik met `--audit-amfibieen`
+- gebruik voor vleermuistransectprotocol `17.208` reconstructieversie
+  `ndff-vleermuistransect-v1` en de vijf openbare tabellen
+  `Meijendel.ndff_vleermuis_*`. Houd de NEM-VTT-autoroute en vleerMUS-fietsroute
+  als afzonderlijke meetreeksen. Gebruik alleen de doelsoortenlijst van de
+  betreffende methodevariant voor afgeleide nullen; overige positieve taxa
+  zijn bijvangst. Interpreteer `detectieaantal` als akoestische detecties en
+  nooit als aantallen individuen. Behoud de 73 onderdrukte dubbele
+  vleerMUS-aanleveringen uit 2019 in de recordselectie voor het auditspoor.
+  Controleer vóór gebruik met `--audit-vleermuizen`
+- gebruik voor konijnentelprotocol `17.209` reconstructieversie
+  `ndff-konijnentelling-v1` en de twee openbare tabellen
+  `Meijendel.ndff_konijn_*`. De FFV-export bevat exacte positieve
+  sectietellingen maar geen route- of sectie-id. Behandel een kilometerhok,
+  kalenderdatum of hok-datum-taxonaggregaat nooit als native route, sectie of
+  bezoek. Onderdruk gelijke telwaarden niet als dubbel en leid geen nul af.
+  Sluit de 11 als `mogelijke_overlap_17_204` gemarkeerde regels niet zonder
+  aanvullende bronkoppeling samen met DAZ-BMP in één telling. Controleer vóór
+  gebruik met `--audit-konijnen`
+- behandel wintertelprotocol `17.201` als een gemengd protocolbereik. De
+  actuele NEM-handleiding onderscheidt soorten waarvoor het wintermeetnet in
+  beginsel geschikt is van overige aangetroffen vleermuizen. In
+  `ndff-protocolbereik-v2` zijn 3.786 records doelsoort
+  (`V,TA`), 124 records bijvangst (`V`) en 50 records
+  `Plecotus auritus/austriacus` onbepaald (`V`). De gezamenlijke categorie
+  `Myotis mystacinus/brandtii` is een geldige NEM-telcategorie en blijft
+  doelsoort. Leid uit de NDFF-regels geen objectbezoeken of nullen af zolang
+  object-id, geteld/niet-geteld-status en start-/stopcontext ontbreken
+- behandel zoldertellingen `17.202`, otter/bever `17.207` en
+  meervleermuis-uitvliegtellingen `17.210` voorlopig alleen binnen hun reeds
+  vastgelegde positieve recordcontext. De zeven zolderrecords bevatten geen
+  eenduidige trenddoelsoort, de drie otterrecords bewijzen geen uitgevoerd
+  sporenmeetnet en de vijf meervleermuisrecords missen bezoekdatum en
+  volledigheidsstatus. Leid daaruit geen aanvullende nullen af
+- gebruik voor DAZ-BMP-protocol `17.204` reconstructieversie
+  `ndff-daz-bmp-v1` en de vier openbare tabellen
+  `Meijendel.ndff_daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van
+  de BMP-vogeltellers dat aan DAZ deelnam; het zijn geen vogelwaarnemingen.
+  Beschouw een BMP-bezoek alleen als deelnemend wanneer minstens één
+  17.204-record eenduidig op datum en SOVON-plot aan dat bezoek is gekoppeld.
+  Leid alleen binnen zo'n bevestigd bezoek echte nullen af voor de zeven
+  DAZ-doelsoorten. Een meervoudig koppelbaar record van hetzelfde taxon
+  blokkeert die nul. Leid nooit nullen af voor bijvangsten of voor overige
+  BMP-bezoeken. Controleer vóór gebruik met `--audit-daz-bmp`
+- gebruik vanaf 13 september 2026 voor DAZ-BMP primair de originele
+  SOVON/AVIMAP-laag `sovon_avimap_*` met regelversie
+  `sovon-avimap-daz-v1`. `ndff-daz-bmp-v1` blijft alleen een historische,
+  secundaire reconstructie. Tel een `17.204`-NDFF-record niet mee wanneer
+  `sovon_avimap_ndff_daz_koppeling.koppelstatus` begint met
+  `sovon_vervangt_ndff`; bij `sovon_vervangt_ndff_telconflict` blijft SOVON
+  leidend en moet het conflict worden vermeld. Leid alleen echte nullen af voor
+  de zeven DAZ-doelsoorten en alleen binnen een bezoek met minimaal één
+  oorspronkelijke zoogdierregel. Behandel `lopend_jaar=1` als onvolledige
+  jaardekking. Wijzig vogelgegevens uit deze export nooit zonder een afzonderlijk
+  besluit van de eigenaar; rapporteer afwijkingen eerst. Controleer met
+  `--audit-sovon-avimap`
+- synchroniseer de vogelregels uit dezelfde primaire SOVON/AVIMAP-download
+  uitsluitend met `--sync-sovon-avimap-vogels` en afsluitjaar 2025. Voeg
+  ontbrekende bron-ID's, bezoeken en territoriumresultaten toe en corrigeer
+  bestaande regels alleen wanneer dezelfde bron-ID of dezelfde
+  plot-soort-jaarcombinatie in de download staat. Verwijder nooit handmatige of
+  andere bestaande regels omdat zij in deze export ontbreken. Controleer met
+  `--audit-sovon-avimap-vogels`
+- gebruik voor zeereeppaddenstoelenprotocol `11.202` reconstructieversie
+  `ndff-zeereep-v2` en de drie openbare tabellen `Meijendel.ndff_zeereep_*`.
+  De native meeteenheid is het RD-kilometerhok en een bezoek is hok plus
+  kalenderdatum. Gebruik alleen onvervaagde records voor de bezoekmatrix.
+  Behandel een niet gemelde typische doelsoort als
+  `niet_gemeld_tellerscope_onbekend`, nooit als echte nul: de NMV-handleiding
+  staat telling van één of enkele bekende soorten toe en de NDFF-export bevat
+  de feitelijke tellerscope niet. Behoud
+  NMV-aantalsklassen als vindplaatsklassen; tel ze nooit op als aantallen
+  vruchtlichamen. Markeer bezoeken buiten oktober-december en vermeld bij
+  analyse dat bezoektijd en waarnemersbekwaamheid nog niet uit de NDFF-export
+  zijn gevalideerd. Controleer vóór gebruik met
+  `--audit-zeereeppaddenstoelen`
+- gebruik voor het historische bospaddenstoelenprotocol `11.201`
+  reconstructieversie `ndff-bospaddenstoel-v1` en de zeven openbare tabellen
+  `Meijendel.ndff_bospaddenstoel_*`. Gebruik de recordselectie om 473 parallelle
+  presentieregels niet naast hun exacte vruchtlichaamtelling mee te tellen.
+  Leid bezoeknullen alleen af voor telsoorten die op hetzelfde vaste meetpunt
+  ooit positief zijn gemeld; dit is het conservatief aantoonbare minimum van het
+  oorspronkelijke doelbereik. Een nul betreft vruchtlichamen op één bezoek,
+  niet afwezigheid van mycelium of geschiktheid van de habitat. Gebruik voor een
+  jaar het hoogste dagtotaal uit `ndff_bospaddenstoel_jaar_taxon`, nooit de som
+  van bezoeken, en vul geen volledig negatieve ontbrekende bezoeken aan. Houd
+  `11.201` gescheiden van `11.204` en controleer vóór gebruik met
+  `--audit-bospaddenstoelen`
+- gebruik voor Het Nieuwe Strepen-protocol `12.204` reconstructieversie
+  `ndff-hns-v1` en de vijf openbare tabellen `Meijendel.ndff_hns_*`. Behandel
+  de 1.145 verschillende bronintervallen niet als bezoeken. Leid echte nullen
+  uitsluitend af binnen de 23 als `volledige_lijst_aannemelijk`
+  geclassificeerde datum/ruimteclusters en het daaruit aantoonbare lokale
+  doelbereik. Kleine fragmenten en vervaagde jaarregels blijven uitsluitend
+  positieve verspreidingsinformatie. Beschouw herhaalde datumclusters niet als
+  bewezen onafhankelijke tellers zolang lijst- en waarnemer-ID ontbreken. Tel
+  aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
+  vóór gebruik met `--audit-hns`
+- gebruik voor korstmossenprotocol `02.202` reconstructieversie
+  `ndff-korstmos-v2` en de vijf openbare tabellen `Meijendel.ndff_korstmos_*`.
+  Leid echte nullen alleen af binnen de 32 bevestigde bezoeken en de dertig
+  openbare taxa. Behoud parallelle positieve regels als afzonderlijke
+  waarnemertellingen. Gebruik `registratiestatus` om te onderscheiden of twee
+  onafhankelijke tellingen in de export aantoonbaar zijn; interpreteer
+  `tweede_telling_niet_aantoonbaar_in_export` nooit als één uitgevoerde teller.
+  Behandel de twee FFV-bedekkingsklassen uitsluitend ordinaal. Kopieer de
+  twintig vervaagde Saucijs-baardmosrecords niet naar de openbare afgeleide
+  tabellen en controleer vóór gebruik met
+  `--audit-korstmossen`
+- gebruik voor mossenprotocol `02.204` reconstructieversie `ndff-mos-v2` en de
+  vijf openbare tabellen `Meijendel.ndff_mos_*`. De native meeteenheid is het
+  volledige kilometerhok. Behandel de 21 bronperioden als onderdelen van zeven
+  hokinventarisaties, nooit als onafhankelijke herhaaltellingen. Leid echte
+  nullen alleen af op hokniveau binnen de 111 openbare taxa; verdeel een
+  hokuitkomst niet over geraakte SOVON-plots. Gebruik de drie BLWG-klassen
+  uitsluitend ordinaal, houd presentiewaarden en abundantieconflicten apart en
+  leid geen lokale tijdtrend af omdat geen hok is herhaald. Kopieer het ene
+  vervaagde record niet naar de openbare afgeleide tabellen. Accepteer de
+  expliciete protocolcode als bewijs voor de voorgeschreven minimale inspanning
+  van acht mensuren en dekking van relevante biotopen; vraag die gegevens niet
+  opnieuw op zonder een concrete resterende analysebehoefte. Controleer vóór
+  gebruik met `--audit-mossen`
+- gebruik voor FLORBASE-protocol `12.001` reconstructieversie
+  `ndff-florbase-v1` en de vier openbare tabellen
+  `Meijendel.ndff_florbase_*`. Groepeer per werkelijk RD-kilometerhok en jaar.
+  Behandel alleen hok-jaren met minimaal 50 geregistreerde taxa als
+  `volledige_lijst_aannemelijk`; dit is een voorlopige reconstructieregel en
+  geen officiële FLORON-norm. Leid uitsluitend daar
+  `protocolnul_onder_volledigheidsaanname` af. Houd kleinere lijsten als
+  positieve fragmenten, aggregeer aantalsinformatie niet, verdeel geen
+  hokuitkomsten over SOVON-plots en toon altijd dat volledigheidsvlag,
+  bezoekduur en historische checklistversie ontbreken. Kopieer de 213
+  vervaagde records niet naar de openbare afgeleide tabellen en controleer vóór
+  gebruik met `--audit-florbase`
+- gebruik voor LMF-A-protocol `12.211` reconstructieversie `ndff-lmfa-v1` en
+  de vijf openbare tabellen `Meijendel.ndff_lmfa_*`. Behandel één
+  kilometerhok en jaar als één bezoek aan de vaste Dunea-looproute. Leid echte
+  nullen alleen af voor de 75 soorten uit Tabel 4 van het officiële
+  FLORON-rapport. Tel uitsluitend exacte groeiplaatsaantallen op; behoud één
+  reeds geaggregeerde FLORON-klasse en zet combinaties van meerdere klassen of
+  gemengde meetwijzen op `waargenomen_aggregatie_onzeker`. Imputeer ontbrekende
+  meetronden nooit met een eerder of later jaar. Bewaar exacte gevoelige
+  geometrie uitsluitend in de beveiligde bronlaag en controleer vóór gebruik
+  met `--audit-lmfa`
+- behandel `12.002`, `12.003`, `12.209` en `12.211` als
+  doelsoortafhankelijke FLORON-protocollen. Leid buiten een expliciet
+  doelsoorten- en bezoekbereik geen nullen af. De enkele Nectarindextelling
+  ondersteunt positieve informatie, maar geen lokale tijdtrend
+- gebruik voor HabSlak-protocol `04.006` reconstructieversie
+  `ndff-habslak-v2` en uitsluitend de vier openbare tabellen
+  `Meijendel.ndff_habslak_*`. Groepeer onvervaagde records per kalenderdatum en
+  openbare geometrie; bewaar verschillende telonderwerpen afzonderlijk en tel
+  ze niet op. Behandel begeleidende soorten alleen als positieve waarneming.
+  Behandel de datum-geometrieclusters niet als bewezen vaste HabSlak-
+  monitoringslocaties. De soortprotocollen uit 2014 vereisen locatie-ID's,
+  voorgeschreven monsters of sublocaties en 10x10-km-doelbereik; die ontbreken
+  in de NDFF-export. Leid daarom geen bemonsteringsvolledigheid of nul af.
+  Kopieer geen exacte beveiligde vindplaats naar de openbare afgeleide tabellen
+  en controleer vóór gebruik met `--audit-habslak`
+- gebruik voor braakbalprotocol `17.002` reconstructieversie
+  `ndff-braakbal-v1` en uitsluitend de drie openbare tabellen
+  `Meijendel.ndff_braakbal_*`. Groepeer de positieve bronregels per jaar en
+  openbare geometrie, maar noem dit geen partij of bezoek. Van de 389 regels
+  zijn er 387 tot 10 x 10 km vervaagd; oorspronkelijke partij- en nest-ID's
+  ontbreken. Ook wanneer de opgetelde prooisom minimaal 150 is, betekent dit
+  daarom uitsluitend `som_minimaal_150_partij_onbekend`. Leid geen echte
+  nullen of SOVON-plotkoppelingen af en gebruik aantallen niet als lokale
+  abundantie. Gebruik de laag alleen voor positieve regionale samenstelling en
+  indicatieve verandering in registraties; controleer haar met
+  `--audit-braakballen`
+- gebruik voor Jaarrond Tuintelling `102.002` reconstructieversie
+  `ndff-tuintelling-v1` en uitsluitend de zes openbare tabellen
+  `Meijendel.ndff_tuintelling_*`. Behandel de drie uit zes geometrieversies
+  afgeleide tuinvakfamilies niet als oorspronkelijke tuin-ID's. Een positieve
+  regel bewijst dat de betreffende soortgroep in die telperiode is geteld.
+  Leid alleen binnen zo'n bevestigde soortgroep en uitsluitend voor de 33 in
+  deze lokale levering aangetroffen taxa
+  `protocolnul_binnen_lokaal_doelbereik` af. Presenteer deze nullen nooit als
+  volledig landelijk doelbereik. Alle 309 bronrecords vallen buiten een
+  eenduidig Meijendel-SOVON-plot; gebruik de reconstructie dus alleen als
+  regionale tuincontext en nooit als lokale Meijendelreeks. De levering loopt
+  van 2015 tot maart 2022 en bevat geen telling na de vernieuwing van juli
+  2022. Controleer vóór gebruik met `--audit-tuintellingen`
+- gebruik voor LiveAtlas `102.005` reconstructieversie `ndff-liveatlas-v1`
+  en uitsluitend de vier openbare tabellen `Meijendel.ndff_liveatlas_*`.
+  Gelijke begin- en eindtijd vormen een afgeleid bezoek, maar niet een bewezen
+  oorspronkelijk bezoek-ID. Behandel de 128 openbare recordgeometrieën nooit
+  als de gelopen route. De FFV-levering bevat evenmin de complete-lijststatus
+  per soortgroep; leid daarom geen nulwaarnemingen af. Gebruik alleen de 169
+  positieve bezoek-soortgroep-taxonuitkomsten voor verspreidingscontext,
+  bezoekintensiteit en indicatieve verandering. Alleen de 12 bezoeken waarvan
+  alle bronregels volledig binnen hetzelfde SOVON-plot liggen hebben een
+  eenduidige bezoekniveau-plotkoppeling. Controleer vóór gebruik met
+  `--audit-liveatlas`
+- gebruik voor Kwartiertellingen `102.007` reconstructieversie
+  `ndff-kwartiertelling-v1` en uitsluitend de vier openbare tabellen
+  `Meijendel.ndff_kwartiertelling_*`. Gelijke begin- en eindtijd vormen een
+  afgeleid telinterval, niet een bewezen oorspronkelijk tel-ID. Behandel de 87
+  openbare recordgeometrieën niet als looproute. Omdat de levering een complete
+  soortenlijst niet onderscheidt van een soortgerichte telling, mogen geen
+  nullen worden afgeleid. Bewaar intervallen boven 15 minuten met status
+  `bronafwijking_boven_15_minuten`; sluit ze niet stilzwijgend uit. Gebruik de
+  49 positieve taxonuitkomsten voor verspreidingscontext, telintervalcontext
+  en indicatieve verandering. Alleen de 14 intervallen waarvan alle bronregels
+  volledig binnen hetzelfde SOVON-plot liggen hebben een eenduidige
+  intervalniveau-plotkoppeling. Controleer met `--audit-kwartiertellingen`
+- gebruik voor de resterende NEM-batch de versies `ndff-nachtvlinder-v1`,
+  `ndff-bospaddenstoel-verspreiding-v1`, `ndff-poldervis-v2` en
+  `ndff-otter-bever-v1` en uitsluitend de openbare tabellen
+  `Meijendel.ndff_nachtvlinder_*`,
+  `Meijendel.ndff_bospaddenstoel_verspreiding_*`,
+  `Meijendel.ndff_poldervis_*` en `Meijendel.ndff_otter_bever_*`. Leid voor
+  `03.203`, `11.204` en `17.207` geen nullen af. Leg bij `13.201` een ontbrekende
+  lokale doelsoort alleen vast als `doelsoort_niet_gemeld` met nulregel
+  `geen_nul_doelmethode_onbekend`; dit is onbekend en geen echte nul. Noem
+  geaggregeerde positieve telwaarden geregistreerde aantallen, niet abundantie.
+  Controleer de vier reeksen samen met `--audit-resterende-nem`
+- gebruik voor RAVON Natura 2000-protocol `13.202` uitsluitend
+  `ndff-ravon-n2000-v1` en `Meijendel.ndff_ravon_n2000_*`. De 67 positieve
+  records zijn doelsoort of bijvangst; de 25 geometrieën zijn slechts
+  monsterlocatieproxy's. Leid geen bezoeken, inspanning of nullen af en
+  controleer met `--audit-ravon-n2000`
+- gebruik voor actuele beslisregels uitsluitend
+  `Meijendel.v_ndff_analysebesluit_actueel`; meng oudere regelversies niet in
+  een analyse
+- reconstrueer protocol `12.202` niet als afzonderlijke NDFF-meetreeks. De
+  provinciale PQ-tabellen zijn gezaghebbend; NDFF-PQ blijft uitsluitend
+  secundaire overlap- en herkomstcontrole
+- sla alle openbare NDFF-brondata en alle daaruit afgeleide tabellen standaard
+  op in `Meijendel`. `Meijendel_ndff_secure` is een zeer hoge uitzondering en
+  bevat uitsluitend afzonderlijke waarnemingen waarvan de openbare NDFF-locatie
+  daadwerkelijk is vervaagd, met de bijbehorende onvervaagde leveringsdetails.
+  Iedere nieuwe tabel, view of gegevensklasse in dit beveiligde schema vereist
+  voorafgaande uitdrukkelijke toestemming van de eigenaar
+- interpreteer NEM-protocolkwaliteit niet als toestemming om willekeurige
+  positieve NDFF-regels rechtstreeks aan TRIM te voeren. TRIM krijgt pas een
+  matrix nadat meeteenheid, bezoeken, doelsoorten, tellingen en geldige echte
+  nullen protocolconform zijn gereconstrueerd
+- pas voor openbare NDFF-records altijd `ndff_open_pq_koppeling` met
+  regelversie `ndff-open-pq-poort-v2` toe. Records met protocol `12.007` uit
+  1952-1980 hebben classificatie `historische_vegetatiecontext`: gebruik ze
+  uitsluitend als positieve context (`V`), nooit als gevalideerde PQ-trendreeks
+  of bron van nullen. Andere records met `12.007` of `12.202` zijn secundaire
+  PQ-controlebron en mogen niet naast de provinciale PQ-reeks meetellen; leid
+  PQ-status nooit uitsluitend uit de bronhouder af
+- laat bijvangst en `algemene_bron` nooit een niet-V-analysetype erven van het
+  bijbehorende protocol
 
 GIS / R-spatial:
+- gebruik voor ruimtelijke toelating tot de life-database de actuele laag
+  `v_meijendel_basisgebied_actueel`; gebruik Natura 2000 niet als vervanging
+  van deze projectgrens en SOVON-plots uitsluitend als monitoringdekking. Het
+  actuele basisgebied is de geografische weg-/kustgrens verenigd met alle 55
+  actuele SOVON-kavels, zodat ieder volledig kavel binnen de toelatingsgrens ligt
+- behandel een bronpolygoon die de projectgrens alleen raakt als
+  `ruimtelijk_dubbelzinnig`: de intersectie is geen bewijs dat de soort binnen
+  Meijendel is aangetroffen
+- raadpleeg bij gecombineerde analyses eerst
+  `meijendel_waarneming_ruimtelijke_status` met regelversie
+  `meijendel-ruimtelijke-poort-v3`; verander de brongeometrie niet om een record
+  alsnog binnen de grens te laten vallen
 - ga ervan uit dat de lokale iMac native Apple Silicon draait: `uname -m` = `arm64` en R `R.version$arch` = `aarch64`
 - gebruik geen Intel/Rosetta-R, oude Intel-builds of oude QGIS-bundels als basis voor nieuw spatial werk
 - ga ervan uit dat Homebrew en de spatial libraries `gdal`, `geos`, `proj`, `sqlite`, `udunits`, `netcdf` en `cmake` lokaal beschikbaar zijn

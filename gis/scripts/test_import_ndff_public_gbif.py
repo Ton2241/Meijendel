@@ -72,6 +72,24 @@ def main() -> int:
     ]
     assert "join ndff_sovon_plot p" in module.gbif_plot_link_sql().casefold()
     assert "plots-huidig" not in module.gbif_plot_link_sql().casefold()
+    enrichment = module.secure_metadata_enrichment_sql().casefold()
+    assert "insert into meijendel.ndff_open_leveringsverrijking" in enrichment
+    assert "meijendel_ndff_secure.ndff_waarneming_bron" in enrichment
+    assert "meijendel_ndff_secure.ndff_open_secure_koppeling" in enrichment
+    assert "on duplicate key update" in enrichment
+    assert "st_equals" in enrichment
+    assert "sha2(s.ndff_identity,256)" in enrichment.replace(" ", "")
+    assert "cast(b.raw_payload->>'$.aantal_min' as char)" in enrichment
+    assert "cast(b.raw_payload->>'$.aantal_max' as char)" in enrichment
+    assert "json_type(json_extract(b.raw_payload,'$.aantal_max'))='null'" in enrichment.replace(" ", "")
+    insert_columns = enrichment.split("select", 1)[0]
+    for forbidden in (
+        "exacte_geometrie",
+        "centrumx",
+        "centrumy",
+        "area_m2",
+    ):
+        assert forbidden not in insert_columns, f"gevoelig veld wordt openbaar opgeslagen: {forbidden}"
     print("OK: openbare FFV/GBIF-importlogica")
     return 0
 

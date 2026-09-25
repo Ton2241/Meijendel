@@ -235,6 +235,503 @@ CREATE TABLE IF NOT EXISTS ndff_open_secure_koppeling (
     REFERENCES ndff_waarneming_register (waarneming_id)
 ) ENGINE=InnoDB;
 
+-- Interne canonieke bronlaag. Deze view bevat exacte beveiligde geometrie en
+-- mag daarom nooit aan meijendel_read, Shiny, de VPS of webexports worden
+-- toegekend. Gekoppelde beveiligde records vervangen hun openbare versie;
+-- niet-gekoppelde records uit beide bronnen blijven eenmaal aanwezig.
+CREATE OR REPLACE VIEW v_ndff_canonieke_waarneming AS
+SELECT
+  o.identiteit_sha256 AS canonieke_identiteit_sha256,
+  o.waarneming_id AS open_waarneming_id,
+  s.waarneming_id AS secure_waarneming_id,
+  CASE WHEN s.waarneming_id IS NULL
+    THEN 'alleen_openbaar' ELSE 'secure_vervangt_open' END AS representatie,
+  (s.waarneming_id IS NOT NULL) AS bevat_beveiligde_details,
+  COALESCE(ss.oorspronkelijke_ffv_soortgroep,o.soortgroep_raw) AS soortgroep_raw,
+  COALESCE(ss.wetenschappelijke_naam,o.wetenschappelijke_naam) AS wetenschappelijke_naam,
+  COALESCE(ss.nederlandse_naam,o.nederlandse_naam) AS nederlandse_naam,
+  CASE WHEN s.waarneming_id IS NULL THEN o.periode_start
+    ELSE CAST(s.periode_start AS DATETIME) END AS periode_start,
+  CASE WHEN s.waarneming_id IS NULL THEN o.periode_stop
+    ELSE CAST(s.periode_stop AS DATETIME) END AS periode_stop,
+  CASE WHEN s.waarneming_id IS NULL THEN o.jaar ELSE s.jaar END AS jaar,
+  CASE WHEN s.waarneming_id IS NULL THEN o.protocol ELSE s.protocol END AS protocol,
+  o.bronhouder AS bronhouder,
+  e.dataeigenaar_uri AS dataeigenaar_uri,
+  COALESCE(e.kwaliteitsstatus_raw,s.validatiestatus) AS validatiestatus,
+  CASE WHEN s.waarneming_id IS NULL
+    THEN o.openbare_geometrie ELSE s.exacte_geometrie END AS analyse_geometrie,
+  CASE WHEN s.waarneming_id IS NULL
+    THEN 'openbare_geometrie' ELSE 'exacte_geometrie' END AS geometrie_bron,
+  o.vervaging_raw AS publieke_vervaging_raw,
+  o.vervagingsniveau_km AS publieke_vervagingsniveau_km
+FROM Meijendel.ndff_open_waarneming AS o
+LEFT JOIN ndff_open_secure_koppeling AS k
+  ON k.open_waarneming_id=o.waarneming_id
+LEFT JOIN ndff_waarneming_register AS s
+  ON s.waarneming_id=k.secure_waarneming_id
+LEFT JOIN ndff_soorten AS ss
+  ON ss.ndff_soort_id=s.ndff_soort_id
+LEFT JOIN Meijendel.ndff_open_leveringsverrijking AS e
+  ON e.waarneming_id=o.waarneming_id
+UNION ALL
+SELECT
+  s.open_identity_sha256 AS canonieke_identiteit_sha256,
+  CAST(NULL AS UNSIGNED) AS open_waarneming_id,
+  s.waarneming_id AS secure_waarneming_id,
+  'alleen_beveiligd' AS representatie,
+  1 AS bevat_beveiligde_details,
+  ss.oorspronkelijke_ffv_soortgroep AS soortgroep_raw,
+  ss.wetenschappelijke_naam,
+  ss.nederlandse_naam,
+  CAST(s.periode_start AS DATETIME) AS periode_start,
+  CAST(s.periode_stop AS DATETIME) AS periode_stop,
+  s.jaar,
+  s.protocol,
+  NULL AS bronhouder,
+  s.bronhouder AS dataeigenaar_uri,
+  s.validatiestatus,
+  s.exacte_geometrie AS analyse_geometrie,
+  'exacte_geometrie' AS geometrie_bron,
+  s.publieke_vervaging_raw,
+  s.publieke_vervagingsniveau_km
+FROM ndff_waarneming_register AS s
+JOIN ndff_soorten AS ss
+  ON ss.ndff_soort_id=s.ndff_soort_id
+LEFT JOIN ndff_open_secure_koppeling AS k
+  ON k.secure_waarneming_id=s.waarneming_id
+WHERE k.secure_waarneming_id IS NULL;
+
+-- Interne analysepoort zonder geometrie of exacte datum. De view maakt de
+-- reeds vastgelegde kwalificaties uitvoerbaar, maar promoveert
+-- protocolgeschiktheid nooit tot voltooide leveringsvalidatie.
+CREATE OR REPLACE VIEW v_ndff_analyse_record AS
+WITH basis AS (
+  SELECT
+    c.canonieke_identiteit_sha256,
+    c.open_waarneming_id,
+    c.secure_waarneming_id,
+    c.representatie,
+    c.bevat_beveiligde_details,
+    c.soortgroep_raw,
+    c.wetenschappelijke_naam,
+    c.nederlandse_naam,
+    c.jaar,
+    p.protocol_id,
+    p.protocol_sleutel,
+    CASE
+      WHEN p.protocol_sleutel='LOS' THEN 'losse_waarneming'
+      WHEN g.doelrelatie='gemengd' THEN COALESCE(ps.doelrelatie,'onbepaald')
+      ELSE COALESCE(g.doelrelatie,'onbepaald')
+    END AS doelrelatie_record,
+    CASE WHEN c.secure_waarneming_id IS NOT NULL
+      THEN (sr.toewijzingskwaliteit='single_volledig_binnen')
+      ELSE COALESCE(orr.is_plotcontext_ruimtelijk_toelaatbaar,0)
+    END AS ruimtelijk_toelaatbaar,
+    CASE WHEN c.secure_waarneming_id IS NOT NULL
+      THEN sp.plot_id ELSE CAST(orr.eenduidig_plot_id AS CHAR) END AS plot_id,
+    CASE
+      WHEN opq.classificatie='historische_vegetatiecontext'
+        THEN opq.classificatie
+      WHEN c.secure_waarneming_id IS NOT NULL
+        THEN spq.classificatie
+      ELSE opq.classificatie
+    END AS pq_status,
+    CASE
+      WHEN p.protocol_sleutel<>'12.205' THEN 'niet_van_toepassing'
+      ELSE COALESCE(snl.overlap_status,'onvoldoende_onderzocht')
+    END AS snl_overlap_status,
+    dv.eindbesluit AS besluit_v,
+    di.eindbesluit AS besluit_i,
+    dtv.eindbesluit AS besluit_tv,
+    dta.eindbesluit AS besluit_ta,
+    dtk.eindbesluit AS besluit_tk,
+    dv.gegevensgeschiktheid,
+    dv.reden AS kwaliteitsmelding
+  FROM v_ndff_canonieke_waarneming AS c
+  LEFT JOIN Meijendel.ndff_open_waarneming_protocol AS opl
+    ON opl.waarneming_id=c.open_waarneming_id
+   AND opl.regelversie='ndff-protocolkwaliteit-v1'
+  LEFT JOIN ndff_waarneming_protocol AS spl
+    ON spl.waarneming_id=c.secure_waarneming_id
+   AND spl.regelversie='ndff-protocolkwaliteit-v1'
+  JOIN Meijendel.ndff_protocol AS p
+    ON p.protocol_id=COALESCE(spl.protocol_id,opl.protocol_id)
+  LEFT JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid AS g
+    ON g.protocol_id=p.protocol_id
+   AND g.soortgroep_raw=c.soortgroep_raw
+   AND g.regelversie='ndff-protocolbereik-v2'
+  LEFT JOIN Meijendel.ndff_protocol_soort_geschiktheid AS ps
+    ON ps.protocol_id=p.protocol_id
+   AND ps.soortgroep_raw=c.soortgroep_raw
+   AND ps.wetenschappelijke_naam=c.wetenschappelijke_naam
+   AND ps.regelversie='ndff-protocolbereik-v2'
+  LEFT JOIN Meijendel.ndff_open_ruimtelijke_beoordeling AS orr
+    ON orr.waarneming_id=c.open_waarneming_id
+   AND orr.regelversie='ndff-protocolkwaliteit-v1'
+  LEFT JOIN ndff_waarneming_register AS sr
+    ON sr.waarneming_id=c.secure_waarneming_id
+  LEFT JOIN (
+    SELECT waarneming_id,MAX(plot_id) AS plot_id
+    FROM ndff_waarneming_plot
+    WHERE is_aanwezigheid_per_plot=1
+    GROUP BY waarneming_id
+  ) AS sp ON sp.waarneming_id=c.secure_waarneming_id
+  LEFT JOIN Meijendel.ndff_open_pq_koppeling AS opq
+    ON opq.waarneming_id=c.open_waarneming_id
+   AND opq.regelversie='ndff-open-pq-poort-v2'
+  LEFT JOIN ndff_pq_koppeling AS spq
+    ON spq.ndff_waarneming_id=c.secure_waarneming_id
+   AND spq.beslisregel_versie='ndff-secure-58679-v1'
+  LEFT JOIN Meijendel.ndff_snl_waarneming_context AS snl
+    ON snl.waarneming_id=c.open_waarneming_id
+   AND snl.regelversie='ndff-snl-overlap-v1'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dv
+    ON dv.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                          THEN 'openbaar' ELSE 'beveiligd' END
+   AND dv.soortgroep_raw=c.soortgroep_raw AND dv.protocol_id=p.protocol_id
+   AND dv.analysetype='V' AND dv.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS di
+    ON di.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                          THEN 'openbaar' ELSE 'beveiligd' END
+   AND di.soortgroep_raw=c.soortgroep_raw AND di.protocol_id=p.protocol_id
+   AND di.analysetype='I' AND di.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dtv
+    ON dtv.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                           THEN 'openbaar' ELSE 'beveiligd' END
+   AND dtv.soortgroep_raw=c.soortgroep_raw AND dtv.protocol_id=p.protocol_id
+   AND dtv.analysetype='TV' AND dtv.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dta
+    ON dta.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                           THEN 'openbaar' ELSE 'beveiligd' END
+   AND dta.soortgroep_raw=c.soortgroep_raw AND dta.protocol_id=p.protocol_id
+   AND dta.analysetype='TA' AND dta.regelversie='ndff-analysebesluit-v4'
+  LEFT JOIN Meijendel.ndff_analysebesluit AS dtk
+    ON dtk.bron_scope=CASE WHEN c.secure_waarneming_id IS NULL
+                           THEN 'openbaar' ELSE 'beveiligd' END
+   AND dtk.soortgroep_raw=c.soortgroep_raw AND dtk.protocol_id=p.protocol_id
+   AND dtk.analysetype='TK' AND dtk.regelversie='ndff-analysebesluit-v4'
+), recordbesluit AS (
+  SELECT basis.*,
+    CASE WHEN basis.pq_status='historische_vegetatiecontext'
+      THEN CASE WHEN besluit_v='voorlopig_toegelaten' THEN 'V' ELSE '' END
+      ELSE CONCAT_WS(',',
+      CASE WHEN besluit_v='voorlopig_toegelaten' THEN 'V' END,
+      CASE WHEN besluit_i='voorlopig_toegelaten'
+             OR (besluit_i='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'I' END,
+      CASE WHEN besluit_tv='voorlopig_toegelaten'
+             OR (besluit_tv='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'TV' END,
+      CASE WHEN besluit_ta='voorlopig_toegelaten'
+             OR (besluit_ta='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'TA' END,
+      CASE WHEN besluit_tk='voorlopig_toegelaten'
+             OR (besluit_tk='alleen_na_doelsoortselectie'
+                 AND doelrelatie_record='doelsoort') THEN 'TK' END
+      )
+    END AS protocol_kandidaattypen
+  FROM basis
+)
+SELECT
+  'ndff-analyseketen-v1' AS analyseketenversie,
+  canonieke_identiteit_sha256,
+  open_waarneming_id,
+  secure_waarneming_id,
+  representatie,
+  bevat_beveiligde_details,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  jaar,
+  protocol_id,
+  protocol_sleutel,
+  doelrelatie_record,
+  protocol_kandidaattypen,
+  ruimtelijk_toelaatbaar,
+  plot_id,
+  pq_status,
+  snl_overlap_status,
+  CASE
+    WHEN pq_status NOT IN ('onafhankelijk','niet_van_toepassing','historische_vegetatiecontext')
+      THEN 'uitgesloten_pq'
+    WHEN ruimtelijk_toelaatbaar=0 THEN 'uitgesloten_ruimtelijk'
+    WHEN snl_overlap_status='overlap_bevestigd' THEN 'uitgesloten_overlap'
+    WHEN snl_overlap_status IN ('overlap_mogelijk','onvoldoende_onderzocht')
+      THEN 'voorlopig_met_overlapwaarschuwing'
+    ELSE 'voorlopig_bruikbaar'
+  END AS record_selectiestatus,
+  gegevensgeschiktheid,
+  CONCAT(kwaliteitsmelding,
+    CASE WHEN pq_status='historische_vegetatiecontext'
+      THEN ' Historische vegetatieopname: alleen positieve context, geen gevalideerde PQ-trendreeks.'
+      ELSE '' END,
+    ' Protocoltypen zijn kandidaten. Verkennende berekeningen zijn toegestaan met deze kwaliteitsmelding. Ruwe meldingsaantallen zijn geen gevalideerde populatietrend.')
+    AS kwaliteitsmelding
+FROM recordbesluit;
+
+-- Veilige positieve-aanwezigheidslaag op plot-jaar-taxonkorrel. Het aantal
+-- bronrecords dient alleen voor kwaliteitscontrole en is geen abundantie.
+CREATE OR REPLACE VIEW v_ndff_verspreiding_plot_jaar_taxon AS
+SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  1 AS aanwezig,
+  COUNT(*) AS bronrecords_ter_controle,
+  GROUP_CONCAT(DISTINCT protocol_sleutel
+    ORDER BY protocol_sleutel SEPARATOR ',') AS protocol_sleutels,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Positieve, voorlopig bruikbare geregistreerde aanwezigheid. Verkennende ruimtelijke berekeningen zijn toegestaan. bronrecords_ter_controle is geen abundantie. Raadpleeg altijd gegevensgeschiktheid.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+WHERE record_selectiestatus = 'voorlopig_bruikbaar'
+  AND FIND_IN_SET('V',protocol_kandidaattypen)>0
+  AND plot_id IS NOT NULL
+  AND jaar IS NOT NULL
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam;
+
+-- Protocolmatige trendkandidaten op plot-jaar-taxon-protocolkorrel. Deze view
+-- selecteert uitsluitend het mogelijke protocolbereik; ontbrekende
+-- surveystructuur blijft zichtbaar en verbiedt interpretatie als trenduitkomst.
+CREATE OR REPLACE VIEW v_ndff_trendkandidaat_plot_jaar_taxon AS
+SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  protocol_sleutel,
+  doelrelatie_record,
+  MAX(FIND_IN_SET('I',protocol_kandidaattypen)>0) AS kandidaat_i,
+  MAX(FIND_IN_SET('TV',protocol_kandidaattypen)>0) AS kandidaat_tv,
+  MAX(FIND_IN_SET('TA',protocol_kandidaattypen)>0) AS kandidaat_ta,
+  MAX(FIND_IN_SET('TK',protocol_kandidaattypen)>0) AS kandidaat_tk,
+  COUNT(*) AS bronrecords_ter_controle,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Protocolmatige trendkandidaat. Een verkennende trendberekening van registraties is toegestaan. Raadpleeg gegevensgeschiktheid en surveystructuur. Dit is geen gevalideerde populatietrend.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+WHERE record_selectiestatus = 'voorlopig_bruikbaar'
+  AND (
+    FIND_IN_SET('I',protocol_kandidaattypen)>0
+    OR FIND_IN_SET('TV',protocol_kandidaattypen)>0
+    OR FIND_IN_SET('TA',protocol_kandidaattypen)>0
+    OR FIND_IN_SET('TK',protocol_kandidaattypen)>0
+  )
+  AND plot_id IS NOT NULL
+  AND jaar IS NOT NULL
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  protocol_sleutel,
+  doelrelatie_record;
+
+-- Compacte dekkingsadministratie voor het kiezen van gegevens per soortgroep
+-- en protocol. Kandidaataantallen tellen uitsluitend records die ook alle
+-- huidige recordpoorten als voorlopig bruikbaar passeren.
+CREATE OR REPLACE VIEW v_ndff_gebruiksdekking_soortgroep_protocol AS
+SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
+  soortgroep_raw,
+  protocol_sleutel,
+  COUNT(*) AS canonieke_records,
+  SUM(doelrelatie_record='doelgroep') AS doelgroep_records,
+  SUM(doelrelatie_record='doelsoort') AS doelsoort_records,
+  SUM(doelrelatie_record='bijvangst') AS bijvangst_records,
+  SUM(doelrelatie_record='losse_waarneming') AS losse_records,
+  SUM(doelrelatie_record='algemene_bron') AS algemene_bron_records,
+  SUM(doelrelatie_record IN ('onbepaald','doelsoortafhankelijk'))
+    AS doelbereik_nog_onbepaald,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('V',protocol_kandidaattypen)>0) AS kandidaat_v,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('I',protocol_kandidaattypen)>0) AS kandidaat_i,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('TV',protocol_kandidaattypen)>0) AS kandidaat_tv,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('TA',protocol_kandidaattypen)>0) AS kandidaat_ta,
+  SUM(record_selectiestatus='voorlopig_bruikbaar'
+      AND FIND_IN_SET('TK',protocol_kandidaattypen)>0) AS kandidaat_tk,
+  SUM(record_selectiestatus='voorlopig_bruikbaar') AS voorlopig_bruikbaar,
+  SUM(record_selectiestatus='voorlopig_met_overlapwaarschuwing')
+    AS overlapwaarschuwing,
+  SUM(record_selectiestatus='uitgesloten_pq') AS uitgesloten_pq,
+  SUM(record_selectiestatus='uitgesloten_ruimtelijk') AS uitgesloten_ruimtelijk,
+  SUM(record_selectiestatus='uitgesloten_overlap') AS uitgesloten_overlap,
+  SUM(bevat_beveiligde_details=1) AS beveiligde_records,
+  SUM(gegevensgeschiktheid<>'geschikt') AS aanvullende_validatie_nodig,
+  'Kandidaataantallen zijn protocolmatig en ruimtelijk voorgeselecteerd. Verkennende berekeningen zijn toegestaan. Raadpleeg gegevensgeschiktheid. Ruwe meldingsaantallen zijn geen gevalideerde populatietrend.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+GROUP BY
+  soortgroep_raw,
+  protocol_sleutel;
+
+-- Positieve geregistreerde soortenrijkdom. Afwezigheid en niet-bezochte jaren
+-- worden niet afgeleid of aangevuld.
+CREATE OR REPLACE VIEW v_ndff_soortenrijkdom_plot_jaar AS
+SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  COUNT(*) AS geregistreerde_taxa,
+  SUM(bronrecords_ter_controle) AS bronrecords_ter_controle,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Geregistreerde positieve soortenrijkdom voor verkennende berekeningen. Niet-bezochte jaren en ontbrekende soorten zijn geen nulwaarnemingen. Raadpleeg gegevensgeschiktheid.'
+    AS kwaliteitsmelding
+FROM v_ndff_verspreiding_plot_jaar_taxon
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw;
+
+-- Eerste en laatste positieve registratie binnen de beschikbare en
+-- voorgeselecteerde NDFF-laag. Dit zijn geen vestigings- of verdwijnjaren.
+CREATE OR REPLACE VIEW v_ndff_eerste_laatste_plot_taxon AS
+SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
+  plot_id,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  MIN(jaar) AS eerste_geregistreerde_jaar,
+  MAX(jaar) AS laatste_geregistreerde_jaar,
+  COUNT(DISTINCT jaar) AS jaren_met_registratie,
+  SUM(bronrecords_ter_controle) AS bronrecords_ter_controle,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Eerste en laatste geregistreerde positieve waarneming voor verkennende berekeningen. Dit zijn geen bewezen vestigings- of verdwijnjaren.'
+    AS kwaliteitsmelding
+FROM v_ndff_verspreiding_plot_jaar_taxon
+GROUP BY
+  plot_id,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam;
+
+-- Verandering in het aantal plots met een positieve registratie tussen twee
+-- opeenvolgende jaren waarin het taxon daadwerkelijk is geregistreerd. Het
+-- expliciete vorige jaar voorkomt dat een ontbrekend jaar als nul wordt gezien.
+CREATE OR REPLACE VIEW v_ndff_verspreidingsverandering_taxon_jaar AS
+WITH jaarbasis AS (
+  SELECT
+    MAX(analyseketenversie) AS analyseketenversie,
+    jaar,
+    soortgroep_raw,
+    wetenschappelijke_naam,
+    nederlandse_naam,
+    COUNT(DISTINCT plot_id) AS plots_met_registratie,
+    SUM(bronrecords_ter_controle) AS bronrecords_ter_controle,
+    CASE
+      WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+      WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+      WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+      ELSE 'geschikt'
+    END AS gegevensgeschiktheid
+  FROM v_ndff_verspreiding_plot_jaar_taxon
+  GROUP BY
+    jaar,
+    soortgroep_raw,
+    wetenschappelijke_naam,
+    nederlandse_naam
+), met_vorig AS (
+  SELECT
+    jaarbasis.*,
+    LAG(jaar) OVER (
+      PARTITION BY soortgroep_raw,wetenschappelijke_naam,nederlandse_naam
+      ORDER BY jaar
+    ) AS vorig_geregistreerd_jaar,
+    LAG(plots_met_registratie) OVER (
+      PARTITION BY soortgroep_raw,wetenschappelijke_naam,nederlandse_naam
+      ORDER BY jaar
+    ) AS vorige_plots_met_registratie
+  FROM jaarbasis
+)
+SELECT
+  analyseketenversie,
+  jaar,
+  soortgroep_raw,
+  wetenschappelijke_naam,
+  nederlandse_naam,
+  plots_met_registratie,
+  vorig_geregistreerd_jaar,
+  vorige_plots_met_registratie,
+  jaar-vorig_geregistreerd_jaar AS jaarafstand,
+  (vorig_geregistreerd_jaar=jaar-1) AS aansluitend_jaar,
+  plots_met_registratie-vorige_plots_met_registratie
+    AS verschil_plots_met_registratie,
+  bronrecords_ter_controle,
+  gegevensgeschiktheid,
+  'Verkennende vergelijking tussen jaren met een positieve registratie. Gebruik aansluitend_jaar voor jaar-op-jaarvergelijking. Verschillen kunnen waarnemingsinspanning weerspiegelen en zijn geen gevalideerde populatietrend.'
+    AS kwaliteitsmelding
+FROM met_vorig;
+
+-- Afzonderlijke waarnemingsdekking en meldingsintensiteit. De aantallen zijn
+-- controlevariabelen voor waarnemingsinspanning en nooit populatieaantallen.
+CREATE OR REPLACE VIEW v_ndff_dekking_intensiteit_plot_jaar_soortgroep AS
+SELECT
+  MAX(analyseketenversie) AS analyseketenversie,
+  plot_id,
+  jaar,
+  soortgroep_raw,
+  COUNT(*) AS bronrecords_ter_controle,
+  SUM(protocol_sleutel='LOS') AS losse_bronrecords,
+  SUM(protocol_sleutel<>'LOS') AS protocol_bronrecords,
+  COUNT(DISTINCT COALESCE(NULLIF(wetenschappelijke_naam,''),
+    CONCAT('NL:',COALESCE(nederlandse_naam,'[onbekend]')))) AS geregistreerde_taxa,
+  COUNT(DISTINCT protocol_sleutel) AS gebruikte_protocollen,
+  SUM(bevat_beveiligde_details=1) AS beveiligde_records,
+  CASE
+    WHEN SUM(gegevensgeschiktheid='onvoldoende')>0 THEN 'onvoldoende'
+    WHEN SUM(gegevensgeschiktheid='niet_beoordeeld')>0 THEN 'niet_beoordeeld'
+    WHEN SUM(gegevensgeschiktheid='voorwaardelijk')>0 THEN 'voorwaardelijk'
+    ELSE 'geschikt'
+  END AS gegevensgeschiktheid,
+  'Dekking en meldingsintensiteit voor verkennende berekeningen. Bronrecords zijn geen individuen en ontbrekende registraties zijn geen gevalideerde afwezigheid.'
+    AS kwaliteitsmelding
+FROM v_ndff_analyse_record
+WHERE record_selectiestatus='voorlopig_bruikbaar'
+  AND FIND_IN_SET('V',protocol_kandidaattypen)>0
+  AND plot_id IS NOT NULL
+  AND jaar IS NOT NULL
+GROUP BY
+  plot_id,
+  jaar,
+  soortgroep_raw;
+
 -- Iedere soortgroep krijgt een fysieke tabel met dezelfde controleerbare basis.
 -- raw_payload bewaart alleen de groepsspecifieke bronvelden; identiteit,
 -- geometrie, taxon, datum en provenance staan in de genormaliseerde kerntabellen.

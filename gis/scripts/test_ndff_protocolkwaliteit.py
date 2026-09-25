@@ -1,0 +1,1894 @@
+#!/usr/bin/env python3
+"""Contract- en unitchecks voor de NDFF-protocolkwaliteitslaag."""
+
+from __future__ import annotations
+
+import csv
+import importlib.util
+from collections import Counter
+from pathlib import Path
+
+
+ROOT = Path(__file__).parents[2]
+SCHEMA = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_schema.sql"
+SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
+IMPORTER = ROOT / "gis" / "scripts" / "import_ndff_protocolkwaliteit.py"
+README = ROOT / "README.md"
+DECISIONS = ROOT / "DECISIONS.md"
+AUDIT = ROOT / "docs" / "NDFF_PROTOCOLAUDIT.md"
+WORK_INSTRUCTION = ROOT / "AGENTS.md"
+ARCHITECTURE = ROOT / "ARCHITECTURE.md"
+
+
+def load_importer():
+    spec = importlib.util.spec_from_file_location("ndff_protocolkwaliteit", IMPORTER)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def main() -> int:
+    sql = SCHEMA.read_text(encoding="utf-8")
+    folded = " ".join(sql.casefold().split())
+    compact = "".join(sql.casefold().split())
+    for table in (
+        "ndff_protocol",
+        "ndff_protocol_mapping",
+        "ndff_protocol_gebruik",
+        "ndff_protocol_soortgroep_geschiktheid",
+        "ndff_protocol_soort_geschiktheid",
+        "ndff_open_ruimtelijke_beoordeling",
+        "ndff_open_pq_koppeling",
+        "ndff_snl_waarneming_context",
+        "ndff_analysebesluit",
+    ):
+        assert f"create table if not exists {table}" in folded, table
+    assert "create table if not exists meijendel.ndff_open_waarneming_protocol" in folded
+    assert "create table if not exists meijendel_ndff_secure.ndff_waarneming_protocol" in folded
+    for table in (
+        "meijendel.ndff_vlinder_routefamilie",
+        "meijendel.ndff_vlinder_route_identificatie",
+        "meijendel.ndff_vlinder_routegeometrie",
+        "meijendel.ndff_vlinder_bezoek",
+        "meijendel.ndff_vlinder_bezoek_taxon",
+        "meijendel.ndff_vliesvleugel_routefamilie",
+        "meijendel.ndff_vliesvleugel_routegeometrie",
+        "meijendel.ndff_vliesvleugel_bezoek",
+        "meijendel.ndff_vliesvleugel_bezoek_taxon",
+        "meijendel.ndff_libel_routefamilie",
+        "meijendel.ndff_libel_routegeometrie",
+        "meijendel.ndff_libel_bezoek",
+        "meijendel.ndff_libel_bezoek_taxon",
+        "meijendel.ndff_reptiel_routefamilie",
+        "meijendel.ndff_reptiel_routegeometrie",
+        "meijendel.ndff_reptiel_bezoek",
+        "meijendel.ndff_reptiel_bezoek_taxon",
+        "meijendel.ndff_amfibie_waterfamilie",
+        "meijendel.ndff_amfibie_watergeometrie",
+        "meijendel.ndff_amfibie_bezoek",
+        "meijendel.ndff_amfibie_waterbezoek",
+        "meijendel.ndff_amfibie_waterbezoek_taxon",
+        "meijendel.ndff_vleermuis_recordselectie",
+        "meijendel.ndff_vleermuis_routefamilie",
+        "meijendel.ndff_vleermuis_routegeometrie",
+        "meijendel.ndff_vleermuis_bezoek",
+        "meijendel.ndff_vleermuis_bezoek_taxon",
+        "meijendel.ndff_konijn_recordselectie",
+        "meijendel.ndff_konijn_hokdatum_taxon",
+        "meijendel.ndff_daz_bmp_recordselectie",
+        "meijendel.ndff_daz_bmp_recordkandidaat",
+        "meijendel.ndff_daz_bmp_bezoek",
+        "meijendel.ndff_daz_bmp_bezoek_taxon",
+        "meijendel.sovon_avimap_import_batch",
+        "meijendel.sovon_avimap_taxon",
+        "meijendel.sovon_avimap_bezoek",
+        "meijendel.sovon_avimap_waarneming",
+        "meijendel.sovon_avimap_ndff_daz_koppeling",
+        "meijendel.sovon_avimap_daz_bezoek_taxon",
+        "meijendel.ndff_zeereep_kilometerhok",
+        "meijendel.ndff_zeereep_bezoek",
+        "meijendel.ndff_zeereep_bezoek_taxon",
+        "meijendel.ndff_bospaddenstoel_meetpunt",
+        "meijendel.ndff_bospaddenstoel_geometrie",
+        "meijendel.ndff_bospaddenstoel_recordselectie",
+        "meijendel.ndff_bospaddenstoel_doelbereik",
+        "meijendel.ndff_bospaddenstoel_bezoek",
+        "meijendel.ndff_bospaddenstoel_bezoek_taxon",
+        "meijendel.ndff_bospaddenstoel_jaar_taxon",
+        "meijendel.ndff_hns_inventarisatie",
+        "meijendel.ndff_hns_recordselectie",
+        "meijendel.ndff_hns_doelbereik",
+        "meijendel.ndff_hns_inventarisatie_taxon",
+        "meijendel.ndff_hns_hok_jaar_taxon",
+        "meijendel.ndff_korstmos_meetlocatie",
+        "meijendel.ndff_korstmos_bezoek",
+        "meijendel.ndff_korstmos_recordselectie",
+        "meijendel.ndff_korstmos_doelbereik",
+        "meijendel.ndff_korstmos_bezoek_taxon",
+        "meijendel.ndff_mos_inventarisatie",
+        "meijendel.ndff_mos_datumcluster",
+        "meijendel.ndff_mos_recordselectie",
+        "meijendel.ndff_mos_doelbereik",
+        "meijendel.ndff_mos_inventarisatie_taxon",
+        "meijendel.ndff_florbase_inventarisatie",
+        "meijendel.ndff_florbase_recordselectie",
+        "meijendel.ndff_florbase_doelbereik",
+        "meijendel.ndff_florbase_inventarisatie_taxon",
+        "meijendel.ndff_lmfa_route",
+        "meijendel.ndff_lmfa_bezoek",
+        "meijendel.ndff_lmfa_recordselectie",
+        "meijendel.ndff_lmfa_doelsoort",
+        "meijendel.ndff_lmfa_bezoek_taxon",
+        "meijendel.ndff_habslak_monster",
+        "meijendel.ndff_habslak_recordselectie",
+        "meijendel.ndff_habslak_monster_taxon",
+        "meijendel.ndff_habslak_hokjaar",
+        "meijendel.ndff_braakbal_hokjaar",
+        "meijendel.ndff_braakbal_recordselectie",
+        "meijendel.ndff_braakbal_hokjaar_taxon",
+        "meijendel.ndff_tuintelling_tuinvakfamilie",
+        "meijendel.ndff_tuintelling_geometrie",
+        "meijendel.ndff_tuintelling_telperiode",
+        "meijendel.ndff_tuintelling_periode_soortgroep",
+        "meijendel.ndff_tuintelling_periode_soortgroep_taxon",
+        "meijendel.ndff_tuintelling_recordselectie",
+        "meijendel.ndff_liveatlas_bezoek",
+        "meijendel.ndff_liveatlas_bezoek_soortgroep",
+        "meijendel.ndff_liveatlas_bezoek_taxon",
+        "meijendel.ndff_liveatlas_recordselectie",
+        "meijendel.ndff_kwartiertelling_telinterval",
+        "meijendel.ndff_kwartiertelling_interval_soortgroep",
+        "meijendel.ndff_kwartiertelling_interval_taxon",
+        "meijendel.ndff_kwartiertelling_recordselectie",
+        "meijendel.ndff_nachtvlinder_hokjaar",
+        "meijendel.ndff_nachtvlinder_hokjaar_taxon",
+        "meijendel.ndff_nachtvlinder_recordselectie",
+        "meijendel.ndff_bospaddenstoel_verspreiding_bezoek",
+        "meijendel.ndff_bospaddenstoel_verspreiding_bezoek_taxon",
+        "meijendel.ndff_bospaddenstoel_verspreiding_recordselectie",
+        "meijendel.ndff_poldervis_waterlocatie",
+        "meijendel.ndff_poldervis_bezoek",
+        "meijendel.ndff_poldervis_bezoek_taxon",
+        "meijendel.ndff_poldervis_recordselectie",
+        "meijendel.ndff_otter_bever_hokjaar",
+        "meijendel.ndff_otter_bever_hokjaar_taxon",
+        "meijendel.ndff_otter_bever_recordselectie",
+    ):
+        assert f"create table if not exists {table}" in folded, table
+    assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
+    assert "meijendel_ndff_secure.ndff_libel_" not in folded
+    assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
+    assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
+    assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
+    assert "meijendel_ndff_secure.ndff_konijn_" not in folded
+    assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
+    assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
+    assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
+    assert "meijendel_ndff_secure.ndff_hns_" not in folded
+    assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
+    assert "meijendel_ndff_secure.ndff_mos_" not in folded
+    assert "meijendel_ndff_secure.ndff_florbase_" not in folded
+    assert "meijendel_ndff_secure.ndff_habslak_" not in folded
+    assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
+    assert "meijendel_ndff_secure.ndff_tuintelling_" not in folded
+    assert "meijendel_ndff_secure.ndff_liveatlas_" not in folded
+    assert "meijendel_ndff_secure.ndff_kwartiertelling_" not in folded
+    assert "fk_ndff_vliesvleugel_geometrie_route" in folded
+    assert "fk_ndff_vliesvleugel_bezoek_route" in folded
+    assert "fk_ndff_vliesvleugel_taxon_bezoek" in folded
+    assert "fk_ndff_libel_geometrie_route" in folded
+    assert "fk_ndff_libel_bezoek_route" in folded
+    assert "fk_ndff_libel_taxon_bezoek" in folded
+    assert "fk_ndff_reptiel_geometrie_route" in folded
+    assert "fk_ndff_reptiel_bezoek_route" in folded
+    assert "fk_ndff_reptiel_taxon_bezoek" in folded
+    assert "fk_ndff_amfibie_geometrie_water" in folded
+    assert "fk_ndff_amfibie_waterbezoek_bezoek" in folded
+    assert "fk_ndff_amfibie_waterbezoek_water" in folded
+    assert "fk_ndff_amfibie_taxon_waterbezoek" in folded
+    assert "fk_ndff_vleermuis_selectie_route" in folded
+    assert "fk_ndff_vleermuis_geometrie_route" in folded
+    assert "fk_ndff_vleermuis_bezoek_route" in folded
+    assert "fk_ndff_vleermuis_taxon_bezoek" in folded
+    assert "alleen_positieve_bezoeken" in folded
+    assert "niet_afleidbaar" in folded
+    assert "enum('waargenomen','echte_nul')" in folded
+    assert "ndff-vlinderroute-v2" in folded
+    assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
+    assert "'voorlopig_toegelaten'" in folded
+    assert "wetenschappelijke_naam varchar(255) not null" in folded
+    assert "enum('doelsoort','bijvangst','onbepaald')" in folded
+    assert "enum('overlap_bevestigd','overlap_mogelijk','geen_overlap_gevonden','onvoldoende_onderzocht')" in compact
+
+    for required in (
+        "regelversie",
+        "bronbestand_sha256",
+        "protocolgeschiktheid",
+        "gegevensgeschiktheid",
+        "eindbesluit",
+        "is_plotcontext_ruimtelijk_toelaatbaar",
+        "eenduidig_plot_id",
+    ):
+        assert required in folded, required
+
+    for forbidden in (
+        "alter table ndff_open_waarneming",
+        "alter table territoria",
+        "alter table pq_",
+        "create table if not exists ndff_telobject",
+        "create table if not exists ndff_bezoek",
+        "create or replace view",
+        "truncate ",
+        "delete from ",
+        "check (eindbesluit <> 'toegelaten')",
+    ):
+        assert forbidden not in folded, forbidden
+
+    with SEED.open(encoding="utf-8", newline="") as handle:
+        rows = list(csv.DictReader(handle))
+    assert len(rows) == 54
+    assert len({row["protocol_sleutel"] for row in rows}) == 54
+    assert len({row["protocol_naam"] for row in rows}) == 54
+    assert Counter(row["hoofdtype"] for row in rows) == {
+        "V": 14,
+        "I": 14,
+        "TV": 9,
+        "TA": 13,
+        "TK": 4,
+    }
+    assert {row["levering_scope"] for row in rows} == {"beide", "alleen_openbaar"}
+    loose = [row for row in rows if row["protocol_sleutel"] == "LOS"]
+    assert len(loose) == 1 and loose[0]["protocol_code"] == ""
+
+    module = load_importer()
+    assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
+    assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
+    assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
+    assert module.SNL_OVERLAP_RULE_VERSION == "ndff-snl-overlap-v1"
+    assert module.ANALYSIS_CHAIN_VERSION == "ndff-analyseketen-v1"
+    parsed = module.read_seed(SEED)
+    assert len(parsed) == 54
+    assert module.protocol_key("Geen code") == "LOS"
+    assert module.protocol_key("03.201") == "03.201"
+    assert module.protocol_code_from_raw("03.201 Landelijk Meetnet Vlinders (NEM)") == "03.201"
+    assert module.protocol_code_from_raw("Losse waarnemingen") == "LOS"
+    for missing in (None, ""):
+        try:
+            module.protocol_code_from_raw(missing)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError("Een lege protocolwaarde mag niet als LOS worden behandeld")
+    assert module.conditional_types("TV / TA met volledige geschikte bezoekgegevens") == {"TV", "TA"}
+    assert module.conditional_types(None) == set()
+    assert module.sql_text("", empty_as_null=False) == "''"
+
+    # Gemengde atlas- en verspreidingsleveringen blijven positieve
+    # verspreidingsbronnen: indicatieve veranderingen mogen worden berekend,
+    # maar de levering onderbouwt geen nullen, abundantie of trend.
+    assert module.protocol_delivery_assessment("04.004", "V") == (
+        "voorwaardelijk", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("07.001", "I") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("04.004", "TV") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("07.001", "TA") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.POSITIVE_ONLY_SOURCE_PROTOCOLS == {
+        "12.004", "12.006", "17.005", "17.006",
+        "102.004", "102.006", "104.000", "105.000",
+    }
+    assert module.protocol_delivery_assessment("102.006", "V") == (
+        "voorwaardelijk", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("12.006", "I") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("105.000", "TV") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.STRUCTURED_INCOMPLETE_PROTOCOLS == {
+        "17.002": {"TV"},
+        "102.002": {"I", "TV"},
+        "102.005": {"I", "TV"},
+        "102.007": {"I", "TV"},
+    }
+    assert module.protocol_delivery_assessment("17.002", "V") == (
+        "voorwaardelijk", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("17.002", "TV") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("17.002", "I") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("102.002", "I") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("102.005", "TV") == (
+        "onvoldoende", "voorlopig_toegelaten"
+    )
+    assert module.protocol_delivery_assessment("102.007", "TA") == (
+        "onvoldoende", "uitgesloten_huidige_levering"
+    )
+    assert module.protocol_delivery_assessment("04.006", "V") is None
+
+    # Een routeversie mag alleen aan een andere versie worden gekoppeld als
+    # minstens de helft van de kleinste geometrieset ruimtelijk overeenkomt.
+    # Eén nabij kruispunt tussen twee routes mag ze niet samenvoegen.
+    route_rows = []
+    for visit, year, prefix, offset in (
+        ("a-2020", 2020, "a", 0.0),
+        ("a-2021", 2021, "a", 0.0),
+        ("a-2022", 2022, "a2", 0.5),
+        ("b-2020", 2020, "b", 1000.0),
+    ):
+        for section in range(1, 5):
+            route_rows.append({
+                "visit": visit,
+                "geometry": f"{prefix}-{section}",
+                "x": offset + section * 50.0,
+                "y": 0.0,
+                "area": 500.0,
+                "year": year,
+                "records": 1,
+            })
+    # Eén punt van route C ligt vlak bij route A, de overige punten niet.
+    for section, x in enumerate((200.0, 2000.0, 2050.0, 2100.0), 1):
+        route_rows.append({
+            "visit": "c-2020", "geometry": f"c-{section}", "x": x,
+            "y": 0.0, "area": 500.0, "year": 2020, "records": 1,
+        })
+    route_rows.append({
+        "visit": "coarse-only", "geometry": "km", "x": 0.0, "y": 0.0,
+        "area": 1_000_000.0, "year": 2020, "records": 3,
+    })
+    reconstruction = module.reconstruct_route_families(route_rows)
+    assert reconstruction["family_count"] == 3
+    assert reconstruction["component_count"] == 4
+    assert reconstruction["fine_visit_count"] == 5
+    assert reconstruction["coarse_only_visit_count"] == 1
+    assert reconstruction["coarse_only_record_count"] == 3
+    assert reconstruction["visit_to_family"]["a-2020"] == reconstruction["visit_to_family"]["a-2022"]
+    assert reconstruction["visit_to_family"]["a-2020"] != reconstruction["visit_to_family"]["c-2020"]
+
+    matrix = module.build_visit_taxon_matrix(
+        visits={"v1": 1, "v2": None, "v3": 2},
+        target_taxa=("Aglais urticae", "Pieris napi"),
+        observations={
+            ("v1", "Aglais urticae"): 3,
+            ("v2", "Pieris napi"): 2,
+        },
+    )
+    assert len(matrix) == 6
+    assert {(row["visit"], row["taxon"]): (row["count"], row["status"])
+            for row in matrix} == {
+        ("v1", "Aglais urticae"): (3, "waargenomen"),
+        ("v1", "Pieris napi"): (0, "echte_nul"),
+        ("v2", "Aglais urticae"): (0, "echte_nul"),
+        ("v2", "Pieris napi"): (2, "waargenomen"),
+        ("v3", "Aglais urticae"): (0, "echte_nul"),
+        ("v3", "Pieris napi"): (0, "echte_nul"),
+    }
+    scoped_matrix = module.build_visit_taxon_matrix(
+        visits={"algemeen": 1, "onbepaald": None},
+        target_taxa=("Aeshna mixta", "Sympetrum vulgatum"),
+        observations={
+            ("algemeen", "Aeshna mixta"): 2,
+            ("onbepaald", "Sympetrum vulgatum"): 1,
+        },
+        visit_target_taxa={
+            "algemeen": {"Aeshna mixta", "Sympetrum vulgatum"},
+            "onbepaald": {"Sympetrum vulgatum"},
+        },
+    )
+    assert len(scoped_matrix) == 3
+    assert not any(
+        row["visit"] == "onbepaald" and row["taxon"] == "Aeshna mixta"
+        for row in scoped_matrix
+    )
+    soortgerichte_bezoeken = {f"soortgericht-{index}" for index in range(87)}
+    vlinder_bezoektaxa = {
+        "algemeen": {"Aglais urticae", "Pieris napi"},
+        "zonder-route-een-soort": {"Pieris napi"},
+        "zonder-route-meer-soorten": {"Aglais urticae", "Pieris napi"},
+        **{visit: {"Ochlodes sylvanus"} for visit in soortgerichte_bezoeken},
+    }
+    vlinder_scope = module.classify_vlinder_visit_scopes(
+        families=[
+            {"family_id": 1, "visits": {"algemeen"}, "year_count": 2},
+            {"family_id": 42, "visits": soortgerichte_bezoeken, "year_count": 16},
+        ],
+        visit_to_family={
+            "algemeen": 1,
+            **{visit: 42 for visit in soortgerichte_bezoeken},
+        },
+        visit_observed_taxa=vlinder_bezoektaxa,
+        target_taxa={"Aglais urticae", "Ochlodes sylvanus", "Pieris napi"},
+    )
+    assert vlinder_scope["family_scope"][1] == {
+        "routetype": "algemene_route",
+        "doelsoort": None,
+        "bewijsgrond": "meerdere_doelsoorten_over_routefamilie",
+    }
+    assert vlinder_scope["family_scope"][42] == {
+        "routetype": "soortgerichte_route",
+        "doelsoort": "Ochlodes sylvanus",
+        "bewijsgrond": "87_bezoeken_16_jaren_uitsluitend_groot_dikkopje",
+    }
+    assert vlinder_scope["visit_scope"]["zonder-route-een-soort"] == {
+        "doelbereikstatus": "onbepaald",
+        "doelsoort": None,
+        "bewijsgrond": "geen_route_een_waargenomen_taxon",
+    }
+    assert vlinder_scope["visit_target_taxa"]["zonder-route-een-soort"] == {"Pieris napi"}
+    assert vlinder_scope["visit_scope"]["zonder-route-meer-soorten"]["doelbereikstatus"] == "algemene_route_aannemelijk"
+    assert vlinder_scope["visit_target_taxa"]["zonder-route-meer-soorten"] == {
+        "Aglais urticae", "Ochlodes sylvanus", "Pieris napi"
+    }
+    try:
+        module.classify_vlinder_visit_scopes(
+            families=[{"family_id": 9, "visits": {"een"}, "year_count": 1}],
+            visit_to_family={"een": 9},
+            visit_observed_taxa={"een": {"Ochlodes sylvanus"}},
+            target_taxa={"Ochlodes sylvanus"},
+        )
+    except ValueError as exc:
+        assert "exact één soortgerichte Groot dikkopje-route" in str(exc)
+    else:
+        raise AssertionError("Een ongeldige soortgerichte familiesignatuur werd geaccepteerd")
+    schema_statements = module.vlinder_v2_schema_statements({
+        "ndff_vlinder_routefamilie": set(),
+        "ndff_vlinder_bezoek": set(),
+        "ndff_vlinder_bezoek_taxon": set(),
+        "ndff_vlinder_routegeometrie": set(),
+    })
+    assert len(schema_statements) == 9
+    assert any("ADD COLUMN routetype " in statement for statement in schema_statements)
+    assert any("ADD COLUMN doelsoort " in statement for statement in schema_statements)
+    assert any("ADD COLUMN routetype_bewijs " in statement for statement in schema_statements)
+    assert any("ADD COLUMN doelbereikstatus " in statement for statement in schema_statements)
+    assert any("ADD COLUMN doelbereik_bewijs " in statement for statement in schema_statements)
+    assert any("ADD COLUMN bewijsgrond " in statement for statement in schema_statements)
+    assert any("ADD COLUMN geometrierol " in statement for statement in schema_statements)
+    assert any("ADD COLUMN geometrierol_bewijs " in statement for statement in schema_statements)
+    complete_columns = {
+        "ndff_vlinder_routefamilie": {"routetype", "doelsoort", "routetype_bewijs"},
+        "ndff_vlinder_bezoek": {"doelbereikstatus", "doelsoort", "doelbereik_bewijs"},
+        "ndff_vlinder_bezoek_taxon": {"bewijsgrond"},
+        "ndff_vlinder_routegeometrie": {"geometrierol", "geometrierol_bewijs"},
+    }
+    assert module.vlinder_v2_schema_statements(complete_columns) == []
+    assert module.VLINDER_ROUTE_RULE_VERSION == "ndff-vlinderroute-v2"
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["matrix_rows"] == 102_489
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_rows"] == 20_075
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["zero_rows"] == 82_414
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_families"] == 1
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_visits"] == 87
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["unknown_scope_visits"] == 28
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["legacy_v1_rows"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_source_missing"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["positive_matrix_extra"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["species_route_invalid_zero"] == 0
+    assert module.VLINDER_RECONSTRUCTION_EXPECTED["evidence_scope_mismatch"] == 0
+    route_identifications = module.vlinder_route_identifications()
+    assert len(route_identifications) == 11
+    by_family = {row["routefamilie_id"]: row for row in route_identifications}
+    assert set(by_family) == set(range(1, 12))
+    assert len({row["officieel_routenummer"] for row in route_identifications}) == 11
+    assert all("Lentevreugd" not in row["officiele_routenaam"] for row in route_identifications)
+    assert by_family[1]["officieel_routenummer"] == 307
+    assert by_family[1]["officiele_routenaam"] == "Het Scheepje"
+    assert by_family[2]["officieel_routenummer"] == 117
+    assert by_family[2]["officiele_routenaam"] == "Parnassiapad"
+    assert by_family[3]["officieel_routenummer"] == 1844
+    assert by_family[7]["officieel_routenummer"] == 1764
+    assert by_family[7]["officiele_routenaam"] == "Voorlinden"
+    assert by_family[9]["officieel_routenummer"] == 1767
+    assert by_family[9]["doelsoort"] == "Ochlodes sylvanus"
+    assert module.classify_vlinder_geometry_role(7, 459_500.0) == {
+        "geometrierol": "hoofdcomponent",
+        "bewijsgrond": "voorlinden_hoofdcomponent",
+    }
+    assert module.classify_vlinder_geometry_role(7, 464_078.0) == {
+        "geometrierol": "ruimtelijke_uitbijter",
+        "bewijsgrond": "voorlinden_noordelijke_uitbijter_k78_79",
+    }
+    assert module.classify_vlinder_geometry_role(3, 464_078.0) == {
+        "geometrierol": "hoofdcomponent",
+        "bewijsgrond": "reguliere_routegeometrie",
+    }
+    vlinder_audit_sql = module.vlinder_validation_sql()
+    assert "'legacy_v1_rows'" in vlinder_audit_sql
+    assert "'zero_outside_scope'" in vlinder_audit_sql
+    assert "'invalid_scope_rows'" in vlinder_audit_sql
+    assert "'positive_source_missing'" in vlinder_audit_sql
+    assert "'positive_matrix_extra'" in vlinder_audit_sql
+    assert "'species_route_invalid_zero'" in vlinder_audit_sql
+    assert "'evidence_scope_mismatch'" in vlinder_audit_sql
+    assert "'route_identifications'" in vlinder_audit_sql
+    assert "'route_identification_mismatch'" in vlinder_audit_sql
+    assert "'spatial_outliers'" in vlinder_audit_sql
+    module.validate_vlinder_prewrite_metrics(
+        dict(module.VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED)
+    )
+    invalid_prewrite = dict(module.VLINDER_RECONSTRUCTION_PREWRITE_EXPECTED)
+    invalid_prewrite["zero_rows"] += 1
+    try:
+        module.validate_vlinder_prewrite_metrics(invalid_prewrite)
+    except ValueError as exc:
+        assert "vóór schrijven" in str(exc)
+    else:
+        raise AssertionError("Afwijkende v2-matrix werd vóór schrijven geaccepteerd")
+    assert module.LIBEL_ROUTE_RULE_VERSION == "ndff-libellenroute-v1"
+    assert module.REPTILE_ROUTE_RULE_VERSION == "ndff-reptielroute-v2"
+    assert module.AMPHIBIAN_WATER_RULE_VERSION == "ndff-amfibiewater-v2"
+    assert module.POLDERVIS_RULE_VERSION == "ndff-poldervis-v2"
+    assert module.RAVON_N2000_RULE_VERSION == "ndff-ravon-n2000-v1"
+    assert module.BAT_TRANSECT_RULE_VERSION == "ndff-vleermuistransect-v1"
+    assert module.RABBIT_COUNT_RULE_VERSION == "ndff-konijnentelling-v1"
+    assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
+    assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v2"
+    assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
+    assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
+    assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v2"
+    assert module.KORSTMOS_LEGACY_RULE_VERSION == "ndff-korstmos-v1"
+    assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.ndff_korstmos"
+    assert module.MOS_RULE_VERSION == "ndff-mos-v2"
+    assert module.MOS_LEGACY_RULE_VERSION == "ndff-mos-v1"
+    assert module.MOS_TABLE_PREFIX == "Meijendel.ndff_mos"
+    assert "waargenomen_twee_tellingen_zelfde_klasse" in folded
+    assert "tweede_telling_niet_aantoonbaar_in_export" in folded
+    assert "protocolconforme_minimale_inspanning_aangenomen" in folded
+
+    korstmos_records = module.classify_korstmos_records([
+        {"observation_id": 1, "visit": "v1", "taxon": "Taxon a",
+         "abundance": "0.01 - 0.1"},
+        {"observation_id": 2, "visit": "v1", "taxon": "Taxon a",
+         "abundance": "0.01 - 0.1"},
+        {"observation_id": 3, "visit": "v1", "taxon": "Taxon b",
+         "abundance": "0.01 - 0.1"},
+        {"observation_id": 4, "visit": "v1", "taxon": "Taxon b",
+         "abundance": "minimaal 0.1"},
+        {"observation_id": 5, "visit": "v2", "taxon": "Taxon a",
+         "abundance": "minimaal 0.1"},
+    ])
+    assert korstmos_records[1]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[2]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[2]["canonieke_waarneming_id"] == 2
+    assert korstmos_records[3]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[4]["selectiestatus"] == "opgenomen"
+    assert korstmos_records[5]["selectiestatus"] == "opgenomen"
+
+    korstmos_matrix = module.build_korstmos_visit_matrix(
+        visits={"v1", "v2"},
+        visits_met_twee_tellingen={"v1"},
+        target_taxa={"Taxon a", "Taxon b", "Taxon c"},
+        records=[
+            {"visit": "v1", "taxon": "Taxon a", "abundance": "0.01 - 0.1"},
+            {"visit": "v1", "taxon": "Taxon b", "abundance": "0.01 - 0.1"},
+            {"visit": "v1", "taxon": "Taxon b", "abundance": "minimaal 0.1"},
+            {"visit": "v1", "taxon": "Taxon c", "abundance": "minimaal 0.1"},
+            {"visit": "v1", "taxon": "Taxon c", "abundance": "minimaal 0.1"},
+            {"visit": "v2", "taxon": "Taxon a", "abundance": "minimaal 0.1"},
+        ],
+    )
+    korstmos_by_key = {(row["visit"], row["taxon"]): row for row in korstmos_matrix}
+    assert korstmos_by_key[("v1", "Taxon a")]["status"] == "waargenomen_een_van_twee_tellingen"
+    assert korstmos_by_key[("v1", "Taxon a")]["bedekkingsrang"] == 1
+    assert korstmos_by_key[("v1", "Taxon b")]["status"] == "waargenomen_twee_tellingen_verschillende_klasse"
+    assert korstmos_by_key[("v1", "Taxon b")]["bedekkingsrang"] is None
+    assert korstmos_by_key[("v1", "Taxon c")]["status"] == "waargenomen_twee_tellingen_zelfde_klasse"
+    assert korstmos_by_key[("v1", "Taxon c")]["bedekkingsrang"] == 2
+    assert korstmos_by_key[("v2", "Taxon a")]["status"] == "waargenomen_enkele_exporttelling"
+    assert korstmos_by_key[("v2", "Taxon a")]["bedekkingsrang"] == 2
+    assert korstmos_by_key[("v2", "Taxon b")]["status"] == "echte_nul"
+    assert korstmos_by_key[("v2", "Taxon b")]["bedekkingsrang"] == 0
+
+    mos_records = module.classify_mos_records([
+        {"observation_id": 1, "inventory": "i1", "taxon": "Taxon a",
+         "scale": "BLWG-aantalsklassen", "abundance": "2.0 - 5.0"},
+        {"observation_id": 2, "inventory": "i1", "taxon": "Taxon a",
+         "scale": "BLWG-aantalsklassen", "abundance": "2.0 - 5.0"},
+        {"observation_id": 3, "inventory": "i1", "taxon": "Taxon b",
+         "scale": "BLWG-aantalsklassen", "abundance": "1.0"},
+        {"observation_id": 4, "inventory": "i1", "taxon": "Taxon b",
+         "scale": "BLWG-aantalsklassen", "abundance": "minimaal 6.0"},
+        {"observation_id": 5, "inventory": "i2", "taxon": "Taxon a",
+         "scale": "aanwezig", "abundance": "minimaal 1.0"},
+    ])
+    assert mos_records[1]["selectiestatus"] == "opgenomen"
+    assert mos_records[2]["selectiestatus"] == "dubbele_registratie_onderdrukt"
+    assert mos_records[2]["canonieke_waarneming_id"] == 1
+    assert mos_records[3]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert mos_records[4]["selectiestatus"] == "abundantieconflict_bewaard"
+    assert mos_records[5]["selectiestatus"] == "opgenomen"
+
+    mos_matrix = module.build_mos_inventory_matrix(
+        inventories={"i1", "i2"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"inventory": "i1", "taxon": "Taxon a",
+             "scale": "BLWG-aantalsklassen", "abundance": "2.0 - 5.0"},
+            {"inventory": "i1", "taxon": "Taxon b",
+             "scale": "BLWG-aantalsklassen", "abundance": "1.0"},
+            {"inventory": "i1", "taxon": "Taxon b",
+             "scale": "BLWG-aantalsklassen", "abundance": "minimaal 6.0"},
+            {"inventory": "i2", "taxon": "Taxon a",
+             "scale": "aanwezig", "abundance": "minimaal 1.0"},
+        ],
+    )
+    mos_by_key = {(row["inventory"], row["taxon"]): row for row in mos_matrix}
+    assert mos_by_key[("i1", "Taxon a")]["status"] == "waargenomen_aantalsklasse"
+    assert mos_by_key[("i1", "Taxon a")]["aantalsrang"] == 2
+    assert mos_by_key[("i1", "Taxon b")]["status"] == "waargenomen_abundantieconflict"
+    assert mos_by_key[("i1", "Taxon b")]["aantalsrang"] is None
+    assert mos_by_key[("i2", "Taxon a")]["status"] == "waargenomen_presentie"
+    assert mos_by_key[("i2", "Taxon a")]["aantalsrang"] is None
+    assert mos_by_key[("i2", "Taxon b")]["status"] == "echte_nul"
+    assert mos_by_key[("i2", "Taxon b")]["aantalsrang"] == 0
+
+    assert module.classify_florbase_inventory(49) == "fragment"
+    assert module.classify_florbase_inventory(50) == "volledige_lijst_aannemelijk"
+    florbase_matrix = module.build_florbase_inventory_matrix(
+        inventories={"i1", "i2"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"inventory": "i1", "taxon": "Taxon a", "scale": "voorkomen",
+             "abundance": "minimaal 1.0"},
+            {"inventory": "i1", "taxon": "Taxon a", "scale": "voorkomen",
+             "abundance": "minimaal 1.0"},
+            {"inventory": "i2", "taxon": "Taxon b",
+             "scale": "FLORON-aantalsklassen", "abundance": "6.0 - 25.0"},
+        ],
+    )
+    florbase_by_key = {
+        (row["inventory"], row["taxon"]): row for row in florbase_matrix
+    }
+    assert florbase_by_key[("i1", "Taxon a")]["status"] == "waargenomen"
+    assert florbase_by_key[("i1", "Taxon a")]["measurement_status"] == "alleen_presentie"
+    assert florbase_by_key[("i1", "Taxon a")]["source_count"] == 2
+    assert florbase_by_key[("i1", "Taxon b")]["status"] == (
+        "protocolnul_onder_volledigheidsaanname"
+    )
+    assert florbase_by_key[("i2", "Taxon b")]["measurement_status"] == (
+        "aantalsinformatie_niet_aggregeerbaar"
+    )
+
+    # LMF-A volgt 75 vaste aandachtssoorten per kilometerhokroute. Alleen
+    # exacte groeiplaatsaantallen mogen zonder extra interpretatie worden
+    # opgeteld; meerdere bronklassen blijven daarom expliciet onzeker.
+    assert len(module.LMFA_TARGET_SPECIES) == 75
+    assert module.lmfa_abundance_class_for_count(0) == 0
+    assert module.lmfa_abundance_class_for_count(1) == 1
+    assert module.lmfa_abundance_class_for_count(5) == 2
+    assert module.lmfa_abundance_class_for_count(25) == 3
+    assert module.lmfa_abundance_class_for_count(50) == 4
+    assert module.lmfa_abundance_class_for_count(500) == 5
+    assert module.lmfa_abundance_class_for_count(5000) == 6
+    assert module.lmfa_abundance_class_for_count(5001) == 7
+    lmfa_matrix = module.build_lmfa_visit_matrix(
+        visits={"r1-2023", "r2-2023"},
+        target_taxa={"Taxon a", "Taxon b"},
+        records=[
+            {"visit": "r1-2023", "taxon": "Taxon a", "scale": "exact aantal", "abundance": "2"},
+            {"visit": "r1-2023", "taxon": "Taxon a", "scale": "exact aantal", "abundance": "4"},
+            {"visit": "r2-2023", "taxon": "Taxon b", "scale": "FLORON-aantalsklassen", "abundance": "6.0 - 25.0"},
+        ],
+    )
+    lmfa_by_key = {(row["visit"], row["taxon"]): row for row in lmfa_matrix}
+    assert lmfa_by_key[("r1-2023", "Taxon a")]["status"] == "waargenomen_exact_opgeteld"
+    assert lmfa_by_key[("r1-2023", "Taxon a")]["abundance_rank"] == 3
+    assert lmfa_by_key[("r1-2023", "Taxon b")]["status"] == "echte_nul"
+    assert lmfa_by_key[("r2-2023", "Taxon b")]["status"] == "waargenomen_bronklasse"
+    assert lmfa_by_key[("r2-2023", "Taxon b")]["abundance_rank"] == 3
+    assert module.classify_habslak_hokjaar(80, 0) == (
+        "niet_beoordeelbaar_onvolledige_monitoringcontext"
+    )
+    assert module.classify_habslak_hokjaar(5, 0) == (
+        "niet_beoordeelbaar_onvolledige_monitoringcontext"
+    )
+    assert module.classify_habslak_hokjaar(15, 1) == "waargenomen"
+    assert module.HABSLAK_LEGACY_RULE_VERSION == "ndff-habslak-v1"
+    habslak_matrix = module.build_habslak_positive_matrix([
+        {
+            "sample": "m1", "taxon": "Vertigo pygmaea", "scale": "exact aantal",
+            "abundance": "2", "subject": "levend exemplaar",
+            "determination": "onderzoek",
+        },
+        {
+            "sample": "m1", "taxon": "Vertigo pygmaea", "scale": "exact aantal",
+            "abundance": "1", "subject": "huisje zonder vleesresten",
+            "determination": "onderzoek",
+        },
+    ])
+    assert len(habslak_matrix) == 1
+    assert habslak_matrix[0]["status"] == "waargenomen"
+    assert habslak_matrix[0]["source_count"] == 2
+    assert len(habslak_matrix[0]["measurements"]) == 2
+
+    assert module.classify_braakbal_period("2011-03-14", "2011-03-15") == (
+        "gedateerde_registratie"
+    )
+    assert module.classify_braakbal_period("2024-01-01", "2025-01-01") == (
+        "jaaraggregaat"
+    )
+    assert module.classify_braakbal_period("2022-01-01", "2024-01-01") == (
+        "meerjaaraggregaat"
+    )
+    assert module.classify_braakbal_inspanning(149) == "som_minder_dan_150"
+    assert module.classify_braakbal_inspanning(150) == (
+        "som_minimaal_150_partij_onbekend"
+    )
+    braakbal = module.build_braakbal_positive_aggregates([
+        {
+            "observation_id": 1, "year": 2020, "geometry": "g1",
+            "taxon": "Microtus arvalis", "count": 100,
+            "start": "2020-01-01", "stop": "2021-01-01",
+            "blurred": True, "blur_level": 10, "x": 85_000.0,
+            "y": 460_000.0, "area": 100_000_000.0,
+        },
+        {
+            "observation_id": 2, "year": 2020, "geometry": "g1",
+            "taxon": "Microtus arvalis", "count": 60,
+            "start": "2020-01-01", "stop": "2021-01-01",
+            "blurred": True, "blur_level": 10, "x": 85_000.0,
+            "y": 460_000.0, "area": 100_000_000.0,
+        },
+        {
+            "observation_id": 3, "year": 2020, "geometry": "g1",
+            "taxon": "Sorex araneus", "count": 5,
+            "start": "2020-01-01", "stop": "2021-01-01",
+            "blurred": True, "blur_level": 10, "x": 85_000.0,
+            "y": 460_000.0, "area": 100_000_000.0,
+        },
+    ])
+    assert len(braakbal["hokyears"]) == 1
+    assert braakbal["hokyears"][0]["prey_sum"] == 165
+    assert braakbal["hokyears"][0]["effort_status"] == (
+        "som_minimaal_150_partij_onbekend"
+    )
+    assert braakbal["hokyears"][0]["zero_status"] == "geen_nul_afleidbaar"
+    assert len(braakbal["taxa"]) == 2
+    braakbal_taxa = {row["taxon"]: row for row in braakbal["taxa"]}
+    assert braakbal_taxa["Microtus arvalis"]["source_count"] == 2
+    assert braakbal_taxa["Microtus arvalis"]["total_count"] == 160
+    assert all(row["status"] == "waargenomen" for row in braakbal["taxa"])
+
+    assert module.classify_tuintelling_period(
+        "2015-10-24 21:00:00", "2015-10-24 21:05:00"
+    ) == "tijdstiptelling"
+    assert module.classify_tuintelling_period(
+        "2016-05-08 00:00:00", "2016-05-09 00:00:00"
+    ) == "dagperiode"
+    assert module.classify_tuintelling_period(
+        "2016-05-09 00:00:00", "2016-05-16 00:00:00"
+    ) == "weektelling"
+    tuin_families = module.reconstruct_tuinvakfamilies([
+        {"geometry": "a", "x": 100.0, "y": 200.0},
+        {"geometry": "b", "x": 100.4, "y": 200.3},
+        {"geometry": "c", "x": 120.0, "y": 220.0},
+    ])
+    assert len(set(tuin_families.values())) == 2
+    assert tuin_families["a"] == tuin_families["b"]
+    assert tuin_families["a"] != tuin_families["c"]
+    tuintelling = module.build_tuintelling_structure(
+        [
+            {
+                "observation_id": 1, "geometry": "a", "group": "Dagvlinders",
+                "taxon": "Aglais io", "start": "2020-07-06 00:00:00",
+                "stop": "2020-07-13 00:00:00", "scale": "exact aantal",
+                "amount": "2", "stage": "adult", "sex": "",
+            },
+            {
+                "observation_id": 2, "geometry": "a", "group": "Dagvlinders",
+                "taxon": "Pieris rapae", "start": "2020-07-13 00:00:00",
+                "stop": "2020-07-20 00:00:00", "scale": "exact aantal",
+                "amount": "1", "stage": "adult", "sex": "",
+            },
+        ],
+        tuin_families,
+    )
+    assert len(tuintelling["periods"]) == 2
+    assert len(tuintelling["group_periods"]) == 2
+    assert len(tuintelling["matrix"]) == 4
+    tuin_matrix = {
+        (row["period"], row["taxon"]): row for row in tuintelling["matrix"]
+    }
+    first_period = next(
+        row["period"] for row in tuintelling["matrix"]
+        if row["taxon"] == "Aglais io" and row["status"] == "waargenomen"
+    )
+    assert tuin_matrix[(first_period, "Aglais io")]["status"] == "waargenomen"
+    assert tuin_matrix[(first_period, "Pieris rapae")]["status"] == (
+        "protocolnul_binnen_lokaal_doelbereik"
+    )
+    assert tuin_matrix[(first_period, "Pieris rapae")]["source_count"] == 0
+
+    liveatlas = module.build_liveatlas_structure([
+        {
+            "observation_id": 1, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 11:00:00", "amount": "2",
+            "scale": "exact aantal", "geometry": "g1",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 2, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 11:00:00", "amount": "3",
+            "scale": "exact aantal", "geometry": "g2",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 3, "group": "Libellen",
+            "taxon": "Ischnura elegans", "start": "2025-05-02 10:00:00",
+            "stop": "2025-05-02 10:20:00", "amount": "1",
+            "scale": "exact aantal", "geometry": "g3",
+            "spatial_quality": "multiple",
+            "plot_version": 1, "plot_id": None,
+        },
+    ])
+    assert len(liveatlas["visits"]) == 2
+    assert len(liveatlas["group_visits"]) == 2
+    assert len(liveatlas["taxa"]) == 2
+    assert len(liveatlas["record_links"]) == 3
+    butterfly_visit = next(
+        row for row in liveatlas["visits"] if row["source_count"] == 2
+    )
+    assert butterfly_visit["spatial_status"] == "single_volledig_binnen"
+    assert butterfly_visit["plot_id"] == 12
+    assert butterfly_visit["duration_minutes"] == 60
+    butterfly_group = next(
+        row for row in liveatlas["group_visits"]
+        if row["group"] == "Dagvlinders"
+    )
+    assert butterfly_group["completeness_status"] == "niet_meegeleverd"
+    butterfly_taxon = next(
+        row for row in liveatlas["taxa"] if row["taxon"] == "Aglais io"
+    )
+    assert butterfly_taxon["source_count"] == 2
+    assert butterfly_taxon["total_count"] == 5
+    assert butterfly_taxon["observation_status"] == "waargenomen"
+    assert butterfly_taxon["zero_rule"] == "geen_nul_afleidbaar"
+    assert all(row["source_count"] > 0 for row in liveatlas["taxa"])
+
+    kwartiertelling = module.build_kwartiertelling_structure([
+        {
+            "observation_id": 1, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 10:15:00", "amount": "1",
+            "scale": "exact aantal", "geometry": "g1",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 2, "group": "Dagvlinders",
+            "taxon": "Aglais io", "start": "2025-05-01 10:00:00",
+            "stop": "2025-05-01 10:15:00", "amount": "2",
+            "scale": "exact aantal", "geometry": "g2",
+            "spatial_quality": "single_volledig_binnen",
+            "plot_version": 1, "plot_id": 12,
+        },
+        {
+            "observation_id": 3, "group": "Nachtvlinders",
+            "taxon": "Autographa gamma", "start": "2025-05-02 10:00:00",
+            "stop": "2025-05-02 10:21:00", "amount": "1",
+            "scale": "exact aantal", "geometry": "g3",
+            "spatial_quality": "multiple", "plot_version": None,
+            "plot_id": None,
+        },
+    ])
+    assert len(kwartiertelling["intervals"]) == 2
+    assert len(kwartiertelling["group_intervals"]) == 2
+    assert len(kwartiertelling["taxa"]) == 2
+    assert len(kwartiertelling["record_links"]) == 3
+    first_interval = next(
+        row for row in kwartiertelling["intervals"] if row["source_count"] == 2
+    )
+    assert first_interval["duration_status"] == "protocolconform_15_minuten"
+    assert first_interval["spatial_status"] == "single_volledig_binnen"
+    assert first_interval["plot_id"] == 12
+    long_interval = next(
+        row for row in kwartiertelling["intervals"] if row["source_count"] == 1
+    )
+    assert long_interval["duration_status"] == "bronafwijking_boven_15_minuten"
+    assert long_interval["spatial_status"] == "multiple"
+    butterfly_group = next(
+        row for row in kwartiertelling["group_intervals"]
+        if row["group"] == "Dagvlinders"
+    )
+    assert butterfly_group["completeness_status"] == (
+        "niet_meegeleverd_ononderscheidbaar_soortgericht"
+    )
+    butterfly_taxon = next(
+        row for row in kwartiertelling["taxa"] if row["taxon"] == "Aglais io"
+    )
+    assert butterfly_taxon["source_count"] == 2
+    assert butterfly_taxon["total_count"] == 3
+    assert butterfly_taxon["zero_rule"] == "geen_nul_afleidbaar"
+    assert all(row["observation_status"] == "waargenomen"
+               for row in kwartiertelling["taxa"])
+    assert module.classify_kwartiertelling_duration(6) == "korter_dan_15_toegestaan"
+    assert module.classify_kwartiertelling_duration(15) == "protocolconform_15_minuten"
+    assert module.classify_kwartiertelling_duration(16) == (
+        "bronafwijking_boven_15_minuten"
+    )
+
+    hns_rows = [
+        {
+            "observation_id": index,
+            "date": "2024-07-18",
+            "stop_date": "2024-07-18",
+            "hok": "82 - 462",
+            "taxon": f"Taxon {index:02d}",
+            "blurred": False,
+        }
+        for index in range(1, 56)
+    ]
+    hns_rows += [
+        {
+            "observation_id": 56,
+            "date": "2024-07-18",
+            "stop_date": "2024-07-18",
+            "hok": "82 - 461",
+            "taxon": "Taxon spillover",
+            "blurred": False,
+        },
+        {
+            "observation_id": 57,
+            "date": "2024-01-01",
+            "stop_date": "2025-01-01",
+            "hok": "82 - 462",
+            "taxon": "Taxon vervaagd",
+            "blurred": True,
+        },
+        {
+            "observation_id": 58,
+            "date": "2024-09-19",
+            "stop_date": "2024-09-19",
+            "hok": "86 - 463",
+            "taxon": "Taxon fragment",
+            "blurred": False,
+        },
+    ]
+    hns = module.reconstruct_hns_candidates(hns_rows)
+    assert len(hns["inventories"]) == 2
+    complete = next(
+        inventory for inventory in hns["inventories"].values()
+        if inventory["status"] == "volledige_lijst_aannemelijk"
+    )
+    assert complete["target_hok"] == "82 - 462"
+    assert complete["taxa_count"] == 56
+    assert complete["source_record_count"] == 56
+    fragment = next(
+        inventory for inventory in hns["inventories"].values()
+        if inventory["status"] == "fragment"
+    )
+    assert fragment["source_record_count"] == 1
+    assert hns["record_status"][57] == "vervaagd_jaarrecord_niet_toegewezen"
+    assert hns["record_inventory"][1] in hns["inventories"]
+    assert hns["record_inventory"][57] is None
+
+    hns_matrix = module.build_hns_visit_matrix(
+        complete_inventories={"visit-a": {"Taxon a"}, "visit-b": {"Taxon b"}},
+        target_taxa={"Taxon a", "Taxon b"},
+    )
+    assert hns_matrix == [
+        {"visit": "visit-a", "taxon": "Taxon a", "status": "waargenomen"},
+        {"visit": "visit-a", "taxon": "Taxon b", "status": "echte_nul"},
+        {"visit": "visit-b", "taxon": "Taxon a", "status": "echte_nul"},
+        {"visit": "visit-b", "taxon": "Taxon b", "status": "waargenomen"},
+    ]
+
+    assert module.classify_zeereep_abundance("NMV-aantalsklassen", "1.0 - 3.0") == "klasse_1_3"
+    assert module.classify_zeereep_abundance("NMV-aantalsklassen", "4.0 - 20.0") == "klasse_4_20"
+    assert module.classify_zeereep_abundance("NMV-aantalsklassen", "minimaal 21.0") == "klasse_21_plus"
+    assert module.classify_zeereep_abundance("voorkomen", "minimaal 1.0") == "aanwezig"
+    assert module.classify_zeereep_abundance("exact aantal", "1") == "exact_1"
+    assert module.classify_zeereep_matrix_entry(None) == {
+        "status": "niet_gemeld_tellerscope_onbekend",
+        "bronrecordaantal": 0,
+        "hoogste_nmv_klasse": "geen",
+        "nulregel": "geen_nul_zonder_tellerscope",
+    }
+    assert module.classify_zeereep_matrix_entry({"records": 2, "abundance": "klasse_4_20"}) == {
+        "status": "waargenomen",
+        "bronrecordaantal": 2,
+        "hoogste_nmv_klasse": "klasse_4_20",
+        "nulregel": "niet_van_toepassing",
+    }
+
+    assert module.normalize_bospaddenstoel_date(
+        "exact aantal", "1999-08-26 22:00:00", "1999-08-27 22:00:00"
+    ) == "1999-08-27"
+    assert module.normalize_bospaddenstoel_date(
+        "voorkomen", "1999-08-27 00:00:00", "1999-08-28 00:00:00"
+    ) == "1999-08-27"
+    assert module.parse_bospaddenstoel_count("exact aantal", "78") == 78
+    assert module.parse_bospaddenstoel_count("voorkomen", "minimaal 1.0") is None
+    bospaddenstoel_selection = module.select_bospaddenstoel_records([
+        {"identity": "exact", "plot": 1, "date": "1999-08-27", "taxon": "Taxon a",
+         "scale": "exact aantal", "raw": "5"},
+        {"identity": "presence", "plot": 1, "date": "1999-08-27", "taxon": "Taxon a",
+         "scale": "voorkomen", "raw": "minimaal 1.0"},
+        {"identity": "presence-only", "plot": 1, "date": "1999-09-27", "taxon": "Taxon b",
+         "scale": "voorkomen", "raw": "minimaal 1.0"},
+    ])
+    assert bospaddenstoel_selection["exact"]["selectiestatus"] == "opgenomen_exact"
+    assert bospaddenstoel_selection["presence"]["selectiestatus"] == "dubbele_presentie_onderdrukt"
+    assert bospaddenstoel_selection["presence"]["canonieke_identiteit"] == "exact"
+    assert bospaddenstoel_selection["presence-only"]["selectiestatus"] == "opgenomen_presentie"
+
+    assert module.classify_rabbit_season("2020-03-15") == "voorjaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-04-07") == "voorjaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-09-15") == "najaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-10-15") == "najaar_huidig_venster"
+    assert module.classify_rabbit_season("2020-04-08") == "buiten_huidig_venster"
+    assert module.classify_rabbit_record_signal(1, 1) == "uniek_binnen_hokdatum_taxon"
+    assert module.classify_rabbit_record_signal(2, 1) == "meerdere_sectieregels_binnen_hokdatum_taxon"
+    assert module.classify_rabbit_record_signal(2, 2) == "gelijke_telwaarde_binnen_hokdatum_taxon"
+
+    daz_matrix = module.build_daz_bmp_matrix(
+        confirmed_visits={101, 102},
+        positive_counts={(101, "Oryctolagus cuniculus"): (3, 1),
+                         (101, "Dama dama"): (2, 1)},
+        ambiguous_counts={(101, "Oryctolagus cuniculus"): 1,
+                          (102, "Lepus europaeus"): 2},
+    )
+    daz_by_key = {(row["visit_id"], row["taxon"]): row for row in daz_matrix}
+    assert daz_by_key[(101, "Oryctolagus cuniculus")]["status"] == "waargenomen"
+    assert daz_by_key[(101, "Oryctolagus cuniculus")]["value_status"] == "minimum_door_ambiguiteit"
+    assert daz_by_key[(101, "Dama dama")]["relation"] == "bijvangst"
+    assert (102, "Dama dama") not in daz_by_key
+    assert daz_by_key[(102, "Lepus europaeus")]["status"] == "onbepaald_ambigu"
+    assert daz_by_key[(102, "Capreolus capreolus")]["status"] == "echte_nul"
+
+    sovon_matrix = module.build_sovon_avimap_daz_matrix([
+        {"visit_id": 11, "taxon": "Konijn", "count": 2},
+        {"visit_id": 11, "taxon": "Konijn", "count": 3},
+        {"visit_id": 11, "taxon": "Damhert", "count": 4},
+        {"visit_id": 12, "taxon": "Vos", "count": 1},
+    ])
+    sovon_by_key = {(row["visit_id"], row["taxon"]): row for row in sovon_matrix}
+    assert sovon_by_key[(11, "Konijn")]["status"] == "waargenomen"
+    assert sovon_by_key[(11, "Konijn")]["count"] == 5
+    assert sovon_by_key[(11, "Haas")]["status"] == "echte_nul"
+    assert sovon_by_key[(11, "Damhert")]["relation"] == "bijvangst"
+    assert (12, "Damhert") not in sovon_by_key
+    assert len(sovon_matrix) == 15
+
+    assert module.classify_sovon_avimap_nonbird(1, "Konijn") == {
+        "protocol_sleutel": "17.204",
+        "gegevensrol": "daz_doelsoort",
+        "protocol_kandidaattypen": "V,TA",
+        "gegevensgeschiktheid": "voorwaardelijk",
+    }
+    assert module.classify_sovon_avimap_nonbird(1, "Damhert") == {
+        "protocol_sleutel": "17.204",
+        "gegevensrol": "daz_bijvangst",
+        "protocol_kandidaattypen": "V",
+        "gegevensgeschiktheid": "geschikt_positieve_aanwezigheid",
+    }
+    assert module.classify_sovon_avimap_nonbird(3, "Gewone pad") == {
+        "protocol_sleutel": "BMP_BIJVANGST",
+        "gegevensrol": "bmp_bijvangst_overig",
+        "protocol_kandidaattypen": "V",
+        "gegevensgeschiktheid": "geschikt_positieve_aanwezigheid",
+    }
+
+    bird_rows = module.select_sovon_avimap_bird_rows([
+        {"id": "1", "soortgrp": "2", "jaar": "2025"},
+        {"id": "2", "soortgrp": "2", "jaar": "2026"},
+        {"id": "3", "soortgrp": "1", "jaar": "2025"},
+    ])
+    assert [row["id"] for row in bird_rows] == ["1"]
+    assert module.select_sovon_avimap_completed_year_rows([
+        {"id": "10", "jaar": "2024"},
+        {"id": "11", "jaar": "2025"},
+        {"id": "12", "jaar": "2026"},
+    ]) == [
+        {"id": "10", "jaar": "2024"},
+        {"id": "11", "jaar": "2025"},
+    ]
+    assert module.normalize_sovon_visit_duration("07:43:00", "11:05:00", "207562") == 202
+    assert module.normalize_sovon_visit_duration("12:33:00", "21:56:00", "17843") == 563
+    assert module.normalize_sovon_visit_duration("06:15:00", "08:47:00", "151") == 151
+    assert module.normalize_sovon_visit_duration("23:30:00", "00:15:00", "1485") == 45
+
+    assert module.classify_bat_route(83_999.0) == {
+        "routefamilie_id": 2,
+        "methodevariant": "vleermus_fiets",
+        "routecode": "vleerMUS_zuid",
+    }
+    assert module.classify_bat_route(84_000.0) == {
+        "routefamilie_id": 1,
+        "methodevariant": "nem_vtt_auto",
+        "routecode": "NEM_VTT_noord",
+    }
+    assert module.bat_target_taxa("nem_vtt_auto") == {
+        "Pipistrellus pipistrellus", "Pipistrellus nathusii",
+        "Eptesicus serotinus", "Nyctalus noctula",
+    }
+    assert module.bat_target_taxa("vleermus_fiets") == {
+        "Pipistrellus pipistrellus", "Pipistrellus nathusii",
+        "Eptesicus serotinus",
+    }
+    bat_rows = [
+        {"identity": "midnight", "taxon": "Pipistrellus pipistrellus",
+         "start": "2019-09-09 00:00:00", "visit_date": "2019-09-09",
+         "geometry": "g1", "x": 82_000.0},
+        {"identity": "timed-a", "taxon": "Pipistrellus pipistrellus",
+         "start": "2019-09-09 21:45:00", "visit_date": "2019-09-09",
+         "geometry": "g1", "x": 82_000.0},
+        {"identity": "timed-b", "taxon": "Pipistrellus pipistrellus",
+         "start": "2019-09-09 21:46:00", "visit_date": "2019-09-09",
+         "geometry": "g1", "x": 82_000.0},
+        {"identity": "north", "taxon": "Nyctalus noctula",
+         "start": "2019-07-23 00:00:00", "visit_date": "2019-07-23",
+         "geometry": "g2", "x": 86_000.0},
+    ]
+    bat_selection = module.classify_bat_records(bat_rows)
+    assert bat_selection["midnight"]["selectiestatus"] == "dubbele_aanlevering_onderdrukt"
+    assert bat_selection["midnight"]["canonieke_identiteit"] == "timed-a"
+    assert bat_selection["timed-a"]["selectiestatus"] == "opgenomen"
+    assert bat_selection["timed-b"]["selectiestatus"] == "opgenomen"
+    assert bat_selection["north"]["selectiestatus"] == "opgenomen"
+
+    # Alleen nabijgelegen geometrieversies met niet-overlappende gebruiksjaren
+    # vormen één waterfamilie. Nabije gelijktijdig gebruikte wateren blijven
+    # afzonderlijke meeteenheden.
+    amphibian_waters = module.reconstruct_amphibian_water_families([
+        {"geometry": "oud", "x": 100.0, "y": 100.0, "area": 25.0,
+         "year": 2010, "records": 2},
+        {"geometry": "nieuw", "x": 112.0, "y": 100.0, "area": 30.0,
+         "year": 2012, "records": 3},
+        {"geometry": "buur", "x": 120.0, "y": 100.0, "area": 20.0,
+         "year": 2012, "records": 1},
+    ])
+    assert amphibian_waters["family_count"] == 2
+    assert amphibian_waters["geometry_to_family"]["oud"] == amphibian_waters["geometry_to_family"]["nieuw"]
+    assert amphibian_waters["geometry_to_family"]["oud"] != amphibian_waters["geometry_to_family"]["buur"]
+
+    assert module.parse_amphibian_measurement("exact aantal", "17") == {
+        "meetwaarde_type": "exact", "aantal_exact": 17,
+        "ondergrens": 17, "bovengrens": 17, "presentieklasse": None,
+    }
+    assert module.parse_amphibian_measurement(
+        "presentieklasse (Ravon)", "11.0 - 100.0"
+    ) == {
+        "meetwaarde_type": "presentieklasse", "aantal_exact": None,
+        "ondergrens": 11, "bovengrens": 100, "presentieklasse": 2,
+    }
+    assert module.parse_amphibian_measurement("minimum aantal", "minimaal 20") == {
+        "meetwaarde_type": "minimum", "aantal_exact": None,
+        "ondergrens": 20, "bovengrens": None, "presentieklasse": None,
+    }
+    assert module.parse_amphibian_measurement("geschat aantal", "8 - 12") == {
+        "meetwaarde_type": "schatting", "aantal_exact": None,
+        "ondergrens": 8, "bovengrens": 12, "presentieklasse": None,
+    }
+    assert module.amphibian_analysis_taxon("Pelophylax kl. esculentus") == "Pelophylax esculentus synklepton"
+    repeated_pair = [
+        {"date": f"2020-05-{day:02d}", "geometry": geometry, "x": x, "y": 0.0, "area": area, "year": 2020, "records": 1}
+        for day in range(1, 11)
+        for geometry, x, area in (("a", 0.0, 10_000.0), ("b", 750.0, 12_000.0))
+    ]
+    reptile_routes = module.reconstruct_reptile_route_families(
+        repeated_pair + [
+            {"date": "2020-05-01", "geometry": "c", "x": 4_000.0, "y": 0.0, "area": 11_000.0, "year": 2020, "records": 1},
+            {"date": "2021-05-01", "geometry": "p", "x": 10.0, "y": 0.0, "area": 25.0, "year": 2021, "records": 1},
+            {"date": "2021-05-02", "geometry": "km", "x": 0.0, "y": 0.0, "area": 1_000_000.0, "year": 2021, "records": 1},
+        ],
+        small_to_anchor={"p": "a"},
+    )
+    assert reptile_routes["family_count"] == 2
+    assert reptile_routes["geometry_to_family"]["a"] == reptile_routes["geometry_to_family"]["b"]
+    assert reptile_routes["geometry_to_family"]["a"] != reptile_routes["geometry_to_family"]["c"]
+    assert reptile_routes["geometry_to_family"]["p"] == reptile_routes["geometry_to_family"]["a"]
+    assert "km" not in reptile_routes["geometry_to_family"]
+    importer_text = IMPORTER.read_text(encoding="utf-8")
+    assert "--reconstruct-vlinders" in importer_text
+    assert "--audit-vlinders" in importer_text
+    assert "--reconstruct-vliesvleugelen" in importer_text
+    assert "--audit-vliesvleugelen" in importer_text
+    assert "--reconstruct-libellen" in importer_text
+    assert "--audit-libellen" in importer_text
+    assert "--reconstruct-reptielen" in importer_text
+    assert "--audit-reptielen" in importer_text
+    assert "--reconstruct-amfibieen" in importer_text
+    assert "--audit-amfibieen" in importer_text
+    assert "--reconstruct-vleermuizen" in importer_text
+    assert "--audit-vleermuizen" in importer_text
+    assert "--reconstruct-konijnen" in importer_text
+    assert "--audit-konijnen" in importer_text
+    assert "--reconstruct-daz-bmp" in importer_text
+    assert "--audit-daz-bmp" in importer_text
+    assert "--reconstruct-zeereeppaddenstoelen" in importer_text
+    assert "--audit-zeereeppaddenstoelen" in importer_text
+    assert "--reconstruct-bospaddenstoelen" in importer_text
+    assert "--audit-bospaddenstoelen" in importer_text
+    assert "--reconstruct-hns" in importer_text
+    assert "--audit-hns" in importer_text
+    assert "--reconstruct-habslak" in importer_text
+    assert "--audit-habslak" in importer_text
+    assert "--reconstruct-braakballen" in importer_text
+    assert "--audit-braakballen" in importer_text
+    assert "--reconstruct-tuintellingen" in importer_text
+    assert "--audit-tuintellingen" in importer_text
+    assert "--reconstruct-liveatlas" in importer_text
+    assert "--audit-liveatlas" in importer_text
+    assert "--reconstruct-kwartiertellingen" in importer_text
+    assert "--audit-kwartiertellingen" in importer_text
+    assert "--reconstruct-resterende-nem" in importer_text
+    assert "--audit-resterende-nem" in importer_text
+    assert "--reconstruct-ravon-n2000" in importer_text
+    assert "--audit-ravon-n2000" in importer_text
+    assert "v_ndff_analysebesluit_actueel" in SCHEMA.read_text(encoding="utf-8")
+    assert "niet_gemeld_methode_onbekend" in SCHEMA.read_text(encoding="utf-8")
+    assert "binnen_geleverd_positief_bezoek" in SCHEMA.read_text(encoding="utf-8")
+    assert "monsterlocatieproxy" in SCHEMA.read_text(encoding="utf-8")
+    assert "ndff_ravon_n2000_recordselectie" in SCHEMA.read_text(encoding="utf-8")
+    assert "03.201" in importer_text
+    assert "soortgroep_raw='Dagvlinders'" in importer_text
+    source_sql = " ".join(module.vlinder_source_sql().split())
+    assert "EXISTS ( SELECT 1" in source_sql
+    assert "doel.soortgroep_raw='Dagvlinders'" in source_sql
+    assert "meijendel_ndff_secure.ndff_vlinder_" not in importer_text.casefold()
+    assert module.VLINDER_TABLE_PREFIX == "Meijendel.ndff_vlinder"
+    assert module.VLIESVLEUGEL_TABLE_PREFIX == "Meijendel.ndff_vliesvleugel"
+    assert module.LIBEL_TABLE_PREFIX == "Meijendel.ndff_libel"
+    assert module.LIVEATLAS_TABLE_PREFIX == "Meijendel.ndff_liveatlas"
+    assert module.KWARTIERTELLING_TABLE_PREFIX == "Meijendel.ndff_kwartiertelling"
+    assert module.NACHTVLINDER_TABLE_PREFIX == "Meijendel.ndff_nachtvlinder"
+    assert module.BOSPADDENSTOEL_VERSPREIDING_TABLE_PREFIX == (
+        "Meijendel.ndff_bospaddenstoel_verspreiding"
+    )
+    assert module.POLDERVIS_TABLE_PREFIX == "Meijendel.ndff_poldervis"
+    assert module.OTTER_BEVER_TABLE_PREFIX == "Meijendel.ndff_otter_bever"
+    assert "Meijendel_ndff_secure" not in module.resterende_nem_source_sql().casefold()
+    assert "12.202" not in module.resterende_nem_source_sql()
+    liveatlas_source_sql = " ".join(module.liveatlas_source_sql().split())
+    assert "o.protocol LIKE '102.005%'" in liveatlas_source_sql
+    assert "Meijendel_ndff_secure" not in liveatlas_source_sql
+    kwartiertelling_source_sql = " ".join(
+        module.kwartiertelling_source_sql().split()
+    )
+    assert "o.protocol LIKE '102.007%'" in kwartiertelling_source_sql
+    assert "Meijendel_ndff_secure" not in kwartiertelling_source_sql
+    assert module.REPTILE_TABLE_PREFIX == "Meijendel.ndff_reptiel"
+    assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
+    assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
+    assert module.RABBIT_TABLE_PREFIX == "Meijendel.ndff_konijn"
+    assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.ndff_daz_bmp"
+    assert module.SOVON_AVIMAP_TABLE_PREFIX == "Meijendel.sovon_avimap"
+    assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
+    assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"
+    assert module.SOVON_AVIMAP_BIRD_RULE_VERSION == "sovon-avimap-vogels-v1"
+    sovon_views = module.sovon_avimap_analysis_views_sql().casefold()
+    assert "bezoekduur_status" in sovon_views
+    assert "handmatige_controle_bezoekduur" in sovon_views
+    libel_source_sql = " ".join(module.libel_source_sql().split())
+    assert "o.protocol LIKE '07.201%'" in libel_source_sql
+    assert "o.soortgroep_raw='Libellen'" in libel_source_sql
+    assert "Meijendel_ndff_secure" not in libel_source_sql
+    reptile_source_sql = " ".join(module.reptile_source_sql().split())
+    assert "o.protocol LIKE '10.201%'" in reptile_source_sql
+    assert "o.soortgroep_raw='Reptielen'" in reptile_source_sql
+    assert "Meijendel_ndff_secure" not in reptile_source_sql
+    assert "DATE(o.periode_start)" in reptile_source_sql
+    amphibian_source_sql = " ".join(module.amphibian_source_sql().split())
+    assert "o.protocol LIKE '01.201%'" in amphibian_source_sql
+    assert "o.soortgroep_raw='Amfibieën'" in amphibian_source_sql
+    assert "o.vervaagd=0" in amphibian_source_sql
+    assert "Meijendel_ndff_secure" not in amphibian_source_sql
+    amphibian_excluded_sql = " ".join(module.amphibian_excluded_sql().split())
+    assert "o.vervaagd=0" not in amphibian_excluded_sql
+    assert "vervaagd=1" in amphibian_excluded_sql
+    assert "TIMESTAMPDIFF(HOUR,periode_start,periode_stop)>=8000" in amphibian_excluded_sql
+    bat_source_sql = " ".join(module.bat_source_sql().split())
+    assert "o.protocol LIKE '17.208%'" in bat_source_sql
+    assert "o.soortgroep_raw='Vleermuizen'" in bat_source_sql
+    assert "o.vervaagd=0" in bat_source_sql
+    assert "Meijendel_ndff_secure" not in bat_source_sql
+    rabbit_source_sql = " ".join(module.rabbit_source_sql().split())
+    assert "o.protocol LIKE '17.209%'" in rabbit_source_sql
+    assert "o.soortgroep_raw='Zoogdieren (overig)'" in rabbit_source_sql
+    assert "Meijendel_ndff_secure" not in rabbit_source_sql
+    daz_source_sql = " ".join(module.daz_bmp_source_sql().split())
+    assert "o.protocol LIKE '17.204%'" in daz_source_sql
+    assert "Meijendel_ndff_secure" not in daz_source_sql
+    daz_candidate_sql = " ".join(module.daz_bmp_candidate_sql().split())
+    assert "Meijendel.dagbezoeken_bmp" in daz_candidate_sql
+    assert "ST_Intersects" in daz_candidate_sql
+    zeereep_source_sql = " ".join(module.zeereep_source_sql().split())
+    assert "o.protocol LIKE '11.202%'" in zeereep_source_sql
+    assert "o.soortgroep_raw='Schimmels'" in zeereep_source_sql
+    assert "o.vervaagd=0" in zeereep_source_sql
+    assert "Meijendel_ndff_secure" not in zeereep_source_sql
+    bospaddenstoel_source_sql = " ".join(module.bospaddenstoel_source_sql().split())
+    assert "o.protocol LIKE '11.201%'" in bospaddenstoel_source_sql
+    assert "o.soortgroep_raw='Schimmels'" in bospaddenstoel_source_sql
+    assert "o.vervaagd=0" in bospaddenstoel_source_sql
+    assert "Meijendel_ndff_secure" not in bospaddenstoel_source_sql
+    hns_source_sql = " ".join(module.hns_source_sql().split())
+    assert "o.protocol LIKE '12.204%'" in hns_source_sql
+    assert "o.soortgroep_raw='Vaatplanten'" in hns_source_sql
+    assert "Meijendel_ndff_secure" not in hns_source_sql
+    korstmos_source_sql = " ".join(module.korstmos_source_sql().split())
+    assert "o.protocol LIKE '02.202%'" in korstmos_source_sql
+    assert "o.soortgroep_raw='Korstmossen'" in korstmos_source_sql
+    assert "o.vervaagd=0" in korstmos_source_sql
+    assert "Meijendel_ndff_secure" not in korstmos_source_sql
+    mos_source_sql = " ".join(module.mos_source_sql().split())
+    assert "o.protocol LIKE '02.204%'" in mos_source_sql
+    assert "o.soortgroep_raw='Mossen'" in mos_source_sql
+    assert "o.vervaagd=0" in mos_source_sql
+    assert "Meijendel_ndff_secure" not in mos_source_sql
+    assert "o.determinatiemethode" not in mos_source_sql
+    assert "o.biotoop" not in mos_source_sql
+    assert "Er is een 03.201-bezoek zonder waargenomen dagvlinder aangetroffen." not in importer_text
+    module.validate_vlinder_reconstruction(dict(module.VLINDER_RECONSTRUCTION_EXPECTED))
+    broken_vlinder = dict(module.VLINDER_RECONSTRUCTION_EXPECTED)
+    broken_vlinder["zero_rows"] -= 1
+    try:
+        module.validate_vlinder_reconstruction(broken_vlinder)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende vlinderreconstructie is niet geblokkeerd")
+    module.validate_vliesvleugel_reconstruction(
+        dict(module.VLIESVLEUGEL_RECONSTRUCTION_EXPECTED)
+    )
+    broken_vliesvleugel = dict(module.VLIESVLEUGEL_RECONSTRUCTION_EXPECTED)
+    broken_vliesvleugel["positive_rows"] -= 1
+    try:
+        module.validate_vliesvleugel_reconstruction(broken_vliesvleugel)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende vliesvleugelreconstructie is niet geblokkeerd")
+    module.validate_libel_reconstruction(dict(module.LIBEL_RECONSTRUCTION_EXPECTED))
+    broken_libel = dict(module.LIBEL_RECONSTRUCTION_EXPECTED)
+    broken_libel["coarse_only_visits"] -= 1
+    try:
+        module.validate_libel_reconstruction(broken_libel)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende libellenreconstructie is niet geblokkeerd")
+    module.validate_reptile_reconstruction(dict(module.REPTILE_RECONSTRUCTION_EXPECTED))
+    broken_reptile = dict(module.REPTILE_RECONSTRUCTION_EXPECTED)
+    broken_reptile["zero_rows"] -= 1
+    try:
+        module.validate_reptile_reconstruction(broken_reptile)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende reptielenreconstructie is niet geblokkeerd")
+    module.validate_amphibian_reconstruction(dict(module.AMPHIBIAN_RECONSTRUCTION_EXPECTED))
+    broken_amphibian = dict(module.AMPHIBIAN_RECONSTRUCTION_EXPECTED)
+    broken_amphibian["year_aggregate_records"] -= 1
+    try:
+        module.validate_amphibian_reconstruction(broken_amphibian)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende amfibieënreconstructie is niet geblokkeerd")
+    module.validate_ravon_n2000_reconstruction(
+        dict(module.RAVON_N2000_RECONSTRUCTION_EXPECTED)
+    )
+    broken_n2000 = dict(module.RAVON_N2000_RECONSTRUCTION_EXPECTED)
+    broken_n2000["target_rows"] -= 1
+    try:
+        module.validate_ravon_n2000_reconstruction(broken_n2000)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende RAVON Natura 2000-laag is niet geblokkeerd")
+    module.validate_bat_reconstruction(dict(module.BAT_RECONSTRUCTION_EXPECTED))
+    broken_bats = dict(module.BAT_RECONSTRUCTION_EXPECTED)
+    broken_bats["suppressed_duplicates"] -= 1
+    try:
+        module.validate_bat_reconstruction(broken_bats)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende vleermuisreconstructie is niet geblokkeerd")
+    module.validate_rabbit_reconstruction(dict(module.RABBIT_RECONSTRUCTION_EXPECTED))
+    broken_rabbit = dict(module.RABBIT_RECONSTRUCTION_EXPECTED)
+    broken_rabbit["derived_zero_rows"] += 1
+    try:
+        module.validate_rabbit_reconstruction(broken_rabbit)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende konijnentellingclassificatie is niet geblokkeerd")
+    module.validate_daz_bmp_reconstruction(dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED))
+    broken_daz = dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED)
+    broken_daz["true_zero_rows"] -= 1
+    try:
+        module.validate_daz_bmp_reconstruction(broken_daz)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende DAZ-BMP-reconstructie is niet geblokkeerd")
+    module.validate_zeereep_reconstruction(dict(module.ZEEREEP_RECONSTRUCTION_EXPECTED))
+    broken_zeereep = dict(module.ZEEREEP_RECONSTRUCTION_EXPECTED)
+    broken_zeereep["unproven_non_detection_rows"] -= 1
+    try:
+        module.validate_zeereep_reconstruction(broken_zeereep)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende zeereeppaddenstoelenreconstructie is niet geblokkeerd")
+    module.validate_bospaddenstoel_reconstruction(
+        dict(module.BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED)
+    )
+    broken_bospaddenstoel = dict(module.BOSPADDENSTOEL_RECONSTRUCTION_EXPECTED)
+    broken_bospaddenstoel["duplicate_presence_records"] -= 1
+    try:
+        module.validate_bospaddenstoel_reconstruction(broken_bospaddenstoel)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende bospaddenstoelenreconstructie is niet geblokkeerd")
+    module.validate_hns_reconstruction(dict(module.HNS_RECONSTRUCTION_EXPECTED))
+    broken_hns = dict(module.HNS_RECONSTRUCTION_EXPECTED)
+    broken_hns["true_zero_rows"] -= 1
+    try:
+        module.validate_hns_reconstruction(broken_hns)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende HNS-reconstructie is niet geblokkeerd")
+    module.validate_korstmos_reconstruction(dict(module.KORSTMOS_RECONSTRUCTION_EXPECTED))
+    broken_korstmos = dict(module.KORSTMOS_RECONSTRUCTION_EXPECTED)
+    broken_korstmos["true_zero_rows"] -= 1
+    try:
+        module.validate_korstmos_reconstruction(broken_korstmos)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende korstmosreconstructie is niet geblokkeerd")
+    module.validate_mos_reconstruction(dict(module.MOS_RECONSTRUCTION_EXPECTED))
+    broken_mos = dict(module.MOS_RECONSTRUCTION_EXPECTED)
+    broken_mos["true_zero_rows"] -= 1
+    try:
+        module.validate_mos_reconstruction(broken_mos)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende mosreconstructie is niet geblokkeerd")
+    module.validate_florbase_reconstruction(
+        dict(module.FLORBASE_RECONSTRUCTION_EXPECTED)
+    )
+    broken_florbase = dict(module.FLORBASE_RECONSTRUCTION_EXPECTED)
+    broken_florbase["preliminary_zero_rows"] -= 1
+    try:
+        module.validate_florbase_reconstruction(broken_florbase)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende FLORBASE-reconstructie is niet geblokkeerd")
+    module.validate_lmfa_reconstruction(dict(module.LMFA_RECONSTRUCTION_EXPECTED))
+    broken_lmfa = dict(module.LMFA_RECONSTRUCTION_EXPECTED)
+    broken_lmfa["true_zero_rows"] -= 1
+    try:
+        module.validate_lmfa_reconstruction(broken_lmfa)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende LMF-A-reconstructie is niet geblokkeerd")
+    module.validate_habslak_reconstruction(
+        dict(module.HABSLAK_RECONSTRUCTION_EXPECTED)
+    )
+    broken_habslak = dict(module.HABSLAK_RECONSTRUCTION_EXPECTED)
+    broken_habslak["sample_events"] -= 1
+    try:
+        module.validate_habslak_reconstruction(broken_habslak)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende HabSlak-reconstructie is niet geblokkeerd")
+    module.validate_braakbal_reconstruction(
+        dict(module.BRAAKBAL_RECONSTRUCTION_EXPECTED)
+    )
+    broken_braakbal = dict(module.BRAAKBAL_RECONSTRUCTION_EXPECTED)
+    broken_braakbal["hok_years"] -= 1
+    try:
+        module.validate_braakbal_reconstruction(broken_braakbal)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende braakbalreconstructie is niet geblokkeerd")
+    module.validate_tuintelling_reconstruction(
+        dict(module.TUINTELLING_RECONSTRUCTION_EXPECTED)
+    )
+    broken_tuintelling = dict(module.TUINTELLING_RECONSTRUCTION_EXPECTED)
+    broken_tuintelling["periods"] -= 1
+    try:
+        module.validate_tuintelling_reconstruction(broken_tuintelling)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende tuintellingreconstructie is niet geblokkeerd")
+    module.validate_liveatlas_reconstruction(
+        dict(module.LIVEATLAS_RECONSTRUCTION_EXPECTED)
+    )
+    broken_liveatlas = dict(module.LIVEATLAS_RECONSTRUCTION_EXPECTED)
+    broken_liveatlas["visits"] -= 1
+    try:
+        module.validate_liveatlas_reconstruction(broken_liveatlas)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende LiveAtlas-reconstructie is niet geblokkeerd")
+    module.validate_kwartiertelling_reconstruction(
+        dict(module.KWARTIERTELLING_RECONSTRUCTION_EXPECTED)
+    )
+    broken_kwartiertelling = dict(module.KWARTIERTELLING_RECONSTRUCTION_EXPECTED)
+    broken_kwartiertelling["intervals"] -= 1
+    try:
+        module.validate_kwartiertelling_reconstruction(broken_kwartiertelling)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(
+            "Een afwijkende kwartiertellingreconstructie is niet geblokkeerd"
+        )
+    module.validate_resterende_nem_reconstruction(
+        dict(module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED)
+    )
+    broken_resterende_nem = dict(module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED)
+    broken_resterende_nem["poldervis_missing_target_rows"] -= 1
+    try:
+        module.validate_resterende_nem_reconstruction(broken_resterende_nem)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError(
+            "Een afwijkende reconstructie van resterende NEM-reeksen is niet geblokkeerd"
+        )
+    assert module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED["zero_rows"] == 0
+    assert module.RESTERENDE_NEM_RECONSTRUCTION_EXPECTED[
+        "poldervis_missing_target_rows"
+    ] == 2
+
+    # Deze gevallen bewaken de grens tussen doeldata en bijvangst. Een fout in
+    # de classificatieregel zou niet-V-analyses ten onrechte toelaten.
+    assert module.classify_protocol_group("03.201", "Dagvlinders")["doelrelatie"] == "doelgroep"
+    vliesvleugelen = module.classify_protocol_group("03.201", "Vliesvleugeligen")
+    assert vliesvleugelen["doelrelatie"] == "doelgroep"
+    assert vliesvleugelen["toegestane_typen"] == "PROTOCOL"
+    vlies_source_sql = " ".join(module.vliesvleugel_source_sql().split())
+    assert "o.soortgroep_raw='Vliesvleugeligen'" in vlies_source_sql
+    assert "doel.soortgroep_raw='Vliesvleugeligen'" in vlies_source_sql
+    assert "doel.soortgroep_raw='Dagvlinders'" not in vlies_source_sql
+    assert module.classify_protocol_group("03.201", "Nachtvlinders")["toegestane_typen"] == "V"
+    assert module.classify_protocol_group("14.204", "Zoogdieren (overig)")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("17.204", "Vleermuizen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("17.204", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("17.209", "Zoogdieren (overig)")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("17.208", "Vleermuizen")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("17.201", "Vleermuizen")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("102.006", "Vaatplanten")["doelrelatie"] == "algemene_bron"
+    assert module.classify_protocol_group("02.204", "Mossen")["doelrelatie"] == "doelgroep"
+    assert module.classify_protocol_group("04.006", "Weekdieren")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("13.202", "Amfibieën")["doelrelatie"] == "gemengd"
+    assert module.classify_protocol_group("10.002", "Amfibieën")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("12.205", "Dagvlinders")["doelrelatie"] == "doelsoortafhankelijk"
+    sbb_flora = module.classify_protocol_group("12.015", "Vaatplanten")
+    assert sbb_flora == {
+        "doelrelatie": "doelsoortafhankelijk",
+        "toegestane_typen": "V",
+    }
+    sbb_scope_sql = " ".join(module.protocol_scope_sql().split())
+    assert "De karteerlijst van protocol 12.015 wordt per Staatsbosbeheer-opdracht vastgesteld" in sbb_scope_sql
+    assert "https://www.staatsbosbeheer.nl/-/media/oostvaardersplassen/oostvaardersplassen-beheer/20180509-vegetatie-oostvaardersplassen-2017.pdf" in sbb_scope_sql
+    assert "p.protocol_sleutel IN ('12.015','12.205','17.201') THEN '2026-09-15'" in sbb_scope_sql
+    assert module.classify_protocol_group("12.211", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_species("12.211", "Ophrys apifera", "Vaatplanten")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("12.211", "Arabis hirsuta subsp. hirsuta", "Vaatplanten")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("12.211", "Urtica dioica", "Vaatplanten")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_group("12.002", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("12.003", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert module.classify_protocol_group("12.209", "Vaatplanten")["doelrelatie"] == "doelsoortafhankelijk"
+    assert len(module.TARGET_DEPENDENT_COMBINATIONS) == 16
+    pair_condition = module._pair_condition("p", "g", {("12.015", "Vaatplanten"), ("12.205", "Vaatplanten")})
+    assert pair_condition.startswith("((") and pair_condition.endswith("))"), (
+        "Een OR-keten moet als geheel tussen haakjes staan voordat een extra AND-voorwaarde wordt toegevoegd"
+    )
+    assert len(module.MIXED_COMBINATIONS) == 11
+    assert len(module.BOSPADDENSTOEL_TARGET_SPECIES) == 49
+
+    daz_target = module.classify_protocol_species("17.204", "Oryctolagus cuniculus")
+    daz_bycatch = module.classify_protocol_species("17.204", "Dama dama")
+    rabbit_target = module.classify_protocol_species("17.209", "Oryctolagus cuniculus")
+    rabbit_bycatch = module.classify_protocol_species("17.209", "Capreolus capreolus")
+    assert daz_target["doelrelatie"] == "doelsoort" and "TA" in daz_target["toegestane_typen"]
+    assert daz_bycatch == {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
+    assert rabbit_target["doelrelatie"] == "doelsoort" and "TA" in rabbit_target["toegestane_typen"]
+    assert rabbit_bycatch == {"doelrelatie": "bijvangst", "toegestane_typen": "V"}
+    assert module.classify_protocol_species("04.006", "Vertigo angustior", "Weekdieren")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("04.006", "Punctum pygmaeum", "Weekdieren")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("11.201", "Amanita citrina", "Schimmels")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("11.201", "Fungi sp. indet.", "Schimmels")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("11.202", "Psathyrella ammophila", "Schimmels")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("11.202", "Tulostoma brumale", "Schimmels")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("13.201", "Cobitis taenia", "Vissen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("13.201", "Perca fluviatilis", "Vissen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("13.202", "Triturus cristatus", "Amfibieën")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("13.202", "Bufo bufo", "Amfibieën")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("17.202", "Plecotus auritus/austriacus", "Vleermuizen")["doelrelatie"] == "onbepaald"
+    assert module.classify_protocol_species("17.202", "Pipistrellus", "Vleermuizen")["doelrelatie"] == "bijvangst"
+    assert module.classify_protocol_species("17.201", "Myotis daubentonii", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.201", "Myotis mystacinus/brandtii", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.201", "Plecotus auritus", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.201", "Plecotus auritus/austriacus", "Vleermuizen")["doelrelatie"] == "onbepaald"
+    assert module.classify_protocol_species("17.201", "Chiroptera", "Vleermuizen") == {
+        "doelrelatie": "bijvangst", "toegestane_typen": "V"
+    }
+    assert module.classify_protocol_species("17.201", "Pipistrellus pipistrellus", "Vleermuizen") == {
+        "doelrelatie": "bijvangst", "toegestane_typen": "V"
+    }
+    assert module.classify_protocol_species("17.208", "Nyctalus noctula", "Vleermuizen")["doelrelatie"] == "doelsoort"
+    assert module.classify_protocol_species("17.208", "Myotis daubentonii", "Vleermuizen")["doelrelatie"] == "bijvangst"
+    try:
+        module.classify_protocol_species("03.201", "Oryctolagus cuniculus")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Soortclassificatie mag alleen voor gemengde protocollen worden gebruikt")
+    assert "not exists" in module.spatial_sql().casefold()
+    mapping_sql = module.mapping_sql().casefold()
+    assert "expliciet_losse_waarneming" in mapping_sql
+    assert "expliciete_code" in mapping_sql
+    assert "coalesce(nullif(trim(protocol),''),'losse waarnemingen')" not in mapping_sql
+    record_link_sql = module.record_protocol_link_sql().casefold()
+    assert "insert into meijendel.ndff_open_waarneming_protocol" in record_link_sql
+    assert "insert into meijendel_ndff_secure.ndff_waarneming_protocol" in record_link_sql
+    assert "analyse_status" not in record_link_sql
+    assert "on duplicate key update" in record_link_sql
+    decision_sql = module.decisions_sql().casefold()
+    assert "then 'voorlopig_toegelaten'" in decision_sql
+    assert "alleen_na_doelsoortselectie" in decision_sql
+    assert "ndff_protocol_soortgroep_geschiktheid" in decision_sql
+    assert "'niet_beoordeeld'" in decision_sql
+    assert "wacht_op_brondata" not in decision_sql
+    assert "on duplicate key update" in decision_sql
+    assert "ndff-analysebesluit-v4" in decision_sql
+    snl_overlap_sql = module.snl_overlap_sql().casefold()
+    assert "ndff_snl_waarneming_context" in snl_overlap_sql
+    assert "then 'overlap_mogelijk'" in snl_overlap_sql
+    assert "then 'onvoldoende_onderzocht'" in snl_overlap_sql
+    assert "else 'geen_overlap_gevonden'" in snl_overlap_sql
+    assert "overlap_bevestigd" in snl_overlap_sql
+    assert "onafhankelijk" not in snl_overlap_sql
+    public_pq_sql = module.public_pq_gate_sql().casefold()
+    assert "insert into meijendel.ndff_open_pq_koppeling" in public_pq_sql
+    assert "update meijendel.ndff_open_waarneming" not in public_pq_sql
+    assert "12.007" in public_pq_sql and "12.202" in public_pq_sql
+    assert module.PUBLIC_PQ_RULE_VERSION == "ndff-open-pq-poort-v2"
+    assert "historische_vegetatiecontext" in public_pq_sql
+    assert "historische_contextbron" in public_pq_sql
+    assert "w.jaar between 1952 and 1980" in public_pq_sql
+    assert "historische vegetatieopname" in public_pq_sql
+    assert "geen gevalideerde pq-trendreeks" in public_pq_sql
+    assert "bronhouder" not in public_pq_sql
+    assert "niet_beoordeelbaar" in public_pq_sql
+    assert "niet_van_toepassing" in public_pq_sql
+    assert "'exact'" not in public_pq_sql
+    assert "'onafhankelijk'" not in public_pq_sql
+    validation_sql = module.validation_sql().casefold()
+    assert "open_pq_historical_context" in validation_sql
+    assert "historische_vegetatiecontext" in validation_sql
+    chain_sql = module.analysis_chain_validation_sql().casefold()
+    for required in (
+        "v_ndff_canonieke_waarneming",
+        "v_ndff_analyse_record",
+        "v_ndff_verspreiding_plot_jaar_taxon",
+        "v_ndff_trendkandidaat_plot_jaar_taxon",
+        "v_ndff_gebruiksdekking_soortgroep_protocol",
+        "v_ndff_soortenrijkdom_plot_jaar",
+        "v_ndff_eerste_laatste_plot_taxon",
+        "v_ndff_verspreidingsverandering_taxon_jaar",
+        "v_ndff_dekking_intensiteit_plot_jaar_soortgroep",
+        "information_schema.table_privileges",
+        "ndff-analyseketen-v1",
+    ):
+        assert required in chain_sql, required
+    module.validate_analysis_chain_metrics(dict(module.ANALYSIS_CHAIN_EXPECTED))
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_rows"] == 9993
+    assert module.ANALYSIS_CHAIN_EXPECTED["trend_sources"] == 61211
+    assert module.parse_analysis_chain_output(
+        '{"canonical_records": 810983}\n{"canonical_duplicates": 0}'
+    ) == {"canonical_records": 810983, "canonical_duplicates": 0}
+    try:
+        module.parse_analysis_chain_output('{"duplicate": 1}\n{"duplicate": 1}')
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Dubbele auditmetriek is niet geblokkeerd")
+    broken_chain = dict(module.ANALYSIS_CHAIN_EXPECTED)
+    broken_chain["canonical_duplicates"] = 1
+    try:
+        module.validate_analysis_chain_metrics(broken_chain)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Een afwijkende analyseketen is niet geblokkeerd")
+    assert "--audit-live" in IMPORTER.read_text(encoding="utf-8")
+    scope_sql = module.protocol_scope_sql().casefold()
+    assert "ndff_protocol_soortgroep_geschiktheid" in scope_sql
+    assert "ndff_protocol_soort_geschiktheid" in scope_sql
+    assert "handleiding-paddenstoelen.pdf" in scope_sql
+    assert "handleiding-meetnet-amfibieen-en-vissen" in scope_sql
+    legacy_sql = module.restore_legacy_decisions_sql().casefold()
+    assert "ndff-protocolkwaliteit-v1" in legacy_sql
+    assert "wacht_op_brondata" in legacy_sql
+    validation_sql = module.validation_sql().casefold()
+    assert "protocolbesluit_mismatch" in validation_sql
+    assert (
+        "d.gegevensgeschiktheid='niet_beoordeeld' and (" in validation_sql
+    ), "De basiscontrole mag beoordeelde leverings-overlays niet opnieuw afkeuren"
+    assert "leveringsbeoordelingen" in validation_sql
+    assert "leveringsbeoordeling_onverwacht" in validation_sql
+    assert "leveringsbeoordeling_ongeldig" in validation_sql
+    module.validate_metrics({
+        "protocols": 54,
+        "uses": 54,
+        "mappings": 91,
+        "unmapped_open": 0,
+        "unmapped_secure": 0,
+        "open_records": 810830,
+        "secure_records": 14573,
+        "open_protocol_links": 810830,
+        "secure_protocol_links": 14573,
+        "open_loose_records": 430166,
+        "open_loose_links": 430166,
+        "secure_loose_records": 9660,
+        "secure_loose_links": 9660,
+        "blank_open_protocol": 0,
+        "blank_secure_protocol": 0,
+        "invalid_protocol_evidence": 0,
+        "spatial": 810830,
+        "scope_combinations": 114,
+        "mixed_species": 632,
+        "dependent_combinations": 16,
+        "mixed_species_missing": 0,
+        "secure_mixed_species_missing": 0,
+        "ambiguous_species": 2,
+        "scope_missing": 0,
+        "decisions": 1040,
+        "protocolbesluit_mismatch": 0,
+        "leveringsbeoordelingen": 400,
+        "leveringsbeoordeling_onverwacht": 0,
+        "leveringsbeoordeling_ongeldig": 0,
+        "snl_records": 6273,
+        "snl_overlap_context": 6273,
+        "snl_overlap_bevestigd": 0,
+        "snl_overlap_mogelijk": 97,
+        "snl_geen_overlap_gevonden": 6176,
+        "snl_onvoldoende_onderzocht": 0,
+        "snl_overlap_ongeldig": 0,
+        "open_pq_blocked": 90992,
+        "open_pq_historical_context": 6326,
+        "open_pq_not_applicable": 713512,
+        "open_pq_unassessed": 0,
+    })
+    try:
+        module.validate_metrics({
+            "protocols": 54, "uses": 54, "mappings": 90,
+            "unmapped_open": 1, "unmapped_secure": 0,
+            "open_records": 810830, "secure_records": 14573,
+            "open_protocol_links": 810829, "secure_protocol_links": 14573,
+            "open_loose_records": 430166, "open_loose_links": 430165,
+            "secure_loose_records": 9660, "secure_loose_links": 9660,
+            "blank_open_protocol": 1, "blank_secure_protocol": 0,
+            "invalid_protocol_evidence": 1, "spatial": 810829,
+            "scope_combinations": 113, "mixed_species": 605, "scope_missing": 1,
+            "dependent_combinations": 12, "mixed_species_missing": 1,
+            "secure_mixed_species_missing": 1,
+            "ambiguous_species": 0,
+            "decisions": 1040, "protocolbesluit_mismatch": 1,
+            "leveringsbeoordelingen": 399,
+            "leveringsbeoordeling_onverwacht": 1,
+            "leveringsbeoordeling_ongeldig": 1,
+            "snl_records": 6273, "snl_overlap_context": 6272,
+            "snl_overlap_bevestigd": 0, "snl_overlap_mogelijk": 97,
+            "snl_geen_overlap_gevonden": 6175,
+            "snl_onvoldoende_onderzocht": 0, "snl_overlap_ongeldig": 1,
+            "open_pq_blocked": 90991,
+            "open_pq_historical_context": 6326,
+            "open_pq_not_applicable": 713512,
+            "open_pq_unassessed": 1,
+        })
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("Onvolledige kwaliteitslaag is niet geblokkeerd")
+
+    insert_sql = module.catalog_insert_sql(parsed, "abc123")
+    assert insert_sql.count("INSERT INTO ndff_protocol ") == 54
+    assert insert_sql.count("INSERT INTO ndff_protocol_gebruik ") == 54
+    assert "FROM ndff_protocol WHERE protocol_sleutel='01.201' AS nieuw" not in insert_sql
+    assert "bronregistratie_niet_toegelaten" not in insert_sql
+    assert "ndff-protocolkwaliteit-v1" in insert_sql
+
+    documentation = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (README, DECISIONS, AUDIT, WORK_INSTRUCTION)
+    )
+    documentation_normalized = " ".join(documentation.split())
+    for required_text in (
+        "ndff_open_waarneming_protocol",
+        "Meijendel_ndff_secure.ndff_waarneming_protocol",
+        "expliciete_code",
+        "expliciet_losse_waarneming",
+        "protocol_sleutel",
+        "overlap_bevestigd",
+        "overlap_mogelijk",
+        "geen_overlap_gevonden",
+        "onvoldoende_onderzocht",
+        "ndff-analyseketen-v1",
+        "--audit-live",
+        "verkennende berekeningen",
+        "niet als een gevalideerde populatietrend",
+        "zeer hoge uitzondering",
+        "voorafgaande uitdrukkelijke toestemming",
+        "ndff-libellenroute-v1",
+        "--audit-libellen",
+        "ndff-reptielroute-v2",
+        "--audit-reptielen",
+        "ndff-amfibiewater-v2",
+        "--audit-amfibieen",
+        "ndff-ravon-n2000-v1",
+        "--audit-ravon-n2000",
+        "monsterlocatieproxy",
+        "v_ndff_analysebesluit_actueel",
+        "ndff-vleermuistransect-v1",
+        "--audit-vleermuizen",
+        "ndff-konijnentelling-v1",
+        "--audit-konijnen",
+        "sovon-avimap-daz-v1",
+        "--audit-sovon-avimap",
+        "--sync-sovon-avimap-vogels",
+        "--audit-sovon-avimap-vogels",
+        "geen route- of sectie-id",
+        "akoestische detecties",
+        "73",
+        "ndff-zeereep-v2",
+        "--audit-zeereeppaddenstoelen",
+        "ndff-hns-v1",
+        "--audit-hns",
+        "ndff-korstmos-v2",
+        "--audit-korstmossen",
+        "ndff-mos-v2",
+        "--audit-mossen",
+        "ndff-florbase-v1",
+        "--audit-florbase",
+    ):
+        assert required_text in documentation_normalized, required_text
+    assert "analyse_status is geen protocolstatus" in documentation.casefold().replace("`", "")
+    architecture = ARCHITECTURE.read_text(encoding="utf-8")
+    assert "ndff_open_waarneming_protocol" in architecture
+    assert "Meijendel_ndff_secure.ndff_waarneming_protocol" in architecture
+    assert "ndff_libel_*" in architecture
+    assert "ndff_reptiel_*" in architecture
+    assert "ndff_vleermuis_*" in architecture
+    assert "ndff_konijn_*" in architecture
+    assert "sovon_avimap_waarneming" in architecture
+    print("OK: NDFF-protocolkwaliteitscontract")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

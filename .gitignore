@@ -1,6 +1,7 @@
 .DS_Store
 Meijendel.sql
 meijendel.sql.manifest
+meijendel_bronnen.sql
 .venv*/
 __pycache__/
 .Rhistory
@@ -8,3 +9,5 @@ __pycache__/
 app_cache/
 meijendel_tables_cache-p*.rds
 meijendel_tables_cache-p*.manifest
+/outputs/
+.worktrees/

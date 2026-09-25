@@ -1,0 +1,42 @@
+[
+  {
+    "key": "ABCD1234",
+    "data": {
+      "itemType": "journalArticle",
+      "title": "Vlinders in Meijendel",
+      "date": "2024",
+      "publicationTitle": "Holland's Duinen",
+      "volume": "82",
+      "pages": "12-21",
+      "DOI": "https://doi.org/10.1234/voorbeeld",
+      "url": "https://example.org/vlinders",
+      "accessDate": "2026-09-24T00:00:00Z",
+      "creators": [
+        {"creatorType": "author", "firstName": "A.", "lastName": "Teller"}
+      ],
+      "tags": [{"tag": "Meijendel"}],
+      "extra": "Citation Key: teller_vlinders_2024"
+    },
+    "bib": "<div class=\"csl-bib-body\"><div class=\"csl-entry\">Teller, A. “Vlinders in Meijendel.” <i>Holland’s Duinen</i> 82 (2024): 12–21.</div></div>"
+  },
+  {
+    "key": "MINI0001",
+    "data": {
+      "itemType": "report",
+      "title": "Ongetitelde reeks",
+      "creators": [],
+      "tags": [],
+      "collections": ["FX8WP4BY"]
+    },
+    "bib": "<div class=\"csl-bib-body\"><div class=\"csl-entry\">Ongetitelde reeks.</div></div>"
+  },
+  {
+    "key": "ATTACH01",
+    "data": {
+      "itemType": "attachment",
+      "title": "Lokaal PDF-bestand",
+      "path": "/Users/ton/Zotero/storage/ATTACH01/document.pdf"
+    }
+  }
+]
+

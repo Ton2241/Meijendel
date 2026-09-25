@@ -17,6 +17,7 @@ def main() -> int:
         "ndff_open_import_batch",
         "ndff_soorten",
         "ndff_open_waarneming",
+        "ndff_open_leveringsverrijking",
         "ndff_open_soortgroep_koppeling",
         "ndff_sovon_plotversie",
         "ndff_sovon_plot",
@@ -39,6 +40,35 @@ def main() -> int:
     assert "referentieel_geldig" in folded
     assert "cc by-nc 4.0" in folded
     assert "foreign key (plot_id) references plots (plot_id)" in folded
+    for field in (
+        "leveringsregel_id",
+        "obs_uri",
+        "obs_uri_sha256",
+        "dataeigenaar_uri",
+        "kwaliteitsstatus_raw",
+        "aantal_min",
+        "aantal_max",
+        "eenheid_raw",
+        "locatie_type_raw",
+        "zoid_raw",
+        "sessionid_raw",
+        "datumdekking_raw",
+        "oppervlaktedekking_raw",
+        "leveringsgeometrie_gelijk_aan_openbaar",
+        "leveringsperiode_gelijk_aan_openbaar",
+        "bronrecord_sha256",
+    ):
+        assert field in folded, field
+    for forbidden in (
+        "exacte_geometrie geometry",
+        "bron_centrum_x_rd",
+        "bron_centrum_y_rd",
+        "centrumx",
+        "centrumy",
+    ):
+        assert forbidden not in folded, f"openbare verrijking bevat gevoelig veld {forbidden}"
+    assert "unique key uq_ndff_open_verrijking_obs_uri (obs_uri_sha256)" in folded
+    assert "unique key uq_ndff_open_verrijking_obs_uri (obs_uri)" not in folded
 
     for group_table in (
         "ndff_amfibieen",

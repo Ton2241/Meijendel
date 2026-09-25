@@ -2,6 +2,91 @@
 
 ## Nu open
 
+### Meijendel_bronnen
+
+- Lokale scheiding afgerond op 24 september 2026: 488 duinvalleiopnamen,
+  204 historische vogelregels en de jachtspinmatrix met 28 niet-herleidbare
+  locaties staan niet langer in de analytische database. De afzonderlijke
+  bron-database bevat daarnaast 522 actuele Zotero-verwijzingen.
+- Productiedeploy en release-registratie volgen pas na merge naar schone,
+  actuele `main`-branches en volledige VPS-preflight.
+- Verwijder eventuele bestaande documenten uit de literatuurcategorie van het
+  productieledenarchief pas nadat ieder bestand op titel of expliciete mapping
+  aan een Zotero-item is gekoppeld en de SHA-256 na de dry-run ongewijzigd is.
+- Een contextdataset wordt alleen naar `Meijendel` gepromoveerd na een apart
+  besluit en bewijs dat iedere waarneming daadwerkelijk in Meijendel ligt en
+  een beschikbare of betrouwbaar herleidbare locatie heeft.
+
+### Ruimtelijke afbakening Meijendel
+
+- Afgerond op 24 september 2026: geversioneerde projectgrens, het uit officieel
+  gebied 97 afgeleide Natura 2000-deel van Meijendel en de bestaande
+  SOVON-plotlaag zijn als drie onafhankelijke lagen vastgelegd. In versie
+  `2026-09-24.3` loopt de zuidgrens via Landscheidingsweg, Van Alkemadelaan en
+  Zwolsestraat en is de geografische weg-/kustgrens plaatselijk verruimd zodat
+  alle 55 SOVON-kavels volledig binnen het basisgebied liggen. Berkheide ten
+  noorden van De Wassenaarse Slag blijft uit de Meijendel-laag verwijderd.
+  Regelversie `meijendel-ruimtelijke-poort-v3` classificeert dezelfde 1.649.085
+  bronrecords of meeteenheden opnieuw zonder de brondata te wijzigen. Ten
+  opzichte van v2 worden 41 BMP-punten, één winterdagwaarneming, 137 openbare
+  NDFF-records en alle 2.535 voorheen grensrakende territoriumregels toegelaten;
+  265 NDFF-records verschuiven van buiten naar ruimtelijk dubbelzinnig.
+  Versies 1 en 2 blijven beschikbaar als auditspoor.
+
+### Toelatingsaudit externe ecologische bronlagen
+
+- Toets de bestaande externe bronlagen reproduceerbaar aan de regel dat iedere
+  opgenomen waarneming aantoonbaar binnen Meijendel moet liggen en een bekende
+  of betrouwbaar herleidbare locatie moet hebben. Verwijder of verplaats niets
+  voordat per bron de gevolgen en aantallen zijn vastgesteld en afzonderlijk
+  zijn besloten.
+- Eerste audit op 24 september 2026:
+  - twee vangblikvangsten uit 1959 hebben geen bestaand event en daardoor geen
+    locatie; zij staan al als verweesd en uitgesloten geregistreerd;
+  - 91.726 van 810.830 openbare NDFF-records liggen volgens
+    `ndff-protocolkwaliteit-v1` geheel buiten de geversioneerde SOVON-plotlaag;
+    23.061 raken één plot slechts gedeeltelijk en 330.189 raken meerdere plots;
+  - 2.524 van 600.959 BMP-dagwaarnemingen uit 2009-2025 en 38 van 19.960
+    primaire SOVON-niet-vogelregels uit 2009-2024 liggen met hun punt buiten
+    alle 55 geversioneerde SOVON-plots;
+  - 671 van 2.007 provinciale PQ-opnamen uit 1981-2025, samen goed voor 17.040
+    taxonregels, liggen met hun punt buiten alle 55 geversioneerde SOVON-plots;
+  - de 488 duinvalleiopnamen uit 2001, 2008 en 2018 hebben stabiele plotcodes en
+    een benoemd deelgebied, maar nog geen coördinaten of geometrie in de bron;
+  - `vogelstand_1924` bevat 204 historische soort-/tekstregels en geen
+    gestructureerde locatie per regel. Behandel deze tabel als historische
+    context en niet als genormaliseerde waarnemingslaag.
+  Deze tellingen zijn een audituitkomst, geen verwijderbesluit. Stel eerst vast
+  of de geversioneerde SOVON-plotlaag ook voor iedere bron de bedoelde
+  Meijendelbegrenzing is.
+- De tweede audit gebruikt daarom de nieuwe projectgrens in plaats van de
+  SOVON-laag als toelatingspoort. Van de 810.830 NDFF-records liggen er 591.651
+  geheel binnen, raken 146.320 de grens en liggen 72.859 erbuiten. Van de
+  600.959 BMP-punten liggen 597.888 binnen en 3.071 buiten; voor de 19.960
+  primaire SOVON-niet-vogelpunten zijn dat 19.945 en 15. Van de 2.007
+  provinciale PQ-opnamen liggen 1.363 binnen en 644 buiten. Alle 37.770
+  vangblikevents liggen binnen. Van de 71.155 territoriumregels horen er 66.697
+  bij een volledig binnenliggend plot en 4.458 bij een plot dat de projectgrens
+  kruist. Deze classificatie is nog geen verwijderbesluit.
+- **Nog uitvoeren:** breng de life-database in overeenstemming met de regel dat
+  alleen aantoonbaar in Meijendel gelokaliseerde waarnemingen worden opgenomen.
+  Regelversie `meijendel-ruimtelijke-poort-v3` bevat nog 72.053 records die
+  aantoonbaar buiten het basisgebied liggen: 70.427 openbare NDFF-records uit
+  1900-2025, 968 BMP-dagwaarnemingen uit 2009-2025, 644 provinciale PQ-opnamen
+  uit 1981-2025 en 14 primaire SOVON-bijvangsten uit 2009-2024. Daarnaast raken
+  146.466 NDFF-polygonen alleen de grens, zodat aanwezigheid binnen Meijendel
+  niet vaststaat. Alle territoriumplots liggen nu volledig binnen. Voor 488
+  duinvalleiopnamen ontbreekt nog een geometrie; 204 regels uit 1924 blijven
+  uitsluitend historische context. Beoordeel dit eerst per bron. Verplaats
+  aantoonbare buitenliggers en niet-oplosbare dubbelzinnige records daarna naar
+  staging; laat records alleen in de life-database wanneer aanvullende
+  locatiegegevens de ligging binnen Meijendel aantonen. Verwijder of verplaats
+  vóór die bronaudit nog niets.
+- Houd de openbare jachtspinmatrix 1969-1970 buiten de database zolang de 28
+  genummerde locaties niet geografisch kunnen worden herleid. Onderzoek alleen
+  nog of de oorspronkelijke publicatie, bijlagen of een Leids archief een
+  betrouwbare locatievertaling bevatten.
+
 ### GBIF-vangblikken Meijendel 1953-1960
 
 - Bevestig bij de bronhouder waarom versie 1.7 in EML en GBIF CC BY-NC 4.0
@@ -15,6 +100,169 @@
   Laat de analyseblokkades staan totdat bovenstaande bronvragen zijn opgelost.
 
 ### NDFF ticket 58679 - beveiligde levering
+
+- De kwaliteitsmetadata is lokaal geïmplementeerd als
+  `ndff_protocol`, `ndff_protocol_mapping`, `ndff_protocol_gebruik`,
+  `ndff_open_ruimtelijke_beoordeling` en `ndff_analysebesluit`. Regelversie
+  `ndff-protocolkwaliteit-v1` dekt alle 54 protocolwaarden, alle 810.830
+  openbare records en zowel de openbare als beveiligde protocolteksten. De
+  huidige analysebesluiten laten uitsluitend positieve verspreidingscontext
+  toe na ruimtelijke en PQ-toets; trend- en effectgebruik blijft geblokkeerd.
+- De recordkoppeling is afgerond: alle 810.830 openbare en 14.573 beveiligde
+  records hebben precies één `protocol_id`. Expliciete codes en expliciete losse
+  waarnemingen zijn afzonderlijk gelabeld; geen lege waarde is als `LOS`
+  geïnterpreteerd. Dit verandert de analysebesluiten niet.
+- Dagvlinderprotocol `03.201` is lokaal herbouwd als
+  `ndff-vlinderroute-v2`. Routetype, doelsoort, doelbereik en nulbewijs zijn
+  toegevoegd. De routefamilie met 87 bezoeken in 16 jaren en uitsluitend Groot
+  dikkopje is soortgericht; 2.871 nullen voor andere taxa en 924 nullen bij 28 eensoortbezoeken zonder route zijn
+  verwijderd. V1 is niet bewaard. Alle elf routefamilies hebben nu een
+  waarschijnlijke officiële identificatie. Familie 7 is gekoppeld aan
+  Voorlinden 1764; twee noordelijke geometrieën blijven zichtbaar als
+  ruimtelijke uitbijter. Controle aan de hand van oorspronkelijke route-ID's
+  blijft wenselijk, maar blokkeert de huidige, duidelijk gelabelde analyse niet.
+- De `03.201`-vliesvleugelreeks is afzonderlijk gereconstrueerd als
+  `ndff-vliesvleugelroute-v1`: 217 bezoeken en zes *Bombus*-taxa. Behoud de
+  365 positieve combinaties, maar gebruik de 937 afgeleide soortnullen niet.
+  Bouw versie 2 met de deelnamevlag en het determinatieniveau (`op soort` of
+  `hommel onbekend`) voordat nul- of trendgebruik wordt toegestaan.
+- Vraag bij een eventuele rijkere centrale NDFF-levering eerst alleen om de
+  native Vlinderstichting-sleutels en context die na deze documentanalyse nog
+  ontbreken: route-/telpuntnummer, routetype en doelsoort, sectienummer,
+  bezoek-ID, bezoekweer en -tellers, deelnamevlaggen, routewijzigingen en voor
+  nachtvlinders val-, lamp- en binnen/buiten-gegevens. Benader De
+  Vlinderstichting pas als NDFF deze concrete velden niet kan leveren.
+- De vier afgeleide dagvlindertabellen horen in `Meijendel`. Controleer met
+  `--audit-vlinders` dat geen oude `ndff_vlinder_*`-tabellen in
+  `Meijendel_ndff_secure` achterblijven. Pas deze opslagregel ook op iedere
+  volgende NEM-reconstructie toe.
+- De reconstructies van `07.201`, `10.201`, `01.201`, `17.208`, `17.204`,
+  `11.202`, `11.201`, `12.204` en `02.202` zijn afgerond. `11.202` omvat 21
+  kilometerhokken, 161 bezoeken en een matrix voor zes typische
+  zeereeppaddenstoelen. De 742 niet-meldingen zijn onder `ndff-zeereep-v2`
+  geen echte nullen zolang de feitelijke tellerscope ontbreekt.
+  `17.209` is als positieve sectietelling geclassificeerd, maar kan zonder
+  route- en sectie-ID's niet tot native bezoeken of nullen worden
+  gereconstrueerd. DAZ-BMP bevat 1.475 bevestigde bezoeken en 7.552 echte
+  doelsoortnullen; de 11 mogelijke overlapsignalen met `17.209` blijven zonder
+  oorspronkelijke route-/sectiesleutel onbeslist. Ga nu verder met de volgende
+  NEM-reeks op basis van omvang en reconstrueerbaarheid. Ken pas nullen toe
+  nadat per protocol meeteenheid, bevestigd bezoek en doelsoortenbereik
+  vaststaan.
+- De Zoogdiervereniging-handleidingen zijn op 15 september 2026 gecontroleerd.
+  `17.201` is op soortniveau gecorrigeerd; vraag later alleen nog om de
+  oorspronkelijke object-, geteld/niet-geteld- en start-/stopcontext wanneer
+  een lokale wintertrend werkelijk prioriteit krijgt. Voor `17.202`, `17.207`
+  en `17.210` is geen brede vervolgvraag nodig zolang de kleine positieve
+  reeksen niet voor trendanalyse worden geselecteerd.
+- De officiële Staatsbosbeheer- en BIJ12-documentatie is op 15 september 2026
+  gecontroleerd en in Zotero onder `Meetnetten - Staatsbosbeheer` vastgelegd.
+  Protocol `12.015` omvat 1.083 records en is voor beide aangetroffen
+  soortgroepen doelsoortafhankelijk gemaakt: zonder de opdrachtgebonden
+  karteerlijst en begrenzing is alleen positieve voorkomensinformatie (`V`)
+  toegestaan. Protocol `12.205` blijft afzonderlijk als SNL-context behandeld;
+  deze controle verandert de bestaande overlapstatussen niet.
+- De officiële ANEMOON-HabSlak-handleidingen zijn op 15 september 2026
+  gecontroleerd en in Zotero onder `Meetnetten - Stichting ANEMOON`
+  (`BPU2U3KE`) vastgelegd. Gebruik `ndff-habslak-v2`: positieve
+  datum-geometrieclusters blijven bruikbaar, maar alle 66 hok-jaren zijn qua
+  bemonsteringsvolledigheid niet beoordeelbaar en leveren geen nullen op. Vraag
+  pas bij een concrete trendanalyse om de oorspronkelijke monitoringslocaties,
+  monster- of sublocatieresultaten en negatieve locaties; deze validatie
+  blokkeert positieve verspreidingsanalyse niet.
+- De officiële BLWG-handleidingen zijn in Zotero onder parentitem
+  `Meetnetten - BLWG` (`8E3TCBHW`) opgeslagen.
+- `02.202` bevat onder `ndff-korstmos-v2` twaalf proefvlakken en 32 bezoeken.
+  Gebruik de 960 bezoek-taxonregels voor presentie/occupancy en behandel de twee
+  FFV-bedekkingsklassen alleen ordinaal. Bij twaalf bezoeken zijn twee
+  onafhankelijke tellingen aantoonbaar; bij twintig bezoeken is een tweede
+  telling niet aantoonbaar in de export. Vraag alleen waarnemer- of lijst-ID's
+  als later waarnemerspecifieke detectieanalyse prioriteit krijgt; dit blokkeert
+  de gecombineerde plotanalyse niet.
+- `02.204` bevat onder `ndff-mos-v2` zeven volledige
+  kilometerhokinventarisaties en 777 inventarisatie-taxonregels. Gebruik de 423
+  echte nullen alleen op kilometerhokniveau. Behandel de 21 tijdclusters niet
+  als onafhankelijke bezoeken en leid geen plotnullen of lokale tijdtrend af.
+  Protocolcode `02.204` onderbouwt de minimale inspanning en habitatdekking.
+  Vraag niet alsnog om bezoekduur of waarnemer om dit opnieuw te bewijzen; vraag
+  alleen een oorspronkelijke lijst-ID als een latere bronaudit die echt nodig
+  maakt.
+- `12.001` bevat onder `ndff-florbase-v1` 118 aannemelijk volledige
+  kilometerhok-jaarlijsten en 65 fragmenten. Gebruik de 101.126 matrixregels
+  voorlopig voor verspreidings- en inventarisatievergelijkingen; de 81.721
+  nullen blijven expliciet afhankelijk van de ≥50-taxa-aanname. Vraag FLORON
+  later gericht om lijst-ID, oorspronkelijke volledigheidsvlag, bezoekduur en
+  gebruikte checklistversie. Deze validatie blokkeert het voorlopige gebruik
+  niet.
+- `12.204` bevat onder `ndff-hns-v1` 23 aannemelijk volledige
+  inventarisaties en drie fragmenten. Gebruik de 16.169
+  inventarisatie-taxonregels voorlopig voor verspreidings-/occupancyanalyse;
+  21 herhaalde inventarisaties blijven gemarkeerd als niet bewezen
+  onafhankelijk. Vraag FLORON later uitsluitend om de lijst-/waarnemer-ID's en
+  het deelnemersaantal waarmee deze scheiding kan worden bevestigd; deze
+  validatie blokkeert het voorlopige gebruik niet.
+- `17.002` bevat onder `ndff-braakbal-v1` 37 openbare
+  geometrie-jaaraggregaten en 226 positieve taxonregels. Gebruik die alleen
+  voor regionale positieve samenstelling en indicatieve verandering in
+  registraties. De 18 sommen van minimaal 150 blijven partij-onbekend; leid
+  geen nullen, bezoeken of SOVON-plotkoppelingen af. Alleen oorspronkelijke
+  partij- en nest-ID's van de Zoogdiervereniging kunnen dit later verbeteren;
+  deze validatie blokkeert het voorlopige regionale gebruik niet.
+- `102.002` bevat onder `ndff-tuintelling-v1` drie afgeleide
+  tuinvakfamilies, 125 telperioden en 1.645 periode-soortgroep-taxonregels.
+  Gebruik de 1.337 voorlopige nullen alleen binnen de 213 positief bevestigde
+  soortgroeptellingen en het lokale doelbereik van 33 taxa. Gebruik deze reeks
+  uitsluitend als regionale tuincontext: geen record ligt eenduidig in een
+  Meijendel-SOVON-plot. Oorspronkelijke tuin-, telling- en gekozen-
+  soortgroep-ID's kunnen later bij Jaarrond Tuintelling/Sovon worden
+  gevalideerd, maar blokkeren dit voorlopige regionale gebruik niet.
+- `102.005` bevat onder `ndff-liveatlas-v1` 64 afgeleide bezoeken, 87
+  bezoek-soortgroepcombinaties en 169 uitsluitend positieve taxonuitkomsten.
+  Gebruik de 12 eenduidig aan één SOVON-plot gekoppelde bezoeken alleen met de
+  melding dat route, oorspronkelijk bezoek-ID en complete-lijststatus niet zijn
+  meegeleverd. Leid voor geen enkel bezoek nullen af. Vraag Sovon later alleen
+  om de oorspronkelijke bezoek-ID's, routes en de complete-lijstvlag per
+  soortgroep; deze validatie blokkeert positieve verspreidingscontext en
+  indicatieve vergelijking van geregistreerde aantallen niet.
+- `102.007` bevat onder `ndff-kwartiertelling-v1` 17 afgeleide
+  telintervallen, 18 interval-soortgroepcombinaties en 49 uitsluitend positieve
+  taxonuitkomsten. Gebruik de 14 eenduidig aan één SOVON-plot gekoppelde
+  intervallen met de melding dat route, oorspronkelijk tel-ID en het onderscheid
+  tussen complete lijst en soortgerichte telling ontbreken. Leid geen nullen
+  af. Vraag De Vlinderstichting later alleen om de oorspronkelijke tel-ID's,
+  routes en lijsttypevlag; dit blokkeert positieve verspreidingscontext en
+  indicatieve vergelijking van geregistreerde aantallen niet.
+- `11.201` bevat na onderdrukking van 473 parallelle presentieregels 509
+  canonieke positieve resultaten, drie vaste meetpunten en 110 bevestigde
+  bezoeken. Gebruik de 2.934 bezoek-taxonregels en 977 jaarlijkse maxima via
+  `ndff-bospaddenstoel-v1`; vul geen geheel negatieve bezoeken aan. Een latere
+  NMV-opvraag kan oorspronkelijke meetpuntnummers, volledig doelbereik en
+  ontbrekende bezoeken valideren, maar blokkeert het voorlopige gebruik niet.
+- Afgerond op 13 september 2026: de volledige SOVON/AVIMAP-download van project
+  252 is gehasht en gecontroleerd. De 19.960 primaire niet-vogelregels, 4.364
+  bijbehorende bezoeken en 35 taxa staan onder `sovon_avimap_*` in `Meijendel`.
+  De nieuwe primaire DAZ-matrix bevat 4.354 bevestigde bezoeken, 6.859 positieve
+  doelsoort-uitkomsten en 23.619 echte nullen. `sovon-avimap-daz-v1` is leidend
+  boven de tijdelijke `ndff-daz-bmp-v1`-reconstructie. Van de 10.670
+  NDFF-DAZ-regels worden er 2.654 exact en 1.917 met een zichtbaar telconflict
+  door SOVON vervangen; 6.099 blijven alleen als secundaire NDFF-bron bestaan.
+  Bezoeken zonder zoogdierregel blijven buiten de DAZ-matrix omdat de export
+  geen afzonderlijke deelnamevlag bevat. De vogelafwijkingen zijn alleen
+  gerapporteerd en niet in de database gecorrigeerd.
+- Afgerond op 13 september 2026: de vogeltabellen zijn tot en met 2025 uit de
+  primaire SOVON-download aangevuld met 303.867 waarnemingen, 7.228 bezoeken en
+  260 territoriumresultaten. Rechtstreeks overeenkomende bronregels zijn
+  gecorrigeerd; 2.521 bestaande territoriumregels zonder exportregel, waaronder
+  handmatige aanvullingen, zijn behouden. Een herhaalde synchronisatie gaf nul
+  toevoegingen en nul correcties.
+- Behandel `12.202` niet als nieuw reconstructietraject naast de provinciale
+  PQ-reeks: de provincie blijft de gezaghebbende bron.
+- Afgerond op 13 september 2026: de resterende NEM-batch `03.203`, `11.204`,
+  `13.201` en `17.207` staat in dertien openbare `Meijendel.ndff_*`-tabellen en
+  is reproduceerbaar controleerbaar met `--audit-resterende-nem`. Alle 633
+  bronrecords zijn gekoppeld; er zijn geen echte nullen afgeleid. `12.202` is
+  door een vaste auditpoort buiten een afzonderlijke NDFF-reconstructie
+  gehouden.
 
 - Ontvangst is afgerond: het ongewijzigde GeoPackage, de standaardcitatie en de
   groene ontvangst-/analysemanifesten staan onder
@@ -33,24 +281,52 @@
 - Beoordeel per soortgroep welke van de 8.494 voorlopige
   verspreidingskandidaten wetenschappelijk nuttig genoeg zijn voor verdere
   analyse; zij zijn niet trendklaar.
-- Vraag voor de 1.274 ruimtelijk geschikte meetnet-/gebiedsmonitoringrecords de
-  volledige native meetreeksen rechtstreeks op bij de bronorganisaties, niet
-  opnieuw bij NDFF. Start met Zoogdiervereniging (572
-  vleermuistransectrecords), Dunea/FLORON (478 LMF-a-records) en RAVON (72
-  reguliere amfibieënrecords). Vraag daarna ANEMOON (112 slakken), BLWG (21
-  korstmos-/mosrecords), FLORON (12 Het Nieuwe Strepen),
-  Staatsbosbeheer/opdrachtgever (5 SNL-records), De Vlinderstichting (1) en
-  RAVON/opdrachtgever (1 Natura 2000-record).
-- Vraag per bron minstens: stabiele telobject-ID en alle geometrieversies; alle
-  geplande, uitgevoerde en niet-uitgevoerde bezoeken; bezoek-ID; duur,
-  route/lengte/oppervlakte, methode en apparatuur; volledige doelsoortenlijst;
-  positieve en nulresultaten; protocolversies; kwaliteits- en
-  wijzigingsmetadata. Los bij LMF-a expliciet de openbare drie-/vierjarige
-  cyclusinconsistentie op.
-- Leg eerst de native surveystructuur vast en koppel die daarna geversioneerd
+- Baseer de latere aanvullende validatie niet uitsluitend op de 1.274 kandidaten uit
+  de beveiligde 191-soortenlevering. Over de volledige canonieke laag zijn
+  66.125 unieke records kandidaat voor minstens één gebruikstype buiten `V`.
+  Behandel de oude 1.274 uitsluitend als beveiligde deelsom.
+- Voer de vervolgstappen in deze vaste volgorde uit:
+  1. verbeter eerst de Meijendel-database op basis van de reeds ontvangen
+     openbare en beveiligde NDFF-velden, het NDFF-woordenboek en de overige
+     officiële documentatie;
+  2. bepaal daarna per protocol en entiteit precies welke informatie nog
+     ontbreekt en vraag uitsluitend die informatie gericht aan NDFF;
+  3. beoordeel pas na het NDFF-antwoord of een nieuwe, minimale vraag aan een
+     of meer bronhouders noodzakelijk is.
+- Afgerond op 14 september 2026: de reeds geleverde, niet-ruimtelijke metadata
+  uit ticket 58679 is gekoppeld aan 14.420 openbare records in
+  `Meijendel.ndff_open_leveringsverrijking`. De live-audit telt 14.420 unieke
+  koppelingen, nul verweesde sleutels en nul ongeldige aantalsintervallen.
+- Vraag NDFF in de volgende stap uitsluitend gericht:
+  1. welke dataset-, onderzoek-, opname-, bezoek- of sessie-entiteiten voor de
+     betreffende waarnemingen bestaan en exporteerbaar zijn;
+  2. hoe de verkorte velden `sessionid`, `datm_dkkng` en `opp_dkkng` precies
+     moeten worden gelezen en waarom ze in ticket 58679 nul of leeg zijn;
+  3. waarom de exacte leveringsgeometrie bij 1.828 gekoppelde records afwijkt
+     terwijl de openbare vlag `vervaagd=0` is;
+  4. of hetzelfde rijkere, niet-ruimtelijke gegevensmodel voor alle relevante
+     niet-vogelwaarnemingen uit 1950-2025 kan worden geleverd.
+  Vraag niet opnieuw naar informatie die al in het openbare NDFF-woordenboek
+  of de ontvangen bestanden staat.
+- Historische status: Ton Lansink heeft op 13 september 2026 zeven
+  bronorganisaties aangeschreven en deze verzoeken op 14 september 2026 weer
+  ingetrokken. De Vlinderstichting, Zoogdiervereniging, RAVON, FLORON, BLWG,
+  Stichting ANEMOON en Staatsbosbeheer hebben daarom geen openstaand verzoek
+  meer van dit project. Stuur geen herinnering of vervolgbericht. De eerder
+  geplande controle op 24 september 2026 is vervallen.
+- Als na het NDFF-antwoord toch broninformatie nodig blijft, bepaal dan per
+  protocol de kleinst noodzakelijke opvraag. Vraag alleen om de concrete
+  sleutels of velden die niet uit de database, de NDFF-leveringen of officiële
+  documentatie kunnen worden afgeleid. Mogelijke onderdelen zijn stabiele
+  telobject-ID's en geometrieversies, uitgevoerde bezoeken, complete resultaten
+  waaruit niet-detecties kunnen worden afgeleid, gegevens die
+  protocolgeldigheid bepalen en methodewijzigingen. Vraag geplande of
+  uitgevallen bezoeken, apparatuur en andere metadata alleen wanneer het
+  gekozen analysemodel die werkelijk nodig heeft.
+- Leg de gereconstrueerde native surveystructuur vast en koppel die daarna geversioneerd
   aan SOVON-plots. Splits routes of gebieden niet over plots zonder
-  sectiegeometrie én sectie-inspanning. Stel het definitieve surveyschema pas
-  vast na ontvangst van minstens één representatieve bronlevering.
+  sectiegeometrie én sectie-inspanning. Houd per protocol een eigen
+  reconstructieversie en onzekerheidsstatus bij.
 - Onderzoek de herkomst van de 163 PQ-risicorecords met status
   `niet_beoordeelbaar`; de 162 exacte PQ-dubbels blijven uitgesloten als
   zelfstandige NDFF-evidentie. Behandel de provinciale PQ-reeks in de
@@ -65,6 +341,11 @@
   in `Meijendel_ndff_secure`; openbare bronregistraties horen in `Meijendel`.
   Het localhost-only Shiny-login-path is ingericht en getest; verleen geen
   bredere rechten op het beveiligde schema.
+- De veilige hotspotanalyse per SOVON-plot en vijf tijdvakken is lokaal
+  uitgevoerd. Beoordeel de zes meerbronnen-signalen in 2015-2025 inhoudelijk op
+  karakteristieke duinsoorten en koppel pas daarna een geversioneerde beheerlaag.
+  Houd iedere ecologische kaart gekoppeld aan de brondekkingskaart en gebruik
+  NDFF-verandering uitsluitend als registratiecontext, niet als trend.
 
 ### Wintertellingen — geparkeerde vervolgstappen
 

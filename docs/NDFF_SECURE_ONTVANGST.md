@@ -5,8 +5,10 @@
 De levering voor ticket 58679 is op 10 september 2026 ontvangen als één
 GeoPackage met alle aanwezige en gevalideerde records van de aangeleverde lijst
 van 191 soorten binnen het organisatie-werkgebied en de periode 1950-2025. De
-ontvangst en eerste kwaliteitsanalyse zijn groen afgerond. Er is nog niets in de
-life-database geïmporteerd en VPS en Shiny zijn niet gewijzigd.
+ontvangst, kwaliteitsanalyse en lokale gescheiden import zijn groen afgerond.
+Alleen openbare FFV- en GBIF-bronregistraties zijn in nieuwe brontabellen van
+de life-database opgenomen. De beveiligde levering staat uitsluitend in
+`Meijendel_ndff_secure`; VPS en algemene Shiny-app zijn niet gewijzigd.
 
 De verplichte citatie is:
 
@@ -144,14 +146,15 @@ gelabeld als wachtend op volledige brondata. Daarbij blijven gelden:
 - de provinciale volledige PQ-opnamen blijven als primaire bron leidend;
   NDFF-PQ blijft uitsluitend secundair QA-materiaal.
 
-De surveystructuur wordt niet opnieuw bij NDFF opgevraagd: NDFF heeft gemeld
-dat zij naast de geleverde waarnemingsinformatie geen aanvullende
-surveystructuur kan leveren. Voor de 1.274 geschikte vervolgkandidaten is het
-bedoelde meetontwerp gereconstrueerd uit de officiële protocollen. De
-feitelijke telobjecten, alle bezoeken, inspanning, doelsoorten, nulresultaten,
-protocolversies en kwaliteitsmetadata worden rechtstreeks bij de
-meetnetbeheerder opgevraagd: Zoogdiervereniging, Dunea/FLORON, RAVON, ANEMOON,
-BLWG, De Vlinderstichting en Staatsbosbeheer/opdrachtgever.
+De eerdere conclusie dat NDFF geen aanvullende surveystructuur kan leveren was
+te breed. Vaststaat alleen dat die structuur niet in de ontvangen exports zat.
+Daarom wordt eerst de Meijendel-database verbeterd met alle reeds geleverde
+velden en de officiële NDFF-documentatie. Vervolgens wordt NDFF gericht gevraagd
+welke nog ontbrekende dataset-, onderzoek-, opname-, bezoek- of sessiegegevens
+voor deze records beschikbaar en exporteerbaar zijn. Pas na dat antwoord wordt
+vastgesteld of voor een concreet protocol nog een minimale vraag aan de
+meetnetbeheerder nodig is. De zeven eerder verzonden bronhouderverzoeken zijn op
+14 september 2026 ingetrokken.
 
 De oorspronkelijke meeteenheid blijft behouden. Een losse waarneming binnen
 één SOVON-plot is onvoldoende om een route, water, proefvlak, kilometerhok of
@@ -176,6 +179,63 @@ koppeling omvat 14.420 regels en staat uitsluitend in
 `ndff_open_secure_koppeling`; 153 beveiligde regels zijn secure-only. Deze
 technische bronopname verandert niets aan de bestaande analysepoort, PQ-regel
 of beveiliging.
+
+Op 14 september 2026 zijn de niet-ruimtelijke velden uit de projectlevering
+voor alle 14.420 gekoppelde records aanvullend vastgelegd in
+`Meijendel.ndff_open_leveringsverrijking`. De tabel bevat geen exacte
+geometrie, centroid of oppervlakte. De koppeling is één-op-één, heeft geen
+verweesde sleutels en gebruikt `SHA-256(obs_uri)` als unieke controlewaarde.
+De openbare `bronhouder` en de in de projectlevering opgenomen
+`dataeigenaar_uri` worden niet meer als hetzelfde veld gepresenteerd.
+
+Alle gekoppelde records hebben het oordeel `betrouwbaar`; dit is uitsluitend
+een kwaliteitskenmerk van de positieve waarneming. Het vervangt geen
+informatie over telobject, bezoek, inspanning, nulwaarnemingen of
+protocolversie. `zoid` en `sessionid` zijn in alle 14.573 leveringsregels nul;
+`datm_dkkng` en `opp_dkkng` zijn overal leeg. Deze velden zijn daarom niet als
+kunstmatige survey- of bezoeksleutel gebruikt.
+
+Een geometriecontrole toont bovendien dat bij 1.828 van de 4.149 gekoppelde
+records waarvoor de openbare export `vervaagd=0` vermeldt, de geometrie uit de
+projectlevering toch afwijkt. Bij de overige 2.321 zijn de geometrieën gelijk.
+De vlag `vervaagd=0` is dus onvoldoende om geometrische gelijkheid te bewijzen.
+Alle exacte leveringsgeometrieën blijven daarom voorlopig in
+`Meijendel_ndff_secure`, totdat NDFF het verschil heeft verklaard.
+
+## Biodiversiteitssignalen door de tijd
+
+Op 10 september 2026 is een eerste reproduceerbare, uitsluitend lokale
+hotspotanalyse gemaakt met `gis/scripts/analyse_biodiversiteit_hotspots.py`.
+Zij combineert per geversioneerd SOVON-plot vijf tijdvakken (1950-1969,
+1970-1989, 1990-2004, 2005-2014 en 2015-2025), maar houdt de drie bronnen
+inhoudelijk gescheiden:
+
+- vogels: gemiddelde territoriumsoortenrijkdom per daadwerkelijk geteld jaar;
+- vegetatie: uitsluitend de provinciale PQ-reeks, zonder NDFF-PQ-aanvulling;
+- NDFF: uitsluitend de 8.494 toegelaten positieve contextrecords uit de
+  beveiligde view, geaggregeerd op plot, jaar en taxon.
+
+Een bron is per plot en tijdvak alleen geldig bij minimaal drie vogeljaren,
+twee PQ-jaren of tien NDFF-records verspreid over minimaal twee jaren. *Hoog*
+betekent het bovenste kwartiel binnen de betreffende bron en periode. De klasse
+`meerdere_bronnen_hoog` vereist minimaal twee geldige én hoog gerangschikte
+bronnen. Er wordt bewust geen samengestelde absolute biodiversiteitsindex
+berekend.
+
+Voor 2015-2025 leveren zes van de 55 plots zo'n meerbronnen-hotspotsignaal; tien
+plots hebben nog onvoldoende meerbronnendekking. In 1990-2004 en eerder is de
+dekking te beperkt voor een gebiedsbrede tijdvergelijking. Iedere ecologische
+kaart wordt daarom samen met een dekkingskaart gebruikt. Verandering in
+NDFF-records of -taxa blijft verandering in *geregistreerde aanwezigheid* en
+mag niet als populatietrend, afwezigheid of beheereffect worden benoemd.
+
+De veilige CSV's, kaartreeksen en interactieve rapportapp staan uitsluitend
+onder
+`secure/ticket_58679/derived/biodiversiteit_hotspots_1950_2025` op de T7. Zij
+bevatten geen exacte NDFF-geometrieën, waarnemingsidentiteiten of soortenlijst.
+De analyse is bedoeld om hypothesen, veldcontrole en vervolgmonitoring te
+richten. Een causale effectanalyse vereist daarnaast een geversioneerde
+beheerlaag, referentieplots en passende correctie voor meetdekking en methode.
 
 ## Beëindiging
 

@@ -33,6 +33,7 @@ for fragment in \
   '"$EXPORT_VALIDATOR" --with-cache' \
   'CACHE_CANDIDATE_FILE=' \
   'CACHE_MANIFEST_CANDIDATE_FILE=' \
+  'SOURCES_SQL_CANDIDATE_FILE=' \
   'MYSQL_VERSION=' \
   'DATABASE_BACKUP=' \
   'CACHE_CANDIDATE_STATUS=ready' \
@@ -66,6 +67,9 @@ for fragment in \
   'STAGES=(preflight apply)' \
   'CONTAINER="meijendel-mysql"' \
   'SHINY_CONTAINER="shiny_meijendel"' \
+  'SOURCES_DATABASE="Meijendel_bronnen"' \
+  'SOURCES_DATABASE_BACKUP=' \
+  'SOURCES_STATUS=ready' \
   'restore_backup' \
   'first_cache_migration=0' \
   'install_first_migration_artifacts' \

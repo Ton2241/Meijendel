@@ -6,7 +6,10 @@ REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 SQL_FILE="$REPO_DIR/meijendel.sql"
 SQL_MANIFEST="$REPO_DIR/meijendel.sql.manifest"
+SOURCES_SQL_FILE="$REPO_DIR/meijendel_bronnen.sql"
 MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
+MYSQL_SOURCES_DATABASE="${MEIJENDEL_SOURCES_MYSQL_DATABASE:-Meijendel_bronnen}"
+MYSQL_LOGIN_PATH="${MEIJENDEL_MYSQL_LOGIN_PATH:-meijendel_root}"
 WINTER_MYSQL_DATABASE="${MEIJENDEL_MYSQL_DATABASE:-Meijendel}"
 
 if [[ -d /usr/local/mysql/bin ]]; then
@@ -41,6 +44,23 @@ cd "$REPO_DIR"
 
 log "Maak en proefimporteer actuele lokale database-dump met MySQL 9.7.1"
 "$REPO_DIR/scripts/export_meijendel_sql.sh" "$SQL_FILE" "$SQL_MANIFEST"
+
+log "Maak afzonderlijke bron-dump"
+mysqldump --login-path="$MYSQL_LOGIN_PATH" \
+  --no-tablespaces --complete-insert --single-transaction \
+  --set-gtid-purged=OFF --routines --triggers --events \
+  "$MYSQL_SOURCES_DATABASE" > "$SOURCES_SQL_FILE"
+for required in \
+  'CREATE TABLE `bron`' \
+  'CREATE TABLE `literatuur`' \
+  'VIEW `v_bron_catalogus`' \
+  'VIEW `v_literatuur_overzicht`' \
+  'VIEW `v_contextdataset_overzicht`'; do
+  grep -qF "$required" "$SOURCES_SQL_FILE" || {
+    printf 'FOUT: vereist bronobject ontbreekt in %s: %s\n' "$SOURCES_SQL_FILE" "$required" >&2
+    exit 1
+  }
+done
 
 log "Controleer gekoppelde dump- en Shiny-cacheartefacten"
 "$REPO_DIR/scripts/validate_meijendel_export.sh" --with-cache \
