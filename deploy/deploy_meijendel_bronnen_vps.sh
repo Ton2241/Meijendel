@@ -158,7 +158,7 @@ grep -Fqx 'GATEWAY_JOB_STATUS=ready' <<<"$gateway_preflight" || die "bron-gatewa
 log "Controleer kandidaatkopie"
 sync_candidate() {
   local mode="$1"
-  local rsync_args=(-az --itemize-changes)
+  local rsync_args=(-az --itemize-changes -e "$SSH_BIN -i $SSH_KEY")
   [[ "$mode" == apply ]] || rsync_args+=(--dry-run)
   "$RSYNC_BIN" "${rsync_args[@]}" "$SOURCES_SQL_LOCAL" "$VPS:$SOURCES_SQL_CANDIDATE_FILE"
   "$RSYNC_BIN" "${rsync_args[@]}" "$MANIFEST_LOCAL" "$VPS:$SOURCES_MANIFEST_CANDIDATE_FILE"

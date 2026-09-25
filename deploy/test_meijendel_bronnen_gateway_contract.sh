@@ -15,6 +15,7 @@ bash -n "$DEPLOY" "$RUNNER"
 for fragment in \
   'meijendel-bronnen-manifest-v2' \
   '/usr/local/mysql/bin/mysql' \
+  '-e "$SSH_BIN -i $SSH_KEY"' \
   'literature_total=' \
   'literature_active=' \
   'literature_removed=' \
