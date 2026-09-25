@@ -149,6 +149,37 @@ websitegebruiker krijgt uitsluitend `SELECT` op `v_bron_catalogus`,
 `v_literatuur_overzicht` en `v_contextdataset_overzicht`, nooit op de ruwe
 brontabellen of het hele schema.
 
+### Eerste bron-only productiegang na integratie
+
+Voer dit uitsluitend uit vanaf schone, actuele `main`-checkouts. Eerst wordt de
+nieuwe gesloten gateway gecontroleerd en geïnstalleerd:
+
+```sh
+VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh
+VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh --apply --yes
+```
+
+Daarna volgt alleen de bronpreflight. Die herstelt de dump lokaal in een
+tijdelijke database, controleert manifest en hashes en toont een rsync-dry-run:
+
+```sh
+Meijendel/deploy/deploy_meijendel_bronnen_vps.sh
+```
+
+Beoordeel die uitvoer en vraag daarna een afzonderlijke productiegoedkeuring.
+Pas na dat nieuwe besluit mag de bronrelease worden uitgevoerd:
+
+```sh
+Meijendel/deploy/deploy_meijendel_bronnen_vps.sh --apply --yes
+```
+
+De bronrelease schrijft haar status atomair naar
+`/srv/vwgm/deploy-state/Meijendel_bronnen.release` en bewaart de voorafgaande
+database onder `/srv/vwgm/backups/meijendel-bronnen-mysql/`. Zij importeert de
+ecologische database niet en herstart geen Shiny-container. Registreer de
+release daarna afzonderlijk in het centrale releasemanifest. Geen van deze
+productiecommando's hoort bij de implementatie of lokale verificatie zelf.
+
 Eerste, eenmalige inrichting nadat de werkelijk draaiende productiecommit is vastgesteld en in `main` is geïntegreerd:
 
 ```sh

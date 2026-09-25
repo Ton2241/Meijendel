@@ -25,6 +25,9 @@ if [[ "$all" == *mysqldump* ]]; then
   exit 0
 fi
 if [[ "$all" == *'SCHEMA_NAME = '*Meijendel_bronnen* ]]; then printf '%s\n' "${MOCK_EXISTING_DATABASE:-1}"; exit 0; fi
+if [[ "$all" == *replication_connection_status* ]]; then printf '%s\n' "${MOCK_REPLICATION_CONNECTIONS:-0}"; exit 0; fi
+if [[ "$all" == *'SHOW REPLICAS'* ]]; then printf '%s' "${MOCK_REGISTERED_REPLICAS:-}"; exit 0; fi
+if [[ "$all" == *'Binlog Dump'* ]]; then printf '%s\n' "${MOCK_BINLOG_THREADS:-0}"; exit 0; fi
 if [[ "$all" == *'SCHEMA_PRIVILEGES'* ]]; then printf '0\n'; exit 0; fi
 if [[ "$all" == *'TABLE_PRIVILEGES'*'PRIVILEGE_TYPE = '* ]]; then printf '3\n'; exit 0; fi
 if [[ "$all" == *'TABLE_PRIVILEGES'*'TABLE_NAME NOT IN'* ]]; then printf '0\n'; exit 0; fi
@@ -32,6 +35,7 @@ if [[ "$all" == *'SELECT DISTINCT TABLE_NAME'* ]]; then printf 'legacy_object\n'
 if [[ "$all" == *'table_type = '*'BASE TABLE'* ]]; then printf 'bron\nliteratuur\n'; exit 0; fi
 if [[ "$all" == *'CHECK TABLE'* ]]; then printf 'Meijendel_bronnen.bron\tcheck\tstatus\tOK\n'; exit 0; fi
 if [[ "$all" == *REFERENTIAL_CONSTRAINTS* ]]; then printf '1\n'; exit 0; fi
+if [[ "$all" == *'COUNT(*) AS total'*'zotero_status="actueel"'*'JSON_LENGTH(trefwoorden)>0'* ]]; then printf '%b\n' "${MOCK_CORE_COUNTS:-522\t518\t4\t342}"; exit 0; fi
 if [[ "$all" == *'v_bron_catalogus'*'COUNT(*)'* || "$all" == *'COUNT(*) FROM `Meijendel_bronnen`.v_bron_catalogus'* ]]; then printf '522\n'; exit 0; fi
 if [[ "$all" == *'v_literatuur_overzicht'*'COUNT(*)'* || "$all" == *'COUNT(*) FROM `Meijendel_bronnen`.v_literatuur_overzicht'* ]]; then printf '518\n'; exit 0; fi
 if [[ "$all" == *'v_contextdataset_overzicht'*'COUNT(*)'* || "$all" == *'COUNT(*) FROM `Meijendel_bronnen`.v_contextdataset_overzicht'* ]]; then printf '4\n'; exit 0; fi
@@ -91,6 +95,11 @@ setup_case preflight
 preflight_output="$(run_helper preflight "$commit" "$sha256")"
 grep -Fqx 'PREFLIGHT_STATUS=ready' <<<"$preflight_output" || fail "preflight werd niet gereed"
 
+setup_case replicated
+if MOCK_REPLICATION_CONNECTIONS=1 run_helper preflight "$commit" "$sha256" >"$tmp/replicated.out" 2>&1; then
+  fail "preflight accepteerde actieve replicatie"
+fi
+
 setup_case bad_hash "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
 if run_helper apply "$commit" "$sha256" >"$tmp/bad-hash.out" 2>&1; then
   fail "manifest-hashmismatch werd geaccepteerd"
@@ -113,6 +122,14 @@ set -e
 grep -Fqx 'ROLLBACK_STATUS=ready' <<<"$failure_output" || fail "importfout werd niet teruggedraaid"
 grep -Fq 'vorige bronexport' "$case_base/data/Meijendel_bronnen.sql" || fail "actieve export wijzigde bij importfout"
 [[ ! -e "$case_base/deploy-state/Meijendel_bronnen.release" ]] || fail "importfout schreef toch status"
+
+setup_case wrong_counts
+set +e
+counts_output="$(MOCK_CORE_COUNTS=$'521\t518\t3\t342' run_helper apply "$commit" "$sha256" 2>&1)"
+counts_rc=$?
+set -e
+[[ "$counts_rc" -ne 0 ]] || fail "afwijkende geïmporteerde kerngetallen werden geaccepteerd"
+grep -Fqx 'ROLLBACK_STATUS=ready' <<<"$counts_output" || fail "kerngetalafwijking werd niet teruggedraaid"
 
 setup_case success
 success_output="$(run_helper apply "$commit" "$sha256")"

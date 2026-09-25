@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DEPLOY="$SCRIPT_DIR/deploy_meijendel_bronnen_vps.sh"
 RUNNER="$SCRIPT_DIR/run_bronnen_gateway_job_vps.sh"
+RUNBOOK="$SCRIPT_DIR/README_DEPLOY.md"
 
 fail() { printf 'FOUT: %s\n' "$*" >&2; exit 1; }
 
@@ -93,5 +94,24 @@ MEIJENDEL_BRONNEN_TEST_MODE=1 \
   "$DEPLOY" > "$mock_root/output"
 grep -Fq 'Preflight klaar; productie is niet aangepast.' "$mock_root/output" ||
   fail "mock-dry-run bereikte geen groene preflighteindstatus"
+
+for fragment in \
+  'VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh' \
+  'VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh --apply --yes' \
+  'Meijendel/deploy/deploy_meijendel_bronnen_vps.sh' \
+  'Meijendel/deploy/deploy_meijendel_bronnen_vps.sh --apply --yes' \
+  '/srv/vwgm/deploy-state/Meijendel_bronnen.release' \
+  '/srv/vwgm/backups/meijendel-bronnen-mysql/' \
+  'herstart geen Shiny' \
+  'afzonderlijke productiegoedkeuring'; do
+  grep -Fq "$fragment" "$RUNBOOK" || fail "bronrunbook mist: $fragment"
+done
+
+install_line="$(grep -nF 'VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh --apply --yes' "$RUNBOOK" | head -n 1 | cut -d: -f1)"
+preflight_line="$(grep -nF 'Meijendel/deploy/deploy_meijendel_bronnen_vps.sh' "$RUNBOOK" | head -n 1 | cut -d: -f1)"
+approval_line="$(grep -nF 'afzonderlijke productiegoedkeuring' "$RUNBOOK" | head -n 1 | cut -d: -f1)"
+apply_line="$(grep -nF 'Meijendel/deploy/deploy_meijendel_bronnen_vps.sh --apply --yes' "$RUNBOOK" | head -n 1 | cut -d: -f1)"
+[[ "$install_line" -lt "$preflight_line" && "$preflight_line" -lt "$approval_line" && "$approval_line" -lt "$apply_line" ]] ||
+  fail "bronrunbook legt gateway-installatie, preflight, productiegoedkeuring en apply niet in vaste volgorde vast"
 
 printf 'OK: zelfstandige Meijendel_bronnen-gateway is begrensd en ecologisch geïsoleerd.\n'

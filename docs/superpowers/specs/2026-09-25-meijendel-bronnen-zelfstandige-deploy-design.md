@@ -1,7 +1,7 @@
 # Ontwerp: zelfstandige deploy van Meijendel_bronnen
 
 **Datum:** 25 september 2026  
-**Status:** ter goedkeuring  
+**Status:** uitgevoerd en lokaal geverifieerd; productie-installatie niet uitgevoerd
 **Betrokken repositories:** `Meijendel`, `VWG_M`, `VWG_Project`
 
 ## Doel

@@ -23,6 +23,10 @@ had_sources_database=0
 had_sources_sql=0
 backup_file=""
 rollback_sources_sql="$REMOTE_DATA/Meijendel_bronnen.sql.rollback-$release_commit-$release_sha256"
+expected_literature_total=""
+expected_literature_active=""
+expected_literature_removed=""
+expected_literature_active_with_tags=""
 
 die() { printf 'BLOKKADE|meijendel-bronnen-release|%s\n' "$*" >&2; exit 1; }
 
@@ -96,7 +100,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 validate_manifest() {
-  local expected_bytes total active removed tagged
+  local expected_bytes
   [[ -f "$SOURCES_SQL_CANDIDATE_FILE" && ! -L "$SOURCES_SQL_CANDIDATE_FILE" && -s "$SOURCES_SQL_CANDIDATE_FILE" ]] || \
     die "bron-dumpkandidaat ontbreekt, is leeg of is een symlink"
   [[ -f "$SOURCES_MANIFEST_CANDIDATE_FILE" && ! -L "$SOURCES_MANIFEST_CANDIDATE_FILE" && -s "$SOURCES_MANIFEST_CANDIDATE_FILE" ]] || \
@@ -111,14 +115,14 @@ validate_manifest() {
   [[ "$expected_bytes" =~ ^[1-9][0-9]*$ ]] || die "ongeldige dumpomvang in bronmanifest"
   [[ "$(file_sha256 "$SOURCES_SQL_CANDIDATE_FILE")" == "$release_sha256" ]] || die "bron-dumphash wijkt af"
   [[ "$(file_bytes "$SOURCES_SQL_CANDIDATE_FILE")" == "$expected_bytes" ]] || die "bron-dumpomvang wijkt af"
-  total="$(manifest_value literature_total "$SOURCES_MANIFEST_CANDIDATE_FILE")"
-  active="$(manifest_value literature_active "$SOURCES_MANIFEST_CANDIDATE_FILE")"
-  removed="$(manifest_value literature_removed "$SOURCES_MANIFEST_CANDIDATE_FILE")"
-  tagged="$(manifest_value literature_active_with_tags "$SOURCES_MANIFEST_CANDIDATE_FILE")"
-  for value in "$total" "$active" "$removed" "$tagged"; do
+  expected_literature_total="$(manifest_value literature_total "$SOURCES_MANIFEST_CANDIDATE_FILE")"
+  expected_literature_active="$(manifest_value literature_active "$SOURCES_MANIFEST_CANDIDATE_FILE")"
+  expected_literature_removed="$(manifest_value literature_removed "$SOURCES_MANIFEST_CANDIDATE_FILE")"
+  expected_literature_active_with_tags="$(manifest_value literature_active_with_tags "$SOURCES_MANIFEST_CANDIDATE_FILE")"
+  for value in "$expected_literature_total" "$expected_literature_active" "$expected_literature_removed" "$expected_literature_active_with_tags"; do
     [[ "$value" =~ ^[0-9]+$ ]] || die "ongeldige literatuurtelling in bronmanifest"
   done
-  [[ $((active + removed)) -eq "$total" && "$tagged" -le "$active" ]] || die "inconsistente literatuurtellingen in bronmanifest"
+  [[ $((expected_literature_active + expected_literature_removed)) -eq "$expected_literature_total" && "$expected_literature_active_with_tags" -le "$expected_literature_active" ]] || die "inconsistente literatuurtellingen in bronmanifest"
   for required in \
     'CREATE TABLE `bron`' \
     'CREATE TABLE `literatuur`' \
@@ -153,7 +157,7 @@ apply_view_grants() {
 }
 
 validate_sources_database() {
-  local table_name result
+  local table_name result actual_total actual_active actual_removed actual_tagged
   while IFS= read -r table_name; do
     [[ -n "$table_name" ]] || continue
     result="$(root_mysql -NBe "CHECK TABLE \`$SOURCES_DATABASE\`.\`$table_name\` EXTENDED")"
@@ -163,6 +167,31 @@ validate_sources_database() {
   [[ "$(root_mysql -NBe "SELECT COUNT(*) FROM \`$SOURCES_DATABASE\`.v_bron_catalogus")" -gt 0 ]] || die "broncatalogus is leeg"
   [[ "$(root_mysql -NBe "SELECT COUNT(*) FROM \`$SOURCES_DATABASE\`.v_literatuur_overzicht")" -gt 0 ]] || die "literatuuroverzicht is leeg"
   [[ "$(root_mysql -NBe "SELECT COUNT(*) FROM \`$SOURCES_DATABASE\`.v_contextdataset_overzicht")" -gt 0 ]] || die "contextdatasetoverzicht is leeg"
+  IFS=$'\t' read -r actual_total actual_active actual_removed actual_tagged <<<"$(root_mysql -NBe \
+    'SELECT COUNT(*) AS total, SUM(CASE WHEN zotero_status="actueel" THEN 1 ELSE 0 END) AS active, SUM(CASE WHEN zotero_status<>"actueel" THEN 1 ELSE 0 END) AS removed, SUM(CASE WHEN zotero_status="actueel" AND JSON_LENGTH(trefwoorden)>0 THEN 1 ELSE 0 END) AS active_with_tags FROM Meijendel_bronnen.literatuur')"
+  [[ "$actual_total" == "$expected_literature_total" && \
+     "$actual_active" == "$expected_literature_active" && \
+     "$actual_removed" == "$expected_literature_removed" && \
+     "$actual_tagged" == "$expected_literature_active_with_tags" ]] || \
+    die "geïmporteerde literatuurtellingen wijken af van het bronmanifest"
+}
+
+validate_replication_absent() {
+  local replica_connections registered_replicas binlog_dump_threads
+  replica_connections="$(root_mysql -NBe "SELECT COUNT(*) FROM performance_schema.replication_connection_status")"
+  registered_replicas="$(root_mysql -NBe "SHOW REPLICAS")"
+  binlog_dump_threads="$(root_mysql -NBe 'SELECT COUNT(*) FROM information_schema.processlist WHERE COMMAND IN ("Binlog Dump","Binlog Dump GTID")')"
+  [[ "$replica_connections" == 0 && -z "$registered_replicas" && "$binlog_dump_threads" == 0 ]] || \
+    die "bronimport zonder binlog is geblokkeerd omdat replicatie actief kan zijn"
+}
+
+validate_current_state() {
+  [[ -e "$STATE_FILE" ]] || return 0
+  [[ -f "$STATE_FILE" && ! -L "$STATE_FILE" ]] || die "huidige bronstatus is geen regulier bestand"
+  [[ "$(manifest_value format "$STATE_FILE")" == meijendel-bronnen-release-v1 ]] || die "huidige bronstatus heeft een onbekend formaat"
+  [[ "$(manifest_value commit "$STATE_FILE")" =~ ^[0-9a-f]{40}$ ]] || die "huidige bronstatus bevat geen geldige commit"
+  [[ "$(manifest_value sql_sha256 "$STATE_FILE")" =~ ^[0-9a-f]{64}$ ]] || die "huidige bronstatus bevat geen geldige SHA-256"
+  manifest_value released_at "$STATE_FILE" >/dev/null
 }
 
 write_sources_state() {
@@ -184,6 +213,9 @@ mysql_version="$(docker exec "$CONTAINER" sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PA
 printf 'MYSQL_VERSION=%s\n' "$mysql_version"
 [[ "$mysql_version" == 9.7.1 ]] || die "MySQL-versie is $mysql_version; vereist 9.7.1"
 [[ -d "$BACKUP_DIR" && -w "$BACKUP_DIR" ]] || die "bronback-upmap ontbreekt of is niet schrijfbaar"
+df -Pk "$BACKUP_DIR" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }' || die "minder dan 1 GiB vrije bronback-upruimte"
+validate_current_state
+validate_replication_absent
 
 if [[ "$stage" == preflight ]]; then
   success=1
