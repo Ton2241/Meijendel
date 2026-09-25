@@ -33,7 +33,6 @@ for fragment in \
   '"$EXPORT_VALIDATOR" --with-cache' \
   'CACHE_CANDIDATE_FILE=' \
   'CACHE_MANIFEST_CANDIDATE_FILE=' \
-  'SOURCES_SQL_CANDIDATE_FILE=' \
   'MYSQL_VERSION=' \
   'DATABASE_BACKUP=' \
   'CACHE_CANDIDATE_STATUS=ready' \
@@ -67,9 +66,6 @@ for fragment in \
   'STAGES=(preflight apply)' \
   'CONTAINER="meijendel-mysql"' \
   'SHINY_CONTAINER="shiny_meijendel"' \
-  'SOURCES_DATABASE="Meijendel_bronnen"' \
-  'SOURCES_DATABASE_BACKUP=' \
-  'SOURCES_STATUS=ready' \
   'restore_backup' \
   'first_cache_migration=0' \
   'install_first_migration_artifacts' \
@@ -89,6 +85,14 @@ for fragment in \
   'trim/soorten/soorten_trendoverzicht.csv' \
   'trim/sandra/soorten/soorten_trendoverzicht.csv'; do
   grep -Fq "$fragment" "$REMOTE_HELPER" || fail "remote helper mist veiligheidscontract: $fragment"
+done
+
+for file in "$DEPLOY_SCRIPT" "$REMOTE_HELPER"; do
+  for forbidden in 'Meijendel_bronnen' 'SOURCES_' 'v_bron_catalogus' 'v_literatuur_overzicht' 'v_contextdataset_overzicht'; do
+    if grep -Fq "$forbidden" "$file"; then
+      fail "ecologische release bevat nog broncataloguscontract: $forbidden in $(basename "$file")"
+    fi
+  done
 done
 
 assert_before "$REMOTE_HELPER" 'table_checksums_sha256' 'DATABASE_BACKUP='

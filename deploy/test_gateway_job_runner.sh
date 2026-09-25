@@ -3,7 +3,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNNER="$SCRIPT_DIR/run_gateway_job_vps.sh"
+SOURCES_RUNNER="$SCRIPT_DIR/run_bronnen_gateway_job_vps.sh"
 [[ -x "$RUNNER" ]] || { printf 'FOUT: gatewayrunner ontbreekt of is niet uitvoerbaar\n' >&2; exit 1; }
+[[ -x "$SOURCES_RUNNER" ]] || { printf 'FOUT: bron-gatewayrunner ontbreekt of is niet uitvoerbaar\n' >&2; exit 1; }
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
@@ -82,5 +84,19 @@ first_fetch="$(grep -n 'bash -s -- gateway-fetch' "$calls" | head -n 1 | cut -d:
   { printf 'FOUT: log werd niet pas na de startopdracht opgehaald\n' >&2; exit 1; }
 grep -Fq '>"$log.next" 2>&1' "$calls" || { printf 'FOUT: gatewayuitvoer gaat niet naar het remote logbestand\n' >&2; exit 1; }
 grep -Fq 'mv "$log.next" "$log"' "$calls" || { printf 'FOUT: remote logbestand wordt niet atomisch gepubliceerd\n' >&2; exit 1; }
+
+: > "$calls"
+set +e
+sources_output="$(MOCK_CALLS="$calls" MOCK_EXIT_CODE=124 \
+  MOCK_LOG=$'SOURCES_DATABASE_BACKUP=backup.sql.gz\nROLLBACK|meijendel-bronnen-release|database=backup.sql.gz\nROLLBACK_STATUS=ready' \
+  SSH_BIN="$mock_ssh" GATEWAY_OPERATION_ID="$operation_id" \
+  "$SOURCES_RUNNER" apply 0123456789abcdef0123456789abcdef01234567 \
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa 2>"$tmp/sources-timeout.err")"
+sources_rc=$?
+set -e
+[[ "$sources_rc" -eq 124 ]] || { printf 'FOUT: bron-timeout gaf rc=%s\n' "$sources_rc" >&2; exit 1; }
+[[ "$(tail -n 1 <<<"$sources_output")" == 'GATEWAY_JOB_STATUS=timeout' ]] || {
+  printf 'FOUT: bron-timeout mist eindstatus\n' >&2; exit 1;
+}
 
 printf 'OK: gatewayrunner begrenst, bewaart en hervat uitvoer zonder geërfde stdout.\n'
