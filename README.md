@@ -56,6 +56,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Afzonderlijke, niet-publieke dump met contextdatasets zonder voldoende
   waarnemingslocatie en het Meijendel-literatuuroverzicht uit Zotero. Zie
   [`docs/MEIJENDEL_BRONNEN.md`](docs/MEIJENDEL_BRONNEN.md).
+- [`docs/MEIJENDEL_BRONREGISTER.md`](docs/MEIJENDEL_BRONREGISTER.md)
+  Menselijk leesbaar overzicht van aanwezige, contextuele en geïdentificeerde
+  ecologische bronnen, met eigenaar en statistische gebruiksgrenzen.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
