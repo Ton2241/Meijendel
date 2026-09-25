@@ -18,10 +18,6 @@ SQL_FILE="$REMOTE_DATA/Meijendel.sql"
 SQL_MANIFEST_FILE="$REMOTE_DATA/Meijendel.sql.manifest"
 SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.candidate-$release_commit"
 SQL_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.manifest.candidate-$release_commit"
-SOURCES_DATABASE="Meijendel_bronnen"
-SOURCES_SQL_FILE="$REMOTE_DATA/Meijendel_bronnen.sql"
-SOURCES_SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel_bronnen.sql.candidate-$release_commit"
-SOURCES_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel_bronnen.sql.manifest.candidate-$release_commit"
 APP_CACHE="$REMOTE_SHINY/shiny_meijendel/app_cache"
 ACTIVE_CACHE_MANIFEST="$APP_CACHE/meijendel_tables_cache.active.manifest"
 BACKUP_DIR="$REMOTE_BASE/backups/meijendel-mysql"
@@ -37,15 +33,12 @@ validation_dir=""
 rollback_sql="$REMOTE_DATA/Meijendel.sql.rollback-$release_commit"
 rollback_sql_manifest="$REMOTE_DATA/Meijendel.sql.manifest.rollback-$release_commit"
 rollback_cache_manifest="$APP_CACHE/meijendel_tables_cache.active.manifest.rollback-$release_commit"
-rollback_sources_sql="$REMOTE_DATA/Meijendel_bronnen.sql.rollback-$release_commit"
 had_sql=0
 had_sql_manifest=0
 had_cache_manifest=0
 previous_cache_file=""
 rollback_uses_candidate_cache=0
 first_cache_migration=0
-had_sources_database=0
-had_sources_sql=0
 
 die() {
   printf 'BLOKKADE|meijendel-release|%s\n' "$*" >&2
@@ -67,10 +60,6 @@ manifest_value() {
 restore_backup() {
   [[ -s "$backup_file" ]] || return 1
   printf 'ROLLBACK|meijendel-release|database=%s\n' "$backup_file" >&2
-  if [[ "$had_sources_database" -eq 0 ]]; then
-    docker exec "$CONTAINER" sh -lc \
-      'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS Meijendel_bronnen"'
-  fi
   { printf 'SET SESSION sql_log_bin=0;\n'; gzip -dc "$backup_file"; } |
     docker exec -i "$CONTAINER" sh -lc \
       'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD"'
@@ -137,9 +126,7 @@ install_first_migration_artifacts() {
   ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
   ln -sfn "$SQL_FILE" "$REMOTE_WWW/Meijendel.sql"
   ln -sfn "$SQL_FILE" "$REMOTE_APP/data/Meijendel.sql"
-  rm -f "$SOURCES_SQL_FILE"
-  if [[ "$had_sources_sql" -eq 1 ]]; then mv "$rollback_sources_sql" "$SOURCES_SQL_FILE"; fi
-  rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest" "$rollback_sources_sql"
+  rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest"
   printf 'ROLLBACK_ARTIFACT_STATUS=deterministic-equivalent\n'
 }
 
@@ -165,8 +152,6 @@ restore_files() {
   if [[ "$had_sql" -eq 1 ]]; then mv "$rollback_sql" "$SQL_FILE"; fi
   if [[ "$had_sql_manifest" -eq 1 ]]; then mv "$rollback_sql_manifest" "$SQL_MANIFEST_FILE"; fi
   if [[ "$had_cache_manifest" -eq 1 ]]; then mv "$rollback_cache_manifest" "$ACTIVE_CACHE_MANIFEST"; fi
-  rm -f "$SOURCES_SQL_FILE"
-  if [[ "$had_sources_sql" -eq 1 ]]; then mv "$rollback_sources_sql" "$SOURCES_SQL_FILE"; fi
   if [[ -n "$cache_file" && "$cache_file" != "$previous_cache_file" ]]; then rm -f "$APP_CACHE/$cache_file"; fi
   if [[ -f "$SQL_FILE" ]]; then
     ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
@@ -180,7 +165,6 @@ cleanup_candidates() {
   rm -f "$SQL_CANDIDATE_FILE" "$SQL_MANIFEST_CANDIDATE_FILE"
   [[ -z "$CACHE_CANDIDATE_FILE" ]] || rm -f "$CACHE_CANDIDATE_FILE"
   [[ -z "$CACHE_MANIFEST_CANDIDATE_FILE" ]] || rm -f "$CACHE_MANIFEST_CANDIDATE_FILE"
-  rm -f "$SOURCES_SQL_CANDIDATE_FILE" "$SOURCES_MANIFEST_CANDIDATE_FILE"
 }
 
 finish() {
@@ -231,28 +215,9 @@ fi
   die "kandidaatmarker heeft niet eigenaar ton en modus 600"
 [[ "$(tr -d '\r\n' < "$CANDIDATE_FILE")" == "$release_commit" ]] || \
   die "kandidaatmarker wijkt af van releasecommit"
-for required in "$SQL_CANDIDATE_FILE" "$SQL_MANIFEST_CANDIDATE_FILE" \
-  "$SOURCES_SQL_CANDIDATE_FILE" "$SOURCES_MANIFEST_CANDIDATE_FILE"; do
+for required in "$SQL_CANDIDATE_FILE" "$SQL_MANIFEST_CANDIDATE_FILE"; do
   [[ -f "$required" && ! -L "$required" && -s "$required" ]] || \
     die "SQL-kandidaat ontbreekt, is leeg of is een symlink: $required"
-done
-[[ "$(manifest_value format "$SOURCES_MANIFEST_CANDIDATE_FILE")" == "meijendel-bronnen-manifest-v1" ]] || \
-  die "ongeldig bronmanifestformaat"
-expected_sources_hash="$(manifest_value sql_sha256 "$SOURCES_MANIFEST_CANDIDATE_FILE")"
-expected_sources_bytes="$(manifest_value sql_bytes "$SOURCES_MANIFEST_CANDIDATE_FILE")"
-[[ "$expected_sources_hash" =~ ^[0-9a-f]{64}$ && "$expected_sources_bytes" =~ ^[0-9]+$ ]] || \
-  die "ongeldige bron-dumpidentiteit"
-[[ "$(sha256sum "$SOURCES_SQL_CANDIDATE_FILE" | awk '{print $1}')" == "$expected_sources_hash" ]] || \
-  die "bron-dumphash wijkt af"
-[[ "$(stat -c '%s' "$SOURCES_SQL_CANDIDATE_FILE")" == "$expected_sources_bytes" ]] || \
-  die "bron-dumpomvang wijkt af"
-for required in \
-  'CREATE TABLE `bron`' \
-  'CREATE TABLE `literatuur`' \
-  'VIEW `v_bron_catalogus`' \
-  'VIEW `v_literatuur_overzicht`' \
-  'VIEW `v_contextdataset_overzicht`'; do
-  grep -qF "$required" "$SOURCES_SQL_CANDIDATE_FILE" || die "bron-dump mist vereist object: $required"
 done
 cache_file="$(manifest_value cache_file "$SQL_MANIFEST_CANDIDATE_FILE")"
 cache_manifest="$(manifest_value cache_manifest "$SQL_MANIFEST_CANDIDATE_FILE")"
@@ -342,24 +307,11 @@ else
 fi
 
 backup_file="$BACKUP_DIR/meijendel_before_${release_commit}_$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
-had_sources_database="$(docker exec "$CONTAINER" sh -lc \
-  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT COUNT(*) FROM information_schema.SCHEMATA WHERE SCHEMA_NAME = '\''Meijendel_bronnen'\''"')"
-if [[ "$had_sources_database" -eq 1 ]]; then
-  docker exec "$CONTAINER" sh -lc '
-    exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
-      --no-tablespaces --single-transaction --set-gtid-purged=OFF \
-      --routines --triggers --events --add-drop-database \
-      --databases "$MYSQL_DATABASE" Meijendel_bronnen
-  ' | gzip -c > "$backup_file.tmp"
-  printf 'SOURCES_DATABASE_BACKUP=included\n'
-else
-  docker exec "$CONTAINER" sh -lc '
-    exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
-      --no-tablespaces --single-transaction --set-gtid-purged=OFF \
-      --routines --triggers --events --add-drop-database --databases "$MYSQL_DATABASE"
-  ' | gzip -c > "$backup_file.tmp"
-  printf 'SOURCES_DATABASE_BACKUP=not-yet-present\n'
-fi
+docker exec "$CONTAINER" sh -lc '
+  exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
+    --no-tablespaces --single-transaction --set-gtid-purged=OFF \
+    --routines --triggers --events --add-drop-database --databases "$MYSQL_DATABASE"
+' | gzip -c > "$backup_file.tmp"
 test -s "$backup_file.tmp" || die "databaseback-up is leeg"
 mv "$backup_file.tmp" "$backup_file"
 chmod 600 "$backup_file"
@@ -378,44 +330,6 @@ import_started=1
 { printf 'SET SESSION sql_log_bin=0;\n'; cat "$SQL_CANDIDATE_FILE"; } |
   docker exec -i "$CONTAINER" sh -lc \
     'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
-
-docker exec "$CONTAINER" sh -lc \
-  'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -e "DROP DATABASE IF EXISTS Meijendel_bronnen; CREATE DATABASE Meijendel_bronnen CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"'
-{ printf 'SET SESSION sql_log_bin=0;\n'; cat "$SOURCES_SQL_CANDIDATE_FILE"; } |
-  docker exec -i "$CONTAINER" sh -lc \
-    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" Meijendel_bronnen'
-
-root_mysql() {
-  docker exec "$CONTAINER" sh -lc \
-    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$@"' sh "$@"
-}
-website_user="$(docker exec "$CONTAINER" sh -lc 'printf %s "$MYSQL_USER"')"
-[[ "$website_user" =~ ^[A-Za-z0-9_]+$ ]] || die "onveilige websitegebruikersnaam"
-schema_grants="$(root_mysql -NBe "SELECT COUNT(*) FROM information_schema.SCHEMA_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '$website_user', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = '$SOURCES_DATABASE'")"
-if [[ "$schema_grants" -gt 0 ]]; then
-  root_mysql -e "REVOKE ALL PRIVILEGES ON \`$SOURCES_DATABASE\`.* FROM \`$website_user\`@\`%\`"
-fi
-while IFS= read -r object_name; do
-  [[ -n "$object_name" ]] || continue
-  root_mysql -e "REVOKE ALL PRIVILEGES ON \`$SOURCES_DATABASE\`.\`$object_name\` FROM \`$website_user\`@\`%\`"
-done < <(root_mysql -NBe "SELECT DISTINCT TABLE_NAME FROM information_schema.TABLE_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '$website_user', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = '$SOURCES_DATABASE'")
-root_mysql -e "GRANT SELECT ON \`Meijendel_bronnen\`.\`v_bron_catalogus\` TO \`$website_user\`@\`%\`"
-root_mysql -e "GRANT SELECT ON \`Meijendel_bronnen\`.\`v_literatuur_overzicht\` TO \`$website_user\`@\`%\`"
-root_mysql -e "GRANT SELECT ON \`Meijendel_bronnen\`.\`v_contextdataset_overzicht\` TO \`$website_user\`@\`%\`"
-
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM information_schema.SCHEMA_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '$website_user', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = '$SOURCES_DATABASE'")" -eq 0 ]] || die "brede bron-schemarechten aanwezig"
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM information_schema.TABLE_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '$website_user', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = '$SOURCES_DATABASE' AND PRIVILEGE_TYPE = 'SELECT'")" -eq 3 ]] || die "bron-viewrechten zijn niet exact drie SELECT-grants"
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM information_schema.TABLE_PRIVILEGES WHERE GRANTEE = CONCAT(CHAR(39), '$website_user', CHAR(39), '@', CHAR(39), '%', CHAR(39)) AND TABLE_SCHEMA = '$SOURCES_DATABASE' AND TABLE_NAME NOT IN ('v_bron_catalogus','v_literatuur_overzicht','v_contextdataset_overzicht')")" -eq 0 ]] || die "ruwe brontabellen zijn leesbaar"
-
-while IFS= read -r table_name; do
-  result="$(root_mysql -NBe "CHECK TABLE \`$SOURCES_DATABASE\`.\`$table_name\` EXTENDED")"
-  printf '%s\n' "$result" | tail -n 1 | grep -Eq 'status[[:space:]]+OK$'
-done < <(root_mysql -NBe "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = '$SOURCES_DATABASE' AND table_type = 'BASE TABLE' ORDER BY TABLE_NAME")
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA = '$SOURCES_DATABASE'")" -gt 0 ]] || die "bron-database mist foreign keys"
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM \`$SOURCES_DATABASE\`.v_bron_catalogus")" -gt 0 ]] || die "broncatalogus is leeg"
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM \`$SOURCES_DATABASE\`.v_literatuur_overzicht")" -gt 0 ]] || die "literatuuroverzicht is leeg"
-[[ "$(root_mysql -NBe "SELECT COUNT(*) FROM \`$SOURCES_DATABASE\`.v_contextdataset_overzicht")" -gt 0 ]] || die "contextdatasetoverzicht is leeg"
-printf 'SOURCES_STATUS=ready\n'
 
 docker exec "$CONTAINER" sh -lc '
   set -eu
@@ -451,20 +365,13 @@ if [[ -f "$ACTIVE_CACHE_MANIFEST" && ! -L "$ACTIVE_CACHE_MANIFEST" ]]; then
   mv "$ACTIVE_CACHE_MANIFEST" "$rollback_cache_manifest"
   had_cache_manifest=1
 fi
-if [[ -f "$SOURCES_SQL_FILE" && ! -L "$SOURCES_SQL_FILE" ]]; then
-  mv "$SOURCES_SQL_FILE" "$rollback_sources_sql"
-  had_sources_sql=1
-fi
 mv "$SQL_CANDIDATE_FILE" "$SQL_FILE"
 mv "$SQL_MANIFEST_CANDIDATE_FILE" "$SQL_MANIFEST_FILE"
 mkdir -p "$APP_CACHE"
 mv "$CACHE_CANDIDATE_FILE" "$APP_CACHE/$cache_file"
 cache_manifest_next="$ACTIVE_CACHE_MANIFEST.next.$$"
 mv "$CACHE_MANIFEST_CANDIDATE_FILE" "$cache_manifest_next"
-mv "$SOURCES_SQL_CANDIDATE_FILE" "$SOURCES_SQL_FILE"
-rm -f "$SOURCES_MANIFEST_CANDIDATE_FILE"
 chmod 644 "$SQL_FILE" "$SQL_MANIFEST_FILE" "$APP_CACHE/$cache_file" "$cache_manifest_next"
-chmod 600 "$SOURCES_SQL_FILE"
 mv "$cache_manifest_next" "$ACTIVE_CACHE_MANIFEST"
 ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
 ln -sfn "$SQL_FILE" "$REMOTE_WWW/Meijendel.sql"
@@ -479,10 +386,6 @@ docker exec "$SHINY_CONTAINER" Rscript -e '
 '
 sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" \
   "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
-sha256sum "$SOURCES_SQL_FILE"
-test ! -e "$REMOTE_SHINY/Meijendel_bronnen.sql"
-test ! -e "$REMOTE_WWW/Meijendel_bronnen.sql"
-test ! -e "$REMOTE_APP/data/Meijendel_bronnen.sql"
 docker stats --no-stream "$SHINY_CONTAINER"
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 
@@ -493,6 +396,6 @@ for path in "$APP_CACHE"/meijendel_tables_cache-p*.rds; do
     rm -f "$path"
   fi
 done
-rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest" "$rollback_sources_sql"
+rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest"
 success=1
 printf 'RELEASE_STATUS=ready\n'

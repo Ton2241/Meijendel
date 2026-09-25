@@ -211,7 +211,7 @@ else
 fi
 
 import_started=1
-root_mysql -e "DROP DATABASE IF EXISTS ${SOURCES_DATABASE}; CREATE DATABASE ${SOURCES_DATABASE} CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"
+root_mysql -e "DROP DATABASE IF EXISTS Meijendel_bronnen; CREATE DATABASE Meijendel_bronnen CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci"
 { printf 'SET SESSION sql_log_bin=0;\n'; cat "$SOURCES_SQL_CANDIDATE_FILE"; } |
   docker exec -i "$CONTAINER" sh -lc 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" Meijendel_bronnen'
 apply_view_grants

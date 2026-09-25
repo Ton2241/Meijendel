@@ -162,7 +162,7 @@ fi
 remote "mkdir -p '$STATE_DIR' && mkdir '$GLOBAL_LOCK'" || \
   die "een andere productie-deploy houdt de globale lock vast: $GLOBAL_LOCK"
 LOCK_HELD=1
-remote_sha256="$(remote "shasum -a 256 '$SOURCES_SQL_CANDIDATE_FILE' | awk '{print \\$1}'")"
+remote_sha256="$(remote "shasum -a 256 '$SOURCES_SQL_CANDIDATE_FILE' | awk '{print \$1}'")"
 [[ "$remote_sha256" == "$sources_sha256" ]] || die "remote kandidaat-hash wijkt af."
 gateway_apply="$($GATEWAY_RUNNER apply "$LOCAL_COMMIT" "$sources_sha256")"
 printf '%s\n' "$gateway_apply"
