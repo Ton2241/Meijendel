@@ -23,6 +23,7 @@ REQUIRED_MYSQL_VERSION="${REQUIRED_MYSQL_VERSION:-9.7.1}"
 APPLY=0
 YES=0
 LOCK_HELD=0
+CANDIDATE_STAGED=0
 RESTORE_DATABASE="Meijendel_bronnen_restore_$$"
 MANIFEST_LOCAL="${TMPDIR:-/tmp}/meijendel_bronnen_$$.manifest"
 SOURCES_SQL_CANDIDATE_FILE=""
@@ -55,6 +56,10 @@ cleanup() {
       "DROP DATABASE IF EXISTS ${RESTORE_DATABASE}" >/dev/null 2>&1 || true
   fi
   rm -f "$MANIFEST_LOCAL"
+  if [[ "$CANDIDATE_STAGED" -eq 1 ]]; then
+    remote "rm -f '$SOURCES_SQL_CANDIDATE_FILE' '$SOURCES_MANIFEST_CANDIDATE_FILE'" || true
+    CANDIDATE_STAGED=0
+  fi
   release_lock
 }
 trap cleanup EXIT INT TERM
@@ -69,6 +74,8 @@ while (($#)); do
   shift
 done
 [[ "$APPLY" -eq 0 || "$YES" -eq 1 ]] || die "--apply vereist --yes."
+[[ "${MEIJENDEL_BRONNEN_TEST_MODE:-0}" != 1 || "$APPLY" -eq 0 ]] || \
+  die "testmodus staat geen --apply toe."
 
 need_executable "$MYSQL_BIN"
 need_executable "$RSYNC_BIN"
@@ -145,14 +152,22 @@ grep -Fqx 'PREFLIGHT_STATUS=ready' <<<"$gateway_preflight" || die "gesloten bron
 grep -Fqx 'GATEWAY_JOB_STATUS=ready' <<<"$gateway_preflight" || die "bron-gatewayjob is niet gereed."
 
 log "Controleer kandidaatkopie"
-rsync_args=(-az --itemize-changes)
-[[ "$APPLY" -eq 1 ]] || rsync_args+=(--dry-run)
-"$RSYNC_BIN" "${rsync_args[@]}" "$SOURCES_SQL_LOCAL" "$VPS:$SOURCES_SQL_CANDIDATE_FILE"
-"$RSYNC_BIN" "${rsync_args[@]}" "$MANIFEST_LOCAL" "$VPS:$SOURCES_MANIFEST_CANDIDATE_FILE"
+sync_candidate() {
+  local mode="$1"
+  local rsync_args=(-az --itemize-changes)
+  [[ "$mode" == apply ]] || rsync_args+=(--dry-run)
+  "$RSYNC_BIN" "${rsync_args[@]}" "$SOURCES_SQL_LOCAL" "$VPS:$SOURCES_SQL_CANDIDATE_FILE"
+  "$RSYNC_BIN" "${rsync_args[@]}" "$MANIFEST_LOCAL" "$VPS:$SOURCES_MANIFEST_CANDIDATE_FILE"
+}
+sync_candidate dry
 
-route_code="$($CURL_BIN -ksS -o /dev/null -w '%{http_code}' https://www.vwg-m.nl/Meijendel_bronnen.sql)"
-[[ "$route_code" == 403 || "$route_code" == 404 || "$route_code" == 303 ]] || \
-  die "afgeschermde bronroute gaf onverwacht HTTP $route_code."
+source_route_smoke() {
+  local route_code
+  route_code="$($CURL_BIN -ksS -o /dev/null -w '%{http_code}' https://www.vwg-m.nl/Meijendel_bronnen.sql)"
+  [[ "$route_code" == 403 || "$route_code" == 404 || "$route_code" == 303 ]] || \
+    die "afgeschermde bronroute gaf onverwacht HTTP $route_code."
+}
+source_route_smoke
 
 if [[ "$APPLY" -eq 0 ]]; then
   printf 'Preflight klaar; productie is niet aangepast.\n'
@@ -162,7 +177,9 @@ fi
 remote "mkdir -p '$STATE_DIR' && mkdir '$GLOBAL_LOCK'" || \
   die "een andere productie-deploy houdt de globale lock vast: $GLOBAL_LOCK"
 LOCK_HELD=1
-remote_sha256="$(remote "shasum -a 256 '$SOURCES_SQL_CANDIDATE_FILE' | awk '{print \$1}'")"
+sync_candidate apply
+CANDIDATE_STAGED=1
+remote_sha256="$(remote "sha256sum '$SOURCES_SQL_CANDIDATE_FILE' | awk '{print \$1}'")"
 [[ "$remote_sha256" == "$sources_sha256" ]] || die "remote kandidaat-hash wijkt af."
 gateway_apply="$($GATEWAY_RUNNER apply "$LOCAL_COMMIT" "$sources_sha256")"
 printf '%s\n' "$gateway_apply"
@@ -171,4 +188,5 @@ grep -Fqx 'GATEWAY_JOB_STATUS=ready' <<<"$gateway_apply" || die "bron-gatewayjob
 remote_state="$(remote "cat '$STATE_FILE'")"
 grep -Fqx "commit=$LOCAL_COMMIT" <<<"$remote_state" || die "bronreleasestatus bevat niet de verwachte commit."
 grep -Fqx "sql_sha256=$sources_sha256" <<<"$remote_state" || die "bronreleasestatus bevat niet de verwachte hash."
+source_route_smoke
 printf 'Meijendel_bronnen-release gereed: %s\n' "$LOCAL_COMMIT"

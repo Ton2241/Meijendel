@@ -23,6 +23,7 @@ for fragment in \
   'Meijendel_bronnen.release' \
   'DROP DATABASE IF EXISTS' \
   'trap cleanup EXIT INT TERM' \
+  'CANDIDATE_STAGED=1' \
   'GATEWAY_RUNNER='; do
   grep -Fq "$fragment" "$DEPLOY" || fail "lokaal bronpad mist contract: $fragment"
 done
@@ -94,6 +95,24 @@ MEIJENDEL_BRONNEN_TEST_MODE=1 \
   "$DEPLOY" > "$mock_root/output"
 grep -Fq 'Preflight klaar; productie is niet aangepast.' "$mock_root/output" ||
   fail "mock-dry-run bereikte geen groene preflighteindstatus"
+
+if PATH="$mock_root/bin:$PATH" \
+  SOURCES_SQL_LOCAL="$fixture" \
+  GATEWAY_RUNNER="$mock_root/gateway" \
+  MEIJENDEL_BRONNEN_TEST_MODE=1 \
+    "$DEPLOY" --apply --yes >"$mock_root/test-apply.out" 2>&1; then
+  fail "testmodus mocht een apply-pad bereiken"
+fi
+grep -Fq 'testmodus staat geen --apply toe' "$mock_root/test-apply.out" ||
+  fail "testmodus blokkeert apply niet expliciet"
+
+lock_line="$(grep -nF 'LOCK_HELD=1' "$DEPLOY" | tail -n 1 | cut -d: -f1)"
+apply_sync_line="$(grep -nF 'sync_candidate apply' "$DEPLOY" | tail -n 1 | cut -d: -f1)"
+[[ "$lock_line" =~ ^[0-9]+$ && "$apply_sync_line" =~ ^[0-9]+$ && "$lock_line" -lt "$apply_sync_line" ]] ||
+  fail "kandidaatapply staat niet aantoonbaar na verwerving van de globale lock"
+grep -Fq 'sha256sum' "$DEPLOY" || fail "remote kandidaat gebruikt niet het VPS-hashcommando sha256sum"
+[[ "$(grep -c '^source_route_smoke$' "$DEPLOY")" -eq 2 ]] ||
+  fail "afgeschermde bronroute wordt niet zowel vóór als na apply gecontroleerd"
 
 for fragment in \
   'VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh' \

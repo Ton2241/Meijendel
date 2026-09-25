@@ -257,7 +257,7 @@ fi
 mv "$SOURCES_SQL_CANDIDATE_FILE" "$SOURCES_SQL_FILE"
 chmod 600 "$SOURCES_SQL_FILE"
 rm -f "$SOURCES_MANIFEST_CANDIDATE_FILE"
-write_sources_state
 rm -f "$rollback_sources_sql"
+write_sources_state
 success=1
 printf 'SOURCES_STATUS=ready\n'
