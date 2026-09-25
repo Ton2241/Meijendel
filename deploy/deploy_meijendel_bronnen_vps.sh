@@ -20,6 +20,10 @@ SSH_BIN="${SSH_BIN:-$(command -v ssh 2>/dev/null || true)}"
 CURL_BIN="${CURL_BIN:-$(command -v curl 2>/dev/null || true)}"
 REQUIRED_MYSQL_VERSION="${REQUIRED_MYSQL_VERSION:-9.7.1}"
 
+if [[ -z "$MYSQL_BIN" && -x /usr/local/mysql/bin/mysql ]]; then
+  MYSQL_BIN="/usr/local/mysql/bin/mysql"
+fi
+
 APPLY=0
 YES=0
 LOCK_HELD=0
