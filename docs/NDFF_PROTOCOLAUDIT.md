@@ -984,6 +984,20 @@ nieuwe vaste volgorde is:
 3. pas na het NDFF-antwoord beoordelen of voor een specifiek protocol nog een
    kleine, gerichte vraag aan een bronhouder nodig is.
 
+### Actuele status bronvragen op 25 september 2026
+
+Na de verdere vergelijking van de NDFF-leveringen, de lokale database en de
+officiële protocollen zijn alle bronorganisaties waarvoor een gerichte
+aanvullende gegevensvraag resteerde opnieuw aangeschreven. Deze nieuwe
+verzoeken vervangen de op 14 september ingetrokken verzoeken.
+
+De Vlinderstichting heeft bevestigd dat zij verwacht de gevraagde gegevens in
+de loop van de week van 28 september 2026 te kunnen leveren. Van de overige
+aangeschreven organisaties is op 25 september 2026 nog geen inhoudelijke
+reactie ontvangen. Behandel de verzoeken daarom als verzonden en in
+afwachting van antwoord; stel geen nieuw verzoek op en stuur geen herinnering
+zonder eerst deze actuele correspondentiestatus te controleren.
+
 Een eventuele latere bronlevering wordt vóór iedere databasewijziging op
 herkomst, dekking, koppelsleutels, gebruiksvoorwaarden en overlap met NDFF
 gecontroleerd.

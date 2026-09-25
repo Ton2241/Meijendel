@@ -314,6 +314,13 @@
   Stichting ANEMOON en Staatsbosbeheer hebben daarom geen openstaand verzoek
   meer van dit project. Stuur geen herinnering of vervolgbericht. De eerder
   geplande controle op 24 september 2026 is vervallen.
+- Actuele status op 25 september 2026: alle bronorganisaties waarvoor na de
+  verdere analyse nog een gerichte aanvullende gegevensvraag resteerde, zijn
+  opnieuw aangeschreven. De Vlinderstichting verwacht de gevraagde gegevens
+  in de loop van de week van 28 september 2026 te kunnen leveren. De overige
+  organisaties hebben nog niet inhoudelijk gereageerd. Behandel alle verzoeken
+  als verzonden en wacht op antwoord; controleer vóór iedere herinnering of
+  vervolgvraag eerst de actuele correspondentie en reeds ontvangen bestanden.
 - Als na het NDFF-antwoord toch broninformatie nodig blijft, bepaal dan per
   protocol de kleinst noodzakelijke opvraag. Vraag alleen om de concrete
   sleutels of velden die niet uit de database, de NDFF-leveringen of officiële
