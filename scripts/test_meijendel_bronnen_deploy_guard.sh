@@ -31,6 +31,11 @@ grep -qF 'information_schema.TABLE_PRIVILEGES' "$REMOTE_HELPER" ||
   fail 'controle op uitsluitend drie viewrechten ontbreekt.'
 grep -qF '/Meijendel_bronnen.sql' "$DEPLOY" ||
   fail 'publieke 403/404-controle voor de bron-dump ontbreekt.'
+grep -qF 'awk '\''{print \$1}'\''' "$DEPLOY" ||
+  fail 'remote bronhash gebruikt geen veilig geescape-te awk-veld.'
+if grep -qF 'awk '\''{print \\$1}'\''' "$DEPLOY"; then
+  fail 'remote bronhash bevat een dubbele escape en leest daardoor lokaal $1.'
+fi
 
 if grep -E 'ln -sfn[^\n]*Meijendel_bronnen\.sql' "$DEPLOY" >/dev/null; then
   fail 'de bron-dump mag nergens via een symlink worden gepubliceerd.'
