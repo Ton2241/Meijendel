@@ -47,6 +47,17 @@ Met **beheerder** wordt hieronder de primaire bronorganisatie of uitgever
 bedoeld voor zover die nu bekend is. Het is geen afzonderlijke uitspraak over
 juridisch eigendom of auteursrecht.
 
+## Beheerregel
+
+Dit is een levend register. Iedere ontdekking, levering, import, verplaatsing,
+uitsluiting of nieuwe beoordeling van een Meijendel-gegevensbron wordt meteen
+in dit document verwerkt. Dat geldt ook wanneer eigenaar, omvang, periode,
+locatiekwaliteit, rechten, overlap, validatiestatus of statistische
+bruikbaarheid verandert. Daarbij worden steeds de analytische database
+`Meijendel`, de contextdatabase `Meijendel_bronnen` en de kandidaatbronnen
+gezamenlijk gecontroleerd. Deze Markdown-versie is leidend; de Wordversie wordt
+in dezelfde wijziging inhoudelijk gelijkgetrokken, gerenderd en gecontroleerd.
+
 ## 1. Bronnen in de analytische database `Meijendel`
 
 ### Vogelgegevens van Vogelwerkgroep Meijendel en SOVON

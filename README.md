@@ -59,7 +59,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 - [`docs/MEIJENDEL_BRONREGISTER.md`](docs/MEIJENDEL_BRONREGISTER.md)
   Menselijk leesbaar overzicht van aanwezige, contextuele en geïdentificeerde
   ecologische bronnen, met eigenaar en statistische gebruiksgrenzen. Ook
-  beschikbaar als [`Wordbestand`](docs/MEIJENDEL_BRONREGISTER.docx).
+  beschikbaar als [`Wordbestand`](docs/MEIJENDEL_BRONREGISTER.docx). Dit is een
+  levend register dat in dezelfde taak wordt bijgewerkt zodra de status of
+  inhoud van een bron verandert.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]

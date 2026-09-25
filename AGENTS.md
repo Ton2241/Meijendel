@@ -119,6 +119,23 @@ Bij communicatie:
 - geef bij grotere wijzigingen een korte samenvatting van wat is aangepast en hoe het is gecontroleerd
 - stel alleen vragen als dat echt nodig is om veilig verder te kunnen
 
+Bronregister:
+- `docs/MEIJENDEL_BRONREGISTER.md` is het blijvende, volledige
+  beslisoverzicht van alle aanwezige, contextuele en geïdentificeerde
+  ecologische gegevensbronnen voor Meijendel
+- werk het bronregister in dezelfde taak onmiddellijk bij wanneer een bron
+  wordt ontdekt, ontvangen, geïmporteerd, verplaatst, uitgesloten of opnieuw
+  beoordeeld, of wanneer eigenaar, omvang, periode, locatiekwaliteit, rechten,
+  overlap, validatiestatus of statistische bruikbaarheid verandert
+- controleer daarbij steeds de volledigheid voor de analytische database
+  `Meijendel`, de contextdatabase `Meijendel_bronnen` en de nog niet toegelaten
+  kandidaatbronnen; wacht niet op een afzonderlijke documentatie-opdracht
+- de Markdown-versie is leidend; actualiseer in dezelfde commit ook
+  `docs/MEIJENDEL_BRONREGISTER.docx`, inclusief standdatum, aantallen en status,
+  en render en controleer de Wordversie vóór afronding
+- een taak die de stand van een gegevensbron verandert is niet afgerond zolang
+  beide registerversies niet inhoudelijk gelijk en actueel zijn
+
 MySQL:
 - laat een ecologische waarneming uitsluitend toe tot de Meijendel-database
   wanneer per waarneming aantoonbaar is dat zij daadwerkelijk binnen Meijendel
