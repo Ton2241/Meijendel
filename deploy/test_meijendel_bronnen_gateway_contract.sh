@@ -38,6 +38,10 @@ for forbidden in \
   fi
 done
 
+if grep -Fq 'remote_state="$(remote "cat ' "$DEPLOY"; then
+  fail 'het lokale deployscript probeert het root-only releasestatusbestand rechtstreeks te lezen.'
+fi
+
 grep -Fq 'meijendel-bronnen-release "$stage" "$commit" "$sha256"' "$RUNNER" ||
   fail "runner roept niet exact de begrensde bronactie aan"
 grep -Fq '^[0-9a-f]{64}$' "$RUNNER" || fail "runner valideert geen exacte SHA-256"

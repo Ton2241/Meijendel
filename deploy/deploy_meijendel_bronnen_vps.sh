@@ -197,8 +197,5 @@ printf '%s\n' "$gateway_apply"
 [[ "$gateway_apply_rc" -eq 0 ]] || die "bronrelease faalde met exitcode $gateway_apply_rc."
 grep -Fqx 'SOURCES_STATUS=ready' <<<"$gateway_apply" || die "bronrelease gaf geen gereedstatus."
 grep -Fqx 'GATEWAY_JOB_STATUS=ready' <<<"$gateway_apply" || die "bron-gatewayjob faalde."
-remote_state="$(remote "cat '$STATE_FILE'")"
-grep -Fqx "commit=$LOCAL_COMMIT" <<<"$remote_state" || die "bronreleasestatus bevat niet de verwachte commit."
-grep -Fqx "sql_sha256=$sources_sha256" <<<"$remote_state" || die "bronreleasestatus bevat niet de verwachte hash."
 source_route_smoke
 printf 'Meijendel_bronnen-release gereed: %s\n' "$LOCAL_COMMIT"
