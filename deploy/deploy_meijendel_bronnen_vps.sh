@@ -150,8 +150,12 @@ printf '%s\n' \
   "literature_active_with_tags=$literature_active_with_tags" > "$MANIFEST_LOCAL"
 
 export VPS SSH_KEY GATEWAY SSH_BIN
+set +e
 gateway_preflight="$($GATEWAY_RUNNER preflight "$LOCAL_COMMIT" "$sources_sha256")"
+gateway_preflight_rc=$?
+set -e
 printf '%s\n' "$gateway_preflight"
+[[ "$gateway_preflight_rc" -eq 0 ]] || die "gesloten bronpreflight faalde met exitcode $gateway_preflight_rc."
 grep -Fqx 'PREFLIGHT_STATUS=ready' <<<"$gateway_preflight" || die "gesloten bronpreflight is niet gereed."
 grep -Fqx 'GATEWAY_JOB_STATUS=ready' <<<"$gateway_preflight" || die "bron-gatewayjob is niet gereed."
 
@@ -185,8 +189,12 @@ sync_candidate apply
 CANDIDATE_STAGED=1
 remote_sha256="$(remote "sha256sum '$SOURCES_SQL_CANDIDATE_FILE' | awk '{print \$1}'")"
 [[ "$remote_sha256" == "$sources_sha256" ]] || die "remote kandidaat-hash wijkt af."
+set +e
 gateway_apply="$($GATEWAY_RUNNER apply "$LOCAL_COMMIT" "$sources_sha256")"
+gateway_apply_rc=$?
+set -e
 printf '%s\n' "$gateway_apply"
+[[ "$gateway_apply_rc" -eq 0 ]] || die "bronrelease faalde met exitcode $gateway_apply_rc."
 grep -Fqx 'SOURCES_STATUS=ready' <<<"$gateway_apply" || die "bronrelease gaf geen gereedstatus."
 grep -Fqx 'GATEWAY_JOB_STATUS=ready' <<<"$gateway_apply" || die "bron-gatewayjob faalde."
 remote_state="$(remote "cat '$STATE_FILE'")"

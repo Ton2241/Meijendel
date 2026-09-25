@@ -21,7 +21,11 @@ if [[ "$1" == inspect ]]; then printf 'running\n'; exit 0; fi
 if [[ "$all" == *'SELECT VERSION()'* ]]; then printf '9.7.1\n'; exit 0; fi
 if [[ "$all" == *'printf %s "$MYSQL_USER"'* ]]; then printf 'website_user'; exit 0; fi
 if [[ "$all" == *mysqldump* ]]; then
-  [[ "${MOCK_EMPTY_BACKUP:-0}" == 1 ]] || printf '%s\n' 'CREATE DATABASE old_sources;' 'SELECT 1;'
+  if [[ "${MOCK_LARGE_BACKUP:-0}" == 1 ]]; then
+    awk 'BEGIN { for (i = 0; i < 200000; i++) print "INSERT INTO old_sources VALUES (1);" }'
+  elif [[ "${MOCK_EMPTY_BACKUP:-0}" != 1 ]]; then
+    printf '%s\n' 'CREATE DATABASE old_sources;' 'SELECT 1;'
+  fi
   exit 0
 fi
 if [[ "$all" == *'SCHEMA_NAME = '*Meijendel_bronnen* ]]; then printf '%s\n' "${MOCK_EXISTING_DATABASE:-1}"; exit 0; fi
@@ -122,6 +126,11 @@ set -e
 grep -Fqx 'ROLLBACK_STATUS=ready' <<<"$failure_output" || fail "importfout werd niet teruggedraaid"
 grep -Fq 'vorige bronexport' "$case_base/data/Meijendel_bronnen.sql" || fail "actieve export wijzigde bij importfout"
 [[ ! -e "$case_base/deploy-state/Meijendel_bronnen.release" ]] || fail "importfout schreef toch status"
+
+setup_case large_backup
+large_backup_output="$(MOCK_LARGE_BACKUP=1 run_helper apply "$commit" "$sha256")"
+grep -Fqx 'SOURCES_STATUS=ready' <<<"$large_backup_output" ||
+  fail "geldige grotere back-up werd onder pipefail ten onrechte afgewezen"
 
 setup_case wrong_counts
 set +e

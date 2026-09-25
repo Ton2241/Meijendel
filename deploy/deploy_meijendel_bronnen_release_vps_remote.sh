@@ -234,7 +234,8 @@ if [[ "$had_sources_database" -eq 1 ]]; then
       --set-gtid-purged=OFF --routines --triggers --events --add-drop-database --databases Meijendel_bronnen
   ' | gzip -c > "$backup_file.tmp"
   gzip -t "$backup_file.tmp" || die "bronback-up is beschadigd"
-  gzip -dc "$backup_file.tmp" | grep -q . || die "bronback-up is inhoudelijk leeg"
+  [[ "$(gzip -dc "$backup_file.tmp" | wc -c | tr -d '[:space:]')" -gt 0 ]] ||
+    die "bronback-up is inhoudelijk leeg"
   mv "$backup_file.tmp" "$backup_file"
   chmod 600 "$backup_file"
   printf 'SOURCES_DATABASE_BACKUP=%s\n' "$backup_file"

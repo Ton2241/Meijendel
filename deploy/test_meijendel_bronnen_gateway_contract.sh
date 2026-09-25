@@ -86,6 +86,10 @@ printf '303'
 MOCK
 cat > "$mock_root/gateway" <<'MOCK'
 #!/usr/bin/env bash
+if [[ "${MOCK_GATEWAY_FAIL:-0}" == 1 ]]; then
+  printf 'BLOKKADE|mock-gateway|zichtbare-fout\n'
+  exit 47
+fi
 printf 'MYSQL_VERSION=9.7.1\nPREFLIGHT_STATUS=ready\nGATEWAY_JOB_STATUS=ready\n'
 MOCK
 chmod +x "$mock_root/bin/"* "$mock_root/gateway"
@@ -107,6 +111,17 @@ if PATH="$mock_root/bin:$PATH" \
 fi
 grep -Fq 'testmodus staat geen --apply toe' "$mock_root/test-apply.out" ||
   fail "testmodus blokkeert apply niet expliciet"
+
+if PATH="$mock_root/bin:$PATH" \
+  SOURCES_SQL_LOCAL="$fixture" \
+  GATEWAY_RUNNER="$mock_root/gateway" \
+  MOCK_GATEWAY_FAIL=1 \
+  MEIJENDEL_BRONNEN_TEST_MODE=1 \
+    "$DEPLOY" >"$mock_root/gateway-failure.out" 2>&1; then
+  fail "falende gateway werd als succesvol behandeld"
+fi
+grep -Fq 'BLOKKADE|mock-gateway|zichtbare-fout' "$mock_root/gateway-failure.out" ||
+  fail "gatewayfout blijft onzichtbaar door set -e"
 
 lock_line="$(grep -nF 'LOCK_HELD=1' "$DEPLOY" | tail -n 1 | cut -d: -f1)"
 apply_sync_line="$(grep -nF 'sync_candidate apply' "$DEPLOY" | tail -n 1 | cut -d: -f1)"
