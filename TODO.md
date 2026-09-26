@@ -6,21 +6,25 @@
 
 - Ontwerpbeoordeling van 26 september 2026 staat in
   [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md).
-  De volledige naamkaart omvat 163 fysieke tabellen: 149 voorgestelde
-  naamswijzigingen en veertien behouden namen, inclusief de zeven provinciale
-  PQ-tabellen. Website, dashboard en Shiny moeten dezelfde inhoud houden.
+  Herschreven naar 26 soortgroepprefixen, zoals `libellen_*`, ongeacht bron.
+  Het eerdere voorstel van 149 loutere hernoemingen vervalt. De bijlage
+  inventariseert nog steeds alle 163 fysieke tabellen. Vogels blijven
+  onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
 - Het voorstel moet nog als migratie worden besloten en op een databasekopie
   worden beproefd. De huidige database, code en bronstatussen zijn niet
   gewijzigd. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
   provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
-- Werk daarna één passende meetfamilie uit voor rechtstreekse verrijking door
-  bronorganisaties. Behoud bron-ID's en bewijs van reconstructie; voorkom dat
-  een oorspronkelijke telling naast haar NDFF-afgeleide opnieuw meetelt.
+- Werk eerst op een databasekopie een volledige libellenfamilie uit, inclusief
+  echte groepswaarnemingen, bronkoppeling, imports en regressiecontroles.
+  Daarna volgt een PQ-proef met de reeds gekoppelde LVD-selectie. Behoud
+  bron-ID's en bewijs van reconstructie; voorkom dubbel getelde metingen.
 - Behoud van `pq_*` en `vangblik*` is geaccordeerd, onder de voorwaarde dat
-  PQ-gegevens uit andere bronnen de PQ-tabellen kunnen aanvullen. Werk daarvoor
+  verspreide PQ-gegevens uit andere bronnen in de PQ-tabellen samenkomen;
+  PQ-resultaten worden niet verdeeld over soortgroeptabellen. Werk daarvoor
   brongebonden locatie-/opname-ID's, leveringsversies, overlap en conflicten
   uit; behoud bestaande interne ID's en toets het doorwerken naar Shiny en
-  website bij iedere inhoudelijke aanvulling.
+  website bij iedere inhoudelijke aanvulling. Maak Vangblik vanuit de
+  betreffende soortgroepen herkenbaar met koppelingen, zonder vangstkopieën.
 
 ### Meijendel_bronnen
 

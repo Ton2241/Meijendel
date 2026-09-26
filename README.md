@@ -67,12 +67,13 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   `TV`, `TA` en `TK`. De laag verwijst naar bronrecords en kopieert geen
   waarnemingen.
 - [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md)
-  Inventaris en voorstel voor 163 fysieke tabellen: NDFF, externe ecologie,
-  Vangblik en provinciale PQ. Bevat de oude→nieuwe naamkaart, bestaande
-  soortkoppelingen, voorwaarden voor rechtstreekse bronverrijking en de
-  gevolgen voor website, Shiny en de migratieketen. Nog geen migratiebesluit.
+  Voorstel voor 26 bronoverstijgende soortgroepprefixen, zoals `libellen_*`.
+  Vogels blijven onaangetast; verspreide PQ-informatie krijgt haar bestemming
+  onder `pq_*`. Vangblik blijft bijeen en wordt vanuit soortgroepen verbonden.
+  Bevat bronverdeling, moeilijkheid, migratievoorwaarden en een inventaris van
+  163 bestaande tabellen. Nog geen migratiebesluit.
   Ook beschikbaar als [leesbaar Wordbestand voor Pages](docs/database/MEIJENDEL_TABELINVENTARIS.docx),
-  met het voorstel vooraan en de volledige naamkaart in een liggende bijlage.
+  met het voorstel vooraan en de tabelinventaris in een liggende bijlage.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
