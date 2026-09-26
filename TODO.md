@@ -2,6 +2,21 @@
 
 ## Nu open
 
+### Naamgeving en bronoverstijgende meetstructuren
+
+- Ontwerpbeoordeling van 26 september 2026 staat in
+  [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md).
+  De volledige naamkaart omvat 163 fysieke tabellen: 149 voorgestelde
+  naamswijzigingen en veertien behouden namen, inclusief de zeven provinciale
+  PQ-tabellen. Website, dashboard en Shiny moeten dezelfde inhoud houden.
+- Het voorstel moet nog als migratie worden besloten en op een databasekopie
+  worden beproefd. De huidige database, code en bronstatussen zijn niet
+  gewijzigd. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
+  provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
+- Werk daarna één passende meetfamilie uit voor rechtstreekse verrijking door
+  bronorganisaties. Behoud bron-ID's en bewijs van reconstructie; voorkom dat
+  een oorspronkelijke telling naast haar NDFF-afgeleide opnieuw meetelt.
+
 ### Meijendel_bronnen
 
 - Lokale scheiding afgerond op 24 september 2026: 488 duinvalleiopnamen,
