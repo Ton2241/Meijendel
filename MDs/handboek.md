@@ -1168,6 +1168,29 @@ Soortenrijkdom en Shannon gebruiken `SRTNUM` als stabiele identiteit. De export 
 
 GEE, GLMM, NMDS/envfit en occupancy mogen deze waarden als optionele covariaten gebruiken. Toon bij iedere interpretatie ook het aantal PQ's of de dekkingskwaliteit. De publieke website gebruikt uitsluitend `website_plot_vegetatie_jaar`; ruwe taxa, PQ-nummers en coördinaten blijven intern.
 
+## 23B. Hoe kies je gegevens voor een ecologische analyse?
+
+Gebruik `v_analyse_catalogus` als centrale ingang. Deze view beoordeelt geen
+soorten of waarnemingen opnieuw, maar verwijst naar de bestaande gegevensreeks
+en toont per analysetype het actuele besluit.
+
+De analysetypen zijn `V` voor voorkomen en verspreiding, `I` voor een volledige
+inventarisatie, `TV` voor een trend in verspreiding, `TA` voor een trend in
+aantallen en `TK` voor een trend in ecologische kwaliteit. Een letter is geen
+algemene kwaliteitsklasse. Controleer daarom altijd ook `eindbesluit`,
+`voorwaarden`, `kwaliteitsmelding` en de afzonderlijke velden voor locatie,
+bezoeken, nulwaarnemingen, methode en validatie.
+
+Gebruik `v_analyse_selectieadvies` voor een eerste overzicht per gegevensreeks.
+Gebruik daarna `v_analyse_catalogus` voor de definitieve selectie. Een status
+`voorlopig_toegelaten` betekent dat de genoemde afbakening of correctie
+verplicht is. `Alleen_context` en `niet_toegelaten` mogen niet stilzwijgend in
+een model worden opgenomen.
+
+Waarnemingen blijven in hun oorspronkelijke tabellen. Alleen een record dat
+aantoonbaar afwijkt van het besluit voor zijn hele reeks krijgt een regel in
+`analyse_recorduitzondering`.
+
 ## 24. Wat zijn de belangrijkste praktische regels?
 
 Houd deze regels aan:

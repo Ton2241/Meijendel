@@ -62,6 +62,10 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   beschikbaar als [`Wordbestand`](docs/MEIJENDEL_BRONREGISTER.docx). Dit is een
   levend register dat in dezelfde taak wordt bijgewerkt zodra de status of
   inhoud van een bron verandert.
+- [`docs/bronnen/importbesluiten/ANALYSEGESCHIKTHEID.md`](docs/bronnen/importbesluiten/ANALYSEGESCHIKTHEID.md)
+  Beschrijft de bronoverstijgende analysepoort met de analysetypen `V`, `I`,
+  `TV`, `TA` en `TK`. De laag verwijst naar bronrecords en kopieert geen
+  waarnemingen.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]

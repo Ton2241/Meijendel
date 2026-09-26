@@ -839,3 +839,12 @@
   zeven aquatische monsterpunten met 19 methodeperioden. Ringgegevens met code
   `NL19` en de 41 droge-duinvegetatieplots blijven kandidaat: `NL19` betekent
   provincie Zuid-Holland en de vegetatiekaart bevat geen koppelbare plotcodes.
+- **26 september 2026 — één bronoverstijgende analysepoort zonder kopieën van
+  waarnemingen.** De analysetypen `V`, `I`, `TV`, `TA` en `TK` gelden voortaan
+  voor alle ecologische gegevensreeksen. De letters beschrijven het beoogde
+  analysetype en niet de algemene datakwaliteit. Ruimtelijke kwaliteit,
+  bezoekstructuur, nulwaarnemingen, methode, validatie en beveiliging blijven
+  afzonderlijke dimensies. Besluiten worden op reeksniveau opgeslagen; alleen
+  afwijkende bronrecords krijgen een recorduitzondering. De bestaande NDFF-v4-
+  besluiten blijven gezaghebbend en worden uitsluitend via een view in de
+  centrale catalogus opgenomen.

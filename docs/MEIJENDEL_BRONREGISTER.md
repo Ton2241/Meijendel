@@ -33,6 +33,36 @@ In één oogopslag:
 - op de VPS staan in het Analysecentrum drie contextdatasets en 522 literatuurverwijzingen die niet ongemerkt in analyses terecht mogen komen; de hieronder beschreven nieuwe fase-2-context staat vooralsnog alleen in de lokale canonieke database;
 - zes openbare externe bronnen zijn na ruimtelijke toelatings- en overlapcontrole in `Meijendel` opgenomen; hun verschillende analysemogelijkheden blijven per record zichtbaar.
 
+## Overkoepelende analysegeschiktheid
+
+De database bevat vanaf 26 september 2026 één bronoverstijgende
+beoordelingslaag. Deze laag kopieert geen waarnemingen. Zij verwijst naar de
+bestaande brontabellen en legt per gegevensreeks vast welke analyses zijn
+toegestaan en onder welke voorwaarden.
+
+De vijf vaste analysetypen zijn:
+
+- **V**: voorkomen en verspreiding;
+- **I**: inventarisatie binnen een aantoonbaar onderzocht bezoek, monster of gebied;
+- **TV**: verandering in verspreiding of bezetting;
+- **TA**: verandering in aantallen, dichtheid of een aantalsindex; en
+- **TK**: verandering in een vooraf gedefinieerde ecologische kwaliteitsmaat.
+
+De letter zegt alleen welk soort analyse wordt bedoeld. Zij is geen algemeen
+kwaliteitsoordeel. Daarom bewaart de catalogus daarnaast afzonderlijk de
+ruimtelijke kwaliteit, bezoekstructuur, beschikbaarheid van nulwaarnemingen,
+methode-informatie, validatiestatus en beveiliging. Per analysetype luidt het
+besluit `toegelaten`, `voorlopig_toegelaten`, `alleen_context` of
+`niet_toegelaten`, steeds met een concrete voorwaarde en kwaliteitsmelding.
+
+De tabellen `analyse_datareeks` en `analyse_datareeks_geschiktheid` bevatten de
+beoordeling op reeksniveau. Alleen records die daarvan afwijken komen in
+`analyse_recorduitzondering`. De view `v_analyse_catalogus` is de volledige
+ingang; `v_analyse_selectieadvies` geeft het compacte overzicht per reeks en
+analysetype. Voor NDFF wordt de bestaande actuele v4-classificatie rechtstreeks
+in deze view getoond. De 1.040 NDFF-protocolbesluiten worden dus niet opnieuw
+opgeslagen.
+
 Met **beheerder** wordt hieronder de primaire bronorganisatie of uitgever bedoeld voor zover die nu bekend is. Het is geen afzonderlijke uitspraak over juridisch eigendom of auteursrecht.
 
 ## Beheerregel
