@@ -45,6 +45,30 @@ def main() -> int:
     assert article["auteurs"] == [
         {"familienaam": "Teller", "voornamen": "A.", "naam_letterlijk": None}
     ]
+
+    statute = module.normalize_item(
+        {
+            "key": "STAT0001",
+            "data": {
+                "itemType": "statute",
+                "nameOfAct": "Besluit Meijendel & Berkheide",
+                "dateEnacted": "1 juli 2014",
+                "code": "Rijksoverheid, Natura 2000",
+                "codeNumber": "Gebiedsnummer 097",
+                "creators": [
+                    {"name": "Ministerie van Economische Zaken", "creatorType": "author"}
+                ],
+                "tags": [{"tag": "Natura 2000"}],
+            },
+            "bib": "",
+        }
+    )
+    assert statute["titel"] == "Besluit Meijendel & Berkheide"
+    assert statute["jaar"] == 2014
+    assert statute["container_titel"] == "Rijksoverheid, Natura 2000"
+    assert statute["citation_chicago"].startswith(
+        "Ministerie van Economische Zaken. Besluit Meijendel & Berkheide."
+    )
     cli_sql = module.build_cli_sync_sql([article])
     assert "START TRANSACTION" in cli_sql
     assert "COMMIT" in cli_sql
