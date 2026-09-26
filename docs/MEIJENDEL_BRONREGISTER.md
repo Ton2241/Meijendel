@@ -14,7 +14,7 @@ verklarende omgevingslagen, geen afzonderlijke soorten. Taxonomische
 referentietabellen, berekende analyse-uitkomsten en technische hulptabellen
 vallen buiten dit overzicht. Details over tabellen, imports en protocolcodes
 staan in de achterliggende projectdocumentatie. De stand is
-**25 september 2026**.
+**26 september 2026**.
 
 ## Hoe de statussen moeten worden gelezen
 
@@ -235,9 +235,24 @@ waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 | [ENDURE helmduinfauna](https://doi.org/10.15468/xx2gcp) | Universiteit Gent en ENDURE | 15 exacte meetpunten in 2018; 14 complete matrices, 71 positieve en 9.001 negatieve taxonuitkomsten | Gestandaardiseerde momentopname van ongewervelden in witte duinen en een herhaalbare nulmeting | Eén event zonder soortenmatrix apart houden; geen tijdtrend afleiden uit één meetjaar |
 | Historische en actuele ringgegevens | Vogeltrekstation/NIOO-KNAW | Biometrie: 100.417 records van 163 soorten, 1963–2023; historische nestjongen: 668 records van 38 soorten, 1928–1957 | Trektijd, conditie, biometrie en vroeg-historische vogelcontext | Vangplaatscodes, locatie-onzekerheid, inspanning en overlap met bestaande vogelgegevens controleren |
 | Bijenmonitoring in vier beheergebieden | EIS Kenniscentrum Insecten | 18 proefvlakken, drie bezoeken per onderzoeksjaar; 162 bezoeken in 2019, 2021 en 2023 | Vergelijking van bijengemeenschappen tussen gebieden en jaren | Tabellen uit rapporten digitaliseren, proefvlakken georefereren en nagaan of 2025 beschikbaar is |
-| [Aquatische macrofauna](https://repository.naturalis.nl/pub/643552/Nieukerken_Doctoraalverslag_Meijendel_1978.pdf) | Rijksuniversiteit Leiden; publicatie via Naturalis | Zeven vaste monsterpunten, vrijwel maandelijks onderzocht van juni 1974 tot juli 1975; de publicaties behandelen onderzoek uit 1970–1977 | Historische reeks van waterorganismen, vegetatie en fysisch-chemische waterkenmerken | De tabellen en grafieken uit 175 gescande pagina's digitaliseren; daarna locatiecodes, complete bemonsteringen en eventuele lege monsters vaststellen |
+| [Aquatische macrofauna](https://repository.naturalis.nl/pub/643552/Nieukerken_Doctoraalverslag_Meijendel_1978.pdf) | Rijksuniversiteit Leiden; publicaties en collecties via Naturalis | Zeven vaste monsterpunten, vrijwel maandelijks onderzocht van juni 1974 tot juli 1975. Aanvullende publicaties bevatten gedateerde waarnemingen van waterwantsen uit 1920–1930, 1953–1961 en 1970–1977, waterkevers uit 1969–1977 en libellen uit 1849–1976, deels gekoppeld aan benoemde of gecodeerde wateren. | Historische reeks van waterorganismen, vegetatie en fysisch-chemische waterkenmerken | Eerst de tabellen, watercodes en collectieregistraties samenbrengen. Daarna per monster vaststellen welke locatie, datum, methode en volledige soortenlijst beschikbaar zijn en overlap met NDFF verwijderen. |
 | Erosiepinnen in een stuifkuilcomplex | Jungerius en Van der Meulen | 48 erosiepinnen in 12 eenheden, vrijwel wekelijks gemeten gedurende één jaar | Gedetailleerde processtudie van erosie, sedimentatie en vegetatie, maar geen langjarige trend | Oorspronkelijke metingen en pinlocaties vinden en op waarnemingsniveau aan Meijendel koppelen |
 | Langjarige droge-duinvegetatieplots | Historische Meijendel-onderzoekers; later ontsloten via Wageningen University & Research | 41 vaste vegetatieplots, aangelegd in 1952–1953 en gemiddeld ongeveer iedere vier jaar herhaald | Potentieel zeer waardevolle langjarige vegetatiereeks voor successie, begrazing en verandering van grijs duin | Oorspronkelijke plotcodes, opnamen en locaties vinden; overlap met provinciale PQ, NDFF en de Landelijke Vegetatie Databank vaststellen |
+
+### Historische museum- en publicatiereeksen
+
+Deze bronnen waren nog niet in het register opgenomen. De aantallen hieronder
+zijn ruimtelijke treffers uit de huidige openbare bron. Zij zijn nog niet
+ontdubbeld tegen NDFF, andere collecties of onderling.
+
+| Bron | Eigenaar of uitgever | Omvang en periode | Mogelijke meerwaarde | Belangrijkste controle vóór opname |
+|---|---|---:|---|---|
+| [Historische vlinder- en motwaarnemingen](https://doi.org/10.15468/czfn9y) | Natuurhistorisch Museum Rotterdam | 5.219 GBIF-records binnen de projectgrens; 1955–2019. Ten minste 4.744 records betreffen de intensieve vangsten van J.A.W. Lucas uit 1955–1956 bij de Bierlap. | Een vrijwel onbenutte historische referentie voor vlinders en nachtvlinders, ruim vóór de huidige meetnetten | Vangnachten en vangmethode reconstrueren, locaties en onzekerheid toetsen en ontdubbelen tegen NDFF en museumobjecten. Zonder inspanningsgegevens zijn dit aanwezigheidsgegevens, geen populatietrend. |
+| [Naturalis Botany](https://doi.org/10.15468/ib5ypt) | Naturalis Biodiversity Center | 6.227 ruimtelijke GBIF-treffers binnen de projectgrens. De expliciet als Meijendel beschreven deelverzameling bevat 138 herbariumspecimens uit 1919–1998. | Gedateerde historische plantenvondsten en controleerbaar collectiemateriaal | Etiketplaats, oorspronkelijke datum en coördinaatonzekerheid per specimen controleren. Veel punten kunnen een later toegekende gebiedscoördinaat zijn; overlap met LVD, NDFF en provinciale PQ verwijderen. |
+| [Naturalis Coleoptera](https://doi.org/10.15468/jrjojf) | Naturalis Biodiversity Center | 1.905 ruimtelijke GBIF-treffers binnen de projectgrens. Daarvan zijn 995 exemplaren uit 1859–1983 expliciet als Meijendel beschreven. | Lange historische context voor kevers, met bewaard bewijsmateriaal | De collectie waarschuwt zelf voor nog niet volledig opgeschoonde datums en locaties. Daarom de oorspronkelijke etiketvelden gebruiken, onzekerheid toetsen en dubbelen met NDFF en andere collecties verwijderen. |
+| Overige museum- en DNA-collecties | Natuurhistorisch Museum Rotterdam, Naturalis, iBOL en gespecialiseerde collecties | Huidige ruimtelijke zoekactie: 474 NMR-specimens, 328 slankpootvliegregels en 1.477 iBOL-records. Expliciet als Meijendel beschreven zijn onder meer 23 slankpootvliegspecimens uit 1920–1968 en 61 iBOL-records uit 1962–2022. | Aanvullende historische en moleculair bevestigde vondsten uit verschillende soortgroepen | Geen totalen optellen voordat dubbelen zijn vastgesteld. Alleen records toelaten waarvan etiket of bronlocatie Meijendel bevestigt; een punt binnen de kaartgrens is onvoldoende. |
+| [Neuropteren van Meijendel](https://repository.naturalis.nl/pub/317242) | Naturalis; onderzoek van D.C. Geijskes | Gepubliceerde waarnemingen uit de jaren twintig, lichtvangsten uit 1957–1963, gerichte bezoeken in 1967–1970 en vrijwel wekelijkse excursies van 15 april tot 21 oktober 1971; 38 soorten | Historische reeks van gaasvliegen en verwanten met beschreven verzamelperioden | De specimen- en soortenlijsten uit de publicatie digitaliseren, datum en plaats per record vaststellen en vergelijken met Naturalis-collecties en NDFF. |
+| [Zweefvliegen van Meijendel](https://repository.naturalis.nl/pub/317221) | Naturalis; onderzoek van G. Delfos | Regelmatige verzamelingen in 1969 en 1970, met gedateerde exemplaren uit onder meer Kijfhoek en Bierlap | Historische referentie voor zweefvliegen in herkenbare deelgebieden | De volledige specimenlijst digitaliseren en per exemplaar datum en locatie vastleggen; daarna ontdubbelen tegen museumcollecties en NDFF. |
 
 ### Afgebakende onderzoeksdatasets
 
@@ -264,6 +279,12 @@ waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 - **Remote sensing van vegetatiehoogte en -bedekking:** WUR beschreef kaarten
   voor 2008 en 2014; TU Delft beschreef elf beeldmomenten uit 2019–2021. De
   afgeleide rasterbestanden zijn nog niet als openbare dataset gevonden.
+- **[Landbedekking in vogelplots](https://doi.org/10.1007/s10531-025-03175-x):** een openbare studie uit 2025 bevat voor 25
+  BMP-plots de verdeling van zeven landbedekkingsklassen in 2001 en 2022. De
+  vogelgegevens overlappen met de bestaande VWG/SOVON-reeks; de afgeleide
+  landbedekking kan wel een nieuwe verklarende laag vormen. Eerst moet worden
+  vastgesteld of de geclassificeerde bronrasters zelf beschikbaar zijn of
+  alleen de samenvatting per plot.
 - **KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en
   hydrologische gegevens. Een afzonderlijke digitale gegevenslevering is nog
   niet gevonden.
@@ -293,7 +314,14 @@ waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 Drie eerder gevonden publicaties bleken bij controle geen Meijendelgegevens te
 bevatten: een macrofaunastudie uit de Drentsche Aa, een voedselwebstudie aan
 Amerikaanse vogelkers in Zuid-Kennemerland en een studie naar vliegtuiggeluid
-bij Tjiftjaf. Zij worden niet als kandidaatbron beschouwd.
+bij Tjiftjaf. De voedselwebstudie noemt toestemming voor veldwerk in Meijendel,
+maar de gepubliceerde waarnemingstabel betreft uitsluitend Nationaal Park
+Zuid-Kennemerland. Zij worden daarom niet als kandidaatbron beschouwd.
+
+Een openbare GBIF-dataset met mondiale bodemorganismen gaf 1.995 ruimtelijke
+treffers binnen de projectgrens. De oorspronkelijke plaatsaanduiding van al
+deze monsters is echter Terschelling. Dit is een georeferentiefout en geen
+Meijendelbron.
 
 Algemene verzamelbronnen zoals Observation.org, iNaturalist en eBird worden ook
 niet opnieuw als zelfstandige Meijendelbron ingevoerd zolang niet is aangetoond
@@ -317,6 +345,83 @@ Bij iedere nieuwe levering worden achtereenvolgens gecontroleerd:
 5. welke analyses daardoor verantwoord mogelijk worden.
 
 Pas daarna volgt een afzonderlijk importbesluit.
+
+## 7. Actieplan
+
+Het doel is niet zoveel mogelijk regels importeren, maar per bron de kortste
+route naar betrouwbare, niet-dubbele en geografisch toegelaten gegevens te
+volgen. De ruwe bestanden blijven onveranderd bewaard; `Meijendel` bevat alleen
+waarnemingen die aan de ruimtelijke toelatingsregel voldoen.
+
+### Fase 1 — openbare, direct toetsbare bronnen
+
+1. **STOWA Limnodata en ENDURE volledig beoordelen.** Controleer locaties,
+   sleutels, rechten, overlap en analyseeenheid. ENDURE kan na deze controle als
+   gestandaardiseerde referentiemeting naar `Meijendel`; STOWA alleen per
+   bemonstering en eenheid, zonder niet-gemelde soorten als nul te behandelen.
+2. **De historische museumreeksen downloaden en vastzetten.** Maak afzonderlijke
+   bronselecties voor de 5.219 NMR-waarnemingen, 6.227 Naturalis-plantenrecords
+   en 1.905 Naturalis-keverrecords. Bewaar `occurrenceID`, oorspronkelijke
+   etiketplaats, datum, coördinaten, onzekerheid, licentie en download-DOI.
+   Alleen geografisch bevestigde, unieke records gaan naar `Meijendel`; overige
+   records blijven kandidaat of gaan als context naar `Meijendel_bronnen`.
+3. **De Landelijke Vegetatie Databank opnieuw selecteren.** De huidige openbare
+   bron geeft meer ruimtelijke treffers dan de eerder vastgelegde selectie van
+   119.006 taxonregels. Leg daarom eerst bronversie, selectiegrens en verschil
+   tussen opname- en taxonregels vast. Ontdubbel daarna tegen provinciale PQ,
+   NDFF en duinvalleivegetatie.
+
+### Fase 2 — reeksen met grote historische of trendwaarde
+
+4. **Ringgegevens koppelen aan vangplaats en inspanning.** Bevestig welke
+   locatiecodes VRS Meijendel betreffen en welke vanguren, netten en bezoeken
+   beschikbaar zijn. Pas daarna kunnen fenologie en biometrie worden
+   geanalyseerd; overeenkomstige vogelrecords worden niet dubbel ingevoerd.
+5. **Bijenmonitoring reconstrueren.** Digitaliseer de 18 proefvlakken en 162
+   bezoeken uit 2019, 2021 en 2023. Alleen complete bezoeken en betrouwbare
+   proefvlaklocaties maken vergelijking tussen gebieden en jaren mogelijk.
+6. **Aquatische en historische insectenreeksen digitaliseren.** Begin met de
+   zeven waterpunten uit 1974–1975 en de bijbehorende watercodekaart. Voeg
+   daarna waterwantsen, waterkevers, libellen, neuropteren en zweefvliegen toe,
+   maar alleen wanneer datum en locatie per waarneming zijn vastgesteld.
+7. **De 41 droge-duinvegetatieplots lokaliseren.** Zoek eerst de oorspronkelijke
+   plotkaart en tabellen. Zonder die koppeling blijft de reeks kandidaat; met
+   vaste locaties en herhaalde opnamen kan zij een belangrijke historische
+   vegetatiereeks worden.
+
+### Fase 3 — reeds bekende bronhouders en contextdatasets
+
+8. **Ontvangen meetnetleveringen vergelijken, niet blind importeren.** De
+   verwachte gegevens van De Vlinderstichting en eventuele latere leveringen
+   worden eerst vergeleken met NDFF op populatie, bezoeken, sleutels, nullen en
+   overlap. Alleen aantoonbare aanvullingen of betere primaire versies vervangen
+   de voorlopige reconstructies.
+9. **Contextdatasets alleen promoveren na georeferentie.** Duinvalleiplots,
+   jachtspinnen, TERRA-Dunes en andere genummerde locaties blijven in
+   `Meijendel_bronnen` totdat per waarneming een betrouwbare ligging in
+   Meijendel is vastgesteld.
+10. **Verklarende lagen afzonderlijk opbouwen.** Voeg de Habitatkaart T1, de
+    landbedekking van 2001 en 2022 en eventueel gevonden remote-sensingrasters
+    toe als omgevingslagen. Zij mogen ecologische veranderingen helpen
+    verklaren, maar worden niet als soortenwaarnemingen behandeld.
+
+### Vaste werkwijze per bron
+
+Iedere bron doorloopt dezelfde vijf stappen: een onveranderde bronkopie met
+checksum bewaren; gegevenswoordenboek en rechten vastleggen; locaties en
+analyseeenheid controleren; overlap en dubbelen bepalen; pas daarna een
+reproduceerbare import en analyseview maken. Na iedere statuswijziging worden
+dit register en de Wordversie meteen bijgewerkt.
+
+### Dekking van de internetcontrole
+
+De controle van 26 september 2026 omvatte GBIF, DataCite, Zenodo, Dryad,
+Figshare, Europe PMC, Naturalis Repository, Wageningen Research e-depot en de
+repositories van Universiteit Leiden en TU Delft. Algemene aggregators zijn
+niet als zelfstandige bron opgenomen wanneer zij waarschijnlijk dezelfde
+waarnemingen als NDFF of primaire collecties bevatten. Een openbare zoekronde
+kan nooit bewijzen dat geen ongepubliceerde of slecht geïndexeerde bron bestaat;
+dit register legt daarom ook de zoekdatum en toelatingsreden vast.
 
 ## Achterliggende verantwoording
 
