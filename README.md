@@ -66,6 +66,10 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Beschrijft de bronoverstijgende analysepoort met de analysetypen `V`, `I`,
   `TV`, `TA` en `TK`. De laag verwijst naar bronrecords en kopieert geen
   waarnemingen.
+- [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md)
+  Read-only inventaris van de fysieke `ndff_*`, `externe_ecologie_*` en
+  `vangblik*`-tabellen, inclusief applicatiekoppelingen en voorlopige
+  naamgevingskeuzes.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
