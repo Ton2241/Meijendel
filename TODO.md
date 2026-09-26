@@ -16,6 +16,11 @@
 - Werk daarna één passende meetfamilie uit voor rechtstreekse verrijking door
   bronorganisaties. Behoud bron-ID's en bewijs van reconstructie; voorkom dat
   een oorspronkelijke telling naast haar NDFF-afgeleide opnieuw meetelt.
+- Behoud van `pq_*` en `vangblik*` is geaccordeerd, onder de voorwaarde dat
+  PQ-gegevens uit andere bronnen de PQ-tabellen kunnen aanvullen. Werk daarvoor
+  brongebonden locatie-/opname-ID's, leveringsversies, overlap en conflicten
+  uit; behoud bestaande interne ID's en toets het doorwerken naar Shiny en
+  website bij iedere inhoudelijke aanvulling.
 
 ### Meijendel_bronnen
 

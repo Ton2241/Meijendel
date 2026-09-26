@@ -14,6 +14,11 @@ Vogels mogen hun bestaande structuur behouden. De provinciale PQ's horen
 uitdrukkelijk bij deze beoordeling. Website, dashboard en Shiny moeten goed
 blijven functioneren; nieuwe views zijn geen oplossing voor het overzicht.
 
+De gebruiker heeft het behoud van `pq_*` en `vangblik*` inmiddels inhoudelijk
+geaccordeerd, met de uitdrukkelijke voorwaarde dat PQ-gegevens uit andere
+bronnen de `pq_*`-structuur kunnen aanvullen. Deze voorwaarde is hieronder
+uitgewerkt; er is nog geen schema- of gegevensmigratie uitgevoerd.
+
 Het uitgangspunt is het voorstel van de gebruiker: verwijder `ndff_` uit de
 tabelnamen en beoordeel daarna waar andere bronnen inhoudelijk kunnen
 aansluiten. De live naamcontrole vindt 145 vrije doelnamen voor 146 tabellen.
@@ -404,7 +409,7 @@ losse analytische werelden te blijven bestaan.
 | Dagvlinderroutes | `vlinder_routefamilie`, `vlinder_routegeometrie`, `vlinder_bezoek`, `vlinder_bezoek_taxon` | Oorspronkelijke route-ID's, volledige bezoeken, deelname en doelbereik uit een rechtstreekse levering; na expliciete koppeling met de reconstructie. |
 | Libellenroutes | `libel_routefamilie`, `libel_routegeometrie`, `libel_bezoek`, `libel_bezoek_taxon` | Rechtstreekse route- en bezoekgegevens die dezelfde meetstructuur beschrijven. |
 | Andere protocollen | De overeenkomstige namen zonder `ndff_`, zoals `amfibie_waterbezoek` en `korstmos_bezoek` | Aanvullingen per protocol; een waterbezoek blijft onderscheiden van een routebezoek of hokinventarisatie. |
-| Vegetatie en permanente quadraten | `pq_vegetatie_*` voor de provinciale PQ-meetstructuur; een bredere vegetatie-opnamefamilie alleen waar nodig | Nieuwe provinciale leveringen passen na versie- en sleutelcontrole. LVD-opnamen mogen alleen dezelfde PQ-identiteit krijgen als die identiteit werkelijk is vastgesteld. |
+| Vegetatie en permanente quadraten | `pq_vegetatie_*` voor PQ-metingen uit alle passende bronnen; een bredere vegetatie-opnamefamilie alleen waar nodig | Zowel provinciale als andere leveringen kunnen bestaande PQ's verrijken of nieuwe gelokaliseerde PQ's toevoegen. Een LVD-opname krijgt alleen een bestaande PQ-identiteit wanneer die koppeling is vastgesteld. |
 | Vangblikken | `vangblik_event`, `vangblik_vangst`, locaties en taxa | Rechtstreekse verrijking van deze vangstreeks. Hetzelfde event kan meerdere soortgroepen opleveren en wordt niet per soortgroep gekopieerd. |
 | Collecties en overige ecologische resultaten | Voorgesteld `ecologie_dataset/event/resultaat/overlap` | Bronnen met dit generieke event–resultaatmodel. Museumexemplaren worden geen routebezoeken. |
 | Vogels | Bestaande `soorten`, `territoria`, dagbezoeken en dagwaarnemingen | Behouden als expliciet geaccepteerde uitzondering. |
@@ -491,10 +496,41 @@ ruimtelijke of analytische toelating.
 
 Het voorstel om deze namen te behouden is inhoudelijk: `pq` benoemt een
 meeteenheid en geen leverancier. De provincienaam zit niet in de tabelnaam.
-Deze familie kan aanvullende provinciale gegevens ontvangen zonder een
-nieuwe naamgevingsregel. Wel moet bij volgende leveringen de relatie tussen
-importversie, meetlocatie, opname en soortenlijst behouden blijven; momenteel
-verwijst het PQ-locatieregister naar de importregistratie.
+Het behoud is door de gebruiker geaccordeerd onder de voorwaarde dat ook
+PQ-gegevens uit andere bronnen kunnen aansluiten. De provinciale reeks is
+de bestaande basis, geen exclusieve toegangseis voor deze tabelfamilie.
+
+Het huidige schema moet daarvoor gericht worden uitgebreid. `pq_nummer` is
+nu een globale sleutel en het PQ-locatieregister verwijst naar één
+importregistratie. Twee organisaties kunnen hetzelfde nummer voor
+verschillende locaties gebruiken; andersom kunnen twee broncodes juist
+dezelfde locatie of opname aanduiden. Alleen de huidige import herhalen
+met een nieuwe bron is daarom nog geen veilige bronoverstijgende import.
+
+De vereiste uitbreiding heeft de volgende betekenis:
+
+- behoud de bestaande interne PQ-, opname- en taxon-ID's; leg daarnaast per
+  bron/dataset en versie het oorspronkelijke PQ-nummer en opname-ID vast;
+- laat meerdere bronidentificaties naar dezelfde interne PQ of opname
+  verwijzen wanneer die gelijkheid is vastgesteld, met bron en bewijsgrond;
+- voeg nieuwe, aantoonbaar lokaliseerbare permanente quadraten en werkelijk
+  nieuwe opnamen toe met eigen interne identificaties;
+- verrijk dezelfde opname met aanvullende metadata of taxoninformatie na
+  inhoudelijke controle; registreer een tweede levering van hetzelfde
+  bedekkingsresultaat als bronkoppeling in plaats van als extra resultaat;
+- bewaar conflicterende waarden en de keuze voor de primaire waarde met
+  herkomst, leveringsversie en validatiestatus. De eerdere status van een
+  provinciale levering gaat niet automatisch over op een andere bron;
+- behoud methode, bedekkingsschaal, soortenlijstversie, opnamedatum en
+  locatiekwaliteit. Een eenmalige vegetatieopname zonder bewijs van een
+  permanente meetlocatie wordt niet alleen vanwege haar bronlabel een PQ.
+
+De technische migratie moet de huidige analyse-uitkomsten behouden. Na een
+afzonderlijk beoordeelde inhoudelijke aanvulling mogen nieuwe of verbeterde
+PQ-gegevens ook doorwerken in analyse, Shiny en website. Daarbij worden de
+gewijzigde bronselectie en uitkomsten expliciet gevalideerd; de provinciale
+selectie blijft als controlebasis reproduceerbaar. Het ontwerp bevriest de
+inhoud dus niet permanent op de huidige provinciale levering.
 
 De koppeling met de toepassingen is werkelijk aanwezig:
 
