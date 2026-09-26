@@ -71,6 +71,8 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Vangblik en provinciale PQ. Bevat de oude→nieuwe naamkaart, bestaande
   soortkoppelingen, voorwaarden voor rechtstreekse bronverrijking en de
   gevolgen voor website, Shiny en de migratieketen. Nog geen migratiebesluit.
+  Ook beschikbaar als [leesbaar Wordbestand voor Pages](docs/database/MEIJENDEL_TABELINVENTARIS.docx),
+  met het voorstel vooraan en de volledige naamkaart in een liggende bijlage.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]
