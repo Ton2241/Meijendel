@@ -55,7 +55,7 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
 - `meijendel_bronnen.sql`
   Afzonderlijke, niet-publieke dump met contextdatasets zonder voldoende
   waarnemingslocatie en het Meijendel-literatuuroverzicht uit Zotero. Zie
-  [`docs/MEIJENDEL_BRONNEN.md`](docs/MEIJENDEL_BRONNEN.md).
+  [`docs/bronnen/MEIJENDEL_BRONNEN.md`](docs/bronnen/MEIJENDEL_BRONNEN.md).
 - [`docs/MEIJENDEL_BRONREGISTER.md`](docs/MEIJENDEL_BRONREGISTER.md)
   Menselijk leesbaar overzicht van aanwezige, contextuele en geïdentificeerde
   ecologische bronnen, met eigenaar en statistische gebruiksgrenzen. Ook
@@ -204,8 +204,8 @@ De open FFV-bronbestanden, stagingdataset en rapporten staan uitsluitend op de
 Samsung T7 onder `/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF`. De ontvangen
 onvervaagde levering voor ticket 58679 staat daar fysiek gescheiden onder
 `secure/ticket_58679` en komt niet in Git, `meijendel.sql`, de gewone Shiny-app
-of webpaden. Zie `docs/NDFF_STAGINGDATASET.md` en
-`docs/NDFF_SECURE_ONTVANGST.md`.
+of webpaden. Zie `docs/bronnen/bronvergelijkingen/NDFF_STAGINGDATASET.md` en
+`docs/bronnen/importbesluiten/NDFF_SECURE_ONTVANGST.md`.
 
 ### Ruimtelijke begrenzingen
 
@@ -217,7 +217,8 @@ toelatingspoort voor gelokaliseerde records; Natura 2000 en SOVON voegen
 juridische respectievelijk monitoringcontext toe. Bouw en import staan in
 `gis/scripts/build_meijendel_ruimtelijke_lagen.py` en
 `gis/scripts/import_meijendel_ruimtelijke_lagen.py`; de werkwijze en
-interpretatieregels staan in `docs/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
+interpretatieregels staan in
+`docs/bronnen/importbesluiten/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
 
 ### Duinvalleivegetatie 2001-2018
 
@@ -226,7 +227,7 @@ vegetatiebron in `Meijendel`. Zij bevat 488 opnamen op 186 vaste proefstroken,
 208 taxa, een volledige matrix van 101.504 opname-taxoncombinaties en 855
 bodemmetingen. Analyseviews sluiten één aantoonbaar afwijkende bronregel uit.
 De reeks wordt niet met de gezaghebbende provinciale PQ-reeks vermengd. Zie
-[`docs/DUINVALLEI_VEGETATIE.md`](docs/DUINVALLEI_VEGETATIE.md).
+[`docs/bronnen/importbesluiten/DUINVALLEI_VEGETATIE.md`](docs/bronnen/importbesluiten/DUINVALLEI_VEGETATIE.md).
 
 De openbare FFV-staging en historische GBIF-vangblikreeks zijn lokaal als
 afzonderlijke bronregistraties in nieuwe tabellen van `Meijendel` opgenomen.

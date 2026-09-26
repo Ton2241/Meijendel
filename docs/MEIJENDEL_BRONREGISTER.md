@@ -425,7 +425,10 @@ dit register legt daarom ook de zoekdatum en toelatingsreden vast.
 
 ## Achterliggende verantwoording
 
-- [NDFF-staging en bronvergelijking](NDFF_STAGINGDATASET.md)
-- [NDFF-protocolaudit](NDFF_PROTOCOLAUDIT.md)
-- [Scheiding tussen Meijendel en Meijendel_bronnen](MEIJENDEL_BRONNEN.md)
-- [Ruimtelijke audit van contextbronnen](MEIJENDEL_BRONNEN_AUDIT.md)
+- [NDFF-staging en bronvergelijking](bronnen/bronvergelijkingen/NDFF_STAGINGDATASET.md)
+- [NDFF-protocolaudit](bronnen/audits/NDFF_PROTOCOLAUDIT.md)
+- [Scheiding tussen Meijendel en Meijendel_bronnen](bronnen/MEIJENDEL_BRONNEN.md)
+- [Ruimtelijke audit van contextbronnen](bronnen/audits/MEIJENDEL_BRONNEN_AUDIT.md)
+- [Importbesluit duinvalleivegetatie](bronnen/importbesluiten/DUINVALLEI_VEGETATIE.md)
+- [Ruimtelijke bronlagen en toelatingsregels](bronnen/importbesluiten/MEIJENDEL_RUIMTELIJKE_LAGEN.md)
+- [Beveiligde NDFF-ontvangst](bronnen/importbesluiten/NDFF_SECURE_ONTVANGST.md)

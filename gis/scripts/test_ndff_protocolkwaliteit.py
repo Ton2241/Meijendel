@@ -15,7 +15,7 @@ SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
 IMPORTER = ROOT / "gis" / "scripts" / "import_ndff_protocolkwaliteit.py"
 README = ROOT / "README.md"
 DECISIONS = ROOT / "DECISIONS.md"
-AUDIT = ROOT / "docs" / "NDFF_PROTOCOLAUDIT.md"
+AUDIT = ROOT / "docs" / "bronnen" / "audits" / "NDFF_PROTOCOLAUDIT.md"
 WORK_INSTRUCTION = ROOT / "AGENTS.md"
 ARCHITECTURE = ROOT / "ARCHITECTURE.md"
 

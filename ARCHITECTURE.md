@@ -51,7 +51,7 @@ De database onderscheidt vanaf 24 september 2026 drie onafhankelijke lagen:
 andere. `meijendel_waarneming_ruimtelijke_status` legt per bronrecord en
 regelversie vast of de locatie volledig binnen het projectgebied ligt, alleen
 de grens raakt, erbuiten ligt of niet als geometrie beschikbaar is. Zie
-`docs/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
+`docs/bronnen/importbesluiten/MEIJENDEL_RUIMTELIJKE_LAGEN.md`.
 
 ### Export- en Shiny-cacheketen
 

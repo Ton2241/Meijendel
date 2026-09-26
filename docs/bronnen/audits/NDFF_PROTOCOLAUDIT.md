@@ -1155,9 +1155,9 @@ tellingen worden nooit automatisch als nul of met machine learning ingevuld.
 ## Geïmplementeerde protocolkwaliteitslaag
 
 De beoordeelde matrix staat tevens in
-`Natuurprotocollen/Natuurprotocollen_gebruiksmatrix.xlsx`; de inhoudelijke
+`docs/bronnen/protocollen/Natuurprotocollen_gebruiksmatrix.xlsx`; de inhoudelijke
 onderbouwing staat in
-`Natuurprotocollen/Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx`.
+`docs/bronnen/protocollen/Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx`.
 De gebruikte bestanden zijn met SHA-256 vastgezet in de importeur.
 
 Regelversie `ndff-protocolkwaliteit-v1` is lokaal in MySQL toegepast voor de

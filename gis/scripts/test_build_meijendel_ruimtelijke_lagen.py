@@ -13,7 +13,7 @@ ROOT = Path(__file__).parents[2]
 BUILDER = ROOT / "gis" / "scripts" / "build_meijendel_ruimtelijke_lagen.py"
 IMPORTER = ROOT / "gis" / "scripts" / "import_meijendel_ruimtelijke_lagen.py"
 SCHEMA = ROOT / "gis" / "database" / "meijendel_ruimtelijke_lagen_schema.sql"
-DOC = ROOT / "docs" / "MEIJENDEL_RUIMTELIJKE_LAGEN.md"
+DOC = ROOT / "docs" / "bronnen" / "importbesluiten" / "MEIJENDEL_RUIMTELIJKE_LAGEN.md"
 
 
 def load_builder():

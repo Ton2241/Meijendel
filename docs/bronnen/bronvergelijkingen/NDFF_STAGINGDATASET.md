@@ -175,7 +175,8 @@ meetnetten gaan vooraf aan een eventuele import.
 ## Protocolaudit 17 augustus 2026
 
 De protocoltoets per FFV-soortgroep is afgerond en reproduceerbaar vastgelegd in
-`gis/scripts/analyse_ndff_protocollen.py` en `docs/NDFF_PROTOCOLAUDIT.md`.
+`gis/scripts/analyse_ndff_protocollen.py` en
+`docs/bronnen/audits/NDFF_PROTOCOLAUDIT.md`.
 
 - De staging bevat 54 protocolnamen in 26 aanvraagsoortgroepen.
 - 130.064 records (16,04%) behoren tot een voor de soortgroep passend
