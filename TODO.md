@@ -446,3 +446,21 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 - Smoke-tests blijven uitbreiden voor ledenroutes, archief, CMS, dashboard, SQL, Shiny en host-aliases.
 - Voorkom dat dashboard, Shiny of grafiekoutputs divergeren van dezelfde dashboardbron.
 - Rond wijzigingen af met relevante verificatie en commit ze daarna standaard in Git.
+
+## Externe ecologiebronnen na fase 1 en 2
+
+- Georeferenceer de 18 EIS-bijenproefvlakken pas wanneer een betrouwbare
+  digitale begrenzing of voldoende controlepunten beschikbaar zijn; importeer
+  daarna de gecontroleerde soortenmatrices uit 2019, 2021 en 2023.
+- Zoek een betrouwbare digitale vertaling van Pan 17.1, Pan 26.1.1, K10, G15
+  en G21 voordat de aquatische soortenresultaten uit 1974–1975 naar
+  `Meijendel` worden gepromoveerd.
+- Koppel de GBIF-biometrie niet aan VRS Meijendel op basis van `NL19`; daarvoor
+  is een record- of stationsleutel naar Trektellen-site 403 nodig.
+- Zoek voor de 41 droge-duinvegetatieplots de oorspronkelijke plotcodes,
+  coördinaten en opnametabellen. De publicatiekaart en LVD-selectie zijn daarvoor
+  onvoldoende.
+- Behandel 13.169 LVD-resultaten met exacte of waarschijnlijke provinciale
+  PQ-overlap niet als onafhankelijke tweede waarneming. Mogelijke NDFF-overlap
+  blijft zichtbaar, maar vormt zonder gedeelde bron-ID geen automatische
+  ontdubbeling.

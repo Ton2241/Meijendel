@@ -10,7 +10,7 @@ Dit register bevat informatie over:
 
 - wie de oorspronkelijke bron beheert; en
 
-- waarvoor de gegevens statistisch al dan niet kunnen worden.
+- waarvoor de gegevens statistisch al dan niet kunnen worden gebruikt.
 
 Het register beschrijft meet- en waarnemingsbronnen en de belangrijkste verklarende omgevingslagen, geen afzonderlijke soorten. Taxonomische referentietabellen, berekende analyse-uitkomsten en technische hulptabellen vallen buiten dit overzicht. Details over tabellen, imports en protocolcodes staan in de achterliggende projectdocumentatie.
 
@@ -30,8 +30,8 @@ In één oogopslag:
 
 - de NDFF-laag is omvangrijk, maar ondersteunt zonder aanvullende meetstructuur vooral verspreidingsonderzoek;
 
-- op de VPS staan in het Analysecentrum drie contextdatasets en 522 literatuurverwijzingen die niet ongemerkt in analyses terecht mogen komen;
-- de gevonden externe datasets zijn nog kandidaten en worden pas na een afzonderlijke toelatingscontrole geïmporteerd.
+- op de VPS staan in het Analysecentrum drie contextdatasets en 522 literatuurverwijzingen die niet ongemerkt in analyses terecht mogen komen; de hieronder beschreven nieuwe fase-2-context staat vooralsnog alleen in de lokale canonieke database;
+- zes openbare externe bronnen zijn na ruimtelijke toelatings- en overlapcontrole in `Meijendel` opgenomen; hun verschillende analysemogelijkheden blijven per record zichtbaar.
 
 Met **beheerder** wordt hieronder de primaire bronorganisatie of uitgever bedoeld voor zover die nu bekend is. Het is geen afzonderlijke uitspraak over juridisch eigendom of auteursrecht.
 
@@ -229,17 +229,71 @@ Iedere ontdekking, levering, import, verplaatsing, uitsluiting of nieuwe beoorde
 
 De overige NDFF-regels zijn losse of uitsluitend positieve registraties. Zij blijven nuttig voor verspreiding, maar ontbreken mag daar nooit als afwezigheid worden uitgelegd.
 
-### 1.6. Openstaande ruimtelijke toelatingscontrole
+### 1.6. Openbare externe ecologiebronnen
+
+Op 26 september 2026 zijn zes openbare bronnen reproduceerbaar geselecteerd en in drie generieke tabellen opgenomen: dataset, meet- of collectie-event en resultaat. De oorspronkelijke bron-ID, bronnaam, datum of datuminterval, coördinaten, locatie-onzekerheid, protocol, hoeveelheid, licentie en volledige bronmetadata blijven behouden. Een afzonderlijke overlaptabel voorkomt dat bekende dubbelen ongemerkt als zelfstandige waarnemingen worden gebruikt.
+
+De import is tweemaal uitgevoerd en leverde beide keren exact 10.994 events en 98.916 resultaten op. De hashes, bronselecties, totalen en overlapuitkomsten staan in het [auditmanifest fase 1 en 2](../gis/audit/externe_ecologie_fase1_2_manifest.json). De onveranderde bronbestanden en hun `SHA256SUMS.txt` worden duurzaam bewaard op de T7 onder `Meijendel data/Externe ecologiebronnen/fase_1_2_2026-09-26`.
+
+#### 1.6.1. STOWA Limnodata
+
+**Beheerder.** STOWA; gegevens van Hoogheemraadschap van Delfland en Rijnland
+
+**Omvang en periode.** 44 bemonsteringen op zeven stationcodes en zes locaties, met 1.036 positieve taxonresultaten van 439 taxa uit 1992–2010.
+
+**Gebruik.** Herhaalde metingen van aquatische flora en fauna kunnen per locatie, datum, methode en meeteenheid worden onderzocht. De gebruikte eenheden blijven gescheiden: 426 resultaten zijn uitgedrukt als `aantal/ml`, 358 als `aantal/5m`, 196 als Braun-Blanquetklasse en 56 zonder eenheid. Niet gemelde soorten zijn geen nulwaarneming.
+
+#### 1.6.2. ENDURE helmduinfauna
+
+**Beheerder.** Universiteit Gent en ENDURE
+
+**Omvang en periode.** Vijftien meetpunten op 19 september 2018. Veertien meetpunten hebben een complete matrix met 71 aanwezigheden en 9.001 expliciete afwezigheden voor 626 taxa; bij één meetpunt ontbreekt de resultatenmatrix.
+
+**Gebruik.** Dit is een gestandaardiseerde en herhaalbare referentiemeting voor ongewervelden in witte duinen. De expliciete afwezigheden zijn bruikbaar binnen de veertien complete matrices. Eén meetjaar levert geen ontwikkeling door de tijd op.
+
+#### 1.6.3. Landelijke Vegetatie Databank
+
+**Beheerder.** Wageningen Environmental Research
+
+**Omvang en periode.** De gepubliceerde bronversie 1.6 bevat binnen het basisgebied 5.195 opnamen en 119.006 taxonregels uit 1930–2015. Toegelaten zijn 3.437 opnamen met een gepubliceerde locatie-onzekerheid van maximaal 50 meter en 81.310 taxonresultaten uit 1959–2015. De overige 1.758 opnamen blijven buiten de analytische selectie vanwege een onzekerheid van 100, 1.000 of 5.000 meter.
+
+**Overlap en gebruik.** De controle op datum, taxon en afstand markeert 8.006 resultaten als exacte en 5.163 als waarschijnlijke overlap met de primaire provinciale PQ-reeks. Deze 13.169 resultaten tellen niet als onafhankelijke tweede waarneming. Daarnaast hebben 51.078 LVD-resultaten een mogelijke overeenkomst met een NDFF-regel op taxon, datum en onzekerheidspolygoon. Omdat NDFF geen gedeelde bron-ID levert en de polygonen ruimtelijke onzekerheid weergeven, wordt die mogelijke overlap niet automatisch als dubbel verwijderd. De resterende opnamecontext is bruikbaar voor historische vegetatiesamenstelling en verspreiding; vergelijking door de tijd vereist controle van opnametype, oppervlak en herhaling.
+
+#### 1.6.4. Historische vlinder- en motcollectie
+
+**Beheerder.** Natuurhistorisch Museum Rotterdam
+
+**Omvang en periode.** Van 5.219 ruimtelijke treffers binnen de projectgrens zijn 4.748 gedateerde, unieke collectierecords met een expliciete etiketplaats Meijendel of Bierlap toegelaten; 247 taxa uit 1955–2015. Van deze resultaten hebben 4.646 een mogelijke overeenkomst met NDFF op taxon, datum en onzekerheidspolygoon.
+
+**Gebruik.** De collectie geeft controleerbare historische aanwezigheid, vooral door de intensieve vangsten van J.A.W. Lucas in 1955–1956. Zonder vanginspanning en lege vangnachten is dit geen populatietrend. De mogelijke NDFF-overlap blijft gemarkeerd en wordt niet automatisch samengevoegd.
+
+#### 1.6.5. Naturalis Botany
+
+**Beheerder.** Naturalis Biodiversity Center
+
+**Omvang en periode.** Van 7.585 ruimtelijke treffers binnen de projectgrens zijn 1.881 gedateerde, unieke specimens met een expliciete Meijendel-etiketplaats toegelaten; 785 taxa uit 1875–2025. Daarvan hebben 641 specimens een mogelijke overeenkomst met NDFF. Nog 33 expliciet als Meijendel beschreven specimens zonder bruikbare datum blijven buiten de analytische selectie.
+
+**Gebruik.** Gedateerde historische plantenvondsten met bewaard bewijsmateriaal. De records tonen aanwezigheid, geen gestandaardiseerde telinspanning of afwezigheid.
+
+#### 1.6.6. Naturalis Coleoptera
+
+**Beheerder.** Naturalis Biodiversity Center
+
+**Omvang en periode.** Van 2.372 ruimtelijke treffers binnen de projectgrens zijn 869 gedateerde, unieke specimens met een expliciete Meijendel-etiketplaats toegelaten; 78 taxa uit 1906–2023. Nog 210 expliciete Meijendel-specimens zonder bruikbare datum blijven buiten de analytische selectie.
+
+**Gebruik.** Historische aanwezigheid van kevers met bewaard collectiemateriaal. De bron ondersteunt geen populatietrend zonder gestandaardiseerde vanginspanning. De oorspronkelijke etiketplaats en de gepubliceerde locatie-onzekerheid blijven per specimen beschikbaar.
+
+### 1.7. Openstaande ruimtelijke toelatingscontrole
 
 De bronregistraties staan wel in `Meijendel`, maar een deel mag nog niet als waarneming binnen Meijendel worden gebruikt. De audit met de actuele projectgrens vond 70.427 openbare NDFF-records uit de downloadselectie 1950–2025, 968 BMP-dagwaarnemingen uit 2009–2025, 644 provinciale PQ-opnamen uit 1981–2025 en 14 primaire SOVON-bijvangsten uit 2009–2024 die buiten het basisgebied liggen. Sommige NDFF-records hebben een breed broninterval dat al vóór 1950 begint; dat maakt hen geen waarneming uit dat eerdere jaar. Daarnaast raken 146.466 NDFF-polygonen alleen de grens. Bij die polygonen staat niet vast dat de waarneming binnen Meijendel is gedaan.
 
 Deze records blijven herkenbaar als bronmateriaal, maar worden niet zonder een afzonderlijk ruimtelijk besluit in Meijendelanalyses gebruikt. Alle 37.770 vangblikevents en alle territoriumplots liggen binnen het basisgebied.
 
-### 1.7. Verklarende omgevingslagen
+### 1.8. Verklarende omgevingslagen
 
 Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologische veranderingen te beschrijven of als mogelijke verklaring te toetsen.
 
-#### 1.7.1. Dagelijks weer
+#### 1.8.1. Dagelijks weer
 
 **Eigenaar.** KNMI, stations Valkenburg en Voorschoten
 
@@ -247,7 +301,7 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Gebruik en grens.** Temperatuur, neerslag, wind, zon en luchtdruk kunnen als covariaten worden gebruikt. Alleen de genormaliseerde analyseview is geldig; 2026 is nog niet compleet.
 
-#### 1.7.2. Hoogte
+#### 1.8.2. Hoogte
 
 **Eigenaar.** Actueel Hoogtebestand Nederland via PDOK
 
@@ -255,7 +309,7 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Gebruik en grens.** Beschrijft hoogte en hoogtevariatie per plot. Eén peiljaar geeft geen ontwikkeling door de tijd.
 
-#### 1.7.3. Stikstofdepositie
+#### 1.8.3. Stikstofdepositie
 
 **Eigenaar.** RIVM
 
@@ -263,7 +317,7 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Gebruik en grens.** Geschikt als mogelijke verklarende factor naast soorten- en vegetatiereeksen. Een samenhang bewijst niet dat stikstof de enige oorzaak is.
 
-#### 1.7.4. Bodemgebruik
+#### 1.8.4. Bodemgebruik
 
 **Eigenaar.** CBS Bestand Bodemgebruik
 
@@ -271,7 +325,7 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Gebruik en grens.** Laat veranderingen in de ruimtelijke omgeving van plots zien. De meetjaren zijn niet jaarlijks beschikbaar.
 
-#### 1.7.5. Natura 2000-habitat
+#### 1.8.5. Natura 2000-habitat
 
 **Eigenaar.** Habitatkartering 2014; bronhouderschap nog in de metadata te bevestigen
 
@@ -281,7 +335,7 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 ## 2. Bronnen in MySQL-database `Meijendel_bronnen`
 
-Deze database bevat informatie die niet aan de ruimtelijke toelatingsregel van de analytische database voldoet. Zij is in het Analysecentrum raadpleegbaar, maar wordt niet automatisch in modellen of kaarten uit `Meijendel` gebruikt.
+Deze database bevat informatie die niet aan de ruimtelijke toelatingsregel van de analytische database voldoet. De reeds gepubliceerde versie is in het Analysecentrum raadpleegbaar, maar wordt niet automatisch in modellen of kaarten uit `Meijendel` gebruikt. De nieuwe bijen- en aquatische context uit fase 2 staat op 26 september 2026 alleen in de lokale canonieke database en is nog niet naar de VPS gepubliceerd.
 
 ### 2.1. Duinvalleivegetatie
 
@@ -315,73 +369,39 @@ Deze database bevat informatie die niet aan de ruimtelijke toelatingsregel van d
 
 **Waarde en beperking.** Zoekingang naar onderzoek en historische context. Dit zijn verwijzingen, geen waarnemingsregels; volledige teksten blijven in Zotero en worden niet op de VPS gekopieerd.
 
+### 2.5. Bijenmonitoring in vier beheergebieden
+
+**Beheerder.** EIS Kenniscentrum Insecten
+
+**Omvang en periode.** Achttien vaste proefvlakken van één hectare, verdeeld over Vallei Meijendel, De Loopert, Buitenduinen en Binnenduinen. Uit de officiële rapporten zijn alle 162 bezoeken gereconstrueerd: drie bezoeken per proefvlak in 2019, 2021 en 2023, telkens 45 minuten.
+
+**Waarde en beperking.** De vaste opzet ondersteunt in beginsel vergelijking van bijengemeenschappen tussen proefvlakken en onderzoeksjaren. De rapporten tonen de proefvlakgrenzen alleen als kaartfiguren. Zolang deze grenzen niet betrouwbaar digitaal zijn vastgelegd en de soortenmatrices niet gecontroleerd zijn gedigitaliseerd, blijven de proefvlak- en bezoekgegevens context in `Meijendel_bronnen`. Drie onderzoeksjaren zijn bovendien een reeks van gestandaardiseerde herhalingen, geen robuuste langjarige trend.
+
+### 2.6. Aquatische macrofauna 1974–1975
+
+**Beheerder.** Rijksuniversiteit Leiden; ontsloten via Naturalis
+
+**Omvang en periode.** Zeven vaste monsterpunten in Pan 17.1, Pan 26.1.1, Kwelplas K10, G15 en G21, vrijwel maandelijks onderzocht van juni 1974 tot juli 1975. De database legt de zeven watercodes en negentien methodeperioden of afwijkingen vast. Vanaf augustus 1974 werd doorgaans 2,5 meter oever en 0,75 m² bemonsterd; voor punt 7 was dit 2 meter en 0,60 m². De pilot in juni 1974, de kortere bemonstering van punt 2 in november 1974 en de gedeeltelijke ronde van juli 1975 blijven afzonderlijk herkenbaar.
+
+**Waarde en beperking.** De reeks is waardevolle historische context voor waterorganismen en watermilieu. De watercodes zijn bekend, maar betrouwbare digitale grenzen of punten en een foutgecontroleerde volledige soortenmatrix ontbreken nog. Daarom zijn nog geen waarnemingsregels naar `Meijendel` overgebracht.
+
 ## 3. Geïdentificeerde externe kandidaatbronnen
 
 Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebben betrekking op de al gemaakte Meijendelselectie of op de beschreven onderzoeksopzet. Voor iedere import volgt eerst controle van locatie per waarneming, overlap met bestaande bronnen, rechten en statistische betekenis.
 
 ### Kandidaten met de grootste verwachte aanvulling
 
-#### 3.1. [Dutch Vegetation Database](https://doi.org/10.15468/ksqxep)
-
-**Eigenaar of uitgever.** Wageningen Environmental Research
-
-**Omvang en periode.** Meijendelselectie: 5.195 opnamen, 119.006 taxonregels en 1.132 taxa; 1930–2015
-
-**Mogelijke meerwaarde.** Rijke historische vegetatieopnamen met opnameoppervlak, bedekking en protocol
-
-**Belangrijkste controle vóór opname.** Overlap met provinciale PQ en NDFF verwijderen; 1.758 opnamen hebben een locatie-onzekerheid groter dan 50 meter
-
-#### 3.2. STOWA Limnodata
-
-**Eigenaar of uitgever.** STOWA; gegevens van Hoogheemraadschap van Delfland en Rijnland
-
-**Omvang en periode.** 1.036 taxonregels, 44 bemonsteringen en 7 stationcodes op 6 locaties; 1992–2010
-
-**Mogelijke meerwaarde.** Aquatische flora en fauna op herhaalde locaties
-
-**Belangrijkste controle vóór opname.** Eenheden en methoden per reeks scheiden; de levering bevat alleen positieve regels en geen bewezen nullen
-
-#### 3.3. [ENDURE helmduinfauna](https://doi.org/10.15468/xx2gcp)
-
-**Eigenaar of uitgever.** Universiteit Gent en ENDURE
-
-**Omvang en periode.** 15 exacte meetpunten in 2018; 14 complete matrices, 71 positieve en 9.001 negatieve taxonuitkomsten
-
-**Mogelijke meerwaarde.** Gestandaardiseerde momentopname van ongewervelden in witte duinen en een herhaalbare nulmeting
-
-**Belangrijkste controle vóór opname.** Eén event zonder soortenmatrix apart houden; geen tijdtrend afleiden uit één meetjaar
-
-#### 3.4. Historische en actuele ringgegevens
+#### 3.1. Historische en actuele ringgegevens
 
 **Eigenaar of uitgever.** Vogeltrekstation/NIOO-KNAW
 
-**Omvang en periode.** Biometrie: 100.417 records van 163 soorten, 1963–2023; historische nestjongen: 668 records van 38 soorten, 1928–1957
+**Omvang en periode.** De ruimtelijke selectie uit de biometrische GBIF-bron bevat 100.417 records van 163 soorten uit 1963–2023. Historische nestjongen omvatten daarnaast 668 records van 38 soorten uit 1928–1957.
 
 **Mogelijke meerwaarde.** Trektijd, conditie, biometrie en vroeg-historische vogelcontext
 
-**Belangrijkste controle vóór opname.** Vangplaatscodes, locatie-onzekerheid, inspanning en overlap met bestaande vogelgegevens controleren
+**Belangrijkste controle vóór opname.** De code `NL19` blijkt in de officiële EURING-codebeschrijving de provincie Zuid-Holland aan te duiden en niet VRS Meijendel. Trektellen-site 403 is wel VRS Meijendel en bevat inspanningsinformatie, maar er is nog geen recordsleutel tussen beide bronnen gevonden. De 100.417 ruimtelijke treffers zijn daarom niet als VRS-Meijendelvangsten geïmporteerd.
 
-#### 3.5. Bijenmonitoring in vier beheergebieden
-
-**Eigenaar of uitgever.** EIS Kenniscentrum Insecten
-
-**Omvang en periode.** 18 proefvlakken, drie bezoeken per onderzoeksjaar; 162 bezoeken in 2019, 2021 en 2023
-
-**Mogelijke meerwaarde.** Vergelijking van bijengemeenschappen tussen gebieden en jaren
-
-**Belangrijkste controle vóór opname.** Tabellen uit rapporten digitaliseren, proefvlakken georefereren en nagaan of 2025 beschikbaar is
-
-#### 3.6. [Aquatische macrofauna](https://repository.naturalis.nl/pub/643552/Nieukerken_Doctoraalverslag_Meijendel_1978.pdf)
-
-**Eigenaar of uitgever.** Rijksuniversiteit Leiden; publicaties en collecties via Naturalis
-
-**Omvang en periode.** Zeven vaste monsterpunten, vrijwel maandelijks onderzocht van juni 1974 tot juli 1975. Aanvullende publicaties bevatten gedateerde waarnemingen van waterwantsen uit 1920–1930, 1953–1961 en 1970–1977, waterkevers uit 1969–1977 en libellen uit 1849–1976, deels gekoppeld aan benoemde of gecodeerde wateren.
-
-**Mogelijke meerwaarde.** Historische reeks van waterorganismen, vegetatie en fysisch-chemische waterkenmerken
-
-**Belangrijkste controle vóór opname.** Eerst de tabellen, watercodes en collectieregistraties samenbrengen. Daarna per monster vaststellen welke locatie, datum, methode en volledige soortenlijst beschikbaar zijn en overlap met NDFF verwijderen.
-
-#### 3.7. Erosiepinnen in een stuifkuilcomplex
+#### 3.2. Erosiepinnen in een stuifkuilcomplex
 
 **Eigenaar of uitgever.** Jungerius en Van der Meulen
 
@@ -391,7 +411,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Belangrijkste controle vóór opname.** Oorspronkelijke metingen en pinlocaties vinden en op waarnemingsniveau aan Meijendel koppelen
 
-#### 3.8. Langjarige droge-duinvegetatieplots
+#### 3.3. Langjarige droge-duinvegetatieplots
 
 **Eigenaar of uitgever.** Historische Meijendel-onderzoekers; later ontsloten via Wageningen University & Research
 
@@ -399,39 +419,9 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Mogelijke meerwaarde.** Potentieel zeer waardevolle langjarige vegetatiereeks voor successie, begrazing en verandering van grijs duin
 
-**Belangrijkste controle vóór opname.** Oorspronkelijke plotcodes, opnamen en locaties vinden; overlap met provinciale PQ, NDFF en de Landelijke Vegetatie Databank vaststellen
+**Belangrijkste controle vóór opname.** De publicatiekaart toont de 41 punten in Helmduinen, Kijfhoek en Bierlap, maar zonder koppelbare plotcodes. De toegelaten LVD-opnamen leverden geen betrouwbare vertaling op naar deze 41 plots. Oorspronkelijke plotcodes, opnamen en locaties blijven daarom noodzakelijk.
 
-#### 3.9. [Historische vlinder- en motwaarnemingen](https://doi.org/10.15468/czfn9y)
-
-**Eigenaar of uitgever.** Natuurhistorisch Museum Rotterdam
-
-**Omvang en periode.** 5.219 GBIF-records binnen de projectgrens; 1955–2019. Ten minste 4.744 records betreffen de intensieve vangsten van J.A.W. Lucas uit 1955–1956 bij de Bierlap.
-
-**Mogelijke meerwaarde.** Een vrijwel onbenutte historische referentie voor vlinders en nachtvlinders, ruim vóór de huidige meetnetten
-
-**Belangrijkste controle vóór opname.** Vangnachten en vangmethode reconstrueren, locaties en onzekerheid toetsen en ontdubbelen tegen NDFF en museumobjecten. Zonder inspanningsgegevens zijn dit aanwezigheidsgegevens, geen populatietrend.
-
-#### 3.10. [Naturalis Botany](https://doi.org/10.15468/ib5ypt)
-
-**Eigenaar of uitgever.** Naturalis Biodiversity Center
-
-**Omvang en periode.** 6.227 ruimtelijke GBIF-treffers binnen de projectgrens. De expliciet als Meijendel beschreven deelverzameling bevat 138 herbariumspecimens uit 1919–1998.
-
-**Mogelijke meerwaarde.** Gedateerde historische plantenvondsten en controleerbaar collectiemateriaal
-
-**Belangrijkste controle vóór opname.** Etiketplaats, oorspronkelijke datum en coördinaatonzekerheid per specimen controleren. Veel punten kunnen een later toegekende gebiedscoördinaat zijn; overlap met LVD, NDFF en provinciale PQ verwijderen.
-
-#### 3.11. [Naturalis Coleoptera](https://doi.org/10.15468/jrjojf)
-
-**Eigenaar of uitgever.** Naturalis Biodiversity Center
-
-**Omvang en periode.** 1.905 ruimtelijke GBIF-treffers binnen de projectgrens. Daarvan zijn 995 exemplaren uit 1859–1983 expliciet als Meijendel beschreven.
-
-**Mogelijke meerwaarde.** Lange historische context voor kevers, met bewaard bewijsmateriaal
-
-**Belangrijkste controle vóór opname.** De collectie waarschuwt zelf voor nog niet volledig opgeschoonde datums en locaties. Daarom de oorspronkelijke etiketvelden gebruiken, onzekerheid toetsen en dubbelen met NDFF en andere collecties verwijderen.
-
-#### 3.12. [Neuropteren van Meijendel](https://repository.naturalis.nl/pub/317242)
+#### 3.4. [Neuropteren van Meijendel](https://repository.naturalis.nl/pub/317242)
 
 **Eigenaar of uitgever.** Naturalis; onderzoek van D.C. Geijskes
 
@@ -441,7 +431,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Belangrijkste controle vóór opname.** De specimen- en soortenlijsten uit de publicatie digitaliseren, datum en plaats per record vaststellen en vergelijken met Naturalis-collecties en NDFF.
 
-#### 3.13. [Zweefvliegen van Meijendel](https://repository.naturalis.nl/pub/317221)
+#### 3.5. [Zweefvliegen van Meijendel](https://repository.naturalis.nl/pub/317221)
 
 **Eigenaar of uitgever.** Naturalis; onderzoek van G. Delfos
 
@@ -451,7 +441,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Belangrijkste controle vóór opname.** De volledige specimenlijst digitaliseren en per exemplaar datum en locatie vastleggen; daarna ontdubbelen tegen museumcollecties en NDFF.
 
-#### 3.14. TERRA-Dunes plant- en bodemmicrobiomen
+#### 3.6. TERRA-Dunes plant- en bodemmicrobiomen
 
 **Eigenaar of uitgever.** Onderzoeksteam TERRA-Dunes, [Figshare](https://doi.org/10.6084/m9.figshare.25425601.v1)
 
@@ -459,7 +449,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Statistische betekenis en beperking.** Geschikt voor samenhang tussen vegetatie en microbiomen. Niet toelaten voordat de proefvlakken geografisch zijn gereconstrueerd.
 
-#### 3.15. Rups- en bodemmicrobiomen
+#### 3.7. Rups- en bodemmicrobiomen
 
 **Eigenaar of uitgever.** Onderzoeksteam, [Dryad](https://doi.org/10.5061/dryad.8cz8w9gnc)
 
@@ -467,7 +457,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Statistische betekenis en beperking.** Eenmalige genetische en microbiële momentopname. Geen populatietrend, wel lokale ecologische vergelijking na controle van alle monsterlocaties.
 
-#### 3.16. Schimmels bij kruipwilg
+#### 3.8. Schimmels bij kruipwilg
 
 **Eigenaar of uitgever.** Onderzoeksteam, [PLOS ONE/ENA](https://doi.org/10.1371/journal.pone.0099852)
 
@@ -475,7 +465,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Statistische betekenis en beperking.** Bruikbaar als lokale microbiële referentie, niet als tijdreeks of gebiedsdekkende inventarisatie.
 
-#### 3.17. Plantengroei, bodemvocht en weer
+#### 3.9. Plantengroei, bodemvocht en weer
 
 **Eigenaar of uitgever.** Wageningen University & Research, [DANS](https://doi.org/10.17026/DANS-28X-UT8Q)
 
@@ -483,7 +473,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Statistische betekenis en beperking.** Gedetailleerde processtudie van de reactie van duingrassen op neerslag en droogte. Eerst locaties en meetkwaliteit controleren; één halfjaar geeft geen langjarige ontwikkeling.
 
-#### 3.18. Genetische datasets amfibieën
+#### 3.10. Genetische datasets amfibieën
 
 **Eigenaar of uitgever.** Verschillende onderzoeksteams, Figshare
 
@@ -491,7 +481,7 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Statistische betekenis en beperking.** Bruikbaar voor populatiegenetische context. Jaar, locatie en relatie met bestaande RAVON-waarnemingen moeten eerst worden vastgesteld.
 
-### 3.19. Alleen context of nog een onderzoeksaanwijzing
+### 3.11. Alleen context of nog een onderzoeksaanwijzing
 
 **Twee-spintmijt:** 573 mijten uit 2015–2017 op 18 genummerde locaties. Zonder vertaling van `MEY1–18` naar werkelijke locaties blijft dit een kandidaat voor `Meijendel_bronnen`.
 
@@ -549,21 +539,21 @@ Het doel is niet zoveel mogelijk regels importeren, maar per bron de kortste rou
 
 ### Fase 1 — openbare, direct toetsbare bronnen
 
-**STOWA Limnodata en ENDURE volledig beoordelen.** Controleer locaties, sleutels, rechten, overlap en analyseeenheid. ENDURE kan na deze controle als gestandaardiseerde referentiemeting naar `Meijendel`; STOWA alleen per bemonstering en eenheid, zonder niet-gemelde soorten als nul te behandelen.
+**Status: uitgevoerd op 26 september 2026.** STOWA en ENDURE zijn na locatie-, sleutel-, rechten- en eenheidscontrole opgenomen. ENDURE bevat veertien complete aanwezigheids-afwezigheidsmatrices en één event zonder resultatenmatrix. STOWA bevat uitsluitend positieve resultaten; de vier typen meeteenheid worden niet samengevoegd.
 
-**De historische museumreeksen downloaden en vastzetten.** Maak afzonderlijke bronselecties voor de 5.219 NMR-waarnemingen, 6.227 Naturalis-plantenrecords en 1.905 Naturalis-keverrecords. Bewaar `occurrenceID`, oorspronkelijke etiketplaats, datum, coördinaten, onzekerheid, licentie en download-DOI. Alleen geografisch bevestigde, unieke records gaan naar `Meijendel`; overige records blijven kandidaat of gaan als context naar `Meijendel_bronnen`.
+**Museumreeksen: uitgevoerd.** De volledige openbare Darwin Core-archieven zijn geprofileerd. Alleen gedateerde, unieke records binnen het basisgebied én met een expliciete Meijendel- of deelgebiednaam op het etiket zijn opgenomen: 4.748 NMR-vlinders en -motten, 1.881 Naturalis Botany-specimens en 869 Naturalis-kevers. `occurrenceID`, etiketplaats, oorspronkelijke en voor analyse genormaliseerde taxonnaam, datum of datuminterval, coördinaten, onzekerheid, licentie, DOI en bronmetadata zijn behouden. Ruimtelijke treffers zonder expliciet Meijendel-etiket en expliciete Meijendel-records zonder datum zijn niet toegelaten.
 
-**De Landelijke Vegetatie Databank opnieuw selecteren.** De huidige openbare bron geeft meer ruimtelijke treffers dan de eerder vastgelegde selectie van 119.006 taxonregels. Leg daarom eerst bronversie, selectiegrens en verschil tussen opname- en taxonregels vast. Ontdubbel daarna tegen provinciale PQ, NDFF en duinvalleivegetatie.
+**Landelijke Vegetatie Databank: uitgevoerd voor de reproduceerbare bronversie 1.6.** Van 5.195 opnamen en 119.006 taxonregels zijn 3.437 opnamen en 81.310 taxonresultaten met maximaal 50 meter locatie-onzekerheid toegelaten. De overlapaudit markeert 13.169 resultaten als exact of waarschijnlijk reeds aanwezig in de provinciale PQ-reeks. Mogelijke NDFF-overlap blijft zichtbaar, maar wordt vanwege de NDFF-onzekerheidspolygonen niet automatisch als dubbel verwijderd. De duinvalleireeks kan zonder georeferentie niet op opnameniveau worden gekoppeld en blijft afzonderlijk in `Meijendel_bronnen`.
 
 ### Fase 2 — reeksen met grote historische of trendwaarde
 
-**Ringgegevens koppelen aan vangplaats en inspanning.** Bevestig welke locatiecodes VRS Meijendel betreffen en welke vanguren, netten en bezoeken beschikbaar zijn. Pas daarna kunnen fenologie en biometrie worden geanalyseerd; overeenkomstige vogelrecords worden niet dubbel ingevoerd.
+**Ringgegevens: onderzocht, niet toegelaten.** De locatiecode `NL19` in de GBIF-biometrie betekent provincie Zuid-Holland en niet VRS Meijendel. Trektellen-site 403 bevat wel VRS-Meijendelrapporten en inspanning, maar er is geen recordsleutel naar de 100.417 ruimtelijke GBIF-treffers. Zij blijven kandidaat en worden niet met de vogelreeks vermengd.
 
-**Bijenmonitoring reconstrueren.** Digitaliseer de 18 proefvlakken en 162 bezoeken uit 2019, 2021 en 2023. Alleen complete bezoeken en betrouwbare proefvlaklocaties maken vergelijking tussen gebieden en jaren mogelijk.
+**Bijenmonitoring: bezoekstructuur gereconstrueerd.** Alle achttien proefvlakcodes, vier deelgebieden en 162 bezoeken uit 2019, 2021 en 2023 zijn in `Meijendel_bronnen` vastgelegd. De rapporten tonen de grenzen alleen als figuur. De reeks verhuist pas naar `Meijendel` nadat die grenzen betrouwbaar zijn gegeorefereerd en de soortenmatrices foutgecontroleerd zijn gedigitaliseerd.
 
-**Aquatische en historische insectenreeksen digitaliseren.** Begin met de zeven waterpunten uit 1974–1975 en de bijbehorende watercodekaart. Voeg daarna waterwantsen, waterkevers, libellen, neuropteren en zweefvliegen toe, maar alleen wanneer datum en locatie per waarneming zijn vastgesteld.
+**Aquatische reeks: methode en locatiestructuur gereconstrueerd.** De zeven monsterpuntcodes, vijf benoemde wateren en negentien standaard- of afwijkende methodeperioden uit 1974–1975 staan in `Meijendel_bronnen`. Een betrouwbare digitale watercodekaart en een gecontroleerde soortenmatrix ontbreken nog. Daarom zijn geen waarnemingsregels naar `Meijendel` gepromoveerd. De aanvullende waterwantsen, waterkevers, libellen, neuropteren en zweefvliegen blijven kandidaat totdat datum en locatie per waarneming vaststaan.
 
-**De 41 droge-duinvegetatieplots lokaliseren.** Zoek eerst de oorspronkelijke plotkaart en tabellen. Zonder die koppeling blijft de reeks kandidaat; met vaste locaties en herhaalde opnamen kan zij een belangrijke historische vegetatiereeks worden.
+**Droge-duinvegetatieplots: onderzocht, nog niet lokaliseerbaar per plot.** De kaart in het proefschrift is visueel gecontroleerd en toont 41 punten in Helmduinen, Kijfhoek en Bierlap, maar geen koppelbare plotcodes. Ook de LVD-selectie levert geen betrouwbare vertaling. De reeks blijft kandidaat totdat de oorspronkelijke plotkaart en opnametabellen zijn gevonden.
 
 ### Fase 3 — reeds bekende bronhouders en contextdatasets
 

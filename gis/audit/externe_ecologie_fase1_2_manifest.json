@@ -1,0 +1,113 @@
+{
+  "regelversie": "fase1-2-2026-09-26",
+  "aangemaakt_op": "2026-09-26",
+  "scope": "Uitvoering fase 1 en 2 van het Meijendel-bronregister",
+  "fase_1": {
+    "database": "Meijendel",
+    "datasets": [
+      {
+        "dataset_sleutel": "stowa-limnodata-meijendel",
+        "bronbestand": "stowa_limnodata.zip",
+        "sha256": "a77a07107ed7c196777b7290d50f83d8114e41ff131c12879755d95c3efd1717",
+        "events": 44,
+        "resultaten": 1036,
+        "periode": "1992-2010"
+      },
+      {
+        "dataset_sleutel": "endure-helmduinfauna-meijendel-2018",
+        "bronbestand": "endure.zip",
+        "sha256": "9f7a4d95da6f04e9aa4f5eeae61a17dd9d5a0d5b4ff099248a9861075826a1fc",
+        "events": 15,
+        "resultaten": 9072,
+        "afwezigheden": 9001,
+        "periode": "2018"
+      },
+      {
+        "dataset_sleutel": "lvd-meijendel-v1-6",
+        "bronbestand": "lvd.zip",
+        "sha256": "84095fedcf3e13e1b7fc8888a5e7fea136360bbb4db7836d560faffb7f869886",
+        "events": 3437,
+        "resultaten": 81310,
+        "periode": "1959-2015",
+        "uitgesloten_events_locatieonzekerheid_meer_dan_50m": 1758
+      },
+      {
+        "dataset_sleutel": "nmr-vlinders-meijendel",
+        "bronbestand": "nmr_observations.zip",
+        "sha256": "4791aafa76259643b7045d927f1d39f995532e24cc4dcdeccf30e173446b0673",
+        "events": 4748,
+        "resultaten": 4748,
+        "periode": "1955-2015"
+      },
+      {
+        "dataset_sleutel": "naturalis-botany-meijendel",
+        "bronbestand": "naturalis_botany.zip",
+        "sha256": "2d40dde338bac879499dbe5ff68da7ef56aca04401541b87d813bbd4af3175b5",
+        "events": 1881,
+        "resultaten": 1881,
+        "periode": "1875-2025",
+        "uitgesloten_ongedateerde_explicit_meijendel": 33
+      },
+      {
+        "dataset_sleutel": "naturalis-coleoptera-meijendel",
+        "bronbestand": "naturalis_coleoptera.zip",
+        "sha256": "19611eead96004ff51e12f8415159e23a6e75e23a30cfb190fcb89262f282ebc",
+        "events": 869,
+        "resultaten": 869,
+        "periode": "1906-2023",
+        "uitgesloten_ongedateerde_explicit_meijendel": 210
+      }
+    ],
+    "totalen": {
+      "datasets": 6,
+      "events": 10994,
+      "resultaten": 98916,
+      "afwezigheden": 9001
+    },
+    "overlap": {
+      "provinciale_pq_exact": {
+        "unieke_resultaten": 8006,
+        "koppelingen": 8034
+      },
+      "provinciale_pq_waarschijnlijk": {
+        "unieke_resultaten": 5163,
+        "koppelingen": 5213
+      },
+      "ndff_mogelijk": {
+        "unieke_resultaten": 56365,
+        "koppelingen": 73806
+      }
+    }
+  },
+  "fase_2": {
+    "database": "Meijendel_bronnen",
+    "bijenmonitoring": {
+      "bron_sleutel": "eis-bijenmonitoring-meijendel",
+      "proefvlakken": 18,
+      "bezoeken": 162,
+      "periode": "2019, 2021 en 2023",
+      "status": "context_alleen"
+    },
+    "aquatische_macrofauna": {
+      "bron_sleutel": "aquatische-macrofauna-meijendel-1974-1975",
+      "monsterpunten": 7,
+      "protocolperioden": 19,
+      "periode": "1974-1975",
+      "status": "context_alleen"
+    },
+    "ringgegevens": {
+      "bron_sleutel": "vrs-ringgegevens-meijendel-kandidaat",
+      "ruimtelijke_treffers": 100417,
+      "periode": "1963-2023",
+      "status": "kandidaat",
+      "reden": "GBIF-locatiecode NL19 betekent Zuid-Holland en bewijst geen koppeling aan VRS Meijendel"
+    },
+    "droge_duinvegetatieplots": {
+      "bron_sleutel": "droge-duinvegetatieplots-1952-2012",
+      "plots": 41,
+      "periode": "1952-2012",
+      "status": "kandidaat",
+      "reden": "publicatiekaart bevat geen koppelbare plotcodes"
+    }
+  }
+}

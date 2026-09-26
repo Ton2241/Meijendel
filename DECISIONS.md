@@ -825,3 +825,17 @@
   Meijendel levert 522 actuele Chicago-verwijzingen; bijlagen en lokale paden
   worden niet opgeslagen. Promotie terug naar `Meijendel` vereist een
   afzonderlijk besluit en een aantoonbare locatie per waarneming.
+- **26 september 2026 — fase 1 en 2 van het bronregister uitgevoerd.** Zes
+  openbare bronnen zijn na reproduceerbare selectie in generieke
+  `externe_ecologie_*`-tabellen in `Meijendel` opgenomen: STOWA (44
+  bemonsteringen, 1.036 resultaten), ENDURE (15 events, 9.072 resultaten), LVD
+  (3.437 opnamen, 81.310 resultaten), NMR (4.748 collectierecords), Naturalis
+  Botany (1.881 specimens) en Naturalis Coleoptera (869 specimens). De
+  provinciale PQ-reeks blijft primair; 13.169 LVD-resultaten met exacte of
+  waarschijnlijke PQ-overlap worden in de analyseview gemarkeerd. Mogelijke
+  NDFF-overlap wordt niet automatisch verwijderd, omdat een gedeelde bron-ID
+  ontbreekt en NDFF-locaties onzekerheidspolygonen zijn. In
+  `Meijendel_bronnen` staan daarnaast 18 bijenproefvlakken met 162 bezoeken en
+  zeven aquatische monsterpunten met 19 methodeperioden. Ringgegevens met code
+  `NL19` en de 41 droge-duinvegetatieplots blijven kandidaat: `NL19` betekent
+  provincie Zuid-Holland en de vegetatiekaart bevat geen koppelbare plotcodes.

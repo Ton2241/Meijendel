@@ -7,7 +7,7 @@ Meijendel-literatuuroverzicht uit Zotero worden beheerd in Meijendel_bronnen en
 mogen niet zonder afzonderlijk promotiebesluit in analyses uit Meijendel worden
 gebruikt.
 
-## Inhoud per 24 september 2026
+## Inhoud per 26 september 2026
 
 - duinvalleivegetatie: 488 opnamen uit 2001, 2008 en 2018 op 186 stabiele
   locatiecodes, maar zonder geometrie per opname;
@@ -17,6 +17,15 @@ gebruikt.
   geografisch nog niet herleidbare locaties;
 - literatuur: 522 actuele bibliografische items uit de Zotero-collectie
   `Meijendel`, weergegeven in Chicago-stijl.
+- bijenmonitoring: 18 vaste hectareproefvlakken en 162 bezoeken uit 2019, 2021
+  en 2023; de rapportfiguren zijn nog niet omgezet in betrouwbare digitale
+  proefvlakgrenzen en de soortenmatrices zijn nog niet geïmporteerd;
+- aquatische macrofauna: 7 monsterpuntcodes in 5 benoemde wateren en 19
+  standaard- of afwijkende methodeperioden uit 1974–1975; digitale geometrie en
+  een gecontroleerde volledige soortenmatrix ontbreken nog;
+- kandidaatregistraties voor de biometrische ringgegevens en 41 droge-
+  duinvegetatieplots. Beide zijn inhoudelijk relevant, maar nog niet per record
+  of plot betrouwbaar aan Meijendel te koppelen.
 
 De Zotero-sync neemt geen pdf's, bijlagen, notities, annotaties, blobs of lokale
 paden over. Zotero op de NAS blijft de bron voor de documenten zelf.
