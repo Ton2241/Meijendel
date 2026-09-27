@@ -1,5 +1,17 @@
 # Besluiten
 
+- Op 27 september 2026 is de eerste vogelinvoer toevoegend uitgevoerd:
+  263 gebruikte bronidentiteiten uit `soorten` hebben ieder een afzonderlijk
+  voorlopig naamgebruik met eigen UUID en een kandidaat-bronkoppeling.
+  Taxonomische status `unresolved`, relatie `onbekend`; geen externe exacte
+  gelijkstellingen of afgeleide rangen. Letterlijke bronvelden en de
+  catalogusmomentopname blijven herleidbaar. Uitsluitend in het nieuwe
+  register zijn IJsgors en Ringsnaveleend gecorrigeerd naar `Calcarius
+  lapponicus` en `Aythya collaris`; `soorten`, waarnemingen, traits en afnemers
+  zijn niet gewijzigd. Darwin Core en TDWG TCS blijven de toetsingsbasis.
+  Back-up, rollbackproef, onafhankelijke review en behoudscontrole staan in
+  `docs/database/TAXONREGISTER.md`. Bevestiging van kandidaten en aansluiting
+  van applicaties vereisen een volgende inhoudelijke stap.
 - In de aansluitende stap van 27 september 2026 is uitsluitend
   `taxon_groepen` gevuld met de 26 bestaande, brononafhankelijk benoemde
   gebruiksgroepen plus `vogels` (27 rijen). Geen formele taxonomische

@@ -78,8 +78,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Structuur en groepsvulling van 27 september 2026: drie fysieke
   tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
   database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;
-  27 praktische groepen, nog geen taxonimport, gegevensmigratie of koppeling
-  aan applicaties. Darwin Core en TDWG TCS zijn voortaan verplichte
+  27 praktische groepen, 263 voorlopige vogelnaamgebruiken en 263
+  kandidaat-bronkoppelingen. Bestaande gegevens en applicaties zijn niet
+  aangepast. Darwin Core en TDWG TCS zijn voortaan verplichte
   toetsingsbasis; afwijkingen vereisen vooraf expliciete goedkeuring door Ton.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.

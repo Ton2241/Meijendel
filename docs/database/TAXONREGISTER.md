@@ -1,9 +1,59 @@
 # Taxonregister: structuur en uitvoering
 
+## Uitvoeringsplan vogelnaamgebruiken 27 september 2026
+
+Opdracht: doorgaan na de beoordeling van 58 gemarkeerde vogelcategorieën.
+De brongetrouwe toevoeging betreft 263 gebruikte IDs uit `soorten`, niet een
+vervanging van de vogeltabel of een nieuwe externe standaardtaxonomie.
+Implementatie in `codex/taxonregister-vogels`; tijdelijke uitvoer en bewijs
+blijven buiten Git in `outputs/vogel-taxoncontrole-20260927.timBzc/`.
+Er worden geen nieuwe gevolgde bestanden gemaakt.
+
+Standaardtoets, opnieuw geraadpleegd 27 september 2026:
+[Darwin Core](https://dwc.tdwg.org/terms/) (`taxonID`, `scientificName`,
+`nameAccordingTo`, `taxonConceptID`, `taxonRank`) en
+[TDWG TCS](https://tcs.tdwg.org/terms/) (naamgebruik, concept en conceptrelatie).
+De lokale broncatalogus en haar SHA-256 vormen de expliciete context. Eigen
+UUIDs zijn naamonafhankelijk; bron-ID, bronversie en letterlijke bronvelden
+blijven gescheiden. Externe concept-IDs, taxonrangen en parent-/synoniemrelaties
+worden niet afgeleid. Beheerstatus `voorlopig`, taxonomische status
+`unresolved`, koppelstatus `kandidaat`, relatie `onbekend`.
+Geen afwijking van de afgesproken basisstructuur.
+
+### Uitvoering en acceptatie
+
+- [x] Voeg eerst de alleen-lezen acceptatiepoort `--fase vogels` toe aan
+  `gis/scripts/test_taxonregister_live_schema.py`; de poort moet vóór invoer
+  falen doordat de 263 naamgebruiken en koppelingen nog ontbreken.
+- [x] Genereer een vast manifest met 263 UUIDs, oorspronkelijke bronvelden,
+  afzonderlijke taxonvormen en de 58 beoordelingen. IJsgors krijgt in het
+  nieuwe register `Calcarius lapponicus`, Ringsnaveleend `Aythya collaris`;
+  de oude cataloguswaarden blijven ongewijzigd en letterlijk bewaard.
+- [x] Maak een gecontroleerde logische back-up en voer hetzelfde invoerrecept
+  eerst uit met ROLLBACK. Controleer lege doelen, juiste lokale server,
+  bronhash, uitsluitend de gebruikte vogel-ID’s, geen triggers en geen
+  externe inkomende relaties; blokkeer bij afwijkingen of herhaalde invoer.
+- [x] Voeg daarna uitsluitend de 263 taxa en 263 kandidaatkoppelingen toe
+  in één transactie, met SQL-voorwaarden vóór COMMIT en verificatie daarna.
+- [x] Bewijs behoud van alle overige tabellen en geëxporteerde objecten met
+  identieke deterministische exports, en controleer de volledige vogelpanels,
+  tellingen, bronmetadata en een één-op-één-koppelproef. Pas geen afnemers aan.
+- [x] Werk bestaande status-, besluit- en brondocumentatie bij, voer relevante
+  regressiecontroles en onafhankelijke review uit, en commit/push/integreer.
+
+Terugdraaien is beperkt tot exact de manifest-UUIDs en hun kandidaatbesluiten,
+na vergelijking van de volledige toegevoegde rijen en controle op nieuwe
+verwijzingen. Geen globale DELETE, DROP of herstel van de volledige database.
+De productiedump, caches en VPS worden in deze stap niet vernieuwd.
+
+Reviewfocus: naamsconflicten niet samenvoegen; oorspronkelijke NULL/spaties en
+alle talen bewaren; kandidaten niet als exact gebruiken; herhaalde/gewijzigde
+invoer weigeren; transactie bij iedere fout afbreken vóór COMMIT.
+
 Stand: 27 september 2026. De drie fysieke tabellen staan in de levende lokale
-database `Meijendel`. Na de eerste lege structuurstap is `taxon_groepen` gevuld
-met 27 praktische groepen; `taxa` en `taxa_bronkoppeling` bevatten nog 0 rijen.
-Geen extra database, views, taxonimport of koppeling van bestaande gegevens.
+database `Meijendel`: 27 praktische groepen, 263 voorlopige vogelnaamgebruiken
+en 263 kandidaat-bronkoppelingen. Geen extra database, views, verplaatsing van
+waarnemingen of aansluiting van applicaties.
 De oorspronkelijke structuurstap en het controlebewijs blijven hieronder
 herkenbaar bewaard; de groepsvulling staat in de laatste sectie.
 Het eerdere voorstel om
@@ -104,8 +154,10 @@ Installatiecontrole: `gis/scripts/test_taxonregister_live_schema.py`.
 Beide werken op de lokale MySQL 9.7.1. De controle leest uitsluitend het
 werkelijk aangemaakte schema en de afgesproken inhoud; zij voegt geen
 proefrecords toe. `--fase leeg` toetst de oorspronkelijke structuurstap;
-`--fase groepen` (nu standaard) toetst 27 groepen en nog lege taxa en
-bronkoppelingen. Na taxonimports moet de acceptatiepoort opnieuw worden aangepast.
+`--fase groepen` toetst de historische tussenstand met 27 groepen en lege
+taxa/bronkoppelingen. `--fase vogels` is nu standaard en toetst daarnaast de
+263 voorlopige vogelnaamgebruiken en hun afzonderlijke bronkandidaten.
+Een volgende import vereist een bijbehorende uitbreiding van deze acceptatiepoort.
 
 De migratie bevat alleen drie `CREATE TABLE`-opdrachten, met InnoDB, Unicode,
 interne foreign keys zonder cascades en afgedwongen CHECK-regels. Geen
@@ -132,11 +184,74 @@ uitgerold. De bestaande `meijendel.sql` weerspiegelt na deze stap dus nog niet
 het nieuwe lokale schema. Vóór een toekomstige release moet de normale
 export-, cache-, validatie- en publicatieketen opnieuw worden uitgevoerd.
 
-Een eventuele terugdraaiing mag uitsluitend de drie nieuwe tabellen betreffen,
+Voor de oorspronkelijke lege structuurstap mocht een eventuele terugdraaiing
+uitsluitend de drie nieuwe tabellen betreffen,
 in afhankelijkheidsvolgorde: bronkoppeling, taxa, groepen. Eerst aantonen dat ze
 nog leeg zijn en geen externe verwijzingen hebben; uitvoering vereist een
 afzonderlijk besluit. Nooit hiervoor de volledige database terugzetten, want
-dat zou intussen toegevoegde gegevens kunnen vernietigen.
+dat zou intussen toegevoegde gegevens kunnen vernietigen. Deze leegtevoorwaarde
+is inmiddels niet meer vervuld. Voor de vogelinvoer geldt uitsluitend de
+hierboven beschreven, recordgerichte terugdraaiing na afzonderlijk besluit.
+
+## Uitkomst vogelinvoer, 27 september 2026
+
+Om 17:16 lokale tijd zijn 263 naamgebruiken en 263 kandidaten in één
+transactie toegevoegd. De acceptatiepoort `--fase vogels` is geslaagd.
+De 263 broncategorieën blijven afzonderlijk: 251 met taxonvorm `taxon`,
+7 operationele eenheden, 3 aggregaten en 2 hybriden. `taxon` is hier geen
+uitspraak dat de rang soort bewezen is; rang en externe concept-ID blijven
+leeg. Alle 263 naamgebruiken zijn `voorlopig/unresolved`; alle 263 koppelingen
+zijn `kandidaat/onbekend`, zonder actieve exacte toewijzing.
+
+| Gecontroleerde brontabel | Regels | Periode | Gebruikte broncategorieën | Som telwaarden |
+| --- | ---: | --- | ---: | ---: |
+| `territoria` | 71.155 | 1958–2025 | 159 | 495.208 |
+| `dagwaarnemingen_bmp` | 600.959 | 2007–2025 | 203 | 621.226 |
+| `dagwaarnemingen_wv` | 105.712 | 2000–2025 | 238 | 737.310 |
+
+Deze drie verzamelingen gebruiken samen 263 verschillende bron-IDs. Alle
+rijaantallen, sommen, nullen, ontbrekende waarden en volledige
+plot–soort–jaarpanels zijn behouden. De 628 catalogusregels en hun acht
+bronvelden, traitkoppelingen en bestaande taxonextracties zijn eveneens gelijk.
+De koppelproef vermenigvuldigt geen waarnemingen. Zij bewijst bronherleidbaarheid,
+niet gelijkheid met een extern taxonconcept of analytische samenvoegbaarheid.
+
+De deterministische exports van alle overige 249 fysieke tabellen plus
+geëxporteerde views, routines, events en triggers zijn bytegelijk vóór en na
+invoer. SHA-256 van beide gzipbestanden:
+`907d30aa737a4f417e7a3b1305fcfad263de4fb0c265c0eabd2d4f74ce713d09`.
+Dit omvat ook de ongewijzigde 27 groepen, PQ, Vangblik, externe ecologie en
+NDFF. Website, dashboard, Shiny, publicatiedump en caches zijn niet aangepast;
+er is geen applicatie- of VPS-rooktest uitgevoerd of daarmee geclaimd.
+
+Bewijs staat lokaal in `outputs/vogel-taxoncontrole-20260927.timBzc/`:
+
+- `vogelinvoer-register-voor.sql.gz` en `vogelinvoer-overig-voor.sql.gz`:
+  gecontroleerde logische back-up; gzip-integriteit en hashes vastgesteld.
+- `vogelinvoer_manifest.json`: 263 bronrecords en vaste nieuwe UUIDs;
+  SHA-256 `5ec7657dc76605e7ad865cf68b1c3e47c0992b74cff90ef4beb1070f797a10ca`.
+- `vogelinvoer_transactie.sql`: begrensde toevoeging met controles vóór COMMIT;
+  SHA-256 `155b265f29113b5f31b822ad8ab435edd200a2cb35f4b56c8c7ececcd9bd4f86`.
+- `vogelinvoer_rehearsal.json` en `vogelinvoer_apply.json`: geslaagde
+  rollbackproef en daaropvolgende invoer met hetzelfde manifest en SQL.
+- `vogelinvoer_eindcontrole.json` en `vogelinvoer-overig-na.sql.gz.json`:
+  behoud van de volledige extracties en overige databaseobjecten.
+
+Onafhankelijke review vond geen kritieke of belangrijke bevindingen. De kleine
+aanbeveling om naast hashes/exitcode ook proefmodus, ROLLBACK en validatiemarker
+te eisen, is vóór COMMIT verwerkt en met een eerst falende regressietest
+geverifieerd. Zeven schemacontracttests en beide exporttests slagen.
+
+Herhaalde invoer is ook na COMMIT beproefd met uitsluitend de voorafgaande
+poort: MySQL blokkeert bij de eis dat beide doeltabellen leeg zijn, vóór enige
+permanente INSERT. Het bronregister is in Markdown en Word inhoudelijk gelijk;
+alle 19 gerenderde Wordpagina’s zijn visueel gecontroleerd.
+
+De eerstvolgende inhoudelijke stap is beoordeling van de kandidaten tegen
+expliciet geversioneerde externe naamgebruiken/concepten. Bij nieuwe besluiten
+blijft de bronidentiteit gelijk, blijft het oorspronkelijke besluit bewaard
+en moet de richting van een eventuele conceptrelatie onderbouwd zijn. Alleen
+naamovereenkomst is geen grond om de 263 kandidaten als exact te bevestigen.
 
 ## Uitvoeringslog eerste, lege structuurstap
 
@@ -181,7 +296,8 @@ dubbeltellingen. Hiërarchiecycli, zelfverwijzingen, synoniemketens,
 metadata-consistentie en conceptwijzigingen moeten vóór import expliciet
 worden getoetst: foreign keys bewijzen alleen dat een doel bestaat, niet dat
 de taxonomische relatie inhoudelijk klopt. De onderstaande vervolgstap vult
-alleen de groepscatalogus; taxon- en koppelproeven blijven uitgesteld.
+alleen de groepscatalogus; taxon- en koppelproeven bleven in die tussenstap
+uitgesteld. De inmiddels uitgevoerde vogelinvoer staat bovenaan dit document.
 
 ## Groepscatalogus v1: uitgevoerd op 27 september 2026
 
@@ -302,18 +418,20 @@ SELECT ROW_COUNT() AS ingevoegde_groepen;
 COMMIT;
 ```
 
-Controle: `python3 gis/scripts/test_taxonregister_live_schema.py --fase groepen`.
-De historische leegtepoort blijft beschikbaar via `--fase leeg` en hoort na
-vulling niet meer te slagen. Alle controles zijn alleen-lezen.
+Historische controle, destijds geslaagd:
+`python3 gis/scripts/test_taxonregister_live_schema.py --fase groepen`.
+Gebruik voor de huidige stand `--fase vogels`. Zowel `--fase leeg` als
+`--fase groepen` hoort na de vogelinvoer te falen; deze poorten bewaren de
+voorwaarden van eerdere tussenstappen. Alle controles zijn alleen-lezen.
 
 De daadwerkelijke INSERT heeft 27 rijen toegevoegd; de alleen-lezen
-groepscontrole slaagt. De back-up van de vooraf lege tabel en de exports voor
+groepscontrole slaagde toen. De back-up van de vooraf lege tabel en de exports voor
 de vergelijking staan in `outputs/taxongroepen-20260927.WpDeqd/` (lokaal,
 buiten Git). De overige 250 basistabellen, 16 views en overige geëxporteerde
 objecten zijn vóór/na byte-identiek (`cmp` geslaagd). Beide gecomprimeerde
 exports hebben SHA-256:
 `cf156b58b32700d9a7d6636477193f6652e732f90ea1daf4e795f54f8c9e955f`.
-Dit omvat ook de nog lege `taxa` en `taxa_bronkoppeling`. De 7 bestaande
+Dit omvat ook de destijds nog lege `taxa` en `taxa_bronkoppeling`. De 7 bestaande
 schemacontracttests en de 2 exporttests zijn opnieuw geslaagd. Geen
 applicatiecode, publicatiedump, cache of VPS gewijzigd; geen nieuwe
 functionele website- of Shiny-gebruikerstest uitgevoerd.

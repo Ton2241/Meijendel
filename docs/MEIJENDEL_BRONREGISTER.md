@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 26 september 2026.**
+**Stand: 27 september 2026.**
 
 Dit register bevat informatie over:
 
@@ -80,6 +80,8 @@ Iedere ontdekking, levering, import, verplaatsing, uitsluiting of nieuwe beoorde
 **Gebruik.** Trends, verspreidingsveranderingen, fenologie en relaties met vegetatie, weer en beheer kunnen verantwoord worden onderzocht, mits veranderingen in methode en dekking expliciet worden verwerkt.
 
 **Status.** Analyseklaar en primaire bron.
+
+**Taxonomische ontsluiting, 27 september 2026.** De 263 gebruikte vogelcategorieën uit `soorten` hebben ieder een voorlopig naamgebruik in `taxa` en een kandidaat in `taxa_bronkoppeling`. De koppelproef omvat 71.155 territoriumregels (1958–2025), 600.959 BMP-regels (2007–2025) en 105.712 wintertelregels (2000–2025). Dit is een afgebakende controle van deze drie tabellen, niet een nieuwe telling van alle vogelbronnen. Bron-IDs en letterlijke cataloguswaarden blijven behouden. De kandidaten leggen nog geen gelijkheid met externe taxonconcepten vast; brongegevens, analytische status en gebruik door website, dashboard en Shiny veranderen niet.
 
 ### 1.2. Provinciale permanente kwadraten
 

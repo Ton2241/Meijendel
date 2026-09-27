@@ -4,14 +4,20 @@ Laatste update: 27 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
-## Taxonregister: structuur en groepscatalogus
+## Taxonregister: eerste vogelnaamgebruiken
 
 Op 27 september 2026 zijn `taxon_groepen`, `taxa` en `taxa_bronkoppeling`
 rechtstreeks toegevoegd aan de levende lokale database. De aansluitende
 groepsvulling bevat 27 praktische groepen (26 bestaande codes plus vogels),
-stand 27 september 2026, zonder waarnemingsperiode. `taxa` en
-`taxa_bronkoppeling` bevatten nog 0 rijen. Structuur en groepsvulling zijn
-alleen-lezen gecontroleerd. Bestaande vogel-, PQ-, Vangblik-
+stand 27 september 2026, zonder waarnemingsperiode. Daarop zijn 263 gebruikte
+vogelnaamgebruiken toegevoegd aan `taxa` en 263 afzonderlijke kandidaten aan
+`taxa_bronkoppeling`: 71.155 territoriumregels (1958–2025), 600.959 BMP-regels
+(2007–2025) en 105.712 wintertelregels (2000–2025) zijn zonder vermenigvuldiging
+aan hun bronidentiteit te verbinden. Dit zijn voorlopige naamgebruiken,
+geen bevestigde externe taxonconcepten. Oorspronkelijke namen en IDs zijn
+bewaard; alleen in het nieuwe register zijn IJsgors en Ringsnaveleend benoemd
+als respectievelijk `Calcarius lapponicus` en `Aythya collaris`.
+De invoer is vooraf met ROLLBACK beproefd. Bestaande vogel-, PQ-, Vangblik-
 en externe tabellen zijn niet gemigreerd en applicatiecode is niet aangepast.
 Ontwerp en controlebewijs staan in `docs/database/TAXONREGISTER.md`.
 De publicatiedump, caches en VPS zijn voor deze stap niet vernieuwd.

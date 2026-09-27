@@ -47,9 +47,12 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
 groepen, taxonnaamgebruiken met conceptcontext en geversioneerde
-brontoewijzingen. Na de eerste lege structuurstap bevat `taxon_groepen`
-27 praktische groepen; de twee overige tabellen zijn nog leeg. Er zijn alleen
-onderlinge foreign keys, geen koppelingen vanuit bestaande tabellen. De
+brontoewijzingen. `taxon_groepen` bevat 27 praktische groepen; `taxa` bevat
+263 voorlopige vogelnaamgebruiken en `taxa_bronkoppeling` 263 kandidaten met
+relatie `onbekend`. Bronidentiteit is `Meijendel` / `soorten` / de SHA-256 van
+de catalogusmomentopname / het oorspronkelijke `soorten.id`. Namen zijn geen
+koppelsleutel. Er zijn alleen onderlinge foreign keys, geen nieuwe foreign
+keys vanuit bestaande tabellen en geen applicatiegebruik van kandidaten. De
 vogeltabel `soorten`, PQ, Vangblik en de applicaties blijven ongewijzigd.
 Uitwerking en verificatie: `docs/database/TAXONREGISTER.md`. De bestaande
 publicatiedump en VPS bevatten deze uitbreiding nog niet; die volgen alleen
