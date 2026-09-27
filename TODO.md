@@ -4,25 +4,24 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
-- Nadere categoriebeoordeling op 27 september 2026: het ongewijzigde manifest
-  v2 mist 129 naamvormsignalen en bevat één onterechte markering. Netto 1.575
-  voorstellen vragen beoordeling; de eerdere 13.904 zijn geen vrijgegeven
-  invoerselectie. Bij 122 LVD-voorstellen bevat het auteursveld de hele naam.
-  Zie de eerste sectie van `docs/database/TAXONREGISTER.md` voor het advies
-  per categorie. Nog geen nieuwe manifestversie, rollbackproef of invoer.
+- De categoriebeoordeling is verwerkt en manifest v3 is op 27 september 2026
+  toevoegend ingevoerd na volledige ROLLBACK-proeven. Stand: 27 groepen,
+  14.576 voorlopige naamgebruiken en 15.614 bronkoppelingen. Volgende inhoudelijke
+  stap: de 89 bronvermeldingen zonder doel oplossen (87 PQ, één Naturalis-
+  `Indet.`, Toendrarietgans) en de 2.787 naamgebruiken zonder primaire groep
+  beoordelen op expliciete bronclassificatie. Niet op naam alleen bevestigen.
+  De 70 onderbouwde lange PQ-naamteksten geven geen conceptgelijkheid.
+  Zie `docs/database/TAXONREGISTER.md` voor afbakening, bronperioden en bewijs.
 
-- Invoermanifest overige taxa voorbereid op 27 september 2026; nog geen
-  database-invoer. Zie `docs/database/TAXONREGISTER.md`: 14.401 voorgestelde
-  brongebonden naamgebruiken, 15.351 koppelingen en 1.447 voorstellen voor
-  afzonderlijke beoordeling. Eerst uitzonderingen en invoerselectie besluiten.
+- De centrale LVD-registratie laat rang en de 122 ondeugdelijke auteursvelden leeg.
   De LVD-import schrijft bij 81.310 resultaten (1959–2015) taxonomische status
   in `taxonrang`; niet als rang overnemen. Herstel van bestaande import/bronlaag
   is niet uitgevoerd en vraagt een eigen gecontroleerde wijziging.
 
 - Structuurstap van 27 september 2026 uitgevoerd: `taxon_groepen`, `taxa` en
   `taxa_bronkoppeling` zijn rechtstreeks in de lokale levende database aangemaakt
-  en aansluitend gevuld met 27 groepen, 263 voorlopige vogelnaamgebruiken en
-  263 kandidaat-bronkoppelingen. Zie
+  en eerst gevuld met 27 groepen, 263 voorlopige vogelnaamgebruiken en
+  263 kandidaat-bronkoppelingen; de aanvullende stand staat hierboven. Zie
   [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md).
   Eerstvolgend: de 263 kandidaten inhoudelijk beoordelen tegen expliciete
   externe naamgebruiken/concepten. Niet automatisch op naam bevestigen;
@@ -37,7 +36,7 @@
   onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
 - De verdere hernoeming en gegevensmigratie uit dit voorstel moeten nog worden
   besloten en beproefd. Alleen het bovenstaande register en de voorlopige
-  vogelnaamgebruiken zijn toegevoegd; bestaande gegevens, applicatiecode en analytische bronstatussen zijn niet
+  naamgebruiken en bronverwijzingen zijn toegevoegd; bestaande gegevens, applicatiecode en analytische bronstatussen zijn niet
   gewijzigd. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
   provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
 - Werk pas na de taxonregisterproef en een afzonderlijk migratiebesluit op een

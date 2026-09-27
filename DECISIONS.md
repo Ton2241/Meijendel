@@ -1,5 +1,18 @@
 # Besluiten
 
+- Op 27 september 2026 is na goedkeuring van de categoriebeoordeling ook
+  de overige taxonomische broninhoud toevoegend geregistreerd. Manifest v3
+  voegt 14.313 voorlopige naamgebruiken en 15.351 bronkoppelingen toe aan
+  de levende lokale database. De 27 groepen en oorspronkelijke vogelrijen
+  blijven gelijk. 87 PQ-vermeldingen, één Naturalis-`Indet.` en
+  Toendrarietgans blijven zonder doeltaxon, met volledige bronwaarden.
+  Geen automatische conceptgelijkheid, synoniemfusie of groepsindeling
+  uitsluitend op naam. LVD-statussen worden niet als rang overgenomen;
+  122 volledige namen worden niet als auteur opgeslagen. Back-up,
+  onafhankelijke review, volledige ROLLBACK-proeven en voor-/nacontrole
+  begeleiden de invoer. Bronlagen, waarnemingen en afnemers zijn niet
+  aangepast; bevestiging en aansluiting vereisen een volgende beoordeling.
+  Details en bronperioden staan in `docs/database/TAXONREGISTER.md`.
 - Op 27 september 2026 is de eerste vogelinvoer toevoegend uitgevoerd:
   263 gebruikte bronidentiteiten uit `soorten` hebben ieder een afzonderlijk
   voorlopig naamgebruik met eigen UUID en een kandidaat-bronkoppeling.

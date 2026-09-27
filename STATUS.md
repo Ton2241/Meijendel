@@ -4,7 +4,20 @@ Laatste update: 27 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
-## Taxonregister: eerste vogelnaamgebruiken
+## Taxonregister
+
+Actuele registerstand op 27 september 2026, zonder eigen waarnemingsperiode:
+27 groepen, 14.576 voorlopige brongebonden naamgebruiken en 15.614
+bronkoppelingen. De aanvulling omvat 14.313 naamgebruiken en 15.351
+bronkoppelingen. Er zijn 89 bronvermeldingen zonder doeltaxon en 2.787
+naamgebruiken zonder primaire groep; deze zijn niet op basis van alleen hun
+naam ingevuld of samengevoegd. Back-up, terugdraaiproef en nacontrole zijn
+geslaagd. De oorspronkelijke vogelregistraties en de volledige export van
+alle 249 overige tabellen en bijbehorende databaseobjecten zijn ongewijzigd.
+Website, dashboard en Shiny zijn niet aangepast. Het volledige controlebewijs
+staat in `docs/database/TAXONREGISTER.md`.
+
+De eerdere vogelstap:
 
 Op 27 september 2026 zijn `taxon_groepen`, `taxa` en `taxa_bronkoppeling`
 rechtstreeks toegevoegd aan de levende lokale database. De aansluitende

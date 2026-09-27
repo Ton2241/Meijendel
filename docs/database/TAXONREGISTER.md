@@ -1,5 +1,78 @@
 # Taxonregister: structuur en uitvoering
 
+## Toevoegende invoer overige naamgebruiken op 27 september 2026
+
+Ton heeft de categoriebeoordeling en aansluitende invoer goedgekeurd.
+De uitvoering blijft beperkt tot het nieuwe register in de levende lokale
+database. Geen hernoeming, broncorrectie, verhuizing van meetgegevens,
+bevestigde conceptkoppeling of wijziging aan website, dashboard en Shiny.
+De bestaande 27 groepen volstaan; er worden geen groepen bij verzonnen.
+
+Manifest v3 is op 27 september 2026 om 19:40 uur toevoegend uitgevoerd:
+14.313 nieuwe naamgebruiken en alle 15.351 bronkoppelingen. De database bevat
+nu 27 groepen, 14.576 naamgebruiken en 15.614 bronkoppelingen: 15.525
+kandidaten en 89 onbeoordeelde vermeldingen zonder doel. Dit zijn geen
+14.576 unieke biologische soorten. Bij 2.787 naamgebruiken is de primaire
+groep nog niet vastgesteld; naamgebaseerde groepssuggesties zijn niet
+automatisch overgenomen. De primaire bronidentiteiten en behouden UUIDs
+uit v2 blijven gelijk.
+87 PQ-vermeldingen uit de bronreeks 1981–2025 krijgen voorlopig geen doel:
+hun naamtekst is niet voldoende onderbouwd. Dit zijn niet 87 bewezen
+afkappingen. Bij 70 van de 157 lengtesignalen is de exacte tekst in andere
+lokale broncatalogi aanwezig; dat ondersteunt alleen registratie van die
+tekst, niet conceptgelijkheid. Ook één `Indet.`-vermelding uit Naturalis
+Botany (bronreeks 1875–2025) en Toendrarietgans uit de referentietabel
+`soorten` blijven zonder doel. Alle 89 vermeldingen blijven volledig
+herleidbaar in `taxa_bronkoppeling`.
+
+De 998 LVD-naamgebruiken uit 1959–2015 krijgen geen status als rang;
+bij 122 daarvan blijft het centrale auteursveld leeg omdat de bron daar de
+hele naam bevat. De oorspronkelijke metadata blijven letterlijk behouden.
+Combinaties worden operationele eenheden, hybriden blijven herkenbaar,
+expliciete verzamelbegrippen worden aggregaten. Een ruime of enge
+naamaanduiding alleen bepaalt geen formele rang of conceptrelatie.
+
+Uitvoeringspoort: lokale back-up, ongewijzigde broncatalogi, vaste manifest-
+en scriptvingerafdruk, echte ROLLBACK-proef, volledige rijvergelijking vóór
+COMMIT en nacontrole. Python-optimalisatie is verboden omdat zij assertions
+uitschakelt. Herhaalde invoer moet vóór schrijven blokkeren. De broncontroles
+en toevoegingen gebeuren binnen dezelfde SERIALIZABLE-transactie.
+De acceptatiepoort `--fase overige --manifest <lokaal manifest>` vergelijkt
+alle ingevoerde velden en behoudt de afzonderlijke controles van de 263 vogels.
+
+Beide volledige ROLLBACK-proeven slaagden. De tweede gebruikte dezelfde
+ASCII-UUID-vergelijking en exact hetzelfde invoerrecept als de definitieve
+toevoeging. Daardoor bleef de unieke UUID-index bruikbaar. Na beide proeven
+resteerden de oorspronkelijke 263 taxa en 263 koppelingen, over alle velden
+identiek. De controles vóór en na COMMIT bevestigen de nieuwe aantallen,
+alle manifestvelden en ongewijzigde oude registerrijen. Een opzettelijk
+verkeerde bronhash en een herhaalde invoerpoging worden vóór INSERT
+geblokkeerd; een SQL-fout beëindigt de sessie zonder vervolg of reconnect.
+
+Manifest-SHA-256:
+`6bb5b6d0df6e07b289b850adc7141da141d097e9a6e66084ec888f297662c603`.
+De vóórback-up bevat de twee registertabellen plus alle 249 overige tabellen.
+De deterministische export van die 249 overige tabellen en bijbehorende
+databaseobjecten is vóór en na invoer byte-identiek:
+`907d30aa737a4f417e7a3b1305fcfad263de4fb0c265c0eabd2d4f74ce713d09`.
+De productiedump `Meijendel.sql`, caches en VPS zijn niet vernieuwd.
+De uitgebreide live-acceptatiepoort en afzonderlijke veldnacontrole slagen.
+De vogelproef behoudt rijtellingen, sommen, nullen en expliciete nullen in
+71.155 territoriumregels (1958–2025), 600.959 BMP-regels (2007–2025) en
+105.712 wintertelregels (2000–2025), zonder ontbrekend koppeldoel of fan-out.
+Zes gerichte manifestregressies slagen. Het bronregister is in Markdown en
+Word bijgewerkt; alle 20 gerenderde Wordpagina's zijn visueel gecontroleerd.
+Terugdraaien na COMMIT vereist een gecontroleerde verwijdering van uitsluitend
+deze manifest-UUIDs en bronbesluiten, na controle op nieuw gebruik; herstel
+van de hele database is hiervoor niet toegestaan.
+
+Uitvoeringsbewijs en back-ups staan uitsluitend lokaal onder
+`outputs/taxa-invoer-20260927.JTFh3v/`. Brondata en SQL-uitvoer gaan niet naar
+GitHub. De volgende secties blijven als historische voorbereidingsstappen
+behouden; hun aantallen en open vervolgstappen beschrijven de stand vóór v3.
+Darwin Core en TDWG TCS zijn op 27 september opnieuw geraadpleegd; er is
+geen afwijking van de vastgelegde basisstructuur toegepast.
+
 ## Beoordeling uitzonderingen op 27 september 2026
 
 Het invoermanifest v2 is nog niet geschikt voor een invoerproef. De nadere
