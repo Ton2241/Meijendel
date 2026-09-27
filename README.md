@@ -75,6 +75,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Ook beschikbaar als [leesbaar Wordbestand voor Pages](docs/database/MEIJENDEL_TABELINVENTARIS.docx),
   met het voorstel vooraan en de tabelinventaris in een liggende bijlage.
 - [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md)
+  Bevat ook de vaste importafspraak: nieuwe taxongegevens sluiten aan op
+  het centrale register, zonder nieuwe afzonderlijke taxoncatalogi;
+  naam- of identiteitstwijfel wordt vóór definitieve import opgelost.
   Structuur en groepsvulling van 27 september 2026: drie fysieke
   tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
   database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;

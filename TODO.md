@@ -4,6 +4,12 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Vóór iedere volgende import: pas de vaste importafspraak in
+  `docs/database/TAXONREGISTER.md` toe. Controleer en pas zo nodig het
+  importscript aan voor gebruik van het centrale register; geen nieuwe
+  brongebonden taxoncatalogus. Los naam- of identiteitstwijfel op vóór
+  definitieve invoer en beproef de koppeling en het terugdraaien.
+
 - De registeraanvulling van 27 september 2026 is na een terugdraaiproef
   opgeslagen: 27 groepen, 15.580 naamgebruiken en referenties en 18.437
   bronbesluiten, waarvan 18.350 actief. In totaal 2.509 ontbrekende groepen

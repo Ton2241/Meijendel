@@ -137,6 +137,12 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- gebruik bij iedere volgende import met taxongegevens het centrale register
+  `taxa`, `taxa_bronkoppeling` en `taxon_groepen`; maak geen afzonderlijke
+  soorten- of taxoncatalogi per bron of levering; volg de canonieke sectie
+  `Vaste importafspraak vanaf 27 september 2026` in
+  `docs/database/TAXONREGISTER.md`, inclusief aanvulling van ontbrekende taxa
+  en oplossing van naam- of identiteitstwijfel vóór definitieve import
 - toets ecologische gegevensstructuren, taxonomie, imports, koppelingen en
   migraties altijd aan Darwin Core en TDWG TCS; afwijkingen van die
   basisstructuur vereisen vooraf expliciete goedkeuring door Ton; volg de

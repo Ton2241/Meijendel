@@ -1,5 +1,13 @@
 # Besluiten
 
+- Op 27 september 2026 heeft Ton besloten dat iedere volgende taxonimport
+  aansluit op `taxa`, `taxa_bronkoppeling` en `taxon_groepen`. Geen nieuwe
+  afzonderlijke soorten- of taxoncatalogi per bron of levering. Ontbrekende
+  taxa worden centraal toegevoegd; twijfel over naam of identiteit wordt
+  vóór definitieve import opgelost. De canonieke regels en veiligheidsgrens
+  staan in `docs/database/TAXONREGISTER.md`, sectie `Vaste importafspraak
+  vanaf 27 september 2026`. Dit is een importafspraak, geen uitgevoerde
+  aanpassing van importscripts of bestaande afnemers.
 - Op 27 september 2026 om 21:53 uur is de aansluitende registeraanvulling
   opgeslagen: 1.226 primaire groepen, 917 externe naamreferenties en 2.736
   kandidaat-bronbesluiten. Hiervan verbinden 1.819 bestaande taxon-UUIDs

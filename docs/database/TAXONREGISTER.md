@@ -1,5 +1,50 @@
 # Taxonregister: structuur en uitvoering
 
+## Vaste importafspraak vanaf 27 september 2026
+
+Besluit Ton: iedere volgende import met taxongegevens gebruikt het bestaande
+centrale register voor de identificatie en koppeling. Er worden geen nieuwe
+afzonderlijke soorten- of taxoncatalogi per organisatie, levering of import
+aangemaakt. Deze sectie is de canonieke importafspraak.
+
+- Zoek eerst in `taxa_bronkoppeling` naar de bronidentiteit, inclusief
+  bronsysteem, dataset, bronversie en oorspronkelijke taxoncode. Controleer
+  het bijbehorende naamgebruik in `taxa` en de praktische indeling via
+  `taxon_groepen`. Gebruik geen naamtekst als enige koppelsleutel.
+- Hergebruik een passend bestaand taxon. Voeg een werkelijk ontbrekend
+  taxon of noodzakelijk afzonderlijk naamgebruik met broncontext toe aan
+  `taxa`, en leg de bronverbinding vast in `taxa_bronkoppeling`. Maak geen
+  duplicaat alleen omdat de levering van een andere organisatie komt.
+  Gebruik de bestaande praktische groepen; een benodigde nieuwe groep wordt
+  onderbouwd in `taxon_groepen` toegevoegd, niet in een aparte catalogus.
+- Bepaal bij twijfel eerst de juiste taxonnaam en de bedoelde afbakening,
+  met de oorspronkelijke broncode, lijstversie en beschikbare referenties.
+  Houd de betrokken regels buiten de definitieve import zolang dat niet is
+  opgelost. Bewaar de oorspronkelijke levering en de onderzoeksuitkomst;
+  neem geen dichtstbijzijnde naamtreffer of onbeoordeelde kandidaat als
+  definitieve identificatie over.
+- Een aantoonbaar brede determinatie, zoals `Lepidoptera`, hoeft niet alsnog
+  tot een soort te worden teruggebracht. Bewaar het werkelijk geleverde
+  determinatieniveau. Een naamtreffer bevestigt evenmin automatisch dat
+  historische bronnen dezelfde taxonomische afbakening gebruiken.
+- Verbind de nieuwe gegevens met dit register en bewaar bronwaarden,
+  bronversies en de onderbouwing van de koppeling. Waarnemingen, aantallen,
+  locaties en meetevents blijven buiten de drie taxontabellen. Een
+  taxontoewijzing is geen besluit om waarnemingen samen te voegen.
+- Toets iedere uitvoering aan Darwin Core en TDWG TCS, volgens de
+  [projectbrede afspraak](../../../VWG_Project/workflow.md#darwin-core-en-tdwg-tcs-als-verplichte-toetsingsbasis).
+  Afwijkingen vereisen vooraf expliciete goedkeuring door Ton. Voer vóór
+  definitieve invoer de bij de import passende koppel-, herhaalbaarheids-,
+  terugdraai- en behoudscontroles uit.
+
+Dit besluit geldt voor volgende imports. Het verwijdert of hernoemt geen
+bestaande catalogi en verandert geen bestaande kandidaatbesluiten in
+bevestigde koppelingen. Bestaande importscripts moeten vóór hun volgende
+gebruik aan deze afspraak worden getoetst en zo nodig aangepast; deze
+vastlegging is op zichzelf geen softwarewijziging. Vogeltabel `soorten`,
+website, dashboard en Shiny blijven onaangetast. Een wijziging van bestaande
+afnemers of een migratie vraagt een afzonderlijk gecontroleerde uitvoering.
+
 ## Naamcontrole en bronverbinding uitgevoerd op 27 september 2026
 
 Na de uitleg over de overdracht van uitsluitend wetenschappelijke namen
