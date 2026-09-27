@@ -194,15 +194,18 @@ def main() -> int:
         ('taxa', 'oorspronkelijk_taxon_id', 'taxa', 'taxon_id'),
         ('taxa_bronkoppeling', 'taxon_id', 'taxa', 'taxon_id'),
     }, fks
-    incoming = rows("SELECT table_name FROM information_schema.key_column_usage "
+    incoming = rows("SELECT table_name,column_name,referenced_table_name,referenced_column_name FROM information_schema.key_column_usage "
                     "WHERE referenced_table_schema=DATABASE() AND referenced_table_name "
                     "IN ('taxon_groepen','taxa','taxa_bronkoppeling') "
                     "AND table_name NOT IN ('taxon_groepen','taxa','taxa_bronkoppeling')")
-    assert not incoming, incoming
+    assert {tuple(r) for r in incoming} == {
+        ('pq_vegetatie_waarneming','taxon_bronkoppeling_id','taxa_bronkoppeling','koppeling_id'),
+        ('pq_vegetatie_bronresultaat','taxon_bronkoppeling_id','taxa_bronkoppeling','koppeling_id'),
+    }, incoming
     rules = rows("SELECT delete_rule,update_rule FROM information_schema.referential_constraints "
                  "WHERE constraint_schema=DATABASE() AND table_name IN ('taxon_groepen','taxa','taxa_bronkoppeling')")
     assert all(rule in {"RESTRICT", "NO ACTION"} for row in rules for rule in row), rules
-    print("OK: zes interne relaties, geen wijziging aan bestaande relaties en geen cascades")
+    print("OK: zes interne relaties, twee toegestane PQ-bronkoppelingen, geen cascades binnen register")
 
     unique = rows("SELECT table_name,index_name,GROUP_CONCAT(column_name ORDER BY seq_in_index) "
                   "FROM information_schema.statistics WHERE " + scope + " AND non_unique=0 "

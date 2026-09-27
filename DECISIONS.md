@@ -1,5 +1,25 @@
 # Besluiten
 
+- Op 27 september 2026 is de opgedragen PQ-integratie lokaal uitgevoerd.
+  Alle 53.122 provinciale taxonregels uit 1981–2025 gebruiken het centrale
+  register. De oude catalogus is verwijderd na controle van alle 714
+  bronvermeldingen. De 644 LVD-bronopnamen met 16.627 resultaten uit
+  1981–2015 staan onder `pq_*`, met 652 vermoedelijke opnamekoppelingen,
+  behoud van alle bronwaarden en zonder zelfstandig meetellen. De
+  oorspronkelijke externe rijen zijn na rijgewijze behoudscontrole verwijderd.
+  Volledige back-up, herstelproef en nacontroles zijn bewaard onder
+  `outputs/pq-integratie`. De 513 publieke PQ-plotjaren en vogelgegevens
+  zijn niet gewijzigd. De afzonderlijke productiepublicatie blijft gekoppeld
+  aan de gecontroleerde export en de bijgewerkte VPS-releasecontrole.
+
+- Op 27 september 2026 heeft Ton voor de PQ-migratie ook de verplaatsing
+  van vermoedelijk bij provinciale PQ-opnamen horende LVD-bronopnamen
+  goedgekeurd. Zij blijven onder `pq_*` herkenbaar als vermoedelijke
+  koppeling, met alle oorspronkelijke bronwaarden, en tellen niet
+  zelfstandig mee. Meerdere passende provinciale opnamen blijven als
+  meerdere kandidaten zichtbaar; er wordt geen willekeurige kandidaat
+  gekozen of definitieve gelijkheid aangenomen.
+
 - Op 27 september 2026 heeft Ton de volledige PQ-integratie en centrale
   taxonkoppeling opgedragen, inclusief gecontroleerde ingebruikname. Daarbij
   is expliciet bepaald dat aantoonbaar volledig naar `pq_*` overgedragen

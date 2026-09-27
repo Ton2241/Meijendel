@@ -45,6 +45,71 @@ vastlegging is op zichzelf geen softwarewijziging. Vogeltabel `soorten`,
 website, dashboard en Shiny blijven onaangetast. Een wijziging van bestaande
 afnemers of een migratie vraagt een afzonderlijk gecontroleerde uitvoering.
 
+## PQ-integratie en behoud van bronopnamen
+
+De opgedragen migratie verbindt de 53.122 provinciale taxonregels uit
+1981–2025 rechtstreeks met `taxa_bronkoppeling`, en via die koppeling met
+`taxa` en `taxon_groepen`. De 714 oorspronkelijke taxonvermeldingen zijn
+volledig bewaard in de bronmetadata van het register. Na de behoudscontrole
+vervalt de afzonderlijke tabel `pq_vegetatie_taxon`. De naam van die
+oorspronkelijke catalogus blijft als historische datasetidentificatie in het
+register staan; dat is geen verwijzing naar een nog bestaande tabel.
+
+Ton heeft ook opname van vermoedelijke PQ-bronvarianten toegestaan. De
+LVD-selectie omvat 644 volledige opnamen en 16.627 taxonregels uit 1981–2015.
+Zij krijgen 652 mogelijke relaties met provinciale opnamen. De relaties
+blijven `vermoedelijk`; bij meerdere kandidaten wordt niet willekeurig één
+gekozen. Alle bronwaarden, oorspronkelijke opname- en resultaat-IDs,
+bedekkingsschalen, metadata en 32.657 bestaande overlapbesluiten blijven
+bewaard in `pq_vegetatie_bronopname`, `pq_vegetatie_bronresultaat` en
+`pq_vegetatie_bronoverlap`. De tabel `pq_vegetatie_opname_bronkoppeling`
+bewaart de opnamevergelijking en de status. Deze bronopnamen tellen niet
+zelfstandig mee. De provinciale meetreeks blijft de primaire reeks.
+
+De bronresultaten krijgen een centrale taxonbronkoppeling op basis van de
+volledige broncontext, niet alleen de naam. Dit verandert bestaande
+kandidaatbesluiten niet in bevestigde taxonconceptgelijkheid. Event,
+Occurrence en de afzonderlijke opname-relatie blijven gescheiden van de
+taxonidentificatie, overeenkomstig [Darwin Core](https://dwc.tdwg.org/terms/)
+en de scheiding tussen naamgebruik en concept in
+[TDWG TCS](https://tcs.tdwg.org/terms/). De foutief als `taxonrang`
+opgeslagen LVD-bronstatus heet bij de verplaatste regels
+`taxonomische_status_aangeleverd`; de oorspronkelijke waarde blijft gelijk.
+
+De bestaande LVD-analyseview blijft alle 81.310 resultaten uit 1959–2015
+ontsluiten, met uitsluiting van zelfstandig meetellen voor de verplaatste
+bronopnamen. Er komt geen nieuwe presentatielaag bij. De overige 2.793
+LVD-opnamen en 64.683 resultaten blijven op hun bestaande plek. Daarom
+blijven de gedeelde datasetmetadata daar eveneens staan. NDFF-protocolnamen
+zonder aantoonbare opnamekoppeling en de 488 nog niet gegeorefereerde
+duinvalleiopnamen uit 2001, 2008 en 2018 worden niet als PQ-opnamen verplaatst.
+
+### Uitvoering en herstel
+
+De actuele uitvoeringsstatus staat in `TODO.md`. Het bestaande script
+`gis/scripts/import_external_ecology_sources.py --pq-integratie` bereidt
+zonder `--apply` alleen een plan voor. Het vereist een gecontroleerd
+back-upmanifest en een nieuwe bewijsdirectory. Met `--apply` voert het
+achtereenvolgens schema, terugdraaiproef, bronverplaatsing, opruiming en
+volledige behoudscontrole uit. Voor de levende database is bovendien
+`--pq-proefbewijs` verplicht: een geslaagde proef met dezelfde broninhoud,
+dezelfde code, dezelfde back-up en dezelfde uitgangscontroles.
+
+Het bewijs staat lokaal buiten Git onder `outputs/pq-integratie`: volledige
+databaseback-up, herstelbewijs, plan, uitgangscontrole en nacontrole. De
+transactionele proef draait bronwijzigingen terug. Schemawijzigingen en
+catalogusverwijdering zijn niet transactioneel; het volledige herstel is
+daarom afzonderlijk op de eigen proefdatabase beproefd. Een onderbroken
+schemawijziging wordt niet blind opnieuw uitgevoerd. Herstel eerst de exact
+geraakte tabellen uit de gecontroleerde back-up, of herstel de hele database
+alleen als is vastgesteld dat er sinds de back-up geen andere wijzigingen
+zijn gedaan. Controleer daarna de bewaarde uitgangscontroles.
+
+De historische bulkimport blokkeert zodra het PQ-migratieschema aanwezig is.
+Zo kan zij verplaatste bronregels niet opnieuw aanmaken of de bestaande
+analyseview terugzetten. Een volgende levering vereist een gerichte
+bronbewuste aanvulling volgens de vaste importafspraak hierboven.
+
 ## Naamcontrole en bronverbinding uitgevoerd op 27 september 2026
 
 Na de uitleg over de overdracht van uitsluitend wetenschappelijke namen

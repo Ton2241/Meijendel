@@ -12,12 +12,38 @@
   en verwijdering van aantoonbaar overgedragen gegevens op hun oude plek.
   De opruiming omvat geen gegevens die niet zijn overgedragen en geen
   oorspronkelijke leveringsbestanden of herstelback-ups.
-  Stand bij aanvang: werkmap voorbereid; bestaande vogelregisterpoort en
-  beide overlaptests geslaagd. Nog geen schema-, data- of productieaanpassing.
-  De controle van oorspronkelijke PQ-/LVD-bestanden op de T7 wacht op de
-  volgens de werkinstructie vereiste toestemming voor alleen-lezen toegang.
-  Eerst volledige opnamen, codes, lagen en schalen onderbouwen; bestaande
-  overlaplabels zijn geen automatische toestemming voor samenvoeging.
+  De lokale migratie is uitgevoerd en gecontroleerd. De publicatie naar de
+  VPS volgt na de nieuwe export en installatie van de bijgewerkte beveiligde
+  releasecontrole; die installatie vereist één zichtbare sudo-invoer.
+  Alleen-lezen toegang tot de PQ-/LVD-bronbestanden op de T7 is op
+  27 september expliciet toegestaan en gebruikt. De SHA-256 van de
+  provinciale levering en het LVD-archief komen overeen met de database.
+  Beide provinciale Excelversies, de kolomdefinities en de LVD-archiefvelden
+  zijn gecontroleerd. De LVD-levering heeft geen vaste PQ-identificatie;
+  bij de 3.437 geïmporteerde opnamen uit 1959–2015 ontbreken bovendien
+  aanvullende vermeldingen in de reference-extensie van dit archief.
+  De volledige vergelijking geeft 654 mogelijke opnameparen uit 1981–2015,
+  waarvan 20 met letterlijk gelijke namen en bedekkingscodes. Bij vier van
+  die 20 verschillen de percentages. Dit zijn nog geen bewezen identieke
+  opnamen. Bewijs en herhaalbare opdracht staan in het bronregister.
+  Alle 53.122 provinciale regels uit 1981–2025 verwijzen nu rechtstreeks
+  naar 714 centrale bronkoppelingen. Alle oorspronkelijke velden zijn
+  identiek gebleven. De afzonderlijke catalogus `pq_vegetatie_taxon` is
+  verwijderd nadat alle 714 bronvermeldingen volledig in het register waren
+  gecontroleerd. De historische lokale codes blijven als bronwaarden staan.
+  Ton heeft daarna expliciet toegestaan dat ook vermoedelijke PQ-bronopnamen
+  onder pq_* worden bewaard, herkenbaar als vermoedelijke koppeling, met
+  behoud van alle bronwaarden en zonder zelfstandig meetellen.
+  De 644 LVD-opnamen met 16.627 resultaten uit 1981–2015 staan nu onder
+  `pq_*`, met 652 vermoedelijke opnamekoppelingen en alle 32.657 bestaande
+  overlapbesluiten. Zij tellen niet zelfstandig mee. De oorspronkelijke
+  rijen zijn pas na vergelijking van iedere broncel verwijderd.
+  Alle 245 niet-gerelateerde basistabellen zijn gelijk gebleven, evenals
+  alle oorspronkelijke provinciale meetvelden en de 513 publieke PQ-
+  plotjaren. Volledige herstelproef, transactionele terugdraaiproef,
+  analysequerypariteit en onafhankelijke codecontrole zijn geslaagd.
+  Bewijs: `outputs/pq-integratie/live_20260927/result.json`; model en
+  herstelwijze: `docs/database/TAXONREGISTER.md`.
 
 - Vóór iedere volgende import: pas de vaste importafspraak in
   `docs/database/TAXONREGISTER.md` toe. Controleer en pas zo nodig het
@@ -40,9 +66,12 @@
   Zie `docs/database/TAXONREGISTER.md` voor afbakening, bronperioden en bewijs.
 
 - De centrale LVD-registratie laat rang en de 122 ondeugdelijke auteursvelden leeg.
-  De LVD-import schrijft bij 81.310 resultaten (1959–2015) taxonomische status
-  in `taxonrang`; niet als rang overnemen. Herstel van bestaande import/bronlaag
-  is niet uitgevoerd en vraagt een eigen gecontroleerde wijziging.
+  De oorspronkelijke LVD-import schreef bij 81.310 resultaten (1959–2015)
+  taxonomische status in `taxonrang`. Bij de 16.627 verplaatste regels heet
+  dit veld nu `taxonomische_status_aangeleverd`; de bronwaarde is behouden.
+  Bij de 64.683 niet-verplaatste regels blijft de oude veldnaam staan en
+  mag die waarde niet als rang worden gebruikt. De historische bulkimport
+  is na de PQ-migratie geblokkeerd tegen onbedoelde herinvoer.
 
 - Structuurstap van 27 september 2026 uitgevoerd: `taxon_groepen`, `taxa` en
   `taxa_bronkoppeling` zijn rechtstreeks in de lokale levende database aangemaakt
@@ -61,14 +90,13 @@
   inventariseert nog steeds alle 163 fysieke tabellen. Vogels blijven
   onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
 - De verdere hernoeming en gegevensmigratie uit dit voorstel moeten nog worden
-  besloten en beproefd. Alleen het bovenstaande register en de voorlopige
-  naamgebruiken en bronverwijzingen zijn toegevoegd; bestaande gegevens, applicatiecode en analytische bronstatussen zijn niet
-  gewijzigd. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
+  besloten en beproefd, met uitzondering van de hierboven uitgevoerde
+  PQ-integratie. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
   provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
 - Werk pas na de taxonregisterproef en een afzonderlijk migratiebesluit op een
   databasekopie een volledige libellenfamilie uit, inclusief
   echte groepswaarnemingen, bronkoppeling, imports en regressiecontroles.
-  Daarna volgt een PQ-proef met de reeds gekoppelde LVD-selectie. Behoud
+  De PQ-integratie met vermoedelijke LVD-bronvarianten is afzonderlijk uitgevoerd. Behoud
   bron-ID's en bewijs van reconstructie; voorkom dubbel getelde metingen.
 - Behoud van `pq_*` en `vangblik*` is geaccordeerd, onder de voorwaarde dat
   verspreide PQ-gegevens uit andere bronnen in de PQ-tabellen samenkomen;

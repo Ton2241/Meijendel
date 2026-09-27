@@ -3,6 +3,8 @@
 
 import importlib.util
 import tempfile
+import sys
+import re
 from pathlib import Path
 
 
@@ -18,6 +20,61 @@ def load_module():
 
 def main() -> int:
     module = load_module()
+    assert callable(getattr(module, 'guard_legacy_import', None)), 'Oude import mist bescherming tegen herinvoer'
+    real_run = module.run_mysql
+    try:
+        module.run_mysql = lambda *args: '0'
+        module.guard_legacy_import(None, [])
+        module.run_mysql = lambda *args: '1'
+        try:
+            module.guard_legacy_import(None, [])
+        except RuntimeError as exc:
+            assert 'PQ' in str(exc)
+        else:
+            raise AssertionError('Historische import moet stoppen na PQ-migratie')
+    finally:
+        module.run_mysql = real_run
+    assert callable(getattr(module, 'resolve_pq_taxon_links', None)), 'Centrale PQ-bronkoppeling ontbreekt'
+    catalogue = [{'taxon_id': 7, 'srtnum': 123, 'latijnse_naam_bron': 'Fagus sylvatica'}]
+    links = [{'koppeling_id': 18, 'taxon_id': 999, 'bron_systeem': 'Meijendel',
+              'bron_dataset': 'pq_vegetatie_taxon', 'bron_taxon_id': '123',
+              'bron_versie': 'snapshot:v1', 'bronmetadata': catalogue[0],
+              'koppelstatus': 'kandidaat', 'ingetrokken_op': None}]
+    assert module.resolve_pq_taxon_links(catalogue, links) == {7: 18}
+    for bad in [[], links + links, [{**links[0], 'taxon_id': None}],
+                [{**links[0], 'bronmetadata': {**catalogue[0], 'srtnum': 124}}],
+                [{**links[0], 'koppelstatus': 'afgewezen'}]]:
+        try:
+            module.resolve_pq_taxon_links(catalogue, bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Onvolledige of ambigue koppeling moet blokkeren')
+    assert callable(getattr(module, 'resolve_external_taxon_links', None)), 'Centrale LVD-koppeling ontbreekt'
+    fields = ['taxonID', 'taxonKey', 'scientificNameID', 'acceptedNameUsageID',
+              'nameAccordingTo', 'nameAccordingToID', 'scientificName', 'scientificNameAuthorship',
+              'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'taxonRank',
+              'verbatimTaxonRank', 'taxonomicStatus', 'nomenclaturalCode', 'taxonRemarks',
+              'higherClassification']
+    metadata = dict.fromkeys(fields)
+    metadata.update(scientificName='Fagus sylvatica', taxonomicStatus='accepted')
+    usage = {**metadata, 'dataset': 'lvd-meijendel-v1-6', 'name': 'Fagus sylvatica',
+             'raw_name': 'Fagus sylvatica', 'nl': 'Beuk', 'rank': 'accepted'}
+    result_row = {'resultaat_id': 17, 'wetenschappelijke_naam': 'Fagus sylvatica',
+                  'wetenschappelijke_naam_bron': 'Fagus sylvatica', 'nederlandse_naam': 'Beuk',
+                  'taxonrang': 'accepted', 'bronmetadata': metadata}
+    ext_link = {**links[0], 'bron_dataset': 'lvd-meijendel-v1-6', 'bron_versie': '1.6; sha256:abc',
+                'bronmetadata': usage}
+    assert module.resolve_external_taxon_links([result_row], [ext_link],
+        'lvd-meijendel-v1-6', '1.6; sha256:abc') == {17: 18}
+    for bad in [{**result_row, 'bronmetadata': {**metadata, 'scientificNameID': 'anders'}},
+                {**result_row, 'wetenschappelijke_naam_bron': 'Andere bronnaam'}]:
+        try:
+            module.resolve_external_taxon_links([bad], [ext_link], 'lvd-meijendel-v1-6', '1.6; sha256:abc')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Naamgelijkheid zonder gelijke broncontext moet blokkeren')
 
     stowa = {
         "_core_id": "496163",
@@ -101,5 +158,113 @@ def main() -> int:
     return 0
 
 
+def check_pq_schema(database: str) -> int:
+    if not re.fullmatch(r'Meijendel_pq_proef_[0-9]+', database):
+        raise ValueError('Integratietest mag uitsluitend in een expliciete PQ-proefdatabase')
+    module = load_module()
+    assert callable(getattr(module, 'pq_schema_sql', None)), 'PQ-bronvariantenschema ontbreekt'
+    client = Path('/usr/local/mysql/bin/mysql')
+    args = module.mysql_args('meijendel_root') + ['--batch', '--skip-column-names', database]
+    module.run_mysql(client, args, module.pq_schema_sql())
+    rows = module.run_mysql(client, args,
+        "SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
+        "AND REFERENCED_TABLE_NAME='taxa_bronkoppeling' AND TABLE_NAME IN "
+        "('pq_vegetatie_waarneming','pq_vegetatie_bronresultaat')")
+    assert rows == '2', rows
+    # Het bronmodel mag geen zelfstandige telling toestaan en geen ontbrekende bron accepteren.
+    for sql in [
+        "INSERT INTO pq_vegetatie_opname_bronkoppeling(event_id,opname_id,koppelstatus,regelversie,bewijs) "
+        "VALUES(9999999999,1,'vermoedelijk','test',JSON_OBJECT())",
+        "INSERT INTO pq_vegetatie_bronopname SELECT e.*,1 FROM externe_ecologie_event e LIMIT 1",
+    ]:
+        try:
+            module.run_mysql(client, args, sql)
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError('Ongeldige PQ-bronvariant ten onrechte toegelaten')
+    print('OK: PQ-schema, centrale foreign keys en uitsluiting zelfstandig meetellen')
+    return 0
+
+
+def check_pq_migration(database: str) -> int:
+    if not re.fullmatch(r'Meijendel_pq_proef_[0-9]+', database):
+        raise ValueError('Migratieproef mag nooit de levende database gebruiken')
+    module = load_module()
+    assert callable(getattr(module, 'prepare_pq_migration', None)), 'PQ-migratievoorbereiding ontbreekt'
+    assert callable(getattr(module, 'pq_migration_sql', None)), 'Transactionele PQ-migratie ontbreekt'
+    client = Path('/usr/local/mysql/bin/mysql')
+    args = module.mysql_args('meijendel_root') + ['--batch', '--raw', '--skip-column-names', database]
+    plan = module.prepare_pq_migration(client, args)
+    assert len(plan['tables']['externe_ecologie_event']) == 644
+    assert len(plan['tables']['externe_ecologie_resultaat']) == 16627
+    assert len(plan['tables']['externe_ecologie_overlap']) == 32657
+    assert len(plan['pairs']) == 652
+    # De default is terugdraaien, met daadwerkelijke inserts en deletes binnen de proef.
+    before = module.run_mysql(client, args, 'CHECKSUM TABLE externe_ecologie_event,externe_ecologie_resultaat,externe_ecologie_overlap,pq_vegetatie_waarneming')
+    module.run_mysql(client, args, module.pq_migration_sql(plan))
+    after = module.run_mysql(client, args, 'CHECKSUM TABLE externe_ecologie_event,externe_ecologie_resultaat,externe_ecologie_overlap,pq_vegetatie_waarneming')
+    assert after == before, 'Terugdraaien moet alle oorspronkelijke tabelinhoud herstellen'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronopname') == '0'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE taxon_bronkoppeling_id IS NOT NULL') == '0'
+    # Commit uitsluitend in de proefdatabase; onafhankelijke telling en waardencontrole.
+    module.run_mysql(client, args, module.pq_migration_sql(plan, commit=True))
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronopname') == '644'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronresultaat') == '16627'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronoverlap') == '32657'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_opname_bronkoppeling') == '652'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronopname WHERE zelfstandig_meetellen<>0') == '0'
+    assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE taxon_bronkoppeling_id IS NULL') == '0'
+    assert module.run_mysql(client, args,
+        'SELECT COUNT(*) FROM externe_ecologie_event e JOIN pq_vegetatie_bronopname p USING(event_id)') == '0'
+    assert module.run_mysql(client, args,
+        'SELECT COUNT(*) FROM externe_ecologie_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)') == '0'
+    try:
+        module.run_mysql(client, args, module.pq_migration_sql(plan, commit=True))
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError('Herhaald toepassen moet blokkeren zonder nieuwe bronregels te maken')
+    print('OK: volledige PQ-bronverplaatsing, centrale taxa, rollback en bescherming tegen dubbele invoer')
+    return 0
+
+
+def check_pq_finalize(database: str) -> int:
+    if not re.fullmatch(r'Meijendel_pq_proef_[0-9]+', database):
+        raise ValueError('Afrondingsproef mag nooit de levende database gebruiken')
+    module = load_module()
+    assert callable(getattr(module, 'pq_finalize_sql', None)), 'Centrale PQ-afronding ontbreekt'
+    client = Path('/usr/local/mysql/bin/mysql')
+    args = module.mysql_args('meijendel_root') + ['--batch', '--raw', '--skip-column-names', database]
+    public_query = 'SELECT * FROM website_plot_vegetatie_jaar ORDER BY plot_id,jaar'
+    before = module.run_mysql(client, args, public_query)
+    calculated_query = 'SELECT * FROM pq_plot_jaar_vegetatie_berekend ORDER BY plot_id,jaar'
+    calculated_before = module.run_mysql(client, args, calculated_query)
+    module.run_mysql(client, args, module.pq_finalize_sql())
+    assert module.run_mysql(client, args, public_query) == before
+    assert module.run_mysql(client, args,
+        "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='pq_vegetatie_taxon'") == '0'
+    assert module.run_mysql(client, args,
+        "SELECT COUNT(*) FROM v_externe_ecologie_analyse WHERE dataset_sleutel='lvd-meijendel-v1-6'") == '81310'
+    assert module.run_mysql(client, args,
+        "SELECT COUNT(*) FROM v_externe_ecologie_analyse a JOIN pq_vegetatie_bronresultaat b USING(resultaat_id) "
+        "WHERE a.heeft_bekende_overlap<>1") == '0'
+    assert module.run_mysql(client, args,
+        'SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend') == '513'
+    assert module.run_mysql(client, args, calculated_query) == calculated_before
+    assert module.run_mysql(client, args,
+        'SELECT COUNT(*) FROM pq_vegetatie_waarneming w LEFT JOIN taxa_bronkoppeling b '
+        'ON b.koppeling_id=w.taxon_bronkoppeling_id LEFT JOIN taxa t ON t.taxon_id=b.taxon_id '
+        'WHERE b.koppeling_id IS NULL OR t.taxon_id IS NULL') == '0'
+    print('OK: catalogus verwijderd, centrale taxa en exact gelijke 513 publieke plot-jaarresultaten')
+    return 0
+
+
 if __name__ == "__main__":
+    if len(sys.argv) == 3 and sys.argv[1] == '--pq-schema':
+        raise SystemExit(check_pq_schema(sys.argv[2]))
+    if len(sys.argv) == 3 and sys.argv[1] == '--pq-migratie':
+        raise SystemExit(check_pq_migration(sys.argv[2]))
+    if len(sys.argv) == 3 and sys.argv[1] == '--pq-afronding':
+        raise SystemExit(check_pq_finalize(sys.argv[2]))
     raise SystemExit(main())

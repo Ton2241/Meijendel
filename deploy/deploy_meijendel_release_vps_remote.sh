@@ -336,15 +336,22 @@ docker exec "$CONTAINER" sh -lc '
   query() { mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "$1" "$MYSQL_DATABASE"; }
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_pq")" -eq 254
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname")" -eq 2007
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon")" -eq 714
+  test "$(query "SELECT COUNT(DISTINCT taxon_bronkoppeling_id) FROM pq_vegetatie_waarneming")" -eq 714
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming")" -eq 53122
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname_plot")" -eq 1336
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie")" -eq 513
   test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar")" -eq 513
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_import WHERE importstatus = \"voorlopig\"")" -eq 1
-  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_taxon WHERE srtnum IS NULL OR taxonlijst_versie = \"\"")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming w LEFT JOIN taxa_bronkoppeling b ON b.koppeling_id=w.taxon_bronkoppeling_id LEFT JOIN taxa t ON t.taxon_id=b.taxon_id WHERE b.koppeling_id IS NULL OR t.taxon_id IS NULL OR b.bron_dataset<>\"pq_vegetatie_taxon\" OR b.bronmetadata->>\"$.srtnum\" IS NULL OR b.bronmetadata->>\"$.srtnum\"=\"null\" OR COALESCE(b.bronmetadata->>\"$.taxonlijst_versie\",\"\") IN (\"\",\"null\")")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE plabed_code IS NULL")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM (SELECT taxonlijst_versie, srtnum FROM pq_vegetatie_taxon GROUP BY taxonlijst_versie, srtnum HAVING COUNT(*) > 1) d")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM (SELECT b.bronmetadata->>\"$.taxonlijst_versie\",b.bronmetadata->>\"$.srtnum\" FROM taxa_bronkoppeling b JOIN (SELECT DISTINCT taxon_bronkoppeling_id FROM pq_vegetatie_waarneming) w ON w.taxon_bronkoppeling_id=b.koppeling_id GROUP BY b.bronmetadata->>\"$.taxonlijst_versie\",b.bronmetadata->>\"$.srtnum\" HAVING COUNT(*) > 1) d")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_bronopname")" -eq 644
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_bronresultaat")" -eq 16627
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_bronopname WHERE zelfstandig_meetellen<>0")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname_bronkoppeling WHERE koppelstatus=\"vermoedelijk\"")" -eq 652
+  test "$(query "SELECT COUNT(*) FROM pq_vegetatie_bronresultaat r LEFT JOIN taxa_bronkoppeling b ON b.koppeling_id=r.taxon_bronkoppeling_id LEFT JOIN taxa t ON t.taxon_id=b.taxon_id WHERE b.koppeling_id IS NULL OR t.taxon_id IS NULL")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM externe_ecologie_event e JOIN pq_vegetatie_bronopname p USING(event_id)")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM externe_ecologie_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE bodemtype_status = \"te_bevestigen\"")" -eq 34
   test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar WHERE bronstatus <> \"voorlopig\" OR taxonlijst_versie = \"\"")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend")" -eq 513

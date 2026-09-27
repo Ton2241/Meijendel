@@ -215,15 +215,17 @@ def verzamel_data() -> list[dict]:
     pq_mos_ids = {235, 236, 336, 441, 452, 619}
     pq_alg_ids = {13, 73, 88, 100, 101, 241, 242, 581}
     pq_sql = """
-      SELECT t.taxon_id,t.nederlandse_naam,
-             COALESCE(t.wetenschappelijke_naam_officieel,t.latijnse_naam_bron,''),
+      SELECT w.bron_taxon_lokaal_id,t.bronmetadata->>'$.nederlandse_naam',
+             COALESCE(NULLIF(t.bronmetadata->>'$.wetenschappelijke_naam_officieel','null'),
+                      NULLIF(t.bronmetadata->>'$.latijnse_naam_bron','null'),''),
              COUNT(*)
       FROM Meijendel.pq_vegetatie_waarneming w
       JOIN Meijendel.pq_vegetatie_opname o ON o.opname_id=w.opname_id
-      JOIN Meijendel.pq_vegetatie_taxon t ON t.taxon_id=w.taxon_id
+      JOIN Meijendel.taxa_bronkoppeling t ON t.koppeling_id=w.taxon_bronkoppeling_id
       WHERE o.jaar BETWEEN 1950 AND 2025
-      GROUP BY t.taxon_id,t.nederlandse_naam,
-               COALESCE(t.wetenschappelijke_naam_officieel,t.latijnse_naam_bron,'')
+      GROUP BY w.bron_taxon_lokaal_id,t.bronmetadata->>'$.nederlandse_naam',
+             COALESCE(NULLIF(t.bronmetadata->>'$.wetenschappelijke_naam_officieel','null'),
+                      NULLIF(t.bronmetadata->>'$.latijnse_naam_bron','null'),'')
     """
     for taxon_id, soort, sci, aantal in mysql_rows(pq_sql):
         groep = resolveer_groep(None, soort, sci, catalogus)

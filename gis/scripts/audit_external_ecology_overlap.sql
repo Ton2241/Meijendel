@@ -37,11 +37,11 @@ JOIN pq_vegetatie_opname p
        ST_Transform(ST_SRID(Point(e.longitude,e.latitude),4326),28992)
      ) <= GREATEST(COALESCE(e.coordinate_uncertainty_m,0),5)
 JOIN pq_vegetatie_waarneming w ON w.opname_id=p.opname_id
-JOIN pq_vegetatie_taxon t
-  ON t.taxon_id=w.taxon_id
+JOIN taxa_bronkoppeling t
+  ON t.koppeling_id=w.taxon_bronkoppeling_id
  AND (
-      t.wetenschappelijke_naam_officieel=r.wetenschappelijke_naam
-      OR t.latijnse_naam_bron=r.wetenschappelijke_naam
+      t.bronmetadata->>'$.wetenschappelijke_naam_officieel'=r.wetenschappelijke_naam
+      OR t.bronmetadata->>'$.latijnse_naam_bron'=r.wetenschappelijke_naam
  )
 WHERE d.dataset_sleutel='lvd-meijendel-v1-6';
 

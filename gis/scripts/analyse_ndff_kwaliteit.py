@@ -63,11 +63,12 @@ def analyse_pq_overlap(
     query = (
         "SELECT o.opname_id,o.pq_nummer,o.jaar,o.opname_datum,o.x_rd,o.y_rd,"
         "w.waarneming_id,"
-        "t.nederlandse_naam,COALESCE(NULLIF(t.wetenschappelijke_naam_officieel,''),"
-        "t.latijnse_naam_bron) "
+        "t.bronmetadata->>'$.nederlandse_naam',COALESCE(NULLIF(NULLIF("
+        "t.bronmetadata->>'$.wetenschappelijke_naam_officieel','null'),''),"
+        "t.bronmetadata->>'$.latijnse_naam_bron') "
         "FROM pq_vegetatie_opname o "
         "JOIN pq_vegetatie_waarneming w USING(opname_id) "
-        "JOIN pq_vegetatie_taxon t USING(taxon_id)"
+        "JOIN taxa_bronkoppeling t ON t.koppeling_id=w.taxon_bronkoppeling_id"
     )
     command = [
         str(mysql_client),
@@ -697,7 +698,7 @@ def source_specs(created_at: str, pq_query: str) -> list[dict[str, Any]]:
                 "tables_used": [
                     "Meijendel.pq_vegetatie_opname",
                     "Meijendel.pq_vegetatie_waarneming",
-                    "Meijendel.pq_vegetatie_taxon",
+                    "Meijendel.taxa_bronkoppeling (provinciale PQ-bronwaarden)",
                     "ndff_waarnemingen",
                 ],
                 "filters": [
