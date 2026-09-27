@@ -1,5 +1,16 @@
 # Besluiten
 
+- Op 27 september 2026 om 20:53 uur zijn 1.283 ontbrekende soortgroepen
+  onderbouwd ingevuld en 87 PQ-naamteksten uit 1981–2025 aangevuld vanuit
+  de officiële Floranld_2020-lijst. Oorspronkelijke bronwaarden blijven
+  behouden; de 87 eerdere bronbesluiten krijgen een nieuwe versie.
+  De aanvulling volgt Darwin Core en TDWG TCS, zonder schema-afwijking,
+  bevestigde conceptgelijkstelling of samenvoeging van waarnemingen.
+  Er blijven 1.504 naamgebruiken zonder groep en twee bronvermeldingen
+  zonder doel. Verdere opvragingen bij GBIF wachten op toestemming voor
+  het versturen van alleen wetenschappelijke namen. Bronlagen en
+  applicaties blijven ongewijzigd. Zie `docs/database/TAXONREGISTER.md`
+  voor onderbouwing, terugdraaiproef, behoudscontrole en actuele aantallen.
 - Op 27 september 2026 is na goedkeuring van de categoriebeoordeling ook
   de overige taxonomische broninhoud toevoegend geregistreerd. Manifest v3
   voegt 14.313 voorlopige naamgebruiken en 15.351 bronkoppelingen toe aan

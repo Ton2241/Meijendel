@@ -1,5 +1,117 @@
 # Taxonregister: structuur en uitvoering
 
+## Groepen en PQ-namen aangevuld, 27 september 2026
+
+Opdracht Ton: ontbrekende groepen aanvullen, onduidelijke namen oplossen en
+aantoonbaar overeenkomstige taxa tussen bronnen verbinden. Uitvoering in
+`codex/taxa-inhoudelijk-verbinden`; bronlagen en applicaties blijven gelijk.
+De bestaande taakdocumentatie blijft de hoofdlocatie; geen tweede planbestand.
+
+Op 27 september om 20:53 uur is de onderbouwde aanvulling opgeslagen in de
+levende lokale database. Het resultaat:
+
+- **Soortgroepen:** 1.283 bestaande naamgebruiken hebben een primaire groep
+  gekregen: 607 uit de overeenkomst van PQ-code, wetenschappelijke naam en
+  Nederlandse naam met Floranld_2020; 674 uit expliciete familie- of
+  ordegegevens in de bron; twee NDFF-naamgebruiken uit hun bestaande
+  aanduiding als kreeftachtige. Er blijven 1.504 naamgebruiken zonder groep.
+- **PQ-namen:** alle 87 eerder onopgeloste naamteksten uit de PQ-reeks
+  1981–2025 zijn onderbouwd met de officiële Floranld_2020-lijst. Code,
+  wetenschappelijke naam én Nederlandse naam moesten passen. De volledige
+  namen zijn als 87 nieuwe, voorlopige brongebonden naamgebruiken toegevoegd,
+  ieder met een groep. De oorspronkelijke 87 bronbesluiten zijn behouden
+  en vervangen door een nieuwe besluitversie, niet overschreven.
+- **Verbinding tussen bronnen:** overeenkomstige spelling bewijst nog niet
+  dat bronnen dezelfde soortafbakening gebruiken. Er zijn daarom geen
+  bevestigde conceptgelijkstellingen toegevoegd en geen waarnemingen
+  samengevoegd. Dit deel van de opdracht is nog niet afgerond.
+
+De registerstand is nu 27 groepen, 14.663 voorlopige naamgebruiken en
+15.701 bronbesluiten, waarvan 15.614 actief. Dit zijn geen 14.663 unieke
+biologische soorten en geen telling van lokale aanwezigheid; het register
+heeft zelf geen waarnemingsperiode. Er zijn nog twee actieve bronvermeldingen
+zonder doeltaxon:
+
+- Naturalis Botany bevat één `Indet.` binnen de bronreeks 1875–2025. Die tekst
+  benoemt geen taxon; er wordt geen soort bij verzonnen.
+- `soorten.id=647` bevat Toendrarietgans zonder wetenschappelijke naam en met
+  `euring_code=1582`. De officiële EURING-lijst van februari 2026 gebruikt
+  `01574` voor `Anser serrirostris`; code `01582` komt daarin niet voor.
+  Dat rechtvaardigt geen wijziging van de oorspronkelijke vogeltabel.
+  De herkomst van de lokale code moet eerst worden vastgesteld.
+
+Voor verdere groepsindeling en naamvergelijking is toestemming gevraagd om
+uitsluitend wetenschappelijke namen naar de openbare GBIF-zoekdienst te
+sturen. Die grootschalige opvraging is door de uitvoeringsbeveiliging
+tegengehouden en niet uitgevoerd. Locaties, datums, tellingen en
+persoonsgegevens zijn niet aangeboden. Ook na toestemming geldt: een
+naamtreffer ondersteunt naamgeving en classificatie, niet vanzelf
+gelijkheid van historische taxonconcepten.
+
+### Onderbouwing en controle
+
+De openbare [Floranld_2020-lijst](https://www.synbiosys.alterra.nl/turboveg/)
+is gedownload uit de door de uitgever aangeboden ZIP van 10 maart 2026.
+De soortenlijst bevat 17.468 unieke codes. Zij is een referentielijst, geen
+nieuwe waarnemingsbron, en bewijst niet dat alle historische PQ-opnamen
+dezelfde lijstversie gebruikten. De oorspronkelijke PQ-tekst, code en
+metadata blijven daarom bewaard. Bij combinaties is de hele gecombineerde
+naam vastgelegd, zonder die als auteursnaam te misbruiken. De 87 aanvullingen
+blijven kandidaat; hun conceptrelatie blijft `onbekend`.
+
+Voor de vlinderindeling zijn de officiële familieoverzichten van
+[De Vlinderstichting](https://vlinderstichting.nl/vlinders-en-libellen/alles-over-vlinders/vlinders-herkennen/families/)
+en [microvlinders](https://vlinderstichting.nl/vlinders-en-libellen/alles-over-vlinders/vlinders-herkennen/microvlinders/)
+gebruikt; alleen expliciet ondersteunde familie-indelingen zijn toegepast.
+De vogelcode is gecontroleerd in de volledige openbare
+[EURING-codelijst](https://www.euring.org/data-and-codes/euring-codes), versie
+IOC 15.1.2, gepubliceerd op 12 februari 2026.
+
+De onafhankelijke beoordeling, zeven naam-/groepstests en zes uitvoeringstests
+slagen. Een tijdens de eerste proef gevonden fout in de rijtelling is
+hersteld met een regressietest; die proef is volledig teruggedraaid.
+De daaropvolgende volledige ROLLBACK-proef en de definitieve invoer gebruikten
+hetzelfde manifest en dezelfde gecontroleerde scripts. Alle bestaande velden
+zijn vergeleken, zowel binnen de schrijftransactie als na COMMIT: uitsluitend
+de bedoelde groepsaanvullingen, hun onderbouwing en de intrekking van de
+87 vervangen bronbesluiten zijn gewijzigd. De 263 bestaande vogelregistraties
+en hun koppelingen blijven identiek; de afzonderlijke vogelcontrole slaagt.
+
+De volledige deterministische export van alle 249 overige tabellen en
+bijbehorende databaseobjecten is vóór en na de aanvulling byte-identiek:
+`907d30aa737a4f417e7a3b1305fcfad263de4fb0c265c0eabd2d4f74ce713d09`.
+Dat omvat ook de oorspronkelijke vogel-, PQ-, NDFF-, Vangblik- en externe
+bronlagen. De historische acceptatiepoort `--fase overige` beschrijft de
+eerste invoer; voor deze vervolgstap is de afzonderlijke volledige
+veldvergelijking in `uitvoering.py` leidend, naast `--fase vogels`.
+
+Uitvoeringsbewijs, scripts, manifest en herstelback-ups staan lokaal onder
+`outputs/taxa-verbinden-20260927.m7fxBO/`; deze gegevens gaan niet naar GitHub.
+Manifest-SHA-256:
+`70ae1187276c206583914e41670895301550d65b71959b4347f4e6a9fd23836f`.
+De vóórback-up van de twee gewijzigde registertabellen heeft SHA-256
+`ac3793346f63e21bc2f8ec6011aeda1be8d71ecba2060647f8632e3206bc1428`.
+Terugdraaien na COMMIT vereist een gerichte hersteltransactie voor uitsluitend
+dit manifest, met voorafgaande controle op later gebruik. Een volledige
+database terugzetten is daarvoor niet toegestaan. De publicatiedump,
+applicatiecode, caches en VPS zijn niet vernieuwd.
+Het bronregister is in Markdown en Word bijgewerkt; de gewijzigde alinea is
+inhoudelijk gelijk en alle overige alineatekst is behouden. Alle 20
+gerenderde Wordpagina's zijn visueel gecontroleerd.
+
+Normbasis opnieuw geraadpleegd op 27 september 2026:
+[Darwin Core](https://dwc.tdwg.org/terms/) (`scientificName`, `taxonID`,
+`nameAccordingToID`, `acceptedNameUsageID`, `taxonRank`) en
+[TCS](https://tcs.tdwg.org/terms/) (naam, brongebonden concept en relatie).
+De lokale groep blijft een gebruiksindeling; `taxonrelatie=gelijk` betreft
+afbakening, niet alleen spelling. De officiële Turboveg-lijst is verkrijgbaar
+via https://www.synbiosys.alterra.nl/turboveg/. GBIF-documentatie over
+naamgebruik en classificatie: https://techdocs.gbif.org/en/openapi/v1/species.
+Geen afwijking van de standaarden of schemawijziging toegestaan.
+
+De volgende secties beschrijven de eerdere stappen op dezelfde dag. Hun
+aantallen en open punten zijn historisch; de actuele stand staat hierboven.
+
 ## Toevoegende invoer overige naamgebruiken op 27 september 2026
 
 Ton heeft de categoriebeoordeling en aansluitende invoer goedgekeurd.

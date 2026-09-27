@@ -4,13 +4,16 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
-- De categoriebeoordeling is verwerkt en manifest v3 is op 27 september 2026
-  toevoegend ingevoerd na volledige ROLLBACK-proeven. Stand: 27 groepen,
-  14.576 voorlopige naamgebruiken en 15.614 bronkoppelingen. Volgende inhoudelijke
-  stap: de 89 bronvermeldingen zonder doel oplossen (87 PQ, één Naturalis-
-  `Indet.`, Toendrarietgans) en de 2.787 naamgebruiken zonder primaire groep
-  beoordelen op expliciete bronclassificatie. Niet op naam alleen bevestigen.
-  De 70 onderbouwde lange PQ-naamteksten geven geen conceptgelijkheid.
+- De registeraanvulling van 27 september 2026 is na een terugdraaiproef
+  opgeslagen: 27 groepen, 14.663 voorlopige naamgebruiken en 15.701
+  bronbesluiten, waarvan 15.614 actief. Er zijn 1.283 bestaande groepsindelingen
+  aangevuld en alle 87 eerder onopgeloste PQ-naamteksten uit 1981–2025 zijn
+  onderbouwd met Floranld_2020. Resterend: 1.504 naamgebruiken indelen en
+  bronoverstijgende relaties inhoudelijk beoordelen. Toestemming voor het
+  versturen van uitsluitend wetenschappelijke namen naar GBIF staat open.
+  Een naamtreffer bewijst geen conceptgelijkheid. De twee bronvermeldingen
+  zonder doel blijven behouden: Naturalis-`Indet.` benoemt geen taxon;
+  bij Toendrarietgans moet de herkomst van lokale code 1582 worden vastgesteld.
   Zie `docs/database/TAXONREGISTER.md` voor afbakening, bronperioden en bewijs.
 
 - De centrale LVD-registratie laat rang en de 122 ondeugdelijke auteursvelden leeg.

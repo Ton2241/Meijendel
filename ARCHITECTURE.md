@@ -48,9 +48,13 @@ De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
 groepen, taxonnaamgebruiken met conceptcontext en geversioneerde
 brontoewijzingen. Na de aanvulling op 27 september 2026 bevat `taxon_groepen`
-27 praktische groepen, `taxa` 14.576 voorlopige brongebonden naamgebruiken en
-`taxa_bronkoppeling` 15.614 registraties: 15.525 kandidaten en 89 nog niet
-beoordeelde vermeldingen zonder doeltaxon. De oorspronkelijke 263
+27 praktische groepen, `taxa` 14.663 voorlopige brongebonden naamgebruiken en
+`taxa_bronkoppeling` 15.701 geversioneerde bronbesluiten, waarvan 15.614 actief:
+15.612 kandidaten en twee vermeldingen zonder doeltaxon. De 87 eerdere
+PQ-besluiten blijven als ingetrokken historie aanwezig. Er zijn 1.283
+bestaande groepsindelingen aangevuld; 1.504 naamgebruiken missen nog een
+primaire groep. Deze referentieregistratie heeft geen eigen waarnemingsperiode.
+De oorspronkelijke 263
 vogelnaamgebruiken en 263 vogelkoppelingen zijn ongewijzigd. Bronidentiteit
 bestaat uit bronsysteem, dataset, bronversie en oorspronkelijke sleutel;
 voor vogels is dit `Meijendel` / `soorten` / de SHA-256 van de
