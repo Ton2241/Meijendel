@@ -42,6 +42,18 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
   `v_bron_catalogus`, `v_literatuur_overzicht` en
   `v_contextdataset_overzicht`; de ruwe tabellen blijven ontoegankelijk.
 
+### Bronoverstijgend taxonregister
+
+De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
+tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
+groepen, taxonnaamgebruiken met conceptcontext en geversioneerde
+brontoewijzingen. De eerste structuurstap laat alle drie leeg. Er zijn alleen
+onderlinge foreign keys, geen koppelingen vanuit bestaande tabellen. De
+vogeltabel `soorten`, PQ, Vangblik en de applicaties blijven ongewijzigd.
+Uitwerking en verificatie: `docs/database/TAXONREGISTER.md`. De bestaande
+publicatiedump en VPS bevatten deze uitbreiding nog niet; die volgen alleen
+via een latere gecontroleerde export/release.
+
 ### Ruimtelijke afbakening
 
 De database onderscheidt vanaf 24 september 2026 drie onafhankelijke lagen:

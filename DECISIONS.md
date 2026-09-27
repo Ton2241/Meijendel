@@ -1,5 +1,15 @@
 # Besluiten
 
+- Op uitdrukkelijk besluit van 27 september 2026 is de eerste structuurstap
+  rechtstreeks uitgevoerd in de levende lokale `Meijendel`-database: uitsluitend
+  drie lege fysieke tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling`.
+  Geen databasekopie, views, zaadrecords, import of bestaande gegevenskoppeling.
+  Darwin Core en TCS onderbouwen het onderscheid tussen naam, taxonconcept en
+  bronidentiteit; het is een lokaal relationeel ontwerp, geen volledige
+  standaardimplementatie. De vogeltabel `soorten` blijft onaangetast. Proeven
+  met bestaande gegevens en de keuze/vulling van groepen volgen pas in een
+  volgende stap. Zie `docs/database/TAXONREGISTER.md`; overige hernoemingen en
+  migraties uit de tabelinventaris zijn hiermee niet geautoriseerd.
 - Meijendel gebruikt vanaf 24 september 2026 niet één, maar drie expliciet
   verschillende ruimtelijke lagen. De ruime projectlaag bepaalt de ruimtelijke
   toelating tot de database. Zij is de door zee en benoemde wegen begrensde

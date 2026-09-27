@@ -74,6 +74,11 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   163 bestaande tabellen. Nog geen migratiebesluit.
   Ook beschikbaar als [leesbaar Wordbestand voor Pages](docs/database/MEIJENDEL_TABELINVENTARIS.docx),
   met het voorstel vooraan en de tabelinventaris in een liggende bijlage.
+- [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md)
+  Eerste uitgevoerde structuurstap van 27 september 2026: drie lege fysieke
+  tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
+  database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;
+  nog geen groepsvulling, gegevensmigratie of koppeling aan applicaties.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.
 - [`README.md`][8]

@@ -4,17 +4,24 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Structuurstap van 27 september 2026 uitgevoerd: `taxon_groepen`, `taxa` en
+  `taxa_bronkoppeling` zijn rechtstreeks in de lokale levende database aangemaakt
+  en nog leeg. Zie [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md).
+  Eerstvolgend: na afzonderlijke opdracht de praktische groepsindeling en
+  taxon-/bronidentiteiten met bestaande gegevens beproeven. Geen import gestart.
 - Ontwerpbeoordeling van 26 september 2026 staat in
   [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md).
   Herschreven naar 26 soortgroepprefixen, zoals `libellen_*`, ongeacht bron.
   Het eerdere voorstel van 149 loutere hernoemingen vervalt. De bijlage
   inventariseert nog steeds alle 163 fysieke tabellen. Vogels blijven
   onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
-- Het voorstel moet nog als migratie worden besloten en op een databasekopie
-  worden beproefd. De huidige database, code en bronstatussen zijn niet
+- De verdere hernoeming en gegevensmigratie uit dit voorstel moeten nog worden
+  besloten en beproefd. Alleen de bovenstaande lege structuur is inmiddels
+  toegevoegd; bestaande gegevens, applicatiecode en bronstatussen zijn niet
   gewijzigd. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
   provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
-- Werk eerst op een databasekopie een volledige libellenfamilie uit, inclusief
+- Werk pas na de taxonregisterproef en een afzonderlijk migratiebesluit op een
+  databasekopie een volledige libellenfamilie uit, inclusief
   echte groepswaarnemingen, bronkoppeling, imports en regressiecontroles.
   Daarna volgt een PQ-proef met de reeds gekoppelde LVD-selectie. Behoud
   bron-ID's en bewijs van reconstructie; voorkom dubbel getelde metingen.
