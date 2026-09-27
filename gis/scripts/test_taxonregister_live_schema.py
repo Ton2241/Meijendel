@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
-"""Alleen-lezen structuurpoort voor het lege taxonregister; geen importtest.
+"""Alleen-lezen structuurpoort voor het taxonregister; geen taxonimporttest.
 
 Dit controleert het werkelijk aangemaakte MySQL-schema, niet SQL-brontekst.
 Opzettelijk geen inserts: gegevensproeven volgen na afzonderlijke opdracht.
 """
 from __future__ import annotations
 
+import argparse
 import subprocess
 
 TABLES = {"taxon_groepen", "taxa", "taxa_bronkoppeling"}
+GROUP_CODES = {
+    'vogels', 'amfibieen', 'dagvlinders', 'eencelligen', 'geleedpotigen_overig',
+    'insecten_overig', 'kevers', 'korstmossen', 'kranswieren_wieren_algen',
+    'kreeftachtigen', 'libellen', 'microvlinders', 'mossen', 'nachtvlinders',
+    'ongewervelden_overig', 'reptielen', 'schimmels', 'snavelinsecten',
+    'spinachtigen', 'sprinkhanen_en_krekels', 'vaatplanten', 'vissen',
+    'vleermuizen', 'vliegen_en_muggen', 'vliesvleugeligen', 'weekdieren',
+    'zoogdieren_overig',
+}
 MYSQL = ["/usr/local/mysql/bin/mysql", "--login-path=meijendel_root",
          "--protocol=TCP", "--host=127.0.0.1", "--port=3306",
          "--batch", "--raw", "--skip-column-names", "Meijendel"]
@@ -21,6 +31,10 @@ def rows(sql: str) -> list[list[str]]:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--fase', choices=['leeg', 'groepen'], default='groepen',
+                        help='leeg: historische installatiepoort; groepen: catalogus v1')
+    args = parser.parse_args()
     scope = "table_schema=DATABASE() AND table_name IN ('taxon_groepen','taxa','taxa_bronkoppeling')"
     found = rows("SELECT table_name,engine,table_collation FROM information_schema.tables WHERE " + scope)
     assert {r[0] for r in found} == TABLES, f"Taxonregister ontbreekt of is onvolledig: {found}"
@@ -80,12 +94,31 @@ def main() -> int:
     assert len(checks) == 24 and all(r[1] == "YES" for r in checks), checks
     print("OK: unieke bronidentiteit/besluiten, geen unieke naam, actieve CHECK-regels")
 
-    for table in sorted(TABLES):
+    empty_tables = TABLES if args.fase == 'leeg' else TABLES - {'taxon_groepen'}
+    for table in sorted(empty_tables):
         assert rows(f"SELECT COUNT(*) FROM {table}") == [["0"]], f"Niet leeg: {table}"
+    if args.fase == 'groepen':
+        groups = rows("SELECT groep_code,groep_naam,bovenliggende_groep_id,actief,"
+                      "indeling_versie,JSON_UNQUOTE(JSON_EXTRACT(groepmetadata,'$.indelingstype')) "
+                      "FROM taxon_groepen")
+        assert {r[0] for r in groups} == GROUP_CODES, f'Groepscatalogus ontbreekt of wijkt af: {groups}'
+        assert len(groups) == 27, groups
+        assert all(r[1] and r[2:] == ['NULL', '1', 'meijendel-soortgroepen-v1',
+                                     'praktische_soortgroep'] for r in groups), groups
+        incomplete = rows("SELECT groep_code FROM taxon_groepen WHERE omschrijving IS NULL "
+                          "OR CHAR_LENGTH(TRIM(omschrijving))=0 OR indeling_bron IS NULL "
+                          "OR CHAR_LENGTH(TRIM(indeling_bron))=0")
+        assert not incomplete, incomplete
+        uncovered = rows("SELECT DISTINCT k.soortgroep_code FROM ndff_open_soortgroep_koppeling k "
+                         "LEFT JOIN taxon_groepen g ON g.groep_code=k.soortgroep_code "
+                         "WHERE g.groep_id IS NULL")
+        assert not uncovered, f'Bestaande groepscodes ontbreken: {uncovered}'
+        assert rows("SELECT groep_naam FROM taxon_groepen WHERE groep_code='vogels'") == [['Vogels']]
+        print('OK: 27 brononafhankelijke gebruiksgroepen; bestaande groepscodes volledig gedekt')
     triggers = rows("SELECT trigger_name FROM information_schema.triggers WHERE trigger_schema=DATABASE() "
                     "AND event_object_table IN ('taxon_groepen','taxa','taxa_bronkoppeling')")
     assert not triggers, triggers
-    print("OK: alle drie tabellen leeg; geen triggers, import of gegevensproef")
+    print(f"OK: fase {args.fase}; taxa en bronkoppelingen leeg, geen triggers")
     return 0
 
 

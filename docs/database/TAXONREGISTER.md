@@ -1,8 +1,12 @@
 # Taxonregister: structuur en uitvoering
 
-Stand: 27 september 2026. Deze stap betreft uitsluitend drie lege tabellen in
-de levende lokale database `Meijendel`. Geen extra database, views, import,
-groepsindeling of koppeling van bestaande gegevens. Het eerdere voorstel om
+Stand: 27 september 2026. De drie fysieke tabellen staan in de levende lokale
+database `Meijendel`. Na de eerste lege structuurstap is `taxon_groepen` gevuld
+met 27 praktische groepen; `taxa` en `taxa_bronkoppeling` bevatten nog 0 rijen.
+Geen extra database, views, taxonimport of koppeling van bestaande gegevens.
+De oorspronkelijke structuurstap en het controlebewijs blijven hieronder
+herkenbaar bewaard; de groepsvulling staat in de laatste sectie.
+Het eerdere voorstel om
 eerst een databasekopie te gebruiken geldt niet voor deze uitdrukkelijk
 geautoriseerde, toevoegende structuurstap.
 
@@ -98,9 +102,10 @@ geen volledige implementatie van alle mogelijkheden van Darwin Core of TCS.
 SQL: `gis/database/taxonregister_schema.sql`.
 Installatiecontrole: `gis/scripts/test_taxonregister_live_schema.py`.
 Beide werken op de lokale MySQL 9.7.1. De controle leest uitsluitend het
-werkelijk aangemaakte schema en de leegte van de drie tabellen; zij voegt geen
-proefrecords toe. Na toekomstige imports is deze leegtecontrole niet meer de
-toepasselijke acceptatietest.
+werkelijk aangemaakte schema en de afgesproken inhoud; zij voegt geen
+proefrecords toe. `--fase leeg` toetst de oorspronkelijke structuurstap;
+`--fase groepen` (nu standaard) toetst 27 groepen en nog lege taxa en
+bronkoppelingen. Na taxonimports moet de acceptatiepoort opnieuw worden aangepast.
 
 De migratie bevat alleen drie `CREATE TABLE`-opdrachten, met InnoDB, Unicode,
 interne foreign keys zonder cascades en afgedwongen CHECK-regels. Geen
@@ -133,7 +138,7 @@ nog leeg zijn en geen externe verwijzingen hebben; uitvoering vereist een
 afzonderlijk besluit. Nooit hiervoor de volledige database terugzetten, want
 dat zou intussen toegevoegde gegevens kunnen vernietigen.
 
-## Uitvoeringslog
+## Uitvoeringslog eerste, lege structuurstap
 
 - [x] Wetenschappelijke en technische bronnen gecontroleerd.
 - [x] Leegte-/schematest vóór migratie faalt zoals verwacht: tabellen ontbreken.
@@ -167,7 +172,7 @@ De MySQL-regels zijn gecontroleerd aan de officiële documentatie voor
 [gegenereerde kolommen](https://dev.mysql.com/doc/refman/9.7/en/create-table-generated-columns.html)
 en [foreign keys](https://dev.mysql.com/doc/refman/9.7/en/create-table-foreign-keys.html).
 
-## Eerstvolgende stap, nog niet uitgevoerd
+## Vervolg op de lege structuurstap
 
 Pas na deze structuurstap beoordelen we met de bestaande databasegegevens
 welke groepen, taxa en bronkoppelingen passen. Dan volgen ook proeven voor
@@ -175,5 +180,145 @@ homoniemen, synoniemen, taxonsplitsingen, onopgeloste codes, bronversies en
 dubbeltellingen. Hiërarchiecycli, zelfverwijzingen, synoniemketens,
 metadata-consistentie en conceptwijzigingen moeten vóór import expliciet
 worden getoetst: foreign keys bewijzen alleen dat een doel bestaat, niet dat
-de taxonomische relatie inhoudelijk klopt. De groepskeuze wordt dus nog niet
-met zaadrecords vastgezet.
+de taxonomische relatie inhoudelijk klopt. De onderstaande vervolgstap vult
+alleen de groepscatalogus; taxon- en koppelproeven blijven uitgesteld.
+
+## Groepscatalogus v1: uitgevoerd op 27 september 2026
+
+Opdracht van 27 september 2026: vul uitsluitend `taxon_groepen` en leg Darwin
+Core en TDWG TCS vast als blijvende toetsingsbasis. De centrale afspraak staat
+in `../../../VWG_Project/workflow.md`, sectie `Darwin Core en TDWG TCS als
+verplichte toetsingsbasis`. Afwijkingen vereisen vooraf expliciete goedkeuring
+door Ton. Alle drie repository-instructies verwijzen naar die afspraak.
+
+De vulling gebruikt de 26 bestaande groepscodes plus `vogels`: 27 praktische
+groepen, stand 27 september 2026, zonder waarnemingsperiode. Ze zijn geen
+vastgestelde lijst van soorten en bewijzen geen lokale aanwezigheid. Geen
+bovenliggende groepen worden ingevuld: dit is een vlakke gebruikscatalogus,
+geen taxonomische stamboom. Groepscodes zijn brononafhankelijk en blijven
+stabiel als de weergavenaam later preciezer wordt. Dezelfde groepen kunnen
+rechtstreekse leveringen en bestaande NDFF-, PQ-, Vangblik- of andere bronnen
+ontsluiten, maar deze stap wijst nog geen taxon of bronrecord toe.
+
+De huidige 26 codes zijn opnieuw gecontroleerd in
+`ndff_open_soortgroep_koppeling`; samengestelde bronlabels worden niet als
+nieuwe groep ingevoerd. Bestaande overlap tussen korstmossen/schimmels en
+kreeftachtigen/overige geleedpotigen blijft ongemoeid. Vogels krijgt alleen een
+catalogusrij, geen wijziging van `soorten`. PQ en Vangblik zijn meetstructuren,
+geen taxon_groepen. De gegevensstatus van bestaande bronnen verandert niet;
+het bronregister hoeft voor deze catalogusvulling niet te worden herzien.
+
+Standaardtoets (27 september 2026):
+
+- [Darwin Core](https://dwc.tdwg.org/terms/) beschrijft onder meer taxonRank,
+  taxonomicStatus, scientificName en nameAccordingTo. Geen groepscode wordt
+  als waarde van die velden gebruikt. Dit is een lokale gebruiksindeling.
+- [TCS](https://tcs.tdwg.org/terms/) onderscheidt naam, taxonconcept en relaties
+  tussen concepten. De vulling schept geen taxonconcepten, rangrelaties of
+  equivalenties; de bestaande structuur en broncontext blijven behouden.
+- Er is geen afwijking van de vastgelegde basisstructuur nodig en er wordt
+  geen volledige standaardconformiteit van bestaande brongegevens geclaimd.
+
+### Reproduceerbare vulling
+
+Onderstaande SQL is het uitvoeringsrecept; het bestaande
+`taxonregister_schema.sql` blijft uitsluitend de historische lege DDL-stap.
+Voer niet opnieuw uit op een gevulde catalogus. De preflight vereist de
+verwachte lokale serveridentiteit, drie lege registertabellen, geen triggers
+op de groepentabel en een gecontroleerde back-up. Eén INSERT binnen een
+transactie vult de catalogus zonder bestaande rijen te wijzigen. Laat de
+MySQL-client bij fouten stoppen (geen `--force`).
+
+```sql
+-- Groepscatalogus v1; eenmalig, uitsluitend op de vooraf leeg gecontroleerde tabel.
+-- Geen schemawijziging, UPDATE, DELETE, taxa-import of bronkoppeling.
+SET NAMES utf8mb4;
+START TRANSACTION;
+INSERT INTO taxon_groepen
+  (groep_code, groep_naam, omschrijving, sorteervolgorde,
+   indeling_bron, indeling_versie, groepmetadata)
+SELECT code, naam, omschrijving, volgorde,
+  'Meijendel/docs/database/MEIJENDEL_TABELINVENTARIS.md (2026-09-26); bestaande lokale groepscodes, aangevuld met vogels; semantische toets aan Darwin Core en TDWG TCS',
+  'meijendel-soortgroepen-v1',
+  JSON_OBJECT('indelingstype','praktische_soortgroep',
+    'standaardtoets_datum','2026-09-27',
+    'toetsingsbasis',JSON_ARRAY('https://dwc.tdwg.org/terms/','https://tcs.tdwg.org/terms/'))
+FROM (
+  SELECT 'vogels' AS code, 'Vogels' AS naam, 'Vogels; groepslabel voor het register, zonder wijziging of koppeling van de bestaande vogeltabel.' AS omschrijving, 10 AS volgorde
+  UNION ALL
+  SELECT 'amfibieen', 'Amfibieën', 'Amfibieën; reptielen blijven een afzonderlijke gebruiksgroep.', 20
+  UNION ALL
+  SELECT 'dagvlinders', 'Dagvlinders', 'Praktische dagvlindergroep; niet alle overdag actieve vlinders.', 30
+  UNION ALL
+  SELECT 'eencelligen', 'Eencelligen', 'Praktische verzamelgroep voor als eencelligen beschreven bronregistraties; geen formeel rijk.', 40
+  UNION ALL
+  SELECT 'geleedpotigen_overig', 'Overige geleedpotigen', 'Overige geleedpotigen buiten de specifiekere gebruiksgroepen; brondubbellabels niet automatisch overnemen.', 50
+  UNION ALL
+  SELECT 'insecten_overig', 'Overige insecten', 'Overige insecten buiten de benoemde insectengroepen; onbekende determinaties blijven afzonderlijk beoordeelbaar.', 60
+  UNION ALL
+  SELECT 'kevers', 'Kevers', 'Kevers, inclusief latere herkenbaarheid van collectiestukken en Vangblik; geen kopie van vangsten.', 70
+  UNION ALL
+  SELECT 'korstmossen', 'Korstmossen', 'Korstmossen als praktische gebruiksgroep; formele taxonomie en eventuele overlap met schimmellabels apart bewaren.', 80
+  UNION ALL
+  SELECT 'kranswieren_wieren_algen', 'Kranswieren, wieren en algen', 'Praktische verzamelgroep; geen gezamenlijk formeel rijk veronderstellen.', 90
+  UNION ALL
+  SELECT 'kreeftachtigen', 'Kreeftachtigen', 'Kreeftachtigen; mogelijke bronoverlap met overige geleedpotigen later op taxonniveau beoordelen.', 100
+  UNION ALL
+  SELECT 'libellen', 'Libellen en juffers', 'Libellen in brede zin, inclusief juffers; stabiele groepscode libellen.', 110
+  UNION ALL
+  SELECT 'microvlinders', 'Microvlinders', 'Praktische microvlindergroep naast dagvlinders en nachtvlinders; geen formele taxonomische rang.', 120
+  UNION ALL
+  SELECT 'mossen', 'Mossen en levermossen', 'Mossen in brede praktische zin, inclusief levermossen en hauwmossen; formele indeling blijft bij het taxon.', 130
+  UNION ALL
+  SELECT 'nachtvlinders', 'Nachtvlinders', 'Bestaande nachtvlindergroep naast de afzonderlijke microvlindergroep; activiteitstijd bepaalt de toewijzing niet.', 140
+  UNION ALL
+  SELECT 'ongewervelden_overig', 'Overige ongewervelden', 'Overige ongewervelden buiten de afzonderlijke gebruiksgroepen, bijvoorbeeld wormen.', 150
+  UNION ALL
+  SELECT 'reptielen', 'Reptielen', 'Reptielen als praktische gebruiksgroep; amfibieën en vogels blijven afzonderlijk.', 160
+  UNION ALL
+  SELECT 'schimmels', 'Paddenstoelen en schimmels', 'Paddenstoelen en overige schimmels; korstmossen hebben een eigen gebruiksgroep, bronlabels blijven behouden.', 170
+  UNION ALL
+  SELECT 'snavelinsecten', 'Snavelinsecten', 'Snavelinsecten, waaronder wantsen, cicaden en bladluizen.', 180
+  UNION ALL
+  SELECT 'spinachtigen', 'Spinachtigen', 'Spinachtigen, waaronder spinnen, hooiwagens en mijten; niet beperken tot spinnen.', 190
+  UNION ALL
+  SELECT 'sprinkhanen_en_krekels', 'Sprinkhanen en krekels', 'Sprinkhanen en krekels als afzonderlijk herkenbare gebruiksgroep.', 200
+  UNION ALL
+  SELECT 'vaatplanten', 'Vaatplanten', 'Vaatplanten, inclusief zaadplanten en varens; PQ-metingen blijven in de PQ-structuur.', 210
+  UNION ALL
+  SELECT 'vissen', 'Vissen', 'Vissen als praktische gebruiksgroep; geen vaste formele klasse opleggen.', 220
+  UNION ALL
+  SELECT 'vleermuizen', 'Vleermuizen', 'Vleermuizen als afzonderlijke gebruiksgroep; de overige zoogdieren staan apart.', 230
+  UNION ALL
+  SELECT 'vliegen_en_muggen', 'Vliegen en muggen', 'Vliegen en muggen als gezamenlijk herkenbare gebruiksgroep.', 240
+  UNION ALL
+  SELECT 'vliesvleugeligen', 'Vliesvleugeligen', 'Vliesvleugeligen, waaronder bijen, wespen en mieren.', 250
+  UNION ALL
+  SELECT 'weekdieren', 'Weekdieren', 'Weekdieren, waaronder slakken en tweekleppigen.', 260
+  UNION ALL
+  SELECT 'zoogdieren_overig', 'Overige zoogdieren', 'Zoogdieren buiten de afzonderlijke vleermuizengroep; inclusief latere herkenbaarheid van Vangblik-taxons.', 270
+) AS catalogus;
+SELECT ROW_COUNT() AS ingevoegde_groepen;
+COMMIT;
+```
+
+Controle: `python3 gis/scripts/test_taxonregister_live_schema.py --fase groepen`.
+De historische leegtepoort blijft beschikbaar via `--fase leeg` en hoort na
+vulling niet meer te slagen. Alle controles zijn alleen-lezen.
+
+De daadwerkelijke INSERT heeft 27 rijen toegevoegd; de alleen-lezen
+groepscontrole slaagt. De back-up van de vooraf lege tabel en de exports voor
+de vergelijking staan in `outputs/taxongroepen-20260927.WpDeqd/` (lokaal,
+buiten Git). De overige 250 basistabellen, 16 views en overige geëxporteerde
+objecten zijn vóór/na byte-identiek (`cmp` geslaagd). Beide gecomprimeerde
+exports hebben SHA-256:
+`cf156b58b32700d9a7d6636477193f6652e732f90ea1daf4e795f54f8c9e955f`.
+Dit omvat ook de nog lege `taxa` en `taxa_bronkoppeling`. De 7 bestaande
+schemacontracttests en de 2 exporttests zijn opnieuw geslaagd. Geen
+applicatiecode, publicatiedump, cache of VPS gewijzigd; geen nieuwe
+functionele website- of Shiny-gebruikerstest uitgevoerd.
+
+De eerder beschreven terugdraaiing van drie lege tabellen is nu niet meer
+toepasselijk: `taxon_groepen` bevat gegevens. Terugdraaien vereist opnieuw een
+expliciet besluit en controle op eventuele nieuwe verwijzingen; nooit een
+volledige databaseherstelactie voor alleen deze catalogusvulling.

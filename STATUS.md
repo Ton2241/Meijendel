@@ -4,12 +4,14 @@ Laatste update: 27 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
-## Leeg taxonregister
+## Taxonregister: structuur en groepscatalogus
 
 Op 27 september 2026 zijn `taxon_groepen`, `taxa` en `taxa_bronkoppeling`
-rechtstreeks toegevoegd aan de levende lokale database. Alle drie bevatten
-0 rijen; er is dus nog geen gegevensperiode of soorteninhoud. De feitelijke
-MySQL-structuur is alleen-lezen gecontroleerd. Bestaande vogel-, PQ-, Vangblik-
+rechtstreeks toegevoegd aan de levende lokale database. De aansluitende
+groepsvulling bevat 27 praktische groepen (26 bestaande codes plus vogels),
+stand 27 september 2026, zonder waarnemingsperiode. `taxa` en
+`taxa_bronkoppeling` bevatten nog 0 rijen. Structuur en groepsvulling zijn
+alleen-lezen gecontroleerd. Bestaande vogel-, PQ-, Vangblik-
 en externe tabellen zijn niet gemigreerd en applicatiecode is niet aangepast.
 Ontwerp en controlebewijs staan in `docs/database/TAXONREGISTER.md`.
 De publicatiedump, caches en VPS zijn voor deze stap niet vernieuwd.

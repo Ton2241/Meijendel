@@ -137,6 +137,11 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- toets ecologische gegevensstructuren, taxonomie, imports, koppelingen en
+  migraties altijd aan Darwin Core en TDWG TCS; afwijkingen van die
+  basisstructuur vereisen vooraf expliciete goedkeuring door Ton; volg de
+  canonieke afspraak in `../VWG_Project/workflow.md`, sectie
+  `Darwin Core en TDWG TCS als verplichte toetsingsbasis`
 - laat een ecologische waarneming uitsluitend toe tot de Meijendel-database
   wanneer per waarneming aantoonbaar is dat zij daadwerkelijk binnen Meijendel
   is gedaan en de waarnemingslocatie beschikbaar is of betrouwbaar kan worden

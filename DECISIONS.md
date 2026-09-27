@@ -1,5 +1,15 @@
 # Besluiten
 
+- In de aansluitende stap van 27 september 2026 is uitsluitend
+  `taxon_groepen` gevuld met de 26 bestaande, brononafhankelijk benoemde
+  gebruiksgroepen plus `vogels` (27 rijen). Geen formele taxonomische
+  hiërarchie, geen taxa of bronkoppelingen toegevoegd. Darwin Core en TDWG
+  TCS zijn voortaan verplichte toetsingsbasis voor alle ecologische
+  gegevensstructuren en -verwerking; afwijkingen vereisen vooraf expliciete
+  goedkeuring door Ton. De canonieke afspraak staat in
+  `../VWG_Project/workflow.md`, sectie `Darwin Core en TDWG TCS als verplichte
+  toetsingsbasis`; uitvoering en begrenzing staan in
+  `docs/database/TAXONREGISTER.md`.
 - Op uitdrukkelijk besluit van 27 september 2026 is de eerste structuurstap
   rechtstreeks uitgevoerd in de levende lokale `Meijendel`-database: uitsluitend
   drie lege fysieke tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling`.

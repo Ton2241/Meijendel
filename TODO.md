@@ -6,9 +6,11 @@
 
 - Structuurstap van 27 september 2026 uitgevoerd: `taxon_groepen`, `taxa` en
   `taxa_bronkoppeling` zijn rechtstreeks in de lokale levende database aangemaakt
-  en nog leeg. Zie [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md).
-  Eerstvolgend: na afzonderlijke opdracht de praktische groepsindeling en
-  taxon-/bronidentiteiten met bestaande gegevens beproeven. Geen import gestart.
+  en aansluitend gevuld met 27 rijen uitsluitend in `taxon_groepen`.
+  `taxa` en `taxa_bronkoppeling` zijn nog leeg. Zie
+  [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md).
+  Eerstvolgend: na afzonderlijke opdracht de taxon-/bronidentiteiten en hun
+  groepskeuze met bestaande gegevens beproeven. Geen taxonimport gestart.
 - Ontwerpbeoordeling van 26 september 2026 staat in
   [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md).
   Herschreven naar 26 soortgroepprefixen, zoals `libellen_*`, ongeacht bron.
@@ -16,8 +18,8 @@
   inventariseert nog steeds alle 163 fysieke tabellen. Vogels blijven
   onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
 - De verdere hernoeming en gegevensmigratie uit dit voorstel moeten nog worden
-  besloten en beproefd. Alleen de bovenstaande lege structuur is inmiddels
-  toegevoegd; bestaande gegevens, applicatiecode en bronstatussen zijn niet
+  besloten en beproefd. Alleen de bovenstaande structuur en groepscatalogus
+  zijn inmiddels toegevoegd; bestaande gegevens, applicatiecode en bronstatussen zijn niet
   gewijzigd. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
   provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
 - Werk pas na de taxonregisterproef en een afzonderlijk migratiebesluit op een
