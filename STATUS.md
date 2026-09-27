@@ -7,14 +7,18 @@ Dit document bevat actuele status, resterende risico's en logische vervolgstappe
 ## Taxonregister
 
 Actuele registerstand op 27 september 2026, zonder eigen waarnemingsperiode:
-27 groepen, 14.663 voorlopige brongebonden naamgebruiken en 15.701
-bronbesluiten, waarvan 15.614 actief. De laatste aanvulling geeft 1.283
-bestaande naamgebruiken een onderbouwde groep en lost de 87 PQ-naamteksten
-uit 1981–2025 op met de officiële Floranld_2020-lijst. Er blijven twee
-bronvermeldingen zonder doeltaxon en 1.504 naamgebruiken zonder primaire
-groep. Verbindingen tussen bronconcepten zijn nog niet bevestigd; voor
-verdere vergelijking via GBIF is toestemming gevraagd om alleen
-wetenschappelijke namen te versturen. Back-up, terugdraaiproef en nacontrole zijn
+27 groepen, 15.580 naamgebruiken en referenties en 18.437 bronbesluiten,
+waarvan 18.350 actief. De veilige registeraanvulling is uitgevoerd.
+Na de eerdere 1.283 groepsaanvullingen en 87 opgeloste PQ-naamteksten
+uit 1981–2025 zijn nog 1.226 groepen ingevuld. Alle 12.173 verschillende
+wetenschappelijke naamteksten zijn bij GBIF gecontroleerd. Er zijn 917
+gedeelde naamreferenties en 1.819 verbindingen vanuit bestaande
+bronregistraties toegevoegd. Dit maakt bronovereenkomsten vindbaar, zonder
+conceptgelijkheid te bevestigen of metingen samen te voegen.
+Er blijven 278 beoordeelde registraties zonder primaire groep en twee
+bronvermeldingen zonder doeltaxon. De concrete redenen staan in het
+taakdocument; zij rechtvaardigen geen verzonnen soort of geforceerde indeling.
+Back-up, terugdraaiproef en nacontrole zijn
 geslaagd. De oorspronkelijke vogelregistraties en de volledige export van
 alle 249 overige tabellen en bijbehorende databaseobjecten zijn ongewijzigd.
 Website, dashboard en Shiny zijn niet aangepast. Het volledige controlebewijs

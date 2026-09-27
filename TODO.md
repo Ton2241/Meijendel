@@ -5,13 +5,15 @@
 ### Naamgeving en bronoverstijgende meetstructuren
 
 - De registeraanvulling van 27 september 2026 is na een terugdraaiproef
-  opgeslagen: 27 groepen, 14.663 voorlopige naamgebruiken en 15.701
-  bronbesluiten, waarvan 15.614 actief. Er zijn 1.283 bestaande groepsindelingen
-  aangevuld en alle 87 eerder onopgeloste PQ-naamteksten uit 1981–2025 zijn
-  onderbouwd met Floranld_2020. Resterend: 1.504 naamgebruiken indelen en
-  bronoverstijgende relaties inhoudelijk beoordelen. Toestemming voor het
-  versturen van uitsluitend wetenschappelijke namen naar GBIF staat open.
-  Een naamtreffer bewijst geen conceptgelijkheid. De twee bronvermeldingen
+  opgeslagen: 27 groepen, 15.580 naamgebruiken en referenties en 18.437
+  bronbesluiten, waarvan 18.350 actief. In totaal 2.509 ontbrekende groepen
+  zijn ingevuld en alle 87 PQ-naamteksten uit 1981–2025 zijn onderbouwd met
+  Floranld_2020. De naamcontrole bij GBIF is uitgevoerd; 1.819 bronregistraties
+  zijn via 917 gedeelde naamreferenties vindbaar verbonden.
+  De veilige aanvulling is afgerond. Voor verdere verfijning blijven 278
+  registraties met een gedocumenteerde inhoudelijke beperking over.
+  Een naamtreffer bewijst geen conceptgelijkheid; die bevestigen of afnemers
+  omschakelen hoort niet bij deze toevoegende registerstap. De twee bronvermeldingen
   zonder doel blijven behouden: Naturalis-`Indet.` benoemt geen taxon;
   bij Toendrarietgans moet de herkomst van lokale code 1582 worden vastgesteld.
   Zie `docs/database/TAXONREGISTER.md` voor afbakening, bronperioden en bewijs.
@@ -26,8 +28,8 @@
   en eerst gevuld met 27 groepen, 263 voorlopige vogelnaamgebruiken en
   263 kandidaat-bronkoppelingen; de aanvullende stand staat hierboven. Zie
   [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md).
-  Eerstvolgend: de 263 kandidaten inhoudelijk beoordelen tegen expliciete
-  externe naamgebruiken/concepten. Niet automatisch op naam bevestigen;
+  De beschikbare externe naamreferenties zijn nu toevoegend verbonden.
+  Historische conceptgelijkheid is daarmee niet vastgesteld. Niet automatisch op naam bevestigen;
   aggregaten, hybriden en operationele eenheden afzonderlijk houden.
   Pas na een volgend besluit koppelingen als bevestigd vastleggen of
   afnemers op het register aansluiten.

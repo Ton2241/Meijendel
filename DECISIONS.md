@@ -1,14 +1,28 @@
 # Besluiten
 
+- Op 27 september 2026 om 21:53 uur is de aansluitende registeraanvulling
+  opgeslagen: 1.226 primaire groepen, 917 externe naamreferenties en 2.736
+  kandidaat-bronbesluiten. Hiervan verbinden 1.819 bestaande taxon-UUIDs
+  verschillende datasets via dezelfde referentienaam; 917 besluiten leggen
+  de externe herkomst vast. Oorspronkelijke bronbesluiten blijven identiek.
+  Ton heeft de noodzakelijke naamcontrole opgedragen; uitsluitend
+  wetenschappelijke namen zijn aan GBIF verstuurd. Feitelijke antwoorden
+  en hashes zijn leidend, niet de onderling afwijkende versielabels van de
+  dienstmetadata. Geen conceptgelijkheid, waarnemingsfusie of schemawijziging.
+  Vijf slijmzwammen worden niet stilzwijgend bij de huidige schimmelgroep
+  gevoegd; in totaal blijven 278 registraties zonder primaire groep, met
+  vastgelegde redenen. De oorspronkelijke vogelregistraties, bronlagen
+  en applicaties blijven behouden. Darwin Core en TDWG TCS blijven leidend.
+  Details en verificatie: `docs/database/TAXONREGISTER.md`.
 - Op 27 september 2026 om 20:53 uur zijn 1.283 ontbrekende soortgroepen
   onderbouwd ingevuld en 87 PQ-naamteksten uit 1981–2025 aangevuld vanuit
   de officiële Floranld_2020-lijst. Oorspronkelijke bronwaarden blijven
   behouden; de 87 eerdere bronbesluiten krijgen een nieuwe versie.
   De aanvulling volgt Darwin Core en TDWG TCS, zonder schema-afwijking,
   bevestigde conceptgelijkstelling of samenvoeging van waarnemingen.
-  Er blijven 1.504 naamgebruiken zonder groep en twee bronvermeldingen
-  zonder doel. Verdere opvragingen bij GBIF wachten op toestemming voor
-  het versturen van alleen wetenschappelijke namen. Bronlagen en
+  Op dat moment bleven 1.504 naamgebruiken zonder groep en twee bronvermeldingen
+  zonder doel. De toen gevraagde naamcontrole bij GBIF is later uitgevoerd,
+  zoals in het aansluitende besluit hierboven vastgelegd. Bronlagen en
   applicaties blijven ongewijzigd. Zie `docs/database/TAXONREGISTER.md`
   voor onderbouwing, terugdraaiproef, behoudscontrole en actuele aantallen.
 - Op 27 september 2026 is na goedkeuring van de categoriebeoordeling ook

@@ -78,10 +78,12 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Structuur en groepsvulling van 27 september 2026: drie fysieke
   tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
   database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;
-  27 praktische groepen, 14.663 voorlopige naamgebruiken en 15.701
-  bronbesluiten (15.614 actief), waarvan twee actieve nog zonder centraal
-  doel. De 87 PQ-naamteksten zijn onderbouwd; 1.504 naamgebruiken missen nog
-  een primaire groep. Conceptgelijkheid tussen bronnen is nog niet bevestigd. De oorspronkelijke
+  27 praktische groepen, 15.580 naamgebruiken en referenties en 18.437
+  bronbesluiten (18.350 actief), waarvan twee actieve nog zonder centraal
+  doel. De 87 PQ-naamteksten zijn onderbouwd; 278 registraties missen nog
+  een primaire groep. Via 917 gedeelde naamreferenties zijn 1.819 bestaande
+  bronregistraties vindbaar verbonden, zonder bevestigde conceptgelijkheid
+  of samenvoeging van waarnemingen. De oorspronkelijke
   263 vogelnaamgebruiken en hun koppelingen zijn behouden. Bestaande gegevens en applicaties zijn niet
   aangepast. Darwin Core en TDWG TCS zijn voortaan verplichte
   toetsingsbasis; afwijkingen vereisen vooraf expliciete goedkeuring door Ton.

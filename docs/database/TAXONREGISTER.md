@@ -1,5 +1,150 @@
 # Taxonregister: structuur en uitvoering
 
+## Naamcontrole en bronverbinding uitgevoerd op 27 september 2026
+
+Na de uitleg over de overdracht van uitsluitend wetenschappelijke namen
+heeft Ton opgedragen de noodzakelijke controles en veilige verwerking uit
+te voeren, zonder opnieuw om taakbevestiging te vragen. De naamcontrole bij
+GBIF is daarom uitgevoerd. Alleen naamteksten en vaste zoekopties verlaten
+de iMac; bronrecords, locaties, tellingen en persoonsgegevens niet.
+
+Uitvoering op de bestaande taakbranch `codex/taxa-inhoudelijk-verbinden`.
+Bewijs, testcode en nieuwe momentopnamen staan lokaal onder
+`outputs/taxa-gbif-20260927.HFKsNg/`. De eerdere uitgevoerde manifesten
+blijven ongewijzigd. Alle geregistreerde naamteksten zijn vergeleken en
+groepsindelingen en uitzonderingen beoordeeld. De onderbouwde aanvulling
+is onafhankelijk beoordeeld, met terugdraaien beproefd en opgeslagen.
+Daarna zijn de behoudscontrole, beide vormen van het bronregister en de
+projectstatus bijgewerkt.
+
+### Wat nu is opgeslagen
+
+Op 27 september 2026 om 21:53 uur is de aanvulling definitief opgeslagen.
+Alle 12.173 verschillende wetenschappelijke naamteksten van de 14.663
+bestaande registraties zijn opgezocht. De registerstand heeft geen eigen
+waarnemingsperiode; de perioden van de afzonderlijke bronreeksen veranderen niet.
+
+- Nog eens 1.226 bestaande registraties hebben een onderbouwde primaire
+  soortgroep gekregen. Samen met de eerdere aanvulling van 1.283 zijn nu
+  2.509 van de aanvankelijk 2.787 ontbrekende groepen ingevuld.
+- Er zijn 917 gedeelde naamreferenties toegevoegd: 909 op soortniveau en
+  acht op ondersoortniveau. Daardoor zijn 1.819 bestaande brongebonden
+  registraties via hun vaste UUID verbonden met een gemeenschappelijke
+  referentie. Iedere referentie brengt minstens twee oorspronkelijke
+  datasets bijeen. Dat is een zoekverbinding, geen bewijs dat hun historische
+  soortafbakening gelijk is.
+- `taxon_groepen` blijft 27 rijen bevatten. `taxa` bevat nu 15.580 rijen:
+  14.663 brongebonden naamgebruiken en 917 externe naamreferenties.
+  `taxa_bronkoppeling` bevat 18.437 besluiten, waarvan 18.350 actief:
+  18.348 kandidaten en twee onbeoordeelde vermeldingen zonder doel.
+  De overige 87 besluiten blijven als ingetrokken historie bewaard.
+
+De 2.736 toegevoegde bronbesluiten bestaan uit 1.819 verwijzingen van lokale
+taxon-UUIDs en 917 verwijzingen naar de externe referentielijst. Alle blijven
+`kandidaat/onbekend`. De externe referenties dragen de status `accepted`
+uitsluitend volgens de geraadpleegde lijst; lokale namen krijgen daardoor
+geen andere status. Er zijn geen concept-IDs verzonnen en geen metingen
+samengevoegd. De 138 nieuwe vogelreferenties zijn aanvullend: de oorspronkelijke
+263 vogeltaxa, hun bronkoppelingen en de tabel `soorten` zijn niet gewijzigd.
+
+De koppellijn is: oorspronkelijke bronvermelding → brongebonden taxon →
+UUID-verwijzing → gedeelde naamreferentie. De tussenstap wordt in de bestaande
+`taxa_bronkoppeling` bewaard met bronsysteem `Meijendel`, dataset `taxa` en
+de oorspronkelijke `taxon_uuid` als bronsleutel. Geen nieuwe tabel of view.
+Voor bestaande bronselecties blijven bronsysteem, dataset en bronversie
+verplicht; de aanvullende verwijzingen mogen niet als meetrecords worden geteld.
+
+### Welke uitzonderingen blijven staan en waarom
+
+Alle 278 resterende registraties zonder primaire groep zijn beoordeeld.
+Zij blijven in het register; er verdwijnt geen informatie. Dit zijn de
+redenen om nu geen verdere groepsindeling af te dwingen:
+
+| Aantal registraties | Wat ontbreekt voor een verantwoorde indeling |
+| ---: | --- |
+| 116 | De referentie noemt Fungi, maar onderbouwt niet de praktische scheiding tussen schimmels en korstmossen. Daarvoor is gerichte mycologische of lichenologische classificatie nodig. |
+| 53 | Een gelijknamige alternatieve referentie heeft onvolledige of afwijkende groepsinformatie. Eerst die naamcontext onderscheiden. |
+| 50 | Geen exacte referentienaam gevonden. Eerst spelling, historische naam of broncode onderbouwen; niet de dichtstbijzijnde treffer overnemen. |
+| 39 | De referentieclassificatie past nog niet eenduidig in de huidige praktische groepen, waaronder diverse waterorganismen. Eerst die indeling onderbouwen. |
+| 8 | Verzamelnaam of onvolledige determinatie. Alleen zo specifiek indelen als de bron werkelijk toelaat. |
+| 5 | Slijmzwammen met rijk Protozoa en stam Amoebozoa botsen met de huidige omschrijving van de groep schimmels. Geen stilzwijgende verruiming van die groep. |
+| 4 | Naamnotatie bevat extra aanduidingen die een eenduidige vergelijking verhinderen. De oorspronkelijke tekst blijft behouden. |
+| 3 | De precieze indeling in dagvlinders, nachtvlinders of microvlinders is met de toegepaste familieonderbouwing niet vastgesteld. |
+
+Deze aantallen betreffen registraties, niet noodzakelijk verschillende soorten.
+De rest is verdeeld over Naturalis Botany (129), STOWA Limnodata (82),
+ENDURE (40), provinciale PQ (9), NDFF (8), `soorten` (6), SOVON/AVIMAP (2)
+en LVD (2). Zij gebruiken de bronperioden uit het bronregister; het zijn geen
+278 nieuwe waarnemingen. De lijst per registratie met reden en geraadpleegd
+bewijs staat in het bewaarde uitvoeringsmanifest, onderdeel `groepsbeoordeling`.
+
+Ook de twee eerdere bronvermeldingen zonder doeltaxon blijven behouden:
+Naturalis-`Indet.` benoemt geen taxon; bij Toendrarietgans ontbreekt de
+wetenschappelijke bronnaam en strookt lokale code 1582 niet met de actuele
+EURING-code 01574. Deze taak verandert de oorspronkelijke vogeltabel niet.
+De veilige registeraanvulling is hiermee uitgevoerd. Nauwkeuriger indeling
+van deze uitzonderingen of bevestiging van historische conceptgelijkheid
+vereist aanvullend inhoudelijk bewijs, niet nogmaals toestemming voor
+de reeds uitgevoerde naamcontrole.
+
+### Bronnen en vastlegging
+
+De externe referentie is [Catalogue of Life via GBIF](https://www.gbif.org/dataset/7ddf754f-d193-4cc9-b351-99906754a03b),
+uitgegeven door de Catalogue of Life Foundation, met geregistreerde licentie
+CC BY 4.0 en gerapporteerde DOI `10.48580/dgyy9`. De metadata bevatten
+verschillende versielabels. Daarom wordt niet beweerd dat de zoekdienst
+een onveranderlijke COL-release is. Het bewijs is de bewaarde verzameling
+feitelijke antwoorden van 27 september 2026, met naam, URL, ophaaltijd,
+lijst-ID en SHA-256 per bestand. Snapshotidentiteit:
+`gbif-responssnapshot-20260927-6725193893040bc3`.
+Dit is naam- en classificatiebewijs, geen nieuwe waarnemingsbron.
+
+Voor de groepsindeling zijn daarnaast de eerder gecontroleerde
+Floranld_2020-lijst en expliciete NDFF-brongroepen gebruikt. Ondersteunende
+NDFF-rijen zijn met taxon- en bronbesluit-ID vastgelegd. Bij tegenstrijdig
+bewijs blijft de indeling achterwege. Het uitvoeringsmanifest controleert
+12.179 bronbestanden op hun hash, inclusief Floranld en de oorspronkelijke
+registermomentopnamen. Alle 30 gerichte regressietests slagen.
+
+De echte ROLLBACK-proef, definitieve invoer en onafhankelijke nacontrole
+gebruiken hetzelfde manifest en dezelfde scripts. Alle oorspronkelijke
+14.663 taxonrijen zijn over alle velden vergeleken: alleen de 1.226 vooraf
+aangewezen groepsvelden en bijbehorende bewijsmetadata veranderen.
+Alle 15.701 oorspronkelijke bronbesluiten zijn volledig identiek gebleven.
+De 263 oorspronkelijke vogeltaxa zijn bovendien afzonderlijk vergeleken;
+de bestaande vogelacceptatiepoort slaagt. De volledige deterministische
+export van alle 249 overige tabellen en bijbehorende databaseobjecten is
+vóór en na deze aanvulling byte-identiek, met SHA-256
+`907d30aa737a4f417e7a3b1305fcfad263de4fb0c265c0eabd2d4f74ce713d09`.
+Een herhaalde invoerpoging blokkeert aantoonbaar vóór de databaseverbinding.
+Het bronregister is in Markdown en Word bijgewerkt; de zes gewijzigde
+alinea's zijn inhoudelijk gelijk en alle overige tekst en tabellen zijn
+behouden. Alle 20 gerenderde Wordpagina's zijn visueel gecontroleerd.
+
+Bewijs en herstelbestanden staan lokaal onder
+`outputs/taxa-gbif-20260927.HFKsNg/`. Manifest-SHA-256:
+`2942b2fa24d5bbab7c507f791688b4be77ab278723a4328f44a212872c0c7a45`.
+Vóórback-up van de twee gewijzigde registertabellen:
+`fbe1055d7b6f8a827dcfd1ee914a8d47a8b21c8860f1494693a62a763f86d89f`.
+Terugdraaien na COMMIT kan uitsluitend gericht op dit manifest, na controle
+dat later werk de nieuwe rijen niet gebruikt: verwijder de nieuwe
+bronbesluiten vóór de nieuwe referentietaxa en herstel alleen de betrokken
+groepsvelden en metadata vanuit de beginsituatie. Geen volledige database
+terugzetten. De oorspronkelijke bronlagen, publicatiedump, caches,
+website, dashboard, Shiny en VPS worden niet gewijzigd.
+
+Darwin Core en TCS zijn opnieuw geraadpleegd op 27 september 2026:
+`scientificName`, `taxonID`, `scientificNameID`, `nameAccordingToID`,
+`acceptedNameUsageID`, `taxonRank` en het onderscheid tussen een naamgebruik
+en een conceptrelatie blijven leidend. GBIF v2 wordt bevraagd met de expliciete
+checklist-ID `7ddf754f-d193-4cc9-b351-99906754a03b`. De feitelijke reactie,
+raadpleegdatum en lijstcontext worden bewaard. Een referentienaamtreffer is
+geen bevestiging dat twee historische bronnen dezelfde afbakening hanteren.
+Schema, oorspronkelijke bronvelden en applicaties blijven ongewijzigd.
+
+De volgende secties zijn het historische uitvoeringsverslag van eerdere
+stappen. De actuele aantallen en resterende uitzonderingen staan hierboven.
+
 ## Groepen en PQ-namen aangevuld, 27 september 2026
 
 Opdracht Ton: ontbrekende groepen aanvullen, onduidelijke namen oplossen en
