@@ -4,6 +4,21 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- PQ-migratie opgedragen op 27 september 2026, taakbranch
+  `codex/pq-integratie`. Eén uitvoering: broncontrole en behoudsback-up;
+  veld-/beoordelingsmapping; bronoverstijgende PQ-structuur en centrale
+  taxonverwijzing; geïsoleerde migratie- en herstelproef; gelijke bestaande
+  applicatie-uitkomsten; lokale invoer; gecontroleerde publicatie; documentatie
+  en verwijdering van aantoonbaar overgedragen gegevens op hun oude plek.
+  De opruiming omvat geen gegevens die niet zijn overgedragen en geen
+  oorspronkelijke leveringsbestanden of herstelback-ups.
+  Stand bij aanvang: werkmap voorbereid; bestaande vogelregisterpoort en
+  beide overlaptests geslaagd. Nog geen schema-, data- of productieaanpassing.
+  De controle van oorspronkelijke PQ-/LVD-bestanden op de T7 wacht op de
+  volgens de werkinstructie vereiste toestemming voor alleen-lezen toegang.
+  Eerst volledige opnamen, codes, lagen en schalen onderbouwen; bestaande
+  overlaplabels zijn geen automatische toestemming voor samenvoeging.
+
 - Vóór iedere volgende import: pas de vaste importafspraak in
   `docs/database/TAXONREGISTER.md` toe. Controleer en pas zo nodig het
   importscript aan voor gebruik van het centrale register; geen nieuwe

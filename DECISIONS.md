@@ -1,5 +1,16 @@
 # Besluiten
 
+- Op 27 september 2026 heeft Ton de volledige PQ-integratie en centrale
+  taxonkoppeling opgedragen, inclusief gecontroleerde ingebruikname. Daarbij
+  is expliciet bepaald dat aantoonbaar volledig naar `pq_*` overgedragen
+  informatie op de oorspronkelijke plek wordt verwijderd: opschonen is
+  verplaatsen, niet twee actieve kopieën onderhouden. Broninformatie,
+  oorspronkelijke waarden, gebruiksbeperkingen, beoordelingen en alle
+  verwijzingen moeten behouden blijven. Niet-overgedragen informatie blijft
+  staan; originele leveringsbestanden en geteste herstelback-ups blijven
+  beschikbaar. Uitvoering houdt de bestaande provinciale applicatie-uitkomsten
+  gelijk; nieuwe analytische toelating volgt niet automatisch uit verplaatsing.
+  Uitvoeringsstatus: `TODO.md`, onderdeel PQ-migratie.
 - Op 27 september 2026 heeft Ton besloten dat iedere volgende taxonimport
   aansluit op `taxa`, `taxa_bronkoppeling` en `taxon_groepen`. Geen nieuwe
   afzonderlijke soorten- of taxoncatalogi per bron of levering. Ontbrekende
