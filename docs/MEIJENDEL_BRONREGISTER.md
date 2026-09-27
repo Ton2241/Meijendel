@@ -291,6 +291,8 @@ De import is tweemaal uitgevoerd en leverde beide keren exact 10.994 events en 9
 
 **Overlap en gebruik.** De controle op datum, taxon en afstand markeert 8.006 resultaten als exacte en 5.163 als waarschijnlijke overlap met de primaire provinciale PQ-reeks. Deze 13.169 resultaten tellen niet als onafhankelijke tweede waarneming. Daarnaast hebben 51.078 LVD-resultaten een mogelijke overeenkomst met een NDFF-regel op taxon, datum en onzekerheidspolygoon. Omdat NDFF geen gedeelde bron-ID levert en de polygonen ruimtelijke onzekerheid weergeven, wordt die mogelijke overlap niet automatisch als dubbel verwijderd. De resterende opnamecontext is bruikbaar voor historische vegetatiesamenstelling en verspreiding; vergelijking door de tijd vereist controle van opnametype, oppervlak en herhaling.
 
+**Taxonomische importbeperking, vastgesteld 27 september 2026.** Bij alle 81.310 toegelaten LVD-resultaten (1959–2015; 998 verschillende naamstrings) bevat `externe_ecologie_resultaat.taxonrang` een status in plaats van een rang: 81.285 keer `accepted` en 25 keer `synonym`. De importeur heeft hiervoor `taxonomicStatus` gebruikt; de oorspronkelijke status is ook in `bronmetadata` bewaard. Gebruik dit veld niet als taxonomische rang. Het nieuwe taxonmanifest laat de rang leeg en houdt de bronstatus afzonderlijk herkenbaar. De bestaande import en database zijn niet gecorrigeerd; de ruimtelijke toelating, overlapbesluiten en meetwaarden blijven ongewijzigd. Zie `docs/database/TAXONREGISTER.md` voor de vervolgcontrole.
+
 #### 1.6.4. Historische vlinder- en motcollectie
 
 **Beheerder.** Natuurhistorisch Museum Rotterdam

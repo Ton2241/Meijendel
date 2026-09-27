@@ -1,5 +1,84 @@
 # Taxonregister: structuur en uitvoering
 
+## Invoermanifest overige taxa van 27 september 2026
+
+Na de inventarisatie van alle 251 fysieke tabellen en 16 views is een
+invoervoorstel gemaakt, niet uitgevoerd. De levende database bevat nog steeds
+27 groepen, 263 voorlopige vogelnaamgebruiken en 263 kandidaat-bronkoppelingen.
+De analytische toelatingsstatussen, metingen, applicaties en productie blijven
+ongewijzigd. `Meijendel_bronnen` en de beveiligde NDFF-database zijn niet in
+dit manifest opgenomen.
+
+Het definitieve voorstel staat lokaal buiten Git in
+`outputs/taxa-manifest-20260927.h2EugE/invoermanifest-v2.json`, met
+`samenvatting-v2.json`, `uitzonderingen-v2.json`, `naamovereenkomsten.json`,
+de bronextracties en `controleer_manifest.py`. De eerste manifestversie
+blijft als auditspoor behouden; v2 behoudt alle oorspronkelijke UUIDs en
+bronidentiteiten. De brongegevens zijn opnieuw live gelezen en inhoudelijk
+gelijk aan de inventarisatie.
+
+SHA-256 van het definitieve manifest:
+`5e60222fcf308b672e339395e9318ec661a17aa78132f71cfb8565e8215e6137`.
+De manifestcontrole en de bestaande live-acceptatiepoort voor vogels slagen.
+Alle 251 fysieke tabellen hebben vóór en na deze voorbereiding dezelfde
+rijtelling; de drie registertabellen zijn ook inhoudelijk ongewijzigd.
+De bijgewerkte Wordversie van het bronregister is gerenderd en visueel
+gecontroleerd.
+
+Het voorstel bevat 14.401 nieuwe brongebonden naamgebruiken en 15.351
+bronkoppelingen, geen telling van biologische soorten. De vier primaire
+catalogi bevatten 9.828 NDFF-regels (opgeslagen jaren 1700–2025), 714
+provinciale PQ-codes (1981–2025), 275 Vangblik-taxa (1953–1960) en 35
+SOVON/AVIMAP-taxa (2009–2026). De zes externe datasets leveren 3.181
+verschillende taxonomische bronweergaven (1875–2025 gezamenlijk): 785
+Botany, 84 Coleoptera, 247 NMR, 628 ENDURE, 998 LVD en 439 STOWA. Het eerdere
+inventarisatieaantal van 3.173 dataset/naamcombinaties was grover: nu blijven
+ook zes oorspronkelijke Coleoptera-naamvarianten en twee extra ENDURE-
+metadatavarianten afzonderlijk herkenbaar.
+
+Daarnaast omvat het manifest 365 nog niet gekoppelde `soorten`-regels,
+4 aanvullende protocolcategorieën, 786 kenmerkenkoppelingen en 163
+functionele groepsreferenties uit `BGgroup`. De kenmerken en groepsreferenties
+krijgen samen 949 kandidaatverwijzingen naar bestaande of voorgestelde
+naamgebruiken, geen 949 nieuwe taxa. De bronvermelding `soorten.id=647`
+(Toendrarietgans) heeft in de lokale soort-, taxon- en traitcatalogi geen
+beschikbare wetenschappelijke naam en blijft zonder doeltaxon. Niets wordt
+automatisch op EURING-code of naam bevestigd.
+
+13.904 voorstellen zijn technisch voorbereid voor voorlopige brongetrouwe
+registratie; 1.447 zijn apart gezet voor beoordeling vóór invoer. Dit is geen
+inhoudelijke goedkeuring van de eerste groep. Onder de blokkades vallen
+onbeoordeelde taxonvormen, mogelijk onvolledige PQ-namen, drie afwijkende
+`BGgroup`-codes en de LVD-rangfout. Voor 2.875 bronvermeldingen blijft de
+primaire groep nog leeg; 1.490 daarvan hebben uitsluitend op naam een
+groepskandidaat. Geen nieuwe groepen voorgesteld.
+
+De LVD-import zet bij 81.310 resultaten uit 1959–2015 de bronstatus ten
+onrechte in `taxonrang`: 81.285 keer `accepted` (997 namen) en 25 keer
+`synonym` (één naam, 1976–2013). Dit is teruggevonden in
+`gis/scripts/import_external_ecology_sources.py`. Het manifest bewaart de
+letterlijke waarde en status, maar laat de centrale rang leeg. De bestaande
+importcode en bronlaag zijn niet gerepareerd. Het bronregister vermeldt deze
+beperking in zowel Markdown als Word.
+
+Standaardtoets opnieuw uitgevoerd op 27 september 2026:
+[Darwin Core](https://dwc.tdwg.org/terms/) en
+[TDWG TCS](https://tcs.tdwg.org/terms/), in het bijzonder scientificName,
+scientificNameID, taxonRank, taxonomicStatus, nameAccordingTo en het
+onderscheid tussen naamgebruik en conceptrelatie. Alle doelen blijven
+`voorlopig`/`unresolved`, alle koppelingen kandidaat/onbekend of onbeoordeeld
+zonder doel. Geen externe concept-ID, parentrelatie of synoniemrelatie
+afgeleid; UUIDs zijn willekeurig en vastgelegd, niet uit namen berekend.
+Een afgeleide bronsleutel is expliciet als zodanig gemarkeerd. De betekenis
+van bronversie en het bronbestand met zijn hash blijven bewaard.
+
+Vervolg: eerst de uitzonderingen en de invoerselectie besluiten. Daarna
+acceptatiepoort uitbreiden, bronhashes en unieke identiteiten opnieuw
+toetsen, back-up maken, dezelfde invoer met ROLLBACK beproeven en pas na
+geslaagde controles toevoegend uitvoeren. Een gewijzigde bron of herhaalde
+manifestinvoer moet vóór schrijven blokkeren. Geen kandidaatkoppelingen
+gebruiken om waarnemingen op te tellen of afnemers om te schakelen.
+
 ## Uitvoeringsplan vogelnaamgebruiken 27 september 2026
 
 Opdracht: doorgaan na de beoordeling van 58 gemarkeerde vogelcategorieën.

@@ -4,6 +4,14 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Invoermanifest overige taxa voorbereid op 27 september 2026; nog geen
+  database-invoer. Zie `docs/database/TAXONREGISTER.md`: 14.401 voorgestelde
+  brongebonden naamgebruiken, 15.351 koppelingen en 1.447 voorstellen voor
+  afzonderlijke beoordeling. Eerst uitzonderingen en invoerselectie besluiten.
+  De LVD-import schrijft bij 81.310 resultaten (1959–2015) taxonomische status
+  in `taxonrang`; niet als rang overnemen. Herstel van bestaande import/bronlaag
+  is niet uitgevoerd en vraagt een eigen gecontroleerde wijziging.
+
 - Structuurstap van 27 september 2026 uitgevoerd: `taxon_groepen`, `taxa` en
   `taxa_bronkoppeling` zijn rechtstreeks in de lokale levende database aangemaakt
   en aansluitend gevuld met 27 groepen, 263 voorlopige vogelnaamgebruiken en
