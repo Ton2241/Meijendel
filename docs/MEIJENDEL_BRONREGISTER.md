@@ -293,6 +293,8 @@ De import is tweemaal uitgevoerd en leverde beide keren exact 10.994 events en 9
 
 **Taxonomische importbeperking, vastgesteld 27 september 2026.** Bij alle 81.310 toegelaten LVD-resultaten (1959–2015; 998 verschillende naamstrings) bevat `externe_ecologie_resultaat.taxonrang` een status in plaats van een rang: 81.285 keer `accepted` en 25 keer `synonym`. De importeur heeft hiervoor `taxonomicStatus` gebruikt; de oorspronkelijke status is ook in `bronmetadata` bewaard. Gebruik dit veld niet als taxonomische rang. Het nieuwe taxonmanifest laat de rang leeg en houdt de bronstatus afzonderlijk herkenbaar. De bestaande import en database zijn niet gecorrigeerd; de ruimtelijke toelating, overlapbesluiten en meetwaarden blijven ongewijzigd. Zie `docs/database/TAXONREGISTER.md` voor de vervolgcontrole.
 
+**Aanvullende taxonomische metadata, beoordeeld 27 september 2026.** In de extractie van 998 LVD-naamgebruiken uit de bronreeks 1959–2015 is bij 122 het veld `scientificNameAuthorship` gelijk aan de volledige `scientificName`. Het invoermanifest kopieert dit naar `naam_auteur`. Deze waarden mogen niet zonder nadere beoordeling als auteurschap in het centrale register worden opgenomen; behoud de letterlijke bronmetadata en laat het centrale auteursveld voor deze gevallen voorlopig leeg. Dit betreft 122 naamgebruiken, niet 122 waarnemingen. Het manifest en de bestaande database zijn nog niet aangepast; meetwaarden, ruimtelijke toelating en overlapbesluiten blijven gelijk.
+
 #### 1.6.4. Historische vlinder- en motcollectie
 
 **Beheerder.** Natuurhistorisch Museum Rotterdam

@@ -1,5 +1,65 @@
 # Taxonregister: structuur en uitvoering
 
+## Beoordeling uitzonderingen op 27 september 2026
+
+Het invoermanifest v2 is nog niet geschikt voor een invoerproef. De nadere
+controle van alle 15.351 voorstellen vindt 129 aanvullende naamvormsignalen
+onder de eerder technisch voorbereide regels. Eén oude markering is onterecht:
+`Byssonectria aggregata` bevat het soortepitheton `aggregata`, geen `agg.`.
+Daarmee vragen netto 1.575 voorstellen beoordeling, tegenover de eerdere
+1.447. De resterende 13.776 vallen buiten deze specifieke blokkades; dit is
+geen volledige taxonomische validatie of vrijgave voor invoer.
+
+De categorieën hieronder zijn disjunct: eerst LVD, dan het PQ-lengtesignaal,
+dan de overige naamvormen. Het zijn voorstellen voor de volgende manifestversie,
+geen door Ton goedgekeurde invoerbesluiten. Manifest, UUIDs, database en
+applicaties zijn in deze beoordeling niet gewijzigd.
+
+| Categorie | Voorstellen | Advies voor voorbereiding |
+| --- | ---: | --- |
+| LVD, bronreeks 1959–2015 | 998 | Rang leeg laten, letterlijke bronstatus afzonderlijk bewaren. Bij 122 voorstellen is het auteursveld gelijk aan de hele naam; die tekst niet als auteur overnemen. Naamvormen binnen deze categorie blijven afzonderlijk te behandelen. |
+| Provinciale PQ, bronreeks 1981–2025 | 157 | Het lengtesignaal van minstens 22 tekens bewijst geen afkapping. Originele SRTNUM en tekst behouden, niets aanvullen door raden. Aantoonbaar onvolledige namen nog niet als volledige wetenschappelijke naam vastleggen; zo nodig voorlopig alleen een onopgeloste bronkoppeling. |
+| Overige bijzondere naamvormen | 416 | Hybriden, verzamelcategorieën, onvolledige determinaties en ruime/enge naamgebruiken herkenbaar behouden; niet splitsen of automatisch gelijkstellen aan een gewone soort. |
+| Afwijkende BGgroup-codes, referentietabel zonder eigen meetperiode | 3 | Groene specht, Tjiftjaf en Grauwe vliegenvanger voorlopig niet op de afwijkende EURING-code bevestigen. Bestaande naamkandidaten blijven kandidaten. |
+| Toendrarietgans, soorten.id 647, referentie zonder eigen meetperiode | 1 | De wetenschappelijke bronnaam ontbreekt. Geen naam afleiden uit alleen de Nederlandse naam of EURING-code; bronkoppeling voorlopig zonder centraal doel. |
+
+De 416 overige naamvormen komen uit NDFF (opgeslagen bronjaren 1700–2025),
+PQ (1981–2025), Vangblik (1953–1960), SOVON/AVIMAP (2009–2026), Naturalis
+Botany (1875–2025), ENDURE (2018), STOWA (1992–2010) en referentiecatalogi
+zonder eigen meetperiode. Het NDFF-jaar 1700 is een opgeslagen intervalgrens,
+geen bewijs voor een waarneming in dat jaar. Deze perioden beschrijven de
+bronreeksen, niet afzonderlijk ieder gemarkeerd naamgebruik.
+
+Over alle categorieën samen zijn er 502 syntactische naamvormsignalen:
+218 combinaties, 101 hybride-aanduidingen zonder combinatie, 136 ruime
+afbakeningen/verzamelgroepen, 16 enge afbakeningen en 31 onbepaalde
+determinaties. Dit zijn beoordelingssignalen, geen 502 bewezen fouten.
+De generator miste onder meer `sl`, `indet.`, `+`, `-groep` en een aansluitend
+hybrideteken. Brongetrouwe registratie moet het verschil behouden tussen een
+formeel taxon, hybride, aggregaat en operationele eenheid; een naamvorm alleen
+bewijst geen taxonomische rang of biologische identiteit. Alleen `Indet.` is
+geen bruikbare wetenschappelijke naam voor een nieuw centraal taxon.
+
+Daarnaast blijven 2.875 primaire groepen leeg. Dat mag voor voorlopige
+registratie; groepskandidaten op uitsluitend naam worden niet bevestigd.
+De 24 naamgelijke regels met verschillende broncodes blijven afzonderlijk,
+waaronder de twee `Elachista`-naamgebruiken. De 786 oude trait-goedkeuringen
+worden niet omgezet in bevestigde taxonconceptrelaties. Catalogusregistratie
+is geen bewijs van lokale aanwezigheid; dat blijft ook gelden voor de
+ENDURE-afwezigheidscategorieën uit 2018.
+
+Bewijs staat lokaal naast het ongewijzigde manifest in
+`outputs/taxa-manifest-20260927.h2EugE/beoordeel_uitzonderingen.py` en
+`beoordeling-categorieen.json`. De controle verifieert de manifesthash,
+de sluitende categorie-indeling en de ongewijzigde invoer. Darwin Core en
+TDWG TCS zijn opnieuw geraadpleegd: rang, taxonomische status, auteurschap,
+naamgebruik en conceptrelatie blijven afzonderlijk. Geen afwijking voorgesteld.
+
+Vervolg: eerst bovenstaande keuzes vaststellen, dan een volgende
+manifestversie maken met behoud van UUIDs en letterlijke bronwaarden.
+Daarna opnieuw controleren en pas vervolgens een afgebakende invoer met
+ROLLBACK beproeven. Geen ROLLBACK-proef of definitieve invoer uitgevoerd.
+
 ## Invoermanifest overige taxa van 27 september 2026
 
 Na de inventarisatie van alle 251 fysieke tabellen en 16 views is een

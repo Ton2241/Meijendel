@@ -4,6 +4,13 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Nadere categoriebeoordeling op 27 september 2026: het ongewijzigde manifest
+  v2 mist 129 naamvormsignalen en bevat één onterechte markering. Netto 1.575
+  voorstellen vragen beoordeling; de eerdere 13.904 zijn geen vrijgegeven
+  invoerselectie. Bij 122 LVD-voorstellen bevat het auteursveld de hele naam.
+  Zie de eerste sectie van `docs/database/TAXONREGISTER.md` voor het advies
+  per categorie. Nog geen nieuwe manifestversie, rollbackproef of invoer.
+
 - Invoermanifest overige taxa voorbereid op 27 september 2026; nog geen
   database-invoer. Zie `docs/database/TAXONREGISTER.md`: 14.401 voorgestelde
   brongebonden naamgebruiken, 15.351 koppelingen en 1.447 voorstellen voor
