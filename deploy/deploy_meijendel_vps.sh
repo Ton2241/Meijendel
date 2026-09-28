@@ -73,6 +73,15 @@ need_file() { [[ -f "$1" ]] || die "bestand ontbreekt: $1"; }
 need_dir() { [[ -d "$1" ]] || die "map ontbreekt: $1"; }
 remote() { "$SSH_BIN" -i "$SSH_KEY" "$VPS" "$@"; }
 
+check_dashboard_parity() {
+  # Vergelijk met precies de gevalideerde releasecache, nooit een oude tussencache.
+  MEIJENDEL_REQUIRE_PREBUILT_CACHE=1 \
+  MEIJENDEL_SQL_MANIFEST_PATH="$SQL_MANIFEST_LOCAL" \
+  MEIJENDEL_CACHE_MANIFEST_PATH="$CACHE_MANIFEST_LOCAL" \
+    Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
+      "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
+}
+
 release_lock() {
   if [[ "$LOCK_HELD" -eq 1 ]]; then
     remote "rmdir '$GLOBAL_LOCK' 2>/dev/null || true" || true
@@ -267,8 +276,7 @@ log "Controleer weerdata-eenhedencontract"
 "$LOCAL_REPO/deploy/check_weer_contract.sh" "$SQL_LOCAL"
 
 log "Controleer Shiny/dashboard parity voor MSI-groepen"
-Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
-  "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
+check_dashboard_parity
 log "Controleer wintertellingoutput voor alle soorten"
 Rscript "$LOCAL_REPO/R/check_wintertelling_output.R" "$LOCAL_REPO/wintertellingen"
 [[ -z "$(git status --porcelain --untracked-files=all)" ]] || \

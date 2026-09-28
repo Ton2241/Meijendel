@@ -440,7 +440,43 @@ def check_pq_release_schema() -> int:
     return 0
 
 
+def check_pq_release_cache() -> int:
+    """De vergelijkingsstap moet dezelfde gevalideerde cache gebruiken als productie."""
+    source = (SCRIPT.parents[2] / 'deploy/deploy_meijendel_vps.sh').read_text()
+    match = re.search(r'^check_dashboard_parity\(\) \{\n.*?^\}', source, re.M | re.S)
+    assert match, 'Lokale paritycontrole mist verplichte kandidaatcache'
+    # Alleen R als procesgrens vervangen; test de echte shellaanroep en alle argumenten.
+    shell = r'''set -euo pipefail
+LOCAL_REPO='/test/repo met spaties'
+SQL_LOCAL='/test/export met spaties.sql'
+SQL_MANIFEST_LOCAL='/test/export met spaties.sql.manifest'
+CACHE_MANIFEST_LOCAL='/test/kandidaat met spaties.manifest'
+MEIJENDEL_REQUIRE_PREBUILT_CACHE=0
+MEIJENDEL_SQL_MANIFEST_PATH='/oude/export'
+MEIJENDEL_CACHE_MANIFEST_PATH='/oude/cache'
+Rscript() {
+  [[ "$MEIJENDEL_REQUIRE_PREBUILT_CACHE" == 1 ]] || exit 91
+  [[ "$MEIJENDEL_SQL_MANIFEST_PATH" == '/test/export met spaties.sql.manifest' ]] || exit 92
+  [[ "$MEIJENDEL_CACHE_MANIFEST_PATH" == '/test/kandidaat met spaties.manifest' ]] || exit 93
+  [[ "$#" == 6 && "$1" == '/test/repo met spaties/R/check_shiny_dashboard_parity.R' ]] || exit 94
+  [[ "$2" == '/test/repo met spaties' && "$3" == '/test/export met spaties.sql' ]] || exit 95
+  [[ "$4" == '/test/repo met spaties/trim_msi_evg/msi_per_groep_per_jaar.csv' ]] || exit 96
+  [[ "$5" == 1958 && "$6" == 2025 ]] || exit 97
+  return "${R_STATUS:-0}"
+}
+'''
+    for status in (0, 37):
+        result = subprocess.run(['bash'], input=shell + match.group() +
+                                f'\nR_STATUS={status}\ncheck_dashboard_parity\n',
+                                text=True, capture_output=True)
+        assert result.returncode == status, (result.returncode, result.stderr)
+    print('OK: parity gebruikt verplicht kandidaatmanifest/cache en geeft R-fouten door')
+    return 0
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ['--pq-release-cache']:
+        raise SystemExit(check_pq_release_cache())
     if sys.argv[1:] == ['--pq-release-schema']:
         raise SystemExit(check_pq_release_schema())
     if sys.argv[1:] == ['--pq-release-opruiming']:
