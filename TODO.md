@@ -13,13 +13,32 @@
   De opruiming omvat geen gegevens die niet zijn overgedragen en geen
   oorspronkelijke leveringsbestanden of herstelback-ups.
   De lokale migratie is uitgevoerd en gecontroleerd. De publicatie naar de
-  VPS volgt na de nieuwe export en installatie van de bijgewerkte beveiligde
-  releasecontrole; die installatie vereist één zichtbare sudo-invoer.
+  VPS gebruikt de nieuwe export en de bijgewerkte beveiligde
+  releasecontrole; beide helperinstallaties zijn inmiddels uitgevoerd.
   De eerste helperinstallatie is op 28 september uitgevoerd. De laatste
   publicatiecontrole ontdekte dat dumpimport de opgeheven catalogus op de
   VPS zou laten staan. De aanvullende begrensde verwijdering is met echte
-  MySQL-proeven getest en vereist opnieuw installatie van de helper vóór
-  publicatie. De levende database hoeft niet opnieuw te worden gemigreerd.
+  MySQL-proeven getest. De gecorrigeerde helper is op 28 september om
+  10:03 CEST geïnstalleerd; de gecontroleerde publicatie is daarna gestart
+  vanaf main-commit `750bc105cb8d7617ec81386c3dfca732af39b793`.
+  Deze publicatiepoging is afgebroken: de PQ-behoudscontroles en verwijdering
+  van de oude catalogus slaagden, maar het totale productietabelaantal week
+  af van het exportmanifest. Automatisch herstel uit de vooraf gemaakte
+  VPS-back-up is geslaagd; Shiny gebruikt de vorige cache en de volledige
+  multi-hostrooktest is groen. Beide productiecommits zijn ongewijzigd.
+  Geen nieuwe poging voordat het feitelijke
+  productieschema is verklaard en vooraf op afwijkingen wordt gecontroleerd.
+  De oude export telt 240 basistabellen, de nieuwe 254; hun naamlijsten
+  verschillen alleen door de bedoelde toevoegingen en de oude PQ-catalogus.
+  De herstelde VPS bevat 243 basistabellen en 19 views, tegenover 240 en 13
+  in de oorspronkelijke export. De back-upinventaris en websitecode bewijzen
+  dat `website_species_mapping`, `website_plot_mapping` en zes bijbehorende
+  views productie-eigen websitekoppelingen zijn. Deze moeten behouden blijven;
+  een vergelijking van het totale tabelaantal zonder die laag is onjuist.
+  De derde extra tabel is nog niet geïdentificeerd. De huidige gesloten
+  beheerroute geeft geen volledige tabelnaamlijst. Er is één alleen-lezen
+  productieschema-overzicht nodig voordat de releasecontrole wordt hersteld.
+  De levende database hoeft niet opnieuw te worden gemigreerd.
   Alleen-lezen toegang tot de PQ-/LVD-bronbestanden op de T7 is op
   27 september expliciet toegestaan en gebruikt. De SHA-256 van de
   provinciale levering en het LVD-archief komen overeen met de database.

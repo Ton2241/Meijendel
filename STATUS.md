@@ -18,9 +18,16 @@ De levende database is niet opnieuw geïmporteerd uit een oudere dump.
 
 De export van 28 september omvat 254 basistabellen en 16 views. De
 teruggelezen export, alle tabelinhouden en de inhoudsgebonden Shiny-cache
-zijn gevalideerd. De productiepublicatie loopt via de gecontroleerde
-release; de definitieve status wordt vastgelegd in `TODO.md` en het
-projectbrede release-manifest.
+zijn gevalideerd. De productiepublicatie van 28 september is afgebroken
+bij een afwijkend totaal aantal productietabellen, nadat de afzonderlijke
+PQ-controles waren geslaagd. De vorige productie is volledig teruggezet;
+Shiny-cachecontrole en volledige multi-hostrooktest zijn groen. Er is geen
+nieuwe release geregistreerd. De VPS heeft naast de 240 oorspronkelijke
+exporttabellen drie extra tabellen en zes extra views. Twee extra tabellen
+en de zes views vormen de vereiste websitekoppellaag; de derde tabel moet
+nog worden geïdentificeerd. Vóór een nieuwe poging wordt die koppellaag
+expliciet behouden en de schemavergelijking vóór import uitgevoerd.
+Actuele herstelstatus en vervolg: `TODO.md`.
 
 ## Taxonregister
 

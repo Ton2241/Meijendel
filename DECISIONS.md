@@ -1,5 +1,17 @@
 # Besluiten
 
+- Publicatiepoging 28 september 2026: de PQ-behoudscontroles en de begrensde
+  catalogusverwijdering slaagden. De totale productietabelcontrole blokkeerde
+  vervolgens de activering; het automatische databaseherstel en de volledige
+  multi-hostrooktest zijn geslaagd. De herstelde VPS heeft drie extra tabellen
+  en zes extra views ten opzichte van de vorige export. De website-eigen
+  soort- en kavelkoppeltabellen en zes views moeten expliciet behouden blijven;
+  zij mogen niet als achtergebleven brondata worden verwijderd. De derde extra
+  tabel vereist nog een alleen-lezen schema-inventaris. Eerst het volledige
+  verschil verklaren en die vergelijking naar de voorcontrole brengen.
+  Geen vaste tolerantie van drie willekeurige extra tabellen. De lokale PQ-migratie blijft
+  behouden; er wordt geen oudere productiedump in de levende database geladen.
+
 - Aanvullende publicatiecontrole, 28 september 2026: een gewone dumpimport
   verwijdert lokaal opgeheven tabellen niet uit de afnemende database.
   De releasehelper verwijdert daarom uitsluitend `pq_vegetatie_taxon`,
