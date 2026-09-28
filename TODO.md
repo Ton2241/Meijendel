@@ -95,17 +95,21 @@
   brongebonden taxoncatalogus. Los naam- of identiteitstwijfel op vóór
   definitieve invoer en beproef de koppeling en het terugdraaien.
 
-- De afzonderlijke MySQL-image-update is voorbereid op de scan van
-  28 september 2026: zes repareerbare HIGH-bevindingen in `libxml2`
-  `2.9.13-14.el9_8.4`, met correctie `2.9.13-14.el9_8.5`.
-  De lokale en servercontrole verwachtten nog de vorige curl-bevindingen;
-  die uitgangscontrole is aangepast en met echte Bash-controles getest.
-  Afwijkende scans blijven blokkerend en de kandidaat moet nul HIGH en nul
-  CRITICAL hebben. De image is nog niet gebouwd of vervangen. Eerst de
-  PQ-publicatie afronden en de back-upketen verifiëren, inclusief bewijs van
-  de NAS-kopie en beschermde snapshot. Alleen-lezen NAS-toegang is gevraagd;
-  actuele controle daarvan staat nog open. Voor de imagewisseling gebruikt
-  Ton daarna zelf het standaard macOS Terminal-venster voor sudo.
+- De afzonderlijke MySQL-image-update is op 28 september 2026 afgerond,
+  na expliciet akkoord en sudo-invoer door Ton in het standaard macOS
+  Terminal-venster. De zes HIGH-bevindingen in `libxml2` zijn verholpen;
+  onafhankelijke scans van actieve MySQL, actieve Shiny en Shiny-rollback
+  melden nul HIGH/CRITICAL. MySQL blijft 9.7.1 met UID/GID 1999 en dezelfde
+  datamap. De 257 basistabellen, 22 views en gepubliceerde PQ-export blijven
+  behouden. Website-rooktest op drie domeinen, Shiny-bereikbaarheid, definitieve
+  back-upchecksum en volledige tijdelijke MySQL-herstelproef zijn groen.
+  De vorige MySQL-image en tijdelijke taakartefacten zijn verwijderd; twee
+  actieve containers en drie verklaarde images resteren, zonder buildcache.
+  Release `2026-09-28.2` in `../VWG_Project/RELEASE_MANIFEST.yml` bevat de
+  exacte image, productiecommits en herstelgegevens. De NAS-kopie en
+  beschermde snapshot van vóór de update zijn gecontroleerd; een NAS-kopie
+  van de nieuwe VPS-back-up is nog niet bevestigd. Geen lokale gegevens
+  of NAS-instellingen zijn gewijzigd; documentatie is geen nieuwe deploy.
 
 - De registeraanvulling van 27 september 2026 is na een terugdraaiproef
   opgeslagen: 27 groepen, 15.580 naamgebruiken en referenties en 18.437
