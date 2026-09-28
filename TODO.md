@@ -4,6 +4,19 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Gerichte taxonfusie lokaal uitgevoerd op 28 september 2026: vijf Naturalis-
+  naamregistraties van Rhantus frontalis en Haliplus ruficollis zijn tot twee
+  centrale rijen teruggebracht. Alle bronkoppeling-IDs en oorspronkelijke
+  cellen zijn behouden; drie oude IDs/UUIDs blijven oplosbaar via technische
+  aliassen. Stand: 15.577 taxa, 18.437 oorspronkelijke bronbesluiten plus
+  drie aliassen, 27 groepen. Volledige back-up, rollback, opzettelijke fout,
+  volledige herstelproef en levende nacontrole zijn geslaagd. Alle 251
+  overige tabellen en 16 viewuitkomsten zijn gelijk gebleven. Geen VPS-
+  publicatie. De overige 1.812 gelijknamige groepen zijn kandidaatdubbelen,
+  geen verwijderlijst. Beoordeel hun bronconcepten voordat een volgende
+  fusie wordt toegestaan; Glaucium flavum blijft nu gescheiden. Zie
+  `docs/database/TAXONREGISTER.md` voor selectie en bewijs.
+
 - PQ-migratie opgedragen op 27 september 2026, taakbranch
   `codex/pq-integratie`. **Afgerond en gepubliceerd op 28 september om
   15:33 CEST** vanaf `829eebda2d3f4eb66acef0b10b1d1039bcf1963f`.

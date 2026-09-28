@@ -45,6 +45,123 @@ vastlegging is op zichzelf geen softwarewijziging. Vogeltabel `soorten`,
 website, dashboard en Shiny blijven onaangetast. Een wijziging van bestaande
 afnemers of een migratie vraagt een afzonderlijk gecontroleerde uitvoering.
 
+## Gerichte fusie van dubbele naamregistraties
+
+Op 28 september 2026 heeft Ton de gerichte fusie opgedragen, met behoud van
+alle informatie en interne verwijzingen. De eerste uitvoering is beperkt tot
+twee groepen uit dezelfde Naturalis-keverlevering van 24 september 2026:
+
+- `Rhantus frontalis`: 40390 naar 40389;
+- `Haliplus ruficollis`: 40403 en 40404 naar 40402.
+
+De vijf centrale rijen bevatten dezelfde taxonomische velden binnen hun groep,
+dezelfde broncontext en dezelfde snapshot. De oorspronkelijke bronvelden
+verschillen uitsluitend in de vermelding van een subgenus: `(Rhantus)`,
+`(Haliplinus)`, `(Haliplus)` of geen subgenus. De naam met auteur, rang en
+overige classificatie zijn gelijk. [ICZN artikel 6.1](https://code.iczn.org/chapter-2-the-number-of-words-in-the-scientific-names-of-animals/article-6-interpolated-names/)
+rekent de tussen haakjes geplaatste subgenusnaam niet tot het binomen.
+[Naturalis](https://repository.naturalis.nl/document/148523) plaatst de
+Meijendelse ruficollis bij subgenus Haliplinus;
+[LANUV Arbeitsblatt 20, p. 16](https://www.lanuv.nrw.de/fileadmin/lanuvpubl/4_arbeitsblaetter/40020.pdf)
+beschrijft de overgang van Haliplinus naar Haliplus. Dit onderbouwt deze
+normalisatie van naamregistraties, geen nieuwe determinatie van de exemplaren.
+
+De veel ruimere inventarisatie van 28 september telde 1.814 groepen met
+letterlijk gelijke wetenschappelijke namen, samen 4.453 centrale rijen.
+Dat zijn kandidaatdubbelen, niet 2.639 bewezen verwijderbare taxa. De eerste
+fusie omvat slechts drie dubbele rijen. Glaucium flavum 35699, 40249 en
+45031 blijft buiten deze uitvoering: NDFF-naamgebruik, Naturalis-naamgebruik
+en de gedeelde Catalogue of Life-naamreferentie hebben verschillende
+broncontexten en rollen. Een actuele geaccepteerde naam bewijst niet dat
+historische bronnen dezelfde soortafbakening hanteerden. Ook vogelaggregaten,
+brede PQ-determinaties en homoniemen worden niet automatisch samengevoegd.
+Van de vijf gevonden naamgroepen met dezelfde opgegeven conceptbron en
+bronversie zijn alleen de twee kevergroepen toegelaten. Elachista bevat
+verschillende rijken/groepen; bij Psathyrella corrugis en Psathyrella
+piluliformis staat naast een nauwer naamgebruik ook een uitdrukkelijk
+ruimere bronvermelding. Die drie groepen blijven gescheiden. Voor de
+andere naamgroepen ontbreekt nog een bronoverstijgend besluit over dezelfde
+taxonomische afbakening. Dat is de resterende inhoudelijke opgave, geen
+technisch probleem dat met een unieke naamindex kan worden opgelost.
+
+Getoetst aan [Darwin Core](https://dwc.tdwg.org/terms/) en
+[TDWG TCS](https://tcs.tdwg.org/terms/): `scientificName`, auteurschap,
+`taxonRank` en de bron die het naamgebruik bepaalt blijven bewaard.
+Naamnormalisatie verandert geen `kandidaat/onbekend`-besluit in bevestigde
+conceptgelijkheid. Er is geen afwijking van de afgesproken toetsingsbasis.
+
+De bestaande `koppeling_id` blijft voor alle bronvermeldingen behouden;
+uitsluitend het centrale doeltaxon van drie bronkoppelingen verandert.
+PQ- en Vangblik-records hoeven daardoor niet te worden aangepast. De volledige
+oorspronkelijke centrale rijen en bronkoppelingen worden per fusie bewaard in
+`taxa.taxonmetadata.fusie_historie`, inclusief datums met microseconden en
+JSON-velden. De overige taxonvelden van het behouden record blijven gelijk.
+
+Oude numerieke taxon-IDs en UUIDs worden vastgelegd in drie technische
+doorverwijzingen binnen `taxa_bronkoppeling`, met
+`bron_dataset='taxa_fusie_alias'` en regelversie `taxa-gerichte-fusie-v1`.
+De metadata-rol `technische_fusie_alias` onderscheidt ze van biologische
+bronbesluiten. Zij blijven `kandidaat/onbekend`; de technische identiteit
+mag niet als nieuwe taxonomische conceptbeoordeling worden uitgelegd.
+Een bestaande kandidaatnaamreferentie in dataset `taxa` is geen alias.
+De twee Rhantus-naamreferenties 50230 en 50231 behouden hun oorspronkelijke
+bron-UUID en doel 44804; de oude UUID van 40390 wordt via de alias opgelost.
+
+`resolve_taxon_identity()` in `gis/scripts/import_external_ecology_sources.py`
+zoekt een huidig of voormalig centraal ID/UUID op. De resolver weigert
+ambiguïteit, ketens, cycli en ontbrekende doelen. Een toekomstige import
+zoekt eerst de volledige oorspronkelijke bronidentiteit op en hergebruikt
+haar bestaande koppeling en huidige doel. Bij invoer met een centraal
+taxon-ID of UUID moet ook deze aliasresolver worden gebruikt. Een verwijderd
+ID mag niet opnieuw worden aangemaakt. Historische bulkimports blijven
+geblokkeerd; er is geen algemene unieke index op naam toegevoegd.
+
+Uitvoeringsvoorwaarden: volledige lokale back-up; geïsoleerde proef met
+volledige broncontextcontrole; normale ROLLBACK én een opzettelijke SQL-fout
+na de mutaties; controle van alle broncellen en oude identificaties; volledig
+herstel van de proefdatabase; daarna pas de identieke levende uitvoering.
+De SQL houdt het register gedurende de transactie vergrendeld en controleert
+de volledige vooraf gelezen registerinhoud opnieuw vóór schrijven. Iedere
+SQL-fout breekt af zonder COMMIT. Het schema, alle overige tabelchecksums en
+alle viewuitkomsten worden voor en na vergeleken. Geen VPS-publicatie,
+geen vervanging van dump, dashboard of Shiny-cache.
+
+Herstel- en proefartefacten staan lokaal in
+`/Users/ton/Documents/Codex/Herstel/taxa-fusie-20260928/`.
+De geïsoleerde fusieproef is geslaagd: de volledige oorspronkelijke rijen
+en koppelingen zijn reconstrueerbaar; de drie oude IDs en UUIDs worden
+eenduidig opgelost; historische bronidentiteiten vinden dezelfde koppeling;
+herhalen en een verouderde snapshot worden geweigerd. Normale ROLLBACK en
+een opzettelijke SQL-fout na alle mutaties laten geen gewijzigde records
+achter. De 251 overige tabelchecksums en de volledige uitkomsten van alle
+16 views zijn gelijk gebleven. De schemacontrole omvat alle definities,
+met uitzondering van de volgende AUTO_INCREMENT-tellerwaarde: een afgebroken
+insert mag een nummer overslaan. Er is geen eis om zulke nummers te hergebruiken.
+Ook het volledige herstel en de levende uitvoering zijn op 28 september 2026
+geslaagd. De levende database bevat nu 15.577 centrale naamregistraties en
+18.440 bronkoppelingrijen: alle 18.437 bestaande bronbesluiten plus drie
+technische identificatie-aliassen. De 27 groepen zijn ongewijzigd. Alle
+1.819 logische UUID-bronverwijzingen zijn oplosbaar, inclusief de verwijzing
+naar het samengevoegde record 40390. De oorspronkelijke vogel-, PQ- en
+Vangblik-koppelingen zijn gelijk gebleven. Er resteren 1.812 groepen met
+dezelfde wetenschappelijke naam, samen 4.448 rijen; dat zijn niet automatisch
+bewezen dubbelen. De volledige back-up, proefuitkomsten en herstelcontrole
+blijven bewaard. Alleen de eigen tijdelijke proefdatabase is na deze
+controle verwijderd. Alle 28 GIS-testscripts slagen vóór en na de levende
+uitvoering. De Wordversie van het bronregister is inhoudelijk gelijk aan
+Markdown; alle 22 gerenderde pagina's zijn visueel gecontroleerd.
+De volgende AUTO_INCREMENT-waarde is geen onderdeel
+van de terugdraai-eis; alle bestaande identificaties zijn dat wel.
+
+Uitvoerroute: `run.py` in de herstelmap voert achtereenvolgens `backup`,
+`clone`, `trial`, `restore`, `live` en `cleanup` uit. Dit is een vastgelegde
+eenmalige taakroute, geen algemene importopdracht: de `live`-poort vereist
+gelijke hashes van importmodule, proefhelper, tests en back-up, alle groene
+proefresultaten en een ongewijzigde levende uitgangssituatie. Een bestaand
+startbewijs verhindert blinde herhaling. Terugdraaien na latere nieuwe
+gegevensinvoer vereist eerst een afzonderlijke herstelbeoordeling; zet dan
+niet zonder meer deze volledige momentopname over de levende database heen.
+
 ## Gerichte Vangblik-opschoning
 
 Ton heeft op 28 september 2026 de gerichte lokale opschoning goedgekeurd.

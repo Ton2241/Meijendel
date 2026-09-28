@@ -21,8 +21,87 @@ def load_module():
     return module
 
 
+def check_fusion_fixture(snapshot):
+    """Actual complete source rows: context drift and unique-key collisions must fail."""
+    import copy
+    module = load_module()
+    taxa, links = snapshot['taxa']['rows'], snapshot['taxa_bronkoppeling']['rows']
+    plan = module.plan_taxon_fusion(taxa, links)
+    assert [(p['keep'], p['remove']) for p in plan] == [(40389, [40390]), (40402, [40403, 40404])]
+    for field, bad_value in [('naam_volgens_versie', 'andere snapshot'),
+                             ('naam_auteur', 'andere auteur'), ('taxonvorm', 'aggregaat')]:
+        changed = copy.deepcopy(taxa)
+        next(row for row in changed if row['taxon_id'] == 40390)[field] = bad_value
+        try:
+            module.plan_taxon_fusion(changed, links)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f'Fusie moet gewijzigde {field} blokkeren')
+    for field in ['taxonRemarks', 'scientificName', 'nameAccordingTo']:
+        changed = copy.deepcopy(links)
+        next(row for row in changed if row['koppeling_id'] == 42553)['bronmetadata'][field] = 'anders'
+        try:
+            module.plan_taxon_fusion(taxa, changed)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f'Gewijzigde bronmetadata {field} moet blokkeren')
+    for field in ['bron_systeem', 'bronbestand_sha256', 'bron_taxon_id']:
+        changed = copy.deepcopy(links)
+        next(row for row in changed if row['koppeling_id'] == 42553)[field] = 'anders'
+        try:
+            module.plan_taxon_fusion(taxa, changed)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError(f'Gewijzigde bronidentiteit {field} moet blokkeren')
+    collision = copy.deepcopy(links)
+    donor = next(row for row in collision if row['koppeling_id'] == 42552)
+    target = next(row for row in collision if row['koppeling_id'] == 42553)
+    target['bron_identiteit_sha256'] = donor['bron_identiteit_sha256']
+    try:
+        module.plan_taxon_fusion(taxa, collision)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Botsende bronidentiteit moet blokkeren')
+
+
 def main() -> int:
     module = load_module()
+    # A name match must never bypass concept-context checks; old IDs must resolve.
+    assert callable(getattr(module, 'resolve_taxon_identity', None)), 'Fusie-aliasresolver ontbreekt'
+    taxa = [{'taxon_id': 10, 'taxon_uuid': 'retained'}]
+    alias = {'bron_systeem': 'Meijendel', 'bron_dataset': 'taxa_fusie_alias',
+             'bron_versie': 'taxa-gerichte-fusie-v1', 'bron_taxon_id': 'old',
+             'regelversie': 'taxa-gerichte-fusie-v1', 'taxon_id': 10,
+             'ingetrokken_op': None, 'koppelstatus': 'kandidaat',
+             'taxonrelatie': 'onbekend',
+             'bronmetadata': {'rol': 'technische_fusie_alias',
+                              'voormalig_taxon_id': 11, 'voormalig_taxon_uuid': 'old'}}
+    for identity in [10, 'retained', 11, 'old']:
+        assert module.resolve_taxon_identity(identity, taxa, [alias]) == 10
+    assert module.resolve_taxon_identity('missing', taxa, [alias]) is None
+    assert module.resolve_taxon_identity('old', taxa, [{**alias, 'bron_dataset': 'taxa'}]) is None
+    for bad in [[alias, alias], [{**alias, 'taxon_id': 99}],
+                [{**alias, 'bron_taxon_id': 'wrong'}],
+                [{**alias, 'bronmetadata': {**alias['bronmetadata'], 'voormalig_taxon_id': 10}}]]:
+        try:
+            module.resolve_taxon_identity('old', taxa, bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Dubbele, cyclische of ongeldige alias moet blokkeren')
+    assert callable(getattr(module, 'plan_taxon_fusion', None)), 'Begrensde fusieplanner ontbreekt'
+    # Actual full-row guards and rollback are exercised against the isolated MySQL clone.
+    for rows in [[], [{'taxon_id': 40389, 'wetenschappelijke_naam': 'Rhantus frontalis'}]]:
+        try:
+            module.plan_taxon_fusion(rows, [])
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Ontbrekende taxonvelden moeten vóór schrijven blokkeren')
     assert callable(getattr(module, 'guard_legacy_import', None)), 'Oude import mist bescherming tegen herinvoer'
     real_run = module.run_mysql
     try:

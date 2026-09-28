@@ -47,14 +47,24 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
 groepen, taxonnaamgebruiken met conceptcontext en geversioneerde
-brontoewijzingen. Na de aanvulling op 27 september 2026 bevat `taxon_groepen`
-27 praktische groepen, `taxa` 14.663 voorlopige brongebonden naamgebruiken
-plus 917 externe naamreferenties en `taxa_bronkoppeling` 18.437 geversioneerde
-bronbesluiten, waarvan 18.350 actief: 18.348 kandidaten en twee vermeldingen
+brontoewijzingen. Na de aanvulling van 27 september en de gerichte fusie van
+28 september 2026 bevat `taxon_groepen` 27 praktische groepen, `taxa` 14.660
+voorlopige brongebonden naamgebruiken plus 917 externe naamreferenties en
+`taxa_bronkoppeling` alle 18.437 oorspronkelijke geversioneerde bronbesluiten
+plus drie technische identificatie-aliassen. Van de oorspronkelijke
+bronbesluiten zijn 18.350 actief: 18.348 kandidaten en twee vermeldingen
 zonder doeltaxon. De 87 eerdere PQ-besluiten blijven als ingetrokken historie
 aanwezig. In twee aanvullingen zijn 2.509 bestaande groepsindelingen ingevuld;
 278 registraties blijven zonder primaire groep, met beoordeelde reden.
 Deze referentieregistratie heeft geen eigen waarnemingsperiode.
+De fusie betreft uitsluitend vijf naamregistraties van twee Naturalis-
+keversoorten binnen dezelfde broncontext. Drie dubbele rijen zijn verwijderd;
+volledige oude rijen en koppelingen staan in `taxonmetadata.fusie_historie`.
+Dataset `taxa_fusie_alias` bevat technische doorverwijzingen voor voormalige
+IDs/UUIDs, geen nieuwe biologische conceptbesluiten. Bestaande koppeling-IDs
+blijven gelijk. Oude centrale identificaties moeten via
+`resolve_taxon_identity()` worden opgelost; een gewone kandidaatnaamreferentie
+is geen alias. Details en behoudsbewijs staan in `docs/database/TAXONREGISTER.md`.
 De 917 externe referenties verbinden 1.819 lokale taxon-UUIDs uit verschillende
 datasets. Deze aanvullende routes gebruiken bronsysteem `Meijendel`, dataset
 `taxa` en een vastgelegde bronversie; zij vervangen geen oorspronkelijke

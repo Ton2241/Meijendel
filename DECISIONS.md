@@ -1,5 +1,15 @@
 # Besluiten
 
+- Gerichte taxonfusie opgedragen op 28 september 2026. Normaliseer uitsluitend
+  aantoonbaar dubbel naamgebruik binnen dezelfde broncontext; behoud alle
+  oorspronkelijke taxonvelden, bronkoppeling-IDs en oude identificaties.
+  Eerste selectie: vijf Naturalis-keverregistraties van Rhantus frontalis en
+  Haliplus ruficollis naar twee centrale records. Glaucium en andere
+  bronoverstijgende naamtreffers zijn geen automatisch bewezen conceptfusies.
+  Eerst volledige back-up, proef, terugdraaien en herstel. Geen VPS-publicatie.
+  Uitvoering en toetsing aan Darwin Core/TDWG TCS:
+  `docs/database/TAXONREGISTER.md`, sectie gerichte fusie.
+
 - Gerichte Vangblik-opschoning goedgekeurd op 28 september 2026. Verbind de
   60.560 vangstregels uit 1953–1960 met de bestaande 275 bronkoppelingen in het
   centrale taxonregister en verwijder daarna uitsluitend de dubbele catalogus

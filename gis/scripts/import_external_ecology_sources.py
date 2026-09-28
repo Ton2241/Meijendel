@@ -25,6 +25,209 @@ SCHEMA = ROOT / "gis" / "database" / "external_ecology_schema.sql"
 DATABASE = "Meijendel"
 IMPORT_VERSION = "externe-ecologie-v1"
 
+FUSION_RULE = 'taxa-gerichte-fusie-v1'
+FUSION_GROUPS = ((40389, 40390), (40402, 40403, 40404))
+FUSION_UUIDS = {
+    40389: 'ea88e014-fe9d-4fcc-91b9-36b8bea5f358',
+    40390: 'bac4ac07-e0b3-49b8-9840-d00ca5cce76c',
+    40402: '288053b1-aee4-4fce-8b8a-58d1bb6167d0',
+    40403: '05dbcb96-be93-459a-9e2b-76eec4cdb568',
+    40404: '865f6504-b92c-45bd-bf52-164da0e057bd',
+}
+FUSION_VERSION = ('2026-09-24; sha256:'
+                  '19611eead96004ff51e12f8415159e23a6e75e23a30cfb190fcb89262f282ebc')
+FUSION_SOURCE = {
+    40389: ('Rhantus (Rhantus) frontalis (Marsham, 1802)', '8139140b07115e012ec4e37dac410b3466178bf50cdf8e3f835f64107bac0a18'),
+    40390: ('Rhantus frontalis (Marsham, 1802)', '254ac84de0f84d021280e91f3023a82d11e7ee3211d1cb664c908cc58154d21d'),
+    40402: ('Haliplus (Haliplinus) ruficollis (De Geer, 1774)', 'fe1f08ee4f1157c2a99acd126f52fc9bf76c340ae0b4265f28a1d21f51aa2b2a'),
+    40403: ('Haliplus (Haliplus) ruficollis (De Geer, 1774)', 'ec473c85e57480011795301140094c7e5c609765ffe25d9dd877c2a3bff24e81'),
+    40404: ('Haliplus ruficollis (De Geer, 1774)', 'd3b56cbe38f78f344aa503e81e71380bc7b74437f039876d7b503e3bdbe5f44c'),
+}
+
+
+def resolve_taxon_identity(identity, taxa: list[dict], links: list[dict]):
+    """Resolveer een centraal ID/UUID, inclusief expliciete technische fusie-aliassen.
+
+    Gewone naamreferenties (dataset taxa) zijn nooit identiteitsaliassen.
+    Een alias moet direct op een bestaande rij eindigen: geen ketens of cycli.
+    """
+    identities = {}
+    live_ids = {row['taxon_id'] for row in taxa}
+    for row in taxa:
+        for key in (row['taxon_id'], row['taxon_uuid']):
+            if key in identities:
+                raise ValueError('Dubbele centrale identiteit')
+            identities[key] = row['taxon_id']
+    for link in links:
+        if (link['bron_systeem'] != 'Meijendel' or link['bron_dataset'] != 'taxa_fusie_alias'
+                or link['ingetrokken_op'] is not None):
+            continue
+        meta = link['bronmetadata'] or {}
+        old_id, old_uuid = meta.get('voormalig_taxon_id'), meta.get('voormalig_taxon_uuid')
+        if (meta.get('rol') != 'technische_fusie_alias' or type(old_id) is not int
+                or not old_uuid or old_uuid != link['bron_taxon_id']
+                or link['taxon_id'] not in live_ids or link['regelversie'] != FUSION_RULE
+                or link['bron_versie'] != FUSION_RULE or link['koppelstatus'] != 'kandidaat'
+                or link['taxonrelatie'] != 'onbekend'):
+            raise ValueError('Ongeldige technische fusie-alias')
+        for key in (old_id, old_uuid):
+            if key in identities:
+                raise ValueError('Dubbele of cyclische fusie-alias')
+            identities[key] = link['taxon_id']
+    return identities.get(identity)
+
+
+def plan_taxon_fusion(taxa: list[dict], links: list[dict]) -> list[dict]:
+    """Uitsluitend de vijf beoordeelde Naturalis-naamregistraties; geen naamheuristiek."""
+    by_id = {row['taxon_id']: row for row in taxa}
+    if len(by_id) != len(taxa) or not FUSION_UUIDS.keys() <= by_id.keys():
+        raise ValueError('Fusie al uitgevoerd of oorspronkelijke taxa ontbreken')
+    plan = []
+    for group in FUSION_GROUPS:
+        rows = [by_id[taxon_id] for taxon_id in group]
+        keeper = rows[0]
+        expected_name = 'Rhantus frontalis' if group[0] == 40389 else 'Haliplus ruficollis'
+        ignored = {'taxon_id', 'taxon_uuid', 'aangemaakt_op', 'gewijzigd_op'}
+        if (len(keeper) < 38 or keeper.get('wetenschappelijke_naam') != expected_name
+                or keeper.get('naam_volgens_versie') != FUSION_VERSION
+                or keeper.get('naam_volgens') != 'Lokale bronweergave Meijendel.naturalis-coleoptera-meijendel'
+                or keeper.get('groep_id') != 7):
+            raise ValueError('Taxonstructuur of beoordeelde broncontext wijkt af')
+        for row in rows:
+            if (row['taxon_uuid'] != FUSION_UUIDS[row['taxon_id']]
+                    or {k: v for k, v in row.items() if k not in ignored}
+                    != {k: v for k, v in keeper.items() if k not in ignored}):
+                raise ValueError('Verschillende taxonvelden: geen bewezen dubbele registratie')
+        removed = set(group[1:])
+        for row in taxa:
+            if any(row[field] in removed for field in
+                   ('bovenliggend_taxon_id', 'geaccepteerd_taxon_id', 'oorspronkelijk_taxon_id')):
+                raise ValueError('Taxonomische verwijzing vereist afzonderlijke beoordeling')
+        source_links = [link for link in links if link['taxon_id'] in group]
+        for row in rows:
+            direct = [link for link in source_links if link['taxon_id'] == row['taxon_id']]
+            if (len(direct) != 1 or direct[0]['bron_dataset'] != 'naturalis-coleoptera-meijendel'
+                    or direct[0]['bron_systeem'] != 'Meijendel'
+                    or direct[0]['bronbestand_sha256'] != FUSION_VERSION.split('sha256:')[1]
+                    or direct[0]['bron_taxon_id'] != 'taxonvelden-sha256:' + FUSION_SOURCE[row['taxon_id']][1]
+                    or direct[0]['bron_versie'] != FUSION_VERSION
+                    or direct[0]['koppelstatus'] != 'kandidaat'
+                    or direct[0]['taxonrelatie'] != 'onbekend'
+                    or direct[0]['ingetrokken_op'] is not None):
+                raise ValueError('Onverwachte bronkoppelingen: eerst opnieuw beoordelen')
+            meta = direct[0]['bronmetadata'] or {}
+            raw_name = FUSION_SOURCE[row['taxon_id']][0]
+            if (meta.get('raw_name') != raw_name or meta.get('scientificName') != raw_name
+                    or any(meta.get(k) is not None for k in ('taxonRemarks', 'nameAccordingTo',
+                        'nameAccordingToID', 'taxonID', 'taxonKey', 'scientificNameID', 'acceptedNameUsageID'))
+                    or {k:v for k,v in meta.items() if k not in {'raw_name','scientificName'}}
+                    != {k:v for k,v in source_links[0]['bronmetadata'].items() if k not in {'raw_name','scientificName'}}):
+                raise ValueError('Bronvelden verschillen meer dan de beoordeelde subgenusnotatie')
+        if (keeper.get('taxonmetadata') or {}).get('fusie_historie'):
+            raise ValueError('Eerdere fusie aanwezig; geen blinde herhaling')
+        plan.append({'keep': group[0], 'remove': list(group[1:]), 'before_taxa': rows,
+                     'before_links': source_links,
+                     'rule': FUSION_RULE,
+                     'reason': 'Zelfde Naturalis-snapshot en alle taxonvelden; alleen subgenusnotatie in ruwe bronnaam verschilt.',
+                     'evidence': ['https://code.iczn.org/chapter-2-the-number-of-words-in-the-scientific-names-of-animals/article-6-interpolated-names/',
+                                  'https://repository.naturalis.nl/document/148523',
+                                  'https://www.lanuv.nrw.de/fileadmin/lanuvpubl/4_arbeitsblaetter/40020.pdf']})
+    target_map = {old: item['keep'] for item in plan for old in item['remove']}
+    keys = [(b['bron_identiteit_sha256'], b['besluitversie'], target_map.get(b['taxon_id'], b['taxon_id']))
+            for b in links]
+    if len(keys) != len(set(keys)):
+        raise ValueError('Fusie veroorzaakt een botsing tussen bronkoppelingen')
+    # Two reviewed Rhantus name-reference links retain their immutable source UUID.
+    # They must be resolved through resolve_taxon_identity, not mistaken for aliases.
+    logical = [(b['koppeling_id'], b['bron_taxon_id'], b['taxon_id'], b['koppelstatus'], b['taxonrelatie'])
+               for b in links if b['bron_dataset'] == 'taxa' and b['bron_taxon_id'] in FUSION_UUIDS.values()]
+    if sorted(logical) != [(50230, FUSION_UUIDS[40389], 44804, 'kandidaat', 'onbekend'),
+                           (50231, FUSION_UUIDS[40390], 44804, 'kandidaat', 'onbekend')]:
+        raise ValueError('Logische UUID-verwijzingen wijken af van beoordeelde inventarisatie')
+    return plan
+
+
+def taxon_registry_snapshot(client: Path, args: list[str]) -> dict:
+    """Alle cellen, inclusief microseconden, JSON en gegenereerde binaire sleutels."""
+    result = {}
+    for table, pk in [('taxa', 'taxon_id'), ('taxa_bronkoppeling', 'koppeling_id')]:
+        columns = run_mysql(client, args,
+            "SELECT COLUMN_NAME,DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() "
+            f"AND TABLE_NAME='{table}' ORDER BY ORDINAL_POSITION").splitlines()
+        parts = []
+        for column in columns:
+            name, kind = column.split('\t')
+            expr = f'HEX(`{name}`)' if kind in {'binary', 'varbinary'} else f'`{name}`'
+            parts.extend([f"'{name}'", expr])
+        expression = 'JSON_OBJECT(' + ','.join(parts) + ')'
+        raw = run_mysql(client, args, f'SELECT SHA2(CAST({expression} AS CHAR),256),{expression} FROM `{table}` ORDER BY `{pk}`')
+        pairs = [line.split('\t', 1) for line in raw.splitlines()]
+        result[table] = {'rows': [json.loads(pair[1]) for pair in pairs],
+                         'sha256': hashlib.sha256(''.join(pair[0] for pair in pairs).encode()).hexdigest(),
+                         'expression': expression, 'pk': pk}
+    return result
+
+
+def taxon_fusion_sql(snapshot: dict, *, commit: bool = False) -> str:
+    """Eén verbinding en transactie; iedere afwijking stopt vóór COMMIT.
+
+    Het mysql-programma moet zonder --force worden gestart. Bij een SQL-fout
+    sluit het de verbinding, waardoor InnoDB de gehele transactie terugdraait.
+    """
+    plan = plan_taxon_fusion(snapshot['taxa']['rows'], snapshot['taxa_bronkoppeling']['rows'])
+    literal = lambda value: "CONVERT(X'" + json.dumps(value, ensure_ascii=False).encode().hex() + "' USING utf8mb4)"
+    sql = ["SET SESSION group_concat_max_len=16777216;",
+           "CREATE TEMPORARY TABLE fusie_guard (ok INT NOT NULL CHECK(ok=1));",
+           "START TRANSACTION;",
+           "SELECT taxon_id FROM taxa ORDER BY taxon_id FOR UPDATE;",
+           "SELECT koppeling_id FROM taxa_bronkoppeling ORDER BY koppeling_id FOR UPDATE;",
+           "CREATE TEMPORARY TABLE fusie_before_taxa AS SELECT * FROM taxa;",
+           "CREATE TEMPORARY TABLE fusie_before_links AS SELECT * FROM taxa_bronkoppeling;"]
+    for table, spec in snapshot.items():
+        sql.append(f"INSERT INTO fusie_guard SELECT SHA2(GROUP_CONCAT(SHA2(CAST({spec['expression']} AS CHAR),256) ORDER BY `{spec['pk']}` SEPARATOR ''),256)='{spec['sha256']}' FROM `{table}`;")
+    for item in plan:
+        keeper = item['before_taxa'][0]
+        metadata = dict(keeper['taxonmetadata'] or {})
+        metadata['fusie_historie'] = [item]
+        sql.append(f"UPDATE taxa SET taxonmetadata={literal(metadata)} WHERE taxon_id={item['keep']};")
+        for row in item['before_taxa'][1:]:
+            old = row['taxon_id']
+            meta = {'rol': 'technische_fusie_alias', 'voormalig_taxon_id': old,
+                    'voormalig_taxon_uuid': row['taxon_uuid']}
+            sql.append(f"UPDATE taxa_bronkoppeling SET taxon_id={item['keep']} WHERE taxon_id={old};")
+            sql.append("INSERT INTO taxa_bronkoppeling (bron_systeem,bron_dataset,bron_versie,bron_taxon_id,bronmetadata,taxon_id,koppelstatus,taxonrelatie,koppelmethode,regelversie,onderbouwing) VALUES ("
+                       f"'Meijendel','taxa_fusie_alias','{FUSION_RULE}','{row['taxon_uuid']}',{literal(meta)},{item['keep']},'kandidaat','onbekend','technische-identiteitsalias','{FUSION_RULE}','Technische alias van dubbele registratie binnen dezelfde broncontext; geen nieuwe conceptbeoordeling.');")
+            sql.append(f"DELETE FROM taxa WHERE taxon_id={old};")
+    sql.extend([
+        f"INSERT INTO fusie_guard SELECT COUNT(*)={len(snapshot['taxa']['rows']) - 3} FROM taxa;",
+        f"INSERT INTO fusie_guard SELECT COUNT(*)={len(snapshot['taxa_bronkoppeling']['rows']) + 3} FROM taxa_bronkoppeling;",
+        "INSERT INTO fusie_guard SELECT COUNT(*)=0 FROM taxa_bronkoppeling b LEFT JOIN taxa t ON t.taxon_id=b.taxon_id WHERE b.taxon_id IS NOT NULL AND t.taxon_id IS NULL;",
+    ])
+    # Guard every original cell before committing, not only counts/FKs.
+    for table, spec in snapshot.items():
+        old_table = 'fusie_before_taxa' if table == 'taxa' else 'fusie_before_links'
+        excluded = " WHERE taxon_id NOT IN (40389,40390,40402,40403,40404)" if table == 'taxa' else " WHERE taxon_id NOT IN (40390,40403,40404) OR taxon_id IS NULL"
+        sha = f"SHA2(CAST({spec['expression']} AS CHAR),256)"
+        sql.append(f"INSERT INTO fusie_guard SELECT COUNT(*)=0 FROM (SELECT `{spec['pk']}` id,{sha} h FROM {old_table}{excluded}) old LEFT JOIN (SELECT `{spec['pk']}` id,{sha} h FROM {table}) new USING(id) WHERE new.id IS NULL OR BINARY old.h<>BINARY new.h;")
+    for item in plan:
+        for row in item['before_links']:
+            if row['taxon_id'] not in item['remove']:
+                continue
+            expected = {**row, 'taxon_id': item['keep'], 'doeltaxon_sleutel': item['keep']}
+            expected.pop('gewijzigd_op')
+            expr = snapshot['taxa_bronkoppeling']['expression']
+            # JSON_OBJECT carries MySQL's internal DATETIME type; the archived
+            # JSON roundtrip carries its identical six-digit text. Compare the
+            # canonical serialized cells bytewise, not these internal types.
+            sql.append(f"INSERT INTO fusie_guard SELECT BINARY CAST(JSON_REMOVE({expr},'$.gewijzigd_op') AS CHAR)=BINARY CAST(CAST({literal(expected)} AS JSON) AS CHAR) FROM taxa_bronkoppeling WHERE koppeling_id={row['koppeling_id']};")
+        metadata = {**(item['before_taxa'][0]['taxonmetadata'] or {}), 'fusie_historie': [item]}
+        expected = {**item['before_taxa'][0], 'taxonmetadata': metadata}
+        expected.pop('gewijzigd_op')
+        expr = snapshot['taxa']['expression']
+        sql.append(f"INSERT INTO fusie_guard SELECT BINARY CAST(JSON_REMOVE({expr},'$.gewijzigd_op') AS CHAR)=BINARY CAST(CAST({literal(expected)} AS JSON) AS CHAR) FROM taxa WHERE taxon_id={item['keep']};")
+    sql.append('COMMIT;' if commit else 'ROLLBACK;')
+    return '\n'.join(sql)
+
 def resolve_pq_taxon_links(catalogue: list[dict], links: list[dict]) -> dict[int, int]:
     """Koppel oorspronkelijke PQ-naamgebruiken, zonder concepten gelijk te stellen."""
     by_code = defaultdict(list)
