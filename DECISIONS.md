@@ -1,5 +1,16 @@
 # Besluiten
 
+- Op 28 september 2026 heeft Ton de taxonopschoning verruimd: echte dubbelen
+  uit verschillende bronnen bijeenbrengen in één centrale vermelding, alle
+  oorspronkelijke bronvelden en interne verwijzingen behouden en herinvoer
+  van dubbelen voorkomen. Een andere leverancier rechtvaardigt geen extra
+  centrale rij. Naamgenoten met verschillende afbakening worden niet
+  automatisch samengevoegd. De oorspronkelijke bronconcepten blijven apart
+  bewaard; een centrale naam is geen bevestiging van conceptgelijkheid.
+  Bestaande koppelingnummers blijven behouden. Geen VPS-publicatie, dump- of
+  cachevervanging. Uitvoering en resterende beoordelingen staan uitsluitend
+  in `docs/database/TAXONREGISTER.md`.
+
 - Gerichte taxonfusie opgedragen op 28 september 2026. Normaliseer uitsluitend
   aantoonbaar dubbel naamgebruik binnen dezelfde broncontext; behoud alle
   oorspronkelijke taxonvelden, bronkoppeling-IDs en oude identificaties.

@@ -46,32 +46,43 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
-groepen, taxonnaamgebruiken met conceptcontext en geversioneerde
-brontoewijzingen. Na de aanvulling van 27 september en de gerichte fusie van
-28 september 2026 bevat `taxon_groepen` 27 praktische groepen, `taxa` 14.660
-voorlopige brongebonden naamgebruiken plus 917 externe naamreferenties en
-`taxa_bronkoppeling` alle 18.437 oorspronkelijke geversioneerde bronbesluiten
-plus drie technische identificatie-aliassen. Van de oorspronkelijke
+groepen, centrale naamregistraties en geversioneerde brontoewijzingen met
+hun oorspronkelijke conceptcontext. Na de centralisatie van 29 september
+2026 bevat `taxon_groepen` 27 praktische groepen, `taxa` 13.421 centrale
+vermeldingen en `taxa_bronkoppeling` 21.799 rijen: alle 18.437 oorspronkelijke
+geversioneerde bronbesluiten, drie eerdere identificatie-aliassen en 3.359
+volledig bewaarde oorspronkelijke taxoncontexten. Van de oorspronkelijke
 bronbesluiten zijn 18.350 actief: 18.348 kandidaten en twee vermeldingen
 zonder doeltaxon. De 87 eerdere PQ-besluiten blijven als ingetrokken historie
 aanwezig. In twee aanvullingen zijn 2.509 bestaande groepsindelingen ingevuld;
 278 registraties blijven zonder primaire groep, met beoordeelde reden.
 Deze referentieregistratie heeft geen eigen waarnemingsperiode.
-De fusie betreft uitsluitend vijf naamregistraties van twee Naturalis-
-keversoorten binnen dezelfde broncontext. Drie dubbele rijen zijn verwijderd;
+De eerste fusie van 28 september betrof vijf naamregistraties van twee
+Naturalis-keversoorten binnen dezelfde broncontext. Drie dubbele rijen zijn verwijderd;
 volledige oude rijen en koppelingen staan in `taxonmetadata.fusie_historie`.
 Dataset `taxa_fusie_alias` bevat technische doorverwijzingen voor voormalige
 IDs/UUIDs, geen nieuwe biologische conceptbesluiten. Bestaande koppeling-IDs
 blijven gelijk. Oude centrale identificaties moeten via
 `resolve_taxon_identity()` worden opgelost; een gewone kandidaatnaamreferentie
-is geen alias. Details en behoudsbewijs staan in `docs/database/TAXONREGISTER.md`.
-De 917 externe referenties verbinden 1.819 lokale taxon-UUIDs uit verschillende
+is geen alias. Bij de aansluitende centralisatie zijn in 1.203 naamgroepen
+nog 2.156 dubbele rijen samengebracht. Dataset `taxa_naamgebruik_archief`
+bewaart iedere oorspronkelijke rij, ook die van de centrale overblijver,
+met ID/UUID en volledige oorspronkelijke bronkoppelingen. De bestaande
+koppelingen bewaren hun eigen broncontext onder `register_broncontext`;
+`resolve_taxon_usage()` geeft centrale bestemming én historische broncontext.
+Een centrale naam wordt niet als congruent historisch concept aangemerkt.
+De bestaande LVD-analyse-ingang leest voortaan de oorspronkelijke bronrang
+uit die context; alle 16 viewuitkomsten zijn aantoonbaar gelijk gebleven.
+Nog 751 naamgroepen blijven buiten de bewezen selectie. Details en
+behoudsbewijs staan in `docs/database/TAXONREGISTER.md`.
+De eerder vastgelegde 917 externe referenties verbinden 1.819 lokale taxon-UUIDs uit verschillende
 datasets. Deze aanvullende routes gebruiken bronsysteem `Meijendel`, dataset
 `taxa` en een vastgelegde bronversie; zij vervangen geen oorspronkelijke
 bronroute. Alle blijven kandidaat met onbekende conceptrelatie. Gemeenschappelijke
 naamreferentie betekent niet automatisch dezelfde historische soortafbakening.
 De oorspronkelijke 263
-vogelnaamgebruiken en 263 vogelkoppelingen zijn ongewijzigd. Bronidentiteit
+vogelnaamgebruiken zijn volledig bewaard en de 263 vogelkoppelingnummers
+blijven gelijk. Bronidentiteit
 bestaat uit bronsysteem, dataset, bronversie en oorspronkelijke sleutel;
 voor vogels is dit `Meijendel` / `soorten` / de SHA-256 van de
 catalogusmomentopname / het oorspronkelijke `soorten.id`. Namen zijn geen

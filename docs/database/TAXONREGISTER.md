@@ -1,5 +1,128 @@
 # Taxonregister: structuur en uitvoering
 
+## Centrale lijst zonder brongebonden dubbelen — eerste selectie uitgevoerd
+
+De bewezen selectie is op 29 september 2026 in de levende lokale database
+uitgevoerd en gecontroleerd, na proef, terugdraaien en volledig herstel uit
+de back-up. In 1.203 naamgroepen zijn 3.359 centrale rijen teruggebracht tot
+1.203 vermeldingen: 2.156 dubbele rijen minder. Het register is daarmee van
+15.577 naar 13.421 rijen gegaan. Het betreft
+naamregistraties, geen telling van unieke biologische soorten; het register
+heeft geen eigen waarnemingsperiode.
+
+Bij *Glaucium flavum* gaan 40249 en 45031 naar 35699. De oorspronkelijke
+velden van alle drie vermeldingen, inclusief Nederlandse naam en auteurschap,
+blijven behouden. Datzelfde behoud geldt voor iedere geselecteerde groep.
+Alle 18.440 bestaande bronkoppelingen behouden hun nummer. Daarnaast zijn
+3.359 oorspronkelijke taxoncontexten bewaard in `taxa_bronkoppeling`, dataset
+`taxa_naamgebruik_archief`. Ook de eigen oorspronkelijke context van de
+behouden centrale rij wordt gearchiveerd. Oude nummers en UUIDs worden door
+`resolve_taxon_usage()` met hun oorspronkelijke context teruggevonden.
+
+De proef en levende nacontrole tonen: alle 251 overige tabellen zijn inhoudelijk identiek, evenals
+alle 16 bestaande viewuitkomsten. De volledige vogelcontrole slaagt. De
+18.351 actieve, eenduidig gekoppelde bronidentiteiten vinden bij herhaling
+hun bestaande koppeling terug; er ontstaat geen nieuwe centrale rij. De
+twee actieve bronvermeldingen zonder taxon en ingetrokken besluiten worden
+niet alsnog gekoppeld. Een verouderde momentopname, opzettelijke late fout
+en herhaalde uitvoering blokkeren zonder achterblijvende gegevenswijziging.
+De tabel `taxa_bronkoppeling` bevat nu 21.799 rijen, inclusief de bewaarde
+broncontexten; `taxon_groepen` blijft 27 rijen bevatten. Geen waarneming is
+verwijderd of samengevoegd. De VPS, exportdump, Shiny-cache en applicatiecode
+zijn niet gewijzigd. Bewijs: `r2_trial_verified.json`,
+`r2_restore_verified.json` en `r2_live_verified.json` in de herstelmap.
+
+### Wat nog niet is opgelost
+
+Er blijven 751 naamgroepen met samen 1.960 centrale rijen buiten deze
+selectie. Die groepen zijn niet allemaal bewezen verschillende taxa en
+evenmin een verwijderlijst. De onderstaande indeling telt iedere groep
+eenmaal, naar de eerste relevante belemmering.
+
+| Reden | Naamgroepen | Nodige vervolgstap |
+|---|---:|---|
+| Externe naamreferentie geeft geen voldoende eenduidige aansluiting | 527 | Onderscheid alternatieve taxa, rangnotatie en te zwakke of ontbrekende naamtreffers. |
+| Auteursvermeldingen verschillen | 78 | Stel vast of het schrijfwijzen van dezelfde naam of werkelijk andere namen zijn. |
+| Classificatie verschilt | 74 | Onderbouw oude/nieuwe familie- of orde-indeling zonder verschillende taxa te verenigen. |
+| Brede, enge of samengestelde determinatie | 64 | Behoud het geleverde determinatieniveau; maak soort en verzamelbegrip niet gelijk. |
+| Praktische groep ontbreekt of verschilt | 8 | Bepaal eerst de bedoelde taxongroep uit de brongegevens. |
+
+Van de 527 referentiegevallen hebben 331 gelijknamige alternatieven, vallen
+124 exacte treffers op de gebruikte scoregrens af en verschillen bij 35 de
+rangnotaties. Verder zijn er 24 zonder exacte treffer, 11 treffers op een
+hoger niveau en twee schrijfvarianten. De scoregrens is een conservatieve
+selectieregel, geen bewijs dat de betrokken taxa verschillen. Deze gevallen
+moeten inhoudelijk verder worden beoordeeld; de lijst is nog niet geheel
+ontdubbeld. Voorbeelden van daadwerkelijke naamverwarring staan in de
+bewaarde referenties bij *Euphrasia stricta*, *Isothecium myosuroides* en
+*Polytrichum longisetum*. Een zelfde geaccepteerde referentiesleutel heft een
+verschil tussen soort en aggregaat niet op.
+
+Opdracht Ton, 28 september 2026: echte dubbelen samenbrengen, alle
+broninformatie en interne verwijzingen behouden, nieuwe dubbelen bij import
+voorkomen. Geen VPS-publicatie. Dit verruimt de hieronder beschreven eerste,
+uitsluitend broninterne fusie. Een andere leverancier is geen reden voor een
+extra centrale vermelding. Gelijke naamtekst alleen bewijst echter geen
+gelijke soortafbakening.
+
+De centrale vermelding en het oorspronkelijke bronnaamgebruik blijven
+verschillende zaken: de volledige oorspronkelijke taxonrij wordt bij de
+bronverbinding bewaard, met oorspronkelijke ID/UUID, bronversie en
+conceptcontext. Een omgeleide ID zoekt de centrale vermelding op, maar bewijst
+geen congruentie van historische concepten. Bestaande kandidaat/onbekend-
+besluiten worden niet stilzwijgend bevestigd. Homoniemen, aggregaten,
+ruime/enge afbakeningen en onopgeloste inhoudelijke conflicten worden niet
+automatisch verenigd. Synoniemen vereisen een afzonderlijk onderbouwde
+naamrelatie; een fuzzy naamtreffer is onvoldoende.
+
+Uitvoering in de bestaande importmodule en haar bestaande tests, op branch
+`codex/taxa-eenlijst`. Geen nieuwe catalogus of view. De bestaande
+analyseview moet brongebonden rang blijven tonen wanneer die van de centrale
+rang afwijkt. Behoud van alle overige tabelinhoud, viewuitkomsten en
+bronbesluit-IDs is een harde acceptatievoorwaarde.
+
+Uitvoeringsplan (zelfstandig uitvoeren; geen herhaalde opdrachtbevestiging):
+
+1. Test en implementeer een deterministische selectie met expliciete
+   uitsluitingen voor naamgenoten, brede afbakeningen en veldconflicten.
+   Gebruik exacte naam/auteurs-/classificatiecontext en bewaarde referenties.
+2. Test de broncontextresolver en importpoort: hergebruik bestaande
+   bronidentiteiten en centrale taxa; blokkeer onbesliste gelijknamige invoer.
+   Bewaar broncontext volledig en behandel herleiding nooit als conceptbewijs.
+3. Bouw de transactionele fusie met snapshotcontrole, vergrendeling,
+   volledige celcontrole, ID-behoud en fail-closed gedrag bij sleutelbotsingen.
+4. Maak een verse volledige back-up. Voer de proef, normale rollback,
+   opzettelijke late fout, herhaalproef en volledig herstel geïsoleerd uit.
+   Vergelijk alle overige tabellen en bestaande viewuitkomsten.
+5. Pas uitsluitend de bewezen selectie identiek lokaal toe; controleer
+   resterende naamgroepen en alle verwijzingen. Actualiseer documentatie en
+   beide bronregisterversies, voer onafhankelijke eindreview en regressies
+   uit, commit/push/merge en sluit af met workspace-preflight. Geen deploy.
+
+Toetsingsbasis: [Darwin Core](https://dwc.tdwg.org/terms/) bewaart naam,
+auteurschap, rang en nameAccordingTo; [TDWG TCS](https://tcs.tdwg.org/terms/)
+onderscheidt TaxonName van brongebonden TaxonConcept. Deze normalisatie
+verklaart historische bronconcepten niet identiek. Bewijs, proefuitkomsten
+en voortgang staan buiten Git onder
+`/Users/ton/Documents/Codex/Herstel/taxa-eenlijst-20260928/`.
+Voor de aangescherpte uitvoering zijn alleen de `r2_`-bewijsbestanden
+leidend. De eerste proef selecteerde nog 19 groepen met verschillende
+referentierangen en is niet de uitvoeringselectie. De gebundelde
+GBIF-antwoorden van 27 september zijn integraal bewaard en op SHA-256
+gecontroleerd; [GBIF beschrijft de naaminterpretatie en haar beperkingen](https://techdocs.gbif.org/en/data-processing/taxonomy-interpretation).
+
+De importpoort `resolve_registry_import()` verlangt bij een bestaande
+bronidentiteit dezelfde bronvelden en metadata. Bij een nieuwe bronidentiteit
+zijn een eenduidige centrale naam, verenigbare broncontext en een gecontroleerde
+naamreferentie vereist. Bij twijfel stopt de koppeling. `None` is nadrukkelijk
+geen toestemming om een nieuwe rij in te voegen: een werkelijk nieuw taxon
+vraagt het afzonderlijke, brongetrouwe invoerbesluit uit de vaste afspraak
+hieronder. De historische bulkimports blijven geblokkeerd. Er is geen
+generieke nieuwe schrijver en geen unieke index op naam alleen toegevoegd;
+zo'n index zou legitieme naamgenoten ten onrechte verbieden. Handmatige SQL
+als root kan deze toepassingscontroles omzeilen en valt niet onder de
+geteste importgarantie.
+
 ## Vaste importafspraak vanaf 27 september 2026
 
 Besluit Ton: iedere volgende import met taxongegevens gebruikt het bestaande

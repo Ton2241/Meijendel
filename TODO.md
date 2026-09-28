@@ -4,6 +4,24 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Centrale taxonopschoning op 29 september 2026 lokaal uitgevoerd voor de
+  bewezen selectie: 1.203 naamgroepen, 2.156 dubbele rijen minder; nu 13.421
+  centrale vermeldingen. Alle 18.440 bestaande koppelingnummers blijven
+  behouden; 3.359 oorspronkelijke taxoncontexten zijn volledig gearchiveerd.
+  Proef, rollback, late fout, herhaling, volledige herstelproef en levende
+  nacontrole geslaagd; 251 overige tabellen en 16 viewuitkomsten identiek.
+  Alle 18.351 geteste bestaande bronidentiteiten vinden dezelfde koppeling
+  terug. Glaucium flavum is nu één centrale vermelding. Geen VPS-publicatie.
+  **Nog open:** 751 naamgroepen, samen 1.960 rijen, inhoudelijk verder
+  beoordelen. Daarvan vallen 124 exacte referentietreffers uitsluitend op
+  de conservatieve scoregrens af; 35 referenties gebruiken een andere
+  rangnotatie. Dat zijn onderzoekspunten, geen bewezen verschillende taxa.
+  Behoud brede determinaties en daadwerkelijke homoniemen gescheiden.
+  De volledige lijst is nog niet dubbelvrij. Gebruik het bestaande
+  selectie-/behoudspad, los onbesliste invoer vóór nieuwe imports op en
+  voer geen blinde herhaling of unieke index op naam alleen in. Canoniek
+  overzicht: `docs/database/TAXONREGISTER.md`.
+
 - Gerichte taxonfusie lokaal uitgevoerd op 28 september 2026: vijf Naturalis-
   naamregistraties van Rhantus frontalis en Haliplus ruficollis zijn tot twee
   centrale rijen teruggebracht. Alle bronkoppeling-IDs en oorspronkelijke
@@ -14,7 +32,8 @@
   overige tabellen en 16 viewuitkomsten zijn gelijk gebleven. Geen VPS-
   publicatie. De overige 1.812 gelijknamige groepen zijn kandidaatdubbelen,
   geen verwijderlijst. Beoordeel hun bronconcepten voordat een volgende
-  fusie wordt toegestaan; Glaucium flavum blijft nu gescheiden. Zie
+  fusie wordt toegestaan; Glaucium flavum bleef in die eerste selectie
+  gescheiden en is op 29 september wel samengebracht. Zie
   `docs/database/TAXONREGISTER.md` voor selectie en bewijs.
 
 - PQ-migratie opgedragen op 27 september 2026, taakbranch

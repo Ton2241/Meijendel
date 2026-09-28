@@ -34,6 +34,23 @@ VOGEL_BRONHASH = '1339c1b6e7da78fa6cea66338fcf32f767ccca5a11b7c04c367755afdbdd89
 VOGEL_REGELVERSIE = 'meijendel-vogel-naamgebruik-v1'
 VOGEL_BRONVELDEN = ['id', 'euring_code', 'soort_naam', 'latijnse_naam',
                    'engelse_naam', 'duitse_naam', 'franse_naam', 'spaanse_naam']
+VOGEL_TAXONVELDEN = {
+    'uuid':'taxon_uuid','naam':'wetenschappelijke_naam','nl':'nederlandse_naam',
+    'vorm':'taxonvorm','naam_volgens':'naam_volgens','naam_versie':'naam_volgens_versie',
+    **{f:f for f in ('taxonrang','beheerstatus','taxonomische_status','concept_identificatie',
+                    'naam_identificatie','bovenliggend_taxon_id','geaccepteerd_taxon_id',
+                    'oorspronkelijk_taxon_id','vastgesteld_op','vastgesteld_door')},
+}
+
+
+def bird_source_context(row: dict) -> dict:
+    """Toets historische bronwaarden, niet later verrijkte centrale naamvelden."""
+    result = {**row, 'bron_raw':dict(row['bron_raw'])}
+    original = result['bron_raw'].pop('register_broncontext', None)
+    if original is not None:
+        assert isinstance(original,dict) and original.get('taxon_uuid'), 'Ongeldig vogelbronarchief'
+        result.update({key:original.get(field) for key,field in VOGEL_TAXONVELDEN.items()})
+    return result
 
 
 def check_vogels() -> None:
@@ -58,13 +75,16 @@ def check_vogels() -> None:
               'bron_latin':'b.bron_wetenschappelijke_naam','bron_nl':'b.bron_nederlandse_naam',
               'methode':'b.koppelmethode','regel':'b.regelversie',
               'naam_volgens':'t.naam_volgens','naam_versie':'t.naam_volgens_versie'}
+    fields.update({key:'t.'+field for key,field in VOGEL_TAXONVELDEN.items()})
     linked = [json.loads(r[0]) for r in rows('SELECT JSON_OBJECT(' +
         ','.join(f"'{k}',{v}" for k,v in fields.items()) +
         ') FROM taxa_bronkoppeling b JOIN taxa t ON t.taxon_id=b.taxon_id '
         f'JOIN taxon_groepen g ON g.groep_id=t.groep_id WHERE b.{bird_scope} ORDER BY b.koppeling_id')]
     assert len(linked) == 263 and {int(r['id']) for r in linked} == used
     assert len({r['uuid'] for r in linked}) == 263
-    for r in linked:
+    preserved = [bird_source_context(r) for r in linked]
+    assert len({r['uuid'] for r in preserved}) == 263
+    for r in preserved:
         sid = int(r['id']); s = source[sid]
         assert str(uuid.UUID(r['uuid'])) == r['uuid']
         assert r['bron_systeem'] == 'Meijendel' and r['bron_dataset'] == 'soorten'
@@ -79,9 +99,12 @@ def check_vogels() -> None:
         vorm = ('hybride' if sid in {253,639} else 'aggregaat' if sid in {240,644,645}
                 else 'operationele_eenheid' if sid in {22,37,43,121,161,630,632} else 'taxon')
         assert r['vorm'] == vorm, (sid, r['vorm'])
+        assert r['beheerstatus']=='voorlopig' and r['taxonomische_status']=='unresolved'
+        assert all(r[f] is None for f in ('taxonrang','concept_identificatie','naam_identificatie',
+                   'bovenliggend_taxon_id','geaccepteerd_taxon_id','oorspronkelijk_taxon_id',
+                   'vastgesteld_op','vastgesteld_door')), 'Oorspronkelijk vogelnaamgebruik gewijzigd'
     assert rows(f"SELECT COUNT(*) FROM taxa WHERE {target_scope} AND (beheerstatus<>'voorlopig' OR "
-        "taxonomische_status<>'unresolved' OR taxonrang IS NOT NULL OR "
-        "concept_identificatie IS NOT NULL OR naam_identificatie IS NOT NULL OR "
+        "taxonomische_status<>'unresolved' OR concept_identificatie IS NOT NULL OR "
         "bovenliggend_taxon_id IS NOT NULL OR geaccepteerd_taxon_id IS NOT NULL OR "
         "oorspronkelijk_taxon_id IS NOT NULL OR vastgesteld_op IS NOT NULL OR "
         "vastgesteld_door IS NOT NULL)") == [['0']], 'Onbedoelde vaststelling of taxonomische hiërarchie'

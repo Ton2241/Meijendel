@@ -68,8 +68,148 @@ def check_fusion_fixture(snapshot):
         raise AssertionError('Botsende bronidentiteit moet blokkeren')
 
 
+def check_central_list(module):
+    """Catch name-only mergers, source-context loss and duplicate reimports."""
+    import copy
+    import test_taxonregister_live_schema as bird_check
+    assert callable(getattr(bird_check,'bird_source_context',None)), 'Vogelcontrole moet bewaarde broncontext lezen'
+    old_bird={'taxon_uuid':'old','wetenschappelijke_naam':'Parus major',
+              'nederlandse_naam':'Koolmees','taxonvorm':'taxon',
+              'naam_volgens':'Meijendel.soorten','naam_volgens_versie':'v1','taxonrang':None}
+    current_bird={'naam':'Parus major','nl':'Koolmees','uuid':'new','taxonrang':'species',
+                  'bron_raw':{'id':1,'register_broncontext':old_bird}}
+    preserved=bird_check.bird_source_context(current_bird)
+    assert preserved['uuid']=='old' and preserved['taxonrang'] is None
+    assert preserved['bron_raw']=={'id':1} and 'register_broncontext' in current_bird['bron_raw']
+    assert callable(getattr(module, 'plan_central_taxa', None)), 'Centrale fusieplanner ontbreekt'
+    def row(i, **extra):
+        return dict(taxon_id=i, taxon_uuid=f'uuid-{i}',
+                    wetenschappelijke_naam='Glaucium flavum', naam_zonder_auteur=None,
+                    naam_auteur=None, groep_id=21, taxonvorm='taxon', taxonrang=None,
+                    taxonmetadata={}, nederlandse_naam=None, opmerkingen=None,
+                    **extra)
+    a=row(1)
+    b={**row(2), 'naam_auteur':'Glaucium flavum Crantz', 'taxonrang':'species'}
+    c={**row(3), 'wetenschappelijke_naam':'Glaucium flavum Crantz',
+       'naam_zonder_auteur':'Glaucium flavum','naam_auteur':'Crantz',
+       'taxonrang':'species'}
+    result=module.plan_central_taxa([a,b,c], [])
+    assert result['groups'][0]['ids']==[1,2,3]
+    assert result['groups'][0]['keep']==1
+    assert module.central_conflicts([{**a,'familie':'Musci_Mniaceae'},
+                                    {**b,'familie':'Mniaceae'}],[])==[]
+    assert module.central_conflicts([{**a,'klasse':'Fungi_Agaricomycetes','stam':'Fungi_Basidiomycota'},
+                                    {**b,'klasse':'Agaricomycetes','stam':'Basidiomycota'}],[])==[]
+    assert module.central_conflicts([{**a,'klasse':'Lichenes_Lecanoromycetes'},
+                                    {**b,'klasse':'Lecanoromycetes'}],[])==[]
+    assert module.central_name({**c,'naam_zonder_auteur':None})=='Glaucium flavum'
+    # An optional source description of the same name is not a licence to
+    # overwrite the historical meaning of its UUID or its original cells.
+    assert callable(getattr(module,'central_taxa_projection',None)), 'Behoudsprojectie ontbreekt'
+    full_link={'koppeling_id':7,'taxon_id':2,'bronmetadata':{'original':'kept'},
+               'bron_identiteit_sha256':'abc','besluitversie':1,'koppelstatus':'kandidaat',
+               'taxonrelatie':'onbekend','doeltaxon_sleutel':2}
+    projected=module.central_taxa_projection([a,b,c],[full_link])
+    assert len(projected['taxa'])==1 and len(projected['archives'])==3
+    assert projected['links'][0]['koppeling_id']==7
+    assert projected['links'][0]['taxon_id']==1
+    assert projected['links'][0]['bronmetadata']['original']=='kept'
+    assert projected['links'][0]['bronmetadata']['register_broncontext']==b
+    assert projected['archives'][1]['bronmetadata']['taxon_voor']==b
+    assert projected['archives'][1]['bronmetadata']['bronkoppelingen_voor']==[full_link]
+    for changed in [{'groep_id':9}, {'taxonvorm':'aggregaat'},
+                    {'naam_auteur':'Other, 1900'}, {'taxonrang':'genus'},
+                    {'nederlandse_naam':'Gele hoornpapaver s.l., incl. andere soorten'},
+                    {'taxonmetadata':{'vormsignalen':['breed']}}]:
+        altered={**b, **changed}
+        plan=module.plan_central_taxa([a,altered,c], [])
+        assert not plan['groups'], ('Onvoldoende onderscheiden taxa verenigd',changed)
+        assert plan['excluded']
+    # A source concept remark must protect a superficially identical central row.
+    links=[{'taxon_id':2,'bronmetadata':{'taxonRemarks':'sensu lato'}}]
+    assert not module.plan_central_taxa([a,b,c],links)['groups']
+    unknown={**a,'groep_id':None}
+    assert not module.plan_central_taxa([unknown,{**unknown,'taxon_id':4}],[])['groups']
+    # Missing author must not bridge two homonyms into a single group.
+    assert not module.plan_central_taxa([a,b,{**c,'naam_auteur':'Smith'}],[])['groups']
+    # An old source usage resolves with its original context, not as concept identity.
+    archived={'bron_systeem':'Meijendel','bron_dataset':'taxa_naamgebruik_archief',
+              'bron_taxon_id':'uuid-2','taxon_id':1,'ingetrokken_op':None,
+              'bronmetadata':{'regelversie':'taxa-centrale-lijst-v1','taxon_voor':b}}
+    answer=module.resolve_taxon_usage('uuid-2',[a],[archived])
+    assert answer['taxon_id']==1 and answer['bron_taxon']==b
+    assert answer['conceptrelatie']=='onbekend'
+    assert module.resolve_taxon_identity('uuid-2',[a],[archived])==1
+    assert module.resolve_taxon_identity(2,[a],[archived])==1
+    source={'bron_systeem':'X','bron_dataset':'Y','bron_versie':'v1','bron_taxon_id':'99'}
+    original={**source,'taxon_id':1,'koppeling_id':7,'ingetrokken_op':None,
+              'koppelstatus':'kandidaat','taxonrelatie':'onbekend'}
+    assert module.resolve_registry_import(source,b,[a],[original])=={'taxon_id':1,'koppeling_id':7}
+    for bad in [{**original,'koppelstatus':'afgewezen'},
+                {**original,'bron_wetenschappelijke_naam':'Other species'}]:
+        try: module.resolve_registry_import(source,b,[a],[bad])
+        except ValueError: pass
+        else: raise AssertionError('Afgewezen of gewijzigde broninhoud mag niet worden hergebruikt')
+    evidence={'name':'Glaucium flavum','response_sha256':'a'*64,
+              'response':{'usage':{'key':'6KGMW','canonicalName':'Glaucium flavum'},
+                          'diagnostics':{'matchType':'EXACT','confidence':100}}}
+    assert callable(getattr(module,'central_name_evidence_ok',None)), 'Uitvoeringsbewijs ontbreekt'
+    assert module.central_name_evidence_ok('Glaucium flavum',evidence)
+    for bad in [{}, {**evidence,'response':{'diagnostics':{'matchType':'FUZZY','confidence':100}}}]:
+        assert not module.central_name_evidence_ok('Glaucium flavum',bad)
+    homonym=copy.deepcopy(evidence)
+    homonym['response']['diagnostics']['alternatives']=[{'usage':{'key':'other','canonicalName':'Glaucium flavum'}}]
+    assert not module.central_name_evidence_ok('Glaucium flavum',homonym)
+    same_reference=copy.deepcopy(homonym)
+    same_reference['response']['diagnostics']['alternatives'][0]['acceptedUsage']={'key':'6KGMW'}
+    assert module.central_name_evidence_ok('Glaucium flavum',same_reference)
+    broad_reference=copy.deepcopy(same_reference)
+    broad_reference['response']['usage']['rank']='SPECIES'
+    broad_reference['response']['diagnostics']['alternatives'][0]['usage']['rank']='SPECIES_AGGREGATE'
+    assert not module.central_name_evidence_ok('Glaucium flavum',broad_reference), 'Gelijk geaccepteerd doel heft brede bronafbakening niet op'
+    same_name=copy.deepcopy(evidence)
+    same_name['response']['usage'].update(authorship='Crantz',rank='SPECIES')
+    same_name['response']['classification']=[{'rank':'KINGDOM','name':'Plantae'}]
+    same_name['response']['diagnostics']['alternatives']=[{
+        'usage':{'key':'provisional','canonicalName':'Glaucium flavum','authorship':'Crantz','rank':'SPECIES'},
+        'classification':[{'rank':'KINGDOM','name':'Plantae'}]}]
+    assert module.central_name_evidence_ok('Glaucium flavum',same_name)
+    same_name['response']['diagnostics']['alternatives'][0]['classification'][0]['name']='Animalia'
+    assert not module.central_name_evidence_ok('Glaucium flavum',same_name)
+    wrong_author=copy.deepcopy(evidence)
+    wrong_author['response']['usage']['authorship']='Other, 1900'
+    checked=module.central_taxa_projection([a,b,c],[],name_evidence={'Glaucium flavum':wrong_author})
+    assert not checked['plan']['groups'], 'Referentie met andere auteur mag lokale gelijke namen niet bevestigen'
+    try: module.resolve_registry_import(source,b,[a],[])
+    except ValueError: pass
+    else: raise AssertionError('Nieuwe bron mag niet op naam alleen aansluiten zonder naamonderzoek')
+    assert module.resolve_registry_import(source,b,[a],[],name_evidence=evidence)=={'taxon_id':1,'koppeling_id':None}
+    without_id={k:v for k,v in b.items() if k not in {'taxon_id','taxon_uuid'}}
+    assert module.resolve_registry_import(source,without_id,[a],[],name_evidence=evidence)=={'taxon_id':1,'koppeling_id':None}
+    try:
+        module.resolve_registry_import({**source,'bron_wetenschappelijke_naam':'Glaucium flavum sensu lato'},without_id,[a],[],name_evidence=evidence)
+    except ValueError: pass
+    else: raise AssertionError('Nieuwe brede bronvermelding mag niet op nauwe centrale naam worden aangesloten')
+    historic={**a,'taxonmetadata':{'fusie_historie':[{'before_taxa':[b]}]}}
+    old_alias={'bron_systeem':'Meijendel','bron_dataset':'taxa_fusie_alias',
+               'bron_versie':'taxa-gerichte-fusie-v1','regelversie':'taxa-gerichte-fusie-v1',
+               'bron_taxon_id':'uuid-2','taxon_id':1,'ingetrokken_op':None,
+               'koppelstatus':'kandidaat','taxonrelatie':'onbekend',
+               'bronmetadata':{'rol':'technische_fusie_alias','voormalig_taxon_id':2,
+                               'voormalig_taxon_uuid':'uuid-2'}}
+    assert module.resolve_taxon_usage(2,[historic],[old_alias])['bron_taxon']==b
+    try: module.resolve_registry_import(source,b,[a,c],[])
+    except ValueError: pass
+    else: raise AssertionError('Import mag een dubbel register niet kiezen op rijvolgorde')
+    try: module.resolve_registry_import(source,{**b,'groep_id':9},[a],[])
+    except ValueError: pass
+    else: raise AssertionError('Gelijknamige invoer met ander groepsbewijs vraagt beoordeling')
+    assert module.resolve_registry_import(source,{**a,'wetenschappelijke_naam':'Unseen taxon'},[a],[]) is None
+
+
 def main() -> int:
     module = load_module()
+    check_central_list(module)
     # A name match must never bypass concept-context checks; old IDs must resolve.
     assert callable(getattr(module, 'resolve_taxon_identity', None)), 'Fusie-aliasresolver ontbreekt'
     taxa = [{'taxon_id': 10, 'taxon_uuid': 'retained'}]

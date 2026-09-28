@@ -1,6 +1,6 @@
 # Status Meijendel
 
-Laatste update: 28 september 2026
+Laatste update: 29 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
 
@@ -41,7 +41,19 @@ De afzonderlijke MySQL-image-update en NAS-back-upcontrole staan nog open.
 
 ## Taxonregister
 
-Actuele registerstand op 27 september 2026, zonder eigen waarnemingsperiode:
+Actuele lokale stand op 29 september 2026: 27 groepen, 13.421 centrale
+vermeldingen en 21.799 bronkoppelingen. In 1.203 naamgroepen zijn 2.156
+dubbele rijen samengebracht; alle 18.440 bestaande koppelingnummers en
+3.359 oorspronkelijke taxoncontexten zijn behouden. Oude IDs en UUIDs blijven
+herleidbaar. Proef, volledige herstelproef en levende nacontrole slagen:
+251 overige tabellen en 16 viewuitkomsten zijn identiek, inclusief de
+brongetrouwe vogelcontrole. De lijst is nog niet geheel ontdubbeld: 751
+naamgroepen blijven voor nadere inhoudelijke beoordeling behouden. Geen
+VPS-publicatie, export- of cachevervanging. Het register heeft geen eigen
+waarnemingsperiode; er zijn geen meetgegevens samengevoegd of verwijderd.
+Uitvoering en resterende categorieën: `docs/database/TAXONREGISTER.md`.
+
+De eerdere registeraanvulling van 27 september 2026:
 27 groepen, 15.580 naamgebruiken en referenties en 18.437 bronbesluiten,
 waarvan 18.350 actief. De veilige registeraanvulling is uitgevoerd.
 Na de eerdere 1.283 groepsaanvullingen en 87 opgeloste PQ-naamteksten

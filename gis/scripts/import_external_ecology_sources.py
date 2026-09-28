@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import calendar
+import copy
 import csv
 import hashlib
 import json
@@ -26,6 +27,366 @@ DATABASE = "Meijendel"
 IMPORT_VERSION = "externe-ecologie-v1"
 
 FUSION_RULE = 'taxa-gerichte-fusie-v1'
+CENTRAL_RULE = 'taxa-centrale-lijst-v1'
+
+
+def central_name(row: dict) -> str:
+    """Conservatieve naamnormalisatie; geen fuzzy match of synoniemenresolver."""
+    name = row.get('naam_zonder_auteur') or row['wetenschappelijke_naam']
+    name = re.sub(r'\s+', ' ', name.replace('ssp.', 'subsp.')).strip()
+    author = re.sub(r'\s+', ' ', row.get('naam_auteur') or '').strip()
+    if not row.get('naam_zonder_auteur') and author and name.endswith(' ' + author):
+        name = name[:-len(author)].strip()
+    return name
+
+
+def central_conflicts(rows: list[dict], links: list[dict]) -> list[str]:
+    """Nominaal taxon is niet hetzelfde als congruent historisch bronconcept."""
+    conflicts = []
+    for field in ('groep_id', 'taxonvorm', 'taxonrang', 'rijk', 'stam', 'klasse',
+                  'orde', 'familie', 'nomenclatuurcode'):
+        values = {r.get(field) for r in rows if r.get(field) not in (None, '')}
+        if field == 'familie':
+            values = {re.sub(r'^(?:Musci_|Hepat\._)', '', v) for v in values}
+        if field in {'stam','klasse','orde','familie'}:
+            values = {re.sub(r'^(?:Fungi_|Lichenes_)', '', v) for v in values}
+        if len(values) > 1:
+            conflicts.append(field)
+    if any(r.get('groep_id') is None for r in rows):
+        conflicts.append('groepscontext_ontbreekt')
+    if any(r.get('taxonvorm') != 'taxon' for r in rows):
+        conflicts.append('geen_enkelvoudig_taxon')
+    authors = set()
+    for row in rows:
+        author = re.sub(r'\s+', ' ', (row.get('naam_auteur') or '').replace('ssp.', 'subsp.')).strip()
+        name = central_name(row)
+        if author.startswith(name + ' '):
+            author = author[len(name):].strip()
+        if author.startswith('species '):
+            author = author[8:]
+        if author:
+            authors.add(re.sub(r'[\s.,]+', '', author).casefold())
+    if len(authors) > 1:
+        conflicts.append('auteurschap')
+    scope = re.compile(r'\b(?:sensu|auct|non|incl|complex|indet)\b|\b(?:cf|aff|agg|spec)\.|\bs\.?\s*[ls]\b|[/+]', re.I)
+    ids = {r['taxon_id'] for r in rows if r.get('taxon_id') is not None}
+    for row in rows:
+        text = ' '.join(str(row.get(f) or '') for f in
+                        ('wetenschappelijke_naam','nederlandse_naam','opmerkingen'))
+        if scope.search(text) or (row.get('taxonmetadata') or {}).get('vormsignalen'):
+            conflicts.append('bronafbakening')
+    for link in links:
+        if link.get('taxon_id') not in ids:
+            continue
+        meta = link.get('bronmetadata') or {}
+        text = ' '.join(str(meta.get(f) or '') for f in
+                        ('raw_name','taxonRemarks','scientificName','nameAccordingTo'))
+        text += ' ' + ' '.join(str(link.get(f) or '') for f in
+                              ('bron_wetenschappelijke_naam','bron_naam_volgens'))
+        if scope.search(text):
+            conflicts.append('bronafbakening')
+    return sorted(set(conflicts))
+
+
+def plan_central_taxa(taxa: list[dict], links: list[dict]) -> dict:
+    """Gelijke nominale taxa; afwijkende context blijft expliciet uitgesloten.
+
+    Geen keuze uit een deelgroep wanneer een lege auteur een homoniem zou
+    kunnen overbruggen. Alle broncontexten blijven bij uitvoering bewaard.
+    """
+    names = defaultdict(list)
+    by_taxon = defaultdict(list)
+    for row in taxa:
+        names[central_name(row)].append(row)
+    for link in links:
+        by_taxon[link.get('taxon_id')].append(link)
+    result = {'groups': [], 'excluded': []}
+    for name, rows in sorted(names.items()):
+        if len(rows) < 2:
+            continue
+        rows = sorted(rows, key=lambda r: r['taxon_id'])
+        group_links = [b for r in rows for b in by_taxon[r['taxon_id']]]
+        conflicts = central_conflicts(rows, group_links)
+        item = {'name': name, 'ids': [r['taxon_id'] for r in rows]}
+        if conflicts:
+            result['excluded'].append({**item, 'reasons': conflicts})
+        else:
+            result['groups'].append({**item, 'keep': rows[0]['taxon_id'], 'rule': CENTRAL_RULE})
+    return result
+
+
+def resolve_taxon_usage(identity, taxa: list[dict], links: list[dict]) -> dict | None:
+    """Vind centrale bestemming én oorspronkelijke context, zonder conceptfusie."""
+    current = {r['taxon_id']: r for r in taxa}
+    archived = []
+    for link in links:
+        if (link.get('bron_systeem') != 'Meijendel'
+                or link.get('bron_dataset') != 'taxa_naamgebruik_archief'
+                or link.get('ingetrokken_op') is not None):
+            continue
+        meta = link.get('bronmetadata') or {}
+        original = meta.get('taxon_voor') or {}
+        if identity not in (original.get('taxon_id'), original.get('taxon_uuid')):
+            continue
+        if (meta.get('regelversie') != CENTRAL_RULE or link['taxon_id'] not in current
+                or link.get('bron_taxon_id') != original.get('taxon_uuid')):
+            raise ValueError('Ongeldig broncontextarchief')
+        archived.append({'taxon_id': link['taxon_id'], 'bron_taxon': original,
+                         'conceptrelatie': 'onbekend'})
+    if len(archived) > 1:
+        raise ValueError('Meerdere oorspronkelijke broncontexten voor dezelfde identiteit')
+    if archived:
+        return archived[0]
+    target = resolve_taxon_identity(identity, taxa, links)
+    if target is not None:
+        contexts = list(taxa) + [(b.get('bronmetadata') or {}).get('taxon_voor',{})
+                                for b in links if b.get('bron_dataset')=='taxa_naamgebruik_archief']
+        originals = []
+        for context in contexts:
+            for fusion in (context.get('taxonmetadata') or {}).get('fusie_historie',[]):
+                for old in fusion.get('before_taxa',[]):
+                    if identity in (old.get('taxon_id'),old.get('taxon_uuid')):
+                        if old not in originals:
+                            originals.append(old)
+        if len(originals)>1:
+            raise ValueError('Tegenstrijdige oudere fusiecontext')
+        if originals:
+            return {'taxon_id':target,'bron_taxon':originals[0],'conceptrelatie':'onbekend'}
+    return None if target is None else {'taxon_id': target, 'bron_taxon': current[target],
+                                       'conceptrelatie': 'onbekend'}
+
+
+def resolve_registry_import(source: dict, taxon: dict, taxa: list[dict], links: list[dict],
+                            *, name_evidence: dict | None = None) -> dict | None:
+    """Voor iedere import: bronidentiteit, dan eenduidig taxon; twijfel blokkeert.
+
+    None betekent alleen geen bestaande kandidaat, geen toestemming tot invoer.
+    Aanroeper gebruikt een vergrendelde actuele snapshot in dezelfde transactie.
+    """
+    fields = ('bron_systeem','bron_dataset','bron_versie','bron_taxon_id')
+    if any(not source.get(f) for f in fields):
+        raise ValueError('Volledige bronidentiteit vereist')
+    existing = [b for b in links if b.get('ingetrokken_op') is None
+                and all(b.get(f) == source[f] for f in fields)]
+    if existing:
+        if (len(existing) != 1 or existing[0]['taxon_id'] not in {t['taxon_id'] for t in taxa}
+                or existing[0].get('koppelstatus') not in {'kandidaat','bevestigd'}):
+            raise ValueError('Bestaande bronidentiteit niet eenduidig gekoppeld')
+        original = existing[0]
+        for field in ('bron_wetenschappelijke_naam','bron_nederlandse_naam','bron_taxonrang',
+                      'bron_naam_volgens','bron_naam_identificatie','bron_concept_identificatie',
+                      'bron_taxonomische_status','bronbestand_sha256','bron_soortgroep'):
+            if original.get(field) != source.get(field):
+                raise ValueError('Bestaande bronidentiteit met andere of onvolledige bronvelden: '+field)
+        stored = {k:v for k,v in (original.get('bronmetadata') or {}).items()
+                  if k!='register_broncontext'}
+        if stored != (source.get('bronmetadata') or {}):
+            raise ValueError('Oorspronkelijke bronmetadata verschilt of ontbreekt')
+        return {'taxon_id': existing[0]['taxon_id'], 'koppeling_id': existing[0]['koppeling_id']}
+    candidates = [t for t in taxa if central_name(t) == central_name(taxon)]
+    if not candidates:
+        return None
+    incoming = {**taxon,'taxon_id':-1}
+    incoming_link = {**source,'taxon_id':-1}
+    if len(candidates) != 1 or central_conflicts([incoming, *candidates], [*links,incoming_link]):
+        raise ValueError('Gelijknamige invoer vereist inhoudelijke beoordeling; geen nieuw duplicaat')
+    name=central_name(taxon)
+    if not central_name_evidence_ok(name,name_evidence or {}):
+        raise ValueError('Nieuwe bronidentiteit vereist een eenduidig gecontroleerd naamanker')
+    reference=central_name_reference(name,taxon['groep_id'],name_evidence)
+    if central_conflicts([incoming,*candidates,reference],[]):
+        raise ValueError('Naamanker wijkt inhoudelijk af van de invoer of het bestaande taxon')
+    return {'taxon_id': candidates[0]['taxon_id'], 'koppeling_id': None}
+
+
+def central_name_evidence_ok(name: str, evidence: dict) -> bool:
+    """Eenduidig extern naamanker, nooit bewijs van historische congruentie."""
+    answer=evidence.get('response') or {}
+    usage=answer.get('usage') or {}
+    diagnostics=answer.get('diagnostics') or {}
+    if (evidence.get('name')!=name or not re.fullmatch(r'[a-f0-9]{64}', evidence.get('response_sha256',''))
+            or diagnostics.get('matchType')!='EXACT' or diagnostics.get('confidence',0)<95
+            or usage.get('canonicalName')!=name or not usage.get('key')):
+        return False
+    for alt in diagnostics.get('alternatives',[]):
+        u=alt.get('usage') or {}
+        if not u:
+            return False
+        if u.get('canonicalName')!=name:
+            continue
+        if (u.get('rank') in {'SPECIES_AGGREGATE','UNRANKED'}
+                or usage.get('rank') in {'SPECIES_AGGREGATE','UNRANKED'}
+                or (usage.get('rank') and u.get('rank') and u['rank']!=usage['rank'])):
+            return False
+        if u.get('key')==usage['key']:
+            continue
+        if (alt.get('acceptedUsage') or u).get('key')==(answer.get('acceptedUsage') or usage).get('key'):
+            continue
+        # COL may supply accepted and provisional entries for the same nominal
+        # name. Different IDs alone are not homonyms. Require author, rank and
+        # every shared higher classification to agree, with a known kingdom.
+        main_class={x['rank']:x['name'] for x in answer.get('classification',[]) if x['rank']!='SPECIES'}
+        alt_class={x['rank']:x['name'] for x in alt.get('classification',[]) if x['rank']!='SPECIES'}
+        if (not usage.get('authorship') or u.get('authorship')!=usage['authorship']
+                or not usage.get('rank') or u.get('rank')!=usage['rank']
+                or not main_class.get('KINGDOM') or alt_class.get('KINGDOM')!=main_class['KINGDOM']
+                or any(main_class[k]!=alt_class[k] for k in main_class.keys() & alt_class.keys())):
+            return False
+    return True
+
+
+def central_name_reference(name: str, group_id: int, evidence: dict) -> dict:
+    answer=evidence['response']; usage=answer['usage']
+    reference={'taxon_id':-2,'wetenschappelijke_naam':name,
+               'groep_id':group_id,'taxonvorm':'taxon',
+               'naam_auteur':usage.get('authorship'),
+               'taxonrang':usage.get('rank','').lower() or None}
+    fields={'KINGDOM':'rijk','PHYLUM':'stam','CLASS':'klasse','ORDER':'orde','FAMILY':'familie'}
+    for rank in answer.get('classification',[]):
+        if rank['rank'] in fields:
+            reference[fields[rank['rank']]]=rank['name']
+    return reference
+
+
+def central_taxa_projection(taxa: list[dict], links: list[dict], *, name_evidence: dict | None = None) -> dict:
+    """Exact te verwachten cellen en herstelarchief, zonder databasewijziging."""
+    plan = plan_central_taxa(taxa, links)
+    if name_evidence is not None:
+        selected=[]
+        rows_by_id={t['taxon_id']:t for t in taxa}
+        for group in plan['groups']:
+            evidence=name_evidence.get(group['name'],{})
+            if not central_name_evidence_ok(group['name'],evidence):
+                plan['excluded'].append({**group,'reasons':['geen_eenduidig_extern_naamanker']})
+                continue
+            answer=evidence['response']; usage=answer['usage']
+            rows=[rows_by_id[i] for i in group['ids']]
+            reference=central_name_reference(group['name'],rows[0]['groep_id'],evidence)
+            conflicts=central_conflicts([*rows,reference],[])
+            if conflicts:
+                plan['excluded'].append({**group,'reasons':['referentie_'+c for c in conflicts]})
+            else:
+                selected.append({**group,'naamanker_sha256':evidence['response_sha256'],
+                                 'naamanker_usage':usage['key']})
+        plan['groups']=selected
+    by_id = {t['taxon_id']: t for t in taxa}
+    mapping = {i:g['keep'] for g in plan['groups'] for i in g['ids']}
+    if any((t.get(f) in mapping) for t in taxa for f in
+           ('bovenliggend_taxon_id','geaccepteerd_taxon_id','oorspronkelijk_taxon_id')):
+        raise ValueError('Taxonomische zelfverwijzing vereist aparte beoordeling')
+    keys = [(b['bron_identiteit_sha256'], b['besluitversie'], mapping.get(b['taxon_id'],b['taxon_id'])) for b in links]
+    if len(keys) != len(set(keys)):
+        raise ValueError('Samenvoeging veroorzaakt bronbesluitbotsing')
+    if any((t.get('taxonmetadata') or {}).get('centrale_lijst') for t in taxa if t['taxon_id'] in mapping):
+        raise ValueError('Herhaalde centralisatie vereist een nieuw beoordeeld plan')
+    by_source = defaultdict(list)
+    for b in links:
+        by_source[b['taxon_id']].append(b)
+    archives = []
+    for i, target in sorted(mapping.items()):
+        original = by_id[i]
+        archives.append({'bron_systeem':'Meijendel','bron_dataset':'taxa_naamgebruik_archief',
+            'bron_versie':CENTRAL_RULE,'bron_taxon_id':original['taxon_uuid'],
+            'bron_wetenschappelijke_naam':original['wetenschappelijke_naam'],
+            'bron_taxonrang':original.get('taxonrang'),
+            'bron_naam_volgens':original.get('naam_volgens'),
+            'bronmetadata':{'regelversie':CENTRAL_RULE,'taxon_voor':original,
+                            'bronkoppelingen_voor':by_source[i]},
+            'taxon_id':target,'koppelstatus':'kandidaat','taxonrelatie':'onbekend',
+            'koppelmethode':'centralisatie-met-behoud-broncontext','regelversie':CENTRAL_RULE,
+            'onderbouwing':'Centrale nominale vermelding; oorspronkelijk bronconcept volledig behouden. Geen congruentie vastgesteld.'})
+    after_links = copy.deepcopy(links)
+    for b in after_links:
+        if b['taxon_id'] not in mapping:
+            continue
+        if b['koppelstatus'] != 'kandidaat' or b['taxonrelatie'] != 'onbekend':
+            raise ValueError('Bevestigd bronbesluit mag niet stilzwijgend worden omgezet')
+        meta = b['bronmetadata'] or {}
+        if 'register_broncontext' in meta:
+            raise ValueError('Broncontext is al gemigreerd')
+        meta['register_broncontext'] = copy.deepcopy(by_id[b['taxon_id']])
+        b['bronmetadata'] = meta
+        b['taxon_id'] = b['doeltaxon_sleutel'] = mapping[b['taxon_id']]
+    new_taxa = copy.deepcopy([t for t in taxa if mapping.get(t['taxon_id'],t['taxon_id'])==t['taxon_id']])
+    groups = {g['keep']:g for g in plan['groups']}
+    for t in new_taxa:
+        if t['taxon_id'] not in groups:
+            continue
+        g = groups[t['taxon_id']]
+        originals = [by_id[i] for i in g['ids']]
+        # Enrich only unambiguous empty cells. Historical source treatment is
+        # preserved in archive rows, not reinterpreted as a shared concept.
+        for f in ('naam_auteur','nederlandse_naam','taxonrang','nomenclatuurcode',
+                  'rijk','stam','klasse','orde','familie','geslacht'):
+            values = {r.get(f) for r in originals if r.get(f) not in (None,'')}
+            if t.get(f) is None and len(values)==1:
+                t[f] = next(iter(values))
+        t['naam_zonder_auteur'] = g['name']
+        t['naam_volgens'] = 'Meijendel centrale nominale taxonregistratie; bronconcepten afzonderlijk bewaard'
+        t['naam_volgens_id'] = None
+        t['naam_volgens_versie'] = CENTRAL_RULE
+        t['concept_identificatie'] = None
+        t['taxonomische_status'] = 'unresolved'
+        t['taxonmetadata'] = {**(t.get('taxonmetadata') or {}),
+            'centrale_lijst':{'regelversie':CENTRAL_RULE,'oorspronkelijke_ids':g['ids'],
+                              'historische_conceptgelijkheid':False}}
+    return {'taxa':new_taxa,'links':after_links,'archives':archives,'plan':plan,'mapping':mapping}
+
+
+def central_taxa_sql(snapshot: dict, *, name_evidence: dict, commit: bool = False) -> str:
+    """Alleen DML, fail-closed snapshotpoort en celcontrole binnen één transactie."""
+    old_taxa, old_links = snapshot['taxa']['rows'], snapshot['taxa_bronkoppeling']['rows']
+    projected = central_taxa_projection(old_taxa, old_links, name_evidence=name_evidence)
+    if not projected['mapping']:
+        raise ValueError('Geen beoordeelde fusies')
+    def literal(value):
+        if value is None:
+            return 'NULL'
+        if isinstance(value,(dict,list)):
+            value=json.dumps(value,ensure_ascii=False)
+        return "CONVERT(X'"+str(value).encode().hex()+"' USING utf8mb4)"
+    def json_literal(value):
+        return literal(json.dumps(value,ensure_ascii=False))
+    sql = ["SET SESSION group_concat_max_len=16777216;",
+           "SET SESSION innodb_lock_wait_timeout=15;",
+           "CREATE TEMPORARY TABLE central_guard(ok INT NOT NULL CHECK(ok=1));",
+           "START TRANSACTION;",
+           "SELECT taxon_id FROM taxa ORDER BY taxon_id FOR UPDATE;",
+           "SELECT koppeling_id FROM taxa_bronkoppeling ORDER BY koppeling_id FOR UPDATE;"]
+    for table, spec in snapshot.items():
+        sql.append(f"INSERT INTO central_guard SELECT SHA2(GROUP_CONCAT(SHA2(CAST({spec['expression']} AS CHAR),256) ORDER BY `{spec['pk']}` SEPARATOR ''),256)='{spec['sha256']}' FROM `{table}`;")
+    for record in projected['archives']:
+        sql.append('INSERT INTO taxa_bronkoppeling ('+','.join(record)+') VALUES ('+','.join(literal(v) for v in record.values())+');')
+    for before, after in zip(old_links,projected['links']):
+        if before == after:
+            continue
+        sql.append(f"UPDATE taxa_bronkoppeling SET taxon_id={after['taxon_id']},bronmetadata={literal(after['bronmetadata'])} WHERE koppeling_id={after['koppeling_id']};")
+    before_taxa = {t['taxon_id']:t for t in old_taxa}
+    for after in projected['taxa']:
+        before = before_taxa[after['taxon_id']]
+        changed = {f:v for f,v in after.items() if before.get(f)!=v}
+        if changed:
+            sql.append('UPDATE taxa SET '+','.join(f'`{f}`={literal(v)}' for f,v in changed.items())+f" WHERE taxon_id={after['taxon_id']};")
+    removed = [i for i,target in projected['mapping'].items() if i != target]
+    sql.append('DELETE FROM taxa WHERE taxon_id IN ('+','.join(map(str,removed))+');')
+    # Every original surviving cell and every archived cell is checked before
+    # commit, not merely counts. Generated target keys are included.
+    for table, rows in [('taxa',projected['taxa']),('taxa_bronkoppeling',projected['links'])]:
+        spec=snapshot[table]
+        for row in rows:
+            expected={k:v for k,v in row.items() if k!='gewijzigd_op'}
+            sql.append(f"INSERT INTO central_guard SELECT COUNT(*)=1 FROM `{table}` WHERE `{spec['pk']}`={row[spec['pk']]} AND BINARY CAST(JSON_REMOVE({spec['expression']},'$.gewijzigd_op') AS CHAR)=BINARY CAST(CAST({json_literal(expected)} AS JSON) AS CHAR);")
+    for archive in projected['archives']:
+        sql.append("INSERT INTO central_guard SELECT COUNT(*)=1 FROM taxa_bronkoppeling WHERE bron_systeem='Meijendel' AND bron_dataset='taxa_naamgebruik_archief' "
+                   f"AND bron_versie='{CENTRAL_RULE}' AND bron_taxon_id={literal(archive['bron_taxon_id'])} AND taxon_id={archive['taxon_id']} "
+                   f"AND BINARY CAST(bronmetadata AS CHAR)=BINARY CAST(CAST({literal(archive['bronmetadata'])} AS JSON) AS CHAR);")
+    sql.extend([f"INSERT INTO central_guard SELECT COUNT(*)={len(projected['taxa'])} FROM taxa;",
+                f"INSERT INTO central_guard SELECT COUNT(*)={len(old_links)+len(projected['archives'])} FROM taxa_bronkoppeling;",
+                "INSERT INTO central_guard SELECT COUNT(*)=0 FROM taxa_bronkoppeling b LEFT JOIN taxa t ON t.taxon_id=b.taxon_id WHERE b.taxon_id IS NOT NULL AND t.taxon_id IS NULL;",
+                'COMMIT;' if commit else 'ROLLBACK;'])
+    return '\n'.join(sql)
+
+
 FUSION_GROUPS = ((40389, 40390), (40402, 40403, 40404))
 FUSION_UUIDS = {
     40389: 'ea88e014-fe9d-4fcc-91b9-36b8bea5f358',
@@ -58,6 +419,21 @@ def resolve_taxon_identity(identity, taxa: list[dict], links: list[dict]):
             if key in identities:
                 raise ValueError('Dubbele centrale identiteit')
             identities[key] = row['taxon_id']
+    for link in links:
+        if (link.get('bron_systeem') != 'Meijendel'
+                or link.get('bron_dataset') != 'taxa_naamgebruik_archief'
+                or link.get('ingetrokken_op') is not None):
+            continue
+        meta = link.get('bronmetadata') or {}
+        original = meta.get('taxon_voor') or {}
+        if (meta.get('regelversie') != CENTRAL_RULE or link['taxon_id'] not in live_ids
+                or link.get('bron_taxon_id') != original.get('taxon_uuid')
+                or type(original.get('taxon_id')) is not int):
+            raise ValueError('Ongeldige centrale broncontextverwijzing')
+        for key in (original['taxon_id'],original['taxon_uuid']):
+            if key in identities and identities[key] != link['taxon_id']:
+                raise ValueError('Botsende centrale broncontextverwijzing')
+            identities[key] = link['taxon_id']
     for link in links:
         if (link['bron_systeem'] != 'Meijendel' or link['bron_dataset'] != 'taxa_fusie_alias'
                 or link['ingetrokken_op'] is not None):
@@ -969,7 +1345,7 @@ ALTER TABLE pq_vegetatie_waarneming
 """
 
 
-def pq_analysis_view_sql() -> str:
+def pq_analysis_view_sql(*, original_rank: bool = False) -> str:
     """Behoud de bestaande catalogusafnemer, met uitsluitend één fysieke bronkopie."""
     marker = 'CREATE OR REPLACE VIEW v_externe_ecologie_analyse AS'
     base = SCHEMA.read_text(encoding='utf-8').split(marker, 1)[1].strip().removesuffix(';')
@@ -980,7 +1356,11 @@ def pq_analysis_view_sql() -> str:
         raise ValueError('De bestaande analyseview is gewijzigd; opnieuw beoordelen')
     moved = moved.replace('externe_ecologie_event', 'pq_vegetatie_bronopname')
     moved = moved.replace('externe_ecologie_resultaat', 'pq_vegetatie_bronresultaat')
-    moved = moved.replace('r.taxonrang,', 't.taxonrang AS taxonrang,')
+    rank = 't.taxonrang' if original_rank else (
+        "CASE WHEN JSON_CONTAINS_PATH(b.bronmetadata,'one','$.register_broncontext') "
+        "THEN JSON_VALUE(b.bronmetadata,'$.register_broncontext.taxonrang' "
+        "RETURNING CHAR(64) NULL ON EMPTY NULL ON ERROR) ELSE t.taxonrang END")
+    moved = moved.replace('r.taxonrang,', rank + ' AS taxonrang,')
     moved += ('\nJOIN taxa_bronkoppeling b ON b.koppeling_id=r.taxon_bronkoppeling_id'
               '\nJOIN taxa t ON t.taxon_id=b.taxon_id')
     return marker + '\n' + base + '\nUNION ALL\n' + moved + ';\n'
