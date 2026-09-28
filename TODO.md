@@ -253,6 +253,14 @@
 
 ### GBIF-vangblikken Meijendel 1953-1960
 
+- Afgerond op 28 september 2026: de 60.560 vangstregels met 99.652 individuen
+  zijn lokaal gekoppeld aan de bestaande 275 centrale bronkoppelingen.
+  `vangblik_soorten` en de oude verwijskolom zijn na volledige bronveldcontrole
+  verwijderd. Events, locaties, bronwaarden en kwaliteitsvlaggen zijn behouden;
+  kandidaatstatussen en analysebesluiten zijn niet veranderd. Volledige proef,
+  terugdraaien en herstel uit back-up zijn geslaagd. Bewijs en herstelroute:
+  `docs/database/TAXONREGISTER.md`. Geen VPS-publicatie; bestaande SQL-export
+  en caches zijn niet vervangen. De onderstaande bronvragen blijven gelden.
 - Bevestig bij de bronhouder waarom versie 1.7 in EML en GBIF CC BY-NC 4.0
   vermeldt terwijl het datapaper CC0 noemt; hanteer tot die tijd CC BY-NC 4.0.
 - Vraag correctie of duiding voor de twee occurrences onder ontbrekend event

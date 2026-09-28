@@ -78,6 +78,9 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Bevat ook de vaste importafspraak: nieuwe taxongegevens sluiten aan op
   het centrale register, zonder nieuwe afzonderlijke taxoncatalogi;
   naam- of identiteitstwijfel wordt vóór definitieve import opgelost.
+  Beschrijft ook de gerichte PQ- en Vangblik-migraties, met behoud van
+  oorspronkelijke bronwaarden en beproefd herstel. Lokale wijzigingen
+  worden niet automatisch naar de VPS gepubliceerd.
   Structuur en groepsvulling van 27 september 2026: drie fysieke
   tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
   database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;

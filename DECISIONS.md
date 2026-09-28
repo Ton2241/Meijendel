@@ -1,5 +1,16 @@
 # Besluiten
 
+- Gerichte Vangblik-opschoning goedgekeurd op 28 september 2026. Verbind de
+  60.560 vangstregels uit 1953–1960 met de bestaande 275 bronkoppelingen in het
+  centrale taxonregister en verwijder daarna uitsluitend de dubbele catalogus
+  `vangblik_soorten` en haar oude foreign key. Behoud alle 99.652 individuen,
+  bronwaarden, events, locaties, kwaliteitsvlaggen en kandidaatstatussen.
+  Voorwaarden: volledige lokale back-up, identieke proef, terugdraaien,
+  volledig herstel en inhoudsvergelijking. Geen wijziging van soortafbakening
+  of analysegeschiktheid; geen afwijking van Darwin Core/TDWG TCS. Geen
+  VPS-publicatie en geen export- of cachevervanging. Uitvoering en bewijs:
+  `docs/database/TAXONREGISTER.md`.
+
 - PQ-publicatie afgerond op 28 september 2026 om 15:33 CEST, Meijendel
   `829eebda2d3f4eb66acef0b10b1d1039bcf1963f`. De nieuwe export en cache
   zijn actief. De 257 basistabellen en 22 views zijn exact verklaard;

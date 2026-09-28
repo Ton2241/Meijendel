@@ -33,6 +33,209 @@ DEFAULT_MANIFEST = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/NDFF/manifests
 SCHEMA = Path(__file__).parents[1] / "database" / "ndff_public_schema.sql"
 SECURE_SCHEMA = Path(__file__).parents[1] / "database" / "ndff_secure_schema.sql"
 
+VANGBLIK_FIELDS = ('vangblik_soort_id', 'taxon_key', 'scientific_name', 'kingdom',
+                   'phylum', 'class_name', 'order_name', 'family', 'taxon_rank')
+
+
+def resolve_vangblik_links(catalogue: list[dict], links: list[dict]) -> dict[int, int]:
+    """Behoud de volledige lokale bronidentiteit; geen conceptgelijkheid afleiden."""
+    candidates = defaultdict(list)
+    for link in links:
+        if (link['bron_systeem'] == 'Meijendel' and link['bron_dataset'] == 'vangblik_soorten'
+                and link['ingetrokken_op'] is None):
+            candidates[link['bron_taxon_id']].append(link)
+    resolved = {}
+    for row in catalogue:
+        matches = candidates[row['taxon_key']]
+        if len(matches) != 1:
+            raise ValueError('Geen unieke actieve bronkoppeling: ' + row['taxon_key'])
+        link = matches[0]
+        if (set(row) != set(VANGBLIK_FIELDS) or link['bronmetadata'] != row
+                or not re.fullmatch(r'snapshot-sha256:[0-9a-f]{64}', link['bron_versie'])
+                or link['taxon_id'] is None or link['koppelstatus'] not in {'kandidaat','bevestigd'}
+                or row['vangblik_soort_id'] in resolved):
+            raise ValueError('Bronvelden, bronversie of taxondoel wijken af')
+        resolved[row['vangblik_soort_id']] = link['koppeling_id']
+    return resolved
+
+
+def vangblik_snapshot(client: Path, connection: list[str], *, migrated=False) -> dict:
+    """Vergelijk alle niet-gewijzigde tabellen en iedere oorspronkelijke vangstcel."""
+    from import_external_ecology_sources import run_mysql as query_sql, pq_row_expression
+    query = lambda sql: query_sql(client, connection, sql)
+    tables = query("SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() "
+                   "AND TABLE_TYPE='BASE TABLE' ORDER BY TABLE_NAME").splitlines()
+    tables = [t for t in tables if t not in {'vangblik_vangst','vangblik_soorten'}]
+    if not tables or any(not re.fullmatch(r'[A-Za-z0-9_]+', t) for t in tables):
+        raise ValueError('Onverwachte tabelinventaris')
+    checks = query('CHECKSUM TABLE '+','.join('`'+t+'`' for t in tables)+' EXTENDED')
+    unchanged = {line.split('\t')[0].split('.',1)[1]:line.split('\t')[1] for line in checks.splitlines()}
+    if 'NULL' in unchanged.values():
+        raise ValueError('Tabelchecksum ontbreekt')
+    cols = [json.loads(line) for line in query(
+        "SELECT JSON_OBJECT('name',COLUMN_NAME,'type',DATA_TYPE) FROM information_schema.COLUMNS "
+        "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='vangblik_vangst' "
+        "AND COLUMN_NAME<>'taxon_bronkoppeling_id' ORDER BY ORDINAL_POSITION").splitlines()]
+    if migrated:
+        cols.insert(4, {'name':'vangblik_soort_id','type':'bigint'})
+    expression = pq_row_expression(cols, 'v')
+    join = ''
+    if migrated:
+        expression = expression.replace('v.`vangblik_soort_id`',
+            "CAST(b.bronmetadata->>'$.vangblik_soort_id' AS UNSIGNED)")
+        join = ' JOIN taxa_bronkoppeling b ON b.koppeling_id=v.taxon_bronkoppeling_id'
+    rows = query(f'SELECT SHA2(CAST({expression} AS CHAR),256) FROM vangblik_vangst v{join} ORDER BY v.occurrence_id')
+    return {'unchanged_tables':unchanged, 'vangst_sha256':sha256_text(rows),
+            'catalogue_sha256':vangblik_catalogue_hash(query,migrated=migrated),
+            'counts':query('SELECT COUNT(*),SUM(individual_count),SUM(is_verweesd) FROM vangblik_vangst')}
+
+
+def vangblik_catalogue_hash(query, *, migrated=False):
+    if migrated:
+        sql = ("SELECT bronmetadata FROM taxa_bronkoppeling WHERE bron_systeem='Meijendel' "
+               "AND bron_dataset='vangblik_soorten' AND ingetrokken_op IS NULL "
+               "ORDER BY CAST(bronmetadata->>'$.vangblik_soort_id' AS UNSIGNED)")
+    else:
+        expression = 'JSON_OBJECT('+','.join("'%s',`%s`" % (f,f) for f in VANGBLIK_FIELDS)+')'
+        sql = 'SELECT '+expression+' FROM vangblik_soorten ORDER BY vangblik_soort_id'
+    return sha256_text(query(sql))
+
+
+def prepare_vangblik_migration(client: Path, connection: list[str]) -> dict:
+    from import_external_ecology_sources import run_mysql as query_sql
+    query = lambda sql: query_sql(client, connection, sql)
+    fields = query("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() "
+                   "AND TABLE_NAME='vangblik_soorten' ORDER BY ORDINAL_POSITION").splitlines()
+    if tuple(fields) != VANGBLIK_FIELDS:
+        raise ValueError('Catalogusschema wijkt af of migratie is al uitgevoerd')
+    if query("SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() "
+             "AND TABLE_NAME='vangblik_vangst' AND COLUMN_NAME='taxon_bronkoppeling_id'") != '0':
+        raise ValueError('Onderbroken of eerdere migratie; eerst herstel beoordelen')
+    expression = 'JSON_OBJECT('+','.join("'%s',`%s`" % (f,f) for f in fields)+')'
+    catalogue = [json.loads(x) for x in query('SELECT '+expression+' FROM vangblik_soorten ORDER BY vangblik_soort_id').splitlines()]
+    link_fields = ('koppeling_id','bron_systeem','bron_dataset','bron_versie','bron_taxon_id',
+                   'ingetrokken_op','taxon_id','koppelstatus','bronmetadata')
+    expression = 'JSON_OBJECT('+','.join("'%s',`%s`" % (f,f) for f in link_fields)+')'
+    links = [json.loads(x) for x in query('SELECT '+expression+" FROM taxa_bronkoppeling WHERE bron_dataset='vangblik_soorten' ORDER BY koppeling_id").splitlines()]
+    mapping = resolve_vangblik_links(catalogue, links)
+    if len(catalogue) != 275 or len(set(mapping.values())) != 275:
+        raise ValueError('Deze begrensde migratie verwacht 275 verschillende bronvermeldingen')
+    dependencies = query("SELECT CONCAT(TABLE_NAME,'.',COLUMN_NAME) FROM information_schema.KEY_COLUMN_USAGE "
+        "WHERE REFERENCED_TABLE_SCHEMA=DATABASE() AND REFERENCED_TABLE_NAME='vangblik_soorten'")
+    if dependencies != 'vangblik_vangst.vangblik_soort_id':
+        raise ValueError('Onverwachte catalogusafhankelijkheden')
+    for table, schema_col, definition in [('VIEWS','TABLE_SCHEMA','VIEW_DEFINITION'),
+                                          ('ROUTINES','ROUTINE_SCHEMA','ROUTINE_DEFINITION'),
+                                          ('TRIGGERS','TRIGGER_SCHEMA','ACTION_STATEMENT'),
+                                          ('EVENTS','EVENT_SCHEMA','EVENT_DEFINITION')]:
+        if query(f"SELECT COUNT(*) FROM information_schema.{table} WHERE {schema_col}=DATABASE() "
+                 f"AND {definition} LIKE '%vangblik_soorten%'") != '0':
+            raise ValueError('Catalogus wordt nog gebruikt door '+table)
+    return {'catalogue':catalogue,'mapping':mapping,
+            'catalogue_schema':query('SHOW CREATE TABLE vangblik_soorten'),
+            'vangst_schema':query('SHOW CREATE TABLE vangblik_vangst')}
+
+
+def vangblik_link_sql(mapping: dict, *, commit=False) -> str:
+    """Transactionele proef of definitieve aansluiting; schema blijft apart."""
+    pairs = ','.join(f'({int(k)},{int(v)})' for k,v in mapping.items())
+    end = 'COMMIT' if commit else 'ROLLBACK'
+    return f"""
+CREATE TEMPORARY TABLE vangblik_map (old_id BIGINT UNSIGNED PRIMARY KEY, new_id BIGINT UNSIGNED UNIQUE);
+INSERT INTO vangblik_map VALUES {pairs};
+CREATE TEMPORARY TABLE vangblik_assert (ok INT NOT NULL CHECK(ok=1));
+START TRANSACTION;
+UPDATE vangblik_vangst v JOIN vangblik_map m ON m.old_id=v.vangblik_soort_id
+SET v.taxon_bronkoppeling_id=m.new_id;
+INSERT INTO vangblik_assert SELECT IF(COUNT(*)=60560 AND SUM(individual_count)=99652
+ AND SUM(taxon_bronkoppeling_id IS NULL)=0,1,0) FROM vangblik_vangst;
+{end};
+"""
+
+
+def validate_vangblik_proofs(proof, restore, before, plan_hash, code_hash, backup_hash):
+    if (proof.get('status') != 'verified' or not proof.get('rollback_verified')
+        or not re.fullmatch(r'Meijendel_vangblik_proef_[0-9]+',proof.get('database',''))
+        or proof.get('before') != before or proof.get('code_sha256') != code_hash
+        or proof.get('plan_sha256') != plan_hash or proof.get('backup_sha256') != backup_hash
+        or restore.get('status') != 'restored' or restore.get('snapshot') != before
+        or restore.get('database') != proof.get('database')
+        or restore.get('plan_sha256') != plan_hash
+        or restore.get('backup_sha256') != backup_hash):
+        raise ValueError('Proef/herstelbewijs past niet bij huidige inhoud, code en back-up')
+
+
+def execute_vangblik_migration(args) -> int:
+    """Eenmalige lokale migratie; live vereist identieke proef plus herstelbewijs."""
+    from import_external_ecology_sources import run_mysql as query_sql
+    if args.host != '127.0.0.1' or args.port != 3306:
+        raise ValueError('Alleen de lokale iMac is toegestaan')
+    if not (args.database == 'Meijendel' or re.fullmatch(r'Meijendel_vangblik_proef_[0-9]+',args.database)):
+        raise ValueError('Onveilige databasenaam')
+    if not args.bewijs_dir or not args.backup_manifest:
+        raise ValueError('Nieuw bewijsdirectory en back-upmanifest vereist')
+    backup = json.loads(args.backup_manifest.read_text())
+    if sha256_file(Path(backup['file'])) != backup['sha256']:
+        raise ValueError('Back-upchecksum wijkt af')
+    connection = mysql_connection_args(args.login_path,args.host,args.port)+[
+        '--batch','--raw','--skip-column-names','--default-character-set=utf8mb4',args.database]
+    query = lambda sql: query_sql(args.mysql_client,connection,sql)
+    plan = prepare_vangblik_migration(args.mysql_client,connection)
+    before = vangblik_snapshot(args.mysql_client,connection)
+    plan_hash = sha256_text(json.dumps(plan,sort_keys=True,ensure_ascii=False))
+    code_hash = sha256_text(sha256_file(Path(__file__)) + sha256_file(
+        Path(__file__).with_name('import_external_ecology_sources.py')))
+    if args.execute and args.database == 'Meijendel':
+        if not args.proefbewijs:
+            raise ValueError('Geslaagde identieke proef en herstelbewijs vereist')
+        proof = json.loads(args.proefbewijs.read_text())
+        restore = json.loads(args.herstelbewijs.read_text()) if args.herstelbewijs else {}
+        validate_vangblik_proofs(proof,restore,before,plan_hash,code_hash,backup['sha256'])
+    args.bewijs_dir.mkdir(parents=True,exist_ok=False)
+    def save(name,data):
+        with (args.bewijs_dir/name).open('x') as out:
+            json.dump(data,out,ensure_ascii=False,indent=2)
+    save('plan.json',plan)
+    save('before.json',before)
+    if not args.execute:
+        print('READ-ONLY: vangblikplan voorbereid')
+        return 0
+    query('ALTER TABLE vangblik_vangst ADD COLUMN taxon_bronkoppeling_id BIGINT UNSIGNED NULL, '
+          'ADD CONSTRAINT fk_vangblik_taxon_bron FOREIGN KEY (taxon_bronkoppeling_id) '
+          'REFERENCES taxa_bronkoppeling(koppeling_id)')
+    query(vangblik_link_sql(plan['mapping']))
+    if query('SELECT COUNT(*) FROM vangblik_vangst WHERE taxon_bronkoppeling_id IS NOT NULL') != '0':
+        raise RuntimeError('Rollback heeft koppelingen achtergelaten')
+    if vangblik_snapshot(args.mysql_client,connection) != before:
+        raise RuntimeError('Terugdraaiproef heeft broninhoud gewijzigd')
+    save('rollback.json',{'status':'verified'})
+    query(vangblik_link_sql(plan['mapping'],commit=True))
+    if vangblik_snapshot(args.mysql_client,connection) != before:
+        raise RuntimeError('Broninhoud gewijzigd vóór catalogusverwijdering')
+    query('ALTER TABLE vangblik_vangst MODIFY taxon_bronkoppeling_id BIGINT UNSIGNED NOT NULL, '
+          'DROP FOREIGN KEY fk_vangblik_vangst_soort, DROP COLUMN vangblik_soort_id')
+    if vangblik_snapshot(args.mysql_client,connection,migrated=True) != before:
+        raise RuntimeError('Centrale reconstructie verschilt; catalogus blijft behouden')
+    if vangblik_catalogue_hash(query) != before['catalogue_sha256']:
+        raise RuntimeError('Catalogus is tussentijds gewijzigd; verwijderen geblokkeerd')
+    query('DROP TABLE vangblik_soorten')
+    after = vangblik_snapshot(args.mysql_client,connection,migrated=True)
+    if after != before:
+        raise RuntimeError('Eindcontrole wijkt af')
+    save('result.json',{'status':'verified','database':args.database,'before':before,
+         'plan_sha256':plan_hash,'code_sha256':code_hash,'backup_sha256':backup['sha256'],
+         'rollback_verified':True})
+    print('VERIFIED: 60560 vangsten, 99652 individuen, 275 centrale bronkoppelingen; catalogus verwijderd')
+    return 0
+
+
+def guard_legacy_vangblik_import(client: Path, connection: list[str]) -> None:
+    if mysql_scalar(client,connection,
+        "SELECT COUNT(*) FROM information_schema.COLUMNS WHERE TABLE_SCHEMA='Meijendel' "
+        "AND TABLE_NAME='vangblik_vangst' AND COLUMN_NAME='taxon_bronkoppeling_id'") != '0':
+        raise RuntimeError('Vangblik is centraal gekoppeld: historische bulkimport geblokkeerd. '
+                           'Volgende leveringen vereisen bronbewuste registeraanvulling.')
+
 GROUP_CODES = {
     "Amfibieën": "amfibieen",
     "Dagvlinders": "dagvlinders",
@@ -604,6 +807,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=3306)
     parser.add_argument("--execute", action="store_true")
+    parser.add_argument('--vangblik-integratie',action='store_true')
+    parser.add_argument('--database',default='Meijendel')
+    parser.add_argument('--bewijs-dir',type=Path)
+    parser.add_argument('--backup-manifest',type=Path)
+    parser.add_argument('--proefbewijs',type=Path)
+    parser.add_argument('--herstelbewijs',type=Path)
     parser.add_argument(
         "--sync-secure-metadata",
         action="store_true",
@@ -614,7 +823,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    if args.vangblik_integratie:
+        return execute_vangblik_migration(args)
     mysql_args = mysql_connection_args(args.login_path, args.host, args.port)
+    if args.execute or args.sync_secure_metadata:
+        guard_legacy_vangblik_import(args.mysql_client,mysql_args)
     if args.sync_secure_metadata:
         run_mysql(args.mysql_client, mysql_args, SCHEMA.read_text(encoding="utf-8"))
         run_mysql(args.mysql_client, mysql_args, secure_metadata_enrichment_sql())

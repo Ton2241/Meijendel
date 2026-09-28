@@ -72,10 +72,15 @@ haar oorspronkelijke waarden en identificaties blijven centraal bewaard.
 De 53.122 provinciale regels uit 1981–2025 behouden hun meetwaarden. De
 644 LVD-bronopnamen met 16.627 resultaten uit 1981–2015 staan onder `pq_*`,
 met 652 vermoedelijke koppelingen en zonder zelfstandig meetellen.
-De vogeltabel `soorten`, Vangblik en de applicatiecode blijven ongewijzigd.
+Sinds 28 september 2026 verwijst ook `vangblik_vangst` via
+`taxon_bronkoppeling_id` naar het register. De 275 oorspronkelijke
+taxonvermeldingen zijn centraal behouden en `vangblik_soorten` is opgeheven;
+alle 60.560 vangstregels uit 1953–1960 zijn ongewijzigd reconstrueerbaar.
+De vogeltabel `soorten` en de applicatiecode blijven ongewijzigd.
 Uitwerking en verificatie: `docs/database/TAXONREGISTER.md`.
-Publicatiestatus: `TODO.md`; de lokale export is gevalideerd, de VPS volgt
-uitsluitend via de gecontroleerde release.
+Publicatiestatus: `TODO.md`; de bestaande export en VPS bevatten nog de
+Vangblik-structuur van vóór deze lokale opschoning. Een nieuwe publicatie
+vereist afzonderlijk akkoord en een verse gevalideerde export.
 
 ### Ruimtelijke afbakening
 
@@ -119,7 +124,8 @@ ontdubbelde FFV-regels met de openbare geometrie en `ndff_soorten` 9.828 taxa;
 fysieke `ndff_<soortgroep>`-tabellen verwijzen genormaliseerd naar deze regels.
 
 De vangblikreeks behoudt haar eigen korrel in `vangblik_locatieversie`,
-`vangblik_event`, `vangblik_soorten` en `vangblik_vangst`. De 55 openbare
+`vangblik_event` en `vangblik_vangst`, met taxonidentificatie via het centrale
+register in plaats van de opgeheven tabel `vangblik_soorten`. De 55 openbare
 geversioneerde SOVON-plotgrenzen staan in `ndff_sovon_plot`; alle 37.770 events
 zijn eenduidig aan één versie-2025-plot gekoppeld. Geen openbare FFV-regel en
 geen vangst is door deze technische opname automatisch toegelaten voor trend-,

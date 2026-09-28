@@ -1,8 +1,18 @@
 -- Openbare externe natuurdata voor lokale opname in de life-database.
 -- Bestaande vogel- en provinciale PQ-tabellen worden niet gewijzigd.
 -- Beveiligde NDFF-locaties horen uitsluitend in Meijendel_ndff_secure.
+-- Historisch bootstrap-schema, geen importpad voor nieuwe leveringen.
+-- Na centrale Vangblik-koppeling uitsluitend de gevalideerde actuele dump
+-- voor herstel gebruiken. Niet met mysql --force uitvoeren.
 
 USE Meijendel;
+
+CREATE TEMPORARY TABLE vangblik_bootstrap_assert (ok INT NOT NULL CHECK(ok=1));
+INSERT INTO vangblik_bootstrap_assert
+SELECT IF(COUNT(*)=0,1,0) FROM information_schema.COLUMNS
+WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='vangblik_vangst'
+  AND COLUMN_NAME='taxon_bronkoppeling_id';
+DROP TEMPORARY TABLE vangblik_bootstrap_assert;
 
 CREATE TABLE IF NOT EXISTS ndff_open_import_batch (
   batch_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,

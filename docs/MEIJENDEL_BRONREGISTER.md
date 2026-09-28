@@ -127,6 +127,8 @@ Iedere ontdekking, levering, import, verplaatsing, uitsluiting of nieuwe beoorde
 
 **Status.** Analyseklaar binnen de historische onderzoeksopzet.
 
+**Vangblik-opschoning, 28 september 2026.** De 60.560 vangstregels uit 1953–1960 zijn lokaal rechtstreeks verbonden met het centrale taxonregister. De 275 oorspronkelijke taxonvermeldingen zijn daar met alle bronvelden behouden; de afzonderlijke tabel `vangblik_soorten` is verwijderd. Alle 99.652 individuen, events, locaties, kwaliteitsvlaggen en oorspronkelijke bronwaarden zijn behouden. Ook de twee vangstregels uit 1959 zonder bijbehorend event blijven herkenbaar en uitgesloten. De bestaande taxonkoppelingen blijven kandidaat; deze opschoning bevestigt geen nieuwe soortidentificaties en verandert de analysegeschiktheid niet. De migratie, het terugdraaien en het volledige herstel uit back-up zijn beproefd. Website, dashboard en Shiny zijn niet aangepast; er is niets naar de VPS gepubliceerd.
+
 ### 1.5. NDFF: één canonieke laag van openbare en beveiligde gegevens
 
 **Omvang en periode.** De levering bevat 810.830 unieke niet-vogelrecords uit 1950–2025. De beveiligde levering bevat 14.573 records voor 191 geselecteerde taxa. Daarvan vervangen 14.420 records hun openbare, vervaagde tegenhanger en zijn 153 records alleen in de beveiligde levering aanwezig. De gecombineerde laag telt daardoor 810.983 unieke waarnemingen.

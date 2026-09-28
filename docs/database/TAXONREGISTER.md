@@ -45,6 +45,75 @@ vastlegging is op zichzelf geen softwarewijziging. Vogeltabel `soorten`,
 website, dashboard en Shiny blijven onaangetast. Een wijziging van bestaande
 afnemers of een migratie vraagt een afzonderlijk gecontroleerde uitvoering.
 
+## Gerichte Vangblik-opschoning
+
+Ton heeft op 28 september 2026 de gerichte lokale opschoning goedgekeurd.
+De 60.560 vangstregels met 99.652 individuen uit 1953–1960 zijn rechtstreeks
+verbonden met de bestaande 275 bronkoppelingen in `taxa_bronkoppeling`.
+Daarmee loopt de identificatie via `taxa` en `taxon_groepen`.
+Alle negen oorspronkelijke velden van `vangblik_soorten` staan volledig in
+`taxa_bronkoppeling.bronmetadata`; na bewezen behoud is die dubbele catalogus
+verwijderd. `bron_dataset='vangblik_soorten'` blijft een historische bronidentificatie,
+geen verwijzing naar een nog bestaande tabel.
+
+De 37.770 events, 135 locatieversies, plotkoppelingen, bronbestanden, aantallen,
+kwaliteitsvlaggen en ruwe bronwaarden blijven intact. Ook de twee vangstregels
+uit 1959 zonder bijbehorend event blijven herkenbaar en uitgesloten. De
+275 centrale koppelingen blijven `kandidaat`: het verplaatsen van een bestaande
+bronverwijzing bevestigt geen taxonomische conceptgelijkheid.
+
+Getoetst op 28 september 2026 aan [Darwin Core](https://dwc.tdwg.org/terms/)
+en [TDWG TCS](https://tcs.tdwg.org/terms/): gebeurtenis, waarneming,
+naamgebruik en taxonconcept blijven afzonderlijke entiteiten. Bronwaarden voor
+`eventID`, `occurrenceID`, `scientificName`, `taxonRank` en oorspronkelijke
+classificatie blijven beschikbaar. Er is geen afwijking van de afgesproken
+toetsingsbasis en geen nieuwe biologische determinatie.
+
+Uitvoering verloopt via `gis/scripts/import_ndff_public_gbif.py` met
+`--vangblik-integratie`. De helper vereist een verse volledige back-up en,
+voor de levende database, een geslaagde identieke proef plus volledig herstel
+op een eigen lokale proefdatabase. Het herstelbewijs omvat zowel alle andere
+tabelinhoud als het oorspronkelijke Vangblik-schema, de catalogus en de
+koppelkaart. Elke vangst wordt vóór en na vergeleken op alle oorspronkelijke
+cellen. Na een fout volgt diagnose; de helper weigert een blinde herhaling
+op een gedeeltelijk gemigreerd schema. Lokale bewijsstukken worden bewaard
+onder `outputs/vangblik-integratie/`.
+
+Het historische bootstrap-schema en de oude bulkimport zijn geen route voor
+nieuwe leveringen. Zij blokkeren vóór schrijven zodra de centrale verwijzing
+aanwezig is. Nieuwe leveringen volgen de vaste centrale importafspraak hierboven.
+Er zijn geen rechtstreekse Vangblik-afnemers in website, dashboard of Shiny
+gevonden. Er wordt niets naar de VPS gepubliceerd. De bestaande `Meijendel.sql`
+blijft een expliciete momentopname van vóór deze lokale migratie; een volgende
+afzonderlijk goedgekeurde publicatie vereist een verse export en vergelijking.
+
+De lokale uitvoering is op 28 september 2026 geslaagd. Alle 60.560 vangstregels
+zijn via precies 275 bronkoppelingen verbonden; de 99.652 individuen en de twee
+verweesde regels zijn behouden. Alle oorspronkelijke vangstcellen en alle negen
+catalogusvelden zijn identiek reconstrueerbaar. De inhoud van de overige 252
+tabellen is gelijk gebleven, inclusief de drie centrale taxontabellen en alle
+vogel- en PQ-tabellen. Er blijven vijf fysieke `vangblik_*`-tabellen over.
+
+Bewijs onder `outputs/vangblik-integratie/`: `proef/result.json` bevat de
+volledige migratieproef en transactionele terugdraaicontrole;
+`migrated_bewijs.json` bevestigt de centrale relaties en geblokkeerde
+heraanmaak; `restored_bewijs.json` bewijst volledig herstel van inhoud,
+catalogus en beide oorspronkelijke tabeldefinities. `live/result.json` bevat
+de uitgevoerde lokale migratie. `live_bewijs.json` bevestigt de onafhankelijke
+nacontrole, inclusief ongewijzigde definities van alle overige tabellen en
+16 views (`schema_overige_voor.sql` gelijk aan `schema_overige_na.sql`). De back-up
+`Meijendel_voor_vangblik_integratie.sql.gz` heeft SHA-256
+`ccbd41095053d8bba2f69b21bdeb7805e7b47d5a9062805eb42970aee43f13c5`.
+Het manifest en de herstelhelper blijven bij dit lokale bewijs bewaard.
+Bij later herstel wordt eerst opnieuw een afzonderlijke proefkopie gemaakt;
+een oudere back-up mag geen nadien gewijzigde levende bron overschrijven.
+De eigen proefdatabase `Meijendel_vangblik_proef_20260928` is na de geslaagde
+nacontrole verwijderd; back-up en bewijs zijn behouden. De importlogica,
+bootstrap-blokkade, ruimtelijke contracten, analysegeschiktheid, exportcontrole
+en levende registerpoort (`test_taxonregister_live_schema.py --fase vogels`)
+zijn groen. De bronregisterversies zijn inhoudelijk gelijk en alle 21
+gerenderde Wordpagina's zijn gecontroleerd.
+
 ## PQ-integratie en behoud van bronopnamen
 
 De opgedragen migratie verbindt de 53.122 provinciale taxonregels uit

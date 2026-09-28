@@ -4,6 +4,9 @@
 from __future__ import annotations
 
 import importlib.util
+import copy
+from argparse import Namespace
+from unittest.mock import patch
 from pathlib import Path
 
 
@@ -19,6 +22,67 @@ def load_module():
 
 def main() -> int:
     module = load_module()
+    assert hasattr(module, 'resolve_vangblik_links'), 'Centrale vangblikresolver ontbreekt'
+    row = dict(vangblik_soort_id=7, taxon_key='a'*64, scientific_name='Test taxon',
+               kingdom='Animalia', phylum='Arthropoda', class_name='Insecta',
+               order_name='Coleoptera', family='Carabidae', taxon_rank='species')
+    link = dict(koppeling_id=91, bron_systeem='Meijendel', bron_dataset='vangblik_soorten',
+                bron_versie='snapshot-sha256:'+'b'*64, bron_taxon_id='a'*64,
+                ingetrokken_op=None, taxon_id=45, koppelstatus='kandidaat', bronmetadata=row)
+    assert module.resolve_vangblik_links([row], [link]) == {7: 91}
+    for bad in ([], [link, link], [dict(link,taxon_id=None)],
+                [dict(link,koppelstatus='afgewezen')], [dict(link,ingetrokken_op='2026-09-28')],
+                [dict(link,bron_systeem='andere bron')], [dict(link,bron_versie='')],
+                [dict(link,bronmetadata=dict(row,family='Andere familie'))]):
+        try:
+            module.resolve_vangblik_links([row], bad)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Onveilige of niet-brongetrouwe koppeling aanvaard')
+    extra = copy.deepcopy(row)
+    extra['nieuw_bronveld'] = 'mag niet verdwijnen'
+    try:
+        module.resolve_vangblik_links([extra], [link])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Extra bronveld verdwijnt ongemerkt')
+    before = {'vangst_sha256':'a','unchanged_tables':{'taxa':'123'}}
+    proof = dict(status='verified',rollback_verified=True,database='Meijendel_vangblik_proef_20260928',
+                 before=before,code_sha256='code',plan_sha256='plan',backup_sha256='backup')
+    restore = dict(status='restored',database=proof['database'],snapshot=before,
+                   plan_sha256='plan',backup_sha256='backup')
+    module.validate_vangblik_proofs(proof,restore,before,'plan','code','backup')
+    for bad_proof,bad_restore in [({},restore),(proof,{}),
+            (dict(proof,rollback_verified=False),restore),
+            (dict(proof,code_sha256='andere code'),restore),
+            (dict(proof,backup_sha256='andere backup'),restore),
+            (dict(proof,before={}),restore),
+            (dict(proof,database='Meijendel'),restore),
+            (proof,dict(restore,plan_sha256='catalogus ontbreekt')),
+            (proof,dict(restore,database='andere proef')),
+            (proof,dict(restore,snapshot={}))]:
+        try:
+            module.validate_vangblik_proofs(bad_proof,bad_restore,before,'plan','code','backup')
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Ongeldig proef- of herstelbewijs aanvaard')
+    # Controleer de volgorde van de CLI-grens zonder echte schrijfacties.
+    for execute,sync in [(True,False),(False,True)]:
+        args = Namespace(vangblik_integratie=False,execute=execute,sync_secure_metadata=sync,
+                         mysql_client=Path('/unused'),login_path='test',host='127.0.0.1',port=3306)
+        with patch.object(module,'parse_args',return_value=args), \
+             patch.object(module,'mysql_scalar',return_value='1'), \
+             patch.object(module,'run_mysql',side_effect=AssertionError('Schrijven vóór guard')) as writer:
+            try:
+                module.main()
+            except RuntimeError as error:
+                assert 'historische bulkimport geblokkeerd' in str(error)
+            else:
+                raise AssertionError('Gemigreerde database niet geblokkeerd')
+            writer.assert_not_called()
     assert module.group_codes("Geleedpotigen (overig)|Kreeftachtigen") == (
         "geleedpotigen_overig",
         "kreeftachtigen",

@@ -12,6 +12,9 @@ def main() -> int:
     folded = " ".join(sql.casefold().split())
     assert "use meijendel" in folded
     assert "use meijendel_ndff_secure" not in folded
+    assert 'historisch bootstrap-schema' in folded
+    assert folded.index('insert into vangblik_bootstrap_assert') < folded.index('create table if not exists ndff_open_import_batch')
+    assert "column_name='taxon_bronkoppeling_id'" in folded
 
     required_tables = (
         "ndff_open_import_batch",
