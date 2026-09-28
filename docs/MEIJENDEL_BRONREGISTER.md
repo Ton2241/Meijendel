@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 27 september 2026.**
+**Stand: 28 september 2026.**
 
 Dit register bevat informatie over:
 
@@ -403,7 +403,7 @@ Deze database bevat informatie die niet aan de ruimtelijke toelatingsregel van d
 
 **Omvang en periode.** 204 regels uit 1924
 
-**Waarde en beperking.** Historische vogelcontext. Zonder locatie per regel geen kavel- of ruimtelijke analyse.
+**Waarde en beperking.** Historische vogelcontext. Zonder locatie per regel geen kavel- of ruimtelijke analyse. Het productieoverzicht van 28 september 2026 toont daarnaast een bestaande tabel `vogelstand_1924` buiten de canonieke export. Deze blijft tijdens de PQ-publicatie onaangetast; haar aanwezigheid geeft geen nieuwe analysetoestemming. Dit schema-overzicht bewijst de tabelnaam en het type, niet haar actuele rijtelling.
 
 ### 2.3. Jachtspinnen
 

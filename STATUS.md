@@ -24,9 +24,12 @@ PQ-controles waren geslaagd. De vorige productie is volledig teruggezet;
 Shiny-cachecontrole en volledige multi-hostrooktest zijn groen. Er is geen
 nieuwe release geregistreerd. De VPS heeft naast de 240 oorspronkelijke
 exporttabellen drie extra tabellen en zes extra views. Twee extra tabellen
-en de zes views vormen de vereiste websitekoppellaag; de derde tabel moet
-nog worden geïdentificeerd. Vóór een nieuwe poging wordt die koppellaag
-expliciet behouden en de schemavergelijking vóór import uitgevoerd.
+en de zes views vormen de vereiste websitekoppellaag; de derde tabel is
+`vogelstand_1924`. Alle negen objecten blijven behouden. De gecorrigeerde
+releasecontrole toetst exacte namen en typen vóór en na import, plus
+ongewijzigde inhoud en definities van deze productie-eigen objecten.
+De lokale MySQL-regressieproeven slagen. Installatie van de bijgewerkte
+roothelper en de aansluitende productiepublicatie staan nog open.
 Actuele herstelstatus en vervolg: `TODO.md`.
 
 ## Taxonregister

@@ -117,10 +117,22 @@ import en vergelijking van alle acht oorspronkelijke velden van alle 714
 rijen met de centrale bronmetadata. Ook historische ingetrokken
 bronversies kunnen behoud bewijzen. Extra bronvelden, afwijkende waarden,
 foreign keys, viewafnemers of triggers blokkeren verwijdering. Daarna
-moet het aantal basistabellen gelijk zijn aan het exportmanifest.
+moeten alle objectnamen en typen gelijk zijn aan de export, aangevuld met
+uitsluitend de negen bestaande productie-eigen objecten:
+`vogelstand_1924`, `website_plot_mapping`, `website_species_mapping` en de
+views `website_plot_mapping_public`, `website_plot_species_totals`,
+`website_plot_year_totals`, `website_species_mapping_public`,
+`website_species_territoria`, `website_species_trends`.
+Dezelfde vergelijking wordt vóór import tegen de actieve export uitgevoerd.
+De kandidaat mag deze beschermde objecten niet bevatten; hun tabelinhoud en
+definities moeten vóór en na import dezelfde controlehash opleveren. Een
+afwijking na import activeert volledig herstel. De tabel `vogelstand_1924`
+is historische context en wordt door dit behoud niet analytisch toegelaten.
 De echte MySQL-proef hiervoor is herhaalbaar met
 `python3 gis/scripts/test_import_external_ecology_sources.py --pq-release-opruiming`.
 Deze proef maakt en verwijdert uitsluitend een eigen tijdelijke database.
+De aanvullende object- en behoudscontrole heeft een eigen echte MySQL-proef:
+`python3 gis/scripts/test_import_external_ecology_sources.py --pq-release-schema`.
 
 ## Naamcontrole en bronverbinding uitgevoerd op 27 september 2026
 

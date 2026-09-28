@@ -1,5 +1,16 @@
 # Besluiten
 
+- Correctie publicatiecontrole, 28 september 2026: het volledige
+  productieoverzicht verklaart de derde extra tabel als `vogelstand_1924`.
+  Deze tabel blijft samen met twee websitekoppeltabellen en zes bestaande
+  views expliciet beschermd. Vergelijk vóór en na import objectnamen én
+  typen met de export plus uitsluitend deze negen objecten. Controleer ook
+  dat hun tabelinhoud en definities identiek blijven. Een export die een
+  beschermd object bevat blokkeert vóór import. Geen wijziging in taxonomie,
+  analysetoelating of Darwin Core/TDWG TCS-mapping. Eerst PQ-publicatie
+  afronden; daarna back-upketen en herstelbaarheid controleren, een verse
+  back-up maken en de MySQL-image afzonderlijk bijwerken.
+
 - Publicatiepoging 28 september 2026: de PQ-behoudscontroles en de begrensde
   catalogusverwijdering slaagden. De totale productietabelcontrole blokkeerde
   vervolgens de activering; het automatische databaseherstel en de volledige
@@ -7,8 +18,7 @@
   en zes extra views ten opzichte van de vorige export. De website-eigen
   soort- en kavelkoppeltabellen en zes views moeten expliciet behouden blijven;
   zij mogen niet als achtergebleven brondata worden verwijderd. De derde extra
-  tabel vereist nog een alleen-lezen schema-inventaris. Eerst het volledige
-  verschil verklaren en die vergelijking naar de voorcontrole brengen.
+  tabel was op dat moment nog niet geïdentificeerd; zie de correctie hierboven.
   Geen vaste tolerantie van drie willekeurige extra tabellen. De lokale PQ-migratie blijft
   behouden; er wordt geen oudere productiedump in de levende database geladen.
 
@@ -19,8 +29,9 @@
   van alle 714 rijen aantoonbaar in het centrale bronregister staan.
   Ingetrokken bronversies blijven geldig als behoudsbewijs. Extra velden,
   afwijkende bronwaarden en nog bestaande foreign keys, views of triggers
-  blokkeren verwijdering. Na afloop moet het aantal basistabellen gelijk
-  zijn aan de canonieke export. Een fout activeert de bestaande volledige
+  blokkeren verwijdering. De aanvankelijke vergelijking van het totale aantal
+  met de canonieke export is vervangen door de exacte objectcontrole hierboven.
+  Een fout na import activeert de bestaande volledige
   databaseherstelroute; er is geen algemene DROP- of opschoonactie.
 
 - Op 27 september 2026 is de opgedragen PQ-integratie lokaal uitgevoerd.

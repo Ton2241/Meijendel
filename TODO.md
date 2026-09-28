@@ -35,9 +35,16 @@
   dat `website_species_mapping`, `website_plot_mapping` en zes bijbehorende
   views productie-eigen websitekoppelingen zijn. Deze moeten behouden blijven;
   een vergelijking van het totale tabelaantal zonder die laag is onjuist.
-  De derde extra tabel is nog niet geïdentificeerd. De huidige gesloten
-  beheerroute geeft geen volledige tabelnaamlijst. Er is één alleen-lezen
-  productieschema-overzicht nodig voordat de releasecontrole wordt hersteld.
+  Het door Ton aangeleverde schema-overzicht identificeert de derde tabel
+  als `vogelstand_1924`. Deze historische vogelcontext blijft eveneens
+  onaangetast. De releasehelper vergelijkt nu de exacte namen en typen met
+  export plus negen benoemde productie-eigen objecten, vóór en na import.
+  Een controlehash bewaakt bovendien hun tabelinhoud en definities.
+  De echte MySQL-proeven voor verwisselde, ontbrekende en extra objecten,
+  onjuiste typen en gewijzigde inhoud/schema slagen. De bijgewerkte helper
+  moet nog via de vaste sudo-installer worden geïnstalleerd voordat de
+  productiepublicatie opnieuw kan starten. De MySQL-image-update volgt
+  afzonderlijk na geslaagde PQ-publicatie en vernieuwde back-upcontrole.
   De levende database hoeft niet opnieuw te worden gemigreerd.
   Alleen-lezen toegang tot de PQ-/LVD-bronbestanden op de T7 is op
   27 september expliciet toegestaan en gebruikt. De SHA-256 van de

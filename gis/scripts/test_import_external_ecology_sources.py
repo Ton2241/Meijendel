@@ -331,7 +331,118 @@ def check_pq_release_retirement() -> int:
     return 0
 
 
+def check_pq_release_schema() -> int:
+    """Test echte schemapoort en behoud van productie-eigen data, buiten Meijendel."""
+    source = (SCRIPT.parents[2] / 'deploy/deploy_meijendel_release_vps_remote.sh').read_text()
+    functions = []
+    for name in ('manifest_value', 'production_only_objects', 'release_schema_objects',
+                 'check_release_schema', 'production_only_fingerprint'):
+        match = re.search(r'^' + name + r'\(\) \{\n.*?^\}', source, re.M | re.S)
+        assert match, f'Release mist beveiliging {name}'
+        functions.append(match.group())
+    tables = ['vogelstand_1924', 'website_plot_mapping', 'website_species_mapping']
+    views = ['website_plot_mapping_public', 'website_plot_species_totals',
+             'website_plot_year_totals', 'website_species_mapping_public',
+             'website_species_territoria', 'website_species_trends']
+    module = load_module()
+    client = Path('/usr/local/mysql/bin/mysql')
+    database = f'codex_pq_schema_{os.getpid()}'
+    args = module.mysql_args('meijendel_root')
+    query = lambda sql: module.run_mysql(client, args + [database], sql)
+    command = shlex.join([str(client), *args, '--batch', '--raw', '--skip-column-names', database])
+    dump_args = [arg for arg in args if arg not in ('--local-infile=1', '--binary-mode')]
+    dump_command = shlex.join([str(client.with_name('mysqldump')), '--no-defaults', *dump_args])
+    # Transport vervangen; beide clients, de SQL en alle guards blijven echt.
+    shell = ('set -euo pipefail\nCONTAINER=test\n'
+             'die() { echo "$*" >&2; exit 1; }\n'
+             'docker() {\n'
+             '  if [[ "$*" == *"exec mysqldump"* ]]; then\n'
+             '    shift 6\n'
+             f'    {dump_command} --no-tablespaces --single-transaction --set-gtid-purged=OFF '
+             f'--skip-comments --skip-dump-date --order-by-primary {database} "$@"\n'
+             '  else\n'
+             f'    {command} -e "${{@: -1}}"\n'
+             '  fi\n}\n' + '\n'.join(functions) + '\n')
+    run = lambda action: subprocess.run(['bash'], input=shell + action, text=True, capture_output=True)
+    module.run_mysql(client, args, f'CREATE DATABASE `{database}` CHARACTER SET utf8mb4')
+    try:
+        query('CREATE TABLE core(id INT PRIMARY KEY); INSERT INTO core VALUES(1); '
+              'CREATE VIEW core_view AS SELECT * FROM core')
+        for table in tables:
+            query(f'CREATE TABLE {table}(id INT PRIMARY KEY, label TEXT); '
+                  f"INSERT INTO {table} VALUES(1,'bewaren')")
+        for view in views:
+            query(f'CREATE VIEW {view} AS SELECT * FROM website_plot_mapping')
+        with tempfile.TemporaryDirectory(prefix='pq-release-schema-') as directory:
+            dump = Path(directory) / 'export.sql'
+            manifest = Path(directory) / 'export.manifest'
+            # Werkelijke mysqldump, inclusief tijdelijke view-stand-in en data.
+            exported = subprocess.run(
+                [str(client.with_name('mysqldump')), '--no-defaults', *dump_args,
+                 '--no-tablespaces', '--set-gtid-purged=OFF', database, 'core', 'core_view'],
+                text=True, capture_output=True, check=True)
+            fixture = exported.stdout
+            dump.write_text(fixture)
+            manifest.write_text('base_tables=1\nviews=1\n')
+            action = f'check_release_schema {shlex.quote(str(dump))} {shlex.quote(str(manifest))}\n'
+            result = run(action)
+            assert result.returncode == 0, result.stderr
+            # Zelfde totaalaantal maar andere identiteit moet blokkeren, zonder mutatie.
+            query('RENAME TABLE core TO onverwacht')
+            before = query('CHECKSUM TABLE onverwacht, vogelstand_1924, website_plot_mapping')
+            assert run(action).returncode != 0, 'Verwisselde tabel niet gedetecteerd'
+            assert query('CHECKSUM TABLE onverwacht, vogelstand_1924, website_plot_mapping') == before
+            query('RENAME TABLE onverwacht TO core')
+            query('DROP VIEW website_species_trends; CREATE TABLE website_species_trends(id INT)')
+            assert run(action).returncode != 0, 'Verkeerd objecttype niet gedetecteerd'
+            query('DROP TABLE website_species_trends')
+            assert run(action).returncode != 0, 'Ontbrekende view niet gedetecteerd'
+            query('CREATE VIEW website_species_trends AS SELECT * FROM website_plot_mapping')
+            query('CREATE TABLE onverwacht(id INT)')
+            assert run(action).returncode != 0, 'Onbekende extra tabel niet gedetecteerd'
+            query('DROP TABLE onverwacht')
+            for bad_dump, bad_manifest in [
+                (fixture + '-- Table structure for table `website_plot_mapping`\n', 'base_tables=2\nviews=1\n'),
+                (fixture + '-- Table structure for table `core`\n', 'base_tables=2\nviews=1\n'),
+                (fixture, 'base_tables=2\nviews=1\n'),
+                (fixture, 'base_tables=1\nviews=1\nviews=1\n'),
+                ('-- Table structure for table `bad-name`\n', 'base_tables=1\nviews=0\n'),
+            ]:
+                dump.write_text(bad_dump)
+                manifest.write_text(bad_manifest)
+                assert run(action).returncode != 0, 'Ongeldige export of manifest geaccepteerd'
+            dump.write_text(fixture)
+            manifest.write_text('base_tables=1\nviews=1\n')
+            assert run(action).returncode == 0
+            assert run('docker() { return 71; }\n' + action).returncode != 0
+            assert run('docker() { printf "partial dump"; return 71; }\n'
+                       'production_only_fingerprint\n').returncode != 0
+            result = run('production_only_fingerprint\n')
+            assert result.returncode == 0, result.stderr
+            digest = result.stdout.strip()
+            assert re.fullmatch('[0-9a-f]{64}', digest), result.stdout
+            assert run(f'production_only_fingerprint {digest}\n').returncode == 0
+            for change, restore in [
+                ("UPDATE vogelstand_1924 SET label='gewijzigd'", "UPDATE vogelstand_1924 SET label='bewaren'"),
+                ('ALTER TABLE website_species_mapping ADD COLUMN nieuw INT',
+                 'ALTER TABLE website_species_mapping DROP COLUMN nieuw'),
+                ('ALTER VIEW website_species_trends AS SELECT id FROM website_plot_mapping',
+                 'ALTER VIEW website_species_trends AS SELECT * FROM website_plot_mapping'),
+            ]:
+                query(change)
+                assert run(f'production_only_fingerprint {digest}\n').returncode != 0, change
+                query(restore)
+                result = run(f'production_only_fingerprint {digest}\n')
+                assert result.returncode == 0, result.stderr
+    finally:
+        module.run_mysql(client, args, f'DROP DATABASE `{database}`')
+    print('OK: exacte releaseobjecten, foutgevallen en ongewijzigde productie-eigen inhoud/schema')
+    return 0
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ['--pq-release-schema']:
+        raise SystemExit(check_pq_release_schema())
     if sys.argv[1:] == ['--pq-release-opruiming']:
         raise SystemExit(check_pq_release_retirement())
     if len(sys.argv) == 3 and sys.argv[1] == '--pq-schema':

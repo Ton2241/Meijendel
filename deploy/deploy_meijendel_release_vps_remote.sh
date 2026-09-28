@@ -101,6 +101,65 @@ manifest_value() {
   printf '%s\n' "$value"
 }
 
+production_only_objects() {
+  # Bestaande websitekoppellaag en historische vogeltabel: geen PQ-bron.
+  # Geen wildcard: ieder ander extra object blokkeert de publicatie.
+  printf '%s\tBASE TABLE\n' vogelstand_1924 website_plot_mapping website_species_mapping
+  printf '%s\tVIEW\n' website_plot_mapping_public website_plot_species_totals \
+    website_plot_year_totals website_species_mapping_public website_species_territoria website_species_trends
+}
+
+release_schema_objects() {
+  local dump="$1" manifest="$2" tables views canonical combined
+  [[ -s "$dump" && -s "$manifest" ]] || die "export of manifest ontbreekt voor schemacontrole"
+  tables="$(manifest_value base_tables "$manifest")" || return 1
+  views="$(manifest_value views "$manifest")" || return 1
+  [[ "$tables" =~ ^[0-9]+$ && "$views" =~ ^[0-9]+$ ]] || die "ongeldige objectaantallen in manifest"
+  # Alleen definitieve viewdefinities tellen, niet mysqldump-stand-ins.
+  canonical="$(LC_ALL=C grep -E -- '^-- (Table structure for table|Final view structure for view) ' "$dump" |
+    LC_ALL=C awk -F'`' -v tables="$tables" -v views="$views" '
+    /^-- Table structure for table / {kind="BASE TABLE"; nt++; emit=1}
+    /^-- Final view structure for view / {kind="VIEW"; nv++; emit=1}
+    emit {
+      if (NF != 3 || $3 != "" || $2 !~ /^[A-Za-z0-9_]+$/ || seen[$2]++) bad=1;
+      print $2 "\t" kind; emit=0
+    }
+    END {if (bad || nt != tables || nv != views || nt == 0) exit 1}
+  ')" || die "exportobjecten zijn ongeldig, dubbel of wijken af van het manifest"
+  combined="$(printf '%s\n' "$canonical"; production_only_objects)"
+  printf '%s\n' "$combined" | awk -F'\t' 'seen[$1]++ {exit 1}' || \
+    die "export overschrijft een beschermd productie-eigen object"
+  printf '%s\n' "$combined" | LC_ALL=C sort
+}
+
+check_release_schema() {
+  local expected actual
+  expected="$(release_schema_objects "$1" "$2")" || return 1
+  actual="$(docker exec "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -NBe "$1"' sh \
+    'SELECT TABLE_NAME,TABLE_TYPE FROM information_schema.tables WHERE table_schema=DATABASE()' | LC_ALL=C sort)" || return 1
+  if [[ "$actual" != "$expected" ]]; then
+    diff -u <(printf '%s\n' "$expected") <(printf '%s\n' "$actual") >&2 || true
+    die "productieschema wijkt af van export plus expliciet beschermde productieobjecten"
+  fi
+  printf 'RELEASE_SCHEMA=verified\n'
+}
+
+production_only_fingerprint() {
+  local expected="${1:-}" digest name kind
+  local objects=()
+  while IFS=$'\t' read -r name kind; do objects+=("$name"); done < <(production_only_objects)
+  # Vaste volgorde, geen tijdstempel; inhoud, tabelschema en viewdefinities.
+  digest="$(docker exec "$CONTAINER" sh -lc '
+    exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
+      --no-tablespaces --single-transaction --set-gtid-purged=OFF \
+      --skip-comments --skip-dump-date --order-by-primary "$MYSQL_DATABASE" "$@"
+  ' sh "${objects[@]}" | sha256sum | awk '{print $1}')" || return 1
+  [[ "$digest" =~ ^[0-9a-f]{64}$ ]] || die "ongeldige controlehash productie-eigen objecten"
+  [[ -z "$expected" || "$digest" == "$expected" ]] || die "productie-eigen inhoud of schema is veranderd"
+  printf '%s\n' "$digest"
+}
+
 [[ " ${STAGES[*]} " == *" $stage "* ]] || die "onbekende fase"
 [[ "$release_commit" =~ ^[0-9a-f]{40}$ ]] || die "commit vereist exact 40 hextekens"
 
@@ -250,6 +309,8 @@ test -d "$BACKUP_DIR" && test -w "$BACKUP_DIR" || die "back-upmap ontbreekt of i
 df -Pk "$BACKUP_DIR" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }' || \
   die "minder dan 1 GiB vrije back-upruimte"
 
+# Ook bij apply opnieuw controleren onder de gedeelde deploy-lock, vóór import.
+check_release_schema "$SQL_FILE" "$SQL_MANIFEST_FILE"
 if [[ "$stage" == "preflight" ]]; then
   success=1
   printf 'PREFLIGHT_STATUS=ready\n'
@@ -353,6 +414,9 @@ else
   first_cache_migration=1
 fi
 
+# Kandidaat mag geen beschermd object bevatten, ook niet als zijn aantallen kloppen.
+release_schema_objects "$SQL_CANDIDATE_FILE" "$SQL_MANIFEST_CANDIDATE_FILE" >/dev/null
+production_only_before="$(production_only_fingerprint)"
 backup_file="$BACKUP_DIR/meijendel_before_${release_commit}_$(date -u +%Y%m%dT%H%M%SZ).sql.gz"
 docker exec "$CONTAINER" sh -lc '
   exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" \
@@ -413,10 +477,9 @@ EOF
 '
 
 retire_pq_taxon_catalog
-expected_base_tables="$(manifest_value base_tables "$SQL_MANIFEST_CANDIDATE_FILE")"
-actual_base_tables="$(docker exec "$CONTAINER" sh -lc \
-  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -NBe "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_type=\"BASE TABLE\""')"
-[[ "$actual_base_tables" == "$expected_base_tables" ]] || die "aantal productietabellen wijkt af van de canonieke export"
+check_release_schema "$SQL_CANDIDATE_FILE" "$SQL_MANIFEST_CANDIDATE_FILE"
+production_only_fingerprint "$production_only_before" >/dev/null
+printf 'PRODUCTION_ONLY_OBJECTS=unchanged\n'
 
 activation_started=1
 if [[ -f "$SQL_FILE" && ! -L "$SQL_FILE" ]]; then mv "$SQL_FILE" "$rollback_sql"; had_sql=1; fi
