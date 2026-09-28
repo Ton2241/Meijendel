@@ -58,7 +58,17 @@ Bij codewerk:
   roepen deze controle zelf aan
 - commit afgeronde wijzigingen standaard met een korte, beschrijvende commitmelding en push de commit daarna naar GitHub, tenzij expliciet is gevraagd om niet te committen of niet te pushen.
 - beheer vanaf nu de volledige Git-repository als onderdeel van het werk: controleer `git status`, houd wijzigingen logisch gegroepeerd, commit afgeronde wijzigingen, en laat niet-door-jou-gemaakte wijzigingen ongemoeid tenzij ik expliciet anders vraag
-- als ik vraag een wijziging door te voeren voor `app.vwg-m.nl` of de VPS-site, voer die wijziging zowel lokaal als op de VPS door, inclusief passende verificatie na deploy
+- upload lokale wijzigingen in de Meijendel-database, website, het dashboard
+  of de Shiny-app uitsluitend na aanwijzing of akkoord van Ton voor die
+  publicatie; een lokale wijzigings- of afrondingsopdracht is geen deployakkoord
+- wijzigingen in de levende lokale database vereisen alleen publicatie als
+  zij gevolgen hebben voor het goede functioneren van websitepagina's,
+  dashboard of Shiny; bepaal eerst welke afnemers geraakt worden en verkrijg
+  ook dan publicatieakkoord. GitHub-versiebeheer geeft geen deploytoestemming.
+  Volg `../VWG_Project/workflow.md`, sectie
+  `Publicatie naar de VPS uitsluitend na aanwijzing of akkoord`
+- voer een uitdrukkelijk opgedragen of goedgekeurde VPS-publicatie volledig
+  uit binnen de toegestane reikwijdte, inclusief passende verificatie na deploy
 
 Bij iedere nieuwe opdrachtdraad en productiedeploy:
 - controleer aan het begin én einde `VWG_Project`, `VWG_M` en `Meijendel`: haal remote refs op, meld de actieve branch en eis dat iedere lokale branch gelijkloopt met haar upstream; buiten een expliciet actieve taak hoort iedere werkboom schoon te zijn
