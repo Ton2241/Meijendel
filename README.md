@@ -87,8 +87,11 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   een primaire groep. Via 917 gedeelde naamreferenties zijn 1.819 bestaande
   bronregistraties vindbaar verbonden, zonder bevestigde conceptgelijkheid
   of samenvoeging van waarnemingen. De oorspronkelijke
-  263 vogelnaamgebruiken en hun koppelingen zijn behouden. Bestaande gegevens en applicaties zijn niet
-  aangepast. Darwin Core en TDWG TCS zijn voortaan verplichte
+  263 vogelnaamgebruiken en hun koppelingen zijn behouden. De aansluitende
+  PQ-integratie verbindt de provinciale soortregels en vermoedelijke
+  LVD-bronvarianten met dit register; bronwaarden en bestaande publieke
+  uitkomsten blijven behouden. Applicatiecode is niet aangepast.
+  Darwin Core en TDWG TCS zijn voortaan verplichte
   toetsingsbasis; afwijkingen vereisen vooraf expliciete goedkeuring door Ton.
 - [`bmp_meijendel_index.html`][7]
   Standalone HTML voor overzicht, controle en presentatie.

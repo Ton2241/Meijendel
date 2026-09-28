@@ -65,12 +65,17 @@ vogelnaamgebruiken en 263 vogelkoppelingen zijn ongewijzigd. Bronidentiteit
 bestaat uit bronsysteem, dataset, bronversie en oorspronkelijke sleutel;
 voor vogels is dit `Meijendel` / `soorten` / de SHA-256 van de
 catalogusmomentopname / het oorspronkelijke `soorten.id`. Namen zijn geen
-koppelsleutel. Er zijn alleen onderlinge foreign keys, geen nieuwe foreign
-keys vanuit bestaande tabellen en geen applicatiegebruik van kandidaten. De
-vogeltabel `soorten`, PQ, Vangblik en de applicaties blijven ongewijzigd.
-Uitwerking en verificatie: `docs/database/TAXONREGISTER.md`. De bestaande
-publicatiedump en VPS bevatten deze uitbreiding nog niet; die volgen alleen
-via een latere gecontroleerde export/release.
+koppelsleutel. Sinds de aansluitende PQ-integratie verwijzen
+`pq_vegetatie_waarneming` en `pq_vegetatie_bronresultaat` via foreign keys
+naar `taxa_bronkoppeling`. De afzonderlijke PQ-taxoncatalogus is opgeheven;
+haar oorspronkelijke waarden en identificaties blijven centraal bewaard.
+De 53.122 provinciale regels uit 1981–2025 behouden hun meetwaarden. De
+644 LVD-bronopnamen met 16.627 resultaten uit 1981–2015 staan onder `pq_*`,
+met 652 vermoedelijke koppelingen en zonder zelfstandig meetellen.
+De vogeltabel `soorten`, Vangblik en de applicatiecode blijven ongewijzigd.
+Uitwerking en verificatie: `docs/database/TAXONREGISTER.md`.
+Publicatiestatus: `TODO.md`; de lokale export is gevalideerd, de VPS volgt
+uitsluitend via de gecontroleerde release.
 
 ### Ruimtelijke afbakening
 

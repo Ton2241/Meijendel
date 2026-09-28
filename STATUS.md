@@ -1,8 +1,26 @@
 # Status Meijendel
 
-Laatste update: 27 september 2026
+Laatste update: 28 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.
+
+## PQ-integratie
+
+De lokale opschoning is uitgevoerd. Alle 53.122 provinciale PQ-soortregels
+uit 1981–2025 gebruiken het centrale taxonregister. Alle 714 oorspronkelijke
+taxonvermeldingen zijn behouden; de afzonderlijke catalogus is verwijderd.
+Verder staan 644 volledige LVD-bronopnamen met 16.627 resultaten uit
+1981–2015 onder `pq_*`. Hun 652 koppelingen blijven vermoedelijk; zij tellen
+niet zelfstandig mee. Alle bronwaarden en 32.657 overlapbesluiten zijn
+behouden en de overgedragen rijen zijn op de oude databaseplek verwijderd.
+De 513 publieke provinciale plotjaren uit 1981–2025 zijn inhoudelijk gelijk.
+De levende database is niet opnieuw geïmporteerd uit een oudere dump.
+
+De export van 28 september omvat 254 basistabellen en 16 views. De
+teruggelezen export, alle tabelinhouden en de inhoudsgebonden Shiny-cache
+zijn gevalideerd. De productiepublicatie loopt via de gecontroleerde
+release; de definitieve status wordt vastgelegd in `TODO.md` en het
+projectbrede release-manifest.
 
 ## Taxonregister
 
@@ -40,7 +58,8 @@ als respectievelijk `Calcarius lapponicus` en `Aythya collaris`.
 De invoer is vooraf met ROLLBACK beproefd. Bestaande vogel-, PQ-, Vangblik-
 en externe tabellen zijn niet gemigreerd en applicatiecode is niet aangepast.
 Ontwerp en controlebewijs staan in `docs/database/TAXONREGISTER.md`.
-De publicatiedump, caches en VPS zijn voor deze stap niet vernieuwd.
+De publicatiedump, caches en VPS zijn tijdens die afzonderlijke vogelstap
+niet vernieuwd; de aansluitende PQ-release omvat het volledige register.
 
 ## Repositoryhygiëne
 

@@ -110,6 +110,18 @@ Zo kan zij verplaatste bronregels niet opnieuw aanmaken of de bestaande
 analyseview terugzetten. Een volgende levering vereist een gerichte
 bronbewuste aanvulling volgens de vaste importafspraak hierboven.
 
+De afnemende VPS-database wordt met een dump bijgewerkt. Een gewone
+dumpimport verwijdert geen tabellen die lokaal zijn opgeheven. Daarom
+verwijdert de releasehelper `pq_vegetatie_taxon` afzonderlijk na back-up,
+import en vergelijking van alle acht oorspronkelijke velden van alle 714
+rijen met de centrale bronmetadata. Ook historische ingetrokken
+bronversies kunnen behoud bewijzen. Extra bronvelden, afwijkende waarden,
+foreign keys, viewafnemers of triggers blokkeren verwijdering. Daarna
+moet het aantal basistabellen gelijk zijn aan het exportmanifest.
+De echte MySQL-proef hiervoor is herhaalbaar met
+`python3 gis/scripts/test_import_external_ecology_sources.py --pq-release-opruiming`.
+Deze proef maakt en verwijdert uitsluitend een eigen tijdelijke database.
+
 ## Naamcontrole en bronverbinding uitgevoerd op 27 september 2026
 
 Na de uitleg over de overdracht van uitsluitend wetenschappelijke namen
