@@ -45,6 +45,53 @@ die() {
   exit 1
 }
 
+retire_pq_taxon_catalog() {
+  local present
+  present="$(docker exec "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -NBe "$1"' sh \
+    "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='pq_vegetatie_taxon'")"
+  [[ "$present" != 0 ]] || return 0
+  [[ "$present" == 1 ]] || die "onverwachte oude PQ-catalogus"
+  # Een dump verwijdert opgeheven tabellen niet. Verwijder uitsluitend deze
+  # catalogus, na import en back-up, als elke cel ook historisch bewaard is.
+  docker exec -i "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' <<'PQ_RETIREMENT_SQL'
+SET NAMES utf8mb4;
+SET SESSION lock_wait_timeout=10;
+CREATE TEMPORARY TABLE pq_release_guard(ok TINYINT NOT NULL CHECK(ok=1));
+INSERT INTO pq_release_guard VALUES(IF((SELECT COUNT(*) FROM pq_vegetatie_taxon)=714,1,0));
+INSERT INTO pq_release_guard VALUES(IF((SELECT COUNT(*) FROM information_schema.columns
+  WHERE table_schema=DATABASE() AND table_name='pq_vegetatie_taxon')=8,1,0));
+INSERT INTO pq_release_guard VALUES(IF((SELECT COUNT(*) FROM pq_vegetatie_taxon q
+  WHERE NOT EXISTS (SELECT 1 FROM taxa_bronkoppeling b
+    WHERE b.bron_systeem='Meijendel' AND b.bron_dataset='pq_vegetatie_taxon'
+      AND b.bron_taxon_id=CAST(q.srtnum AS CHAR)
+      AND JSON_CONTAINS_PATH(b.bronmetadata,'all','$.taxon_id','$.nederlandse_naam',
+        '$.latijnse_naam_bron','$.srtnum','$.taxonlijst_versie','$.taxoncode_officieel',
+        '$.wetenschappelijke_naam_officieel','$.taxon_koppeling_status')
+      AND CAST(JSON_OBJECT('taxon_id',q.taxon_id,'nederlandse_naam',q.nederlandse_naam,
+        'latijnse_naam_bron',q.latijnse_naam_bron,'srtnum',q.srtnum,
+        'taxonlijst_versie',q.taxonlijst_versie,'taxoncode_officieel',q.taxoncode_officieel,
+        'wetenschappelijke_naam_officieel',q.wetenschappelijke_naam_officieel,
+        'taxon_koppeling_status',q.taxon_koppeling_status) AS BINARY)
+      = CAST(JSON_OBJECT('taxon_id',b.bronmetadata->'$.taxon_id',
+        'nederlandse_naam',b.bronmetadata->'$.nederlandse_naam',
+        'latijnse_naam_bron',b.bronmetadata->'$.latijnse_naam_bron',
+        'srtnum',b.bronmetadata->'$.srtnum','taxonlijst_versie',b.bronmetadata->'$.taxonlijst_versie',
+        'taxoncode_officieel',b.bronmetadata->'$.taxoncode_officieel',
+        'wetenschappelijke_naam_officieel',b.bronmetadata->'$.wetenschappelijke_naam_officieel',
+        'taxon_koppeling_status',b.bronmetadata->'$.taxon_koppeling_status') AS BINARY)))=0,1,0));
+INSERT INTO pq_release_guard VALUES(IF((SELECT COUNT(*) FROM information_schema.key_column_usage
+  WHERE referenced_table_schema=DATABASE() AND referenced_table_name='pq_vegetatie_taxon')=0,1,0));
+INSERT INTO pq_release_guard VALUES(IF((SELECT COUNT(*) FROM information_schema.view_table_usage
+  WHERE table_schema=DATABASE() AND table_name='pq_vegetatie_taxon')=0,1,0));
+INSERT INTO pq_release_guard VALUES(IF((SELECT COUNT(*) FROM information_schema.triggers
+  WHERE event_object_schema=DATABASE() AND event_object_table='pq_vegetatie_taxon')=0,1,0));
+DROP TABLE pq_vegetatie_taxon;
+SELECT 'PQ_CATALOG_RETIREMENT=verified';
+PQ_RETIREMENT_SQL
+}
+
 manifest_value() {
   local key="$1" file="$2" value count
   count="$(awk -F= -v key="$key" '$1 == key {count++} END {print count+0}' "$file")"
@@ -364,6 +411,12 @@ docker exec "$CONTAINER" sh -lc '
 $(query "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = DATABASE() AND table_type = \"BASE TABLE\" ORDER BY TABLE_NAME")
 EOF
 '
+
+retire_pq_taxon_catalog
+expected_base_tables="$(manifest_value base_tables "$SQL_MANIFEST_CANDIDATE_FILE")"
+actual_base_tables="$(docker exec "$CONTAINER" sh -lc \
+  'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -NBe "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_type=\"BASE TABLE\""')"
+[[ "$actual_base_tables" == "$expected_base_tables" ]] || die "aantal productietabellen wijkt af van de canonieke export"
 
 activation_started=1
 if [[ -f "$SQL_FILE" && ! -L "$SQL_FILE" ]]; then mv "$SQL_FILE" "$rollback_sql"; had_sql=1; fi

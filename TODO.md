@@ -15,6 +15,11 @@
   De lokale migratie is uitgevoerd en gecontroleerd. De publicatie naar de
   VPS volgt na de nieuwe export en installatie van de bijgewerkte beveiligde
   releasecontrole; die installatie vereist één zichtbare sudo-invoer.
+  De eerste helperinstallatie is op 28 september uitgevoerd. De laatste
+  publicatiecontrole ontdekte dat dumpimport de opgeheven catalogus op de
+  VPS zou laten staan. De aanvullende begrensde verwijdering is met echte
+  MySQL-proeven getest en vereist opnieuw installatie van de helper vóór
+  publicatie. De levende database hoeft niet opnieuw te worden gemigreerd.
   Alleen-lezen toegang tot de PQ-/LVD-bronbestanden op de T7 is op
   27 september expliciet toegestaan en gebruikt. De SHA-256 van de
   provinciale levering en het LVD-archief komen overeen met de database.

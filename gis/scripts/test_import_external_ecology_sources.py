@@ -5,6 +5,9 @@ import importlib.util
 import tempfile
 import sys
 import re
+import os
+import shlex
+import subprocess
 from pathlib import Path
 
 
@@ -260,7 +263,77 @@ def check_pq_finalize(database: str) -> int:
     return 0
 
 
+def check_pq_release_retirement() -> int:
+    """Voer de echte release-opruiming uit op een eigen wegwerpdatabase."""
+    source = (SCRIPT.parents[2] / 'deploy/deploy_meijendel_release_vps_remote.sh').read_text()
+    match = re.search(r'^retire_pq_taxon_catalog\(\) \{\n.*?^\}', source, re.M | re.S)
+    assert match, 'Release laat de opgeheven PQ-catalogus achter'
+    module = load_module()
+    client = Path('/usr/local/mysql/bin/mysql')
+    database = f'codex_pq_retirement_{os.getpid()}'
+    args = module.mysql_args('meijendel_root') + ['--batch', '--raw', '--skip-column-names']
+    module.run_mysql(client, args, f'CREATE DATABASE `{database}` CHARACTER SET utf8mb4')
+    args += [database]
+    query = lambda sql: module.run_mysql(client, args, sql)
+    # Alleen de Docker-/VPS-transportgrens wordt vervangen; SQL en MySQL zijn echt.
+    command = shlex.join([str(client), *args])
+    shell = ('set -euo pipefail\nCONTAINER=test\n'
+             'die() { echo "$*" >&2; exit 1; }\n'
+             'docker() {\n'
+             '  if [[ "$*" == *"-NBe"* ]]; then\n'
+             f'    {command} -e "${{@: -1}}"\n'
+             '  else\n'
+             f'    {command}\n'
+             '  fi\n}\n' + match.group() + '\nretire_pq_taxon_catalog\n')
+    def run():
+        return subprocess.run(['bash'], input=shell, text=True, capture_output=True)
+    exists = ("SELECT COUNT(*) FROM information_schema.tables WHERE "
+              "table_schema=DATABASE() AND table_name='pq_vegetatie_taxon'")
+    try:
+        query("CREATE TABLE taxa_bronkoppeling AS SELECT * FROM Meijendel.taxa_bronkoppeling "
+              "WHERE bron_dataset='pq_vegetatie_taxon' AND ingetrokken_op IS NULL")
+        fields = [('taxon_id', 'INT'), ('nederlandse_naam', 'VARCHAR(500)'),
+                  ('latijnse_naam_bron', 'VARCHAR(500)'), ('srtnum', 'INT'),
+                  ('taxonlijst_versie', 'VARCHAR(500)'), ('taxoncode_officieel', 'VARCHAR(500)'),
+                  ('wetenschappelijke_naam_officieel', 'VARCHAR(500)'),
+                  ('taxon_koppeling_status', 'VARCHAR(500)')]
+        columns = ','.join(f"{name} {kind} PATH '$.{name}'" for name, kind in fields)
+        query('CREATE TABLE pq_vegetatie_taxon AS SELECT j.* FROM taxa_bronkoppeling b, '
+              f"JSON_TABLE(b.bronmetadata,'$' COLUMNS({columns})) j")
+        # Ook ingetrokken oorspronkelijke bronvermeldingen bewijzen celbehoud.
+        query("UPDATE taxa_bronkoppeling SET ingetrokken_op='2026-09-27' WHERE bron_taxon_id='1071'")
+        before = query('CHECKSUM TABLE taxa_bronkoppeling')
+        query("UPDATE pq_vegetatie_taxon SET nederlandse_naam='NIET BEWAARD' WHERE taxon_id=1")
+        assert run().returncode != 0, 'Afwijkende oorspronkelijke cel moet verwijdering blokkeren'
+        assert query(exists) == '1'
+        query("UPDATE pq_vegetatie_taxon SET nederlandse_naam='Aalbes' WHERE taxon_id=1")
+        query('ALTER TABLE pq_vegetatie_taxon ADD COLUMN onbekend_bronveld TEXT')
+        assert run().returncode != 0, 'Extra bronveld mag niet verloren gaan'
+        assert query(exists) == '1'
+        query('ALTER TABLE pq_vegetatie_taxon DROP COLUMN onbekend_bronveld')
+        query('CREATE VIEW oude_afnemer AS SELECT * FROM pq_vegetatie_taxon')
+        assert run().returncode != 0, 'Nog bestaande afnemer moet verwijdering blokkeren'
+        assert query(exists) == '1'
+        query('DROP VIEW oude_afnemer')
+        query('ALTER TABLE pq_vegetatie_taxon ADD PRIMARY KEY(taxon_id); '
+              'CREATE TABLE oude_verwijzer(id INT, FOREIGN KEY(id) REFERENCES pq_vegetatie_taxon(taxon_id))')
+        assert run().returncode != 0, 'Foreign key moet verwijdering blokkeren'
+        assert query(exists) == '1'
+        query('DROP TABLE oude_verwijzer')
+        result = run()
+        assert result.returncode == 0, result.stderr
+        assert query(exists) == '0', 'Volledig bewaarde catalogus moet ook op productie verdwijnen'
+        assert query('CHECKSUM TABLE taxa_bronkoppeling') == before
+        assert run().returncode == 0, 'Volgende release zonder oude catalogus moet werken'
+    finally:
+        module.run_mysql(client, args[:-1], f'DROP DATABASE `{database}`')
+    print('OK: echte MySQL-releaseopruiming, celbehoud, extra velden, afnemers en herhaling')
+    return 0
+
+
 if __name__ == "__main__":
+    if sys.argv[1:] == ['--pq-release-opruiming']:
+        raise SystemExit(check_pq_release_retirement())
     if len(sys.argv) == 3 and sys.argv[1] == '--pq-schema':
         raise SystemExit(check_pq_schema(sys.argv[2]))
     if len(sys.argv) == 3 and sys.argv[1] == '--pq-migratie':

@@ -1,5 +1,16 @@
 # Besluiten
 
+- Aanvullende publicatiecontrole, 28 september 2026: een gewone dumpimport
+  verwijdert lokaal opgeheven tabellen niet uit de afnemende database.
+  De releasehelper verwijdert daarom uitsluitend `pq_vegetatie_taxon`,
+  na back-up en import en alleen wanneer alle acht oorspronkelijke velden
+  van alle 714 rijen aantoonbaar in het centrale bronregister staan.
+  Ingetrokken bronversies blijven geldig als behoudsbewijs. Extra velden,
+  afwijkende bronwaarden en nog bestaande foreign keys, views of triggers
+  blokkeren verwijdering. Na afloop moet het aantal basistabellen gelijk
+  zijn aan de canonieke export. Een fout activeert de bestaande volledige
+  databaseherstelroute; er is geen algemene DROP- of opschoonactie.
+
 - Op 27 september 2026 is de opgedragen PQ-integratie lokaal uitgevoerd.
   Alle 53.122 provinciale taxonregels uit 1981–2025 gebruiken het centrale
   register. De oude catalogus is verwijderd na controle van alle 714
