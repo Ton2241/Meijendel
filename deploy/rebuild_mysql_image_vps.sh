@@ -78,7 +78,7 @@ printf '%s\n' \
   "HELPER|deploy/rebuild_mysql_image_vps_remote.sh|sha256=$helper_hash" \
   "VALIDATOR|deploy/validate_mysql_uid_migration_vps_remote.sh|sha256=$validator_hash" \
   "ACTIEF|container=$ACTIVE_CONTAINER|image=$old_image_id" \
-  "DOEL|MySQL=9.7.1|UID:GID=1999:1999|libevent=2.1.13-1.el9_8" \
+  "DOEL|MySQL=9.7.1|UID:GID=1999:1999|libxml2=2.9.13-14.el9_8.5-of-nieuwer|high=0|critical=0" \
   'GRENS|geen-datamapmigratie|geen-docker-prune|geen-andere-container-of-image'
 
 echo "== Read-only startgate =="
@@ -104,12 +104,10 @@ if [[ "$FINALIZE" -eq 1 ]]; then
     guard_die "finalisatiescan bevat een afwijking."
 else
 [[ "$baseline_status" -eq 1 ]] || guard_die "uitgangsscan heeft niet uitsluitend de verwachte aandachtstatus."
-grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=4|fix_beschikbaar=4|zonder_fix=0' \
-  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/4 repareerbare HIGH."
-grep -Fq 'pakket=curl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
-  <<< "$baseline_audit" || guard_die "curl-uitgangsversie of fixversie wijkt af."
-grep -Fq 'pakket=libcurl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
-  <<< "$baseline_audit" || guard_die "libcurl-uitgangsversie of fixversie wijkt af."
+grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=6|fix_beschikbaar=6|zonder_fix=0' \
+  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/6 repareerbare HIGH."
+grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=6|pakket=libxml2|installed=2.9.13-14.el9_8.4|fixed=2.9.13-14.el9_8.5|' \
+  <<< "$baseline_audit" || guard_die "libxml2-uitgangsversie of fixversie wijkt af."
 grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   <<< "$baseline_audit" || guard_die "Shiny-uitgangsscan wijkt af."
 ! grep -Eq '^URGENT\|' <<< "$baseline_audit" ||

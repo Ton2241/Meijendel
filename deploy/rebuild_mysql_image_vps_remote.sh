@@ -90,12 +90,10 @@ audit_candidate() {
   short="${CANDIDATE_ID#sha256:}"
   grep -Fq "SAMENVATTING|kandidaat-${short:0:12}|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
     <<< "$output" || fail "kandidaat bevat HIGH/CRITICAL of is niet exact gescand"
-  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=4|fix_beschikbaar=4|zonder_fix=0' \
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=6|fix_beschikbaar=6|zonder_fix=0' \
     <<< "$output" || fail "actieve uitgangsimage wijkt af tijdens kandidaatscan"
-  grep -Fq 'pakket=curl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
-    <<< "$output" || fail "curl-uitgangsversie wijkt af tijdens kandidaatscan"
-  grep -Fq 'pakket=libcurl|installed=7.76.1-40.el9_8.5|fixed=7.76.1-40.el9_8.7' \
-    <<< "$output" || fail "libcurl-uitgangsversie wijkt af tijdens kandidaatscan"
+  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=6|pakket=libxml2|installed=2.9.13-14.el9_8.4|fixed=2.9.13-14.el9_8.5|' \
+    <<< "$output" || fail "libxml2-uitgangsversie wijkt af tijdens kandidaatscan"
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$output" || fail "Shiny wijkt af tijdens kandidaatscan"
   [[ "$status" -eq 1 ]] || fail "kandidaatscan heeft een onverwachte eindstatus"
