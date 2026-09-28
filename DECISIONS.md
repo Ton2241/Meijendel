@@ -1,5 +1,17 @@
 # Besluiten
 
+- PQ-publicatie afgerond op 28 september 2026 om 15:33 CEST, Meijendel
+  `829eebda2d3f4eb66acef0b10b1d1039bcf1963f`. De nieuwe export en cache
+  zijn actief. De 257 basistabellen en 22 views zijn exact verklaard;
+  `vogelstand_1924` en de acht websitekoppelobjecten zijn inhoudelijk en
+  structureel gelijk gebleven. De oude PQ-taxoncatalogus is na volledige
+  bronveldcontrole verwijderd. Geen nieuwe taxonomische interpretatie of
+  afwijking van Darwin Core/TDWG TCS. De lokale paritycontrole moet voortaan
+  dezelfde gevalideerde, verplichte releasecache gebruiken als productie;
+  een oude tussencache mag geen stille volledige SQL-herinlezing veroorzaken.
+  De MySQL-image blijft in deze gegevensrelease ongewijzigd; onderhoud volgt
+  afzonderlijk na controle van de volledige back-upketen.
+
 - Correctie publicatiecontrole, 28 september 2026: het volledige
   productieoverzicht verklaart de derde extra tabel als `vogelstand_1924`.
   Deze tabel blijft samen met twee websitekoppeltabellen en zes bestaande

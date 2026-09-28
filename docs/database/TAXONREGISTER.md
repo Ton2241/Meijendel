@@ -86,6 +86,14 @@ duinvalleiopnamen uit 2001, 2008 en 2018 worden niet als PQ-opnamen verplaatst.
 
 ### Uitvoering en herstel
 
+De lokale migratie van 27 september 2026 is op 28 september om 15:33 CEST
+ook gepubliceerd op de VPS, vanaf commit
+`829eebda2d3f4eb66acef0b10b1d1039bcf1963f`. PQ-behoud, volledige
+catalogusoverdracht, exact productieschema, behoud van de negen
+productie-eigen objecten en de verplichte Shiny-cache zijn gecontroleerd.
+Publicatiebewijs: `outputs/pq-integratie/productie_20260928_cachevast.log`.
+De levende lokale database is daarbij niet opnieuw geïmporteerd.
+
 De actuele uitvoeringsstatus staat in `TODO.md`. Het bestaande script
 `gis/scripts/import_external_ecology_sources.py --pq-integratie` bereidt
 zonder `--apply` alleen een plan voor. Het vereist een gecontroleerd

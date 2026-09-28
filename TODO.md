@@ -5,7 +5,10 @@
 ### Naamgeving en bronoverstijgende meetstructuren
 
 - PQ-migratie opgedragen op 27 september 2026, taakbranch
-  `codex/pq-integratie`. Eén uitvoering: broncontrole en behoudsback-up;
+  `codex/pq-integratie`. **Afgerond en gepubliceerd op 28 september om
+  15:33 CEST** vanaf `829eebda2d3f4eb66acef0b10b1d1039bcf1963f`.
+  Onderstaand verloop bewaart ook de eerdere herstelpoging.
+  Eén uitvoering: broncontrole en behoudsback-up;
   veld-/beoordelingsmapping; bronoverstijgende PQ-structuur en centrale
   taxonverwijzing; geïsoleerde migratie- en herstelproef; gelijke bestaande
   applicatie-uitkomsten; lokale invoer; gecontroleerde publicatie; documentatie
@@ -41,10 +44,20 @@
   export plus negen benoemde productie-eigen objecten, vóór en na import.
   Een controlehash bewaakt bovendien hun tabelinhoud en definities.
   De echte MySQL-proeven voor verwisselde, ontbrekende en extra objecten,
-  onjuiste typen en gewijzigde inhoud/schema slagen. De bijgewerkte helper
-  moet nog via de vaste sudo-installer worden geïnstalleerd voordat de
-  productiepublicatie opnieuw kan starten. De MySQL-image-update volgt
-  afzonderlijk na geslaagde PQ-publicatie en vernieuwde back-upcontrole.
+  onjuiste typen en gewijzigde inhoud/schema slagen. Ton heeft de bijgewerkte
+  helper op 28 september om 14:29 CEST via de vaste sudo-installer geïnstalleerd
+  (SHA-256 `50ff9bd85d5ca9e6955b86b98a7b577f481568b89bec64c19f32e585d2c285f0`).
+  De uitvoering vanaf main `829eebd` om 14:31 CEST is tijdens de lokale
+  voorcontrole onderbroken: de vergelijkingsstap gebruikte nog de tussencache
+  van de vorige export en ging opnieuw SQL inlezen. Productie bleef ongewijzigd.
+  Om 14:54 CEST is opnieuw gestart met expliciete SQL-/cachemanifestpaden en
+  `MEIJENDEL_REQUIRE_PREBUILT_CACHE=1`; de juiste cache is vooraf geladen en
+  gevalideerd in 0,11 seconde. Deze publicatie is om 15:33 CEST geslaagd:
+  PQ-behoudscontroles, catalogusverwijdering, exacte schema-inventaris,
+  ongewijzigde negen productie-eigen objecten, `SQL_CACHE=TRUE`, Shiny en
+  publieke soortselectie zijn groen. Productie bevat 257 basistabellen en
+  22 views. Bewijs: `outputs/pq-integratie/productie_20260928_cachevast.log`.
+  De MySQL-image-update volgt afzonderlijk na vernieuwde back-upcontrole.
   De levende database hoeft niet opnieuw te worden gemigreerd.
   Alleen-lezen toegang tot de PQ-/LVD-bronbestanden op de T7 is op
   27 september expliciet toegestaan en gebruikt. De SHA-256 van de
@@ -81,6 +94,18 @@
   importscript aan voor gebruik van het centrale register; geen nieuwe
   brongebonden taxoncatalogus. Los naam- of identiteitstwijfel op vóór
   definitieve invoer en beproef de koppeling en het terugdraaien.
+
+- De afzonderlijke MySQL-image-update is voorbereid op de scan van
+  28 september 2026: zes repareerbare HIGH-bevindingen in `libxml2`
+  `2.9.13-14.el9_8.4`, met correctie `2.9.13-14.el9_8.5`.
+  De lokale en servercontrole verwachtten nog de vorige curl-bevindingen;
+  die uitgangscontrole is aangepast en met echte Bash-controles getest.
+  Afwijkende scans blijven blokkerend en de kandidaat moet nul HIGH en nul
+  CRITICAL hebben. De image is nog niet gebouwd of vervangen. Eerst de
+  PQ-publicatie afronden en de back-upketen verifiëren, inclusief bewijs van
+  de NAS-kopie en beschermde snapshot. Alleen-lezen NAS-toegang is gevraagd;
+  actuele controle daarvan staat nog open. Voor de imagewisseling gebruikt
+  Ton daarna zelf het standaard macOS Terminal-venster voor sudo.
 
 - De registeraanvulling van 27 september 2026 is na een terugdraaiproef
   opgeslagen: 27 groepen, 15.580 naamgebruiken en referenties en 18.437

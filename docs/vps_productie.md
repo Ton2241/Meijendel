@@ -1,8 +1,27 @@
 # Actuele VPS-productie voor Meijendel
 
-Momentopname: **21 september 2026**. De volledige gedeelde hostinventaris staat
-canoniek in `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
-Controleer live voordat een versieclaim opnieuw wordt gebruikt.
+De actuele gedeelde hostinventaris staat canoniek in
+`/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
+Controleer daar de actieve images en productiecommits. De technische
+momentopnamen verderop zijn historisch; zij zijn geen uitvoeringsinstructie.
+
+## PQ-publicatie op 28 september 2026
+
+De PQ-integratie is lokaal uitgevoerd en om 15:33 CEST op de VPS gepubliceerd
+vanaf `829eebda2d3f4eb66acef0b10b1d1039bcf1963f`.
+De lokale voorcontrole van 14:31 CEST
+is zonder productiehandeling onderbroken wegens opnieuw inlezen via een
+verouderde tussencache. Bij de herstart zijn de geldige manifestpaden en
+`MEIJENDEL_REQUIRE_PREBUILT_CACHE=1` expliciet ingesteld.
+De gecorrigeerde roothelper is om
+14:29 CEST geïnstalleerd. De export, cache en voorafgaande schemacontrole
+zijn geslaagd. De VPS telt exact 257 basistabellen en 22 views. De helper
+bevestigt ongewijzigde inhoud en definities van `vogelstand_1924`, de twee
+websitekoppeltabellen en hun zes views. PQ-behoud, catalogusverwijdering,
+`SQL_CACHE=TRUE`, Shiny-gereedheid en publieke soortselectie zijn groen.
+Bewijs: `outputs/pq-integratie/productie_20260928_cachevast.log`.
+Exacte objecten en controles staan
+in `docs/database/TAXONREGISTER.md`; uitvoeringsstatus staat in `TODO.md`.
 
 ## Extern herstelbewijs
 
@@ -19,7 +38,7 @@ instance, 100-GB-schijf, IPv4, Security Group, Private Network en VPC
 verwijderd; AMS 1 toont nul bijbehorende Instances, Flexible IPs en Block
 Storage-volumes.
 
-## Actieve componenten
+## Historische componentenstand van 21 september 2026
 
 | Onderdeel | Actieve versie of status |
 |---|---|
@@ -70,7 +89,7 @@ rollback wordt uiterlijk 25 augustus opnieuw beoordeeld volgens `TODO.md`.
 Actieve Meijendel-productiecommit:
 `891ca4e9bd51a2d9bfd825a733c79bb61473b4ee`.
 
-## Opslag en containers
+## Historische opslag en containers van 20 augustus 2026
 
 Na gecontroleerde opschoning zijn vier verklaarde containers aanwezig:
 

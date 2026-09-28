@@ -18,7 +18,7 @@ De levende database is niet opnieuw geïmporteerd uit een oudere dump.
 
 De export van 28 september omvat 254 basistabellen en 16 views. De
 teruggelezen export, alle tabelinhouden en de inhoudsgebonden Shiny-cache
-zijn gevalideerd. De productiepublicatie van 28 september is afgebroken
+zijn gevalideerd. De eerste productiepublicatie van 28 september is afgebroken
 bij een afwijkend totaal aantal productietabellen, nadat de afzonderlijke
 PQ-controles waren geslaagd. De vorige productie is volledig teruggezet;
 Shiny-cachecontrole en volledige multi-hostrooktest zijn groen. Er is geen
@@ -28,9 +28,16 @@ en de zes views vormen de vereiste websitekoppellaag; de derde tabel is
 `vogelstand_1924`. Alle negen objecten blijven behouden. De gecorrigeerde
 releasecontrole toetst exacte namen en typen vóór en na import, plus
 ongewijzigde inhoud en definities van deze productie-eigen objecten.
-De lokale MySQL-regressieproeven slagen. Installatie van de bijgewerkte
-roothelper en de aansluitende productiepublicatie staan nog open.
-Actuele herstelstatus en vervolg: `TODO.md`.
+De lokale MySQL-regressieproeven slagen. Ton heeft de bijgewerkte roothelper
+op 28 september om 14:29 CEST geïnstalleerd. De aansluitende publicatie is
+om 15:33 CEST geslaagd vanaf `829eebda2d3f4eb66acef0b10b1d1039bcf1963f`.
+De VPS bevat nu exact 257 basistabellen en 22 views: de export plus de negen
+behouden productie-eigen objecten. Hun inhoud en definities zijn identiek
+gebleven. De PQ-controles, catalogusverwijdering, Shiny-cache en publieke
+soortselectie zijn groen. De actuele publicatie is dus niet de hierboven
+beschreven teruggedraaide ochtendpoging. Bewijs:
+`outputs/pq-integratie/productie_20260928_cachevast.log`.
+De afzonderlijke MySQL-image-update en NAS-back-upcontrole staan nog open.
 
 ## Taxonregister
 
