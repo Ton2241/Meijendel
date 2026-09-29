@@ -1,5 +1,18 @@
 # Besluiten
 
+- Op 29 september 2026 heeft Ton zijn naamgevingsvoorkeur gewijzigd:
+  behalve PQ en vogels krijgen nieuwe of opnieuw ingerichte tabelfamilies
+  bij voorkeur de naam van de bron of herkenbare broncollectie. De eerdere
+  voorkeur voor fysieke soortgroepprefixen is niet meer leidend; het voorstel
+  in `docs/database/MEIJENDEL_TABELINVENTARIS.md` blijft historische context.
+  Alle PQ-informatie blijft onder `pq_*`; de vogelketen blijft onaangetast.
+  De bronoverstijgende soortingang blijft `taxa`, `taxa_bronkoppeling` en
+  `taxon_groepen`, zonder eigen soortenlijsten per bron. Bron-ID's, versies,
+  meetcontext en overlapbesluiten blijven behouden. Geen databasewijziging
+  of VPS-publicatie in deze vastlegging. Canonieke projectafspraak:
+  `../VWG_Project/workflow.md`, sectie
+  `Bronbenaming als voorkeur voor Meijendel-tabellen`.
+
 - Op 29 september 2026 heeft Ton verplicht gesteld dat **alle soortwaarnemingen**
   in `Meijendel` bereikbaar zijn vanuit `taxa`, via `taxa_bronkoppeling` en
   met `taxon_groepen` als indeling. Dit omvat iedere bron, afgeleide meetregels
