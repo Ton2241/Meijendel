@@ -1,5 +1,19 @@
 # Besluiten
 
+- Op 29 september 2026 heeft Ton bepaald dat alle PQ-gegevens in
+  `Meijendel` uitsluitend binnen `pq_*` worden opgeslagen, verbonden met
+  `taxa_bronkoppeling`, `taxa` en `taxon_groepen`. Na gecontroleerde
+  integratie blijven geen PQ-gegevens op andere databaseplekken of in
+  losse actieve gegevensbestanden achter. Dezelfde regel geldt voor alle
+  toekomstige aanvullingen en vervangingen, waaronder onvervaagde NDFF-PQ-
+  informatie. Bronwaarden, versies, beoordelingen, verwijzingen en rechten
+  blijven behouden; mogelijke koppelingen worden niet tot bewezen
+  opnamen verheven. Geen VPS-publicatie. Canonieke projectafspraak:
+  `../VWG_Project/workflow.md`, sectie `Alle PQ-gegevens uitsluitend in pq_*`.
+  Dit besluit is vastgelegd; de aanvullende fysieke migratie en importborging
+  zijn nog niet uitgevoerd. De eerdere deelmigratie is geen bewijs dat
+  deze ruimere eindtoestand al is bereikt. Zie `TODO.md`.
+
 - Op 29 september 2026 heeft Ton goedgekeurd dat `taxa.weergavenaam` voor
   alle taxa wordt toegevoegd en gevuld. Gebruik de Nederlandse naam, anders
   de wetenschappelijke naam; onderscheid naamgenoten met een inhoudelijke

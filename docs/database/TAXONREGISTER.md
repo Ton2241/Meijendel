@@ -593,6 +593,26 @@ gerenderde Wordpagina's zijn gecontroleerd.
 
 ## PQ-integratie en behoud van bronopnamen
 
+### Bindende eindtoestand vanaf 29 september 2026
+
+Alle PQ-informatie wordt brononafhankelijk opgeslagen onder `pq_*`, met
+centrale taxonkoppeling. Dit geldt ook voor nieuwe, aanvullende en
+vervangende leveringen. De volledige, canonieke opslagafspraak staat in
+[`VWG_Project/workflow.md`](../../../VWG_Project/workflow.md), sectie
+`Alle PQ-gegevens uitsluitend in pq_*`. Zij omvat ook PQ-specifieke
+bronmetadata, beoordelingen en opnamekoppelingen; geen losse actieve
+bestanden of PQ-restopslag elders in `Meijendel`.
+
+De hierna beschreven uitvoering van 27–28 september betreft uitsluitend
+de toen geselecteerde provinciale PQ- en vermoedelijke LVD-opnamen.
+De resterende NDFF-/LVD-beoordeling, fysieke verplaatsing en importborging
+zijn niet door die deelmigratie uitgevoerd. De oude beschrijving van
+achtergebleven bronlagen is een feitelijke tussenstand, geen blijvende
+opslaguitzondering. `TODO.md`, sectie `Volledige PQ-opslag uitsluitend onder
+pq_*`, beschrijft het resterende werk en de afsluitende controle.
+
+### Eerder uitgevoerde deelmigratie
+
 De opgedragen migratie verbindt de 53.122 provinciale taxonregels uit
 1981–2025 rechtstreeks met `taxa_bronkoppeling`, en via die koppeling met
 `taxa` en `taxon_groepen`. De 714 oorspronkelijke taxonvermeldingen zijn

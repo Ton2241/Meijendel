@@ -2,6 +2,42 @@
 
 ## Nu open
 
+### Volledige PQ-opslag uitsluitend onder pq_*
+
+- Bindend besluit van 29 september 2026 vastgelegd in
+  `../VWG_Project/workflow.md`, sectie `Alle PQ-gegevens uitsluitend in pq_*`.
+  De resterende fysieke migratie en aanpassing van imports zijn **nog open**;
+  de eerdere PQ/LVD-deelmigratie hieronder blijft afgerond binnen haar
+  toenmalige selectie. Geen VPS-publicatie.
+- Bepaal de volledige verplaatsingsselectie, niet alleen de tabellen met
+  `pq` in hun naam. Onderzoek NDFF-bronregels en hun PQ-poort, resterende
+  LVD-opnamen, metadata, JSON-bronvelden, overlap-/kwaliteitsbesluiten,
+  foreign keys, niet-afgedwongen verwijzingen en bestaande afnemers.
+  Bewaar bewezen en vermoedelijke PQ-bronopnamen met verschillende status
+  binnen dezelfde PQ-familie; houd niet-PQ-vegetatie inhoudelijk apart.
+- Ontwerp de bronoverstijgende opname- en resultaatroute binnen de bestaande
+  PQ-familie. Leg de concrete selectie, veldmapping, bronidentiteiten,
+  versies, vervangingsrelaties en bewaarbeperkingen in het bestaande
+  `docs/database/TAXONREGISTER.md` vast. Iedere taxonregel krijgt een
+  bestaande of gecontroleerd nieuwe centrale bronkoppeling. Geen losse
+  gegevensbestanden als eindoplossing en geen nieuwe taxoncatalogus.
+- Pas de aanvoer- en leesroutes samen aan. Een volgende NDFF-, LVD- of
+  provinciale levering moet PQ-data rechtstreeks naar `pq_*` routeren en
+  mag verplaatste rijen niet in `ndff_*` of `externe_ecologie_*` terugmaken.
+  Een vervanging bewaart de eerdere bronversie binnen `pq_*` zonder dubbel
+  meetellen. Beveiligde, onvervaagde brondata worden niet openbaar gemaakt.
+- Beproef migratie, herhaling, onderbreking, transactioneel terugdraaien en
+  volledig herstel op een gecontroleerde lokale databasekopie. Vergelijk
+  alle bronvelden en verwijzingen en de bestaande website-, dashboard- en
+  Shiny-uitkomsten. Migreer daarna lokaal en verwijder uitsluitend de
+  aantoonbaar volledig overgedragen inhoud op de oude plek.
+- Rond pas af na databasebrede controle: geen PQ-meetgegevens of
+  PQ-specifieke bron-, koppel- en beoordelingsgegevens buiten `pq_*`, geen
+  resterende onbesliste PQ-kandidaten buiten de familie, geen verweesde
+  relaties of ontbrekende centrale taxonkoppelingen, geen ongewenste
+  dubbelingen en geen herinvoer via bestaande imports. Werk bij daadwerkelijke
+  bronverplaatsing beide versies van het bronregister onmiddellijk bij.
+
 ### Naamgeving en bronoverstijgende meetstructuren
 
 - Weergavenaam op 29 september 2026 lokaal uitgevoerd: alle 11.659 centrale

@@ -6,7 +6,14 @@ Dit document bevat actuele status, resterende risico's en logische vervolgstappe
 
 ## PQ-integratie
 
-De lokale opschoning is uitgevoerd. Alle 53.122 provinciale PQ-soortregels
+Op 29 september 2026 is de bindende eindtoestand aangescherpt: alle
+PQ-informatie uitsluitend binnen `pq_*`, met centrale taxonkoppeling en
+zonder resterende PQ-opslag elders in `Meijendel` of in losse actieve
+bestanden. De aanvullende migratie en importborging zijn nog open; zie
+`TODO.md`, sectie `Volledige PQ-opslag uitsluitend onder pq_*` en de
+canonieke afspraak in `../VWG_Project/workflow.md`.
+
+De eerdere lokale deelopschoning is uitgevoerd. Alle 53.122 provinciale PQ-soortregels
 uit 1981–2025 gebruiken het centrale taxonregister. Alle 714 oorspronkelijke
 taxonvermeldingen zijn behouden; de afzonderlijke catalogus is verwijderd.
 Verder staan 644 volledige LVD-bronopnamen met 16.627 resultaten uit

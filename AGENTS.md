@@ -147,6 +147,14 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- pas voor iedere PQ-import, correctie of migratie de bindende afspraak
+  `../VWG_Project/workflow.md`, sectie `Alle PQ-gegevens uitsluitend in pq_*`,
+  toe: alle PQ-inhoud onder `pq_*`, centrale taxonkoppeling, geen losse
+  actieve bestanden en na integratie geen PQ-restgegevens elders in
+  `Meijendel`. Dit geldt ook voor aanvullende of vervangende onvervaagde
+  NDFF-PQ-data; behoud bronversies, interne verwijzingen en afscherming.
+  Eerdere opslagregels voor afzonderlijke NDFF/PQ-controlelagen beschrijven
+  de nog te migreren toestand, niet een uitzondering op deze eindtoestand
 - Vul `taxa.weergavenaam` bij ieder nieuw taxon en controleer de uniciteit;
   gebruik `prepare_registry_import()` voor identiteit én presentatie. Gebruik
   de weergavenaam nooit als koppelsleutel of bewijs van taxonidentiteit.
