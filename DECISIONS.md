@@ -1,5 +1,18 @@
 # Besluiten
 
+- Op 29 september 2026 heeft Ton verplicht gesteld dat **alle soortwaarnemingen**
+  in `Meijendel` bereikbaar zijn vanuit `taxa`, via `taxa_bronkoppeling` en
+  met `taxon_groepen` als indeling. Dit omvat iedere bron, afgeleide meetregels
+  en echte nullen. Bronidentiteiten, versies, oorspronkelijke waarden en
+  analysebeperkingen blijven behouden; een ontbrekende groep sluit niets uit.
+  Iedere toevoeging, correctie, import, migratie en schemawijziging vereist
+  vóór en na uitvoering de volledige centrale controle. Een nieuwe tabel of
+  kolom mag die controle niet ontlopen. 'Doe wat nodig is' betekent de gehele
+  taak afronden, inclusief bewijs en documentatie; vraag niet opnieuw om
+  dezelfde autorisatie. Alleen werkelijk ontbrekende keuzes of nieuwe
+  bevoegdheden worden voorgelegd. Geen VPS-publicatie. Canonieke uitwerking:
+  `docs/database/TAXONREGISTER.md`; projectregel: `../VWG_Project/workflow.md`.
+
 - Op 29 september 2026 heeft Ton bepaald dat alle PQ-gegevens in
   `Meijendel` uitsluitend binnen `pq_*` worden opgeslagen, verbonden met
   `taxa_bronkoppeling`, `taxa` en `taxon_groepen`. Na gecontroleerde

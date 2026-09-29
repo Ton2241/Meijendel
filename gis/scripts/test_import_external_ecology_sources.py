@@ -830,7 +830,117 @@ Rscript() {
     return 0
 
 
+def check_central_query_routes():
+    """Catch incomplete route discovery, metadata drift and name-only identity."""
+    module = load_module()
+    assert callable(getattr(module, 'central_query_routes', None)), 'Databasebrede centrale queryroute ontbreekt'
+    check=dict(name='ck_taxa_bron_hash',table='taxa_bronkoppeling',clause="regexp_like(x,_ascii\\'^[0-9a-f]{64}$\\')")
+    projected=module.central_constraint_projection(check)
+    assert projected['clause']=="regexp_like(x,_utf8mb4\\'^[0-9a-f]{64}$\\')"
+    assert check['clause']!=projected['clause']
+    other={**check,'name':'andere_check'}
+    assert module.central_constraint_projection(other)==other
+    different={**check,'clause':"regexp_like(x,_ascii\\'^[A-Z]$\\')"}
+    assert module.central_constraint_projection(different)==different
+    connection=module.CentralQueryDatabase('Test',client='/actual/mysql',host='localhost',port=3307)
+    assert '--port=3307' in connection.args and '--host=localhost' in connection.args
+    schema = {
+        'taxa': {'taxon_id','wetenschappelijke_naam'},
+        'soorten': {'id','soort_naam'},
+        'territoria': {'id','soort_id','jaar','territoria'},
+        'ndff_soorten': {'ndff_soort_id','soort_key','wetenschappelijke_naam'},
+        'ndff_open_waarneming': {'waarneming_id','soort_key','jaar'},
+        'sovon_avimap_taxon': {'batch_id','soortgroep_code','soortnr'},
+        'sovon_avimap_waarneming': {'batch_id','soortgroep_code','soortnr','jaar'},
+        'externe_ecologie_resultaat': {'resultaat_id','wetenschappelijke_naam','bronmetadata'},
+        'pq_vegetatie_waarneming': {'waarneming_id','taxon_bronkoppeling_id'},
+        'ndff_test_bezoek_taxon': {'reconstructieversie','bezoek_sleutel','wetenschappelijke_naam','waarnemingsstatus'},
+        'ndff_habslak_hokjaar': {'reconstructieversie','hokjaar_sleutel','doelsoort','jaar'},
+    }
+    routes = module.central_query_routes(schema)
+    assert routes['territoria']['catalogue'] == 'soorten'
+    assert routes['ndff_open_waarneming']['catalogue'] == 'ndff_soorten'
+    assert routes['sovon_avimap_waarneming']['catalogue'] == 'sovon_avimap_taxon'
+    assert routes['ndff_habslak_hokjaar']['name_field'] == 'doelsoort'
+    assert routes['ndff_test_bezoek_taxon']['kind'] == 'derived'
+    assert routes['pq_vegetatie_waarneming']['kind'] == 'direct'
+    migrated = {k: v | {'taxon_bronkoppeling_id'} for k, v in schema.items()}
+    assert module.central_query_routes(migrated)['ndff_test_bezoek_taxon']['kind'] == 'derived'
+    assert module.derived_source_key({'name_field':'wetenschappelijke_naam',
+                                    'context_fields':['soortgroep_raw']},
+                                   {'wetenschappelijke_naam':'A', 'soortgroep_raw':'B'}) == '["A","B"]'
+    assert module.source_usage_projection({'name':'A','register_broncontext':{'extra':1}})['name'] == 'A'
+    assert 'register_broncontext' not in module.source_usage_projection({'register_broncontext':{}})
+    actual={k:set(v) for k,v in module.CENTRAL_QUERY_SCHEMA.items()}
+    module.central_query_schema_contract(actual)
+    for changed in ({**actual,'nieuwe_metingen':{'soortnr','aantal','jaar'}},
+                    {**actual,'nieuwe_metingen':{'euring_code','aantal','jaar'}},
+                    {**actual,'territoria':actual['territoria']|{'ongecontroleerd_taxon'}}):
+        try:module.central_query_schema_contract(changed)
+        except ValueError:pass
+        else:raise AssertionError('Nieuwe soortkolom of gegevenslaag geaccepteerd zonder beoordeling')
+    # A new unregistered observation layer must never pass by a naming convention.
+    try:
+        module.central_query_routes({**schema, 'nieuwe_metingen': {'wetenschappelijke_naam','aantal','jaar'}})
+    except ValueError as exc:
+        assert 'nieuwe_metingen' in str(exc)
+    else:
+        raise AssertionError('Nieuwe ongecontroleerde soortmeettabel geaccepteerd')
+    sql = module.central_taxon_query('territoria', routes['territoria'], 7)
+    assert 'FROM taxa t' in sql and 'LEFT JOIN taxon_groepen g' in sql
+    assert 't.taxon_id=7' in sql and 'w.soort_id=c.id' in sql
+    for invalid in (True, -1, '7 OR 1=1'):
+        try: module.central_taxon_query('territoria',routes['territoria'],invalid)
+        except ValueError: pass
+        else: raise AssertionError('Ongeldige taxonidentifier geaccepteerd')
+    print('OK: centrale queryroutes, groeps-NULL en detectie nieuwe gegevenslaag')
+    return 0
+
+
+def check_central_new_source_versions(database):
+    """Exercise actual INSERT registration, including the existing parent FKs.
+
+    This is never a live test. Every complete route/visit/target/measurement
+    insertion and its new register decisions are rolled back together.
+    """
+    if not re.fullmatch(r'Meijendel_taxa_query_(?:proef|herstel)_[0-9]+',database):
+        raise ValueError('Invoerproeven uitsluitend in de eigen geïsoleerde proefdatabase')
+    module=load_module()
+    db=module.CentralQueryDatabase(database,writable=True)
+    version='centrale-querypoort-invoerproef-v1'
+    def clone(table,where):
+        columns=db.sql("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME="+
+            module.query_literal(table)+" AND EXTRA NOT LIKE '%auto_increment%' AND GENERATION_EXPRESSION='' ORDER BY ORDINAL_POSITION;").splitlines()
+        values=[module.query_literal(version) if c=='reconstructieversie' else 'NULL' if c=='taxon_bronkoppeling_id'
+                else module.query_identifier(c) for c in columns]
+        return ('INSERT INTO '+module.query_identifier(table)+' ('+','.join(map(module.query_identifier,columns))+') SELECT '+
+                ','.join(values)+' FROM '+module.query_identifier(table)+' '+where+' LIMIT 1;')
+    for table in ('ndff_lmfa_bezoek_taxon','sovon_avimap_daz_bezoek_taxon'):
+        setup='';where=''
+        if table=='ndff_lmfa_bezoek_taxon':
+            setup=('SET @cv=(SELECT reconstructieversie FROM ndff_lmfa_bezoek_taxon LIMIT 1); '
+                'SET @cb=(SELECT bezoek_sleutel FROM ndff_lmfa_bezoek_taxon LIMIT 1); '
+                'SET @cr=(SELECT route_sleutel FROM ndff_lmfa_bezoek WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb); '
+                'SET @cn=(SELECT wetenschappelijke_naam FROM ndff_lmfa_bezoek_taxon WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb LIMIT 1);')
+            setup+=clone('ndff_lmfa_route','WHERE reconstructieversie=@cv AND route_sleutel=@cr')
+            setup+=clone('ndff_lmfa_bezoek','WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb')
+            setup+=clone('ndff_lmfa_doelsoort','WHERE reconstructieversie=@cv AND wetenschappelijke_naam=@cn')
+            where='WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb'
+        sql=('START TRANSACTION; '+setup+clone(table,where)+' SELECT COUNT(*) FROM '+module.query_identifier(table)+
+            ' w JOIN taxa_bronkoppeling b ON b.koppeling_id=w.taxon_bronkoppeling_id JOIN taxa t ON t.taxon_id=b.taxon_id '
+            'WHERE w.reconstructieversie='+module.query_literal(version)+'; ROLLBACK;')
+        assert db.sql(sql,write=True)=='1',table
+        assert db.sql('SELECT COUNT(*) FROM '+module.query_identifier(table)+' WHERE reconstructieversie='+module.query_literal(version)+';')=='0'
+        assert db.sql('SELECT COUNT(*) FROM taxa_bronkoppeling WHERE bron_versie='+module.query_literal(version)+';')=='0'
+        print('OK: nieuwe bronversie automatisch centraal verbonden en volledig teruggedraaid:',table)
+    return 0
+
+
 if __name__ == "__main__":
+    if len(sys.argv)==3 and sys.argv[1]=='--centrale-invoerproef':
+        raise SystemExit(check_central_new_source_versions(sys.argv[2]))
+    if sys.argv[1:] == ['--centrale-querypoort']:
+        raise SystemExit(check_central_query_routes())
     if sys.argv[1:] == ['--pq-release-cache']:
         raise SystemExit(check_pq_release_cache())
     if sys.argv[1:] == ['--pq-release-schema']:

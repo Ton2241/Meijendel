@@ -282,6 +282,12 @@ def main() -> int:
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--sql-output", type=Path)
     args = parser.parse_args()
+    from import_external_ecology_sources import central_query_guarded_operation
+    return central_query_guarded_operation(lambda: execute_main(args),enabled=args.apply,
+        login_path=args.login_path,client=args.mysql)
+
+
+def execute_main(args) -> int:
     for path in (args.gpkg, args.manifest, SCHEMA):
         if not path.exists():
             raise FileNotFoundError(path)
@@ -292,7 +298,8 @@ def main() -> int:
     if not args.apply:
         print("DRY RUN: SQL opgebouwd; gebruik --apply om de lokale Meijendel-database te wijzigen.")
         return 0
-    run_mysql(args.mysql, [f"--login-path={args.login_path}", "--show-warnings"], sql)
+    run_mysql(args.mysql, [f"--login-path={args.login_path}", '--protocol=TCP',
+                          '--host=127.0.0.1','--port=3306',"--show-warnings"], sql)
     print(f"OK: ruimtelijke lagen en statusregels geïmporteerd ({RULE_VERSION})")
     return 0
 

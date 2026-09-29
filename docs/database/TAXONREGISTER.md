@@ -1,5 +1,213 @@
 # Taxonregister: structuur en uitvoering
 
+## Alle waarnemingen vanuit het centrale taxonregister
+
+Bindende opdracht Ton, 29 september 2026: alle soortwaarnemingen zijn vanuit
+`taxa` via `taxa_bronkoppeling` vindbaar, met de indeling in `taxon_groepen`.
+Dit omvat oorspronkelijke waarnemingen, afgeleide meetregels en echte nullen.
+Geen afzonderlijke taxoncatalogus is de ingang. Een naamregistratie zonder
+werkende verbinding naar de waarneming voldoet niet. Bij iedere databasewijziging
+wordt de volledige verbinding gecontroleerd. Deze opdracht is op 29 september
+2026 volledig lokaal uitgevoerd en gecontroleerd. Er is niets naar de VPS gepubliceerd.
+
+### Ontwerp en uitvoeringsplan
+
+Doel: bestaande bronwaarden en identificaties behouden, de ontbrekende expliciete
+verbindingen aanvullen en hernieuwde ontkoppeling blokkeren. De implementatie
+blijft in de bestaande importmodule, bestaande tests en bestaande live-controlepoort.
+Geen nieuwe views, geen VPS-publicatie en geen verplaatsing van PQ-bronopnamen
+als onderdeel van deze voorafgaande taxonkoppeling.
+
+- [x] Alle fysieke soort-/waarnemingslagen, bestaande sleutelroutes, afgeleide
+  meetregels en import-/exportschrijvers inventariseren; onbekende nieuwe lagen
+  moeten de controlepoort laten falen.
+- [x] Een complete sleutelkaart opstellen. Nieuwe waarnemingsverwijzingen gebruiken
+  `taxon_bronkoppeling_id`, met foreign key, index en verplichte integriteitscontrole.
+  Bestaande vogel-ID-routes blijven behouden. Afgeleide bronidentiteiten bevatten
+  de reconstructieversie en oorspronkelijke naamcontext; geen fuzzy match.
+- [x] Niet-geïdentificeerd bronmateriaal als zodanig bereikbaar houden, zonder
+  biologische soort, rang of conceptgelijkheid te verzinnen. De originele
+  onbeoordeelde beslissing en bronmetadata blijven bewaard.
+- [x] Queryhelpers starten bij `taxa`; een LEFT JOIN met `taxon_groepen` bewaart
+  ook de nog niet ingedeelde taxa. Alle bronlagen worden met herkomst afzonderlijk
+  teruggegeven; bronregels en afgeleide nullen worden niet bij elkaar opgeteld.
+- [x] Tests eerst laten falen bij ontbrekende verbinding, fout doel, gewijzigde
+  bronidentiteit, groeps-NULL, duplicatie, nieuwe onbekende tabel en historische versie.
+  Daarna de kleinste volledige implementatie en invoerborging toevoegen.
+- [x] Verse volledige back-up, identieke proefdatabase, transactionele rollback,
+  schemaherstel en volledig herstel uit de back-up bewijzen. Alle oorspronkelijke
+  cellen, geometrieën, meetwaarden, bronmetadata en bestaande viewuitkomsten vergelijken.
+- [x] Alleen dezelfde bewezen code en dezelfde bronstand lokaal toepassen;
+  aansluitend alle centrale routes, schrijvers en bestaande afnemers controleren.
+- [x] Bronregister in Markdown en Word, besluiten, status en TODO actualiseren;
+  onafhankelijke review, regressietests, commit/push/merge en workspace-preflight.
+
+Toetsingsbasis: op 29 september 2026 geraadpleegd:
+[Darwin Core](https://dwc.tdwg.org/terms/) en [TDWG TCS](https://tcs.tdwg.org/).
+Waarneming, identificatie, naamgebruik, taxonconcept en bronbesluit blijven gescheiden.
+Een centrale sleutel bevestigt geen historische conceptgelijkheid of analysetoelating.
+
+### Uitvoering en bewijs
+
+De oorspronkelijke waarnemingslagen zijn volledig onderzocht. Vogeltellingen
+lopen via de bestaande sleutel naar `soorten`, openbare NDFF-regels via
+`ndff_soorten`, en AVIMAP via zijn samengestelde bronsleutel. Deze drie bestaande
+catalogi krijgen een vaste centrale bronkoppeling. PQ en Vangblik hadden die
+verwijzing al. Externe bronresultaten en afgeleide soortmetingen krijgen haar
+ook. De broncodes blijven staan. Een query begint bij `taxa`, niet bij een van
+deze oude catalogi.
+
+De eerste herstelproef heeft twee beveiligingsgaten zichtbaar gemaakt: een
+bestaande maar verkeerde bronkoppeling moest worden geweigerd, en wijzigingen
+van de bovenliggende dataset mochten de herkomst niet stilzwijgend veranderen.
+Beide zijn aangescherpt en met schrijfproeven gecontroleerd. Ook verwijzingen
+naar een niet-bestaande NDFF-waarneming worden geweigerd. De levende database
+is pas na de volledige eindproef en onafhankelijke review gewijzigd. De lokale
+nacontrole is geslaagd: alle 122 beoordeelde routes zijn bereikbaar, zonder
+ontbrekende verbindingen of vermenigvuldiging van soortregels. Alle oorspronkelijke
+cellen en schema-eigenschappen en alle 16 bestaande viewuitkomsten zijn behouden.
+
+De lokale stand is nu 27 groepen, 11.660 centrale vermeldingen en 30.035
+bronkoppelingen. Het register heeft geen eigen waarnemingsperiode. De 11.659
+bestaande centrale vermeldingen en alle 24.561 eerdere bronkoppelingen zijn
+ongewijzigd bewaard. Er zijn 5.473 brongebruiken voor afgeleide meet-/doelsoortregels
+toegevoegd en één uitdrukkelijk onbepaald operationeel registerobject met zijn
+bronkoppeling voor het Naturalis Botany-collectieobject uit 2018. Dit laatste
+is geen nieuwe biologische soort. De 235 nog niet ingedeelde naamvermeldingen
+en dit operationele object blijven via de LEFT JOIN bereikbaar. Alle
+weergavenamen zijn gevuld en uniek. 242 rijtriggers beschermen de centrale
+bronidentiteit, versie en verwijzingen. Het levende bewijs staat onder
+`live/result.json` in de herstelmap hieronder.
+
+De 27 bestaande GIS-regressietestbestanden zonder databasewrites, de nieuwe
+routeproeven en de standaard volledige live-test zijn groen. Positieve invoer
+van nieuwe NDFF-LMFA- en SOVON-reconstructieversies is in de geïsoleerde proef
+getest en teruggedraaid. Ongeldige taxonverwijzingen en gewijzigde broncontext
+worden geweigerd. De export-, gekoppelde-cache- en Shiny-reproduceerbaarheidsproeven
+zijn groen. Bestaande website-, dashboard- en Shiny-leesroutes zijn niet gewijzigd;
+hun bestaande queryuitkomsten zijn in de volledige vergelijking behouden.
+Geen nieuwe dump, cachevervanging, bronverplaatsing of VPS-upload.
+
+Het bronregister is in Markdown en Word inhoudelijk gelijk; alle 22 pagina's
+van de Wordversie zijn visueel gecontroleerd. De vier eigen tijdelijke
+proef- en hersteldatabases zijn na verificatie verwijderd. De volledige
+back-up en alle controlebewijzen blijven in de onderstaande herstelmap bewaard.
+
+De volledige back-up staat buiten Git in
+`/Users/ton/Documents/Codex/Herstel/taxa-centrale-querypoort-20260929/Meijendel_before.sql.gz`.
+SHA-256: `0e7f65ae9fa632191cb894b0040ee4d98b8a82200fb6dcb0ad0ba45be5c68e67`.
+Transactioneel terugdraaien betreft de gegevenswijzigingen. Omdat MySQL DDL
+niet transactioneel terugdraait, wordt daarnaast een volledige herinstallatie
+van gegevens én oorspronkelijke structuur uit deze back-up bewezen.
+
+De onafhankelijke eindproef staat in dezelfde herstelmap onder
+`proef-3/result.json`. Alle 122 beoordeelde routes zijn bereikbaar, zonder
+ontbrekende of vermenigvuldigde soortregels. Het transactionele terugdraaien,
+ongeldige schrijfproeven en volledige herstel van de 253 basistabellen en
+16 views zijn geslaagd. De onafhankelijk herstelde database was
+`Meijendel_taxa_query_herstel_2026092903`. De exact beproefde module heeft
+SHA-256 `e144a2a3d604fcc3341e13dbab1957f39cee94112f06ea6b068cdd467cd9a69a`;
+het migratieplan `f3b5f4c8816ab1447ec078887eb7650d39e00e33c5432abc34974ef8689c4f9e`.
+Een andere bronstand, module of back-up wordt vóór de lokale wijziging geweigerd.
+
+De schema-vergelijking bewaart alle oorspronkelijke fysieke kolomtypen,
+nullability, defaults, indexen, CHECK-betekenis en foreign-key-kolommen met
+update-/verwijderregels. MySQL herleidt bij herstel de nullability van een
+berekend viewveld opnieuw; daarom worden voor views de definities, kolomtypen
+en volledige uitkomsten gecontroleerd, niet die afgeleide nullability-vlag.
+Een ALTER kan in de bestaande SHA-256-CHECK de introducer van de identieke
+ASCII-regex `^[0-9a-f]{64}$` van `utf8mb4` naar `ascii` wijzigen. Alleen die
+bewezen gelijkwaardige literal in die ene bestaande CHECK wordt genormaliseerd;
+andere CHECKs, tekensets en collaties worden niet gelijkgesteld. Het oorspronkelijke
+proefbewijs blijft bewaard, ook na gecontroleerde hervatting van de geïsoleerde proef.
+
+De verplichte poort staat in de bestaande importmodule als
+`central_query_audit()` en in de bestaande live-test als fase `waarnemingen`.
+Zij controleert het volledige fysieke schema, niet alleen bekende tabelnamen.
+Een nieuwe tabel of gewijzigde kolom vereist een expliciete beoordeling van
+de centrale route voordat zij aan het schema-contract wordt toegevoegd.
+Foreign keys moeten naar de gecontroleerde database wijzen. De daadwerkelijke
+triggerinhoud, bronidentiteit, centrale sleutelroutes en eenduidige
+bereikbaarheid worden bij iedere normale voor- en nacontrole gecontroleerd.
+De vergelijking van alle oorspronkelijke celwaarden, fysieke kolomtypen,
+indexen, constraints en 16 viewuitkomsten hoort bij de afzonderlijke
+migratie-/herstelproef. Zij is geen onderdeel van de normale bereikbaarheidspoort:
+een gewone import mag immers nieuwe meetwaarden toevoegen. Bij migraties en
+opschoning blijft die volledige vergelijking van te behouden inhoud verplicht.
+
+De poort is verplicht vóór en na iedere import, migratie, gegevenswijziging,
+structuurwijziging of export van `Meijendel`. Rijtriggers beschermen bestaande
+waarnemingslagen tijdens het schrijven. MySQL heeft geen algemene DDL-trigger:
+een beheerder met rootrechten kan beveiliging bewust verwijderen. Daarom mag
+handmatige root-SQL nooit de volledige voor- en nacontrole vervangen of
+overslaan. Een falende poort betekent dat de wijziging niet is afgerond.
+
+### Reikwijdte en gebruik
+
+De onderstaande hoeveelheden zijn oorspronkelijke bronregels. Zij zijn geen
+opgetelde unieke waarnemingen: bronnen kunnen overlappen en afgeleide meetregels
+hebben een andere betekenis dan bronwaarnemingen. De volledige controle omvat
+ook de afgeleide matrices, doelsoortregels, nulregels, historische versies en
+via een bronwaarneming verbonden beoordelingsregels. Vier oude invoertabellen
+zijn leeg en mogen geen ongecontroleerde blijvende soortwaarnemingen bevatten.
+
+| Oorspronkelijke bronlaag | Regels | Bronperiode | Centrale sleutelroute |
+|---|---:|---|---|
+| `territoria` | 71.155 | 1958–2025 | Via behouden vogel-ID en centraal verbonden `soorten` |
+| `dagwaarnemingen_bmp` | 600.959 | 2007–2025 | Dezelfde vogelroute |
+| `dagwaarnemingen_wv` | 105.712 | 2000–2025 | Dezelfde vogelroute |
+| `ndff_open_waarneming` | 810.830 | Ruwe bronjaren 1700–2025 | Via behouden `soort_key` en centraal verbonden `ndff_soorten` |
+| `sovon_avimap_waarneming` | 19.960 | 2009–2026 | Via de bestaande samengestelde AVIMAP-bronsleutel |
+| `pq_vegetatie_waarneming` | 53.122 | 1981–2025 | Rechtstreeks via `taxon_bronkoppeling_id` |
+| `pq_vegetatie_bronresultaat` | 16.627 | 1981–2015 | Rechtstreeks, met de oorspronkelijke LVD-broncontext |
+| `vangblik_vangst` | 60.560 | 1953–1960 | Rechtstreeks, met de oorspronkelijke determinatievelden |
+| `externe_ecologie_resultaat` | 82.289 | 1875–2025, verschillend per bron | Rechtstreeks, met volledige taxonbroncontext en datasetversie |
+
+De laatste laag omvat ENDURE: 9.072 regels uit 2018; resterende LVD:
+64.683 regels uit 1959–2015; Naturalis Botany: 1.881 regels uit 1875–2025;
+Naturalis Coleoptera: 869 regels uit 1906–2023; NMR: 4.748 regels uit
+1955–2015; STOWA: 1.036 regels uit 1992–2010. De LVD-regels binnen en buiten
+`pq_*` zijn hiermee taxonomisch bereikbaar; dit is geen fysieke verplaatsing
+van de resterende LVD-levering en geen uitspraak dat alle opnamen permanente
+kwadraten zijn. De afzonderlijke PQ-integratie blijft in `TODO.md` beschreven.
+
+Van de openbare NDFF-laag hebben 5.336 regels een ruw bronjaar in 1700–1949.
+Dat is geen bevestiging van hun feitelijke waarnemingsdatum. De centrale
+ontsluiting verandert die oorspronkelijke datums of hun kwaliteitsbeoordeling niet.
+
+Voer vóór en na iedere wijziging de volledige controle uit:
+
+```bash
+python3 gis/scripts/test_taxonregister_live_schema.py
+```
+
+Deze bestaande test kiest standaard de actuele fase `waarnemingen`. De oudere
+fasen zijn historische deelproeven, geen bewijs van de volledige actuele dekking.
+De normale imports en export roepen dezelfde controle automatisch aan rond de
+werkelijke schrijfactie, met dezelfde MySQL-client, server, poort en database.
+
+Maak SQL voor een gekozen bronlaag vanuit een centraal taxon, bijvoorbeeld:
+
+```bash
+python3 gis/scripts/import_external_ecology_sources.py \
+  --centrale-query-sql --taxon-id 35699 --tabel ndff_open_waarneming
+```
+
+De helper controleert eerst de volledige database en geeft een gewone SELECT,
+geen nieuwe view. Zonder `--tabel` geeft hij de afzonderlijke beoordeelde
+bronroutes. Koppelen gebeurt met IDs, niet door wetenschappelijke naamteksten
+opnieuw te vergelijken. De LEFT JOIN met `taxon_groepen` behoudt ook taxa
+zonder groepsindeling. Kies daarna de benodigde bronvelden en kwaliteitsfilters;
+tel overlappende bronnen en gereconstrueerde nullen niet zonder meer samen.
+
+Onopgeloste **referentiegegevens zonder waarnemingen** zijn geen fictieve
+waarnemingen. De catalogusregel `soorten.id=647` bevat Toendrarietgans zonder
+wetenschappelijke bronnaam, met een eerder vastgesteld codeconflict. Zij is
+niet gebruikt in de vogelwaarnemingen. Haar oorspronkelijke onbeoordeelde
+bronbesluit blijft behouden; een nieuwe waarneming met die onopgeloste sleutel
+wordt geweigerd. Niet-geïdentificeerd daadwerkelijk bronmateriaal blijft
+daarentegen via een uitdrukkelijk onbepaald operationeel registerobject vindbaar.
+
 ## Weergavenaam voor alle taxa
 
 Besluit Ton, 29 september 2026: voeg `taxa.weergavenaam` toe en vul deze

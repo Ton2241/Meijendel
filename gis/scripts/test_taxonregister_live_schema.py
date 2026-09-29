@@ -176,10 +176,17 @@ def rows(sql: str) -> list[list[str]]:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--fase', choices=['leeg', 'groepen', 'vogels', 'overige'], default='vogels',
-                        help='historische leegte/groepspoort of vogelnaamgebruiken v1')
+    parser.add_argument('--fase', choices=['leeg', 'groepen', 'vogels', 'overige','waarnemingen'], default='waarnemingen',
+                        help='standaard volledige actuele database; andere fasen zijn historische deelproeven')
     parser.add_argument('--manifest', type=Path, help='Lokaal vast invoermanifest v3 voor fase overige')
+    parser.add_argument('--database',default='Meijendel')
+    parser.add_argument('--login-path',default='meijendel_root')
     args = parser.parse_args()
+    if args.fase=='waarnemingen':
+        from import_external_ecology_sources import central_query_gate
+        result=central_query_gate(args.database,args.login_path)
+        print('OK: volledige centrale bereikbaarheid; gecontroleerde routes:',len(result['routes']))
+        return 0
     if args.fase == 'overige' and not args.manifest:
         parser.error('--fase overige vereist --manifest')
     scope = "table_schema=DATABASE() AND table_name IN ('taxon_groepen','taxa','taxa_bronkoppeling')"

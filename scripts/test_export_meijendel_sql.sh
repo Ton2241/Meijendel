@@ -7,6 +7,7 @@ TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
 export MEIJENDEL_TEST_VALIDATOR_LOG="$TEST_DIR/validator.log"
 export MEIJENDEL_TEST_MYSQLDUMP_LOG="$TEST_DIR/mysqldump.log"
+export MEIJENDEL_TEST_TAXON_LOG="$TEST_DIR/taxon.log"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -18,6 +19,14 @@ mkdir -p "$TEST_DIR/bin"
 cat > "$TEST_DIR/bin/ok" <<'SCRIPT'
 #!/usr/bin/env bash
 exit 0
+SCRIPT
+
+cat > "$TEST_DIR/bin/python3" <<'SCRIPT'
+#!/usr/bin/env bash
+set -euo pipefail
+[[ "$1" == */gis/scripts/import_external_ecology_sources.py && "$2" == --centrale-querypoort ]]
+printf '%s\n' "$@" >> "$MEIJENDEL_TEST_TAXON_LOG"
+[[ "${MEIJENDEL_TEST_TAXON_FAIL:-0}" == 0 ]]
 SCRIPT
 
 cat > "$TEST_DIR/bin/mysqldump" <<'SCRIPT'
@@ -108,6 +117,18 @@ if PATH="$TEST_DIR/bin:$PATH" \
   MEIJENDEL_MYSQL_VERSION_GUARD="$TEST_DIR/bin/ok" \
   MEIJENDEL_MYSQL_BIN="$TEST_DIR/bin/mysql" \
   MEIJENDEL_MYSQLDUMP_BIN="$TEST_DIR/bin/mysqldump" \
+  MEIJENDEL_EXPORT_VALIDATOR="$TEST_DIR/bin/validator-ok" \
+  MEIJENDEL_CACHE_BUILDER="$TEST_DIR/bin/cache-builder-ok" \
+  MEIJENDEL_TEST_TAXON_FAIL=1 "$EXPORTER" "$dump" "$manifest" >/dev/null 2>&1; then
+  fail "export met falende centrale taxonpoort werd geaccepteerd."
+fi
+[[ ! -e "$MEIJENDEL_TEST_MYSQLDUMP_LOG" ]] || fail "dump begon vóór centrale taxoncontrole."
+
+if PATH="$TEST_DIR/bin:$PATH" \
+  MEIJENDEL_WORKSPACE_GUARD="$TEST_DIR/bin/ok" \
+  MEIJENDEL_MYSQL_VERSION_GUARD="$TEST_DIR/bin/ok" \
+  MEIJENDEL_MYSQL_BIN="$TEST_DIR/bin/mysql" \
+  MEIJENDEL_MYSQLDUMP_BIN="$TEST_DIR/bin/mysqldump" \
   MEIJENDEL_EXPORT_VALIDATOR="$TEST_DIR/bin/validator-fail" \
   "$EXPORTER" "$dump" "$manifest" >/dev/null 2>&1; then
   fail "export met falende proefvalidatie werd geaccepteerd."
@@ -140,6 +161,7 @@ PATH="$TEST_DIR/bin:$PATH" \
 
 grep -Fqx -- '-- Dump completed on deterministic export' "$dump" || fail "deterministische eindmarkering ontbreekt."
 grep -Fqx -- '--skip-dump-date' "$MEIJENDEL_TEST_MYSQLDUMP_LOG" || fail "mysqldump-tijdstempel is niet uitgeschakeld."
+grep -Fqx -- '--centrale-querypoort' "$MEIJENDEL_TEST_TAXON_LOG" || fail "centrale querypoort is overgeslagen."
 grep -q 'candidate=codex_meijendel_export_check_' "$manifest" || fail "nieuw manifest werd niet geactiveerd."
 cache_file="$(awk -F= '$1 == "cache_file" {print $2}' "$manifest")"
 cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"

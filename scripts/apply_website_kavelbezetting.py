@@ -44,8 +44,11 @@ class DiffPlan:
 
 def _mysql(args: argparse.Namespace, sql: str) -> str:
     cmd = [
-        "mysql",
+        "/usr/local/mysql/bin/mysql",
         f"--login-path={args.login_path}",
+        '--protocol=TCP',
+        '--host=127.0.0.1',
+        '--port=3306',
         "--batch",
         "--raw",
         "--skip-column-names",
@@ -368,7 +371,12 @@ def main() -> int:
     args = parser.parse_args()
     if args.command not in {"apply", "diff-apply"} and args.yes:
         raise SystemExit("--yes is alleen toegestaan bij apply en diff-apply.")
-    return run(args)
+    import sys
+    sys.path.insert(0,str(Path(__file__).resolve().parents[1] / 'gis' / 'scripts'))
+    from import_external_ecology_sources import central_query_guarded_operation
+    return central_query_guarded_operation(lambda:run(args),
+        enabled=args.command in {'apply','diff-apply'} and args.database=='Meijendel',
+        database=args.database,login_path=args.login_path)
 
 
 if __name__ == "__main__":

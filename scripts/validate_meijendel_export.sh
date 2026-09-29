@@ -198,6 +198,9 @@ write_manifest() {
   write_table_checksums "$MYSQL_DATABASE" "$live_checksums"
   write_table_checksums "$candidate" "$candidate_checksums"
   cmp -s "$live_checksums" "$candidate_checksums" || die "proefimport wijkt inhoudelijk af van de levende database."
+  query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$MYSQL_DATABASE' ORDER BY trigger_name" > "$temp_dir/live-triggers.tsv"
+  query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$candidate' ORDER BY trigger_name" > "$temp_dir/candidate-triggers.tsv"
+  cmp -s "$temp_dir/live-triggers.tsv" "$temp_dir/candidate-triggers.tsv" || die "proefimport wijkt af in daadwerkelijke schrijfbewaking."
   "$mysqlcheck_bin" "${mysql_args[@]}" --check "$candidate" > "$temp_dir/mysqlcheck.txt"
   awk '$NF != "OK" && $0 !~ /^[[:alnum:]_]+\.[[:alnum:]_]+$/ {bad=1} END {exit bad}' "$temp_dir/mysqlcheck.txt" || die "mysqlcheck van proefimport is niet volledig groen."
 
@@ -220,6 +223,7 @@ write_manifest() {
     printf 'views=%s\n' "$live_views"
     printf 'row_counts_sha256=%s\n' "$row_hash"
     printf 'table_checksums_sha256=%s\n' "$table_hash"
+    printf 'trigger_definitions_sha256=%s\n' "$(shasum -a 256 "$temp_dir/live-triggers.tsv" | awk '{print $1}')"
     printf 'dagbezoeken_bmp=%s\n' "$(table_count "$MYSQL_DATABASE" dagbezoeken_bmp)"
     printf 'dagwaarnemingen_bmp=%s\n' "$(table_count "$MYSQL_DATABASE" dagwaarnemingen_bmp)"
     printf 'territoria=%s\n' "$(table_count "$MYSQL_DATABASE" territoria)"
@@ -236,6 +240,11 @@ validate_live() {
   local dump="$1" manifest="$2" temp_dir live_counts live_checksums row_hash table_hash
   "$REPO_DIR/scripts/check_mysql_version.sh" >/dev/null
   validate_artifact "$dump" "$manifest"
+  if grep -q '^trigger_definitions_sha256=' "$manifest"; then
+    local trigger_hash
+    trigger_hash="$(query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$MYSQL_DATABASE' ORDER BY trigger_name" | shasum -a 256 | awk '{print $1}')"
+    [[ "$trigger_hash" == "$(manifest_value trigger_definitions_sha256 "$manifest")" ]] || die "schrijfbewaking wijzigde sinds export."
+  fi
   [[ "$(query 'SELECT VERSION()')" == "$(manifest_value mysql_version "$manifest")" ]] || die "MySQL-versie wijkt af van exportmanifest."
   [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='BASE TABLE'")" == "$(manifest_value base_tables "$manifest")" ]] || die "aantal basistabellen wijkt af van exportmanifest."
   [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$MYSQL_DATABASE' AND table_type='VIEW'")" == "$(manifest_value views "$manifest")" ]] || die "aantal views wijkt af van exportmanifest."

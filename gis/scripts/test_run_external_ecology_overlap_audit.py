@@ -9,6 +9,7 @@ import json
 import tempfile
 import sys
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -16,6 +17,20 @@ SCRIPT = Path(__file__).with_name("run_external_ecology_overlap_audit.py")
 
 
 class AuditRunnerTests(unittest.TestCase):
+    def test_apply_checks_complete_registry_before_and_after_actual_writer(self):
+        import import_external_ecology_sources as common
+        spec=importlib.util.spec_from_file_location('pq_audit',SCRIPT)
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        order=[]
+        with mock.patch.object(sys,'argv',[str(SCRIPT),'--apply','--mysql-client','/actual/mysql','--login-path','actual']), \
+             mock.patch.object(common,'central_query_gate',side_effect=lambda *a:order.append(('gate',a))), \
+             mock.patch.object(module.subprocess,'run',side_effect=lambda *a,**k:order.append(('write',a))):
+            self.assertEqual(module.main(),0)
+        self.assertEqual([item[0] for item in order],['gate','write','gate'])
+        self.assertEqual(order[0][1],('Meijendel','actual',Path('/actual/mysql'),'127.0.0.1',3306))
+        self.assertIn('--protocol=TCP',order[1][1][0])
+        self.assertIn('--port=3306',order[1][1][0])
+
     def test_inventory_uses_central_names_and_both_source_locations(self):
         spec = importlib.util.spec_from_file_location('pq_audit', SCRIPT)
         module = importlib.util.module_from_spec(spec)

@@ -8187,8 +8187,8 @@ def reconstruct_habslak(
         "START TRANSACTION;",
         f"DELETE FROM {HABSLAK_TABLE_PREFIX}_monster_taxon WHERE reconstructieversie IN ({obsolete_and_current});",
         f"DELETE FROM {HABSLAK_TABLE_PREFIX}_recordselectie WHERE reconstructieversie IN ({obsolete_and_current});",
-        f"DROP TABLE IF EXISTS {HABSLAK_TABLE_PREFIX}_hokjaar;",
-        f"""CREATE TABLE {HABSLAK_TABLE_PREFIX}_hokjaar (
+        f"DELETE FROM {HABSLAK_TABLE_PREFIX}_hokjaar WHERE reconstructieversie IN ({obsolete_and_current});",
+        f"""CREATE TABLE IF NOT EXISTS {HABSLAK_TABLE_PREFIX}_hokjaar (
           reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
           hokjaar_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
           protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '04.006',
@@ -10594,6 +10594,13 @@ def main() -> int:
     mode.add_argument("--reconstruct-ravon-n2000", action="store_true")
     mode.add_argument("--audit-ravon-n2000", action="store_true")
     args = parser.parse_args()
+    from import_external_ecology_sources import central_query_guarded_operation
+    mutates = not args.dry_run and not any(value for key,value in vars(args).items() if key.startswith('audit_'))
+    return central_query_guarded_operation(lambda: execute_main(args,parser), enabled=mutates,
+        login_path=args.login_path,client=args.mysql_client,host=args.host,port=args.port)
+
+
+def execute_main(args,parser) -> int:
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
         raise ValueError("Een protocolbrondocument wijkt af van de beoordeelde versie.")

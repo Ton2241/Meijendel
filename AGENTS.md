@@ -147,6 +147,13 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- Controleer bij ELKE toevoeging, correctie, import, migratie of schemawijziging
+  dat ALLE soortwaarnemingen, inclusief afgeleide meetregels en echte nullen,
+  via `taxa`, `taxa_bronkoppeling` en `taxon_groepen` benaderbaar zijn.
+  Alleen namen registreren is onvoldoende. Een ontbrekende groepsindeling
+  mag geen bronregel verbergen. Geen afronding zonder databasebrede bewijscontrole.
+  Canonieke uitwerking: `docs/database/TAXONREGISTER.md`, sectie
+  `Alle waarnemingen vanuit het centrale taxonregister`.
 - pas voor iedere PQ-import, correctie of migratie de bindende afspraak
   `../VWG_Project/workflow.md`, sectie `Alle PQ-gegevens uitsluitend in pq_*`,
   toe: alle PQ-inhoud onder `pq_*`, centrale taxonkoppeling, geen losse

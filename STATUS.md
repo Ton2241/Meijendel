@@ -48,17 +48,30 @@ De afzonderlijke MySQL-image-update en NAS-back-upcontrole staan nog open.
 
 ## Taxonregister
 
-Actuele lokale stand op 29 september 2026: 27 groepen, 13.421 centrale
-vermeldingen en 21.799 bronkoppelingen. In 1.203 naamgroepen zijn 2.156
-dubbele rijen samengebracht; alle 18.440 bestaande koppelingnummers en
-3.359 oorspronkelijke taxoncontexten zijn behouden. Oude IDs en UUIDs blijven
-herleidbaar. Proef, volledige herstelproef en levende nacontrole slagen:
-251 overige tabellen en 16 viewuitkomsten zijn identiek, inclusief de
-brongetrouwe vogelcontrole. De lijst is nog niet geheel ontdubbeld: 751
-naamgroepen blijven voor nadere inhoudelijke beoordeling behouden. Geen
-VPS-publicatie, export- of cachevervanging. Het register heeft geen eigen
-waarnemingsperiode; er zijn geen meetgegevens samengevoegd of verwijderd.
-Uitvoering en resterende categorieën: `docs/database/TAXONREGISTER.md`.
+Actuele lokale stand op 29 september 2026: 27 groepen, 11.660 centrale
+vermeldingen en 30.035 bronkoppelingen. Het register heeft geen eigen
+waarnemingsperiode. De eerder resterende 751 naamgroepen zijn inhoudelijk
+afgehandeld; de zeven verschillende gelijknamige paren hebben verschillende
+weergavenamen. Alle presentatienamen zijn gevuld en uniek. Oude IDs, UUIDs,
+broncontexten en koppelingnummers blijven herleidbaar.
+
+Alle soortwaarnemingen zijn nu vanuit `taxa`, `taxa_bronkoppeling` en
+`taxon_groepen` bereikbaar. De volledige inventarisatie van 253 basistabellen
+levert 122 beoordeelde routes op, inclusief afgeleide meetregels, echte nullen,
+historische versies en LVD binnen en buiten `pq_*`. Geen ontbrekende verbindingen
+of vermenigvuldigde soortregels. Alle oorspronkelijke gegevens, schema-eigenschappen
+en 16 bestaande viewuitkomsten zijn behouden. Een onbepaald Naturalis-collectieobject
+uit 2018 is als zodanig bereikbaar, niet als verzonnen biologische soort.
+De 235 nog niet ingedeelde naamvermeldingen blijven eveneens vindbaar.
+
+De verplichte voor- en nacontrole is ingebouwd rond bestaande schrijf- en
+exportpaden; 242 rijtriggers beschermen bronidentiteit en verwijzingen.
+Nieuwe tabellen of kolommen vereisen een beoordeelde centrale route.
+Back-up, transactioneel terugdraaien, onafhankelijk volledig herstel,
+negatieve en positieve invoerproeven, regressietests en levende nacontrole
+zijn geslaagd. Geen VPS-publicatie, dump- of cachevervanging. De afzonderlijke
+fysieke PQ-verplaatsing hierboven blijft open. Uitvoering, bronperioden,
+querygebruik en herstelbewijs: `docs/database/TAXONREGISTER.md`.
 
 De eerdere registeraanvulling van 27 september 2026:
 27 groepen, 15.580 naamgebruiken en referenties en 18.437 bronbesluiten,

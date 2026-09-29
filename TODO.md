@@ -2,6 +2,18 @@
 
 ## Nu open
 
+### Verplichte centrale ingang voor alle soortwaarnemingen
+
+- Op 29 september 2026 lokaal uitgevoerd: alle oorspronkelijke soortwaarnemingen,
+  afgeleide meetregels, echte nullen en historische versies zijn via het centrale
+  register bereikbaar. Alle 122 beoordeelde routes slagen; oorspronkelijke
+  gegevens en 16 viewuitkomsten zijn behouden. Volledige back-up, terugdraaien,
+  onafhankelijk schema-/gegevensherstel en levende nacontrole zijn bewezen.
+  Iedere volgende wijziging moet vóór en na uitvoering door de volledige
+  controlepoort; 242 rijtriggers beschermen bestaande routes tijdens invoer.
+  Geen VPS-publicatie. Uitvoering en bewijs staan uitsluitend in
+  `docs/database/TAXONREGISTER.md`.
+
 ### Volledige PQ-opslag uitsluitend onder pq_*
 
 - Bindend besluit van 29 september 2026 vastgelegd in

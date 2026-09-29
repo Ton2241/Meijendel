@@ -13,6 +13,7 @@ import calendar
 import copy
 import csv
 import hashlib
+import gzip
 import json
 import re
 import subprocess
@@ -29,6 +30,1183 @@ IMPORT_VERSION = "externe-ecologie-v1"
 
 FUSION_RULE = 'taxa-gerichte-fusie-v1'
 CENTRAL_RULE = 'taxa-centrale-lijst-v1'
+
+QUERY_RULE = 'taxa-centrale-querypoort-v1'
+SOURCE_TAXON_FIELDS = (
+    'taxonID', 'taxonKey', 'scientificNameID', 'acceptedNameUsageID',
+    'nameAccordingTo', 'nameAccordingToID', 'scientificName', 'scientificNameAuthorship',
+    'kingdom', 'phylum', 'class', 'order', 'family', 'genus', 'taxonRank',
+    'verbatimTaxonRank', 'taxonomicStatus', 'nomenclaturalCode', 'taxonRemarks',
+    'higherClassification',
+)
+SOURCE_USAGE_FIELDS = (*SOURCE_TAXON_FIELDS, 'dataset', 'name', 'raw_name', 'nl', 'rank')
+STAGING_TABLES = {'import_dagwaarnemingen_raw', 'import_resultaten_raw',
+                  'import_waarnemingen_breed', 'import_waarnemingen_lang'}
+
+
+def source_usage_projection(metadata: dict) -> dict:
+    """Historic taxon context, excluding subsequent merge/review annotations."""
+    return {field: metadata.get(field) for field in SOURCE_USAGE_FIELDS}
+
+
+def derived_source_key(route: dict, row: dict) -> str:
+    return json.dumps([row[route['name_field']], *[row.get(c) for c in route['context_fields']]],
+                      ensure_ascii=False, separators=(',', ':'))
+
+
+def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
+    """Discover every taxon-bearing layer; unknown semantics fail closed.
+
+    Discovery is not acceptance: the live gate additionally requires the actual
+    FK, row-level coverage and write guards for every discovered direct route.
+    Temporary imports are never accepted as committed observational data.
+    """
+    catalogues = {
+        'soorten': {'id': 'id', 'name_field': 'latijnse_naam', 'nullable': True},
+        'ndff_soorten': {'id': 'soort_key', 'name_field': 'wetenschappelijke_naam'},
+        'sovon_avimap_taxon': {'id': 'batch_id,soortgroep_code,soortnr',
+                             'name_field': 'wetenschappelijke_naam'},
+    }
+    routes = {}
+    for table, columns in schema.items():
+        if not re.fullmatch('[a-zA-Z][a-zA-Z0-9_]*', table):
+            raise ValueError('Ongeldige tabelidentifier')
+        if table in {'taxa', 'taxa_bronkoppeling', 'taxon_groepen'}:
+            continue
+        if table in STAGING_TABLES:
+            routes[table] = {'kind': 'staging'}
+        elif table in catalogues:
+            routes[table] = {'kind': 'catalogue', **catalogues[table]}
+        elif table == 'ndff_open_waarneming':
+            routes[table] = {'kind': 'catalogue_child', 'catalogue': 'ndff_soorten',
+                             'join': 'w.soort_key=c.soort_key', 'role': 'bronwaarneming'}
+        elif table == 'sovon_avimap_waarneming':
+            routes[table] = {'kind': 'catalogue_child', 'catalogue': 'sovon_avimap_taxon',
+                'join': 'w.batch_id=c.batch_id AND w.soortgroep_code=c.soortgroep_code AND w.soortnr=c.soortnr',
+                'role': 'bronwaarneming'}
+        elif 'soort_id' in columns:
+            routes[table] = {'kind': 'catalogue_child', 'catalogue': 'soorten',
+                             'join': 'w.soort_id=c.id',
+                             'role': 'bronwaarneming' if 'jaar' in columns else 'soortreferentie'}
+        elif table == 'externe_ecologie_resultaat':
+            routes[table] = {'kind': 'external', 'role': 'bronwaarneming'}
+        elif table.startswith(('ndff_', 'sovon_avimap_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
+            field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
+            routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
+                             'role': 'bronverwijzing'}
+        elif table.startswith(('ndff_', 'sovon_avimap_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
+            name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
+            version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
+            if version not in columns:
+                raise ValueError(f'{table}: bronversie ontbreekt')
+            routes[table] = {'kind': 'derived', 'name_field': name, 'version_field': version,
+                'context_fields': sorted(columns & {'soortgroep_raw', 'batch_id', 'protocol_id'}),
+                'nullable': name == 'doelsoort',
+                'role': 'afgeleide_meting' if columns & {'waarnemingsstatus','jaarstatus','doelsoortstatus'}
+                        else 'soortreferentie'}
+        elif 'taxon_bronkoppeling_id' in columns:
+            routes[table] = {'kind': 'direct', 'role': 'bronwaarneming'}
+        elif 'ndff_soort_id' in columns:
+            routes[table] = {'kind': 'catalogue_child', 'catalogue': 'ndff_soorten',
+                             'join': 'w.ndff_soort_id=c.ndff_soort_id', 'role': 'soortreferentie'}
+        elif columns & {'wetenschappelijke_naam','scientificName','scientific_name','scientificname',
+                        'doelsoort','taxon_id','taxon_uuid','species_id','soort_key'}:
+            raise ValueError(f'{table}: nieuwe ongecontroleerde soortgegevenslaag')
+    return routes
+
+
+def central_taxon_query(table: str, route: dict, taxon_id: int | None = None) -> str:
+    """Read the stored, version-bound route, never infer identity from names.
+
+    One query per source keeps original values and analysis roles separate;
+    this is not a UNION that silently sums sources or reconstructed zeroes.
+    Historical decisions remain queryable through the measurement's pinned ID.
+    """
+    if not re.fullmatch('[a-zA-Z][a-zA-Z0-9_]*', table):
+        raise ValueError('Ongeldige tabelidentifier')
+    if taxon_id is not None and (type(taxon_id) is not int or taxon_id <= 0):
+        raise ValueError('Ongeldige taxonidentifier')
+    kind = route['kind']
+    if kind == 'staging':
+        raise ValueError('Tijdelijke invoer is geen toegelaten waarnemingslaag')
+    joins = ''
+    if kind == 'catalogue_child':
+        joins = (f"JOIN `{route['catalogue']}` c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
+                 f"JOIN `{table}` w ON {route['join']}")
+    elif kind == 'ndff_child':
+        joins = ("JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
+                 "JOIN ndff_open_waarneming o ON o.soort_key=c.soort_key\n"
+                 f"JOIN `{table}` w ON {route['join']}")
+    else:
+        joins = f'JOIN `{table}` w ON w.taxon_bronkoppeling_id=b.koppeling_id'
+    return ("SELECT t.taxon_id,t.weergavenaam,g.groep_id,g.groep_code,g.groep_naam,"
+            "b.koppeling_id,b.koppelstatus,b.taxonrelatie,b.bron_dataset,b.bron_versie,w.*\n"
+            "FROM taxa t\nLEFT JOIN taxon_groepen g ON g.groep_id=t.groep_id\n"
+            "JOIN taxa_bronkoppeling b ON b.taxon_id=t.taxon_id\n" + joins +
+            (f'\nWHERE t.taxon_id={taxon_id}' if taxon_id is not None else '') + ';')
+
+
+def query_identifier(value: str) -> str:
+    if not re.fullmatch('[A-Za-z][A-Za-z0-9_]*', value):
+        raise ValueError('Ongeldige SQL-identifier')
+    return '`' + value + '`'
+
+
+def query_literal(value) -> str:
+    if value is None:
+        return 'NULL'
+    return "CONVERT(X'" + str(value).encode().hex() + "' USING utf8mb4)"
+
+
+def query_context_sql(metadata: str) -> str:
+    return 'JSON_OBJECT(' + ','.join(
+        query_literal(f) + ',' + f"JSON_EXTRACT({metadata},'$.{f}')"
+        for f in SOURCE_USAGE_FIELDS) + ')'
+
+
+def derived_key_sql(route: dict, alias: str = 'w') -> str:
+    fields = [route['name_field'], *route['context_fields']]
+    return "CONCAT('context-sha256:',SHA2(CAST(JSON_ARRAY(" + ','.join(
+        alias + '.' + query_identifier(f) for f in fields) + ') AS CHAR CHARACTER SET utf8mb4),256))'
+
+
+def central_source_condition(table: str, route: dict, alias='w') -> str:
+    """Same semantic check in the acceptance gate and in BEFORE row triggers."""
+    kind = route['kind']
+    if kind=='catalogue':
+        if table=='soorten': source_id=f'CAST({alias}.id AS CHAR)'; name=f'{alias}.latijnse_naam'
+        elif table=='ndff_soorten': source_id=f'{alias}.soort_key'; name=f'{alias}.wetenschappelijke_naam'
+        else:
+            source_id=f"REPLACE(CAST(JSON_ARRAY({alias}.batch_id,{alias}.soortgroep_code,{alias}.soortnr) AS CHAR),' ','')"
+            name=f'{alias}.wetenschappelijke_naam'
+        condition = "b.bron_systeem='Meijendel' AND BINARY b.bron_dataset=BINARY "+query_literal(table)+\
+                    ' AND BINARY b.bron_taxon_id=BINARY '+source_id+' AND BINARY b.bron_wetenschappelijke_naam <=> BINARY '+name
+        if table=='ndff_soorten':
+            condition += f" AND BINARY JSON_UNQUOTE(JSON_EXTRACT(b.bronmetadata,'$.soortgroep_raw')) <=> BINARY {alias}.soortgroep_raw"
+        return condition
+    if table=='pq_vegetatie_waarneming':
+        return ("b.bron_systeem='Meijendel' AND b.bron_dataset='pq_vegetatie_taxon' AND "
+                f"CAST(JSON_UNQUOTE(JSON_EXTRACT(b.bronmetadata,'$.taxon_id')) AS UNSIGNED)={alias}.bron_taxon_lokaal_id")
+    if table=='vangblik_vangst':
+        fields = {'scientific_name':'scientificName','kingdom':'kingdom','phylum':'phylum',
+                  'class_name':'class','order_name':'order','family':'family','taxon_rank':'taxonRank'}
+        return ("b.bron_systeem='Meijendel' AND b.bron_dataset='vangblik_soorten' AND "+' AND '.join(
+            f"BINARY JSON_EXTRACT(b.bronmetadata,'$.{c}') <=> BINARY JSON_EXTRACT({alias}.raw_payload,'$.{f}')"
+            for c,f in fields.items()))
+    if kind=='external' or table=='pq_vegetatie_bronresultaat':
+        event = 'pq_vegetatie_bronopname' if table=='pq_vegetatie_bronresultaat' else 'externe_ecologie_event'
+        source = f'(SELECT d.dataset_sleutel FROM {event} e JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)'
+        version = f"(SELECT CONCAT(d.bronversie,'; sha256:',d.bronbestand_sha256) FROM {event} e JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)"
+        fields = {f:f"JSON_EXTRACT({alias}.bronmetadata,'$.{f}')" for f in SOURCE_TAXON_FIELDS}
+        fields.update(dataset=source,name=f'{alias}.wetenschappelijke_naam',raw_name=f'{alias}.wetenschappelijke_naam_bron',
+                      nl=f'{alias}.nederlandse_naam',rank=f'{alias}.'+('taxonomische_status_aangeleverd' if table=='pq_vegetatie_bronresultaat' else 'taxonrang'))
+        context='JSON_OBJECT('+','.join(query_literal(f)+','+fields[f] for f in SOURCE_USAGE_FIELDS)+')'
+        return ("b.bron_systeem='Meijendel' AND BINARY b.bron_dataset=BINARY "+source+
+                ' AND BINARY b.bron_versie=BINARY '+version+
+                ' AND b.bron_context_sha256=UNHEX(SHA2(CAST('+context+' AS CHAR CHARACTER SET utf8mb4),256))')
+    return 'TRUE'
+
+
+# Accepted physical schema. Every new/changed column requires an explicit route review.
+# Updated from the canonical local database and checked against the restored candidate.
+CENTRAL_QUERY_SCHEMA = {
+    'BGgroup': frozenset(['euring_code', 'group_code', 'id', 'soort_naam']),
+    'analyse_datareeks': frozenset(['aangemaakt_op', 'beoordeeld_op', 'beveiligingsniveau', 'bezoekstructuur_status', 'bijgewerkt_op', 'bron_object', 'bron_schema', 'bronorganisatie', 'bronselectie_omschrijving', 'bronstatus', 'classificatiebron', 'datareeks_id', 'datareeks_sleutel', 'jaar_tot', 'jaar_van', 'korrel', 'kwaliteitsmelding', 'methode_status', 'naam', 'nulwaarneming_status', 'recordaantal_bij_beoordeling', 'regelversie', 'ruimtelijke_status', 'soortgroep', 'validatie_status']),
+    'analyse_datareeks_geschiktheid': frozenset(['analyse_type_code', 'beoordeeld_op', 'datareeks_geschiktheid_id', 'datareeks_id', 'eindbesluit', 'gegevensgeschiktheid', 'kwaliteitsmelding', 'protocolgeschiktheid', 'regelversie', 'voorwaarden']),
+    'analyse_recorduitzondering': frozenset(['analyse_type_code', 'beoordeeld_op', 'bronrecord_sleutel', 'datareeks_id', 'eindbesluit', 'gegevensgeschiktheid', 'recorduitzondering_id', 'reden', 'regelversie']),
+    'analyse_type': frozenset(['analyse_type_code', 'naam', 'omschrijving']),
+    'bezoekersdruk_locatie': frozenset(['bron', 'geom', 'id', 'locatie_type', 'naam', 'omschrijving']),
+    'bezoekersdruk_meting': frozenset(['bron', 'dagtype', 'eenheid', 'herkomst', 'id', 'indicator', 'jaar', 'locatie_id', 'opmerking', 'seizoen', 'waarde']),
+    'bronnen': frozenset(['code', 'id', 'omschrijving']),
+    'dagbezoeken_bmp': frozenset(['aantal_records', 'aantal_soorten', 'begintijd', 'bezoek_datum', 'bezoek_id', 'bezoekduur_min', 'bron_id', 'dagvanjaar', 'deelbezoek', 'deelbezoek_deel', 'eindtijd', 'gunstig', 'invoerdatum', 'jaar', 'omstandigheden_opm', 'opmerking', 'plot_id']),
+    'dagbezoeken_wv': frozenset(['aantal_records', 'aantal_soorten', 'begintijd', 'bezoek_datum', 'bezoek_id', 'bezoekduur_min', 'bron_id', 'dagvanjaar', 'deelbezoek', 'deelbezoek_deel', 'eindtijd', 'gunstig', 'ijs', 'invoerdatum', 'jaar', 'omstandigheden_opm', 'opmerking', 'plot_id', 'sneeuw', 'telling_id', 'tellingtype', 'telomschrijving', 'waterstand']),
+    'dagwaarnemingen_bmp': frozenset(['aantal', 'bezoek_id', 'broedcode', 'bron_id', 'bron_waarneming_id', 'cluster_territorium', 'cluster_territorium_id', 'dag', 'dagvanjaar', 'geom', 'geslacht', 'id', 'in_plot', 'invoerdatum', 'ioc_sort', 'jaar', 'kopid', 'maand', 'opmerking', 'plot_id', 'soort_id', 'soortgroep_code', 'sovon_soortnr', 'wrntype', 'x_coord', 'y_coord']),
+    'dagwaarnemingen_wv': frozenset(['aantal', 'bezoek_id', 'broedcode', 'bron_id', 'bron_waarneming_id', 'cluster_territorium', 'cluster_territorium_id', 'dag', 'dagvanjaar', 'geom', 'geslacht', 'id', 'in_plot', 'invoerdatum', 'ioc_sort', 'jaar', 'kopid', 'maand', 'opmerking', 'plot_id', 'soort_id', 'soortgroep_code', 'sovon_soortnr', 'wrntype', 'x_coord', 'y_coord']),
+    'evg_landschapstypen': frozenset(['beschrijving', 'id']),
+    'evg_vogel_landschapgroep': frozenset(['beschrijving_landschap_vogel', 'groepsnummer', 'veeleisendheid_score', 'vogel_id']),
+    'evg_vogel_landschapstype': frozenset(['landschap_id', 'soort_id', 'veeleisendheid']),
+    'evg_vogelgroepen': frozenset(['beschrijving_landschap_groep', 'groepsnummer', 'landschap_groep']),
+    'externe_ecologie_dataset': frozenset(['bronbestand_naam', 'bronbestand_sha256', 'bronorganisatie', 'bronversie', 'dataset_id', 'dataset_sleutel', 'doi', 'geimporteerd_op', 'importversie', 'licentie', 'selectie_omschrijving', 'titel']),
+    'externe_ecologie_event': frozenset(['analyse_status', 'bron_event_id', 'bron_locatie', 'bronmetadata', 'coordinate_uncertainty_m', 'dataset_id', 'datum_precisie', 'event_datum', 'event_datum_tot', 'event_id', 'inspanning_eenheid', 'inspanning_waarde', 'jaar', 'latitude', 'longitude', 'ruimtelijke_klasse', 'sampling_protocol']),
+    'externe_ecologie_overlap': frozenset(['doelrecord_sleutel', 'doelsysteem', 'koppelmethode', 'overlap_id', 'resultaat_id', 'toelichting', 'zekerheid']),
+    'externe_ecologie_resultaat': frozenset(['basis_of_record', 'bron_occurrence_id', 'bronmetadata', 'catalogusnummer', 'event_id', 'hoeveelheid', 'hoeveelheid_eenheid', 'hoeveelheid_oorspronkelijk', 'nederlandse_naam', 'occurrence_status', 'resultaat_id', 'taxon_bronkoppeling_id', 'taxonrang', 'wetenschappelijke_naam', 'wetenschappelijke_naam_bron']),
+    'familie': frozenset(['familie_latijn', 'familienaam_nl', 'id', 'orde_latijn', 'orde_nl']),
+    'functional_group_definition': frozenset(['created_at', 'group_code', 'group_version', 'id', 'minimum_exploratief', 'minimum_hoofdindicator', 'minimum_robuust', 'naam_nl', 'onderzoeksvraag', 'rule_json', 'status']),
+    'functional_group_membership': frozenset(['binary_membership', 'classification', 'functional_group_definition_id', 'generated_at', 'generation_commit', 'id', 'membership_weight', 'rationale_json', 'soort_id']),
+    'habitattypen': frozenset(['beschrijving', 'habitat_code', 'habitat_doelstelling', 'habitat_naam', 'id']),
+    'habitattypen_doelstelling': frozenset(['doelstelling_csv', 'habitat_code_csv', 'habitat_naam_csv']),
+    'habitattypen_kenmerken': frozenset(['aangemaakt_op', 'bron', 'habitattype_id', 'id', 'soorten_kenmerken_datadictionary_id']),
+    'import_dagwaarnemingen_raw': frozenset(['aantal', 'broedcode', 'bron_waarneming_id', 'bzdid', 'clterr', 'clterrid', 'dag', 'doy', 'geslacht', 'inplot', 'ioc_sort', 'jaar', 'kopid', 'maand', 'naam', 'opmerk', 'plotid', 'projectid', 'soortgrp', 'soortnr', 'telgeb', 'wrntype', 'x_coord', 'y_coord']),
+    'import_resultaten_raw': frozenset(['aantal', 'dh100ha', 'euring', 'gebied', 'ioc_sort', 'jaar', 'kopid', 'naam', 'oid', 'opp_ha', 'plotid', 'projectid', 'rl_status', 'snl', 'waarnemer', 'wetenschap']),
+    'import_waarnemingen_breed': frozenset(['bron_id', 'euring_code', 'jaar', 'p_105', 'p_10_12_76', 'p_12A', 'p_13', 'p_13S', 'p_14', 'p_15', 'p_16S', 'p_16plus', 'p_17A', 'p_17B', 'p_1A', 'p_1B', 'p_2', 'p_3', 'p_31', 'p_32', 'p_33', 'p_34', 'p_35', 'p_36', 'p_41', 'p_42', 'p_43', 'p_45', 'p_46', 'p_4_5', 'p_51', 'p_52', 'p_53', 'p_54A', 'p_54B', 'p_55', 'p_6', 'p_61', 'p_62', 'p_63', 'p_64', 'p_65', 'p_66', 'p_7', 'p_71', 'p_72', 'p_73', 'p_74', 'p_75', 'p_75A', 'p_77', 'p_78_79', 'p_8', 'p_83', 'p_84', 'p_85', 'p_91']),
+    'import_waarnemingen_lang': frozenset(['bron_id', 'euring_code', 'jaar', 'plot_id', 'soort_id', 'territoria']),
+    'ioc_euring_mapping': frozenset(['aantal_records', 'bron_naam', 'euring_code', 'ioc_sort', 'wetenschap']),
+    'kernopgave_habitat': frozenset(['habitat_id', 'kernopgave_id']),
+    'kernopgave_soort': frozenset(['kernopgave_id', 'soort_id']),
+    'kernopgaven': frozenset(['code', 'id', 'omschrijving']),
+    'legacy_trait_mapping': frozenset(['category_id', 'id', 'legacy_code', 'mapping_rule', 'mapping_status', 'mapping_strength', 'reviewed_on', 'trait_id']),
+    'maatregel_habitat': frozenset(['habitat_id', 'maatregel_id']),
+    'maatregelen': frozenset(['code', 'druk_aandachtspunt', 'id', 'maatregelgroep_code', 'omschrijving']),
+    'maatregelen_kernwoorden': frozenset(['actief', 'code', 'id', 'kernwoord', 'parent_maatregel_id']),
+    'meijendel_basisgebied': frozenset(['basisgebiedversie_id', 'gebied_geometrie', 'gebied_id', 'naam']),
+    'meijendel_basisgebied_versie': frozenset(['aangemaakt_op', 'basisgebiedversie_id', 'bronbestand', 'bronbestand_sha256', 'crs_epsg', 'oppervlakte_ha', 'projectgeometrie_sha256', 'status', 'versie']),
+    'meijendel_natura2000': frozenset(['gebied_geometrie', 'gebiedsnummer', 'naam', 'natura2000versie_id']),
+    'meijendel_natura2000_versie': frozenset(['aangemaakt_op', 'bronbestand', 'bronbestand_sha256', 'crs_epsg', 'gebiedsnummer', 'natura2000versie_id', 'oppervlakte_ha', 'versie']),
+    'meijendel_waarneming_ruimtelijke_status': frozenset(['basisgebiedversie_id', 'basisstatus', 'beoordeeld_op', 'bron_record_id', 'bron_tabel', 'eenduidig_plot_id', 'locatiemethode', 'natura2000status', 'natura2000versie_id', 'plotversie_id', 'reden', 'regelversie', 'ruimtelijke_status_id', 'sovon_plot_count', 'toelatingsstatus']),
+    'natura2000_vogelrichtlijn_soort': frozenset(['bron_gelezen_op', 'bron_url', 'eu_code', 'id', 'pdf_url', 'profiel_url', 'profieltype', 'richtlijn_bijlage', 'richtlijn_id', 'soort_id']),
+    'ndff_amfibie_bezoek': frozenset(['bezoek_sleutel', 'bezoekdatum', 'bezoekdekkingstatus', 'bronrecordaantal', 'inspanningstatus', 'jaar', 'periode_start', 'periode_stop', 'periodecodering', 'reconstructieversie', 'waterbezoekaantal']),
+    'ndff_amfibie_waterbezoek': frozenset(['bevestigingsstatus', 'bezoek_sleutel', 'bronrecordaantal', 'reconstructieversie', 'waterbezoek_sleutel', 'waterfamilie_id']),
+    'ndff_amfibie_waterbezoek_taxon': frozenset(['aantal_exact', 'bovengrens', 'bron_taxonnamen', 'bronrecordaantal', 'hoogste_presentieklasse', 'meetwaarde_type', 'meetwaardetypen_raw', 'nulregel', 'ondergrens', 'reconstructieversie', 'stadia_raw', 'stadium_status', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'waterbezoek_sleutel', 'wetenschappelijke_naam']),
+    'ndff_amfibie_waterfamilie': frozenset(['aangemaakt_op', 'bronrecordaantal', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'ruimtelijke_omvang_m', 'waterbezoekaantal', 'waterfamilie_id']),
+    'ndff_amfibie_watergeometrie': frozenset(['afstand_anker_m', 'anker_geometrie_sha256', 'centrum_x_rd', 'centrum_y_rd', 'eerste_jaar', 'geometrie_sha256', 'geometrierol', 'laatste_jaar', 'oppervlakte_m2', 'reconstructieversie', 'waterfamilie_id']),
+    'ndff_amfibieen': frozenset(['waarneming_id']),
+    'ndff_analysebesluit': frozenset(['analysebesluit_id', 'analysetype', 'besloten_op', 'bron_scope', 'eindbesluit', 'gegevensgeschiktheid', 'protocol_id', 'protocolgeschiktheid', 'recordaantal_bij_besluit', 'reden', 'regelversie', 'soortgroep_raw', 'vereist_pq_toets', 'vereist_ruimtelijke_toets']),
+    'ndff_bospaddenstoel_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bezoekdatum', 'bronrecordaantal', 'canonieke_positieve_resultaten', 'geregistreerde_taxa', 'inspanningstatus', 'jaar', 'kwaliteitsnotitie', 'meetpunt_id', 'reconstructieversie', 'seizoenstatus']),
+    'ndff_bospaddenstoel_bezoek_taxon': frozenset(['aangemaakt_op', 'aantal_vruchtlichamen', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_bospaddenstoel_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'meetpunt_id', 'positieve_bezoekaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_bospaddenstoel_geometrie': frozenset(['aangemaakt_op', 'bronrecordaantal', 'centrum_x_rd', 'centrum_y_rd', 'eerste_jaar', 'geometrie_sha256', 'laatste_jaar', 'meetpunt_id', 'oppervlakte_m2', 'reconstructieversie', 'representatietype']),
+    'ndff_bospaddenstoel_jaar_taxon': frozenset(['aangemaakt_op', 'bezoekaantal', 'jaar', 'jaarstatus', 'kwaliteitsnotitie', 'maximum_vruchtlichamen', 'meetpunt_id', 'positief_bezoekaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_bospaddenstoel_meetpunt': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'centrum_x_rd', 'centrum_y_rd', 'doelbereikstatus', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'kwaliteitsnotitie', 'laatste_jaar', 'meetpunt_id', 'meetpunt_sleutel', 'protocol_sleutel', 'reconstructieversie']),
+    'ndff_bospaddenstoel_recordselectie': frozenset(['aangemaakt_op', 'bezoekdatum', 'canonieke_waarneming_id', 'doelrelatie', 'meetpunt_id', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_bospaddenstoel_verspreiding_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'hoknummer', 'kwaliteitsnotitie', 'openbare_geometrie_sha256', 'periode_start', 'periode_stop', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'volledigheidsstatus']),
+    'ndff_bospaddenstoel_verspreiding_bezoek_taxon': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_bospaddenstoel_verspreiding_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_braakbal_hokjaar': frozenset(['aangemaakt_op', 'bronperiodestatus', 'bronrecordaantal', 'centroide_x_rd', 'centroide_y_rd', 'geregistreerde_taxa', 'hokjaar_sleutel', 'inspanningsstatus', 'jaar', 'kwaliteitsnotitie', 'nulstatus', 'openbare_geometrie_sha256', 'oppervlakte_m2', 'plotstatus', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'som_prooidieren', 'veldmuis_aandeel', 'veldmuis_aantal', 'vervaagd', 'vervagingsniveau_km']),
+    'ndff_braakbal_hokjaar_taxon': frozenset(['aandeel_prooidieren', 'aangemaakt_op', 'bronrecordaantal', 'hokjaar_sleutel', 'kwaliteitsnotitie', 'nulstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'totaal_aantal', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_braakbal_recordselectie': frozenset(['aangemaakt_op', 'hokjaar_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_dagvlinders': frozenset(['waarneming_id']),
+    'ndff_daz_bmp_bezoek': frozenset(['aangemaakt_op', 'ambigu_kandidaatrecordaantal', 'bezoek_id', 'bezoekdatum', 'deelnamestatus', 'eenduidig_bronrecordaantal', 'inspanningstatus', 'jaar', 'kwaliteitsnotitie', 'nulbereikstatus', 'plot_id', 'reconstructieversie']),
+    'ndff_daz_bmp_bezoek_taxon': frozenset(['aangemaakt_op', 'aantal', 'ambigu_recordaantal', 'bezoek_id', 'bronrecordaantal', 'doelrelatie', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'telwaardestatus', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_daz_bmp_recordkandidaat': frozenset(['aangemaakt_op', 'bezoek_id', 'bezoekdatum', 'plot_id', 'reconstructieversie', 'waarneming_id']),
+    'ndff_daz_bmp_recordselectie': frozenset(['aangemaakt_op', 'aantal_exact', 'bezoek_id', 'doelrelatie', 'gebruiksstatus', 'kandidaat_bezoekaantal', 'koppelstatus', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'waarneming_id', 'wetenschappelijke_naam']),
+    'ndff_eencelligen': frozenset(['waarneming_id']),
+    'ndff_florbase_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'taxonomiestatus', 'wetenschappelijke_naam']),
+    'ndff_florbase_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'einddatum', 'geregistreerde_taxa', 'hok_x', 'hok_y', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie', 'volledigheidsdrempel_taxa', 'volledigheidsstatus']),
+    'ndff_florbase_inventarisatie_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'meetwaardestatus', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_florbase_recordselectie': frozenset(['aangemaakt_op', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_geleedpotigen_overig': frozenset(['waarneming_id']),
+    'ndff_habslak_hokjaar': frozenset(['aangemaakt_op', 'bemonsteringsstatus', 'doelsoort', 'doelsoort_bronrecordaantal', 'doelsoortstatus', 'hokjaar_sleutel', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'minimale_monsterlocaties', 'monsteraantal', 'protocol_sleutel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'unieke_monsterlocaties']),
+    'ndff_habslak_monster': frozenset(['aangemaakt_op', 'bezoekdatum', 'bronrecordaantal', 'centroide_x_rd', 'centroide_y_rd', 'doelbereikstatus', 'eenduidig_plot_id', 'geregistreerde_taxa', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'monster_sleutel', 'openbare_geometrie_sha256', 'oppervlakte_m2', 'plotstatus', 'protocol_sleutel', 'reconstructieversie']),
+    'ndff_habslak_monster_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'doelrelatie', 'kwaliteitsnotitie', 'meetwaarden_json', 'monster_sleutel', 'nulstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_habslak_recordselectie': frozenset(['aangemaakt_op', 'doelrelatie', 'monster_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_hns_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_hns_hok_jaar_taxon': frozenset(['aangemaakt_op', 'doelhok', 'inventarisatieaantal', 'jaar', 'jaarstatus', 'kwaliteitsnotitie', 'onafhankelijkheidsstatus', 'positief_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_hns_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'doelhok', 'doelhok_aandeel', 'einddatum', 'geregistreerde_taxa', 'herhaalstatus', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'protocol_sleutel', 'reconstructieversie', 'seizoenstatus']),
+    'ndff_hns_inventarisatie_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_hns_recordselectie': frozenset(['aangemaakt_op', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_insecten_overig': frozenset(['waarneming_id']),
+    'ndff_kevers': frozenset(['waarneming_id']),
+    'ndff_konijn_hokdatum_taxon': frozenset(['aangemaakt_op', 'aantal_max', 'aantal_min', 'aantal_som', 'aggregatiestatus', 'bronrecordaantal', 'doelrelatie', 'hokdatum_taxon_sleutel', 'hoknummer', 'jaar', 'nulstatus', 'openbare_geometrie_sha256', 'reconstructieversie', 'taxon_bronkoppeling_id', 'teldatum', 'wetenschappelijke_naam']),
+    'ndff_konijn_recordselectie': frozenset(['aangemaakt_op', 'aantal_exact', 'daz_overlapstatus', 'doelrelatie', 'exactgelijke_groepsgrootte', 'hokdatum_taxon_groepsgrootte', 'kwaliteitsnotitie', 'meeteenheidstatus', 'protocol_sleutel', 'reconstructieversie', 'recordgroepstatus', 'ruimtelijke_status', 'seizoenstatus', 'trendgebruik', 'waarneming_id']),
+    'ndff_korstmos_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bezoekdatum', 'bronrecordaantal', 'geregistreerde_taxa', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'meetlocatie_id', 'reconstructieversie', 'registratiestatus']),
+    'ndff_korstmos_bezoek_taxon': frozenset(['aangemaakt_op', 'bedekkingsklasse_raw', 'bedekkingsrang', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_korstmos_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_bezoekaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_korstmos_meetlocatie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'centrum_x_rd', 'centrum_y_rd', 'eerste_jaar', 'geometrie_sha256', 'herhaalstatus', 'kwaliteitsnotitie', 'laatste_jaar', 'meetlocatie_id', 'oppervlakte_m2', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_klasse', 'sovon_plot_id']),
+    'ndff_korstmos_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'canonieke_waarneming_id', 'meetlocatie_id', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_korstmossen': frozenset(['waarneming_id']),
+    'ndff_kranswieren_wieren_algen': frozenset(['waarneming_id']),
+    'ndff_kreeftachtigen': frozenset(['waarneming_id']),
+    'ndff_kwartiertelling_interval_soortgroep': frozenset(['aangemaakt_op', 'bronrecordaantal', 'interval_sleutel', 'kwaliteitsnotitie', 'nulstatus', 'reconstructieversie', 'soortgroep_raw', 'volledigheidsstatus', 'waargenomen_taxa']),
+    'ndff_kwartiertelling_interval_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'interval_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'totaal_aantal', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_kwartiertelling_recordselectie': frozenset(['aangemaakt_op', 'eenduidig_plot_id', 'interval_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_kwartiertelling_telinterval': frozenset(['aangemaakt_op', 'bronrecordaantal', 'duur_minuten', 'duurstatus', 'eenduidig_plot_id', 'geometrieversies', 'interval_sleutel', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'plotversie_id', 'protocol_sleutel', 'reconstructieversie', 'routestatus', 'ruimtelijke_status', 'soortgroepen_met_positieve_regels']),
+    'ndff_libel_bezoek': frozenset(['bezoek_sleutel', 'bronrecordaantal', 'doelbereikstatus', 'jaar', 'periode_start', 'periode_stop', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_libel_bezoek_taxon': frozenset(['aantal', 'bezoek_sleutel', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_libel_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'componentaantal', 'doelbereikstatus', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'ruimtelijke_omvang_m']),
+    'ndff_libel_routegeometrie': frozenset(['centrum_x_rd', 'centrum_y_rd', 'geometrie_sha256', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_libellen': frozenset(['waarneming_id']),
+    'ndff_liveatlas_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'duur_minuten', 'duurstatus', 'eenduidig_plot_id', 'geometrieversies', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'plotversie_id', 'protocol_sleutel', 'reconstructieversie', 'routestatus', 'ruimtelijke_status', 'soortgroepen_met_positieve_regels']),
+    'ndff_liveatlas_bezoek_soortgroep': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulstatus', 'reconstructieversie', 'soortgroep_raw', 'volledigheidsstatus', 'waargenomen_taxa']),
+    'ndff_liveatlas_bezoek_taxon': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'totaal_aantal', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_liveatlas_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'eenduidig_plot_id', 'reconstructieversie', 'ruimtelijke_status', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_lmfa_bezoek': frozenset(['aangemaakt_op', 'begindatum', 'bezoek_sleutel', 'bezoekstatus', 'bronrecordaantal', 'einddatum', 'geregistreerde_doelsoorten', 'jaar', 'kwaliteitsnotitie', 'reconstructieversie', 'route_sleutel', 'vervaagd_bronrecordaantal']),
+    'ndff_lmfa_bezoek_taxon': frozenset(['aangemaakt_op', 'abundantieklasse', 'bezoek_sleutel', 'bronklasse_raw', 'bronrecordaantal', 'exact_totaal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_lmfa_doelsoort': frozenset(['aangemaakt_op', 'bron_url', 'doelstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_lmfa_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_lmfa_route': frozenset(['aangemaakt_op', 'bron_url', 'hok_x', 'hok_y', 'hoknummer', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'route_sleutel', 'route_status']),
+    'ndff_microvlinders': frozenset(['waarneming_id']),
+    'ndff_mos_datumcluster': frozenset(['aangemaakt_op', 'brongeometrieaantal', 'bronrecordaantal', 'clusterstatus', 'datumcluster_sleutel', 'geregistreerde_taxa', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'reconstructieversie', 'tijdprecisie']),
+    'ndff_mos_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'ndff_mos_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'eerste_jaar', 'einddatum', 'geregistreerde_taxa', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaarstatus', 'kwaliteitsnotitie', 'laatste_jaar', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie']),
+    'ndff_mos_inventarisatie_taxon': frozenset(['aangemaakt_op', 'aantalsklasse_raw', 'aantalsrang', 'bron_schaal', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_mos_recordselectie': frozenset(['aangemaakt_op', 'canonieke_waarneming_id', 'datumcluster_sleutel', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_mossen': frozenset(['waarneming_id']),
+    'ndff_nachtvlinder_hokjaar': frozenset(['aangemaakt_op', 'bronrecordaantal', 'hokjaar_sleutel', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'openbare_geometrie_sha256', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'telstatus']),
+    'ndff_nachtvlinder_hokjaar_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'geregistreerd_aantal', 'hokjaar_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_nachtvlinder_recordselectie': frozenset(['aangemaakt_op', 'hokjaar_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_nachtvlinders': frozenset(['waarneming_id']),
+    'ndff_ongewervelden_overig': frozenset(['waarneming_id']),
+    'ndff_open_import_batch': frozenset(['batch_id', 'bouwversie', 'bronbestand', 'bronbestand_sha256', 'bronstatus', 'geimporteerd_op', 'opmerkingen', 'periode_einde', 'periode_start', 'recordaantal', 'taxonaantal']),
+    'ndff_open_leveringsverrijking': frozenset(['aantal_max', 'aantal_min', 'bronrecord_sha256', 'dataeigenaar_uri', 'datumdekking_raw', 'eenheid_raw', 'koppelmethode', 'kwaliteitsstatus_raw', 'leveringsgeometrie_gelijk_aan_openbaar', 'leveringsperiode_gelijk_aan_openbaar', 'leveringsregel_id', 'locatie_type_raw', 'obs_uri', 'obs_uri_sha256', 'oorspronkelijke_aantal_raw', 'oppervlaktedekking_raw', 'sessionid_raw', 'ticketnummer', 'verrijkt_op', 'waarneming_id', 'zoid_raw']),
+    'ndff_open_pq_koppeling': frozenset(['beoordeeld_op', 'classificatie', 'ndff_bronrol', 'primaire_pq_bron', 'reden', 'regelversie', 'waarneming_id']),
+    'ndff_open_ruimtelijke_beoordeling': frozenset(['beoordeeld_op', 'eenduidig_plot_id', 'geometrie_oppervlakte_m2', 'geometrie_type', 'is_plotcontext_ruimtelijk_toelaatbaar', 'plot_match_count', 'plotversie_id', 'regelversie', 'ruimtelijke_klasse', 'toewijzingskwaliteit', 'vervaagd', 'vervagingsniveau_km', 'waarneming_id']),
+    'ndff_open_soortgroep_koppeling': frozenset(['soortgroep_code', 'soortgroep_raw', 'waarneming_id']),
+    'ndff_open_waarneming': frozenset(['aantal_raw', 'analyse_status', 'apparatuur', 'batch_id', 'beleidsstatus', 'biotoop', 'bouwversie', 'bronbestand_aantal', 'bronbestand_eerste', 'bronhouder', 'bronrecord_aantal', 'determinatiemethode', 'doodsoorzaak', 'gedrag', 'hok_grootte', 'hoknummer', 'identiteit', 'identiteit_sha256', 'jaar', 'nederlandse_naam', 'ontdubbel_sleutel', 'oorsprong', 'openbare_geometrie', 'openbare_geometrie_sha256', 'payload_conflict', 'periode_start', 'periode_stop', 'pq_status', 'protocol', 'raw_payload', 'schaal_telmethode', 'sekse', 'soort_key', 'soortgroep_raw', 'stadium', 'staging_fid', 'substraat', 'telonderwerp', 'verblijfplaats', 'vervaagd', 'vervaging_raw', 'vervagingsniveau_km', 'waarneming_id', 'wetenschappelijke_naam', 'zoek_of_vangmethode']),
+    'ndff_open_waarneming_protocol': frozenset(['bewijsmethode', 'gekoppeld_op', 'protocol_id', 'regelversie', 'waarneming_id']),
+    'ndff_otter_bever_hokjaar': frozenset(['aangemaakt_op', 'bronrecordaantal', 'hokjaar_sleutel', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'volledigheidsstatus']),
+    'ndff_otter_bever_hokjaar_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'doelrelatie', 'geregistreerd_aantal', 'hokjaar_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_otter_bever_recordselectie': frozenset(['aangemaakt_op', 'eenduidig_plot_id', 'hokjaar_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_poldervis_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'methodestatus', 'periode_start', 'periode_stop', 'reconstructieversie', 'waterlocatie_sleutel']),
+    'ndff_poldervis_bezoek_taxon': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'doelrelatie', 'geregistreerd_aantal', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_poldervis_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_poldervis_waterlocatie': frozenset(['aangemaakt_op', 'bronrecordaantal', 'eenduidig_plot_id', 'identificatiestatus', 'kwaliteitsnotitie', 'meeteenheidstype', 'openbare_geometrie_sha256', 'plotversie_id', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'waterlocatie_sleutel']),
+    'ndff_protocol': frozenset(['bron_nummers', 'bron_urls', 'bronbestand', 'bronbestand_sha256', 'broncontrole_datum', 'levering_scope', 'protocol_code', 'protocol_id', 'protocol_naam', 'protocol_sleutel']),
+    'ndff_protocol_gebruik': frozenset(['aanvullend_gebruik', 'aanvullende_typen', 'begrenzing', 'benodigde_onderzoekscontext', 'bronbestand_sha256', 'broncontrole_datum', 'hoofdtype', 'passende_analyse', 'protocol_gebruik_id', 'protocol_id', 'regelversie', 'toelichting_sha256', 'wetenschappelijk_gebruik']),
+    'ndff_protocol_mapping': frozenset(['aangemaakt_op', 'bron_scope', 'mapping_id', 'mapping_methode', 'protocol_id', 'protocol_raw', 'regelversie']),
+    'ndff_protocol_soort_geschiktheid': frozenset(['beoordeeld_op', 'doelrelatie', 'protocol_id', 'protocol_soort_id', 'recordaantal_bij_classificatie', 'reden', 'regelversie', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'toegestane_typen', 'wetenschappelijke_naam']),
+    'ndff_protocol_soortgroep_geschiktheid': frozenset(['beoordeeld_op', 'bron_urls', 'doelrelatie', 'protocol_id', 'protocol_soortgroep_id', 'recordaantal_bij_classificatie', 'reden', 'regelversie', 'soortgroep_raw', 'toegestane_typen']),
+    'ndff_ravon_n2000_monsterlocatieproxy': frozenset(['bronrecordaantal', 'identificatiestatus', 'kwaliteitsnotitie', 'locatie_sleutel', 'openbare_geometrie_sha256', 'protocol_sleutel', 'reconstructieversie', 'vervaagde_recordaantal']),
+    'ndff_ravon_n2000_recordselectie': frozenset(['bezoekstatus', 'doelrelatie', 'kwaliteitsnotitie', 'locatie_sleutel', 'methodestatus', 'nulstatus', 'reconstructieversie', 'waarneming_id', 'waarnemingsstatus']),
+    'ndff_reptiel_bezoek': frozenset(['bezoek_sleutel', 'bezoekdatum', 'bezoekdekkingstatus', 'bronrecordaantal', 'inspanningstatus', 'jaar', 'periode_start', 'periode_stop', 'periodebetekenis', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_reptiel_bezoek_taxon': frozenset(['aantal', 'adult_aantal', 'bezoek_sleutel', 'juveniel_aantal', 'nulbereik', 'nulregel', 'onbekend_stadium_aantal', 'reconstructieversie', 'subadult_aantal', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_reptiel_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'ruimtelijke_omvang_m']),
+    'ndff_reptiel_routegeometrie': frozenset(['anker_geometrie_sha256', 'centrum_x_rd', 'centrum_y_rd', 'geometrie_sha256', 'geometrierol', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_reptielen': frozenset(['waarneming_id']),
+    'ndff_schimmels': frozenset(['waarneming_id']),
+    'ndff_snavelinsecten': frozenset(['waarneming_id']),
+    'ndff_snl_waarneming_context': frozenset(['beoordeeld_op', 'bewijsnotitie', 'kandidaat_aantal', 'kandidaat_waarneming_ids', 'overlap_status', 'regelversie', 'toets_methode', 'waarneming_id']),
+    'ndff_soorten': frozenset(['ndff_soort_id', 'nederlandse_naam', 'soort_key', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'waarneming_aantal_bron', 'wetenschappelijke_naam']),
+    'ndff_sovon_plot': frozenset(['bron_oppervlakte_ha', 'plot_geometrie', 'plot_geometrie_sha256', 'plot_id', 'plotnaam', 'plotnummer', 'plotversie_id', 'sovon_projectid']),
+    'ndff_sovon_plotversie': frozenset(['bronbestand', 'bronbestand_sha256', 'crs_epsg', 'objectaantal', 'plotversie_id', 'versie']),
+    'ndff_spinachtigen': frozenset(['waarneming_id']),
+    'ndff_sprinkhanen_en_krekels': frozenset(['waarneming_id']),
+    'ndff_tuintelling_geometrie': frozenset(['aangemaakt_op', 'bronrecordaantal', 'centroide_x_rd', 'centroide_y_rd', 'eerste_jaar', 'kwaliteitsnotitie', 'laatste_jaar', 'openbare_geometrie_sha256', 'oppervlakte_m2', 'reconstructieversie', 'ruimtelijke_status', 'tuinvakfamilie_sleutel']),
+    'ndff_tuintelling_periode_soortgroep': frozenset(['aangemaakt_op', 'bronrecordaantal', 'doelbereikstatus', 'kwaliteitsnotitie', 'lokale_doelsoorten', 'reconstructieversie', 'selectiebewijs', 'soortgroep_raw', 'telperiode_sleutel', 'waargenomen_taxa']),
+    'ndff_tuintelling_periode_soortgroep_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'telperiode_sleutel', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_tuintelling_recordselectie': frozenset(['aangemaakt_op', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'telperiode_sleutel', 'waarneming_id']),
+    'ndff_tuintelling_telperiode': frozenset(['aangemaakt_op', 'bronrecordaantal', 'getelde_soortgroepen', 'kwaliteitsnotitie', 'methodeversie', 'periode_start', 'periode_stop', 'plotstatus', 'reconstructieversie', 'telperiode_sleutel', 'teltype', 'tuinvakfamilie_sleutel']),
+    'ndff_tuintelling_tuinvakfamilie': frozenset(['aangemaakt_op', 'bronrecordaantal', 'eerste_periode', 'geometrieversies', 'identificatiestatus', 'kwaliteitsnotitie', 'laatste_periode', 'protocol_sleutel', 'reconstructieversie', 'tuinvakfamilie_sleutel']),
+    'ndff_vaatplanten': frozenset(['waarneming_id']),
+    'ndff_vissen': frozenset(['waarneming_id']),
+    'ndff_vleermuis_bezoek': frozenset(['bezoek_sleutel', 'bezoekdatum', 'bezoekdekkingstatus', 'bronrecordaantal', 'datumvenster_status', 'herhalingsvenster_status', 'inspanningstatus', 'jaar', 'methodevariant', 'reconstructiestatus', 'reconstructieversie', 'ronde_binnen_jaar', 'routefamilie_id']),
+    'ndff_vleermuis_bezoek_taxon': frozenset(['bezoek_sleutel', 'detectieaantal', 'doelrelatie', 'meeteenheid', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_vleermuis_recordselectie': frozenset(['bezoek_sleutel', 'bronsysteem', 'canonieke_waarneming_id', 'doelrelatie', 'reconstructieversie', 'routefamilie_id', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'ndff_vleermuis_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'methodevariant', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routecode', 'routefamilie_id', 'ruimtelijke_omvang_m', 'vervoerswijze']),
+    'ndff_vleermuis_routegeometrie': frozenset(['centrum_x_rd', 'centrum_y_rd', 'eerste_jaar', 'geometrie_sha256', 'geometrierol', 'laatste_jaar', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_vleermuizen': frozenset(['waarneming_id']),
+    'ndff_vliegen_en_muggen': frozenset(['waarneming_id']),
+    'ndff_vliesvleugel_bezoek': frozenset(['bezoek_sleutel', 'bronrecordaantal', 'jaar', 'periode_start', 'periode_stop', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_vliesvleugel_bezoek_taxon': frozenset(['aantal', 'bezoek_sleutel', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_vliesvleugel_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'componentaantal', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'ruimtelijke_omvang_m']),
+    'ndff_vliesvleugel_routegeometrie': frozenset(['centrum_x_rd', 'centrum_y_rd', 'geometrie_sha256', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_vliesvleugeligen': frozenset(['waarneming_id']),
+    'ndff_vlinder_bezoek': frozenset(['bezoek_sleutel', 'bronrecordaantal', 'doelbereik_bewijs', 'doelbereikstatus', 'doelsoort', 'jaar', 'periode_start', 'periode_stop', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'taxon_bronkoppeling_id']),
+    'ndff_vlinder_bezoek_taxon': frozenset(['aantal', 'bewijsgrond', 'bezoek_sleutel', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_vlinder_route_identificatie': frozenset(['aangemaakt_op', 'bewijsbron_uri', 'bewijsgrond', 'bron_eerste_jaar', 'bron_laatste_jaar', 'doelsoort', 'officieel_routenummer', 'officiele_routenaam', 'reconstructieversie', 'routefamilie_id', 'taxon_bronkoppeling_id', 'zekerheidsniveau']),
+    'ndff_vlinder_routefamilie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'componentaantal', 'doelsoort', 'eerste_jaar', 'geometrieaantal', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructiestatus', 'reconstructieversie', 'routefamilie_id', 'routetype', 'routetype_bewijs', 'ruimtelijke_omvang_m', 'taxon_bronkoppeling_id']),
+    'ndff_vlinder_routegeometrie': frozenset(['centrum_x_rd', 'centrum_y_rd', 'geometrie_sha256', 'geometrierol', 'geometrierol_bewijs', 'oppervlakte_m2', 'reconstructieversie', 'routefamilie_id']),
+    'ndff_weekdieren': frozenset(['waarneming_id']),
+    'ndff_zeereep_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bezoekdatum', 'bronrecordaantal', 'geregistreerde_taxa', 'hok_sleutel', 'inspanningstatus', 'jaar', 'kwaliteitsnotitie', 'reconstructieversie', 'seizoenstatus']),
+    'ndff_zeereep_bezoek_taxon': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'doelrelatie', 'hoogste_nmv_klasse', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'ndff_zeereep_kilometerhok': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'eerste_jaar', 'hok_sleutel', 'jaaraantal', 'laatste_jaar', 'protocol_sleutel', 'reconstructieversie', 'x_km', 'y_km']),
+    'ndff_zoogdieren_overig': frozenset(['waarneming_id']),
+    'plot_jaar_ahn_dtm': frozenset(['ahn_mean', 'ahn_sd', 'bron', 'jaar', 'plot_id']),
+    'plot_jaar_habitat': frozenset(['aandeel_m2', 'habitat_id', 'id', 'jaar', 'plot_id']),
+    'plot_jaar_infra': frozenset(['bron', 'jaar', 'plot_id', 'variabele', 'waarde']),
+    'plot_jaar_landgebruik': frozenset(['area_m2', 'bron', 'jaar', 'klasse', 'pct', 'plot_id']),
+    'plot_jaar_maatregel': frozenset(['bron', 'deel_label', 'dekking_pct', 'id', 'intensiteit_code', 'jaar', 'maatregel_id', 'opmerking', 'plot_id', 'uitvoerder_of_diersoort']),
+    'plot_jaar_oppervlak': frozenset(['id', 'jaar', 'oppervlakte_km2', 'plot_id']),
+    'plot_jaar_stikstof': frozenset(['bron', 'jaar', 'plot_id', 'stikstof_mean', 'stikstof_median']),
+    'plot_jaar_teller': frozenset(['id', 'jaar', 'plot_id', 'teller_id']),
+    'plot_jaar_toegankelijkheid': frozenset(['bron', 'jaar', 'opmerking', 'plot_id', 'plot_naam', 'status_code']),
+    'plot_jaar_toegankelijkheid_deel': frozenset(['aandeel_pct', 'barriere_type', 'bron', 'deel_label', 'geom_wkt', 'id', 'jaar', 'opmerking', 'plot_id', 'status_code']),
+    'plot_link': frozenset(['bron', 'id', 'label', 'link_type', 'opmerking', 'plot_id', 'url']),
+    'plotkolom_mapping': frozenset(['kolomnaam', 'plot_id']),
+    'plots': frozenset(['geom', 'in_gebruik', 'kavel_nummer', 'plot_id', 'plot_naam', 'plot_nr', 'plot_wv']),
+    'pq_plot_jaar_vegetatie': frozenset(['bedekking_som_gem', 'bronbestand', 'bronstatus', 'dekking_kwaliteit', 'importversie', 'jaar', 'methode', 'n_opnamen', 'n_pq', 'plot_id', 'shannon_gem', 'soortenrijkdom_gem', 'taxa_aantal', 'taxonlijst_versie']),
+    'pq_vegetatie_bronopname': frozenset(['analyse_status', 'bron_event_id', 'bron_locatie', 'bronmetadata', 'coordinate_uncertainty_m', 'dataset_id', 'datum_precisie', 'event_datum', 'event_datum_tot', 'event_id', 'inspanning_eenheid', 'inspanning_waarde', 'jaar', 'latitude', 'longitude', 'ruimtelijke_klasse', 'sampling_protocol', 'zelfstandig_meetellen']),
+    'pq_vegetatie_bronoverlap': frozenset(['doelrecord_sleutel', 'doelsysteem', 'koppelmethode', 'overlap_id', 'resultaat_id', 'toelichting', 'zekerheid']),
+    'pq_vegetatie_bronresultaat': frozenset(['basis_of_record', 'bron_occurrence_id', 'bronmetadata', 'catalogusnummer', 'event_id', 'hoeveelheid', 'hoeveelheid_eenheid', 'hoeveelheid_oorspronkelijk', 'nederlandse_naam', 'occurrence_status', 'resultaat_id', 'taxon_bronkoppeling_id', 'taxonomische_status_aangeleverd', 'wetenschappelijke_naam', 'wetenschappelijke_naam_bron']),
+    'pq_vegetatie_import': frozenset(['aangemaakt_op', 'aantal_opnamen', 'aantal_pq', 'aantal_taxa', 'aantal_waarnemingen', 'bronbestand', 'import_id', 'importstatus', 'ontvangen_op', 'sha256', 'taxonlijst_versie', 'toelichting']),
+    'pq_vegetatie_opname': frozenset(['bodemtype_code', 'bodemtype_code_aangeleverd', 'bodemtype_naam', 'bodemtype_status', 'geom', 'ipi_code', 'ipi_naam', 'jaar', 'opname_datum', 'opname_id', 'pq_nummer', 'x_rd', 'y_rd']),
+    'pq_vegetatie_opname_bronkoppeling': frozenset(['beoordeeld_op', 'bewijs', 'event_id', 'koppelstatus', 'opname_id', 'regelversie']),
+    'pq_vegetatie_opname_plot': frozenset(['afstand_grens_m', 'match_method', 'opname_id', 'plot_id', 'polygon_bron']),
+    'pq_vegetatie_pq': frozenset(['bronbestand', 'eerste_jaar', 'import_id', 'importversie', 'laatste_jaar', 'lmf', 'n2000_gebied', 'pq_nummer']),
+    'pq_vegetatie_waarneming': frozenset(['abundantie_code', 'abundantie_percentage', 'bron_taxon_lokaal_id', 'gra_gebr', 'natuurwaarde_n', 'oever_cultuur', 'opname_id', 'plabed_code', 'taxon_bronkoppeling_id', 'trofgra', 'trofind', 'trofwat', 'vochtind', 'waarneming_id', 'zuur_vn', 'zuur_za']),
+    'richtlijnen': frozenset(['id', 'naam']),
+    'soort_familie': frozenset(['familie_id', 'id', 'soort_id']),
+    'soort_habitat': frozenset(['habitat_id', 'id', 'soort_id']),
+    'soort_richtlijn': frozenset(['id', 'richtlijn_id', 'soort_id']),
+    'soorten': frozenset(['duitse_naam', 'engelse_naam', 'euring_code', 'franse_naam', 'id', 'latijnse_naam', 'soort_naam', 'spaanse_naam', 'taxon_bronkoppeling_id']),
+    'soorten_habitattypen': frozenset(['habitattype_id', 'id', 'koppelingsterkte', 'soort_id']),
+    'soorten_kenmerken': frozenset(['code', 'hoofdcategorie_id', 'id', 'soort_id', 'soortnaam', 'waarde']),
+    'soorten_kenmerken_datadictionary': frozenset(['betekenis', 'betekenis_nederlands', 'code_type', 'id', 'parent_code', 'status', 'veld']),
+    'soorten_kenmerken_hoofdcategorien': frozenset(['beschrijving', 'beschrijving_engels', 'code', 'id']),
+    'soorten_kenmerken_voedsel': frozenset(['id', 'soort_id', 'soortnaam', 'voedselcode', 'waarde']),
+    'soorten_kenmerken_vogeltypering': frozenset(['aangemaakt_op', 'bijgewerkt_op', 'soort_id', 'soortnaam', 'vogeltypering']),
+    'sovon_avimap_bezoek': frozenset(['aangemaakt_op', 'batch_id', 'begintijd', 'bezoekdatum', 'bezoekduur_min', 'bron_aantal_records', 'bron_aantal_soorten', 'bron_bezoek_id', 'bronproject_id', 'dagvanjaar', 'deelbezoek', 'deelbezoek_deel', 'eindtijd', 'gunstig', 'jaar', 'lopend_jaar', 'niet_vogel_recordaantal', 'omstandigheden_opm', 'opmerking', 'plot_id', 'plotnaam']),
+    'sovon_avimap_daz_bezoek_taxon': frozenset(['aangemaakt_op', 'aantal', 'batch_id', 'bron_bezoek_id', 'bronrecordaantal', 'doelrelatie', 'kwaliteitsnotitie', 'lopend_jaar', 'nederlandse_naam', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'sovon_avimap_import_batch': frozenset(['aangemaakt_op', 'actueel', 'batch_id', 'bronbestanden_json', 'bronmanifest_sha256', 'bronmap', 'bronproject_id', 'kwaliteitsnotitie', 'niet_vogel_bezoeken', 'niet_vogel_records', 'niet_vogel_taxa', 'ontvangen_op', 'regelversie']),
+    'sovon_avimap_ndff_daz_koppeling': frozenset(['aangemaakt_op', 'batch_id', 'koppel_sleutel', 'koppelstatus', 'kwaliteitsnotitie', 'ndff_aantal_som', 'ndff_recordaantal', 'ndff_waarneming_id', 'sovon_aantal_som', 'sovon_bron_waarneming_ids', 'sovon_bronrecordaantal']),
+    'sovon_avimap_taxon': frozenset(['aangemaakt_op', 'batch_id', 'ndff_soort_id', 'nederlandse_naam', 'soortgroep_code', 'soortgroep_naam', 'soortnr', 'taxon_bronkoppeling_id', 'taxon_mapping_status', 'wetenschappelijke_naam']),
+    'sovon_avimap_vogel_sync_batch': frozenset(['afsluitjaar', 'batch_id', 'behouden_database_territoria_zonder_bronregel', 'bijgewerkte_bezoekduur', 'bijgewerkte_bezoekteksten', 'bijgewerkte_in_plot_records', 'bijgewerkte_territoriumaantallen', 'bron_bezoeken', 'bron_territoriumresultaten', 'bron_vogelrecords', 'kwaliteitsnotitie', 'regelversie', 'sync_id', 'toegevoegde_bezoeken', 'toegevoegde_territoriumresultaten', 'toegevoegde_vogelrecords', 'uitgevoerd_op']),
+    'sovon_avimap_waarneming': frozenset(['aangemaakt_op', 'aantal', 'batch_id', 'broedcode', 'bron_bezoek_id', 'bron_waarneming_id', 'bronproject_id', 'bronstatus', 'cluster_territorium', 'cluster_territorium_id', 'dag', 'dagvanjaar', 'gegevensrol', 'geom', 'geslacht', 'in_plot', 'ioc_sort', 'jaar', 'kopid', 'lopend_jaar', 'maand', 'opmerking', 'plot_id', 'soortgroep_code', 'soortnr', 'telgebied', 'waarnemingsdatum', 'wrntype', 'x_coord', 'y_coord']),
+    'species_trait_value': frozenset(['boolean_value', 'category_id', 'confidence_score', 'created_at', 'evidence_note', 'geographic_context', 'id', 'import_batch_id', 'is_preferred', 'levensfase', 'numeric_value', 'ordinal_value', 'population_context', 'preferred_context_hash', 'quality_status', 'raw_value', 'seizoen', 'soort_id', 'trait_id', 'updated_at', 'value_type']),
+    'species_trait_value_source': frozenset(['evidence_note', 'source_id', 'source_locator', 'species_trait_value_id']),
+    'taxa': frozenset(['aangemaakt_op', 'aanvullende_namen', 'beheerstatus', 'bovenliggend_taxon_id', 'concept_identificatie', 'familie', 'geaccepteerd_taxon_id', 'geslacht', 'gewijzigd_op', 'groep_id', 'klasse', 'naam_auteur', 'naam_gepubliceerd_in', 'naam_gepubliceerd_in_id', 'naam_gepubliceerd_jaar', 'naam_identificatie', 'naam_volgens', 'naam_volgens_id', 'naam_volgens_versie', 'naam_zonder_auteur', 'nederlandse_naam', 'nomenclatuurcode', 'nomenclatuurstatus', 'oorspronkelijk_taxon_id', 'opmerkingen', 'orde', 'rijk', 'stam', 'taxon_id', 'taxon_uuid', 'taxonmetadata', 'taxonomische_status', 'taxonrang', 'taxonrang_bron', 'taxonvorm', 'vastgesteld_door', 'vastgesteld_op', 'weergavenaam', 'wetenschappelijke_naam']),
+    'taxa_bronkoppeling': frozenset(['aangemaakt_op', 'actieve_exacte_bron', 'beoordeeld_door', 'beoordeeld_op', 'besluitversie', 'bron_citatie', 'bron_concept_identificatie', 'bron_context_sha256', 'bron_dataset', 'bron_identiteit_sha256', 'bron_licentie', 'bron_naam_identificatie', 'bron_naam_volgens', 'bron_nederlandse_naam', 'bron_sleuteltype', 'bron_soortgroep', 'bron_systeem', 'bron_taxon_id', 'bron_taxonomische_status', 'bron_taxonrang', 'bron_uri', 'bron_versie', 'bron_wetenschappelijke_naam', 'bronbestand_sha256', 'bronmetadata', 'doeltaxon_sleutel', 'gewijzigd_op', 'ingetrokken_op', 'koppeling_id', 'koppelmethode', 'koppelstatus', 'onderbouwing', 'regelversie', 'taxon_id', 'taxonrelatie']),
+    'taxon_groepen': frozenset(['aangemaakt_op', 'actief', 'bovenliggende_groep_id', 'gewijzigd_op', 'groep_code', 'groep_id', 'groep_naam', 'groepmetadata', 'indeling_bron', 'indeling_versie', 'omschrijving', 'sorteervolgorde']),
+    'tellers': frozenset(['id', 'tellercode']),
+    'territoria': frozenset(['bron_id', 'id', 'invoerdatum', 'jaar', 'plot_id', 'soort_id', 'territoria']),
+    'trait_analysis_scope': frozenset(['created_at', 'generation_commit', 'id', 'naam_nl', 'omschrijving_nl', 'scope_code', 'source_file', 'source_sha256']),
+    'trait_analysis_scope_species': frozenset(['scope_id', 'soort_id']),
+    'trait_category': frozenset(['category_code', 'id', 'naam_nl', 'omschrijving_nl', 'sort_order', 'status', 'trait_id']),
+    'trait_definition': frozenset(['context_standaard', 'created_at', 'datatype', 'domein', 'eenheid', 'id', 'levensfase_standaard', 'naam_nl', 'omschrijving_nl', 'seizoen_standaard', 'status', 'trait_code', 'trait_rol', 'trait_version', 'updated_at', 'verplicht_v1']),
+    'trait_import_batch': frozenset(['batch_code', 'bron_rijen', 'file_sha256', 'geimporteerde_waarden', 'gekoppelde_soorten', 'id', 'imported_at', 'omzettingsregels', 'source_id', 'source_url', 'source_version', 'status', 'taxonomie_naam', 'taxonomie_versie']),
+    'trait_source': frozenset(['bron_scope', 'bronrang', 'doi', 'geraadpleegd_op', 'id', 'licentie', 'notities', 'source_code', 'titel', 'url', 'volledige_citatie']),
+    'trait_taxon_mapping': frozenset(['evidence_note', 'id', 'mapping_method', 'soort_id', 'source_id', 'source_scientific_name', 'status']),
+    'trends': frozenset(['id', 'jaar', 'regio', 'soort_id', 'waarde']),
+    'vangblik_event': frozenset(['batch_id', 'country', 'country_code', 'event_id', 'event_remarks', 'eventdatum', 'geen_harde_nul', 'geodetic_datum', 'heeft_predatie_of_zoogdierrisico', 'is_vergelijkingsblik_1959', 'locality', 'locatieversie_id', 'occurrenceaantal', 'owner_institution_code', 'raw_payload', 'sample_size_unit', 'sample_size_value', 'sampling_effort', 'sampling_protocol', 'start_day_of_year']),
+    'vangblik_event_plot': frozenset(['event_id', 'is_eenduidig', 'koppelregel_versie', 'plot_id']),
+    'vangblik_import_batch': frozenset(['batch_id', 'dataset_doi', 'dataset_titel', 'dataset_versie', 'eventaantal', 'eventbestand_sha256', 'geimporteerd_op', 'licentie', 'occurrenceaantal', 'occurrencebestand_sha256']),
+    'vangblik_locatieversie': frozenset(['batch_id', 'decimal_latitude', 'decimal_longitude', 'geldig_tot_en_met', 'geldig_vanaf', 'is_verplaatst_blok_7_18', 'locatiepunt', 'locatieversie_id', 'location_id', 'onzekerheid_meter', 'verbatim_x_rd', 'verbatim_y_rd']),
+    'vangblik_vangst': frozenset(['analyse_status', 'basis_of_record', 'batch_id', 'bron_event_id', 'event_id', 'individual_count', 'is_verweesd', 'life_stage', 'minimumvangst_mogelijk', 'occurrence_id', 'occurrence_remarks', 'occurrence_status', 'owner_institution_code', 'raw_payload', 'recorded_by', 'referentieel_geldig', 'taxon_bronkoppeling_id']),
+    'weer': frozenset(['FG', 'Naam', 'PG', 'RH', 'SQ', 'STN', 'TG', 'TN', 'TX', 'UG', 'datum']),
+    'weer_legenda': frozenset(['toelichting', 'variabele']),
+}
+
+def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
+    for table in sorted(set(schema) | set(CENTRAL_QUERY_SCHEMA)):
+        if table not in schema or table not in CENTRAL_QUERY_SCHEMA:
+            raise ValueError(table + ": niet beoordeelde schemawijziging")
+        if set(schema[table]) != CENTRAL_QUERY_SCHEMA[table]:
+            raise ValueError(table + ": gewijzigde kolommen vereisen centrale routecontrole")
+
+
+class CentralQueryDatabase:
+    """One local MySQL connection contract; never logs credentials or source rows."""
+    def __init__(self, database='Meijendel', login_path='meijendel_root',
+                 client='/usr/local/mysql/bin/mysql', *, writable=False, host='127.0.0.1',port=3306):
+        query_identifier(database)
+        self.database = database
+        self.args = [str(client), '--login-path='+login_path, '--protocol=TCP',
+                     '--host='+str(host), '--port='+str(port), '--batch', '--raw',
+                     '--skip-column-names', database]
+        self.writable = writable
+
+    def sql(self, sql: str, *, write=False) -> str:
+        if write and not self.writable:
+            raise ValueError('Alleen-lezen controle kan geen database wijzigen')
+        command = sql if write else 'START TRANSACTION READ ONLY;\n'+sql+'\nCOMMIT;'
+        result = subprocess.run(self.args, input=command, text=True, capture_output=True)
+        if result.returncode:
+            raise RuntimeError(result.stderr.strip())
+        return result.stdout.strip()
+
+    def objects(self, sql: str) -> list[dict]:
+        return [json.loads(line) for line in self.sql(sql).splitlines()]
+
+    def schema(self) -> dict[str, set[str]]:
+        output = self.sql("SELECT c.TABLE_NAME,c.COLUMN_NAME FROM information_schema.COLUMNS c "
+            "JOIN information_schema.TABLES t ON t.TABLE_SCHEMA=c.TABLE_SCHEMA AND t.TABLE_NAME=c.TABLE_NAME "
+            "WHERE c.TABLE_SCHEMA=DATABASE() AND t.TABLE_TYPE='BASE TABLE' ORDER BY c.TABLE_NAME,c.ORDINAL_POSITION;")
+        schema = defaultdict(set)
+        for line in output.splitlines():
+            table, column = line.split('\t'); schema[table].add(column)
+        return dict(schema)
+
+
+def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dict:
+    """Whole database acceptance, including unknown layers, pinned IDs and fan-out.
+
+    A taxon without a known group is retained by LEFT JOIN. No observation is
+    accepted on a free text name match. DDL by root cannot be intercepted by a
+    MySQL trigger: this complete scan is required before AND after controlled DDL.
+    """
+    schema = db.schema()
+    central_query_schema_contract(schema)
+    routes = central_query_routes(schema)
+    result = {'rule':QUERY_RULE, 'database':db.database, 'tables':len(schema), 'routes':{}, 'errors':[]}
+    errors = result['errors']
+    invalid = db.sql("SELECT COUNT(*) FROM taxa_bronkoppeling b LEFT JOIN taxa t ON t.taxon_id=b.taxon_id "
+        "WHERE b.taxon_id IS NOT NULL AND t.taxon_id IS NULL;")
+    if invalid != '0': errors.append('Verweesde centrale taxonkoppelingen: '+invalid)
+    if db.sql('SELECT COUNT(*) FROM taxa t LEFT JOIN taxon_groepen g ON g.groep_id=t.groep_id '
+              'WHERE t.groep_id IS NOT NULL AND g.groep_id IS NULL;') != '0':
+        errors.append('Verweesde groepsindeling')
+    fks = set(tuple(line.split('\t')) for line in db.sql(
+        "SELECT TABLE_NAME,COLUMN_NAME,REFERENCED_TABLE_NAME,REFERENCED_COLUMN_NAME "
+        "FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
+        "AND REFERENCED_TABLE_NAME IS NOT NULL;").splitlines())
+    if db.sql("SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
+              "AND REFERENCED_TABLE_SCHEMA IS NOT NULL AND REFERENCED_TABLE_SCHEMA<>DATABASE();")!='0':
+        errors.append('Foreign key verwijst buiten de gecontroleerde database')
+    triggers = set(line.split('\t')[0] for line in db.sql(
+        "SELECT TRIGGER_NAME FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA=DATABASE();").splitlines())
+    if require_guards and 'cq_registry_bu' not in triggers:
+        errors.append('Centrale bronbesluiten missen schrijfbewaking')
+    if require_guards:
+        definitions = db.objects("SELECT JSON_OBJECT('name',TRIGGER_NAME,'table',EVENT_OBJECT_TABLE,"
+            "'event',EVENT_MANIPULATION,'timing',ACTION_TIMING,'body',ACTION_STATEMENT) FROM information_schema.TRIGGERS "
+            "WHERE TRIGGER_SCHEMA=DATABASE();")
+        actual={row['name']:row for row in definitions}
+        for match in re.finditer(r'CREATE TRIGGER (\w+) BEFORE (INSERT|UPDATE|DELETE) ON `?(\w+)`? FOR EACH ROW (BEGIN.*?END)\$\$',
+                                central_query_triggers_sql({'routes':routes}),re.S):
+            name,event,table,body=match.groups()
+            found=actual.get(name)
+            if (found is None or found['table']!=table or found['event']!=event or found['timing']!='BEFORE'
+                    or ' '.join(found['body'].split())!=' '.join(body.split())):
+                errors.append(name+': schrijfbewaking ontbreekt of is gewijzigd')
+    for table, route in routes.items():
+        kind = route['kind']; qtable = query_identifier(table)
+        count = int(db.sql(f'SELECT COUNT(*) FROM {qtable};'))
+        entry = {'rows':count, **route}; result['routes'][table] = entry
+        if kind == 'staging':
+            if count: errors.append(f'{table}: {count} niet toegelaten tijdelijke invoerregels')
+            continue
+        if kind in {'catalogue','direct','external','derived'}:
+            if 'taxon_bronkoppeling_id' not in schema[table]:
+                errors.append(table+': vaste centrale bronkoppeling ontbreekt'); continue
+            if (table,'taxon_bronkoppeling_id','taxa_bronkoppeling','koppeling_id') not in fks:
+                errors.append(table+': centrale FK ontbreekt')
+            allowed = ('w.taxon_bronkoppeling_id IS NOT NULL' if kind == 'catalogue' and route.get('nullable')
+                       else 'w.'+query_identifier(route['name_field'])+' IS NOT NULL'
+                       if kind == 'derived' and route.get('nullable') else 'TRUE')
+            missing = int(db.sql(f'SELECT COUNT(*) FROM {qtable} w LEFT JOIN taxa_bronkoppeling b '
+                'ON b.koppeling_id=w.taxon_bronkoppeling_id LEFT JOIN taxa t ON t.taxon_id=b.taxon_id '
+                f'WHERE ({allowed}) AND (t.taxon_id IS NULL OR b.koppelstatus NOT IN (\'kandidaat\',\'bevestigd\'));'))
+            if missing: errors.append(f'{table}: {missing} regels niet centraal bereikbaar')
+            entry['unreachable'] = missing
+            if kind in {'catalogue','direct','external'}:
+                mismatch = db.sql(f'SELECT COUNT(*) FROM {qtable} w JOIN taxa_bronkoppeling b '
+                    'ON b.koppeling_id=w.taxon_bronkoppeling_id WHERE ('+central_source_condition(table,route)+') IS NOT TRUE;')
+                if mismatch!='0': errors.append(table+': verkeerde bronidentiteit: '+mismatch)
+            if kind == 'derived':
+                mismatch = db.sql(f'SELECT COUNT(*) FROM {qtable} w JOIN taxa_bronkoppeling b '
+                    'ON b.koppeling_id=w.taxon_bronkoppeling_id WHERE '
+                    f'BINARY b.bron_dataset<>BINARY {query_literal(table)} OR '
+                    f'BINARY b.bron_versie<>BINARY w.{query_identifier(route["version_field"])} OR '
+                    f'BINARY b.bron_taxon_id<>BINARY {derived_key_sql(route)};')
+                if mismatch != '0': errors.append(table+': broncontext wijkt af: '+mismatch)
+        else:
+            catalogue = route.get('catalogue', 'ndff_soorten')
+            if 'taxon_bronkoppeling_id' not in schema[catalogue]:
+                errors.append(table+': centrale catalogusroute ontbreekt'); continue
+            if kind == 'ndff_child':
+                joined = f'{qtable} w LEFT JOIN ndff_open_waarneming o ON {route["join"]} '
+                joined += 'LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key '
+            else:
+                joined = f'{qtable} w LEFT JOIN {query_identifier(catalogue)} c ON {route["join"]} '
+            reference_scope = 'c.taxon_bronkoppeling_id IS NOT NULL AND ' if route.get('role')=='soortreferentie' else ''
+            missing = int(db.sql('SELECT COUNT(*) FROM '+joined+
+                'LEFT JOIN taxa_bronkoppeling b ON b.koppeling_id=c.taxon_bronkoppeling_id '
+                'LEFT JOIN taxa t ON t.taxon_id=b.taxon_id WHERE '+reference_scope+"(t.taxon_id IS NULL "
+                "OR b.koppelstatus NOT IN ('kandidaat','bevestigd'));"))
+            entry['unreachable'] = missing
+            if missing: errors.append(f'{table}: {missing} niet centraal bereikbare regels')
+        if require_guards:
+            for suffix in ('bi','bu'):
+                if central_trigger_name(table,suffix) not in triggers:
+                    errors.append(table+': schrijfbewaking ontbreekt: '+suffix)
+    result['status'] = 'verified' if not errors else 'blocked'
+    return result
+
+
+def central_trigger_name(table: str, suffix: str) -> str:
+    return 'cq_' + hashlib.sha256(table.encode()).hexdigest()[:20] + '_' + suffix
+
+
+def central_query_plan(db: CentralQueryDatabase) -> dict:
+    """Source identities, not display names, bind every current observation layer."""
+    schema = db.schema(); routes = central_query_routes(schema)
+    links = db.objects("SELECT JSON_OBJECT('id',koppeling_id,'taxon_id',taxon_id,'dataset',bron_dataset,"
+        "'version',bron_versie,'source_id',bron_taxon_id,'name',bron_wetenschappelijke_naam,"
+        "'metadata',bronmetadata,'status',koppelstatus) FROM taxa_bronkoppeling "
+        "WHERE bron_systeem='Meijendel' AND ingetrokken_op IS NULL;")
+    plan = {'rule':QUERY_RULE,'catalogues':{},'derived':{},'external':{},'operational':None,
+            'routes':routes, 'schema':{k:sorted(v) for k,v in schema.items()}}
+    by_catalogue = defaultdict(dict)
+    for link in links:
+        if link['dataset'] in {'soorten','ndff_soorten','sovon_avimap_taxon'}:
+            key = link['source_id']
+            if key in by_catalogue[link['dataset']]: raise ValueError('Ambigue broncatalogusidentiteit')
+            by_catalogue[link['dataset']][key] = link
+    for table, route in routes.items():
+        if route['kind'] != 'catalogue': continue
+        fields = ['id'] if table == 'soorten' else ['soort_key'] if table == 'ndff_soorten' else ['batch_id','soortgroep_code','soortnr']
+        rows = db.objects('SELECT JSON_OBJECT('+','.join(query_literal(c)+','+query_identifier(c) for c in fields)+
+                          ') FROM '+query_identifier(table)+';')
+        mapping = []
+        for row in rows:
+            key = str(row[fields[0]]) if len(fields)==1 else json.dumps([row[c] for c in fields],separators=(',', ':'))
+            link = by_catalogue[table].get(key)
+            if not link: raise ValueError(f'{table}: niet geregistreerde bronidentiteit {key}')
+            if link['taxon_id'] is None:
+                if table != 'soorten': raise ValueError('Ontbrekend centraal taxon')
+                continue  # Unused, unresolved catalogue entry; observations still fail closed.
+            mapping.append({'key':row,'link':link['id']})
+        plan['catalogues'][table] = mapping
+    # Source catalogue names remain the literal evidence after central taxon merges.
+    candidates = defaultdict(list)
+    for link in links:
+        if link['dataset'] in {'ndff_soorten','sovon_avimap_taxon','ndff_lmfa_doelsoort',
+                              'ndff_zeereep_doelbereik'} and link['taxon_id'] is not None:
+            candidates[link['name']].append(link)
+    for table, route in routes.items():
+        if route['kind'] != 'derived': continue
+        fields = [route['version_field'],route['name_field'],*route['context_fields']]
+        rows = db.objects('SELECT DISTINCT JSON_OBJECT('+','.join(query_literal(c)+',w.'+query_identifier(c) for c in fields)+
+                          ",'source_key',"+derived_key_sql(route)+') FROM '+query_identifier(table)+
+                          ' w WHERE w.'+query_identifier(route['name_field'])+' IS NOT NULL;')
+        registrations = []
+        for row in rows:
+            found = candidates[row[route['name_field']]]
+            if 'soortgroep_raw' in row:
+                found = [b for b in found if b['dataset']=='ndff_soorten' and
+                         b['metadata'].get('soortgroep_raw') == row['soortgroep_raw']]
+            elif table.startswith('sovon_avimap_'):
+                avimap = [b for b in found if b['dataset']=='sovon_avimap_taxon' and
+                          b['metadata'].get('batch_id') == row.get('batch_id')]
+                # Ondatra has a documented target range but no positive Avimap record.
+                found = avimap or ([b for b in found if b['dataset']=='ndff_soorten']
+                                  if row[route['name_field']]=='Ondatra zibethicus' else [])
+            else:
+                found = [b for b in found if b['dataset']=='ndff_soorten' or
+                         (table.startswith('ndff_lmfa_') and b['dataset']=='ndff_lmfa_doelsoort') or
+                         (table.startswith('ndff_zeereep_') and b['dataset']=='ndff_zeereep_doelbereik')]
+            targets = {b['taxon_id'] for b in found}
+            if len(targets) != 1:
+                raise ValueError(f'{table}: bronnaam {row[route["name_field"]]!r} niet eenduidig ({len(targets)} taxa)')
+            registrations.append({'version':row[route['version_field']], 'source_key':row['source_key'],
+                'name':row[route['name_field']], 'taxon_id':next(iter(targets)),
+                'metadata':{'bronvelden':{c:row[c] for c in fields},
+                            'onderliggende_bronkoppeling_ids':sorted(b['id'] for b in found),
+                            'interpretatie':'nominale taxonroute; geen bevestigde conceptgelijkheid'}})
+        plan['derived'][table] = registrations
+    datasets = db.objects("SELECT JSON_OBJECT('id',dataset_id,'key',dataset_sleutel,'version',"
+        "CONCAT(bronversie,'; sha256:',bronbestand_sha256)) FROM externe_ecologie_dataset;")
+    for dataset in datasets:
+        rows = db.objects("SELECT JSON_OBJECT('resultaat_id',r.resultaat_id,'wetenschappelijke_naam',r.wetenschappelijke_naam,"
+            "'wetenschappelijke_naam_bron',r.wetenschappelijke_naam_bron,'nederlandse_naam',r.nederlandse_naam,"
+            "'taxonrang',r.taxonrang,'bronmetadata',r.bronmetadata) FROM externe_ecologie_resultaat r "
+            f"JOIN externe_ecologie_event e ON e.event_id=r.event_id WHERE e.dataset_id={int(dataset['id'])};")
+        existing = [{**b,'bron_systeem':'Meijendel','bron_dataset':b['dataset'],'bron_versie':b['version'],
+                     'ingetrokken_op':None,'bronmetadata':b['metadata'],'koppeling_id':b['id'],
+                     'koppelstatus':b['status']} for b in links if b['dataset']==dataset['key'] and b['version']==dataset['version']]
+        resolved_rows = []
+        unresolved = []
+        unresolved_rows = [r for r in rows if r['wetenschappelijke_naam']=='Indet.'
+                           and dataset['key']=='naturalis-botany-meijendel']
+        resolved_map = resolve_external_taxon_links([r for r in rows if r not in unresolved_rows],existing,
+                                                    dataset['key'],dataset['version'])
+        for row in rows:
+            if row in unresolved_rows:
+                unresolved.append(row); continue
+            resolved_rows.append({'result_id':row['resultaat_id'],'link':resolved_map[row['resultaat_id']]})
+        if unresolved:
+            if (dataset['key']!='naturalis-botany-meijendel' or len(unresolved)!=1 or
+                    unresolved[0]['wetenschappelijke_naam']!='Indet.'):
+                raise ValueError(f'{dataset["key"]}: {len(unresolved)} niet opgeloste bronvermeldingen')
+            row = unresolved[0]
+            usage = {f:row['bronmetadata'].get(f) for f in SOURCE_TAXON_FIELDS}
+            usage.update(dataset=dataset['key'],name=row['wetenschappelijke_naam'],raw_name=row['wetenschappelijke_naam_bron'],
+                         nl=row['nederlandse_naam'],rank=row['taxonrang'])
+            original = [b for b in existing if source_usage_projection(b['metadata'])==usage]
+            if len(original)!=1 or original[0]['taxon_id'] is not None:
+                raise ValueError('Oorspronkelijk onbeoordeeld Indet.-besluit niet eenduidig')
+            plan['operational'] = {'source_link':original[0]['id'],'result_id':row['resultaat_id'],
+                'dataset':dataset['key'],'version':dataset['version'],'metadata':usage,
+                'label':'Onbepaald collectieobject — Naturalis Botany'}
+        plan['external'][dataset['key']] = resolved_rows
+    plan['original_constraint_names'] = db.sql("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS "
+        "WHERE CONSTRAINT_SCHEMA=DATABASE() ORDER BY CONSTRAINT_NAME;").splitlines()
+    plan['original_max_ids'] = {table:int(db.sql(f'SELECT MAX({field}) FROM {table};'))
+                               for table,field in [('taxa','taxon_id'),('taxa_bronkoppeling','koppeling_id')]}
+    return plan
+
+
+def central_query_migration_sql(plan: dict, *, commit=False) -> str:
+    """Only DML; run twice (rollback then commit) after separately tested DDL."""
+    statements = ['START TRANSACTION;']
+    operational = plan['operational']
+    if operational:
+        meta = {'registratieregel':QUERY_RULE,'interpretatie':'geen bepaald biologisch taxon of rang',
+                'oorspronkelijk_onbeoordeeld_bronbesluit':operational['source_link']}
+        statements += ["INSERT INTO taxa(taxon_uuid,wetenschappelijke_naam,weergavenaam,taxonvorm,"
+            "taxonomische_status,beheerstatus,naam_volgens,taxonmetadata) VALUES(UUID(),'Indet.',"+
+            query_literal(operational['label'])+",'operationele_eenheid','unresolved','voorlopig',"
+            "'Ongedetermineerd Naturalis-collectieobject; geen soortbepaling',"+query_literal(json.dumps(meta,ensure_ascii=False))+');',
+            'SET @cq_operational=LAST_INSERT_ID();',
+            "INSERT INTO taxa_bronkoppeling(bron_systeem,bron_dataset,bron_versie,bron_taxon_id,bron_sleuteltype,"
+            "bron_wetenschappelijke_naam,bronmetadata,taxon_id,koppelstatus,taxonrelatie,koppelmethode,regelversie,onderbouwing) "
+            "SELECT bron_systeem,bron_dataset,bron_versie,CONCAT('operationeel:',koppeling_id),'afgeleid',"
+            "bron_wetenschappelijke_naam,bronmetadata,@cq_operational,'kandidaat','onbekend','onbepaald_collection_object',"+
+            query_literal(QUERY_RULE)+",'Alleen operationele vindbaarheid; oorspronkelijk onbeoordeeld besluit blijft ongewijzigd' "
+            f"FROM taxa_bronkoppeling WHERE koppeling_id={operational['source_link']};",
+            'SET @cq_operational_link=LAST_INSERT_ID();']
+    for table, mapping in plan['catalogues'].items():
+        for row in mapping:
+            condition = ' AND '.join(query_identifier(c)+' <=> '+query_literal(v) for c,v in row['key'].items())
+            statements.append(f'UPDATE {query_identifier(table)} SET taxon_bronkoppeling_id={row["link"]} WHERE {condition};')
+    for table, registrations in plan['derived'].items():
+        for row in registrations:
+            fields = ['bron_systeem','bron_dataset','bron_versie','bron_taxon_id','bron_sleuteltype',
+                      'bron_wetenschappelijke_naam','bronmetadata','taxon_id','koppelstatus','taxonrelatie',
+                      'koppelmethode','regelversie','onderbouwing']
+            vals = ['Meijendel',table,row['version'],row['source_key'],'afgeleid',row['name'],
+                    json.dumps(row['metadata'],ensure_ascii=False),row['taxon_id'],'kandidaat','onbekend',
+                    'brongetrouwe_afgeleide_meettaxonroute',QUERY_RULE,
+                    'Versiegebonden bronvelden en onderliggende centrale bronkoppelingen; geen conceptgelijkheid']
+            statements.append('INSERT INTO taxa_bronkoppeling('+','.join(fields)+') VALUES('+','.join(map(query_literal,vals))+');')
+        route = plan['routes'][table]
+        identity = ("UNHEX(SHA2(CAST(JSON_ARRAY('Meijendel',"+query_literal(table)+',w.'+query_identifier(route['version_field'])+
+                    ','+derived_key_sql(route)+') AS CHAR CHARACTER SET utf8mb4),256))')
+        statements.append(f'UPDATE {query_identifier(table)} w JOIN taxa_bronkoppeling b ON b.bron_identiteit_sha256={identity} '
+                          "AND b.ingetrokken_op IS NULL SET w.taxon_bronkoppeling_id=b.koppeling_id;")
+    # A temporary mapping is exact per source result ID and leaves every old cell intact.
+    statements.append('CREATE TEMPORARY TABLE cq_result_map(result_id BIGINT PRIMARY KEY,link_id BIGINT NOT NULL);')
+    rows = [f'({r["result_id"]},{r["link"]})' for group in plan['external'].values() for r in group]
+    for index in range(0,len(rows),1000):
+        statements.append('INSERT INTO cq_result_map VALUES '+','.join(rows[index:index+1000])+';')
+    if operational:
+        statements.append(f'INSERT INTO cq_result_map VALUES({operational["result_id"]},@cq_operational_link);')
+    statements += ['UPDATE externe_ecologie_resultaat r JOIN cq_result_map m ON m.result_id=r.resultaat_id '
+                   'SET r.taxon_bronkoppeling_id=m.link_id;',
+                   'DROP TEMPORARY TABLE cq_result_map;', 'COMMIT;' if commit else 'ROLLBACK;']
+    return '\n'.join(statements)
+
+
+def central_query_schema_sql(plan: dict, *, finalize=False) -> str:
+    statements = []
+    schema = plan['schema']
+    if not finalize:
+        if 'bron_context_sha256' not in schema['taxa_bronkoppeling']:
+            statements.append('ALTER TABLE taxa_bronkoppeling ADD COLUMN bron_context_sha256 BINARY(32) '
+                'GENERATED ALWAYS AS (UNHEX(SHA2(CAST('+query_context_sql('bronmetadata')+
+                ' AS CHAR CHARACTER SET utf8mb4),256))) STORED, ADD INDEX ix_cq_broncontext(bron_context_sha256);')
+        for table, route in plan['routes'].items():
+            if route['kind'] not in {'catalogue','derived','external'}: continue
+            if 'taxon_bronkoppeling_id' not in schema[table]:
+                name = hashlib.sha256(table.encode()).hexdigest()[:20]
+                statements.append(f'ALTER TABLE {query_identifier(table)} ADD COLUMN taxon_bronkoppeling_id BIGINT UNSIGNED NULL,'
+                    f' ADD INDEX ix_cq_{name}(taxon_bronkoppeling_id), ADD CONSTRAINT fk_cq_{name} '
+                    'FOREIGN KEY(taxon_bronkoppeling_id) REFERENCES taxa_bronkoppeling(koppeling_id);')
+    else:
+        for table, route in plan['routes'].items():
+            if route['kind'] in {'catalogue','derived','external'} and not route.get('nullable'):
+                name = hashlib.sha256(table.encode()).hexdigest()[:20]
+                statements.append(f'ALTER TABLE {query_identifier(table)} DROP FOREIGN KEY fk_cq_{name}, '
+                    'MODIFY taxon_bronkoppeling_id BIGINT UNSIGNED NOT NULL, '
+                    f'ADD CONSTRAINT fk_cq_final_{name} FOREIGN KEY(taxon_bronkoppeling_id) REFERENCES taxa_bronkoppeling(koppeling_id);')
+    return '\n'.join(statements)
+
+
+def central_query_triggers_sql(plan: dict) -> str:
+    """Guards are local-schema bound and survive a complete dump/restore.
+
+    Source usages for new reconstruction versions are admitted only when the
+    already registered source catalogue gives one nominal target. New biological
+    taxa still require the normal central register import/review first.
+    """
+    statements = ['DELIMITER $$']
+    routes = plan['routes']
+    validity = ("SELECT COUNT(*) INTO cq_n FROM taxa_bronkoppeling b JOIN taxa t ON t.taxon_id=b.taxon_id "
+        "WHERE b.koppeling_id=NEW.taxon_bronkoppeling_id AND b.koppelstatus IN ('kandidaat','bevestigd');\n"
+        "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Geen geldige centrale taxonroute'; END IF;\n")
+    for table, route in routes.items():
+        kind = route['kind']
+        if kind=='staging': continue
+        body = ''
+        declarations = 'DECLARE cq_n BIGINT DEFAULT 0; DECLARE cq_id BIGINT UNSIGNED; DECLARE cq_taxon BIGINT UNSIGNED;'
+        if kind=='ndff_child':
+            body = ('IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming o WHERE '+route['join'].replace('w.','NEW.')+
+                    ") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronwaarneming bestaat niet'; END IF;")
+        elif kind == 'catalogue_child':
+            # Catalogue target protection + existing FK protects the factual source key.
+            join = route['join'].replace('w.', 'NEW.')
+            body = ('SELECT COUNT(*) INTO cq_n FROM '+query_identifier(route['catalogue'])+' c '
+                'JOIN taxa_bronkoppeling b ON b.koppeling_id=c.taxon_bronkoppeling_id '
+                "JOIN taxa t ON t.taxon_id=b.taxon_id WHERE "+join+
+                " AND b.koppelstatus IN ('kandidaat','bevestigd'); "
+                "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Bronsoort niet centraal bereikbaar'; END IF;")
+            if route.get('role')=='soortreferentie':
+                body='IF NOT EXISTS(SELECT 1 FROM '+query_identifier(route['catalogue'])+' c WHERE '+join+\
+                     ' AND c.taxon_bronkoppeling_id IS NULL) THEN '+body+' END IF;'
+        elif kind == 'catalogue':
+            if table=='soorten':
+                source_id='CAST(NEW.id AS CHAR)'; name='NEW.latijnse_naam'
+            elif table=='ndff_soorten': source_id='NEW.soort_key'; name='NEW.wetenschappelijke_naam'
+            else:
+                # Initial registry uses compact JSON tuple. This expression removes
+                # only structural spaces, never source values (these are integers).
+                source_id="REPLACE(CAST(JSON_ARRAY(NEW.batch_id,NEW.soortgroep_code,NEW.soortnr) AS CHAR),' ','')"
+                name='NEW.wetenschappelijke_naam'
+            conditions = ("b.bron_systeem='Meijendel' AND BINARY b.bron_dataset=BINARY "+query_literal(table)+
+                ' AND BINARY b.bron_taxon_id=BINARY '+source_id+' AND b.taxon_id IS NOT NULL '
+                "AND b.ingetrokken_op IS NULL AND b.koppelstatus IN ('kandidaat','bevestigd') "
+                'AND BINARY b.bron_wetenschappelijke_naam <=> BINARY '+name)
+            if table=='ndff_soorten':
+                conditions += " AND BINARY JSON_UNQUOTE(JSON_EXTRACT(b.bronmetadata,'$.soortgroep_raw')) <=> BINARY NEW.soortgroep_raw"
+            body = (f'SELECT COUNT(*),MIN(b.koppeling_id) INTO cq_n,cq_id FROM taxa_bronkoppeling b WHERE {conditions}; '
+                'IF NEW.taxon_bronkoppeling_id IS NULL AND cq_n=1 THEN SET NEW.taxon_bronkoppeling_id=cq_id; END IF; ')
+            if table=='soorten':
+                body += 'IF NEW.taxon_bronkoppeling_id IS NOT NULL THEN '
+            body += ('IF NEW.taxon_bronkoppeling_id IS NULL OR NOT EXISTS(SELECT 1 FROM taxa_bronkoppeling b WHERE '+conditions+
+                     ' AND b.koppeling_id=NEW.taxon_bronkoppeling_id) THEN '
+                     "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Registreer bronsoort eerst centraal'; END IF; "+validity)
+            if table=='soorten': body += 'END IF;'
+        elif kind == 'derived':
+            key = derived_key_sql(route,'NEW'); version='NEW.'+query_identifier(route['version_field'])
+            name='NEW.'+query_identifier(route['name_field'])
+            source_hash=("UNHEX(SHA2(CAST(JSON_ARRAY('Meijendel',"+query_literal(table)+','+version+','+key+
+                         ') AS CHAR CHARACTER SET utf8mb4),256))')
+            conditions = "b.bron_identiteit_sha256="+source_hash+" AND b.ingetrokken_op IS NULL AND b.taxon_id IS NOT NULL AND b.koppelstatus IN ('kandidaat','bevestigd')"
+            catalogue='sovon_avimap_taxon' if table.startswith('sovon_avimap_') else 'ndff_soorten'
+            context = 'BINARY c.wetenschappelijke_naam=BINARY '+name
+            if 'soortgroep_raw' in route['context_fields']: context+=' AND BINARY c.soortgroep_raw=BINARY NEW.soortgroep_raw'
+            if 'batch_id' in route['context_fields'] and catalogue=='sovon_avimap_taxon': context+=' AND c.batch_id=NEW.batch_id'
+            source_lookup = (f'SELECT COUNT(DISTINCT b.taxon_id),MIN(b.taxon_id) INTO cq_n,cq_taxon FROM {catalogue} c '
+                            'JOIN taxa_bronkoppeling b ON b.koppeling_id=c.taxon_bronkoppeling_id WHERE '+context+'; ')
+            for prefix,source in [('ndff_lmfa_','ndff_lmfa_doelsoort'),('ndff_zeereep_','ndff_zeereep_doelbereik')]:
+                if table.startswith(prefix):
+                    source_lookup += ('IF cq_n=0 THEN SELECT COUNT(DISTINCT b.taxon_id),MIN(b.taxon_id) INTO cq_n,cq_taxon '
+                        "FROM taxa_bronkoppeling b WHERE b.bron_systeem='Meijendel' AND b.ingetrokken_op IS NULL "
+                        'AND b.bron_dataset='+query_literal(source)+' AND BINARY b.bron_wetenschappelijke_naam=BINARY '+name+
+                        " AND b.regelversie<>"+query_literal(QUERY_RULE)+" AND b.koppelstatus IN ('kandidaat','bevestigd'); END IF; ")
+            if catalogue=='sovon_avimap_taxon':
+                source_lookup += ("IF cq_n=0 AND BINARY "+name+"=BINARY 'Ondatra zibethicus' THEN "
+                    'SELECT COUNT(DISTINCT b.taxon_id),MIN(b.taxon_id) INTO cq_n,cq_taxon FROM ndff_soorten c '
+                    'JOIN taxa_bronkoppeling b ON b.koppeling_id=c.taxon_bronkoppeling_id '
+                    "WHERE BINARY c.wetenschappelijke_naam=BINARY 'Ondatra zibethicus'; END IF; ")
+            metadata=('JSON_OBJECT(\'bronvelden\',JSON_OBJECT('+','.join(query_literal(f)+',NEW.'+query_identifier(f)
+                for f in [route['version_field'],route['name_field'],*route['context_fields']])+
+                "),'interpretatie','nominale route uit centraal gekoppelde broncatalogus; geen conceptgelijkheid')")
+            body = (f'IF {name} IS NOT NULL THEN '
+                f'SELECT COUNT(*),MIN(b.koppeling_id) INTO cq_n,cq_id FROM taxa_bronkoppeling b WHERE {conditions}; '
+                'IF cq_n=0 THEN '+source_lookup+
+                "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Afgeleide soort eerst centraal beoordelen'; END IF; "
+                'INSERT INTO taxa_bronkoppeling(bron_systeem,bron_dataset,bron_versie,bron_taxon_id,bron_sleuteltype,'
+                'bron_wetenschappelijke_naam,bronmetadata,taxon_id,koppelstatus,taxonrelatie,koppelmethode,regelversie,onderbouwing) '
+                "VALUES('Meijendel',"+query_literal(table)+','+version+','+key+",'afgeleid',"+name+','+metadata+
+                ",cq_taxon,'kandidaat','onbekend','brongetrouwe_afgeleide_meettaxonroute',"+query_literal(QUERY_RULE)+
+                ",'Versiegebonden nominale broncatalogusroute; geen bevestigde conceptgelijkheid'); "
+                'SET cq_id=LAST_INSERT_ID(); SET cq_n=1; END IF; '
+                "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Ambigue afgeleide bronidentiteit'; END IF; "
+                'IF NEW.taxon_bronkoppeling_id IS NULL THEN SET NEW.taxon_bronkoppeling_id=cq_id; END IF; '
+                "IF NEW.taxon_bronkoppeling_id<>cq_id THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Afgeleide broncontext past niet'; END IF; "+
+                validity+' ELSE IF NEW.taxon_bronkoppeling_id IS NOT NULL THEN '
+                "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Geen doelsoort maar wel taxonkoppeling'; END IF; END IF;")
+        elif kind == 'external':
+            declarations += ' DECLARE cq_dataset VARCHAR(255); DECLARE cq_version VARCHAR(255); DECLARE cq_context BINARY(32);'
+            fields = {f:f"JSON_EXTRACT(NEW.bronmetadata,'$.{f}')" for f in SOURCE_TAXON_FIELDS}
+            fields.update(dataset='cq_dataset',name='NEW.wetenschappelijke_naam',raw_name='NEW.wetenschappelijke_naam_bron',
+                          nl='NEW.nederlandse_naam',rank='NEW.taxonrang')
+            context='JSON_OBJECT('+','.join(query_literal(f)+','+fields[f] for f in SOURCE_USAGE_FIELDS)+')'
+            conditions = ("b.bron_context_sha256=cq_context AND b.bron_systeem='Meijendel' "
+                'AND BINARY b.bron_dataset=BINARY cq_dataset AND BINARY b.bron_versie=BINARY cq_version '
+                "AND b.ingetrokken_op IS NULL AND b.taxon_id IS NOT NULL AND b.koppelstatus IN ('kandidaat','bevestigd')")
+            body = ('SELECT d.dataset_sleutel,CONCAT(d.bronversie,\'; sha256:\',d.bronbestand_sha256) INTO cq_dataset,cq_version '
+                'FROM externe_ecologie_event e JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id WHERE e.event_id=NEW.event_id; '
+                'SET cq_context=UNHEX(SHA2(CAST('+context+' AS CHAR CHARACTER SET utf8mb4),256)); '
+                f'SELECT COUNT(*),MIN(b.koppeling_id) INTO cq_n,cq_id FROM taxa_bronkoppeling b WHERE {conditions}; '
+                "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Externe bron eerst centraal registreren'; END IF; "
+                'IF NEW.taxon_bronkoppeling_id IS NULL THEN SET NEW.taxon_bronkoppeling_id=cq_id; END IF; '
+                "IF NEW.taxon_bronkoppeling_id<>cq_id THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Externe taxonbroncontext past niet'; END IF; "+validity)
+        else:
+            condition=central_source_condition(table,route,'NEW')
+            body=("IF NOT EXISTS(SELECT 1 FROM taxa_bronkoppeling b WHERE b.koppeling_id=NEW.taxon_bronkoppeling_id AND "+
+                  condition+") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Taxonkoppeling past niet bij bronwaarneming'; END IF; "+validity)
+        for suffix,event in [('bi','INSERT'),('bu','UPDATE')]:
+            trigger=central_trigger_name(table,suffix)
+            statements += [f'DROP TRIGGER IF EXISTS {trigger}$$',
+                f'CREATE TRIGGER {trigger} BEFORE {event} ON {query_identifier(table)} FOR EACH ROW BEGIN\n'
+                +declarations+'\n'+body+'\nEND$$']
+    # Registry edits must not make any pinned measurement lose its target or origin.
+    references = ' OR '.join(f'EXISTS(SELECT 1 FROM {query_identifier(table)} WHERE taxon_bronkoppeling_id=OLD.koppeling_id)'
+        for table,r in routes.items() if r['kind'] in {'catalogue','derived','direct','external'})
+    source_fields = ('soort_key','ndff_soort_id','soortgroep_raw','wetenschappelijke_naam','nederlandse_naam',
+                     'id','latijnse_naam','soort_naam','euring_code','engelse_naam','duitse_naam','franse_naam','spaanse_naam',
+                     'batch_id','soortgroep_code','soortnr','soortgroep_naam','bronvelden','taxon_id','srtnum',
+                     'scientific_name','kingdom','phylum','class_name','order_name','family','taxon_rank')
+    preserved = ' OR '.join("NOT (JSON_EXTRACT(NEW.bronmetadata,'$."+f+"') <=> JSON_EXTRACT(OLD.bronmetadata,'$."+f+"'))"
+                            for f in source_fields)
+    guard = ("IF ("+references+") AND (NEW.taxon_id IS NULL OR NEW.koppelstatus NOT IN ('kandidaat','bevestigd') OR "
+        'NOT (NEW.bron_systeem<=>OLD.bron_systeem) OR NOT (NEW.bron_dataset<=>OLD.bron_dataset) OR '
+        'NOT (NEW.bron_versie<=>OLD.bron_versie) OR NOT (NEW.bron_taxon_id<=>OLD.bron_taxon_id) OR '
+        'NOT (NEW.bron_wetenschappelijke_naam<=>OLD.bron_wetenschappelijke_naam) OR '
+        'NOT ('+query_context_sql('NEW.bronmetadata')+' <=> '+query_context_sql('OLD.bronmetadata')+') OR '+preserved+') THEN '
+        "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte taxonbroncontext moet behouden blijven'; END IF;")
+    statements += ['DROP TRIGGER IF EXISTS cq_registry_bu$$',
+        'CREATE TRIGGER cq_registry_bu BEFORE UPDATE ON taxa_bronkoppeling FOR EACH ROW BEGIN '+guard+' END$$',
+        ]
+    children = ' OR '.join('EXISTS(SELECT 1 FROM '+query_identifier(table)+' w WHERE '+
+        route['join'].replace('o.waarneming_id','OLD.waarneming_id')+')'
+        for table,route in routes.items() if route['kind']=='ndff_child')
+    for suffix,event in [('bd','DELETE'),('bu','UPDATE')]:
+        condition = '('+children+')'
+        if event=='UPDATE': condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id) AND '+condition
+        statements += [f'DROP TRIGGER IF EXISTS cq_ndff_parent_{suffix}$$',
+            f'CREATE TRIGGER cq_ndff_parent_{suffix} BEFORE {event} ON ndff_open_waarneming FOR EACH ROW BEGIN '
+            'IF '+condition+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Verwijder eerst afgeleide NDFF-verwijzingen'; END IF; END$$"]
+    for table,field,child in [('externe_ecologie_event','dataset_id','externe_ecologie_resultaat'),
+                              ('pq_vegetatie_bronopname','dataset_id','pq_vegetatie_bronresultaat')]:
+        name=central_trigger_name(table,'bu')
+        statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON {table} FOR EACH ROW BEGIN '
+            f'IF NOT (NEW.{field}<=>OLD.{field}) AND EXISTS(SELECT 1 FROM {child} WHERE event_id=OLD.event_id) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Waargenomen bronopname kan niet van dataset wisselen'; END IF; END$$"]
+    name=central_trigger_name('externe_ecologie_dataset','bu')
+    statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON externe_ecologie_dataset FOR EACH ROW BEGIN '
+        'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
+        'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
+        'EXISTS(SELECT 1 FROM externe_ecologie_event e JOIN externe_ecologie_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
+        'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
+        "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$",'DELIMITER ;']
+    return '\n'.join(statements)
+
+
+def central_constraint_projection(row: dict) -> dict:
+    """MySQL ALTER retypes this ASCII-only regex literal, not its meaning.
+
+    Limit equivalence to the existing hash CHECK and its two exact literals;
+    do not normalize arbitrary taxonomy checks, collations or expressions.
+    """
+    row = dict(row)
+    if row['name']=='ck_taxa_bron_hash' and row['table']=='taxa_bronkoppeling':
+        row['clause'] = row['clause'].replace("_ascii\\'^[0-9a-f]{64}$\\'", "_utf8mb4\\'^[0-9a-f]{64}$\\'")
+    return row
+
+
+def central_query_original_snapshot(db: CentralQueryDatabase, plan: dict) -> dict:
+    """Every old cell, including metadata, zeros, provenance and analysis flags.
+
+    A 256-bit per-row digest is reduced as four independent 64-bit XORs plus
+    row count. Unchanged tables use MySQL's native full-table checksum. New
+    register rows are excluded by the original maximum IDs, never by names.
+    """
+    affected = {'taxa','taxa_bronkoppeling','externe_ecologie_resultaat',*plan['catalogues'],*plan['derived']}
+    types = {(t,c):kind for t,c,kind in (line.split('\t') for line in db.sql(
+        'SELECT TABLE_NAME,COLUMN_NAME,DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE();').splitlines())}
+    result = {}
+    for table, columns in plan['schema'].items():
+        qtable = query_identifier(table)
+        if table not in affected:
+            result[table] = db.sql('CHECKSUM TABLE '+qtable+';').split('\t')[-1]
+            continue
+        fields = []
+        for column in columns:
+            value = query_identifier(column)
+            if types[table,column] in {'binary','varbinary','blob','tinyblob','mediumblob','longblob','bit'}:
+                value = 'HEX('+value+')'
+            elif types[table,column] in {'geometry','point','polygon','multipolygon','linestring','multilinestring','multipoint','geometrycollection'}:
+                value = 'HEX(ST_AsWKB('+value+'))'
+            fields += [query_literal(column),value]
+        scope = ''
+        if table in plan['original_max_ids']:
+            field = 'taxon_id' if table=='taxa' else 'koppeling_id'
+            scope = f' WHERE {field}<={plan["original_max_ids"][table]}'
+        aggregations = ','.join(f'BIT_XOR(CAST(CONV(SUBSTRING(h,{i},16),16,10) AS UNSIGNED))' for i in (1,17,33,49))
+        result[table] = db.sql('SELECT COUNT(*),'+aggregations+' FROM (SELECT SHA2(CAST(JSON_OBJECT('+','.join(fields)+
+            ') AS CHAR CHARACTER SET utf8mb4),256) h FROM '+qtable+scope+') original_cells;')
+    def normalize(value):
+        return value.replace('`'+db.database.lower()+'`','`meijendel`').replace('`'+db.database+'`','`meijendel`')
+    views = db.sql("SELECT TABLE_NAME,VIEW_DEFINITION FROM information_schema.VIEWS WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME;")
+    result['__views'] = hashlib.sha256(normalize(views).encode()).hexdigest()
+    # Original types, nullability, defaults, generated expressions, indexes and
+    # constraints are independent of row equality and must survive too.
+    definitions = db.objects("SELECT JSON_OBJECT('table',TABLE_NAME,'column',COLUMN_NAME,'type',COLUMN_TYPE,"
+        "'nullable',IS_NULLABLE,'default',COLUMN_DEFAULT,'extra',EXTRA,'generated',GENERATION_EXPRESSION,"
+        "'collation',COLLATION_NAME,'comment',COLUMN_COMMENT) FROM information_schema.COLUMNS "
+        "WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME,ORDINAL_POSITION;")
+    originals = []
+    for row in definitions:
+        if row['table'] not in plan['schema']:
+            # Derived view nullability is re-inferred by MySQL on restore; it
+            # differs even when the view SQL, output and all base columns match.
+            row={**row,'nullable':'derived-view'}
+        elif row['column'] not in plan['schema'][row['table']]: continue
+        originals.append(row)
+    result['__columns'] = hashlib.sha256(normalize(json.dumps(originals,ensure_ascii=False,sort_keys=True)).encode()).hexdigest()
+    indexes = db.objects("SELECT JSON_OBJECT('table',TABLE_NAME,'name',INDEX_NAME,'nonunique',NON_UNIQUE,"
+        "'sequence',SEQ_IN_INDEX,'column',COLUMN_NAME,'subpart',SUB_PART,'type',INDEX_TYPE) FROM information_schema.STATISTICS "
+        "WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX;")
+    result['__indexes'] = hashlib.sha256(json.dumps([r for r in indexes if r['column'] in plan['schema'][r['table']]],
+                                        ensure_ascii=False,sort_keys=True).encode()).hexdigest()
+    constraints = db.objects("SELECT JSON_OBJECT('name',t.CONSTRAINT_NAME,'type',t.CONSTRAINT_TYPE,"
+        "'table',t.TABLE_NAME,'clause',c.CHECK_CLAUSE,'update',f.UPDATE_RULE,'delete',f.DELETE_RULE,"
+        "'keys',(SELECT GROUP_CONCAT(CONCAT(k.COLUMN_NAME,':',COALESCE(k.REFERENCED_TABLE_NAME,''),':',"
+        "COALESCE(k.REFERENCED_COLUMN_NAME,'')) ORDER BY k.ORDINAL_POSITION) FROM information_schema.KEY_COLUMN_USAGE k "
+        "WHERE k.CONSTRAINT_SCHEMA=t.CONSTRAINT_SCHEMA AND k.TABLE_NAME=t.TABLE_NAME AND k.CONSTRAINT_NAME=t.CONSTRAINT_NAME)) "
+        "FROM information_schema.TABLE_CONSTRAINTS t "
+        "LEFT JOIN information_schema.CHECK_CONSTRAINTS c ON c.CONSTRAINT_SCHEMA=t.CONSTRAINT_SCHEMA AND c.CONSTRAINT_NAME=t.CONSTRAINT_NAME "
+        "LEFT JOIN information_schema.REFERENTIAL_CONSTRAINTS f ON f.CONSTRAINT_SCHEMA=t.CONSTRAINT_SCHEMA AND f.TABLE_NAME=t.TABLE_NAME AND f.CONSTRAINT_NAME=t.CONSTRAINT_NAME "
+        "WHERE t.CONSTRAINT_SCHEMA=DATABASE() ORDER BY t.TABLE_NAME,t.CONSTRAINT_NAME;")
+    result['__constraints'] = hashlib.sha256(json.dumps([central_constraint_projection(r) for r in constraints if r['name'] in plan['original_constraint_names']],
+                                             ensure_ascii=False,sort_keys=True).encode()).hexdigest()
+    # View results are checked, not merely their text. These are existing views,
+    # not new query entry points; central queries remain plain SELECT statements.
+    view_columns = defaultdict(list)
+    for row in definitions:
+        if row['table'] not in plan['schema']: view_columns[row['table']].append(row['column'])
+    for table,columns in view_columns.items():
+        fields=[]
+        for c in columns:
+            value=query_identifier(c)
+            if types[table,c] in {'binary','varbinary','blob','tinyblob','mediumblob','longblob','bit'}: value='HEX('+value+')'
+            elif types[table,c] in {'geometry','point','polygon','multipolygon','linestring','multilinestring','multipoint','geometrycollection'}: value='HEX(ST_AsWKB('+value+'))'
+            fields += [query_literal(c),value]
+        result['__view_'+table] = db.sql('SELECT COUNT(*),'+','.join(
+            f'BIT_XOR(CAST(CONV(SUBSTRING(h,{i},16),16,10) AS UNSIGNED))' for i in (1,17,33,49))+
+            ' FROM (SELECT SHA2(CAST(JSON_OBJECT('+','.join(fields)+') AS CHAR CHARACTER SET utf8mb4),256) h FROM '+
+            query_identifier(table)+') view_rows;')
+    return result
+
+
+def central_query_gate(database='Meijendel', login_path='meijendel_root', client='/usr/local/mysql/bin/mysql',
+                       host='127.0.0.1',port=3306) -> dict:
+    result = central_query_audit(CentralQueryDatabase(database,login_path,client,host=host,port=port))
+    if result['errors']:
+        raise RuntimeError('Centrale taxonpoort blokkeert: '+'; '.join(result['errors']))
+    return result
+
+
+def central_query_guarded_operation(operation, *, enabled=True, database='Meijendel',
+                                    login_path='meijendel_root',client='/usr/local/mysql/bin/mysql',
+                                    host='127.0.0.1',port=3306):
+    """Call after argument parsing, around the actual writer, also from Python."""
+    if not enabled: return operation()
+    central_query_gate(database,login_path,client,host,port)
+    result = operation()
+    central_query_gate(database,login_path,client,host,port)
+    return result
+
+
+def central_query_negative_tests(db: CentralQueryDatabase) -> None:
+    """Only inside the restored proof schema; all probes roll back."""
+    if not re.fullmatch('Meijendel_taxa_query_(?:proef|herstel)_[0-9]+',db.database):
+        raise ValueError('Schrijfproeven uitsluitend in de geïsoleerde herstelproef')
+    probes = [
+        'UPDATE externe_ecologie_resultaat SET taxon_bronkoppeling_id=0 LIMIT 1',
+        'UPDATE pq_vegetatie_waarneming SET taxon_bronkoppeling_id=0 LIMIT 1',
+        'UPDATE vangblik_vangst SET taxon_bronkoppeling_id=0 LIMIT 1',
+        'UPDATE ndff_lmfa_bezoek_taxon SET wetenschappelijke_naam=\'Niet geregistreerd taxon\' LIMIT 1',
+        "UPDATE taxa_bronkoppeling SET bron_versie='onjuiste versie' WHERE koppeling_id="
+        '(SELECT taxon_bronkoppeling_id FROM ndff_soorten LIMIT 1)',
+        'UPDATE taxa_bronkoppeling SET taxon_id=NULL WHERE koppeling_id='
+        '(SELECT taxon_bronkoppeling_id FROM ndff_soorten LIMIT 1)',
+        "UPDATE taxa_bronkoppeling SET bronmetadata=JSON_SET(bronmetadata,'$.scientific_name','Onjuist taxon') WHERE koppeling_id="
+        '(SELECT taxon_bronkoppeling_id FROM vangblik_vangst LIMIT 1)',
+        "UPDATE ndff_vaatplanten SET waarneming_id=(SELECT MAX(waarneming_id)+1 FROM ndff_open_waarneming) LIMIT 1",
+        'DELETE FROM ndff_open_waarneming WHERE waarneming_id=(SELECT waarneming_id FROM ndff_vaatplanten LIMIT 1)',
+        'UPDATE ndff_open_waarneming SET waarneming_id=(SELECT id FROM (SELECT MAX(waarneming_id)+1 id FROM ndff_open_waarneming) x) '
+        'WHERE waarneming_id=(SELECT waarneming_id FROM ndff_vaatplanten LIMIT 1)',
+        "UPDATE externe_ecologie_dataset SET bronversie='ongeldige versie' WHERE dataset_id=2",
+        'UPDATE externe_ecologie_event SET dataset_id=3 WHERE event_id='
+        '(SELECT event_id FROM externe_ecologie_resultaat LIMIT 1)',
+    ]
+    for table in ('externe_ecologie_resultaat','pq_vegetatie_waarneming','pq_vegetatie_bronresultaat','vangblik_vangst'):
+        probes.append('UPDATE '+table+' SET taxon_bronkoppeling_id=(SELECT MIN(koppeling_id) FROM taxa_bronkoppeling '
+                      "WHERE bron_dataset='soorten' AND taxon_id IS NOT NULL AND ingetrokken_op IS NULL) LIMIT 1")
+    for probe in probes:
+        try: db.sql('START TRANSACTION; '+probe+'; ROLLBACK;',write=True)
+        except RuntimeError as exc:
+            if "45000" not in str(exc): raise
+        else: raise RuntimeError('Ongeldige invoer werd niet geblokkeerd: '+probe.split(' SET ')[0])
+    for table in ('externe_ecologie_resultaat','ndff_lmfa_bezoek_taxon','ndff_soorten','soorten',
+                  'sovon_avimap_taxon','pq_vegetatie_waarneming','vangblik_vangst'):
+        db.sql('START TRANSACTION; UPDATE '+query_identifier(table)+
+               ' SET taxon_bronkoppeling_id=taxon_bronkoppeling_id LIMIT 1; ROLLBACK;',write=True)
+    # Missing group never makes the original observation disappear.
+    original = db.sql('SELECT COUNT(*) FROM externe_ecologie_resultaat r JOIN taxa_bronkoppeling b '
+                     'ON b.koppeling_id=r.taxon_bronkoppeling_id JOIN taxa t ON t.taxon_id=b.taxon_id WHERE t.groep_id IS NULL;')
+    joined = db.sql('SELECT COUNT(*) FROM taxa t LEFT JOIN taxon_groepen g ON g.groep_id=t.groep_id '
+                   'JOIN taxa_bronkoppeling b ON b.taxon_id=t.taxon_id JOIN externe_ecologie_resultaat r '
+                   'ON r.taxon_bronkoppeling_id=b.koppeling_id WHERE t.groep_id IS NULL;')
+    if original!=joined: raise RuntimeError('Niet ingedeelde taxa verdwijnen uit query')
+
+
+def execute_central_query_migration(args) -> int:
+    """Proof schema only first; live requires exact unchanged backup/plan/code proof."""
+    root = args.centrale_bewijs_dir
+    if root is None: raise ValueError('--centrale-bewijs-dir is vereist')
+    if args.database != 'Meijendel' and not re.fullmatch('Meijendel_taxa_query_(?:proef|herstel)_[0-9]+',args.database):
+        raise ValueError('Alleen de canonieke database of een gerichte herstelproef')
+    db = CentralQueryDatabase(args.database,args.login_path,args.mysql_client,host=args.host,port=args.port,writable=args.apply)
+    if args.apply and args.centrale_backup is None: raise ValueError('Volledige back-up is vereist')
+    backup_hash=None
+    if args.centrale_backup:
+        digest=hashlib.sha256()
+        with args.centrale_backup.open('rb') as f:
+            while chunk:=f.read(1024*1024): digest.update(chunk)
+        backup_hash=digest.hexdigest()
+    resume = args.centrale_hervat_proef
+    if resume and (args.database=='Meijendel' or not args.apply or not root.is_dir()):
+        raise ValueError('Hervatten uitsluitend van de bestaande geïsoleerde, nog niet vastgelegde proef')
+    original = CentralQueryDatabase('Meijendel',args.login_path,args.mysql_client,host=args.host,port=args.port) if resume else db
+    plan = central_query_plan(original)
+    snapshot = central_query_original_snapshot(original,plan)
+    if resume:
+        if json.loads((root/'plan.json').read_text())!=plan or (root/'result.json').exists() or (root/'rollback.json').exists():
+            raise ValueError('Hervatting heeft geen identiek oorspronkelijk plan of is al vastgelegd')
+        previous=json.loads((root/'before.json').read_text())
+        # The sole first-proof discrepancy was MySQL's ASCII regex introducer.
+        # Retain that original evidence; the stricter new constraint projection
+        # is computed afresh against the untouched canonical database.
+        if any(previous[k]!=snapshot[k] for k in previous if k not in {'__constraints','__columns'}):
+            raise ValueError('Oorspronkelijke gegevens of schema veranderd sinds de onderbroken proef')
+        if central_query_original_snapshot(db,plan)!=snapshot:
+            raise ValueError('De onderbroken proef wijkt af van de volledige oorspronkelijke database')
+        if db.sql('SELECT COUNT(*) FROM taxa_bronkoppeling WHERE regelversie='+query_literal(QUERY_RULE)+';')!='0':
+            raise ValueError('De onderbroken proef heeft al centrale gegevens vastgelegd')
+    code_hash = hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    plan_hash = hashlib.sha256(json.dumps(plan,sort_keys=True,ensure_ascii=False).encode()).hexdigest()
+    def save(name,value):
+        with (root/name).open('x',encoding='utf-8') as f: json.dump(value,f,ensure_ascii=False,indent=2)
+    if args.apply and args.database=='Meijendel':
+        if args.centrale_proefbewijs is None: raise ValueError('Live wijziging vereist een passende herstel- en terugdraaiproef')
+        proof = json.loads(args.centrale_proefbewijs.read_text())
+        if (proof.get('status')!='verified' or proof.get('snapshot')!=snapshot or proof.get('code_sha256')!=code_hash
+                or proof.get('plan_sha256')!=plan_hash or not proof.get('rollback_verified') or not proof.get('negative_tests_verified')
+                or proof.get('backup_sha256')!=backup_hash or not proof.get('backup_restore_verified') or not proof.get('schema_restore_verified')):
+            raise ValueError('Proefbewijs past niet bij de volledige actuele database, code of bronkoppelingen')
+    if resume:
+        save('resumed-before.json',snapshot)
+    else:
+        root.mkdir(parents=True,exist_ok=False)
+        save('plan.json',plan); save('before.json',snapshot)
+    if not args.apply:
+        print('READ-ONLY: volledige bronkoppelingen en schema geïnventariseerd'); return 0
+    if not resume: db.sql(central_query_schema_sql(plan),write=True)
+    db.sql(central_query_migration_sql(plan),write=True)
+    if central_query_original_snapshot(db,plan)!=snapshot:
+        raise RuntimeError('Terugdraaiproef heeft oorspronkelijke cellen gewijzigd')
+    if db.sql('SELECT COUNT(*) FROM taxa_bronkoppeling WHERE regelversie='+query_literal(QUERY_RULE)+';')!='0':
+        raise RuntimeError('Terugdraaiproef liet centrale bronkoppelingen achter')
+    save('rollback.json',{'status':'verified'})
+    db.sql(central_query_migration_sql(plan,commit=True),write=True)
+    db.sql(central_query_schema_sql(plan,finalize=True),write=True)
+    db.sql(central_query_triggers_sql(plan),write=True)
+    result = central_query_audit(db)
+    if result['errors']: raise RuntimeError('; '.join(result['errors']))
+    if central_query_original_snapshot(db,plan)!=snapshot:
+        raise RuntimeError('Oorspronkelijke waarnemingen, bronwaarden of analyses gewijzigd')
+    if args.database!='Meijendel':
+        central_query_negative_tests(db)
+        if central_query_original_snapshot(db,plan)!=snapshot:
+            raise RuntimeError('Negatieve schrijfproeven hebben oorspronkelijke gegevens veranderd')
+        recovery=args.centrale_herstel_database
+        if not recovery or not re.fullmatch('Meijendel_taxa_query_herstel_[0-9]+',recovery):
+            raise ValueError('Afzonderlijke volledige schemaherstelproef is vereist')
+        restored=CentralQueryDatabase(recovery,args.login_path,args.mysql_client,host=args.host,port=args.port,writable=True)
+        # Never replace an existing schema. This exact recovery target must be absent.
+        db.sql('CREATE DATABASE '+query_identifier(recovery)+' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;',write=True)
+        process=subprocess.Popen(restored.args,stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+        try:
+            with gzip.open(args.centrale_backup,'rb') as source:
+                for line in source:
+                    if line.startswith(b'/*!50001 VIEW'):
+                        line=line.replace(b'`meijendel`.',('`'+recovery.lower()+'`.').encode()).replace(b'`Meijendel`.',('`'+recovery+'`.').encode())
+                    process.stdin.write(line)
+            process.stdin.close(); error=process.stderr.read(); status=process.wait()
+        except BaseException:
+            process.kill(); process.wait(); raise
+        if status: raise RuntimeError(error.decode())
+        if central_query_original_snapshot(restored,plan)!=snapshot:
+            raise RuntimeError('Volledig herstel wijkt af op gegevens, schema of bestaande viewuitkomsten')
+    result.update(snapshot=snapshot,rollback_verified=True,code_sha256=code_hash,plan_sha256=plan_hash,
+                  negative_tests_verified=True,backup_sha256=backup_hash,backup_restore_verified=True,schema_restore_verified=True)
+    save('result.json',result)
+    print('OK: alle geïnventariseerde soortwaarnemingen centraal bereikbaar; bewijs:',root)
+    return 0
 
 # Approved on 29 September 2026; presentation only, never taxon identity.
 DISPLAY_NAMES = {
@@ -921,7 +2099,7 @@ def resolve_external_taxon_links(results: list[dict], links: list[dict],
     for link in links:
         if (link['bron_systeem'] == 'Meijendel' and link['bron_dataset'] == dataset
                 and link['bron_versie'] == source_version and link['ingetrokken_op'] is None):
-            by_usage[canonical(link['bronmetadata'])].append(link)
+            by_usage[canonical(source_usage_projection(link['bronmetadata']))].append(link)
     resolved = {}
     for row in results:
         usage = {key: row['bronmetadata'].get(key) for key in fields}
@@ -1890,15 +3068,48 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--mysql-client", type=Path, default=Path("/usr/local/mysql/bin/mysql"))
     parser.add_argument("--login-path", default="meijendel_root")
     parser.add_argument("--database", default=DATABASE)
+    parser.add_argument('--host',default='127.0.0.1')
+    parser.add_argument('--port',type=int,default=3306)
     parser.add_argument('--pq-integratie', action='store_true')
     parser.add_argument('--pq-bewijs-dir', type=Path)
     parser.add_argument('--pq-backup-manifest', type=Path)
     parser.add_argument('--pq-proefbewijs', type=Path)
+    parser.add_argument('--centrale-querypoort', action='store_true')
+    parser.add_argument('--centrale-query-sql',action='store_true')
+    parser.add_argument('--taxon-id',type=int)
+    parser.add_argument('--tabel')
+    parser.add_argument('--centrale-integratie', action='store_true')
+    parser.add_argument('--centrale-bewijs-dir', type=Path)
+    parser.add_argument('--centrale-proefbewijs', type=Path)
+    parser.add_argument('--centrale-backup',type=Path)
+    parser.add_argument('--centrale-herstel-database')
+    parser.add_argument('--centrale-hervat-proef',action='store_true')
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.centrale_query_sql:
+        result=central_query_gate(args.database,args.login_path,args.mysql_client,args.host,args.port)
+        selected={table:route for table,route in result['routes'].items()
+                  if route['kind']!='staging' and (args.tabel is None or table==args.tabel)}
+        if args.tabel and not selected: raise ValueError('Geen beoordeelde centrale route voor deze tabel')
+        for table,route in selected.items():
+            print('-- '+table+'; '+route.get('role','soortreferentie'))
+            print(central_taxon_query(table,route,args.taxon_id))
+        return 0
+    if args.centrale_querypoort:
+        result = central_query_gate(args.database,args.login_path,args.mysql_client,args.host,args.port)
+        print(json.dumps(result,ensure_ascii=False,indent=2)); return 0
+    if args.centrale_integratie:
+        return execute_central_query_migration(args)
+    if args.host!='127.0.0.1' or args.port!=3306:
+        raise ValueError('Host/port zijn alleen voor de centrale controle; historische import gebruikt lokaal 127.0.0.1:3306')
+    return central_query_guarded_operation(lambda:execute_external_main(args),enabled=args.apply,
+        database=args.database,login_path=args.login_path,client=args.mysql_client,host=args.host,port=args.port)
+
+
+def execute_external_main(args) -> int:
     if args.pq_integratie:
         return execute_pq_integration(args)
     if args.profiles_dir is None:

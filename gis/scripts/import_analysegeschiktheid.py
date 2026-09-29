@@ -129,6 +129,12 @@ def main() -> int:
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=3306)
     args = parser.parse_args()
+    from import_external_ecology_sources import central_query_guarded_operation
+    return central_query_guarded_operation(lambda: execute_main(args),enabled=args.apply,
+        login_path=args.login_path,host=args.host,port=args.port)
+
+
+def execute_main(args) -> int:
 
     series = read_rows(SERIES)
     decisions = read_rows(DECISIONS)

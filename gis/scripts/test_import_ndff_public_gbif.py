@@ -70,10 +70,12 @@ def main() -> int:
         else:
             raise AssertionError('Ongeldig proef- of herstelbewijs aanvaard')
     # Controleer de volgorde van de CLI-grens zonder echte schrijfacties.
+    import import_external_ecology_sources as central
     for execute,sync in [(True,False),(False,True)]:
         args = Namespace(vangblik_integratie=False,execute=execute,sync_secure_metadata=sync,
                          mysql_client=Path('/unused'),login_path='test',host='127.0.0.1',port=3306)
         with patch.object(module,'parse_args',return_value=args), \
+             patch.object(central,'central_query_gate',return_value={'status':'verified'}) as gate, \
              patch.object(module,'mysql_scalar',return_value='1'), \
              patch.object(module,'run_mysql',side_effect=AssertionError('Schrijven vóór guard')) as writer:
             try:
@@ -83,6 +85,7 @@ def main() -> int:
             else:
                 raise AssertionError('Gemigreerde database niet geblokkeerd')
             writer.assert_not_called()
+            gate.assert_called_once_with('Meijendel','test',Path('/unused'),'127.0.0.1',3306)
     assert module.group_codes("Geleedpotigen (overig)|Kreeftachtigen") == (
         "geleedpotigen_overig",
         "kreeftachtigen",

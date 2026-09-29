@@ -174,12 +174,12 @@ def main() -> int:
     if args.database != 'Meijendel':
         parser.error('--database is uitsluitend instelbaar voor de read-only inventarisatie')
 
-    subprocess.run(
-        [str(args.mysql_client), f"--login-path={args.login_path}"],
-        input=sql,
-        text=True,
-        check=True,
-    )
+    from import_external_ecology_sources import central_query_guarded_operation
+    central_query_guarded_operation(lambda: subprocess.run(
+        [str(args.mysql_client), f"--login-path={args.login_path}", '--protocol=TCP',
+         '--host=127.0.0.1', '--port=3306',args.database],
+        input=sql, text=True, check=True), database=args.database,
+        login_path=args.login_path,client=args.mysql_client)
     print("IMPORT: overlapaudit externe ecologiebronnen opnieuw opgebouwd")
     return 0
 

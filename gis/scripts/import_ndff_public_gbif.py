@@ -823,6 +823,14 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    from import_external_ecology_sources import central_query_guarded_operation
+    return central_query_guarded_operation(lambda: execute_main(args),
+        enabled=args.execute or args.sync_secure_metadata,
+        login_path=args.login_path,client=args.mysql_client,host=args.host,port=args.port,
+        database=args.database if args.vangblik_integratie else 'Meijendel')
+
+
+def execute_main(args) -> int:
     if args.vangblik_integratie:
         return execute_vangblik_migration(args)
     mysql_args = mysql_connection_args(args.login_path, args.host, args.port)

@@ -56,6 +56,10 @@ trap cleanup EXIT INT TERM
 "$WORKSPACE_GUARD"
 "$MYSQL_VERSION_GUARD"
 
+python3 "$REPO_DIR/gis/scripts/import_external_ecology_sources.py" \
+  --centrale-querypoort --database "$MYSQL_DATABASE" --login-path "$MYSQL_LOGIN_PATH" \
+  --host "$MYSQL_HOST" --port "$MYSQL_PORT" --mysql-client "$MYSQL_BIN" >/dev/null
+
 "$MYSQLDUMP_BIN" --login-path="$MYSQL_LOGIN_PATH" \
   --no-tablespaces \
   --complete-insert \
@@ -81,6 +85,10 @@ candidate_created=1
 "$MYSQL_BIN" --login-path="$MYSQL_LOGIN_PATH" --protocol=tcp \
   --host="$MYSQL_HOST" --port="$MYSQL_PORT" \
   "$CANDIDATE_SCHEMA" < "$NEXT_DUMP"
+
+python3 "$REPO_DIR/gis/scripts/import_external_ecology_sources.py" \
+  --centrale-querypoort --database "$CANDIDATE_SCHEMA" --login-path "$MYSQL_LOGIN_PATH" \
+  --host "$MYSQL_HOST" --port "$MYSQL_PORT" --mysql-client "$MYSQL_BIN" >/dev/null
 
 "$VALIDATOR" --write-manifest "$NEXT_DUMP" "$NEXT_MANIFEST" "$CANDIDATE_SCHEMA"
 

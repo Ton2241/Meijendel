@@ -415,6 +415,12 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
+    from import_external_ecology_sources import central_query_guarded_operation
+    return central_query_guarded_operation(lambda: execute_main(args),enabled=not args.prepare_only,
+        login_path=args.login_path,client=args.mysql_client,host=args.host,port=args.port)
+
+
+def execute_main(args) -> int:
     model = prepare_import_model(args.secure, args.gate, args.spatial, args.pq, args.plot_matches)
     manifest = safe_manifest(model, args.secure)
     if not args.prepare_only:
