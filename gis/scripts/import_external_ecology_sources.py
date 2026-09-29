@@ -42,6 +42,27 @@ SOURCE_TAXON_FIELDS = (
 SOURCE_USAGE_FIELDS = (*SOURCE_TAXON_FIELDS, 'dataset', 'name', 'raw_name', 'nl', 'rank')
 STAGING_TABLES = {'import_dagwaarnemingen_raw', 'import_resultaten_raw',
                   'import_waarnemingen_breed', 'import_waarnemingen_lang'}
+SOURCE_FAMILIES = {
+    'endure-helmduinfauna-meijendel-2018': 'endure',
+    'stowa-limnodata-meijendel': 'stowa_limnodata',
+    'naturalis-botany-meijendel': 'naturalis_botany',
+    'naturalis-coleoptera-meijendel': 'naturalis_coleoptera',
+    'nmr-vlinders-meijendel': 'nmr_vlinders',
+}
+SOURCE_SUFFIXES = ('dataset', 'event', 'resultaat', 'overlap')
+
+
+def source_family_tables() -> dict[str, str]:
+    return {prefix+'_'+suffix: 'externe_ecologie_'+suffix
+            for prefix in SOURCE_FAMILIES.values() for suffix in SOURCE_SUFFIXES}
+
+
+def source_family_for_dataset(key: str) -> str:
+    if key == 'lvd-meijendel-v1-6':
+        return 'externe_ecologie'
+    if key not in SOURCE_FAMILIES:
+        raise ValueError('Onbeoordeelde bron: geen stilzwijgende generieke import')
+    return SOURCE_FAMILIES[key]
 
 
 def source_usage_projection(metadata: dict) -> dict:
@@ -88,8 +109,12 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'soorten',
                              'join': 'w.soort_id=c.id',
                              'role': 'bronwaarneming' if 'jaar' in columns else 'soortreferentie'}
-        elif table == 'externe_ecologie_resultaat':
+        elif table == 'externe_ecologie_resultaat' or table in {
+                prefix+'_resultaat' for prefix in SOURCE_FAMILIES.values()}:
             routes[table] = {'kind': 'external', 'role': 'bronwaarneming'}
+            if table != 'externe_ecologie_resultaat':
+                prefix = table.removesuffix('_resultaat')
+                routes[table].update(event_table=prefix+'_event', dataset_table=prefix+'_dataset')
         elif table.startswith(('ndff_', 'sovon_avimap_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
@@ -194,9 +219,11 @@ def central_source_condition(table: str, route: dict, alias='w') -> str:
             f"BINARY JSON_EXTRACT(b.bronmetadata,'$.{c}') <=> BINARY JSON_EXTRACT({alias}.raw_payload,'$.{f}')"
             for c,f in fields.items()))
     if kind=='external' or table=='pq_vegetatie_bronresultaat':
-        event = 'pq_vegetatie_bronopname' if table=='pq_vegetatie_bronresultaat' else 'externe_ecologie_event'
-        source = f'(SELECT d.dataset_sleutel FROM {event} e JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)'
-        version = f"(SELECT CONCAT(d.bronversie,'; sha256:',d.bronbestand_sha256) FROM {event} e JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)"
+        event = 'pq_vegetatie_bronopname' if table=='pq_vegetatie_bronresultaat' else route.get('event_table','externe_ecologie_event')
+        dataset = route.get('dataset_table','externe_ecologie_dataset')
+        query_identifier(event); query_identifier(dataset)
+        source = f'(SELECT d.dataset_sleutel FROM {event} e JOIN {dataset} d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)'
+        version = f"(SELECT CONCAT(d.bronversie,'; sha256:',d.bronbestand_sha256) FROM {event} e JOIN {dataset} d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)"
         fields = {f:f"JSON_EXTRACT({alias}.bronmetadata,'$.{f}')" for f in SOURCE_TAXON_FIELDS}
         fields.update(dataset=source,name=f'{alias}.wetenschappelijke_naam',raw_name=f'{alias}.wetenschappelijke_naam_bron',
                       nl=f'{alias}.nederlandse_naam',rank=f'{alias}.'+('taxonomische_status_aangeleverd' if table=='pq_vegetatie_bronresultaat' else 'taxonrang'))
@@ -466,10 +493,14 @@ CENTRAL_QUERY_SCHEMA = {
 }
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
-    for table in sorted(set(schema) | set(CENTRAL_QUERY_SCHEMA)):
-        if table not in schema or table not in CENTRAL_QUERY_SCHEMA:
+    expected = dict(CENTRAL_QUERY_SCHEMA)
+    additions = source_family_tables()
+    if set(schema) & set(additions):
+        expected.update({table: CENTRAL_QUERY_SCHEMA[original] for table,original in additions.items()})
+    for table in sorted(set(schema) | set(expected)):
+        if table not in schema or table not in expected:
             raise ValueError(table + ": niet beoordeelde schemawijziging")
-        if set(schema[table]) != CENTRAL_QUERY_SCHEMA[table]:
+        if set(schema[table]) != expected[table]:
             raise ValueError(table + ": gewijzigde kolommen vereisen centrale routecontrole")
 
 
@@ -531,6 +562,24 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
     if db.sql("SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
               "AND REFERENCED_TABLE_SCHEMA IS NOT NULL AND REFERENCED_TABLE_SCHEMA<>DATABASE();")!='0':
         errors.append('Foreign key verwijst buiten de gecontroleerde database')
+    for key,prefix in [('lvd-meijendel-v1-6','externe_ecologie'),*SOURCE_FAMILIES.items()]:
+        if prefix+'_dataset' not in schema: continue
+        if prefix!='externe_ecologie' and db.sql(f'SELECT COUNT(*) FROM {prefix}_dataset WHERE BINARY dataset_sleutel<>BINARY '+query_literal(key)+';')!='0':
+            errors.append(prefix+': dataset hoort niet bij deze bronfamilie')
+        if prefix!='externe_ecologie' and db.sql("SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS "
+                "WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME IN ("+
+                ','.join(query_literal(prefix+'_'+s) for s in ('event','resultaat','overlap'))+
+                ") AND (DELETE_RULE NOT IN ('RESTRICT','NO ACTION') OR UPDATE_RULE NOT IN ('RESTRICT','NO ACTION'));")!='0':
+            errors.append(prefix+': automatische cascade niet toegestaan')
+        for table,field,parent,parent_field in [
+            (prefix+'_event','dataset_id',prefix+'_dataset','dataset_id'),
+            (prefix+'_resultaat','event_id',prefix+'_event','event_id'),
+            (prefix+'_overlap','resultaat_id',prefix+'_resultaat','resultaat_id')]:
+            if (table,field,parent,parent_field) not in fks:
+                errors.append(table+': bronouder ontbreekt')
+            orphans = db.sql(f'SELECT COUNT(*) FROM {table} c LEFT JOIN {parent} p '
+                f'ON c.{field}=p.{parent_field} WHERE p.{parent_field} IS NULL;')
+            if orphans!='0': errors.append(table+': verweesde bronregels: '+orphans)
     triggers = set(line.split('\t')[0] for line in db.sql(
         "SELECT TRIGGER_NAME FROM information_schema.TRIGGERS WHERE TRIGGER_SCHEMA=DATABASE();").splitlines())
     if require_guards and 'cq_registry_bu' not in triggers:
@@ -887,6 +936,9 @@ def central_query_triggers_sql(plan: dict) -> str:
                 validity+' ELSE IF NEW.taxon_bronkoppeling_id IS NOT NULL THEN '
                 "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Geen doelsoort maar wel taxonkoppeling'; END IF; END IF;")
         elif kind == 'external':
+            event_table = route.get('event_table','externe_ecologie_event')
+            dataset_table = route.get('dataset_table','externe_ecologie_dataset')
+            query_identifier(event_table); query_identifier(dataset_table)
             declarations += ' DECLARE cq_dataset VARCHAR(255); DECLARE cq_version VARCHAR(255); DECLARE cq_context BINARY(32);'
             fields = {f:f"JSON_EXTRACT(NEW.bronmetadata,'$.{f}')" for f in SOURCE_TAXON_FIELDS}
             fields.update(dataset='cq_dataset',name='NEW.wetenschappelijke_naam',raw_name='NEW.wetenschappelijke_naam_bron',
@@ -896,7 +948,7 @@ def central_query_triggers_sql(plan: dict) -> str:
                 'AND BINARY b.bron_dataset=BINARY cq_dataset AND BINARY b.bron_versie=BINARY cq_version '
                 "AND b.ingetrokken_op IS NULL AND b.taxon_id IS NOT NULL AND b.koppelstatus IN ('kandidaat','bevestigd')")
             body = ('SELECT d.dataset_sleutel,CONCAT(d.bronversie,\'; sha256:\',d.bronbestand_sha256) INTO cq_dataset,cq_version '
-                'FROM externe_ecologie_event e JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id WHERE e.event_id=NEW.event_id; '
+                f'FROM {event_table} e JOIN {dataset_table} d ON d.dataset_id=e.dataset_id WHERE e.event_id=NEW.event_id; '
                 'SET cq_context=UNHEX(SHA2(CAST('+context+' AS CHAR CHARACTER SET utf8mb4),256)); '
                 f'SELECT COUNT(*),MIN(b.koppeling_id) INTO cq_n,cq_id FROM taxa_bronkoppeling b WHERE {conditions}; '
                 "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Externe bron eerst centraal registreren'; END IF; "
@@ -950,7 +1002,25 @@ def central_query_triggers_sql(plan: dict) -> str:
         'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
         'EXISTS(SELECT 1 FROM externe_ecologie_event e JOIN externe_ecologie_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
         'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
-        "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$",'DELIMITER ;']
+        "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$"]
+    for source_key,prefix in SOURCE_FAMILIES.items():
+        if prefix+'_resultaat' not in routes: continue
+        event_table, dataset_table, result_table = (prefix+'_'+s for s in ('event','dataset','resultaat'))
+        source_guard = 'IF NOT (BINARY NEW.dataset_sleutel<=>BINARY '+query_literal(source_key)+') THEN '+\
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Dataset past niet bij deze bronfamilie'; END IF; "
+        name = central_trigger_name(dataset_table,'bi')
+        statements += [f'DROP TRIGGER IF EXISTS {name}$$',
+            f'CREATE TRIGGER {name} BEFORE INSERT ON {dataset_table} FOR EACH ROW BEGIN {source_guard} END$$']
+        for table, body in [
+            (event_table, f'IF NOT (NEW.dataset_id<=>OLD.dataset_id) AND EXISTS(SELECT 1 FROM {result_table} WHERE event_id=OLD.event_id) THEN '
+             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Waargenomen bronopname kan niet van dataset wisselen'; END IF;"),
+            (dataset_table, source_guard+'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
+             f'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND EXISTS(SELECT 1 FROM {event_table} e '
+             'WHERE e.dataset_id=OLD.dataset_id) THEN '
+             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF;")]:
+            name = central_trigger_name(table,'bu')
+            statements += [f'DROP TRIGGER IF EXISTS {name}$$', f'CREATE TRIGGER {name} BEFORE UPDATE ON {table} FOR EACH ROW BEGIN {body} END$$']
+    statements.append('DELIMITER ;')
     return '\n'.join(statements)
 
 
@@ -3061,6 +3131,360 @@ def execute_pq_integration(args) -> int:
     return 0
 
 
+def source_separation_schema_sql() -> str:
+    """LIKE preserves column/index/CHECK semantics; foreign keys need explicit copies."""
+    sql = ['SET SESSION lock_wait_timeout=10;']
+    for key,prefix in SOURCE_FAMILIES.items():
+        for suffix in SOURCE_SUFFIXES:
+            sql.append(f'CREATE TABLE {prefix}_{suffix} LIKE externe_ecologie_{suffix};')
+        sql += [
+            f'ALTER TABLE {prefix}_dataset ADD CONSTRAINT ck_{prefix}_source '
+            'CHECK(BINARY dataset_sleutel=BINARY '+query_literal(key)+');',
+            f'ALTER TABLE {prefix}_event ADD CONSTRAINT fk_{prefix}_event_dataset '
+            f'FOREIGN KEY(dataset_id) REFERENCES {prefix}_dataset(dataset_id) ON DELETE RESTRICT;',
+            f'ALTER TABLE {prefix}_resultaat ADD CONSTRAINT fk_{prefix}_resultaat_event '
+            f'FOREIGN KEY(event_id) REFERENCES {prefix}_event(event_id) ON DELETE RESTRICT, '
+            f'ADD CONSTRAINT fk_{prefix}_resultaat_taxon FOREIGN KEY(taxon_bronkoppeling_id) '
+            'REFERENCES taxa_bronkoppeling(koppeling_id);',
+            f'ALTER TABLE {prefix}_overlap ADD CONSTRAINT fk_{prefix}_overlap_resultaat '
+            f'FOREIGN KEY(resultaat_id) REFERENCES {prefix}_resultaat(resultaat_id) ON DELETE RESTRICT;',
+        ]
+    return '\n'.join(sql)
+
+
+def source_separation_counts(db: CentralQueryDatabase) -> dict:
+    counts = {}
+    for key,prefix in SOURCE_FAMILIES.items():
+        counts[prefix] = {}
+        hashes = {}
+        scopes = source_separation_scopes(key)
+        for suffix,where in scopes.items():
+            counts[prefix][suffix] = int(db.sql(f'SELECT COUNT(*) FROM externe_ecologie_{suffix} s WHERE {where};'))
+            hashes[suffix] = db.sql('SET SESSION group_concat_max_len=1073741824; SELECT '+
+                source_cell_digest_sql('externe_ecologie_'+suffix,'externe_ecologie_'+suffix,where)+';')
+        counts[prefix]['_hashes'] = hashes
+        if counts[prefix]['dataset'] != 1:
+            raise ValueError('Verwachte oorspronkelijke bronregistratie ontbreekt: '+prefix)
+    return counts
+
+
+def source_separation_scopes(key: str) -> dict[str,str]:
+    source_family_for_dataset(key)
+    dataset = 'SELECT dataset_id FROM externe_ecologie_dataset WHERE BINARY dataset_sleutel=BINARY '+query_literal(key)
+    events = f'SELECT event_id FROM externe_ecologie_event WHERE dataset_id IN ({dataset})'
+    results = f'SELECT resultaat_id FROM externe_ecologie_resultaat WHERE event_id IN ({events})'
+    return dict(dataset=f's.dataset_id IN ({dataset})',event=f's.dataset_id IN ({dataset})',
+                resultaat=f's.event_id IN ({events})',overlap=f's.resultaat_id IN ({results})')
+
+
+def source_cell_digest_sql(table: str, original: str, where='TRUE') -> str:
+    columns = sorted(CENTRAL_QUERY_SCHEMA[original])
+    fields = ','.join(query_literal(c)+',s.'+query_identifier(c) for c in columns)
+    rows = f'SELECT SHA2(CAST(JSON_OBJECT({fields}) AS CHAR CHARACTER SET utf8mb4),256) h FROM {query_identifier(table)} s WHERE {where}'
+    return "(SELECT COALESCE(SHA2(GROUP_CONCAT(h ORDER BY h SEPARATOR ''),256),SHA2('',256)) FROM ("+rows+') cells)'
+
+
+def source_separation_sql(counts: dict, *, commit=False) -> str:
+    """One atomic copy-and-delete; checks fail before source deletion, no ignored errors."""
+    if set(counts) != set(SOURCE_FAMILIES.values()):
+        raise ValueError('Onvolledige bronselectie')
+    sql = ['SET NAMES utf8mb4;', 'SET SESSION innodb_lock_wait_timeout=10;',
+           'SET SESSION group_concat_max_len=1073741824;',
+           'START TRANSACTION;', 'CREATE TEMPORARY TABLE tmp_source_guard(ok TINYINT NOT NULL CHECK(ok=1));']
+    def guard(condition):
+        sql.append('INSERT INTO tmp_source_guard VALUES(IF('+condition+',1,0));')
+    guard('@@SESSION.foreign_key_checks=1')
+    guard("(SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
+          "AND REFERENCED_TABLE_NAME IN ('externe_ecologie_dataset','externe_ecologie_event','externe_ecologie_resultaat') "
+          "AND TABLE_NAME NOT IN ('externe_ecologie_event','externe_ecologie_resultaat','externe_ecologie_overlap','pq_vegetatie_bronopname'))=0")
+    for key,prefix in SOURCE_FAMILIES.items():
+        scopes = source_separation_scopes(key)
+        hashes = counts[prefix].get('_hashes',{})
+        if set(hashes)!=set(SOURCE_SUFFIXES) or any(not re.fullmatch('[0-9a-f]{64}',h) for h in hashes.values()):
+            raise ValueError('Bewezen volledige broncelhashes ontbreken')
+        # Parent locks also block concurrent child INSERTs through their FK.
+        for suffix,primary in zip(SOURCE_SUFFIXES,('dataset_id','event_id','resultaat_id','overlap_id')):
+            sql.append(f'SELECT {primary} FROM externe_ecologie_{suffix} s WHERE {scopes[suffix]} FOR UPDATE;')
+        for suffix in SOURCE_SUFFIXES:
+            original, target = 'externe_ecologie_'+suffix, prefix+'_'+suffix
+            n = counts[prefix][suffix]
+            if type(n) is not int or n < 0: raise ValueError('Ongeldige brontelling')
+            if n*64>16*1024*1024: raise ValueError('Bronhashstream vereist apart beoordeelde grotere limiet')
+            guard(f'(SELECT COUNT(*) FROM {target})=0')
+            guard(f'(SELECT COUNT(*) FROM {original} s WHERE {scopes[suffix]})={n}')
+            guard(source_cell_digest_sql(original,original,scopes[suffix])+'='+query_literal(hashes[suffix]))
+            columns = ','.join(query_identifier(c) for c in sorted(CENTRAL_QUERY_SCHEMA[original]))
+            sql.append(f'INSERT INTO {target} ({columns}) SELECT {columns} FROM {original} s WHERE {scopes[suffix]};')
+            guard(f'(SELECT COUNT(*) FROM {target})={n}')
+            guard(source_cell_digest_sql(target,original)+'='+query_literal(hashes[suffix]))
+        # Explicit child-first deletion, by the fully verified target IDs:
+        # the real multi-level cascade trial left old children behind.
+        for suffix,primary in reversed(list(zip(SOURCE_SUFFIXES,
+                ('dataset_id','event_id','resultaat_id','overlap_id')))):
+            original = 'externe_ecologie_'+suffix
+            target = prefix+'_'+suffix
+            sql.append(f'DELETE s FROM {original} s WHERE s.{primary} IN (SELECT {primary} FROM {target});')
+            guard(f'(SELECT COUNT(*) FROM {original} s JOIN {target} n USING({primary}))=0')
+    for prefix in ('externe_ecologie',*SOURCE_FAMILIES.values()):
+        for child,parent,field in [('event','dataset','dataset_id'),
+                ('resultaat','event','event_id'),('overlap','resultaat','resultaat_id')]:
+            guard(f'(SELECT COUNT(*) FROM {prefix}_{child} c LEFT JOIN {prefix}_{parent} p '
+                f'ON c.{field}=p.{field} WHERE p.{field} IS NULL)=0')
+    sql.append('COMMIT;' if commit else 'ROLLBACK;')
+    return '\n'.join(sql)
+
+
+def source_separation_view_sql() -> str:
+    """Adapt the EXISTING consumer only; central querying remains ordinary SELECT."""
+    marker = 'CREATE OR REPLACE VIEW v_externe_ecologie_analyse AS'
+    original = pq_analysis_view_sql()
+    base = SCHEMA.read_text(encoding='utf-8').split(marker,1)[1].strip().removesuffix(';')
+    branches = []
+    for prefix in SOURCE_FAMILIES.values():
+        branch = base
+        for suffix in SOURCE_SUFFIXES:
+            branch = branch.replace('externe_ecologie_'+suffix,prefix+'_'+suffix)
+        branches.append(branch)
+    return original.rstrip().removesuffix(';')+'\nUNION ALL\n'+'\nUNION ALL\n'.join(branches)+';\n'
+
+
+def source_separation_snapshot(db: CentralQueryDatabase) -> dict:
+    """All unchanged tables, all old source cells logically reunited, all existing view rows.
+
+    Exact ordered SHA256 streams retain multiplicity; source primary keys and
+    version fields are included, never just species names or summary counts.
+    """
+    schema = db.schema()
+    central_query_schema_contract(schema)
+    additions = source_family_tables()
+    columns = db.objects("SELECT JSON_OBJECT('table',TABLE_NAME,'name',COLUMN_NAME,'type',DATA_TYPE,"
+        "'definition',COLUMN_TYPE,'nullable',IS_NULLABLE,'default',COLUMN_DEFAULT,'extra',EXTRA,"
+        "'generated',GENERATION_EXPRESSION,'collation',COLLATION_NAME,'comment',COLUMN_COMMENT) "
+        "FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME,ORDINAL_POSITION;")
+    tables = defaultdict(list)
+    for column in columns: tables[column['table']].append(column)
+    digest = lambda raw: hashlib.sha256(raw.encode()).hexdigest()
+    def row_digest(table, source=None):
+        items = []
+        for column in tables[table]:
+            value = 's.'+query_identifier(column['name'])
+            if column['type'] in {'binary','varbinary','blob','tinyblob','mediumblob','longblob','bit'}:
+                value = 'HEX('+value+')'
+            elif column['type'] in {'geometry','point','polygon','multipolygon','linestring','multilinestring','multipoint','geometrycollection'}:
+                value = 'HEX(ST_AsWKB('+value+'))'
+            items += [query_literal(column['name']),value]
+        raw = db.sql('SELECT SHA2(CAST(JSON_OBJECT('+','.join(items)+') AS CHAR CHARACTER SET utf8mb4),256) h '
+                     'FROM '+(source or query_identifier(table))+' s ORDER BY h;')
+        return {'rows':len(raw.splitlines()),'sha256':digest(raw)}
+    result = {}
+    for table in sorted(CENTRAL_QUERY_SCHEMA):
+        if table.startswith('externe_ecologie_'):
+            suffix = table.removeprefix('externe_ecologie_')
+            cols = ','.join(query_identifier(c['name']) for c in tables[table])
+            sources = [table]+[p+'_'+suffix for p in SOURCE_FAMILIES.values() if p+'_'+suffix in schema]
+            union = '('+' UNION ALL '.join(f'SELECT {cols} FROM {query_identifier(s)}' for s in sources)+')'
+            result[table] = row_digest(table,union)
+        else:
+            checksum = db.sql('CHECKSUM TABLE '+query_identifier(table)+' EXTENDED;').split('\t')[-1]
+            if checksum == 'NULL': raise ValueError('Geen volledige checksum: '+table)
+            result[table] = checksum
+    for table in sorted(set(tables)-set(schema)):
+        result['view:'+table] = row_digest(table)
+    # Existing physical metadata and all unaffected view definitions must remain identical.
+    originals = [{**c,'nullable':'derived-view'} if c['table'] not in schema else c
+                 for c in columns if c['table'] not in additions]
+    result['columns'] = digest(json.dumps(originals,ensure_ascii=False,sort_keys=True))
+    normalize = lambda raw: raw.replace('`'+db.database.lower()+'`','`meijendel`').replace('`'+db.database+'`','`meijendel`')
+    for name,query in {
+        'indexes': "SELECT TABLE_NAME,INDEX_NAME,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,SUB_PART,INDEX_TYPE "
+            "FROM information_schema.STATISTICS WHERE TABLE_SCHEMA=DATABASE() ORDER BY TABLE_NAME,INDEX_NAME,SEQ_IN_INDEX;",
+        'constraints': "SELECT t.TABLE_NAME,t.CONSTRAINT_NAME,t.CONSTRAINT_TYPE,c.CHECK_CLAUSE,f.UPDATE_RULE,f.DELETE_RULE,"
+            "(SELECT GROUP_CONCAT(CONCAT(k.COLUMN_NAME,':',COALESCE(k.REFERENCED_TABLE_NAME,''),':',COALESCE(k.REFERENCED_COLUMN_NAME,'')) "
+            "ORDER BY k.ORDINAL_POSITION) FROM information_schema.KEY_COLUMN_USAGE k WHERE k.CONSTRAINT_SCHEMA=t.CONSTRAINT_SCHEMA "
+            "AND k.TABLE_NAME=t.TABLE_NAME AND k.CONSTRAINT_NAME=t.CONSTRAINT_NAME) "
+            "FROM information_schema.TABLE_CONSTRAINTS t LEFT JOIN information_schema.CHECK_CONSTRAINTS c "
+            "ON c.CONSTRAINT_SCHEMA=t.CONSTRAINT_SCHEMA AND c.CONSTRAINT_NAME=t.CONSTRAINT_NAME "
+            "LEFT JOIN information_schema.REFERENTIAL_CONSTRAINTS f ON f.CONSTRAINT_SCHEMA=t.CONSTRAINT_SCHEMA "
+            "AND f.TABLE_NAME=t.TABLE_NAME AND f.CONSTRAINT_NAME=t.CONSTRAINT_NAME "
+            "WHERE t.CONSTRAINT_SCHEMA=DATABASE() ORDER BY t.TABLE_NAME,t.CONSTRAINT_NAME;",
+        'views': "SELECT TABLE_NAME,VIEW_DEFINITION FROM information_schema.VIEWS WHERE TABLE_SCHEMA=DATABASE() "
+            "AND TABLE_NAME<>'v_externe_ecologie_analyse' ORDER BY TABLE_NAME;",
+        # Filter complete trigger records in SQL. ACTION_STATEMENT contains
+        # newlines: a line-wise filter would retain a new trigger's body.
+        'triggers': "SELECT EVENT_OBJECT_TABLE,TRIGGER_NAME,ACTION_STATEMENT FROM information_schema.TRIGGERS "
+            "WHERE TRIGGER_SCHEMA=DATABASE() AND TRIGGER_NAME<>'cq_registry_bu' "
+            "AND EVENT_OBJECT_TABLE NOT IN ("+','.join(map(query_literal,additions))+') ORDER BY TRIGGER_NAME;',
+        'routines': "SELECT ROUTINE_NAME,ROUTINE_TYPE,ROUTINE_DEFINITION FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA=DATABASE() ORDER BY ROUTINE_NAME;",
+        'events': "SELECT EVENT_NAME,EVENT_DEFINITION,INTERVAL_VALUE,INTERVAL_FIELD,STATUS FROM information_schema.EVENTS WHERE EVENT_SCHEMA=DATABASE() ORDER BY EVENT_NAME;",
+    }.items():
+        raw = '\n'.join(line for line in db.sql(query).splitlines() if line.split('\t',1)[0] not in additions)
+        result[name] = digest(normalize(raw))
+    return result
+
+
+def validate_source_backup(backup: Path) -> None:
+    """Only an unqualified single-database dump, never a database-switching script."""
+    quoted = re.compile(r"'(?:[^'\\]|\\.|'')*'")
+    commands = re.compile(r'\b(?:USE\b|(?:CREATE|DROP|ALTER)\s+(?:DATABASE|SCHEMA)\b)',re.I)
+    qualified = re.compile(r'\b(?:TABLE|INTO|UPDATE|REFERENCES|FROM|JOIN)\s+`?\w+`?\s*\.|'
+        r'\b(?:BEFORE|AFTER)\s+(?:INSERT|UPDATE|DELETE)\s+ON\s+`?\w+`?\s*\.',re.I)
+    with gzip.open(backup,'rt',encoding='utf-8') as handle:
+        for line in handle:
+            if line.lstrip().startswith('--'): continue
+            sql = quoted.sub("''",line)
+            if commands.search(sql) or re.match(r'\s*(?:\\|SOURCE\b|CONNECT\b|SYSTEM\b)',sql,re.I):
+                raise ValueError('Back-up bevat een databasewisseling of clientcommando; herstel geweigerd')
+            if qualified.search(sql) and not line.startswith('/*!50001 VIEW'):
+                raise ValueError('Back-up bevat database-gekwalificeerde instructies buiten bestaande views')
+
+
+def restore_source_copy(db: CentralQueryDatabase, backup: Path) -> None:
+    if not re.fullmatch(r'Meijendel_bronnen_(?:proef|herstel)_[0-9]+',db.database):
+        raise ValueError('Herstel uitsluitend naar een eigen, nog niet bestaande proefdatabase')
+    if '--host=127.0.0.1' not in db.args or '--port=3306' not in db.args:
+        raise ValueError('Herstelproef uitsluitend lokaal')
+    validate_source_backup(backup)
+    db_args = db.args[:-1]
+    subprocess.run(db_args, input='CREATE DATABASE '+query_identifier(db.database)+
+        ' CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;',text=True,check=True,capture_output=True)
+    process = subprocess.Popen(db.args,stdin=subprocess.PIPE,stdout=subprocess.DEVNULL,stderr=subprocess.PIPE)
+    try:
+        # These are disposable local proof schemas, not canonical writes.
+        # Avoid duplicating an entire restore in the canonical binary log;
+        # this affects ONLY this already-validated restore connection.
+        process.stdin.write(b'SET SESSION sql_log_bin=0;\n')
+        with gzip.open(backup,'rb') as source:
+            for line in source:
+                if line.startswith(b'/*!50001 VIEW'):
+                    line = line.replace(b'`meijendel`.',('`'+db.database.lower()+'`.').encode()).replace(b'`Meijendel`.',('`'+db.database+'`.').encode())
+                process.stdin.write(line)
+        process.stdin.close(); error=process.stderr.read(); status=process.wait()
+    except BaseException:
+        process.kill(); process.wait(); raise
+    if status: raise RuntimeError(error.decode())
+
+
+def source_append_sql(payload: dict) -> str:
+    """Append one approved source version, with trigger-resolved central identification.
+
+    No replacement, no source-local taxa, no fallback to a joint import table.
+    A changed delivery/version must first be reviewed and registered separately.
+    """
+    key = payload.get('dataset_sleutel')
+    prefix = source_family_for_dataset(key)
+    if prefix == 'externe_ecologie': raise ValueError('LVD/PQ valt buiten deze bronaanvulling')
+    if set(payload)-{'dataset_sleutel','bronversie','bronbestand_sha256','events','resultaten'}:
+        raise ValueError('Onbekende bronaanvullingsvelden')
+    version, sha = payload.get('bronversie'),payload.get('bronbestand_sha256')
+    if not isinstance(version,str) or not isinstance(sha,str) or not re.fullmatch('[0-9a-f]{64}',sha):
+        raise ValueError('Exacte beoordeelde bronversie en bestandshash zijn verplicht')
+    if not isinstance(payload.get('events',[]),list) or not isinstance(payload.get('resultaten'),list) or not payload['resultaten']:
+        raise ValueError('Bronaanvulling vereist resultaatregels en een eventlijst')
+    if payload.get('events'):
+        raise ValueError('Nieuwe events vereisen eerst geografische toelating; deze route gebruikt uitsluitend bestaande toegelaten events')
+    dataset = f'SELECT dataset_id FROM {prefix}_dataset WHERE BINARY dataset_sleutel=BINARY '+query_literal(key)+\
+        ' AND BINARY bronversie=BINARY '+query_literal(version)+' AND BINARY bronbestand_sha256=BINARY '+query_literal(sha)
+    sql = ['SET NAMES utf8mb4;', 'START TRANSACTION;',
+           'CREATE TEMPORARY TABLE tmp_source_append_guard(ok TINYINT NOT NULL CHECK(ok=1));',
+           f'INSERT INTO tmp_source_append_guard VALUES(IF((SELECT COUNT(*) FROM ({dataset}) d)=1,1,0));']
+    for suffix,rows in [('event',payload.get('events',[])),('resultaat',payload['resultaten'])]:
+        table = prefix+'_'+suffix
+        excluded = {'event_id','dataset_id'} if suffix=='event' else {'resultaat_id','event_id','taxon_bronkoppeling_id'}
+        columns = sorted(CENTRAL_QUERY_SCHEMA['externe_ecologie_'+suffix]-excluded)
+        for row in rows:
+            allowed = set(columns) | ({'bron_event_id'} if suffix=='resultaat' else set())
+            if not isinstance(row,dict) or set(row)-allowed or not isinstance(row.get('bronmetadata'),dict):
+                raise ValueError('Onbekende bronvelden of ontbrekende oorspronkelijke bronmetadata')
+            values = [query_literal(json.dumps(row[c],ensure_ascii=False)) if c=='bronmetadata'
+                      else query_literal(row.get(c)) for c in columns]
+            target_columns = list(columns)
+            if suffix=='event':
+                target_columns.append('dataset_id'); values.append('('+dataset+')')
+            else:
+                if not isinstance(row.get('bron_event_id'),str): raise ValueError('Resultaat mist oorspronkelijke event-ID')
+                event = f'SELECT event_id FROM {prefix}_event WHERE dataset_id=({dataset}) AND BINARY bron_event_id=BINARY '+query_literal(row['bron_event_id'])
+                sql.append(f'INSERT INTO tmp_source_append_guard VALUES(IF((SELECT COUNT(*) FROM ({event}) e)=1,1,0));')
+                target_columns += ['event_id','taxon_bronkoppeling_id']; values += ['('+event+')','NULL']
+            sql.append('INSERT INTO '+table+' ('+','.join(map(query_identifier,target_columns))+') VALUES ('+','.join(values)+');')
+    sql.append('COMMIT;')
+    return '\n'.join(sql)
+
+
+def execute_source_separation(args) -> int:
+    if args.host!='127.0.0.1' or args.port!=3306:
+        raise ValueError('Bronverplaatsing uitsluitend op de lokale iMac')
+    if args.database!='Meijendel' and not re.fullmatch(r'Meijendel_bronnen_proef_[0-9]+',args.database):
+        raise ValueError('Onbeoordeeld migratiedoel')
+    root, backup = args.bron_bewijs_dir, args.bron_backup
+    if not root or root.exists() or not backup or not backup.is_file():
+        raise ValueError('Nieuwe bewijsmap en bestaande volledige back-up zijn verplicht')
+    # Fail before the lengthy database audit if the backup is unavailable.
+    # Stream the full archive rather than allocating it on the 8-GB iMac.
+    digest = hashlib.sha256()
+    with backup.open('rb') as handle:
+        while chunk := handle.read(1024*1024): digest.update(chunk)
+    backup_hash = digest.hexdigest()
+    db = CentralQueryDatabase(args.database,args.login_path,args.mysql_client,writable=args.apply)
+    before_audit = central_query_audit(db)
+    if before_audit['errors']: raise ValueError('; '.join(before_audit['errors']))
+    if set(db.schema()) & set(source_family_tables()):
+        raise ValueError('Bronfamilies bestaan al: geen blinde herhaling of overschrijving')
+    snapshot = source_separation_snapshot(db)
+    counts = source_separation_counts(db)
+    code_hash = hashlib.sha256(Path(__file__).read_bytes()+SCHEMA.read_bytes()+
+        Path(__file__).with_name('test_import_external_ecology_sources.py').read_bytes()).hexdigest()
+    if args.apply and args.database=='Meijendel':
+        if not args.bron_proefbewijs: raise ValueError('Volledig geïsoleerd proefbewijs ontbreekt')
+        proof = json.loads(args.bron_proefbewijs.read_text())
+        if (proof.get('status')!='verified' or proof.get('snapshot')!=snapshot or proof.get('counts')!=counts
+            or proof.get('code_sha256')!=code_hash or proof.get('backup_sha256')!=backup_hash
+            or not proof.get('rollback_verified') or not proof.get('backup_restore_verified')
+            or not proof.get('source_inputs_verified')
+            or not re.fullmatch(r'Meijendel_bronnen_proef_[0-9]+',proof.get('database',''))):
+            raise ValueError('Proefbewijs past niet bij dezelfde code, volledige bronstand en back-up')
+    root.mkdir(parents=True,exist_ok=False)
+    def save(name,value):
+        with (root/name).open('x',encoding='utf-8') as handle:
+            json.dump(value,handle,ensure_ascii=False,indent=2)
+    save('before.json',snapshot); save('counts.json',counts)
+    if not args.apply:
+        print('READ-ONLY: bronverplaatsing geïnventariseerd; bewijs:',root); return 0
+    db.sql(source_separation_schema_sql(),write=True)
+    routes = central_query_routes(db.schema())
+    db.sql(central_query_triggers_sql({'routes':routes}),write=True)
+    db.sql(source_separation_view_sql(),write=True)
+    db.sql(source_separation_sql(counts),write=True)
+    if source_separation_snapshot(db)!=snapshot:
+        raise RuntimeError('Terugdraaiproef veranderde oorspronkelijke informatie')
+    if any(db.sql('SELECT COUNT(*) FROM '+query_identifier(t)+';')!='0' for t in source_family_tables()):
+        raise RuntimeError('Terugdraaiproef liet bronregels achter')
+    save('rollback.json',{'status':'verified'})
+    if args.database!='Meijendel':
+        subprocess.run(['python3','-B',str(Path(__file__).with_name('test_import_external_ecology_sources.py')),
+            '--bron-driftproef',args.database,str(root/'counts.json'),str(args.mysql_client),args.login_path],check=True)
+    db.sql(source_separation_sql(counts,commit=True),write=True)
+    result = central_query_audit(db)
+    if result['errors']: raise RuntimeError('; '.join(result['errors']))
+    if source_separation_snapshot(db)!=snapshot:
+        raise RuntimeError('Bronwaarden, overige tabellen, structuur of bestaande analyseuitkomsten gewijzigd')
+    if args.database!='Meijendel':
+        # Existing test module owns test-only writers; it never writes to the live database.
+        subprocess.run(['python3','-B',str(Path(__file__).with_name('test_import_external_ecology_sources.py')),
+                        '--bron-invoerproef',args.database,str(args.mysql_client),args.login_path],check=True)
+        if source_separation_snapshot(db)!=snapshot:
+            raise RuntimeError('Invoerproeven hebben oorspronkelijke informatie gewijzigd')
+        if not args.bron_herstel_database: raise ValueError('Tweede onafhankelijke herstelkopie vereist')
+        restored = CentralQueryDatabase(args.bron_herstel_database,args.login_path,args.mysql_client,writable=True)
+        restore_source_copy(restored,backup)
+        if source_separation_snapshot(restored)!=snapshot or central_query_audit(restored)['errors']:
+            raise RuntimeError('Volledig herstel van originele schema en gegevens wijkt af')
+    result.update(database=args.database,snapshot=snapshot,counts=counts,rollback_verified=True,
+        source_inputs_verified=True,backup_restore_verified=True,code_sha256=code_hash,backup_sha256=backup_hash)
+    save('result.json',result)
+    print('OK: vijf bronnen fysiek gescheiden; alle bronwaarden en centrale routes behouden; bewijs:',root)
+    return 0
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profiles-dir", type=Path)
@@ -3084,11 +3508,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--centrale-backup',type=Path)
     parser.add_argument('--centrale-herstel-database')
     parser.add_argument('--centrale-hervat-proef',action='store_true')
+    parser.add_argument('--bron-ontvlechting',action='store_true')
+    parser.add_argument('--bron-bewijs-dir',type=Path)
+    parser.add_argument('--bron-backup',type=Path)
+    parser.add_argument('--bron-proefbewijs',type=Path)
+    parser.add_argument('--bron-herstel-database')
+    parser.add_argument('--bron-aanvulling',type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.bron_ontvlechting:
+        return execute_source_separation(args)
     if args.centrale_query_sql:
         result=central_query_gate(args.database,args.login_path,args.mysql_client,args.host,args.port)
         selected={table:route for table,route in result['routes'].items()
@@ -3110,6 +3542,15 @@ def main() -> int:
 
 
 def execute_external_main(args) -> int:
+    if args.bron_aanvulling:
+        payload = json.loads(args.bron_aanvulling.read_text(encoding='utf-8'))
+        sql = source_append_sql(payload)
+        if not args.apply:
+            print('READ-ONLY: bronaanvulling gevalideerd; niets ingevoerd'); return 0
+        db = CentralQueryDatabase(args.database,args.login_path,args.mysql_client,writable=True)
+        db.sql(sql,write=True)
+        print('OK: bronaanvulling in eigen bronfamilie en centraal taxonomisch verbonden')
+        return 0
     if args.pq_integratie:
         return execute_pq_integration(args)
     if args.profiles_dir is None:

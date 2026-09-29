@@ -1,6 +1,103 @@
 # Taxonregister: structuur en uitvoering
 
+## Ontvlechting van vijf externe bronnen — lokaal uitgevoerd 29 september 2026
+
+Opdracht: de vijf niet-LVD-bronnen fysiek onder hun eigen bronnaam bewaren.
+Geen nieuwe views of brongebonden taxoncatalogi. De bestaande analyse-ingang
+blijft dezelfde uitkomsten leveren. PQ, LVD en vogels worden niet verplaatst;
+geen VPS-publicatie. Darwin Core Event/Occurrence, de oorspronkelijke
+Identification-context en TCS-naamgebruiken blijven gescheiden.
+
+Per bron komen vier tabellen: `dataset`, `event`, `resultaat` en `overlap`.
+De prefixes zijn `endure`, `stowa_limnodata`, `naturalis_botany`,
+`naturalis_coleoptera` en `nmr_vlinders`. Alle oorspronkelijke IDs, bronvelden,
+expliciete nullen, lege events, eenheden en overlapbesluiten blijven behouden.
+De drie centrale taxontabellen worden inhoudelijk niet gewijzigd.
+De nieuwe bronouderrelaties gebruiken `RESTRICT`: een dataset of event met
+onderliggende gegevens kan niet automatisch worden verwijderd. De verplaatsing
+verwijdert de geverifieerde oude overlap-, resultaat-, event- en datasetrijen
+expliciet in die volgorde, op de bewezen oorspronkelijke primary keys. Zij
+controleert iedere oude selectie en alle bronouderrelaties vóór COMMIT.
+Dit voorkomt afhankelijkheid van de onvolledige automatische meerstapscascade
+die in de eerste verplaatsingsproef met MySQL 9.7.1 is waargenomen. Die fout
+trof uitsluitend de tijdelijke proefkopie; de levende database is daarmee
+niet bewerkt. De interne oorzaak in MySQL is niet vastgesteld.
+
+Implementatie in de bestaande importmodule, overlapaudit en tests;
+schema-contract en queryhelpers krijgen vijf expliciete nieuwe routes.
+De historische gezamenlijke vervangingsimport blijft geblokkeerd. Een nieuwe
+bronbewuste aanvulling mag alleen een reeds centraal beoordeelde bronidentiteit
+gebruiken; onbekende of strijdige taxoncontext wordt vóór invoer geweigerd.
+Deze aanvullingsroute verwerkt uitsluitend de reeds geregistreerde bronversie
+en bestaande, geografisch toegelaten events. Zij vervangt geen levering en
+registreert geen nieuwe locaties of nieuwe archiefversies. De gekopieerde
+datasetstructuur ondersteunt nu één versie per bronsleutel; ondersteuning van
+meer leveringsversies vereist eerst een afzonderlijk beoordeelde uitbreiding
+van de datasetstructuur en de versie-/vervangingsroute. Een bestaande versie
+overschrijven of een gewijzigd archief als dezelfde levering aanbieden is
+uitdrukkelijk geblokkeerd. Dit is geen algemene importer voor nieuwe leveringen.
+
+- [x] Tests eerst: vijf expliciete bronroutes; gewijzigde of gedeeltelijke
+  schemafamilie weigeren; taxoncontext controleren via de juiste bronouders.
+- [x] Verse volledige back-up, oorspronkelijke schema-/gegevenssnapshot en
+  geïsoleerde herstelkopie vastleggen. Geen bronselectie uit losse bestanden.
+- [x] Vier oorspronkelijke tabellen per bron volledig klonen, inclusief
+  CHECKs, indexen en expliciete foreign keys; invoerbescherming toevoegen.
+  Alle geselecteerde bronregels in één transactionele verplaatsing overbrengen.
+- [x] Rollback, alle oorspronkelijke cellen en bestaande viewuitkomsten,
+  behoud van bronverwijzingen en volledige centrale bereikbaarheid bewijzen.
+  Ongeldige en correcte invoer in de geïsoleerde kopie testen en terugdraaien.
+- [x] Volledig herstel uit dezelfde back-up in een tweede geïsoleerde database
+  bewijzen. Alleen dezelfde code en ongewijzigde bronstand lokaal toepassen.
+- [x] Bronregister MD/DOCX, taakdocumentatie, status en TODO bijwerken;
+  onafhankelijke branchreview, regressies, commit/push/merge en preflight.
+
+Bijzondere controlepunten: het lege ENDURE-event uit 2018; de 9.001 echte
+ENDURE-afwezigheden; gemengde STOWA-eenheden uit 1992–2010; bronresultaten
+zonder primaire taxongroep; mogelijke overlap die geen bewezen dubbel is.
+LVD blijft voor deze taak in zijn bestaande externe/PQ-opslag. De afzonderlijk
+overeengekomen volledige PQ-integratie wordt hiermee niet als voltooid gemeld.
+
+De vergelijking gebruikt volledige, gesorteerde SHA-256-rijstreams voor alle
+oorspronkelijke externe broncellen en de uitkomsten van de 16 bestaande views.
+Voor de 249 overige basistabellen gebruikt zij `CHECKSUM TABLE EXTENDED`, plus
+afzonderlijke controles van oorspronkelijke kolommen, indexen, constraints,
+routines, events en ongewijzigde triggerdefinities. Die tabelchecksums zijn
+native MySQL-checksums, geen cryptografische SHA-256-bewijzen. Nieuwe triggers
+worden als volledige records uitgesloten van de vergelijking van oude triggers
+en afzonderlijk door de centrale controlepoort inhoudelijk getoetst.
+
+**Uitkomst, levende lokale database.** De vijf bronfamilies bevatten samen vijf
+datasets, 7.557 events, 17.606 resultaten en 5.942 overlapbeoordelingen uit
+1875–2025. De gedeelde `externe_ecologie_*`-tabellen bevatten nu uitsluitend
+LVD: één dataset, 2.793 events, 64.683 resultaten en 48.454
+overlapbeoordelingen uit 1959–2015. De bestaande `pq_*`-inhoud blijft staan.
+Er zijn nu 273 basistabellen, 16 bestaande views, 127 beoordeelde centrale
+soortroutes en 267 invoertriggers. `taxon_groepen` (27), `taxa` (11.660) en
+`taxa_bronkoppeling` (30.035) zijn niet gewijzigd. Alle 127 routes zijn
+bereikbaar, zonder ontbrekende bronkoppeling. De 16 viewuitkomsten en alle
+oorspronkelijke broncellen zijn gelijk gebleven; er zijn geen verplaatste
+bronregels achtergebleven of dubbel opgeslagen.
+
+De verse volledige lokale back-up heeft SHA-256
+`18f9c547c051aa807646fc162a460860e2262e39044e7abc05fd0c508dc39049`.
+De geïsoleerde proef en de levende migratie hebben dezelfde codehash
+`2ad56cd72930ee1cc448bba841c815f42ae5f8a723e8ceefb024ce950f159a5b`
+en dezelfde bron-/schemamomentopname. In de proef slaagden rollback, een
+negatieve gewijzigde-celproef, positieve en negatieve invoerproeven per bron,
+de volledige centrale controle en een onafhankelijk volledig herstel uit die
+back-up. Het bewijs staat lokaal buiten iCloud onder
+`~/Library/Application Support/Codex/Herstel/externe-bronnen-ontvlechten-20260929/`
+in `proef-4/` en `live/`. Er is niets naar de VPS gepubliceerd; de bestaande
+lokale dump en Shiny-cache zijn niet vervangen. Nieuwe leveringsversies en
+nieuwe eventlocaties vergen nog een afzonderlijk beoordeelde invoerroute.
+
 ## Alle waarnemingen vanuit het centrale taxonregister
+
+Het onderstaande uitvoeringsverslag beschrijft de eerdere centrale koppeling
+vóór de fysieke bronontvlechting hierboven. Daarom zijn de daarin genoemde
+253 tabellen, 122 routes, 242 triggers en afwezigheid van bronverplaatsing
+historische controletellingen; de actuele lokale stand staat bovenaan.
 
 Bindende opdracht Ton, 29 september 2026: alle soortwaarnemingen zijn vanuit
 `taxa` via `taxa_bronkoppeling` vindbaar, met de indeling in `taxon_groepen`.
@@ -163,7 +260,8 @@ zijn leeg en mogen geen ongecontroleerde blijvende soortwaarnemingen bevatten.
 | `vangblik_vangst` | 60.560 | 1953–1960 | Rechtstreeks, met de oorspronkelijke determinatievelden |
 | `externe_ecologie_resultaat` | 82.289 | 1875–2025, verschillend per bron | Rechtstreeks, met volledige taxonbroncontext en datasetversie |
 
-De laatste laag omvat ENDURE: 9.072 regels uit 2018; resterende LVD:
+Deze tabel beschrijft de stand vóór de hierboven geplande bronontvlechting.
+De toen gezamenlijke externe laag omvat ENDURE: 9.072 regels uit 2018; resterende LVD:
 64.683 regels uit 1959–2015; Naturalis Botany: 1.881 regels uit 1875–2025;
 Naturalis Coleoptera: 869 regels uit 1906–2023; NMR: 4.748 regels uit
 1955–2015; STOWA: 1.036 regels uit 1992–2010. De LVD-regels binnen en buiten

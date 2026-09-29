@@ -55,8 +55,8 @@ automatisch omgezet; lokale schemawijziging is geen publicatieopdracht.
 De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
 groepen, centrale naamregistraties en geversioneerde brontoewijzingen met
-hun oorspronkelijke conceptcontext. Na de centralisatie van 29 september
-2026 bevat `taxon_groepen` 27 praktische groepen, `taxa` 11.659 centrale
+hun oorspronkelijke conceptcontext. Bij de eerdere naamcentralisatie van 29 september
+2026 bevatte `taxon_groepen` 27 praktische groepen, `taxa` 11.659 centrale
 vermeldingen en `taxa_bronkoppeling` 24.561 rijen: alle 18.437 oorspronkelijke
 geversioneerde bronbesluiten, drie eerdere identificatie-aliassen en 6.121
 volledig bewaarde oorspronkelijke taxoncontexten. Van de oorspronkelijke
@@ -67,6 +67,10 @@ Vóór centralisatie bleven 278 bronregistraties zonder primaire groep;
 na de beoordeelde fusies zijn dat 235 centrale vermeldingen. De oorspronkelijke
 redenen en broncontexten blijven bewaard; bronrijen en centrale rijen hebben
 niet meer dezelfde telbasis.
+De aansluitende volledige waarnemingskoppeling brengt de actuele stand op
+27 groepen, 11.660 vermeldingen en 30.035 bronkoppelingen. De extra centrale
+eenheid beschrijft uitdrukkelijk onbepaald bronmateriaal; zij is geen verzonnen
+soort. Alle afgeleide en oorspronkelijke soortregels lopen via het register.
 Deze referentieregistratie heeft geen eigen waarnemingsperiode.
 De eerste fusie van 28 september betrof vijf naamregistraties van twee
 Naturalis-keversoorten binnen dezelfde broncontext. Drie dubbele rijen zijn verwijderd;
@@ -119,6 +123,25 @@ Uitwerking en verificatie: `docs/database/TAXONREGISTER.md`.
 Publicatiestatus: `TODO.md`; de bestaande export en VPS bevatten nog de
 Vangblik-structuur van vóór deze lokale opschoning. Een nieuwe publicatie
 vereist afzonderlijk akkoord en een verse gevalideerde export.
+
+### Afzonderlijke externe bronfamilies
+
+De vijf niet-LVD-bronnen gebruiken elk vier fysieke tabellen onder hun
+bronnaam: `endure_*`, `stowa_limnodata_*`, `naturalis_botany_*`,
+`naturalis_coleoptera_*` en `nmr_vlinders_*`. De suffixen zijn `_dataset`,
+`_event`, `_resultaat` en `_overlap`. Oorspronkelijke sleutels, versies,
+bronmetadata en overlapbesluiten blijven staan. Geen familie bevat een eigen
+taxoncatalogus: iedere soortregel heeft een controleerbare centrale
+`taxon_bronkoppeling_id` en is vanuit `taxa` bereikbaar. Ouderverwijzingen
+zijn restrictief; een afhankelijke bronregel kan niet door het verwijderen
+van de ouder automatisch verdwijnen.
+
+De gedeelde `externe_ecologie_*`-structuur bevat voorlopig alleen de resterende
+LVD-opnamen; een andere LVD-selectie staat al onder `pq_*`. De bestaande
+analyse-ingang geeft dezelfde uitkomsten. De nog open volledige PQ-integratie
+staat in `TODO.md`. Er is geen automatische VPS-publicatie: de bestaande
+dump, website, dashboard en Shiny zijn niet vervangen. Details en controle:
+`docs/database/TAXONREGISTER.md` en `docs/MEIJENDEL_BRONREGISTER.md`.
 
 ### Ruimtelijke afbakening
 

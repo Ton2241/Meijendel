@@ -88,7 +88,7 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Structuur en groepsvulling van 27 september 2026: drie fysieke
   tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
   database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;
-  Na de lokale centralisatie van 29 september: 27 praktische groepen,
+  Bij de eerdere lokale naamcentralisatie van 29 september: 27 praktische groepen,
   11.659 centrale vermeldingen en 24.561 bronkoppelingen. Daarin blijven alle
   18.437 oorspronkelijke bronbesluiten (18.350 actief), drie eerdere
   identificatie-aliassen en 6.121 volledig bewaarde broncontexten aanwezig.
@@ -99,7 +99,7 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   hebben aantoonbaar verschillende betekenissen en blijven afzonderlijk.
   Proef, volledig herstel en levende nacontrole
   bevestigen behoud van alle 251 overige tabellen en 16 viewuitkomsten.
-  Van de oorspronkelijke besluiten zijn twee actieve nog zonder centraal
+  Bij die eerdere naamcentralisatie waren twee actieve besluiten nog zonder centraal
   doel. De 87 PQ-naamteksten zijn onderbouwd; 235 centrale vermeldingen missen nog
   een primaire groep. De eerder toegevoegde 917 gedeelde naamreferenties en
   1.819 verbindingen blijven als broninformatie bewaard, zonder bevestigde conceptgelijkheid
@@ -110,6 +110,16 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   PQ-integratie verbindt de provinciale soortregels en vermoedelijke
   LVD-bronvarianten met dit register; bronwaarden en bestaande publieke
   uitkomsten blijven behouden. Applicatiecode is niet aangepast.
+  De aansluitende volledige centrale koppeling brengt de actuele stand op
+  11.660 vermeldingen en 30.035 bronkoppelingen bij dezelfde 27 groepen.
+  Alle oorspronkelijke soortwaarnemingen, afgeleide meetregels, echte nullen
+  en historische versies zijn vanuit dit register bereikbaar; de aanvullende
+  onbepaalde eenheid is geen verzonnen biologische soort.
+  De brongebonden ontvlechting van ENDURE, STOWA, Naturalis Botany/Coleoptera
+  en NMR gebruikt dezelfde centrale soortingang. Uitvoering en actuele
+  fysieke routes staan in het taxonregisterdocument. Het oude voorstel voor
+  soortgroepprefixen in de tabelinventaris is historische context; de huidige
+  voorkeur is bronbenaming, met PQ en vogels als uitzonderingen.
   Darwin Core en TDWG TCS zijn voortaan verplichte
   toetsingsbasis; afwijkingen vereisen vooraf expliciete goedkeuring door Ton.
 - [`bmp_meijendel_index.html`][7]

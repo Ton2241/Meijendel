@@ -897,6 +897,213 @@ def check_central_query_routes():
     return 0
 
 
+def check_source_separation():
+    """New families must use their own parents, never the remaining LVD parents."""
+    module = load_module()
+    assert callable(getattr(module, 'source_family_tables', None)), 'Bronfamilies ontbreken'
+    prefixes = ('endure', 'stowa_limnodata', 'naturalis_botany', 'naturalis_coleoptera', 'nmr_vlinders')
+    schema = {k: set(v) for k, v in module.CENTRAL_QUERY_SCHEMA.items()}
+    for prefix in prefixes:
+        for suffix in ('dataset', 'event', 'resultaat', 'overlap'):
+            schema[prefix+'_'+suffix] = schema['externe_ecologie_'+suffix].copy()
+    module.central_query_schema_contract(schema)
+    routes = module.central_query_routes(schema)
+    for prefix in prefixes:
+        table = prefix+'_resultaat'
+        route = routes[table]
+        assert route['kind'] == 'external'
+        condition = module.central_source_condition(table, route)
+        assert prefix+'_event e JOIN '+prefix+'_dataset d' in condition
+        assert 'externe_ecologie_event' not in condition
+        query = module.central_taxon_query(table, route, 7)
+        assert 'FROM taxa t' in query and 'LEFT JOIN taxon_groepen g' in query
+    for broken in (dict(schema, endure_resultaat=schema['endure_resultaat']|{'ongecontroleerd'}),
+                   {k:v for k,v in schema.items() if k!='endure_event'}):
+        try: module.central_query_schema_contract(broken)
+        except ValueError: pass
+        else: raise AssertionError('Gedeeltelijke/gewijzigde bronstructuur geaccepteerd')
+    assert module.source_family_for_dataset('lvd-meijendel-v1-6') == 'externe_ecologie'
+    assert module.source_family_for_dataset('nmr-vlinders-meijendel') == 'nmr_vlinders'
+    try: module.source_family_for_dataset('onbekende-bron')
+    except ValueError: pass
+    else: raise AssertionError('Onbeoordeelde bron stilzwijgend geïmporteerd')
+    assert callable(getattr(module,'source_separation_sql',None)), 'Transactionele bronverplaatsing ontbreekt'
+    counts = {prefix:{'dataset':1,'event':1,'resultaat':1,'overlap':0,
+        '_hashes':{suffix:'a'*64 for suffix in ('dataset','event','resultaat','overlap')}} for prefix in prefixes}
+    sql = module.source_separation_sql(counts,commit=False)
+    assert sql.rstrip().endswith('ROLLBACK;')
+    assert 'CREATE TABLE ' not in sql and 'FOREIGN_KEY_CHECKS=0' not in sql
+    deletions = [sql.index('DELETE s FROM externe_ecologie_'+suffix+' s')
+        for suffix in ('overlap','resultaat','event','dataset')]
+    assert deletions==sorted(deletions),'Verwijder expliciet kind-eerst, vertrouw niet op cascades'
+    assert 'ON DELETE CASCADE' not in module.source_separation_schema_sql()
+    assert module.source_separation_sql(counts,commit=True).rstrip().endswith('COMMIT;')
+    # Metadata comparisons must exclude whole NEW trigger records in SQL,
+    # not just their first output line: trigger bodies contain newlines.
+    from unittest.mock import Mock
+    metadata_db = Mock(database='Meijendel')
+    metadata_db.schema.return_value = schema
+    metadata_db.objects.return_value = [dict(table=t,name=c,type='varchar')
+        for t,columns in schema.items() for c in sorted(columns)]
+    metadata_db.sql.return_value = '0'
+    module.source_separation_snapshot(metadata_db)
+    trigger_query = next(call.args[0] for call in metadata_db.sql.call_args_list
+        if 'FROM information_schema.TRIGGERS' in call.args[0])
+    assert 'EVENT_OBJECT_TABLE NOT IN (' in trigger_query
+    assert all(module.query_literal(t) in trigger_query for t in module.source_family_tables())
+    assert callable(getattr(module,'source_append_sql',None)), 'Bronbewuste aanvulling ontbreekt'
+    try: module.source_append_sql({'dataset_sleutel':'lvd-meijendel-v1-6'})
+    except ValueError: pass
+    else: raise AssertionError('LVD buiten PQ aangeboden aan nieuwe bronimport')
+    try: module.source_append_sql({'dataset_sleutel':'nmr-vlinders-meijendel',
+        'bronversie':'1','bronbestand_sha256':'a'*64,'events':[{'latitude':0,'longitude':0}],
+        'resultaten':[{}]})
+    except ValueError: pass
+    else: raise AssertionError('Nieuwe niet-geografisch toegelaten locatie geaccepteerd')
+    spec = importlib.util.spec_from_file_location('overlap',SCRIPT.with_name('run_external_ecology_overlap_audit.py'))
+    audit = importlib.util.module_from_spec(spec); spec.loader.exec_module(audit)
+    assert callable(getattr(audit,'source_overlap_sql',None)), 'Overlapaudit mist ontvlochten bronnen'
+    rendered = audit.source_overlap_sql({'externe_ecologie_resultaat','endure_resultaat'})
+    assert 'INSERT INTO endure_overlap' in rendered and 'FROM endure_resultaat r' in rendered
+    assert rendered.count('START TRANSACTION;')==1 and rendered.count('COMMIT;')==1
+    assert callable(getattr(module,'validate_source_backup',None)), 'Hersteldoel niet geïsoleerd van databasecommando in dump'
+    import gzip
+    with tempfile.TemporaryDirectory() as tmp:
+        backup = Path(tmp)/'dump.sql.gz'
+        for raw in ('USE Meijendel;\n','/*!50000 DROP DATABASE Meijendel */;\n',
+                    'CREATE DATABASE Meijendel;\n','INSERT INTO `Meijendel`.`taxa` VALUES (1);\n',
+                    '\\! echo forbidden\n'):
+            with gzip.open(backup,'wt') as handle: handle.write(raw)
+            try: module.validate_source_backup(backup)
+            except ValueError: pass
+            else: raise AssertionError('Gevaarlijk herstelcommando geaccepteerd')
+        with gzip.open(backup,'wt') as handle:
+            handle.write("CREATE TABLE `a` (v TEXT);\nINSERT INTO `a` VALUES ('USE Meijendel; bronwaarde behouden');\n")
+        module.validate_source_backup(backup)
+        from io import BytesIO
+        from unittest.mock import patch
+        class CapturePipe(BytesIO):
+            def close(self): pass
+        pipe = CapturePipe()
+        process = Mock(stdin=pipe,stderr=BytesIO(b''))
+        process.wait.return_value = 0
+        restore_db = Mock(database='Meijendel_bronnen_herstel_123',
+            args=['mysql','--host=127.0.0.1','--port=3306','Meijendel_bronnen_herstel_123'])
+        with patch.object(module.subprocess,'run') as create, \
+             patch.object(module.subprocess,'Popen',return_value=process):
+            module.restore_source_copy(restore_db,backup)
+            assert pipe.getvalue().startswith(b'SET SESSION sql_log_bin=0;\n')
+            assert 'Meijendel_bronnen_herstel_123' in create.call_args.kwargs['input']
+        restore_db.database = 'Meijendel'
+        with patch.object(module.subprocess,'run') as forbidden:
+            try: module.restore_source_copy(restore_db,backup)
+            except ValueError: pass
+            else: raise AssertionError('Herstel naar canonieke database geaccepteerd')
+            forbidden.assert_not_called()
+    print('OK: vijf eigen bronfamilies, juiste taxonouders, onbekende bron geweigerd')
+    return 0
+
+
+def check_source_changed_cell(database, counts_file, client, login_path):
+    if not re.fullmatch(r'Meijendel_bronnen_proef_[0-9]+',database):
+        raise ValueError('Driftproef uitsluitend op eigen proefkopie')
+    import json
+    module = load_module()
+    db = module.CentralQueryDatabase(database,login_path,client,writable=True)
+    counts = json.loads(Path(counts_file).read_text())
+    mutation = ("UPDATE externe_ecologie_event SET bron_locatie='Gecontroleerde celwijziging' "
+                "WHERE dataset_id=(SELECT dataset_id FROM externe_ecologie_dataset WHERE dataset_sleutel='endure-helmduinfauna-meijendel-2018') LIMIT 1;")
+    sql = module.source_separation_sql(counts).replace('START TRANSACTION;', 'START TRANSACTION;\n'+mutation,1)
+    try: db.sql(sql,write=True)
+    except RuntimeError as exc:
+        assert 'tmp_source_guard' in str(exc) or '3819' in str(exc),str(exc)
+    else: raise AssertionError('Gewijzigde broncel met identieke aantallen niet vóór verplaatsing geweigerd')
+    assert db.sql("SELECT COUNT(*) FROM externe_ecologie_event WHERE bron_locatie='Gecontroleerde celwijziging';")=='0'
+    assert all(db.sql('SELECT COUNT(*) FROM '+table+';')=='0' for table in module.source_family_tables())
+    print('OK: broncelwijziging bij gelijk aantal vóór verwijderen geweigerd en volledig teruggedraaid')
+    return 0
+
+
+def check_source_inputs(database, client='/usr/local/mysql/bin/mysql', login_path='meijendel_root'):
+    """Exercise real constraints and real guards, rollback every write in own copy."""
+    if not re.fullmatch(r'Meijendel_bronnen_proef_[0-9]+',database):
+        raise ValueError('Broninvoerproeven nooit in de levende database')
+    module = load_module()
+    db = module.CentralQueryDatabase(database,login_path,client,writable=True)
+    schema = db.schema()
+    for key,prefix in module.SOURCE_FAMILIES.items():
+        for suffix in ('dataset','event','resultaat','overlap'):
+            table = prefix+'_'+suffix
+            assert table in schema, 'Ontbrekende fysieke bronfamilie: '+table
+            # Original complete columns (types/defaults/checks) plus correctly rebound FKs.
+            def columns(name):
+                return db.sql("SELECT COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COALESCE(COLUMN_DEFAULT,'NULL'),EXTRA,COLLATION_NAME "
+                    "FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME="+
+                    module.query_literal(name)+" ORDER BY ORDINAL_POSITION;")
+            assert columns(table)==columns('externe_ecologie_'+suffix),table
+        result = prefix+'_resultaat'
+        sample, = db.objects('SELECT JSON_OBJECT(\'link\',taxon_bronkoppeling_id,\'id\',resultaat_id) FROM '+result+' LIMIT 1;')
+        columns = db.sql("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME="+
+            module.query_literal(result)+" AND EXTRA NOT LIKE '%auto_increment%' ORDER BY ORDINAL_POSITION;").splitlines()
+        values = ['NULL' if c=='taxon_bronkoppeling_id' else module.query_literal('bron-invoerproef') if c=='bron_occurrence_id'
+                  else module.query_identifier(c) for c in columns]
+        sql = ('START TRANSACTION; INSERT INTO '+result+' ('+','.join(map(module.query_identifier,columns))+') SELECT '+
+            ','.join(values)+' FROM '+result+f' WHERE resultaat_id={sample["id"]}; '
+            'SELECT taxon_bronkoppeling_id FROM '+result+" WHERE bron_occurrence_id='bron-invoerproef'; ROLLBACK;")
+        assert db.sql(sql,write=True)==str(sample['link']),prefix
+        assert db.sql('SELECT COUNT(*) FROM '+result+" WHERE bron_occurrence_id='bron-invoerproef';")=='0'
+        # The actual future-import writer must use these physical tables too.
+        fields = []
+        for c in sorted(module.CENTRAL_QUERY_SCHEMA['externe_ecologie_resultaat']-
+                        {'resultaat_id','event_id','taxon_bronkoppeling_id'}):
+            fields += [module.query_literal(c),'CAST(r.hoeveelheid AS CHAR)' if c=='hoeveelheid' else 'r.'+module.query_identifier(c)]
+        fields += [module.query_literal('bron_event_id'),'e.bron_event_id']
+        row, = db.objects('SELECT JSON_OBJECT('+','.join(fields)+') FROM '+result+' r JOIN '+prefix+'_event e USING(event_id) '
+                          f'WHERE resultaat_id={sample["id"]};')
+        header, = db.objects("SELECT JSON_OBJECT('dataset_sleutel',dataset_sleutel,'bronversie',bronversie,"
+            "'bronbestand_sha256',bronbestand_sha256) FROM "+prefix+'_dataset;')
+        for statement in [f"UPDATE {prefix}_dataset SET dataset_sleutel='lvd-meijendel-v1-6';",
+            f"INSERT INTO {prefix}_dataset(dataset_sleutel,titel,bronorganisatie,bronbestand_naam,bronbestand_sha256,selectie_omschrijving,importversie) "
+            "VALUES('verkeerde-bron','Test','Test','Test',REPEAT('a',64),'Test','Test');"]:
+            try: db.sql('START TRANSACTION; '+statement+' ROLLBACK;',write=True)
+            except RuntimeError: pass
+            else: raise AssertionError('Verkeerde dataset in bronfamilie geaccepteerd')
+        try: db.sql('START TRANSACTION; DELETE FROM '+prefix+'_dataset; ROLLBACK;',write=True)
+        except RuntimeError as exc: assert '1451' in str(exc),str(exc)
+        else: raise AssertionError('Ouderverwijdering met afhankelijke bronregels niet geweigerd')
+        row['bron_occurrence_id'] = 'bron-aanvullingsproef'
+        payload = {**header,'events':[],'resultaten':[row]}
+        append = module.source_append_sql(payload).removesuffix('COMMIT;')
+        assert db.sql(append+' SELECT taxon_bronkoppeling_id FROM '+result+
+            " WHERE bron_occurrence_id='bron-aanvullingsproef'; ROLLBACK;",write=True)==str(sample['link'])
+        assert db.sql('SELECT COUNT(*) FROM '+result+" WHERE bron_occurrence_id='bron-aanvullingsproef';")=='0'
+        for bad in [{**payload,'bronversie':'niet beoordeeld'},
+                    {**payload,'resultaten':[{**row,'wetenschappelijke_naam':'niet beoordeeld'}]},
+                    {**payload,'resultaten':[row,row]}]:
+            try: db.sql(module.source_append_sql(bad),write=True)
+            except RuntimeError: pass
+            else: raise AssertionError('Onbeoordeelde of dubbele import geaccepteerd: '+prefix)
+            assert db.sql('SELECT COUNT(*) FROM '+result+" WHERE bron_occurrence_id='bron-aanvullingsproef';")=='0'
+        bad_link = db.sql('SELECT MIN(koppeling_id) FROM taxa_bronkoppeling WHERE taxon_id IS NOT NULL '
+                         f'AND koppeling_id<>{sample["link"]};')
+        for bad in [f'UPDATE {result} SET taxon_bronkoppeling_id={bad_link} LIMIT 1;',
+                    f'UPDATE {result} SET wetenschappelijke_naam=\'verkeerde context\' LIMIT 1;',
+                    f'UPDATE {prefix}_dataset SET bronversie=\'verkeerde versie\';',
+                    f'UPDATE {prefix}_event SET dataset_id=0 WHERE event_id IN (SELECT event_id FROM {result});',
+                    f'UPDATE taxa_bronkoppeling SET taxon_id=NULL WHERE koppeling_id={sample["link"]};']:
+            try: db.sql('START TRANSACTION; '+bad+' ROLLBACK;',write=True)
+            except RuntimeError: pass
+            else: raise AssertionError('Ongeldige bronwrite geaccepteerd: '+prefix)
+        if prefix=='endure':
+            try: db.sql("START TRANSACTION; DELETE FROM endure_overlap; DELETE FROM endure_resultaat; "
+                "DELETE FROM endure_event WHERE analyse_status<>'geen_resultaatmatrix'; "
+                "UPDATE endure_dataset SET bronversie='andere versie'; ROLLBACK;",write=True)
+            except RuntimeError as exc: assert 'Gebruikte bronversie' in str(exc),str(exc)
+            else: raise AssertionError('Bronversie van uitsluitend leeg event overschreven')
+        print('OK: correcte invoer centraal gekoppeld, verkeerde broncontext geweigerd en teruggedraaid:',prefix)
+    return 0
+
+
 def check_central_new_source_versions(database):
     """Exercise actual INSERT registration, including the existing parent FKs.
 
@@ -937,6 +1144,14 @@ def check_central_new_source_versions(database):
 
 
 if __name__ == "__main__":
+    if len(sys.argv)==6 and sys.argv[1]=='--bron-driftproef':
+        raise SystemExit(check_source_changed_cell(*sys.argv[2:]))
+    if len(sys.argv)==5 and sys.argv[1]=='--bron-invoerproef':
+        raise SystemExit(check_source_inputs(*sys.argv[2:]))
+    if len(sys.argv)==3 and sys.argv[1]=='--bron-invoerproef':
+        raise SystemExit(check_source_inputs(sys.argv[2]))
+    if sys.argv[1:] == ['--bron-ontvlechting']:
+        raise SystemExit(check_source_separation())
     if len(sys.argv)==3 and sys.argv[1]=='--centrale-invoerproef':
         raise SystemExit(check_central_new_source_versions(sys.argv[2]))
     if sys.argv[1:] == ['--centrale-querypoort']:

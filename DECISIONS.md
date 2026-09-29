@@ -1,5 +1,17 @@
 # Besluiten
 
+- Op 29 september 2026 is de afzonderlijk goedgekeurde ontvlechting van vijf
+  externe broncollecties lokaal uitgevoerd. ENDURE, STOWA Limnodata,
+  Naturalis Botany, Naturalis Coleoptera en NMR gebruiken voortaan ieder een
+  eigen fysieke `*_dataset`, `*_event`, `*_resultaat` en `*_overlap`-familie.
+  Alle bronresultaten blijven via de drie centrale taxontabellen vindbaar.
+  Oorspronkelijke waarden, interne sleutels, versies, bronbesluiten en
+  bestaande analyse-uitkomsten blijven behouden. De LVD/PQ-verplaatsing is
+  hiermee niet voltooid; vogels blijven onaangetast. Nieuwe
+  bronouderrelaties zijn restrictief na een aantoonbaar onvolledige automatische
+  cascade in de proefkopie. Geen VPS-publicatie. Canoniek controlebewijs:
+  `docs/database/TAXONREGISTER.md`.
+
 - Op 29 september 2026 heeft Ton zijn naamgevingsvoorkeur gewijzigd:
   behalve PQ en vogels krijgen nieuwe of opnieuw ingerichte tabelfamilies
   bij voorkeur de naam van de bron of herkenbare broncollectie. De eerdere

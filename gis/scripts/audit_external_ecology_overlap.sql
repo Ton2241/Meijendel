@@ -1,5 +1,8 @@
 USE Meijendel;
 
+-- Sjabloon voor run_external_ecology_overlap_audit.py: deze verwerkt ook de
+-- vijf fysieke bronfamilies. Niet rechtstreeks als gezamenlijke audit uitvoeren.
+
 START TRANSACTION;
 
 DELETE FROM externe_ecologie_overlap

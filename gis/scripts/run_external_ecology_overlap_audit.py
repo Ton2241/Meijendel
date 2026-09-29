@@ -130,6 +130,24 @@ def pq_inventory_from_rows(rows) -> dict:
     }
 
 
+def source_overlap_sql(tables: set[str]) -> str:
+    """Rebuild each physical source locally; never join unrelated local IDs."""
+    from import_external_ecology_sources import SOURCE_FAMILIES
+    template = AUDIT_SQL.read_text(encoding='utf-8')
+    start = template.index('DELETE FROM externe_ecologie_overlap\nWHERE doelsysteem=\'ndff\';')
+    base = template.replace('USE Meijendel;','',1).replace('START TRANSACTION;','',1).replace('COMMIT;','',1)
+    ndff = template[start:].replace('COMMIT;','',1)
+    bodies = [base] if 'externe_ecologie_resultaat' in tables else []
+    for prefix in SOURCE_FAMILIES.values():
+        if prefix+'_resultaat' not in tables: continue
+        body = ndff
+        for suffix in ('dataset','event','resultaat','overlap'):
+            body = body.replace('externe_ecologie_'+suffix,prefix+'_'+suffix)
+        bodies.append(body)
+    if not bodies: raise ValueError('Geen beoordeelde externe bronfamilies')
+    return 'START TRANSACTION;\n'+'\nDROP TEMPORARY TABLE IF EXISTS tmp_external_ndff;\n'.join(bodies)+'\nCOMMIT;\n'
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     modes = parser.add_mutually_exclusive_group()
@@ -169,12 +187,15 @@ def main() -> int:
 
     sql = AUDIT_SQL.read_text(encoding="utf-8")
     if not args.apply:
-        print(f"DRY-RUN: {AUDIT_SQL}; {len(sql.encode('utf-8'))} bytes SQL")
+        print(f"DRY-RUN: {AUDIT_SQL}; {len(sql.encode('utf-8'))} bytes basissjabloon; "
+              "--apply genereert daarnaast de aanwezige beoordeelde bronfamilies")
         return 0
     if args.database != 'Meijendel':
         parser.error('--database is uitsluitend instelbaar voor de read-only inventarisatie')
 
-    from import_external_ecology_sources import central_query_guarded_operation
+    from import_external_ecology_sources import central_query_guarded_operation, CentralQueryDatabase
+    db = CentralQueryDatabase(args.database,args.login_path,args.mysql_client)
+    sql = source_overlap_sql(set(db.schema()))
     central_query_guarded_operation(lambda: subprocess.run(
         [str(args.mysql_client), f"--login-path={args.login_path}", '--protocol=TCP',
          '--host=127.0.0.1', '--port=3306',args.database],

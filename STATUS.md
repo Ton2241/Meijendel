@@ -56,8 +56,8 @@ weergavenamen. Alle presentatienamen zijn gevuld en uniek. Oude IDs, UUIDs,
 broncontexten en koppelingnummers blijven herleidbaar.
 
 Alle soortwaarnemingen zijn nu vanuit `taxa`, `taxa_bronkoppeling` en
-`taxon_groepen` bereikbaar. De volledige inventarisatie van 253 basistabellen
-levert 122 beoordeelde routes op, inclusief afgeleide meetregels, echte nullen,
+`taxon_groepen` bereikbaar. De volledige inventarisatie van 273 basistabellen
+levert 127 beoordeelde routes op, inclusief afgeleide meetregels, echte nullen,
 historische versies en LVD binnen en buiten `pq_*`. Geen ontbrekende verbindingen
 of vermenigvuldigde soortregels. Alle oorspronkelijke gegevens, schema-eigenschappen
 en 16 bestaande viewuitkomsten zijn behouden. Een onbepaald Naturalis-collectieobject
@@ -65,13 +65,25 @@ uit 2018 is als zodanig bereikbaar, niet als verzonnen biologische soort.
 De 235 nog niet ingedeelde naamvermeldingen blijven eveneens vindbaar.
 
 De verplichte voor- en nacontrole is ingebouwd rond bestaande schrijf- en
-exportpaden; 242 rijtriggers beschermen bronidentiteit en verwijzingen.
+exportpaden; 267 rijtriggers beschermen bronidentiteit en verwijzingen.
 Nieuwe tabellen of kolommen vereisen een beoordeelde centrale route.
 Back-up, transactioneel terugdraaien, onafhankelijk volledig herstel,
 negatieve en positieve invoerproeven, regressietests en levende nacontrole
 zijn geslaagd. Geen VPS-publicatie, dump- of cachevervanging. De afzonderlijke
 fysieke PQ-verplaatsing hierboven blijft open. Uitvoering, bronperioden,
 querygebruik en herstelbewijs: `docs/database/TAXONREGISTER.md`.
+
+De vijf niet-LVD-bronnen zijn op 29 september 2026 uitsluitend in de levende
+lokale database fysiek ontvlochten naar `endure_*`, `stowa_limnodata_*`,
+`naturalis_botany_*`, `naturalis_coleoptera_*` en `nmr_vlinders_*`.
+Samen gaat het om vijf datasets, 7.557 events, 17.606 resultaten en 5.942
+overlapbeoordelingen uit 1875–2025. `externe_ecologie_*` bevat nu alleen nog
+LVD: één dataset, 2.793 events, 64.683 resultaten en 48.454
+overlapbeoordelingen uit 1959–2015. De oorspronkelijke broncellen, IDs,
+interne verwijzingen en 16 bestaande viewuitkomsten zijn gelijk gebleven;
+alle 127 centrale routes slagen. Volledige back-up, proefterugdraaiing,
+fout-/goedinvoer en onafhankelijk herstel zijn aangetoond. De lokale dump en
+Shiny-cache zijn niet vervangen; er is niets naar de VPS gepubliceerd.
 
 De eerdere registeraanvulling van 27 september 2026:
 27 groepen, 15.580 naamgebruiken en referenties en 18.437 bronbesluiten,

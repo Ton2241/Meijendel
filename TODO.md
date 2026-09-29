@@ -6,13 +6,27 @@
 
 - Op 29 september 2026 lokaal uitgevoerd: alle oorspronkelijke soortwaarnemingen,
   afgeleide meetregels, echte nullen en historische versies zijn via het centrale
-  register bereikbaar. Alle 122 beoordeelde routes slagen; oorspronkelijke
+  register bereikbaar. Alle 127 beoordeelde routes slagen; oorspronkelijke
   gegevens en 16 viewuitkomsten zijn behouden. Volledige back-up, terugdraaien,
   onafhankelijk schema-/gegevensherstel en levende nacontrole zijn bewezen.
   Iedere volgende wijziging moet vóór en na uitvoering door de volledige
-  controlepoort; 242 rijtriggers beschermen bestaande routes tijdens invoer.
+  controlepoort; 267 rijtriggers beschermen bestaande routes tijdens invoer.
   Geen VPS-publicatie. Uitvoering en bewijs staan uitsluitend in
   `docs/database/TAXONREGISTER.md`.
+
+### Vijf externe bronnen: lokaal ontvlochten
+
+- Op 29 september 2026 zijn ENDURE, STOWA Limnodata, Naturalis Botany,
+  Naturalis Coleoptera en NMR Vlinders elk onder een herkenbare eigen
+  tabelprefix geplaatst. Het gaat samen om vijf datasets, 7.557 events,
+  17.606 resultaten en 5.942 overlapbeoordelingen uit 1875–2025.
+  `externe_ecologie_*` bevat uitsluitend de resterende LVD-bron.
+  De bronwaarden, taxonroutes en 16 bestaande views zijn gelijk gebleven;
+  rollback en onafhankelijk herstel zijn bewezen. Geen VPS-publicatie.
+- Nog open voor een latere nieuwe levering: bronversies en nieuwe eventlocaties
+  expliciet ondersteunen en toetsen voordat import wordt toegelaten. De
+  huidige bronbewuste aanvulling staat alleen bestaande geregistreerde
+  versies en bestaande toegelaten events toe.
 
 ### Volledige PQ-opslag uitsluitend onder pq_*
 
