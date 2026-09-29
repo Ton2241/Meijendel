@@ -1,5 +1,40 @@
 # Taxonregister: structuur en uitvoering
 
+## LVD-tabellen naar bronnaam hernoemd — lokaal uitgevoerd 29 september 2026
+
+De vier fysieke tabellen die na de eerdere ontvlechting uitsluitend LVD
+bevatten, heten nu `lvd_dataset`, `lvd_event`, `lvd_resultaat` en
+`lvd_overlap`. `externe_ecologie_*` bestaat niet meer als basistabelfamilie.
+De bestaande `v_externe_ecologie_analyse` blijft bewust bestaan, omdat zij
+de leesingang voor alle zes bronnen is. De 644 LVD-bronopnamen die al onder
+`pq_*` staan, zijn niet verplaatst; de volledige PQ-opschoning blijft open.
+Darwin Core Event/Occurrence en de TDWG TCS-naamgebruiken veranderen niet.
+
+Vooraf is een volledige consistente lokale MySQL-back-up gemaakt, met
+SHA-256 `efe39d27b6abdbdc19e205eee76ddb18aae1e94b94752ba02cba54e5e51f70ca`.
+Herstel naar een nieuwe, afzonderlijke proefdatabase leverde alle 273
+basistabellen en 16 views op. De naamwijziging is daar eerst uitgevoerd;
+dezelfde codehash
+`45c8677b6690ffa89c97fbd62b272be4a6ced2cfcaa73463b5bc5a30d624bc85`
+en identieke uitgangshashes zijn daarna voor de levende lokale database
+vereist. Beide uitvoeringen vergeleken de volledige inhoud van alle vier
+tabellen en de bestaande analyse-uitkomst. Eén dataset, 2.793 events,
+64.683 resultaten en 48.454 overlapbeoordelingen uit 1959–2015 zijn
+inhoudelijk identiek gebleven. De analyseview levert nog 98.916 regels uit
+alle zes bronnen; de overige vijf bronfamilies bleven staan.
+
+De foreign keys van `lvd_event`, `lvd_resultaat` en `lvd_overlap` verwijzen
+naar hun hernoemde ouders. Ook de bestaande foreign key van de 644
+`pq_vegetatie_bronopname`-rijen verwijst nu naar `lvd_dataset`.
+Alle 64.683 LVD-resultaten blijven centraal gekoppeld via
+`taxa_bronkoppeling`; de volledige poort meldt 127 bereikbare routes,
+nul fouten en 267 invoertriggers. De oude tabelgebonden triggernamen zijn
+vervangen, terwijl de bestaande analyseview is bijgewerkt zonder haar naam
+of uitkomsten te veranderen. Website, dashboard, Shiny, actieve dump en
+VPS zijn niet gepubliceerd of vervangen. Bewijs en back-up staan alleen
+lokaal buiten iCloud onder
+`~/Library/Application Support/Codex/Herstel/lvd-tabellen-hernoemen-20260929/`.
+
 ## Ontvlechting van vijf externe bronnen — lokaal uitgevoerd 29 september 2026
 
 Opdracht: de vijf niet-LVD-bronnen fysiek onder hun eigen bronnaam bewaren.
@@ -69,7 +104,8 @@ en afzonderlijk door de centrale controlepoort inhoudelijk getoetst.
 
 **Uitkomst, levende lokale database.** De vijf bronfamilies bevatten samen vijf
 datasets, 7.557 events, 17.606 resultaten en 5.942 overlapbeoordelingen uit
-1875–2025. De gedeelde `externe_ecologie_*`-tabellen bevatten nu uitsluitend
+1875–2025. Direct na deze eerdere stap bevatten de gedeelde
+`externe_ecologie_*`-tabellen uitsluitend
 LVD: één dataset, 2.793 events, 64.683 resultaten en 48.454
 overlapbeoordelingen uit 1959–2015. De bestaande `pq_*`-inhoud blijft staan.
 Er zijn nu 273 basistabellen, 16 bestaande views, 127 beoordeelde centrale

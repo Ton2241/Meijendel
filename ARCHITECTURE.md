@@ -136,9 +136,10 @@ taxoncatalogus: iedere soortregel heeft een controleerbare centrale
 zijn restrictief; een afhankelijke bronregel kan niet door het verwijderen
 van de ouder automatisch verdwijnen.
 
-De gedeelde `externe_ecologie_*`-structuur bevat voorlopig alleen de resterende
-LVD-opnamen; een andere LVD-selectie staat al onder `pq_*`. De bestaande
-analyse-ingang geeft dezelfde uitkomsten. De nog open volledige PQ-integratie
+De resterende LVD-opnamen staan onder `lvd_dataset`, `lvd_event`,
+`lvd_resultaat` en `lvd_overlap`; een andere LVD-selectie staat al onder
+`pq_*`. De bestaande analyse-ingang `v_externe_ecologie_analyse` blijft
+ongewijzigd beschikbaar. De nog open volledige PQ-integratie
 staat in `TODO.md`. Er is geen automatische VPS-publicatie: de bestaande
 dump, website, dashboard en Shiny zijn niet vervangen. Details en controle:
 `docs/database/TAXONREGISTER.md` en `docs/MEIJENDEL_BRONREGISTER.md`.

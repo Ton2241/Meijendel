@@ -33,9 +33,9 @@ SELECT JSON_OBJECT('kind','lvd','data',JSON_OBJECT(
       CHAR(39),CHAR(34)) AS JSON),'$.coverScaleCode')),
   'quantity',CAST(r.hoeveelheid AS CHAR),
   'layer',JSON_UNQUOTE(JSON_EXTRACT(r.bronmetadata,'$.layer'))))
-FROM externe_ecologie_resultaat r
-JOIN externe_ecologie_event e USING(event_id)
-JOIN externe_ecologie_dataset d USING(dataset_id)
+FROM lvd_resultaat r
+JOIN lvd_event e USING(event_id)
+JOIN lvd_dataset d USING(dataset_id)
 WHERE d.dataset_sleutel='lvd-meijendel-v1-6'
 ORDER BY r.resultaat_id;
 SELECT JSON_OBJECT('kind','pair','data',JSON_OBJECT(
@@ -44,8 +44,8 @@ SELECT JSON_OBJECT('kind','pair','data',JSON_OBJECT(
   'distance_m',ROUND(ST_Distance(p.geom,
     ST_Transform(ST_SRID(Point(e.longitude,e.latitude),4326),28992)),3),
   'source_uncertainty_m',e.coordinate_uncertainty_m))
-FROM externe_ecologie_event e
-JOIN externe_ecologie_dataset d USING(dataset_id)
+FROM lvd_event e
+JOIN lvd_dataset d USING(dataset_id)
 JOIN pq_vegetatie_opname p ON p.opname_datum BETWEEN e.event_datum AND e.event_datum_tot
   AND ST_Distance(p.geom,ST_Transform(ST_SRID(Point(e.longitude,e.latitude),4326),28992))
     <= GREATEST(COALESCE(e.coordinate_uncertainty_m,0),5)
@@ -60,12 +60,12 @@ for _table, _columns in {
 }.items():
     _target = 'bronresultaat' if _table == 'resultaat' else 'bronopname'
     PQ_INVENTORY_SQL = PQ_INVENTORY_SQL.replace(
-        f'FROM externe_ecologie_{_table} ',
-        f'FROM (SELECT {_columns} FROM externe_ecologie_{_table} UNION ALL '
+        f'FROM lvd_{_table} ',
+        f'FROM (SELECT {_columns} FROM lvd_{_table} UNION ALL '
         f'SELECT {_columns} FROM pq_vegetatie_{_target}) ')
     PQ_INVENTORY_SQL = PQ_INVENTORY_SQL.replace(
-        f'JOIN externe_ecologie_{_table} ',
-        f'JOIN (SELECT {_columns} FROM externe_ecologie_{_table} UNION ALL '
+        f'JOIN lvd_{_table} ',
+        f'JOIN (SELECT {_columns} FROM lvd_{_table} UNION ALL '
         f'SELECT {_columns} FROM pq_vegetatie_{_target}) ')
 
 
@@ -134,15 +134,15 @@ def source_overlap_sql(tables: set[str]) -> str:
     """Rebuild each physical source locally; never join unrelated local IDs."""
     from import_external_ecology_sources import SOURCE_FAMILIES
     template = AUDIT_SQL.read_text(encoding='utf-8')
-    start = template.index('DELETE FROM externe_ecologie_overlap\nWHERE doelsysteem=\'ndff\';')
+    start = template.index('DELETE FROM lvd_overlap\nWHERE doelsysteem=\'ndff\';')
     base = template.replace('USE Meijendel;','',1).replace('START TRANSACTION;','',1).replace('COMMIT;','',1)
     ndff = template[start:].replace('COMMIT;','',1)
-    bodies = [base] if 'externe_ecologie_resultaat' in tables else []
+    bodies = [base] if 'lvd_resultaat' in tables else []
     for prefix in SOURCE_FAMILIES.values():
         if prefix+'_resultaat' not in tables: continue
         body = ndff
         for suffix in ('dataset','event','resultaat','overlap'):
-            body = body.replace('externe_ecologie_'+suffix,prefix+'_'+suffix)
+            body = body.replace('lvd_'+suffix,prefix+'_'+suffix)
         bodies.append(body)
     if not bodies: raise ValueError('Geen beoordeelde externe bronfamilies')
     return 'START TRANSACTION;\n'+'\nDROP TEMPORARY TABLE IF EXISTS tmp_external_ndff;\n'.join(bodies)+'\nCOMMIT;\n'

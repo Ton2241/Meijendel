@@ -5,10 +5,10 @@ USE Meijendel;
 
 START TRANSACTION;
 
-DELETE FROM externe_ecologie_overlap
+DELETE FROM lvd_overlap
 WHERE doelsysteem='provinciale_pq';
 
-INSERT INTO externe_ecologie_overlap (
+INSERT INTO lvd_overlap (
   resultaat_id,doelsysteem,doelrecord_sleutel,koppelmethode,zekerheid,toelichting
 )
 SELECT DISTINCT
@@ -30,9 +30,9 @@ SELECT DISTINCT
            p.geom,
            ST_Transform(ST_SRID(Point(e.longitude,e.latitude),4326),28992)
          ),1))
-FROM externe_ecologie_resultaat r
-JOIN externe_ecologie_event e USING(event_id)
-JOIN externe_ecologie_dataset d USING(dataset_id)
+FROM lvd_resultaat r
+JOIN lvd_event e USING(event_id)
+JOIN lvd_dataset d USING(dataset_id)
 JOIN pq_vegetatie_opname p
   ON p.opname_datum BETWEEN e.event_datum AND e.event_datum_tot
  AND ST_Distance(
@@ -48,7 +48,7 @@ JOIN taxa_bronkoppeling t
  )
 WHERE d.dataset_sleutel='lvd-meijendel-v1-6';
 
-DELETE FROM externe_ecologie_overlap
+DELETE FROM lvd_overlap
 WHERE doelsysteem='ndff';
 
 CREATE TEMPORARY TABLE tmp_external_ndff (
@@ -66,15 +66,15 @@ INSERT INTO tmp_external_ndff (resultaat_id,soort_key,datum_van,datum_tot,punt_r
 SELECT DISTINCT
   r.resultaat_id,s.soort_key,e.event_datum,e.event_datum_tot,
   ST_Transform(ST_SRID(Point(e.longitude,e.latitude),4326),28992)
-FROM externe_ecologie_resultaat r
-JOIN externe_ecologie_event e USING(event_id)
+FROM lvd_resultaat r
+JOIN lvd_event e USING(event_id)
 JOIN ndff_soorten s ON s.wetenschappelijke_naam=r.wetenschappelijke_naam
 WHERE e.event_datum IS NOT NULL
   AND e.event_datum_tot IS NOT NULL
   AND e.latitude IS NOT NULL
   AND e.longitude IS NOT NULL;
 
-INSERT INTO externe_ecologie_overlap (
+INSERT INTO lvd_overlap (
   resultaat_id,doelsysteem,doelrecord_sleutel,koppelmethode,zekerheid,toelichting
 )
 SELECT

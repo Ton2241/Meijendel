@@ -20,7 +20,8 @@
   Naturalis Coleoptera en NMR Vlinders elk onder een herkenbare eigen
   tabelprefix geplaatst. Het gaat samen om vijf datasets, 7.557 events,
   17.606 resultaten en 5.942 overlapbeoordelingen uit 1875–2025.
-  `externe_ecologie_*` bevat uitsluitend de resterende LVD-bron.
+  De resterende LVD-bron is aansluitend hernoemd naar `lvd_*`; er zijn
+  geen fysieke `externe_ecologie_*`-tabellen meer.
   De bronwaarden, taxonroutes en 16 bestaande views zijn gelijk gebleven;
   rollback en onafhankelijk herstel zijn bewezen. Geen VPS-publicatie.
 - Nog open voor een latere nieuwe levering: bronversies en nieuwe eventlocaties
@@ -49,7 +50,8 @@
   gegevensbestanden als eindoplossing en geen nieuwe taxoncatalogus.
 - Pas de aanvoer- en leesroutes samen aan. Een volgende NDFF-, LVD- of
   provinciale levering moet PQ-data rechtstreeks naar `pq_*` routeren en
-  mag verplaatste rijen niet in `ndff_*` of `externe_ecologie_*` terugmaken.
+  mag verplaatste rijen niet in `ndff_*`, `lvd_*` of opnieuw aangemaakte
+  `externe_ecologie_*`-tabellen terugmaken.
   Een vervanging bewaart de eerdere bronversie binnen `pq_*` zonder dubbel
   meetellen. Beveiligde, onvervaagde brondata worden niet openbaar gemaakt.
 - Beproef migratie, herhaling, onderbreking, transactioneel terugdraaien en

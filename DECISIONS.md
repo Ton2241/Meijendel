@@ -1,5 +1,16 @@
 # Besluiten
 
+- Op 29 september 2026 zijn de vier na de bronontvlechting uitsluitend voor
+  LVD gebruikte fysieke `externe_ecologie_*`-tabellen lokaal hernoemd naar
+  `lvd_dataset`, `lvd_event`, `lvd_resultaat` en `lvd_overlap`. De bestaande
+  `v_externe_ecologie_analyse` blijft als compatibele leesingang bestaan.
+  De 644 verwijzingen vanuit `pq_vegetatie_bronopname` zijn door MySQL naar
+  `lvd_dataset` omgebonden; LVD buiten `pq_*` en de nog open volledige
+  PQ-integratie worden hierdoor niet inhoudelijk gewijzigd. Alle broncellen,
+  98.916 analyseviewregels, 127 taxonroutes en 267 invoertriggers zijn in
+  proef en levend gelijk gebleven. Geen VPS-publicatie. Herstelbewijs en
+  precieze afbakening: `docs/database/TAXONREGISTER.md`.
+
 - Op 29 september 2026 is de afzonderlijk goedgekeurde ontvlechting van vijf
   externe broncollecties lokaal uitgevoerd. ENDURE, STOWA Limnodata,
   Naturalis Botany, Naturalis Coleoptera en NMR gebruiken voortaan ieder een

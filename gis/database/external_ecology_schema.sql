@@ -1,6 +1,6 @@
 USE Meijendel;
 
-CREATE TABLE IF NOT EXISTS externe_ecologie_dataset (
+CREATE TABLE IF NOT EXISTS lvd_dataset (
   dataset_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   dataset_sleutel VARCHAR(128) CHARACTER SET ascii NOT NULL,
   titel VARCHAR(1000) NOT NULL,
@@ -14,13 +14,13 @@ CREATE TABLE IF NOT EXISTS externe_ecologie_dataset (
   importversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   geimporteerd_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (dataset_id),
-  UNIQUE KEY uq_externe_ecologie_dataset_sleutel (dataset_sleutel),
+  UNIQUE KEY uq_lvd_dataset_sleutel (dataset_sleutel),
   UNIQUE KEY uq_externe_ecologie_bronhash (dataset_sleutel, bronbestand_sha256),
   CHECK (bronbestand_sha256 REGEXP '^[0-9a-f]{64}$'),
   CHECK (doi IS NULL OR doi NOT LIKE 'http%')
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS externe_ecologie_event (
+CREATE TABLE IF NOT EXISTS lvd_event (
   event_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   dataset_id BIGINT UNSIGNED NOT NULL,
   bron_event_id VARCHAR(512) NOT NULL,
@@ -49,11 +49,11 @@ CREATE TABLE IF NOT EXISTS externe_ecologie_event (
   ) NOT NULL,
   bronmetadata JSON NOT NULL,
   PRIMARY KEY (event_id),
-  UNIQUE KEY uq_externe_ecologie_event (dataset_id, bron_event_id),
-  KEY ix_externe_ecologie_event_datum (event_datum),
-  KEY ix_externe_ecologie_event_ruimtelijk (ruimtelijke_klasse, analyse_status),
-  CONSTRAINT fk_externe_ecologie_event_dataset FOREIGN KEY (dataset_id)
-    REFERENCES externe_ecologie_dataset (dataset_id) ON DELETE CASCADE,
+  UNIQUE KEY uq_lvd_event (dataset_id, bron_event_id),
+  KEY ix_lvd_event_datum (event_datum),
+  KEY ix_lvd_event_ruimtelijk (ruimtelijke_klasse, analyse_status),
+  CONSTRAINT fk_lvd_event_dataset FOREIGN KEY (dataset_id)
+    REFERENCES lvd_dataset (dataset_id) ON DELETE CASCADE,
   CHECK (json_valid(bronmetadata)),
   CHECK (jaar IS NULL OR jaar BETWEEN 1800 AND 2100),
   CHECK (event_datum_tot IS NULL OR event_datum IS NULL OR event_datum_tot >= event_datum),
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS externe_ecologie_event (
   CHECK (longitude IS NULL OR longitude BETWEEN -180 AND 180)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS externe_ecologie_resultaat (
+CREATE TABLE IF NOT EXISTS lvd_resultaat (
   resultaat_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   event_id BIGINT UNSIGNED NOT NULL,
   bron_occurrence_id VARCHAR(512) NOT NULL,
@@ -77,11 +77,11 @@ CREATE TABLE IF NOT EXISTS externe_ecologie_resultaat (
   catalogusnummer VARCHAR(255) NULL,
   bronmetadata JSON NOT NULL,
   PRIMARY KEY (resultaat_id),
-  UNIQUE KEY uq_externe_ecologie_resultaat (event_id, bron_occurrence_id),
-  KEY ix_externe_ecologie_resultaat_taxon (wetenschappelijke_naam),
-  KEY ix_externe_ecologie_resultaat_status (occurrence_status),
-  CONSTRAINT fk_externe_ecologie_resultaat_event FOREIGN KEY (event_id)
-    REFERENCES externe_ecologie_event (event_id) ON DELETE CASCADE,
+  UNIQUE KEY uq_lvd_resultaat (event_id, bron_occurrence_id),
+  KEY ix_lvd_resultaat_taxon (wetenschappelijke_naam),
+  KEY ix_lvd_resultaat_status (occurrence_status),
+  CONSTRAINT fk_lvd_resultaat_event FOREIGN KEY (event_id)
+    REFERENCES lvd_event (event_id) ON DELETE CASCADE,
   CHECK (json_valid(bronmetadata))
 ) ENGINE=InnoDB;
 
@@ -89,17 +89,17 @@ SET @external_name_migration = IF(
   EXISTS(
     SELECT 1 FROM information_schema.columns
     WHERE table_schema=DATABASE()
-      AND table_name='externe_ecologie_resultaat'
+      AND table_name='lvd_resultaat'
       AND column_name='wetenschappelijke_naam_bron'
   ),
   'SELECT 1',
-  'ALTER TABLE externe_ecologie_resultaat ADD COLUMN wetenschappelijke_naam_bron VARCHAR(500) NOT NULL DEFAULT '''' AFTER wetenschappelijke_naam'
+  'ALTER TABLE lvd_resultaat ADD COLUMN wetenschappelijke_naam_bron VARCHAR(500) NOT NULL DEFAULT '''' AFTER wetenschappelijke_naam'
 );
 PREPARE external_name_stmt FROM @external_name_migration;
 EXECUTE external_name_stmt;
 DEALLOCATE PREPARE external_name_stmt;
 
-CREATE TABLE IF NOT EXISTS externe_ecologie_overlap (
+CREATE TABLE IF NOT EXISTS lvd_overlap (
   overlap_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   resultaat_id BIGINT UNSIGNED NOT NULL,
   doelsysteem ENUM('ndff','provinciale_pq','duinvallei','andere_externe_bron') NOT NULL,
@@ -108,12 +108,12 @@ CREATE TABLE IF NOT EXISTS externe_ecologie_overlap (
   zekerheid ENUM('exact','waarschijnlijk','mogelijk') NOT NULL,
   toelichting TEXT NULL,
   PRIMARY KEY (overlap_id),
-  UNIQUE KEY uq_externe_ecologie_overlap (
+  UNIQUE KEY uq_lvd_overlap (
     resultaat_id, doelsysteem, doelrecord_sleutel, koppelmethode
   ),
-  KEY ix_externe_ecologie_overlap_doel (doelsysteem, zekerheid),
-  CONSTRAINT fk_externe_ecologie_overlap_resultaat FOREIGN KEY (resultaat_id)
-    REFERENCES externe_ecologie_resultaat (resultaat_id) ON DELETE CASCADE
+  KEY ix_lvd_overlap_doel (doelsysteem, zekerheid),
+  CONSTRAINT fk_lvd_overlap_resultaat FOREIGN KEY (resultaat_id)
+    REFERENCES lvd_resultaat (resultaat_id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE OR REPLACE VIEW v_externe_ecologie_analyse AS
@@ -147,10 +147,10 @@ SELECT
   r.hoeveelheid_eenheid,
   EXISTS (
     SELECT 1
-    FROM externe_ecologie_overlap o
+    FROM lvd_overlap o
     WHERE o.resultaat_id = r.resultaat_id
       AND o.zekerheid IN ('exact','waarschijnlijk')
   ) AS heeft_bekende_overlap
-FROM externe_ecologie_dataset d
-JOIN externe_ecologie_event e ON e.dataset_id = d.dataset_id
-JOIN externe_ecologie_resultaat r ON r.event_id = e.event_id;
+FROM lvd_dataset d
+JOIN lvd_event e ON e.dataset_id = d.dataset_id
+JOIN lvd_resultaat r ON r.event_id = e.event_id;

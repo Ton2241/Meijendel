@@ -77,13 +77,21 @@ De vijf niet-LVD-bronnen zijn op 29 september 2026 uitsluitend in de levende
 lokale database fysiek ontvlochten naar `endure_*`, `stowa_limnodata_*`,
 `naturalis_botany_*`, `naturalis_coleoptera_*` en `nmr_vlinders_*`.
 Samen gaat het om vijf datasets, 7.557 events, 17.606 resultaten en 5.942
-overlapbeoordelingen uit 1875–2025. `externe_ecologie_*` bevat nu alleen nog
-LVD: één dataset, 2.793 events, 64.683 resultaten en 48.454
+overlapbeoordelingen uit 1875–2025. De resterende LVD-bron staat nu onder
+`lvd_*`: één dataset, 2.793 events, 64.683 resultaten en 48.454
 overlapbeoordelingen uit 1959–2015. De oorspronkelijke broncellen, IDs,
 interne verwijzingen en 16 bestaande viewuitkomsten zijn gelijk gebleven;
 alle 127 centrale routes slagen. Volledige back-up, proefterugdraaiing,
 fout-/goedinvoer en onafhankelijk herstel zijn aangetoond. De lokale dump en
 Shiny-cache zijn niet vervangen; er is niets naar de VPS gepubliceerd.
+
+Daarna zijn uitsluitend de vier resterende LVD-tabellen lokaal hernoemd
+naar `lvd_*`. De 2.793 opnamen, 64.683 soortregels en 48.454
+overlapbeoordelingen uit 1959–2015 hebben dezelfde inhoud en IDs. Ook de
+644 bestaande PQ-verwijzingen, 98.916 analyseviewregels, 127 taxonroutes
+en 267 beschermende triggers zijn na de hernoeming gecontroleerd. De
+volledige back-up, proef op een onafhankelijk herstelde database en levende
+nacontrole staan in `docs/database/TAXONREGISTER.md`. Geen VPS-publicatie.
 
 De eerdere registeraanvulling van 27 september 2026:
 27 groepen, 15.580 naamgebruiken en referenties en 18.437 bronbesluiten,

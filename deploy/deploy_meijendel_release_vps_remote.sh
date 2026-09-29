@@ -461,8 +461,8 @@ docker exec "$CONTAINER" sh -lc '
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_bronopname WHERE zelfstandig_meetellen<>0")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname_bronkoppeling WHERE koppelstatus=\"vermoedelijk\"")" -eq 652
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_bronresultaat r LEFT JOIN taxa_bronkoppeling b ON b.koppeling_id=r.taxon_bronkoppeling_id LEFT JOIN taxa t ON t.taxon_id=b.taxon_id WHERE b.koppeling_id IS NULL OR t.taxon_id IS NULL")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM externe_ecologie_event e JOIN pq_vegetatie_bronopname p USING(event_id)")" -eq 0
-  test "$(query "SELECT COUNT(*) FROM externe_ecologie_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM lvd_event e JOIN pq_vegetatie_bronopname p USING(event_id)")" -eq 0
+  test "$(query "SELECT COUNT(*) FROM lvd_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_vegetatie_opname WHERE bodemtype_status = \"te_bevestigen\"")" -eq 34
   test "$(query "SELECT COUNT(*) FROM website_plot_vegetatie_jaar WHERE bronstatus <> \"voorlopig\" OR taxonlijst_versie = \"\"")" -eq 0
   test "$(query "SELECT COUNT(*) FROM pq_plot_jaar_vegetatie_berekend")" -eq 513

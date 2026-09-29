@@ -28,7 +28,7 @@ class AuditRunnerTests(unittest.TestCase):
         with mock.patch.object(sys,'argv',[str(SCRIPT),'--apply','--mysql-client','/actual/mysql','--login-path','actual']), \
              mock.patch.object(common,'central_query_gate',side_effect=lambda *a:order.append(('gate',a))), \
              mock.patch.object(common.CentralQueryDatabase,'schema',return_value={
-                 'externe_ecologie_resultaat':set(),'endure_resultaat':set(),'nmr_vlinders_resultaat':set()}), \
+                 'lvd_resultaat':set(),'endure_resultaat':set(),'nmr_vlinders_resultaat':set()}), \
              mock.patch.object(module.subprocess,'run',side_effect=writer):
             self.assertEqual(module.main(),0)
         self.assertEqual([item[0] for item in order],['gate','write','gate'])

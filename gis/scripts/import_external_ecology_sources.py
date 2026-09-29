@@ -53,13 +53,13 @@ SOURCE_SUFFIXES = ('dataset', 'event', 'resultaat', 'overlap')
 
 
 def source_family_tables() -> dict[str, str]:
-    return {prefix+'_'+suffix: 'externe_ecologie_'+suffix
+    return {prefix+'_'+suffix: 'lvd_'+suffix
             for prefix in SOURCE_FAMILIES.values() for suffix in SOURCE_SUFFIXES}
 
 
 def source_family_for_dataset(key: str) -> str:
     if key == 'lvd-meijendel-v1-6':
-        return 'externe_ecologie'
+        return 'lvd'
     if key not in SOURCE_FAMILIES:
         raise ValueError('Onbeoordeelde bron: geen stilzwijgende generieke import')
     return SOURCE_FAMILIES[key]
@@ -109,10 +109,10 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'soorten',
                              'join': 'w.soort_id=c.id',
                              'role': 'bronwaarneming' if 'jaar' in columns else 'soortreferentie'}
-        elif table == 'externe_ecologie_resultaat' or table in {
+        elif table == 'lvd_resultaat' or table in {
                 prefix+'_resultaat' for prefix in SOURCE_FAMILIES.values()}:
             routes[table] = {'kind': 'external', 'role': 'bronwaarneming'}
-            if table != 'externe_ecologie_resultaat':
+            if table != 'lvd_resultaat':
                 prefix = table.removesuffix('_resultaat')
                 routes[table].update(event_table=prefix+'_event', dataset_table=prefix+'_dataset')
         elif table.startswith(('ndff_', 'sovon_avimap_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
@@ -219,8 +219,8 @@ def central_source_condition(table: str, route: dict, alias='w') -> str:
             f"BINARY JSON_EXTRACT(b.bronmetadata,'$.{c}') <=> BINARY JSON_EXTRACT({alias}.raw_payload,'$.{f}')"
             for c,f in fields.items()))
     if kind=='external' or table=='pq_vegetatie_bronresultaat':
-        event = 'pq_vegetatie_bronopname' if table=='pq_vegetatie_bronresultaat' else route.get('event_table','externe_ecologie_event')
-        dataset = route.get('dataset_table','externe_ecologie_dataset')
+        event = 'pq_vegetatie_bronopname' if table=='pq_vegetatie_bronresultaat' else route.get('event_table','lvd_event')
+        dataset = route.get('dataset_table','lvd_dataset')
         query_identifier(event); query_identifier(dataset)
         source = f'(SELECT d.dataset_sleutel FROM {event} e JOIN {dataset} d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)'
         version = f"(SELECT CONCAT(d.bronversie,'; sha256:',d.bronbestand_sha256) FROM {event} e JOIN {dataset} d ON d.dataset_id=e.dataset_id WHERE e.event_id={alias}.event_id)"
@@ -253,10 +253,10 @@ CENTRAL_QUERY_SCHEMA = {
     'evg_vogel_landschapgroep': frozenset(['beschrijving_landschap_vogel', 'groepsnummer', 'veeleisendheid_score', 'vogel_id']),
     'evg_vogel_landschapstype': frozenset(['landschap_id', 'soort_id', 'veeleisendheid']),
     'evg_vogelgroepen': frozenset(['beschrijving_landschap_groep', 'groepsnummer', 'landschap_groep']),
-    'externe_ecologie_dataset': frozenset(['bronbestand_naam', 'bronbestand_sha256', 'bronorganisatie', 'bronversie', 'dataset_id', 'dataset_sleutel', 'doi', 'geimporteerd_op', 'importversie', 'licentie', 'selectie_omschrijving', 'titel']),
-    'externe_ecologie_event': frozenset(['analyse_status', 'bron_event_id', 'bron_locatie', 'bronmetadata', 'coordinate_uncertainty_m', 'dataset_id', 'datum_precisie', 'event_datum', 'event_datum_tot', 'event_id', 'inspanning_eenheid', 'inspanning_waarde', 'jaar', 'latitude', 'longitude', 'ruimtelijke_klasse', 'sampling_protocol']),
-    'externe_ecologie_overlap': frozenset(['doelrecord_sleutel', 'doelsysteem', 'koppelmethode', 'overlap_id', 'resultaat_id', 'toelichting', 'zekerheid']),
-    'externe_ecologie_resultaat': frozenset(['basis_of_record', 'bron_occurrence_id', 'bronmetadata', 'catalogusnummer', 'event_id', 'hoeveelheid', 'hoeveelheid_eenheid', 'hoeveelheid_oorspronkelijk', 'nederlandse_naam', 'occurrence_status', 'resultaat_id', 'taxon_bronkoppeling_id', 'taxonrang', 'wetenschappelijke_naam', 'wetenschappelijke_naam_bron']),
+    'lvd_dataset': frozenset(['bronbestand_naam', 'bronbestand_sha256', 'bronorganisatie', 'bronversie', 'dataset_id', 'dataset_sleutel', 'doi', 'geimporteerd_op', 'importversie', 'licentie', 'selectie_omschrijving', 'titel']),
+    'lvd_event': frozenset(['analyse_status', 'bron_event_id', 'bron_locatie', 'bronmetadata', 'coordinate_uncertainty_m', 'dataset_id', 'datum_precisie', 'event_datum', 'event_datum_tot', 'event_id', 'inspanning_eenheid', 'inspanning_waarde', 'jaar', 'latitude', 'longitude', 'ruimtelijke_klasse', 'sampling_protocol']),
+    'lvd_overlap': frozenset(['doelrecord_sleutel', 'doelsysteem', 'koppelmethode', 'overlap_id', 'resultaat_id', 'toelichting', 'zekerheid']),
+    'lvd_resultaat': frozenset(['basis_of_record', 'bron_occurrence_id', 'bronmetadata', 'catalogusnummer', 'event_id', 'hoeveelheid', 'hoeveelheid_eenheid', 'hoeveelheid_oorspronkelijk', 'nederlandse_naam', 'occurrence_status', 'resultaat_id', 'taxon_bronkoppeling_id', 'taxonrang', 'wetenschappelijke_naam', 'wetenschappelijke_naam_bron']),
     'familie': frozenset(['familie_latijn', 'familienaam_nl', 'id', 'orde_latijn', 'orde_nl']),
     'functional_group_definition': frozenset(['created_at', 'group_code', 'group_version', 'id', 'minimum_exploratief', 'minimum_hoofdindicator', 'minimum_robuust', 'naam_nl', 'onderzoeksvraag', 'rule_json', 'status']),
     'functional_group_membership': frozenset(['binary_membership', 'classification', 'functional_group_definition_id', 'generated_at', 'generation_commit', 'id', 'membership_weight', 'rationale_json', 'soort_id']),
@@ -562,11 +562,11 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
     if db.sql("SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
               "AND REFERENCED_TABLE_SCHEMA IS NOT NULL AND REFERENCED_TABLE_SCHEMA<>DATABASE();")!='0':
         errors.append('Foreign key verwijst buiten de gecontroleerde database')
-    for key,prefix in [('lvd-meijendel-v1-6','externe_ecologie'),*SOURCE_FAMILIES.items()]:
+    for key,prefix in [('lvd-meijendel-v1-6','lvd'),*SOURCE_FAMILIES.items()]:
         if prefix+'_dataset' not in schema: continue
-        if prefix!='externe_ecologie' and db.sql(f'SELECT COUNT(*) FROM {prefix}_dataset WHERE BINARY dataset_sleutel<>BINARY '+query_literal(key)+';')!='0':
+        if prefix!='lvd' and db.sql(f'SELECT COUNT(*) FROM {prefix}_dataset WHERE BINARY dataset_sleutel<>BINARY '+query_literal(key)+';')!='0':
             errors.append(prefix+': dataset hoort niet bij deze bronfamilie')
-        if prefix!='externe_ecologie' and db.sql("SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS "
+        if prefix!='lvd' and db.sql("SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS "
                 "WHERE CONSTRAINT_SCHEMA=DATABASE() AND TABLE_NAME IN ("+
                 ','.join(query_literal(prefix+'_'+s) for s in ('event','resultaat','overlap'))+
                 ") AND (DELETE_RULE NOT IN ('RESTRICT','NO ACTION') OR UPDATE_RULE NOT IN ('RESTRICT','NO ACTION'));")!='0':
@@ -723,12 +723,12 @@ def central_query_plan(db: CentralQueryDatabase) -> dict:
                             'interpretatie':'nominale taxonroute; geen bevestigde conceptgelijkheid'}})
         plan['derived'][table] = registrations
     datasets = db.objects("SELECT JSON_OBJECT('id',dataset_id,'key',dataset_sleutel,'version',"
-        "CONCAT(bronversie,'; sha256:',bronbestand_sha256)) FROM externe_ecologie_dataset;")
+        "CONCAT(bronversie,'; sha256:',bronbestand_sha256)) FROM lvd_dataset;")
     for dataset in datasets:
         rows = db.objects("SELECT JSON_OBJECT('resultaat_id',r.resultaat_id,'wetenschappelijke_naam',r.wetenschappelijke_naam,"
             "'wetenschappelijke_naam_bron',r.wetenschappelijke_naam_bron,'nederlandse_naam',r.nederlandse_naam,"
-            "'taxonrang',r.taxonrang,'bronmetadata',r.bronmetadata) FROM externe_ecologie_resultaat r "
-            f"JOIN externe_ecologie_event e ON e.event_id=r.event_id WHERE e.dataset_id={int(dataset['id'])};")
+            "'taxonrang',r.taxonrang,'bronmetadata',r.bronmetadata) FROM lvd_resultaat r "
+            f"JOIN lvd_event e ON e.event_id=r.event_id WHERE e.dataset_id={int(dataset['id'])};")
         existing = [{**b,'bron_systeem':'Meijendel','bron_dataset':b['dataset'],'bron_versie':b['version'],
                      'ingetrokken_op':None,'bronmetadata':b['metadata'],'koppeling_id':b['id'],
                      'koppelstatus':b['status']} for b in links if b['dataset']==dataset['key'] and b['version']==dataset['version']]
@@ -809,7 +809,7 @@ def central_query_migration_sql(plan: dict, *, commit=False) -> str:
         statements.append('INSERT INTO cq_result_map VALUES '+','.join(rows[index:index+1000])+';')
     if operational:
         statements.append(f'INSERT INTO cq_result_map VALUES({operational["result_id"]},@cq_operational_link);')
-    statements += ['UPDATE externe_ecologie_resultaat r JOIN cq_result_map m ON m.result_id=r.resultaat_id '
+    statements += ['UPDATE lvd_resultaat r JOIN cq_result_map m ON m.result_id=r.resultaat_id '
                    'SET r.taxon_bronkoppeling_id=m.link_id;',
                    'DROP TEMPORARY TABLE cq_result_map;', 'COMMIT;' if commit else 'ROLLBACK;']
     return '\n'.join(statements)
@@ -936,8 +936,8 @@ def central_query_triggers_sql(plan: dict) -> str:
                 validity+' ELSE IF NEW.taxon_bronkoppeling_id IS NOT NULL THEN '
                 "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Geen doelsoort maar wel taxonkoppeling'; END IF; END IF;")
         elif kind == 'external':
-            event_table = route.get('event_table','externe_ecologie_event')
-            dataset_table = route.get('dataset_table','externe_ecologie_dataset')
+            event_table = route.get('event_table','lvd_event')
+            dataset_table = route.get('dataset_table','lvd_dataset')
             query_identifier(event_table); query_identifier(dataset_table)
             declarations += ' DECLARE cq_dataset VARCHAR(255); DECLARE cq_version VARCHAR(255); DECLARE cq_context BINARY(32);'
             fields = {f:f"JSON_EXTRACT(NEW.bronmetadata,'$.{f}')" for f in SOURCE_TAXON_FIELDS}
@@ -990,17 +990,17 @@ def central_query_triggers_sql(plan: dict) -> str:
         statements += [f'DROP TRIGGER IF EXISTS cq_ndff_parent_{suffix}$$',
             f'CREATE TRIGGER cq_ndff_parent_{suffix} BEFORE {event} ON ndff_open_waarneming FOR EACH ROW BEGIN '
             'IF '+condition+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Verwijder eerst afgeleide NDFF-verwijzingen'; END IF; END$$"]
-    for table,field,child in [('externe_ecologie_event','dataset_id','externe_ecologie_resultaat'),
+    for table,field,child in [('lvd_event','dataset_id','lvd_resultaat'),
                               ('pq_vegetatie_bronopname','dataset_id','pq_vegetatie_bronresultaat')]:
         name=central_trigger_name(table,'bu')
         statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON {table} FOR EACH ROW BEGIN '
             f'IF NOT (NEW.{field}<=>OLD.{field}) AND EXISTS(SELECT 1 FROM {child} WHERE event_id=OLD.event_id) THEN '
             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Waargenomen bronopname kan niet van dataset wisselen'; END IF; END$$"]
-    name=central_trigger_name('externe_ecologie_dataset','bu')
-    statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON externe_ecologie_dataset FOR EACH ROW BEGIN '
+    name=central_trigger_name('lvd_dataset','bu')
+    statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON lvd_dataset FOR EACH ROW BEGIN '
         'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
         'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
-        'EXISTS(SELECT 1 FROM externe_ecologie_event e JOIN externe_ecologie_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
+        'EXISTS(SELECT 1 FROM lvd_event e JOIN lvd_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
         'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
         "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$"]
     for source_key,prefix in SOURCE_FAMILIES.items():
@@ -1043,7 +1043,7 @@ def central_query_original_snapshot(db: CentralQueryDatabase, plan: dict) -> dic
     row count. Unchanged tables use MySQL's native full-table checksum. New
     register rows are excluded by the original maximum IDs, never by names.
     """
-    affected = {'taxa','taxa_bronkoppeling','externe_ecologie_resultaat',*plan['catalogues'],*plan['derived']}
+    affected = {'taxa','taxa_bronkoppeling','lvd_resultaat',*plan['catalogues'],*plan['derived']}
     types = {(t,c):kind for t,c,kind in (line.split('\t') for line in db.sql(
         'SELECT TABLE_NAME,COLUMN_NAME,DATA_TYPE FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE();').splitlines())}
     result = {}
@@ -1145,7 +1145,7 @@ def central_query_negative_tests(db: CentralQueryDatabase) -> None:
     if not re.fullmatch('Meijendel_taxa_query_(?:proef|herstel)_[0-9]+',db.database):
         raise ValueError('Schrijfproeven uitsluitend in de geïsoleerde herstelproef')
     probes = [
-        'UPDATE externe_ecologie_resultaat SET taxon_bronkoppeling_id=0 LIMIT 1',
+        'UPDATE lvd_resultaat SET taxon_bronkoppeling_id=0 LIMIT 1',
         'UPDATE pq_vegetatie_waarneming SET taxon_bronkoppeling_id=0 LIMIT 1',
         'UPDATE vangblik_vangst SET taxon_bronkoppeling_id=0 LIMIT 1',
         'UPDATE ndff_lmfa_bezoek_taxon SET wetenschappelijke_naam=\'Niet geregistreerd taxon\' LIMIT 1',
@@ -1159,11 +1159,11 @@ def central_query_negative_tests(db: CentralQueryDatabase) -> None:
         'DELETE FROM ndff_open_waarneming WHERE waarneming_id=(SELECT waarneming_id FROM ndff_vaatplanten LIMIT 1)',
         'UPDATE ndff_open_waarneming SET waarneming_id=(SELECT id FROM (SELECT MAX(waarneming_id)+1 id FROM ndff_open_waarneming) x) '
         'WHERE waarneming_id=(SELECT waarneming_id FROM ndff_vaatplanten LIMIT 1)',
-        "UPDATE externe_ecologie_dataset SET bronversie='ongeldige versie' WHERE dataset_id=2",
-        'UPDATE externe_ecologie_event SET dataset_id=3 WHERE event_id='
-        '(SELECT event_id FROM externe_ecologie_resultaat LIMIT 1)',
+        "UPDATE lvd_dataset SET bronversie='ongeldige versie' WHERE dataset_id=2",
+        'UPDATE lvd_event SET dataset_id=3 WHERE event_id='
+        '(SELECT event_id FROM lvd_resultaat LIMIT 1)',
     ]
-    for table in ('externe_ecologie_resultaat','pq_vegetatie_waarneming','pq_vegetatie_bronresultaat','vangblik_vangst'):
+    for table in ('lvd_resultaat','pq_vegetatie_waarneming','pq_vegetatie_bronresultaat','vangblik_vangst'):
         probes.append('UPDATE '+table+' SET taxon_bronkoppeling_id=(SELECT MIN(koppeling_id) FROM taxa_bronkoppeling '
                       "WHERE bron_dataset='soorten' AND taxon_id IS NOT NULL AND ingetrokken_op IS NULL) LIMIT 1")
     for probe in probes:
@@ -1171,15 +1171,15 @@ def central_query_negative_tests(db: CentralQueryDatabase) -> None:
         except RuntimeError as exc:
             if "45000" not in str(exc): raise
         else: raise RuntimeError('Ongeldige invoer werd niet geblokkeerd: '+probe.split(' SET ')[0])
-    for table in ('externe_ecologie_resultaat','ndff_lmfa_bezoek_taxon','ndff_soorten','soorten',
+    for table in ('lvd_resultaat','ndff_lmfa_bezoek_taxon','ndff_soorten','soorten',
                   'sovon_avimap_taxon','pq_vegetatie_waarneming','vangblik_vangst'):
         db.sql('START TRANSACTION; UPDATE '+query_identifier(table)+
                ' SET taxon_bronkoppeling_id=taxon_bronkoppeling_id LIMIT 1; ROLLBACK;',write=True)
     # Missing group never makes the original observation disappear.
-    original = db.sql('SELECT COUNT(*) FROM externe_ecologie_resultaat r JOIN taxa_bronkoppeling b '
+    original = db.sql('SELECT COUNT(*) FROM lvd_resultaat r JOIN taxa_bronkoppeling b '
                      'ON b.koppeling_id=r.taxon_bronkoppeling_id JOIN taxa t ON t.taxon_id=b.taxon_id WHERE t.groep_id IS NULL;')
     joined = db.sql('SELECT COUNT(*) FROM taxa t LEFT JOIN taxon_groepen g ON g.groep_id=t.groep_id '
-                   'JOIN taxa_bronkoppeling b ON b.taxon_id=t.taxon_id JOIN externe_ecologie_resultaat r '
+                   'JOIN taxa_bronkoppeling b ON b.taxon_id=t.taxon_id JOIN lvd_resultaat r '
                    'ON r.taxon_bronkoppeling_id=b.koppeling_id WHERE t.groep_id IS NULL;')
     if original!=joined: raise RuntimeError('Niet ingedeelde taxa verdwijnen uit query')
 
@@ -2534,12 +2534,12 @@ def load_sql(paths: dict[str, Path], database: str = DATABASE) -> str:
     return f"""
 USE {database};
 START TRANSACTION;
-CREATE TEMPORARY TABLE tmp_external_dataset LIKE externe_ecologie_dataset;
+CREATE TEMPORARY TABLE tmp_external_dataset LIKE lvd_dataset;
 ALTER TABLE tmp_external_dataset DROP COLUMN dataset_id, DROP COLUMN geimporteerd_op;
 LOAD DATA LOCAL INFILE '{datasets}' INTO TABLE tmp_external_dataset
 CHARACTER SET utf8mb4 FIELDS TERMINATED BY '\\t' ESCAPED BY '\\\\'
 LINES TERMINATED BY '\\n' IGNORE 1 LINES;
-INSERT INTO externe_ecologie_dataset (
+INSERT INTO lvd_dataset (
   dataset_sleutel,titel,bronorganisatie,doi,licentie,bronbestand_naam,
   bronbestand_sha256,bronversie,selectie_omschrijving,importversie
 ) SELECT dataset_sleutel,titel,bronorganisatie,doi,licentie,bronbestand_naam,
@@ -2550,8 +2550,8 @@ ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronorganisatie=VALUES(bronorganisat
   bronbestand_sha256=VALUES(bronbestand_sha256),bronversie=VALUES(bronversie),
   selectie_omschrijving=VALUES(selectie_omschrijving),importversie=VALUES(importversie);
 
-DELETE e FROM externe_ecologie_event e
-JOIN externe_ecologie_dataset d ON d.dataset_id=e.dataset_id
+DELETE e FROM lvd_event e
+JOIN lvd_dataset d ON d.dataset_id=e.dataset_id
 JOIN tmp_external_dataset t ON t.dataset_sleutel=d.dataset_sleutel;
 
 CREATE TEMPORARY TABLE tmp_external_event (
@@ -2566,7 +2566,7 @@ CREATE TEMPORARY TABLE tmp_external_event (
 LOAD DATA LOCAL INFILE '{events}' INTO TABLE tmp_external_event
 CHARACTER SET utf8mb4 FIELDS TERMINATED BY '\\t' ESCAPED BY '\\\\'
 LINES TERMINATED BY '\\n' IGNORE 1 LINES;
-INSERT INTO externe_ecologie_event (
+INSERT INTO lvd_event (
   dataset_id,bron_event_id,event_datum,event_datum_tot,datum_precisie,jaar,latitude,longitude,
   coordinate_uncertainty_m,bron_locatie,ruimtelijke_klasse,sampling_protocol,
   inspanning_waarde,inspanning_eenheid,analyse_status,bronmetadata
@@ -2574,7 +2574,7 @@ INSERT INTO externe_ecologie_event (
   t.coordinate_uncertainty_m,t.bron_locatie,t.ruimtelijke_klasse,t.sampling_protocol,
   t.inspanning_waarde,t.inspanning_eenheid,t.analyse_status,t.bronmetadata
 FROM tmp_external_event t
-JOIN externe_ecologie_dataset d ON d.dataset_sleutel=t.dataset_sleutel;
+JOIN lvd_dataset d ON d.dataset_sleutel=t.dataset_sleutel;
 
 CREATE TEMPORARY TABLE tmp_external_result (
   dataset_sleutel VARCHAR(128), bron_event_id VARCHAR(512), bron_occurrence_id VARCHAR(512),
@@ -2587,7 +2587,7 @@ CREATE TEMPORARY TABLE tmp_external_result (
 LOAD DATA LOCAL INFILE '{results}' INTO TABLE tmp_external_result
 CHARACTER SET utf8mb4 FIELDS TERMINATED BY '\\t' ESCAPED BY '\\\\'
 LINES TERMINATED BY '\\n' IGNORE 1 LINES;
-INSERT INTO externe_ecologie_resultaat (
+INSERT INTO lvd_resultaat (
   event_id,bron_occurrence_id,wetenschappelijke_naam,wetenschappelijke_naam_bron,nederlandse_naam,taxonrang,
   occurrence_status,hoeveelheid,hoeveelheid_oorspronkelijk,hoeveelheid_eenheid,
   basis_of_record,catalogusnummer,bronmetadata
@@ -2595,16 +2595,16 @@ INSERT INTO externe_ecologie_resultaat (
   t.occurrence_status,t.hoeveelheid,t.hoeveelheid_oorspronkelijk,t.hoeveelheid_eenheid,
   t.basis_of_record,t.catalogusnummer,t.bronmetadata
 FROM tmp_external_result t
-JOIN externe_ecologie_dataset d ON d.dataset_sleutel=t.dataset_sleutel
-JOIN externe_ecologie_event e ON e.dataset_id=d.dataset_id AND e.bron_event_id=t.bron_event_id;
+JOIN lvd_dataset d ON d.dataset_sleutel=t.dataset_sleutel
+JOIN lvd_event e ON e.dataset_id=d.dataset_id AND e.bron_event_id=t.bron_event_id;
 COMMIT;
 """
 
 
 PQ_MOVES = {
-    'externe_ecologie_event': 'pq_vegetatie_bronopname',
-    'externe_ecologie_resultaat': 'pq_vegetatie_bronresultaat',
-    'externe_ecologie_overlap': 'pq_vegetatie_bronoverlap',
+    'lvd_event': 'pq_vegetatie_bronopname',
+    'lvd_resultaat': 'pq_vegetatie_bronresultaat',
+    'lvd_overlap': 'pq_vegetatie_bronoverlap',
 }
 
 
@@ -2628,7 +2628,7 @@ def prepare_pq_migration(client: Path, args: list[str]) -> dict:
     """Lees één bronsnapshot; kies alleen reeds vastgelegde LVD/PQ-kandidaten."""
     from run_external_ecology_overlap_audit import compare_pq_recordings
     read_args = [*args, '--batch', '--raw', '--skip-column-names', '--default-character-set=utf8mb4']
-    tables = [*PQ_MOVES, 'pq_vegetatie_taxon', 'externe_ecologie_dataset']
+    tables = [*PQ_MOVES, 'pq_vegetatie_taxon', 'lvd_dataset']
     quoted = ','.join(f"'{table}'" for table in tables)
     metadata = run_mysql(client, read_args,
         "SELECT JSON_OBJECT('table',TABLE_NAME,'name',COLUMN_NAME,'type',DATA_TYPE,'key',COLUMN_KEY) "
@@ -2640,16 +2640,16 @@ def prepare_pq_migration(client: Path, args: list[str]) -> dict:
         columns[column.pop('table')].append(column)
     if any(not cols for cols in columns.values()):
         raise ValueError('De oorspronkelijke PQ-/LVD-brontabellen ontbreken')
-    scope = """SELECT DISTINCT r.event_id FROM externe_ecologie_overlap x
-      JOIN externe_ecologie_resultaat r USING(resultaat_id)
-      JOIN externe_ecologie_event e USING(event_id)
-      JOIN externe_ecologie_dataset d USING(dataset_id)
+    scope = """SELECT DISTINCT r.event_id FROM lvd_overlap x
+      JOIN lvd_resultaat r USING(resultaat_id)
+      JOIN lvd_event e USING(event_id)
+      JOIN lvd_dataset d USING(dataset_id)
       WHERE x.doelsysteem='provinciale_pq' AND d.dataset_sleutel='lvd-meijendel-v1-6'"""
     where = {
-        'externe_ecologie_event': f's.event_id IN ({scope})',
-        'externe_ecologie_resultaat': f's.event_id IN ({scope})',
-        'externe_ecologie_overlap': f's.resultaat_id IN (SELECT resultaat_id FROM externe_ecologie_resultaat WHERE event_id IN ({scope}))',
-        'externe_ecologie_dataset': "s.dataset_sleutel='lvd-meijendel-v1-6'",
+        'lvd_event': f's.event_id IN ({scope})',
+        'lvd_resultaat': f's.event_id IN ({scope})',
+        'lvd_overlap': f's.resultaat_id IN (SELECT resultaat_id FROM lvd_resultaat WHERE event_id IN ({scope}))',
+        'lvd_dataset': "s.dataset_sleutel='lvd-meijendel-v1-6'",
         'pq_vegetatie_taxon': 'TRUE',
     }
     statements = ['SET NAMES utf8mb4;', 'SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;',
@@ -2676,8 +2676,8 @@ def prepare_pq_migration(client: Path, args: list[str]) -> dict:
       'event_id',r.event_id,'opname_id',p.opname_id,'date',CAST(p.opname_datum AS CHAR),
       'distance_m',ROUND(ST_Distance(p.geom,ST_Transform(ST_SRID(Point(e.longitude,e.latitude),4326),28992)),3),
       'date_precision',e.datum_precisie,'source_uncertainty_m',e.coordinate_uncertainty_m))
-      FROM externe_ecologie_overlap x JOIN externe_ecologie_resultaat r USING(resultaat_id)
-      JOIN externe_ecologie_event e USING(event_id) JOIN externe_ecologie_dataset d USING(dataset_id)
+      FROM lvd_overlap x JOIN lvd_resultaat r USING(resultaat_id)
+      JOIN lvd_event e USING(event_id) JOIN lvd_dataset d USING(dataset_id)
       JOIN pq_vegetatie_opname p ON p.opname_id=CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(x.doelrecord_sleutel,':',2),':',-1) AS UNSIGNED)
       WHERE x.doelsysteem='provinciale_pq' AND d.dataset_sleutel='lvd-meijendel-v1-6';""")
     statements.append('ROLLBACK;')
@@ -2690,17 +2690,17 @@ def prepare_pq_migration(client: Path, args: list[str]) -> dict:
         if 'hash' in item:
             primary = next(c['name'] for c in columns[table] if c['key'] == 'PRI')
             hashes[table][row[primary]] = item['hash']
-    dataset, = collected['externe_ecologie_dataset']
+    dataset, = collected['lvd_dataset']
     if dataset['bronbestand_sha256'] != SOURCE_CONFIG['lvd']['sha256']:
         raise ValueError('LVD-bronversie gewijzigd; eerst opnieuw beoordelen')
     pq_links = resolve_pq_taxon_links(collected['pq_vegetatie_taxon'], collected['registry'])
-    lvd_links = resolve_external_taxon_links(collected['externe_ecologie_resultaat'], collected['registry'],
+    lvd_links = resolve_external_taxon_links(collected['lvd_resultaat'], collected['registry'],
         dataset['dataset_sleutel'], dataset['bronversie'] + '; sha256:' + dataset['bronbestand_sha256'])
     province, lvd = defaultdict(list), defaultdict(list)
     for row in collected['province']:
         province[row['opname_id']].append(row)
     import ast
-    for row in collected['externe_ecologie_resultaat']:
+    for row in collected['lvd_resultaat']:
         raw_properties = row['bronmetadata'].get('dynamicProperties') or '{}'
         properties = ast.literal_eval(raw_properties)
         if not isinstance(properties, dict):
@@ -2761,7 +2761,7 @@ def pq_migration_sql(plan: dict, *, commit: bool = False) -> str:
         'CREATE TEMPORARY TABLE tmp_pq_hashes(bron VARCHAR(64),id BIGINT UNSIGNED,h CHAR(64),PRIMARY KEY(bron,id)) ENGINE=InnoDB;',
         'CREATE TEMPORARY TABLE tmp_pq_registry(id BIGINT UNSIGNED PRIMARY KEY,inhoud JSON NOT NULL) ENGINE=InnoDB;',
     ])
-    insert('tmp_pq_events', [f"({integer(r['event_id'])})" for r in plan['tables']['externe_ecologie_event']])
+    insert('tmp_pq_events', [f"({integer(r['event_id'])})" for r in plan['tables']['lvd_event']])
     insert('tmp_pq_results', [f'({integer(k)},{integer(v)})' for k, v in plan['lvd_links'].items()])
     insert('tmp_pq_taxa', [f'({integer(k)},{integer(v)})' for k, v in plan['pq_links'].items()])
     registry_keys = tuple(plan['registry'][0])
@@ -2770,7 +2770,7 @@ def pq_migration_sql(plan: dict, *, commit: bool = False) -> str:
     guard('(SELECT COUNT(*) FROM tmp_pq_registry x LEFT JOIN taxa_bronkoppeling b ON b.koppeling_id=x.id '
           f'WHERE b.koppeling_id IS NULL OR NOT(CAST({registry_expression} AS BINARY)<=>CAST(x.inhoud AS BINARY)))=0')
     for table, hashes in plan['hashes'].items():
-        if table not in {*PQ_MOVES, 'pq_vegetatie_taxon', 'externe_ecologie_dataset'}:
+        if table not in {*PQ_MOVES, 'pq_vegetatie_taxon', 'lvd_dataset'}:
             raise ValueError('Onverwachte brontabel in migratieplan')
         for digest in hashes.values():
             if not re.fullmatch('[0-9a-f]{64}', digest):
@@ -2780,20 +2780,20 @@ def pq_migration_sql(plan: dict, *, commit: bool = False) -> str:
         expression = pq_row_expression(plan['columns'][table], 's')
         guard(f"(SELECT COUNT(*) FROM tmp_pq_hashes x LEFT JOIN `{table}` s ON s.`{primary}`=x.id "
               f"WHERE x.bron='{table}' AND (s.`{primary}` IS NULL OR SHA2(CAST({expression} AS CHAR),256)<>x.h))=0")
-    n_events = len(plan['tables']['externe_ecologie_event'])
-    n_results = len(plan['tables']['externe_ecologie_resultaat'])
-    n_overlap = len(plan['tables']['externe_ecologie_overlap'])
-    guard(f'(SELECT COUNT(*) FROM externe_ecologie_resultaat r JOIN tmp_pq_events x ON x.id=r.event_id)={n_results}')
-    guard(f'(SELECT COUNT(*) FROM externe_ecologie_overlap o JOIN tmp_pq_results x ON x.id=o.resultaat_id)={n_overlap}')
+    n_events = len(plan['tables']['lvd_event'])
+    n_results = len(plan['tables']['lvd_resultaat'])
+    n_overlap = len(plan['tables']['lvd_overlap'])
+    guard(f'(SELECT COUNT(*) FROM lvd_resultaat r JOIN tmp_pq_events x ON x.id=r.event_id)={n_results}')
+    guard(f'(SELECT COUNT(*) FROM lvd_overlap o JOIN tmp_pq_results x ON x.id=o.resultaat_id)={n_overlap}')
     sql.append('UPDATE pq_vegetatie_waarneming w JOIN tmp_pq_taxa x ON x.id=w.taxon_id '
                'SET w.taxon_bronkoppeling_id=x.koppeling_id;')
     guard('(SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE taxon_bronkoppeling_id IS NULL)=0')
     for table, target in PQ_MOVES.items():
         column_names = ','.join('`' + c['name'] + '`' for c in plan['columns'][table])
         select_names = ','.join('s.`' + c['name'] + '`' for c in plan['columns'][table])
-        if table == 'externe_ecologie_event':
+        if table == 'lvd_event':
             extra_columns, extra_values, join = ',zelfstandig_meetellen', ',0', 'tmp_pq_events x ON x.id=s.event_id'
-        elif table == 'externe_ecologie_resultaat':
+        elif table == 'lvd_resultaat':
             extra_columns, extra_values, join = ',taxon_bronkoppeling_id', ',x.koppeling_id', 'tmp_pq_results x ON x.id=s.resultaat_id'
         else:
             extra_columns, extra_values, join = '', '', 'tmp_pq_results x ON x.id=s.resultaat_id'
@@ -2812,12 +2812,12 @@ def pq_migration_sql(plan: dict, *, commit: bool = False) -> str:
     # Alleen volledig bewaarde opnamen; de twee bekende CASCADE-relaties verwijderen
     # hun resultaten en overlapregels. Onbekende verwijzende tabellen blokkeren vooraf.
     guard("(SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_SCHEMA=DATABASE() "
-          "AND REFERENCED_TABLE_NAME IN ('externe_ecologie_event','externe_ecologie_resultaat') "
-          "AND TABLE_NAME NOT IN ('externe_ecologie_resultaat','externe_ecologie_overlap'))=0")
-    sql.append('DELETE e FROM externe_ecologie_event e JOIN tmp_pq_events x ON x.id=e.event_id;')
-    guard('(SELECT COUNT(*) FROM externe_ecologie_event e JOIN tmp_pq_events x ON x.id=e.event_id)=0')
-    guard('(SELECT COUNT(*) FROM externe_ecologie_resultaat r JOIN tmp_pq_events x ON x.id=r.event_id)=0')
-    guard('(SELECT COUNT(*) FROM externe_ecologie_overlap o JOIN tmp_pq_results x ON x.id=o.resultaat_id)=0')
+          "AND REFERENCED_TABLE_NAME IN ('lvd_event','lvd_resultaat') "
+          "AND TABLE_NAME NOT IN ('lvd_resultaat','lvd_overlap'))=0")
+    sql.append('DELETE e FROM lvd_event e JOIN tmp_pq_events x ON x.id=e.event_id;')
+    guard('(SELECT COUNT(*) FROM lvd_event e JOIN tmp_pq_events x ON x.id=e.event_id)=0')
+    guard('(SELECT COUNT(*) FROM lvd_resultaat r JOIN tmp_pq_events x ON x.id=r.event_id)=0')
+    guard('(SELECT COUNT(*) FROM lvd_overlap o JOIN tmp_pq_results x ON x.id=o.resultaat_id)=0')
     sql.append('COMMIT;' if commit else 'ROLLBACK;')
     sql.append("DO RELEASE_LOCK(CONCAT(DATABASE(),':pq-integratie-v1'));")
     return '\n'.join(sql)
@@ -2833,20 +2833,20 @@ def pq_schema_sql() -> str:
     """
     return """
 SET SESSION lock_wait_timeout=10;
-CREATE TABLE pq_vegetatie_bronopname LIKE externe_ecologie_event;
+CREATE TABLE pq_vegetatie_bronopname LIKE lvd_event;
 ALTER TABLE pq_vegetatie_bronopname
   ADD COLUMN zelfstandig_meetellen BOOLEAN NOT NULL DEFAULT FALSE,
   ADD CONSTRAINT ck_pq_bronopname_geen_tweede_telling CHECK(zelfstandig_meetellen=0),
   ADD CONSTRAINT fk_pq_bronopname_dataset FOREIGN KEY(dataset_id)
-    REFERENCES externe_ecologie_dataset(dataset_id);
-CREATE TABLE pq_vegetatie_bronresultaat LIKE externe_ecologie_resultaat;
+    REFERENCES lvd_dataset(dataset_id);
+CREATE TABLE pq_vegetatie_bronresultaat LIKE lvd_resultaat;
 ALTER TABLE pq_vegetatie_bronresultaat
   ADD COLUMN taxon_bronkoppeling_id BIGINT UNSIGNED NOT NULL,
   ADD CONSTRAINT fk_pq_bronresultaat_opname FOREIGN KEY(event_id)
     REFERENCES pq_vegetatie_bronopname(event_id),
   ADD CONSTRAINT fk_pq_bronresultaat_taxon FOREIGN KEY(taxon_bronkoppeling_id)
     REFERENCES taxa_bronkoppeling(koppeling_id);
-CREATE TABLE pq_vegetatie_bronoverlap LIKE externe_ecologie_overlap;
+CREATE TABLE pq_vegetatie_bronoverlap LIKE lvd_overlap;
 ALTER TABLE pq_vegetatie_bronoverlap
   ADD CONSTRAINT fk_pq_bronoverlap_resultaat FOREIGN KEY(resultaat_id)
     REFERENCES pq_vegetatie_bronresultaat(resultaat_id);
@@ -2876,12 +2876,12 @@ def pq_analysis_view_sql(*, original_rank: bool = False) -> str:
     marker = 'CREATE OR REPLACE VIEW v_externe_ecologie_analyse AS'
     base = SCHEMA.read_text(encoding='utf-8').split(marker, 1)[1].strip().removesuffix(';')
     moved, replacements = re.subn(
-        r"EXISTS \(\s*SELECT 1\s*FROM externe_ecologie_overlap o.*?\) AS heeft_bekende_overlap",
+        r"EXISTS \(\s*SELECT 1\s*FROM lvd_overlap o.*?\) AS heeft_bekende_overlap",
         '1 AS heeft_bekende_overlap', base, count=1, flags=re.S)
     if replacements != 1:
         raise ValueError('De bestaande analyseview is gewijzigd; opnieuw beoordelen')
-    moved = moved.replace('externe_ecologie_event', 'pq_vegetatie_bronopname')
-    moved = moved.replace('externe_ecologie_resultaat', 'pq_vegetatie_bronresultaat')
+    moved = moved.replace('lvd_event', 'pq_vegetatie_bronopname')
+    moved = moved.replace('lvd_resultaat', 'pq_vegetatie_bronresultaat')
     rank = 't.taxonrang' if original_rank else (
         "CASE WHEN JSON_CONTAINS_PATH(b.bronmetadata,'one','$.register_broncontext') "
         "THEN JSON_VALUE(b.bronmetadata,'$.register_broncontext.taxonrang' "
@@ -3052,8 +3052,8 @@ def verify_pq_integration(client: Path, args: list[str], plan: dict, before: dic
         "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='pq_vegetatie_taxon'",
         'SELECT COUNT(*) FROM pq_vegetatie_bronopname WHERE zelfstandig_meetellen<>0',
         "SELECT COUNT(*) FROM pq_vegetatie_opname_bronkoppeling WHERE koppelstatus<>'vermoedelijk'",
-        'SELECT COUNT(*) FROM externe_ecologie_event e JOIN pq_vegetatie_bronopname p USING(event_id)',
-        'SELECT COUNT(*) FROM externe_ecologie_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)',
+        'SELECT COUNT(*) FROM lvd_event e JOIN pq_vegetatie_bronopname p USING(event_id)',
+        'SELECT COUNT(*) FROM lvd_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)',
     ]
     for table in ['pq_vegetatie_waarneming','pq_vegetatie_bronresultaat']:
         zero_queries.append(f'SELECT COUNT(*) FROM {table} w LEFT JOIN taxa_bronkoppeling b '
@@ -3113,9 +3113,9 @@ def execute_pq_integration(args) -> int:
     run_mysql(client, db_args, pq_schema_sql())
     # Catalogus blijft volledig tijdens de atomische verplaatsing van bronregels.
     run_mysql(client, db_args, pq_analysis_view_sql())
-    original = run_mysql(client, db_args, 'CHECKSUM TABLE externe_ecologie_event,externe_ecologie_resultaat,externe_ecologie_overlap,pq_vegetatie_waarneming')
+    original = run_mysql(client, db_args, 'CHECKSUM TABLE lvd_event,lvd_resultaat,lvd_overlap,pq_vegetatie_waarneming')
     run_mysql(client, db_args, pq_migration_sql(plan))
-    if original != run_mysql(client, db_args, 'CHECKSUM TABLE externe_ecologie_event,externe_ecologie_resultaat,externe_ecologie_overlap,pq_vegetatie_waarneming'):
+    if original != run_mysql(client, db_args, 'CHECKSUM TABLE lvd_event,lvd_resultaat,lvd_overlap,pq_vegetatie_waarneming'):
         raise RuntimeError('Transactionele terugdraaiproef wijkt af')
     for table in [*PQ_MOVES.values(),'pq_vegetatie_opname_bronkoppeling']:
         if run_mysql(client, db_args, f'SELECT COUNT(*) FROM {table}') != '0':
@@ -3136,7 +3136,7 @@ def source_separation_schema_sql() -> str:
     sql = ['SET SESSION lock_wait_timeout=10;']
     for key,prefix in SOURCE_FAMILIES.items():
         for suffix in SOURCE_SUFFIXES:
-            sql.append(f'CREATE TABLE {prefix}_{suffix} LIKE externe_ecologie_{suffix};')
+            sql.append(f'CREATE TABLE {prefix}_{suffix} LIKE lvd_{suffix};')
         sql += [
             f'ALTER TABLE {prefix}_dataset ADD CONSTRAINT ck_{prefix}_source '
             'CHECK(BINARY dataset_sleutel=BINARY '+query_literal(key)+');',
@@ -3159,9 +3159,9 @@ def source_separation_counts(db: CentralQueryDatabase) -> dict:
         hashes = {}
         scopes = source_separation_scopes(key)
         for suffix,where in scopes.items():
-            counts[prefix][suffix] = int(db.sql(f'SELECT COUNT(*) FROM externe_ecologie_{suffix} s WHERE {where};'))
+            counts[prefix][suffix] = int(db.sql(f'SELECT COUNT(*) FROM lvd_{suffix} s WHERE {where};'))
             hashes[suffix] = db.sql('SET SESSION group_concat_max_len=1073741824; SELECT '+
-                source_cell_digest_sql('externe_ecologie_'+suffix,'externe_ecologie_'+suffix,where)+';')
+                source_cell_digest_sql('lvd_'+suffix,'lvd_'+suffix,where)+';')
         counts[prefix]['_hashes'] = hashes
         if counts[prefix]['dataset'] != 1:
             raise ValueError('Verwachte oorspronkelijke bronregistratie ontbreekt: '+prefix)
@@ -3170,9 +3170,9 @@ def source_separation_counts(db: CentralQueryDatabase) -> dict:
 
 def source_separation_scopes(key: str) -> dict[str,str]:
     source_family_for_dataset(key)
-    dataset = 'SELECT dataset_id FROM externe_ecologie_dataset WHERE BINARY dataset_sleutel=BINARY '+query_literal(key)
-    events = f'SELECT event_id FROM externe_ecologie_event WHERE dataset_id IN ({dataset})'
-    results = f'SELECT resultaat_id FROM externe_ecologie_resultaat WHERE event_id IN ({events})'
+    dataset = 'SELECT dataset_id FROM lvd_dataset WHERE BINARY dataset_sleutel=BINARY '+query_literal(key)
+    events = f'SELECT event_id FROM lvd_event WHERE dataset_id IN ({dataset})'
+    results = f'SELECT resultaat_id FROM lvd_resultaat WHERE event_id IN ({events})'
     return dict(dataset=f's.dataset_id IN ({dataset})',event=f's.dataset_id IN ({dataset})',
                 resultaat=f's.event_id IN ({events})',overlap=f's.resultaat_id IN ({results})')
 
@@ -3195,8 +3195,8 @@ def source_separation_sql(counts: dict, *, commit=False) -> str:
         sql.append('INSERT INTO tmp_source_guard VALUES(IF('+condition+',1,0));')
     guard('@@SESSION.foreign_key_checks=1')
     guard("(SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_SCHEMA=DATABASE() "
-          "AND REFERENCED_TABLE_NAME IN ('externe_ecologie_dataset','externe_ecologie_event','externe_ecologie_resultaat') "
-          "AND TABLE_NAME NOT IN ('externe_ecologie_event','externe_ecologie_resultaat','externe_ecologie_overlap','pq_vegetatie_bronopname'))=0")
+          "AND REFERENCED_TABLE_NAME IN ('lvd_dataset','lvd_event','lvd_resultaat') "
+          "AND TABLE_NAME NOT IN ('lvd_event','lvd_resultaat','lvd_overlap','pq_vegetatie_bronopname'))=0")
     for key,prefix in SOURCE_FAMILIES.items():
         scopes = source_separation_scopes(key)
         hashes = counts[prefix].get('_hashes',{})
@@ -3204,9 +3204,9 @@ def source_separation_sql(counts: dict, *, commit=False) -> str:
             raise ValueError('Bewezen volledige broncelhashes ontbreken')
         # Parent locks also block concurrent child INSERTs through their FK.
         for suffix,primary in zip(SOURCE_SUFFIXES,('dataset_id','event_id','resultaat_id','overlap_id')):
-            sql.append(f'SELECT {primary} FROM externe_ecologie_{suffix} s WHERE {scopes[suffix]} FOR UPDATE;')
+            sql.append(f'SELECT {primary} FROM lvd_{suffix} s WHERE {scopes[suffix]} FOR UPDATE;')
         for suffix in SOURCE_SUFFIXES:
-            original, target = 'externe_ecologie_'+suffix, prefix+'_'+suffix
+            original, target = 'lvd_'+suffix, prefix+'_'+suffix
             n = counts[prefix][suffix]
             if type(n) is not int or n < 0: raise ValueError('Ongeldige brontelling')
             if n*64>16*1024*1024: raise ValueError('Bronhashstream vereist apart beoordeelde grotere limiet')
@@ -3221,11 +3221,11 @@ def source_separation_sql(counts: dict, *, commit=False) -> str:
         # the real multi-level cascade trial left old children behind.
         for suffix,primary in reversed(list(zip(SOURCE_SUFFIXES,
                 ('dataset_id','event_id','resultaat_id','overlap_id')))):
-            original = 'externe_ecologie_'+suffix
+            original = 'lvd_'+suffix
             target = prefix+'_'+suffix
             sql.append(f'DELETE s FROM {original} s WHERE s.{primary} IN (SELECT {primary} FROM {target});')
             guard(f'(SELECT COUNT(*) FROM {original} s JOIN {target} n USING({primary}))=0')
-    for prefix in ('externe_ecologie',*SOURCE_FAMILIES.values()):
+    for prefix in ('lvd',*SOURCE_FAMILIES.values()):
         for child,parent,field in [('event','dataset','dataset_id'),
                 ('resultaat','event','event_id'),('overlap','resultaat','resultaat_id')]:
             guard(f'(SELECT COUNT(*) FROM {prefix}_{child} c LEFT JOIN {prefix}_{parent} p '
@@ -3243,9 +3243,96 @@ def source_separation_view_sql() -> str:
     for prefix in SOURCE_FAMILIES.values():
         branch = base
         for suffix in SOURCE_SUFFIXES:
-            branch = branch.replace('externe_ecologie_'+suffix,prefix+'_'+suffix)
+            branch = branch.replace('lvd_'+suffix,prefix+'_'+suffix)
         branches.append(branch)
     return original.rstrip().removesuffix(';')+'\nUNION ALL\n'+'\nUNION ALL\n'.join(branches)+';\n'
+
+
+def lvd_rename_snapshot(db: CentralQueryDatabase, prefix: str) -> dict:
+    """Compare every LVD cell and the existing consumer before/after a name-only move."""
+    if prefix not in {'externe_ecologie', 'lvd'}:
+        raise ValueError('Onbekend LVD-tabelprefix')
+    schema = db.schema()
+    if any(prefix+'_'+suffix not in schema for suffix in SOURCE_SUFFIXES):
+        raise ValueError('Onvolledige LVD-tabelfamilie')
+    digests = {}
+    for suffix in SOURCE_SUFFIXES:
+        table = prefix+'_'+suffix
+        raw = db.sql('SET SESSION group_concat_max_len=1073741824; '
+            'SELECT COUNT(*),'+source_cell_digest_sql(table,'lvd_'+suffix)+' FROM '+table+';')
+        count, digest = raw.split('\t')
+        digests[suffix] = {'rows':int(count),'sha256':digest}
+    view = db.sql('SET SESSION group_concat_max_len=1073741824; '
+        "SELECT COUNT(*),SHA2(GROUP_CONCAT(h ORDER BY h SEPARATOR ''),256) "
+        'FROM (SELECT SHA2(CAST(JSON_OBJECT('
+        "'dataset_sleutel',dataset_sleutel,'event_id',event_id,'resultaat_id',resultaat_id,"
+        "'wetenschappelijke_naam',wetenschappelijke_naam,'hoeveelheid',hoeveelheid,"
+        "'heeft_bekende_overlap',heeft_bekende_overlap) AS CHAR CHARACTER SET utf8mb4),256) h "
+        'FROM v_externe_ecologie_analyse) v;')
+    view_count, view_hash = view.split('\t')
+    return {'tables':digests,'view':{'rows':int(view_count),'sha256':view_hash},
+        'pq_dataset_links':int(db.sql('SELECT COUNT(*) FROM pq_vegetatie_bronopname p '
+            'JOIN '+prefix+'_dataset d ON d.dataset_id=p.dataset_id;')),
+        'taxon_links':int(db.sql('SELECT COUNT(*) FROM '+prefix+'_resultaat r '
+            'JOIN taxa_bronkoppeling b ON b.koppeling_id=r.taxon_bronkoppeling_id;'))}
+
+
+def execute_lvd_rename(args) -> int:
+    """Name-only local migration, guarded by an identical full-copy rehearsal."""
+    if args.host!='127.0.0.1' or args.port!=3306:
+        raise ValueError('LVD-hernoeming uitsluitend op de lokale iMac')
+    if args.database!='Meijendel' and not re.fullmatch(r'Meijendel_bronnen_proef_[0-9]+',args.database):
+        raise ValueError('Onbeoordeeld migratiedoel')
+    root, backup = args.lvd_bewijs_dir, args.lvd_backup
+    if not root or root.exists() or not backup or not backup.is_file():
+        raise ValueError('Nieuwe bewijsmap en bestaande volledige back-up zijn verplicht')
+    validate_source_backup(backup)
+    digest = hashlib.sha256()
+    with backup.open('rb') as handle:
+        while chunk := handle.read(1024*1024):
+            digest.update(chunk)
+    backup_hash = digest.hexdigest()
+    db = CentralQueryDatabase(args.database,args.login_path,args.mysql_client,writable=args.apply)
+    schema = db.schema()
+    old = {'externe_ecologie_'+s for s in SOURCE_SUFFIXES}
+    new = {'lvd_'+s for s in SOURCE_SUFFIXES}
+    if not old <= set(schema) or new & set(schema):
+        raise ValueError('Bronstand voor eenmalige LVD-hernoeming wijkt af')
+    before = lvd_rename_snapshot(db,'externe_ecologie')
+    code_hash = hashlib.sha256(Path(__file__).read_bytes()+SCHEMA.read_bytes()).hexdigest()
+    if args.apply and args.database=='Meijendel':
+        if not args.lvd_proefbewijs:
+            raise ValueError('Geïsoleerd proefbewijs ontbreekt')
+        proof = json.loads(args.lvd_proefbewijs.read_text())
+        if (proof.get('status')!='verified' or proof.get('before')!=before or
+            proof.get('backup_sha256')!=backup_hash or proof.get('code_sha256')!=code_hash):
+            raise ValueError('Proefbewijs komt niet overeen met code, back-up of actuele bronstand')
+    root.mkdir(parents=True,exist_ok=False)
+    def save(name,value):
+        with (root/name).open('x',encoding='utf-8') as handle:
+            json.dump(value,handle,ensure_ascii=False,indent=2)
+    save('before.json',before)
+    if not args.apply:
+        print('READ-ONLY: LVD-naamwijziging voorbereid; bewijs:',root); return 0
+    db.sql('RENAME TABLE '+', '.join('externe_ecologie_'+s+' TO lvd_'+s for s in SOURCE_SUFFIXES)+';',write=True)
+    # Old hash-derived trigger names remain attached after RENAME TABLE.
+    # Remove only those obsolete names; regenerate the complete audited guards.
+    for suffix in SOURCE_SUFFIXES:
+        for action in ('bi','bu'):
+            db.sql('DROP TRIGGER IF EXISTS '+central_trigger_name('externe_ecologie_'+suffix,action)+';',write=True)
+    routes = central_query_routes(db.schema())
+    db.sql(central_query_triggers_sql({'routes':routes}),write=True)
+    db.sql(source_separation_view_sql(),write=True)
+    after = lvd_rename_snapshot(db,'lvd')
+    audit = central_query_audit(db)
+    if after!=before or audit['errors'] or old & set(db.schema()) or not new <= set(db.schema()):
+        raise RuntimeError('LVD-hernoeming wijkt af; herstel uit back-up is vereist')
+    result = {'status':'verified','database':args.database,'before':before,'after':after,
+        'audit':{'tables':audit['tables'],'routes':len(audit['routes']),'errors':audit['errors']},
+        'backup_sha256':backup_hash,'code_sha256':code_hash}
+    save('result.json',result)
+    print('OK: uitsluitend LVD-tabellen hernoemd; broncellen en bestaande view gelijk; bewijs:',root)
+    return 0
 
 
 def source_separation_snapshot(db: CentralQueryDatabase) -> dict:
@@ -3278,8 +3365,8 @@ def source_separation_snapshot(db: CentralQueryDatabase) -> dict:
         return {'rows':len(raw.splitlines()),'sha256':digest(raw)}
     result = {}
     for table in sorted(CENTRAL_QUERY_SCHEMA):
-        if table.startswith('externe_ecologie_'):
-            suffix = table.removeprefix('externe_ecologie_')
+        if table.startswith('lvd_'):
+            suffix = table.removeprefix('lvd_')
             cols = ','.join(query_identifier(c['name']) for c in tables[table])
             sources = [table]+[p+'_'+suffix for p in SOURCE_FAMILIES.values() if p+'_'+suffix in schema]
             union = '('+' UNION ALL '.join(f'SELECT {cols} FROM {query_identifier(s)}' for s in sources)+')'
@@ -3372,7 +3459,7 @@ def source_append_sql(payload: dict) -> str:
     """
     key = payload.get('dataset_sleutel')
     prefix = source_family_for_dataset(key)
-    if prefix == 'externe_ecologie': raise ValueError('LVD/PQ valt buiten deze bronaanvulling')
+    if prefix == 'lvd': raise ValueError('LVD/PQ valt buiten deze bronaanvulling')
     if set(payload)-{'dataset_sleutel','bronversie','bronbestand_sha256','events','resultaten'}:
         raise ValueError('Onbekende bronaanvullingsvelden')
     version, sha = payload.get('bronversie'),payload.get('bronbestand_sha256')
@@ -3390,7 +3477,7 @@ def source_append_sql(payload: dict) -> str:
     for suffix,rows in [('event',payload.get('events',[])),('resultaat',payload['resultaten'])]:
         table = prefix+'_'+suffix
         excluded = {'event_id','dataset_id'} if suffix=='event' else {'resultaat_id','event_id','taxon_bronkoppeling_id'}
-        columns = sorted(CENTRAL_QUERY_SCHEMA['externe_ecologie_'+suffix]-excluded)
+        columns = sorted(CENTRAL_QUERY_SCHEMA['lvd_'+suffix]-excluded)
         for row in rows:
             allowed = set(columns) | ({'bron_event_id'} if suffix=='resultaat' else set())
             if not isinstance(row,dict) or set(row)-allowed or not isinstance(row.get('bronmetadata'),dict):
@@ -3514,11 +3601,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument('--bron-proefbewijs',type=Path)
     parser.add_argument('--bron-herstel-database')
     parser.add_argument('--bron-aanvulling',type=Path)
+    parser.add_argument('--lvd-hernoeming',action='store_true')
+    parser.add_argument('--lvd-bewijs-dir',type=Path)
+    parser.add_argument('--lvd-backup',type=Path)
+    parser.add_argument('--lvd-proefbewijs',type=Path)
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+    if args.lvd_hernoeming:
+        return execute_lvd_rename(args)
     if args.bron_ontvlechting:
         return execute_source_separation(args)
     if args.centrale_query_sql:

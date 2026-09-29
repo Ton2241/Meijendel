@@ -510,7 +510,7 @@ def main() -> int:
         assert files["results"].read_text(encoding="utf-8").count("\n") == 4
         sql = module.load_sql(files, database="Meijendel_phase12_test")
         assert "USE Meijendel_phase12_test" in sql
-        assert "externe_ecologie_dataset" in sql
+        assert "lvd_dataset" in sql
         assert "START TRANSACTION" in sql and "COMMIT" in sql
 
     print("OK: externe ecologie-importlogica")
@@ -534,7 +534,7 @@ def check_pq_schema(database: str) -> int:
     for sql in [
         "INSERT INTO pq_vegetatie_opname_bronkoppeling(event_id,opname_id,koppelstatus,regelversie,bewijs) "
         "VALUES(9999999999,1,'vermoedelijk','test',JSON_OBJECT())",
-        "INSERT INTO pq_vegetatie_bronopname SELECT e.*,1 FROM externe_ecologie_event e LIMIT 1",
+        "INSERT INTO pq_vegetatie_bronopname SELECT e.*,1 FROM lvd_event e LIMIT 1",
     ]:
         try:
             module.run_mysql(client, args, sql)
@@ -555,14 +555,14 @@ def check_pq_migration(database: str) -> int:
     client = Path('/usr/local/mysql/bin/mysql')
     args = module.mysql_args('meijendel_root') + ['--batch', '--raw', '--skip-column-names', database]
     plan = module.prepare_pq_migration(client, args)
-    assert len(plan['tables']['externe_ecologie_event']) == 644
-    assert len(plan['tables']['externe_ecologie_resultaat']) == 16627
-    assert len(plan['tables']['externe_ecologie_overlap']) == 32657
+    assert len(plan['tables']['lvd_event']) == 644
+    assert len(plan['tables']['lvd_resultaat']) == 16627
+    assert len(plan['tables']['lvd_overlap']) == 32657
     assert len(plan['pairs']) == 652
     # De default is terugdraaien, met daadwerkelijke inserts en deletes binnen de proef.
-    before = module.run_mysql(client, args, 'CHECKSUM TABLE externe_ecologie_event,externe_ecologie_resultaat,externe_ecologie_overlap,pq_vegetatie_waarneming')
+    before = module.run_mysql(client, args, 'CHECKSUM TABLE lvd_event,lvd_resultaat,lvd_overlap,pq_vegetatie_waarneming')
     module.run_mysql(client, args, module.pq_migration_sql(plan))
-    after = module.run_mysql(client, args, 'CHECKSUM TABLE externe_ecologie_event,externe_ecologie_resultaat,externe_ecologie_overlap,pq_vegetatie_waarneming')
+    after = module.run_mysql(client, args, 'CHECKSUM TABLE lvd_event,lvd_resultaat,lvd_overlap,pq_vegetatie_waarneming')
     assert after == before, 'Terugdraaien moet alle oorspronkelijke tabelinhoud herstellen'
     assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronopname') == '0'
     assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE taxon_bronkoppeling_id IS NOT NULL') == '0'
@@ -575,9 +575,9 @@ def check_pq_migration(database: str) -> int:
     assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_bronopname WHERE zelfstandig_meetellen<>0') == '0'
     assert module.run_mysql(client, args, 'SELECT COUNT(*) FROM pq_vegetatie_waarneming WHERE taxon_bronkoppeling_id IS NULL') == '0'
     assert module.run_mysql(client, args,
-        'SELECT COUNT(*) FROM externe_ecologie_event e JOIN pq_vegetatie_bronopname p USING(event_id)') == '0'
+        'SELECT COUNT(*) FROM lvd_event e JOIN pq_vegetatie_bronopname p USING(event_id)') == '0'
     assert module.run_mysql(client, args,
-        'SELECT COUNT(*) FROM externe_ecologie_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)') == '0'
+        'SELECT COUNT(*) FROM lvd_resultaat e JOIN pq_vegetatie_bronresultaat p USING(resultaat_id)') == '0'
     try:
         module.run_mysql(client, args, module.pq_migration_sql(plan, commit=True))
     except RuntimeError:
@@ -852,7 +852,7 @@ def check_central_query_routes():
         'ndff_open_waarneming': {'waarneming_id','soort_key','jaar'},
         'sovon_avimap_taxon': {'batch_id','soortgroep_code','soortnr'},
         'sovon_avimap_waarneming': {'batch_id','soortgroep_code','soortnr','jaar'},
-        'externe_ecologie_resultaat': {'resultaat_id','wetenschappelijke_naam','bronmetadata'},
+        'lvd_resultaat': {'resultaat_id','wetenschappelijke_naam','bronmetadata'},
         'pq_vegetatie_waarneming': {'waarneming_id','taxon_bronkoppeling_id'},
         'ndff_test_bezoek_taxon': {'reconstructieversie','bezoek_sleutel','wetenschappelijke_naam','waarnemingsstatus'},
         'ndff_habslak_hokjaar': {'reconstructieversie','hokjaar_sleutel','doelsoort','jaar'},
@@ -905,7 +905,7 @@ def check_source_separation():
     schema = {k: set(v) for k, v in module.CENTRAL_QUERY_SCHEMA.items()}
     for prefix in prefixes:
         for suffix in ('dataset', 'event', 'resultaat', 'overlap'):
-            schema[prefix+'_'+suffix] = schema['externe_ecologie_'+suffix].copy()
+            schema[prefix+'_'+suffix] = schema['lvd_'+suffix].copy()
     module.central_query_schema_contract(schema)
     routes = module.central_query_routes(schema)
     for prefix in prefixes:
@@ -914,7 +914,7 @@ def check_source_separation():
         assert route['kind'] == 'external'
         condition = module.central_source_condition(table, route)
         assert prefix+'_event e JOIN '+prefix+'_dataset d' in condition
-        assert 'externe_ecologie_event' not in condition
+        assert 'lvd_event' not in condition
         query = module.central_taxon_query(table, route, 7)
         assert 'FROM taxa t' in query and 'LEFT JOIN taxon_groepen g' in query
     for broken in (dict(schema, endure_resultaat=schema['endure_resultaat']|{'ongecontroleerd'}),
@@ -922,7 +922,7 @@ def check_source_separation():
         try: module.central_query_schema_contract(broken)
         except ValueError: pass
         else: raise AssertionError('Gedeeltelijke/gewijzigde bronstructuur geaccepteerd')
-    assert module.source_family_for_dataset('lvd-meijendel-v1-6') == 'externe_ecologie'
+    assert module.source_family_for_dataset('lvd-meijendel-v1-6') == 'lvd'
     assert module.source_family_for_dataset('nmr-vlinders-meijendel') == 'nmr_vlinders'
     try: module.source_family_for_dataset('onbekende-bron')
     except ValueError: pass
@@ -933,7 +933,7 @@ def check_source_separation():
     sql = module.source_separation_sql(counts,commit=False)
     assert sql.rstrip().endswith('ROLLBACK;')
     assert 'CREATE TABLE ' not in sql and 'FOREIGN_KEY_CHECKS=0' not in sql
-    deletions = [sql.index('DELETE s FROM externe_ecologie_'+suffix+' s')
+    deletions = [sql.index('DELETE s FROM lvd_'+suffix+' s')
         for suffix in ('overlap','resultaat','event','dataset')]
     assert deletions==sorted(deletions),'Verwijder expliciet kind-eerst, vertrouw niet op cascades'
     assert 'ON DELETE CASCADE' not in module.source_separation_schema_sql()
@@ -963,7 +963,7 @@ def check_source_separation():
     spec = importlib.util.spec_from_file_location('overlap',SCRIPT.with_name('run_external_ecology_overlap_audit.py'))
     audit = importlib.util.module_from_spec(spec); spec.loader.exec_module(audit)
     assert callable(getattr(audit,'source_overlap_sql',None)), 'Overlapaudit mist ontvlochten bronnen'
-    rendered = audit.source_overlap_sql({'externe_ecologie_resultaat','endure_resultaat'})
+    rendered = audit.source_overlap_sql({'lvd_resultaat','endure_resultaat'})
     assert 'INSERT INTO endure_overlap' in rendered and 'FROM endure_resultaat r' in rendered
     assert rendered.count('START TRANSACTION;')==1 and rendered.count('COMMIT;')==1
     assert callable(getattr(module,'validate_source_backup',None)), 'Hersteldoel niet geïsoleerd van databasecommando in dump'
@@ -1011,14 +1011,14 @@ def check_source_changed_cell(database, counts_file, client, login_path):
     module = load_module()
     db = module.CentralQueryDatabase(database,login_path,client,writable=True)
     counts = json.loads(Path(counts_file).read_text())
-    mutation = ("UPDATE externe_ecologie_event SET bron_locatie='Gecontroleerde celwijziging' "
-                "WHERE dataset_id=(SELECT dataset_id FROM externe_ecologie_dataset WHERE dataset_sleutel='endure-helmduinfauna-meijendel-2018') LIMIT 1;")
+    mutation = ("UPDATE lvd_event SET bron_locatie='Gecontroleerde celwijziging' "
+                "WHERE dataset_id=(SELECT dataset_id FROM lvd_dataset WHERE dataset_sleutel='endure-helmduinfauna-meijendel-2018') LIMIT 1;")
     sql = module.source_separation_sql(counts).replace('START TRANSACTION;', 'START TRANSACTION;\n'+mutation,1)
     try: db.sql(sql,write=True)
     except RuntimeError as exc:
         assert 'tmp_source_guard' in str(exc) or '3819' in str(exc),str(exc)
     else: raise AssertionError('Gewijzigde broncel met identieke aantallen niet vóór verplaatsing geweigerd')
-    assert db.sql("SELECT COUNT(*) FROM externe_ecologie_event WHERE bron_locatie='Gecontroleerde celwijziging';")=='0'
+    assert db.sql("SELECT COUNT(*) FROM lvd_event WHERE bron_locatie='Gecontroleerde celwijziging';")=='0'
     assert all(db.sql('SELECT COUNT(*) FROM '+table+';')=='0' for table in module.source_family_tables())
     print('OK: broncelwijziging bij gelijk aantal vóór verwijderen geweigerd en volledig teruggedraaid')
     return 0
@@ -1040,7 +1040,7 @@ def check_source_inputs(database, client='/usr/local/mysql/bin/mysql', login_pat
                 return db.sql("SELECT COLUMN_NAME,COLUMN_TYPE,IS_NULLABLE,COALESCE(COLUMN_DEFAULT,'NULL'),EXTRA,COLLATION_NAME "
                     "FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME="+
                     module.query_literal(name)+" ORDER BY ORDINAL_POSITION;")
-            assert columns(table)==columns('externe_ecologie_'+suffix),table
+            assert columns(table)==columns('lvd_'+suffix),table
         result = prefix+'_resultaat'
         sample, = db.objects('SELECT JSON_OBJECT(\'link\',taxon_bronkoppeling_id,\'id\',resultaat_id) FROM '+result+' LIMIT 1;')
         columns = db.sql("SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME="+
@@ -1054,7 +1054,7 @@ def check_source_inputs(database, client='/usr/local/mysql/bin/mysql', login_pat
         assert db.sql('SELECT COUNT(*) FROM '+result+" WHERE bron_occurrence_id='bron-invoerproef';")=='0'
         # The actual future-import writer must use these physical tables too.
         fields = []
-        for c in sorted(module.CENTRAL_QUERY_SCHEMA['externe_ecologie_resultaat']-
+        for c in sorted(module.CENTRAL_QUERY_SCHEMA['lvd_resultaat']-
                         {'resultaat_id','event_id','taxon_bronkoppeling_id'}):
             fields += [module.query_literal(c),'CAST(r.hoeveelheid AS CHAR)' if c=='hoeveelheid' else 'r.'+module.query_identifier(c)]
         fields += [module.query_literal('bron_event_id'),'e.bron_event_id']
