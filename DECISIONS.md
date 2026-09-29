@@ -1,5 +1,19 @@
 # Besluiten
 
+- Op 29 september 2026 is de resterende taxonopschoning lokaal afgerond:
+  nog 1.762 dubbele centrale rijen samengebracht, met behoud van alle
+  oorspronkelijke bronwaarden, koppelingnummers en oude IDs/UUIDs. De 751
+  eerder onbesliste naamgroepen zijn afgehandeld. Zeven gelijknamige paren
+  blijven op onderbouwde inhoudelijke gronden afzonderlijk. Ook auteurs-,
+  rang-, spelling- en materiaalconditievarianten zijn beoordeeld; een
+  externe naamtreffer overrulet geen oorspronkelijke bronafbakening.
+  Nieuwe imports blijven verplicht door de centrale importpoort lopen;
+  onbesliste varianten worden niet als nieuw taxon ingevoerd. Proef,
+  volledig herstel en levende nacontrole zijn geslaagd. Geen VPS-publicatie,
+  geen conceptbevestiging, geen waarnemingsfusie, geen afwijking van Darwin
+  Core/TDWG TCS. Actuele aantallen en volledige onderbouwing staan in
+  `docs/database/TAXONREGISTER.md` en het bronregister.
+
 - Op 28 september 2026 heeft Ton de taxonopschoning verruimd: echte dubbelen
   uit verschillende bronnen bijeenbrengen in één centrale vermelding, alle
   oorspronkelijke bronvelden en interne verwijzingen behouden en herinvoer

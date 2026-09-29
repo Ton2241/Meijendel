@@ -4,23 +4,22 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
-- Centrale taxonopschoning op 29 september 2026 lokaal uitgevoerd voor de
-  bewezen selectie: 1.203 naamgroepen, 2.156 dubbele rijen minder; nu 13.421
-  centrale vermeldingen. Alle 18.440 bestaande koppelingnummers blijven
-  behouden; 3.359 oorspronkelijke taxoncontexten zijn volledig gearchiveerd.
-  Proef, rollback, late fout, herhaling, volledige herstelproef en levende
-  nacontrole geslaagd; 251 overige tabellen en 16 viewuitkomsten identiek.
-  Alle 18.351 geteste bestaande bronidentiteiten vinden dezelfde koppeling
-  terug. Glaucium flavum is nu één centrale vermelding. Geen VPS-publicatie.
-  **Nog open:** 751 naamgroepen, samen 1.960 rijen, inhoudelijk verder
-  beoordelen. Daarvan vallen 124 exacte referentietreffers uitsluitend op
-  de conservatieve scoregrens af; 35 referenties gebruiken een andere
-  rangnotatie. Dat zijn onderzoekspunten, geen bewezen verschillende taxa.
-  Behoud brede determinaties en daadwerkelijke homoniemen gescheiden.
-  De volledige lijst is nog niet dubbelvrij. Gebruik het bestaande
-  selectie-/behoudspad, los onbesliste invoer vóór nieuwe imports op en
-  voer geen blinde herhaling of unieke index op naam alleen in. Canoniek
-  overzicht: `docs/database/TAXONREGISTER.md`.
+- Centrale taxonopschoning op 29 september 2026 lokaal afgerond. Na de
+  eerste 2.156 fusies zijn nog 1.762 dubbele rijen samengebracht; nu 11.659
+  centrale vermeldingen en 24.561 bronkoppelingen, inclusief 6.121 volledig
+  bewaarde oorspronkelijke taxoncontexten. Alle 751 eerder overgebleven
+  naamgroepen zijn beoordeeld. De zeven resterende paren met dezelfde naam
+  hebben een verschillende taxonomische of determinatiebetekenis; hun
+  afzonderlijke behoud is per paar onderbouwd. Ook auteurs-, rang-, spelling-
+  en conditievarianten zijn gecontroleerd. Alle bestaande koppelingnummers
+  en 31.160 oude IDs/UUIDs blijven bruikbaar. Proef, rollback, late fout,
+  herhaling, volledige herstelproef en levende nacontrole zijn geslaagd;
+  251 overige tabellen en 16 viewuitkomsten zijn identiek. Alle 21.710
+  geteste bestaande bronidentiteiten vinden dezelfde koppeling terug.
+  De importpoort blokkeert herinvoer van onbesliste naamvarianten. Geen
+  VPS-publicatie. Gebruik ook voortaan de vaste importpoort, geen losse
+  root-SQL of unieke index op naam alleen. Canoniek overzicht en bewijs:
+  `docs/database/TAXONREGISTER.md`.
 
 - Gerichte taxonfusie lokaal uitgevoerd op 28 september 2026: vijf Naturalis-
   naamregistraties van Rhantus frontalis en Haliplus ruficollis zijn tot twee
@@ -149,15 +148,19 @@
   zijn ingevuld en alle 87 PQ-naamteksten uit 1981–2025 zijn onderbouwd met
   Floranld_2020. De naamcontrole bij GBIF is uitgevoerd; 1.819 bronregistraties
   zijn via 917 gedeelde naamreferenties vindbaar verbonden.
-  De veilige aanvulling is afgerond. Voor verdere verfijning blijven 278
-  registraties met een gedocumenteerde inhoudelijke beperking over.
+  De veilige aanvulling is afgerond. Op dat moment bleven 278 bronregistraties
+  zonder primaire groep; dit is de historische stand vóór centralisatie.
+  De actuele centrale aantallen staan in `docs/MEIJENDEL_BRONREGISTER.md`.
   Een naamtreffer bewijst geen conceptgelijkheid; die bevestigen of afnemers
   omschakelen hoort niet bij deze toevoegende registerstap. De twee bronvermeldingen
   zonder doel blijven behouden: Naturalis-`Indet.` benoemt geen taxon;
   bij Toendrarietgans moet de herkomst van lokale code 1582 worden vastgesteld.
   Zie `docs/database/TAXONREGISTER.md` voor afbakening, bronperioden en bewijs.
 
-- De centrale LVD-registratie laat rang en de 122 ondeugdelijke auteursvelden leeg.
+- Bij de eerste centrale LVD-invoer bleven rang en de 122 ondeugdelijke
+  auteursvelden leeg. Die oorspronkelijke waarden blijven in de broncontext
+  behouden; afzonderlijk onderbouwde aanvullingen in het centrale register
+  veranderen de aangeleverde brongegevens niet.
   De oorspronkelijke LVD-import schreef bij 81.310 resultaten (1959–2015)
   taxonomische status in `taxonrang`. Bij de 16.627 verplaatste regels heet
   dit veld nu `taxonomische_status_aangeleverd`; de bronwaarde is behouden.

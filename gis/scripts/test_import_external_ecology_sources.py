@@ -68,9 +68,95 @@ def check_fusion_fixture(snapshot):
         raise AssertionError('Botsende bronidentiteit moet blokkeren')
 
 
+def check_reviewed_fusion(module):
+    """An exact reviewed decision may resolve a conflict, never bypass drift."""
+    import copy
+    assert callable(getattr(module,'reviewed_taxa_projection',None)), 'Beoordeelde fusie ontbreekt'
+    for kwargs in [{},{'name_evidence':{}},{'name_evidence':{'a':1},'reviewed_plan':{'a':1}}]:
+        try: module.central_taxa_sql({},commit=True,**kwargs)
+        except ValueError: pass
+        else: raise AssertionError('Missing or ambiguous assessment route accepted')
+    rows=[dict(taxon_id=i,taxon_uuid=f'u{i}',wetenschappelijke_naam='Testus testus',
+               naam_zonder_auteur=None,naam_auteur=a,taxonvorm='taxon',taxonrang='species',
+               groep_id=21,taxonmetadata={},familie=f) for i,a,f in
+          [(1,'A.','Oldaceae'),(2,'A. ex B.','Newaceae'),(3,'A.','Newaceae')]]
+    def link(i,t):
+        return dict(koppeling_id=i,taxon_id=t,doeltaxon_sleutel=t,bron_systeem='source',
+                    bron_dataset='test',bron_versie='1',bron_taxon_id=str(i),
+                    bron_identiteit_sha256=str(i),besluitversie=1,koppelstatus='kandidaat',
+                    taxonrelatie='onbekend',ingetrokken_op=None,bronmetadata={'raw':'kept'})
+    links=[link(10,1),link(11,2),link(12,3)]
+    g=dict(ids=[1,2],keep=1,name='Testus testus',updates={'naam_auteur':'A. ex B.'},
+           reason='Reviewed source author expansion; nominal name only.',
+           evidence=[{'url':'https://example.org/reference','sha256':'a'*64}])
+    g['source_sha256']=module.reviewed_group_hash(g['ids'],rows,links)
+    plan={'rule':'taxa-beoordeelde-fusie-v2','groups':[g]}
+    p=module.reviewed_taxa_projection(rows,links,plan)
+    assert len(p['taxa'])==2 and p['mapping']=={1:1,2:1}
+    assert p['links'][1]['koppeling_id']==11 and p['links'][1]['taxon_id']==1
+    assert p['links'][1]['bronmetadata']['register_broncontext']==rows[1]
+    assert len(p['archives'])==2 and p['archives'][0]['bronmetadata']['taxon_voor']==rows[0]
+    saved=copy.deepcopy(rows); saved[1]['familie']='changed'
+    for altered_rows,altered_links in [(saved,links),(rows,[{**links[0],'bronmetadata':{}},*links[1:]])]:
+        try: module.reviewed_taxa_projection(altered_rows,altered_links,plan)
+        except ValueError: pass
+        else: raise AssertionError('Source drift accepted')
+    for patch in [{'ids':[1,2,3]}, {'updates':{'taxon_uuid':'replace'}}, {'evidence':[]}]:
+        bad=copy.deepcopy(plan); bad['groups'][0].update(patch)
+        try: module.reviewed_taxa_projection(rows,links,bad)
+        except ValueError: pass
+        else: raise AssertionError('Unreviewed mutation accepted')
+    # A later fusion must preserve the first context, reuse existing UUID archives,
+    # redirect old aliases and preserve every intermediate central row as history.
+    existing=copy.deepcopy(p['links'])
+    for i,b in enumerate(p['archives'],20):
+        existing.append({**b,'koppeling_id':i,'doeltaxon_sleutel':b['taxon_id'],
+                         'bron_identiteit_sha256':str(i),'besluitversie':1,'ingetrokken_op':None})
+    g2={**g,'ids':[1,3],'keep':3}
+    g2['source_sha256']=module.reviewed_group_hash(g2['ids'],p['taxa'],existing)
+    p2=module.reviewed_taxa_projection(p['taxa'],existing,{**plan,'groups':[g2]})
+    assert len(p2['archives'])==1 and p2['archives'][0]['bron_taxon_id']=='u3'
+    assert p2['links'][1]['bronmetadata']['register_broncontext']==rows[1]
+    combined=p2['links']+p2['archives']
+    for i in [1,2,3]:
+        assert module.resolve_taxon_usage(i,p2['taxa'],combined)['taxon_id']==3
+        assert module.resolve_taxon_usage('u'+str(i),p2['taxa'],combined)['bron_taxon']['taxon_id']==i
+    history=p2['taxa'][0]['taxonmetadata']['beoordeelde_fusies'][-1]
+    assert history['taxa_voor']==p['taxa']
+    # A reviewed correction of a truncated source name still archives its original.
+    correction={**g,'ids':[3],'keep':3,'name':'Testus testus var. testus',
+                'updates':{'taxonrang':'variety'}}
+    correction['source_sha256']=module.reviewed_group_hash([3],rows,links)
+    c=module.reviewed_taxa_projection(rows,links,{**plan,'groups':[correction]})
+    assert c['taxa'][-1]['wetenschappelijke_naam']=='Testus testus var. testus'
+    assert c['archives'][0]['bronmetadata']['taxon_voor']==rows[-1]
+    # An old/truncated name under a NEW source key must not recreate a duplicate.
+    alias_only=module.reviewed_taxa_projection([rows[2]],[links[2]],{**plan,'groups':[correction]})
+    incoming={**links[2],'bron_taxon_id':'new'}
+    try: module.resolve_registry_import(incoming,rows[2],alias_only['taxa'],alias_only['links']+alias_only['archives'])
+    except ValueError: pass
+    else: raise AssertionError('Archived name could re-enter as a new taxon')
+    # Unseen author spelling or rank/separator notation is not a new taxon.
+    # Blocking is deliberate: the guard must NOT conflate a species/subspecies.
+    for variant in ['Testus testus A.', 'Testus testus subsp. testus',
+                    'Testus testus v. testus']:
+        try: module.resolve_registry_import(incoming,{**rows[2],'wetenschappelijke_naam':variant},[rows[0]],[])
+        except ValueError: pass
+        else: raise AssertionError('Name variant could bypass duplicate review: '+variant)
+    combo={**rows[0],'wetenschappelijke_naam':'Testus testus/alius','taxonvorm':'operationele_eenheid'}
+    try: module.resolve_registry_import(incoming,{**combo,'wetenschappelijke_naam':'Testus testus + alius'},[combo],[])
+    except ValueError: pass
+    else: raise AssertionError('Separator variant could bypass duplicate review')
+    genus={**rows[0],'wetenschappelijke_naam':'Testus','taxonrang':'genus'}
+    try: module.resolve_registry_import(incoming,{**genus,'wetenschappelijke_naam':'Testus Linnaeus, 1753'},[genus],[])
+    except ValueError: pass
+    else: raise AssertionError('Higher-rank authored name could bypass duplicate review')
+
+
 def check_central_list(module):
     """Catch name-only mergers, source-context loss and duplicate reimports."""
     import copy
+    check_reviewed_fusion(module)
     import test_taxonregister_live_schema as bird_check
     assert callable(getattr(bird_check,'bird_source_context',None)), 'Vogelcontrole moet bewaarde broncontext lezen'
     old_bird={'taxon_uuid':'old','wetenschappelijke_naam':'Parus major',

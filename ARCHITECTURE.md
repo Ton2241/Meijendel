@@ -48,14 +48,17 @@ De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
 groepen, centrale naamregistraties en geversioneerde brontoewijzingen met
 hun oorspronkelijke conceptcontext. Na de centralisatie van 29 september
-2026 bevat `taxon_groepen` 27 praktische groepen, `taxa` 13.421 centrale
-vermeldingen en `taxa_bronkoppeling` 21.799 rijen: alle 18.437 oorspronkelijke
-geversioneerde bronbesluiten, drie eerdere identificatie-aliassen en 3.359
+2026 bevat `taxon_groepen` 27 praktische groepen, `taxa` 11.659 centrale
+vermeldingen en `taxa_bronkoppeling` 24.561 rijen: alle 18.437 oorspronkelijke
+geversioneerde bronbesluiten, drie eerdere identificatie-aliassen en 6.121
 volledig bewaarde oorspronkelijke taxoncontexten. Van de oorspronkelijke
 bronbesluiten zijn 18.350 actief: 18.348 kandidaten en twee vermeldingen
 zonder doeltaxon. De 87 eerdere PQ-besluiten blijven als ingetrokken historie
-aanwezig. In twee aanvullingen zijn 2.509 bestaande groepsindelingen ingevuld;
-278 registraties blijven zonder primaire groep, met beoordeelde reden.
+aanwezig. In twee aanvullingen zijn 2.509 bestaande groepsindelingen ingevuld.
+Vóór centralisatie bleven 278 bronregistraties zonder primaire groep;
+na de beoordeelde fusies zijn dat 235 centrale vermeldingen. De oorspronkelijke
+redenen en broncontexten blijven bewaard; bronrijen en centrale rijen hebben
+niet meer dezelfde telbasis.
 Deze referentieregistratie heeft geen eigen waarnemingsperiode.
 De eerste fusie van 28 september betrof vijf naamregistraties van twee
 Naturalis-keversoorten binnen dezelfde broncontext. Drie dubbele rijen zijn verwijderd;
@@ -73,7 +76,13 @@ koppelingen bewaren hun eigen broncontext onder `register_broncontext`;
 Een centrale naam wordt niet als congruent historisch concept aangemerkt.
 De bestaande LVD-analyse-ingang leest voortaan de oorspronkelijke bronrang
 uit die context; alle 16 viewuitkomsten zijn aantoonbaar gelijk gebleven.
-Nog 751 naamgroepen blijven buiten de bewezen selectie. Details en
+De aansluitende inhoudelijke beoordeling handelt alle 751 resterende
+naamgroepen af en brengt nog 1.762 dubbele rijen samen. Zeven herhaalde
+namen hebben verschillende taxonomische of determinatiebetekenissen; geen
+unieke index op naam alleen. Vervolgfusies hergebruiken het oorspronkelijke
+UUID-archief, bewaren tussenstanden in `beoordeelde_fusies` en overschrijven
+nooit `register_broncontext`. De importpoort blokkeert gecorrigeerde oude
+namen en onbesliste rang-/auteursvarianten vóór nieuwe invoer. Details en
 behoudsbewijs staan in `docs/database/TAXONREGISTER.md`.
 De eerder vastgelegde 917 externe referenties verbinden 1.819 lokale taxon-UUIDs uit verschillende
 datasets. Deze aanvullende routes gebruiken bronsysteem `Meijendel`, dataset

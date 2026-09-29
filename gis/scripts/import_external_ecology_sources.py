@@ -184,7 +184,27 @@ def resolve_registry_import(source: dict, taxon: dict, taxa: list[dict], links: 
             raise ValueError('Oorspronkelijke bronmetadata verschilt of ontbreekt')
         return {'taxon_id': existing[0]['taxon_id'], 'koppeling_id': existing[0]['koppeling_id']}
     candidates = [t for t in taxa if central_name(t) == central_name(taxon)]
+    archived_targets={b['taxon_id'] for b in links
+                      if b.get('bron_systeem')=='Meijendel'
+                      and b.get('bron_dataset')=='taxa_naamgebruik_archief'
+                      and b.get('ingetrokken_op') is None
+                      and (b.get('bronmetadata') or {}).get('taxon_voor')
+                      and central_name(b['bronmetadata']['taxon_voor'])==central_name(taxon)}
+    if archived_targets-{t['taxon_id'] for t in candidates}:
+        raise ValueError('Naam is eerder gecorrigeerd of gefuseerd; bronafbakening beoordelen, geen nieuw taxon')
     if not candidates:
+        # A shared binomial is only a REVIEW signal, never identity evidence.
+        # This catches new author/rank/separator variants while preventing a
+        # species from being silently equated with its subspecies or aggregate.
+        def name_stem(row):
+            match=re.match(r'^([A-Z][a-z]+)\s+(?:[x×]\s+)?([a-z][a-z-]+)\b',central_name(row))
+            return match.groups() if match else None
+        stem=name_stem(taxon)
+        if stem and any(name_stem(t)==stem for t in taxa):
+            raise ValueError('Verwante naamvariant bestaat; rang, auteur en afbakening beoordelen vóór nieuwe invoer')
+        authored=re.fullmatch(r'([A-Z][a-z]+) (?:[A-Z(]|von |de ).*',central_name(taxon))
+        if authored and any(central_name(t)==authored[1] for t in taxa):
+            raise ValueError('Bestaande hogere taxonnaam met auteursuffix; eerst inhoudelijk beoordelen')
         return None
     incoming = {**taxon,'taxon_id':-1}
     incoming_link = {**source,'taxon_id':-1}
@@ -333,10 +353,122 @@ def central_taxa_projection(taxa: list[dict], links: list[dict], *, name_evidenc
     return {'taxa':new_taxa,'links':after_links,'archives':archives,'plan':plan,'mapping':mapping}
 
 
-def central_taxa_sql(snapshot: dict, *, name_evidence: dict, commit: bool = False) -> str:
+def reviewed_group_hash(ids: list[int], taxa: list[dict], links: list[dict]) -> str:
+    """Bind a reviewed decision to every source cell, not just name and ID."""
+    payload={'taxa':sorted((t for t in taxa if t['taxon_id'] in ids),key=lambda t:t['taxon_id']),
+             'links':sorted((b for b in links if b['taxon_id'] in ids),key=lambda b:b['koppeling_id'])}
+    return hashlib.sha256(json.dumps(payload,sort_keys=True,ensure_ascii=False,
+                                    separators=(',',':')).encode()).hexdigest()
+
+
+def reviewed_taxa_projection(taxa: list[dict], links: list[dict], plan: dict) -> dict:
+    """Execute a bounded, source-hashed review; never infer concept congruence.
+
+    Unlike the conservative discovery planner this accepts individually reviewed
+    author/classification differences and name corrections. Review evidence is
+    mandatory. Previously archived UUIDs are redirected, not archived twice.
+    """
+    rule='taxa-beoordeelde-fusie-v2'
+    if plan.get('rule')!=rule or not plan.get('groups'):
+        raise ValueError('Een expliciet beoordeeld fusieplan is vereist')
+    allowed={'naam_auteur','nederlandse_naam','taxonrang','taxonvorm','groep_id',
+             'rijk','stam','klasse','orde','familie','geslacht','nomenclatuurcode','opmerkingen'}
+    by_id={t['taxon_id']:t for t in taxa}
+    mapping={}
+    for g in plan['groups']:
+        ids=g.get('ids',[])
+        if (not ids or len(ids)!=len(set(ids)) or set(ids)-by_id.keys()
+                or g.get('keep') not in ids or set(ids)&mapping.keys()
+                or not g.get('name') or not g.get('reason') or not g.get('evidence')
+                or set(g.get('updates',{}))-allowed):
+            raise ValueError('Onvolledig, overlappend of onbevoegd fusiebesluit')
+        for e in g['evidence']:
+            if not e.get('url') or not re.fullmatch('[a-f0-9]{64}',e.get('sha256','')):
+                raise ValueError('Controleerbare bewijsverwijzing ontbreekt')
+        if reviewed_group_hash(ids,taxa,links)!=g.get('source_sha256'):
+            raise ValueError('Broncellen gewijzigd sinds inhoudelijke beoordeling')
+        mapping.update({i:g['keep'] for i in ids})
+    if any(t.get(f) in mapping for t in taxa for f in
+           ('bovenliggend_taxon_id','geaccepteerd_taxon_id','oorspronkelijk_taxon_id')):
+        raise ValueError('Taxonomische zelfverwijzing vereist aparte beoordeling')
+    keys=[(b['bron_identiteit_sha256'],b['besluitversie'],mapping.get(b['taxon_id'],b['taxon_id'])) for b in links]
+    if len(keys)!=len(set(keys)):
+        raise ValueError('Samenvoeging veroorzaakt bronbesluitbotsing')
+    by_source=defaultdict(list)
+    archived=set()
+    for b in links:
+        by_source[b['taxon_id']].append(b)
+        if b.get('bron_systeem')=='Meijendel' and b.get('bron_dataset')=='taxa_naamgebruik_archief':
+            original=(b.get('bronmetadata') or {}).get('taxon_voor') or {}
+            if (b.get('ingetrokken_op') is not None or b.get('bron_versie')!=CENTRAL_RULE
+                    or b.get('bron_taxon_id')!=original.get('taxon_uuid')
+                    or original.get('taxon_uuid') in archived):
+                raise ValueError('Ongeldig of dubbel bestaand broncontextarchief')
+            archived.add(original['taxon_uuid'])
+    archives=[]
+    for i,target in sorted(mapping.items()):
+        original=by_id[i]
+        if original['taxon_uuid'] in archived:
+            continue
+        archives.append({'bron_systeem':'Meijendel','bron_dataset':'taxa_naamgebruik_archief',
+            'bron_versie':CENTRAL_RULE,'bron_taxon_id':original['taxon_uuid'],
+            'bron_wetenschappelijke_naam':original['wetenschappelijke_naam'],
+            'bron_taxonrang':original.get('taxonrang'),'bron_naam_volgens':original.get('naam_volgens'),
+            'bronmetadata':{'regelversie':CENTRAL_RULE,'taxon_voor':copy.deepcopy(original),
+                            'bronkoppelingen_voor':copy.deepcopy(by_source[i])},
+            'taxon_id':target,'koppelstatus':'kandidaat','taxonrelatie':'onbekend',
+            'koppelmethode':'centralisatie-met-behoud-broncontext','regelversie':CENTRAL_RULE,
+            'onderbouwing':'Beoordeelde nominale fusie; oorspronkelijke broncontext behouden. Geen historische congruentie vastgesteld.'})
+    after_links=copy.deepcopy(links)
+    for b in after_links:
+        i=b['taxon_id']
+        if i not in mapping:
+            continue
+        if b['koppelstatus']!='kandidaat' or b['taxonrelatie']!='onbekend':
+            raise ValueError('Bevestigd bronbesluit mag niet stilzwijgend worden omgezet')
+        if not (b['bron_systeem']=='Meijendel' and b['bron_dataset'] in
+                {'taxa_naamgebruik_archief','taxa_fusie_alias'}):
+            meta=b.get('bronmetadata') or {}
+            meta.setdefault('register_broncontext',copy.deepcopy(by_id[i]))
+            b['bronmetadata']=meta
+        b['taxon_id']=b['doeltaxon_sleutel']=mapping[i]
+    new_taxa=copy.deepcopy([t for t in taxa if mapping.get(t['taxon_id'],t['taxon_id'])==t['taxon_id']])
+    groups={g['keep']:g for g in plan['groups']}
+    for t in new_taxa:
+        g=groups.get(t['taxon_id'])
+        if not g:
+            continue
+        originals=[by_id[i] for i in g['ids']]
+        for field in allowed-{'opmerkingen'}:
+            values={r.get(field) for r in originals if r.get(field) not in (None,'')}
+            if t.get(field) is None and len(values)==1:
+                t[field]=next(iter(values))
+        t.update(copy.deepcopy(g.get('updates',{})))
+        t['wetenschappelijke_naam']=t['naam_zonder_auteur']=g['name']
+        t['naam_volgens']='Meijendel centrale nominale taxonregistratie; bronconcepten afzonderlijk bewaard'
+        t['naam_volgens_id']=None
+        t['naam_volgens_versie']=rule
+        t['concept_identificatie']=None
+        t['taxonomische_status']='unresolved'
+        meta=t.get('taxonmetadata') or {}
+        meta.setdefault('beoordeelde_fusies',[]).append({'besluit':copy.deepcopy(g),
+            'taxa_voor':copy.deepcopy(originals),'historische_conceptgelijkheid':False})
+        meta['centrale_lijst']={'regelversie':rule,'oorspronkelijke_ids':g['ids'],
+                               'historische_conceptgelijkheid':False}
+        t['taxonmetadata']=meta
+    return {'taxa':new_taxa,'links':after_links,'archives':archives,'plan':copy.deepcopy(plan),'mapping':mapping}
+
+
+def central_taxa_sql(snapshot: dict, *, name_evidence: dict | None = None,
+                     reviewed_plan: dict | None = None, commit: bool = False) -> str:
     """Alleen DML, fail-closed snapshotpoort en celcontrole binnen één transactie."""
+    if (not name_evidence and not reviewed_plan) or (name_evidence is not None and reviewed_plan is not None):
+        raise ValueError('Precies één volledige naambeoordeling of beoordeeld fusieplan vereist')
     old_taxa, old_links = snapshot['taxa']['rows'], snapshot['taxa_bronkoppeling']['rows']
-    projected = central_taxa_projection(old_taxa, old_links, name_evidence=name_evidence)
+    if reviewed_plan is not None:
+        projected=reviewed_taxa_projection(old_taxa,old_links,reviewed_plan)
+    else:
+        projected = central_taxa_projection(old_taxa, old_links, name_evidence=name_evidence)
     if not projected['mapping']:
         raise ValueError('Geen beoordeelde fusies')
     def literal(value):
@@ -368,7 +500,8 @@ def central_taxa_sql(snapshot: dict, *, name_evidence: dict, commit: bool = Fals
         if changed:
             sql.append('UPDATE taxa SET '+','.join(f'`{f}`={literal(v)}' for f,v in changed.items())+f" WHERE taxon_id={after['taxon_id']};")
     removed = [i for i,target in projected['mapping'].items() if i != target]
-    sql.append('DELETE FROM taxa WHERE taxon_id IN ('+','.join(map(str,removed))+');')
+    if removed:
+        sql.append('DELETE FROM taxa WHERE taxon_id IN ('+','.join(map(str,removed))+');')
     # Every original surviving cell and every archived cell is checked before
     # commit, not merely counts. Generated target keys are included.
     for table, rows in [('taxa',projected['taxa']),('taxa_bronkoppeling',projected['links'])]:

@@ -85,17 +85,18 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   tabellen `taxon_groepen`, `taxa` en `taxa_bronkoppeling` in de levende lokale
   database. Wetenschappelijke onderbouwing, sleutels en uitvoeringscontrole;
   Na de lokale centralisatie van 29 september: 27 praktische groepen,
-  13.421 centrale vermeldingen en 21.799 bronkoppelingen. Daarin blijven alle
+  11.659 centrale vermeldingen en 24.561 bronkoppelingen. Daarin blijven alle
   18.437 oorspronkelijke bronbesluiten (18.350 actief), drie eerdere
-  identificatie-aliassen en 3.359 volledig bewaarde broncontexten aanwezig.
-  In 1.203 naamgroepen zijn 2.156 dubbele centrale rijen samengebracht,
-  inclusief Glaucium flavum. Alle oorspronkelijke koppelingnummers blijven
+  identificatie-aliassen en 6.121 volledig bewaarde broncontexten aanwezig.
+  Na de eerste 2.156 fusies zijn nog 1.762 dubbele centrale rijen samengebracht,
+  inclusief de beoordeelde naamvarianten. Alle oorspronkelijke koppelingnummers blijven
   bruikbaar; oude taxonnummers en UUIDs zijn met hun broncontext herleidbaar.
-  Nog 751 naamgroepen zijn niet voldoende opgelost; de lijst is dus nog
-  niet geheel ontdubbeld. Proef, volledig herstel en levende nacontrole
+  De 751 eerder open naamgroepen zijn afgehandeld; zeven gelijknamige paren
+  hebben aantoonbaar verschillende betekenissen en blijven afzonderlijk.
+  Proef, volledig herstel en levende nacontrole
   bevestigen behoud van alle 251 overige tabellen en 16 viewuitkomsten.
   Van de oorspronkelijke besluiten zijn twee actieve nog zonder centraal
-  doel. De 87 PQ-naamteksten zijn onderbouwd; 278 registraties missen nog
+  doel. De 87 PQ-naamteksten zijn onderbouwd; 235 centrale vermeldingen missen nog
   een primaire groep. De eerder toegevoegde 917 gedeelde naamreferenties en
   1.819 verbindingen blijven als broninformatie bewaard, zonder bevestigde conceptgelijkheid
   of samenvoeging van waarnemingen. De drie verwijderde dubbele

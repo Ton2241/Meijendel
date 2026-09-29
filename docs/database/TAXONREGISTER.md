@@ -1,6 +1,111 @@
 # Taxonregister: structuur en uitvoering
 
-## Centrale lijst zonder brongebonden dubbelen — eerste selectie uitgevoerd
+## Opschoning afgerond op 29 september 2026
+
+De 751 eerder overgebleven naamgroepen zijn inhoudelijk beoordeeld. Ook
+verschillende auteursnotaties, rangafkortingen, spellingen en volgorden van
+dezelfde samengestelde determinatie zijn onderzocht. In de levende lokale
+database zijn nog 1.762 dubbele centrale rijen samengebracht. Er staan nu
+11.659 centrale naamvermeldingen, tegenover 13.421 vóór deze vervolgstap.
+Dit zijn geen 11.659 unieke biologische soorten: het register bevat ook
+ondersoorten, geslachten en bredere determinatie-eenheden en heeft geen eigen
+waarnemingsperiode. Er zijn geen onbesliste herhaalde naamgroepen meer uit
+deze inventarisatie. De zeven inhoudelijk verschillende naamparen hieronder
+zijn bewust niet samengevoegd.
+
+Alle 21.799 bestaande bronkoppelingnummers zijn behouden. Er zijn 2.762
+volledige oorspronkelijke taxoncontexten toegevoegd aan het bestaande
+bronarchief; dat telt nu 6.121 contexten. `taxa_bronkoppeling` bevat 24.561
+rijen en `taxon_groepen` blijft 27 groepen bevatten. Alle 31.160 geteste oude
+IDs en UUIDs leiden naar de juiste centrale vermelding. De oorspronkelijke
+bronwaarden en eventuele eerdere centrale versies blijven terugvindbaar.
+Geen waarneming is verwijderd of samengevoegd.
+
+### Gelijke namen met verschillende betekenis
+
+| Naam | Behouden IDs | Waarom afzonderlijk |
+|---|---|---|
+| Acanthis flammea | 471, 472 | Barmsijs als aggregaat tegenover Grote barmsijs; EURING 16630 en 16631. |
+| Branta canadensis | 284, 285 | De vogelbron onderscheidt Kleine en Grote Canadese gans. |
+| Elachista | 30322, 30633 | Een algengeslacht en een vlindergeslacht; verschillende nomenclatuurcodes. |
+| Psathyrella corrugis | 33906, 33907 | Sierlijke franjehoed tegenover de eenheid die ook Kortwortelfranjehoed omvat. |
+| Psathyrella piluliformis | 34312, 34313 | Witsteelfranjehoed tegenover de eenheid die ook de Zoetgeurende omvat. |
+| Dactylorhiza majalis | 35436, 42297 | Brede orchis tegenover Brede orchis én Rietorchis. |
+| Lepidoptera | 39058, 41317 | PQ-broncode 3755 betekent ‘Dagvlinder’; de andere bron bedoelt de hele orde. De eerste determinatie mag niet tot alle vlinders worden verruimd. |
+
+Ook verschillende formele rangen, subgenera, cultivars en expliciete subsets
+blijven afzonderlijk. Bij Cortinarius zijn de bijna gelijke namen
+`emollitus` en `emmolitus` niet verenigd: de bron noemt respectievelijk Gele
+galgordijnzwam en het Fries-naamgebruik. Een verkeerde externe naamtreffer
+maakt deze homoniemen niet identiek. De eindcontrole gebruikt beide
+naamvelden en de bronbetekenis; alleen unieke naamtekst afdwingen zou hier
+taxonomische fouten veroorzaken.
+
+### Belangrijkste inhoudelijke correcties
+
+De verkorte PQ-namen zijn getoetst aan de volledige Floranld-naam, code en
+NDFF-identiteit. Baldellia blijft de bedoelde ondersoort; Polytrichum de
+bedoelde variëteit. De gecombineerde waterkers-eenheid wordt niet met één
+van haar twee soorten gelijkgesteld. De bredere LVD-Carex-eenheid gaat naar
+`Carex demissa/oederi`, niet naar alleen Dwergzegge.
+
+Bij Myosotis discolor bevat de oorspronkelijke LVD-waarneming van 29 april
+2003 code 842. Die verbindt de vermelding met de brede Floranld-eenheid en
+Bleek/Veelkleurig vergeet-mij-nietje; zij is niet vernauwd tot één van de
+soorten. Bij Myosotis laxa bevatten zeven LVD-resultaten uit 2005–2013 code
+841, overeenkomstig de PQ-code. `caespitosa` en `cespitosa` zijn hier
+spellingvarianten; centraal wordt de oorspronkelijke spelling `cespitosa`
+gebruikt. Dit volgt uit de oorspronkelijke codes en
+[de nomenclatuurtoelichting van Landcare Research](https://biotanz.landcareresearch.co.nz/scientific-names/8EC2BE04-17E6-4576-BDE8-53F48B648A3B),
+niet uit de afwijkende COL-synoniemenroute.
+
+De LVD-conditie ‘dood’ creëert geen afzonderlijk taxon. Twee Buntgrasregels
+uit 2006 en één Dicranum-regel uit 2009 behouden die conditie in de
+ongewijzigde waarneming en volledige broncontext. De ene dode Hypnum-regel
+uit 2009 hoort bij de brede eenheid `cupressiforme/andoi`: de LVD-catalogus
+onderscheidt zelf Gewoon klauwtjesmos van het smallere Gesnaveld klauwtjesmos.
+Floranld 2788 en 3287 bevestigen die naamafbakening. De LVD-doodcodes 9517,
+9521 en 9524 zijn **niet** gelijkgesteld aan dezelfde getallen in
+Floranld_2020: die betekenen daar andere taxa. Geen dood materiaal is als
+levend geherinterpreteerd.
+
+### Behoud, toetsing en nieuwe imports
+
+De uitvoering gebruikt 1.208 afzonderlijk beoordeelde groepen in
+`taxa-beoordeelde-fusie-v2`. Elk besluit bevat oorspronkelijke IDs, behouden
+ID, veldcorrecties, reden, bewijsverwijzingen en een hash van alle betrokken
+broncellen. Bij vervolgfusies blijft het eerste UUID-archief bestaan;
+tussentijdse centrale rijen komen in `beoordeelde_fusies`. De bestaande
+`register_broncontext` wordt nooit overschreven. De nominale centrale
+vermelding bevestigt geen gelijkheid van historische taxonconcepten:
+kandidaatstatussen en onbekende conceptrelaties blijven behouden. Dit volgt
+de scheiding tussen naamgebruik, concept en bronidentiteit van Darwin Core
+en TDWG TCS; geen afwijking van de afgesproken basisstructuur.
+
+De volledige back-up, fusieproef, normale rollback, opzettelijke late fout,
+weigering van verouderde invoer, herhaalde uitvoering en volledige
+herstelproef zijn geslaagd. De levende nacontrole bevestigt alle broncellen
+en verwijzingen, alle 251 overige tabellen en alle 16 viewuitkomsten.
+De vogelcontrole behoudt de 263 oorspronkelijke naamgebruiken. Alle 21.710
+actieve, eenduidige bestaande bronidentiteiten vinden bij importherhaling
+hun bestaande koppeling terug. De 28 GIS-testbestanden slagen.
+
+Nieuwe bronidentiteiten met een gecorrigeerde oude naam, dezelfde
+binominale stam maar afwijkende rang/auteursnotatie, of een hogere taxonnaam
+met auteursuffix worden vóór invoer tegengehouden voor beoordeling. Dat is
+geen automatische gelijkstelling: een nieuw onderscheiden taxon kan pas na
+een brongetrouw besluit worden toegevoegd. De bestaande importpoort blijft
+verplicht; losse root-SQL valt niet onder deze geteste bescherming.
+
+Er is niets naar de VPS gepubliceerd. Applicatiecode, exportdump en
+Shiny-cache zijn niet vervangen. Uitvoeringsbewijs en volledige back-up:
+`/Users/ton/Documents/Codex/Herstel/taxa-restgroepen-20260929/`.
+Leidend zijn `reviewed_plan.json`, `r3_trial_verified.json`,
+`r3_restore_verified.json` en `r3_live_verified.json`. Eerdere proefselecties
+in dezelfde map zijn niet de uiteindelijke uitvoering. De eigen tijdelijke
+proefdatabase is na verificatie verwijderd; de herstelbestanden blijven bewaard.
+
+## Historie van de eerste centrale selectie
 
 De bewezen selectie is op 29 september 2026 in de levende lokale database
 uitgevoerd en gecontroleerd, na proef, terugdraaien en volledig herstel uit
@@ -32,11 +137,12 @@ verwijderd of samengevoegd. De VPS, exportdump, Shiny-cache en applicatiecode
 zijn niet gewijzigd. Bewijs: `r2_trial_verified.json`,
 `r2_restore_verified.json` en `r2_live_verified.json` in de herstelmap.
 
-### Wat nog niet is opgelost
+### Uitgangsstand voor de inmiddels afgeronde vervolgcontrole
 
-Er blijven 751 naamgroepen met samen 1.960 centrale rijen buiten deze
-selectie. Die groepen zijn niet allemaal bewezen verschillende taxa en
-evenmin een verwijderlijst. De onderstaande indeling telt iedere groep
+Na die eerste selectie bleven 751 naamgroepen met samen 1.960 centrale rijen
+buiten de selectie. Zij zijn in de vervolgstap hierboven afgehandeld.
+Destijds waren zij niet allemaal bewezen verschillende taxa en evenmin
+een verwijderlijst. De onderstaande indeling telt iedere groep
 eenmaal, naar de eerste relevante belemmering.
 
 | Reden | Naamgroepen | Nodige vervolgstap |
@@ -52,9 +158,8 @@ Van de 527 referentiegevallen hebben 331 gelijknamige alternatieven, vallen
 rangnotaties. Verder zijn er 24 zonder exacte treffer, 11 treffers op een
 hoger niveau en twee schrijfvarianten. De scoregrens is een conservatieve
 selectieregel, geen bewijs dat de betrokken taxa verschillen. Deze gevallen
-moeten inhoudelijk verder worden beoordeeld; de lijst is nog niet geheel
-ontdubbeld. Voorbeelden van daadwerkelijke naamverwarring staan in de
-bewaarde referenties bij *Euphrasia stricta*, *Isothecium myosuroides* en
+zijn in de vervolgcontrole inhoudelijk beoordeeld. Voorbeelden van daadwerkelijke
+naamverwarring staan in de bewaarde referenties bij *Euphrasia stricta*, *Isothecium myosuroides* en
 *Polytrichum longisetum*. Een zelfde geaccepteerde referentiesleutel heft een
 verschil tussen soort en aggregaat niet op.
 
