@@ -1,5 +1,130 @@
 # Taxonregister: structuur en uitvoering
 
+## Weergavenaam voor alle taxa
+
+Besluit Ton, 29 september 2026: voeg `taxa.weergavenaam` toe en vul deze
+voor iedere centrale vermelding. De naam is bedoeld voor leesbare lijsten,
+niet voor koppelingen of de vaststelling dat twee bronconcepten identiek zijn.
+De oorspronkelijke wetenschappelijke en Nederlandse namen blijven staan.
+
+### Vaste gebruiksregels
+
+- Gebruik de Nederlandse naam; ontbreekt die, gebruik dan de wetenschappelijke
+  naam. Maak alleen de presentatie schoon: overtollige spaties vervallen;
+  de verkeerd gedecodeerde aanhalingstekens in de twee Cryptomonas-namen
+  worden leesbaar. De oorspronkelijke bronvelden worden niet aangepast.
+- Krijgen verschillende vermeldingen dezelfde naam, voeg dan de wetenschappelijke
+  naam toe. Zo worden de vogel en plant `Hop — Upupa epops` en
+  `Hop — Humulus lupulus`. Is dat nog niet onderscheidend, beoordeel eerst
+  de betekenis en kies een inhoudelijke verduidelijking; geen volgnummers.
+- De zeven eerder beoordeelde paren krijgen de hieronder vastgelegde labels.
+  Het geleverde determinatieniveau blijft behouden, ook bij historische vogels.
+- Bestaande weergavenamen blijven bij import gelijk. Een nieuwe bron is geen
+  reden voor een nieuwe centrale rij of voor het hernoemen van een bestaande.
+  Bij een latere inhoudelijke naamcorrectie moet ook de weergavenaam expliciet
+  worden beoordeeld en opnieuw op uniciteit worden gecontroleerd.
+- Gebruik voor nieuwe registerpresentaties deze kolom. Identificeer en verbind
+  gegevens uitsluitend via de bestaande IDs/UUIDs en bronkoppelingen.
+  Dit is geen opdracht om bestaande website-, dashboard- of Shiny-presentaties
+  te wijzigen en geen toestemming tot publicatie naar de VPS.
+
+| Taxon-ID | Weergavenaam |
+|---|---|
+| 471 | Barmsijs — Grote of Kleine niet onderscheiden |
+| 472 | Grote barmsijs |
+| 284 | Kleine Canadese gans |
+| 285 | Grote Canadese gans |
+| 30322 | Elachista — algengeslacht |
+| 30633 | Elachista — microvlindergeslacht |
+| 33906 | Sierlijke franjehoed |
+| 33907 | Sierlijke franjehoed — inclusief Kortwortelfranjehoed |
+| 34312 | Witsteelfranjehoed |
+| 34313 | Witsteelfranjehoed — inclusief Zoetgeurende witsteelfranjehoed |
+| 35436 | Brede orchis |
+| 42297 | Brede orchis / Rietorchis — niet onderscheiden |
+| 39058 | Dagvlinder — niet nader bepaald |
+| 41317 | Vlinder — dag- of nachtvlinder niet onderscheiden |
+
+### Invoer en technische borging
+
+De nieuwe kolom is `VARCHAR(700) NOT NULL`, met de volledige unieke index
+`uq_taxa_weergavenaam` onder `utf8mb4_0900_ai_ci` en
+`ck_taxa_weergavenaam` tegen lege/witruimtewaarden, controlekarakters en
+randspaties. Hoofdletters en accenten mogen dus niet het enige onderscheid
+zijn. De wetenschappelijke naam zelf krijgt geen unieke index.
+
+Nieuwe importcode gebruikt `prepare_registry_import()` in
+`gis/scripts/import_external_ecology_sources.py`. Deze voert eerst de bestaande
+identiteitscontrole `resolve_registry_import()` uit. Bij herkende bronidentiteit
+wordt de bestaande koppeling plus weergavenaam teruggegeven; bij werkelijk
+nieuwe invoer wordt `nieuw_taxon` met weergavenaam voorbereid. Dit resultaat
+is geen toestemming om onbesliste taxa in te voeren. De aanroeper beoordeelt
+de bron en gebruikt een actuele, vergrendelde registerselectie in dezelfde
+transactie als de uiteindelijke invoer. De database weigert een ontbrekende,
+lege of al gebruikte weergavenaam, ook als een oude losse invoerroute deze
+voorbereiding overslaat. Een geldige unieke tekst alleen bewijst echter
+geen geldige taxonidentiteit. Historische import-/migratiescripts mogen niet
+blind opnieuw worden uitgevoerd; het nieuwe veld is een verplichte voorwaarde.
+
+### Toetsing aan Darwin Core en TDWG TCS
+
+Op 29 september 2026 opnieuw geraadpleegd: de
+[Darwin Core-termen](https://dwc.tdwg.org/terms/), in het bijzonder
+`scientificName`, `vernacularName`, `taxonID` en `taxonConceptID`, de
+[TCS-standaardbeschrijving](https://www.tdwg.org/standards/tcs/) en de
+[TCS-vocabulairetoelichting](https://tcs.tdwg.org/).
+De lokale uitwerking houdt naam, concept en identiteit gescheiden.
+`weergavenaam` is een aanvullende presentatielaag, geen formele
+wetenschappelijke naam, vernacularName of conceptidentifier. Exporteer de
+samengestelde labels niet stilzwijgend naar die standaardvelden. Er worden
+geen standaardtermen hergedefinieerd, bronconcepten bevestigd of nieuwe
+taxonomische interpretaties toegevoegd; geen afwijking van de afgesproken
+Darwin Core/TDWG TCS-basisstructuur.
+
+### Uitvoering en behoudscontrole
+
+Het naamplan omvat de 11.659 centrale vermeldingen van 29 september 2026;
+het register heeft geen eigen waarnemingsperiode. Er zijn 10.609 vermeldingen
+met een Nederlandse naam; de overige 1.050 gebruiken de wetenschappelijke
+naam, met de expliciete Lepidoptera-verduidelijking hierboven. Bij 194
+vermeldingen is een wetenschappelijke aanvulling nodig. Het plan bevat
+11.659 verschillende labels; de langste telt 113 tekens.
+
+Lokaal uitgevoerd en gecontroleerd op 29 september 2026. Alle 11.659 centrale
+vermeldingen hebben een gevulde, unieke weergavenaam. Alle oorspronkelijke
+taxoncellen, inclusief IDs/UUIDs en tijdstempels, zijn identiek gebleven.
+Alle 24.561 bronkoppelingen, alle 252 overige tabellen en alle 16 bestaande
+viewuitkomsten zijn gelijk aan de uitgangstoestand. De schema- en vogelcontrole
+bevestigen de bestaande relaties en 263 oorspronkelijke vogelnaamgebruiken.
+
+Vooraf zijn een verse volledige back-up en een identieke proefdatabase gemaakt.
+Rollback, een opzettelijke late fout, verouderde invoer, herhaling, ongeldige
+labels en een nieuwe import met rollback zijn beproefd. Ook herstel vanuit
+de tussenstanden na lege kolomtoevoeging en na gecommitteerde vulling slaagt.
+De volledige back-up is daarna opnieuw hersteld en met de oorspronkelijke
+database vergeleken. Proef, herstel en levende nacontrole zijn geslaagd.
+De database weigert ontbrekende, NULL-, lege en dubbele weergavenamen.
+Alle 28 GIS-testbestanden slagen. De aanvullende verwijzingscontrole vindt
+geen verweesde taxon-, provinciale PQ-, LVD-bronresultaat- of Vangblik-koppeling.
+De eigen proefdatabase is verwijderd; de volledige herstelback-up blijft bewaard.
+
+Geen exportdump,
+cache, applicatiecode of VPS-publicatie. Omdat geen broninhoud, omvang,
+beoordeling of analysegeschiktheid verandert, blijven beide verschijningsvormen
+van het bronregister ongewijzigd; deze presentatieafspraak hoort hier.
+Uitvoeringsbestanden en herstelbewijs staan buiten Git in
+`/Users/ton/Documents/Codex/Herstel/taxa-weergavenaam-20260929/`.
+Leidend zijn `labels.json`, `trial_verified.json`, `restore_verified.json`
+en `live_verified.json`. De volledige back-up `Meijendel_before.sql.gz` heeft
+SHA-256 `ead876e85a5954d531ff8482e53eecf78e1d8f65d4f98d2a29d33019467e4eed`.
+`run_display.py` voert uitsluitend benoemde fasen uit; na een fout eerst
+diagnose. `recover` draait alleen de eigen schema-uitbreiding terug, mits
+de bewaarde uitgangstoestand en bekende schemahashes dat aantoonbaar toelaten.
+Bij `ALTER TABLE` herschrijft MySQL de tekenreeks van de bestaande UUID-controle
+van `_utf8mb4` naar `_ascii`. Alleen dat exact geïdentificeerde, semantisch
+gelijke patroon wordt voor de schemahash genormaliseerd; overige
+schemaverschillen blijven blokkeren. Broninhoud wordt niet genormaliseerd.
+
 ## Opschoning afgerond op 29 september 2026
 
 De 751 eerder overgebleven naamgroepen zijn inhoudelijk beoordeeld. Ook
@@ -217,13 +342,16 @@ GBIF-antwoorden van 27 september zijn integraal bewaard en op SHA-256
 gecontroleerd; [GBIF beschrijft de naaminterpretatie en haar beperkingen](https://techdocs.gbif.org/en/data-processing/taxonomy-interpretation).
 
 De importpoort `resolve_registry_import()` verlangt bij een bestaande
-bronidentiteit dezelfde bronvelden en metadata. Bij een nieuwe bronidentiteit
+bronidentiteit dezelfde bronvelden en metadata. Vanaf de toevoeging van de
+weergavenaam wordt deze identiteitscontrole aangeroepen via de verplichte
+voorbereiding `prepare_registry_import()`, zoals bovenaan beschreven.
+Bij een nieuwe bronidentiteit
 zijn een eenduidige centrale naam, verenigbare broncontext en een gecontroleerde
 naamreferentie vereist. Bij twijfel stopt de koppeling. `None` is nadrukkelijk
 geen toestemming om een nieuwe rij in te voegen: een werkelijk nieuw taxon
 vraagt het afzonderlijke, brongetrouwe invoerbesluit uit de vaste afspraak
 hieronder. De historische bulkimports blijven geblokkeerd. Er is geen
-generieke nieuwe schrijver en geen unieke index op naam alleen toegevoegd;
+generieke nieuwe schrijver en geen unieke index op wetenschappelijke naam toegevoegd;
 zo'n index zou legitieme naamgenoten ten onrechte verbieden. Handmatige SQL
 als root kan deze toepassingscontroles omzeilen en valt niet onder de
 geteste importgarantie.
@@ -245,6 +373,10 @@ aangemaakt. Deze sectie is de canonieke importafspraak.
   duplicaat alleen omdat de levering van een andere organisatie komt.
   Gebruik de bestaande praktische groepen; een benodigde nieuwe groep wordt
   onderbouwd in `taxon_groepen` toegevoegd, niet in een aparte catalogus.
+- Vul bij iedere nieuwe centrale vermelding ook `weergavenaam` en toets
+  die via `prepare_registry_import()`; volg de canonieke sectie
+  `Weergavenaam voor alle taxa` hierboven. Een bestaande vermelding behoudt
+  haar label. Gelijke of verschillende weergavenamen zijn geen taxonomisch bewijs.
 - Bepaal bij twijfel eerst de juiste taxonnaam en de bedoelde afbakening,
   met de oorspronkelijke broncode, lijstversie en beschikbare referenties.
   Houd de betrokken regels buiten de definitieve import zolang dat niet is

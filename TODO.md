@@ -4,6 +4,20 @@
 
 ### Naamgeving en bronoverstijgende meetstructuren
 
+- Weergavenaam op 29 september 2026 lokaal uitgevoerd: alle 11.659 centrale
+  vermeldingen hebben een gevulde, unieke presentatienaam. Oorspronkelijke
+  taxoncellen en alle 24.561 bronkoppelingen zijn identiek gebleven, evenals
+  de 252 overige tabellen en 16 viewuitkomsten. Migratieproef, rollback,
+  herstel van tussenstanden, volledige herstelproef en levende nacontrole
+  zijn geslaagd. Nieuwe imports vullen en toetsen de naam verplicht via
+  `prepare_registry_import()`; de database weigert lege en dubbele labels.
+  Alle 28 GIS-testbestanden slagen; geen verweesde register-, PQ- of
+  Vangblik-verwijzingen. De eigen proefdatabase is verwijderd en de
+  herstelback-up blijft bewaard.
+  Canonieke afspraak,
+  afgesproken namen en controlebewijs: `docs/database/TAXONREGISTER.md`,
+  sectie `Weergavenaam voor alle taxa`. Geen VPS-publicatie.
+
 - Centrale taxonopschoning op 29 september 2026 lokaal afgerond. Na de
   eerste 2.156 fusies zijn nog 1.762 dubbele rijen samengebracht; nu 11.659
   centrale vermeldingen en 24.561 bronkoppelingen, inclusief 6.121 volledig
@@ -18,7 +32,7 @@
   geteste bestaande bronidentiteiten vinden dezelfde koppeling terug.
   De importpoort blokkeert herinvoer van onbesliste naamvarianten. Geen
   VPS-publicatie. Gebruik ook voortaan de vaste importpoort, geen losse
-  root-SQL of unieke index op naam alleen. Canoniek overzicht en bewijs:
+  root-SQL of unieke index op wetenschappelijke naam. Canoniek overzicht en bewijs:
   `docs/database/TAXONREGISTER.md`.
 
 - Gerichte taxonfusie lokaal uitgevoerd op 28 september 2026: vijf Naturalis-

@@ -17,6 +17,7 @@ import json
 import re
 import subprocess
 import tempfile
+import unicodedata
 from collections import defaultdict
 from pathlib import Path
 
@@ -28,6 +29,150 @@ IMPORT_VERSION = "externe-ecologie-v1"
 
 FUSION_RULE = 'taxa-gerichte-fusie-v1'
 CENTRAL_RULE = 'taxa-centrale-lijst-v1'
+
+# Approved on 29 September 2026; presentation only, never taxon identity.
+DISPLAY_NAMES = {
+    471: ('Acanthis flammea', 'Barmsijs', 1, 'Barmsijs — Grote of Kleine niet onderscheiden'),
+    472: ('Acanthis flammea', 'Grote Barmsijs', 1, 'Grote barmsijs'),
+    284: ('Branta canadensis', 'Kleine Canadese Gans', 1, 'Kleine Canadese gans'),
+    285: ('Branta canadensis', 'Grote Canadese Gans', 1, 'Grote Canadese gans'),
+    30322: ('Elachista', 'Elachista', 9, 'Elachista — algengeslacht'),
+    30633: ('Elachista', 'Elachista', 12, 'Elachista — microvlindergeslacht'),
+    33906: ('Psathyrella corrugis', 'Sierlijke franjehoed', 17, 'Sierlijke franjehoed'),
+    33907: ('Psathyrella corrugis', 'Sierlijke franjehoed sl, incl. Kortwortelfranjehoed', 17,
+            'Sierlijke franjehoed — inclusief Kortwortelfranjehoed'),
+    34312: ('Psathyrella piluliformis', 'Witsteelfranjehoed', 17, 'Witsteelfranjehoed'),
+    34313: ('Psathyrella piluliformis', 'Witsteelfranjehoed sl, incl. Zoetgeurende witsteelfranjehoed', 17,
+            'Witsteelfranjehoed — inclusief Zoetgeurende witsteelfranjehoed'),
+    35436: ('Dactylorhiza majalis', 'Brede orchis', 21, 'Brede orchis'),
+    42297: ('Dactylorhiza majalis', 'Brede orchis en Rietorchis', 21,
+            'Brede orchis / Rietorchis — niet onderscheiden'),
+    39058: ('Lepidoptera', 'Dagvlinder', None, 'Dagvlinder — niet nader bepaald'),
+    41317: ('Lepidoptera', None, None, 'Vlinder — dag- of nachtvlinder niet onderscheiden'),
+}
+
+
+def display_name_key(value: str) -> str:
+    """Conservative precheck; MySQL's unique index remains authoritative."""
+    return ''.join(c for c in unicodedata.normalize('NFKD', value.casefold())
+                   if not unicodedata.combining(c))
+
+
+def display_name_base(taxon: dict) -> str:
+    dutch = ' '.join((taxon.get('nederlandse_naam') or '').split())
+    label = dutch or ' '.join((taxon.get('wetenschappelijke_naam') or '').split())
+    # Two source names contain Windows-1252 quotes decoded as C1 controls.
+    # Repair only their presentation; the original source field stays intact.
+    return label.replace('\x93', '“').replace('\x94', '”')
+
+
+def checked_display_name(value: str) -> str:
+    if (not isinstance(value, str) or not value.strip() or value != ' '.join(value.split())
+            or len(value) > 700 or any(unicodedata.category(c).startswith('C') for c in value)):
+        raise ValueError('Weergavenaam moet gevuld, opgeschoond en maximaal 700 tekens zijn')
+    return value
+
+
+def taxon_display_names(taxa: list[dict]) -> dict[int, str]:
+    """Fill all labels without changing source fields or merging any rows."""
+    labels = {}
+    for row in taxa:
+        key = row['taxon_id']
+        if key in labels:
+            raise ValueError('Dubbele taxon-ID in weergavenaamplan')
+        label = row.get('weergavenaam')
+        if not label and key in DISPLAY_NAMES:
+            latin, dutch, group, label = DISPLAY_NAMES[key]
+            if (row.get('wetenschappelijke_naam'), row.get('nederlandse_naam'), row.get('groep_id')) != (latin, dutch, group):
+                raise ValueError('Beoordeelde naamcontext gewijzigd; eerst opnieuw beoordelen')
+        labels[key] = checked_display_name(label or display_name_base(row))
+    buckets = defaultdict(list)
+    for key, label in labels.items():
+        buckets[display_name_key(label)].append(key)
+    collisions = {i for ids in buckets.values() if len(ids) > 1 for i in ids}
+    for row in taxa:
+        key = row['taxon_id']
+        if key in collisions:
+            if row.get('weergavenaam') or key in DISPLAY_NAMES:
+                raise ValueError('Bestaande of beoordeelde weergavenaam botst; niet automatisch hernoemen')
+            latin = display_name_base({'wetenschappelijke_naam': row['wetenschappelijke_naam']})
+            labels[key] = checked_display_name(labels[key] + ' — ' + latin)
+    if len({display_name_key(v) for v in labels.values()}) != len(labels):
+        raise ValueError('Naamconflict vereist inhoudelijke verduidelijking; geen nummers toevoegen')
+    return labels
+
+
+def prepare_taxon_display_name(taxon: dict, taxa: list[dict]) -> str:
+    """New import label; existing labels are never silently renamed."""
+    labels = [checked_display_name(t['weergavenaam']) for t in taxa]
+    label = taxon.get('weergavenaam')
+    if label is None:
+        label = display_name_base(taxon)
+        same_base = any(display_name_key(display_name_base(t)) == display_name_key(label) for t in taxa)
+        if same_base or display_name_key(label) in {display_name_key(v) for v in labels}:
+            label += ' — ' + display_name_base({'wetenschappelijke_naam': taxon.get('wetenschappelijke_naam')})
+    label = checked_display_name(label)
+    if display_name_key(label) in {display_name_key(v) for v in labels}:
+        raise ValueError('Weergavenaam bestaat al; inhoudelijk beoordelen vóór import')
+    return label
+
+
+def prepare_registry_import(source: dict, taxon: dict, taxa: list[dict], links: list[dict],
+                            *, name_evidence: dict | None = None) -> dict:
+    """Prepare identity AND label. A new row still requires a source review.
+
+    Use in the same locked transaction as the eventual insert; NOT NULL,
+    CHECK and UNIQUE in MySQL guard missing labels and concurrent collisions.
+    A display label is never evidence of taxonomic identity.
+    """
+    resolved = resolve_registry_import(source, taxon, taxa, links, name_evidence=name_evidence)
+    if resolved is not None:
+        row = next(t for t in taxa if t['taxon_id'] == resolved['taxon_id'])
+        return {**resolved, 'weergavenaam': checked_display_name(row['weergavenaam']), 'nieuw_taxon': None}
+    new = copy.deepcopy(taxon)
+    new['weergavenaam'] = prepare_taxon_display_name(taxon, taxa)
+    return {'taxon_id': None, 'koppeling_id': None, 'nieuw_taxon': new}
+
+
+def display_name_migration_sql(snapshot: dict, labels: dict[int, str], *, commit: bool = False) -> str:
+    """DML only; nullable column is added beforehand, constraints afterwards.
+
+    Snapshot expressions deliberately include every OLD cell, not the new
+    column. This proves no name, identity, timestamp or source link changed.
+    """
+    if set(labels) != {t['taxon_id'] for t in snapshot['taxa']['rows']}:
+        raise ValueError('Weergavenaamplan dekt niet exact alle taxa')
+    if len({display_name_key(checked_display_name(v)) for v in labels.values()}) != len(labels):
+        raise ValueError('Dubbele weergavenamen in migratieplan')
+    literal = lambda value: "CONVERT(X'" + value.encode().hex() + "' USING utf8mb4)"
+    sql = ['SET NAMES utf8mb4;', 'SET SESSION group_concat_max_len=16777216;',
+           'SET SESSION innodb_lock_wait_timeout=10;',
+           'CREATE TEMPORARY TABLE display_guard(ok INT NOT NULL CHECK(ok=1));',
+           'CREATE TEMPORARY TABLE display_plan(id BIGINT UNSIGNED PRIMARY KEY,naam VARCHAR(700) NOT NULL UNIQUE) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;',
+           'INSERT INTO display_plan VALUES ' + ','.join(f'({int(i)},{literal(v)})' for i,v in sorted(labels.items())) + ';',
+           'START TRANSACTION;', 'SELECT taxon_id FROM taxa ORDER BY taxon_id FOR UPDATE;',
+           'SELECT koppeling_id FROM taxa_bronkoppeling ORDER BY koppeling_id FOR UPDATE;']
+    guards = [f"INSERT INTO display_guard SELECT SHA2(GROUP_CONCAT(SHA2(CAST({s['expression']} AS CHAR),256) ORDER BY `{s['pk']}` SEPARATOR ''),256)='{s['sha256']}' FROM `{table}`;"
+              for table,s in snapshot.items()]
+    sql += guards
+    sql += ['INSERT INTO display_guard SELECT COUNT(*)=0 FROM taxa WHERE weergavenaam IS NOT NULL;',
+            'UPDATE taxa t JOIN display_plan p ON p.id=t.taxon_id SET t.weergavenaam=p.naam,t.gewijzigd_op=t.gewijzigd_op;',
+            'INSERT INTO display_guard SELECT COUNT(*)=0 FROM taxa t LEFT JOIN display_plan p ON p.id=t.taxon_id WHERE p.id IS NULL OR NOT(BINARY t.weergavenaam<=>BINARY p.naam);']
+    sql += guards
+    sql += ['COMMIT;' if commit else 'ROLLBACK;']
+    return '\n'.join(sql)
+
+
+def display_name_schema_sql(*, finalize: bool = False) -> str:
+    if not finalize:
+        return "SET SESSION lock_wait_timeout=10; ALTER TABLE taxa ADD COLUMN weergavenaam VARCHAR(700) NULL COMMENT 'Unieke lokale presentatienaam; geen taxonidentiteit of wetenschappelijke naam' AFTER nederlandse_naam;"
+    return """SET SESSION lock_wait_timeout=10;
+ALTER TABLE taxa MODIFY COLUMN weergavenaam VARCHAR(700) NOT NULL
+  COMMENT 'Unieke lokale presentatienaam; geen taxonidentiteit of wetenschappelijke naam',
+  ADD UNIQUE KEY uq_taxa_weergavenaam (weergavenaam),
+  ADD CONSTRAINT ck_taxa_weergavenaam CHECK (
+    REGEXP_LIKE(weergavenaam,'[^[:space:]]') AND NOT REGEXP_LIKE(weergavenaam,'[[:cntrl:]]')
+    AND BINARY weergavenaam=BINARY TRIM(weergavenaam));"""
 
 
 def central_name(row: dict) -> str:

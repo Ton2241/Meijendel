@@ -206,6 +206,13 @@ def main() -> int:
                   "besluitversie", "ingetrokken_op", "bron_identiteit_sha256"]:
         assert ("taxa_bronkoppeling", field) in cols, field
     print("OK: identiteit, taxonrang, naamgebruik, bronversie en beoordeling afzonderlijk")
+    assert cols['taxa', 'weergavenaam'] == ['NO', 'varchar']
+    assert rows("SELECT CHARACTER_MAXIMUM_LENGTH FROM information_schema.columns WHERE "
+                "table_schema=DATABASE() AND table_name='taxa' AND column_name='weergavenaam'") == [['700']]
+    assert rows("SELECT COUNT(*)-COUNT(weergavenaam),COUNT(*)-COUNT(DISTINCT weergavenaam) FROM taxa") == [['0', '0']]
+    assert rows("SELECT COUNT(*) FROM taxa WHERE NOT REGEXP_LIKE(weergavenaam,'[^[:space:]]') "
+                "OR REGEXP_LIKE(weergavenaam,'[[:cntrl:]]') OR BINARY weergavenaam<>BINARY TRIM(weergavenaam)") == [['0']]
+    print('OK: iedere taxonvermelding heeft een gevulde, unieke weergavenaam')
 
     fks = rows("SELECT table_name,column_name,referenced_table_name,referenced_column_name "
                "FROM information_schema.key_column_usage WHERE " + scope + " AND referenced_table_name IS NOT NULL")
@@ -237,13 +244,17 @@ def main() -> int:
     keys = {r[1]: r[2] for r in unique}
     assert keys["uq_taxon_groep_code"] == "groep_code"
     assert keys["uq_taxa_uuid"] == "taxon_uuid"
+    assert keys["uq_taxa_weergavenaam"] == "weergavenaam"
+    assert rows("SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema=DATABASE() "
+                "AND table_name='taxa' AND index_name='uq_taxa_weergavenaam' AND sub_part IS NOT NULL") == [['0']]
     assert keys["uq_taxa_bron_besluit"] == "bron_identiteit_sha256,besluitversie,doeltaxon_sleutel"
     assert keys["uq_taxa_bron_actief_exact"] == "actieve_exacte_bron"
     assert not any(r[0] == "taxa" and r[2] == "wetenschappelijke_naam" for r in unique)
     checks = rows("SELECT constraint_name,enforced FROM information_schema.table_constraints WHERE "
                   + scope + " AND constraint_type='CHECK'")
-    assert len(checks) == 24 and all(r[1] == "YES" for r in checks), checks
-    print("OK: unieke bronidentiteit/besluiten, geen unieke naam, actieve CHECK-regels")
+    assert len(checks) == 25 and all(r[1] == "YES" for r in checks), checks
+    assert ['ck_taxa_weergavenaam', 'YES'] in checks
+    print("OK: unieke bronidentiteit/besluiten en weergavenaam; wetenschappelijke naam niet uniek")
 
     empty_tables = TABLES if args.fase == 'leeg' else TABLES - {'taxon_groepen'} if args.fase == 'groepen' else set()
     for table in sorted(empty_tables):

@@ -293,8 +293,59 @@ def check_central_list(module):
     assert module.resolve_registry_import(source,{**a,'wetenschappelijke_naam':'Unseen taxon'},[a],[]) is None
 
 
+def check_display_names(module):
+    """Missing Dutch preference, ambiguous labels or source mutation must fail."""
+    assert module.display_name_base({'wetenschappelijke_naam': 'Cryptomonas erosa (\x931831\x94)'}) == 'Cryptomonas erosa (“1831”)'
+    assert module.taxon_display_names([
+        {'taxon_id': 1, 'nederlandse_naam': 'Linde', 'wetenschappelijke_naam': 'Tilia europaea  x'},
+        {'taxon_id': 2, 'nederlandse_naam': 'Linde', 'wetenschappelijke_naam': 'Tilia'}
+    ])[1] == 'Linde — Tilia europaea x'
+    import copy
+    assert callable(getattr(module, 'taxon_display_names', None)), 'Weergavenaamplanning ontbreekt'
+    rows = [dict(taxon_id=1, wetenschappelijke_naam='Upupa epops', nederlandse_naam='Hop'),
+            dict(taxon_id=2, wetenschappelijke_naam='Humulus lupulus', nederlandse_naam='Hop'),
+            dict(taxon_id=3, wetenschappelijke_naam='Testus testus', nederlandse_naam=None),
+            dict(taxon_id=4, wetenschappelijke_naam='Parus major', nederlandse_naam=' Koolmees ')]
+    before = copy.deepcopy(rows)
+    assert module.taxon_display_names(rows) == {
+        1:'Hop — Upupa epops', 2:'Hop — Humulus lupulus', 3:'Testus testus', 4:'Koolmees'}
+    assert rows == before, 'Naamgeving mag geen bronveld wijzigen'
+    assert module.taxon_display_names([{**rows[2], 'nederlandse_naam':'   '}]) == {3:'Testus testus'}
+    pairs = [dict(taxon_id=30322, wetenschappelijke_naam='Elachista', nederlandse_naam='Elachista', groep_id=9),
+             dict(taxon_id=30633, wetenschappelijke_naam='Elachista', nederlandse_naam='Elachista', groep_id=12)]
+    assert module.taxon_display_names(pairs) == {30322:'Elachista — algengeslacht',30633:'Elachista — microvlindergeslacht'}
+    for bad in [[rows[0], {**rows[0], 'taxon_id':5}],
+                [{**rows[2], 'wetenschappelijke_naam':' '}],
+                [{**rows[3], 'nederlandse_naam':'x'*701}],
+                [{**pairs[0], 'groep_id':12}],
+                [rows[0], rows[0]]]:
+        try: module.taxon_display_names(bad)
+        except ValueError: pass
+        else: raise AssertionError('Ongeldige of onbesliste weergavenaam geaccepteerd')
+    existing = [{**rows[0], 'weergavenaam':'Hop — Upupa epops'}]
+    assert module.prepare_taxon_display_name(rows[1],existing) == 'Hop — Humulus lupulus'
+    assert module.prepare_taxon_display_name(rows[2],existing) == 'Testus testus'
+    try: module.prepare_taxon_display_name({**rows[2],'weergavenaam':'HOP — Úpupa epops'},existing)
+    except ValueError: pass
+    else: raise AssertionError('Botsende importweergavenaam geaccepteerd')
+    assert module.taxon_display_names(existing) == {1:'Hop — Upupa epops'}
+    # The import entry point must actually provide the field, not merely a helper.
+    source = dict(bron_systeem='test',bron_dataset='test',bron_versie='1',bron_taxon_id='new')
+    result = module.prepare_registry_import(source, rows[2], existing, [])
+    assert result['nieuw_taxon']['weergavenaam'] == 'Testus testus'
+    assert 'weergavenaam' not in rows[2]
+    link = {**source, 'taxon_id':1, 'koppeling_id':9, 'koppelstatus':'kandidaat'}
+    reused = module.prepare_registry_import(source, rows[0], existing, [link])
+    assert reused == {'taxon_id':1, 'koppeling_id':9,
+                      'weergavenaam':'Hop — Upupa epops', 'nieuw_taxon':None}
+    approved = [dict(taxon_id=i, wetenschappelijke_naam=v[0], nederlandse_naam=v[1], groep_id=v[2])
+                for i,v in module.DISPLAY_NAMES.items()]
+    assert module.taxon_display_names(approved) == {i:v[3] for i,v in module.DISPLAY_NAMES.items()}
+
+
 def main() -> int:
     module = load_module()
+    check_display_names(module)
     check_central_list(module)
     # A name match must never bypass concept-context checks; old IDs must resolve.
     assert callable(getattr(module, 'resolve_taxon_identity', None)), 'Fusie-aliasresolver ontbreekt'

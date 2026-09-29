@@ -147,6 +147,11 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- Vul `taxa.weergavenaam` bij ieder nieuw taxon en controleer de uniciteit;
+  gebruik `prepare_registry_import()` voor identiteit én presentatie. Gebruik
+  de weergavenaam nooit als koppelsleutel of bewijs van taxonidentiteit.
+  De canonieke regels, naamverduidelijkingen en migratiecontrole staan in
+  `docs/database/TAXONREGISTER.md`, sectie `Weergavenaam voor alle taxa`.
 - gebruik bij iedere volgende import met taxongegevens het centrale register
   `taxa`, `taxa_bronkoppeling` en `taxon_groepen`; maak geen afzonderlijke
   soorten- of taxoncatalogi per bron of levering; volg de canonieke sectie

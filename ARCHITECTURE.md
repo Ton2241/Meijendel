@@ -44,6 +44,14 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
 
 ### Bronoverstijgend taxonregister
 
+`taxa.weergavenaam` is een lokale presentatienaam, verplicht en uniek voor
+iedere centrale vermelding. Zij is geen taxonomische identificatie of
+koppelsleutel. Bestaande wetenschappelijke/Nederlandse bronvelden blijven
+afzonderlijk behouden. Nieuwe imports lopen via `prepare_registry_import()`;
+naamregels en controles staan uitsluitend in `docs/database/TAXONREGISTER.md`,
+sectie `Weergavenaam voor alle taxa`. Bestaande afnemers worden hierdoor niet
+automatisch omgezet; lokale schemawijziging is geen publicatieopdracht.
+
 De lokale database bevat vanaf 27 september 2026 drie aanvullende fysieke
 tabellen: `taxon_groepen`, `taxa` en `taxa_bronkoppeling`. Zij scheiden praktische
 groepen, centrale naamregistraties en geversioneerde brontoewijzingen met

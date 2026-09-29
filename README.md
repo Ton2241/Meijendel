@@ -75,6 +75,10 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   Ook beschikbaar als [leesbaar Wordbestand voor Pages](docs/database/MEIJENDEL_TABELINVENTARIS.docx),
   met het voorstel vooraan en de tabelinventaris in een liggende bijlage.
 - [`docs/database/TAXONREGISTER.md`](docs/database/TAXONREGISTER.md)
+  Legt ook het gebruik van `taxa.weergavenaam` vast: een gevulde, unieke
+  presentatienaam voor ieder taxon, zonder oorspronkelijke namen of
+  identificaties te vervangen. Nieuwe imports controleren identiteit én
+  weergavenaam via `prepare_registry_import()`.
   Bevat ook de vaste importafspraak: nieuwe taxongegevens sluiten aan op
   het centrale register, zonder nieuwe afzonderlijke taxoncatalogi;
   naam- of identiteitstwijfel wordt vóór definitieve import opgelost.

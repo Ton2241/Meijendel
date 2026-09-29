@@ -1,5 +1,16 @@
 # Besluiten
 
+- Op 29 september 2026 heeft Ton goedgekeurd dat `taxa.weergavenaam` voor
+  alle taxa wordt toegevoegd en gevuld. Gebruik de Nederlandse naam, anders
+  de wetenschappelijke naam; onderscheid naamgenoten met een inhoudelijke
+  verduidelijking of wetenschappelijke aanvulling. De zeven beoordeelde
+  naamparen blijven afzonderlijk, met herkenbaar verschillende labels.
+  Alle oorspronkelijke velden, identificaties en bronkoppelingen blijven
+  behouden. De nieuwe kolom is uitsluitend presentatie, geen vervanging van
+  Darwin Core-namen of TDWG TCS-concepten. Nieuwe imports vullen en toetsen
+  haar verplicht. Geen VPS-publicatie. Canonieke uitwerking en bewijs:
+  `docs/database/TAXONREGISTER.md`, sectie `Weergavenaam voor alle taxa`.
+
 - Op 29 september 2026 is de resterende taxonopschoning lokaal afgerond:
   nog 1.762 dubbele centrale rijen samengebracht, met behoud van alle
   oorspronkelijke bronwaarden, koppelingnummers en oude IDs/UUIDs. De 751

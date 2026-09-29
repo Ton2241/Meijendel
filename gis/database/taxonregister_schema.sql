@@ -1,4 +1,4 @@
--- Meijendel taxonregister v1, 27 september 2026.
+-- Meijendel taxonregister v2, 29 september 2026; weergavenaam verplicht.
 -- Eenmalige ADDITIEVE migratie: uitsluitend drie lege nieuwe tabellen.
 -- Geen IF NOT EXISTS: een bestaande naam moet blokkeren, niet stilzwijgend
 -- een mogelijk afwijkende structuur accepteren. MySQL DDL commit per statement.
@@ -43,6 +43,8 @@ CREATE TABLE taxa (
   naam_zonder_auteur VARCHAR(500) NULL,
   naam_auteur VARCHAR(500) NULL,
   nederlandse_naam VARCHAR(500) NULL,
+  weergavenaam VARCHAR(700) NOT NULL
+    COMMENT 'Unieke lokale presentatienaam; geen taxonidentiteit of wetenschappelijke naam',
   aanvullende_namen JSON NULL COMMENT 'Array met naam, taal en bron; geen taxon-ID-lijsten',
   taxonrang VARCHAR(64) NULL COMMENT 'Darwin Core taxonRank; onbekend mag NULL zijn',
   taxonrang_bron VARCHAR(128) NULL,
@@ -78,6 +80,7 @@ CREATE TABLE taxa (
   gewijzigd_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
   PRIMARY KEY (taxon_id),
   UNIQUE KEY uq_taxa_uuid (taxon_uuid),
+  UNIQUE KEY uq_taxa_weergavenaam (weergavenaam),
   KEY ix_taxa_groep (groep_id, beheerstatus),
   KEY ix_taxa_naam (wetenschappelijke_naam),
   KEY ix_taxa_nederlandse_naam (nederlandse_naam),
@@ -91,6 +94,9 @@ CREATE TABLE taxa (
   CONSTRAINT ck_taxa_uuid CHECK (REGEXP_LIKE(taxon_uuid,
     '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$', 'c')),
   CONSTRAINT ck_taxa_naam CHECK (CHAR_LENGTH(TRIM(wetenschappelijke_naam)) > 0),
+  CONSTRAINT ck_taxa_weergavenaam CHECK (
+    REGEXP_LIKE(weergavenaam,'[^[:space:]]') AND NOT REGEXP_LIKE(weergavenaam,'[[:cntrl:]]')
+    AND BINARY weergavenaam=BINARY TRIM(weergavenaam)),
   CONSTRAINT ck_taxa_nl CHECK (nederlandse_naam IS NULL OR CHAR_LENGTH(TRIM(nederlandse_naam)) > 0),
   CONSTRAINT ck_taxa_rang CHECK (taxonrang IS NULL OR
     (CHAR_LENGTH(TRIM(taxonrang)) > 0 AND LOWER(taxonrang) NOT IN
