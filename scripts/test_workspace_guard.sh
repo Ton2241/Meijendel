@@ -10,6 +10,7 @@ UPDATE="$REPO_DIR/deploy/update_en_deploy_meijendel.sh"
 ARCHIVE="$REPO_DIR/deploy/Archivering_en_Dump_Meijendel.sh"
 EXPORTER="$REPO_DIR/scripts/export_meijendel_sql.sh"
 EXPORT_VALIDATOR="$REPO_DIR/scripts/validate_meijendel_export.sh"
+KAREKIET_SCRIPT="$REPO_DIR/output_kleine_karekiet_kaveltrends/maak_kleine_karekiet_kaveltrends.R"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -70,5 +71,33 @@ done
 grep -qF '[[ -x "$EXPORT_VALIDATOR" ]]' "$DEPLOY" || fail "validatoroverride wordt niet als uitvoerbaar bestand gevalideerd."
 grep -qF '[[ -x "$RSYNC_BIN" ]]' "$DEPLOY" || fail "rsyncoverride wordt niet als uitvoerbaar bestand gevalideerd."
 grep -qF '[[ -x "$SSH_BIN" ]]' "$DEPLOY" || fail "SSH-override wordt niet als uitvoerbaar bestand gevalideerd."
+
+temp_dir="$(mktemp -d)"
+trap 'rm -rf -- "$temp_dir"' EXIT
+mkdir -p "$temp_dir/bin" "$temp_dir/output_kleine_karekiet_kaveltrends"
+cat > "$temp_dir/bin/mysql" <<'EOF'
+#!/usr/bin/env bash
+printf '%s\n' "$@" > "$MYSQL_ARGS_LOG"
+cat <<'DATA'
+jaar	plot_id	kavel_nummer	plot_naam	territoria
+1990	1	1	Testkavel	1
+1991	1	1	Testkavel	2
+1992	1	1	Testkavel	3
+DATA
+EOF
+chmod +x "$temp_dir/bin/mysql"
+(
+  cd "$temp_dir"
+  PATH="$temp_dir/bin:$PATH" MYSQL_ARGS_LOG="$temp_dir/mysql-args.txt" \
+    Rscript "$KAREKIET_SCRIPT" >/dev/null
+)
+grep -qx -- '--login-path=meijendel_root' "$temp_dir/mysql-args.txt" ||
+  fail "de karekietanalyse gebruikt het beveiligde MySQL-loginprofiel niet."
+if grep -Eq -- '^-p.+' "$temp_dir/mysql-args.txt"; then
+  fail "de karekietanalyse geeft nog een MySQL-wachtwoord via argv door."
+fi
+if grep -qx -- '--no-defaults' "$temp_dir/mysql-args.txt"; then
+  fail "de karekietanalyse schakelt het beveiligde MySQL-loginprofiel uit."
+fi
 
 printf 'OK: lokale-bestands- en MySQL-versiecontroles zijn fail-fast gekoppeld aan generatie en deploy.\n'

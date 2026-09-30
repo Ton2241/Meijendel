@@ -33,16 +33,12 @@ ORDER BY p.kavel_nummer, c.jaar
 "
 
 mysql_args <- c(
-  "--no-defaults",
-  "-uroot",
-  "-pYaTp$2022",
-  "--protocol=SOCKET",
-  "--socket=/tmp/mysql.sock",
+  "--login-path=meijendel_root",
   "-D", "meijendel",
   "--batch",
   "--raw",
   "--column-names",
-  "-e", query
+  "-e", shQuote(query)
 )
 
 raw <- system2("mysql", mysql_args, stdout = TRUE, stderr = TRUE)
