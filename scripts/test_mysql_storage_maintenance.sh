@@ -9,6 +9,41 @@ mutation_log="$tmp/mutations.log"
 
 VWGM_MYSQL_STORAGE_LIBRARY_ONLY=1 source "$helper"
 
+[[ -n "${MYSQL_ROOT_CLIENT_SCRIPT:-}" ]] || {
+  printf 'FOUT: FD3-clientwrapper ontbreekt.\n' >&2
+  exit 1
+}
+fake_client="$tmp/fake-mysql"
+cat >"$fake_client" <<'FAKE_MYSQL'
+#!/usr/bin/env bash
+set -euo pipefail
+printf 'ARGS=%s\n' "$*"
+if env | grep -Fq 'FD3 secret'; then
+  printf 'SECRET_IN_ENV\n'
+fi
+printf 'FD3_BEGIN\n'
+cat /dev/fd/3
+printf 'FD3_END\nSTDIN_BEGIN\n'
+cat
+printf 'STDIN_END\n'
+exit 23
+FAKE_MYSQL
+chmod +x "$fake_client"
+set +e
+fd3_output="$(
+  printf 'SELECT 1;\n' |
+    MYSQL_ROOT_PASSWORD='FD3 secret met spatie " en \ teken' \
+      bash -c "$MYSQL_ROOT_CLIENT_SCRIPT" bash "$fake_client" --batch
+)"
+fd3_status=$?
+set -e
+[[ "$fd3_status" -eq 23 ]]
+grep -Fq 'ARGS=--defaults-extra-file=/dev/fd/3 --batch' <<<"$fd3_output"
+! grep -Fq 'SECRET_IN_ENV' <<<"$fd3_output"
+grep -Fq 'password="FD3 secret met spatie \" en \\ teken"' <<<"$fd3_output"
+grep -Fq $'STDIN_BEGIN\nSELECT 1;\nSTDIN_END' <<<"$fd3_output"
+! grep -Fq -- '-p"$MYSQL_ROOT_PASSWORD"' "$helper"
+
 docker() {
   [[ "$1" == inspect ]]
   printf 'running\n'

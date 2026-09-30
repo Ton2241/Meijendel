@@ -9,6 +9,20 @@ EXPECTED_BINLOG_RETENTION=259200
 EXPECTED_REDO_CAPACITY=536870912
 MAX_BACKUP_AGE=129600
 
+MYSQL_ROOT_CLIENT_SCRIPT="$(cat <<'MYSQL_ROOT_CLIENT'
+set -euo pipefail
+client="$1"
+shift
+mysql_password="${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD ontbreekt}"
+unset MYSQL_ROOT_PASSWORD
+mysql_password_escaped="${mysql_password//\\/\\\\}"
+mysql_password_escaped="${mysql_password_escaped//\"/\\\"}"
+"$client" --defaults-extra-file=/dev/fd/3 "$@" 3< <(
+  printf '[client]\nuser=root\npassword="%s"\n' "$mysql_password_escaped"
+)
+MYSQL_ROOT_CLIENT
+)"
+
 fail() { printf 'BLOKKADE|mysql-opslag|%s\n' "$*" >&2; exit 1; }
 
 make_baremetal_backup() {
@@ -20,8 +34,8 @@ smoke_public() {
 }
 
 mysql_query() {
-  docker exec "$CONTAINER" sh -c \
-    'exec mysql --batch --skip-column-names -uroot -p"$MYSQL_ROOT_PASSWORD" -e "$1"' sh "$1"
+  docker exec "$CONTAINER" bash -c "$MYSQL_ROOT_CLIENT_SCRIPT" \
+    bash mysql --batch --skip-column-names -e "$1"
 }
 
 validate_backup() {
