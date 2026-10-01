@@ -1,17 +1,19 @@
 # Besluiten
 
-- Op 1 oktober 2026 is de goedkeuringsstatus van de vogelterritoria expliciet
-  vastgelegd. De tabel `territoria` bevat uitsluitend formele territoria uit
-  goedgekeurde tellingen. Zodra voor een plot en jaar een territoriumregel
-  aanwezig is, komt die dus uit een goedgekeurde telling. `dagbezoeken_bmp` en
-  `dagwaarnemingen_bmp` kunnen daarnaast bezoeken en waarnemingen bevatten uit
-  tellingen die niet zijn goedgekeurd; hun aanwezigheid bewijst daarom niet dat
-  het plotjaar als territoriumtelling is toegelaten. Omgekeerd bewijst het
-  ontbreken van een territoriumregel op zichzelf geen afkeuring, omdat een
-  goedgekeurd plotjaar voor een afzonderlijke soort ook nul territoria kan
-  hebben. Analyses van territoria, trends en tellersensitiviteit gebruiken
-  uitsluitend de goedgekeurde territoriumuitkomsten en de bijbehorende
-  `plot_jaar_teller`-registraties. Geen databasewijziging of VPS-publicatie.
+- Op 1 oktober 2026 is de goedkeuringsstatus van de vogelterritoria nader
+  vastgesteld. De inhoudelijke regel blijft dat `territoria` uitsluitend
+  formele territoria uit goedgekeurde tellingen hoort te bevatten. Controle door
+  de data-eigenaar heeft drie afgekeurde uitzonderingen aangetoond. De 26 regels
+  en 98 territoria van 2009/M36, de 2 regels en 2 territoria van 2018/M55 en de
+  19 regels en 114 territoria van 2019/M8 zijn na afzonderlijke gerichte
+  herstelkopieën uit de levende tabel verwijderd. Er resteert geen bekende
+  afgekeurde telling in `territoria`. Wel vervalt 2016/M62 (1 regel,
+  1 territorium) uit de BMP-tellersensitiviteitsanalyse omdat dit een
+  afzonderlijke roofvogeltelling was. Dit is een uitzondering op de
+  vergelijkbaarheid, niet op de goedkeuringsstatus. De eerder ontbrekende
+  tellers zijn vastgelegd als
+  2010/M54a–AZNA00, 2012/M66–WCLE00, 2018/M34–B_0097 en
+  2018/M8–B_0098. Geen VPS-publicatie.
 
 - Op 1 oktober 2026 is voor telleridentificatie bij de vogelgegevens bepaald
   dat `plot_jaar_teller` in de levende lokale database leidend is. De vergelijking
@@ -19,7 +21,8 @@
   soortresultaten in 752 plotjaren uit 2007 en 2009–2026. In 282 plotjaren is
   de ene AVIMAP-code exact gelijk aan de databasecode, in 56 is zij lid van een
   groter geregistreerd tellerteam, in 400 ontbreekt zij geheel in het
-  geregistreerde team en voor 14 plotjaren ontbreekt `plot_jaar_teller`.
+  geregistreerde team en voor 14 plotjaren ontbrak aanvankelijk
+  `plot_jaar_teller`.
   Inhoudelijke controle door de data-eigenaar toont bovendien concrete
   AVIMAP-toeschrijvingen aan kavels die de genoemde waarnemer niet heeft
   geteld. Het AVIMAP-veld `waarnemer` wordt daarom niet gebruikt om
@@ -30,8 +33,11 @@
   geregistreerde tellers blijft het plotjaar een teamregistratie; zonder een
   expliciete teller per bezoek wordt geen individuele bezoekdeelname afgeleid.
   Tellersensitiviteitsanalyses gebruiken voortaan `plot_jaar_teller`, met
-  tellerteams en ontbrekende koppelingen afzonderlijk herkenbaar. Geen
-  databasewijziging of VPS-publicatie.
+  tellerteams en ontbrekende koppelingen afzonderlijk herkenbaar. Op basis van
+  inhoudelijke vaststelling door de data-eigenaar zijn vier van de ontbrekende
+  koppelingen op 1 oktober 2026 aan de levende tabel toegevoegd:
+  2010/M54a–AZNA00, 2012/M66–WCLE00, 2018/M34–B_0097 en
+  2018/M8–B_0098. De tabel bevat daarna 2.453 regels. Geen VPS-publicatie.
 
 - Op 29 september 2026 zijn de vier na de bronontvlechting uitsluitend voor
   LVD gebruikte fysieke `externe_ecologie_*`-tabellen lokaal hernoemd naar

@@ -14,10 +14,17 @@ Eén keer per jaar worden nieuwe vogelterritoria verwerkt vanuit externe bron (S
 ## Goedkeuringsstatus
 
 Neem in `territoria` uitsluitend formele territoria uit goedgekeurde tellingen
-op. De aanwezigheid van een territoriumregel voor een plot en jaar betekent dus
-dat deze uit een goedgekeurde telling komt. Bezoeken en waarnemingen in
-`dagbezoeken_bmp` en `dagwaarnemingen_bmp` kunnen ook afkomstig zijn uit een
-niet-goedgekeurde telling en zijn op zichzelf geen bewijs van goedkeuring.
+op. Controleer die status vóór import en bewaar het besluit. De 26 regels en 98
+territoria van het afgekeurde plotjaar 2009/M36, de 2 regels en 2 territoria
+van het afgekeurde plotjaar 2018/M55 en de 19 regels en 114 territoria van het
+afgekeurde plotjaar 2019/M8 zijn op 1 oktober 2026 uit de levende tabel
+verwijderd. Er resteert geen bekende afgekeurde telling in `territoria`.
+Sluit 2016/M62 wel uit van de BMP-tellersensitiviteitsanalyse: dit was een
+afzonderlijke roofvogeltelling.
+
+Bezoeken en waarnemingen in `dagbezoeken_bmp` en `dagwaarnemingen_bmp` kunnen
+ook afkomstig zijn uit een niet-goedgekeurde telling en zijn op zichzelf geen
+bewijs van goedkeuring.
 
 Leid afkeuring niet uitsluitend af uit het ontbreken van een territoriumregel.
 Een goedgekeurd plotjaar kan voor een afzonderlijke soort immers nul territoria

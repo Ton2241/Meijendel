@@ -54,11 +54,17 @@ Praktisch betekent dit:
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
-De tabel `territoria` bevat uitsluitend formele territoria uit goedgekeurde
-tellingen. Staat voor een plot en jaar een territoriumregel in deze tabel, dan
-komt die uit een goedgekeurde telling. De bezoek- en waarnemingstabellen kunnen
-ook gegevens uit niet-goedgekeurde tellingen bevatten en bewijzen daarom niet
-dat het plotjaar als territoriumtelling is toegelaten. Het ontbreken van een
+De tabel `territoria` hoort uitsluitend formele territoria uit goedgekeurde
+tellingen te bevatten. Drie afgekeurde plotjaren bleken toch aanwezig. De 26
+regels en 98 territoria van 2009/M36, de 2 regels en 2 territoria van 2018/M55
+en de 19 regels en 114 territoria van 2019/M8 zijn op 1 oktober 2026 uit de
+levende tabel verwijderd. Er resteert geen bekende afgekeurde telling in
+`territoria`.
+2016/M62 was een afzonderlijke roofvogeltelling en hoort niet in een
+BMP-tellersensitiviteitsanalyse. Sluit deze plotjaren voor die analyses uit.
+De bezoek- en waarnemingstabellen kunnen eveneens gegevens uit
+niet-goedgekeurde tellingen bevatten. Aanwezigheid in die tabellen is daarom op
+zichzelf geen goedkeuringsbewijs. Het ontbreken van een
 territoriumregel bewijst omgekeerd niet zonder meer dat een telling is
 afgekeurd: een goedgekeurd plotjaar kan voor een afzonderlijke soort nul
 territoria hebben.
