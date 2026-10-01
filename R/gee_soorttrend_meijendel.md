@@ -10,7 +10,7 @@ Dit script voert een `GEE`-analyse uit voor één broedvogelsoort op basis van d
 
 ## Wat het script doet
 
-1. Leest de tabellen `plots`, `soorten`, `plot_jaar_oppervlak`, `plot_jaar_teller` en `territoria` uit de SQL-dump.
+1. Leest de tabellen `plots`, `plot_analyse_scope`, `soorten`, `plot_jaar_oppervlak`, `plot_jaar_teller` en `territoria` uit de SQL-dump en past standaard de scope `meijendel_natura2000` toe.
 2. Selecteert geldige `plot x jaar`-combinaties op basis van `plot_jaar_oppervlak`.
 3. Markeert een plotjaar als geteld als het voorkomt in `plot_jaar_teller` of in `territoria`.
 4. Bouwt voor één soort een volledige matrix van geselecteerde plot-jaren.
@@ -91,8 +91,9 @@ Rscript /Users/ton/Documents/GitHub/Meijendel/R/gee_soorttrend_meijendel.R \
 ## Belangrijke aannames
 
 - `plot_jaar_oppervlak` bepaalt welke plot-jaren inhoudelijk bestaan.
+- M66 en M91 vallen standaard buiten iedere analyseset. Alleen
+  `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66`, `M91` of `M66,M91` voegt de
+  uitdrukkelijk gevraagde kavel(s) toe.
 - Een record in `territoria` impliceert in deze context ook telactiviteit voor dat plotjaar.
 - Het model gebruikt oppervlakte als offset in `km2`, conform de bestaande tabellen.
 - Het script is bewust zelfstandig gehouden en hergebruikt daarom de parserlogica uit de bestaande R-scripts in plaats van een aparte package-helper.
-
-## 

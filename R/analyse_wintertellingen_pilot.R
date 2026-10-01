@@ -6,6 +6,10 @@ suppressPackageStartupMessages({
 })
 
 args <- commandArgs(trailingOnly = TRUE)
+cmd_args <- commandArgs(trailingOnly = FALSE)
+file_arg <- grep("^--file=", cmd_args, value = TRUE)
+script_path <- if (length(file_arg)) sub("^--file=", "", file_arg[[1L]]) else "R/analyse_wintertellingen_pilot.R"
+source(file.path(dirname(normalizePath(script_path, mustWork = TRUE)), "meijendel_cache_contract.R"))
 output_dir <- if (length(args) >= 1L) args[[1L]] else file.path(getwd(), "wintertellingen")
 login_path <- if (length(args) >= 2L) args[[2L]] else Sys.getenv("MEIJENDEL_MYSQL_LOGIN_PATH", "meijendel_root")
 database <- if (length(args) >= 3L) args[[3L]] else Sys.getenv("MEIJENDEL_MYSQL_DATABASE", "Meijendel")
@@ -33,6 +37,20 @@ write_csv <- function(x, name) {
 }
 
 season_expr <- "CASE WHEN MONTH(b.bezoek_datum) >= 9 THEN YEAR(b.bezoek_datum) ELSE YEAR(b.bezoek_datum) - 1 END"
+included_out_of_scope <- meijendel_out_of_scope_from_env()
+invalid_out_of_scope <- setdiff(included_out_of_scope, c("M66", "M91"))
+if (length(invalid_out_of_scope)) {
+  stop("Alleen M66 en M91 kunnen expliciet buiten de standaard analysescope worden toegevoegd.")
+}
+scope_extra <- if (length(included_out_of_scope)) {
+  paste(sprintf("'%s'", included_out_of_scope), collapse = ",")
+} else {
+  "''"
+}
+scope_predicate <- sprintf(
+  "(p.plot_id IN (SELECT plot_id FROM v_meijendel_analyseplot_actueel) OR p.kavel_nummer IN (%s))",
+  scope_extra
+)
 
 visits <- query_mysql(sprintf(
   paste(
@@ -44,8 +62,9 @@ visits <- query_mysql(sprintf(
     "JOIN plots p ON p.plot_id=b.plot_id",
     "LEFT JOIN plot_jaar_oppervlak a ON a.plot_id=b.plot_id AND a.jaar=YEAR(b.bezoek_datum)",
     "WHERE (MONTH(b.bezoek_datum)>=9 OR MONTH(b.bezoek_datum)<=3)",
+    "AND %s",
     "AND %s BETWEEN 2000 AND 2024"
-  ), season_expr, season_expr
+  ), season_expr, scope_predicate, season_expr
 ))
 
 counts <- query_mysql(sprintf(
@@ -53,10 +72,12 @@ counts <- query_mysql(sprintf(
     "SELECT w.bezoek_id,w.soort_id,SUM(w.aantal) AS aantal,COUNT(*) AS bronregels,MAX(w.aantal) AS max_bronregel",
     "FROM dagwaarnemingen_wv w",
     "JOIN dagbezoeken_wv b ON b.bezoek_id=w.bezoek_id",
+    "JOIN plots p ON p.plot_id=b.plot_id",
     "WHERE (MONTH(b.bezoek_datum)>=9 OR MONTH(b.bezoek_datum)<=3)",
+    "AND %s",
     "AND %s BETWEEN 2000 AND 2024",
     "GROUP BY w.bezoek_id,w.soort_id"
-  ), season_expr
+  ), scope_predicate, season_expr
 ))
 
 species <- query_mysql("SELECT id AS soort_id,euring_code,TRIM(soort_naam) AS soort_naam,TRIM(latijnse_naam) AS latijnse_naam FROM soorten")

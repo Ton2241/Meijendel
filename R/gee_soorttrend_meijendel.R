@@ -5,6 +5,7 @@ file_arg <- grep("^--file=", cmd_args, value = TRUE)
 script_path <- if (length(file_arg)) sub("^--file=", "", file_arg[[1]]) else "R/gee_soorttrend_meijendel.R"
 repo_dir <- normalizePath(file.path(dirname(script_path), ".."), mustWork = TRUE)
 source(file.path(repo_dir, "R", "species_name_synonyms.R"))
+source(file.path(repo_dir, "R", "meijendel_cache_contract.R"))
 
 user_lib <- file.path(Sys.getenv("HOME"), "Library/R/arm64/4.5/library")
 if (dir.exists(user_lib)) {
@@ -202,12 +203,15 @@ to_numeric <- function(x) as.numeric(x)
 
 parse_tables <- function(path) {
   plots <- read_insert_table(path, "plots", c("plot_id", "plot_naam", "kavel_nummer"))
+  plot_analyse_scope <- read_insert_table(path, "plot_analyse_scope", c("scope_code", "plot_id", "in_scope", "reden", "besluitdatum"))
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
   territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
 
   plots$plot_id <- to_integer(plots$plot_id)
+  plot_analyse_scope$plot_id <- to_integer(plot_analyse_scope$plot_id)
+  plot_analyse_scope$in_scope <- to_integer(plot_analyse_scope$in_scope)
   soorten$id <- to_integer(soorten$id)
   soorten$euring_code <- to_integer(soorten$euring_code)
   pjo$plot_id <- to_integer(pjo$plot_id)
@@ -220,13 +224,14 @@ parse_tables <- function(path) {
   territoria$jaar <- to_integer(territoria$jaar)
   territoria$territoria <- to_numeric(territoria$territoria)
 
-  list(
+  apply_meijendel_plot_scope(list(
     plots = plots,
+    plot_analyse_scope = plot_analyse_scope,
     soorten = soorten,
     plot_jaar_oppervlak = pjo,
     plot_jaar_teller = pjt,
     territoria = territoria
-  )
+  ), meijendel_out_of_scope_from_env())
 }
 
 make_analysis_basis <- function(tbls, year_min, year_max, analysis_set) {
@@ -389,10 +394,15 @@ pred_years <- data.frame(
   stringsAsFactors = FALSE
 )
 
-pred_link <- predict(gee_fit, newdata = pred_years, type = "link", se.fit = TRUE)
+coef_vector <- stats::coef(gee_fit)
+pred_matrix <- stats::model.matrix(~ year_c, data = pred_years)
+pred_matrix <- pred_matrix[, names(coef_vector), drop = FALSE]
+coef_vcov <- stats::vcov(gee_fit)[names(coef_vector), names(coef_vector), drop = FALSE]
+pred_eta <- as.numeric(pred_matrix %*% coef_vector + pred_years$log_area)
+pred_se <- sqrt(pmax(0, diag(pred_matrix %*% coef_vcov %*% t(pred_matrix))))
 pred_df <- pred_years
-pred_df$eta <- as.numeric(pred_link$fit)
-pred_df$se_eta <- as.numeric(pred_link$se.fit)
+pred_df$eta <- pred_eta
+pred_df$se_eta <- pred_se
 pred_df$mu <- exp(pred_df$eta)
 pred_df$mu_low <- exp(pred_df$eta - 1.96 * pred_df$se_eta)
 pred_df$mu_high <- exp(pred_df$eta + 1.96 * pred_df$se_eta)

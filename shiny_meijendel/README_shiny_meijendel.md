@@ -2,6 +2,11 @@
 
 Dit is een werkende Shiny-opzet voor vrije TRIM-selecties op kavels.
 
+De vrije selectie begint binnen `meijendel_natura2000`: M66 en M91 en hun
+gekoppelde plotregels vallen standaard af. De technische loader kan ze alleen
+na een uitdrukkelijk argument of via `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS`
+toevoegen.
+
 De app staat in:
 
 - `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R`

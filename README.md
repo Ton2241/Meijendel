@@ -135,6 +135,15 @@ Meijendel-literatuuroverzicht uit Zotero worden beheerd in Meijendel_bronnen en
 mogen niet zonder afzonderlijk promotiebesluit in analyses uit Meijendel worden
 gebruikt.
 
+Plotgebonden analyses gebruiken standaard de centrale scope
+`meijendel_natura2000` uit `plot_analyse_scope` en de view
+`v_meijendel_analyseplot_actueel`. M66 (Haagsche Golf Club) en M91
+(Voorlinden) blijven met hun geldige bronregels in de database aanwezig, maar
+hebben `in_scope = 0` met reden `Geen onderdeel van Natura
+2000-analysegebied.` Zij worden alleen meegenomen wanneer de gebruiker M66
+en/of M91 uitdrukkelijk voor een analyse toevoegt. Dit staat los van
+`plots.in_gebruik`, dat alleen aangeeft of een plot actueel wordt gebruikt.
+
 ### Documentatie
 
 Projectdocumentatie staat vooral in `MDs/`, met scriptspecifieke documentatie in `R/`.

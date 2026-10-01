@@ -147,6 +147,16 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- Gebruik voor iedere plotgebonden berekening uit `Meijendel` standaard
+  `plot_analyse_scope` met `scope_code = meijendel_natura2000` of de view
+  `v_meijendel_analyseplot_actueel`. M66 (`plot_id = 3503`) en M91
+  (`plot_id = 3514`) hebben `in_scope = 0` omdat zij geen onderdeel zijn van
+  het Natura 2000-analysegebied. Neem een of beide alleen mee wanneer Ton dat
+  uitdrukkelijk voor die analyse vraagt; gebruik in de bestaande R-routes
+  daarvoor `include_out_of_scope_kavels` of
+  `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66,M91`. Leid analysescope nooit af
+  uit `plots.in_gebruik`: dat veld beschrijft alleen de actuele gebruiksstatus.
+  Nieuwe plots zonder expliciete scopestatus moeten de analyse laten stoppen.
 - Controleer bij ELKE toevoeging, correctie, import, migratie of schemawijziging
   dat ALLE soortwaarnemingen, inclusief afgeleide meetregels en echte nullen,
   via `taxa`, `taxa_bronkoppeling` en `taxon_groepen` benaderbaar zijn.

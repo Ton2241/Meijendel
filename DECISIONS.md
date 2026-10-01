@@ -1,5 +1,26 @@
 # Besluiten
 
+- Op 1 oktober 2026 is de standaard-analysescope voor plotgebonden gegevens
+  structureel vastgelegd. `plot_analyse_scope` bevat voor alle 69 plots een
+  expliciete status onder `scope_code = meijendel_natura2000`; de view
+  `v_meijendel_analyseplot_actueel` geeft de 67 standaard toegelaten plots.
+  M66 (Haagsche Golf Club, `plot_id = 3503`) en M91 (Voorlinden,
+  `plot_id = 3514`) hebben `in_scope = 0`, beide met de reden `Geen onderdeel
+  van Natura 2000-analysegebied.` De geldige bronregels blijven bewaard. In
+  `territoria` gaat het om 1.593 regels uit 39 jaren (1985–2025) voor M66 en
+  774 regels uit 18 jaren (1993–2021) voor M91. De standaardselectie bevat
+  daardoor 68.646 territoriumregels in 52 territoriumplots en 2.111 plotjaren
+  uit 1958–2025; de ruwe tabel bevat 71.013 regels in 54 territoriumplots en
+  2.168 plotjaren uit 1958–2025. Alle repositoryberekeningen filteren
+  standaard via deze centrale scope. Alleen een uitdrukkelijke selectie van
+  M66 en/of M91 mag daarvan afwijken, in R via argument
+  `include_out_of_scope_kavels` of de omgevingsvariabele
+  `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS`. `plots.in_gebruik` blijft uitsluitend
+  de actuele gebruiksstatus en is geen vervanging voor deze inhoudelijke
+  analysegrens. De scope is technische selectiemetadata en verandert geen
+  Event-, Occurrence- of Taxonbetekenis volgens Darwin Core of TDWG TCS. Geen
+  VPS-publicatie.
+
 - Op 1 oktober 2026 is de goedkeuringsstatus van de vogelterritoria nader
   vastgesteld. De inhoudelijke regel blijft dat `territoria` uitsluitend
   formele territoria uit goedgekeurde tellingen hoort te bevatten. De

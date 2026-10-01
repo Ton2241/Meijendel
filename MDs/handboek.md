@@ -99,6 +99,34 @@ FROM plots p
 WHERE p.in_gebruik = 1
 ```
 
+### 1.2 Welke plots horen standaard bij het analysegebied?
+
+Gebruik voor iedere plotgebonden berekening de centrale scope
+`meijendel_natura2000` in `plot_analyse_scope`. De vaste SQL-ingang is:
+
+```sql
+JOIN v_meijendel_analyseplot_actueel s ON s.plot_id = ...
+```
+
+M66 (Haagsche Golf Club, `plot_id = 3503`) en M91 (Voorlinden,
+`plot_id = 3514`) hebben `in_scope = 0`, beide met de reden `Geen onderdeel
+van Natura 2000-analysegebied.` Hun geldige bronregels blijven in de database,
+maar doen standaard niet mee. De ruwe tabel `territoria` bevat 71.013 regels
+in 54 plots en 2.168 plotjaren uit 1958–2025. Na toepassing van de scope blijven
+68.646 regels in 52 plots en 2.111 plotjaren uit 1958–2025 over.
+
+Alleen wanneer de gebruiker M66 en/of M91 uitdrukkelijk voor een bepaalde
+analyse vraagt, mogen zij worden toegevoegd. In de bestaande R-routes gebeurt
+dat met `include_out_of_scope_kavels` of, voor scripts, met bijvoorbeeld:
+
+```sh
+MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66,M91 Rscript ...
+```
+
+Verwar dit niet met `plots.in_gebruik`. Een plot kan actief zijn en toch buiten
+het Natura 2000-analysegebied vallen. Een nieuw plot zonder expliciete regel in
+`plot_analyse_scope` laat de standaardanalyse daarom stoppen.
+
 ## 2. Hoe is de repository opgebouwd?
 
 Je werkt in de repository `Ton2241/Meijendel`.
@@ -548,7 +576,7 @@ De hoofd-TRIM-analyse leest rechtstreeks `meijendel.sql` in en maakt nieuwe outp
 
 De analyse doet in grote lijnen dit:
 
-1. leest de kern-tabellen in
+1. leest de kern-tabellen in en past `meijendel_natura2000` toe
 2. bouwt per `plot x jaar` een analysebasis op
 3. gebruikt voor `1958-1972` alleen de historische kernkavels
 4. behandelt niet-getelde plotjaren als `NA`

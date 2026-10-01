@@ -37,6 +37,7 @@ De globale analyseketen is: beschrijven, patronen herkennen, omslagmomenten zoek
 De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 
 - `plots`
+- `plot_analyse_scope`
 - `soorten`
 - `plot_jaar_oppervlak`
 - `plot_jaar_teller`
@@ -78,6 +79,15 @@ Voor `plots` geldt nu extra:
 - alleen records met `in_gebruik = 1` worden ingelezen
 - plots met `in_gebruik = 0` worden nergens in de app getoond
 - gekoppelde tabelregels op niet-gebruikte `plot_id` vallen in de parser direct af
+- daarna wordt de centrale scope `meijendel_natura2000` toegepast; M66 en M91
+  en alle gekoppelde plotregels vallen standaard af
+- een nieuw plot zonder expliciete scopestatus blokkeert het laden, zodat het
+  niet ongemerkt in een analyse terechtkomt
+
+De technische loader kan M66 en/of M91 alleen na een uitdrukkelijk argument
+`include_out_of_scope_kavels` of via
+`MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS` toevoegen. De gewone Shiny-interface
+biedt deze uitzondering niet stilzwijgend aan.
 
 ## Analysebasis
 

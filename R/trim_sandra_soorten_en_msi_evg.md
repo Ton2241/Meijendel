@@ -12,6 +12,11 @@ Het script:
 - gebruikt dezelfde verbeterde TRIM-logica als de lange analyse: eerst een volledig model, daarna automatisch eenvoudigere modellen als dat nodig is
 - berekent daarna een MSI per ecologische 100-groep
 
+Vooraf past het script de centrale scope `meijendel_natura2000` toe. M66 en
+M91 vallen daardoor standaard buiten iedere variant, ook als een toekomstige
+plotlijst een van beide zou noemen. Alleen een uitdrukkelijke uitvoering met
+`MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS` kan daarvan afwijken.
+
 ## Trendcontract `trim-trend-v2`
 
 De soorttrend over `1997-2022` wordt rechtstreeks uit het werkende TRIM-model

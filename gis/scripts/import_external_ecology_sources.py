@@ -438,6 +438,7 @@ CENTRAL_QUERY_SCHEMA = {
     'plot_jaar_toegankelijkheid': frozenset(['bron', 'jaar', 'opmerking', 'plot_id', 'plot_naam', 'status_code']),
     'plot_jaar_toegankelijkheid_deel': frozenset(['aandeel_pct', 'barriere_type', 'bron', 'deel_label', 'geom_wkt', 'id', 'jaar', 'opmerking', 'plot_id', 'status_code']),
     'plot_link': frozenset(['bron', 'id', 'label', 'link_type', 'opmerking', 'plot_id', 'url']),
+    'plot_analyse_scope': frozenset(['besluitdatum', 'in_scope', 'plot_id', 'reden', 'scope_code']),
     'plotkolom_mapping': frozenset(['kolomnaam', 'plot_id']),
     'plots': frozenset(['geom', 'in_gebruik', 'kavel_nummer', 'plot_id', 'plot_naam', 'plot_nr', 'plot_wv']),
     'pq_plot_jaar_vegetatie': frozenset(['bedekking_som_gem', 'bronbestand', 'bronstatus', 'dekking_kwaliteit', 'importversie', 'jaar', 'methode', 'n_opnamen', 'n_pq', 'plot_id', 'shannon_gem', 'soortenrijkdom_gem', 'taxa_aantal', 'taxonlijst_versie']),

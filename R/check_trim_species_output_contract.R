@@ -26,11 +26,13 @@ main_usable <- read_output("trim", "soorten", "soorten_trendoverzicht_bruikbare_
 main_indices <- read_output("trim", "soorten", "soortindices_per_jaar.csv")
 main_status <- read_output("trim", "soorten", "soorten_modelstatus.csv")
 main_selection <- read_output("trim", "soorten", "soorten_bruikbare_tijdreeks_selectie.csv")
+main_basis <- read_output("trim", "soorten", "analysebasis_plot_jaar.csv")
 
-assert_true(nrow(main_status) == 159L, "hoofdstatus moet 159 soorten bevatten")
+assert_true(nrow(main_status) == 157L, "hoofdstatus moet 157 soorten binnen de Natura 2000-analysescope bevatten")
 assert_true(length(unique(main_indices$soort_id)) == 137L, "hoofdindices moeten 137 soorten bevatten")
 assert_true(nrow(main_trends) == 137L && length(unique(main_trends$soort_id)) == 137L, "hoofdtrendoverzicht moet 137 unieke soorten bevatten")
-assert_true(nrow(main_usable) == 95L && length(unique(main_usable$soort_id)) == 95L, "bruikbare hoofdreeks moet 95 unieke soorten bevatten")
+assert_true(nrow(main_usable) == 94L && length(unique(main_usable$soort_id)) == 94L, "bruikbare hoofdreeks moet 94 unieke soorten bevatten")
+assert_true(!any(main_basis$plot_id %in% c(3503L, 3514L)), "hoofd-analysebasis bevat M66 of M91")
 assert_true(setequal(main_trends$soort_id, unique(main_indices$soort_id)), "hoofdtrendsoorten wijken af van de indexsoorten")
 assert_true(setequal(main_usable$soort_id, main_selection$soort_id), "bruikbare trendsoorten wijken af van de selectie")
 
@@ -96,7 +98,7 @@ assert_true(all(sandra_trends$trend_formaliteit == "formeel"), "Sandra bevat onv
 assert_true(all(is.finite(sandra_trends$trend_se_pct) & is.finite(sandra_trends$trend_ci95_laag_pct) & is.finite(sandra_trends$trend_ci95_hoog_pct) & is.finite(sandra_trends$trend_p)), "Sandra mist formele onzekerheidsvelden")
 assert_true(all(sandra_trends$model == sandra_status$model[match(sandra_trends$soort_id, sandra_status$soort_id)]), "Sandra-modelkeuzes wijken af van modelstatus")
 
-cat("TRIM-soortuitvoercontract: OK (137 hoofdsoorten; 95 bruikbaar; 110 Sandra, 1997-2022)\n")
+cat("TRIM-soortuitvoercontract: OK (137 hoofdsoorten; 94 bruikbaar; 110 Sandra, 1997-2022)\n")
 
 assert_descriptive_group_trends <- function(data, expected_rows, label, required_estimates) {
   assert_true(nrow(data) == expected_rows, sprintf("%s moet %d trendregels bevatten", label, expected_rows))

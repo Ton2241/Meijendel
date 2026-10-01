@@ -32,7 +32,7 @@ if (is.na(cache_contract_helper)) {
   stop("R/meijendel_cache_contract.R ontbreekt; de Shiny-cache kan niet veilig worden gevalideerd.")
 }
 source(cache_contract_helper)
-MEIJENDEL_PARSER_CACHE_VERSION <- 9L
+MEIJENDEL_PARSER_CACHE_VERSION <- 10L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
 extract_columns <- function(header) {
@@ -644,6 +644,11 @@ to_numeric <- function(x) as.numeric(x)
 
 parse_meijendel_tables <- function(path) {
   plots <- read_insert_table(path, "plots")
+  plot_analyse_scope <- read_insert_table(
+    path,
+    "plot_analyse_scope",
+    c("scope_code", "plot_id", "in_scope", "reden", "besluitdatum")
+  )
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
@@ -677,6 +682,8 @@ parse_meijendel_tables <- function(path) {
   weather_year <- build_weather_year_covariates(weather_raw)
 
   plots$plot_id <- to_integer(plots$plot_id)
+  plot_analyse_scope$plot_id <- to_integer(plot_analyse_scope$plot_id)
+  plot_analyse_scope$in_scope <- to_integer(plot_analyse_scope$in_scope)
   plots$in_gebruik <- if ("in_gebruik" %in% names(plots)) to_integer(plots$in_gebruik) else 1L
   plots <- plots[, c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik")]
   plots <- plots[plots$in_gebruik == 1L, , drop = FALSE]
@@ -753,6 +760,7 @@ parse_meijendel_tables <- function(path) {
 
   list(
     plots = plots,
+    plot_analyse_scope = plot_analyse_scope,
     soorten = soorten,
     plot_jaar_oppervlak = pjo,
     plot_jaar_teller = pjt,
@@ -876,7 +884,8 @@ meijendel_cache_path_from_manifest <- function(cache_manifest_path, expected_ide
 }
 
 load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_path = NULL,
-                                         cache_manifest_path = NULL, require_prebuilt = NULL) {
+                                         cache_manifest_path = NULL, require_prebuilt = NULL,
+                                         include_out_of_scope_kavels = NULL) {
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
   if (is.null(require_prebuilt)) {
     require_prebuilt <- identical(Sys.getenv("MEIJENDEL_REQUIRE_PREBUILT_CACHE", unset = "0"), "1")
@@ -894,7 +903,10 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_p
       meijendel_tables_cache_path(path)
     }
   }
-  required_data <- c("richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar")
+  if (is.null(include_out_of_scope_kavels)) {
+    include_out_of_scope_kavels <- meijendel_out_of_scope_from_env()
+  }
+  required_data <- c("plot_analyse_scope", "richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar")
 
   if (file.exists(cache_path)) {
     cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
@@ -904,7 +916,11 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_p
     }, error = function(e) FALSE)
     if (isTRUE(cache_valid)) {
       cache$data$sql_path <- path
-      return(list(data = cache$data, from_cache = TRUE, cache_path = cache_path))
+      return(list(
+        data = apply_meijendel_plot_scope(cache$data, include_out_of_scope_kavels),
+        from_cache = TRUE,
+        cache_path = cache_path
+      ))
     }
   }
 
@@ -932,7 +948,11 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_p
       cache_path <<- fallback_cache_path
     }
   )
-  list(data = data, from_cache = FALSE, cache_path = cache_path)
+  list(
+    data = apply_meijendel_plot_scope(data, include_out_of_scope_kavels),
+    from_cache = FALSE,
+    cache_path = cache_path
+  )
 }
 
 safe_mean <- function(x) {

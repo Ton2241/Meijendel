@@ -7,7 +7,7 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
 
 ## Wat het script doet
 
-1. Het leest de tabellen `plots`, `plot_jaar_oppervlak`, `plot_jaar_teller`, `territoria`, `soorten`, `evg_vogelgroepen` en `evg_vogel_landschapgroep`.
+1. Het leest de tabellen `plots`, `plot_analyse_scope`, `plot_jaar_oppervlak`, `plot_jaar_teller`, `territoria`, `soorten`, `evg_vogelgroepen` en `evg_vogel_landschapgroep` en past standaard de scope `meijendel_natura2000` toe.
 2. Het bouwt per `plot x jaar` een analysebasis op.
 3. Het gebruikt voor `1958-1972` alleen de historische kernkavels.
 4. Het behandelt niet-getelde plotjaren als `NA` en wel-getelde maar niet-waargenomen soorten als `0`.
@@ -19,6 +19,17 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
    (`1,0` primair; `0,5` secundair), zowel volledig als robuust.
 10. Het voert per functionele groep en analysevariant een
     leave-one-species-out-trendcontrole uit.
+
+M66 en M91 vallen standaard buiten de analyse. Alleen een uitdrukkelijke
+uitvoering met bijvoorbeeld
+`MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66,M91` voegt beide kavels toe.
+
+De op 2 oktober 2026 herberekende standaarduitvoer over 1958–2025 bevat 157
+soorten met territoriumrecords binnen de scope, 137 soorten met ten minste één
+bruikbare TRIM-indexreeks en 94 soorten met een brugbare reeks in beide
+modelperioden. Mandarijneend en Hop hadden alleen territoria in M66 en/of M91 en
+vallen daarom uit de standaardsoortstatus. Boerenzwaluw blijft aanwezig, maar
+voldoet zonder deze plots niet meer aan de criteria voor een brugbare reeks.
 
 ## Trendcontract `trim-trend-v2`
 

@@ -10,6 +10,7 @@ suppressPackageStartupMessages(library(rtrim))
 script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1])
 script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
 source(file.path(script_dir, "trim_trend_contract.R"))
+source(file.path(script_dir, "meijendel_cache_contract.R"))
 
 sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
 species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/soorten"
@@ -185,7 +186,7 @@ normalize_kavel_nummer <- function(x) sub("^M", "", x)
 
 parse_tables <- function(path) {
   plots <- read_insert_table(path, "plots", c("plot_id", "plot_naam", "kavel_nummer"))
-  plots$kavel_nummer <- normalize_kavel_nummer(plots$kavel_nummer)
+  plot_analyse_scope <- read_insert_table(path, "plot_analyse_scope", c("scope_code", "plot_id", "in_scope", "reden", "besluitdatum"))
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
@@ -194,6 +195,8 @@ parse_tables <- function(path) {
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
 
   plots$plot_id <- to_integer(plots$plot_id)
+  plot_analyse_scope$plot_id <- to_integer(plot_analyse_scope$plot_id)
+  plot_analyse_scope$in_scope <- to_integer(plot_analyse_scope$in_scope)
   soorten$id <- to_integer(soorten$id)
   soorten$euring_code <- to_integer(soorten$euring_code)
   pjo$plot_id <- to_integer(pjo$plot_id)
@@ -209,8 +212,9 @@ parse_tables <- function(path) {
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
 
-  list(
+  tbls <- list(
     plots = plots,
+    plot_analyse_scope = plot_analyse_scope,
     soorten = soorten,
     plot_jaar_oppervlak = pjo,
     plot_jaar_teller = pjt,
@@ -218,6 +222,9 @@ parse_tables <- function(path) {
     evg_vogelgroepen = evg_groepen,
     evg_vogel_landschapgroep = evg_koppeling
   )
+  tbls <- apply_meijendel_plot_scope(tbls, meijendel_out_of_scope_from_env())
+  tbls$plots$kavel_nummer <- normalize_kavel_nummer(tbls$plots$kavel_nummer)
+  tbls
 }
 
 safe_mean <- function(x) {
