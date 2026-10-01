@@ -54,6 +54,15 @@ Praktisch betekent dit:
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
+De tabel `territoria` bevat uitsluitend formele territoria uit goedgekeurde
+tellingen. Staat voor een plot en jaar een territoriumregel in deze tabel, dan
+komt die uit een goedgekeurde telling. De bezoek- en waarnemingstabellen kunnen
+ook gegevens uit niet-goedgekeurde tellingen bevatten en bewijzen daarom niet
+dat het plotjaar als territoriumtelling is toegelaten. Het ontbreken van een
+territoriumregel bewijst omgekeerd niet zonder meer dat een telling is
+afgekeurd: een goedgekeurd plotjaar kan voor een afzonderlijke soort nul
+territoria hebben.
+
 ### 1.1 Hoe gebruik je `plots.in_gebruik`?
 
 In `plots` staat het veld `in_gebruik`.

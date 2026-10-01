@@ -11,6 +11,20 @@
 
 Eén keer per jaar worden nieuwe vogelterritoria verwerkt vanuit externe bron (SOVON) naar de productietabellen. Dit document beschrijft de volgorde en de controles die daarbij horen.
 
+## Goedkeuringsstatus
+
+Neem in `territoria` uitsluitend formele territoria uit goedgekeurde tellingen
+op. De aanwezigheid van een territoriumregel voor een plot en jaar betekent dus
+dat deze uit een goedgekeurde telling komt. Bezoeken en waarnemingen in
+`dagbezoeken_bmp` en `dagwaarnemingen_bmp` kunnen ook afkomstig zijn uit een
+niet-goedgekeurde telling en zijn op zichzelf geen bewijs van goedkeuring.
+
+Leid afkeuring niet uitsluitend af uit het ontbreken van een territoriumregel.
+Een goedgekeurd plotjaar kan voor een afzonderlijke soort immers nul territoria
+hebben. Gebruik voor analyses van territoria, trends en tellersensitiviteit
+alleen de goedgekeurde territoriumuitkomsten en de bijbehorende registratie in
+`plot_jaar_teller`.
+
 ## Telleridentificatie
 
 Gebruik voor de teller of het tellerteam per plot en jaar uitsluitend

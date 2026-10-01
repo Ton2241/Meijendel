@@ -1,5 +1,18 @@
 # Besluiten
 
+- Op 1 oktober 2026 is de goedkeuringsstatus van de vogelterritoria expliciet
+  vastgelegd. De tabel `territoria` bevat uitsluitend formele territoria uit
+  goedgekeurde tellingen. Zodra voor een plot en jaar een territoriumregel
+  aanwezig is, komt die dus uit een goedgekeurde telling. `dagbezoeken_bmp` en
+  `dagwaarnemingen_bmp` kunnen daarnaast bezoeken en waarnemingen bevatten uit
+  tellingen die niet zijn goedgekeurd; hun aanwezigheid bewijst daarom niet dat
+  het plotjaar als territoriumtelling is toegelaten. Omgekeerd bewijst het
+  ontbreken van een territoriumregel op zichzelf geen afkeuring, omdat een
+  goedgekeurd plotjaar voor een afzonderlijke soort ook nul territoria kan
+  hebben. Analyses van territoria, trends en tellersensitiviteit gebruiken
+  uitsluitend de goedgekeurde territoriumuitkomsten en de bijbehorende
+  `plot_jaar_teller`-registraties. Geen databasewijziging of VPS-publicatie.
+
 - Op 1 oktober 2026 is voor telleridentificatie bij de vogelgegevens bepaald
   dat `plot_jaar_teller` in de levende lokale database leidend is. De vergelijking
   met `waarnemer` uit de actuele SOVON/AVIMAP-resultatendownload omvat 25.555
