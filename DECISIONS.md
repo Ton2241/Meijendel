@@ -2,12 +2,15 @@
 
 - Op 1 oktober 2026 is de goedkeuringsstatus van de vogelterritoria nader
   vastgesteld. De inhoudelijke regel blijft dat `territoria` uitsluitend
-  formele territoria uit goedgekeurde tellingen hoort te bevatten. Controle door
-  de data-eigenaar heeft drie afgekeurde uitzonderingen aangetoond. De 26 regels
-  en 98 territoria van 2009/M36, de 2 regels en 2 territoria van 2018/M55 en de
-  19 regels en 114 territoria van 2019/M8 zijn na afzonderlijke gerichte
-  herstelkopieën uit de levende tabel verwijderd. Er resteert geen bekende
-  afgekeurde telling in `territoria`. Wel vervalt 2016/M62 (1 regel,
+  formele territoria uit goedgekeurde tellingen hoort te bevatten. De
+  data-eigenaar heeft elf plotjaren als afgekeurd vastgesteld: 2009/M35,
+  2009/M36, 2012/M105, 2012/M54a, 2015/M53, 2018/M54b, 2018/M55,
+  2019/M78/79, 2019/M8, 2021/M61 en 2022/M1a. Acht daarvan stonden in
+  `territoria`. In totaal zijn 142 regels met 1.017 territoria, na gerichte
+  herstelkopieën, uit de levende tabel verwijderd. Voor 2012/M105, 2015/M53
+  en 2021/M61 stonden al geen territoriumregels in de tabel. `territoria`
+  bevat daarna 71.013 regels; geen van de elf afgekeurde plotjaren komt er nog
+  in voor. Wel vervalt 2016/M62 (1 regel,
   1 territorium) uit de BMP-tellersensitiviteitsanalyse omdat dit een
   afzonderlijke roofvogeltelling was. Dit is een uitzondering op de
   vergelijkbaarheid, niet op de goedkeuringsstatus. De eerder ontbrekende

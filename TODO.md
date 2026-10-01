@@ -2,11 +2,6 @@
 
 ## Nu open
 
-### BMP-territoria: afgeleide producten
-
-- Controleer vóór de volgende analyse of afgeleide export, cache, dashboard en
-  Shiny opnieuw moeten worden opgebouwd uit de gecorrigeerde levende tabel.
-
 ### Verplichte centrale ingang voor alle soortwaarnemingen
 
 - Op 29 september 2026 lokaal uitgevoerd: alle oorspronkelijke soortwaarnemingen,
