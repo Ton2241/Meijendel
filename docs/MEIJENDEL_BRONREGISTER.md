@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 29 september 2026.**
+**Stand: 1 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -98,6 +98,8 @@ Iedere ontdekking, levering, import, verplaatsing, uitsluiting of nieuwe beoorde
 **Status.** Analyseklaar en primaire bron.
 
 **Taxonomische ontsluiting, 27 september 2026.** De 263 gebruikte vogelcategorieën uit `soorten` hebben ieder een voorlopig naamgebruik in `taxa` en een kandidaat in `taxa_bronkoppeling`. De koppelproef omvat 71.155 territoriumregels (1958–2025), 600.959 BMP-regels (2007–2025) en 105.712 wintertelregels (2000–2025). Dit is een afgebakende controle van deze drie tabellen, niet een nieuwe telling van alle vogelbronnen. Bron-IDs en letterlijke cataloguswaarden blijven behouden. De kandidaten leggen nog geen gelijkheid met externe taxonconcepten vast; brongegevens, analytische status en gebruik door website, dashboard en Shiny veranderen niet.
+
+**Telleridentificatie, 1 oktober 2026.** Voor telleridentificatie is `plot_jaar_teller` in de levende lokale database de leidende projectregistratie. Een vergelijking met `waarnemer` uit de actuele SOVON/AVIMAP-resultatendownload omvat 25.555 soortresultaten in 752 plotjaren uit 2007 en 2009–2026. In 282 plotjaren is de ene AVIMAP-code exact gelijk aan de databasecode, in 56 is zij lid van een groter geregistreerd tellerteam, in 400 ontbreekt zij geheel in het geregistreerde team en voor 14 plotjaren ontbreekt `plot_jaar_teller`. Inhoudelijke controle door de data-eigenaar toont concrete AVIMAP-toeschrijvingen aan kavels die de genoemde waarnemer niet heeft geteld. Het AVIMAP-veld wordt daarom niet gebruikt om `plot_jaar_teller` te vervangen, aan te vullen of te corrigeren; het blijft uitsluitend als letterlijke bronwaarde en auditinformatie behouden. Deze beperking betreft alleen telleridentificatie en keurt de territorium- en bezoekgegevens uit de download niet als geheel af. Bij meerdere tellers blijft een plotjaar een teamregistratie. Omdat de AVIMAP-bezoekentabel geen teller bevat, wordt zonder andere expliciete bron niet afgeleid wie aan een afzonderlijk bezoek deelnam. Tellersensitiviteitsanalyses gebruiken `plot_jaar_teller` en houden tellerteams en ontbrekende koppelingen afzonderlijk herkenbaar.
 
 ### 1.2. Provinciale permanente kwadraten
 

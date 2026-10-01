@@ -1,5 +1,25 @@
 # Besluiten
 
+- Op 1 oktober 2026 is voor telleridentificatie bij de vogelgegevens bepaald
+  dat `plot_jaar_teller` in de levende lokale database leidend is. De vergelijking
+  met `waarnemer` uit de actuele SOVON/AVIMAP-resultatendownload omvat 25.555
+  soortresultaten in 752 plotjaren uit 2007 en 2009–2026. In 282 plotjaren is
+  de ene AVIMAP-code exact gelijk aan de databasecode, in 56 is zij lid van een
+  groter geregistreerd tellerteam, in 400 ontbreekt zij geheel in het
+  geregistreerde team en voor 14 plotjaren ontbreekt `plot_jaar_teller`.
+  Inhoudelijke controle door de data-eigenaar toont bovendien concrete
+  AVIMAP-toeschrijvingen aan kavels die de genoemde waarnemer niet heeft
+  geteld. Het AVIMAP-veld `waarnemer` wordt daarom niet gebruikt om
+  `plot_jaar_teller` te vervangen, aan te vullen of te corrigeren. Het blijft
+  uitsluitend als letterlijke bronwaarde en auditinformatie behouden. Dit
+  besluit betreft alleen telleridentificatie en verandert de beoordeling van
+  de aangeleverde territorium- en bezoekgegevens niet. Bij meerdere
+  geregistreerde tellers blijft het plotjaar een teamregistratie; zonder een
+  expliciete teller per bezoek wordt geen individuele bezoekdeelname afgeleid.
+  Tellersensitiviteitsanalyses gebruiken voortaan `plot_jaar_teller`, met
+  tellerteams en ontbrekende koppelingen afzonderlijk herkenbaar. Geen
+  databasewijziging of VPS-publicatie.
+
 - Op 29 september 2026 zijn de vier na de bronontvlechting uitsluitend voor
   LVD gebruikte fysieke `externe_ecologie_*`-tabellen lokaal hernoemd naar
   `lvd_dataset`, `lvd_event`, `lvd_resultaat` en `lvd_overlap`. De bestaande

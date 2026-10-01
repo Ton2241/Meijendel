@@ -3,13 +3,29 @@
 **Database:** Meijendel  
 **Engine:** InnoDB, UTF8MB4  
 **Frequentie:** Jaarlijks  
-**Laatste update van dit document:** februari 2026  
+**Laatste update van dit document:** 1 oktober 2026\
 
 ---
 
 ## Overzicht
 
 Eén keer per jaar worden nieuwe vogelterritoria verwerkt vanuit externe bron (SOVON) naar de productietabellen. Dit document beschrijft de volgorde en de controles die daarbij horen.
+
+## Telleridentificatie
+
+Gebruik voor de teller of het tellerteam per plot en jaar uitsluitend
+`plot_jaar_teller` uit de levende lokale Meijendel-database. Het veld
+`waarnemer` uit een SOVON/AVIMAP-resultatendownload is daarvoor niet leidend:
+inhoudelijke controle heeft concrete toeschrijvingen gevonden aan kavels die
+de genoemde waarnemer niet heeft geteld. Gebruik dit veld daarom niet om
+`plot_jaar_teller` te vervangen, aan te vullen of te corrigeren. Als het wordt
+ingelezen, blijft het uitsluitend een letterlijke bronwaarde voor audit.
+
+Behoud meerdere geregistreerde tellers binnen hetzelfde plotjaar als een
+tellerteam. Leid daaruit niet af wie aan welk afzonderlijk bezoek deelnam. De
+AVIMAP-bezoekentabel bevat geen telleridentificatie. Deze beperking betreft
+alleen de telleridentificatie en is geen algemene afwijzing van de aangeleverde
+territorium- of bezoekgegevens.
 
 ---
 
