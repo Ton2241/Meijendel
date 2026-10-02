@@ -105,8 +105,8 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'sovon_avimap_taxon',
                 'join': 'w.batch_id=c.batch_id AND w.soortgroep_code=c.soortgroep_code AND w.soortnr=c.soortnr',
                 'role': 'bronwaarneming'}
-        elif table.startswith('sovon_bmp_') and 'taxon_bronkoppeling_id' in columns:
-            routes[table] = {'kind': 'direct', 'role': 'bronwaarneming'}
+        elif table == 'sovon_bmp_soortenlijst_taxon':
+            routes[table] = {'kind': 'direct', 'role': 'protocolsoortenlijst'}
         elif 'soort_id' in columns:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'soorten',
                              'join': 'w.soort_id=c.id',
@@ -200,15 +200,13 @@ def derived_key_sql(route: dict, alias: str = 'w') -> str:
 def central_source_condition(table: str, route: dict, alias='w') -> str:
     """Same semantic check in the acceptance gate and in BEFORE row triggers."""
     kind = route['kind']
-    if table in {
-        'sovon_bmp_soortenlijst_taxon', 'sovon_bmp_bezoek_taxon',
-        'sovon_bmp_waarneming', 'sovon_bmp_territoriumpunt',
-        'sovon_bmp_plotjaar_taxon',
-    }:
+    if table == 'sovon_bmp_soortenlijst_taxon':
         return (
-            f'EXISTS(SELECT 1 FROM soorten s WHERE s.id={alias}.soort_id '
+            f'(({alias}.koppelstatus=\'niet_gekoppeld\' AND {alias}.soort_id IS NULL '
+            f'AND {alias}.taxon_bronkoppeling_id IS NULL AND {alias}.euring_code IS NULL) '
+            f'OR EXISTS(SELECT 1 FROM soorten s WHERE s.id={alias}.soort_id '
             f'AND s.taxon_bronkoppeling_id={alias}.taxon_bronkoppeling_id '
-            f'AND s.euring_code={alias}.euring_code)'
+            f'AND s.euring_code={alias}.euring_code))'
         )
     if kind=='catalogue':
         if table=='soorten': source_id=f'CAST({alias}.id AS CHAR)'; name=f'{alias}.latijnse_naam'
@@ -243,6 +241,17 @@ def central_source_condition(table: str, route: dict, alias='w') -> str:
         return ("b.bron_systeem='Meijendel' AND BINARY b.bron_dataset=BINARY "+source+
                 ' AND BINARY b.bron_versie=BINARY '+version+
                 ' AND b.bron_context_sha256=UNHEX(SHA2(CAST('+context+' AS CHAR CHARACTER SET utf8mb4),256))')
+    return 'TRUE'
+
+
+def central_reachability_scope(table: str, route: dict, alias: str = 'w') -> str:
+    """Selecteer alleen regels die volgens hun rol een centraal taxon vereisen."""
+    if table == 'sovon_bmp_soortenlijst_taxon':
+        return f"{alias}.koppelstatus<>'niet_gekoppeld'"
+    if route['kind'] == 'catalogue' and route.get('nullable'):
+        return f'{alias}.taxon_bronkoppeling_id IS NOT NULL'
+    if route['kind'] == 'derived' and route.get('nullable'):
+        return f'{alias}.{query_identifier(route["name_field"])} IS NOT NULL'
     return 'TRUE'
 
 
@@ -481,16 +490,11 @@ CENTRAL_QUERY_SCHEMA = {
     'sovon_avimap_taxon': frozenset(['aangemaakt_op', 'batch_id', 'ndff_soort_id', 'nederlandse_naam', 'soortgroep_code', 'soortgroep_naam', 'soortnr', 'taxon_bronkoppeling_id', 'taxon_mapping_status', 'wetenschappelijke_naam']),
     'sovon_avimap_vogel_sync_batch': frozenset(['afsluitjaar', 'batch_id', 'behouden_database_territoria_zonder_bronregel', 'bijgewerkte_bezoekduur', 'bijgewerkte_bezoekteksten', 'bijgewerkte_in_plot_records', 'bijgewerkte_territoriumaantallen', 'bron_bezoeken', 'bron_territoriumresultaten', 'bron_vogelrecords', 'kwaliteitsnotitie', 'regelversie', 'sync_id', 'toegevoegde_bezoeken', 'toegevoegde_territoriumresultaten', 'toegevoegde_vogelrecords', 'uitgevoerd_op']),
     'sovon_avimap_waarneming': frozenset(['aangemaakt_op', 'aantal', 'batch_id', 'broedcode', 'bron_bezoek_id', 'bron_waarneming_id', 'bronproject_id', 'bronstatus', 'cluster_territorium', 'cluster_territorium_id', 'dag', 'dagvanjaar', 'gegevensrol', 'geom', 'geslacht', 'in_plot', 'ioc_sort', 'jaar', 'kopid', 'lopend_jaar', 'maand', 'opmerking', 'plot_id', 'soortgroep_code', 'soortnr', 'telgebied', 'waarnemingsdatum', 'wrntype', 'x_coord', 'y_coord']),
-    'sovon_bmp_bezoek': frozenset(['aangemaakt_op', 'begintijd', 'bezoek_datum', 'bezoeknummer', 'bezoektype', 'bron_aantal_records', 'bron_aantal_soorten', 'bron_bezoek_id', 'bronvorm', 'dagbezoek_id', 'deelbezoek', 'eindtijd', 'gunstig', 'jaar', 'levering_id', 'opmerking', 'plot_id']),
-    'sovon_bmp_bezoek_taxon': frozenset(['aangemaakt_op', 'aantal_buiten_plot', 'aantal_waarnemingen', 'bron_bezoek_id', 'bron_naam', 'bronwaarde_raw', 'euring_code', 'levering_id', 'soort_id', 'taxon_bronkoppeling_id']),
     'sovon_bmp_jaarlevering': frozenset(['aangemaakt_op', 'actief_jaar', 'actueel', 'bezoekstippen_bestanden_json', 'bezoekstippen_manifest_sha256', 'bezoektotalen_bestand', 'bezoektotalen_sha256', 'bron_bezoeken', 'bronmap', 'jaar', 'kwaliteitsnotitie', 'levering_id', 'leveringsstatus', 'matrix_bestand', 'matrix_rijen', 'matrix_sha256', 'ontvangen_op', 'regelversie', 'standaardbezoeken_bestand', 'standaardbezoeken_sha256', 'standaardresultaten_bestand', 'standaardresultaten_sha256', 'territoriumpunten_bestanden_json', 'territoriumpunten_manifest_sha256']),
     'sovon_bmp_plotjaar': frozenset(['aangemaakt_op', 'beoordeeld_door', 'beoordeeld_op', 'beoordelingsstatus', 'bmp_type', 'bmp_type_bron', 'bron_bezoekaantal', 'controle_status', 'controlebesluit', 'jaar', 'levering_id', 'matrixstatus', 'plot_id', 'soortenbereik', 'soortenlijstversie_id', 'volledigheidstatus']),
-    'sovon_bmp_plotjaar_taxon': frozenset(['aangemaakt_op', 'aantal_buiten_plot', 'aantal_niet_bruikbaar', 'autocluster_territoria', 'bron_naam', 'broncelstatus', 'database_territoria_bij_ontvangst', 'euring_code', 'hoogste_broedcode', 'ioc_sort', 'jaar', 'kwaliteitsnotitie', 'levering_id', 'plot_id', 'soort_id', 'standaardresultaat_territoria', 'taxon_bronkoppeling_id', 'territoria', 'totaal_waarnemingen', 'vergelijkingsstatus']),
     'sovon_bmp_plotjaar_tellercode': frozenset(['aangemaakt_op', 'bronveld', 'jaar', 'koppelstatus', 'levering_id', 'plot_id', 'teller_id', 'tellercode', 'toelichting']),
-    'sovon_bmp_soortenlijst_taxon': frozenset(['aangemaakt_op', 'bron_naam', 'bronnotitie', 'euring_code', 'lijststatus', 'soort_id', 'soortenlijstversie_id', 'taxon_bronkoppeling_id']),
+    'sovon_bmp_soortenlijst_taxon': frozenset(['aangemaakt_op', 'bron_naam', 'bronnotitie', 'euring_code', 'koppelstatus', 'lijststatus', 'lijsttaxon_id', 'soort_id', 'soortenlijstversie_id', 'taxon_bronkoppeling_id']),
     'sovon_bmp_soortenlijstversie': frozenset(['aangemaakt_op', 'bmp_type', 'bronbestand_sha256', 'bronverwijzing', 'geldig_tot', 'geldig_van', 'lijst_sleutel', 'lijststatus', 'regelversie', 'soortenlijstversie_id', 'titel', 'toelichting']),
-    'sovon_bmp_territoriumpunt': frozenset(['aangemaakt_op', 'aantal', 'broedcode', 'bron_feature_id', 'bron_naam', 'bron_record_sha256', 'euring_code', 'geom', 'in_plot', 'jaar', 'levering_id', 'opmerking', 'plot_id', 'soort_id', 'taxon_bronkoppeling_id', 'x_coord', 'y_coord']),
-    'sovon_bmp_waarneming': frozenset(['aangemaakt_op', 'aantal', 'broedcode', 'bron_bezoek_id', 'bron_naam', 'bron_waarneming_id', 'cluster_territorium', 'cluster_territorium_id', 'dagwaarneming_id', 'euring_code', 'geom', 'geslacht', 'in_plot', 'jaar', 'levering_id', 'opmerking', 'plot_id', 'soort_id', 'taxon_bronkoppeling_id', 'waarnemingstype', 'x_coord', 'y_coord']),
     'species_trait_value': frozenset(['boolean_value', 'category_id', 'confidence_score', 'created_at', 'evidence_note', 'geographic_context', 'id', 'import_batch_id', 'is_preferred', 'levensfase', 'numeric_value', 'ordinal_value', 'population_context', 'preferred_context_hash', 'quality_status', 'raw_value', 'seizoen', 'soort_id', 'trait_id', 'updated_at', 'value_type']),
     'species_trait_value_source': frozenset(['evidence_note', 'source_id', 'source_locator', 'species_trait_value_id']),
     'taxa': frozenset(['aangemaakt_op', 'aanvullende_namen', 'beheerstatus', 'bovenliggend_taxon_id', 'concept_identificatie', 'familie', 'geaccepteerd_taxon_id', 'geslacht', 'gewijzigd_op', 'groep_id', 'klasse', 'naam_auteur', 'naam_gepubliceerd_in', 'naam_gepubliceerd_in_id', 'naam_gepubliceerd_jaar', 'naam_identificatie', 'naam_volgens', 'naam_volgens_id', 'naam_volgens_versie', 'naam_zonder_auteur', 'nederlandse_naam', 'nomenclatuurcode', 'nomenclatuurstatus', 'oorspronkelijk_taxon_id', 'opmerkingen', 'orde', 'rijk', 'stam', 'taxon_id', 'taxon_uuid', 'taxonmetadata', 'taxonomische_status', 'taxonrang', 'taxonrang_bron', 'taxonvorm', 'vastgesteld_door', 'vastgesteld_op', 'weergavenaam', 'wetenschappelijke_naam']),
@@ -631,9 +635,7 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
                 errors.append(table+': vaste centrale bronkoppeling ontbreekt'); continue
             if (table,'taxon_bronkoppeling_id','taxa_bronkoppeling','koppeling_id') not in fks:
                 errors.append(table+': centrale FK ontbreekt')
-            allowed = ('w.taxon_bronkoppeling_id IS NOT NULL' if kind == 'catalogue' and route.get('nullable')
-                       else 'w.'+query_identifier(route['name_field'])+' IS NOT NULL'
-                       if kind == 'derived' and route.get('nullable') else 'TRUE')
+            allowed = central_reachability_scope(table, route)
             missing = int(db.sql(f'SELECT COUNT(*) FROM {qtable} w LEFT JOIN taxa_bronkoppeling b '
                 'ON b.koppeling_id=w.taxon_bronkoppeling_id LEFT JOIN taxa t ON t.taxon_id=b.taxon_id '
                 f'WHERE ({allowed}) AND (t.taxon_id IS NULL OR b.koppelstatus NOT IN (\'kandidaat\',\'bevestigd\'));'))
@@ -977,6 +979,19 @@ def central_query_triggers_sql(plan: dict) -> str:
                 "IF cq_n<>1 THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Externe bron eerst centraal registreren'; END IF; "
                 'IF NEW.taxon_bronkoppeling_id IS NULL THEN SET NEW.taxon_bronkoppeling_id=cq_id; END IF; '
                 "IF NEW.taxon_bronkoppeling_id<>cq_id THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Externe taxonbroncontext past niet'; END IF; "+validity)
+        elif table == 'sovon_bmp_soortenlijst_taxon':
+            body = (
+                "IF NEW.koppelstatus='niet_gekoppeld' THEN "
+                "IF NEW.soort_id IS NOT NULL OR NEW.taxon_bronkoppeling_id IS NOT NULL "
+                "OR NEW.euring_code IS NOT NULL THEN SIGNAL SQLSTATE '45000' "
+                "SET MESSAGE_TEXT='Niet-gekoppeld lijstlid bevat toch een taxonkoppeling'; END IF; "
+                "ELSE IF NOT EXISTS(SELECT 1 FROM soorten s JOIN taxa_bronkoppeling b "
+                "ON b.koppeling_id=s.taxon_bronkoppeling_id JOIN taxa t ON t.taxon_id=b.taxon_id "
+                "WHERE s.id=NEW.soort_id AND s.taxon_bronkoppeling_id=NEW.taxon_bronkoppeling_id "
+                "AND s.euring_code=NEW.euring_code AND b.koppelstatus IN ('kandidaat','bevestigd')) "
+                "THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gekoppeld lijstlid is niet centraal bereikbaar'; "
+                "END IF; END IF;"
+            )
         else:
             condition=central_source_condition(table,route,'NEW')
             body=("IF NOT EXISTS(SELECT 1 FROM taxa_bronkoppeling b WHERE b.koppeling_id=NEW.taxon_bronkoppeling_id AND "+

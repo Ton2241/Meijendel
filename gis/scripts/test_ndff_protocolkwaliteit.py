@@ -112,11 +112,6 @@ def main() -> int:
         "meijendel.sovon_bmp_soortenlijst_taxon",
         "meijendel.sovon_bmp_plotjaar",
         "meijendel.sovon_bmp_plotjaar_tellercode",
-        "meijendel.sovon_bmp_bezoek",
-        "meijendel.sovon_bmp_bezoek_taxon",
-        "meijendel.sovon_bmp_waarneming",
-        "meijendel.sovon_bmp_territoriumpunt",
-        "meijendel.sovon_bmp_plotjaar_taxon",
         "meijendel.ndff_zeereep_kilometerhok",
         "meijendel.ndff_zeereep_bezoek",
         "meijendel.ndff_zeereep_bezoek_taxon",
@@ -201,11 +196,10 @@ def main() -> int:
     ):
         assert condition_column in folded, condition_column
     assert "'formeel_afgekeurd'" in folded
-    assert "'expliciete_nul'" in folded
-    assert "'leeg'" in folded
-    assert "broncelstatus='positief'andterritoria>0" in compact
-    assert "broncelstatus='expliciete_nul'andterritoria=0" in compact
-    assert "broncelstatus='leeg'andterritoriaisnull" in compact
+    assert "sovon_bmp_plotjaar_taxon" not in folded
+    assert "sovon_bmp_bezoek" not in folded
+    assert "sovon_bmp_waarneming" not in folded
+    assert "sovon_bmp_territoriumpunt" not in folded
     assert "referencesmeijendel.taxa_bronkoppeling" in compact
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
     assert "meijendel_ndff_secure.ndff_libel_" not in folded
@@ -508,19 +502,56 @@ def main() -> int:
         assert module.sovon_bmp_receipt_comparison(
             "leeg", None, None, False,
         ) == ("niet_vergeleken", None)
+        territory_comparison = module.compare_sovon_bmp_territories(
+            [{"plot_id": 3506, "euring_code": 13120, "plot_nr": 61,
+              "plot_naam": "Meijendel k 13s", "bron_naam": "Fitis",
+              "broncelstatus": "expliciete_nul", "territoria": 0}],
+            {13120: {"groep_code": "vogels"}},
+            {(3506, 13120): 0},
+        )
+        assert territory_comparison["categorieen"] == {"gelijk_expliciete_nul": 1}
+        assert territory_comparison["verschillen"] == []
         assert module.sovon_bmp_transaction_end(False) == "ROLLBACK;"
         assert module.sovon_bmp_transaction_end(True) == "COMMIT;"
         list_sql = module.sovon_bmp_current_list_from_1984_sql(
-            "a" * 64, commit=False,
+            "a" * 64,
+            [
+                {"bron_naam": "Fitis", "soort_id": 200,
+                 "taxon_bronkoppeling_id": 900, "euring_code": 13120},
+                {"bron_naam": "Nog niet gekoppeld", "soort_id": None,
+                 "taxon_bronkoppeling_id": None, "euring_code": None},
+            ],
+            commit=False,
         ).casefold()
         assert "sovon-bmp-a-actueel-retroactief-vanaf-1984-v1" in list_sql
         assert "geldig_van" in list_sql
         assert "1984" in list_sql
         assert "lijststatus='officieel_bevestigd'" in list_sql
-        assert "from meijendel.sovon_bmp_plotjaar_taxon r" in list_sql
-        assert "p.jaar=1984" in list_sql
+        assert "'fitis',200,900,13120" in list_sql
+        assert "'nog niet gekoppeld',null,null,null" in list_sql
+        assert "sovon_bmp_plotjaar_taxon" not in list_sql
         assert "p.soortenlijstversie_id=@sovon_bmp_soortenlijst" in list_sql
         assert list_sql.rstrip().endswith("rollback;")
+
+        cleanup_sql = module.sovon_bmp_duplicate_cleanup_sql().casefold()
+        for duplicate in (
+            "sovon_bmp_bezoek_taxon", "sovon_bmp_waarneming",
+            "sovon_bmp_territoriumpunt", "sovon_bmp_plotjaar_taxon",
+            "sovon_bmp_bezoek",
+        ):
+            assert f"drop table if exists meijendel.{duplicate}" in cleanup_sql
+        assert "drop view if exists meijendel.v_sovon_bmp_analyse" in cleanup_sql
+        assert "drop view if exists meijendel.v_sovon_bmp_formeel_afgekeurd" in cleanup_sql
+
+        zero_sql = module.sovon_bmp_zero_insert_sql([
+            {"plot_id": 3506, "soort_id": 200, "jaar": 1984,
+             "broncelstatus": "expliciete_nul", "territoria": 0},
+            {"plot_id": 3506, "soort_id": 201, "jaar": 1984,
+             "broncelstatus": "positief", "territoria": 2},
+        ]).casefold()
+        assert "insert into meijendel.territoria" in zero_sql
+        assert "(3506,200,1984,0,1" in zero_sql
+        assert "(3506,201,1984,2,1" not in zero_sql
 
         for suffix in (".shp", ".shx", ".dbf", ".prj"):
             (source / f"avimap_252_diversen__bezoekstippen{suffix}").write_text(
@@ -1575,14 +1606,7 @@ def main() -> int:
     sovon_views = module.sovon_avimap_analysis_views_sql().casefold()
     assert "bezoekduur_status" in sovon_views
     assert "handmatige_controle_bezoekduur" in sovon_views
-    sovon_bmp_views = module.sovon_bmp_analysis_views_sql().casefold()
-    assert "create or replace view meijendel.v_sovon_bmp_analyse" in sovon_bmp_views
-    assert "p.beoordelingsstatus='goedgekeurd'" in sovon_bmp_views
-    assert "p.volledigheidstatus='volledig'" in sovon_bmp_views
-    assert "r.broncelstatus in ('positief','expliciete_nul')" in sovon_bmp_views
-    assert "r.vergelijkingsstatus<>'conflict'" in sovon_bmp_views
-    assert "create or replace view meijendel.v_sovon_bmp_formeel_afgekeurd" in sovon_bmp_views
-    assert "p.beoordelingsstatus='formeel_afgekeurd'" in sovon_bmp_views
+    assert not hasattr(module, "sovon_bmp_analysis_views_sql")
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql

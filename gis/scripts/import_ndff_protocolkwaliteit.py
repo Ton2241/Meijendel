@@ -5369,23 +5369,141 @@ def sovon_bmp_transaction_end(commit: bool) -> str:
     return "COMMIT;" if commit else "ROLLBACK;"
 
 
-def sovon_bmp_current_list_from_1984_sql(
-    source_sha256: str, *, commit: bool = True,
-) -> str:
-    """Pas de actuele BMP-A-lijst volgens eigenaarsbesluit toe vanaf 1984.
+def sovon_bmp_zero_insert_sql(rows: list[dict[str, object]]) -> str:
+    """Schrijf uitsluitend letterlijk aangeleverde nulcellen naar territoria."""
+    zeros = [row for row in rows if row.get("broncelstatus") == "expliciete_nul"]
+    if not zeros:
+        return "-- Geen expliciete SOVON-nulcellen."
+    values = ",\n".join(
+        "({plot_id},{soort_id},{jaar},0,1)".format(
+            plot_id=int(row["plot_id"]), soort_id=int(row["soort_id"]),
+            jaar=int(row["jaar"]),
+        )
+        for row in zeros
+    )
+    return (
+        "INSERT INTO Meijendel.territoria "
+        "(plot_id,soort_id,jaar,territoria,bron_id) VALUES\n" + values + ";"
+    )
 
-    De lijstkoppeling bewaart voor 1984 uitsluitend de broncategorieën die
-    daadwerkelijk in de SOVON-matrix voorkomen. Ze is dus geen zelfstandige
-    volledige transcriptie van de actuele SOVON-tabel. Historische namen
-    blijven als bronidentiteit behouden; een lijstlidmaatschap is geen
-    taxonomische conceptfusie.
-    """
+
+def sovon_bmp_duplicate_cleanup_sql() -> str:
+    """Verwijder de foutief aangelegde tweede waarnemingslaag."""
+    return """
+DROP VIEW IF EXISTS Meijendel.v_sovon_bmp_analyse;
+DROP VIEW IF EXISTS Meijendel.v_sovon_bmp_formeel_afgekeurd;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_bezoek_taxon;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_waarneming;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_territoriumpunt;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_plotjaar_taxon;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_bezoek;
+""".strip()
+
+
+def sovon_bmp_metadata_migration_sql() -> str:
+    """Breid bestaande lijstmetadata zonder gegevensverlies uit."""
+    return """
+ALTER TABLE Meijendel.sovon_bmp_soortenlijst_taxon
+  ADD COLUMN lijsttaxon_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT FIRST,
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (lijsttaxon_id),
+  ADD UNIQUE KEY uq_sovon_bmp_lijst_naam (soortenlijstversie_id,bron_naam),
+  ADD UNIQUE KEY uq_sovon_bmp_lijst_soort (soortenlijstversie_id,soort_id),
+  MODIFY soort_id INT NULL,
+  MODIFY taxon_bronkoppeling_id BIGINT UNSIGNED NULL,
+  MODIFY euring_code INT NULL,
+  ADD COLUMN koppelstatus ENUM('exacte_naam','naamvariant','niet_gekoppeld') NULL
+    AFTER lijststatus;
+UPDATE Meijendel.sovon_bmp_soortenlijst_taxon
+SET koppelstatus='exacte_naam'
+WHERE koppelstatus IS NULL;
+ALTER TABLE Meijendel.sovon_bmp_soortenlijst_taxon
+  MODIFY koppelstatus ENUM('exacte_naam','naamvariant','niet_gekoppeld') NOT NULL,
+  ADD CONSTRAINT chk_sovon_bmp_lijst_koppeling CHECK (
+    (koppelstatus='niet_gekoppeld' AND soort_id IS NULL
+     AND taxon_bronkoppeling_id IS NULL AND euring_code IS NULL)
+    OR (koppelstatus IN ('exacte_naam','naamvariant') AND soort_id IS NOT NULL
+     AND taxon_bronkoppeling_id IS NOT NULL AND euring_code IS NOT NULL));
+ALTER TABLE Meijendel.sovon_bmp_plotjaar
+  DROP CHECK sovon_bmp_plotjaar_chk_2,
+  ADD CONSTRAINT sovon_bmp_plotjaar_chk_2 CHECK (
+    (controle_status='te_beoordelen' AND beoordeeld_op IS NULL)
+    OR (controle_status='beoordeeld' AND controlebesluit IS NOT NULL
+        AND beoordeeld_op IS NOT NULL));
+UPDATE Meijendel.sovon_bmp_plotjaar
+SET beoordeeld_door=NULL
+WHERE beoordeeld_door='Ton namens data-eigenaar';
+""".strip()
+
+
+def sovon_bmp_list_guard_sql() -> str:
+    """Bewaak uitsluitend de taxonkoppeling van officiële lijstmetadata."""
+    condition = """
+IF NEW.koppelstatus='niet_gekoppeld' THEN
+  IF NEW.soort_id IS NOT NULL OR NEW.taxon_bronkoppeling_id IS NOT NULL
+     OR NEW.euring_code IS NOT NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Niet-gekoppeld lijstlid bevat toch een taxonkoppeling';
+  END IF;
+ELSE
+  IF NOT EXISTS(
+    SELECT 1 FROM soorten s
+    JOIN taxa_bronkoppeling b
+      ON b.koppeling_id=s.taxon_bronkoppeling_id
+    JOIN taxa t ON t.taxon_id=b.taxon_id
+    WHERE s.id=NEW.soort_id
+      AND s.taxon_bronkoppeling_id=NEW.taxon_bronkoppeling_id
+      AND s.euring_code=NEW.euring_code
+      AND b.koppelstatus IN ('kandidaat','bevestigd')
+  ) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gekoppeld lijstlid is niet centraal bereikbaar';
+  END IF;
+END IF;
+""".strip()
+    statements = ["DELIMITER $$"]
+    for trigger, event in (
+        ("cq_bb97530064cc58332aff_bi", "INSERT"),
+        ("cq_bb97530064cc58332aff_bu", "UPDATE"),
+    ):
+        statements.append(f"DROP TRIGGER IF EXISTS {trigger}$$")
+        statements.append(
+            f"CREATE TRIGGER {trigger} BEFORE {event} "
+            "ON sovon_bmp_soortenlijst_taxon FOR EACH ROW BEGIN\n"
+            + condition + "\nEND$$"
+        )
+    statements.append("DELIMITER ;")
+    return "\n".join(statements)
+
+
+def sovon_bmp_current_list_from_1984_sql(
+    source_sha256: str, list_rows: list[dict[str, object]], *, commit: bool = True,
+) -> str:
+    """Registreer de volledige officiële BMP-A-lijst, los van een jaarmatrix."""
     if not re.fullmatch(r"[0-9a-f]{64}", source_sha256):
         raise ValueError("De SHA-256 van de actuele SOVON-soortenlijst is ongeldig.")
-    historical_names = (
-        "'Barmsijs','Beflijster','Bosruiter','Goudplevier',"
-        "'Klapekster','Koperwiek','Kuifleeuwerik'"
-    )
+    if not list_rows:
+        raise ValueError("De officiële SOVON-soortenlijst is leeg.")
+    values = []
+    for row in list_rows:
+        mapped = row.get("soort_id") is not None
+        if mapped != (row.get("taxon_bronkoppeling_id") is not None):
+            raise ValueError("Een soortenlijstkoppeling is slechts gedeeltelijk gevuld.")
+        if mapped != (row.get("euring_code") is not None):
+            raise ValueError("Een soortenlijstkoppeling mist de Euring-code.")
+        status = str(row.get("koppelstatus") or (
+            "exacte_naam" if mapped else "niet_gekoppeld"
+        ))
+        values.append(
+            "(@sovon_bmp_soortenlijst,{name},{species},{link},{euring},'opgenomen',"
+            "{status},{note})".format(
+                name=sql_text(str(row["bron_naam"])),
+                species="NULL" if not mapped else int(row["soort_id"]),
+                link="NULL" if not mapped else int(row["taxon_bronkoppeling_id"]),
+                euring="NULL" if not mapped else int(row["euring_code"]),
+                status=sql_text(status),
+                note=sql_text(str(row.get("bronnotitie") or "")),
+            )
+        )
+    list_values = ",\n".join(values)
     return f"""
 SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 START TRANSACTION;
@@ -5399,10 +5517,10 @@ VALUES
    1984,NULL,'officieel_bevestigd',
    {sql_text(SOVON_BMP_CURRENT_LIST_RULE_VERSION)},
    'Besluit data-eigenaar 2 oktober 2026: de actuele BMP-A-lijst geldt '
-   'voor de jaarcontrole vanaf 1984. BMP-A omvat alle soorten. De '
-   'taxontabel bewaart per verwerkt jaar de in de SOVON-matrix voorkomende '
-   'broncategorieën; dit is geen taxonomische conceptfusie en geen volledige '
-   'transcriptie van het brondocument.')
+   'voor de jaarcontrole vanaf 1984. BMP-A omvat alle soorten. Alle 264 '
+   'unieke BMP-A-lijstnamen uit het officiële brondocument zijn vastgelegd; '
+   'een niet-gekoppelde lijstnaam is geen waarneming en blokkeert latere '
+   'invoer wanneer die naam als waarneming voorkomt.')
 AS nieuw
 ON DUPLICATE KEY UPDATE
   soortenlijstversie_id=LAST_INSERT_ID(soortenlijstversie_id),
@@ -5412,28 +5530,20 @@ ON DUPLICATE KEY UPDATE
   regelversie=nieuw.regelversie,toelichting=nieuw.toelichting;
 SET @sovon_bmp_soortenlijst=LAST_INSERT_ID();
 
+UPDATE Meijendel.sovon_bmp_soortenlijst_taxon
+SET lijststatus='expliciet_uitgesloten',
+    bronnotitie='Niet als BMP-A-lijstlid teruggevonden in de volledig uitgelezen officiële lijst.'
+WHERE soortenlijstversie_id=@sovon_bmp_soortenlijst;
 INSERT INTO Meijendel.sovon_bmp_soortenlijst_taxon
-  (soortenlijstversie_id,soort_id,taxon_bronkoppeling_id,euring_code,
-   bron_naam,lijststatus,bronnotitie)
-SELECT DISTINCT @sovon_bmp_soortenlijst,r.soort_id,r.taxon_bronkoppeling_id,
-       r.euring_code,r.bron_naam,'opgenomen',
-       CASE WHEN r.bron_naam IN ({historical_names}) THEN
-         'Historische SOVON-broncategorie uit de 1984-matrix. Onder het '
-         'eigenaarsbesluit valt deze categorie binnen BMP-A; de historische '
-         'naam en centrale bronkoppeling blijven ongewijzigd.'
-       ELSE
-         'In de 1984-SOVON-matrix voorkomende vogelcategorie binnen de '
-         'retroactief toegepaste actuele BMP-A-lijst.' END
-FROM Meijendel.sovon_bmp_plotjaar_taxon r
-JOIN Meijendel.sovon_bmp_plotjaar p
-  ON p.levering_id=r.levering_id AND p.plot_id=r.plot_id AND p.jaar=r.jaar
-JOIN Meijendel.sovon_bmp_jaarlevering j
-  ON j.levering_id=p.levering_id AND j.jaar=p.jaar AND j.actueel=1
-WHERE p.jaar=1984
+  (soortenlijstversie_id,bron_naam,soort_id,taxon_bronkoppeling_id,euring_code,
+   lijststatus,koppelstatus,bronnotitie)
+VALUES
+{list_values} AS nieuw
 ON DUPLICATE KEY UPDATE
-  taxon_bronkoppeling_id=VALUES(taxon_bronkoppeling_id),
-  euring_code=VALUES(euring_code),bron_naam=VALUES(bron_naam),
-  lijststatus='opgenomen',bronnotitie=VALUES(bronnotitie);
+  bron_naam=nieuw.bron_naam,soort_id=nieuw.soort_id,
+  taxon_bronkoppeling_id=nieuw.taxon_bronkoppeling_id,
+  euring_code=nieuw.euring_code,lijststatus='opgenomen',
+  koppelstatus=nieuw.koppelstatus,bronnotitie=nieuw.bronnotitie;
 
 UPDATE Meijendel.sovon_bmp_plotjaar p
 JOIN Meijendel.sovon_bmp_jaarlevering j
@@ -5455,6 +5565,99 @@ WHERE p.jaar=1984
 """.strip()
 
 
+def read_sovon_bmp_official_names(source_pdf: Path) -> list[str]:
+    """Lees de BMP-A-kolom uit de twee panelen van de officiële SOVON-tabel."""
+    try:
+        import pdfplumber
+    except ImportError as exc:
+        raise RuntimeError("pdfplumber is nodig om de officiële BMP-lijst te lezen.") from exc
+    names: set[str] = set()
+    panels = ((20, 97, 124, 135), (436, 512, 540, 551))
+    with pdfplumber.open(source_pdf) as pdf:
+        for page in pdf.pages:
+            words = page.extract_words(use_text_flow=False)
+            lines: dict[float, list[dict[str, object]]] = defaultdict(list)
+            for word in words:
+                top = round(float(word["top"]), 1)
+                if 63 <= top <= 577:
+                    lines[top].append(word)
+            for line in lines.values():
+                for name_min, name_max, bmp_min, bmp_max in panels:
+                    name_words = sorted(
+                        (word for word in line
+                         if name_min <= float(word["x0"]) < name_max),
+                        key=lambda word: float(word["x0"]),
+                    )
+                    if not name_words:
+                        continue
+                    name = " ".join(str(word["text"]) for word in name_words).strip()
+                    marked = any(
+                        bmp_min <= float(word["x0"]) < bmp_max
+                        and str(word["text"]).casefold() == "x"
+                        for word in line
+                    )
+                    if marked and name != "Naam":
+                        names.add(name)
+    if len(names) != 264:
+        raise ValueError(
+            f"De officiële BMP-A-lijst bevat {len(names)} unieke namen; verwacht 264."
+        )
+    return sorted(names, key=str.casefold)
+
+
+SOVON_BMP_OFFICIAL_NAME_ALIASES = {
+    "Baardman": "Baardmannetje",
+    "Eider": "Eidereend",
+    "Fazant": "Gewone Fazant",
+    "Knobbelgans (Chinese)": "Knobbelgans (Chinese vorm)",
+    "Kraanvogel": "Europese Kraanvogel",
+    "Oehoe": "Europese Oehoe",
+    "Sprinkhaanzanger": "Sprinkhaanrietzanger",
+    "Zeearend": "Europese Zeearend",
+    "Zomertortel": "Tortelduif",
+}
+
+
+def read_sovon_bmp_official_taxon_rows(
+    client: Path, client_args: list[str], names: list[str],
+) -> list[dict[str, object]]:
+    """Koppel lijstnamen alleen exact of via een expliciet vastgelegde naamvariant."""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        "SELECT s.soort_naam,s.id,s.taxon_bronkoppeling_id,s.euring_code "
+        "FROM Meijendel.soorten s "
+        "WHERE s.taxon_bronkoppeling_id IS NOT NULL ORDER BY s.id;",
+        capture=True,
+    )
+    species = {}
+    for line in output.splitlines():
+        name, species_id, link_id, euring = line.split("\t")
+        species[name.strip().casefold()] = (int(species_id), int(link_id), int(euring), name.strip())
+    result = []
+    for name in names:
+        target = SOVON_BMP_OFFICIAL_NAME_ALIASES.get(name, name)
+        match = species.get(target.casefold())
+        if match is None:
+            result.append({
+                "bron_naam": name, "soort_id": None, "taxon_bronkoppeling_id": None,
+                "euring_code": None, "koppelstatus": "niet_gekoppeld",
+                "bronnotitie": "Officieel BMP-A-lijstlid; nog niet als centrale vogelsoort gekoppeld.",
+            })
+            continue
+        species_id, link_id, euring, matched_name = match
+        variant = matched_name.casefold() != name.casefold()
+        result.append({
+            "bron_naam": name, "soort_id": species_id,
+            "taxon_bronkoppeling_id": link_id, "euring_code": euring,
+            "koppelstatus": "naamvariant" if variant else "exacte_naam",
+            "bronnotitie": (
+                f"Expliciete naamvariant van centrale soort {matched_name}."
+                if variant else "Exacte naamkoppeling met de centrale vogelsoort."
+            ),
+        })
+    return result
+
+
 def apply_sovon_bmp_current_list_from_1984(
     client: Path, client_args: list[str], source_pdf: Path, *, commit: bool = True,
 ) -> dict[str, object]:
@@ -5462,49 +5665,53 @@ def apply_sovon_bmp_current_list_from_1984(
     if not source_pdf.is_file():
         raise FileNotFoundError(source_pdf)
     source_hash = sha256_file(source_pdf)
+    names = read_sovon_bmp_official_names(source_pdf)
+    list_rows = read_sovon_bmp_official_taxon_rows(client, client_args, names)
     run_mysql_stream(
         client, client_args,
-        [sovon_bmp_current_list_from_1984_sql(source_hash, commit=commit)],
+        [sovon_bmp_current_list_from_1984_sql(
+            source_hash, list_rows, commit=commit,
+        )],
     )
     if not commit:
-        return {"jaar": 1984, "bronbestand_sha256": source_hash, "vastgelegd": False}
-    run_mysql(client, client_args, sovon_bmp_analysis_views_sql())
+        return {
+            "jaar": 1984, "bronbestand_sha256": source_hash,
+            "lijstnamen": len(names), "vastgelegd": False,
+        }
     metrics_sql = """
 SELECT
   (SELECT COUNT(*) FROM Meijendel.sovon_bmp_soortenlijst_taxon lt
    JOIN Meijendel.sovon_bmp_soortenlijstversie l
      ON l.soortenlijstversie_id=lt.soortenlijstversie_id
-   WHERE l.lijst_sleutel='sovon-bmp-a-actueel-retroactief-vanaf-1984-v1'),
+   WHERE l.lijst_sleutel='sovon-bmp-a-actueel-retroactief-vanaf-1984-v1'
+     AND lt.lijststatus='opgenomen'),
   (SELECT COUNT(*) FROM Meijendel.sovon_bmp_plotjaar p
    JOIN Meijendel.sovon_bmp_jaarlevering j
      ON j.levering_id=p.levering_id AND j.actueel=1
    WHERE p.jaar=1984 AND p.soortenlijstversie_id IS NOT NULL),
-  (SELECT COUNT(*) FROM Meijendel.v_sovon_bmp_analyse WHERE jaar=1984),
-  (SELECT COUNT(*) FROM Meijendel.v_sovon_bmp_analyse
-   WHERE jaar=1984 AND occurrence_status='notDetected'),
-  (SELECT COUNT(*) FROM Meijendel.v_sovon_bmp_analyse
-   WHERE jaar=1984 AND occurrence_status='detected');
+  (SELECT COUNT(*) FROM Meijendel.sovon_bmp_soortenlijst_taxon lt
+   JOIN Meijendel.sovon_bmp_soortenlijstversie l
+     ON l.soortenlijstversie_id=lt.soortenlijstversie_id
+   WHERE l.lijst_sleutel='sovon-bmp-a-actueel-retroactief-vanaf-1984-v1'
+     AND lt.lijststatus='opgenomen'
+     AND lt.koppelstatus='niet_gekoppeld');
 """
     output = run_mysql(
         client, client_args + ["--batch", "--raw", "--skip-column-names"],
         metrics_sql, capture=True,
     ).strip()
-    members, plotyears, analysis_rows, zeros, positives = map(int, output.split("\t"))
-    expected = (187, 15, 1422, 860, 562)
-    actual = (members, plotyears, analysis_rows, zeros, positives)
-    if actual != expected:
+    members, plotyears, unmapped = map(int, output.split("\t"))
+    if members != 264 or plotyears != 15:
         raise ValueError(
-            f"De 1984-soortenlijstkoppeling wijkt af: {actual!r} != {expected!r}."
+            "De officiële soortenlijstregistratie wijkt af: "
+            f"leden={members}, plotjaren={plotyears}."
         )
     return {
         "jaar": 1984,
         "bronbestand_sha256": source_hash,
-        "lijsttaxa_1984": members,
+        "officiele_lijstnamen": members,
+        "niet_gekoppelde_lijstnamen": unmapped,
         "gekoppelde_plotjaren": plotyears,
-        "analyse_regels": analysis_rows,
-        "not_detected": zeros,
-        "detected": positives,
-        "uitgesloten_meeuwenconflicten": 6,
         "vastgelegd": True,
     }
 
@@ -5872,11 +6079,12 @@ def compare_sovon_bmp_territories(
             else:
                 category = "afwijkend_positief"
         elif status == "expliciete_nul":
-            category = (
-                "expliciete_nul_zonder_databasepositief"
-                if database_value is None or database_value == 0
-                else "expliciete_nul_tegen_databasepositief"
-            )
+            if database_value is None:
+                category = "expliciete_nul_ontbreekt_database"
+            elif database_value == 0:
+                category = "gelijk_expliciete_nul"
+            else:
+                category = "expliciete_nul_tegen_databasepositief"
         else:
             category = (
                 "leeg_zonder_databasepositief"
@@ -5885,7 +6093,7 @@ def compare_sovon_bmp_territories(
             )
         counts[category] += 1
         if category not in {
-            "gelijk_positief", "expliciete_nul_zonder_databasepositief",
+            "gelijk_positief", "gelijk_expliciete_nul",
             "leeg_zonder_databasepositief",
         }:
             differences.append({
@@ -6146,8 +6354,16 @@ def import_sovon_bmp_1984(
         territory_manifest_hash,
         "2026-10-02", len(matrix), len(visits), "gevalideerd", note,
     )
+    existing_delivery_output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        "SELECT levering_id FROM Meijendel.sovon_bmp_jaarlevering "
+        f"WHERE jaar={year} AND matrix_sha256={sql_text(str(delivery_row[4]))} "
+        f"AND bezoektotalen_sha256={sql_text(str(delivery_row[6]))};",
+        capture=True,
+    ).strip()
+    existing_delivery_id = int(existing_delivery_output) if existing_delivery_output else None
     statements = ["SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;", "START TRANSACTION;"]
-    statements += _sovon_bmp_insert_batches(
+    delivery_statements = _sovon_bmp_insert_batches(
         "sovon_bmp_jaarlevering",
         ("jaar", "regelversie", "bronmap", "matrix_bestand", "matrix_sha256",
          "bezoektotalen_bestand", "bezoektotalen_sha256",
@@ -6159,7 +6375,13 @@ def import_sovon_bmp_1984(
          "kwaliteitsnotitie"),
         [delivery_row],
     )
-    statements.append("SET @sovon_bmp_levering=LAST_INSERT_ID();")
+    if len(delivery_statements) != 1:
+        raise ValueError("De SOVON-jaarlevering levert niet exact één SQL-statement op.")
+    if existing_delivery_id is None:
+        statements.append(delivery_statements[0])
+        statements.append("SET @sovon_bmp_levering=LAST_INSERT_ID();")
+    else:
+        statements.append(f"SET @sovon_bmp_levering={existing_delivery_id};")
 
     rows_by_plot: dict[int, list[dict[str, object]]] = defaultdict(list)
     for row in selected_rows:
@@ -6176,51 +6398,29 @@ def import_sovon_bmp_1984(
         "(@sovon_bmp_levering,{plot_id},{year},'BMP-A',"
         "'standaardregel_data_eigenaar','alle_soorten','volledig','goedgekeurd',"
         "NULL,{status},{visits_count},'beoordeeld',{decision},"
-        "'Ton namens data-eigenaar',NOW(6))".format(
+        "NULL,NOW(6))".format(
             plot_id=plot_id, year=year, status=sql_text(status),
             visits_count=visits_count,
             decision=sql_text(
-                "BMP-A, alle soorten en volledig geteld bevestigd. Expliciete "
-                "SOVON-nulcellen brongetrouw verwerkt. Analytische notDetected-"
-                "toelating wacht alleen nog op koppeling aan de toepasselijke "
-                "officiële historische BMP-soortenlijst."
+                "Besluitregel data-eigenaar 2 oktober 2026: BMP-A, alle soorten "
+                "en volledig geteld; een niet als afgekeurd aangeduide SOVON-"
+                "download geldt als goedgekeurd. Expliciete nulcellen worden "
+                "brongetrouw in territoria verwerkt."
             ),
         )
         for plot_id, status, visits_count in plotyear_rows
     )
-    statements.append(
-        "INSERT INTO Meijendel.sovon_bmp_plotjaar "
-        "(levering_id,plot_id,jaar,bmp_type,bmp_type_bron,soortenbereik,"
-        "volledigheidstatus,beoordelingsstatus,soortenlijstversie_id,"
-        "matrixstatus,bron_bezoekaantal,controle_status,controlebesluit,"
-        "beoordeeld_door,beoordeeld_op) VALUES\n" +
-        plotyear_values + ";"
-    )
-
-    visit_rows = [(
-        int(row["bron_bezoek_id"]), int(row["plot_id"]), year,
-        row["bezoek_datum"], row.get("bezoeknummer"), row.get("begintijd"),
-        row.get("eindtijd"), row.get("bezoektype"), row.get("deelbezoek"),
-        row.get("gunstig"), row.get("opmerking"), row.get("bron_aantal_soorten"),
-        row.get("bron_aantal_records"), int(row["bron_bezoek_id"]), row["bronvorm"],
-    ) for row in selected_visits]
-    for statement in _sovon_bmp_insert_batches(
-        "sovon_bmp_bezoek",
-        ("bron_bezoek_id", "plot_id", "jaar", "bezoek_datum", "bezoeknummer",
-         "begintijd", "eindtijd", "bezoektype", "deelbezoek", "gunstig",
-         "opmerking", "bron_aantal_soorten", "bron_aantal_records",
-         "dagbezoek_id", "bronvorm"),
-        visit_rows,
-    ):
-        statements.append(statement.replace(
-            "INSERT INTO Meijendel.sovon_bmp_bezoek (",
-            "INSERT INTO Meijendel.sovon_bmp_bezoek (levering_id,",
-        ).replace("VALUES\n(", "VALUES\n(@sovon_bmp_levering,", 1).replace(
-            "),\n(", "),\n(@sovon_bmp_levering,"
-        ))
+    if existing_delivery_id is None:
+        statements.append(
+            "INSERT INTO Meijendel.sovon_bmp_plotjaar "
+            "(levering_id,plot_id,jaar,bmp_type,bmp_type_bron,soortenbereik,"
+            "volledigheidstatus,beoordelingsstatus,soortenlijstversie_id,"
+            "matrixstatus,bron_bezoekaantal,controle_status,controlebesluit,"
+            "beoordeeld_door,beoordeeld_op) VALUES\n" + plotyear_values + ";"
+        )
 
     summary = totals["taxon_summaries"]
-    matrix_rows = []
+    comparison_rows = []
     for row in selected_rows:
         code = int(row["euring_code"])
         mapping = taxon_map[code]
@@ -6231,31 +6431,31 @@ def import_sovon_bmp_1984(
             None if row["territoria"] is None else int(row["territoria"]),
             database_territories.get(key), key in literature_leading,
         )
-        matrix_rows.append((
-            int(row["plot_id"]), year, int(mapping["soort_id"]),
-            int(mapping["taxon_bronkoppeling_id"]), code, row.get("ioc_sort"),
-            row["bron_naam"], row["broncelstatus"], row["territoria"], None,
-            database_territories.get(key), source_summary.get("autocluster_territoria"),
-            source_summary.get("hoogste_broedcode"), source_summary.get("totaal_waarnemingen"),
-            source_summary.get("aantal_buiten_plot"), source_summary.get("aantal_niet_bruikbaar"),
-            comparison, quality_note,
-        ))
-    for statement in _sovon_bmp_insert_batches(
-        "sovon_bmp_plotjaar_taxon",
-        ("plot_id", "jaar", "soort_id", "taxon_bronkoppeling_id", "euring_code",
-         "ioc_sort", "bron_naam", "broncelstatus", "territoria",
-         "standaardresultaat_territoria", "database_territoria_bij_ontvangst",
-         "autocluster_territoria", "hoogste_broedcode", "totaal_waarnemingen",
-         "aantal_buiten_plot", "aantal_niet_bruikbaar", "vergelijkingsstatus",
-         "kwaliteitsnotitie"),
-        matrix_rows,
-    ):
-        statements.append(statement.replace(
-            "INSERT INTO Meijendel.sovon_bmp_plotjaar_taxon (",
-            "INSERT INTO Meijendel.sovon_bmp_plotjaar_taxon (levering_id,",
-        ).replace("VALUES\n(", "VALUES\n(@sovon_bmp_levering,", 1).replace(
-            "),\n(", "),\n(@sovon_bmp_levering,"
-        ))
+        comparison_rows.append({
+            "plot_id": int(row["plot_id"]), "jaar": year,
+            "soort_id": int(mapping["soort_id"]),
+            "taxon_bronkoppeling_id": int(mapping["taxon_bronkoppeling_id"]),
+            "euring_code": code, "bron_naam": row["bron_naam"],
+            "broncelstatus": row["broncelstatus"], "territoria": row["territoria"],
+            "vergelijkingsstatus": comparison, "kwaliteitsnotitie": quality_note,
+            "autocluster_territoria": source_summary.get("autocluster_territoria"),
+        })
+    existing_zero_conflicts = [
+        row for row in comparison_rows
+        if row["broncelstatus"] == "expliciete_nul"
+        and (int(row["plot_id"]), int(row["euring_code"])) in database_territories
+        and database_territories[(int(row["plot_id"]), int(row["euring_code"]))] != 0
+    ]
+    if existing_zero_conflicts:
+        raise ValueError(
+            "Een expliciete SOVON-nul conflicteert met een bestaande territoriumwaarde."
+        )
+    new_zero_rows = [
+        row for row in comparison_rows
+        if row["broncelstatus"] == "expliciete_nul"
+        and (int(row["plot_id"]), int(row["euring_code"])) not in database_territories
+    ]
+    statements.append(sovon_bmp_zero_insert_sql(new_zero_rows))
     statements.append(sovon_bmp_transaction_end(commit))
     run_mysql_stream(client, client_args, statements)
     return {
@@ -6265,11 +6465,12 @@ def import_sovon_bmp_1984(
         "verwerkte_matrixregels": len(selected_rows),
         "positieve_cellen": status_counts["positief"],
         "expliciete_nulcellen": status_counts["expliciete_nul"],
+        "toegevoegde_expliciete_nullen": len(new_zero_rows),
         "lege_cellen_binnen_verwerkte_plotjaren": status_counts["leeg"],
         "uitgesloten_lege_niet_vogelregels": len(excluded),
         "plotjaren": len(plotyear_rows),
         "bezoeken_bron": len(visits),
-        "verwerkte_bezoeken": len(selected_visits),
+        "vergeleken_bezoeken": len(selected_visits),
         "meeuwenconflicten_literatuur_leidend": len(literature_leading),
         "onbeslist_bezocht_blanco_plot": sorted(decision["pending_visited_blank_plots"]),
         "genegeerde_niet_bezochte_blanco_plots": len(decision["ignored_unvisited_blank_plots"]),
@@ -6798,49 +6999,6 @@ JOIN Meijendel.sovon_avimap_import_batch b
   ON b.batch_id=m.batch_id AND b.actueel=1
 JOIN Meijendel.sovon_avimap_bezoek v
   ON v.batch_id=m.batch_id AND v.bron_bezoek_id=m.bron_bezoek_id;
-"""
-
-
-def sovon_bmp_analysis_views_sql() -> str:
-    """Maak strikte analyse- en afkeuringsviews voor de SOVON-BMP-jaarbron."""
-    return """
-CREATE OR REPLACE VIEW Meijendel.v_sovon_bmp_analyse AS
-SELECT r.levering_id,r.plot_id,r.jaar,r.soort_id,r.taxon_bronkoppeling_id,
-       r.euring_code,r.bron_naam,r.broncelstatus,
-       CASE WHEN r.broncelstatus='positief' THEN 'detected'
-            ELSE 'notDetected' END AS occurrence_status,
-       r.territoria AS organism_quantity,
-       'territoria' AS organism_quantity_type,
-       p.bmp_type,p.soortenbereik,p.volledigheidstatus,
-       p.beoordelingsstatus,p.soortenlijstversie_id,
-       l.lijst_sleutel AS toepasselijke_soortenlijst,
-       'goedgekeurd_volledig_plotjaar_officiele_soortenlijst'
-         AS analysetoelating
-FROM Meijendel.sovon_bmp_plotjaar_taxon r
-JOIN Meijendel.sovon_bmp_plotjaar p
-  ON p.levering_id=r.levering_id AND p.plot_id=r.plot_id AND p.jaar=r.jaar
-JOIN Meijendel.sovon_bmp_soortenlijstversie l
-  ON l.soortenlijstversie_id=p.soortenlijstversie_id
- AND l.lijststatus='officieel_bevestigd'
-JOIN Meijendel.sovon_bmp_soortenlijst_taxon lt
-  ON lt.soortenlijstversie_id=p.soortenlijstversie_id
- AND lt.soort_id=r.soort_id AND lt.lijststatus='opgenomen'
-WHERE p.beoordelingsstatus='goedgekeurd'
-  AND p.volledigheidstatus='volledig'
-  AND p.soortenbereik IN ('alle_soorten','expliciete_uitzondering')
-  AND r.broncelstatus IN ('positief','expliciete_nul')
-  AND r.vergelijkingsstatus<>'conflict';
-
-CREATE OR REPLACE VIEW Meijendel.v_sovon_bmp_formeel_afgekeurd AS
-SELECT r.levering_id,r.plot_id,r.jaar,r.soort_id,r.taxon_bronkoppeling_id,
-       r.euring_code,r.bron_naam,r.broncelstatus,r.territoria,
-       r.standaardresultaat_territoria,r.totaal_waarnemingen,
-       p.bmp_type,p.soortenbereik,p.volledigheidstatus,
-       p.beoordelingsstatus,p.controlebesluit,p.beoordeeld_door,p.beoordeeld_op
-FROM Meijendel.sovon_bmp_plotjaar_taxon r
-JOIN Meijendel.sovon_bmp_plotjaar p
-  ON p.levering_id=r.levering_id AND p.plot_id=r.plot_id AND p.jaar=r.jaar
-WHERE p.beoordelingsstatus='formeel_afgekeurd';
 """
 
 

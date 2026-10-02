@@ -852,12 +852,13 @@ def check_central_query_routes():
         'ndff_open_waarneming': {'waarneming_id','soort_key','jaar'},
         'sovon_avimap_taxon': {'batch_id','soortgroep_code','soortnr'},
         'sovon_avimap_waarneming': {'batch_id','soortgroep_code','soortnr','jaar'},
+        'sovon_bmp_soortenlijst_taxon': {
+            'lijsttaxon_id','soortenlijstversie_id','soort_id',
+            'taxon_bronkoppeling_id','euring_code','bron_naam','lijststatus',
+            'koppelstatus','bronnotitie','aangemaakt_op',
+        },
         'lvd_resultaat': {'resultaat_id','wetenschappelijke_naam','bronmetadata'},
         'pq_vegetatie_waarneming': {'waarneming_id','taxon_bronkoppeling_id'},
-        'sovon_bmp_plotjaar_taxon': {
-            'levering_id','plot_id','jaar','soort_id','taxon_bronkoppeling_id',
-            'euring_code','bron_naam','broncelstatus','territoria',
-        },
         'ndff_test_bezoek_taxon': {'reconstructieversie','bezoek_sleutel','wetenschappelijke_naam','waarnemingsstatus'},
         'ndff_habslak_hokjaar': {'reconstructieversie','hokjaar_sleutel','doelsoort','jaar'},
     }
@@ -868,17 +869,16 @@ def check_central_query_routes():
     assert routes['ndff_habslak_hokjaar']['name_field'] == 'doelsoort'
     assert routes['ndff_test_bezoek_taxon']['kind'] == 'derived'
     assert routes['pq_vegetatie_waarneming']['kind'] == 'direct'
-    assert routes['sovon_bmp_plotjaar_taxon']['kind'] == 'direct'
-    sovon_condition = module.central_source_condition(
-        'sovon_bmp_plotjaar_taxon', routes['sovon_bmp_plotjaar_taxon'],
-    )
-    assert 's.euring_code=w.euring_code' in sovon_condition
-    assert 's.taxon_bronkoppeling_id=w.taxon_bronkoppeling_id' in sovon_condition
-    sovon_trigger_sql = module.central_query_triggers_sql({
-        'routes': {'sovon_bmp_plotjaar_taxon': routes['sovon_bmp_plotjaar_taxon']},
+    list_route = routes['sovon_bmp_soortenlijst_taxon']
+    assert list_route['role'] == 'protocolsoortenlijst'
+    assert module.central_reachability_scope(
+        'sovon_bmp_soortenlijst_taxon', list_route,
+    ) == "w.koppelstatus<>'niet_gekoppeld'"
+    list_guard_sql = module.central_query_triggers_sql({
+        'routes': {'sovon_bmp_soortenlijst_taxon': list_route},
     })
-    assert 's.euring_code=NEW.euring_code' in sovon_trigger_sql
-    assert module.central_trigger_name('sovon_bmp_plotjaar_taxon', 'bi') in sovon_trigger_sql
+    assert "Niet-gekoppeld lijstlid bevat toch een taxonkoppeling" in list_guard_sql
+    assert "Gekoppeld lijstlid is niet centraal bereikbaar" in list_guard_sql
     migrated = {k: v | {'taxon_bronkoppeling_id'} for k, v in schema.items()}
     assert module.central_query_routes(migrated)['ndff_test_bezoek_taxon']['kind'] == 'derived'
     assert module.derived_source_key({'name_field':'wetenschappelijke_naam',
@@ -887,7 +887,7 @@ def check_central_query_routes():
     assert module.source_usage_projection({'name':'A','register_broncontext':{'extra':1}})['name'] == 'A'
     assert 'register_broncontext' not in module.source_usage_projection({'register_broncontext':{}})
     actual={k:set(v) for k,v in module.CENTRAL_QUERY_SCHEMA.items()}
-    assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 10
+    assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5
     module.central_query_schema_contract(actual)
     for changed in ({**actual,'nieuwe_metingen':{'soortnr','aantal','jaar'}},
                     {**actual,'nieuwe_metingen':{'euring_code','aantal','jaar'}},

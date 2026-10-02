@@ -8,6 +8,11 @@ trap 'rm -rf "$TEST_DIR"' EXIT
 export MEIJENDEL_TEST_VALIDATOR_LOG="$TEST_DIR/validator.log"
 export MEIJENDEL_TEST_MYSQLDUMP_LOG="$TEST_DIR/mysqldump.log"
 export MEIJENDEL_TEST_TAXON_LOG="$TEST_DIR/taxon.log"
+export MEIJENDEL_TEST_PARSER_VERSION="$(sed -n 's/^MEIJENDEL_PARSER_CACHE_VERSION <- \([0-9][0-9]*\)L$/\1/p' "$REPO_DIR/shiny_meijendel/helpers.R")"
+[[ "$MEIJENDEL_TEST_PARSER_VERSION" =~ ^[1-9][0-9]*$ ]] || {
+  printf 'FOUT: actuele parser-versie kon niet worden gelezen.\n' >&2
+  exit 1
+}
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -91,14 +96,14 @@ cache <- list(
     format = "meijendel-shiny-cache-v1",
     sql_sha256 = manifest[["sql_sha256"]],
     sql_bytes = manifest[["sql_bytes"]],
-    parser_version = "9"
+    parser_version = Sys.getenv("MEIJENDEL_TEST_PARSER_VERSION")
   ),
   data = list(plots = data.frame())
 )
 saveRDS(cache, args[[2L]], version = 3)
 RSCRIPT
-cat <<'EOF'
-CACHE_PARSER_VERSION=9
+cat <<EOF
+CACHE_PARSER_VERSION=$MEIJENDEL_TEST_PARSER_VERSION
 CACHE_R_VERSION=4.6.1
 CACHE_SERIALIZATION_VERSION=3
 CACHE_CREATED_AT=2026-09-21T12:00:00+0200
@@ -165,7 +170,7 @@ grep -Fqx -- '--centrale-querypoort' "$MEIJENDEL_TEST_TAXON_LOG" || fail "centra
 grep -q 'candidate=codex_meijendel_export_check_' "$manifest" || fail "nieuw manifest werd niet geactiveerd."
 cache_file="$(awk -F= '$1 == "cache_file" {print $2}' "$manifest")"
 cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
-[[ "$cache_file" =~ ^meijendel_tables_cache-p9-[0-9a-f]{64}\.rds$ ]] || fail "cachebestand heeft geen veilige inhoudsgebonden naam."
+[[ "$cache_file" =~ ^meijendel_tables_cache-p${MEIJENDEL_TEST_PARSER_VERSION}-[0-9a-f]{64}\.rds$ ]] || fail "cachebestand heeft geen veilige inhoudsgebonden naam."
 [[ "$cache_manifest" == "${cache_file%.rds}.manifest" ]] || fail "cachemanifestnaam past niet bij cachebestand."
 [[ -s "$TEST_DIR/$cache_file" ]] || fail "gepubliceerde cache ontbreekt."
 [[ -s "$TEST_DIR/$cache_manifest" ]] || fail "gepubliceerd cachemanifest ontbreekt."

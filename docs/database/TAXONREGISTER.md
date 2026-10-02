@@ -128,24 +128,24 @@ in `proef-4/` en `live/`. Er is niets naar de VPS gepubliceerd; de bestaande
 lokale dump en Shiny-cache zijn niet vervangen. Nieuwe leveringsversies en
 nieuwe eventlocaties vergen nog een afzonderlijk beoordeelde invoerroute.
 
-### SOVON-BMP-ontvangstlaag: geïsoleerd bewijs van 2 oktober 2026
+### SOVON-BMP-jaarvergelijking: gecorrigeerde structuur van 2 oktober 2026
 
-De nieuwe, nog lege ontvangstfamilie bestaat uit tien `sovon_bmp_*`-tabellen
-en twee analyseviews. Zowel positieve matrixwaarden en expliciete nullen als
-bezoeksoorten, individuele waarnemingspunten en territoriumpunten verwijzen met
-een foreign key naar `taxa_bronkoppeling`. Daardoor blijft iedere nieuwe
-soortregel bereikbaar vanuit `taxa`; `taxon_groepen` blijft via de bestaande
-LEFT JOIN-route betrokken en een ontbrekende groepsindeling verbergt geen regel.
-Een jaarimport stopt wanneer de Euring-code niet eenduidig langs deze centrale
-route kan worden gekoppeld.
+De SOVON-jaarbestanden zijn een vergelijkingsbron voor de bestaande
+kerntabellen, geen tweede waarnemingslaag. Een aanvankelijk aangelegde
+ontvangstfamilie van tien tabellen en twee views dupliceerde bezoeken en
+resultaten en is daarom dezelfde dag gecorrigeerd. De tabellen
+`sovon_bmp_bezoek`, `sovon_bmp_bezoek_taxon`, `sovon_bmp_waarneming`,
+`sovon_bmp_territoriumpunt` en `sovon_bmp_plotjaar_taxon` en de views
+`v_sovon_bmp_analyse` en `v_sovon_bmp_formeel_afgekeurd` zijn verwijderd.
 
-De structuur is eerst in `Meijendel_sovon_bmp_test_20261002` toegepast. De
-proef omvatte 18 tabellen, twee views, 24 foreign keys, een positieve
-broedcode-0-waarneming en negatieve proeven voor een nul met territoria, een
-waarneming met aantal nul en een bezoeksoort zonder binnen- of buitenaantal.
-Formeel afgekeurde regels verdwenen uit `v_sovon_bmp_analyse` en bleven in
-`v_sovon_bmp_formeel_afgekeurd` behouden. De levende kerntabellen bleven
-ongewijzigd.
+Vijf tabellen blijven bestaan voor metadata die de kerntabellen niet bevatten:
+`sovon_bmp_jaarlevering`, `sovon_bmp_plotjaar`,
+`sovon_bmp_plotjaar_tellercode`, `sovon_bmp_soortenlijstversie` en
+`sovon_bmp_soortenlijst_taxon`. Zij leggen de herkomst en vijf voorwaarden voor
+de nulinterpretatie vast: BMP-type, alle soorten of een expliciete uitzondering,
+volledig geteld, goedgekeurd of formeel afgekeurd en de toepasselijke officiële
+soortenlijst. Bezoeken, bezoekwaarnemingen en territoriumresultaten staan alleen
+in `dagbezoeken_bmp`, `dagwaarnemingen_bmp` en `territoria`.
 
 De volledige back-up staat buiten Git en iCloud in
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-bmp-20261002-164240.sql`.
@@ -159,40 +159,30 @@ Volledig herstel in `Meijendel_sovon_restore_test_20261002` leverde dezelfde
 herstelbaarheid van de uitgangsstand; het is nog geen jaarimport en er is niets
 naar de VPS gepubliceerd.
 
-De lege structuur is daarna op 2 oktober 2026 lokaal in `Meijendel` aangelegd.
-De tien tabellen, twee views en 24 foreign keys zijn aanwezig; alle nieuwe
-tabellen en views bevatten nul regels. De centrale schema- en schrijfbewaking
-is voor de vijf taxondragende tabellen uitgebreid: de directe koppeling naar
-`taxa_bronkoppeling` moet tevens exact passen bij `soort_id` en Euring-code in
-`soorten`. De volledige nacontrole omvat 132 centraal bereikbare routes. De
-zeven hierboven genoemde kerntellingen zijn na aanleg ongewijzigd. De levende
-database bevatte op dat moment uitsluitend de ontvangststructuur.
+Voor controlejaar 1984 bevat de download 230 bezoeken in 16 plots. Alle 230
+zijn gelijk aan de bestaande regels in `dagbezoeken_bmp`; er is dus geen bezoek
+ingevoerd. In 15 plotjaren met resultaten staan 568 positieve waarden, 860
+letterlijke nulcellen en 18 lege cellen. Van de positieve waarden zijn 562
+gelijk aan de bestaande SOVON-regels in `territoria`. Zes meeuwenwaarden wijken
+af; zij zijn niet toegevoegd omdat `meeuwen_literatuur` voor deze combinaties
+leidend blijft. De 860 letterlijke nullen zijn rechtstreeks als
+`territoria = 0` met SOVON als bron aan `territoria` toegevoegd. De lege cellen
+zijn niet ingevoerd. Daardoor bevat `territoria` 71.873 regels; de 1.422
+SOVON-regels uit 1984 bestaan uit 562 positieve waarden en 860 nullen.
 
-Later op 2 oktober 2026 is het besloten deel van controlejaar 1984 toegevoegd:
-15 plotjaren, 222 bezoeken en 1.446 taxondragende matrixregels. Daarvan zijn 568
-regels positief, 860 een expliciete nul en 18 leeg. De 40 niet-bezochte plots
-met uitsluitend lege cellen zijn genegeerd; M35 met acht bezoeken en 49 lege
-cellen blijft buiten de ontvangstlaag in afwachting van een afzonderlijk
-besluit. De zes afwijkende meeuwenwaarden zijn als conflict bewaard terwijl
-`meeuwen_literatuur` leidend blijft in `territoria`. Alle 1.446 matrixregels
-verwijzen rechtstreeks naar `soorten` en `taxa_bronkoppeling`. De volledige
-nacontrole omvat 132 routes en nul fouten. De toepasselijke officiële
-historische BMP-soortenlijst is daarna op besluit van de data-eigenaar ingevuld
-met de actuele officiële BMP-A-lijst, toegepast vanaf 1984. De lijstkoppeling
-omvat de 187 in de 1984-matrix voorkomende vogeltaxa. De 15 plotjaren verwijzen
-naar deze lijstversie; `v_sovon_bmp_analyse` bevat daardoor 860 `notDetected`
-en 562 niet-conflicterende `detected`-regels. De zes meeuwenconflicten blijven
-in de ontvangstlaag en zijn uit de gewone analyseview uitgesloten. Zeven
-historische SOVON-namen blijven als afzonderlijke bronidentiteit gekoppeld;
-de retroactieve lijsttoepassing verandert geen taxonconcept.
-De lijstkoppeling is eerst transactioneel teruggedraaid. De actuele volledige
-back-up vóór vastlegging staat in
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-bmp-list-20261002-183928.sql`
-met SHA-256
-`eda11fb6a3e8a7ca6ebad61a0ee2e49c3fb55ff93935bf4c411f9283fbe942b2`.
-Na vastlegging zijn de twee relevante regressietests, de centrale querypoort en
-de rijtellingen van de zeven bestaande kern- en taxontabellen ongewijzigd
-bevonden.
+De actuele BMP-A-lijst geldt op besluit van de data-eigenaar vanaf 1984. De
+lijst bevat 264 officiële namen: 240 exacte centrale naamkoppelingen, negen
+vastgelegde naamvarianten en 15 namen die alleen als lijstmetadata zijn bewaard.
+Die laatste groep heeft geen waarnemingsregel en is niet kunstmatig aan een
+taxonconcept gekoppeld. Zestien historische matrixcategorieën die niet op de
+actuele lijst staan, hebben `lijststatus = expliciet_uitgesloten`.
+
+Vóór deze correctie is een volledige back-up gemaakt:
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
+4,0 GB, SHA-256
+`fee814424dc2183a705cbec4b57b571b1a37fa545d87e07b23d6be1a25f1c197`.
+De eerdere structuurback-ups blijven als herstelbewijs van de tussenstanden
+bestaan. Er is niets naar de VPS gepubliceerd.
 
 ## Alle waarnemingen vanuit het centrale taxonregister
 

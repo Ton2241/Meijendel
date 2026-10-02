@@ -2,6 +2,23 @@
 
 ## Nu open
 
+### SOVON-BMP jaar-voor-jaarvergelijking
+
+- 1984 is vergeleken met de levende kerntabellen. Alle 230 bezoeken en 562
+  niet-meeuwpositieven waren gelijk; 860 letterlijke SOVON-nullencellen zijn
+  als `territoria = 0` toegevoegd. Zes meeuwenverschillen zijn niet ingevoerd,
+  omdat `meeuwen_literatuur` leidend blijft. Achttien lege cellen en de 49 lege
+  M35-cellen zijn niet als nul behandeld. De overbodige kopietabellen en views
+  zijn verwijderd; vijf tabellen met uitsluitend vergelijkingsmetadata blijven.
+- Volgende stap is uitsluitend de vergelijking van 1985. Eerst feiten en
+  verschillen vaststellen; daarna alleen waar nodig een afzonderlijk gevraagd
+  besluit. Geen volgend jaar verwerken voordat de uitkomst van het vorige jaar
+  is besproken.
+- Nog afzonderlijk te besluiten: officiële BMP-A-lijstnamen die voor een
+  volledig geteld plotjaar geheel ontbreken uit de SOVON-matrix. De 860 reeds
+  ingevoerde nullen zijn letterlijke broncellen; er zijn nog geen aanvullende
+  nullen afgeleid voor lijstsoorten waarvoor de download geen cel bevat.
+
 ### Verplichte centrale ingang voor alle soortwaarnemingen
 
 - Op 29 september 2026 lokaal uitgevoerd: alle oorspronkelijke soortwaarnemingen,

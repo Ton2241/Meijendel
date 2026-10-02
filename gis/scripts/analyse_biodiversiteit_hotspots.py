@@ -73,6 +73,7 @@ SELECT p.plot_id,t.jaar,COUNT(DISTINCT t.soort_id) AS bird_taxa,
 FROM Meijendel.ndff_sovon_plot p
 JOIN Meijendel.territoria t ON t.plot_id=p.plot_id
 WHERE p.plotversie_id=1 AND t.jaar BETWEEN 1950 AND 2025
+  AND t.territoria > 0
 GROUP BY p.plot_id,t.jaar
 ORDER BY p.plot_id,t.jaar
 """
