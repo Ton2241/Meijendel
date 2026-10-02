@@ -16,8 +16,12 @@
   is besproken.
 - Nog afzonderlijk te besluiten: officiële BMP-A-lijstnamen die voor een
   volledig geteld plotjaar geheel ontbreken uit de SOVON-matrix. De 860 reeds
-  ingevoerde nullen zijn letterlijke broncellen; er zijn nog geen aanvullende
-  nullen afgeleid voor lijstsoorten waarvoor de download geen cel bevat.
+  ingevoerde nullen zijn letterlijke broncellen. Voor de 249 centraal gekoppelde
+  officiële lijstsoorten en 15 plotjaren zijn 3.735 combinaties mogelijk; 2.338
+  daarvan ontbreken geheel uit de matrix en zijn nog niet als nul afgeleid.
+  Daarnaast ontbreken alle 225 combinaties van de 15 nog niet centraal
+  gekoppelde officiële lijstnamen en de 15 plotjaren; deze kunnen niet in
+  `territoria` worden opgeslagen voordat hun taxonidentiteit is opgelost.
 
 ### Verplichte centrale ingang voor alle soortwaarnemingen
 
