@@ -97,6 +97,20 @@ het kavel geldt als getelde meeteenheid. Een bezoek kan worden gekoppeld aan
 `dagbezoeken_bmp`, maar die koppeling bewijst geen goedkeuring en geen
 individuele tellerdeelname.
 
+Samengestelde AVIMAP-waarden blijven raw bewaard en worden daarnaast gesplitst:
+het getal vóór haakjes is `aantal_waarnemingen` binnen het telgebied; het getal
+tussen haakjes is `aantal_buiten_plot`. Een bronwaarde als ` (1)` betekent dus
+nul binnen en één buiten het telgebied en is nadrukkelijk geen echte nul.
+
+### `sovon_bmp_waarneming` en `sovon_bmp_territoriumpunt`
+
+De jaargebonden puntlagen `bezoekstippen` en `territoria` worden eveneens
+brongetrouw opgenomen. De waarnemingslaag bewaart onder meer bron-ID,
+bezoek-ID, broedcode, `inplot` en RD-coördinaat; broedcode 0 blijft een
+positieve waarneming. De territoriumpunten krijgen naast het bronrijnummer een
+inhoudelijke SHA-256, omdat de shapefile geen zelfstandige territorium-ID
+levert. Tracks en gebiedspolygonen blijven buiten scope.
+
 ### `sovon_bmp_plotjaar_taxon`
 
 Iedere matrixrij wordt bewaard, inclusief lege cellen. Kernvelden zijn de
@@ -164,4 +178,3 @@ Taxon Concept en naamgebruik uit TDWG TCS.
 - automatische vervanging van `plot_jaar_teller` door een AVIMAP-code;
 - jaar 2026;
 - VPS-publicatie.
-

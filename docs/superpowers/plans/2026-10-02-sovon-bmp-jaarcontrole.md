@@ -42,9 +42,9 @@
 
 **Interfaces:**
 - Consumes: het bestaande schema-contract en centrale taxonroutes.
-- Produces: falende tests voor zeven `sovon_bmp_*`-tabellen, vijf nulvoorwaarden, formele afkeuring en centrale taxonkoppeling.
+- Produces: falende tests voor tien `sovon_bmp_*`-tabellen, vijf nulvoorwaarden, formele afkeuring, puntwaarnemingen en centrale taxonkoppeling.
 
-- [ ] **Step 1: Voeg falende schemacontracttests toe**
+- [x] **Step 1: Voeg falende schemacontracttests toe**
 
 Controleer minimaal:
 
@@ -57,6 +57,8 @@ for table in (
     "sovon_bmp_plotjaar_tellercode",
     "sovon_bmp_bezoek",
     "sovon_bmp_bezoek_taxon",
+    "sovon_bmp_waarneming",
+    "sovon_bmp_territoriumpunt",
     "sovon_bmp_plotjaar_taxon",
 ):
     assert f"create table if not exists meijendel.{table}" in schema
@@ -65,13 +67,13 @@ for table in (
 Test daarnaast CHECKs voor `expliciete_nul` met aantal 0, `leeg` met NULL,
 positief met aantal boven 0, en de status `formeel_afgekeurd`.
 
-- [ ] **Step 2: Draai de gerichte test en bevestig de verwachte fout**
+- [x] **Step 2: Draai de gerichte test en bevestig de verwachte fout**
 
 Run: `python3 -m pytest gis/scripts/test_ndff_protocolkwaliteit.py -q -k sovon_bmp`
 
 Expected: FAIL omdat het nieuwe schema nog ontbreekt.
 
-- [ ] **Step 3: Commit alleen wanneer test en foutoorzaak controleerbaar zijn**
+- [x] **Step 3: Commit alleen wanneer test en foutoorzaak controleerbaar zijn**
 
 Geen commit van uitsluitend een rood tussenstadium; ga direct door naar Task 2.
 
@@ -84,22 +86,22 @@ Geen commit van uitsluitend een rood tussenstadium; ga direct door naar Task 2.
 
 **Interfaces:**
 - Consumes: centrale `soorten`- en `taxa_bronkoppeling`-routes.
-- Produces: acht tabellen, `v_sovon_bmp_analyse` en `v_sovon_bmp_formeel_afgekeurd`.
+- Produces: tien tabellen, `v_sovon_bmp_analyse` en `v_sovon_bmp_formeel_afgekeurd`.
 
-- [ ] **Step 1: Implementeer de tabellen met restrictieve foreign keys en CHECKs**
+- [x] **Step 1: Implementeer de tabellen met restrictieve foreign keys en CHECKs**
 
 Gebruik een versieerbare jaarlevering; bewaar per plotjaar BMP-type,
 soortenbereik, volledigheid, beoordeling en soortenlijstversie afzonderlijk.
 Bewaar broncelstatus en bronwaarden zonder afleiding.
 
-- [ ] **Step 2: Implementeer analyseviews**
+- [x] **Step 2: Implementeer analyseviews**
 
 `v_sovon_bmp_analyse` laat alleen positief/expliciete nul toe wanneer het
 plotjaar volledig, goedgekeurd en aan een toepasselijke officiële lijst
 gekoppeld is. `v_sovon_bmp_formeel_afgekeurd` toont de verworpen bronregels en
 reden, maar levert geen analyse-uitkomst.
 
-- [ ] **Step 3: Draai contract- en regressietests**
+- [x] **Step 3: Draai contract- en regressietests**
 
 Run:
 
@@ -117,23 +119,25 @@ Expected: PASS; bestaande AVIMAP/DAZ-regels blijven ongewijzigd.
 - Modify: `gis/scripts/test_ndff_protocolkwaliteit.py`
 
 **Interfaces:**
-- Consumes: één jaarmap met standaardexports, territoriummatrix en bezoektotalen.
+- Consumes: één jaarmap met standaardexports, territoriummatrix,
+  bezoektotalen, bezoekstippen en territoriumpunten.
 - Produces: genormaliseerde bronrijen en een deterministisch vergelijkingsrapport; standaard uitsluitend dry-run.
 
-- [ ] **Step 1: Schrijf tests met tijdelijke werkboeken**
+- [x] **Step 1: Schrijf tests met tijdelijke werkboeken**
 
 Test positieve waarde, expliciete nul, lege cel, ontbrekende Excel-dimensie,
 variabel aantal bezoeken, bezoekopmerking, broedcode 0 en meervoudige
 tellercodes. Test dat een leegtepatroon niet automatisch
 `formeel_afgekeurd` wordt.
 
-- [ ] **Step 2: Implementeer parsers**
+- [x] **Step 2: Implementeer parsers**
 
-Voeg afzonderlijke functies toe voor matrix, bezoektotalen, standaardbezoeken
-en standaardresultaten. Gebruik Euring-code en plot-ID als bronkeys; naam is
-alleen bronwaarde. Negeer tracks en polygonen.
+Voeg afzonderlijke functies toe voor matrix, bezoektotalen, standaardbezoeken,
+standaardresultaten, bezoekstippen en territoriumpunten. Gebruik Euring-code en
+plot-ID als bronkeys; naam is alleen bronwaarde. Negeer tracks en
+gebiedspolygonen.
 
-- [ ] **Step 3: Implementeer vergelijking met levende database**
+- [x] **Step 3: Implementeer vergelijking met levende database**
 
 Rapporteer per plotjaar:
 
@@ -145,7 +149,7 @@ Rapporteer per plotjaar:
 - tellercodes en relatie tot `plot_jaar_teller`;
 - taxon- en referentiële-integriteitsfouten.
 
-- [ ] **Step 4: Draai parsertests en algemene dry-run**
+- [x] **Step 4: Draai parsertests en algemene dry-run**
 
 Run: gerichte pytest plus een dry-run over 1984–2025. Expected: 42 jaren,
 telkens 5.306 matrixregels, zonder dubbele plot-Euring-jaarsleutel.
@@ -160,17 +164,17 @@ telkens 5.306 matrixregels, zonder dubbele plot-Euring-jaarsleutel.
 - Consumes: nieuwe schemafamilie en bestaande volledige taxonaudit.
 - Produces: bewijs dat aanleg en rollback geen bestaande vogel- of taxonrij wijzigt.
 
-- [ ] **Step 1: Maak een verse lokale back-up buiten Git en iCloud**
+- [x] **Step 1: Maak een verse lokale back-up buiten Git en iCloud**
 
 Leg hash, MySQL-versie, schema-aantallen en kernrijtellingen vast.
 
-- [ ] **Step 2: Test het schema eerst in een afzonderlijke database**
+- [x] **Step 2: Test het schema eerst in een afzonderlijke database**
 
 Controleer tabellen, views, constraints, ongeldige nul-/leegproeven en volledige
 ROLLBACK. Vergelijk bestaande kernrijtellingen en centrale taxonroutes voor en
 na de proef.
 
-- [ ] **Step 3: Bewijs volledig herstel uit dezelfde back-up**
+- [x] **Step 3: Bewijs volledig herstel uit dezelfde back-up**
 
 Een schemawijziging gaat niet naar de levende database zonder geslaagde
 herstelproef.
@@ -242,4 +246,3 @@ bevestigd.
 - [ ] **Step 5: Commit en push afgeronde wijzigingen**
 
 Geen dumpgeneratie, cachevernieuwing of VPS-publicatie in deze fase.
-

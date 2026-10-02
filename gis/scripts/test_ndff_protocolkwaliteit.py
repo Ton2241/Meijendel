@@ -5,8 +5,12 @@ from __future__ import annotations
 
 import csv
 import importlib.util
+import tempfile
+import zipfile
 from collections import Counter
 from pathlib import Path
+
+from openpyxl import Workbook
 
 
 ROOT = Path(__file__).parents[2]
@@ -26,6 +30,23 @@ def load_importer():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def remove_xlsx_dimension(path: Path) -> None:
+    """Boots de ontbrekende dimensiemetadata van de AVIMAP-XLSX na."""
+    replacement = path.with_suffix(".zonder-dimensie.xlsx")
+    with zipfile.ZipFile(path) as source, zipfile.ZipFile(replacement, "w") as target:
+        for item in source.infolist():
+            payload = source.read(item.filename)
+            if item.filename == "xl/worksheets/sheet1.xml":
+                text = payload.decode("utf-8")
+                start = text.find("<dimension ")
+                end = text.find("/>", start) + 2
+                assert start >= 0 and end > start
+                text = text[:start] + text[end:]
+                payload = text.encode("utf-8")
+            target.writestr(item, payload)
+    replacement.replace(path)
 
 
 def main() -> int:
@@ -93,6 +114,8 @@ def main() -> int:
         "meijendel.sovon_bmp_plotjaar_tellercode",
         "meijendel.sovon_bmp_bezoek",
         "meijendel.sovon_bmp_bezoek_taxon",
+        "meijendel.sovon_bmp_waarneming",
+        "meijendel.sovon_bmp_territoriumpunt",
         "meijendel.sovon_bmp_plotjaar_taxon",
         "meijendel.ndff_zeereep_kilometerhok",
         "meijendel.ndff_zeereep_bezoek",
@@ -265,6 +288,184 @@ def main() -> int:
     assert len(loose) == 1 and loose[0]["protocol_code"] == ""
 
     module = load_importer()
+
+    with tempfile.TemporaryDirectory(prefix="sovon_bmp_test_") as temporary:
+        source = Path(temporary)
+
+        matrix_path = source / "Avimap_totalen_territoria__plots_diversen.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.append(("Plotid", "Plotnr", "Plotnaam", "Soort", "Euring", "IOC sort", 1984))
+        sheet.append((3506, 61, "Meijendel k 13s", "Fitis", 13120, 11620, 2))
+        sheet.append((3506, 61, "Meijendel k 13s", "Grasmus", 12750, 9550, 0))
+        sheet.append((3506, 61, "Meijendel k 13s", "Tjiftjaf", 11060, 11530, 0))
+        sheet.append((3515, 70, "Meijendel k 35", "Fitis", 13120, 11620, None))
+        workbook.save(matrix_path)
+
+        standard_results_path = source / "avimap_252_diversen__resultaten.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "sql_statement"
+        sheet.append((
+            "oid", "projectid", "plotid", "kopid", "euring", "naam",
+            "wetenschap", "aantal", "dh100ha", "jaar", "gebied", "opp_ha",
+            "waarnemer", "ioc_sort", "rl_status", "snl",
+        ))
+        sheet.append((1, 252, 3506, 10, 13120, "Fitis", "Phylloscopus trochilus",
+                      2, 1.0, 1984, "Meijendel k 13s", 100, "AAA001, BBB002", 11620, None, True))
+        workbook.save(standard_results_path)
+        remove_xlsx_dimension(standard_results_path)
+
+        standard_visits_path = source / "avimap_252_diversen__bezoeken.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "sql_statement"
+        sheet.append((
+            "projectid", "plotid", "naam", "bzdid", "datum", "begintijd",
+            "eindtijd", "bezoekduur", "aantal_minuten", "deelbezoek",
+            "deelbezoekdeel", "gunstig", "omst_opm", "opm", "jaar", "doy",
+            "nsoort", "nrecord",
+        ))
+        sheet.append((252, 3506, "Meijendel k 13s", 101, "12-3", "08:00:00",
+                      "10:00:00", "02:00:00", 120, 0, None, 1, "helder",
+                      "standaardopmerking", 1984, 72, 1, 1))
+        workbook.save(standard_visits_path)
+
+        totals_path = source / "Avimap_bezoektotalen_plots.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.append((None, None, None, None, None, None, None, None))
+        sheet.append(("Telgebied", "61, Meijendel k 13s"))
+        sheet.append(("Jaar", 1984))
+        sheet.append(("ID", 101, 102))
+        sheet.append((None, "12 maart", "17 maart"))
+        sheet.append((None, "08:00", "19:00"))
+        sheet.append((None, "10:00", "21:00"))
+        sheet.append(("bezoeknr", 1, 2))
+        sheet.append((
+            "Bezoektype", "zonop", "avond", "aantal autocluster territoria",
+            "hoogste broed- code", "totaal aantal waarn.",
+            "aantal buiten plot", "aantal niet bruikbare waarnemingen",
+        ))
+        sheet.append(("* * * * Overige soorten * * *",))
+        sheet.append(("Fitis", "2 (1)", None, 2, 0, 3, 1, 1))
+        sheet.append(("Tjiftjaf", " (1)", None, 0, 0, 0, 1, 0))
+        sheet.append(("Grasmus", None, 1, 0, 5, 1, 0, 0))
+        sheet.append((None, None, None, None, None, None, None, None))
+        sheet.append(("Opmerkingen", "helder", "late avond"))
+        workbook.save(totals_path)
+
+        matrix = module.read_sovon_bmp_matrix(matrix_path, expected_year=1984)
+        matrix_statuses = [row["broncelstatus"] for row in matrix]
+        assert matrix_statuses == [
+            "positief", "expliciete_nul", "expliciete_nul", "leeg",
+        ], matrix_statuses
+        assert [row["territoria"] for row in matrix] == [2, 0, 0, None]
+
+        standard_results = module.read_sovon_bmp_standard_results(
+            standard_results_path, expected_year=1984,
+        )
+        assert standard_results[0]["tellercodes"] == ("AAA001", "BBB002")
+        assert standard_results[0]["territoria"] == 2
+
+        standard_visits = module.read_sovon_bmp_standard_visits(
+            standard_visits_path, expected_year=1984,
+        )
+        assert standard_visits[0]["bron_bezoek_id"] == 101
+        assert standard_visits[0]["bezoek_datum"] == "1984-03-12"
+
+        totals = module.read_sovon_bmp_visit_totals(totals_path, matrix)
+        assert [visit["bron_bezoek_id"] for visit in totals["visits"]] == [101, 102]
+        assert [visit["opmerking"] for visit in totals["visits"]] == [
+            "helder", "late avond",
+        ]
+        assert totals["visit_taxa"] == [{
+            "plot_id": 3506,
+            "jaar": 1984,
+            "bron_bezoek_id": 101,
+            "euring_code": 13120,
+            "bron_naam": "Fitis",
+            "bronwaarde_raw": "2 (1)",
+            "aantal_waarnemingen": 2,
+            "aantal_buiten_plot": 1,
+        }, {
+            "plot_id": 3506,
+            "jaar": 1984,
+            "bron_bezoek_id": 101,
+            "euring_code": 11060,
+            "bron_naam": "Tjiftjaf",
+            "bronwaarde_raw": " (1)",
+            "aantal_waarnemingen": 0,
+            "aantal_buiten_plot": 1,
+        }, {
+            "plot_id": 3506,
+            "jaar": 1984,
+            "bron_bezoek_id": 102,
+            "euring_code": 12750,
+            "bron_naam": "Grasmus",
+            "bronwaarde_raw": "1",
+            "aantal_waarnemingen": 1,
+            "aantal_buiten_plot": 0,
+        }]
+        assert totals["taxon_summaries"][(3506, 13120)]["hoogste_broedcode"] == 0
+
+        observations = module.normalize_sovon_bmp_observation_rows([{
+            "id": "501", "bzdid": "101", "plotid": "3506", "soortnr": "13120",
+            "jaar": "1984", "broedcode": "0", "aantal": "1",
+        }], expected_year=1984)
+        assert observations[0]["broedcode"] == 0
+        assert observations[0]["waarnemingsstatus"] == "waargenomen"
+
+        observation_features = [{
+            "type": "Feature",
+            "properties": {
+                "id": 501, "bzdid": 101, "plotid": 3506, "soortnr": 13120,
+                "naam": "Fitis", "jaar": 1984, "aantal": 1, "broedcode": 0,
+                "wrntype": "3", "geslacht": None, "opmerk": "bronopmerking",
+                "clterr": 0, "clterrid": None, "inplot": 1,
+                "x_coord": 83000, "y_coord": 461000,
+            },
+            "geometry": {"type": "Point", "coordinates": [83000.25, 461000.75]},
+        }]
+        observation_points = module.normalize_sovon_bmp_observation_features(
+            observation_features, expected_year=1984,
+        )
+        assert observation_points[0]["broedcode"] == 0
+        assert observation_points[0]["geom_x"] == 83000.25
+        assert observation_points[0]["in_plot"] == 1
+
+        territory_features = [{
+            "type": "Feature",
+            "properties": {
+                "plotid": 3506, "jaar": 1984, "euring": 13120,
+                "naam": "Fitis", "aantal": 1, "broedcode": 0,
+                "opmerking": None, "inplot": 1,
+                "x_coord": 83001, "y_coord": 461001,
+            },
+            "geometry": {"type": "Point", "coordinates": [83001.5, 461001.5]},
+        }]
+        territory_points = module.normalize_sovon_bmp_territory_features(
+            territory_features, expected_year=1984,
+        )
+        assert territory_points[0]["bron_feature_id"] == 1
+        assert len(territory_points[0]["bron_record_sha256"]) == 64
+        assert territory_points[0]["broedcode"] == 0
+
+        live_sql = module.sovon_bmp_live_year_metrics_sql().casefold()
+        assert "start transaction read only" in live_sql
+        assert "dagbezoeken_bmp" in live_sql
+        assert "dagwaarnemingen_bmp" in live_sql
+        assert "broedcode=0" in live_sql
+        assert "territoria" in live_sql
+        assert "plot_jaar_teller" in live_sql
+
+        blank_status = module.classify_sovon_bmp_plotyear(
+            [row for row in matrix if row["plot_id"] == 3515], has_visits=True,
+        )
+        assert blank_status == {
+            "matrixstatus": "uitsluitend_leeg",
+            "beoordelingsstatus": "te_beoordelen",
+        }
     assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
     assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
     assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
@@ -1232,6 +1433,7 @@ def main() -> int:
     assert "--audit-vleermuizen" in importer_text
     assert "--reconstruct-konijnen" in importer_text
     assert "--audit-konijnen" in importer_text
+    assert "--audit-sovon-bmp-years" in importer_text
     assert "--reconstruct-daz-bmp" in importer_text
     assert "--audit-daz-bmp" in importer_text
     assert "--reconstruct-zeereeppaddenstoelen" in importer_text

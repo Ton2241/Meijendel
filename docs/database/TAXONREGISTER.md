@@ -128,6 +128,37 @@ in `proef-4/` en `live/`. Er is niets naar de VPS gepubliceerd; de bestaande
 lokale dump en Shiny-cache zijn niet vervangen. Nieuwe leveringsversies en
 nieuwe eventlocaties vergen nog een afzonderlijk beoordeelde invoerroute.
 
+### SOVON-BMP-ontvangstlaag: geïsoleerd bewijs van 2 oktober 2026
+
+De nieuwe, nog lege ontvangstfamilie bestaat uit tien `sovon_bmp_*`-tabellen
+en twee analyseviews. Zowel positieve matrixwaarden en expliciete nullen als
+bezoeksoorten, individuele waarnemingspunten en territoriumpunten verwijzen met
+een foreign key naar `taxa_bronkoppeling`. Daardoor blijft iedere nieuwe
+soortregel bereikbaar vanuit `taxa`; `taxon_groepen` blijft via de bestaande
+LEFT JOIN-route betrokken en een ontbrekende groepsindeling verbergt geen regel.
+Een jaarimport stopt wanneer de Euring-code niet eenduidig langs deze centrale
+route kan worden gekoppeld.
+
+De structuur is eerst in `Meijendel_sovon_bmp_test_20261002` toegepast. De
+proef omvatte 18 tabellen, twee views, 24 foreign keys, een positieve
+broedcode-0-waarneming en negatieve proeven voor een nul met territoria, een
+waarneming met aantal nul en een bezoeksoort zonder binnen- of buitenaantal.
+Formeel afgekeurde regels verdwenen uit `v_sovon_bmp_analyse` en bleven in
+`v_sovon_bmp_formeel_afgekeurd` behouden. De levende kerntabellen bleven
+ongewijzigd.
+
+De volledige back-up staat buiten Git en iCloud in
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-bmp-20261002-164240.sql`.
+Het bestand is 4,0 GB, gemaakt met MySQL 9.7.1, en heeft SHA-256
+`fae744b4bca5d715a9345e92325c279e409b0cde57409ebdbd1b54e383b01236`.
+Volledig herstel in `Meijendel_sovon_restore_test_20261002` leverde dezelfde
+274 basistabellen, 17 views en dezelfde aantallen in `dagbezoeken_bmp` (14.455),
+`dagwaarnemingen_bmp` (600.959), `territoria` (71.013), `plot_jaar_teller`
+(2.453), `taxa` (11.660), `taxa_bronkoppeling` (30.035) en `taxon_groepen`
+(27). Beide tijdelijke databases zijn na de controle verwijderd. Dit bewijst
+herstelbaarheid van de uitgangsstand; het is nog geen jaarimport en er is niets
+naar de VPS gepubliceerd.
+
 ## Alle waarnemingen vanuit het centrale taxonregister
 
 Het onderstaande uitvoeringsverslag beschrijft de eerdere centrale koppeling
