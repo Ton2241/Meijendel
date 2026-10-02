@@ -1,5 +1,65 @@
 # Besluiten
 
+- Op 2 oktober 2026 is na de uitsluitend-lezen vergelijking het besloten deel
+  van SOVON-controlejaar 1984 in de ontvangstlaag vastgelegd. Dit betreft 15
+  bezochte plotjaren, 222 bezoeken en 1.446 vogelcellen: 568 positieve waarden
+  met samen 7.811 territoria, 860 expliciete nulcellen en 18 lege soortcellen.
+  De lege cellen blijven leeg en gelden niet als nul. De 40 geselecteerde maar
+  niet-bezochte plots met uitsluitend lege cellen zijn genegeerd. M35 heeft in
+  de SOVON-download acht bezoeken maar 49 uitsluitend lege vogelcellen en is
+  daarom nog niet ingevoerd. De levende database bevat voor M35 dezelfde acht
+  bezoeken onder `sovon_m`, geen SOVON-territoria, en daarnaast 13 afzonderlijke
+  territoriumregels met samen 106 territoria onder `jrvslg_m`; die
+  jaarverslaggegevens vallen buiten deze SOVON-verwerking. Zes positieve
+  meeuwenwaarden uit de download zijn als bronconflict bewaard;
+  `meeuwen_literatuur` blijft voor deze combinaties leidend in `territoria`.
+  De bestaande tabellen `dagbezoeken_bmp`, `dagwaarnemingen_bmp`, `territoria`
+  en `plot_jaar_teller` zijn niet gewijzigd. De expliciete nullen staan
+  brongetrouw vast. Op besluit van de data-eigenaar geldt de actuele officiële
+  SOVON BMP-A-soortenlijst vanaf 1984. De 15 plotjaren zijn daarom gekoppeld
+  aan lijstversie `sovon-bmp-a-actueel-retroactief-vanaf-1984-v1`; 187 in de
+  1984-matrix voorkomende vogeltaxa zijn als lijstlid vastgelegd. De analyseview
+  bevat nu 860 `notDetected`-regels en 562 niet-conflicterende positieve regels.
+  De zes meeuwenconflicten blijven in de ontvangstlaag, maar niet in de gewone
+  analyseview. De zeven historische broncategorieën Barmsijs, Beflijster,
+  Bosruiter, Goudplevier, Klapekster, Koperwiek en Kuifleeuwerik blijven onder
+  hun eigen naam en centrale bronkoppeling bewaard; lijstlidmaatschap is geen
+  taxonomische fusie. De centrale nacontrole omvat 132 routes en nul fouten.
+  Geen VPS-publicatie.
+
+- Het verslag over 1983-1985 bevestigt dat de resultatentabel 1984 alleen
+  kavels bevat die volgens BMP zijn geteld. Kavel 35 staat in de bezettingslijst
+  bij J. Bosland en heeft resultaten in de tabel. De 49 lege M35-cellen in de
+  SOVON-download betekenen daarom niet dat M35 niet is geteld en evenmin dat
+  zij nullen zijn; zij wijzen op ontbrekende SOVON-resultaten. De acht bezoeken
+  en 49 lege cellen blijven buiten de goedgekeurde ontvangstselectie totdat een
+  afzonderlijk besluit over deze bronleemte is genomen. Voor kavel 16 vermeldt
+  het verslag dat in 1984 alleen het centrale deel is geïnventariseerd. De
+  geaccepteerde historische kavelmapping koppelt `16S` aan SOVON-plot 29456
+  (`M16s`). Daarmee horen de 15 SOVON-bezoeken en matrixresultaten bij M16s;
+  de historische verslagnaam `16` verklaart de tellerregistratie op M16, maar
+  bewijst niet dat het volledige huidige M16 is geteld. De bestaande
+  `plot_jaar_teller`-regel is daarom niet verplaatst. Jaarverslaggegevens zijn
+  niet als SOVON-data ingevoerd.
+
+- Op 2 oktober 2026 is in de levende lokale database een lege, versieerbare
+  SOVON-BMP-ontvangstlaag aangelegd: tien `sovon_bmp_*`-tabellen en de views
+  `v_sovon_bmp_analyse` en `v_sovon_bmp_formeel_afgekeurd`. De laag bewaart
+  positieve waarden, expliciete nullen en lege broncellen afzonderlijk. Een
+  nul wordt pas analyseerbaar wanneer BMP-type, soortenbereik, volledige
+  telling, goedkeuringsstatus en toepasselijke officiële soortenlijst alle
+  expliciet zijn bevestigd. Formeel afgekeurde bronregels blijven bewaard,
+  maar staan niet in de gewone analyseview. Broedcode 0 blijft een positieve
+  waarneming. Tracks en de ongeversioneerde actuele SOVON-gebiedspolygonen
+  worden niet ingevoerd; SOVON-tellercodes wijzigen `plot_jaar_teller` niet
+  automatisch. De vijf taxondragende tabellen vereisen een directe koppeling
+  naar `taxa_bronkoppeling` die tevens exact past bij `soort_id` en Euring-code
+  in `soorten`. De volledige centrale audit omvat daarna 132 routes. Alle tien
+  tabellen en beide views bevatten bij aanleg nul regels; de bestaande 14.455
+  SOVON-BMP-bezoeken, 600.959 SOVON-BMP-dagwaarnemingen, 71.013 territoriumregels
+  en 2.453 tellerkoppelingen zijn ongewijzigd. De jaar-voor-jaarinhoud begint
+  afzonderlijk bij 1984. Geen VPS-publicatie.
+
 - Op 1 oktober 2026 is de standaard-analysescope voor plotgebonden gegevens
   structureel vastgelegd. `plot_analyse_scope` bevat voor alle 69 plots een
   expliciete status onder `scope_code = meijendel_natura2000`; de view

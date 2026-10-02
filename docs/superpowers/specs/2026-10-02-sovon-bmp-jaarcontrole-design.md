@@ -102,6 +102,13 @@ het getal vóór haakjes is `aantal_waarnemingen` binnen het telgebied; het geta
 tussen haakjes is `aantal_buiten_plot`. Een bronwaarde als ` (1)` betekent dus
 nul binnen en één buiten het telgebied en is nadrukkelijk geen echte nul.
 
+Zoogdieren en andere niet-vogels zijn gelegenheidswaarnemingen tijdens het
+vogelbezoek. Daarvoor geldt geen afzonderlijk telprotocol of volledige
+soortenlijst. Alleen positieve bronregels worden bewaard; een lege of
+ontbrekende niet-vogelregel is nooit een echte nul. Positieve niet-vogelregels
+worden bij de jaarcontrole vergeleken met de primaire `sovon_avimap_*`-laag en
+niet als tweede waarneming geteld.
+
 ### `sovon_bmp_waarneming` en `sovon_bmp_territoriumpunt`
 
 De jaargebonden puntlagen `bezoekstippen` en `territoria` worden eveneens
@@ -146,10 +153,12 @@ Voor ieder jaar, beginnend met 1984:
    lege cellen en bronopmerkingen;
 3. bepaal per plotjaar BMP-type, soortenbereik, volledigheid, goedkeuring en
    soortenlijstversie;
-4. presenteer alle verschillen met de levende database, zonder VWG-bronregels
+4. presenteer alle verschillen met de levende database, zonder voor dat jaar
+   al gegevens naar de levende database te schrijven en zonder VWG-bronregels
    als SOVON-correctie te behandelen;
-5. leg het jaarbesluit vast;
-6. verrijk alleen de goedgekeurde, volledig onderbouwde canonieke tabellen;
+5. laat Ton besluiten of en hoe de verschillen van dat jaar worden verwerkt;
+6. leg pas na dat besluit de goedgekeurde brongegevens vast en verrijk alleen
+   de uitdrukkelijk goedgekeurde, volledig onderbouwde canonieke tabellen;
 7. controleer centrale taxonbereikbaarheid, referentiële integriteit,
    uniciteit, afnemers en herhaalbaarheid.
 

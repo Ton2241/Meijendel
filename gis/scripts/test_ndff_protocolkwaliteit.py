@@ -187,6 +187,11 @@ def main() -> int:
         "meijendel.ndff_otter_bever_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
+    for field in (
+        "bezoekstippen_bestanden_json", "bezoekstippen_manifest_sha256",
+        "territoriumpunten_bestanden_json", "territoriumpunten_manifest_sha256",
+    ):
+        assert field in folded, field
     for condition_column in (
         "bmp_type",
         "soortenbereik",
@@ -379,6 +384,12 @@ def main() -> int:
         assert [visit["opmerking"] for visit in totals["visits"]] == [
             "helder", "late avond",
         ]
+        merged_visits = module.merge_sovon_bmp_visits(
+            standard_visits, totals["visits"][:1],
+        )
+        assert len(merged_visits) == 1
+        assert merged_visits[0]["bronvorm"] == "beide"
+        assert merged_visits[0]["opmerking"] == "helder"
         assert totals["visit_taxa"] == [{
             "plot_id": 3506,
             "jaar": 1984,
@@ -466,6 +477,66 @@ def main() -> int:
             "matrixstatus": "uitsluitend_leeg",
             "beoordelingsstatus": "te_beoordelen",
         }
+
+        decision = module.select_sovon_bmp_decided_plotyears(
+            matrix, standard_visits + [{
+                **standard_visits[0],
+                "bron_bezoek_id": 201,
+                "plot_id": 3515,
+            }],
+        )
+        assert decision["plot_ids"] == {3506}
+        assert Counter(row["broncelstatus"] for row in decision["matrix_rows"]) == {
+            "positief": 1,
+            "expliciete_nul": 2,
+        }
+        assert [row["bron_bezoek_id"] for row in decision["visits"]] == [101]
+        assert decision["ignored_unvisited_blank_plots"] == set()
+        assert decision["pending_visited_blank_plots"] == {3515}
+        assert module.sovon_bmp_receipt_comparison(
+            "positief", 2, 2, False,
+        ) == ("gelijk", None)
+        assert module.sovon_bmp_receipt_comparison(
+            "positief", 51, None, True,
+        ) == (
+            "conflict",
+            "SOVON-bronwaarde wijkt af; meeuwen_literatuur blijft leidend in territoria.",
+        )
+        assert module.sovon_bmp_receipt_comparison(
+            "expliciete_nul", 0, None, False,
+        ) == ("bron_nieuwer", None)
+        assert module.sovon_bmp_receipt_comparison(
+            "leeg", None, None, False,
+        ) == ("niet_vergeleken", None)
+        assert module.sovon_bmp_transaction_end(False) == "ROLLBACK;"
+        assert module.sovon_bmp_transaction_end(True) == "COMMIT;"
+        list_sql = module.sovon_bmp_current_list_from_1984_sql(
+            "a" * 64, commit=False,
+        ).casefold()
+        assert "sovon-bmp-a-actueel-retroactief-vanaf-1984-v1" in list_sql
+        assert "geldig_van" in list_sql
+        assert "1984" in list_sql
+        assert "lijststatus='officieel_bevestigd'" in list_sql
+        assert "from meijendel.sovon_bmp_plotjaar_taxon r" in list_sql
+        assert "p.jaar=1984" in list_sql
+        assert "p.soortenlijstversie_id=@sovon_bmp_soortenlijst" in list_sql
+        assert list_sql.rstrip().endswith("rollback;")
+
+        for suffix in (".shp", ".shx", ".dbf", ".prj"):
+            (source / f"avimap_252_diversen__bezoekstippen{suffix}").write_text(
+                suffix, encoding="utf-8",
+            )
+        manifest, manifest_hash = module.sovon_bmp_bundle_manifest(
+            source / "avimap_252_diversen__bezoekstippen.shp",
+        )
+        assert set(manifest) == {
+            "avimap_252_diversen__bezoekstippen.dbf",
+            "avimap_252_diversen__bezoekstippen.prj",
+            "avimap_252_diversen__bezoekstippen.shp",
+            "avimap_252_diversen__bezoekstippen.shx",
+        }
+        assert len(manifest_hash) == 64
+        assert callable(module.import_sovon_bmp_1984)
     assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
     assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
     assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
@@ -1434,6 +1505,8 @@ def main() -> int:
     assert "--reconstruct-konijnen" in importer_text
     assert "--audit-konijnen" in importer_text
     assert "--audit-sovon-bmp-years" in importer_text
+    assert "--compare-sovon-bmp-year" in importer_text
+    assert "--import-sovon-bmp-year" in importer_text
     assert "--reconstruct-daz-bmp" in importer_text
     assert "--audit-daz-bmp" in importer_text
     assert "--reconstruct-zeereeppaddenstoelen" in importer_text
@@ -1507,6 +1580,7 @@ def main() -> int:
     assert "p.beoordelingsstatus='goedgekeurd'" in sovon_bmp_views
     assert "p.volledigheidstatus='volledig'" in sovon_bmp_views
     assert "r.broncelstatus in ('positief','expliciete_nul')" in sovon_bmp_views
+    assert "r.vergelijkingsstatus<>'conflict'" in sovon_bmp_views
     assert "create or replace view meijendel.v_sovon_bmp_formeel_afgekeurd" in sovon_bmp_views
     assert "p.beoordelingsstatus='formeel_afgekeurd'" in sovon_bmp_views
     libel_source_sql = " ".join(module.libel_source_sql().split())

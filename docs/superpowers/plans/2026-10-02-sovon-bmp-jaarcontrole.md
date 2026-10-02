@@ -19,6 +19,9 @@
 - De vijf nulvoorwaarden worden afzonderlijk opgeslagen; een nul wordt pas analyseerbaar wanneer alle vijf positief zijn.
 - Alle nieuwe soortregels hebben een werkende centrale taxonroute; onbekende of strijdige identificatie blokkeert de jaarimport.
 - Tracks en actuele SOVON-polygonen worden niet ingevoerd.
+- Zoogdieren en andere niet-vogels zijn uitsluitend positieve
+  gelegenheidswaarnemingen tijdens het vogelbezoek. Ontbreken is nooit een nul;
+  positieve regels worden tegen `sovon_avimap_*` gecontroleerd op dubbeling.
 - Geen bestaande bronregel wordt verwijderd omdat hij in een jaarwerkboek ontbreekt.
 - Geen VPS-publicatie zonder nieuw, expliciet akkoord.
 - Werk eerst met falende tests, daarna minimale implementatie, daarna volledige regressie en herstelbewijs.
@@ -190,16 +193,16 @@ herstelproef.
 - Consumes: exact geteste schemahash en ongewijzigde levende bronstand.
 - Produces: lege, gebruiksklare `sovon_bmp_*`-structuur; nog geen canonieke jaarcorrecties.
 
-- [ ] **Step 1: Herhaal preflight en bronstandcontrole**
-- [ ] **Step 2: Pas exact het bewezen schema transactioneel toe**
-- [ ] **Step 3: Controleer databasebreed centrale taxonbereikbaarheid**
-- [ ] **Step 4: Controleer dat bestaande vogelrijen, sommen en bronnen gelijk zijn**
+- [x] **Step 1: Herhaal preflight en bronstandcontrole**
+- [x] **Step 2: Pas exact het bewezen schema toe na volledig herstelbewijs**
+- [x] **Step 3: Controleer databasebreed centrale taxonbereikbaarheid**
+- [x] **Step 4: Controleer dat bestaande vogelrijen, sommen en bronnen gelijk zijn**
 
 Expected: alleen nieuwe lege tabellen/views; `dagbezoeken_bmp`,
 `dagwaarnemingen_bmp`, `territoria`, `plot_jaar_teller` en niet-SOVON-bronnen
 zijn inhoudelijk onveranderd.
 
-### Task 6: Eerste jaarcontrole 1984
+### Task 6: Eerste, uitsluitend-lezen jaarcontrole 1984
 
 **Files:**
 - Modify: `gis/scripts/import_ndff_protocolkwaliteit.py`
@@ -208,25 +211,40 @@ zijn inhoudelijk onveranderd.
 
 **Interfaces:**
 - Consumes: de vier SOVON-werkboeken in jaarmap 1984 en de levende database.
-- Produces: bronimport 1984 in `sovon_bmp_*`, verschilrapport en afzonderlijk voorstel voor canonieke verrijking.
+- Produces: verschilrapport en afzonderlijke keuzen voor de verwerking van
+  1984; nog geen databasewijziging.
 
-- [ ] **Step 1: Importeer alleen de bronlaag voor 1984**
+- [x] **Step 1: Vergelijk 1984 zonder de levende database te wijzigen**
 
-Bewaar 5.306 matrixregels, zestien plotsecties en 230 bezoeken. Wijs geen lege
-cel als nul aan. Neem de plot met bezoeken maar uitsluitend lege matrixcellen
-op als `te_beoordelen`, niet automatisch als afgekeurd.
+Vergelijk 5.306 matrixregels, zestien plotsecties en 230 bezoeken rechtstreeks
+met de levende database. Schrijf nog geen levering, matrixregel of bezoek naar
+de database. Wijs geen lege cel als nul aan. Behandel de plot met bezoeken maar
+uitsluitend lege matrixcellen als `te_beoordelen`, niet automatisch als
+afgekeurd.
 
 - [ ] **Step 2: Beoordeel de vijf nulvoorwaarden per plotjaar**
 
 Koppel de toepasselijke officiële BMP-soortenlijst. Iedere nog ontbrekende
 voorwaarde houdt de nul buiten de analyseview.
 
-- [ ] **Step 3: Presenteer het 1984-verschilbesluit vóór canonieke wijziging**
+- [ ] **Step 3: Presenteer het 1984-verschilbesluit vóór iedere databasewijziging**
 
 Noem concrete aantallen, plots, soorten en gevolgen. Splits toevoegen,
-corrigeren, behouden en formeel uitsluiten. Wacht met wijziging van
-`territoria` of andere canonieke tabellen tot het jaarbesluit inhoudelijk is
-bevestigd.
+corrigeren, behouden en formeel uitsluiten. Wacht met zowel de SOVON-
+ontvangstlaag als `territoria` en andere canonieke tabellen tot Ton het
+jaarbesluit inhoudelijk heeft bevestigd.
+
+Stand 2 oktober 2026: Ton heeft besloten de 860 expliciete nulcellen van de 15
+bezochte plotjaren met matrixwaarden brongetrouw te verwerken, de 40
+niet-bezochte plots met uitsluitend lege cellen te negeren en bij zes
+meeuwenconflicten `meeuwen_literatuur` leidend te houden. Dit deel is in de
+ontvangstlaag uitgevoerd. De actuele officiële BMP-A-soortenlijst geldt op
+besluit van Ton vanaf 1984; de 860 nullen zijn daardoor analytisch
+`notDetected`. Het verslag 1983-1985 bevestigt dat M35 wel volgens BMP is
+geteld, maar dat de resultaten in de SOVON-download ontbreken. Voor 16 betreft
+de telling alleen het centrale deel, dat in de geaccepteerde historische
+kavelmapping als 16S naar SOVON-plot M16s verwijst. M35 blijft als afzonderlijke
+bronleemte te besluiten; de tellerregel M16/M16s is niet automatisch verplaatst.
 
 ### Task 7: Documentatie, verificatie en versiebeheer
 

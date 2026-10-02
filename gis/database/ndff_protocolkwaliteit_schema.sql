@@ -3099,6 +3099,10 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
   standaardresultaten_sha256 CHAR(64) CHARACTER SET ascii NULL,
   standaardbezoeken_bestand VARCHAR(1000) NULL,
   standaardbezoeken_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  bezoekstippen_bestanden_json JSON NOT NULL,
+  bezoekstippen_manifest_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  territoriumpunten_bestanden_json JSON NOT NULL,
+  territoriumpunten_manifest_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
   ontvangen_op DATE NOT NULL,
   matrix_rijen INT UNSIGNED NOT NULL,
   bron_bezoeken INT UNSIGNED NOT NULL,
@@ -3122,7 +3126,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
   CHECK (standaardresultaten_sha256 IS NULL OR
     REGEXP_LIKE(standaardresultaten_sha256,'^[0-9a-f]{64}$','c')),
   CHECK (standaardbezoeken_sha256 IS NULL OR
-    REGEXP_LIKE(standaardbezoeken_sha256,'^[0-9a-f]{64}$','c'))
+    REGEXP_LIKE(standaardbezoeken_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (REGEXP_LIKE(bezoekstippen_manifest_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (REGEXP_LIKE(territoriumpunten_manifest_sha256,'^[0-9a-f]{64}$','c'))
 ) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_soortenlijstversie (

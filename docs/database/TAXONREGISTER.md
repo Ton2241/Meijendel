@@ -159,6 +159,41 @@ Volledig herstel in `Meijendel_sovon_restore_test_20261002` leverde dezelfde
 herstelbaarheid van de uitgangsstand; het is nog geen jaarimport en er is niets
 naar de VPS gepubliceerd.
 
+De lege structuur is daarna op 2 oktober 2026 lokaal in `Meijendel` aangelegd.
+De tien tabellen, twee views en 24 foreign keys zijn aanwezig; alle nieuwe
+tabellen en views bevatten nul regels. De centrale schema- en schrijfbewaking
+is voor de vijf taxondragende tabellen uitgebreid: de directe koppeling naar
+`taxa_bronkoppeling` moet tevens exact passen bij `soort_id` en Euring-code in
+`soorten`. De volledige nacontrole omvat 132 centraal bereikbare routes. De
+zeven hierboven genoemde kerntellingen zijn na aanleg ongewijzigd. De levende
+database bevatte op dat moment uitsluitend de ontvangststructuur.
+
+Later op 2 oktober 2026 is het besloten deel van controlejaar 1984 toegevoegd:
+15 plotjaren, 222 bezoeken en 1.446 taxondragende matrixregels. Daarvan zijn 568
+regels positief, 860 een expliciete nul en 18 leeg. De 40 niet-bezochte plots
+met uitsluitend lege cellen zijn genegeerd; M35 met acht bezoeken en 49 lege
+cellen blijft buiten de ontvangstlaag in afwachting van een afzonderlijk
+besluit. De zes afwijkende meeuwenwaarden zijn als conflict bewaard terwijl
+`meeuwen_literatuur` leidend blijft in `territoria`. Alle 1.446 matrixregels
+verwijzen rechtstreeks naar `soorten` en `taxa_bronkoppeling`. De volledige
+nacontrole omvat 132 routes en nul fouten. De toepasselijke officiële
+historische BMP-soortenlijst is daarna op besluit van de data-eigenaar ingevuld
+met de actuele officiële BMP-A-lijst, toegepast vanaf 1984. De lijstkoppeling
+omvat de 187 in de 1984-matrix voorkomende vogeltaxa. De 15 plotjaren verwijzen
+naar deze lijstversie; `v_sovon_bmp_analyse` bevat daardoor 860 `notDetected`
+en 562 niet-conflicterende `detected`-regels. De zes meeuwenconflicten blijven
+in de ontvangstlaag en zijn uit de gewone analyseview uitgesloten. Zeven
+historische SOVON-namen blijven als afzonderlijke bronidentiteit gekoppeld;
+de retroactieve lijsttoepassing verandert geen taxonconcept.
+De lijstkoppeling is eerst transactioneel teruggedraaid. De actuele volledige
+back-up vóór vastlegging staat in
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-bmp-list-20261002-183928.sql`
+met SHA-256
+`eda11fb6a3e8a7ca6ebad61a0ee2e49c3fb55ff93935bf4c411f9283fbe942b2`.
+Na vastlegging zijn de twee relevante regressietests, de centrale querypoort en
+de rijtellingen van de zeven bestaande kern- en taxontabellen ongewijzigd
+bevonden.
+
 ## Alle waarnemingen vanuit het centrale taxonregister
 
 Het onderstaande uitvoeringsverslag beschrijft de eerdere centrale koppeling
