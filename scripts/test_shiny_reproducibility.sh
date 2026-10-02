@@ -50,6 +50,8 @@ grep -Fq 'Niet-vergrendelde site-librarypackages' "$installer"
 
 bash -n "$repo/scripts/generate_shiny_sbom.sh"
 bash -n "$repo/deploy/rebuild_shiny_image_vps.sh"
+bash -n "$repo/deploy/shiny_vulnerability_baseline.sh"
+bash "$repo/scripts/test_shiny_vulnerability_baseline.sh"
 
 if [[ -n "$image" ]]; then
   [[ "$(docker image inspect --format '{{.Architecture}}' "$image")" == "amd64" ]]

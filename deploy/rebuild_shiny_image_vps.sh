@@ -6,6 +6,7 @@ SSH_KEY="${SSH_KEY:-$HOME/.ssh/vwgm_spectraip_ed25519}"
 REMOTE_BASE="${REMOTE_BASE:-/srv/vwgm}"
 REMOTE_SHINY="${REMOTE_SHINY:-$REMOTE_BASE/shiny}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/shiny_vulnerability_baseline.sh"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 LOCAL_IMAGE_DIR="$LOCAL_REPO/deploy/shiny_image"
 LOCAL_LOCKFILE="$LOCAL_REPO/renv.lock"
@@ -169,7 +170,7 @@ baseline_status=$?
 set -e
 printf '%s\n' "$baseline_output"
 if [[ "$baseline_status" -ne 0 ]] && \
-   ! grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' <<<"$baseline_output"; then
+   ! known_shiny_openssl_baseline "$baseline_output"; then
   guard_die "baseline-audit bevat andere HIGH/CRITICAL-bevindingen dan de gedocumenteerde oude Shiny-baseline."
 fi
 
@@ -510,9 +511,8 @@ grep -Fq "SAMENVATTING|$candidate_label|critical=0|high=0|fix_beschikbaar=0|zond
 if [[ "$candidate_audit_status" -ne 0 ]]; then
   unexpected_tags="$(grep '^AANDACHT|container-hygiene|onverwachte-imagetag=' <<<"$candidate_audit" || true)"
   expected_candidate_tag="AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"
-  if grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' \
-      <<<"$candidate_audit"; then
-    : # Alleen de gedocumenteerde oude productie-image mag nog 0/43 opleveren.
+  if known_shiny_openssl_baseline "$candidate_audit"; then
+    : # Alleen de exact bekende OpenSSL-baseline van actief en rollback is toegestaan.
   elif [[ "$unexpected_tags" == "$expected_candidate_tag" ]] &&
        ! grep -Eq '^SAMENVATTING\|.*\|(critical|high)=[1-9][0-9]*' <<<"$candidate_audit" &&
        ! grep -Eq '^(URGENT|BLOKKADE)\|' <<<"$candidate_audit"; then
