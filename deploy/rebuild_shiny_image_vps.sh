@@ -305,6 +305,7 @@ docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
   --mount type=bind,src="$CANDIDATE_CACHE",dst=/workspace/shiny_meijendel/app_cache \
   --mount type=bind,src="$REMOTE_SHINY/R",dst=/workspace/R,readonly \
   --mount type=bind,src="$REMOTE_SHINY/Meijendel.sql",dst=/workspace/meijendel.sql,readonly \
+  --mount type=bind,src="$(dirname "$REMOTE_SHINY")/www/trim",dst=/workspace/trim,readonly \
   --mount type=bind,src="$(dirname "$REMOTE_SHINY")/www/trim_msi_evg",dst=/workspace/trim_msi_evg,readonly \
   "$CANDIDATE_ID" >/dev/null
 for attempt in $(seq 1 30); do

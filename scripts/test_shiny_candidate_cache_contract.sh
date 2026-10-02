@@ -17,6 +17,8 @@ grep -Fq 'MEIJENDEL_CACHE_MANIFEST_PATH=/srv/shiny-server/shiny_meijendel/app_ca
   fail 'kandidaat krijgt het actieve cachemanifest niet'
 grep -Fq 'stopifnot(isTRUE(x[[\"from_cache\"]])' "$script" ||
   fail 'kandidaat bewijst niet dat uitsluitend de vooraf gebouwde cache is gebruikt'
+grep -Fq -- '--mount type=bind,src="$(dirname "$REMOTE_SHINY")/www/trim",dst=/workspace/trim,readonly' "$script" ||
+  fail 'kandidaat krijgt de gepubliceerde TRIM-soortbestanden niet alleen-lezen mee'
 if grep -Fq 'stopifnot(!isTRUE(first[[\"from_cache\"]])' "$script"; then
   fail 'kandidaat probeert het volledige SQL-bestand nog opnieuw te parsen'
 fi
