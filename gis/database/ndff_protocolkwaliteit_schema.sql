@@ -3082,3 +3082,240 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_vogel_sync_batch (
     REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
   CHECK (afsluitjaar <= 2025)
 ) ENGINE=InnoDB;
+
+-- Versieerbare ontvangst van de officiële SOVON-BMP-jaarwerkboeken.
+-- Deze bronlaag bewaart positieve waarden, expliciete nullen en lege cellen
+-- afzonderlijk. Alleen de analyseview past de inhoudelijke nulpoort toe.
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
+  levering_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  regelversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bronmap VARCHAR(1000) NOT NULL,
+  matrix_bestand VARCHAR(1000) NOT NULL,
+  matrix_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoektotalen_bestand VARCHAR(1000) NOT NULL,
+  bezoektotalen_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  standaardresultaten_bestand VARCHAR(1000) NULL,
+  standaardresultaten_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  standaardbezoeken_bestand VARCHAR(1000) NULL,
+  standaardbezoeken_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  ontvangen_op DATE NOT NULL,
+  matrix_rijen INT UNSIGNED NOT NULL,
+  bron_bezoeken INT UNSIGNED NOT NULL,
+  actueel TINYINT(1) NOT NULL DEFAULT 1,
+  leveringsstatus ENUM('ontvangen','gevalideerd','jaar_beoordeeld','vervangen')
+    NOT NULL DEFAULT 'ontvangen',
+  kwaliteitsnotitie VARCHAR(2000) NOT NULL,
+  actief_jaar SMALLINT UNSIGNED GENERATED ALWAYS AS
+    (CASE WHEN actueel=1 THEN jaar ELSE NULL END) STORED,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id),
+  UNIQUE KEY uq_sovon_bmp_jaar_hashes
+    (jaar,matrix_sha256,bezoektotalen_sha256),
+  UNIQUE KEY uq_sovon_bmp_actief_jaar (actief_jaar),
+  UNIQUE KEY uq_sovon_bmp_levering_jaar (levering_id,jaar),
+  CHECK (jaar BETWEEN 1984 AND 2025),
+  CHECK (actueel IN (0,1)),
+  CHECK (matrix_rijen > 0),
+  CHECK (REGEXP_LIKE(matrix_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (REGEXP_LIKE(bezoektotalen_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (standaardresultaten_sha256 IS NULL OR
+    REGEXP_LIKE(standaardresultaten_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (standaardbezoeken_sha256 IS NULL OR
+    REGEXP_LIKE(standaardbezoeken_sha256,'^[0-9a-f]{64}$','c'))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_soortenlijstversie (
+  soortenlijstversie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  lijst_sleutel VARCHAR(128) CHARACTER SET ascii NOT NULL,
+  bmp_type VARCHAR(32) NOT NULL,
+  titel VARCHAR(1000) NOT NULL,
+  bronverwijzing VARCHAR(2000) NOT NULL,
+  bronbestand_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  geldig_van SMALLINT UNSIGNED NULL,
+  geldig_tot SMALLINT UNSIGNED NULL,
+  lijststatus ENUM('te_verifieren','officieel_bevestigd','vervangen') NOT NULL,
+  regelversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  toelichting VARCHAR(2000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (soortenlijstversie_id),
+  UNIQUE KEY uq_sovon_bmp_lijst_sleutel (lijst_sleutel),
+  CHECK (geldig_van IS NULL OR geldig_van BETWEEN 1900 AND 2100),
+  CHECK (geldig_tot IS NULL OR geldig_tot BETWEEN 1900 AND 2100),
+  CHECK (geldig_van IS NULL OR geldig_tot IS NULL OR geldig_van<=geldig_tot),
+  CHECK (bronbestand_sha256 IS NULL OR
+    REGEXP_LIKE(bronbestand_sha256,'^[0-9a-f]{64}$','c'))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_soortenlijst_taxon (
+  soortenlijstversie_id BIGINT UNSIGNED NOT NULL,
+  soort_id INT NOT NULL,
+  taxon_bronkoppeling_id BIGINT UNSIGNED NOT NULL,
+  euring_code INT NOT NULL,
+  bron_naam VARCHAR(255) NOT NULL,
+  lijststatus ENUM('opgenomen','expliciet_uitgesloten') NOT NULL DEFAULT 'opgenomen',
+  bronnotitie VARCHAR(1000) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (soortenlijstversie_id,soort_id),
+  UNIQUE KEY uq_sovon_bmp_lijst_euring (soortenlijstversie_id,euring_code),
+  KEY ix_sovon_bmp_lijst_taxon (taxon_bronkoppeling_id),
+  CONSTRAINT fk_sovon_bmp_lijst_versie FOREIGN KEY (soortenlijstversie_id)
+    REFERENCES Meijendel.sovon_bmp_soortenlijstversie (soortenlijstversie_id),
+  CONSTRAINT fk_sovon_bmp_lijst_soort FOREIGN KEY (soort_id)
+    REFERENCES Meijendel.soorten (id),
+  CONSTRAINT fk_sovon_bmp_lijst_taxon FOREIGN KEY (taxon_bronkoppeling_id)
+    REFERENCES Meijendel.taxa_bronkoppeling (koppeling_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_plotjaar (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bmp_type VARCHAR(32) NOT NULL DEFAULT 'BMP-A',
+  bmp_type_bron ENUM('standaardregel_data_eigenaar','expliciete_bron','jaarbesluit')
+    NOT NULL DEFAULT 'standaardregel_data_eigenaar',
+  soortenbereik ENUM('alle_soorten','expliciete_uitzondering','te_beoordelen')
+    NOT NULL DEFAULT 'alle_soorten',
+  volledigheidstatus ENUM('te_beoordelen','volledig','onvolledig')
+    NOT NULL DEFAULT 'te_beoordelen',
+  beoordelingsstatus ENUM('te_beoordelen','goedgekeurd','formeel_afgekeurd')
+    NOT NULL DEFAULT 'te_beoordelen',
+  soortenlijstversie_id BIGINT UNSIGNED NULL,
+  matrixstatus ENUM('waarden_aanwezig','uitsluitend_leeg','geen_matrixrijen')
+    NOT NULL,
+  bron_bezoekaantal SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  controle_status ENUM('te_beoordelen','beoordeeld') NOT NULL DEFAULT 'te_beoordelen',
+  controlebesluit VARCHAR(2000) NULL,
+  beoordeeld_door VARCHAR(255) NULL,
+  beoordeeld_op DATETIME(6) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,plot_id),
+  UNIQUE KEY uq_sovon_bmp_plotjaar (levering_id,plot_id,jaar),
+  KEY ix_sovon_bmp_plotjaar_status
+    (jaar,beoordelingsstatus,volledigheidstatus),
+  KEY ix_sovon_bmp_plotjaar_lijst (soortenlijstversie_id),
+  CONSTRAINT fk_sovon_bmp_plotjaar_levering FOREIGN KEY (levering_id,jaar)
+    REFERENCES Meijendel.sovon_bmp_jaarlevering (levering_id,jaar),
+  CONSTRAINT fk_sovon_bmp_plotjaar_plot FOREIGN KEY (plot_id)
+    REFERENCES Meijendel.plots (plot_id),
+  CONSTRAINT fk_sovon_bmp_plotjaar_lijst FOREIGN KEY (soortenlijstversie_id)
+    REFERENCES Meijendel.sovon_bmp_soortenlijstversie (soortenlijstversie_id),
+  CHECK (jaar BETWEEN 1984 AND 2025),
+  CHECK ((controle_status='te_beoordelen' AND beoordeeld_op IS NULL)
+    OR (controle_status='beoordeeld' AND controlebesluit IS NOT NULL
+      AND beoordeeld_door IS NOT NULL AND beoordeeld_op IS NOT NULL))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_plotjaar_tellercode (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  tellercode VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  teller_id INT NULL,
+  koppelstatus ENUM('te_beoordelen','exact','lid_van_team','strijdig','niet_gevonden')
+    NOT NULL DEFAULT 'te_beoordelen',
+  bronveld VARCHAR(64) CHARACTER SET ascii NOT NULL DEFAULT 'waarnemer',
+  toelichting VARCHAR(1000) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,plot_id,tellercode),
+  KEY ix_sovon_bmp_tellercode_teller (teller_id),
+  CONSTRAINT fk_sovon_bmp_tellercode_plotjaar FOREIGN KEY
+    (levering_id,plot_id,jaar)
+    REFERENCES Meijendel.sovon_bmp_plotjaar (levering_id,plot_id,jaar),
+  CONSTRAINT fk_sovon_bmp_tellercode_teller FOREIGN KEY (teller_id)
+    REFERENCES Meijendel.tellers (id),
+  CHECK ((koppelstatus IN ('exact','lid_van_team') AND teller_id IS NOT NULL)
+    OR koppelstatus IN ('te_beoordelen','strijdig','niet_gevonden'))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_bezoek (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  bron_bezoek_id INT NOT NULL,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bezoek_datum DATE NOT NULL,
+  bezoeknummer SMALLINT UNSIGNED NULL,
+  begintijd TIME NULL,
+  eindtijd TIME NULL,
+  bezoektype VARCHAR(64) NULL,
+  deelbezoek TINYINT(1) NULL,
+  gunstig TINYINT(1) NULL,
+  opmerking VARCHAR(2000) NULL,
+  bron_aantal_soorten SMALLINT UNSIGNED NULL,
+  bron_aantal_records INT UNSIGNED NULL,
+  dagbezoek_id INT NULL,
+  bronvorm ENUM('standaardexport','bezoektotalen','beide') NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,bron_bezoek_id),
+  KEY ix_sovon_bmp_bezoek_plotjaar (levering_id,plot_id,jaar),
+  KEY ix_sovon_bmp_bezoek_dagbezoek (dagbezoek_id),
+  CONSTRAINT fk_sovon_bmp_bezoek_plotjaar FOREIGN KEY
+    (levering_id,plot_id,jaar)
+    REFERENCES Meijendel.sovon_bmp_plotjaar (levering_id,plot_id,jaar),
+  CONSTRAINT fk_sovon_bmp_bezoek_dagbezoek FOREIGN KEY (dagbezoek_id)
+    REFERENCES Meijendel.dagbezoeken_bmp (bezoek_id),
+  CHECK (jaar=YEAR(bezoek_datum)),
+  CHECK ((deelbezoek IS NULL OR deelbezoek IN (0,1))
+    AND (gunstig IS NULL OR gunstig IN (0,1)))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_bezoek_taxon (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  bron_bezoek_id INT NOT NULL,
+  soort_id INT NOT NULL,
+  taxon_bronkoppeling_id BIGINT UNSIGNED NOT NULL,
+  euring_code INT NOT NULL,
+  bron_naam VARCHAR(255) NOT NULL,
+  bronwaarde_raw VARCHAR(100) NOT NULL,
+  aantal_waarnemingen SMALLINT UNSIGNED NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,bron_bezoek_id,soort_id),
+  KEY ix_sovon_bmp_bezoektaxon_taxon (taxon_bronkoppeling_id),
+  CONSTRAINT fk_sovon_bmp_bezoektaxon_bezoek FOREIGN KEY
+    (levering_id,bron_bezoek_id)
+    REFERENCES Meijendel.sovon_bmp_bezoek (levering_id,bron_bezoek_id),
+  CONSTRAINT fk_sovon_bmp_bezoektaxon_soort FOREIGN KEY (soort_id)
+    REFERENCES Meijendel.soorten (id),
+  CONSTRAINT fk_sovon_bmp_bezoektaxon_taxon FOREIGN KEY (taxon_bronkoppeling_id)
+    REFERENCES Meijendel.taxa_bronkoppeling (koppeling_id),
+  CHECK (aantal_waarnemingen IS NULL OR aantal_waarnemingen>0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_plotjaar_taxon (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  soort_id INT NOT NULL,
+  taxon_bronkoppeling_id BIGINT UNSIGNED NOT NULL,
+  euring_code INT NOT NULL,
+  ioc_sort INT NULL,
+  bron_naam VARCHAR(255) NOT NULL,
+  broncelstatus ENUM('positief','expliciete_nul','leeg') NOT NULL,
+  territoria INT UNSIGNED NULL,
+  standaardresultaat_territoria INT UNSIGNED NULL,
+  database_territoria_bij_ontvangst INT UNSIGNED NULL,
+  autocluster_territoria INT UNSIGNED NULL,
+  hoogste_broedcode SMALLINT UNSIGNED NULL,
+  totaal_waarnemingen INT UNSIGNED NULL,
+  aantal_buiten_plot INT UNSIGNED NULL,
+  aantal_niet_bruikbaar INT UNSIGNED NULL,
+  vergelijkingsstatus ENUM('gelijk','bron_nieuwer','database_extra','conflict','niet_vergeleken')
+    NOT NULL DEFAULT 'niet_vergeleken',
+  kwaliteitsnotitie VARCHAR(1500) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,plot_id,soort_id),
+  UNIQUE KEY uq_sovon_bmp_plotjaar_euring
+    (levering_id,plot_id,jaar,euring_code),
+  KEY ix_sovon_bmp_resultaat_status (jaar,broncelstatus),
+  KEY ix_sovon_bmp_resultaat_taxon (taxon_bronkoppeling_id),
+  CONSTRAINT fk_sovon_bmp_resultaat_plotjaar FOREIGN KEY
+    (levering_id,plot_id,jaar)
+    REFERENCES Meijendel.sovon_bmp_plotjaar (levering_id,plot_id,jaar),
+  CONSTRAINT fk_sovon_bmp_resultaat_soort FOREIGN KEY (soort_id)
+    REFERENCES Meijendel.soorten (id),
+  CONSTRAINT fk_sovon_bmp_resultaat_taxon FOREIGN KEY (taxon_bronkoppeling_id)
+    REFERENCES Meijendel.taxa_bronkoppeling (koppeling_id),
+  CHECK ((broncelstatus='positief' AND territoria>0)
+    OR (broncelstatus='expliciete_nul' AND territoria=0)
+    OR (broncelstatus='leeg' AND territoria IS NULL))
+) ENGINE=InnoDB;

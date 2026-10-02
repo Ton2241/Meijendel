@@ -56,6 +56,7 @@ DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
 SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
 SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
 SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
+SOVON_BMP_RULE_VERSION = "sovon-bmp-jaarcontrole-v1"
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v2"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
@@ -130,6 +131,7 @@ BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
 DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
 SOVON_AVIMAP_TABLE_PREFIX = "Meijendel.sovon_avimap"
+SOVON_BMP_TABLE_PREFIX = "Meijendel.sovon_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
@@ -5278,6 +5280,48 @@ JOIN Meijendel.sovon_avimap_import_batch b
   ON b.batch_id=m.batch_id AND b.actueel=1
 JOIN Meijendel.sovon_avimap_bezoek v
   ON v.batch_id=m.batch_id AND v.bron_bezoek_id=m.bron_bezoek_id;
+"""
+
+
+def sovon_bmp_analysis_views_sql() -> str:
+    """Maak strikte analyse- en afkeuringsviews voor de SOVON-BMP-jaarbron."""
+    return """
+CREATE OR REPLACE VIEW Meijendel.v_sovon_bmp_analyse AS
+SELECT r.levering_id,r.plot_id,r.jaar,r.soort_id,r.taxon_bronkoppeling_id,
+       r.euring_code,r.bron_naam,r.broncelstatus,
+       CASE WHEN r.broncelstatus='positief' THEN 'detected'
+            ELSE 'notDetected' END AS occurrence_status,
+       r.territoria AS organism_quantity,
+       'territoria' AS organism_quantity_type,
+       p.bmp_type,p.soortenbereik,p.volledigheidstatus,
+       p.beoordelingsstatus,p.soortenlijstversie_id,
+       l.lijst_sleutel AS toepasselijke_soortenlijst,
+       'goedgekeurd_volledig_plotjaar_officiele_soortenlijst'
+         AS analysetoelating
+FROM Meijendel.sovon_bmp_plotjaar_taxon r
+JOIN Meijendel.sovon_bmp_plotjaar p
+  ON p.levering_id=r.levering_id AND p.plot_id=r.plot_id AND p.jaar=r.jaar
+JOIN Meijendel.sovon_bmp_soortenlijstversie l
+  ON l.soortenlijstversie_id=p.soortenlijstversie_id
+ AND l.lijststatus='officieel_bevestigd'
+JOIN Meijendel.sovon_bmp_soortenlijst_taxon lt
+  ON lt.soortenlijstversie_id=p.soortenlijstversie_id
+ AND lt.soort_id=r.soort_id AND lt.lijststatus='opgenomen'
+WHERE p.beoordelingsstatus='goedgekeurd'
+  AND p.volledigheidstatus='volledig'
+  AND p.soortenbereik IN ('alle_soorten','expliciete_uitzondering')
+  AND r.broncelstatus IN ('positief','expliciete_nul');
+
+CREATE OR REPLACE VIEW Meijendel.v_sovon_bmp_formeel_afgekeurd AS
+SELECT r.levering_id,r.plot_id,r.jaar,r.soort_id,r.taxon_bronkoppeling_id,
+       r.euring_code,r.bron_naam,r.broncelstatus,r.territoria,
+       r.standaardresultaat_territoria,r.totaal_waarnemingen,
+       p.bmp_type,p.soortenbereik,p.volledigheidstatus,
+       p.beoordelingsstatus,p.controlebesluit,p.beoordeeld_door,p.beoordeeld_op
+FROM Meijendel.sovon_bmp_plotjaar_taxon r
+JOIN Meijendel.sovon_bmp_plotjaar p
+  ON p.levering_id=r.levering_id AND p.plot_id=r.plot_id AND p.jaar=r.jaar
+WHERE p.beoordelingsstatus='formeel_afgekeurd';
 """
 
 

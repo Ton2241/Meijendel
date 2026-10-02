@@ -86,6 +86,14 @@ def main() -> int:
         "meijendel.sovon_avimap_waarneming",
         "meijendel.sovon_avimap_ndff_daz_koppeling",
         "meijendel.sovon_avimap_daz_bezoek_taxon",
+        "meijendel.sovon_bmp_jaarlevering",
+        "meijendel.sovon_bmp_soortenlijstversie",
+        "meijendel.sovon_bmp_soortenlijst_taxon",
+        "meijendel.sovon_bmp_plotjaar",
+        "meijendel.sovon_bmp_plotjaar_tellercode",
+        "meijendel.sovon_bmp_bezoek",
+        "meijendel.sovon_bmp_bezoek_taxon",
+        "meijendel.sovon_bmp_plotjaar_taxon",
         "meijendel.ndff_zeereep_kilometerhok",
         "meijendel.ndff_zeereep_bezoek",
         "meijendel.ndff_zeereep_bezoek_taxon",
@@ -156,6 +164,21 @@ def main() -> int:
         "meijendel.ndff_otter_bever_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
+    for condition_column in (
+        "bmp_type",
+        "soortenbereik",
+        "volledigheidstatus",
+        "beoordelingsstatus",
+        "soortenlijstversie_id",
+    ):
+        assert condition_column in folded, condition_column
+    assert "'formeel_afgekeurd'" in folded
+    assert "'expliciete_nul'" in folded
+    assert "'leeg'" in folded
+    assert "broncelstatus='positief'andterritoria>0" in compact
+    assert "broncelstatus='expliciete_nul'andterritoria=0" in compact
+    assert "broncelstatus='leeg'andterritoriaisnull" in compact
+    assert "referencesmeijendel.taxa_bronkoppeling" in compact
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
     assert "meijendel_ndff_secure.ndff_libel_" not in folded
     assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
@@ -1272,9 +1295,18 @@ def main() -> int:
     assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
     assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"
     assert module.SOVON_AVIMAP_BIRD_RULE_VERSION == "sovon-avimap-vogels-v1"
+    assert module.SOVON_BMP_TABLE_PREFIX == "Meijendel.sovon_bmp"
+    assert module.SOVON_BMP_RULE_VERSION == "sovon-bmp-jaarcontrole-v1"
     sovon_views = module.sovon_avimap_analysis_views_sql().casefold()
     assert "bezoekduur_status" in sovon_views
     assert "handmatige_controle_bezoekduur" in sovon_views
+    sovon_bmp_views = module.sovon_bmp_analysis_views_sql().casefold()
+    assert "create or replace view meijendel.v_sovon_bmp_analyse" in sovon_bmp_views
+    assert "p.beoordelingsstatus='goedgekeurd'" in sovon_bmp_views
+    assert "p.volledigheidstatus='volledig'" in sovon_bmp_views
+    assert "r.broncelstatus in ('positief','expliciete_nul')" in sovon_bmp_views
+    assert "create or replace view meijendel.v_sovon_bmp_formeel_afgekeurd" in sovon_bmp_views
+    assert "p.beoordelingsstatus='formeel_afgekeurd'" in sovon_bmp_views
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
