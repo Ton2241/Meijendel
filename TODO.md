@@ -1,12 +1,5 @@
 # TODO
 
-- Beslis over controlejaar 2023, M53/Zwarte Kraai. De nieuwe SOVON-matrix
-  levert een letterlijke nul. In de levende database staat voor dezelfde
-  plot-soort-jaarcombinatie één territorium met bron `sovon_m`, ingevoerd op
-  21 februari 2026. Bijlage 2 van het vogelwerkgroepverslag 2023 vermeldt
-  eveneens één territorium voor M53. De nul is daarom niet ingevoerd; de
-  jaarverwerking is vóór 2023 gepauzeerd.
-
 ## Nu open
 
 ### SOVON-BMP jaar-voor-jaarvergelijking
@@ -80,6 +73,24 @@
   voor 2008-2022 3.929 aanvullende positieve zoogdierregels op 2.334 bezoeken;
   alle bronwaarden zijn na invoer gelijk aan de download en er zijn geen
   zoogdiernullen afgeleid.
+- De jaren 2023-2025 zijn jaar voor jaar vergeleken en verwerkt. De 1.367
+  in-scope downloadbezoeken staan al in `dagbezoeken_bmp`; 24 verschillen
+  betreffen uitsluitend afsluitende witruimte in bezoekopmerkingen. In
+  `territoria` zijn 8.012 nieuwe regels met letterlijke SOVON-nullen toegevoegd
+  en is M53/Zwarte Kraai 2023 van één naar nul gecorrigeerd. Het bijbehorende
+  territoriumpunt blijft als brongegeven behouden: aantal 1, broedcode 2 en
+  `inplot = 0`. In 2024 heeft M75 een volledig lege matrix tegenover 27
+  positieve databasewaarden; in 2025 geldt hetzelfde voor M51. Die bestaande
+  waarden zijn ongemoeid gelaten. M84s 2025 heeft bezoeken maar eveneens een
+  volledig lege matrix; daaruit is niets afgeleid. Voor 2023-2025 zijn 1.171
+  positieve zoogdierregels op 886 bezoeken toegevoegd. M75 is voor 2024 op
+  basis van het jaarverslag aan Patricia van Veen gekoppeld via de bestaande
+  code `ANBN01`. Voor M51 2025 blijft de teller leeg, omdat geen lokaal
+  jaarverslag 2025 beschikbaar is en de exportcode niet zelfstandig leidend is.
+- Voer nu de afzonderlijk afgesproken controle op formeel afgekeurde
+  SOVON-BMP-tellingen uit via de SOVON-website. Vernieuw pas daarna de afgeleide
+  dump en caches. `Meijendel.sql` en de caches zijn tijdens de jaarverwerking
+  1984-2025 bewust niet vernieuwd.
 - Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: alle werkelijk aanvullende
   SOVON-gegevens mogen in de bestaande Meijendel-kerntabellen worden
   toegevoegd. Bestaande Meijendelgegevens blijven staan wanneer zij in de

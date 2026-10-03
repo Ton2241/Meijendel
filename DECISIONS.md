@@ -60,8 +60,27 @@
   gelijk onder `jrvslg_m` en zijn niet als tweede bronkopie toegevoegd. De
   aanvullende SOVON-zoogdierlaag voor 2008-2022 bevat 3.929 positieve regels
   op 2.334 bezoeken. Na invoer komen alle waarden overeen met de jaarbestanden;
-  er zijn geen zoogdiernullen afgeleid. De verwerking stopt vóór 2023 wegens
-  het afzonderlijke conflict M53/Zwarte Kraai.
+  er zijn geen zoogdiernullen afgeleid.
+
+- De SOVON-controlejaren 2023-2025 zijn op 3 oktober 2026 afgerond. De 1.367
+  in-scope downloadbezoeken staan al in `dagbezoeken_bmp`; de 24 verschillen
+  zijn uitsluitend afsluitende witruimte in `opmerking`. Er zijn 8.012 nieuwe
+  nulregels aan `territoria` toegevoegd. Voor M53/Zwarte Kraai 2023 is de
+  bestaande SOVON-waarde één na afzonderlijk akkoord gewijzigd in nul, omdat
+  de kavelmatrix nul levert en het enige territoriumpunt `inplot = 0` heeft.
+  Dat punt met aantal 1 en broedcode 2 blijft in de bronlaag als auditgegeven
+  behouden. De 27 positieve M75-regels uit 2024 en de 27 positieve M51-regels
+  uit 2025 blijven ongewijzigd: de downloads bevatten voor die bezochte kavels
+  uitsluitend lege matrixcellen en dus geen tegengestelde waarden. Ook uit de
+  lege matrix van het bezochte M84s in 2025 is niets afgeleid. Aan
+  `daz_bmp_*` zijn voor 2023-2025 1.171 positieve SOVON-zoogdierregels op 886
+  bezoeken toegevoegd; geen zoogdiernullen zijn afgeleid. De gecombineerde
+  categorie `Martes foina/martes` blijft één operationele broncategorie en is
+  niet naar Steenmarter of Boommarter gesplitst. Het verslag 2024 koppelt M75
+  ondubbelzinnig aan Patricia van Veen; daarvoor is de al bestaande code
+  `ANBN01` aan `plot_jaar_teller` toegevoegd. Voor M51 2025 blijft het veld
+  leeg omdat geen lokaal jaarverslag 2025 beschikbaar is en de exportcode niet
+  zelfstandig als tellerbewijs geldt.
 
 - Op 3 oktober 2026 is de algemene bronregel voor de verdere SOVON-
   jaarcontroles aangescherpt. Werkelijk aanvullende gegevens uit de officiële

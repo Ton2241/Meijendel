@@ -303,14 +303,32 @@ SOVON is voor gecombineerd gebruik leidend en de waarden worden niet opgeteld.
 Iedere nieuwe regel heeft een geldige `taxon_bronkoppeling_id`.
 
 De jaarcontrole 2008-2022 heeft onder `sovon-bmp-jaarbestanden-v1` 3.929
-aanvullende positieve zoogdierregels op 2.334 bezoeken vastgelegd. Samen met
-2005-2007 bevat deze versie 4.281 regels op 2.536 bezoeken, met 16.221 dieren
-binnen en 370 buiten het plot. Alle 22 gebruikte brontaxa zijn via
+aanvullende positieve zoogdierregels op 2.334 bezoeken vastgelegd. De
+jaarcontrole 2023-2025 voegde 1.171 regels op 886 bezoeken toe. Samen met
+2005-2007 bevat deze versie nu 5.452 regels op 3.422 bezoeken, met 19.384
+dieren binnen en 444 buiten het plot. Alle 26 gebruikte brontaxa zijn via
 versiegebonden routes centraal bereikbaar. Ook de toegevoegde nominale routes
 voor `Chiroptera spec.`, `Soricidae spec.`, `Sorex araneus spec.`,
-`Myodes glareolus`, `Martes spec.` en `Equus ferus caballus (Konik)` behouden
-status kandidaat/onbekend: zij verbinden de letterlijke bronnaam met een al
-beoordeelde centrale registratie, maar bewijzen geen conceptgelijkheid.
+`Myodes glareolus`, `Martes spec.`, `Equus ferus caballus (Konik)`,
+`Bos taurus (Heck)` en `Martes foina/martes` behouden status
+kandidaat/onbekend: zij verbinden de letterlijke bronnaam met een al
+beoordeelde centrale registratie, maar bewijzen geen conceptgelijkheid. De
+laatste naam blijft één samengestelde operationele categorie en wordt niet in
+Steenmarter en Boommarter gesplitst.
+
+Vóór de verwerking van 2023 zijn `territoria`, `daz_bmp_bezoek` en
+`daz_bmp_bezoek_taxon` geëxporteerd naar
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-2023-20261003.sql`
+met SHA-256
+`06e96368c1418e9903601865be7230be8c84cd5115d15a507beb8cae889bda53`.
+De taxonroutes vóór de Heckrund-koppeling staan in
+`Meijendel-taxonroutes-before-sovon-2023-20261003.sql`, SHA-256
+`aa02b7e29e1c41f4b89565c9d7b8776a4b13ce8914b1c8d6f7034847386103f6`.
+De gerichte tabelback-up voor 2024 heeft SHA-256
+`6f3f666f0bceb83eb96c7ebc1fae660ea3b280c9718d7c190cb5da4f6c9d20f1`.
+Voor 2025 zijn de tabellen en taxonroutes afzonderlijk bewaard met SHA-256
+`12f8ecfe0ae04b571d1c32f853e44005b5db80c7e37ab02474f33a2d72ebb0ac`
+en `11c5fc17c8ce8a63f3a13c41d623d5dacbacb12c13a21b82994e34be91d06c81`.
 
 Vóór de hernoeming is de tabelgroep afzonderlijk geëxporteerd naar
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-daz-bmp-before-rename-20261003.sql`;
