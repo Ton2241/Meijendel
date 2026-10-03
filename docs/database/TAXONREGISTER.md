@@ -185,10 +185,28 @@ of een andere interpretatieregel is afgeleid, wordt nooit als record in
 `territoria` aangemaakt. Zulke metadata blijft beschikbaar voor controle en
 analyse, maar creëert geen waarnemingsregel.
 
-Vóór deze correctie is een volledige back-up gemaakt:
+Voor controlejaar 1985 bevat de download 323 bezoeken in 24 plots. Alle 323
+zijn gelijk aan de bestaande SOVON-regels in `dagbezoeken_bmp`. De vogelmatrix
+bevat 864 positieve waarden, 1.386 letterlijke nullen en 2.742 lege cellen.
+Van de positieve waarden zijn 855 gelijk aan `territoria`; negen
+meeuwenverschillen blijven buiten de SOVON-invoer omdat
+`meeuwen_literatuur` leidend is. Van de letterlijke nullen zijn 1.385 als
+SOVON-regel toegevoegd. Alleen M4-5/Zilvermeeuw is uitgesloten: SOVON levert
+0, maar de leidende literatuurbron bevat 55 territoria. `territoria` bevat
+daarna 73.258 regels. De 2.240 SOVON-regels uit 1985 bestaan uit 855 positieve
+waarden en 1.385 nullen. Alle nieuwe nulregels blijven via de bestaande
+`soorten`-route centraal taxonomisch bereikbaar; de centrale nacontrole omvat
+128 taxonroutes en geeft nul fouten.
+
+Vóór de 1984-correctie is een volledige back-up gemaakt:
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
 4,0 GB, SHA-256
 `fee814424dc2183a705cbec4b57b571b1a37fa545d87e07b23d6be1a25f1c197`.
+Vóór de 1985-correctie zijn `territoria` en `plot_jaar_teller` bovendien
+gericht veiliggesteld in
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1985-reconcile-20261003.sql`,
+3,4 MB, SHA-256
+`e7cabd0ea5644ad6cea3f350e2736e390d770a38ff6b683059670762d19bf730`.
 De eerdere structuurback-ups blijven als herstelbewijs van de tussenstanden
 bestaan. Er is niets naar de VPS gepubliceerd.
 

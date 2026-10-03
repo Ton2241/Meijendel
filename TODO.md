@@ -10,7 +10,12 @@
   omdat `meeuwen_literatuur` leidend blijft. Achttien lege cellen en de 49 lege
   M35-cellen zijn niet als nul behandeld. De overbodige kopietabellen en views
   zijn verwijderd; vijf tabellen met uitsluitend vergelijkingsmetadata blijven.
-- Volgende stap is uitsluitend de vergelijking van 1985. Eerst feiten en
+- 1985 is vergeleken en verwerkt. Alle 323 bezoeken en 855 positieve
+  niet-meeuwresultaten waren gelijk. Van 1.386 letterlijke SOVON-nullen zijn
+  1.385 aan `territoria` toegevoegd; M4-5/Zilvermeeuw bleef 55 uit
+  `meeuwen_literatuur`. De drie besloten tellerkoppelingen voor M35 en M16s
+  zijn toegevoegd. Lege cellen zijn niet ingevoerd.
+- Volgende stap is uitsluitend de vergelijking van 1986. Eerst feiten en
   verschillen vaststellen; daarna alleen waar nodig een afzonderlijk gevraagd
   besluit. Geen volgend jaar verwerken voordat de uitkomst van het vorige jaar
   is besproken.

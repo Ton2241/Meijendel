@@ -11,6 +11,18 @@
   buiten `territoria`. De soortenlijst en overige protocolmetadata blijven wel
   beschikbaar voor controle en analyse.
 
+- Op 3 oktober 2026 is SOVON-controlejaar 1985 met de levende kerntabellen
+  vergeleken en verwerkt. Alle 323 bezoeken in 24 plots zijn gelijk aan
+  `dagbezoeken_bmp`. Van 864 positieve waarden zijn 855 gelijk aan bestaande
+  SOVON-regels; negen meeuwenwaarden zijn niet toegevoegd omdat
+  `meeuwen_literatuur` leidend blijft. Van de 1.386 letterlijke nulcellen zijn
+  1.385 als `territoria = 0` met SOVON als bron toegevoegd. M4-5/Zilvermeeuw
+  is uitgezonderd: SOVON levert 0 en `meeuwen_literatuur` 55. De 2.742 lege
+  cellen zijn niet ingevoerd. Op grond van de jaarverslagen en het besluit van
+  de data-eigenaar zijn 1985/M35–B_0042 en 1984 en 1985/M16s–A_0042 aan
+  `plot_jaar_teller` toegevoegd. De bestaande koppelingen op M16 en 1984/M35
+  zijn behouden.
+
 - Op 2 oktober 2026 is SOVON-controlejaar 1984 rechtstreeks met de bestaande
   kerntabellen vergeleken. De download bevat 230 bezoeken in 16 plots; alle 230
   zijn inhoudelijk gelijk aan `dagbezoeken_bmp`. Er is daarom geen bezoek
@@ -50,7 +62,8 @@
   (`M16s`). Daarmee horen de 15 SOVON-bezoeken en matrixresultaten bij M16s;
   de historische verslagnaam `16` verklaart de tellerregistratie op M16, maar
   bewijst niet dat het volledige huidige M16 is geteld. De bestaande
-  `plot_jaar_teller`-regel is daarom niet verplaatst. Jaarverslaggegevens zijn
+  `plot_jaar_teller`-regel is niet verplaatst; op besluit van de data-eigenaar
+  is A_0042 voor 1984 aanvullend aan M16s gekoppeld. Jaarverslaggegevens zijn
   niet als SOVON-data ingevoerd.
 
 - De aanvankelijk aangelegde SOVON-BMP-ontvangstlaag was te breed en dupliceerde
@@ -75,10 +88,10 @@
   M66 (Haagsche Golf Club, `plot_id = 3503`) en M91 (Voorlinden,
   `plot_id = 3514`) hebben `in_scope = 0`, beide met de reden `Geen onderdeel
   van Natura 2000-analysegebied.` De geldige bronregels blijven bewaard. In
-  `territoria` gaat het om 1.593 regels uit 39 jaren (1985–2025) voor M66 en
+  `territoria` gaat het om 1.669 regels uit 39 jaren (1985–2025) voor M66 en
   774 regels uit 18 jaren (1993–2021) voor M91. De standaardselectie bevat
-  daardoor 69.506 territoriumregels in 52 territoriumplots en 2.111 plotjaren
-  uit 1958–2025; de ruwe tabel bevat 71.873 regels in 54 territoriumplots en
+  daardoor 70.815 territoriumregels in 52 territoriumplots en 2.111 plotjaren
+  uit 1958–2025; de ruwe tabel bevat 73.258 regels in 54 territoriumplots en
   2.168 plotjaren uit 1958–2025. Alle repositoryberekeningen filteren
   standaard via deze centrale scope. Alleen een uitdrukkelijke selectie van
   M66 en/of M91 mag daarvan afwijken, in R via argument
@@ -129,7 +142,9 @@
   inhoudelijke vaststelling door de data-eigenaar zijn vier van de ontbrekende
   koppelingen op 1 oktober 2026 aan de levende tabel toegevoegd:
   2010/M54a–AZNA00, 2012/M66–WCLE00, 2018/M34–B_0097 en
-  2018/M8–B_0098. De tabel bevat daarna 2.453 regels. Geen VPS-publicatie.
+  2018/M8–B_0098. Na de jaarcontrole 1985 zijn op inhoudelijk besluit ook
+  1985/M35–B_0042 en 1984 en 1985/M16s–A_0042 toegevoegd. De tabel bevat
+  daarna 2.456 regels. Geen VPS-publicatie.
 
 - Op 29 september 2026 zijn de vier na de bronontvlechting uitsluitend voor
   LVD gebruikte fysieke `externe_ecologie_*`-tabellen lokaal hernoemd naar
