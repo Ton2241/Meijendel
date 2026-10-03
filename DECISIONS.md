@@ -1,5 +1,16 @@
 # Besluiten
 
+- Op 3 oktober 2026 is besloten dat `territoria` uitsluitend werkelijk door de
+  bron geleverde territoriumwaarden bevat. Letterlijke nulcellen uit een
+  SOVON-download worden met SOVON als bron ingevoerd. Ontbrekende matrixregels
+  en nullen die uit BMP-type, volledigheid, de officiële soortenlijst of een
+  andere interpretatieregel kunnen worden afgeleid, worden niet als record in
+  `territoria` opgenomen. Voor controlejaar 1984 blijven daardoor 2.338
+  ontbrekende combinaties van centraal gekoppelde officiële lijstsoorten en
+  225 ontbrekende combinaties van nog niet centraal gekoppelde lijstnamen
+  buiten `territoria`. De soortenlijst en overige protocolmetadata blijven wel
+  beschikbaar voor controle en analyse.
+
 - Op 2 oktober 2026 is SOVON-controlejaar 1984 rechtstreeks met de bestaande
   kerntabellen vergeleken. De download bevat 230 bezoeken in 16 plots; alle 230
   zijn inhoudelijk gelijk aan `dagbezoeken_bmp`. Er is daarom geen bezoek

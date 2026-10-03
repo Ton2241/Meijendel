@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 2 oktober 2026.**
+**Stand: 3 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -109,7 +109,7 @@ De data-eigenaar heeft op 2 oktober 2026 besloten de actuele officiële SOVON BM
 
 De aanvankelijk aangelegde ontvangsttabellen met kopieën van bezoeken en resultaten zijn op 2 oktober 2026 verwijderd. Over blijven vijf `sovon_bmp_*`-tabellen met uitsluitend niet elders aanwezige vergelijkingsmetadata: jaarlevering, plotjaarvoorwaarden, tellercodes, soortenlijstversie en soortenlijstnamen. `territoria` bevat na de 1984-correctie 71.873 regels uit 1958-2025; daarvan zijn 1.422 SOVON-regels voor 1984, bestaande uit 562 positieve territoriumresultaten en 860 letterlijke nullen. `dagbezoeken_bmp` bevat voor 1984 de 230 reeds aanwezige bezoeken. De download is dus geen tweede in te voeren gegevenslaag: per jaar wordt hij met de bestaande kerntabellen vergeleken en alleen een vastgesteld, besloten verschil leidt tot een wijziging.
 
-De 860 ingevoerde nullen zijn uitsluitend letterlijke nulcellen uit de SOVON-matrix. Voor de 249 centraal gekoppelde officiële BMP-A-lijstsoorten en de 15 plotjaren met resultaten zijn 3.735 plot-soortcombinaties mogelijk; 2.338 daarvan ontbreken geheel uit de matrix en zijn nog niet als nul afgeleid. Daarnaast ontbreken alle 225 combinaties van de 15 nog niet centraal gekoppelde officiële lijstnamen en de 15 plotjaren. Eventuele omzetting van deze 2.563 ontbrekende combinaties naar nullen vergt een afzonderlijk besluit; voor de laatste 225 moet bovendien eerst de taxonidentiteit worden opgelost.
+De 860 ingevoerde nullen zijn uitsluitend letterlijke nulcellen uit de SOVON-matrix. Op 3 oktober 2026 is besloten dat `territoria` alleen werkelijk door de bron geleverde territoriumwaarden bevat; afgeleide gegevens worden niet in deze tabel opgenomen. Voor de 249 centraal gekoppelde officiële BMP-A-lijstsoorten en de 15 plotjaren met resultaten zijn 3.735 plot-soortcombinaties mogelijk; 2.338 daarvan ontbreken geheel uit de matrix en blijven buiten `territoria`. Ook de 225 ontbrekende combinaties van de 15 nog niet centraal gekoppelde officiële lijstnamen en de 15 plotjaren blijven buiten `territoria`. BMP-type, volledigheid, soortenlijst en overige protocolmetadata kunnen dus wel worden gebruikt voor controle en analyse, maar nooit om in `territoria` een ontbrekende bronregel als nul aan te maken.
 
 Voor kavel 16 vermeldt het verslag dat in 1984 alleen het centrale deel is geïnventariseerd. De bestaande geaccepteerde historische kavelmapping koppelt `16S` aan SOVON-plot 29456 (`M16s`). Dit past bij de download: M16s bevat 15 bezoeken en 90 vogelcellen, waarvan 47 positief, 42 expliciete nul en één leeg; M16 bevat geen bezoeken en 99 lege cellen. De historische verslagnaam `16` verklaart dat `plot_jaar_teller` de teller op M16 registreert, maar bewijst niet dat het volledige huidige M16 is geteld. De tellerregel is daarom niet verplaatst. De volledige centrale nacontrole omvat 132 taxonroutes en nul fouten.
 

@@ -548,10 +548,26 @@ def main() -> int:
              "broncelstatus": "expliciete_nul", "territoria": 0},
             {"plot_id": 3506, "soort_id": 201, "jaar": 1984,
              "broncelstatus": "positief", "territoria": 2},
+            {"plot_id": 3506, "soort_id": 202, "jaar": 1984,
+             "broncelstatus": "afgeleide_nul", "territoria": 0},
         ]).casefold()
         assert "insert into meijendel.territoria" in zero_sql
         assert "(3506,200,1984,0,1" in zero_sql
         assert "(3506,201,1984,2,1" not in zero_sql
+        assert "(3506,202,1984,0,1" not in zero_sql
+        assert module.SOVON_BMP_TERRITORIA_POLICY == "uitsluitend_letterlijke_bronwaarden"
+
+        try:
+            module.sovon_bmp_zero_insert_sql([
+                {"plot_id": 3506, "soort_id": 202, "jaar": 1984,
+                 "broncelstatus": "expliciete_nul", "territoria": 1},
+            ])
+        except ValueError as exc:
+            assert "expliciete_nul" in str(exc)
+        else:
+            raise AssertionError(
+                "Een als expliciete nul gemarkeerde niet-nulwaarde moet worden geweigerd."
+            )
 
         for suffix in (".shp", ".shx", ".dbf", ".prj"):
             (source / f"avimap_252_diversen__bezoekstippen{suffix}").write_text(

@@ -177,6 +177,14 @@ Die laatste groep heeft geen waarnemingsregel en is niet kunstmatig aan een
 taxonconcept gekoppeld. Zestien historische matrixcategorieën die niet op de
 actuele lijst staan, hebben `lijststatus = expliciet_uitgesloten`.
 
+Bindend besluit van 3 oktober 2026: `territoria` bevat uitsluitend werkelijk
+door de bron geleverde territoriumwaarden. Een letterlijke SOVON-nulcel is een
+bronwaarde en mag als `territoria = 0` worden opgenomen. Een ontbrekende
+matrixregel of een nul die uit BMP-type, volledigheid, officiële soortenlijst
+of een andere interpretatieregel is afgeleid, wordt nooit als record in
+`territoria` aangemaakt. Zulke metadata blijft beschikbaar voor controle en
+analyse, maar creëert geen waarnemingsregel.
+
 Vóór deze correctie is een volledige back-up gemaakt:
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
 4,0 GB, SHA-256

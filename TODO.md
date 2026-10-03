@@ -14,14 +14,13 @@
   verschillen vaststellen; daarna alleen waar nodig een afzonderlijk gevraagd
   besluit. Geen volgend jaar verwerken voordat de uitkomst van het vorige jaar
   is besproken.
-- Nog afzonderlijk te besluiten: officiële BMP-A-lijstnamen die voor een
-  volledig geteld plotjaar geheel ontbreken uit de SOVON-matrix. De 860 reeds
-  ingevoerde nullen zijn letterlijke broncellen. Voor de 249 centraal gekoppelde
-  officiële lijstsoorten en 15 plotjaren zijn 3.735 combinaties mogelijk; 2.338
-  daarvan ontbreken geheel uit de matrix en zijn nog niet als nul afgeleid.
-  Daarnaast ontbreken alle 225 combinaties van de 15 nog niet centraal
-  gekoppelde officiële lijstnamen en de 15 plotjaren; deze kunnen niet in
-  `territoria` worden opgeslagen voordat hun taxonidentiteit is opgelost.
+- Besloten op 3 oktober 2026: `territoria` bevat alleen werkelijk door de bron
+  geleverde territoriumwaarden. Voor SOVON worden dus wel letterlijke
+  nulcellen ingevoerd, maar nooit nullen die uit de officiële soortenlijst,
+  protocolvoorwaarden of een ontbrekende matrixregel zijn afgeleid. De 2.338
+  ontbrekende combinaties van centraal gekoppelde officiële lijstsoorten en de
+  225 ontbrekende combinaties van nog niet centraal gekoppelde lijstnamen
+  blijven daarom buiten `territoria`.
 
 ### Verplichte centrale ingang voor alle soortwaarnemingen
 

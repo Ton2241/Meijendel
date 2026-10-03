@@ -57,6 +57,7 @@ SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
 SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
 SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
 SOVON_BMP_RULE_VERSION = "sovon-bmp-jaarcontrole-v1"
+SOVON_BMP_TERRITORIA_POLICY = "uitsluitend_letterlijke_bronwaarden"
 SOVON_BMP_CURRENT_LIST_RULE_VERSION = "sovon-bmp-a-actueel-retroactief-v1"
 SOVON_BMP_CURRENT_LIST_KEY = "sovon-bmp-a-actueel-retroactief-vanaf-1984-v1"
 SOVON_BMP_CURRENT_LIST_URL = (
@@ -5371,7 +5372,15 @@ def sovon_bmp_transaction_end(commit: bool) -> str:
 
 def sovon_bmp_zero_insert_sql(rows: list[dict[str, object]]) -> str:
     """Schrijf uitsluitend letterlijk aangeleverde nulcellen naar territoria."""
-    zeros = [row for row in rows if row.get("broncelstatus") == "expliciete_nul"]
+    zeros = []
+    for row in rows:
+        if row.get("broncelstatus") != "expliciete_nul":
+            continue
+        if row.get("territoria") != 0:
+            raise ValueError(
+                "SOVON-broncelstatus expliciete_nul vereist territoria = 0."
+            )
+        zeros.append(row)
     if not zeros:
         return "-- Geen expliciete SOVON-nulcellen."
     values = ",\n".join(
