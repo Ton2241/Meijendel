@@ -1394,7 +1394,15 @@ def main() -> int:
     assert daz_by_key[(101, "Dama dama")]["relation"] == "bijvangst"
     assert (102, "Dama dama") not in daz_by_key
     assert daz_by_key[(102, "Lepus europaeus")]["status"] == "onbepaald_ambigu"
-    assert daz_by_key[(102, "Capreolus capreolus")]["status"] == "echte_nul"
+    assert daz_by_key[(102, "Capreolus capreolus")]["status"] == (
+        "historische_afgeleide_nul"
+    )
+    assert daz_by_key[(102, "Capreolus capreolus")]["zero_rule"] == (
+        "historische_reconstructie_geen_afwezigheidsbewijs"
+    )
+    assert daz_by_key[(102, "Capreolus capreolus")]["value_status"] == (
+        "historisch_afgeleid_geen_afwezigheidsbewijs"
+    )
 
     sovon_matrix = module.build_sovon_avimap_daz_matrix([
         {"visit_id": 11, "taxon": "Konijn", "count": 2},
@@ -1623,6 +1631,11 @@ def main() -> int:
     assert "geen_nulafleiding" in SCHEMA.read_text(encoding="utf-8")
     assert "aantal_buiten_plot" in SCHEMA.read_text(encoding="utf-8")
     assert "geen_nulafleiding_sovon_positief" in SCHEMA.read_text(encoding="utf-8")
+    assert "historische_afgeleide_nul" in SCHEMA.read_text(encoding="utf-8")
+    assert (
+        "historische_reconstructie_geen_afwezigheidsbewijs"
+        in SCHEMA.read_text(encoding="utf-8")
+    )
     assert module.SOVON_AVIMAP_TABLE_PREFIX == "Meijendel.sovon_avimap"
     assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
     assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"
@@ -1770,6 +1783,8 @@ def main() -> int:
     else:
         raise AssertionError("Een afwijkende konijnentellingclassificatie is niet geblokkeerd")
     module.validate_daz_bmp_reconstruction(dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED))
+    assert module.DAZ_BMP_RECONSTRUCTION_EXPECTED["true_zero_rows"] == 0
+    assert module.DAZ_BMP_RECONSTRUCTION_EXPECTED["historical_derived_zero_rows"] == 7552
     broken_daz = dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED)
     broken_daz["true_zero_rows"] -= 1
     try:

@@ -1000,7 +1000,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek (
   ) NOT NULL,
   eenduidig_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   ambigu_kandidaatrecordaantal SMALLINT UNSIGNED NOT NULL,
-  nulbereikstatus ENUM('zeven_daz_doelsoorten','geen_nulafleiding') NOT NULL,
+  nulbereikstatus ENUM(
+    'zeven_daz_doelsoorten',
+    'geen_nulafleiding',
+    'historische_reconstructie_geen_afwezigheidsbewijs'
+  ) NOT NULL,
   inspanningstatus ENUM('bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk') NOT NULL,
   kwaliteitsnotitie VARCHAR(750) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -1067,18 +1071,30 @@ CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek_taxon (
   bezoek_id INT NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
-  waarnemingsstatus ENUM('waargenomen','echte_nul','onbepaald_ambigu') NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen',
+    'echte_nul',
+    'historische_afgeleide_nul',
+    'onbepaald_ambigu'
+  ) NOT NULL,
   aantal INT UNSIGNED DEFAULT NULL,
   aantal_buiten_plot INT UNSIGNED NOT NULL DEFAULT 0,
   bronwaarde_raw VARCHAR(64) DEFAULT NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   ambigu_recordaantal SMALLINT UNSIGNED NOT NULL,
-  telwaardestatus ENUM('exact','minimum_door_ambiguiteit','echte_nul','niet_toewijsbaar') NOT NULL,
+  telwaardestatus ENUM(
+    'exact',
+    'minimum_door_ambiguiteit',
+    'echte_nul',
+    'historisch_afgeleid_geen_afwezigheidsbewijs',
+    'niet_toewijsbaar'
+  ) NOT NULL,
   nulregel ENUM(
     'bevestigde_daz_deelname',
     'niet_van_toepassing_bijvangst',
     'geblokkeerd_door_ambigu_record',
-    'geen_nulafleiding_sovon_positief'
+    'geen_nulafleiding_sovon_positief',
+    'historische_reconstructie_geen_afwezigheidsbewijs'
   ) NOT NULL,
   kwaliteitsnotitie VARCHAR(750) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
@@ -1092,10 +1108,19 @@ CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek_taxon (
     (waarnemingsstatus='waargenomen'
       AND (aantal>0 OR aantal_buiten_plot>0) AND bronrecordaantal>0)
     OR
-    (waarnemingsstatus='echte_nul' AND aantal=0 AND bronrecordaantal=0
+    (waarnemingsstatus='echte_nul' AND aantal=0 AND aantal_buiten_plot=0
+      AND bronrecordaantal=0
       AND ambigu_recordaantal=0 AND doelrelatie='doelsoort')
     OR
+    (waarnemingsstatus='historische_afgeleide_nul' AND aantal=0
+      AND aantal_buiten_plot=0
+      AND bronrecordaantal=0 AND ambigu_recordaantal=0
+      AND doelrelatie='doelsoort'
+      AND telwaardestatus='historisch_afgeleid_geen_afwezigheidsbewijs'
+      AND nulregel='historische_reconstructie_geen_afwezigheidsbewijs')
+    OR
     (waarnemingsstatus='onbepaald_ambigu' AND aantal IS NULL
+      AND aantal_buiten_plot=0
       AND bronrecordaantal=0 AND ambigu_recordaantal>0 AND doelrelatie='doelsoort')
   )
 ) ENGINE=InnoDB;

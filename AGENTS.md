@@ -420,14 +420,17 @@ MySQL:
   volledigheidsstatus. Leid daaruit geen aanvullende nullen af
 - gebruik voor DAZ-BMP-protocol `17.204` reconstructieversie
   `ndff-daz-bmp-v1` en de vier openbare tabellen
-  `Meijendel.ndff_daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van
+  `Meijendel.daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van
   de BMP-vogeltellers dat aan DAZ deelnam; het zijn geen vogelwaarnemingen.
   Beschouw een BMP-bezoek alleen als deelnemend wanneer minstens één
   17.204-record eenduidig op datum en SOVON-plot aan dat bezoek is gekoppeld.
-  Leid alleen binnen zo'n bevestigd bezoek echte nullen af voor de zeven
-  DAZ-doelsoorten. Een meervoudig koppelbaar record van hetzelfde taxon
-  blokkeert die nul. Leid nooit nullen af voor bijvangsten of voor overige
-  BMP-bezoeken. Controleer vóór gebruik met `--audit-daz-bmp`
+  De 7.552 eerder voor de zeven DAZ-doelsoorten afgeleide nulregels blijven
+  onder `ndff-daz-bmp-v1` uitsluitend als historisch auditspoor bewaard; zij
+  zijn niet geschikt als bewezen afwezigheid. Leid uit deze historische
+  reconstructie geen nieuwe nullen af. Een meervoudig koppelbaar record van
+  hetzelfde taxon blijft afzonderlijk herkenbaar. Leid nooit nullen af voor
+  bijvangsten of voor overige BMP-bezoeken. Controleer vóór gebruik met
+  `--audit-daz-bmp`
 - gebruik vanaf 13 september 2026 voor DAZ-BMP primair de originele
   SOVON/AVIMAP-laag `sovon_avimap_*` met regelversie
   `sovon-avimap-daz-v1`. `ndff-daz-bmp-v1` blijft alleen een historische,

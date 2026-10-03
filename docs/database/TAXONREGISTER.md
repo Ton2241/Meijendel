@@ -274,14 +274,33 @@ kan worden gekoppeld. In 1988-2004 leverde dit geen ontbrekende koppeling op.
 
 De vier historische tabellen `ndff_daz_bmp_*` zijn op 3 oktober 2026 atomisch
 hernoemd naar `daz_bmp_*`. De 27.923 bestaande rijen, foreign keys en centrale
-taxonroutes bleven behouden. Voor controlejaar 2005 zijn vervolgens 79
-ontbrekende positieve SOVON-zoogdierregels met samen 281 dieren op 44 bestaande
-BMP-bezoeken toegevoegd onder `sovon-bmp-jaarbestanden-v1`. Zij gebruiken vijf
-versiegebonden centrale taxonkoppelingen; alle 79 regels zijn via
-`taxa_bronkoppeling`, `taxa` en `taxon_groepen` bereikbaar. Er zijn geen nullen
-afgeleid. Twintig SOVON-waarden waren gelijk aan de bestaande NDFF-afleiding.
-Twee Konijnwaarden in M16 verschillen en zijn niet gewijzigd: bezoek 365793
-heeft SOVON 2 tegenover NDFF 9; bezoek 365789 heeft SOVON 1 tegenover NDFF 3.
+taxonroutes bleven behouden. Het SOVON-bestand voor controlejaar 2005 bevat 101
+positieve zoogdierregels. Twintig waarden waren gelijk aan de bestaande
+NDFF-afleiding en zijn niet gedupliceerd. Onder
+`sovon-bmp-jaarbestanden-v1` zijn 81 aanvullende regels met 284 dieren op 46
+bestaande BMP-bezoeken opgenomen: 79 werkelijk ontbrekende waarden en twee
+afwijkende Konijnwaarden voor M16. Bezoek 365793 heeft SOVON 2 naast NDFF 9;
+bezoek 365789 heeft SOVON 1 naast NDFF 3. Het historische NDFF-auditspoor
+blijft staan en bij gecombineerd gebruik is SOVON leidend. De vijf gebruikte
+versiegebonden taxonkoppelingen maken alle 81 regels bereikbaar via
+`taxa_bronkoppeling`, `taxa` en `taxon_groepen`. Er zijn geen nullen afgeleid.
+
+De 7.552 onder `ndff-daz-bmp-v1` afgeleide nullen zijn na inhoudelijk besluit
+herclassificeerd als `historische_afgeleide_nul`. De 1.475 bijbehorende
+bezoeken dragen eveneens de status dat deze reconstructie geen bewijs van
+afwezigheid levert. Alle rijen en centrale koppelingen zijn behouden; de
+DAZ-audit rapporteert nul `echte_nul`-regels en 7.552 historische afleidingen.
+
+Voor controlejaar 2006 zijn 123 aanvullende positieve SOVON-regels met 523
+dieren op 72 bestaande BMP-bezoeken toegevoegd. Daaronder staan acht
+afwijkende SOVON-bezoektotalen naast het NDFF-auditspoor. Zij zijn centraal
+verbonden, leiden geen nullen af en zijn voor gecombineerd gebruik leidend.
+
+Voor controlejaar 2007 zijn 137 aanvullende positieve SOVON-regels met 649
+dieren op 75 bestaande BMP-bezoeken toegevoegd. Negen gebruikte taxa zijn via
+versiegebonden bronroutes centraal bereikbaar; iedere nieuwe regel heeft een
+geldige `taxon_bronkoppeling_id`. Elf positieve bronverschillen zijn niet
+ingevoerd en blijven afzonderlijk ter beslissing staan.
 
 Vóór de hernoeming is de tabelgroep afzonderlijk geëxporteerd naar
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-daz-bmp-before-rename-20261003.sql`;

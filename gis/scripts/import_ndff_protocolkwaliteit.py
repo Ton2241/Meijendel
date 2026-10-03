@@ -444,7 +444,8 @@ DAZ_BMP_RECONSTRUCTION_EXPECTED = {
     "confirmed_plots": 49,
     "target_matrix_rows": 10325,
     "target_positive_rows": 2681,
-    "true_zero_rows": 7552,
+    "true_zero_rows": 0,
+    "historical_derived_zero_rows": 7552,
     "ambiguous_target_rows": 92,
     "target_count_sum": 12685,
     "bycatch_positive_rows": 49,
@@ -1575,11 +1576,12 @@ def build_daz_bmp_matrix(
     positive_counts: dict[tuple[int, str], tuple[int, int]],
     ambiguous_counts: dict[tuple[int, str], int],
 ) -> list[dict[str, object]]:
-    """Bouw de DAZ-matrix voor aantoonbaar deelnemende BMP-bezoeken.
+    """Bouw het historische DAZ-auditspoor voor gekoppelde BMP-bezoeken.
 
     Een eenduidig gekoppelde positieve 17.204-regel bewijst deelname. Voor de
-    zeven DAZ-doelsoorten is ontbreken dan een echte nul, behalve als een
-    meervoudig koppelbaar record van hetzelfde taxon die nul onzeker maakt.
+    zeven DAZ-doelsoorten werd ontbreken eerder als nul afgeleid. Die afleiding
+    blijft als historisch auditspoor herkenbaar, maar is geen bewezen
+    afwezigheid. Een meervoudig koppelbaar record blijft afzonderlijk onzeker.
     Bijvangsten krijgen uitsluitend positieve regels en nooit afgeleide nullen.
     """
     rows: list[dict[str, object]] = []
@@ -1598,10 +1600,10 @@ def build_daz_bmp_matrix(
                 value = None
                 zero_rule = "geblokkeerd_door_ambigu_record"
             else:
-                status = "echte_nul"
-                value_status = "echte_nul"
+                status = "historische_afgeleide_nul"
+                value_status = "historisch_afgeleid_geen_afwezigheidsbewijs"
                 value = 0
-                zero_rule = "bevestigde_daz_deelname"
+                zero_rule = "historische_reconstructie_geen_afwezigheidsbewijs"
             rows.append({
                 "visit_id": visit_id, "taxon": taxon, "relation": "doelsoort",
                 "status": status, "count": value, "source_records": source_records,
@@ -4300,7 +4302,7 @@ def reconstruct_daz_bmp(
     mysql_client: Path,
     client_args: list[str],
 ) -> dict[str, int]:
-    """Reconstructeer DAZ-deelname en echte nullen binnen bekende BMP-bezoeken."""
+    """Reconstructeer het historische DAZ-auditspoor binnen bekende BMP-bezoeken."""
     query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
     source_output = run_mysql(mysql_client, query_args, daz_bmp_source_sql(), capture=True)
     source: dict[int, dict[str, object]] = {}
@@ -4375,7 +4377,8 @@ def reconstruct_daz_bmp(
     visit_note = (
         "DAZ-deelname is bevestigd door minimaal één eenduidig aan dit BMP-bezoek "
         "gekoppeld positief 17.204-record. Niet-bevestigde BMP-bezoeken worden niet "
-        "als DAZ-bezoek gebruikt. BMP-bezoektijd is bekend; afzonderlijke DAZ-inspanning niet."
+        "als DAZ-bezoek gebruikt. BMP-bezoektijd is bekend; afzonderlijke DAZ-inspanning niet. "
+        "Niet-gemelde doelsoorten zijn historisch afgeleid en gelden niet als bewezen afwezigheid."
     )
     for visit_id in sorted(confirmed_visits):
         meta = visit_meta[visit_id]
@@ -4384,7 +4387,8 @@ def reconstruct_daz_bmp(
             f"{sql_text(str(meta['date']))},{int(str(meta['date'])[:4])},"
             "'bevestigd_door_positieve_17_204',"
             f"{unique_records_by_visit[visit_id]},{ambiguous_records_by_visit[visit_id]},"
-            "'zeven_daz_doelsoorten','bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk',"
+            "'historische_reconstructie_geen_afwezigheidsbewijs',"
+            "'bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk',"
             f"{sql_text(visit_note)})"
         )
 
@@ -11187,6 +11191,7 @@ SELECT JSON_OBJECT(
   'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
   'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
   'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'historical_derived_zero_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='historische_afgeleide_nul'),
   'ambiguous_target_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='onbepaald_ambigu'),
   'target_count_sum',(SELECT SUM(aantal) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
   'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
@@ -11195,7 +11200,7 @@ SELECT JSON_OBJECT(
   'secure_source_records',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE protocol LIKE '17.204%'),
   'secure_linked_to_public',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register r JOIN Meijendel_ndff_secure.ndff_open_secure_koppeling k ON k.secure_waarneming_id=r.waarneming_id WHERE r.protocol LIKE '17.204%' AND k.open_waarneming_id IS NOT NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables})),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='historische_afgeleide_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort' OR telwaardestatus<>'historisch_afgeleid_geen_afwezigheidsbewijs' OR nulregel<>'historische_reconstructie_geen_afwezigheidsbewijs')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
 );
 """
 

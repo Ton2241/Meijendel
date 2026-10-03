@@ -1,5 +1,51 @@
 # Besluiten
 
+- Op 3 oktober 2026 zijn de 7.552 onder reconstructieversie
+  `ndff-daz-bmp-v1` afgeleide nulregels herclassificeerd als
+  `historische_afgeleide_nul`. De 1.475 bijbehorende BMP-bezoeken hebben nu
+  nulbereikstatus `historische_reconstructie_geen_afwezigheidsbewijs`. Alle
+  bronregels, positieve waarden, ambigue koppelingen en relaties zijn als
+  auditspoor behouden; geen van deze 7.552 regels mag nog als bewezen
+  afwezigheid worden gebruikt.
+
+- De twee in 2005 afwijkende positieve Konijnwaarden uit de SOVON-download
+  zijn op 3 oktober 2026 naast de historische NDFF-waarden opgenomen onder
+  `sovon-bmp-jaarbestanden-v1`: bezoek 365789 bevat SOVON 1 naast NDFF 3 en
+  bezoek 365793 bevat SOVON 2 naast NDFF 9. Beide bronwaarden blijven
+  zichtbaar; SOVON is bij gecombineerd gebruik leidend. De SOVON-laag voor
+  2005 omvat daarmee 81 aanvullende bezoek-taxonregels met 284 dieren op 46
+  bezoeken. De 20 reeds gelijke bronwaarden zijn niet gedupliceerd.
+
+- Controlejaar 2005 is voor vogels afgerond. De 111 ontvangen bezoeken zijn
+  veld voor veld gelijk aan `dagbezoeken_bmp`; 1.156 positieve waarden zijn
+  gelijk aan `territoria`. De 1.999 letterlijke, niet-conflicterende
+  SOVON-nullen zijn als `territoria = 0` met SOVON-herkomst toegevoegd. De
+  1.766 lege cellen zijn niet ingevoerd. De puntenlaag bevat nul features.
+
+- Controlejaar 2006 is afgerond. De
+  172 bezoeken en 1.069 positieve vogelwaarden zijn gelijk; 1.865 letterlijke
+  SOVON-nullen zijn toegevoegd en 1.987 lege cellen niet. De puntenlaag bevat
+  nul features. Van 159 positieve zoogdierregels waren er 36 gelijk, 112
+  werkelijk ontbrekend en drie alleen in strijd met een historische afgeleide
+  nul. Die 115 aanvullende regels met samen 466 dieren op 68 bezoeken zijn
+  onder `sovon-bmp-jaarbestanden-v1` toegevoegd. Op besluit van 3 oktober 2026
+  zijn ook de acht afwijkende SOVON-bezoektotalen afzonderlijk opgenomen. De
+  SOVON-laag voor 2006 bevat daardoor 123 regels met 523 dieren op 72 bezoeken.
+  De NDFF-bronregels blijven als auditspoor staan; bij gecombineerd gebruik is
+  het geconsolideerde SOVON-bezoektotaal leidend en worden beide waarden nooit
+  opgeteld.
+
+- Controlejaar 2007 is op 3 oktober 2026 verwerkt tot een nieuw bronbesluit.
+  Alle 172 bezoeken en 1.166 positieve vogelwaarden zijn gelijk. De 1.924
+  letterlijke SOVON-nullen zijn aan `territoria` toegevoegd; 1.831 lege cellen
+  niet. Van 249 positieve zoogdierregels waren 101 al gelijk. Er zijn 137
+  aanvullende SOVON-regels met 649 dieren op 75 bezoeken toegevoegd, waaronder
+  één positieve regel naast een onbepaalde NDFF-koppeling. Elf verschillen
+  tussen positieve telwaarden zijn niet ingevoerd. Voor M6 vermeldt de download
+  `JASQ00`, maar het verslag noemt T. Lansink voor M6 en M61; de database koppelt
+  beide aan `ALNK00`. M83, dat het verslag aan J. van As koppelt, draagt in de
+  database `JASQ00`. De tellerkoppeling van M6 blijft daarom ongewijzigd.
+
 - Op 3 oktober 2026 is de algemene bronregel voor de verdere SOVON-
   jaarcontroles aangescherpt. Werkelijk aanvullende gegevens uit de officiële
   download mogen aan de bestaande Meijendel-kerntabellen worden toegevoegd,
@@ -48,15 +94,14 @@
   van 279 tabellen en 128 taxonroutes geeft daarna nul fouten.
 
 - Voor controlejaar 2005 bevat het SOVON-bezoektotalenbestand 101 positieve
-  zoogdierregels op 58 bestaande BMP-bezoeken in zeven plots. Vergelijking op
-  bezoek en centraal taxon geeft 20 gelijke waarden, 79 ontbrekende waarden en
-  twee telconflicten. De 79 ontbrekende waarden, samen 281 dieren op 44
-  bezoeken, zijn onder `sovon-bmp-jaarbestanden-v1` in `daz_bmp_bezoek` en
-  `daz_bmp_bezoek_taxon` toegevoegd. Zij zijn als incidentele positieve
-  nevenwaarnemingen opgeslagen; er zijn geen nullen of DAZ-deelnamevoorwaarden
-  uit afgeleid. De twee conflicten zijn niet gewijzigd: bezoek 365793,
-  M16 (`plot_id = 3512`), Konijn, SOVON 2 tegenover NDFF 9; en bezoek 365789,
-  hetzelfde plot en taxon, SOVON 1 tegenover NDFF 3.
+  zoogdierregels op 58 bestaande BMP-bezoeken in zeven plots. Twintig waarden
+  waren al gelijk en zijn niet gedupliceerd. De overige 81 waarden met 284
+  dieren op 46 bezoeken zijn onder `sovon-bmp-jaarbestanden-v1` in
+  `daz_bmp_bezoek` en `daz_bmp_bezoek_taxon` toegevoegd. Zij zijn als
+  incidentele positieve nevenwaarnemingen opgeslagen; er zijn geen nullen of
+  DAZ-deelnamevoorwaarden uit afgeleid. De twee afwijkende Konijnwaarden staan
+  naast het historische NDFF-auditspoor; SOVON is bij gecombineerd gebruik
+  leidend.
 
 - Op 3 oktober 2026 gelden voor alle volgende SOVON-jaarcontroles drie algemene
   uitvoeringsbesluiten. Ten eerste worden letterlijke SOVON-nullen zonder

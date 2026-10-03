@@ -1,5 +1,13 @@
 # TODO
 
+- Beslis over elf positieve zoogdiertelconflicten in controlejaar 2007. Het
+  betreft zeven Konijnwaarden en vier Reewaarden op tien bezoeken in M2, M14,
+  M75, M77 en M75a. Bezoek-ID, kavel, datum, tijd en soort zijn gelijk; alleen
+  het geconsolideerde SOVON-bezoektotaal wijkt af van de som van de secundaire
+  NDFF-bronregels. Beslis tevens of het voor 2005 en 2006 genomen besluit dat
+  SOVON leidend is voortaan algemeen op dit terugkerende verschil van toepassing
+  is.
+
 ## Nu open
 
 ### SOVON-BMP jaar-voor-jaarvergelijking
@@ -40,14 +48,25 @@
   Bestaande Meijendelregels die geen positieve of nulwaarde in de download
   hebben, zijn ongemoeid gelaten: 1.309 `jrvslg_m`-regels en 70
   `meeuwen_literatuur`-regels uit 1984-2004.
-- Controlejaar 2005 is voor de zoogdierregels gedeeltelijk verwerkt. De vier
-  tabellen heten nu `daz_bmp_*`; 79 ontbrekende positieve SOVON-regels met
-  samen 281 dieren op 44 bestaande BMP-bezoeken zijn toegevoegd zonder
-  nulafleiding. Twintig waarden waren al gelijk. Open besluit: Konijn op
-  bezoek 365793 in M16 staat als 2 in SOVON en 9 in de NDFF-reconstructie;
-  bezoek 365789 staat als 1 in SOVON en 3 in de NDFF-reconstructie. Beide
-  bestaande waarden en beide SOVON-conflicten zijn ongemoeid gelaten. Na het
-  besluit volgen de 1.999 niet-conflicterende vogelnullen en de rest van 2005.
+- Controlejaar 2005 is afgerond. De 111 bezoeken en 1.156 positieve
+  vogelwaarden waren gelijk; 1.999 letterlijke nullen zijn toegevoegd en
+  1.766 lege cellen niet. De puntenlaag bevat nul features. In `daz_bmp_*`
+  staan 81 aanvullende positieve SOVON-regels met 284 dieren op 46 bezoeken.
+  Daaronder staan de twee afwijkende Konijnwaarden naast het historische
+  NDFF-auditspoor; SOVON is voor gecombineerd gebruik leidend.
+- Controlejaar 2006 is afgerond. De 172
+  bezoeken en 1.069 positieve vogelwaarden waren gelijk; 1.865 letterlijke
+  nullen zijn toegevoegd en 1.987 lege cellen niet. De puntenlaag bevat nul
+  features. In `daz_bmp_*` zijn 123 aanvullende positieve SOVON-regels met
+  523 dieren op 72 bezoeken toegevoegd. De acht afwijkende SOVON-waarden staan
+  naast het NDFF-auditspoor en zijn voor gecombineerd gebruik leidend.
+- Controlejaar 2007 is verwerkt tot het hierboven genoemde besluit. Alle 172
+  bezoeken en 1.166 positieve vogelwaarden zijn gelijk. De 1.924 letterlijke
+  nullen zijn toegevoegd; 1.831 lege cellen niet. Van 249 positieve
+  zoogdierregels waren 101 al gelijk en zijn 137 aanvullende regels met 649
+  dieren op 75 bezoeken toegevoegd. Elf positieve telverschillen zijn niet
+  ingevoerd. SOVON vermeldt voor M6 ten onrechte teller `JASQ00`; het verslag
+  en de database bevestigen `ALNK00`, zodat `plot_jaar_teller` ongewijzigd is.
 - Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: alle werkelijk aanvullende
   SOVON-gegevens mogen in de bestaande Meijendel-kerntabellen worden
   toegevoegd. Bestaande Meijendelgegevens blijven staan wanneer zij in de
