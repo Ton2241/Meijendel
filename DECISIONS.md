@@ -1,5 +1,52 @@
 # Besluiten
 
+- Op 3 oktober 2026 gelden voor alle volgende SOVON-jaarcontroles drie algemene
+  uitvoeringsbesluiten. Ten eerste worden letterlijke SOVON-nullen zonder
+  conflict met een leidende bestaande bron rechtstreeks als `territoria = 0`
+  met SOVON als bron opgenomen. Ten tweede worden geaggregeerde vermeldingen
+  van niet-bruikbare waarnemingen niet als individuele formeel afgekeurde
+  waarnemingen gereconstrueerd wanneer bron-ID, bezoek, datum, broedcode en
+  locatie ontbreken. Ten derde blijft `plot_jaar_teller` leeg wanneer zowel de
+  Meijendel-database als de gecontroleerde SOVON-download voor een plotjaar geen
+  tellercode bevatten. Deze regels nemen alleen terugkerende uitvoeringsvragen
+  weg; ieder jaar wordt nog steeds eerst volledig vergeleken en nieuwe soorten
+  verschillen worden afzonderlijk voorgelegd.
+
+- Op 3 oktober 2026 is SOVON-controlejaar 1987 met de levende kerntabellen
+  vergeleken en volgens de algemene uitvoeringsbesluiten verwerkt. Alle 328
+  ontvangen bezoeken zijn gelijk aan `dagbezoeken_bmp`; er is geen bezoek
+  toegevoegd. De vogelmatrix bevat 1.088 positieve waarden, 1.788 letterlijke
+  nulcellen en 2.116 lege cellen. Van de positieve waarden zijn 1.081 gelijk
+  aan bestaande SOVON-regels. De zeven overige waarden zijn meeuwenaantallen
+  voor M15, M16 en M8 en zijn niet toegevoegd, omdat `meeuwen_literatuur`
+  leidend blijft. Alle 1.788 nullen waren niet-conflicterend en zijn als
+  `territoria = 0` met SOVON als bron toegevoegd. De 2.116 lege cellen zijn
+  geen nullen en zijn niet ingevoerd. Het bezoektotalenbestand bevat 1.091
+  soort-plotregels met elk één niet-bruikbare waarneming, maar geen individuele
+  bron-ID, bezoek, datum, broedcode, locatie of formele afkeurstatus; er is
+  daarom geen afgekeurde individuele waarneming gereconstrueerd. M66 HGC mist
+  in download en database een tellercode en blijft leeg. M8 heeft wel
+  resultaten, maar geen bezoekregels in de download of `dagbezoeken_bmp`; het
+  jaarverslag bevestigt twaalf BMP-bezoeken door R. Wanders. Deze bezoeken zijn
+  niet uit het jaarverslag als SOVON-bezoeken gereconstrueerd.
+
+- Op 3 oktober 2026 is SOVON-controlejaar 1986 met de levende kerntabellen
+  vergeleken en volgens de algemene uitvoeringsbesluiten verwerkt. Alle 305
+  bezoeken in 25 plots zijn gelijk aan `dagbezoeken_bmp`; er is geen bezoek
+  toegevoegd. De vogelmatrix bevat 925 positieve waarden, 1.422 letterlijke
+  nulcellen en 2.645 lege cellen. Van de positieve waarden zijn 919 gelijk aan
+  bestaande SOVON-regels. De zes overige positieve waarden zijn meeuwen en
+  zijn niet toegevoegd omdat `meeuwen_literatuur` leidend blijft. Van de
+  letterlijke nullen zijn 1.417 als `territoria = 0` met SOVON als bron
+  toegevoegd. Vijf meeuwennullen zijn wegens positieve waarden uit
+  `meeuwen_literatuur` niet ingevoerd. De 2.645 lege cellen zijn geen nullen en
+  zijn niet ingevoerd. De aggregaatkolom vermeldt bij 927 soort-plotregels
+  telkens één niet-bruikbare waarneming, dus 927 aggregaatvermeldingen, maar
+  zonder individuele bron-ID, bezoek,
+  datum, broedcode, locatie of formele afkeurstatus; er is daarom geen
+  afgekeurde individuele waarneming gereconstrueerd. Voor M66 HGC ontbreekt een
+  tellercode in zowel download als database; het veld blijft leeg.
+
 - Op 3 oktober 2026 is besloten dat `territoria` uitsluitend werkelijk door de
   bron geleverde territoriumwaarden bevat. Letterlijke nulcellen uit een
   SOVON-download worden met SOVON als bron ingevoerd. Ontbrekende matrixregels
@@ -88,10 +135,10 @@
   M66 (Haagsche Golf Club, `plot_id = 3503`) en M91 (Voorlinden,
   `plot_id = 3514`) hebben `in_scope = 0`, beide met de reden `Geen onderdeel
   van Natura 2000-analysegebied.` De geldige bronregels blijven bewaard. In
-  `territoria` gaat het om 1.669 regels uit 39 jaren (1985–2025) voor M66 en
+  `territoria` gaat het om 1.802 regels uit 39 jaren (1985–2025) voor M66 en
   774 regels uit 18 jaren (1993–2021) voor M91. De standaardselectie bevat
-  daardoor 70.815 territoriumregels in 52 territoriumplots en 2.111 plotjaren
-  uit 1958–2025; de ruwe tabel bevat 73.258 regels in 54 territoriumplots en
+  daardoor 73.887 territoriumregels in 52 territoriumplots en 2.111 plotjaren
+  uit 1958–2025; de ruwe tabel bevat 76.463 regels in 54 territoriumplots en
   2.168 plotjaren uit 1958–2025. Alle repositoryberekeningen filteren
   standaard via deze centrale scope. Alleen een uitdrukkelijke selectie van
   M66 en/of M91 mag daarvan afwijken, in R via argument

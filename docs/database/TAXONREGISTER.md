@@ -198,6 +198,44 @@ waarden en 1.385 nullen. Alle nieuwe nulregels blijven via de bestaande
 `soorten`-route centraal taxonomisch bereikbaar; de centrale nacontrole omvat
 128 taxonroutes en geeft nul fouten.
 
+Voor controlejaar 1986 bevat de download 305 bezoeken in 25 plots. Alle 305
+zijn op bron-ID en inhoud gelijk aan `dagbezoeken_bmp`. De vogelmatrix bevat
+925 positieve waarden, 1.422 letterlijke nullen en 2.645 lege cellen. Van de
+positieve waarden zijn 919 gelijk aan bestaande SOVON-regels. De zes overige
+positieve waarden zijn meeuwen en blijven buiten de SOVON-invoer omdat
+`meeuwen_literatuur` leidend is. Van de 1.422 letterlijke nullen zijn 1.417 als
+SOVON-regel toegevoegd; vijf meeuwennullen botsen met positieve waarden uit
+`meeuwen_literatuur` en zijn niet toegevoegd. `territoria` bevat daarna 74.675
+regels. De 2.336 SOVON-regels uit 1986 bestaan uit 919 positieve waarden en
+1.417 nullen. Alle 2.336 regels zijn via `soorten`, `taxa_bronkoppeling`,
+`taxa` en `taxon_groepen` als vogels bereikbaar. De volledige levende
+taxonregistercontrole `test_taxonregister_live_schema.py` geeft na de invoer
+nul fouten.
+
+Voor controlejaar 1987 bevat de download 328 bezoeken; alle 328 zijn op
+bron-ID en inhoud gelijk aan `dagbezoeken_bmp`. De vogelmatrix bevat 1.088
+positieve waarden, 1.788 letterlijke nullen en 2.116 lege cellen. Van de
+positieve waarden zijn 1.081 gelijk aan bestaande SOVON-regels. De zeven
+overige waarden zijn meeuwen en blijven buiten de SOVON-invoer omdat
+`meeuwen_literatuur` leidend is. Alle 1.788 letterlijke nullen waren
+niet-conflicterend en zijn als SOVON-regel toegevoegd. `territoria` bevat
+daarna 76.463 regels. De 2.869 SOVON-regels uit 1987 bestaan uit 1.081
+positieve waarden en 1.788 nullen. Alle 2.869 regels zijn via `soorten`,
+`taxa_bronkoppeling`, `taxa` en `taxon_groepen` als vogels bereikbaar. De
+volledige levende taxonregistercontrole omvat na de invoer 128 routes en geeft
+nul fouten.
+
+De algemene besluiten van 3 oktober 2026 gelden voor alle volgende
+jaarcontroles: niet-conflicterende letterlijke SOVON-nullen worden opgenomen;
+aggregaatvermeldingen zonder individuele bron-ID, bezoek, datum, broedcode en
+locatie worden niet als formeel afgekeurde individuele waarnemingen
+gereconstrueerd; en `plot_jaar_teller` blijft leeg wanneer zowel database als
+download geen tellercode geven. Voor 1986 betreft dit 927 soort-plotregels die
+elk één niet-bruikbare waarneming als aggregaat vermelden, en het
+ontbrekende tellerveld voor M66 HGC. Voor 1987 betreft dit 1.091 zulke
+aggregaatvermeldingen en opnieuw het ontbrekende tellerveld voor M66 HGC.
+Nieuwe soorten verschillen blijven buiten deze algemene toestemming.
+
 Vóór de 1984-correctie is een volledige back-up gemaakt:
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
 4,0 GB, SHA-256
@@ -207,6 +245,14 @@ gericht veiliggesteld in
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1985-reconcile-20261003.sql`,
 3,4 MB, SHA-256
 `e7cabd0ea5644ad6cea3f350e2736e390d770a38ff6b683059670762d19bf730`.
+Vóór de 1986-correctie is opnieuw een volledige back-up gemaakt:
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1986-reconcile-20261003.sql`,
+4,0 GB, SHA-256
+`61b14c76d6b6f989b5f82a6a2b4c5a6533b0cd9cc849796b85282d9a156e9b71`.
+Vóór de 1987-correctie is `territoria` gericht veiliggesteld in
+`/Users/ton/Documents/Backups/Meijendel/Meijendel-territoria-before-sovon-1987-reconcile-20261003.sql`,
+3,4 MB, SHA-256
+`368b86e17095dc803b5045208832dddbb2f76595db4f1f39ae364eddec404805`.
 De eerdere structuurback-ups blijven als herstelbewijs van de tussenstanden
 bestaan. Er is niets naar de VPS gepubliceerd.
 

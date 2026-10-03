@@ -15,10 +15,33 @@
   1.385 aan `territoria` toegevoegd; M4-5/Zilvermeeuw bleef 55 uit
   `meeuwen_literatuur`. De drie besloten tellerkoppelingen voor M35 en M16s
   zijn toegevoegd. Lege cellen zijn niet ingevoerd.
-- Volgende stap is uitsluitend de vergelijking van 1986. Eerst feiten en
+- 1986 is vergeleken en verwerkt. Alle 305 bezoeken en 919 positieve
+  niet-meeuwresultaten zijn gelijk. Van 1.422 letterlijke SOVON-nullen zijn
+  1.417 aan `territoria` toegevoegd; vijf meeuwennullen en zes positieve
+  meeuwenwaarden zijn wegens `meeuwen_literatuur` niet ingevoerd. De 2.645
+  lege cellen zijn geen nullen. De 927 geaggregeerde niet-bruikbare
+  vermeldingen zijn niet tot individuele bronregels te herleiden en daarom niet
+  als formeel afgekeurd gereconstrueerd. Voor M66 HGC ontbreekt in download en database een
+  tellercode; `plot_jaar_teller` blijft daar leeg.
+- 1987 is vergeleken en verwerkt. Alle 328 ontvangen bezoeken en 1.081
+  positieve niet-meeuwresultaten zijn gelijk. Alle 1.788 letterlijke
+  SOVON-nullen waren niet-conflicterend en zijn aan `territoria` toegevoegd.
+  Zeven positieve meeuwenwaarden zijn wegens `meeuwen_literatuur` niet
+  ingevoerd. De 2.116 lege cellen zijn geen nullen. De 1.091 geaggregeerde
+  niet-bruikbare vermeldingen zijn niet als formeel afgekeurd gereconstrueerd.
+  M66 HGC blijft zonder tellercode. M8 heeft wel resultaten maar geen
+  bezoekregels in download of database; het jaarverslag bevestigt twaalf
+  bezoeken. Die verslagbezoeken zijn niet als SOVON-data gereconstrueerd.
+- Volgende stap is uitsluitend de vergelijking van 1988. Eerst feiten en
   verschillen vaststellen; daarna alleen waar nodig een afzonderlijk gevraagd
   besluit. Geen volgend jaar verwerken voordat de uitkomst van het vorige jaar
   is besproken.
+- Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: niet-conflicterende
+  letterlijke SOVON-nullen worden zonder nieuwe jaarbeslissing opgenomen;
+  niet tot individuele bronregels herleidbare aggregaatvermeldingen worden niet
+  als formeel afgekeurd gereconstrueerd; en een tellerveld blijft leeg wanneer
+  download én database geen tellercode bevatten. Nieuwe soorten verschillen
+  blijven een afzonderlijk besluit vragen.
 - Besloten op 3 oktober 2026: `territoria` bevat alleen werkelijk door de bron
   geleverde territoriumwaarden. Voor SOVON worden dus wel letterlijke
   nulcellen ingevoerd, maar nooit nullen die uit de officiële soortenlijst,
