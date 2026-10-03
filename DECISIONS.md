@@ -288,23 +288,26 @@
   Event-, Occurrence- of Taxonbetekenis volgens Darwin Core of TDWG TCS. Geen
   VPS-publicatie.
 
-- Op 1 oktober 2026 is de goedkeuringsstatus van de vogelterritoria nader
-  vastgesteld. De inhoudelijke regel blijft dat `territoria` uitsluitend
-  formele territoria uit goedgekeurde tellingen hoort te bevatten. De
-  data-eigenaar heeft elf plotjaren als afgekeurd vastgesteld: 2009/M35,
-  2009/M36, 2012/M105, 2012/M54a, 2015/M53, 2018/M54b, 2018/M55,
-  2019/M78/79, 2019/M8, 2021/M61 en 2022/M1a. Acht daarvan stonden in
-  `territoria`. In totaal zijn 142 regels met 1.017 territoria, na gerichte
-  herstelkopieën, uit de levende tabel verwijderd. Voor 2012/M105, 2015/M53
-  en 2021/M61 stonden al geen territoriumregels in de tabel. `territoria`
-  bevat daarna 71.013 regels; geen van de elf afgekeurde plotjaren komt er nog
-  in voor. Wel vervalt 2016/M62 (1 regel,
-  1 territorium) uit de BMP-tellersensitiviteitsanalyse omdat dit een
-  afzonderlijke roofvogeltelling was. Dit is een uitzondering op de
-  vergelijkbaarheid, niet op de goedkeuringsstatus. De eerder ontbrekende
-  tellers zijn vastgelegd als
-  2010/M54a–AZNA00, 2012/M66–WCLE00, 2018/M34–B_0097 en
-  2018/M8–B_0098. Geen VPS-publicatie.
+- Op 1 oktober 2026 is een eerste tussenstand van elf afgekeurde plotjaren
+  verwerkt. De volledige visuele controle op sovon.nl van 3 oktober 2026
+  vervangt die lijst. Voor 1984-2025 zijn 25 plotjaren met bezoeken of records
+  formeel afgekeurd en als zodanig vastgelegd in `sovon_bmp_plotjaar`.
+  `territoria` bevat voor deze plotjaren geen actieve SOVON-uitkomsten. Daarom
+  zijn aanvullend 373 SOVON-regels met 756 territoria verwijderd voor
+  M8/2008, M45/2018, M8/2018, M75/2024 en M51/2025. M8/2019 staat nu groen;
+  daarvoor zijn 19 positieve SOVON-regels met samen 114 territoria hersteld.
+  De matrix bevat daar 107 lege cellen, zodat geen nul is toegevoegd. Twaalf
+  overige oranje-rode combinaties bevatten in alle jaarbestanden uitsluitend
+  980 lege matrixcellen en verder geen telling; zij zijn niet als afgekeurd
+  plotjaar vastgelegd. M53/2007 heeft op de SOVON-detailpagina 36
+  soorttotalen, maar geen individuele bron-ID's, bezoekkoppelingen of
+  waarnemingspunten. Deze totalen zijn daarom niet als `dagwaarnemingen_bmp`
+  gereconstrueerd. De actuele tabel `territoria` bevat 157.580 regels.
+  Bezoeken en individueel herleidbare waarnemingen uit afgekeurde tellingen
+  blijven auditspoor. De 60 regels uit `jrvslg_m` en vier uit
+  `meeuwen_literatuur` voor M35 in 1984-1987 en 2000 blijven volgens de
+  brongebonden regels behouden; zij zijn geen SOVON-uitkomsten. Geen
+  VPS-publicatie.
 
 - Op 1 oktober 2026 is voor telleridentificatie bij de vogelgegevens bepaald
   dat `plot_jaar_teller` in de levende lokale database leidend is. De vergelijking

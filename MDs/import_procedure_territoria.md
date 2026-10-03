@@ -3,7 +3,7 @@
 **Database:** Meijendel  
 **Engine:** InnoDB, UTF8MB4  
 **Frequentie:** Jaarlijks  
-**Laatste update van dit document:** 1 oktober 2026\
+**Laatste update van dit document:** 3 oktober 2026\
 
 ---
 
@@ -13,15 +13,24 @@ Eén keer per jaar worden nieuwe vogelterritoria verwerkt vanuit externe bron (S
 
 ## Goedkeuringsstatus
 
-Neem in `territoria` uitsluitend formele territoria uit goedgekeurde tellingen
-op. Controleer die status vóór import en bewaar het besluit. Elf plotjaren zijn
-inhoudelijk als afgekeurd vastgesteld: 2009/M35, 2009/M36, 2012/M105,
-2012/M54a, 2015/M53, 2018/M54b, 2018/M55, 2019/M78/79, 2019/M8, 2021/M61 en
-2022/M1a. Acht daarvan stonden in `territoria`. De 142 betrokken regels met
-1.017 territoria zijn op 1 oktober 2026, na gerichte herstelkopieën, uit de
-levende tabel verwijderd. Voor 2012/M105, 2015/M53 en 2021/M61 stonden al geen
-territoriumregels in de tabel. `territoria` bevat daarna 71.013 regels; geen
-van de elf afgekeurde plotjaren komt er nog in voor.
+Neem voor SOVON in `territoria` uitsluitend formele territoria uit goedgekeurde
+SOVON-tellingen op. Controleer die status vóór import en bewaar het besluit in
+`sovon_bmp_plotjaar`. De volledige SOVON-controle van 3 oktober 2026 omvat 55
+Meijendel-plots en 1984-2025. Zij levert 25 formeel afgekeurde plotjaren met
+bezoeken of records op. Geen van deze 25 bevat nog een `sovon_m`-regel. Bij de
+laatste correctie zijn 373 SOVON-regels met samen 756 territoria verwijderd
+voor M8/2008, M45/2018, M8/2018, M75/2024 en M51/2025. M8/2019 staat nu groen;
+daarvoor zijn 19 positieve SOVON-regels met 114 territoria hersteld. De matrix
+voor M8/2019 bevat uitsluitend 107 lege cellen, dus geen nullen. `territoria`
+bevat daarna 157.580 regels. De 60 regels uit `jrvslg_m` en vier uit
+`meeuwen_literatuur` voor M35 in 1984-1987 en 2000 blijven volgens de
+brongebonden regels behouden; zij zijn geen SOVON-uitkomsten.
+
+Twaalf oranje-rode combinaties zonder bezoeken, soorten of records bevatten
+in de downloads uitsluitend 980 lege matrixcellen. Zij zijn geen telling en
+krijgen geen plotjaarstatus. M53/2007 bevat in SOVON 36 soorttotalen, maar geen
+individuele bron-ID, datum, bezoekkoppeling of exporteerbaar waarnemingspunt;
+reconstrueer deze totalen daarom niet als `dagwaarnemingen_bmp`.
 Sluit 2016/M62 wel uit van de BMP-tellersensitiviteitsanalyse: dit was een
 afzonderlijke roofvogeltelling.
 

@@ -365,6 +365,16 @@ ontbrekende tellerveld voor M66 HGC. Voor 1987 betreft dit 1.091 zulke
 aggregaatvermeldingen en opnieuw het ontbrekende tellerveld voor M66 HGC.
 Nieuwe soorten verschillen blijven buiten deze algemene toestemming.
 
+De actuele goedkeuringscontrole van 3 oktober 2026 legt 25 plotjaren met
+bezoeken of records vast als `formeel_afgekeurd` in `sovon_bmp_plotjaar`.
+De 373 SOVON-territoriumregels van vijf daarvan zijn uit `territoria`
+verwijderd. Voor het nu groene M8/2019 zijn 19 positieve regels met samen 114
+territoria hersteld. Alle 19 zijn via `soorten`, `taxa_bronkoppeling`, `taxa`
+en `taxon_groepen` bereikbaar. De twaalf combinaties zonder geleverde telling
+zijn niet als survey- of plotjaarrecord aangemaakt. M53/2007 bevat alleen 36
+niet tot individuele bronrecords herleidbare soorttotalen; zij zijn niet als
+waarnemingen gereconstrueerd.
+
 Vóór de 1984-correctie is een volledige back-up gemaakt:
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
 4,0 GB, SHA-256

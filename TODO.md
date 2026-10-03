@@ -87,10 +87,16 @@
   basis van het jaarverslag aan Patricia van Veen gekoppeld via de bestaande
   code `ANBN01`. Voor M51 2025 blijft de teller leeg, omdat geen lokaal
   jaarverslag 2025 beschikbaar is en de exportcode niet zelfstandig leidend is.
-- Voer nu de afzonderlijk afgesproken controle op formeel afgekeurde
-  SOVON-BMP-tellingen uit via de SOVON-website. Vernieuw pas daarna de afgeleide
-  dump en caches. `Meijendel.sql` en de caches zijn tijdens de jaarverwerking
-  1984-2025 bewust niet vernieuwd.
+- Afgerond op 3 oktober 2026: alle 55 Meijendel-plots zijn op sovon.nl voor
+  1984-2025 gecontroleerd. De 25 plotjaren met bezoeken of records en een
+  oranje-rode status staan als `formeel_afgekeurd` in `sovon_bmp_plotjaar`.
+  De twaalf volledig lege combinaties bevatten ook in alle jaarbestanden geen
+  telling en zijn niet als plotjaar vastgelegd. M8/2019 is groen en met 19
+  positieve regels en 114 territoria hersteld. Voor vijf afgekeurde plotjaren
+  zijn 373 regels met 756 territoria verwijderd. De afgeleide dump, het
+  exportmanifest en de lokale Shiny-cache zijn daarna opnieuw opgebouwd en
+  gevalideerd onder SQL-hash
+  `57dea9216785c7c743ff2b7f6dfb06bf8af4bd7c74928b6d7560e7698ab69b83`.
 - Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: alle werkelijk aanvullende
   SOVON-gegevens mogen in de bestaande Meijendel-kerntabellen worden
   toegevoegd. Bestaande Meijendelgegevens blijven staan wanneer zij in de

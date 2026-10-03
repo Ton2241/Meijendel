@@ -54,15 +54,16 @@ Praktisch betekent dit:
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
-De tabel `territoria` hoort uitsluitend formele territoria uit goedgekeurde
-tellingen te bevatten. Elf plotjaren zijn inhoudelijk als afgekeurd
-vastgesteld: 2009/M35, 2009/M36, 2012/M105, 2012/M54a, 2015/M53, 2018/M54b,
-2018/M55, 2019/M78/79, 2019/M8, 2021/M61 en 2022/M1a. Acht daarvan stonden in
-`territoria`. De 142 betrokken regels met 1.017 territoria zijn op 1 oktober
-2026, na gerichte herstelkopieën, uit de levende tabel verwijderd. Voor
-2012/M105, 2015/M53 en 2021/M61 stonden al geen territoriumregels in de tabel.
-`territoria` bevat daarna 71.013 regels; geen van de elf afgekeurde plotjaren
-komt er nog in voor.
+De tabel `territoria` bevat voor afgekeurde SOVON-tellingen geen actieve
+SOVON-uitkomsten. De volledige SOVON-controle van 3 oktober 2026 heeft 25
+plotjaren met bezoeken of records als `formeel_afgekeurd` vastgelegd in
+`sovon_bmp_plotjaar`. Geen van deze plotjaren bevat nog een `sovon_m`-regel.
+Daarvoor zijn bij de laatste correctie 373 SOVON-regels met 756 territoria
+verwijderd. Voor M35 in 1984-1987 en 2000 blijven 60 regels uit `jrvslg_m` en
+vier uit `meeuwen_literatuur` volgens de brongebonden regels behouden. M8/2019
+staat inmiddels groen; daarvoor zijn 19 positieve regels met 114 territoria
+hersteld. De 107 lege matrixcellen van M8/2019 zijn geen nullen en zijn niet
+ingevoerd. `territoria` bevat daarna 157.580 regels.
 2016/M62 was een afzonderlijke roofvogeltelling en hoort niet in een
 BMP-tellersensitiviteitsanalyse. Sluit deze plotjaren voor die analyses uit.
 De bezoek- en waarnemingstabellen kunnen eveneens gegevens uit
@@ -111,9 +112,9 @@ JOIN v_meijendel_analyseplot_actueel s ON s.plot_id = ...
 M66 (Haagsche Golf Club, `plot_id = 3503`) en M91 (Voorlinden,
 `plot_id = 3514`) hebben `in_scope = 0`, beide met de reden `Geen onderdeel
 van Natura 2000-analysegebied.` Hun geldige bronregels blijven in de database,
-maar doen standaard niet mee. De ruwe tabel `territoria` bevat 71.013 regels
-in 54 plots en 2.168 plotjaren uit 1958–2025. Na toepassing van de scope blijven
-68.646 regels in 52 plots en 2.111 plotjaren uit 1958–2025 over.
+maar doen standaard niet mee. De ruwe tabel `territoria` bevat 157.580 regels
+in 54 plots en 2.164 plotjaren uit 1958-2025. Na toepassing van de scope blijven
+151.583 regels in 52 plots en 2.107 plotjaren uit 1958-2025 over.
 
 Alleen wanneer de gebruiker M66 en/of M91 uitdrukkelijk voor een bepaalde
 analyse vraagt, mogen zij worden toegevoegd. In de bestaande R-routes gebeurt
