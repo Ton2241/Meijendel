@@ -40,11 +40,28 @@
   letterlijke SOVON-nullen zijn aan `territoria` toegevoegd; 1.831 lege cellen
   niet. Van 249 positieve zoogdierregels waren 101 al gelijk. Er zijn 137
   aanvullende SOVON-regels met 649 dieren op 75 bezoeken toegevoegd, waaronder
-  één positieve regel naast een onbepaalde NDFF-koppeling. Elf verschillen
-  tussen positieve telwaarden zijn niet ingevoerd. Voor M6 vermeldt de download
+  één positieve regel naast een onbepaalde NDFF-koppeling. De elf afwijkende
+  SOVON-bezoektotalen zijn daarna eveneens als afzonderlijke bronwaarden
+  opgenomen. De 2007-laag bevat daarmee 148 regels met 692 dieren op 84
+  bezoeken. Het NDFF-auditspoor blijft staan; SOVON is bij gecombineerd gebruik
+  leidend en de twee lagen worden nooit opgeteld. Voor M6 vermeldt de download
   `JASQ00`, maar het verslag noemt T. Lansink voor M6 en M61; de database koppelt
   beide aan `ALNK00`. M83, dat het verslag aan J. van As koppelt, draagt in de
   database `JASQ00`. De tellerkoppeling van M6 blijft daarom ongewijzigd.
+
+- De SOVON-controlejaren 2008-2022 zijn op 3 oktober 2026 jaar voor jaar met de
+  levende database vergeleken en volgens de algemene bronregels verwerkt. De
+  6.306 downloadbezoeken stonden al in `dagbezoeken_bmp`; 154 verschillen
+  betroffen uitsluitend afsluitende witruimte in de bezoekopmerking en zijn
+  niet gewijzigd. Aan `territoria` zijn 37.213 letterlijke,
+  niet-conflicterende SOVON-nullen toegevoegd. Lege cellen zijn niet als nul
+  behandeld. Bestaande waarden die niet in de download staan zijn behouden.
+  De 81 positieve waarden uit 2022 voor M105, M71 en M36 stonden al exact
+  gelijk onder `jrvslg_m` en zijn niet als tweede bronkopie toegevoegd. De
+  aanvullende SOVON-zoogdierlaag voor 2008-2022 bevat 3.929 positieve regels
+  op 2.334 bezoeken. Na invoer komen alle waarden overeen met de jaarbestanden;
+  er zijn geen zoogdiernullen afgeleid. De verwerking stopt vóór 2023 wegens
+  het afzonderlijke conflict M53/Zwarte Kraai.
 
 - Op 3 oktober 2026 is de algemene bronregel voor de verdere SOVON-
   jaarcontroles aangescherpt. Werkelijk aanvullende gegevens uit de officiële

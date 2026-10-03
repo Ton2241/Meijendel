@@ -1,12 +1,11 @@
 # TODO
 
-- Beslis over elf positieve zoogdiertelconflicten in controlejaar 2007. Het
-  betreft acht Konijnwaarden en drie Reewaarden op tien bezoeken in M2, M14,
-  M75, M77 en M75a. Bezoek-ID, kavel, datum, tijd en soort zijn gelijk; alleen
-  het geconsolideerde SOVON-bezoektotaal wijkt af van de som van de secundaire
-  NDFF-bronregels. Beslis tevens of het voor 2005 en 2006 genomen besluit dat
-  SOVON leidend is voortaan algemeen op dit terugkerende verschil van toepassing
-  is.
+- Beslis over controlejaar 2023, M53/Zwarte Kraai. De nieuwe SOVON-matrix
+  levert een letterlijke nul. In de levende database staat voor dezelfde
+  plot-soort-jaarcombinatie één territorium met bron `sovon_m`, ingevoerd op
+  21 februari 2026. Bijlage 2 van het vogelwerkgroepverslag 2023 vermeldt
+  eveneens één territorium voor M53. De nul is daarom niet ingevoerd; de
+  jaarverwerking is vóór 2023 gepauzeerd.
 
 ## Nu open
 
@@ -60,13 +59,27 @@
   features. In `daz_bmp_*` zijn 123 aanvullende positieve SOVON-regels met
   523 dieren op 72 bezoeken toegevoegd. De acht afwijkende SOVON-waarden staan
   naast het NDFF-auditspoor en zijn voor gecombineerd gebruik leidend.
-- Controlejaar 2007 is verwerkt tot het hierboven genoemde besluit. Alle 172
+- Controlejaar 2007 is afgerond. Alle 172
   bezoeken en 1.166 positieve vogelwaarden zijn gelijk. De 1.924 letterlijke
   nullen zijn toegevoegd; 1.831 lege cellen niet. Van 249 positieve
-  zoogdierregels waren 101 al gelijk en zijn 137 aanvullende regels met 649
-  dieren op 75 bezoeken toegevoegd. Elf positieve telverschillen zijn niet
-  ingevoerd. SOVON vermeldt voor M6 ten onrechte teller `JASQ00`; het verslag
+  zoogdierregels waren 101 al gelijk. Alle 148 aanvullende SOVON-regels staan
+  nu met 692 dieren op 84 bezoeken in `daz_bmp_*`; de elf afwijkende
+  bezoektotalen staan naast het historische NDFF-auditspoor en SOVON is voor
+  gecombineerd gebruik leidend. SOVON vermeldt voor M6 ten onrechte teller
+  `JASQ00`; het verslag
   en de database bevestigen `ALNK00`, zodat `plot_jaar_teller` ongewijzigd is.
+- De jaren 2008-2022 zijn jaar voor jaar vergeleken en verwerkt. De 6.306
+  ontvangen bezoeken staan al in `dagbezoeken_bmp`; alleen 154
+  bezoekopmerkingen verschillen door afsluitende spaties of regeleinden en zijn
+  niet gewijzigd. In `territoria` zijn 37.213 letterlijke,
+  niet-conflicterende SOVON-nullen toegevoegd. Lege downloadcellen zijn niet
+  ingevoerd en bestaande Meijendelwaarden die alleen in de database staan zijn
+  behouden. De 81 positieve downloadwaarden uit 2022 voor M105, M71 en M36
+  staan al met exact dezelfde aantallen onder `jrvslg_m` en zijn daarom niet
+  als tweede SOVON-kopie toegevoegd. Onder `sovon-bmp-jaarbestanden-v1` staan
+  voor 2008-2022 3.929 aanvullende positieve zoogdierregels op 2.334 bezoeken;
+  alle bronwaarden zijn na invoer gelijk aan de download en er zijn geen
+  zoogdiernullen afgeleid.
 - Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: alle werkelijk aanvullende
   SOVON-gegevens mogen in de bestaande Meijendel-kerntabellen worden
   toegevoegd. Bestaande Meijendelgegevens blijven staan wanneer zij in de

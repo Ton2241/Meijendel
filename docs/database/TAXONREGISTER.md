@@ -296,11 +296,21 @@ dieren op 72 bestaande BMP-bezoeken toegevoegd. Daaronder staan acht
 afwijkende SOVON-bezoektotalen naast het NDFF-auditspoor. Zij zijn centraal
 verbonden, leiden geen nullen af en zijn voor gecombineerd gebruik leidend.
 
-Voor controlejaar 2007 zijn 137 aanvullende positieve SOVON-regels met 649
-dieren op 75 bestaande BMP-bezoeken toegevoegd. Negen gebruikte taxa zijn via
-versiegebonden bronroutes centraal bereikbaar; iedere nieuwe regel heeft een
-geldige `taxon_bronkoppeling_id`. Elf positieve bronverschillen zijn niet
-ingevoerd en blijven afzonderlijk ter beslissing staan.
+Voor controlejaar 2007 zijn 148 aanvullende positieve SOVON-regels met 692
+dieren op 84 bestaande BMP-bezoeken toegevoegd. De elf afwijkende
+SOVON-bezoektotalen staan afzonderlijk naast het historische NDFF-auditspoor;
+SOVON is voor gecombineerd gebruik leidend en de waarden worden niet opgeteld.
+Iedere nieuwe regel heeft een geldige `taxon_bronkoppeling_id`.
+
+De jaarcontrole 2008-2022 heeft onder `sovon-bmp-jaarbestanden-v1` 3.929
+aanvullende positieve zoogdierregels op 2.334 bezoeken vastgelegd. Samen met
+2005-2007 bevat deze versie 4.281 regels op 2.536 bezoeken, met 16.221 dieren
+binnen en 370 buiten het plot. Alle 22 gebruikte brontaxa zijn via
+versiegebonden routes centraal bereikbaar. Ook de toegevoegde nominale routes
+voor `Chiroptera spec.`, `Soricidae spec.`, `Sorex araneus spec.`,
+`Myodes glareolus`, `Martes spec.` en `Equus ferus caballus (Konik)` behouden
+status kandidaat/onbekend: zij verbinden de letterlijke bronnaam met een al
+beoordeelde centrale registratie, maar bewijzen geen conceptgelijkheid.
 
 Vóór de hernoeming is de tabelgroep afzonderlijk geëxporteerd naar
 `/Users/ton/Documents/Backups/Meijendel/Meijendel-daz-bmp-before-rename-20261003.sql`;

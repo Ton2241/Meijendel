@@ -514,6 +514,13 @@ def main() -> int:
         )
         assert territory_comparison["categorieen"] == {"gelijk_expliciete_nul": 1}
         assert territory_comparison["verschillen"] == []
+        visit_output = (
+            "9992\t3519\t2009\t2009-03-01\t07:00:00\t09:00:00\t120\t0\t1\t"
+            "6E61636874766F7273740A4E4F2031202667743B20320A6F6E6265776F6C6B74"
+            "\t10\t20\n"
+        )
+        parsed_visits = module.parse_sovon_bmp_database_visits(visit_output)
+        assert parsed_visits[9992]["opmerking"] == "nachtvorst\nNO 1 &gt; 2\nonbewolkt"
         assert module.sovon_bmp_transaction_end(False) == "ROLLBACK;"
         assert module.sovon_bmp_transaction_end(True) == "COMMIT;"
         list_sql = module.sovon_bmp_current_list_from_1984_sql(

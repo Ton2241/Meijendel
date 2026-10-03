@@ -6023,28 +6023,8 @@ COMMIT;
     }
 
 
-def read_sovon_bmp_database_visits(
-    client: Path, client_args: list[str], year: int,
-) -> dict[int, dict[str, object]]:
-    sql = f"""
-START TRANSACTION READ ONLY;
-SELECT bezoek_id,plot_id,jaar,DATE_FORMAT(bezoek_datum,'%Y-%m-%d'),
-       IFNULL(TIME_FORMAT(begintijd,'%H:%i:%s'),'__NULL__'),
-       IFNULL(TIME_FORMAT(eindtijd,'%H:%i:%s'),'__NULL__'),
-       IFNULL(CAST(bezoekduur_min AS CHAR),'__NULL__'),
-       IFNULL(CAST(deelbezoek AS CHAR),'__NULL__'),
-       IFNULL(CAST(gunstig AS CHAR),'__NULL__'),IFNULL(opmerking,'__NULL__'),
-       IFNULL(CAST(aantal_soorten AS CHAR),'__NULL__'),
-       IFNULL(CAST(aantal_records AS CHAR),'__NULL__')
-FROM Meijendel.dagbezoeken_bmp
-WHERE bron_id=1 AND jaar={year}
-ORDER BY bezoek_id;
-COMMIT;
-"""
-    output = run_mysql(
-        client, client_args + ["--batch", "--raw", "--skip-column-names"],
-        sql, capture=True,
-    )
+def parse_sovon_bmp_database_visits(output: str) -> dict[int, dict[str, object]]:
+    """Lees tabgescheiden bezoeken; het opmerkingenveld is hex om regels te bewaren."""
     fields = (
         "plot_id", "jaar", "bezoek_datum", "begintijd", "eindtijd",
         "bezoekduur_min", "deelbezoek", "gunstig", "opmerking",
@@ -6062,12 +6042,39 @@ COMMIT;
         for field, value in zip(fields, values[1:]):
             if value == "__NULL__":
                 row[field] = None
+            elif field == "opmerking":
+                row[field] = bytes.fromhex(value).decode("utf-8")
             elif field in integer_fields:
                 row[field] = int(value)
             else:
                 row[field] = value
         result[visit_id] = row
     return result
+
+
+def read_sovon_bmp_database_visits(
+    client: Path, client_args: list[str], year: int,
+) -> dict[int, dict[str, object]]:
+    sql = f"""
+START TRANSACTION READ ONLY;
+SELECT bezoek_id,plot_id,jaar,DATE_FORMAT(bezoek_datum,'%Y-%m-%d'),
+       IFNULL(TIME_FORMAT(begintijd,'%H:%i:%s'),'__NULL__'),
+       IFNULL(TIME_FORMAT(eindtijd,'%H:%i:%s'),'__NULL__'),
+       IFNULL(CAST(bezoekduur_min AS CHAR),'__NULL__'),
+       IFNULL(CAST(deelbezoek AS CHAR),'__NULL__'),
+       IFNULL(CAST(gunstig AS CHAR),'__NULL__'),IFNULL(HEX(opmerking),'__NULL__'),
+       IFNULL(CAST(aantal_soorten AS CHAR),'__NULL__'),
+       IFNULL(CAST(aantal_records AS CHAR),'__NULL__')
+FROM Meijendel.dagbezoeken_bmp
+WHERE bron_id=1 AND jaar={year}
+ORDER BY bezoek_id;
+COMMIT;
+"""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        sql, capture=True,
+    )
+    return parse_sovon_bmp_database_visits(output)
 
 
 def compare_sovon_bmp_territories(
