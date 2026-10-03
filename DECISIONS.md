@@ -1,5 +1,63 @@
 # Besluiten
 
+- Op 3 oktober 2026 is de algemene bronregel voor de verdere SOVON-
+  jaarcontroles aangescherpt. Werkelijk aanvullende gegevens uit de officiële
+  download mogen aan de bestaande Meijendel-kerntabellen worden toegevoegd,
+  waaronder ontbrekende bezoeken. Bestaande Meijendelgegevens blijven staan
+  wanneer zij niet in de download voorkomen; ontbreken in de download is geen
+  verwijder- of wijzigingsgrond. Alleen een afzonderlijk vastgelegde
+  conflictregel kan daarvan afwijken. Voor meeuwen blijft een aanwezige regel
+  met bron `meeuwen_literatuur` ongewijzigd en leidend; alleen zonder zo'n
+  regel mag de SOVON-waarde een bestaande waarde corrigeren of aanvullen. Een
+  ontbrekende teller mag vanuit het jaarverslag aan `plot_jaar_teller` worden
+  toegevoegd wanneer kavel en waarnemer ondubbelzinnig zijn en de teller aan
+  een bestaande code kan worden gekoppeld. De Horsten behoort niet tot
+  Meijendel; alle bezoeken, resultaten, nullen en lege cellen van SOVON-plot
+  1642 (`plot_id` 29945 in de download) worden genegeerd.
+
+- De SOVON-controlejaren 1988-2004 zijn op 3 oktober 2026 jaar voor jaar met de
+  levende kerntabellen vergeleken en verwerkt. In `territoria` zijn uitsluitend
+  de volgende aantallen letterlijke, niet-conflicterende SOVON-nullen
+  toegevoegd: 1988 1.444; 1989 1.512; 1990 1.622; 1991 1.761; 1992 1.739;
+  1993 2.057; 1994 1.838; 1995 1.811; 1996 1.797; 1997 1.829; 1998 1.834;
+  1999 1.873; 2000 1.773; 2001 1.846; 2002 1.884; 2003 1.854; 2004 1.984.
+  Samen zijn dit 30.458 nieuwe regels. Alle 5.141 in-scope bezoeken uit deze
+  zeventien downloads stonden al veld voor veld gelijk in `dagbezoeken_bmp`;
+  er is geen bezoek toegevoegd of gewijzigd. Ook zijn geen bestaande regels
+  verwijderd of overschreven. De retroactieve afwezigheidscontrole houdt 1.309
+  `jrvslg_m`-regels en 70 `meeuwen_literatuur`-regels uit 1984-2004 bewust in
+  stand omdat de SOVON-matrix voor die combinaties geen positieve of
+  letterlijke nulwaarde bevat. `territoria` bevat na 2004 in totaal 106.921
+  regels. Alle jaarlijkse centrale-taxonregistercontroles geven nul fouten.
+  In 1996 zijn negen bezoeken, 41 positieve waarden, 30 nullen en vier lege
+  cellen van De Horsten genegeerd. In 1991 zijn vier SOVON-meeuwennullen niet
+  ingevoerd wegens positieve, leidende regels uit `meeuwen_literatuur`.
+
+- Op 3 oktober 2026 zijn de vier tabellen `ndff_daz_bmp_*` atomisch hernoemd
+  naar `daz_bmp_*`. Alle 27.923 bestaande rijen, foreign keys, centrale
+  taxonroutes en reconstructieversies zijn behouden. De naam is nu
+  bronneutraal; de historische versie `ndff-daz-bmp-v1` blijft als herkomst in
+  de rijen staan. Het schema kan daarnaast letterlijke positieve SOVON-
+  bezoektotalen opslaan met `nulbereikstatus = geen_nulafleiding` en een apart
+  `aantal_buiten_plot`.
+  Omdat de centrale taxonroute zijn afgeleide bronidentiteit mede aan de
+  tabelnaam bindt, zijn ook de 23 gebruikte bronkoppelingen van
+  `ndff_daz_bmp_bezoek_taxon` naar `daz_bmp_bezoek_taxon` gemigreerd. Acht
+  achtergebleven oude triggeridentiteiten zijn verwijderd en de volledige
+  centrale schrijfbewaking is opnieuw opgebouwd. De databasebrede controle
+  van 279 tabellen en 128 taxonroutes geeft daarna nul fouten.
+
+- Voor controlejaar 2005 bevat het SOVON-bezoektotalenbestand 101 positieve
+  zoogdierregels op 58 bestaande BMP-bezoeken in zeven plots. Vergelijking op
+  bezoek en centraal taxon geeft 20 gelijke waarden, 79 ontbrekende waarden en
+  twee telconflicten. De 79 ontbrekende waarden, samen 281 dieren op 44
+  bezoeken, zijn onder `sovon-bmp-jaarbestanden-v1` in `daz_bmp_bezoek` en
+  `daz_bmp_bezoek_taxon` toegevoegd. Zij zijn als incidentele positieve
+  nevenwaarnemingen opgeslagen; er zijn geen nullen of DAZ-deelnamevoorwaarden
+  uit afgeleid. De twee conflicten zijn niet gewijzigd: bezoek 365793,
+  M16 (`plot_id = 3512`), Konijn, SOVON 2 tegenover NDFF 9; en bezoek 365789,
+  hetzelfde plot en taxon, SOVON 1 tegenover NDFF 3.
+
 - Op 3 oktober 2026 gelden voor alle volgende SOVON-jaarcontroles drie algemene
   uitvoeringsbesluiten. Ten eerste worden letterlijke SOVON-nullen zonder
   conflict met een leidende bestaande bron rechtstreeks als `territoria = 0`
@@ -697,7 +755,7 @@
   bevestigde bezoeken zijn 7.552 echte nullen voor zeven DAZ-doelsoorten
   afgeleid. Voor 92 bezoek-taxoncombinaties blokkeert ruimtelijke ambiguïteit
   een nul. Bijvangsten krijgen alleen positieve regels. Alle vier
-  `ndff_daz_bmp_*`-tabellen staan in `Meijendel`; het beveiligde schema is niet
+  `daz_bmp_*`-tabellen staan in `Meijendel`; het beveiligde schema is niet
   uitgebreid.
 - De huidige `ndff-daz-bmp-v1`-koppeling is nadrukkelijk tijdelijk ten opzichte
   van de primaire BMP/SAP-bron. Na afronding van alle NDFF-bewerkingen wordt

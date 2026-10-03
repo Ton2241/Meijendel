@@ -20,8 +20,9 @@ from typing import Iterable
 ROOT = Path(__file__).parents[2]
 SCHEMA = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_schema.sql"
 DEFAULT_SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
-SOURCE_XLSX = ROOT / "Natuurprotocollen" / "Natuurprotocollen_gebruiksmatrix.xlsx"
-SOURCE_DOCX = ROOT / "Natuurprotocollen" / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
+PROTOCOL_SOURCE_DIR = ROOT / "docs" / "bronnen" / "protocollen"
+SOURCE_XLSX = PROTOCOL_SOURCE_DIR / "Natuurprotocollen_gebruiksmatrix.xlsx"
+SOURCE_DOCX = PROTOCOL_SOURCE_DIR / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
 RULE_VERSION = "ndff-protocolkwaliteit-v1"
 SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
 DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
@@ -53,6 +54,7 @@ AMPHIBIAN_LEGACY_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
+SOVON_BMP_MAMMAL_RULE_VERSION = "sovon-bmp-jaarbestanden-v1"
 SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
 SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
 SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
@@ -136,7 +138,7 @@ REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
-DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
+DAZ_BMP_TABLE_PREFIX = "Meijendel.daz_bmp"
 SOVON_AVIMAP_TABLE_PREFIX = "Meijendel.sovon_avimap"
 SOVON_BMP_TABLE_PREFIX = "Meijendel.sovon_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
@@ -11170,30 +11172,30 @@ SELECT JSON_OBJECT(
 
 def daz_bmp_validation_sql() -> str:
     version = sql_text(DAZ_BMP_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_daz_bmp_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"daz_bmp_{suffix}") for suffix in (
         "recordselectie", "recordkandidaat", "bezoek", "bezoek_taxon",
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version}),
-  'unique_link_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='eenduidig_bmp_bezoek'),
-  'multiple_link_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='meerdere_bmp_bezoeken'),
-  'unlinked_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='geen_bmp_bezoek'),
-  'candidate_links',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordkandidaat WHERE reconstructieversie={version}),
-  'confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version}),
-  'confirmed_plots',(SELECT COUNT(DISTINCT plot_id) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version}),
-  'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
-  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'ambiguous_target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='onbepaald_ambigu'),
-  'target_count_sum',(SELECT SUM(aantal) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
-  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
-  'bycatch_positive_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
-  'ambiguous_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version} AND ambigu_kandidaatrecordaantal>0),
+  'source_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version}),
+  'unique_link_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='eenduidig_bmp_bezoek'),
+  'multiple_link_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='meerdere_bmp_bezoeken'),
+  'unlinked_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='geen_bmp_bezoek'),
+  'candidate_links',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordkandidaat WHERE reconstructieversie={version}),
+  'confirmed_visits',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek WHERE reconstructieversie={version}),
+  'confirmed_plots',(SELECT COUNT(DISTINCT plot_id) FROM Meijendel.daz_bmp_bezoek WHERE reconstructieversie={version}),
+  'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'ambiguous_target_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='onbepaald_ambigu'),
+  'target_count_sum',(SELECT SUM(aantal) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'bycatch_positive_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'ambiguous_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek WHERE reconstructieversie={version} AND ambigu_kandidaatrecordaantal>0),
   'secure_source_records',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE protocol LIKE '17.204%'),
   'secure_linked_to_public',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register r JOIN Meijendel_ndff_secure.ndff_open_secure_koppeling k ON k.secure_waarneming_id=r.waarneming_id WHERE r.protocol LIKE '17.204%' AND k.open_waarneming_id IS NOT NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables})),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
 );
 """
 

@@ -97,10 +97,10 @@ def main() -> int:
         "meijendel.ndff_vleermuis_bezoek_taxon",
         "meijendel.ndff_konijn_recordselectie",
         "meijendel.ndff_konijn_hokdatum_taxon",
-        "meijendel.ndff_daz_bmp_recordselectie",
-        "meijendel.ndff_daz_bmp_recordkandidaat",
-        "meijendel.ndff_daz_bmp_bezoek",
-        "meijendel.ndff_daz_bmp_bezoek_taxon",
+        "meijendel.daz_bmp_recordselectie",
+        "meijendel.daz_bmp_recordkandidaat",
+        "meijendel.daz_bmp_bezoek",
+        "meijendel.daz_bmp_bezoek_taxon",
         "meijendel.sovon_avimap_import_batch",
         "meijendel.sovon_avimap_taxon",
         "meijendel.sovon_avimap_bezoek",
@@ -207,7 +207,7 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
     assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
     assert "meijendel_ndff_secure.ndff_konijn_" not in folded
-    assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
+    assert "meijendel_ndff_secure.daz_bmp_" not in folded
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
     assert "meijendel_ndff_secure.ndff_hns_" not in folded
@@ -287,6 +287,9 @@ def main() -> int:
     assert len(loose) == 1 and loose[0]["protocol_code"] == ""
 
     module = load_importer()
+    protocol_dir = ROOT / "docs" / "bronnen" / "protocollen"
+    assert module.SOURCE_XLSX == protocol_dir / "Natuurprotocollen_gebruiksmatrix.xlsx"
+    assert module.SOURCE_DOCX == protocol_dir / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
 
     with tempfile.TemporaryDirectory(prefix="sovon_bmp_test_") as temporary:
         source = Path(temporary)
@@ -1612,7 +1615,14 @@ def main() -> int:
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
     assert module.RABBIT_TABLE_PREFIX == "Meijendel.ndff_konijn"
-    assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.ndff_daz_bmp"
+    assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.daz_bmp"
+    assert module.SOVON_BMP_MAMMAL_RULE_VERSION == "sovon-bmp-jaarbestanden-v1"
+    assert "CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek" in SCHEMA.read_text(encoding="utf-8")
+    assert "CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek" not in SCHEMA.read_text(encoding="utf-8")
+    assert "bevestigd_door_sovon_bezoektotaal" in SCHEMA.read_text(encoding="utf-8")
+    assert "geen_nulafleiding" in SCHEMA.read_text(encoding="utf-8")
+    assert "aantal_buiten_plot" in SCHEMA.read_text(encoding="utf-8")
+    assert "geen_nulafleiding_sovon_positief" in SCHEMA.read_text(encoding="utf-8")
     assert module.SOVON_AVIMAP_TABLE_PREFIX == "Meijendel.sovon_avimap"
     assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
     assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"

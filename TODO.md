@@ -32,16 +32,35 @@
   M66 HGC blijft zonder tellercode. M8 heeft wel resultaten maar geen
   bezoekregels in download of database; het jaarverslag bevestigt twaalf
   bezoeken. Die verslagbezoeken zijn niet als SOVON-data gereconstrueerd.
-- Volgende stap is uitsluitend de vergelijking van 1988. Eerst feiten en
-  verschillen vaststellen; daarna alleen waar nodig een afzonderlijk gevraagd
-  besluit. Geen volgend jaar verwerken voordat de uitkomst van het vorige jaar
-  is besproken.
-- Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: niet-conflicterende
-  letterlijke SOVON-nullen worden zonder nieuwe jaarbeslissing opgenomen;
-  niet tot individuele bronregels herleidbare aggregaatvermeldingen worden niet
-  als formeel afgekeurd gereconstrueerd; en een tellerveld blijft leeg wanneer
-  download én database geen tellercode bevatten. Nieuwe soorten verschillen
-  blijven een afzonderlijk besluit vragen.
+- De jaren 1988-2004 zijn eveneens vergeleken en verwerkt. In `territoria` zijn
+  samen 30.458 letterlijke, niet-conflicterende SOVON-nullen toegevoegd. Alle
+  5.141 in-scope downloadbezoeken stonden al veld voor veld gelijk in
+  `dagbezoeken_bmp`; er is geen bezoek toegevoegd of gewijzigd. De Horsten is
+  vanaf 1996 volledig genegeerd omdat dit plot niet tot Meijendel behoort.
+  Bestaande Meijendelregels die geen positieve of nulwaarde in de download
+  hebben, zijn ongemoeid gelaten: 1.309 `jrvslg_m`-regels en 70
+  `meeuwen_literatuur`-regels uit 1984-2004.
+- Controlejaar 2005 is voor de zoogdierregels gedeeltelijk verwerkt. De vier
+  tabellen heten nu `daz_bmp_*`; 79 ontbrekende positieve SOVON-regels met
+  samen 281 dieren op 44 bestaande BMP-bezoeken zijn toegevoegd zonder
+  nulafleiding. Twintig waarden waren al gelijk. Open besluit: Konijn op
+  bezoek 365793 in M16 staat als 2 in SOVON en 9 in de NDFF-reconstructie;
+  bezoek 365789 staat als 1 in SOVON en 3 in de NDFF-reconstructie. Beide
+  bestaande waarden en beide SOVON-conflicten zijn ongemoeid gelaten. Na het
+  besluit volgen de 1.999 niet-conflicterende vogelnullen en de rest van 2005.
+- Algemeen uitvoeringsbesluit vanaf 3 oktober 2026: alle werkelijk aanvullende
+  SOVON-gegevens mogen in de bestaande Meijendel-kerntabellen worden
+  toegevoegd. Bestaande Meijendelgegevens blijven staan wanneer zij in de
+  download ontbreken. Een jaarverslagteller mag worden toegevoegd wanneer
+  kavel en waarnemer ondubbelzinnig zijn en een bestaande code beschikbaar is.
+  Een aanwezige regel uit `meeuwen_literatuur` blijft voor meeuwen leidend; De
+  Horsten wordt volledig genegeerd. Daarnaast worden niet-conflicterende
+  letterlijke SOVON-nullen zonder nieuwe jaarbeslissing opgenomen; niet tot
+  individuele bronregels herleidbare aggregaatvermeldingen worden niet als
+  formeel afgekeurd gereconstrueerd; en een tellerveld blijft leeg wanneer
+  download, database én jaarverslag geen bruikbare telleridentificatie geven.
+  Nieuwe conflictsoorten of een nieuw gegevensmodel blijven een afzonderlijk
+  besluit vragen.
 - Besloten op 3 oktober 2026: `territoria` bevat alleen werkelijk door de bron
   geleverde territoriumwaarden. Voor SOVON worden dus wel letterlijke
   nulcellen ingevoerd, maar nooit nullen die uit de officiële soortenlijst,

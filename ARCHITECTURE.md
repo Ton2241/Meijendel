@@ -243,13 +243,17 @@ sectietellingen van `17.209`, maar geen route- of sectie-id; de tabellen bewaren
 daarom een recordclassificatie en een uitsluitend diagnostische
 hok-datum-taxonsamenvatting. Geen daarvan is een native NEM-meeteenheid en er
 worden geen nullen of routegebonden trends uit afgeleid.
-`ndff_daz_bmp_*` koppelt openbare `17.204`-zoogdierregistraties op datum en
+`daz_bmp_*` koppelt openbare `17.204`-zoogdierregistraties op datum en
 SOVON-plot aan de bestaande `dagbezoeken_bmp`. Een eenduidige positieve
 koppeling bevestigt dat de teller tijdens dat BMP-bezoek aan DAZ deelnam.
-Alleen voor zulke bezoeken bevat `ndff_daz_bmp_bezoek_taxon` een volledige
+Alleen voor zulke bezoeken bevat `daz_bmp_bezoek_taxon` een volledige
 matrix voor de zeven DAZ-doelsoorten. Meervoudig koppelbare records blijven in
 de kandidaatbrug en blokkeren taxonspecifiek een nul. Niet-bevestigde
 BMP-bezoeken en bijvangsten krijgen nooit een afgeleide nul.
+Letterlijke positieve zoogdiertellingen uit de jaarlijkse SOVON-BMP-bestanden
+staan in dezelfde tabelgroep onder een eigen reconstructieversie. Zij worden
+alleen aan bestaande BMP-bezoeken gekoppeld, behouden de bronwaarde binnen en
+buiten het plot en leveren geen DAZ-deelname of afgeleide nul op.
 De primaire opvolger staat sinds 13 september 2026 in
 `sovon_avimap_import_batch`, `sovon_avimap_taxon`, `sovon_avimap_bezoek`,
 `sovon_avimap_waarneming`, `sovon_avimap_ndff_daz_koppeling` en

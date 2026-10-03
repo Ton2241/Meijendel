@@ -356,6 +356,13 @@ zichtbaar in de recordselectie. De vier tabellen worden gecontroleerd met
 `--audit-daz-bmp`; er staan geen afgeleide DAZ-tabellen in het beveiligde
 schema.
 
+De vier tabellen heten sinds 3 oktober 2026 `daz_bmp_*`. De historische
+reconstructieversie `ndff-daz-bmp-v1` en alle 27.923 bestaande rijen zijn bij
+de atomaire hernoeming behouden. De tabelgroep bevat daarnaast uitsluitend
+letterlijke positieve zoogdiertellingen uit de jaarlijkse SOVON-BMP-bestanden.
+Voor 2005 betreft dit 79 ontbrekende bezoek-taxonregels met samen 281 dieren;
+er zijn uit deze jaarbestanden geen zoogdiernullen afgeleid.
+
 Methodische grondslag: [NEM Meetprogramma Zoogdieren](https://www.netwerkecologischemonitoring.nl/meetprogrammas/zoogdieren)
 en [Kwaliteitsrapportage NEM 2024](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2025/05/meetprogrammasvoorfloraenfauna2024.pdf).
 

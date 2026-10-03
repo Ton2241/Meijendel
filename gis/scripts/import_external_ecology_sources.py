@@ -117,11 +117,11 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             if table != 'lvd_resultaat':
                 prefix = table.removesuffix('_resultaat')
                 routes[table].update(event_table=prefix+'_event', dataset_table=prefix+'_dataset')
-        elif table.startswith(('ndff_', 'sovon_avimap_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
+        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
                              'role': 'bronverwijzing'}
-        elif table.startswith(('ndff_', 'sovon_avimap_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
+        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
             if version not in columns:
@@ -323,10 +323,10 @@ CENTRAL_QUERY_SCHEMA = {
     'ndff_braakbal_hokjaar_taxon': frozenset(['aandeel_prooidieren', 'aangemaakt_op', 'bronrecordaantal', 'hokjaar_sleutel', 'kwaliteitsnotitie', 'nulstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'totaal_aantal', 'waarnemingsstatus', 'wetenschappelijke_naam']),
     'ndff_braakbal_recordselectie': frozenset(['aangemaakt_op', 'hokjaar_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'ndff_dagvlinders': frozenset(['waarneming_id']),
-    'ndff_daz_bmp_bezoek': frozenset(['aangemaakt_op', 'ambigu_kandidaatrecordaantal', 'bezoek_id', 'bezoekdatum', 'deelnamestatus', 'eenduidig_bronrecordaantal', 'inspanningstatus', 'jaar', 'kwaliteitsnotitie', 'nulbereikstatus', 'plot_id', 'reconstructieversie']),
-    'ndff_daz_bmp_bezoek_taxon': frozenset(['aangemaakt_op', 'aantal', 'ambigu_recordaantal', 'bezoek_id', 'bronrecordaantal', 'doelrelatie', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'telwaardestatus', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_daz_bmp_recordkandidaat': frozenset(['aangemaakt_op', 'bezoek_id', 'bezoekdatum', 'plot_id', 'reconstructieversie', 'waarneming_id']),
-    'ndff_daz_bmp_recordselectie': frozenset(['aangemaakt_op', 'aantal_exact', 'bezoek_id', 'doelrelatie', 'gebruiksstatus', 'kandidaat_bezoekaantal', 'koppelstatus', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'waarneming_id', 'wetenschappelijke_naam']),
+    'daz_bmp_bezoek': frozenset(['aangemaakt_op', 'ambigu_kandidaatrecordaantal', 'bezoek_id', 'bezoekdatum', 'deelnamestatus', 'eenduidig_bronrecordaantal', 'inspanningstatus', 'jaar', 'kwaliteitsnotitie', 'nulbereikstatus', 'plot_id', 'reconstructieversie']),
+    'daz_bmp_bezoek_taxon': frozenset(['aangemaakt_op', 'aantal', 'aantal_buiten_plot', 'ambigu_recordaantal', 'bezoek_id', 'bronrecordaantal', 'bronwaarde_raw', 'doelrelatie', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'telwaardestatus', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'daz_bmp_recordkandidaat': frozenset(['aangemaakt_op', 'bezoek_id', 'bezoekdatum', 'plot_id', 'reconstructieversie', 'waarneming_id']),
+    'daz_bmp_recordselectie': frozenset(['aangemaakt_op', 'aantal_exact', 'bezoek_id', 'doelrelatie', 'gebruiksstatus', 'kandidaat_bezoekaantal', 'koppelstatus', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'waarneming_id', 'wetenschappelijke_naam']),
     'ndff_eencelligen': frozenset(['waarneming_id']),
     'ndff_florbase_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'taxonomiestatus', 'wetenschappelijke_naam']),
     'ndff_florbase_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'einddatum', 'geregistreerde_taxa', 'hok_x', 'hok_y', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie', 'volledigheidsdrempel_taxa', 'volledigheidsstatus']),
@@ -678,6 +678,62 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
 
 def central_trigger_name(table: str, suffix: str) -> str:
     return 'cq_' + hashlib.sha256(table.encode()).hexdigest()[:20] + '_' + suffix
+
+
+def central_derived_rename_sql(old_table: str, new_table: str) -> str:
+    """Move pinned derived-source identities after an approved table rename.
+
+    The table row keeps the same taxon link. Only the table-bound source
+    identity changes; a guard blocks partial, foreign or colliding contexts.
+    Complete central guards must be regenerated immediately afterwards.
+    """
+    if old_table == new_table:
+        raise ValueError('Oude en nieuwe tabelnaam zijn gelijk')
+    query_identifier(old_table)
+    query_identifier(new_table)
+    old = query_literal(old_table)
+    new = query_literal(new_table)
+    guard = 'cq_derived_rename_guard'
+    return '\n'.join([
+        'SET SESSION innodb_lock_wait_timeout=10;',
+        'DROP TRIGGER IF EXISTS cq_registry_bu;',
+        'START TRANSACTION;',
+        f'CREATE TEMPORARY TABLE {guard}(ok TINYINT NOT NULL CHECK(ok=1));',
+        f'INSERT INTO {guard} SELECT IF(NOT EXISTS('
+        f'SELECT 1 FROM {query_identifier(new_table)} w '
+        'JOIN taxa_bronkoppeling b ON b.koppeling_id=w.taxon_bronkoppeling_id '
+        f"WHERE b.bron_systeem<>'Meijendel' OR BINARY b.bron_dataset<>BINARY {old}),1,0);",
+        f'INSERT INTO {guard} SELECT IF(NOT EXISTS('
+        'SELECT 1 FROM taxa_bronkoppeling oldb JOIN taxa_bronkoppeling newb '
+        'ON newb.bron_systeem=oldb.bron_systeem '
+        f'AND BINARY newb.bron_dataset=BINARY {new} '
+        'AND BINARY newb.bron_versie=BINARY oldb.bron_versie '
+        'AND BINARY newb.bron_taxon_id=BINARY oldb.bron_taxon_id '
+        'AND newb.koppeling_id<>oldb.koppeling_id '
+        f'WHERE BINARY oldb.bron_dataset=BINARY {old}),1,0);',
+        'UPDATE taxa_bronkoppeling b '
+        f'JOIN {query_identifier(new_table)} w ON w.taxon_bronkoppeling_id=b.koppeling_id '
+        f'SET b.bron_dataset={new} WHERE b.bron_systeem=\'Meijendel\' '
+        f'AND BINARY b.bron_dataset=BINARY {old};',
+        f'INSERT INTO {guard} SELECT IF(NOT EXISTS('
+        f'SELECT 1 FROM {query_identifier(new_table)} w '
+        'JOIN taxa_bronkoppeling b ON b.koppeling_id=w.taxon_bronkoppeling_id '
+        f"WHERE b.bron_systeem<>'Meijendel' OR BINARY b.bron_dataset<>BINARY {new}),1,0);",
+        'COMMIT;',
+        f'DROP TEMPORARY TABLE {guard};',
+    ])
+
+
+def central_old_table_triggers_drop_sql(old_tables: list[str]) -> str:
+    """Remove only hash-named row guards left attached by RENAME TABLE."""
+    if not old_tables:
+        raise ValueError('Geen oude tabelnamen opgegeven')
+    statements = []
+    for table in old_tables:
+        query_identifier(table)
+        for suffix in ('bi', 'bu'):
+            statements.append('DROP TRIGGER IF EXISTS '+central_trigger_name(table, suffix)+';')
+    return '\n'.join(statements)
 
 
 def central_query_plan(db: CentralQueryDatabase) -> dict:
