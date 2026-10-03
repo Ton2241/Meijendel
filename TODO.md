@@ -1,7 +1,7 @@
 # TODO
 
 - Beslis over elf positieve zoogdiertelconflicten in controlejaar 2007. Het
-  betreft zeven Konijnwaarden en vier Reewaarden op tien bezoeken in M2, M14,
+  betreft acht Konijnwaarden en drie Reewaarden op tien bezoeken in M2, M14,
   M75, M77 en M75a. Bezoek-ID, kavel, datum, tijd en soort zijn gelijk; alleen
   het geconsolideerde SOVON-bezoektotaal wijkt af van de som van de secundaire
   NDFF-bronregels. Beslis tevens of het voor 2005 en 2006 genomen besluit dat
