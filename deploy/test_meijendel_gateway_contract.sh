@@ -67,6 +67,7 @@ for fragment in \
   'CONTAINER="meijendel-mysql"' \
   'SHINY_CONTAINER="shiny_meijendel"' \
   'restore_backup' \
+  'retire_previous_release_objects' \
   'first_cache_migration=0' \
   'install_first_migration_artifacts' \
   'row_counts_sha256' \
@@ -81,10 +82,19 @@ for fragment in \
   'stat -c '\''%U:%a'\'' "$CANDIDATE_FILE"' \
   'SELECT VERSION()' \
   'CHECK TABLE' \
+  'runtime_cache_check || return 1' \
   'docker compose up -d --force-recreate shiny' \
   'trim/soorten/soorten_trendoverzicht.csv' \
   'trim/sandra/soorten/soorten_trendoverzicht.csv'; do
   grep -Fq "$fragment" "$REMOTE_HELPER" || fail "remote helper mist veiligheidscontract: $fragment"
+done
+
+for retired_object in \
+  externe_ecologie_dataset externe_ecologie_event externe_ecologie_overlap externe_ecologie_resultaat \
+  ndff_daz_bmp_bezoek ndff_daz_bmp_bezoek_taxon ndff_daz_bmp_recordkandidaat ndff_daz_bmp_recordselectie \
+  vangblik_soorten; do
+  grep -Fq "$retired_object" "$REMOTE_HELPER" || \
+    fail "remote helper mist expliciet toegestaan vervallen object: $retired_object"
 done
 
 for file in "$DEPLOY_SCRIPT" "$REMOTE_HELPER"; do
@@ -97,6 +107,9 @@ done
 
 assert_before "$REMOTE_HELPER" 'table_checksums_sha256' 'DATABASE_BACKUP='
 assert_before "$REMOTE_HELPER" 'row_counts_sha256' 'DATABASE_BACKUP='
+assert_before "$REMOTE_HELPER" 'DATABASE_BACKUP=' 'retire_previous_release_objects "$SQL_CANDIDATE_FILE"'
+assert_before "$REMOTE_HELPER" 'import_started=1 # rollback omvat vanaf hier ook objectmigratie' 'retire_previous_release_objects "$SQL_CANDIDATE_FILE"'
+assert_before "$REMOTE_HELPER" 'retire_previous_release_objects "$SQL_CANDIDATE_FILE"' 'cat "$SQL_CANDIDATE_FILE"'
 
 cache_status_line="$(grep -nF 'CACHE_CANDIDATE_STATUS=ready' "$REMOTE_HELPER" | head -n 1 | cut -d: -f1 || true)"
 backup_line="$(grep -nF 'DATABASE_BACKUP=' "$REMOTE_HELPER" | head -n 1 | cut -d: -f1 || true)"

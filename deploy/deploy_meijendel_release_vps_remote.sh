@@ -145,6 +145,66 @@ check_release_schema() {
   printf 'RELEASE_SCHEMA=verified\n'
 }
 
+retired_release_allowlist() {
+  printf '%s\tBASE TABLE\n' \
+    externe_ecologie_dataset \
+    externe_ecologie_event \
+    externe_ecologie_overlap \
+    externe_ecologie_resultaat \
+    ndff_daz_bmp_bezoek \
+    ndff_daz_bmp_bezoek_taxon \
+    ndff_daz_bmp_recordkandidaat \
+    ndff_daz_bmp_recordselectie \
+    vangblik_soorten | LC_ALL=C sort
+}
+
+retire_previous_release_objects() {
+  local dump="$1" manifest="$2" expected actual stale allowed unexpected remaining name kind
+  expected="$(release_schema_objects "$dump" "$manifest")" || return 1
+  actual="$(docker exec "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -NBe "$1"' sh \
+    'SELECT TABLE_NAME,TABLE_TYPE FROM information_schema.tables WHERE table_schema=DATABASE()' | LC_ALL=C sort)" || return 1
+  stale="$(comm -23 <(printf '%s\n' "$actual") <(printf '%s\n' "$expected"))"
+  [[ -n "$stale" ]] || {
+    printf 'RETIRED_RELEASE_OBJECTS=none\n'
+    return 0
+  }
+
+  allowed="$(retired_release_allowlist)"
+  unexpected="$(comm -23 <(printf '%s\n' "$stale") <(printf '%s\n' "$allowed"))"
+  [[ -z "$unexpected" ]] || die "onverwachte productieobjecten buiten kandidaat: ${unexpected//$'\n'/, }"
+  while IFS=$'\t' read -r name kind; do
+    [[ -n "$name" ]] || continue
+    if awk -F'\t' -v object="$name" '$1 == object {found=1} END {exit !found}' <<<"$expected"; then
+      die "allowlistobject staat opnieuw in de kandidaat: $name"
+    fi
+    [[ "$kind" == "BASE TABLE" ]] || die "vervallen object heeft onverwacht type: $name ($kind)"
+  done <<<"$stale"
+
+  docker exec -i "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"' <<'RETIRED_RELEASE_SQL'
+SET SESSION FOREIGN_KEY_CHECKS=0;
+DROP TABLE IF EXISTS
+  `ndff_daz_bmp_bezoek_taxon`,
+  `ndff_daz_bmp_recordkandidaat`,
+  `ndff_daz_bmp_recordselectie`,
+  `ndff_daz_bmp_bezoek`,
+  `externe_ecologie_resultaat`,
+  `externe_ecologie_overlap`,
+  `externe_ecologie_event`,
+  `externe_ecologie_dataset`,
+  `vangblik_soorten`;
+SET SESSION FOREIGN_KEY_CHECKS=1;
+RETIRED_RELEASE_SQL
+
+  actual="$(docker exec "$CONTAINER" sh -lc \
+    'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" -NBe "$1"' sh \
+    'SELECT TABLE_NAME,TABLE_TYPE FROM information_schema.tables WHERE table_schema=DATABASE()' | LC_ALL=C sort)" || return 1
+  remaining="$(comm -23 <(printf '%s\n' "$actual") <(printf '%s\n' "$expected"))"
+  [[ -z "$remaining" ]] || die "vervallen productieobjecten bleven aanwezig: ${remaining//$'\n'/, }"
+  printf 'RETIRED_RELEASE_OBJECTS=%s\n' "$(cut -f1 <<<"$stale" | paste -sd, -)"
+}
+
 production_only_fingerprint() {
   local expected="${1:-}" digest name kind
   local objects=()
@@ -201,7 +261,7 @@ restart_shiny() {
   for attempt in $(seq 1 30); do
     if curl -fsSI http://127.0.0.1:3838/ >/dev/null; then
       printf 'SHINY_STATUS=ready\n'
-      runtime_cache_check
+      runtime_cache_check || return 1
       return 0
     fi
     sleep 2
@@ -437,7 +497,8 @@ binlog_dump_threads="$(docker exec "$CONTAINER" sh -lc \
 [[ "$replica_connections" == 0 && -z "$registered_replicas" && "$binlog_dump_threads" == 0 ]] ||
   die "volledige import zonder binlog is geblokkeerd omdat replicatie actief kan zijn"
 
-import_started=1
+import_started=1 # rollback omvat vanaf hier ook objectmigratie
+retire_previous_release_objects "$SQL_CANDIDATE_FILE" "$SQL_MANIFEST_CANDIDATE_FILE"
 { printf 'SET SESSION sql_log_bin=0;\n'; cat "$SQL_CANDIDATE_FILE"; } |
   docker exec -i "$CONTAINER" sh -lc \
     'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
