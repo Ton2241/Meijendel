@@ -7,10 +7,10 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
 
 ## Wat het script doet
 
-1. Het leest de tabellen `plots`, `plot_jaar_oppervlak`, `plot_jaar_teller`, `territoria`, `soorten`, `evg_vogelgroepen` en `evg_vogel_landschapgroep`.
+1. Het leest onder meer `plots`, `plot_analyse_scope`, `plot_jaar_oppervlak`, `plot_jaar_teller`, `territoria`, `bronnen`, `sovon_bmp_plotjaar`, `soorten`, `evg_vogelgroepen` en `evg_vogel_landschapgroep` en past standaard de scope `meijendel_natura2000` toe.
 2. Het bouwt per `plot x jaar` een analysebasis op.
 3. Het gebruikt voor `1958-1972` alleen de historische kernkavels.
-4. Het behandelt niet-getelde plotjaren als `NA` en wel-getelde maar niet-waargenomen soorten als `0`.
+4. Het gebruikt alleen een letterlijke territoriumregel als analysewaarde. Een expliciete nul blijft `0`; een ontbrekende soortregel blijft `NA`. Een formeel afgekeurd SOVON-plotjaar levert voor SOVON `NA`, terwijl een aanwezige onafhankelijke niet-SOVON-regel geldig blijft.
 5. Het corrigeert tellingen pragmatisch voor veranderend plotoppervlak door elk plotjaar terug te rekenen naar de mediane plotoppervlakte van dat plot.
 6. Het draait per soort een `TRIM`-model vóór `1984` en een tweede `TRIM`-model vanaf `1984`.
 7. Het verbindt beide indexreeksen met een brugfactor op basis van `1981-1983` versus `1984-1986`.
@@ -19,6 +19,19 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
    (`1,0` primair; `0,5` secundair), zowel volledig als robuust.
 10. Het voert per functionele groep en analysevariant een
     leave-one-species-out-trendcontrole uit.
+
+M66 en M91 vallen standaard buiten de analyse. Alleen een uitdrukkelijke
+uitvoering met bijvoorbeeld
+`MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66,M91` voegt beide kavels toe.
+
+De op 4 oktober 2026 herberekende standaarduitvoer over 1958–2025 bevat 156
+soorten met minimaal één geaccepteerd positief territorium binnen de scope, 135
+soorten met ten minste één bruikbare TRIM-indexreeks en 94 soorten met een
+brugbare reeks in beide modelperioden. Letterlijke SOVON-nullen vullen de
+meetmatrix van zo'n soort aan, maar maken een soort zonder positieve waarneming
+niet zelfstandig tot analysekandidaat; lege matrixcellen zijn niet als nul
+gebruikt. M66 en M91 en de formeel afgekeurde SOVON-plotjaren zijn conform hun
+status buiten de standaardberekening gehouden.
 
 ## Trendcontract `trim-trend-v2`
 

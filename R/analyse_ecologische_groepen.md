@@ -54,6 +54,10 @@ De MSI geeft daardoor eerder een “gemiddelde ontwikkeling van soorten binnen d
 
 ## Uitgangspunten
 
+- De centrale scope `meijendel_natura2000` wordt toegepast voordat de
+  onderstaande vaste kavelselectie wordt gemaakt. M66 en M91 vallen standaard
+  buiten de berekening; alleen `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS` kan ze na
+  een uitdrukkelijke gebruikerskeuze toevoegen.
 - Ecologische groepen worden afgeleid uit `evg_vogel_landschapgroep`.
 - De analyse gebruikt 100-talgroepen: `100`, `200`, `300`, enzovoort.
 - Alleen deze kavels worden meegenomen:

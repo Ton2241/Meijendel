@@ -2,6 +2,11 @@
 
 Dit is een werkende Shiny-opzet voor vrije TRIM-selecties op kavels.
 
+De vrije selectie begint binnen `meijendel_natura2000`: M66 en M91 en hun
+gekoppelde plotregels vallen standaard af. De technische loader kan ze alleen
+na een uitdrukkelijk argument of via `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS`
+toevoegen.
+
 De app staat in:
 
 - `/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R`
@@ -201,7 +206,8 @@ Er zit nog niet in:
 Maar methodisch doet deze versie wel al wat nodig is:
 
 - opnieuw rekenen voor de gekozen kavels
-- correcte `0` voor wel geteld maar niet aanwezig
-- lege waarde voor niet geteld
+- correcte `0` uitsluitend voor een letterlijke nulregel
+- lege waarde voor een ontbrekende soortregel, een niet-geteld plotjaar of een formeel afgekeurde SOVON-uitkomst
+- behoud van een aanwezige onafhankelijke niet-SOVON-regel in een afgekeurd SOVON-plotjaar
 - TRIM per soort
 - MSI per ecologische groep

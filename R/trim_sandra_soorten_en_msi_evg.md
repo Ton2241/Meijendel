@@ -7,10 +7,21 @@ Het script:
 - gebruikt alleen de periode `1997-2022`
 - gebruikt alleen de 25 Sandra-plots
 - laat de bestaande lange output in `trim/soorten` en `trim_msi_evg` ongemoeid
-- behandelt niet-getelde plotjaren als `NA`
-- behandelt wel-getelde maar niet-waargenomen soorten als `0`
+- gebruikt alleen een letterlijke territoriumregel als analysewaarde
+- houdt een expliciete nul als `0` en een ontbrekende soortregel als `NA`
+- zet SOVON-uitkomsten van formeel afgekeurde plotjaren op `NA`, maar behoudt aanwezige onafhankelijke niet-SOVON-regels
 - gebruikt dezelfde verbeterde TRIM-logica als de lange analyse: eerst een volledig model, daarna automatisch eenvoudigere modellen als dat nodig is
 - berekent daarna een MSI per ecologische 100-groep
+
+Vooraf past het script de centrale scope `meijendel_natura2000` toe. M66 en
+M91 vallen daardoor standaard buiten iedere variant, ook als een toekomstige
+plotlijst een van beide zou noemen. Alleen een uitdrukkelijke uitvoering met
+`MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS` kan daarvan afwijken.
+
+De op 4 oktober 2026 herberekende standaarduitvoer bevat binnen de 25
+Sandra-plots en 1997–2022 132 soorten met minimaal één positief territorium.
+Daarvan leveren 110 soorten een formele TRIM-trend. Letterlijke nulregels tellen
+mee in de modellen, maar selecteren een soort niet zonder positief territorium.
 
 ## Trendcontract `trim-trend-v2`
 

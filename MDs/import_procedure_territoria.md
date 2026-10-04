@@ -3,13 +3,62 @@
 **Database:** Meijendel  
 **Engine:** InnoDB, UTF8MB4  
 **Frequentie:** Jaarlijks  
-**Laatste update van dit document:** februari 2026  
+**Laatste update van dit document:** 3 oktober 2026\
 
 ---
 
 ## Overzicht
 
 Eén keer per jaar worden nieuwe vogelterritoria verwerkt vanuit externe bron (SOVON) naar de productietabellen. Dit document beschrijft de volgorde en de controles die daarbij horen.
+
+## Goedkeuringsstatus
+
+Neem voor SOVON in `territoria` uitsluitend formele territoria uit goedgekeurde
+SOVON-tellingen op. Controleer die status vóór import en bewaar het besluit in
+`sovon_bmp_plotjaar`. De volledige SOVON-controle van 3 oktober 2026 omvat 55
+Meijendel-plots en 1984-2025. Zij levert 25 formeel afgekeurde plotjaren met
+bezoeken of records op. Geen van deze 25 bevat nog een `sovon_m`-regel. Bij de
+laatste correctie zijn 373 SOVON-regels met samen 756 territoria verwijderd
+voor M8/2008, M45/2018, M8/2018, M75/2024 en M51/2025. M8/2019 staat nu groen;
+daarvoor zijn 19 positieve SOVON-regels met 114 territoria hersteld. De matrix
+voor M8/2019 bevat uitsluitend 107 lege cellen, dus geen nullen. `territoria`
+bevat daarna 157.580 regels. De 60 regels uit `jrvslg_m` en vier uit
+`meeuwen_literatuur` voor M35 in 1984-1987 en 2000 blijven volgens de
+brongebonden regels behouden; zij zijn geen SOVON-uitkomsten.
+
+Twaalf oranje-rode combinaties zonder bezoeken, soorten of records bevatten
+in de downloads uitsluitend 980 lege matrixcellen. Zij zijn geen telling en
+krijgen geen plotjaarstatus. M53/2007 bevat in SOVON 36 soorttotalen, maar geen
+individuele bron-ID, datum, bezoekkoppeling of exporteerbaar waarnemingspunt;
+reconstrueer deze totalen daarom niet als `dagwaarnemingen_bmp`.
+Sluit 2016/M62 wel uit van de BMP-tellersensitiviteitsanalyse: dit was een
+afzonderlijke roofvogeltelling.
+
+Bezoeken en waarnemingen in `dagbezoeken_bmp` en `dagwaarnemingen_bmp` kunnen
+ook afkomstig zijn uit een niet-goedgekeurde telling en zijn op zichzelf geen
+bewijs van goedkeuring.
+
+Leid afkeuring niet uitsluitend af uit het ontbreken van een territoriumregel.
+Een goedgekeurd plotjaar kan voor een afzonderlijke soort immers nul territoria
+hebben. Gebruik voor analyses van territoria, trends en tellersensitiviteit
+alleen de goedgekeurde territoriumuitkomsten en de bijbehorende registratie in
+`plot_jaar_teller`.
+
+## Telleridentificatie
+
+Gebruik voor de teller of het tellerteam per plot en jaar uitsluitend
+`plot_jaar_teller` uit de levende lokale Meijendel-database. Het veld
+`waarnemer` uit een SOVON/AVIMAP-resultatendownload is daarvoor niet leidend:
+inhoudelijke controle heeft concrete toeschrijvingen gevonden aan kavels die
+de genoemde waarnemer niet heeft geteld. Gebruik dit veld daarom niet om
+`plot_jaar_teller` te vervangen, aan te vullen of te corrigeren. Als het wordt
+ingelezen, blijft het uitsluitend een letterlijke bronwaarde voor audit.
+
+Behoud meerdere geregistreerde tellers binnen hetzelfde plotjaar als een
+tellerteam. Leid daaruit niet af wie aan welk afzonderlijk bezoek deelnam. De
+AVIMAP-bezoekentabel bevat geen telleridentificatie. Deze beperking betreft
+alleen de telleridentificatie en is geen algemene afwijzing van de aangeleverde
+territorium- of bezoekgegevens.
 
 ---
 

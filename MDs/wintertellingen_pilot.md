@@ -26,6 +26,11 @@ watervogels en wetlandsoorten. Daardoor is een ontbrekende soortregistratie op
 zowel een volledige telling `Alle vogelsoorten` als een volledige telling
 `Watervogels en wetlandsoorten` een geldige nul voor iedere soort.
 
+De plotselectie gebruikt standaard `v_meijendel_analyseplot_actueel`. M66 en
+M91 vallen dus ook in deze analyse buiten het Natura 2000-analysegebied. Alleen
+een uitdrukkelijke uitvoering met `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66`,
+`M91` of `M66,M91` voegt de gevraagde kavel(s) toe.
+
 Onvolledige bezoeken, deelbezoeken, bezoeken voor alleen specifieke soorten en
 overige niet-reguliere teltypen leveren geen nul op en blijven buiten de
 analysetabel. Het historische teltype blijft in de modellen opgenomen als

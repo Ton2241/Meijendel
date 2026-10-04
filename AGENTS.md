@@ -147,6 +147,16 @@ Bronregister:
   beide registerversies niet inhoudelijk gelijk en actueel zijn
 
 MySQL:
+- Gebruik voor iedere plotgebonden berekening uit `Meijendel` standaard
+  `plot_analyse_scope` met `scope_code = meijendel_natura2000` of de view
+  `v_meijendel_analyseplot_actueel`. M66 (`plot_id = 3503`) en M91
+  (`plot_id = 3514`) hebben `in_scope = 0` omdat zij geen onderdeel zijn van
+  het Natura 2000-analysegebied. Neem een of beide alleen mee wanneer Ton dat
+  uitdrukkelijk voor die analyse vraagt; gebruik in de bestaande R-routes
+  daarvoor `include_out_of_scope_kavels` of
+  `MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66,M91`. Leid analysescope nooit af
+  uit `plots.in_gebruik`: dat veld beschrijft alleen de actuele gebruiksstatus.
+  Nieuwe plots zonder expliciete scopestatus moeten de analyse laten stoppen.
 - Controleer bij ELKE toevoeging, correctie, import, migratie of schemawijziging
   dat ALLE soortwaarnemingen, inclusief afgeleide meetregels en echte nullen,
   via `taxa`, `taxa_bronkoppeling` en `taxon_groepen` benaderbaar zijn.
@@ -410,14 +420,17 @@ MySQL:
   volledigheidsstatus. Leid daaruit geen aanvullende nullen af
 - gebruik voor DAZ-BMP-protocol `17.204` reconstructieversie
   `ndff-daz-bmp-v1` en de vier openbare tabellen
-  `Meijendel.ndff_daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van
+  `Meijendel.daz_bmp_*`. Dit zijn zoogdierregistraties door het deel van
   de BMP-vogeltellers dat aan DAZ deelnam; het zijn geen vogelwaarnemingen.
   Beschouw een BMP-bezoek alleen als deelnemend wanneer minstens één
   17.204-record eenduidig op datum en SOVON-plot aan dat bezoek is gekoppeld.
-  Leid alleen binnen zo'n bevestigd bezoek echte nullen af voor de zeven
-  DAZ-doelsoorten. Een meervoudig koppelbaar record van hetzelfde taxon
-  blokkeert die nul. Leid nooit nullen af voor bijvangsten of voor overige
-  BMP-bezoeken. Controleer vóór gebruik met `--audit-daz-bmp`
+  De 7.552 eerder voor de zeven DAZ-doelsoorten afgeleide nulregels blijven
+  onder `ndff-daz-bmp-v1` uitsluitend als historisch auditspoor bewaard; zij
+  zijn niet geschikt als bewezen afwezigheid. Leid uit deze historische
+  reconstructie geen nieuwe nullen af. Een meervoudig koppelbaar record van
+  hetzelfde taxon blijft afzonderlijk herkenbaar. Leid nooit nullen af voor
+  bijvangsten of voor overige BMP-bezoeken. Controleer vóór gebruik met
+  `--audit-daz-bmp`
 - gebruik vanaf 13 september 2026 voor DAZ-BMP primair de originele
   SOVON/AVIMAP-laag `sovon_avimap_*` met regelversie
   `sovon-avimap-daz-v1`. `ndff-daz-bmp-v1` blijft alleen een historische,

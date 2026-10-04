@@ -94,7 +94,7 @@ Het hernoemen van een al afgebakende meetfamilie is het eenvoudigste deel. Gebru
 | `ndff_poldervis_*`, `ndff_habslak_*` | `vissen_poldervis_*`, `weekdieren_habslak_*` |
 | `ndff_ravon_n2000_*` | Amfibieën en vissen; gedeelde monsterlocatie eenmaal bewaren |
 | `ndff_tuintelling_*`, `ndff_liveatlas_*`, `ndff_kwartiertelling_*` | Resultaten en taxonbereik per groep; gemengde events gemeenschappelijk |
-| `ndff_daz_bmp_*` | Niet-vogelgegevens naar passende groepen; primaire AVIMAP-laag en vogelketen beschermen |
+| `daz_bmp_*` | Niet-vogelgegevens naar passende groepen; primaire AVIMAP-laag en vogelketen beschermen |
 
 De indeling mag niet op de afkorting worden geraden. De 5.980 geselecteerde LMFa-records uit 2000–2025 bevatten uitsluitend vaatplanten. De 67 RAVON-N2000-records uit 2025 bestaan uit 41 amfibieën- en 26 visrecords. Een volledige RAVON-tabel onder één van die groepen schuiven zou de andere groep verhullen.
 
@@ -345,10 +345,10 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 |---|---:|---|
 | `ndff_ravon_n2000_monsterlocatieproxy` | 25 | Amfibieën en vissen scheiden; gedeeld monster behouden |
 | `ndff_ravon_n2000_recordselectie` | 67 | Amfibieën en vissen scheiden; gedeeld monster behouden |
-| `ndff_daz_bmp_bezoek` | 1.475 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
-| `ndff_daz_bmp_bezoek_taxon` | 10.374 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
-| `ndff_daz_bmp_recordkandidaat` | 5.404 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
-| `ndff_daz_bmp_recordselectie` | 10.670 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
+| `daz_bmp_bezoek` | 1.519 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
+| `daz_bmp_bezoek_taxon` | 10.453 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
+| `daz_bmp_recordkandidaat` | 5.404 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
+| `daz_bmp_recordselectie` | 10.670 | Niet-vogelgroepen; primaire AVIMAP en vogelketen beschermen |
 | `ndff_kwartiertelling_interval_soortgroep` | 18 | Gemengde events behouden; groepsresultaten en telbereik herkenbaar verdelen |
 | `ndff_kwartiertelling_interval_taxon` | 49 | Gemengde events behouden; groepsresultaten en telbereik herkenbaar verdelen |
 | `ndff_kwartiertelling_recordselectie` | 102 | Gemengde events behouden; groepsresultaten en telbereik herkenbaar verdelen |

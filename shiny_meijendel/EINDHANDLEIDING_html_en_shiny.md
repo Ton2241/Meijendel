@@ -24,6 +24,10 @@ Gebruik meestal deze volgorde:
 1. Start de Shiny-app.
 2. Laad `meijendel.sql`.
 3. Kies kavels.
+
+De beschikbare kavels zijn vooraf beperkt tot de centrale scope
+`meijendel_natura2000`. M66 en M91 worden standaard niet getoond of berekend.
+
 4. Kies `Van jaar` en `Tot jaar`.
 5. Klik op `Analyse uitvoeren`.
 6. Controleer de uitkomsten in `Soorten`, `Groepen` en `Controle`.

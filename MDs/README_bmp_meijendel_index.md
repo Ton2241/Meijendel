@@ -20,6 +20,10 @@ Dit laat de ruwe aantallen territoria per soort of per groep zien.
 Bron:
 rechtstreeks uit `meijendel.sql`
 
+Bij het laden past de HTML eerst de centrale scope `meijendel_natura2000` toe.
+M66 en M91 en alle gekoppelde plotregels worden daarom standaard niet in de
+overzichten en berekeningen gebruikt.
+
 ### 2. Dichtheid (per km²)
 
 Dit laat aantallen per oppervlakte zien.

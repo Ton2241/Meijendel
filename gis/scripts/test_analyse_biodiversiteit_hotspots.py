@@ -135,6 +135,12 @@ def test_data_app_snapshot_bevat_alleen_geaggregeerde_queries():
     assert "ndff_identity" not in encoded
 
 
+def test_vogels_soortenrijkdom_telt_geen_explicitiete_nullen():
+    module = load_module()
+    normalized = " ".join(module.BIRD_QUERY.casefold().split())
+    assert "t.territoria > 0" in normalized
+
+
 if __name__ == "__main__":
     test_periodisering_sluit_oude_startdata_en_2026_uit()
     test_percentielrang_behandelt_gelijke_waarden_gelijk()
@@ -143,4 +149,5 @@ if __name__ == "__main__":
     test_rapportdataset_bevat_geen_beveiligde_detailvelden()
     test_uitvoerpad_moet_in_beveiligde_t7_zone_staan()
     test_data_app_snapshot_bevat_alleen_geaggregeerde_queries()
+    test_vogels_soortenrijkdom_telt_geen_explicitiete_nullen()
     print("OK: biodiversiteit-hotspotanalyse")

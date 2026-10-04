@@ -345,6 +345,36 @@ def check_display_names(module):
 
 def main() -> int:
     module = load_module()
+    assert callable(getattr(module, 'central_derived_rename_sql', None)), \
+        'Hernoemde afgeleide tabel mist migratie van centrale broncontext'
+    rename_sql = module.central_derived_rename_sql(
+        'ndff_daz_bmp_bezoek_taxon', 'daz_bmp_bezoek_taxon')
+    assert module.query_literal('daz_bmp_bezoek_taxon') in rename_sql
+    assert module.query_literal('ndff_daz_bmp_bezoek_taxon') in rename_sql
+    assert 'JOIN `daz_bmp_bezoek_taxon` w' in rename_sql
+    assert 'DROP TRIGGER IF EXISTS cq_registry_bu' in rename_sql
+    old_daz_tables = [
+        'ndff_daz_bmp_bezoek', 'ndff_daz_bmp_bezoek_taxon',
+        'ndff_daz_bmp_recordkandidaat', 'ndff_daz_bmp_recordselectie']
+    drop_sql = module.central_old_table_triggers_drop_sql(old_daz_tables)
+    for table in old_daz_tables:
+        for suffix in ('bi', 'bu'):
+            assert 'DROP TRIGGER IF EXISTS '+module.central_trigger_name(table, suffix) in drop_sql
+    try:
+        module.central_old_table_triggers_drop_sql(['ongeldig-tabel'])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError('Ongeldige oude tabelnaam geaccepteerd')
+    for old, new in [('', 'daz_bmp_bezoek_taxon'),
+                     ('ndff_daz_bmp_bezoek_taxon', 'daz-bmp-bezoek-taxon'),
+                     ('daz_bmp_bezoek_taxon', 'daz_bmp_bezoek_taxon')]:
+        try:
+            module.central_derived_rename_sql(old, new)
+        except ValueError:
+            pass
+        else:
+            raise AssertionError('Ongeldige centrale tabelhernoeming geaccepteerd')
     check_display_names(module)
     check_central_list(module)
     # A name match must never bypass concept-context checks; old IDs must resolve.
@@ -852,6 +882,11 @@ def check_central_query_routes():
         'ndff_open_waarneming': {'waarneming_id','soort_key','jaar'},
         'sovon_avimap_taxon': {'batch_id','soortgroep_code','soortnr'},
         'sovon_avimap_waarneming': {'batch_id','soortgroep_code','soortnr','jaar'},
+        'sovon_bmp_soortenlijst_taxon': {
+            'lijsttaxon_id','soortenlijstversie_id','soort_id',
+            'taxon_bronkoppeling_id','euring_code','bron_naam','lijststatus',
+            'koppelstatus','bronnotitie','aangemaakt_op',
+        },
         'lvd_resultaat': {'resultaat_id','wetenschappelijke_naam','bronmetadata'},
         'pq_vegetatie_waarneming': {'waarneming_id','taxon_bronkoppeling_id'},
         'ndff_test_bezoek_taxon': {'reconstructieversie','bezoek_sleutel','wetenschappelijke_naam','waarnemingsstatus'},
@@ -864,6 +899,16 @@ def check_central_query_routes():
     assert routes['ndff_habslak_hokjaar']['name_field'] == 'doelsoort'
     assert routes['ndff_test_bezoek_taxon']['kind'] == 'derived'
     assert routes['pq_vegetatie_waarneming']['kind'] == 'direct'
+    list_route = routes['sovon_bmp_soortenlijst_taxon']
+    assert list_route['role'] == 'protocolsoortenlijst'
+    assert module.central_reachability_scope(
+        'sovon_bmp_soortenlijst_taxon', list_route,
+    ) == "w.koppelstatus<>'niet_gekoppeld'"
+    list_guard_sql = module.central_query_triggers_sql({
+        'routes': {'sovon_bmp_soortenlijst_taxon': list_route},
+    })
+    assert "Niet-gekoppeld lijstlid bevat toch een taxonkoppeling" in list_guard_sql
+    assert "Gekoppeld lijstlid is niet centraal bereikbaar" in list_guard_sql
     migrated = {k: v | {'taxon_bronkoppeling_id'} for k, v in schema.items()}
     assert module.central_query_routes(migrated)['ndff_test_bezoek_taxon']['kind'] == 'derived'
     assert module.derived_source_key({'name_field':'wetenschappelijke_naam',
@@ -872,6 +917,7 @@ def check_central_query_routes():
     assert module.source_usage_projection({'name':'A','register_broncontext':{'extra':1}})['name'] == 'A'
     assert 'register_broncontext' not in module.source_usage_projection({'register_broncontext':{}})
     actual={k:set(v) for k,v in module.CENTRAL_QUERY_SCHEMA.items()}
+    assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5
     module.central_query_schema_contract(actual)
     for changed in ({**actual,'nieuwe_metingen':{'soortnr','aantal','jaar'}},
                     {**actual,'nieuwe_metingen':{'euring_code','aantal','jaar'}},

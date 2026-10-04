@@ -42,6 +42,8 @@ validate_dump_structure() {
   grep -q -- '-- Dump completed on ' "$dump" || die "SQL-dump mist de eindmarkering."
   grep -q 'CREATE TABLE `pq_vegetatie_pq`' "$dump" || die "SQL-dump mist pq_vegetatie_pq."
   grep -q 'CREATE TABLE `ndff_open_waarneming`' "$dump" || die "SQL-dump mist de openbare NDFF-tabel."
+  grep -q 'CREATE TABLE `plot_analyse_scope`' "$dump" || die "SQL-dump mist plot_analyse_scope."
+  grep -q 'v_meijendel_analyseplot_actueel' "$dump" || die "SQL-dump mist v_meijendel_analyseplot_actueel."
   if LC_ALL=C grep -Eq 'Meijendel_ndff_secure|ndff_open_secure_koppeling|ticket_58679' "$dump"; then
     die "SQL-dump bevat een verwijzing naar beveiligde NDFF-data."
   fi
@@ -182,6 +184,20 @@ table_count() {
   query "SELECT COUNT(*) FROM \`$schema\`.\`$table\`;"
 }
 
+validate_plot_scope() {
+  local schema="$1" missing_scope unexpected_exclusions required_exclusions view_count plot_count
+  [[ "$schema" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schemanaam voor plot-analysescope."
+  missing_scope="$(query "SELECT COUNT(*) FROM \`$schema\`.plots p LEFT JOIN \`$schema\`.plot_analyse_scope s ON s.plot_id=p.plot_id AND s.scope_code='meijendel_natura2000' WHERE s.plot_id IS NULL")"
+  [[ "$missing_scope" == "0" ]] || die "plot_analyse_scope mist een expliciete status voor $missing_scope plots."
+  required_exclusions="$(query "SELECT COUNT(*) FROM \`$schema\`.plot_analyse_scope s JOIN \`$schema\`.plots p ON p.plot_id=s.plot_id WHERE s.scope_code='meijendel_natura2000' AND s.in_scope=0 AND p.kavel_nummer IN ('M66','M91') AND s.reden='Geen onderdeel van Natura 2000-analysegebied.'")"
+  [[ "$required_exclusions" == "2" ]] || die "M66 en M91 zijn niet beide met de vastgestelde reden uitgesloten."
+  unexpected_exclusions="$(query "SELECT COUNT(*) FROM \`$schema\`.plot_analyse_scope s JOIN \`$schema\`.plots p ON p.plot_id=s.plot_id WHERE s.scope_code='meijendel_natura2000' AND s.in_scope=0 AND p.kavel_nummer NOT IN ('M66','M91')")"
+  [[ "$unexpected_exclusions" == "0" ]] || die "plot_analyse_scope sluit onverwachte kavels uit."
+  plot_count="$(table_count "$schema" plots)"
+  view_count="$(query "SELECT COUNT(*) FROM \`$schema\`.v_meijendel_analyseplot_actueel")"
+  [[ "$view_count" -eq $((plot_count - 2)) ]] || die "v_meijendel_analyseplot_actueel bevat niet exact alle plots behalve M66 en M91."
+}
+
 write_manifest() {
   local dump="$1" manifest="$2" candidate="$3" temp_dir live_counts candidate_counts live_checksums candidate_checksums
   [[ "$candidate" =~ ^codex_meijendel_export_check_[0-9]+$ ]] || die "onveilige kandidaatnaam: $candidate"
@@ -198,6 +214,8 @@ write_manifest() {
   write_table_checksums "$MYSQL_DATABASE" "$live_checksums"
   write_table_checksums "$candidate" "$candidate_checksums"
   cmp -s "$live_checksums" "$candidate_checksums" || die "proefimport wijkt inhoudelijk af van de levende database."
+  validate_plot_scope "$MYSQL_DATABASE"
+  validate_plot_scope "$candidate"
   query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$MYSQL_DATABASE' ORDER BY trigger_name" > "$temp_dir/live-triggers.tsv"
   query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$candidate' ORDER BY trigger_name" > "$temp_dir/candidate-triggers.tsv"
   cmp -s "$temp_dir/live-triggers.tsv" "$temp_dir/candidate-triggers.tsv" || die "proefimport wijkt af in daadwerkelijke schrijfbewaking."
@@ -251,6 +269,7 @@ validate_live() {
   [[ "$(table_count "$MYSQL_DATABASE" dagbezoeken_bmp)" == "$(manifest_value dagbezoeken_bmp "$manifest")" ]] || die "dagbezoeken_bmp wijzigde sinds export."
   [[ "$(table_count "$MYSQL_DATABASE" dagwaarnemingen_bmp)" == "$(manifest_value dagwaarnemingen_bmp "$manifest")" ]] || die "dagwaarnemingen_bmp wijzigde sinds export."
   [[ "$(table_count "$MYSQL_DATABASE" territoria)" == "$(manifest_value territoria "$manifest")" ]] || die "territoria wijzigde sinds export."
+  validate_plot_scope "$MYSQL_DATABASE"
   temp_dir="$(mktemp -d)"
   trap 'rm -rf "$temp_dir"' RETURN
   live_counts="$temp_dir/live.tsv"

@@ -20,8 +20,9 @@ from typing import Iterable
 ROOT = Path(__file__).parents[2]
 SCHEMA = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_schema.sql"
 DEFAULT_SEED = ROOT / "gis" / "database" / "ndff_protocolkwaliteit_seed.csv"
-SOURCE_XLSX = ROOT / "Natuurprotocollen" / "Natuurprotocollen_gebruiksmatrix.xlsx"
-SOURCE_DOCX = ROOT / "Natuurprotocollen" / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
+PROTOCOL_SOURCE_DIR = ROOT / "docs" / "bronnen" / "protocollen"
+SOURCE_XLSX = PROTOCOL_SOURCE_DIR / "Natuurprotocollen_gebruiksmatrix.xlsx"
+SOURCE_DOCX = PROTOCOL_SOURCE_DIR / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
 RULE_VERSION = "ndff-protocolkwaliteit-v1"
 SCOPE_RULE_VERSION = "ndff-protocolbereik-v2"
 DECISION_RULE_VERSION = "ndff-analysebesluit-v4"
@@ -53,9 +54,18 @@ AMPHIBIAN_LEGACY_RULE_VERSION = "ndff-amfibiewater-v1"
 BAT_TRANSECT_RULE_VERSION = "ndff-vleermuistransect-v1"
 RABBIT_COUNT_RULE_VERSION = "ndff-konijnentelling-v1"
 DAZ_BMP_RULE_VERSION = "ndff-daz-bmp-v1"
+SOVON_BMP_MAMMAL_RULE_VERSION = "sovon-bmp-jaarbestanden-v1"
 SOVON_AVIMAP_RULE_VERSION = "sovon-avimap-252-v1"
 SOVON_AVIMAP_DAZ_RULE_VERSION = "sovon-avimap-daz-v1"
 SOVON_AVIMAP_BIRD_RULE_VERSION = "sovon-avimap-vogels-v1"
+SOVON_BMP_RULE_VERSION = "sovon-bmp-jaarcontrole-v1"
+SOVON_BMP_TERRITORIA_POLICY = "uitsluitend_letterlijke_bronwaarden"
+SOVON_BMP_CURRENT_LIST_RULE_VERSION = "sovon-bmp-a-actueel-retroactief-v1"
+SOVON_BMP_CURRENT_LIST_KEY = "sovon-bmp-a-actueel-retroactief-vanaf-1984-v1"
+SOVON_BMP_CURRENT_LIST_URL = (
+    "https://pub.sovon.nl/static/publicaties/"
+    "BMP-Tabel-interpretatiecriteria-alfabetisch-LR.pdf"
+)
 ZEEREEP_RULE_VERSION = "ndff-zeereep-v2"
 BOSPADDENSTOEL_RULE_VERSION = "ndff-bospaddenstoel-v1"
 HNS_RULE_VERSION = "ndff-hns-v1"
@@ -128,8 +138,9 @@ REPTILE_TABLE_PREFIX = "Meijendel.ndff_reptiel"
 AMPHIBIAN_TABLE_PREFIX = "Meijendel.ndff_amfibie"
 BAT_TABLE_PREFIX = "Meijendel.ndff_vleermuis"
 RABBIT_TABLE_PREFIX = "Meijendel.ndff_konijn"
-DAZ_BMP_TABLE_PREFIX = "Meijendel.ndff_daz_bmp"
+DAZ_BMP_TABLE_PREFIX = "Meijendel.daz_bmp"
 SOVON_AVIMAP_TABLE_PREFIX = "Meijendel.sovon_avimap"
+SOVON_BMP_TABLE_PREFIX = "Meijendel.sovon_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
@@ -433,7 +444,8 @@ DAZ_BMP_RECONSTRUCTION_EXPECTED = {
     "confirmed_plots": 49,
     "target_matrix_rows": 10325,
     "target_positive_rows": 2681,
-    "true_zero_rows": 7552,
+    "true_zero_rows": 0,
+    "historical_derived_zero_rows": 7552,
     "ambiguous_target_rows": 92,
     "target_count_sum": 12685,
     "bycatch_positive_rows": 49,
@@ -1564,11 +1576,12 @@ def build_daz_bmp_matrix(
     positive_counts: dict[tuple[int, str], tuple[int, int]],
     ambiguous_counts: dict[tuple[int, str], int],
 ) -> list[dict[str, object]]:
-    """Bouw de DAZ-matrix voor aantoonbaar deelnemende BMP-bezoeken.
+    """Bouw het historische DAZ-auditspoor voor gekoppelde BMP-bezoeken.
 
     Een eenduidig gekoppelde positieve 17.204-regel bewijst deelname. Voor de
-    zeven DAZ-doelsoorten is ontbreken dan een echte nul, behalve als een
-    meervoudig koppelbaar record van hetzelfde taxon die nul onzeker maakt.
+    zeven DAZ-doelsoorten werd ontbreken eerder als nul afgeleid. Die afleiding
+    blijft als historisch auditspoor herkenbaar, maar is geen bewezen
+    afwezigheid. Een meervoudig koppelbaar record blijft afzonderlijk onzeker.
     Bijvangsten krijgen uitsluitend positieve regels en nooit afgeleide nullen.
     """
     rows: list[dict[str, object]] = []
@@ -1587,10 +1600,10 @@ def build_daz_bmp_matrix(
                 value = None
                 zero_rule = "geblokkeerd_door_ambigu_record"
             else:
-                status = "echte_nul"
-                value_status = "echte_nul"
+                status = "historische_afgeleide_nul"
+                value_status = "historisch_afgeleid_geen_afwezigheidsbewijs"
                 value = 0
-                zero_rule = "bevestigde_daz_deelname"
+                zero_rule = "historische_reconstructie_geen_afwezigheidsbewijs"
             rows.append({
                 "visit_id": visit_id, "taxon": taxon, "relation": "doelsoort",
                 "status": status, "count": value, "source_records": source_records,
@@ -4289,7 +4302,7 @@ def reconstruct_daz_bmp(
     mysql_client: Path,
     client_args: list[str],
 ) -> dict[str, int]:
-    """Reconstructeer DAZ-deelname en echte nullen binnen bekende BMP-bezoeken."""
+    """Reconstructeer het historische DAZ-auditspoor binnen bekende BMP-bezoeken."""
     query_args = client_args + ["--batch", "--raw", "--skip-column-names"]
     source_output = run_mysql(mysql_client, query_args, daz_bmp_source_sql(), capture=True)
     source: dict[int, dict[str, object]] = {}
@@ -4364,7 +4377,8 @@ def reconstruct_daz_bmp(
     visit_note = (
         "DAZ-deelname is bevestigd door minimaal één eenduidig aan dit BMP-bezoek "
         "gekoppeld positief 17.204-record. Niet-bevestigde BMP-bezoeken worden niet "
-        "als DAZ-bezoek gebruikt. BMP-bezoektijd is bekend; afzonderlijke DAZ-inspanning niet."
+        "als DAZ-bezoek gebruikt. BMP-bezoektijd is bekend; afzonderlijke DAZ-inspanning niet. "
+        "Niet-gemelde doelsoorten zijn historisch afgeleid en gelden niet als bewezen afwezigheid."
     )
     for visit_id in sorted(confirmed_visits):
         meta = visit_meta[visit_id]
@@ -4373,7 +4387,8 @@ def reconstruct_daz_bmp(
             f"{sql_text(str(meta['date']))},{int(str(meta['date'])[:4])},"
             "'bevestigd_door_positieve_17_204',"
             f"{unique_records_by_visit[visit_id]},{ambiguous_records_by_visit[visit_id]},"
-            "'zeven_daz_doelsoorten','bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk',"
+            "'historische_reconstructie_geen_afwezigheidsbewijs',"
+            "'bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk',"
             f"{sql_text(visit_note)})"
         )
 
@@ -4756,8 +4771,1736 @@ def reconstruct_bospaddenstoel_plot_families(
 
 
 def _sovon_int(value: str | None) -> int | None:
-    text = str(value or "").strip()
+    if value is None:
+        return None
+    text = str(value).strip()
     return None if not text else int(float(text))
+
+
+def _sovon_bmp_xlsx_rows(path: Path) -> list[tuple[object, ...]]:
+    """Lees ook AVIMAP-XLSX zonder worksheet-dimensiemetadata volledig."""
+    try:
+        import openpyxl
+    except ImportError as exc:
+        raise RuntimeError(
+            "De SOVON-BMP-jaarwerkboeken vereisen openpyxl uit de Codex-werkruimteruntime."
+        ) from exc
+    workbook = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    try:
+        sheet = workbook.active
+        sheet.reset_dimensions()
+        return [tuple(row) for row in sheet.iter_rows(values_only=True)]
+    finally:
+        workbook.close()
+
+
+def _sovon_bmp_header(row: tuple[object, ...]) -> dict[str, int]:
+    return {
+        str(value).strip().casefold(): index
+        for index, value in enumerate(row)
+        if value is not None and str(value).strip()
+    }
+
+
+def _sovon_bmp_time(value: object) -> str | None:
+    if value is None or str(value).strip() == "":
+        return None
+    if hasattr(value, "strftime"):
+        return value.strftime("%H:%M:%S")
+    text = str(value).strip()
+    parsed = datetime.strptime(text, "%H:%M:%S" if text.count(":") == 2 else "%H:%M")
+    return parsed.strftime("%H:%M:%S")
+
+
+SOVON_BMP_DUTCH_MONTHS = {
+    "januari": 1, "februari": 2, "maart": 3, "april": 4,
+    "mei": 5, "juni": 6, "juli": 7, "augustus": 8,
+    "september": 9, "oktober": 10, "november": 11, "december": 12,
+}
+
+
+def _sovon_bmp_date(value: object, year: int) -> str:
+    if isinstance(value, (date, datetime)):
+        parsed = value.date() if isinstance(value, datetime) else value
+        if parsed.year != year:
+            raise ValueError(f"SOVON-bezoekdatum {parsed} wijkt af van jaar {year}.")
+        return parsed.isoformat()
+    text = str(value or "").strip().casefold()
+    numeric = re.fullmatch(r"(\d{1,2})\s*[-/]\s*(\d{1,2})(?:\s*[-/]\s*(\d{2,4}))?", text)
+    if numeric:
+        day, month = int(numeric.group(1)), int(numeric.group(2))
+        source_year = int(numeric.group(3)) if numeric.group(3) else year
+        if source_year < 100:
+            source_year += 2000
+        if source_year != year:
+            raise ValueError(f"SOVON-bezoekdatum {text!r} wijkt af van jaar {year}.")
+        return date(year, month, day).isoformat()
+    named = re.fullmatch(r"(\d{1,2})\s+([a-z]+)", text)
+    if named and named.group(2) in SOVON_BMP_DUTCH_MONTHS:
+        return date(year, SOVON_BMP_DUTCH_MONTHS[named.group(2)], int(named.group(1))).isoformat()
+    raise ValueError(f"Onbekende SOVON-bezoekdatum: {value!r}")
+
+
+def split_sovon_bmp_observer_codes(value: object) -> tuple[str, ...]:
+    text = str(value or "").strip()
+    if not text:
+        return ()
+    return tuple(dict.fromkeys(
+        part.strip() for part in re.split(r"\s*[,;|/]\s*", text) if part.strip()
+    ))
+
+
+def read_sovon_bmp_matrix(path: Path, expected_year: int) -> list[dict[str, object]]:
+    """Lees de volledige plot-soortmatrix met positief, nul en leeg apart."""
+    rows = _sovon_bmp_xlsx_rows(path)
+    if not rows:
+        raise ValueError(f"Lege SOVON-territoriummatrix: {path}")
+    header = _sovon_bmp_header(rows[0])
+    required = {"plotid", "plotnr", "plotnaam", "soort", "euring", "ioc sort"}
+    if not required.issubset(header):
+        raise ValueError(f"Onvolledige SOVON-matrixkop: {sorted(required-set(header))}")
+    year_columns = [index for index, value in enumerate(rows[0]) if value == expected_year]
+    if len(year_columns) != 1:
+        raise ValueError(f"SOVON-matrix heeft niet exact één jaarkolom voor {expected_year}.")
+    year_column = year_columns[0]
+    result: list[dict[str, object]] = []
+    keys: set[tuple[int, int, int]] = set()
+    for source_row in rows[1:]:
+        if not source_row or source_row[header["plotid"]] is None:
+            continue
+        value = source_row[year_column] if year_column < len(source_row) else None
+        territories = _sovon_int(value)
+        if territories is None:
+            cell_status = "leeg"
+        elif territories == 0:
+            cell_status = "expliciete_nul"
+        elif territories > 0:
+            cell_status = "positief"
+        else:
+            raise ValueError("Een SOVON-territoriumaantal mag niet negatief zijn.")
+        row = {
+            "plot_id": int(source_row[header["plotid"]]),
+            "plot_nr": int(source_row[header["plotnr"]]),
+            "plot_naam": str(source_row[header["plotnaam"]]).strip(),
+            "bron_naam": str(source_row[header["soort"]]).strip(),
+            "euring_code": int(source_row[header["euring"]]),
+            "ioc_sort": _sovon_int(source_row[header["ioc sort"]]),
+            "jaar": expected_year,
+            "broncelstatus": cell_status,
+            "territoria": territories,
+        }
+        key = (int(row["plot_id"]), int(row["euring_code"]), expected_year)
+        if key in keys:
+            raise ValueError(f"Dubbele SOVON-matrixsleutel: {key}")
+        keys.add(key)
+        result.append(row)
+    return result
+
+
+def read_sovon_bmp_standard_results(
+    path: Path, expected_year: int,
+) -> list[dict[str, object]]:
+    """Lees positieve standaardresultaten; ontbrekende dimensies zijn toegestaan."""
+    rows = _sovon_bmp_xlsx_rows(path)
+    if not rows:
+        return []
+    header = _sovon_bmp_header(rows[0])
+    required = {"plotid", "euring", "naam", "aantal", "jaar"}
+    if not required.issubset(header):
+        raise ValueError(f"Onvolledige SOVON-resultaatkop: {sorted(required-set(header))}")
+    result = []
+    for source_row in rows[1:]:
+        if not source_row or source_row[header["plotid"]] is None:
+            continue
+        year = int(source_row[header["jaar"]])
+        if year != expected_year:
+            raise ValueError(f"SOVON-resultaatjaar {year} wijkt af van {expected_year}.")
+        count = int(source_row[header["aantal"]])
+        if count <= 0:
+            raise ValueError("De standaardresultaten mogen alleen positieve waarden bevatten.")
+        observer = source_row[header["waarnemer"]] if "waarnemer" in header else None
+        result.append({
+            "plot_id": int(source_row[header["plotid"]]),
+            "euring_code": int(source_row[header["euring"]]),
+            "bron_naam": str(source_row[header["naam"]]).strip(),
+            "jaar": year,
+            "territoria": count,
+            "tellercodes": split_sovon_bmp_observer_codes(observer),
+        })
+    return result
+
+
+def read_sovon_bmp_standard_visits(
+    path: Path, expected_year: int,
+) -> list[dict[str, object]]:
+    """Lees de rijvormige AVIMAP-bezoekexport."""
+    rows = _sovon_bmp_xlsx_rows(path)
+    if not rows:
+        return []
+    header = _sovon_bmp_header(rows[0])
+    required = {"plotid", "bzdid", "datum", "jaar"}
+    if not required.issubset(header):
+        raise ValueError(f"Onvolledige SOVON-bezoekkop: {sorted(required-set(header))}")
+    result = []
+    for source_row in rows[1:]:
+        if not source_row or source_row[header["bzdid"]] is None:
+            continue
+        year = int(source_row[header["jaar"]])
+        if year != expected_year:
+            raise ValueError(f"SOVON-bezoekjaar {year} wijkt af van {expected_year}.")
+        value = lambda name: source_row[header[name]] if name in header else None
+        result.append({
+            "plot_id": int(value("plotid")),
+            "jaar": year,
+            "bron_bezoek_id": int(value("bzdid")),
+            "bezoek_datum": _sovon_bmp_date(value("datum"), year),
+            "begintijd": _sovon_bmp_time(value("begintijd")),
+            "eindtijd": _sovon_bmp_time(value("eindtijd")),
+            "deelbezoek": _sovon_bool(value("deelbezoek")),
+            "gunstig": _sovon_bool(value("gunstig")),
+            "opmerking": str(value("opm") or "").strip() or None,
+            "bron_aantal_soorten": _sovon_int(value("nsoort")),
+            "bron_aantal_records": _sovon_int(value("nrecord")),
+        })
+    return result
+
+
+def _sovon_bmp_summary_column(header_row: tuple[object, ...], needle: str) -> int | None:
+    normalized_needle = " ".join(needle.casefold().replace("-", " ").split())
+    for index, value in enumerate(header_row):
+        normalized = " ".join(str(value or "").casefold().replace("-", " ").split())
+        if normalized_needle in normalized:
+            return index
+    return None
+
+
+def _sovon_bmp_visit_value_counts(value: object) -> tuple[int, int]:
+    """Splits bezoekwaarden in aantallen binnen en buiten het telgebied."""
+    if value is None or str(value).strip() == "":
+        return (0, 0)
+    match = re.match(r"^\s*(\d*)\s*(?:\((\d+)\))?\s*$", str(value))
+    if not match:
+        raise ValueError(f"Onbekende SOVON-bezoek-soortwaarde: {value!r}")
+    inside = int(match.group(1) or 0)
+    outside = int(match.group(2) or 0)
+    if inside == 0 and outside == 0:
+        raise ValueError(f"Lege SOVON-bezoek-soortwaarde: {value!r}")
+    return inside, outside
+
+
+def read_sovon_bmp_visit_totals(
+    path: Path, matrix_rows: list[dict[str, object]],
+) -> dict[str, object]:
+    """Normaliseer het blokvormige bezoektotalenwerkboek."""
+    rows = _sovon_bmp_xlsx_rows(path)
+    plot_numbers = {int(row["plot_nr"]): int(row["plot_id"]) for row in matrix_rows}
+    taxon_by_plot_name = {
+        (int(row["plot_id"]), str(row["bron_naam"]).casefold()): int(row["euring_code"])
+        for row in matrix_rows
+    }
+    visits: list[dict[str, object]] = []
+    visit_taxa: list[dict[str, object]] = []
+    summaries: dict[tuple[int, int], dict[str, int | None]] = {}
+    plot_sections = 0
+    index = 0
+    while index < len(rows):
+        row = rows[index]
+        if not row or row[0] != "Telgebied":
+            index += 1
+            continue
+        plot_sections += 1
+        match = re.match(r"\s*(\d+)\s*,\s*(.*)", str(row[1] or ""))
+        if not match or int(match.group(1)) not in plot_numbers:
+            raise ValueError(f"Onbekend SOVON-telgebied: {row[1]!r}")
+        plot_id = plot_numbers[int(match.group(1))]
+        block_end = index + 1
+        while block_end < len(rows) and not (
+            rows[block_end] and rows[block_end][0] == "Telgebied"
+        ):
+            block_end += 1
+        block = rows[index:block_end]
+        by_label = {str(item[0]).strip().casefold(): pos for pos, item in enumerate(block) if item and item[0] is not None}
+        for required in ("jaar", "id", "bezoeknr", "bezoektype"):
+            if required not in by_label:
+                raise ValueError(f"Telgebied {plot_id} mist rij {required!r}.")
+        year_row = block[by_label["jaar"]]
+        year = int(year_row[1])
+        id_position = by_label["id"]
+        id_row = block[id_position]
+        date_row = block[id_position + 1]
+        start_row = block[id_position + 2]
+        end_row = block[id_position + 3]
+        visit_number_row = block[by_label["bezoeknr"]]
+        visit_type_position = by_label["bezoektype"]
+        visit_type_row = block[visit_type_position]
+        visit_columns = [
+            column for column, value in enumerate(id_row) if column > 0 and value is not None
+        ]
+        visit_by_column: dict[int, int] = {}
+        for column in visit_columns:
+            visit_id = int(id_row[column])
+            visit_by_column[column] = visit_id
+            visits.append({
+                "plot_id": plot_id,
+                "jaar": year,
+                "bron_bezoek_id": visit_id,
+                "bezoek_datum": _sovon_bmp_date(date_row[column], year),
+                "bezoeknummer": _sovon_int(visit_number_row[column]),
+                "begintijd": _sovon_bmp_time(start_row[column]),
+                "eindtijd": _sovon_bmp_time(end_row[column]),
+                "bezoektype": str(visit_type_row[column] or "").strip() or None,
+                "opmerking": None,
+            })
+        summary_columns = {
+            "autocluster_territoria": _sovon_bmp_summary_column(visit_type_row, "aantal autocluster territoria"),
+            "hoogste_broedcode": _sovon_bmp_summary_column(visit_type_row, "hoogste broed code"),
+            "totaal_waarnemingen": _sovon_bmp_summary_column(visit_type_row, "totaal aantal waarn"),
+            "aantal_buiten_plot": _sovon_bmp_summary_column(visit_type_row, "aantal buiten plot"),
+            "aantal_niet_bruikbaar": _sovon_bmp_summary_column(visit_type_row, "aantal niet bruikbare waarnemingen"),
+        }
+        for species_row in block[visit_type_position + 1:]:
+            if not species_row:
+                continue
+            source_name = str(species_row[0] or "").strip()
+            if not source_name or source_name == "Opmerkingen":
+                continue
+            if source_name.casefold() == "* * * * overige soorten * * *":
+                continue
+            taxon_key = (plot_id, source_name.casefold())
+            if taxon_key not in taxon_by_plot_name:
+                raise ValueError(f"Onbekende SOVON-soort in bezoektotalen: {plot_id}/{source_name}")
+            euring = taxon_by_plot_name[taxon_key]
+            for column, visit_id in visit_by_column.items():
+                value = species_row[column] if column < len(species_row) else None
+                if value is None or str(value).strip() == "":
+                    continue
+                inside_count, outside_count = _sovon_bmp_visit_value_counts(value)
+                visit_taxa.append({
+                    "plot_id": plot_id,
+                    "jaar": year,
+                    "bron_bezoek_id": visit_id,
+                    "euring_code": euring,
+                    "bron_naam": source_name,
+                    "bronwaarde_raw": str(value),
+                    "aantal_waarnemingen": inside_count,
+                    "aantal_buiten_plot": outside_count,
+                })
+            summaries[(plot_id, euring)] = {
+                name: _sovon_int(species_row[column])
+                if column is not None and column < len(species_row) else None
+                for name, column in summary_columns.items()
+            }
+        if "opmerkingen" in by_label:
+            comments = block[by_label["opmerkingen"]]
+            comments_by_id = {
+                visit_by_column[column]: str(comments[column] or "").strip() or None
+                for column in visit_columns
+            }
+            for visit in visits:
+                visit_id = int(visit["bron_bezoek_id"])
+                if int(visit["plot_id"]) == plot_id and visit_id in comments_by_id:
+                    visit["opmerking"] = comments_by_id[visit_id]
+        index = block_end
+    if len({int(row["bron_bezoek_id"]) for row in visits}) != len(visits):
+        raise ValueError("SOVON-bezoektotalen bevatten dubbele bezoek-ID's.")
+    return {
+        "plot_sections": plot_sections,
+        "visits": visits,
+        "visit_taxa": visit_taxa,
+        "taxon_summaries": summaries,
+    }
+
+
+def normalize_sovon_bmp_observation_rows(
+    rows: list[dict[str, str]], expected_year: int,
+) -> list[dict[str, object]]:
+    """Normaliseer individuele bronregels zonder broedcode 0 te verliezen."""
+    result = []
+    for source_row in rows:
+        year = int(source_row["jaar"])
+        if year != expected_year:
+            raise ValueError(f"SOVON-waarnemingsjaar {year} wijkt af van {expected_year}.")
+        count = _sovon_int(source_row.get("aantal"))
+        if count is None or count <= 0:
+            raise ValueError("Een SOVON-dagwaarneming moet een positief aantal hebben.")
+        result.append({
+            "bron_waarneming_id": int(source_row["id"]),
+            "bron_bezoek_id": int(source_row["bzdid"]),
+            "plot_id": int(source_row["plotid"]),
+            "euring_code": int(source_row["soortnr"]),
+            "jaar": year,
+            "aantal": count,
+            "broedcode": _sovon_int(source_row.get("broedcode")),
+            "waarnemingsstatus": "waargenomen",
+        })
+    return result
+
+
+def _sovon_bmp_point_geometry(feature: dict[str, object]) -> tuple[float, float]:
+    geometry = feature.get("geometry")
+    if not isinstance(geometry, dict) or geometry.get("type") != "Point":
+        raise ValueError("Een SOVON-BMP-puntlaag bevat geen puntgeometrie.")
+    coordinates = geometry.get("coordinates")
+    if not isinstance(coordinates, list) or len(coordinates) < 2:
+        raise ValueError("Een SOVON-BMP-puntgeometrie mist coördinaten.")
+    return float(coordinates[0]), float(coordinates[1])
+
+
+def _sovon_bmp_feature_properties(feature: dict[str, object]) -> dict[str, object]:
+    properties = feature.get("properties")
+    if not isinstance(properties, dict):
+        raise ValueError("Een SOVON-BMP-feature mist eigenschappen.")
+    return properties
+
+
+def read_sovon_bmp_geojson_features(
+    path: Path,
+    ogr2ogr: Path = Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogr2ogr"),
+) -> list[dict[str, object]]:
+    """Lees een SOVON-puntlaag brongetrouw als GeoJSON in RD New."""
+    result = subprocess.run(
+        [str(ogr2ogr), "-f", "GeoJSON", "/vsistdout/", str(path)],
+        text=True, capture_output=True, check=False,
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or f"ogr2ogr stopte met code {result.returncode}")
+    payload = json.loads(result.stdout)
+    if payload.get("type") != "FeatureCollection":
+        raise ValueError(f"Geen GeoJSON FeatureCollection in {path}")
+    crs = payload.get("crs")
+    crs_name = ""
+    if isinstance(crs, dict) and isinstance(crs.get("properties"), dict):
+        crs_name = str(crs["properties"].get("name") or "")
+    if not crs_name.endswith("::28992"):
+        raise ValueError(f"SOVON-BMP-puntlaag heeft geen EPSG:28992: {crs_name!r}")
+    features = payload.get("features")
+    if not isinstance(features, list):
+        raise ValueError(f"SOVON-BMP-puntlaag mist features: {path}")
+    return features
+
+
+def normalize_sovon_bmp_observation_features(
+    features: list[dict[str, object]], expected_year: int,
+) -> list[dict[str, object]]:
+    """Normaliseer alle bronvelden uit de SOVON-bezoekstippenlaag."""
+    result: list[dict[str, object]] = []
+    source_ids: set[int] = set()
+    for feature in features:
+        source = _sovon_bmp_feature_properties(feature)
+        x_geom, y_geom = _sovon_bmp_point_geometry(feature)
+        year = int(source["jaar"])
+        if year != expected_year:
+            raise ValueError(f"SOVON-waarnemingsjaar {year} wijkt af van {expected_year}.")
+        source_id = int(source["id"])
+        if source_id in source_ids:
+            raise ValueError(f"Dubbele SOVON-waarneming-ID: {source_id}")
+        source_ids.add(source_id)
+        count = _sovon_int(source.get("aantal"))
+        in_plot = _sovon_int(source.get("inplot"))
+        if count is None or count <= 0:
+            raise ValueError("Een SOVON-dagwaarneming moet een positief aantal hebben.")
+        if in_plot not in {0, 1}:
+            raise ValueError("Een SOVON-dagwaarneming mist een geldige inplot-status.")
+        result.append({
+            "bron_waarneming_id": source_id,
+            "bron_bezoek_id": int(source["bzdid"]),
+            "plot_id": int(source["plotid"]),
+            "jaar": year,
+            "euring_code": int(source["soortnr"]),
+            "bron_naam": str(source["naam"]).strip(),
+            "aantal": count,
+            "broedcode": _sovon_int(source.get("broedcode")),
+            "waarnemingstype": str(source.get("wrntype") or "").strip() or None,
+            "geslacht": str(source.get("geslacht") or "").strip() or None,
+            "opmerking": str(source.get("opmerk") or "").strip() or None,
+            "cluster_territorium": _sovon_int(source.get("clterr")),
+            "cluster_territorium_id": _sovon_int(source.get("clterrid")),
+            "in_plot": in_plot,
+            "x_coord": int(source["x_coord"]),
+            "y_coord": int(source["y_coord"]),
+            "geom_x": x_geom,
+            "geom_y": y_geom,
+        })
+    return result
+
+
+def normalize_sovon_bmp_territory_features(
+    features: list[dict[str, object]], expected_year: int,
+) -> list[dict[str, object]]:
+    """Normaliseer territoriumpunten; bronrijvolgorde en inhoudshash blijven bewaard."""
+    result: list[dict[str, object]] = []
+    hashes: set[str] = set()
+    for feature_id, feature in enumerate(features, start=1):
+        source = _sovon_bmp_feature_properties(feature)
+        x_geom, y_geom = _sovon_bmp_point_geometry(feature)
+        year = int(source["jaar"])
+        if year != expected_year:
+            raise ValueError(f"SOVON-territoriumjaar {year} wijkt af van {expected_year}.")
+        count = _sovon_int(source.get("aantal"))
+        in_plot = _sovon_int(source.get("inplot"))
+        if count is None or count <= 0:
+            raise ValueError("Een SOVON-territoriumpunt moet een positief aantal hebben.")
+        if in_plot not in {0, 1}:
+            raise ValueError("Een SOVON-territoriumpunt mist een geldige inplot-status.")
+        canonical = json.dumps(
+            {"properties": source, "coordinates": [x_geom, y_geom]},
+            ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+        )
+        source_hash = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        if source_hash in hashes:
+            raise ValueError(f"Dubbel SOVON-territoriumpunt: {source_hash}")
+        hashes.add(source_hash)
+        result.append({
+            "bron_feature_id": feature_id,
+            "bron_record_sha256": source_hash,
+            "plot_id": int(source["plotid"]),
+            "jaar": year,
+            "euring_code": int(source["euring"]),
+            "bron_naam": str(source["naam"]).strip(),
+            "aantal": count,
+            "broedcode": _sovon_int(source.get("broedcode")),
+            "opmerking": str(source.get("opmerking") or "").strip() or None,
+            "in_plot": in_plot,
+            "x_coord": int(source["x_coord"]),
+            "y_coord": int(source["y_coord"]),
+            "geom_x": x_geom,
+            "geom_y": y_geom,
+        })
+    return result
+
+
+def read_sovon_bmp_observation_points(
+    path: Path, expected_year: int,
+    ogr2ogr: Path = Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogr2ogr"),
+) -> list[dict[str, object]]:
+    return normalize_sovon_bmp_observation_features(
+        read_sovon_bmp_geojson_features(path, ogr2ogr), expected_year,
+    )
+
+
+def read_sovon_bmp_territory_points(
+    path: Path, expected_year: int,
+    ogr2ogr: Path = Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogr2ogr"),
+) -> list[dict[str, object]]:
+    return normalize_sovon_bmp_territory_features(
+        read_sovon_bmp_geojson_features(path, ogr2ogr), expected_year,
+    )
+
+
+def classify_sovon_bmp_plotyear(
+    matrix_rows: list[dict[str, object]], has_visits: bool,
+) -> dict[str, str]:
+    """Leid alleen matrixvulling af; leegte bewijst nooit formele afkeuring."""
+    statuses = {str(row["broncelstatus"]) for row in matrix_rows}
+    if not matrix_rows:
+        matrix_status = "geen_matrixrijen"
+    elif statuses == {"leeg"}:
+        matrix_status = "uitsluitend_leeg"
+    else:
+        matrix_status = "waarden_aanwezig"
+    return {
+        "matrixstatus": matrix_status,
+        "beoordelingsstatus": "te_beoordelen",
+    }
+
+
+def select_sovon_bmp_decided_plotyears(
+    matrix_rows: list[dict[str, object]],
+    visits: list[dict[str, object]],
+) -> dict[str, object]:
+    """Selecteer alleen bezochte plotjaren met ten minste één ingevulde broncel.
+
+    Bezochte plotjaren met uitsluitend lege cellen blijven in afwachting van
+    een afzonderlijk jaarbesluit. Niet-bezochte plots met uitsluitend lege
+    cellen worden genegeerd. Lege soortcellen binnen een geselecteerd plotjaar
+    blijven wel als lege broncel bewaard.
+    """
+    rows_by_plot: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for row in matrix_rows:
+        rows_by_plot[int(row["plot_id"])].append(row)
+    visits_by_plot: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for visit in visits:
+        visits_by_plot[int(visit["plot_id"])].append(visit)
+
+    selected = {
+        plot_id for plot_id, rows in rows_by_plot.items()
+        if visits_by_plot.get(plot_id)
+        and any(row["broncelstatus"] != "leeg" for row in rows)
+    }
+    pending = {
+        plot_id for plot_id, rows in rows_by_plot.items()
+        if visits_by_plot.get(plot_id)
+        and all(row["broncelstatus"] == "leeg" for row in rows)
+    }
+    ignored = {
+        plot_id for plot_id, rows in rows_by_plot.items()
+        if not visits_by_plot.get(plot_id)
+        and all(row["broncelstatus"] == "leeg" for row in rows)
+    }
+    return {
+        "plot_ids": selected,
+        "matrix_rows": [
+            row for row in matrix_rows if int(row["plot_id"]) in selected
+        ],
+        "visits": [
+            visit for visit in visits if int(visit["plot_id"]) in selected
+        ],
+        "ignored_unvisited_blank_plots": ignored,
+        "pending_visited_blank_plots": pending,
+    }
+
+
+def sovon_bmp_receipt_comparison(
+    cell_status: str,
+    source_value: int | None,
+    existing_sovon_value: int | None,
+    literature_leading: bool,
+) -> tuple[str, str | None]:
+    """Classificeer de broncel zonder een leidende literatuurwaarde te vervangen."""
+    if literature_leading:
+        return (
+            "conflict",
+            "SOVON-bronwaarde wijkt af; meeuwen_literatuur blijft leidend in territoria.",
+        )
+    if cell_status == "positief":
+        return (
+            "gelijk" if existing_sovon_value == source_value else "bron_nieuwer",
+            None,
+        )
+    if cell_status == "expliciete_nul":
+        return "bron_nieuwer", None
+    return "niet_vergeleken", None
+
+
+def sovon_bmp_transaction_end(commit: bool) -> str:
+    return "COMMIT;" if commit else "ROLLBACK;"
+
+
+def sovon_bmp_zero_insert_sql(rows: list[dict[str, object]]) -> str:
+    """Schrijf uitsluitend letterlijk aangeleverde nulcellen naar territoria."""
+    zeros = []
+    for row in rows:
+        if row.get("broncelstatus") != "expliciete_nul":
+            continue
+        if row.get("territoria") != 0:
+            raise ValueError(
+                "SOVON-broncelstatus expliciete_nul vereist territoria = 0."
+            )
+        zeros.append(row)
+    if not zeros:
+        return "-- Geen expliciete SOVON-nulcellen."
+    values = ",\n".join(
+        "({plot_id},{soort_id},{jaar},0,1)".format(
+            plot_id=int(row["plot_id"]), soort_id=int(row["soort_id"]),
+            jaar=int(row["jaar"]),
+        )
+        for row in zeros
+    )
+    return (
+        "INSERT INTO Meijendel.territoria "
+        "(plot_id,soort_id,jaar,territoria,bron_id) VALUES\n" + values + ";"
+    )
+
+
+def sovon_bmp_duplicate_cleanup_sql() -> str:
+    """Verwijder de foutief aangelegde tweede waarnemingslaag."""
+    return """
+DROP VIEW IF EXISTS Meijendel.v_sovon_bmp_analyse;
+DROP VIEW IF EXISTS Meijendel.v_sovon_bmp_formeel_afgekeurd;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_bezoek_taxon;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_waarneming;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_territoriumpunt;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_plotjaar_taxon;
+DROP TABLE IF EXISTS Meijendel.sovon_bmp_bezoek;
+""".strip()
+
+
+def sovon_bmp_metadata_migration_sql() -> str:
+    """Breid bestaande lijstmetadata zonder gegevensverlies uit."""
+    return """
+ALTER TABLE Meijendel.sovon_bmp_soortenlijst_taxon
+  ADD COLUMN lijsttaxon_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT FIRST,
+  DROP PRIMARY KEY,
+  ADD PRIMARY KEY (lijsttaxon_id),
+  ADD UNIQUE KEY uq_sovon_bmp_lijst_naam (soortenlijstversie_id,bron_naam),
+  ADD UNIQUE KEY uq_sovon_bmp_lijst_soort (soortenlijstversie_id,soort_id),
+  MODIFY soort_id INT NULL,
+  MODIFY taxon_bronkoppeling_id BIGINT UNSIGNED NULL,
+  MODIFY euring_code INT NULL,
+  ADD COLUMN koppelstatus ENUM('exacte_naam','naamvariant','niet_gekoppeld') NULL
+    AFTER lijststatus;
+UPDATE Meijendel.sovon_bmp_soortenlijst_taxon
+SET koppelstatus='exacte_naam'
+WHERE koppelstatus IS NULL;
+ALTER TABLE Meijendel.sovon_bmp_soortenlijst_taxon
+  MODIFY koppelstatus ENUM('exacte_naam','naamvariant','niet_gekoppeld') NOT NULL,
+  ADD CONSTRAINT chk_sovon_bmp_lijst_koppeling CHECK (
+    (koppelstatus='niet_gekoppeld' AND soort_id IS NULL
+     AND taxon_bronkoppeling_id IS NULL AND euring_code IS NULL)
+    OR (koppelstatus IN ('exacte_naam','naamvariant') AND soort_id IS NOT NULL
+     AND taxon_bronkoppeling_id IS NOT NULL AND euring_code IS NOT NULL));
+ALTER TABLE Meijendel.sovon_bmp_plotjaar
+  DROP CHECK sovon_bmp_plotjaar_chk_2,
+  ADD CONSTRAINT sovon_bmp_plotjaar_chk_2 CHECK (
+    (controle_status='te_beoordelen' AND beoordeeld_op IS NULL)
+    OR (controle_status='beoordeeld' AND controlebesluit IS NOT NULL
+        AND beoordeeld_op IS NOT NULL));
+UPDATE Meijendel.sovon_bmp_plotjaar
+SET beoordeeld_door=NULL
+WHERE beoordeeld_door='Ton namens data-eigenaar';
+""".strip()
+
+
+def sovon_bmp_list_guard_sql() -> str:
+    """Bewaak uitsluitend de taxonkoppeling van officiële lijstmetadata."""
+    condition = """
+IF NEW.koppelstatus='niet_gekoppeld' THEN
+  IF NEW.soort_id IS NOT NULL OR NEW.taxon_bronkoppeling_id IS NOT NULL
+     OR NEW.euring_code IS NOT NULL THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Niet-gekoppeld lijstlid bevat toch een taxonkoppeling';
+  END IF;
+ELSE
+  IF NOT EXISTS(
+    SELECT 1 FROM soorten s
+    JOIN taxa_bronkoppeling b
+      ON b.koppeling_id=s.taxon_bronkoppeling_id
+    JOIN taxa t ON t.taxon_id=b.taxon_id
+    WHERE s.id=NEW.soort_id
+      AND s.taxon_bronkoppeling_id=NEW.taxon_bronkoppeling_id
+      AND s.euring_code=NEW.euring_code
+      AND b.koppelstatus IN ('kandidaat','bevestigd')
+  ) THEN
+    SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gekoppeld lijstlid is niet centraal bereikbaar';
+  END IF;
+END IF;
+""".strip()
+    statements = ["DELIMITER $$"]
+    for trigger, event in (
+        ("cq_bb97530064cc58332aff_bi", "INSERT"),
+        ("cq_bb97530064cc58332aff_bu", "UPDATE"),
+    ):
+        statements.append(f"DROP TRIGGER IF EXISTS {trigger}$$")
+        statements.append(
+            f"CREATE TRIGGER {trigger} BEFORE {event} "
+            "ON sovon_bmp_soortenlijst_taxon FOR EACH ROW BEGIN\n"
+            + condition + "\nEND$$"
+        )
+    statements.append("DELIMITER ;")
+    return "\n".join(statements)
+
+
+def sovon_bmp_current_list_from_1984_sql(
+    source_sha256: str, list_rows: list[dict[str, object]], *, commit: bool = True,
+) -> str:
+    """Registreer de volledige officiële BMP-A-lijst, los van een jaarmatrix."""
+    if not re.fullmatch(r"[0-9a-f]{64}", source_sha256):
+        raise ValueError("De SHA-256 van de actuele SOVON-soortenlijst is ongeldig.")
+    if not list_rows:
+        raise ValueError("De officiële SOVON-soortenlijst is leeg.")
+    values = []
+    for row in list_rows:
+        mapped = row.get("soort_id") is not None
+        if mapped != (row.get("taxon_bronkoppeling_id") is not None):
+            raise ValueError("Een soortenlijstkoppeling is slechts gedeeltelijk gevuld.")
+        if mapped != (row.get("euring_code") is not None):
+            raise ValueError("Een soortenlijstkoppeling mist de Euring-code.")
+        status = str(row.get("koppelstatus") or (
+            "exacte_naam" if mapped else "niet_gekoppeld"
+        ))
+        values.append(
+            "(@sovon_bmp_soortenlijst,{name},{species},{link},{euring},'opgenomen',"
+            "{status},{note})".format(
+                name=sql_text(str(row["bron_naam"])),
+                species="NULL" if not mapped else int(row["soort_id"]),
+                link="NULL" if not mapped else int(row["taxon_bronkoppeling_id"]),
+                euring="NULL" if not mapped else int(row["euring_code"]),
+                status=sql_text(status),
+                note=sql_text(str(row.get("bronnotitie") or "")),
+            )
+        )
+    list_values = ",\n".join(values)
+    return f"""
+SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+START TRANSACTION;
+INSERT INTO Meijendel.sovon_bmp_soortenlijstversie
+  (lijst_sleutel,bmp_type,titel,bronverwijzing,bronbestand_sha256,
+   geldig_van,geldig_tot,lijststatus,regelversie,toelichting)
+VALUES
+  ({sql_text(SOVON_BMP_CURRENT_LIST_KEY)},'BMP-A',
+   'Actuele officiële SOVON BMP-A-soortenlijst, toegepast vanaf 1984',
+   {sql_text(SOVON_BMP_CURRENT_LIST_URL)},{sql_text(source_sha256)},
+   1984,NULL,'officieel_bevestigd',
+   {sql_text(SOVON_BMP_CURRENT_LIST_RULE_VERSION)},
+   'Besluit data-eigenaar 2 oktober 2026: de actuele BMP-A-lijst geldt '
+   'voor de jaarcontrole vanaf 1984. BMP-A omvat alle soorten. Alle 264 '
+   'unieke BMP-A-lijstnamen uit het officiële brondocument zijn vastgelegd; '
+   'een niet-gekoppelde lijstnaam is geen waarneming en blokkeert latere '
+   'invoer wanneer die naam als waarneming voorkomt.')
+AS nieuw
+ON DUPLICATE KEY UPDATE
+  soortenlijstversie_id=LAST_INSERT_ID(soortenlijstversie_id),
+  titel=nieuw.titel,bronverwijzing=nieuw.bronverwijzing,
+  bronbestand_sha256=nieuw.bronbestand_sha256,geldig_van=nieuw.geldig_van,
+  geldig_tot=nieuw.geldig_tot,lijststatus='officieel_bevestigd',
+  regelversie=nieuw.regelversie,toelichting=nieuw.toelichting;
+SET @sovon_bmp_soortenlijst=LAST_INSERT_ID();
+
+UPDATE Meijendel.sovon_bmp_soortenlijst_taxon
+SET lijststatus='expliciet_uitgesloten',
+    bronnotitie='Niet als BMP-A-lijstlid teruggevonden in de volledig uitgelezen officiële lijst.'
+WHERE soortenlijstversie_id=@sovon_bmp_soortenlijst;
+INSERT INTO Meijendel.sovon_bmp_soortenlijst_taxon
+  (soortenlijstversie_id,bron_naam,soort_id,taxon_bronkoppeling_id,euring_code,
+   lijststatus,koppelstatus,bronnotitie)
+VALUES
+{list_values} AS nieuw
+ON DUPLICATE KEY UPDATE
+  bron_naam=nieuw.bron_naam,soort_id=nieuw.soort_id,
+  taxon_bronkoppeling_id=nieuw.taxon_bronkoppeling_id,
+  euring_code=nieuw.euring_code,lijststatus='opgenomen',
+  koppelstatus=nieuw.koppelstatus,bronnotitie=nieuw.bronnotitie;
+
+UPDATE Meijendel.sovon_bmp_plotjaar p
+JOIN Meijendel.sovon_bmp_jaarlevering j
+  ON j.levering_id=p.levering_id AND j.jaar=p.jaar AND j.actueel=1
+SET p.soortenlijstversie_id=@sovon_bmp_soortenlijst,
+    p.controlebesluit=CONCAT(
+      p.controlebesluit,
+      ' De actuele officiële SOVON BMP-A-soortenlijst is volgens besluit van '
+      'de data-eigenaar toegepast vanaf 1984; expliciete nulcellen zijn '
+      'daarmee analytisch notDetected, behalve bronconflicten.'
+    )
+WHERE p.jaar=1984
+  AND p.bmp_type='BMP-A'
+  AND p.soortenbereik='alle_soorten'
+  AND p.volledigheidstatus='volledig'
+  AND p.beoordelingsstatus='goedgekeurd'
+  AND p.soortenlijstversie_id IS NULL;
+{sovon_bmp_transaction_end(commit)}
+""".strip()
+
+
+def read_sovon_bmp_official_names(source_pdf: Path) -> list[str]:
+    """Lees de BMP-A-kolom uit de twee panelen van de officiële SOVON-tabel."""
+    try:
+        import pdfplumber
+    except ImportError as exc:
+        raise RuntimeError("pdfplumber is nodig om de officiële BMP-lijst te lezen.") from exc
+    names: set[str] = set()
+    panels = ((20, 97, 124, 135), (436, 512, 540, 551))
+    with pdfplumber.open(source_pdf) as pdf:
+        for page in pdf.pages:
+            words = page.extract_words(use_text_flow=False)
+            lines: dict[float, list[dict[str, object]]] = defaultdict(list)
+            for word in words:
+                top = round(float(word["top"]), 1)
+                if 63 <= top <= 577:
+                    lines[top].append(word)
+            for line in lines.values():
+                for name_min, name_max, bmp_min, bmp_max in panels:
+                    name_words = sorted(
+                        (word for word in line
+                         if name_min <= float(word["x0"]) < name_max),
+                        key=lambda word: float(word["x0"]),
+                    )
+                    if not name_words:
+                        continue
+                    name = " ".join(str(word["text"]) for word in name_words).strip()
+                    marked = any(
+                        bmp_min <= float(word["x0"]) < bmp_max
+                        and str(word["text"]).casefold() == "x"
+                        for word in line
+                    )
+                    if marked and name != "Naam":
+                        names.add(name)
+    if len(names) != 264:
+        raise ValueError(
+            f"De officiële BMP-A-lijst bevat {len(names)} unieke namen; verwacht 264."
+        )
+    return sorted(names, key=str.casefold)
+
+
+SOVON_BMP_OFFICIAL_NAME_ALIASES = {
+    "Baardman": "Baardmannetje",
+    "Eider": "Eidereend",
+    "Fazant": "Gewone Fazant",
+    "Knobbelgans (Chinese)": "Knobbelgans (Chinese vorm)",
+    "Kraanvogel": "Europese Kraanvogel",
+    "Oehoe": "Europese Oehoe",
+    "Sprinkhaanzanger": "Sprinkhaanrietzanger",
+    "Zeearend": "Europese Zeearend",
+    "Zomertortel": "Tortelduif",
+}
+
+
+def read_sovon_bmp_official_taxon_rows(
+    client: Path, client_args: list[str], names: list[str],
+) -> list[dict[str, object]]:
+    """Koppel lijstnamen alleen exact of via een expliciet vastgelegde naamvariant."""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        "SELECT s.soort_naam,s.id,s.taxon_bronkoppeling_id,s.euring_code "
+        "FROM Meijendel.soorten s "
+        "WHERE s.taxon_bronkoppeling_id IS NOT NULL ORDER BY s.id;",
+        capture=True,
+    )
+    species = {}
+    for line in output.splitlines():
+        name, species_id, link_id, euring = line.split("\t")
+        species[name.strip().casefold()] = (int(species_id), int(link_id), int(euring), name.strip())
+    result = []
+    for name in names:
+        target = SOVON_BMP_OFFICIAL_NAME_ALIASES.get(name, name)
+        match = species.get(target.casefold())
+        if match is None:
+            result.append({
+                "bron_naam": name, "soort_id": None, "taxon_bronkoppeling_id": None,
+                "euring_code": None, "koppelstatus": "niet_gekoppeld",
+                "bronnotitie": "Officieel BMP-A-lijstlid; nog niet als centrale vogelsoort gekoppeld.",
+            })
+            continue
+        species_id, link_id, euring, matched_name = match
+        variant = matched_name.casefold() != name.casefold()
+        result.append({
+            "bron_naam": name, "soort_id": species_id,
+            "taxon_bronkoppeling_id": link_id, "euring_code": euring,
+            "koppelstatus": "naamvariant" if variant else "exacte_naam",
+            "bronnotitie": (
+                f"Expliciete naamvariant van centrale soort {matched_name}."
+                if variant else "Exacte naamkoppeling met de centrale vogelsoort."
+            ),
+        })
+    return result
+
+
+def apply_sovon_bmp_current_list_from_1984(
+    client: Path, client_args: list[str], source_pdf: Path, *, commit: bool = True,
+) -> dict[str, object]:
+    """Koppel het eigenaarsbesluit aan de beoordeelde 1984-plotjaren."""
+    if not source_pdf.is_file():
+        raise FileNotFoundError(source_pdf)
+    source_hash = sha256_file(source_pdf)
+    names = read_sovon_bmp_official_names(source_pdf)
+    list_rows = read_sovon_bmp_official_taxon_rows(client, client_args, names)
+    run_mysql_stream(
+        client, client_args,
+        [sovon_bmp_current_list_from_1984_sql(
+            source_hash, list_rows, commit=commit,
+        )],
+    )
+    if not commit:
+        return {
+            "jaar": 1984, "bronbestand_sha256": source_hash,
+            "lijstnamen": len(names), "vastgelegd": False,
+        }
+    metrics_sql = """
+SELECT
+  (SELECT COUNT(*) FROM Meijendel.sovon_bmp_soortenlijst_taxon lt
+   JOIN Meijendel.sovon_bmp_soortenlijstversie l
+     ON l.soortenlijstversie_id=lt.soortenlijstversie_id
+   WHERE l.lijst_sleutel='sovon-bmp-a-actueel-retroactief-vanaf-1984-v1'
+     AND lt.lijststatus='opgenomen'),
+  (SELECT COUNT(*) FROM Meijendel.sovon_bmp_plotjaar p
+   JOIN Meijendel.sovon_bmp_jaarlevering j
+     ON j.levering_id=p.levering_id AND j.actueel=1
+   WHERE p.jaar=1984 AND p.soortenlijstversie_id IS NOT NULL),
+  (SELECT COUNT(*) FROM Meijendel.sovon_bmp_soortenlijst_taxon lt
+   JOIN Meijendel.sovon_bmp_soortenlijstversie l
+     ON l.soortenlijstversie_id=lt.soortenlijstversie_id
+   WHERE l.lijst_sleutel='sovon-bmp-a-actueel-retroactief-vanaf-1984-v1'
+     AND lt.lijststatus='opgenomen'
+     AND lt.koppelstatus='niet_gekoppeld');
+"""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        metrics_sql, capture=True,
+    ).strip()
+    members, plotyears, unmapped = map(int, output.split("\t"))
+    if members != 264 or plotyears != 15:
+        raise ValueError(
+            "De officiële soortenlijstregistratie wijkt af: "
+            f"leden={members}, plotjaren={plotyears}."
+        )
+    return {
+        "jaar": 1984,
+        "bronbestand_sha256": source_hash,
+        "officiele_lijstnamen": members,
+        "niet_gekoppelde_lijstnamen": unmapped,
+        "gekoppelde_plotjaren": plotyears,
+        "vastgelegd": True,
+    }
+
+
+def sovon_bmp_layer_feature_count(
+    path: Path, ogrinfo: Path = Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogrinfo"),
+) -> int:
+    """Lees alleen het officiële feature-aantal uit een SOVON-puntlaag."""
+    result = subprocess.run(
+        [str(ogrinfo), "-json", "-so", str(path)],
+        text=True, capture_output=True, check=False,
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr.strip() or f"ogrinfo stopte met code {result.returncode}")
+    payload = json.loads(result.stdout)
+    layers = payload.get("layers", [])
+    if len(layers) != 1 or "featureCount" not in layers[0]:
+        raise ValueError(f"Geen eenduidig feature-aantal in {path}")
+    return int(layers[0]["featureCount"])
+
+
+def sovon_bmp_live_year_metrics_sql() -> str:
+    """Lever een compacte, alleen-lezen jaarstaat van de bestaande SOVON-tabellen."""
+    return """
+START TRANSACTION READ ONLY;
+WITH RECURSIVE y AS (
+  SELECT 1984 AS jaar UNION ALL SELECT jaar+1 FROM y WHERE jaar<2025
+)
+SELECT y.jaar,
+  (SELECT COUNT(*) FROM Meijendel.dagbezoeken_bmp b
+    WHERE b.bron_id=1 AND b.jaar=y.jaar),
+  (SELECT COUNT(*) FROM Meijendel.dagwaarnemingen_bmp w
+    WHERE w.bron_id=1 AND w.jaar=y.jaar),
+  (SELECT COUNT(*) FROM Meijendel.dagwaarnemingen_bmp w
+    WHERE w.bron_id=1 AND w.jaar=y.jaar AND w.broedcode=0),
+  (SELECT COUNT(*) FROM Meijendel.territoria t
+    WHERE t.bron_id=1 AND t.jaar=y.jaar),
+  (SELECT COALESCE(SUM(t.territoria),0) FROM Meijendel.territoria t
+    WHERE t.bron_id=1 AND t.jaar=y.jaar),
+  (SELECT COUNT(*) FROM Meijendel.territoria t
+    WHERE t.bron_id=1 AND t.jaar=y.jaar AND t.territoria=0),
+  (SELECT COUNT(*) FROM Meijendel.plot_jaar_teller p WHERE p.jaar=y.jaar)
+FROM y ORDER BY y.jaar;
+COMMIT;
+"""
+
+
+def read_sovon_bmp_live_year_metrics(
+    client: Path, client_args: list[str],
+) -> dict[int, dict[str, int]]:
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        sovon_bmp_live_year_metrics_sql(), capture=True,
+    )
+    names = (
+        "db_bezoeken", "db_waarnemingen", "db_broedcode_nul",
+        "db_territoriumregels", "db_territoria_som", "db_territoria_nulregels",
+        "db_tellerkoppelingen",
+    )
+    metrics: dict[int, dict[str, int]] = {}
+    for line in output.splitlines():
+        values = line.split("\t")
+        if len(values) != len(names) + 1:
+            raise ValueError(f"Onverwachte SOVON-live-auditregel: {line!r}")
+        year = int(values[0])
+        metrics[year] = {name: int(value) for name, value in zip(names, values[1:])}
+    if set(metrics) != set(range(1984, 2026)):
+        raise ValueError("De levende SOVON-jaarstaat omvat niet exact 1984-2025.")
+    return metrics
+
+
+def summarize_sovon_bmp_year(
+    year_dir: Path, year: int,
+    ogrinfo: Path = Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogrinfo"),
+) -> dict[str, object]:
+    matrix_path = year_dir / "Avimap_totalen_territoria__plots_diversen.xlsx"
+    total_paths = sorted(year_dir.glob("Avimap_bezoektotalen*.xlsx"))
+    if len(total_paths) != 1:
+        raise ValueError(f"Jaar {year} heeft niet exact één bezoektotalenwerkboek.")
+    matrix = read_sovon_bmp_matrix(matrix_path, year)
+    totals = read_sovon_bmp_visit_totals(total_paths[0], matrix)
+    standard_results = read_sovon_bmp_standard_results(
+        year_dir / "avimap_252_diversen__resultaten.xlsx", year,
+    )
+    standard_visits = read_sovon_bmp_standard_visits(
+        year_dir / "avimap_252_diversen__bezoeken.xlsx", year,
+    )
+    rows_by_plot: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for row in matrix:
+        rows_by_plot[int(row["plot_id"])].append(row)
+    visited_plots = {int(row["plot_id"]) for row in totals["visits"]}
+    blank_visited = sorted(
+        plot_id for plot_id in visited_plots
+        if classify_sovon_bmp_plotyear(rows_by_plot.get(plot_id, []), True)["matrixstatus"]
+        == "uitsluitend_leeg"
+    )
+    keys = {
+        (int(row["plot_id"]), int(row["euring_code"]), int(row["jaar"]))
+        for row in matrix
+    }
+    observation_points = sovon_bmp_layer_feature_count(
+        year_dir / "avimap_252_diversen__bezoekstippen.shp", ogrinfo,
+    )
+    territory_points = sovon_bmp_layer_feature_count(
+        year_dir / "avimap_252_diversen__territoria.shp", ogrinfo,
+    )
+    return {
+        "jaar": year,
+        "matrix_rijen": len(matrix),
+        "unieke_matrixsleutels": len(keys),
+        "matrix_positief": sum(row["broncelstatus"] == "positief" for row in matrix),
+        "matrix_explicit_nul": sum(row["broncelstatus"] == "expliciete_nul" for row in matrix),
+        "matrix_leeg": sum(row["broncelstatus"] == "leeg" for row in matrix),
+        "matrix_territoria_som": sum(int(row["territoria"] or 0) for row in matrix),
+        "bezoektotalen_plotsecties": int(totals["plot_sections"]),
+        "bezoektotalen_bezoeken": len(totals["visits"]),
+        "standaard_bezoeken": len(standard_visits),
+        "standaard_resultaten": len(standard_results),
+        "waarnemingspunten": observation_points,
+        "territoriumpunten": territory_points,
+        "blanco_matrix_met_bezoeken": blank_visited,
+    }
+
+
+def audit_sovon_bmp_years(
+    root: Path, live_metrics: dict[int, dict[str, int]] | None = None,
+    ogrinfo: Path = Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogrinfo"),
+) -> list[dict[str, object]]:
+    reports = [
+        summarize_sovon_bmp_year(root / str(year), year, ogrinfo)
+        for year in range(1984, 2026)
+    ]
+    wrong = [report["jaar"] for report in reports if report["matrix_rijen"] != 5306]
+    duplicates = [
+        report["jaar"] for report in reports
+        if report["matrix_rijen"] != report["unieke_matrixsleutels"]
+    ]
+    if wrong or duplicates:
+        raise ValueError(
+            f"SOVON-BMP-jaarprofiel wijkt af: rijaantal={wrong}, duplicaten={duplicates}"
+        )
+    if live_metrics is not None:
+        for report in reports:
+            year = int(report["jaar"])
+            report.update(live_metrics[year])
+            report["verschil_bezoeken_download_min_database"] = (
+                int(report["standaard_bezoeken"]) - int(report["db_bezoeken"])
+            )
+            report["verschil_waarnemingspunten_min_database"] = (
+                int(report["waarnemingspunten"]) - int(report["db_waarnemingen"])
+            )
+            report["verschil_matrixpositieven_min_database"] = (
+                int(report["matrix_positief"]) - int(report["db_territoriumregels"])
+            )
+            report["verschil_matrixsom_min_database"] = (
+                int(report["matrix_territoria_som"]) - int(report["db_territoria_som"])
+            )
+    return reports
+
+
+def sovon_bmp_bundle_manifest(path: Path) -> tuple[dict[str, str], str]:
+    """Hash alle fysieke onderdelen van éé shapefilebundel."""
+    required = {".shp", ".shx", ".dbf", ".prj"}
+    files = sorted(
+        candidate for candidate in path.parent.glob(path.stem + ".*")
+        if candidate.is_file()
+    )
+    found = {candidate.suffix.casefold() for candidate in files}
+    if not required.issubset(found):
+        raise ValueError(f"Onvolledige SOVON-shapefilebundel {path}: {sorted(required-found)}")
+    manifest = {candidate.name: sha256_file(candidate) for candidate in files}
+    canonical = json.dumps(manifest, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return manifest, hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def merge_sovon_bmp_visits(
+    standard_visits: list[dict[str, object]],
+    total_visits: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    """Combineer de twee bezoekexports uitsluitend bij gelijke bron-ID, plot en datum."""
+    standard = {int(row["bron_bezoek_id"]): row for row in standard_visits}
+    totals = {int(row["bron_bezoek_id"]): row for row in total_visits}
+    if len(standard) != len(standard_visits) or len(totals) != len(total_visits):
+        raise ValueError("Dubbele bezoek-ID in SOVON-BMP-jaarlevering.")
+    if set(standard) != set(totals):
+        raise ValueError("Standaardbezoeken en bezoektotalen bevatten andere bezoek-ID's.")
+    merged = []
+    for visit_id in sorted(standard):
+        left, right = standard[visit_id], totals[visit_id]
+        for field in ("plot_id", "jaar", "bezoek_datum"):
+            if left[field] != right[field]:
+                raise ValueError(f"SOVON-bezoek {visit_id} verschilt in {field}.")
+        for field in ("begintijd", "eindtijd"):
+            if left.get(field) and right.get(field) and left[field] != right[field]:
+                raise ValueError(f"SOVON-bezoek {visit_id} verschilt in {field}.")
+        merged.append({
+            **right,
+            "begintijd": left.get("begintijd") or right.get("begintijd"),
+            "eindtijd": left.get("eindtijd") or right.get("eindtijd"),
+            "deelbezoek": left.get("deelbezoek"),
+            "gunstig": left.get("gunstig"),
+            "bron_aantal_soorten": left.get("bron_aantal_soorten"),
+            "bron_aantal_records": left.get("bron_aantal_records"),
+            "opmerking": right.get("opmerking") or left.get("opmerking"),
+            "bronvorm": "beide",
+        })
+    return merged
+
+
+def _sovon_bmp_value(value: object) -> str:
+    if value is None:
+        return "NULL"
+    if isinstance(value, bool):
+        return "1" if value else "0"
+    if isinstance(value, (int, float)):
+        return str(value)
+    return sql_text(str(value))
+
+
+def _sovon_bmp_insert_batches(
+    table: str, columns: tuple[str, ...], rows: list[tuple[object, ...]],
+    *, batch_size: int = 500,
+) -> list[str]:
+    statements = []
+    for start in range(0, len(rows), batch_size):
+        values = rows[start:start + batch_size]
+        encoded = ",\n".join(
+            "(" + ",".join(_sovon_bmp_value(value) for value in row) + ")"
+            for row in values
+        )
+        statements.append(
+            f"INSERT INTO Meijendel.{table} ({','.join(columns)}) VALUES\n{encoded};"
+        )
+    return statements
+
+
+def read_sovon_bmp_taxon_map(
+    client: Path, client_args: list[str], euring_codes: set[int],
+) -> dict[int, dict[str, object]]:
+    if not euring_codes:
+        return {}
+    code_sql = ",".join(str(code) for code in sorted(euring_codes))
+    sql = f"""
+START TRANSACTION READ ONLY;
+SELECT s.euring_code,s.id,s.taxon_bronkoppeling_id,
+       COALESCE(g.groep_code,'zonder_groep')
+FROM Meijendel.soorten s
+JOIN Meijendel.taxa_bronkoppeling b
+  ON b.koppeling_id=s.taxon_bronkoppeling_id
+JOIN Meijendel.taxa t ON t.taxon_id=b.taxon_id
+LEFT JOIN Meijendel.taxon_groepen g ON g.groep_id=t.groep_id
+WHERE s.euring_code IN ({code_sql})
+  AND b.koppelstatus IN ('kandidaat','bevestigd')
+ORDER BY s.euring_code,s.id;
+COMMIT;
+"""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        sql, capture=True,
+    )
+    result: dict[int, dict[str, object]] = {}
+    for line in output.splitlines():
+        code, species_id, link_id, group = line.split("\t")
+        key = int(code)
+        if key in result:
+            raise ValueError(f"Euring-code {key} koppelt aan meerdere soortenregels.")
+        result[key] = {
+            "soort_id": int(species_id),
+            "taxon_bronkoppeling_id": int(link_id),
+            "groep_code": group,
+        }
+    return result
+
+
+def read_sovon_bmp_database_territories(
+    client: Path, client_args: list[str], year: int,
+) -> dict[tuple[int, int], int]:
+    sql = f"""
+START TRANSACTION READ ONLY;
+SELECT t.plot_id,s.euring_code,SUM(t.territoria)
+FROM Meijendel.territoria t
+JOIN Meijendel.soorten s ON s.id=t.soort_id
+WHERE t.bron_id=1 AND t.jaar={year}
+GROUP BY t.plot_id,s.euring_code;
+COMMIT;
+"""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        sql, capture=True,
+    )
+    return {
+        (int(plot_id), int(euring)): int(total)
+        for plot_id, euring, total in (line.split("\t") for line in output.splitlines())
+    }
+
+
+def parse_sovon_bmp_database_visits(output: str) -> dict[int, dict[str, object]]:
+    """Lees tabgescheiden bezoeken; het opmerkingenveld is hex om regels te bewaren."""
+    fields = (
+        "plot_id", "jaar", "bezoek_datum", "begintijd", "eindtijd",
+        "bezoekduur_min", "deelbezoek", "gunstig", "opmerking",
+        "bron_aantal_soorten", "bron_aantal_records",
+    )
+    integer_fields = {
+        "plot_id", "jaar", "bezoekduur_min", "deelbezoek", "gunstig",
+        "bron_aantal_soorten", "bron_aantal_records",
+    }
+    result: dict[int, dict[str, object]] = {}
+    for line in output.splitlines():
+        values = line.split("\t")
+        visit_id = int(values[0])
+        row: dict[str, object] = {}
+        for field, value in zip(fields, values[1:]):
+            if value == "__NULL__":
+                row[field] = None
+            elif field == "opmerking":
+                row[field] = bytes.fromhex(value).decode("utf-8")
+            elif field in integer_fields:
+                row[field] = int(value)
+            else:
+                row[field] = value
+        result[visit_id] = row
+    return result
+
+
+def read_sovon_bmp_database_visits(
+    client: Path, client_args: list[str], year: int,
+) -> dict[int, dict[str, object]]:
+    sql = f"""
+START TRANSACTION READ ONLY;
+SELECT bezoek_id,plot_id,jaar,DATE_FORMAT(bezoek_datum,'%Y-%m-%d'),
+       IFNULL(TIME_FORMAT(begintijd,'%H:%i:%s'),'__NULL__'),
+       IFNULL(TIME_FORMAT(eindtijd,'%H:%i:%s'),'__NULL__'),
+       IFNULL(CAST(bezoekduur_min AS CHAR),'__NULL__'),
+       IFNULL(CAST(deelbezoek AS CHAR),'__NULL__'),
+       IFNULL(CAST(gunstig AS CHAR),'__NULL__'),IFNULL(HEX(opmerking),'__NULL__'),
+       IFNULL(CAST(aantal_soorten AS CHAR),'__NULL__'),
+       IFNULL(CAST(aantal_records AS CHAR),'__NULL__')
+FROM Meijendel.dagbezoeken_bmp
+WHERE bron_id=1 AND jaar={year}
+ORDER BY bezoek_id;
+COMMIT;
+"""
+    output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        sql, capture=True,
+    )
+    return parse_sovon_bmp_database_visits(output)
+
+
+def compare_sovon_bmp_territories(
+    matrix: list[dict[str, object]], taxon_map: dict[int, dict[str, object]],
+    database_territories: dict[tuple[int, int], int],
+) -> dict[str, object]:
+    """Vergelijk vogelmatrix en database zonder nul- of leegtecellen te herduiden."""
+    source = {
+        (int(row["plot_id"]), int(row["euring_code"])): row
+        for row in matrix
+        if taxon_map.get(int(row["euring_code"]), {}).get("groep_code") == "vogels"
+    }
+    counts: Counter[str] = Counter()
+    differences: list[dict[str, object]] = []
+    for key, row in sorted(source.items()):
+        status = str(row["broncelstatus"])
+        source_value = row["territoria"]
+        database_value = database_territories.get(key)
+        if status == "positief":
+            if database_value is None:
+                category = "alleen_download_positief"
+            elif int(source_value) == database_value:
+                category = "gelijk_positief"
+            else:
+                category = "afwijkend_positief"
+        elif status == "expliciete_nul":
+            if database_value is None:
+                category = "expliciete_nul_ontbreekt_database"
+            elif database_value == 0:
+                category = "gelijk_expliciete_nul"
+            else:
+                category = "expliciete_nul_tegen_databasepositief"
+        else:
+            category = (
+                "leeg_zonder_databasepositief"
+                if database_value is None or database_value == 0
+                else "leeg_tegen_databasepositief"
+            )
+        counts[category] += 1
+        if category not in {
+            "gelijk_positief", "gelijk_expliciete_nul",
+            "leeg_zonder_databasepositief",
+        }:
+            differences.append({
+                "plot_id": key[0], "euring_code": key[1],
+                "plot_nr": row["plot_nr"], "plot_naam": row["plot_naam"],
+                "bron_naam": row["bron_naam"], "categorie": category,
+                "download": source_value, "database": database_value,
+            })
+    for key, database_value in sorted(database_territories.items()):
+        if key not in source:
+            counts["alleen_database_buiten_vogelmatrix"] += 1
+            differences.append({
+                "plot_id": key[0], "euring_code": key[1],
+                "bron_naam": None, "categorie": "alleen_database_buiten_vogelmatrix",
+                "download": None, "database": database_value,
+            })
+    return {
+        "vogel_matrixregels": len(source),
+        "categorieen": dict(sorted(counts.items())),
+        "verschillen": differences,
+    }
+
+
+def compare_sovon_bmp_visits(
+    source_visits: list[dict[str, object]],
+    database_visits: dict[int, dict[str, object]],
+) -> dict[str, object]:
+    source = {int(row["bron_bezoek_id"]): row for row in source_visits}
+    fields = (
+        "plot_id", "jaar", "bezoek_datum", "begintijd", "eindtijd",
+        "deelbezoek", "gunstig", "opmerking", "bron_aantal_soorten",
+        "bron_aantal_records",
+    )
+    differences: list[dict[str, object]] = []
+    def normalized(field: str, value: object) -> object:
+        if field in {"deelbezoek", "gunstig"} and value is None:
+            return 0
+        if field == "opmerking" and str(value or "").strip() in {"", "-"}:
+            return None
+        return value
+
+    for visit_id in sorted(set(source) | set(database_visits)):
+        if visit_id not in database_visits:
+            differences.append({"bezoek_id": visit_id, "categorie": "alleen_download"})
+            continue
+        if visit_id not in source:
+            differences.append({"bezoek_id": visit_id, "categorie": "alleen_database"})
+            continue
+        changed = {
+            field: {"download": source[visit_id].get(field),
+                    "database": database_visits[visit_id].get(field)}
+            for field in fields
+            if normalized(field, source[visit_id].get(field))
+            != normalized(field, database_visits[visit_id].get(field))
+        }
+        if changed:
+            differences.append({
+                "bezoek_id": visit_id, "categorie": "veldverschil",
+                "velden": changed,
+            })
+    return {
+        "download_bezoeken": len(source),
+        "database_bezoeken": len(database_visits),
+        "gelijke_bezoeken": len(source) - sum(
+            row["categorie"] in {"alleen_download", "veldverschil"}
+            for row in differences
+        ),
+        "verschillen": differences,
+    }
+
+
+def compare_sovon_bmp_year(
+    root: Path, year: int, client: Path, client_args: list[str],
+) -> dict[str, object]:
+    """Maak het jaarverschilrapport zonder een databasewijziging."""
+    year_dir = root / str(year)
+    matrix = read_sovon_bmp_matrix(
+        year_dir / "Avimap_totalen_territoria__plots_diversen.xlsx", year,
+    )
+    total_paths = sorted(year_dir.glob("Avimap_bezoektotalen*.xlsx"))
+    if len(total_paths) != 1:
+        raise ValueError(f"Jaar {year} heeft niet exact één bezoektotalenbestand.")
+    totals = read_sovon_bmp_visit_totals(total_paths[0], matrix)
+    standard_visits = read_sovon_bmp_standard_visits(
+        year_dir / "avimap_252_diversen__bezoeken.xlsx", year,
+    )
+    standard_results = read_sovon_bmp_standard_results(
+        year_dir / "avimap_252_diversen__resultaten.xlsx", year,
+    )
+    source_visits = merge_sovon_bmp_visits(standard_visits, totals["visits"])
+    taxon_map = read_sovon_bmp_taxon_map(
+        client, client_args, {int(row["euring_code"]) for row in matrix},
+    )
+    bird_rows = [
+        row for row in matrix
+        if taxon_map.get(int(row["euring_code"]), {}).get("groep_code") == "vogels"
+    ]
+    rows_by_plot: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for row in bird_rows:
+        rows_by_plot[int(row["plot_id"])].append(row)
+    visited_plots = {int(row["plot_id"]) for row in source_visits}
+    plot_statuses = Counter()
+    cells_by_plot_status: dict[str, Counter[str]] = defaultdict(Counter)
+    blank_visited = []
+    blank_within_value_plots = []
+    for plot_id, rows in rows_by_plot.items():
+        classification = classify_sovon_bmp_plotyear(
+            rows, has_visits=plot_id in visited_plots,
+        )["matrixstatus"]
+        plot_status = f"{'bezocht' if plot_id in visited_plots else 'niet_bezocht'}__{classification}"
+        plot_statuses[plot_status] += 1
+        cells_by_plot_status[plot_status].update(
+            str(row["broncelstatus"]) for row in rows
+        )
+        if plot_id in visited_plots and classification == "uitsluitend_leeg":
+            blank_visited.append({
+                "plot_id": plot_id, "plot_nr": rows[0]["plot_nr"],
+                "plot_naam": rows[0]["plot_naam"],
+            })
+        if plot_id in visited_plots and classification == "waarden_aanwezig":
+            blank_within_value_plots.extend({
+                "plot_id": plot_id, "plot_nr": row["plot_nr"],
+                "plot_naam": row["plot_naam"], "euring_code": row["euring_code"],
+                "bron_naam": row["bron_naam"],
+            } for row in rows if row["broncelstatus"] == "leeg")
+    return {
+        "jaar": year,
+        "bron_matrixregels": len(matrix),
+        "bron_bezoek_taxonregels": len(totals["visit_taxa"]),
+        "bron_standaardresultaten": len(standard_results),
+        "bron_tellercodes": sorted({
+            code for row in standard_results for code in row["tellercodes"]
+        }),
+        "plots": {
+            "matrixplots": len(rows_by_plot), "bezochte_plots": len(visited_plots),
+            "statussen": dict(sorted(plot_statuses.items())),
+            "cellen_per_plotstatus": {
+                key: dict(sorted(value.items()))
+                for key, value in sorted(cells_by_plot_status.items())
+            },
+            "bezocht_met_uitsluitend_lege_matrix": sorted(
+                blank_visited, key=lambda row: int(row["plot_id"]),
+            ),
+            "lege_cellen_binnen_plot_met_waarden": sorted(
+                blank_within_value_plots,
+                key=lambda row: (int(row["plot_id"]), int(row["euring_code"])),
+            ),
+        },
+        "territoria": compare_sovon_bmp_territories(
+            matrix, taxon_map,
+            read_sovon_bmp_database_territories(client, client_args, year),
+        ),
+        "bezoeken": compare_sovon_bmp_visits(
+            source_visits, read_sovon_bmp_database_visits(client, client_args, year),
+        ),
+    }
+
+
+def import_sovon_bmp_1984(
+    root: Path, client: Path, client_args: list[str], *, commit: bool = True,
+) -> dict[str, object]:
+    """Importeer uitsluitend de brongetrouwe vogellaag van het eerste controlejaar."""
+    year = 1984
+    year_dir = root / str(year)
+    matrix_path = year_dir / "Avimap_totalen_territoria__plots_diversen.xlsx"
+    total_paths = sorted(year_dir.glob("Avimap_bezoektotalen*.xlsx"))
+    if len(total_paths) != 1:
+        raise ValueError("1984 heeft niet exact éé bezoektotalenbestand.")
+    results_path = year_dir / "avimap_252_diversen__resultaten.xlsx"
+    visits_path = year_dir / "avimap_252_diversen__bezoeken.xlsx"
+    observation_path = year_dir / "avimap_252_diversen__bezoekstippen.shp"
+    territory_path = year_dir / "avimap_252_diversen__territoria.shp"
+
+    matrix = read_sovon_bmp_matrix(matrix_path, year)
+    totals = read_sovon_bmp_visit_totals(total_paths[0], matrix)
+    standard_results = read_sovon_bmp_standard_results(results_path, year)
+    standard_visits = read_sovon_bmp_standard_visits(visits_path, year)
+    visits = merge_sovon_bmp_visits(standard_visits, totals["visits"])
+    observation_count = sovon_bmp_layer_feature_count(observation_path)
+    territory_count = sovon_bmp_layer_feature_count(territory_path)
+    if observation_count or territory_count:
+        raise ValueError("De 1984-import verwacht lege puntlagen.")
+
+    taxon_map = read_sovon_bmp_taxon_map(
+        client, client_args, {int(row["euring_code"]) for row in matrix},
+    )
+    bird_rows = [
+        row for row in matrix
+        if taxon_map.get(int(row["euring_code"]), {}).get("groep_code") == "vogels"
+    ]
+    excluded = [row for row in matrix if row not in bird_rows]
+    unsafe_excluded = [row for row in excluded if row["broncelstatus"] != "leeg"]
+    if unsafe_excluded:
+        raise ValueError("Niet-vogel- of ongekoppelde matrixregels bevatten waarden.")
+    if len(matrix) != 5306 or len(bird_rows) != 4992 or len(excluded) != 314:
+        raise ValueError("De vastgestelde 1984-matrixomvang wijkt af.")
+    if len(visits) != 230 or len(totals["visit_taxa"]) != 0:
+        raise ValueError("De vastgestelde 1984-bezoekomvang wijkt af.")
+    if standard_results:
+        raise ValueError("1984 bevat onverwacht standaardresultaten.")
+
+    database_territories = read_sovon_bmp_database_territories(
+        client, client_args, year,
+    )
+    database_visits = read_sovon_bmp_database_visits(client, client_args, year)
+    visit_comparison = compare_sovon_bmp_visits(visits, database_visits)
+    if visit_comparison["verschillen"]:
+        raise ValueError("De 1984-bezoeken verschillen van de levende SOVON-laag.")
+
+    decision = select_sovon_bmp_decided_plotyears(bird_rows, visits)
+    selected_rows = list(decision["matrix_rows"])
+    selected_visits = list(decision["visits"])
+    status_counts = Counter(str(row["broncelstatus"]) for row in selected_rows)
+    if len(decision["plot_ids"]) != 15 or status_counts != {
+        "positief": 568, "expliciete_nul": 860, "leeg": 18,
+    }:
+        raise ValueError("Het bevestigde 1984-besluit omvat niet exact de verwachte broncellen.")
+    if len(selected_visits) != 222:
+        raise ValueError("De vijftien bevestigde 1984-plotjaren bevatten niet exact 222 bezoeken.")
+    if decision["pending_visited_blank_plots"] != {3515}:
+        raise ValueError("Het onbesliste bezochte blanco plotjaar is niet uitsluitend M35.")
+    if len(decision["ignored_unvisited_blank_plots"]) != 40:
+        raise ValueError("De genegeerde niet-bezochte blanco plots zijn niet exact 40.")
+
+    literature_leading = {
+        (3498, 5920), (3530, 5920), (3581, 5920),
+        (29456, 5900), (29456, 5910), (29456, 5920),
+    }
+    download_only_positive = {
+        (int(row["plot_id"]), int(row["euring_code"]))
+        for row in selected_rows
+        if row["broncelstatus"] == "positief"
+        and (int(row["plot_id"]), int(row["euring_code"])) not in database_territories
+    }
+    if download_only_positive != literature_leading:
+        raise ValueError("De zes bevestigde meeuwenconflicten voor 1984 wijken af.")
+    observation_manifest, observation_manifest_hash = sovon_bmp_bundle_manifest(observation_path)
+    territory_manifest, territory_manifest_hash = sovon_bmp_bundle_manifest(territory_path)
+    note = (
+        "Officiële SOVON-jaarlevering. Bronbestand bevat 5.306 matrixregels; "
+        "4.992 vogelregels zijn genormaliseerd. 314 uitsluitend lege regels "
+        "voor niet-vogels, oningedeelde taxa of de placeholder 'Hybride nog "
+        "toevoegen' blijven via bronbestand en hashes bewaard en zijn niet als "
+        "vogel, nul of waarneming ingevoerd. Conform jaarbesluit zijn alleen "
+        "15 bezochte plotjaren met matrixwaarden opgenomen: 568 positieve "
+        "cellen, 860 expliciete nullen en 18 lege soortcellen. M35 blijft te "
+        "beoordelen; 40 niet-bezochte plots met uitsluitend lege cellen zijn "
+        "genegeerd. Voor zes meeuwenwaarden blijft meeuwen_literatuur leidend."
+    )
+    delivery_row = (
+        year, SOVON_BMP_RULE_VERSION, str(year_dir), matrix_path.name,
+        sha256_file(matrix_path), total_paths[0].name, sha256_file(total_paths[0]),
+        results_path.name, sha256_file(results_path), visits_path.name,
+        sha256_file(visits_path),
+        json.dumps(observation_manifest, ensure_ascii=False, sort_keys=True),
+        observation_manifest_hash,
+        json.dumps(territory_manifest, ensure_ascii=False, sort_keys=True),
+        territory_manifest_hash,
+        "2026-10-02", len(matrix), len(visits), "gevalideerd", note,
+    )
+    existing_delivery_output = run_mysql(
+        client, client_args + ["--batch", "--raw", "--skip-column-names"],
+        "SELECT levering_id FROM Meijendel.sovon_bmp_jaarlevering "
+        f"WHERE jaar={year} AND matrix_sha256={sql_text(str(delivery_row[4]))} "
+        f"AND bezoektotalen_sha256={sql_text(str(delivery_row[6]))};",
+        capture=True,
+    ).strip()
+    existing_delivery_id = int(existing_delivery_output) if existing_delivery_output else None
+    statements = ["SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;", "START TRANSACTION;"]
+    delivery_statements = _sovon_bmp_insert_batches(
+        "sovon_bmp_jaarlevering",
+        ("jaar", "regelversie", "bronmap", "matrix_bestand", "matrix_sha256",
+         "bezoektotalen_bestand", "bezoektotalen_sha256",
+         "standaardresultaten_bestand", "standaardresultaten_sha256",
+         "standaardbezoeken_bestand", "standaardbezoeken_sha256",
+         "bezoekstippen_bestanden_json", "bezoekstippen_manifest_sha256",
+         "territoriumpunten_bestanden_json", "territoriumpunten_manifest_sha256",
+         "ontvangen_op", "matrix_rijen", "bron_bezoeken", "leveringsstatus",
+         "kwaliteitsnotitie"),
+        [delivery_row],
+    )
+    if len(delivery_statements) != 1:
+        raise ValueError("De SOVON-jaarlevering levert niet exact één SQL-statement op.")
+    if existing_delivery_id is None:
+        statements.append(delivery_statements[0])
+        statements.append("SET @sovon_bmp_levering=LAST_INSERT_ID();")
+    else:
+        statements.append(f"SET @sovon_bmp_levering={existing_delivery_id};")
+
+    rows_by_plot: dict[int, list[dict[str, object]]] = defaultdict(list)
+    for row in selected_rows:
+        rows_by_plot[int(row["plot_id"])].append(row)
+    visits_by_plot = Counter(int(row["plot_id"]) for row in selected_visits)
+    plotyear_rows = []
+    for plot_id, plot_rows in sorted(rows_by_plot.items()):
+        classification = classify_sovon_bmp_plotyear(
+            plot_rows, has_visits=visits_by_plot[plot_id] > 0,
+        )
+        plotyear_rows.append((plot_id, classification["matrixstatus"], visits_by_plot[plot_id]))
+    # @variabelen mogen niet als gequote tekst eindigen.
+    plotyear_values = ",\n".join(
+        "(@sovon_bmp_levering,{plot_id},{year},'BMP-A',"
+        "'standaardregel_data_eigenaar','alle_soorten','volledig','goedgekeurd',"
+        "NULL,{status},{visits_count},'beoordeeld',{decision},"
+        "NULL,NOW(6))".format(
+            plot_id=plot_id, year=year, status=sql_text(status),
+            visits_count=visits_count,
+            decision=sql_text(
+                "Besluitregel data-eigenaar 2 oktober 2026: BMP-A, alle soorten "
+                "en volledig geteld; een niet als afgekeurd aangeduide SOVON-"
+                "download geldt als goedgekeurd. Expliciete nulcellen worden "
+                "brongetrouw in territoria verwerkt."
+            ),
+        )
+        for plot_id, status, visits_count in plotyear_rows
+    )
+    if existing_delivery_id is None:
+        statements.append(
+            "INSERT INTO Meijendel.sovon_bmp_plotjaar "
+            "(levering_id,plot_id,jaar,bmp_type,bmp_type_bron,soortenbereik,"
+            "volledigheidstatus,beoordelingsstatus,soortenlijstversie_id,"
+            "matrixstatus,bron_bezoekaantal,controle_status,controlebesluit,"
+            "beoordeeld_door,beoordeeld_op) VALUES\n" + plotyear_values + ";"
+        )
+
+    summary = totals["taxon_summaries"]
+    comparison_rows = []
+    for row in selected_rows:
+        code = int(row["euring_code"])
+        mapping = taxon_map[code]
+        key = (int(row["plot_id"]), code)
+        source_summary = summary.get(key, {})
+        comparison, quality_note = sovon_bmp_receipt_comparison(
+            str(row["broncelstatus"]),
+            None if row["territoria"] is None else int(row["territoria"]),
+            database_territories.get(key), key in literature_leading,
+        )
+        comparison_rows.append({
+            "plot_id": int(row["plot_id"]), "jaar": year,
+            "soort_id": int(mapping["soort_id"]),
+            "taxon_bronkoppeling_id": int(mapping["taxon_bronkoppeling_id"]),
+            "euring_code": code, "bron_naam": row["bron_naam"],
+            "broncelstatus": row["broncelstatus"], "territoria": row["territoria"],
+            "vergelijkingsstatus": comparison, "kwaliteitsnotitie": quality_note,
+            "autocluster_territoria": source_summary.get("autocluster_territoria"),
+        })
+    existing_zero_conflicts = [
+        row for row in comparison_rows
+        if row["broncelstatus"] == "expliciete_nul"
+        and (int(row["plot_id"]), int(row["euring_code"])) in database_territories
+        and database_territories[(int(row["plot_id"]), int(row["euring_code"]))] != 0
+    ]
+    if existing_zero_conflicts:
+        raise ValueError(
+            "Een expliciete SOVON-nul conflicteert met een bestaande territoriumwaarde."
+        )
+    new_zero_rows = [
+        row for row in comparison_rows
+        if row["broncelstatus"] == "expliciete_nul"
+        and (int(row["plot_id"]), int(row["euring_code"])) not in database_territories
+    ]
+    statements.append(sovon_bmp_zero_insert_sql(new_zero_rows))
+    statements.append(sovon_bmp_transaction_end(commit))
+    run_mysql_stream(client, client_args, statements)
+    return {
+        "jaar": year,
+        "bron_matrixregels": len(matrix),
+        "vogel_matrixregels_bron": len(bird_rows),
+        "verwerkte_matrixregels": len(selected_rows),
+        "positieve_cellen": status_counts["positief"],
+        "expliciete_nulcellen": status_counts["expliciete_nul"],
+        "toegevoegde_expliciete_nullen": len(new_zero_rows),
+        "lege_cellen_binnen_verwerkte_plotjaren": status_counts["leeg"],
+        "uitgesloten_lege_niet_vogelregels": len(excluded),
+        "plotjaren": len(plotyear_rows),
+        "bezoeken_bron": len(visits),
+        "vergeleken_bezoeken": len(selected_visits),
+        "meeuwenconflicten_literatuur_leidend": len(literature_leading),
+        "onbeslist_bezocht_blanco_plot": sorted(decision["pending_visited_blank_plots"]),
+        "genegeerde_niet_bezochte_blanco_plots": len(decision["ignored_unvisited_blank_plots"]),
+        "vastgelegd": commit,
+        "bezoek_taxonregels": len(totals["visit_taxa"]),
+        "waarnemingspunten": observation_count,
+        "territoriumpunten": territory_count,
+    }
 
 
 def _sovon_bool(value: str | None) -> int | None:
@@ -9440,30 +11183,31 @@ SELECT JSON_OBJECT(
 
 def daz_bmp_validation_sql() -> str:
     version = sql_text(DAZ_BMP_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_daz_bmp_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"daz_bmp_{suffix}") for suffix in (
         "recordselectie", "recordkandidaat", "bezoek", "bezoek_taxon",
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version}),
-  'unique_link_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='eenduidig_bmp_bezoek'),
-  'multiple_link_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='meerdere_bmp_bezoeken'),
-  'unlinked_records',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='geen_bmp_bezoek'),
-  'candidate_links',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_recordkandidaat WHERE reconstructieversie={version}),
-  'confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version}),
-  'confirmed_plots',(SELECT COUNT(DISTINCT plot_id) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version}),
-  'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
-  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'ambiguous_target_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='onbepaald_ambigu'),
-  'target_count_sum',(SELECT SUM(aantal) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
-  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
-  'bycatch_positive_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
-  'ambiguous_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek WHERE reconstructieversie={version} AND ambigu_kandidaatrecordaantal>0),
+  'source_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version}),
+  'unique_link_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='eenduidig_bmp_bezoek'),
+  'multiple_link_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='meerdere_bmp_bezoeken'),
+  'unlinked_records',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordselectie WHERE reconstructieversie={version} AND koppelstatus='geen_bmp_bezoek'),
+  'candidate_links',(SELECT COUNT(*) FROM Meijendel.daz_bmp_recordkandidaat WHERE reconstructieversie={version}),
+  'confirmed_visits',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek WHERE reconstructieversie={version}),
+  'confirmed_plots',(SELECT COUNT(DISTINCT plot_id) FROM Meijendel.daz_bmp_bezoek WHERE reconstructieversie={version}),
+  'target_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort'),
+  'target_positive_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'historical_derived_zero_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='historische_afgeleide_nul'),
+  'ambiguous_target_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='onbepaald_ambigu'),
+  'target_count_sum',(SELECT SUM(aantal) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='doelsoort' AND waarnemingsstatus='waargenomen'),
+  'bycatch_positive_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'bycatch_positive_records',(SELECT SUM(bronrecordaantal) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND doelrelatie='bijvangst'),
+  'ambiguous_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek WHERE reconstructieversie={version} AND ambigu_kandidaatrecordaantal>0),
   'secure_source_records',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE protocol LIKE '17.204%'),
   'secure_linked_to_public',(SELECT COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register r JOIN Meijendel_ndff_secure.ndff_open_secure_koppeling k ON k.secure_waarneming_id=r.waarneming_id WHERE r.protocol LIKE '17.204%' AND k.open_waarneming_id IS NOT NULL),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables})),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.daz_bmp_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (aantal IS NULL OR aantal=0 OR bronrecordaantal=0)) OR (waarnemingsstatus='echte_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort')) OR (waarnemingsstatus='historische_afgeleide_nul' AND (aantal<>0 OR bronrecordaantal<>0 OR ambigu_recordaantal<>0 OR doelrelatie<>'doelsoort' OR telwaardestatus<>'historisch_afgeleid_geen_afwezigheidsbewijs' OR nulregel<>'historische_reconstructie_geen_afwezigheidsbewijs')) OR (waarnemingsstatus='onbepaald_ambigu' AND (aantal IS NOT NULL OR bronrecordaantal<>0 OR ambigu_recordaantal=0 OR doelrelatie<>'doelsoort'))))
 );
 """
 
@@ -10542,6 +12286,12 @@ def main() -> int:
     parser.add_argument("--port", type=int, default=3306)
     parser.add_argument("--sovon-source-dir", type=Path)
     parser.add_argument("--sovon-csv-dir", type=Path)
+    parser.add_argument("--sovon-bmp-root", type=Path)
+    parser.add_argument("--sovon-bmp-current-list", type=Path)
+    parser.add_argument(
+        "--ogrinfo", type=Path,
+        default=Path("/Applications/Postgres.app/Contents/Versions/latest/bin/ogrinfo"),
+    )
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--dry-run", action="store_true")
     mode.add_argument("--audit-live", action="store_true")
@@ -10565,6 +12315,10 @@ def main() -> int:
     mode.add_argument("--audit-sovon-avimap", action="store_true")
     mode.add_argument("--sync-sovon-avimap-vogels", action="store_true")
     mode.add_argument("--audit-sovon-avimap-vogels", action="store_true")
+    mode.add_argument("--audit-sovon-bmp-years", action="store_true")
+    mode.add_argument("--compare-sovon-bmp-year", type=int)
+    mode.add_argument("--import-sovon-bmp-year", type=int)
+    mode.add_argument("--apply-sovon-bmp-current-list-from", type=int)
     mode.add_argument("--reconstruct-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--audit-zeereeppaddenstoelen", action="store_true")
     mode.add_argument("--reconstruct-bospaddenstoelen", action="store_true")
@@ -10595,12 +12349,65 @@ def main() -> int:
     mode.add_argument("--audit-ravon-n2000", action="store_true")
     args = parser.parse_args()
     from import_external_ecology_sources import central_query_guarded_operation
-    mutates = not args.dry_run and not any(value for key,value in vars(args).items() if key.startswith('audit_'))
+    mutates = (not args.dry_run
+        and args.compare_sovon_bmp_year is None
+        and not any(value for key,value in vars(args).items() if key.startswith('audit_')))
     return central_query_guarded_operation(lambda: execute_main(args,parser), enabled=mutates,
         login_path=args.login_path,client=args.mysql_client,host=args.host,port=args.port)
 
 
 def execute_main(args,parser) -> int:
+
+    if args.apply_sovon_bmp_current_list_from is not None:
+        if args.apply_sovon_bmp_current_list_from != 1984:
+            parser.error("De actuele BMP-A-lijst is nu alleen besloten vanaf 1984")
+        if args.sovon_bmp_current_list is None:
+            parser.error(
+                "--apply-sovon-bmp-current-list-from vereist "
+                "--sovon-bmp-current-list"
+            )
+        client_args = mysql_args(args.login_path, args.host, args.port)
+        result = apply_sovon_bmp_current_list_from_1984(
+            args.mysql_client, client_args, args.sovon_bmp_current_list,
+        )
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0
+
+    if args.compare_sovon_bmp_year is not None:
+        if args.sovon_bmp_root is None:
+            parser.error("--compare-sovon-bmp-year vereist --sovon-bmp-root")
+        client_args = mysql_args(args.login_path, args.host, args.port)
+        report = compare_sovon_bmp_year(
+            args.sovon_bmp_root, args.compare_sovon_bmp_year,
+            args.mysql_client, client_args,
+        )
+        print(json.dumps(report, ensure_ascii=False, sort_keys=True))
+        return 0
+
+    if args.import_sovon_bmp_year is not None:
+        if args.sovon_bmp_root is None:
+            parser.error("--import-sovon-bmp-year vereist --sovon-bmp-root")
+        if args.import_sovon_bmp_year != 1984:
+            parser.error("Alleen het inhoudelijk besloten jaar 1984 mag nu worden ingevoerd")
+        client_args = mysql_args(args.login_path, args.host, args.port)
+        result = import_sovon_bmp_1984(
+            args.sovon_bmp_root, args.mysql_client, client_args,
+        )
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
+        return 0
+
+    # De SOVON-BMP-jaaraudit gebruikt uitsluitend de opgegeven jaarmappen en
+    # mag niet afhankelijk zijn van de losstaande NDFF-protocolbrondocumenten.
+    if args.audit_sovon_bmp_years:
+        if args.sovon_bmp_root is None:
+            parser.error("--audit-sovon-bmp-years vereist --sovon-bmp-root")
+        client_args = mysql_args(args.login_path, args.host, args.port)
+        live_metrics = read_sovon_bmp_live_year_metrics(args.mysql_client, client_args)
+        reports = audit_sovon_bmp_years(
+            args.sovon_bmp_root, live_metrics=live_metrics, ogrinfo=args.ogrinfo,
+        )
+        print(json.dumps(reports, ensure_ascii=False, sort_keys=True))
+        return 0
 
     if sha256_file(SOURCE_XLSX) != SOURCE_XLSX_SHA256 or sha256_file(SOURCE_DOCX) != SOURCE_DOCX_SHA256:
         raise ValueError("Een protocolbrondocument wijkt af van de beoordeelde versie.")

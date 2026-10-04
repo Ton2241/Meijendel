@@ -14,11 +14,23 @@ fail() {
 dump="$TEST_DIR/Meijendel.sql"
 manifest="$TEST_DIR/Meijendel.sql.manifest"
 
+write_dump_without_scope() {
+  cat > "$dump" <<'SQL'
+CREATE TABLE `tellers` (`id` int NOT NULL, `tellercode` varchar(20) NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `pq_vegetatie_pq` (`id` int NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `ndff_open_waarneming` (`id` bigint NOT NULL) ENGINE=InnoDB;
+-- Dump completed on 2026-09-20 22:42:46
+SQL
+}
+
 write_dump() {
   cat > "$dump" <<'SQL'
 CREATE TABLE `tellers` (`id` int NOT NULL, `tellercode` varchar(20) NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `pq_vegetatie_pq` (`id` int NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `ndff_open_waarneming` (`id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `plot_analyse_scope` (`scope_code` varchar(64) NOT NULL, `plot_id` int NOT NULL, `in_scope` tinyint(1) NOT NULL, `reden` varchar(255) NOT NULL, PRIMARY KEY (`scope_code`,`plot_id`)) ENGINE=InnoDB;
+INSERT INTO `plot_analyse_scope` VALUES ('meijendel_natura2000',3503,0,'Geen onderdeel van Natura 2000-analysegebied.'),('meijendel_natura2000',3514,0,'Geen onderdeel van Natura 2000-analysegebied.');
+CREATE VIEW `v_meijendel_analyseplot_actueel` AS SELECT `plot_id` FROM `plot_analyse_scope` WHERE `scope_code`='meijendel_natura2000' AND `in_scope`=1;
 -- Dump completed on 2026-09-20 22:42:46
 SQL
 }
@@ -42,6 +54,13 @@ dagwaarnemingen_bmp=600959
 territoria=71155
 EOF
 }
+
+write_dump_without_scope
+write_manifest
+if output=$("$VALIDATOR" --artifact-only "$dump" "$manifest" 2>&1); then
+  fail "dump zonder centrale plot-analysescope werd geaccepteerd."
+fi
+[[ "$output" == *"plot_analyse_scope"* ]] || fail "gerichte fout over de ontbrekende plot-analysescope ontbreekt."
 
 write_dump
 write_manifest
@@ -84,7 +103,7 @@ write_cache_set() {
   write_manifest
   sql_hash="$(awk -F= '$1 == "sql_sha256" {print $2}' "$manifest")"
   sql_bytes="$(awk -F= '$1 == "sql_bytes" {print $2}' "$manifest")"
-  cache_file="meijendel_tables_cache-p9-${sql_hash}.rds"
+  cache_file="meijendel_tables_cache-p12-${sql_hash}.rds"
   cache_manifest="${cache_file%.rds}.manifest"
   rm -rf "$cache_dir"
   mkdir -p "$cache_dir"
@@ -95,7 +114,7 @@ write_cache_set() {
 format=meijendel-shiny-cache-manifest-v1
 sql_sha256=$sql_hash
 sql_bytes=$sql_bytes
-parser_version=9
+parser_version=12
 cache_sha256=$cache_hash
 cache_bytes=$cache_bytes
 r_version=4.6.1
@@ -140,7 +159,7 @@ expect_cache_fail "SQL-hash"
 
 write_cache_set
 cache_manifest="$(awk -F= '$1 == "cache_manifest" {print $2}' "$manifest")"
-sed -i '' 's/^parser_version=.*/parser_version=10/' "$cache_dir/$cache_manifest"
+sed -i '' 's/^parser_version=.*/parser_version=13/' "$cache_dir/$cache_manifest"
 expect_cache_fail "parser-versie"
 
 printf 'OK: dumpmanifest blokkeert gewijzigde SQL en ongeldige gekoppelde cacheartefacten.\n'

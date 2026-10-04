@@ -5,8 +5,12 @@ from __future__ import annotations
 
 import csv
 import importlib.util
+import tempfile
+import zipfile
 from collections import Counter
 from pathlib import Path
+
+from openpyxl import Workbook
 
 
 ROOT = Path(__file__).parents[2]
@@ -26,6 +30,23 @@ def load_importer():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def remove_xlsx_dimension(path: Path) -> None:
+    """Boots de ontbrekende dimensiemetadata van de AVIMAP-XLSX na."""
+    replacement = path.with_suffix(".zonder-dimensie.xlsx")
+    with zipfile.ZipFile(path) as source, zipfile.ZipFile(replacement, "w") as target:
+        for item in source.infolist():
+            payload = source.read(item.filename)
+            if item.filename == "xl/worksheets/sheet1.xml":
+                text = payload.decode("utf-8")
+                start = text.find("<dimension ")
+                end = text.find("/>", start) + 2
+                assert start >= 0 and end > start
+                text = text[:start] + text[end:]
+                payload = text.encode("utf-8")
+            target.writestr(item, payload)
+    replacement.replace(path)
 
 
 def main() -> int:
@@ -76,16 +97,21 @@ def main() -> int:
         "meijendel.ndff_vleermuis_bezoek_taxon",
         "meijendel.ndff_konijn_recordselectie",
         "meijendel.ndff_konijn_hokdatum_taxon",
-        "meijendel.ndff_daz_bmp_recordselectie",
-        "meijendel.ndff_daz_bmp_recordkandidaat",
-        "meijendel.ndff_daz_bmp_bezoek",
-        "meijendel.ndff_daz_bmp_bezoek_taxon",
+        "meijendel.daz_bmp_recordselectie",
+        "meijendel.daz_bmp_recordkandidaat",
+        "meijendel.daz_bmp_bezoek",
+        "meijendel.daz_bmp_bezoek_taxon",
         "meijendel.sovon_avimap_import_batch",
         "meijendel.sovon_avimap_taxon",
         "meijendel.sovon_avimap_bezoek",
         "meijendel.sovon_avimap_waarneming",
         "meijendel.sovon_avimap_ndff_daz_koppeling",
         "meijendel.sovon_avimap_daz_bezoek_taxon",
+        "meijendel.sovon_bmp_jaarlevering",
+        "meijendel.sovon_bmp_soortenlijstversie",
+        "meijendel.sovon_bmp_soortenlijst_taxon",
+        "meijendel.sovon_bmp_plotjaar",
+        "meijendel.sovon_bmp_plotjaar_tellercode",
         "meijendel.ndff_zeereep_kilometerhok",
         "meijendel.ndff_zeereep_bezoek",
         "meijendel.ndff_zeereep_bezoek_taxon",
@@ -156,13 +182,32 @@ def main() -> int:
         "meijendel.ndff_otter_bever_recordselectie",
     ):
         assert f"create table if not exists {table}" in folded, table
+    for field in (
+        "bezoekstippen_bestanden_json", "bezoekstippen_manifest_sha256",
+        "territoriumpunten_bestanden_json", "territoriumpunten_manifest_sha256",
+    ):
+        assert field in folded, field
+    for condition_column in (
+        "bmp_type",
+        "soortenbereik",
+        "volledigheidstatus",
+        "beoordelingsstatus",
+        "soortenlijstversie_id",
+    ):
+        assert condition_column in folded, condition_column
+    assert "'formeel_afgekeurd'" in folded
+    assert "sovon_bmp_plotjaar_taxon" not in folded
+    assert "sovon_bmp_bezoek" not in folded
+    assert "sovon_bmp_waarneming" not in folded
+    assert "sovon_bmp_territoriumpunt" not in folded
+    assert "referencesmeijendel.taxa_bronkoppeling" in compact
     assert "meijendel_ndff_secure.ndff_vlinder_" not in folded
     assert "meijendel_ndff_secure.ndff_libel_" not in folded
     assert "meijendel_ndff_secure.ndff_reptiel_" not in folded
     assert "meijendel_ndff_secure.ndff_amfibie_" not in folded
     assert "meijendel_ndff_secure.ndff_vleermuis_" not in folded
     assert "meijendel_ndff_secure.ndff_konijn_" not in folded
-    assert "meijendel_ndff_secure.ndff_daz_bmp_" not in folded
+    assert "meijendel_ndff_secure.daz_bmp_" not in folded
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
     assert "meijendel_ndff_secure.ndff_hns_" not in folded
@@ -242,6 +287,313 @@ def main() -> int:
     assert len(loose) == 1 and loose[0]["protocol_code"] == ""
 
     module = load_importer()
+    protocol_dir = ROOT / "docs" / "bronnen" / "protocollen"
+    assert module.SOURCE_XLSX == protocol_dir / "Natuurprotocollen_gebruiksmatrix.xlsx"
+    assert module.SOURCE_DOCX == protocol_dir / "Classificatie_natuurprotocollen_wetenschappelijk_gebruik.docx"
+
+    with tempfile.TemporaryDirectory(prefix="sovon_bmp_test_") as temporary:
+        source = Path(temporary)
+
+        matrix_path = source / "Avimap_totalen_territoria__plots_diversen.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.append(("Plotid", "Plotnr", "Plotnaam", "Soort", "Euring", "IOC sort", 1984))
+        sheet.append((3506, 61, "Meijendel k 13s", "Fitis", 13120, 11620, 2))
+        sheet.append((3506, 61, "Meijendel k 13s", "Grasmus", 12750, 9550, 0))
+        sheet.append((3506, 61, "Meijendel k 13s", "Tjiftjaf", 11060, 11530, 0))
+        sheet.append((3515, 70, "Meijendel k 35", "Fitis", 13120, 11620, None))
+        workbook.save(matrix_path)
+
+        standard_results_path = source / "avimap_252_diversen__resultaten.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "sql_statement"
+        sheet.append((
+            "oid", "projectid", "plotid", "kopid", "euring", "naam",
+            "wetenschap", "aantal", "dh100ha", "jaar", "gebied", "opp_ha",
+            "waarnemer", "ioc_sort", "rl_status", "snl",
+        ))
+        sheet.append((1, 252, 3506, 10, 13120, "Fitis", "Phylloscopus trochilus",
+                      2, 1.0, 1984, "Meijendel k 13s", 100, "AAA001, BBB002", 11620, None, True))
+        workbook.save(standard_results_path)
+        remove_xlsx_dimension(standard_results_path)
+
+        standard_visits_path = source / "avimap_252_diversen__bezoeken.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.title = "sql_statement"
+        sheet.append((
+            "projectid", "plotid", "naam", "bzdid", "datum", "begintijd",
+            "eindtijd", "bezoekduur", "aantal_minuten", "deelbezoek",
+            "deelbezoekdeel", "gunstig", "omst_opm", "opm", "jaar", "doy",
+            "nsoort", "nrecord",
+        ))
+        sheet.append((252, 3506, "Meijendel k 13s", 101, "12-3", "08:00:00",
+                      "10:00:00", "02:00:00", 120, 0, None, 1, "helder",
+                      "standaardopmerking", 1984, 72, 1, 1))
+        workbook.save(standard_visits_path)
+
+        totals_path = source / "Avimap_bezoektotalen_plots.xlsx"
+        workbook = Workbook()
+        sheet = workbook.active
+        sheet.append((None, None, None, None, None, None, None, None))
+        sheet.append(("Telgebied", "61, Meijendel k 13s"))
+        sheet.append(("Jaar", 1984))
+        sheet.append(("ID", 101, 102))
+        sheet.append((None, "12 maart", "17 maart"))
+        sheet.append((None, "08:00", "19:00"))
+        sheet.append((None, "10:00", "21:00"))
+        sheet.append(("bezoeknr", 1, 2))
+        sheet.append((
+            "Bezoektype", "zonop", "avond", "aantal autocluster territoria",
+            "hoogste broed- code", "totaal aantal waarn.",
+            "aantal buiten plot", "aantal niet bruikbare waarnemingen",
+        ))
+        sheet.append(("* * * * Overige soorten * * *",))
+        sheet.append(("Fitis", "2 (1)", None, 2, 0, 3, 1, 1))
+        sheet.append(("Tjiftjaf", " (1)", None, 0, 0, 0, 1, 0))
+        sheet.append(("Grasmus", None, 1, 0, 5, 1, 0, 0))
+        sheet.append((None, None, None, None, None, None, None, None))
+        sheet.append(("Opmerkingen", "helder", "late avond"))
+        workbook.save(totals_path)
+
+        matrix = module.read_sovon_bmp_matrix(matrix_path, expected_year=1984)
+        matrix_statuses = [row["broncelstatus"] for row in matrix]
+        assert matrix_statuses == [
+            "positief", "expliciete_nul", "expliciete_nul", "leeg",
+        ], matrix_statuses
+        assert [row["territoria"] for row in matrix] == [2, 0, 0, None]
+
+        standard_results = module.read_sovon_bmp_standard_results(
+            standard_results_path, expected_year=1984,
+        )
+        assert standard_results[0]["tellercodes"] == ("AAA001", "BBB002")
+        assert standard_results[0]["territoria"] == 2
+
+        standard_visits = module.read_sovon_bmp_standard_visits(
+            standard_visits_path, expected_year=1984,
+        )
+        assert standard_visits[0]["bron_bezoek_id"] == 101
+        assert standard_visits[0]["bezoek_datum"] == "1984-03-12"
+
+        totals = module.read_sovon_bmp_visit_totals(totals_path, matrix)
+        assert [visit["bron_bezoek_id"] for visit in totals["visits"]] == [101, 102]
+        assert [visit["opmerking"] for visit in totals["visits"]] == [
+            "helder", "late avond",
+        ]
+        merged_visits = module.merge_sovon_bmp_visits(
+            standard_visits, totals["visits"][:1],
+        )
+        assert len(merged_visits) == 1
+        assert merged_visits[0]["bronvorm"] == "beide"
+        assert merged_visits[0]["opmerking"] == "helder"
+        assert totals["visit_taxa"] == [{
+            "plot_id": 3506,
+            "jaar": 1984,
+            "bron_bezoek_id": 101,
+            "euring_code": 13120,
+            "bron_naam": "Fitis",
+            "bronwaarde_raw": "2 (1)",
+            "aantal_waarnemingen": 2,
+            "aantal_buiten_plot": 1,
+        }, {
+            "plot_id": 3506,
+            "jaar": 1984,
+            "bron_bezoek_id": 101,
+            "euring_code": 11060,
+            "bron_naam": "Tjiftjaf",
+            "bronwaarde_raw": " (1)",
+            "aantal_waarnemingen": 0,
+            "aantal_buiten_plot": 1,
+        }, {
+            "plot_id": 3506,
+            "jaar": 1984,
+            "bron_bezoek_id": 102,
+            "euring_code": 12750,
+            "bron_naam": "Grasmus",
+            "bronwaarde_raw": "1",
+            "aantal_waarnemingen": 1,
+            "aantal_buiten_plot": 0,
+        }]
+        assert totals["taxon_summaries"][(3506, 13120)]["hoogste_broedcode"] == 0
+
+        observations = module.normalize_sovon_bmp_observation_rows([{
+            "id": "501", "bzdid": "101", "plotid": "3506", "soortnr": "13120",
+            "jaar": "1984", "broedcode": "0", "aantal": "1",
+        }], expected_year=1984)
+        assert observations[0]["broedcode"] == 0
+        assert observations[0]["waarnemingsstatus"] == "waargenomen"
+
+        observation_features = [{
+            "type": "Feature",
+            "properties": {
+                "id": 501, "bzdid": 101, "plotid": 3506, "soortnr": 13120,
+                "naam": "Fitis", "jaar": 1984, "aantal": 1, "broedcode": 0,
+                "wrntype": "3", "geslacht": None, "opmerk": "bronopmerking",
+                "clterr": 0, "clterrid": None, "inplot": 1,
+                "x_coord": 83000, "y_coord": 461000,
+            },
+            "geometry": {"type": "Point", "coordinates": [83000.25, 461000.75]},
+        }]
+        observation_points = module.normalize_sovon_bmp_observation_features(
+            observation_features, expected_year=1984,
+        )
+        assert observation_points[0]["broedcode"] == 0
+        assert observation_points[0]["geom_x"] == 83000.25
+        assert observation_points[0]["in_plot"] == 1
+
+        territory_features = [{
+            "type": "Feature",
+            "properties": {
+                "plotid": 3506, "jaar": 1984, "euring": 13120,
+                "naam": "Fitis", "aantal": 1, "broedcode": 0,
+                "opmerking": None, "inplot": 1,
+                "x_coord": 83001, "y_coord": 461001,
+            },
+            "geometry": {"type": "Point", "coordinates": [83001.5, 461001.5]},
+        }]
+        territory_points = module.normalize_sovon_bmp_territory_features(
+            territory_features, expected_year=1984,
+        )
+        assert territory_points[0]["bron_feature_id"] == 1
+        assert len(territory_points[0]["bron_record_sha256"]) == 64
+        assert territory_points[0]["broedcode"] == 0
+
+        live_sql = module.sovon_bmp_live_year_metrics_sql().casefold()
+        assert "start transaction read only" in live_sql
+        assert "dagbezoeken_bmp" in live_sql
+        assert "dagwaarnemingen_bmp" in live_sql
+        assert "broedcode=0" in live_sql
+        assert "territoria" in live_sql
+        assert "plot_jaar_teller" in live_sql
+
+        blank_status = module.classify_sovon_bmp_plotyear(
+            [row for row in matrix if row["plot_id"] == 3515], has_visits=True,
+        )
+        assert blank_status == {
+            "matrixstatus": "uitsluitend_leeg",
+            "beoordelingsstatus": "te_beoordelen",
+        }
+
+        decision = module.select_sovon_bmp_decided_plotyears(
+            matrix, standard_visits + [{
+                **standard_visits[0],
+                "bron_bezoek_id": 201,
+                "plot_id": 3515,
+            }],
+        )
+        assert decision["plot_ids"] == {3506}
+        assert Counter(row["broncelstatus"] for row in decision["matrix_rows"]) == {
+            "positief": 1,
+            "expliciete_nul": 2,
+        }
+        assert [row["bron_bezoek_id"] for row in decision["visits"]] == [101]
+        assert decision["ignored_unvisited_blank_plots"] == set()
+        assert decision["pending_visited_blank_plots"] == {3515}
+        assert module.sovon_bmp_receipt_comparison(
+            "positief", 2, 2, False,
+        ) == ("gelijk", None)
+        assert module.sovon_bmp_receipt_comparison(
+            "positief", 51, None, True,
+        ) == (
+            "conflict",
+            "SOVON-bronwaarde wijkt af; meeuwen_literatuur blijft leidend in territoria.",
+        )
+        assert module.sovon_bmp_receipt_comparison(
+            "expliciete_nul", 0, None, False,
+        ) == ("bron_nieuwer", None)
+        assert module.sovon_bmp_receipt_comparison(
+            "leeg", None, None, False,
+        ) == ("niet_vergeleken", None)
+        territory_comparison = module.compare_sovon_bmp_territories(
+            [{"plot_id": 3506, "euring_code": 13120, "plot_nr": 61,
+              "plot_naam": "Meijendel k 13s", "bron_naam": "Fitis",
+              "broncelstatus": "expliciete_nul", "territoria": 0}],
+            {13120: {"groep_code": "vogels"}},
+            {(3506, 13120): 0},
+        )
+        assert territory_comparison["categorieen"] == {"gelijk_expliciete_nul": 1}
+        assert territory_comparison["verschillen"] == []
+        visit_output = (
+            "9992\t3519\t2009\t2009-03-01\t07:00:00\t09:00:00\t120\t0\t1\t"
+            "6E61636874766F7273740A4E4F2031202667743B20320A6F6E6265776F6C6B74"
+            "\t10\t20\n"
+        )
+        parsed_visits = module.parse_sovon_bmp_database_visits(visit_output)
+        assert parsed_visits[9992]["opmerking"] == "nachtvorst\nNO 1 &gt; 2\nonbewolkt"
+        assert module.sovon_bmp_transaction_end(False) == "ROLLBACK;"
+        assert module.sovon_bmp_transaction_end(True) == "COMMIT;"
+        list_sql = module.sovon_bmp_current_list_from_1984_sql(
+            "a" * 64,
+            [
+                {"bron_naam": "Fitis", "soort_id": 200,
+                 "taxon_bronkoppeling_id": 900, "euring_code": 13120},
+                {"bron_naam": "Nog niet gekoppeld", "soort_id": None,
+                 "taxon_bronkoppeling_id": None, "euring_code": None},
+            ],
+            commit=False,
+        ).casefold()
+        assert "sovon-bmp-a-actueel-retroactief-vanaf-1984-v1" in list_sql
+        assert "geldig_van" in list_sql
+        assert "1984" in list_sql
+        assert "lijststatus='officieel_bevestigd'" in list_sql
+        assert "'fitis',200,900,13120" in list_sql
+        assert "'nog niet gekoppeld',null,null,null" in list_sql
+        assert "sovon_bmp_plotjaar_taxon" not in list_sql
+        assert "p.soortenlijstversie_id=@sovon_bmp_soortenlijst" in list_sql
+        assert list_sql.rstrip().endswith("rollback;")
+
+        cleanup_sql = module.sovon_bmp_duplicate_cleanup_sql().casefold()
+        for duplicate in (
+            "sovon_bmp_bezoek_taxon", "sovon_bmp_waarneming",
+            "sovon_bmp_territoriumpunt", "sovon_bmp_plotjaar_taxon",
+            "sovon_bmp_bezoek",
+        ):
+            assert f"drop table if exists meijendel.{duplicate}" in cleanup_sql
+        assert "drop view if exists meijendel.v_sovon_bmp_analyse" in cleanup_sql
+        assert "drop view if exists meijendel.v_sovon_bmp_formeel_afgekeurd" in cleanup_sql
+
+        zero_sql = module.sovon_bmp_zero_insert_sql([
+            {"plot_id": 3506, "soort_id": 200, "jaar": 1984,
+             "broncelstatus": "expliciete_nul", "territoria": 0},
+            {"plot_id": 3506, "soort_id": 201, "jaar": 1984,
+             "broncelstatus": "positief", "territoria": 2},
+            {"plot_id": 3506, "soort_id": 202, "jaar": 1984,
+             "broncelstatus": "afgeleide_nul", "territoria": 0},
+        ]).casefold()
+        assert "insert into meijendel.territoria" in zero_sql
+        assert "(3506,200,1984,0,1" in zero_sql
+        assert "(3506,201,1984,2,1" not in zero_sql
+        assert "(3506,202,1984,0,1" not in zero_sql
+        assert module.SOVON_BMP_TERRITORIA_POLICY == "uitsluitend_letterlijke_bronwaarden"
+
+        try:
+            module.sovon_bmp_zero_insert_sql([
+                {"plot_id": 3506, "soort_id": 202, "jaar": 1984,
+                 "broncelstatus": "expliciete_nul", "territoria": 1},
+            ])
+        except ValueError as exc:
+            assert "expliciete_nul" in str(exc)
+        else:
+            raise AssertionError(
+                "Een als expliciete nul gemarkeerde niet-nulwaarde moet worden geweigerd."
+            )
+
+        for suffix in (".shp", ".shx", ".dbf", ".prj"):
+            (source / f"avimap_252_diversen__bezoekstippen{suffix}").write_text(
+                suffix, encoding="utf-8",
+            )
+        manifest, manifest_hash = module.sovon_bmp_bundle_manifest(
+            source / "avimap_252_diversen__bezoekstippen.shp",
+        )
+        assert set(manifest) == {
+            "avimap_252_diversen__bezoekstippen.dbf",
+            "avimap_252_diversen__bezoekstippen.prj",
+            "avimap_252_diversen__bezoekstippen.shp",
+            "avimap_252_diversen__bezoekstippen.shx",
+        }
+        assert len(manifest_hash) == 64
+        assert callable(module.import_sovon_bmp_1984)
     assert module.RULE_VERSION == "ndff-protocolkwaliteit-v1"
     assert module.SCOPE_RULE_VERSION == "ndff-protocolbereik-v2"
     assert module.DECISION_RULE_VERSION == "ndff-analysebesluit-v4"
@@ -1049,7 +1401,15 @@ def main() -> int:
     assert daz_by_key[(101, "Dama dama")]["relation"] == "bijvangst"
     assert (102, "Dama dama") not in daz_by_key
     assert daz_by_key[(102, "Lepus europaeus")]["status"] == "onbepaald_ambigu"
-    assert daz_by_key[(102, "Capreolus capreolus")]["status"] == "echte_nul"
+    assert daz_by_key[(102, "Capreolus capreolus")]["status"] == (
+        "historische_afgeleide_nul"
+    )
+    assert daz_by_key[(102, "Capreolus capreolus")]["zero_rule"] == (
+        "historische_reconstructie_geen_afwezigheidsbewijs"
+    )
+    assert daz_by_key[(102, "Capreolus capreolus")]["value_status"] == (
+        "historisch_afgeleid_geen_afwezigheidsbewijs"
+    )
 
     sovon_matrix = module.build_sovon_avimap_daz_matrix([
         {"visit_id": 11, "taxon": "Konijn", "count": 2},
@@ -1209,6 +1569,9 @@ def main() -> int:
     assert "--audit-vleermuizen" in importer_text
     assert "--reconstruct-konijnen" in importer_text
     assert "--audit-konijnen" in importer_text
+    assert "--audit-sovon-bmp-years" in importer_text
+    assert "--compare-sovon-bmp-year" in importer_text
+    assert "--import-sovon-bmp-year" in importer_text
     assert "--reconstruct-daz-bmp" in importer_text
     assert "--audit-daz-bmp" in importer_text
     assert "--reconstruct-zeereeppaddenstoelen" in importer_text
@@ -1267,14 +1630,29 @@ def main() -> int:
     assert module.AMPHIBIAN_TABLE_PREFIX == "Meijendel.ndff_amfibie"
     assert module.BAT_TABLE_PREFIX == "Meijendel.ndff_vleermuis"
     assert module.RABBIT_TABLE_PREFIX == "Meijendel.ndff_konijn"
-    assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.ndff_daz_bmp"
+    assert module.DAZ_BMP_TABLE_PREFIX == "Meijendel.daz_bmp"
+    assert module.SOVON_BMP_MAMMAL_RULE_VERSION == "sovon-bmp-jaarbestanden-v1"
+    assert "CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek" in SCHEMA.read_text(encoding="utf-8")
+    assert "CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek" not in SCHEMA.read_text(encoding="utf-8")
+    assert "bevestigd_door_sovon_bezoektotaal" in SCHEMA.read_text(encoding="utf-8")
+    assert "geen_nulafleiding" in SCHEMA.read_text(encoding="utf-8")
+    assert "aantal_buiten_plot" in SCHEMA.read_text(encoding="utf-8")
+    assert "geen_nulafleiding_sovon_positief" in SCHEMA.read_text(encoding="utf-8")
+    assert "historische_afgeleide_nul" in SCHEMA.read_text(encoding="utf-8")
+    assert (
+        "historische_reconstructie_geen_afwezigheidsbewijs"
+        in SCHEMA.read_text(encoding="utf-8")
+    )
     assert module.SOVON_AVIMAP_TABLE_PREFIX == "Meijendel.sovon_avimap"
     assert module.SOVON_AVIMAP_RULE_VERSION == "sovon-avimap-252-v1"
     assert module.SOVON_AVIMAP_DAZ_RULE_VERSION == "sovon-avimap-daz-v1"
     assert module.SOVON_AVIMAP_BIRD_RULE_VERSION == "sovon-avimap-vogels-v1"
+    assert module.SOVON_BMP_TABLE_PREFIX == "Meijendel.sovon_bmp"
+    assert module.SOVON_BMP_RULE_VERSION == "sovon-bmp-jaarcontrole-v1"
     sovon_views = module.sovon_avimap_analysis_views_sql().casefold()
     assert "bezoekduur_status" in sovon_views
     assert "handmatige_controle_bezoekduur" in sovon_views
+    assert not hasattr(module, "sovon_bmp_analysis_views_sql")
     libel_source_sql = " ".join(module.libel_source_sql().split())
     assert "o.protocol LIKE '07.201%'" in libel_source_sql
     assert "o.soortgroep_raw='Libellen'" in libel_source_sql
@@ -1412,6 +1790,8 @@ def main() -> int:
     else:
         raise AssertionError("Een afwijkende konijnentellingclassificatie is niet geblokkeerd")
     module.validate_daz_bmp_reconstruction(dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED))
+    assert module.DAZ_BMP_RECONSTRUCTION_EXPECTED["true_zero_rows"] == 0
+    assert module.DAZ_BMP_RECONSTRUCTION_EXPECTED["historical_derived_zero_rows"] == 7552
     broken_daz = dict(module.DAZ_BMP_RECONSTRUCTION_EXPECTED)
     broken_daz["true_zero_rows"] -= 1
     try:

@@ -1,6 +1,11 @@
 args <- commandArgs(trailingOnly = TRUE)
 suppressPackageStartupMessages(library(mgcv))
 
+file_arg <- grep("^--file=", commandArgs(FALSE), value = TRUE)
+script_file <- if (length(file_arg)) sub("^--file=", "", file_arg[[1L]]) else "R/analyse_ecologische_groepen.R"
+script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
+source(file.path(script_dir, "meijendel_cache_contract.R"))
+
 sql_path <- if (length(args) >= 1) {
   args[[1]]
 } else {
@@ -195,7 +200,7 @@ calc_pct_trend <- function(slope) {
 
 parse_needed_tables <- function(path) {
   plots <- read_insert_table(path, "plots", c("plot_id", "kavel_nummer"))
-  plots$kavel_nummer <- normalize_kavel_nummer(plots$kavel_nummer)
+  plot_analyse_scope <- read_insert_table(path, "plot_analyse_scope", c("scope_code", "plot_id", "in_scope", "reden", "besluitdatum"))
   soorten <- read_insert_table(path, "soorten", c("id", "soort_naam"))
   evg_vogelgroepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_vogel_landschapgroep <- read_insert_table(
@@ -215,6 +220,8 @@ parse_needed_tables <- function(path) {
   )
 
   plots$plot_id <- to_integer(plots$plot_id)
+  plot_analyse_scope$plot_id <- to_integer(plot_analyse_scope$plot_id)
+  plot_analyse_scope$in_scope <- to_integer(plot_analyse_scope$in_scope)
   soorten$id <- to_integer(soorten$id)
   evg_vogelgroepen$groepsnummer <- to_integer(evg_vogelgroepen$groepsnummer)
   evg_vogel_landschapgroep$groepsnummer <- to_integer(evg_vogel_landschapgroep$groepsnummer)
@@ -228,14 +235,18 @@ parse_needed_tables <- function(path) {
   territoria$jaar <- to_integer(territoria$jaar)
   territoria$territoria <- to_numeric(territoria$territoria)
 
-  list(
+  tbls <- list(
     plots = plots,
+    plot_analyse_scope = plot_analyse_scope,
     soorten = soorten,
     evg_vogelgroepen = evg_vogelgroepen,
     evg_vogel_landschapgroep = evg_vogel_landschapgroep,
     plot_jaar_oppervlak = plot_jaar_oppervlak,
     territoria = territoria
   )
+  tbls <- apply_meijendel_plot_scope(tbls, meijendel_out_of_scope_from_env())
+  tbls$plots$kavel_nummer <- normalize_kavel_nummer(tbls$plots$kavel_nummer)
+  tbls
 }
 
 make_group_descriptions <- function(evg_vogelgroepen) {

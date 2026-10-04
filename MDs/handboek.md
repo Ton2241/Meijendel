@@ -54,6 +54,25 @@ Praktisch betekent dit:
 - `plot_jaar_oppervlak` is nodig om dichtheden te berekenen
 - `plot_jaar_teller` laat zien of een plot in een jaar echt is geteld
 
+De tabel `territoria` bevat voor afgekeurde SOVON-tellingen geen actieve
+SOVON-uitkomsten. De volledige SOVON-controle van 3 oktober 2026 heeft 25
+plotjaren met bezoeken of records als `formeel_afgekeurd` vastgelegd in
+`sovon_bmp_plotjaar`. Geen van deze plotjaren bevat nog een `sovon_m`-regel.
+Daarvoor zijn bij de laatste correctie 373 SOVON-regels met 756 territoria
+verwijderd. Voor M35 in 1984-1987 en 2000 blijven 60 regels uit `jrvslg_m` en
+vier uit `meeuwen_literatuur` volgens de brongebonden regels behouden. M8/2019
+staat inmiddels groen; daarvoor zijn 19 positieve regels met 114 territoria
+hersteld. De 107 lege matrixcellen van M8/2019 zijn geen nullen en zijn niet
+ingevoerd. `territoria` bevat daarna 157.580 regels.
+2016/M62 was een afzonderlijke roofvogeltelling en hoort niet in een
+BMP-tellersensitiviteitsanalyse. Sluit deze plotjaren voor die analyses uit.
+De bezoek- en waarnemingstabellen kunnen eveneens gegevens uit
+niet-goedgekeurde tellingen bevatten. Aanwezigheid in die tabellen is daarom op
+zichzelf geen goedkeuringsbewijs. Het ontbreken van een
+territoriumregel bewijst omgekeerd niet zonder meer dat een telling is
+afgekeurd: een goedgekeurd plotjaar kan voor een afzonderlijke soort nul
+territoria hebben.
+
 ### 1.1 Hoe gebruik je `plots.in_gebruik`?
 
 In `plots` staat het veld `in_gebruik`.
@@ -80,6 +99,34 @@ of, als je vanuit `plots` start:
 FROM plots p
 WHERE p.in_gebruik = 1
 ```
+
+### 1.2 Welke plots horen standaard bij het analysegebied?
+
+Gebruik voor iedere plotgebonden berekening de centrale scope
+`meijendel_natura2000` in `plot_analyse_scope`. De vaste SQL-ingang is:
+
+```sql
+JOIN v_meijendel_analyseplot_actueel s ON s.plot_id = ...
+```
+
+M66 (Haagsche Golf Club, `plot_id = 3503`) en M91 (Voorlinden,
+`plot_id = 3514`) hebben `in_scope = 0`, beide met de reden `Geen onderdeel
+van Natura 2000-analysegebied.` Hun geldige bronregels blijven in de database,
+maar doen standaard niet mee. De ruwe tabel `territoria` bevat 157.580 regels
+in 54 plots en 2.164 plotjaren uit 1958-2025. Na toepassing van de scope blijven
+151.583 regels in 52 plots en 2.107 plotjaren uit 1958-2025 over.
+
+Alleen wanneer de gebruiker M66 en/of M91 uitdrukkelijk voor een bepaalde
+analyse vraagt, mogen zij worden toegevoegd. In de bestaande R-routes gebeurt
+dat met `include_out_of_scope_kavels` of, voor scripts, met bijvoorbeeld:
+
+```sh
+MEIJENDEL_INCLUDE_OUT_OF_SCOPE_PLOTS=M66,M91 Rscript ...
+```
+
+Verwar dit niet met `plots.in_gebruik`. Een plot kan actief zijn en toch buiten
+het Natura 2000-analysegebied vallen. Een nieuw plot zonder expliciete regel in
+`plot_analyse_scope` laat de standaardanalyse daarom stoppen.
 
 ## 2. Hoe is de repository opgebouwd?
 
@@ -530,7 +577,7 @@ De hoofd-TRIM-analyse leest rechtstreeks `meijendel.sql` in en maakt nieuwe outp
 
 De analyse doet in grote lijnen dit:
 
-1. leest de kern-tabellen in
+1. leest de kern-tabellen in en past `meijendel_natura2000` toe
 2. bouwt per `plot x jaar` een analysebasis op
 3. gebruikt voor `1958-1972` alleen de historische kernkavels
 4. behandelt niet-getelde plotjaren als `NA`

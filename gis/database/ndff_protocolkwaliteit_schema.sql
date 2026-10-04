@@ -988,28 +988,35 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_konijn_hokdatum_taxon (
 -- De zoogdieren zijn tijdens BMP-bezoeken als afzonderlijke nevenregistratie
 -- verzameld. Alleen een eenduidig aan een BMP-bezoek gekoppeld positief record
 -- bewijst dat de teller aan DAZ deelnam. Andere BMP-bezoeken blijven onbekend.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek (
+CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_id INT NOT NULL,
   plot_id INT NOT NULL,
   bezoekdatum DATE NOT NULL,
   jaar SMALLINT UNSIGNED NOT NULL,
-  deelnamestatus ENUM('bevestigd_door_positieve_17_204') NOT NULL,
+  deelnamestatus ENUM(
+    'bevestigd_door_positieve_17_204',
+    'bevestigd_door_sovon_bezoektotaal'
+  ) NOT NULL,
   eenduidig_bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   ambigu_kandidaatrecordaantal SMALLINT UNSIGNED NOT NULL,
-  nulbereikstatus ENUM('zeven_daz_doelsoorten') NOT NULL,
+  nulbereikstatus ENUM(
+    'zeven_daz_doelsoorten',
+    'geen_nulafleiding',
+    'historische_reconstructie_geen_afwezigheidsbewijs'
+  ) NOT NULL,
   inspanningstatus ENUM('bmp_bezoek_bekend_daz_inspanning_niet_afzonderlijk') NOT NULL,
   kwaliteitsnotitie VARCHAR(750) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_id),
-  KEY ix_ndff_daz_bmp_bezoek_plot_jaar (plot_id, jaar, bezoekdatum),
-  CONSTRAINT fk_ndff_daz_bmp_bezoek_bron FOREIGN KEY (bezoek_id)
+  KEY ix_daz_bmp_bezoek_plot_jaar (plot_id, jaar, bezoekdatum),
+  CONSTRAINT fk_daz_bmp_bezoek_bron FOREIGN KEY (bezoek_id)
     REFERENCES Meijendel.dagbezoeken_bmp (bezoek_id),
   CHECK (jaar = YEAR(bezoekdatum)),
   CHECK (eenduidig_bronrecordaantal > 0)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordselectie (
+CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_recordselectie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '17.204',
@@ -1023,13 +1030,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordselectie (
   kwaliteitsnotitie VARCHAR(750) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
-  KEY ix_ndff_daz_bmp_selectie_status (koppelstatus, doelrelatie),
-  KEY ix_ndff_daz_bmp_selectie_bezoek (reconstructieversie, bezoek_id),
-  CONSTRAINT fk_ndff_daz_bmp_selectie_bron FOREIGN KEY (waarneming_id)
+  KEY ix_daz_bmp_selectie_status (koppelstatus, doelrelatie),
+  KEY ix_daz_bmp_selectie_bezoek (reconstructieversie, bezoek_id),
+  CONSTRAINT fk_daz_bmp_selectie_bron FOREIGN KEY (waarneming_id)
     REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_daz_bmp_selectie_bezoek FOREIGN KEY
+  CONSTRAINT fk_daz_bmp_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_id)
-    REFERENCES Meijendel.ndff_daz_bmp_bezoek (reconstructieversie, bezoek_id),
+    REFERENCES Meijendel.daz_bmp_bezoek (reconstructieversie, bezoek_id),
   CHECK (aantal_exact > 0),
   CHECK (
     (koppelstatus='eenduidig_bmp_bezoek' AND bezoek_id IS NOT NULL
@@ -1042,7 +1049,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordselectie (
 
 -- Alle ruimtelijk en temporeel mogelijke record-bezoekkoppelingen blijven
 -- bewaard. Zo blijft zichtbaar waarom een record eenduidig of ambigu is.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordkandidaat (
+CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_recordkandidaat (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   bezoek_id INT NOT NULL,
@@ -1050,41 +1057,70 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_recordkandidaat (
   bezoekdatum DATE NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id, bezoek_id),
-  KEY ix_ndff_daz_bmp_kandidaat_bezoek (reconstructieversie, bezoek_id),
-  CONSTRAINT fk_ndff_daz_bmp_kandidaat_selectie FOREIGN KEY
+  KEY ix_daz_bmp_kandidaat_bezoek (reconstructieversie, bezoek_id),
+  CONSTRAINT fk_daz_bmp_kandidaat_selectie FOREIGN KEY
     (reconstructieversie, waarneming_id)
-    REFERENCES Meijendel.ndff_daz_bmp_recordselectie
+    REFERENCES Meijendel.daz_bmp_recordselectie
       (reconstructieversie, waarneming_id),
-  CONSTRAINT fk_ndff_daz_bmp_kandidaat_bezoek FOREIGN KEY (bezoek_id)
+  CONSTRAINT fk_daz_bmp_kandidaat_bezoek FOREIGN KEY (bezoek_id)
     REFERENCES Meijendel.dagbezoeken_bmp (bezoek_id)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_daz_bmp_bezoek_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_bezoek_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_id INT NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   doelrelatie ENUM('doelsoort','bijvangst') NOT NULL,
-  waarnemingsstatus ENUM('waargenomen','echte_nul','onbepaald_ambigu') NOT NULL,
+  waarnemingsstatus ENUM(
+    'waargenomen',
+    'echte_nul',
+    'historische_afgeleide_nul',
+    'onbepaald_ambigu'
+  ) NOT NULL,
   aantal INT UNSIGNED DEFAULT NULL,
+  aantal_buiten_plot INT UNSIGNED NOT NULL DEFAULT 0,
+  bronwaarde_raw VARCHAR(64) DEFAULT NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   ambigu_recordaantal SMALLINT UNSIGNED NOT NULL,
-  telwaardestatus ENUM('exact','minimum_door_ambiguiteit','echte_nul','niet_toewijsbaar') NOT NULL,
-  nulregel ENUM('bevestigde_daz_deelname','niet_van_toepassing_bijvangst','geblokkeerd_door_ambigu_record') NOT NULL,
+  telwaardestatus ENUM(
+    'exact',
+    'minimum_door_ambiguiteit',
+    'echte_nul',
+    'historisch_afgeleid_geen_afwezigheidsbewijs',
+    'niet_toewijsbaar'
+  ) NOT NULL,
+  nulregel ENUM(
+    'bevestigde_daz_deelname',
+    'niet_van_toepassing_bijvangst',
+    'geblokkeerd_door_ambigu_record',
+    'geen_nulafleiding_sovon_positief',
+    'historische_reconstructie_geen_afwezigheidsbewijs'
+  ) NOT NULL,
   kwaliteitsnotitie VARCHAR(750) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_id, wetenschappelijke_naam),
-  KEY ix_ndff_daz_bmp_taxon_status
+  KEY ix_daz_bmp_taxon_status
     (wetenschappelijke_naam, doelrelatie, waarnemingsstatus),
-  CONSTRAINT fk_ndff_daz_bmp_taxon_bezoek FOREIGN KEY
+  CONSTRAINT fk_daz_bmp_taxon_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_id)
-    REFERENCES Meijendel.ndff_daz_bmp_bezoek (reconstructieversie, bezoek_id),
+    REFERENCES Meijendel.daz_bmp_bezoek (reconstructieversie, bezoek_id),
   CHECK (
-    (waarnemingsstatus='waargenomen' AND aantal>0 AND bronrecordaantal>0)
+    (waarnemingsstatus='waargenomen'
+      AND (aantal>0 OR aantal_buiten_plot>0) AND bronrecordaantal>0)
     OR
-    (waarnemingsstatus='echte_nul' AND aantal=0 AND bronrecordaantal=0
+    (waarnemingsstatus='echte_nul' AND aantal=0 AND aantal_buiten_plot=0
+      AND bronrecordaantal=0
       AND ambigu_recordaantal=0 AND doelrelatie='doelsoort')
     OR
+    (waarnemingsstatus='historische_afgeleide_nul' AND aantal=0
+      AND aantal_buiten_plot=0
+      AND bronrecordaantal=0 AND ambigu_recordaantal=0
+      AND doelrelatie='doelsoort'
+      AND telwaardestatus='historisch_afgeleid_geen_afwezigheidsbewijs'
+      AND nulregel='historische_reconstructie_geen_afwezigheidsbewijs')
+    OR
     (waarnemingsstatus='onbepaald_ambigu' AND aantal IS NULL
+      AND aantal_buiten_plot=0
       AND bronrecordaantal=0 AND ambigu_recordaantal>0 AND doelrelatie='doelsoort')
   )
 ) ENGINE=InnoDB;
@@ -3081,4 +3117,163 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_vogel_sync_batch (
   CONSTRAINT fk_sovon_avimap_vogel_sync_batch FOREIGN KEY (batch_id)
     REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
   CHECK (afsluitjaar <= 2025)
+) ENGINE=InnoDB;
+
+-- Versieerbare controlemetadata van de officiële SOVON-BMP-jaarwerkboeken.
+-- Bezoeken, waarnemingen en territoriumwaarden worden niet gedupliceerd:
+-- verschillen en expliciete nullen worden rechtstreeks in de kerntabellen verwerkt.
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_jaarlevering (
+  levering_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  regelversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bronmap VARCHAR(1000) NOT NULL,
+  matrix_bestand VARCHAR(1000) NOT NULL,
+  matrix_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  bezoektotalen_bestand VARCHAR(1000) NOT NULL,
+  bezoektotalen_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  standaardresultaten_bestand VARCHAR(1000) NULL,
+  standaardresultaten_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  standaardbezoeken_bestand VARCHAR(1000) NULL,
+  standaardbezoeken_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  bezoekstippen_bestanden_json JSON NOT NULL,
+  bezoekstippen_manifest_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  territoriumpunten_bestanden_json JSON NOT NULL,
+  territoriumpunten_manifest_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  ontvangen_op DATE NOT NULL,
+  matrix_rijen INT UNSIGNED NOT NULL,
+  bron_bezoeken INT UNSIGNED NOT NULL,
+  actueel TINYINT(1) NOT NULL DEFAULT 1,
+  leveringsstatus ENUM('ontvangen','gevalideerd','jaar_beoordeeld','vervangen')
+    NOT NULL DEFAULT 'ontvangen',
+  kwaliteitsnotitie VARCHAR(2000) NOT NULL,
+  actief_jaar SMALLINT UNSIGNED GENERATED ALWAYS AS
+    (CASE WHEN actueel=1 THEN jaar ELSE NULL END) STORED,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id),
+  UNIQUE KEY uq_sovon_bmp_jaar_hashes
+    (jaar,matrix_sha256,bezoektotalen_sha256),
+  UNIQUE KEY uq_sovon_bmp_actief_jaar (actief_jaar),
+  UNIQUE KEY uq_sovon_bmp_levering_jaar (levering_id,jaar),
+  CHECK (jaar BETWEEN 1984 AND 2025),
+  CHECK (actueel IN (0,1)),
+  CHECK (matrix_rijen > 0),
+  CHECK (REGEXP_LIKE(matrix_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (REGEXP_LIKE(bezoektotalen_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (standaardresultaten_sha256 IS NULL OR
+    REGEXP_LIKE(standaardresultaten_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (standaardbezoeken_sha256 IS NULL OR
+    REGEXP_LIKE(standaardbezoeken_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (REGEXP_LIKE(bezoekstippen_manifest_sha256,'^[0-9a-f]{64}$','c')),
+  CHECK (REGEXP_LIKE(territoriumpunten_manifest_sha256,'^[0-9a-f]{64}$','c'))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_soortenlijstversie (
+  soortenlijstversie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  lijst_sleutel VARCHAR(128) CHARACTER SET ascii NOT NULL,
+  bmp_type VARCHAR(32) NOT NULL,
+  titel VARCHAR(1000) NOT NULL,
+  bronverwijzing VARCHAR(2000) NOT NULL,
+  bronbestand_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  geldig_van SMALLINT UNSIGNED NULL,
+  geldig_tot SMALLINT UNSIGNED NULL,
+  lijststatus ENUM('te_verifieren','officieel_bevestigd','vervangen') NOT NULL,
+  regelversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  toelichting VARCHAR(2000) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (soortenlijstversie_id),
+  UNIQUE KEY uq_sovon_bmp_lijst_sleutel (lijst_sleutel),
+  CHECK (geldig_van IS NULL OR geldig_van BETWEEN 1900 AND 2100),
+  CHECK (geldig_tot IS NULL OR geldig_tot BETWEEN 1900 AND 2100),
+  CHECK (geldig_van IS NULL OR geldig_tot IS NULL OR geldig_van<=geldig_tot),
+  CHECK (bronbestand_sha256 IS NULL OR
+    REGEXP_LIKE(bronbestand_sha256,'^[0-9a-f]{64}$','c'))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_soortenlijst_taxon (
+  lijsttaxon_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  soortenlijstversie_id BIGINT UNSIGNED NOT NULL,
+  soort_id INT NULL,
+  taxon_bronkoppeling_id BIGINT UNSIGNED NULL,
+  euring_code INT NULL,
+  bron_naam VARCHAR(255) NOT NULL,
+  lijststatus ENUM('opgenomen','expliciet_uitgesloten') NOT NULL DEFAULT 'opgenomen',
+  koppelstatus ENUM('exacte_naam','naamvariant','niet_gekoppeld') NOT NULL,
+  bronnotitie VARCHAR(1000) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (lijsttaxon_id),
+  UNIQUE KEY uq_sovon_bmp_lijst_naam (soortenlijstversie_id,bron_naam),
+  UNIQUE KEY uq_sovon_bmp_lijst_soort (soortenlijstversie_id,soort_id),
+  UNIQUE KEY uq_sovon_bmp_lijst_euring (soortenlijstversie_id,euring_code),
+  KEY ix_sovon_bmp_lijst_taxon (taxon_bronkoppeling_id),
+  CONSTRAINT fk_sovon_bmp_lijst_versie FOREIGN KEY (soortenlijstversie_id)
+    REFERENCES Meijendel.sovon_bmp_soortenlijstversie (soortenlijstversie_id),
+  CONSTRAINT fk_sovon_bmp_lijst_soort FOREIGN KEY (soort_id)
+    REFERENCES Meijendel.soorten (id),
+  CONSTRAINT fk_sovon_bmp_lijst_taxon FOREIGN KEY (taxon_bronkoppeling_id)
+    REFERENCES Meijendel.taxa_bronkoppeling (koppeling_id),
+  CHECK ((koppelstatus='niet_gekoppeld' AND soort_id IS NULL
+          AND taxon_bronkoppeling_id IS NULL AND euring_code IS NULL)
+    OR (koppelstatus IN ('exacte_naam','naamvariant') AND soort_id IS NOT NULL
+          AND taxon_bronkoppeling_id IS NOT NULL AND euring_code IS NOT NULL))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_plotjaar (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bmp_type VARCHAR(32) NOT NULL DEFAULT 'BMP-A',
+  bmp_type_bron ENUM('standaardregel_data_eigenaar','expliciete_bron','jaarbesluit')
+    NOT NULL DEFAULT 'standaardregel_data_eigenaar',
+  soortenbereik ENUM('alle_soorten','expliciete_uitzondering','te_beoordelen')
+    NOT NULL DEFAULT 'alle_soorten',
+  volledigheidstatus ENUM('te_beoordelen','volledig','onvolledig')
+    NOT NULL DEFAULT 'te_beoordelen',
+  beoordelingsstatus ENUM('te_beoordelen','goedgekeurd','formeel_afgekeurd')
+    NOT NULL DEFAULT 'te_beoordelen',
+  soortenlijstversie_id BIGINT UNSIGNED NULL,
+  matrixstatus ENUM('waarden_aanwezig','uitsluitend_leeg','geen_matrixrijen')
+    NOT NULL,
+  bron_bezoekaantal SMALLINT UNSIGNED NOT NULL DEFAULT 0,
+  controle_status ENUM('te_beoordelen','beoordeeld') NOT NULL DEFAULT 'te_beoordelen',
+  controlebesluit VARCHAR(2000) NULL,
+  beoordeeld_door VARCHAR(255) NULL,
+  beoordeeld_op DATETIME(6) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,plot_id),
+  UNIQUE KEY uq_sovon_bmp_plotjaar (levering_id,plot_id,jaar),
+  KEY ix_sovon_bmp_plotjaar_status
+    (jaar,beoordelingsstatus,volledigheidstatus),
+  KEY ix_sovon_bmp_plotjaar_lijst (soortenlijstversie_id),
+  CONSTRAINT fk_sovon_bmp_plotjaar_levering FOREIGN KEY (levering_id,jaar)
+    REFERENCES Meijendel.sovon_bmp_jaarlevering (levering_id,jaar),
+  CONSTRAINT fk_sovon_bmp_plotjaar_plot FOREIGN KEY (plot_id)
+    REFERENCES Meijendel.plots (plot_id),
+  CONSTRAINT fk_sovon_bmp_plotjaar_lijst FOREIGN KEY (soortenlijstversie_id)
+    REFERENCES Meijendel.sovon_bmp_soortenlijstversie (soortenlijstversie_id),
+  CHECK (jaar BETWEEN 1984 AND 2025),
+  CHECK ((controle_status='te_beoordelen' AND beoordeeld_op IS NULL)
+    OR (controle_status='beoordeeld' AND controlebesluit IS NOT NULL
+      AND beoordeeld_op IS NOT NULL))
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS Meijendel.sovon_bmp_plotjaar_tellercode (
+  levering_id BIGINT UNSIGNED NOT NULL,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  tellercode VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  teller_id INT NULL,
+  koppelstatus ENUM('te_beoordelen','exact','lid_van_team','strijdig','niet_gevonden')
+    NOT NULL DEFAULT 'te_beoordelen',
+  bronveld VARCHAR(64) CHARACTER SET ascii NOT NULL DEFAULT 'waarnemer',
+  toelichting VARCHAR(1000) NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (levering_id,plot_id,tellercode),
+  KEY ix_sovon_bmp_tellercode_teller (teller_id),
+  CONSTRAINT fk_sovon_bmp_tellercode_plotjaar FOREIGN KEY
+    (levering_id,plot_id,jaar)
+    REFERENCES Meijendel.sovon_bmp_plotjaar (levering_id,plot_id,jaar),
+  CONSTRAINT fk_sovon_bmp_tellercode_teller FOREIGN KEY (teller_id)
+    REFERENCES Meijendel.tellers (id),
+  CHECK ((koppelstatus IN ('exact','lid_van_team') AND teller_id IS NOT NULL)
+    OR koppelstatus IN ('te_beoordelen','strijdig','niet_gevonden'))
 ) ENGINE=InnoDB;
