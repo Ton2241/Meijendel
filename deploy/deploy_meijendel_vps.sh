@@ -221,11 +221,33 @@ canonical_data_smoke() {
   remote "bash -s" <<'REMOTE'
 set -euo pipefail
 body="$(curl -ksS --resolve www.vwg-m.nl:443:127.0.0.1 https://www.vwg-m.nl/soorten/index.asp)"
-grep -Fq '<strong>153</strong>' <<<"$body"
+stat_count() {
+  local label="$1"
+  awk -v label="$label" '
+    /<strong>[0-9]+<\/strong>/ {
+      value=$0
+      sub(/^.*<strong>/, "", value)
+      sub(/<\/strong>.*$/, "", value)
+    }
+    index($0, "<span>" label "</span>") {
+      if (value !~ /^[0-9]+$/) exit 2
+      print value
+      found=1
+      exit
+    }
+    END {if (!found) exit 1}
+  ' <<<"$body"
+}
+total_count="$(stat_count 'soorten totaal')"
+breeding_count="$(stat_count 'broedvogels')"
+other_count="$(stat_count 'overige soorten')"
+(( total_count > 0 && breeding_count > 0 && other_count > 0 ))
+(( total_count == breeding_count + other_count ))
 for species_id in 3 23 117 199; do
   grep -Fq "href=\"/soorten/vogel.asp?id=$species_id\"" <<<"$body"
 done
-printf 'CANONICAL_SPECIES_STATUS=ready\n'
+printf 'CANONICAL_SPECIES_STATUS=ready total=%s breeding=%s other=%s\n' \
+  "$total_count" "$breeding_count" "$other_count"
 REMOTE
 }
 

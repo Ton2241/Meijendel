@@ -42,6 +42,17 @@ for fragment in \
   grep -Fq "$fragment" "$DEPLOY_SCRIPT" || fail "lokaal deployscript mist gatewaycontract: $fragment"
 done
 
+grep -Fq "'<strong>153</strong>'" "$DEPLOY_SCRIPT" &&
+  fail "publieke soortrooktest bevat nog het verouderde vaste aantal 153"
+for fragment in \
+  'soorten totaal' \
+  'broedvogels' \
+  'overige soorten' \
+  'total_count == breeding_count + other_count'; do
+  grep -Fq "$fragment" "$DEPLOY_SCRIPT" ||
+    fail "publieke soortrooktest mist consistentiecontract: $fragment"
+done
+
 grep -Fq 'meijendel-release "$stage" "$commit"' "$GATEWAY_RUNNER" || \
   fail "gatewayrunner roept de gesloten Meijendel-actie niet aan"
 
