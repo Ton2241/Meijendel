@@ -86,6 +86,145 @@ apply_meijendel_plot_scope <- function(
   data
 }
 
+normalize_sovon_plotjaar_status <- function(sovon_plotjaar) {
+  required <- c("plot_id", "jaar", "beoordelingsstatus")
+  if (!is.data.frame(sovon_plotjaar) || length(setdiff(required, names(sovon_plotjaar)))) {
+    stop("sovon_bmp_plotjaar mist plot_id, jaar of beoordelingsstatus.", call. = FALSE)
+  }
+  status <- unique(sovon_plotjaar[, required, drop = FALSE])
+  status$plot_id <- as.integer(status$plot_id)
+  status$jaar <- as.integer(status$jaar)
+  status$beoordelingsstatus <- as.character(status$beoordelingsstatus)
+  key <- paste(status$plot_id, status$jaar, sep = ":")
+  if (anyDuplicated(key)) {
+    stop("sovon_bmp_plotjaar bevat conflicterende statussen voor hetzelfde plotjaar.", call. = FALSE)
+  }
+  status
+}
+
+apply_territory_observation_gate <- function(grid, bronnen, sovon_plotjaar) {
+  required_grid <- c("plot_id", "jaar", "territoria", "bron_id")
+  if (!is.data.frame(grid) || length(setdiff(required_grid, names(grid)))) {
+    stop("Territoriummatrix mist plot_id, jaar, territoria of bron_id.", call. = FALSE)
+  }
+  if (!"plotjaar_geteld" %in% names(grid)) {
+    if (!"geteld" %in% names(grid)) {
+      stop("Territoriummatrix mist de plotjaarstatus geteld.", call. = FALSE)
+    }
+    grid$plotjaar_geteld <- as.logical(grid$geteld)
+  } else {
+    grid$plotjaar_geteld <- as.logical(grid$plotjaar_geteld)
+  }
+  if (!is.data.frame(bronnen) || length(setdiff(c("id", "code"), names(bronnen)))) {
+    stop("bronnen mist id of code.", call. = FALSE)
+  }
+
+  bron_lookup <- unique(bronnen[, c("id", "code"), drop = FALSE])
+  bron_lookup$id <- as.integer(bron_lookup$id)
+  bron_lookup$code <- as.character(bron_lookup$code)
+  if (anyDuplicated(bron_lookup$id)) {
+    stop("bronnen bevat een dubbel bron-id.", call. = FALSE)
+  }
+  grid$plot_id <- as.integer(grid$plot_id)
+  grid$jaar <- as.integer(grid$jaar)
+  grid$bron_id <- as.integer(grid$bron_id)
+  grid$territoria <- as.numeric(grid$territoria)
+  grid$.gate_row_order <- seq_len(nrow(grid))
+  grid <- merge(
+    grid,
+    bron_lookup,
+    by.x = "bron_id",
+    by.y = "id",
+    all.x = TRUE,
+    sort = FALSE
+  )
+  names(grid)[names(grid) == "code"] <- "bron_code"
+  unresolved <- !is.na(grid$bron_id) & (is.na(grid$bron_code) | !nzchar(grid$bron_code))
+  if (any(unresolved)) {
+    stop("Territoriummatrix bevat een onbekend bron-id.", call. = FALSE)
+  }
+
+  status <- normalize_sovon_plotjaar_status(sovon_plotjaar)
+  grid <- merge(grid, status, by = c("plot_id", "jaar"), all.x = TRUE, sort = FALSE)
+  grid <- grid[order(grid$.gate_row_order), , drop = FALSE]
+  grid$.gate_row_order <- NULL
+
+  has_source_row <- !is.na(grid$bron_id)
+  finite_count <- is.finite(grid$territoria)
+  is_sovon_source <- has_source_row & grepl("^sovon_", grid$bron_code)
+  grid$sovon_formeel_afgekeurd <- !is.na(grid$beoordelingsstatus) &
+    grid$beoordelingsstatus == "formeel_afgekeurd"
+  blocked_sovon <- grid$sovon_formeel_afgekeurd & is_sovon_source
+  independent_after_rejection <- grid$sovon_formeel_afgekeurd &
+    has_source_row & !is_sovon_source & finite_count
+  accepted <- has_source_row & finite_count & !blocked_sovon
+
+  grid$geteld <- accepted
+  grid$count_raw <- ifelse(accepted, grid$territoria, NA_real_)
+  grid$observatie_status <- ifelse(
+    independent_after_rejection,
+    "onafhankelijke_bron_ondanks_sovon_afkeur",
+    ifelse(
+      grid$sovon_formeel_afgekeurd,
+      "formeel_afgekeurd",
+      ifelse(
+        accepted & grid$count_raw == 0,
+        "letterlijke_nul",
+        ifelse(
+          accepted & grid$count_raw > 0,
+          "territorium_vastgesteld",
+          ifelse(grid$plotjaar_geteld, "ontbrekende_soortregel", "niet_geteld")
+        )
+      )
+    )
+  )
+  grid$is_missing <- !grid$geteld
+  grid$territorium_vastgesteld <- grid$geteld & grid$count_raw > 0
+  grid$echte_nul <- grid$geteld & grid$count_raw == 0
+  grid$waargenomen_zonder_territorium <- NA
+  rownames(grid) <- NULL
+  grid
+}
+
+accepted_territory_rows <- function(territoria, bronnen, sovon_plotjaar) {
+  if (!is.data.frame(territoria) || !nrow(territoria)) return(territoria)
+  territoria$plotjaar_geteld <- TRUE
+  gated <- apply_territory_observation_gate(territoria, bronnen, sovon_plotjaar)
+  gated[gated$geteld, , drop = FALSE]
+}
+
+accepted_positive_species_ids <- function(
+    territoria,
+    bronnen,
+    sovon_plotjaar,
+    plot_year_scope = NULL,
+    plot_ids = NULL,
+    year_min = NULL,
+    year_max = NULL) {
+  if (!is.null(plot_year_scope)) {
+    required_scope <- c("plot_id", "jaar")
+    if (!is.data.frame(plot_year_scope) || length(setdiff(required_scope, names(plot_year_scope)))) {
+      stop("plot_year_scope mist plot_id of jaar.", call. = FALSE)
+    }
+    scope <- unique(plot_year_scope[, required_scope, drop = FALSE])
+    scope$plot_id <- as.integer(scope$plot_id)
+    scope$jaar <- as.integer(scope$jaar)
+    territoria <- merge(territoria, scope, by = required_scope, all = FALSE, sort = FALSE)
+  }
+  if (!is.null(plot_ids)) {
+    territoria <- territoria[territoria$plot_id %in% as.integer(plot_ids), , drop = FALSE]
+  }
+  if (!is.null(year_min)) {
+    territoria <- territoria[territoria$jaar >= as.integer(year_min), , drop = FALSE]
+  }
+  if (!is.null(year_max)) {
+    territoria <- territoria[territoria$jaar <= as.integer(year_max), , drop = FALSE]
+  }
+  accepted <- accepted_territory_rows(territoria, bronnen, sovon_plotjaar)
+  if (!is.data.frame(accepted) || !nrow(accepted)) return(integer())
+  sort(unique(as.integer(accepted$soort_id[is.finite(accepted$count_raw) & accepted$count_raw > 0])))
+}
+
 validate_sha256 <- function(value, field) {
   value <- as.character(value)
   if (length(value) != 1L || is.na(value) || !grepl("^[0-9a-f]{64}$", value)) {

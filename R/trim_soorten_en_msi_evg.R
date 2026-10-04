@@ -204,7 +204,9 @@ parse_tables <- function(path) {
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
-  territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
+  territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria", "bron_id"))
+  bronnen <- read_insert_table(path, "bronnen", c("id", "code"))
+  sovon_plotjaar <- read_insert_table(path, "sovon_bmp_plotjaar", c("plot_id", "jaar", "beoordelingsstatus"))
   evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
   functionele_groepen <- read_insert_table(
@@ -232,6 +234,10 @@ parse_tables <- function(path) {
   territoria$soort_id <- to_integer(territoria$soort_id)
   territoria$jaar <- to_integer(territoria$jaar)
   territoria$territoria <- to_numeric(territoria$territoria)
+  territoria$bron_id <- to_integer(territoria$bron_id)
+  bronnen$id <- to_integer(bronnen$id)
+  sovon_plotjaar$plot_id <- to_integer(sovon_plotjaar$plot_id)
+  sovon_plotjaar$jaar <- to_integer(sovon_plotjaar$jaar)
   evg_groepen$groepsnummer <- to_integer(evg_groepen$groepsnummer)
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
@@ -251,6 +257,8 @@ parse_tables <- function(path) {
     plot_jaar_oppervlak = pjo,
     plot_jaar_teller = pjt,
     territoria = territoria,
+    bronnen = bronnen,
+    sovon_bmp_plotjaar = sovon_plotjaar,
     evg_vogelgroepen = evg_groepen,
     evg_vogel_landschapgroep = evg_koppeling,
     functional_group_definition = functionele_groepen,
@@ -366,7 +374,12 @@ prepare_analysis_basis <- function(tbls) {
 }
 
 build_species_matrix <- function(tbls, basis) {
-  species <- unique(tbls$territoria$soort_id)
+  species <- accepted_positive_species_ids(
+    tbls$territoria,
+    tbls$bronnen,
+    tbls$sovon_bmp_plotjaar,
+    plot_year_scope = basis[, c("plot_id", "jaar"), drop = FALSE]
+  )
   grid <- expand.grid(
     soort_id = species,
     row_id = seq_len(nrow(basis)),
@@ -376,11 +389,11 @@ build_species_matrix <- function(tbls, basis) {
   grid <- merge(grid, data.frame(row_id = seq_len(nrow(basis)), basis, stringsAsFactors = FALSE), by = "row_id", all.x = TRUE)
   grid$row_id <- NULL
 
-  counts <- tbls$territoria[tbls$territoria$jaar >= 1958 & tbls$territoria$jaar <= 2025, c("plot_id", "soort_id", "jaar", "territoria")]
+  counts <- tbls$territoria[tbls$territoria$jaar >= 1958 & tbls$territoria$jaar <= 2025, c("plot_id", "soort_id", "jaar", "territoria", "bron_id")]
   grid <- merge(grid, counts, by = c("plot_id", "soort_id", "jaar"), all.x = TRUE)
   grid <- merge(grid, tbls$soorten[, c("id", "euring_code", "soort_naam")], by.x = "soort_id", by.y = "id", all.x = TRUE)
 
-  grid$count_raw <- ifelse(grid$geteld & is.na(grid$territoria), 0, grid$territoria)
+  grid <- apply_territory_observation_gate(grid, tbls$bronnen, tbls$sovon_bmp_plotjaar)
   grid$count_adjusted <- ifelse(grid$geteld, grid$count_raw * grid$oppervlakte_factor, NA_real_)
   grid$post84 <- ifelse(grid$jaar >= 1984, "post1984", "pre1984")
   grid[order(grid$soort_id, grid$plot_id, grid$jaar), ]

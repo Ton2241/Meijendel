@@ -75,26 +75,109 @@ expect_error(
   "mist een expliciete scopestatus"
 )
 
-identity <- meijendel_cache_identity(strrep("a", 64), 123L, 10L)
+territory_gate_fixture <- data.frame(
+  plot_id = rep(1L, 5L),
+  soort_id = seq_len(5L),
+  jaar = c(2024L, 2024L, 2025L, 2025L, 2025L),
+  territoria = c(0, NA, 3, NA, 4),
+  bron_id = c(1L, NA, 1L, NA, 2L),
+  plotjaar_geteld = TRUE,
+  stringsAsFactors = FALSE
+)
+territory_gate_bronnen <- data.frame(
+  id = c(1L, 2L),
+  code = c("sovon_m", "jrvslg_m"),
+  stringsAsFactors = FALSE
+)
+territory_gate_plotjaar <- data.frame(
+  plot_id = c(1L, 1L),
+  jaar = c(2024L, 2025L),
+  beoordelingsstatus = c("goedgekeurd", "formeel_afgekeurd"),
+  stringsAsFactors = FALSE
+)
+territory_gate_result <- apply_territory_observation_gate(
+  territory_gate_fixture,
+  territory_gate_bronnen,
+  territory_gate_plotjaar
+)
+stopifnot(
+  identical(territory_gate_result$count_raw, c(0, NA, NA, NA, 4)),
+  identical(territory_gate_result$geteld, c(TRUE, FALSE, FALSE, FALSE, TRUE)),
+  identical(
+    territory_gate_result$observatie_status,
+    c(
+      "letterlijke_nul",
+      "ontbrekende_soortregel",
+      "formeel_afgekeurd",
+      "formeel_afgekeurd",
+      "onafhankelijke_bron_ondanks_sovon_afkeur"
+    )
+  ),
+  identical(
+    territory_gate_result$sovon_formeel_afgekeurd,
+    c(FALSE, FALSE, TRUE, TRUE, TRUE)
+  )
+)
+stopifnot(identical(
+  accepted_positive_species_ids(
+    territory_gate_fixture,
+    territory_gate_bronnen,
+    territory_gate_plotjaar
+  ),
+  5L
+))
+period_fixture <- rbind(
+  territory_gate_fixture,
+  data.frame(
+    plot_id = 1L,
+    soort_id = 6L,
+    jaar = 2026L,
+    territoria = 2,
+    bron_id = 2L,
+    plotjaar_geteld = TRUE
+  )
+)
+period_fixture <- rbind(
+  period_fixture,
+  data.frame(
+    plot_id = 2L,
+    soort_id = 7L,
+    jaar = 2024L,
+    territoria = 3,
+    bron_id = 2L,
+    plotjaar_geteld = TRUE
+  )
+)
+stopifnot(identical(
+  accepted_positive_species_ids(
+    period_fixture,
+    territory_gate_bronnen,
+    territory_gate_plotjaar,
+    plot_year_scope = data.frame(plot_id = 1L, jaar = c(2024L, 2025L))
+  ),
+  5L
+))
+
+identity <- meijendel_cache_identity(strrep("a", 64), 123L, 12L)
 cache <- list(
   format = "meijendel-shiny-cache-v1",
   identity = identity,
   data = list(plots = data.frame())
 )
 stopifnot(validate_meijendel_cache(cache, identity))
-stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 10L)))
+stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 12L)))
 
-wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 10L)
+wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 12L)
 expect_error(validate_meijendel_cache(cache, wrong_hash), "sql_sha256")
 
-wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 10L)
+wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 12L)
 expect_error(validate_meijendel_cache(cache, wrong_size), "sql_bytes")
 
-wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 11L)
+wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 13L)
 expect_error(validate_meijendel_cache(cache, wrong_parser), "parser_version")
 
-expect_error(meijendel_cache_identity("ABC", 123L, 10L), "sql_sha256")
-expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 10L), "sql_bytes")
+expect_error(meijendel_cache_identity("ABC", 123L, 12L), "sql_sha256")
+expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 12L), "sql_bytes")
 
 tmp <- tempfile("meijendel-cache-contract-")
 dir.create(tmp)
@@ -104,8 +187,8 @@ writeLines(c(
   "format=meijendel-export-v1",
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  paste0("cache_file=meijendel_tables_cache-p10-", strrep("a", 64), ".rds"),
-  paste0("cache_manifest=meijendel_tables_cache-p10-", strrep("a", 64), ".manifest")
+  paste0("cache_file=meijendel_tables_cache-p12-", strrep("a", 64), ".rds"),
+  paste0("cache_manifest=meijendel_tables_cache-p12-", strrep("a", 64), ".manifest")
 ), manifest)
 parsed <- read_meijendel_manifest(manifest)
 stopifnot(identical(unname(parsed[["sql_bytes"]]), "123"))
@@ -122,11 +205,89 @@ writeBin(charToRaw("dezelfde dumpbytes"), sql_one)
 stopifnot(file.copy(sql_one, sql_two))
 stopifnot(!identical(normalizePath(sql_one), normalizePath(sql_two)))
 stopifnot(identical(
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 10L),
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 10L)
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 12L),
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 12L)
 ))
 
 source(file.path(repo, "shiny_meijendel", "helpers.R"))
+complete_count_fixture <- data.frame(
+  plot_id = rep(1L, 5L),
+  jaar = c(2024L, 2024L, 2025L, 2025L, 2025L),
+  soort_id = c(1L, 2L, 1L, 2L, 2L),
+  count_raw = c(0, NA, 0, NA, 4),
+  geteld = c(TRUE, FALSE, TRUE, FALSE, TRUE),
+  stringsAsFactors = FALSE
+)
+complete_counts <- aggregate_complete_species_counts(complete_count_fixture, c(1L, 2L))
+stopifnot(
+  nrow(complete_counts) == 1L,
+  identical(complete_counts$jaar, 2025L),
+  identical(complete_counts$count, 4)
+)
+helpers_source <- readLines(file.path(repo, "shiny_meijendel", "helpers.R"), warn = FALSE)
+stopifnot(
+  !any(grepl("plots <- plots[plots$in_gebruik == 1L", helpers_source, fixed = TRUE)),
+  any(grepl("accepted_positive_species_ids", helpers_source, fixed = TRUE))
+)
+batch_gate_files <- c(
+  file.path(repo, "R", "trim_soorten_en_msi_evg.R"),
+  file.path(repo, "R", "trim_sandra_soorten_en_msi_evg.R"),
+  file.path(repo, "R", "gee_soorttrend_meijendel.R")
+)
+stopifnot(vapply(
+  batch_gate_files,
+  function(path) any(grepl("apply_territory_observation_gate", readLines(path, warn = FALSE), fixed = TRUE)),
+  logical(1)
+))
+
+shiny_tbls <- list(
+  territoria = territory_gate_fixture[!is.na(territory_gate_fixture$bron_id), c("plot_id", "soort_id", "jaar", "territoria", "bron_id")],
+  bronnen = territory_gate_bronnen,
+  sovon_bmp_plotjaar = territory_gate_plotjaar
+)
+shiny_basis <- data.frame(
+  plot_id = c(1L, 1L),
+  jaar = c(2024L, 2025L),
+  kavel_nummer = c("1", "1"),
+  oppervlakte_km2 = c(1, 1),
+  geteld = c(TRUE, TRUE),
+  referentie_oppervlakte_km2 = c(1, 1),
+  oppervlakte_factor = c(1, 1),
+  analyse_reeks = c("test", "test"),
+  stringsAsFactors = FALSE
+)
+shiny_selection <- data.frame(
+  id = seq_len(5L),
+  euring_code = seq_len(5L),
+  soort_naam = paste("Soort", seq_len(5L)),
+  engelse_naam = paste("Species", seq_len(5L)),
+  in_selectie = TRUE,
+  stringsAsFactors = FALSE
+)
+shiny_gate_result <- build_species_matrix_subset(shiny_tbls, shiny_basis, shiny_selection, 2024L, 2025L)
+shiny_gate_result <- shiny_gate_result[
+  (shiny_gate_result$soort_id == 1L & shiny_gate_result$jaar == 2024L) |
+    (shiny_gate_result$soort_id == 2L & shiny_gate_result$jaar == 2024L) |
+    (shiny_gate_result$soort_id %in% 3:5 & shiny_gate_result$jaar == 2025L),
+  ,
+  drop = FALSE
+]
+shiny_gate_result <- shiny_gate_result[order(shiny_gate_result$soort_id), , drop = FALSE]
+stopifnot(
+  identical(shiny_gate_result$count_raw, c(0, NA, NA, NA, 4)),
+  identical(shiny_gate_result$geteld, c(TRUE, FALSE, FALSE, FALSE, TRUE)),
+  identical(
+    shiny_gate_result$observatie_status,
+    c(
+      "letterlijke_nul",
+      "ontbrekende_soortregel",
+      "formeel_afgekeurd",
+      "formeel_afgekeurd",
+      "onafhankelijke_bron_ondanks_sovon_afkeur"
+    )
+  )
+)
+
 parse_called <- FALSE
 parse_meijendel_tables <- function(path) {
   parse_called <<- TRUE
@@ -145,7 +306,7 @@ expect_error(
 stopifnot(!parse_called)
 
 required_names <- c(
-  "plots", "plot_analyse_scope",
+  "plots", "plot_analyse_scope", "bronnen", "sovon_bmp_plotjaar",
   "richtlijnen", "soort_richtlijn", "functional_group_definition",
   "functional_group_membership", "soorten_kenmerken",
   "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien",
@@ -184,7 +345,7 @@ stopifnot(!local_result$from_cache, file.exists(local_cache))
 stopifnot(any(grepl(paste0("\\.next\\.", Sys.getpid(), "$"), saved_paths)))
 stopifnot(!any(file.exists(paste0(local_cache, ".next.", Sys.getpid()))))
 
-active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p10-", strrep("a", 64), ".rds"))
+active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p12-", strrep("a", 64), ".rds"))
 active_cache_object <- list(
   format = MEIJENDEL_CACHE_FORMAT,
   identity = identity,
@@ -199,7 +360,7 @@ writeLines(c(
   paste0("cache_bytes=", file.info(active_cache)$size),
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  "parser_version=10"
+  "parser_version=12"
 ), active_manifest)
 manifest_result <- load_meijendel_tables_cached(
   sql_one,

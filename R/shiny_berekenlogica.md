@@ -76,10 +76,9 @@ Daarnaast maakt de app twee verzamelcategorieen:
 
 Voor `plots` geldt nu extra:
 
-- alleen records met `in_gebruik = 1` worden ingelezen
-- plots met `in_gebruik = 0` worden nergens in de app getoond
-- gekoppelde tabelregels op niet-gebruikte `plot_id` vallen in de parser direct af
-- daarna wordt de centrale scope `meijendel_natura2000` toegepast; M66 en M91
+- alle plotrecords worden ingelezen; `in_gebruik` blijft alleen een
+  gebruiksstatus en bepaalt de inhoudelijke analysescope niet
+- de centrale scope `meijendel_natura2000` wordt daarna toegepast; M66 en M91
   en alle gekoppelde plotregels vallen standaard af
 - een nieuw plot zonder expliciete scopestatus blokkeert het laden, zodat het
   niet ongemerkt in een analyse terechtkomt
@@ -129,8 +128,10 @@ De functie `build_species_matrix_subset()` maakt een matrix van:
 
 Belangrijke interpretatie:
 
-- wel geteld maar geen territorium: `0`
-- niet geteld: `NA`
+- letterlijke territoriumregel met nul: `0`
+- ontbrekende soortregel of lege broncel: `NA`
+- formeel afgekeurd SOVON-plotjaar: `NA` voor SOVON
+- aanwezige onafhankelijke niet-SOVON-regel in zo'n plotjaar: de bronwaarde blijft geldig
 
 Daarnaast wordt per cel berekend:
 
@@ -145,7 +146,10 @@ Daarnaast wordt per cel berekend:
 De statusvelden leggen expliciet vast hoe echte nullen worden behandeld:
 
 - `niet_geteld`: geen analysewaarde, blijft `NA`
-- `echte_nul_geen_territorium`: plot-jaar is geteld, maar geen territorium vastgesteld
+- `ontbrekende_soortregel`: het plotjaar is geregistreerd, maar voor deze soort ontbreekt een bronwaarde; blijft `NA`
+- `formeel_afgekeurd`: de SOVON-uitkomst is niet toegelaten; blijft `NA`
+- `letterlijke_nul`: de bron leverde expliciet nul territoria
+- `onafhankelijke_bron_ondanks_sovon_afkeur`: een aanwezige niet-SOVON-regel blijft geldig
 - `territorium_vastgesteld`: plot-jaar is geteld en er is minimaal één territorium
 
 `waargenomen_zonder_territorium` is nu nog `NA`, omdat dagwaarnemingen nog niet als aparte respons in de Shiny-analyses worden gebruikt. Dit veld is toegevoegd om later het onderscheid tussen "wel waargenomen maar geen territorium" en "niet waargenomen" structureel te kunnen opnemen.
@@ -478,9 +482,12 @@ Per `plot_id + jaar` wordt eerst een G.E.E.-dataset opgebouwd.
 
 Daarbij geldt:
 
-- territoria worden geaggregeerd per `plot_id + jaar`
-- wel geteld maar geen territorium = `0`
-- niet geteld = `NA`
+- geaccepteerde territoriumregels worden geaggregeerd per `plot_id + jaar`
+- een letterlijke nul blijft `0`; een ontbrekende soortregel blijft `NA`
+- formeel afgekeurde SOVON-waarden blijven buiten de dataset; onafhankelijke bronregels blijven geldig
+- bij een groep, richtlijn of habitatgroep wordt alleen een totaal berekend
+  wanneer alle samenstellende soortcellen in dat plotjaar een geaccepteerde
+  waarde hebben; een gedeeltelijke som blijft `NA`
 - de statusvelden `is_missing`, `territorium_vastgesteld`, `echte_nul`, `observatie_status` en `waargenomen_zonder_territorium` worden toegevoegd aan de modeldataset
 - `ahn_mean`, `stikstof_mean` en infra-waarden worden gekoppeld op dichtstbijzijnde beschikbare jaarwaarde per plot
 - `toegankelijkheid_status` gebruikt de laatst bekende status op of vóór het gekozen jaar
@@ -488,14 +495,17 @@ Daarbij geldt:
 - weer wordt per kalenderjaar gekoppeld als maart-juni-aggregaat; de parser past
   exact de stationsafhankelijke eenhedenlogica van de SQL-view `weer_analyse` toe
 
-Deze statusvelden zijn ook beschikbaar in de G.E.E.-kenmerkenanalyse en in GLMM, omdat die dezelfde datasetopbouw gebruiken.
+Deze statusvelden zijn ook beschikbaar in de G.E.E.-kenmerkenanalyse en in
+GLMM, omdat die dezelfde datasetopbouw gebruiken. Soorten zonder minimaal één
+geaccepteerd positief territorium binnen de gekozen plot-jaar-basis worden niet
+als afzonderlijk kenmerkcluster opgenomen; hun nulregels blijven wel brondata.
 
 ## Voorbereiding toekomstige methoden
 
 Voor toekomstige modules geldt dezelfde basisinterpretatie:
 
-- echte nullen blijven `0`
-- niet-getelde plot-jaren blijven `NA`
+- alleen letterlijke nullen blijven `0`
+- ontbrekende soortregels, niet-getelde plotjaren en afgekeurde SOVON-uitkomsten blijven `NA`
 - analyses mogen `NA` niet stilzwijgend naar `0` omzetten
 
 Gevolg per methode:

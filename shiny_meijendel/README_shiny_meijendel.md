@@ -206,7 +206,8 @@ Er zit nog niet in:
 Maar methodisch doet deze versie wel al wat nodig is:
 
 - opnieuw rekenen voor de gekozen kavels
-- correcte `0` voor wel geteld maar niet aanwezig
-- lege waarde voor niet geteld
+- correcte `0` uitsluitend voor een letterlijke nulregel
+- lege waarde voor een ontbrekende soortregel, een niet-geteld plotjaar of een formeel afgekeurde SOVON-uitkomst
+- behoud van een aanwezige onafhankelijke niet-SOVON-regel in een afgekeurd SOVON-plotjaar
 - TRIM per soort
 - MSI per ecologische groep

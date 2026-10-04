@@ -207,7 +207,9 @@ parse_tables <- function(path) {
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
-  territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
+  territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria", "bron_id"))
+  bronnen <- read_insert_table(path, "bronnen", c("id", "code"))
+  sovon_plotjaar <- read_insert_table(path, "sovon_bmp_plotjaar", c("plot_id", "jaar", "beoordelingsstatus"))
 
   plots$plot_id <- to_integer(plots$plot_id)
   plot_analyse_scope$plot_id <- to_integer(plot_analyse_scope$plot_id)
@@ -223,6 +225,10 @@ parse_tables <- function(path) {
   territoria$soort_id <- to_integer(territoria$soort_id)
   territoria$jaar <- to_integer(territoria$jaar)
   territoria$territoria <- to_numeric(territoria$territoria)
+  territoria$bron_id <- to_integer(territoria$bron_id)
+  bronnen$id <- to_integer(bronnen$id)
+  sovon_plotjaar$plot_id <- to_integer(sovon_plotjaar$plot_id)
+  sovon_plotjaar$jaar <- to_integer(sovon_plotjaar$jaar)
 
   apply_meijendel_plot_scope(list(
     plots = plots,
@@ -230,7 +236,9 @@ parse_tables <- function(path) {
     soorten = soorten,
     plot_jaar_oppervlak = pjo,
     plot_jaar_teller = pjt,
-    territoria = territoria
+    territoria = territoria,
+    bronnen = bronnen,
+    sovon_bmp_plotjaar = sovon_plotjaar
   ), meijendel_out_of_scope_from_env())
 }
 
@@ -281,22 +289,22 @@ build_species_counts <- function(tbls, species_id, year_min, year_max, plot_ids)
       tbls$territoria$jaar >= year_min &
       tbls$territoria$jaar <= year_max &
       tbls$territoria$plot_id %in% plot_ids,
-    c("plot_id", "jaar", "territoria")
+    c("plot_id", "jaar", "territoria", "bron_id")
   ]
 
   if (!nrow(counts)) {
-    return(data.frame(plot_id = integer(), jaar = integer(), count = numeric(), stringsAsFactors = FALSE))
+    return(data.frame(
+      plot_id = integer(), jaar = integer(), territoria = numeric(), bron_id = integer(),
+      stringsAsFactors = FALSE
+    ))
   }
-
-  agg <- aggregate(territoria ~ plot_id + jaar, data = counts, FUN = sum, na.rm = TRUE)
-  names(agg)[names(agg) == "territoria"] <- "count"
-  agg
+  counts
 }
 
-build_model_dataset <- function(basis, counts) {
+build_model_dataset <- function(basis, counts, bronnen, sovon_plotjaar) {
   dat <- merge(basis, counts, by = c("plot_id", "jaar"), all.x = TRUE)
-  dat$count <- ifelse(dat$geteld & is.na(dat$count), 0, dat$count)
-  dat$count <- ifelse(!dat$geteld, NA_real_, dat$count)
+  dat <- apply_territory_observation_gate(dat, bronnen, sovon_plotjaar)
+  dat$count <- dat$count_raw
   dat$log_area <- ifelse(
     is.finite(dat$oppervlakte_km2) & dat$oppervlakte_km2 > 0,
     log(dat$oppervlakte_km2),
@@ -340,7 +348,7 @@ if (!nrow(basis)) {
 }
 
 counts <- build_species_counts(tbls, species_id, year_min, year_max, unique(basis$plot_id))
-dat <- build_model_dataset(basis, counts)
+dat <- build_model_dataset(basis, counts, tbls$bronnen, tbls$sovon_bmp_plotjaar)
 
 if (!any(!is.na(dat$count))) {
   stop("Geen getelde plot-jaren voor deze selectie.")

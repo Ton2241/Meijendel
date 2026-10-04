@@ -1,5 +1,24 @@
 # Besluiten
 
+- Vanaf 4 oktober 2026 gebruiken batchanalyse, Shiny en de zelfstandige
+  GEE/power-route één statusgestuurde territoriumpoort. Alleen een werkelijk
+  aanwezige bronregel is een analysewaarde: een letterlijke nul blijft nul en
+  een ontbrekende soortregel of lege broncel blijft `NA`. Een SOVON-regel uit
+  een formeel afgekeurd plotjaar blijft `NA`; een aanwezige onafhankelijke
+  niet-SOVON-regel in hetzelfde plotjaar blijft geldig. De standaardscope is
+  `meijendel_natura2000`, dus M66 en M91 blijven buiten de berekening tenzij
+  zij uitdrukkelijk worden toegevoegd; `plots.in_gebruik` bepaalt die scope
+  niet. Een soort wordt alleen kandidaat bij minimaal één geaccepteerd positief
+  territorium binnen exact de gebruikte plot-jaar-basis. Een GEE/GLMM-kenmerkenroute
+  neemt nul-only-soorten niet als cluster op. Een groeps-, richtlijn- of
+  habitatgroeptotaal wordt alleen berekend als alle samenstellende soortcellen
+  voor dat plotjaar een geaccepteerde waarde hebben; een gedeeltelijke som
+  blijft `NA`. De herberekende hoofdreeks 1958-2025
+  bevat 156 soorten met minimaal één geaccepteerd positief territorium in de
+  statuslaag, 135 soorten met indices en 94 brugbare
+  reeksen. De Sandra-reeks 1997-2022 bevat 132 positief waargenomen soorten en
+  110 formele soorttrends.
+
 - Op 3 oktober 2026 zijn de 7.552 onder reconstructieversie
   `ndff-daz-bmp-v1` afgeleide nulregels herclassificeerd als
   `historische_afgeleide_nul`. De 1.475 bijbehorende BMP-bezoeken hebben nu

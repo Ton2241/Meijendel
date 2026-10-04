@@ -32,7 +32,7 @@ if (is.na(cache_contract_helper)) {
   stop("R/meijendel_cache_contract.R ontbreekt; de Shiny-cache kan niet veilig worden gevalideerd.")
 }
 source(cache_contract_helper)
-MEIJENDEL_PARSER_CACHE_VERSION <- 10L
+MEIJENDEL_PARSER_CACHE_VERSION <- 12L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
 extract_columns <- function(header) {
@@ -652,7 +652,9 @@ parse_meijendel_tables <- function(path) {
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
   pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
-  territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria"))
+  territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria", "bron_id"))
+  bronnen <- read_insert_table(path, "bronnen", c("id", "code"))
+  sovon_plotjaar <- read_insert_table(path, "sovon_bmp_plotjaar", c("plot_id", "jaar", "beoordelingsstatus"))
   evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
   functionele_groepen <- read_insert_table(path, "functional_group_definition", c("id", "group_code", "group_version", "naam_nl", "minimum_exploratief", "minimum_hoofdindicator", "minimum_robuust", "status"))
@@ -686,8 +688,6 @@ parse_meijendel_tables <- function(path) {
   plot_analyse_scope$in_scope <- to_integer(plot_analyse_scope$in_scope)
   plots$in_gebruik <- if ("in_gebruik" %in% names(plots)) to_integer(plots$in_gebruik) else 1L
   plots <- plots[, c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik")]
-  plots <- plots[plots$in_gebruik == 1L, , drop = FALSE]
-  actieve_plot_ids <- unique(plots$plot_id)
   soorten$id <- to_integer(soorten$id)
   soorten$euring_code <- to_integer(soorten$euring_code)
   pjo$plot_id <- to_integer(pjo$plot_id)
@@ -699,6 +699,10 @@ parse_meijendel_tables <- function(path) {
   territoria$soort_id <- to_integer(territoria$soort_id)
   territoria$jaar <- to_integer(territoria$jaar)
   territoria$territoria <- to_numeric(territoria$territoria)
+  territoria$bron_id <- to_integer(territoria$bron_id)
+  bronnen$id <- to_integer(bronnen$id)
+  sovon_plotjaar$plot_id <- to_integer(sovon_plotjaar$plot_id)
+  sovon_plotjaar$jaar <- to_integer(sovon_plotjaar$jaar)
   evg_groepen$groepsnummer <- to_integer(evg_groepen$groepsnummer)
   evg_koppeling$groepsnummer <- to_integer(evg_koppeling$groepsnummer)
   evg_koppeling$vogel_id <- to_integer(evg_koppeling$vogel_id)
@@ -748,16 +752,6 @@ parse_meijendel_tables <- function(path) {
   pjv$bedekking_som_gem <- to_numeric(pjv$bedekking_som_gem)
   pjv$shannon_gem <- to_numeric(pjv$shannon_gem)
 
-  pjo <- pjo[pjo$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pjt <- pjt[pjt$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  territoria <- territoria[territoria$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pjh <- pjh[pjh$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pja <- pja[pja$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pjs <- pjs[pjs$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pji <- pji[pji$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pjtg <- pjtg[pjtg$plot_id %in% actieve_plot_ids, , drop = FALSE]
-  pjv <- pjv[pjv$plot_id %in% actieve_plot_ids, , drop = FALSE]
-
   list(
     plots = plots,
     plot_analyse_scope = plot_analyse_scope,
@@ -765,6 +759,8 @@ parse_meijendel_tables <- function(path) {
     plot_jaar_oppervlak = pjo,
     plot_jaar_teller = pjt,
     territoria = territoria,
+    bronnen = bronnen,
+    sovon_bmp_plotjaar = sovon_plotjaar,
     evg_vogelgroepen = evg_groepen,
     evg_vogel_landschapgroep = evg_koppeling,
     functional_group_definition = functionele_groepen,
@@ -1089,26 +1085,9 @@ prepare_analysis_basis_subset <- function(tbls, selected_kavels, year_from, year
   basis[order(basis$jaar, basis$kavel_nummer, basis$plot_id), ]
 }
 
-add_territory_observation_status <- function(dat, count_col = "count") {
-  count <- dat[[count_col]]
-  dat$is_missing <- !dat$geteld
-  dat$territorium_vastgesteld <- dat$geteld & is.finite(count) & count > 0
-  dat$echte_nul <- dat$geteld & is.finite(count) & count == 0
-  dat$waargenomen_zonder_territorium <- NA
-  dat$observatie_status <- ifelse(
-    dat$is_missing,
-    "niet_geteld",
-    ifelse(
-      dat$territorium_vastgesteld,
-      "territorium_vastgesteld",
-      ifelse(dat$echte_nul, "echte_nul_geen_territorium", "onbekend")
-    )
-  )
-  dat
-}
-
 build_species_selection_subset <- function(tbls, selected_kavels, year_from, year_to) {
-  territoria <- tbls$territoria[tbls$territoria$jaar >= year_from & tbls$territoria$jaar <= year_to, c("plot_id", "soort_id", "jaar", "territoria")]
+  territoria <- tbls$territoria[tbls$territoria$jaar >= year_from & tbls$territoria$jaar <= year_to, c("plot_id", "soort_id", "jaar", "territoria", "bron_id")]
+  territoria <- accepted_territory_rows(territoria, tbls$bronnen, tbls$sovon_bmp_plotjaar)
   territoria <- merge(territoria, tbls$plots[, c("plot_id", "kavel_nummer")], by = "plot_id", all.x = TRUE)
   territoria <- territoria[territoria$kavel_nummer %in% selected_kavels, , drop = FALSE]
   territoria <- territoria[territoria$territoria > 0, , drop = FALSE]
@@ -1139,7 +1118,7 @@ build_species_matrix_subset <- function(tbls, basis, selection_df, year_from, ye
   )
   grid$row_id <- NULL
 
-  counts <- tbls$territoria[tbls$territoria$jaar >= year_from & tbls$territoria$jaar <= year_to, c("plot_id", "soort_id", "jaar", "territoria")]
+  counts <- tbls$territoria[tbls$territoria$jaar >= year_from & tbls$territoria$jaar <= year_to, c("plot_id", "soort_id", "jaar", "territoria", "bron_id")]
   grid <- merge(grid, counts, by = c("plot_id", "soort_id", "jaar"), all.x = TRUE)
   grid <- merge(
     grid,
@@ -1149,7 +1128,7 @@ build_species_matrix_subset <- function(tbls, basis, selection_df, year_from, ye
     all.x = TRUE
   )
 
-  grid$count_raw <- ifelse(!grid$geteld, NA_real_, ifelse(is.na(grid$territoria), 0, grid$territoria))
+  grid <- apply_territory_observation_gate(grid, tbls$bronnen, tbls$sovon_bmp_plotjaar)
   grid$territoria_per_km2 <- ifelse(
     grid$geteld &
       is.finite(grid$count_raw) &
@@ -1160,7 +1139,6 @@ build_species_matrix_subset <- function(tbls, basis, selection_df, year_from, ye
   )
   grid$count_area_standardized <- ifelse(grid$geteld, grid$count_raw * grid$oppervlakte_factor, NA_real_)
   grid$count_adjusted <- grid$count_area_standardized
-  grid <- add_territory_observation_status(grid, "count_raw")
   grid[order(grid$soort_id, grid$plot_id, grid$jaar), ]
 }
 
@@ -2205,6 +2183,53 @@ add_toegankelijkheid_covariate <- function(dat, source_df, new_col = "toegankeli
   dat
 }
 
+aggregate_complete_species_counts <- function(species_matrix, target_species) {
+  required <- c("plot_id", "jaar", "soort_id", "count_raw", "geteld")
+  if (!is.data.frame(species_matrix) || length(setdiff(required, names(species_matrix)))) {
+    stop("Soortenmatrix mist velden voor volledige groepsaggregatie.", call. = FALSE)
+  }
+  target_species <- sort(unique(as.integer(target_species)))
+  if (!length(target_species) || !nrow(species_matrix)) {
+    return(data.frame(plot_id = integer(), jaar = integer(), count = numeric()))
+  }
+  species_matrix <- species_matrix[species_matrix$soort_id %in% target_species, , drop = FALSE]
+  row_groups <- split(
+    seq_len(nrow(species_matrix)),
+    interaction(species_matrix$plot_id, species_matrix$jaar, species_matrix$soort_id, drop = TRUE)
+  )
+  cells <- do.call(rbind, lapply(row_groups, function(index) {
+    rows <- species_matrix[index, , drop = FALSE]
+    valid <- rows$geteld & is.finite(rows$count_raw)
+    data.frame(
+      plot_id = rows$plot_id[[1L]],
+      jaar = rows$jaar[[1L]],
+      soort_id = rows$soort_id[[1L]],
+      geteld = any(valid),
+      count = if (any(valid)) sum(rows$count_raw[valid]) else NA_real_,
+      stringsAsFactors = FALSE
+    )
+  }))
+  plot_year_groups <- split(
+    seq_len(nrow(cells)),
+    interaction(cells$plot_id, cells$jaar, drop = TRUE)
+  )
+  complete <- lapply(plot_year_groups, function(index) {
+    rows <- cells[index, , drop = FALSE]
+    if (!setequal(rows$soort_id, target_species) || !all(rows$geteld)) return(NULL)
+    data.frame(
+      plot_id = rows$plot_id[[1L]],
+      jaar = rows$jaar[[1L]],
+      count = sum(rows$count),
+      stringsAsFactors = FALSE
+    )
+  })
+  complete <- complete[!vapply(complete, is.null, logical(1L))]
+  if (!length(complete)) {
+    return(data.frame(plot_id = integer(), jaar = integer(), count = numeric()))
+  }
+  do.call(rbind, complete)
+}
+
 build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_type = c("species", "group", "richtlijn", "habitatgroep"), target_value) {
   target_type <- match.arg(target_type)
   basis <- prepare_analysis_basis_subset(tbls, selected_kavels, year_from, year_to)
@@ -2214,12 +2239,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
 
   if (target_type == "species") {
     species_row <- find_species_by_name(tbls, target_value)
-    counts <- tbls$territoria[
-      tbls$territoria$soort_id == species_row$id[[1]] &
-        tbls$territoria$jaar >= year_from &
-        tbls$territoria$jaar <= year_to,
-      c("plot_id", "jaar", "territoria")
-    ]
+    target_species <- species_row$id[[1]]
     target_label <- species_row$soort_naam[[1]]
     target_slug <- tolower(gsub("[^a-z0-9]+", "_", target_label))
   } else if (target_type == "group") {
@@ -2227,13 +2247,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     group_row <- find_group_by_code(tbls, target_value)
     richtlijn_row <- NULL
     group_mapping <- build_group_mapping(tbls)
-    group_species <- unique(group_mapping$soort_id[group_mapping$groep_100 == group_row$groep_100[[1]]])
-    counts <- tbls$territoria[
-      tbls$territoria$soort_id %in% group_species &
-        tbls$territoria$jaar >= year_from &
-        tbls$territoria$jaar <= year_to,
-      c("plot_id", "jaar", "territoria")
-    ]
+    target_species <- unique(group_mapping$soort_id[group_mapping$groep_100 == group_row$groep_100[[1]]])
     target_label <- group_row$groep_titel[[1]]
     target_slug <- paste0("groep_", group_row$groep_100[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
   } else if (target_type == "richtlijn") {
@@ -2241,39 +2255,46 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     group_row <- NULL
     richtlijn_row <- find_richtlijn_by_id(tbls, target_value)
     richtlijn_mapping <- build_richtlijn_mapping(tbls)
-    richtlijn_species <- unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]])
-    counts <- tbls$territoria[
-      tbls$territoria$soort_id %in% richtlijn_species &
-        tbls$territoria$jaar >= year_from &
-        tbls$territoria$jaar <= year_to,
-      c("plot_id", "jaar", "territoria")
-    ]
+    target_species <- unique(richtlijn_mapping$soort_id[richtlijn_mapping$richtlijn_id == richtlijn_row$richtlijn_id[[1]]])
     target_label <- richtlijn_row$richtlijn_titel[[1]]
     target_slug <- paste0("richtlijn_", richtlijn_row$richtlijn_id[[1]], "_", tolower(gsub("[^a-z0-9]+", "_", target_label)))
   } else {
     species_row <- NULL
     group_row <- NULL
     richtlijn_row <- NULL
-    habitat_species <- unique(build_habitatgroep_mapping(tbls)$soort_id)
-    counts <- tbls$territoria[
-      tbls$territoria$soort_id %in% habitat_species &
-        tbls$territoria$jaar >= year_from &
-        tbls$territoria$jaar <= year_to,
-      c("plot_id", "jaar", "territoria")
-    ]
+    target_species <- unique(build_habitatgroep_mapping(tbls)$soort_id)
     target_label <- "Habitatgroep"
     target_slug <- "habitatgroep"
   }
-  if (nrow(counts)) {
-    counts <- aggregate(territoria ~ plot_id + jaar, data = counts, FUN = sum, na.rm = TRUE)
-    names(counts)[names(counts) == "territoria"] <- "count"
-  } else {
-    counts <- data.frame(plot_id = integer(), jaar = integer(), count = numeric(), stringsAsFactors = FALSE)
-  }
+  selection_df <- tbls$soorten[tbls$soorten$id %in% target_species, , drop = FALSE]
+  selection_df$in_selectie <- TRUE
+  target_matrix <- build_species_matrix_subset(tbls, basis, selection_df, year_from, year_to)
+  counts <- aggregate_complete_species_counts(target_matrix, selection_df$id)
 
+  rejected <- unique(target_matrix[, c("plot_id", "jaar", "sovon_formeel_afgekeurd")])
+  basis$plotjaar_geteld <- basis$geteld
+  basis$geteld <- NULL
   dat <- merge(basis, counts, by = c("plot_id", "jaar"), all.x = TRUE)
-  dat$count <- ifelse(dat$geteld & is.na(dat$count), 0, dat$count)
-  dat$count <- ifelse(!dat$geteld, NA_real_, dat$count)
+  dat <- merge(dat, rejected, by = c("plot_id", "jaar"), all.x = TRUE)
+  dat$sovon_formeel_afgekeurd[is.na(dat$sovon_formeel_afgekeurd)] <- FALSE
+  dat$geteld <- is.finite(dat$count)
+  dat$observatie_status <- ifelse(
+    dat$geteld & dat$sovon_formeel_afgekeurd,
+    "onafhankelijke_bron_ondanks_sovon_afkeur",
+    ifelse(
+      !dat$geteld & dat$sovon_formeel_afgekeurd,
+      "formeel_afgekeurd",
+      ifelse(
+        dat$geteld & dat$count == 0,
+        "letterlijke_nul",
+        ifelse(dat$geteld, "territorium_vastgesteld", ifelse(dat$plotjaar_geteld, "ontbrekende_soortregel", "niet_geteld"))
+      )
+    )
+  )
+  dat$is_missing <- !dat$geteld
+  dat$territorium_vastgesteld <- dat$geteld & dat$count > 0
+  dat$echte_nul <- dat$geteld & dat$count == 0
+  dat$waargenomen_zonder_territorium <- NA
   dat$territoria_per_km2 <- ifelse(
     dat$geteld &
       is.finite(dat$count) &
@@ -2282,7 +2303,6 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
     dat$count / dat$oppervlakte_km2,
     NA_real_
   )
-  dat <- add_territory_observation_status(dat, "count")
   dat$log_area <- ifelse(is.finite(dat$oppervlakte_km2) & dat$oppervlakte_km2 > 0, log(dat$oppervlakte_km2), NA_real_)
   dat$year_c <- dat$jaar - min(dat$jaar, na.rm = TRUE)
 
@@ -3495,45 +3515,26 @@ build_gee_trait_dataset <- function(tbls, selected_kavels, year_from, year_to, s
     stop("Geen geldige plot-jaar-combinaties voor deze selectie.")
   }
   species_ids <- intersect(unique(as.integer(species_ids)), unique(tbls$soorten$id))
-  if (!length(species_ids)) {
-    stop("Geen soorten gevonden binnen deze kenmerkenselectie.")
-  }
-
-  basis$.join_key <- 1L
-  species_df <- data.frame(soort_id = species_ids, .join_key = 1L)
-  dat <- merge(basis, species_df, by = ".join_key", all = TRUE)
-  dat$.join_key <- NULL
-  counts <- tbls$territoria[
-    tbls$territoria$soort_id %in% species_ids &
-      tbls$territoria$jaar >= year_from &
-      tbls$territoria$jaar <= year_to,
-    c("plot_id", "jaar", "soort_id", "territoria")
-  ]
-  if (nrow(counts)) {
-    counts <- aggregate(territoria ~ plot_id + jaar + soort_id, data = counts, FUN = sum, na.rm = TRUE)
-    names(counts)[names(counts) == "territoria"] <- "count"
-  } else {
-    counts <- data.frame(plot_id = integer(), jaar = integer(), soort_id = integer(), count = numeric())
-  }
-
-  dat <- merge(dat, counts, by = c("plot_id", "jaar", "soort_id"), all.x = TRUE)
-  dat$count <- ifelse(dat$geteld & is.na(dat$count), 0, dat$count)
-  dat$count <- ifelse(!dat$geteld, NA_real_, dat$count)
-  dat$territoria_per_km2 <- ifelse(
-    dat$geteld &
-      is.finite(dat$count) &
-      is.finite(dat$oppervlakte_km2) &
-      dat$oppervlakte_km2 > 0,
-    dat$count / dat$oppervlakte_km2,
-    NA_real_
+  species_ids <- intersect(
+    species_ids,
+    accepted_positive_species_ids(
+      tbls$territoria,
+      tbls$bronnen,
+      tbls$sovon_bmp_plotjaar,
+      plot_year_scope = basis[, c("plot_id", "jaar"), drop = FALSE]
+    )
   )
-  dat <- add_territory_observation_status(dat, "count")
+  if (!length(species_ids)) {
+    stop("Geen soorten met een geaccepteerd positief territorium binnen deze kenmerkenselectie.")
+  }
+
+  selection_df <- tbls$soorten[tbls$soorten$id %in% species_ids, , drop = FALSE]
+  selection_df$in_selectie <- TRUE
+  dat <- build_species_matrix_subset(tbls, basis, selection_df, year_from, year_to)
+  dat$count <- dat$count_raw
   dat$log_area <- ifelse(is.finite(dat$oppervlakte_km2) & dat$oppervlakte_km2 > 0, log(dat$oppervlakte_km2), NA_real_)
   dat$year_c <- dat$jaar - min(dat$jaar, na.rm = TRUE)
   dat$cluster_id <- interaction(dat$plot_id, dat$soort_id, drop = TRUE)
-  soort_info <- tbls$soorten[, c("id", "euring_code", "soort_naam", "engelse_naam")]
-  names(soort_info)[names(soort_info) == "id"] <- "soort_id"
-  dat <- merge(dat, soort_info, by = "soort_id", all.x = TRUE)
   dat[order(dat$plot_id, dat$soort_id, dat$jaar), , drop = FALSE]
 }
 

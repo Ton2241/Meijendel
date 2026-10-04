@@ -45,11 +45,16 @@ De centrale regel is:
 
 ```text
 niet geteld = NA
-wel geteld, geen territorium = 0
-wel geteld, territorium vastgesteld = positief aantal
+ontbrekende soortregel of lege broncel = NA
+letterlijke territoriumregel met nul = 0
+formeel afgekeurde SOVON-uitkomst = NA
+geaccepteerde positieve bronregel = positief aantal
 ```
 
-Voor getelde plot-jaren worden ontbrekende soort-territoria dus echte nullen. Voor niet-getelde plot-jaren wordt geen nul ingevuld. Dit is essentieel voor alle modules.
+Een geregistreerd of bezocht plotjaar bewijst dus niet dat iedere ontbrekende
+soortcel nul is. Alleen een letterlijke nulregel geldt als echte nul. Een
+aanwezige onafhankelijke niet-SOVON-regel blijft ook geldig wanneer het
+SOVON-plotjaar formeel is afgekeurd. Dit is essentieel voor alle modules.
 
 ### Responsmaat
 
@@ -90,8 +95,8 @@ Daarbij is:
 - rij = `sample_id`, opgebouwd als `plot_id_jaar`;
 - kolom = `soort_id`;
 - waarde = `territoria_per_km2`;
-- echte nullen blijven 0;
-- niet-getelde plot-jaren komen niet in de matrix;
+- letterlijke nullen blijven 0;
+- ontbrekende soortregels, niet-getelde plotjaren en afgekeurde SOVON-uitkomsten komen niet als nul in de matrix;
 - rijen en kolommen die overal 0 zijn worden verwijderd.
 
 De gedeelde metadata bevat onder andere:
@@ -242,7 +247,7 @@ De app gebruikt drie T0-perioden:
 
 ### Invoerdata
 
-LAMBDA gebruikt geaggregeerde soort-jaar waarden uit getelde plot-jaren. Echte nullen worden gebruikt bij geschiktheidsbeoordeling, maar jaar-op-jaar verandering wordt alleen berekend tussen opeenvolgende positieve waarden.
+LAMBDA gebruikt geaggregeerde soort-jaarwaarden uit geaccepteerde bronregels. Letterlijke nullen worden gebruikt bij geschiktheidsbeoordeling, maar jaar-op-jaarverandering wordt alleen berekend tussen opeenvolgende positieve waarden.
 
 ### UI-keuzes
 
@@ -322,9 +327,13 @@ GEE gebruikt:
 
 - `count` als territoriumaantal;
 - `offset(log_area)` voor oppervlaktecorrectie;
-- getelde plot-jaren;
-- echte nullen voor getelde plot-jaren zonder territorium;
-- `NA` voor niet-getelde plot-jaren;
+- geaccepteerde bronregels;
+- letterlijke nullen als nul;
+- `NA` voor ontbrekende soortregels, niet-getelde plotjaren en afgekeurde SOVON-uitkomsten;
+- alleen complete groeps-, richtlijn- en habitatgroeptotalen; zodra één
+  samenstellende soortcel ontbreekt, blijft het groepstotaal `NA`;
+- in de kenmerkenroute alleen soorten met minimaal één geaccepteerd positief
+  territorium binnen de gekozen plot-jaar-basis;
 - covariaten zoals jaar, stikstof, toegankelijkheid, AHN, afstand tot pad en habitatvariabelen.
 
 ### UI-keuzes
@@ -433,8 +442,9 @@ GLMM gebruikt dezelfde reguliere datalaag als GEE:
 - `count`;
 - `offset(log_area)`;
 - territoria per km2 als inhoudelijke respons;
-- echte nullen voor getelde plot-jaren;
-- `NA` voor niet-getelde plot-jaren.
+- letterlijke nullen als nul;
+- `NA` voor ontbrekende soortregels, niet-getelde plotjaren en afgekeurde SOVON-uitkomsten.
+- in de kenmerkenroute geen nul-only-soorten als afzonderlijke soortclusters.
 
 ### UI-keuzes
 
@@ -617,9 +627,9 @@ Biodiversity gebruikt:
 
 - `plotjaar x soort`;
 - territoria per km2;
-- getelde plot-jaren;
-- echte nullen als nul;
-- niet-getelde plot-jaren buiten de analyse.
+- geaccepteerde soort-plotjaarregels;
+- letterlijke nullen als nul;
+- ontbrekende en afgekeurde waarden buiten de analyse.
 
 ### Output
 
@@ -1148,9 +1158,9 @@ Beta-Diversity gebruikt:
 
 - `plotjaar x soort`;
 - presence/absence;
-- getelde plot-jaren;
-- echte nullen als afwezigheid;
-- niet-getelde plot-jaren buiten de analyse.
+- geaccepteerde soort-plotjaarregels;
+- letterlijke nullen als afwezigheid;
+- ontbrekende en afgekeurde waarden buiten de analyse.
 
 ### UI-keuzes
 
