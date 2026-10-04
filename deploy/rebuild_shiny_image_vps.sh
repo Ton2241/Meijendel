@@ -6,6 +6,7 @@ SSH_KEY="${SSH_KEY:-$HOME/.ssh/vwgm_spectraip_ed25519}"
 REMOTE_BASE="${REMOTE_BASE:-/srv/vwgm}"
 REMOTE_SHINY="${REMOTE_SHINY:-$REMOTE_BASE/shiny}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/shiny_vulnerability_baseline.sh"
 LOCAL_REPO="$(cd "$SCRIPT_DIR/.." && pwd)"
 LOCAL_IMAGE_DIR="$LOCAL_REPO/deploy/shiny_image"
 LOCAL_LOCKFILE="$LOCAL_REPO/renv.lock"
@@ -169,7 +170,7 @@ baseline_status=$?
 set -e
 printf '%s\n' "$baseline_output"
 if [[ "$baseline_status" -ne 0 ]] && \
-   ! grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' <<<"$baseline_output"; then
+   ! known_shiny_openssl_baseline "$baseline_output"; then
   guard_die "baseline-audit bevat andere HIGH/CRITICAL-bevindingen dan de gedocumenteerde oude Shiny-baseline."
 fi
 
@@ -272,26 +273,39 @@ printf '%s\n' "$AUDIT_OUTPUT"
 CANDIDATE_SHORT="${CANDIDATE_ID#sha256:}"
 grep -Fq "SAMENVATTING|kandidaat-${CANDIDATE_SHORT:0:12}|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
   <<<"$AUDIT_OUTPUT"
-! grep -Eq '^(URGENT|BLOKKADE)\|' <<<"$AUDIT_OUTPUT"
-if [[ "$AUDIT_STATUS" -ne 0 ]]; then
-  EXPECTED_TAG="AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"
-  UNEXPECTED_TAGS="$(grep '^AANDACHT|container-hygiene|onverwachte-imagetag=' <<<"$AUDIT_OUTPUT" || true)"
-  [[ "$UNEXPECTED_TAGS" == "$EXPECTED_TAG" ]]
-fi
+! grep -Eq '^URGENT\|' <<<"$AUDIT_OUTPUT"
+# De integrale audit kan hier nog status 1 geven door de reeds vastgestelde
+# actieve/rollback-baseline. Na deze geisoleerde kandidaattests valideert de
+# lokale wrapper de volledige audit exact met known_shiny_openssl_baseline.
 
+PRODUCTION_CACHE="$REMOTE_SHINY/shiny_meijendel/app_cache"
+SQL_MANIFEST="$(dirname "$REMOTE_SHINY")/data/Meijendel.sql.manifest"
+CACHE_MANIFEST="$PRODUCTION_CACHE/meijendel_tables_cache.active.manifest"
+test -f "$SQL_MANIFEST"
+test -f "$CACHE_MANIFEST"
 mkdir -p "$CANDIDATE_CACHE/sass"
+cp -p "$CACHE_MANIFEST" "$CANDIDATE_CACHE/meijendel_tables_cache.active.manifest"
+CACHE_FILE="$(sed -n 's/^cache_file=//p' "$CACHE_MANIFEST")"
+[[ "$CACHE_FILE" =~ ^meijendel_tables_cache-p[1-9][0-9]*-[0-9a-f]{64}\.rds$ ]]
+test -f "$PRODUCTION_CACHE/$CACHE_FILE"
+cp -p "$PRODUCTION_CACHE/$CACHE_FILE" "$CANDIDATE_CACHE/$CACHE_FILE"
 docker run --rm -v "$CANDIDATE_CACHE:/app_cache" "$CANDIDATE_ID" \
   chown -R shiny:shiny /app_cache
 docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
   -p 127.0.0.1:3839:3838 \
+  -e MEIJENDEL_REQUIRE_PREBUILT_CACHE=1 \
+  -e MEIJENDEL_SQL_MANIFEST_PATH=/srv/shiny-server/Meijendel.sql.manifest \
+  -e MEIJENDEL_CACHE_MANIFEST_PATH=/srv/shiny-server/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest \
   --mount type=bind,src="$REMOTE_SHINY/shiny_meijendel",dst=/srv/shiny-server/shiny_meijendel,readonly \
   --mount type=bind,src="$CANDIDATE_CACHE",dst=/srv/shiny-server/shiny_meijendel/app_cache \
   --mount type=bind,src="$REMOTE_SHINY/Meijendel.sql",dst=/srv/shiny-server/Meijendel.sql,readonly \
+  --mount type=bind,src="$SQL_MANIFEST",dst=/srv/shiny-server/Meijendel.sql.manifest,readonly \
   --mount type=bind,src="$REMOTE_SHINY/R",dst=/srv/shiny-server/R,readonly \
   --mount type=bind,src="$REMOTE_SHINY/shiny_meijendel",dst=/workspace/shiny_meijendel,readonly \
   --mount type=bind,src="$CANDIDATE_CACHE",dst=/workspace/shiny_meijendel/app_cache \
   --mount type=bind,src="$REMOTE_SHINY/R",dst=/workspace/R,readonly \
   --mount type=bind,src="$REMOTE_SHINY/Meijendel.sql",dst=/workspace/meijendel.sql,readonly \
+  --mount type=bind,src="$(dirname "$REMOTE_SHINY")/www/trim",dst=/workspace/trim,readonly \
   --mount type=bind,src="$(dirname "$REMOTE_SHINY")/www/trim_msi_evg",dst=/workspace/trim_msi_evg,readonly \
   "$CANDIDATE_ID" >/dev/null
 for attempt in $(seq 1 30); do
@@ -315,8 +329,7 @@ docker exec "$CANDIDATE_CONTAINER" sh -lc '
   done
   ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec env LD_LIBRARY_PATH=/usr/local/lib/R/lib ldd {} \; | grep -F "not found"
 '
-find "$CANDIDATE_CACHE" -mindepth 1 -maxdepth 1 ! -name sass -exec rm -rf -- {} +
-docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); first <- load_meijendel_tables_cached(path); second <- load_meijendel_tables_cached(path); stopifnot(!isTRUE(first[[\"from_cache\"]]), isTRUE(second[[\"from_cache\"]]), file.exists(second[[\"cache_path\"]])); cat(\"GROEN|phase8-kandidaat|cache=eerste-load-en-hergebruik\\n\")"'
+docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); x <- load_meijendel_tables_cached(path); stopifnot(isTRUE(x[[\"from_cache\"]]), file.exists(x[[\"cache_path\"]])); cat(\"GROEN|phase8-kandidaat|cache=vooraf-gebouwd-en-geisoleerd\\n\")"'
 PARITY_LOG="$WORK_DIR/shiny-dashboard-parity.log"
 PARITY_STARTED=$SECONDS
 set +e
@@ -510,9 +523,8 @@ grep -Fq "SAMENVATTING|$candidate_label|critical=0|high=0|fix_beschikbaar=0|zond
 if [[ "$candidate_audit_status" -ne 0 ]]; then
   unexpected_tags="$(grep '^AANDACHT|container-hygiene|onverwachte-imagetag=' <<<"$candidate_audit" || true)"
   expected_candidate_tag="AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"
-  if grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=43|fix_beschikbaar=0|zonder_fix=43' \
-      <<<"$candidate_audit"; then
-    : # Alleen de gedocumenteerde oude productie-image mag nog 0/43 opleveren.
+  if known_shiny_openssl_baseline "$candidate_audit"; then
+    : # Alleen de exact bekende OpenSSL-baseline van actief en rollback is toegestaan.
   elif [[ "$unexpected_tags" == "$expected_candidate_tag" ]] &&
        ! grep -Eq '^SAMENVATTING\|.*\|(critical|high)=[1-9][0-9]*' <<<"$candidate_audit" &&
        ! grep -Eq '^(URGENT|BLOKKADE)\|' <<<"$candidate_audit"; then
@@ -530,13 +542,27 @@ ssh -i "$SSH_KEY" "$VPS" \
   "REMOTE_SHINY='$REMOTE_SHINY' CANDIDATE_ID='$CANDIDATE_ID' CANDIDATE_CONTAINER='$CANDIDATE_CONTAINER' CANDIDATE_CACHE='$CANDIDATE_CACHE' bash -s" <<'REMOTE'
 set -euo pipefail
 test ! -e "$CANDIDATE_CACHE"
+PRODUCTION_CACHE="$REMOTE_SHINY/shiny_meijendel/app_cache"
+SQL_MANIFEST="$(dirname "$REMOTE_SHINY")/data/Meijendel.sql.manifest"
+CACHE_MANIFEST="$PRODUCTION_CACHE/meijendel_tables_cache.active.manifest"
+test -f "$SQL_MANIFEST"
+test -f "$CACHE_MANIFEST"
 mkdir -p "$CANDIDATE_CACHE/sass"
+cp -p "$CACHE_MANIFEST" "$CANDIDATE_CACHE/meijendel_tables_cache.active.manifest"
+CACHE_FILE="$(sed -n 's/^cache_file=//p' "$CACHE_MANIFEST")"
+[[ "$CACHE_FILE" =~ ^meijendel_tables_cache-p[1-9][0-9]*-[0-9a-f]{64}\.rds$ ]]
+test -f "$PRODUCTION_CACHE/$CACHE_FILE"
+cp -p "$PRODUCTION_CACHE/$CACHE_FILE" "$CANDIDATE_CACHE/$CACHE_FILE"
 docker run --rm -v "$CANDIDATE_CACHE:/app_cache" "$CANDIDATE_ID" chown -R shiny:shiny /app_cache
 docker run -d --name "$CANDIDATE_CONTAINER" --restart no \
   -p 127.0.0.1:3839:3838 \
+  -e MEIJENDEL_REQUIRE_PREBUILT_CACHE=1 \
+  -e MEIJENDEL_SQL_MANIFEST_PATH=/srv/shiny-server/Meijendel.sql.manifest \
+  -e MEIJENDEL_CACHE_MANIFEST_PATH=/srv/shiny-server/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest \
   --mount type=bind,src="$REMOTE_SHINY/shiny_meijendel",dst=/srv/shiny-server/shiny_meijendel,readonly \
   --mount type=bind,src="$CANDIDATE_CACHE",dst=/srv/shiny-server/shiny_meijendel/app_cache \
   --mount type=bind,src="$REMOTE_SHINY/Meijendel.sql",dst=/srv/shiny-server/Meijendel.sql,readonly \
+  --mount type=bind,src="$SQL_MANIFEST",dst=/srv/shiny-server/Meijendel.sql.manifest,readonly \
   --mount type=bind,src="$REMOTE_SHINY/R",dst=/srv/shiny-server/R,readonly \
   "$CANDIDATE_ID" >/dev/null
 for attempt in $(seq 1 30); do
@@ -561,7 +587,7 @@ docker exec "$CANDIDATE_CONTAINER" sh -lc '
   done
   ! find /usr/local/lib/R/site-library -type f -name "*.so" -exec env LD_LIBRARY_PATH=/usr/local/lib/R/lib ldd {} \; | grep -F "not found"
 '
-docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
+docker exec -u shiny "$CANDIDATE_CONTAINER" sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(isTRUE(x[[\"from_cache\"]]), file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
 docker rm -f "$CANDIDATE_CONTAINER" >/dev/null
 docker run --rm -v "$CANDIDATE_CACHE:/app_cache" "$CANDIDATE_ID" \
   chown -R "$(id -u):$(id -g)" /app_cache >/dev/null
@@ -598,7 +624,7 @@ docker exec shiny_meijendel Rscript -e '
 docker exec shiny_meijendel Rscript \
   /opt/vwgm-build/install_shiny_packages.R \
   /opt/vwgm-build/renv.lock /opt/vwgm-build/DESCRIPTION validate
-docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
+docker exec -u shiny shiny_meijendel sh -lc 'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(isTRUE(x[[\"from_cache\"]]), file.exists(x[[\"cache_path\"]])); print(x[c(\"from_cache\", \"cache_path\")])"'
 REMOTE
 fi
 

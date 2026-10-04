@@ -111,7 +111,7 @@ grep -Fq 'BLOKKADE|phase8-kandidaat|pariteit-timeout-na-3600-seconden' "$shiny_r
 grep -Fq -- '--entrypoint dpkg-query "$CANDIDATE_ID"' "$shiny_rebuild"
 grep -Fq -- "-W '-f=\${binary:Package}\\t\${Version}\\n'" "$shiny_rebuild"
 ! grep -Fq -- '--entrypoint sh "$CANDIDATE_ID" -lc' "$shiny_rebuild"
-grep -Fq 'cache=eerste-load-en-hergebruik' "$shiny_rebuild"
+grep -Fq 'cache=vooraf-gebouwd-en-geisoleerd' "$shiny_rebuild"
 grep -Fq '[[ "$(docker inspect --format' "$shiny_rebuild"
 candidate_scan_prelude="$(sed -n '/^CANDIDATE_ID=.*docker image inspect/,/^AUDIT_OUTPUT=/p' "$shiny_rebuild")"
 grep -Fq 'docker buildx rm "$BUILDER_NAME"' <<<"$candidate_scan_prelude"

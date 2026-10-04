@@ -461,8 +461,26 @@ Gereed:
   productiecommit is `f74c24ad440c0185c94763c51f27f4663ec41599`. De vorige
   productie-image
   `sha256:478ed47b333524f8b26df445919e1fc888ed243bc14951b14eb03d772f1ad906`
-  blijft exact beschikbaar als rollbacktag `vwgm-shiny:rollback-e54a49a5966b`.
-  Er zijn geen tijdelijke containers, volumes of buildcache aanwezig.
+  is op 2 oktober 2026 als verouderde rollbacktag exact verwijderd.
+- Op 2 oktober 2026 is de reproduceerbare kandidaat van schone `main`-commit
+  `9bac5daf99e683245adf0b941742b474aee23abd`, image
+  `sha256:1159fc61c0da2826f0dbbb2e70b25e5d1184e75e9036d67e9c708c81263bf510`,
+  na de groene 01:15/03:00/05:00-back-upketen gecontroleerd geactiveerd. De
+  kandidaat en actieve image melden 0 `CRITICAL` en 0 `HIGH`; R 4.6.1,
+  P3M-snapshot `2026-08-18`, exact 191 lockpackages, readiness,
+  eerste-load/cachehergebruik en Shiny/dashboard-pariteit over 55 kavels,
+  1.224 MSI-rijen en 1.628 functionele MSI-rijen zijn groen. De CycloneDX-SBOM
+  bevat 511 componenten. Het checksummed bewijs staat onder
+  `/srv/vwgm/shiny/evidence/phase8-9bac5daf99e683245adf0b941742b474aee23abd`.
+  De volledige multi-hostrooktest is na omschakeling groen. De vorige actieve
+  image
+  `sha256:c7c181a76a5119ca9315739eb2834cb50f0d1d5c286e48f803c435d0a00174ff`
+  blijft exact beschikbaar als `vwgm-shiny:rollback-9bac5daf99e6`. Deze
+  gestopte rollback bevat twee repareerbare OpenSSL-HIGH-bevindingen en houdt
+  de integrale containerscan daarom bewust op `AANDACHT` totdat de
+  rollbackretentie afzonderlijk wordt beoordeeld. Er zijn geen tijdelijke
+  containers, volumes of buildcache aanwezig. De eerstvolgende reguliere
+  back-upketen moet de nieuwe actieve image nog meenemen.
 
 Open:
 
