@@ -59,14 +59,14 @@
 "100","Watervogels",2015,35.214,625,17.74848285
 "100","Watervogels",2016,36.51,648,17.74848285
 "100","Watervogels",2017,36.792,653,17.74848285
-"100","Watervogels",2018,32.961,585,17.74848285
+"100","Watervogels",2018,31.89,566,17.74848285
 "100","Watervogels",2019,36.003,639,17.74848285
 "100","Watervogels",2020,41.299,733,17.74848285
 "100","Watervogels",2021,37.693,669,17.74848285
 "100","Watervogels",2022,35.102,623,17.74848285
 "100","Watervogels",2023,37.919,673,17.74848285
 "100","Watervogels",2024,36.341,645,17.74848285
-"100","Watervogels",2025,33.242,590,17.74848285
+"100","Watervogels",2025,33.186,589,17.74848285
 "200","Rietvogels",1958,1.457,24,16.4707
 "200","Rietvogels",1959,4.675,77,16.4707
 "200","Rietvogels",1960,4.609,76,16.4907
@@ -117,7 +117,7 @@
 "200","Rietvogels",2005,22.819,405,17.74848285
 "200","Rietvogels",2006,21.185,376,17.74848285
 "200","Rietvogels",2007,21.636,384,17.74848285
-"200","Rietvogels",2008,14.649,260,17.74848285
+"200","Rietvogels",2008,14.536,258,17.74848285
 "200","Rietvogels",2009,17.185,305,17.74848285
 "200","Rietvogels",2010,18.988,337,17.74848285
 "200","Rietvogels",2011,18.875,335,17.74848285
@@ -128,12 +128,12 @@
 "200","Rietvogels",2016,14.931,265,17.74848285
 "200","Rietvogels",2017,15.551,276,17.74848285
 "200","Rietvogels",2018,14.593,259,17.74848285
-"200","Rietvogels",2019,17.41,309,17.74848285
+"200","Rietvogels",2019,17.523,311,17.74848285
 "200","Rietvogels",2020,18.593,330,17.74848285
 "200","Rietvogels",2021,18.48,328,17.74848285
 "200","Rietvogels",2022,15.494,275,17.74848285
 "200","Rietvogels",2023,18.762,333,17.74848285
-"200","Rietvogels",2024,17.635,313,17.74848285
+"200","Rietvogels",2024,17.579,312,17.74848285
 "200","Rietvogels",2025,19.213,341,17.74848285
 "2110-embryonale-wandelende-duinen","H2110 - Embryonale wandelende duinen",1958,0.668,11,16.4707
 "2110-embryonale-wandelende-duinen","H2110 - Embryonale wandelende duinen",1959,1.032,17,16.4707
@@ -253,7 +253,7 @@
 "2120-witte-duinen","H2120 - Witte duinen",2005,6.085,108,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2006,3.775,67,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2007,4.676,83,17.74848285
-"2120-witte-duinen","H2120 - Witte duinen",2008,3.381,60,17.74848285
+"2120-witte-duinen","H2120 - Witte duinen",2008,3.324,59,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2009,3.55,63,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2010,3.212,57,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2011,4.451,79,17.74848285
@@ -263,13 +263,13 @@
 "2120-witte-duinen","H2120 - Witte duinen",2015,4.676,83,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2016,4.733,84,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2017,4.282,76,17.74848285
-"2120-witte-duinen","H2120 - Witte duinen",2018,5.634,100,17.74848285
+"2120-witte-duinen","H2120 - Witte duinen",2018,5.578,99,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2019,5.747,102,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2020,5.916,105,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2021,5.522,98,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2022,6.987,124,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2023,8.959,159,17.74848285
-"2120-witte-duinen","H2120 - Witte duinen",2024,10.423,185,17.74848285
+"2120-witte-duinen","H2120 - Witte duinen",2024,10.142,180,17.74848285
 "2120-witte-duinen","H2120 - Witte duinen",2025,10.874,193,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",1958,7.589,125,16.4707
 "2130-grijze-duinen","H2130 - Grijze duinen",1959,21.857,360,16.4707
@@ -321,7 +321,7 @@
 "2130-grijze-duinen","H2130 - Grijze duinen",2005,42.877,761,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2006,35.496,630,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2007,39.102,694,17.74848285
-"2130-grijze-duinen","H2130 - Grijze duinen",2008,31.608,561,17.74848285
+"2130-grijze-duinen","H2130 - Grijze duinen",2008,30.481,541,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2009,32.848,583,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2010,35.665,633,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2011,46.314,822,17.74848285
@@ -331,14 +331,14 @@
 "2130-grijze-duinen","H2130 - Grijze duinen",2015,41.412,735,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2016,45.074,800,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2017,43.835,778,17.74848285
-"2130-grijze-duinen","H2130 - Grijze duinen",2018,40.172,713,17.74848285
-"2130-grijze-duinen","H2130 - Grijze duinen",2019,42.764,759,17.74848285
+"2130-grijze-duinen","H2130 - Grijze duinen",2018,38.82,689,17.74848285
+"2130-grijze-duinen","H2130 - Grijze duinen",2019,43.271,768,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2020,48.624,863,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2021,47.497,843,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2022,48.624,863,17.74848285
 "2130-grijze-duinen","H2130 - Grijze duinen",2023,55.047,977,17.74848285
-"2130-grijze-duinen","H2130 - Grijze duinen",2024,54.371,965,17.74848285
-"2130-grijze-duinen","H2130 - Grijze duinen",2025,59.836,1062,17.74848285
+"2130-grijze-duinen","H2130 - Grijze duinen",2024,53.075,942,17.74848285
+"2130-grijze-duinen","H2130 - Grijze duinen",2025,59.273,1052,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",1958,17,280,16.4707
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",1959,42.318,697,16.4707
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",1960,45.116,744,16.4907
@@ -389,7 +389,7 @@
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2005,201.933,3584,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2006,176.522,3133,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2007,200.693,3562,17.74848285
-"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2008,161.873,2873,17.74848285
+"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2008,153.253,2720,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2009,167,2964,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2010,194.214,3447,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2011,209.145,3712,17.74848285
@@ -399,14 +399,14 @@
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2015,219.061,3888,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2016,234.048,4154,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2017,229.428,4072,17.74848285
-"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2018,195.735,3474,17.74848285
-"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2019,203.51,3612,17.74848285
+"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2018,187.622,3330,17.74848285
+"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2019,207.567,3684,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2020,204.412,3628,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2021,200.581,3560,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2022,194.552,3453,17.74848285
 "2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2023,217.99,3869,17.74848285
-"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2024,215.399,3823,17.74848285
-"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2025,214.892,3814,17.74848285
+"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2024,213.201,3784,17.74848285
+"2160-duindoornstruwelen","H2160 - Duindoornstruwelen",2025,211.455,3753,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",1958,0.789,13,16.4707
 "2180-duinbossen","H2180 - Duinbossen",1959,1.821,30,16.4707
 "2180-duinbossen","H2180 - Duinbossen",1960,3.638,60,16.4907
@@ -457,7 +457,7 @@
 "2180-duinbossen","H2180 - Duinbossen",2005,36.51,648,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2006,39.722,705,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2007,46.37,823,17.74848285
-"2180-duinbossen","H2180 - Duinbossen",2008,35.834,636,17.74848285
+"2180-duinbossen","H2180 - Duinbossen",2008,33.242,590,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2009,28.679,509,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2010,36.792,653,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2011,38.144,677,17.74848285
@@ -467,14 +467,14 @@
 "2180-duinbossen","H2180 - Duinbossen",2015,61.076,1084,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2016,79.443,1410,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2017,72.232,1282,17.74848285
-"2180-duinbossen","H2180 - Duinbossen",2018,63.442,1126,17.74848285
-"2180-duinbossen","H2180 - Duinbossen",2019,55.272,981,17.74848285
+"2180-duinbossen","H2180 - Duinbossen",2018,61.47,1091,17.74848285
+"2180-duinbossen","H2180 - Duinbossen",2019,56.117,996,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2020,58.033,1030,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2021,56.512,1003,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2022,56.23,998,17.74848285
 "2180-duinbossen","H2180 - Duinbossen",2023,66.992,1189,17.74848285
-"2180-duinbossen","H2180 - Duinbossen",2024,60.794,1079,17.74848285
-"2180-duinbossen","H2180 - Duinbossen",2025,61.188,1086,17.74848285
+"2180-duinbossen","H2180 - Duinbossen",2024,60.005,1065,17.74848285
+"2180-duinbossen","H2180 - Duinbossen",2025,58.371,1036,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",1958,1.821,30,16.4707
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",1959,8.196,135,16.4707
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",1960,7.823,129,16.4907
@@ -525,7 +525,7 @@
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2005,31.383,557,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2006,30.932,549,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2007,35.552,631,17.74848285
-"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2008,25.918,460,17.74848285
+"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2008,25.805,458,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2009,32.679,580,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2010,32.735,581,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2011,34.144,606,17.74848285
@@ -535,13 +535,13 @@
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2015,29.974,532,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2016,28.002,497,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2017,28.735,510,17.74848285
-"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2018,26.763,475,17.74848285
-"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2019,30.425,540,17.74848285
+"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2018,26.425,469,17.74848285
+"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2019,30.538,542,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2020,33.637,597,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2021,33.637,597,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2022,30.989,550,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2023,36.848,654,17.74848285
-"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2024,37.637,668,17.74848285
+"2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2024,37.581,667,17.74848285
 "2190-vochtige-duinvalleien","H2190 - Vochtige duinvalleien",2025,35.496,630,17.74848285
 "300","Vogels van pionierbegroeiingen",1958,8.379,138,16.4707
 "300","Vogels van pionierbegroeiingen",1959,9.957,164,16.4707
@@ -593,7 +593,7 @@
 "300","Vogels van pionierbegroeiingen",2005,12.114,215,17.74848285
 "300","Vogels van pionierbegroeiingen",2006,9.747,173,17.74848285
 "300","Vogels van pionierbegroeiingen",2007,10.142,180,17.74848285
-"300","Vogels van pionierbegroeiingen",2008,8.395,149,17.74848285
+"300","Vogels van pionierbegroeiingen",2008,8.17,145,17.74848285
 "300","Vogels van pionierbegroeiingen",2009,8.846,157,17.74848285
 "300","Vogels van pionierbegroeiingen",2010,7.888,140,17.74848285
 "300","Vogels van pionierbegroeiingen",2011,9.691,172,17.74848285
@@ -603,14 +603,14 @@
 "300","Vogels van pionierbegroeiingen",2015,10.423,185,17.74848285
 "300","Vogels van pionierbegroeiingen",2016,13.241,235,17.74848285
 "300","Vogels van pionierbegroeiingen",2017,13.241,235,17.74848285
-"300","Vogels van pionierbegroeiingen",2018,12.114,215,17.74848285
+"300","Vogels van pionierbegroeiingen",2018,11.607,206,17.74848285
 "300","Vogels van pionierbegroeiingen",2019,13.072,232,17.74848285
 "300","Vogels van pionierbegroeiingen",2020,15.044,267,17.74848285
 "300","Vogels van pionierbegroeiingen",2021,15.889,282,17.74848285
 "300","Vogels van pionierbegroeiingen",2022,14.818,263,17.74848285
 "300","Vogels van pionierbegroeiingen",2023,15.382,273,17.74848285
-"300","Vogels van pionierbegroeiingen",2024,16.001,284,17.74848285
-"300","Vogels van pionierbegroeiingen",2025,16.677,296,17.74848285
+"300","Vogels van pionierbegroeiingen",2024,15.663,278,17.74848285
+"300","Vogels van pionierbegroeiingen",2025,16.621,295,17.74848285
 "3140-kranswierwateren","H3140 - Kranswierwateren",1958,5.221,86,16.4707
 "3140-kranswierwateren","H3140 - Kranswierwateren",1959,13.418,221,16.4707
 "3140-kranswierwateren","H3140 - Kranswierwateren",1960,12.431,205,16.4907
@@ -671,7 +671,7 @@
 "3140-kranswierwateren","H3140 - Kranswierwateren",2015,25.805,458,17.74848285
 "3140-kranswierwateren","H3140 - Kranswierwateren",2016,27.045,480,17.74848285
 "3140-kranswierwateren","H3140 - Kranswierwateren",2017,27.89,495,17.74848285
-"3140-kranswierwateren","H3140 - Kranswierwateren",2018,23.777,422,17.74848285
+"3140-kranswierwateren","H3140 - Kranswierwateren",2018,22.988,408,17.74848285
 "3140-kranswierwateren","H3140 - Kranswierwateren",2019,26.368,468,17.74848285
 "3140-kranswierwateren","H3140 - Kranswierwateren",2020,29.129,517,17.74848285
 "3140-kranswierwateren","H3140 - Kranswierwateren",2021,27.045,480,17.74848285
@@ -807,14 +807,14 @@
 "500","Weidevogels",2015,9.409,167,17.74848285
 "500","Weidevogels",2016,8.564,152,17.74848285
 "500","Weidevogels",2017,8.789,156,17.74848285
-"500","Weidevogels",2018,8.057,143,17.74848285
+"500","Weidevogels",2018,7.775,138,17.74848285
 "500","Weidevogels",2019,8.17,145,17.74848285
 "500","Weidevogels",2020,10.085,179,17.74848285
 "500","Weidevogels",2021,9.409,167,17.74848285
 "500","Weidevogels",2022,9.015,160,17.74848285
 "500","Weidevogels",2023,10.705,190,17.74848285
 "500","Weidevogels",2024,10.423,185,17.74848285
-"500","Weidevogels",2025,9.916,176,17.74848285
+"500","Weidevogels",2025,9.86,175,17.74848285
 "600","Struweelvogels",1958,18.032,297,16.4707
 "600","Struweelvogels",1959,46.871,772,16.4707
 "600","Struweelvogels",1960,50.271,829,16.4907
@@ -865,7 +865,7 @@
 "600","Struweelvogels",2005,207.736,3687,17.74848285
 "600","Struweelvogels",2006,186.664,3313,17.74848285
 "600","Struweelvogels",2007,207.905,3690,17.74848285
-"600","Struweelvogels",2008,165.085,2930,17.74848285
+"600","Struweelvogels",2008,155.675,2763,17.74848285
 "600","Struweelvogels",2009,167.902,2980,17.74848285
 "600","Struweelvogels",2010,198.27,3519,17.74848285
 "600","Struweelvogels",2011,208.187,3695,17.74848285
@@ -875,14 +875,14 @@
 "600","Struweelvogels",2015,218.498,3878,17.74848285
 "600","Struweelvogels",2016,237.767,4220,17.74848285
 "600","Struweelvogels",2017,229.428,4072,17.74848285
-"600","Struweelvogels",2018,196.524,3488,17.74848285
-"600","Struweelvogels",2019,204.299,3626,17.74848285
+"600","Struweelvogels",2018,188.918,3353,17.74848285
+"600","Struweelvogels",2019,207.849,3689,17.74848285
 "600","Struweelvogels",2020,204.017,3621,17.74848285
 "600","Struweelvogels",2021,197.763,3510,17.74848285
 "600","Struweelvogels",2022,191.284,3395,17.74848285
 "600","Struweelvogels",2023,214.385,3805,17.74848285
-"600","Struweelvogels",2024,210.553,3737,17.74848285
-"600","Struweelvogels",2025,206.778,3670,17.74848285
+"600","Struweelvogels",2024,208.13,3694,17.74848285
+"600","Struweelvogels",2025,203.623,3614,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",1958,3.157,52,16.4707
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",1959,8.804,145,16.4707
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",1960,9.096,150,16.4907
@@ -933,7 +933,7 @@
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2005,32.51,577,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2006,28.622,508,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2007,30.538,542,17.74848285
-"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2008,22.537,400,17.74848285
+"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2008,22.086,392,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2009,25.918,460,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2010,28.171,500,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2011,31.777,564,17.74848285
@@ -943,13 +943,13 @@
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2015,33.524,595,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2016,33.299,591,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2017,30.651,544,17.74848285
-"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2018,28.397,504,17.74848285
-"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2019,34.256,608,17.74848285
+"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2018,27.101,481,17.74848285
+"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2019,34.764,617,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2020,36.116,641,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2021,33.975,603,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2022,35.609,632,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2023,39.834,707,17.74848285
-"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2024,40.736,723,17.74848285
+"6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2024,40.172,713,17.74848285
 "6430-ruigten-en-zomen","H6430 - Ruigten en zomen",2025,39.947,709,17.74848285
 "700","Bosrandvogels",1958,18.032,297,16.4707
 "700","Bosrandvogels",1959,43.714,720,16.4707
@@ -1001,7 +1001,7 @@
 "700","Bosrandvogels",2005,177.142,3144,17.74848285
 "700","Bosrandvogels",2006,153.647,2727,17.74848285
 "700","Bosrandvogels",2007,170.719,3030,17.74848285
-"700","Bosrandvogels",2008,136.969,2431,17.74848285
+"700","Bosrandvogels",2008,131.673,2337,17.74848285
 "700","Bosrandvogels",2009,160.295,2845,17.74848285
 "700","Bosrandvogels",2010,173.649,3082,17.74848285
 "700","Bosrandvogels",2011,185.086,3285,17.74848285
@@ -1011,14 +1011,14 @@
 "700","Bosrandvogels",2015,204.299,3626,17.74848285
 "700","Bosrandvogels",2016,217.202,3855,17.74848285
 "700","Bosrandvogels",2017,204.525,3630,17.74848285
-"700","Bosrandvogels",2018,187.396,3326,17.74848285
-"700","Bosrandvogels",2019,199.961,3549,17.74848285
+"700","Bosrandvogels",2018,181.086,3214,17.74848285
+"700","Bosrandvogels",2019,202.158,3588,17.74848285
 "700","Bosrandvogels",2020,203.398,3610,17.74848285
 "700","Bosrandvogels",2021,194.214,3447,17.74848285
 "700","Bosrandvogels",2022,158.098,2806,17.74848285
-"700","Bosrandvogels",2023,191.847,3405,17.74848285
-"700","Bosrandvogels",2024,188.467,3345,17.74848285
-"700","Bosrandvogels",2025,191.453,3398,17.74848285
+"700","Bosrandvogels",2023,191.791,3404,17.74848285
+"700","Bosrandvogels",2024,185.819,3298,17.74848285
+"700","Bosrandvogels",2025,190.326,3378,17.74848285
 "800","Bosvogels",1958,1.943,32,16.4707
 "800","Bosvogels",1959,4.129,68,16.4707
 "800","Bosvogels",1960,4.669,77,16.4907
@@ -1066,10 +1066,10 @@
 "800","Bosvogels",2002,100.009,1775,17.74848285
 "800","Bosvogels",2003,101.642,1804,17.74848285
 "800","Bosvogels",2004,109.981,1952,17.74848285
-"800","Bosvogels",2005,78.711,1397,17.74848285
-"800","Bosvogels",2006,79.387,1409,17.74848285
+"800","Bosvogels",2005,78.655,1396,17.74848285
+"800","Bosvogels",2006,79.331,1408,17.74848285
 "800","Bosvogels",2007,87.5,1553,17.74848285
-"800","Bosvogels",2008,73.133,1298,17.74848285
+"800","Bosvogels",2008,68.231,1211,17.74848285
 "800","Bosvogels",2009,70.485,1251,17.74848285
 "800","Bosvogels",2010,100.009,1775,17.74848285
 "800","Bosvogels",2011,96.403,1711,17.74848285
@@ -1079,14 +1079,14 @@
 "800","Bosvogels",2015,116.517,2068,17.74848285
 "800","Bosvogels",2016,138.491,2458,17.74848285
 "800","Bosvogels",2017,138.885,2465,17.74848285
-"800","Bosvogels",2018,124.011,2201,17.74848285
-"800","Bosvogels",2019,110.995,1970,17.74848285
+"800","Bosvogels",2018,119.898,2128,17.74848285
+"800","Bosvogels",2019,113.756,2019,17.74848285
 "800","Bosvogels",2020,112.46,1996,17.74848285
 "800","Bosvogels",2021,118.038,2095,17.74848285
 "800","Bosvogels",2022,117.7,2089,17.74848285
-"800","Bosvogels",2023,139.336,2473,17.74848285
-"800","Bosvogels",2024,140.632,2496,17.74848285
-"800","Bosvogels",2025,138.829,2464,17.74848285
+"800","Bosvogels",2023,139.28,2472,17.74848285
+"800","Bosvogels",2024,138.885,2465,17.74848285
+"800","Bosvogels",2025,133.138,2363,17.74848285
 "900","Vogels van bebouwing/overige",1958,0.061,1,16.4707
 "900","Vogels van bebouwing/overige",1959,0.304,5,16.4707
 "900","Vogels van bebouwing/overige",1960,0.303,5,16.4907
@@ -1137,9 +1137,9 @@
 "900","Vogels van bebouwing/overige",2005,4.733,84,17.74848285
 "900","Vogels van bebouwing/overige",2006,5.296,94,17.74848285
 "900","Vogels van bebouwing/overige",2007,4.845,86,17.74848285
-"900","Vogels van bebouwing/overige",2008,3.155,56,17.74848285
-"900","Vogels van bebouwing/overige",2009,3.831,68,17.74848285
-"900","Vogels van bebouwing/overige",2010,5.691,101,17.74848285
+"900","Vogels van bebouwing/overige",2008,3.043,54,17.74848285
+"900","Vogels van bebouwing/overige",2009,3.662,65,17.74848285
+"900","Vogels van bebouwing/overige",2010,5.409,96,17.74848285
 "900","Vogels van bebouwing/overige",2011,5.916,105,17.74848285
 "900","Vogels van bebouwing/overige",2012,3.437,61,17.74848285
 "900","Vogels van bebouwing/overige",2013,4.958,88,17.74848285
@@ -1147,14 +1147,14 @@
 "900","Vogels van bebouwing/overige",2015,4.169,74,17.74848285
 "900","Vogels van bebouwing/overige",2016,5.803,103,17.74848285
 "900","Vogels van bebouwing/overige",2017,3.888,69,17.74848285
-"900","Vogels van bebouwing/overige",2018,4.676,83,17.74848285
-"900","Vogels van bebouwing/overige",2019,3.888,69,17.74848285
+"900","Vogels van bebouwing/overige",2018,4.507,80,17.74848285
+"900","Vogels van bebouwing/overige",2019,3.944,70,17.74848285
 "900","Vogels van bebouwing/overige",2020,4.845,86,17.74848285
 "900","Vogels van bebouwing/overige",2021,5.184,92,17.74848285
 "900","Vogels van bebouwing/overige",2022,4.902,87,17.74848285
 "900","Vogels van bebouwing/overige",2023,5.071,90,17.74848285
 "900","Vogels van bebouwing/overige",2024,3.888,69,17.74848285
-"900","Vogels van bebouwing/overige",2025,4.226,75,17.74848285
+"900","Vogels van bebouwing/overige",2025,4.113,73,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",1958,22.525,371,16.4707
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",1959,43.289,713,16.4707
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",1960,45.905,757,16.4907
@@ -1205,7 +1205,7 @@
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2005,208.243,3696,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2006,185.312,3289,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2007,207.116,3676,17.74848285
-"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2008,169.367,3006,17.74848285
+"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2008,159.901,2838,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2009,178.325,3165,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2010,211.624,3756,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2011,222.667,3952,17.74848285
@@ -1215,14 +1215,14 @@
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2015,249.768,4433,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2016,270.502,4801,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2017,271.742,4823,17.74848285
-"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2018,233.654,4147,17.74848285
-"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2019,230.499,4091,17.74848285
+"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2018,224.639,3987,17.74848285
+"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2019,234.95,4170,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2020,239.344,4248,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2021,239.175,4245,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2022,231.513,4109,17.74848285
 "functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2023,266.84,4736,17.74848285
-"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2024,270.671,4804,17.74848285
-"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2025,268.812,4771,17.74848285
+"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2024,267.347,4745,17.74848285
+"functioneel-bodem-insect-binair","Bodemfoeragerende insecteneters — binair",2025,263.459,4676,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",1958,18.761,309,16.4707
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",1959,35.943,592,16.4707
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",1960,37.93,625.5,16.4907
@@ -1273,7 +1273,7 @@
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2005,158.943,2821,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2006,139.251,2471.5,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2007,157.309,2792,17.74848285
-"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2008,128.715,2284.5,17.74848285
+"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2008,121.56,2157.5,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2009,135.899,2412,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2010,158.042,2805,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2011,168.212,2985.5,17.74848285
@@ -1283,14 +1283,14 @@
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2015,181.959,3229.5,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2016,194.495,3452,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2017,196.327,3484.5,17.74848285
-"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2018,164.606,2921.5,17.74848285
-"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2019,166.718,2959,17.74848285
+"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2018,157.591,2797,17.74848285
+"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2019,169.93,3016,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2020,172.437,3060.5,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2021,171.818,3049.5,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2022,167.479,2972.5,17.74848285
 "functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2023,195.707,3473.5,17.74848285
-"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2024,200.75,3563,17.74848285
-"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2025,201.623,3578.5,17.74848285
+"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2024,198.073,3515.5,17.74848285
+"functioneel-bodem-insect-gewogen","Bodemfoeragerende insecteneters — gewogen",2025,198.101,3516,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",1958,34.971,576,16.4707
 "functioneel-grondbroed-binair","Grondbroeders — binair",1959,63.385,1044,16.4707
 "functioneel-grondbroed-binair","Grondbroeders — binair",1960,66.219,1092,16.4907
@@ -1341,7 +1341,7 @@
 "functioneel-grondbroed-binair","Grondbroeders — binair",2005,195.115,3463,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2006,177.649,3153,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2007,199.51,3541,17.74848285
-"functioneel-grondbroed-binair","Grondbroeders — binair",2008,161.422,2865,17.74848285
+"functioneel-grondbroed-binair","Grondbroeders — binair",2008,155.281,2756,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2009,194.214,3447,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2010,198.609,3525,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2011,203.341,3609,17.74848285
@@ -1351,14 +1351,14 @@
 "functioneel-grondbroed-binair","Grondbroeders — binair",2015,233.541,4145,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2016,249.43,4427,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2017,239.344,4248,17.74848285
-"functioneel-grondbroed-binair","Grondbroeders — binair",2018,217.202,3855,17.74848285
-"functioneel-grondbroed-binair","Grondbroeders — binair",2019,221.146,3925,17.74848285
+"functioneel-grondbroed-binair","Grondbroeders — binair",2018,209.821,3724,17.74848285
+"functioneel-grondbroed-binair","Grondbroeders — binair",2019,224.019,3976,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2020,225.766,4007,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2021,212.751,3776,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2022,182.833,3245,17.74848285
 "functioneel-grondbroed-binair","Grondbroeders — binair",2023,224.075,3977,17.74848285
-"functioneel-grondbroed-binair","Grondbroeders — binair",2024,226.893,4027,17.74848285
-"functioneel-grondbroed-binair","Grondbroeders — binair",2025,233.541,4145,17.74848285
+"functioneel-grondbroed-binair","Grondbroeders — binair",2024,224.188,3979,17.74848285
+"functioneel-grondbroed-binair","Grondbroeders — binair",2025,230.499,4091,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",1958,32.543,536,16.4707
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",1959,59.56,981,16.4707
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",1960,62.096,1024,16.4907
@@ -1409,7 +1409,7 @@
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2005,168.634,2993,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2006,152.745,2711,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2007,171.958,3052,17.74848285
-"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2008,140.913,2501,17.74848285
+"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2008,135.927,2412.5,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2009,166.352,2952.5,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2010,169.169,3002.5,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2011,175.283,3111,17.74848285
@@ -1419,14 +1419,14 @@
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2015,190.016,3372.5,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2016,198.439,3522,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2017,193.932,3442,17.74848285
-"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2018,170.465,3025.5,17.74848285
-"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2019,178.889,3175,17.74848285
+"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2018,163.732,2906,17.74848285
+"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2019,181.508,3221.5,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2020,185.086,3285,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2021,176.353,3130,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2022,161.788,2871.5,17.74848285
 "functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2023,194.045,3444,17.74848285
-"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2024,196.721,3491.5,17.74848285
-"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2025,201.538,3577,17.74848285
+"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2024,194.27,3448,17.74848285
+"functioneel-grondbroed-gewogen","Grondbroeders — gewogen",2025,199.031,3532.5,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",1958,10.321,170,16.4707
 "functioneel-holenbroed-binair","Holenbroeders — binair",1959,14.996,247,16.4707
 "functioneel-holenbroed-binair","Holenbroeders — binair",1960,17.101,282,16.4907
@@ -1477,9 +1477,9 @@
 "functioneel-holenbroed-binair","Holenbroeders — binair",2005,42.933,762,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2006,47.159,837,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2007,50.652,899,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2008,40.905,726,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2009,40.341,716,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2010,61.864,1098,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2008,38.426,682,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2009,40.172,713,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2010,61.583,1093,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2011,56.399,1001,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2012,59.949,1064,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2013,61.47,1091,17.74848285
@@ -1487,14 +1487,14 @@
 "functioneel-holenbroed-binair","Holenbroeders — binair",2015,65.245,1158,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2016,81.528,1447,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2017,79.162,1405,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2018,71.555,1270,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2019,64.4,1143,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2018,69.245,1229,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2019,65.752,1167,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2020,66.71,1184,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2021,67.949,1206,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2022,64.287,1141,17.74848285
 "functioneel-holenbroed-binair","Holenbroeders — binair",2023,74.711,1326,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2024,71.386,1267,17.74848285
-"functioneel-holenbroed-binair","Holenbroeders — binair",2025,68.907,1223,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2024,70.372,1249,17.74848285
+"functioneel-holenbroed-binair","Holenbroeders — binair",2025,65.583,1164,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",1958,10.321,170,16.4707
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",1959,14.996,247,16.4707
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",1960,17.101,282,16.4907
@@ -1545,9 +1545,9 @@
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2005,42.933,762,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2006,47.159,837,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2007,50.652,899,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2008,40.905,726,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2009,40.341,716,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2010,61.864,1098,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2008,38.426,682,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2009,40.172,713,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2010,61.583,1093,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2011,56.399,1001,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2012,59.949,1064,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2013,61.47,1091,17.74848285
@@ -1555,14 +1555,14 @@
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2015,65.245,1158,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2016,81.528,1447,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2017,79.162,1405,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2018,71.555,1270,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2019,64.4,1143,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2018,69.245,1229,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2019,65.752,1167,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2020,66.71,1184,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2021,67.949,1206,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2022,64.287,1141,17.74848285
 "functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2023,74.711,1326,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2024,71.386,1267,17.74848285
-"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2025,68.907,1223,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2024,70.372,1249,17.74848285
+"functioneel-holenbroed-gewogen","Holenbroeders — gewogen",2025,65.583,1164,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",1958,19.611,323,16.4707
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",1959,47.843,788,16.4707
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",1960,47.724,787,16.4907
@@ -1610,12 +1610,12 @@
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2002,140.632,2496,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2003,134.209,2382,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2004,155.225,2755,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2005,140.688,2497,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2006,121.419,2155,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2005,140.632,2496,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2006,121.362,2154,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2007,132.913,2359,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2008,105.643,1875,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2009,117.306,2082,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2010,130.715,2320,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2008,101.361,1799,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2009,117.137,2079,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2010,130.434,2315,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2011,145.026,2574,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2012,123.56,2193,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2013,125.757,2232,17.74848285
@@ -1623,14 +1623,14 @@
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2015,138.603,2460,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2016,141.026,2503,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2017,136.35,2420,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2018,112.291,1993,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2019,128.067,2273,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2018,107.22,1903,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2019,130.321,2313,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2020,133.983,2378,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2021,129.363,2296,17.74848285
 "functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2022,120.968,2147,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2023,140.463,2493,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2024,130.884,2323,17.74848285
-"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2025,131.166,2328,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2023,140.406,2492,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2024,129.025,2290,17.74848285
+"functioneel-lange-trek-binair","Langeafstandstrekkers — binair",2025,130.265,2312,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",1958,18.639,307,16.4707
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",1959,46.203,761,16.4707
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",1960,46.269,763,16.4907
@@ -1678,12 +1678,12 @@
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2002,140.35,2491,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2003,134.18,2381.5,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2004,155.196,2754.5,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2005,140.688,2497,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2006,121.419,2155,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2005,140.632,2496,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2006,121.362,2154,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2007,132.913,2359,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2008,105.586,1874,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2009,117.221,2080.5,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2010,130.659,2319,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2008,101.304,1798,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2009,117.052,2077.5,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2010,130.377,2314,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2011,144.998,2573.5,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2012,123.504,2192,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2013,125.447,2226.5,17.74848285
@@ -1691,14 +1691,14 @@
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2015,138.491,2458,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2016,140.857,2500,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2017,136.322,2419.5,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2018,112.207,1991.5,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2019,127.926,2270.5,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2018,107.136,1901.5,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2019,130.18,2310.5,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2020,133.899,2376.5,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2021,129.138,2292,17.74848285
 "functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2022,120.884,2145.5,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2023,140.012,2485,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2024,130.772,2321,17.74848285
-"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2025,131.11,2327,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2023,139.956,2484,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2024,128.912,2288,17.74848285
+"functioneel-lange-trek-gewogen","Langeafstandstrekkers — gewogen",2025,130.208,2311,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",1958,0,0,16.4707
 "functioneel-lucht-binair","Luchtfoerageerders — binair",1959,0.182,3,16.4707
 "functioneel-lucht-binair","Luchtfoerageerders — binair",1960,0.121,2,16.4907
@@ -1749,9 +1749,9 @@
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2005,0.563,10,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2006,0.62,11,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2007,0.62,11,17.74848285
-"functioneel-lucht-binair","Luchtfoerageerders — binair",2008,0.732,13,17.74848285
-"functioneel-lucht-binair","Luchtfoerageerders — binair",2009,0.507,9,17.74848285
-"functioneel-lucht-binair","Luchtfoerageerders — binair",2010,0.507,9,17.74848285
+"functioneel-lucht-binair","Luchtfoerageerders — binair",2008,0.676,12,17.74848285
+"functioneel-lucht-binair","Luchtfoerageerders — binair",2009,0.338,6,17.74848285
+"functioneel-lucht-binair","Luchtfoerageerders — binair",2010,0.225,4,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2011,0.451,8,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2012,0.732,13,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2013,0.563,10,17.74848285
@@ -1759,7 +1759,7 @@
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2015,0.958,17,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2016,2.254,40,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2017,1.803,32,17.74848285
-"functioneel-lucht-binair","Luchtfoerageerders — binair",2018,2.028,36,17.74848285
+"functioneel-lucht-binair","Luchtfoerageerders — binair",2018,1.916,34,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2019,2.31,41,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2020,2.31,41,17.74848285
 "functioneel-lucht-binair","Luchtfoerageerders — binair",2021,1.803,32,17.74848285
@@ -1817,9 +1817,9 @@
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2005,0.366,6.5,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2006,0.451,8,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2007,0.366,6.5,17.74848285
-"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2008,0.451,8,17.74848285
-"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2009,0.338,6,17.74848285
-"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2010,0.423,7.5,17.74848285
+"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2008,0.423,7.5,17.74848285
+"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2009,0.169,3,17.74848285
+"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2010,0.141,2.5,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2011,0.254,4.5,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2012,0.423,7.5,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2013,0.31,5.5,17.74848285
@@ -1827,7 +1827,7 @@
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2015,0.648,11.5,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2016,1.747,31,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2017,1.324,23.5,17.74848285
-"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2018,1.465,26,17.74848285
+"functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2018,1.352,24,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2019,1.747,31,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2020,1.916,34,17.74848285
 "functioneel-lucht-gewogen","Luchtfoerageerders — gewogen",2021,1.493,26.5,17.74848285
@@ -1885,7 +1885,7 @@
 "functioneel-zaad-binair","Zaadeters — binair",2005,117.869,2092,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2006,120.686,2142,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2007,128.067,2273,17.74848285
-"functioneel-zaad-binair","Zaadeters — binair",2008,107.728,1912,17.74848285
+"functioneel-zaad-binair","Zaadeters — binair",2008,101.586,1803,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2009,107.051,1900,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2010,139.899,2483,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2011,123.56,2193,17.74848285
@@ -1895,14 +1895,14 @@
 "functioneel-zaad-binair","Zaadeters — binair",2015,144.069,2557,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2016,165.141,2931,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2017,165.93,2945,17.74848285
-"functioneel-zaad-binair","Zaadeters — binair",2018,149.703,2657,17.74848285
-"functioneel-zaad-binair","Zaadeters — binair",2019,137.251,2436,17.74848285
+"functioneel-zaad-binair","Zaadeters — binair",2018,145.308,2579,17.74848285
+"functioneel-zaad-binair","Zaadeters — binair",2019,139.223,2471,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2020,144.914,2572,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2021,145.252,2578,17.74848285
 "functioneel-zaad-binair","Zaadeters — binair",2022,138.491,2458,17.74848285
-"functioneel-zaad-binair","Zaadeters — binair",2023,160.521,2849,17.74848285
-"functioneel-zaad-binair","Zaadeters — binair",2024,161.76,2871,17.74848285
-"functioneel-zaad-binair","Zaadeters — binair",2025,156.126,2771,17.74848285
+"functioneel-zaad-binair","Zaadeters — binair",2023,160.464,2848,17.74848285
+"functioneel-zaad-binair","Zaadeters — binair",2024,159.901,2838,17.74848285
+"functioneel-zaad-binair","Zaadeters — binair",2025,151.168,2683,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",1958,7.923,130.5,16.4707
 "functioneel-zaad-gewogen","Zaadeters — gewogen",1959,14.693,242,16.4707
 "functioneel-zaad-gewogen","Zaadeters — gewogen",1960,16.858,278,16.4907
@@ -1953,7 +1953,7 @@
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2005,74.654,1325,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2006,76.767,1362.5,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2007,79.753,1415.5,17.74848285
-"functioneel-zaad-gewogen","Zaadeters — gewogen",2008,67.471,1197.5,17.74848285
+"functioneel-zaad-gewogen","Zaadeters — gewogen",2008,63.442,1126,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2009,67.189,1192.5,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2010,88.12,1564,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2011,77.387,1373.5,17.74848285
@@ -1963,14 +1963,14 @@
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2015,93.304,1656,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2016,107.023,1899.5,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2017,109.023,1935,17.74848285
-"functioneel-zaad-gewogen","Zaadeters — gewogen",2018,100.065,1776,17.74848285
-"functioneel-zaad-gewogen","Zaadeters — gewogen",2019,88.853,1577,17.74848285
+"functioneel-zaad-gewogen","Zaadeters — gewogen",2018,97.332,1727.5,17.74848285
+"functioneel-zaad-gewogen","Zaadeters — gewogen",2019,90.205,1601,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2020,95.698,1698.5,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2021,97.558,1731.5,17.74848285
 "functioneel-zaad-gewogen","Zaadeters — gewogen",2022,91.67,1627,17.74848285
-"functioneel-zaad-gewogen","Zaadeters — gewogen",2023,106.065,1882.5,17.74848285
-"functioneel-zaad-gewogen","Zaadeters — gewogen",2024,105.051,1864.5,17.74848285
-"functioneel-zaad-gewogen","Zaadeters — gewogen",2025,101.502,1801.5,17.74848285
+"functioneel-zaad-gewogen","Zaadeters — gewogen",2023,106.037,1882,17.74848285
+"functioneel-zaad-gewogen","Zaadeters — gewogen",2024,103.868,1843.5,17.74848285
+"functioneel-zaad-gewogen","Zaadeters — gewogen",2025,98.093,1741,17.74848285
 "oranje-lijst","Oranje Lijst",1958,5.768,95,16.4707
 "oranje-lijst","Oranje Lijst",1959,7.954,131,16.4707
 "oranje-lijst","Oranje Lijst",1960,7.034,116,16.4907
@@ -2037,8 +2037,8 @@
 "oranje-lijst","Oranje Lijst",2021,2.479,44,17.74848285
 "oranje-lijst","Oranje Lijst",2022,2.366,42,17.74848285
 "oranje-lijst","Oranje Lijst",2023,2.873,51,17.74848285
-"oranje-lijst","Oranje Lijst",2024,2.254,40,17.74848285
-"oranje-lijst","Oranje Lijst",2025,2.141,38,17.74848285
+"oranje-lijst","Oranje Lijst",2024,2.197,39,17.74848285
+"oranje-lijst","Oranje Lijst",2025,2.028,36,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",1958,11.353,187,16.4707
 "rode-en-oranje-lijst","Rode & Oranjelijst",1959,17.607,290,16.4707
 "rode-en-oranje-lijst","Rode & Oranjelijst",1960,15.948,263,16.4907
@@ -2089,7 +2089,7 @@
 "rode-en-oranje-lijst","Rode & Oranjelijst",2005,14.029,249,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2006,11.438,203,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2007,11.325,201,17.74848285
-"rode-en-oranje-lijst","Rode & Oranjelijst",2008,9.466,168,17.74848285
+"rode-en-oranje-lijst","Rode & Oranjelijst",2008,9.24,164,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2009,8.339,148,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2010,7.55,134,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2011,7.437,132,17.74848285
@@ -2099,14 +2099,14 @@
 "rode-en-oranje-lijst","Rode & Oranjelijst",2015,10.085,179,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2016,11.832,210,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2017,10.987,195,17.74848285
-"rode-en-oranje-lijst","Rode & Oranjelijst",2018,11.607,206,17.74848285
-"rode-en-oranje-lijst","Rode & Oranjelijst",2019,11.607,206,17.74848285
+"rode-en-oranje-lijst","Rode & Oranjelijst",2018,11.494,204,17.74848285
+"rode-en-oranje-lijst","Rode & Oranjelijst",2019,11.663,207,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2020,13.015,231,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2021,13.804,245,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2022,12.452,221,17.74848285
 "rode-en-oranje-lijst","Rode & Oranjelijst",2023,15.382,273,17.74848285
-"rode-en-oranje-lijst","Rode & Oranjelijst",2024,13.466,239,17.74848285
-"rode-en-oranje-lijst","Rode & Oranjelijst",2025,13.804,245,17.74848285
+"rode-en-oranje-lijst","Rode & Oranjelijst",2024,13.353,237,17.74848285
+"rode-en-oranje-lijst","Rode & Oranjelijst",2025,13.691,243,17.74848285
 "rode-lijst","Rode Lijst Totaal",1958,5.586,92,16.4707
 "rode-lijst","Rode Lijst Totaal",1959,9.654,159,16.4707
 "rode-lijst","Rode Lijst Totaal",1960,8.914,147,16.4907
@@ -2157,7 +2157,7 @@
 "rode-lijst","Rode Lijst Totaal",2005,10.142,180,17.74848285
 "rode-lijst","Rode Lijst Totaal",2006,7.325,130,17.74848285
 "rode-lijst","Rode Lijst Totaal",2007,7.606,135,17.74848285
-"rode-lijst","Rode Lijst Totaal",2008,6.31,112,17.74848285
+"rode-lijst","Rode Lijst Totaal",2008,6.085,108,17.74848285
 "rode-lijst","Rode Lijst Totaal",2009,5.578,99,17.74848285
 "rode-lijst","Rode Lijst Totaal",2010,4.902,87,17.74848285
 "rode-lijst","Rode Lijst Totaal",2011,5.015,89,17.74848285
@@ -2167,13 +2167,13 @@
 "rode-lijst","Rode Lijst Totaal",2015,7.325,130,17.74848285
 "rode-lijst","Rode Lijst Totaal",2016,8.057,143,17.74848285
 "rode-lijst","Rode Lijst Totaal",2017,7.832,139,17.74848285
-"rode-lijst","Rode Lijst Totaal",2018,9.071,161,17.74848285
-"rode-lijst","Rode Lijst Totaal",2019,8.902,158,17.74848285
+"rode-lijst","Rode Lijst Totaal",2018,8.959,159,17.74848285
+"rode-lijst","Rode Lijst Totaal",2019,8.959,159,17.74848285
 "rode-lijst","Rode Lijst Totaal",2020,9.804,174,17.74848285
 "rode-lijst","Rode Lijst Totaal",2021,11.325,201,17.74848285
 "rode-lijst","Rode Lijst Totaal",2022,10.085,179,17.74848285
 "rode-lijst","Rode Lijst Totaal",2023,12.508,222,17.74848285
-"rode-lijst","Rode Lijst Totaal",2024,11.212,199,17.74848285
+"rode-lijst","Rode Lijst Totaal",2024,11.156,198,17.74848285
 "rode-lijst","Rode Lijst Totaal",2025,11.663,207,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",1958,20.946,345,16.4707
 "vogelrichtlijn","Vogelrichtlijn",1959,34.243,564,16.4707
@@ -2225,7 +2225,7 @@
 "vogelrichtlijn","Vogelrichtlijn",2005,55.948,993,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2006,55.216,980,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2007,62.935,1117,17.74848285
-"vogelrichtlijn","Vogelrichtlijn",2008,50.596,898,17.74848285
+"vogelrichtlijn","Vogelrichtlijn",2008,50.314,893,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2009,80.57,1430,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2010,70.09,1244,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2011,65.977,1171,17.74848285
@@ -2235,11 +2235,11 @@
 "vogelrichtlijn","Vogelrichtlijn",2015,88.909,1578,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2016,96.403,1711,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2017,90.036,1598,17.74848285
-"vogelrichtlijn","Vogelrichtlijn",2018,96.515,1713,17.74848285
+"vogelrichtlijn","Vogelrichtlijn",2018,94.938,1685,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2019,99.22,1761,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2020,99.332,1763,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2021,91.952,1632,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2022,63.104,1120,17.74848285
 "vogelrichtlijn","Vogelrichtlijn",2023,80.12,1422,17.74848285
-"vogelrichtlijn","Vogelrichtlijn",2024,81.979,1455,17.74848285
-"vogelrichtlijn","Vogelrichtlijn",2025,84.683,1503,17.74848285
+"vogelrichtlijn","Vogelrichtlijn",2024,81.359,1444,17.74848285
+"vogelrichtlijn","Vogelrichtlijn",2025,84.571,1501,17.74848285

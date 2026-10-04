@@ -216,8 +216,10 @@ parse_needed_tables <- function(path) {
   territoria <- read_insert_table(
     path,
     "territoria",
-    c("plot_id", "soort_id", "jaar", "territoria")
+    c("plot_id", "soort_id", "jaar", "territoria", "bron_id")
   )
+  bronnen <- read_insert_table(path, "bronnen", c("id", "code"))
+  sovon_plotjaar <- read_insert_table(path, "sovon_bmp_plotjaar", c("plot_id", "jaar", "beoordelingsstatus"))
 
   plots$plot_id <- to_integer(plots$plot_id)
   plot_analyse_scope$plot_id <- to_integer(plot_analyse_scope$plot_id)
@@ -234,6 +236,10 @@ parse_needed_tables <- function(path) {
   territoria$soort_id <- to_integer(territoria$soort_id)
   territoria$jaar <- to_integer(territoria$jaar)
   territoria$territoria <- to_numeric(territoria$territoria)
+  territoria$bron_id <- to_integer(territoria$bron_id)
+  bronnen$id <- to_integer(bronnen$id)
+  sovon_plotjaar$plot_id <- to_integer(sovon_plotjaar$plot_id)
+  sovon_plotjaar$jaar <- to_integer(sovon_plotjaar$jaar)
 
   tbls <- list(
     plots = plots,
@@ -242,7 +248,9 @@ parse_needed_tables <- function(path) {
     evg_vogelgroepen = evg_vogelgroepen,
     evg_vogel_landschapgroep = evg_vogel_landschapgroep,
     plot_jaar_oppervlak = plot_jaar_oppervlak,
-    territoria = territoria
+    territoria = territoria,
+    bronnen = bronnen,
+    sovon_bmp_plotjaar = sovon_plotjaar
   )
   tbls <- apply_meijendel_plot_scope(tbls, meijendel_out_of_scope_from_env())
   tbls$plots$kavel_nummer <- normalize_kavel_nummer(tbls$plots$kavel_nummer)
@@ -284,7 +292,19 @@ read_previous_outputs <- function(out_dir) {
 
 prepare_base_data <- function(tbls) {
   selected_plots <- tbls$plots[tbls$plots$kavel_nummer %in% selected_kavels, c("plot_id", "kavel_nummer")]
-  selected_species <- tbls$soorten[!grepl("meeuw", tbls$soorten$soort_naam, ignore.case = TRUE), c("id", "soort_naam")]
+  accepted_species <- accepted_positive_species_ids(
+    tbls$territoria,
+    tbls$bronnen,
+    tbls$sovon_bmp_plotjaar,
+    plot_ids = selected_plots$plot_id,
+    year_min = 1958L,
+    year_max = 2025L
+  )
+  selected_species <- tbls$soorten[
+    tbls$soorten$id %in% accepted_species &
+      !grepl("meeuw", tbls$soorten$soort_naam, ignore.case = TRUE),
+    c("id", "soort_naam")
+  ]
   names(selected_species)[1] <- "soort_id"
 
   bird_groups <- unique(data.frame(
@@ -293,7 +313,9 @@ prepare_base_data <- function(tbls) {
     stringsAsFactors = FALSE
   ))
 
-  filtered <- merge(tbls$territoria[tbls$territoria$jaar >= 1958 & tbls$territoria$jaar <= 2025, ], selected_plots, by = "plot_id")
+  filtered <- tbls$territoria[tbls$territoria$jaar >= 1958 & tbls$territoria$jaar <= 2025, ]
+  filtered <- accepted_territory_rows(filtered, tbls$bronnen, tbls$sovon_bmp_plotjaar)
+  filtered <- merge(filtered, selected_plots, by = "plot_id")
   filtered <- merge(filtered, selected_species, by = "soort_id")
   filtered <- merge(filtered, bird_groups, by = "soort_id")
 
@@ -345,7 +367,8 @@ build_species_indices <- function(annual_species) {
 
     df$bridge_factor <- pre_ref / post_ref
     df$index_spliced <- ifelse(df$jaar <= 1983, df$index_raw, df$index_raw * df$bridge_factor)
-    df$log_index_spliced <- log(df$index_spliced)
+    df$log_index_spliced <- ifelse(df$index_spliced > 0, log(df$index_spliced), NA_real_)
+    df$log1p_index_spliced <- log1p(df$index_spliced)
     df
   })
 
@@ -356,12 +379,17 @@ build_species_indices <- function(annual_species) {
 }
 
 build_group_msi <- function(species_indices, group_desc, annual_group_density) {
-  msi <- aggregate(log_index_spliced ~ groep_100 + jaar, data = species_indices, FUN = mean, na.rm = TRUE)
+  species_indices$log1p_index_spliced <- log1p(species_indices$index_spliced)
+  msi <- aggregate(log1p_index_spliced ~ groep_100 + jaar, data = species_indices, FUN = mean, na.rm = TRUE)
   species_n <- aggregate(soort_id ~ groep_100 + jaar, data = species_indices, FUN = function(x) length(unique(x)))
   names(species_n)[3] <- "n_soorten"
-  msi$msi <- exp(msi$log_index_spliced)
+  zero_n <- aggregate(index_spliced ~ groep_100 + jaar, data = species_indices, FUN = function(x) sum(x == 0, na.rm = TRUE))
+  names(zero_n)[3] <- "n_nulindices"
+  msi$msi <- exp(msi$log1p_index_spliced) - 1
+  msi$msi_methode <- "verschoven_geometrisch_gemiddelde_index_plus_1"
   msi$periode <- ifelse(msi$jaar <= 1983, "1958-1983", "1984-2025")
   msi <- merge(msi, species_n, by = c("groep_100", "jaar"), all.x = TRUE)
+  msi <- merge(msi, zero_n, by = c("groep_100", "jaar"), all.x = TRUE)
   msi <- merge(msi, annual_group_density[c("groep_100", "jaar", "density_per_km2")], by = c("groep_100", "jaar"), all.x = TRUE)
   msi <- merge(msi, group_desc, by = "groep_100", all.x = TRUE)
   msi <- msi[order(msi$groep_100, msi$jaar), ]

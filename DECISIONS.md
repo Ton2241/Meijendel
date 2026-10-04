@@ -17,7 +17,12 @@
   bevat 156 soorten met minimaal één geaccepteerd positief territorium in de
   statuslaag, 135 soorten met indices en 94 brugbare
   reeksen. De Sandra-reeks 1997-2022 bevat 132 positief waargenomen soorten en
-  110 formele soorttrends.
+  110 formele soorttrends. De aanvullende ruwe ecologische groepsreeks in
+  `output_ecologische_groepen` gebruikt voor letterlijke nulindices de
+  verschoven geometrische index `exp(mean(log(1 + index))) - 1` en rapporteert
+  `n_nulindices`; deze route blijft beschrijvend. Voor standaard-MSI en
+  machtsanalyse is de op TRIM-modelindices gebaseerde uitvoer in
+  `trim_msi_evg` leidend.
 
 - Op 3 oktober 2026 zijn de 7.552 onder reconstructieversie
   `ndff-daz-bmp-v1` afgeleide nulregels herclassificeerd als

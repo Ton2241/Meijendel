@@ -43,7 +43,12 @@ Per soort wordt eerst een jaarlijkse index gemaakt:
 - apart gestandaardiseerd vóór en na de methodologische breuk
 - vervolgens gebridged rond `1983/1984`
 
-Daarna wordt per ecologische groep per jaar de `MSI` berekend als het geometrisch gemiddelde van de soortindices binnen die groep.
+Daarna wordt per ecologische groep per jaar een nulrobuuste, verschoven
+geometrische index berekend als `exp(mean(log(1 + index))) - 1`. Een
+letterlijke nul blijft daarin een echte nulbijdrage; het veld `n_nulindices`
+maakt het aantal nulbijdragen per groep en jaar zichtbaar. Deze aanvullende
+ruwe-indexroute is beschrijvend. Voor de standaard-MSI en machtsanalyse blijft
+de op TRIM-modelindices gebaseerde uitvoer in `trim_msi_evg` leidend.
 
 Dat heeft een belangrijk gevolg:
 
@@ -63,6 +68,11 @@ De MSI geeft daardoor eerder een “gemiddelde ontwikkeling van soorten binnen d
 - Alleen deze kavels worden meegenomen:
   `1a, 1b, 2, 3, 4-5, 6, 7, 8, 9, 10-12-76, 12, 12a, 13, 13s, 14, 15, 16, 16s, 17a`.
 - Soorten met `"meeuw"` in de naam worden uitgesloten.
+- De gedeelde statuspoort wordt toegepast: alleen letterlijke bronwaarden
+  tellen mee, een lege cel blijft `NA`, een SOVON-regel uit een formeel
+  afgekeurd plotjaar blijft `NA` en een aanwezige onafhankelijke niet-SOVON-
+  regel in hetzelfde plotjaar blijft geldig. Een soort zonder minimaal één
+  geaccepteerde positieve waarde wordt niet geselecteerd.
 - De methodologische breuk wordt gemodelleerd via aparte standaardisatie vóór en ná `1983`, plus een brugfactor op basis van `1981-1983` versus `1984-1986`.
 
 ## Interpretatie

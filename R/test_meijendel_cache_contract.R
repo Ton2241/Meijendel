@@ -240,6 +240,72 @@ stopifnot(vapply(
   logical(1)
 ))
 
+source(file.path(repo, "R", "analyse_ecologische_groepen.R"))
+alternative_tbls <- list(
+  plots = data.frame(plot_id = 1L, kavel_nummer = "1a", stringsAsFactors = FALSE),
+  soorten = data.frame(
+    id = c(1L, 2L),
+    soort_naam = c("Testsoort een", "Testsoort twee"),
+    stringsAsFactors = FALSE
+  ),
+  evg_vogel_landschapgroep = data.frame(
+    groepsnummer = c(100L, 100L),
+    vogel_id = c(1L, 2L),
+    stringsAsFactors = FALSE
+  ),
+  evg_vogelgroepen = data.frame(
+    groepsnummer = 100L,
+    landschap_groep = "Testgroep",
+    stringsAsFactors = FALSE
+  ),
+  plot_jaar_oppervlak = data.frame(
+    plot_id = 1L,
+    jaar = 2025L,
+    oppervlakte_km2 = 1,
+    stringsAsFactors = FALSE
+  ),
+  territoria = data.frame(
+    plot_id = c(1L, 1L, 1L),
+    soort_id = c(1L, 1L, 2L),
+    jaar = 2025L,
+    territoria = c(3, 4, 0),
+    bron_id = c(1L, 2L, 1L),
+    stringsAsFactors = FALSE
+  ),
+  bronnen = territory_gate_bronnen,
+  sovon_bmp_plotjaar = data.frame(
+    plot_id = 1L,
+    jaar = 2025L,
+    beoordelingsstatus = "formeel_afgekeurd",
+    stringsAsFactors = FALSE
+  )
+)
+alternative_base <- prepare_base_data(alternative_tbls)
+stopifnot(
+  identical(alternative_base$annual_species$territoria, 4),
+  identical(alternative_base$annual_species$soort_id, 1L)
+)
+
+zero_index_fixture <- data.frame(
+  groep_100 = c(100L, 100L),
+  jaar = c(2025L, 2025L),
+  soort_id = c(1L, 2L),
+  index_spliced = c(0, 100),
+  log_index_spliced = c(-Inf, log(100)),
+  stringsAsFactors = FALSE
+)
+zero_group <- build_group_msi(
+  zero_index_fixture,
+  data.frame(groep_100 = 100L, korte_beschrijving = "Testgroep"),
+  data.frame(groep_100 = 100L, jaar = 2025L, density_per_km2 = 1)
+)
+stopifnot(
+  nrow(zero_group) == 1L,
+  isTRUE(all.equal(zero_group$msi, sqrt(101) - 1, tolerance = 1e-12)),
+  identical(zero_group$n_nulindices, 1L),
+  identical(zero_group$msi_methode, "verschoven_geometrisch_gemiddelde_index_plus_1")
+)
+
 shiny_tbls <- list(
   territoria = territory_gate_fixture[!is.na(territory_gate_fixture$bron_id), c("plot_id", "soort_id", "jaar", "territoria", "bron_id")],
   bronnen = territory_gate_bronnen,
