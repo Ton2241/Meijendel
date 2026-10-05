@@ -32,7 +32,7 @@ if (is.na(cache_contract_helper)) {
   stop("R/meijendel_cache_contract.R ontbreekt; de Shiny-cache kan niet veilig worden gevalideerd.")
 }
 source(cache_contract_helper)
-MEIJENDEL_PARSER_CACHE_VERSION <- 12L
+MEIJENDEL_PARSER_CACHE_VERSION <- 13L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
 extract_columns <- function(header) {
@@ -651,11 +651,11 @@ parse_meijendel_tables <- function(path) {
   )
   soorten <- read_insert_table(path, "soorten", c("id", "euring_code", "soort_naam", "engelse_naam"))
   pjo <- read_insert_table(path, "plot_jaar_oppervlak", c("plot_id", "jaar", "oppervlakte_km2"))
-  pjt <- read_insert_table(path, "plot_jaar_teller", c("plot_id", "jaar"))
+  pjt <- read_insert_table(path, "plot_jaar_teller", c("teller_id", "plot_id", "jaar"))
   territoria <- read_insert_table(path, "territoria", c("plot_id", "soort_id", "jaar", "territoria", "bron_id"))
   bronnen <- read_insert_table(path, "bronnen", c("id", "code"))
   sovon_plotjaar <- read_insert_table(path, "sovon_bmp_plotjaar", c("plot_id", "jaar", "beoordelingsstatus"))
-  evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep"))
+  evg_groepen <- read_insert_table(path, "evg_vogelgroepen", c("groepsnummer", "landschap_groep", "beschrijving_landschap_groep"))
   evg_koppeling <- read_insert_table(path, "evg_vogel_landschapgroep", c("groepsnummer", "vogel_id"))
   functionele_groepen <- read_insert_table(path, "functional_group_definition", c("id", "group_code", "group_version", "naam_nl", "minimum_exploratief", "minimum_hoofdindicator", "minimum_robuust", "status"))
   functionele_koppeling <- read_insert_table(path, "functional_group_membership", c("functional_group_definition_id", "soort_id", "binary_membership", "membership_weight", "classification"))
@@ -671,6 +671,20 @@ parse_meijendel_tables <- function(path) {
   pjs <- read_insert_table(path, "plot_jaar_stikstof", c("plot_id", "jaar", "bron", "stikstof_mean"))
   pji <- read_insert_table(path, "plot_jaar_infra", c("plot_id", "jaar", "bron", "variabele", "waarde"))
   pjtg <- read_insert_table(path, "plot_jaar_toegankelijkheid", c("plot_id", "jaar", "bron", "status_code"))
+  dagwaarnemingen_wv <- read_insert_table(
+    path,
+    "dagwaarnemingen_wv",
+    c("plot_id", "soort_id", "jaar", "maand", "dag", "aantal"),
+    sanitize_binary = TRUE,
+    keep_only = TRUE
+  )
+  maatregelen <- read_insert_table(path, "maatregelen", c("id", "omschrijving"))
+  plot_jaar_landgebruik <- read_insert_table(path, "plot_jaar_landgebruik", c("plot_id", "jaar", "bron", "klasse", "pct"))
+  plot_jaar_maatregel <- read_insert_table(path, "plot_jaar_maatregel", c("plot_id", "jaar", "maatregel_id"))
+  plot_link <- read_insert_table(path, "plot_link", c("plot_id", "link_type", "label", "url"))
+  soorten_habitattypen <- read_insert_table(path, "soorten_habitattypen", c("soort_id", "habitattype_id", "koppelingsterkte"))
+  tellers <- read_insert_table(path, "tellers", c("id", "tellercode"))
+  trends <- read_insert_table(path, "trends", c("soort_id", "regio", "jaar", "waarde"))
   pjv <- read_optional_insert_table(
     path,
     "pq_plot_jaar_vegetatie",
@@ -694,6 +708,7 @@ parse_meijendel_tables <- function(path) {
   pjo$jaar <- to_integer(pjo$jaar)
   pjo$oppervlakte_km2 <- to_numeric(pjo$oppervlakte_km2)
   pjt$plot_id <- to_integer(pjt$plot_id)
+  pjt$teller_id <- to_integer(pjt$teller_id)
   pjt$jaar <- to_integer(pjt$jaar)
   territoria$plot_id <- to_integer(territoria$plot_id)
   territoria$soort_id <- to_integer(territoria$soort_id)
@@ -743,6 +758,26 @@ parse_meijendel_tables <- function(path) {
   pji$waarde <- to_numeric(pji$waarde)
   pjtg$plot_id <- to_integer(pjtg$plot_id)
   pjtg$jaar <- to_integer(pjtg$jaar)
+  dagwaarnemingen_wv$plot_id <- to_integer(dagwaarnemingen_wv$plot_id)
+  dagwaarnemingen_wv$soort_id <- to_integer(dagwaarnemingen_wv$soort_id)
+  dagwaarnemingen_wv$jaar <- to_integer(dagwaarnemingen_wv$jaar)
+  dagwaarnemingen_wv$maand <- to_integer(dagwaarnemingen_wv$maand)
+  dagwaarnemingen_wv$dag <- to_integer(dagwaarnemingen_wv$dag)
+  dagwaarnemingen_wv$aantal <- to_numeric(dagwaarnemingen_wv$aantal)
+  maatregelen$id <- to_integer(maatregelen$id)
+  plot_jaar_landgebruik$plot_id <- to_integer(plot_jaar_landgebruik$plot_id)
+  plot_jaar_landgebruik$jaar <- to_integer(plot_jaar_landgebruik$jaar)
+  plot_jaar_landgebruik$pct <- to_numeric(plot_jaar_landgebruik$pct)
+  plot_jaar_maatregel$plot_id <- to_integer(plot_jaar_maatregel$plot_id)
+  plot_jaar_maatregel$jaar <- to_integer(plot_jaar_maatregel$jaar)
+  plot_jaar_maatregel$maatregel_id <- to_integer(plot_jaar_maatregel$maatregel_id)
+  plot_link$plot_id <- to_integer(plot_link$plot_id)
+  soorten_habitattypen$soort_id <- to_integer(soorten_habitattypen$soort_id)
+  soorten_habitattypen$habitattype_id <- to_integer(soorten_habitattypen$habitattype_id)
+  tellers$id <- to_integer(tellers$id)
+  trends$soort_id <- to_integer(trends$soort_id)
+  trends$jaar <- to_integer(trends$jaar)
+  trends$waarde <- to_numeric(trends$waarde)
   pjv$plot_id <- to_integer(pjv$plot_id)
   pjv$jaar <- to_integer(pjv$jaar)
   pjv$n_pq <- to_integer(pjv$n_pq)
@@ -777,6 +812,14 @@ parse_meijendel_tables <- function(path) {
     plot_jaar_stikstof = pjs,
     plot_jaar_infra = pji,
     plot_jaar_toegankelijkheid = pjtg,
+    dagwaarnemingen_wv = dagwaarnemingen_wv,
+    maatregelen = maatregelen,
+    plot_jaar_landgebruik = plot_jaar_landgebruik,
+    plot_jaar_maatregel = plot_jaar_maatregel,
+    plot_link = plot_link,
+    soorten_habitattypen = soorten_habitattypen,
+    tellers = tellers,
+    trends = trends,
     pq_plot_jaar_vegetatie = pjv,
     weer_analyse_jaar = weather_year,
     sql_path = normalizePath(path, winslash = "/", mustWork = TRUE)

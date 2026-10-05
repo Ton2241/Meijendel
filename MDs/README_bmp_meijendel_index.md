@@ -16,9 +16,11 @@ In `BMP-Soorten` zijn er drie keuzes.
 
 ### 1. Territoria
 
-Dit laat de ruwe aantallen territoria per soort of per groep zien.
-Bron:
-rechtstreeks uit `meijendel.sql`
+Dit laat de ruwe aantallen territoria per soort of per groep zien. De pagina
+laadt daarvoor automatisch een compacte dashboarddataset. Die dataset wordt
+bij iedere release uit dezelfde gevalideerde, inhoudsgebonden cache als Shiny
+gemaakt en is aan de SHA-256 van `meijendel.sql` gebonden. De browser downloadt
+en ontleedt de volledige SQL-dump dus niet meer.
 
 Bij het laden past de HTML eerst de centrale scope `meijendel_natura2000` toe.
 M66 en M91 en alle gekoppelde plotregels worden daarom standaard niet in de
@@ -30,7 +32,8 @@ Dit laat aantallen per oppervlakte zien.
 De HTML gebruikt hiervoor nu het werkelijke oppervlak uit `plot_jaar_oppervlak`.
 Als `plot_jaar_teller` aanwezig is, wordt alleen het bemeten oppervlak meegenomen.
 Bron:
-`meijendel.sql`, plus oppervlak uit `plot_jaar_oppervlak` en telling uit `plot_jaar_teller`
+de hashgebonden dashboarddataset, met oppervlak uit `plot_jaar_oppervlak` en
+telling uit `plot_jaar_teller`
 
 ### 3. TRIM-index
 

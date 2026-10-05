@@ -362,6 +362,12 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
 - Shiny-app: `/srv/vwgm/shiny/shiny_meijendel/`
 - gedeelde R-code: `/srv/vwgm/shiny/R/`
 - HTML-dashboard: `/srv/vwgm/www/bmp_meijendel_index.html`
+- compacte, aan dezelfde SQL-hash gebonden browserdataset:
+  `/srv/vwgm/www/bmp_meijendel_data.json` met
+  `/srv/vwgm/www/bmp_meijendel_data.json.manifest`;
+- browserloader: `/srv/vwgm/www/bmp_meijendel_data_loader.js`; het dashboard
+  haalt `Meijendel.sql` niet meer in de browser op en ontleedt die dump daar
+  ook niet meer;
 - dashboard-outputmappen:
   - `/srv/vwgm/www/output_ecologische_groepen/`
   - `/srv/vwgm/www/trim/soorten/` (137 hoofdsoorten over 1958–2025, inclusief formele periodetrends)

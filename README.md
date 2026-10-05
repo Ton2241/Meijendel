@@ -349,8 +349,8 @@ De praktische volgorde is:
 Voor alleen bekijken:
 
 1. open `bmp_meijendel_index.html`
-2. laad `meijendel.sql`
-3. laad waar nodig extra CSV-bestanden
+2. wacht tot de compacte, hashgebonden dashboarddata automatisch is geladen
+3. gebruik de filters; de aanvullende CSV-bestanden worden eveneens automatisch geladen
 
 Voor nieuwe analyses:
 

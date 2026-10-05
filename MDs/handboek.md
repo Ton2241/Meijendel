@@ -252,8 +252,8 @@ De eenvoudigste en veiligste werkvolgorde is:
 Als je alleen resultaten wilt bekijken:
 
 1. open `bmp_meijendel_index.html`
-2. laad `meijendel.sql`
-3. laad waar nodig extra CSV-bestanden
+2. wacht tot de compacte, hashgebonden dashboarddata automatisch is geladen
+3. gebruik de filters; de aanvullende CSV-bestanden worden eveneens automatisch geladen
 4. bekijk de uitkomsten
 
 Als je nieuwe soort- of groepsanalyses wilt maken:
@@ -448,7 +448,8 @@ Gebruik dit als je simpel wilt zien hoeveel territoria er in een jaar zijn vastg
 
 Bron:
 
-- rechtstreeks uit `meijendel.sql`
+- de compacte dashboarddataset die bij iedere release uit de gevalideerde,
+  inhoudsgebonden cache van `meijendel.sql` wordt gemaakt
 
 #### Dichtheid (per km2)
 

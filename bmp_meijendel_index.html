@@ -200,6 +200,7 @@ summary::-webkit-details-marker{display:none}
 </head>
 <body>
 <div id="app"></div>
+<script src="bmp_meijendel_data_loader.js"></script>
 <script>
 const COLORS=["#2ecc71","#3498db","#e67e22","#9b59b6","#e74c3c","#1abc9c","#f39c12","#16a085","#8e44ad","#d35400","#27ae60","#c0392b"];
 const SVG_NS="http://www.w3.org/2000/svg";
@@ -281,7 +282,8 @@ async function tryAutoLoadWinterCsv(paths,type){
 }
 
 const AUTOLOAD_PATHS={
-  sql:["Meijendel.sql","meijendel.sql"],
+  dashboardManifest:"bmp_meijendel_data.json.manifest",
+  dashboardData:"bmp_meijendel_data.json",
   trendTrimIndex:["trim/soorten/soortindices_bruikbare_tijdreeks.csv","soortindices_bruikbare_tijdreeks.csv"],
   trendTrimIndexPost:["trim/soorten/soortindices_per_jaar.csv","soortindices_per_jaar.csv"],
   trendTrimSummary:["trim/soorten/soorten_trendoverzicht_bruikbare_tijdreeks.csv","soorten_trendoverzicht_bruikbare_tijdreeks.csv"],
@@ -302,16 +304,17 @@ const AUTOLOAD_PATHS={
 };
 
 async function autoLoadFromSameFolder(){
-  let sqlLoaded=false;
-
-  for(const path of AUTOLOAD_PATHS.sql){
-    try{
-      const sqlText=await fetchTextFile(path);
-      setState({status:"loading",error:""});
-      processFile(sqlText);
-      sqlLoaded=true;
-      break;
-    }catch(_err){}
+  let dashboardLoaded=false;
+  try{
+    setState({status:"loading",error:""});
+    const loaded=await MeijendelDashboardData.loadDashboardData({
+      manifestUrl:AUTOLOAD_PATHS.dashboardManifest,
+      dataUrl:AUTOLOAD_PATHS.dashboardData
+    });
+    processTables(loaded.tables);
+    dashboardLoaded=true;
+  }catch(err){
+    setState({status:"error",error:`Dashboarddata kon niet worden geladen: ${err.message||err}`});
   }
 
   await Promise.all([
@@ -333,7 +336,7 @@ async function autoLoadFromSameFolder(){
     tryAutoLoadWinterCsv(AUTOLOAD_PATHS.winterDecision,"decision")
   ]);
 
-  if(!sqlLoaded&&S.status==="idle")render();
+  if(!dashboardLoaded&&S.status==="idle")render();
 }
 
 function el(tag,attrs,children){
@@ -666,8 +669,8 @@ const PLOT_SPECIES_START_YEAR=1958;
 const PLOT_SPECIES_PAGE_SIZE=10;
 const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],excludeGulls:false,yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimIndexBaseData:null,trimIndexPostData:null,trimTrendSummary:null,trimTrendSummaryBase:null,trimTrendSummaryAll:null,trimAllSpecies:[],winterMetric:"abs",winterSelected:[],winterSelectedPlots:[],winterSeasonRange:{van:null,tot:null},winterMeta:null,winterView:"index",winterPilotSpecies:"",winterQualityFilter:"alle",winterShowAllPlots:false,winterAnnualData:null,winterMonthData:null,winterPlotData:null,winterDecisionData:null,kenmerkenSelected:null,voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,landelijkGamPredData:null,functionalMsiData:null,functionalTrendData:null,functionalMode:"binair",msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotSpeciesView:{plot:null,yearRange:{van:PLOT_SPECIES_START_YEAR,tot:null},sort:"alpha",pageEnd:null},plotView:{plot:null,jaar:null}};
 function setState(patch){Object.assign(S,patch);render();}
-function processFile(sql){
-  const tables=applyDefaultPlotScope(parseDump(sql));
+function processTables(inputTables){
+  const tables=applyDefaultPlotScope(inputTables);
   if(!Object.keys(tables).length){setState({status:"error",error:"Geen tabellen gevonden."});return;}
   const[name,tbl]=pickMain(tables),roles=guessRoles(tbl.columns);
   const sc=tbl.columns.find(c=>roles[c]==="species"),yc=tbl.columns.find(c=>roles[c]==="year")||tbl.columns.find(c=>roles[c]==="date"),cc=tbl.columns.find(c=>roles[c]==="count"),pfk=tbl.columns.find(c=>/^plot_id$/i.test(c))||tbl.columns.find(c=>roles[c]==="location");
@@ -685,6 +688,7 @@ function processFile(sql){
   refreshMsiMeta();
   refilter();
 }
+function processFile(sql){processTables(parseDump(sql));}
 function refilter(){
   if(!S.main)return;
   let rows=getFilteredTrendRows();

@@ -1,5 +1,22 @@
 # Status Meijendel
 
+## 5 oktober 2026 - mobiele dashboarddata
+
+- Het statische dashboard laadde bij openen de volledige `Meijendel.sql` van
+  4.260.156.142 bytes in browser-JavaScript. Safari op iPad beëindigde daardoor
+  herhaaldelijk het paginaproces.
+- Het dashboard gebruikt nu een compacte browserdataset uit dezelfde
+  inhoudsgebonden cache als Shiny. Dataset en manifest dragen dezelfde
+  SQL-SHA-256; de deploy controleert beide hashes en publiceert data en loader
+  vóór de aangepaste HTML.
+- De cacheparser bevat 33 dashboardtabellen. Daaronder vallen 157.580
+  territoriumregels uit 1958-2025 en 105.712 winterwaarnemingsregels uit
+  2000-2025; uitsluitend de voor het dashboard gebruikte kolommen worden
+  opgenomen.
+- Browserloader-, generator-, cache- en deploycontracttests blokkeren een
+  SQL-hashverschil, een onvolledig tabelaantal en automatische browserload van
+  de volledige SQL-dump.
+
 Laatste update: 29 september 2026
 
 Dit document bevat actuele status, resterende risico's en logische vervolgstappen voor Meijendel-onderdelen die ook de VWG-M-site raken. Stabiele architectuur staat in `ARCHITECTURE.md`; open werk staat in `TODO.md`.

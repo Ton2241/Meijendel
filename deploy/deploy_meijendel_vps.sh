@@ -27,6 +27,8 @@ CACHE_FILE=""
 CACHE_MANIFEST=""
 CACHE_LOCAL=""
 CACHE_MANIFEST_LOCAL=""
+DASHBOARD_DATA_LOCAL="${TMPDIR:-/tmp}/bmp_meijendel_data_$$.json"
+DASHBOARD_MANIFEST_LOCAL="$DASHBOARD_DATA_LOCAL.manifest"
 SQL_CANDIDATE_FILE=""
 SQL_MANIFEST_CANDIDATE_FILE=""
 CACHE_CANDIDATE_FILE=""
@@ -89,7 +91,7 @@ release_lock() {
   fi
 }
 cleanup() {
-  rm -f "$SQL_DEPLOY"
+  rm -f "$SQL_DEPLOY" "$DASHBOARD_DATA_LOCAL" "$DASHBOARD_MANIFEST_LOCAL"
   if [[ "$CANDIDATE_STAGED" -eq 1 ]]; then
     remote "rm -f '$CANDIDATE_FILE'" || true
   fi
@@ -153,6 +155,12 @@ CACHE_LOCAL="$LOCAL_REPO/$CACHE_FILE"
 CACHE_MANIFEST_LOCAL="$LOCAL_REPO/$CACHE_MANIFEST"
 need_file "$CACHE_LOCAL"
 need_file "$CACHE_MANIFEST_LOCAL"
+log "Bouw compacte, SQL-gebonden browserdataset"
+"$LOCAL_REPO/scripts/test_dashboard_browser_data_contract.sh"
+Rscript "$LOCAL_REPO/R/build_dashboard_browser_data.R" \
+  "$CACHE_LOCAL" "$CACHE_MANIFEST_LOCAL" "$DASHBOARD_DATA_LOCAL" "$DASHBOARD_MANIFEST_LOCAL"
+need_file "$DASHBOARD_DATA_LOCAL"
+need_file "$DASHBOARD_MANIFEST_LOCAL"
 SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.candidate-$LOCAL_COMMIT"
 SQL_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.manifest.candidate-$LOCAL_COMMIT"
 CACHE_CANDIDATE_FILE="$STATE_DIR/${CACHE_FILE}.candidate-$LOCAL_COMMIT"
@@ -201,7 +209,7 @@ production_smoke() {
   remote "bash -s" <<'REMOTE'
 set -euo pipefail
 curl -fsSI http://127.0.0.1:3838/ >/dev/null
-for path in /bmp_meijendel_index.html /Meijendel.sql /shiny_meijendel/ /trim/soorten/soorten_trendoverzicht.csv; do
+for path in /bmp_meijendel_index.html /bmp_meijendel_data_loader.js /bmp_meijendel_data.json /bmp_meijendel_data.json.manifest /Meijendel.sql /shiny_meijendel/ /trim/soorten/soorten_trendoverzicht.csv; do
   code="$(curl -ksS -o /dev/null -w '%{http_code}' --resolve www.vwg-m.nl:443:127.0.0.1 "https://www.vwg-m.nl$path")"
   if [[ "$code" != "401" ]]; then
     echo "FOUT: verwacht 401 voor https://www.vwg-m.nl$path, kreeg $code" >&2
@@ -330,6 +338,9 @@ printf '%s\n' \
   "deploy/shiny_image/ -> $REMOTE_SHINY/" \
   "shiny_meijendel/ -> $REMOTE_SHINY/shiny_meijendel/" \
   "R/ -> $REMOTE_SHINY/R/" \
+  "bmp_meijendel_data.json -> $REMOTE_WWW/bmp_meijendel_data.json" \
+  "bmp_meijendel_data.json.manifest -> $REMOTE_WWW/bmp_meijendel_data.json.manifest" \
+  "bmp_meijendel_data_loader.js -> $REMOTE_WWW/bmp_meijendel_data_loader.js" \
   "bmp_meijendel_index.html -> $REMOTE_WWW/" \
   "index.html -> $REMOTE_WWW/" \
   "output_ecologische_groepen/ -> $REMOTE_WWW/output_ecologische_groepen/" \
@@ -366,6 +377,9 @@ sync_release() {
   [[ ! -d "$LOCAL_REPO/deploy/shiny_image" ]] || run_rsync "$LOCAL_REPO/deploy/shiny_image/" "$VPS:$REMOTE_SHINY/"
   [[ ! -d "$LOCAL_REPO/shiny_meijendel" ]] || run_rsync --delete-delay --exclude '.DS_Store' --exclude 'rsconnect/' --exclude 'app_cache/' "$LOCAL_REPO/shiny_meijendel/" "$VPS:$REMOTE_SHINY/shiny_meijendel/"
   [[ ! -d "$LOCAL_REPO/R" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/R/" "$VPS:$REMOTE_SHINY/R/"
+  run_rsync "$DASHBOARD_DATA_LOCAL" "$VPS:$REMOTE_WWW/bmp_meijendel_data.json"
+  run_rsync "$DASHBOARD_MANIFEST_LOCAL" "$VPS:$REMOTE_WWW/bmp_meijendel_data.json.manifest"
+  run_rsync "$LOCAL_REPO/bmp_meijendel_data_loader.js" "$VPS:$REMOTE_WWW/bmp_meijendel_data_loader.js"
   [[ ! -f "$LOCAL_REPO/bmp_meijendel_index.html" ]] || run_rsync "$LOCAL_REPO/bmp_meijendel_index.html" "$VPS:$REMOTE_WWW/bmp_meijendel_index.html"
   [[ ! -f "$LOCAL_REPO/index.html" ]] || run_rsync "$LOCAL_REPO/index.html" "$VPS:$REMOTE_WWW/index.html"
   [[ ! -d "$LOCAL_REPO/output_ecologische_groepen" ]] || run_rsync --delete-delay --exclude '.DS_Store' "$LOCAL_REPO/output_ecologische_groepen/" "$VPS:$REMOTE_WWW/output_ecologische_groepen/"
@@ -414,12 +428,18 @@ EXPECTED_CACHE_SHA256="$(awk -F= '$1 == "cache_sha256" {print $2}' "$CACHE_MANIF
 REMOTE_CACHE_SHA256="$(remote "sha256sum '$CACHE_CANDIDATE_FILE' | awk '{print \$1}'")"
 REMOTE_CACHE_MANIFEST_SHA256="$(remote "sha256sum '$CACHE_MANIFEST_CANDIDATE_FILE' | awk '{print \$1}'")"
 LOCAL_CACHE_MANIFEST_SHA256="$(shasum -a 256 "$CACHE_MANIFEST_LOCAL" | awk '{print $1}')"
+EXPECTED_DASHBOARD_SHA256="$(awk -F= '$1 == "dashboard_data_sha256" {print $2}' "$DASHBOARD_MANIFEST_LOCAL")"
+REMOTE_DASHBOARD_SHA256="$(remote "sha256sum '$REMOTE_WWW/bmp_meijendel_data.json' | awk '{print \$1}'")"
+LOCAL_DASHBOARD_MANIFEST_SHA256="$(shasum -a 256 "$DASHBOARD_MANIFEST_LOCAL" | awk '{print $1}')"
+REMOTE_DASHBOARD_MANIFEST_SHA256="$(remote "sha256sum '$REMOTE_WWW/bmp_meijendel_data.json.manifest' | awk '{print \$1}'")"
 [[ "$REMOTE_SQL_SHA256" == "$EXPECTED_SQL_SHA256" ]] || die "remote SQL-hash wijkt af van exportmanifest."
 [[ "$REMOTE_MANIFEST_SHA256" == "$LOCAL_MANIFEST_SHA256" ]] || die "remote exportmanifest wijkt af van lokaal manifest."
 [[ "$REMOTE_CACHE_SHA256" == "$EXPECTED_CACHE_SHA256" ]] || die "remote cachehash wijkt af van cachemanifest."
 [[ "$REMOTE_CACHE_MANIFEST_SHA256" == "$LOCAL_CACHE_MANIFEST_SHA256" ]] || die "remote cachemanifest wijkt af van lokaal manifest."
-printf 'REMOTE_SQL_SHA256=%s\nREMOTE_CACHE_SHA256=%s\n' \
-  "$REMOTE_SQL_SHA256" "$REMOTE_CACHE_SHA256"
+[[ "$REMOTE_DASHBOARD_SHA256" == "$EXPECTED_DASHBOARD_SHA256" ]] || die "remote dashboarddatahash wijkt af van dashboardmanifest."
+[[ "$REMOTE_DASHBOARD_MANIFEST_SHA256" == "$LOCAL_DASHBOARD_MANIFEST_SHA256" ]] || die "remote dashboardmanifest wijkt af van lokaal manifest."
+printf 'REMOTE_SQL_SHA256=%s\nREMOTE_CACHE_SHA256=%s\nREMOTE_DASHBOARD_SHA256=%s\n' \
+  "$REMOTE_SQL_SHA256" "$REMOTE_CACHE_SHA256" "$REMOTE_DASHBOARD_SHA256"
 
 log "Leg exacte kandidaatcommit vast voor de gesloten releasehelper"
 remote "mkdir -p '$STATE_DIR'; umask 077; tmp='$CANDIDATE_FILE.tmp.\$\$'; printf '%s\n' '$LOCAL_COMMIT' > \"\$tmp\"; mv \"\$tmp\" '$CANDIDATE_FILE'"

@@ -158,26 +158,26 @@ stopifnot(identical(
   5L
 ))
 
-identity <- meijendel_cache_identity(strrep("a", 64), 123L, 12L)
+identity <- meijendel_cache_identity(strrep("a", 64), 123L, 13L)
 cache <- list(
   format = "meijendel-shiny-cache-v1",
   identity = identity,
   data = list(plots = data.frame())
 )
 stopifnot(validate_meijendel_cache(cache, identity))
-stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 12L)))
+stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 13L)))
 
-wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 12L)
+wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 13L)
 expect_error(validate_meijendel_cache(cache, wrong_hash), "sql_sha256")
 
-wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 12L)
+wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 13L)
 expect_error(validate_meijendel_cache(cache, wrong_size), "sql_bytes")
 
-wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 13L)
+wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 14L)
 expect_error(validate_meijendel_cache(cache, wrong_parser), "parser_version")
 
-expect_error(meijendel_cache_identity("ABC", 123L, 12L), "sql_sha256")
-expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 12L), "sql_bytes")
+expect_error(meijendel_cache_identity("ABC", 123L, 13L), "sql_sha256")
+expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 13L), "sql_bytes")
 
 tmp <- tempfile("meijendel-cache-contract-")
 dir.create(tmp)
@@ -187,8 +187,8 @@ writeLines(c(
   "format=meijendel-export-v1",
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  paste0("cache_file=meijendel_tables_cache-p12-", strrep("a", 64), ".rds"),
-  paste0("cache_manifest=meijendel_tables_cache-p12-", strrep("a", 64), ".manifest")
+  paste0("cache_file=meijendel_tables_cache-p13-", strrep("a", 64), ".rds"),
+  paste0("cache_manifest=meijendel_tables_cache-p13-", strrep("a", 64), ".manifest")
 ), manifest)
 parsed <- read_meijendel_manifest(manifest)
 stopifnot(identical(unname(parsed[["sql_bytes"]]), "123"))
@@ -205,8 +205,8 @@ writeBin(charToRaw("dezelfde dumpbytes"), sql_one)
 stopifnot(file.copy(sql_one, sql_two))
 stopifnot(!identical(normalizePath(sql_one), normalizePath(sql_two)))
 stopifnot(identical(
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 12L),
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 12L)
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 13L),
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 13L)
 ))
 
 source(file.path(repo, "shiny_meijendel", "helpers.R"))
@@ -411,7 +411,7 @@ stopifnot(!local_result$from_cache, file.exists(local_cache))
 stopifnot(any(grepl(paste0("\\.next\\.", Sys.getpid(), "$"), saved_paths)))
 stopifnot(!any(file.exists(paste0(local_cache, ".next.", Sys.getpid()))))
 
-active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p12-", strrep("a", 64), ".rds"))
+active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p13-", strrep("a", 64), ".rds"))
 active_cache_object <- list(
   format = MEIJENDEL_CACHE_FORMAT,
   identity = identity,
@@ -426,7 +426,7 @@ writeLines(c(
   paste0("cache_bytes=", file.info(active_cache)$size),
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  "parser_version=12"
+  "parser_version=13"
 ), active_manifest)
 manifest_result <- load_meijendel_tables_cached(
   sql_one,
