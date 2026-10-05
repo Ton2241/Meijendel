@@ -676,6 +676,7 @@ parse_meijendel_tables <- function(path) {
     "dagwaarnemingen_wv",
     c("plot_id", "soort_id", "jaar", "maand", "dag", "aantal"),
     sanitize_binary = TRUE,
+    fast_tuples = TRUE,
     keep_only = TRUE
   )
   maatregelen <- read_insert_table(path, "maatregelen", c("id", "omschrijving"))

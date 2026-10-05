@@ -3,6 +3,7 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 VALIDATOR="$REPO_DIR/scripts/validate_meijendel_export.sh"
+HELPERS="$REPO_DIR/shiny_meijendel/helpers.R"
 TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
 
@@ -10,6 +11,9 @@ fail() {
   printf 'FOUT: %s\n' "$*" >&2
   exit 1
 }
+
+grep -A8 -F '"dagwaarnemingen_wv",' "$HELPERS" | grep -Fq 'fast_tuples = TRUE' ||
+  fail "dagwaarnemingen_wv gebruikt niet de snelle tuple-parser."
 
 dump="$TEST_DIR/Meijendel.sql"
 manifest="$TEST_DIR/Meijendel.sql.manifest"
