@@ -53,6 +53,7 @@ bash -n "$repo/deploy/rebuild_shiny_image_vps.sh"
 bash -n "$repo/deploy/shiny_vulnerability_baseline.sh"
 bash "$repo/scripts/test_shiny_vulnerability_baseline.sh"
 bash "$repo/scripts/test_shiny_candidate_cache_contract.sh"
+bash "$repo/scripts/test_shiny_sql_load_contract.sh"
 
 if [[ -n "$image" ]]; then
   [[ "$(docker image inspect --format '{{.Architecture}}' "$image")" == "amd64" ]]

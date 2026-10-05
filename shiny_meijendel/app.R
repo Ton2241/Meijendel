@@ -1251,9 +1251,8 @@ server <- function(input, output, session) {
     load_info_rv("SQL wordt geladen...")
     tryCatch({
       path <- normalizePath(input$sql_path, winslash = "/", mustWork = TRUE)
-      cache_path <- meijendel_tables_cache_path(path)
       withProgress(message = "SQL wordt gelezen.", detail = "Dit kan even duren afhankelijk van het werkgeheugen van de server.", value = 0.1, {
-        loaded <- load_meijendel_tables_cached(path, cache_path = cache_path)
+        loaded <- load_meijendel_tables_cached(path)
         incProgress(0.8)
         tbls_rv(loaded$data)
         if (loaded$from_cache) {
