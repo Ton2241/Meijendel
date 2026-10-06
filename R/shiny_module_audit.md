@@ -56,6 +56,16 @@ soortcel nul is. Alleen een letterlijke nulregel geldt als echte nul. Een
 aanwezige onafhankelijke niet-SOVON-regel blijft ook geldig wanneer het
 SOVON-plotjaar formeel is afgekeurd. Dit is essentieel voor alle modules.
 
+Dit beschrijft de implementatie per 6 oktober 2026, maar niet meer het volledige
+inhoudelijke besluit. Voor officiële SOVON-matrices blijft deze regel juist:
+SOVON bevestigt dat `0` een harde nul is en een lege cel betekent dat de soort
+niet is onderzocht. Voor `jrvslg_m` is aanvullend besloten een ontbrekende
+soort-plotjaarcombinatie als `afgeleide_jaarverslagnul` te behandelen wanneer
+de soort ten minste één geaccepteerd positief territoriumresultaat in de
+volledige Meijendel-reeks 1958-2025 heeft. Voorkomen elders in hetzelfde
+kalenderjaar is geen voorwaarde. Die afleiding is nog niet in de gedeelde
+matrixbouwer geïmplementeerd.
+
 ### Responsmaat
 
 De meeste modules gebruiken `territoria_per_km2`. Bij tellingmodellen zoals GEE en GLMM wordt feitelijk gemodelleerd met:

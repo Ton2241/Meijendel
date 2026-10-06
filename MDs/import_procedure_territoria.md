@@ -3,7 +3,7 @@
 **Database:** Meijendel  
 **Engine:** InnoDB, UTF8MB4  
 **Frequentie:** Jaarlijks  
-**Laatste update van dit document:** 3 oktober 2026\
+**Laatste update van dit document:** 6 oktober 2026\
 
 ---
 
@@ -43,6 +43,53 @@ Een goedgekeurd plotjaar kan voor een afzonderlijke soort immers nul territoria
 hebben. Gebruik voor analyses van territoria, trends en tellersensitiviteit
 alleen de goedgekeurde territoriumuitkomsten en de bijbehorende registratie in
 `plot_jaar_teller`.
+
+## Nulwaarden per bron
+
+Gebruik voor officiële SOVON-Excelbestanden de op 6 oktober 2026 door SOVON
+Helpdesk bevestigde betekenis:
+
+- `0` is een harde nul: de soort is onderzocht maar niet vastgesteld;
+- een lege cel betekent dat de soort niet is onderzocht en blijft `NA`.
+
+Deze regel geldt voor alle SOVON-territoriummatrices in dit project. Leid uit
+een lege SOVON-cel nooit alsnog nul af omdat de soort elders in Meijendel is
+waargenomen.
+
+Voor de afzonderlijke bron `jrvslg_m` geldt bij TRIM een vastgelegde
+analyseaanname. Een plotjaar met jaarverslagresultaten geldt als onderzocht
+voor iedere vogelsoort met ten minste één geaccepteerd positief
+territoriumresultaat in de volledige Meijendel-reeks 1958-2025.
+Ontbreekt zo'n soort in een geteld jaarverslagplot, dan krijgt de analysematrix
+een afgeleide nul met status `afgeleide_jaarverslagnul`. Het is daarvoor niet
+nodig dat de soort in hetzelfde kalenderjaar elders is vastgesteld. Schrijf
+deze afleiding niet als bronregel naar `territoria`: die tabel blijft uitsluitend
+letterlijke bronwaarden bevatten. Een aanwezige positieve waarde blijft altijd
+leidend. Bij een plotjaar waarvoor ook SOVON-data bestaan, blijft een lege
+SOVON-cel `NA`; een eventuele jaarverslagnul blijft een afzonderlijke,
+herleidbare analysewaarde uit de jaarverslagbron.
+
+Een niet-geteld plotjaar blijft altijd `NA`. Een formeel afgekeurd
+SOVON-plotjaar blijft voor de SOVON-bron eveneens `NA`. Een zelfstandige,
+geldige jaarverslagbron in hetzelfde plotjaar mag wel volgens de bovenstaande
+jaarverslagregel bijdragen.
+
+Bewaar in iedere analysematrix naast de waarde ook bron, nulstatus en
+bewijsgrond. Gebruik minimaal de statussen `territorium_vastgesteld`,
+`letterlijke_nul`, `afgeleide_jaarverslagnul`, `niet_onderzocht` en
+`formeel_afgekeurd`. Daardoor blijft zichtbaar welke nullen rechtstreeks door
+SOVON zijn geleverd en welke uit de volledige soortenregistratie in een
+jaarverslagplot zijn afgeleid.
+
+De audit van 6 oktober 2026 vindt binnen 662 getelde `jrvslg_m`-plotjaren en
+een soortpool van 130 soorten 67.562 potentiële afgeleide jaarverslagnullen:
+61.593 in 1958-1983 en 5.969 in 1984-2025. Na de bestaande selectie op het
+eerste positieve jaar en actieve plots kunnen 14.902 cellen voor 120 soorten
+in de huidige TRIM-modellen vallen: 14.254 in 1958-1983 en 648 in 1984-2025.
+De matrixbouwers passen deze afleiding nog niet toe; zij laten deze ontbrekende
+jaarverslagregels nu als `NA`. Herbereken de lange TRIM-reeks daarom na
+implementatie. De Sandra-selectie 1997-2022 bevat geen `jrvslg_m`-plotjaar en
+verandert door deze regel niet.
 
 ## Telleridentificatie
 
