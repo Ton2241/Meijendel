@@ -23,6 +23,12 @@ Sandra-plots en 1997–2022 132 soorten met minimaal één positief territorium.
 Daarvan leveren 110 soorten een formele TRIM-trend. Letterlijke nulregels tellen
 mee in de modellen, maar selecteren een soort niet zonder positief territorium.
 
+Het nulbesluit van 6 oktober 2026 verandert deze Sandra-variant niet. Binnen de
+25 Sandra-plots en 1997-2022 bevat de huidige database geen plotjaar met bron
+`jrvslg_m`. Er ontstaan in deze selectie dus geen afgeleide
+jaarverslagnullen. De letterlijke SOVON-nullen blijven `0` en lege SOVON-cellen
+blijven `NA`.
+
 ## Trendcontract `trim-trend-v2`
 
 De soorttrend over `1997-2022` wordt rechtstreeks uit het werkende TRIM-model

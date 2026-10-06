@@ -10,7 +10,7 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
 1. Het leest onder meer `plots`, `plot_analyse_scope`, `plot_jaar_oppervlak`, `plot_jaar_teller`, `territoria`, `bronnen`, `sovon_bmp_plotjaar`, `soorten`, `evg_vogelgroepen` en `evg_vogel_landschapgroep` en past standaard de scope `meijendel_natura2000` toe.
 2. Het bouwt per `plot x jaar` een analysebasis op.
 3. Het gebruikt voor `1958-1972` alleen de historische kernkavels.
-4. Het gebruikt alleen een letterlijke territoriumregel als analysewaarde. Een expliciete nul blijft `0`; een ontbrekende soortregel blijft `NA`. Een formeel afgekeurd SOVON-plotjaar levert voor SOVON `NA`, terwijl een aanwezige onafhankelijke niet-SOVON-regel geldig blijft.
+4. De huidige implementatie gebruikt alleen een letterlijke territoriumregel als analysewaarde. Een expliciete nul blijft `0`; een ontbrekende soortregel blijft `NA`. Een formeel afgekeurd SOVON-plotjaar levert voor SOVON `NA`, terwijl een aanwezige onafhankelijke niet-SOVON-regel geldig blijft.
 5. Het corrigeert tellingen pragmatisch voor veranderend plotoppervlak door elk plotjaar terug te rekenen naar de mediane plotoppervlakte van dat plot.
 6. Het draait per soort een `TRIM`-model vóór `1984` en een tweede `TRIM`-model vanaf `1984`.
 7. Het verbindt beide indexreeksen met een brugfactor op basis van `1981-1983` versus `1984-1986`.
@@ -32,6 +32,33 @@ meetmatrix van zo'n soort aan, maar maken een soort zonder positieve waarneming
 niet zelfstandig tot analysekandidaat; lege matrixcellen zijn niet als nul
 gebruikt. M66 en M91 en de formeel afgekeurde SOVON-plotjaren zijn conform hun
 status buiten de standaardberekening gehouden.
+
+## Nulbesluit van 6 oktober 2026 en huidige afwijking
+
+SOVON Helpdesk heeft bevestigd dat in de officiële Excel-downloads `0` een
+harde nul is en een lege cel betekent dat de soort niet is onderzocht. De
+huidige TRIM-code behandelt de SOVON-gegevens dus correct: alleen de letterlijke
+SOVON-nul wordt nul en de lege cel blijft `NA`.
+
+Voor de zelfstandige jaarverslagbron `jrvslg_m` geldt voortaan de volgende
+analyseaanname. Omdat de tellers alle vogelsoorten telden, bestaat de soortpool
+uit iedere soort met ten minste één geaccepteerd positief territoriumresultaat
+in de volledige Meijendel-reeks 1958-2025. Haar ontbreken in een
+geteld jaarverslagplot geldt als afgeleide nul; voorkomen elders in hetzelfde
+kalenderjaar is geen voorwaarde. De huidige code voert deze bronafhankelijke
+afleiding nog niet uit en laat die cellen als `NA` staan. Binnen de
+standaardanalyse over 1958-2025 zijn binnen 662 getelde `jrvslg_m`-plotjaren en
+een soortpool van 130 soorten 67.562 zulke combinaties gevonden: 61.593
+in 1958-1983 en 5.969 in 1984-2025. Na toepassing van het bestaande
+eerste-positieve-jaarcriterium en de selectie van actieve plots kunnen 14.902
+cellen voor 120 soorten werkelijk in een TRIM-model terechtkomen: 14.254 in
+1958-1983 en 648 in 1984-2025.
+
+De op 4 oktober 2026 gemaakte soorttrends, brugreeksen en groeps-MSI's zijn dus
+nog berekend zonder deze afgeleide jaarverslagnullen. Zij moeten na aanpassing
+van de matrixopbouw opnieuw worden berekend en vergeleken. De afgeleide waarde
+moet zichtbaar blijven als `afgeleide_jaarverslagnul` en mag niet als letterlijke
+bronwaarde in `territoria` worden opgenomen.
 
 ## Trendcontract `trim-trend-v2`
 

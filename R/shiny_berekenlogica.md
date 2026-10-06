@@ -154,6 +154,23 @@ De statusvelden leggen expliciet vast hoe echte nullen worden behandeld:
 
 `waargenomen_zonder_territorium` is nu nog `NA`, omdat dagwaarnemingen nog niet als aparte respons in de Shiny-analyses worden gebruikt. Dit veld is toegevoegd om later het onderscheid tussen "wel waargenomen maar geen territorium" en "niet waargenomen" structureel te kunnen opnemen.
 
+### Bronafhankelijke jaarverslagnullen nog niet geïmplementeerd
+
+SOVON Helpdesk heeft op 6 oktober 2026 bevestigd dat een `0` in de officiële
+Excel-download een harde nul is en dat een lege cel betekent dat de soort niet
+is onderzocht. De huidige Shiny-matrix volgt die SOVON-regel correct.
+
+Voor `jrvslg_m` geldt inmiddels een afzonderlijk analysebesluit. Omdat de
+tellers alle vogelsoorten telden, wordt de soortpool bepaald over de volledige
+Meijendel-reeks 1958-2025. Wanneer een soort ten minste één geaccepteerd
+positief territoriumresultaat in die reeks heeft, wordt haar ontbreken in ieder geteld
+jaarverslagplot als
+`afgeleide_jaarverslagnul` behandeld. `build_species_matrix_subset()` past deze
+regel nog niet toe. Shiny toont daarom voorlopig dezelfde letterlijke
+nulbenadering als de batchanalyse en kan voor selecties met jaarverslagdata
+minder nulcellen bevatten dan besloten. Deze afwijking moet worden opgelost
+voordat de betreffende Shiny-TRIM-uitkomsten als actueel worden beschouwd.
+
 ## TRIM-logica
 
 De TRIM-berekeningen lopen via:

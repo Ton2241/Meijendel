@@ -1,5 +1,24 @@
 # Besluiten
 
+- Vanaf 6 oktober 2026 geldt voor vogelterritoria een bronafhankelijke
+  nulregel. In een officiële SOVON-Excel-download is `0` een harde nul: de
+  soort is onderzocht maar niet vastgesteld. Een lege cel betekent dat de
+  soort niet is onderzocht en blijft daarom `NA`. SOVON Helpdesk heeft dit op
+  6 oktober 2026 uitdrukkelijk bevestigd; de regel geldt voor alle in dit
+  project gebruikte SOVON-territoriummatrices. Voor gegevens uit de
+  VWG-jaarverslagen blijft een andere, expliciete analyseaanname gelden. De
+  tellers telden alle vogelsoorten. De relevante soortpool bestaat daarom uit
+  iedere soort met ten minste één geaccepteerd positief territoriumresultaat
+  in de volledige Meijendel-reeks 1958-2025. Als een plotjaar in
+  het jaarverslag is geteld en een soort uit deze soortpool ontbreekt, wordt
+  die soort-plotjaarcombinatie voor TRIM als nul behandeld. Het is dus niet
+  vereist dat de soort in hetzelfde kalenderjaar elders in Meijendel is
+  vastgesteld. Die waarde krijgt de
+  herkomst `afgeleide_jaarverslagnul` en wordt niet als letterlijk door de bron
+  geleverde nul in `territoria` opgeslagen. Een positieve bronwaarde wordt
+  nooit door zo'n afgeleide nul vervangen. Bij overlap blijven de SOVON-cel en
+  de zelfstandige jaarverslaginterpretatie afzonderlijk herkenbaar.
+
 - Vanaf 4 oktober 2026 gebruiken batchanalyse, Shiny en de zelfstandige
   GEE/power-route één statusgestuurde territoriumpoort. Alleen een werkelijk
   aanwezige bronregel is een analysewaarde: een letterlijke nul blijft nul en
@@ -18,6 +37,19 @@
   statuslaag, 135 soorten met indices en 94 brugbare
   reeksen. De Sandra-reeks 1997-2022 bevat 132 positief waargenomen soorten en
   110 formele soorttrends.
+
+  Deze implementatie is door het besluit van 6 oktober 2026 voor
+  jaarverslaggegevens niet langer volledig. De letterlijke SOVON-nullen en
+  lege SOVON-cellen worden wel correct behandeld. Ontbrekende
+  jaarverslagcombinaties blijven in de huidige code echter nog `NA`. Binnen de
+  standaard-TRIM-scope gaat het om 67.562 afleidbare nullen: 61.593 in
+  1958-1983 en 5.969 in 1984-2025. Na de bestaande selectie op het eerste
+  positieve jaar en actieve plots kunnen 14.902 cellen voor 120 soorten in de
+  huidige modellen vallen: 14.254 in 1958-1983 en 648 in 1984-2025. De lange
+  TRIM-reeks moet na implementatie
+  daarom opnieuw worden berekend. De Sandra-variant 1997-2022 bevat binnen
+  haar plotselectie geen `jrvslg_m`-plotjaren en wordt door deze wijziging niet
+  geraakt.
 
 - Op 3 oktober 2026 zijn de 7.552 onder reconstructieversie
   `ndff-daz-bmp-v1` afgeleide nulregels herclassificeerd als
