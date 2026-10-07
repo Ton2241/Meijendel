@@ -14,6 +14,10 @@
   1997-2022 bleven bytegelijk.
 - De volledige vergelijking met de uitvoer van 4 oktober staat in
   `trim/soorten/gevolgen_afgeleide_jaarverslagnullen_per_soort.csv`.
+- Voor snelle beoordeling staat daarnaast een vereenvoudigd Excel-overzicht in
+  `trim/soorten/gevolgen_afgeleide_jaarverslagnullen_presentatie.xlsx`. Het
+  openingsblad toont de 29 soorten waarbij modelstatus, significantie of
+  trendklasse verandert; een tweede blad bevat alle 156 soorten met filters.
 
 ## 5 oktober 2026 - mobiele dashboarddata
 

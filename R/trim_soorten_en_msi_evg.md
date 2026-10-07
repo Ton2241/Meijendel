@@ -97,6 +97,9 @@ Daarom gebruikt dit script een verdedigbare alternatieve aanpak:
 - `soorten_trendoverzicht.csv`
 - `soorten_brugfactoren.csv`
 - `gevolgen_afgeleide_jaarverslagnullen_per_soort.csv`
+- `gevolgen_afgeleide_jaarverslagnullen_presentatie.xlsx`: vereenvoudigde,
+  gefilterde vergelijking voor lezers die vooral de verschillen en hun reden
+  willen zien
 
 ## Uitvoer in `trim_msi_evg`
 
