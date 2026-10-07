@@ -240,6 +240,8 @@ def main() -> int:
     assert "niet_afleidbaar" in folded
     assert "enum('waargenomen','echte_nul')" in folded
     assert "ndff-vlinderroute-v2" in folded
+    assert "meerdere_teldagen_in_hokjaar" in folded
+    assert "meerdere_teldagen_in_hokjaar_geen_waarnemersreplicaten" in folded
     assert "enum('expliciete_code','expliciet_losse_waarneming')" in folded
     assert "'voorlopig_toegelaten'" in folded
     assert "wetenschappelijke_naam varchar(255) not null" in folded
@@ -1285,6 +1287,7 @@ def main() -> int:
         }
         for index in range(1, 56)
     ]
+    hns_rows[0]["stop_date"] = "2024-07-19"
     hns_rows += [
         {
             "observation_id": 56,
@@ -1318,6 +1321,7 @@ def main() -> int:
         if inventory["status"] == "volledige_lijst_aannemelijk"
     )
     assert complete["target_hok"] == "82 - 462"
+    assert complete["stop_date"] == "2024-07-18"
     assert complete["taxa_count"] == 56
     assert complete["source_record_count"] == 56
     fragment = next(
@@ -1328,6 +1332,18 @@ def main() -> int:
     assert hns["record_status"][57] == "vervaagd_jaarrecord_niet_toegewezen"
     assert hns["record_inventory"][1] in hns["inventories"]
     assert hns["record_inventory"][57] is None
+
+    assert module.HNS_RULE_VERSION == "ndff-hns-v2"
+    assert module.hns_repeat_status(1) == (
+        "enkele_teldag_in_hokjaar", "een_teldag_in_hokjaar"
+    )
+    assert module.hns_repeat_status(2) == (
+        "meerdere_teldagen_in_hokjaar",
+        "meerdere_teldagen_in_hokjaar_geen_waarnemersreplicaten",
+    )
+    assert module.HNS_RECONSTRUCTION_EXPECTED["independence_unconfirmed_visits"] == 0
+    assert module.HNS_RECONSTRUCTION_EXPECTED["multiple_count_day_visits"] == 21
+    assert module.HNS_RECONSTRUCTION_EXPECTED["stop_date_differs_from_count_date"] == 0
 
     hns_matrix = module.build_hns_visit_matrix(
         complete_inventories={"visit-a": {"Taxon a"}, "visit-b": {"Taxon b"}},

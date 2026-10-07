@@ -1373,8 +1373,8 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_jaar_taxon (
 
 -- Reconstructie van 12.204 Het Nieuwe Strepen. De NDFF-regels bevatten geen
 -- lijst- of waarnemer-ID. Een inventarisatie is daarom een controleerbare
--- datum/ruimtedagcluster; onafhankelijkheid van herhaalbezoeken blijft apart
--- van de waargenomen soorten en echte nullen vastgelegd.
+-- dag/ruimtedagcluster. Meerdere teldagen in hetzelfde hokjaar zijn afzonderlijke
+-- tellingen, maar geen bewijs voor onafhankelijke waarnemerslijsten binnen één dag.
 CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -1391,7 +1391,8 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie (
     'duur_buiten_protocol_of_onvolledig'
   ) NOT NULL,
   herhaalstatus ENUM(
-    'enkele_inventarisatie','herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'
+    'enkele_inventarisatie','herhaling_aanwezig_onafhankelijkheid_niet_bevestigd',
+    'enkele_teldag_in_hokjaar','meerdere_teldagen_in_hokjaar'
   ) NOT NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
@@ -1476,7 +1477,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_hok_jaar_taxon (
   positief_inventarisatieaantal SMALLINT UNSIGNED NOT NULL,
   onafhankelijkheidsstatus ENUM(
     'niet_van_toepassing_een_inventarisatie',
-    'herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'
+    'herhaling_aanwezig_onafhankelijkheid_niet_bevestigd',
+    'een_teldag_in_hokjaar',
+    'meerdere_teldagen_in_hokjaar_geen_waarnemersreplicaten'
   ) NOT NULL,
   kwaliteitsnotitie VARCHAR(1000) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
