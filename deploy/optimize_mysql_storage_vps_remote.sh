@@ -17,9 +17,15 @@ mysql_password="${MYSQL_ROOT_PASSWORD:?MYSQL_ROOT_PASSWORD ontbreekt}"
 unset MYSQL_ROOT_PASSWORD
 mysql_password_escaped="${mysql_password//\\/\\\\}"
 mysql_password_escaped="${mysql_password_escaped//\"/\\\"}"
-"$client" --defaults-extra-file=/dev/fd/3 "$@" 3< <(
+exec 3< <(
   printf '[client]\nuser=root\npassword="%s"\n' "$mysql_password_escaped"
 )
+mysql_credentials_pid=$!
+mysql_status=0
+"$client" --defaults-extra-file=/dev/fd/3 "$@" || mysql_status=$?
+exec 3<&-
+wait "$mysql_credentials_pid" 2>/dev/null || true
+exit "$mysql_status"
 MYSQL_ROOT_CLIENT
 )"
 
