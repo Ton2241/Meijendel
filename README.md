@@ -457,7 +457,8 @@ betreffende meetpunt aantoonbaar ooit zijn gevolgd. De 977 jaarregels gebruiken
 conform het protocol het hoogste dagtotaal, nooit de som van bezoeken. Controleer
 de laag met `--audit-bospaddenstoelen`.
 
-Vaatplantenprotocol `12.204` (Het Nieuwe Strepen) staat onder `ndff-hns-v1`
+Vaatplantenprotocol `12.204` (Het Nieuwe Strepen) staat voor nieuwe analyses
+onder `ndff-hns-v2`
 in vijf openbare `Meijendel.ndff_hns_*`-tabellen. De 4.569 bronregels vormen
 23 aannemelijk volledige inventarisaties en drie kleine fragmenten; 39
 vervaagde jaarregels zijn niet aan een bezoek toegewezen. De bezoekmatrix voor
@@ -468,7 +469,11 @@ clusters hebben ieder precies één begindatum en één doelhok; hun groepering 
 daarmee inhoudelijk bevestigd. Binnen zo'n dag-hoktelling kunnen één, twee of
 drie oorspronkelijke lijsten liggen. Die lijsten zijn in de NDFF-export niet
 afzonderlijk herkenbaar en mogen daarom niet als herhaalde waarnemersmetingen
-worden gebruikt. De nullen zijn niet door FLORON geleverd, maar uit een
+worden gebruikt. V2 gebruikt steeds de begindatum als teldatum; een latere
+`periode_stop` geldt niet als tweede velddag. In 21 tellingen is alleen
+vastgelegd dat hetzelfde hok in hetzelfde jaar ook op een andere kalenderdag
+is geteld, zonder daar waarnemersonafhankelijkheid uit af te leiden. V1 blijft
+als historisch auditspoor bewaard. De nullen zijn niet door FLORON geleverd, maar uit een
 aannemelijk volledige HNS-telling en het lokale doelbereik afgeleid. Gebruik de
 laag daarom voor voorlopige verspreidings- en occupancyanalyse, nooit voor
 plantenabundantie, en controleer haar vooraf met `--audit-hns`.
@@ -522,7 +527,10 @@ doelsoorten. Daarvan horen 4.945 nullen bij de 79 in het rapport bevestigde
 routejaren; 2.862 horen bij de 45 alleen uit NDFF afgeleide routejaren en
 blijven daarom voorlopig. FLORON heeft op 6 oktober 2026 bevestigd dat Dunea de
 onderliggende gegevens beheert en dat FLORON voor dit meetnet alleen de
-softwaredienst levert. Exacte groeiplaatsaantallen zijn opgeteld en naar
+softwaredienst levert. Een lokale controle op 7 oktober 2026 van de reposities,
+documenten, iCloud-downloads en Zotero vond geen primaire Dunea-export; alleen
+het officiële rapport en algemene methodedocumenten waren aanwezig. Exacte
+groeiplaatsaantallen zijn opgeteld en naar
 FLORON-klasse A-G vertaald. Bij 161
 combinaties met meerdere klassen of gemengde meetwijzen is geen schijnprecieze
 klasse berekend. Exacte gevoelige vindplaatsen zijn niet naar deze openbare

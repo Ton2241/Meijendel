@@ -283,13 +283,14 @@ telsoorten en houdt `11.201` volledig gescheiden van opvolger `11.204`.
 `ndff_hns_*` reconstrueert protocol `12.204` in `Meijendel` als
 inventarisaties, recordselectie, lokaal doelbereik, inventarisatie-taxonmatrix
 en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
-`ndff-hns-v1` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
+`ndff-hns-v2` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
 FLORON heeft bevestigd dat kalenderdag plus kilometerhok de beschikbare
 teleenheid is. Eén dag-hoktelling kan één, twee of drie onderliggende lijsten
 bevatten, maar de export onderscheidt die lijsten niet. De huidige
 `herhaalstatus` beschrijft daarom geen aantoonbare waarnemersonafhankelijkheid
-en wordt in `ndff-hns-v2` vervangen. Bron-aantallen worden niet als abundantie
-gebruikt.
+en is in `ndff-hns-v2` vervangen door een neutrale kalenderdagstatus. V2
+gebruikt de begindatum als teldatum; v1 blijft als auditspoor bewaard.
+Bron-aantallen worden niet als abundantie gebruikt.
 `ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v2` in
 `Meijendel`: openbare proefvlakken, bezoeken, recordselectie, lokaal doelbereik
 en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen

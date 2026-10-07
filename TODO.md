@@ -596,23 +596,24 @@
   teleenheid is en dat de gevraagde lijst-, bezoek-, volledigheids- en
   niet-detectiegegevens niet worden bewaard. Sluit deze bronvraag daarom; een
   nieuwe aanvraag bij FLORON kan deze nullen niet verder valideren.
-- `12.204` bevat onder `ndff-hns-v1` 23 aannemelijk volledige
+- `12.204` bevat onder `ndff-hns-v2` 23 aannemelijk volledige
   inventarisaties en drie fragmenten. Gebruik de 16.169
   inventarisatie-taxonregels voorlopig voor verspreidings-/occupancyanalyse;
   de 11.730 nullen zijn afgeleid en niet als nulregel geleverd. FLORON heeft
   bevestigd dat kalenderdag plus kilometerhok de beschikbare teleenheid is en
   dat één telling één, twee of drie niet afzonderlijk leverbare lijsten kan
-  bevatten. Maak `ndff-hns-v2`: behoud de huidige dag-hokgroepering, gebruik de
-  begindatum als teldatum, interpreteer `periode_stop` niet als extra velddag en
-  vervang de huidige onafhankelijkheidsstatus door een neutrale aanduiding van
-  meerdere teldagen in hetzelfde hokjaar. Controleer dat recordselectie,
-  positieve combinaties en afgeleide nullen daardoor niet veranderen. Vraag
-  FLORON niet opnieuw om persoonsgegevens, lijst- of waarnemercodes.
+  bevatten. V2 is op 7 oktober 2026 gebouwd en gecontroleerd: de begindatum is
+  de teldatum, `periode_stop` levert geen extra velddag en de status beschrijft
+  uitsluitend één of meerdere teldagen in hetzelfde hokjaar. Recordselectie,
+  doelbereik, positieve combinaties en 11.730 afgeleide nullen zijn gelijk aan
+  v1; v1 blijft als auditspoor bewaard. Vraag FLORON niet opnieuw om
+  persoonsgegevens, lijst- of waarnemercodes.
 - `12.211` bevat 79 in het FLORON-rapport bevestigde routejaren met 4.945
   nullen en 45 alleen uit NDFF afgeleide routejaren met 2.862 nullen. FLORON
-  beheert alleen de software; Dunea beheert de brongegevens. Vergelijk vóór een
-  extern vervolg eerst alle lokale Dunea-bestanden en correspondentie. Vraag
-  Dunea daarna, alleen als de leemte resteert, om de bestaande volledige
+  beheert alleen de software; Dunea beheert de brongegevens. De gerichte lokale
+  controle van reposities, documenten, iCloud-downloads en Zotero op 7 oktober
+  2026 vond geen primaire Dunea-export. Vraag Dunea daarom, wanneer deze
+  validatie prioriteit krijgt, alleen om de bestaande volledige
   LMF-A-export waarmee de 45 routejaren, routeversies en methodewijzigingen
   kunnen worden bevestigd.
 - `17.002` bevat onder `ndff-braakbal-v1` 37 openbare

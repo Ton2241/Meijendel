@@ -914,7 +914,8 @@
   gemeld. Een afgeleide nul betekent uitsluitend geen vruchtlichaam op dat
   bezoek. De jaarlijkse telwaarde is het hoogste dagtotaal en nooit de som van
   bezoeken. Volledig negatieve ontbrekende bezoeken worden niet aangevuld.
-- Protocol `12.204` wordt onder `ndff-hns-v1` gereconstrueerd naar
+- Protocol `12.204` wordt voor nieuwe analyses onder `ndff-hns-v2`
+  gereconstrueerd naar
   datum/ruimteclusters met een waarschijnlijk doelkilometerhok. De 1.145
   verschillende bronintervallen zijn uitdrukkelijk geen bezoeken. Alleen 23
   binnen het veldseizoen gelegen clusters met minimaal 50 taxa en minimaal 80%
@@ -925,10 +926,11 @@
   is. De 26 bestaande clusters hebben ieder één begindatum en één doelhok. Een
   telling kan één, twee of drie onderliggende lijsten bevatten; die lijsten
   zijn niet afzonderlijk leverbaar en worden niet als onafhankelijke
-  herhalingen gebruikt. De bestaande `herhaalstatus` uit `ndff-hns-v1` moet in
-  een volgende regelversie worden vervangen door een status die alleen
-  vastlegt dat hetzelfde hok in hetzelfde jaar op meerdere dagen is geteld.
-  Een `periode_stop` na de begindatum bewijst geen meerdaags bezoek.
+  herhalingen gebruikt. V2 gebruikt de begindatum als teldatum en legt alleen
+  vast of hetzelfde hok in hetzelfde jaar op één of meerdere kalenderdagen is
+  geteld. Een `periode_stop` na de begindatum bewijst geen meerdaags bezoek.
+  V1 blijft ongewijzigd als historisch auditspoor. De v1- en v2-selectie,
+  doelsoorten, positieve combinaties en afgeleide nullen zijn inhoudelijk gelijk.
   Aantallen en dubbele vindplaatsen worden niet als plantenabundantie gebruikt.
 - Protocol `02.202` wordt onder `ndff-korstmos-v2` gereconstrueerd uit uitsluitend
   de 364 onvervaagde openbare regels. De twaalf geometrieën gelden als
@@ -984,6 +986,11 @@
   validatie blijven de 45 alleen uit NDFF afgeleide routejaren en hun 2.862
   nulregels voorlopig; de 79 in het rapport bevestigde routejaren en 4.945
   nulregels hebben een sterkere onderbouwing.
+- Op 7 oktober 2026 zijn de lokale reposities, documenten, iCloud-downloads en
+  Zotero gericht doorzocht. Er is geen primaire Dunea-LMF-A-export gevonden.
+  Alleen het officiële rapport en algemene methodedocumenten zijn lokaal
+  beschikbaar. Daarmee is de lokale zoekroute afgerond; een volgende validatie
+  van de 45 routejaren kan alleen rechtstreeks via een bestaande Dunea-export.
 - De `uri` of `identity` uit de NDFF-export geldt voor deze FLORON-reeksen als
   stabiele sleutel op waarnemingsniveau. Een extra waarnemingssleutel wordt niet
   meer bij FLORON gevraagd.

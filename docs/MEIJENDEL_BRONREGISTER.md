@@ -293,9 +293,9 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 **Wat heeft FLORON bevestigd?** Op 6 oktober 2026 meldde FLORON dat één kalenderdag in één kilometerhok als telling mag worden beschouwd. Zo'n telling kan één, twee of drie oorspronkelijke lijsten omvatten. Persoonsgegevens en daarvan afgeleide waarnemerscodes worden niet geleverd. De `uri` of `identity` uit de NDFF-export is de stabiele sleutel van de afzonderlijke waarneming.
 
-**Wat kan nu?** De bestaande groepering is op hoofdlijnen bevestigd: ieder van de 26 clusters bevat precies één begindatum en één doelhok. De 4.439 positieve combinaties en 11.730 afgeleide protocolnullen kunnen voorlopig per dag en kilometerhok worden gebruikt voor inventarisatie- en occupancyanalyse. De onderliggende één tot drie lijsten mogen niet als afzonderlijke herhaaltellingen worden gebruikt.
+**Wat kan nu?** Regelversie `ndff-hns-v2` is op 7 oktober 2026 in de lokale database opgebouwd. Ieder van de 26 clusters bevat precies één begindatum en één doelhok. De 4.439 positieve combinaties en 11.730 afgeleide protocolnullen kunnen voorlopig per dag en kilometerhok worden gebruikt voor inventarisatie- en occupancyanalyse. De onderliggende één tot drie lijsten mogen niet als afzonderlijke herhaaltellingen worden gebruikt.
 
-**Wat moet worden verbeterd?** In `ndff-hns-v1` hebben negentien tellingen een latere `periode_stop`; dat betekent niet dat op een tweede dag is geteld. Ook zijn 21 tellingen ten onrechte gemarkeerd alsof hun onafhankelijkheid onzeker is. Een volgende regelversie moet de begindatum als teldatum nemen en alleen vastleggen dat hetzelfde hok in hetzelfde jaar op meerdere kalenderdagen is geteld. De indeling van 23 volledige tellingen en drie fragmenten blijft een lokale reconstructie en moet als zodanig zichtbaar blijven.
+**Wat is gecorrigeerd?** V2 gebruikt steeds de begindatum als teldatum; een latere `periode_stop` geldt niet als tweede velddag. Bij 21 tellingen staat nu neutraal dat hetzelfde hok in hetzelfde jaar op meerdere kalenderdagen is geteld. Dat zegt niets over onafhankelijke waarnemers. De recordselectie, het doelbereik, de 4.439 positieve combinaties en de 11.730 nullen zijn gelijk aan v1. V1 blijft als historisch auditspoor bewaard. De indeling van 23 volledige tellingen en drie fragmenten blijft een lokale reconstructie en moet als zodanig zichtbaar blijven.
 
 #### 1.5.12. FLORBASE en andere vaatplantinventarisaties
 
@@ -313,7 +313,7 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 **Wat kan nu?** Binnen de 75 doelsoorten bevat de matrix 1.493 positieve resultaten en 7.807 afgeleide nullen. Van die nullen horen 4.945 bij de 79 in het rapport bevestigde routejaren. De overige 2.862 horen bij de 45 alleen uit NDFF afgeleide routejaren en blijven voorlopig.
 
-**Wat ontbreekt voor zelfstandige trends?** Voor de 45 niet in het rapport bevestigde routejaren ontbreken nog de primaire Dunea-export, routeversies en eventuele methodewijzigingen. Die gegevens moeten eerst in de lokale Dunea-bestanden en correspondentie worden gezocht. Alleen als de leemte daarna resteert, is een rechtstreeks verzoek aan Dunea zinvol.
+**Wat ontbreekt voor zelfstandige trends?** Voor de 45 niet in het rapport bevestigde routejaren ontbreken nog de primaire Dunea-export, routeversies en eventuele methodewijzigingen. Op 7 oktober 2026 zijn de lokale reposities, documenten, iCloud-downloads en Zotero hierop gericht doorzocht. Er is geen primaire Dunea-export gevonden; alleen het officiële rapport en algemene methodedocumenten zijn lokaal aanwezig. De lokale zoekroute is daarmee afgerond. Wanneer deze validatie prioriteit krijgt, is de kortste vervolgstap een rechtstreeks verzoek aan Dunea om een bestaande volledige LMF-A-export.
 
 #### 1.5.14. Mossen en korstmossen
 

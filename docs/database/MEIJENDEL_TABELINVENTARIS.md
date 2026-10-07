@@ -1,6 +1,6 @@
 # Meijendel ingedeeld naar soortgroepen
 
-Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 26 september 2026. Dit is een herschreven ontwerp, geen uitgevoerde migratie. De levende lokale database, applicatiecode en bronstatussen zijn niet gewijzigd.
+Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 7 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
 
 ## Hoofdkeuze
 
@@ -292,11 +292,11 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 | `ndff_florbase_inventarisatie` | 183 | `vaatplanten_florbase_inventarisatie` |
 | `ndff_florbase_inventarisatie_taxon` | 101.126 | `vaatplanten_florbase_inventarisatie_taxon` |
 | `ndff_florbase_recordselectie` | 21.161 | `vaatplanten_florbase_recordselectie` |
-| `ndff_hns_doelbereik` | 703 | `vaatplanten_hns_doelbereik` |
-| `ndff_hns_hok_jaar_taxon` | 8.436 | `vaatplanten_hns_hok_jaar_taxon` |
-| `ndff_hns_inventarisatie` | 26 | `vaatplanten_hns_inventarisatie` |
-| `ndff_hns_inventarisatie_taxon` | 16.169 | `vaatplanten_hns_inventarisatie_taxon` |
-| `ndff_hns_recordselectie` | 4.569 | `vaatplanten_hns_recordselectie` |
+| `ndff_hns_doelbereik` | 1.406 | `vaatplanten_hns_doelbereik` |
+| `ndff_hns_hok_jaar_taxon` | 16.872 | `vaatplanten_hns_hok_jaar_taxon` |
+| `ndff_hns_inventarisatie` | 52 | `vaatplanten_hns_inventarisatie` |
+| `ndff_hns_inventarisatie_taxon` | 32.338 | `vaatplanten_hns_inventarisatie_taxon` |
+| `ndff_hns_recordselectie` | 9.138 | `vaatplanten_hns_recordselectie` |
 | `ndff_libel_bezoek` | 461 | `libellen_bezoek` |
 | `ndff_libel_bezoek_taxon` | 13.173 | `libellen_bezoek_taxon` |
 | `ndff_libel_routefamilie` | 9 | `libellen_routefamilie` |

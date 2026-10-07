@@ -2263,7 +2263,7 @@ def main() -> int:
         "73",
         "ndff-zeereep-v2",
         "--audit-zeereeppaddenstoelen",
-        "ndff-hns-v1",
+        "ndff-hns-v2",
         "--audit-hns",
         "ndff-korstmos-v2",
         "--audit-korstmossen",

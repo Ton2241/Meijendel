@@ -201,6 +201,10 @@ MySQL:
 - voor inloggen is `-u root -p` nodig
 - behandel de levende lokale Meijendel-MySQL-database op de iMac als de
   canonieke schrijfbron
+- vraag na iedere wijziging van de levende lokale database eerst aan Ton of ook
+  de zware afgeleide exportketen nodig is. Start `Meijendel.sql`-export,
+  proefimport en Shiny-cachebouw nooit automatisch als onderdeel van een
+  gewone databasecorrectie; daarvoor is afzonderlijk akkoord vereist
 - genereer `Meijendel.sql` uitsluitend opnieuw uit die gevalideerde database;
   de dump is een afspiegeling en nooit een zelfstandige bron
 - laat een productieback-up of oudere dump nooit de levende database als
@@ -476,7 +480,8 @@ MySQL:
   `11.201` gescheiden van `11.204` en controleer vóór gebruik met
   `--audit-bospaddenstoelen`
 - gebruik voor Het Nieuwe Strepen-protocol `12.204` reconstructieversie
-  `ndff-hns-v1` en de vijf openbare tabellen `Meijendel.ndff_hns_*`. Behandel
+  `ndff-hns-v2` en de vijf openbare tabellen `Meijendel.ndff_hns_*`. V1 blijft
+  uitsluitend als historisch auditspoor bewaard. Behandel
   de 1.145 verschillende bronintervallen niet als bezoeken. Leid echte nullen
   uitsluitend af binnen de 23 als `volledige_lijst_aannemelijk`
   geclassificeerde datum/ruimteclusters en het daaruit aantoonbare lokale
@@ -487,9 +492,9 @@ MySQL:
   extra velddag. Binnen één dag-hoktelling kunnen één, twee of drie
   oorspronkelijke lijsten liggen; gebruik die zonder lijst-ID nooit als
   afzonderlijke waarnemersherhalingen. Beschouw tellingen op verschillende
-  kalenderdagen wel als verschillende dag-hoktellingen. De huidige
-  `herhaalstatus` in `ndff-hns-v1` moet vóór een nieuwe HNS-analyse via
-  `ndff-hns-v2` worden vervangen. Tel
+  kalenderdagen wel als verschillende dag-hoktellingen. Interpreteer de
+  v2-status `meerdere_teldagen_in_hokjaar` uitsluitend als kalenderherhaling,
+  niet als bewijs voor onafhankelijke waarnemers. Tel
   aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
   vóór gebruik met `--audit-hns`
 - gebruik voor korstmossenprotocol `02.202` reconstructieversie
@@ -545,7 +550,10 @@ MySQL:
   2026 bevestigd dat Dunea de brongegevens beheert en FLORON alleen de software
   levert. Behandel de 79 in het rapport bevestigde routejaren sterker dan de 45
   uitsluitend uit NDFF afgeleide routejaren; valideer die laatste zo nodig
-  rechtstreeks met een bestaande Dunea-export. Controleer vóór gebruik met
+  rechtstreeks met een bestaande Dunea-export. De lokale controle van
+  reposities, documenten, iCloud-downloads en Zotero op 7 oktober 2026 vond
+  zo'n primaire export niet. Herhaal die brede lokale zoekactie niet zonder
+  nieuwe aanwijzing; de resterende leemte ligt bij Dunea. Controleer vóór gebruik met
   `--audit-lmfa`
 - gebruik `uri` of `identity` uit de NDFF-export als stabiele
   waarnemingssleutel voor FLORON-records. Vraag FLORON niet om een tweede

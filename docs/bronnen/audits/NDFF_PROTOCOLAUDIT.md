@@ -563,7 +563,7 @@ als uitgesloten gemarkeerd.
 
 De eerdere telling van 1.145 verschillende begin-/eindtijdcombinaties was geen
 bezoektelling. Bij app-invoer heeft vrijwel iedere plantwaarneming haar eigen
-tijdstip. Regelversie `ndff-hns-v1` groepeert de 4.569 openbare bronregels
+tijdstip. Regelversie `ndff-hns-v2` groepeert de 4.569 openbare bronregels
 daarom op kalenderdatum en ruimtelijk samenhangende RD-kilometerhokken. Het hok
 met minimaal 80% van de regels geldt als waarschijnlijk doelhok. Een cluster
 geldt als `volledige_lijst_aannemelijk` wanneer het binnen 27 april-30 september
@@ -587,13 +587,13 @@ gebruikt, maar tellingen op verschillende kalenderdagen zijn wel afzonderlijke
 dag-hoktellingen.
 
 Deze informatie bevestigt de groepering van de 26 clusters: ieder cluster bevat
-precies één verschillende begindatum en één doelhok. De v1-presentatie moet wel
-worden gecorrigeerd. Bij negentien clusters ligt `periode_stop` na de
-begindatum; die einddatum bewijst geen tweede velddag. Verder dragen 21 clusters
-nog de status `herhaling_aanwezig_onafhankelijkheid_niet_bevestigd`, terwijl die
-status nu alleen betekent dat hetzelfde hok in hetzelfde jaar op verschillende
-dagen is geteld. `ndff-hns-v2` moet daarom de begindatum als teldatum gebruiken
-en deze status neutraler formuleren. De 11.730 nullen blijven afgeleide
+precies één verschillende begindatum en één doelhok. V2 gebruikt de begindatum
+als teldatum; een latere `periode_stop` bewijst geen tweede velddag. Bij 21
+clusters staat nu neutraal dat hetzelfde hok in hetzelfde jaar op meerdere
+kalenderdagen is geteld. Dat is geen uitspraak over onafhankelijke waarnemers.
+De recordselectie, het doelbereik, de positieve combinaties en afgeleide nullen
+zijn gelijk aan `ndff-hns-v1`; v1 blijft als historisch auditspoor bewaard. De
+11.730 nullen blijven afgeleide
 protocolnullen: zij zijn niet door FLORON opgeslagen, maar volgen uit een
 aannemelijk volledige HNS-telling en het lokale doelbereik. Gebruik de matrix
 voorlopig voor verspreidings- en occupancyanalyse; voer aantallen en dubbele
@@ -736,6 +736,11 @@ de 7.807 afgeleide nullen horen 4.945 bij de 79 in het rapport bevestigde
 routejaren. De overige 2.862 horen bij de 45 alleen uit NDFF afgeleide
 routejaren. Voor validatie van die 45 routejaren zijn de primaire Dunea-export,
 routeversies en eventuele methodewijzigingen de kortste gegevenslijn.
+Een gerichte controle op 7 oktober 2026 van de lokale reposities, documenten,
+iCloud-downloads en Zotero vond geen primaire Dunea-export. Alleen het officiële
+rapport en algemene methodedocumenten zijn lokaal aanwezig. De resterende
+leemte kan daarom alleen rechtstreeks met een bestaande Dunea-export worden
+gesloten.
 
 De gerichte plantenprojecten `12.002` en `12.003`, Nectarindex `12.209` en
 LMF-A `12.211` zijn doelsoortafhankelijk geclassificeerd. Voor de negen
