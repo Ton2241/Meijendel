@@ -280,7 +280,7 @@ recordselectie die exacte tellingen boven parallelle presentie kiest, een
 conservatief meetpunt-doelbereik, bezoeken, bezoek-soortmatrix en jaarlijkse
 maximumtelling. De keten bewaart echte nullen alleen binnen aantoonbaar gevolgde
 telsoorten en houdt `11.201` volledig gescheiden van opvolger `11.204`.
-`ndff_hns_*` reconstrueert protocol `12.204` in `Meijendel` als
+`hns_*` reconstrueert protocol `12.204` in `Meijendel` als
 inventarisaties, recordselectie, lokaal doelbereik, inventarisatie-taxonmatrix
 en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
 `ndff-hns-v2` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
@@ -306,7 +306,7 @@ datumcluster of geraakt SOVON-plot. De laag bewaart jaarprecisie, een
 jaargrensoverschrijdende inventarisatie, presentiewaarden zonder aantalsklasse,
 dubbelen en abundantieconflicten afzonderlijk. De protocolcode geldt als bewijs
 voor de voorgeschreven minimale inspanning en dekking van relevante biotopen.
-`ndff_florbase_*` reconstrueert protocol `12.001` onder `ndff-florbase-v1` in
+`florbase_*` reconstrueert protocol `12.001` onder `ndff-florbase-v1` in
 `Meijendel`: kilometerhok-jaarinventarisaties, volledige recordselectie, lokaal
 doelbereik en een inventarisatie-taxonmatrix. Alleen hok-jaren met minimaal 50
 taxa leveren voorlopige protocolnullen; fragmenten blijven positieve
@@ -314,7 +314,7 @@ broninformatie. FLORON heeft bevestigd dat jaar plus kilometerhok de fijnste
 beschikbare teleenheid is en dat de ontbrekende lijst- en bezoekmetadata niet
 als aanvullende bronstructuur beschikbaar zijn. De lokale drempel van vijftig
 taxa blijft dus de grondslag en onzekerheid van de nulafleiding.
-`ndff_lmfa_*` reconstrueert protocol `12.211` onder `ndff-lmfa-v1` in
+`lmfa_*` reconstrueert protocol `12.211` onder `ndff-lmfa-v1` in
 `Meijendel`: vaste kilometerhokroutes, routejaren, volledige recordselectie, de
 75 officiële trendsoorten en een routejaar-soortmatrix. Niet-gemeld is binnen
 een uitgevoerd routejaar een echte nul voor deze 75 soorten. Exacte

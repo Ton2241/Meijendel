@@ -117,11 +117,11 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             if table != 'lvd_resultaat':
                 prefix = table.removesuffix('_resultaat')
                 routes[table].update(event_table=prefix+'_event', dataset_table=prefix+'_dataset')
-        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
+        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
                              'role': 'bronverwijzing'}
-        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
+        elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
             if version not in columns:
@@ -328,20 +328,20 @@ CENTRAL_QUERY_SCHEMA = {
     'daz_bmp_recordkandidaat': frozenset(['aangemaakt_op', 'bezoek_id', 'bezoekdatum', 'plot_id', 'reconstructieversie', 'waarneming_id']),
     'daz_bmp_recordselectie': frozenset(['aangemaakt_op', 'aantal_exact', 'bezoek_id', 'doelrelatie', 'gebruiksstatus', 'kandidaat_bezoekaantal', 'koppelstatus', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'waarneming_id', 'wetenschappelijke_naam']),
     'ndff_eencelligen': frozenset(['waarneming_id']),
-    'ndff_florbase_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'taxonomiestatus', 'wetenschappelijke_naam']),
-    'ndff_florbase_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'einddatum', 'geregistreerde_taxa', 'hok_x', 'hok_y', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie', 'volledigheidsdrempel_taxa', 'volledigheidsstatus']),
-    'ndff_florbase_inventarisatie_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'meetwaardestatus', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_florbase_recordselectie': frozenset(['aangemaakt_op', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'florbase_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'taxonomiestatus', 'wetenschappelijke_naam']),
+    'florbase_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'einddatum', 'geregistreerde_taxa', 'hok_x', 'hok_y', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie', 'volledigheidsdrempel_taxa', 'volledigheidsstatus']),
+    'florbase_inventarisatie_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'meetwaardestatus', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'florbase_recordselectie': frozenset(['aangemaakt_op', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'ndff_geleedpotigen_overig': frozenset(['waarneming_id']),
     'ndff_habslak_hokjaar': frozenset(['aangemaakt_op', 'bemonsteringsstatus', 'doelsoort', 'doelsoort_bronrecordaantal', 'doelsoortstatus', 'hokjaar_sleutel', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'minimale_monsterlocaties', 'monsteraantal', 'protocol_sleutel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'unieke_monsterlocaties']),
     'ndff_habslak_monster': frozenset(['aangemaakt_op', 'bezoekdatum', 'bronrecordaantal', 'centroide_x_rd', 'centroide_y_rd', 'doelbereikstatus', 'eenduidig_plot_id', 'geregistreerde_taxa', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'monster_sleutel', 'openbare_geometrie_sha256', 'oppervlakte_m2', 'plotstatus', 'protocol_sleutel', 'reconstructieversie']),
     'ndff_habslak_monster_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'doelrelatie', 'kwaliteitsnotitie', 'meetwaarden_json', 'monster_sleutel', 'nulstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
     'ndff_habslak_recordselectie': frozenset(['aangemaakt_op', 'doelrelatie', 'monster_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
-    'ndff_hns_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
-    'ndff_hns_hok_jaar_taxon': frozenset(['aangemaakt_op', 'doelhok', 'inventarisatieaantal', 'jaar', 'jaarstatus', 'kwaliteitsnotitie', 'onafhankelijkheidsstatus', 'positief_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
-    'ndff_hns_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'doelhok', 'doelhok_aandeel', 'einddatum', 'geregistreerde_taxa', 'herhaalstatus', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'protocol_sleutel', 'reconstructieversie', 'seizoenstatus']),
-    'ndff_hns_inventarisatie_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_hns_recordselectie': frozenset(['aangemaakt_op', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'hns_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'hns_hok_jaar_taxon': frozenset(['aangemaakt_op', 'doelhok', 'inventarisatieaantal', 'jaar', 'jaarstatus', 'kwaliteitsnotitie', 'onafhankelijkheidsstatus', 'positief_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'hns_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'doelhok', 'doelhok_aandeel', 'einddatum', 'geregistreerde_taxa', 'herhaalstatus', 'inspanningstatus', 'inventarisatie_sleutel', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'protocol_sleutel', 'reconstructieversie', 'seizoenstatus']),
+    'hns_inventarisatie_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'hns_recordselectie': frozenset(['aangemaakt_op', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'ndff_insecten_overig': frozenset(['waarneming_id']),
     'ndff_kevers': frozenset(['waarneming_id']),
     'ndff_konijn_hokdatum_taxon': frozenset(['aangemaakt_op', 'aantal_max', 'aantal_min', 'aantal_som', 'aggregatiestatus', 'bronrecordaantal', 'doelrelatie', 'hokdatum_taxon_sleutel', 'hoknummer', 'jaar', 'nulstatus', 'openbare_geometrie_sha256', 'reconstructieversie', 'taxon_bronkoppeling_id', 'teldatum', 'wetenschappelijke_naam']),
@@ -367,11 +367,11 @@ CENTRAL_QUERY_SCHEMA = {
     'ndff_liveatlas_bezoek_soortgroep': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulstatus', 'reconstructieversie', 'soortgroep_raw', 'volledigheidsstatus', 'waargenomen_taxa']),
     'ndff_liveatlas_bezoek_taxon': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'soortgroep_raw', 'taxon_bronkoppeling_id', 'totaal_aantal', 'waarnemingsstatus', 'wetenschappelijke_naam']),
     'ndff_liveatlas_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'eenduidig_plot_id', 'reconstructieversie', 'ruimtelijke_status', 'selectiereden', 'selectiestatus', 'waarneming_id']),
-    'ndff_lmfa_bezoek': frozenset(['aangemaakt_op', 'begindatum', 'bezoek_sleutel', 'bezoekstatus', 'bronrecordaantal', 'einddatum', 'geregistreerde_doelsoorten', 'jaar', 'kwaliteitsnotitie', 'reconstructieversie', 'route_sleutel', 'vervaagd_bronrecordaantal']),
-    'ndff_lmfa_bezoek_taxon': frozenset(['aangemaakt_op', 'abundantieklasse', 'bezoek_sleutel', 'bronklasse_raw', 'bronrecordaantal', 'exact_totaal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_lmfa_doelsoort': frozenset(['aangemaakt_op', 'bron_url', 'doelstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
-    'ndff_lmfa_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
-    'ndff_lmfa_route': frozenset(['aangemaakt_op', 'bron_url', 'hok_x', 'hok_y', 'hoknummer', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'route_sleutel', 'route_status']),
+    'lmfa_bezoek': frozenset(['aangemaakt_op', 'begindatum', 'bezoek_sleutel', 'bezoekstatus', 'bronrecordaantal', 'einddatum', 'geregistreerde_doelsoorten', 'jaar', 'kwaliteitsnotitie', 'reconstructieversie', 'route_sleutel', 'vervaagd_bronrecordaantal']),
+    'lmfa_bezoek_taxon': frozenset(['aangemaakt_op', 'abundantieklasse', 'bezoek_sleutel', 'bronklasse_raw', 'bronrecordaantal', 'exact_totaal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'lmfa_doelsoort': frozenset(['aangemaakt_op', 'bron_url', 'doelstatus', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'lmfa_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'lmfa_route': frozenset(['aangemaakt_op', 'bron_url', 'hok_x', 'hok_y', 'hoknummer', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'route_sleutel', 'route_status']),
     'ndff_microvlinders': frozenset(['waarneming_id']),
     'ndff_mos_datumcluster': frozenset(['aangemaakt_op', 'brongeometrieaantal', 'bronrecordaantal', 'clusterstatus', 'datumcluster_sleutel', 'geregistreerde_taxa', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'reconstructieversie', 'tijdprecisie']),
     'ndff_mos_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
@@ -769,7 +769,7 @@ def central_query_plan(db: CentralQueryDatabase) -> dict:
     # Source catalogue names remain the literal evidence after central taxon merges.
     candidates = defaultdict(list)
     for link in links:
-        if link['dataset'] in {'ndff_soorten','sovon_avimap_taxon','ndff_lmfa_doelsoort',
+        if link['dataset'] in {'ndff_soorten','sovon_avimap_taxon','lmfa_doelsoort',
                               'ndff_zeereep_doelbereik'} and link['taxon_id'] is not None:
             candidates[link['name']].append(link)
     for table, route in routes.items():
@@ -792,7 +792,7 @@ def central_query_plan(db: CentralQueryDatabase) -> dict:
                                   if row[route['name_field']]=='Ondatra zibethicus' else [])
             else:
                 found = [b for b in found if b['dataset']=='ndff_soorten' or
-                         (table.startswith('ndff_lmfa_') and b['dataset']=='ndff_lmfa_doelsoort') or
+                         (table.startswith('lmfa_') and b['dataset']=='lmfa_doelsoort') or
                          (table.startswith('ndff_zeereep_') and b['dataset']=='ndff_zeereep_doelbereik')]
             targets = {b['taxon_id'] for b in found}
             if len(targets) != 1:
@@ -987,7 +987,7 @@ def central_query_triggers_sql(plan: dict) -> str:
             if 'batch_id' in route['context_fields'] and catalogue=='sovon_avimap_taxon': context+=' AND c.batch_id=NEW.batch_id'
             source_lookup = (f'SELECT COUNT(DISTINCT b.taxon_id),MIN(b.taxon_id) INTO cq_n,cq_taxon FROM {catalogue} c '
                             'JOIN taxa_bronkoppeling b ON b.koppeling_id=c.taxon_bronkoppeling_id WHERE '+context+'; ')
-            for prefix,source in [('ndff_lmfa_','ndff_lmfa_doelsoort'),('ndff_zeereep_','ndff_zeereep_doelbereik')]:
+            for prefix,source in [('lmfa_','lmfa_doelsoort'),('ndff_zeereep_','ndff_zeereep_doelbereik')]:
                 if table.startswith(prefix):
                     source_lookup += ('IF cq_n=0 THEN SELECT COUNT(DISTINCT b.taxon_id),MIN(b.taxon_id) INTO cq_n,cq_taxon '
                         "FROM taxa_bronkoppeling b WHERE b.bron_systeem='Meijendel' AND b.ingetrokken_op IS NULL "
@@ -1242,7 +1242,7 @@ def central_query_negative_tests(db: CentralQueryDatabase) -> None:
         'UPDATE lvd_resultaat SET taxon_bronkoppeling_id=0 LIMIT 1',
         'UPDATE pq_vegetatie_waarneming SET taxon_bronkoppeling_id=0 LIMIT 1',
         'UPDATE vangblik_vangst SET taxon_bronkoppeling_id=0 LIMIT 1',
-        'UPDATE ndff_lmfa_bezoek_taxon SET wetenschappelijke_naam=\'Niet geregistreerd taxon\' LIMIT 1',
+        'UPDATE lmfa_bezoek_taxon SET wetenschappelijke_naam=\'Niet geregistreerd taxon\' LIMIT 1',
         "UPDATE taxa_bronkoppeling SET bron_versie='onjuiste versie' WHERE koppeling_id="
         '(SELECT taxon_bronkoppeling_id FROM ndff_soorten LIMIT 1)',
         'UPDATE taxa_bronkoppeling SET taxon_id=NULL WHERE koppeling_id='
@@ -1265,7 +1265,7 @@ def central_query_negative_tests(db: CentralQueryDatabase) -> None:
         except RuntimeError as exc:
             if "45000" not in str(exc): raise
         else: raise RuntimeError('Ongeldige invoer werd niet geblokkeerd: '+probe.split(' SET ')[0])
-    for table in ('lvd_resultaat','ndff_lmfa_bezoek_taxon','ndff_soorten','soorten',
+    for table in ('lvd_resultaat','lmfa_bezoek_taxon','ndff_soorten','soorten',
                   'sovon_avimap_taxon','pq_vegetatie_waarneming','vangblik_vangst'):
         db.sql('START TRANSACTION; UPDATE '+query_identifier(table)+
                ' SET taxon_bronkoppeling_id=taxon_bronkoppeling_id LIMIT 1; ROLLBACK;',write=True)

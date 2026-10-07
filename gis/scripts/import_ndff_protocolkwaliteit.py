@@ -143,11 +143,11 @@ SOVON_AVIMAP_TABLE_PREFIX = "Meijendel.sovon_avimap"
 SOVON_BMP_TABLE_PREFIX = "Meijendel.sovon_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
-HNS_TABLE_PREFIX = "Meijendel.ndff_hns"
+HNS_TABLE_PREFIX = "Meijendel.hns"
 KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
 MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
-FLORBASE_TABLE_PREFIX = "Meijendel.ndff_florbase"
-LMFA_TABLE_PREFIX = "Meijendel.ndff_lmfa"
+FLORBASE_TABLE_PREFIX = "Meijendel.florbase"
+LMFA_TABLE_PREFIX = "Meijendel.lmfa"
 HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
 BRAAKBAL_TABLE_PREFIX = "Meijendel.ndff_braakbal"
 TUINTELLING_TABLE_PREFIX = "Meijendel.ndff_tuintelling"
@@ -7592,12 +7592,12 @@ def hns_repeat_status(count_days_in_hok_year: int) -> tuple[str, str]:
 def ensure_hns_v2_schema(mysql_client: Path, client_args: list[str]) -> None:
     """Breid bestaande HNS-enums uit zonder historische v1-regels te wijzigen."""
     statements = """
-ALTER TABLE Meijendel.ndff_hns_inventarisatie
+ALTER TABLE Meijendel.hns_inventarisatie
   MODIFY herhaalstatus ENUM(
     'enkele_inventarisatie','herhaling_aanwezig_onafhankelijkheid_niet_bevestigd',
     'enkele_teldag_in_hokjaar','meerdere_teldagen_in_hokjaar'
   ) NOT NULL;
-ALTER TABLE Meijendel.ndff_hns_hok_jaar_taxon
+ALTER TABLE Meijendel.hns_hok_jaar_taxon
   MODIFY onafhankelijkheidsstatus ENUM(
     'niet_van_toepassing_een_inventarisatie',
     'herhaling_aanwezig_onafhankelijkheid_niet_bevestigd',
@@ -11303,38 +11303,38 @@ SELECT JSON_OBJECT(
 
 def hns_validation_sql() -> str:
     version = sql_text(HNS_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_hns_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"hns_{suffix}") for suffix in (
         "inventarisatie", "recordselectie", "doelbereik",
         "inventarisatie_taxon", "hok_jaar_taxon",
     ))
     return f"""
 SELECT JSON_OBJECT(
   'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.204%' AND soortgroep_raw='Vaatplanten'),
-  'year_aggregate_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='vervaagd_jaarrecord_niet_toegewezen'),
-  'linked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version}),
-  'inventories',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version}),
-  'complete_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
-  'fragment_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
-  'complete_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst'),
-  'fragment_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_fragment'),
-  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_hns_doelbereik WHERE reconstructieversie={version}),
-  'visit_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version}),
-  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'hok_years',(SELECT COUNT(*) FROM (SELECT doelhok,jaar FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} GROUP BY doelhok,jaar) q),
-  'annual_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version}),
-  'annual_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='waargenomen'),
-  'annual_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='echte_nul'),
-  'repeated_hok_years',(SELECT COUNT(*) FROM (SELECT doelhok,jaar FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk' GROUP BY doelhok,jaar HAVING COUNT(*)>1) q),
-  'independence_unconfirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND herhaalstatus='herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'),
-  'multiple_count_day_visits',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND herhaalstatus='meerdere_teldagen_in_hokjaar'),
-  'stop_date_differs_from_count_date',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie WHERE reconstructieversie={version} AND einddatum<>begindatum),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND bronrecordaantal=0) OR (waarnemingsstatus='echte_nul' AND bronrecordaantal<>0))),
-  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_hns_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_hns_inventarisatie i LEFT JOIN Meijendel.ndff_hns_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} AND i.lijststatus='volledige_lijst_aannemelijk' GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst')),
-  'selection_status_mismatch',(SELECT COUNT(*) FROM Meijendel.ndff_hns_recordselectie s JOIN Meijendel.ndff_hns_inventarisatie i ON i.reconstructieversie=s.reconstructieversie AND i.inventarisatie_sleutel=s.inventarisatie_sleutel WHERE s.reconstructieversie={version} AND ((s.selectiestatus='opgenomen_volledige_lijst' AND i.lijststatus<>'volledige_lijst_aannemelijk') OR (s.selectiestatus='opgenomen_fragment' AND i.lijststatus<>'fragment'))),
-  'invalid_annual_rows',(SELECT COUNT(*) FROM Meijendel.ndff_hns_hok_jaar_taxon WHERE reconstructieversie={version} AND ((jaarstatus='waargenomen' AND (positief_inventarisatieaantal=0 OR positief_inventarisatieaantal>inventarisatieaantal)) OR (jaarstatus='echte_nul' AND positief_inventarisatieaantal<>0))),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_hns_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.204%' AND o.soortgroep_raw='Vaatplanten' AND s.waarneming_id IS NULL),
+  'year_aggregate_records',(SELECT COUNT(*) FROM Meijendel.hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='vervaagd_jaarrecord_niet_toegewezen'),
+  'linked_source_records',(SELECT COUNT(*) FROM Meijendel.hns_recordselectie WHERE reconstructieversie={version}),
+  'inventories',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version}),
+  'complete_inventories',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'fragment_inventories',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
+  'complete_source_records',(SELECT COUNT(*) FROM Meijendel.hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst'),
+  'fragment_source_records',(SELECT COUNT(*) FROM Meijendel.hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_fragment'),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.hns_doelbereik WHERE reconstructieversie={version}),
+  'visit_matrix_rows',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'hok_years',(SELECT COUNT(*) FROM (SELECT doelhok,jaar FROM Meijendel.hns_hok_jaar_taxon WHERE reconstructieversie={version} GROUP BY doelhok,jaar) q),
+  'annual_rows',(SELECT COUNT(*) FROM Meijendel.hns_hok_jaar_taxon WHERE reconstructieversie={version}),
+  'annual_positive_rows',(SELECT COUNT(*) FROM Meijendel.hns_hok_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='waargenomen'),
+  'annual_zero_rows',(SELECT COUNT(*) FROM Meijendel.hns_hok_jaar_taxon WHERE reconstructieversie={version} AND jaarstatus='echte_nul'),
+  'repeated_hok_years',(SELECT COUNT(*) FROM (SELECT doelhok,jaar FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk' GROUP BY doelhok,jaar HAVING COUNT(*)>1) q),
+  'independence_unconfirmed_visits',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version} AND herhaalstatus='herhaling_aanwezig_onafhankelijkheid_niet_bevestigd'),
+  'multiple_count_day_visits',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version} AND herhaalstatus='meerdere_teldagen_in_hokjaar'),
+  'stop_date_differs_from_count_date',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie WHERE reconstructieversie={version} AND einddatum<>begindatum),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.hns_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND bronrecordaantal=0) OR (waarnemingsstatus='echte_nul' AND bronrecordaantal<>0))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.hns_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.hns_inventarisatie i LEFT JOIN Meijendel.hns_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} AND i.lijststatus='volledige_lijst_aannemelijk' GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.hns_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.hns_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst')),
+  'selection_status_mismatch',(SELECT COUNT(*) FROM Meijendel.hns_recordselectie s JOIN Meijendel.hns_inventarisatie i ON i.reconstructieversie=s.reconstructieversie AND i.inventarisatie_sleutel=s.inventarisatie_sleutel WHERE s.reconstructieversie={version} AND ((s.selectiestatus='opgenomen_volledige_lijst' AND i.lijststatus<>'volledige_lijst_aannemelijk') OR (s.selectiestatus='opgenomen_fragment' AND i.lijststatus<>'fragment'))),
+  'invalid_annual_rows',(SELECT COUNT(*) FROM Meijendel.hns_hok_jaar_taxon WHERE reconstructieversie={version} AND ((jaarstatus='waargenomen' AND (positief_inventarisatieaantal=0 OR positief_inventarisatieaantal>inventarisatieaantal)) OR (jaarstatus='echte_nul' AND positief_inventarisatieaantal<>0))),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.hns_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.204%' AND o.soortgroep_raw='Vaatplanten' AND s.waarneming_id IS NULL),
   'legacy_secure_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
@@ -11424,30 +11424,30 @@ SELECT JSON_OBJECT(
 
 def florbase_validation_sql() -> str:
     version = sql_text(FLORBASE_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_florbase_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"florbase_{suffix}") for suffix in (
         "inventarisatie", "recordselectie", "doelbereik", "inventarisatie_taxon",
     ))
     return f"""
 SELECT JSON_OBJECT(
   'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.001%' AND soortgroep_raw='Vaatplanten' AND vervaagd=0),
   'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.001%' AND soortgroep_raw='Vaatplanten' AND vervaagd=1),
-  'inventories',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version}),
-  'complete_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
-  'fragment_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
-  'complete_source_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
-  'fragment_source_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
-  'complete_hoks',(SELECT COUNT(DISTINCT CONCAT(hok_x,'-',hok_y)) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
-  'all_hoks',(SELECT COUNT(DISTINCT CONCAT(hok_x,'-',hok_y)) FROM Meijendel.ndff_florbase_inventarisatie WHERE reconstructieversie={version}),
-  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_doelbereik WHERE reconstructieversie={version}),
-  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version}),
-  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
-  'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaardestatus='alleen_presentie'),
-  'amount_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaardestatus='aantalsinformatie_niet_aggregeerbaar'),
-  'preliminary_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='protocolnul_onder_volledigheidsaanname'),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR meetwaardestatus='niet_van_toepassing' OR nulregel<>'niet_van_toepassing' OR JSON_LENGTH(meetwaarden_json)=0)) OR (waarnemingsstatus='protocolnul_onder_volledigheidsaanname' AND (bronrecordaantal<>0 OR meetwaardestatus<>'niet_van_toepassing' OR nulregel<>'niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa' OR JSON_LENGTH(meetwaarden_json)<>0)))),
-  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_florbase_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_florbase_inventarisatie i LEFT JOIN Meijendel.ndff_florbase_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} AND i.lijststatus='volledige_lijst_aannemelijk' GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.ndff_florbase_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst')),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_florbase_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'inventories',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version}),
+  'complete_inventories',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'fragment_inventories',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
+  'complete_source_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'fragment_source_records',(SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='fragment'),
+  'complete_hoks',(SELECT COUNT(DISTINCT CONCAT(hok_x,'-',hok_y)) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version} AND lijststatus='volledige_lijst_aannemelijk'),
+  'all_hoks',(SELECT COUNT(DISTINCT CONCAT(hok_x,'-',hok_y)) FROM Meijendel.florbase_inventarisatie WHERE reconstructieversie={version}),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.florbase_doelbereik WHERE reconstructieversie={version}),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen'),
+  'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaardestatus='alleen_presentie'),
+  'amount_positive_rows',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen' AND meetwaardestatus='aantalsinformatie_niet_aggregeerbaar'),
+  'preliminary_zero_rows',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='protocolnul_onder_volledigheidsaanname'),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen' AND (bronrecordaantal=0 OR meetwaardestatus='niet_van_toepassing' OR nulregel<>'niet_van_toepassing' OR JSON_LENGTH(meetwaarden_json)=0)) OR (waarnemingsstatus='protocolnul_onder_volledigheidsaanname' AND (bronrecordaantal<>0 OR meetwaardestatus<>'niet_van_toepassing' OR nulregel<>'niet_gemeld_op_12_001_hokjaar_met_minimaal_50_taxa' OR JSON_LENGTH(meetwaarden_json)<>0)))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.florbase_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.florbase_inventarisatie i LEFT JOIN Meijendel.florbase_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} AND i.lijststatus='volledige_lijst_aannemelijk' GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.florbase_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen')-(SELECT COUNT(*) FROM Meijendel.florbase_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_volledige_lijst')),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.florbase_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
   'pq_non_applicable_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_pq_koppeling p ON p.waarneming_id=o.waarneming_id AND p.regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)} WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND p.classificatie='niet_van_toepassing'),
   'pq_other_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_pq_koppeling p ON p.waarneming_id=o.waarneming_id AND p.regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)} WHERE o.protocol LIKE '12.001%' AND o.soortgroep_raw='Vaatplanten' AND p.classificatie<>'niet_van_toepassing'),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
@@ -11457,26 +11457,26 @@ SELECT JSON_OBJECT(
 
 def lmfa_validation_sql() -> str:
     version = sql_text(LMFA_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_lmfa_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"lmfa_{suffix}") for suffix in (
         "route", "bezoek", "recordselectie", "doelsoort", "bezoek_taxon",
     ))
     return f"""
 SELECT JSON_OBJECT(
   'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '12.211%' AND soortgroep_raw='Vaatplanten'),
-  'routes',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_route WHERE reconstructieversie={version}),
-  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek WHERE reconstructieversie={version}),
-  'report_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek WHERE reconstructieversie={version} AND bezoekstatus='bevestigd_in_flora_rapport_2021'),
-  'inferred_visits',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek WHERE reconstructieversie={version} AND bezoekstatus='afgeleid_uit_12_211_hokjaar_niet_bevestigd_in_rapport'),
-  'target_species',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_doelsoort WHERE reconstructieversie={version}),
-  'selection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_recordselectie WHERE reconstructieversie={version}),
-  'target_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_doelsoort'),
-  'outside_target_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_recordselectie WHERE reconstructieversie={version} AND selectiestatus='bewaard_buiten_officieel_doelbereik'),
-  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version}),
-  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'uncertain_aggregation_rows',(SELECT COUNT(*) FROM Meijendel.ndff_lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_aggregatie_onzeker'),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_lmfa_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.211%' AND o.soortgroep_raw='Vaatplanten' AND s.waarneming_id IS NULL),
-  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels FROM Meijendel.ndff_lmfa_bezoek b LEFT JOIN Meijendel.ndff_lmfa_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel HAVING matrixregels<>75) q),
+  'routes',(SELECT COUNT(*) FROM Meijendel.lmfa_route WHERE reconstructieversie={version}),
+  'visits',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek WHERE reconstructieversie={version}),
+  'report_confirmed_visits',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek WHERE reconstructieversie={version} AND bezoekstatus='bevestigd_in_flora_rapport_2021'),
+  'inferred_visits',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek WHERE reconstructieversie={version} AND bezoekstatus='afgeleid_uit_12_211_hokjaar_niet_bevestigd_in_rapport'),
+  'target_species',(SELECT COUNT(*) FROM Meijendel.lmfa_doelsoort WHERE reconstructieversie={version}),
+  'selection_rows',(SELECT COUNT(*) FROM Meijendel.lmfa_recordselectie WHERE reconstructieversie={version}),
+  'target_source_records',(SELECT COUNT(*) FROM Meijendel.lmfa_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen_doelsoort'),
+  'outside_target_source_records',(SELECT COUNT(*) FROM Meijendel.lmfa_recordselectie WHERE reconstructieversie={version} AND selectiestatus='bewaard_buiten_officieel_doelbereik'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'uncertain_aggregation_rows',(SELECT COUNT(*) FROM Meijendel.lmfa_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_aggregatie_onzeker'),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.lmfa_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '12.211%' AND o.soortgroep_raw='Vaatplanten' AND s.waarneming_id IS NULL),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels FROM Meijendel.lmfa_bezoek b LEFT JOIN Meijendel.lmfa_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel HAVING matrixregels<>75) q),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """

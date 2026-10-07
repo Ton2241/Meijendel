@@ -122,11 +122,11 @@ def main() -> int:
         "meijendel.ndff_bospaddenstoel_bezoek",
         "meijendel.ndff_bospaddenstoel_bezoek_taxon",
         "meijendel.ndff_bospaddenstoel_jaar_taxon",
-        "meijendel.ndff_hns_inventarisatie",
-        "meijendel.ndff_hns_recordselectie",
-        "meijendel.ndff_hns_doelbereik",
-        "meijendel.ndff_hns_inventarisatie_taxon",
-        "meijendel.ndff_hns_hok_jaar_taxon",
+        "meijendel.hns_inventarisatie",
+        "meijendel.hns_recordselectie",
+        "meijendel.hns_doelbereik",
+        "meijendel.hns_inventarisatie_taxon",
+        "meijendel.hns_hok_jaar_taxon",
         "meijendel.ndff_korstmos_meetlocatie",
         "meijendel.ndff_korstmos_bezoek",
         "meijendel.ndff_korstmos_recordselectie",
@@ -137,15 +137,15 @@ def main() -> int:
         "meijendel.ndff_mos_recordselectie",
         "meijendel.ndff_mos_doelbereik",
         "meijendel.ndff_mos_inventarisatie_taxon",
-        "meijendel.ndff_florbase_inventarisatie",
-        "meijendel.ndff_florbase_recordselectie",
-        "meijendel.ndff_florbase_doelbereik",
-        "meijendel.ndff_florbase_inventarisatie_taxon",
-        "meijendel.ndff_lmfa_route",
-        "meijendel.ndff_lmfa_bezoek",
-        "meijendel.ndff_lmfa_recordselectie",
-        "meijendel.ndff_lmfa_doelsoort",
-        "meijendel.ndff_lmfa_bezoek_taxon",
+        "meijendel.florbase_inventarisatie",
+        "meijendel.florbase_recordselectie",
+        "meijendel.florbase_doelbereik",
+        "meijendel.florbase_inventarisatie_taxon",
+        "meijendel.lmfa_route",
+        "meijendel.lmfa_bezoek",
+        "meijendel.lmfa_recordselectie",
+        "meijendel.lmfa_doelsoort",
+        "meijendel.lmfa_bezoek_taxon",
         "meijendel.ndff_habslak_monster",
         "meijendel.ndff_habslak_recordselectie",
         "meijendel.ndff_habslak_monster_taxon",
@@ -210,10 +210,10 @@ def main() -> int:
     assert "meijendel_ndff_secure.daz_bmp_" not in folded
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
-    assert "meijendel_ndff_secure.ndff_hns_" not in folded
+    assert "meijendel_ndff_secure.hns_" not in folded
     assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
     assert "meijendel_ndff_secure.ndff_mos_" not in folded
-    assert "meijendel_ndff_secure.ndff_florbase_" not in folded
+    assert "meijendel_ndff_secure.florbase_" not in folded
     assert "meijendel_ndff_secure.ndff_habslak_" not in folded
     assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
     assert "meijendel_ndff_secure.ndff_tuintelling_" not in folded
@@ -889,7 +889,7 @@ def main() -> int:
     assert module.DAZ_BMP_RULE_VERSION == "ndff-daz-bmp-v1"
     assert module.ZEEREEP_RULE_VERSION == "ndff-zeereep-v2"
     assert module.ZEEREEP_TABLE_PREFIX == "Meijendel.ndff_zeereep"
-    assert module.HNS_TABLE_PREFIX == "Meijendel.ndff_hns"
+    assert module.HNS_TABLE_PREFIX == "Meijendel.hns"
     assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v2"
     assert module.KORSTMOS_LEGACY_RULE_VERSION == "ndff-korstmos-v1"
     assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.ndff_korstmos"

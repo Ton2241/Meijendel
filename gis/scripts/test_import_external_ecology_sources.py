@@ -1168,16 +1168,16 @@ def check_central_new_source_versions(database):
                 else module.query_identifier(c) for c in columns]
         return ('INSERT INTO '+module.query_identifier(table)+' ('+','.join(map(module.query_identifier,columns))+') SELECT '+
                 ','.join(values)+' FROM '+module.query_identifier(table)+' '+where+' LIMIT 1;')
-    for table in ('ndff_lmfa_bezoek_taxon','sovon_avimap_daz_bezoek_taxon'):
+    for table in ('lmfa_bezoek_taxon','sovon_avimap_daz_bezoek_taxon'):
         setup='';where=''
-        if table=='ndff_lmfa_bezoek_taxon':
-            setup=('SET @cv=(SELECT reconstructieversie FROM ndff_lmfa_bezoek_taxon LIMIT 1); '
-                'SET @cb=(SELECT bezoek_sleutel FROM ndff_lmfa_bezoek_taxon LIMIT 1); '
-                'SET @cr=(SELECT route_sleutel FROM ndff_lmfa_bezoek WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb); '
-                'SET @cn=(SELECT wetenschappelijke_naam FROM ndff_lmfa_bezoek_taxon WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb LIMIT 1);')
-            setup+=clone('ndff_lmfa_route','WHERE reconstructieversie=@cv AND route_sleutel=@cr')
-            setup+=clone('ndff_lmfa_bezoek','WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb')
-            setup+=clone('ndff_lmfa_doelsoort','WHERE reconstructieversie=@cv AND wetenschappelijke_naam=@cn')
+        if table=='lmfa_bezoek_taxon':
+            setup=('SET @cv=(SELECT reconstructieversie FROM lmfa_bezoek_taxon LIMIT 1); '
+                'SET @cb=(SELECT bezoek_sleutel FROM lmfa_bezoek_taxon LIMIT 1); '
+                'SET @cr=(SELECT route_sleutel FROM lmfa_bezoek WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb); '
+                'SET @cn=(SELECT wetenschappelijke_naam FROM lmfa_bezoek_taxon WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb LIMIT 1);')
+            setup+=clone('lmfa_route','WHERE reconstructieversie=@cv AND route_sleutel=@cr')
+            setup+=clone('lmfa_bezoek','WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb')
+            setup+=clone('lmfa_doelsoort','WHERE reconstructieversie=@cv AND wetenschappelijke_naam=@cn')
             where='WHERE reconstructieversie=@cv AND bezoek_sleutel=@cb'
         sql=('START TRANSACTION; '+setup+clone(table,where)+' SELECT COUNT(*) FROM '+module.query_identifier(table)+
             ' w JOIN taxa_bronkoppeling b ON b.koppeling_id=w.taxon_bronkoppeling_id JOIN taxa t ON t.taxon_id=b.taxon_id '

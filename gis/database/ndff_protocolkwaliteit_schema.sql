@@ -1375,7 +1375,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_jaar_taxon (
 -- lijst- of waarnemer-ID. Een inventarisatie is daarom een controleerbare
 -- dag/ruimtedagcluster. Meerdere teldagen in hetzelfde hokjaar zijn afzonderlijke
 -- tellingen, maar geen bewijs voor onafhankelijke waarnemerslijsten binnen één dag.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie (
+CREATE TABLE IF NOT EXISTS Meijendel.hns_inventarisatie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '12.204',
@@ -1400,13 +1400,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie (
   kwaliteitsnotitie VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, inventarisatie_sleutel),
-  KEY ix_ndff_hns_hok_jaar (doelhok, jaar, lijststatus),
+  KEY ix_hns_hok_jaar (doelhok, jaar, lijststatus),
   CHECK (einddatum >= begindatum),
   CHECK (jaar = YEAR(begindatum)),
   CHECK (doelhok_aandeel BETWEEN 0 AND 1)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_recordselectie (
+CREATE TABLE IF NOT EXISTS Meijendel.hns_recordselectie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NULL,
@@ -1417,13 +1417,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_recordselectie (
   selectiereden VARCHAR(1000) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
-  KEY ix_ndff_hns_selectie_inventarisatie
+  KEY ix_hns_selectie_inventarisatie
     (reconstructieversie, inventarisatie_sleutel),
-  CONSTRAINT fk_ndff_hns_selectie_waarneming FOREIGN KEY
+  CONSTRAINT fk_hns_selectie_waarneming FOREIGN KEY
     (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_hns_selectie_inventarisatie FOREIGN KEY
+  CONSTRAINT fk_hns_selectie_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_hns_inventarisatie
+    REFERENCES Meijendel.hns_inventarisatie
       (reconstructieversie, inventarisatie_sleutel),
   CHECK (
     (selectiestatus='vervaagd_jaarrecord_niet_toegewezen'
@@ -1434,7 +1434,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_recordselectie (
   )
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_doelbereik (
+CREATE TABLE IF NOT EXISTS Meijendel.hns_doelbereik (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   afleidingsregel ENUM('waargenomen_op_aannemelijk_volledige_hns_lijst') NOT NULL,
@@ -1446,7 +1446,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_doelbereik (
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.hns_inventarisatie_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
@@ -1456,10 +1456,10 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie_taxon (
   kwaliteitsnotitie VARCHAR(1000) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, inventarisatie_sleutel, wetenschappelijke_naam),
-  KEY ix_ndff_hns_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
-  CONSTRAINT fk_ndff_hns_taxon_inventarisatie FOREIGN KEY
+  KEY ix_hns_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_hns_taxon_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_hns_inventarisatie
+    REFERENCES Meijendel.hns_inventarisatie
       (reconstructieversie, inventarisatie_sleutel),
   CHECK (
     (waarnemingsstatus='waargenomen' AND bronrecordaantal>0)
@@ -1467,7 +1467,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_inventarisatie_taxon (
   )
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_hns_hok_jaar_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.hns_hok_jaar_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   doelhok VARCHAR(16) CHARACTER SET ascii NOT NULL,
   jaar SMALLINT UNSIGNED NOT NULL,
@@ -1821,7 +1821,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie_taxon (
 -- oorspronkelijke veld 'volledigheid onderzoek' niet bevat, worden nullen
 -- uitsluitend afgeleid voor hok-jaren met minimaal 50 geregistreerde taxa en
 -- blijven zij expliciet voorlopig.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie (
+CREATE TABLE IF NOT EXISTS Meijendel.florbase_inventarisatie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '12.001',
@@ -1844,7 +1844,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie (
   kwaliteitsnotitie VARCHAR(1600) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, inventarisatie_sleutel),
-  UNIQUE KEY uq_ndff_florbase_hokjaar
+  UNIQUE KEY uq_florbase_hokjaar
     (reconstructieversie, hok_x, hok_y, jaar),
   CHECK (einddatum >= begindatum),
   CHECK (volledigheidsdrempel_taxa = 50),
@@ -1858,7 +1858,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie (
   )
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_recordselectie (
+CREATE TABLE IF NOT EXISTS Meijendel.florbase_recordselectie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -1866,17 +1866,17 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_recordselectie (
   selectiereden VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
-  KEY ix_ndff_florbase_selectie_inventarisatie
+  KEY ix_florbase_selectie_inventarisatie
     (reconstructieversie, inventarisatie_sleutel),
-  CONSTRAINT fk_ndff_florbase_selectie_waarneming FOREIGN KEY
+  CONSTRAINT fk_florbase_selectie_waarneming FOREIGN KEY
     (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_florbase_selectie_inventarisatie FOREIGN KEY
+  CONSTRAINT fk_florbase_selectie_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_florbase_inventarisatie
+    REFERENCES Meijendel.florbase_inventarisatie
       (reconstructieversie, inventarisatie_sleutel)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_doelbereik (
+CREATE TABLE IF NOT EXISTS Meijendel.florbase_doelbereik (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   afleidingsregel ENUM(
@@ -1891,7 +1891,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_doelbereik (
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.florbase_inventarisatie_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
@@ -1910,10 +1910,10 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie_taxon (
   kwaliteitsnotitie VARCHAR(1800) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, inventarisatie_sleutel, wetenschappelijke_naam),
-  KEY ix_ndff_florbase_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
-  CONSTRAINT fk_ndff_florbase_taxon_inventarisatie FOREIGN KEY
+  KEY ix_florbase_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_florbase_taxon_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_florbase_inventarisatie
+    REFERENCES Meijendel.florbase_inventarisatie
       (reconstructieversie, inventarisatie_sleutel),
   CHECK (
     (waarnemingsstatus='waargenomen' AND bronrecordaantal>0
@@ -1929,7 +1929,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_florbase_inventarisatie_taxon (
 -- looproute per kilometerhok en 75 vooraf bepaalde aandachtssoorten. Exacte
 -- gevoelige vindplaatsen blijven in de beveiligde bronlaag; deze afgeleide
 -- tabellen bevatten alleen het niet-gevoelige routehok en het routejaar.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_route (
+CREATE TABLE IF NOT EXISTS Meijendel.lmfa_route (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   route_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '12.211',
@@ -1941,10 +1941,10 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_route (
   kwaliteitsnotitie VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, route_sleutel),
-  UNIQUE KEY uq_ndff_lmfa_route_hok (reconstructieversie, hok_x, hok_y)
+  UNIQUE KEY uq_lmfa_route_hok (reconstructieversie, hok_x, hok_y)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_bezoek (
+CREATE TABLE IF NOT EXISTS Meijendel.lmfa_bezoek (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   route_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -1961,14 +1961,14 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_bezoek (
   kwaliteitsnotitie VARCHAR(1600) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_sleutel),
-  UNIQUE KEY uq_ndff_lmfa_routejaar (reconstructieversie, route_sleutel, jaar),
-  CONSTRAINT fk_ndff_lmfa_bezoek_route FOREIGN KEY
+  UNIQUE KEY uq_lmfa_routejaar (reconstructieversie, route_sleutel, jaar),
+  CONSTRAINT fk_lmfa_bezoek_route FOREIGN KEY
     (reconstructieversie, route_sleutel)
-    REFERENCES Meijendel.ndff_lmfa_route (reconstructieversie, route_sleutel),
+    REFERENCES Meijendel.lmfa_route (reconstructieversie, route_sleutel),
   CHECK (einddatum >= begindatum)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_recordselectie (
+CREATE TABLE IF NOT EXISTS Meijendel.lmfa_recordselectie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -1976,15 +1976,15 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_recordselectie (
   selectiereden VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
-  KEY ix_ndff_lmfa_selectie_bezoek (reconstructieversie, bezoek_sleutel),
-  CONSTRAINT fk_ndff_lmfa_selectie_waarneming FOREIGN KEY
+  KEY ix_lmfa_selectie_bezoek (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_lmfa_selectie_waarneming FOREIGN KEY
     (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_lmfa_selectie_bezoek FOREIGN KEY
+  CONSTRAINT fk_lmfa_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
-    REFERENCES Meijendel.ndff_lmfa_bezoek (reconstructieversie, bezoek_sleutel)
+    REFERENCES Meijendel.lmfa_bezoek (reconstructieversie, bezoek_sleutel)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_doelsoort (
+CREATE TABLE IF NOT EXISTS Meijendel.lmfa_doelsoort (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   doelstatus ENUM('officiele_lmfa_aandachtssoort') NOT NULL,
@@ -1993,7 +1993,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_doelsoort (
   PRIMARY KEY (reconstructieversie, wetenschappelijke_naam)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_bezoek_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.lmfa_bezoek_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
@@ -2009,13 +2009,13 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_lmfa_bezoek_taxon (
   kwaliteitsnotitie VARCHAR(1800) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
-  KEY ix_ndff_lmfa_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
-  CONSTRAINT fk_ndff_lmfa_taxon_bezoek FOREIGN KEY
+  KEY ix_lmfa_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_lmfa_taxon_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
-    REFERENCES Meijendel.ndff_lmfa_bezoek (reconstructieversie, bezoek_sleutel),
-  CONSTRAINT fk_ndff_lmfa_taxon_doelsoort FOREIGN KEY
+    REFERENCES Meijendel.lmfa_bezoek (reconstructieversie, bezoek_sleutel),
+  CONSTRAINT fk_lmfa_taxon_doelsoort FOREIGN KEY
     (reconstructieversie, wetenschappelijke_naam)
-    REFERENCES Meijendel.ndff_lmfa_doelsoort (reconstructieversie, wetenschappelijke_naam),
+    REFERENCES Meijendel.lmfa_doelsoort (reconstructieversie, wetenschappelijke_naam),
   CHECK (
     (waarnemingsstatus='echte_nul' AND abundantieklasse=0 AND exact_totaal=0
       AND bronklasse_raw IS NULL AND bronrecordaantal=0

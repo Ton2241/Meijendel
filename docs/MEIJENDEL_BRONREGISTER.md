@@ -315,6 +315,8 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 **Wat ontbreekt voor zelfstandige trends?** Voor de 45 niet in het rapport bevestigde routejaren ontbreken nog de primaire Dunea-export, routeversies en eventuele methodewijzigingen. Op 7 oktober 2026 zijn de lokale reposities, documenten, iCloud-downloads en Zotero hierop gericht doorzocht. Er is geen primaire Dunea-export gevonden; alleen het officiële rapport en algemene methodedocumenten zijn lokaal aanwezig. De lokale zoekroute is daarmee afgerond. Wanneer deze validatie prioriteit krijgt, is de kortste vervolgstap een rechtstreeks verzoek aan Dunea om een bestaande volledige LMF-A-export.
 
+**Opslag, 7 oktober 2026.** De veertien afgeleide tabellen van Het Nieuwe Strepen, FLORBASE en LMF-A heten nu respectievelijk `hns_*`, `florbase_*` en `lmfa_*` in de lokale analytische database. De oorspronkelijke NDFF-waarnemingen, bronvermelding en reconstructieversies blijven behouden. Alle tabelcontrolesommen zijn na de hernoeming gelijk aan de nulmeting en alle 18 foreign keys bleven intact; de centrale taxoncontrole geeft 128 werkende routes en nul fouten. De zware SQL-export en VPS-publicatie zijn nog niet uitgevoerd.
+
 #### 1.5.14. Mossen en korstmossen
 
 **Omvang en periode.** 761 records, 2000–2025

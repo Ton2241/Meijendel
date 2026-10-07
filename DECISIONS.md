@@ -1510,3 +1510,14 @@
   afwijkende bronrecords krijgen een recorduitzondering. De bestaande NDFF-v4-
   besluiten blijven gezaghebbend en worden uitsluitend via een view in de
   centrale catalogus opgenomen.
+- **7 oktober 2026 — flora-reconstructies zonder NDFF-tabelprefix.** De 14
+  afgeleide tabellen voor Het Nieuwe Strepen, FLORBASE en LMF-A zijn in de
+  lokale `Meijendel` atomair hernoemd van `ndff_hns_*`, `ndff_florbase_*` en
+  `ndff_lmfa_*` naar `hns_*`, `florbase_*` en `lmfa_*`. De bronidentiteit en
+  reconstructieversies blijven NDFF-gerelateerd; alleen de fysieke
+  tabelnamen zijn gewijzigd. De 198.642 rijen en tabelcontrolesommen zijn
+  behouden, evenals 18 foreign keys. De 6.085 centrale
+  taxon-bronkoppelingen gebruiken de nieuwe datasetnamen. Import- en
+  auditcode verwijzen naar de nieuwe namen; HNS-, FLORBASE- en LMF-A-audits
+  slagen. Een nieuwe `Meijendel.sql`-export, cachebouw en VPS-publicatie
+  vallen buiten dit besluit en vergen afzonderlijke toestemming.

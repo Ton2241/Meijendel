@@ -89,7 +89,7 @@ Het hernoemen van een al afgebakende meetfamilie is het eenvoudigste deel. Gebru
 | `ndff_braakbal_*`, `ndff_konijn_*`, `ndff_otter_bever_*` | `zoogdieren_overig_braakbal_*`, `zoogdieren_overig_konijn_*`, `zoogdieren_overig_otter_bever_*` |
 | `ndff_mos_*`, `ndff_korstmos_*` | `mossen_*`, `korstmossen_*` |
 | `ndff_bospaddenstoel_*`, `ndff_zeereep_*` | `schimmels_bospaddenstoel_*`, `schimmels_zeereep_*` |
-| `ndff_florbase_*`, `ndff_hns_*`, `ndff_lmfa_*` | `vaatplanten_florbase_*`, `vaatplanten_hns_*`, `vaatplanten_lmfa_*` |
+| `florbase_*`, `hns_*`, `lmfa_*` | `vaatplanten_florbase_*`, `vaatplanten_hns_*`, `vaatplanten_lmfa_*` |
 | `ndff_vliesvleugel_*` | `vliesvleugeligen_*` |
 | `ndff_poldervis_*`, `ndff_habslak_*` | `vissen_poldervis_*`, `weekdieren_habslak_*` |
 | `ndff_ravon_n2000_*` | Amfibieën en vissen; gedeelde monsterlocatie eenmaal bewaren |
@@ -288,24 +288,24 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 | `ndff_otter_bever_hokjaar` | 1 | `zoogdieren_overig_otter_bever_hokjaar` |
 | `ndff_otter_bever_hokjaar_taxon` | 1 | `zoogdieren_overig_otter_bever_hokjaar_taxon` |
 | `ndff_otter_bever_recordselectie` | 3 | `zoogdieren_overig_otter_bever_recordselectie` |
-| `ndff_florbase_doelbereik` | 857 | `vaatplanten_florbase_doelbereik` |
-| `ndff_florbase_inventarisatie` | 183 | `vaatplanten_florbase_inventarisatie` |
-| `ndff_florbase_inventarisatie_taxon` | 101.126 | `vaatplanten_florbase_inventarisatie_taxon` |
-| `ndff_florbase_recordselectie` | 21.161 | `vaatplanten_florbase_recordselectie` |
-| `ndff_hns_doelbereik` | 1.406 | `vaatplanten_hns_doelbereik` |
-| `ndff_hns_hok_jaar_taxon` | 16.872 | `vaatplanten_hns_hok_jaar_taxon` |
-| `ndff_hns_inventarisatie` | 52 | `vaatplanten_hns_inventarisatie` |
-| `ndff_hns_inventarisatie_taxon` | 32.338 | `vaatplanten_hns_inventarisatie_taxon` |
-| `ndff_hns_recordselectie` | 9.138 | `vaatplanten_hns_recordselectie` |
+| `florbase_doelbereik` | 857 | `vaatplanten_florbase_doelbereik` |
+| `florbase_inventarisatie` | 183 | `vaatplanten_florbase_inventarisatie` |
+| `florbase_inventarisatie_taxon` | 101.126 | `vaatplanten_florbase_inventarisatie_taxon` |
+| `florbase_recordselectie` | 21.161 | `vaatplanten_florbase_recordselectie` |
+| `hns_doelbereik` | 1.406 | `vaatplanten_hns_doelbereik` |
+| `hns_hok_jaar_taxon` | 16.872 | `vaatplanten_hns_hok_jaar_taxon` |
+| `hns_inventarisatie` | 52 | `vaatplanten_hns_inventarisatie` |
+| `hns_inventarisatie_taxon` | 32.338 | `vaatplanten_hns_inventarisatie_taxon` |
+| `hns_recordselectie` | 9.138 | `vaatplanten_hns_recordselectie` |
 | `ndff_libel_bezoek` | 461 | `libellen_bezoek` |
 | `ndff_libel_bezoek_taxon` | 13.173 | `libellen_bezoek_taxon` |
 | `ndff_libel_routefamilie` | 9 | `libellen_routefamilie` |
 | `ndff_libel_routegeometrie` | 18 | `libellen_routegeometrie` |
-| `ndff_lmfa_bezoek` | 124 | `vaatplanten_lmfa_bezoek` |
-| `ndff_lmfa_bezoek_taxon` | 9.300 | `vaatplanten_lmfa_bezoek_taxon` |
-| `ndff_lmfa_doelsoort` | 75 | `vaatplanten_lmfa_doelsoort` |
-| `ndff_lmfa_recordselectie` | 5.980 | `vaatplanten_lmfa_recordselectie` |
-| `ndff_lmfa_route` | 30 | `vaatplanten_lmfa_route` |
+| `lmfa_bezoek` | 124 | `vaatplanten_lmfa_bezoek` |
+| `lmfa_bezoek_taxon` | 9.300 | `vaatplanten_lmfa_bezoek_taxon` |
+| `lmfa_doelsoort` | 75 | `vaatplanten_lmfa_doelsoort` |
+| `lmfa_recordselectie` | 5.980 | `vaatplanten_lmfa_recordselectie` |
+| `lmfa_route` | 30 | `vaatplanten_lmfa_route` |
 | `ndff_nachtvlinder_hokjaar` | 5 | `nachtvlinders_hokjaar` |
 | `ndff_nachtvlinder_hokjaar_taxon` | 84 | `nachtvlinders_hokjaar_taxon` |
 | `ndff_nachtvlinder_recordselectie` | 596 | `nachtvlinders_recordselectie` |

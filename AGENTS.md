@@ -480,7 +480,7 @@ MySQL:
   `11.201` gescheiden van `11.204` en controleer vóór gebruik met
   `--audit-bospaddenstoelen`
 - gebruik voor Het Nieuwe Strepen-protocol `12.204` reconstructieversie
-  `ndff-hns-v2` en de vijf openbare tabellen `Meijendel.ndff_hns_*`. V1 blijft
+  `ndff-hns-v2` en de vijf openbare tabellen `Meijendel.hns_*`. V1 blijft
   uitsluitend als historisch auditspoor bewaard. Behandel
   de 1.145 verschillende bronintervallen niet als bezoeken. Leid echte nullen
   uitsluitend af binnen de 23 als `volledige_lijst_aannemelijk`
@@ -523,7 +523,7 @@ MySQL:
   gebruik met `--audit-mossen`
 - gebruik voor FLORBASE-protocol `12.001` reconstructieversie
   `ndff-florbase-v1` en de vier openbare tabellen
-  `Meijendel.ndff_florbase_*`. Groepeer per werkelijk RD-kilometerhok en jaar.
+  `Meijendel.florbase_*`. Groepeer per werkelijk RD-kilometerhok en jaar.
   Behandel alleen hok-jaren met minimaal 50 geregistreerde taxa als
   `volledige_lijst_aannemelijk`; dit is een voorlopige reconstructieregel en
   geen officiële FLORON-norm. Leid uitsluitend daar
@@ -539,7 +539,7 @@ MySQL:
   vervaagde records niet naar de openbare afgeleide tabellen en controleer vóór
   gebruik met `--audit-florbase`
 - gebruik voor LMF-A-protocol `12.211` reconstructieversie `ndff-lmfa-v1` en
-  de vijf openbare tabellen `Meijendel.ndff_lmfa_*`. Behandel één
+  de vijf openbare tabellen `Meijendel.lmfa_*`. Behandel één
   kilometerhok en jaar als één bezoek aan de vaste Dunea-looproute. Leid echte
   nullen alleen af voor de 75 soorten uit Tabel 4 van het officiële
   FLORON-rapport. Tel uitsluitend exacte groeiplaatsaantallen op; behoud één

@@ -1,5 +1,19 @@
 # Taxonregister: structuur en uitvoering
 
+## Flora-reconstructietabellen hernoemd — lokaal uitgevoerd 7 oktober 2026
+
+De 14 afgeleide tabellen voor Het Nieuwe Strepen (2012–2024), FLORBASE
+(1974–2025) en LMF-A (2000–2025) gebruiken in de lokale `Meijendel` nu de
+prefixen `hns_`, `florbase_` en `lmfa_`. De oorspronkelijke NDFF-waarnemingen
+en hun bronidentiteit zijn niet gewijzigd. Voor en na de atomaire hernoeming
+zijn alle 198.642 rijen en 14 tabelcontrolesommen vergeleken; zij zijn gelijk.
+Alle 18 foreign keys bleven intact. De 6.085 rijen in `taxa_bronkoppeling`
+voor deze zeven bron-datasets verwijzen nu naar de nieuwe datasetnamen. De
+centrale cataloguspoort rapporteert 279 tabellen, 128 routes en nul fouten.
+De drie inhoudelijke reconstructie-audits en de twee importcontracttests
+slagen met de nieuwe namen. De gegenereerde `Meijendel.sql`-dump en de VPS
+zijn niet bijgewerkt; een nieuwe export of publicatie vraagt apart besluit.
+
 ## LVD-tabellen naar bronnaam hernoemd — lokaal uitgevoerd 29 september 2026
 
 De vier fysieke tabellen die na de eerdere ontvlechting uitsluitend LVD

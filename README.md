@@ -459,7 +459,7 @@ de laag met `--audit-bospaddenstoelen`.
 
 Vaatplantenprotocol `12.204` (Het Nieuwe Strepen) staat voor nieuwe analyses
 onder `ndff-hns-v2`
-in vijf openbare `Meijendel.ndff_hns_*`-tabellen. De 4.569 bronregels vormen
+in vijf openbare `Meijendel.hns_*`-tabellen. De 4.569 bronregels vormen
 23 aannemelijk volledige inventarisaties en drie kleine fragmenten; 39
 vervaagde jaarregels zijn niet aan een bezoek toegewezen. De bezoekmatrix voor
 703 lokaal aantoonbare HNS-taxa bevat 4.439 positieve combinaties en 11.730
@@ -502,7 +502,7 @@ ordinaal, koppel hoknullen niet door naar SOVON-plots en controleer de laag met
 `--audit-mossen`.
 
 FLORBASE-protocol `12.001` staat onder `ndff-florbase-v1` in vier openbare
-`Meijendel.ndff_florbase_*`-tabellen. De 21.161 onvervaagde bronregels vormen
+`Meijendel.florbase_*`-tabellen. De 21.161 onvervaagde bronregels vormen
 183 kilometerhok-jaarcombinaties. Daarvan gelden 118 hok-jaren met minimaal
 50 taxa als `volledige_lijst_aannemelijk`; 65 kleinere lijsten blijven
 fragment. De matrix voor 857 lokaal aangetoonde taxa bevat 19.405 positieve
@@ -517,7 +517,7 @@ kilometerhokniveau, nooit als nul per SOVON-plot, en controleer de laag met
 `--audit-florbase`.
 
 LMF-A-protocol `12.211` staat onder `ndff-lmfa-v1` in vijf openbare
-`Meijendel.ndff_lmfa_*`-tabellen. Het officiële FLORON-rapport bevestigt dat
+`Meijendel.lmfa_*`-tabellen. Het officiële FLORON-rapport bevestigt dat
 Dunea per kilometerhok een vaste looproute gebruikt en daar gemiddeld eens per
 vier jaar 75 aandachtssoorten telt. De 5.980 bronregels zijn samengevat tot 30
 routes en 124 routejaren. Daarvan zijn 79 routejaren rechtstreeks in het rapport
