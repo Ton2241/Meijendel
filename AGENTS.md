@@ -481,8 +481,15 @@ MySQL:
   uitsluitend af binnen de 23 als `volledige_lijst_aannemelijk`
   geclassificeerde datum/ruimteclusters en het daaruit aantoonbare lokale
   doelbereik. Kleine fragmenten en vervaagde jaarregels blijven uitsluitend
-  positieve verspreidingsinformatie. Beschouw herhaalde datumclusters niet als
-  bewezen onafhankelijke tellers zolang lijst- en waarnemer-ID ontbreken. Tel
+  positieve verspreidingsinformatie. FLORON heeft op 6 oktober 2026 bevestigd
+  dat kalenderdag plus kilometerhok de beschikbare teleenheid is. Behandel de
+  begindatum als teldatum en een latere `periode_stop` niet als bewijs voor een
+  extra velddag. Binnen één dag-hoktelling kunnen één, twee of drie
+  oorspronkelijke lijsten liggen; gebruik die zonder lijst-ID nooit als
+  afzonderlijke waarnemersherhalingen. Beschouw tellingen op verschillende
+  kalenderdagen wel als verschillende dag-hoktellingen. De huidige
+  `herhaalstatus` in `ndff-hns-v1` moet vóór een nieuwe HNS-analyse via
+  `ndff-hns-v2` worden vervangen. Tel
   aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
   vóór gebruik met `--audit-hns`
 - gebruik voor korstmossenprotocol `02.202` reconstructieversie
@@ -517,8 +524,13 @@ MySQL:
   geen officiële FLORON-norm. Leid uitsluitend daar
   `protocolnul_onder_volledigheidsaanname` af. Houd kleinere lijsten als
   positieve fragmenten, aggregeer aantalsinformatie niet, verdeel geen
-  hokuitkomsten over SOVON-plots en toon altijd dat volledigheidsvlag,
-  bezoekduur en historische checklistversie ontbreken. Kopieer de 213
+  hokuitkomsten over SOVON-plots. FLORON heeft op 6 oktober 2026 bevestigd dat
+  jaar plus kilometerhok de fijnste beschikbare teleenheid is, dat voor 2011
+  alleen soort, jaar, kilometerhok en waarnemer werden opgeslagen en dat
+  expliciete niet-detecties niet worden opgeslagen. Toon daarom altijd dat de
+  nullen uitsluitend op de lokale ≥50-taxa-aanname berusten; vraag FLORON niet
+  opnieuw om lijst-ID, volledigheidsvlag, bezoekduur, checklistversie of
+  nulregels. Kopieer de 213
   vervaagde records niet naar de openbare afgeleide tabellen en controleer vóór
   gebruik met `--audit-florbase`
 - gebruik voor LMF-A-protocol `12.211` reconstructieversie `ndff-lmfa-v1` en
@@ -529,8 +541,15 @@ MySQL:
   reeds geaggregeerde FLORON-klasse en zet combinaties van meerdere klassen of
   gemengde meetwijzen op `waargenomen_aggregatie_onzeker`. Imputeer ontbrekende
   meetronden nooit met een eerder of later jaar. Bewaar exacte gevoelige
-  geometrie uitsluitend in de beveiligde bronlaag en controleer vóór gebruik
-  met `--audit-lmfa`
+  geometrie uitsluitend in de beveiligde bronlaag. FLORON heeft op 6 oktober
+  2026 bevestigd dat Dunea de brongegevens beheert en FLORON alleen de software
+  levert. Behandel de 79 in het rapport bevestigde routejaren sterker dan de 45
+  uitsluitend uit NDFF afgeleide routejaren; valideer die laatste zo nodig
+  rechtstreeks met een bestaande Dunea-export. Controleer vóór gebruik met
+  `--audit-lmfa`
+- gebruik `uri` of `identity` uit de NDFF-export als stabiele
+  waarnemingssleutel voor FLORON-records. Vraag FLORON niet om een tweede
+  sleutel op waarnemingsniveau
 - behandel `12.002`, `12.003`, `12.209` en `12.211` als
   doelsoortafhankelijke FLORON-protocollen. Leid buiten een expliciet
   doelsoorten- en bezoekbereik geen nullen af. De enkele Nectarindextelling

@@ -591,17 +591,30 @@
 - `12.001` bevat onder `ndff-florbase-v1` 118 aannemelijk volledige
   kilometerhok-jaarlijsten en 65 fragmenten. Gebruik de 101.126 matrixregels
   voorlopig voor verspreidings- en inventarisatievergelijkingen; de 81.721
-  nullen blijven expliciet afhankelijk van de ≥50-taxa-aanname. Vraag FLORON
-  later gericht om lijst-ID, oorspronkelijke volledigheidsvlag, bezoekduur en
-  gebruikte checklistversie. Deze validatie blokkeert het voorlopige gebruik
-  niet.
+  nullen blijven expliciet afhankelijk van de ≥50-taxa-aanname. FLORON heeft
+  op 6 oktober 2026 bevestigd dat jaar plus kilometerhok de fijnste beschikbare
+  teleenheid is en dat de gevraagde lijst-, bezoek-, volledigheids- en
+  niet-detectiegegevens niet worden bewaard. Sluit deze bronvraag daarom; een
+  nieuwe aanvraag bij FLORON kan deze nullen niet verder valideren.
 - `12.204` bevat onder `ndff-hns-v1` 23 aannemelijk volledige
   inventarisaties en drie fragmenten. Gebruik de 16.169
   inventarisatie-taxonregels voorlopig voor verspreidings-/occupancyanalyse;
-  21 herhaalde inventarisaties blijven gemarkeerd als niet bewezen
-  onafhankelijk. Vraag FLORON later uitsluitend om de lijst-/waarnemer-ID's en
-  het deelnemersaantal waarmee deze scheiding kan worden bevestigd; deze
-  validatie blokkeert het voorlopige gebruik niet.
+  de 11.730 nullen zijn afgeleid en niet als nulregel geleverd. FLORON heeft
+  bevestigd dat kalenderdag plus kilometerhok de beschikbare teleenheid is en
+  dat één telling één, twee of drie niet afzonderlijk leverbare lijsten kan
+  bevatten. Maak `ndff-hns-v2`: behoud de huidige dag-hokgroepering, gebruik de
+  begindatum als teldatum, interpreteer `periode_stop` niet als extra velddag en
+  vervang de huidige onafhankelijkheidsstatus door een neutrale aanduiding van
+  meerdere teldagen in hetzelfde hokjaar. Controleer dat recordselectie,
+  positieve combinaties en afgeleide nullen daardoor niet veranderen. Vraag
+  FLORON niet opnieuw om persoonsgegevens, lijst- of waarnemercodes.
+- `12.211` bevat 79 in het FLORON-rapport bevestigde routejaren met 4.945
+  nullen en 45 alleen uit NDFF afgeleide routejaren met 2.862 nullen. FLORON
+  beheert alleen de software; Dunea beheert de brongegevens. Vergelijk vóór een
+  extern vervolg eerst alle lokale Dunea-bestanden en correspondentie. Vraag
+  Dunea daarna, alleen als de leemte resteert, om de bestaande volledige
+  LMF-A-export waarmee de 45 routejaren, routeversies en methodewijzigingen
+  kunnen worden bevestigd.
 - `17.002` bevat onder `ndff-braakbal-v1` 37 openbare
   geometrie-jaaraggregaten en 226 positieve taxonregels. Gebruik die alleen
   voor regionale positieve samenstelling en indicatieve verandering in

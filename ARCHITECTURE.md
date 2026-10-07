@@ -284,8 +284,12 @@ telsoorten en houdt `11.201` volledig gescheiden van opvolger `11.204`.
 inventarisaties, recordselectie, lokaal doelbereik, inventarisatie-taxonmatrix
 en hok-jaar-taxontabel. Alleen datum/ruimteclusters die onder
 `ndff-hns-v1` aannemelijk volledige HNS-lijsten zijn krijgen afgeleide nullen.
-De laag bewaart onafhankelijkheid van herhaalde clusters als afzonderlijke,
-nog niet bevestigde eigenschap en gebruikt bron-aantallen niet als abundantie.
+FLORON heeft bevestigd dat kalenderdag plus kilometerhok de beschikbare
+teleenheid is. Eén dag-hoktelling kan één, twee of drie onderliggende lijsten
+bevatten, maar de export onderscheidt die lijsten niet. De huidige
+`herhaalstatus` beschrijft daarom geen aantoonbare waarnemersonafhankelijkheid
+en wordt in `ndff-hns-v2` vervangen. Bron-aantallen worden niet als abundantie
+gebruikt.
 `ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v2` in
 `Meijendel`: openbare proefvlakken, bezoeken, recordselectie, lokaal doelbereik
 en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen
@@ -305,9 +309,10 @@ voor de voorgeschreven minimale inspanning en dekking van relevante biotopen.
 `Meijendel`: kilometerhok-jaarinventarisaties, volledige recordselectie, lokaal
 doelbereik en een inventarisatie-taxonmatrix. Alleen hok-jaren met minimaal 50
 taxa leveren voorlopige protocolnullen; fragmenten blijven positieve
-broninformatie. Volledigheid, inspanning en historische checklistversie blijven
-afzonderlijke onzekerheden en kilometerhokresultaten worden niet naar
-SOVON-plots verdeeld.
+broninformatie. FLORON heeft bevestigd dat jaar plus kilometerhok de fijnste
+beschikbare teleenheid is en dat de ontbrekende lijst- en bezoekmetadata niet
+als aanvullende bronstructuur beschikbaar zijn. De lokale drempel van vijftig
+taxa blijft dus de grondslag en onzekerheid van de nulafleiding.
 `ndff_lmfa_*` reconstrueert protocol `12.211` onder `ndff-lmfa-v1` in
 `Meijendel`: vaste kilometerhokroutes, routejaren, volledige recordselectie, de
 75 officiële trendsoorten en een routejaar-soortmatrix. Niet-gemeld is binnen
@@ -315,6 +320,9 @@ een uitgevoerd routejaar een echte nul voor deze 75 soorten. Exacte
 groeiplaatsaantallen worden opgeteld; niet-deterministisch combineerbare
 FLORON-klassen blijven onzeker. De afgeleide laag bevat geen exacte gevoelige
 vindplaatsen en vult ontbrekende meetronden niet met een ander jaar.
+De onderliggende brongegevens worden door Dunea beheerd; FLORON levert alleen
+de softwaredienst. De 79 in het rapport bevestigde routejaren blijven daarom
+onderscheiden van de 45 uitsluitend uit NDFF afgeleide routejaren.
 
 Openbare SNL-records met protocol `12.205` hebben een aparte, geversioneerde
 overlaplaag in `Meijendel.ndff_snl_waarneming_context`. Die legt mogelijke of

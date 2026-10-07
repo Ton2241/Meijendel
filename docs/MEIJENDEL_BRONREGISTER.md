@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 4 oktober 2026.**
+**Stand: 7 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -289,27 +289,31 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 #### 1.5.11. Het Nieuwe Strepen
 
-**Omvang en periode.** 4.569 records, 23 lijstkandidaten, 2012–2024
+**Omvang en periode.** 4.569 records, 26 gereconstrueerde dag-hoktellingen, 2012–2024. Daarvan zijn 23 tellingen met minimaal vijftig taxa als aannemelijk volledig geclassificeerd en drie tellingen als fragment. Daarnaast zijn 39 vervaagde jaarregels niet aan een telling gekoppeld.
 
-**Wat kan nu?** Voorlopige vergelijking van inventarisaties
+**Wat heeft FLORON bevestigd?** Op 6 oktober 2026 meldde FLORON dat één kalenderdag in één kilometerhok als telling mag worden beschouwd. Zo'n telling kan één, twee of drie oorspronkelijke lijsten omvatten. Persoonsgegevens en daarvan afgeleide waarnemerscodes worden niet geleverd. De `uri` of `identity` uit de NDFF-export is de stabiele sleutel van de afzonderlijke waarneming.
 
-**Wat ontbreekt voor zelfstandige trends?** Oorspronkelijke lijstcodes en bevestiging welke tellingen onafhankelijk zijn
+**Wat kan nu?** De bestaande groepering is op hoofdlijnen bevestigd: ieder van de 26 clusters bevat precies één begindatum en één doelhok. De 4.439 positieve combinaties en 11.730 afgeleide protocolnullen kunnen voorlopig per dag en kilometerhok worden gebruikt voor inventarisatie- en occupancyanalyse. De onderliggende één tot drie lijsten mogen niet als afzonderlijke herhaaltellingen worden gebruikt.
+
+**Wat moet worden verbeterd?** In `ndff-hns-v1` hebben negentien tellingen een latere `periode_stop`; dat betekent niet dat op een tweede dag is geteld. Ook zijn 21 tellingen ten onrechte gemarkeerd alsof hun onafhankelijkheid onzeker is. Een volgende regelversie moet de begindatum als teldatum nemen en alleen vastleggen dat hetzelfde hok in hetzelfde jaar op meerdere kalenderdagen is geteld. De indeling van 23 volledige tellingen en drie fragmenten blijft een lokale reconstructie en moet als zodanig zichtbaar blijven.
 
 #### 1.5.12. FLORBASE en andere vaatplantinventarisaties
 
-**Omvang en periode.** 21.374 records, 1974–2025
+**Omvang en periode.** 21.374 NDFF-records, 1974–2025. De 21.161 onvervaagde records zijn samengevat tot 183 combinaties van jaar en kilometerhok. Daarvan hebben 118 hok-jaren minimaal vijftig geregistreerde taxa; 65 kleinere reeksen blijven fragment.
 
-**Wat kan nu?** Verspreiding en floristische context
+**Wat heeft FLORON bevestigd?** Eén jaar in één kilometerhok is de fijnste beschikbare teleenheid. Voor 2011 werden alleen soort, jaar, kilometerhok en waarnemer opgeslagen. FLORON beschikt niet over de eerder gevraagde lijst-ID's, volledigheidsvlaggen, bezoekdata, bezoekduur, checklistversies of expliciete registraties van niet-aangetroffen soorten.
 
-**Wat ontbreekt voor zelfstandige trends?** Oorspronkelijke lijsten, onderzochte gebieden en volledige bezoekstructuur
+**Wat kan nu?** Positieve waarnemingen, floristische samenstelling en veranderingen in geregistreerde verspreiding kunnen per kilometerhok en jaar worden onderzocht. De huidige 81.721 protocolnullen blijven afhankelijk van de lokale regel dat een hok-jaar met minimaal vijftig taxa als aannemelijk volledig geldt. Zij zijn geen door FLORON geleverde nulwaarnemingen en ondersteunen zonder gevoeligheidsanalyse geen definitieve trendclaim. Een nieuw verzoek aan FLORON kan deze leemte niet oplossen.
 
 #### 1.5.13. LMF-aandachtssoorten
 
-**Omvang en periode.** 5.980 records, 2000–2025
+**Omvang en periode.** 5.980 records, 30 vaste kilometerhokroutes en 124 routejaren, 2000–2025. Het openbare FLORON-rapport bevestigt 79 routejaren uit 1999–2019; 45 routejaren zijn alleen uit NDFF-records afgeleid.
 
-**Wat kan nu?** Positieve aanwezigheid
+**Wat heeft FLORON bevestigd?** Dunea beheert de onderliggende LMF-A-gegevens. FLORON levert alleen de software als dienst aan Dunea.
 
-**Wat ontbreekt voor zelfstandige trends?** Oorspronkelijke routes, bezoeken en gevolgde soortenlijst
+**Wat kan nu?** Binnen de 75 doelsoorten bevat de matrix 1.493 positieve resultaten en 7.807 afgeleide nullen. Van die nullen horen 4.945 bij de 79 in het rapport bevestigde routejaren. De overige 2.862 horen bij de 45 alleen uit NDFF afgeleide routejaren en blijven voorlopig.
+
+**Wat ontbreekt voor zelfstandige trends?** Voor de 45 niet in het rapport bevestigde routejaren ontbreken nog de primaire Dunea-export, routeversies en eventuele methodewijzigingen. Die gegevens moeten eerst in de lokale Dunea-bestanden en correspondentie worden gezocht. Alleen als de leemte daarna resteert, is een rechtstreeks verzoek aan Dunea zinvol.
 
 #### 1.5.14. Mossen en korstmossen
 

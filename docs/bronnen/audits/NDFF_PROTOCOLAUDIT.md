@@ -575,16 +575,30 @@ inventarisaties met 4.524 bronregels en drie fragmenten met samen zes regels.
 Daarnaast blijven 39 openbaar vervaagde jaarregels positief beschikbaar, maar
 zonder koppeling aan een bezoek. Het uit de volledige lijsten aantoonbare lokale
 doelbereik omvat 703 taxa. De bezoekmatrix bevat 4.439 positieve combinaties en
-11.730 echte nullen; het hok-jaarbestand bevat 3.269 positieve combinaties en
+11.730 afgeleide protocolnullen; het hok-jaarbestand bevat 3.269 positieve combinaties en
 5.167 nullen over twaalf hok-jaren.
 
-De NDFF-export bevat geen FLORON-lijst-ID, teller of deelnemersaantal. Van tien
-hok-jaren zijn herhaalde datumclusters aanwezig; 21 inventarisaties krijgen
-daarom de status `herhaling_aanwezig_onafhankelijkheid_niet_bevestigd`. Twee
-clusters binnen veertien dagen kunnen twee onafhankelijke tellers zijn, maar ook
-velddagen van één inventarisatie. Gebruik de matrix voorlopig voor
-verspreidings-/occupancyanalyse met deze waarschuwing; voer aantallen en dubbele
-vindplaatsen niet als plantenabundantie in. Controleer de laag met `--audit-hns`.
+FLORON heeft op 6 oktober 2026 bevestigd dat één kalenderdag in één
+kilometerhok de beschikbare teleenheid is. Binnen zo'n telling kunnen conform
+het protocol één, twee of drie oorspronkelijke lijsten liggen. FLORON levert
+geen persoonsgegevens of daarvan afgeleide waarnemerscodes. De onderliggende
+lijsten kunnen daarom niet als afzonderlijke waarnemersherhalingen worden
+gebruikt, maar tellingen op verschillende kalenderdagen zijn wel afzonderlijke
+dag-hoktellingen.
+
+Deze informatie bevestigt de groepering van de 26 clusters: ieder cluster bevat
+precies één verschillende begindatum en één doelhok. De v1-presentatie moet wel
+worden gecorrigeerd. Bij negentien clusters ligt `periode_stop` na de
+begindatum; die einddatum bewijst geen tweede velddag. Verder dragen 21 clusters
+nog de status `herhaling_aanwezig_onafhankelijkheid_niet_bevestigd`, terwijl die
+status nu alleen betekent dat hetzelfde hok in hetzelfde jaar op verschillende
+dagen is geteld. `ndff-hns-v2` moet daarom de begindatum als teldatum gebruiken
+en deze status neutraler formuleren. De 11.730 nullen blijven afgeleide
+protocolnullen: zij zijn niet door FLORON opgeslagen, maar volgen uit een
+aannemelijk volledige HNS-telling en het lokale doelbereik. Gebruik de matrix
+voorlopig voor verspreidings- en occupancyanalyse; voer aantallen en dubbele
+vindplaatsen niet als plantenabundantie in. Controleer de laag met
+`--audit-hns`.
 
 Methodische grondslag: [FLORON Het Nieuwe Strepen](https://www.floron.nl/Meedoen/Het-Nieuwe-Strepen),
 [FLORON protocol 2019](https://www.floron.nl/Portals/1/Downloads/Protocol%20Het%20Nieuwe%20Strepen%202019_papierenstreeplijst_mei2019.pdf),
@@ -668,15 +682,22 @@ aantallen of meerdere vindplaatsen worden niet geaggregeerd tot lokale
 abundantie. De 987 bronregels uit fragmenten blijven als positieve informatie
 traceerbaar maar leveren geen nullen.
 
-FLORON registreert op de oorspronkelijke streeplijst of het onderzoek volledig
-was, naast bezoekdata en bezoekduur. Die volledigheidsvlag, de lijst-ID,
-bezoekduur en historische checklistversie ontbreken in de FFV-export. Daarom
-zijn de afgeleide nullen geschikt voor voorlopige inventarisatie- en
-verspreidingsvergelijkingen, maar niet zonder waarschuwing voor een definitieve
-trendclaim. De native meeteenheid is het kilometerhok; geen aanwezigheid of nul
-wordt naar ieder geraakt SOVON-plot doorgezet. De 213 vervaagde records worden
-niet naar deze openbare afgeleide laag gekopieerd. Controleer de laag met
-`--audit-florbase`.
+FLORON heeft op 6 oktober 2026 bevestigd dat één jaar in één kilometerhok als
+één telling moet worden behandeld en dat de organisatie niet over een fijnere
+bronstructuur beschikt. Voor 2011 werd uitsluitend soort, jaar, kilometerhok en
+waarnemer opgeslagen. Expliciete registraties van niet-aangetroffen soorten
+worden niet bewaard. De eerder gevraagde lijst-ID, volledigheidsvlag,
+bezoekdatum, bezoekduur en historische checklistversie kunnen deze reeks daarom
+niet alsnog verrijken.
+
+De huidige hok-jaarindeling is daarmee bevestigd, maar de grens van vijftig taxa
+blijft een lokale volledigheidsaanname. De 81.721 afgeleide nullen zijn geschikt
+voor voorlopige inventarisatie- en verspreidingsvergelijkingen met een
+gevoeligheidsanalyse voor deze drempel, niet zonder waarschuwing voor een
+definitieve trendclaim. De native meeteenheid is het kilometerhok; geen
+aanwezigheid of nul wordt naar ieder geraakt SOVON-plot doorgezet. De 213
+vervaagde records worden niet naar deze openbare afgeleide laag gekopieerd.
+Controleer de laag met `--audit-florbase`.
 
 Methodische grondslag: [NDFF protocol 12.001](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/12-001-totaalproject-floron/),
 [FLORON kilometerhokinventarisatie](https://www.floron.nl/Meedoen/Kilometerhokken-inventariseren)
@@ -708,6 +729,13 @@ vindplaatsen blijven buiten de openbare tabellen. De analysemethode uit het
 rapport waarbij een ontbrekende meetronde met een eerdere of latere ronde werd
 ingevuld, wordt niet overgenomen: de database bewaart uitsluitend uitgevoerde
 routejaren.
+
+FLORON heeft op 6 oktober 2026 bevestigd dat Dunea de onderliggende
+LMF-A-gegevens beheert en dat FLORON alleen de software als dienst levert. Van
+de 7.807 afgeleide nullen horen 4.945 bij de 79 in het rapport bevestigde
+routejaren. De overige 2.862 horen bij de 45 alleen uit NDFF afgeleide
+routejaren. Voor validatie van die 45 routejaren zijn de primaire Dunea-export,
+routeversies en eventuele methodewijzigingen de kortste gegevenslijn.
 
 De gerichte plantenprojecten `12.002` en `12.003`, Nectarindex `12.209` en
 LMF-A `12.211` zijn doelsoortafhankelijk geclassificeerd. Voor de negen
@@ -1004,6 +1032,16 @@ aangeschreven organisaties is op 25 september 2026 nog geen inhoudelijke
 reactie ontvangen. Behandel de verzoeken daarom als verzonden en in
 afwachting van antwoord; stel geen nieuw verzoek op en stuur geen herinnering
 zonder eerst deze actuele correspondentiestatus te controleren.
+
+FLORON heeft op 6 oktober 2026 inhoudelijk geantwoord. De organisatie bevestigt
+jaar plus kilometerhok als beschikbare FLORBASE-eenheid en kalenderdag plus
+kilometerhok als beschikbare HNS-eenheid. FLORON slaat niet op welke soorten
+niet zijn aangetroffen, levert geen persoonsgegevens of afgeleide
+waarnemerscodes en verwijst voor LMF-A naar Dunea als gegevensbeheerder. De
+`uri` of `identity` uit de NDFF-export is de beschikbare stabiele sleutel per
+waarneming. De brede FLORON-bronvraag is daarmee gesloten. Nieuwe vragen aan
+FLORON over lijst-ID's, nulwaarnemingen of extra FLORBASE-bezoekmetadata hebben
+geen zin.
 
 Een eventuele latere bronlevering wordt vóór iedere databasewijziging op
 herkomst, dekking, koppelsleutels, gebruiksvoorwaarden en overlap met NDFF

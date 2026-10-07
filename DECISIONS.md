@@ -919,9 +919,16 @@
   verschillende bronintervallen zijn uitdrukkelijk geen bezoeken. Alleen 23
   binnen het veldseizoen gelegen clusters met minimaal 50 taxa en minimaal 80%
   concentratie in één doelhok gelden als aannemelijk volledige lijsten en
-  leveren echte nullen; drie fragmenten en 39 vervaagde jaarregels blijven
-  positieve verspreidingsinformatie. Herhaalde lijsten blijven gemarkeerd als
-  niet bewezen onafhankelijk zolang FLORON-lijst- of waarnemer-ID ontbreekt.
+  leveren afgeleide protocolnullen; drie fragmenten en 39 vervaagde jaarregels
+  blijven positieve verspreidingsinformatie. FLORON heeft op 6 oktober 2026
+  bevestigd dat één kalenderdag in één kilometerhok de beschikbare teleenheid
+  is. De 26 bestaande clusters hebben ieder één begindatum en één doelhok. Een
+  telling kan één, twee of drie onderliggende lijsten bevatten; die lijsten
+  zijn niet afzonderlijk leverbaar en worden niet als onafhankelijke
+  herhalingen gebruikt. De bestaande `herhaalstatus` uit `ndff-hns-v1` moet in
+  een volgende regelversie worden vervangen door een status die alleen
+  vastlegt dat hetzelfde hok in hetzelfde jaar op meerdere dagen is geteld.
+  Een `periode_stop` na de begindatum bewijst geen meerdaags bezoek.
   Aantallen en dubbele vindplaatsen worden niet als plantenabundantie gebruikt.
 - Protocol `02.202` wordt onder `ndff-korstmos-v2` gereconstrueerd uit uitsluitend
   de 364 onvervaagde openbare regels. De twaalf geometrieën gelden als
@@ -951,8 +958,13 @@
   transparante status `volledige_lijst_aannemelijk`; dit is geen officiële
   FLORON-norm. Alleen deze lijsten leveren
   `protocolnul_onder_volledigheidsaanname`. Kleinere lijsten blijven positieve
-  fragmenten. De oorspronkelijke volledigheidsvlag, bezoekduur en historische
-  checklistversie ontbreken en blijven verplichte kwaliteitswaarschuwingen.
+  fragmenten. FLORON heeft op 6 oktober 2026 bevestigd dat één jaar in één
+  kilometerhok de fijnste beschikbare teleenheid is. Voor 2011 werden alleen
+  soort, jaar, kilometerhok en waarnemer opgeslagen. De oorspronkelijke
+  volledigheidsvlag, lijst-ID, bezoekdatum, bezoekduur, checklistversie en
+  expliciete niet-detecties zijn daarom niet alsnog bij FLORON opvraagbaar. De
+  grens van vijftig taxa blijft een lokale aanname en een verplichte
+  kwaliteitswaarschuwing.
   Aantalsklassen of meerdere vindplaatsen worden niet tot abundantie opgeteld.
   De native meeteenheid blijft het kilometerhok en wordt niet naar SOVON-plots
   verdeeld. De 213 vervaagde records krijgen geen openbare afleiding.
@@ -966,6 +978,15 @@
   niet-deterministisch combineerbare klassen blijven onzeker. De in het rapport
   gebruikte invulling van ontbrekende meetronden met een eerder of later jaar
   wordt niet in de observatiedatabase overgenomen.
+  FLORON heeft op 6 oktober 2026 bevestigd dat Dunea de onderliggende
+  LMF-A-gegevens beheert en FLORON alleen de software als dienst levert. Een
+  eventuele bronvalidatie richt zich daarom rechtstreeks tot Dunea. Tot die
+  validatie blijven de 45 alleen uit NDFF afgeleide routejaren en hun 2.862
+  nulregels voorlopig; de 79 in het rapport bevestigde routejaren en 4.945
+  nulregels hebben een sterkere onderbouwing.
+- De `uri` of `identity` uit de NDFF-export geldt voor deze FLORON-reeksen als
+  stabiele sleutel op waarnemingsniveau. Een extra waarnemingssleutel wordt niet
+  meer bij FLORON gevraagd.
 - De gerichte FLORON-projecten `12.002` en `12.003`, Nectarindex `12.209` en
   LMF-A `12.211` zijn doelsoortafhankelijk. Een positieve regel blijft
   voorkomensinformatie; afwezigheid wordt uitsluitend afgeleid binnen een

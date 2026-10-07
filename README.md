@@ -462,10 +462,16 @@ in vijf openbare `Meijendel.ndff_hns_*`-tabellen. De 4.569 bronregels vormen
 23 aannemelijk volledige inventarisaties en drie kleine fragmenten; 39
 vervaagde jaarregels zijn niet aan een bezoek toegewezen. De bezoekmatrix voor
 703 lokaal aantoonbare HNS-taxa bevat 4.439 positieve combinaties en 11.730
-echte nullen. Herhaalde datumclusters zijn nog niet aantoonbaar onafhankelijke
-tellers, omdat lijst- en waarnemer-ID ontbreken. Gebruik deze laag daarom voor
-voorlopige verspreidings-/occupancyanalyse, nooit voor plantenabundantie, en
-controleer haar vooraf met `--audit-hns`.
+afgeleide protocolnullen. FLORON heeft op 6 oktober 2026 bevestigd dat een
+kalenderdag in een kilometerhok de beschikbare teleenheid is. De huidige 26
+clusters hebben ieder precies één begindatum en één doelhok; hun groepering is
+daarmee inhoudelijk bevestigd. Binnen zo'n dag-hoktelling kunnen één, twee of
+drie oorspronkelijke lijsten liggen. Die lijsten zijn in de NDFF-export niet
+afzonderlijk herkenbaar en mogen daarom niet als herhaalde waarnemersmetingen
+worden gebruikt. De nullen zijn niet door FLORON geleverd, maar uit een
+aannemelijk volledige HNS-telling en het lokale doelbereik afgeleid. Gebruik de
+laag daarom voor voorlopige verspreidings- en occupancyanalyse, nooit voor
+plantenabundantie, en controleer haar vooraf met `--audit-hns`.
 
 Korstmossenprotocol `02.202` staat onder `ndff-korstmos-v2` in vijf openbare
 `Meijendel.ndff_korstmos_*`-tabellen. De 364 onvervaagde bronregels vormen
@@ -496,8 +502,12 @@ FLORBASE-protocol `12.001` staat onder `ndff-florbase-v1` in vier openbare
 50 taxa als `volledige_lijst_aannemelijk`; 65 kleinere lijsten blijven
 fragment. De matrix voor 857 lokaal aangetoonde taxa bevat 19.405 positieve
 combinaties en 81.721 `protocolnul_onder_volledigheidsaanname`. Die nullen zijn
-voorlopig omdat de FFV-export de oorspronkelijke volledigheidsvlag, bezoekduur
-en historische checklistversie niet bevat. Gebruik ze alleen op
+voorlopig omdat de grens van vijftig taxa een lokale aanname blijft. FLORON
+heeft op 6 oktober 2026 bevestigd dat jaar plus kilometerhok de fijnste
+beschikbare teleenheid is en dat voor 2011 alleen soort, jaar, kilometerhok en
+waarnemer werden opgeslagen. Oorspronkelijke lijst-ID's, bezoekdata,
+bezoekduur, checklistversies en expliciete niet-detecties zijn bij FLORON niet
+als aanvullende bronstructuur beschikbaar. Gebruik de afgeleide nullen alleen op
 kilometerhokniveau, nooit als nul per SOVON-plot, en controleer de laag met
 `--audit-florbase`.
 
@@ -507,8 +517,13 @@ Dunea per kilometerhok een vaste looproute gebruikt en daar gemiddeld eens per
 vier jaar 75 aandachtssoorten telt. De 5.980 bronregels zijn samengevat tot 30
 routes en 124 routejaren. Daarvan zijn 79 routejaren rechtstreeks in het rapport
 1999-2019 bevestigd; 45 zijn uit gelabelde `12.211`-records afgeleid. De matrix
-bevat 1.493 positieve routejaar-soortresultaten en 7.807 echte nullen. Exacte
-groeiplaatsaantallen zijn opgeteld en naar FLORON-klasse A-G vertaald. Bij 161
+bevat 1.493 positieve routejaar-soortresultaten en 7.807 nullen binnen de 75
+doelsoorten. Daarvan horen 4.945 nullen bij de 79 in het rapport bevestigde
+routejaren; 2.862 horen bij de 45 alleen uit NDFF afgeleide routejaren en
+blijven daarom voorlopig. FLORON heeft op 6 oktober 2026 bevestigd dat Dunea de
+onderliggende gegevens beheert en dat FLORON voor dit meetnet alleen de
+softwaredienst levert. Exacte groeiplaatsaantallen zijn opgeteld en naar
+FLORON-klasse A-G vertaald. Bij 161
 combinaties met meerdere klassen of gemengde meetwijzen is geen schijnprecieze
 klasse berekend. Exacte gevoelige vindplaatsen zijn niet naar deze openbare
 afleiding gekopieerd. Controleer de laag met `--audit-lmfa`.
