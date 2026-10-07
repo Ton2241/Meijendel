@@ -301,9 +301,14 @@ build_species_counts <- function(tbls, species_id, year_min, year_max, plot_ids)
   counts
 }
 
-build_model_dataset <- function(basis, counts, bronnen, sovon_plotjaar) {
+build_model_dataset <- function(basis, counts, territoria_reference, bronnen, sovon_plotjaar) {
   dat <- merge(basis, counts, by = c("plot_id", "jaar"), all.x = TRUE)
-  dat <- apply_territory_observation_gate(dat, bronnen, sovon_plotjaar)
+  dat <- apply_territory_observation_gate(
+    dat,
+    bronnen,
+    sovon_plotjaar,
+    territoria_reference = territoria_reference
+  )
   dat$count <- dat$count_raw
   dat$log_area <- ifelse(
     is.finite(dat$oppervlakte_km2) & dat$oppervlakte_km2 > 0,
@@ -348,7 +353,13 @@ if (!nrow(basis)) {
 }
 
 counts <- build_species_counts(tbls, species_id, year_min, year_max, unique(basis$plot_id))
-dat <- build_model_dataset(basis, counts, tbls$bronnen, tbls$sovon_bmp_plotjaar)
+dat <- build_model_dataset(
+  basis,
+  counts,
+  tbls$territoria,
+  tbls$bronnen,
+  tbls$sovon_bmp_plotjaar
+)
 
 if (!any(!is.na(dat$count))) {
   stop("Geen getelde plot-jaren voor deze selectie.")

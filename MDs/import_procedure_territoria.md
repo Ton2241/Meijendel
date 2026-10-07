@@ -58,8 +58,8 @@ waargenomen.
 
 Voor de afzonderlijke bron `jrvslg_m` geldt bij TRIM een vastgelegde
 analyseaanname. Een plotjaar met jaarverslagresultaten geldt als onderzocht
-voor iedere vogelsoort met ten minste één geaccepteerd positief
-territoriumresultaat in de volledige Meijendel-reeks 1958-2025.
+voor iedere vogelsoort met ten minste één geaccepteerd positief `jrvslg_m`-
+territoriumresultaat in de volledige jaarverslagreeks 1958-2025.
 Ontbreekt zo'n soort in een geteld jaarverslagplot, dan krijgt de analysematrix
 een afgeleide nul met status `afgeleide_jaarverslagnul`. Het is daarvoor niet
 nodig dat de soort in hetzelfde kalenderjaar elders is vastgesteld. Schrijf
@@ -81,15 +81,14 @@ bewijsgrond. Gebruik minimaal de statussen `territorium_vastgesteld`,
 SOVON zijn geleverd en welke uit de volledige soortenregistratie in een
 jaarverslagplot zijn afgeleid.
 
-De audit van 6 oktober 2026 vindt binnen 662 getelde `jrvslg_m`-plotjaren en
-een soortpool van 130 soorten 67.562 potentiële afgeleide jaarverslagnullen:
-61.593 in 1958-1983 en 5.969 in 1984-2025. Na de bestaande selectie op het
-eerste positieve jaar en actieve plots kunnen 14.902 cellen voor 120 soorten
-in de huidige TRIM-modellen vallen: 14.254 in 1958-1983 en 648 in 1984-2025.
-De matrixbouwers passen deze afleiding nog niet toe; zij laten deze ontbrekende
-jaarverslagregels nu als `NA`. Herbereken de lange TRIM-reeks daarom na
-implementatie. De Sandra-selectie 1997-2022 bevat geen `jrvslg_m`-plotjaar en
-verandert door deze regel niet.
+De herberekening van 7 oktober 2026 vindt binnen 662 getelde
+`jrvslg_m`-plotjaren en een actuele soortpool van 128 soorten 66.116 afgeleide
+jaarverslagnullen: 60.387 in 1958-1983 en 5.729 in 1984-2025. Na selectie op
+het eerste positieve jaar en actieve plots worden 15.921 cellen werkelijk als
+TRIM-modelinvoer gebruikt: 14.149 in 1958-1983 en 1.772 in 1984-2025. De
+gedeelde matrixbouwer past de regel toe in batch-TRIM, Shiny, Sandra en GEE.
+De Sandra-selectie 1997-2022 bevat geen `jrvslg_m`-plotjaar en verandert door
+deze regel niet.
 
 ## Telleridentificatie
 

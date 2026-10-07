@@ -1172,7 +1172,12 @@ build_species_matrix_subset <- function(tbls, basis, selection_df, year_from, ye
     all.x = TRUE
   )
 
-  grid <- apply_territory_observation_gate(grid, tbls$bronnen, tbls$sovon_bmp_plotjaar)
+  grid <- apply_territory_observation_gate(
+    grid,
+    tbls$bronnen,
+    tbls$sovon_bmp_plotjaar,
+    territoria_reference = tbls$territoria
+  )
   grid$territoria_per_km2 <- ifelse(
     grid$geteld &
       is.finite(grid$count_raw) &
@@ -1217,6 +1222,15 @@ prepare_trim_period <- function(df) {
   df <- df[order(df$plot_id, df$jaar), ]
 
   list(ok = TRUE, data = df, year_map = year_map)
+}
+
+count_derived_year_report_zeros <- function(df, trim_period_only = FALSE) {
+  if (trim_period_only) {
+    prepared <- prepare_trim_period(df)
+    if (!prepared$ok) return(0L)
+    df <- prepared$data
+  }
+  as.integer(sum(df$observatie_status == "afgeleide_jaarverslagnul", na.rm = TRUE))
 }
 
 fit_trim_model <- function(df) {
@@ -1470,6 +1484,11 @@ analyse_species_subset <- function(species_matrix) {
       n_positieve_cellen = observed_positive,
       n_jaren_geteld = observed_years,
       n_positieve_jaren = length(unique(df$jaar[df$geteld & is.finite(df$count_adjusted) & df$count_adjusted > 0])),
+      n_afgeleide_jaarverslagnullen = count_derived_year_report_zeros(df),
+      pre_afgeleide_jaarverslagnullen = count_derived_year_report_zeros(pre_df),
+      post_afgeleide_jaarverslagnullen = count_derived_year_report_zeros(post_df),
+      pre_afgeleide_jaarverslagnullen_in_model = count_derived_year_report_zeros(pre_df, trim_period_only = TRUE),
+      post_afgeleide_jaarverslagnullen_in_model = count_derived_year_report_zeros(post_df, trim_period_only = TRUE),
       pre_model_gelukt = !is.null(pre_fit$model),
       post_model_gelukt = !is.null(post_fit$model),
       pre_model = pre_fit$config,

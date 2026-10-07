@@ -102,10 +102,49 @@ normalize_sovon_plotjaar_status <- function(sovon_plotjaar) {
   status
 }
 
-apply_territory_observation_gate <- function(grid, bronnen, sovon_plotjaar) {
+year_report_zero_context <- function(territoria_reference, bronnen) {
+  required <- c("plot_id", "soort_id", "jaar", "territoria", "bron_id")
+  if (!is.data.frame(territoria_reference) || length(setdiff(required, names(territoria_reference)))) {
+    stop("Referentie voor jaarverslagnullen mist verplichte territoriumvelden.", call. = FALSE)
+  }
+  bron_lookup <- unique(bronnen[, c("id", "code"), drop = FALSE])
+  bron_lookup$id <- as.integer(bron_lookup$id)
+  bron_lookup$code <- as.character(bron_lookup$code)
+  reference <- territoria_reference[, required, drop = FALSE]
+  reference$plot_id <- as.integer(reference$plot_id)
+  reference$soort_id <- as.integer(reference$soort_id)
+  reference$jaar <- as.integer(reference$jaar)
+  reference$territoria <- as.numeric(reference$territoria)
+  reference$bron_id <- as.integer(reference$bron_id)
+  reference <- merge(reference, bron_lookup, by.x = "bron_id", by.y = "id", all.x = TRUE, sort = FALSE)
+  unresolved <- !is.na(reference$bron_id) & (is.na(reference$code) | !nzchar(reference$code))
+  if (any(unresolved)) {
+    stop("Referentie voor jaarverslagnullen bevat een onbekend bron-id.", call. = FALSE)
+  }
+  is_year_report <- !is.na(reference$code) &
+    reference$code == "jrvslg_m" &
+    reference$jaar >= 1958L &
+    reference$jaar <= 2025L &
+    is.finite(reference$territoria)
+  reference <- reference[is_year_report, , drop = FALSE]
+
+  list(
+    plotjaar_sleutels = unique(paste(reference$plot_id, reference$jaar, sep = ":")),
+    soort_ids = sort(unique(reference$soort_id[reference$territoria > 0]))
+  )
+}
+
+apply_territory_observation_gate <- function(
+    grid,
+    bronnen,
+    sovon_plotjaar,
+    territoria_reference = NULL) {
   required_grid <- c("plot_id", "jaar", "territoria", "bron_id")
   if (!is.data.frame(grid) || length(setdiff(required_grid, names(grid)))) {
     stop("Territoriummatrix mist plot_id, jaar, territoria of bron_id.", call. = FALSE)
+  }
+  if (!is.null(territoria_reference) && !"soort_id" %in% names(grid)) {
+    stop("Territoriummatrix mist soort_id voor afgeleide jaarverslagnullen.", call. = FALSE)
   }
   if (!"plotjaar_geteld" %in% names(grid)) {
     if (!"geteld" %in% names(grid)) {
@@ -129,6 +168,7 @@ apply_territory_observation_gate <- function(grid, bronnen, sovon_plotjaar) {
   grid$jaar <- as.integer(grid$jaar)
   grid$bron_id <- as.integer(grid$bron_id)
   grid$territoria <- as.numeric(grid$territoria)
+  if ("soort_id" %in% names(grid)) grid$soort_id <- as.integer(grid$soort_id)
   grid$.gate_row_order <- seq_len(nrow(grid))
   grid <- merge(
     grid,
@@ -174,6 +214,44 @@ apply_territory_observation_gate <- function(grid, bronnen, sovon_plotjaar) {
           accepted & grid$count_raw > 0,
           "territorium_vastgesteld",
           ifelse(grid$plotjaar_geteld, "ontbrekende_soortregel", "niet_geteld")
+        )
+      )
+    )
+  )
+  grid$analyse_bron_code <- ifelse(accepted, grid$bron_code, NA_character_)
+
+  if (!is.null(territoria_reference)) {
+    context <- year_report_zero_context(territoria_reference, bronnen)
+    row_plotjaar_key <- paste(grid$plot_id, grid$jaar, sep = ":")
+    row_value_key <- paste(grid$plot_id, grid$jaar, grid$soort_id, sep = ":")
+    accepted_value_keys <- unique(row_value_key[grid$geteld])
+    eligible <- row_plotjaar_key %in% context$plotjaar_sleutels &
+      grid$soort_id %in% context$soort_ids &
+      !row_value_key %in% accepted_value_keys
+    derived_rows <- which(eligible)
+    derived_rows <- derived_rows[!duplicated(row_value_key[derived_rows])]
+    if (length(derived_rows)) {
+      grid$geteld[derived_rows] <- TRUE
+      grid$count_raw[derived_rows] <- 0
+      grid$observatie_status[derived_rows] <- "afgeleide_jaarverslagnul"
+      grid$analyse_bron_code[derived_rows] <- "jrvslg_m"
+    }
+  }
+
+  grid$nulstatus <- grid$observatie_status
+  grid$bewijsgrond <- ifelse(
+    grid$observatie_status == "territorium_vastgesteld",
+    "aanwezige_geaccepteerde_bronregel",
+    ifelse(
+      grid$observatie_status == "letterlijke_nul",
+      "letterlijke_nul_in_bron",
+      ifelse(
+        grid$observatie_status == "afgeleide_jaarverslagnul",
+        "ontbreekt_in_geteld_jaarverslagplot_binnen_jaarverslagsoortpool",
+        ifelse(
+          grid$observatie_status == "onafhankelijke_bron_ondanks_sovon_afkeur",
+          "aanwezige_onafhankelijke_bronregel",
+          "geen_geaccepteerde_analysewaarde"
         )
       )
     )

@@ -8,8 +8,8 @@
   project gebruikte SOVON-territoriummatrices. Voor gegevens uit de
   VWG-jaarverslagen blijft een andere, expliciete analyseaanname gelden. De
   tellers telden alle vogelsoorten. De relevante soortpool bestaat daarom uit
-  iedere soort met ten minste één geaccepteerd positief territoriumresultaat
-  in de volledige Meijendel-reeks 1958-2025. Als een plotjaar in
+  iedere soort met ten minste één geaccepteerd positief `jrvslg_m`-resultaat
+  in de volledige jaarverslagreeks 1958-2025. Als een plotjaar in
   het jaarverslag is geteld en een soort uit deze soortpool ontbreekt, wordt
   die soort-plotjaarcombinatie voor TRIM als nul behandeld. Het is dus niet
   vereist dat de soort in hetzelfde kalenderjaar elders in Meijendel is
@@ -34,7 +34,7 @@
   voor dat plotjaar een geaccepteerde waarde hebben; een gedeeltelijke som
   blijft `NA`. De herberekende hoofdreeks 1958-2025
   bevat 156 soorten met minimaal één geaccepteerd positief territorium in de
-  statuslaag, 135 soorten met indices en 94 brugbare
+  statuslaag, 135 soorten met indices en 93 brugbare
   reeksen. De Sandra-reeks 1997-2022 bevat 132 positief waargenomen soorten en
   110 formele soorttrends. De aanvullende ruwe ecologische groepsreeks in
   `output_ecologische_groepen` gebruikt voor letterlijke nulindices de
@@ -43,18 +43,17 @@
   machtsanalyse is de op TRIM-modelindices gebaseerde uitvoer in
   `trim_msi_evg` leidend.
 
-  Deze implementatie is door het besluit van 6 oktober 2026 voor
-  jaarverslaggegevens niet langer volledig. De letterlijke SOVON-nullen en
-  lege SOVON-cellen worden wel correct behandeld. Ontbrekende
-  jaarverslagcombinaties blijven in de huidige code echter nog `NA`. Binnen de
-  standaard-TRIM-scope gaat het om 67.562 afleidbare nullen: 61.593 in
-  1958-1983 en 5.969 in 1984-2025. Na de bestaande selectie op het eerste
-  positieve jaar en actieve plots kunnen 14.902 cellen voor 120 soorten in de
-  huidige modellen vallen: 14.254 in 1958-1983 en 648 in 1984-2025. De lange
-  TRIM-reeks moet na implementatie
-  daarom opnieuw worden berekend. De Sandra-variant 1997-2022 bevat binnen
-  haar plotselectie geen `jrvslg_m`-plotjaren en wordt door deze wijziging niet
-  geraakt.
+  Op 7 oktober 2026 is de jaarverslagregel in de gedeelde matrixbouwer
+  geïmplementeerd voor batch-TRIM, Shiny, Sandra en de zelfstandige GEE-route.
+  De actuele standaardanalyse over 52 Natura 2000-plots en 1958-2025 bevat
+  66.116 afgeleide jaarverslagnullen voor 128 soorten: 60.387 in 1958-1983 en
+  5.729 in 1984-2025. Na selectie op eerste positieve jaar en actieve plots
+  worden 15.921 daarvan werkelijk als modelinvoer gebruikt: 14.149 in
+  1958-1983 en 1.772 in 1984-2025. De hoofdreeks en groeps-MSI's zijn opnieuw
+  berekend. Kuifleeuwerik verloor als enige de post-1984-modelreeks, zodat het
+  aantal brugbare soorten van 94 naar 93 daalde. De Sandra-variant 1997-2022
+  bevat geen `jrvslg_m`-plotjaren; de bestaande soorttrends en indexbestanden
+  bleven bytegelijk.
 
 - Op 3 oktober 2026 zijn de 7.552 onder reconstructieversie
   `ndff-daz-bmp-v1` afgeleide nulregels herclassificeerd als

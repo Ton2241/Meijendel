@@ -141,6 +141,9 @@ Daarnaast wordt per cel berekend:
 - `territorium_vastgesteld`
 - `echte_nul`
 - `observatie_status`
+- `analyse_bron_code`
+- `nulstatus`
+- `bewijsgrond`
 - `waargenomen_zonder_territorium`
 
 De statusvelden leggen expliciet vast hoe echte nullen worden behandeld:
@@ -149,12 +152,13 @@ De statusvelden leggen expliciet vast hoe echte nullen worden behandeld:
 - `ontbrekende_soortregel`: het plotjaar is geregistreerd, maar voor deze soort ontbreekt een bronwaarde; blijft `NA`
 - `formeel_afgekeurd`: de SOVON-uitkomst is niet toegelaten; blijft `NA`
 - `letterlijke_nul`: de bron leverde expliciet nul territoria
+- `afgeleide_jaarverslagnul`: de soort ontbreekt in een geteld jaarverslagplot en behoort tot de `jrvslg_m`-soortpool
 - `onafhankelijke_bron_ondanks_sovon_afkeur`: een aanwezige niet-SOVON-regel blijft geldig
 - `territorium_vastgesteld`: plot-jaar is geteld en er is minimaal één territorium
 
 `waargenomen_zonder_territorium` is nu nog `NA`, omdat dagwaarnemingen nog niet als aparte respons in de Shiny-analyses worden gebruikt. Dit veld is toegevoegd om later het onderscheid tussen "wel waargenomen maar geen territorium" en "niet waargenomen" structureel te kunnen opnemen.
 
-### Bronafhankelijke jaarverslagnullen nog niet geïmplementeerd
+### Bronafhankelijke jaarverslagnullen
 
 SOVON Helpdesk heeft op 6 oktober 2026 bevestigd dat een `0` in de officiële
 Excel-download een harde nul is en dat een lege cel betekent dat de soort niet
@@ -163,13 +167,10 @@ is onderzocht. De huidige Shiny-matrix volgt die SOVON-regel correct.
 Voor `jrvslg_m` geldt inmiddels een afzonderlijk analysebesluit. Omdat de
 tellers alle vogelsoorten telden, wordt de soortpool bepaald over de volledige
 Meijendel-reeks 1958-2025. Wanneer een soort ten minste één geaccepteerd
-positief territoriumresultaat in die reeks heeft, wordt haar ontbreken in ieder geteld
-jaarverslagplot als
-`afgeleide_jaarverslagnul` behandeld. `build_species_matrix_subset()` past deze
-regel nog niet toe. Shiny toont daarom voorlopig dezelfde letterlijke
-nulbenadering als de batchanalyse en kan voor selecties met jaarverslagdata
-minder nulcellen bevatten dan besloten. Deze afwijking moet worden opgelost
-voordat de betreffende Shiny-TRIM-uitkomsten als actueel worden beschouwd.
+positief `jrvslg_m`-resultaat in die reeks heeft, wordt haar ontbreken in ieder
+geteld jaarverslagplot als `afgeleide_jaarverslagnul` behandeld.
+`build_species_matrix_subset()` past deze regel sinds 7 oktober 2026 toe via de
+gedeelde observatiepoort. Een aanwezige positieve bronwaarde blijft leidend.
 
 ## TRIM-logica
 
@@ -500,12 +501,12 @@ Per `plot_id + jaar` wordt eerst een G.E.E.-dataset opgebouwd.
 Daarbij geldt:
 
 - geaccepteerde territoriumregels worden geaggregeerd per `plot_id + jaar`
-- een letterlijke nul blijft `0`; een ontbrekende soortregel blijft `NA`
+- een letterlijke nul blijft `0`; een ontbrekende soortregel blijft `NA`, behalve wanneer de vastgelegde `jrvslg_m`-regel een afgeleide jaarverslagnul rechtvaardigt
 - formeel afgekeurde SOVON-waarden blijven buiten de dataset; onafhankelijke bronregels blijven geldig
 - bij een groep, richtlijn of habitatgroep wordt alleen een totaal berekend
   wanneer alle samenstellende soortcellen in dat plotjaar een geaccepteerde
   waarde hebben; een gedeeltelijke som blijft `NA`
-- de statusvelden `is_missing`, `territorium_vastgesteld`, `echte_nul`, `observatie_status` en `waargenomen_zonder_territorium` worden toegevoegd aan de modeldataset
+- de statusvelden `is_missing`, `territorium_vastgesteld`, `echte_nul`, `observatie_status`, `analyse_bron_code`, `nulstatus`, `bewijsgrond` en `waargenomen_zonder_territorium` worden toegevoegd aan de modeldataset
 - `ahn_mean`, `stikstof_mean` en infra-waarden worden gekoppeld op dichtstbijzijnde beschikbare jaarwaarde per plot
 - `toegankelijkheid_status` gebruikt de laatst bekende status op of vóór het gekozen jaar
 - habitatcovariaten worden gekoppeld als aandeel per geselecteerd habitattype in `plot_jaar_habitat`

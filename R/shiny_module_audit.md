@@ -47,24 +47,25 @@ De centrale regel is:
 niet geteld = NA
 ontbrekende soortregel of lege broncel = NA
 letterlijke territoriumregel met nul = 0
+ontbrekende soort uit de jrvslg_m-soortpool in een geteld jaarverslagplot = 0
 formeel afgekeurde SOVON-uitkomst = NA
 geaccepteerde positieve bronregel = positief aantal
 ```
 
 Een geregistreerd of bezocht plotjaar bewijst dus niet dat iedere ontbrekende
-soortcel nul is. Alleen een letterlijke nulregel geldt als echte nul. Een
-aanwezige onafhankelijke niet-SOVON-regel blijft ook geldig wanneer het
-SOVON-plotjaar formeel is afgekeurd. Dit is essentieel voor alle modules.
+soortcel nul is. Buiten de vastgelegde `jrvslg_m`-afleiding geldt alleen een
+letterlijke nulregel als nul. Een aanwezige onafhankelijke niet-SOVON-regel
+blijft ook geldig wanneer het SOVON-plotjaar formeel is afgekeurd. Dit is
+essentieel voor alle modules.
 
-Dit beschrijft de implementatie per 6 oktober 2026, maar niet meer het volledige
-inhoudelijke besluit. Voor officiële SOVON-matrices blijft deze regel juist:
+Voor officiële SOVON-matrices blijft deze regel gelden:
 SOVON bevestigt dat `0` een harde nul is en een lege cel betekent dat de soort
 niet is onderzocht. Voor `jrvslg_m` is aanvullend besloten een ontbrekende
 soort-plotjaarcombinatie als `afgeleide_jaarverslagnul` te behandelen wanneer
 de soort ten minste één geaccepteerd positief territoriumresultaat in de
-volledige Meijendel-reeks 1958-2025 heeft. Voorkomen elders in hetzelfde
-kalenderjaar is geen voorwaarde. Die afleiding is nog niet in de gedeelde
-matrixbouwer geïmplementeerd.
+volledige `jrvslg_m`-reeks 1958-2025 heeft. Voorkomen elders in hetzelfde
+kalenderjaar is geen voorwaarde. Sinds 7 oktober 2026 past de gedeelde
+matrixbouwer deze afleiding toe.
 
 ### Responsmaat
 

@@ -1,5 +1,20 @@
 # Status Meijendel
 
+## 7 oktober 2026 - afgeleide jaarverslagnullen in TRIM
+
+- De gedeelde observatiepoort gebruikt voor officiële SOVON-matrices alleen
+  letterlijke nullen; lege SOVON-cellen blijven `NA`.
+- Voor 662 getelde `jrvslg_m`-plotjaren in 1958-2025 worden ontbrekende soorten
+  uit de brongebonden soortpool als `afgeleide_jaarverslagnul` behandeld. De
+  standaardanalyse over 52 Natura 2000-plots bevat 66.116 zulke cellen voor 128
+  soorten; 15.921 cellen komen na de modelselecties werkelijk in TRIM terecht.
+- De hoofdreeks en groeps-MSI's zijn opnieuw berekend: 156 soorten in de
+  statuslaag, 135 met minimaal één indexreeks en 93 met twee brugbare perioden.
+  Alleen Kuifleeuwerik verloor de post-1984-modelreeks. De Sandra-resultaten
+  1997-2022 bleven bytegelijk.
+- De volledige vergelijking met de uitvoer van 4 oktober staat in
+  `trim/soorten/gevolgen_afgeleide_jaarverslagnullen_per_soort.csv`.
+
 ## 5 oktober 2026 - mobiele dashboarddata
 
 - Het statische dashboard laadde bij openen de volledige `Meijendel.sql` van

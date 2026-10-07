@@ -126,6 +126,89 @@ stopifnot(identical(
   ),
   5L
 ))
+
+year_report_reference <- data.frame(
+  plot_id = c(1L, 2L, 2L, 1L),
+  soort_id = c(1L, 2L, 3L, 4L),
+  jaar = c(2024L, 2023L, 2023L, 2024L),
+  territoria = c(2, 1, 1, 0),
+  bron_id = c(2L, 2L, 1L, 1L),
+  stringsAsFactors = FALSE
+)
+year_report_grid <- data.frame(
+  plot_id = rep(1L, 4L),
+  soort_id = 1:4,
+  jaar = rep(2024L, 4L),
+  territoria = c(2, NA, NA, 0),
+  bron_id = c(2L, NA, NA, 1L),
+  plotjaar_geteld = TRUE,
+  stringsAsFactors = FALSE
+)
+year_report_result <- apply_territory_observation_gate(
+  year_report_grid,
+  territory_gate_bronnen,
+  territory_gate_plotjaar,
+  territoria_reference = year_report_reference
+)
+expect_error(
+  apply_territory_observation_gate(
+    year_report_grid[, setdiff(names(year_report_grid), "soort_id"), drop = FALSE],
+    territory_gate_bronnen,
+    territory_gate_plotjaar,
+    territoria_reference = year_report_reference
+  ),
+  "Territoriummatrix mist soort_id voor afgeleide jaarverslagnullen."
+)
+stopifnot(
+  identical(year_report_result$count_raw, c(2, 0, NA, 0)),
+  identical(year_report_result$geteld, c(TRUE, TRUE, FALSE, TRUE)),
+  identical(
+    year_report_result$observatie_status,
+    c(
+      "territorium_vastgesteld",
+      "afgeleide_jaarverslagnul",
+      "ontbrekende_soortregel",
+      "letterlijke_nul"
+    )
+  ),
+  identical(year_report_result$analyse_bron_code, c("jrvslg_m", "jrvslg_m", NA, "sovon_m")),
+  identical(
+    year_report_result$bewijsgrond,
+    c(
+      "aanwezige_geaccepteerde_bronregel",
+      "ontbreekt_in_geteld_jaarverslagplot_binnen_jaarverslagsoortpool",
+      "geen_geaccepteerde_analysewaarde",
+      "letterlijke_nul_in_bron"
+    )
+  )
+)
+
+unknown_year_report_reference <- year_report_reference
+unknown_year_report_reference$bron_id[1L] <- 999L
+expect_error(
+  apply_territory_observation_gate(
+    year_report_grid,
+    territory_gate_bronnen,
+    territory_gate_plotjaar,
+    territoria_reference = unknown_year_report_reference
+  ),
+  "Referentie voor jaarverslagnullen bevat een onbekend bron-id."
+)
+
+future_year_report_reference <- rbind(
+  year_report_reference,
+  data.frame(plot_id = 1L, soort_id = 3L, jaar = 2026L, territoria = 1, bron_id = 2L)
+)
+future_year_report_result <- apply_territory_observation_gate(
+  year_report_grid,
+  territory_gate_bronnen,
+  territory_gate_plotjaar,
+  territoria_reference = future_year_report_reference
+)
+stopifnot(
+  is.na(future_year_report_result$count_raw[future_year_report_result$soort_id == 3L]),
+  future_year_report_result$observatie_status[future_year_report_result$soort_id == 3L] == "ontbrekende_soortregel"
+)
 period_fixture <- rbind(
   territory_gate_fixture,
   data.frame(
@@ -239,6 +322,12 @@ stopifnot(vapply(
   function(path) any(grepl("apply_territory_observation_gate", readLines(path, warn = FALSE), fixed = TRUE)),
   logical(1)
 ))
+gee_source <- readLines(file.path(repo, "R", "gee_soorttrend_meijendel.R"), warn = FALSE)
+stopifnot(
+  any(grepl("build_model_dataset <- function(basis, counts, territoria_reference, bronnen, sovon_plotjaar)", gee_source, fixed = TRUE)),
+  any(grepl("territoria_reference = territoria_reference", gee_source, fixed = TRUE)),
+  any(grepl("tbls$territoria,", gee_source, fixed = TRUE))
+)
 
 source(file.path(repo, "R", "analyse_ecologische_groepen.R"))
 alternative_tbls <- list(

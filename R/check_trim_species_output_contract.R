@@ -29,9 +29,25 @@ main_selection <- read_output("trim", "soorten", "soorten_bruikbare_tijdreeks_se
 main_basis <- read_output("trim", "soorten", "analysebasis_plot_jaar.csv")
 
 assert_true(nrow(main_status) == 156L, "hoofdstatus moet 156 soorten met minimaal één geaccepteerd positief territorium binnen de Natura 2000-analysescope bevatten")
+assert_columns(
+  main_status,
+  c(
+    "n_afgeleide_jaarverslagnullen",
+    "pre_afgeleide_jaarverslagnullen",
+    "post_afgeleide_jaarverslagnullen",
+    "pre_afgeleide_jaarverslagnullen_in_model",
+    "post_afgeleide_jaarverslagnullen_in_model"
+  ),
+  "hoofdmodelstatus"
+)
+assert_true(sum(main_status$n_afgeleide_jaarverslagnullen) == 66116L, "hoofdmodelstatus moet 66.116 afgeleide jaarverslagnullen bevatten")
+assert_true(sum(main_status$pre_afgeleide_jaarverslagnullen) == 60387L, "hoofdmodelstatus moet 60.387 afgeleide jaarverslagnullen voor 1958-1983 bevatten")
+assert_true(sum(main_status$post_afgeleide_jaarverslagnullen) == 5729L, "hoofdmodelstatus moet 5.729 afgeleide jaarverslagnullen voor 1984-2025 bevatten")
+assert_true(sum(main_status$pre_afgeleide_jaarverslagnullen_in_model) == 14149L, "hoofdmodelstatus moet 14.149 afgeleide jaarverslagnullen in de pre-1984-modeldata bevatten")
+assert_true(sum(main_status$post_afgeleide_jaarverslagnullen_in_model) == 1772L, "hoofdmodelstatus moet 1.772 afgeleide jaarverslagnullen in de post-1984-modeldata bevatten")
 assert_true(length(unique(main_indices$soort_id)) == 135L, "hoofdindices moeten 135 soorten bevatten")
 assert_true(nrow(main_trends) == 135L && length(unique(main_trends$soort_id)) == 135L, "hoofdtrendoverzicht moet 135 unieke soorten bevatten")
-assert_true(nrow(main_usable) == 94L && length(unique(main_usable$soort_id)) == 94L, "bruikbare hoofdreeks moet 94 unieke soorten bevatten")
+assert_true(nrow(main_usable) == 93L && length(unique(main_usable$soort_id)) == 93L, "bruikbare hoofdreeks moet 93 unieke soorten bevatten")
 assert_true(!any(main_basis$plot_id %in% c(3503L, 3514L)), "hoofd-analysebasis bevat M66 of M91")
 assert_true(setequal(main_trends$soort_id, unique(main_indices$soort_id)), "hoofdtrendsoorten wijken af van de indexsoorten")
 assert_true(setequal(main_usable$soort_id, main_selection$soort_id), "bruikbare trendsoorten wijken af van de selectie")
@@ -98,7 +114,7 @@ assert_true(all(sandra_trends$trend_formaliteit == "formeel"), "Sandra bevat onv
 assert_true(all(is.finite(sandra_trends$trend_se_pct) & is.finite(sandra_trends$trend_ci95_laag_pct) & is.finite(sandra_trends$trend_ci95_hoog_pct) & is.finite(sandra_trends$trend_p)), "Sandra mist formele onzekerheidsvelden")
 assert_true(all(sandra_trends$model == sandra_status$model[match(sandra_trends$soort_id, sandra_status$soort_id)]), "Sandra-modelkeuzes wijken af van modelstatus")
 
-cat("TRIM-soortuitvoercontract: OK (135 hoofdsoorten; 94 bruikbaar; 110 Sandra, 1997-2022)\n")
+cat("TRIM-soortuitvoercontract: OK (135 hoofdsoorten; 93 bruikbaar; 110 Sandra, 1997-2022)\n")
 
 assert_descriptive_group_trends <- function(data, expected_rows, label, required_estimates) {
   assert_true(nrow(data) == expected_rows, sprintf("%s moet %d trendregels bevatten", label, expected_rows))

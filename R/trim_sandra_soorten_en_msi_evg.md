@@ -7,8 +7,8 @@ Het script:
 - gebruikt alleen de periode `1997-2022`
 - gebruikt alleen de 25 Sandra-plots
 - laat de bestaande lange output in `trim/soorten` en `trim_msi_evg` ongemoeid
-- gebruikt alleen een letterlijke territoriumregel als analysewaarde
-- houdt een expliciete nul als `0` en een ontbrekende soortregel als `NA`
+- houdt een expliciete SOVON-nul als `0` en een lege SOVON-cel als `NA`
+- gebruikt de gedeelde `jrvslg_m`-nulregel; binnen deze selectie ontstaan daaruit geen afgeleide nullen
 - zet SOVON-uitkomsten van formeel afgekeurde plotjaren op `NA`, maar behoudt aanwezige onafhankelijke niet-SOVON-regels
 - gebruikt dezelfde verbeterde TRIM-logica als de lange analyse: eerst een volledig model, daarna automatisch eenvoudigere modellen als dat nodig is
 - berekent daarna een MSI per ecologische 100-groep

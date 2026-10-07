@@ -2,27 +2,6 @@
 
 ## Nu open
 
-### Bronafhankelijke nullen in TRIM en Shiny
-
-- Implementeer het besluit van 6 oktober 2026 zonder `territoria` met afgeleide
-  waarden te vullen. Officiële SOVON-nulcellen blijven letterlijke harde nullen;
-  lege SOVON-cellen blijven `NA`. Voor `jrvslg_m` wordt een ontbrekende
-  soort-plotjaarcombinatie `afgeleide_jaarverslagnul` wanneer de soort in ten
-  minste één geaccepteerd positief territoriumresultaat in de volledige
-  Meijendel-reeks 1958-2025 heeft. Voorkomen elders in hetzelfde
-  kalenderjaar is geen voorwaarde.
-- Bewaar in de analysematrix bron, nulstatus en bewijsgrond afzonderlijk. Een
-  positieve waarde mag nooit door een afgeleide nul worden vervangen.
-- Voeg regressietests toe voor een SOVON-nul, een lege SOVON-cel, een afgeleide
-  jaarverslagnul, een werkelijk niet-geteld plotjaar, bronoverlap en een
-  formeel afgekeurd SOVON-plotjaar.
-- Herbereken daarna de lange TRIM-reeks 1958-2025, de soorttrends en de
-  groeps-MSI's en vergelijk ze met de uitvoer van 4 oktober 2026. De huidige
-  audit vindt 67.562 potentiële jaarverslagnullen in de standaard-TRIM-scope;
-  na de bestaande modelselecties kunnen 14.902 cellen voor 120 soorten in de
-  huidige modellen vallen. De Sandra-variant 1997-2022 heeft in haar 25 plots geen
-  `jrvslg_m`-plotjaar en hoeft door deze regel niet te veranderen.
-
 ### SOVON-BMP jaar-voor-jaarvergelijking
 
 - 1984 is vergeleken met de levende kerntabellen. Alle 230 bezoeken en 562

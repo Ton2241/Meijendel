@@ -393,7 +393,12 @@ build_species_matrix <- function(tbls, basis, selection_df) {
     all.x = TRUE
   )
 
-  grid <- apply_territory_observation_gate(grid, tbls$bronnen, tbls$sovon_bmp_plotjaar)
+  grid <- apply_territory_observation_gate(
+    grid,
+    tbls$bronnen,
+    tbls$sovon_bmp_plotjaar,
+    territoria_reference = tbls$territoria
+  )
   grid$count_adjusted <- ifelse(grid$geteld, grid$count_raw * grid$oppervlakte_factor, NA_real_)
   grid[order(grid$soort_id, grid$plot_id, grid$jaar), ]
 }
