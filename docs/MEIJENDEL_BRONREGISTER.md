@@ -323,11 +323,15 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 #### 1.5.14. Mossen en korstmossen
 
-**Omvang en periode.** 761 records, 2000–2025
+**Omvang en periode.** De NDFF-levering bevat 384 korstmossenregels onder meetnetprotocol 02.202 uit 2000–2025 en 377 mossenregels onder protocol 02.204 uit 2000–2011.
 
-**Wat kan nu?** Positieve aanwezigheid en voorlopige proefvlakvergelijking
+**Nieuwe primaire bron, 8 oktober 2026.** BLWG leverde voor korstmossen zes plots, 32 afzonderlijke telformulieren met waarnemer en lijstcode, en 292 positieve soortregels. Vier vaste plots zijn onderzocht in de veldjaren 2000, 2006, 2011, 2015, 2020 en 2025; twee andere plots zijn alleen in 2021 onderzocht. De levering bevat plotbegrenzingen en de oorspronkelijke kolom `Kwantiteit`, met vijf van de zes mogelijke klassen in deze selectie. Het rapportagejaar loopt meestal één jaar achter op de feitelijke velddatum; analyses gebruiken de velddatum.
 
-**Wat ontbreekt voor zelfstandige trends?** Oorspronkelijke proefvlak-, lijst- en waarnemersgegevens
+**Vergelijking met NDFF.** De 32 BLWG-formulieren zijn niet dezelfde 32 eenheden als de eerder uit NDFF gereconstrueerde plot-datumbezoeken: BLWG onderscheidt bijvoorbeeld de twee tellers in 2015 en 2021. Van de 292 BLWG-soortregels matchen 269 rechtstreeks op plot, velddatum en soortnaam met onvervaagde NDFF-regels; 20 betreffen de openbaar vervaagde *Usnea articulata* en drie verschillen alleen in de gebruikte wetenschappelijke naam. Die twintig regels en de precieze plotlocatie mogen niet in openbare afgeleide tabellen terechtkomen. De bron is ontvangen maar nog niet geïmporteerd.
+
+**Wat kan nu?** De vier vaste korstmossenplots vormen dankzij de primaire plot-, bezoek- en soortenlijsten een veel betere kandidaat voor lokale analyse van aanwezigheid en ordinale bedekking over zes meetronden. Dit is nog geen gebiedsbrede populatietrend of bewijs voor een beheereffect. De twee plots uit 2021 bieden alleen een momentopname. Het mossendeel blijft bruikbaar als zeven kilometerhokinventarisaties, niet als zelfstandige lokale tijdreeks.
+
+**Wat ontbreekt nog?** De NDFF-selectie 02.202 bevat daarnaast 92 regels van zes andere BLWG-locaties: twee locaties met een bezoek op 15 februari 2015 en vier met een bezoek op 31 maart 2018. Zij staan niet in de ontvangen BLWG-export. Eerst moet duidelijk zijn of ook voor deze zes locaties de oorspronkelijke plot- en bezoekgegevens beschikbaar zijn; de bestaande NDFF-reconstructie blijft daarvoor voorlopig. Voor protocol 02.204 meldde BLWG dat het om kilometerhokinventarisaties gaat en dat, voor zover bekend, geen afzonderlijke kopgegevens worden bijgehouden. Er is daarvoor nu geen aanvullende levering te verwachten.
 
 #### 1.5.15. Bos- en zeereeppaddenstoelen
 

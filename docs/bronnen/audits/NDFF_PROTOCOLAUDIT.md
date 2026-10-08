@@ -635,6 +635,30 @@ en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/
 De beoordeelde BLWG-documenten staan in Zotero onder `Meetnetten - BLWG`
 (`8E3TCBHW`).
 
+**Primaire BLWG-levering, 8 oktober 2026 — nog niet geïmporteerd.** Het
+ontvangen Excelbestand bevat zes plots, 32 oorspronkelijke formulieren
+(`kopid`) en 292 positieve soortregels. Vier vaste plots hebben
+zes meetronden in de veldjaren 2000, 2006, 2011, 2015, 2020 en 2025;
+twee eenmalige plots hebben alleen formulieren uit 2021. De 32 bronformulieren
+zijn niet identiek aan de 32 hierboven uit NDFF afgeleide plot-datumbezoeken:
+de bron scheidt onafhankelijke waarnemers op hetzelfde plot en dezelfde datum.
+Van de 292 bronregels matchen 269 op plot, velddatum en soortnaam met
+onvervaagde NDFF-regels; twintig *Usnea articulata*-regels zijn in de openbare
+NDFF-levering vervaagd en drie zijn taxonomische naamsverschillen
+(*Bacidia/Bacidina caligans* tweemaal; *Leptogium/Scytinium pulvinatum*
+eenmaal). De oorspronkelijke `Kwantiteit`-codes 1, 2, 3, 5 en 6 bevatten
+meer detail dan de twee openbare NDFF-klassen. Analyseer volgens de
+velddatum, niet volgens het vaak een jaar eerdere rapportagejaar.
+
+Dezelfde NDFF-selectie 02.202 heeft daarnaast 92 regels op zes andere,
+eenduidig aan een SOVON-plot gekoppelde BLWG-locaties: twee met een bezoek op
+15 februari 2015 (36 regels) en vier met een bezoek op 31 maart 2018
+(56 regels). Deze ontbreken in de primaire Excel-levering. Vraag uitsluitend
+gericht of de oorspronkelijke plot- en bezoekgegevens voor deze zes locaties
+ook beschikbaar zijn. Wijzig tot na een afzonderlijke integratie-audit geen
+NDFF-bronregels of afgeleide matrix; bescherm de twintig publiek vervaagde
+waarnemingen en hun plotkoppeling.
+
 ### Meetnet mossen (`02.204`)
 
 Regelversie `ndff-mos-v2` reconstrueert 376 onvervaagde openbare bronregels
