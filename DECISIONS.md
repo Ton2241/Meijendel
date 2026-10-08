@@ -1552,3 +1552,15 @@
   auditcode verwijzen naar de nieuwe namen; HNS-, FLORBASE- en LMF-A-audits
   slagen. Een nieuwe `Meijendel.sql`-export, cachebouw en VPS-publicatie
   vallen buiten dit besluit en vergen afzonderlijke toestemming.
+- **8 oktober 2026 — volledige Meijendel-herberekening en VPS-publicatie.** Na
+  expliciete toestemming zijn de volledige SQL-export, Shiny-cache,
+  dashboardbestanden, TRIM-soortuitvoer, ecologische en functionele MSI's,
+  groepsgrafieken en wintertellinguitvoer opnieuw opgebouwd en gepubliceerd.
+  De productie draait op commit `6dbc679887074501f0505ca784e4e494aecd5e3d`
+  met SQL-hash
+  `15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913`.
+  De gesloten releasehelper heeft uitsluitend de 14 vooraf goedgekeurde oude
+  `ndff_hns_*`-, `ndff_florbase_*`- en `ndff_lmfa_*`-tabelnamen verwijderd.
+  Het productieschema, `SQL_CACHE=TRUE`, de canonieke publieke soortselectie en
+  de rookproeven zijn geslaagd. De herstelkopie staat onder
+  `/srv/vwgm/backups/meijendel-mysql/meijendel_before_6dbc679887074501f0505ca784e4e494aecd5e3d_20261008T113632Z.sql.gz`.

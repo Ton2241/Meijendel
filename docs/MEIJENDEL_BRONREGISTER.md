@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 7 oktober 2026.**
+**Stand: 8 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -319,7 +319,7 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 **Wat ontbreekt voor zelfstandige trends?** Voor de 45 niet in het rapport bevestigde routejaren ontbreken nog de primaire Dunea-export, routeversies en eventuele methodewijzigingen. Op 7 oktober 2026 zijn de lokale reposities, documenten, iCloud-downloads en Zotero hierop gericht doorzocht. Er is geen primaire Dunea-export gevonden; alleen het officiële rapport en algemene methodedocumenten zijn lokaal aanwezig. De lokale zoekroute is daarmee afgerond. Wanneer deze validatie prioriteit krijgt, is de kortste vervolgstap een rechtstreeks verzoek aan Dunea om een bestaande volledige LMF-A-export.
 
-**Opslag, 7 oktober 2026.** De veertien afgeleide tabellen van Het Nieuwe Strepen, FLORBASE en LMF-A heten nu respectievelijk `hns_*`, `florbase_*` en `lmfa_*` in de lokale analytische database. De oorspronkelijke NDFF-waarnemingen, bronvermelding en reconstructieversies blijven behouden. Alle tabelcontrolesommen zijn na de hernoeming gelijk aan de nulmeting en alle 18 foreign keys bleven intact; de centrale taxoncontrole geeft 128 werkende routes en nul fouten. De zware SQL-export en VPS-publicatie zijn nog niet uitgevoerd.
+**Opslag, 8 oktober 2026.** De veertien afgeleide tabellen van Het Nieuwe Strepen, FLORBASE en LMF-A heten nu respectievelijk `hns_*`, `florbase_*` en `lmfa_*` in de lokale analytische database en op de VPS. De oorspronkelijke NDFF-waarnemingen, bronvermelding en reconstructieversies blijven behouden. Alle tabelcontrolesommen zijn na de hernoeming gelijk aan de nulmeting en alle 18 foreign keys bleven intact; de centrale taxoncontrole geeft 128 werkende routes en nul fouten. De volledige SQL-export, Shiny-cache en website-uitvoer zijn op 8 oktober 2026 gepubliceerd als Meijendel-productiecommit `6dbc679887074501f0505ca784e4e494aecd5e3d`. De releasehelper verwijderde uitsluitend de veertien oude `ndff_hns_*`-, `ndff_florbase_*`- en `ndff_lmfa_*`-tabelnamen. Het productieschema, de cachemodus `SQL_CACHE=TRUE` en de publieke rookproeven zijn daarna geslaagd.
 
 #### 1.5.14. Mossen en korstmossen
 
