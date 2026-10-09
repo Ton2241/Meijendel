@@ -462,7 +462,56 @@ gee_coefficient <- function(fit, term) {
   c(estimate = coefficients[term, "Estimate"], se = coefficients[term, "Std.err"])
 }
 
-fit_species_gee_checks <- function(data, eligibility, analysis_id) {
+run_isolated_with_timeout <- function(fun, timeout_seconds = 60) {
+  if (!is.numeric(timeout_seconds) || length(timeout_seconds) != 1L || timeout_seconds <= 0) {
+    stop("De tijdslimiet moet één positief aantal seconden zijn.", call. = FALSE)
+  }
+  if (.Platform$OS.type != "unix") {
+    return(tryCatch(
+      {
+        setTimeLimit(elapsed = timeout_seconds, transient = TRUE)
+        on.exit(setTimeLimit(cpu = Inf, elapsed = Inf, transient = FALSE), add = TRUE)
+        list(status = "geslaagd", value = fun(), error = NULL)
+      },
+      error = function(error) list(status = "modeluitval", value = NULL, error = conditionMessage(error))
+    ))
+  }
+  job <- parallel::mcparallel(
+    tryCatch(
+      list(status = "geslaagd", value = fun(), error = NULL),
+      error = function(error) list(status = "modeluitval", value = NULL, error = conditionMessage(error))
+    ),
+    silent = TRUE
+  )
+  deadline <- Sys.time() + timeout_seconds
+  repeat {
+    collected <- suppressWarnings(parallel::mccollect(job, wait = FALSE))
+    if (length(collected)) {
+      result <- collected[[1L]]
+      if (inherits(result, "try-error")) {
+        return(list(status = "modeluitval", value = NULL, error = as.character(result)))
+      }
+      return(result)
+    }
+    if (Sys.time() >= deadline) {
+      tools::pskill(job$pid, signal = 15L)
+      suppressWarnings(parallel::mccollect(job, wait = TRUE))
+      return(list(
+        status = "modeluitval",
+        value = NULL,
+        error = paste0("tijdslimiet_", timeout_seconds, "_seconden")
+      ))
+    }
+    Sys.sleep(0.05)
+  }
+}
+
+fit_species_gee_checks <- function(
+    data,
+    eligibility,
+    analysis_id,
+    checkpoint_dir = NULL,
+    timeout_seconds = 60) {
   if (!requireNamespace("geepack", quietly = TRUE)) stop("R-pakket geepack ontbreekt.", call. = FALSE)
   candidates <- eligible_species(eligibility)
   prepared <- prepare_experience_variant(data, "mean")
@@ -486,38 +535,57 @@ fit_species_gee_checks <- function(data, eligibility, analysis_id) {
       ervaring_plot_beta = NA_real_, ervaring_elders_beta = NA_real_,
       stringsAsFactors = FALSE
     )
+    checkpoint_path <- if (is.null(checkpoint_dir)) NULL else file.path(
+      checkpoint_dir,
+      safe_model_filename(paste("gee", analysis_id, species_id, sep = "__"))
+    )
+    if (!is.null(checkpoint_path)) {
+      dir.create(checkpoint_dir, recursive = TRUE, showWarnings = FALSE)
+      if (file.exists(checkpoint_path)) {
+        saved <- readRDS(checkpoint_path)
+        if (is.data.frame(saved) && nrow(saved) == 1L && identical(saved$row_hash, current_hash)) {
+          return(saved)
+        }
+      }
+    }
+    finish <- function(result) {
+      if (!is.null(checkpoint_path)) saveRDS(result, checkpoint_path)
+      result
+    }
     if (!nrow(current) || sum(current$count > 0) == 0L) {
       blank$reden <- "geen_positieve_tellingen"
-      return(blank)
+      return(finish(blank))
     }
     if (stats::sd(current$ervaring_plot_z) == 0 || stats::sd(current$ervaring_elders_z) == 0) {
       blank$reden <- "constante_ervaring"
-      return(blank)
+      return(finish(blank))
     }
     include_source <- nlevels(droplevels(current$analyse_bron_factor)) > 1L
     fixed <- "jaar_decennium"
     if (include_source) fixed <- c(fixed, "analyse_bron_factor")
     m0 <- stats::as.formula(paste("count ~", paste(c(fixed, "offset(log_oppervlakte_km2)"), collapse = " + ")))
     m2 <- stats::update.formula(m0, ~ . + ervaring_plot_z + ervaring_elders_z)
-    warnings <- character()
-    fits <- tryCatch(
-      withCallingHandlers(
+    isolated <- run_isolated_with_timeout(function() {
+      local_warnings <- character()
+      fits <- withCallingHandlers(
         list(
           M0 = geepack::geeglm(m0, data = current, id = plot_id, family = stats::poisson("log"), corstr = "exchangeable"),
           M2 = geepack::geeglm(m2, data = current, id = plot_id, family = stats::poisson("log"), corstr = "exchangeable")
         ),
         warning = function(warning) {
-          warnings <<- c(warnings, conditionMessage(warning))
+          local_warnings <<- c(local_warnings, conditionMessage(warning))
           invokeRestart("muffleWarning")
         }
-      ),
-      error = function(error) error
-    )
-    if (inherits(fits, "error")) {
+      )
+      list(fits = fits, warnings = unique(local_warnings))
+    }, timeout_seconds)
+    if (!identical(isolated$status, "geslaagd")) {
       blank$status <- "modeluitval"
-      blank$reden <- conditionMessage(fits)
-      return(blank)
+      blank$reden <- isolated$error
+      return(finish(blank))
     }
+    fits <- isolated$value$fits
+    warnings <- isolated$value$warnings
     trend0 <- gee_coefficient(fits$M0, "jaar_decennium")[["estimate"]]
     trend2 <- gee_coefficient(fits$M2, "jaar_decennium")[["estimate"]]
     annual <- function(beta) 100 * (exp(beta / 10) - 1)
@@ -526,7 +594,7 @@ fit_species_gee_checks <- function(data, eligibility, analysis_id) {
     blank$trendverschil_pctpunt <- blank$trend_m2_pct_jaar - blank$trend_m0_pct_jaar
     blank$ervaring_plot_beta <- gee_coefficient(fits$M2, "ervaring_plot_z")[["estimate"]]
     blank$ervaring_elders_beta <- gee_coefficient(fits$M2, "ervaring_elders_z")[["estimate"]]
-    blank
+    finish(blank)
   })
   do.call(rbind, results)
 }

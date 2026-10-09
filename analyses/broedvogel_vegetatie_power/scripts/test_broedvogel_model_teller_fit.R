@@ -143,6 +143,8 @@ gee_results <- fit_species_gee_checks(
   species_eligibility_test,
   analysis_id = "synthetic_species"
 )
+quick_isolated <- run_isolated_with_timeout(function() 42L, timeout_seconds = 1)
+slow_isolated <- run_isolated_with_timeout(function() { Sys.sleep(0.2); 42L }, timeout_seconds = 0.05)
 stopifnot(
   identical(species_results$soort_id, 1:3),
   identical(gee_results$soort_id, 1:3),
@@ -153,7 +155,11 @@ stopifnot(
   identical(gee_results$reden[[2L]], "geen_positieve_tellingen"),
   identical(species_results$reden[[3L]], "constante_ervaring"),
   identical(gee_results$reden[[3L]], "constante_ervaring"),
-  identical(species_results$row_hash, gee_results$row_hash)
+  identical(species_results$row_hash, gee_results$row_hash),
+  identical(quick_isolated$status, "geslaagd"),
+  identical(quick_isolated$value, 42L),
+  identical(slow_isolated$status, "modeluitval"),
+  grepl("tijdslimiet", slow_isolated$error, fixed = TRUE)
 )
 
 sensitivity <- summarise_teller_sensitivity(batch, species_results, gee_results)

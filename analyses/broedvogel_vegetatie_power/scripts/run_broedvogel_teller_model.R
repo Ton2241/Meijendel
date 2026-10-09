@@ -187,7 +187,13 @@ run_teller_model_pipeline <- function(
   })
   names(species) <- names(species_specs)
   gee <- run_resumable_step("gee_lang", populations$row_hashes[["long"]], checkpoint_dir, resume, function() {
-    fit_species_gee_checks(populations$long, populations$eligibility, "gee_lang")
+    fit_species_gee_checks(
+      populations$long,
+      populations$eligibility,
+      "gee_lang",
+      checkpoint_dir = file.path(run_dir, "gee_soorten"),
+      timeout_seconds = 60
+    )
   })$value
   sensitivity <- summarise_teller_sensitivity(joint$lang_mean, species$lang, gee)
 
