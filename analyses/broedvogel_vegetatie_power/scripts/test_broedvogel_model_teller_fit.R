@@ -4,6 +4,7 @@ test_path <- if (length(file_arg)) sub("^--file=", "", file_arg[[1L]]) else "ana
 repo <- normalizePath(file.path(dirname(test_path), "..", "..", ".."), mustWork = TRUE)
 
 Sys.setenv(MEIJENDEL_REPO = repo)
+Sys.setenv(MEIJENDEL_ANALYSIS_COMMIT = strrep("a", 40L))
 source(file.path(repo, "analyses", "broedvogel_vegetatie_power", "scripts", "broedvogel_model_teller_fit.R"))
 
 formula_text <- function(formula) paste(deparse(formula, width.cutoff = 500L), collapse = " ")
@@ -83,8 +84,22 @@ simple <- fit_glmmtmb_safely(
 stopifnot(
   identical(simple$status, "geslaagd"),
   file.exists(simple$fit_path),
-  identical(simple$diagnostics$row_hash, row_set_sha256(prepared$row_id))
+  identical(simple$diagnostics$row_hash, row_set_sha256(prepared$row_id)),
+  grepl("^[0-9a-f]{64}$", simple$diagnostics$checkpoint_contract_hash)
 )
+
+Sys.setenv(MEIJENDEL_ANALYSIS_COMMIT = strrep("b", 40L))
+changed_code <- fit_glmmtmb_safely(
+  count ~ jaar_decennium + offset(log_oppervlakte_km2) + (1 | plotjaar_factor),
+  prepared,
+  "synthetic_simple",
+  checkpoint_dir
+)
+stopifnot(!isTRUE(changed_code$resumed), !identical(
+  simple$diagnostics$checkpoint_contract_hash,
+  changed_code$diagnostics$checkpoint_contract_hash
+))
+Sys.setenv(MEIJENDEL_ANALYSIS_COMMIT = strrep("a", 40L))
 
 forced <- fit_glmmtmb_safely(
   count ~ niet_bestaande_variabele,
@@ -102,6 +117,7 @@ invalid_meta_path <- paste0(simple$fit_path, ".meta.rds")
 invalid_meta <- readRDS(invalid_meta_path)
 invalid_meta$diagnostics$pdHess <- FALSE
 saveRDS(invalid_meta, invalid_meta_path)
+Sys.setenv(MEIJENDEL_ANALYSIS_COMMIT = strrep("b", 40L))
 reclassified <- fit_glmmtmb_safely(
   count ~ jaar_decennium + offset(log_oppervlakte_km2) + (1 | plotjaar_factor),
   prepared,
@@ -111,6 +127,7 @@ reclassified <- fit_glmmtmb_safely(
 stopifnot(identical(reclassified$status, "modeluitval"), isTRUE(reclassified$resumed))
 invalid_meta$diagnostics$pdHess <- TRUE
 saveRDS(invalid_meta, invalid_meta_path)
+Sys.setenv(MEIJENDEL_ANALYSIS_COMMIT = strrep("a", 40L))
 
 batch <- fit_joint_teller_models(
   prepared,
@@ -170,6 +187,13 @@ stopifnot(
   identical(species_results$reden[[3L]], "constante_ervaring"),
   identical(gee_results$reden[[3L]], "constante_ervaring"),
   identical(species_results$row_hash, gee_results$row_hash),
+  all(vapply(seq_len(nrow(gee_results)), function(i) {
+    if (gee_results$status[[i]] != "geslaagd") return(TRUE)
+    all(is.finite(as.numeric(gee_results[i, c(
+      "trend_m0_pct_jaar", "trend_m2_pct_jaar", "ervaring_plot_beta", "ervaring_elders_beta",
+      "trend_m0_se", "trend_m2_se", "ervaring_plot_se", "ervaring_elders_se"
+    )]))) && gee_results$gee_error_m0[[i]] == 0L && gee_results$gee_error_m2[[i]] == 0L
+  }, logical(1))),
   if (identical(species_results$status[[1L]], "geslaagd")) is.finite(species_results$team_sd[[1L]]) else TRUE,
   identical(quick_isolated$status, "geslaagd"),
   identical(quick_isolated$value, 42L),

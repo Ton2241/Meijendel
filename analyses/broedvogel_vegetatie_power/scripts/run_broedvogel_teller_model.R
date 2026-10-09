@@ -30,18 +30,27 @@ collect_tsv_metadata <- function(input_dir) {
   })
 }
 
-run_resumable_step <- function(step_id, row_hash, checkpoint_dir, resume, fun) {
+run_resumable_step <- function(step_id, row_hash, contract_hash, checkpoint_dir, resume, fun) {
   dir.create(checkpoint_dir, recursive = TRUE, showWarnings = FALSE)
   checkpoint_path <- file.path(checkpoint_dir, safe_model_filename(step_id))
   if (isTRUE(resume) && file.exists(checkpoint_path)) {
     saved <- readRDS(checkpoint_path)
-    if (is.list(saved) && identical(saved$checkpoint_status, "groen") && identical(saved$row_hash, row_hash)) {
+    if (is.list(saved) &&
+        identical(saved$checkpoint_status, "voltooid") &&
+        identical(saved$row_hash, row_hash) &&
+        identical(saved$contract_hash, contract_hash)) {
       return(list(resumed = TRUE, value = saved$value, checkpoint_path = checkpoint_path))
     }
   }
   value <- fun()
   saveRDS(
-    list(checkpoint_status = "groen", row_hash = row_hash, completed_at_utc = format(Sys.time(), tz = "UTC", "%Y-%m-%dT%H:%M:%SZ"), value = value),
+    list(
+      checkpoint_status = "voltooid",
+      row_hash = row_hash,
+      contract_hash = contract_hash,
+      completed_at_utc = format(Sys.time(), tz = "UTC", "%Y-%m-%dT%H:%M:%SZ"),
+      value = value
+    ),
     checkpoint_path
   )
   list(resumed = FALSE, value = value, checkpoint_path = checkpoint_path)
@@ -58,7 +67,48 @@ package_versions_for_manifest <- function() {
 }
 
 formula_manifest <- function(formulas) {
-  lapply(formulas, function(formula) paste(deparse(formula, width.cutoff = 500L), collapse = " "))
+  lapply(formulas, function(formula) {
+    if (is.character(formula)) return(paste(formula, collapse = " "))
+    paste(deparse(formula, width.cutoff = 500L), collapse = " ")
+  })
+}
+
+analysis_contract_hash <- function(metadata, analysis_id, row_hash, formulas, extra = list()) {
+  if (is.null(metadata$git_commit) || !nzchar(metadata$git_commit)) {
+    stop("Git-commit ontbreekt in het analysecontract.", call. = FALSE)
+  }
+  digest::digest(
+    list(
+      contract_version = 1L,
+      git_commit = metadata$git_commit,
+      analysis_id = analysis_id,
+      row_hash = row_hash,
+      formulas = formula_manifest(formulas),
+      package_versions = package_versions_for_manifest(),
+      extra = extra
+    ),
+    algo = "sha256",
+    serialize = TRUE
+  )
+}
+
+teller_formula_manifest <- function() {
+  out <- list()
+  add <- function(prefix, formulas) {
+    for (model in names(formulas)) out[[paste(prefix, model, sep = "_")]] <<- formulas[[model]]
+  }
+  add("joint_lang_mean", joint_teller_formulas())
+  add("joint_lang_min", joint_teller_formulas())
+  add("joint_lang_max", joint_teller_formulas())
+  add("joint_een_teller_mean", joint_teller_formulas())
+  add("joint_inspanning_duur", joint_teller_formulas(TRUE, "inspanning_duur_z"))
+  add("joint_inspanning_bezoeken", joint_teller_formulas(TRUE, "inspanning_bezoeken_z"))
+  add("species_lang", species_teller_formulas(TRUE))
+  add("species_een_teller", species_teller_formulas(TRUE))
+  add("species_inspanning_duur", species_teller_formulas(TRUE, "inspanning_duur_z"))
+  add("species_inspanning_bezoeken", species_teller_formulas(TRUE, "inspanning_bezoeken_z"))
+  add("gee_lang", gee_teller_formulas(TRUE))
+  out
 }
 
 write_teller_manifest <- function(path, metadata, source_files, response_hashes, formulas, outputs) {
@@ -131,6 +181,116 @@ flatten_joint_diagnostics <- function(joint_results) {
   do.call(rbind, rows)
 }
 
+validate_teller_pipeline_results <- function(joint, species, gee, expected) {
+  expected_joint <- c(
+    "lang_mean", "lang_min", "lang_max", "een_teller_mean",
+    "inspanning_duur", "inspanning_bezoeken"
+  )
+  if (!identical(names(joint), expected_joint)) {
+    stop("Onvolledige selectie gezamenlijke modellen.", call. = FALSE)
+  }
+  for (analysis_id in expected_joint) {
+    comparison <- joint[[analysis_id]]$comparison
+    valid <- nrow(comparison) == 3L &&
+      identical(as.character(comparison$model), c("M0", "M1", "M2")) &&
+      all(comparison$status == "geslaagd") &&
+      !anyNA(comparison$row_hash) &&
+      all(nzchar(comparison$row_hash)) &&
+      length(unique(comparison$row_hash)) == 1L &&
+      identical(unique(comparison$row_hash), expected$joint_hashes[[analysis_id]])
+    if (!isTRUE(valid)) {
+      stop("Niet-publiceerbaar gezamenlijk model: ", analysis_id, call. = FALSE)
+    }
+  }
+
+  expected_species <- c("lang", "een_teller", "inspanning_duur", "inspanning_bezoeken")
+  if (!identical(names(species), expected_species)) {
+    stop("Onvolledige selectie afzonderlijke soortmodellen.", call. = FALSE)
+  }
+  allowed_status <- c("geslaagd", "modeluitval", "uitval")
+  for (analysis_id in expected_species) {
+    current <- species[[analysis_id]]
+    valid <- identical(sort(as.integer(current$soort_id)), sort(as.integer(expected$species_ids[[analysis_id]]))) &&
+      all(current$status %in% allowed_status) &&
+      !anyNA(current$row_hash) && all(nzchar(current$row_hash))
+    if (!isTRUE(valid)) stop("Niet-publiceerbare soortselectie: ", analysis_id, call. = FALSE)
+  }
+
+  gee_fields <- c(
+    "trend_m0_pct_jaar", "trend_m2_pct_jaar", "ervaring_plot_beta", "ervaring_elders_beta",
+    "trend_m0_se", "trend_m2_se", "ervaring_plot_se", "ervaring_elders_se"
+  )
+  valid_gee <- identical(sort(as.integer(gee$soort_id)), sort(as.integer(expected$species_ids$lang))) &&
+    all(gee$status %in% allowed_status) && !anyNA(gee$row_hash) && all(nzchar(gee$row_hash))
+  if (!isTRUE(valid_gee)) stop("Niet-publiceerbare GEE-selectie.", call. = FALSE)
+  successful <- gee$status == "geslaagd"
+  if (any(successful)) {
+    finite <- apply(gee[successful, gee_fields, drop = FALSE], 1L, function(row) all(is.finite(as.numeric(row))))
+    valid_success <- all(finite) &&
+      all(gee$gee_error_m0[successful] == 0L) &&
+      all(gee$gee_error_m2[successful] == 0L)
+    if (!isTRUE(valid_success)) stop("Een geslaagde GEE-uitkomst bevat ongeldige diagnostiek.", call. = FALSE)
+  }
+  TRUE
+}
+
+build_teller_pipeline_coverage <- function(state) {
+  basis <- state$matrix_result$basis
+  analysis_basis <- basis[!(basis$kavel_nummer == "M62" & basis$jaar == 2016L), , drop = FALSE]
+  teams <- unique(state$teller_layer$teams[c("plot_id", "jaar", "aantal_tellers")])
+  coupled <- merge(
+    analysis_basis[c("plot_id", "jaar")],
+    teams,
+    by = c("plot_id", "jaar"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  known <- !is.na(coupled$aantal_tellers)
+  contract <- data.frame(
+    metric = c(
+      "natura2000_plots", "territorium_plotjaren", "telleranalyse_plotjaren",
+      "plotjaren_met_teller", "plotjaren_zonder_teller", "een_teller_plotjaren",
+      "twee_teller_plotjaren", "drie_teller_plotjaren", "gezamenlijke_modelsoorten"
+    ),
+    value = as.numeric(c(
+      length(unique(basis$plot_id)), nrow(basis), nrow(analysis_basis),
+      sum(known), sum(!known), sum(coupled$aantal_tellers == 1L, na.rm = TRUE),
+      sum(coupled$aantal_tellers == 2L, na.rm = TRUE),
+      sum(coupled$aantal_tellers == 3L, na.rm = TRUE), nrow(state$matrix_result$species)
+    )),
+    stringsAsFactors = FALSE
+  )
+  combined <- rbind(contract, state$populations$coverage)
+  combined[!duplicated(combined$metric), , drop = FALSE]
+}
+
+validate_teller_coverage_contract <- function(coverage) {
+  expected <- c(
+    natura2000_plots = 52,
+    telleranalyse_plotjaren = 2106,
+    plotjaren_met_teller = 2007,
+    plotjaren_zonder_teller = 99,
+    een_teller_plotjaren = 1804,
+    twee_teller_plotjaren = 201,
+    drie_teller_plotjaren = 2,
+    gezamenlijke_modelsoorten = 156,
+    structureel_geschikte_soorten = 121
+  )
+  if (anyDuplicated(coverage$metric)) stop("Dekkingsuitvoer bevat dubbele metriekregels.", call. = FALSE)
+  actual <- stats::setNames(coverage$value, coverage$metric)
+  for (metric in names(expected)) {
+    if (!metric %in% names(actual) || is.na(actual[[metric]]) || actual[[metric]] != expected[[metric]]) {
+      shown <- if (metric %in% names(actual)) actual[[metric]] else "ontbreekt"
+      stop(
+        "Gegevenscontract wijkt af voor ", metric, ": verwacht ", expected[[metric]],
+        ", gevonden ", shown, ".",
+        call. = FALSE
+      )
+    }
+  }
+  TRUE
+}
+
 run_teller_model_pipeline <- function(
     input_dir = NULL,
     run_dir,
@@ -149,8 +309,14 @@ run_teller_model_pipeline <- function(
     state$run_metadata <- metadata
     saveRDS(state, state_path)
   }
+  if (is.null(metadata$git_commit) || !nzchar(metadata$git_commit)) {
+    stop("Git-commit ontbreekt in de runmetadata.", call. = FALSE)
+  }
+  Sys.setenv(MEIJENDEL_ANALYSIS_COMMIT = metadata$git_commit)
   set.seed(random_seed)
   populations <- state$populations
+  coverage <- build_teller_pipeline_coverage(state)
+  validate_teller_coverage_contract(coverage)
   checkpoint_dir <- file.path(run_dir, "checkpoints")
   model_checkpoint_dir <- file.path(run_dir, "modellen")
 
@@ -165,7 +331,12 @@ run_teller_model_pipeline <- function(
   joint <- lapply(names(joint_specs), function(analysis_id) {
     spec <- joint_specs[[analysis_id]]
     hash <- row_set_sha256(spec$data$row_id)
-    run_resumable_step(analysis_id, hash, checkpoint_dir, resume, function() {
+    formulas <- joint_teller_formulas(!is.null(spec$effort), spec$effort)
+    contract <- analysis_contract_hash(
+      metadata, analysis_id, hash, formulas,
+      list(family = "nbinom2", experience_variant = spec$variant, effort = spec$effort)
+    )
+    run_resumable_step(analysis_id, hash, contract, checkpoint_dir, resume, function() {
       fit_joint_teller_models(spec$data, analysis_id, model_checkpoint_dir, spec$variant, spec$effort)
     })$value
   })
@@ -181,12 +352,25 @@ run_teller_model_pipeline <- function(
     spec <- species_specs[[analysis_id]]
     eligibility <- species_eligibility(spec$data)
     hash <- row_set_sha256(spec$data$row_id)
-    run_resumable_step(paste0("soorten_", analysis_id), hash, checkpoint_dir, resume, function() {
+    formulas <- c(
+      species_teller_formulas(TRUE, spec$effort),
+      stats::setNames(species_teller_formulas(FALSE, spec$effort), paste0(names(species_teller_formulas(FALSE, spec$effort)), "_zonder_bron"))
+    )
+    contract <- analysis_contract_hash(
+      metadata, paste0("soorten_", analysis_id), hash, formulas,
+      list(families = c("nbinom2", "poisson_na_nb_uitval"), effort = spec$effort)
+    )
+    run_resumable_step(paste0("soorten_", analysis_id), hash, contract, checkpoint_dir, resume, function() {
       fit_species_teller_models(spec$data, eligibility, paste0("soorten_", analysis_id), model_checkpoint_dir, spec$effort)
     })$value
   })
   names(species) <- names(species_specs)
-  gee <- run_resumable_step("gee_lang", populations$row_hashes[["long"]], checkpoint_dir, resume, function() {
+  gee_contract <- analysis_contract_hash(
+    metadata, "gee_lang", populations$row_hashes[["long"]],
+    c(gee_teller_formulas(TRUE), stats::setNames(gee_teller_formulas(FALSE), c("M0_zonder_bron", "M2_zonder_bron"))),
+    list(family = "poisson", correlation = "exchangeable", timeout_seconds = 60)
+  )
+  gee <- run_resumable_step("gee_lang", populations$row_hashes[["long"]], gee_contract, checkpoint_dir, resume, function() {
     fit_species_gee_checks(
       populations$long,
       populations$eligibility,
@@ -195,9 +379,27 @@ run_teller_model_pipeline <- function(
       timeout_seconds = 60
     )
   })$value
+
+  expected_contract <- list(
+    joint_hashes = c(
+      lang_mean = populations$row_hashes[["long"]],
+      lang_min = populations$row_hashes[["long"]],
+      lang_max = populations$row_hashes[["long"]],
+      een_teller_mean = populations$row_hashes[["single_teller"]],
+      inspanning_duur = populations$row_hashes[["effort_1984_2025"]],
+      inspanning_bezoeken = populations$row_hashes[["effort_1984_2025"]]
+    ),
+    species_ids = list(
+      lang = eligible_species(species_eligibility(populations$long))$soort_id,
+      een_teller = eligible_species(species_eligibility(populations$single_teller))$soort_id,
+      inspanning_duur = eligible_species(species_eligibility(populations$effort_1984_2025))$soort_id,
+      inspanning_bezoeken = eligible_species(species_eligibility(populations$effort_1984_2025))$soort_id
+    )
+  )
+  validate_teller_pipeline_results(joint, species, gee, expected_contract)
   sensitivity <- summarise_teller_sensitivity(joint$lang_mean, species$lang, gee)
 
-  coverage_path <- write_csv_atomic(populations$coverage, file.path(run_dir, "teller_model_dekking.csv"))
+  coverage_path <- write_csv_atomic(coverage, file.path(run_dir, "teller_model_dekking.csv"))
   summary_path <- write_csv_atomic(sensitivity$summary, file.path(run_dir, "teller_model_samenvatting.csv"))
   species_combined <- do.call(rbind, lapply(names(species), function(name) {
     current <- species[[name]]; current$analyse <- name; current
@@ -227,7 +429,7 @@ run_teller_model_pipeline <- function(
     )),
     source_files = state$extract_metadata,
     response_hashes = populations$row_hashes,
-    formulas = joint_teller_formulas(),
+    formulas = teller_formula_manifest(),
     outputs = outputs
   )
   if (!is.null(compact_results_dir)) {
@@ -238,8 +440,12 @@ run_teller_model_pipeline <- function(
       soorten = "teller_model_laatste_soorten.csv",
       diagnostiek = "teller_model_laatste_diagnostiek.csv"
     )
-    for (name in names(stable)) file.copy(outputs[[name]], file.path(compact_results_dir, stable[[name]]), overwrite = TRUE)
-    file.copy(manifest_path, file.path(compact_results_dir, "teller_model_laatste_manifest.json"), overwrite = TRUE)
+    for (name in names(stable)) {
+      copied <- file.copy(outputs[[name]], file.path(compact_results_dir, stable[[name]]), overwrite = TRUE)
+      if (!isTRUE(copied)) stop("Kon compact resultaat niet kopieren: ", stable[[name]], call. = FALSE)
+    }
+    copied_manifest <- file.copy(manifest_path, file.path(compact_results_dir, "teller_model_laatste_manifest.json"), overwrite = TRUE)
+    if (!isTRUE(copied_manifest)) stop("Kon compact manifest niet kopieren.", call. = FALSE)
   }
   list(manifest = manifest, manifest_path = manifest_path, outputs = outputs)
 }
@@ -262,6 +468,10 @@ if (sys.nframe() == 0L) {
     state <- readRDS(file.path(cli[[2L]], "teller_model_state.rds"))
     metadata <- state$run_metadata
     if (is.null(metadata)) stop("Hervatten kan niet: runmetadata ontbreekt in de statuslaag.", call. = FALSE)
+    current_commit <- system2("git", c("-C", shQuote(.teller_pipeline_repo), "rev-parse", "HEAD"), stdout = TRUE)
+    if (length(current_commit) != 1L || !identical(trimws(current_commit), metadata$git_commit)) {
+      stop("Hervatten geweigerd: de huidige codecommit wijkt af van de oorspronkelijke run.", call. = FALSE)
+    }
     result <- run_teller_model_pipeline(run_dir = cli[[2L]], metadata = metadata, resume = TRUE, compact_results_dir = cli[[3L]])
   }
   cat(result$manifest_path, "\n", sep = "")

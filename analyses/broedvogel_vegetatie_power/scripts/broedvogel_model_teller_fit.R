@@ -94,6 +94,25 @@ safe_model_filename <- function(model_id) {
   paste0(cleaned, ".rds")
 }
 
+model_checkpoint_contract_hash <- function(formula, family_label, row_hash, model_id) {
+  if (!requireNamespace("digest", quietly = TRUE)) stop("R-pakket digest ontbreekt.", call. = FALSE)
+  code_commit <- Sys.getenv("MEIJENDEL_ANALYSIS_COMMIT", unset = "")
+  if (!nzchar(code_commit)) stop("MEIJENDEL_ANALYSIS_COMMIT ontbreekt voor het modelcheckpoint.", call. = FALSE)
+  digest::digest(
+    list(
+      contract_version = 1L,
+      git_commit = code_commit,
+      model_id = model_id,
+      row_hash = row_hash,
+      formula = paste(deparse(formula, width.cutoff = 500L), collapse = " "),
+      family = family_label,
+      glmmTMB_version = as.character(utils::packageVersion("glmmTMB"))
+    ),
+    algo = "sha256",
+    serialize = TRUE
+  )
+}
+
 variance_components_from_fit <- function(fit) {
   conditional <- glmmTMB::VarCorr(fit)$cond
   rows <- lapply(names(conditional), function(group) {
@@ -123,11 +142,14 @@ fit_glmmtmb_safely <- function(
   require_prepare_fields(data, "row_id", "modelpopulatie")
   dir.create(checkpoint_dir, recursive = TRUE, showWarnings = FALSE)
   row_hash <- row_set_sha256(data$row_id)
+  contract_hash <- model_checkpoint_contract_hash(formula, family_label, row_hash, model_id)
   fit_path <- file.path(checkpoint_dir, safe_model_filename(model_id))
   metadata_path <- paste0(fit_path, ".meta.rds")
   if (file.exists(fit_path) && file.exists(metadata_path)) {
     saved <- readRDS(metadata_path)
-    if (is.list(saved) && identical(saved$diagnostics$row_hash, row_hash)) {
+    if (is.list(saved) &&
+        identical(saved$diagnostics$row_hash, row_hash) &&
+        identical(saved$diagnostics$checkpoint_contract_hash, contract_hash)) {
       has_convergence_warning <- any(grepl(
         "convergence problem|false convergence|non-positive-definite",
         saved$warnings,
@@ -175,6 +197,7 @@ fit_glmmtmb_safely <- function(
         model_id = model_id,
         n = nrow(data),
         row_hash = row_hash,
+        checkpoint_contract_hash = contract_hash,
         elapsed_seconds = elapsed,
         error = conditionMessage(outcome),
         pdHess = NA,
@@ -203,6 +226,7 @@ fit_glmmtmb_safely <- function(
       model_id = model_id,
       n = nrow(data),
       row_hash = row_hash,
+      checkpoint_contract_hash = contract_hash,
       elapsed_seconds = elapsed,
       error = NULL,
       pdHess = pd_hessian,
@@ -493,6 +517,49 @@ gee_coefficient <- function(fit, term) {
   c(estimate = coefficients[term, "Estimate"], se = coefficients[term, "Std.err"])
 }
 
+gee_teller_formulas <- function(include_source = TRUE) {
+  fixed <- "jaar_decennium"
+  if (include_source) fixed <- c(fixed, "analyse_bron_factor")
+  m0 <- stats::as.formula(paste(
+    "count ~",
+    paste(c(fixed, "offset(log_oppervlakte_km2)"), collapse = " + ")
+  ))
+  list(M0 = m0, M2 = stats::update.formula(m0, ~ . + ervaring_plot_z + ervaring_elders_z))
+}
+
+gee_checkpoint_contract_hash <- function(formulas, row_hash, analysis_id, species_id) {
+  code_commit <- Sys.getenv("MEIJENDEL_ANALYSIS_COMMIT", unset = "")
+  if (!nzchar(code_commit)) stop("MEIJENDEL_ANALYSIS_COMMIT ontbreekt voor het GEE-checkpoint.", call. = FALSE)
+  digest::digest(
+    list(
+      contract_version = 1L,
+      git_commit = code_commit,
+      analysis_id = analysis_id,
+      species_id = as.integer(species_id),
+      row_hash = row_hash,
+      formulas = lapply(formulas, function(x) paste(deparse(x, width.cutoff = 500L), collapse = " ")),
+      family = "poisson_log",
+      correlation = "exchangeable",
+      geepack_version = as.character(utils::packageVersion("geepack"))
+    ),
+    algo = "sha256",
+    serialize = TRUE
+  )
+}
+
+validate_gee_fit <- function(fit, terms) {
+  error_code <- suppressWarnings(as.integer(fit$geese$error))
+  if (length(error_code) != 1L || is.na(error_code) || error_code != 0L) {
+    return(list(valid = FALSE, error_code = if (length(error_code)) error_code[[1L]] else NA_integer_, coefficients = NULL))
+  }
+  coefficients <- lapply(terms, function(term) gee_coefficient(fit, term))
+  names(coefficients) <- terms
+  finite <- all(vapply(coefficients, function(value) {
+    length(value) == 2L && all(is.finite(as.numeric(value)))
+  }, logical(1)))
+  list(valid = finite, error_code = error_code, coefficients = coefficients)
+}
+
 run_isolated_with_timeout <- function(fun, timeout_seconds = 60) {
   if (!is.numeric(timeout_seconds) || length(timeout_seconds) != 1L || timeout_seconds <= 0) {
     stop("De tijdslimiet moet één positief aantal seconden zijn.", call. = FALSE)
@@ -559,11 +626,18 @@ fit_species_gee_checks <- function(
     current <- current[stats::complete.cases(current[required]), , drop = FALSE]
     current <- droplevels(current[order(current$plot_id, current$jaar), , drop = FALSE])
     current_hash <- row_set_sha256(current$row_id)
+    include_source <- nlevels(droplevels(current$analyse_bron_factor)) > 1L
+    formulas <- gee_teller_formulas(include_source)
+    contract_hash <- gee_checkpoint_contract_hash(formulas, current_hash, analysis_id, species_id)
     blank <- data.frame(
       soort_id = species_id, soort_naam = species_name, status = "uitval", reden = "",
       row_hash = current_hash, correlatiestructuur = "exchangeable",
       trend_m0_pct_jaar = NA_real_, trend_m2_pct_jaar = NA_real_, trendverschil_pctpunt = NA_real_,
+      trend_m0_se = NA_real_, trend_m2_se = NA_real_,
       ervaring_plot_beta = NA_real_, ervaring_elders_beta = NA_real_,
+      ervaring_plot_se = NA_real_, ervaring_elders_se = NA_real_,
+      gee_error_m0 = NA_integer_, gee_error_m2 = NA_integer_,
+      checkpoint_contract_hash = contract_hash,
       stringsAsFactors = FALSE
     )
     checkpoint_path <- if (is.null(checkpoint_dir)) NULL else file.path(
@@ -574,7 +648,9 @@ fit_species_gee_checks <- function(
       dir.create(checkpoint_dir, recursive = TRUE, showWarnings = FALSE)
       if (file.exists(checkpoint_path)) {
         saved <- readRDS(checkpoint_path)
-        if (is.data.frame(saved) && nrow(saved) == 1L && identical(saved$row_hash, current_hash)) {
+        if (is.data.frame(saved) && nrow(saved) == 1L &&
+            identical(saved$row_hash, current_hash) &&
+            identical(saved$checkpoint_contract_hash, contract_hash)) {
           return(saved)
         }
       }
@@ -591,17 +667,12 @@ fit_species_gee_checks <- function(
       blank$reden <- "constante_ervaring"
       return(finish(blank))
     }
-    include_source <- nlevels(droplevels(current$analyse_bron_factor)) > 1L
-    fixed <- "jaar_decennium"
-    if (include_source) fixed <- c(fixed, "analyse_bron_factor")
-    m0 <- stats::as.formula(paste("count ~", paste(c(fixed, "offset(log_oppervlakte_km2)"), collapse = " + ")))
-    m2 <- stats::update.formula(m0, ~ . + ervaring_plot_z + ervaring_elders_z)
     isolated <- run_isolated_with_timeout(function() {
       local_warnings <- character()
       fits <- withCallingHandlers(
         list(
-          M0 = geepack::geeglm(m0, data = current, id = plot_id, family = stats::poisson("log"), corstr = "exchangeable"),
-          M2 = geepack::geeglm(m2, data = current, id = plot_id, family = stats::poisson("log"), corstr = "exchangeable")
+          M0 = geepack::geeglm(formulas$M0, data = current, id = plot_id, family = stats::poisson("log"), corstr = "exchangeable"),
+          M2 = geepack::geeglm(formulas$M2, data = current, id = plot_id, family = stats::poisson("log"), corstr = "exchangeable")
         ),
         warning = function(warning) {
           local_warnings <<- c(local_warnings, conditionMessage(warning))
@@ -617,14 +688,30 @@ fit_species_gee_checks <- function(
     }
     fits <- isolated$value$fits
     warnings <- isolated$value$warnings
-    trend0 <- gee_coefficient(fits$M0, "jaar_decennium")[["estimate"]]
-    trend2 <- gee_coefficient(fits$M2, "jaar_decennium")[["estimate"]]
+    diagnostics_m0 <- validate_gee_fit(fits$M0, "jaar_decennium")
+    diagnostics_m2 <- validate_gee_fit(
+      fits$M2,
+      c("jaar_decennium", "ervaring_plot_z", "ervaring_elders_z")
+    )
+    blank$gee_error_m0 <- diagnostics_m0$error_code
+    blank$gee_error_m2 <- diagnostics_m2$error_code
+    if (!isTRUE(diagnostics_m0$valid) || !isTRUE(diagnostics_m2$valid)) {
+      blank$status <- "modeluitval"
+      blank$reden <- "ongeldige_gee_convergentie_of_coefficient"
+      return(finish(blank))
+    }
+    trend0 <- diagnostics_m0$coefficients$jaar_decennium[["estimate"]]
+    trend2 <- diagnostics_m2$coefficients$jaar_decennium[["estimate"]]
     annual <- function(beta) 100 * (exp(beta / 10) - 1)
     blank$status <- "geslaagd"; blank$reden <- paste(unique(warnings), collapse = " | ")
     blank$trend_m0_pct_jaar <- annual(trend0); blank$trend_m2_pct_jaar <- annual(trend2)
     blank$trendverschil_pctpunt <- blank$trend_m2_pct_jaar - blank$trend_m0_pct_jaar
-    blank$ervaring_plot_beta <- gee_coefficient(fits$M2, "ervaring_plot_z")[["estimate"]]
-    blank$ervaring_elders_beta <- gee_coefficient(fits$M2, "ervaring_elders_z")[["estimate"]]
+    blank$trend_m0_se <- diagnostics_m0$coefficients$jaar_decennium[["se"]]
+    blank$trend_m2_se <- diagnostics_m2$coefficients$jaar_decennium[["se"]]
+    blank$ervaring_plot_beta <- diagnostics_m2$coefficients$ervaring_plot_z[["estimate"]]
+    blank$ervaring_elders_beta <- diagnostics_m2$coefficients$ervaring_elders_z[["estimate"]]
+    blank$ervaring_plot_se <- diagnostics_m2$coefficients$ervaring_plot_z[["se"]]
+    blank$ervaring_elders_se <- diagnostics_m2$coefficients$ervaring_elders_z[["se"]]
     finish(blank)
   })
   do.call(rbind, results)
@@ -658,7 +745,9 @@ summarise_teller_sensitivity <- function(joint, species, gee) {
     diagnostics = list(
       aantal_kandidaatsoorten = nrow(species),
       gelijke_soortselectie = identical(sort(species$soort_id), sort(gee$soort_id)),
-      gelijke_responsrijen = all(comparison$row_hash_glmm == comparison$row_hash_gee, na.rm = TRUE),
+      gelijke_responsrijen = nrow(comparison) == nrow(species) &&
+        !anyNA(comparison$row_hash_glmm) && !anyNA(comparison$row_hash_gee) &&
+        all(comparison$row_hash_glmm == comparison$row_hash_gee),
       gezamenlijk_model = joint$comparison
     )
   )
