@@ -18,6 +18,8 @@ poweranalyse uit.
 - [Ontwerp teller- en ervaringsmodel](ONTWERP_TELLER_EN_ERVARINGSMODEL.md)
   specificeert de goedgekeurde tweede analysestap voordat deze wordt
   geïmplementeerd.
+- [Implementatieplan teller- en ervaringsmodel](IMPLEMENTATIEPLAN_TELLER_EN_ERVARINGSMODEL.md)
+  vertaalt dat ontwerp in zes testgestuurde uitvoertaken.
 - [`scripts/`](scripts/README.md) bevat straks alleen de scripts die specifiek
   voor deze analyse zijn geschreven.
 - [`resultaten/`](resultaten/README.md) bevat compacte, controleerbare
