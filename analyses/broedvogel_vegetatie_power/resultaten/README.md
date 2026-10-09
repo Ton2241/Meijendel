@@ -1,60 +1,75 @@
 # Resultaten
 
-Deze map bevat later de compacte, inhoudelijk beoordeelde uitkomsten die nodig
-zijn om conclusies en figuren te controleren. Iedere resultaatset vermeldt het
-uitvoer-ID en verwijst naar een manifest met gegevensselectie, aantallen,
-Git-commit, modelvariant, validatie en waarschuwingen.
+Deze map bevat de compacte, gecontroleerde uitkomsten waarmee conclusies en
+latere figuren kunnen worden herleid. Grote matrices, modelobjecten en
+checkpoints staan onder de door Git genegeerde map `runs/`. Een getal gaat pas
+naar het hoofddocument of het artikel wanneer selectie, modelstatus en manifest
+zijn gecontroleerd.
 
-Op te nemen eindproducten zijn onder meer:
+## Analysematrix
 
-- dekking en ontbrekende gegevens;
-- invloed van teller en tellerervaring;
-- vergelijking van basis-, PQ- en verrijkte modellen;
-- voorspelprestaties voor achtergehouden jaren en plots;
-- effecten per soort, functionele groep, ecologische groep en habitattype;
-- veranderingen in continue functionele kenmerken;
-- powercurven en benodigde toekomstige meetduur.
+`analysematrix_laatste_samenvatting.csv` beschrijft de actuele
+soort–plot–jaarmatrix. `analysematrix_laatste_manifest.json` legt de gebruikte
+bronregels, selectie en SHA256-controlesommen vast. De volledige matrix blijft
+in de runmap die in het manifest is genoemd.
 
-Grote modelobjecten, proefuitvoer en caches horen in `runs/` en blijven buiten
-Git. Een getal wordt pas in het hoofddocument of artikel overgenomen nadat de
-bijbehorende resultaatset is gecontroleerd.
+De matrix maakt het onderscheid tussen een positief territorium, een
+letterlijke SOVON-nul, een afgeleide jaarverslagnul, een ontbrekende waarde en
+een formeel afgekeurd SOVON-resultaat zichtbaar. Daarmee voorkomt zij dat een
+ontbrekende soortregel stilzwijgend als afwezigheid wordt geïnterpreteerd.
 
-De bestanden `analysematrix_laatste_samenvatting.csv` en
-`analysematrix_laatste_manifest.json` zijn de compacte, gevolgde weergave van
-de laatste formele matrixbouw. Het manifest bevat bronregelaantallen en
-SHA256-controlesommen; de bijbehorende volledige matrix staat lokaal in de
-genoemde `run_id` onder `runs/`.
+## Telleranalyse
 
-De bestanden `teller_model_laatste_dekking.csv`,
-`teller_model_laatste_samenvatting.csv`, `teller_model_laatste_soorten.csv`,
-`teller_model_laatste_diagnostiek.csv` en
-`teller_model_laatste_manifest.json` behoren bij run
-`20261009T171423Z-8888e94f0aab` van 9 oktober 2026. Deze run is volledig
-uitgevoerd met commit `8888e94f0aab0ecff6c9245bc3a7bcf31443987e`.
+De vijf bestanden `teller_model_laatste_*` horen bij de formele run
+`20261009T171423Z-8888e94f0aab` van 9 oktober 2026, uitgevoerd met commit
+`8888e94f0aab0ecff6c9245bc3a7bcf31443987e`. De analyse omvat 52 Natura
+2000-plots, 2.106 voor deze stap geldige plotjaren uit 1958–2025 en 156
+soorten. Voor 2.007 plotjaren is een teller of tellerteam bekend; de 99 overige
+plotjaren zijn niet geïmputeerd. De primaire modelpopulatie bevat 203.628
+geldige soort–plot–jaarrijen.
 
-De gegevens omvatten 52 Natura 2000-plots en 2.106 voor de telleranalyse
-geldige plotjaren over 1958–2025; 2.007 daarvan hebben een bekende teller of
-een bekend tellerteam en 99 niet. De primaire modelpopulatie bevat 203.628
-soort–plot–jaarrijen van 156 soorten; 121 soorten voldoen aan de vooraf
-vastgelegde criteria voor een afzonderlijk soortmodel.
+De kernuitkomst is dat tellerteam een betekenisvolle bron van spreiding blijft
+nadat de overige modelstructuur is verwerkt. De geschatte standaardafwijking
+is 0,382 op logschaal, een factor 1,47 per standaardafwijking. Dit is geen
+schatting van door individuele tellers gemiste vogels. Het is de reden om
+tellerteam in volgende ecologische modellen als random effect op te nemen.
 
-Alle achttien gezamenlijke modellen zijn convergent en gebruiken binnen iedere
-vergelijking exact dezelfde responsrijen. In de primaire soortanalyse zijn 90
-M2-uitkomsten negatief-binomiaal en 31 na gedocumenteerde NB-uitval met
-Poisson geschat. De GEE-controle slaagde voor 105 soorten. Acht soorten
-bereikten de vaste grens van zestig seconden; acht andere soorten voldeden
-niet aan de aanvullende eis van foutcode nul en volledig eindige
-coëfficiënten en robuuste standaardfouten. Alle zestien blijven zichtbaar als
-modeluitval.
+Meer geregistreerde ervaring in dezelfde plot had over 1958–2025 geen
+duidelijk gemiddeld effect. Eén, drie en vijf eerdere geregistreerde jaren in
+andere Meijendelplots hingen samen met gemiddeld 4,2%, 8,6% en 11,2% hogere
+verwachte aantallen. Hetzelfde hoofdpatroon bleef zichtbaar wanneer alleen de
+1.804 één-teller-plotjaren werden gebruikt en wanneer voor bezoekduur of aantal
+bezoeken over 1984–2025 werd gecorrigeerd. Dat maakt het verband robuuster,
+maar nog niet causaal.
 
-De gevoeligheidsanalyses leverden 117 bruikbare soortuitkomsten uit 118
-kandidaten voor uitsluitend één-teller-plotjaren, 109 uit 111 voor totale
-bezoekduur en 108 uit 111 voor aantal bezoeken. De overige zes uitkomsten zijn
-als modeluitval met reden bewaard.
+Alle 121 vooraf toegelaten soorten leverden in het hiërarchische hoofdmodel een
+bruikbare uitkomst. Negentig M2-modellen waren negatief-binomiaal; 31 gebruikten
+na gedocumenteerde NB-uitval de vooraf toegestane Poisson-terugval. De mediane
+absolute verandering van de jaarlijkse trend was 0,545 procentpunt. Bij 67
+soorten was zij groter dan 0,5 procentpunt en bij 31 groter dan één
+procentpunt. De mediane intervalbreedte nam 11% toe. De tellercorrectie heeft
+dus gemiddeld een beperkte invloed op de puntschatting, maar kan voor
+afzonderlijke soorten relevant zijn en maakt de onzekerheid minder stellig.
 
-Het soortenbestand bevat zowel de primaire lange reeks als de één-teller- en
-beide inspanningsanalyses. Voor de lange reeks staan de GEE-status,
-foutcodes, coëfficiënten en robuuste standaardfouten in dezelfde rij.
-`nbinom2` en `poisson_na_nb_uitval` blijven afzonderlijk herkenbaar. Grote
-RDS-fits en de per-soort GEE-checkpoints staan uitsluitend in de bij het
-manifest genoemde, door Git genegeerde runmap.
+De GEE gaf voor 105 van de 121 soorten een technisch geldig controleresultaat.
+Acht fits bereikten de grens van zestig seconden; acht andere leverden geen
+geldige numerieke oplossing. Hun hiërarchische hoofdmodel bleef wel bruikbaar.
+Bij de geldige GEE-uitkomsten kwam de richting van het ervaringseffect in
+dezelfde plot voor 78,1% en elders voor 80,0% overeen met het hoofdmodel. De
+GEE ondersteunt daarmee de algemene richting, maar vervangt het hoofdmodel
+niet en rechtvaardigt geen stellige ervaringsconclusie per soort.
+
+## Betekenis van de bestanden
+
+`teller_model_laatste_dekking.csv` legt de gebruikte populatie vast.
+`teller_model_laatste_samenvatting.csv` bevat de kernmaten over alle soorten.
+`teller_model_laatste_soorten.csv` toont per soort hoe trend, interval en
+ervaringseffect veranderen, inclusief modeluitval. De gezamenlijke
+modelkwaliteit en rijgelijkheid staan in
+`teller_model_laatste_diagnostiek.csv`. Het manifest verbindt dit alles met
+data, formules, pakketversies, checkpoints en controlesommen.
+
+Deze resultaten zijn de correctielaag voor de volgende analysefase. De
+factor 1,47 en de ervaringspercentages worden niet rechtstreeks op tellingen
+toegepast. Tellerteam en de twee ervaringsvariabelen worden binnen ieder
+volgend model opnieuw geschat op de exacte daar gebruikte gegevens.

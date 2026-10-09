@@ -11,6 +11,21 @@
   levende hoofddocument en het besluitenbestand in die directory zijn leidend
   voor opzet, voortgang en uitkomsten.
 
+- De tellergevoeligheidsfase van dit analyseproject is op 9 oktober 2026
+  afgerond op 203.628 geldige soort–plot–jaarrijen uit 2.007 plotjaren met een
+  bekende teller of een bekend tellerteam, voor 156 soorten over 1958–2025.
+  De teamspreiding van 0,382 op logschaal, factor 1,47 per
+  standaardafwijking, wordt niet als vast correctiepercentage op tellingen
+  toegepast. Volgende primaire modellen bevatten tellerteam als random
+  intercept en eerdere geregistreerde ervaring in dezelfde plot en elders als
+  afzonderlijke `log(1 + jaren)`-variabelen; soorten mogen daarvan afwijken.
+  De effecten worden binnen iedere nieuwe analysepopulatie opnieuw geschat.
+  Plotjaren zonder bekende teller blijven buiten de primaire gecorrigeerde
+  analyse en worden alleen als gevoeligheidsvariant gebruikt. GEE blijft een
+  aanvullende robuustheidscontrole en vervangt het hiërarchische hoofdmodel
+  niet. De volledige inhoudelijke interpretatie en de grenzen daarvan staan in
+  `analyses/broedvogel_vegetatie_power/ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.md`.
+
 - Vanaf 6 oktober 2026 geldt voor vogelterritoria een bronafhankelijke
   nulregel. In een officiële SOVON-Excel-download is `0` een harde nul: de
   soort is onderzocht maar niet vastgesteld. Een lege cel betekent dat de

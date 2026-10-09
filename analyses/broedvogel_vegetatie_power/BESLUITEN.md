@@ -43,7 +43,7 @@ stilzwijgend herschreven.
   voorspelde soortreacties afgeleid; directe groepsmodellen zijn
   gevoeligheidsanalyses.
 - Teller en tellerervaring worden als onderdeel van het waarnemingsproces
-  onderzocht. Zij worden niet uitsluitend op grond van niet-significantie
+  gemodelleerd. Zij worden niet uitsluitend op grond van niet-significantie
   verwijderd.
 - PQ-vegetatie wordt gesplitst in verschillen tussen plots en veranderingen
   binnen dezelfde plot.
@@ -83,9 +83,9 @@ stilzwijgend herschreven.
 
 ## 9 oktober 2026 — teller- en ervaringsmodel
 
-- Het goedgekeurde ontwerp staat in
-  `ONTWERP_TELLER_EN_ERVARINGSMODEL.md` en wordt vóór implementatie als
-  methodische specificatie gebruikt.
+- Het vooraf goedgekeurde ontwerp in
+  `ONTWERP_TELLER_EN_ERVARINGSMODEL.md` is uitgevoerd. De formele run
+  `20261009T171423Z-8888e94f0aab` is de vastgelegde uitkomst van deze fase.
 - Het hoofdmodel is hiërarchisch en negatief-binomiaal. Het vergelijkt op
   exact dezelfde responscellen een basismodel, een model met tellerteam en een
   model met tellerteam plus ervaring. GEE is een afzonderlijke controle.
@@ -117,3 +117,35 @@ stilzwijgend herschreven.
   formule, familie, analysevariant en relevante pakketversies gelijk zijn.
   Compacte resultaten worden pas geschreven nadat de volledige selectie,
   modelstatussen en GLMM–GEE-rijgelijkheid de eindpoort hebben doorstaan.
+
+## 9 oktober 2026 — gevolg van de telleranalyse
+
+- Territoriumaantallen worden niet achteraf met één tellerpercentage
+  gecorrigeerd. In volgende primaire modellen wordt tellerteam als random
+  intercept opgenomen. Eerdere geregistreerde jaren in dezelfde plot en in
+  andere Meijendelplots blijven daarnaast als twee afzonderlijke
+  `log(1 + jaren)`-variabelen in het model. Soorten mogen van het gemiddelde
+  ervaringseffect afwijken.
+- Deze effecten worden opnieuw geschat op de concrete populatie van ieder
+  ecologisch model. De in de lange reeks gevonden teamspreiding van 0,382 op
+  logschaal, factor 1,47 per standaardafwijking, en de ervaringsverhoudingen
+  worden dus niet als vaste correctiecoëfficiënten opgelegd.
+- De lange reeks toont geen duidelijk gemiddeld effect van meer ervaring in
+  dezelfde plot. Eén, drie en vijf eerder geregistreerde jaren elders hangen
+  samen met gemiddeld 4,2%, 8,6% en 11,2% hogere verwachte aantallen. Dit blijft
+  een statistische samenhang; zonder betrouwbare teller per bezoek is het geen
+  maat voor letterlijk gemiste vogels.
+- Bij 121 voldoende gedekte soorten veranderde de geschatte jaarlijkse trend
+  mediaan 0,545 procentpunt in absolute zin; voor 31 soorten meer dan één
+  procentpunt per jaar. De mediane intervalbreedte nam 11% toe. Tellercorrectie
+  is daarom verplicht in de volgende verklarende modellen, ook al is de
+  gemiddelde trendverschuiving klein.
+- Plotjaren zonder geregistreerde teller blijven buiten de primaire, voor
+  teller gecorrigeerde analyse. Zij kunnen alleen in een afzonderlijke
+  gevoeligheidsanalyse worden gebruikt. Het model zonder teller blijft als
+  vergelijking bestaan, niet als route om teller op grond van significantie
+  te verwijderen.
+- GEE blijft uitsluitend een robuustheidscontrole. De geldige GEE-uitkomsten
+  ondersteunden de hoofdrichting voor ongeveer vier op de vijf soorten, maar
+  waren niet voor alle soorten technisch bruikbaar en zijn daarom geen
+  vervanging van het hiërarchische hoofdmodel.

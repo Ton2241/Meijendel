@@ -1,7 +1,8 @@
 # Scripts
 
-Hier komen uitsluitend scripts die specifiek zijn voor de integrale
-broedvogel-, vegetatie- en poweranalyse.
+Hier staan uitsluitend scripts die specifiek zijn voor de integrale
+broedvogel-, vegetatie- en poweranalyse. De matrixbouw en de telleranalyse zijn
+uitgevoerd. De vegetatie-, validatie- en powerstappen volgen nog.
 
 De verwachte keten bestaat uit afzonderlijke stappen voor:
 
@@ -66,6 +67,13 @@ De runner leest negen tabellen uit de levende lokale database, waaronder
 onder `resultaten/runs/`. Na een volledig afgeronde uitvoering worden vijf
 compacte `teller_model_laatste_*`-bestanden bijgewerkt. Er wordt niets naar
 Shiny, dashboard of VPS geschreven.
+
+De runner verandert geen territoriumaantallen. M0 schat de vogelontwikkeling
+zonder tellerinformatie, M1 voegt de systematische spreiding tussen
+tellerteams toe en M2 voegt eerdere geregistreerde ervaring in dezelfde plot
+en elders toe. In volgende ecologische modellen wordt deze M2-structuur
+opnieuw geschat; de nu gevonden coëfficiënten worden niet als vaste
+nabewerking op de gegevens gezet.
 
 Een onderbroken run kan worden voortgezet met:
 

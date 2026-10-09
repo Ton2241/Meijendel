@@ -9,6 +9,14 @@ De analyse wordt buiten Shiny uitgevoerd. Shiny kan later gevalideerde
 uitkomsten presenteren, maar bepaalt geen modelkeuze en voert geen
 poweranalyse uit.
 
+De eerste twee stappen zijn afgerond. Er staat een reproduceerbare
+soort–plot–jaarmatrix en de invloed van tellerteam en geregistreerde ervaring
+is geschat. Die tellerfase laat zien dat tellerteam een wezenlijke bron van
+verschil is. Zij levert geen vast percentage op waarmee tellingen achteraf
+worden verhoogd of verlaagd. In de volgende modellen wordt tellerteam als
+variërend modelonderdeel opgenomen; ervaring in dezelfde plot en ervaring
+elders blijven als afzonderlijke, doorlopende variabelen in het model.
+
 ## Begin hier
 
 - [Analyse op hoofdlijnen en uitkomsten](ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.md)
@@ -16,11 +24,11 @@ poweranalyse uit.
 - [Besluiten](BESLUITEN.md) bewaart methodische keuzes die niet bij iedere
   vervolgstap opnieuw moeten worden gemaakt.
 - [Ontwerp teller- en ervaringsmodel](ONTWERP_TELLER_EN_ERVARINGSMODEL.md)
-  specificeert de goedgekeurde tweede analysestap voordat deze wordt
-  geïmplementeerd.
+  legt de vooraf vastgestelde methode én de gevolgen van de uitgevoerde tweede
+  analysestap vast.
 - [Implementatieplan teller- en ervaringsmodel](IMPLEMENTATIEPLAN_TELLER_EN_ERVARINGSMODEL.md)
-  vertaalt dat ontwerp in zes testgestuurde uitvoertaken.
-- [`scripts/`](scripts/README.md) bevat straks alleen de scripts die specifiek
+  is het beknopte uitvoerings- en herhaalbaarheidsverslag van die stap.
+- [`scripts/`](scripts/README.md) bevat alleen de scripts die specifiek
   voor deze analyse zijn geschreven.
 - [`resultaten/`](resultaten/README.md) bevat compacte, controleerbare
   einduitkomsten en uitvoermanifesten.
@@ -44,6 +52,33 @@ analyse-specifieke aansturing en documentatie.
 Grote tijdelijke modelobjecten, caches en proefuitvoer blijven buiten Git.
 Compacte tabellen, figuren en manifesten die nodig zijn om conclusies te
 controleren mogen na inhoudelijke beoordeling wel worden opgenomen.
+
+## Wat nu vaststaat
+
+De telleranalyse gebruikt 203.628 geldige soort–plot–jaarrijen uit 2.007
+plotjaren met een bekende teller of een bekend tellerteam, voor 156 soorten en
+de periode 1958–2025. De geschatte spreiding tussen tellerteams bedraagt op de
+logschaal 0,382. Dat komt overeen met een factor 1,47 per standaardafwijking:
+bij een modelverwachting van tien territoria voor een gemiddeld team ligt één
+standaardafwijking grofweg tussen 6,8 en 14,7. Dit is een modelmatige spreiding,
+geen bewijs dat een bepaalde teller vogels heeft gemist of dubbel heeft
+geteld.
+
+Meer geregistreerde ervaring in dezelfde plot gaf over de volledige periode
+geen duidelijk gemiddeld effect. Meer geregistreerde ervaring in andere
+Meijendelplots hing wel samen met hogere aantallen: bij één, drie en vijf
+eerdere jaren elders waren de verwachte aantallen gemiddeld 4,2%, 8,6% en
+11,2% hoger dan bij nul eerdere jaren. Dit verband bleef zichtbaar in de
+analyses met alleen één teller en met telinspanning, maar kan nog niet als een
+zuiver leereffect worden uitgelegd.
+
+Voor 121 voldoende gedekte soorten veranderde de jaarlijkse trend door opname
+van tellerteam en ervaring mediaan met 0,55 procentpunt in absolute zin. Bij 31
+soorten was de verandering groter dan één procentpunt per jaar. De
+onzekerheidsintervallen werden mediaan 11% breder. De inhoudelijke conclusie
+is daarom helder: teller en ervaring mogen in het komende vegetatie- en
+powermodel niet worden genegeerd, maar hun effecten moeten binnen de dan
+gebruikte gegevens opnieuw worden geschat.
 
 ## Vaste analysescope
 

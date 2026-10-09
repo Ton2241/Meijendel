@@ -1,7 +1,8 @@
 # Ontwerp teller- en ervaringsmodel
 
 **Vastgesteld:** 9 oktober 2026  
-**Status:** inhoudelijk akkoord; nog niet geïmplementeerd of geschat
+**Status:** uitgevoerd en inhoudelijk beoordeeld; formele run
+`20261009T171423Z-8888e94f0aab`
 
 ## Doel
 
@@ -12,9 +13,34 @@ niet letterlijk hoeveel vogels een teller heeft gemist en levert nog geen
 powergetal op.
 
 De telleranalyse gebruikt territoriumaantallen per soort, plot en jaar. De
-TRIM-indices zijn hiervoor niet de respons. De uitkomst wordt later als vaste
-correctielaag gebruikt voordat PQ-vegetatie en andere ecologische verklaringen
-worden toegevoegd.
+TRIM-indices zijn hiervoor niet de respons. De uitkomst bepaalt welke
+onderdelen van het waarnemingsproces in het volgende model moeten blijven. Zij
+levert geen vaste correctiecoëfficiënten die op de brongegevens worden
+toegepast.
+
+## Uitkomst en betekenis voor het vervolg
+
+De uitvoering bevestigt dat tellerteam niet kan worden genegeerd. De
+teamspreiding bedraagt 0,382 op logschaal, een factor 1,47 per
+standaardafwijking. Dit is de overblijvende spreiding die met tellerteam
+samenhangt nadat het model onder meer soort, tijd, plot, oppervlakte, bron,
+jaar en plotjaar heeft verwerkt. Zij kan ook verschillen in omstandigheden,
+inzet en toedeling bevatten en is daarom geen schatting van het percentage
+gemiste vogels.
+
+Ervaring in dezelfde plot heeft in de lange reeks geen duidelijk gemiddeld
+effect. Ervaring in andere Meijendelplots hangt wel positief samen met het
+territoriumaantal: één, drie en vijf eerder geregistreerde jaren elders komen
+overeen met gemiddeld 4,2%, 8,6% en 11,2% hogere verwachte aantallen. De
+één-telleranalyse en de analyses met bezoekinspanning houden dit hoofdpatroon
+in stand. Zij veranderen de samenhang echter niet in bewezen causaliteit.
+
+In volgende primaire modellen wordt tellerteam daarom als random intercept
+opgenomen. De twee ervaringsvariabelen blijven afzonderlijk in het model en
+soorten mogen in hun ervaringseffect afwijken. Alle effecten worden opnieuw
+geschat binnen de dan gebruikte plots, jaren en soorten. Plotjaren zonder
+bekende teller blijven buiten deze primaire correctie en worden desgewenst in
+een afzonderlijke gevoeligheidsanalyse onderzocht.
 
 ## Actuele gegevensbasis
 
@@ -130,7 +156,7 @@ of modeluitval en wordt per model vastgelegd.
 
 ### Afzonderlijke soortmodellen
 
-Voor de 121 structureel voldoende gedekte soorten worden dezelfde drie
+Voor de 121 structureel voldoende gedekte soorten zijn dezelfde drie
 modellen afzonderlijk geschat. Deze modellen laten per soort zien hoeveel de
 geschatte tijdontwikkeling en de onzekerheid veranderen wanneer tellerteam en
 ervaring worden toegevoegd. Niet-convergerende modellen leveren geen
@@ -138,7 +164,7 @@ soortconclusie op; zij worden niet stilzwijgend weggelaten.
 
 ### GEE-controle
 
-Voor dezelfde voldoende gedekte soorten wordt een GEE-analyse met plot als
+Voor dezelfde voldoende gedekte soorten is een GEE-analyse met plot als
 cluster uitgevoerd. Zij controleert of de richting van de gemiddelde
 ervaringseffecten overeind blijft bij een populatiegemiddelde benadering met
 robuuste standaardfouten.
@@ -148,21 +174,15 @@ tellerteams niet op dezelfde manier scheiden en laat zeldzame soorten geen
 informatie delen. Een verschil tussen GEE en het hiërarchische model wordt
 gerapporteerd, niet door modelselectie weggewerkt.
 
-## Te rapporteren uitkomsten
+## Gerapporteerde uitkomsten
 
 Het resultaat is geen ranglijst van tellers. Tellercodes of teller-ID's worden
-niet in het artikel gepubliceerd. De analyse rapporteert:
-
-- de geschatte spreiding tussen tellerteams;
-- de verandering in de soortspecifieke tijdontwikkeling tussen M0, M1 en M2;
-- de verhouding tussen standaardfouten of intervalbreedten van M0 en M2;
-- het geschatte verschil tussen nul en één, drie en vijf eerdere geregistreerde
-  teljaren, in dezelfde plot en elders;
-- de uitkomst van de één-telleranalyse;
-- de uitkomst van de analyse met telinspanning over 1984–2025;
-- overeenstemming of verschil met de GEE-controle;
-- datadekking, waarschuwingen, niet-identificeerbare effecten en
-  niet-convergerende modellen.
+niet in het artikel gepubliceerd. De compacte resultaten leggen de geschatte
+teamspreiding, de trendverandering tussen M0 en M2, de verandering van de
+intervalbreedte, de ervaringsverhoudingen en alle modeluitval vast. De
+één-telleranalyse en de analyse met telinspanning laten zien of de conclusie
+afhangt van teamtoerekening of bezoekinspanning. GEE controleert alleen of de
+richting bij een andere modelbenadering overeind blijft.
 
 Een statistisch ervaringsverband betekent dat territoriumaantallen
 systematisch samenhangen met geregistreerde ervaring, nadat voor de genoemde
@@ -172,24 +192,20 @@ betrouwbare tellerkoppeling nodig.
 
 ## Technische uitvoering en toetsing
 
-De implementatie komt onder
+De implementatie staat onder
 `analyses/broedvogel_vegetatie_power/scripts/` en bouwt voort op de bestaande
 matrix en `R/meijendel_cache_contract.R`. De volledige modelobjecten en
 detailuitvoer blijven onder de genegeerde map `resultaten/runs/`. In Git komen
 alleen compacte samenvattingen, diagnostiek en een manifest met
 databasevingerafdruk, Git-commit, formules, pakketversies en controlesommen.
 
-Tests leggen vooraf ten minste vast:
-
-- ervaring telt alleen jaren vóór het betreffende jaar;
-- ervaring in dezelfde plot en ervaring elders overlappen niet;
-- teams worden onafhankelijk van de volgorde van teller-ID's gevormd;
-- M66, M91 en M62/2016 zijn uitgesloten;
-- plotjaren zonder teller krijgen geen verzonnen teller of ervaring;
-- alle drie modelvarianten gebruiken dezelfde responsrijen;
-- mislukte of niet-convergerende modellen blijven zichtbaar in de uitvoer;
-- de één-teller- en inspanningsanalyses gebruiken exact hun vastgelegde
-  deelpopulatie.
+De tests bewaken dat ervaring alleen uit eerdere jaren wordt afgeleid, dat
+ervaring in dezelfde plot niet nogmaals als ervaring elders meetelt en dat de
+volgorde van teller-ID's geen nieuw team maakt. Zij controleren tevens de
+Natura 2000-scope, de uitsluiting van M62/2016, het ontbreken van imputatie voor
+onbekende tellers, gelijke responsrijen binnen M0–M2 en het zichtbaar blijven
+van iedere modeluitval. Daarmee is niet alleen de uitkomst, maar ook de grens
+van de uitkomst reproduceerbaar.
 
 Modelschatting en GEE draaien buiten Shiny. Er wordt niets naar dashboard,
 Shiny of VPS gepubliceerd zonder een afzonderlijk besluit.

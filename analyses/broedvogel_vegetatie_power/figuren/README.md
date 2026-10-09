@@ -1,7 +1,8 @@
 # Figuren
 
-Hier komen uitsluitend definitieve figuren voor inhoudelijke beoordeling en
-eventueel het artikel. Iedere figuur heeft:
+Deze map bevat nog geen definitieve figuur. Alleen figuren die een inhoudelijke
+conclusie verduidelijken en volledig uit een gecontroleerde resultaatset kunnen
+worden herleid, worden hier opgenomen. Iedere figuur heeft:
 
 - een stabiele figuurcode;
 - een onderschrift dat populatie, periode en eenheid noemt;
