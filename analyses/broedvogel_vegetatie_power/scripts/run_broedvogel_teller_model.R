@@ -202,6 +202,18 @@ run_teller_model_pipeline <- function(
   species_combined <- do.call(rbind, lapply(names(species), function(name) {
     current <- species[[name]]; current$analyse <- name; current
   }))
+  gee_compact <- gee
+  gee_fields <- setdiff(names(gee_compact), c("soort_id", "soort_naam"))
+  names(gee_compact)[match(gee_fields, names(gee_compact))] <- paste0("gee_", gee_fields)
+  species_combined <- merge(
+    species_combined,
+    gee_compact,
+    by = c("soort_id", "soort_naam"),
+    all.x = TRUE,
+    sort = FALSE
+  )
+  species_combined[species_combined$analyse != "lang", paste0("gee_", gee_fields)] <- NA
+  species_combined <- species_combined[order(species_combined$analyse, species_combined$soort_id), , drop = FALSE]
   species_path <- write_csv_atomic(species_combined, file.path(run_dir, "teller_model_soorten.csv"))
   diagnostics_path <- write_csv_atomic(flatten_joint_diagnostics(joint), file.path(run_dir, "teller_model_diagnostiek.csv"))
   outputs <- c(dekking = coverage_path, samenvatting = summary_path, soorten = species_path, diagnostiek = diagnostics_path)

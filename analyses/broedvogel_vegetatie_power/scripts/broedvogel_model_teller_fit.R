@@ -94,6 +94,22 @@ safe_model_filename <- function(model_id) {
   paste0(cleaned, ".rds")
 }
 
+variance_components_from_fit <- function(fit) {
+  conditional <- glmmTMB::VarCorr(fit)$cond
+  rows <- lapply(names(conditional), function(group) {
+    matrix <- conditional[[group]]
+    standard_deviation <- attr(matrix, "stddev")
+    data.frame(
+      grp = group,
+      term = names(standard_deviation),
+      variance = as.numeric(diag(matrix)),
+      sdcor = as.numeric(standard_deviation),
+      stringsAsFactors = FALSE
+    )
+  })
+  do.call(rbind, rows)
+}
+
 fit_glmmtmb_safely <- function(
     formula,
     data,
@@ -159,7 +175,7 @@ fit_glmmtmb_safely <- function(
   }
 
   variance_components <- tryCatch(
-    as.data.frame(glmmTMB::VarCorr(outcome)),
+    variance_components_from_fit(outcome),
     error = function(error) data.frame(error = conditionMessage(error), stringsAsFactors = FALSE)
   )
   pd_hessian <- isTRUE(outcome$sdr$pdHess)
@@ -334,7 +350,7 @@ coefficient_from_fit <- function(fit, term) {
 }
 
 team_sd_from_fit <- function(fit) {
-  components <- tryCatch(as.data.frame(glmmTMB::VarCorr(fit)), error = function(error) NULL)
+  components <- tryCatch(variance_components_from_fit(fit), error = function(error) NULL)
   if (is.null(components) || !all(c("grp", "sdcor") %in% names(components))) return(NA_real_)
   team <- components[components$grp == "tellerteam_factor" & !is.na(components$sdcor), , drop = FALSE]
   if (!nrow(team)) NA_real_ else unname(team$sdcor[[1L]])

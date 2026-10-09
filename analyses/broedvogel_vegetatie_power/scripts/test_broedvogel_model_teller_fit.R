@@ -156,6 +156,7 @@ stopifnot(
   identical(species_results$reden[[3L]], "constante_ervaring"),
   identical(gee_results$reden[[3L]], "constante_ervaring"),
   identical(species_results$row_hash, gee_results$row_hash),
+  if (identical(species_results$status[[1L]], "geslaagd")) is.finite(species_results$team_sd[[1L]]) else TRUE,
   identical(quick_isolated$status, "geslaagd"),
   identical(quick_isolated$value, 42L),
   identical(slow_isolated$status, "modeluitval"),
