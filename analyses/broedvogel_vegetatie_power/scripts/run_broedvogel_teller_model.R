@@ -103,11 +103,16 @@ teller_formula_manifest <- function() {
   add("joint_een_teller_mean", joint_teller_formulas())
   add("joint_inspanning_duur", joint_teller_formulas(TRUE, "inspanning_duur_z"))
   add("joint_inspanning_bezoeken", joint_teller_formulas(TRUE, "inspanning_bezoeken_z"))
-  add("species_lang", species_teller_formulas(TRUE))
-  add("species_een_teller", species_teller_formulas(TRUE))
-  add("species_inspanning_duur", species_teller_formulas(TRUE, "inspanning_duur_z"))
-  add("species_inspanning_bezoeken", species_teller_formulas(TRUE, "inspanning_bezoeken_z"))
-  add("gee_lang", gee_teller_formulas(TRUE))
+  add("species_lang_met_bron", species_teller_formulas(TRUE))
+  add("species_lang_zonder_bron", species_teller_formulas(FALSE))
+  add("species_een_teller_met_bron", species_teller_formulas(TRUE))
+  add("species_een_teller_zonder_bron", species_teller_formulas(FALSE))
+  add("species_inspanning_duur_met_bron", species_teller_formulas(TRUE, "inspanning_duur_z"))
+  add("species_inspanning_duur_zonder_bron", species_teller_formulas(FALSE, "inspanning_duur_z"))
+  add("species_inspanning_bezoeken_met_bron", species_teller_formulas(TRUE, "inspanning_bezoeken_z"))
+  add("species_inspanning_bezoeken_zonder_bron", species_teller_formulas(FALSE, "inspanning_bezoeken_z"))
+  add("gee_lang_met_bron", gee_teller_formulas(TRUE))
+  add("gee_lang_zonder_bron", gee_teller_formulas(FALSE))
   out
 }
 
@@ -223,6 +228,18 @@ validate_teller_pipeline_results <- function(joint, species, gee, expected) {
   valid_gee <- identical(sort(as.integer(gee$soort_id)), sort(as.integer(expected$species_ids$lang))) &&
     all(gee$status %in% allowed_status) && !anyNA(gee$row_hash) && all(nzchar(gee$row_hash))
   if (!isTRUE(valid_gee)) stop("Niet-publiceerbare GEE-selectie.", call. = FALSE)
+  hash_comparison <- merge(
+    species$lang[c("soort_id", "row_hash")],
+    gee[c("soort_id", "row_hash")],
+    by = "soort_id",
+    suffixes = c("_glmm", "_gee"),
+    sort = TRUE
+  )
+  if (nrow(hash_comparison) != nrow(species$lang) ||
+      anyNA(hash_comparison$row_hash_glmm) || anyNA(hash_comparison$row_hash_gee) ||
+      !all(hash_comparison$row_hash_glmm == hash_comparison$row_hash_gee)) {
+    stop("GLMM en GEE gebruiken niet exact dezelfde responsrijen.", call. = FALSE)
+  }
   successful <- gee$status == "geslaagd"
   if (any(successful)) {
     finite <- apply(gee[successful, gee_fields, drop = FALSE], 1L, function(row) all(is.finite(as.numeric(row))))

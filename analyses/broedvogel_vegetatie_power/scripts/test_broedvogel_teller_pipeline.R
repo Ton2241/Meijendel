@@ -66,11 +66,12 @@ stopifnot(grepl("^[0-9a-f]{64}$", contract_a), !identical(contract_a, contract_b
 
 all_formulas <- teller_formula_manifest()
 stopifnot(
-  length(all_formulas) == 32L,
+  length(all_formulas) == 46L,
   all(c(
     "joint_lang_mean_M0", "joint_inspanning_duur_M2",
-    "species_lang_M0", "species_inspanning_bezoeken_M2",
-    "gee_lang_M0", "gee_lang_M2"
+    "species_lang_met_bron_M0", "species_lang_zonder_bron_M0",
+    "species_inspanning_bezoeken_met_bron_M2", "species_inspanning_bezoeken_zonder_bron_M2",
+    "gee_lang_met_bron_M0", "gee_lang_zonder_bron_M2"
   ) %in% names(all_formulas))
 )
 
@@ -109,6 +110,13 @@ broken_error <- tryCatch(
   error = conditionMessage
 )
 stopifnot(grepl("gezamenlijk model", broken_error, fixed = TRUE))
+broken_gee_hash <- gee_fixture
+broken_gee_hash$row_hash[[1L]] <- "andere_rijselectie"
+gee_hash_error <- tryCatch(
+  { validate_teller_pipeline_results(joint_fixture, species_fixture, broken_gee_hash, expected_contract); "" },
+  error = conditionMessage
+)
+stopifnot(grepl("GLMM en GEE", gee_hash_error, fixed = TRUE))
 
 coverage_fixture <- data.frame(
   metric = c(
@@ -151,7 +159,7 @@ stopifnot(
   identical(as.integer(read_manifest$random_seed), 20261009L),
   all(c("glmmTMB", "geepack", "digest", "jsonlite") %in% names(read_manifest$package_versions)),
   identical(as.integer(read_manifest$tables$territoria$rows), 3L),
-  length(read_manifest$formulas) == 32L,
+  length(read_manifest$formulas) == 46L,
   identical(read_manifest$response_row_hashes$long, strrep("d", 64L)),
   identical(read_manifest$outputs$resultaat$sha256, sha256_file(output_path))
 )
