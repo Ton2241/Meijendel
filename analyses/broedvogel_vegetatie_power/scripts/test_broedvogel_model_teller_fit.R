@@ -98,6 +98,20 @@ stopifnot(
   is.null(forced$fit_path)
 )
 
+invalid_meta_path <- paste0(simple$fit_path, ".meta.rds")
+invalid_meta <- readRDS(invalid_meta_path)
+invalid_meta$diagnostics$pdHess <- FALSE
+saveRDS(invalid_meta, invalid_meta_path)
+reclassified <- fit_glmmtmb_safely(
+  count ~ jaar_decennium + offset(log_oppervlakte_km2) + (1 | plotjaar_factor),
+  prepared,
+  "synthetic_simple",
+  checkpoint_dir
+)
+stopifnot(identical(reclassified$status, "modeluitval"), isTRUE(reclassified$resumed))
+invalid_meta$diagnostics$pdHess <- TRUE
+saveRDS(invalid_meta, invalid_meta_path)
+
 batch <- fit_joint_teller_models(
   prepared,
   analysis_id = "synthetic_joint",

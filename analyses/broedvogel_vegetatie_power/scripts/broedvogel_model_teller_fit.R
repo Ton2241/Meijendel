@@ -127,7 +127,17 @@ fit_glmmtmb_safely <- function(
   metadata_path <- paste0(fit_path, ".meta.rds")
   if (file.exists(fit_path) && file.exists(metadata_path)) {
     saved <- readRDS(metadata_path)
-    if (is.list(saved) && identical(saved$status, "geslaagd") && identical(saved$diagnostics$row_hash, row_hash)) {
+    if (is.list(saved) && identical(saved$diagnostics$row_hash, row_hash)) {
+      has_convergence_warning <- any(grepl(
+        "convergence problem|false convergence|non-positive-definite",
+        saved$warnings,
+        ignore.case = TRUE
+      ))
+      saved$status <- if (isTRUE(saved$diagnostics$pdHess) && !has_convergence_warning) {
+        "geslaagd"
+      } else {
+        "modeluitval"
+      }
       saved$fit_path <- normalizePath(fit_path, mustWork = TRUE)
       saved$resumed <- TRUE
       return(saved)
@@ -179,9 +189,14 @@ fit_glmmtmb_safely <- function(
     error = function(error) data.frame(error = conditionMessage(error), stringsAsFactors = FALSE)
   )
   pd_hessian <- isTRUE(outcome$sdr$pdHess)
+  has_convergence_warning <- any(grepl(
+    "convergence problem|false convergence|non-positive-definite",
+    warnings,
+    ignore.case = TRUE
+  ))
   saveRDS(outcome, fit_path)
   result <- list(
-    status = "geslaagd",
+    status = if (pd_hessian && !has_convergence_warning) "geslaagd" else "modeluitval",
     fit_path = normalizePath(fit_path, mustWork = TRUE),
     warnings = unique(warnings),
     diagnostics = list(
