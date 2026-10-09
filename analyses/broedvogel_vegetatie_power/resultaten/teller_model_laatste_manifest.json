@@ -1,0 +1,146 @@
+{
+  "run_id": "20261009T171423Z-8888e94f0aab",
+  "git_commit": "8888e94f0aab0ecff6c9245bc3a7bcf31443987e",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.1",
+  "executed_at_utc": "2026-10-09T18:47:37Z",
+  "random_seed": 20261009,
+  "source_fingerprint_sha256": "304f5f73288e91728483e662befded4195d3b3af387c7d8ada838730a9a4dd01",
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "tables": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "dagbezoeken_bmp": {
+      "file": "dagbezoeken_bmp.tsv",
+      "rows": 14455,
+      "bytes": 310792,
+      "sha256": "16c6619bd6144ce2a9ce137392674e66bf4c138fb9c1d1960313295971982a50"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 69,
+      "bytes": 1783,
+      "sha256": "d4ae5665cf0346f2f626daef8bcd75a9db1bed8f3fe28dca70707ff51a55671c"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    }
+  },
+  "formulas": {
+    "joint_lang_mean_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2) + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor)",
+    "joint_lang_mean_M1": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "joint_lang_mean_M2": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "joint_lang_min_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2) + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor)",
+    "joint_lang_min_M1": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "joint_lang_min_M2": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "joint_lang_max_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2) + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor)",
+    "joint_lang_max_M1": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "joint_lang_max_M2": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "joint_een_teller_mean_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2) + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor)",
+    "joint_een_teller_mean_M1": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "joint_een_teller_mean_M2": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "joint_inspanning_duur_M0": "count ~ jaar_decennium + analyse_bron_factor + inspanning_duur_z + offset(log_oppervlakte_km2) + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor)",
+    "joint_inspanning_duur_M1": "count ~ jaar_decennium + analyse_bron_factor + inspanning_duur_z + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "joint_inspanning_duur_M2": "count ~ jaar_decennium + analyse_bron_factor + inspanning_duur_z + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "joint_inspanning_bezoeken_M0": "count ~ jaar_decennium + analyse_bron_factor + inspanning_bezoeken_z + offset(log_oppervlakte_km2) + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor)",
+    "joint_inspanning_bezoeken_M1": "count ~ jaar_decennium + analyse_bron_factor + inspanning_bezoeken_z + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "joint_inspanning_bezoeken_M2": "count ~ jaar_decennium + analyse_bron_factor + inspanning_bezoeken_z + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "species_lang_met_bron_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_lang_met_bron_M1": "count ~ jaar_decennium + analyse_bron_factor + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_lang_met_bron_M2": "count ~ jaar_decennium + analyse_bron_factor + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_lang_zonder_bron_M0": "count ~ jaar_decennium + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_lang_zonder_bron_M1": "count ~ jaar_decennium + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_lang_zonder_bron_M2": "count ~ jaar_decennium + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_een_teller_met_bron_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_een_teller_met_bron_M1": "count ~ jaar_decennium + analyse_bron_factor + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_een_teller_met_bron_M2": "count ~ jaar_decennium + analyse_bron_factor + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_een_teller_zonder_bron_M0": "count ~ jaar_decennium + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_een_teller_zonder_bron_M1": "count ~ jaar_decennium + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_een_teller_zonder_bron_M2": "count ~ jaar_decennium + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_inspanning_duur_met_bron_M0": "count ~ jaar_decennium + analyse_bron_factor + inspanning_duur_z + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_inspanning_duur_met_bron_M1": "count ~ jaar_decennium + analyse_bron_factor + inspanning_duur_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_inspanning_duur_met_bron_M2": "count ~ jaar_decennium + analyse_bron_factor + inspanning_duur_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_inspanning_duur_zonder_bron_M0": "count ~ jaar_decennium + inspanning_duur_z + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_inspanning_duur_zonder_bron_M1": "count ~ jaar_decennium + inspanning_duur_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_inspanning_duur_zonder_bron_M2": "count ~ jaar_decennium + inspanning_duur_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_inspanning_bezoeken_met_bron_M0": "count ~ jaar_decennium + analyse_bron_factor + inspanning_bezoeken_z + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_inspanning_bezoeken_met_bron_M1": "count ~ jaar_decennium + analyse_bron_factor + inspanning_bezoeken_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_inspanning_bezoeken_met_bron_M2": "count ~ jaar_decennium + analyse_bron_factor + inspanning_bezoeken_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "species_inspanning_bezoeken_zonder_bron_M0": "count ~ jaar_decennium + inspanning_bezoeken_z + offset(log_oppervlakte_km2) + (1 | plot_factor) + (1 | jaar_factor)",
+    "species_inspanning_bezoeken_zonder_bron_M1": "count ~ jaar_decennium + inspanning_bezoeken_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + offset(log_oppervlakte_km2)",
+    "species_inspanning_bezoeken_zonder_bron_M2": "count ~ jaar_decennium + inspanning_bezoeken_z + (1 | plot_factor) + (1 | jaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "gee_lang_met_bron_M0": "count ~ jaar_decennium + analyse_bron_factor + offset(log_oppervlakte_km2)",
+    "gee_lang_met_bron_M2": "count ~ jaar_decennium + analyse_bron_factor + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)",
+    "gee_lang_zonder_bron_M0": "count ~ jaar_decennium + offset(log_oppervlakte_km2)",
+    "gee_lang_zonder_bron_M2": "count ~ jaar_decennium + ervaring_plot_z + ervaring_elders_z + offset(log_oppervlakte_km2)"
+  },
+  "response_row_hashes": {
+    "long": "134b916617d3c116a14c513d425c2e633bda95251fd594078d31e7514b9c1a5e",
+    "single_teller": "830a43134cde4ebec38627bbfefabd0dc8e524013ea2a9d2429f9371f3f637a5",
+    "effort_1984_2025": "309871249325f8b4468fe7e58c258f9aee21f45582916931ae833c3c11db4251"
+  },
+  "outputs": {
+    "dekking": {
+      "file": "teller_model_dekking.csv",
+      "bytes": 417,
+      "sha256": "635731f5ba853a74187e1f122cd16ccfe82fce053e82cd2796552cf856756af3"
+    },
+    "samenvatting": {
+      "file": "teller_model_samenvatting.csv",
+      "bytes": 225,
+      "sha256": "21a1ccd227efb41e99d33ebabb5748cbdbc5916dd60eb7c11cb8bd8198fda707"
+    },
+    "soorten": {
+      "file": "teller_model_soorten.csv",
+      "bytes": 283362,
+      "sha256": "170d724b8128cc6e617cbc920721fac514fa4c76567e207232825599ca48bd1d"
+    },
+    "diagnostiek": {
+      "file": "teller_model_diagnostiek.csv",
+      "bytes": 3125,
+      "sha256": "8d6bc144492f74a1bc7a158180bfa711301cd5b13c0f7815a71a1529c5f1fa05"
+    }
+  }
+}

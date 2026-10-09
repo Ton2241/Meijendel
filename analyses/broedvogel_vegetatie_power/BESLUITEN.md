@@ -105,3 +105,15 @@ stilzwijgend herschreven.
 - De uitkomst beschrijft een systematisch effect op territoriumtotalen. Zij
   wordt niet zonder bezoekniveau-tellerkoppeling uitgelegd als het letterlijke
   aantal door een teller gemiste vogels.
+- Een negatief-binomiaal soortmodel geldt alleen als bruikbaar bij een positieve
+  Hessiaan en zonder convergentiewaarschuwing. Alleen na zo'n gedocumenteerde
+  NB-uitval mag de vooraf bepaalde, zichtbaar gelabelde Poisson-terugval worden
+  gebruikt.
+- Iedere GEE-soortfit draait geïsoleerd en krijgt zestig seconden. Een
+  overschrijding wordt als modeluitval bewaard; de overige soorten gaan door.
+  Ook een niet-nul foutcode of een niet-eindige coëfficiënt of robuuste
+  standaardfout geldt als modeluitval.
+- Een checkpoint wordt alleen hervat wanneer gegevenshash, Git-commit,
+  formule, familie, analysevariant en relevante pakketversies gelijk zijn.
+  Compacte resultaten worden pas geschreven nadat de volledige selectie,
+  modelstatussen en GLMM–GEE-rijgelijkheid de eindpoort hebben doorstaan.

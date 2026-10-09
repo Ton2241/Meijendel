@@ -2,7 +2,9 @@
 
 **Stand:** 9 oktober 2026
 
-**Status:** stap 1 uitgevoerd: reproduceerbare analysematrix; modelschatting en formele poweranalyse nog niet uitgevoerd
+**Status:** stappen 1 en 2 uitgevoerd: reproduceerbare analysematrix en
+tellergevoeligheidsanalyse; voorspellend ecologisch model en formele
+poweranalyse nog niet uitgevoerd
 
 **Beoogd eindproduct:** artikel voor *Holland's Duinen*
 
@@ -217,8 +219,55 @@ De opzet van deze stap is op 9 oktober 2026 vastgesteld in
 Het hoofdmodel wordt hiërarchisch en negatief-binomiaal; GEE dient als
 controle. Ervaring wordt zonder vaste grens afgeleid uit eerdere geregistreerde
 teljaren in dezelfde plot en eerdere geregistreerde teljaren elders. De
-modellen zijn nog niet geschat, zodat nog geen tellereffect of leereffect is
-vastgesteld.
+formele uitvoering van 9 oktober 2026 gebruikt 203.628 soort–plot–jaarrijen uit
+2.007 plotjaren met bekende teller over 1958–2025. Alle achttien gezamenlijke
+M0–M2-fits slaagden met een positieve Hessiaan en zonder
+convergentiewaarschuwing; per vergelijking was de responsrijhash gelijk.
+
+In de primaire lange reeks bedroeg de geschatte standaardafwijking tussen
+tellerteams op logschaal 0,382, ofwel een factor 1,47 per standaardafwijking.
+Dit is spreiding die na correctie voor de modelstructuur met tellerteam
+samenhangt. Zij is geen ranglijst van tellers en bewijst niet dat vogels zijn
+gemist.
+
+De gezamenlijke coëfficiënt voor eerdere geregistreerde ervaring in dezelfde
+plot was 0,008 per gestandaardiseerde eenheid (standaardfout 0,018); deze
+uitkomst onderscheidt zich niet duidelijk van nul. Voor geregistreerde
+ervaring elders was de coëfficiënt 0,066 (standaardfout 0,017). Omgerekend
+komt dit laatste verband neer op verwachte telverhoudingen van 1,042, 1,086 en
+1,112 bij respectievelijk één, drie en vijf eerdere geregistreerde teljaren
+elders ten opzichte van nul. Minimum- en maximumervaring binnen tellerteams
+gaven vrijwel hetzelfde patroon. Ook de analyse van uitsluitend 1.804
+één-teller-plotjaren hield dit patroon in stand.
+
+De telinspanninganalyse gebruikt 120.731 soort–plot–jaarrijen over 1984–2025.
+Met zowel totale bezoekduur als aantal bezoeken bleef het verband met ervaring
+elders positief. In deze kortere populatie was ook het verband met ervaring in
+dezelfde plot positief. Dat verschil met de lange reeks kan zowel door
+telinspanning als door periode en gegevenssamenstelling ontstaan en wordt niet
+als afzonderlijk leereffect uitgelegd. De één-telleranalyse leverde 117
+bruikbare soortuitkomsten uit 118 kandidaten; de analyses met bezoekduur en
+aantal bezoeken respectievelijk 109 uit 111 en 108 uit 111. De zes overige
+soortmodellen blijven als modeluitval zichtbaar.
+
+Voor de 121 vooraf toegelaten soorten leverde de lange analyse 121 bruikbare
+uitkomsten: 90 met negatief-binomiale M2 en 31 met de vooraf toegestane,
+expliciet gelabelde Poisson-terugval na NB-uitval. De mediane verandering van
+de geschatte jaartrend tussen M0 en M2 was −0,033 procentpunt per jaar; de
+mediane absolute verandering 0,545 procentpunt. Bij 67 soorten was de absolute
+verschuiving groter dan 0,5 procentpunt en bij 31 groter dan 1 procentpunt per
+jaar. Deze grenzen zijn beschrijvend, geen significantieselectie. De mediane
+intervalbreedte nam met factor 1,11 toe.
+
+De streng gecontroleerde Poisson-GEE slaagde voor 105 van de 121 soorten.
+Acht soorten bereikten de vooraf ingestelde grens van zestig seconden; bij
+acht andere soorten meldde `geepack` een numerieke foutcode of geen volledig
+eindige coëfficiënten en robuuste standaardfouten. Deze zestien soorten blijven
+als modeluitval zichtbaar. Bij de 105 geslaagde controles kwam de richting van
+het ervaringseffect in dezelfde plot voor 78,1% en elders voor 80,0% overeen
+met het GLMM; beide richtingen tegelijk kwamen voor 62,9% overeen. GEE
+bevestigt het algemene patroon dus slechts gedeeltelijk en blijft een controle,
+niet het hoofdmodel.
 
 ### 3. Vegetatiemodel
 
@@ -323,7 +372,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Ecologische groepen | Beschikbaar | 51 EVG-groepen; hoofdanalyse begint met acht brede groepen. |
 | Habitatgroepen | Beschikbaar | Acht habitattypen; analysevarianten sterk en sterk plus matig. |
 | Continue vogelkenmerken | Beschikbaar | 23 goedgekeurde kenmerken; zestien gevuld voor alle 156 positieve soorten. |
-| Teller- en ervaringsmodel | Ontwerp vastgesteld | Hiërarchisch negatief-binomiaal hoofdmodel plus GEE-controle; nog geen geschat tellereffect of leereffect. |
+| Teller- en ervaringsmodel | Uitgevoerd | Zes gezamenlijke M0–M2-vergelijkingen groen; primaire soortanalyse 121/121 bruikbaar, waarvan 31 met gelabelde Poisson-terugval; GEE 105/121 bruikbaar. Tellerteam en geregistreerde ervaring hangen samen met verschillen in geschatte uitkomsten, maar bewijzen geen gemiste vogels. |
 | Voorspellend vogelmodel | Nog uit te voeren | Geen voorspellende kracht of meerwaarde van PQ vastgesteld. |
 | Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
