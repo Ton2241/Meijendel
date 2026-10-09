@@ -20,3 +20,20 @@ of afwijkend interpreteert wordt niet aan deze keten toegevoegd.
 Ieder uitvoerscript moet een uitvoermanifest schrijven zoals beschreven in het
 hoofddocument. Scripts schrijven niet rechtstreeks naar Shiny, dashboard of
 VPS.
+
+## Stap 1: vogelmatrix
+
+Voer vanuit de repository uit:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_model_data.sh
+```
+
+De runner leest de levende lokale MySQL-database uitsluitend read-only,
+controleert eerst de lokale werkruimte en verwijdert de tijdelijke TSV-extracten
+na afloop. `broedvogel_model_data.R` past daarna de centrale scope-, nul- en
+afkeurregels toe. De test kan afzonderlijk worden uitgevoerd met:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_data.R
+```

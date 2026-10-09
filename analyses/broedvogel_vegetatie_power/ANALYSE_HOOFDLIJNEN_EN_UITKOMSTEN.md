@@ -2,7 +2,7 @@
 
 **Stand:** 9 oktober 2026
 
-**Status:** opzet vastgesteld; modelbouw en formele poweranalyse nog niet uitgevoerd
+**Status:** stap 1 uitgevoerd: reproduceerbare analysematrix; modelschatting en formele poweranalyse nog niet uitgevoerd
 
 **Beoogd eindproduct:** artikel voor *Holland's Duinen*
 
@@ -171,6 +171,33 @@ De analyse neemt de centrale Natura 2000-scope, bronstatus, nulregels en
 formele afkeur over. Iedere waarde behoudt bron en nulstatus. Een groepswaarde
 wordt alleen berekend wanneer voor alle samenstellende soorten een geldige
 analysewaarde beschikbaar is; een gedeeltelijke som blijft `NA`.
+
+Deze stap is op 9 oktober 2026 uitgevoerd. De standaardmatrix bevat 328.692
+soort–plot–jaarcellen: 156 soorten maal 2.107 werkelijk in `territoria`
+aanwezige plotjaren in 52 Natura 2000-plots, over 1958–2025. De 123
+plotjaarcombinaties die alleen in `plot_jaar_teller` staan, creëren nadrukkelijk
+geen analysejaar.
+
+Van de 328.692 cellen hebben 68.504 een positief territoriumaantal. Er zijn
+142.802 geldige nullen: 76.686 letterlijk door de bron geleverde nullen en
+66.116 volgens de vastgelegde jaarverslagregel afgeleide nullen. Voor 117.120
+cellen ontbreekt een soortregel en 266 cellen behouden de status
+`formeel_afgekeurd`; deze 117.386 cellen krijgen geen modelwaarde. De vijf
+M35-plotjaren met een afgekeurde SOVON-status bevatten daarnaast zelfstandige
+geldige jaarverslag- of meeuwenliteratuurwaarden. Die blijven volgens de
+brongebonden regel bruikbaar en herkenbaar.
+
+Voor 2.007 van de 2.107 territorium-plotjaren is minstens één teller
+geregistreerd; voor 100 niet. M62/2016, de afzonderlijke roofvogeltelling, is
+voor de algemene vogelmatrix als bronwaarde behouden. Bij de volgende stap,
+de analyse van teller en tellerervaring, wordt deze combinatie overeenkomstig
+het bestaande besluit uitgesloten. Dan resteren 99 plotjaren zonder
+tellerregistratie.
+
+De volledige matrix staat lokaal, buiten Git, in de uitvoermap
+`resultaten/runs/`. De compacte actuele samenvatting en het controlemanifest
+staan in `resultaten/analysematrix_laatste_samenvatting.csv` en
+`resultaten/analysematrix_laatste_manifest.json`.
 
 ### 2. Waarnemingsmodel
 

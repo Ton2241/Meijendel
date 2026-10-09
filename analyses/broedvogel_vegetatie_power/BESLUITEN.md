@@ -61,3 +61,22 @@ stilzwijgend herschreven.
   uitkomsten presenteren.
 - Een statistische relatie wordt niet zonder aanvullend bewijs als een
   causale beheerwerking beschreven.
+
+## 9 oktober 2026 — analysematrix stap 1
+
+- Alleen plotjaren die in `territoria` voorkomen vormen de vogelmeetbasis.
+  Een registratie die uitsluitend in `plot_jaar_teller` staat, voegt geen
+  analysejaar toe.
+- De matrix bevat de volledige kruising van 156 positief vastgestelde soorten
+  en 2.107 territorium-plotjaren in de 52 standaardplots. Ontbrekende
+  soortregels blijven expliciet `NA`; zij worden niet door de rechthoekige
+  matrix impliciet nul.
+- Tellerregistraties worden per plotjaar als afzonderlijke dekking en als
+  herleidbare tellerteamsleutel toegevoegd. Zij bepalen niet of een plotjaar als
+  territoriumtelling bestaat.
+- M62/2016 blijft in de algemene vogelmatrix aanwezig. Deze afzonderlijke
+  roofvogeltelling wordt pas uit de teller- en tellerervaringsanalyse
+  verwijderd, conform het reeds vastgelegde gebruiksbesluit.
+- Iedere uitvoering bewaart de bronbestanden alleen tijdelijk, schrijft de
+  volledige matrix onder de genegeerde map `resultaten/runs/` en houdt een
+  compact samenvattingsbestand en SHA256-manifest in Git bij.

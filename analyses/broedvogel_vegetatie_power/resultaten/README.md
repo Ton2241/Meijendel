@@ -18,3 +18,9 @@ Op te nemen eindproducten zijn onder meer:
 Grote modelobjecten, proefuitvoer en caches horen in `runs/` en blijven buiten
 Git. Een getal wordt pas in het hoofddocument of artikel overgenomen nadat de
 bijbehorende resultaatset is gecontroleerd.
+
+De bestanden `analysematrix_laatste_samenvatting.csv` en
+`analysematrix_laatste_manifest.json` zijn de compacte, gevolgde weergave van
+de laatste formele matrixbouw. Het manifest bevat bronregelaantallen en
+SHA256-controlesommen; de bijbehorende volledige matrix staat lokaal in de
+genoemde `run_id` onder `runs/`.
