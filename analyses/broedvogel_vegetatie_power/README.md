@@ -15,6 +15,9 @@ poweranalyse uit.
   is het levende inhoudelijke hoofddocument.
 - [Besluiten](BESLUITEN.md) bewaart methodische keuzes die niet bij iedere
   vervolgstap opnieuw moeten worden gemaakt.
+- [Ontwerp teller- en ervaringsmodel](ONTWERP_TELLER_EN_ERVARINGSMODEL.md)
+  specificeert de goedgekeurde tweede analysestap voordat deze wordt
+  geïmplementeerd.
 - [`scripts/`](scripts/README.md) bevat straks alleen de scripts die specifiek
   voor deze analyse zijn geschreven.
 - [`resultaten/`](resultaten/README.md) bevat compacte, controleerbare

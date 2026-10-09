@@ -212,6 +212,14 @@ De vergelijking zonder en met teller bepaalt niet of tellerinformatie mag
 worden weggeselecteerd. Zij laat zien hoeveel teller en ervaring veranderen aan
 de geschatte relaties, onzekerheid en resterende variatie.
 
+De opzet van deze stap is op 9 oktober 2026 vastgesteld in
+[`ONTWERP_TELLER_EN_ERVARINGSMODEL.md`](ONTWERP_TELLER_EN_ERVARINGSMODEL.md).
+Het hoofdmodel wordt hiërarchisch en negatief-binomiaal; GEE dient als
+controle. Ervaring wordt zonder vaste grens afgeleid uit eerdere geregistreerde
+teljaren in dezelfde plot en eerdere geregistreerde teljaren elders. De
+modellen zijn nog niet geschat, zodat nog geen tellereffect of leereffect is
+vastgesteld.
+
 ### 3. Vegetatiemodel
 
 PQ-kenmerken worden gesplitst in:
@@ -315,7 +323,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Ecologische groepen | Beschikbaar | 51 EVG-groepen; hoofdanalyse begint met acht brede groepen. |
 | Habitatgroepen | Beschikbaar | Acht habitattypen; analysevarianten sterk en sterk plus matig. |
 | Continue vogelkenmerken | Beschikbaar | 23 goedgekeurde kenmerken; zestien gevuld voor alle 156 positieve soorten. |
-| Teller- en ervaringsmodel | Nog uit te voeren | Geen geschat tellereffect of leereffect vastgesteld. |
+| Teller- en ervaringsmodel | Ontwerp vastgesteld | Hiërarchisch negatief-binomiaal hoofdmodel plus GEE-controle; nog geen geschat tellereffect of leereffect. |
 | Voorspellend vogelmodel | Nog uit te voeren | Geen voorspellende kracht of meerwaarde van PQ vastgesteld. |
 | Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |

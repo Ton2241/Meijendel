@@ -80,3 +80,28 @@ stilzwijgend herschreven.
 - Iedere uitvoering bewaart de bronbestanden alleen tijdelijk, schrijft de
   volledige matrix onder de genegeerde map `resultaten/runs/` en houdt een
   compact samenvattingsbestand en SHA256-manifest in Git bij.
+
+## 9 oktober 2026 — teller- en ervaringsmodel
+
+- Het goedgekeurde ontwerp staat in
+  `ONTWERP_TELLER_EN_ERVARINGSMODEL.md` en wordt vóór implementatie als
+  methodische specificatie gebruikt.
+- Het hoofdmodel is hiërarchisch en negatief-binomiaal. Het vergelijkt op
+  exact dezelfde responscellen een basismodel, een model met tellerteam en een
+  model met tellerteam plus ervaring. GEE is een afzonderlijke controle.
+- Ervaring bestaat uit eerdere geregistreerde teljaren in dezelfde plot en
+  eerdere geregistreerde teljaren elders. Beide worden met `log(1 + jaren)`
+  gemodelleerd; er komt geen willekeurige grens tussen onervaren en ervaren.
+- Bij meertellerteams wordt de gemiddelde getransformeerde ervaring gebruikt.
+  Een analyse van uitsluitend één-teller-plotjaren voorkomt dat het resultaat
+  geheel van deze teamtoerekening afhankelijk wordt.
+- M62/2016 en de 99 plotjaren zonder tellerregistratie worden niet in de
+  primaire tellervergelijking gebruikt. Tellergegevens worden niet geïmputeerd.
+- Telinspanning wordt alleen in een afzonderlijke analyse over 1984–2025
+  opgenomen. Voor 1958–1983 ontbreken BMP-bezoekgegevens.
+- Confounders worden niet op grond van niet-significantie verwijderd. Alleen
+  niet-identificeerbaarheid of modeluitval kan tot een gedocumenteerde
+  vereenvoudiging leiden.
+- De uitkomst beschrijft een systematisch effect op territoriumtotalen. Zij
+  wordt niet zonder bezoekniveau-tellerkoppeling uitgelegd als het letterlijke
+  aantal door een teller gemiste vogels.

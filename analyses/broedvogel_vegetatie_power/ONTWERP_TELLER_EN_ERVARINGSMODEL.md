@@ -1,0 +1,195 @@
+# Ontwerp teller- en ervaringsmodel
+
+**Vastgesteld:** 9 oktober 2026  
+**Status:** inhoudelijk akkoord; nog niet geïmplementeerd of geschat
+
+## Doel
+
+Deze analysestap bepaalt hoeveel verschillen tussen tellerteams en
+geregistreerde tellerervaring veranderen aan de geschatte ontwikkeling van de
+broedvogelaantallen. Het is een analyse van het waarnemingsproces. Zij bepaalt
+niet letterlijk hoeveel vogels een teller heeft gemist en levert nog geen
+powergetal op.
+
+De telleranalyse gebruikt territoriumaantallen per soort, plot en jaar. De
+TRIM-indices zijn hiervoor niet de respons. De uitkomst wordt later als vaste
+correctielaag gebruikt voordat PQ-vegetatie en andere ecologische verklaringen
+worden toegevoegd.
+
+## Actuele gegevensbasis
+
+De reproduceerbare vogelmatrix over 1958–2025 bevat 2.107
+territorium-plotjaren in 52 Natura 2000-plots en 156 soorten. Voor de
+telleranalyse vervalt M62/2016, omdat dit een afzonderlijke roofvogeltelling
+was. Van de resterende 2.106 plotjaren hebben 2.007 een tellerregistratie en 99
+niet. De 99 onbekende tellerregistraties worden niet aangevuld of afgeleid.
+
+De 2.007 gekoppelde plotjaren bestaan uit:
+
+- 1.804 plotjaren met één teller;
+- 201 plotjaren met twee tellers;
+- 2 plotjaren met drie tellers;
+- 216 verschillende tellerteamcombinaties;
+- 1.955 opeenvolgende overgangen tussen bekende tellerjaren binnen een plot,
+  waarvan 360 met een ander tellerteam.
+
+Na selectie op een geldige territoriumwaarde en bekende teller zijn 203.628
+soort–plot–jaarcellen beschikbaar. Alle 156 soorten blijven in het gezamenlijke
+model. Voor afzonderlijke soortmodellen voldoen bij deze gegevensstand 121
+soorten aan de structurele minimumvoorwaarden: minstens 30 geldige cellen,
+10 positieve waarden, 3 plots, 3 tellerteams en 3 jaren. De andere 35 soorten
+blijven in het gezamenlijke model, maar krijgen geen zelfstandige
+soortconclusie.
+
+Het scoped tellerregister bevat 2.339 tellerdeelnames van 186 tellers. Daarvan
+vallen 216 deelnames in het eerste bij ons geregistreerde teljaar en 413 in het
+eerste geregistreerde jaar van die teller in de betreffende plot. Dit betekent
+niet noodzakelijk dat de teller toen werkelijk onervaren was.
+
+Deze aantallen zijn de stand van 9 oktober 2026. Iedere formele uitvoering
+berekent ze opnieuw uit de levende database en legt ze in het manifest vast.
+
+## Ervaringsvariabelen
+
+Ervaring wordt uitsluitend afgeleid uit `plot_jaar_teller`, de leidende
+tellerregistratie. AVIMAP-waarnemers vervangen of verrijken deze registratie
+niet automatisch.
+
+Per tellerdeelname worden vóór het betreffende jaar bepaald:
+
+1. het aantal eerdere geregistreerde teljaren in dezelfde plot;
+2. het aantal eerdere geregistreerde teljaren in andere Natura 2000-plots.
+
+De tweede variabele is dus niet het totale aantal eerdere jaren. Daarmee wordt
+voorkomen dat ervaring in dezelfde plot dubbel in beide variabelen terechtkomt.
+M66, M91 en M62/2016 tellen niet mee in deze ervaringshistorie.
+
+De variabelen worden als `log(1 + eerdere jaren)` opgenomen. Dit legt geen
+willekeurige grens tussen onervaren en ervaren, maar laat het grootste verschil
+in de eerste geregistreerde jaren vallen en daarna afnemen.
+
+Bij meertellerteams is de primaire teamervaring het gemiddelde van de
+getransformeerde ervaringswaarden van de teamleden. Een aanvullende analyse
+gebruikt uitsluitend de 1.804 één-teller-plotjaren. Daardoor kan een mogelijk
+leereffect niet ten onrechte aan één lid van een team worden toegeschreven.
+Minimum- en maximumervaring binnen teams worden alleen als
+gevoeligheidscontrole gebruikt.
+
+## Telinspanning en methode
+
+`dagbezoeken_bmp` bevat binnen de standaard Natura 2000-scope 13.903 bezoeken
+in 1.361 plotjaren uit 1984–2025. Voor alle 13.903 bezoeken is
+`bezoekduur_min` gevuld. Deze tabel bevat geen betrouwbare teller per bezoek;
+de teller blijft daarom gekoppeld op plotjaarniveau.
+
+Het lange model over 1958–2025 kan niet voor telinspanning corrigeren, omdat
+bezoekgegevens vóór 1984 ontbreken. Een afzonderlijke analyse over 1984–2025
+voegt totale bezoekduur per plotjaar toe. Het aantal bezoeken wordt als
+gevoeligheidsvariant gebruikt. Beide komen alleen tegelijk in een model als de
+collineariteitscontrole dat toelaat.
+
+Er bestaat geen afzonderlijke, volledige databasevariabele
+`methodeperiode` voor 1958–2025. Er wordt daarom geen methodegeschiedenis
+verzonnen. Het model gebruikt de werkelijk vastgelegde analysebron en vergelijkt
+de lange reeks met de beter gedocumenteerde periode 1984–2025. Deze
+broncorrectie is geen volledige correctie voor alle historische
+methodeveranderingen.
+
+## Modelopbouw
+
+Alle modellen gebruiken exact dezelfde cellen binnen een vergelijking. Zo kan
+een verandering tussen modellen niet worden veroorzaakt doordat een ander deel
+van de meetreeks is gebruikt.
+
+### Gezamenlijk hiërarchisch model
+
+Het hoofdmodel is negatief-binomiaal met log-link en
+`log(oppervlakte_km2)` als offset. Het model bevat:
+
+- een gemiddelde tijdontwikkeling en een per soort afwijkende tijdontwikkeling;
+- de vastgelegde analysebron;
+- verschillen tussen soorten;
+- herhaalde waarnemingen van dezelfde soort binnen dezelfde plot;
+- verschillen tussen jaren en plotjaren.
+
+Daarbinnen worden drie vooraf vastgelegde varianten vergeleken:
+
+1. **M0 — basis:** geen teller- of ervaringsvariabele;
+2. **M1 — tellerteam:** M0 plus een random effect voor tellerteam;
+3. **M2 — teller en ervaring:** M1 plus geregistreerde ervaring in dezelfde
+   plot en geregistreerde ervaring elders.
+
+M2 laat soorten via gedeeltelijke pooling van het gemiddelde ervaringspatroon
+afwijken. Een random plotjaareffect voorkomt zoveel mogelijk dat een eenmalig
+hoog of laag vogeljaar automatisch als tellereffect wordt uitgelegd.
+
+Dit is een inhoudelijk stapsgewijze opbouw. Teller, plot, tijd, bron en
+oppervlakte worden niet op grond van niet-significantie verwijderd. Een
+vereenvoudiging is alleen toegestaan bij structurele niet-identificeerbaarheid
+of modeluitval en wordt per model vastgelegd.
+
+### Afzonderlijke soortmodellen
+
+Voor de 121 structureel voldoende gedekte soorten worden dezelfde drie
+modellen afzonderlijk geschat. Deze modellen laten per soort zien hoeveel de
+geschatte tijdontwikkeling en de onzekerheid veranderen wanneer tellerteam en
+ervaring worden toegevoegd. Niet-convergerende modellen leveren geen
+soortconclusie op; zij worden niet stilzwijgend weggelaten.
+
+### GEE-controle
+
+Voor dezelfde voldoende gedekte soorten wordt een GEE-analyse met plot als
+cluster uitgevoerd. Zij controleert of de richting van de gemiddelde
+ervaringseffecten overeind blijft bij een populatiegemiddelde benadering met
+robuuste standaardfouten.
+
+GEE is hier een controle en niet het hoofdmodel. Het kan de variantie tussen
+tellerteams niet op dezelfde manier scheiden en laat zeldzame soorten geen
+informatie delen. Een verschil tussen GEE en het hiërarchische model wordt
+gerapporteerd, niet door modelselectie weggewerkt.
+
+## Te rapporteren uitkomsten
+
+Het resultaat is geen ranglijst van tellers. Tellercodes of teller-ID's worden
+niet in het artikel gepubliceerd. De analyse rapporteert:
+
+- de geschatte spreiding tussen tellerteams;
+- de verandering in de soortspecifieke tijdontwikkeling tussen M0, M1 en M2;
+- de verhouding tussen standaardfouten of intervalbreedten van M0 en M2;
+- het geschatte verschil tussen nul en één, drie en vijf eerdere geregistreerde
+  teljaren, in dezelfde plot en elders;
+- de uitkomst van de één-telleranalyse;
+- de uitkomst van de analyse met telinspanning over 1984–2025;
+- overeenstemming of verschil met de GEE-controle;
+- datadekking, waarschuwingen, niet-identificeerbare effecten en
+  niet-convergerende modellen.
+
+Een statistisch ervaringsverband betekent dat territoriumaantallen
+systematisch samenhangen met geregistreerde ervaring, nadat voor de genoemde
+structuur is gecorrigeerd. Het bewijst niet dat het verschil uitsluitend door
+gemiste vogels wordt veroorzaakt. Daarvoor zijn bezoekniveauwaarnemingen met
+betrouwbare tellerkoppeling nodig.
+
+## Technische uitvoering en toetsing
+
+De implementatie komt onder
+`analyses/broedvogel_vegetatie_power/scripts/` en bouwt voort op de bestaande
+matrix en `R/meijendel_cache_contract.R`. De volledige modelobjecten en
+detailuitvoer blijven onder de genegeerde map `resultaten/runs/`. In Git komen
+alleen compacte samenvattingen, diagnostiek en een manifest met
+databasevingerafdruk, Git-commit, formules, pakketversies en controlesommen.
+
+Tests leggen vooraf ten minste vast:
+
+- ervaring telt alleen jaren vóór het betreffende jaar;
+- ervaring in dezelfde plot en ervaring elders overlappen niet;
+- teams worden onafhankelijk van de volgorde van teller-ID's gevormd;
+- M66, M91 en M62/2016 zijn uitgesloten;
+- plotjaren zonder teller krijgen geen verzonnen teller of ervaring;
+- alle drie modelvarianten gebruiken dezelfde responsrijen;
+- mislukte of niet-convergerende modellen blijven zichtbaar in de uitvoer;
+- de één-teller- en inspanningsanalyses gebruiken exact hun vastgelegde
+  deelpopulatie.
+
+Modelschatting en GEE draaien buiten Shiny. Er wordt niets naar dashboard,
+Shiny of VPS gepubliceerd zonder een afzonderlijk besluit.
