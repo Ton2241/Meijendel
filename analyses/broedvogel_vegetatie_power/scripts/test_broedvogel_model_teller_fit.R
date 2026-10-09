@@ -112,4 +112,55 @@ stopifnot(
   identical(batch$diagnostics$ervaring_variant, "mean")
 )
 
+species_data <- do.call(rbind, lapply(1:3, function(species_id) {
+  current <- grid[grid$soort_id == 1L, , drop = FALSE]
+  current$soort_id <- species_id
+  current$soort_factor <- factor(species_id)
+  current$soort_plot_factor <- factor(paste(species_id, current$plot_id, sep = ":"))
+  current$row_id <- paste(species_id, current$plot_id, current$jaar, sep = ":")
+  if (species_id == 2L) current$count <- 0
+  if (species_id == 3L) {
+    current$ervaring_plot_mean <- 0
+    current$ervaring_elders_mean <- 0
+  }
+  current
+}))
+species_eligibility_test <- data.frame(
+  soort_id = 1:3,
+  soort_naam = paste("Testsoort", 1:3),
+  structureel_geschikt = TRUE,
+  stringsAsFactors = FALSE
+)
+
+species_results <- fit_species_teller_models(
+  species_data,
+  species_eligibility_test,
+  analysis_id = "synthetic_species",
+  checkpoint_dir = checkpoint_dir
+)
+gee_results <- fit_species_gee_checks(
+  species_data,
+  species_eligibility_test,
+  analysis_id = "synthetic_species"
+)
+stopifnot(
+  identical(species_results$soort_id, 1:3),
+  identical(gee_results$soort_id, 1:3),
+  species_results$status[[1L]] %in% c("geslaagd", "modeluitval"),
+  gee_results$status[[1L]] %in% c("geslaagd", "modeluitval"),
+  identical(species_results$status[[2L]], "uitval"),
+  identical(species_results$reden[[2L]], "geen_positieve_tellingen"),
+  identical(gee_results$reden[[2L]], "geen_positieve_tellingen"),
+  identical(species_results$reden[[3L]], "constante_ervaring"),
+  identical(gee_results$reden[[3L]], "constante_ervaring"),
+  identical(species_results$row_hash, gee_results$row_hash)
+)
+
+sensitivity <- summarise_teller_sensitivity(batch, species_results, gee_results)
+stopifnot(
+  is.data.frame(sensitivity$summary),
+  nrow(sensitivity$species_comparison) == 3L,
+  sensitivity$diagnostics$aantal_kandidaatsoorten == 3L
+)
+
 cat("OK: gezamenlijke M0-M2-modellen bewaken rijen, structuur en checkpoints.\n")
