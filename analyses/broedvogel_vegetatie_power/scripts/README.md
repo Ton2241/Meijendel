@@ -37,3 +37,18 @@ afkeurregels toe. De test kan afzonderlijk worden uitgevoerd met:
 ```bash
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_data.R
 ```
+
+## Stap 2: tellerdata en modelpopulaties
+
+`broedvogel_model_teller_data.R` maakt uit `plot_jaar_teller` de canonieke
+tellerteams en uitsluitend de vóór ieder teljaar geregistreerde ervaring.
+`broedvogel_model_teller_prepare.R` koppelt die laag aan de vogelmatrix en
+maakt drie vaste populaties: de lange reeks met bekende teller, alleen
+één-teller-plotjaren en de periode 1984–2025 met BMP-bezoekinspanning.
+
+De bijbehorende zuivere tests zijn:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_teller_data.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_teller_prepare.R
+```
