@@ -1,5 +1,16 @@
 # Besluiten
 
+- Vanaf 9 oktober 2026 wordt de integrale analyse van broedvogels,
+  PQ-vegetatie, tellerinvloed, omgevingsfactoren en detecteerbaarheid als één
+  reproduceerbaar analyseproject beheerd onder
+  `analyses/broedvogel_vegetatie_power/`. Het beoogde eindproduct is een
+  artikel voor *Holland's Duinen*. Het hiërarchische soortmodel is leidend;
+  functionele, ecologische, habitatgebonden en continue traituitkomsten worden
+  daaruit afgeleid en met directe groepsmodellen gecontroleerd. Modelbouw,
+  geblokkeerde validatie en poweranalyse worden buiten Shiny uitgevoerd. Het
+  levende hoofddocument en het besluitenbestand in die directory zijn leidend
+  voor opzet, voortgang en uitkomsten.
+
 - Vanaf 6 oktober 2026 geldt voor vogelterritoria een bronafhankelijke
   nulregel. In een officiële SOVON-Excel-download is `0` een harde nul: de
   soort is onderzocht maar niet vastgesteld. Een lege cel betekent dat de

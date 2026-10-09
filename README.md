@@ -230,6 +230,16 @@ Belangrijkste outputmappen:
 - `output_ecologische_groepen/`
 - `wintertellingen/`
 
+### Lopende integrale analyse broedvogels en vegetatie
+
+De reproduceerbare analyse van broedvogels, PQ-vegetatie, tellerinvloed,
+omgevingsfactoren en detecteerbaarheid staat bijeen in
+[`analyses/broedvogel_vegetatie_power/`](analyses/broedvogel_vegetatie_power/README.md).
+Deze analyse moet uiteindelijk leiden tot een artikel voor *Holland's Duinen*.
+Het levende hoofddocument legt op hoofdlijnen vast wat wordt onderzocht, hoe
+de stappen kunnen worden herhaald en welke uitkomsten inmiddels werkelijk zijn
+vastgesteld.
+
 ### SQL-views en hulpmiddelen
 
 De repository bevat veel SQL-bestanden voor:
