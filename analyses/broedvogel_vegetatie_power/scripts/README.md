@@ -52,3 +52,31 @@ De bijbehorende zuivere tests zijn:
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_teller_data.R
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_teller_prepare.R
 ```
+
+## Stap 3: teller- en ervaringsmodellen
+
+De zelfstandige telleranalyse wordt lokaal en sequentieel uitgevoerd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_teller_model.sh
+```
+
+De runner leest negen tabellen uit de levende lokale database, waaronder
+`dagbezoeken_bmp`, en schrijft volledige matrices en modelcheckpoints alleen
+onder `resultaten/runs/`. Na een volledig afgeronde uitvoering worden vijf
+compacte `teller_model_laatste_*`-bestanden bijgewerkt. Er wordt niets naar
+Shiny, dashboard of VPS geschreven.
+
+Een onderbroken run kan worden voortgezet met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_teller_model.sh --resume ABSOLUTE_RUNMAP
+```
+
+Een checkpoint wordt alleen hergebruikt als de vastgelegde SHA256-hash van de
+responsrijen gelijk is. Ontbrekende of niet-passende checkpoints worden opnieuw
+berekend. De pijplijntest is:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_teller_pipeline.R
+```
