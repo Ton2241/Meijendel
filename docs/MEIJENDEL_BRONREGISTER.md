@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 8 oktober 2026.**
+**Stand: 10 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -172,6 +172,8 @@ M53/2007 vraagt een afzonderlijke beperking. SOVON toont 8 bezoeken, 36 soorten 
 **Status.** Analyseklaar en primaire bron.
 
 **PQ-integratie, 27–28 september 2026.** De 53.122 provinciale taxonregels uit 1981–2025 zijn lokaal en op de VPS rechtstreeks verbonden met het centrale taxonregister. De 714 oorspronkelijke taxonvermeldingen zijn daar met alle bronvelden behouden; de afzonderlijke PQ-taxoncatalogus is verwijderd. De 2.007 opnamen en de 513 gepubliceerde plot-jaaruitkomsten zijn ongewijzigd. Daarnaast zijn 644 vermoedelijk verwante LVD-bronopnamen met 16.627 resultaten uit 1981–2015 binnen de PQ-tabellen bijeengebracht. Zij behouden alle bronwaarden en 652 mogelijke opnamekoppelingen en tellen niet zelfstandig mee. De oorspronkelijke externe rijen zijn pas na inhoudscontrole verwijderd. De volledige migratie, het terugdraaien en het herstel uit back-up zijn beproefd. De gecontroleerde publicatie naar website, dashboard en Shiny is op 28 september om 15:33 uur geslaagd; hun bestaande provinciale uitkomsten zijn gelijk gebleven.
+
+**Vergelijking met NDFF, 10 oktober 2026.** De eerdere uitkomst dat 1.039 van 2.007 provinciale opnamen uit 1981–2025 in de openbare NDFF-download herkenbaar waren, was een resultaat van de toenmalige strikte matchmethode, niet een maat voor volledige NDFF-dekking. Binnen het huidige Meijendelgebied liggen 1.363 provinciale opnamen; 897 daarvan matchen strikt met de openbare export en 916 na een voorlopige proef met de gemelde verschuiving van beide coördinaten met 5 meter. Naamvarianten leveren op opnameniveau geen extra matches op. Van de 434 provinciale opnamen binnen Meijendel uit 2018–2025 blijven 91 herkenbaar. Afzonderlijk zijn bij 127 opnamen kandidaatmatches gevonden in de beveiligde, openbaar vervaagde NDFF-gegevens; deze kunnen overlappen met de openbare matches en worden niet opgeteld. De reden voor de overige niet-matches staat niet vast. De provinciale PQ-reeks blijft primair; NDFF-PQ telt niet als een tweede opname mee. De methode en de uitsplitsing naar taxonregels staan in `docs/bronnen/bronvergelijkingen/NDFF_STAGINGDATASET.md`.
 
 ### 1.3. Zoogdieren tijdens SOVON- en VWG-bezoeken
 

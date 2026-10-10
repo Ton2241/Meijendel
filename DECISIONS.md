@@ -1266,9 +1266,27 @@
   totdat de surveystructuur is onderzocht; `04.004` en `07.001` vormen de
   inmiddels expliciet beoordeelde uitzondering.
 - Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
-  NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
-  (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open
-  NDFF-staging herkenbaar zijn, met een sterke daling van de dekking vanaf 2018.
+  NDFF/PQ-analysepoort toe. De vergelijking van 17 augustus 2026 herkende met
+  een strikte datum-, naam- en ruimtelijke match 1.039 van 2.007 provinciale
+  PQ-opnamen (51,77%) en 24.804 van 53.122 taxonregels (46,69%) uit
+  1981–2025 in de openbare NDFF-export. Dit zijn **oude matchpercentages**,
+  geen percentages werkelijk door NDFF overgenomen provinciale gegevens:
+  de toenmalige vergelijking bakende Meijendel niet eerst af en corrigeerde
+  niet voor de door NDFF gemelde coördinatenverschuiving, naamvarianten of
+  vervaging. Bij hercontrole op 10 oktober 2026 liggen 1.363 provinciale
+  opnamen en 36.335 taxonregels binnen Meijendel. Daarvan matchen met de
+  oude methode 897 opnamen en 21.663 regels; een voorlopige test met 5 meter
+  verschuiving van beide coördinaten en beperkte naamnormalisatie vindt 916
+  opnamen en 22.172 regels. Ook dat zijn kandidaatmatches, geen bewezen
+  identieke bronopnamen. Van de 434 opnamen binnen Meijendel uit 2018–2025
+  blijven 91 in deze openbare export herkenbaar. De oorzaak van de lagere
+  herkenbaarheid na 2017 is niet vastgesteld. Daarnaast matchen de 310
+  afgeschermde, openbaar vervaagde NDFF-PQ-regels afzonderlijk met 127
+  provinciale opnamen en 143 taxonregels; deze aantallen overlappen mogelijk
+  met de openbare matches en worden niet opgeteld. Een volgende vergelijking
+  toetst achtereenvolgens gebied, coördinaten, namen en vervaging, en pas
+  daarna bronidentiteit en volledige opname-inhoud. De provinciale PQ-reeks
+  blijft primair; deze correctie verandert de PQ-analysepoort niet.
   Iedere NDFF-waarneming krijgt vóór analyse een
   auditeerbare status `exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk`,
   `onafhankelijk`, `niet_beoordeelbaar` of `niet_van_toepassing`, met een

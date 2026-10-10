@@ -122,32 +122,55 @@ gelezen voor de PQ-vergelijking en niet gewijzigd.
   sterk door de tijd; ruwe jaartotalen zijn daarom geen populatietrend.
 - Van 9.828 taxoncombinaties zijn er 1.991 met zowel vervaagde als onvervaagde
   records en 208 uitsluitend met vervaagde records.
-- Onder de gezamenlijke gestructureerde protocollen `12.007 Vegetatieopnamen`
-  en `12.202 Landelijk Meetnet Flora- Milieu- en Natuurkwaliteit (NEM)` zijn
-  1.039 van 2.007 PQ-opnamen (51,77%) herkenbaar via minstens één datum-, taxon-
-  en locatiematch. Dit betreft 24.804 van 53.122 PQ-soortwaarnemingen (46,69%).
-  Bij 650 opnamen matcht minstens 90% van de soortenlijst en bij 147 alle nu
-  herkenbare namen. Abundantie-/Braun-Blanquetcompatibiliteit en taxonomische
-  synoniemen moeten nog worden gecontroleerd voordat een match definitief
-  `exact` heet.
-- De PQ-dekking is selectief: 937 van 1.331 opnamen uit 1981-2017 zijn
-  herkenbaar (70,40%), tegenover 102 van 676 uit 2018-2025 (15,09%). Voor 2025
-  is onder de twee gestructureerde protocollen geen PQ-opname gevonden. Van de
-  253 vóór 2018 bemonsterde PQ-locaties zijn er 149 steeds, 38 wisselend en 66
-  nooit herkenbaar. Alle gestructureerde kandidaatmatches hebben bronhouder
-  `Zuid-Holland (provincie)`.
-- Alle overige protocollen samen verhogen de ruime bovengrens slechts tot
-  1.067 herkenbare opnamen (53,16%). Losse meldingen, ObsIdentify en
-  collectierecords gelden niet als bewijs dat dezelfde PQ-bronopname is
-  overgenomen.
+- De vergelijking van 17 augustus met de openbare NDFF-export, beperkt tot
+  protocollen `12.007` en `12.202`, vond 1.039 van 2.007 provinciale
+  PQ-opnamen (51,77%) en 24.804 van 53.122 taxonregels (46,69%) uit
+  1981–2025 terug met een strikte combinatie van datum, taxonnaam en
+  polygonale locatie. Die vergelijking nam ook opnamen buiten het huidige
+  Meijendelgebied mee en corrigeerde geen verschoven coördinaten, naamvarianten
+  of vervaging. De percentages zijn dus de opbrengst van deze *matchmethode*,
+  niet het aandeel provinciale gegevens dat daadwerkelijk bij NDFF aanwezig is.
+  Ook de destijds gevonden 937/1.331 opnamen uit 1981–2017 en 102/676 uit
+  2018–2025 beschrijven uitsluitend deze oude vergelijking. De daarbij
+  gerapporteerde 650 grotendeels en 147 volledig herkenbare soortenlijsten,
+  en de 1.067 matches met alle protocollen, zijn geen bevestigde bronidentiteiten.
+- De hercontrole van 10 oktober 2026 bakent eerst het huidige Meijendelgebied
+  af. Daarbinnen liggen 1.363 van de 2.007 provinciale opnamen en 36.335 van de
+  53.122 taxonregels uit 1981–2025. Met de oorspronkelijke strikte methode
+  matchen 897 opnamen en 21.663 taxonregels. Een proef met een verschuiving
+  van beide coördinaten met 5 meter in beide richtingen vindt 916 opnamen en
+  22.054 taxonregels. Beperkte, slechts voorlopige normalisatie van toevoegingen
+  als `(var)` en `+` brengt dit op 916 opnamen en 22.172 taxonregels. Dit zijn
+  kandidaatmatches, geen bewijs van identieke volledige opnamen; de
+  taxonnaamvarianten mogen niet automatisch als synoniem worden behandeld.
+- Voor de 434 provinciale opnamen binnen Meijendel uit 2018–2025 blijven in
+  deze openbare export ook na die proeven slechts 91 opnamen herkenbaar. De
+  terugval in *herkenbaarheid* na 2017 blijft dus bestaan, maar de oorzaak is
+  niet vastgesteld. Van de 2.007 provinciale opnamen liggen er 234 in zes
+  kilometerhokken aan de Berkheidezijde die in de vergeleken NDFF-export
+  ontbreken; zij liggen buiten de huidige Meijendelafbakening. NDFF noemt
+  daarnaast als mogelijke verklaringen niet-gevalideerde bronregels en
+  vervaging van kwetsbare soorten. Die mogelijkheden zijn niet als oorzaak
+  per ontbrekende opname bevestigd.
+- De beveiligde levering bevat 310 PQ-gerelateerde NDFF-regels met een
+  vervaagde openbare tegenhanger. Een afzonderlijke strikte vergelijking van
+  hun afgeschermde geometrie vindt kandidaten bij 127 provinciale opnamen en
+  143 taxonregels binnen Meijendel. Die aantallen mogen niet bij de 916 en
+  22.172 worden opgeteld: dezelfde provinciale opname of taxonregel kan al
+  via een niet-vervaagde regel zijn herkend. De exacte locaties blijven lokaal
+  afgeschermd. Een definitieve aanwezigheids- en dubbeltelling vereist één
+  gezamenlijk afgebakende vergelijking met bronidentiteit, taxon en
+  meeteenheid; polygonen blijven onzekerheidsbuffers en geen exacte
+  waarnemingspunten.
 - 233 canonieke records behoren via hun bronbestanden tot twee aangevraagde
   FFV-soortgroepen. Het databaseschema moet groepslidmaatschap daarom als een
   many-to-many-relatie vastleggen.
 
 ### Verplichte NDFF/PQ-analysepoort
 
-De NDFF bevat dus aantoonbaar een omvangrijke maar selectieve afspiegeling van
-de bestaande PQ-reeks. De door Provincie Zuid-Holland aangeleverde PQ-reeks in
+In de onderzochte NDFF-leveringen is een deel van de provinciale PQ-reeks
+herkenbaar. Hoeveel provinciale opnamen werkelijk bij NDFF aanwezig zijn, volgt
+niet uit de oude matchpercentages. De door Provincie Zuid-Holland aangeleverde PQ-reeks in
 de Meijendel-database is de oorspronkelijke, gezaghebbende bron; NDFF-PQ is
 uitsluitend een secundaire controlebron.
 Geen enkele analyse mag NDFF-records zonder expliciete PQ-status als

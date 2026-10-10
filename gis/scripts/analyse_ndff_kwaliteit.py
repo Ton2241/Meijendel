@@ -915,8 +915,8 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
             "type": "markdown",
             "sourceId": PQ_SOURCE_ID,
             "body": (
-                "**De NDFF bevat een selectieve, geen volledige kopie van de bestaande PQ-data.** Onder de gestructureerde protocollen Vegetatieopnamen en NEM is 1.039 van 2.007 PQ-opnamen (51,77%) herkenbaar via minstens één gelijke datum-, taxon- en locatiematch; 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) matchen. "
-                "Bij 650 opnamen matcht minstens 90% van de soortenlijst. De dekking daalt van 70,40% van de opnamen in 1981-2017 naar 15,09% in 2018-2025; voor 2025 is onder deze protocollen geen opname gevonden."
+                "**Dit zijn matchpercentages uit de vergelijking van 17 augustus 2026, geen maat voor de werkelijke NDFF-dekking.** Onder de gestructureerde protocollen Vegetatieopnamen en NEM waren 1.039 van 2.007 provinciale PQ-opnamen (51,77%) en 24.804 van 53.122 taxonregels (46,69%) uit 1981-2025 herkenbaar met dezelfde datum, taxonnaam en polygonale locatie. "
+                "Die vergelijking omvatte ook opnamen buiten het huidige Meijendelgebied en hield geen rekening met een coördinatenverschuiving, naamvarianten of vervaging. De lagere herkenbaarheid na 2017 in deze export is reëel, maar de oorzaak is niet vastgesteld."
             ),
         },
         {"id": "headline-metrics", "type": "metric-strip", "cardIds": ["records", "plot-candidates", "loose", "pq-matches"]},
@@ -960,9 +960,9 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
             "type": "markdown",
             "sourceId": PQ_SOURCE_ID,
             "body": (
-                "## De PQ-dekking in de NDFF is tijdsgebonden én selectief per locatie\n\n"
-                "Alle gestructureerde kandidaatmatches hebben bronhouder Zuid-Holland (provincie). Van de 253 PQ-locaties die vóór 2018 zijn bemonsterd, zijn er 149 bij iedere opname herkenbaar, 38 slechts in sommige jaren en 66 nooit. Het protocol Vegetatieopnamen stopt voor deze overlap na 2017; NEM levert daarna nog een beperkte selectie. "
-                "Zelfs wanneer ook losse meldingen, ObsIdentify en collectierecords als ruime bovengrens meetellen, stijgt het aandeel herkenbare PQ-opnamen slechts van 51,77% naar 53,16%. Dat bevestigt een selectieve provinciale levering, niet een tekort in de complete Meijendel-PQ-database. "
+                "## Herkenbaarheid van provinciale PQ-opnamen in de oude NDFF-export\n\n"
+                "De telling van 17 augustus 2026 omvatte ook provinciale opnamen buiten Meijendel. Van de 253 toen vergeleken PQ-locaties die vóór 2018 zijn bemonsterd, waren er 149 bij iedere opname herkenbaar, 38 slechts in sommige jaren en 66 nooit. Alle gestructureerde kandidaatmatches hadden bronhouder Zuid-Holland (provincie). "
+                "Met alle protocollen steeg de oude matchopbrengst van 51,77% naar 53,16%. Dit bewijst niet welk deel daadwerkelijk bij NDFF ontbreekt. Een hercontrole op 10 oktober 2026 bakende Meijendel eerst af: binnen dat gebied lagen 1.363 provinciale opnamen uit 1981-2025, waarvan 897 strikt en 916 na een voorlopige proef met 5 meter coördinatenverschuiving herkenbaar waren in de openbare export. Naamvarianten leverden op opnameniveau geen extra matches op; vervaagde records zijn afzonderlijk beoordeeld. "
                 "Voor classificatie als `exact` moeten taxonomische synoniemen en Braun-Blanquet-/bedekkingswaarden nog worden gecontroleerd; tot die tijd blijven beide bronnen bewaard en worden alleen bevestigde gedeelde opnamen analytisch niet dubbel geteld."
             ),
         },
@@ -997,7 +997,7 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
                 "- 5.336 bronintervallen beginnen vóór 1950 en 10.323 duren langer dan één jaar; zij mogen niet als exacte jaarwaarnemingen worden behandeld.\n"
                 "- `Determinatiemethode` is bij 48,12% `onbekend`; zoek-/vangmethode ontbreekt bij 39,88% en apparatuur bij 86,08%.\n"
                 "- Een gelijke datum, taxonnaam en locatie is een kandidaatmatch, geen definitief bewijs van dezelfde bronopname. Abundantiecompatibiliteit en resterende taxonomische synoniemen zijn nog niet gecontroleerd.\n"
-                "- De PQ-dekking is selectief: 650 van 2.007 opnamen hebben minstens 90% soortenlijstdekking en 147 matchen volledig op de nu beschikbare namen. Naamverschillen kunnen dit onderschatten.\n"
+                "- Binnen de oude, niet geografisch afgebakende vergelijking hadden 650 van 2.007 provinciale opnamen minstens 90% herkenbare taxonnamen en 147 een volledige naammatch. Dit is geen definitieve dekkingsmaat; naamvarianten en bronidentiteit zijn niet afdoende getoetst.\n"
                 "- De SOVON-plotintersectie en beoordeling van meerplot-geometrieën zijn nog niet uitgevoerd."
             ),
         },
@@ -1006,7 +1006,7 @@ def build_artifact(result: dict[str, Any]) -> dict[str, Any]:
             "type": "markdown",
             "body": (
                 "## Aanbevolen vervolgstappen\n\n"
-                "1. Bouw `ndff_pq_koppeling` voor de 1.039 herkenbare PQ-opnamen onder Vegetatieopnamen plus NEM, beginnend met de 650 opnamen met minstens 90% soortenlijstdekking; toets taxonomie en abundantie-/Braun-Blanquetcompatibiliteit.\n"
+                "1. Gebruik de bestaande PQ-koppelpoort en vergelijk de provinciale en NDFF-bronnen binnen dezelfde Meijendelafbakening; toets daarna coördinatenverschuiving, naamvarianten en vervaging afzonderlijk. Bevestig bronidentiteit en volledige opname-inhoud voordat een kandidaatmatch definitief wordt.\n"
                 "2. Koppel alle geometrieën aan één geversioneerde SOVON-plotlaag en registreer per intersectie overlapoppervlak, overlapaandeel en aantal geraakte plots.\n"
                 "3. Voeg een many-to-many groepslidmaatschap toe voor de 233 records die door twee FFV-soortgroepen worden geleverd.\n"
                 "4. Beslis daarna per analysetype welke vervaagde, grote en methodearme records worden toegelaten, beperkt gebruikt of uitgesloten.\n"
