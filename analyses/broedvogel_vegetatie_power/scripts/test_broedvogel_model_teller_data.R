@@ -83,4 +83,4 @@ stopifnot(
   isTRUE(all.equal(team_2012$ervaring_elders_max, log1p(1)))
 )
 
-cat("OK: tellerteams en uitsluitend eerdere geregistreerde ervaring zijn canoniek afgeleid.\n")
+cat("OK: teller/tellerteam en uitsluitend eerdere geregistreerde ervaring zijn canoniek afgeleid.\n")

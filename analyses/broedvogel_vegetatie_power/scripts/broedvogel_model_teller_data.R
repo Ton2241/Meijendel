@@ -17,7 +17,7 @@ source(file.path(.teller_model_repo, "R", "meijendel_cache_contract.R"))
 canonical_tellerteam_key <- function(teller_ids) {
   teller_ids <- sort(unique(as.integer(teller_ids)))
   teller_ids <- teller_ids[!is.na(teller_ids)]
-  if (!length(teller_ids)) stop("Een tellerteam moet minstens één geldige teller-id bevatten.", call. = FALSE)
+  if (!length(teller_ids)) stop("Een registratie van teller/tellerteam moet minstens één geldige teller-id bevatten.", call. = FALSE)
   paste(teller_ids, collapse = "+")
 }
 

@@ -24,15 +24,16 @@ De vijf bestanden `teller_model_laatste_*` horen bij de formele run
 `20261009T171423Z-8888e94f0aab` van 9 oktober 2026, uitgevoerd met commit
 `8888e94f0aab0ecff6c9245bc3a7bcf31443987e`. De analyse omvat 52 Natura
 2000-plots, 2.106 voor deze stap geldige plotjaren uit 1958–2025 en 156
-soorten. Voor 2.007 plotjaren is een teller of tellerteam bekend; de 99 overige
+soorten. Voor 2.007 plotjaren is teller/tellerteam bekend; de 99 overige
 plotjaren zijn niet geïmputeerd. De primaire modelpopulatie bevat 203.628
 geldige soort–plot–jaarrijen.
 
-De kernuitkomst is dat tellerteam een betekenisvolle bron van spreiding blijft
-nadat de overige modelstructuur is verwerkt. De geschatte standaardafwijking
+De kernuitkomst is dat teller/tellerteam een betekenisvolle bron van spreiding
+blijft nadat de overige modelstructuur is verwerkt. De geschatte standaardafwijking
 is 0,382 op logschaal, een factor 1,47 per standaardafwijking. Dit is geen
 schatting van door individuele tellers gemiste vogels. Het is de reden om
-tellerteam in volgende ecologische modellen als random effect op te nemen.
+teller/tellerteam in volgende ecologische modellen als random effect op te
+nemen.
 
 Meer geregistreerde ervaring in dezelfde plot had over 1958–2025 geen
 duidelijk gemiddeld effect. Eén, drie en vijf eerdere geregistreerde jaren in
@@ -71,5 +72,5 @@ data, formules, pakketversies, checkpoints en controlesommen.
 
 Deze resultaten zijn de correctielaag voor de volgende analysefase. De
 factor 1,47 en de ervaringspercentages worden niet rechtstreeks op tellingen
-toegepast. Tellerteam en de twee ervaringsvariabelen worden binnen ieder
+toegepast. Teller/tellerteam en de twee ervaringsvariabelen worden binnen ieder
 volgend model opnieuw geschat op de exacte daar gebruikte gegevens.

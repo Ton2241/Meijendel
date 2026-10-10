@@ -22,17 +22,18 @@ uit `R/meijendel_cache_contract.R` toe. M66 en M91 vallen buiten de scope.
 M62/2016 blijft als bronwaarde in de algemene vogelmatrix staan, maar telt niet
 mee in de telleranalyse of in de ervaringshistorie.
 
-Uit `plot_jaar_teller` is voor ieder plotjaar een canonieke tellerteamsleutel
-gemaakt. Ervaring telt alleen geregistreerde jaren vóór het betreffende
+Uit `plot_jaar_teller` is voor ieder plotjaar een canonieke sleutel voor
+teller/tellerteam gemaakt. De technische veldnaam blijft `tellerteam_sleutel`.
+Ervaring telt alleen geregistreerde jaren vóór het betreffende
 teljaar. Zij wordt gesplitst in eerdere jaren in dezelfde plot en eerdere jaren
-in andere Meijendelplots. Bij een team wordt het gemiddelde van de
+in andere Meijendelplots. Bij een tellerteam wordt het gemiddelde van de
 `log(1 + jaren)`-waarden gebruikt. Minimum en maximum zijn uitsluitend als
 gevoeligheidsvarianten doorgerekend.
 
 Het hoofdmodel is negatief-binomiaal en gebruikt territoriumaantallen per
 soort, plot en jaar, met plotoppervlakte als offset. Het basismodel M0 verwerkt
 tijd, analysebron en de hiërarchische structuur van soort, soort–plot, jaar en
-plotjaar. M1 voegt tellerteam toe. M2 voegt ervaring in dezelfde plot,
+plotjaar. M1 voegt teller/tellerteam toe. M2 voegt ervaring in dezelfde plot,
 ervaring elders en soortspecifieke afwijkingen van beide ervaringseffecten toe.
 M0, M1 en M2 gebruiken binnen iedere vergelijking exact dezelfde
 responsrijen.
@@ -53,8 +54,9 @@ toegestaan wanneer gegevenshash, Git-commit, formule, familie,
 analysevariant en relevante pakketversies gelijk zijn. Eén mislukt soortmodel
 stopt de overige soorten niet en blijft met reden in de uitkomst staan.
 
-De tests controleren onder meer dat tellerteam niet afhangt van de volgorde
-van teller-ID's, dat ervaring in dezelfde plot en elders niet overlapt, dat
+De tests controleren onder meer dat de technische sleutel voor
+teller/tellerteam niet afhangt van de volgorde van teller-ID's, dat ervaring in
+dezelfde plot en elders niet overlapt, dat
 onbekende tellers niet worden geïmputeerd, dat alle modellen binnen een
 vergelijking dezelfde rijen gebruiken en dat mislukte modellen niet uit de
 rapportage verdwijnen. De formele uitvoering schreef pas na deze controles de

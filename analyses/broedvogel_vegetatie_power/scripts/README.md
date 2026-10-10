@@ -42,7 +42,8 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_data.R
 ## Stap 2: tellerdata en modelpopulaties
 
 `broedvogel_model_teller_data.R` maakt uit `plot_jaar_teller` de canonieke
-tellerteams en uitsluitend de vóór ieder teljaar geregistreerde ervaring.
+registraties van teller/tellerteam en uitsluitend de vóór ieder teljaar
+geregistreerde ervaring.
 `broedvogel_model_teller_prepare.R` koppelt die laag aan de vogelmatrix en
 maakt drie vaste populaties: de lange reeks met bekende teller, alleen
 één-teller-plotjaren en de periode 1984–2025 met BMP-bezoekinspanning.
@@ -69,9 +70,9 @@ compacte `teller_model_laatste_*`-bestanden bijgewerkt. Er wordt niets naar
 Shiny, dashboard of VPS geschreven.
 
 De runner verandert geen territoriumaantallen. M0 schat de vogelontwikkeling
-zonder tellerinformatie, M1 voegt de systematische spreiding tussen
-tellerteams toe en M2 voegt eerdere geregistreerde ervaring in dezelfde plot
-en elders toe. In volgende ecologische modellen wordt deze M2-structuur
+zonder tellerinformatie, M1 voegt de systematische spreiding die samenhangt
+met teller/tellerteam toe en M2 voegt eerdere geregistreerde ervaring in
+dezelfde plot en elders toe. In volgende ecologische modellen wordt deze M2-structuur
 opnieuw geschat; de nu gevonden coëfficiënten worden niet als vaste
 nabewerking op de gegevens gezet.
 

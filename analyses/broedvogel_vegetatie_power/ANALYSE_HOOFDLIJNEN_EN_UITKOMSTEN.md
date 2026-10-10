@@ -30,11 +30,12 @@ verstuiving en rust kunnen tegelijk werken en elkaar versterken of verzwakken.
 De meetreeks kan niet worden gelezen alsof ieder verschil in territoriumaantal
 uitsluitend een verschil in vogelstand is. Ook nadat soort, tijd, plot,
 oppervlakte, bron, jaar en plotjaar zijn verwerkt, blijven systematische
-verschillen tussen tellerteams over. Het waarnemingsproces moet daarom in alle
+verschillen die samenhangen met teller/tellerteam over. Het waarnemingsproces
+moet daarom in alle
 volgende verklarende modellen worden meegenomen.
 
 Dat gebeurt niet door bestaande territoriumaantallen te veranderen. Het model
-schat voor ieder tellerteam een afwijking ten opzichte van het gemiddelde en
+schat voor ieder teller/tellerteam een afwijking ten opzichte van het gemiddelde
 houdt daarnaast afzonderlijk rekening met eerder geregistreerde ervaring in
 dezelfde plot en elders in Meijendel. De tellerfase bepaalt dus de vorm van de
 correctie, niet één universele correctiefactor.
@@ -231,27 +232,29 @@ staan in `resultaten/analysematrix_laatste_samenvatting.csv` en
 ### 2. Waarnemingsmodel
 
 De formele uitvoering gebruikt 203.628 geldige soort–plot–jaarrijen uit 2.007
-plotjaren met een bekende teller of een bekend tellerteam, voor 156 soorten en
+plotjaren met bekend teller/tellerteam, voor 156 soorten en
 de periode 1958–2025. M62/2016 en 99 plotjaren zonder tellerregistratie zijn
 niet in deze primaire tellervergelijking opgenomen. Binnen iedere vergelijking
 zijn exact dezelfde responsrijen gebruikt. Alle achttien gezamenlijke modellen
 slaagden zonder convergentiewaarschuwing.
 
 Het model onderscheidt drie zaken. Eerst de vogelontwikkeling die samenhangt
-met soort, tijd en plot. Vervolgens de blijvende afwijking van een tellerteam
-ten opzichte van het gemiddelde team. Ten slotte twee vormen van ervaring:
+met soort, tijd en plot. Vervolgens de blijvende afwijking van teller/tellerteam
+ten opzichte van het gemiddelde. Ten slotte twee vormen van ervaring:
 eerdere geregistreerde teljaren in dezelfde plot en eerdere geregistreerde
 teljaren in andere Meijendelplots. Beide ervaringsvariabelen zijn doorlopend;
 er bestaat dus geen kunstmatige grens tussen “onervaren” en “ervaren”.
 
-De geschatte standaardafwijking tussen tellerteams bedraagt op logschaal
-0,382, ofwel een factor 1,47. Als het model voor een gemiddeld team tien
+De geschatte standaardafwijking die samenhangt met teller/tellerteam bedraagt op
+logschaal 0,382, ofwel een factor 1,47. Als het model voor een gemiddeld
+teller/tellerteam tien
 territoria verwacht, ligt één standaardafwijking naar beneden op ongeveer 6,8
 en één standaardafwijking naar boven op ongeveer 14,7. Dit maakt de omvang van
 de spreiding concreet. Het is geen ranglijst van tellers en ook geen bewijs dat
-een laag uitkomend team 32% van de vogels heeft gemist of een hoog uitkomend
-team 47% te veel heeft geteld. De teams kunnen tevens verschillen in inzet,
-toedeling, omstandigheden en niet-gemeten kenmerken.
+een laag uitkomend teller/tellerteam 32% van de vogels heeft gemist of een hoog
+uitkomend teller/tellerteam 47% te veel heeft geteld. Teller/tellerteam kan
+tevens verschillen in inzet, toedeling, omstandigheden en niet-gemeten
+kenmerken.
 
 Voor ervaring in dezelfde plot was het gemiddelde effect 0,008 per
 gestandaardiseerde eenheid, met een standaardfout van 0,018. Dat ligt zo dicht
@@ -261,7 +264,7 @@ aantoont. Voor ervaring elders was het effect 0,066 met een standaardfout van
 geregistreerde teljaren elders gemiddeld 4,2%, 8,6% en 11,2% hoger dan bij nul
 eerdere jaren. De analyse met uitsluitend 1.804 één-teller-plotjaren gaf
 hetzelfde hoofdpatroon. Het resultaat wordt dus niet gedragen door de manier
-waarop ervaring binnen meertellerteams is samengevat.
+waarop ervaring binnen tellerteams is samengevat.
 
 De afzonderlijke analyse van 120.731 soort–plot–jaarrijen met bekende
 bezoekinspanning over 1984–2025 liet het positieve verband met ervaring elders
@@ -271,7 +274,8 @@ en gegevenssamenstelling veranderen, is dit geen zelfstandig bewijs voor een
 leereffect.
 
 Voor alle 121 voldoende gedekte soorten leverde het hoofdmodel een bruikbare
-uitkomst. Door tellerteam en ervaring toe te voegen veranderde de jaarlijkse
+uitkomst. Door teller/tellerteam en ervaring toe te voegen veranderde de
+jaarlijkse
 trend mediaan met −0,033 procentpunt; de mediane absolute verschuiving was
 0,545 procentpunt. Bij 67 soorten bedroeg de absolute verandering meer dan 0,5
 procentpunt en bij 31 meer dan één procentpunt per jaar. De mediane breedte van
@@ -294,7 +298,7 @@ methode-onafhankelijk.
 ### Correctie in de volgende modellen
 
 De territoriumaantallen zelf worden niet aangepast. Ieder volgend primair
-ecologisch model bevat een random intercept voor tellerteam en de twee
+ecologisch model bevat een random intercept voor teller/tellerteam en de twee
 variabelen `log(1 + eerdere geregistreerde jaren in dezelfde plot)` en
 `log(1 + eerdere geregistreerde jaren elders)`. Soorten mogen van het
 gemiddelde ervaringseffect afwijken. De effecten worden opnieuw geschat binnen
@@ -411,7 +415,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Ecologische groepen | Beschikbaar | 51 EVG-groepen; hoofdanalyse begint met acht brede groepen. |
 | Habitatgroepen | Beschikbaar | Acht habitattypen; analysevarianten sterk en sterk plus matig. |
 | Continue vogelkenmerken | Beschikbaar | 23 goedgekeurde kenmerken; zestien gevuld voor alle 156 positieve soorten. |
-| Teller- en ervaringsmodel | Uitgevoerd | Tellerteam blijft als random effect in volgende modellen; ervaring in dezelfde plot en elders blijven afzonderlijke doorlopende correcties. De effecten worden per analyse opnieuw geschat en veranderen de brongegevens niet. |
+| Teller- en ervaringsmodel | Uitgevoerd | Teller/tellerteam blijft als random effect in volgende modellen; ervaring in dezelfde plot en elders blijven afzonderlijke doorlopende correcties. De effecten worden per analyse opnieuw geschat en veranderen de brongegevens niet. |
 | Voorspellend vogelmodel | Nog uit te voeren | Geen voorspellende kracht of meerwaarde van PQ vastgesteld. |
 | Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |

@@ -13,10 +13,14 @@
 
 - De tellergevoeligheidsfase van dit analyseproject is op 9 oktober 2026
   afgerond op 203.628 geldige soort–plot–jaarrijen uit 2.007 plotjaren met een
-  bekende teller of een bekend tellerteam, voor 156 soorten over 1958–2025.
-  De teamspreiding van 0,382 op logschaal, factor 1,47 per
+  bekend teller/tellerteam, voor 156 soorten over 1958–2025.
+  Hier en in de overige documentatie betekent *teller* één persoon,
+  *tellerteam* twee of meer tellers en *teller/tellerteam* beide mogelijkheden.
+  Technische veld- en functienamen blijven omwille van compatibiliteit
+  ongewijzigd. De spreiding van 0,382 op logschaal die samenhangt met
+  teller/tellerteam, factor 1,47 per
   standaardafwijking, wordt niet als vast correctiepercentage op tellingen
-  toegepast. Volgende primaire modellen bevatten tellerteam als random
+  toegepast. Volgende primaire modellen bevatten teller/tellerteam als random
   intercept en eerdere geregistreerde ervaring in dezelfde plot en elders als
   afzonderlijke `log(1 + jaren)`-variabelen; soorten mogen daarvan afwijken.
   De effecten worden binnen iedere nieuwe analysepopulatie opnieuw geschat.
@@ -395,8 +399,8 @@
   met `waarnemer` uit de actuele SOVON/AVIMAP-resultatendownload omvat 25.555
   soortresultaten in 752 plotjaren uit 2007 en 2009–2026. In 282 plotjaren is
   de ene AVIMAP-code exact gelijk aan de databasecode, in 56 is zij lid van een
-  groter geregistreerd tellerteam, in 400 ontbreekt zij geheel in het
-  geregistreerde team en voor 14 plotjaren ontbrak aanvankelijk
+  groter geregistreerd tellerteam, in 400 ontbreekt zij geheel in de
+  registratie van teller/tellerteam en voor 14 plotjaren ontbrak aanvankelijk
   `plot_jaar_teller`.
   Inhoudelijke controle door de data-eigenaar toont bovendien concrete
   AVIMAP-toeschrijvingen aan kavels die de genoemde waarnemer niet heeft
@@ -404,12 +408,13 @@
   `plot_jaar_teller` te vervangen, aan te vullen of te corrigeren. Het blijft
   uitsluitend als letterlijke bronwaarde en auditinformatie behouden. Dit
   besluit betreft alleen telleridentificatie en verandert de beoordeling van
-  de aangeleverde territorium- en bezoekgegevens niet. Bij meerdere
-  geregistreerde tellers blijft het plotjaar een teamregistratie; zonder een
-  expliciete teller per bezoek wordt geen individuele bezoekdeelname afgeleid.
+  de aangeleverde territorium- en bezoekgegevens niet. Bij twee of meer
+  geregistreerde tellers blijft het plotjaar een tellerteamregistratie; zonder
+  een expliciete teller per bezoek wordt geen individuele bezoekdeelname
+  afgeleid.
   Tellersensitiviteitsanalyses gebruiken voortaan `plot_jaar_teller`, met
-  tellerteams en ontbrekende koppelingen afzonderlijk herkenbaar. Op basis van
-  inhoudelijke vaststelling door de data-eigenaar zijn vier van de ontbrekende
+  teller/tellerteam en ontbrekende koppelingen afzonderlijk herkenbaar. Op
+  basis van inhoudelijke vaststelling door de data-eigenaar zijn vier van de ontbrekende
   koppelingen op 1 oktober 2026 aan de levende tabel toegevoegd:
   2010/M54a–AZNA00, 2012/M66–WCLE00, 2018/M34–B_0097 en
   2018/M8–B_0098. Na de jaarcontrole 1985 zijn op inhoudelijk besluit ook

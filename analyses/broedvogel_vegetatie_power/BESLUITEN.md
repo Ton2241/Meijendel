@@ -72,7 +72,8 @@ stilzwijgend herschreven.
   soortregels blijven expliciet `NA`; zij worden niet door de rechthoekige
   matrix impliciet nul.
 - Tellerregistraties worden per plotjaar als afzonderlijke dekking en als
-  herleidbare tellerteamsleutel toegevoegd. Zij bepalen niet of een plotjaar als
+  herleidbare sleutel voor teller/tellerteam toegevoegd. De technische
+  veldnaam blijft `tellerteam_sleutel`. Zij bepalen niet of een plotjaar als
   territoriumtelling bestaat.
 - M62/2016 blijft in de algemene vogelmatrix aanwezig. Deze afzonderlijke
   roofvogeltelling wordt pas uit de teller- en tellerervaringsanalyse
@@ -87,12 +88,13 @@ stilzwijgend herschreven.
   `ONTWERP_TELLER_EN_ERVARINGSMODEL.md` is uitgevoerd. De formele run
   `20261009T171423Z-8888e94f0aab` is de vastgelegde uitkomst van deze fase.
 - Het hoofdmodel is hiërarchisch en negatief-binomiaal. Het vergelijkt op
-  exact dezelfde responscellen een basismodel, een model met tellerteam en een
-  model met tellerteam plus ervaring. GEE is een afzonderlijke controle.
+  exact dezelfde responscellen een basismodel, een model met teller/tellerteam
+  en een model met teller/tellerteam plus ervaring. GEE is een afzonderlijke
+  controle.
 - Ervaring bestaat uit eerdere geregistreerde teljaren in dezelfde plot en
   eerdere geregistreerde teljaren elders. Beide worden met `log(1 + jaren)`
   gemodelleerd; er komt geen willekeurige grens tussen onervaren en ervaren.
-- Bij meertellerteams wordt de gemiddelde getransformeerde ervaring gebruikt.
+- Bij tellerteams wordt de gemiddelde getransformeerde ervaring gebruikt.
   Een analyse van uitsluitend één-teller-plotjaren voorkomt dat het resultaat
   geheel van deze teamtoerekening afhankelijk wordt.
 - M62/2016 en de 99 plotjaren zonder tellerregistratie worden niet in de
@@ -121,14 +123,15 @@ stilzwijgend herschreven.
 ## 9 oktober 2026 — gevolg van de telleranalyse
 
 - Territoriumaantallen worden niet achteraf met één tellerpercentage
-  gecorrigeerd. In volgende primaire modellen wordt tellerteam als random
+  gecorrigeerd. In volgende primaire modellen wordt teller/tellerteam als random
   intercept opgenomen. Eerdere geregistreerde jaren in dezelfde plot en in
   andere Meijendelplots blijven daarnaast als twee afzonderlijke
   `log(1 + jaren)`-variabelen in het model. Soorten mogen van het gemiddelde
   ervaringseffect afwijken.
 - Deze effecten worden opnieuw geschat op de concrete populatie van ieder
-  ecologisch model. De in de lange reeks gevonden teamspreiding van 0,382 op
-  logschaal, factor 1,47 per standaardafwijking, en de ervaringsverhoudingen
+  ecologisch model. De in de lange reeks gevonden spreiding van 0,382 op
+  logschaal die samenhangt met teller/tellerteam, factor 1,47 per
+  standaardafwijking, en de ervaringsverhoudingen
   worden dus niet als vaste correctiecoëfficiënten opgelegd.
 - De lange reeks toont geen duidelijk gemiddeld effect van meer ervaring in
   dezelfde plot. Eén, drie en vijf eerder geregistreerde jaren elders hangen

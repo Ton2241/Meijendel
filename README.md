@@ -241,12 +241,12 @@ de stappen kunnen worden herhaald en welke uitkomsten inmiddels werkelijk zijn
 vastgesteld.
 
 De analysematrix en de tellergevoeligheidsfase zijn uitgevoerd. De uitkomst is
-niet één correctiepercentage per telling: volgende modellen nemen tellerteam
-als variërend modelonderdeel op en schatten ervaring in dezelfde plot en elders
-afzonderlijk. Daarmee wordt voorkomen dat systematische verschillen tussen
-tellerteams volledig als verandering in de vogelstand of als ecologische
-relatie worden gelezen. Het voorspellende vogel–vegetatiemodel en de formele
-poweranalyse zijn nog niet uitgevoerd.
+niet één correctiepercentage per telling: volgende modellen nemen
+teller/tellerteam als variërend modelonderdeel op en schatten ervaring in
+dezelfde plot en elders afzonderlijk. Daarmee wordt voorkomen dat systematische
+verschillen die samenhangen met teller/tellerteam volledig als verandering in
+de vogelstand of als ecologische relatie worden gelezen. Het voorspellende
+vogel–vegetatiemodel en de formele poweranalyse zijn nog niet uitgevoerd.
 
 ### SQL-views en hulpmiddelen
 

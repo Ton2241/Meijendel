@@ -6,7 +6,8 @@
 
 ## Doel
 
-Deze analysestap bepaalt hoeveel verschillen tussen tellerteams en
+Deze analysestap bepaalt hoeveel verschillen die samenhangen met
+teller/tellerteam en
 geregistreerde tellerervaring veranderen aan de geschatte ontwikkeling van de
 broedvogelaantallen. Het is een analyse van het waarnemingsproces. Zij bepaalt
 niet letterlijk hoeveel vogels een teller heeft gemist en levert nog geen
@@ -20,9 +21,9 @@ toegepast.
 
 ## Uitkomst en betekenis voor het vervolg
 
-De uitvoering bevestigt dat tellerteam niet kan worden genegeerd. De
-teamspreiding bedraagt 0,382 op logschaal, een factor 1,47 per
-standaardafwijking. Dit is de overblijvende spreiding die met tellerteam
+De uitvoering bevestigt dat teller/tellerteam niet kan worden genegeerd. De
+spreiding die daarmee samenhangt bedraagt 0,382 op logschaal, een factor 1,47 per
+standaardafwijking. Dit is de overblijvende spreiding die met teller/tellerteam
 samenhangt nadat het model onder meer soort, tijd, plot, oppervlakte, bron,
 jaar en plotjaar heeft verwerkt. Zij kan ook verschillen in omstandigheden,
 inzet en toedeling bevatten en is daarom geen schatting van het percentage
@@ -35,7 +36,8 @@ overeen met gemiddeld 4,2%, 8,6% en 11,2% hogere verwachte aantallen. De
 één-telleranalyse en de analyses met bezoekinspanning houden dit hoofdpatroon
 in stand. Zij veranderen de samenhang echter niet in bewezen causaliteit.
 
-In volgende primaire modellen wordt tellerteam daarom als random intercept
+In volgende primaire modellen wordt teller/tellerteam daarom als random
+intercept
 opgenomen. De twee ervaringsvariabelen blijven afzonderlijk in het model en
 soorten mogen in hun ervaringseffect afwijken. Alle effecten worden opnieuw
 geschat binnen de dan gebruikte plots, jaren en soorten. Plotjaren zonder
@@ -55,15 +57,16 @@ De 2.007 gekoppelde plotjaren bestaan uit:
 - 1.804 plotjaren met één teller;
 - 201 plotjaren met twee tellers;
 - 2 plotjaren met drie tellers;
-- 216 verschillende tellerteamcombinaties;
+- 216 verschillende registraties van teller/tellerteam;
 - 1.955 opeenvolgende overgangen tussen bekende tellerjaren binnen een plot,
-  waarvan 360 met een ander tellerteam.
+  waarvan 360 met een andere registratie van teller/tellerteam.
 
 Na selectie op een geldige territoriumwaarde en bekende teller zijn 203.628
 soort–plot–jaarcellen beschikbaar. Alle 156 soorten blijven in het gezamenlijke
 model. Voor afzonderlijke soortmodellen voldoen bij deze gegevensstand 121
 soorten aan de structurele minimumvoorwaarden: minstens 30 geldige cellen,
-10 positieve waarden, 3 plots, 3 tellerteams en 3 jaren. De andere 35 soorten
+10 positieve waarden, 3 plots, 3 registraties van teller/tellerteam en 3 jaren.
+De andere 35 soorten
 blijven in het gezamenlijke model, maar krijgen geen zelfstandige
 soortconclusie.
 
@@ -94,10 +97,10 @@ De variabelen worden als `log(1 + eerdere jaren)` opgenomen. Dit legt geen
 willekeurige grens tussen onervaren en ervaren, maar laat het grootste verschil
 in de eerste geregistreerde jaren vallen en daarna afnemen.
 
-Bij meertellerteams is de primaire teamervaring het gemiddelde van de
+Bij tellerteams is de primaire teamervaring het gemiddelde van de
 getransformeerde ervaringswaarden van de teamleden. Een aanvullende analyse
 gebruikt uitsluitend de 1.804 één-teller-plotjaren. Daardoor kan een mogelijk
-leereffect niet ten onrechte aan één lid van een team worden toegeschreven.
+leereffect niet ten onrechte aan één lid van een tellerteam worden toegeschreven.
 Minimum- en maximumervaring binnen teams worden alleen als
 gevoeligheidscontrole gebruikt.
 
@@ -141,9 +144,9 @@ Het hoofdmodel is negatief-binomiaal met log-link en
 Daarbinnen worden drie vooraf vastgelegde varianten vergeleken:
 
 1. **M0 — basis:** geen teller- of ervaringsvariabele;
-2. **M1 — tellerteam:** M0 plus een random effect voor tellerteam;
-3. **M2 — teller en ervaring:** M1 plus geregistreerde ervaring in dezelfde
-   plot en geregistreerde ervaring elders.
+2. **M1 — teller/tellerteam:** M0 plus een random effect voor teller/tellerteam;
+3. **M2 — teller/tellerteam en ervaring:** M1 plus geregistreerde ervaring in
+   dezelfde plot en geregistreerde ervaring elders.
 
 M2 laat soorten via gedeeltelijke pooling van het gemiddelde ervaringspatroon
 afwijken. Een random plotjaareffect voorkomt zoveel mogelijk dat een eenmalig
@@ -158,7 +161,8 @@ of modeluitval en wordt per model vastgelegd.
 
 Voor de 121 structureel voldoende gedekte soorten zijn dezelfde drie
 modellen afzonderlijk geschat. Deze modellen laten per soort zien hoeveel de
-geschatte tijdontwikkeling en de onzekerheid veranderen wanneer tellerteam en
+geschatte tijdontwikkeling en de onzekerheid veranderen wanneer
+teller/tellerteam en
 ervaring worden toegevoegd. Niet-convergerende modellen leveren geen
 soortconclusie op; zij worden niet stilzwijgend weggelaten.
 
@@ -169,8 +173,9 @@ cluster uitgevoerd. Zij controleert of de richting van de gemiddelde
 ervaringseffecten overeind blijft bij een populatiegemiddelde benadering met
 robuuste standaardfouten.
 
-GEE is hier een controle en niet het hoofdmodel. Het kan de variantie tussen
-tellerteams niet op dezelfde manier scheiden en laat zeldzame soorten geen
+GEE is hier een controle en niet het hoofdmodel. Het kan de variantie die
+samenhangt met teller/tellerteam niet op dezelfde manier scheiden en laat
+zeldzame soorten geen
 informatie delen. Een verschil tussen GEE en het hiërarchische model wordt
 gerapporteerd, niet door modelselectie weggewerkt.
 
@@ -178,7 +183,8 @@ gerapporteerd, niet door modelselectie weggewerkt.
 
 Het resultaat is geen ranglijst van tellers. Tellercodes of teller-ID's worden
 niet in het artikel gepubliceerd. De compacte resultaten leggen de geschatte
-teamspreiding, de trendverandering tussen M0 en M2, de verandering van de
+spreiding die samenhangt met teller/tellerteam, de trendverandering tussen M0
+en M2, de verandering van de
 intervalbreedte, de ervaringsverhoudingen en alle modeluitval vast. De
 één-telleranalyse en de analyse met telinspanning laten zien of de conclusie
 afhangt van teamtoerekening of bezoekinspanning. GEE controleert alleen of de
@@ -201,7 +207,8 @@ databasevingerafdruk, Git-commit, formules, pakketversies en controlesommen.
 
 De tests bewaken dat ervaring alleen uit eerdere jaren wordt afgeleid, dat
 ervaring in dezelfde plot niet nogmaals als ervaring elders meetelt en dat de
-volgorde van teller-ID's geen nieuw team maakt. Zij controleren tevens de
+volgorde van teller-ID's geen nieuwe registratie van teller/tellerteam maakt.
+Zij controleren tevens de
 Natura 2000-scope, de uitsluiting van M62/2016, het ontbreken van imputatie voor
 onbekende tellers, gelijke responsrijen binnen M0–M2 en het zichtbaar blijven
 van iedere modeluitval. Daarmee is niet alleen de uitkomst, maar ook de grens

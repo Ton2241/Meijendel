@@ -10,12 +10,13 @@ uitkomsten presenteren, maar bepaalt geen modelkeuze en voert geen
 poweranalyse uit.
 
 De eerste twee stappen zijn afgerond. Er staat een reproduceerbare
-soort–plot–jaarmatrix en de invloed van tellerteam en geregistreerde ervaring
-is geschat. Die tellerfase laat zien dat tellerteam een wezenlijke bron van
-verschil is. Zij levert geen vast percentage op waarmee tellingen achteraf
-worden verhoogd of verlaagd. In de volgende modellen wordt tellerteam als
-variërend modelonderdeel opgenomen; ervaring in dezelfde plot en ervaring
-elders blijven als afzonderlijke, doorlopende variabelen in het model.
+soort–plot–jaarmatrix en de invloed van teller/tellerteam en geregistreerde
+ervaring is geschat. Die tellerfase laat zien dat teller/tellerteam een
+wezenlijke bron van verschil is. Zij levert geen vast percentage op waarmee
+tellingen achteraf worden verhoogd of verlaagd. In de volgende modellen wordt
+teller/tellerteam als variërend modelonderdeel opgenomen; ervaring in dezelfde
+plot en ervaring elders blijven als afzonderlijke, doorlopende variabelen in
+het model.
 
 ## Begin hier
 
@@ -56,10 +57,12 @@ controleren mogen na inhoudelijke beoordeling wel worden opgenomen.
 ## Wat nu vaststaat
 
 De telleranalyse gebruikt 203.628 geldige soort–plot–jaarrijen uit 2.007
-plotjaren met een bekende teller of een bekend tellerteam, voor 156 soorten en
-de periode 1958–2025. De geschatte spreiding tussen tellerteams bedraagt op de
-logschaal 0,382. Dat komt overeen met een factor 1,47 per standaardafwijking:
-bij een modelverwachting van tien territoria voor een gemiddeld team ligt één
+plotjaren met bekend teller/tellerteam, voor 156 soorten en de periode
+1958–2025. De geschatte spreiding die samenhangt met teller/tellerteam bedraagt
+op de logschaal 0,382. Dat komt overeen met een factor 1,47 per
+standaardafwijking:
+bij een modelverwachting van tien territoria voor een gemiddeld
+teller/tellerteam ligt één
 standaardafwijking grofweg tussen 6,8 en 14,7. Dit is een modelmatige spreiding,
 geen bewijs dat een bepaalde teller vogels heeft gemist of dubbel heeft
 geteld.
@@ -73,7 +76,8 @@ analyses met alleen één teller en met telinspanning, maar kan nog niet als een
 zuiver leereffect worden uitgelegd.
 
 Voor 121 voldoende gedekte soorten veranderde de jaarlijkse trend door opname
-van tellerteam en ervaring mediaan met 0,55 procentpunt in absolute zin. Bij 31
+van teller/tellerteam en ervaring mediaan met 0,55 procentpunt in absolute zin.
+Bij 31
 soorten was de verandering groter dan één procentpunt per jaar. De
 onzekerheidsintervallen werden mediaan 11% breder. De inhoudelijke conclusie
 is daarom helder: teller en ervaring mogen in het komende vegetatie- en
