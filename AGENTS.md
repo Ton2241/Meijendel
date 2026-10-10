@@ -13,6 +13,13 @@ NDFF-bewerkingen vastlopen. Verlaag deze waarde niet zonder nieuwe meting.
 
 Antwoord in het Nederlands, compact en praktisch.
 
+Gebruik in documentatie *teller* uitsluitend voor één persoon, *tellerteam*
+uitsluitend voor twee of meer tellers en *teller/tellerteam* wanneer beide
+mogelijkheden worden bedoeld. Licht bij de eerste vermelding in ieder document
+van een technische naam met `tellerteam`, zoals `tellerteam_factor` of
+`tellerteam_sleutel`, meteen toe dat dit een technische term is die zowel één
+teller als een tellerteam van twee of meer tellers kan aanduiden.
+
 Werk standaard op de lokale iMac M1 in mijn thuismap/projectmap. Ga ervan uit dat projecten lokaal staan tenzij ik expliciet zeg dat bestanden op de Samsung Portable SSD T7, op de NAS DS225+ of op de VPS staan. Vraag eerst om bevestiging voordat je paden op externe opslag of NAS gebruikt. Gebruik voor de NAS standaard Synology DSM via de browser.
 
 ## Lokale uitvoercontext is verplicht

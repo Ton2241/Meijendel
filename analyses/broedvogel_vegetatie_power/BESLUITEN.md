@@ -72,8 +72,9 @@ stilzwijgend herschreven.
   soortregels blijven expliciet `NA`; zij worden niet door de rechthoekige
   matrix impliciet nul.
 - Tellerregistraties worden per plotjaar als afzonderlijke dekking en als
-  herleidbare sleutel voor teller/tellerteam toegevoegd. De technische
-  veldnaam blijft `tellerteam_sleutel`. Zij bepalen niet of een plotjaar als
+  herleidbare sleutel voor teller/tellerteam toegevoegd. De technische veldnaam
+  `tellerteam_sleutel` kan zowel één teller als een tellerteam van twee of meer
+  tellers aanduiden. De tellerregistraties bepalen niet of een plotjaar als
   territoriumtelling bestaat.
 - M62/2016 blijft in de algemene vogelmatrix aanwezig. Deze afzonderlijke
   roofvogeltelling wordt pas uit de teller- en tellerervaringsanalyse

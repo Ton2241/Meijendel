@@ -23,7 +23,8 @@ M62/2016 blijft als bronwaarde in de algemene vogelmatrix staan, maar telt niet
 mee in de telleranalyse of in de ervaringshistorie.
 
 Uit `plot_jaar_teller` is voor ieder plotjaar een canonieke sleutel voor
-teller/tellerteam gemaakt. De technische veldnaam blijft `tellerteam_sleutel`.
+teller/tellerteam gemaakt. De technische veldnaam `tellerteam_sleutel` kan
+zowel één teller als een tellerteam van twee of meer tellers aanduiden.
 Ervaring telt alleen geregistreerde jaren vóór het betreffende
 teljaar. Zij wordt gesplitst in eerdere jaren in dezelfde plot en eerdere jaren
 in andere Meijendelplots. Bij een tellerteam wordt het gemiddelde van de

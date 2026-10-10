@@ -16,8 +16,12 @@
   bekend teller/tellerteam, voor 156 soorten over 1958–2025.
   Hier en in de overige documentatie betekent *teller* één persoon,
   *tellerteam* twee of meer tellers en *teller/tellerteam* beide mogelijkheden.
-  Technische veld- en functienamen blijven omwille van compatibiliteit
-  ongewijzigd. De spreiding van 0,382 op logschaal die samenhangt met
+  Technische veld- en functienamen waarin `tellerteam` voorkomt, zoals
+  `tellerteam_factor` en `tellerteam_sleutel`, blijven omwille van
+  compatibiliteit ongewijzigd. Deze technische termen kunnen zowel één teller
+  als een tellerteam van twee of meer tellers aanduiden. Bij hun eerste
+  vermelding in ieder document wordt dit voortaan expliciet uitgelegd. De
+  spreiding van 0,382 op logschaal die samenhangt met
   teller/tellerteam, factor 1,47 per
   standaardafwijking, wordt niet als vast correctiepercentage op tellingen
   toegepast. Volgende primaire modellen bevatten teller/tellerteam als random
