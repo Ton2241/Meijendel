@@ -15,7 +15,8 @@ if [[ "${1:-}" == "--resume" ]]; then
   [[ $# -eq 2 ]] || die "Gebruik: $0 --resume RUNMAP"
   RUN_DIR="$2"
   [[ -f "$RUN_DIR/vegetatiesamenstelling_state.rds" ]] || die "Geen hervatbare runmap: $RUN_DIR"
-  Rscript "$SCRIPT_DIR/run_broedvogel_vegetatiesamenstelling.R" resume "$RUN_DIR" "$RESULTS_DIR"
+  REPORTING_COMMIT="$(git -C "$REPO_DIR" rev-parse HEAD)"
+  Rscript "$SCRIPT_DIR/run_broedvogel_vegetatiesamenstelling.R" resume "$RUN_DIR" "$RESULTS_DIR" "$REPORTING_COMMIT"
   printf 'OK: vegetatiesamenstellingsanalyse hervat in %s\n' "$RUN_DIR"
   exit 0
 fi

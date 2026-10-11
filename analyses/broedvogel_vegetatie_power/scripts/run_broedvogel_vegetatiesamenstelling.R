@@ -24,6 +24,14 @@ primary_composition_model_lags <- function() 0L
 validation_worker_count <- function() {
   1L
 }
+
+add_reporting_commit <- function(metadata, reporting_commit) {
+  if (length(reporting_commit) != 1L || is.na(reporting_commit) || !nzchar(reporting_commit)) {
+    stop("Rapportagecommit ontbreekt.", call. = FALSE)
+  }
+  metadata$reporting_commit <- reporting_commit
+  metadata
+}
 source(file.path(
   .composition_pipeline_repo,
   "analyses", "broedvogel_vegetatie_power", "scripts",
@@ -180,10 +188,16 @@ validation_failure_row <- function(
 
 validation_model_failure_message <- function(model) {
   message <- model$diagnostics$error
-  if (is.null(message) || !length(message) || is.na(message) || !nzchar(message)) {
-    return("onbekende modeluitval")
+  if (!is.null(message) && length(message) && !is.na(message) && nzchar(message)) {
+    return(as.character(message[[1L]]))
   }
-  as.character(message[[1L]])
+  warnings <- unique(model$warnings)
+  warnings <- warnings[!is.na(warnings) & nzchar(warnings)]
+  if (length(warnings)) return(paste(warnings, collapse = " | "))
+  if (identical(model$diagnostics$pdHess, FALSE)) {
+    return("Hessiaan niet positief-definiet")
+  }
+  "onbekende modeluitval"
 }
 
 fit_multivariate_validation_fold <- function(
@@ -537,14 +551,14 @@ if (sys.nframe() == 0L) {
       input_dir = cli[[2L]], run_dir = cli[[3L]],
       metadata = list(
         run_id = cli[[4L]], git_commit = cli[[5L]], database_name = cli[[6L]],
-        mysql_version = cli[[7L]]
+        mysql_version = cli[[7L]], reporting_commit = cli[[5L]]
       ),
       compact_results_dir = cli[[8L]]
     )
   } else {
-    if (length(cli) != 3L) stop("Hervatten: runmap en resultaatmap vereist.", call. = FALSE)
+    if (length(cli) != 4L) stop("Hervatten: runmap, resultaatmap en rapportagecommit vereist.", call. = FALSE)
     state <- readRDS(file.path(cli[[2L]], "vegetatiesamenstelling_state.rds"))
-    metadata <- state$run_metadata
+    metadata <- add_reporting_commit(state$run_metadata, cli[[4L]])
     result <- run_composition_pipeline(
       run_dir = cli[[2L]], metadata = metadata, resume = TRUE,
       compact_results_dir = cli[[3L]]

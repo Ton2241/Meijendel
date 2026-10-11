@@ -16,6 +16,25 @@ if (is.na(old_workers)) Sys.unsetenv("MEIJENDEL_MODEL_WORKERS") else Sys.setenv(
 
 failed_model <- list(diagnostics = list(error = "foutmelding"))
 stopifnot(identical(validation_model_failure_message(failed_model), "foutmelding"))
+failed_hessian <- list(warnings = character(), diagnostics = list(error = NULL, pdHess = FALSE))
+stopifnot(identical(
+  validation_model_failure_message(failed_hessian),
+  "Hessiaan niet positief-definiet"
+))
+failed_warning <- list(
+  warnings = "Model convergence problem; non-positive-definite",
+  diagnostics = list(error = NULL, pdHess = TRUE)
+)
+stopifnot(grepl(
+  "Model convergence problem",
+  validation_model_failure_message(failed_warning),
+  fixed = TRUE
+))
+reported_metadata <- add_reporting_commit(
+  list(git_commit = "model-commit"), "rapportage-commit"
+)
+stopifnot(identical(reported_metadata$git_commit, "model-commit"))
+stopifnot(identical(reported_metadata$reporting_commit, "rapportage-commit"))
 
 validation <- data.frame(
   validatie = rep(c("ruimte", "tijd"), each = 4),
