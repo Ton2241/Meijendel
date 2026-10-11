@@ -325,6 +325,11 @@ summarise_block_validation <- function(validation) {
   result[order(result$validatie, result$blok), , drop = FALSE]
 }
 
+model_pair_comparison_validity <- function(models) {
+  identical(models$basis$status, "geslaagd") &&
+    identical(models$vegetatie$status, "geslaagd")
+}
+
 extract_multivariate_fixed_effects <- function(results) {
   rows <- list()
   for (name in names(results)) {
@@ -345,6 +350,9 @@ extract_multivariate_fixed_effects <- function(results) {
         z = coefficients[terms, "z value"],
         p = coefficients[terms, "Pr(>|z|)"],
         ratio_per_sd = exp(coefficients[terms, "Estimate"]),
+        basis_status = result$models$basis$status,
+        vegetatie_status = result$models$vegetatie$status,
+        vergelijking_geldig = model_pair_comparison_validity(result$models),
         stringsAsFactors = FALSE
       )
       rows[[length(rows) + 1L]] <- current
@@ -368,12 +376,12 @@ decide_height_followup <- function(validation_summary) {
   )
   if (useful) {
     return(list(
-      status = "aanvullende_hoogteproxy_nuttig",
+      status = "gerichte_hoogteproef_aanbevolen",
       advies = paste(
-        "De structuurgevoelige vegetatieblokken leveren ruimtelijk signaal, maar meten",
-        "geen verticale gelaagdheid. Leid daarom in een afzonderlijke vervolgstap",
-        "vegetatiehoogte af als DSM minus DTM uit de openbare AHN-cycli, met het",
-        "werkelijke inwinningsjaar voor Meijendel."
+        "De vegetatieblokken leveren enig ruimtelijk signaal, maar bewijzen nog niet",
+        "dat vegetatiehoogte de voorspelling verbetert. Voer daarom eerst een gerichte proef uit",
+        "voor bos-, boomgroep- en struweelvogels met DSM minus DTM uit de openbare AHN-cycli,",
+        "gekoppeld aan het werkelijke inwinningsjaar voor Meijendel."
       )
     ))
   }

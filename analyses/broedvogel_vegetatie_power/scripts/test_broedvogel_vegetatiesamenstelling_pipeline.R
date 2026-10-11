@@ -35,6 +35,12 @@ reported_metadata <- add_reporting_commit(
 )
 stopifnot(identical(reported_metadata$git_commit, "model-commit"))
 stopifnot(identical(reported_metadata$reporting_commit, "rapportage-commit"))
+stopifnot(isTRUE(model_pair_comparison_validity(list(
+  basis = list(status = "geslaagd"), vegetatie = list(status = "geslaagd")
+))))
+stopifnot(!model_pair_comparison_validity(list(
+  basis = list(status = "modeluitval"), vegetatie = list(status = "geslaagd")
+)))
 
 validation <- data.frame(
   validatie = rep(c("ruimte", "tijd"), each = 4),
@@ -72,7 +78,8 @@ decision <- decide_height_followup(data.frame(
   delta_logscore_gem = c(.02, -.01, .03),
   aandeel_betere_logscore = c(.8, .4, .8)
 ))
-stopifnot(decision$status == "aanvullende_hoogteproxy_nuttig")
+stopifnot(decision$status == "gerichte_hoogteproef_aanbevolen")
 stopifnot(grepl("AHN", decision$advies, fixed = TRUE))
+stopifnot(grepl("gerichte proef", decision$advies, fixed = TRUE))
 
 cat("OK: vegetatiesamenstellingspijplijncontracten\n")
