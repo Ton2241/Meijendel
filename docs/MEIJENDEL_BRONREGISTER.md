@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 7 oktober 2026.**
+**Stand: 11 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -172,6 +172,18 @@ M53/2007 vraagt een afzonderlijke beperking. SOVON toont 8 bezoeken, 36 soorten 
 **Status.** Analyseklaar en primaire bron.
 
 **PQ-integratie, 27–28 september 2026.** De 53.122 provinciale taxonregels uit 1981–2025 zijn lokaal en op de VPS rechtstreeks verbonden met het centrale taxonregister. De 714 oorspronkelijke taxonvermeldingen zijn daar met alle bronvelden behouden; de afzonderlijke PQ-taxoncatalogus is verwijderd. De 2.007 opnamen en de 513 gepubliceerde plot-jaaruitkomsten zijn ongewijzigd. Daarnaast zijn 644 vermoedelijk verwante LVD-bronopnamen met 16.627 resultaten uit 1981–2015 binnen de PQ-tabellen bijeengebracht. Zij behouden alle bronwaarden en 652 mogelijke opnamekoppelingen en tellen niet zelfstandig mee. De oorspronkelijke externe rijen zijn pas na inhoudscontrole verwijderd. De volledige migratie, het terugdraaien en het herstel uit back-up zijn beproefd. De gecontroleerde publicatie naar website, dashboard en Shiny is op 28 september om 15:33 uur geslaagd; hun bestaande provinciale uitkomsten zijn gelijk gebleven.
+
+**Gebruik van de volledige PQ-samenstelling, 11 oktober 2026.** Voor de
+broedvogel–vegetatieanalyse zijn 1.314 van de 2.007 provinciale opnamen aan 35
+actieve Natura 2000-vogelplots gekoppeld. Zij vormen 501 PQ-plotjaren en
+bevatten 642 van de 714 centrale taxa over 1981–2025. Een
+Hellinger-transformatie en drie compositieassen vatten 27,8% van de variatie
+samen. In de vogeloverlap van 37.140 soort–plot–jaarrijen, 406 vogelplotjaren,
+35 plots en 154 soorten over 1989–2025 verbeteren deze assen de ruimtelijke
+voorspelling in vier van vijf plotblokken, maar niet de voorspelling van latere
+jaren in twee tijdsblokken. De uitkomst maakt de provinciale PQ-reeks
+bruikbaarder voor ruimtelijke habitatverschillen, maar levert nog geen
+voorspellende relatie tussen vegetatieverandering en vogelverandering.
 
 ### 1.3. Zoogdieren tijdens SOVON- en VWG-bezoeken
 
@@ -441,7 +453,14 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Omvang en periode in de huidige SQL-dump.** 55 plots, peiljaar 2025
 
-**Gebruik en grens.** Beschrijft hoogte en hoogtevariatie per plot. Eén peiljaar geeft geen ontwikkeling door de tijd.
+**Gebruik en grens.** De huidige tabel beschrijft maaiveldhoogte en
+hoogtevariatie per plot. Eén peiljaar geeft geen ontwikkeling door de tijd en
+een DTM meet geen vegetatiehoogte. AHN stelt per cyclus zowel een digitaal
+terreinmodel als een digitaal oppervlaktemodel beschikbaar. Het verschil
+DSM–DTM kan daarom als vegetatiehoogteproxy worden onderzocht, maar alleen na
+vaststelling van het werkelijke inwinningsjaar in Meijendel en controle op
+gebouwen, water en andere niet-vegetatieobjecten. Zo'n laag is nog niet voor de
+vogel–vegetatieanalyse afgeleid of in de database opgenomen.
 
 #### 1.8.3. Stikstofdepositie
 
@@ -625,9 +644,43 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Twee losse GBIF-events van Roel van Klink:** 22 voorkomensrecords uit 2011 en 2023, met 200 meter tot 5 kilometer locatie-onzekerheid. Alleen positieve verspreidingscontext en waarschijnlijk beperkte meerwaarde naast NDFF.
 
-**Remote sensing van vegetatiehoogte en -bedekking:** WUR beschreef kaarten voor 2008 en 2014; TU Delft beschreef elf beeldmomenten uit 2019–2021. De afgeleide rasterbestanden zijn nog niet als openbare dataset gevonden.
+**Remote sensing van vegetatiehoogte en -bedekking:** WUR beschreef kaarten
+voor 2008 en 2014; TU Delft beschreef elf beeldmomenten uit 2019–2021. De
+afgeleide onderzoeksrasters zijn nog niet als openbare dataset gevonden. De
+[AHN-dataroom](https://www.ahn.nl/dataroom) biedt wel de landelijke DTM- en
+DSM-bronnen voor meerdere cycli. Daarmee kan een reproduceerbare
+vegetatiehoogteproxy worden afgeleid, maar niet zonder lokale kwaliteitscontrole
+en koppeling aan de feitelijke inwinningsjaren. Deze kandidaatbron is daarom
+beschikbaar voor een gerichte vervolgtoets, niet reeds analyseklaar.
 
-**[Landbedekking in vogelplots](https://doi.org/10.1007/s10531-025-03175-x):** de openbare studie van Schmidt-Tauscher, Häger en Van der Hagen uit 2025 behandelt 25 BMP-plots met samen 925 hectare. Het openbare supplement bevat inmiddels de volledige tabel met de oppervlakte van zeven landbedekkingsklassen per plot in 2001 en 2022: struweel, bos, boomgroepen, lage vegetatie, riet, kaal zand en water. De vogelgegevens overlappen met de bestaande VWG/SOVON-reeks. De plot-tabel voegt wel een ecologisch specifiekere verklarende laag toe dan de reeds aanwezige CBS-landgebruikgegevens voor 55 plots in 1996, 2010, 2015, 2017 en 2022. De classificatie is afgeleid uit luchtfoto’s, teruggebracht tot pixels van 5 bij 5 meter en had een totale nauwkeurigheid van 81% in 2001 en 82% in 2022. De geclassificeerde rasters zelf zitten niet in het openbare supplement; de auteurs vermelden dat de gebruikte en gemaakte datasets op verzoek verkrijgbaar zijn. Met die rasters kunnen ook ruimtelijke samenhang, versnippering, randen en het vegetatiemozaïek binnen plots worden onderzocht. Het blijven twee momentopnamen binnen 25 van de 55 plots; zij meten geen jaarlijkse ontwikkeling, voedsel, nestgelegenheid of andere habitatkwaliteit en bewijzen op zichzelf geen beheereffect.
+**[Landbedekking in vogelplots](https://doi.org/10.1007/s10531-025-03175-x):**
+de openbare studie van Schmidt-Tauscher, Häger en Van der Hagen uit 2025
+behandelt 25 BMP-plots met samen 925 hectare. Het openbare supplement bevat de
+volledige tabel met de oppervlakte van zeven landbedekkingsklassen per plot in
+2001 en 2022: struweel, bos, boomgroepen, lage vegetatie, riet, kaal zand en
+water. De classificatie is afgeleid uit luchtfoto's, teruggebracht tot pixels
+van 5 bij 5 meter en had een totale nauwkeurigheid van 81% in 2001 en 82% in
+2022. De bron-Excel is op 11 oktober 2026 reproduceerbaar in de lokale
+broedvogel–vegetatieanalyse gebruikt en met SHA256 in het uitvoermanifest
+vastgelegd; zij is niet als nieuwe brontabel in de levende database
+geïmporteerd. M17 heeft in de actuele vogelmatrix geen territoriumplotjaar en
+valt uit de modellen. De overige vogelgroepen gebruiken 22–24 plots. Bij M71
+is in beide jaren 47,89 van 48,46 hectare geclassificeerd; de ontbrekende 0,57
+hectare blijft zichtbaar en de klasseaandelen zijn alleen over het
+geclassificeerde deel berekend.
+
+De plot-tabel voegt een ecologisch specifiekere verklarende laag toe dan de
+CBS-landgebruikgegevens voor 55 plots in 1996, 2010, 2015, 2017 en 2022.
+Wateroppervlak leverde in alle vijf ruimtelijke validatieblokken een betere
+logscore voor watervogels. Voor de overige vogelgroepen waren de scores
+gemengd of te veel modellen numeriek ongeldig; van de 36
+landbedekkingsvalidaties slaagden er 18. De geclassificeerde rasters zelf zitten
+niet in het openbare supplement; de auteurs vermelden dat de gebruikte en
+gemaakte datasets op verzoek verkrijgbaar zijn. Met die rasters zouden ook
+ruimtelijke samenhang, versnippering, randen en vegetatiemozaïek kunnen worden
+onderzocht. Het blijven twee momentopnamen binnen 25 plots; zij meten geen
+jaarlijkse ontwikkeling, vegetatiehoogte, voedsel, nestgelegenheid of andere
+habitatkwaliteit en bewijzen op zichzelf geen beheereffect.
 
 **KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en hydrologische gegevens. Een afzonderlijke digitale gegevenslevering is nog niet gevonden.
 

@@ -115,3 +115,47 @@ binnen-plotreacties; `vegetatie_model_laatste_soorten.csv` de soortspecifieke
 afwijkingen. De 21 geblokkeerde vergelijkingen en hun samenvatting staan in de
 validatie- en samenvattingsbestanden. Het manifest verbindt de uitkomsten met
 bronhashes, formules, pakketversies en de uitvoercommit.
+
+## PQ-samenstelling, IPI en landbedekking
+
+De bestanden `vegetatiesamenstelling_laatste_*` horen bij formele run
+`20261011T130319Z-bb63b78a716f`. De modellen zijn geschat met commit
+`bb63b78a716ff5f91a01b07e3ba9d1ba56cee249`; de compacte rapportage is na
+verbetering van de uitvalredenen en geldigheidsvlaggen opgebouwd met commit
+`a1a2293dde48e7100920cb21552a2d2204a4be0d`. Beide staan in het manifest.
+
+De samenstellings- en IPI-modellen bevatten 37.140 geldige
+soort–plot–jaarrijen uit 406 vogelplotjaren, 35 plots en 154 soorten over
+1989–2025. De vegetatiebasis bestaat uit 1.314 gekoppelde PQ-opnamen, 501
+PQ-plotjaren en 642 taxa uit 1981–2025. De eerste drie compositieassen verklaren
+12,1%, 9,1% en 6,6%, samen 27,8%.
+
+Alle zeven compositievalidaties zijn geldig. De ruimtelijke logscore verbetert
+gemiddeld 0,093 en in vier van vijf blokken; beide tijdsscores verslechteren
+licht. Van de zeven IPI-validaties zijn er zes geldig. Ruimtelijk verbetert de
+logscore gemiddeld 0,036 en in drie van vier geldige blokken; beide
+tijdsblokken verslechteren licht. De bestanden bewaren alle afzonderlijke
+scores, niet alleen deze gemiddelden.
+
+De landbedekkingstabel bevat zeven klassen voor 25 plots en 2001 en 2022. M17
+heeft geen territoriumplotjaar in de huidige vogelmatrix; afhankelijk van de
+vogelgroep gebruiken de modellen 22–24 plots, 209–228 plotjaren en 15–36
+soorten over 1997–2022. M71 heeft in beide bronjaren 47,89 geclassificeerde
+hectare tegenover 48,46 hectare plotoppervlak. Dit verschil van 0,57 hectare
+blijft expliciet in het resultaatbestand staan.
+
+Van de twaalf volledige landbedekkingsmodellen zijn negen geldig. Het
+vegetatiemodel voor pionier/open-duinvogels en boomgroepvogels en het
+basismodel voor bosvogels hebben een niet-positief-definiete Hessiaan. Over de
+volledige validatie zijn 31 van 50 vergelijkingen geldig en 19 ongeldig. Voor
+water- en struweelvogels slagen vijf van zes validatieblokken, voor rietvogels
+vier, voor pionier/open-duinvogels twee en voor boomgroep- en bosvogels ieder
+één. Een effect in `vegetatiesamenstelling_laatste_effecten.csv` heeft daarom
+de expliciete kolom `vergelijking_geldig`; een coëfficiënt uit een los geslaagd
+vegetatiemodel geldt niet als geldige vergelijking wanneer het basismodel
+faalt.
+
+`vegetatiesamenstelling_laatste_hoogtebesluit.csv` adviseert geen algemene
+hoogtecorrectie, maar een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en
+struweelvogels. De hoogteproxy is nog niet afgeleid en niet in de database
+opgenomen.

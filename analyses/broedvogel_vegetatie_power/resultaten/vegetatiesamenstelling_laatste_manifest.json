@@ -1,0 +1,193 @@
+{
+  "run_id": "20261011T130319Z-bb63b78a716f",
+  "git_commit": "bb63b78a716ff5f91a01b07e3ba9d1ba56cee249",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.1",
+  "reporting_commit": "a1a2293dde48e7100920cb21552a2d2204a4be0d",
+  "executed_at_utc": "2026-10-11T14:39:17Z",
+  "source_fingerprint_sha256": "b95fb5764cbb8bbaba901323c832236d0f9957912e5f68fb84d055b33cf4c2f3",
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "tables": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "dagbezoeken_bmp": {
+      "file": "dagbezoeken_bmp.tsv",
+      "rows": 14455,
+      "bytes": 310792,
+      "sha256": "16c6619bd6144ce2a9ce137392674e66bf4c138fb9c1d1960313295971982a50"
+    },
+    "evg_vogel_landschapgroep": {
+      "file": "evg_vogel_landschapgroep.tsv",
+      "rows": 200,
+      "bytes": 1549,
+      "sha256": "e6a84668009a4e65b262947a3df410f6c92b43726c3daee52ba4030eceb3e3bb"
+    },
+    "landbedekking_schmidt_2025_bron": {
+      "file": "landbedekking_schmidt_2025_bron.tsv",
+      "rows": 1,
+      "bytes": 199,
+      "sha256": "28017c3cb09a1d2a8c1d6aab8242a754314979c0cd6d249bd9a514f06ac36400"
+    },
+    "landbedekking_schmidt_2025": {
+      "file": "landbedekking_schmidt_2025.tsv",
+      "rows": 25,
+      "bytes": 2136,
+      "sha256": "44bbfb76a4f7476967ad9e64995164906c580a9ff9bb591d72b2faa2851f9851"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 67,
+      "bytes": 1720,
+      "sha256": "d5dc6600e87f2be2b5ec65ceb54f00f17ef755fb18e7604dc24d853a18d138dd"
+    },
+    "pq_vegetatie_opname_plot": {
+      "file": "pq_vegetatie_opname_plot.tsv",
+      "rows": 1314,
+      "bytes": 12305,
+      "sha256": "be7058bf3560be75bd6715d9a10a5698282d24c2e414d0794960730ef2fa599a"
+    },
+    "pq_vegetatie_opname": {
+      "file": "pq_vegetatie_opname.tsv",
+      "rows": 2007,
+      "bytes": 86069,
+      "sha256": "da7d7e98b656332c6534389604756eb55222260a65ad4fab5c5914eb16ab49b6"
+    },
+    "pq_vegetatie_waarneming": {
+      "file": "pq_vegetatie_waarneming.tsv",
+      "rows": 53122,
+      "bytes": 2552596,
+      "sha256": "a317e5b3a82badf4207a0f776a268e2e99cc7bcebc4e92b5ab33c9ea94f3395f"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    }
+  },
+  "response_exclusions": [
+    {
+      "soort_id": 5,
+      "soort_naam": "Aalscholver",
+      "reden": "Kolonievogel; territoriumaantal wordt bepaald door een nestelplaats die niet door de gebruikte PQ-vegetatiematen wordt gemeten."
+    }
+  ],
+  "composition_quality": {
+    "n_opnamen": 1314,
+    "n_plotyears": 501,
+    "n_plots": 35,
+    "n_taxa": 642,
+    "first_year": 1981,
+    "last_year": 2025
+  },
+  "composition_axes": ["compositie_pc1", "compositie_pc2", "compositie_pc3"],
+  "coverage_lags": [0, 1, 2, 3],
+  "fitted_lags": 0,
+  "ipi_groups": {
+    "open": [211, 214],
+    "nat_water": [213, 352],
+    "struweel": [150, 151, 155],
+    "bos": [111, 121, 124, 130, 131, 132, 140, 143, 192, 193]
+  },
+  "landcover_groups": ["water_aandeel", "riet_aandeel", "open_aandeel", "struik_aandeel", "boomgroep_aandeel", "bos_aandeel"],
+  "height_decision": {
+    "status": "gerichte_hoogteproef_aanbevolen",
+    "advies": "De vegetatieblokken leveren enig ruimtelijk signaal, maar bewijzen nog niet dat vegetatiehoogte de voorspelling verbetert. Voer daarom eerst een gerichte proef uit voor bos-, boomgroep- en struweelvogels met DSM minus DTM uit de openbare AHN-cycli, gekoppeld aan het werkelijke inwinningsjaar voor Meijendel."
+  },
+  "outputs": {
+    "dekking": {
+      "file": "vegetatiesamenstelling_dekking.csv",
+      "bytes": 1702,
+      "sha256": "04147f5a052aea4e7fcce76165dab27fbfad845a6e54788dd34b1fbec87fd960"
+    },
+    "pca_variantie": {
+      "file": "vegetatiesamenstelling_pca_variantie.csv",
+      "bytes": 180,
+      "sha256": "1e70c5a37b455611539840da6b7abf0a1bfa2039e74efb2aa53cd6ac4ca34f88"
+    },
+    "pca_ladingen": {
+      "file": "vegetatiesamenstelling_pca_ladingen.csv",
+      "bytes": 131072,
+      "sha256": "6a485e012505dd0fce9fb4fe689fcc275993970ba9fccc9bcbd4792836e9f5f7"
+    },
+    "pca_scores": {
+      "file": "vegetatiesamenstelling_pca_scores.csv",
+      "bytes": 34258,
+      "sha256": "343650d30099c83c6b3fdee8385b43aeea52c38bf6f705e079afdec293ba6d72"
+    },
+    "ipi": {
+      "file": "vegetatiesamenstelling_ipi.csv",
+      "bytes": 13064,
+      "sha256": "2eeaba1a34efbb702a23052ad267076b46e0a7dd89e7493ef2ee636ee0bf89f8"
+    },
+    "landbedekking": {
+      "file": "vegetatiesamenstelling_landbedekking.csv",
+      "bytes": 12208,
+      "sha256": "711cef4f828f842af30302eae280d2597a4fa083549a32aa45bd998a820fdc7f"
+    },
+    "modellen": {
+      "file": "vegetatiesamenstelling_modellen.csv",
+      "bytes": 3145,
+      "sha256": "b149410aec42d3f6812782dad608a3b6c6e891ddff3f7c9f2d03b02ab70d0571"
+    },
+    "effecten": {
+      "file": "vegetatiesamenstelling_effecten.csv",
+      "bytes": 3423,
+      "sha256": "f742f9b21d297c3324bdc738ff8120cb900c83c397357b38e669b4536a5081a6"
+    },
+    "validatie": {
+      "file": "vegetatiesamenstelling_validatie.csv",
+      "bytes": 15421,
+      "sha256": "78ee63d10c5c34a6db478105bdd906e9f60ed0e1c8e6399cb06dc51327bd9da7"
+    },
+    "samenvatting": {
+      "file": "vegetatiesamenstelling_samenvatting.csv",
+      "bytes": 1555,
+      "sha256": "495ca01de6f1cecc77cd83a613ee82d3dc6f9cfc384d3a5016f41342a999ae83"
+    },
+    "hoogtebesluit": {
+      "file": "vegetatiesamenstelling_hoogtebesluit.csv",
+      "bytes": 491,
+      "sha256": "ccf3fc6f2af27c4f665f494ab67cdf0865199684b1937a8514a7d7bae3015f1d"
+    }
+  }
+}

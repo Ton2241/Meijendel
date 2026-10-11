@@ -33,6 +33,10 @@ Shiny en de VPS.
 - Leg verklaarde variantie en taxonladingen vast. Toets daarna de extra
   voorspellende waarde met dezelfde geblokkeerde validatie als het brede
   PQ-model.
+- Leg voor vertraging nul tot en met drie jaar de feitelijke dekking vast.
+  Schat in deze fase alleen het gelijktijdige model. Vertragingen worden pas
+  gemodelleerd wanneer dat primaire model buiten de schattingsgegevens waarde
+  toevoegt; zo worden geen kostbare lagmodellen op een afwezig signaal gestapeld.
 
 ## Taak 2 — IPI als brede habitatproxy
 
@@ -68,9 +72,33 @@ Shiny en de VPS.
 ## Controle en afronding
 
 - Iedere nieuwe functie krijgt eerst een falende regressietest.
+- De `glmmTMB`-validatiemodellen worden op de 8GB-iMac sequentieel uitgevoerd.
+  Een proef met twee gevorkte R-processen veroorzaakte op 11 oktober 2026 een
+  niet-afvangbare fout in de onderliggende numerieke bibliotheek; dat is een
+  technisch uitvoeringsresultaat en geen ecologische modeluitkomst.
 - De compacte resultaten en manifesten worden in `resultaten/` vastgelegd;
   grote tussenbestanden blijven genegeerd.
 - Hoofddocument, besluiten, resultaten-README en bronregister worden inhoudelijk
   bijgewerkt. Bij wijziging van de bronstatus wordt ook de Wordversie van het
   bronregister opnieuw gemaakt, gerenderd en visueel gecontroleerd.
 - Afsluiten met de volledige relevante R-tests en de projectbrede preflight.
+
+## Uitvoering 11 oktober 2026
+
+De formele run `20261011T130319Z-bb63b78a716f` heeft alle vier taken
+uitgevoerd. De modellen zijn geschat met commit `bb63b78`; de definitieve
+rapportagelaag met expliciete uitvalredenen en geldigheidsvlaggen is opgebouwd
+met commit `a1a2293`.
+
+De drie compositieassen verklaren samen 27,8% en verbeteren de ruimtelijke
+logscore in vier van vijf plotblokken, maar niet in twee tijdsblokken. IPI
+verbetert drie van vier geldige ruimtelijke blokken en evenmin de tijdsblokken.
+De landbedekking geeft het duidelijkste ruimtelijke signaal bij watervogels;
+voor open-duin-, boomgroep- en bosvogels is de numerieke validatie te
+instabiel. Van vijftig geblokkeerde vergelijkingen over alle drie blokken zijn
+31 geldig en 19 ongeldig. Alle uitvalredenen zijn bewaard.
+
+Taak 4 leidt daarom niet tot algemene opname van vegetatiehoogte. Het besluit
+is een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en struweelvogels,
+gekoppeld aan werkelijke inwinningsjaren en opnieuw beoordeeld op voorspelling
+buiten de schattingsgegevens.

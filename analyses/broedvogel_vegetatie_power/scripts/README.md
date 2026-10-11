@@ -121,3 +121,41 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegeta
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatie_validate.R
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatie_pipeline.R
 ```
+
+## Stap 3 vervolg: samenstelling, IPI en landbedekking
+
+Voer de aanvullende vegetatieanalyse uit met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_vegetatiesamenstelling.sh
+```
+
+De runner gebruikt de volledige taxonbedekking uit de provinciale PQ-reeks,
+de IPI-indeling en Online Resource 2 van Schmidt-Tauscher, Häger en Van der
+Hagen (2025). De laatste bron bevat zeven landbedekkingsklassen voor 25
+BMP-plots in 2001 en 2022. De bron-Excel wordt bij iedere formele uitvoering
+opnieuw opgehaald en met SHA256 vastgelegd; zij wordt niet als ruwe bronkopie
+in Git opgeslagen.
+
+De taxonomische samenstelling wordt met een Hellinger-transformatie en drie
+compositieassen samengevat. IPI wordt vooraf tot open duin, nat/water,
+struweel en bos gegroepeerd. De landbedekking wordt zonder jaarlijkse
+interpolatie gekoppeld aan vogelvensters 1997–2001 en 2018–2022. Aalscholver
+blijft uit deze vogel–vegetatiemodellen, omdat de PQ's de kolonienestplaats
+niet meten.
+
+De geblokkeerde `glmmTMB`-validatie draait sequentieel. Een parallelle proef
+met twee gevorkte R-processen bleek op de 8GB-iMac technisch onveilig. Een
+onderbroken run kan vanuit de opgeslagen modelcheckpoints worden hervat:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_vegetatiesamenstelling.sh --resume ABSOLUTE_RUNMAP
+```
+
+De tests zijn:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatiesamenstelling.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatiesamenstelling_fit.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatiesamenstelling_pipeline.R
+```

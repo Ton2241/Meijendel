@@ -199,3 +199,44 @@ stilzwijgend herschreven.
   ondersteunden de hoofdrichting voor ongeveer vier op de vijf soorten, maar
   waren niet voor alle soorten technisch bruikbaar en zijn daarom geen
   vervanging van het hiërarchische hoofdmodel.
+
+## 11 oktober 2026 — vegetatiesamenstelling, IPI en landbedekking
+
+- De volledige provinciale PQ-samenstelling wordt per plotjaar met een
+  Hellinger-transformatie en drie compositieassen samengevat. De drie assen
+  verklaren samen 27,8%; dit is een gerichte reductie, geen volledige weergave
+  van de 642 taxa in 1.314 gekoppelde opnamen uit 1981–2025.
+- Dekking bij nul tot en met drie jaar vertraging blijft gerapporteerd. Alleen
+  het gelijktijdige model is geschat, omdat dit wel ruimtelijke maar geen
+  temporele voorspelwinst gaf. Lagmodellen worden niet automatisch toegevoegd
+  wanneer het primaire tijdssignaal ontbreekt.
+- IPI wordt vooraf samengebracht tot open duin, nat/water, struweel en bos. De
+  fracties beschrijven de verdeling van bemonsterde PQ-opnamen en worden niet
+  als oppervlakteaandeel van de vogelplot geïnterpreteerd.
+- Online Resource 2 van Schmidt-Tauscher, Häger en Van der Hagen wordt bij
+  iedere formele run opnieuw opgehaald en met SHA256 vastgelegd. De zeven
+  klassen voor 25 plots in 2001 en 2022 worden niet jaarlijks geïnterpoleerd;
+  zij worden gekoppeld aan vogelvensters 1997–2001 en 2018–2022.
+- M17 heeft in de actuele vogelmatrix geen territoriumplotjaar en valt daarom
+  zonder kunstmatige aanvulling uit de landbedekkingsmodellen. M71 behoudt de
+  bronafwijking van 0,57 niet-geclassificeerde hectare; klasseaandelen zijn
+  genormaliseerd over de werkelijk geclassificeerde 47,89 hectare.
+- Een effectcoëfficiënt wordt alleen als geldige modelvergelijking beschouwd
+  wanneer zowel basis- als vegetatiemodel numeriek geldig zijn. Alle overige
+  coëfficiënten, waarschuwingen en niet-positief-definiete Hessianen blijven wel
+  in de uitkomsten zichtbaar.
+- De taxonsamenstelling verbetert de ruimtelijke voorspelling in vier van vijf
+  plotblokken, IPI in drie van vier geldige blokken. Beide verslechteren de
+  logscore in twee van twee tijdsblokken. Zij beschrijven dus vooral verschillen
+  tussen plots en bewijzen geen voorspelling van verandering door de tijd.
+- Wateroppervlak levert voor watervogels het duidelijkste ruimtelijke
+  landbedekkingssignaal. De overige vogelgroepen geven gemengde scores of te
+  veel numerieke uitval voor een algemeen voorspelmodel. Het onverwachte
+  negatieve binnen-plotverband bij rietvogels wordt niet causaal uitgelegd.
+- Vegetatiehoogte wordt niet algemeen toegevoegd. Er volgt alleen een gerichte
+  proef voor bos-, boomgroep- en struweelvogels met AHN DSM minus DTM, gekoppeld
+  aan werkelijke inwinningsjaren en getoetst op extra voorspelling buiten de
+  schattingsgegevens.
+- `glmmTMB`-validatie blijft op de 8GB-iMac sequentieel. Twee gelijktijdig
+  gevorkte R-processen veroorzaakten een niet-afvangbare numerieke crash; dat
+  is als mislukte uitvoerpoging vastgelegd en is geen ecologische uitkomst.

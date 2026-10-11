@@ -2,10 +2,11 @@
 
 **Stand:** 11 oktober 2026
 
-**Status:** stappen 1–3 uitgevoerd: reproduceerbare analysematrix,
-tellergevoeligheidsanalyse en eerste PQ-vegetatiemodel met geblokkeerde
-validatie; aanvullende verklarende lagen, groepsafleiding en formele
-poweranalyse nog niet uitgevoerd
+**Status:** analysematrix, tellergevoeligheid en drie opeenvolgende
+vegetatiestappen uitgevoerd: brede PQ-maten, volledige PQ-samenstelling met
+IPI en onafhankelijke landbedekking van 2001 en 2022; gerichte proef met
+vegetatiehoogte aanbevolen, aanvullende omgevingslagen, groepsafleiding en
+formele poweranalyse nog niet uitgevoerd
 
 **Beoogd eindproduct:** artikel voor *Holland's Duinen*
 
@@ -353,26 +354,94 @@ dat is zonder een afzonderlijke poweranalyse niet vastgesteld. De maten kunnen
 ook ecologisch te grof zijn, tegengestelde soortreacties middelen of relevante
 structuurkenmerken niet meten.
 
-De 53.122 taxonregels uit 2.007 PQ-opnamen over 1981–2025 bewaren de
-taxonidentiteit en bedekking wel. Daardoor kan een volgende stap de volledige
-vegetatiesamenstelling gebruiken, bijvoorbeeld compositieassen en
-verschuivingen tussen open-duin-, struweel- en bostaxa. Het IPI-vegetatietype
-is bij de opnamen beschikbaar als brede habitatproxy. Rechtstreekse metingen
-van vegetatiehoogte en afzonderlijke boom-, struik-, kruid- en moslagen
-ontbreken. Zulke structuur kan dus alleen met vooraf gevalideerde
-groeivormproxies of een onafhankelijke kaartbron worden toegevoegd.
+### Volledige PQ-samenstelling en IPI
 
-Voor die onafhankelijke toets ligt de landbedekking van Schmidt-Tauscher,
-Häger en Van der Hagen het meest voor de hand: 25 BMP-plots met struweel, bos,
-boomgroepen, lage vegetatie, riet, kaal zand en water in 2001 en 2022. De
-openbare plottabel is beschikbaar; de 5 × 5-meterclassificatierasters zijn nog
-niet in de database aanwezig. De 918 CBS-landgebruikregels voor 55 plots en
-vijf kaartjaren tussen 1996 en 2022 zijn breder gedekt maar ecologisch grover.
-De habitatkaart van 2014 en het AHN-terreinmodel van 2025 kunnen alleen
-ruimtelijke context leveren; het AHN-terreinmodel meet maaiveld, niet
-vegetatiehoogte. In publicaties beschreven vegetatiehoogtekaarten voor 2008,
-2014 en 2019–2021 blijven kandidaatbron zolang de afgeleide rasters niet zijn
-gevonden en beoordeeld.
+Deze vervolgstap gebruikt de 53.122 taxonregels uit 2.007 provinciale
+PQ-opnamen over 1981–2025. Daarvan zijn 1.314 opnamen, 501 plotjaren en 642
+centrale taxa aan 35 actieve vogelplots gekoppeld. De gelijktijdige
+vogelvergelijking bevat 37.140 geldige soort–plot–jaarrijen, 406
+vogelplotjaren, 35 plots en 154 soorten over 1989–2025. Dezelfde bron-, nul-,
+scope- en tellercorrecties zijn gebruikt als in het brede PQ-model;
+Aalscholver blijft alleen uit de vogel–vegetatiemodellen verwijderd.
+
+De Hellinger-getransformeerde taxonsamenstelling is samengevat in drie
+compositieassen. Zij verklaren respectievelijk 12,1%, 9,1% en 6,6%, samen
+27,8%, van de variatie. De eerste as onderscheidt vooral houtige en ruigere
+vegetatie met onder meer zomereik, eenstijlige meidoorn en grote brandnetel van
+open droog duin met mossen, fijn schapengras en geel walstro. De tweede as
+onderscheidt vooral natte vegetatie met riet, watermunt, kruipwilg en zeggen van
+houtige vegetatie. Het teken van een compositieas is op zichzelf willekeurig;
+de taxa aan beide uiteinden geven haar inhoud.
+
+In het volledige model ligt geen van de drie gemiddelde veranderingen binnen
+dezelfde plot duidelijk van nul af. De verwachte verhoudingen per
+standaardafwijking zijn 0,987, 0,991 en 0,992. Toch verbetert de compositie de
+ruimtelijke logscore gemiddeld met 0,093 en is zij in vier van vijf
+achtergehouden plotblokken beter. Voor latere jaren is de logscore in beide
+tijdsblokken juist iets slechter. De volledige taxonsamenstelling beschrijft
+daarmee verschillen tussen plots beter, maar voorspelt met deze drie assen nog
+geen verandering door de tijd.
+
+IPI is samengebracht tot open duin, nat/water, struweel en bos. Dit zijn
+aandelen van de bemonsterde PQ-opnamen, geen oppervlakteaandelen van de
+vogelplot. Ook hier zijn de gemiddelde binnen-ploteffecten vrijwel nul. De
+ruimtelijke logscore verbetert gemiddeld met 0,036 en in drie van vier geldige
+plotblokken; één van vijf modellen had een niet-positief-definiete Hessiaan.
+Beide tijdsblokken worden iets slechter. IPI levert dus een bescheiden
+ruimtelijke habitatbeschrijving, geen aangetoonde temporele voorspelling.
+
+De vertragingen van één tot en met drie jaar zijn alleen qua dekking
+vastgelegd: 390, 372 en 349 vogelplotjaren. Omdat het gelijktijdige model geen
+tijdswinst oplevert, zijn daarvoor niet alsnog 42 kostbare lag-validatiemodellen
+geschat.
+
+### Onafhankelijke landbedekking 2001 en 2022
+
+Online Resource 2 van Schmidt-Tauscher, Häger en Van der Hagen bevat zeven
+landbedekkingsklassen voor 25 BMP-plots en de jaren 2001 en 2022. De
+oppervlakten zijn omgerekend naar aandelen binnen het geclassificeerde deel.
+Bij M71 is in beide jaren 47,89 van de opgegeven 48,46 hectare geclassificeerd;
+de ontbrekende 0,57 hectare, 1,2%, blijft zichtbaar en is niet aan een klasse
+toegerekend. M17 heeft in de actuele vogelmatrix geen territoriumplotjaar.
+Daardoor gebruiken de groepsmodellen maximaal 24 plots. De vogeldata zijn
+zonder jaarlijkse interpolatie samengevat in de vensters 1997–2001 en
+2018–2022.
+
+De volledige modellen slagen voor water-, riet- en struweelvogels. Het model
+met landbedekking is numeriek ongeldig voor pionier/open-duinvogels en
+boomgroepvogels; bij bosvogels is het basismodel ongeldig. Hun coëfficiënten
+kunnen daarom niet als geldige modelvergelijking worden gelezen. Van de vijftig
+geblokkeerde vergelijkingen voor compositie, IPI en landbedekking slagen er 31
+en hebben er 19 een niet-positief-definiete Hessiaan of een andere expliciet
+vastgelegde convergentiewaarschuwing.
+
+Wateroppervlak levert het duidelijkste ruimtelijke landbedekkingssignaal: de
+logscore is in alle vijf plotblokken beter, hoewel MAE en RMSE slechts in drie
+blokken verbeteren. De binnen-plotreactie is niet duidelijk. Bij rietvogels
+zijn drie van vijf ruimtelijke blokken geldig; twee daarvan verbeteren. Het
+volledige model schat bij meer riet binnen dezelfde plot een verhouding van
+0,884 per standaardafwijking. Dat onverwachte negatieve verband is met slechts
+twee kaartmomenten, gemengde voorspelscores en één geldig tijdsblok geen bewijs
+dat uitbreiding van riet rietvogels doet afnemen. Voor struweelvogels zijn vier
+van vijf ruimtelijke logscores iets beter, maar één duidelijk slechter blok
+maakt het gemiddelde negatief en het tijdsmodel is ongeldig. Voor
+open-duin-, boomgroep- en bosvogels is de numerieke dekking te instabiel voor
+een stevige uitspraak.
+
+De landbedekking bevestigt dus dat een ecologisch specifieke kaartlaag nuttige
+ruimtelijke informatie kan bevatten. Zij levert nog geen algemeen geldig model
+van vogelverandering. Twee momentopnamen meten bovendien geen verticale
+gelaagdheid, vegetatiehoogte, voedsel of nestgelegenheid.
+
+### Besluit over vegetatiehoogte
+
+Een algemene hoogtecorrectie wordt niet ingevoerd. Wel is een gerichte proef
+verdedigbaar voor bos-, boomgroep- en struweelvogels, juist omdat hun
+landbedekkingsmodellen geen stabiele temporele toets leveren en de huidige
+bronnen verticale structuur niet meten. De voorkeursroute is DSM minus DTM uit
+openbare AHN-cycli, gekoppeld aan het werkelijke inwinningsjaar in Meijendel en
+gecontroleerd op gebouwen, water en andere niet-vegetatieobjecten. Of die proxy
+de voorspelling werkelijk verbetert, moet in dezelfde geblokkeerde toets blijken.
 
 ### 4. Aanvullende verklarende blokken
 
@@ -487,14 +556,18 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Continue vogelkenmerken | Beschikbaar | 23 goedgekeurde kenmerken; zestien gevuld voor alle 156 positieve soorten. |
 | Teller- en ervaringsmodel | Uitgevoerd | Teller/tellerteam blijft als random effect in volgende modellen; ervaring in dezelfde plot en elders blijven afzonderlijke doorlopende correcties. De effecten worden per analyse opnieuw geschat en veranderen de brongegevens niet. |
 | Voorspellend vogelmodel met drie brede PQ-maten | Uitgevoerd | Duidelijke verschillen tussen plots, maar geen duidelijke gemiddelde binnen-plotreactie. De tijdsvalidatie verbetert bescheiden; de ruimtelijke winst blijft tussen maten en blokken gemengd. Met deze drie maten is geen bestendige extra voorspellende waarde over zowel nieuwe plots als latere jaren aangetoond. |
+| Volledige PQ-samenstelling | Uitgevoerd | Drie assen verklaren samen 27,8%. De ruimtelijke voorspelling verbetert in vier van vijf plotblokken; beide tijdsblokken worden iets slechter. |
+| IPI-habitatproxy | Uitgevoerd | Bescheiden ruimtelijke winst in drie van vier geldige plotblokken; geen tijdswinst en geen duidelijke gemiddelde binnen-plotreactie. |
+| Landbedekking 2001/2022 | Uitgevoerd | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
+| Vegetatiehoogte | Besloten | Geen algemene toevoeging. Eerst een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en struweelvogels. |
 | Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
 ## Betekenis voor het latere artikel
 
-Het artikel wordt pas inhoudelijk afgerond nadat vegetatiesamenstelling en
-beschikbare structuurproxies zijn onderzocht, de groepsuitkomsten zijn
+Het artikel wordt pas inhoudelijk afgerond nadat de gerichte hoogteproef en
+aanvullende omgevingsblokken zijn beoordeeld, de groepsuitkomsten zijn
 afgeleid en de poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
 gevonden, maar ook:
 

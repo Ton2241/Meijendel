@@ -5,15 +5,16 @@ de broedvogels van Meijendel, hun relatie met vegetatie en andere biotische en
 abiotische factoren, de invloed van tellers en de detecteerbaarheid van
 veranderingen.
 
-De eerste drie stappen zijn afgerond. Er staat een reproduceerbare
-soort–plot–jaarmatrix, de invloed van teller/tellerteam en geregistreerde
-ervaring is geschat en de toegevoegde waarde van drie PQ-vegetatiematen is
-onderzocht. Die vegetatiematen verbeteren de voorspelling voor andere plots
-niet bestendig. Binnen dezelfde plot is evenmin een duidelijke gemiddelde
-vogelreactie gevonden nadat soortenrijkdom, Shannon of totale bedekking
-verandert. Daarmee is wel een ruimtelijk verschil tussen plots beschreven,
-maar nog geen voorspellende relatie tussen vegetatieverandering en
-vogelverandering aangetoond.
+De analysematrix, tellergevoeligheid en drie vegetatiestappen zijn afgerond.
+Naast soortenrijkdom, Shannon en totale bedekking zijn nu ook de volledige
+PQ-soortensamenstelling, IPI en de onafhankelijke landbedekking van 2001 en
+2022 onderzocht. De taxonsamenstelling en IPI voorspellen verschillen tussen
+andere plots beter, maar niet de latere jaren. Landbedekking levert vooral voor
+watervogels ruimtelijk signaal; voor meerdere andere vogelgroepen is de
+numerieke validatie te instabiel. Een algemene relatie tussen
+vegetatieverandering en vogelverandering is dus nog niet aangetoond. Wel is een
+gerichte proef met AHN-vegetatiehoogte voor bos-, boomgroep- en
+struweelvogels verantwoord.
 
 ## Begin hier
 
@@ -105,6 +106,21 @@ drie brede PQ-maten is daarom geen bestendige extra voorspellende waarde over
 zowel nieuwe plots als latere jaren aangetoond. Dit bewijst niet dat de
 vegetatieveranderingen te klein waren; de power voor deze relaties is nog niet
 berekend.
+
+De aanvullende samenstellingsanalyse gebruikt binnen dezelfde 35 plots 1.314
+PQ-opnamen, 501 PQ-plotjaren en 642 taxa uit 1981–2025. Drie compositieassen
+verklaren samen 27,8% van de variatie. In 37.140 vogelrijen uit 406
+vogelplotjaren over 1989–2025 verbetert de ruimtelijke logscore in vier van
+vijf plotblokken, maar niet in twee tijdsblokken. IPI geeft hetzelfde, zwakkere
+patroon: ruimtelijke winst in drie van vier geldige blokken en geen tijdswinst.
+
+De landbedekkingsbron omvat 25 BMP-plots en twee jaren, 2001 en 2022. M17 heeft
+geen territoriumplotjaar in de actuele vogelmatrix; de modellen gebruiken dus
+maximaal 24 plots en de vensters 1997–2001 en 2018–2022. Wateroppervlak geeft
+het duidelijkste ruimtelijke signaal voor watervogels. Van vijftig
+validatievergelijkingen voor compositie, IPI en landbedekking zijn er 31 geldig
+en 19 numeriek ongeldig. Daarom worden de resultaten voor open-duin-,
+boomgroep- en bosvogels niet als stevige verbanden gepresenteerd.
 
 ## Vaste analysescope
 
