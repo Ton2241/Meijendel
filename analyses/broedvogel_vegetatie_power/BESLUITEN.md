@@ -23,6 +23,11 @@ stilzwijgend herschreven.
   gegevens worden niet gekopieerd naar de analysedirectory.
 - Iedere formele uitvoering krijgt een manifest met gegevensselectie,
   aantallen, versies, modelinstellingen, controles en uitkomsten.
+- Iedere berekende uitkomst wordt bewaard en gerapporteerd, ook wanneer geen
+  statistisch duidelijk of ecologisch betekenisvol verband is gevonden of een
+  model niet geldig kon worden geschat. De rapportage noemt steeds de gebruikte
+  gegevensverzameling, het aantal, de periode en de modelstatus; uitkomsten
+  worden niet geselecteerd op opvallendheid of betekenis.
 - Grote tijdelijke uitvoer, caches en modelobjecten worden niet in Git
   opgenomen.
 
@@ -78,17 +83,30 @@ stilzwijgend herschreven.
   negatief-binomiale logscore in vijf achtergehouden plotblokken en twee
   achtergehouden perioden. MAE en RMSE blijven zichtbaar, maar kunnen door
   grote kolonievogelaantallen worden gedomineerd.
-- De formele run `20261011T084206Z-c1136b4ef309` vond geen bestendige
-  ruimtelijke voorspelwinst en geen duidelijke gemiddelde binnen-plotreactie.
-  Een kleine relatieve tijdswinst telt niet als bruikbare voorspelling zolang
-  het model bij kolonieverschuivingen biologisch onrealistische aantallen kan
-  produceren.
+- De formele run `20261011T084206Z-c1136b4ef309` gebruikte 37.362
+  soort–plot–jaarrijen uit 406 vogelplotjaren, 35 plots en 155 soorten over
+  1989–2025. Zij vond geen bestendige ruimtelijke voorspelwinst en geen
+  duidelijke gemiddelde binnen-plotreactie. Een kleine relatieve tijdswinst
+  telde niet als bruikbare voorspelling, omdat het model bij Aalscholver
+  biologisch onrealistische aantallen produceerde. Deze run blijft als
+  modeldiagnose vastgelegd en is voor de inhoudelijke PQ-uitkomst vervangen
+  door de run zonder Aalscholver hieronder.
 - Aalscholver (`soort_id = 5`) wordt uit het PQ-vegetatiemodel verwijderd. Het
   is een kolonievogel waarvan de aantallen vooral door beschikbaarheid en
   verplaatsing van de nestelplaats worden bepaald; die nestelplaats wordt niet
   door plantensoortenrijkdom, Shannon of totale PQ-bedekking gemeten. De soort
   blijft ongewijzigd in de vogelbrondata en in analyses waarvoor deze
   ecologische uitsluitingsgrond niet geldt.
+- De vervangende formele run `20261011T101029Z-cf9b4e61c455` gebruikt 37.140
+  soort–plot–jaarrijen uit 406 vogelplotjaren, 35 plots en 154 soorten over
+  1989–2025. Alle 24 volledige en 42 validatiemodellen slaagden. De
+  binnen-plotreacties bleven rond één en waren voor geen van de drie PQ-maten
+  duidelijk. De eerdere Aalscholverextrapolatie verdween; het hoogste
+  modelgemiddelde in de tijdvalidatie was 133 Vinken tegenover 11 getelde in
+  M55/2025. De tijdscores verbeterden bescheiden, terwijl de ruimtelijke
+  validatie tussen maten en blokken gemengd bleef. Met deze drie brede
+  PQ-maten is geen bestendige extra voorspellende waarde over zowel nieuwe
+  plots als latere jaren aangetoond.
 
 ## 9 oktober 2026 — analysematrix stap 1
 

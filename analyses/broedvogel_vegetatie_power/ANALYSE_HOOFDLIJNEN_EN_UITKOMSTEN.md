@@ -325,8 +325,11 @@ en “de vogels veranderen nadat de vegetatie binnen dezelfde plot verandert”.
 Vertragingen worden vooraf beperkt tot hetzelfde jaar, één jaar en, indien
 ecologisch verdedigbaar, twee of drie jaar.
 
-Deze stap is uitgevoerd op 37.362 geldige soort–plot–jaarrijen uit 406
-vogelplotjaren in 35 plots, voor 155 soorten en 1989–2025. De technische
+Deze stap is uitgevoerd op 37.140 geldige soort–plot–jaarrijen uit 406
+vogelplotjaren in 35 plots, voor 154 soorten en 1989–2025. Muskuseend heeft in
+deze overlap geen geldige modelrij. Aalscholver is alleen uit het PQ-model
+verwijderd, omdat de nestelplaats van deze kolonievogel niet door de gebruikte
+PQ-maten wordt gemeten. De technische
 modelterm `tellerteam_factor` kan zowel één teller als een tellerteam van twee
 of meer tellers aanduiden. Teller/tellerteam en beide ervaringsmaten zijn in
 ieder model opnieuw geschat. Bij vertraging één, twee en drie jaar bleven
@@ -343,9 +346,33 @@ omstandigheden, en soorten reageren onderling verschillend.
 De voor de veranderingsvraag beslissende binnen-plotreacties liggen met
 factoren 0,99, 0,98 en 1,01 rond één en zijn niet duidelijk van geen gemiddeld
 effect te onderscheiden. Ook bij één tot drie jaar vertraging ontstaat geen
-consistent binnen-plotverband. De huidige PQ-maten tonen dus wel waar plots
-gemiddeld van elkaar verschillen, maar nog niet dat vogels in dezelfde plot
-voorspelbaar veranderen nadat deze vegetatiematen veranderen.
+consistent binnen-plotverband. Met deze drie brede PQ-maten is geen
+bestendige extra voorspellende waarde over zowel nieuwe plots als latere jaren
+aangetoond. Dit betekent niet dat de veranderingen in de PQ's te gering waren;
+dat is zonder een afzonderlijke poweranalyse niet vastgesteld. De maten kunnen
+ook ecologisch te grof zijn, tegengestelde soortreacties middelen of relevante
+structuurkenmerken niet meten.
+
+De 53.122 taxonregels uit 2.007 PQ-opnamen over 1981–2025 bewaren de
+taxonidentiteit en bedekking wel. Daardoor kan een volgende stap de volledige
+vegetatiesamenstelling gebruiken, bijvoorbeeld compositieassen en
+verschuivingen tussen open-duin-, struweel- en bostaxa. Het IPI-vegetatietype
+is bij de opnamen beschikbaar als brede habitatproxy. Rechtstreekse metingen
+van vegetatiehoogte en afzonderlijke boom-, struik-, kruid- en moslagen
+ontbreken. Zulke structuur kan dus alleen met vooraf gevalideerde
+groeivormproxies of een onafhankelijke kaartbron worden toegevoegd.
+
+Voor die onafhankelijke toets ligt de landbedekking van Schmidt-Tauscher,
+Häger en Van der Hagen het meest voor de hand: 25 BMP-plots met struweel, bos,
+boomgroepen, lage vegetatie, riet, kaal zand en water in 2001 en 2022. De
+openbare plottabel is beschikbaar; de 5 × 5-meterclassificatierasters zijn nog
+niet in de database aanwezig. De 918 CBS-landgebruikregels voor 55 plots en
+vijf kaartjaren tussen 1996 en 2022 zijn breder gedekt maar ecologisch grover.
+De habitatkaart van 2014 en het AHN-terreinmodel van 2025 kunnen alleen
+ruimtelijke context leveren; het AHN-terreinmodel meet maaiveld, niet
+vegetatiehoogte. In publicaties beschreven vegetatiehoogtekaarten voor 2008,
+2014 en 2019–2021 blijven kandidaatbron zolang de afgeleide rasters niet zijn
+gevonden en beoordeeld.
 
 ### 4. Aanvullende verklarende blokken
 
@@ -383,17 +410,20 @@ exact dezelfde gegevens, niet alleen een significante regressiecoëfficiënt.
 
 Deze toets is uitgevoerd met vijf achtergehouden plotblokken en twee
 achtergehouden perioden. Totale bedekking verbeterde de ruimtelijke logscore
-gemiddeld licht, maar slechts in twee van vijf blokken. Soortenrijkdom en
-Shannon verslechterden haar gemiddeld en waren eveneens in twee blokken beter.
-Er is daarmee geen bestendige ruimtelijke voorspelwinst.
+gemiddeld licht en was in drie van vijf blokken beter. Soortenrijkdom was in
+vier van vijf blokken beter, maar door één duidelijk slechter blok gemiddeld
+vrijwel gelijk. Shannon verslechterde gemiddeld en was in twee van vijf
+blokken beter. Er is daarmee geen ruimtelijke winst die bestendig is over de
+drie maten en vijf plotblokken.
 
-Voor latere jaren waren de relatieve logscores met PQ in beide tijdsblokken
-iets beter. De absolute voorspellingen waren echter niet bruikbaar bij enkele
-sterke kolonieverschuivingen. Het basismodel voorspelde bijvoorbeeld 14.804
-Aalscholverterritoria in een plot–jaarcombinatie met nul getelde territoria;
-het PQ-model verminderde die ontsporing, maar loste haar niet op. Deze uitkomst
-is een concrete modeldiagnose. Zij geldt niet als bewijs dat PQ-vegetatie de
-latere vogelstand betrouwbaar voorspelt.
+Voor latere jaren waren de logscore, MAE en RMSE met PQ voor alle drie maten in
+beide tijdsblokken iets beter. Na verwijdering van Aalscholver verdween de
+eerdere voorspelling van 14.804 territoria bij een nulwaarneming. Het hoogste
+modelgemiddelde was nu 133 Vinken tegenover 11 getelde in M55/2025. De
+absolute extrapolatie is dus sterk verbeterd maar nog niet volledig goed
+gekalibreerd. De bescheiden relatieve tijdswinst weegt daarom mee als positieve
+modeldiagnose, niet als zelfstandig bewijs dat deze drie PQ-maten de latere
+vogelstand betrouwbaar voorspellen.
 
 ### 7. Poweranalyse
 
@@ -428,6 +458,9 @@ Iedere formele uitvoering krijgt een eigen identificatie en legt vast:
 
 - uitvoerdatum en Git-commit;
 - databaseschema en controleerbare databasevingerafdruk;
+- alle berekende uitkomsten, inclusief nulbevindingen, inhoudelijk niet
+  betekenisvolle uitkomsten en modeluitval, telkens met gegevensverzameling,
+  aantal, periode en modelstatus;
 - gebruikte tabellen, views, perioden en filters;
 - aantallen regels, soorten, plots en plotjaren na iedere selectie;
 - bron-, nul- en afkeurstatussen;
@@ -453,16 +486,16 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Habitatgroepen | Beschikbaar | Acht habitattypen; analysevarianten sterk en sterk plus matig. |
 | Continue vogelkenmerken | Beschikbaar | 23 goedgekeurde kenmerken; zestien gevuld voor alle 156 positieve soorten. |
 | Teller- en ervaringsmodel | Uitgevoerd | Teller/tellerteam blijft als random effect in volgende modellen; ervaring in dezelfde plot en elders blijven afzonderlijke doorlopende correcties. De effecten worden per analyse opnieuw geschat en veranderen de brongegevens niet. |
-| Voorspellend vogelmodel met PQ | Uitgevoerd, nog niet voldoende voorspellend | Duidelijke verschillen tussen plots, maar geen duidelijke gemiddelde binnen-plotreactie en geen bestendige ruimtelijke voorspelwinst. De tijdsvalidatie legt onrealistische extrapolatie bij kolonieverschuivingen bloot. |
+| Voorspellend vogelmodel met drie brede PQ-maten | Uitgevoerd | Duidelijke verschillen tussen plots, maar geen duidelijke gemiddelde binnen-plotreactie. De tijdsvalidatie verbetert bescheiden; de ruimtelijke winst blijft tussen maten en blokken gemengd. Met deze drie maten is geen bestendige extra voorspellende waarde over zowel nieuwe plots als latere jaren aangetoond. |
 | Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
 ## Betekenis voor het latere artikel
 
-Het artikel wordt pas inhoudelijk afgerond nadat de modelstructuur voor
-kolonieverschuivingen is verbeterd, de groepsuitkomsten zijn afgeleid en de
-poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
+Het artikel wordt pas inhoudelijk afgerond nadat vegetatiesamenstelling en
+beschikbare structuurproxies zijn onderzocht, de groepsuitkomsten zijn
+afgeleid en de poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
 gevonden, maar ook:
 
 - hoeveel beter het model buiten de schattingsgegevens voorspelt;

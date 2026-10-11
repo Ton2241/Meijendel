@@ -78,10 +78,12 @@ is daarom: teller en ervaring mogen in het komende vegetatie- en
 powermodel niet worden genegeerd, maar hun effecten moeten binnen de dan
 gebruikte gegevens opnieuw worden geschat.
 
-Het vegetatiemodel gebruikt voor de gelijktijdige vergelijking 37.362 geldige
-soort–plot–jaarrijen uit 406 vogelplotjaren in 35 plots, voor 155 soorten en de
-periode 1989–2025. Alleen Muskuseend heeft binnen deze PQ-overlap geen geldige
-modelrij. Verschillen tussen plots zijn zichtbaar: bij een één
+Het vegetatiemodel gebruikt voor de gelijktijdige vergelijking 37.140 geldige
+soort–plot–jaarrijen uit 406 vogelplotjaren in 35 plots, voor 154 soorten en de
+periode 1989–2025. Muskuseend heeft binnen deze PQ-overlap geen geldige
+modelrij. Aalscholver is alleen uit dit PQ-model verwijderd, omdat de
+nestelplaats van deze kolonievogel niet door de gebruikte PQ-maten wordt
+gemeten. Verschillen tussen plots zijn zichtbaar: bij een één
 standaardafwijking hogere plantensoortenrijkdom, Shannon of totale bedekking is
 het gemiddelde verwachte territoriumaantal per soort respectievelijk een
 factor 0,80, 0,88 en 0,85 lager. Binnen dezelfde plot liggen de overeenkomstige
@@ -91,14 +93,18 @@ tussen plots, niet op een aangetoonde vogelreactie nadat de gemeten vegetatie
 in een plot verandert.
 
 Bij vijfvoudig achterhouden van volledige plots verbeterde totale bedekking de
-gemiddelde negatief-binomiale logscore licht, maar slechts in twee van vijf
-blokken. Soortenrijkdom en Shannon verslechterden die score gemiddeld en waren
-eveneens slechts in twee blokken beter. In de tijdstoets waren de relatieve
-scores iets gunstiger met PQ, maar de absolute voorspelling ontspoorde bij
-enkele sterke kolonieverschuivingen: voor Aalscholver werd in een
-plot–jaarcombinatie 14.804 verwacht waar nul territoria waren geteld. Die
-tijdstoets geldt daarom als modeldiagnose, niet als bewijs van bruikbare
-voorspellende kracht.
+gemiddelde negatief-binomiale logscore licht en was zij in drie van vijf
+blokken beter. Soortenrijkdom was in vier van vijf blokken beter, maar door één
+duidelijk slechter blok gemiddeld vrijwel gelijk; Shannon was gemiddeld
+slechter en in twee van vijf blokken beter. Ruimtelijk is de winst dus niet
+bestendig over maten en plotblokken. In beide tijdsblokken waren de scores met
+PQ voor alle drie maten iets beter. Na uitsluiting van Aalscholver verdween de
+eerdere extreme kolonie-extrapolatie, maar het hoogste modelgemiddelde bleef
+met 133 voorspelde Vinken tegenover 11 getelde in M55/2025 te hoog. Met deze
+drie brede PQ-maten is daarom geen bestendige extra voorspellende waarde over
+zowel nieuwe plots als latere jaren aangetoond. Dit bewijst niet dat de
+vegetatieveranderingen te klein waren; de power voor deze relaties is nog niet
+berekend.
 
 ## Vaste analysescope
 

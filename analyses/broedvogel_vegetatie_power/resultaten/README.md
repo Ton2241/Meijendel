@@ -78,12 +78,14 @@ volgend model opnieuw geschat op de exacte daar gebruikte gegevens.
 ## PQ-vegetatiemodel
 
 De bestanden `vegetatie_model_laatste_*` horen bij de formele run
-`20261011T084206Z-c1136b4ef309` van 11 oktober 2026, uitgevoerd met commit
-`c1136b4ef309877ccd086441185e9d3058bc6a02`. De gelijktijdige modelpopulatie
-bevat 37.362 geldige soort–plot–jaarrijen uit 406 vogelplotjaren in 35 Natura
-2000-plots, voor 155 soorten en 1989–2025. Bij vertraging één, twee en drie
+`20261011T101029Z-cf9b4e61c455` van 11 oktober 2026, uitgevoerd met commit
+`cf9b4e61c45558c11553a11cb1b48ce48cf70ffd`. De gelijktijdige modelpopulatie
+bevat 37.140 geldige soort–plot–jaarrijen uit 406 vogelplotjaren in 35 Natura
+2000-plots, voor 154 soorten en 1989–2025. Bij vertraging één, twee en drie
 jaar blijven respectievelijk 390, 372 en 349 plotjaren over. Kavel 91 valt via
-de analysescope af; tussen PQ-meetjaren is niets geïnterpoleerd.
+de analysescope af; tussen PQ-meetjaren is niets geïnterpoleerd. Muskuseend
+heeft geen geldige PQ-modelrij. Aalscholver is alleen uit dit model verwijderd,
+omdat de nestelplaats niet door de gebruikte PQ-maten wordt gemeten.
 
 Alle 24 volledige modellen en 42 validatiemodellen voldeden aan de numerieke
 eindcontrole. De volledige modellen vinden voor alle drie PQ-maten een
@@ -93,14 +95,18 @@ tot drie jaar bestaan. Het is daarom geen bewijs dat een verandering van
 plantensoortenrijkdom, Shannon of totale bedekking daarna een verandering van
 de vogelstand veroorzaakt of voorspelt.
 
-De ruimtelijk geblokkeerde logscore geeft evenmin een bestendige meerwaarde.
-Totale bedekking is gemiddeld licht beter, maar slechts in twee van vijf
-plotblokken; soortenrijkdom en Shannon zijn gemiddeld slechter en eveneens in
-maar twee blokken beter. De tijdsscores zijn relatief iets gunstiger met PQ,
-maar beide modellen extrapoleren bij enkele kolonieverschuivingen onrealistisch.
-De meest uitgesproken fout is 14.804 voorspelde Aalscholverterritoria tegenover
-nul getelde territoria in één validatiecel. Die relatieve tijdswinst is dus
-geen bruikbaar voorspelresultaat.
+De ruimtelijk geblokkeerde uitkomst is gemengd. Totale bedekking verbetert de
+gemiddelde logscore licht en is in drie van vijf plotblokken beter.
+Soortenrijkdom is in vier van vijf blokken beter, maar door één slechter blok
+gemiddeld vrijwel gelijk; Shannon is gemiddeld slechter en in twee blokken
+beter. In beide tijdsblokken verbeteren logscore, MAE en RMSE voor alle drie
+maten bescheiden. De eerdere extreme Aalscholverextrapolatie verdwijnt; het
+hoogste modelgemiddelde is 133 voorspelde Vinken tegenover 11 getelde in
+M55/2025. De absolute tijdvoorspelling is dus sterk verbeterd maar nog niet
+volledig goed gekalibreerd. Met deze drie brede PQ-maten is geen bestendige
+extra voorspellende waarde over zowel nieuwe plots als latere jaren aangetoond.
+Dit bewijst niet dat de PQ-veranderingen te klein waren; daarvoor is nog geen
+poweranalyse uitgevoerd.
 
 `vegetatie_model_laatste_dekking.csv` legt de vier modelpopulaties vast.
 `vegetatie_model_laatste_modellen.csv` bevat modelstatus en fitmaten;

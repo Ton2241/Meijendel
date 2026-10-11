@@ -1,9 +1,9 @@
 {
-  "run_id": "20261011T084206Z-c1136b4ef309",
-  "git_commit": "c1136b4ef309877ccd086441185e9d3058bc6a02",
+  "run_id": "20261011T101029Z-cf9b4e61c455",
+  "git_commit": "cf9b4e61c45558c11553a11cb1b48ce48cf70ffd",
   "database_name": "Meijendel",
   "mysql_version": "9.7.1",
-  "executed_at_utc": "2026-10-11T10:03:41Z",
+  "executed_at_utc": "2026-10-11T11:37:42Z",
   "source_fingerprint_sha256": "90ef6b934cf89b448c5f629dd0b104f38461b91e6a370301225ac57f56496c0d",
   "package_versions": {
     "glmmTMB": "1.1.14",
@@ -83,31 +83,43 @@
   },
   "lags": [0, 1, 2, 3],
   "primary_validation_lag": 0,
+  "response_exclusions": [
+    {
+      "soort_id": 5,
+      "soort_naam": "Aalscholver",
+      "reden": "Kolonievogel; territoriumaantal wordt bepaald door een nestelplaats die niet door de gebruikte PQ-vegetatiematen wordt gemeten."
+    }
+  ],
   "outputs": {
     "dekking": {
       "file": "vegetatie_model_dekking.csv",
       "bytes": 479,
-      "sha256": "0936b2897afa62ba9d2a6beb83ffd097389c575bf3b391ae5f23dd5e7cb55c96"
+      "sha256": "c9ce04606217f8ee2a2c1911ac93bb18021ef61c2269da0619d9612365ac7cf1"
     },
     "modellen": {
       "file": "vegetatie_model_modellen.csv",
-      "bytes": 4265,
-      "sha256": "7b5cf2f139016045797c0a4931426af1c362fd16f554362c29338ae18cb2aa06"
+      "bytes": 4261,
+      "sha256": "61a76134f1cb9c7b410032d522eb0ee1ca7e4d1923b5ba5059391e2c7bc8fd10"
     },
     "validatie": {
       "file": "vegetatie_model_validatie.csv",
-      "bytes": 5212,
-      "sha256": "98f0df455e6b3e74a20e1732a27dbd1035d5d5d0b15438ac28fb74ad4b771760"
+      "bytes": 5221,
+      "sha256": "9bbd9d6704fdf1ea8b22d8ddde5b73cade0c8ffbbfbbd20ba801a826bd6c8b01"
     },
     "samenvatting": {
       "file": "vegetatie_model_samenvatting.csv",
-      "bytes": 689,
-      "sha256": "475bf514ee4bea2732e2afba529ca67765952f104675b2bc510f9be511f98fd5"
+      "bytes": 702,
+      "sha256": "b2bdfb0ddc57e9b21d1dbe72226aa67770434120ccfea5c1c5df4d525ace173d"
+    },
+    "effecten": {
+      "file": "vegetatie_model_effecten.csv",
+      "bytes": 3212,
+      "sha256": "31473f969671f1e5db01a5fe7b91fb41f875aebfa189a7ee76decfe6dd82cf19"
     },
     "soorten": {
       "file": "vegetatie_model_soorten.csv",
-      "bytes": 228648,
-      "sha256": "d8f359d39898b0bcb85f7e458f7e061ddd7a9bada00861b5f6a7352ad502234f"
+      "bytes": 227804,
+      "sha256": "4cd803115254e9b4b1f5dfae42e42a9229bead528cd8652129e55f0d9b2b1dee"
     }
   }
 }
