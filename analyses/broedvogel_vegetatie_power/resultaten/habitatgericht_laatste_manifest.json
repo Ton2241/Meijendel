@@ -1,7 +1,7 @@
 {
   "run_id": "20261011T160059Z-9e3a1178fa51",
   "git_commit": "9e3a1178fa51c5153476b37f74a3e4a66556c9e2",
-  "reporting_commit": "9e3a1178fa51c5153476b37f74a3e4a66556c9e2",
+  "reporting_commit": "a074c5093fc11d8288f05f2fb45d7509cbcca38a",
   "database_name": "Meijendel",
   "mysql_version": "9.7.1",
   "executed_at_utc": "2026-10-11T16:19:16Z",
