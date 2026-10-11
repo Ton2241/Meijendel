@@ -101,6 +101,16 @@ stopifnot(
   !temporal_design$uitvoerbaar,
   temporal_design$aantal_onafhankelijke_structuurmetingen == 2L
 )
+design_state <- list(items = list(
+  land_water = list(data = data.frame(landbedekking_jaar = c(2001L, 2022L))),
+  ahn_open = list(data = data.frame(ahn_jaar = c(2014L, 2020L)))
+))
+design_manifest <- targeted_temporal_design_manifest(design_state)
+stopifnot(
+  design_manifest$status == "niet_uitvoerbaar",
+  identical(design_manifest$landbedekking_meetjaren, c(2001L, 2022L)),
+  identical(design_manifest$ahn_meetjaren, c(2014L, 2020L))
+)
 
 decision <- decide_targeted_model(
   basis_status = "geslaagd", habitat_status = "geslaagd",

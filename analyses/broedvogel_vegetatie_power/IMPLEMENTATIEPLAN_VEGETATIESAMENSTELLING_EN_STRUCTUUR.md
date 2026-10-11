@@ -106,7 +106,7 @@ buiten de schattingsgegevens.
 ## Vervolguitvoering 11 oktober 2026
 
 De gerichte proef is uitgevoerd in run
-`20261011T152905Z-4035fe0a00cd`. AHN3/2014 en AHN4/2020 leveren 110
+`20261011T160059Z-9e3a1178fa51`. AHN3/2014 en AHN4/2020 leveren 110
 plot–cyclusregels voor 55 plots. De analyse gebruikt tien vooraf bepaalde
 combinaties van structuurbron en vogelgroep en voegt vier seizoensmaten uit
 het dagelijkse weer toe. De gebruikte modelpopulaties omvatten per combinatie

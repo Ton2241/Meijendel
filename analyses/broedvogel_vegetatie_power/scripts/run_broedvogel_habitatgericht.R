@@ -126,6 +126,25 @@ summarise_targeted_result <- function(spec, fit, validation, effects) {
   )
 }
 
+targeted_temporal_design_manifest <- function(state) {
+  land_years <- sort(unique(state$items$land_water$data$landbedekking_jaar))
+  ahn_years <- sort(unique(state$items$ahn_open$data$ahn_jaar))
+  designs <- lapply(state$items, function(item) targeted_temporal_design(item$data))
+  executable <- vapply(designs, `[[`, logical(1), "uitvoerbaar")
+  list(
+    status = if (all(executable)) "uitvoerbaar" else if (any(executable)) {
+      "gedeeltelijk_uitvoerbaar"
+    } else {
+      "niet_uitvoerbaar"
+    },
+    reden = if (all(executable)) "" else paste(unique(vapply(
+      designs[!executable], `[[`, character(1), "reden"
+    )), collapse = " "),
+    landbedekking_meetjaren = as.integer(land_years),
+    ahn_meetjaren = as.integer(ahn_years)
+  )
+}
+
 run_targeted_pipeline <- function(input_dir, run_dir, metadata, compact_results_dir = NULL) {
   dir.create(run_dir, recursive = TRUE, showWarnings = FALSE)
   state <- build_targeted_state(input_dir)
@@ -159,6 +178,7 @@ run_targeted_pipeline <- function(input_dir, run_dir, metadata, compact_results_
     source_fingerprint_sha256 = state$source_fingerprint_sha256,
     package_versions = package_versions_for_manifest(),
     specifications = state$specs,
+    temporal_validation_design = targeted_temporal_design_manifest(state),
     outputs = lapply(outputs, function(path) list(
       file = basename(path), bytes = unname(file.info(path)$size), sha256 = sha256_file(path)
     ))
@@ -224,12 +244,7 @@ reclassify_two_snapshot_temporal_results <- function(run_dir, compact_results_di
     write_csv_atomic(loo, loo_path)
   }
   manifest <- jsonlite::read_json(manifest_path, simplifyVector = FALSE)
-  manifest$temporal_validation_design <- list(
-    status = "niet_uitvoerbaar",
-    reden = "Beide structuurbronnen hebben slechts twee onafhankelijke meetmomenten.",
-    landbedekking_meetjaren = c(2001L, 2022L),
-    ahn_meetjaren = c(2014L, 2020L)
-  )
+  manifest$temporal_validation_design <- targeted_temporal_design_manifest(state)
   for (name in names(manifest$outputs)) {
     path <- file.path(run_dir, manifest$outputs[[name]]$file)
     manifest$outputs[[name]]$bytes <- unname(file.info(path)$size)

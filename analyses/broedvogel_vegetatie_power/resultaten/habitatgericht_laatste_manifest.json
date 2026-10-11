@@ -1,10 +1,10 @@
 {
-  "run_id": "20261011T152905Z-4035fe0a00cd",
-  "git_commit": "4035fe0a00cd5da6305b2e68cca3fadce6febc45",
-  "reporting_commit": "4035fe0a00cd5da6305b2e68cca3fadce6febc45",
+  "run_id": "20261011T160059Z-9e3a1178fa51",
+  "git_commit": "9e3a1178fa51c5153476b37f74a3e4a66556c9e2",
+  "reporting_commit": "9e3a1178fa51c5153476b37f74a3e4a66556c9e2",
   "database_name": "Meijendel",
   "mysql_version": "9.7.1",
-  "executed_at_utc": "2026-10-11T15:49:18Z",
+  "executed_at_utc": "2026-10-11T16:19:16Z",
   "source_fingerprint_sha256": "fb7e6c91901f920c6a63173d20e36824b5b0c5cfd63564826a59f517c04bf320",
   "package_versions": {
     "glmmTMB": "1.1.14",
@@ -133,7 +133,7 @@
   },
   "temporal_validation_design": {
     "status": "niet_uitvoerbaar",
-    "reden": "Beide structuurbronnen hebben slechts twee onafhankelijke meetmomenten.",
+    "reden": "Slechts 2 onafhankelijke vegetatiestructuurmetingen; het eerste meetmoment alleen leert geen respons op verandering voor toetsing op het tweede meetmoment.",
     "landbedekking_meetjaren": [2001, 2022],
     "ahn_meetjaren": [2014, 2020]
   }
