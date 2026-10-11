@@ -14,6 +14,9 @@ Sys.setenv(MEIJENDEL_MODEL_WORKERS = "2")
 stopifnot(identical(validation_worker_count(), 1L))
 if (is.na(old_workers)) Sys.unsetenv("MEIJENDEL_MODEL_WORKERS") else Sys.setenv(MEIJENDEL_MODEL_WORKERS = old_workers)
 
+failed_model <- list(diagnostics = list(error = "foutmelding"))
+stopifnot(identical(validation_model_failure_message(failed_model), "foutmelding"))
+
 validation <- data.frame(
   validatie = rep(c("ruimte", "tijd"), each = 4),
   fold_id = paste0("f", 1:8),

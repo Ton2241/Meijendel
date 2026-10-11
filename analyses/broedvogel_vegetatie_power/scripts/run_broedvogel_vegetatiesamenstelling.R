@@ -178,6 +178,14 @@ validation_failure_row <- function(
   )
 }
 
+validation_model_failure_message <- function(model) {
+  message <- model$diagnostics$error
+  if (is.null(message) || !length(message) || is.na(message) || !nzchar(message)) {
+    return("onbekende modeluitval")
+  }
+  as.character(message[[1L]])
+}
+
 fit_multivariate_validation_fold <- function(
     data, block, fields, validation_type, fold_id, train_rows, test_rows,
     checkpoint_dir) {
@@ -204,7 +212,7 @@ fit_multivariate_validation_fold <- function(
   names(models) <- names(formulas)
   invalid <- names(models)[vapply(models, function(model) !identical(model$status, "geslaagd"), logical(1))]
   if (length(invalid)) {
-    messages <- vapply(models[invalid], function(model) model$diagnostics$fout, character(1))
+    messages <- vapply(models[invalid], validation_model_failure_message, character(1))
     return(validation_failure_row(
       validation_type, fold_id, block, train, test,
       paste(paste(invalid, messages, sep = ": "), collapse = " | ")
