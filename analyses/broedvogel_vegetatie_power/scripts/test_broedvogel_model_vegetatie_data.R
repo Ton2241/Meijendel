@@ -10,13 +10,13 @@ expect_error <- function(expr, pattern) {
 }
 
 base <- expand.grid(
-  soort_id = 1:2,
+  soort_id = c(1L, 2L, 5L),
   plot_id = c(10L, 20L),
   jaar = 2001:2003,
   KEEP.OUT.ATTRS = FALSE,
   stringsAsFactors = FALSE
 )
-base$soort_naam <- ifelse(base$soort_id == 1L, "A", "B")
+base$soort_naam <- ifelse(base$soort_id == 5L, "Aalscholver", ifelse(base$soort_id == 1L, "A", "B"))
 base$count <- base$soort_id + base$jaar - 2001L
 base$count_raw <- base$count
 base$row_id <- paste(base$soort_id, base$plot_id, base$jaar, sep = ":")
@@ -54,6 +54,8 @@ lag0 <- build_vegetation_population(base, pq, lag_years = 0L)
 lag1 <- build_vegetation_population(base, pq, lag_years = 1L)
 stopifnot(nrow(lag0$data) == 8L)
 stopifnot(nrow(lag1$data) == 12L)
+stopifnot(!5L %in% lag0$data$soort_id)
+stopifnot(!"Aalscholver" %in% lag0$data$soort_naam)
 stopifnot(length(unique(lag1$data$pq_jaar)) == 3L)
 stopifnot(all(lag1$data$jaar - lag1$data$pq_jaar == 1L))
 stopifnot(identical(lag1$row_hash, row_set_sha256(lag1$data$row_id)))

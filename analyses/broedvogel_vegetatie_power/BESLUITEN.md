@@ -83,6 +83,12 @@ stilzwijgend herschreven.
   Een kleine relatieve tijdswinst telt niet als bruikbare voorspelling zolang
   het model bij kolonieverschuivingen biologisch onrealistische aantallen kan
   produceren.
+- Aalscholver (`soort_id = 5`) wordt uit het PQ-vegetatiemodel verwijderd. Het
+  is een kolonievogel waarvan de aantallen vooral door beschikbaarheid en
+  verplaatsing van de nestelplaats worden bepaald; die nestelplaats wordt niet
+  door plantensoortenrijkdom, Shannon of totale PQ-bedekking gemeten. De soort
+  blijft ongewijzigd in de vogelbrondata en in analyses waarvoor deze
+  ecologische uitsluitingsgrond niet geldt.
 
 ## 9 oktober 2026 — analysematrix stap 1
 

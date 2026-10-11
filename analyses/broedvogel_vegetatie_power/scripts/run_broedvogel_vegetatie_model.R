@@ -165,6 +165,7 @@ write_vegetation_manifest <- function(path, metadata, state, formulas, outputs) 
     formulas = formula_manifest(formulas),
     lags = 0:3,
     primary_validation_lag = 0L,
+    response_exclusions = pq_response_exclusions(),
     outputs = output_metadata
   ))
   jsonlite::write_json(manifest, path, auto_unbox = TRUE, pretty = TRUE, null = "null", digits = NA)

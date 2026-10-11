@@ -24,6 +24,18 @@ pq_metric_contract <- function() {
   )
 }
 
+pq_response_exclusions <- function() {
+  data.frame(
+    soort_id = 5L,
+    soort_naam = "Aalscholver",
+    reden = paste(
+      "Kolonievogel; territoriumaantal wordt bepaald door een nestelplaats",
+      "die niet door de gebruikte PQ-vegetatiematen wordt gemeten."
+    ),
+    stringsAsFactors = FALSE
+  )
+}
+
 pq_standardize <- function(x) {
   current_sd <- stats::sd(x)
   if (!is.finite(current_sd) || current_sd <= 0) return(rep(0, length(x)))
@@ -78,6 +90,15 @@ build_vegetation_population <- function(base_population, pq, lag_years = 0L) {
   if (anyDuplicated(base_population$row_id)) {
     stop("Basis-modelpopulatie bevat dubbele soort-plot-jaarcellen.", call. = FALSE)
   }
+  exclusions <- pq_response_exclusions()
+  present <- unique(base_population[base_population$soort_id %in% exclusions$soort_id, c("soort_id", "soort_naam")])
+  if (nrow(present)) {
+    checked <- merge(present, exclusions[c("soort_id", "soort_naam")], by = "soort_id", suffixes = c("_data", "_contract"))
+    if (any(checked$soort_naam_data != checked$soort_naam_contract)) {
+      stop("Soortidentiteit van een PQ-modeluitsluiting wijkt af van het contract.", call. = FALSE)
+    }
+  }
+  base_population <- base_population[!base_population$soort_id %in% exclusions$soort_id, , drop = FALSE]
   pq <- pq[as.integer(pq$plot_id) %in% unique(as.integer(base_population$plot_id)), , drop = FALSE]
   pq_features <- build_pq_plotyear_features(pq)
   pq_features$pq_jaar <- pq_features$jaar
@@ -105,6 +126,7 @@ build_vegetation_population <- function(base_population, pq, lag_years = 0L) {
     data = joined,
     plotyears = plotyears[order(plotyears$jaar, plotyears$plot_id), , drop = FALSE],
     row_hash = row_set_sha256(joined$row_id),
-    lag_years = lag_years
+    lag_years = lag_years,
+    excluded_species = exclusions
   )
 }
