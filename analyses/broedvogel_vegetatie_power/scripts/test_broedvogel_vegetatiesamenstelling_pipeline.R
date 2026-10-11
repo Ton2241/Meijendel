@@ -9,6 +9,10 @@ source(file.path(
 
 stopifnot(identical(primary_composition_model_lags(), 0L))
 stopifnot(identical(composition_coverage_lags(), 0:3))
+old_workers <- Sys.getenv("MEIJENDEL_MODEL_WORKERS", unset = NA_character_)
+Sys.setenv(MEIJENDEL_MODEL_WORKERS = "2")
+stopifnot(identical(validation_worker_count(), 2L))
+if (is.na(old_workers)) Sys.unsetenv("MEIJENDEL_MODEL_WORKERS") else Sys.setenv(MEIJENDEL_MODEL_WORKERS = old_workers)
 
 validation <- data.frame(
   validatie = rep(c("ruimte", "tijd"), each = 4),

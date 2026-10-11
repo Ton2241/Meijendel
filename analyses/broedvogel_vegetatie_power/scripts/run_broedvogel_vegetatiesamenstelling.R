@@ -20,6 +20,12 @@ source(file.path(
 composition_coverage_lags <- function() 0:3
 
 primary_composition_model_lags <- function() 0L
+
+validation_worker_count <- function() {
+  workers <- suppressWarnings(as.integer(Sys.getenv("MEIJENDEL_MODEL_WORKERS", unset = "2")))
+  if (length(workers) != 1L || is.na(workers) || workers < 1L) workers <- 1L
+  min(workers, 2L)
+}
 source(file.path(
   .composition_pipeline_repo,
   "analyses", "broedvogel_vegetatie_power", "scripts",
@@ -240,21 +246,35 @@ run_multivariate_blocked_validation <- function(
   plotyears <- unique(data[c("plot_id", "jaar")])
   spatial <- make_spatial_folds(plotyears, spatial_k, seed)
   temporal <- make_temporal_folds(plotyears, temporal_cut_years)
-  rows <- list()
+  tasks <- list()
   for (fold_id in unique(spatial$fold_id)) {
     test_plots <- spatial$plot_id[spatial$fold_id == fold_id]
     test_rows <- data$plot_id %in% test_plots
-    rows[[length(rows) + 1L]] <- fit_multivariate_validation_fold(
-      data, block, fields, "ruimte", fold_id, !test_rows, test_rows, checkpoint_dir
+    tasks[[length(tasks) + 1L]] <- list(
+      validation_type = "ruimte", fold_id = fold_id,
+      train_rows = !test_rows, test_rows = test_rows
     )
   }
   for (i in seq_len(nrow(temporal))) {
     fold <- temporal[i, ]
     train_rows <- data$jaar <= fold$train_max_year
     test_rows <- data$jaar >= fold$test_min_year & data$jaar <= fold$test_max_year
-    rows[[length(rows) + 1L]] <- fit_multivariate_validation_fold(
-      data, block, fields, "tijd", fold$fold_id, train_rows, test_rows, checkpoint_dir
+    tasks[[length(tasks) + 1L]] <- list(
+      validation_type = "tijd", fold_id = fold$fold_id,
+      train_rows = train_rows, test_rows = test_rows
     )
+  }
+  execute <- function(task) {
+    fit_multivariate_validation_fold(
+      data, block, fields, task$validation_type, task$fold_id,
+      task$train_rows, task$test_rows, checkpoint_dir
+    )
+  }
+  workers <- validation_worker_count()
+  rows <- if (workers > 1L && .Platform$OS.type != "windows") {
+    parallel::mclapply(tasks, execute, mc.cores = workers, mc.preschedule = FALSE)
+  } else {
+    lapply(tasks, execute)
   }
   do.call(rbind, rows)
 }
