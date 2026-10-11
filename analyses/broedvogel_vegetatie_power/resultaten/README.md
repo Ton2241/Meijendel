@@ -155,7 +155,40 @@ de expliciete kolom `vergelijking_geldig`; een coëfficiënt uit een los geslaag
 vegetatiemodel geldt niet als geldige vergelijking wanneer het basismodel
 faalt.
 
-`vegetatiesamenstelling_laatste_hoogtebesluit.csv` adviseert geen algemene
-hoogtecorrectie, maar een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en
-struweelvogels. De hoogteproxy is nog niet afgeleid en niet in de database
-opgenomen.
+`vegetatiesamenstelling_laatste_hoogtebesluit.csv` adviseerde geen algemene
+hoogtecorrectie, maar een gerichte AHN DSM–DTM-proef. Die proef is inmiddels
+uitgevoerd en staat in de bestanden `habitatgericht_laatste_*`.
+
+## Gerichte habitatmodellen met AHN en weer
+
+De bestanden `habitatgericht_laatste_*` horen bij formele run
+`20261011T152905Z-4035fe0a00cd`. De AHN-uitvoer bevat 110 regels voor 55 plots:
+AHN3 uit 2014 en AHN4 uit 2020. Voor 54 respectievelijk 46 plots volgt de
+inwinningsdatum uit vlakoverlap; voor één respectievelijk negen plots uit de
+dichtstbijzijnde vlieglijn, op maximaal 254 meter. Geen van de 110 regels mist
+een structuurmaat en geen pixel boven 45 meter is als vegetatie behouden.
+
+De tien vooraf bepaalde combinaties gebruiken per model 1.741–10.340
+soort–plot–jaarrijen, 15–36 soorten, 22–50 plots en tien vogeljaren. De
+landbedekkingsmodellen gebruiken de vensters 1997–2001 en 2018–2022; de
+AHN-modellen 2012–2016 en 2018–2022. Naast teller/tellerteam en ervaring zijn
+bezoekduur, de beschikbaarheid en waarde van ongunstige
+bezoeksomstandigheden, wintertemperatuur, wintervorstdagen,
+voorjaarstemperatuur en voorjaarsneerslag opgenomen.
+
+Van twintig volledige basis- en habitatmodellen zijn twaalf geldig en acht
+numeriek ongeldig. Van vijftig ruimtelijke validaties zijn 24 geldig en 26
+ongeldig. De geldige ruimtelijke blokken verbeteren bij water in drie van
+drie, riet in vier van vijf, landbedekking open in één van één,
+landbedekking boomgroep in één van één en landbedekking bos in twee van twee
+gevallen. Dit is geen robuust rangnummer: de ontbrekende blokken zijn
+modeluitval en tellen niet als verbetering.
+
+De structuurbronnen hebben ieder slechts twee onafhankelijke meetmomenten:
+landbedekking 2001 en 2022, AHN 2014 en 2020. Een model kan op het eerste
+moment nog geen respons op verandering binnen een plot leren en die vervolgens
+op het tweede moment toetsen. De tien tijdsvalidaties hebben daarom de status
+`niet_uitvoerbaar`. Geen van de tien modellen voldoet aan de vooraf
+vastgelegde poort naar power. `habitatgericht_laatste_samenvatting.csv` geeft
+het besluit per combinatie; de effect-, validatie- en modeltabellen bewaren
+ook nulbevindingen en uitval.

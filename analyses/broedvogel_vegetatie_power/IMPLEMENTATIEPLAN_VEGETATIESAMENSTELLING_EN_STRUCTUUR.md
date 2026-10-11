@@ -102,3 +102,22 @@ Taak 4 leidt daarom niet tot algemene opname van vegetatiehoogte. Het besluit
 is een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en struweelvogels,
 gekoppeld aan werkelijke inwinningsjaren en opnieuw beoordeeld op voorspelling
 buiten de schattingsgegevens.
+
+## Vervolguitvoering 11 oktober 2026
+
+De gerichte proef is uitgevoerd in run
+`20261011T152905Z-4035fe0a00cd`. AHN3/2014 en AHN4/2020 leveren 110
+plot–cyclusregels voor 55 plots. De analyse gebruikt tien vooraf bepaalde
+combinaties van structuurbron en vogelgroep en voegt vier seizoensmaten uit
+het dagelijkse weer toe. De gebruikte modelpopulaties omvatten per combinatie
+1.741–10.340 soort–plot–jaarrijen, 15–36 soorten, 22–50 plots en tien
+vogeljaren.
+
+Twaalf van twintig volledige modellen en 24 van vijftig ruimtelijke
+validaties zijn numeriek geldig. De overige uitkomsten blijven met hun
+convergentiereden bewaard. De geplande tijdsvalidatie blijkt inhoudelijk niet
+identificeerbaar: beide structuurbronnen hebben slechts twee onafhankelijke
+meetmomenten. Zonder een eerdere verandering kan een model niet op het eerste
+moment een binnen-plotrespons leren en die op het tweede moment toetsen. Daarom
+zijn tien tijdstoetsen als `niet_uitvoerbaar` vastgelegd en gaat geen gericht
+model door naar power.

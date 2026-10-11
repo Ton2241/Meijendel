@@ -443,9 +443,10 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Eigenaar.** KNMI, stations Valkenburg en Voorschoten
 
-**Omvang en periode in de huidige SQL-dump.** 24.837 dagregels, 1953–2026
+**Omvang en periode in de levende database op 11 oktober 2026.** 24.837
+dagregels, 1 januari 1958 tot en met 31 december 2025.
 
-**Gebruik en grens.** Temperatuur, neerslag, wind, zon en luchtdruk kunnen als covariaten worden gebruikt. Alleen de genormaliseerde analyseview is geldig; 2026 is nog niet compleet.
+**Gebruik en grens.** Temperatuur, neerslag, wind, zon en luchtdruk kunnen als covariaten worden gebruikt. Alleen de genormaliseerde analyseview is geldig. De huidige reeks eindigt met het volledige kalenderjaar 2025.
 
 #### 1.8.2. Hoogte
 
@@ -455,12 +456,20 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 
 **Gebruik en grens.** De huidige tabel beschrijft maaiveldhoogte en
 hoogtevariatie per plot. Eén peiljaar geeft geen ontwikkeling door de tijd en
-een DTM meet geen vegetatiehoogte. AHN stelt per cyclus zowel een digitaal
-terreinmodel als een digitaal oppervlaktemodel beschikbaar. Het verschil
-DSM–DTM kan daarom als vegetatiehoogteproxy worden onderzocht, maar alleen na
-vaststelling van het werkelijke inwinningsjaar in Meijendel en controle op
-gebouwen, water en andere niet-vegetatieobjecten. Zo'n laag is nog niet voor de
-vogel–vegetatieanalyse afgeleid of in de database opgenomen.
+een DTM meet geen vegetatiehoogte.
+
+Voor de vogel–vegetatieanalyse is daarnaast een reproduceerbare proxy uit
+AHN3 en AHN4 afgeleid. Deze analyse-uitvoer bevat 110 regels: 55 plots voor
+2014 en 55 voor 2020, telkens DSM minus DTM op twee meter resolutie. Bij 100
+regels volgt de inwinningsdatum uit vlakoverlap met de officiële vlieglijnen;
+bij tien uit de dichtstbijzijnde vlieglijn, op maximaal 254 meter. Vastgelegd
+zijn hoogteverdeling, aandelen open terrein, lage vegetatie, struweel en bomen
+en randlengte per hectare. Pixels boven 45 meter zijn als niet-vegetatieve
+uitbijter uitgesloten. De afgeleide waarden staan met manifest en controlesom
+onder `analyses/broedvogel_vegetatie_power/resultaten/` en zijn niet als
+primaire bronmeting in de levende database opgenomen. Twee cycli tonen
+verschil, maar zijn zonder derde onafhankelijke meting onvoldoende om een
+vogelreactie op structuurverandering op een later moment te valideren.
 
 #### 1.8.3. Stikstofdepositie
 
@@ -646,12 +655,11 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Remote sensing van vegetatiehoogte en -bedekking:** WUR beschreef kaarten
 voor 2008 en 2014; TU Delft beschreef elf beeldmomenten uit 2019–2021. De
-afgeleide onderzoeksrasters zijn nog niet als openbare dataset gevonden. De
-[AHN-dataroom](https://www.ahn.nl/dataroom) biedt wel de landelijke DTM- en
-DSM-bronnen voor meerdere cycli. Daarmee kan een reproduceerbare
-vegetatiehoogteproxy worden afgeleid, maar niet zonder lokale kwaliteitscontrole
-en koppeling aan de feitelijke inwinningsjaren. Deze kandidaatbron is daarom
-beschikbaar voor een gerichte vervolgtoets, niet reeds analyseklaar.
+afgeleide onderzoeksrasters zijn nog niet als openbare dataset gevonden en
+blijven kandidaatbron. De landelijke DTM- en DSM-bronnen uit de
+[AHN-dataroom](https://www.ahn.nl/dataroom) zijn inmiddels wel gebruikt om de
+onder 1.8.2 beschreven proxy voor 2014 en 2020 af te leiden en lokaal te
+controleren. De onderzoeksrasters en de AHN-proxy zijn dus niet dezelfde bron.
 
 **[Landbedekking in vogelplots](https://doi.org/10.1007/s10531-025-03175-x):**
 de openbare studie van Schmidt-Tauscher, Häger en Van der Hagen uit 2025

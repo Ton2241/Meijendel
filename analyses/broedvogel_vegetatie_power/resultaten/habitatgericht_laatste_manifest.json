@@ -1,0 +1,140 @@
+{
+  "run_id": "20261011T152905Z-4035fe0a00cd",
+  "git_commit": "4035fe0a00cd5da6305b2e68cca3fadce6febc45",
+  "reporting_commit": "4035fe0a00cd5da6305b2e68cca3fadce6febc45",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.1",
+  "executed_at_utc": "2026-10-11T15:49:18Z",
+  "source_fingerprint_sha256": "fb7e6c91901f920c6a63173d20e36824b5b0c5cfd63564826a59f517c04bf320",
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "specifications": [
+    {
+      "analysis_id": "land_water",
+      "source": "landbedekking",
+      "group_number": 100,
+      "predictor": "water_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "land_riet",
+      "source": "landbedekking",
+      "group_number": 200,
+      "predictor": "riet_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "land_open",
+      "source": "landbedekking",
+      "group_number": 300,
+      "predictor": "open_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "land_struweel",
+      "source": "landbedekking",
+      "group_number": 600,
+      "predictor": "struik_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "land_boomgroep",
+      "source": "landbedekking",
+      "group_number": 700,
+      "predictor": "boomgroep_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "land_bos",
+      "source": "landbedekking",
+      "group_number": 800,
+      "predictor": "bos_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "ahn_open",
+      "source": "ahn",
+      "group_number": 300,
+      "predictor": "open_lage_aandeel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "ahn_struweel",
+      "source": "ahn",
+      "group_number": 600,
+      "predictor": "aandeel_struweel",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "ahn_boomgroep",
+      "source": "ahn",
+      "group_number": 700,
+      "predictor": "aandeel_bomen",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    },
+    {
+      "analysis_id": "ahn_bos",
+      "source": "ahn",
+      "group_number": 800,
+      "predictor": "aandeel_bomen",
+      "temporal_cut_year": 2018,
+      "expected_direction": 1
+    }
+  ],
+  "outputs": {
+    "samenvatting": {
+      "file": "habitatgericht_samenvatting.csv",
+      "bytes": 2417,
+      "sha256": "4532f8e3f2de20724387bfb90bac20ac721afca0f5ebce3b2c290c70b19df881"
+    },
+    "modellen": {
+      "file": "habitatgericht_modellen.csv",
+      "bytes": 3958,
+      "sha256": "0bb66cbe557f11e45a76d4ca6225f534d1e8ff32f189e372669a48e41de71a9e"
+    },
+    "effecten": {
+      "file": "habitatgericht_effecten.csv",
+      "bytes": 4764,
+      "sha256": "60b7c76adff5799e6053697f06d71f5063cec56ef19c507bd367bba58a5ebfb6"
+    },
+    "validatie": {
+      "file": "habitatgericht_validatie.csv",
+      "bytes": 18448,
+      "sha256": "1c5120b65113139e96ea92f05e29330eb6a8434142c8c99555973267643a781d"
+    },
+    "soortgevoeligheid": {
+      "file": "habitatgericht_soortgevoeligheid.csv",
+      "bytes": 31312,
+      "sha256": "d274717b14ada3659c879a32631ab6b93e5880951cb4bcf5bec65f8da4a23e06"
+    },
+    "weer": {
+      "file": "habitatgericht_weer.csv",
+      "bytes": 3624,
+      "sha256": "f9c7fbc27e3c704cbf809fbde5c80cdac3b051bf05b21fd6a3cc4ac9f9df73fa"
+    },
+    "ahn": {
+      "file": "habitatgericht_ahn.csv",
+      "bytes": 26357,
+      "sha256": "53e3dd4fc7b86710242e7866297b4ac95c6bc49cd4e4e923374f263abb66be2a"
+    }
+  },
+  "temporal_validation_design": {
+    "status": "niet_uitvoerbaar",
+    "reden": "Beide structuurbronnen hebben slechts twee onafhankelijke meetmomenten.",
+    "landbedekking_meetjaren": [2001, 2022],
+    "ahn_meetjaren": [2014, 2020]
+  }
+}

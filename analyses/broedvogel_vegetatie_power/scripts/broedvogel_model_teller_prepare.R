@@ -45,7 +45,7 @@ build_bmp_effort <- function(dagbezoeken, valid_plot_years) {
     return(data.frame(
       plot_id = integer(), jaar = integer(), aantal_bezoeken = integer(),
       totale_bezoekduur_min = numeric(), eerste_bezoekdag = integer(),
-      laatste_bezoekdag = integer(), aandeel_gunstig = numeric(),
+      laatste_bezoekdag = integer(), aandeel_ongunstig = numeric(),
       stringsAsFactors = FALSE
     ))
   }
@@ -54,7 +54,9 @@ build_bmp_effort <- function(dagbezoeken, valid_plot_years) {
   rows <- lapply(visit_split, function(indices) {
     current <- visits[indices, , drop = FALSE]
     finite_days <- current$dagvanjaar[is.finite(current$dagvanjaar)]
-    known_favourable <- current$gunstig[is.finite(current$gunstig)]
+    # De historische bronkolom heet `gunstig`, maar de bronwaarde 1 markeert
+    # juist ongunstige omstandigheden. Shiny gebruikt hetzelfde broncontract.
+    known_unfavourable <- current$gunstig[is.finite(current$gunstig)]
     data.frame(
       plot_id = current$plot_id[[1L]],
       jaar = current$jaar[[1L]],
@@ -62,7 +64,7 @@ build_bmp_effort <- function(dagbezoeken, valid_plot_years) {
       totale_bezoekduur_min = sum(current$bezoekduur_min, na.rm = TRUE),
       eerste_bezoekdag = if (length(finite_days)) min(finite_days) else NA_integer_,
       laatste_bezoekdag = if (length(finite_days)) max(finite_days) else NA_integer_,
-      aandeel_gunstig = if (length(known_favourable)) mean(known_favourable) else NA_real_,
+      aandeel_ongunstig = if (length(known_unfavourable)) mean(known_unfavourable) else NA_real_,
       stringsAsFactors = FALSE
     )
   })
@@ -205,6 +207,20 @@ build_teller_model_populations <- function(matrix, teams, effort) {
     log_visits <- log1p(effort_population$aantal_bezoeken)
     effort_population$inspanning_duur_z <- standardize_with(log_duration, mean(log_duration), stats::sd(log_duration))
     effort_population$inspanning_bezoeken_z <- standardize_with(log_visits, mean(log_visits), stats::sd(log_visits))
+    ongunstig_bekend <- is.finite(effort_population$aandeel_ongunstig)
+    effort_population$inspanning_ongunstig_bekend <- as.integer(ongunstig_bekend)
+    if (any(ongunstig_bekend)) {
+      ongunstig_mean <- mean(effort_population$aandeel_ongunstig[ongunstig_bekend])
+      ongunstig_sd <- stats::sd(effort_population$aandeel_ongunstig[ongunstig_bekend])
+      effort_population$inspanning_ongunstig_z <- standardize_with(
+        effort_population$aandeel_ongunstig, ongunstig_mean, ongunstig_sd
+      )
+      # Ontbrekende bezoekscodering krijgt de gemiddelde waarde; de indicator
+      # hieronder houdt het verschil tussen wel en niet gecodeerd expliciet vast.
+      effort_population$inspanning_ongunstig_z[!ongunstig_bekend] <- 0
+    } else {
+      effort_population$inspanning_ongunstig_z <- 0
+    }
   }
 
   eligibility <- species_eligibility(long)

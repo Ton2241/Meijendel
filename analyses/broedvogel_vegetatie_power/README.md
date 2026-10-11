@@ -5,7 +5,8 @@ de broedvogels van Meijendel, hun relatie met vegetatie en andere biotische en
 abiotische factoren, de invloed van tellers en de detecteerbaarheid van
 veranderingen.
 
-De analysematrix, tellergevoeligheid en drie vegetatiestappen zijn afgerond.
+De analysematrix, tellergevoeligheid en de vegetatiestappen tot en met de
+gerichte habitatmodellen zijn afgerond.
 Naast soortenrijkdom, Shannon en totale bedekking zijn nu ook de volledige
 PQ-soortensamenstelling, IPI en de onafhankelijke landbedekking van 2001 en
 2022 onderzocht. De taxonsamenstelling en IPI voorspellen verschillen tussen
@@ -13,8 +14,10 @@ andere plots beter, maar niet de latere jaren. Landbedekking levert vooral voor
 watervogels ruimtelijk signaal; voor meerdere andere vogelgroepen is de
 numerieke validatie te instabiel. Een algemene relatie tussen
 vegetatieverandering en vogelverandering is dus nog niet aangetoond. Wel is een
-gerichte proef met AHN-vegetatiehoogte voor bos-, boomgroep- en
-struweelvogels verantwoord.
+gerichte proef met AHN-vegetatiehoogte voor open-duin-, bos-, boomgroep- en
+struweelvogels uitgevoerd. Die proef levert ruimtelijke aanwijzingen, maar nog
+geen gevalideerd model van verandering door de tijd. Geen van de tien gerichte
+modellen gaat daarom al door naar power.
 
 ## Begin hier
 

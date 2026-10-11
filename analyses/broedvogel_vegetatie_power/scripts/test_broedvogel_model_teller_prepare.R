@@ -69,7 +69,7 @@ stopifnot(
   first_effort$totale_bezoekduur_min == 90,
   first_effort$eerste_bezoekdag == 100L,
   first_effort$laatste_bezoekdag == 120L,
-  isTRUE(all.equal(first_effort$aandeel_gunstig, 0.5))
+  isTRUE(all.equal(first_effort$aandeel_ongunstig, 0.5))
 )
 
 populations <- build_teller_model_populations(matrix, teams, effort)
@@ -85,6 +85,10 @@ stopifnot(
   all(single$aantal_tellers == 1L),
   all(with_effort$jaar >= 1984L & with_effort$jaar <= 2025L),
   all(with_effort$totale_bezoekduur_min > 0),
+  "inspanning_ongunstig_z" %in% names(with_effort),
+  "inspanning_ongunstig_bekend" %in% names(with_effort),
+  all(is.finite(with_effort$inspanning_ongunstig_z)),
+  all(with_effort$inspanning_ongunstig_bekend %in% 0:1),
   all(c("analyse_bron_code", "nulstatus", "oppervlakte_km2", "ervaring_plot_mean") %in% names(long)),
   identical(levels(long$analyse_bron_factor)[[1L]], "sovon_m"),
   identical(long$row_id, paste(long$soort_id, long$plot_id, long$jaar, sep = ":")),

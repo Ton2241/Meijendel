@@ -159,3 +159,38 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegeta
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatiesamenstelling_fit.R
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatiesamenstelling_pipeline.R
 ```
+
+## Gerichte habitatmodellen met AHN en weer
+
+Leid eerst voor AHN3 en AHN4 de structuurmaten af:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_ahn_vegetatiestructuur.sh
+```
+
+De Python-runner vraagt de officiële AHN DSM-, DTM- en vlieglijnservices per
+tegel op, werkt op twee meter resolutie en schrijft een controleerbare CSV voor
+55 plots en twee cycli. Voer daarna de gerichte modellen uit met het absolute
+of repository-relatieve pad naar die CSV:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_habitatgericht.sh \
+  PAD/NAAR/ahn_vegetatiestructuur.csv
+```
+
+De R-runner bouwt tien vooraf vastgelegde vogelgroep–habitatcombinaties,
+voegt teller/tellerteam, ervaring, telinspanning en vier seizoensmaten uit
+`weer_analyse` toe en valideert volledige plots in vijf ruimtelijke blokken.
+Een tijdstoets wordt alleen uitgevoerd als minstens drie onafhankelijke
+structuurmetingen beschikbaar zijn; met de huidige twee landbedekkings- en
+twee AHN-momenten wordt zij expliciet als `niet_uitvoerbaar` gerapporteerd.
+Er wordt niets naar Shiny, dashboard of VPS geschreven.
+
+De tests zijn:
+
+```bash
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur.py
+bash analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur_pipeline.sh
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_habitatgericht.R
+bash analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_habitatgericht_pipeline.sh
+```

@@ -240,3 +240,31 @@ stilzwijgend herschreven.
 - `glmmTMB`-validatie blijft op de 8GB-iMac sequentieel. Twee gelijktijdig
   gevorkte R-processen veroorzaakten een niet-afvangbare numerieke crash; dat
   is als mislukte uitvoerpoging vastgelegd en is geen ecologische uitkomst.
+
+## 11 oktober 2026 — gerichte habitatmodellen, AHN en weer
+
+- AHN3 uit 2014 en AHN4 uit 2020 worden als afzonderlijke
+  vegetatiestructuurmetingen gebruikt. DSM minus DTM is op twee meter
+  resolutie samengevat tot open terrein, lage vegetatie, struweel, bomen,
+  hoogteverdeling en randlengte. De afgeleide laag omvat 110 regels voor 55
+  plots en blijft een reproduceerbaar analyseproduct; zij wordt niet als
+  bronmeting in de levende database opgeslagen.
+- De gerichte modellen gebruiken steeds een vooraf passende vogelgroep en
+  corrigeren naast teller/tellerteam en ervaring ook voor bezoekduur,
+  registratie van ongunstige bezoeksomstandigheden en vier seizoensmaten uit
+  `weer_analyse`. Ontbrekende bezoekweercodering wordt niet weggefilterd: de
+  gestandaardiseerde waarde wordt op het gemiddelde gezet en een afzonderlijke
+  indicator bewaart dat de code ontbrak.
+- Een vaste bronfactor blijft in het model wanneer meer dan één bron aanwezig
+  is. Binnen een trainingsset met precies één bron wordt die factor
+  structureel weggelaten, omdat zij daar niet schatbaar is. Dit is geen
+  stepwise selectie op significantie.
+- Twee onafhankelijke structuurmetingen zijn onvoldoende voor een zuivere
+  tijdsvalidatie van een binnen-plotreactie. De landbedekking heeft de jaren
+  2001 en 2022; AHN 2014 en 2020. Alle tien tijdstoetsen krijgen daarom de
+  status `niet_uitvoerbaar`. Ruimtelijke validatie blijft wel informatief,
+  maar bewijst geen toekomstige reactie op habitatverandering.
+- Van twintig volledige modellen zijn twaalf numeriek geldig; van vijftig
+  ruimtelijke validaties 24. Geen van de tien gerichte habitatmodellen voldoet
+  aan de vooraf vastgelegde poort naar power. Ook de acht ongeldige volledige
+  modellen en 26 ongeldige ruimtelijke validaties blijven gerapporteerd.

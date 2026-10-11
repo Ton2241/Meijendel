@@ -11,6 +11,16 @@
   levende hoofddocument en het besluitenbestand in die directory zijn leidend
   voor opzet, voortgang en uitkomsten.
 
+- Op 11 oktober 2026 zijn de gerichte habitatmodellen uitgevoerd met
+  landbedekking 2001/2022, AHN3/2014, AHN4/2020 en dagweer 1958–2025. De AHN-laag
+  bevat 110 afgeleide plot–cyclusregels voor 55 plots. Van twintig volledige
+  modellen zijn twaalf numeriek geldig; van vijftig ruimtelijke validaties 24.
+  Omdat iedere structuurbron slechts twee onafhankelijke meetmomenten heeft,
+  is een zuivere tijdsvalidatie van verandering nog niet identificeerbaar. Geen
+  van de tien modellen gaat daarom door naar power. De afgeleide AHN-laag
+  blijft analyse-uitvoer en wordt niet als primaire bronmeting in `Meijendel`
+  opgeslagen.
+
 - De tellergevoeligheidsfase van dit analyseproject is op 9 oktober 2026
   afgerond op 203.628 geldige soort–plot–jaarrijen uit 2.007 plotjaren met een
   bekend teller/tellerteam, voor 156 soorten over 1958–2025.

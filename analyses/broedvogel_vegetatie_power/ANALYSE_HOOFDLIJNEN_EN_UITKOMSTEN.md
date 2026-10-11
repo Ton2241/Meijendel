@@ -106,8 +106,8 @@ de bronmetadata zijn vastgesteld.
 
 ### Overige verklarende lagen
 
-- `weer` bevat 24.837 dagrecords uit 1953–2026. Het lopende jaar 2026 is
-  onvolledig en wordt niet als volledig analysejaar behandeld.
+- `weer` en de genormaliseerde view `weer_analyse` bevatten 24.837 dagrecords
+  van 1 januari 1958 tot en met 31 december 2025.
 - `plot_jaar_stikstof` bevat 1.027 plotjaren in 55 plots uit 2005–2023.
 - `plot_jaar_landgebruik` bevat 918 klasseregels voor 275 plotjaren in 55
   plots uit 1996–2022. Dit zijn kaartmomenten, geen jaarlijkse metingen.
@@ -433,15 +433,43 @@ ruimtelijke informatie kan bevatten. Zij levert nog geen algemeen geldig model
 van vogelverandering. Twee momentopnamen meten bovendien geen verticale
 gelaagdheid, vegetatiehoogte, voedsel of nestgelegenheid.
 
-### Besluit over vegetatiehoogte
+### Gerichte habitatmodellen met AHN en landbedekking
 
-Een algemene hoogtecorrectie wordt niet ingevoerd. Wel is een gerichte proef
-verdedigbaar voor bos-, boomgroep- en struweelvogels, juist omdat hun
-landbedekkingsmodellen geen stabiele temporele toets leveren en de huidige
-bronnen verticale structuur niet meten. De voorkeursroute is DSM minus DTM uit
-openbare AHN-cycli, gekoppeld aan het werkelijke inwinningsjaar in Meijendel en
-gecontroleerd op gebouwen, water en andere niet-vegetatieobjecten. Of die proxy
-de voorspelling werkelijk verbetert, moet in dezelfde geblokkeerde toets blijken.
+De hoogteproef is uitgevoerd met AHN3 uit 2014 en AHN4 uit 2020. Voor 55
+vogelplots zijn 110 plot–cyclusregels op twee meter resolutie afgeleid uit DSM
+minus DTM. De inwinningsdatum volgt bij 100 regels uit rechtstreekse overlap
+met de vlieglijn; bij de overige tien uit de dichtstbijzijnde vlieglijn, op
+maximaal 254 meter. Per plot zijn aandelen open terrein, lage vegetatie,
+struweel en bomen plus hoogteverdeling en randlengte berekend. Hoogten boven
+45 meter zijn als niet-vegetatieve uitbijter uitgesloten.
+
+De gerichte modellen combineren deze AHN-structuur of de landbedekking van
+2001 en 2022 met vooraf passende vogelgroepen. Zij corrigeren voor tijd,
+oppervlakte, bron, bezoekduur, wel of niet geregistreerde ongunstige
+bezoeksomstandigheden, teller/tellerteam, geregistreerde ervaring en vier
+weermaten: wintertemperatuur, vorstdagen, voorjaarstemperatuur en
+voorjaarsneerslag. Aalscholver blijft uitgesloten. Afhankelijk van groep en
+bron bevatten de tien modellen 1.741–10.340 soort–plot–jaarrijen, 15–36
+soorten, 22–50 plots en tien vogeljaren.
+
+Van de twintig volledige basis- en habitatmodellen zijn twaalf numeriek geldig
+en acht ongeldig. In de ruimtelijke validatie zijn 24 van vijftig
+vergelijkingen geldig en 26 ongeldig. Water-, riet-, bos- en boomgroepmodellen
+geven plaatselijk duidelijke verbanden, maar de richting van verandering
+binnen dezelfde plot is niet stabiel tussen bron en groep. De geldige
+binnen-plotschattingen lopen van een verhouding van 0,905 bij riet tot 1,052
+bij bos per standaardafwijking; sommige verwachte richtingen worden dus niet
+bevestigd.
+
+Een zuivere tijdsvalidatie is met deze structuurbronnen nog niet mogelijk.
+Landbedekking heeft twee onafhankelijke meetjaren, 2001 en 2022; AHN eveneens
+twee, 2014 en 2020. Wie op het eerste meetmoment traint, heeft nog geen
+verandering waaruit een binnen-plotrespons kan worden geleerd en op het tweede
+moment getoetst. Alle tien tijdstoetsen zijn daarom als niet uitvoerbaar
+vastgelegd, niet als negatieve of mislukte ecologische uitkomst. Geen model
+voldoet aan de vooraf vastgelegde poort naar power. Een derde onafhankelijke
+structuurmeting of een andere tijdreeks van vegetatiestructuur is daarvoor
+nodig.
 
 ### 4. Aanvullende verklarende blokken
 
@@ -559,8 +587,9 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Volledige PQ-samenstelling | Uitgevoerd | Drie assen verklaren samen 27,8%. De ruimtelijke voorspelling verbetert in vier van vijf plotblokken; beide tijdsblokken worden iets slechter. |
 | IPI-habitatproxy | Uitgevoerd | Bescheiden ruimtelijke winst in drie van vier geldige plotblokken; geen tijdswinst en geen duidelijke gemiddelde binnen-plotreactie. |
 | Landbedekking 2001/2022 | Uitgevoerd | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
-| Vegetatiehoogte | Besloten | Geen algemene toevoeging. Eerst een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en struweelvogels. |
-| Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
+| Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN3/2014 en AHN4/2020 leveren 110 structuurregels voor 55 plots. Ruimtelijke signalen zijn aanwezig, maar twee meetmomenten laten geen onafhankelijke tijdsvalidatie toe; geen model gaat door naar power. |
+| Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
+| Stikstof en overig landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn nog niet in deze gerichte modellen geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
