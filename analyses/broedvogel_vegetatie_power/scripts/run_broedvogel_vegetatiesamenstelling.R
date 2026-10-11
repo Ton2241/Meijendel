@@ -22,9 +22,7 @@ composition_coverage_lags <- function() 0:3
 primary_composition_model_lags <- function() 0L
 
 validation_worker_count <- function() {
-  workers <- suppressWarnings(as.integer(Sys.getenv("MEIJENDEL_MODEL_WORKERS", unset = "2")))
-  if (length(workers) != 1L || is.na(workers) || workers < 1L) workers <- 1L
-  min(workers, 2L)
+  1L
 }
 source(file.path(
   .composition_pipeline_repo,
