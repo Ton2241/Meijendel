@@ -1,8 +1,9 @@
 # Scripts
 
 Hier staan uitsluitend scripts die specifiek zijn voor de integrale
-broedvogel-, vegetatie- en poweranalyse. De matrixbouw en de telleranalyse zijn
-uitgevoerd. De vegetatie-, validatie- en powerstappen volgen nog.
+broedvogel-, vegetatie- en poweranalyse. De matrixbouw, telleranalyse en het
+eerste PQ-vegetatiemodel met geblokkeerde validatie zijn uitgevoerd. De
+groepsafleiding, aanvullende verklarende lagen en powerstap volgen nog.
 
 De verwachte keten bestaat uit afzonderlijke stappen voor:
 
@@ -55,7 +56,7 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_teller
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_teller_prepare.R
 ```
 
-## Stap 3: teller- en ervaringsmodellen
+## Technische stap 3: teller- en ervaringsmodellen
 
 De zelfstandige telleranalyse wordt lokaal en sequentieel uitgevoerd met:
 
@@ -88,4 +89,35 @@ berekend. De pijplijntest is:
 
 ```bash
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_teller_pipeline.R
+```
+
+## Inhoudelijke stap 3: PQ-vegetatiemodel
+
+De zelfstandige vegetatieanalyse wordt lokaal en sequentieel uitgevoerd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_vegetatie_model.sh
+```
+
+De runner koppelt uitsluitend werkelijke PQ-meetjaren aan geldige
+vogelplotjaren met bekende teller/tellerteam. De technische velden
+`tellerteam_factor` en `tellerteam_sleutel` kunnen zowel één teller als een
+tellerteam van twee of meer tellers aanduiden. Soortenrijkdom, Shannon en
+totale bedekking worden elk gesplitst in een verschil tussen plots en een
+afwijking binnen dezelfde plot. De primaire voorspellingstoets houdt vijfmaal
+volledige plots en tweemaal volledige latere perioden achter.
+
+Een onderbroken run kan met de bestaande checkpoints worden hervat:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_vegetatie_model.sh --resume ABSOLUTE_RUNMAP
+```
+
+De vier zuivere tests zijn:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatie_data.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatie_fit.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegetatie_validate.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatie_pipeline.R
 ```

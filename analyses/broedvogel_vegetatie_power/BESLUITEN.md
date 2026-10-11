@@ -62,6 +62,28 @@ stilzwijgend herschreven.
 - Een statistische relatie wordt niet zonder aanvullend bewijs als een
   causale beheerwerking beschreven.
 
+## 11 oktober 2026 — PQ-vegetatiemodel
+
+- De primaire vergelijking gebruikt de gelijktijdige PQ-meting. Vertragingen
+  van één, twee en drie jaar zijn gevoeligheidsanalyses; tussen PQ-meetjaren
+  wordt niet geïnterpoleerd.
+- Plantensoortenrijkdom, Shannon en totale bedekking worden afzonderlijk aan
+  hetzelfde basismodel toegevoegd. Plantensoortenrijkdom en Shannon correleren
+  binnen 501 PQ-plotjaren in 35 plots over 1981–2025 sterk (`r = 0,802`); één
+  primair model met alle drie maten zou hetzelfde signaal instabiel verdelen.
+- Iedere PQ-maat wordt gesplitst in het gemiddelde van de plot en de afwijking
+  in het meetjaar. Een tussen-plotverband wordt niet als verandering binnen
+  een plot geïnterpreteerd.
+- Toegevoegde voorspellende waarde wordt primair beoordeeld met de
+  negatief-binomiale logscore in vijf achtergehouden plotblokken en twee
+  achtergehouden perioden. MAE en RMSE blijven zichtbaar, maar kunnen door
+  grote kolonievogelaantallen worden gedomineerd.
+- De formele run `20261011T084206Z-c1136b4ef309` vond geen bestendige
+  ruimtelijke voorspelwinst en geen duidelijke gemiddelde binnen-plotreactie.
+  Een kleine relatieve tijdswinst telt niet als bruikbare voorspelling zolang
+  het model bij kolonieverschuivingen biologisch onrealistische aantallen kan
+  produceren.
+
 ## 9 oktober 2026 — analysematrix stap 1
 
 - Alleen plotjaren die in `territoria` voorkomen vormen de vogelmeetbasis.

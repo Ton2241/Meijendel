@@ -1,0 +1,113 @@
+{
+  "run_id": "20261011T084206Z-c1136b4ef309",
+  "git_commit": "c1136b4ef309877ccd086441185e9d3058bc6a02",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.1",
+  "executed_at_utc": "2026-10-11T10:03:41Z",
+  "source_fingerprint_sha256": "90ef6b934cf89b448c5f629dd0b104f38461b91e6a370301225ac57f56496c0d",
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "tables": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "dagbezoeken_bmp": {
+      "file": "dagbezoeken_bmp.tsv",
+      "rows": 14455,
+      "bytes": 310792,
+      "sha256": "16c6619bd6144ce2a9ce137392674e66bf4c138fb9c1d1960313295971982a50"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 69,
+      "bytes": 1783,
+      "sha256": "d4ae5665cf0346f2f626daef8bcd75a9db1bed8f3fe28dca70707ff51a55671c"
+    },
+    "pq_plot_jaar_vegetatie": {
+      "file": "pq_plot_jaar_vegetatie.tsv",
+      "rows": 513,
+      "bytes": 80222,
+      "sha256": "1dd535c543da3679aa46b72ca08afb648fa76a78debf5a1e7c3c07c45d86a3c8"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    }
+  },
+  "formulas": {
+    "soortenrijkdom_basis": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "soortenrijkdom_pq": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + soortenrijkdom_between_z + soortenrijkdom_within_z + (0 + soortenrijkdom_between_z + soortenrijkdom_within_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "shannon_basis": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "shannon_pq": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + shannon_between_z + shannon_within_z + (0 + shannon_between_z + shannon_within_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "bedekking_basis": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + offset(log_oppervlakte_km2)",
+    "bedekking_pq": "count ~ jaar_decennium + analyse_bron_factor + (1 + jaar_decennium | soort_factor) + (1 | soort_plot_factor) + (1 | jaar_factor) + (1 | plotjaar_factor) + (1 | tellerteam_factor) + ervaring_plot_z + ervaring_elders_z + (0 + ervaring_plot_z + ervaring_elders_z || soort_factor) + bedekking_between_z + bedekking_within_z + (0 + bedekking_between_z + bedekking_within_z || soort_factor) + offset(log_oppervlakte_km2)"
+  },
+  "lags": [0, 1, 2, 3],
+  "primary_validation_lag": 0,
+  "outputs": {
+    "dekking": {
+      "file": "vegetatie_model_dekking.csv",
+      "bytes": 479,
+      "sha256": "0936b2897afa62ba9d2a6beb83ffd097389c575bf3b391ae5f23dd5e7cb55c96"
+    },
+    "modellen": {
+      "file": "vegetatie_model_modellen.csv",
+      "bytes": 4265,
+      "sha256": "7b5cf2f139016045797c0a4931426af1c362fd16f554362c29338ae18cb2aa06"
+    },
+    "validatie": {
+      "file": "vegetatie_model_validatie.csv",
+      "bytes": 5212,
+      "sha256": "98f0df455e6b3e74a20e1732a27dbd1035d5d5d0b15438ac28fb74ad4b771760"
+    },
+    "samenvatting": {
+      "file": "vegetatie_model_samenvatting.csv",
+      "bytes": 689,
+      "sha256": "475bf514ee4bea2732e2afba529ca67765952f104675b2bc510f9be511f98fd5"
+    },
+    "soorten": {
+      "file": "vegetatie_model_soorten.csv",
+      "bytes": 228648,
+      "sha256": "d8f359d39898b0bcb85f7e458f7e061ddd7a9bada00861b5f6a7352ad502234f"
+    }
+  }
+}

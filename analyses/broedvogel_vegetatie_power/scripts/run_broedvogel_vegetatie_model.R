@@ -119,6 +119,40 @@ flatten_vegetation_species <- function(full_results) {
   do.call(rbind, rows)
 }
 
+extract_vegetation_fixed_effects <- function(full_results) {
+  rows <- lapply(names(full_results), function(name) {
+    result <- full_results[[name]]
+    metric <- result$comparison$metric[[1L]]
+    analysis_id <- result$comparison$analysis_id[[1L]]
+    model <- result$models$pq
+    if (!identical(model$status, "geslaagd") || !file.exists(model$fit_path)) return(NULL)
+    fit <- readRDS(model$fit_path)
+    coefficients <- summary(fit)$coefficients$cond
+    components <- c(tussen_plots = "between", binnen_plot = "within")
+    current <- do.call(rbind, lapply(names(components), function(component) {
+      term <- paste0(metric, "_", components[[component]], "_z")
+      data.frame(
+        analysis_id = analysis_id,
+        lag_years = as.integer(sub("^lag", "", analysis_id)),
+        metric = metric,
+        component = component,
+        beta = coefficients[term, "Estimate"],
+        standaardfout = coefficients[term, "Std. Error"],
+        z = coefficients[term, "z value"],
+        p = coefficients[term, "Pr(>|z|)"],
+        ratio_per_sd = exp(coefficients[term, "Estimate"]),
+        stringsAsFactors = FALSE
+      )
+    }))
+    rm(fit)
+    gc(verbose = FALSE)
+    current
+  })
+  out <- do.call(rbind, rows)
+  rownames(out) <- NULL
+  out[order(out$lag_years, out$metric, out$component), , drop = FALSE]
+}
+
 write_vegetation_manifest <- function(path, metadata, state, formulas, outputs) {
   output_metadata <- lapply(outputs, function(output_path) list(
     file = basename(output_path), bytes = unname(file.info(output_path)$size), sha256 = sha256_file(output_path)
@@ -178,12 +212,14 @@ run_vegetation_model_pipeline <- function(
   validation_summary <- summarise_vegetation_validation(validation)
   comparisons <- flatten_vegetation_comparisons(full_results)
   species <- flatten_vegetation_species(full_results)
+  effects <- extract_vegetation_fixed_effects(full_results)
 
   outputs <- c(
     dekking = write_csv_atomic(coverage, file.path(run_dir, "vegetatie_model_dekking.csv")),
     modellen = write_csv_atomic(comparisons, file.path(run_dir, "vegetatie_model_modellen.csv")),
     validatie = write_csv_atomic(validation, file.path(run_dir, "vegetatie_model_validatie.csv")),
     samenvatting = write_csv_atomic(validation_summary, file.path(run_dir, "vegetatie_model_samenvatting.csv")),
+    effecten = write_csv_atomic(effects, file.path(run_dir, "vegetatie_model_effecten.csv")),
     soorten = write_csv_atomic(species, file.path(run_dir, "vegetatie_model_soorten.csv"))
   )
   formulas <- unlist(lapply(metrics, vegetation_model_formulas), recursive = FALSE)

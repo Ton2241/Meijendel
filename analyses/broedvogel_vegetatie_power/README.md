@@ -5,12 +5,15 @@ de broedvogels van Meijendel, hun relatie met vegetatie en andere biotische en
 abiotische factoren, de invloed van tellers en de detecteerbaarheid van
 veranderingen.
 
-De eerste twee stappen zijn afgerond. Er staat een reproduceerbare
-soort–plot–jaarmatrix en de invloed van teller/tellerteam en geregistreerde
-ervaring is geschat. Die tellerfase laat zien dat teller/tellerteam een
-bron van verschil is. Zij levert echter geen vast percentage op waarmee
-tellingen achteraf worden verhoogd of verlaagd. In de volgende modellen wordt
-teller/tellerteam als variërend modelonderdeel opgenomen.
+De eerste drie stappen zijn afgerond. Er staat een reproduceerbare
+soort–plot–jaarmatrix, de invloed van teller/tellerteam en geregistreerde
+ervaring is geschat en de toegevoegde waarde van drie PQ-vegetatiematen is
+onderzocht. Die vegetatiematen verbeteren de voorspelling voor andere plots
+niet bestendig. Binnen dezelfde plot is evenmin een duidelijke gemiddelde
+vogelreactie gevonden nadat soortenrijkdom, Shannon of totale bedekking
+verandert. Daarmee is wel een ruimtelijk verschil tussen plots beschreven,
+maar nog geen voorspellende relatie tussen vegetatieverandering en
+vogelverandering aangetoond.
 
 ## Begin hier
 
@@ -74,6 +77,28 @@ onzekerheidsintervallen werden mediaan 11% breder. De inhoudelijke conclusie
 is daarom: teller en ervaring mogen in het komende vegetatie- en
 powermodel niet worden genegeerd, maar hun effecten moeten binnen de dan
 gebruikte gegevens opnieuw worden geschat.
+
+Het vegetatiemodel gebruikt voor de gelijktijdige vergelijking 37.362 geldige
+soort–plot–jaarrijen uit 406 vogelplotjaren in 35 plots, voor 155 soorten en de
+periode 1989–2025. Alleen Muskuseend heeft binnen deze PQ-overlap geen geldige
+modelrij. Verschillen tussen plots zijn zichtbaar: bij een één
+standaardafwijking hogere plantensoortenrijkdom, Shannon of totale bedekking is
+het gemiddelde verwachte territoriumaantal per soort respectievelijk een
+factor 0,80, 0,88 en 0,85 lager. Binnen dezelfde plot liggen de overeenkomstige
+factoren met 0,99, 0,98 en 1,01 rond één. De varianten met één tot drie jaar
+vertraging geven hetzelfde hoofdbeeld. Dit wijst op blijvende verschillen
+tussen plots, niet op een aangetoonde vogelreactie nadat de gemeten vegetatie
+in een plot verandert.
+
+Bij vijfvoudig achterhouden van volledige plots verbeterde totale bedekking de
+gemiddelde negatief-binomiale logscore licht, maar slechts in twee van vijf
+blokken. Soortenrijkdom en Shannon verslechterden die score gemiddeld en waren
+eveneens slechts in twee blokken beter. In de tijdstoets waren de relatieve
+scores iets gunstiger met PQ, maar de absolute voorspelling ontspoorde bij
+enkele sterke kolonieverschuivingen: voor Aalscholver werd in een
+plot–jaarcombinatie 14.804 verwacht waar nul territoria waren geteld. Die
+tijdstoets geldt daarom als modeldiagnose, niet als bewijs van bruikbare
+voorspellende kracht.
 
 ## Vaste analysescope
 

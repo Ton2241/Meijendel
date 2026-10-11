@@ -1,9 +1,10 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 9 oktober 2026
+**Stand:** 11 oktober 2026
 
-**Status:** stappen 1 en 2 uitgevoerd: reproduceerbare analysematrix en
-tellergevoeligheidsanalyse; voorspellend ecologisch model en formele
+**Status:** stappen 1–3 uitgevoerd: reproduceerbare analysematrix,
+tellergevoeligheidsanalyse en eerste PQ-vegetatiemodel met geblokkeerde
+validatie; aanvullende verklarende lagen, groepsafleiding en formele
 poweranalyse nog niet uitgevoerd
 
 **Beoogd eindproduct:** artikel voor *Holland's Duinen*
@@ -324,6 +325,28 @@ en “de vogels veranderen nadat de vegetatie binnen dezelfde plot verandert”.
 Vertragingen worden vooraf beperkt tot hetzelfde jaar, één jaar en, indien
 ecologisch verdedigbaar, twee of drie jaar.
 
+Deze stap is uitgevoerd op 37.362 geldige soort–plot–jaarrijen uit 406
+vogelplotjaren in 35 plots, voor 155 soorten en 1989–2025. De technische
+modelterm `tellerteam_factor` kan zowel één teller als een tellerteam van twee
+of meer tellers aanduiden. Teller/tellerteam en beide ervaringsmaten zijn in
+ieder model opnieuw geschat. Bij vertraging één, twee en drie jaar bleven
+respectievelijk 390, 372 en 349 vogelplotjaren beschikbaar.
+
+De drie PQ-maten geven op de volledige gegevens een duidelijk gemiddeld
+verschil tussen plots. Bij één standaardafwijking hogere
+plantensoortenrijkdom, Shannon of totale bedekking is het verwachte
+territoriumaantal per soort gemiddeld een factor 0,80, 0,88 en 0,85 lager.
+Dat mag niet worden gelezen als “meer planten veroorzaken minder vogels”. De
+plots verschillen ook in habitat, ligging en andere niet volledig gemeten
+omstandigheden, en soorten reageren onderling verschillend.
+
+De voor de veranderingsvraag beslissende binnen-plotreacties liggen met
+factoren 0,99, 0,98 en 1,01 rond één en zijn niet duidelijk van geen gemiddeld
+effect te onderscheiden. Ook bij één tot drie jaar vertraging ontstaat geen
+consistent binnen-plotverband. De huidige PQ-maten tonen dus wel waar plots
+gemiddeld van elkaar verschillen, maar nog niet dat vogels in dezelfde plot
+voorspelbaar veranderen nadat deze vegetatiematen veranderen.
+
 ### 4. Aanvullende verklarende blokken
 
 We voegen verklarende informatie in herkenbare blokken toe:
@@ -357,6 +380,20 @@ voorspellen voor gegevens die niet voor schatting zijn gebruikt:
 
 De toegevoegde waarde van PQ is het verschil in voorspelfout tussen modellen op
 exact dezelfde gegevens, niet alleen een significante regressiecoëfficiënt.
+
+Deze toets is uitgevoerd met vijf achtergehouden plotblokken en twee
+achtergehouden perioden. Totale bedekking verbeterde de ruimtelijke logscore
+gemiddeld licht, maar slechts in twee van vijf blokken. Soortenrijkdom en
+Shannon verslechterden haar gemiddeld en waren eveneens in twee blokken beter.
+Er is daarmee geen bestendige ruimtelijke voorspelwinst.
+
+Voor latere jaren waren de relatieve logscores met PQ in beide tijdsblokken
+iets beter. De absolute voorspellingen waren echter niet bruikbaar bij enkele
+sterke kolonieverschuivingen. Het basismodel voorspelde bijvoorbeeld 14.804
+Aalscholverterritoria in een plot–jaarcombinatie met nul getelde territoria;
+het PQ-model verminderde die ontsporing, maar loste haar niet op. Deze uitkomst
+is een concrete modeldiagnose. Zij geldt niet als bewijs dat PQ-vegetatie de
+latere vogelstand betrouwbaar voorspelt.
 
 ### 7. Poweranalyse
 
@@ -416,16 +453,17 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Habitatgroepen | Beschikbaar | Acht habitattypen; analysevarianten sterk en sterk plus matig. |
 | Continue vogelkenmerken | Beschikbaar | 23 goedgekeurde kenmerken; zestien gevuld voor alle 156 positieve soorten. |
 | Teller- en ervaringsmodel | Uitgevoerd | Teller/tellerteam blijft als random effect in volgende modellen; ervaring in dezelfde plot en elders blijven afzonderlijke doorlopende correcties. De effecten worden per analyse opnieuw geschat en veranderen de brongegevens niet. |
-| Voorspellend vogelmodel | Nog uit te voeren | Geen voorspellende kracht of meerwaarde van PQ vastgesteld. |
+| Voorspellend vogelmodel met PQ | Uitgevoerd, nog niet voldoende voorspellend | Duidelijke verschillen tussen plots, maar geen duidelijke gemiddelde binnen-plotreactie en geen bestendige ruimtelijke voorspelwinst. De tijdsvalidatie legt onrealistische extrapolatie bij kolonieverschuivingen bloot. |
 | Relaties met weer, stikstof en landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn niet geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
 ## Betekenis voor het latere artikel
 
-Het artikel wordt pas inhoudelijk afgerond nadat de ruimtelijk en temporeel
-geblokkeerde validatie en de poweranalyse zijn uitgevoerd. Het moet niet alleen
-melden welke relaties zijn gevonden, maar ook:
+Het artikel wordt pas inhoudelijk afgerond nadat de modelstructuur voor
+kolonieverschuivingen is verbeterd, de groepsuitkomsten zijn afgeleid en de
+poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
+gevonden, maar ook:
 
 - hoeveel beter het model buiten de schattingsgegevens voorspelt;
 - of een relatie vooral verschillen tussen plots of veranderingen binnen
