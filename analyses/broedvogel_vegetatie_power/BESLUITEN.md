@@ -7,7 +7,7 @@ stilzwijgend herschreven.
 ## 9 oktober 2026 — doel en samenhang
 
 - De analyse moet uiteindelijk leiden tot een artikel voor *Holland's
-  Duinen*.
+  Duinen* of een andere periodiek.
 - Methode, voortgang en verschillende uitkomsten worden gedurende het werk in
   één leesbaar hoofddocument bijgehouden.
 - De analyse omvat soorten, de broedvogelgemeenschap als geheel, functionele
@@ -19,7 +19,7 @@ stilzwijgend herschreven.
 - Alle blijvende analysespecifieke documentatie, scripts, compacte resultaten,
   figuren en artikelversies worden onder
   `analyses/broedvogel_vegetatie_power/` bijeengehouden.
-- De levende lokale MySQL-database `Meijendel` blijft de canonieke bron. Ruwe
+- De lokale MySQL-database `Meijendel` blijft de canonieke bron. Ruwe
   gegevens worden niet gekopieerd naar de analysedirectory.
 - Iedere formele uitvoering krijgt een manifest met gegevensselectie,
   aantallen, versies, modelinstellingen, controles en uitkomsten.
@@ -29,7 +29,7 @@ stilzwijgend herschreven.
 ## 9 oktober 2026 — analysescope en gegevensbetekenis
 
 - Plotgebonden analyses gebruiken standaard
-  `v_meijendel_analyseplot_actueel`. M66 en M91 blijven buiten beschouwing.
+  `v_meijendel_analyseplot_actueel`. Kavel 66 en kavel 91 blijven buiten beschouwing.
 - De centrale bron-, nul- en afkeurregels uit
   `R/meijendel_cache_contract.R` worden hergebruikt en niet binnen deze analyse
   opnieuw geïnterpreteerd.
@@ -76,7 +76,7 @@ stilzwijgend herschreven.
   `tellerteam_sleutel` kan zowel één teller als een tellerteam van twee of meer
   tellers aanduiden. De tellerregistraties bepalen niet of een plotjaar als
   territoriumtelling bestaat.
-- M62/2016 blijft in de algemene vogelmatrix aanwezig. Deze afzonderlijke
+- Kavel 62 in 2016 blijft in de algemene vogelmatrix aanwezig. Deze afzonderlijke
   roofvogeltelling wordt pas uit de teller- en tellerervaringsanalyse
   verwijderd, conform het reeds vastgelegde gebruiksbesluit.
 - Iedere uitvoering bewaart de bronbestanden alleen tijdelijk, schrijft de
@@ -98,7 +98,7 @@ stilzwijgend herschreven.
 - Bij tellerteams wordt de gemiddelde getransformeerde ervaring gebruikt.
   Een analyse van uitsluitend één-teller-plotjaren voorkomt dat het resultaat
   geheel van deze teamtoerekening afhankelijk wordt.
-- M62/2016 en de 99 plotjaren zonder tellerregistratie worden niet in de
+- Kavel 62/2016 en de 99 plotjaren zonder tellerregistratie worden niet in de
   primaire tellervergelijking gebruikt. Tellergegevens worden niet geïmputeerd.
 - Telinspanning wordt alleen in een afzonderlijke analyse over 1984–2025
   opgenomen. Voor 1958–1983 ontbreken BMP-bezoekgegevens.
