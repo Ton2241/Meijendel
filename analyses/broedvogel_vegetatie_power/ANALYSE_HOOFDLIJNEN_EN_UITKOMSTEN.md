@@ -1,12 +1,12 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 11 oktober 2026
+**Stand:** 12 oktober 2026
 
-**Status:** analysematrix, tellergevoeligheid en drie opeenvolgende
-vegetatiestappen uitgevoerd: brede PQ-maten, volledige PQ-samenstelling met
-IPI en onafhankelijke landbedekking van 2001 en 2022; gerichte proef met
-vegetatiehoogte aanbevolen, aanvullende omgevingslagen, groepsafleiding en
-formele poweranalyse nog niet uitgevoerd
+**Status:** analysematrix, tellergevoeligheid, vegetatiestappen,
+AHN-structuurproef, luchtfotoproef en de aanvullende modellen met stikstof en
+CBS-landgebruik uitgevoerd; geen van de gerichte habitat- of
+omgevingsmodellen voldoet aan de vooraf vastgelegde poort naar een formele
+poweranalyse
 
 **Beoogd eindproduct:** artikel voor *Holland's Duinen*
 
@@ -503,6 +503,62 @@ gevalideerd. Daarom volgt geen jaarlijkse reeks. Luchtfoto's vervangen de
 hoogte-informatie niet en herstellen AHN1 niet; een vervolg vereist
 onafhankelijke trainingsvlakken of de oorspronkelijke classificatierasters.
 
+### Aanvullende modellen met stikstof en CBS-landgebruik
+
+De laatste verklarende stap gebruikt dezelfde soortgerichte modelbasis als de
+eerdere analyses. Tijd, oppervlakte, bron, teller/tellerteam, geregistreerde
+ervaring, bezoekduur, registratie van ongunstige bezoeksomstandigheden en vier
+weermaten blijven in het model. Stikstof en landgebruik worden steeds gesplitst
+in een gemiddeld verschil tussen plots en een verandering binnen dezelfde
+plot. Daardoor wordt een blijvend verschil tussen plaatsen niet verward met de
+vraag of vogels reageren nadat de omgevingswaarde in een plot verandert.
+
+Het stikstofmodel bevat 60.127 soort–plot–jaarrijen uit 674 plotjaren in 51
+plots, voor 155 soorten en 2005–2023. Zowel het basis- als het stikstofmodel is
+numeriek geldig. Tussen plots bedraagt de geschatte verhouding 1,157 per
+standaardafwijking hogere gemiddelde depositie; binnen dezelfde plot is zij
+1,002, met p = 0,924. De beschikbare reeks laat dus een ruimtelijk verschil
+zien, maar geen gemiddelde vogelverandering die meeloopt met een verandering
+in stikstofdepositie. Van de vijf ruimtelijke validatieblokken slaagt er één;
+daar verslechtert de logscore met 0,0315. De tijdstoets leert uit 2005–2018 en
+toetst op 2019–2023, maar beide modellen vallen numeriek uit. Er is daarom geen
+bestendige voorspellende meerwaarde.
+
+Het CBS-landgebruik bevat in de bron 918 klasseregels voor 55 plots en vijf
+kaartmomenten, 1996–2022. De codes van 1996 zijn niet zonder aanvullende
+bronvertaling vergelijkbaar met de latere klassen en zijn niet stilzwijgend
+gehercodeerd. De modellen gebruiken daarom 2010, 2015, 2017 en 2022. Na de
+Natura 2000- en vogelselectie resteren 15.039 soort–plot–jaarrijen uit 168
+plotjaren in 49 plots, voor 155 soorten. Getoetst zijn open natuurlijk terrein,
+bos, water, deze drie gezamenlijk en de combinatie met stikstof.
+
+Van de twaalf volledige basis- en omgevingsmodellen zijn vier numeriek geldig;
+alleen het stikstofpaar is aan beide zijden geldig. Van 36 validaties slagen er
+twaalf en vallen er 24 uit. Bos verbetert de logscore in vier van vier geldige
+ruimtelijke blokken en water in twee van twee. Dat is een aanwijzing dat deze
+kaartklassen plaatsverschillen kunnen beschrijven, geen gevalideerd model van
+verandering: de volledige modellen zijn ongeldig, de overige plotblokken
+vallen uit en geen van de zes tijdstoetsen slaagt. De tijdstoetsen voor
+landgebruik leren uit 2010 en 2015 en toetsen op 2017 en 2022. Drie vallen door
+modeluitval uit; bij twee kan door een rangdeficiënte trainingsmatrix niet op
+de latere jaren worden voorspeld. Dit is technische modeluitval, geen
+ecologische nulbevinding.
+
+De conclusie is begrensd. De beschikbare stikstof- en CBS-landgebruiksgegevens
+leveren geen bestendig model waarmee vogelverandering in latere jaren of
+andere plots kan worden voorspeld. Daarmee is niet aangetoond dat stikstof of
+landgebruik ecologisch onbelangrijk zijn. Wel is aangetoond dat deze gegevens,
+in deze modelopzet en met deze dekking, niet voldoen aan de vooraf bepaalde
+toegangspoort tot de poweranalyse.
+
+De soort- en groepsuitvoer is wel volledig bewaard: 930 soortregels en 84
+regels voor acht ecologische en zes functionele groepen. Alleen de veertien
+stikstofgroepen berusten op een volledig geldig modelpaar. Hun geschatte
+binnen-plotverhoudingen liggen tussen 0,985 en 1,012 per standaardafwijking en
+dus alle dicht bij één. Dit zijn beschrijvende, gedeeltelijk gepoolde
+soortreacties; door de mislukte externe validatie zijn zij geen afzonderlijk
+bewijs voor een stikstofeffect op een vogelgroep.
+
 ### 4. Aanvullende verklarende blokken
 
 We voegen verklarende informatie in herkenbare blokken toe:
@@ -622,15 +678,15 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
 | Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. Geen jaarlijkse structuurreeks gebouwd. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
-| Stikstof en overig landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn nog niet in deze gerichte modellen geschat. |
+| Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
 ## Betekenis voor het latere artikel
 
-Het artikel wordt pas inhoudelijk afgerond nadat de gerichte hoogteproef en
-aanvullende omgevingsblokken zijn beoordeeld, de groepsuitkomsten zijn
-afgeleid en de poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
+Het artikel wordt pas inhoudelijk afgerond nadat is besloten welke van de
+resterende relaties inhoudelijk sterk genoeg zijn voor een formele
+poweranalyse en die poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
 gevonden, maar ook:
 
 - hoeveel beter het model buiten de schattingsgegevens voorspelt;

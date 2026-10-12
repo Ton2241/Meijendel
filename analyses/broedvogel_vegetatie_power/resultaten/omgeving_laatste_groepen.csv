@@ -1,0 +1,85 @@
+"groep_type","groep_id","analysis_id","predictor","soorten","gewicht_som","beta_tussen_plots","beta_binnen_plot","basis_status","omgeving_status","vergelijking_geldig","groep_naam","ratio_tussen_plots_per_sd","ratio_binnen_plot_per_sd"
+"ecologisch","100","stikstof","stikstof_mean",21,21,-0.172102091512931,-0.015515109385825,"geslaagd","geslaagd",TRUE,"Watervogels",0.841893218628544,0.984604629868105
+"ecologisch","200","stikstof","stikstof_mean",16,16,-0.114055824233177,-0.00259441266825208,"geslaagd","geslaagd",TRUE,"Rietvogels",0.892208147656491,0.997408949911693
+"ecologisch","300","stikstof","stikstof_mean",31,31,0.147123585592596,0.00604752702772955,"geslaagd","geslaagd",TRUE,"Vogels van pionierbegroeiingen",1.15849712773718,1.00606585023738
+"ecologisch","400","stikstof","stikstof_mean",11,11,0.135601953563893,0.00551550458243616,"geslaagd","geslaagd",TRUE,"Vogels van open heide",1.14522594974964,1.00553074298077
+"ecologisch","500","stikstof","stikstof_mean",18,18,0.0363749646799188,-0.00184623792129247,"geslaagd","geslaagd",TRUE,"Weidevogels",1.03704462870383,0.998155465327576
+"ecologisch","600","stikstof","stikstof_mean",25,25,-0.120661030278257,0.00233395055506905,"geslaagd","geslaagd",TRUE,"Struweelvogels",0.886334349186226,1.00233667633787
+"ecologisch","700","stikstof","stikstof_mean",15,15,0.171953306914393,0.0110236662202965,"geslaagd","geslaagd",TRUE,"Bosrandvogels",1.18762237816586,1.01108465071365
+"ecologisch","800","stikstof","stikstof_mean",36,36,0.478140699609401,0.00436007783274587,"geslaagd","geslaagd",TRUE,"Bosvogels",1.61307242607816,1.00436959680155
+"functioneel","1","stikstof","stikstof_mean",75,55,0.074697741531753,0.00188120581559741,"geslaagd","geslaagd",TRUE,"Bodemfoeragerende insecteneters",1.07755840050512,1.00188297639336
+"functioneel","11","stikstof","stikstof_mean",61,44.5,0.191402543165276,0.00250343244421832,"geslaagd","geslaagd",TRUE,"Zaadeters",1.21094681234577,1.00250656864776
+"functioneel","2","stikstof","stikstof_mean",15,11.5,0.346876338167406,0.011609257778182,"geslaagd","geslaagd",TRUE,"Luchtfoerageerders",1.4146417773588,1.01167690674256
+"functioneel","3","stikstof","stikstof_mean",68,65,0.0201788764382847,-0.00301885585963836,"geslaagd","geslaagd",TRUE,"Grondbroeders",1.02038384633135,0.996985696303785
+"functioneel","4","stikstof","stikstof_mean",39,38.5,0.405410508963897,0.00315244570357275,"geslaagd","geslaagd",TRUE,"Holenbroeders",1.49991810351936,1.0031574198861
+"functioneel","5","stikstof","stikstof_mean",46,44,0.0242080537562675,0.000134144556311113,"geslaagd","geslaagd",TRUE,"Langeafstandstrekkers",1.02450344750921,1.00013415355409
+"ecologisch","100","land_open","land_open_pct",21,21,-0.40337423562062,0.00683333179515726,"modeluitval","geslaagd",FALSE,"Watervogels",0.668062039923788,1.00685673227759
+"ecologisch","200","land_open","land_open_pct",16,16,-0.305928633748506,0.00683343220484889,"modeluitval","geslaagd",FALSE,"Rietvogels",0.736439174484086,1.00685683337577
+"ecologisch","300","land_open","land_open_pct",31,31,-0.360804678027998,0.00683338662343628,"modeluitval","geslaagd",FALSE,"Vogels van pionierbegroeiingen",0.697115147075272,1.00685678748181
+"ecologisch","400","land_open","land_open_pct",11,11,-0.288205109486457,0.00683335202482113,"modeluitval","geslaagd",FALSE,"Vogels van open heide",0.749607824794012,1.00685675264596
+"ecologisch","500","land_open","land_open_pct",18,18,-0.331551139178551,0.00683336073610027,"modeluitval","geslaagd",FALSE,"Weidevogels",0.717809447092625,1.00685676141697
+"ecologisch","600","land_open","land_open_pct",25,25,-0.135580688277092,0.00683340204476277,"modeluitval","geslaagd",FALSE,"Struweelvogels",0.87320870238011,1.00685680300888
+"ecologisch","700","land_open","land_open_pct",15,15,-0.268095222728434,0.00683336658537324,"modeluitval","geslaagd",FALSE,"Bosrandvogels",0.764834947964687,1.00685676730635
+"ecologisch","800","land_open","land_open_pct",36,36,-0.49508597868946,0.00683341395710476,"modeluitval","geslaagd",FALSE,"Bosvogels",0.609518499441579,1.0068568150029
+"functioneel","1","land_open","land_open_pct",75,55,-0.263982023059167,0.00683338227198722,"modeluitval","geslaagd",FALSE,"Bodemfoeragerende insecteneters",0.767987345595683,1.00685678310053
+"functioneel","11","land_open","land_open_pct",61,44.5,-0.410436361098008,0.00683339689145361,"modeluitval","geslaagd",FALSE,"Zaadeters",0.663360722158444,1.00685679782024
+"functioneel","2","land_open","land_open_pct",15,11.5,-0.520659726825576,0.00683337705523052,"modeluitval","geslaagd",FALSE,"Luchtfoerageerders",0.594128456167304,1.006856777848
+"functioneel","3","land_open","land_open_pct",68,65,-0.315668922866031,0.0068333894401591,"modeluitval","geslaagd",FALSE,"Grondbroeders",0.729300865042145,1.00685679031785
+"functioneel","4","land_open","land_open_pct",39,38.5,-0.515735065000365,0.00683338857315876,"modeluitval","geslaagd",FALSE,"Holenbroeders",0.597061554224818,1.0068567894449
+"functioneel","5","land_open","land_open_pct",46,44,-0.305178101615446,0.0068334155429318,"modeluitval","geslaagd",FALSE,"Langeafstandstrekkers",0.736992103218017,1.0068568165996
+"ecologisch","100","stikstof_en_land","land_bos_pct",21,21,-0.198743460434416,-0.0356670841544727,"modeluitval","geslaagd",FALSE,"Watervogels",0.819760167277176,0.96496149098496
+"ecologisch","100","stikstof_en_land","land_open_pct",21,21,-0.219835865424717,0.00178157499793012,"modeluitval","geslaagd",FALSE,"Watervogels",0.802650529855122,1.00178316294554
+"ecologisch","100","stikstof_en_land","land_water_pct",21,21,0.359886019109929,0.015702601162512,"modeluitval","geslaagd",FALSE,"Watervogels",1.4331660517082,1.01582653484816
+"ecologisch","100","stikstof_en_land","stikstof_mean",21,21,-0.16442811925954,-0.0704058037291458,"modeluitval","geslaagd",FALSE,"Watervogels",0.848378736844468,0.932015527778167
+"ecologisch","200","stikstof_en_land","land_bos_pct",16,16,-0.186998185031843,-0.0356672112901364,"modeluitval","geslaagd",FALSE,"Rietvogels",0.829445241800739,0.964961368303948
+"ecologisch","200","stikstof_en_land","land_open_pct",16,16,-0.219835753241034,0.00178165482756135,"modeluitval","geslaagd",FALSE,"Rietvogels",0.802650619899419,1.00178324291753
+"ecologisch","200","stikstof_en_land","land_water_pct",16,16,0.302382998603485,0.0157026002455118,"modeluitval","geslaagd",FALSE,"Rietvogels",1.35307935498531,1.01582653391664
+"ecologisch","200","stikstof_en_land","stikstof_mean",16,16,-0.199550739447772,-0.0918343140496728,"modeluitval","geslaagd",FALSE,"Rietvogels",0.819098659144889,0.912256285073762
+"ecologisch","300","stikstof_en_land","land_bos_pct",31,31,-0.0543975036764011,-0.03566716247739,"modeluitval","geslaagd",FALSE,"Vogels van pionierbegroeiingen",0.947055573597888,0.964961415406364
+"ecologisch","300","stikstof_en_land","land_open_pct",31,31,-0.21983588463859,0.00178162233811249,"modeluitval","geslaagd",FALSE,"Vogels van pionierbegroeiingen",0.802650514433097,1.00178321037014
+"ecologisch","300","stikstof_en_land","land_water_pct",31,31,0.0164962382460296,0.0157025993683663,"modeluitval","geslaagd",FALSE,"Vogels van pionierbegroeiingen",1.01663305245544,1.01582653302562
+"ecologisch","300","stikstof_en_land","stikstof_mean",31,31,0.0504058687943599,-0.0717583381327871,"modeluitval","geslaagd",FALSE,"Vogels van pionierbegroeiingen",1.05169786110784,0.930755796818891
+"ecologisch","400","stikstof_en_land","land_bos_pct",11,11,-0.116791136925432,-0.0356671693222729,"modeluitval","geslaagd",FALSE,"Vogels van open heide",0.889771014066833,0.964961408801316
+"ecologisch","400","stikstof_en_land","land_open_pct",11,11,-0.21983591227074,0.00178159984354182,"modeluitval","geslaagd",FALSE,"Vogels van open heide",0.802650492254138,1.00178318783546
+"ecologisch","400","stikstof_en_land","land_water_pct",11,11,-0.0106278716186459,0.0157025992515835,"modeluitval","geslaagd",FALSE,"Vogels van open heide",0.989428404666769,1.01582653290698
+"ecologisch","400","stikstof_en_land","stikstof_mean",11,11,-0.023155438192648,-0.0628689390466362,"modeluitval","geslaagd",FALSE,"Vogels van open heide",0.97711059166428,0.939066540580406
+"ecologisch","500","stikstof_en_land","land_bos_pct",18,18,-0.125691104907392,-0.0356671597993645,"modeluitval","geslaagd",FALSE,"Weidevogels",0.881887215347648,0.964961417990555
+"ecologisch","500","stikstof_en_land","land_open_pct",18,18,-0.219835883408092,0.00178160204967341,"modeluitval","geslaagd",FALSE,"Weidevogels",0.802650515420756,1.00178319004552
+"ecologisch","500","stikstof_en_land","land_water_pct",18,18,0.102136423216149,0.0157025990861798,"modeluitval","geslaagd",FALSE,"Weidevogels",1.10753455484805,1.01582653273896
+"ecologisch","500","stikstof_en_land","stikstof_mean",18,18,-0.0382535227805015,-0.0626058561007568,"modeluitval","geslaagd",FALSE,"Weidevogels",0.962468902165595,0.939313625472764
+"ecologisch","600","stikstof_en_land","land_bos_pct",25,25,-0.166155646879836,-0.0356672563087355,"modeluitval","geslaagd",FALSE,"Struweelvogels",0.846914404345689,0.96496132486274
+"ecologisch","600","stikstof_en_land","land_open_pct",25,25,-0.219835767908527,0.00178163776956678,"modeluitval","geslaagd",FALSE,"Struweelvogels",0.802650608126548,1.00178322582911
+"ecologisch","600","stikstof_en_land","land_water_pct",25,25,0.113031070475949,0.0157025996014011,"modeluitval","geslaagd",FALSE,"Struweelvogels",1.11966672098607,1.01582653326234
+"ecologisch","600","stikstof_en_land","stikstof_mean",25,25,-0.170358310201543,-0.0692300123428959,"modeluitval","geslaagd",FALSE,"Struweelvogels",0.843362577036907,0.933112028109077
+"ecologisch","700","stikstof_en_land","land_bos_pct",15,15,-0.117857741924502,-0.0356671564251989,"modeluitval","geslaagd",FALSE,"Bosrandvogels",0.888822485797622,0.964961421246495
+"ecologisch","700","stikstof_en_land","land_open_pct",15,15,-0.219835676225709,0.00178160753967994,"modeluitval","geslaagd",FALSE,"Bosrandvogels",0.80265068171582,1.00178319554532
+"ecologisch","700","stikstof_en_land","land_water_pct",15,15,-0.0440859039424136,0.0157025982454514,"modeluitval","geslaagd",FALSE,"Bosrandvogels",0.956871754886205,1.01582653188493
+"ecologisch","700","stikstof_en_land","stikstof_mean",15,15,0.0647239053409534,-0.0647037151790927,"modeluitval","geslaagd",FALSE,"Bosrandvogels",1.0668644281473,0.937345143377121
+"ecologisch","800","stikstof_en_land","land_bos_pct",36,36,0.0913185612835434,-0.0356671614028424,"modeluitval","geslaagd",FALSE,"Bosvogels",1.09561797113916,0.964961416443261
+"ecologisch","800","stikstof_en_land","land_open_pct",36,36,-0.219835927543036,0.0017816528517556,"modeluitval","geslaagd",FALSE,"Bosvogels",0.802650479995822,1.0017832409382
+"ecologisch","800","stikstof_en_land","land_water_pct",36,36,-0.0753033299937012,0.0157025991675163,"modeluitval","geslaagd",FALSE,"Bosvogels",0.927462116578788,1.01582653282159
+"ecologisch","800","stikstof_en_land","stikstof_mean",36,36,0.195796586958923,-0.0560439887748621,"modeluitval","geslaagd",FALSE,"Bosvogels",1.21627947306328,0.945497543697026
+"functioneel","1","stikstof_en_land","land_bos_pct",75,55,-0.117824544329785,-0.0356671756592426,"modeluitval","geslaagd",FALSE,"Bodemfoeragerende insecteneters",0.888851993056064,0.964961402686385
+"functioneel","1","stikstof_en_land","land_open_pct",75,55,-0.219835803417161,0.00178162169167223,"modeluitval","geslaagd",FALSE,"Bodemfoeragerende insecteneters",0.802650579625521,1.00178320972255
+"functioneel","1","stikstof_en_land","land_water_pct",75,55,0.0272891804342469,0.015702599698574,"modeluitval","geslaagd",FALSE,"Bodemfoeragerende insecteneters",1.02766494039195,1.01582653336105
+"functioneel","1","stikstof_en_land","stikstof_mean",75,55,-0.0299656569018721,-0.0700573404481541,"modeluitval","geslaagd",FALSE,"Bodemfoeragerende insecteneters",0.970478862226996,0.932340357559251
+"functioneel","11","stikstof_en_land","land_bos_pct",61,44.5,-0.0172781589171611,-0.0356671406106437,"modeluitval","geslaagd",FALSE,"Zaadeters",0.982870252482737,0.964961436506931
+"functioneel","11","stikstof_en_land","land_open_pct",61,44.5,-0.219835926527456,0.00178163392767052,"modeluitval","geslaagd",FALSE,"Zaadeters",0.802650480810977,1.00178322198037
+"functioneel","11","stikstof_en_land","land_water_pct",61,44.5,0.0469754684141332,0.0157025993820296,"modeluitval","geslaagd",FALSE,"Zaadeters",1.04809629729997,1.01582653303949
+"functioneel","11","stikstof_en_land","stikstof_mean",61,44.5,0.0288576629153837,-0.0726962824559892,"modeluitval","geslaagd",FALSE,"Zaadeters",1.02927807960702,0.92988320898635
+"functioneel","2","stikstof_en_land","land_bos_pct",15,11.5,0.0836479626828478,-0.0356671459420137,"modeluitval","geslaagd",FALSE,"Luchtfoerageerders",1.08724607523816,0.964961431362364
+"functioneel","2","stikstof_en_land","land_open_pct",15,11.5,-0.219835994962307,0.00178161901784863,"modeluitval","geslaagd",FALSE,"Luchtfoerageerders",0.802650425881714,1.00178320704396
+"functioneel","2","stikstof_en_land","land_water_pct",15,11.5,-0.00923465395213284,0.0157025994070899,"modeluitval","geslaagd",FALSE,"Luchtfoerageerders",0.990807854513717,1.01582653306495
+"functioneel","2","stikstof_en_land","stikstof_mean",15,11.5,0.0679682815184988,-0.0674201410112723,"modeluitval","geslaagd",FALSE,"Luchtfoerageerders",1.07033135865496,0.934802370007204
+"functioneel","3","stikstof_en_land","land_bos_pct",68,65,-0.147470279482362,-0.0356671638797409,"modeluitval","geslaagd",FALSE,"Grondbroeders",0.862888083420784,0.964961414053149
+"functioneel","3","stikstof_en_land","land_open_pct",68,65,-0.219835779526499,0.00178162518329033,"modeluitval","geslaagd",FALSE,"Grondbroeders",0.802650598801376,1.00178321322039
+"functioneel","3","stikstof_en_land","land_water_pct",68,65,0.158280298883314,0.0157026003190339,"modeluitval","geslaagd",FALSE,"Grondbroeders",1.1714945172963,1.01582653399133
+"functioneel","3","stikstof_en_land","stikstof_mean",68,65,-0.0691481886055887,-0.0696564355938514,"modeluitval","geslaagd",FALSE,"Grondbroeders",0.933188381946279,0.932714212269535
+"functioneel","4","stikstof_en_land","land_bos_pct",39,38.5,0.0585082121530786,-0.0356671528534173,"modeluitval","geslaagd",FALSE,"Holenbroeders",1.06025369262447,0.964961424693126
+"functioneel","4","stikstof_en_land","land_open_pct",39,38.5,-0.219835983181789,0.00178162923625436,"modeluitval","geslaagd",FALSE,"Holenbroeders",0.802650435337351,1.00178321728058
+"functioneel","4","stikstof_en_land","land_water_pct",39,38.5,-0.0351055549019123,0.0157025987615362,"modeluitval","geslaagd",FALSE,"Holenbroeders",0.965503497251687,1.01582653240918
+"functioneel","4","stikstof_en_land","stikstof_mean",39,38.5,0.198295022843723,-0.0633583554175438,"modeluitval","geslaagd",FALSE,"Holenbroeders",1.21932206862699,0.938607058490274
+"functioneel","5","stikstof_en_land","land_bos_pct",46,44,-0.0952688902969275,-0.0356672369381878,"modeluitval","geslaagd",FALSE,"Langeafstandstrekkers",0.909128445781655,0.96496134355457
+"functioneel","5","stikstof_en_land","land_open_pct",46,44,-0.219835777868603,0.00178164620133135,"modeluitval","geslaagd",FALSE,"Langeafstandstrekkers",0.802650600132086,1.00178323427591
+"functioneel","5","stikstof_en_land","land_water_pct",46,44,0.108972328441925,0.0157025991247755,"modeluitval","geslaagd",FALSE,"Langeafstandstrekkers",1.11513149248865,1.01582653277817
+"functioneel","5","stikstof_en_land","stikstof_mean",46,44,-0.080033185279335,-0.0699221789637082,"modeluitval","geslaagd",FALSE,"Langeafstandstrekkers",0.923085713021113,0.93246638258266

@@ -30,6 +30,17 @@ vooraf gekozen grens van 0,60. Radiometrische normalisatie en beeldtextuur
 verbeteren dit niet. De luchtfoto's worden daarom niet tot een jaarlijkse
 vegetatiestructuurreeks uitgebreid.
 
+Ook de aanvullende omgevingsstap is uitgevoerd. Het stikstofmodel gebruikt
+60.127 soort–plot–jaarrijen uit 674 plotjaren in 51 plots, voor 155 soorten en
+2005–2023. Het CBS-landgebruik gebruikt 15.039 rijen uit 168 plotjaren in 49
+plots, voor dezelfde 155 soorten en de kaartjaren 2010, 2015, 2017 en 2022.
+De stikstofdepositie onderscheidt plots, maar verandering binnen dezelfde plot
+hangt niet samen met een gemiddelde verandering in vogelaantallen. Bij
+landgebruik zijn enkele ruimtelijke signalen zichtbaar, vooral voor bos en
+water, maar slechts 12 van 36 validatievergelijkingen zijn numeriek geldig en
+geen van de zes tijdstoetsen slaagt. Geen van deze zes omgevingsmodellen gaat
+door naar power.
+
 ## Begin hier
 
 - [Analyse op hoofdlijnen en uitkomsten](ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.md)
@@ -137,6 +148,23 @@ het duidelijkste ruimtelijke signaal voor watervogels. Van vijftig
 validatievergelijkingen voor compositie, IPI en landbedekking zijn er 31 geldig
 en 19 numeriek ongeldig. Daarom worden de resultaten voor open-duin-,
 boomgroep- en bosvogels niet als stevige verbanden gepresenteerd.
+
+De aanvullende stikstof- en landgebruiksanalyse gebruikt dezelfde vogelpoort,
+teller/tellerteamcorrectie, inspanningsmaten en vier weercorrecties. Voor
+stikstof zijn 60.127 soort–plot–jaarrijen uit 674 plotjaren in 51 plots en
+2005–2023 beschikbaar. Plots met gemiddeld hogere depositie hebben gemiddeld
+andere vogelaantallen, een factor 1,157 per standaardafwijking, maar binnen
+dezelfde plot is de factor 1,002 en dus praktisch één. De enige geldige
+ruimtelijke stikstofvalidatie verslechtert bovendien. De CBS-kaartmomenten
+2010, 2015, 2017 en 2022 leveren 15.039 rijen uit 168 plotjaren in 49 plots.
+Van twaalf volledige basis- en omgevingsmodellen zijn er vier geldig; slechts
+één van zes modelparen is volledig geldig. Van 36 ruimtelijke en temporele
+validatievergelijkingen slagen er twaalf en vallen er 24 uit. Bos en water
+verbeteren de logscore in respectievelijk vier van vier en twee van twee
+geldige ruimtelijke blokken, maar dit is onvoldoende: de volledige modellen
+zijn ongeldig en alle zes tijdstoetsen mislukken. De huidige stikstof- en
+landgebruiksgegevens leveren daarmee geen bestendig voorspelmodel van
+vogelverandering en gaan niet door naar power.
 
 ## Vaste analysescope
 

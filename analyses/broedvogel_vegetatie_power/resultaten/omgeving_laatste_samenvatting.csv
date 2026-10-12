@@ -1,0 +1,7 @@
+"analysis_id","bron","predictors","rijen","plotjaren","plots","soorten","eerste_jaar","laatste_jaar","basis_status","omgeving_status","ruimte_geldige_blokken","ruimte_aandeel_beter","tijd_status","tijd_delta_logscore","besluit"
+"stikstof","stikstof","stikstof_mean",60127,674,51,155,2005,2023,"geslaagd","geslaagd",1,0,"mislukt",,"geen_bestendige_voorspellende_meerwaarde"
+"land_open","landgebruik","land_open_pct",15039,168,49,155,2010,2022,"modeluitval","geslaagd",2,0.5,"mislukt",,"geen_bestendige_voorspellende_meerwaarde"
+"land_bos","landgebruik","land_bos_pct",15039,168,49,155,2010,2022,"modeluitval","modeluitval",4,1,"mislukt",,"geen_bestendige_voorspellende_meerwaarde"
+"land_water","landgebruik","land_water_pct",15039,168,49,155,2010,2022,"modeluitval","modeluitval",2,1,"mislukt",,"geen_bestendige_voorspellende_meerwaarde"
+"land_gecombineerd","landgebruik","land_open_pct;land_bos_pct;land_water_pct",15039,168,49,155,2010,2022,"modeluitval","modeluitval",3,0.333333333333333,"mislukt",,"geen_bestendige_voorspellende_meerwaarde"
+"stikstof_en_land","gecombineerd","stikstof_mean;land_open_pct;land_bos_pct;land_water_pct",15039,168,49,155,2010,2022,"modeluitval","geslaagd",0,,"mislukt",,"geen_bestendige_voorspellende_meerwaarde"

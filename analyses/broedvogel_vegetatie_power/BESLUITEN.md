@@ -288,3 +288,30 @@ stilzwijgend herschreven.
   Daarvoor zijn onafhankelijke pixelreferenties nodig. De luchtfoto's kunnen
   AHN dus niet vervangen; een vervolg is alleen zinvol met trainingsvlakken of
   de oorspronkelijke classificatierasters.
+
+## 12 oktober 2026 — stikstof en CBS-landgebruik
+
+- Stikstofdepositie en CBS-landgebruik zijn als afzonderlijke verklarende
+  blokken toegevoegd aan hetzelfde soortgerichte vogelmodel. Tijd,
+  oppervlakte, bron, teller/tellerteam, geregistreerde ervaring, bezoekduur,
+  ongunstige bezoeksomstandigheden en vier weermaten blijven vaste correcties.
+  Omgevingswaarden zijn vooraf gesplitst in verschillen tussen plots en
+  veranderingen binnen dezelfde plot.
+- Het stikstofmodel gebruikt 60.127 soort–plot–jaarrijen uit 674 plotjaren in
+  51 plots, voor 155 soorten en 2005–2023. Het verschil tussen plots is een
+  factor 1,157 per standaardafwijking; het binnen-plotverband is 1,002 en niet
+  aantoonbaar. De enige geldige ruimtelijke validatie verslechtert en de
+  tijdstoets valt numeriek uit. Stikstof gaat daarom niet door naar power.
+- Het CBS-landgebruik gebruikt 15.039 soort–plot–jaarrijen uit 168 plotjaren in
+  49 plots, voor 155 soorten en de kaartjaren 2010, 2015, 2017 en 2022. De
+  broncodes van 1996 blijven uitgesloten zolang zij niet inhoudelijk aan de
+  latere klassen zijn geharmoniseerd.
+- Van twaalf volledige basis- en omgevingsmodellen zijn vier geldig; alleen het
+  stikstofpaar is volledig geldig. Van 36 validaties zijn er twaalf geldig en
+  24 ongeldig. Bos verbetert de logscore in vier van vier geldige ruimtelijke
+  blokken en water in twee van twee, maar de volledige modellen zijn ongeldig
+  en geen van de zes tijdstoetsen slaagt. Dit blijft een ruimtelijke
+  aanwijzing, geen gevalideerde voorspelling van vogelverandering.
+- Geen van de zes omgevingsmodellen voldoet aan de vooraf vastgelegde poort
+  naar power. Alle coëfficiënten, nulbevindingen en numerieke uitval blijven in
+  de compacte resultaatbestanden en het uitvoermanifest bewaard.

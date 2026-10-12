@@ -486,7 +486,21 @@ toegevoegd.
 
 **Omvang en periode in de huidige SQL-dump.** 1.027 plot-jaarregels, 2005–2023
 
-**Gebruik en grens.** Geschikt als mogelijke verklarende factor naast soorten- en vegetatiereeksen. Een samenhang bewijst niet dat stikstof de enige oorzaak is.
+**Gebruik en grens.** De bron is op 12 oktober 2026 formeel gekoppeld aan de
+broedvogelreeks. Na toepassing van de Natura 2000-scope en de geldige
+vogelselectie bevat het stikstofmodel 60.127 soort–plot–jaarrijen uit 674
+plotjaren in 51 plots, voor 155 soorten en 2005–2023. Het model corrigeert
+tevens voor tijd, oppervlakte, bron, teller/tellerteam, geregistreerde
+ervaring, bezoekinspanning, ongunstige bezoeksomstandigheden en vier
+weermaten. Het verschil tussen plots is een factor 1,157 per
+standaardafwijking hogere gemiddelde depositie; het verband tussen verandering
+in depositie en verandering in vogelaantallen binnen dezelfde plot is 1,002,
+met p = 0,924. Slechts één van vijf ruimtelijke validatieblokken is numeriek
+geldig en dat voorspelt slechter; de tijdstoets op 2019–2023 valt numeriek uit.
+De bron blijft geschikt als mogelijke verklarende factor, maar levert in deze
+modelopzet geen bestendig voorspelmodel van vogelverandering en gaat niet door
+naar power. Een samenhang bewijst bovendien niet dat stikstof de enige oorzaak
+is.
 
 #### 1.8.4. Bodemgebruik
 
@@ -494,7 +508,21 @@ toegevoegd.
 
 **Omvang en periode in de huidige SQL-dump.** 918 plot-jaar-klasseregels, 1996–2022
 
-**Gebruik en grens.** Laat veranderingen in de ruimtelijke omgeving van plots zien. De meetjaren zijn niet jaarlijks beschikbaar.
+**Gebruik en grens.** De bron bevat vijf kaartmomenten: 1996, 2010, 2015, 2017
+en 2022. De codes van 1996 zijn niet inhoudelijk aan de latere klassen
+geharmoniseerd en zijn daarom niet stilzwijgend in het vogelmodel opgenomen.
+Na toepassing van de Natura 2000-scope en de geldige vogelselectie gebruiken
+de modellen voor open natuurlijk terrein, bos en water 15.039
+soort–plot–jaarrijen uit 168 plotjaren in 49 plots, voor 155 soorten en de vier
+kaartjaren 2010–2022. In de vijf analyses waarin landgebruik voorkomt zijn van
+de tien volledige basis- en omgevingsmodellen twee geldig; geen modelpaar is
+aan beide zijden geldig. Van dertig validaties zijn er elf geldig en negentien
+ongeldig. Bos verbetert de logscore in vier van vier geldige ruimtelijke
+blokken en water in
+twee van twee, maar geen van de vijf tijdstoetsen slaagt. De bron kan dus
+ruimtelijke verschillen tussen plots helpen beschrijven, maar levert in deze
+modelopzet geen bestendig voorspelmodel van vogelverandering en gaat niet door
+naar power. De kaartmomenten zijn niet jaarlijks beschikbaar.
 
 #### 1.8.5. Natura 2000-habitat
 

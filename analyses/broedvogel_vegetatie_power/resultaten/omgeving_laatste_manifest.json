@@ -1,0 +1,205 @@
+{
+  "run_id": "20261012T111852Z-d190db5705c6",
+  "git_commit": "d190db5705c6e25ddbea069c57d92578cb88b724",
+  "reporting_commit": "d190db5705c6e25ddbea069c57d92578cb88b724",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.1",
+  "executed_at_utc": "2026-10-12T13:47:27Z",
+  "source_fingerprint_sha256": "071b463353b57b9ea6c52adaceef1372f2a122971f20a07c48f4fdacd5450f7e",
+  "tables": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "dagbezoeken_bmp": {
+      "file": "dagbezoeken_bmp.tsv",
+      "rows": 14455,
+      "bytes": 310792,
+      "sha256": "16c6619bd6144ce2a9ce137392674e66bf4c138fb9c1d1960313295971982a50"
+    },
+    "evg_vogel_landschapgroep": {
+      "file": "evg_vogel_landschapgroep.tsv",
+      "rows": 243,
+      "bytes": 1863,
+      "sha256": "4492e5476dd70dd63bfaf4a402ef05eb97e1238adf7cc689e729cd699968883d"
+    },
+    "evg_vogelgroepen": {
+      "file": "evg_vogelgroepen.tsv",
+      "rows": 8,
+      "bytes": 188,
+      "sha256": "1dc53c37a2b731118363331b90f43d6595499bb190ce8523ef374d6e5126286e"
+    },
+    "functional_group_definition": {
+      "file": "functional_group_definition.tsv",
+      "rows": 6,
+      "bytes": 300,
+      "sha256": "371ecf0b059cca04c12ec5eed60a3fc7ba5c383dfbf2d721f6700f8527c4ba0e"
+    },
+    "functional_group_membership": {
+      "file": "functional_group_membership.tsv",
+      "rows": 312,
+      "bytes": 6147,
+      "sha256": "72c4c138df002cb518f789e2675d86ab26b206c6a9a067d63c2309a1c955c1b0"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_landgebruik": {
+      "file": "plot_jaar_landgebruik.tsv",
+      "rows": 918,
+      "bytes": 66759,
+      "sha256": "d86705317d8f6e4709035fbf2a9611467ded645912de8b5b1bdfd1284f76289c"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_stikstof": {
+      "file": "plot_jaar_stikstof.tsv",
+      "rows": 1027,
+      "bytes": 52887,
+      "sha256": "4d5179231100234943415cc4415c5aaf0a07c36f39da3da9884c26568231b9f9"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 67,
+      "bytes": 1720,
+      "sha256": "d5dc6600e87f2be2b5ec65ceb54f00f17ef755fb18e7604dc24d853a18d138dd"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    },
+    "weer_analyse": {
+      "file": "weer_analyse.tsv",
+      "rows": 24837,
+      "bytes": 603713,
+      "sha256": "ce5c4ce15bb996b33007793255a0248279484b80d72674bbb9f0641e5357bbe9"
+    }
+  },
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "specifications": {
+    "stikstof": {
+      "fields": "stikstof_mean",
+      "source": "stikstof",
+      "lag": 0,
+      "train_end": 2018,
+      "test_start": 2019
+    },
+    "land_open": {
+      "fields": "land_open_pct",
+      "source": "landgebruik",
+      "lag": 0,
+      "train_end": 2015,
+      "test_start": 2017
+    },
+    "land_bos": {
+      "fields": "land_bos_pct",
+      "source": "landgebruik",
+      "lag": 0,
+      "train_end": 2015,
+      "test_start": 2017
+    },
+    "land_water": {
+      "fields": "land_water_pct",
+      "source": "landgebruik",
+      "lag": 0,
+      "train_end": 2015,
+      "test_start": 2017
+    },
+    "land_gecombineerd": {
+      "fields": ["land_open_pct", "land_bos_pct", "land_water_pct"],
+      "source": "landgebruik",
+      "lag": 0,
+      "train_end": 2015,
+      "test_start": 2017
+    },
+    "stikstof_en_land": {
+      "fields": ["stikstof_mean", "land_open_pct", "land_bos_pct", "land_water_pct"],
+      "source": "gecombineerd",
+      "lag": 0,
+      "train_end": 2015,
+      "test_start": 2017
+    }
+  },
+  "landgebruik_uitgesloten_jaren": 1996,
+  "outputs": {
+    "samenvatting": {
+      "file": "omgeving_samenvatting.csv",
+      "bytes": 1245,
+      "sha256": "a26c9f45e2c6ebcbd65c7a36eac3eddc0d88719b9fc6434ab8ea93a3a9743c8b"
+    },
+    "dekking": {
+      "file": "omgeving_dekking.csv",
+      "bytes": 742,
+      "sha256": "15038917e5a3ce4c3461e0c4d07d3efae44484f022f738afec1bd40a2effb46a"
+    },
+    "modellen": {
+      "file": "omgeving_modellen.csv",
+      "bytes": 2797,
+      "sha256": "61d89607305ea0fa0967da3fcfe7f98bbffac04501cbd4924b2633c2f6e79369"
+    },
+    "effecten": {
+      "file": "omgeving_effecten.csv",
+      "bytes": 3701,
+      "sha256": "5a6d5ce93fe5d0da70b211a4583bb2e5f03817736df8eac6774632341362ed3d"
+    },
+    "soorten": {
+      "file": "omgeving_soorten.csv",
+      "bytes": 142190,
+      "sha256": "0389cd779111228b39f768d375d7c2d14f2b0964249292f005987a50a1c42642"
+    },
+    "groepen": {
+      "file": "omgeving_groepen.csv",
+      "bytes": 15386,
+      "sha256": "386bc6171c8f7a82fe4a7efc7a3e7634079463cc4f9c3ec3a570489243188e10"
+    },
+    "validatie": {
+      "file": "omgeving_validatie.csv",
+      "bytes": 10910,
+      "sha256": "9d0e05a1da4ee240b8bf269590deeb0f62949018b61bb9606127637319ae6eb9"
+    },
+    "stikstof": {
+      "file": "omgeving_stikstof.csv",
+      "bytes": 99440,
+      "sha256": "ea0d19fae10afec6245205443b4bc2e85214d126ba1a7f3adaf24f122bc40770"
+    },
+    "landgebruik": {
+      "file": "omgeving_landgebruik.csv",
+      "bytes": 14471,
+      "sha256": "d087b4a3d5ecbf9b774a1d80c11147701e4ecd18da92a21a0f62b69b6a997db0"
+    }
+  }
+}

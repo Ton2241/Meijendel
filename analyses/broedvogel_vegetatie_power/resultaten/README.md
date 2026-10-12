@@ -225,3 +225,41 @@ aandeel van 24 afzonderlijk begrensde plots in 2022. De correlatie bedraagt
 absolute fout blijft respectievelijk 0,102 en 0,106. Water en kaal zand zijn
 niet afzonderlijk gevalideerd. De status is daarom
 `niet_bruikbaar_voor_jaarlijkse_uitbreiding`.
+
+## Stikstof en CBS-landgebruik
+
+De bestanden `omgeving_laatste_*` horen bij formele run
+`20261012T111852Z-d190db5705c6`. Het stikstofmodel bevat 60.127
+soort–plot–jaarrijen uit 674 plotjaren in 51 plots, voor 155 soorten en
+2005–2023. De vijf CBS-landgebruikmodellen bevatten ieder 15.039 rijen uit 168
+plotjaren in 49 plots, voor 155 soorten en de kaartjaren 2010, 2015, 2017 en
+2022. De 918 bronregels bevatten daarnaast 1996; die broncodes zijn niet
+inhoudelijk aan de latere klassen gekoppeld en blijven daarom buiten deze
+modellen.
+
+Voor stikstof zijn basis- en omgevingsmodel beide geldig. Het gemiddelde
+verschil tussen plots is een factor 1,157 per standaardafwijking; het
+binnen-plotverband is 1,002, met p = 0,924. Van vijf ruimtelijke blokken slaagt
+er één en dat blok voorspelt slechter. De tijdstoets op 2019–2023 valt
+numeriek uit.
+
+Over alle zes vergelijkingen zijn vier van twaalf volledige modellen geldig;
+alleen bij stikstof is het volledige modelpaar geldig. Twaalf van 36
+validatievergelijkingen slagen en 24 vallen numeriek uit. Bos verbetert de
+logscore in vier van vier geldige ruimtelijke blokken, water in twee van twee.
+Deze signalen worden niet als model van verandering gelezen: de volledige
+modelparen zijn ongeldig en geen van de zes tijdstoetsen slaagt. Daarom luidt
+het besluit voor alle zes combinaties
+`geen_bestendige_voorspellende_meerwaarde` en gaat geen combinatie door naar
+power.
+
+`omgeving_laatste_samenvatting.csv` geeft dit besluit per combinatie.
+`omgeving_laatste_modellen.csv` en `omgeving_laatste_validatie.csv` bewaren
+alle modeluitval. De effect-, soort- en groepstabellen bevatten expliciete
+statusvelden, zodat een coëfficiënt uit een los geslaagd omgevingsmodel niet
+als geldige vergelijking wordt gelezen wanneer het basismodel faalt.
+De soorttabel bevat 930 regels en de groepstabel 84 regels. Alleen de veertien
+stikstofgroepen hebben `vergelijking_geldig = TRUE`; hun binnen-plotverhouding
+ligt tussen 0,985 en 1,012. Omdat de ruimtelijke en temporele validatie voor
+stikstof niet slaagt, zijn ook deze groepswaarden geen zelfstandig bewijs van
+een ecologisch effect.

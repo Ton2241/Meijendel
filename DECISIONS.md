@@ -39,6 +39,18 @@
   pixelreferenties ongescheiden. Een vervolg vereist trainingsvlakken of de
   oorspronkelijke classificatierasters; alle nuluitkomsten blijven bewaard.
 
+- Op 12 oktober 2026 zijn stikstofdepositie en CBS-landgebruik toegevoegd aan
+  het soortgerichte broedvogelmodel. Het stikstofmodel gebruikt 60.127
+  soort–plot–jaarrijen uit 674 plotjaren in 51 plots en 2005–2023; de
+  landgebruikmodellen 15.039 rijen uit 168 plotjaren in 49 plots en de
+  kaartjaren 2010, 2015, 2017 en 2022. Het stikstofverband binnen dezelfde plot
+  is praktisch nul. Bos en water geven alleen in de geldige ruimtelijke
+  blokken een gunstig signaal. Van twaalf volledige modellen zijn er vier
+  geldig en van 36 validaties twaalf; geen tijdstoets slaagt. Geen van de zes
+  omgevingsmodellen gaat door naar power. De 1996-codes blijven buiten de
+  modellen zolang zij niet inhoudelijk met de latere CBS-klassen zijn
+  geharmoniseerd.
+
 - De tellergevoeligheidsfase van dit analyseproject is op 9 oktober 2026
   afgerond op 203.628 geldige soort–plot–jaarrijen uit 2.007 plotjaren met een
   bekend teller/tellerteam, voor 156 soorten over 1958–2025.

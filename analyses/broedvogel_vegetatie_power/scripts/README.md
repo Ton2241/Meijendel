@@ -232,3 +232,35 @@ bash analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur_pip
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_habitatgericht.R
 bash analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_habitatgericht_pipeline.sh
 ```
+
+## Stikstof en CBS-landgebruik
+
+De aanvullende omgevingsmodellen zijn herhaalbaar met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_omgeving.sh
+```
+
+De runner leest `plot_jaar_stikstof`, `plot_jaar_landgebruik`, de vogelmatrix,
+teller/tellerteam, bezoekinspanning, weer en de vastgelegde groepsindelingen
+rechtstreeks uit de lokale canonieke database. M66 en M91 worden via de
+centrale analysescope uitgesloten. De kaartcodes uit 1996 worden niet aan de
+latere CBS-klassen gelijkgesteld; de modellen gebruiken 2010, 2015, 2017 en
+2022. Getoetst worden stikstof, open natuurlijk terrein, bos, water, de drie
+landklassen gezamenlijk en hun combinatie met stikstof.
+
+Iedere combinatie vergelijkt hetzelfde basis- en omgevingsmodel op de exacte
+zelfde rijen, met vijf achtergehouden plotblokken en één tijdstoets. Een
+afgebroken uitvoering kan zonder opnieuw schatten van voltooide checkpoints
+worden hervat met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_omgeving.sh \
+  --resume PAD/NAAR/RUNMAP
+```
+
+De afzonderlijke test is:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_omgeving.R
+```
