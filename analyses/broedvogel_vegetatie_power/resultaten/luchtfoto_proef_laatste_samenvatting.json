@@ -1,0 +1,44 @@
+{
+  "run_id": "20261012T123500Z-luchtfoto-proef-1d09d26",
+  "status": "niet_bruikbaar_voor_jaarlijkse_uitbreiding",
+  "reden": "Geen van beide kenmerkensets haalt macro-F1 0,60 in beide onafhankelijke overdrachtstoetsen 2020-2023.",
+  "water_en_zand": "niet_afzonderlijk_gevalideerd; pixelreferenties ontbreken",
+  "gegevens": {
+    "bronplots": 55,
+    "analyseplots": 53,
+    "uitgesloten_plot_ids": [
+      3503,
+      3514
+    ],
+    "beeldjaren": [
+      2016,
+      2020,
+      2022,
+      2023,
+      2024
+    ],
+    "ahn_referentie": {
+      "2016": "AHN3/2014",
+      "2020": "AHN4/2020",
+      "2023": "AHN5/2023"
+    }
+  },
+  "validatiepoort": "macro-F1 >= 0,60 in beide overdrachtstoetsen 2020 naar 2023 en 2023 naar 2020",
+  "model": {
+    "algoritme": "RandomForestClassifier",
+    "n_estimators": 160,
+    "max_depth": 18,
+    "min_samples_leaf": 4,
+    "class_weight": "balanced_subsample",
+    "n_jobs": 2,
+    "steekproef_per_klasse_per_toets": 40000
+  },
+  "software_uitgevoerde_run": {
+    "python": "3.9.6",
+    "numpy": "2.0.2",
+    "rasterio": "1.4.3",
+    "geopandas": "1.0.1",
+    "scipy": "1.13.1",
+    "scikit_learn": "1.6.1"
+  }
+}

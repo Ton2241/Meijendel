@@ -27,6 +27,18 @@
   analyse-uitvoer en worden niet als primaire bronmeting in `Meijendel`
   opgeslagen.
 
+- Op 12 oktober 2026 is de beperkte luchtfoto-classificatieproef afgerond met
+  tien PDOK-WMS-beelden, RGB en CIR voor 2016, 2020, 2022, 2023 en 2024. Van
+  de 55 bronplots zijn M66 en M91 uitgesloten; 53 Natura 2000-plots zijn
+  geanalyseerd. De onafhankelijke overdracht van vier AHN-afgeleide
+  hoogteklassen tussen 2020 en 2023 behaalt met ruwe kenmerken macro-F1 0,469
+  en 0,420, beneden de vooraf gekozen grens van 0,60. Radiometrische
+  normalisatie en textuur verbeteren dit niet. De openbare luchtfoto's worden
+  daarom niet tot een jaarlijkse structuurreeks uitgebreid en niet in de
+  levende database opgenomen. Water en kaal zand blijven zonder onafhankelijke
+  pixelreferenties ongescheiden. Een vervolg vereist trainingsvlakken of de
+  oorspronkelijke classificatierasters; alle nuluitkomsten blijven bewaard.
+
 - De tellergevoeligheidsfase van dit analyseproject is op 9 oktober 2026
   afgerond op 203.628 geldige soort–plot–jaarrijen uit 2.007 plotjaren met een
   bekend teller/tellerteam, voor 156 soorten over 1958–2025.

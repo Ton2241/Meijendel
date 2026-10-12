@@ -202,6 +202,21 @@ niet-grondbestanden, bouwt twee verdedigbare 5-meterrasters en kwantificeert de
 methodegevoeligheid. De uitvoer wordt niet stilzwijgend aan AHN2–AHN5
 toegevoegd.
 
+De beperkte luchtfoto-classificatieproef is herhaalbaar met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_luchtfoto_classificatieproef.sh \
+  PAD/NAAR/AHN3-AHN5-RASTERMAP
+```
+
+De runner downloadt RGB en CIR voor 2016, 2020, 2022, 2023 en 2024 via de
+officiële PDOK-WMS, bouwt tien GeoTIFFs op het gedeelde tweemetergrid en voert
+zowel de ruwe als de radiometrisch genormaliseerde Random-Forest-proef uit.
+M66 en M91 worden uitgesloten. De grote beelden en runuitvoer blijven lokaal
+en door Git genegeerd; alleen compact beoordeelde uitkomsten worden blijvend
+opgenomen. De lokale `.venv_ahn` moet NumPy, Rasterio, GeoPandas, SciPy en
+scikit-learn bevatten; de uitgevoerde proef gebruikte scikit-learn 1.6.1.
+
 De tests zijn:
 
 ```bash
@@ -212,6 +227,8 @@ De tests zijn:
 .venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_ahn1_historische_rasters.py
 .venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_analyseer_ahn1_gevoeligheid.py
 bash analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur_pipeline.sh
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_luchtfoto_download.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_luchtfoto_classificatie.py
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_habitatgericht.R
 bash analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_habitatgericht_pipeline.sh
 ```

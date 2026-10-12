@@ -23,12 +23,21 @@ AHN-tijdstoetsen vallen numeriek uit. AHN1 is wel gereconstrueerd, maar blijkt
 te methodegevoelig voor opname in dezelfde reeks. Geen van de tien gerichte
 modellen gaat daarom door naar power.
 
+De aansluitende RGB/CIR-proef gebruikt tien PDOK-beelden uit 2016, 2020, 2022,
+2023 en 2024 en 53 Natura 2000-plots. De overdracht van de vier AHN-afgeleide
+hoogteklassen tussen 2020 en 2023 blijft met macro-F1 0,420–0,469 onder de
+vooraf gekozen grens van 0,60. Radiometrische normalisatie en beeldtextuur
+verbeteren dit niet. De luchtfoto's worden daarom niet tot een jaarlijkse
+vegetatiestructuurreeks uitgebreid.
+
 ## Begin hier
 
 - [Analyse op hoofdlijnen en uitkomsten](ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.md)
   is het levende inhoudelijke hoofddocument.
 - [Besluiten](BESLUITEN.md) bewaart methodische keuzes die niet bij iedere
   vervolgstap opnieuw moeten worden gemaakt.
+- [Luchtfoto classificatieproef](LUCHTFOTO_CLASSIFICATIEPROEF.md) beschrijft
+  gegevens, validatie, nuluitkomsten en het besluit over een jaarlijkse reeks.
 - [Ontwerp teller- en ervaringsmodel](ONTWERP_TELLER_EN_ERVARINGSMODEL.md)
   legt de vooraf vastgestelde methode én de gevolgen van de uitgevoerde tweede
   analysestap vast.

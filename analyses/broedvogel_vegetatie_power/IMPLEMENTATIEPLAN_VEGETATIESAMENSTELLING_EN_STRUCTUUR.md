@@ -130,3 +130,25 @@ haalbaarheidsanalyse gebruikt 12.318.672 punten binnen het analysevenster.
 Twee verdedigbare 5-meterrastermethoden verschillen gemiddeld 48,0
 procentpunt in open terrein, 14,0 procentpunt in bomen en 4,81 meter in de 95e
 hoogtepercentiel. Daarom blijft AHN1 buiten de geharmoniseerde hoofdreeks.
+
+## Luchtfotovervolg 12 oktober 2026
+
+De beoogde beperkte proef is uitgevoerd met RGB en CIR uit 2016, 2020, 2022,
+2023 en 2024. De tien beelden zijn via de officiële PDOK-WMS opgebouwd op het
+AHN-rooster van 3.440 bij 3.018 pixels van 2 meter. Van de 55 bronplots zijn
+M66 en M91 uitgesloten; de proef omvat 53 Natura 2000-plots.
+
+De ruwe kenmerkenset behaalt bij overdracht 2020 naar 2023 macro-F1 0,469 en
+in omgekeerde richting 0,420. Een gevoeligheidsrun met kleurverhoudingen,
+genormaliseerde helderheid en lokale beeldtextuur behaalt 0,419 en 0,326. Geen
+van beide varianten voldoet aan de vooraf gekozen grens van 0,60. De
+voorspelde houtige bedekking rangschikt 24 afzonderlijk begrensde plots in
+2022 redelijk, correlatie 0,743 tot 0,869, maar de gemiddelde absolute fout is
+10,2 tot 10,6 procentpunt. Water en kaal zand zijn door het ontbreken van
+pixelreferenties niet afzonderlijk gevalideerd.
+
+Daarom wordt geen jaarlijkse luchtfotoreeks gebouwd. De tien GeoTIFFs blijven
+lokale analyse-uitvoer; compacte validaties, klasse-uitkomsten, plotfracties,
+samenvatting en bronhashes zijn blijvend vastgelegd. Een nieuwe proef begint
+pas nadat onafhankelijke trainingsvlakken of de oorspronkelijke
+classificatierasters beschikbaar zijn.

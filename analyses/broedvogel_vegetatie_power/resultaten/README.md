@@ -203,3 +203,25 @@ haalbaarheids- en methodegevoeligheidsanalyse van AHN1/1997–1998. Zij omvatten
 analysevenster. Omdat twee verdedigbare rastermethoden gemiddeld 48,0
 procentpunt verschil in open terrein opleveren, is AHN1 niet aan de
 AHN2–AHN5-reeks toegevoegd.
+
+## Luchtfoto classificatieproef
+
+De bestanden `luchtfoto_proef_laatste_*` horen bij lokale run
+`20261012T123500Z-luchtfoto-proef-1d09d26`. Het downloadmanifest beschrijft
+tien PDOK-WMS-rasters: RGB en CIR voor 2016, 2020, 2022, 2023 en 2024, steeds
+3.440 bij 3.018 pixels op 2 meter. De classificatie gebruikt 53 van de 55
+bronplots; M66 en M91 zijn uitgesloten.
+
+Beide kenmerkensets bewaren vier overdrachtstoetsen van 160.000 evenwichtig
+over de vier klassen getrokken testpixels. De ruwe 2020–2023-toetsen behalen
+macro-F1 0,469 en 0,420; de genormaliseerde toetsen 0,419 en 0,326. Geen toets
+haalt de vooraf gekozen grens van 0,60. De plotbestanden bewaren daarnaast
+alle 1.060 aandelen per kenmerkenset: 53 plots maal vijf jaren maal vier
+klassen.
+
+De samenvatting bevat ook de vergelijking met het gepubliceerde houtige
+aandeel van 24 afzonderlijk begrensde plots in 2022. De correlatie bedraagt
+0,743 voor ruwe en 0,869 voor genormaliseerde kenmerken, maar de gemiddelde
+absolute fout blijft respectievelijk 0,102 en 0,106. Water en kaal zand zijn
+niet afzonderlijk gevalideerd. De status is daarom
+`niet_bruikbaar_voor_jaarlijkse_uitbreiding`.

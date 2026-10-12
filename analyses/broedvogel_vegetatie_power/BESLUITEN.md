@@ -275,7 +275,16 @@ stilzwijgend herschreven.
   48,0 procentpunt verschil in open terrein en 14,0 procentpunt verschil in
   bomen geven, wordt AHN1 niet aan AHN2–AHN5 gekoppeld. Het blijft een
   historische gevoeligheidsanalyse.
-- De vrijwel jaarlijkse luchtfoto's vanaf 2016 worden alleen via een beperkte
-  RGB/CIR-proef op
-  dezelfde 55 plots beoordeeld. Zij kunnen horizontale bedekking tussen de
-  AHN-cycli aanvullen, maar niet de verticale structuur of AHN1 herstellen.
+- De beperkte RGB/CIR-proef is uitgevoerd met tien PDOK-beelden uit 2016,
+  2020, 2022, 2023 en 2024. Van de 55 bronplots zijn M66 en M91 conform de
+  Natura 2000-scope uitgesloten; de analyse omvat 53 plots.
+- De vier uit AHN afgeleide hoogteklassen zijn niet voldoende overdraagbaar
+  tussen beeldjaren. De ruwe kenmerken behalen macro-F1 0,469 voor 2020 naar
+  2023 en 0,420 voor 2023 naar 2020, onder de vooraf gekozen grens van 0,60.
+  Een gevoeligheidsrun met radiometrische normalisatie en beeldtextuur scoort
+  lager. De luchtfoto's worden daarom niet tot een jaarlijkse structuurreeks
+  uitgebreid.
+- Water en kaal zand worden niet met onbewezen spectrale drempels gescheiden.
+  Daarvoor zijn onafhankelijke pixelreferenties nodig. De luchtfoto's kunnen
+  AHN dus niet vervangen; een vervolg is alleen zinvol met trainingsvlakken of
+  de oorspronkelijke classificatierasters.

@@ -490,14 +490,18 @@ gemiddeld 48,0 procentpunt, de boomfractie 14,0 procentpunt en de 95e
 hoogtepercentiel 4,81 meter. AHN1 is dus technisch beschikbaar, maar niet
 vergelijkbaar genoeg om als vijfde punt aan AHN2–AHN5 toe te voegen.
 
-Luchtfoto's blijven na deze uitkomst nuttig, maar voor een andere maat. Een
-vrijwel jaarlijkse RGB/CIR-classificatie kan vanaf 2016 horizontale
-veranderingen in open zand, lage vegetatie, struweel, bomen en water tussen de
-AHN-cycli volgen. De 25-centimeterreeks mist in ieder geval 2021. Zij vervangt
-geen hoogte-informatie en repareert AHN1 niet. De volgende stap is
-daarom een beperkte proef op dezelfde 55 plots en enkele jaren die samenvallen
-met AHN3–AHN5; alleen bij voldoende reproduceerbare classificatie volgt een
-jaarlijkse reeks.
+De aansluitende luchtfotoproef is uitgevoerd met RGB en CIR voor 2016, 2020,
+2022, 2023 en 2024. Van de 55 bronplots zijn M66 en M91 uitgesloten, zodat 53
+Natura 2000-plots zijn onderzocht. De vier AHN-afgeleide hoogteklassen blijken
+niet voldoende tussen beeldjaren overdraagbaar. De ruwe kenmerken behalen
+macro-F1 0,469 voor 2020 naar 2023 en 0,420 in omgekeerde richting, beneden de
+vooraf gekozen grens van 0,60. Normalisatie en beeldtextuur verbeteren dit
+niet. De redelijke ruimtelijke rangorde van houtige bedekking in 24 plots in
+2022 weegt daar niet tegenop: de gemiddelde absolute fout blijft circa 10
+procentpunt. Water en kaal zand zijn zonder pixelreferenties niet afzonderlijk
+gevalideerd. Daarom volgt geen jaarlijkse reeks. Luchtfoto's vervangen de
+hoogte-informatie niet en herstellen AHN1 niet; een vervolg vereist
+onafhankelijke trainingsvlakken of de oorspronkelijke classificatierasters.
 
 ### 4. Aanvullende verklarende blokken
 
@@ -616,6 +620,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | IPI-habitatproxy | Uitgevoerd | Bescheiden ruimtelijke winst in drie van vier geldige plotblokken; geen tijdswinst en geen duidelijke gemiddelde binnen-plotreactie. |
 | Landbedekking 2001/2022 | Uitgevoerd | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
 | Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
+| Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. Geen jaarlijkse structuurreeks gebouwd. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en overig landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn nog niet in deze gerichte modellen geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |

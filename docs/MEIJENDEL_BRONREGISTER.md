@@ -509,21 +509,27 @@ toegevoegd.
 **Eigenaar.** Beeldmateriaal Nederland, ontsloten via PDOK en het landelijke
 downloadportaal.
 
-**Omvang en periode.** Kandidaatbron, nog niet lokaal geïmporteerd. De landelijk
-beschikbare zomerbeelden leveren vanaf 2016 RGB en nabij-infrarood op 25
-centimeter, maar de 25-centimeterreeks mist in ieder geval 2021. Recentere
-voorjaarsbeelden zijn afzonderlijk beschikbaar.
-Voor de beoogde proef zijn 55 vogelplots en enkele jaren rond AHN3, AHN4 en
-AHN5 nodig. De feitelijke tegelselectie, omvang en dekking worden pas bij die
-proef vastgesteld.
+**Omvang en periode.** Kandidaatbron, niet in de levende database opgenomen.
+De uitgevoerde proef gebruikt tien officiële WMS-beelden: RGB en CIR voor
+2016, 2020, 2022, 2023 en 2024. Elk beeld is op het gedeelde AHN-rooster
+samengesteld tot 3.440 bij 3.018 pixels van 2 meter. De brongeometrie bevat 55
+vogelplots; na uitsluiting van M66 en M91 zijn 53 Natura 2000-plots
+geanalyseerd. De officiële 25-centimeterlagen bevatten geen RGB/CIR-paar voor
+2021.
 
-**Gebruik en grens.** Een reproduceerbare RGB/CIR-classificatie kan jaarlijkse
-horizontale bedekking door open zand, lage vegetatie, struweel, bomen en water
-tussen de AHN-cycli volgen. Luchtfoto's meten geen vegetatiehoogte, maken AHN1
-niet vergelijkbaar en mogen niet rechtstreeks als causale verklaring van
-vogelverandering worden gebruikt. Eerst volgt een beperkte
-classificatieproef; alleen bij voldoende jaar-op-jaarstabiliteit wordt deze
-kandidaatbron analyseklaar gemaakt.
+**Gebruik en grens.** De beperkte classificatieproef is uitgevoerd. De ruwe
+RGB/CIR-kenmerken behalen bij overdracht van 2020 naar 2023 macro-F1 0,469 en
+in omgekeerde richting 0,420; beide blijven onder de vooraf gekozen grens van
+0,60. Radiometrische normalisatie en beeldtextuur verbeteren dit niet. De
+voorspelde houtige bedekking correleert in 24 afzonderlijk begrensde plots in
+2022 wel met de onafhankelijke landbedekking, 0,743 tot 0,869, maar de
+gemiddelde absolute fout blijft 10,2 tot 10,6 procentpunt. Water en kaal zand
+zijn zonder pixelreferenties niet afzonderlijk gevalideerd. De kandidaatbron
+wordt daarom niet analyseklaar verklaard en niet tot een jaarlijkse reeks
+uitgebreid. Een vervolg vereist onafhankelijke trainingsvlakken of de
+oorspronkelijke classificatierasters. Luchtfoto's meten geen vegetatiehoogte,
+maken AHN1 niet vergelijkbaar en mogen niet rechtstreeks als causale
+verklaring van vogelverandering worden gebruikt.
 
 ## 2. Bronnen in MySQL-database `Meijendel_bronnen`
 
