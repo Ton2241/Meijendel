@@ -44,7 +44,6 @@ groups = '\n'.join([
 shiny = 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0'
 attention = 'AANDACHT|container-image|meijendel-mysql|beoordeel beschikbare fix'
 wrapper = "BLOKKADE|vwgm-admin|Command 'vulnerability-audit-root' returned non-zero exit status 1."
-candidate_wrapper = "BLOKKADE|vwgm-admin|Command '('/usr/local/libexec/vwgm-admin/vulnerability-audit-root', '--image', 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')' returned non-zero exit status 1."
 candidate = 'SAMENVATTING|kandidaat-aaaaaaaaaaaa|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0'
 tag = 'AANDACHT|container-hygiene|onverwachte-imagetag=vwgm-mysql:candidate-test'
 common = '\n'.join([mysql, groups, shiny, attention])
@@ -60,7 +59,7 @@ test_scanner() { printf '%s\\n' "$TEST_AUDIT"; return "$TEST_STATUS"; }
 '''
 for mode, gate, good in [
     ('local', local_gate, common + '\n' + wrapper),
-    ('candidate', remote_gate + '\naudit_candidate', common + '\n' + candidate + '\n' + tag + '\n' + candidate_wrapper),
+    ('candidate', remote_gate + '\naudit_candidate', common + '\n' + candidate + '\n' + tag),
 ]:
     cases = [
         ('current OpenSSL and Go scan', good, '1', True),
@@ -77,7 +76,6 @@ for mode, gate, good in [
         cases.append(('candidate vulnerable', good.replace('kandidaat-aaaaaaaaaaaa|critical=0|high=0', 'kandidaat-aaaaaaaaaaaa|critical=0|high=1'), '1', False))
         cases.append(('known Shiny rollback attention', good + '\nAANDACHT|container-image|vwgm-shiny-rollback-9bac5daf99e6|beoordeel beschikbare fix', '1', True))
         cases.append(('unexpected attention', good + '\nAANDACHT|container-image|unknown|unexpected', '1', False))
-        cases.append(('missing gateway wrapper', good.replace('\n' + candidate_wrapper, ''), '1', False))
         cases.append(('unexpected blockade', good + '\nBLOKKADE|scanner|unexpected', '1', False))
     for name, audit, status, expected in cases:
         result = subprocess.run(['bash', '-c', prefix + gate], text=True, capture_output=True,

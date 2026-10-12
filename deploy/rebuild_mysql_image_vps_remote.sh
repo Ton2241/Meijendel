@@ -103,9 +103,7 @@ audit_candidate() {
   [[ "$status" -eq 1 ]] || fail "kandidaatscan heeft een onverwachte eindstatus"
   ! grep -Eq '^URGENT\|' <<< "$output" || fail "kandidaatscan is onvolledig"
   blockades="$(grep -c '^BLOKKADE|' <<< "$output" || true)"
-  [[ "$blockades" -eq 1 ]] || fail "kandidaatscan bevat een onverwacht aantal blokkaderegels"
-  grep -Fq "BLOKKADE|vwgm-admin|Command '('/usr/local/libexec/vwgm-admin/vulnerability-audit-root', '--image', '$CANDIDATE_ID')' returned non-zero exit status 1." \
-    <<< "$output" || fail "kandidaatscan bevat een andere blokkade dan de verwachte gateway-wrapper"
+  [[ "$blockades" -eq 0 ]] || fail "kandidaatscan bevat een onverwachte blokkaderegel"
   grep -Fq "AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG" <<< "$output" || fail "kandidaattag is niet exact verklaard"
   grep -Fq 'AANDACHT|container-image|meijendel-mysql|' <<< "$output" || fail "oude MySQL-baseline ontbreekt"
   while IFS= read -r attention; do
