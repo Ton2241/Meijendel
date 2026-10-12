@@ -14,10 +14,14 @@ andere plots beter, maar niet de latere jaren. Landbedekking levert vooral voor
 watervogels ruimtelijk signaal; voor meerdere andere vogelgroepen is de
 numerieke validatie te instabiel. Een algemene relatie tussen
 vegetatieverandering en vogelverandering is dus nog niet aangetoond. Wel is een
-gerichte proef met AHN-vegetatiehoogte voor open-duin-, bos-, boomgroep- en
-struweelvogels uitgevoerd. Die proef levert ruimtelijke aanwijzingen, maar nog
-geen gevalideerd model van verandering door de tijd. Geen van de tien gerichte
-modellen gaat daarom al door naar power.
+gerichte proef met AHN-vegetatiestructuur voor open-duin-, bos-, boomgroep- en
+struweelvogels uitgevoerd. AHN2–AHN5 leveren vier vergelijkbare
+structuurmomenten voor 55 plots, zodat tijdsvalidatie nu mogelijk is. Alleen
+het boomgroepmodel doorloopt die toets numeriek; de voorspellingswinst is zeer
+klein en niet bestand tegen het weglaten van een soort. De andere drie
+AHN-tijdstoetsen vallen numeriek uit. AHN1 is wel gereconstrueerd, maar blijkt
+te methodegevoelig voor opname in dezelfde reeks. Geen van de tien gerichte
+modellen gaat daarom door naar power.
 
 ## Begin hier
 

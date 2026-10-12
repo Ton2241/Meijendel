@@ -11,14 +11,20 @@
   levende hoofddocument en het besluitenbestand in die directory zijn leidend
   voor opzet, voortgang en uitkomsten.
 
-- Op 11 oktober 2026 zijn de gerichte habitatmodellen uitgevoerd met
-  landbedekking 2001/2022, AHN3/2014, AHN4/2020 en dagweer 1958–2025. De AHN-laag
-  bevat 110 afgeleide plot–cyclusregels voor 55 plots. Van twintig volledige
-  modellen zijn twaalf numeriek geldig; van vijftig ruimtelijke validaties 24.
-  Omdat iedere structuurbron slechts twee onafhankelijke meetmomenten heeft,
-  is een zuivere tijdsvalidatie van verandering nog niet identificeerbaar. Geen
-  van de tien modellen gaat daarom door naar power. De afgeleide AHN-laag
-  blijft analyse-uitvoer en wordt niet als primaire bronmeting in `Meijendel`
+- Op 12 oktober 2026 is de vegetatiestructuur voor 55 plots geharmoniseerd over
+  AHN2/2008, AHN3/2014, AHN4/2020 en AHN5/2023. De vier cycli leveren 220
+  plot–cyclusregels op een identiek raster van twee meter. De AHN-modellen
+  gebruiken elf vogeljaren binnen vaste responsvensters na iedere inwinning.
+  Daardoor is de vooraf bedoelde tijdstoets voor het eerst uitvoerbaar. Alleen
+  het boomgroepmodel kon die toets numeriek doorlopen; de verbetering van de
+  gemiddelde logscore was 0,0024, maar niet bestand tegen het weglaten van een
+  soort. De overige drie AHN-tijdstoetsen vielen numeriek uit. Geen van de tien
+  gerichte habitatmodellen gaat door naar power. AHN1/1997–1998 is technisch
+  gereconstrueerd voor 55 plots, maar blijft buiten de hoofdreeks: de geschatte
+  open bedekking verschilt gemiddeld 48,0 procentpunt tussen twee verdedigbare
+  rastermethoden. AHN1 is daarmee een historische gevoeligheidsanalyse, geen
+  vergelijkbaar vijfde meetmoment. Alle afgeleide AHN-lagen blijven
+  analyse-uitvoer en worden niet als primaire bronmeting in `Meijendel`
   opgeslagen.
 
 - De tellergevoeligheidsfase van dit analyseproject is op 9 oktober 2026

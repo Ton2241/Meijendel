@@ -171,14 +171,43 @@ def derive_plot_metrics(
     dsm_path: str,
     dtm_path: str,
     cycle: str,
-    flightlines_path: str,
+    flightlines_path: str | None,
     date_field: str,
+    bronproduct: str | None = None,
+    harmonisatie: str | None = None,
+    acquisition_year: int | None = None,
+    acquisition_period: str | None = None,
+    structure_moment: int | None = None,
+    response_start_year: int | None = None,
 ) -> pd.DataFrame:
     plots = gpd.read_file(plots_path)
     if "plotid" not in plots.columns:
         raise ValueError("Veld 'plotid' ontbreekt in het plotbestand.")
-    flightlines = gpd.read_file(flightlines_path)
-    dates = dominant_acquisition_dates(plots, flightlines, date_field)
+    if flightlines_path:
+        flightlines = gpd.read_file(flightlines_path)
+        dates = dominant_acquisition_dates(plots, flightlines, date_field)
+        dates["inwinningsjaar"] = dates["inwinningsdatum"].str[:4].astype(int)
+        dates["inwinningsperiode"] = dates["inwinningsdatum"]
+        acquired = pd.to_datetime(dates["inwinningsdatum"])
+        dates["respons_startjaar"] = acquired.dt.year + (acquired.dt.month > 3).astype(int)
+    else:
+        required = (acquisition_year, acquisition_period, response_start_year)
+        if any(value is None for value in required):
+            raise ValueError(
+                "Zonder vlieglijnen zijn inwinningsjaar, -periode en responsstartjaar verplicht."
+            )
+        dates = pd.DataFrame(
+            {
+                "plotid": plots["plotid"].astype(int),
+                "inwinningsdatum": None,
+                "inwinningsjaar": int(acquisition_year),
+                "inwinningsperiode": acquisition_period,
+                "respons_startjaar": int(response_start_year),
+                "datum_dekkingsaandeel": np.nan,
+                "datum_methode": "regionale_inwinningsjaarkaart",
+                "afstand_vlieglijn_m": np.nan,
+            }
+        ).set_index("plotid")
     with rasterio.open(dsm_path) as dsm_src, rasterio.open(dtm_path) as dtm_src:
         if dsm_src.crs != dtm_src.crs or dsm_src.transform != dtm_src.transform:
             raise ValueError("DSM en DTM hebben niet hetzelfde rastergrid.")
@@ -190,6 +219,14 @@ def derive_plot_metrics(
             if feature.plotid not in dates.index:
                 continue
             acquisition_date = dates.loc[feature.plotid, "inwinningsdatum"]
+            cycle_structure_moment = structure_moment or {
+                "AHN2": 2008,
+                "AHN3": 2014,
+                "AHN4": 2020,
+                "AHN5": 2023,
+            }.get(cycle)
+            if cycle_structure_moment is None:
+                raise ValueError(f"Onbekende AHN-cyclus voor structuurmoment: {cycle}")
             dsm = _read_masked_band(dsm_src, feature.geometry)
             dtm = _read_masked_band(dtm_src, feature.geometry)
             metrics = calculate_height_metrics(dsm, dtm, pixel_size)
@@ -198,7 +235,10 @@ def derive_plot_metrics(
                     "plot_id": int(feature.plotid),
                     "ahn_cyclus": cycle,
                     "inwinningsdatum": acquisition_date,
-                    "inwinningsjaar": int(acquisition_date[:4]),
+                    "inwinningsjaar": int(dates.loc[feature.plotid, "inwinningsjaar"]),
+                    "inwinningsperiode": dates.loc[feature.plotid, "inwinningsperiode"],
+                    "structuurmoment": int(cycle_structure_moment),
+                    "respons_startjaar": int(dates.loc[feature.plotid, "respons_startjaar"]),
                     "datum_dekkingsaandeel": float(
                         dates.loc[feature.plotid, "datum_dekkingsaandeel"]
                     ),
@@ -207,6 +247,8 @@ def derive_plot_metrics(
                         dates.loc[feature.plotid, "afstand_vlieglijn_m"]
                     ),
                     "resolutie_m": pixel_size,
+                    "bronproduct": bronproduct,
+                    "harmonisatie": harmonisatie,
                     **metrics,
                 }
             )
@@ -219,8 +261,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--dsm", required=True)
     parser.add_argument("--dtm", required=True)
     parser.add_argument("--cycle", required=True)
-    parser.add_argument("--flightlines", required=True)
+    parser.add_argument("--flightlines")
     parser.add_argument("--date-field", default="datum")
+    parser.add_argument("--bronproduct")
+    parser.add_argument("--harmonisatie")
+    parser.add_argument("--acquisition-year", type=int)
+    parser.add_argument("--acquisition-period")
+    parser.add_argument("--structure-moment", type=int)
+    parser.add_argument("--response-start-year", type=int)
     parser.add_argument("--output", required=True)
     return parser.parse_args()
 
@@ -234,6 +282,12 @@ def main() -> None:
         args.cycle,
         args.flightlines,
         args.date_field,
+        args.bronproduct,
+        args.harmonisatie,
+        args.acquisition_year,
+        args.acquisition_period,
+        args.structure_moment,
+        args.response_start_year,
     )
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)

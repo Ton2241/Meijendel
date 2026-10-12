@@ -71,7 +71,8 @@ build_targeted_state <- function(input_dir) {
     } else {
       build_ahn_habitat_population(
         model_population, height, extract$data$evg_vogel_landschapgroep,
-        spec$group_number, spec$predictor, lag_years = 0L, window_half_width = 2L
+        spec$group_number, spec$predictor, lag_years = 0L,
+        window_mode = "na_inwinning", response_years = 3L
       )
     }
     item$data <- add_habitat_controls(item$data, weather)

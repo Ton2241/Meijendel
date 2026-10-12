@@ -162,16 +162,19 @@ uitgevoerd en staat in de bestanden `habitatgericht_laatste_*`.
 ## Gerichte habitatmodellen met AHN en weer
 
 De bestanden `habitatgericht_laatste_*` horen bij formele run
-`20261011T160059Z-9e3a1178fa51`. De AHN-uitvoer bevat 110 regels voor 55 plots:
-AHN3 uit 2014 en AHN4 uit 2020. Voor 54 respectievelijk 46 plots volgt de
-inwinningsdatum uit vlakoverlap; voor één respectievelijk negen plots uit de
-dichtstbijzijnde vlieglijn, op maximaal 254 meter. Geen van de 110 regels mist
-een structuurmaat en geen pixel boven 45 meter is als vegetatie behouden.
+`20261012T085549Z-3a43bb218f8a`. De voorafgaande bronrun
+`20261012T081631Z-ahn-harmonized-3a43bb218f8a` bevat 220 regels voor 55 plots:
+AHN2/2008, AHN3/2014, AHN4/2020 en AHN5/2023. De officiële DSM- en DTM-tegels
+zijn per cyclus op exact hetzelfde tweemetergrid gemiddeld. Geen van de 220
+regels mist een structuurmaat en geen pixel boven 45 meter is als vegetatie
+behouden. De compact bijgehouden bestanden `ahn_harmonisatie_laatste_*`
+bevatten de structuurlaag, bronbestanden, controles, cyclusgemiddelden en alle
+165 gepaarde plotverschillen tussen opeenvolgende cycli.
 
-De tien vooraf bepaalde combinaties gebruiken per model 1.741–10.340
-soort–plot–jaarrijen, 15–36 soorten, 22–50 plots en tien vogeljaren. De
+De tien vooraf bepaalde combinaties gebruiken per model 1.741–11.639
+soort–plot–jaarrijen, 15–36 soorten en 22–52 plots. De
 landbedekkingsmodellen gebruiken de vensters 1997–2001 en 2018–2022; de
-AHN-modellen 2012–2016 en 2018–2022. Naast teller/tellerteam en ervaring zijn
+AHN-modellen de jaren 2009–2011, 2014–2016, 2021–2022 en 2023–2025. Naast teller/tellerteam en ervaring zijn
 bezoekduur, de beschikbaarheid en waarde van ongunstige
 bezoeksomstandigheden, wintertemperatuur, wintervorstdagen,
 voorjaarstemperatuur en voorjaarsneerslag opgenomen.
@@ -184,11 +187,19 @@ landbedekking boomgroep in één van één en landbedekking bos in twee van twee
 gevallen. Dit is geen robuust rangnummer: de ontbrekende blokken zijn
 modeluitval en tellen niet als verbetering.
 
-De structuurbronnen hebben ieder slechts twee onafhankelijke meetmomenten:
-landbedekking 2001 en 2022, AHN 2014 en 2020. Een model kan op het eerste
-moment nog geen respons op verandering binnen een plot leren en die vervolgens
-op het tweede moment toetsen. De tien tijdsvalidaties hebben daarom de status
-`niet_uitvoerbaar`. Geen van de tien modellen voldoet aan de vooraf
-vastgelegde poort naar power. `habitatgericht_laatste_samenvatting.csv` geeft
-het besluit per combinatie; de effect-, validatie- en modeltabellen bewaren
-ook nulbevindingen en uitval.
+De landbedekking heeft slechts twee onafhankelijke meetmomenten; de zes
+bijbehorende tijdstoetsen blijven `niet_uitvoerbaar`. AHN heeft vier
+structuurmomenten en kan daarom op AHN2–AHN3 leren en op AHN4–AHN5 toetsen.
+Van die vier tijdstoetsen slaagt alleen het boomgroepmodel numeriek. De
+logscore verbetert met 0,0024, maar de minimale verandering na het weglaten van
+een soort is −0,0174. De drie andere AHN-tijdstoetsen vallen numeriek uit.
+Geen van de tien modellen voldoet aan de vooraf vastgelegde poort naar power.
+`habitatgericht_laatste_samenvatting.csv` geeft het besluit per combinatie; de
+effect-, validatie- en modeltabellen bewaren ook nulbevindingen en uitval.
+
+De bestanden `ahn1_historisch_laatste_*` bewaren de afzonderlijke
+haalbaarheids- en methodegevoeligheidsanalyse van AHN1/1997–1998. Zij omvatten
+55 plots, tien gecontroleerde bronbestanden en 12.318.672 punten binnen het
+analysevenster. Omdat twee verdedigbare rastermethoden gemiddeld 48,0
+procentpunt verschil in open terrein opleveren, is AHN1 niet aan de
+AHN2–AHN5-reeks toegevoegd.

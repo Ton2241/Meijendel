@@ -1,0 +1,11 @@
+klasse,kaartblad,url,verwachte_md5,feitelijke_md5,omvang_bytes
+g,30dn2,https://geotiles.citg.tudelft.nl/AHN1/g/30dn2.laz,81641998d78715babb4395f04e78ec26,81641998d78715babb4395f04e78ec26,9594437
+g,30ez1,https://geotiles.citg.tudelft.nl/AHN1/g/30ez1.laz,abf0163a957f054825307c60cd4a8e49,abf0163a957f054825307c60cd4a8e49,5071146
+g,30ez2,https://geotiles.citg.tudelft.nl/AHN1/g/30ez2.laz,2545703cce742485508a90443906ae5b,2545703cce742485508a90443906ae5b,23029731
+g,30gn1,https://geotiles.citg.tudelft.nl/AHN1/g/30gn1.laz,4491231eb6e61f6913a49e222638994a,4491231eb6e61f6913a49e222638994a,34544507
+g,30gn2,https://geotiles.citg.tudelft.nl/AHN1/g/30gn2.laz,32cdfd935104ddfbbebfe37a7ef506b8,32cdfd935104ddfbbebfe37a7ef506b8,37124552
+u,30dn2,https://geotiles.citg.tudelft.nl/AHN1/u/30dn2.laz,ba07b9f45d42db8b114e81452dcb2235,ba07b9f45d42db8b114e81452dcb2235,209343
+u,30ez1,https://geotiles.citg.tudelft.nl/AHN1/u/30ez1.laz,f7247db1052497d744a05d994d1b4852,f7247db1052497d744a05d994d1b4852,779388
+u,30ez2,https://geotiles.citg.tudelft.nl/AHN1/u/30ez2.laz,ccb9ee9a096d5923fc5e6489fa406f2e,ccb9ee9a096d5923fc5e6489fa406f2e,2671541
+u,30gn1,https://geotiles.citg.tudelft.nl/AHN1/u/30gn1.laz,14c25bdca9dd8709a9fb96d79e4ab8fd,14c25bdca9dd8709a9fb96d79e4ab8fd,12856338
+u,30gn2,https://geotiles.citg.tudelft.nl/AHN1/u/30gn2.laz,666f88db2ebc04722cce93b5609c09d4,666f88db2ebc04722cce93b5609c09d4,13457499

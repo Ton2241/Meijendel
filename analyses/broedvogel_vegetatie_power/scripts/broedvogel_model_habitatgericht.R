@@ -97,7 +97,9 @@ add_habitat_controls <- function(data, weather_year) {
 
 build_ahn_habitat_population <- function(
     base_population, height, membership, group_number, predictor,
-    lag_years = 0L, window_half_width = 2L) {
+    lag_years = 0L, window_half_width = 2L,
+    window_mode = c("rond", "na_inwinning"), response_years = 3L) {
+  window_mode <- match.arg(window_mode)
   require_prepare_fields(
     base_population,
     c("row_id", "soort_id", "plot_id", "jaar", "count"),
@@ -107,6 +109,12 @@ build_ahn_habitat_population <- function(
     height, c("plot_id", "inwinningsjaar", predictor, "datum_methode"),
     "AHN-vegetatiestructuur"
   )
+  if (window_mode == "na_inwinning") {
+    require_prepare_fields(
+      height, c("inwinningsdatum", "structuurmoment", "respons_startjaar"),
+      "AHN-vegetatiestructuur voor niet-overlappende vensters"
+    )
+  }
   require_prepare_fields(membership, c("groepsnummer", "vogel_id"), "vogelgroepen")
   lag_years <- as.integer(lag_years)
   window_half_width <- as.integer(window_half_width)
@@ -116,25 +124,53 @@ build_ahn_habitat_population <- function(
   if (length(window_half_width) != 1L || is.na(window_half_width) || window_half_width < 0L) {
     stop("AHN-vensterbreedte is ongeldig.", call. = FALSE)
   }
+  response_years <- as.integer(response_years)
+  if (length(response_years) != 1L || is.na(response_years) || response_years < 1L) {
+    stop("Aantal responsjaren na AHN-inwinning is ongeldig.", call. = FALSE)
+  }
   species <- unique(as.integer(membership$vogel_id[membership$groepsnummer == group_number]))
   species <- setdiff(species, pq_response_exclusions()$soort_id)
   selected <- base_population[base_population$soort_id %in% species, , drop = FALSE]
-  features <- height[c("plot_id", "inwinningsjaar", predictor, "datum_methode")]
-  names(features)[names(features) == "inwinningsjaar"] <- "jaar"
+  feature_fields <- c("plot_id", "inwinningsjaar", predictor, "datum_methode")
+  if (window_mode == "na_inwinning") {
+    feature_fields <- c(
+      feature_fields, "inwinningsdatum", "structuurmoment", "respons_startjaar"
+    )
+  }
+  features <- height[feature_fields]
+  features$jaar <- if (window_mode == "na_inwinning") {
+    as.integer(features$structuurmoment)
+  } else {
+    as.integer(features$inwinningsjaar)
+  }
   names(features)[names(features) == predictor] <- "habitat"
-  split <- split_multivariate_plotyear_features(features[c("plot_id", "jaar", "habitat")], "habitat")
-  split$datum_methode <- features$datum_methode[match(
-    paste(split$plot_id, split$jaar), paste(features$plot_id, features$jaar)
-  )]
+  split <- split_multivariate_plotyear_features(features, "habitat")
   expanded <- do.call(rbind, lapply(seq_len(nrow(split)), function(i) {
     current <- split[i, , drop = FALSE]
-    years <- seq.int(
-      current$jaar - window_half_width + lag_years,
-      current$jaar + window_half_width + lag_years
-    )
+    if (window_mode == "na_inwinning") {
+      response_start <- as.integer(current$respons_startjaar)
+      years <- seq.int(response_start, response_start + response_years - 1L)
+    } else {
+      years <- seq.int(
+        current$jaar - window_half_width + lag_years,
+        current$jaar + window_half_width + lag_years
+      )
+    }
     current[rep(1L, length(years)), , drop = FALSE] |>
       transform(ahn_jaar = current$jaar, jaar = years, lag_years = lag_years)
   }))
+  if (window_mode == "na_inwinning") {
+    expanded$.inwinningsdatum_sort <- ifelse(
+      is.na(expanded$inwinningsdatum),
+      as.numeric(as.Date(paste0(expanded$structuurmoment, "-12-31"))),
+      as.numeric(as.Date(expanded$inwinningsdatum))
+    )
+    expanded <- expanded[order(
+      expanded$plot_id, expanded$jaar, -expanded$.inwinningsdatum_sort
+    ), , drop = FALSE]
+    expanded <- expanded[!duplicated(paste(expanded$plot_id, expanded$jaar)), , drop = FALSE]
+    expanded$.inwinningsdatum_sort <- NULL
+  }
   joined <- merge(selected, expanded, by = c("plot_id", "jaar"), all = FALSE, sort = FALSE)
   joined <- prepare_joined_vegetation_population(joined, lag_years)
   list(
@@ -143,7 +179,9 @@ build_ahn_habitat_population <- function(
     groepsnummer = as.integer(group_number),
     predictor = predictor,
     lag_years = lag_years,
-    window_half_width = window_half_width
+    window_half_width = window_half_width,
+    window_mode = window_mode,
+    response_years = response_years
   )
 }
 

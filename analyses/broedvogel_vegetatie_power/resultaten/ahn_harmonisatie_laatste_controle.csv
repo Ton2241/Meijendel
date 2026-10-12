@@ -1,0 +1,9 @@
+controle,geslaagd,toelichting
+unieke_plot_cyclus,True,220 regels
+55_plots_per_cyclus,True,"{'AHN2': 55, 'AHN3': 55, 'AHN4': 55, 'AHN5': 55}"
+vier_cycli,True,"AHN2, AHN3, AHN4, AHN5"
+een_structuurmoment_per_cyclus,True,"{'AHN2': [np.int64(2008)], 'AHN3': [np.int64(2014)], 'AHN4': [np.int64(2020)], 'AHN5': [np.int64(2023)]}"
+zelfde_resolutie,True,[np.float64(2.0)]
+zelfde_harmonisatie,True,['officiele_KM05_AHN6_specificatie_gemiddeld_naar_2m']
+hoogteklassen_sommeren_tot_een,True,minimum=1.000000000000; maximum=1.000000000000
+inwinningsgrond_compleet,True,datum_ontbrekend=55; periode_ontbrekend=0

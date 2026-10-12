@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 11 oktober 2026.**
+**Stand: 12 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -459,17 +459,26 @@ hoogtevariatie per plot. Eén peiljaar geeft geen ontwikkeling door de tijd en
 een DTM meet geen vegetatiehoogte.
 
 Voor de vogel–vegetatieanalyse is daarnaast een reproduceerbare proxy uit
-AHN3 en AHN4 afgeleid. Deze analyse-uitvoer bevat 110 regels: 55 plots voor
-2014 en 55 voor 2020, telkens DSM minus DTM op twee meter resolutie. Bij 100
-regels volgt de inwinningsdatum uit vlakoverlap met de officiële vlieglijnen;
-bij tien uit de dichtstbijzijnde vlieglijn, op maximaal 254 meter. Vastgelegd
-zijn hoogteverdeling, aandelen open terrein, lage vegetatie, struweel en bomen
-en randlengte per hectare. Pixels boven 45 meter zijn als niet-vegetatieve
-uitbijter uitgesloten. De afgeleide waarden staan met manifest en controlesom
-onder `analyses/broedvogel_vegetatie_power/resultaten/` en zijn niet als
-primaire bronmeting in de levende database opgenomen. Twee cycli tonen
-verschil, maar zijn zonder derde onafhankelijke meting onvoldoende om een
-vogelreactie op structuurverandering op een later moment te valideren.
+AHN2, AHN3, AHN4 en AHN5 afgeleid. Deze analyse-uitvoer bevat 220 regels: 55
+plots voor de structuurmomenten 2008, 2014, 2020 en 2023, telkens DSM minus
+DTM op hetzelfde tweemetergrid. Vastgelegd zijn hoogteverdeling, aandelen open
+terrein, lage vegetatie, struweel en bomen en randlengte per hectare. Pixels
+boven 45 meter zijn als niet-vegetatieve uitbijter uitgesloten. De afgeleide
+waarden en de controles op bronhashes, rastergelijkheid, volledigheid en
+overgangen staan onder
+`analyses/broedvogel_vegetatie_power/resultaten/`. Zij zijn niet als primaire
+bronmeting in de levende database opgenomen. De vier cycli maken een
+historische tijdstoets mogelijk; in vier vogelgroepmodellen slaagde alleen de
+boomgroeptoets numeriek en die leverde geen robuuste voorspellingswinst.
+
+AHN1 uit 1997–1998 is afzonderlijk beoordeeld op 55 plots. Tien historische
+grond- en niet-grondbestanden leveren binnen het analysevenster 12.318.672
+punten. Op het gekozen vijfmeterraster heeft 68,17% van 1.663.416 cellen een
+grondpunt en 71,36% enig punt. Twee verdedigbare DSM-afleidingen verschillen
+gemiddeld 48,0 procentpunt in open terrein, 14,0 procentpunt in bomen en 4,81
+meter in de 95e hoogtepercentiel. AHN1 blijft daarom een experimentele
+gevoeligheidsanalyse en is niet als vergelijkbaar vijfde moment aan AHN2–AHN5
+toegevoegd.
 
 #### 1.8.3. Stikstofdepositie
 
@@ -494,6 +503,27 @@ vogelreactie op structuurverandering op een later moment te valideren.
 **Omvang en periode in de huidige SQL-dump.** 384 plot-habitatregels uit 2014
 
 **Gebruik en grens.** Geeft de verdeling van habitattypen binnen plots. Dit is één kaartjaar; de aangekondigde T1-kaart is nodig voor een directe vergelijking door de tijd.
+
+#### 1.8.6. Jaarlijks luchtfotobeeld
+
+**Eigenaar.** Beeldmateriaal Nederland, ontsloten via PDOK en het landelijke
+downloadportaal.
+
+**Omvang en periode.** Kandidaatbron, nog niet lokaal geïmporteerd. De landelijk
+beschikbare zomerbeelden leveren vanaf 2016 RGB en nabij-infrarood op 25
+centimeter, maar de 25-centimeterreeks mist in ieder geval 2021. Recentere
+voorjaarsbeelden zijn afzonderlijk beschikbaar.
+Voor de beoogde proef zijn 55 vogelplots en enkele jaren rond AHN3, AHN4 en
+AHN5 nodig. De feitelijke tegelselectie, omvang en dekking worden pas bij die
+proef vastgesteld.
+
+**Gebruik en grens.** Een reproduceerbare RGB/CIR-classificatie kan jaarlijkse
+horizontale bedekking door open zand, lage vegetatie, struweel, bomen en water
+tussen de AHN-cycli volgen. Luchtfoto's meten geen vegetatiehoogte, maken AHN1
+niet vergelijkbaar en mogen niet rechtstreeks als causale verklaring van
+vogelverandering worden gebruikt. Eerst volgt een beperkte
+classificatieproef; alleen bij voldoende jaar-op-jaarstabiliteit wordt deze
+kandidaatbron analyseklaar gemaakt.
 
 ## 2. Bronnen in MySQL-database `Meijendel_bronnen`
 

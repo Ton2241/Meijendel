@@ -103,21 +103,30 @@ is een gerichte AHN DSM–DTM-proef voor bos-, boomgroep- en struweelvogels,
 gekoppeld aan werkelijke inwinningsjaren en opnieuw beoordeeld op voorspelling
 buiten de schattingsgegevens.
 
-## Vervolguitvoering 11 oktober 2026
+## Vervolguitvoering 12 oktober 2026
 
-De gerichte proef is uitgevoerd in run
-`20261011T160059Z-9e3a1178fa51`. AHN3/2014 en AHN4/2020 leveren 110
-plot–cyclusregels voor 55 plots. De analyse gebruikt tien vooraf bepaalde
+De AHN-bronbewerking is uitgevoerd in run
+`20261012T081631Z-ahn-harmonized-3a43bb218f8a`. AHN2/2008, AHN3/2014,
+AHN4/2020 en AHN5/2023 leveren 220 vergelijkbare plot–cyclusregels voor 55
+plots. De definitieve modelrun is
+`20261012T085549Z-3a43bb218f8a`. De analyse gebruikt tien vooraf bepaalde
 combinaties van structuurbron en vogelgroep en voegt vier seizoensmaten uit
 het dagelijkse weer toe. De gebruikte modelpopulaties omvatten per combinatie
-1.741–10.340 soort–plot–jaarrijen, 15–36 soorten, 22–50 plots en tien
-vogeljaren.
+1.741–11.639 soort–plot–jaarrijen, 15–36 soorten en 22–52 plots. De
+landbedekkingsmodellen omvatten tien vogeljaren; de AHN-modellen elf jaren uit
+de vaste vensters 2009–2011, 2014–2016, 2021–2022 en 2023–2025.
 
 Twaalf van twintig volledige modellen en 24 van vijftig ruimtelijke
 validaties zijn numeriek geldig. De overige uitkomsten blijven met hun
-convergentiereden bewaard. De geplande tijdsvalidatie blijkt inhoudelijk niet
-identificeerbaar: beide structuurbronnen hebben slechts twee onafhankelijke
-meetmomenten. Zonder een eerdere verandering kan een model niet op het eerste
-moment een binnen-plotrespons leren en die op het tweede moment toetsen. Daarom
-zijn tien tijdstoetsen als `niet_uitvoerbaar` vastgelegd en gaat geen gericht
-model door naar power.
+convergentiereden bewaard. De zes landbedekkingstijdstoetsen blijven door hun
+twee kaartmomenten `niet_uitvoerbaar`. De vier AHN-tijdstoetsen zijn nu wel
+inhoudelijk uitvoerbaar. Eén slaagt numeriek: bij boomgroepvogels bedraagt de
+verbetering van de gemiddelde logscore 0,0024, maar de minimale verandering na
+weglaten van een soort is −0,0174. De andere drie AHN-tijdstoetsen vallen
+numeriek uit. Geen gericht model gaat door naar power.
+
+AHN1/1997–1998 is daarnaast apart gereconstrueerd voor 55 plots. De
+haalbaarheidsanalyse gebruikt 12.318.672 punten binnen het analysevenster.
+Twee verdedigbare 5-meterrastermethoden verschillen gemiddeld 48,0
+procentpunt in open terrein, 14,0 procentpunt in bomen en 4,81 meter in de 95e
+hoogtepercentiel. Daarom blijft AHN1 buiten de geharmoniseerde hoofdreeks.

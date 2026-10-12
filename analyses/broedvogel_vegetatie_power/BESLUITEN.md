@@ -241,12 +241,12 @@ stilzwijgend herschreven.
   gevorkte R-processen veroorzaakten een niet-afvangbare numerieke crash; dat
   is als mislukte uitvoerpoging vastgelegd en is geen ecologische uitkomst.
 
-## 11 oktober 2026 — gerichte habitatmodellen, AHN en weer
+## 12 oktober 2026 — gerichte habitatmodellen, AHN en weer
 
-- AHN3 uit 2014 en AHN4 uit 2020 worden als afzonderlijke
-  vegetatiestructuurmetingen gebruikt. DSM minus DTM is op twee meter
+- AHN2/2008, AHN3/2014, AHN4/2020 en AHN5/2023 zijn met dezelfde bronproducten,
+  rasteruitlijning en rekenregel geharmoniseerd. DSM minus DTM is op twee meter
   resolutie samengevat tot open terrein, lage vegetatie, struweel, bomen,
-  hoogteverdeling en randlengte. De afgeleide laag omvat 110 regels voor 55
+  hoogteverdeling en randlengte. De afgeleide laag omvat 220 regels voor 55
   plots en blijft een reproduceerbaar analyseproduct; zij wordt niet als
   bronmeting in de levende database opgeslagen.
 - De gerichte modellen gebruiken steeds een vooraf passende vogelgroep en
@@ -259,12 +259,23 @@ stilzwijgend herschreven.
   is. Binnen een trainingsset met precies één bron wordt die factor
   structureel weggelaten, omdat zij daar niet schatbaar is. Dit is geen
   stepwise selectie op significantie.
-- Twee onafhankelijke structuurmetingen zijn onvoldoende voor een zuivere
-  tijdsvalidatie van een binnen-plotreactie. De landbedekking heeft de jaren
-  2001 en 2022; AHN 2014 en 2020. Alle tien tijdstoetsen krijgen daarom de
-  status `niet_uitvoerbaar`. Ruimtelijke validatie blijft wel informatief,
-  maar bewijst geen toekomstige reactie op habitatverandering.
+- De zes landbedekkingsmodellen houden twee meetjaren, 2001 en 2022, en blijven
+  daarom zonder uitvoerbare tijdstoets. De vier AHN-modellen hebben nu vier
+  onafhankelijke structuurmomenten. Zij leren uit 2008 en 2014 en worden op de
+  vensters na 2020 en 2023 getoetst. Alleen de AHN-tijdstoets voor
+  boomgroepvogels slaagt numeriek; de verbetering van de gemiddelde logscore
+  is 0,0024 en de minimale verbetering na het weglaten van een soort −0,0174.
+  De drie andere AHN-tijdstoetsen vallen numeriek uit.
 - Van twintig volledige modellen zijn twaalf numeriek geldig; van vijftig
   ruimtelijke validaties 24. Geen van de tien gerichte habitatmodellen voldoet
   aan de vooraf vastgelegde poort naar power. Ook de acht ongeldige volledige
   modellen en 26 ongeldige ruimtelijke validaties blijven gerapporteerd.
+- AHN1/1997–1998 is voor 55 plots afzonderlijk gereconstrueerd uit 12.318.672
+  oorspronkelijke punten. Omdat twee verdedigbare rastermethoden gemiddeld
+  48,0 procentpunt verschil in open terrein en 14,0 procentpunt verschil in
+  bomen geven, wordt AHN1 niet aan AHN2–AHN5 gekoppeld. Het blijft een
+  historische gevoeligheidsanalyse.
+- De vrijwel jaarlijkse luchtfoto's vanaf 2016 worden alleen via een beperkte
+  RGB/CIR-proef op
+  dezelfde 55 plots beoordeeld. Zij kunnen horizontale bedekking tussen de
+  AHN-cycli aanvullen, maar niet de verticale structuur of AHN1 herstellen.

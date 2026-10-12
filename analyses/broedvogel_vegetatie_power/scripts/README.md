@@ -162,16 +162,19 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatiesam
 
 ## Gerichte habitatmodellen met AHN en weer
 
-Leid eerst voor AHN3 en AHN4 de structuurmaten af:
+Leid eerst voor AHN2 tot en met AHN5 de geharmoniseerde structuurmaten af:
 
 ```bash
 analyses/broedvogel_vegetatie_power/scripts/run_ahn_vegetatiestructuur.sh
 ```
 
-De Python-runner vraagt de officiële AHN DSM-, DTM- en vlieglijnservices per
-tegel op, werkt op twee meter resolutie en schrijft een controleerbare CSV voor
-55 plots en twee cycli. Voer daarna de gerichte modellen uit met het absolute
-of repository-relatieve pad naar die CSV:
+De runner selecteert per officieel DSM- en DTM-product de 34 relevante
+kilometertegels, controleert de gepubliceerde SHA256, middelt iedere cyclus naar
+hetzelfde tweemetergrid en schrijft een controleerbare CSV voor 55 plots en
+vier cycli. AHN2 gebruikt voor Meijendel het officiële regionale
+inwinningsjaar 2008; voor AHN3–AHN5 worden de vlieglijnen gebruikt. Voer daarna
+de gerichte modellen uit met het absolute of repository-relatieve pad naar die
+CSV:
 
 ```bash
 analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_habitatgericht.sh \
@@ -182,14 +185,32 @@ De R-runner bouwt tien vooraf vastgelegde vogelgroep–habitatcombinaties,
 voegt teller/tellerteam, ervaring, telinspanning en vier seizoensmaten uit
 `weer_analyse` toe en valideert volledige plots in vijf ruimtelijke blokken.
 Een tijdstoets wordt alleen uitgevoerd als minstens drie onafhankelijke
-structuurmetingen beschikbaar zijn; met de huidige twee landbedekkings- en
-twee AHN-momenten wordt zij expliciet als `niet_uitvoerbaar` gerapporteerd.
+structuurmetingen beschikbaar zijn. De landbedekking heeft twee momenten en
+blijft `niet_uitvoerbaar`; AHN2–AHN5 leveren vier momenten en worden in vaste,
+niet-overlappende responsvensters getoetst.
 Er wordt niets naar Shiny, dashboard of VPS geschreven.
+
+AHN1 wordt bewust afzonderlijk onderzocht:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_ahn1_historische_haalbaarheid.sh \
+  PAD/NAAR/UITVOERMAP
+```
+
+Deze runner controleert de oorspronkelijke MD5's van tien grond- en
+niet-grondbestanden, bouwt twee verdedigbare 5-meterrasters en kwantificeert de
+methodegevoeligheid. De uitvoer wordt niet stilzwijgend aan AHN2–AHN5
+toegevoegd.
 
 De tests zijn:
 
 ```bash
 .venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_ahn_selecteer_kaartbladen.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_controleer_ahn_harmonisatie.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_analyseer_ahn_harmonisatie.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_ahn1_historische_rasters.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_analyseer_ahn1_gevoeligheid.py
 bash analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur_pipeline.sh
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_habitatgericht.R
 bash analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_habitatgericht_pipeline.sh

@@ -61,6 +61,34 @@ stopifnot(
   all(c("habitat_between_z", "habitat_within_z") %in% names(population$data))
 )
 
+base_after <- base[0, ]
+for (year in c(2014L, 2015L, 2016L, 2021L, 2022L, 2023L, 2024L, 2025L)) {
+  row <- base[base$soort_id == 1L & base$plot_id == 10L, ][1, ]
+  row$jaar <- year
+  row$row_id <- paste(row$soort_id, row$plot_id, year, sep = ":")
+  base_after <- rbind(base_after, row)
+}
+height_after <- data.frame(
+  plot_id = 10L,
+  inwinningsjaar = c(2014L, 2020L, 2022L),
+  structuurmoment = c(2014L, 2020L, 2023L),
+  inwinningsdatum = c("2014-02-03", "2020-04-07", "2022-12-13"),
+  respons_startjaar = c(2014L, 2021L, 2023L),
+  aandeel_bomen = c(.1, .2, .3),
+  datum_methode = "vlakoverlap"
+)
+population_after <- build_ahn_habitat_population(
+  base_after, height_after, membership, 800L, "aandeel_bomen",
+  window_mode = "na_inwinning", response_years = 3L
+)
+stopifnot(
+  identical(sort(unique(population_after$data$jaar)),
+            c(2014L, 2015L, 2016L, 2021L, 2022L, 2023L, 2024L, 2025L)),
+  population_after$data$ahn_jaar[population_after$data$jaar == 2022L] == 2020L,
+  population_after$data$ahn_jaar[population_after$data$jaar == 2023L] == 2023L,
+  !anyDuplicated(population_after$data$row_id)
+)
+
 landcover <- data.frame(
   plot_id = rep(c(10L, 20L), each = 2), jaar = rep(c(2001L, 2022L), 2),
   water_aandeel = c(.1, .2, .3, .4)

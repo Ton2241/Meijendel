@@ -435,13 +435,23 @@ gelaagdheid, vegetatiehoogte, voedsel of nestgelegenheid.
 
 ### Gerichte habitatmodellen met AHN en landbedekking
 
-De hoogteproef is uitgevoerd met AHN3 uit 2014 en AHN4 uit 2020. Voor 55
-vogelplots zijn 110 plot–cyclusregels op twee meter resolutie afgeleid uit DSM
-minus DTM. De inwinningsdatum volgt bij 100 regels uit rechtstreekse overlap
-met de vlieglijn; bij de overige tien uit de dichtstbijzijnde vlieglijn, op
-maximaal 254 meter. Per plot zijn aandelen open terrein, lage vegetatie,
-struweel en bomen plus hoogteverdeling en randlengte berekend. Hoogten boven
-45 meter zijn als niet-vegetatieve uitbijter uitgesloten.
+De hoogteproef is op 12 oktober 2026 opnieuw opgebouwd met AHN2 uit 2008,
+AHN3 uit 2014, AHN4 uit 2020 en AHN5 uit 2022–2023. Voor 55 vogelplots zijn
+220 plot–cyclusregels afgeleid uit de officiële DSM- en DTM-tegels. Alle vier
+cycli zijn eerst met dezelfde rekenregel gemiddeld naar exact hetzelfde
+tweemetergrid; pas daarna is DSM minus DTM berekend. Per plot zijn aandelen
+open terrein, lage vegetatie, struweel en bomen plus hoogteverdeling en
+randlengte bepaald. Hoogten boven 45 meter zijn als niet-vegetatieve uitbijter
+uitgesloten. Alle controles op vier cycli, 55 plots per cyclus, identieke
+resolutie, unieke plot–cycluscombinaties en optellende hoogteklassen slagen.
+
+De harmonisatie wijzigt de eerdere lezing van AHN3 en AHN4. Over 55 plots
+neemt open terrein tussen 2014 en 2020 gemiddeld met 2,94 procentpunt toe, niet
+met ongeveer elf procentpunt zoals uit de eerder gemengde services volgde. De
+gemiddelde boomfractie neemt tussen 2008 en 2014 met 5,27 procentpunt toe,
+tussen 2014 en 2020 met 0,55 en tussen 2020 en 2023 met 0,63 procentpunt. Dit
+zijn beschrijvende verschillen uit 220 afgeleide structuurregels, geen
+causale vegetatietrends.
 
 De gerichte modellen combineren deze AHN-structuur of de landbedekking van
 2001 en 2022 met vooraf passende vogelgroepen. Zij corrigeren voor tijd,
@@ -450,26 +460,44 @@ bezoeksomstandigheden, teller/tellerteam, geregistreerde ervaring en vier
 weermaten: wintertemperatuur, vorstdagen, voorjaarstemperatuur en
 voorjaarsneerslag. Aalscholver blijft uitgesloten. Afhankelijk van groep en
 bron bevatten de tien modellen 1.741–10.340 soort–plot–jaarrijen, 15–36
-soorten, 22–50 plots en tien vogeljaren.
+soorten en 22–52 plots. De zes landbedekkingsmodellen gebruiken tien
+vogeljaren. De vier AHN-modellen gebruiken elf vogeljaren: 2009–2011,
+2014–2016, 2021–2022 en 2023–2025. Het jaar 2023 wordt daarbij uitsluitend
+aan het recentere AHN5-moment gekoppeld.
 
 Van de twintig volledige basis- en habitatmodellen zijn twaalf numeriek geldig
-en acht ongeldig. In de ruimtelijke validatie zijn 24 van vijftig
-vergelijkingen geldig en 26 ongeldig. Water-, riet-, bos- en boomgroepmodellen
-geven plaatselijk duidelijke verbanden, maar de richting van verandering
-binnen dezelfde plot is niet stabiel tussen bron en groep. De geldige
-binnen-plotschattingen lopen van een verhouding van 0,905 bij riet tot 1,052
-bij bos per standaardafwijking; sommige verwachte richtingen worden dus niet
-bevestigd.
+en acht ongeldig. Van de vijftig ruimtelijke validaties slagen 24 en vallen 26
+numeriek uit. Die aantallen veranderen niet door AHN2 en AHN5, maar de vier
+AHN-tijdstoetsen zijn nu inhoudelijk uitvoerbaar: zij leren uit AHN2 en AHN3
+en toetsen op de latere AHN4- en AHN5-vensters. Alleen het boomgroepmodel
+slaagt numeriek. Toevoeging van de boomfractie verbetert de gemiddelde
+logscore daar met 0,0024; het binnen-ploteffect is een factor 1,029 per
+standaardafwijking, met p = 0,439. De tijdswinst verdwijnt bovendien wanneer
+een ongunstige soort wordt weggelaten: de minimale logscoreverandering is
+−0,0174. De AHN-tijdstoetsen voor open-duin-, struweel- en bosvogels vallen
+door niet-positief-definiete Hessian-matrices uit. Dat is modeluitval, geen
+ecologische nul. Geen van de vier AHN-modellen en geen van de zes
+landbedekkingsmodellen voldoet aan de vooraf vastgelegde poort naar power.
 
-Een zuivere tijdsvalidatie is met deze structuurbronnen nog niet mogelijk.
-Landbedekking heeft twee onafhankelijke meetjaren, 2001 en 2022; AHN eveneens
-twee, 2014 en 2020. Wie op het eerste meetmoment traint, heeft nog geen
-verandering waaruit een binnen-plotrespons kan worden geleerd en op het tweede
-moment getoetst. Alle tien tijdstoetsen zijn daarom als niet uitvoerbaar
-vastgelegd, niet als negatieve of mislukte ecologische uitkomst. Geen model
-voldoet aan de vooraf vastgelegde poort naar power. Een derde onafhankelijke
-structuurmeting of een andere tijdreeks van vegetatiestructuur is daarvoor
-nodig.
+AHN1 uit 1997–1998 is apart als historische haalbaarheids- en
+gevoeligheidsanalyse gereconstrueerd. De tien oorspronkelijke grond- en
+niet-grondbestanden voor vijf kaartbladen bevatten binnen het analysevenster
+12.318.672 punten, of gemiddeld 0,296 punt per vierkante meter. Op een raster
+van vijf meter bevat 68,17% van de 1.663.416 cellen een grondpunt en 71,36%
+enig punt. Twee verdedigbare DSM-afleidingen geven echter zeer verschillende
+uitkomsten voor dezelfde 55 plots: de geschatte open fractie verschilt
+gemiddeld 48,0 procentpunt, de boomfractie 14,0 procentpunt en de 95e
+hoogtepercentiel 4,81 meter. AHN1 is dus technisch beschikbaar, maar niet
+vergelijkbaar genoeg om als vijfde punt aan AHN2–AHN5 toe te voegen.
+
+Luchtfoto's blijven na deze uitkomst nuttig, maar voor een andere maat. Een
+vrijwel jaarlijkse RGB/CIR-classificatie kan vanaf 2016 horizontale
+veranderingen in open zand, lage vegetatie, struweel, bomen en water tussen de
+AHN-cycli volgen. De 25-centimeterreeks mist in ieder geval 2021. Zij vervangt
+geen hoogte-informatie en repareert AHN1 niet. De volgende stap is
+daarom een beperkte proef op dezelfde 55 plots en enkele jaren die samenvallen
+met AHN3–AHN5; alleen bij voldoende reproduceerbare classificatie volgt een
+jaarlijkse reeks.
 
 ### 4. Aanvullende verklarende blokken
 
@@ -587,7 +615,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Volledige PQ-samenstelling | Uitgevoerd | Drie assen verklaren samen 27,8%. De ruimtelijke voorspelling verbetert in vier van vijf plotblokken; beide tijdsblokken worden iets slechter. |
 | IPI-habitatproxy | Uitgevoerd | Bescheiden ruimtelijke winst in drie van vier geldige plotblokken; geen tijdswinst en geen duidelijke gemiddelde binnen-plotreactie. |
 | Landbedekking 2001/2022 | Uitgevoerd | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
-| Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN3/2014 en AHN4/2020 leveren 110 structuurregels voor 55 plots. Ruimtelijke signalen zijn aanwezig, maar twee meetmomenten laten geen onafhankelijke tijdsvalidatie toe; geen model gaat door naar power. |
+| Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en overig landgebruik | Nog uit te voeren | Beschikbaarheid is vastgesteld; effecten zijn nog niet in deze gerichte modellen geschat. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
