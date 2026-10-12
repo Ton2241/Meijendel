@@ -4,6 +4,7 @@ set -euo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 local_script="$repo/deploy/rebuild_mysql_image_vps.sh"
 remote_script="$repo/deploy/rebuild_mysql_image_vps_remote.sh"
+dockerfile="$repo/deploy/mysql_image/Dockerfile.9.7.1"
 
 python3 - "$local_script" "$remote_script" <<'PY'
 import os
@@ -43,6 +44,7 @@ groups = '\n'.join([
 shiny = 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0'
 attention = 'AANDACHT|container-image|meijendel-mysql|beoordeel beschikbare fix'
 wrapper = "BLOKKADE|vwgm-admin|Command 'vulnerability-audit-root' returned non-zero exit status 1."
+candidate_wrapper = "BLOKKADE|vwgm-admin|Command '('/usr/local/libexec/vwgm-admin/vulnerability-audit-root', '--image', 'sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')' returned non-zero exit status 1."
 candidate = 'SAMENVATTING|kandidaat-aaaaaaaaaaaa|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0'
 tag = 'AANDACHT|container-hygiene|onverwachte-imagetag=vwgm-mysql:candidate-test'
 common = '\n'.join([mysql, groups, shiny, attention])
@@ -58,7 +60,7 @@ test_scanner() { printf '%s\\n' "$TEST_AUDIT"; return "$TEST_STATUS"; }
 '''
 for mode, gate, good in [
     ('local', local_gate, common + '\n' + wrapper),
-    ('candidate', remote_gate + '\naudit_candidate', common + '\n' + candidate + '\n' + tag),
+    ('candidate', remote_gate + '\naudit_candidate', common + '\n' + candidate + '\n' + tag + '\n' + candidate_wrapper),
 ]:
     cases = [
         ('current OpenSSL and Go scan', good, '1', True),
@@ -75,6 +77,8 @@ for mode, gate, good in [
         cases.append(('candidate vulnerable', good.replace('kandidaat-aaaaaaaaaaaa|critical=0|high=0', 'kandidaat-aaaaaaaaaaaa|critical=0|high=1'), '1', False))
         cases.append(('known Shiny rollback attention', good + '\nAANDACHT|container-image|vwgm-shiny-rollback-9bac5daf99e6|beoordeel beschikbare fix', '1', True))
         cases.append(('unexpected attention', good + '\nAANDACHT|container-image|unknown|unexpected', '1', False))
+        cases.append(('missing gateway wrapper', good.replace('\n' + candidate_wrapper, ''), '1', False))
+        cases.append(('unexpected blockade', good + '\nBLOKKADE|scanner|unexpected', '1', False))
     for name, audit, status, expected in cases:
         result = subprocess.run(['bash', '-c', prefix + gate], text=True, capture_output=True,
             env={**os.environ, 'TEST_AUDIT': audit, 'TEST_STATUS': status})
@@ -134,6 +138,7 @@ for marker in \
   'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl'; do
   grep -Fq -- "$marker" "$local_script"
 done
+grep -Fq 'golang@sha256:d9c68c2c51161e12fd77e4c6320687c9cd86e1af1e3ad6e6cd63ff970641453c' "$dockerfile"
 [[ "$(grep -Fc -- '--binlog-expire-logs-seconds=259200' "$remote_script")" -ge 2 ]]
 [[ "$(grep -Fc -- '--innodb-redo-log-capacity=536870912' "$remote_script")" -ge 2 ]]
 for marker in \

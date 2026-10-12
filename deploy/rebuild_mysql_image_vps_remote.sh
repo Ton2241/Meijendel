@@ -81,7 +81,7 @@ validate_image_inventory() {
     fail "verplichte actieve imagetags ontbreken of zijn dubbel"
 }
 audit_candidate() {
-  local output status short attention
+  local output status short attention blockades
   set +e
   output="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root --image "$CANDIDATE_ID" 2>&1)"
   status=$?
@@ -101,7 +101,11 @@ audit_candidate() {
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$output" || fail "Shiny wijkt af tijdens kandidaatscan"
   [[ "$status" -eq 1 ]] || fail "kandidaatscan heeft een onverwachte eindstatus"
-  ! grep -Eq '^(URGENT|BLOKKADE)\|' <<< "$output" || fail "kandidaatscan is onvolledig"
+  ! grep -Eq '^URGENT\|' <<< "$output" || fail "kandidaatscan is onvolledig"
+  blockades="$(grep -c '^BLOKKADE|' <<< "$output" || true)"
+  [[ "$blockades" -eq 1 ]] || fail "kandidaatscan bevat een onverwacht aantal blokkaderegels"
+  grep -Fq "BLOKKADE|vwgm-admin|Command '('/usr/local/libexec/vwgm-admin/vulnerability-audit-root', '--image', '$CANDIDATE_ID')' returned non-zero exit status 1." \
+    <<< "$output" || fail "kandidaatscan bevat een andere blokkade dan de verwachte gateway-wrapper"
   grep -Fq "AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG" <<< "$output" || fail "kandidaattag is niet exact verklaard"
   grep -Fq 'AANDACHT|container-image|meijendel-mysql|' <<< "$output" || fail "oude MySQL-baseline ontbreekt"
   while IFS= read -r attention; do

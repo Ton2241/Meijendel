@@ -264,7 +264,7 @@ Oracle Linux-pakketten bij, maar schakelen de MySQL-repositories tijdens die
 update uit. Daardoor blijven server en clients exact 9.7.1 respectievelijk
 9.5.0. De niet gebruikte `mysql-shell` wordt verwijderd. `gosu` 1.19 wordt
 vanaf commit `6456aaa0f3c854d199d0f037f068eb97515b7513` opnieuw gebouwd met de
-digestvaste Go 1.25.13-builder en functioneel getest.
+digestvaste Go 1.26.9-builder en functioneel getest.
 
 Voor iedere MySQL-kandidaat geldt:
 
