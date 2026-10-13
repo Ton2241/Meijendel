@@ -1,6 +1,6 @@
 # Meijendel ingedeeld naar soortgroepen
 
-Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 7 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
+Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 13 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
 
 ## Hoofdkeuze
 
@@ -171,6 +171,25 @@ Het volledige voorstel is een gegevensmigratie. De complexiteit zit vooral in id
 Een betrouwbare urenraming volgt pas uit een proef op een databasekopie. Het aantal nieuwe tabellen staat evenmin vast: sommige structuren worden hernoemd, andere verdeeld, en gedeelde ondersteuning blijft bijeen. De oude rekensom van 149 hernoemingen en veertien behouden namen geldt dus niet meer.
 
 Taxonvertaling is noodzakelijk. `ndff_soorten` heeft 9.828 bronreferenties, Vangblik 275 bij de reeks 1953–1960, PQ 714 bij 1981–2025 en AVIMAP 35 bij 2009–2026. Externe ecologie heeft 2.894 verschillende opgeslagen wetenschappelijke naamwaarden bij de 98.916 resultaten uit 1875–2025, zonder gemeenschappelijke taxon-foreign-key. Behoud bronnamen, rang en versie en leg gecontroleerde overeenkomsten naast de bronidentiteit vast. De vogelgerichte tabel `soorten` blijft onaangetast.
+
+## Bronvast werkzaamhedenmodel
+
+De levende lokale database bevat vanaf 13 oktober 2026 naast de bestaande classificatie een afzonderlijke laag voor projecten, feitelijke of geplande uitvoeringen, expliciete jaarstatussen en bewijsbronnen. De bestaande tabellen `maatregelen`, `maatregelen_kernwoorden` en `plot_jaar_maatregel` blijven bestaan. De vier algemene kernwoorden voor recreatiebeheer zijn onder de nieuwe hoofdklasse `rust_en_recreatiebeheer` geplaatst; `strandreservaat` blijft als specifiek kernwoord onder `strandreservaten` herkenbaar.
+
+| Tabel of view | Records | Betekenis |
+|---|---:|---|
+| `maatregel_project` | 12 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
+| `maatregel_bron` | 12 | Vijf lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
+| `maatregel_uitvoering` | 33 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. |
+| `maatregel_uitvoering_jaar` | 58 | Letterlijk onderbouwde jaarstatussen uit 1988–2025: 42 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
+| `maatregel_uitvoering_bron` | 39 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
+| `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
+| `maatregel_plot_koppeling` | 0 | Alleen voor expliciet of geometrisch bewezen plotrelaties. |
+| `v_plot_jaar_maatregel_bronvast` | 0 | Toont pas regels wanneer zowel het uitvoeringsjaar als de plotkoppeling zijn bewezen. |
+
+De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
+
+De 144 bestaande regels in `plot_jaar_maatregel` blijven de historische dashboardlaag voor begrazing in 16 plots uit 1991–1999. Hun inhoud en checksum zijn bij de migratie onveranderd gebleven. Zij worden niet achteraf als bronvaste projectuitvoering geïnterpreteerd. Nieuwe werkzaamheden gaan pas naar een plot-jaarselectie nadat locatie, jaar en bron voldoende precies zijn vastgesteld.
 
 ## Website dashboard en Shiny beschermen
 

@@ -536,6 +536,17 @@ De informatie in deze tab komt uit meerdere tabellen, onder andere:
 - `plot_jaar_maatregel`
 - `territoria`
 
+De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat 33 uitvoeringen en 58 expliciete jaarbeoordelingen uit 12 bronnen, maar nog geen gevalideerde plotkoppelingen. Daarom levert `v_plot_jaar_maatregel_bronvast` op 13 oktober 2026 nul regels en verandert de bestaande plottab niet.
+
+Gebruik voor nieuwe werkzaamheden deze volgorde:
+
+1. leg project en afzonderlijke uitvoering vast in `maatregel_project` en `maatregel_uitvoering`;
+2. koppel de geraadpleegde bron via `maatregel_uitvoering_bron`;
+3. voeg alleen een regel aan `maatregel_uitvoering_jaar` toe als de bron dat jaar werkelijk beoordeelt;
+4. voeg pas een geometrie of plotkoppeling toe wanneer de begrenzing of relatie aantoonbaar is.
+
+Een plan, subsidie-openstelling of algemene locatieaanduiding bewijst geen uitvoering in een vogelplot. De view toont daarom uitsluitend `jaarstatus = 'uitgevoerd'` met een geverifieerde plotkoppeling.
+
 Praktisch is deze tab vooral nuttig als je voor één plot tegelijk wilt begrijpen:
 
 - hoe het plot er qua omgeving uitziet
@@ -1124,7 +1135,7 @@ Kolommen:
 - `dekking_pct`
 - `opmerking`
 
-Gebruik dit bestand voor beheermaatregelen per plot en jaar.
+Gebruik dit bestand alleen voor reeds geverifieerde beheermaatregelen per plot en jaar in de bestaande dashboardlaag. Het bestand is niet de ingang voor algemene projectinformatie of een benoemd deelgebied zonder bewezen plotrelatie.
 
 Belangrijk:
 
@@ -1133,6 +1144,8 @@ Belangrijk:
   - `intensiteit_code`
   - `uitvoerder_of_diersoort`
 - hiermee kun je onderscheid maken tussen bijvoorbeeld extensieve en intensieve begrazing en tussen schapen, runderen of paarden
+
+Nieuwe broninformatie over werkzaamheden leg je eerst vast in `maatregel_bron`, `maatregel_project`, `maatregel_uitvoering`, `maatregel_uitvoering_jaar` en `maatregel_uitvoering_bron`. Pas daarna volgt, indien de bron of een gecontroleerde geometrische bewerking dit werkelijk ondersteunt, `maatregel_geometrie` en `maatregel_plot_koppeling`. De afgeleide view `v_plot_jaar_maatregel_bronvast` vormt dan de veilige plot-jaarlaag.
 
 ## 22. Wat is de bezoekersdruklaag?
 

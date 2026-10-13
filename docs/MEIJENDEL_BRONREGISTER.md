@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 10 oktober 2026.**
+**Stand: 13 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -472,6 +472,22 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 **Omvang en periode in de huidige SQL-dump.** 384 plot-habitatregels uit 2014
 
 **Gebruik en grens.** Geeft de verdeling van habitattypen binnen plots. Dit is één kaartjaar; de aangekondigde T1-kaart is nodig voor een directe vergelijking door de tijd.
+
+### 1.9. Werkzaamheden en beheermaatregelen
+
+Deze laag bevat geen nieuwe soortenwaarnemingen. Zij legt uitvoeringsinformatie vast die later, na een afzonderlijk bewezen ruimtelijke koppeling, als verklarende beheerlaag kan worden gebruikt.
+
+**Broncontrole.** De lokale Zotero-bibliotheek bevatte op 13 oktober 2026 1.434 items en 807 bijlagen. Alle 807 bijlagebestanden zijn op de toegestane gekoppelde opslag onder `/Volumes/zotero` gevonden en bestandsgewijs geraadpleegd via tekstextractie, formaatcontrole en voor vier relevante scans OCR. De inhoudelijke selectie leverde vijf lokale hoofdbronnen op: *De slibverwijdering van Pan 13* (1991), *Natuurherstel van de Kikkervalleien in Noord-Meijendel* (2010), *Grenzen slechten in Meijendel: stuifgaten in de zeereep* (2017), de definitieve *Evaluatie Natura 2000-beheerplan Meijendel & Berkheide* (25 april 2025) en het ontwerpbeheerplan 2026–2032 (13 januari 2026). Het ontwerp is alleen als historische aanvulling en plancontext gebruikt; ontwerpmaatregelen zijn niet als uitgevoerd ingevoerd.
+
+Daarbij zijn zeven officiële internetbronnen geraadpleegd: vijf Dunea-pagina's over optimalisatie van de waterwinning, beheer in Meeuwenduin en Prinsenduin, vervanging van slagbomen, actuele werkzaamheden en duindynamiek; het Dunea-jaarverslag 2024; en het Zuid-Hollandse subsidie-openstellingsbesluit voor Bendel. De bronnen staan afzonderlijk in `maatregel_bron`, met URL of Zotero-itemcode, brondatum, raadpleegdatum en bronstatus.
+
+**Omvang en periode.** De levende lokale database bevat 12 projecten, 12 bronnen, 33 uitvoeringen, 58 expliciete jaarbeoordelingen uit 1988–2025 en 39 bronkoppelingen. Van de jaarbeoordelingen zijn er 42 `uitgevoerd`, 9 `niet_uitgevoerd` en 7 `onbekend`. De uitvoeringen lopen volgens de beschikbare datumvelden van oktober 1988 tot en met een gepland einde in maart 2027. Geplande werkzaamheden bij de Paardenstal en het subsidieerbare Bendel-nabeheer hebben geen uitgevoerd jaar gekregen; elektriciteitswerk in Vallei Meijendel staat als uitvoering onbekend en heeft eveneens geen jaarregel.
+
+**Ruimtelijke kwaliteit.** De geraadpleegde bronnen noemen onder meer Pan 13, Kikkervalleien, de zeereep, Meeuwenduin, Prinsenduin, Vallei Meijendel en Bendel, maar leveren in deze selectie geen gevalideerde uitvoeringsgeometrie of eenduidige vogelplotrelatie. `maatregel_geometrie` en `maatregel_plot_koppeling` bevatten daarom beide nul regels. De afgeleide view `v_plot_jaar_maatregel_bronvast` bevat eveneens nul regels. Een benoemd deelgebied, oppervlaktecijfer of algemene aanduiding Meijendel wordt niet tot een plotkoppeling omgerekend.
+
+**Gebruik en grens.** De laag is geschikt om vast te leggen wat volgens welke bron is gepland, uitgevoerd, niet uitgevoerd of onbekend. Zij ondersteunt nog geen vergelijking van vogelontwikkeling per maatregelplot. De geëvalueerde bronnen melden bovendien geen afzonderlijke effectmeting per maatregel; uit de werkzaamhedenlaag volgt dus geen causaal beheereffect. De 144 bestaande regels in `plot_jaar_maatregel` betreffen begrazing in 16 plots uit 1991–1999, zijn bij deze migratie inhoudelijk ongewijzigd gebleven en worden niet als onderdeel van de nieuwe bronvaste laag geteld.
+
+**Status.** Bronvast op project-, uitvoering- en jaarniveau; ruimtelijk nog niet toegelaten tot plot-jaaranalyses.
 
 ## 2. Bronnen in MySQL-database `Meijendel_bronnen`
 
