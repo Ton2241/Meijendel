@@ -1,7 +1,7 @@
 -- Eerste bronvaste invoer van werkzaamheden in Meijendel.
 -- Stand bronbeoordeling: 13 oktober 2026.
--- Geen geometrieën of plotkoppelingen: de geraadpleegde bronnen leveren daarvoor
--- nog geen voldoende nauwkeurige, gevalideerde begrenzing.
+-- Geen uitvoeringsgeometrieën; plotkoppelingen worden alleen opgenomen waar de
+-- geraadpleegde bronnen de betrokken kavels expliciet noemen.
 
 USE Meijendel;
 
@@ -21,6 +21,7 @@ CREATE TEMPORARY TABLE tmp_maatregel_bron_seed (
 INSERT INTO tmp_maatregel_bron_seed
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking) VALUES
   ('zotero_pan13_1991','beheerpublicatie','De slibverwijdering van Pan 13','1991-04-01','96NVCM5S',NULL,'2026-10-13','gepubliceerd','Volledige PDF geraadpleegd vanaf de gekoppelde Zotero-opslag.'),
+  ('zotero_broedvogelmonitoring_2006','beheerpublicatie','Broedvogelmonitoring Meijendel 2006','2007-11-01','PPHE9GVI',NULL,'2026-10-13','gepubliceerd','Volledige PDF geraadpleegd vanaf de gekoppelde Zotero-opslag; PPHE9GVI is de beschikbare Zotero-bijlagecode.'),
   ('zotero_kikkervalleien_2010','beheerpublicatie','Natuurherstel van de Kikkervalleien in Noord-Meijendel','2010-04-01','USGTMZNW',NULL,'2026-10-13','gepubliceerd','Volledige PDF geraadpleegd vanaf de gekoppelde Zotero-opslag.'),
   ('zotero_stuifgaten_2017','beheerpublicatie','Grenzen slechten in Meijendel: stuifgaten in de zeereep','2017-11-01','C224J22K',NULL,'2026-10-13','gepubliceerd','Volledige PDF geraadpleegd vanaf de gekoppelde Zotero-opslag.'),
   ('zotero_n2000_evaluatie_2025','natura2000_beheerplan','Evaluatie Natura 2000-beheerplan Meijendel & Berkheide','2025-04-25','DUNY3DCC',NULL,'2026-10-13','definitief','Definitieve evaluatie; uitvoeringsstatus gebaseerd op jaarrapportages en gesprekken met terreinbeheerders.'),
@@ -278,6 +279,7 @@ SELECT uitvoering_code,
 FROM tmp_maatregel_uitvoering_seed;
 
 INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
+  ('pan13_slib_1988_1989','zotero_broedvogelmonitoring_2006','bevestiging','p. 56-57','Benoemt Pan 13 expliciet als de lange plassenserie in kavels 2 en 3 en bevestigt drooglegging, slibverwijdering en visverwijdering in 1988.'),
   ('zeereep_vijf_kerven_2014_2015','dunea_dynamiek_2024','bevestiging',NULL,'Dunea bevestigt aanvang in september 2014 en voltooiing van vijf kerven in 2015.'),
   ('zeereep_kerven_nabeheer','zotero_n2000_ontwerp_2026','bevestiging','4.2','Ontwerpbeheerplan bevestigt nabeheer in 2016 en 2024.'),
   ('pas_3d_begrazing_zuid','zotero_n2000_ontwerp_2026','bevestiging','4.2','Actualiseert onderbreking in 2020, hervatting in 2021 en vaste rasters in 2025.'),
@@ -453,6 +455,34 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_ontwerp_2026'
 JOIN plots p ON p.kavel_nummer='M91'
 WHERE u.uitvoering_code='pas_24c_voorlinden'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  CASE p.kavel_nummer
+    WHEN 'M2' THEN b1991.bron_id
+    WHEN 'M3' THEN b2006.bron_id
+  END,
+  CASE p.kavel_nummer
+    WHEN 'M2' THEN 'De primaire bron noemt kavel 2 als het zuidelijke deel van Pan 13; het broedvogelverslag over 2006 bevestigt dat Pan 13 in kavels 2 en 3 ligt.'
+    WHEN 'M3' THEN 'Het broedvogelverslag over 2006 noemt Pan 13 expliciet als plassenserie in kavels 2 en 3.'
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b1991 ON b1991.bron_code='zotero_pan13_1991'
+JOIN maatregel_bron b2006 ON b2006.bron_code='zotero_broedvogelmonitoring_2006'
+JOIN plots p ON p.kavel_nummer IN ('M2','M3')
+WHERE u.uitvoering_code='pan13_slib_1988_1989'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),

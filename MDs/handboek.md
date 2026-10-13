@@ -536,7 +536,7 @@ De informatie in deze tab komt uit meerdere tabellen, onder andere:
 - `plot_jaar_maatregel`
 - `territoria`
 
-De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat 33 uitvoeringen en 58 expliciete jaarbeoordelingen uit 12 bronnen, maar nog geen gevalideerde plotkoppelingen. Daarom levert `v_plot_jaar_maatregel_bronvast` op 13 oktober 2026 nul regels en verandert de bestaande plottab niet.
+De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat 33 uitvoeringen en 58 expliciete jaarbeoordelingen uit 13 bronnen. Drie plotkoppelingen zijn gevalideerd: Voorlinden–M91 en Pan 13–M2/M3. Alleen Pan 13 heeft ook uitgevoerde jaarstatussen; daardoor levert `v_plot_jaar_maatregel_bronvast` op 13 oktober 2026 vier regels voor M2 en M3 in 1988 en 1989. De bestaande plottab blijft ongewijzigd.
 
 Gebruik voor nieuwe werkzaamheden deze volgorde:
 

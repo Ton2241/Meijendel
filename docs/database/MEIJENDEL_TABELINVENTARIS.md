@@ -179,20 +179,20 @@ De levende lokale database bevat vanaf 13 oktober 2026 naast de bestaande classi
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
 | `maatregel_project` | 12 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
-| `maatregel_bron` | 12 | Vijf lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
+| `maatregel_bron` | 13 | Zes lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
 | `maatregel_uitvoering` | 33 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. |
 | `maatregel_uitvoering_jaar` | 58 | Letterlijk onderbouwde jaarstatussen uit 1988–2025: 42 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
-| `maatregel_uitvoering_bron` | 39 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
+| `maatregel_uitvoering_bron` | 40 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
 | `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
 | `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
 | `maatregel_uitvoering_gebied` | 1 | Voorlinden als gevalideerde gebiedsrelatie van uitvoering `pas_24c_voorlinden`. |
-| `maatregel_plot_koppeling` | 1 | Voorlinden gekoppeld aan M91; het doorsnijdingspercentage is onbekend en blijft leeg. |
+| `maatregel_plot_koppeling` | 3 | Voorlinden gekoppeld aan M91 en Pan 13 aan M2 en M3; de bronnen geven geen doorsnijdingspercentage per plot. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 0 | Toont pas regels wanneer zowel het uitvoeringsjaar als de plotkoppeling zijn bewezen. |
+| `v_plot_jaar_maatregel_bronvast` | 4 | Pan 13 in M2 en M3 voor de uitgevoerde jaren 1988 en 1989. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 
