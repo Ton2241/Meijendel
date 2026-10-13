@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 10 oktober 2026.**
+**Stand: 13 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -639,6 +639,12 @@ Deze bronnen zijn gevonden, maar nog niet toegelaten. De genoemde aantallen hebb
 
 **Langjarige stuifkuil- en vegetatiemetingen:** publicaties noemen 32–35 stuifkuilen die vanaf 1983 tweemaal per jaar zijn gemeten, 19 permanente vegetatieplots en vergelijkingen van luchtfoto’s en orthofoto’s. De oorspronkelijke tabellen, plot-ID’s en digitale kaartlagen zijn nog niet voldoende geïdentificeerd om deze als afzonderlijke gegevensbron toe te laten.
 
+**Historische publieke toegankelijkheid van broedvogelkavels:** de lokale Zotero-bibliotheek bevat elf relevante VWG-jaarverslagobjecten voor 1958–1994, 1998 en 2001. Drie daarvan bevatten rechtstreeks bruikbare toegankelijkheidsinformatie. Het jaarverslag 1986 beschrijft kavel 84 als grotendeels gelegen in het voor publiek opengestelde deel van de Waalsdorpervlakte en de Oude Rijs, maar noemt ook een niet voor publiek toegankelijk deel. Het jaarverslag 1987 onderscheidt voor Meijendel vrij toegankelijke delen, delen die alleen op wegen en paden of met een jaarkaart toegankelijk waren en afgesloten delen rond de infiltratieplassen. Het jaarverslag 2001 meldt dat kavel 17B dat jaar door routepaaltjes en houtsnipperpaden beter toegankelijk werd. Eén verslagobject uit 1992 bevat zes recreatiemonitoringsroutes, maar die routes bewijzen geen publieke openstelling; in zeven andere verslagobjecten is met de gecontroleerde zoektermen geen expliciete toegangsregeling gevonden. De verzamelband 1958–1984 vermeldt bovendien dat de bijbehorende kavelkaarten afzonderlijk zijn opgeborgen.
+
+**Stand van de toegankelijkheidstabellen:** de levende lokale database bevat voor `plot_jaar_toegankelijkheid` 55 handmatig ingevoerde regels, alle voor 2024: 20 `vrij`, 14 `beperkt`, 12 `afgesloten` en negen met een gemengd regime. Daarvan liggen 53 plots binnen de Natura 2000-analysescope; M66 en M91 liggen daarbuiten. `plot_jaar_toegankelijkheid_deel` bevat geen regels. `plot_jaar_oppervlak` bevat 3.769 plot-jaarregels voor deze 55 plots binnen 1950–2026: 54 plots per jaar in 1958–1983 en 55 in 1984–2026; voor 1950–1957 zijn geen regels aanwezig. Deze tabel bevat alleen oppervlakte en geen historische geometrie en kan daarom geen veranderende kavelgrenzen bewijzen. De huidige import-CSV’s wijken bovendien af van de levende database: het hoofdbestand zet alle 55 plots op `beperkt`, terwijl het deelbestand twee niet geïmporteerde regels voor plot 3581 bevat.
+
+**Status en gebruik:** deze bronnenlaag is verklarende historische context, geen ecologische waarnemingsbron. Zij is al bruikbaar voor een bronmatrix met jaargebeurtenissen en voorlopige hele-kavelclassificaties, maar nog niet voor een volledige import over 1950–2026. Eerst moeten de afzonderlijk bewaarde kavelkaarten, de historische toegangsgrenzen en de relevante fysieke archiefdossiers worden gekoppeld aan de actuele plots. Iedere kwalificatie krijgt daarbij afzonderlijk bronzekerheid en geografische zekerheid; onbekend wordt niet als afgesloten ingevuld.
+
 ## 4. Verwachte aanvullingen
 
 **Vlindergegevens:** De Vlinderstichting verwacht in de week van 28 september 2026 aanvullende meetstructuur te kunnen leveren. Die levering wordt eerst vergeleken met de 82.217 NDFF-dagvlinderrecords en de bestaande routeconstructie.
@@ -694,6 +700,8 @@ Het doel is niet zoveel mogelijk regels importeren, maar per bron de kortste rou
 **Aquatische reeks: methode en locatiestructuur gereconstrueerd.** De zeven monsterpuntcodes, vijf benoemde wateren en negentien standaard- of afwijkende methodeperioden uit 1974–1975 staan in `Meijendel_bronnen`. Een betrouwbare digitale watercodekaart en een gecontroleerde soortenmatrix ontbreken nog. Daarom zijn geen waarnemingsregels naar `Meijendel` gepromoveerd. De aanvullende waterwantsen, waterkevers, libellen, neuropteren en zweefvliegen blijven kandidaat totdat datum en locatie per waarneming vaststaan.
 
 **Droge-duinvegetatieplots: onderzocht, nog niet lokaliseerbaar per plot.** De kaart in het proefschrift is visueel gecontroleerd en toont 41 punten in Helmduinen, Kijfhoek en Bierlap, maar geen koppelbare plotcodes. Ook de LVD-selectie levert geen betrouwbare vertaling. De reeks blijft kandidaat totdat de oorspronkelijke plotkaart en opnametabellen zijn gevonden.
+
+**Historische toegankelijkheid: bronmatrix en kavelgenealogie opbouwen.** Begin met de rechtstreeks gedateerde aanwijzingen uit de VWG-jaarverslagen en koppel daarna de afzonderlijk bewaarde jaarlijkse kavelkaarten aan de 55 actuele plots. Raadpleeg voor de toegangsgrenzen de 20 fysieke archiefeenheden uit elf relevante beschrijvingen van het Haags Gemeentearchief over 1951–1989. Vul alleen jaren in die door een regeling, kaart of aantoonbaar doorlopende werkingsperiode worden gedragen. Leg per plot-jaar zowel bronzekerheid als geografische zekerheid vast en maak pas na inhoudelijke validatie een reproduceerbaar correctievoorstel voor `plot_jaar_toegankelijkheid` en `plot_jaar_toegankelijkheid_deel`.
 
 ### Fase 3 — reeds bekende bronhouders en contextdatasets
 
