@@ -420,6 +420,46 @@ ON DUPLICATE KEY UPDATE
   bewijswijze=VALUES(bewijswijze),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_uitvoering_gebied
+  (uitvoering_id,indeling_code,gebied_code,relatietype,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  'vogelplot-gebiedsindeling-v1',
+  'voorlinden',
+  'locatie_binnen_gebied',
+  'geverifieerd',
+  b.bron_id,
+  'Het ontwerpbeheerplan noemt Voorlinden; Ton bevestigde op 13 oktober 2026 dat M91 Voorlinden is. De precieze uitvoeringsvoetafdruk binnen het plot is onbekend.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_ontwerp_2026'
+WHERE u.uitvoering_code='pas_24c_voorlinden'
+ON DUPLICATE KEY UPDATE
+  relatietype=VALUES(relatietype),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'Voorlinden is door Ton op 13 oktober 2026 eenduidig gekoppeld aan M91. De bron bewijst geen volledig uitvoeringsvlak; daarom blijft het doorsnijdingspercentage leeg.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_ontwerp_2026'
+JOIN plots p ON p.kavel_nummer='M91'
+WHERE u.uitvoering_code='pas_24c_voorlinden'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_bron_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_jaar_seed;

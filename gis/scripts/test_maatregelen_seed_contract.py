@@ -121,14 +121,14 @@ def main() -> int:
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
+            "maatregel_plot_koppeling": 1,
+            "maatregel_uitvoering_gebied": 1,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
         assert before == expected, before
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
-        assert scalar("SELECT COUNT(*) FROM maatregel_plot_koppeling;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_gebied;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
@@ -142,6 +142,39 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel WHERE plot_id=3509 AND gebied_code='kijfhoek_en_bierlap';") == 1
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel WHERE plot_id IN (3510,12381) AND gebied_code='vallei_meijendel';") == 2
         assert scalar("SELECT COUNT(*) FROM plots WHERE kavel_nummer='M54q';") == 0
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          WHERE u.uitvoering_code='pas_24c_voorlinden'
+            AND p.kavel_nummer='M91'
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL;
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_gebied ug
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='pas_24c_voorlinden'
+            AND ug.indeling_code='vogelplot-gebiedsindeling-v1'
+            AND ug.gebied_code='voorlinden'
+            AND ug.relatietype='locatie_binnen_gebied'
+            AND ug.verificatiestatus='geverifieerd';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_jaar uj
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='pas_24c_voorlinden'
+            AND uj.jaar=2025 AND uj.jaarstatus='onbekend';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='pas_24c_voorlinden';
+        """) == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='pas_23_maaibeheer' AND uj.jaar BETWEEN 2016 AND 2019 AND uj.jaarstatus='niet_uitgevoerd';") == 4
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='pas_23_vogelkers_2020' AND uj.jaar=2020 AND uj.jaarstatus='uitgevoerd';") == 1
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u WHERE u.uitvoering_code='bendel_nabeheer_2026' AND u.uitvoering_status_code='gepland';") == 1
