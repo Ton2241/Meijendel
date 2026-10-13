@@ -60,7 +60,54 @@ def main() -> int:
               (9,'strandreservaten','Strandreservaten'),
               (10,'predatorenbeheer','Predatorenbeheer'),
               (11,'rust_en_recreatiebeheer','Rust- en recreatiebeheer');
-            CREATE TABLE plots (plot_id INT NOT NULL, PRIMARY KEY (plot_id)) ENGINE=InnoDB;
+            CREATE TABLE plots (
+              plot_id INT NOT NULL,
+              kavel_nummer VARCHAR(255) NULL,
+              in_gebruik TINYINT(1) NOT NULL DEFAULT 1,
+              PRIMARY KEY (plot_id)
+            ) ENGINE=InnoDB;
+            INSERT INTO plots (plot_id,kavel_nummer,in_gebruik) VALUES
+              (3490,'M33',1),(3496,'M34',1),(3497,'M83',1),(3498,'M7',1),
+              (3499,'M105',1),(3500,'M46',1),(3501,'M71',1),(3502,'M10-12-76',1),
+              (3503,'M66',1),(3504,'M3',1),(3505,'M1b',1),(3506,'M13s',1),
+              (3507,'M45',1),(3508,'M32',1),(3509,'M63',1),(3510,'M85',1),
+              (3511,'M13',1),(3512,'M14',1),(3513,'M17a',1),(3514,'M91',1),
+              (3515,'M35',1),(3516,'M64',1),(3517,'M84',1),(3518,'M65',1),
+              (3519,'M12a',1),(3520,'M62',1),(3521,'M6',1),(3522,'M61',1),
+              (3523,'M2',1),(3524,'M15',1),(3525,'M16',1),(3526,'M72',1),
+              (3527,'M73',1),(3528,'M74',1),(3529,'M17b',1),(3530,'M8',1),
+              (3531,'M75',1),(3532,'M77',1),(3533,'M36',1),(3534,'M1a',1),
+              (3581,'M4-5',1),(3583,'M75a',1),(9917,'M51',1),(10626,'M43',1),
+              (12381,'M54a',1),(12382,'M54b',1),(20247,'M52',1),(20758,'M78/79',1),
+              (27371,'M53',1),(29455,'M55',1),(29456,'M16s',1),(29457,'M42',1),
+              (29459,'M31',1),(100425,'M41',1),(112100,'M84s',1),
+              (999986,'M9',0),(999987,'M12',0),(999988,'M5',0),(999989,'M4',0),
+              (999990,'M11',0),(999991,'M1',0),(999992,'M54',0),(999993,'M79',0),
+              (999994,'M78',0),(999995,'M17',0),(999996,'M76',0),(999997,'M8/11',0),
+              (999998,'M10',0),(999999,'M8/9',0);
+            CREATE TABLE ndff_sovon_plotversie (
+              plotversie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+              versie VARCHAR(32) NOT NULL,
+              bronbestand VARCHAR(500) NOT NULL,
+              bronbestand_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+              crs_epsg INT UNSIGNED NOT NULL DEFAULT 28992,
+              objectaantal SMALLINT UNSIGNED NOT NULL,
+              PRIMARY KEY (plotversie_id),
+              UNIQUE KEY uq_test_plotversie_hash (bronbestand_sha256)
+            ) ENGINE=InnoDB;
+            INSERT INTO ndff_sovon_plotversie
+              (plotversie_id,versie,bronbestand,bronbestand_sha256,crs_epsg,objectaantal)
+            VALUES (1,'2025','test.gpkg',REPEAT('a',64),28992,55);
+            CREATE TABLE ndff_sovon_plot (
+              plotversie_id BIGINT UNSIGNED NOT NULL,
+              plot_id INT NOT NULL,
+              plot_geometrie GEOMETRY NOT NULL SRID 28992,
+              plot_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+              PRIMARY KEY (plotversie_id,plot_id),
+              CONSTRAINT fk_test_plotversie FOREIGN KEY (plotversie_id)
+                REFERENCES ndff_sovon_plotversie (plotversie_id),
+              CONSTRAINT fk_test_plot FOREIGN KEY (plot_id) REFERENCES plots (plot_id)
+            ) ENGINE=InnoDB;
             """,
             TEST_DB,
         )
@@ -71,13 +118,30 @@ def main() -> int:
             "maatregel_project": 12,
             "maatregel_uitvoering": 33,
             "maatregel_uitvoering_jaar": 58,
+            "plot_gebied": 8,
+            "plot_gebiedsindeling": 1,
+            "plot_gebied_lidmaatschap": 69,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
         assert before == expected, before
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_plot_koppeling;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
+        assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_gebied;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 0
+        assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
+        assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
+        assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
+            "buitenduin_noord:12,buitenduin_zuid:7,haagsche_golfclub:1,hertenkamp:1,"
+            "kijfhoek_en_bierlap:23,vallei_meijendel:12,voorlinden:1,zuid_oosthoek:12"
+        )
+        assert scalar("SELECT COUNT(*) FROM plot_gebied_lidmaatschap WHERE lidmaatschap_status='actueel_met_geometrie';") == 55
+        assert scalar("SELECT COUNT(*) FROM plot_gebied_lidmaatschap WHERE lidmaatschap_status='historisch_zonder_geometrie';") == 14
+        assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel WHERE plot_id=999995 AND gebied_code='buitenduin_noord';") == 1
+        assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel WHERE plot_id=3509 AND gebied_code='kijfhoek_en_bierlap';") == 1
+        assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel WHERE plot_id IN (3510,12381) AND gebied_code='vallei_meijendel';") == 2
+        assert scalar("SELECT COUNT(*) FROM plots WHERE kavel_nummer='M54q';") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='pas_23_maaibeheer' AND uj.jaar BETWEEN 2016 AND 2019 AND uj.jaarstatus='niet_uitgevoerd';") == 4
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='pas_23_vogelkers_2020' AND uj.jaar=2020 AND uj.jaarstatus='uitgevoerd';") == 1
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u WHERE u.uitvoering_code='bendel_nabeheer_2026' AND u.uitvoering_status_code='gepland';") == 1

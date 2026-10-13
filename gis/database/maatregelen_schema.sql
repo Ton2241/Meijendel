@@ -240,6 +240,91 @@ CREATE TABLE IF NOT EXISTS maatregel_geometrie (
   CHECK (geometrie_jaar IS NULL OR geometrie_jaar BETWEEN 1900 AND 2100)
 ) ENGINE=InnoDB;
 
+CREATE TABLE IF NOT EXISTS plot_gebied (
+  gebied_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  naam VARCHAR(160) NOT NULL,
+  gebiedstype ENUM('meijendel_deelgebied','speciaal_gebied') NOT NULL,
+  karakterisering VARCHAR(500) NULL,
+  sortering SMALLINT UNSIGNED NOT NULL,
+  PRIMARY KEY (gebied_code),
+  UNIQUE KEY uq_plot_gebied_naam (naam),
+  UNIQUE KEY uq_plot_gebied_sortering (sortering)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS plot_gebiedsindeling (
+  indeling_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  naam VARCHAR(255) NOT NULL,
+  plotversie_id BIGINT UNSIGNED NOT NULL,
+  vastgesteld_op DATE NOT NULL,
+  status ENUM('concept','vastgesteld','vervangen') NOT NULL,
+  bron_url VARCHAR(1000) NULL,
+  besluitnotitie VARCHAR(1500) NOT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (indeling_code),
+  KEY ix_plot_gebiedsindeling_status (status, vastgesteld_op),
+  CONSTRAINT fk_plot_gebiedsindeling_plotversie FOREIGN KEY (plotversie_id)
+    REFERENCES ndff_sovon_plotversie (plotversie_id)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS plot_gebied_lidmaatschap (
+  indeling_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  plot_id INT NOT NULL,
+  gebied_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  lidmaatschap_status ENUM('actueel_met_geometrie','historisch_zonder_geometrie') NOT NULL,
+  bewijswijze ENUM('gebruiker_bevestigd','afgeleid_en_gebruiker_bevestigd') NOT NULL,
+  opmerking VARCHAR(1000) NULL,
+  PRIMARY KEY (indeling_code, plot_id),
+  KEY ix_plot_gebied_lidmaatschap_gebied (indeling_code, gebied_code),
+  CONSTRAINT fk_plot_gebied_lidmaatschap_indeling FOREIGN KEY (indeling_code)
+    REFERENCES plot_gebiedsindeling (indeling_code) ON DELETE CASCADE,
+  CONSTRAINT fk_plot_gebied_lidmaatschap_plot FOREIGN KEY (plot_id)
+    REFERENCES plots (plot_id),
+  CONSTRAINT fk_plot_gebied_lidmaatschap_gebied FOREIGN KEY (gebied_code)
+    REFERENCES plot_gebied (gebied_code)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS plot_gebied_geometrie (
+  indeling_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  gebied_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  plotversie_id BIGINT UNSIGNED NOT NULL,
+  gebied_geometrie MULTIPOLYGON NOT NULL SRID 28992,
+  bronplot_aantal SMALLINT UNSIGNED NOT NULL,
+  oppervlakte_ha DECIMAL(14,6) NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  afgeleid_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (indeling_code, gebied_code, plotversie_id),
+  SPATIAL KEY sx_plot_gebied_geometrie (gebied_geometrie),
+  CONSTRAINT fk_plot_gebied_geometrie_indeling FOREIGN KEY (indeling_code)
+    REFERENCES plot_gebiedsindeling (indeling_code) ON DELETE CASCADE,
+  CONSTRAINT fk_plot_gebied_geometrie_gebied FOREIGN KEY (gebied_code)
+    REFERENCES plot_gebied (gebied_code),
+  CONSTRAINT fk_plot_gebied_geometrie_plotversie FOREIGN KEY (plotversie_id)
+    REFERENCES ndff_sovon_plotversie (plotversie_id),
+  CHECK (bronplot_aantal > 0),
+  CHECK (oppervlakte_ha > 0)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS maatregel_uitvoering_gebied (
+  uitvoering_id BIGINT UNSIGNED NOT NULL,
+  indeling_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  gebied_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  relatietype ENUM('locatie_binnen_gebied','volledig_gebied') NOT NULL,
+  verificatiestatus ENUM('geverifieerd','te_beoordelen','afgekeurd') NOT NULL,
+  bron_id BIGINT UNSIGNED NOT NULL,
+  opmerking VARCHAR(1000) NULL,
+  PRIMARY KEY (uitvoering_id, indeling_code, gebied_code),
+  KEY ix_maatregel_uitvoering_gebied_selectie (indeling_code, gebied_code, verificatiestatus),
+  KEY ix_maatregel_uitvoering_gebied_bron (bron_id),
+  CONSTRAINT fk_maatregel_uitvoering_gebied_uitvoering FOREIGN KEY (uitvoering_id)
+    REFERENCES maatregel_uitvoering (uitvoering_id) ON DELETE CASCADE,
+  CONSTRAINT fk_maatregel_uitvoering_gebied_indeling FOREIGN KEY (indeling_code)
+    REFERENCES plot_gebiedsindeling (indeling_code),
+  CONSTRAINT fk_maatregel_uitvoering_gebied_gebied FOREIGN KEY (gebied_code)
+    REFERENCES plot_gebied (gebied_code),
+  CONSTRAINT fk_maatregel_uitvoering_gebied_bron FOREIGN KEY (bron_id)
+    REFERENCES maatregel_bron (bron_id)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS maatregel_plot_koppeling (
   uitvoering_id BIGINT UNSIGNED NOT NULL,
   plot_id INT NOT NULL,
@@ -279,3 +364,50 @@ JOIN maatregel_project p ON p.project_id=u.project_id
 JOIN maatregel_uitvoering_jaar uj ON uj.uitvoering_id=u.uitvoering_id
 WHERE pk.verificatiestatus='geverifieerd'
   AND uj.jaarstatus='uitgevoerd';
+
+CREATE OR REPLACE VIEW v_plot_gebied_actueel AS
+SELECT
+  l.indeling_code,
+  l.plot_id,
+  p.kavel_nummer,
+  p.in_gebruik,
+  l.gebied_code,
+  g.naam AS gebied_naam,
+  g.gebiedstype,
+  l.lidmaatschap_status,
+  l.bewijswijze,
+  l.opmerking
+FROM plot_gebied_lidmaatschap l
+JOIN plot_gebiedsindeling i USING (indeling_code)
+JOIN plot_gebied g USING (gebied_code)
+JOIN plots p USING (plot_id)
+WHERE i.indeling_code=(
+  SELECT i2.indeling_code
+  FROM plot_gebiedsindeling i2
+  WHERE i2.status='vastgesteld'
+  ORDER BY i2.vastgesteld_op DESC, i2.indeling_code DESC
+  LIMIT 1
+);
+
+CREATE OR REPLACE VIEW v_plot_gebied_geometrie_actueel AS
+SELECT
+  gg.indeling_code,
+  gg.gebied_code,
+  g.naam AS gebied_naam,
+  g.gebiedstype,
+  gg.plotversie_id,
+  gg.gebied_geometrie,
+  gg.bronplot_aantal,
+  gg.oppervlakte_ha,
+  gg.geometrie_sha256,
+  gg.afgeleid_op
+FROM plot_gebied_geometrie gg
+JOIN plot_gebiedsindeling i USING (indeling_code)
+JOIN plot_gebied g USING (gebied_code)
+WHERE i.indeling_code=(
+  SELECT i2.indeling_code
+  FROM plot_gebiedsindeling i2
+  WHERE i2.status='vastgesteld'
+  ORDER BY i2.vastgesteld_op DESC, i2.indeling_code DESC
+  LIMIT 1
+);

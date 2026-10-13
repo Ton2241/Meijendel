@@ -51,7 +51,30 @@ def main() -> int:
             ) ENGINE=InnoDB;
             CREATE TABLE plots (
               plot_id INT NOT NULL,
+              kavel_nummer VARCHAR(255) NULL,
+              in_gebruik TINYINT(1) NOT NULL DEFAULT 1,
               PRIMARY KEY (plot_id)
+            ) ENGINE=InnoDB;
+            CREATE TABLE ndff_sovon_plotversie (
+              plotversie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+              versie VARCHAR(32) NOT NULL,
+              bronbestand VARCHAR(500) NOT NULL,
+              bronbestand_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+              crs_epsg INT UNSIGNED NOT NULL DEFAULT 28992,
+              objectaantal SMALLINT UNSIGNED NOT NULL,
+              PRIMARY KEY (plotversie_id),
+              UNIQUE KEY uq_test_plotversie_hash (bronbestand_sha256)
+            ) ENGINE=InnoDB;
+            CREATE TABLE ndff_sovon_plot (
+              plotversie_id BIGINT UNSIGNED NOT NULL,
+              plot_id INT NOT NULL,
+              plot_geometrie GEOMETRY NOT NULL SRID 28992,
+              plot_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+              PRIMARY KEY (plotversie_id, plot_id),
+              CONSTRAINT fk_test_plot_versie FOREIGN KEY (plotversie_id)
+                REFERENCES ndff_sovon_plotversie (plotversie_id),
+              CONSTRAINT fk_test_plot_id FOREIGN KEY (plot_id)
+                REFERENCES plots (plot_id)
             ) ENGINE=InnoDB;
             """,
             TEST_DB,
@@ -70,6 +93,11 @@ def main() -> int:
             "maatregel_uitvoering_bron",
             "maatregel_geometrie",
             "maatregel_plot_koppeling",
+            "plot_gebied",
+            "plot_gebiedsindeling",
+            "plot_gebied_lidmaatschap",
+            "plot_gebied_geometrie",
+            "maatregel_uitvoering_gebied",
         }
         rows = mysql("SHOW FULL TABLES WHERE Table_type='BASE TABLE';", TEST_DB).splitlines()
         actual = {row.split("\t", 1)[0] for row in rows}
@@ -84,9 +112,12 @@ def main() -> int:
                 TEST_DB,
             ).splitlines())
             assert module.CENTRAL_QUERY_SCHEMA.get(table) == frozenset(columns), table
-        assert scalar("SELECT COUNT(*) FROM information_schema.views WHERE table_schema=DATABASE() AND table_name='v_plot_jaar_maatregel_bronvast';") == 1
+        assert scalar("SELECT COUNT(*) FROM information_schema.views WHERE table_schema=DATABASE() AND table_name IN ('v_plot_jaar_maatregel_bronvast','v_plot_gebied_actueel','v_plot_gebied_geometrie_actueel');") == 3
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 0
-        assert scalar("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema=DATABASE() AND constraint_type='FOREIGN KEY';") >= 12
+        assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 0
+        assert scalar("SELECT COUNT(*) FROM v_plot_gebied_geometrie_actueel;") == 0
+        assert scalar("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema=DATABASE() AND constraint_type='FOREIGN KEY';") >= 22
+        assert scalar("SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='plot_gebied_lidmaatschap' AND index_name='PRIMARY' AND column_name IN ('indeling_code','plot_id');") == 2
         before = scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE();")
         apply_schema()
         after = scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE();")

@@ -294,6 +294,133 @@ JOIN maatregel_bron b ON b.bron_code=s.bron_code
 ON DUPLICATE KEY UPDATE
   pagina_of_paragraaf=VALUES(pagina_of_paragraaf), bewijsnotitie=VALUES(bewijsnotitie);
 
+INSERT INTO plot_gebied
+  (gebied_code,naam,gebiedstype,karakterisering,sortering) VALUES
+  ('buitenduin_noord','Buitenduin Noord','meijendel_deelgebied',NULL,10),
+  ('buitenduin_zuid','Buitenduin Zuid','meijendel_deelgebied',NULL,20),
+  ('kijfhoek_en_bierlap','Kijfhoek en Bierlap','meijendel_deelgebied',NULL,30),
+  ('vallei_meijendel','Vallei Meijendel','meijendel_deelgebied',NULL,40),
+  ('zuid_oosthoek','Zuid-oosthoek','meijendel_deelgebied',NULL,50),
+  ('haagsche_golfclub','Haagsche Golfclub','speciaal_gebied','Golfterrein.',60),
+  ('voorlinden','Voorlinden','speciaal_gebied','Museumterrein met gebouw.',70),
+  ('hertenkamp','Hertenkamp','speciaal_gebied','Geheel omheind, open gebied dat als park functioneert.',80)
+ON DUPLICATE KEY UPDATE
+  naam=VALUES(naam), gebiedstype=VALUES(gebiedstype),
+  karakterisering=VALUES(karakterisering), sortering=VALUES(sortering);
+
+INSERT INTO plot_gebiedsindeling
+  (indeling_code,naam,plotversie_id,vastgesteld_op,status,bron_url,besluitnotitie)
+SELECT
+  'vogelplot-gebiedsindeling-v1',
+  'Vogelplots Meijendel: vijf deelgebieden en drie speciale gebieden',
+  v.plotversie_id,
+  '2026-10-13',
+  'vastgesteld',
+  'https://www.vwg-m.nl/meijendel/index.asp',
+  'Indeling en uitzonderingen door Ton bevestigd op 13 oktober 2026; de globale historische overzichtskaart dient als naamcontext. M54q is genormaliseerd naar het bestaande plot M54a.'
+FROM ndff_sovon_plotversie v
+WHERE v.versie='2025'
+ORDER BY v.plotversie_id DESC
+LIMIT 1
+ON DUPLICATE KEY UPDATE
+  naam=VALUES(naam), plotversie_id=VALUES(plotversie_id),
+  vastgesteld_op=VALUES(vastgesteld_op), status=VALUES(status),
+  bron_url=VALUES(bron_url), besluitnotitie=VALUES(besluitnotitie);
+
+DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
+CREATE TEMPORARY TABLE tmp_plot_gebied_lidmaatschap_seed (
+  plot_id INT NOT NULL PRIMARY KEY,
+  gebied_code VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  lidmaatschap_status VARCHAR(32) CHARACTER SET ascii NOT NULL,
+  bewijswijze VARCHAR(40) CHARACTER SET ascii NOT NULL,
+  opmerking VARCHAR(1000) NULL
+) ENGINE=InnoDB;
+
+INSERT INTO tmp_plot_gebied_lidmaatschap_seed VALUES
+  (20758,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3532,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3511,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3506,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3512,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3524,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3525,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (29456,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3513,'buitenduin_noord','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (999995,'buitenduin_noord','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd','Historisch M17 is door Ton gelijkgesteld aan M17a.'),
+  (999994,'buitenduin_noord','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999993,'buitenduin_noord','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (3529,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3533,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3515,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3496,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3490,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3508,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (29459,'buitenduin_zuid','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3583,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3528,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3527,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3531,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3502,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3519,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3526,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3501,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3518,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3530,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3498,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3516,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3520,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3521,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3522,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3509,'kijfhoek_en_bierlap','actueel_met_geometrie','gebruiker_bevestigd','M63 door Ton toegevoegd aan Kijfhoek en Bierlap.'),
+  (999998,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999990,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999987,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999996,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999997,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999999,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999986,'kijfhoek_en_bierlap','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (29455,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3581,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (20247,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (12381,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd','De aangeleverde aanduiding M54q is genormaliseerd naar bestaand plot M54a.'),
+  (12382,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (27371,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (9917,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3504,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3510,'vallei_meijendel','actueel_met_geometrie','gebruiker_bevestigd','M85 door Ton toegevoegd aan Vallei Meijendel.'),
+  (999989,'vallei_meijendel','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999988,'vallei_meijendel','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (999992,'vallei_meijendel','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (3523,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3500,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3497,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3517,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (112100,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3507,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3505,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (3534,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (100425,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (29457,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (10626,'zuid_oosthoek','actueel_met_geometrie','gebruiker_bevestigd',NULL),
+  (999991,'zuid_oosthoek','historisch_zonder_geometrie','afgeleid_en_gebruiker_bevestigd',NULL),
+  (3503,'haagsche_golfclub','actueel_met_geometrie','gebruiker_bevestigd','M66 is een golfterrein.'),
+  (3514,'voorlinden','actueel_met_geometrie','gebruiker_bevestigd','M91 is Voorlinden, een museumterrein met gebouw.'),
+  (3499,'hertenkamp','actueel_met_geometrie','gebruiker_bevestigd','M105 is een geheel omheind, open parkgebied.');
+
+INSERT INTO plot_gebied_lidmaatschap
+  (indeling_code,plot_id,gebied_code,lidmaatschap_status,bewijswijze,opmerking)
+SELECT
+  'vogelplot-gebiedsindeling-v1',s.plot_id,s.gebied_code,
+  s.lidmaatschap_status,s.bewijswijze,s.opmerking
+FROM tmp_plot_gebied_lidmaatschap_seed s
+JOIN plots p ON p.plot_id=s.plot_id
+ON DUPLICATE KEY UPDATE
+  gebied_code=VALUES(gebied_code),
+  lidmaatschap_status=VALUES(lidmaatschap_status),
+  bewijswijze=VALUES(bewijswijze),
+  opmerking=VALUES(opmerking);
+
+DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_bron_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_jaar_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_seed;
