@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import subprocess
 import uuid
+import importlib.util
 from pathlib import Path
 
 
@@ -12,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "gis" / "database" / "maatregelen_schema.sql"
 TEST_DB = f"meijendel_maatregelen_test_{uuid.uuid4().hex[:12]}"
 MYSQL = "/usr/local/mysql/bin/mysql"
+CENTRAL_QUERY = ROOT / "gis" / "scripts" / "import_external_ecology_sources.py"
 
 
 def mysql(sql: str, database: str | None = None) -> str:
@@ -72,6 +74,16 @@ def main() -> int:
         rows = mysql("SHOW FULL TABLES WHERE Table_type='BASE TABLE';", TEST_DB).splitlines()
         actual = {row.split("\t", 1)[0] for row in rows}
         assert required <= actual, sorted(required - actual)
+        spec = importlib.util.spec_from_file_location("central_query_schema", CENTRAL_QUERY)
+        assert spec and spec.loader
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for table in required:
+            columns = set(mysql(
+                f"SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='{table}';",
+                TEST_DB,
+            ).splitlines())
+            assert module.CENTRAL_QUERY_SCHEMA.get(table) == frozenset(columns), table
         assert scalar("SELECT COUNT(*) FROM information_schema.views WHERE table_schema=DATABASE() AND table_name='v_plot_jaar_maatregel_bronvast';") == 1
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 0
         assert scalar("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema=DATABASE() AND constraint_type='FOREIGN KEY';") >= 12
