@@ -10,4 +10,5 @@ app_cache/
 meijendel_tables_cache-p*.rds
 meijendel_tables_cache-p*.manifest
 /outputs/
+/analyses/broedvogel_vegetatie_power/resultaten/runs/
 .worktrees/
