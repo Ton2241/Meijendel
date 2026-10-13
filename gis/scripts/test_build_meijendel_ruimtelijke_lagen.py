@@ -127,6 +127,61 @@ def main() -> int:
         else:
             raise AssertionError(f"ongeldige gebiedsdekking geaccepteerd: {invalid_counts}")
 
+    source_rows = []
+    next_plot_id = 1
+    for gebied_code, count in expected_counts.items():
+        for offset in range(count):
+            source_geometry = polygon(
+                next_plot_id * 20,
+                offset * 20,
+                next_plot_id * 20 + 10,
+                offset * 20 + 10,
+            )
+            source_rows.append(
+                (gebied_code, next_plot_id, source_geometry.ExportToWkb().hex())
+            )
+            next_plot_id += 1
+    writes = []
+
+    def source_loader(_mysql, _mysql_args):
+        return "vogelplot-gebiedsindeling-v1", 1, source_rows
+
+    def writer(_mysql, _mysql_args, sql):
+        writes.append(sql)
+
+    summary = importer.apply_plot_gebieden_only(
+        "mysql", ["--login-path=test"], source_loader=source_loader, writer=writer
+    )
+    assert summary == (
+        "OK: vogelplot-gebiedsindeling-v1, plotversie 1, "
+        "55 geldige bronplots en 8 gebiedsgeometrieën geschreven"
+    )
+    assert len(writes) == 1
+    assert writes[0].count("ST_GeomFromWKB") == 8
+
+    mysql_args = [
+        "--login-path=meijendel_root",
+        "--protocol=TCP",
+        "--host=127.0.0.1",
+        "--port=3306",
+    ]
+    _, _, live_rows = importer.load_plot_gebied_source(
+        "/usr/local/mysql/bin/mysql", mysql_args
+    )
+    kijfhoek_rows = [
+        (plot_id, wkb_hex)
+        for gebied_code, plot_id, wkb_hex in live_rows
+        if gebied_code == "kijfhoek_en_bierlap"
+    ]
+    kijfhoek_union = importer.union_plot_geometries(kijfhoek_rows)
+    kijfhoek_hex = bytes(kijfhoek_union.ExportToWkb()).hex()
+    mysql_valid = importer.query_mysql(
+        "/usr/local/mysql/bin/mysql",
+        mysql_args,
+        "SELECT ST_IsValid(ST_GeomFromWKB(UNHEX('%s'),28992));" % kijfhoek_hex,
+    )
+    assert mysql_valid == "1"
+
     invalid = ogr.CreateGeometryFromWkt(
         "POLYGON ((0 0, 10 10, 0 10, 10 0, 0 0))"
     )

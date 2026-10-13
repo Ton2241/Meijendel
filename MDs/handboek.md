@@ -1147,6 +1147,34 @@ Belangrijk:
 
 Nieuwe broninformatie over werkzaamheden leg je eerst vast in `maatregel_bron`, `maatregel_project`, `maatregel_uitvoering`, `maatregel_uitvoering_jaar` en `maatregel_uitvoering_bron`. Pas daarna volgt, indien de bron of een gecontroleerde geometrische bewerking dit werkelijk ondersteunt, `maatregel_geometrie` en `maatregel_plot_koppeling`. De afgeleide view `v_plot_jaar_maatregel_bronvast` vormt dan de veilige plot-jaarlaag.
 
+### 21.1. Deelgebieden, speciale gebieden en plotgrenzen
+
+De vastgestelde indeling `vogelplot-gebiedsindeling-v1` koppelt alle 69 plots aan precies één gebied. Daarvan zijn 55 plots actueel en geometrisch beschikbaar in SOVON-plotversie 2025; 14 plots zijn historisch en hebben in die versie geen afzonderlijke grens.
+
+De actuele indeling is:
+
+- Buitenduin Noord, 9 plots: M78/79, M77, M13, M13s, M14, M15, M16, M16s en M17a;
+- Buitenduin Zuid, 7 plots: M17b, M36, M35, M34, M33, M32 en M31;
+- Kijfhoek en Bierlap, 16 plots: M75a, M74, M73, M75, M10-12-76, M12a, M72, M71, M65, M8, M7, M64, M62, M6, M61 en M63;
+- Vallei Meijendel, 9 plots: M55, M4-5, M52, M54a, M54b, M53, M51, M3 en M85;
+- Zuid-oosthoek, 11 plots: M2, M46, M83, M84, M84s, M45, M1b, M1a, M41, M42 en M43;
+- Haagsche Golfclub: M66;
+- Voorlinden: M91;
+- Hertenkamp: M105.
+
+De historische indeling is:
+
+- Buitenduin Noord: M17, M78 en M79;
+- Kijfhoek en Bierlap: M10, M11, M12, M76, M8/11, M8/9 en M9;
+- Vallei Meijendel: M4, M5 en M54;
+- Zuid-oosthoek: M1.
+
+M17 volgt volgens de bevestigde historische indeling M17a. De aangeleverde aanduiding M54q is genormaliseerd naar het bestaande actuele plot M54a; er is geen nieuw plot M54q aangemaakt.
+
+`plot_gebied_geometrie` bevat acht afgeleide MULTIPOLYGON-geometrieën in EPSG:28992. Gebruik `v_plot_gebied_actueel` voor plotlidmaatschap en `v_plot_gebied_geometrie_actueel` voor de actuele gebiedsgrenzen. De geometrieën zijn topologische samenvoegingen van de kavelgrenzen: overlap tussen telplots telt binnen een gebied niet dubbel mee.
+
+Een gebiedskoppeling is geen bewijs dat een maatregel in ieder onderliggend plot is uitgevoerd. Leg een benoemde relatie eerst vast in `maatregel_uitvoering_gebied`. Vul `maatregel_plot_koppeling` alleen wanneer de bron, een gecontroleerde uitvoeringsgeometrie of een eenduidige bijzondere gebiedsnaam de plotrelatie werkelijk bewijst. Voorlinden–M91 is de eerste dergelijke koppeling. De status van de uitvoering in 2025 blijft daarbij `onbekend`, zodat geen uitgevoerde plot-jaarrij ontstaat.
+
 ## 22. Wat is de bezoekersdruklaag?
 
 Voor bezoekersdruk uit het Dunea-rapport is een apart model ontworpen.

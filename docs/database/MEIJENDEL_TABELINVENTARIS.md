@@ -184,12 +184,23 @@ De levende lokale database bevat vanaf 13 oktober 2026 naast de bestaande classi
 | `maatregel_uitvoering_jaar` | 58 | Letterlijk onderbouwde jaarstatussen uit 1988–2025: 42 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
 | `maatregel_uitvoering_bron` | 39 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
-| `maatregel_plot_koppeling` | 0 | Alleen voor expliciet of geometrisch bewezen plotrelaties. |
+| `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
+| `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |
+| `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
+| `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
+| `maatregel_uitvoering_gebied` | 1 | Voorlinden als gevalideerde gebiedsrelatie van uitvoering `pas_24c_voorlinden`. |
+| `maatregel_plot_koppeling` | 1 | Voorlinden gekoppeld aan M91; het doorsnijdingspercentage is onbekend en blijft leeg. |
+| `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
+| `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
 | `v_plot_jaar_maatregel_bronvast` | 0 | Toont pas regels wanneer zowel het uitvoeringsjaar als de plotkoppeling zijn bewezen. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 
 De 144 bestaande regels in `plot_jaar_maatregel` blijven de historische dashboardlaag voor begrazing in 16 plots uit 1991–1999. Hun inhoud en checksum zijn bij de migratie onveranderd gebleven. Zij worden niet achteraf als bronvaste projectuitvoering geïnterpreteerd. Nieuwe werkzaamheden gaan pas naar een plot-jaarselectie nadat locatie, jaar en bron voldoende precies zijn vastgesteld.
+
+De gebiedsindeling gebruikt de 55 geldige SOVON-kavelpolygonen uit plotversie 2025, in EPSG:28992. Daaruit zijn vijf geometrieën voor Buitenduin Noord, Buitenduin Zuid, Kijfhoek en Bierlap, Vallei Meijendel en Zuid-oosthoek en drie geometrieën voor Haagsche Golfclub, Voorlinden en Hertenkamp afgeleid. Interne overlap van telplots wordt bij de topologische samenvoeging niet dubbel als gebiedsoppervlak geteld. De 14 historische plots zijn inhoudelijk ingedeeld, maar hebben in plotversie 2025 geen afzonderlijke historische geometrie en worden daarom niet als geometriebron gebruikt.
+
+De actuele aantallen bronplots per geometrie zijn respectievelijk 9, 7, 16, 9 en 11 voor de vijf Meijendel-deelgebieden en 1 voor ieder speciaal gebied. De indeling normaliseert de aangeleverde aanduiding M54q naar het bestaande plot M54a. Historisch M17 volgt M17a en ligt in Buitenduin Noord; M8/11, M8/9, M9 en M11 liggen in Kijfhoek en Bierlap.
 
 ## Website dashboard en Shiny beschermen
 

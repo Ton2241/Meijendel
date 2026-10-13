@@ -31,6 +31,7 @@ EXPECTED_PLOT_GEBIED_COUNTS = {
     "voorlinden": 1,
     "hertenkamp": 1,
 }
+PLOT_GEBIED_PRECISION_M = 0.0001
 
 
 def sha256_file(path: Path) -> str:
@@ -87,6 +88,7 @@ def union_plot_geometries(plot_rows: list[tuple[int, str]]) -> ogr.Geometry:
         union = geometry.Clone() if union is None else union.Union(geometry)
     if union is None or union.IsEmpty() or not union.IsValid():
         raise ValueError("Topologische samenvoeging leverde geen geldige geometrie")
+    union = union.SetPrecision(PLOT_GEBIED_PRECISION_M)
     union = force_multi(union)
     union.FlattenTo2D()
     if not union.IsValid():
@@ -222,6 +224,26 @@ VALUES
 {values};
 COMMIT;
 """
+
+
+def apply_plot_gebieden_only(
+    mysql: str,
+    mysql_args: list[str],
+    *,
+    source_loader=load_plot_gebied_source,
+    writer=run_mysql,
+) -> str:
+    indeling_code, plotversie_id, rows = source_loader(mysql, mysql_args)
+    derived = derive_plot_gebied_geometries(rows)
+    writer(
+        mysql,
+        [*mysql_args, "--show-warnings"],
+        plot_gebied_geometrie_sql(indeling_code, plotversie_id, derived),
+    )
+    return (
+        f"OK: {indeling_code}, plotversie {plotversie_id}, "
+        f"55 geldige bronplots en {len(derived)} gebiedsgeometrieën geschreven"
+    )
 
 
 def boundary_sql(gpkg: Path, manifest: dict) -> str:
@@ -439,24 +461,27 @@ def main() -> int:
     parser.add_argument("--mysql", default="/usr/local/mysql/bin/mysql")
     parser.add_argument("--login-path", default="meijendel_root")
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--apply-plot-gebieden", action="store_true")
     parser.add_argument("--audit-plot-gebieden", action="store_true")
     parser.add_argument("--sql-output", type=Path)
     args = parser.parse_args()
     from import_external_ecology_sources import central_query_guarded_operation
-    return central_query_guarded_operation(lambda: execute_main(args),enabled=args.apply,
-        login_path=args.login_path,client=args.mysql)
+    return central_query_guarded_operation(
+        lambda: execute_main(args),
+        enabled=args.apply or args.apply_plot_gebieden,
+        login_path=args.login_path,
+        client=args.mysql,
+    )
 
 
 def execute_main(args) -> int:
-    for path in (args.gpkg, args.manifest, SCHEMA):
-        if not path.exists():
-            raise FileNotFoundError(path)
-    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), boundary_sql(args.gpkg, manifest), status_sql()))
-    if args.sql_output:
-        args.sql_output.write_text(sql, encoding="utf-8")
+    if args.apply and args.apply_plot_gebieden:
+        raise ValueError("Gebruik --apply of --apply-plot-gebieden, niet beide")
     mysql_args = [f"--login-path={args.login_path}", '--protocol=TCP',
                   '--host=127.0.0.1','--port=3306']
+    if args.apply_plot_gebieden:
+        print(apply_plot_gebieden_only(args.mysql, mysql_args))
+        return 0
     if args.audit_plot_gebieden and not args.apply:
         indeling_code, plotversie_id, rows = load_plot_gebied_source(args.mysql, mysql_args)
         derived = derive_plot_gebied_geometries(rows)
@@ -465,6 +490,13 @@ def execute_main(args) -> int:
             f"55 geldige bronplots en {len(derived)} afleidbare gebiedsgeometrieën"
         )
         return 0
+    for path in (args.gpkg, args.manifest, SCHEMA):
+        if not path.exists():
+            raise FileNotFoundError(path)
+    manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), boundary_sql(args.gpkg, manifest), status_sql()))
+    if args.sql_output:
+        args.sql_output.write_text(sql, encoding="utf-8")
     if not args.apply:
         print("DRY RUN: SQL opgebouwd; gebruik --apply om de lokale Meijendel-database te wijzigen.")
         return 0
