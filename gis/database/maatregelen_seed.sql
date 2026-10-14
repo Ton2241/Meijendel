@@ -46,7 +46,7 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_valleien_2003','beheerpublicatie','Beheer en herstel van duinvalleien in Meijendel','2003-04-01','9Z4K34B6',NULL,'2026-10-14','gepubliceerd','Beschrijft maaien in de Libellenvallei, plaggen langs het Parnassiapad en de Kikkervalleien.'),
   ('zotero_natuurherstel_2005','beheerpublicatie','Natuurherstel in de Kikkervalleien','2005-11-01','G3K24ZDB',NULL,'2026-10-14','gepubliceerd','Aanvullende bevestiging van de in 1997 uitgevoerde eerste herstelfase.'),
   ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
-  ('zotero_plas20_2006','beheerpublicatie','Slibverwijdering in Plas 20.1','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Inhoud dateert uit maart 2006; afwijkende Zotero-metadata is niet als brondatum overgenomen. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.');
+  ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -394,7 +394,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('ganzenhoek_pan_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Bevestigt dat de werkzaamheden rond de in 1972 in gebruik genomen pan in 1973 doorliepen.'),
   ('leidingherstel_kavel2_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Beschrijft de droogval van de ronde plas in M2 door leidingherstel begin 1973.'),
   ('ganzenhoek_afwerking_pan_1973_1974','zotero_vogelrapport_1974','bevestiging',NULL,'Beschrijft het aanbrengen van hakhout op de oevers in 1974.'),
-  ('ganzenhoek_wandelpad_1974_1975','zotero_vogelrapport_1975','bevestiging',NULL,'Bevestigt voltooiing van het wandelpad langs M13, M13s, M14 en M77 in 1975.');
+  ('ganzenhoek_wandelpad_1974_1975','zotero_vogelrapport_1975','bevestiging',NULL,'Bevestigt voltooiing van het wandelpad langs M13, M13s, M14 en M77 in 1975.'),
+  ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -644,6 +645,31 @@ FROM tmp_maatregel_plot_koppeling_seed s
 JOIN maatregel_uitvoering u ON u.uitvoering_code=s.uitvoering_code
 JOIN maatregel_bron b ON b.bron_code=s.bron_code
 JOIN plots p ON p.plot_id=s.plot_id
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CASE p.kavel_nummer
+    WHEN 'M16' THEN 'Noordelijke plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M16, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
+    WHEN 'M17a' THEN 'Middelste plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M17a, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
+    WHEN 'M17b' THEN 'Zuidelijke plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M17b, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_plas20_2006'
+JOIN plots p ON p.kavel_nummer IN ('M16','M17a','M17b')
+WHERE u.uitvoering_code='plas20_reparatie_1969'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),

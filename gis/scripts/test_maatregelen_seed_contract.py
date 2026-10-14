@@ -118,11 +118,11 @@ def main() -> int:
             "maatregel_project": 18,
             "maatregel_uitvoering": 61,
             "maatregel_uitvoering_jaar": 92,
-            "maatregel_uitvoering_bron": 78,
+            "maatregel_uitvoering_bron": 79,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 32,
+            "maatregel_plot_koppeling": 35,
             "maatregel_uitvoering_gebied": 2,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
@@ -130,7 +130,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 40
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 43
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -202,7 +202,27 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='bendel_nabeheer_2026';") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE zotero_item_key IN ('JVDIWBDE','3B2FN68M','F87WJAIG','EP58F3ZI','HDRX28C3','HTUFWIAS','8CFXEBIQ','NZWRNSSI','4BFHKS7Q','JQZFPPEK','9Z4K34B6','G3K24ZDB','MUAD7GB2','4KR5RBAH');") == 14
         assert scalar("SELECT COUNT(*)-COUNT(DISTINCT zotero_item_key) FROM maatregel_bron WHERE zotero_item_key IS NOT NULL;") == 0
-        assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE bron_code='zotero_plas20_2006' AND bron_datum='2006-03-01';") == 1
+        assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE bron_code='zotero_plas20_2006' AND bron_datum='2006-03-01' AND titel='Schone start voor infiltratieplas 20 in Meijendel';") == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='plas20_reparatie_1969'
+            AND p.kavel_nummer IN ('M16','M17a','M17b')
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL
+            AND b.bron_code='zotero_plas20_2006';
+        """) == 3
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='plas20_reparatie_1969'
+            AND plot_id IN (3513,3525,3529)
+            AND jaar=1969;
+        """) == 3
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering WHERE uitvoering_code IN ('pan2_peilverlaging_1967','pan3_schoonmaak_1967','rietpoten_noord_1987','begrazing_kijfhoek_bierlap_1990','slib_plas20_2005_2006');") == 5
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering WHERE uitvoering_code LIKE 'kwelplassen_2006_2007%';") == 0
         assert scalar("""

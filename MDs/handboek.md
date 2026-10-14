@@ -536,7 +536,7 @@ De informatie in deze tab komt uit meerdere tabellen, onder andere:
 - `plot_jaar_maatregel`
 - `territoria`
 
-De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat op 14 oktober 2026 61 uitvoeringen en 92 expliciete jaarbeoordelingen uit 27 bronnen. Van de 32 gevalideerde plotkoppelingen zijn er 29 rechtstreeks ontleend aan kavelvermeldingen in de vogelrapporten over 1967–1975; de drie bestaande koppelingen zijn Voorlinden–M91 en Pan 13–M2/M3. `v_plot_jaar_maatregel_bronvast` bevat 40 regels voor 1967, 1968, 1972–1975, 1988 en 1989. De bestaande plottab blijft ongewijzigd; de checksum is `306480715648`.
+De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat op 14 oktober 2026 61 uitvoeringen en 92 expliciete jaarbeoordelingen uit 27 bronnen. Van de 35 gevalideerde plotkoppelingen zijn er 29 rechtstreeks ontleend aan kavelvermeldingen in de vogelrapporten over 1967–1975; de drie bestaande koppelingen zijn Voorlinden–M91 en Pan 13–M2/M3. Drie aanvullende koppelingen leggen de reparatie bij Plas 20 in 1969 vast voor M16, M17a en M17b, op basis van Tons lokalisatie en de ruimtelijke context in *Holland's Duinen* 48 uit maart 2006. `v_plot_jaar_maatregel_bronvast` bevat 43 regels voor 1967–1969, 1972–1975, 1988 en 1989. De bestaande plottab blijft ongewijzigd; de checksum is `306480715648`.
 
 Gebruik voor nieuwe werkzaamheden deze volgorde:
 
