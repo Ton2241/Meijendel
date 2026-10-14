@@ -375,11 +375,12 @@ SELECT uitvoering_code,
          ELSE 'primaire_uitvoeringsbron'
        END AS bronrol,
        CASE
-         WHEN uitvoering_code='kikkervalleien_begrazing_1997' THEN 'p. 5 en 22'
+         WHEN uitvoering_code IN ('kikkervalleien_begrazing_1997','kikkervalleien_bodem_1997') THEN 'p. 5 en 22'
          ELSE NULL
        END AS pagina_of_paragraaf,
        CASE
          WHEN uitvoering_code='kikkervalleien_begrazing_1997' THEN 'Pagina 5 beschrijft de uitbreiding van het sinds 1991 begraasde Helmduinengebied met circa 50 hectare Kikkervalleien direct na de herinrichting van 1997. Pagina 22 benoemt M13, M13s en M14 expliciet als de kavels waarin de Kikkervalleien liggen.'
+         WHEN uitvoering_code='kikkervalleien_bodem_1997' THEN 'Pagina 5 beschrijft dat in het najaar van 1997 de vegetatie en voedselrijke bovengrond in en rond Pan 26.1 zijn verwijderd. Pagina 22 benoemt M13, M13s en M14 expliciet als de kavels waarin de Kikkervalleien liggen en toont het bewerkte gebied met een zwarte begrenzing.'
          ELSE CONCAT('Bronbasis voor uitvoering ', CONVERT(uitvoering_code USING utf8mb4), '; status en omvang zijn niet ruimer geïnterpreteerd dan de bron ondersteunt.')
        END AS bewijsnotitie
 FROM tmp_maatregel_uitvoering_seed;
@@ -624,6 +625,27 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_kikkervalleien_2010'
 JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14')
 WHERE u.uitvoering_code='kikkervalleien_begrazing_1997'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT('Kikkervalleien; Holland''s Duinen 55 (april 2010), pagina 5, beschrijft verwijdering van vegetatie en voedselrijke bovengrond in en rond Pan 26.1 in het najaar van 1997. Pagina 22 benoemt ', p.kavel_nummer, ' expliciet als een van de drie kavels waarin de Kikkervalleien liggen en toont het bewerkte gebied met een zwarte begrenzing. De totale ingreep besloeg circa 50 hectare, maar de oppervlakte per kavel is niet gegeven; daarom blijft het doorsnijdingspercentage leeg.')
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_kikkervalleien_2010'
+JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14')
+WHERE u.uitvoering_code='kikkervalleien_bodem_1997'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
