@@ -202,6 +202,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='bendel_nabeheer_2026';") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE zotero_item_key IN ('JVDIWBDE','3B2FN68M','F87WJAIG','EP58F3ZI','HDRX28C3','HTUFWIAS','8CFXEBIQ','NZWRNSSI','4BFHKS7Q','JQZFPPEK','9Z4K34B6','G3K24ZDB','MUAD7GB2','4KR5RBAH');") == 14
         assert scalar("SELECT COUNT(*)-COUNT(DISTINCT zotero_item_key) FROM maatregel_bron WHERE zotero_item_key IS NOT NULL;") == 0
+        assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE bron_code='zotero_valleien_2003' AND zotero_item_key='9Z4K34B6' AND titel='Vegetatieontwikkeling in duinvalleien van Meijendel na opheffen van infiltratieplassen';") == 1
         assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE bron_code='zotero_plas20_2006' AND bron_datum='2006-03-01' AND titel='Schone start voor infiltratieplas 20 in Meijendel';") == 1
         assert scalar("""
           SELECT COUNT(*)
