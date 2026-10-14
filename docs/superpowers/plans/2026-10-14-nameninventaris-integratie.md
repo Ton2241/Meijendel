@@ -330,19 +330,19 @@ Gebruik uitsluitend de zojuist gemaakte gehashte back-up en bijbehorende codever
 - Consumes: de bewezen levende database-eindstand.
 - Produces: gelijkluidende registratie van levering, omvang, periode, locatiekwaliteit, rechten, overlap, validatiestatus en analytische bruikbaarheid.
 
-- [ ] **Step 1: Werk het Markdown-register bij met de feitelijke importstatus**
+- [x] **Step 1: Werk het Markdown-register bij met de feitelijke importstatus**
 
 Noem concreet: 182 naamobjecten, 299 vermeldingen uit 1602-2026, 8 bronnen, 71 geometrieën en 111 expliciete lacunes; vermeld 47 TOP10NL-features, 60 OSM-segmenten/25 namen en het ontbreken van geometrie voor Bunkerpad en Klippad. Leg vast dat dit een namen-/locatieregister is en geen ecologische waarnemingslaag.
 
-- [ ] **Step 2: Neem de gebruikerswijzigingen zorgvuldig over**
+- [x] **Step 2: Neem de gebruikerswijzigingen zorgvuldig over**
 
 Vergelijk de reeds lokaal gewijzigde registerbestanden in de canonieke checkout met de taakbranch. Neem alleen de inhoud over die bij deze levering hoort; overschrijf geen niet-door-ons gemaakte tekst of opmaak.
 
-- [ ] **Step 3: Werk de DOCX inhoudelijk gelijk bij**
+- [x] **Step 3: Werk de DOCX inhoudelijk gelijk bij**
 
 Behoud bestaande stijlen, paginering en tabellen. De Markdown-versie blijft leidend.
 
-- [ ] **Step 4: Render en controleer alle pagina's**
+- [x] **Step 4: Render en controleer alle pagina's**
 
 Run:
 
@@ -353,7 +353,7 @@ scripts/render_docx_local.sh docs/MEIJENDEL_BRONREGISTER.docx \
 
 Expected: succesvolle render van het volledige document. Controleer de gewijzigde pagina's op tekst, tabellen, afbrekingen en overloop, en controleer het totale pagina-aantal.
 
-- [ ] **Step 5: Controleer MD/DOCX-inhoudelijke gelijkheid**
+- [x] **Step 5: Controleer MD/DOCX-inhoudelijke gelijkheid**
 
 Vergelijk standdatum, aantallen, status, rechten, ruimtelijke dekking en bronlacunes expliciet.
 

@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 10 oktober 2026.**
+**Stand: 14 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -472,6 +472,24 @@ Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologisch
 **Omvang en periode in de huidige SQL-dump.** 384 plot-habitatregels uit 2014
 
 **Gebruik en grens.** Geeft de verdeling van habitattypen binnen plots. Dit is één kaartjaar; de aangekondigde T1-kaart is nodig voor een directe vergelijking door de tijd.
+
+### 1.9. Geografische namen en historische paden
+
+Deze laag bevat geen soortenwaarnemingen. Zij legt actuele en historische namen van gebieden, paden, wegen en wandelroutes vast, met brongeometrie waar de geraadpleegde bron die verantwoord levert.
+
+**Bronnen, omvang en periode.** Op 14 oktober 2026 is de levering `meijendel_nameninventaris_2026-10-14` in de levende lokale database `Meijendel` opgenomen. De levering bevat 182 naamobjecten en 299 gedateerde vermeldingen uit 1602–2026, afkomstig uit acht bronsnapshots: Beekman 2021, Van Leeuwen en Jungerius 1992, Neefjes 2010, Van der Meijden 2012, BRT TOP10NL, een lokale OpenStreetMap-export en twee Dunea-bronnen. Van de 182 objecten hebben er 52 actueel bronbewijs, 104 historisch bronbewijs en 26 beide soorten bronbewijs. Deze status zegt alleen wat in de acht bronnen is aangetroffen; zij is geen verklaring dat een naam officieel is vastgesteld of elders niet meer wordt gebruikt.
+
+**Ruimtelijke kwaliteit.** Voor 71 van de 182 naamobjecten is brongeometrie in RD New opgeslagen; 111 objecten hebben bewust geen geometrie en een expliciete beoordeling van de bronlacune. De actuele kaartbasis bestaat uit 47 TOP10NL-features, samengebracht tot 46 naamobjecten, en 60 OSM-lijnsegmenten, samengebracht tot 25 pad- en wegnamen. De 47 TOP10NL-feature-ID's en 60 OSM-way-ID's zijn afzonderlijk gekoppeld; er staan geen lijsten met bron-ID's in één databaseveld. Alle 71 geometrieën hebben SRID 28992, zijn niet leeg en zijn geldig. De RD-geometrieën stemmen na herprojectie overeen met de 71 geometrieën in het geleverde GeoJSON.
+
+TOP10NL is de officiële topografische kaartbasis en is beschikbaar onder CC BY 4.0. OpenStreetMap is communitydata onder de ODbL en geldt niet als officiële naamvaststelling. De objectactualiteit van de geselecteerde TOP10NL-features loopt per object uiteen; de OSM-export is een momentopname van 3 april 2026. Historische tekst- en kaartvermeldingen leveren zonder bijbehorende georeferentie geen exact vlak of tracé.
+
+Van Leeuwen en Jungerius noemen in 1992 de proefdriehoek Klippad–Bunkerpad–Wassenaarse Slag en vermelden dat elf proefplekken in 1987 op een kaart 1:1.000 zijn ingetekend. Die kaart staat niet in het artikel. Van der Meijden bevestigt in 2012 alleen de onderlinge ligging. Bunkerpad en Klippad blijven daarom twee historische naamobjecten zonder geometrie. Zonder de oorspronkelijke 1:1.000-kaart uit 1987 wordt geen lijn gereconstrueerd.
+
+**Database en validatie.** De bronlaag staat in zeven tabellen met prefix `nameninventaris_`: importbatch, bronnen, objecten, vermeldingen, geometrieën, geometrie-bronobjecten en beoordelingen. De import is gekoppeld aan leveringshash `72862f84d47daa3c98bb4e2960c57cc84945421619eaebd22d90a68791b7239c`. De levende controle vond 0 dubbele beoordelingssleutels, 0 verweesde koppelingen en 0 ongeldige, lege of verkeerd geprojecteerde geometrieën. Een tweede import van dezelfde levering veranderde geen rijtelling of tabelchecksum. De databasebrede controle van 128 centrale taxonroutes gaf 0 fouten; de namenlaag bevat zelf geen taxa en vereist daarom geen taxonkoppeling.
+
+**Gebruik en grens.** De laag is geschikt als bronvast namen- en locatieregister, voor kaartlabels, historische naamvarianten en later afzonderlijk te beoordelen relaties met andere ruimtelijke objecten. Zij is geen ecologische waarnemingslaag en bewijst geen aanwezigheid of afwezigheid van soorten. Er is geen automatische naamkoppeling gemaakt met VWG-kavels, `plot_gebied`, `meijendel_basisgebied` of `meijendel_natura2000`. De 111 objecten zonder geometrie mogen niet ruimtelijk worden geïnterpreteerd alsof hun ligging bekend is.
+
+**Status.** Gevalideerd en op 14 oktober 2026 geïmporteerd in de levende lokale database `Meijendel`. Niet gepubliceerd naar de VPS. De zware afgeleide `Meijendel.sql`-export en Shiny-cache zijn niet vernieuwd.
 
 ## 2. Bronnen in MySQL-database `Meijendel_bronnen`
 
