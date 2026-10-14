@@ -652,6 +652,75 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
+CREATE TEMPORARY TABLE tmp_maatregel_nameninventaris_plot_seed (
+  uitvoering_code VARCHAR(128) CHARACTER SET ascii NOT NULL,
+  plot_id INT NOT NULL,
+  bron_code VARCHAR(96) CHARACTER SET ascii NOT NULL,
+  naamobject_grondslag VARCHAR(500) NOT NULL,
+  PRIMARY KEY (uitvoering_code,plot_id)
+) ENGINE=InnoDB;
+
+INSERT INTO tmp_maatregel_nameninventaris_plot_seed VALUES
+  ('begrazing_kijfhoek_bierlap_1990',3519,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('begrazing_kijfhoek_bierlap_1990',3520,'zotero_begrazing_2012','Kijfhoek [OBJ-27B6483878; geometrie 11]'),
+  ('begrazing_kijfhoek_bierlap_1990',3509,'zotero_begrazing_2012','Kijfhoek [OBJ-27B6483878; geometrie 11]'),
+  ('begrazing_kijfhoek_bierlap_1990',3516,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('begrazing_kijfhoek_bierlap_1990',3518,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('begrazing_kijfhoek_bierlap_1990',3526,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('begrazing_kijfhoek_bierlap_1990',3527,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('begrazing_meeuwenhoek_voor_2008',3502,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_voor_2008',3519,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_voor_2008',3527,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_voor_2008',3528,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_voor_2008',3531,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('pas_22a_tafelberg_scheepje',3511,'zotero_n2000_evaluatie_2025','Tafelberg [OBJ-87A3731527; geometrie 37]'),
+  ('pas_22a_tafelberg_scheepje',3521,'zotero_n2000_evaluatie_2025','''t Scheepje [OBJ-3DB0CB7DAA; geometrie 18]'),
+  ('pas_22a_tafelberg_scheepje',3498,'zotero_n2000_evaluatie_2025','''t Scheepje [OBJ-3DB0CB7DAA; geometrie 18]'),
+  ('pas_22a_tafelberg_scheepje',3532,'zotero_n2000_evaluatie_2025','Tafelberg [OBJ-87A3731527; geometrie 37]'),
+  ('pas_22c_uilenbosch',29457,'zotero_n2000_evaluatie_2025','Uilenbosch [OBJ-4EDC595A83; geometrie 21]'),
+  ('pas_22c_uilenbosch',10626,'zotero_n2000_evaluatie_2025','Uilenbosch [OBJ-4EDC595A83; geometrie 21]'),
+  ('pas_22c_uilenbosch',112100,'zotero_n2000_evaluatie_2025','Uilenbosch [OBJ-4EDC595A83; geometrie 21]'),
+  ('pas_23_vogelkers_2020',3502,'zotero_n2000_evaluatie_2025','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('pas_23_vogelkers_2020',3519,'zotero_n2000_evaluatie_2025','Bierlap [OBJ-636B14D1E3; geometrie 25] + Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('pas_23_vogelkers_2020',3520,'zotero_n2000_evaluatie_2025','Kijfhoek [OBJ-27B6483878; geometrie 11]'),
+  ('pas_23_vogelkers_2020',3509,'zotero_n2000_evaluatie_2025','Kijfhoek [OBJ-27B6483878; geometrie 11]'),
+  ('pas_23_vogelkers_2020',3516,'zotero_n2000_evaluatie_2025','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('pas_23_vogelkers_2020',3518,'zotero_n2000_evaluatie_2025','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('pas_23_vogelkers_2020',3526,'zotero_n2000_evaluatie_2025','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
+  ('pas_23_vogelkers_2020',3527,'zotero_n2000_evaluatie_2025','Bierlap [OBJ-636B14D1E3; geometrie 25] + Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('pas_23_vogelkers_2020',3528,'zotero_n2000_evaluatie_2025','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('pas_23_vogelkers_2020',3531,'zotero_n2000_evaluatie_2025','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('pas_24b_ouderijs',27371,'zotero_n2000_evaluatie_2025','Oude Rijs [OBJ-A82FC1291F; geometrie 46]'),
+  ('pas_24b_ouderijs',3517,'zotero_n2000_evaluatie_2025','Oude Rijs [OBJ-A82FC1291F; geometrie 46]'),
+  ('pas_24b_ouderijs',3510,'zotero_n2000_evaluatie_2025','Oude Rijs [OBJ-A82FC1291F; geometrie 46]');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  s.plot_id,
+  'geometrische_doorsnijding',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Letterlijke maatregellocatie gekoppeld via ',s.naamobject_grondslag,
+    ' uit meijendel_nameninventaris_2026-10-14 en actuele plotgeometrie ',
+    'sovon-avimap-2025-download-2026-10-02. Dit bewijst de naamgebied-plotdoorsnijding, ',
+    'niet het exacte werkoppervlak; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM tmp_maatregel_nameninventaris_plot_seed s
+JOIN maatregel_uitvoering u ON u.uitvoering_code=s.uitvoering_code
+JOIN maatregel_bron b ON b.bron_code=s.bron_code
+JOIN plots p ON p.plot_id=s.plot_id
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 INSERT INTO maatregel_plot_koppeling
   (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
 SELECT
@@ -683,14 +752,19 @@ SELECT
   'geverifieerd',
   b.bron_id,
   CASE p.kavel_nummer
-    WHEN 'M16' THEN 'Noordelijke plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M16, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
-    WHEN 'M17a' THEN 'Middelste plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M17a, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
-    WHEN 'M17b' THEN 'Zuidelijke plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M17b, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
+    WHEN 'M16' THEN 'Noordelijke plas van het volledige Plas 20-systeem; door Ton op 14 oktober 2026 gekoppeld aan M16, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
+    WHEN 'M17a' THEN 'Middelste plas van het volledige Plas 20-systeem; door Ton op 14 oktober 2026 gekoppeld aan M17a, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
+    WHEN 'M17b' THEN 'Zuidelijke plas van het volledige Plas 20-systeem; door Ton op 14 oktober 2026 gekoppeld aan M17b, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
   END
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_plas20_2006'
 JOIN plots p ON p.kavel_nummer IN ('M16','M17a','M17b')
-WHERE u.uitvoering_code='plas20_reparatie_1969'
+WHERE u.uitvoering_code IN (
+  'plas20_reparatie_1969',
+  'plas20_hydrologie_2005_2006',
+  'plas20_infrastructuur_2005_2006',
+  'slib_plas20_2005_2006'
+)
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
@@ -718,7 +792,7 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b1991 ON b1991.bron_code='zotero_pan13_1991'
 JOIN maatregel_bron b2006 ON b2006.bron_code='zotero_broedvogelmonitoring_2006'
 JOIN plots p ON p.kavel_nummer IN ('M2','M3')
-WHERE u.uitvoering_code='pan13_slib_1988_1989'
+WHERE u.uitvoering_code IN ('pan13_slib_1988_1989','pan13_oeveraanpassing_1988_1989')
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
@@ -728,6 +802,7 @@ ON DUPLICATE KEY UPDATE
 
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
+DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_bron_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_jaar_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_seed;

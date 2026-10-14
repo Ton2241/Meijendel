@@ -122,7 +122,7 @@ def main() -> int:
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 36,
+            "maatregel_plot_koppeling": 79,
             "maatregel_uitvoering_gebied": 2,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
@@ -130,7 +130,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 44
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 102
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -245,6 +245,69 @@ def main() -> int:
             AND plot_id=3529
             AND jaar=1975;
         """) == 1
+        expected_name_inventory_plots = {
+            "begrazing_kijfhoek_bierlap_1990": "M12a,M62,M63,M64,M65,M72,M73",
+            "begrazing_meeuwenhoek_voor_2008": "M10-12-76,M12a,M73,M74,M75",
+            "pas_22a_tafelberg_scheepje": "M13,M6,M7,M77",
+            "pas_22c_uilenbosch": "M42,M43,M84s",
+            "pas_23_vogelkers_2020": "M10-12-76,M12a,M62,M63,M64,M65,M72,M73,M74,M75",
+            "pas_24b_ouderijs": "M53,M84,M85",
+        }
+        for execution_code, plots_csv in expected_name_inventory_plots.items():
+            actual = mysql(f"""
+              SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+              FROM maatregel_plot_koppeling pk
+              JOIN maatregel_uitvoering u USING (uitvoering_id)
+              JOIN plots p USING (plot_id)
+              WHERE u.uitvoering_code='{execution_code}'
+                AND pk.koppelmethode='geometrische_doorsnijding'
+                AND pk.verificatiestatus='geverifieerd'
+                AND pk.doorsnijding_pct IS NULL
+                AND pk.opmerking LIKE '%meijendel_nameninventaris_2026-10-14%';
+            """, TEST_DB)
+            assert actual == plots_csv, (execution_code, actual)
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering u
+          LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
+          WHERE pk.uitvoering_id IS NULL;
+        """) == 31
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_kijfhoek_bierlap_1990' AND jaar=1990;") == 7
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_22a_tafelberg_scheepje' AND jaar=2025;") == 4
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_22c_uilenbosch' AND jaar BETWEEN 2017 AND 2021;") == 15
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_23_vogelkers_2020' AND jaar=2020;") == 10
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code IN ('begrazing_meeuwenhoek_voor_2008','pas_24b_ouderijs');") == 0
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='pan13_oeveraanpassing_1988_1989'
+            AND pk.plot_id IN (3504,3523)
+            AND pk.koppelmethode='expliciet_in_bron'
+            AND pk.verificatiestatus='geverifieerd';
+        """) == 2
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pan13_oeveraanpassing_1988_1989' AND jaar IN (1988,1989);") == 4
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code IN ('plas20_hydrologie_2005_2006','plas20_infrastructuur_2005_2006','slib_plas20_2005_2006')
+            AND pk.plot_id IN (3513,3525,3529)
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd';
+        """) == 9
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code IN ('plas20_hydrologie_2005_2006','plas20_infrastructuur_2005_2006','slib_plas20_2005_2006')
+            AND jaar IN (2005,2006);
+        """) == 18
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='rietpoten_noord_1987';
+        """) == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering WHERE uitvoering_code IN ('pan2_peilverlaging_1967','pan3_schoonmaak_1967','rietpoten_noord_1987','begrazing_kijfhoek_bierlap_1990','slib_plas20_2005_2006');") == 5
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering WHERE uitvoering_code LIKE 'kwelplassen_2006_2007%';") == 0
         assert scalar("""

@@ -189,10 +189,10 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
 | `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
-| `maatregel_plot_koppeling` | 36 | Drie bestaande en 33 nieuwe, geverifieerde directe relaties; de bronnen geven geen doorsnijdingspercentage per plot. |
+| `maatregel_plot_koppeling` | 79 | 36 eerder onderbouwde relaties, 32 geometrische naam–kavelrelaties voor zes uitvoeringen en 11 aanvullende relaties voor de volledige systemen Pan 13 en Plas 20; het exacte werkoppervlak en dus het doorsnijdingspercentage blijven onbekend. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 44 | Bronvaste plot-jaarregels voor expliciet benoemde kavels en gevalideerde gebiedsnamen in 1967–1969, 1972–1975, 1988 en 1989. |
+| `v_plot_jaar_maatregel_bronvast` | 102 | Bronvaste plot-jaarregels voor expliciet benoemde kavels en gevalideerde gebiedsnamen in 1967–1969, 1972–1975, 1988–1990, 2005–2006, 2017–2021 en 2025. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 
@@ -201,6 +201,25 @@ De 144 bestaande regels in `plot_jaar_maatregel` blijven de historische dashboar
 De gebiedsindeling gebruikt de 55 geldige SOVON-kavelpolygonen uit plotversie 2025, in EPSG:28992. Daaruit zijn vijf geometrieën voor Buitenduin Noord, Buitenduin Zuid, Kijfhoek en Bierlap, Vallei Meijendel en Zuid-oosthoek en drie geometrieën voor Haagsche Golfclub, Voorlinden en Hertenkamp afgeleid. Interne overlap van telplots wordt bij de topologische samenvoeging niet dubbel als gebiedsoppervlak geteld. De 14 historische plots zijn inhoudelijk ingedeeld, maar hebben in plotversie 2025 geen afzonderlijke historische geometrie en worden daarom niet als geometriebron gebruikt.
 
 De actuele aantallen bronplots per geometrie zijn respectievelijk 9, 7, 16, 9 en 11 voor de vijf Meijendel-deelgebieden en 1 voor ieder speciaal gebied. De indeling normaliseert de aangeleverde aanduiding M54q naar het bestaande plot M54a. Historisch M17 volgt M17a en ligt in Buitenduin Noord; M8/11, M8/9, M9 en M11 liggen in Kijfhoek en Bierlap.
+
+## Nameninventaris en plotgeometrie
+
+Versie `meijendel_nameninventaris_2026-10-14` is op 14 oktober 2026 in de levende lokale database opgenomen. De korrel is één naamobject, één bronvermelding of één brongeometrie; naamgeometrie bewijst niet automatisch de exacte grens van een uitgevoerde maatregel.
+
+| Tabel of view | Records | Betekenis |
+|---|---:|---|
+| `nameninventaris_import` | 1 | Herkomst, hash, regelversie en verwachte aantallen van de levering. |
+| `nameninventaris_bron` | 8 | Beekman 2021, twee historische artikelen, Neefjes 2010, TOP10NL, OSM en twee Dunea-bronnen. |
+| `nameninventaris_object` | 182 | Onderscheiden gebieds-, functionele, pad-, weg- en routeobjecten. |
+| `nameninventaris_vermelding` | 299 | Gedateerde naamvermeldingen uit 1602–2026. |
+| `nameninventaris_geometrie` | 71 | Brongeometrieën in EPSG:28992 voor 71 objecten. |
+| `nameninventaris_geometrie_bronobject` | 107 | Herleidbaarheid van samengevoegde geometrieën naar afzonderlijke bronobjecten. |
+| `nameninventaris_beoordeling` | 111 | Actuele, expliciete geometrieleemten; deze namen worden niet ruimtelijk afgeleid. |
+| `plot_geometrie_import` | 1 | Actuele SOVON-kavelgeometrie van 55 plots, versie `sovon-avimap-2025-download-2026-10-02`. |
+| `nameninventaris_plot_koppeling` | 377 | Alle geometrische doorsnijdingen tussen 66 naamobjecten en 55 actuele kavels. |
+| `v_nameninventaris_plot_actueel` | 365 | Actuele leeslaag voor 53 kavels binnen `meijendel_natura2000`; M66 en M91 zijn uitgesloten. |
+
+De maatregelactualisering gebruikt deze laag alleen wanneer de maatregellocatie volledig en letterlijk overeenkomt met één of meer geometriseerde naamobjecten. Daarmee zijn 32 relaties voor zes uitvoeringen toegevoegd. Uitvoeringen met een brede locatie, een niet-geometriseerde naam, een gedeeltelijk geometriseerde samengestelde locatie of een afwijkende naam blijven buiten de automatische koppeling.
 
 ## Website dashboard en Shiny beschermen
 
