@@ -189,10 +189,10 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
 | `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
-| `maatregel_plot_koppeling` | 35 | Drie bestaande en 32 nieuwe, geverifieerde directe relaties; de bronnen geven geen doorsnijdingspercentage per plot. |
+| `maatregel_plot_koppeling` | 36 | Drie bestaande en 33 nieuwe, geverifieerde directe relaties; de bronnen geven geen doorsnijdingspercentage per plot. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 43 | Bronvaste plot-jaarregels voor expliciet benoemde kavels in 1967–1969, 1972–1975, 1988 en 1989. |
+| `v_plot_jaar_maatregel_bronvast` | 44 | Bronvaste plot-jaarregels voor expliciet benoemde kavels en gevalideerde gebiedsnamen in 1967–1969, 1972–1975, 1988 en 1989. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 

@@ -661,6 +661,27 @@ SELECT
   NULL,
   'geverifieerd',
   b.bron_id,
+  'Libellenvallei; door Ton op 14 oktober 2026 gekoppeld aan M17b. Holland''s Duinen 42 (april 2003) vermeldt dat de vallei sinds 1975 jaarlijks in het najaar wordt gemaaid.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_valleien_2003'
+JOIN plots p ON p.kavel_nummer='M17b'
+WHERE u.uitvoering_code='maaibeheer_libellenvallei_1975_2003'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
   CASE p.kavel_nummer
     WHEN 'M16' THEN 'Noordelijke plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M16, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
     WHEN 'M17a' THEN 'Middelste plas van Plas 20; door Ton op 14 oktober 2026 gekoppeld aan M17a, met Holland''s Duinen 48 (maart 2006), figuur 1-2, als ruimtelijke context.'
