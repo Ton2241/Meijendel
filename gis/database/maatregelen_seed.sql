@@ -47,7 +47,8 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_natuurherstel_2005','beheerpublicatie','Natuurherstel in de Kikkervalleien','2005-11-01','G3K24ZDB',NULL,'2026-10-14','gepubliceerd','Aanvullende bevestiging van de in 1997 uitgevoerde eerste herstelfase.'),
   ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
   ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.'),
-  ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.');
+  ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.'),
+  ('zotero_meijendel_mededelingen_30_1996','beheerpublicatie','Meijendel Mededelingen - aflevering 30','1996-11-01','2TXQMXTB',NULL,'2026-10-14','gepubliceerd','Volledige aflevering geraadpleegd. Pagina 99 koppelt Sprang PI letterlijk aan kavel 13s en beschrijft het betrokken rietgebied als gelegen in kavels 13s en 14; gebruikt als ruimtelijke plancontext voor de herinrichting van 1997.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -398,6 +399,7 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('kikkervalleien_begrazing_1997','zotero_valleien_2003','bevestiging',NULL,'Beschrijft toevoeging van de Kikkervalleien aan het begrazingsgebied na de herinrichting; de bron formuleert het vervolg als 1998.'),
   ('kikkervalleien_bodem_1997','zotero_natuurherstel_2005','bevestiging',NULL,'Bevestigt uitvoering van de eerste herstelfase in de winter van 1997.'),
   ('kikkervalleien_infra_1997','zotero_natuurherstel_2005','bevestiging',NULL,'Bevestigt de herinrichting na beëindiging van waterwinning in een deel van de Kikkervalleien.'),
+  ('kikkervalleien_infra_1997','zotero_meijendel_mededelingen_30_1996','plancontext','p. 99','Koppelt Sprang PI letterlijk aan kavel 13s en plaatst het voor regeneratie bestemde rietgebied in kavels 13s en 14. Dit is ruimtelijke plancontext; de uitvoering van het verwijderen van leidingen en putten in 1997 wordt door de primaire bron bevestigd.'),
   ('kikkervalleien_begrazing_1997','zotero_begrazing_2008','bevestiging',NULL,'Bevestigt uitbreiding van de begrazing met de Kikkervallei na de herstelwerkzaamheden.'),
   ('ganzenhoek_pan_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Bevestigt dat de werkzaamheden rond de in 1972 in gebruik genomen pan in 1973 doorliepen.'),
   ('leidingherstel_kavel2_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Beschrijft de droogval van de ronde plas in M2 door leidingherstel begin 1973.'),
@@ -646,6 +648,38 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_kikkervalleien_2010'
 JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14')
 WHERE u.uitvoering_code='kikkervalleien_bodem_1997'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  CASE
+    WHEN p.kavel_nummer='M13' THEN 'benoemd_gebied_gevalideerd'
+    ELSE 'expliciet_in_bron'
+  END,
+  NULL,
+  'geverifieerd',
+  CASE
+    WHEN p.kavel_nummer='M13' THEN b2010.bron_id
+    ELSE b1996.bron_id
+  END,
+  CASE p.kavel_nummer
+    WHEN 'M13' THEN 'Sprang I ligt volgens de bronkaarten aan de oostzijde van het werkgebied; Holland''s Duinen 55 (april 2010), pagina 22, plaatst het geschoonde gebied praktisch geheel binnen M13, M13s en M14. Ton bevestigde M13 op 14 oktober 2026. Omdat geen exacte leiding- of putgeometrie beschikbaar is, blijft het doorsnijdingspercentage leeg.'
+    WHEN 'M13s' THEN 'Meijendel Mededelingen 30 (november 1996), pagina 99, koppelt Sprang PI letterlijk aan kavel 13s. De verwijdering van leidingen en putten in 1997 wordt bevestigd door Holland''s Duinen 55, pagina 5. De exacte uitvoeringsvoetafdruk binnen de kavel is onbekend; daarom blijft het doorsnijdingspercentage leeg.'
+    WHEN 'M14' THEN 'Meijendel Mededelingen 30 (november 1996), pagina 99, plaatst het voor regeneratie bestemde rietgebied van Sprang PI in kavels 13s en 14. De verwijdering van leidingen en putten in 1997 wordt bevestigd door Holland''s Duinen 55, pagina 5. De exacte uitvoeringsvoetafdruk binnen de kavel is onbekend; daarom blijft het doorsnijdingspercentage leeg.'
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b2010 ON b2010.bron_code='zotero_kikkervalleien_2010'
+JOIN maatregel_bron b1996 ON b1996.bron_code='zotero_meijendel_mededelingen_30_1996'
+JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14')
+WHERE u.uitvoering_code='kikkervalleien_infra_1997'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
