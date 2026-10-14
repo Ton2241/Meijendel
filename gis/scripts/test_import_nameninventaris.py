@@ -6,9 +6,13 @@ from __future__ import annotations
 import csv
 import importlib.util
 import json
+import os
+import re
 import shutil
+import subprocess
 import tempfile
 import unittest
+import uuid
 from pathlib import Path
 
 
@@ -196,6 +200,86 @@ class NameninventarisContract(unittest.TestCase):
             row["page_or_map"] = "999999999999999999"
             write_csv(path, fields, rows)
             self.assert_invalid(delivery, "OSM.*bronobject")
+
+
+@unittest.skipUnless(os.environ.get("MEIJENDEL_MYSQL_INTEGRATION") == "1",
+                     "zet MEIJENDEL_MYSQL_INTEGRATION=1 voor de MySQL-schemaproef")
+class NameninventarisSchemaIntegration(unittest.TestCase):
+    mysql = "/usr/local/mysql/bin/mysql"
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.database = "Meijendel_namen_test_" + uuid.uuid4().hex[:10]
+        cls.run_mysql(f"CREATE DATABASE `{cls.database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        if getattr(cls, "database", "").startswith("Meijendel_namen_test_"):
+            cls.run_mysql(f"DROP DATABASE `{cls.database}`")
+
+    @classmethod
+    def run_mysql(cls, sql: str, *, database: str | None = None) -> str:
+        command = [cls.mysql, "--login-path=meijendel_root", "--protocol=TCP",
+                   "--batch", "--raw", "--skip-column-names"]
+        if database:
+            command.append(database)
+        result = subprocess.run(command, input=sql, text=True, capture_output=True, check=False)
+        if result.returncode:
+            raise AssertionError(result.stderr or result.stdout)
+        return result.stdout.strip()
+
+    def test_schema_creates_seven_restrictive_tables(self) -> None:
+        schema = SCHEMA.read_text(encoding="utf-8")
+        schema = re.sub(r"\bUSE\s+Meijendel\s*;", f"USE `{self.database}`;", schema,
+                        count=1, flags=re.IGNORECASE)
+        self.run_mysql(schema)
+        expected = {
+            "nameninventaris_import",
+            "nameninventaris_bron",
+            "nameninventaris_object",
+            "nameninventaris_vermelding",
+            "nameninventaris_geometrie",
+            "nameninventaris_geometrie_bronobject",
+            "nameninventaris_beoordeling",
+        }
+        actual = set(self.run_mysql("SHOW TABLES", database=self.database).splitlines())
+        self.assertEqual(actual, expected)
+        for table in expected:
+            status = self.run_mysql(
+                "SELECT ENGINE,TABLE_COLLATION FROM information_schema.TABLES "
+                f"WHERE TABLE_SCHEMA='{self.database}' AND TABLE_NAME='{table}'"
+            )
+            self.assertEqual(status, "InnoDB\tutf8mb4_0900_ai_ci")
+        geometry_ddl = self.run_mysql(
+            "SHOW CREATE TABLE nameninventaris_geometrie", database=self.database
+        )
+        geometry_metadata = self.run_mysql(
+            "SELECT SRS_ID,GEOMETRY_TYPE_NAME FROM information_schema.ST_GEOMETRY_COLUMNS "
+            f"WHERE TABLE_SCHEMA='{self.database}' AND TABLE_NAME='nameninventaris_geometrie' "
+            "AND COLUMN_NAME='geometry'"
+        )
+        self.assertEqual(geometry_metadata, "28992\tgeometry")
+        self.assertIn("`geometry` geometry NOT NULL", geometry_ddl)
+        self.assertIn("SPATIAL KEY", geometry_ddl)
+        object_ddl = self.run_mysql(
+            "SHOW CREATE TABLE nameninventaris_object", database=self.database
+        )
+        for status in ("actueel_bronbewijs", "historisch_bronbewijs",
+                       "actueel_en_historisch_bronbewijs"):
+            self.assertIn(status, object_ddl)
+        mention_ddl = self.run_mysql(
+            "SHOW CREATE TABLE nameninventaris_vermelding", database=self.database
+        )
+        self.assertIn("datumprecisie", mention_ddl)
+        assessment_ddl = self.run_mysql(
+            "SHOW CREATE TABLE nameninventaris_beoordeling", database=self.database
+        )
+        self.assertIn("regelversie", assessment_ddl)
+        foreign_keys = int(self.run_mysql(
+            "SELECT COUNT(*) FROM information_schema.REFERENTIAL_CONSTRAINTS "
+            f"WHERE CONSTRAINT_SCHEMA='{self.database}'"
+        ))
+        self.assertGreaterEqual(foreign_keys, 8)
 
 
 if __name__ == "__main__":

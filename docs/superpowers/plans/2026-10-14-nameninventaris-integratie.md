@@ -149,7 +149,7 @@ Expected: PASS met exact de afgesproken aantallen en normalisaties.
 - Consumes: het genormaliseerde importplan.
 - Produces: zeven `nameninventaris_*`-tabellen met restrictieve sleutels, constraints en ruimtelijke index.
 
-- [ ] **Step 1: Voeg eerst falende schema-asserties toe**
+- [x] **Step 1: Voeg eerst falende schema-asserties toe**
 
 Controleer alle tabellen en kerneigenschappen:
 
@@ -168,17 +168,17 @@ for table in (
 
 Eis foreign keys, unieke importsleutel, `GEOMETRY NOT NULL SRID 28992`, spatial index, drie bewijsstatussen, datumprecisie, nauwkeurigheidsstatus en regelversie.
 
-- [ ] **Step 2: Draai de test en bevestig dat alleen het schema ontbreekt**
+- [x] **Step 2: Draai de test en bevestig dat alleen het schema ontbreekt**
 
 Run: `python3 gis/scripts/test_import_nameninventaris.py`
 
 Expected: FAIL op de nieuwe schema-asserties.
 
-- [ ] **Step 3: Implementeer het minimale schema**
+- [x] **Step 3: Implementeer het minimale schema**
 
 Gebruik InnoDB, `utf8mb4_0900_ai_ci`, betekenisvolle unieke sleutels en expliciete CHECKs. Sla ontbrekende geometrie uitsluitend op als beoordeling zonder rij in `nameninventaris_geometrie`.
 
-- [ ] **Step 4: Draai alle gerichte tests opnieuw**
+- [x] **Step 4: Draai alle gerichte tests opnieuw**
 
 Expected: PASS.
 
