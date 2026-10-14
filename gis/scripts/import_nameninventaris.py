@@ -24,6 +24,11 @@ DEFAULT_MYSQL = Path("/usr/local/mysql/bin/mysql")
 DEFAULT_OSM = ROOT / "Recreatie" / "OSM" / "osm_highways_lijnen.geojson"
 DELIVERY_VERSION = "meijendel_nameninventaris_2026-10-14"
 RULE_VERSION = "nameninventaris-import-v1"
+ZOTERO_KEYS = {
+    "SRC-VANLEEUWEN-1992": "NZWRNSSI",
+    "SRC-NEEFJES-2010": "7Y38WFF3",
+    "SRC-VANDERMEIJDEN-2012": "DB82S8IR",
+}
 
 REQUIRED_FILES = {
     "README.md",
@@ -476,6 +481,345 @@ def build_import_plan(
     return plan
 
 
+def sql_text(value: str) -> str:
+    return "'" + value.replace("\\", "\\\\").replace("'", "''") + "'"
+
+
+def sql_nullable(value: str | None) -> str:
+    return "NULL" if value is None or value == "" else sql_text(value)
+
+
+def sql_number(value: float | int | None) -> str:
+    return "NULL" if value is None else format(value, ".15g")
+
+
+def database_identifier(value: str) -> str:
+    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]{0,63}", value):
+        raise ValueError(f"Ongeldige databasenaam: {value}")
+    return f"`{value}`"
+
+
+def logical_source_reference(source_id: str, value: str) -> tuple[str, str | None]:
+    if source_id in ZOTERO_KEYS:
+        key = ZOTERO_KEYS[source_id]
+        return f"zotero:{key}", key
+    if source_id == "SRC-OSM-2026-04-03":
+        return "project:Recreatie/OSM/osm_highways_lijnen.geojson", None
+    if value.startswith("/"):
+        raise ValueError(f"Absolute bronverwijzing niet toegestaan voor {source_id}: {value}")
+    return value, None
+
+
+def values_sql(rows: list[tuple[str, ...]]) -> str:
+    return ",\n".join("(" + ",".join(row) + ")" for row in rows)
+
+
+def build_import_sql(plan: ImportPlan, database: str) -> str:
+    database_sql = database_identifier(database)
+    parts = [
+        f"USE {database_sql};",
+        "SET NAMES utf8mb4;",
+        "START TRANSACTION;",
+        "INSERT INTO nameninventaris_import "
+        "(versiesleutel,leveringsdatum,bronreferentie,archief_sha256,regelversie,"
+        "verwacht_bronnen,verwacht_objecten,verwacht_vermeldingen,"
+        "verwacht_geometrieen,verwacht_lacunes) VALUES "
+        f"({sql_text(DELIVERY_VERSION)},'2026-10-14',"
+        f"{sql_text('codex-delivery:' + DELIVERY_VERSION)},{sql_text(plan.delivery_hash)},"
+        f"{sql_text(RULE_VERSION)},8,182,299,71,111);",
+        "SET @nameninventaris_import_id := LAST_INSERT_ID();",
+    ]
+
+    source_values: list[tuple[str, ...]] = []
+    for source_id in sorted(plan.sources):
+        row = plan.sources[source_id]
+        reference, zotero_key = logical_source_reference(source_id, row["location"])
+        source_values.append((
+            "@nameninventaris_import_id",
+            sql_text(source_id),
+            sql_text(row["title"]),
+            sql_nullable(row["author"] or None),
+            sql_number(int(row["year"])) if row["year"] else "NULL",
+            sql_text(row["source_type"]),
+            sql_text(reference),
+            sql_nullable(zotero_key),
+            sql_text(row["access_date"]),
+            sql_text(row["spatial_basis"]),
+            sql_text(row["rights"]),
+            sql_text(row["quality"]),
+        ))
+    parts.append(
+        "INSERT INTO nameninventaris_bron "
+        "(import_id,source_id,titel,auteur_beheerder,bronjaar,brontype,bronverwijzing,"
+        "zotero_item_key,raadpleegdatum,ruimtelijke_grondslag,rechten,kwaliteitsbeoordeling) VALUES\n"
+        + values_sql(source_values) + ";"
+    )
+
+    object_values: list[tuple[str, ...]] = []
+    for object_id in sorted(plan.objects):
+        row = plan.objects[object_id]
+        object_values.append((
+            sql_text(object_id),
+            "@nameninventaris_import_id",
+            sql_text(row.voorkeursnaam),
+            sql_text(row.aangeleverde_naam),
+            sql_text(row.objectklasse),
+            sql_nullable(row.bronobjecttype),
+            sql_text(row.bewijsstatus),
+            sql_number(row.nauwkeurigheid_m),
+            sql_text(row.nauwkeurigheidsstatus),
+        ))
+    parts.append(
+        "INSERT INTO nameninventaris_object "
+        "(object_id,import_id,voorkeursnaam,aangeleverde_naam,objectklasse,bronobjecttype,"
+        "bewijsstatus,nauwkeurigheid_m,nauwkeurigheidsstatus) VALUES\n"
+        + values_sql(object_values) + ";"
+    )
+
+    mention_values: list[tuple[str, ...]] = []
+    for mention_id in sorted(plan.mentions):
+        row = plan.mentions[mention_id]
+        mention_values.append((
+            sql_text(mention_id),
+            "@nameninventaris_import_id",
+            sql_text(row.object_id),
+            sql_text(row.source_id),
+            sql_text(row.bronnaam),
+            sql_text(row.periode_letterlijk),
+            sql_nullable(row.periode_einde_letterlijk),
+            str(row.jaar_van),
+            str(row.jaar_tot),
+            sql_text(row.datumprecisie),
+            sql_nullable(row.raw["page_or_map"] or None),
+            sql_nullable(row.raw["subarea"] or None),
+            sql_text(row.raw["evidence_note"]),
+        ))
+    parts.append(
+        "INSERT INTO nameninventaris_vermelding "
+        "(mention_id,import_id,object_id,source_id,bronnaam,periode_letterlijk,"
+        "periode_einde_letterlijk,jaar_van,jaar_tot,datumprecisie,pagina_kaart_bronobject,"
+        "deelgebied,bewijsnotitie) VALUES\n" + values_sql(mention_values) + ";"
+    )
+
+    geometry_values: list[tuple[str, ...]] = []
+    for object_id in sorted(plan.geometries):
+        row = plan.geometries[object_id]
+        geometry_values.append((
+            "@nameninventaris_import_id",
+            sql_text(row.object_id),
+            sql_text(row.source_id),
+            sql_text(RULE_VERSION),
+            sql_text(row.mapped_date),
+            sql_nullable(row.bronobjecttype),
+            sql_text(row.wkt_sha256),
+            sql_number(row.nauwkeurigheid_m),
+            sql_text(row.nauwkeurigheidsstatus),
+            sql_text(row.selectiegrondslag),
+            sql_nullable(row.opmerking),
+            f"ST_GeomFromText({sql_text(row.wkt_rdnew)},28992)",
+        ))
+    parts.append(
+        "INSERT INTO nameninventaris_geometrie "
+        "(import_id,object_id,source_id,geometrieversie,peildatum,bronobjecttype,wkt_sha256,"
+        "nauwkeurigheid_m,nauwkeurigheidsstatus,ruimtelijke_selectiegrondslag,"
+        "geometrieopmerking,geometry) VALUES\n" + values_sql(geometry_values) + ";"
+    )
+
+    link_values: list[tuple[str, ...]] = []
+    for link in plan.geometry_source_objects:
+        link_values.append((
+            "(SELECT geometrie_id FROM nameninventaris_geometrie "
+            f"WHERE import_id=@nameninventaris_import_id AND object_id={sql_text(link.object_id)} "
+            f"AND source_id={sql_text(link.source_id)} AND geometrieversie={sql_text(RULE_VERSION)})",
+            sql_text(link.bronobject_systeem),
+            sql_text(link.bronobject_id),
+        ))
+    parts.append(
+        "INSERT INTO nameninventaris_geometrie_bronobject "
+        "(geometrie_id,bronobject_systeem,bronobject_id) VALUES\n"
+        + values_sql(link_values) + ";"
+    )
+
+    assessment_values: list[tuple[str, ...]] = []
+    for object_id in sorted(plan.assessments):
+        row = plan.assessments[object_id]
+        assessment_values.append((
+            "@nameninventaris_import_id",
+            sql_text(object_id),
+            sql_text(RULE_VERSION),
+            sql_text("bronlacune_geometrie"),
+            sql_text(row["missing"]),
+            sql_text(row["consequence"]),
+            sql_text(row["smallest_next_source"]),
+            "1",
+        ))
+    parts.append(
+        "INSERT INTO nameninventaris_beoordeling "
+        "(import_id,object_id,regelversie,beoordelingsstatus,ontbreekt,gevolg,"
+        "kleinste_volgende_bron,actueel) VALUES\n" + values_sql(assessment_values) + ";"
+    )
+    parts.append("COMMIT;")
+    return "\n".join(parts) + "\n"
+
+
+def mysql_connection_args(login_path: str, database: str | None = None) -> list[str]:
+    args = [f"--login-path={login_path}", "--protocol=TCP", "--batch", "--raw",
+            "--skip-column-names"]
+    if database:
+        args.append(database)
+    return args
+
+
+def run_mysql(client: Path, args: list[str], sql: str) -> str:
+    result = subprocess.run(
+        [str(client), *args], input=sql, text=True, capture_output=True, check=False
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr or result.stdout)
+    return result.stdout.strip()
+
+
+def schema_for_database(database: str) -> str:
+    schema = SCHEMA.read_text(encoding="utf-8")
+    return re.sub(r"\bUSE\s+Meijendel\s*;", f"USE {database_identifier(database)};",
+                  schema, count=1, flags=re.IGNORECASE)
+
+
+def apply_delivery(
+    delivery: Path | str,
+    *,
+    database: str,
+    mysql_client: Path = DEFAULT_MYSQL,
+    login_path: str = "meijendel_root",
+    verify_checksums: bool = True,
+    mysql_runner=run_mysql,
+) -> str:
+    plan = build_import_plan(delivery, verify_checksums=verify_checksums)
+    args = mysql_connection_args(login_path)
+    mysql_runner(mysql_client, args, schema_for_database(database))
+    existing = mysql_runner(
+        mysql_client,
+        mysql_connection_args(login_path, database),
+        "SELECT archief_sha256 FROM nameninventaris_import "
+        f"WHERE versiesleutel={sql_text(DELIVERY_VERSION)}",
+    ).strip()
+    if existing:
+        if existing != plan.delivery_hash:
+            raise ValueError(
+                f"Versiesleutel {DELIVERY_VERSION} bestaat met afwijkende inhoudshash"
+            )
+        return "already_present"
+    mysql_runner(mysql_client, args, build_import_sql(plan, database))
+    return "imported"
+
+
+TABLES = (
+    "nameninventaris_import",
+    "nameninventaris_bron",
+    "nameninventaris_object",
+    "nameninventaris_vermelding",
+    "nameninventaris_geometrie",
+    "nameninventaris_geometrie_bronobject",
+    "nameninventaris_beoordeling",
+)
+
+
+def database_fingerprint(
+    *, database: str, mysql_client: Path = DEFAULT_MYSQL, login_path: str = "meijendel_root"
+) -> dict[str, dict[str, int | str]]:
+    args = mysql_connection_args(login_path, database)
+    result: dict[str, dict[str, int | str]] = {}
+    for table in TABLES:
+        count = int(run_mysql(mysql_client, args, f"SELECT COUNT(*) FROM `{table}`"))
+        checksum_row = run_mysql(mysql_client, args, f"CHECKSUM TABLE `{table}`")
+        checksum = checksum_row.split("\t")[-1]
+        result[table] = {"count": count, "checksum": checksum}
+    return result
+
+
+def grouped_counts(client: Path, args: list[str], sql: str) -> dict[str, int]:
+    output = run_mysql(client, args, sql)
+    result: dict[str, int] = {}
+    for line in output.splitlines():
+        if not line:
+            continue
+        key, value = line.split("\t", 1)
+        result[key] = int(value)
+    return result
+
+
+def audit_database(
+    *, database: str, mysql_client: Path = DEFAULT_MYSQL, login_path: str = "meijendel_root"
+) -> dict:
+    args = mysql_connection_args(login_path, database)
+    counts = {table: int(run_mysql(mysql_client, args, f"SELECT COUNT(*) FROM `{table}`"))
+              for table in TABLES}
+    invalid_geometry = int(run_mysql(
+        mysql_client, args,
+        "SELECT COUNT(*) FROM nameninventaris_geometrie "
+        "WHERE NOT ST_IsValid(geometry) OR ST_SRID(geometry)<>28992 OR ST_IsEmpty(geometry)",
+    ))
+    orphan_sql = """
+SELECT
+  (SELECT COUNT(*) FROM nameninventaris_vermelding v LEFT JOIN nameninventaris_object o
+     ON o.import_id=v.import_id AND o.object_id=v.object_id WHERE o.object_id IS NULL) +
+  (SELECT COUNT(*) FROM nameninventaris_vermelding v LEFT JOIN nameninventaris_bron b
+     ON b.import_id=v.import_id AND b.source_id=v.source_id WHERE b.source_id IS NULL) +
+  (SELECT COUNT(*) FROM nameninventaris_geometrie g LEFT JOIN nameninventaris_object o
+     ON o.import_id=g.import_id AND o.object_id=g.object_id WHERE o.object_id IS NULL) +
+  (SELECT COUNT(*) FROM nameninventaris_geometrie_bronobject l LEFT JOIN nameninventaris_geometrie g
+     ON g.geometrie_id=l.geometrie_id WHERE g.geometrie_id IS NULL) +
+  (SELECT COUNT(*) FROM nameninventaris_beoordeling b LEFT JOIN nameninventaris_object o
+     ON o.import_id=b.import_id AND o.object_id=b.object_id WHERE o.object_id IS NULL)
+"""
+    orphan_rows = int(run_mysql(mysql_client, args, orphan_sql))
+    duplicate_rows = int(run_mysql(
+        mysql_client, args,
+        "SELECT COUNT(*) FROM ("
+        "SELECT object_id,regelversie,COUNT(*) n FROM nameninventaris_beoordeling "
+        "GROUP BY object_id,regelversie HAVING n>1) d",
+    ))
+    missing_output = run_mysql(
+        mysql_client, args,
+        "SELECT o.voorkeursnaam FROM nameninventaris_object o "
+        "LEFT JOIN nameninventaris_geometrie g ON g.object_id=o.object_id "
+        "WHERE o.voorkeursnaam IN ('Bunkerpad','Klippad') AND g.geometrie_id IS NULL "
+        "ORDER BY o.voorkeursnaam",
+    )
+    return {
+        "counts": counts,
+        "invalid_geometry": invalid_geometry,
+        "orphan_rows": orphan_rows,
+        "duplicate_rows": duplicate_rows,
+        "top10nl_ids": int(run_mysql(
+            mysql_client, args,
+            "SELECT COUNT(DISTINCT bronobject_id) FROM nameninventaris_geometrie_bronobject "
+            "WHERE bronobject_systeem='TOP10NL'",
+        )),
+        "osm_ids": int(run_mysql(
+            mysql_client, args,
+            "SELECT COUNT(DISTINCT bronobject_id) FROM nameninventaris_geometrie_bronobject "
+            "WHERE bronobject_systeem='OSM'",
+        )),
+        "missing_named_geometry": missing_output.splitlines() if missing_output else [],
+        "evidence_statuses": grouped_counts(
+            mysql_client, args,
+            "SELECT bewijsstatus,COUNT(*) FROM nameninventaris_object GROUP BY bewijsstatus ORDER BY bewijsstatus",
+        ),
+        "period_precisions": grouped_counts(
+            mysql_client, args,
+            "SELECT datumprecisie,COUNT(*) FROM nameninventaris_vermelding GROUP BY datumprecisie ORDER BY datumprecisie",
+        ),
+        "batch_hash": run_mysql(
+            mysql_client, args,
+            f"SELECT archief_sha256 FROM nameninventaris_import WHERE versiesleutel={sql_text(DELIVERY_VERSION)}",
+        ),
+        "fingerprint": database_fingerprint(
+            database=database, mysql_client=mysql_client, login_path=login_path
+        ),
+    }
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--delivery", type=Path, required=True)
@@ -492,8 +836,23 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     plan = build_import_plan(args.delivery)
-    if args.apply or args.audit_live:
-        raise NotImplementedError("Database-uitvoering volgt na het schemacontract")
+    if args.apply:
+        status = apply_delivery(
+            args.delivery,
+            database=args.database,
+            mysql_client=args.mysql_client,
+            login_path=args.login_path,
+        )
+        print(json.dumps({"status": status, "counts": plan.counts}, ensure_ascii=False, indent=2))
+        return 0
+    if args.audit_live:
+        audit = audit_database(
+            database=args.database,
+            mysql_client=args.mysql_client,
+            login_path=args.login_path,
+        )
+        print(json.dumps(audit, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
     print(json.dumps({"version": DELIVERY_VERSION, "counts": plan.counts,
                       "delivery_sha256": plan.delivery_hash}, ensure_ascii=False, indent=2))
     return 0

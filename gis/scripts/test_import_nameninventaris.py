@@ -201,21 +201,59 @@ class NameninventarisContract(unittest.TestCase):
             write_csv(path, fields, rows)
             self.assert_invalid(delivery, "OSM.*bronobject")
 
+    def test_import_sql_is_transactional_ordered_and_portable(self) -> None:
+        plan = self.module.build_import_plan(DELIVERY)
+        sql = self.module.build_import_sql(plan, "Meijendel_test")
+        self.assertIn("START TRANSACTION", sql)
+        self.assertIn("COMMIT", sql)
+        self.assertLess(sql.index("INSERT INTO nameninventaris_import"),
+                        sql.index("INSERT INTO nameninventaris_bron"))
+        self.assertLess(sql.index("INSERT INTO nameninventaris_bron"),
+                        sql.index("INSERT INTO nameninventaris_object"))
+        self.assertLess(sql.index("INSERT INTO nameninventaris_object"),
+                        sql.index("INSERT INTO nameninventaris_vermelding"))
+        self.assertLess(sql.index("INSERT INTO nameninventaris_geometrie"),
+                        sql.index("INSERT INTO nameninventaris_geometrie_bronobject"))
+        self.assertNotIn("/Volumes/T7", sql)
+        self.assertNotIn(str(DELIVERY.parent), sql)
+        self.assertIn("zotero:NZWRNSSI", sql)
+        self.assertIn("project:Recreatie/OSM/osm_highways_lijnen.geojson", sql)
+
+    def test_validation_failure_happens_before_mysql_write(self) -> None:
+        calls: list[tuple] = []
+
+        def record_mysql(*args, **kwargs):
+            calls.append((args, kwargs))
+            return ""
+
+        with DeliveryCopy() as delivery:
+            path = delivery / "meijendel_namen_rdnew.csv"
+            fields, rows = csv_rows(path)
+            rows[0]["name_status"] = "mogelijk"
+            write_csv(path, fields, rows)
+            with self.assertRaisesRegex(ValueError, "name_status"):
+                self.module.apply_delivery(
+                    delivery,
+                    database="Meijendel_namen_test_no_write",
+                    verify_checksums=False,
+                    mysql_runner=record_mysql,
+                )
+        self.assertEqual(calls, [])
+
 
 @unittest.skipUnless(os.environ.get("MEIJENDEL_MYSQL_INTEGRATION") == "1",
                      "zet MEIJENDEL_MYSQL_INTEGRATION=1 voor de MySQL-schemaproef")
 class NameninventarisSchemaIntegration(unittest.TestCase):
     mysql = "/usr/local/mysql/bin/mysql"
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.database = "Meijendel_namen_test_" + uuid.uuid4().hex[:10]
-        cls.run_mysql(f"CREATE DATABASE `{cls.database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
+    def setUp(self) -> None:
+        self.module = load_importer()
+        self.database = "Meijendel_namen_test_" + uuid.uuid4().hex[:10]
+        self.run_mysql(f"CREATE DATABASE `{self.database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci")
 
-    @classmethod
-    def tearDownClass(cls) -> None:
-        if getattr(cls, "database", "").startswith("Meijendel_namen_test_"):
-            cls.run_mysql(f"DROP DATABASE `{cls.database}`")
+    def tearDown(self) -> None:
+        if getattr(self, "database", "").startswith("Meijendel_namen_test_"):
+            self.run_mysql(f"DROP DATABASE `{self.database}`")
 
     @classmethod
     def run_mysql(cls, sql: str, *, database: str | None = None) -> str:
@@ -280,6 +318,66 @@ class NameninventarisSchemaIntegration(unittest.TestCase):
             f"WHERE CONSTRAINT_SCHEMA='{self.database}'"
         ))
         self.assertGreaterEqual(foreign_keys, 8)
+
+    def test_import_is_idempotent_and_auditable(self) -> None:
+        first = self.module.apply_delivery(
+            DELIVERY,
+            database=self.database,
+            mysql_client=Path(self.mysql),
+        )
+        before = self.module.database_fingerprint(
+            database=self.database,
+            mysql_client=Path(self.mysql),
+        )
+        second = self.module.apply_delivery(
+            DELIVERY,
+            database=self.database,
+            mysql_client=Path(self.mysql),
+        )
+        after = self.module.database_fingerprint(
+            database=self.database,
+            mysql_client=Path(self.mysql),
+        )
+        self.assertEqual(first, "imported")
+        self.assertEqual(second, "already_present")
+        self.assertEqual(after, before)
+        audit = self.module.audit_database(
+            database=self.database,
+            mysql_client=Path(self.mysql),
+        )
+        self.assertEqual(audit["counts"], {
+            "nameninventaris_import": 1,
+            "nameninventaris_bron": 8,
+            "nameninventaris_object": 182,
+            "nameninventaris_vermelding": 299,
+            "nameninventaris_geometrie": 71,
+            "nameninventaris_geometrie_bronobject": 107,
+            "nameninventaris_beoordeling": 111,
+        })
+        self.assertEqual(audit["invalid_geometry"], 0)
+        self.assertEqual(audit["orphan_rows"], 0)
+        self.assertEqual(audit["top10nl_ids"], 47)
+        self.assertEqual(audit["osm_ids"], 60)
+        self.assertEqual(audit["missing_named_geometry"], ["Bunkerpad", "Klippad"])
+
+    def test_existing_version_with_changed_content_is_rejected(self) -> None:
+        self.module.apply_delivery(
+            DELIVERY,
+            database=self.database,
+            mysql_client=Path(self.mysql),
+        )
+        with DeliveryCopy() as delivery:
+            path = delivery / "meijendel_bronnen.csv"
+            fields, rows = csv_rows(path)
+            rows[0]["title"] += " gewijzigd"
+            write_csv(path, fields, rows)
+            with self.assertRaisesRegex(ValueError, "afwijkende inhoudshash"):
+                self.module.apply_delivery(
+                    delivery,
+                    database=self.database,
+                    mysql_client=Path(self.mysql),
+                    verify_checksums=False,
+                )
 
 
 if __name__ == "__main__":

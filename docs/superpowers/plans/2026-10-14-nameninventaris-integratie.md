@@ -192,23 +192,23 @@ Expected: PASS.
 - Consumes: gevalideerd importplan en `nameninventaris_schema.sql`.
 - Produces: één transactionele import en een read-only auditrapport.
 
-- [ ] **Step 1: Test SQL-opbouw vóór implementatie**
+- [x] **Step 1: Test SQL-opbouw vóór implementatie**
 
 Assert dat SQL pas na volledige validatie ontstaat, `START TRANSACTION`/`COMMIT` bevat, foreign-keyvolgorde respecteert en geen absoluut bronpad bevat. Simuleer een validatiefout en bewijs dat de MySQL-runner nul keer is aangeroepen.
 
-- [ ] **Step 2: Implementeer geparametriseerde SQL-opbouw**
+- [x] **Step 2: Implementeer geparametriseerde SQL-opbouw**
 
 Schrijf schema en data via de lokale MySQL-client. Koppel iedere rij aan de importsleutel en gebruik unieke natuurlijke/importsleutels zodat een gelijke levering geen duplicaten maakt. Verander een reeds geïmporteerde batch niet stilzwijgend wanneer de inhoudshash verschilt.
 
-- [ ] **Step 3: Implementeer `--audit-live`**
+- [x] **Step 3: Implementeer `--audit-live`**
 
 Rapporteer minimaal aantallen, dubbele sleutels, verweesde foreign keys, bewijsstatussen, periodetypen, geometrievaliditeit/SRID, bronfeaturedekking, Bunkerpad/Klippad zonder geometrie en batchhash.
 
-- [ ] **Step 4: Test een tweede identieke import als no-op**
+- [x] **Step 4: Test een tweede identieke import als no-op**
 
 Vergelijk vóór en na de tweede run rijtellingen en een deterministische inhoudshash per nieuwe tabel.
 
-- [ ] **Step 5: Draai de tests**
+- [x] **Step 5: Draai de tests**
 
 Run: `python3 gis/scripts/test_import_nameninventaris.py`
 
