@@ -29,6 +29,7 @@ INSERT INTO tmp_maatregel_bron_seed
   ('dunea_optimalisatie_waterwinning_2018','officiele_webpagina','Optimalisatie waterwinsysteem Meijendel afgerond','2018-10-22',NULL,'https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2018-10/optimalisatie-waterwinsysteem-meijendel-afgerond','2026-10-13','officiele_publicatie','Dunea meldt afronding van het achtjarige programma.'),
   ('dunea_beheer_meijendel_2023','officiele_webpagina','Beheersmaatregelen Meijendel ter bevordering van oorspronkelijke flora en fauna','2023-11-13',NULL,'https://www.dunea.nl/over-dunea/algemeen/nieuws/2023/beheersmaatregelen-meijendel-ter-bevordering-van-oorspronkelijke-flora-en-fauna','2026-10-13','officiele_publicatie','Dunea beschrijft start en aard van de werkzaamheden in Meeuwenduin en Prinsenduin.'),
   ('dunea_jaarverslag_2024','onderzoeksrapport','Dunea jaarverslag 2024','2025-01-01',NULL,'https://www.dunea.nl/duinen/-/media/bestanden/over-dunea/jaarberichten/dunea-jaarverslag-2024.pdf','2026-10-13','vastgesteld_jaarverslag','Bevestigt voortzetting beheerwerk en start konijnenproef in 2024.'),
+  ('odh_konijnenontheffing_2023','inrichtingsplan','Beschikking Wet natuurbescherming: pilot uitzetten konijnen in Meijendel','2023-08-28',NULL,'https://omgevingsdiensthaaglanden.nl/wp-content/uploads/besluiten/2023/08/30/4e5424ce-bc9f-42ce-870f-1a146507f6d1/Besluit%20op%20aanvraag%2001069060-ODH701135.pdf','2026-10-14','definitieve_beschikking','Zaak 01069060, kenmerk ODH701135. Bevat het activiteitenplan met de twee uitzetlocaties Kleine Pan en Waterschapsvallei en kaartbijlagen; vergunning geldig tot en met 31 maart 2026.'),
   ('dunea_slagbomen_2025','officiele_webpagina','Vervangen slagbomen Meijendel','2025-11-25',NULL,'https://www.dunea.nl/algemeen/nieuws/2025/vervangen-slagbomen-meijendel','2026-10-13','officiele_publicatie','Werkperiode 1 tot en met 12 december 2025.'),
   ('dunea_reguliere_werkzaamheden_2026','officiele_webpagina','Reguliere werkzaamheden in Meijendel','2026-10-13',NULL,'https://www.dunea.nl/duinen/werkzaamheden/reguliere-werkzaamheden','2026-10-13','actuele_webpagina','De pagina bevat geplande werkzaamheden bij de Paardenstal en elektriciteitswerk in Vallei Meijendel; uitvoering is niet als voltooid bevestigd.'),
   ('pzh_bendel_subsidie_2026','subsidiebesluit','Openstellingsbesluit subsidie natuurmaatregelen 2026','2026-04-22',NULL,'https://zoek.officielebekendmakingen.nl/prb-2026-6828.html','2026-10-13','subsidie_openstelling','Subsidieerbaarheid van Bendel-nabeheer bewijst geen uitvoering.'),
@@ -83,7 +84,7 @@ INSERT INTO tmp_maatregel_project_seed VALUES
   ('pas_meijendel_grijze_duinen','PAS-beheer grijze duinen Meijendel','Uitvoering van de in de eerste Natura 2000-beheerplanperiode beschreven beheermaatregelen.','natuurbeheer','Dunea, Staatsbosbeheer en Defensie','gemengd_uitgevoerd','Meijendel & Berkheide','Meijendel','2014-01-01','2025-12-31','PAS',NULL,NULL),
   ('kikkervallei_watercrassula','Bestrijding watercrassula Kikkervallei','Afdekken en vervolgbestrijding van watercrassula.','natuurbeheer','Dunea','doorlopend','Meijendel & Berkheide','Kikkervallei','2015-01-01',NULL,NULL,NULL,NULL),
   ('meeuwenduin_prinsenduin_beheer','Verwijdering bomen, struiken en exoten Meeuwenduin en Prinsenduin','Herstel van open duin door verwijdering van opslag en exoten.','natuurbeheer','Dunea','uitgevoerd_en_voortgezet','Meijendel & Berkheide','Meeuwenduin en Prinsenduin','2023-11-01','2024-12-31',NULL,'Gedeeltelijk RVO',NULL),
-  ('konijnen_bijplaatsing','Konijnenbijplaatsingsproef Meijendel','Proef met bijplaatsing en monitoring van konijnen voor herstel van de begrazingsfunctie.','onderzoek_monitoring','Dunea','in_uitvoering','Meijendel & Berkheide','Meijendel','2024-01-01','2026-12-31',NULL,NULL,NULL),
+  ('konijnen_bijplaatsing','Konijnenbijplaatsingsproef Meijendel','Proef met bijplaatsing en monitoring van konijnen voor herstel van de begrazingsfunctie.','onderzoek_monitoring','Dunea','uitvoering_2024_bevestigd_vervolg_onbekend','Meijendel & Berkheide','Kleine Pan en Waterschapsvallei','2024-01-01','2026-03-31',NULL,NULL,NULL),
   ('optimalisatie_waterwinning','Optimalisatie waterwinsysteem Meijendel','Achtjarig programma met putten, leidingen, schoning van infiltratiepannen en natuurherstel.','waterwinning','Dunea','afgerond','Meijendel & Berkheide','Meijendel','2010-01-01','2018-10-22',NULL,'Projectomvang 40 miljoen euro; natuurherstel voor 50 procent gesubsidieerd',NULL),
   ('slagbomen_2025','Vervanging slagbomen Meijendel','Vervanging van slagbomen bij toegangen tot Meijendel.','infrastructuur','Dunea','afgerond','Meijendel & Berkheide','Meijendel','2025-12-01','2025-12-12',NULL,NULL,NULL),
   ('vallei_elektriciteit_2026','Elektriciteitswerk Vallei Meijendel','Kabel, elektriciteitskast en voorbereiding van drie laadpunten met zes plaatsen.','infrastructuur','Dunea','uitvoering_niet_bevestigd','Meijendel & Berkheide','Vallei Meijendel','2026-09-23',NULL,NULL,NULL,NULL),
@@ -163,7 +164,7 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('ganzenhoek_dunning_2017','pas_meijendel_grijze_duinen','bosreductie_struweelbeheer','MT02','A04','uitgevoerd_voor_2026','Grote dunning Ganzenhoekbos','Grote dunning in 2017 ten behoeve van geleidelijke omvorming naar inheems duinbos.','Ganzenhoekbos','benoemd_deelgebied','2017-01-01','2017-12-31','jaar','eenmalig','Staatsbosbeheer',NULL,NULL,NULL),
   ('kikkervallei_watercrassula','kikkervallei_watercrassula','exotenbestrijding','MT01','F04','in_uitvoering','Watercrassula afdekken en bestrijden','Aangetroffen in 2015 en 2017, afgedekt met zeil en sindsdien bestreden.','Kikkervallei','benoemd_deelgebied','2015-01-01',NULL,'jaar','doorlopend','Dunea',NULL,NULL,NULL),
   ('meeuwenduin_prinsenduin_opslag_2023_2024','meeuwenduin_prinsenduin_beheer','bosreductie_struweelbeheer','MT02','A09','uitgevoerd_voor_2026','Bomen, struiken en exoten verwijderen','Werk gestart in november 2023 en in 2024 voortgezet; gericht op onder meer Amerikaanse vogelkers, den, hulst en esdoorn.','Meeuwenduin en Prinsenduin','benoemd_deelgebied','2023-11-01','2024-12-31','periode','seizoenswerk november-maart','Dunea',NULL,NULL,NULL),
-  ('konijnen_bijplaatsing_2024_2026','konijnen_bijplaatsing',NULL,'MT06','F01','in_uitvoering','Konijnen bijplaatsen en volgen','Pilot gestart in 2024, loopt volgens jaarverslag door tot en met 2026 en wordt gemonitord.','Meijendel','meijendel_breed','2024-01-01','2026-12-31','periode',NULL,'Dunea',NULL,NULL,'Onderzoek en beheerproef; niet als regulier begrazingsbeheer geclassificeerd.'),
+  ('konijnen_bijplaatsing_2024_2026','konijnen_bijplaatsing',NULL,'MT06','F01','uitgevoerd','Konijnen bijplaatsen en volgen','Pilot in 2024 uitgevoerd op twee uitzetlocaties en daar gemonitord. Voor 2025 en 2026 is in de geraadpleegde bronnen geen uitvoering per kalenderjaar bevestigd.','Kleine Pan en Waterschapsvallei','benoemd_deelgebied','2024-01-01','2024-12-31','jaar',NULL,'Dunea',NULL,NULL,'Onderzoek en beheerproef; niet als regulier begrazingsbeheer geclassificeerd. De beschikking gold tot en met 31 maart 2026, maar dat vergunnings- en planbereik is niet als feitelijke uitvoering in 2025 of 2026 geregistreerd.'),
   ('waterwinning_putten_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Nieuwe winputten aanleggen','Bijna 700 nieuwe putten aangelegd binnen het optimalisatieprogramma.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',700,'aantal','Bron zegt bijna 700; hoeveelheid is daarom afgerond.'),
   ('waterwinning_leidingen_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Leidingen aanleggen','6,5 kilometer leiding aangelegd.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',6.5,'km',NULL),
   ('waterwinning_pannen_2010_2018','optimalisatie_waterwinning','hydrologie_optimaliseren','MT04','B01','uitgevoerd_voor_2026','Infiltratiepannen schonen en oevers natuurvriendelijk maken','370.000 m3 materiaal verwijderd; pannen schoongemaakt en oevers natuurvriendelijk ingericht.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',370000,'m3',NULL),
@@ -415,7 +416,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('ganzenhoek_afwerking_pan_1973_1974','zotero_vogelrapport_1974','bevestiging',NULL,'Beschrijft het aanbrengen van hakhout op de oevers in 1974.'),
   ('ganzenhoek_wandelpad_1974_1975','zotero_vogelrapport_1975','bevestiging',NULL,'Bevestigt voltooiing van het wandelpad langs M13, M13s, M14 en M77 in 1975.'),
   ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.'),
-  ('plaggen_parnassiapad2_1993','zotero_hollands_duinen_86_2025','bevestiging','p. 49, figuur 1','De routekaart toont de ligging van het Parnassiapad aan de noordzijde van de Helmduinen. Ton bevestigde op 14 oktober 2026 dat het geplagde Parnassiapad 2 aan M15 moet worden gekoppeld.');
+  ('plaggen_parnassiapad2_1993','zotero_hollands_duinen_86_2025','bevestiging','p. 49, figuur 1','De routekaart toont de ligging van het Parnassiapad aan de noordzijde van de Helmduinen. Ton bevestigde op 14 oktober 2026 dat het geplagde Parnassiapad 2 aan M15 moet worden gekoppeld.'),
+  ('konijnen_bijplaatsing_2024_2026','odh_konijnenontheffing_2023','bevestiging','p. 5 en bijlagen p. 4-5','De beschikking en het opgenomen activiteitenplan noemen twee uitzetlocaties: Kleine Pan en Waterschapsvallei. De kaartbijlagen begrenzen deze locaties. Ton bevestigde op 14 oktober 2026 de koppeling aan respectievelijk M8 en M41.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -731,6 +733,30 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_hollands_duinen_86_2025'
 JOIN plots p ON p.kavel_nummer='M15'
 WHERE u.uitvoering_code='plaggen_parnassiapad2_1993'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CASE p.kavel_nummer
+    WHEN 'M8' THEN 'De ODH-beschikking en kaartbijlage benoemen en begrenzen locatie A, Kleine Pan. De nameninventaris koppelt Kleine Pan aan M8. Ton bevestigde deze plotkoppeling op 14 oktober 2026. Alleen de uitzetlocatie binnen de kavel is betrokken; de uitvoeringsvoetafdruk en het doorsnijdingspercentage zijn niet vastgesteld.'
+    WHEN 'M41' THEN 'De ODH-beschikking en kaartbijlage benoemen en begrenzen locatie B, Waterschapsvallei. Vergelijking met de actuele SOVON-kavelgeometrie plaatst deze locatie in M41. Ton bevestigde deze plotkoppeling op 14 oktober 2026. Alleen de uitzetlocatie binnen de kavel is betrokken; de uitvoeringsvoetafdruk en het doorsnijdingspercentage zijn niet vastgesteld.'
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='odh_konijnenontheffing_2023'
+JOIN plots p ON p.kavel_nummer IN ('M8','M41')
+WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),

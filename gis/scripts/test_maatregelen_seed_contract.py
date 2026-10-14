@@ -114,15 +114,15 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 29,
+            "maatregel_bron": 30,
             "maatregel_project": 18,
             "maatregel_uitvoering": 61,
             "maatregel_uitvoering_jaar": 100,
-            "maatregel_uitvoering_bron": 82,
+            "maatregel_uitvoering_bron": 83,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 95,
+            "maatregel_plot_koppeling": 97,
             "maatregel_uitvoering_gebied": 2,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
@@ -130,7 +130,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 145
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 147
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -271,7 +271,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 25
+        """) == 24
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_kijfhoek_bierlap_1990' AND jaar=1990;") == 7
         assert scalar("""
           SELECT COUNT(*)
@@ -421,6 +421,64 @@ def main() -> int:
             AND plot_id=3524
             AND jaar=1993;
         """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_bron
+          WHERE bron_code='odh_konijnenontheffing_2023'
+            AND brontype_code='inrichtingsplan'
+            AND bron_datum='2023-08-28'
+            AND bronstatus='definitieve_beschikking'
+            AND url LIKE '%ODH701135.pdf';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_bron ub
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
+            AND b.bron_code='odh_konijnenontheffing_2023'
+            AND ub.bronrol='bevestiging'
+            AND ub.pagina_of_paragraaf='p. 5 en bijlagen p. 4-5';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering u
+          JOIN maatregel_project p USING (project_id)
+          WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
+            AND u.uitvoering_status_code='uitgevoerd'
+            AND u.locatie_naam='Kleine Pan en Waterschapsvallei'
+            AND u.locatie_precisie='benoemd_deelgebied'
+            AND u.datum_vanaf='2024-01-01'
+            AND u.datum_tot='2024-12-31'
+            AND u.datum_precisie='jaar'
+            AND p.bestuurlijke_status='uitvoering_2024_bevestigd_vervolg_onbekend'
+            AND p.deelgebied='Kleine Pan en Waterschapsvallei'
+            AND p.plan_einddatum='2026-03-31';
+        """) == 1
+        assert mysql("""
+          SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code) ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL;
+        """, TEST_DB) == "M41:expliciet_in_bron:odh_konijnenontheffing_2023,M8:expliciet_in_bron:odh_konijnenontheffing_2023"
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='konijnen_bijplaatsing_2024_2026'
+            AND plot_id IN (3530,100425)
+            AND jaar=2024;
+        """) == 2
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_jaar j
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
+            AND j.jaar<>2024;
+        """) == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_22a_tafelberg_scheepje' AND jaar=2025;") == 4
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_22c_uilenbosch' AND jaar BETWEEN 2017 AND 2021;") == 15
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_23_vogelkers_2020' AND jaar=2020;") == 10
