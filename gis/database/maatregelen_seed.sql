@@ -46,7 +46,8 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_valleien_2003','beheerpublicatie','Vegetatieontwikkeling in duinvalleien van Meijendel na opheffen van infiltratieplassen','2003-04-01','9Z4K34B6',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 42, april 2003. Beschrijft maaien in de Libellenvallei, plaggen langs het Parnassiapad en de Kikkervalleien.'),
   ('zotero_natuurherstel_2005','beheerpublicatie','Natuurherstel in de Kikkervalleien','2005-11-01','G3K24ZDB',NULL,'2026-10-14','gepubliceerd','Aanvullende bevestiging van de in 1997 uitgevoerde eerste herstelfase.'),
   ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
-  ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.');
+  ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.'),
+  ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -395,7 +396,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('leidingherstel_kavel2_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Beschrijft de droogval van de ronde plas in M2 door leidingherstel begin 1973.'),
   ('ganzenhoek_afwerking_pan_1973_1974','zotero_vogelrapport_1974','bevestiging',NULL,'Beschrijft het aanbrengen van hakhout op de oevers in 1974.'),
   ('ganzenhoek_wandelpad_1974_1975','zotero_vogelrapport_1975','bevestiging',NULL,'Bevestigt voltooiing van het wandelpad langs M13, M13s, M14 en M77 in 1975.'),
-  ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.');
+  ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.'),
+  ('plaggen_parnassiapad2_1993','zotero_hollands_duinen_86_2025','bevestiging','p. 49, figuur 1','De routekaart toont de ligging van het Parnassiapad aan de noordzijde van de Helmduinen. Ton bevestigde op 14 oktober 2026 dat het geplagde Parnassiapad 2 aan M15 moet worden gekoppeld.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -591,6 +593,27 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_begrazing_2012'
 JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14','M15','M16','M17a')
 WHERE u.uitvoering_code='begrazing_helmduinen_1991'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'Parnassiapad 2 is door Ton op 14 oktober 2026 eenduidig gekoppeld aan M15. Holland''s Duinen 86 (mei 2025), p. 49 figuur 1, toont de route Parnassiapad als aanvullende ruimtelijke context. De geplagde uitvoeringsvoetafdruk binnen M15 is niet begrensd; daarom blijft het doorsnijdingspercentage leeg.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_hollands_duinen_86_2025'
+JOIN plots p ON p.kavel_nummer='M15'
+WHERE u.uitvoering_code='plaggen_parnassiapad2_1993'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),

@@ -179,20 +179,20 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
 | `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
-| `maatregel_bron` | 27 | Twintig lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
+| `maatregel_bron` | 28 | 21 lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
 | `maatregel_uitvoering` | 61 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. |
 | `maatregel_uitvoering_jaar` | 92 | Letterlijk onderbouwde jaarstatussen uit 1967–2025: 76 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
-| `maatregel_uitvoering_bron` | 79 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
+| `maatregel_uitvoering_bron` | 80 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
 | `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
 | `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
 | `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
-| `maatregel_plot_koppeling` | 85 | 36 eerder onderbouwde relaties, 32 geometrische naam–kavelrelaties voor zes uitvoeringen, 11 aanvullende relaties voor de volledige systemen Pan 13 en Plas 20 en 6 gebruikersvastgestelde relaties voor de begrazing van Helmduinen; het exacte werkoppervlak en dus het doorsnijdingspercentage blijven onbekend. |
+| `maatregel_plot_koppeling` | 86 | 36 eerder onderbouwde relaties, 32 geometrische naam–kavelrelaties voor zes uitvoeringen, 11 aanvullende relaties voor de volledige systemen Pan 13 en Plas 20, 6 gebruikersvastgestelde relaties voor de begrazing van Helmduinen en 1 gebruikersvastgestelde relatie voor Parnassiapad 2 in M15; het exacte werkoppervlak en dus het doorsnijdingspercentage blijven onbekend. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 108 | Bronvaste plot-jaarregels voor expliciet benoemde kavels en gevalideerde gebiedsnamen in 1967–1969, 1972–1975, 1988–1991, 2005–2006, 2017–2021 en 2025. |
+| `v_plot_jaar_maatregel_bronvast` | 109 | Bronvaste plot-jaarregels voor expliciet benoemde kavels en gevalideerde gebiedsnamen in 1967–1969, 1972–1975, 1988–1991, 1993, 2005–2006, 2017–2021 en 2025. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 
