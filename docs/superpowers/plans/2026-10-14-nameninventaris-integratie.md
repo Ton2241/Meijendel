@@ -280,15 +280,15 @@ Controleer namen vóór `DROP DATABASE`. Bewaar het gehashte proefbewijs tot afr
 - Consumes: exact het geteste schema, dezelfde leveringshash en een vlak vóór uitvoering gemaakte back-up.
 - Produces: gevalideerde `nameninventaris_*`-tabellen in de levende lokale database `Meijendel`.
 
-- [ ] **Step 1: Leg de levende nulmeting vast**
+- [x] **Step 1: Leg de levende nulmeting vast**
 
 Bewaar schema-aantallen, tabelaantallen en deterministische checksums van geselecteerde bestaande referentietabellen en taxonroutes. Controleer expliciet dat nog geen afwijkende `nameninventaris_*`-objecten bestaan.
 
-- [ ] **Step 2: Maak de live herstelback-up**
+- [x] **Step 2: Maak de live herstelback-up**
 
 Maak vlak vóór de import een logisch dumpbestand in een lokale tijdelijke map buiten Git en iCloud. Omdat de zeven tabellen nieuw zijn, bevat het herstelpakket minimaal hun eventuele voorstand/schema plus een manifest van de levende nulmeting, MySQL-versie, codecommit, leveringshash en dumphash.
 
-- [ ] **Step 3: Voer exact de bewezen import uit**
+- [x] **Step 3: Voer exact de bewezen import uit**
 
 Run:
 
@@ -302,11 +302,11 @@ PATH="/Applications/Postgres.app/Contents/Versions/latest/bin:$PATH" \
   --apply
 ```
 
-- [ ] **Step 4: Audit de levende import en herhaal idempotent**
+- [x] **Step 4: Audit de levende import en herhaal idempotent**
 
 Run `--audit-live`, voer daarna dezelfde `--apply` nog eenmaal uit en controleer opnieuw. Expected: exact 8/182/299/71/111 en 47/60 bronobject-ID's; tweede run verandert niets.
 
-- [ ] **Step 5: Bewijs dat bestaande inhoud ongewijzigd bleef**
+- [x] **Step 5: Bewijs dat bestaande inhoud ongewijzigd bleef**
 
 Vergelijk de nulmeting met de eindmeting voor alle gekozen bestaande tabellen en centrale taxonroutes. Voer bovendien uit:
 
@@ -316,7 +316,7 @@ python3 gis/scripts/test_taxonregister_live_schema.py
 
 Expected: PASS; alle soortwaarnemingen blijven via `taxa`, `taxa_bronkoppeling` en `taxon_groepen` bereikbaar.
 
-- [ ] **Step 6: Stop en herstel bij iedere afwijking**
+- [x] **Step 6: Stop en herstel bij iedere afwijking**
 
 Gebruik uitsluitend de zojuist gemaakte gehashte back-up en bijbehorende codeversie. Ga niet door naar documentatie of versiebeheer zolang audit of referentiechecks afwijken.
 

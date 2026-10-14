@@ -240,6 +240,50 @@ class NameninventarisContract(unittest.TestCase):
                 )
         self.assertEqual(calls, [])
 
+    def test_central_database_contract_accepts_nameninventaris_without_taxon_route(self) -> None:
+        import import_external_ecology_sources as external
+
+        additions = {
+            "nameninventaris_import": {
+                "import_id", "versiesleutel", "leveringsdatum", "bronreferentie",
+                "archief_sha256", "regelversie", "verwacht_bronnen", "verwacht_objecten",
+                "verwacht_vermeldingen", "verwacht_geometrieen", "verwacht_lacunes",
+                "geimporteerd_op",
+            },
+            "nameninventaris_bron": {
+                "import_id", "source_id", "titel", "auteur_beheerder", "bronjaar",
+                "brontype", "bronverwijzing", "zotero_item_key", "raadpleegdatum",
+                "ruimtelijke_grondslag", "rechten", "kwaliteitsbeoordeling",
+            },
+            "nameninventaris_object": {
+                "object_id", "import_id", "voorkeursnaam", "aangeleverde_naam",
+                "objectklasse", "bronobjecttype", "bewijsstatus", "nauwkeurigheid_m",
+                "nauwkeurigheidsstatus", "aangemaakt_op",
+            },
+            "nameninventaris_vermelding": {
+                "mention_id", "import_id", "object_id", "source_id", "bronnaam",
+                "periode_letterlijk", "periode_einde_letterlijk", "jaar_van", "jaar_tot",
+                "datumprecisie", "pagina_kaart_bronobject", "deelgebied", "bewijsnotitie",
+            },
+            "nameninventaris_geometrie": {
+                "geometrie_id", "import_id", "object_id", "source_id", "geometrieversie",
+                "peildatum", "bronobjecttype", "wkt_sha256", "nauwkeurigheid_m",
+                "nauwkeurigheidsstatus", "ruimtelijke_selectiegrondslag",
+                "geometrieopmerking", "geometry", "aangemaakt_op",
+            },
+            "nameninventaris_geometrie_bronobject": {
+                "geometrie_id", "bronobject_systeem", "bronobject_id",
+            },
+            "nameninventaris_beoordeling": {
+                "beoordeling_id", "import_id", "object_id", "regelversie",
+                "beoordelingsstatus", "ontbreekt", "gevolg", "kleinste_volgende_bron",
+                "actueel", "beoordeeld_op",
+            },
+        }
+        actual = {name: set(columns) for name, columns in external.CENTRAL_QUERY_SCHEMA.items()}
+        actual.update(additions)
+        external.central_query_schema_contract(actual)
+
 
 @unittest.skipUnless(os.environ.get("MEIJENDEL_MYSQL_INTEGRATION") == "1",
                      "zet MEIJENDEL_MYSQL_INTEGRATION=1 voor de MySQL-schemaproef")
