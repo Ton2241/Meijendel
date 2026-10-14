@@ -6,7 +6,7 @@
 
 **Architecture:** Eén importbatch verbindt acht bronsnapshots met 182 stabiele naamobjecten, 299 letterlijke vermeldingen, 71 geometrieën en 111 actuele beoordelingen van ontbrekende geometrie. Een afzonderlijke koppeltabel bewaart de 47 TOP10NL-feature-ID's en 60 OSM-way-ID's zonder lijstvelden. De import valideert en normaliseert de levering vóór iedere schrijfactie, wordt eerst in een wegwerpdatabase bewezen en raakt geen bestaande plot-, grens-, taxon-, waarnemings- of webtabellen.
 
-**Tech Stack:** MySQL 9.7.1, Python 3 standaardbibliotheek, GDAL/OGR uit Postgres.app, bestaande MySQL-login-path `meijendel_root`, Markdown/DOCX-bronregister.
+**Tech Stack:** MySQL 9.7.1, Python 3, Shapely, GDAL/OGR uit Postgres.app, bestaande MySQL-login-path `meijendel_root`, Markdown/DOCX-bronregister.
 
 **Spec:** `docs/superpowers/specs/2026-10-14-nameninventaris-integratie-design.md`
 
@@ -366,7 +366,7 @@ Vergelijk standdatum, aantallen, status, rechten, ruimtelijke dekking en bronlac
 - Consumes: code, schema, levende database-audit en beide bronregisters.
 - Produces: gereviewde, gecommitte en gepushte taakbranch zonder publicatie.
 
-- [ ] **Step 1: Draai alle gerichte en repositorycontroles**
+- [x] **Step 1: Draai alle gerichte en repositorycontroles**
 
 ```bash
 python3 gis/scripts/test_import_nameninventaris.py
@@ -377,11 +377,11 @@ scripts/check_local_workspace.sh
 
 Expected: alle controles PASS.
 
-- [ ] **Step 2: Herhaal de levende read-only audit**
+- [x] **Step 2: Herhaal de levende read-only audit**
 
 Leg de exacte eindstanden en nulbevindingen vast. Controleer dat geen dashboard-, Shiny-, website- of VPS-afnemer is gewijzigd en dat daarom geen publicatie nodig is.
 
-- [ ] **Step 3: Review de diff tegen ontwerp en plan**
+- [x] **Step 3: Review de diff tegen ontwerp en plan**
 
 Controleer scope, absolute paden, geheimen, herstelbaarheid, idempotentie, documentgelijkheid en onbedoelde wijzigingen. Vraag een code-review vóór integratie.
 
