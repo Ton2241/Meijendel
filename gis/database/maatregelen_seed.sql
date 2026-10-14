@@ -1,5 +1,5 @@
 -- Eerste bronvaste invoer van werkzaamheden in Meijendel.
--- Stand bronbeoordeling: 13 oktober 2026.
+-- Stand bronbeoordeling: 14 oktober 2026.
 -- Geen uitvoeringsgeometrieën; plotkoppelingen worden alleen opgenomen waar de
 -- geraadpleegde bronnen de betrokken kavels expliciet noemen.
 
@@ -32,7 +32,21 @@ INSERT INTO tmp_maatregel_bron_seed
   ('dunea_slagbomen_2025','officiele_webpagina','Vervangen slagbomen Meijendel','2025-11-25',NULL,'https://www.dunea.nl/algemeen/nieuws/2025/vervangen-slagbomen-meijendel','2026-10-13','officiele_publicatie','Werkperiode 1 tot en met 12 december 2025.'),
   ('dunea_reguliere_werkzaamheden_2026','officiele_webpagina','Reguliere werkzaamheden in Meijendel','2026-10-13',NULL,'https://www.dunea.nl/duinen/werkzaamheden/reguliere-werkzaamheden','2026-10-13','actuele_webpagina','De pagina bevat geplande werkzaamheden bij de Paardenstal en elektriciteitswerk in Vallei Meijendel; uitvoering is niet als voltooid bevestigd.'),
   ('pzh_bendel_subsidie_2026','subsidiebesluit','Openstellingsbesluit subsidie natuurmaatregelen 2026','2026-04-22',NULL,'https://zoek.officielebekendmakingen.nl/prb-2026-6828.html','2026-10-13','subsidie_openstelling','Subsidieerbaarheid van Bendel-nabeheer bewijst geen uitvoering.'),
-  ('dunea_dynamiek_2024','officiele_webpagina','Dynamiek in het duin','2024-12-18',NULL,'https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2024-12/dynamiek-in-het-duin','2026-10-13','officiele_publicatie','Bevestigt vijf in 2015 voltooide kerven en aanvang van het werk in september 2014.');
+  ('dunea_dynamiek_2024','officiele_webpagina','Dynamiek in het duin','2024-12-18',NULL,'https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2024-12/dynamiek-in-het-duin','2026-10-13','officiele_publicatie','Bevestigt vijf in 2015 voltooide kerven en aanvang van het werk in september 2014.'),
+  ('zotero_vogelrapport_1967','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1967',NULL,'JVDIWBDE',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1967 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
+  ('zotero_vogelrapport_1968','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1968',NULL,'3B2FN68M',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1968 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
+  ('zotero_vogelrapport_1969','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1969',NULL,'F87WJAIG',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1969 is het rapportjaar. De reparatie bij Plas 20 is opgenomen, de onbedoelde droogval door Rijnverontreiniging niet.'),
+  ('zotero_vogelrapport_1972','beheerpublicatie','Meijendelonderzoek - Vogelpopulaties: Rapport 1972',NULL,'EP58F3ZI',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1972 is het rapportjaar. Dubbele Zotero-exemplaren zijn niet als afzonderlijke bron geregistreerd.'),
+  ('zotero_vogelrapport_1973','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1973','1974-08-01','HDRX28C3',NULL,'2026-10-14','gepubliceerd','Rapport over kalenderjaar 1973; publicatiedatum augustus 1974.'),
+  ('zotero_vogelrapport_1974','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1974','1976-11-01','HTUFWIAS',NULL,'2026-10-14','gepubliceerd','Rapport over kalenderjaar 1974; publicatiedatum november 1976.'),
+  ('zotero_vogelrapport_1975','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1975',NULL,'8CFXEBIQ',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1975 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
+  ('zotero_rietpoten_1992','onderzoeksrapport','De toepassing van rietpoten ter bestrijding van winderosie in Meijendel: het effect na drie jaar','1992-04-01','NZWRNSSI',NULL,'2026-10-14','gepubliceerd','Beschrijft aanleg van proefvlakken van 29 oktober tot en met 6 november 1987.'),
+  ('zotero_begrazing_2008','beheerpublicatie','Begrazingsbeheer in Meijendel','2008-04-01','4BFHKS7Q',NULL,'2026-10-14','gepubliceerd','Beschrijft invoering en uitbreiding van extensieve begrazing vanaf september 1990.'),
+  ('zotero_begrazing_2012','onderzoeksrapport','Evaluatie begrazingsbeheer Meijendel','2012-11-01','JQZFPPEK',NULL,'2026-10-14','gepubliceerd','Bevestigt start in september 1990 en noemt oppervlakten van Kijfhoek-Bierlap en Helmduinen.'),
+  ('zotero_valleien_2003','beheerpublicatie','Beheer en herstel van duinvalleien in Meijendel','2003-04-01','9Z4K34B6',NULL,'2026-10-14','gepubliceerd','Beschrijft maaien in de Libellenvallei, plaggen langs het Parnassiapad en de Kikkervalleien.'),
+  ('zotero_natuurherstel_2005','beheerpublicatie','Natuurherstel in de Kikkervalleien','2005-11-01','G3K24ZDB',NULL,'2026-10-14','gepubliceerd','Aanvullende bevestiging van de in 1997 uitgevoerde eerste herstelfase.'),
+  ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
+  ('zotero_plas20_2006','beheerpublicatie','Slibverwijdering in Plas 20.1','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Inhoud dateert uit maart 2006; afwijkende Zotero-metadata is niet als brondatum overgenomen. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -72,7 +86,13 @@ INSERT INTO tmp_maatregel_project_seed VALUES
   ('slagbomen_2025','Vervanging slagbomen Meijendel','Vervanging van slagbomen bij toegangen tot Meijendel.','infrastructuur','Dunea','afgerond','Meijendel & Berkheide','Meijendel','2025-12-01','2025-12-12',NULL,NULL,NULL),
   ('vallei_elektriciteit_2026','Elektriciteitswerk Vallei Meijendel','Kabel, elektriciteitskast en voorbereiding van drie laadpunten met zes plaatsen.','infrastructuur','Dunea','uitvoering_niet_bevestigd','Meijendel & Berkheide','Vallei Meijendel','2026-09-23',NULL,NULL,NULL,NULL),
   ('paardenstal_2026_2027','Werkzaamheden Paardenstal','Op de actuele werkzaamhedenpagina aangekondigde werkzaamheden bij de Paardenstal.','infrastructuur','Dunea','gepland','Meijendel & Berkheide','Paardenstal','2026-11-01','2027-03-31',NULL,NULL,NULL),
-  ('bendel_nabeheer_2026','Nabeheer Bendel','Subsidieerbaar nabeheer voor H2130 en H2190; uitvoering niet bewezen.','natuurbeheer','Nog niet vastgesteld','subsidie_openstelling','Meijendel & Berkheide','Bendel',NULL,NULL,'Subsidieregeling natuurmaatregelen 2026',NULL,'97-NP-263');
+  ('bendel_nabeheer_2026','Nabeheer Bendel','Subsidieerbaar nabeheer voor H2130 en H2190; uitvoering niet bewezen.','natuurbeheer','Nog niet vastgesteld','subsidie_openstelling','Meijendel & Berkheide','Bendel',NULL,NULL,'Subsidieregeling natuurmaatregelen 2026',NULL,'97-NP-263'),
+  ('historische_waterwinning_1967_1975','Historische werkzaamheden waterwinning 1967-1975','Schoonmaak, peilbeheer, leidingen en aanleg of afwerking van infiltratieplassen zoals jaarlijks beschreven in de vogelrapporten.','waterwinning','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Meijendel','1967-01-01','1975-12-31',NULL,NULL,NULL),
+  ('historische_recreatiepaden_1974_1975','Aanleg wandel- en ruiterpaden 1974-1975','Aanleg en voltooiing van paden rond Ganzenhoek en kavel 13.','recreatie','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Ganzenhoek en omgeving','1974-01-01','1975-12-31',NULL,NULL,NULL),
+  ('rietpotenproef_1987','Rietpotenproef tegen winderosie','Aanleg van proefvlakken met rietpoten in stuifplekken in Noord-Meijendel.','natuurbeheer','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Noord-Meijendel','1987-10-29','1987-11-06',NULL,NULL,NULL),
+  ('integrale_begrazing_1990','Invoering extensieve begrazing vanaf 1990','Stapsgewijze invoering en uitbreiding van extensieve begrazing in Meijendel.','natuurbeheer','Duinwaterbedrijf Zuid-Holland','uitgevoerd_met_doorlopend_beheer','Meijendel & Berkheide','Meijendel','1990-09-01',NULL,NULL,NULL,NULL),
+  ('duinvalleibeheer_1975_2003','Historisch beheer duinvalleien 1975-2003','Maaien en plaggen in de Libellenvallei en langs het Parnassiapad.','natuurbeheer','Duinwaterbedrijf Zuid-Holland','afgerond_of_voortgezet','Meijendel & Berkheide','Libellenvallei en Parnassiapad','1975-01-01','2003-12-31',NULL,NULL,NULL),
+  ('slibverwijdering_plassen_2002_2006','Slibverwijdering en inrichting infiltratieplassen 2002-2006','Slibverwijdering en hydrologische en infrastructurele aanpassingen in plas 8.4.2 en Plas 20.1.','waterwinning','Duinwaterbedrijf Zuid-Holland','afgerond','Meijendel & Berkheide','Infiltratieplassen 8.4.2 en 20.1','2002-01-01','2006-03-01',NULL,NULL,NULL);
 
 INSERT INTO maatregel_project
   (project_code, naam, omschrijving, werkcategorie_code, verantwoordelijke_organisatie,
@@ -88,6 +108,11 @@ ON DUPLICATE KEY UPDATE
   natura2000_gebied=VALUES(natura2000_gebied), deelgebied=VALUES(deelgebied),
   plan_startdatum=VALUES(plan_startdatum), plan_einddatum=VALUES(plan_einddatum),
   programma=VALUES(programma), financiering=VALUES(financiering), externe_projectcode=VALUES(externe_projectcode);
+
+-- Correctie binnen deze seed: de aanvankelijk samengestelde M2/M3-regel is
+-- gesplitst in twee atomaire uitvoeringen met een eigen activiteitstype.
+DELETE FROM maatregel_uitvoering
+WHERE uitvoering_code='pannen_2_3_schoonmaak_1967';
 
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_seed;
 CREATE TEMPORARY TABLE tmp_maatregel_uitvoering_seed (
@@ -144,7 +169,35 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('slagbomen_2025','slagbomen_2025','rust_en_recreatiebeheer','MT03','G04','uitgevoerd_voor_2026','Slagbomen vervangen','Vervanging uitgevoerd in de aangekondigde werkperiode 1-12 december 2025.','Meijendel','meijendel_breed','2025-12-01','2025-12-12','dag','eenmalig','Dunea',NULL,NULL,NULL),
   ('vallei_elektriciteit_2026','vallei_elektriciteit_2026',NULL,'MT03','L01','onbekend','Elektriciteitskabel en laadvoorbereiding','Start aangekondigd op 23 september 2026; voltooiing niet bevestigd.','Vallei Meijendel','benoemd_deelgebied','2026-09-23',NULL,'dag','eenmalig','Dunea',3,'aantal','Drie laadpunten, voorbereid voor zes plaatsen.'),
   ('paardenstal_2026_2027','paardenstal_2026_2027',NULL,'MT03','L02','gepland','Werkzaamheden Paardenstal','Geplande werkperiode 1 november 2026 tot en met 31 maart 2027.','Paardenstal','benoemd_deelgebied','2026-11-01','2027-03-31','dag','eenmalig','Dunea',NULL,NULL,NULL),
-  ('bendel_nabeheer_2026','bendel_nabeheer_2026',NULL,'MT02','D01','gepland','Subsidieerbaar nabeheer Bendel','Openstelling noemt nabeheer voor H2130 en H2190; geen bewijs van opdracht of uitvoering.','Bendel','benoemd_deelgebied',NULL,NULL,'onbekend',NULL,NULL,NULL,NULL,'Alleen plan- en subsidiecontext.');
+  ('bendel_nabeheer_2026','bendel_nabeheer_2026',NULL,'MT02','D01','gepland','Subsidieerbaar nabeheer Bendel','Openstelling noemt nabeheer voor H2130 en H2190; geen bewijs van opdracht of uitvoering.','Bendel','benoemd_deelgebied',NULL,NULL,'onbekend',NULL,NULL,NULL,NULL,'Alleen plan- en subsidiecontext.'),
+  ('kavel1b_herstel_1967','historische_waterwinning_1967_1975','geomorfologie_herstel_stortplaatsen','MT03','D01','uitgevoerd_voor_2026','Afrastering verwijderen en zand vastleggen in M1b','Oude afrastering verwijderd, helm en bomen geplant en in augustus grondwerk en aanvullende helmbeplanting uitgevoerd.','Kavel M1b','benoemd_deelgebied','1967-01-01','1967-08-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('pan2_peilverlaging_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Waterpeil verlagen in M2','De infiltratiepannen in M2 zijn voor samenhangende werkzaamheden drooggezet.','Kavel M2','benoemd_deelgebied','1967-09-01','1967-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('pan3_schoonmaak_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT04','B01','uitgevoerd_voor_2026','Infiltratiepannen M3 schoonmaken','De pannen in M3 zijn volledig schoongemaakt; bodemslib en veel riet zijn verwijderd.','Kavel M3','benoemd_deelgebied','1967-09-01','1967-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('pannen_16_17_peilverlaging_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Waterpeil verlagen in M16 en M17','In de laatste twee maanden van 1967 is het waterpeil tot het minimum verlaagd; de bodems zijn niet schoongemaakt.','Kavels M16 en M17','benoemd_deelgebied','1967-11-01','1967-12-31','maand',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('hoofdader_leidingen_5_6_71_1967','historische_waterwinning_1967_1975',NULL,'MT04','L01','uitgevoerd_voor_2026','Leidingwerk in de hoofdader','Tot begin mei is aan leidingen in de hoofdader gewerkt.','Kavels M5, M6 en M71','benoemd_deelgebied','1967-01-01','1967-05-10','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('nieuwe_pannen_10_12_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT04','C01','uitgevoerd_voor_2026','Nieuwe infiltratiepannen M10 en M12 in gebruik nemen','Nieuw aangelegde infiltratiepannen kregen voor het eerst water in mei respectievelijk juli 1967.','Kavels M10 en M12','benoemd_deelgebied','1967-05-01','1967-07-31','maand',NULL,'Duinwaterleiding van s-Gravenhage',2,'aantal',NULL),
+  ('hoofdader_rietmaaien_6_1968','historische_waterwinning_1967_1975','maaibeheer_aanvullend','MT02','A06','uitgevoerd_voor_2026','Riet maaien in de hoofdader bij M6','Begin juni 1968 is het riet in de hoofdader gemaaid.','Kavel M6','benoemd_deelgebied','1968-06-01','1968-06-10','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('pannen_2_3_16_17_peilherstel_1968','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Waterpeil in M2, M3, M16 en M17 herstellen','Na de werkzaamheden in 1967 was het waterpeil op 18 februari 1968 weer hersteld.','Kavels M2, M3, M16 en M17','benoemd_deelgebied','1968-02-18','1968-02-18','dag',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('plas20_reparatie_1969','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','L01','uitgevoerd_voor_2026','Reparatie bij Plas 20','Plas 20 stond in maart en april 1969 zeer laag wegens reparatiewerk.','Plas 20','benoemd_deelgebied','1969-03-01','1969-04-30','maand',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,'De bron noemt niet welk onderdeel is gerepareerd.'),
+  ('ganzenhoek_pan_1972_1973','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT04','C01','uitgevoerd_voor_2026','Nieuwe infiltratiepan Ganzenhoek aanleggen en in gebruik nemen','De aanleg liep in 1972 door; de pan bij M77 is in 1972 in gebruik genomen en werkzaamheden liepen in 1973 door.','Ganzenhoek, kavel M77','benoemd_deelgebied','1972-01-01','1973-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',1,'aantal',NULL),
+  ('ganzenhoek_helm_populier_13_14_1972','historische_waterwinning_1967_1975','geomorfologie_herstel_stortplaatsen','MT03','D01','uitgevoerd_voor_2026','Zand vastleggen met helm en populieren','Na zandverplaatsing bij M13 en M14 is vanaf half april maandenlang helm geplant; op de nieuwe panoevers zijn populieren geplant.','Kavels M13 en M14','benoemd_deelgebied','1972-04-15','1972-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('leidingherstel_kavel2_1972_1973','historische_waterwinning_1967_1975',NULL,'MT03','L01','uitgevoerd_voor_2026','Leiding herstellen in M2','Een plas in M2 stond in 1972 grotendeels droog wegens leidingreparatie; begin 1973 viel de ronde plas opnieuw droog door leidingherstel.','Kavel M2','benoemd_deelgebied','1972-01-01','1973-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('ganzenhoek_afwerking_pan_1973_1974','historische_waterwinning_1967_1975',NULL,'MT03','L02','uitgevoerd_voor_2026','Nieuwe pan Ganzenhoek afwerken','In 1973 is konijnenraster geplaatst en zijn losse zandheuvels met takken bedekt; in 1974 is hakhout op de panoevers aangebracht.','Ganzenhoek, kavel M77','benoemd_deelgebied','1973-01-01','1974-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('pannen_drooglegging_4_7_1974','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Pannen M4 en M7 droogleggen voor werkzaamheden','Voor werkzaamheden stonden plassen in M4 en M7 van maart tot en met mei droog; in M7 liep dit door tot juni.','Kavels M4 en M7','benoemd_deelgebied','1974-03-01','1974-06-30','maand',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('nieuwe_plas_14_16_1975','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT04','C01','uitgevoerd_voor_2026','Nieuwe plas op grens M14-M16 aanleggen','In april 1975 begon de aanleg van een nieuwe plas op de grens van M14 en M16; een aangrenzende plas in M16 werd drooggezet.','Grens kavels M14 en M16','benoemd_deelgebied','1975-04-01','1975-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',1,'aantal',NULL),
+  ('ganzenhoek_wandelpad_1974_1975','historische_recreatiepaden_1974_1975','rust_en_recreatiebeheer','MT03','L02','uitgevoerd_voor_2026','Wandelpad langs M13, M13s, M14 en M77 aanleggen','Het wandelpad op de grens van M13, M14 en M77 is in 1974 aangelegd en in 1975 langs M13, M13s, M14 en M77 voltooid.','Ganzenhoek en kavels M13, M13s, M14 en M77','benoemd_deelgebied','1974-01-01','1975-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('ruiterpad_kavel13_1974','historische_recreatiepaden_1974_1975','rust_en_recreatiebeheer','MT03','L02','uitgevoerd_voor_2026','Ruiterpad door M13 aanleggen','Door aanleg van een ruiterpad is het noordelijke deel van M13 afgescheiden.','Kavel M13','benoemd_deelgebied','1974-01-01','1974-12-31','jaar',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
+  ('rietpoten_noord_1987','rietpotenproef_1987',NULL,'MT06','D01','uitgevoerd_voor_2026','Rietpoten in stuifplekken aanbrengen','In elf proef- en referentiestuifplekken zijn tussen 29 oktober en 6 november 1987 proefvlakken aangelegd en rietpoten geplaatst.','Driehoek Klippad, Bunkerpad en Wassenaarse Slag','benoemd_deelgebied','1987-10-29','1987-11-06','dag','eenmalige proef','Terreinbeheer DZH',11,'aantal','Binnenduinproef; niet als zeereepbeheer geclassificeerd.'),
+  ('begrazing_kijfhoek_bierlap_1990','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Extensieve begrazing Kijfhoek en Bierlap invoeren','Extensieve begrazing is in september 1990 ingevoerd in Kijfhoek en Bierlap.','Kijfhoek en Bierlap','benoemd_deelgebied','1990-09-01',NULL,'maand','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',275,'ha',NULL),
+  ('begrazing_helmduinen_1991','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Extensieve begrazing Helmduinen invoeren','De Helmduinen worden sinds 1991 extensief begraasd.','Helmduinen','benoemd_deelgebied','1991-01-01',NULL,'jaar','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',125,'ha',NULL),
+  ('begrazing_meeuwenhoek_voor_2008','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Begrazingsgebied uitbreiden met Meeuwenhoek','De begrazing is later uitgebreid met de Meeuwenhoek; de bron uit 2008 noemt geen invoeringsjaar.','Meeuwenhoek','benoemd_deelgebied',NULL,NULL,'onbekend','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Geen jaarregel omdat de bron geen betrouwbaar invoeringsjaar geeft.'),
+  ('maaibeheer_libellenvallei_1975_2003','duinvalleibeheer_1975_2003','maaibeheer_aanvullend','MT01','A06','uitgevoerd_voor_2026','Libellenvallei jaarlijks maaien','Volgens de bron uit 2003 is de Libellenvallei sinds 1975 jaarlijks in het najaar gemaaid.','Libellenvallei','benoemd_deelgebied','1975-01-01','2003-12-31','periode','jaarlijks in het najaar','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Alleen 1975 krijgt een jaarregel; de bron onderbouwt het terugkerende beheer als periode, niet iedere afzonderlijke jaaruitvoering.'),
+  ('plaggen_parnassiapad2_1993','duinvalleibeheer_1975_2003','plaggen_chopperen_afgraven','MT02','B04','uitgevoerd_voor_2026','Proefvlak Parnassiapad 2 plaggen','Proefvlak Parnassiapad 2 is volgens de in 2001 beschreven ouderdom ongeveer in 1993 geplagd.','Parnassiapad 2','benoemd_deelgebied','1993-01-01','1993-12-31','jaar',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Jaar is uit de bron afgeleid als circa acht jaar voor 2001.'),
+  ('plaggen_parnassiapad1_1997','duinvalleibeheer_1975_2003','plaggen_chopperen_afgraven','MT02','B04','uitgevoerd_voor_2026','Proefvlak Parnassiapad 1 plaggen','Proefvlak Parnassiapad 1 is volgens de in 2001 beschreven ouderdom ongeveer in 1997 geplagd.','Parnassiapad 1','benoemd_deelgebied','1997-01-01','1997-12-31','jaar',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Jaar is uit de bron afgeleid als circa vier jaar voor 2001.'),
+  ('slib_plas_8_4_2_2002','slibverwijdering_plassen_2002_2006','hydrologie_optimaliseren','MT04','B01','uitgevoerd_voor_2026','Slib verwijderen uit plas 8.4.2','In 2002 is opnieuw slib verwijderd uit de regelmatig verstopte plas 8.4.2.','Plas 8.4.2','benoemd_deelgebied','2002-01-01','2002-12-31','jaar',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,NULL),
+  ('slib_plas20_2005_2006','slibverwijdering_plassen_2002_2006','hydrologie_optimaliseren','MT04','B01','uitgevoerd_voor_2026','Slib verwijderen uit Plas 20.1','Tussen 1 september 2005 en 1 maart 2006 is circa 39.000 m3 slib uit Plas 20.1 verwijderd.','Plas 20.1','benoemd_deelgebied','2005-09-01','2006-03-01','dag',NULL,'Duinwaterbedrijf Zuid-Holland',39000,'m3',NULL),
+  ('plas20_hydrologie_2005_2006','slibverwijdering_plassen_2002_2006','hydrologie_optimaliseren','MT04','C01','uitgevoerd_voor_2026','Plas 20.1 hydrologisch en ecologisch aanpassen','Het westelijke deel 20.1.1 is losgekoppeld van de waterwinning, oevers zijn verflauwd en het waterpeil is verhoogd van 4,60 naar 5,20 meter NAP.','Plas 20.1 en 20.1.1','benoemd_deelgebied','2005-09-01','2006-03-01','dag',NULL,'Duinwaterbedrijf Zuid-Holland',0.6,'m','Peilverhoging van 0,60 meter; uitgestelde schoonmaak van twee natte valleien is niet als uitgevoerd opgenomen.'),
+  ('plas20_infrastructuur_2005_2006','slibverwijdering_plassen_2002_2006',NULL,'MT03','L02','uitgevoerd_voor_2026','Brug, zanddam en uitkijkpunt bij Plas 20.1 aanpassen','Een houten brug is vervangen door een Waco, een zanddam is aangelegd en het uitkijkpunt is vernieuwd.','Plas 20.1','benoemd_deelgebied','2005-09-01','2006-03-01','dag',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,NULL);
 
 INSERT INTO maatregel_uitvoering
   (uitvoering_code, project_id, maatregel_id, maatregeltype_code, activiteit_code,
@@ -236,7 +289,41 @@ INSERT INTO tmp_maatregel_jaar_seed VALUES
   ('waterwinning_leidingen_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
   ('waterwinning_pannen_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
   ('waterwinning_plaggen_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
-  ('slagbomen_2025',2025,'uitgevoerd','dunea_slagbomen_2025','Werkperiode 1-12 december 2025.');
+  ('slagbomen_2025',2025,'uitgevoerd','dunea_slagbomen_2025','Werkperiode 1-12 december 2025.'),
+  ('kavel1b_herstel_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Afrastering verwijderd; helm en bomen geplant; in augustus grondwerk en helmbeplanting.'),
+  ('pan2_peilverlaging_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Infiltratiepannen in M2 drooggezet.'),
+  ('pan3_schoonmaak_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Pannen in M3 volledig schoongemaakt.'),
+  ('pannen_16_17_peilverlaging_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Peil in de laatste twee maanden tot het minimum verlaagd.'),
+  ('hoofdader_leidingen_5_6_71_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Leidingwerk liep tot begin mei.'),
+  ('nieuwe_pannen_10_12_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Nieuwe pannen kregen in mei en juli voor het eerst water.'),
+  ('hoofdader_rietmaaien_6_1968',1968,'uitgevoerd','zotero_vogelrapport_1968','Riet begin juni gemaaid.'),
+  ('pannen_2_3_16_17_peilherstel_1968',1968,'uitgevoerd','zotero_vogelrapport_1968','Waterpeil was op 18 februari weer hersteld.'),
+  ('plas20_reparatie_1969',1969,'uitgevoerd','zotero_vogelrapport_1969','Plas stond in maart en april zeer laag wegens reparatie.'),
+  ('ganzenhoek_pan_1972_1973',1972,'uitgevoerd','zotero_vogelrapport_1972','Aanleg voortgezet en pan in gebruik genomen.'),
+  ('ganzenhoek_pan_1972_1973',1973,'uitgevoerd','zotero_vogelrapport_1973','Werkzaamheden aan en rond de nieuwe pan liepen door.'),
+  ('ganzenhoek_helm_populier_13_14_1972',1972,'uitgevoerd','zotero_vogelrapport_1972','Helm en populieren geplant om nieuw zand en oevers vast te leggen.'),
+  ('leidingherstel_kavel2_1972_1973',1972,'uitgevoerd','zotero_vogelrapport_1972','Plas grotendeels droog wegens leidingreparatie.'),
+  ('leidingherstel_kavel2_1972_1973',1973,'uitgevoerd','zotero_vogelrapport_1973','Ronde plas begin 1973 droog wegens leidingherstel.'),
+  ('ganzenhoek_afwerking_pan_1973_1974',1973,'uitgevoerd','zotero_vogelrapport_1973','Konijnenraster geplaatst en zandheuvels met takken bedekt.'),
+  ('ganzenhoek_afwerking_pan_1973_1974',1974,'uitgevoerd','zotero_vogelrapport_1974','Hakhout op de panoevers aangebracht.'),
+  ('pannen_drooglegging_4_7_1974',1974,'uitgevoerd','zotero_vogelrapport_1974','Pannen voor werkzaamheden drooggelegd.'),
+  ('nieuwe_plas_14_16_1975',1975,'uitgevoerd','zotero_vogelrapport_1975','Aanleg begon in april.'),
+  ('ganzenhoek_wandelpad_1974_1975',1974,'uitgevoerd','zotero_vogelrapport_1974','Pad aangelegd op de grens van M13, M14 en M77.'),
+  ('ganzenhoek_wandelpad_1974_1975',1975,'uitgevoerd','zotero_vogelrapport_1975','Pad langs M13, M13s, M14 en M77 voltooid.'),
+  ('ruiterpad_kavel13_1974',1974,'uitgevoerd','zotero_vogelrapport_1974','Ruiterpad aangelegd.'),
+  ('rietpoten_noord_1987',1987,'uitgevoerd','zotero_rietpoten_1992','Proefvlakken aangelegd van 29 oktober tot en met 6 november.'),
+  ('begrazing_kijfhoek_bierlap_1990',1990,'uitgevoerd','zotero_begrazing_2008','Begrazing ingevoerd in september.'),
+  ('begrazing_helmduinen_1991',1991,'uitgevoerd','zotero_begrazing_2008','Begrazing vanaf 1991.'),
+  ('maaibeheer_libellenvallei_1975_2003',1975,'uitgevoerd','zotero_valleien_2003','Start van het volgens de bron jaarlijks uitgevoerde najaarsmaaien.'),
+  ('plaggen_parnassiapad2_1993',1993,'uitgevoerd','zotero_valleien_2003','Circa-jaar, afgeleid uit de in 2001 genoemde ouderdom van acht jaar.'),
+  ('plaggen_parnassiapad1_1997',1997,'uitgevoerd','zotero_valleien_2003','Circa-jaar, afgeleid uit de in 2001 genoemde ouderdom van vier jaar.'),
+  ('slib_plas_8_4_2_2002',2002,'uitgevoerd','zotero_slib_plassen_2005','Slib opnieuw verwijderd.'),
+  ('slib_plas20_2005_2006',2005,'uitgevoerd','zotero_plas20_2006','Werk begon op 1 september 2005.'),
+  ('slib_plas20_2005_2006',2006,'uitgevoerd','zotero_plas20_2006','Werk eindigde op 1 maart 2006.'),
+  ('plas20_hydrologie_2005_2006',2005,'uitgevoerd','zotero_plas20_2006','Hydrologische en oeveraanpassingen uitgevoerd binnen de werkperiode.'),
+  ('plas20_hydrologie_2005_2006',2006,'uitgevoerd','zotero_plas20_2006','Hydrologische en oeveraanpassingen afgerond binnen de werkperiode.'),
+  ('plas20_infrastructuur_2005_2006',2005,'uitgevoerd','zotero_plas20_2006','Brug, dam en uitkijkvoorziening aangepast binnen de werkperiode.'),
+  ('plas20_infrastructuur_2005_2006',2006,'uitgevoerd','zotero_plas20_2006','Infrastructurele aanpassingen afgerond binnen de werkperiode.');
 
 INSERT INTO maatregel_uitvoering_jaar (uitvoering_id, jaar, jaarstatus, bron_id, toelichting)
 SELECT u.uitvoering_id, s.jaar, s.jaarstatus, b.bron_id, s.toelichting
@@ -259,6 +346,18 @@ CREATE TEMPORARY TABLE tmp_maatregel_uitvoering_bron_seed (
 INSERT INTO tmp_maatregel_uitvoering_bron_seed
 SELECT uitvoering_code,
        CASE
+         WHEN uitvoering_code IN ('kavel1b_herstel_1967','pan2_peilverlaging_1967','pan3_schoonmaak_1967','pannen_16_17_peilverlaging_1967','hoofdader_leidingen_5_6_71_1967','nieuwe_pannen_10_12_1967') THEN 'zotero_vogelrapport_1967'
+         WHEN uitvoering_code IN ('hoofdader_rietmaaien_6_1968','pannen_2_3_16_17_peilherstel_1968') THEN 'zotero_vogelrapport_1968'
+         WHEN uitvoering_code='plas20_reparatie_1969' THEN 'zotero_vogelrapport_1969'
+         WHEN uitvoering_code IN ('ganzenhoek_pan_1972_1973','ganzenhoek_helm_populier_13_14_1972','leidingherstel_kavel2_1972_1973') THEN 'zotero_vogelrapport_1972'
+         WHEN uitvoering_code='ganzenhoek_afwerking_pan_1973_1974' THEN 'zotero_vogelrapport_1973'
+         WHEN uitvoering_code IN ('pannen_drooglegging_4_7_1974','ganzenhoek_wandelpad_1974_1975','ruiterpad_kavel13_1974') THEN 'zotero_vogelrapport_1974'
+         WHEN uitvoering_code='nieuwe_plas_14_16_1975' THEN 'zotero_vogelrapport_1975'
+         WHEN uitvoering_code='rietpoten_noord_1987' THEN 'zotero_rietpoten_1992'
+         WHEN uitvoering_code IN ('begrazing_kijfhoek_bierlap_1990','begrazing_helmduinen_1991','begrazing_meeuwenhoek_voor_2008') THEN 'zotero_begrazing_2008'
+         WHEN uitvoering_code IN ('maaibeheer_libellenvallei_1975_2003','plaggen_parnassiapad2_1993','plaggen_parnassiapad1_1997') THEN 'zotero_valleien_2003'
+         WHEN uitvoering_code='slib_plas_8_4_2_2002' THEN 'zotero_slib_plassen_2005'
+         WHEN uitvoering_code IN ('slib_plas20_2005_2006','plas20_hydrologie_2005_2006','plas20_infrastructuur_2005_2006') THEN 'zotero_plas20_2006'
          WHEN uitvoering_code LIKE 'pan13_%' THEN 'zotero_pan13_1991'
          WHEN uitvoering_code LIKE 'kikkervalleien_%' THEN 'zotero_kikkervalleien_2010'
          WHEN uitvoering_code LIKE 'zeereep_%' THEN 'zotero_stuifgaten_2017'
@@ -285,7 +384,17 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('pas_3d_begrazing_zuid','zotero_n2000_ontwerp_2026','bevestiging','4.2','Actualiseert onderbreking in 2020, hervatting in 2021 en vaste rasters in 2025.'),
   ('pas_24b_ouderijs','zotero_n2000_ontwerp_2026','tegenstrijdig_bewijs','4.2','Evaluatie noemt jaarlijks maaien; ontwerp actualiseert dat dit ten tijde van 2025 niet meer gebeurt.'),
   ('pas_22a_tafelberg_scheepje','zotero_n2000_ontwerp_2026','bevestiging','4.1.2','Bevestigt niet maaien in 2016 en hervatting in 2025.'),
-  ('meeuwenduin_prinsenduin_opslag_2023_2024','dunea_jaarverslag_2024','bevestiging',NULL,'Jaarverslag bevestigt voortzetting in 2024.');
+  ('meeuwenduin_prinsenduin_opslag_2023_2024','dunea_jaarverslag_2024','bevestiging',NULL,'Jaarverslag bevestigt voortzetting in 2024.'),
+  ('begrazing_kijfhoek_bierlap_1990','zotero_begrazing_2012','bevestiging',NULL,'Bevestigt invoering in september 1990 en een begraasd oppervlak van 275 hectare.'),
+  ('begrazing_helmduinen_1991','zotero_begrazing_2012','bevestiging',NULL,'Bevestigt begrazing van 125 hectare Helmduinen sinds 1991.'),
+  ('kikkervalleien_begrazing_1997','zotero_valleien_2003','bevestiging',NULL,'Beschrijft toevoeging van de Kikkervalleien aan het begrazingsgebied na de herinrichting; de bron formuleert het vervolg als 1998.'),
+  ('kikkervalleien_bodem_1997','zotero_natuurherstel_2005','bevestiging',NULL,'Bevestigt uitvoering van de eerste herstelfase in de winter van 1997.'),
+  ('kikkervalleien_infra_1997','zotero_natuurherstel_2005','bevestiging',NULL,'Bevestigt de herinrichting na beëindiging van waterwinning in een deel van de Kikkervalleien.'),
+  ('kikkervalleien_begrazing_1997','zotero_begrazing_2008','bevestiging',NULL,'Bevestigt uitbreiding van de begrazing met de Kikkervallei na de herstelwerkzaamheden.'),
+  ('ganzenhoek_pan_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Bevestigt dat de werkzaamheden rond de in 1972 in gebruik genomen pan in 1973 doorliepen.'),
+  ('leidingherstel_kavel2_1972_1973','zotero_vogelrapport_1973','bevestiging',NULL,'Beschrijft de droogval van de ronde plas in M2 door leidingherstel begin 1973.'),
+  ('ganzenhoek_afwerking_pan_1973_1974','zotero_vogelrapport_1974','bevestiging',NULL,'Beschrijft het aanbrengen van hakhout op de oevers in 1974.'),
+  ('ganzenhoek_wandelpad_1974_1975','zotero_vogelrapport_1975','bevestiging',NULL,'Bevestigt voltooiing van het wandelpad langs M13, M13s, M14 en M77 in 1975.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -441,6 +550,25 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_uitvoering_gebied
+  (uitvoering_id,indeling_code,gebied_code,relatietype,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  'vogelplot-gebiedsindeling-v1',
+  'kijfhoek_en_bierlap',
+  'volledig_gebied',
+  'geverifieerd',
+  b.bron_id,
+  'De bron beschrijft de invoering voor Kijfhoek en Bierlap als geheel en noemt 275 hectare. Dit is een gebiedsrelatie; er worden geen afzonderlijke plotuitvoeringen uit afgeleid.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_begrazing_2008'
+WHERE u.uitvoering_code='begrazing_kijfhoek_bierlap_1990'
+ON DUPLICATE KEY UPDATE
+  relatietype=VALUES(relatietype),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 INSERT INTO maatregel_plot_koppeling
   (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
 SELECT
@@ -455,6 +583,67 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_ontwerp_2026'
 JOIN plots p ON p.kavel_nummer='M91'
 WHERE u.uitvoering_code='pas_24c_voorlinden'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
+CREATE TEMPORARY TABLE tmp_maatregel_plot_koppeling_seed (
+  uitvoering_code VARCHAR(128) CHARACTER SET ascii NOT NULL,
+  plot_id INT NOT NULL,
+  bron_code VARCHAR(96) CHARACTER SET ascii NOT NULL,
+  opmerking VARCHAR(1000) NOT NULL,
+  PRIMARY KEY (uitvoering_code,plot_id)
+) ENGINE=InnoDB;
+
+INSERT INTO tmp_maatregel_plot_koppeling_seed VALUES
+  ('kavel1b_herstel_1967',3505,'zotero_vogelrapport_1967','De terreinbijlage noemt kavel M1b expliciet.'),
+  ('pan2_peilverlaging_1967',3523,'zotero_vogelrapport_1967','De terreinbijlage noemt kavel M2 expliciet bij het droogzetten.'),
+  ('pan3_schoonmaak_1967',3504,'zotero_vogelrapport_1967','De terreinbijlage noemt kavel M3 expliciet bij de volledige schoonmaak.'),
+  ('pannen_16_17_peilverlaging_1967',3525,'zotero_vogelrapport_1967','De terreinbijlage noemt kavel M16 expliciet.'),
+  ('pannen_16_17_peilverlaging_1967',999995,'zotero_vogelrapport_1967','De terreinbijlage noemt historisch kavel M17 expliciet; dit blijft gekoppeld aan het historische plotrecord.'),
+  ('hoofdader_leidingen_5_6_71_1967',999988,'zotero_vogelrapport_1967','De terreinbijlage noemt historisch kavel M5 expliciet.'),
+  ('hoofdader_leidingen_5_6_71_1967',3521,'zotero_vogelrapport_1967','De terreinbijlage noemt kavel M6 expliciet.'),
+  ('hoofdader_leidingen_5_6_71_1967',3501,'zotero_vogelrapport_1967','De terreinbijlage noemt kavel M71 expliciet.'),
+  ('nieuwe_pannen_10_12_1967',999998,'zotero_vogelrapport_1967','De terreinbijlage noemt historisch kavel M10 expliciet.'),
+  ('nieuwe_pannen_10_12_1967',999987,'zotero_vogelrapport_1967','De terreinbijlage noemt historisch kavel M12 expliciet.'),
+  ('hoofdader_rietmaaien_6_1968',3521,'zotero_vogelrapport_1968','De terreinbijlage noemt kavel M6 expliciet.'),
+  ('pannen_2_3_16_17_peilherstel_1968',3523,'zotero_vogelrapport_1968','De terreinbijlage noemt kavel M2 expliciet.'),
+  ('pannen_2_3_16_17_peilherstel_1968',3504,'zotero_vogelrapport_1968','De terreinbijlage noemt kavel M3 expliciet.'),
+  ('pannen_2_3_16_17_peilherstel_1968',3525,'zotero_vogelrapport_1968','De terreinbijlage noemt kavel M16 expliciet.'),
+  ('pannen_2_3_16_17_peilherstel_1968',999995,'zotero_vogelrapport_1968','De terreinbijlage noemt historisch kavel M17 expliciet.'),
+  ('ganzenhoek_pan_1972_1973',3532,'zotero_vogelrapport_1972','De bron lokaliseert de nieuwe pan bij kavel M77.'),
+  ('ganzenhoek_helm_populier_13_14_1972',3511,'zotero_vogelrapport_1972','De terreinbijlage noemt kavel M13 expliciet.'),
+  ('ganzenhoek_helm_populier_13_14_1972',3512,'zotero_vogelrapport_1972','De terreinbijlage noemt kavel M14 expliciet.'),
+  ('leidingherstel_kavel2_1972_1973',3523,'zotero_vogelrapport_1972','De terreinbijlagen voor 1972 en 1973 noemen kavel M2 expliciet.'),
+  ('ganzenhoek_afwerking_pan_1973_1974',3532,'zotero_vogelrapport_1973','De bron koppelt de afwerking aan de nieuwe pan bij M77.'),
+  ('pannen_drooglegging_4_7_1974',999989,'zotero_vogelrapport_1974','De terreinbijlage noemt historisch kavel M4 expliciet.'),
+  ('pannen_drooglegging_4_7_1974',3498,'zotero_vogelrapport_1974','De terreinbijlage noemt kavel M7 expliciet.'),
+  ('nieuwe_plas_14_16_1975',3512,'zotero_vogelrapport_1975','De bron noemt de grens van M14 en M16.'),
+  ('nieuwe_plas_14_16_1975',3525,'zotero_vogelrapport_1975','De bron noemt de grens van M14 en M16.'),
+  ('ganzenhoek_wandelpad_1974_1975',3511,'zotero_vogelrapport_1975','De bron over 1975 noemt M13 expliciet.'),
+  ('ganzenhoek_wandelpad_1974_1975',3506,'zotero_vogelrapport_1975','De bron over 1975 noemt M13s expliciet.'),
+  ('ganzenhoek_wandelpad_1974_1975',3512,'zotero_vogelrapport_1975','De bronnen over 1974 en 1975 noemen M14 expliciet.'),
+  ('ganzenhoek_wandelpad_1974_1975',3532,'zotero_vogelrapport_1975','De bronnen over 1974 en 1975 noemen M77 expliciet.'),
+  ('ruiterpad_kavel13_1974',3511,'zotero_vogelrapport_1974','De terreinbijlage noemt kavel M13 expliciet.');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  s.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  s.opmerking
+FROM tmp_maatregel_plot_koppeling_seed s
+JOIN maatregel_uitvoering u ON u.uitvoering_code=s.uitvoering_code
+JOIN maatregel_bron b ON b.bron_code=s.bron_code
+JOIN plots p ON p.plot_id=s.plot_id
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
@@ -491,6 +680,7 @@ ON DUPLICATE KEY UPDATE
   opmerking=VALUES(opmerking);
 
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
+DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_bron_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_jaar_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_seed;

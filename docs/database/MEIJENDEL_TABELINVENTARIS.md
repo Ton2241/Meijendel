@@ -1,6 +1,6 @@
 # Meijendel ingedeeld naar soortgroepen
 
-Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 13 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
+Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 14 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
 
 ## Hoofdkeuze
 
@@ -174,29 +174,29 @@ Taxonvertaling is noodzakelijk. `ndff_soorten` heeft 9.828 bronreferenties, Vang
 
 ## Bronvast werkzaamhedenmodel
 
-De levende lokale database bevat vanaf 13 oktober 2026 naast de bestaande classificatie een afzonderlijke laag voor projecten, feitelijke of geplande uitvoeringen, expliciete jaarstatussen en bewijsbronnen. De bestaande tabellen `maatregelen`, `maatregelen_kernwoorden` en `plot_jaar_maatregel` blijven bestaan. De vier algemene kernwoorden voor recreatiebeheer zijn onder de nieuwe hoofdklasse `rust_en_recreatiebeheer` geplaatst; `strandreservaat` blijft als specifiek kernwoord onder `strandreservaten` herkenbaar.
+De levende lokale database bevat naast de bestaande classificatie een afzonderlijke laag voor projecten, feitelijke of geplande uitvoeringen, expliciete jaarstatussen en bewijsbronnen. Op 14 oktober 2026 is deze laag aangevuld na controle van alle 807 actieve Zotero-bijlagen. De bestaande tabellen `maatregelen`, `maatregelen_kernwoorden` en `plot_jaar_maatregel` blijven bestaan. De vier algemene kernwoorden voor recreatiebeheer zijn onder de nieuwe hoofdklasse `rust_en_recreatiebeheer` geplaatst; `strandreservaat` blijft als specifiek kernwoord onder `strandreservaten` herkenbaar.
 
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
-| `maatregel_project` | 12 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
-| `maatregel_bron` | 13 | Zes lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
-| `maatregel_uitvoering` | 33 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. |
-| `maatregel_uitvoering_jaar` | 58 | Letterlijk onderbouwde jaarstatussen uit 1988–2025: 42 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
-| `maatregel_uitvoering_bron` | 40 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
+| `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
+| `maatregel_bron` | 27 | Twintig lokaal geraadpleegde Zotero-bronnen en zeven officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
+| `maatregel_uitvoering` | 61 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. |
+| `maatregel_uitvoering_jaar` | 92 | Letterlijk onderbouwde jaarstatussen uit 1967–2025: 76 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
+| `maatregel_uitvoering_bron` | 78 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
 | `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
 | `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
-| `maatregel_uitvoering_gebied` | 1 | Voorlinden als gevalideerde gebiedsrelatie van uitvoering `pas_24c_voorlinden`. |
-| `maatregel_plot_koppeling` | 3 | Voorlinden gekoppeld aan M91 en Pan 13 aan M2 en M3; de bronnen geven geen doorsnijdingspercentage per plot. |
+| `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
+| `maatregel_plot_koppeling` | 32 | Drie bestaande en 29 nieuwe, geverifieerde directe relaties; de bronnen geven geen doorsnijdingspercentage per plot. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 4 | Pan 13 in M2 en M3 voor de uitgevoerde jaren 1988 en 1989. |
+| `v_plot_jaar_maatregel_bronvast` | 40 | Bronvaste plot-jaarregels voor expliciet benoemde kavels in 1967, 1968, 1972–1975, 1988 en 1989. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 
-De 144 bestaande regels in `plot_jaar_maatregel` blijven de historische dashboardlaag voor begrazing in 16 plots uit 1991–1999. Hun inhoud en checksum zijn bij de migratie onveranderd gebleven. Zij worden niet achteraf als bronvaste projectuitvoering geïnterpreteerd. Nieuwe werkzaamheden gaan pas naar een plot-jaarselectie nadat locatie, jaar en bron voldoende precies zijn vastgesteld.
+De 144 bestaande regels in `plot_jaar_maatregel` blijven de historische dashboardlaag voor begrazing in 16 plots uit 1991–1999. Hun aantal en checksum `306480715648` zijn vóór en na de invoer op 14 oktober 2026 gelijk gebleven. Zij worden niet achteraf als bronvaste projectuitvoering geïnterpreteerd. Nieuwe werkzaamheden gaan pas naar een plot-jaarselectie nadat locatie, jaar en bron voldoende precies zijn vastgesteld.
 
 De gebiedsindeling gebruikt de 55 geldige SOVON-kavelpolygonen uit plotversie 2025, in EPSG:28992. Daaruit zijn vijf geometrieën voor Buitenduin Noord, Buitenduin Zuid, Kijfhoek en Bierlap, Vallei Meijendel en Zuid-oosthoek en drie geometrieën voor Haagsche Golfclub, Voorlinden en Hertenkamp afgeleid. Interne overlap van telplots wordt bij de topologische samenvoeging niet dubbel als gebiedsoppervlak geteld. De 14 historische plots zijn inhoudelijk ingedeeld, maar hebben in plotversie 2025 geen afzonderlijke historische geometrie en worden daarom niet als geometriebron gebruikt.
 

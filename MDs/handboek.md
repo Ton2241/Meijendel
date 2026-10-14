@@ -536,7 +536,7 @@ De informatie in deze tab komt uit meerdere tabellen, onder andere:
 - `plot_jaar_maatregel`
 - `territoria`
 
-De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat 33 uitvoeringen en 58 expliciete jaarbeoordelingen uit 13 bronnen. Drie plotkoppelingen zijn gevalideerd: Voorlinden–M91 en Pan 13–M2/M3. Alleen Pan 13 heeft ook uitgevoerde jaarstatussen; daardoor levert `v_plot_jaar_maatregel_bronvast` op 13 oktober 2026 vier regels voor M2 en M3 in 1988 en 1989. De bestaande plottab blijft ongewijzigd.
+De huidige plottab gebruikt nog de 144 bestaande regels in `plot_jaar_maatregel`: begrazingsinformatie voor 16 plots uit 1991–1999. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat op 14 oktober 2026 61 uitvoeringen en 92 expliciete jaarbeoordelingen uit 27 bronnen. Van de 32 gevalideerde plotkoppelingen zijn er 29 rechtstreeks ontleend aan kavelvermeldingen in de vogelrapporten over 1967–1975; de drie bestaande koppelingen zijn Voorlinden–M91 en Pan 13–M2/M3. `v_plot_jaar_maatregel_bronvast` bevat 40 regels voor 1967, 1968, 1972–1975, 1988 en 1989. De bestaande plottab blijft ongewijzigd; de checksum is `306480715648`.
 
 Gebruik voor nieuwe werkzaamheden deze volgorde:
 
@@ -1173,7 +1173,7 @@ M17 volgt volgens de bevestigde historische indeling M17a. De aangeleverde aandu
 
 `plot_gebied_geometrie` bevat acht afgeleide MULTIPOLYGON-geometrieën in EPSG:28992. Gebruik `v_plot_gebied_actueel` voor plotlidmaatschap en `v_plot_gebied_geometrie_actueel` voor de actuele gebiedsgrenzen. De geometrieën zijn topologische samenvoegingen van de kavelgrenzen: overlap tussen telplots telt binnen een gebied niet dubbel mee.
 
-Een gebiedskoppeling is geen bewijs dat een maatregel in ieder onderliggend plot is uitgevoerd. Leg een benoemde relatie eerst vast in `maatregel_uitvoering_gebied`. Vul `maatregel_plot_koppeling` alleen wanneer de bron, een gecontroleerde uitvoeringsgeometrie of een eenduidige bijzondere gebiedsnaam de plotrelatie werkelijk bewijst. Voorlinden–M91 is de eerste dergelijke koppeling. De status van de uitvoering in 2025 blijft daarbij `onbekend`, zodat geen uitgevoerde plot-jaarrij ontstaat.
+Een gebiedskoppeling is geen bewijs dat een maatregel in ieder onderliggend plot is uitgevoerd. Leg een benoemde relatie eerst vast in `maatregel_uitvoering_gebied`. Vul `maatregel_plot_koppeling` alleen wanneer de bron, een gecontroleerde uitvoeringsgeometrie of een eenduidige bijzondere gebiedsnaam de plotrelatie werkelijk bewijst. De begrazing van Kijfhoek en Bierlap vanaf 1990 is daarom wel aan het volledige benoemde gebied gekoppeld, maar niet automatisch aan alle 23 onderliggende actuele en historische plots. Voorlinden is rechtstreeks gekoppeld aan M91; de status van de uitvoering in 2025 blijft `onbekend`, zodat geen uitgevoerde plot-jaarrij ontstaat.
 
 ## 22. Wat is de bezoekersdruklaag?
 
