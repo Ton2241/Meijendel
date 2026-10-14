@@ -43,7 +43,7 @@
 - Consumes: de acht geleverde bestanden onder een expliciet opgegeven leveringsmap.
 - Produces: een gevalideerd Python-importplan; standaard geen databasewrite.
 
-- [ ] **Step 1: Leg fixtures en verwachte transformaties in tests vast**
+- [x] **Step 1: Leg fixtures en verwachte transformaties in tests vast**
 
 Test met tijdelijke CSV/GeoJSON-fixtures minimaal:
 
@@ -65,11 +65,11 @@ assert plan.objects["OBJ-AC70DD4C7A"].bronobjecttype == "Buitenplaats"
 
 Controleer ook jaar, jaarbereik, decennium, letterlijke periode, onbekende nauwkeurigheid, gesplitste broncodes en gesplitste TOP10NL-/OSM-ID's.
 
-- [ ] **Step 2: Voeg blokkerende negatieve tests toe**
+- [x] **Step 2: Voeg blokkerende negatieve tests toe**
 
 Laat validatie falen bij gewijzigde checksum, ontbrekende header, dubbele object-ID, verweesde vermelding, onbekende status, ongeldige periode, lege geometrie, verkeerde SRID, ongeldige geometrie en een niet-bestaand bronfeature-ID.
 
-- [ ] **Step 3: Draai de test en bevestig de verwachte fout**
+- [x] **Step 3: Draai de test en bevestig de verwachte fout**
 
 Run:
 
@@ -89,11 +89,11 @@ Expected: FAIL omdat de importerfuncties nog ontbreken. Commit geen uitsluitend 
 - Consumes: `README.md`, GeoJSON, RD-CSV, vermeldingen-CSV, bronregister, bronlacunes en het manifest/checksumbewijs uit de levering.
 - Produces: genormaliseerde records met stabiele sleutels en een samenvattend validatierapport.
 
-- [ ] **Step 1: Implementeer bestands- en checksumvalidatie**
+- [x] **Step 1: Implementeer bestands- en checksumvalidatie**
 
 Gebruik `pathlib`, `csv`, `json` en `hashlib`. Vereis de verwachte bestandsnamen, kolommen, hashes en recordaantallen voordat SQL kan worden opgebouwd.
 
-- [ ] **Step 2: Implementeer expliciete normalisatiefuncties**
+- [x] **Step 2: Implementeer expliciete normalisatiefuncties**
 
 Maak kleine functies voor:
 
@@ -108,11 +108,11 @@ split_native_feature_ids(...)
 
 Beperk correcties tot de acht regels uit het goedgekeurde ontwerp. Bewaar iedere letterlijke bronwaarde naast de afleiding.
 
-- [ ] **Step 3: Valideer geometrieën en bronobjecten met OGR**
+- [x] **Step 3: Valideer geometrieën en bronobjecten met OGR**
 
 Lees WKT in EPSG:28992, eis niet-leeg en geldig, vergelijk de 71 RD-geometrieën met de GeoJSON-geometrieën na transformatie en controleer alle 47 TOP10NL- en 60 OSM-ID's tegen de meegeleverde/lokale bronbestanden.
 
-- [ ] **Step 4: Maak de CLI standaard read-only**
+- [x] **Step 4: Maak de CLI standaard read-only**
 
 Ondersteun minimaal:
 
@@ -128,7 +128,7 @@ Ondersteun minimaal:
 
 Zonder `--apply` mag geen schrijvende MySQL-opdracht worden uitgevoerd.
 
-- [ ] **Step 5: Draai de gerichte tests**
+- [x] **Step 5: Draai de gerichte tests**
 
 Run:
 
