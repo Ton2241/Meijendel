@@ -579,6 +579,34 @@ SELECT
   NULL,
   'geverifieerd',
   b.bron_id,
+  CASE p.kavel_nummer
+    WHEN 'M16' THEN 'Helmduinen; door Ton op 14 oktober 2026 als grootste deel van het in 1991 begonnen begrazingsgebied gekoppeld aan M16. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
+    WHEN 'M15' THEN 'Helmduinen; door Ton op 14 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M15. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
+    WHEN 'M17a' THEN 'Helmduinen; door Ton op 14 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M17a. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
+    WHEN 'M13' THEN 'Door Ton op 14 oktober 2026 gekoppeld vanwege aanvullende consequenties van de in 1991 begonnen begrazing van de Helmduinen voor M13; aard en omvang zijn niet per kavel gekwantificeerd.'
+    WHEN 'M13s' THEN 'Door Ton op 14 oktober 2026 gekoppeld vanwege aanvullende consequenties van de in 1991 begonnen begrazing van de Helmduinen voor M13s; aard en omvang zijn niet per kavel gekwantificeerd.'
+    WHEN 'M14' THEN 'Door Ton op 14 oktober 2026 gekoppeld vanwege aanvullende consequenties van de in 1991 begonnen begrazing van de Helmduinen voor M14; aard en omvang zijn niet per kavel gekwantificeerd.'
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_begrazing_2012'
+JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14','M15','M16','M17a')
+WHERE u.uitvoering_code='begrazing_helmduinen_1991'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
   'Voorlinden is door Ton op 13 oktober 2026 eenduidig gekoppeld aan M91. De bron bewijst geen volledig uitvoeringsvlak; daarom blijft het doorsnijdingspercentage leeg.'
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_ontwerp_2026'
