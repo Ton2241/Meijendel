@@ -271,8 +271,17 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 29
+        """) == 28
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_kijfhoek_bierlap_1990' AND jaar=1990;") == 7
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering
+          WHERE uitvoering_code IN ('begrazing_helmduinen_1991','kikkervalleien_begrazing_1997')
+            AND uitvoering_status_code='in_uitvoering'
+            AND datum_tot IS NULL
+            AND cycliciteit='doorlopend tot heden'
+            AND opmerking LIKE '%Ton bevestigde op 14 oktober 2026%';
+        """) == 2
         assert mysql("""
           SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
@@ -282,8 +291,31 @@ def main() -> int:
             AND pk.koppelmethode='benoemd_gebied_gevalideerd'
             AND pk.verificatiestatus='geverifieerd'
             AND pk.doorsnijding_pct IS NULL;
-        """, TEST_DB) == "M13,M13s,M14,M15,M16,M17a"
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_helmduinen_1991' AND jaar=1991;") == 6
+        """, TEST_DB) == "M15,M16,M17a"
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_helmduinen_1991' AND jaar=1991;") == 3
+        assert mysql("""
+          SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='kikkervalleien_begrazing_1997'
+            AND pk.koppelmethode='expliciet_in_bron'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL
+            AND b.bron_code='zotero_kikkervalleien_2010';
+        """, TEST_DB) == "M13,M13s,M14"
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='kikkervalleien_begrazing_1997' AND jaar=1997;") == 3
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_bron ub
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='kikkervalleien_begrazing_1997'
+            AND b.bron_code='zotero_kikkervalleien_2010'
+            AND ub.bronrol='primaire_uitvoeringsbron'
+            AND ub.pagina_of_paragraaf='p. 5 en 22';
+        """) == 1
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_plot_koppeling pk

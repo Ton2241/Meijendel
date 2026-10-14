@@ -142,7 +142,7 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('pan13_oeveraanpassing_1988_1989','pan13_slibverwijdering','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Drie oevertaluds verflauwen','Drie steile taluds zijn flauwer gemaakt; bestaande rietkragen zijn waar mogelijk behouden.','Pan 13','benoemd_deelgebied','1988-10-01','1989-01-31','maand',NULL,'Duinwaterbedrijf Zuid-Holland',3,'aantal',NULL),
   ('kikkervalleien_bodem_1997','kikkervalleien_herstel','plaggen_chopperen_afgraven','MT04','B03','uitgevoerd_voor_2026','Voedselrijke bodem en vegetatie verwijderen','Bovenste voedselrijke bodemlaag en vegetatie verwijderd en plaatselijk oorspronkelijk reliëf hersteld.','Kikkervalleien en Pan 26.1','benoemd_deelgebied','1997-01-01','1997-12-31','jaar',NULL,'Dunea',50,'ha','Omvang betreft het gehele gecreëerde kale gebied; niet uitsluitend de afgegraven bodem.'),
   ('kikkervalleien_infra_1997','kikkervalleien_herstel','hydrologie_optimaliseren','MT04','L01','uitgevoerd_voor_2026','Leidingen en putten verwijderen','Omgevende leidingen en putten van Sprang PI en I uit het duingebied verwijderd.','Kikkervalleien, Sprang PI en I','benoemd_deelgebied','1997-01-01','1997-12-31','jaar',NULL,'Dunea',NULL,NULL,NULL),
-  ('kikkervalleien_begrazing_1997','kikkervalleien_herstel','begrazing','MT01','A01','overgangsbeheer','Begrazingsgebied uitbreiden','Na de herinrichting is circa 50 ha toegevoegd aan het sinds 1991 begraasde gebied van circa 125 ha.','Kikkervalleien en Helmduinen','benoemd_deelgebied','1997-01-01',NULL,'jaar','doorlopend na inrichting','Dunea',50,'ha',NULL),
+  ('kikkervalleien_begrazing_1997','kikkervalleien_herstel','begrazing','MT01','A01','in_uitvoering','Begrazingsgebied uitbreiden','Na de herinrichting is circa 50 ha toegevoegd aan het sinds 1991 begraasde gebied van circa 125 ha.','Kikkervalleien en Helmduinen','benoemd_deelgebied','1997-01-01',NULL,'jaar','doorlopend tot heden','Dunea',50,'ha','Ton bevestigde op 14 oktober 2026 dat deze begrazing sinds de uitbreiding doorloopt tot heden. De open einddatum betekent voortgezet beheer en niet een onbekende einddatum.'),
   ('kikkervalleien_duindoorn_nabeheer','kikkervalleien_herstel','bosreductie_struweelbeheer','MT01','A09','uitgevoerd_voor_2026','Duindoorn bestrijden','Handmatige en later vooral machinale bestrijding van Duindoorn als nabeheer.','Kikkervalleien','benoemd_deelgebied',NULL,NULL,'onbekend','meerjarig','Dunea',NULL,NULL,'De bron uit 2010 noemt geen sluitende uitvoeringsjaren.'),
   ('zeereep_vijf_kerven_2014_2015','zeereep_kerven','zeereepbeheer','MT04','E02','uitgevoerd_voor_2026','Vijf kerven aanleggen','Op vijf plekken vegetatie en een tot twee decimeter bodem verwijderd; werk gestart winter 2013/2014 en afgerond winter 2014/2015.','Zeereep Meijendel','benoemd_deelgebied','2013-12-01','2015-03-31','periode',NULL,'Dunea',10.9434,'ha','109.434 m2 feitelijk afgegraven oppervlak.'),
   ('zeereep_kerven_nabeheer','zeereep_kerven','zeereepbeheer','MT02','E02','uitgevoerd','Nabeheer kerven en stuifkuilen','Openhouden en zo nodig ontdoen van vegetatie om zandtransport te behouden.','Zeereep Meijendel','benoemd_deelgebied','2016-01-01',NULL,'jaar','waar nodig','Dunea',NULL,NULL,NULL),
@@ -190,7 +190,7 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('ruiterpad_kavel13_1974','historische_recreatiepaden_1974_1975','rust_en_recreatiebeheer','MT03','L02','uitgevoerd_voor_2026','Ruiterpad door M13 aanleggen','Door aanleg van een ruiterpad is het noordelijke deel van M13 afgescheiden.','Kavel M13','benoemd_deelgebied','1974-01-01','1974-12-31','jaar',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
   ('rietpoten_noord_1987','rietpotenproef_1987',NULL,'MT06','D01','uitgevoerd_voor_2026','Rietpoten in stuifplekken aanbrengen','In elf proef- en referentiestuifplekken zijn tussen 29 oktober en 6 november 1987 proefvlakken aangelegd en rietpoten geplaatst.','Driehoek Klippad, Bunkerpad en Wassenaarse Slag','benoemd_deelgebied','1987-10-29','1987-11-06','dag','eenmalige proef','Terreinbeheer DZH',11,'aantal','Binnenduinproef; niet als zeereepbeheer geclassificeerd.'),
   ('begrazing_kijfhoek_bierlap_1990','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Extensieve begrazing Kijfhoek en Bierlap invoeren','Extensieve begrazing is in september 1990 ingevoerd in Kijfhoek en Bierlap.','Kijfhoek en Bierlap','benoemd_deelgebied','1990-09-01',NULL,'maand','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',275,'ha',NULL),
-  ('begrazing_helmduinen_1991','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Extensieve begrazing Helmduinen invoeren','De Helmduinen worden sinds 1991 extensief begraasd.','Helmduinen','benoemd_deelgebied','1991-01-01',NULL,'jaar','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',125,'ha',NULL),
+  ('begrazing_helmduinen_1991','integrale_begrazing_1990','begrazing','MT01','A01','in_uitvoering','Extensieve begrazing Helmduinen invoeren','De Helmduinen worden sinds 1991 extensief begraasd.','Helmduinen','benoemd_deelgebied','1991-01-01',NULL,'jaar','doorlopend tot heden','Duinwaterbedrijf Zuid-Holland',125,'ha','Ton bevestigde op 14 oktober 2026 dat deze begrazing sinds de invoering doorloopt tot heden. De open einddatum betekent voortgezet beheer en niet een onbekende einddatum.'),
   ('begrazing_meeuwenhoek_voor_2008','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Begrazingsgebied uitbreiden met Meeuwenhoek','De begrazing is later uitgebreid met de Meeuwenhoek; de bron uit 2008 noemt geen invoeringsjaar.','Meeuwenhoek','benoemd_deelgebied',NULL,NULL,'onbekend','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Geen jaarregel omdat de bron geen betrouwbaar invoeringsjaar geeft.'),
   ('maaibeheer_libellenvallei_1975_2003','duinvalleibeheer_1975_2003','maaibeheer_aanvullend','MT01','A06','uitgevoerd_voor_2026','Libellenvallei jaarlijks maaien','Volgens de bron uit 2003 is de Libellenvallei sinds 1975 jaarlijks in het najaar gemaaid.','Libellenvallei','benoemd_deelgebied','1975-01-01','2003-12-31','periode','jaarlijks in het najaar','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Alleen 1975 krijgt een jaarregel; de bron onderbouwt het terugkerende beheer als periode, niet iedere afzonderlijke jaaruitvoering.'),
   ('plaggen_parnassiapad2_1993','duinvalleibeheer_1975_2003','plaggen_chopperen_afgraven','MT02','B04','uitgevoerd_voor_2026','Proefvlak Parnassiapad 2 plaggen','Proefvlak Parnassiapad 2 is volgens de in 2001 beschreven ouderdom ongeveer in 1993 geplagd.','Parnassiapad 2','benoemd_deelgebied','1993-01-01','1993-12-31','jaar',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Jaar is uit de bron afgeleid als circa acht jaar voor 2001.'),
@@ -374,8 +374,14 @@ SELECT uitvoering_code,
          WHEN uitvoering_status_code IN ('gepland','onbekend') THEN 'plancontext'
          ELSE 'primaire_uitvoeringsbron'
        END AS bronrol,
-       NULL AS pagina_of_paragraaf,
-       CONCAT('Bronbasis voor uitvoering ', CONVERT(uitvoering_code USING utf8mb4), '; status en omvang zijn niet ruimer geïnterpreteerd dan de bron ondersteunt.')
+       CASE
+         WHEN uitvoering_code='kikkervalleien_begrazing_1997' THEN 'p. 5 en 22'
+         ELSE NULL
+       END AS pagina_of_paragraaf,
+       CASE
+         WHEN uitvoering_code='kikkervalleien_begrazing_1997' THEN 'Pagina 5 beschrijft de uitbreiding van het sinds 1991 begraasde Helmduinengebied met circa 50 hectare Kikkervalleien direct na de herinrichting van 1997. Pagina 22 benoemt M13, M13s en M14 expliciet als de kavels waarin de Kikkervalleien liggen.'
+         ELSE CONCAT('Bronbasis voor uitvoering ', CONVERT(uitvoering_code USING utf8mb4), '; status en omvang zijn niet ruimer geïnterpreteerd dan de bron ondersteunt.')
+       END AS bewijsnotitie
 FROM tmp_maatregel_uitvoering_seed;
 
 INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
@@ -585,14 +591,39 @@ SELECT
     WHEN 'M16' THEN 'Helmduinen; door Ton op 14 oktober 2026 als grootste deel van het in 1991 begonnen begrazingsgebied gekoppeld aan M16. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
     WHEN 'M15' THEN 'Helmduinen; door Ton op 14 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M15. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
     WHEN 'M17a' THEN 'Helmduinen; door Ton op 14 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M17a. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
-    WHEN 'M13' THEN 'Door Ton op 14 oktober 2026 gekoppeld vanwege aanvullende consequenties van de in 1991 begonnen begrazing van de Helmduinen voor M13; aard en omvang zijn niet per kavel gekwantificeerd.'
-    WHEN 'M13s' THEN 'Door Ton op 14 oktober 2026 gekoppeld vanwege aanvullende consequenties van de in 1991 begonnen begrazing van de Helmduinen voor M13s; aard en omvang zijn niet per kavel gekwantificeerd.'
-    WHEN 'M14' THEN 'Door Ton op 14 oktober 2026 gekoppeld vanwege aanvullende consequenties van de in 1991 begonnen begrazing van de Helmduinen voor M14; aard en omvang zijn niet per kavel gekwantificeerd.'
   END
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_begrazing_2012'
-JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14','M15','M16','M17a')
+JOIN plots p ON p.kavel_nummer IN ('M15','M16','M17a')
 WHERE u.uitvoering_code='begrazing_helmduinen_1991'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
+JOIN plots p ON p.plot_id=pk.plot_id
+WHERE u.uitvoering_code='begrazing_helmduinen_1991'
+  AND p.kavel_nummer IN ('M13','M13s','M14');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT('Kikkervalleien; Holland''s Duinen 55 (april 2010), pagina 5, beschrijft toevoeging van circa 50 hectare aan het sinds 1991 begraasde Helmduinengebied. Pagina 22 benoemt ', p.kavel_nummer, ' expliciet als een van de drie kavels waarin de Kikkervalleien liggen. Ton bevestigde deze toedeling op 14 oktober 2026. De oppervlakte per kavel is niet gegeven; daarom blijft het doorsnijdingspercentage leeg.')
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_kikkervalleien_2010'
+JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14')
+WHERE u.uitvoering_code='kikkervalleien_begrazing_1997'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
