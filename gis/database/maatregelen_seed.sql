@@ -745,6 +745,27 @@ INSERT INTO maatregel_plot_koppeling
 SELECT
   u.uitvoering_id,
   p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'Parnassiapad 1 is door Ton op 14 oktober 2026 gekoppeld aan M15. Holland''s Duinen 42 (april 2003), tabel 1 en bijlage A, onderscheidt Parnassiapad 1 als de in circa 1997 geplagde blokken E en F. De publicatie bevat geen kavelgrens of exacte plaggeometrie; daarom blijft het doorsnijdingspercentage leeg.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_valleien_2003'
+JOIN plots p ON p.kavel_nummer='M15'
+WHERE u.uitvoering_code='plaggen_parnassiapad1_1997'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
   'expliciet_in_bron',
   NULL,
   'geverifieerd',
