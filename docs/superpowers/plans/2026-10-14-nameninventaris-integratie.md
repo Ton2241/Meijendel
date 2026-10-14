@@ -224,7 +224,7 @@ Expected: PASS.
 - Consumes: exact de te importeren levering en het nieuwe schema.
 - Produces: bewijs van constraints, aantallen, idempotentie en herstel vóór live wijziging.
 
-- [ ] **Step 1: Herhaal repository- en databasepreflight**
+- [x] **Step 1: Herhaal repository- en databasepreflight**
 
 Run vanuit de taakworktree:
 
@@ -237,11 +237,11 @@ scripts/check_local_workspace.sh
 
 Expected: branches/upstreams geldig, werkboom alleen met taakwijzigingen, MySQL 9.7.1 en redo-capaciteit 536870912 bytes.
 
-- [ ] **Step 2: Maak en vul een expliciete wegwerpdatabase**
+- [x] **Step 2: Maak en vul een expliciete wegwerpdatabase**
 
 Maak `Meijendel_nameninventaris_test`, pas het schema toe en importeer dezelfde levering. Gebruik nooit de levende databasenaam in deze proef.
 
-- [ ] **Step 3: Bewijs constraints en acceptatieaantallen**
+- [x] **Step 3: Bewijs constraints en acceptatieaantallen**
 
 Expected:
 
@@ -259,15 +259,15 @@ verweesde_koppelingen=0
 
 Voer daarnaast negatieve INSERT-proeven uit voor ongeldige SRID, ontbrekende foreign key en dubbele importsleutel.
 
-- [ ] **Step 4: Bewijs idempotentie in de testdatabase**
+- [x] **Step 4: Bewijs idempotentie in de testdatabase**
 
 Importeer dezelfde levering opnieuw en vergelijk rijtellingen plus inhoudshashes. Expected: geen verschil.
 
-- [ ] **Step 5: Maak een testback-up en bewijs herstel**
+- [x] **Step 5: Maak een testback-up en bewijs herstel**
 
 Dump uitsluitend de zeven nieuwe tabellen plus hun schema naar een tijdelijke lokale map buiten Git en iCloud, leg SHA-256 vast, verwijder de testdatabase, herstel naar een tweede wegwerpdatabase en herhaal de audit.
 
-- [ ] **Step 6: Verwijder alleen de twee expliciete wegwerpdatabases**
+- [x] **Step 6: Verwijder alleen de twee expliciete wegwerpdatabases**
 
 Controleer namen vóór `DROP DATABASE`. Bewaar het gehashte proefbewijs tot afronding van de levende import.
 
