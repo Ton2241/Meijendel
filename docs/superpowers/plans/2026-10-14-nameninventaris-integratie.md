@@ -385,7 +385,7 @@ Leg de exacte eindstanden en nulbevindingen vast. Controleer dat geen dashboard-
 
 Controleer scope, absolute paden, geheimen, herstelbaarheid, idempotentie, documentgelijkheid en onbedoelde wijzigingen. Vraag een code-review vóór integratie.
 
-- [ ] **Step 4: Commit en push de afgeronde wijziging**
+- [x] **Step 4: Commit en push de afgeronde wijziging**
 
 ```bash
 git add gis/database/nameninventaris_schema.sql \
@@ -398,10 +398,10 @@ git commit -m "Importeer Meijendel-nameninventaris"
 git push
 ```
 
-- [ ] **Step 5: Rond repositorycontrole af**
+- [x] **Step 5: Rond repositorycontrole af**
 
 Bevestig `branch == upstream`, een schone taakworktree en ongewijzigde schone toestand van `VWG_Project` en `VWG_M`. Behandel de twee vooraf bestaande registerwijzigingen in de canonieke Meijendel-checkout als gebruikerswerk; verwijder of overschrijf ze niet.
 
-- [ ] **Step 6: Rapporteer en vraag afzonderlijk naar de zware afgeleiden**
+- [x] **Step 6: Rapporteer en vraag afzonderlijk naar de zware afgeleiden**
 
 Rapporteer live databaseaantallen, tests, back-up/hash, bronregisterrender en Git-commit. Vraag Ton daarna expliciet of ook `Meijendel.sql`-export, proefimport en Shiny-cachebouw gewenst zijn. Start die keten niet zonder afzonderlijk akkoord.
