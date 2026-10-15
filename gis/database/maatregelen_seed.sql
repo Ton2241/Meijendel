@@ -1036,6 +1036,33 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Maatregel 22d betreft gericht aanvullend beheer van één hectare in Waalsdorp. ',
+    'De actuele TOP10NL-geometrie Vlakte van Waalsdorp [OBJ-FC72913747; geometrie 70] raakt ',
+    p.kavel_nummer,
+    '. Ton bevestigde op 15 oktober 2026 de koppeling aan M84 en M43 en sloot M84s uit. ',
+    'De precieze uitvoeringsvoetafdruk binnen de twee kavels is niet bekend; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M84','M43')
+WHERE u.uitvoering_code='pas_22d_waalsdorp'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
