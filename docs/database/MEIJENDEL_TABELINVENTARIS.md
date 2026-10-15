@@ -179,11 +179,11 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
 | `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
-| `maatregel_bron` | 37 | 25 lokaal geraadpleegde Zotero-bronnen en twaalf officiële of institutionele internetbronnen, ieder met type, datum, status en raadpleegdatum. KIWA Mededeling 114 lokaliseert infiltratieplas 27.2; de officiële PIM-bijlage uit 2013 beschrijft de werkzaamheden en werkperiode. |
+| `maatregel_bron` | 39 | 25 lokaal geraadpleegde Zotero-bronnen en veertien officiële of institutionele internetbronnen, ieder met type, datum, status en raadpleegdatum. KIWA Mededeling 114 lokaliseert infiltratieplas 27.2; de officiële PIM-bijlage uit 2013 beschrijft de werkzaamheden en werkperiode. De gemeentelijke objectinventaris en de actuele PDOK-Kadastrale Kaart identificeren landgoed Weiduin en het gekoppelde perceel Wassenaar H 2889. |
 | `maatregel_uitvoering` | 64 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. Infiltratieplas 27.2 is los van de programmabrede pannenuitvoering geregistreerd, zodat het totale volume van 370.000 m3 niet aan deze plas wordt toegeschreven. |
 | `maatregel_uitvoering_jaar` | 104 | Letterlijk onderbouwde jaarstatussen uit 1967–2026: 88 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
-| `maatregel_uitvoering_bron` | 92 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. De uitvoering bij infiltratieplas 27.2 verwijst naar de officiële PIM-bijlage, KIWA Mededeling 114 en Dunea's afrondingsbericht uit 2018. |
-| `maatregel_uitvoering_plotscope` | 2 | Expliciete beoordeling of een uitvoering binnen de 55 Meijendel-plots valt. De Bendel-herinrichting en het Bendel-nabeheer zijn beide geverifieerd als `buiten_meijendel_plotgebied`. |
+| `maatregel_uitvoering_bron` | 94 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. De uitvoering bij infiltratieplas 27.2 verwijst naar de officiële PIM-bijlage, KIWA Mededeling 114 en Dunea's afrondingsbericht uit 2018; Weiduin is gekoppeld aan de gemeentelijke objectinventaris en de actuele PDOK-Kadastrale Kaart. |
+| `maatregel_uitvoering_plotscope` | 3 | Expliciete beoordeling of een uitvoering binnen de 55 Meijendel-plots valt. De Bendel-herinrichting, het Bendel-nabeheer en de begrazing van landgoed Weiduin zijn geverifieerd als `buiten_meijendel_plotgebied`. Het actuele perceel Wassenaar H 2889 doorsnijdt geen plot; M85 ligt op 226,5 meter. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
 | `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
 | `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |

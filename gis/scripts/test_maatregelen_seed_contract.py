@@ -114,17 +114,17 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 37,
+            "maatregel_bron": 39,
             "maatregel_project": 18,
             "maatregel_uitvoering": 64,
             "maatregel_uitvoering_jaar": 104,
-            "maatregel_uitvoering_bron": 92,
+            "maatregel_uitvoering_bron": 94,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
             "maatregel_plot_koppeling": 143,
             "maatregel_uitvoering_gebied": 2,
-            "maatregel_uitvoering_plotscope": 2,
+            "maatregel_uitvoering_plotscope": 3,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
         assert before == expected, before
@@ -403,7 +403,7 @@ def main() -> int:
           LEFT JOIN maatregel_uitvoering_plotscope ps USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL
             AND COALESCE(ps.plotscope_status,'onbepaald') <> 'buiten_meijendel_plotgebied';
-        """) == 11
+        """) == 10
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld')) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
@@ -472,7 +472,13 @@ def main() -> int:
           FROM maatregel_uitvoering_plotscope ps
           JOIN maatregel_uitvoering u USING (uitvoering_id)
           JOIN maatregel_bron b USING (bron_id);
-        """, TEST_DB) == "bendel_herinrichting_2025_2026:buiten_meijendel_plotgebied:staatsbosbeheer_bendel_2026,bendel_nabeheer_2026:buiten_meijendel_plotgebied:staatsbosbeheer_bendel_2026"
+        """, TEST_DB) == "bendel_herinrichting_2025_2026:buiten_meijendel_plotgebied:staatsbosbeheer_bendel_2026,bendel_nabeheer_2026:buiten_meijendel_plotgebied:staatsbosbeheer_bendel_2026,pas_24a_weiduin:buiten_meijendel_plotgebied:pdok_brk_weiduin_2026"
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='pas_24a_weiduin';
+        """) == 0
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_uitvoering_jaar uj

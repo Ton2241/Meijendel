@@ -56,7 +56,9 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_prinsenduin_2020','onderzoeksrapport','Is livestock grazing a key factor for changing vegetation patterns in lime rich coastal dunes in the Netherlands?','2020-03-14','IVRJVABT','https://doi.org/10.1007/s11852-020-00733-z','2026-10-15','gepubliceerd','Figuur 1 onderscheidt Prinsenduin, Lange Strooken en Helmduinen als afzonderlijke onderzoeksgebieden. Gebruikt als ruimtelijke context; de plottoedeling volgt uit de combinatie met de nameninventaris en Tons vaststelling.'),
   ('zotero_kiwa_mededeling_114_1990','onderzoeksrapport','Natuurwaarden en waterwinning in de duinen: mogelijkheden voor behoud, herstel en ontwikkeling van natuurwaarden','1990-12-01','6MSHE3RU','https://api2.kwrwater.nl/uploads/Mededeling%20114%20Natuurwaarden%20en%20waterwinning%20in%20de%20duinen.pdf','2026-10-15','gepubliceerd','KIWA Mededeling 114. Figuur 1 op PDF-pagina 73 geeft het overzicht van de infiltratieplassen in Meijendel en lokaliseert 27.2 binnen het noordelijke plassensysteem. De gekoppelde PDF staat als linked file op de T7.'),
   ('officiele_bijlage_pim_2013_2014','inrichtingsplan','Projecten 2013/2014: werkzaamheden PIM in Noord-Meijendel','2013-08-01',NULL,'https://repository.officiele-overheidspublicaties.nl/externebijlagen/exb-2013-7902/1/pdf/exb-2013-7902.pdf','2026-10-15','officiele_bijlage','Officiële externe bijlage bij de vergunningpublicatie. Beschrijft schoning van infiltratieplas 27.2, verwijdering van organisch verrijkt bodemmateriaal en oeveraanpassing tussen 1 september 2013 en 1 maart 2014. De brondatum volgt uit de PDF-aanmaakdatum 1 augustus 2013.'),
-  ('denhaag_pim_archeologie_2013','onderzoeksrapport','Dunea. Programma Investeringen Meijendel, gemeenten Den Haag en Wassenaar','2013-01-01',NULL,'https://doi.org/10.17026/DANS-XTN-EEV7','2026-10-15','gepubliceerd','Haagse Archeologische Rapportage 1306 van M. Benjamins. Afbeelding 1 begrenst de PIM-werkgebieden; bijlage 2 specificeert het leidingwerk per winningsserie. Alleen het publicatiejaar 2013 is bekend, daarom is 1 januari als datumprecisie op jaarniveau vastgelegd.');
+  ('denhaag_pim_archeologie_2013','onderzoeksrapport','Dunea. Programma Investeringen Meijendel, gemeenten Den Haag en Wassenaar','2013-01-01',NULL,'https://doi.org/10.17026/DANS-XTN-EEV7','2026-10-15','gepubliceerd','Haagse Archeologische Rapportage 1306 van M. Benjamins. Afbeelding 1 begrenst de PIM-werkgebieden; bijlage 2 specificeert het leidingwerk per winningsserie. Alleen het publicatiejaar 2013 is bekend, daarom is 1 januari als datumprecisie op jaarniveau vastgelegd.'),
+  ('gemeente_wassenaar_weiduin_2013','onderzoeksrapport','Hoofdkenmerken en waardering van waardevolle cultuurhistorische gebouwen en objecten in de gemeente Wassenaar','2013-01-01',NULL,'https://www.wassenaar.nl/_flysystem/media/beschrijvingen-beeld-bepalende-objecten-in-wassenaar.pdf','2026-10-15','gemeentelijke_inventaris','De gemeentelijke inventaris uit 2012/2013 identificeert Weiduin als het particuliere landhuis aan Prins Frederiklaan 28. Alleen de periode 2012/2013 is bekend; 1 januari 2013 is als datumprecisie op jaarniveau vastgelegd.'),
+  ('pdok_brk_weiduin_2026','officiele_webpagina','Kadastrale Kaart: perceel Wassenaar H 2889','2026-10-15',NULL,'https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel','2026-10-15','actueel_officieel_register','De actuele PDOK-Kadastrale Kaart geeft voor het aan Prins Frederiklaan 28 gekoppelde perceel Wassenaar H 2889 een oppervlakte van 13.325 m2. Vergelijking met de 55 levende Meijendel-plotgeometrieen toont geen doorsnijding.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -461,6 +463,10 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('infiltratieplas_27_2_2013_2014','dunea_optimalisatie_waterwinning_2018','bevestiging',NULL,'Dunea bevestigt dat het achtjarige optimalisatieprogramma, waaronder het schonen van infiltratiepannen en natuurvriendelijk inrichten van oevers, in 2018 is afgerond.'),
   ('waterwinning_leidingen_2010_2018','denhaag_pim_archeologie_2013','bevestiging','p. 4 en bijlage 2, p. 38-39','Afbeelding 1 begrenst de PIM-werkgebieden. Bijlage 2 noemt expliciet vervanging of aansluiting van leidingwerk in Serie RA, Serie WV, Serie E, Serie LV en Complex 8. Dunea meldt voor het programma als geheel 6,5 kilometer vernieuwde leiding, maar verdeelt deze lengte niet over series of kavels.');
 
+INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
+  ('pas_24a_weiduin','gemeente_wassenaar_weiduin_2013','plancontext','Prins Frederiklaan 28','De gemeentelijke inventaris identificeert Weiduin als particulier landhuis aan Prins Frederiklaan 28. Dit past bij de omschrijving van PAS-maatregel 24a als beheer op terrein van een particuliere landgoedeigenaar.'),
+  ('pas_24a_weiduin','pdok_brk_weiduin_2026','bevestiging','Perceel Wassenaar H 2889','Het actuele, aan Prins Frederiklaan 28 gekoppelde perceel heeft geen doorsnijding met een van de 55 levende Meijendel-plotgeometrieen. Ton bevestigde op 15 oktober 2026 dat daarom geen plotkoppeling wordt gelegd.');
+
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
 SELECT u.uitvoering_id, b.bron_id, s.bronrol, s.pagina_of_paragraaf, s.bewijsnotitie
@@ -482,6 +488,25 @@ SELECT
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='staatsbosbeheer_bendel_2026'
 WHERE u.uitvoering_code IN ('bendel_nabeheer_2026','bendel_herinrichting_2025_2026')
+ON DUPLICATE KEY UPDATE
+  plotscope_status=VALUES(plotscope_status),
+  bron_id=VALUES(bron_id),
+  vastgesteld_op=VALUES(vastgesteld_op),
+  verificatiestatus=VALUES(verificatiestatus),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_uitvoering_plotscope
+  (uitvoering_id,plotscope_status,bron_id,vastgesteld_op,verificatiestatus,opmerking)
+SELECT
+  u.uitvoering_id,
+  'buiten_meijendel_plotgebied',
+  b.bron_id,
+  '2026-10-15',
+  'geverifieerd',
+  'Weiduin is het particuliere landgoed aan Prins Frederiklaan 28. Het actuele gekoppelde perceel Wassenaar H 2889 van 13.325 m2 doorsnijdt geen van de 55 levende Meijendel-plots; de dichtstbijzijnde plot M85 ligt op 226,5 meter. Ton bevestigde op 15 oktober 2026 dat voor deze uitvoering geen plotkoppeling wordt gelegd.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='pdok_brk_weiduin_2026'
+WHERE u.uitvoering_code='pas_24a_weiduin'
 ON DUPLICATE KEY UPDATE
   plotscope_status=VALUES(plotscope_status),
   bron_id=VALUES(bron_id),
