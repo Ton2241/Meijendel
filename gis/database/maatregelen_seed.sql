@@ -1015,6 +1015,27 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'Plas 8.4.2 is op de overzichtskaart in Van der Hagen (2005) herkenbaar als de zuidwestelijke plas van Complex 8. Vergelijking met de actuele TOP10NL-watergeometrie en SOVON-kavelgeometrie plaatst de volledige plas in M32. Ton bevestigde M32 op 15 oktober 2026. De in 2002 gebaggerde werkvoetafdruk binnen de plas is niet afzonderlijk begrensd; daarom blijft doorsnijding_pct leeg.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_slib_plassen_2005'
+JOIN plots p ON p.kavel_nummer='M32'
+WHERE u.uitvoering_code='slib_plas_8_4_2_2002'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
