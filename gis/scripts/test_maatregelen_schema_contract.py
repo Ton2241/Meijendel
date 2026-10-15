@@ -98,6 +98,7 @@ def main() -> int:
             "plot_gebied_lidmaatschap",
             "plot_gebied_geometrie",
             "maatregel_uitvoering_gebied",
+            "maatregel_uitvoering_plotscope",
         }
         rows = mysql("SHOW FULL TABLES WHERE Table_type='BASE TABLE';", TEST_DB).splitlines()
         actual = {row.split("\t", 1)[0] for row in rows}
@@ -118,6 +119,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_geometrie_actueel;") == 0
         assert scalar("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema=DATABASE() AND constraint_type='FOREIGN KEY';") >= 22
         assert scalar("SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='plot_gebied_lidmaatschap' AND index_name='PRIMARY' AND column_name IN ('indeling_code','plot_id');") == 2
+        assert scalar("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='maatregel_uitvoering_plotscope' AND column_name IN ('uitvoering_id','plotscope_status','bron_id','vastgesteld_op','verificatiestatus','opmerking');") == 6
         before = scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE();")
         apply_schema()
         after = scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE();")

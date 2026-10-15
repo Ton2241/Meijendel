@@ -304,6 +304,7 @@ CENTRAL_QUERY_SCHEMA = {
     'maatregel_uitvoering': frozenset(['activiteit_code', 'aangemaakt_op', 'cycliciteit', 'datum_precisie', 'datum_tot', 'datum_vanaf', 'gerealiseerde_hoeveelheid', 'gewijzigd_op', 'hoeveelheid_eenheid', 'locatie_naam', 'locatie_precisie', 'maatregel_id', 'maatregeltype_code', 'naam', 'omschrijving', 'opmerking', 'project_id', 'uitvoerder', 'uitvoering_code', 'uitvoering_id', 'uitvoering_status_code']),
     'maatregel_uitvoering_bron': frozenset(['bewijsnotitie', 'bron_id', 'bronrol', 'pagina_of_paragraaf', 'uitvoering_id']),
     'maatregel_uitvoering_gebied': frozenset(['bron_id', 'gebied_code', 'indeling_code', 'opmerking', 'relatietype', 'uitvoering_id', 'verificatiestatus']),
+    'maatregel_uitvoering_plotscope': frozenset(['bron_id', 'opmerking', 'plotscope_status', 'uitvoering_id', 'vastgesteld_op', 'verificatiestatus']),
     'maatregel_uitvoering_jaar': frozenset(['bron_id', 'jaar', 'jaarstatus', 'toelichting', 'uitvoering_id']),
     'maatregel_uitvoering_status': frozenset(['is_feitelijk_uitgevoerd', 'landelijk_status_code', 'omschrijving', 'uitvoering_status_code']),
     'maatregel_werkcategorie': frozenset(['omschrijving', 'werkcategorie_code']),

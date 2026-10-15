@@ -179,10 +179,11 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
 | `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
-| `maatregel_bron` | 31 | 22 lokaal geraadpleegde Zotero-bronnen en negen officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
-| `maatregel_uitvoering` | 62 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. Het werk in Meeuwenduin en Prinsenduin is voor 2023 en 2024 ruimtelijk gesplitst. |
-| `maatregel_uitvoering_jaar` | 100 | Letterlijk onderbouwde jaarstatussen uit 1967–2025: 84 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
-| `maatregel_uitvoering_bron` | 84 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
+| `maatregel_bron` | 33 | 23 lokaal geraadpleegde Zotero-bronnen en tien officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
+| `maatregel_uitvoering` | 63 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. Het werk in Meeuwenduin en Prinsenduin is voor 2023 en 2024 ruimtelijk gesplitst; de afgeronde Bendel-herinrichting en het geplande nabeheer zijn afzonderlijke uitvoeringen. |
+| `maatregel_uitvoering_jaar` | 102 | Letterlijk onderbouwde jaarstatussen uit 1967–2026: 86 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
+| `maatregel_uitvoering_bron` | 86 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
+| `maatregel_uitvoering_plotscope` | 2 | Expliciete beoordeling of een uitvoering binnen de 55 Meijendel-plots valt. De Bendel-herinrichting en het Bendel-nabeheer zijn beide geverifieerd als `buiten_meijendel_plotgebied`. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
 | `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
 | `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |

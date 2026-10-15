@@ -221,6 +221,25 @@ CREATE TABLE IF NOT EXISTS maatregel_uitvoering_bron (
     REFERENCES maatregel_bron (bron_id)
 ) ENGINE=InnoDB;
 
+-- Expliciete beoordeling of een uitvoering aan de 55 Meijendel-plots kan
+-- worden gekoppeld. Alleen uitzonderingen en beoordeelde gevallen hoeven hier
+-- een regel te krijgen; een ontbrekende regel betekent nog niet beoordeeld.
+CREATE TABLE IF NOT EXISTS maatregel_uitvoering_plotscope (
+  uitvoering_id BIGINT UNSIGNED NOT NULL,
+  plotscope_status ENUM('binnen_meijendel_plotgebied','buiten_meijendel_plotgebied','onbepaald') NOT NULL,
+  bron_id BIGINT UNSIGNED NOT NULL,
+  vastgesteld_op DATE NOT NULL,
+  verificatiestatus ENUM('geverifieerd','te_beoordelen','afgekeurd') NOT NULL,
+  opmerking VARCHAR(1000) NULL,
+  PRIMARY KEY (uitvoering_id),
+  KEY ix_maatregel_uitvoering_plotscope_status (plotscope_status, verificatiestatus),
+  KEY ix_maatregel_uitvoering_plotscope_bron (bron_id),
+  CONSTRAINT fk_maatregel_uitvoering_plotscope_uitvoering FOREIGN KEY (uitvoering_id)
+    REFERENCES maatregel_uitvoering (uitvoering_id) ON DELETE CASCADE,
+  CONSTRAINT fk_maatregel_uitvoering_plotscope_bron FOREIGN KEY (bron_id)
+    REFERENCES maatregel_bron (bron_id)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS maatregel_geometrie (
   geometrie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   uitvoering_id BIGINT UNSIGNED NOT NULL,

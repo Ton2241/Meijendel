@@ -34,6 +34,7 @@ INSERT INTO tmp_maatregel_bron_seed
   ('dunea_reguliere_werkzaamheden_2026','officiele_webpagina','Reguliere werkzaamheden in Meijendel','2026-10-13',NULL,'https://www.dunea.nl/duinen/werkzaamheden/reguliere-werkzaamheden','2026-10-13','actuele_webpagina','De pagina bevat geplande werkzaamheden bij de Paardenstal en elektriciteitswerk in Vallei Meijendel; uitvoering is niet als voltooid bevestigd.'),
   ('odh_paardenstal_beschikking_2025','inrichtingsplan','Beschikking flora- en fauna-activiteit: renovatie dak Paardenstal Hart van Meijendel','2025-11-05',NULL,'https://cuatro.sim-cdn.nl/wassenaar/uploads/besluit_op_aanvraag_01132870-odh1498120.pdf?cb=o8hXZHXK','2026-10-15','definitieve_beschikking','Zaak 01132870, kenmerk ODH1498120. Definitieve vergunning voor renovatie van de Paardenstal bij Hart van Meijendel; de kaartbijlagen begrenzen het plangebied. Geldig tot en met 15 maart 2027.'),
   ('pzh_bendel_subsidie_2026','subsidiebesluit','Openstellingsbesluit subsidie natuurmaatregelen 2026','2026-04-22',NULL,'https://zoek.officielebekendmakingen.nl/prb-2026-6828.html','2026-10-13','subsidie_openstelling','Subsidieerbaarheid van Bendel-nabeheer bewijst geen uitvoering.'),
+  ('staatsbosbeheer_bendel_2026','officiele_webpagina','Herinrichting Bendel',NULL,NULL,'https://www.staatsbosbeheer.nl/wat-we-doen/werk-in-uitvoering/hollands-duin-herinrichting-bendel','2026-10-15','actuele_webpagina','Staatsbosbeheer lokaliseert Bendel expliciet in Berkheide-Noord en noemt als looptijd najaar 2025 tot voorjaar 2026.'),
   ('dunea_dynamiek_2024','officiele_webpagina','Dynamiek in het duin','2024-12-18',NULL,'https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2024-12/dynamiek-in-het-duin','2026-10-13','officiele_publicatie','Bevestigt vijf in 2015 voltooide kerven en aanvang van het werk in september 2014.'),
   ('zotero_vogelrapport_1967','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1967',NULL,'JVDIWBDE',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1967 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
   ('zotero_vogelrapport_1968','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1968',NULL,'3B2FN68M',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1968 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
@@ -50,7 +51,8 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
   ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.'),
   ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.'),
-  ('zotero_meijendel_mededelingen_30_1996','beheerpublicatie','Meijendel Mededelingen - aflevering 30','1996-11-01','2TXQMXTB',NULL,'2026-10-14','gepubliceerd','Volledige aflevering geraadpleegd. Pagina 99 koppelt Sprang PI letterlijk aan kavel 13s en beschrijft het betrokken rietgebied als gelegen in kavels 13s en 14; gebruikt als ruimtelijke plancontext voor de herinrichting van 1997.');
+  ('zotero_meijendel_mededelingen_30_1996','beheerpublicatie','Meijendel Mededelingen - aflevering 30','1996-11-01','2TXQMXTB',NULL,'2026-10-14','gepubliceerd','Volledige aflevering geraadpleegd. Pagina 99 koppelt Sprang PI letterlijk aan kavel 13s en beschrijft het betrokken rietgebied als gelegen in kavels 13s en 14; gebruikt als ruimtelijke plancontext voor de herinrichting van 1997.'),
+  ('zotero_hollands_duinen_88_2026','beheerpublicatie','Holland''s Duinen - nummer 88','2026-04-01','JI7RKU9B','https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/dunea---hollands-duinen-nummer-88.pdf','2026-10-15','gepubliceerd','Het artikel Herinrichting Bendel - Werk om trots op te zijn! op pagina 47-50 beschrijft uitvoering van oktober 2025 tot maart 2026 en lokaliseert het project in Berkheide.' );
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -90,7 +92,7 @@ INSERT INTO tmp_maatregel_project_seed VALUES
   ('slagbomen_2025','Vervanging slagbomen Meijendel','Vervanging van slagbomen bij toegangen tot Meijendel.','infrastructuur','Dunea','afgerond','Meijendel & Berkheide','Meijendel','2025-12-01','2025-12-12',NULL,NULL,NULL),
   ('vallei_elektriciteit_2026','Elektriciteitswerk Vallei Meijendel','Kabel, elektriciteitskast en voorbereiding van drie laadpunten met zes plaatsen.','infrastructuur','Dunea','uitvoering_niet_bevestigd','Meijendel & Berkheide','Vallei Meijendel','2026-09-23',NULL,NULL,NULL,NULL),
   ('paardenstal_2026_2027','Werkzaamheden Paardenstal','Geplande renovatie van dak, gevels en kozijnen, plaatsing van zonnecollectoren en aanleg van water- en elektriciteitsleidingen, met voorafgaande maatregelen voor vleermuizen.','infrastructuur','Dunea','gepland','Meijendel & Berkheide','Paardenstal','2026-11-01','2027-03-31',NULL,NULL,NULL),
-  ('bendel_nabeheer_2026','Nabeheer Bendel','Subsidieerbaar nabeheer voor H2130 en H2190; uitvoering niet bewezen.','natuurbeheer','Nog niet vastgesteld','subsidie_openstelling','Meijendel & Berkheide','Bendel',NULL,NULL,'Subsidieregeling natuurmaatregelen 2026',NULL,'97-NP-263'),
+  ('bendel_nabeheer_2026','Herinrichting en nabeheer Bendel','Afgeronde herinrichting in 2025-2026 en afzonderlijk subsidieerbaar nabeheer voor H2130 en H2190; Bendel ligt in Berkheide-Noord, buiten de 55 Meijendel-plots.','natuurbeheer','Staatsbosbeheer','herinrichting_afgerond_nabeheer_gepland','Meijendel & Berkheide','Bendel, Berkheide-Noord','2025-10-01',NULL,'Subsidieregeling natuurmaatregelen 2026','Provincie Zuid-Holland en Europese Commissie','97-NP-263'),
   ('historische_waterwinning_1967_1975','Historische werkzaamheden waterwinning 1967-1975','Schoonmaak, peilbeheer, leidingen en aanleg of afwerking van infiltratieplassen zoals jaarlijks beschreven in de vogelrapporten.','waterwinning','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Meijendel','1967-01-01','1975-12-31',NULL,NULL,NULL),
   ('historische_recreatiepaden_1974_1975','Aanleg wandel- en ruiterpaden 1974-1975','Aanleg en voltooiing van paden rond Ganzenhoek en kavel 13.','recreatie','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Ganzenhoek en omgeving','1974-01-01','1975-12-31',NULL,NULL,NULL),
   ('rietpotenproef_1987','Rietpotenproef tegen winderosie','Aanleg van proefvlakken met rietpoten in stuifplekken in Noord-Meijendel.','natuurbeheer','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Noord-Meijendel','1987-10-29','1987-11-06',NULL,NULL,NULL),
@@ -175,6 +177,7 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('vallei_elektriciteit_2026','vallei_elektriciteit_2026',NULL,'MT03','L01','onbekend','Elektriciteitskabel en laadvoorbereiding','Start aangekondigd op 23 september 2026; voltooiing niet bevestigd.','Vallei Meijendel','benoemd_deelgebied','2026-09-23',NULL,'dag','eenmalig','Dunea',3,'aantal','Drie laadpunten, voorbereid voor zes plaatsen.'),
   ('paardenstal_2026_2027','paardenstal_2026_2027',NULL,'MT03','L02','gepland','Werkzaamheden Paardenstal','Geplande renovatie van dak, gevels en kozijnen, plaatsing van zonnecollectoren en aanleg van water- en elektriciteitsleidingen. Vooraf zijn mitigerende maatregelen voor vleermuisverblijfplaatsen vereist.','Paardenstal','benoemd_deelgebied','2026-11-01','2027-03-31','dag','eenmalig','Dunea',NULL,NULL,'Dunea noemt 1 november 2026 tot en met 31 maart 2027 als werkperiode. De ODH-beschikking onderbouwt aard en ligging, maar bewijst geen uitvoering.'),
   ('bendel_nabeheer_2026','bendel_nabeheer_2026',NULL,'MT02','D01','gepland','Subsidieerbaar nabeheer Bendel','Openstelling noemt nabeheer voor H2130 en H2190; geen bewijs van opdracht of uitvoering.','Bendel','benoemd_deelgebied',NULL,NULL,'onbekend',NULL,NULL,NULL,NULL,'Alleen plan- en subsidiecontext.'),
+  ('bendel_herinrichting_2025_2026','bendel_nabeheer_2026','plaggen_chopperen_afgraven','MT04','B03','uitgevoerd','Herinrichting Bendel','Herstel van historische duinakkers, dynamisch grijs duin en grotere en kleinere vochtige duinvalleien; tevens zijn twee duinpoelen gegraven.','Bendel, Berkheide-Noord','benoemd_deelgebied','2025-10-01','2026-03-31','maand','eenmalig','Staatsbosbeheer',NULL,NULL,'Holland''s Duinen 88 beschrijft uitvoering van oktober 2025 tot maart 2026 en afronding voor het broedseizoen van 2026. De uitvoering ligt buiten de 55 Meijendel-plots.'),
   ('kavel1b_herstel_1967','historische_waterwinning_1967_1975','geomorfologie_herstel_stortplaatsen','MT03','D01','uitgevoerd_voor_2026','Afrastering verwijderen en zand vastleggen in M1b','Oude afrastering verwijderd, helm en bomen geplant en in augustus grondwerk en aanvullende helmbeplanting uitgevoerd.','Kavel M1b','benoemd_deelgebied','1967-01-01','1967-08-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
   ('pan2_peilverlaging_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Waterpeil verlagen in M2','De infiltratiepannen in M2 zijn voor samenhangende werkzaamheden drooggezet.','Kavel M2','benoemd_deelgebied','1967-09-01','1967-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
   ('pan3_schoonmaak_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT04','B01','uitgevoerd_voor_2026','Infiltratiepannen M3 schoonmaken','De pannen in M3 zijn volledig schoongemaakt; bodemslib en veel riet zijn verwijderd.','Kavel M3','benoemd_deelgebied','1967-09-01','1967-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
@@ -303,6 +306,8 @@ INSERT INTO tmp_maatregel_jaar_seed VALUES
   ('waterwinning_pannen_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
   ('waterwinning_plaggen_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
   ('slagbomen_2025',2025,'uitgevoerd','dunea_slagbomen_2025','Werkperiode 1-12 december 2025.'),
+  ('bendel_herinrichting_2025_2026',2025,'uitgevoerd','zotero_hollands_duinen_88_2026','Herinrichting uitgevoerd vanaf oktober 2025.'),
+  ('bendel_herinrichting_2025_2026',2026,'uitgevoerd','zotero_hollands_duinen_88_2026','Werk in maart 2026 afgerond, vóór het broedseizoen.'),
   ('kavel1b_herstel_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Afrastering verwijderd; helm en bomen geplant; in augustus grondwerk en helmbeplanting.'),
   ('pan2_peilverlaging_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Infiltratiepannen in M2 drooggezet.'),
   ('pan3_schoonmaak_1967',1967,'uitgevoerd','zotero_vogelrapport_1967','Pannen in M3 volledig schoongemaakt.'),
@@ -399,6 +404,7 @@ SELECT uitvoering_code,
          WHEN uitvoering_code='slagbomen_2025' THEN 'dunea_slagbomen_2025'
          WHEN uitvoering_code IN ('vallei_elektriciteit_2026','paardenstal_2026_2027') THEN 'dunea_reguliere_werkzaamheden_2026'
          WHEN uitvoering_code='bendel_nabeheer_2026' THEN 'pzh_bendel_subsidie_2026'
+         WHEN uitvoering_code='bendel_herinrichting_2025_2026' THEN 'zotero_hollands_duinen_88_2026'
        END AS bron_code,
        CASE
          WHEN uitvoering_status_code IN ('gepland','onbekend') THEN 'plancontext'
@@ -437,7 +443,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.'),
   ('plaggen_parnassiapad2_1993','zotero_hollands_duinen_86_2025','bevestiging','p. 49, figuur 1','De routekaart toont de ligging van het Parnassiapad aan de noordzijde van de Helmduinen. Ton bevestigde op 14 oktober 2026 dat het geplagde Parnassiapad 2 aan M15 moet worden gekoppeld.'),
   ('konijnen_bijplaatsing_2024_2026','odh_konijnenontheffing_2023','bevestiging','p. 5 en bijlagen p. 4-5','De beschikking en het opgenomen activiteitenplan noemen twee uitzetlocaties: Kleine Pan en Waterschapsvallei. De kaartbijlagen begrenzen deze locaties. Ton bevestigde op 14 oktober 2026 de koppeling aan respectievelijk M8 en M41.'),
-  ('paardenstal_2026_2027','odh_paardenstal_beschikking_2025','plancontext','p. 1-2 en kaartbijlagen p. 12-14','De definitieve ODH-beschikking beschrijft dak-, gevel-, kozijn-, zonnecollector-, water- en elektriciteitswerk en vereiste vleermuismaatregelen. De kaartbijlagen begrenzen de Paardenstal naast De Tapuit en Boerderij Meyendel. De beschikking bewijst vergunningverlening en ligging, niet dat de geplande uitvoering al is begonnen of voltooid.');
+  ('paardenstal_2026_2027','odh_paardenstal_beschikking_2025','plancontext','p. 1-2 en kaartbijlagen p. 12-14','De definitieve ODH-beschikking beschrijft dak-, gevel-, kozijn-, zonnecollector-, water- en elektriciteitswerk en vereiste vleermuismaatregelen. De kaartbijlagen begrenzen de Paardenstal naast De Tapuit en Boerderij Meyendel. De beschikking bewijst vergunningverlening en ligging, niet dat de geplande uitvoering al is begonnen of voltooid.'),
+  ('bendel_herinrichting_2025_2026','staatsbosbeheer_bendel_2026','bevestiging','Locatie en looptijd','Staatsbosbeheer lokaliseert de herinrichting in Berkheide-Noord en noemt najaar 2025 tot voorjaar 2026 als looptijd.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -447,6 +454,25 @@ JOIN maatregel_uitvoering u ON u.uitvoering_code=s.uitvoering_code
 JOIN maatregel_bron b ON b.bron_code=s.bron_code
 ON DUPLICATE KEY UPDATE
   pagina_of_paragraaf=VALUES(pagina_of_paragraaf), bewijsnotitie=VALUES(bewijsnotitie);
+
+INSERT INTO maatregel_uitvoering_plotscope
+  (uitvoering_id,plotscope_status,bron_id,vastgesteld_op,verificatiestatus,opmerking)
+SELECT
+  u.uitvoering_id,
+  'buiten_meijendel_plotgebied',
+  b.bron_id,
+  '2026-10-15',
+  'geverifieerd',
+  'Staatsbosbeheer lokaliseert Bendel expliciet in Berkheide-Noord. De levende plotlaag bevat 55 Meijendel-plots en geen Berkheide-plots. Daarom krijgt deze uitvoering geen relatie in maatregel_plot_koppeling.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='staatsbosbeheer_bendel_2026'
+WHERE u.uitvoering_code IN ('bendel_nabeheer_2026','bendel_herinrichting_2025_2026')
+ON DUPLICATE KEY UPDATE
+  plotscope_status=VALUES(plotscope_status),
+  bron_id=VALUES(bron_id),
+  vastgesteld_op=VALUES(vastgesteld_op),
+  verificatiestatus=VALUES(verificatiestatus),
+  opmerking=VALUES(opmerking);
 
 INSERT INTO plot_gebied
   (gebied_code,naam,gebiedstype,karakterisering,sortering) VALUES
