@@ -116,13 +116,13 @@ def main() -> int:
         expected = {
             "maatregel_bron": 30,
             "maatregel_project": 18,
-            "maatregel_uitvoering": 61,
+            "maatregel_uitvoering": 62,
             "maatregel_uitvoering_jaar": 100,
             "maatregel_uitvoering_bron": 83,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 101,
+            "maatregel_plot_koppeling": 114,
             "maatregel_uitvoering_gebied": 2,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
@@ -130,7 +130,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 157
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 170
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -271,7 +271,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 21
+        """) == 20
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_kijfhoek_bierlap_1990' AND jaar=1990;") == 7
         assert scalar("""
           SELECT COUNT(*)
@@ -503,6 +503,44 @@ def main() -> int:
         """, TEST_DB) == "M32:benoemd_gebied_gevalideerd:zotero_slib_plassen_2005:geverifieerd"
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='slib_plas_8_4_2_2002' AND plot_id=3508 AND jaar=2002;") == 1
         assert mysql("""
+          SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL;
+        """, TEST_DB) == "M10-12-76,M12a,M2,M3,M35,M36,M73,M74,M75"
+        assert mysql("""
+          SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          WHERE u.uitvoering_code='prinsenduin_opslag_2024'
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL;
+        """, TEST_DB) == "M2,M3,M35,M36"
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+            AND jaar=2023;
+        """) == 9
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+            AND jaar=2024;
+        """) == 0
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='prinsenduin_opslag_2024'
+            AND jaar=2024;
+        """) == 4
+        assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
           JOIN maatregel_uitvoering u USING (uitvoering_id)
@@ -599,9 +637,30 @@ def main() -> int:
           WHERE uitvoering_code='ganzenhoek_wandelpad_1974_1975'
             AND jaar IN (1974,1975);
         """) == 8
+        mysql("""
+          INSERT INTO maatregel_uitvoering_jaar
+            (uitvoering_id,jaar,jaarstatus,bron_id,toelichting)
+          SELECT u.uitvoering_id,2024,'uitgevoerd',b.bron_id,'Verouderde gecombineerde jaarregel.'
+          FROM maatregel_uitvoering u
+          JOIN maatregel_bron b ON b.bron_code='dunea_jaarverslag_2024'
+          WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024';
+          INSERT INTO maatregel_uitvoering_bron
+            (uitvoering_id,bron_id,bronrol,pagina_of_paragraaf,bewijsnotitie)
+          SELECT u.uitvoering_id,b.bron_id,'bevestiging',NULL,'Verouderde bronkoppeling voor de gecombineerde uitvoering.'
+          FROM maatregel_uitvoering u
+          JOIN maatregel_bron b ON b.bron_code='dunea_jaarverslag_2024'
+          WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024';
+        """, TEST_DB)
         apply(SEED)
         after = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
         assert after == before, (before, after)
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_jaar j
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+            AND j.jaar=2024;
+        """) == 0
     finally:
         mysql(f"DROP DATABASE {TEST_DB};")
     print("OK: maatregelen-seed, brondekking en idempotentie")

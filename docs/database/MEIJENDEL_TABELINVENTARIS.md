@@ -180,7 +180,7 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 |---|---:|---|
 | `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
 | `maatregel_bron` | 30 | 22 lokaal geraadpleegde Zotero-bronnen en acht officiële webbronnen, ieder met type, datum, status en raadpleegdatum. |
-| `maatregel_uitvoering` | 61 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. |
+| `maatregel_uitvoering` | 62 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. Het werk in Meeuwenduin en Prinsenduin is voor 2023 en 2024 ruimtelijk gesplitst. |
 | `maatregel_uitvoering_jaar` | 100 | Letterlijk onderbouwde jaarstatussen uit 1967–2025: 84 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
 | `maatregel_uitvoering_bron` | 83 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
@@ -189,10 +189,10 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
 | `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
-| `maatregel_plot_koppeling` | 101 | 36 eerder onderbouwde relaties; 32 relaties via de nameninventaris; 11 voor Pan 13 en Plas 20; telkens 3 voor Helmduinen, Kikkervalleienbegrazing, bodemherstel, infrastructuur en Watercrassula; telkens 1 voor Parnassiapad 1, Parnassiapad 2 en Plas 8.4.2; 2 voor Waalsdorp; en 2 voor de konijnenbijplaatsingsproef. De exacte werkoppervlakken per kavel blijven onbekend. |
+| `maatregel_plot_koppeling` | 114 | 36 eerder onderbouwde relaties; 32 relaties via de nameninventaris; 11 voor Pan 13 en Plas 20; telkens 3 voor Helmduinen, Kikkervalleienbegrazing, bodemherstel, infrastructuur en Watercrassula; telkens 1 voor Parnassiapad 1, Parnassiapad 2 en Plas 8.4.2; 2 voor Waalsdorp; 13 voor Meeuwenduin en Prinsenduin; en 2 voor de konijnenbijplaatsingsproef. De exacte werkoppervlakken per kavel blijven onbekend. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 157 | Bronvaste plot-jaarregels voor 1967–1969, 1972–1975, 1988–1991, 1993, 1997, 2002, 2005–2006 en 2017–2025. Hieronder vallen Waalsdorp in M84 en M43 in 2016–2019, Parnassiapad 1 in M15 rond 1997, de konijnenbijplaatsingsproef in M8 en M41 in 2024 en de slibverwijdering in Plas 8.4.2 in M32 in 2002. |
+| `v_plot_jaar_maatregel_bronvast` | 170 | Bronvaste plot-jaarregels voor 1967–1969, 1972–1975, 1988–1991, 1993, 1997, 2002, 2005–2006 en 2017–2025. Hieronder vallen Meeuwenduin en Prinsenduin in negen kavels in 2023, alleen Prinsenduin in M2, M3, M35 en M36 in 2024, Waalsdorp in M84 en M43 in 2016–2019, Parnassiapad 1 in M15 rond 1997, de konijnenbijplaatsingsproef in M8 en M41 in 2024 en de slibverwijdering in Plas 8.4.2 in M32 in 2002. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 

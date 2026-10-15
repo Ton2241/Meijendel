@@ -163,7 +163,8 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('pas_22a_tafelberg_scheepje','pas_meijendel_grijze_duinen','maaibeheer_aanvullend','MT02','A06','in_uitvoering','Maaibeheer Tafelberg en t Scheepje','In 2016 gestopt wegens integrale begrazing; in 2025 deels hervat vanwege waterveiligheid.','Tafelberg en t Scheepje','benoemd_deelgebied','2016-01-01',NULL,'jaar','gewijzigd beheer','Dunea',1,'ha',NULL),
   ('ganzenhoek_dunning_2017','pas_meijendel_grijze_duinen','bosreductie_struweelbeheer','MT02','A04','uitgevoerd_voor_2026','Grote dunning Ganzenhoekbos','Grote dunning in 2017 ten behoeve van geleidelijke omvorming naar inheems duinbos.','Ganzenhoekbos','benoemd_deelgebied','2017-01-01','2017-12-31','jaar','eenmalig','Staatsbosbeheer',NULL,NULL,NULL),
   ('kikkervallei_watercrassula','kikkervallei_watercrassula','exotenbestrijding','MT01','F04','in_uitvoering','Watercrassula afdekken en bestrijden','Aangetroffen in 2015 en 2017, afgedekt met zeil en sindsdien bestreden.','Kikkervallei','benoemd_deelgebied','2015-01-01',NULL,'jaar','doorlopend','Dunea',NULL,NULL,NULL),
-  ('meeuwenduin_prinsenduin_opslag_2023_2024','meeuwenduin_prinsenduin_beheer','bosreductie_struweelbeheer','MT02','A09','uitgevoerd_voor_2026','Bomen, struiken en exoten verwijderen','Werk gestart in november 2023 en in 2024 voortgezet; gericht op onder meer Amerikaanse vogelkers, den, hulst en esdoorn.','Meeuwenduin en Prinsenduin','benoemd_deelgebied','2023-11-01','2024-12-31','periode','seizoenswerk november-maart','Dunea',NULL,NULL,NULL),
+  ('meeuwenduin_prinsenduin_opslag_2023_2024','meeuwenduin_prinsenduin_beheer','bosreductie_struweelbeheer','MT02','A09','uitgevoerd_voor_2026','Bomen, struiken en exoten verwijderen in Meeuwenduin en Prinsenduin','Werk gestart in november 2023; gericht op onder meer Amerikaanse vogelkers, den, hulst en esdoorn.','Meeuwenduin en Prinsenduin','benoemd_deelgebied','2023-11-01','2023-12-31','periode','seizoenswerk november-maart','Dunea',NULL,NULL,'De bestaande uitvoeringcode blijft als stabiele sleutel behouden, maar deze uitvoering bevat alleen het in 2023 gestarte werk in beide naamgebieden.'),
+  ('prinsenduin_opslag_2024','meeuwenduin_prinsenduin_beheer','bosreductie_struweelbeheer','MT02','A09','uitgevoerd_voor_2026','Bomen en struwelen verwijderen in Prinsenduin','Voortzetting in 2024 van de in 2023 gestarte natuurherstelwerkzaamheden bij Prinsenduin.','Prinsenduin','benoemd_deelgebied','2024-01-01','2024-12-31','jaar',NULL,'Dunea',NULL,NULL,'Afzonderlijke uitvoering voorkomt dat de voortzetting in 2024 ook aan Meeuwenduin wordt toegeschreven.'),
   ('konijnen_bijplaatsing_2024_2026','konijnen_bijplaatsing',NULL,'MT06','F01','uitgevoerd','Konijnen bijplaatsen en volgen','Pilot in 2024 uitgevoerd op twee uitzetlocaties en daar gemonitord. Voor 2025 en 2026 is in de geraadpleegde bronnen geen uitvoering per kalenderjaar bevestigd.','Kleine Pan en Waterschapsvallei','benoemd_deelgebied','2024-01-01','2024-12-31','jaar',NULL,'Dunea',NULL,NULL,'Onderzoek en beheerproef; niet als regulier begrazingsbeheer geclassificeerd. De beschikking gold tot en met 31 maart 2026, maar dat vergunnings- en planbereik is niet als feitelijke uitvoering in 2025 of 2026 geregistreerd.'),
   ('waterwinning_putten_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Nieuwe winputten aanleggen','Bijna 700 nieuwe putten aangelegd binnen het optimalisatieprogramma.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',700,'aantal','Bron zegt bijna 700; hoeveelheid is daarom afgerond.'),
   ('waterwinning_leidingen_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Leidingen aanleggen','6,5 kilometer leiding aangelegd.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',6.5,'km',NULL),
@@ -294,7 +295,7 @@ INSERT INTO tmp_maatregel_jaar_seed VALUES
   ('kikkervallei_watercrassula',2024,'uitgevoerd','zotero_n2000_evaluatie_2025','Sinds 2017 bestreden; bronstand 25 april 2025.'),
   ('kikkervallei_watercrassula',2025,'uitgevoerd','zotero_n2000_evaluatie_2025','Bestrijding liep bij de bronstand van 25 april 2025 door.'),
   ('meeuwenduin_prinsenduin_opslag_2023_2024',2023,'uitgevoerd','dunea_beheer_meijendel_2023','Werk gestart in november 2023.'),
-  ('meeuwenduin_prinsenduin_opslag_2023_2024',2024,'uitgevoerd','dunea_jaarverslag_2024','Werk in 2024 voortgezet.'),
+  ('prinsenduin_opslag_2024',2024,'uitgevoerd','dunea_jaarverslag_2024','Werk bij Prinsenduin in 2024 voortgezet.'),
   ('konijnen_bijplaatsing_2024_2026',2024,'uitgevoerd','dunea_jaarverslag_2024','Pilot gestart.'),
   ('waterwinning_putten_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
   ('waterwinning_leidingen_2010_2018',2018,'uitgevoerd','dunea_optimalisatie_waterwinning_2018','Programma afgerond.'),
@@ -336,6 +337,23 @@ INSERT INTO tmp_maatregel_jaar_seed VALUES
   ('plas20_infrastructuur_2005_2006',2005,'uitgevoerd','zotero_plas20_2006','Brug, dam en uitkijkvoorziening aangepast binnen de werkperiode.'),
   ('plas20_infrastructuur_2005_2006',2006,'uitgevoerd','zotero_plas20_2006','Infrastructurele aanpassingen afgerond binnen de werkperiode.');
 
+-- De bron over 2024 noemt alleen Prinsenduin. Verwijder bij actualisatie de
+-- oude gecombineerde jaar- en bronrelatie; 2024 krijgt hieronder een eigen
+-- uitvoering en kan daardoor niet meer aan Meeuwenduin worden toegeschreven.
+DELETE j
+FROM maatregel_uitvoering_jaar j
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+  AND j.jaar=2024;
+
+DELETE ub
+FROM maatregel_uitvoering_bron ub
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN maatregel_bron b USING (bron_id)
+WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+  AND b.bron_code='dunea_jaarverslag_2024'
+  AND ub.bronrol='bevestiging';
+
 INSERT INTO maatregel_uitvoering_jaar (uitvoering_id, jaar, jaarstatus, bron_id, toelichting)
 SELECT u.uitvoering_id, s.jaar, s.jaarstatus, b.bron_id, s.toelichting
 FROM tmp_maatregel_jaar_seed s
@@ -374,6 +392,7 @@ SELECT uitvoering_code,
          WHEN uitvoering_code LIKE 'zeereep_%' THEN 'zotero_stuifgaten_2017'
          WHEN uitvoering_code LIKE 'pas_%' OR uitvoering_code='ganzenhoek_dunning_2017' OR uitvoering_code='kikkervallei_watercrassula' THEN 'zotero_n2000_evaluatie_2025'
          WHEN uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024' THEN 'dunea_beheer_meijendel_2023'
+         WHEN uitvoering_code='prinsenduin_opslag_2024' THEN 'dunea_jaarverslag_2024'
          WHEN uitvoering_code='konijnen_bijplaatsing_2024_2026' THEN 'dunea_jaarverslag_2024'
          WHEN uitvoering_code LIKE 'waterwinning_%' THEN 'dunea_optimalisatie_waterwinning_2018'
          WHEN uitvoering_code='slagbomen_2025' THEN 'dunea_slagbomen_2025'
@@ -402,7 +421,6 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('pas_3d_begrazing_zuid','zotero_n2000_ontwerp_2026','bevestiging','4.2','Actualiseert onderbreking in 2020, hervatting in 2021 en vaste rasters in 2025.'),
   ('pas_24b_ouderijs','zotero_n2000_ontwerp_2026','tegenstrijdig_bewijs','4.2','Evaluatie noemt jaarlijks maaien; ontwerp actualiseert dat dit ten tijde van 2025 niet meer gebeurt.'),
   ('pas_22a_tafelberg_scheepje','zotero_n2000_ontwerp_2026','bevestiging','4.1.2','Bevestigt niet maaien in 2016 en hervatting in 2025.'),
-  ('meeuwenduin_prinsenduin_opslag_2023_2024','dunea_jaarverslag_2024','bevestiging',NULL,'Jaarverslag bevestigt voortzetting in 2024.'),
   ('begrazing_kijfhoek_bierlap_1990','zotero_begrazing_2012','bevestiging',NULL,'Bevestigt invoering in september 1990 en een begraasd oppervlak van 275 hectare.'),
   ('begrazing_helmduinen_1991','zotero_begrazing_2012','bevestiging',NULL,'Bevestigt begrazing van 125 hectare Helmduinen sinds 1991.'),
   ('kikkervalleien_begrazing_1997','zotero_valleien_2003','bevestiging',NULL,'Beschrijft toevoeging van de Kikkervalleien aan het begrazingsgebied na de herinrichting; de bron formuleert het vervolg als 1998.'),
@@ -1056,6 +1074,53 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
 JOIN plots p ON p.kavel_nummer IN ('M84','M43')
 WHERE u.uitvoering_code='pas_22d_waalsdorp'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CASE
+    WHEN p.kavel_nummer IN ('M10-12-76','M12a','M73','M74','M75') THEN
+      'Meeuwenduin is door Ton op 15 oktober 2026 gelijkgesteld aan het naamgebied Meeuwenhoek. De actuele Meeuwenhoek-geometrie [OBJ-78715810AF; geometrie 34] raakt deze kavel. De exacte werkvoetafdruk binnen de kavel is niet bekend.'
+    ELSE
+      'Voor Prinsenduin gebruikt Ton op 15 oktober 2026 voorlopig de actuele topografie van het afzonderlijke naamobject Prinsenberg. Deze raakt M2, M3, M35 en M36. De gelijkstelling is voorlopig en de exacte werkvoetafdruk binnen de kavel is niet bekend.'
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='dunea_beheer_meijendel_2023'
+JOIN plots p ON p.kavel_nummer IN ('M10-12-76','M12a','M73','M74','M75','M2','M3','M35','M36')
+WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'Voor Prinsenduin gebruikt Ton op 15 oktober 2026 voorlopig de actuele topografie van het afzonderlijke naamobject Prinsenberg. Deze raakt M2, M3, M35 en M36. Het Dunea-jaarverslag 2024 bevestigt voortzetting bij Prinsenduin, maar niet de exacte werkvoetafdruk binnen de kavels.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='dunea_jaarverslag_2024'
+JOIN plots p ON p.kavel_nummer IN ('M2','M3','M35','M36')
+WHERE u.uitvoering_code='prinsenduin_opslag_2024'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
