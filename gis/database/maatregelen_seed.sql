@@ -1252,6 +1252,40 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CASE
+    WHEN p.kavel_nummer='M32' THEN CONCAT(
+      'De Natura 2000-evaluatie van 25 april 2025 beschrijft jaarlijks aanvullend maaibeheer in Ruijgenhoek, Langestrook en De Loopert, totaal 3 hectare, en vermeldt dat Dunea dit beheer voortzet. ',
+      'Ton lokaliseerde Ruygenhoek op 15 oktober 2026 in M32. Langestrook blijft niet gelokaliseerd. ',
+      'De bron verdeelt de drie hectare niet over de gebieden of kavels; daarom blijft doorsnijding_pct leeg.'
+    )
+    ELSE CONCAT(
+      'De Natura 2000-evaluatie van 25 april 2025 beschrijft jaarlijks aanvullend maaibeheer in Ruijgenhoek, Langestrook en De Loopert, totaal 3 hectare, en vermeldt dat Dunea dit beheer voortzet. ',
+      'De actuele TOP10NL-geometrie van De Loopert [OBJ-70B5AFD1B2; geometrie 29] raakt ',
+      p.kavel_nummer,
+      '. Ton bevestigde deze verwerking op 15 oktober 2026. Langestrook blijft niet gelokaliseerd. ',
+      'De bron verdeelt de drie hectare niet over de gebieden of kavels; daarom blijft doorsnijding_pct leeg.'
+    )
+  END
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M32','M45','M83')
+WHERE u.uitvoering_code='pas_22b_maaibeheer'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
