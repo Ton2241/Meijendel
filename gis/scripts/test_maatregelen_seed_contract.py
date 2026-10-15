@@ -122,7 +122,7 @@ def main() -> int:
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 133,
+            "maatregel_plot_koppeling": 143,
             "maatregel_uitvoering_gebied": 2,
             "maatregel_uitvoering_plotscope": 2,
         }
@@ -373,6 +373,7 @@ def main() -> int:
             "begrazing_meeuwenhoek_voor_2008": "M10-12-76,M12a,M73,M74,M75",
             "pas_22a_tafelberg_scheepje": "M13,M6,M7,M77",
             "pas_22c_uilenbosch": "M42,M43,M84s",
+            "pas_23_maaibeheer": "M10-12-76,M12a,M62,M63,M64,M65,M72,M73,M74,M75",
             "pas_23_vogelkers_2020": "M10-12-76,M12a,M62,M63,M64,M65,M72,M73,M74,M75",
             "pas_24b_ouderijs": "M53,M84,M85",
         }
@@ -394,7 +395,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 14
+        """) == 13
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_uitvoering u
@@ -402,7 +403,7 @@ def main() -> int:
           LEFT JOIN maatregel_uitvoering_plotscope ps USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL
             AND COALESCE(ps.plotscope_status,'onbepaald') <> 'buiten_meijendel_plotgebied';
-        """) == 12
+        """) == 11
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld')) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
@@ -860,6 +861,7 @@ def main() -> int:
         """) == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_22a_tafelberg_scheepje' AND jaar=2025;") == 4
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_22c_uilenbosch' AND jaar BETWEEN 2017 AND 2021;") == 15
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_23_maaibeheer';") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_23_vogelkers_2020' AND jaar=2020;") == 10
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code IN ('begrazing_meeuwenhoek_voor_2008','pas_24b_ouderijs');") == 0
         assert scalar("""
