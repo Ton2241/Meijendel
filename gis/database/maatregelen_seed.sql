@@ -1436,6 +1436,38 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='pas_3b_vallei_begrazing'
+  AND p.kavel_nummer NOT IN ('M3','M4-5','M51','M52','M53','M54a','M54b','M55','M85');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'De Natura 2000-evaluatie van 25 april 2025 beschrijft dat de intensivering van het maaibeheer in Vallei Meijendel (maatregel 3b) is omgezet naar jaarlijkse begrazing met 38 heideschapen en dat Dunea dit beheer voortzet. ',
+    'De vastgestelde actuele gebiedsindeling omvat M3, M4-5, M51, M52, M53, M54a, M54b, M55 en M85. Ton bevestigde deze negen koppelingen op 15 oktober 2026. ',
+    'De historische voorgangers M4, M5 en M54 worden niet gekoppeld om ruimtelijke dubbeltelling te voorkomen. De exacte begrazingsvoetafdruk binnen de actuele kavels is niet gepubliceerd; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M3','M4-5','M51','M52','M53','M54a','M54b','M55','M85')
+WHERE u.uitvoering_code='pas_3b_vallei_begrazing'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;

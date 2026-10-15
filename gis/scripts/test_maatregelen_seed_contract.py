@@ -122,7 +122,7 @@ def main() -> int:
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 143,
+            "maatregel_plot_koppeling": 152,
             "maatregel_uitvoering_gebied": 2,
             "maatregel_uitvoering_plotscope": 3,
         }
@@ -395,7 +395,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 13
+        """) == 12
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_uitvoering u
@@ -403,7 +403,7 @@ def main() -> int:
           LEFT JOIN maatregel_uitvoering_plotscope ps USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL
             AND COALESCE(ps.plotscope_status,'onbepaald') <> 'buiten_meijendel_plotgebied';
-        """) == 10
+        """) == 9
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld')) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
@@ -777,6 +777,27 @@ def main() -> int:
             AND pk.verificatiestatus='geverifieerd'
             AND pk.doorsnijding_pct IS NULL;
         """, TEST_DB) == "M13s,M15,M16,M17a,M77,M78/79"
+        assert mysql("""
+          SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='pas_3b_vallei_begrazing'
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL
+            AND b.bron_code='zotero_n2000_evaluatie_2025';
+        """, TEST_DB) == "M3,M4-5,M51,M52,M53,M54a,M54b,M55,M85"
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          WHERE u.uitvoering_code='pas_3b_vallei_begrazing'
+            AND p.kavel_nummer IN ('M4','M5','M54');
+        """) == 0
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='pas_3b_vallei_begrazing';") == 0
         assert scalar("""
           SELECT COUNT(*)
           FROM v_plot_jaar_maatregel_bronvast
