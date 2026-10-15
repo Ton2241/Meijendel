@@ -1,5 +1,5 @@
 -- Eerste bronvaste invoer van werkzaamheden in Meijendel.
--- Stand bronbeoordeling: 14 oktober 2026.
+-- Stand bronbeoordeling: 15 oktober 2026.
 -- Geen uitvoeringsgeometrieën; plotkoppelingen worden alleen opgenomen waar de
 -- geraadpleegde bronnen de betrokken kavels expliciet noemen.
 
@@ -32,6 +32,7 @@ INSERT INTO tmp_maatregel_bron_seed
   ('odh_konijnenontheffing_2023','inrichtingsplan','Beschikking Wet natuurbescherming: pilot uitzetten konijnen in Meijendel','2023-08-28',NULL,'https://omgevingsdiensthaaglanden.nl/wp-content/uploads/besluiten/2023/08/30/4e5424ce-bc9f-42ce-870f-1a146507f6d1/Besluit%20op%20aanvraag%2001069060-ODH701135.pdf','2026-10-14','definitieve_beschikking','Zaak 01069060, kenmerk ODH701135. Bevat het activiteitenplan met de twee uitzetlocaties Kleine Pan en Waterschapsvallei en kaartbijlagen; vergunning geldig tot en met 31 maart 2026.'),
   ('dunea_slagbomen_2025','officiele_webpagina','Vervangen slagbomen Meijendel','2025-11-25',NULL,'https://www.dunea.nl/algemeen/nieuws/2025/vervangen-slagbomen-meijendel','2026-10-13','officiele_publicatie','Werkperiode 1 tot en met 12 december 2025.'),
   ('dunea_reguliere_werkzaamheden_2026','officiele_webpagina','Reguliere werkzaamheden in Meijendel','2026-10-13',NULL,'https://www.dunea.nl/duinen/werkzaamheden/reguliere-werkzaamheden','2026-10-13','actuele_webpagina','De pagina bevat geplande werkzaamheden bij de Paardenstal en elektriciteitswerk in Vallei Meijendel; uitvoering is niet als voltooid bevestigd.'),
+  ('odh_paardenstal_beschikking_2025','inrichtingsplan','Beschikking flora- en fauna-activiteit: renovatie dak Paardenstal Hart van Meijendel','2025-11-05',NULL,'https://cuatro.sim-cdn.nl/wassenaar/uploads/besluit_op_aanvraag_01132870-odh1498120.pdf?cb=o8hXZHXK','2026-10-15','definitieve_beschikking','Zaak 01132870, kenmerk ODH1498120. Definitieve vergunning voor renovatie van de Paardenstal bij Hart van Meijendel; de kaartbijlagen begrenzen het plangebied. Geldig tot en met 15 maart 2027.'),
   ('pzh_bendel_subsidie_2026','subsidiebesluit','Openstellingsbesluit subsidie natuurmaatregelen 2026','2026-04-22',NULL,'https://zoek.officielebekendmakingen.nl/prb-2026-6828.html','2026-10-13','subsidie_openstelling','Subsidieerbaarheid van Bendel-nabeheer bewijst geen uitvoering.'),
   ('dunea_dynamiek_2024','officiele_webpagina','Dynamiek in het duin','2024-12-18',NULL,'https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2024-12/dynamiek-in-het-duin','2026-10-13','officiele_publicatie','Bevestigt vijf in 2015 voltooide kerven en aanvang van het werk in september 2014.'),
   ('zotero_vogelrapport_1967','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1967',NULL,'JVDIWBDE',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1967 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
@@ -88,7 +89,7 @@ INSERT INTO tmp_maatregel_project_seed VALUES
   ('optimalisatie_waterwinning','Optimalisatie waterwinsysteem Meijendel','Achtjarig programma met putten, leidingen, schoning van infiltratiepannen en natuurherstel.','waterwinning','Dunea','afgerond','Meijendel & Berkheide','Meijendel','2010-01-01','2018-10-22',NULL,'Projectomvang 40 miljoen euro; natuurherstel voor 50 procent gesubsidieerd',NULL),
   ('slagbomen_2025','Vervanging slagbomen Meijendel','Vervanging van slagbomen bij toegangen tot Meijendel.','infrastructuur','Dunea','afgerond','Meijendel & Berkheide','Meijendel','2025-12-01','2025-12-12',NULL,NULL,NULL),
   ('vallei_elektriciteit_2026','Elektriciteitswerk Vallei Meijendel','Kabel, elektriciteitskast en voorbereiding van drie laadpunten met zes plaatsen.','infrastructuur','Dunea','uitvoering_niet_bevestigd','Meijendel & Berkheide','Vallei Meijendel','2026-09-23',NULL,NULL,NULL,NULL),
-  ('paardenstal_2026_2027','Werkzaamheden Paardenstal','Op de actuele werkzaamhedenpagina aangekondigde werkzaamheden bij de Paardenstal.','infrastructuur','Dunea','gepland','Meijendel & Berkheide','Paardenstal','2026-11-01','2027-03-31',NULL,NULL,NULL),
+  ('paardenstal_2026_2027','Werkzaamheden Paardenstal','Geplande renovatie van dak, gevels en kozijnen, plaatsing van zonnecollectoren en aanleg van water- en elektriciteitsleidingen, met voorafgaande maatregelen voor vleermuizen.','infrastructuur','Dunea','gepland','Meijendel & Berkheide','Paardenstal','2026-11-01','2027-03-31',NULL,NULL,NULL),
   ('bendel_nabeheer_2026','Nabeheer Bendel','Subsidieerbaar nabeheer voor H2130 en H2190; uitvoering niet bewezen.','natuurbeheer','Nog niet vastgesteld','subsidie_openstelling','Meijendel & Berkheide','Bendel',NULL,NULL,'Subsidieregeling natuurmaatregelen 2026',NULL,'97-NP-263'),
   ('historische_waterwinning_1967_1975','Historische werkzaamheden waterwinning 1967-1975','Schoonmaak, peilbeheer, leidingen en aanleg of afwerking van infiltratieplassen zoals jaarlijks beschreven in de vogelrapporten.','waterwinning','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Meijendel','1967-01-01','1975-12-31',NULL,NULL,NULL),
   ('historische_recreatiepaden_1974_1975','Aanleg wandel- en ruiterpaden 1974-1975','Aanleg en voltooiing van paden rond Ganzenhoek en kavel 13.','recreatie','Duinwaterleiding van s-Gravenhage','afgerond','Meijendel & Berkheide','Ganzenhoek en omgeving','1974-01-01','1975-12-31',NULL,NULL,NULL),
@@ -172,7 +173,7 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('waterwinning_plaggen_2010_2018','optimalisatie_waterwinning','plaggen_chopperen_afgraven','MT04','B04','uitgevoerd_voor_2026','Duinen plaggen bij optimalisatie waterwinning','Bijna 400.000 m2 duin geplagd; 100.000 m3 zand hergebruikt.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',40,'ha','Bron zegt bijna 400.000 m2; hoeveelheid is omgerekend en afgerond.'),
   ('slagbomen_2025','slagbomen_2025','rust_en_recreatiebeheer','MT03','G04','uitgevoerd_voor_2026','Slagbomen vervangen','Vervanging uitgevoerd in de aangekondigde werkperiode 1-12 december 2025.','Meijendel','meijendel_breed','2025-12-01','2025-12-12','dag','eenmalig','Dunea',NULL,NULL,NULL),
   ('vallei_elektriciteit_2026','vallei_elektriciteit_2026',NULL,'MT03','L01','onbekend','Elektriciteitskabel en laadvoorbereiding','Start aangekondigd op 23 september 2026; voltooiing niet bevestigd.','Vallei Meijendel','benoemd_deelgebied','2026-09-23',NULL,'dag','eenmalig','Dunea',3,'aantal','Drie laadpunten, voorbereid voor zes plaatsen.'),
-  ('paardenstal_2026_2027','paardenstal_2026_2027',NULL,'MT03','L02','gepland','Werkzaamheden Paardenstal','Geplande werkperiode 1 november 2026 tot en met 31 maart 2027.','Paardenstal','benoemd_deelgebied','2026-11-01','2027-03-31','dag','eenmalig','Dunea',NULL,NULL,NULL),
+  ('paardenstal_2026_2027','paardenstal_2026_2027',NULL,'MT03','L02','gepland','Werkzaamheden Paardenstal','Geplande renovatie van dak, gevels en kozijnen, plaatsing van zonnecollectoren en aanleg van water- en elektriciteitsleidingen. Vooraf zijn mitigerende maatregelen voor vleermuisverblijfplaatsen vereist.','Paardenstal','benoemd_deelgebied','2026-11-01','2027-03-31','dag','eenmalig','Dunea',NULL,NULL,'Dunea noemt 1 november 2026 tot en met 31 maart 2027 als werkperiode. De ODH-beschikking onderbouwt aard en ligging, maar bewijst geen uitvoering.'),
   ('bendel_nabeheer_2026','bendel_nabeheer_2026',NULL,'MT02','D01','gepland','Subsidieerbaar nabeheer Bendel','Openstelling noemt nabeheer voor H2130 en H2190; geen bewijs van opdracht of uitvoering.','Bendel','benoemd_deelgebied',NULL,NULL,'onbekend',NULL,NULL,NULL,NULL,'Alleen plan- en subsidiecontext.'),
   ('kavel1b_herstel_1967','historische_waterwinning_1967_1975','geomorfologie_herstel_stortplaatsen','MT03','D01','uitgevoerd_voor_2026','Afrastering verwijderen en zand vastleggen in M1b','Oude afrastering verwijderd, helm en bomen geplant en in augustus grondwerk en aanvullende helmbeplanting uitgevoerd.','Kavel M1b','benoemd_deelgebied','1967-01-01','1967-08-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
   ('pan2_peilverlaging_1967','historische_waterwinning_1967_1975','hydrologie_optimaliseren','MT03','C01','uitgevoerd_voor_2026','Waterpeil verlagen in M2','De infiltratiepannen in M2 zijn voor samenhangende werkzaamheden drooggezet.','Kavel M2','benoemd_deelgebied','1967-09-01','1967-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
@@ -435,7 +436,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('ganzenhoek_wandelpad_1974_1975','zotero_vogelrapport_1975','bevestiging',NULL,'Bevestigt voltooiing van het wandelpad langs M13, M13s, M14 en M77 in 1975.'),
   ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.'),
   ('plaggen_parnassiapad2_1993','zotero_hollands_duinen_86_2025','bevestiging','p. 49, figuur 1','De routekaart toont de ligging van het Parnassiapad aan de noordzijde van de Helmduinen. Ton bevestigde op 14 oktober 2026 dat het geplagde Parnassiapad 2 aan M15 moet worden gekoppeld.'),
-  ('konijnen_bijplaatsing_2024_2026','odh_konijnenontheffing_2023','bevestiging','p. 5 en bijlagen p. 4-5','De beschikking en het opgenomen activiteitenplan noemen twee uitzetlocaties: Kleine Pan en Waterschapsvallei. De kaartbijlagen begrenzen deze locaties. Ton bevestigde op 14 oktober 2026 de koppeling aan respectievelijk M8 en M41.');
+  ('konijnen_bijplaatsing_2024_2026','odh_konijnenontheffing_2023','bevestiging','p. 5 en bijlagen p. 4-5','De beschikking en het opgenomen activiteitenplan noemen twee uitzetlocaties: Kleine Pan en Waterschapsvallei. De kaartbijlagen begrenzen deze locaties. Ton bevestigde op 14 oktober 2026 de koppeling aan respectievelijk M8 en M41.'),
+  ('paardenstal_2026_2027','odh_paardenstal_beschikking_2025','plancontext','p. 1-2 en kaartbijlagen p. 12-14','De definitieve ODH-beschikking beschrijft dak-, gevel-, kozijn-, zonnecollector-, water- en elektriciteitswerk en vereiste vleermuismaatregelen. De kaartbijlagen begrenzen de Paardenstal naast De Tapuit en Boerderij Meyendel. De beschikking bewijst vergunningverlening en ligging, niet dat de geplande uitvoering al is begonnen of voltooid.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -1142,6 +1144,27 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='dunea_reguliere_werkzaamheden_2026'
 JOIN plots p ON p.kavel_nummer='M51'
 WHERE u.uitvoering_code='vallei_elektriciteit_2026'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'De kaartbijlagen op pagina 12-14 van de ODH-beschikking begrenzen de Paardenstal bij De Tapuit en Boerderij Meyendel. Ton bevestigde op 15 oktober 2026 dat de Paardenstal in M51 ligt. De exacte werkvoetafdruk binnen de kavel is niet gepubliceerd; daarom blijft doorsnijding_pct leeg.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='odh_paardenstal_beschikking_2025'
+JOIN plots p ON p.kavel_nummer='M51'
+WHERE u.uitvoering_code='paardenstal_2026_2027'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),

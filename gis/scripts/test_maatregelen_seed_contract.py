@@ -114,15 +114,15 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 30,
+            "maatregel_bron": 31,
             "maatregel_project": 18,
             "maatregel_uitvoering": 62,
             "maatregel_uitvoering_jaar": 100,
-            "maatregel_uitvoering_bron": 83,
+            "maatregel_uitvoering_bron": 84,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 115,
+            "maatregel_plot_koppeling": 116,
             "maatregel_uitvoering_gebied": 2,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
@@ -271,7 +271,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 19
+        """) == 18
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_kijfhoek_bierlap_1990' AND jaar=1990;") == 7
         assert scalar("""
           SELECT COUNT(*)
@@ -553,6 +553,33 @@ def main() -> int:
           FROM v_plot_jaar_maatregel_bronvast
           WHERE uitvoering_code='vallei_elektriciteit_2026';
         """) == 0
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_bron
+          WHERE bron_code='odh_paardenstal_beschikking_2025'
+            AND brontype_code='inrichtingsplan'
+            AND bron_datum='2025-11-05'
+            AND bronstatus='definitieve_beschikking';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_bron ub
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='paardenstal_2026_2027'
+            AND b.bron_code='odh_paardenstal_beschikking_2025'
+            AND ub.bronrol='plancontext';
+        """) == 1
+        assert mysql("""
+          SELECT CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld'))
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='paardenstal_2026_2027';
+        """, TEST_DB) == "M51:expliciet_in_bron:odh_paardenstal_beschikking_2025:geverifieerd:leeg"
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar uj JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='paardenstal_2026_2027';") == 0
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='paardenstal_2026_2027';") == 0
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
