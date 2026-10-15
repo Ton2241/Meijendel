@@ -114,15 +114,15 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 35,
+            "maatregel_bron": 37,
             "maatregel_project": 18,
-            "maatregel_uitvoering": 63,
-            "maatregel_uitvoering_jaar": 102,
-            "maatregel_uitvoering_bron": 89,
+            "maatregel_uitvoering": 64,
+            "maatregel_uitvoering_jaar": 104,
+            "maatregel_uitvoering_bron": 92,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 132,
+            "maatregel_plot_koppeling": 133,
             "maatregel_uitvoering_gebied": 2,
             "maatregel_uitvoering_plotscope": 2,
         }
@@ -131,7 +131,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 184
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 186
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -259,6 +259,74 @@ def main() -> int:
           WHERE uitvoering_code='waterwinning_leidingen_2010_2018'
             AND jaar=2018;
         """) == 7
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_bron
+          WHERE bron_code='zotero_kiwa_mededeling_114_1990'
+            AND zotero_item_key='6MSHE3RU'
+            AND titel='Natuurwaarden en waterwinning in de duinen: mogelijkheden voor behoud, herstel en ontwikkeling van natuurwaarden'
+            AND bron_datum='1990-12-01';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_bron
+          WHERE bron_code='officiele_bijlage_pim_2013_2014'
+            AND brontype_code='inrichtingsplan'
+            AND bron_datum='2013-08-01'
+            AND url LIKE '%exb-2013-7902.pdf';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering
+          WHERE uitvoering_code='infiltratieplas_27_2_2013_2014'
+            AND naam='Infiltratieplas 27.2 schonen en oevers aanpassen'
+            AND locatie_naam='Infiltratieplas 27.2'
+            AND locatie_precisie='benoemd_deelgebied'
+            AND datum_vanaf='2013-09-01'
+            AND datum_tot='2014-03-01'
+            AND gerealiseerde_hoeveelheid IS NULL;
+        """) == 1
+        assert mysql("""
+          SELECT GROUP_CONCAT(CONCAT(j.jaar,':',j.jaarstatus) ORDER BY j.jaar SEPARATOR ',')
+          FROM maatregel_uitvoering_jaar j
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          WHERE u.uitvoering_code='infiltratieplas_27_2_2013_2014';
+        """, TEST_DB) == '2013:uitgevoerd,2014:uitgevoerd'
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_bron ub
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='infiltratieplas_27_2_2013_2014'
+            AND b.bron_code IN ('officiele_bijlage_pim_2013_2014','zotero_kiwa_mededeling_114_1990','dunea_optimalisatie_waterwinning_2018');
+        """) == 3
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='infiltratieplas_27_2_2013_2014'
+            AND p.kavel_nummer='M77'
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL
+            AND b.bron_code='zotero_kiwa_mededeling_114_1990';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='infiltratieplas_27_2_2013_2014'
+            AND plot_id=3532
+            AND jaar IN (2013,2014);
+        """) == 2
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering
+          WHERE uitvoering_code='waterwinning_pannen_2010_2018'
+            AND gerealiseerde_hoeveelheid=370000
+            AND hoeveelheid_eenheid='m3';
+        """) == 1
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_plot_koppeling pk
