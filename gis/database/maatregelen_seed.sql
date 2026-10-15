@@ -700,6 +700,27 @@ SELECT
   NULL,
   'geverifieerd',
   b.bron_id,
+  CONCAT('Kikkervalleien; Holland''s Duinen 55 (april 2010), pagina 5, beschrijft handmatige en later vooral machinale Duindoornbestrijding en jaarlijks maaien als nabeheer na de herinrichting van 1997. Pagina 22 benoemt ', p.kavel_nummer, ' expliciet als een van de drie kavels waarin de Kikkervalleien liggen. Ton bevestigde deze koppeling op 15 oktober 2026. De bron geeft geen sluitende uitvoeringsjaren of behandelingsoppervlakte per kavel; daarom blijft het doorsnijdingspercentage leeg en worden geen jaarregels toegevoegd.')
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_kikkervalleien_2010'
+JOIN plots p ON p.kavel_nummer IN ('M13','M13s','M14')
+WHERE u.uitvoering_code='kikkervalleien_duindoorn_nabeheer'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'expliciet_in_bron',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
   CONCAT('Kikkervalleien; Holland''s Duinen 55 (april 2010), pagina 5, beschrijft verwijdering van vegetatie en voedselrijke bovengrond in en rond Pan 26.1 in het najaar van 1997. Pagina 22 benoemt ', p.kavel_nummer, ' expliciet als een van de drie kavels waarin de Kikkervalleien liggen en toont het bewerkte gebied met een zwarte begrenzing. De totale ingreep besloeg circa 50 hectare, maar de oppervlakte per kavel is niet gegeven; daarom blijft het doorsnijdingspercentage leeg.')
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_kikkervalleien_2010'
