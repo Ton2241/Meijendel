@@ -1219,6 +1219,39 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='ganzenhoek_dunning_2017'
+  AND p.kavel_nummer='M13s';
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'De Natura 2000-evaluatie van 25 april 2025 noemt Ganzenhoek en bevestigt de grote dunning van het Ganzenhoekbos in 2017. ',
+    'De actuele Ganzenhoek-geometrie in de nameninventaris raakt M13s, M77 en M78/79. ',
+    'Ton bepaalde op 15 oktober 2026 dat deze dunning uitsluitend aan M77 en M78/79 wordt gekoppeld en niet aan M13s. ',
+    'De exacte werkvoetafdruk binnen de twee kavels is niet bekend; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M77','M78/79')
+WHERE u.uitvoering_code='ganzenhoek_dunning_2017'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
