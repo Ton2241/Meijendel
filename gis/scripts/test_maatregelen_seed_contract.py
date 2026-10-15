@@ -114,15 +114,15 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 34,
+            "maatregel_bron": 35,
             "maatregel_project": 18,
             "maatregel_uitvoering": 63,
             "maatregel_uitvoering_jaar": 102,
-            "maatregel_uitvoering_bron": 88,
+            "maatregel_uitvoering_bron": 89,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 125,
+            "maatregel_plot_koppeling": 132,
             "maatregel_uitvoering_gebied": 2,
             "maatregel_uitvoering_plotscope": 2,
         }
@@ -131,7 +131,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 177
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 184
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -217,6 +217,50 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE bron_code='zotero_plas20_2006' AND bron_datum='2006-03-01' AND titel='Schone start voor infiltratieplas 20 in Meijendel';") == 1
         assert scalar("""
           SELECT COUNT(*)
+          FROM maatregel_bron
+          WHERE bron_code='denhaag_pim_archeologie_2013'
+            AND brontype_code='onderzoeksrapport'
+            AND titel='Dunea. Programma Investeringen Meijendel, gemeenten Den Haag en Wassenaar'
+            AND bron_datum='2013-01-01';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering
+          WHERE uitvoering_code='waterwinning_leidingen_2010_2018'
+            AND naam='Leidingwerk vernieuwen en aansluiten'
+            AND omschrijving='In totaal is 6,5 kilometer leiding vernieuwd; het PIM-rapport specificeert vervanging en aansluiting van leidingwerk in meerdere winningsseries.'
+            AND locatie_precisie='benoemd_deelgebied';
+        """) == 1
+        assert mysql("""
+          SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='waterwinning_leidingen_2010_2018'
+            AND pk.koppelmethode='benoemd_gebied_gevalideerd'
+            AND pk.verificatiestatus='geverifieerd'
+            AND pk.doorsnijding_pct IS NULL
+            AND b.bron_code='denhaag_pim_archeologie_2013';
+        """, TEST_DB) == 'M41,M42,M43,M45,M84,M84s,M85'
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering_bron ub
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='waterwinning_leidingen_2010_2018'
+            AND b.bron_code='denhaag_pim_archeologie_2013'
+            AND ub.bronrol='bevestiging'
+            AND ub.pagina_of_paragraaf='p. 4 en bijlage 2, p. 38-39';
+        """) == 1
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='waterwinning_leidingen_2010_2018'
+            AND jaar=2018;
+        """) == 7
+        assert scalar("""
+          SELECT COUNT(*)
           FROM maatregel_plot_koppeling pk
           JOIN maatregel_uitvoering u USING (uitvoering_id)
           JOIN plots p USING (plot_id)
@@ -282,7 +326,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 15
+        """) == 14
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_uitvoering u
@@ -290,7 +334,7 @@ def main() -> int:
           LEFT JOIN maatregel_uitvoering_plotscope ps USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL
             AND COALESCE(ps.plotscope_status,'onbepaald') <> 'buiten_meijendel_plotgebied';
-        """) == 13
+        """) == 12
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld')) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk

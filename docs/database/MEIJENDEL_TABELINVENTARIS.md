@@ -179,10 +179,10 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
 | `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
-| `maatregel_bron` | 34 | 24 lokaal geraadpleegde Zotero-bronnen en tien officiële webbronnen, ieder met type, datum, status en raadpleegdatum. Van der Hagen et al. (2020) is als ruimtelijke plancontext voor Prinsenduin toegevoegd. |
+| `maatregel_bron` | 35 | 24 lokaal geraadpleegde Zotero-bronnen en elf officiële of institutionele internetbronnen, ieder met type, datum, status en raadpleegdatum. Van der Hagen et al. (2020) is als ruimtelijke plancontext voor Prinsenduin toegevoegd; Haagse Archeologische Rapportage 1306 onderbouwt het PIM-leidingwerk. |
 | `maatregel_uitvoering` | 63 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. Het werk in Meeuwenduin en Prinsenduin is voor 2023 en 2024 ruimtelijk gesplitst; de afgeronde Bendel-herinrichting en het geplande nabeheer zijn afzonderlijke uitvoeringen. |
 | `maatregel_uitvoering_jaar` | 102 | Letterlijk onderbouwde jaarstatussen uit 1967–2026: 86 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
-| `maatregel_uitvoering_bron` | 88 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. De twee Prinsenduin-uitvoeringen verwijzen aanvullend naar figuur 1 van Van der Hagen et al. (2020). |
+| `maatregel_uitvoering_bron` | 89 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. De twee Prinsenduin-uitvoeringen verwijzen aanvullend naar figuur 1 van Van der Hagen et al. (2020); het PIM-leidingwerk verwijst aanvullend naar afbeelding 1 en bijlage 2 van Haagse Archeologische Rapportage 1306. |
 | `maatregel_uitvoering_plotscope` | 2 | Expliciete beoordeling of een uitvoering binnen de 55 Meijendel-plots valt. De Bendel-herinrichting en het Bendel-nabeheer zijn beide geverifieerd als `buiten_meijendel_plotgebied`. |
 | `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
 | `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
@@ -190,10 +190,10 @@ De levende lokale database bevat naast de bestaande classificatie een afzonderli
 | `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
 | `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
 | `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
-| `maatregel_plot_koppeling` | 125 | Helmduinen is gekoppeld aan M15 en M16; M17a is retroactief verwijderd. Meeuwenduin en Prinsenduin hebben samen zeven relaties: vijf voor Meeuwenhoek plus M17a in 2023, en M17a in 2024. Het maaibeheer in Ruygenhoek, Lange Strook en De Loopert heeft vijf relaties: M1a, M1b, M32, M45 en M83. Maatregel 22h heeft zes relaties: M13s, M15, M16, M17a, M77 en M78/79. Eerdere Prinsenduin-relaties met M2, M3, M35 en M36 zijn verwijderd. De exacte werkoppervlakken per kavel blijven onbekend. |
+| `maatregel_plot_koppeling` | 132 | Helmduinen is gekoppeld aan M15 en M16; M17a is retroactief verwijderd. Meeuwenduin en Prinsenduin hebben samen zeven relaties. Het maaibeheer in Ruygenhoek, Lange Strook en De Loopert heeft vijf relaties. Maatregel 22h heeft zes relaties. Het PIM-leidingwerk heeft zeven relaties: M41, M42, M43, M45, M84, M84s en M85. De gepubliceerde 6,5 kilometer is niet per kavel verdeeld; alle doorsnijdingspercentages blijven leeg. |
 | `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
 | `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
-| `v_plot_jaar_maatregel_bronvast` | 177 | Bronvaste plot-jaarregels voor 1967–1969, 1972–1975, 1988–1991, 1993, 1997, 2002, 2005–2006 en 2016–2025. Meeuwenduin en Prinsenduin leveren zes regels in 2023 en één voor M17a in 2024. Maatregel 22h levert twaalf scoperegels voor zes kavels in 2016 en 2017; de bron verdeelt de werkzaamheden niet per kavel. |
+| `v_plot_jaar_maatregel_bronvast` | 184 | Bronvaste plot-jaarregels voor 1967–1969, 1972–1975, 1988–1991, 1993, 1997, 2002, 2005–2006 en 2016–2025. Meeuwenduin en Prinsenduin leveren zes regels in 2023 en één voor M17a in 2024. Maatregel 22h levert twaalf scoperegels in 2016 en 2017. Het PIM-leidingwerk levert zeven scoperegels voor 2018; de bron verdeelt de lengte niet per kavel. |
 
 De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
 

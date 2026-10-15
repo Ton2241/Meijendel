@@ -53,7 +53,8 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.'),
   ('zotero_meijendel_mededelingen_30_1996','beheerpublicatie','Meijendel Mededelingen - aflevering 30','1996-11-01','2TXQMXTB',NULL,'2026-10-14','gepubliceerd','Volledige aflevering geraadpleegd. Pagina 99 koppelt Sprang PI letterlijk aan kavel 13s en beschrijft het betrokken rietgebied als gelegen in kavels 13s en 14; gebruikt als ruimtelijke plancontext voor de herinrichting van 1997.'),
   ('zotero_hollands_duinen_88_2026','beheerpublicatie','Holland''s Duinen - nummer 88','2026-04-01','JI7RKU9B','https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/dunea---hollands-duinen-nummer-88.pdf','2026-10-15','gepubliceerd','Het artikel Herinrichting Bendel - Werk om trots op te zijn! op pagina 47-50 beschrijft uitvoering van oktober 2025 tot maart 2026 en lokaliseert het project in Berkheide.'),
-  ('zotero_prinsenduin_2020','onderzoeksrapport','Is livestock grazing a key factor for changing vegetation patterns in lime rich coastal dunes in the Netherlands?','2020-03-14','IVRJVABT','https://doi.org/10.1007/s11852-020-00733-z','2026-10-15','gepubliceerd','Figuur 1 onderscheidt Prinsenduin, Lange Strooken en Helmduinen als afzonderlijke onderzoeksgebieden. Gebruikt als ruimtelijke context; de plottoedeling volgt uit de combinatie met de nameninventaris en Tons vaststelling.');
+  ('zotero_prinsenduin_2020','onderzoeksrapport','Is livestock grazing a key factor for changing vegetation patterns in lime rich coastal dunes in the Netherlands?','2020-03-14','IVRJVABT','https://doi.org/10.1007/s11852-020-00733-z','2026-10-15','gepubliceerd','Figuur 1 onderscheidt Prinsenduin, Lange Strooken en Helmduinen als afzonderlijke onderzoeksgebieden. Gebruikt als ruimtelijke context; de plottoedeling volgt uit de combinatie met de nameninventaris en Tons vaststelling.'),
+  ('denhaag_pim_archeologie_2013','onderzoeksrapport','Dunea. Programma Investeringen Meijendel, gemeenten Den Haag en Wassenaar','2013-01-01',NULL,'https://doi.org/10.17026/DANS-XTN-EEV7','2026-10-15','gepubliceerd','Haagse Archeologische Rapportage 1306 van M. Benjamins. Afbeelding 1 begrenst de PIM-werkgebieden; bijlage 2 specificeert het leidingwerk per winningsserie. Alleen het publicatiejaar 2013 is bekend, daarom is 1 januari als datumprecisie op jaarniveau vastgelegd.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -171,7 +172,7 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('prinsenduin_opslag_2024','meeuwenduin_prinsenduin_beheer','bosreductie_struweelbeheer','MT02','A09','uitgevoerd_voor_2026','Bomen en struwelen verwijderen in Prinsenduin','Voortzetting in 2024 van de in 2023 gestarte natuurherstelwerkzaamheden bij Prinsenduin.','Prinsenduin','benoemd_deelgebied','2024-01-01','2024-12-31','jaar',NULL,'Dunea',NULL,NULL,'Afzonderlijke uitvoering voorkomt dat de voortzetting in 2024 ook aan Meeuwenduin wordt toegeschreven.'),
   ('konijnen_bijplaatsing_2024_2026','konijnen_bijplaatsing',NULL,'MT06','F01','uitgevoerd','Konijnen bijplaatsen en volgen','Pilot in 2024 uitgevoerd op twee uitzetlocaties en daar gemonitord. Voor 2025 en 2026 is in de geraadpleegde bronnen geen uitvoering per kalenderjaar bevestigd.','Kleine Pan en Waterschapsvallei','benoemd_deelgebied','2024-01-01','2024-12-31','jaar',NULL,'Dunea',NULL,NULL,'Onderzoek en beheerproef; niet als regulier begrazingsbeheer geclassificeerd. De beschikking gold tot en met 31 maart 2026, maar dat vergunnings- en planbereik is niet als feitelijke uitvoering in 2025 of 2026 geregistreerd.'),
   ('waterwinning_putten_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Nieuwe winputten aanleggen','Bijna 700 nieuwe putten aangelegd binnen het optimalisatieprogramma.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',700,'aantal','Bron zegt bijna 700; hoeveelheid is daarom afgerond.'),
-  ('waterwinning_leidingen_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Leidingen aanleggen','6,5 kilometer leiding aangelegd.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',6.5,'km',NULL),
+  ('waterwinning_leidingen_2010_2018','optimalisatie_waterwinning',NULL,'MT04','L01','uitgevoerd_voor_2026','Leidingwerk vernieuwen en aansluiten','In totaal is 6,5 kilometer leiding vernieuwd; het PIM-rapport specificeert vervanging en aansluiting van leidingwerk in meerdere winningsseries.','Serie RA, Serie WV, Serie E, Serie LV en Complex 8','benoemd_deelgebied','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',6.5,'km','Dunea geeft geen verdeling van de totale 6,5 kilometer over de afzonderlijke winningsseries of kavels.'),
   ('waterwinning_pannen_2010_2018','optimalisatie_waterwinning','hydrologie_optimaliseren','MT04','B01','uitgevoerd_voor_2026','Infiltratiepannen schonen en oevers natuurvriendelijk maken','370.000 m3 materiaal verwijderd; pannen schoongemaakt en oevers natuurvriendelijk ingericht.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',370000,'m3',NULL),
   ('waterwinning_plaggen_2010_2018','optimalisatie_waterwinning','plaggen_chopperen_afgraven','MT04','B04','uitgevoerd_voor_2026','Duinen plaggen bij optimalisatie waterwinning','Bijna 400.000 m2 duin geplagd; 100.000 m3 zand hergebruikt.','Meijendel','meijendel_breed','2010-01-01','2018-10-22','periode','eenmalig programma','Dunea',40,'ha','Bron zegt bijna 400.000 m2; hoeveelheid is omgerekend en afgerond.'),
   ('slagbomen_2025','slagbomen_2025','rust_en_recreatiebeheer','MT03','G04','uitgevoerd_voor_2026','Slagbomen vervangen','Vervanging uitgevoerd in de aangekondigde werkperiode 1-12 december 2025.','Meijendel','meijendel_breed','2025-12-01','2025-12-12','dag','eenmalig','Dunea',NULL,NULL,NULL),
@@ -447,7 +448,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('meeuwenduin_prinsenduin_opslag_2023_2024','zotero_prinsenduin_2020','plancontext','figuur 1','Figuur 1 onderscheidt Prinsenduin van de Prinsenberg en plaatst het als zuidwestelijk onderzoeksgebied in de paraboolduinen. Ton lokaliseerde Prinsenduin op 15 oktober 2026 in M17a.'),
   ('prinsenduin_opslag_2024','zotero_prinsenduin_2020','plancontext','figuur 1','Figuur 1 onderscheidt Prinsenduin van de Prinsenberg en plaatst het als zuidwestelijk onderzoeksgebied in de paraboolduinen. Ton lokaliseerde Prinsenduin op 15 oktober 2026 in M17a.'),
   ('paardenstal_2026_2027','odh_paardenstal_beschikking_2025','plancontext','p. 1-2 en kaartbijlagen p. 12-14','De definitieve ODH-beschikking beschrijft dak-, gevel-, kozijn-, zonnecollector-, water- en elektriciteitswerk en vereiste vleermuismaatregelen. De kaartbijlagen begrenzen de Paardenstal naast De Tapuit en Boerderij Meyendel. De beschikking bewijst vergunningverlening en ligging, niet dat de geplande uitvoering al is begonnen of voltooid.'),
-  ('bendel_herinrichting_2025_2026','staatsbosbeheer_bendel_2026','bevestiging','Locatie en looptijd','Staatsbosbeheer lokaliseert de herinrichting in Berkheide-Noord en noemt najaar 2025 tot voorjaar 2026 als looptijd.');
+  ('bendel_herinrichting_2025_2026','staatsbosbeheer_bendel_2026','bevestiging','Locatie en looptijd','Staatsbosbeheer lokaliseert de herinrichting in Berkheide-Noord en noemt najaar 2025 tot voorjaar 2026 als looptijd.'),
+  ('waterwinning_leidingen_2010_2018','denhaag_pim_archeologie_2013','bevestiging','p. 4 en bijlage 2, p. 38-39','Afbeelding 1 begrenst de PIM-werkgebieden. Bijlage 2 noemt expliciet vervanging of aansluiting van leidingwerk in Serie RA, Serie WV, Serie E, Serie LV en Complex 8. Dunea meldt voor het programma als geheel 6,5 kilometer vernieuwde leiding, maar verdeelt deze lengte niet over series of kavels.');
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -1318,6 +1320,38 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
 JOIN plots p ON p.kavel_nummer IN ('M13s','M15','M16','M17a','M77','M78/79')
 WHERE u.uitvoering_code='pas_22h_aanvullend_beheer'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
+JOIN plots p ON p.plot_id=pk.plot_id
+WHERE u.uitvoering_code='waterwinning_leidingen_2010_2018'
+  AND p.kavel_nummer NOT IN ('M41','M42','M43','M45','M84','M84s','M85');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Het PIM-rapport uit 2013 specificeert leidingvervanging of -aansluiting in Serie RA, Serie WV, Serie E, Serie LV en Complex 8. ',
+    'De werkgebieden op afbeelding 1 zijn op 15 oktober 2026 over de actuele kavelgeometrie gelegd; Ton bevestigde vervolgens de gezamenlijke koppeling aan M41, M42, M43, M45, M84, M84s en M85. ',
+    'De gepubliceerde totale lengte van 6,5 kilometer is niet per serie of kavel uitgesplitst; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='denhaag_pim_archeologie_2013'
+JOIN plots p ON p.kavel_nummer IN ('M41','M42','M43','M45','M84','M84s','M85')
+WHERE u.uitvoering_code='waterwinning_leidingen_2010_2018'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
