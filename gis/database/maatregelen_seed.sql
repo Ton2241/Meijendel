@@ -52,7 +52,8 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.'),
   ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.'),
   ('zotero_meijendel_mededelingen_30_1996','beheerpublicatie','Meijendel Mededelingen - aflevering 30','1996-11-01','2TXQMXTB',NULL,'2026-10-14','gepubliceerd','Volledige aflevering geraadpleegd. Pagina 99 koppelt Sprang PI letterlijk aan kavel 13s en beschrijft het betrokken rietgebied als gelegen in kavels 13s en 14; gebruikt als ruimtelijke plancontext voor de herinrichting van 1997.'),
-  ('zotero_hollands_duinen_88_2026','beheerpublicatie','Holland''s Duinen - nummer 88','2026-04-01','JI7RKU9B','https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/dunea---hollands-duinen-nummer-88.pdf','2026-10-15','gepubliceerd','Het artikel Herinrichting Bendel - Werk om trots op te zijn! op pagina 47-50 beschrijft uitvoering van oktober 2025 tot maart 2026 en lokaliseert het project in Berkheide.' );
+  ('zotero_hollands_duinen_88_2026','beheerpublicatie','Holland''s Duinen - nummer 88','2026-04-01','JI7RKU9B','https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/dunea---hollands-duinen-nummer-88.pdf','2026-10-15','gepubliceerd','Het artikel Herinrichting Bendel - Werk om trots op te zijn! op pagina 47-50 beschrijft uitvoering van oktober 2025 tot maart 2026 en lokaliseert het project in Berkheide.'),
+  ('zotero_prinsenduin_2020','onderzoeksrapport','Is livestock grazing a key factor for changing vegetation patterns in lime rich coastal dunes in the Netherlands?','2020-03-14','IVRJVABT','https://doi.org/10.1007/s11852-020-00733-z','2026-10-15','gepubliceerd','Figuur 1 onderscheidt Prinsenduin, Lange Strooken en Helmduinen als afzonderlijke onderzoeksgebieden. Gebruikt als ruimtelijke context; de plottoedeling volgt uit de combinatie met de nameninventaris en Tons vaststelling.');
 
 INSERT INTO maatregel_bron
   (bron_code, brontype_code, titel, bron_datum, zotero_item_key, url, raadpleegdatum, bronstatus, opmerking)
@@ -443,6 +444,8 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('plas20_reparatie_1969','zotero_plas20_2006','bevestiging','figuur 1-2','Beschrijft Plas 20 als één langgerekt plassensysteem met een noordelijk, midden- en zuidelijk deel. Ton koppelde deze delen op 14 oktober 2026 respectievelijk aan M16, M17a en M17b.'),
   ('plaggen_parnassiapad2_1993','zotero_hollands_duinen_86_2025','bevestiging','p. 49, figuur 1','De routekaart toont de ligging van het Parnassiapad aan de noordzijde van de Helmduinen. Ton bevestigde op 14 oktober 2026 dat het geplagde Parnassiapad 2 aan M15 moet worden gekoppeld.'),
   ('konijnen_bijplaatsing_2024_2026','odh_konijnenontheffing_2023','bevestiging','p. 5 en bijlagen p. 4-5','De beschikking en het opgenomen activiteitenplan noemen twee uitzetlocaties: Kleine Pan en Waterschapsvallei. De kaartbijlagen begrenzen deze locaties. Ton bevestigde op 14 oktober 2026 de koppeling aan respectievelijk M8 en M41.'),
+  ('meeuwenduin_prinsenduin_opslag_2023_2024','zotero_prinsenduin_2020','plancontext','figuur 1','Figuur 1 onderscheidt Prinsenduin van de Prinsenberg en plaatst het als zuidwestelijk onderzoeksgebied in de paraboolduinen. Ton lokaliseerde Prinsenduin op 15 oktober 2026 in M17a.'),
+  ('prinsenduin_opslag_2024','zotero_prinsenduin_2020','plancontext','figuur 1','Figuur 1 onderscheidt Prinsenduin van de Prinsenberg en plaatst het als zuidwestelijk onderzoeksgebied in de paraboolduinen. Ton lokaliseerde Prinsenduin op 15 oktober 2026 in M17a.'),
   ('paardenstal_2026_2027','odh_paardenstal_beschikking_2025','plancontext','p. 1-2 en kaartbijlagen p. 12-14','De definitieve ODH-beschikking beschrijft dak-, gevel-, kozijn-, zonnecollector-, water- en elektriciteitswerk en vereiste vleermuismaatregelen. De kaartbijlagen begrenzen de Paardenstal naast De Tapuit en Boerderij Meyendel. De beschikking bewijst vergunningverlening en ligging, niet dat de geplande uitvoering al is begonnen of voltooid.'),
   ('bendel_herinrichting_2025_2026','staatsbosbeheer_bendel_2026','bevestiging','Locatie en looptijd','Staatsbosbeheer lokaliseert de herinrichting in Berkheide-Noord en noemt najaar 2025 tot voorjaar 2026 als looptijd.');
 
@@ -648,13 +651,12 @@ SELECT
   'geverifieerd',
   b.bron_id,
   CASE p.kavel_nummer
-    WHEN 'M16' THEN 'Helmduinen; door Ton op 14 oktober 2026 als grootste deel van het in 1991 begonnen begrazingsgebied gekoppeld aan M16. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
-    WHEN 'M15' THEN 'Helmduinen; door Ton op 14 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M15. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
-    WHEN 'M17a' THEN 'Helmduinen; door Ton op 14 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M17a. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
+    WHEN 'M16' THEN 'Helmduinen; door Ton op 15 oktober 2026 als grootste deel van het in 1991 begonnen begrazingsgebied gekoppeld aan M16. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
+    WHEN 'M15' THEN 'Helmduinen; door Ton op 15 oktober 2026 als gedeeltelijk begrazingsgebied gekoppeld aan M15. De bron bevestigt Helmduinen, circa 125 hectare en start eind 1991, maar geeft geen kavelverdeling of doorsnijdingspercentage.'
   END
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_begrazing_2012'
-JOIN plots p ON p.kavel_nummer IN ('M15','M16','M17a')
+JOIN plots p ON p.kavel_nummer IN ('M15','M16')
 WHERE u.uitvoering_code='begrazing_helmduinen_1991'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
@@ -662,6 +664,13 @@ ON DUPLICATE KEY UPDATE
   verificatiestatus=VALUES(verificatiestatus),
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
+JOIN plots p ON p.plot_id=pk.plot_id
+WHERE u.uitvoering_code='begrazing_helmduinen_1991'
+  AND p.kavel_nummer='M17a';
 
 DELETE pk
 FROM maatregel_plot_koppeling pk
@@ -1143,11 +1152,11 @@ SELECT
     WHEN p.kavel_nummer IN ('M10-12-76','M12a','M73','M74','M75') THEN
       'Meeuwenduin is door Ton op 15 oktober 2026 gelijkgesteld aan het naamgebied Meeuwenhoek. De actuele Meeuwenhoek-geometrie [OBJ-78715810AF; geometrie 34] raakt deze kavel. De exacte werkvoetafdruk binnen de kavel is niet bekend.'
     ELSE
-      'Voor Prinsenduin gebruikt Ton op 15 oktober 2026 voorlopig de actuele topografie van het afzonderlijke naamobject Prinsenberg. Deze raakt M2, M3, M35 en M36. De gelijkstelling is voorlopig en de exacte werkvoetafdruk binnen de kavel is niet bekend.'
+      'Prinsenduin is een afzonderlijk duingebied en niet de Prinsenberg. Ton lokaliseerde Prinsenduin op 15 oktober 2026 in M17a, mede op grond van figuur 1 in Van der Hagen et al. (2020). De exacte werkvoetafdruk binnen de kavel is niet bekend.'
   END
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='dunea_beheer_meijendel_2023'
-JOIN plots p ON p.kavel_nummer IN ('M10-12-76','M12a','M73','M74','M75','M2','M3','M35','M36')
+JOIN plots p ON p.kavel_nummer IN ('M10-12-76','M12a','M73','M74','M75','M17a')
 WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
@@ -1155,6 +1164,13 @@ ON DUPLICATE KEY UPDATE
   verificatiestatus=VALUES(verificatiestatus),
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
+JOIN plots p ON p.plot_id=pk.plot_id
+WHERE u.uitvoering_code='meeuwenduin_prinsenduin_opslag_2023_2024'
+  AND p.kavel_nummer IN ('M2','M3','M35','M36');
 
 INSERT INTO maatregel_plot_koppeling
   (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
@@ -1165,10 +1181,10 @@ SELECT
   NULL,
   'geverifieerd',
   b.bron_id,
-  'Voor Prinsenduin gebruikt Ton op 15 oktober 2026 voorlopig de actuele topografie van het afzonderlijke naamobject Prinsenberg. Deze raakt M2, M3, M35 en M36. Het Dunea-jaarverslag 2024 bevestigt voortzetting bij Prinsenduin, maar niet de exacte werkvoetafdruk binnen de kavels.'
+  'Prinsenduin is een afzonderlijk duingebied en niet de Prinsenberg. Ton lokaliseerde Prinsenduin op 15 oktober 2026 in M17a, mede op grond van figuur 1 in Van der Hagen et al. (2020). Het Dunea-jaarverslag 2024 bevestigt voortzetting bij Prinsenduin, maar niet de exacte werkvoetafdruk binnen de kavel.'
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='dunea_jaarverslag_2024'
-JOIN plots p ON p.kavel_nummer IN ('M2','M3','M35','M36')
+JOIN plots p ON p.kavel_nummer='M17a'
 WHERE u.uitvoering_code='prinsenduin_opslag_2024'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
@@ -1176,6 +1192,13 @@ ON DUPLICATE KEY UPDATE
   verificatiestatus=VALUES(verificatiestatus),
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
+JOIN plots p ON p.plot_id=pk.plot_id
+WHERE u.uitvoering_code='prinsenduin_opslag_2024'
+  AND p.kavel_nummer IN ('M2','M3','M35','M36');
 
 INSERT INTO maatregel_plot_koppeling
   (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
@@ -1261,24 +1284,40 @@ SELECT
   NULL,
   'geverifieerd',
   b.bron_id,
-  CASE
-    WHEN p.kavel_nummer='M32' THEN CONCAT(
-      'De Natura 2000-evaluatie van 25 april 2025 beschrijft jaarlijks aanvullend maaibeheer in Ruijgenhoek, Langestrook en De Loopert, totaal 3 hectare, en vermeldt dat Dunea dit beheer voortzet. ',
-      'Ton lokaliseerde Ruygenhoek op 15 oktober 2026 in M32. Langestrook blijft niet gelokaliseerd. ',
-      'De bron verdeelt de drie hectare niet over de gebieden of kavels; daarom blijft doorsnijding_pct leeg.'
-    )
-    ELSE CONCAT(
-      'De Natura 2000-evaluatie van 25 april 2025 beschrijft jaarlijks aanvullend maaibeheer in Ruijgenhoek, Langestrook en De Loopert, totaal 3 hectare, en vermeldt dat Dunea dit beheer voortzet. ',
-      'De actuele TOP10NL-geometrie van De Loopert [OBJ-70B5AFD1B2; geometrie 29] raakt ',
-      p.kavel_nummer,
-      '. Ton bevestigde deze verwerking op 15 oktober 2026. Langestrook blijft niet gelokaliseerd. ',
-      'De bron verdeelt de drie hectare niet over de gebieden of kavels; daarom blijft doorsnijding_pct leeg.'
-    )
-  END
+  CONCAT(
+    'De Natura 2000-evaluatie van 25 april 2025 beschrijft jaarlijks aanvullend maaibeheer in Ruijgenhoek, Langestrook en De Loopert, totaal 3 hectare, en vermeldt dat Dunea dit beheer voortzet. ',
+    'Ton lokaliseerde Ruygenhoek in M32. De actuele TOP10NL-geometrie van De Loopert [OBJ-70B5AFD1B2; geometrie 29] raakt M45 en M83. ',
+    'De actuele TOP10NL-geometrie van Lange Strook [OBJ-2F95388B74; geometrie 14] raakt M1a en M1b; de schrijfwijzen Langestrook, Lange Strook en Lange Strooken blijven als bronvarianten onderscheiden. ',
+    'De bron verdeelt de drie hectare niet over de gebieden of kavels; daarom blijft doorsnijding_pct leeg.'
+  )
 FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
-JOIN plots p ON p.kavel_nummer IN ('M32','M45','M83')
+JOIN plots p ON p.kavel_nummer IN ('M1a','M1b','M32','M45','M83')
 WHERE u.uitvoering_code='pas_22b_maaibeheer'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Maatregel 22h omvat Zeereep Meijendel, Helmduinen, Prinsenduin en Ganzenhoek. Ton bepaalde op 15 oktober 2026 de gezamenlijke uitvoeringsscope als M15 en M16 voor Helmduinen; M17a voor Prinsenduin; M13s, M77 en M78/79 voor Ganzenhoek; en M17a, M16, M15, M13s en M78/79 voor de buitenste zeereep direct achter het strand. ',
+    'De jaarbron meldt uitvoering in 2016 en 2017 voor de maatregel als geheel, maar verdeelt het werk niet over naamgebieden of kavels. Een plot-jaarrij betekent daarom uitvoeringsscope en geen bewijs dat in die kavel in dat jaar feitelijk is gewerkt; doorsnijding_pct blijft leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M13s','M15','M16','M17a','M77','M78/79')
+WHERE u.uitvoering_code='pas_22h_aanvullend_beheer'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
