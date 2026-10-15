@@ -122,7 +122,7 @@ def main() -> int:
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 114,
+            "maatregel_plot_koppeling": 115,
             "maatregel_uitvoering_gebied": 2,
         }
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
@@ -271,7 +271,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 20
+        """) == 19
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='begrazing_kijfhoek_bierlap_1990' AND jaar=1990;") == 7
         assert scalar("""
           SELECT COUNT(*)
@@ -540,6 +540,19 @@ def main() -> int:
           WHERE uitvoering_code='prinsenduin_opslag_2024'
             AND jaar=2024;
         """) == 4
+        assert mysql("""
+          SELECT CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld'))
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          JOIN maatregel_bron b USING (bron_id)
+          WHERE u.uitvoering_code='vallei_elektriciteit_2026';
+        """, TEST_DB) == "M51:benoemd_gebied_gevalideerd:dunea_reguliere_werkzaamheden_2026:geverifieerd:leeg"
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code='vallei_elektriciteit_2026';
+        """) == 0
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk

@@ -1128,6 +1128,27 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  'Dunea lokaliseert de kabels, elektriciteitskast en laadvoorbereiding op het parkeerterrein bij De Tapuit, bezoekerscentrum Dunea en Boerderij Meyendel. De openbare locatiepunten van deze drie voorzieningen liggen volgens de actuele kavelgeometrie alle in M51. Ton bevestigde de koppeling aan M51 op 15 oktober 2026. Het exacte kabeltracé en de werkvoetafdruk zijn niet gepubliceerd; daarom blijft doorsnijding_pct leeg.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='dunea_reguliere_werkzaamheden_2026'
+JOIN plots p ON p.kavel_nummer='M51'
+WHERE u.uitvoering_code='vallei_elektriciteit_2026'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
