@@ -1532,6 +1532,39 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='slagbomen_2025'
+  AND p.kavel_nummer NOT IN ('M55','M85');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Dunea beschrijft vervanging van de slagbomen bij de entree van Meijendel van 1 tot en met 12 december 2025. ',
+    'De Dunea-trendanalyse van 16 september 2024 onderscheidt P1 Kievietsduin buiten de slagboom van de parkeerterreinen P2 en P3 in De Vallei achter de slagboom. ',
+    'De korte toegangssectie in de lokale OSM-wegenlaag ligt volgens de actuele plotgeometrie op en over de grens van M55 en M85. Ton bevestigde beide koppelingen op 16 oktober 2026. ',
+    'De precieze werkvoetafdruk binnen beide kavels is niet gepubliceerd; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='dunea_slagbomen_2025'
+JOIN plots p ON p.kavel_nummer IN ('M55','M85')
+WHERE u.uitvoering_code='slagbomen_2025'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
