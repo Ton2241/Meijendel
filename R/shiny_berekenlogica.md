@@ -51,7 +51,7 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 - `plot_jaar_ahn_dtm`
 - `plot_jaar_stikstof`
 - `plot_jaar_infra`
-- `plot_jaar_toegankelijkheid`
+- `maatregel_toegankelijkheid_registratie`
 
 De parser leest `INSERT`-blokken rechtstreeks uit `meijendel.sql` en zet die om naar dataframes.
 
@@ -625,6 +625,18 @@ Dat zou snel tot inconsistenties leiden tussen:
 
 ## Jaarselectie beheer en toegankelijkheid
 
-De drie oude fysieke tabellen zijn verwijderd. Hun namen plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel blijven alleen-lezen compatibiliteitsviews, met respectievelijk 144, 55 en nul regels. v_plot_jaar_maatregel_bronvast behoudt de bestaande 307 regels voor expliciete jaren tussen 1967 en 2025; v_plot_jaar_maatregel_gecombineerd bevat 446 regels, inclusief de 139 aanvullende jaarfeiten. Deze laatste view mag bronregistraties niet als onafhankelijke terreinmetingen of behandeld oppervlak tellen.
+De drie oude fysieke tabellen én de gelijknamige compatibiliteitsviews zijn verwijderd. Dashboard en Shiny gebruiken rechtstreeks de centrale registraties. De oorspronkelijke 144, 55 en nul regels blijven voor audit reconstrueerbaar zonder die databaseobjecten. v_plot_jaar_maatregel_bronvast behoudt de bestaande 307 regels voor expliciete jaren tussen 1967 en 2025; v_plot_jaar_maatregel_gecombineerd bevat 446 regels, inclusief de 139 aanvullende jaarfeiten. Deze laatste view mag bronregistraties niet als onafhankelijke terreinmetingen of behandeld oppervlak tellen.
 
-Dashboard en Shiny gebruiken dezelfde gereconstrueerde registraties. De SQL-dumpparser leest de nieuwe basistabellen en maakt de oude gegevensobjecten via één R-adapter; parser/cacheversie is 14. Een nieuw schema zonder afgeronde compatibiliteitsviews blokkeert de parser. Voor analyse geldt een toegankelijkheidsstatus uitsluitend in het geregistreerde jaar; buiten 2024 blijft die voor deze 55 plots onbekend. Het dashboard mag de laatste historische registratie apart tonen met bronjaar, maar presenteert haar niet als bewezen toestand van een later jaar. Beheerjaarfeiten worden evenmin stilzwijgend doorgetrokken.
+Dashboard en Shiny lezen rechtstreeks uit de centrale basistabellen via build_maatregel_registration_data. Parser/cacheversie is 15; de oude gegevensobjectnamen en de afhankelijkheid van compatibiliteitsviews zijn uit de actieve leesroute verwijderd. Voor analyse geldt een toegankelijkheidsstatus uitsluitend in het geregistreerde jaar; buiten 2024 blijft die voor deze 55 plots onbekend. Het dashboard mag de laatste historische registratie apart tonen met bronjaar, maar presenteert haar niet als bewezen toestand van een later jaar. Beheerjaarfeiten worden evenmin stilzwijgend doorgetrokken.
+
+## Rechtstreekse aansluiting zonder compatibiliteitsviews
+
+De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
+
+Dashboard en Shiny lezen rechtstreeks de centrale basistabellen. De 139 aanvullende begrazingsregistraties uit 1991–1999 en de vijf bestaande uitvoeringsfeiten leveren samen dezelfde 144 beheerfeiten voor 16 plots. De 55 toegankelijkheidsregistraties uit 2024 worden met niveau plot/deel gelezen; een deelregistratie wordt niet als toestand van het hele plot gebruikt. De nieuwe gegevensobjecten heten maatregel_beheer_jaar en maatregel_toegankelijkheid_registratie. Parser/cacheversie is 15.
+
+De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling, uitvoeringsjaar en geverifieerde plotkoppeling bereikt, zonder het oorspronkelijke JSON-rijpayload als toepassingsgegevens te reconstrueren. Oude veldnamen en bronwaarden blijven uitsluitend beschikbaar voor historische reconstructie en herstelcontrole. De 307 bronvaste en 446 gecombineerde plot-jaarregels blijven ongewijzigd; deze vervolgwijziging voegt geen waarnemingen of beheerfeiten toe.
+
+Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
+
+Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.

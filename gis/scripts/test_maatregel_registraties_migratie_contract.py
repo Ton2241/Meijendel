@@ -119,6 +119,7 @@ def main():
             assert all(c.kind(t)=='' for t in m.OLD)
             m.verify(c,backup)
             m.retire_views(c,Path(tmp)/'views-backup',backup)
+            m.apply(c,backup)
             assert all(c.kind(t)=='' for t in m.OLD)
             rscript.write_text('source("'+str(ROOT/'shiny_meijendel/helpers.R')+'"); x<-build_maatregel_registration_data(read_maatregel_registration_tables("'+str(dump)+'")); stopifnot(nrow(x$maatregel_beheer_jaar)==145L,nrow(x$maatregel_toegankelijkheid_registratie)==55L,!any(c("plot_jaar_maatregel","plot_jaar_toegankelijkheid") %in% names(x)));')
             # De eerdere dump bevat 140 aanvullende feiten + vijf bestaande doelen.

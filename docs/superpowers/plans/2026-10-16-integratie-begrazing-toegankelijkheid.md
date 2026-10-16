@@ -151,3 +151,8 @@ De lokale migratie is gereed wanneer de drie oude fysieke tabellen weg zijn, de 
 Taken 1–5 lokaal uitgevoerd. De actuele bronvaste basis was 307 regels en is ongewijzigd behouden; de gezamenlijke view bevat 446 regels. Vijf bevestigde dubbelingen wijzen naar bestaande feiten. Volledige reconstructie van 144 begrazingsregels (1991–1999) en 55 toegankelijkheidsregels (2024), herstelproef, SQL/R-pariteit, overige-tabelchecksums en 128 centrale taxonroutes zijn groen. Alle betrokken Markdown-/Worddocumentatie is bijgewerkt. Reviewbevindingen over bronidentiteit bij correctie, native ids, te ruime ontdubbeling en tussentoestanden zijn opgelost en getest.
 
 Taak 6: de afzonderlijke vraag over zware export/proefimport/cachebouw is gesteld; zonder antwoord geen uitvoering. VPS-publicatie is niet goedgekeurd en niet uitgevoerd. Proefbestanden en herstelbewijs staan in `/Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid`.
+
+
+## Vervolgbesluit van Ton op 16 oktober 2026
+
+De drie compatibiliteitsviews eveneens verwijderen en de afnemers rechtstreeks aansluiten. Uitgevoerd op een afzonderlijke taakbranch: R/cache/browserobjecten hernoemd, import- en exportcontroles rechtstreeks op maatregel*, behoud van 144 beheerfeiten en 55 toegankelijkheidsregistraties, expliciete jaarselectie en vijf ontdubbelingen. Historische reconstructie en herstelbewijs blijven mogelijk zonder de views. Geen zware export of VPS-publicatie.
