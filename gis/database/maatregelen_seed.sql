@@ -1,5 +1,5 @@
 -- Eerste bronvaste invoer van werkzaamheden in Meijendel.
--- Stand bronbeoordeling: 15 oktober 2026.
+-- Stand bronbeoordeling: 16 oktober 2026.
 -- Geen uitvoeringsgeometrieën; plotkoppelingen worden alleen opgenomen waar de
 -- geraadpleegde bronnen de betrokken kavels expliciet noemen.
 
@@ -25,6 +25,7 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_kikkervalleien_2010','beheerpublicatie','Natuurherstel van de Kikkervalleien in Noord-Meijendel','2010-04-01','USGTMZNW',NULL,'2026-10-13','gepubliceerd','Volledige PDF geraadpleegd vanaf de gekoppelde Zotero-opslag.'),
   ('zotero_stuifgaten_2017','beheerpublicatie','Grenzen slechten in Meijendel: stuifgaten in de zeereep','2017-11-01','C224J22K',NULL,'2026-10-13','gepubliceerd','Volledige PDF geraadpleegd vanaf de gekoppelde Zotero-opslag.'),
   ('zotero_n2000_evaluatie_2025','natura2000_beheerplan','Evaluatie Natura 2000-beheerplan Meijendel & Berkheide','2025-04-25','DUNY3DCC',NULL,'2026-10-13','definitief','Definitieve evaluatie; uitvoeringsstatus gebaseerd op jaarrapportages en gesprekken met terreinbeheerders.'),
+  ('zotero_n2000_beheerplan_2016','natura2000_beheerplan','Beheerplan bijzondere natuurwaarden Meijendel & Berkheide 2016-2022','2016-01-01','CZDA8MMM',NULL,'2026-10-16','definitief','Pagina 25 beschrijft de natuurherstelgebieden van het PIM als geheel. Pagina 131 koppelt de aanpassingen aan de oevers van infiltratieplassen expliciet aan Tafelberg en ''t Scheepje. Gebruikt voor het bronvast lokaliseerbare deel van de pannenmaatregel; de volledige verdeling van 370.000 m3 verwijderd materiaal over afzonderlijke plassen blijft onbekend.'),
   ('zotero_n2000_ontwerp_2026','natura2000_beheerplan','Ontwerp Natura 2000-beheerplan Meijendel & Berkheide 2026-2032','2026-01-13','LAW9SJXC','https://www.zuid-holland.nl/politiek-bestuur/gedeputeerde-staten/besluiten/besluit/ontwerpbesluit-vaststelling-natura-2000-beheerplan-meijendel-en-berkheide-2026-2','2026-10-13','ontwerp','Alleen gebruikt voor geactualiseerde historische uitvoering en als plancontext; ontwerpmaatregelen zijn niet als uitgevoerd aangemerkt.'),
   ('dunea_optimalisatie_waterwinning_2018','officiele_webpagina','Optimalisatie waterwinsysteem Meijendel afgerond','2018-10-22',NULL,'https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2018-10/optimalisatie-waterwinsysteem-meijendel-afgerond','2026-10-13','officiele_publicatie','Dunea meldt afronding van het achtjarige programma.'),
   ('dunea_beheer_meijendel_2023','officiele_webpagina','Beheersmaatregelen Meijendel ter bevordering van oorspronkelijke flora en fauna','2023-11-13',NULL,'https://www.dunea.nl/over-dunea/algemeen/nieuws/2023/beheersmaatregelen-meijendel-ter-bevordering-van-oorspronkelijke-flora-en-fauna','2026-10-13','officiele_publicatie','Dunea beschrijft start en aard van de werkzaamheden in Meeuwenduin en Prinsenduin.'),
@@ -434,6 +435,7 @@ SELECT uitvoering_code,
 FROM tmp_maatregel_uitvoering_seed;
 
 INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
+  ('waterwinning_pannen_2010_2018','zotero_n2000_beheerplan_2016','bevestiging','p. 25 en 131','Pagina 131 koppelt de PIM-aanpassingen aan de oevers van infiltratieplassen expliciet aan Tafelberg en ''t Scheepje. Pagina 25 noemt daarnaast de gebieden waar het PIM als geheel tot natuurherstel leidde, maar specificeert niet welke infiltratieplassen samen de door Dunea gemelde 370.000 m3 verwijderd materiaal vertegenwoordigen.'),
   ('pan13_slib_1988_1989','zotero_broedvogelmonitoring_2006','bevestiging','p. 56-57','Benoemt Pan 13 expliciet als de lange plassenserie in kavels 2 en 3 en bevestigt drooglegging, slibverwijdering en visverwijdering in 1988.'),
   ('zeereep_vijf_kerven_2014_2015','dunea_dynamiek_2024','bevestiging',NULL,'Dunea bevestigt aanvang in september 2014 en voltooiing van vijf kerven in 2015.'),
   ('zeereep_kerven_nabeheer','zotero_n2000_ontwerp_2026','bevestiging','4.2','Ontwerpbeheerplan bevestigt nabeheer in 2016 en 2024.'),
@@ -1429,6 +1431,38 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_kiwa_mededeling_114_1990'
 JOIN plots p ON p.kavel_nummer='M77'
 WHERE u.uitvoering_code='infiltratieplas_27_2_2013_2014'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='waterwinning_pannen_2010_2018'
+  AND p.kavel_nummer NOT IN ('M6','M7','M13','M77');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Het Natura 2000-beheerplan 2016-2022 koppelt op pagina 131 de PIM-aanpassingen aan de oevers van infiltratieplassen expliciet aan Tafelberg en ''t Scheepje. ',
+    'De actuele nameninventaris koppelt Tafelberg aan M13 en M77 en ''t Scheepje aan M6 en M7. Ton bevestigde deze vier koppelingen op 16 oktober 2026. ',
+    'Dit is het bronvast lokaliseerbare deel van de pannenmaatregel. De bronnen specificeren niet welke afzonderlijke plassen samen de door Dunea gemelde 370.000 m3 verwijderd materiaal vertegenwoordigen; dit volume wordt daarom niet over de kavels verdeeld en doorsnijding_pct blijft leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_beheerplan_2016'
+JOIN plots p ON p.kavel_nummer IN ('M6','M7','M13','M77')
+WHERE u.uitvoering_code='waterwinning_pannen_2010_2018'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
