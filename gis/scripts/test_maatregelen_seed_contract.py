@@ -114,15 +114,15 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 43,
-            "maatregel_project": 18,
-            "maatregel_uitvoering": 64,
-            "maatregel_uitvoering_jaar": 104,
-            "maatregel_uitvoering_bron": 99,
+            "maatregel_bron": 51,
+            "maatregel_project": 21,
+            "maatregel_uitvoering": 87,
+            "maatregel_uitvoering_jaar": 132,
+            "maatregel_uitvoering_bron": 126,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 211,
+            "maatregel_plot_koppeling": 256,
             "maatregel_uitvoering_gebied": 2,
             "maatregel_uitvoering_plotscope": 3,
         }
@@ -131,7 +131,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
         assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 307
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 357
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -530,7 +530,7 @@ def main() -> int:
           FROM maatregel_uitvoering u
           LEFT JOIN maatregel_plot_koppeling pk USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL;
-        """) == 4
+        """) == 7
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_uitvoering u
@@ -538,7 +538,7 @@ def main() -> int:
           LEFT JOIN maatregel_uitvoering_plotscope ps USING (uitvoering_id)
           WHERE pk.uitvoering_id IS NULL
             AND COALESCE(ps.plotscope_status,'onbepaald') <> 'buiten_meijendel_plotgebied';
-        """) == 1
+        """) == 4
         assert mysql("""
           SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus,':',IF(pk.doorsnijding_pct IS NULL,'leeg','gevuld')) ORDER BY p.kavel_nummer SEPARATOR ',')
           FROM maatregel_plot_koppeling pk
@@ -1151,6 +1151,22 @@ def main() -> int:
           WHERE uitvoering_code='ganzenhoek_wandelpad_1974_1975'
             AND jaar IN (1974,1975);
         """) == 8
+        assert scalar("SELECT COUNT(*) FROM maatregel_bron WHERE zotero_item_key IN ('Q6ZVIPGC','6Q4HVJRB','JKQQNZG7','7SBASTZA','EIFHHD7U','D2QGN8BQ','RWHAWSJD','2JBJ6E36');") == 8
+        assert scalar("SELECT COUNT(*) FROM maatregel_project WHERE project_code IN ('historisch_terreinbeheer_1958_2001','historische_waterwinning_1984_2002','historische_recreatie_inrichting_1966_2001');") == 3
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering WHERE uitvoering_code IN ('corvidenbestrijding_1958_1966','openstelling_kavel4_6_1966','waterstandverlaging_kavel14_1967','zandwal_egaliseren_helm_kavel14_1968','hoofdader_ophogen_putten_1984','infiltratieplas17_2_uitgraven_1984','spoelplas43_vernieuwen_1984','hoofdader_installaties_1985','jaarlijks_maaien_geschikte_gebieden_voor_1987','galloways_toevoegen_1991','moerasjes_wisselmaaien_15_16_voor_1991','pan20_maaien_1991','pan20_houtopslag_verwijderen_1991','rijnland_pad_sprang_pi_1993','waterstandverlaging_10_12_76_1994','houtkap_10_12_76_1994','sprokkelhoutpad_10_12_76_1994','pan26_plassen_1997_1998','libellenvallei_routevoorzieningen_2001','hoofdader_peilverlaging_75_77_2001','dennenbos_kappen_77_2001','pan20_wisselpeilproef_2002','libellenvallei_noordpad_2001_niet_uitgevoerd');") == 23
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar j JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code='corvidenbestrijding_1958_1966' AND j.jaar IN (1958,1960,1961,1965,1966) AND j.jaarstatus='uitgevoerd';") == 5
+        assert mysql("""
+          SELECT GROUP_CONCAT(p.kavel_nummer ORDER BY p.kavel_nummer SEPARATOR ',')
+          FROM maatregel_plot_koppeling pk
+          JOIN maatregel_uitvoering u USING (uitvoering_id)
+          JOIN plots p USING (plot_id)
+          WHERE u.uitvoering_code='hoofdader_installaties_1985';
+        """, TEST_DB) == 'M10-12-76,M1a,M1b,M2,M3,M4-5,M42,M43,M52,M6,M7,M8'
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code IN ('pan20_maaien_1991','pan20_houtopslag_verwijderen_1991','pan20_wisselpeilproef_2002') AND plot_id IN (3513,3525,3529);") == 9
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast WHERE uitvoering_code='libellenvallei_noordpad_2001_niet_uitgevoerd';") == 0
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_bron ub JOIN maatregel_uitvoering u USING (uitvoering_id) JOIN maatregel_bron b USING (bron_id) WHERE u.uitvoering_code IN ('begrazing_kijfhoek_bierlap_1990','begrazing_helmduinen_1991') AND b.bron_code='zotero_vogelrapport_1991' AND ub.bronrol='bevestiging';") == 2
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering_jaar j JOIN maatregel_uitvoering u USING (uitvoering_id) WHERE u.uitvoering_code IN ('kikkervalleien_bodem_1997','kikkervalleien_infra_1997') AND j.jaar=1998 AND j.jaarstatus='uitgevoerd';") == 2
+        assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering WHERE uitvoering_code IN ('kikkervalleien_bodem_1997','kikkervalleien_infra_1997') AND datum_tot='1998-03-31';") == 2
         mysql("""
           INSERT INTO maatregel_uitvoering_jaar
             (uitvoering_id,jaar,jaarstatus,bron_id,toelichting)
@@ -1168,6 +1184,18 @@ def main() -> int:
         apply(SEED)
         after = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
         assert after == before, (before, after)
+        assert scalar("""
+          SELECT COUNT(*)
+          FROM maatregel_uitvoering
+          WHERE uitvoering_code IN ('kikkervalleien_bodem_1997','kikkervalleien_infra_1997')
+            AND (
+              LENGTH(opmerking) - LENGTH(REPLACE(
+                opmerking,
+                'Het jaarverslag 1998 bevestigt dat de herinrichting tot maart 1998 doorliep.',
+                ''
+              ))
+            ) / LENGTH('Het jaarverslag 1998 bevestigt dat de herinrichting tot maart 1998 doorliep.') = 1;
+        """) == 2
         assert scalar("""
           SELECT COUNT(*)
           FROM maatregel_uitvoering_jaar j
