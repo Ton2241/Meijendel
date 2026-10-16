@@ -421,18 +421,21 @@ SELECT uitvoering_code,
          WHEN uitvoering_code='bendel_herinrichting_2025_2026' THEN 'zotero_hollands_duinen_88_2026'
        END AS bron_code,
        CASE
+         WHEN uitvoering_code='zeereep_kerven_nabeheer' THEN 'plancontext'
          WHEN uitvoering_status_code IN ('gepland','onbekend') THEN 'plancontext'
          ELSE 'primaire_uitvoeringsbron'
        END AS bronrol,
        CASE
          WHEN uitvoering_code IN ('kikkervalleien_begrazing_1997','kikkervalleien_bodem_1997') THEN 'p. 5 en 22'
          WHEN uitvoering_code='infiltratieplas_27_2_2013_2014' THEN 'p. 1-2'
+         WHEN uitvoering_code='zeereep_kerven_nabeheer' THEN 'p. 2-6, figuur 2'
          ELSE NULL
        END AS pagina_of_paragraaf,
        CASE
          WHEN uitvoering_code='kikkervalleien_begrazing_1997' THEN 'Pagina 5 beschrijft de uitbreiding van het sinds 1991 begraasde Helmduinengebied met circa 50 hectare Kikkervalleien direct na de herinrichting van 1997. Pagina 22 benoemt M13, M13s en M14 expliciet als de kavels waarin de Kikkervalleien liggen.'
          WHEN uitvoering_code='kikkervalleien_bodem_1997' THEN 'Pagina 5 beschrijft dat in het najaar van 1997 de vegetatie en voedselrijke bovengrond in en rond Pan 26.1 zijn verwijderd. Pagina 22 benoemt M13, M13s en M14 expliciet als de kavels waarin de Kikkervalleien liggen en toont het bewerkte gebied met een zwarte begrenzing.'
          WHEN uitvoering_code='infiltratieplas_27_2_2013_2014' THEN 'Beschrijft de aard en de operationele werkperiode van de schoning en oeveraanpassing van infiltratieplas 27.2, van 1 september 2013 tot afronding voor 1 maart 2014.'
+         WHEN uitvoering_code='zeereep_kerven_nabeheer' THEN 'Ruimtelijke context voor de vijf bestaande kerven: de bron lokaliseert de uitgevoerde zuidelijke zone over 750 meter ten zuiden van de bunker bij het Parnassiapad. De publicatie meldt uitdrukkelijk dat tot het voorjaar van 2017 nog geen nabeheer nodig was; zij bewijst daarom niet de nabeheeruitvoering in 2016 en 2024.'
          ELSE CONCAT('Bronbasis voor uitvoering ', CONVERT(uitvoering_code USING utf8mb4), '; status en omvang zijn niet ruimer geïnterpreteerd dan de bron ondersteunt.')
        END AS bewijsnotitie
 FROM tmp_maatregel_uitvoering_seed;
@@ -475,6 +478,14 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
 INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('pas_24a_weiduin','gemeente_wassenaar_weiduin_2013','plancontext','Prins Frederiklaan 28','De gemeentelijke inventaris identificeert Weiduin als particulier landhuis aan Prins Frederiklaan 28. Dit past bij de omschrijving van PAS-maatregel 24a als beheer op terrein van een particuliere landgoedeigenaar.'),
   ('pas_24a_weiduin','pdok_brk_weiduin_2026','bevestiging','Perceel Wassenaar H 2889','Het actuele, aan Prins Frederiklaan 28 gekoppelde perceel heeft geen doorsnijding met een van de 55 levende Meijendel-plotgeometrieen. Ton bevestigde op 15 oktober 2026 dat daarom geen plotkoppeling wordt gelegd.');
+
+DELETE ub
+FROM maatregel_uitvoering_bron ub
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN maatregel_bron b USING (bron_id)
+WHERE u.uitvoering_code='zeereep_kerven_nabeheer'
+  AND b.bron_code='zotero_stuifgaten_2017'
+  AND ub.bronrol<>'plancontext';
 
 INSERT INTO maatregel_uitvoering_bron
   (uitvoering_id, bron_id, bronrol, pagina_of_paragraaf, bewijsnotitie)
@@ -1291,6 +1302,39 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='odh_paardenstal_beschikking_2025'
 JOIN plots p ON p.kavel_nummer='M51'
 WHERE u.uitvoering_code='paardenstal_2026_2027'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='zeereep_kerven_nabeheer'
+  AND p.kavel_nummer NOT IN ('M16','M17a');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Het ontwerpbeheerplan bevestigt nabeheer van de bestaande kerven en stuifkuilen in 2016 en 2024. ',
+    'Van der Hagen, Ten Napel en Arens (2017) lokaliseren de uitgevoerde zuidelijke kerfzone over 750 meter ten zuiden van de bunker bij het Parnassiapad; de noordelijke variant is niet uitgevoerd. ',
+    'Vergelijking met de gereconstrueerde Parnassiapad-route en de actuele plotgeometrie plaatst deze zone in M16 en M17a. Ton bevestigde beide koppelingen op 16 oktober 2026. ',
+    'De exacte werkvoetafdruk van het nabeheer per jaar en kavel is niet gepubliceerd; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN plots p ON p.kavel_nummer IN ('M16','M17a')
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_ontwerp_2026'
+WHERE u.uitvoering_code='zeereep_kerven_nabeheer'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
