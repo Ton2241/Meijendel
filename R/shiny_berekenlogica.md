@@ -622,3 +622,9 @@ Dat zou snel tot inconsistenties leiden tussen:
 
 [1]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R
 [2]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/helpers.R
+
+## Jaarselectie beheer en toegankelijkheid
+
+De drie oude fysieke tabellen zijn verwijderd. Hun namen plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel blijven alleen-lezen compatibiliteitsviews, met respectievelijk 144, 55 en nul regels. v_plot_jaar_maatregel_bronvast behoudt de bestaande 307 regels voor expliciete jaren tussen 1967 en 2025; v_plot_jaar_maatregel_gecombineerd bevat 446 regels, inclusief de 139 aanvullende jaarfeiten. Deze laatste view mag bronregistraties niet als onafhankelijke terreinmetingen of behandeld oppervlak tellen.
+
+Dashboard en Shiny gebruiken dezelfde gereconstrueerde registraties. De SQL-dumpparser leest de nieuwe basistabellen en maakt de oude gegevensobjecten via één R-adapter; parser/cacheversie is 14. Een nieuw schema zonder afgeronde compatibiliteitsviews blokkeert de parser. Voor analyse geldt een toegankelijkheidsstatus uitsluitend in het geregistreerde jaar; buiten 2024 blijft die voor deze 55 plots onbekend. Het dashboard mag de laatste historische registratie apart tonen met bronjaar, maar presenteert haar niet als bewezen toestand van een later jaar. Beheerjaarfeiten worden evenmin stilzwijgend doorgetrokken.

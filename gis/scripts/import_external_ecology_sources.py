@@ -551,6 +551,13 @@ CENTRAL_QUERY_SCHEMA = {
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
+    registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
+    legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
+    if not (registraties & set(schema)):
+        for table in registraties: expected.pop(table)
+    elif registraties <= set(schema) and not (legacy & set(schema)):
+        # De oude objecten zijn views, buiten deze inventaris van fysieke tabellen.
+        for table in legacy: expected.pop(table)
     additions = source_family_tables()
     if set(schema) & set(additions):
         expected.update({table: CENTRAL_QUERY_SCHEMA[original] for table,original in additions.items()})

@@ -110,6 +110,11 @@ def main() -> int:
         assert spec and spec.loader
         module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(module)
+        # De centrale audit inventariseert basistabellen; oude namen zijn na migratie views.
+        migrated = dict(module.CENTRAL_QUERY_SCHEMA)
+        for old in ('plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'):
+            migrated.pop(old)
+        module.central_query_schema_contract(migrated)
         for table in required:
             columns = set(mysql(
                 f"SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='{table}';",
