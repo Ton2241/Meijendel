@@ -52,12 +52,15 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
   ('zotero_plas20_2006','beheerpublicatie','Schone start voor infiltratieplas 20 in Meijendel','2006-03-01','4KR5RBAH',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 48, maart 2006. Zotero noemt ten onrechte 1989; dat jaar verwijst in de tekst naar de eerdere slibverwijdering in Plas 13. Uitgestelde valleiwerkzaamheden zijn niet als uitgevoerd ingevoerd.'),
   ('zotero_hollands_duinen_86_2025','beheerpublicatie','Holland''s Duinen - nummer 86','2025-05-01','ZS99KGRA',NULL,'2026-10-14','gepubliceerd','Het artikel Vlinders in Meijendel: aantallen in 2024 langs twee telroutes toont op p. 49, figuur 1, de ligging van de dagvlinderroute Parnassiapad. Gebruikt als aanvullende ruimtelijke context, niet als bron voor het plagjaar.'),
+  ('zotero_hollands_duinen_63_2014','beheerpublicatie','Holland''s Duinen - nummer 63','2014-04-01','4BCGZLGX',NULL,'2026-10-16','gepubliceerd','Het artikel Drones over de duinen: waarnemen vanuit de lucht op pagina 5-7 bevestigt verwijdering van het vegetatiedek in Elleboogsprang, Helmduinen en Vinkenhoek. In Elleboogsprang is circa 15 hectare behandeld.'),
+  ('zotero_hollands_duinen_64_2014','beheerpublicatie','Holland''s Duinen - nummer 64','2014-11-01','NK6U49NY',NULL,'2026-10-16','gepubliceerd','Het artikel Fotograferen met een vlieger op pagina 12-15 beschrijft de monitoring van de ingrepen en toont Elleboogsprang, Vinkenhoek, Meeuwenduin en Helmduinen als de vier gefotografeerde herstelgebieden.'),
   ('zotero_meijendel_mededelingen_30_1996','beheerpublicatie','Meijendel Mededelingen - aflevering 30','1996-11-01','2TXQMXTB',NULL,'2026-10-14','gepubliceerd','Volledige aflevering geraadpleegd. Pagina 99 koppelt Sprang PI letterlijk aan kavel 13s en beschrijft het betrokken rietgebied als gelegen in kavels 13s en 14; gebruikt als ruimtelijke plancontext voor de herinrichting van 1997.'),
   ('zotero_hollands_duinen_88_2026','beheerpublicatie','Holland''s Duinen - nummer 88','2026-04-01','JI7RKU9B','https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/dunea---hollands-duinen-nummer-88.pdf','2026-10-15','gepubliceerd','Het artikel Herinrichting Bendel - Werk om trots op te zijn! op pagina 47-50 beschrijft uitvoering van oktober 2025 tot maart 2026 en lokaliseert het project in Berkheide.'),
   ('zotero_prinsenduin_2020','onderzoeksrapport','Is livestock grazing a key factor for changing vegetation patterns in lime rich coastal dunes in the Netherlands?','2020-03-14','IVRJVABT','https://doi.org/10.1007/s11852-020-00733-z','2026-10-15','gepubliceerd','Figuur 1 onderscheidt Prinsenduin, Lange Strooken en Helmduinen als afzonderlijke onderzoeksgebieden. Gebruikt als ruimtelijke context; de plottoedeling volgt uit de combinatie met de nameninventaris en Tons vaststelling.'),
   ('zotero_kiwa_mededeling_114_1990','onderzoeksrapport','Natuurwaarden en waterwinning in de duinen: mogelijkheden voor behoud, herstel en ontwikkeling van natuurwaarden','1990-12-01','6MSHE3RU','https://api2.kwrwater.nl/uploads/Mededeling%20114%20Natuurwaarden%20en%20waterwinning%20in%20de%20duinen.pdf','2026-10-15','gepubliceerd','KIWA Mededeling 114. Figuur 1 op PDF-pagina 73 geeft het overzicht van de infiltratieplassen in Meijendel en lokaliseert 27.2 binnen het noordelijke plassensysteem. De gekoppelde PDF staat als linked file op de T7.'),
   ('officiele_bijlage_pim_2013_2014','inrichtingsplan','Projecten 2013/2014: werkzaamheden PIM in Noord-Meijendel','2013-08-01',NULL,'https://repository.officiele-overheidspublicaties.nl/externebijlagen/exb-2013-7902/1/pdf/exb-2013-7902.pdf','2026-10-15','officiele_bijlage','Officiële externe bijlage bij de vergunningpublicatie. Beschrijft schoning van infiltratieplas 27.2, verwijdering van organisch verrijkt bodemmateriaal en oeveraanpassing tussen 1 september 2013 en 1 maart 2014. De brondatum volgt uit de PDF-aanmaakdatum 1 augustus 2013.'),
   ('denhaag_pim_archeologie_2013','onderzoeksrapport','Dunea. Programma Investeringen Meijendel, gemeenten Den Haag en Wassenaar','2013-01-01',NULL,'https://doi.org/10.17026/DANS-XTN-EEV7','2026-10-15','gepubliceerd','Haagse Archeologische Rapportage 1306 van M. Benjamins. Afbeelding 1 begrenst de PIM-werkgebieden; bijlage 2 specificeert het leidingwerk per winningsserie. Alleen het publicatiejaar 2013 is bekend, daarom is 1 januari als datumprecisie op jaarniveau vastgelegd.'),
+  ('denhaag_natuurherstel_2012','onderzoeksrapport','Vijf natuurherstelprojecten - Meijendel, gemeente Wassenaar','2012-02-01',NULL,'https://doi.org/10.17026/DANS-ZSH-JAXF','2026-10-16','gepubliceerd','Haagse Archeologische Rapportage 1204 van M. Benjamins. Afbeelding 1 op PDF-pagina 4 begrenst Elleboogsprang, Meeuwenduin en Vinkenhoek. De contouren zijn met de gepubliceerde schaal en RD-kilometerhokken op de actuele kavelgeometrie gelegd; de bronpolygonen worden wegens de kaartnauwkeurigheid niet als exacte uitvoeringsgeometrie opgeslagen.'),
   ('gemeente_wassenaar_weiduin_2013','onderzoeksrapport','Hoofdkenmerken en waardering van waardevolle cultuurhistorische gebouwen en objecten in de gemeente Wassenaar','2013-01-01',NULL,'https://www.wassenaar.nl/_flysystem/media/beschrijvingen-beeld-bepalende-objecten-in-wassenaar.pdf','2026-10-15','gemeentelijke_inventaris','De gemeentelijke inventaris uit 2012/2013 identificeert Weiduin als het particuliere landhuis aan Prins Frederiklaan 28. Alleen de periode 2012/2013 is bekend; 1 januari 2013 is als datumprecisie op jaarniveau vastgelegd.'),
   ('pdok_brk_weiduin_2026','officiele_webpagina','Kadastrale Kaart: perceel Wassenaar H 2889','2026-10-15',NULL,'https://api.pdok.nl/kadaster/brk-kadastrale-kaart/ogc/v1/collections/perceel','2026-10-15','actueel_officieel_register','De actuele PDOK-Kadastrale Kaart geeft voor het aan Prins Frederiklaan 28 gekoppelde perceel Wassenaar H 2889 een oppervlakte van 13.325 m2. Vergelijking met de 55 levende Meijendel-plotgeometrieen toont geen doorsnijding.');
 
@@ -436,6 +439,9 @@ FROM tmp_maatregel_uitvoering_seed;
 
 INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('waterwinning_pannen_2010_2018','zotero_n2000_beheerplan_2016','bevestiging','p. 25 en 131','Pagina 131 koppelt de PIM-aanpassingen aan de oevers van infiltratieplassen expliciet aan Tafelberg en ''t Scheepje. Pagina 25 noemt daarnaast de gebieden waar het PIM als geheel tot natuurherstel leidde, maar specificeert niet welke infiltratieplassen samen de door Dunea gemelde 370.000 m3 verwijderd materiaal vertegenwoordigen.'),
+  ('waterwinning_plaggen_2010_2018','zotero_hollands_duinen_63_2014','bevestiging','p. 5-7','Bevestigt dat Dunea in de voorafgaande twee jaar het vegetatiedek in Elleboogsprang, Helmduinen en Vinkenhoek verwijderde. In Elleboogsprang is circa 15 hectare behandeld.'),
+  ('waterwinning_plaggen_2010_2018','zotero_hollands_duinen_64_2014','bevestiging','p. 12-15','Beschrijft de monitoring van de ingrepen en toont Elleboogsprang, Vinkenhoek, Meeuwenduin en Helmduinen als de vier gefotografeerde herstelgebieden.'),
+  ('waterwinning_plaggen_2010_2018','denhaag_natuurherstel_2012','bevestiging','PDF-p. 4 en 19-20','Afbeelding 1 begrenst Elleboogsprang, Meeuwenduin en Vinkenhoek. De tekst beschrijft afplaggen en vegetatieverwijdering in deze gebieden; vergelijking met de actuele kavelgeometrie lokaliseert de broncontouren.'),
   ('pan13_slib_1988_1989','zotero_broedvogelmonitoring_2006','bevestiging','p. 56-57','Benoemt Pan 13 expliciet als de lange plassenserie in kavels 2 en 3 en bevestigt drooglegging, slibverwijdering en visverwijdering in 1988.'),
   ('zeereep_vijf_kerven_2014_2015','dunea_dynamiek_2024','bevestiging',NULL,'Dunea bevestigt aanvang in september 2014 en voltooiing van vijf kerven in 2015.'),
   ('zeereep_kerven_nabeheer','zotero_n2000_ontwerp_2026','bevestiging','4.2','Ontwerpbeheerplan bevestigt nabeheer in 2016 en 2024.'),
@@ -1463,6 +1469,55 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_beheerplan_2016'
 JOIN plots p ON p.kavel_nummer IN ('M6','M7','M13','M77')
 WHERE u.uitvoering_code='waterwinning_pannen_2010_2018'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='waterwinning_plaggen_2010_2018'
+  AND p.kavel_nummer NOT IN ('M10-12-76','M12a','M15','M16','M71','M73','M74','M75');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CASE
+    WHEN p.kavel_nummer IN ('M15','M16') THEN CONCAT(
+      'Holland''s Duinen 63 bevestigt uitvoering in de Helmduinen. Ton lokaliseerde Helmduinen eerder in M15 en M16. ',
+      'De bron verdeelt de bijna 400.000 m2 geplagd duin niet over gebieden of kavels; daarom blijft doorsnijding_pct leeg.'
+    )
+    WHEN p.kavel_nummer='M71' THEN CONCAT(
+      'HAR 1204 begrenst Vinkenhoek op PDF-pagina 4. De gepubliceerde schaal en de door Ton aangeleverde RD-referentie 85/461-462 plaatsen de gedigitaliseerde broncontour volledig in M71. ',
+      'De gereconstrueerde oppervlakte van circa 8,3 hectare sluit aan bij de gepubliceerde circa 8 hectare. De contour is niet nauwkeurig genoeg voor een uitvoeringspercentage; daarom blijft doorsnijding_pct leeg.'
+    )
+    WHEN p.kavel_nummer IN ('M10-12-76','M75') THEN CONCAT(
+      'HAR 1204 begrenst Meeuwenduin en Elleboogsprang op PDF-pagina 4. Ton stelde eerder Meeuwenduin gelijk aan Meeuwenhoek. ',
+      'De gepubliceerde schaal en de RD-referentie 84/463-85/463 plaatsen Elleboogsprang in M10-12-76 en M75; de actuele Meeuwenhoek-koppeling raakt deze kavels eveneens. ',
+      'De bijna 400.000 m2 is niet per gebied of kavel verdeeld; daarom blijft doorsnijding_pct leeg.'
+    )
+    ELSE CONCAT(
+      'HAR 1204 begrenst Meeuwenduin op PDF-pagina 4. Ton stelde eerder Meeuwenduin gelijk aan Meeuwenhoek; de actuele Meeuwenhoek-koppeling raakt deze kavel. ',
+      'De bijna 400.000 m2 is niet per gebied of kavel verdeeld; daarom blijft doorsnijding_pct leeg.'
+    )
+  END
+FROM maatregel_uitvoering u
+JOIN plots p ON p.kavel_nummer IN ('M10-12-76','M12a','M15','M16','M71','M73','M74','M75')
+JOIN maatregel_bron b ON b.bron_code=CASE
+  WHEN p.kavel_nummer IN ('M15','M16') THEN 'zotero_hollands_duinen_63_2014'
+  ELSE 'denhaag_natuurherstel_2012'
+END
+WHERE u.uitvoering_code='waterwinning_plaggen_2010_2018'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
