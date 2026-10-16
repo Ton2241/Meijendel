@@ -1500,6 +1500,38 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='pas_3d_begrazing_zuid'
+  AND p.kavel_nummer NOT IN ('M13s','M15','M16','M17a','M78/79');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Maatregel 3d betreft jaarlijkse begrazing in Zeereep Meijendel, Helmduinen en Prinsenduin. De Natura 2000-evaluatie bevestigt de onderbreking in 2020 en hervatting in 2021; het ontwerpbeheerplan 2026-2032 bevestigt tevens begrazing binnen vaste rasters in 2025. ',
+    'Ton lokaliseerde Helmduinen in M15 en M16, Prinsenduin in M17a en de buitenste zeereep direct achter het strand in M13s, M15, M16, M17a en M78/79. Ton bevestigde op 16 oktober 2026 de gezamenlijke koppeling aan M13s, M15, M16, M17a en M78/79. ',
+    'De bronnen verdelen de jaarlijkse begrazing niet over de drie naamgebieden of vijf kavels. De plot-jaarrijen voor 2021 en 2025 beschrijven daarom uitsluitend de uitvoeringsscope; doorsnijding_pct blijft leeg. Voor het niet-uitgevoerde jaar 2020 ontstaat geen plot-jaarrij.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M13s','M15','M16','M17a','M78/79')
+WHERE u.uitvoering_code='pas_3d_begrazing_zuid'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DROP TEMPORARY TABLE IF EXISTS tmp_plot_gebied_lidmaatschap_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_plot_koppeling_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_nameninventaris_plot_seed;
