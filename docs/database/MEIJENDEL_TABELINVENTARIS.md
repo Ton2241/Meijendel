@@ -218,12 +218,12 @@ Versie `meijendel_nameninventaris_2026-10-14` is op 14 oktober 2026 in de levend
 | Tabel of view | Records | Betekenis |
 |---|---:|---|
 | `nameninventaris_import` | 1 | Herkomst, hash, regelversie en verwachte aantallen van de levering. |
-| `nameninventaris_bron` | 8 | Beekman 2021, twee historische artikelen, Neefjes 2010, TOP10NL, OSM en twee Dunea-bronnen. |
+| `nameninventaris_bron` | 21 | Dertien bronnen toegevoegd op 16 oktober 2026; de acht oorspronkelijke bronnen blijven behouden: Beekman 2021, twee historische artikelen, Neefjes 2010, TOP10NL, OSM en twee Dunea-bronnen. |
 | `nameninventaris_object` | 182 | Onderscheiden gebieds-, functionele, pad-, weg- en routeobjecten. |
-| `nameninventaris_vermelding` | 299 | Gedateerde naamvermeldingen uit 1602–2026. |
+| `nameninventaris_vermelding` | 319 | 299 oorspronkelijke vermeldingen uit 1602–2026 en twintig aanvullende letterlijke vermeldingen; 2026 is bij ongedateerde kaarten uitsluitend raadpleegjaar. |
 | `nameninventaris_geometrie` | 71 | Brongeometrieën in EPSG:28992 voor 71 objecten. |
 | `nameninventaris_geometrie_bronobject` | 107 | Herleidbaarheid van samengevoegde geometrieën naar afzonderlijke bronobjecten. |
-| `nameninventaris_beoordeling` | 111 | Actuele, expliciete geometrieleemten; deze namen worden niet ruimtelijk afgeleid. |
+| `nameninventaris_beoordeling` | 222 | 111 actuele, concrete geometrieleemten en 111 bewaarde eerdere beoordelingen; deze namen worden niet ruimtelijk afgeleid. |
 | `plot_geometrie_import` | 1 | Actuele SOVON-kavelgeometrie van 55 plots, versie `sovon-avimap-2025-download-2026-10-02`. |
 | `nameninventaris_plot_koppeling` | 377 | Alle geometrische doorsnijdingen tussen 66 naamobjecten en 55 actuele kavels. |
 | `v_nameninventaris_plot_actueel` | 365 | Actuele leeslaag voor 53 kavels binnen `meijendel_natura2000`; M66 en M91 zijn uitgesloten. |
