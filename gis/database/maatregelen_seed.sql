@@ -1313,6 +1313,39 @@ DELETE pk
 FROM maatregel_plot_koppeling pk
 JOIN maatregel_uitvoering u USING (uitvoering_id)
 JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='zeereep_vijf_kerven_2014_2015'
+  AND p.kavel_nummer NOT IN ('M15','M16','M17a');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CONCAT(
+    'Van der Hagen, Ten Napel en Arens (2017) beschrijven de aanleg van vijf kerven over de uitgevoerde zuidelijke zone van 750 meter bij het Parnassiapad. ',
+    'Het werk begon in winter 2013/2014, werd na de vondst van granaten onderbroken en is in winter 2014/2015 voltooid. ',
+    'Ton koppelde maatregel 33 op 16 oktober 2026 aan M15, M16 en M17a. ',
+    'Het totale afgegraven oppervlak van 109.434 m2 is niet per kavel of uitvoeringsjaar verdeeld; daarom blijft doorsnijding_pct leeg.'
+  )
+FROM maatregel_uitvoering u
+JOIN plots p ON p.kavel_nummer IN ('M15','M16','M17a')
+JOIN maatregel_bron b ON b.bron_code='zotero_stuifgaten_2017'
+WHERE u.uitvoering_code='zeereep_vijf_kerven_2014_2015'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
 WHERE u.uitvoering_code='zeereep_kerven_nabeheer'
   AND p.kavel_nummer NOT IN ('M16','M17a');
 
