@@ -430,3 +430,73 @@ WHERE i.indeling_code=(
   ORDER BY i2.vastgesteld_op DESC, i2.indeling_code DESC
   LIMIT 1
 );
+
+-- Jaarfeiten en toestandsregistraties; uitvoering is optioneel, nooit gefingeerd.
+CREATE TABLE IF NOT EXISTS maatregel_plot_jaar_registratie (
+  registratie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  maatregel_id INT NOT NULL,
+  bron_id BIGINT UNSIGNED NOT NULL,
+  uitvoering_id BIGINT UNSIGNED NULL,
+  intensiteit_code VARCHAR(30) NOT NULL DEFAULT '',
+  uitvoerder_of_diersoort VARCHAR(50) NOT NULL DEFAULT '',
+  deel_label VARCHAR(100) NOT NULL DEFAULT '',
+  dekking_pct DECIMAL(5,2) NULL,
+  opmerking VARCHAR(255) NULL,
+  beoordelingsstatus VARCHAR(32) NOT NULL DEFAULT 'overgenomen_bronregistratie',
+  UNIQUE KEY uq_mpjr (plot_id,jaar,bron_id,maatregel_id,intensiteit_code,uitvoerder_of_diersoort,deel_label),
+  FOREIGN KEY (plot_id) REFERENCES plots(plot_id),
+  FOREIGN KEY (maatregel_id) REFERENCES maatregelen(id),
+  FOREIGN KEY (bron_id) REFERENCES maatregel_bron(bron_id),
+  FOREIGN KEY (uitvoering_id) REFERENCES maatregel_uitvoering(uitvoering_id),
+  CHECK (dekking_pct IS NULL OR dekking_pct BETWEEN 0 AND 100)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS maatregel_toegankelijkheid_registratie (
+  registratie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  plot_id INT NOT NULL,
+  jaar SMALLINT UNSIGNED NOT NULL,
+  bron_id BIGINT UNSIGNED NOT NULL,
+  niveau ENUM('plot','deel') NOT NULL,
+  ouder_registratie_id BIGINT UNSIGNED NULL,
+  deel_label VARCHAR(100) NOT NULL DEFAULT '',
+  status_code VARCHAR(30) NOT NULL,
+  aandeel_pct DECIMAL(5,2) NULL,
+  barriere_type VARCHAR(50) NOT NULL DEFAULT '',
+  geom_wkt LONGTEXT NULL,
+  uitvoering_id BIGINT UNSIGNED NULL,
+  opmerking VARCHAR(255) NULL,
+  beoordelingsstatus VARCHAR(32) NOT NULL DEFAULT 'overgenomen_bronregistratie',
+  UNIQUE KEY uq_mtr (plot_id,jaar,bron_id,niveau,deel_label),
+  FOREIGN KEY (plot_id) REFERENCES plots(plot_id),
+  FOREIGN KEY (bron_id) REFERENCES maatregel_bron(bron_id),
+  FOREIGN KEY (uitvoering_id) REFERENCES maatregel_uitvoering(uitvoering_id),
+  FOREIGN KEY (ouder_registratie_id) REFERENCES maatregel_toegankelijkheid_registratie(registratie_id),
+  CHECK (aandeel_pct IS NULL OR aandeel_pct BETWEEN 0 AND 100),
+  CHECK (niveau='deel' OR (deel_label='' AND aandeel_pct IS NULL AND ouder_registratie_id IS NULL)),
+  CHECK (status_code IN ('vrij','beperkt','afgesloten','deels beperkt, deels vrij','deels afgesloten, deels vrij','onbekend'))
+) ENGINE=InnoDB;
+
+-- Uitsluitend herkomstmetadata: precies één doel, geen tweede beheerfeit.
+CREATE TABLE IF NOT EXISTS maatregel_registratie_herkomst (
+  herkomst_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  brontabel VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  bronsleutel VARCHAR(255) NOT NULL,
+  oorspronkelijke_rij JSON NOT NULL,
+  rij_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  migratieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
+  beheer_registratie_id BIGINT UNSIGNED NULL,
+  toegang_registratie_id BIGINT UNSIGNED NULL,
+  uitvoering_id BIGINT UNSIGNED NULL,
+  plot_id INT NULL,
+  jaar SMALLINT UNSIGNED NULL,
+  UNIQUE KEY uq_mrh_bron (brontabel,bronsleutel),
+  FOREIGN KEY (beheer_registratie_id) REFERENCES maatregel_plot_jaar_registratie(registratie_id),
+  FOREIGN KEY (toegang_registratie_id) REFERENCES maatregel_toegankelijkheid_registratie(registratie_id),
+  FOREIGN KEY (uitvoering_id,plot_id) REFERENCES maatregel_plot_koppeling(uitvoering_id,plot_id),
+  FOREIGN KEY (uitvoering_id,jaar) REFERENCES maatregel_uitvoering_jaar(uitvoering_id,jaar),
+  CHECK ((beheer_registratie_id IS NOT NULL)+(toegang_registratie_id IS NOT NULL)+(uitvoering_id IS NOT NULL)=1),
+  CHECK ((uitvoering_id IS NOT NULL AND plot_id IS NOT NULL AND jaar IS NOT NULL)
+      OR (uitvoering_id IS NULL AND plot_id IS NULL AND jaar IS NULL))
+) ENGINE=InnoDB;

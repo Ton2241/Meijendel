@@ -81,6 +81,9 @@ def main() -> int:
         )
         apply_schema()
         required = {
+            "maatregel_plot_jaar_registratie",
+            "maatregel_toegankelijkheid_registratie",
+            "maatregel_registratie_herkomst",
             "maatregel_werkcategorie",
             "maatregel_type",
             "maatregel_activiteit_type",

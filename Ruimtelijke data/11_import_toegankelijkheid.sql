@@ -1,25 +1,11 @@
-USE `meijendel`;
-
-LOAD DATA LOCAL INFILE '/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_toegankelijkheid_import.csv'
-INTO TABLE `plot_jaar_toegankelijkheid`
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
-(
-  plot_id,
-  jaar,
-  bron,
-  status_code,
-  opmerking
-);
-
-SELECT COUNT(*) AS aantal_records_toegankelijkheid
-FROM plot_jaar_toegankelijkheid
-WHERE bron IN ('HANDMATIG', 'DUNEA_RAPPORT_2022');
-
-SELECT plot_id, jaar, bron, status_code, opmerking
-FROM plot_jaar_toegankelijkheid
-WHERE bron IN ('HANDMATIG', 'DUNEA_RAPPORT_2022')
-ORDER BY jaar, plot_id
-LIMIT 20;
+-- Gebruik alleen een beoordeelde levering; de meegeleverde CSV is een voorbeeld.
+USE Meijendel;
+DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_import;
+CREATE TEMPORARY TABLE tmp_maatregel_import (plot_id INT,jaar INT,bron VARCHAR(50),status_code VARCHAR(30),opmerking VARCHAR(255));
+LOAD DATA LOCAL INFILE '/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_toegankelijkheid_import.csv' INTO TABLE tmp_maatregel_import FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (@plot_id,@jaar,@bron,@status_code,@opmerking) SET plot_id=@plot_id,jaar=@jaar,bron=@bron,status_code=@status_code,opmerking=NULLIF(TRIM(TRAILING CHAR(13) FROM @opmerking),'');
+START TRANSACTION;
+INSERT INTO maatregel_brontype VALUES ('handmatige_registratie',NULL,'Oorspronkelijke handmatige bronregistratie') ON DUPLICATE KEY UPDATE brontype_code=brontype_code;
+INSERT INTO maatregel_bron(bron_code,brontype_code,titel,raadpleegdatum,bronstatus) SELECT DISTINCT bron,'handmatige_registratie',CONCAT('Beheerregistraties: ',bron),CURRENT_DATE,'aangeleverde_registratie' FROM tmp_maatregel_import ON DUPLICATE KEY UPDATE bron_code=bron_code;
+INSERT INTO maatregel_toegankelijkheid_registratie (plot_id,jaar,status_code,opmerking,bron_id,niveau) SELECT i.plot_id,i.jaar,i.status_code,i.opmerking,COALESCE((SELECT MAX(a.bron_id) FROM maatregel_toegankelijkheid_registratie a JOIN maatregel_registratie_herkomst h ON h.toegang_registratie_id=a.registratie_id WHERE h.brontabel='plot_jaar_toegankelijkheid' AND JSON_VALUE(h.oorspronkelijke_rij,'$.bron' RETURNING CHAR(50))=i.bron AND a.plot_id <=> i.plot_id AND a.jaar <=> i.jaar),b.bron_id),'plot' FROM tmp_maatregel_import i JOIN maatregel_bron b ON b.bron_code=i.bron WHERE NOT EXISTS (SELECT 1 FROM plot_jaar_toegankelijkheid old WHERE old.plot_id <=> i.plot_id AND old.jaar <=> i.jaar AND old.bron <=> i.bron AND old.status_code <=> i.status_code AND old.opmerking <=> i.opmerking) ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),opmerking=VALUES(opmerking);
+COMMIT;
+DROP TEMPORARY TABLE tmp_maatregel_import;

@@ -62,3 +62,17 @@ main().catch(error => {
   console.error(error);
   process.exit(1);
 });
+
+// De echte dashboardfuncties mogen een snapshot niet onbeperkt doortrekken.
+{
+  const fs=require('node:fs'),vm=require('node:vm');
+  const html=fs.readFileSync(path.join(__dirname,'..','bmp_meijendel_index.html'),'utf8');
+  const extract=name=>{const start=html.indexOf(`function ${name}(`);assert.ok(start>=0,name);return html.slice(start,html.indexOf('\nfunction ',start+1));};
+  const tables={plot_jaar_toegankelijkheid:[{plot_id:1,jaar:2024,status_code:'vrij'}],plot_jaar_maatregel:[{plot_id:1,jaar:1999,maatregel_id:3}],maatregelen:[{id:3,omschrijving:'Begrazing'}]};
+  const ctx={getTableRows:name=>tables[name]||[],toYear:Number};vm.createContext(ctx);
+  vm.runInContext(extract('getSelectedToegankelijkheid')+'\n'+extract('getMaatregelblok'),ctx);
+  assert.equal(ctx.getSelectedToegankelijkheid(1,2025),null);
+  assert.equal(ctx.getSelectedToegankelijkheid(1,2024).status_code,'vrij');
+  assert.equal(ctx.getMaatregelblok(1,2026).items.length,0);
+  assert.equal(ctx.getMaatregelblok(1,1999).items[0],'Begrazing');
+}

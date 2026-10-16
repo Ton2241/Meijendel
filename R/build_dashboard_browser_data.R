@@ -88,6 +88,11 @@ tables <- cache[["data"]]
 missing_tables <- setdiff(required_tables, names(tables))
 if (length(missing_tables)) stop("Dashboardcache mist: ", paste(missing_tables, collapse = ", "), ".", call. = FALSE)
 tables <- tables[required_tables]
+for(name in c("plot_jaar_toegankelijkheid","plot_jaar_maatregel")) {
+  for(field in c("bron","opmerking","intensiteit_code","uitvoerder_of_diersoort","deel_label","dekking_pct")) {
+    if(field %in% names(tables[[name]])) required_columns[[name]]<-unique(c(required_columns[[name]],field))
+  }
+}
 if (!all(vapply(tables, is.data.frame, logical(1)))) stop("Niet alle dashboardtabellen zijn dataframes.", call. = FALSE)
 for (table_name in names(required_columns)) {
   missing_columns <- setdiff(required_columns[[table_name]], names(tables[[table_name]]))

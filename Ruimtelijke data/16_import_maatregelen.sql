@@ -1,22 +1,11 @@
-USE `meijendel`;
-
-LOAD DATA LOCAL INFILE '/Users/ton/Documents/GitHub/Meijendel/Beheer/plot_jaar_maatregel_import.csv'
-INTO TABLE `plot_jaar_maatregel`
-FIELDS TERMINATED BY ','
-OPTIONALLY ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 LINES
-(
-  plot_id,
-  jaar,
-  bron,
-  maatregel_id,
-  intensiteit_code,
-  uitvoerder_of_diersoort,
-  deel_label,
-  dekking_pct,
-  opmerking
-);
-
-SELECT COUNT(*) AS aantal_records_maatregel
-FROM plot_jaar_maatregel;
+-- Gebruik alleen een beoordeelde levering; de meegeleverde CSV is een voorbeeld.
+USE Meijendel;
+DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_import;
+CREATE TEMPORARY TABLE tmp_maatregel_import (plot_id INT,jaar INT,bron VARCHAR(50),maatregel_id INT,intensiteit_code VARCHAR(30),uitvoerder_of_diersoort VARCHAR(50),deel_label VARCHAR(100),dekking_pct DECIMAL(5,2),opmerking VARCHAR(255));
+LOAD DATA LOCAL INFILE '/Users/ton/Documents/GitHub/Meijendel/Beheer/plot_jaar_maatregel_import.csv' INTO TABLE tmp_maatregel_import FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '"' LINES TERMINATED BY '\n' IGNORE 1 LINES (@plot_id,@jaar,@bron,@maatregel_id,@intensiteit_code,@uitvoerder_of_diersoort,@deel_label,@dekking_pct,@opmerking) SET plot_id=@plot_id,jaar=@jaar,bron=@bron,maatregel_id=@maatregel_id,intensiteit_code=@intensiteit_code,uitvoerder_of_diersoort=@uitvoerder_of_diersoort,deel_label=@deel_label,dekking_pct=NULLIF(@dekking_pct,''),opmerking=NULLIF(TRIM(TRAILING CHAR(13) FROM @opmerking),'');
+START TRANSACTION;
+INSERT INTO maatregel_brontype VALUES ('handmatige_registratie',NULL,'Oorspronkelijke handmatige bronregistratie') ON DUPLICATE KEY UPDATE brontype_code=brontype_code;
+INSERT INTO maatregel_bron(bron_code,brontype_code,titel,raadpleegdatum,bronstatus) SELECT DISTINCT bron,'handmatige_registratie',CONCAT('Beheerregistraties: ',bron),CURRENT_DATE,'aangeleverde_registratie' FROM tmp_maatregel_import ON DUPLICATE KEY UPDATE bron_code=bron_code;
+INSERT INTO maatregel_plot_jaar_registratie (plot_id,jaar,maatregel_id,intensiteit_code,uitvoerder_of_diersoort,deel_label,dekking_pct,opmerking,bron_id) SELECT i.plot_id,i.jaar,i.maatregel_id,i.intensiteit_code,i.uitvoerder_of_diersoort,i.deel_label,i.dekking_pct,i.opmerking,COALESCE((SELECT MAX(a.bron_id) FROM maatregel_plot_jaar_registratie a JOIN maatregel_registratie_herkomst h ON h.beheer_registratie_id=a.registratie_id WHERE h.brontabel='plot_jaar_maatregel' AND JSON_VALUE(h.oorspronkelijke_rij,'$.bron' RETURNING CHAR(50))=i.bron AND a.plot_id <=> i.plot_id AND a.jaar <=> i.jaar AND a.maatregel_id <=> i.maatregel_id AND a.intensiteit_code <=> i.intensiteit_code AND a.uitvoerder_of_diersoort <=> i.uitvoerder_of_diersoort AND a.deel_label <=> i.deel_label),b.bron_id) FROM tmp_maatregel_import i JOIN maatregel_bron b ON b.bron_code=i.bron WHERE NOT EXISTS (SELECT 1 FROM plot_jaar_maatregel old WHERE old.plot_id <=> i.plot_id AND old.jaar <=> i.jaar AND old.bron <=> i.bron AND old.maatregel_id <=> i.maatregel_id AND old.intensiteit_code <=> i.intensiteit_code AND old.uitvoerder_of_diersoort <=> i.uitvoerder_of_diersoort AND old.deel_label <=> i.deel_label AND old.dekking_pct <=> i.dekking_pct AND old.opmerking <=> i.opmerking) ON DUPLICATE KEY UPDATE maatregel_id=VALUES(maatregel_id),intensiteit_code=VALUES(intensiteit_code),uitvoerder_of_diersoort=VALUES(uitvoerder_of_diersoort),deel_label=VALUES(deel_label),dekking_pct=VALUES(dekking_pct),opmerking=VALUES(opmerking);
+COMMIT;
+DROP TEMPORARY TABLE tmp_maatregel_import;
