@@ -107,7 +107,7 @@ write_cache_set() {
   write_manifest
   sql_hash="$(awk -F= '$1 == "sql_sha256" {print $2}' "$manifest")"
   sql_bytes="$(awk -F= '$1 == "sql_bytes" {print $2}' "$manifest")"
-  cache_file="meijendel_tables_cache-p14-${sql_hash}.rds"
+  cache_file="meijendel_tables_cache-p15-${sql_hash}.rds"
   cache_manifest="${cache_file%.rds}.manifest"
   rm -rf "$cache_dir"
   mkdir -p "$cache_dir"
@@ -118,7 +118,7 @@ write_cache_set() {
 format=meijendel-shiny-cache-manifest-v1
 sql_sha256=$sql_hash
 sql_bytes=$sql_bytes
-parser_version=14
+parser_version=15
 cache_sha256=$cache_hash
 cache_bytes=$cache_bytes
 r_version=4.6.1

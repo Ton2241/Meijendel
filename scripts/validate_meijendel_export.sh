@@ -204,7 +204,7 @@ write_maatregel_view_results() {
   [[ "$schema" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schemanaam."
   : > "$output"
   [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$schema' AND table_name='maatregel_registratie_herkomst'")" != "0" ]] || return 0
-  for table in plot_jaar_maatregel plot_jaar_toegankelijkheid plot_jaar_toegankelijkheid_deel v_plot_jaar_maatregel_gecombineerd; do
+  for table in maatregel_plot_jaar_registratie maatregel_toegankelijkheid_registratie maatregel_registratie_herkomst v_plot_jaar_maatregel_bronvast v_plot_jaar_maatregel_gecombineerd; do
     columns="$(query "SELECT GROUP_CONCAT(CONCAT(QUOTE(column_name),',',CHAR(96),column_name,CHAR(96)) ORDER BY ordinal_position SEPARATOR ',') FROM information_schema.columns WHERE table_schema='$schema' AND table_name='$table'")"
     [[ -n "$columns" && "$columns" != "NULL" ]] || die "leescontract ontbreekt: $table"
     printf '%s\n' "$table" >> "$output"

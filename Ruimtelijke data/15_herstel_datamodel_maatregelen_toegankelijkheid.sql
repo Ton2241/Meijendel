@@ -41,13 +41,11 @@ ON DUPLICATE KEY UPDATE
 
 COMMIT;
 
--- Controle na uitvoering: deze resultset hoort 11, 26, 144 en 0 te tonen.
+-- Classificatiecontrole; onafhankelijk van historische tabellen of compatibiliteitsviews.
 SELECT
   (SELECT COUNT(*) FROM maatregelen) AS n_maatregelen,
   (SELECT COUNT(*) FROM maatregelen_kernwoorden) AS n_maatregelen_kernwoorden,
-  (SELECT COUNT(*) FROM plot_jaar_maatregel) AS n_plot_jaar_maatregel,
   (SELECT COUNT(*)
    FROM maatregelen_kernwoorden mk
    LEFT JOIN maatregelen m ON m.id = mk.parent_maatregel_id
-   WHERE mk.parent_maatregel_id IS NOT NULL AND m.id IS NULL) AS n_verweesde_kernwoorden,
-  (SELECT COUNT(*) FROM plot_jaar_toegankelijkheid_deel) AS n_plot_jaar_toegankelijkheid_deel;
+   WHERE mk.parent_maatregel_id IS NOT NULL AND m.id IS NULL) AS n_verweesde_kernwoorden;

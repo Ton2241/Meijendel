@@ -43,11 +43,11 @@ Rscript -e '
     plot_jaar_ahn_dtm=c("plot_id","jaar","bron","ahn_mean","ahn_sd"),
     plot_jaar_stikstof=c("plot_id","jaar","bron","stikstof_mean"),
     plot_jaar_infra=c("plot_id","jaar","bron","variabele","waarde"),
-    plot_jaar_toegankelijkheid=c("plot_id","jaar","bron","status_code"),
+    maatregel_toegankelijkheid_registratie=c("plot_id","jaar","bron_id","niveau","status_code"),
     pq_plot_jaar_vegetatie=c("plot_id","jaar","n_pq","n_opnamen","taxa_aantal","soortenrijkdom_gem","bedekking_som_gem","shannon_gem","dekking_kwaliteit","bronstatus","bronbestand","importversie","taxonlijst_versie"),
     dagwaarnemingen_wv=c("plot_id","soort_id","jaar","maand","dag","aantal"),
     maatregelen=c("id","omschrijving"), plot_jaar_landgebruik=c("plot_id","jaar","bron","klasse","pct"),
-    plot_jaar_maatregel=c("plot_id","jaar","maatregel_id"), plot_link=c("plot_id","link_type","label","url"),
+    maatregel_beheer_jaar=c("plot_id","jaar","maatregel_id"), plot_link=c("plot_id","link_type","label","url"),
     soorten_habitattypen=c("soort_id","habitattype_id","koppelingsterkte"), tellers=c("id","tellercode"),
     trends=c("soort_id","regio","jaar","waarde")
   )

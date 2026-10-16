@@ -68,7 +68,7 @@ main().catch(error => {
   const fs=require('node:fs'),vm=require('node:vm');
   const html=fs.readFileSync(path.join(__dirname,'..','bmp_meijendel_index.html'),'utf8');
   const extract=name=>{const start=html.indexOf(`function ${name}(`);assert.ok(start>=0,name);return html.slice(start,html.indexOf('\nfunction ',start+1));};
-  const tables={plot_jaar_toegankelijkheid:[{plot_id:1,jaar:2024,status_code:'vrij'}],plot_jaar_maatregel:[{plot_id:1,jaar:1999,maatregel_id:3}],maatregelen:[{id:3,omschrijving:'Begrazing'}]};
+  const tables={maatregel_toegankelijkheid_registratie:[{plot_id:1,jaar:2024,niveau:'plot',status_code:'vrij'},{plot_id:1,jaar:2024,niveau:'deel',status_code:'beperkt'}],maatregel_beheer_jaar:[{plot_id:1,jaar:1999,maatregel_id:3}],maatregelen:[{id:3,omschrijving:'Begrazing'}]};
   const ctx={getTableRows:name=>tables[name]||[],toYear:Number};vm.createContext(ctx);
   vm.runInContext(extract('getSelectedToegankelijkheid')+'\n'+extract('getMaatregelblok'),ctx);
   assert.equal(ctx.getSelectedToegankelijkheid(1,2025),null);

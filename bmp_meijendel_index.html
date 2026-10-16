@@ -1492,12 +1492,12 @@ function getSelectedPlotRecord(){
   return rows.find(r=>String(r.plot_id)===selected||String(r.kavel_nummer)===selected||String(r.plot_nr)===selected)||null;
 }
 function getSelectedToegankelijkheid(plotId,jaar){
-  const rows=getTableRows("plot_jaar_toegankelijkheid").filter(r=>String(r.plot_id)===String(plotId)&&toYear(r.jaar)===Number(jaar));
+  const rows=getTableRows("maatregel_toegankelijkheid_registratie").filter(r=>r.niveau==="plot").filter(r=>String(r.plot_id)===String(plotId)&&toYear(r.jaar)===Number(jaar));
   if(new Set(rows.map(r=>r.status_code)).size>1)return {status_code:"onbekend",opmerking:"tegenstrijdige bronregistraties",jaar:Number(jaar)};
   return rows[0]||null;
 }
 function getHistorischeToegankelijkheid(plotId,jaar){
-  return getTableRows("plot_jaar_toegankelijkheid").filter(r=>String(r.plot_id)===String(plotId)&&toYear(r.jaar)<Number(jaar)).sort((a,b)=>Number(b.jaar)-Number(a.jaar))[0]||null;
+  return getTableRows("maatregel_toegankelijkheid_registratie").filter(r=>r.niveau==="plot").filter(r=>String(r.plot_id)===String(plotId)&&toYear(r.jaar)<Number(jaar)).sort((a,b)=>Number(b.jaar)-Number(a.jaar))[0]||null;
 }
 function getPlotLink(plotId,linkType){
   const rows=getTableRows("plot_link")
@@ -1600,7 +1600,7 @@ function getKerncijfers(plotId,jaar){
   };
 }
 function getMaatregelblok(plotId,jaar){
-  const rows=getTableRows("plot_jaar_maatregel")
+  const rows=getTableRows("maatregel_beheer_jaar")
     .filter(r=>String(r.plot_id)===String(plotId))
     .filter(r=>toYear(r.jaar)!=null&&Number(toYear(r.jaar))===Number(jaar));
   if(!rows.length)return {items:[],bronjaar:null};

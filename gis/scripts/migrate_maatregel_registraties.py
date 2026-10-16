@@ -59,7 +59,9 @@ def migration_lock(c):
     finally:
         proc.terminate();proc.wait(timeout=10)
 
-def snapshot(c): return {t:c.rows(t) for t in OLD}
+def snapshot(c):
+    if all(not c.kind(t) for t in OLD): return canonical_snapshot(c)
+    return {t:c.rows(t) for t in OLD}
 
 def audit(c):
     rows=snapshot(c)
@@ -123,7 +125,56 @@ def view_sql():
     sql.append("CREATE OR REPLACE ALGORITHM=TEMPTABLE SQL SECURITY DEFINER VIEW v_plot_jaar_maatregel_gecombineerd AS SELECT plot_id,jaar,maatregel_id,uitvoering_id,bron_id,'bronvast' AS registratiestatus FROM v_plot_jaar_maatregel_bronvast UNION ALL SELECT a.plot_id,a.jaar,a.maatregel_id,a.uitvoering_id,a.bron_id,a.beoordelingsstatus FROM maatregel_plot_jaar_registratie a;")
     return '\n'.join(sql)
 
+def canonical_snapshot(c):
+    """Historische bewijsprojectie zonder een oude databaseview aan te roepen."""
+    columns={
+        OLD[0]: ['id','plot_id','jaar','bron','maatregel_id','intensiteit_code','uitvoerder_of_diersoort','deel_label','dekking_pct','opmerking'],
+        OLD[1]: ['plot_id','plot_naam','jaar','bron','status_code','opmerking'],
+        OLD[2]: ['id','plot_id','jaar','bron','deel_label','status_code','aandeel_pct','barriere_type','geom_wkt','opmerking']
+    }
+    results={}
+    for table,statement in zip(OLD,view_sql().splitlines()[:3]):
+        select=statement.split(' AS SELECT ',1)[1].rstrip(';')
+        pairs=','.join(literal(col)+',`'+col+'`' for col in columns[table])
+        raw=c.sql('SELECT JSON_OBJECT('+pairs+') FROM (SELECT '+select+') canoniek')
+        results[table]=sorted([json.loads(row) for row in raw.splitlines()],key=stable)
+    return results
+
+
+def retire_views(c,path,original_backup):
+    """Verwijder alleen de drie compatibiliteitsviews; controleer alle bronwaarden."""
+    verify(c,original_backup)
+    path=Path(path)
+    present=[table for table in OLD if c.kind(table)]
+    if not present:
+        if not (path/'views.json').exists(): raise RuntimeError('Views ontbreken zonder eerder verwijderbewijs')
+        return
+    if any(c.kind(table)!='VIEW' for table in present): raise RuntimeError('Verwijdering weigert een fysieke tabel')
+    dependencies=c.sql("SELECT TABLE_NAME FROM information_schema.views WHERE table_schema=DATABASE() AND table_name NOT IN ("+','.join(map(literal,OLD))+") AND VIEW_DEFINITION REGEXP "+literal(r'(^|[ .`])(plot_jaar_maatregel|plot_jaar_toegankelijkheid|plot_jaar_toegankelijkheid_deel)([^a-zA-Z_]|$)'))
+    if dependencies: raise RuntimeError('Andere views verwijzen nog naar oude namen: '+dependencies)
+    before={table:digest(c.rows(table)) for table in NEW}
+    if not path.exists():
+        path.mkdir(parents=True);path.chmod(0o700)
+        ddl={table:c.sql('SHOW CREATE VIEW `'+table+'`').split('\t')[1] for table in present}
+        (path/'views.json').write_text(json.dumps({'database':c.database,'ddl':ddl,'facts':before},ensure_ascii=False,indent=2)+'\n')
+        (path/'restore-views.sql').write_text(';\n'.join(ddl.values())+';\n')
+    else:
+        saved=json.loads((path/'views.json').read_text())
+        if saved['database']!=c.database or saved['facts']!=before: raise RuntimeError('Viewback-up hoort bij andere toestand')
+    try:
+        c.sql('DROP VIEW '+','.join('`'+table+'`' for table in present))
+        verify(c,original_backup)
+        if any(c.kind(table) for table in OLD): raise RuntimeError('Een oude view resteert')
+        if before!={table:digest(c.rows(table)) for table in NEW}: raise RuntimeError('Bronfeiten gewijzigd')
+    except Exception:
+        c.sql((path/'restore-views.sql').read_text())
+        raise
+    (path/'verified.json').write_text(json.dumps({'old_objects':0,'facts_unchanged':True,'legacy_reconstruction':True},indent=2)+'\n')
+
 def apply(c,path,interrupt_after_rename=False):
+    if all(not c.kind(t) for t in OLD) and c.kind(NEW[0]):
+        if any(c.kind(t+'_migratie_oud') for t in OLD): raise RuntimeError('Onderbroken migratie: eerst gecontroleerd herstel uitvoeren')
+        verify(c,path);return
     if c.kind(OLD[0])=='VIEW': verify(c,path);return
     rows=audit(c);info=backup(c,path,rows)
     for t in NEW:
@@ -190,11 +241,16 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--database',required=True);p.add_argument('--login-path',default='meijendel_root');p.add_argument('--backup-dir',type=Path,required=True)
     g=p.add_mutually_exclusive_group(required=True)
-    for mode in ('audit','apply','verify','restore'): g.add_argument('--'+mode,action='store_true')
+    p.add_argument('--view-backup-dir',type=Path)
+    for mode in ('audit','apply','verify','restore','retire-views'): g.add_argument('--'+mode,action='store_true')
     args=p.parse_args();c=Client(args.database,args.login_path)
     try:
         if args.audit:
             data=audit(c);print(json.dumps({t:len(v) for t,v in data.items()}))
+        elif args.retire_views:
+            if not args.view_backup_dir: p.error('--view-backup-dir is verplicht')
+            with migration_lock(c): retire_views(c,args.view_backup_dir,args.backup_dir)
+            print('OK: drie oude views verwijderd; alle bronfeiten en reconstructies gelijk')
         elif args.apply:
             with migration_lock(c): apply(c,args.backup_dir)
             print('OK: migratie en reconstructie')

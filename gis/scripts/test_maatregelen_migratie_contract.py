@@ -88,6 +88,8 @@ def main() -> int:
         assert scalar("SELECT druk_aandachtspunt FROM maatregelen WHERE code='maaibeheer_aanvullend';") == r"Overgrassing en\nverstruweling"
         assert scalar("SELECT COUNT(*) FROM maatregelen_kernwoorden mk JOIN maatregelen m ON m.id=mk.parent_maatregel_id WHERE mk.code IN ('recreatiezonering','honden_aanlijnplicht','parkeerreductie','routing') AND m.code='rust_en_recreatiebeheer';") == "4"
         assert scalar("SELECT COUNT(*) FROM maatregelen_kernwoorden mk JOIN maatregelen m ON m.id=mk.parent_maatregel_id WHERE mk.code='strandreservaat' AND m.code='strandreservaten';") == "1"
+        mysql("DROP TABLE plot_jaar_maatregel; DROP TABLE plot_jaar_toegankelijkheid_deel;", TEST_DB)
+        apply_migration()  # De classificatieroute werkt ook na definitieve verwijdering.
     finally:
         mysql(f"DROP DATABASE {TEST_DB};")
     print("OK: classificatieherstel is idempotent en behoudt plot-jaarregels")

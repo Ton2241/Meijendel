@@ -48,7 +48,7 @@ def main():
             tables=list(m.NEW)+['maatregel_bron','maatregel_uitvoering','maatregel_uitvoering_jaar','maatregel_plot_koppeling']
             dump.write_bytes(subprocess.run(c.command('mysqldump')+['--no-tablespaces','--complete-insert','--set-gtid-purged=OFF',db,*tables],capture_output=True,check=True).stdout)
             rscript=Path(tmp)/'compare.R'
-            rscript.write_text('source("'+str(ROOT/'shiny_meijendel/helpers.R')+'"); x<-build_maatregel_compat_tables(read_maatregel_registration_tables("'+str(dump)+'")); jsonlite::write_json(x,"'+str(out)+'",dataframe="rows",auto_unbox=TRUE,na="null",null="null");')
+            rscript.write_text('source("'+str(ROOT/'shiny_meijendel/helpers.R')+'"); x<-reconstruct_legacy_maatregel_rows(read_maatregel_registration_tables("'+str(dump)+'",audit=TRUE)); jsonlite::write_json(x,"'+str(out)+'",dataframe="rows",auto_unbox=TRUE,na="null",null="null");')
             subprocess.run(['Rscript',str(rscript)],cwd=ROOT,check=True)
             actual=json.loads(out.read_text())
             assert {t:sorted(actual[t],key=m.stable) for t in m.OLD}==before, 'R/SQL-verschil'
@@ -108,9 +108,21 @@ def main():
             assert m.snapshot(c)==before
             # Onderbreking na atomair hernoemen: herstel moet alle drie tabellen terugzetten.
             m.apply(c,backup,interrupt_after_rename=True)
+            try: m.apply(c,backup)
+            except RuntimeError: pass
+            else: raise AssertionError('onderbroken migratie ten onrechte als voltooid gemeld')
             m.restore(c,backup)
             assert m.snapshot(c)==before
             m.apply(c,backup);m.verify(c,backup)
+            # De uiteindelijke afnemers moeten zonder enige oude view blijven werken.
+            m.retire_views(c,Path(tmp)/'views-backup',backup)
+            assert all(c.kind(t)=='' for t in m.OLD)
+            m.verify(c,backup)
+            m.retire_views(c,Path(tmp)/'views-backup',backup)
+            assert all(c.kind(t)=='' for t in m.OLD)
+            rscript.write_text('source("'+str(ROOT/'shiny_meijendel/helpers.R')+'"); x<-build_maatregel_registration_data(read_maatregel_registration_tables("'+str(dump)+'")); stopifnot(nrow(x$maatregel_beheer_jaar)==145L,nrow(x$maatregel_toegankelijkheid_registratie)==55L,!any(c("plot_jaar_maatregel","plot_jaar_toegankelijkheid") %in% names(x)));')
+            # De eerdere dump bevat 140 aanvullende feiten + vijf bestaande doelen.
+            subprocess.run(['Rscript',str(rscript)],cwd=ROOT,check=True)
         print('OK: 139/55 feiten, 199 herkomsten, vijf duplicaten, inhoudscontrole, herhaling en herstel')
     finally:
         c.sql(f'DROP DATABASE `{db}`',selected=False)

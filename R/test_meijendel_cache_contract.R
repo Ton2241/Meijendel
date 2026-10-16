@@ -15,13 +15,13 @@ expect_error <- function(expr, pattern) {
 
 scope_fixture <- list(
   plots = data.frame(
-    plot_id = c(1L, 3503L, 3514L),
+    plot_id = c(1L, 3503L, 3515L),
     kavel_nummer = c("M1", "M66", "M91"),
     stringsAsFactors = FALSE
   ),
   plot_analyse_scope = data.frame(
     scope_code = rep("meijendel_natura2000", 3L),
-    plot_id = c(1L, 3503L, 3514L),
+    plot_id = c(1L, 3503L, 3515L),
     in_scope = c(1L, 0L, 0L),
     reden = c(
       "Onderdeel van Natura 2000-analysegebied.",
@@ -31,13 +31,13 @@ scope_fixture <- list(
     stringsAsFactors = FALSE
   ),
   territoria = data.frame(
-    plot_id = c(1L, 3503L, 3514L),
+    plot_id = c(1L, 3503L, 3515L),
     soort_id = 1L,
     jaar = 2025L,
     territoria = c(2, 3, 4)
   ),
   plot_jaar_oppervlak = data.frame(
-    plot_id = c(1L, 3503L, 3514L),
+    plot_id = c(1L, 3503L, 3515L),
     jaar = 2025L,
     oppervlakte_km2 = c(1, 1, 1)
   ),
@@ -60,7 +60,7 @@ stopifnot(
 scope_all <- apply_meijendel_plot_scope(scope_fixture, c("M66", "M91"))
 stopifnot(
   identical(scope_all$plots$kavel_nummer, c("M1", "M66", "M91")),
-  identical(scope_all$territoria$plot_id, c(1L, 3503L, 3514L))
+  identical(scope_all$territoria$plot_id, c(1L, 3503L, 3515L))
 )
 
 expect_error(
@@ -241,26 +241,26 @@ stopifnot(identical(
   5L
 ))
 
-identity <- meijendel_cache_identity(strrep("a", 64), 123L, 14L)
+identity <- meijendel_cache_identity(strrep("a", 64), 123L, 15L)
 cache <- list(
   format = "meijendel-shiny-cache-v1",
   identity = identity,
   data = list(plots = data.frame())
 )
 stopifnot(validate_meijendel_cache(cache, identity))
-stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 14L)))
+stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 15L)))
 
-wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 14L)
+wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 15L)
 expect_error(validate_meijendel_cache(cache, wrong_hash), "sql_sha256")
 
-wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 14L)
+wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 15L)
 expect_error(validate_meijendel_cache(cache, wrong_size), "sql_bytes")
 
-wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 15L)
+wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 16L)
 expect_error(validate_meijendel_cache(cache, wrong_parser), "parser_version")
 
-expect_error(meijendel_cache_identity("ABC", 123L, 14L), "sql_sha256")
-expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 14L), "sql_bytes")
+expect_error(meijendel_cache_identity("ABC", 123L, 15L), "sql_sha256")
+expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 15L), "sql_bytes")
 
 tmp <- tempfile("meijendel-cache-contract-")
 dir.create(tmp)
@@ -270,8 +270,8 @@ writeLines(c(
   "format=meijendel-export-v1",
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  paste0("cache_file=meijendel_tables_cache-p14-", strrep("a", 64), ".rds"),
-  paste0("cache_manifest=meijendel_tables_cache-p14-", strrep("a", 64), ".manifest")
+  paste0("cache_file=meijendel_tables_cache-p15-", strrep("a", 64), ".rds"),
+  paste0("cache_manifest=meijendel_tables_cache-p15-", strrep("a", 64), ".manifest")
 ), manifest)
 parsed <- read_meijendel_manifest(manifest)
 stopifnot(identical(unname(parsed[["sql_bytes"]]), "123"))
@@ -288,8 +288,8 @@ writeBin(charToRaw("dezelfde dumpbytes"), sql_one)
 stopifnot(file.copy(sql_one, sql_two))
 stopifnot(!identical(normalizePath(sql_one), normalizePath(sql_two)))
 stopifnot(identical(
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 14L),
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 14L)
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 15L),
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 15L)
 ))
 
 source(file.path(repo, "shiny_meijendel", "helpers.R"))
@@ -445,7 +445,7 @@ stopifnot(
 
 partial_migration <- tempfile(fileext=".sql")
 writeLines("CREATE TABLE `maatregel_plot_jaar_registratie` (",partial_migration)
-expect_error(parse_meijendel_tables(partial_migration),"Onvoltooide registratiemigratie")
+expect_error(parse_meijendel_tables(partial_migration),"Vereist registratieschema ontbreekt")
 unlink(partial_migration)
 
 parse_called <- FALSE
@@ -472,7 +472,7 @@ required_names <- c(
   "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien",
   "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat",
   "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra",
-  "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie", "weer_analyse_jaar"
+  "maatregel_toegankelijkheid_registratie", "pq_plot_jaar_vegetatie", "weer_analyse_jaar"
 )
 cache_fixture_data <- function() {
   data <- stats::setNames(lapply(required_names, function(name) data.frame()), required_names)
@@ -505,7 +505,7 @@ stopifnot(!local_result$from_cache, file.exists(local_cache))
 stopifnot(any(grepl(paste0("\\.next\\.", Sys.getpid(), "$"), saved_paths)))
 stopifnot(!any(file.exists(paste0(local_cache, ".next.", Sys.getpid()))))
 
-active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p14-", strrep("a", 64), ".rds"))
+active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p15-", strrep("a", 64), ".rds"))
 active_cache_object <- list(
   format = MEIJENDEL_CACHE_FORMAT,
   identity = identity,
@@ -520,7 +520,7 @@ writeLines(c(
   paste0("cache_bytes=", file.info(active_cache)$size),
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  "parser_version=14"
+  "parser_version=15"
 ), active_manifest)
 manifest_result <- load_meijendel_tables_cached(
   sql_one,
