@@ -439,6 +439,7 @@ FROM tmp_maatregel_uitvoering_seed;
 
 INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('waterwinning_pannen_2010_2018','zotero_n2000_beheerplan_2016','bevestiging','p. 25 en 131','Pagina 131 koppelt de PIM-aanpassingen aan de oevers van infiltratieplassen expliciet aan Tafelberg en ''t Scheepje. Pagina 25 noemt daarnaast de gebieden waar het PIM als geheel tot natuurherstel leidde, maar specificeert niet welke infiltratieplassen samen de door Dunea gemelde 370.000 m3 verwijderd materiaal vertegenwoordigen.'),
+  ('waterwinning_putten_2010_2018','denhaag_pim_archeologie_2013','plancontext','afbeelding 1 en bijlage 2','Afbeelding 1 begrenst de PIM-winningsseries. Bijlage 2 noemt nieuwe of vervangende putten in serie HH, WW, RA, C, KG, WV, E, LV, Complex 8.3 en Complex 8. De rapportage beschrijft de planning tot en met 2015-2016; Dunea bevestigt afzonderlijk dat het volledige programma in 2018 met bijna 700 nieuwe winputten is afgerond.'),
   ('waterwinning_plaggen_2010_2018','zotero_hollands_duinen_63_2014','bevestiging','p. 5-7','Bevestigt dat Dunea in de voorafgaande twee jaar het vegetatiedek in Elleboogsprang, Helmduinen en Vinkenhoek verwijderde. In Elleboogsprang is circa 15 hectare behandeld.'),
   ('waterwinning_plaggen_2010_2018','zotero_hollands_duinen_64_2014','bevestiging','p. 12-15','Beschrijft de monitoring van de ingrepen en toont Elleboogsprang, Vinkenhoek, Meeuwenduin en Helmduinen als de vier gefotografeerde herstelgebieden.'),
   ('waterwinning_plaggen_2010_2018','denhaag_natuurherstel_2012','bevestiging','PDF-p. 4 en 19-20','Afbeelding 1 begrenst Elleboogsprang, Meeuwenduin en Vinkenhoek. De tekst beschrijft afplaggen en vegetatieverwijdering in deze gebieden; vergelijking met de actuele kavelgeometrie lokaliseert de broncontouren.'),
@@ -1518,6 +1519,51 @@ JOIN maatregel_bron b ON b.bron_code=CASE
   ELSE 'denhaag_natuurherstel_2012'
 END
 WHERE u.uitvoering_code='waterwinning_plaggen_2010_2018'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+DELETE pk
+FROM maatregel_plot_koppeling pk
+JOIN maatregel_uitvoering u USING (uitvoering_id)
+JOIN plots p USING (plot_id)
+WHERE u.uitvoering_code='waterwinning_putten_2010_2018'
+  AND p.kavel_nummer NOT IN (
+    'M1a','M1b','M3','M6','M10-12-76','M12a','M14','M15','M16','M16s','M17a',
+    'M17b','M31','M32','M33','M36','M41','M43','M45','M55','M62','M83'
+  );
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,
+  p.plot_id,
+  'benoemd_gebied_gevalideerd',
+  NULL,
+  'geverifieerd',
+  b.bron_id,
+  CASE
+    WHEN p.kavel_nummer IN ('M16','M62') THEN CONCAT(
+      'HAR 1306 begrenst de winningsseries op afbeelding 1 en noemt in bijlage 2 de aanleg of vervanging van putten per serie. ',
+      'Deze kavel wordt alleen aan de rand door de broncorridor geraakt. Ton bevestigde op 16 oktober 2026 dat M16 en M62 als grensdoorsnijdingen bij maatregel 31 worden opgenomen. ',
+      'Dunea bevestigt bijna 700 nieuwe winputten voor het programma als geheel, maar verdeelt die niet per serie of kavel; daarom blijft doorsnijding_pct leeg.'
+    )
+    ELSE CONCAT(
+      'HAR 1306 begrenst de winningsseries op afbeelding 1 en noemt in bijlage 2 de aanleg of vervanging van putten per serie. ',
+      'De broncorridors zijn over de actuele kavelgeometrie gelegd; Ton bevestigde op 16 oktober 2026 de gezamenlijke koppeling van maatregel 31 aan twintig duidelijke doorsnijdingen en de grensdoorsnijdingen M16 en M62. ',
+      'Dunea bevestigt bijna 700 nieuwe winputten voor het programma als geheel, maar verdeelt die niet per serie of kavel; daarom blijft doorsnijding_pct leeg.'
+    )
+  END
+FROM maatregel_uitvoering u
+JOIN plots p ON p.kavel_nummer IN (
+  'M1a','M1b','M3','M6','M10-12-76','M12a','M14','M15','M16','M16s','M17a',
+  'M17b','M31','M32','M33','M36','M41','M43','M45','M55','M62','M83'
+)
+JOIN maatregel_bron b ON b.bron_code='denhaag_pim_archeologie_2013'
+WHERE u.uitvoering_code='waterwinning_putten_2010_2018'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),
