@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Publiceer formele onzekerheid voor afzonderlijke TRIM-perioden, de gebrugde soorttrend 1958–2025 en ecologische en functionele MSI-groepen, met een reproduceerbare gestratificeerde clusterbootstrap die lokaal en optioneel op NAS/VPS in controleerbare batches draait.
+**Goal:** Bouw en valideer formele onzekerheid voor afzonderlijke TRIM-perioden, de empirisch gebrugde soorttrend en ecologische en functionele MSI-groepen, met een eerste productierun over 1958–2026 zodra broedseizoen 2026 compleet en gevalideerd is.
 
-**Architecture:** De bestaande TRIM-batchscripts worden sourcebaar gemaakt zonder hun CLI-gedrag te veranderen. Een nieuwe zuivere bootstrapkern trekt volledige plotclusters binnen vaste strata, voert per replicatie de bestaande soort-, brug- en groepsketen uit en schrijft atomische batchartefacten. De iMac coördineert en valideert alle batches; NAS en productie-VPS zijn optionele workers die nooit canonieke uitvoer schrijven en alleen na een groene capaciteitstest worden geactiveerd.
+**Architecture:** De bestaande TRIM-batchscripts worden sourcebaar gemaakt zonder hun CLI-gedrag te veranderen. Een nieuwe zuivere bootstrapkern trekt volledige plotclusters binnen vaste strata en schat per replicatie beide TRIM-perioden, een hulp-TRIM op gemeenschappelijke brugplots, de empirische brug, de verplichte gevoeligheidsvarianten en de groepen. De iMac coördineert en valideert alle batches; NAS en productie-VPS zijn optionele workers die nooit canonieke uitvoer schrijven en alleen na een groene capaciteitstest en afzonderlijk akkoord worden geactiveerd.
 
 **Tech Stack:** R 4.6.1, `rtrim` 2.3.1, base R-tests met `stopifnot`, shellcontracttests, JSON via `jsonlite`, Git, Docker voor Linux-workers, SSH/rsync voor optionele NAS/VPS-workers.
 
@@ -12,13 +12,16 @@
 
 ## Global Constraints
 
-- De bronset Meijendel bevat 55 plots en 3.159 plot-jaarregels over 1958–2025; iedere gegevensuitspraak noemt verzameling, aantal en periode.
+- De ontwikkelbaseline van 7 oktober 2026 bevat 53 plots met oppervlaktejaren, 52 ooit getelde plots, 3.053 plot-jaarregels, 156 soorten in de statuslaag, 135 soorten met indices en 93 soorten met twee bruikbare perioden over 1958–2025; iedere gegevensuitspraak noemt verzameling, aantal en periode.
 - De afzonderlijke soortperioden 1958–1983 en 1984–2025 blijven primair en gebruiken `rtrim::overall(..., which = "imputed")`.
 - De soorttrend 1958–2025 heet altijd `gecombineerde trend via brugfactor`; presenteer hem nooit als één doorlopend TRIM-model.
+- Gebruik voor de primaire brug 1981–1983 en 1986–1988; gebruik 1984 en 1985 niet als kalibratiejaren.
+- Schat de niveauverhouding met een hulp-TRIM op de 33 plots die in beide ankervensters vertegenwoordigd zijn; gebruik de 20 in alle zes jaren getelde plots als strikte gevoeligheidsvariant.
+- Bereken ook 1987–1989, 1988–1990, de historische continuiteitsbrug 1984–1986 en een vaste historische-kernvariant; label hun totale bereik als gevoeligheidsenvelop, niet als 95%-interval.
 - Trek volledige plotgeschiedenissen met teruglegging binnen vaste strata; trek geen jaren, indexwaarden of soorten afzonderlijk.
 - Gebruik binnen een replicatie exact dezelfde clustertrekking voor alle soorten en groepen.
 - De primaire robuuste groep heeft vaste soortensamenstelling; een ontbrekende vaste groepssoort maakt die groepsreplicatie ongeldig.
-- Gebruik minimaal 2.000 replicaties; verleng alleen volgens het vastgelegde stabiliteitscriterium, tot maximaal 5.000.
+- Gebruik nu 50 pilotreplicaties en daarna 500 validatiereplicaties. Start 2.000–5.000 productiereplicaties pas na opname en validatie van 2026.
 - Draai geen bootstrap in een interactieve website- of Shiny-request.
 - De iMac is coördinator en referentie. NAS/VPS zijn optioneel, schrijven alleen batchresultaten en worden niet automatisch geactiveerd.
 - De volledige 2.000-run blijft lokaal uitvoerbaar; NAS/VPS staan standaard uit en vereisen na een read-only proef afzonderlijk expliciet akkoord.
@@ -26,128 +29,107 @@
 - De productie-VPS gebruikt een aparte container en uitvoermap; raak actieve Shiny- en MySQL-containers niet aan.
 - Houd credentials, lokale workerconfiguratie, ruwe replicaties, caches en runtime-output buiten Git.
 - Werk testgestuurd: schrijf en observeer eerst de bedoelde testfout, implementeer daarna minimaal en draai vervolgens de gerichte én relevante bestaande tests.
-- Voer begin- en eindpreflight uit; commit logisch afgeronde taken en deploy pas na integratie in schone actuele `main` volgens de projectworkflow.
+- Voer begin- en eindpreflight uit en commit logisch afgeronde taken. Publicatie naar de VPS vereist na de 2026-productierun afzonderlijk expliciet akkoord.
 
 ## Review Focus
 
-- **Plotduplicatie:** twee trekkingen van hetzelfde bronplot moeten twee unieke TRIM-site-ID's opleveren; Task 4 test dit expliciet.
+- **Brugidentiteit:** dezelfde getrokken plotkopieën en multipliciteiten moeten in hoofd-TRIM, hulp-TRIM, soorttrend en groeps-MSI terechtkomen; Tasks 4 en 5 testen dit expliciet.
+- **Overgangsjaren:** 1984 en 1985 mogen wel geldige post-1984-modeldata blijven, maar nooit in de primaire brugkalibratie belanden; Task 5 test dit expliciet.
 - **Vaste groepssamenstelling:** uitval van één primaire groepssoort mag geen kleiner ogenschijnlijk geldig MSI opleveren; Task 6 test dat de replicatie ongeldig wordt.
 - **Hervatten en dubbelen:** een afgebroken of dubbel aangeleverde batch mag geen replicatie tweemaal meetellen; Task 8 test atomische hervatting en overlapafwijzing.
-- **Heterogene workers:** dezelfde replicaties op macOS en Linux moeten discrete velden exact en numerieke velden binnen `1e-8` reproduceren; Task 9 test de workerpariteit.
-- **Productieveiligheid en preëmptie:** een VPS-worker mag niet starten bij deploylock, onvoldoende reservegeheugen of ongezonde Shiny/MySQL-status en een externe worker mag na swapgroei of verslechterde health geen volgende replicatie starten; Task 9 test deze blokkades.
+- **Structurele gevoeligheid:** een richtings- of nulgrensverschil tussen brugvarianten of de historische-kernvariant moet status `bruggevoelig` respectievelijk `gebiedsdekkinggevoelig` opleveren; Task 7 test beide statussen.
+- **Productieveiligheid:** optionele externe workers blijven uit, tenzij capaciteit, numerieke pariteit en servicehealth aantoonbaar groen zijn en Ton daarna afzonderlijk akkoord geeft; Task 9 test de blokkades zonder echte NAS/VPS-activering.
 
 ---
 
-### Task 1: Canonieke regressiebaseline uit één bronrun
+### Task 1: Canonieke regressiebaseline en reproduceerbare brugjaaraudit
 
 **Files:**
 - Create: `R/trim_run_manifest.R`
 - Create: `R/check_trim_source_output_contract.R`
+- Create: `R/audit_trim_bridge_windows.R`
+- Create: `R/check_trim_bridge_audit.R`
 - Create: `scripts/test_trim_source_output_contract.sh`
 - Modify: `.gitignore`
 - Modify: `R/trim_soorten_en_msi_evg.md`
-- Modify: `R/trim_sandra_soorten_en_msi_evg.md`
 
 **Interfaces:**
 - Consumes: één expliciet SQL-pad, Git-commit, R- en packageversies en de bestaande TRIM-outputmappen.
-- Produces: `trim/run_manifest.json` met bronhash en uitvoerchecksums; een contractcontrole die gemengde bron- en outputruns weigert.
+- Produces: `trim/bootstrap/run_manifest.json`, een bron/outputcontract en `audit_trim_bridge_windows(tbls, basis, windows)` met jaarlijkse dekking, vensterdekking en plotoverlap.
 
-- [ ] **Step 1: Schrijf de falende bron/outputcontracttest**
+- [ ] **Step 1: Schrijf de falende bron/outputcontract- en brugjaaraudittests**
 
-Maak `scripts/test_trim_source_output_contract.sh` met een tijdelijke SQL-fixture, twee kleine uitvoerbestanden en een manifest met opzettelijk verkeerde SQL-hash:
-
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-work="$(mktemp -d "${TMPDIR:-/tmp}/trim-contract.XXXXXX")"
-trap 'rm -rf "$work"' EXIT
-mkdir -p "$work/out"
-printf 'bron-a\n' > "$work/meijendel.sql"
-printf 'x,y\n1,2\n' > "$work/out/result.csv"
-Rscript "$repo/R/trim_run_manifest.R" create \
-  --sql "$work/meijendel.sql" --output "$work/out" \
-  --manifest "$work/run_manifest.json" --run-id test-run
-printf 'bron-b\n' > "$work/meijendel.sql"
-if Rscript "$repo/R/check_trim_source_output_contract.R" \
-  "$work/meijendel.sql" "$work/out" "$work/run_manifest.json"; then
-  echo 'Contract had gewijzigde SQL moeten weigeren.' >&2
-  exit 1
-fi
-```
-
-- [ ] **Step 2: Voer de test uit en verifieer RED**
-
-Run: `bash scripts/test_trim_source_output_contract.sh`
-
-Expected: FAIL omdat `R/trim_run_manifest.R` nog ontbreekt.
-
-- [ ] **Step 3: Implementeer manifest en contractcontrole minimaal**
-
-Implementeer in `R/trim_run_manifest.R` de functies:
+De manifesttest wijzigt na manifestcreatie de SQL-fixture en eist afwijzing.
+De brugfixture bevat zes plots over 1981–1988 en eist exact:
 
 ```r
-sha256_file <- function(path) character(1)
-hash_output_tree <- function(path) data.frame(path = character(), sha256 = character())
-build_trim_run_manifest <- function(sql_path, output_dir, run_id, git_commit) list()
-write_trim_run_manifest <- function(manifest, path) invisible(path)
+audit <- audit_trim_bridge_windows(tbls, basis, list(pre = 1981:1983, primary = 1986:1988))
+stopifnot(audit$windows$unique_plots[audit$windows$window == "pre"] == 4L)
+stopifnot(audit$overlap$any_year == 3L)
+stopifnot(audit$overlap$all_six_years == 2L)
+stopifnot(!any(audit$primary_post_years %in% c(1984L, 1985L)))
 ```
 
-Gebruik `system2("shasum", c("-a", "256", path), stdout = TRUE)` op macOS en
-`sha256sum` als fallback. Sorteer relatieve bestandspaden vóór hashing. De
-controle weigert ontbrekende bestanden, gewijzigde bronhash, gewijzigde
-uitvoerchecksum of een leeg run-ID.
-
-- [ ] **Step 4: Voeg runtimepaden aan `.gitignore` toe**
-
-Voeg uitsluitend deze patronen toe:
-
-```gitignore
-trim/bootstrap_runs/
-trim/bootstrap_workers.csv
-trim/**/*.partial
-```
-
-- [ ] **Step 5: Draai test en bestaande lichte baselinecontroles**
+- [ ] **Step 2: Voer beide tests uit en verifieer RED**
 
 Run:
 
 ```bash
 bash scripts/test_trim_source_output_contract.sh
-scripts/test_shiny_reproducibility.sh
-Rscript R/check_dashboard_website_parity.R . groepen_grafieken
+Rscript R/check_trim_bridge_audit.R .
 ```
 
-Expected: alle groen.
+Expected: FAIL omdat manifest- en auditfuncties ontbreken.
 
-- [ ] **Step 6: Bouw SQL en bestaande TRIM/dashboardoutput uit één bronrun**
+- [ ] **Step 3: Implementeer manifest, contract en brugjaaraudit**
 
-Gebruik één vastgelegd lokaal SQL-pad. Genereer eerst naar een tijdelijke map,
-maak het manifest, controleer aantallen voor de bronset 1958–2025 en vervang de
-gevolgde output alleen wanneer alle contract- en pariteitstests groen zijn.
+Definieer:
+
+```r
+sha256_file <- function(path) character(1)
+build_trim_run_manifest <- function(sql_path, output_dir, run_id, git_commit) list()
+audit_trim_bridge_windows <- function(tbls, basis, windows) list()
+derive_bridge_plot_sets <- function(basis, pre_years, post_years) list()
+```
+
+`derive_bridge_plot_sets()` levert voor 1981–1983 en 1986–1988 de plots met
+ten minste één geteld jaar in ieder venster en afzonderlijk de plots die alle
+zes jaren zijn geteld. De audit gebruikt exact de Natura 2000-, oppervlakte-
+en geteld-poort uit `prepare_analysis_basis()`.
+
+- [ ] **Step 4: Voeg uitsluitend runtimepaden toe aan `.gitignore`**
+
+Negeer `trim/bootstrap_runs/`, `trim/bootstrap_workers.csv` en
+`trim/**/*.partial`.
+
+- [ ] **Step 5: Verifieer de ontwikkelbaseline zonder een nieuwe zware dump te maken**
+
+Controleer op de gevolgde bronset 1958–2025 exact 53 plots met
+oppervlaktejaren, 52 ooit getelde plots, 3.053 plot-jaarregels, 156 soorten in
+de statuslaag, 135 soorten met indices, 93 soorten met twee perioden, 18
+ecologische en 24 functionele trendregels. Controleer voor de brug 43 unieke
+preplots, 37 unieke primaire postplots, 33 gemeenschappelijke plots en 20
+volledig getelde plots. Een nieuwe dump, cachebouw of gevolgde uitvoer is geen
+onderdeel van deze stap.
+
+- [ ] **Step 6: Draai contract- en bestaande lichte baselinecontroles**
 
 Run:
 
 ```bash
-Rscript R/trim_soorten_en_msi_evg.R /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
-  "$TMPDIR/trim-baseline/trim/soorten" "$TMPDIR/trim-baseline/trim_msi_evg"
-Rscript R/build_groepen_grafieken_dashboard_csv.R \
-  /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
-  "$TMPDIR/trim-baseline/groepen_grafieken"
+bash scripts/test_trim_source_output_contract.sh
+Rscript R/check_trim_bridge_audit.R .
+scripts/test_shiny_reproducibility.sh
+Rscript R/check_dashboard_website_parity.R . groepen_grafieken
 ```
 
-Controleer exact: 55 plots, 3.159 plot-jaarregels, 159 soortstatusregels, 137
-soorten met indices en 95 brugbare soorten. Als deze aantallen door een
-gedocumenteerde broncorrectie zijn gewijzigd, stop en leg het verschil voor
-voordat gevolgde output wordt vervangen.
-
-- [ ] **Step 7: Commit de baselinecontractwijziging**
+- [ ] **Step 7: Commit**
 
 ```bash
 git add .gitignore R/trim_run_manifest.R R/check_trim_source_output_contract.R \
-  scripts/test_trim_source_output_contract.sh R/trim_soorten_en_msi_evg.md \
-  R/trim_sandra_soorten_en_msi_evg.md trim trim_msi_evg groepen_grafieken
-git commit -m "Borg bron en uitvoer van TRIM-runs"
+  R/audit_trim_bridge_windows.R R/check_trim_bridge_audit.R \
+  scripts/test_trim_source_output_contract.sh R/trim_soorten_en_msi_evg.md
+git commit -m "Borg TRIM-bronrun en brugjaaraudit"
 ```
 
 ### Task 2: Maak de bestaande batchscripts veilig sourcebaar
@@ -216,84 +198,64 @@ git add R/trim_soorten_en_msi_evg.R R/trim_sandra_soorten_en_msi_evg.R \
 git commit -m "Maak TRIM-batchfuncties herbruikbaar"
 ```
 
-### Task 3: Formele trends voor afzonderlijke TRIM-perioden
+### Task 3: Behoud het bestaande formele trendcontract en parametriseer het eindjaar
 
 **Files:**
-- Create: `R/trim_uncertainty_core.R`
-- Create: `R/check_trim_overall_trends.R`
+- Create: `R/trim_analysis_config.R`
+- Create: `R/check_trim_analysis_period.R`
 - Modify: `R/trim_soorten_en_msi_evg.R`
-- Modify: `R/trim_sandra_soorten_en_msi_evg.R`
+- Modify: `R/check_trim_species_output_contract.R`
 
 **Interfaces:**
-- Consumes: een geslaagde `fit_trim_model()`-uitkomst en periodelabel.
-- Produces: `extract_trim_overall(fit_obj, period_label)` met additieve helling, multiplicatieve helling, SE, 95%-BI, p-waarde en procent per jaar.
+- Consumes: expliciet analyse-eindjaar; de al bestaande `trim_overall_contract()` uit `R/trim_trend_contract.R`.
+- Produces: `resolve_trim_periods(end_year)` met perioden en labels voor hoofdmodel, gecombineerde trend en presentatie.
 
-- [ ] **Step 1: Schrijf een falende synthetische overall-test**
-
-Maak een klein telpaneel met zes jaren, vier sites, één stijgende soort en één
-stabiele soort. Pas `rtrim::trim()` toe en eis:
-
-```r
-up <- extract_trim_overall(up_fit, "1984-1989")
-flat <- extract_trim_overall(flat_fit, "1984-1989")
-stopifnot(up$trend_pct_per_year > 0)
-stopifnot(up$ci_low_pct < up$trend_pct_per_year)
-stopifnot(up$ci_high_pct > up$trend_pct_per_year)
-stopifnot(is.finite(up$se_pct), is.finite(up$p_value))
-stopifnot(abs(flat$trend_pct_per_year) < 1e-8)
-stopifnot(identical(up$method, "rtrim_overall_imputed_vcov"))
-```
-
-- [ ] **Step 2: Voer de test uit en verifieer RED**
-
-Run: `Rscript R/check_trim_overall_trends.R .`
-
-Expected: FAIL omdat `extract_trim_overall()` ontbreekt.
-
-- [ ] **Step 3: Implementeer `extract_trim_overall()`**
-
-Gebruik `rtrim::overall(fit_obj$model, which = "imputed")`. Lees de
-slope-regel, bereken:
-
-```r
-trend_pct <- 100 * (exp(beta) - 1)
-se_pct <- 100 * exp(beta) * se_beta
-critical <- qt(0.975, df = overall$J - 2L)
-ci_low_pct <- 100 * (exp(beta - critical * se_beta) - 1)
-ci_high_pct <- 100 * (exp(beta + critical * se_beta) - 1)
-```
-
-Weiger `J < 3`, niet-eindige waarden en een ontbrekende slope met een
-gestructureerde status in plaats van een ongerichte fout.
-
-- [ ] **Step 4: Vervang alleen de formele periodetrends**
-
-Gebruik `extract_trim_overall()` voor `trend_pre_*`, `trend_post_*` en de
-Sandra-soorttrend. Behoud de huidige gebrugde `overall_trend_*` voorlopig als
-beschrijvende puntschatting met methodecode
-`loglineair_op_gebrugde_trim_indices_zonder_interval`.
-
-- [ ] **Step 5: Verifieer tests en uitvoerschema**
+- [ ] **Step 1: Bevestig eerst de bestaande formele periodetrends**
 
 Run:
 
 ```bash
-Rscript R/check_trim_overall_trends.R .
-Rscript R/trim_soorten_en_msi_evg.R /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
-  "$TMPDIR/trim-overall/soorten" "$TMPDIR/trim-overall/groepen"
-Rscript R/trim_sandra_soorten_en_msi_evg.R /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
-  "$TMPDIR/trim-overall/sandra-soorten" "$TMPDIR/trim-overall/sandra-groepen"
+Rscript R/test_trim_trend_contract.R
+Rscript R/check_trim_species_output_contract.R .
 ```
 
-Controleer dat iedere geslaagde soortperiode SE, ondergrens, bovengrens,
-p-waarde, periode en methode bevat.
+Expected: beide groen; `rtrim::overall(imputed)` levert al schatting, SE,
+95%-interval en p-waarde voor de afzonderlijke perioden. Wijzig dit contract
+niet opnieuw.
 
-- [ ] **Step 6: Commit**
+- [ ] **Step 2: Schrijf de falende eindjaartest**
+
+```r
+p25 <- resolve_trim_periods(2025L)
+p26 <- resolve_trim_periods(2026L)
+stopifnot(identical(p25$post$label, "1984-2025"))
+stopifnot(identical(p26$post$label, "1984-2026"))
+stopifnot(identical(p26$combined$label, "1958-2026"))
+stopifnot(inherits(try(resolve_trim_periods(1983L), silent = TRUE), "try-error"))
+```
+
+- [ ] **Step 3: Implementeer `resolve_trim_periods(end_year)` en verwijder functionele hardcodering**
+
+De huidige standaard blijft expliciet 2025. De pilot krijgt `end_year = 2025`;
+de productierun krijgt pas na validatie expliciet `end_year = 2026`. Leid
+labels, filters, manifestvelden en contracttests uit dezelfde configuratie af.
+
+- [ ] **Step 4: Verifieer 2025-regressie en 2026-fixture**
+
+Run:
 
 ```bash
-git add R/trim_uncertainty_core.R R/check_trim_overall_trends.R \
-  R/trim_soorten_en_msi_evg.R R/trim_sandra_soorten_en_msi_evg.R
-git commit -m "Voeg formele TRIM-periodetrends toe"
+Rscript R/check_trim_analysis_period.R .
+Rscript R/test_trim_trend_contract.R
+Rscript R/check_trim_species_output_contract.R .
+```
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add R/trim_analysis_config.R R/check_trim_analysis_period.R \
+  R/trim_soorten_en_msi_evg.R R/check_trim_species_output_contract.R
+git commit -m "Parametriseer eindjaar van TRIM-analyse"
 ```
 
 ### Task 4: Plotlineage, strata en reproduceerbare clustertrekking
@@ -305,8 +267,8 @@ git commit -m "Voeg formele TRIM-periodetrends toe"
 - Create: `trim/bootstrap/cluster_definition.csv`
 
 **Interfaces:**
-- Consumes: analysebasis met `plot_id`, `kavel_nummer`, jaar en historische-kernstatus.
-- Produces: gevalideerde clusterdefinitie en `make_stratified_cluster_draw(clusters, replicate_id, run_seed)`.
+- Consumes: analysebasis met `plot_id`, `kavel_nummer`, jaar en historische-kernstatus plus de vaste primaire en strikte brugplotsets uit Task 1.
+- Produces: gevalideerde clusterdefinitie en `make_stratified_cluster_draw(clusters, replicate_id, run_seed)`; iedere getrokken broncluster bewaart zijn brugplotstatus.
 
 - [ ] **Step 1: Schrijf falende tests voor stratificatie en duplicatie**
 
@@ -320,6 +282,7 @@ stopifnot(table(d1$stratum)[["historische_kern"]] == 3L)
 stopifnot(table(d1$stratum)[["later_netwerk"]] == 3L)
 stopifnot(!anyDuplicated(d1$bootstrap_site_id))
 stopifnot(anyDuplicated(d1$source_cluster_id) > 0L)
+stopifnot(identical(d1$primary_bridge_plot, clusters$primary_bridge_plot[match(d1$source_cluster_id, clusters$bootstrap_cluster_id)]))
 ```
 
 Zoek voor de duplicatietest deterministisch het eerste replicatienummer tussen
@@ -352,11 +315,11 @@ Laat `audit_trim_bootstrap_clusters.R` controleren op:
 - één stratum per cluster;
 - overlappende of niet-aaneengesloten plotidentiteiten;
 - dezelfde genormaliseerde kavelnaam onder meerdere `plot_id`'s;
-- clusterjaren buiten 1958–2025;
+- clusterjaren buiten het geconfigureerde analysebereik;
 - lege historische of latere strata.
 
 Schrijf `trim/bootstrap/cluster_definition.csv` met
-`plot_id,bootstrap_cluster_id,stratum,eerst_jaar,laatst_jaar,reden`. Gebruik
+`plot_id,bootstrap_cluster_id,stratum,eerst_jaar,laatst_jaar,primary_bridge_plot,strict_bridge_plot,reden`. Gebruik
 `plot_id` als cluster-ID alleen waar de audit geen lineageconflict vindt. Een
 conflict blokkeert verdere uitvoering totdat de mapping inhoudelijk is
 vastgelegd.
@@ -372,7 +335,8 @@ Rscript R/audit_trim_bootstrap_clusters.R \
 Rscript R/check_trim_bootstrap_sampling.R .
 ```
 
-Expected: 55 bronplots over 1958–2025, geen ongeclassificeerde clusters en
+Expected op de ontwikkelbaseline 1958–2025: 52 ooit getelde bronplots, geen
+ongeclassificeerde clusters, 33 primaire brugplots, 20 strikte brugplots en
 gelijke aantallen per stratum vóór en na iedere trekking.
 
 - [ ] **Step 6: Commit**
@@ -383,37 +347,67 @@ git add R/trim_bootstrap_core.R R/audit_trim_bootstrap_clusters.R \
 git commit -m "Leg gestratificeerde plotbootstrap vast"
 ```
 
-### Task 5: Eén volledige bootstrapreplicatie
+### Task 5: Empirische brug en één volledige bootstrapreplicatie
 
 **Files:**
 - Modify: `R/trim_bootstrap_core.R`
+- Create: `R/trim_bridge_core.R`
+- Create: `R/check_trim_bridge_core.R`
 - Create: `R/check_trim_bootstrap_replicate.R`
 
 **Interfaces:**
-- Consumes: vooraf opgebouwde analysecontext, clustertrekking en replicatie-ID.
-- Produces: `run_trim_bootstrap_replicate(context, replicate_id)` met soort-, brug-, groep- en diagnostiekregels.
+- Consumes: vooraf opgebouwde analysecontext, clustertrekking, vaste brugplotsets en replicatie-ID.
+- Produces: `fit_bridge_calibration_trim()`, `compute_empirical_bridge()` en `run_trim_bootstrap_replicate()` met soort-, brugvariant-, groep- en diagnostiekregels.
 
-- [ ] **Step 1: Schrijf een falende end-to-endtest op synthetische data**
+- [ ] **Step 1: Schrijf falende tests voor de empirische brug**
 
-De fixture bevat twee strata, vier plots per stratum, twee soorten en acht jaren
-aan weerszijden van een kunstmatige modelbreuk. Eis:
+Gebruik synthetische pre- en postindices en hulp-TRIM-totalen. Eis exact:
 
 ```r
-r <- run_trim_bootstrap_replicate(context, 11L)
-stopifnot(identical(unique(r$species$replicate_id), 11L))
-stopifnot(nrow(r$bridge) == 2L)
-stopifnot(all(is.finite(r$bridge$bridge_factor)))
-stopifnot(nrow(r$groups) >= 1L)
-stopifnot(length(unique(r$diagnostics$draw_hash)) == 1L)
+b <- compute_empirical_bridge(
+  pre_index = c(`1981` = 180, `1982` = 200, `1983` = 220),
+  post_index = c(`1986` = 90, `1987` = 100, `1988` = 110),
+  calibration_totals = c(`1981` = 40, `1982` = 50, `1983` = 60,
+                         `1986` = 20, `1987` = 25, `1988` = 30)
+)
+stopifnot(all.equal(b$level_ratio, 0.5))
+stopifnot(all.equal(b$bridge_factor, 1.0))
+stopifnot(identical(b$method, "common_plot_trim_1981_1983_to_1986_1988"))
 ```
 
-- [ ] **Step 2: Voer de test uit en verifieer RED**
+Voeg negatieve tests toe: 1984 of 1985 in `post_years` is voor de primaire
+configuratie een fout; een mislukt hulp-TRIM of een niet-positief ankertotaal
+levert status `geen_formele_brug` en nooit factor `1` als fallback.
 
-Run: `Rscript R/check_trim_bootstrap_replicate.R .`
+- [ ] **Step 2: Voer de brugtest uit en verifieer RED**
 
-Expected: FAIL omdat de replicatiefunctie ontbreekt.
+Run: `Rscript R/check_trim_bridge_core.R .`
 
-- [ ] **Step 3: Implementeer context en replicatieketen**
+Expected: FAIL omdat `R/trim_bridge_core.R` ontbreekt.
+
+- [ ] **Step 3: Implementeer hulp-TRIM en brugvarianten**
+
+Definieer:
+
+```r
+fit_bridge_calibration_trim <- function(species_df, draw, plot_ids, pre_years, post_years) list()
+compute_empirical_bridge <- function(pre_index, post_index, calibration_totals, pre_years = 1981:1983, post_years = 1986:1988) list()
+compute_bridge_variants <- function(species_df, pre_index, post_index, draw, config) data.frame()
+```
+
+De hulp-TRIM gebruikt dezelfde synthetische sites en multipliciteiten als de
+hoofdmodellen, model 3 met overdispersie en zonder seriële correlatie. Maak de
+primaire variant 1986–1988, alternatieven 1987–1989 en 1988–1990, de strikte
+20-plotvariant en de historische continuiteitscomparator 1984–1986.
+
+- [ ] **Step 4: Schrijf de falende end-to-end-replicatietest**
+
+De fixture bevat twee strata, acht plots, twee soorten, de ankerjaren en
+overgangsjaren. Eis één gedeelde `draw_hash`, geldige primaire brugregels, alle
+verplichte varianten, uitsluiting van 1984–1985 uit de primaire kalibratie en
+een afzonderlijke historische-kernuitkomst.
+
+- [ ] **Step 5: Implementeer context en volledige replicatieketen**
 
 Definieer:
 
@@ -423,23 +417,29 @@ fit_first_working_trim_model <- function(df, configs) list()
 run_trim_bootstrap_replicate <- function(context, replicate_id) list()
 ```
 
-Parse brondata en bouw onveranderlijke mappings eenmaal in de context. Gebruik
-de bestaande vier modelconfiguraties in dezelfde volgorde, maar stop na de
-eerste geslaagde fit. Registreer iedere poging, waarschuwing en fout. Bereken de
-brugfactor per replicatie opnieuw en gebruik de bestaande loglineaire schatter
-voor 1958–2025.
+Stop na de eerste geslaagde hoofdmodelconfiguratie, maar registreer poging,
+waarschuwing en fout. Herbereken per replicatie beide hoofd-TRIM-modellen,
+hulp-TRIM, brugvarianten, gecombineerde soorttrend en historische-kernvariant.
 
-- [ ] **Step 4: Verifieer determinisme en gedeelde trekking**
+- [ ] **Step 6: Verifieer determinisme en gedeelde trekking**
 
-Voer replicatie 11 tweemaal uit en vergelijk alle gegevensframes na sortering.
-Eis identieke discrete velden en numerieke verschillen kleiner dan `1e-12` op
-dezelfde machine. Controleer dat beide soorten dezelfde `draw_hash` hebben.
-
-- [ ] **Step 5: Commit**
+Run:
 
 ```bash
-git add R/trim_bootstrap_core.R R/check_trim_bootstrap_replicate.R
-git commit -m "Bereken volledige TRIM-bootstrapreplicatie"
+Rscript R/check_trim_bridge_core.R .
+Rscript R/check_trim_bootstrap_replicate.R .
+```
+
+Voer dezelfde replicatie tweemaal uit. Eis identieke discrete velden,
+numerieke verschillen kleiner dan `1e-12` en dezelfde synthetische site-ID's in
+hoofdmodel en hulp-TRIM.
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add R/trim_bootstrap_core.R R/trim_bridge_core.R \
+  R/check_trim_bridge_core.R R/check_trim_bootstrap_replicate.R
+git commit -m "Voeg empirische TRIM-brug aan bootstrap toe"
 ```
 
 ### Task 6: Vaste robuuste groepen en volledige gevoeligheidsvariant
@@ -449,8 +449,8 @@ git commit -m "Bereken volledige TRIM-bootstrapreplicatie"
 - Create: `R/check_trim_bootstrap_groups.R`
 
 **Interfaces:**
-- Consumes: oorspronkelijke selectie, groepsmapping en replicatiesoortindices.
-- Produces: primaire robuuste groepstrends met vaste samenstelling en volledige gevoeligheidstrends met werkelijk soortenaantal.
+- Consumes: oorspronkelijke selectie, groepsmapping en replicatiesoortindices per brug- en gebiedsvariant.
+- Produces: primaire robuuste groepstrends met vaste samenstelling, volledige gevoeligheidstrends met werkelijk soortenaantal en dezelfde brug-/gebiedsvariantcodes als de soorten.
 
 - [ ] **Step 1: Schrijf de falende groepsuitvaltest**
 
@@ -464,6 +464,7 @@ stopifnot(identical(robust$status, "ongeldig_vaste_soort_ontbreekt"))
 stopifnot(nrow(robust$series) == 0L)
 stopifnot(identical(full$status, "geldig_wisselende_samenstelling"))
 stopifnot(all(full$series$n_soorten == 2L))
+stopifnot(setequal(unique(result$bridge_variant), required_bridge_variants))
 ```
 
 - [ ] **Step 2: Voer de test uit en verifieer RED**
@@ -483,7 +484,9 @@ alle vereiste soorten voor de geschatte periode aanwezig zijn.
 
 Test negen ecologische groepen en zes functionele groepen in binaire en gewogen
 vorm, met `volledig` en `robuust`. Controleer dat gewichten niet na uitval
-stilzwijgend tot een ander primair estimand worden hergeschaald.
+stilzwijgend tot een ander primair estimand worden hergeschaald. Controleer dat
+iedere groep dezelfde brugvariant en gebiedsvariant gebruikt als alle
+onderliggende soortindices binnen die replicatie.
 
 - [ ] **Step 5: Commit**
 
@@ -500,8 +503,8 @@ git commit -m "Borg vaste samenstelling van bootstrapgroepen"
 - Create: `R/check_trim_bootstrap_summary.R`
 
 **Interfaces:**
-- Consumes: analysecontext, oorspronkelijke puntschatting en geldige bootstrapwaarden.
-- Produces: clusterjackknifewaarden, standaardfout, percentile- en BCa-interval, empirische p-waarde, geldigheids- en stabiliteitsstatus.
+- Consumes: analysecontext, oorspronkelijke puntschatting en geldige bootstrapwaarden per primaire, brug- en gebiedsvariant.
+- Produces: clusterjackknifewaarden, standaardfout, percentile- en BCa-interval, empirische p-waarde, geldigheids- en stabiliteitsstatus plus `summarise_structural_sensitivity()`.
 
 - [ ] **Step 1: Schrijf falende tests voor samenvatting en grenzen**
 
@@ -516,6 +519,11 @@ stopifnot(s$p_value >= 0, s$p_value <= 1)
 
 bad <- summarise_bootstrap_estimate(1, c(rep(1, 1899), rep(NA, 101)), c(.9, 1.1), 2000L)
 stopifnot(identical(bad$publication_status, "onvoldoende_bootstrap"))
+
+sens <- summarise_structural_sensitivity(primary, alternatives, historical_core)
+stopifnot(identical(sens$bridge_status, "bruggevoelig"))
+stopifnot(identical(sens$coverage_status, "gebiedsdekkinggevoelig"))
+stopifnot(identical(sens$envelope_type, "gevoeligheidsenvelop_geen_bi"))
 ```
 
 - [ ] **Step 2: Voer de test uit en verifieer RED**
@@ -533,11 +541,15 @@ bca_interval <- function(theta_hat, boot, jack, conf = 0.95) numeric(2)
 empirical_two_sided_p <- function(values, null = 0) numeric(1)
 summarise_bootstrap_estimate <- function(theta_hat, boot, jack, planned) data.frame()
 check_interval_stability <- function(previous, current) logical(1)
+summarise_structural_sensitivity <- function(primary, bridge_variants, historical_core) data.frame()
 ```
 
 Gebruik de eindige-steekproefcorrectie uit de spec. Val terug op percentile bij
 niet-eindige BCa-acceleratie en leg de reden vast. Publiceer geen formeel
 interval onder 95% geldige replicaties.
+`summarise_structural_sensitivity()` vergelijkt richting en de vraag of het
+interval nul omvat. De minimum- en maximumgrens over varianten worden nooit als
+95%-interval benoemd.
 
 - [ ] **Step 4: Test stabiliteitsregel exact**
 
@@ -819,7 +831,8 @@ required <- c(
   "entity_type", "entity_id", "period", "method", "estimate_pct_per_year",
   "se_pct", "ci_low_pct", "ci_high_pct", "p_value", "interval_method",
   "planned_replicates", "valid_replicates", "valid_fraction",
-  "publication_status", "run_id"
+  "publication_status", "bridge_variant", "bridge_status", "coverage_status",
+  "run_id"
 )
 stopifnot(!length(setdiff(required, names(result))))
 stopifnot(all(result$ci_low_pct <= result$estimate_pct_per_year, na.rm = TRUE))
@@ -834,25 +847,33 @@ Expected: FAIL omdat writer of bestanden ontbreken.
 
 - [ ] **Step 3: Implementeer atomische publicatiewriter**
 
-Schrijf eerst naar een tijdelijke publicatiemap. Controleer schema, unieke
-sleutels, perioden, eindige grenzen, status/intervalconsistentie en run-ID.
+Schrijf eerst naar een tijdelijke publicatiemap. Schrijf afzonderlijk
+`brugvenstergevoeligheid.csv` en `historische_kerngevoeligheid.csv`. Controleer
+schema, unieke sleutels, perioden, eindige grenzen,
+status/intervalconsistentie, gevoeligheidsenveloplabel en run-ID.
 Vervang de canonieke bestanden pas na een volledig groen contract.
 
 - [ ] **Step 4: Documenteer methode en actualisatiecommand**
 
-Documenteer 1958–1983, 1984–2025 en 1958–2025 afzonderlijk; leg uit dat de
-laatste een gecombineerde brugtrendschatter is. Vermeld voor de Sandra-set exact
-110 soorten en 1997–2022.
+Documenteer 1958–1983, 1984–actueel eindjaar en 1958–actueel eindjaar
+afzonderlijk. Leg uit dat de laatste een gecombineerde gemeenschappelijke-
+plotbrugtrendschatter is, dat 1984–1985 niet kalibreren en dat de
+gevoeligheidsenvelop geen betrouwbaarheidsinterval is. Vermeld voor de
+Sandra-set exact 110 geselecteerde soorten over 1997–2022.
 
 - [ ] **Step 5: Verifieer en commit**
 
 ```bash
-Rscript R/check_trim_uncertainty_outputs.R . trim
+Rscript R/check_trim_uncertainty_outputs.R . "$TMPDIR/trim-output-fixture"
 git add R/write_trim_uncertainty_outputs.R R/check_trim_uncertainty_outputs.R \
   R/trim_soorten_en_msi_evg.R R/trim_sandra_soorten_en_msi_evg.R \
-  R/trim_soorten_en_msi_evg.md R/trim_sandra_soorten_en_msi_evg.md trim trim_msi_evg
-git commit -m "Publiceer TRIM- en bootstraponzekerheid"
+  R/trim_soorten_en_msi_evg.md R/trim_sandra_soorten_en_msi_evg.md
+git commit -m "Definieer TRIM-bootstrapuitvoer"
 ```
+
+Schrijf in deze fase geen 50- of 500-replicatieresultaat naar de canonieke
+publicatiebestanden; alleen een latere geldige 2.000+-run over 1958–2026 mag
+die bestanden activeren.
 
 ### Task 12: Website en dashboard
 
@@ -881,11 +902,16 @@ handgegenereerde HTML zonder bijbehorende generatorwijziging.
 
 Eis in gegenereerde data/HTML:
 
-- labels `1958–1983`, `1984–2025` en `1958–2025`;
+- periodevelden afgeleid van het runmanifest, met in de ontwikkelfixture
+  `1958–1983`, `1984–2025` en `1958–2025`;
 - onder- en bovengrens;
-- tekst `Gecombineerde trend via een geschatte brugfactor; geen enkel doorlopend TRIM-model.`;
+- tekst `Gecombineerde trend via een geschatte gemeenschappelijke-plotbrug van 1981–1983 naar 1986–1988; geen enkel doorlopend TRIM-model.`;
+- zichtbare kwalificatie bij `bruggevoelig` en `gebiedsdekkinggevoelig`;
+- label `gevoeligheidsenvelop; geen 95%-betrouwbaarheidsinterval`;
 - robuuste groepsvariant vóór volledige gevoeligheidsvariant;
-- geen intervalweergave bij `onvoldoende_bootstrap`.
+- geen intervalweergave bij `onvoldoende_bootstrap`;
+- bytegelijk behoud van de huidige beschrijvende presentatie wanneer nog geen
+  definitieve 2026-bootstrapbestanden aanwezig zijn.
 
 - [ ] **Step 3: Voer test uit en verifieer RED**
 
@@ -897,7 +923,9 @@ Expected: FAIL omdat de presentatie nog geen onzekerheidsvelden gebruikt.
 
 Voeg compacte trendregels en tooltips toe. Toon methode, geldig aantal
 replicaties en rekendatum. Gebruik geen betrouwbaarheidslint voor jaarindices in
-deze fase; de spec sluit simultane jaarlijkse banden uit.
+deze fase; de spec sluit simultane jaarlijkse banden uit. Activeer nieuwe
+velden uitsluitend wanneer runmanifest en uitvoercontract beide status
+`publiceerbaar` hebben; anders blijft de bestaande presentatie intact.
 
 - [ ] **Step 5: Genereer en verifieer**
 
@@ -905,7 +933,8 @@ Run:
 
 ```bash
 Rscript R/build_groepen_grafieken_dashboard_csv.R \
-  /Users/ton/Documents/GitHub/Meijendel/meijendel.sql groepen_grafieken
+  /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
+  "$TMPDIR/trim-dashboard-fixture"
 Rscript R/check_trim_uncertainty_presentation.R .
 Rscript R/check_dashboard_website_parity.R . groepen_grafieken
 ```
@@ -918,8 +947,8 @@ groepen en methodetoelichting.
 ```bash
 git add R/build_groepen_grafieken_dashboard_csv.R \
   R/check_dashboard_website_parity.R R/check_trim_uncertainty_presentation.R \
-  bmp_meijendel_index.html groepen_grafieken
-git commit -m "Toon formele trendonzekerheid in dashboard"
+  bmp_meijendel_index.html
+git commit -m "Bereid formele trendonzekerheid in dashboard voor"
 ```
 
 ### Task 13: Shiny gebruikt alleen vooraf berekende standaardintervallen
@@ -942,10 +971,12 @@ Eis:
 ```r
 standard <- resolve_trim_uncertainty(selection_hash = canonical_hash, results)
 custom <- resolve_trim_uncertainty(selection_hash = "anders", results)
+pending <- resolve_trim_uncertainty(selection_hash = canonical_hash, results_pending)
 stopifnot(identical(standard$status, "precomputed_formal"))
 stopifnot(is.finite(standard$ci_low_pct))
 stopifnot(identical(custom$status, "exploratory_no_formal_interval"))
 stopifnot(is.na(custom$ci_low_pct), is.na(custom$ci_high_pct))
+stopifnot(identical(pending$status, "descriptive_pending_final_run"))
 ```
 
 - [ ] **Step 2: Voer test uit en verifieer RED**
@@ -957,7 +988,9 @@ Expected: FAIL omdat resolver en selectiehash ontbreken.
 - [ ] **Step 3: Implementeer selectiehash en resolver**
 
 Hash exacte plot-, jaar-, soort- en groepsselecties. Alleen een exacte match met
-het runmanifest krijgt vooraf berekende intervallen. Iedere afwijking toont:
+een publiceerbaar runmanifest krijgt vooraf berekende intervallen. Een nog niet
+definitieve run behoudt de bestaande beschrijvende presentatie. Iedere echte
+selectieafwijking toont:
 `Verkennende selectie; geen formeel bootstrapinterval.` Start nergens vanuit
 Shiny een bootstrapproces.
 
@@ -984,7 +1017,7 @@ git add shiny_meijendel/helpers.R shiny_meijendel/app.R \
 git commit -m "Gebruik vooraf berekende onzekerheid in Shiny"
 ```
 
-### Task 14: Pilot 50, validatie 500 en productierun 2.000+
+### Task 14: Pilot 50 en validatie 500 vóór broedseizoen 2026
 
 **Files:**
 - Modify: `trim/bootstrap/run_manifest.json`
@@ -993,10 +1026,12 @@ git commit -m "Gebruik vooraf berekende onzekerheid in Shiny"
 - Modify: `TODO.md`
 - Modify: `DECISIONS.md`
 - Modify: `ARCHITECTURE.md`
+- Modify: `docs/MEIJENDEL_BRONREGISTER.md`
+- Modify: `docs/MEIJENDEL_BRONREGISTER.docx`
 
 **Interfaces:**
-- Consumes: volledig geteste lokale en eventueel geactiveerde workerketen.
-- Produces: feitelijke prestatiegegevens, geldige formele intervallen en actuele projectdocumentatie.
+- Consumes: volledig geteste lokale keten en de ontwikkelbronset 1958–2025.
+- Produces: feitelijke prestatie-, uitval- en gevoeligheidsgegevens, een gevalideerde maar nog niet gepubliceerde bootstrapketen en actuele projectdocumentatie.
 
 - [ ] **Step 1: Draai de lokale pilot van 50 replicaties**
 
@@ -1004,54 +1039,61 @@ Gebruik batches van 5, één worker en een vaste seed. Registreer totale tijd,
 seconden per replicatie, piekgeheugen, swap, foutpercentage per soort/groep en
 hervatbaarheid. Vergelijk de eerste twee replicaties met een tweede lokale run.
 
-- [ ] **Step 2: Beslis op meetwaarden over NAS/VPS-activering**
+- [ ] **Step 2: Beoordeel op meetwaarden of externe workers later zinvol kunnen zijn**
 
-Bereken workergeheugenlimiet als 125% van de pilotpiek. Activeer alleen workers
-waar na die limiet de vereiste reserve overblijft. Leg per host `enabled` plus
-reden vast; geen geschiktheid betekent geen externe berekening.
+Bereken workergeheugenlimiet als 125% van de pilotpiek. Maak alleen een
+read-only geschiktheidsrapport wanneer Ton vooraf het NAS-pad of de VPS-probe
+afzonderlijk goedkeurt. Activeer in deze taak geen NAS- of VPS-worker.
 
 - [ ] **Step 3: Draai validatie met 500 replicaties**
 
 Controleer:
 
-- minimaal 95% geldige replicaties per te publiceren schatter;
-- lokale/externe numerieke pariteit `<= 1e-8`;
+- minimaal 95% geldige replicaties per kandidaat-schatter;
 - BCa versus percentile;
 - model- en fallbackfrequenties;
 - vaste primaire groepssamenstelling;
-- gevoeligheid van volledige groepen;
+- bruggevoeligheid, strikte 20-plotvariant en historische-kerngevoeligheid;
 - reproduceerbaarheid na hervatten.
 
-Stop en corrigeer de implementatie wanneer een formele schatter onder 95%
-geldig blijft; schaal niet door naar 2.000 om een structureel probleem te
-verbergen.
+Stop en corrigeer de implementatie wanneer een kandidaat-schatter onder 95%
+geldig blijft. Een structureel ongeldige schatter wordt niet door meer
+replicaties geldig gemaakt.
 
-- [ ] **Step 4: Draai minimaal 2.000 replicaties**
+- [ ] **Step 4: Controleer de structurele gevoeligheid en leg de 2026-gate vast**
 
-Wijs niet-overlappende bereiken toe aan alle groen geactiveerde workers. De
-iMac mergeert, valideert en berekent jackknife/BCa. Beoordeel na 2.000 en iedere
-volgende 500 de vastgelegde stabiliteitsregel. Stop uiterlijk bij 5.000 en
-publiceer `interval_niet_gestabiliseerd` waar nodig.
+Vergelijk primaire brug, beide alternatieve postvensters, de strikte
+20-plotvariant, de historische comparator en de vaste historische-kernvariant.
+Leg per soort en groep de gevoeligheidsstatus vast. Markeer de keten daarna als
+`gereed_voor_productierun_na_2026`; start geen 2.000-run op 1958–2025.
 
-- [ ] **Step 5: Genereer alle canonieke outputs opnieuw**
+- [ ] **Step 5: Werk methode- en bronregistratie bij**
 
-Maak soort-, brug-, ecologische, functionele en Sandra-uitvoer vanuit exact
-hetzelfde run-ID. Draai alle uitvoer-, presentatie- en pariteitstests.
+Werk `STATUS.md`, `TODO.md`, `DECISIONS.md`, `ARCHITECTURE.md` en het leidende
+bronregister bij met de getelde dataset, aantallen, periode, brugkeuze,
+structurele beperking en 2026-gate. Actualiseer daarna ook
+`docs/MEIJENDEL_BRONREGISTER.docx`, render hem met het bestaande projectscript
+en controleer alle pagina's visueel.
 
-- [ ] **Step 6: Werk projectdocumentatie bij met feitelijke resultaten**
+- [ ] **Step 6: Leg feitelijke pilot- en validatieresultaten vast**
 
 Leg vast:
 
 - bronset met aantal, periode en hash;
 - werkelijk aantal replicaties;
-- gebruikte workers en hun gemeten bijdrage;
-- totale en per-workerdoorlooptijd;
+- uitsluitend lokaal gebruikte worker en eventuele niet-uitgevoerde externe
+  opties;
+- totale en lokale doorlooptijd;
 - geheugen en swap;
 - geldige percentages en fallbacks;
 - intervalmethode en eventuele uitzonderingen;
-- jaarlijkse actualisatieroute.
+- jaarlijkse actualisatieroute en de harde stop vóór 2026.
 
 - [ ] **Step 7: Volledige eindverificatie**
+
+Gebruik voor deze stap een taakgebonden, niet-gevolgde validatiemap als
+`VALIDATION_ROOT`; schrijf geen pilot- of 500-run naar de canonieke
+publicatiepaden.
 
 Run minimaal:
 
@@ -1059,7 +1101,10 @@ Run minimaal:
 scripts/test_shiny_reproducibility.sh
 bash scripts/test_trim_source_output_contract.sh
 Rscript R/check_trim_scripts_sourceable.R .
-Rscript R/check_trim_overall_trends.R .
+Rscript R/test_trim_trend_contract.R
+Rscript R/check_trim_analysis_period.R .
+Rscript R/check_trim_bridge_audit.R .
+Rscript R/check_trim_bridge_core.R .
 Rscript R/check_trim_bootstrap_sampling.R .
 Rscript R/check_trim_bootstrap_replicate.R .
 Rscript R/check_trim_bootstrap_groups.R .
@@ -1068,39 +1113,42 @@ Rscript R/check_trim_bootstrap_resume.R .
 bash scripts/test_trim_bootstrap_workers.sh
 Rscript R/check_trim_sandra_uncertainty.R . \
   /Users/ton/Documents/GitHub/Meijendel/meijendel.sql
-Rscript R/check_trim_uncertainty_outputs.R . trim
+Rscript R/check_trim_uncertainty_outputs.R . "$VALIDATION_ROOT/publication-fixture"
 Rscript R/check_trim_uncertainty_presentation.R .
 Rscript R/check_shiny_trim_uncertainty_contract.R .
 Rscript R/check_dashboard_website_parity.R . groepen_grafieken
 Rscript R/check_shiny_dashboard_parity.R . \
   /Users/ton/Documents/GitHub/Meijendel/meijendel.sql \
   trim_msi_evg/msi_per_groep_per_jaar.csv 1958 2025
+scripts/render_docx_local.sh docs/MEIJENDEL_BRONREGISTER.md \
+  docs/MEIJENDEL_BRONREGISTER.docx
 git diff --check
 /Users/ton/Documents/GitHub/VWG_Project/scripts/workspace_preflight.sh
 ```
 
-- [ ] **Step 8: Commit de gevalideerde resultaten en documentatie**
+- [ ] **Step 8: Commit de gevalideerde engine, pilotdiagnostiek en documentatie**
 
 ```bash
-git add trim trim_msi_evg groepen_grafieken bmp_meijendel_index.html \
-  STATUS.md TODO.md DECISIONS.md ARCHITECTURE.md
-git commit -m "Publiceer gevalideerde TRIM-bootstrapintervallen"
+git add trim/bootstrap STATUS.md TODO.md DECISIONS.md ARCHITECTURE.md \
+  docs/MEIJENDEL_BRONREGISTER.md docs/MEIJENDEL_BRONREGISTER.docx
+git commit -m "Valideer TRIM-bootstrapketen vóór cijfers 2026"
 ```
 
-### Task 15: Review, integratie en productiepublicatie
+### Task 15: Review en integratie van de voorbereide bootstrapketen
 
 **Files:**
-- Modify: `RELEASE_MANIFEST.yml` volgens de projectreleaseprocedure
-- Modify: overige releasebewijsbestanden die de preflight vereist
+- Modify: geen productie- of releasebestanden in deze fase
 
 **Interfaces:**
-- Consumes: volledig groene featurebranch met gereproduceerde output.
-- Produces: gereviewde integratie in actuele `main`, gecontroleerde deploy en productie-evidence.
+- Consumes: volledig groene featurebranch met engine, tests, pilot, validatie en gedocumenteerde 2026-gate.
+- Produces: gereviewde integratie in actuele `main`; geen 2.000-run, geen gewijzigde canonieke onzekerheidsoutput en geen VPS-publicatie.
 
 - [ ] **Step 1: Laat de volledige branch onafhankelijk reviewen**
 
-Review statistische estimands, vaste groepssamenstelling, workerveiligheid,
-uitvoercontracten en alle UI-consumenten. Los bevindingen testgestuurd op.
+Review statistische estimands, empirische brugformule, vaste
+groepssamenstelling, structurele gevoeligheidsstatussen, hervatbaarheid,
+workerveiligheid, uitvoercontracten en terugwaartse compatibiliteit van alle
+UI-consumenten. Los bevindingen testgestuurd op.
 
 - [ ] **Step 2: Integreer uitsluitend op schone actuele `main`**
 
@@ -1108,25 +1156,26 @@ Voer projectpreflight uit, actualiseer refs, verifieer ancestry en integreer
 volgens de geldende repositoryworkflow. Draai daarna de volledige testset
 opnieuw op `main`.
 
-- [ ] **Step 3: Voer volledige deploypreflight uit**
+- [ ] **Step 3: Verifieer dat de huidige productiepresentatie ongewijzigd blijft**
 
-Gebruik uitsluitend het repositoriespecifieke deployscript. Laat de preflight
-de SQL-hash, publicatiebestanden, Shiny/dashboard-pariteit, containerstatus en
-productiecommit controleren.
+Zonder definitieve 2026-run mogen website, dashboard en Shiny geen
+bootstrapinterval tonen. Ontbrekende definitieve bestanden moeten veilig
+terugvallen op de huidige primaire periodetrends en beschrijvende gecombineerde
+trend. Test dit expliciet op `main`.
 
-- [ ] **Step 4: Deploy en controleer productie**
+- [ ] **Step 4: Leg de afzonderlijke vervolgfase na ontvangst van 2026 vast**
 
-Controleer website, dashboard en Shiny voor:
+De vervolgfase omvat pas na complete en gevalideerde cijfers over 2026:
 
-- beide primaire perioden;
-- aanvullende gebrugde trend en kwalificatietekst;
-- robuuste en volledige groepsvarianten;
-- standaardselectie met formeel interval;
-- maatwerkselectie zonder misleidend interval;
-- ongewijzigde bestaande filters, grafieken en toelichtingen.
+- afzonderlijk akkoord voor een nieuwe dump uit de levende lokale database en
+  de zware afgeleide keten;
+- herijking van aantallen, vaste soortenpopulatie en groepssamenstelling;
+- minimaal 2.000 en zo nodig maximaal 5.000 replicaties;
+- generatie van canonieke publicatiebestanden en volledige pariteitstests;
+- afzonderlijk expliciet akkoord voor VPS-publicatie en pas daarna bijwerking
+  van `VWG_Project/RELEASE_MANIFEST.yml`.
 
-- [ ] **Step 5: Registreer release en voer eindpreflight uit**
+- [ ] **Step 5: Voer eindpreflight uit en push geïntegreerde main**
 
-Werk het release-manifest pas bij na volledig groene nacontrole. Verwijder geen
-branch, worktree, rollbackimage of bootstrapbewijs zonder afzonderlijke
-beoordeling en expliciete toestemming waar de projectregels dat vereisen.
+Eis `main == origin/main` in alle drie repositories en een schone werkboom.
+Verwijder geen branch, worktree of pilotbewijs zonder afzonderlijke beoordeling.

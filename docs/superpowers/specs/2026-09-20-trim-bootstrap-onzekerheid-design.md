@@ -2,7 +2,7 @@
 
 **Datum:** 17 oktober 2026
 
-**Status:** geactualiseerd ontwerp ter inhoudelijke review
+**Status:** inhoudelijk goedgekeurd op 17 oktober 2026
 
 **Leidende repository:** `Meijendel`
 
