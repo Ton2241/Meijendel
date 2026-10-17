@@ -224,6 +224,7 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
     historische_kern = context$historical_cluster_ids
   )
   result_rows <- list()
+  index_rows <- list()
   diagnostic_main <- list()
   diagnostic_calibration <- list()
   counter <- 0L
@@ -262,6 +263,18 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
           estimate_pct_per_year = combined_pct_trend(pre_index, post_index, bridge_rows$bridge_factor[[i]]),
           stringsAsFactors = FALSE
         )
+        factor <- bridge_rows$bridge_factor[[i]]
+        combined <- c(pre_index, if (is.finite(factor) && factor > 0) post_index * factor else post_index * NA_real_)
+        if (length(combined)) {
+          index_rows[[length(index_rows) + 1L]] <- data.frame(
+            soort_id = species_id,
+            jaar = as.integer(names(combined)),
+            index_value = as.numeric(combined),
+            bridge_variant = bridge_rows$bridge_variant[[i]],
+            coverage_variant = coverage_name,
+            stringsAsFactors = FALSE
+          )
+        }
       }
       primary <- bridge_rows[bridge_rows$bridge_variant == "primary_1986_1988", , drop = FALSE]
       diagnostic_main[[length(diagnostic_main) + 1L]] <- sort(unique(species_drawn$bootstrap_site_id))
@@ -271,10 +284,16 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
       diagnostic_calibration[[length(diagnostic_calibration) + 1L]] <- calibration_ids
     }
   }
+  index_data <- if (length(index_rows)) do.call(rbind, index_rows) else data.frame()
+  group_data <- if (length(context$group_definitions) && nrow(index_data)) {
+    build_bootstrap_group_results(index_data, context$group_definitions, replicate_id)
+  } else data.frame()
   list(
     replicate_id = as.integer(replicate_id),
     draw = draw,
     species = do.call(rbind, result_rows),
+    indices = index_data,
+    groups = group_data,
     diagnostics = list(main_site_ids = diagnostic_main, calibration_site_ids = diagnostic_calibration)
   )
 }
@@ -354,6 +373,45 @@ aggregate_bootstrap_group <- function(indices, fixed_group, variant = c("robuust
     status = if (variant == "robuust") "geldig_vaste_samenstelling" else "geldig_wisselende_samenstelling",
     series = do.call(rbind, rows)
   )
+}
+
+build_bootstrap_group_results <- function(indices, definitions, replicate_id) {
+  keys <- unique(indices[, c("bridge_variant", "coverage_variant"), drop = FALSE])
+  rows <- unlist(lapply(definitions, function(definition) {
+    lapply(seq_len(nrow(keys)), function(i) {
+      candidate_indices <- indices[
+        indices$bridge_variant == keys$bridge_variant[[i]] &
+          indices$coverage_variant == keys$coverage_variant[[i]],
+        , drop = FALSE
+      ]
+      result <- aggregate_bootstrap_group(
+        candidate_indices, definition$mapping,
+        variant = definition$variant,
+        aggregation = definition$aggregation
+      )
+      part <- result$series
+      estimate <- NA_real_
+      if (nrow(part) >= 3L) {
+        keep <- is.finite(part$group_index) & part$group_index > 0 & is.finite(part$jaar)
+        if (sum(keep) >= 3L) {
+          slope <- unname(stats::coef(stats::lm(log(group_index) ~ jaar, data = part[keep, , drop = FALSE]))[[2L]])
+          estimate <- 100 * (exp(slope) - 1)
+        }
+      }
+      data.frame(
+        replicate_id = as.integer(replicate_id),
+        entity_id = definition$entity_id,
+        bridge_variant = keys$bridge_variant[[i]],
+        coverage_variant = keys$coverage_variant[[i]],
+        estimate_pct_per_year = estimate,
+        group_status = result$status,
+        n_years = nrow(part),
+        stringsAsFactors = FALSE
+      )
+    })
+  }), recursive = FALSE)
+  if (!length(rows)) return(data.frame())
+  do.call(rbind, rows)
 }
 
 run_unbridged_bootstrap_replicate <- function(context, replicate_id) {

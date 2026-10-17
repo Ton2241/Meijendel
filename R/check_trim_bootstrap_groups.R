@@ -71,4 +71,14 @@ stopifnot(all(vapply(functional_checks, function(x) {
     identical(x$robuust$status, "geldig_vaste_samenstelling")
 }, logical(1))))
 
+definitions <- list(
+  list(entity_id = "eco-100-robuust", mapping = fixed_group, variant = "robuust", aggregation = "geometrisch"),
+  list(entity_id = "eco-100-volledig", mapping = fixed_group, variant = "volledig", aggregation = "geometrisch")
+)
+group_rows <- build_bootstrap_group_results(complete, definitions, replicate_id = 7L)
+stopifnot(nrow(group_rows) == length(required_bridge_variants) * 2L)
+stopifnot(all(c("entity_id", "estimate_pct_per_year", "group_status", "replicate_id") %in% names(group_rows)))
+stopifnot(all(group_rows$replicate_id == 7L))
+stopifnot(all(is.finite(group_rows$estimate_pct_per_year)))
+
 cat("OK: vaste groepen vallen volledig uit en volledige groepen bewaren samenstellingsdiagnostiek.\n")

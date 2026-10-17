@@ -34,6 +34,20 @@ context <- build_bootstrap_context(
     primary_post_years = 1986:1988
   )
 )
+context$group_definitions <- list(
+  list(
+    entity_id = "eco-100-robuust",
+    mapping = data.frame(soort_id = 1:2),
+    variant = "robuust",
+    aggregation = "geometrisch"
+  ),
+  list(
+    entity_id = "eco-100-volledig",
+    mapping = data.frame(soort_id = 1:2),
+    variant = "volledig",
+    aggregation = "geometrisch"
+  )
+)
 r1 <- run_trim_bootstrap_replicate(context, 7L)
 r2 <- run_trim_bootstrap_replicate(context, 7L)
 stopifnot(identical(r1$draw, r2$draw))
@@ -52,6 +66,9 @@ stopifnot(all(primary$bridge_status == "formele_brug"))
 stopifnot(all(primary$post_years == "1986-1988"))
 stopifnot(!any(grepl("1984|1985", primary$post_years)))
 stopifnot(any(r1$species$coverage_variant == "historische_kern"))
+stopifnot(nrow(r1$groups) > 0L)
+stopifnot(setequal(unique(r1$groups$entity_id), c("eco-100-robuust", "eco-100-volledig")))
+stopifnot(all(is.finite(r1$groups$estimate_pct_per_year)))
 stopifnot(all(mapply(
   identical,
   r1$diagnostics$main_site_ids,
