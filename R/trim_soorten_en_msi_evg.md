@@ -13,7 +13,7 @@ Dit script leest rechtstreeks `meijendel.sql` in en maakt twee nieuwe outputmapp
 4. Een expliciete SOVON-nul blijft `0`; een lege SOVON-cel blijft `NA`. In een geteld `jrvslg_m`-plotjaar wordt het ontbreken van een soort uit de jaarverslagsoortpool als `afgeleide_jaarverslagnul` behandeld. Een formeel afgekeurd SOVON-plotjaar levert voor SOVON `NA`, terwijl een aanwezige onafhankelijke niet-SOVON-regel geldig blijft.
 5. Het corrigeert tellingen pragmatisch voor veranderend plotoppervlak door elk plotjaar terug te rekenen naar de mediane plotoppervlakte van dat plot.
 6. Het draait per soort een `TRIM`-model vóór `1984` en een tweede `TRIM`-model vanaf `1984`.
-7. Het verbindt beide indexreeksen met een brugfactor op basis van `1981-1983` versus `1984-1986`.
+7. De bestaande productie-uitvoer verbindt beide indexreeksen nog met een brugfactor op basis van `1981-1983` versus `1984-1986`. De voorbereide nieuwe methode gebruikt voor de formele bootstrapuitvoer een gemeenschappelijke-plotbrug van `1981-1983` naar `1986-1988`; de overgangsjaren 1984 en 1985 kalibreren die brug niet.
 8. Het berekent daarna per ecologische 100-groep een `MSI` als geometrisch gemiddelde van de soortindices.
 9. Het berekent voor de zes functionele vogelgroepen altijd binair en gewogen
    (`1,0` primair; `0,5` secundair), zowel volledig als robuust.

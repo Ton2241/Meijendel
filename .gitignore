@@ -15,3 +15,8 @@ meijendel_tables_cache-p*.manifest
 
 # Lokale taakvoortgang en testuitvoer
 .superpowers/
+
+# Lokale TRIM-bootstrapstate en workerconfiguratie
+trim/bootstrap_runs/
+trim/bootstrap_workers.csv
+trim/**/*.partial
