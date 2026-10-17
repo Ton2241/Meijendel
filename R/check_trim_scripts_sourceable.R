@@ -22,6 +22,7 @@ source_without_execution <- function(path, main_name) {
   sys.source(path, envir = env)
   after <- list.files(root, all.files = TRUE, recursive = TRUE)
   stopifnot(exists(main_name, envir = env, mode = "function", inherits = FALSE))
+  stopifnot(exists("apply_meijendel_plot_scope", envir = env, mode = "function", inherits = FALSE))
   stopifnot(identical(before, after))
   invisible(TRUE)
 }

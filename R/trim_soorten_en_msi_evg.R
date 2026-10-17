@@ -8,9 +8,9 @@ suppressPackageStartupMessages(library(mgcv))
 
 script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1])
 script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
-source(file.path(script_dir, "trim_trend_contract.R"))
-source(file.path(script_dir, "meijendel_cache_contract.R"))
-source(file.path(script_dir, "trim_analysis_config.R"))
+source(file.path(script_dir, "trim_trend_contract.R"), local = TRUE)
+source(file.path(script_dir, "meijendel_cache_contract.R"), local = TRUE)
+source(file.path(script_dir, "trim_analysis_config.R"), local = TRUE)
 
 historische_kavels <- c(
   "1", "1a", "1b", "2", "3", "4", "4-5", "5", "6", "7", "8", "8/9", "8/11",
