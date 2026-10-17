@@ -88,3 +88,193 @@ apply_cluster_draw <- function(data, draw, cluster_col = "bootstrap_cluster_id")
   rownames(out) <- NULL
   out
 }
+
+fit_first_working_trim_model <- function(df, configs = NULL) {
+  required <- c("plot_id", "jaar", "geteld", "count_adjusted")
+  missing <- setdiff(required, names(df))
+  if (length(missing)) return(list(ok = FALSE, model = NULL, reason = paste("mist", paste(missing, collapse = ","))))
+  df <- df[df$geteld %in% TRUE & is.finite(df$count_adjusted), , drop = FALSE]
+  if (!nrow(df) || length(unique(df$jaar)) < 3L || length(unique(df$plot_id)) < 2L) {
+    return(list(ok = FALSE, model = NULL, reason = "te_weinig_modeldata"))
+  }
+  years <- sort(unique(df$jaar))
+  year_map <- data.frame(jaar = years, trim_year = seq_along(years))
+  df <- merge(df, year_map, by = "jaar", all.x = TRUE)
+  fit_data <- data.frame(site = df$plot_id, year = df$trim_year, count = df$count_adjusted)
+  if (is.null(configs)) {
+    configs <- list(
+      list(model = 3, overdisp = TRUE, serialcor = FALSE, label = "model3_overdisp"),
+      list(model = 3, overdisp = FALSE, serialcor = FALSE, label = "model3_basis"),
+      list(model = 2, overdisp = FALSE, serialcor = FALSE, label = "model2_basis")
+    )
+  }
+  attempts <- character()
+  for (cfg in configs) {
+    warnings <- character()
+    fit <- tryCatch(
+      withCallingHandlers(
+        rtrim::trim(
+          fit_data, model = cfg$model, overdisp = cfg$overdisp,
+          serialcor = cfg$serialcor, autodelete = TRUE, conv_crit = 1e-5, max_iter = 400
+        ),
+        warning = function(w) {
+          warnings <<- c(warnings, conditionMessage(w))
+          invokeRestart("muffleWarning")
+        }
+      ),
+      error = function(e) e
+    )
+    if (!inherits(fit, "error")) {
+      attempts <- c(attempts, paste0(cfg$label, ":ok"))
+      return(list(
+        ok = TRUE, model = fit, config = cfg$label, year_map = year_map,
+        attempts = attempts, warnings = unique(warnings),
+        site_ids = sort(unique(df$plot_id)), reason = NA_character_
+      ))
+    }
+    attempts <- c(attempts, paste0(cfg$label, ":", conditionMessage(fit)))
+  }
+  list(ok = FALSE, model = NULL, reason = tail(attempts, 1L), attempts = attempts)
+}
+
+bootstrap_model_index <- function(fit) {
+  if (!isTRUE(fit$ok)) return(NULL)
+  idx <- rtrim::index(fit$model, which = "imputed")
+  years <- fit$year_map$jaar[match(idx$time, fit$year_map$trim_year)]
+  values <- as.numeric(idx$imputed)
+  first <- values[which(is.finite(values) & values > 0)[1L]]
+  if (!is.finite(first) || first <= 0) return(NULL)
+  stats::setNames(100 * values / first, as.character(years))
+}
+
+bridge_common_plots <- function(species_matrix, pre_years, post_years) {
+  counted <- unique(species_matrix[
+    species_matrix$geteld %in% TRUE & species_matrix$jaar %in% c(pre_years, post_years),
+    c("bootstrap_cluster_id", "jaar"), drop = FALSE
+  ])
+  pre <- unique(counted$bootstrap_cluster_id[counted$jaar %in% pre_years])
+  post <- unique(counted$bootstrap_cluster_id[counted$jaar %in% post_years])
+  sort(intersect(pre, post))
+}
+
+build_bootstrap_context <- function(tbls, cluster_definition, config) {
+  species_matrix <- tbls$species_matrix
+  if (is.null(species_matrix)) stop("build_bootstrap_context vereist tbls$species_matrix.", call. = FALSE)
+  if (!"bootstrap_cluster_id" %in% names(species_matrix)) {
+    species_matrix <- merge(
+      species_matrix,
+      cluster_definition[, c("plot_id", "bootstrap_cluster_id")],
+      by = "plot_id", all.x = TRUE
+    )
+  }
+  if (any(is.na(species_matrix$bootstrap_cluster_id))) stop("Soortmatrix bevat ongekoppelde plots.", call. = FALSE)
+  pre_years <- config$bridge_pre_years
+  primary_post <- config$primary_post_years
+  variants <- list(
+    primary_1986_1988 = list(
+      pre_years = pre_years, post_years = primary_post,
+      plot_ids = bridge_common_plots(species_matrix, pre_years, primary_post)
+    ),
+    alternative_1987_1989 = list(
+      pre_years = pre_years, post_years = 1987:1989,
+      plot_ids = bridge_common_plots(species_matrix, pre_years, 1987:1989)
+    ),
+    alternative_1988_1990 = list(
+      pre_years = pre_years, post_years = 1988:1990,
+      plot_ids = bridge_common_plots(species_matrix, pre_years, 1988:1990)
+    ),
+    strict_all_six = list(
+      pre_years = pre_years, post_years = primary_post,
+      plot_ids = cluster_definition$bootstrap_cluster_id[cluster_definition$strict_bridge_plot %in% TRUE]
+    ),
+    historical_continuity_1984_1986 = list(
+      pre_years = pre_years, post_years = 1984:1986,
+      plot_ids = bridge_common_plots(species_matrix, pre_years, 1984:1986),
+      allow_transition_years = TRUE
+    )
+  )
+  list(
+    species_matrix = species_matrix,
+    clusters = cluster_definition,
+    config = config,
+    bridge_variants = variants,
+    historical_cluster_ids = cluster_definition$bootstrap_cluster_id[cluster_definition$stratum == "historische_kern"]
+  )
+}
+
+draw_hash_text <- function(draw) {
+  paste(paste(draw$draw_position, draw$source_cluster_id, draw$bootstrap_site_id, sep = ":"), collapse = "|")
+}
+
+combined_pct_trend <- function(pre_index, post_index, bridge_factor) {
+  if (is.null(pre_index) || is.null(post_index) || !is.finite(bridge_factor) || bridge_factor <= 0) return(NA_real_)
+  series <- c(pre_index, post_index * bridge_factor)
+  years <- as.integer(names(series))
+  keep <- is.finite(series) & series > 0 & is.finite(years)
+  if (sum(keep) < 3L) return(NA_real_)
+  slope <- unname(stats::coef(stats::lm(log(series[keep]) ~ years[keep]))[[2L]])
+  100 * (exp(slope) - 1)
+}
+
+run_trim_bootstrap_replicate <- function(context, replicate_id) {
+  draw <- make_stratified_cluster_draw(context$clusters, replicate_id, context$config$run_seed)
+  draw_hash <- draw_hash_text(draw)
+  coverage_sets <- list(
+    volledig_netwerk = context$clusters$bootstrap_cluster_id,
+    historische_kern = context$historical_cluster_ids
+  )
+  result_rows <- list()
+  diagnostic_main <- list()
+  diagnostic_calibration <- list()
+  counter <- 0L
+
+  for (coverage_name in names(coverage_sets)) {
+    coverage_ids <- coverage_sets[[coverage_name]]
+    coverage_matrix <- context$species_matrix[context$species_matrix$bootstrap_cluster_id %in% coverage_ids, , drop = FALSE]
+    coverage_draw <- draw[draw$source_cluster_id %in% coverage_ids, , drop = FALSE]
+    variants <- context$bridge_variants
+    for (name in names(variants)) variants[[name]]$plot_ids <- intersect(variants[[name]]$plot_ids, coverage_ids)
+    if (coverage_name == "historische_kern") variants <- variants["primary_1986_1988"]
+
+    for (species_id in sort(unique(coverage_matrix$soort_id))) {
+      species_original <- coverage_matrix[coverage_matrix$soort_id == species_id, , drop = FALSE]
+      species_drawn <- apply_cluster_draw(species_original, coverage_draw)
+      pre_df <- species_drawn[species_drawn$jaar %in% context$config$periods$pre, , drop = FALSE]
+      post_df <- species_drawn[species_drawn$jaar %in% context$config$periods$post, , drop = FALSE]
+      pre_fit <- fit_first_working_trim_model(pre_df)
+      post_fit <- fit_first_working_trim_model(post_df)
+      pre_index <- bootstrap_model_index(pre_fit)
+      post_index <- bootstrap_model_index(post_fit)
+      bridge_rows <- compute_bridge_variants(
+        species_original, pre_index, post_index, coverage_draw,
+        list(bridge_variants = variants)
+      )
+      for (i in seq_len(nrow(bridge_rows))) {
+        counter <- counter + 1L
+        result_rows[[counter]] <- data.frame(
+          replicate_id = as.integer(replicate_id),
+          soort_id = species_id,
+          coverage_variant = coverage_name,
+          draw_hash = draw_hash,
+          pre_model = pre_fit$config %||% NA_character_,
+          post_model = post_fit$config %||% NA_character_,
+          bridge_rows[i, , drop = FALSE],
+          estimate_pct_per_year = combined_pct_trend(pre_index, post_index, bridge_rows$bridge_factor[[i]]),
+          stringsAsFactors = FALSE
+        )
+      }
+      primary <- bridge_rows[bridge_rows$bridge_variant == "primary_1986_1988", , drop = FALSE]
+      diagnostic_main[[length(diagnostic_main) + 1L]] <- sort(unique(species_drawn$bootstrap_site_id))
+      calibration_ids <- if (nrow(primary) && nzchar(primary$calibration_site_ids[[1L]])) {
+        as.integer(strsplit(primary$calibration_site_ids[[1L]], ";", fixed = TRUE)[[1L]])
+      } else integer()
+      diagnostic_calibration[[length(diagnostic_calibration) + 1L]] <- calibration_ids
+    }
+  }
+  list(
+    replicate_id = as.integer(replicate_id),
+    draw = draw,
+    species = do.call(rbind, result_rows),
+    diagnostics = list(main_site_ids = diagnostic_main, calibration_site_ids = diagnostic_calibration)
+  )
+}
