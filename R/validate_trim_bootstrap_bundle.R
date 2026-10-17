@@ -1,6 +1,20 @@
 #!/usr/bin/env Rscript
 
-validate_trim_bootstrap_bundle <- function(bundle, sql_path, requested_replicates) {
+validate_trim_bootstrap_engine <- function(bundle, repo) {
+  bundle <- normalizePath(bundle, mustWork = TRUE)
+  repo <- normalizePath(repo, mustWork = TRUE)
+  manifest_path <- file.path(bundle, "bundle_manifest.json")
+  if (!file.exists(manifest_path)) stop("Bundlemanifest ontbreekt.", call. = FALSE)
+  manifest <- jsonlite::read_json(manifest_path, simplifyVector = TRUE)
+  expected <- unlist(manifest$engine_sha256, use.names = TRUE)
+  required <- trim_bootstrap_engine_files()
+  if (!identical(sort(names(expected)), sort(required))) stop("Bundlemanifest mist de exacte bootstrapengine.", call. = FALSE)
+  actual <- trim_bootstrap_engine_hashes(repo)
+  if (!identical(expected[names(actual)], actual)) stop("Bootstrapengine wijkt af van de hashgebonden runbundle.", call. = FALSE)
+  invisible(TRUE)
+}
+
+validate_trim_bootstrap_bundle <- function(bundle, sql_path, requested_replicates, repo = NULL) {
   bundle <- normalizePath(bundle, mustWork = TRUE)
   sql_path <- normalizePath(sql_path, mustWork = TRUE)
   manifest_path <- file.path(bundle, "bundle_manifest.json")
@@ -22,6 +36,7 @@ validate_trim_bootstrap_bundle <- function(bundle, sql_path, requested_replicate
   if (!identical(bundle_sha256_file(sql_path), manifest$source_hash)) {
     stop("SQL-bronhash wijkt af van de runbundle.", call. = FALSE)
   }
+  if (!is.null(repo)) validate_trim_bootstrap_engine(bundle, repo)
   invisible(manifest)
 }
 
@@ -29,7 +44,8 @@ if (sys.nframe() == 0L) {
   args <- commandArgs(trailingOnly = TRUE)
   if (length(args) != 3L) stop("Gebruik: validate_trim_bootstrap_bundle.R BUNDLE SQL REPLICATES", call. = FALSE)
   script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1L])
+  repo <- normalizePath(file.path(dirname(script_file), ".."), mustWork = TRUE)
   source(file.path(dirname(script_file), "build_trim_bootstrap_bundle.R"), local = TRUE)
-  validate_trim_bootstrap_bundle(args[[1L]], args[[2L]], as.integer(args[[3L]]))
+  validate_trim_bootstrap_bundle(args[[1L]], args[[2L]], as.integer(args[[3L]]), repo = repo)
   cat("BUNDLE_VALIDATION=ready\n")
 }

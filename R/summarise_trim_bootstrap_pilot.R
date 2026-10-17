@@ -93,6 +93,7 @@ summarise_trim_bootstrap_pilot <- function(paths, expected_ids) {
   runtimes <- vapply(states, function(x) as.numeric(x$runtime_seconds %||% NA_real_), numeric(1))
   peaks <- vapply(states, function(x) as.numeric(x$peak_memory_mb %||% NA_real_), numeric(1))
   swaps <- vapply(states, function(x) as.numeric(x$swap_used_bytes %||% NA_real_), numeric(1))
+  swap_growth <- vapply(states, function(x) as.numeric(x$swap_growth_bytes %||% NA_real_), numeric(1))
   error_count <- sum(vapply(states, function(x) length(x$errors %||% list()), integer(1)))
   identity <- merged$identity
   started_at <- vapply(states, function(x) as.character(x$started_at %||% NA_character_), character(1))
@@ -120,6 +121,7 @@ summarise_trim_bootstrap_pilot <- function(paths, expected_ids) {
     seconds_per_replicate = sum(runtimes, na.rm = TRUE) / completed,
     peak_memory_mb_max = if (any(is.finite(peaks))) max(peaks, na.rm = TRUE) else NA_real_,
     swap_used_bytes_max = if (any(is.finite(swaps))) max(swaps, na.rm = TRUE) else NA_real_,
+    swap_growth_bytes_max = if (any(is.finite(swap_growth))) max(swap_growth, na.rm = TRUE) else NA_real_,
     error_count = error_count,
     stringsAsFactors = FALSE
   )

@@ -7,6 +7,22 @@ bundle_sha256_file <- function(path) {
   hash
 }
 
+trim_bootstrap_engine_files <- function() {
+  c(
+    "R/run_trim_bootstrap_batch.R",
+    "R/trim_bootstrap_core.R",
+    "R/trim_bridge_core.R"
+  )
+}
+
+trim_bootstrap_engine_hashes <- function(repo) {
+  repo <- normalizePath(repo, mustWork = TRUE)
+  files <- trim_bootstrap_engine_files()
+  paths <- file.path(repo, files)
+  if (any(!file.exists(paths))) stop("Bootstrapengine is onvolledig: ", paste(files[!file.exists(paths)], collapse = ", "), ".", call. = FALSE)
+  stats::setNames(vapply(paths, bundle_sha256_file, character(1)), files)
+}
+
 write_trim_bootstrap_bundle <- function(context, identity, bundle_dir, metadata) {
   required_identity <- c("run_id", "source_hash", "config_hash", "code_commit", "software_id")
   if (length(setdiff(required_identity, names(identity)))) stop("Bundle-identiteit is onvolledig.", call. = FALSE)
@@ -69,6 +85,44 @@ select_fixed_robust_species <- function(species_results, required_years) {
   intersect(as.integer(complete), as.integer(valid_status))
 }
 
+select_formal_primary_species <- function(context, required_years) {
+  clusters <- context$clusters[order(context$clusters$stratum, context$clusters$bootstrap_cluster_id), , drop = FALSE]
+  identity_draw <- data.frame(
+    source_cluster_id = clusters$bootstrap_cluster_id,
+    bootstrap_site_id = clusters$bootstrap_cluster_id,
+    draw_position = seq_len(nrow(clusters)),
+    stringsAsFactors = FALSE
+  )
+  rows <- lapply(sort(unique(context$species_matrix$soort_id)), function(species_id) {
+    species <- context$species_matrix[context$species_matrix$soort_id == species_id, , drop = FALSE]
+    drawn <- apply_cluster_draw(species, identity_draw)
+    pre_fit <- fit_first_working_trim_model(drawn[drawn$jaar %in% context$config$periods$pre, , drop = FALSE])
+    post_fit <- fit_first_working_trim_model(drawn[drawn$jaar %in% context$config$periods$post, , drop = FALSE])
+    pre_index <- bootstrap_model_index(pre_fit)
+    post_index <- bootstrap_model_index(post_fit)
+    bridge <- compute_bridge_variants(species, pre_index, post_index, identity_draw, context)
+    primary <- bridge[bridge$bridge_variant == "primary_1986_1988", , drop = FALSE]
+    factor <- if (nrow(primary)) primary$bridge_factor[[1L]] else NA_real_
+    combined <- c(pre_index, if (is.finite(factor) && factor > 0) post_index * factor else post_index * NA_real_)
+    valid_years <- as.integer(names(combined)[is.finite(combined) & combined > 0])
+    estimate <- combined_pct_trend(pre_index, post_index, factor)
+    data.frame(
+      soort_id = as.integer(species_id),
+      formal_primary = nrow(primary) == 1L && identical(primary$bridge_status[[1L]], "formele_brug") && is.finite(estimate),
+      complete_primary = is.finite(estimate) && identical(sort(unique(valid_years)), sort(unique(as.integer(required_years)))),
+      point_estimate_pct_per_year = estimate,
+      bridge_reason = if (nrow(primary)) primary$bridge_reason[[1L]] else "primaire_brug_ontbreekt",
+      stringsAsFactors = FALSE
+    )
+  })
+  diagnostics <- do.call(rbind, rows)
+  list(
+    formal_species_ids = diagnostics$soort_id[diagnostics$formal_primary],
+    complete_species_ids = diagnostics$soort_id[diagnostics$formal_primary & diagnostics$complete_primary],
+    diagnostics = diagnostics
+  )
+}
+
 read_bundle_key_values <- function(path) {
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   fields <- strsplit(lines[grepl("=", lines, fixed = TRUE)], "=", fixed = TRUE)
@@ -120,9 +174,10 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
 
   analysis_env <- new.env(parent = globalenv())
   sys.source(file.path(repo, "R", "trim_soorten_en_msi_evg.R"), envir = analysis_env)
-  source(file.path(repo, "R", "trim_bootstrap_core.R"), local = TRUE)
-  source(file.path(repo, "R", "trim_bridge_core.R"), local = TRUE)
-  source(file.path(repo, "R", "audit_trim_bridge_windows.R"), local = TRUE)
+  runtime_env <- environment(select_formal_primary_species)
+  sys.source(file.path(repo, "R", "trim_bootstrap_core.R"), envir = runtime_env)
+  sys.source(file.path(repo, "R", "trim_bridge_core.R"), envir = runtime_env)
+  sys.source(file.path(repo, "R", "audit_trim_bridge_windows.R"), envir = runtime_env)
 
   export_manifest_path <- paste0(sql_path, ".manifest")
   if (!file.exists(export_manifest_path)) stop("Exportmanifest naast SQL-bron ontbreekt.", call. = FALSE)
@@ -143,8 +198,10 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
   species_matrix <- analysis_env$build_species_matrix(tbls, basis, end_year)
   clusters <- build_cluster_definition_from_basis(basis, derive_bridge_plot_sets)
   species_results <- analysis_env$analyse_species(species_matrix, periods)
-  robust_ids <- select_fixed_robust_species(species_results, periods$combined$years)
-  if (!length(robust_ids)) stop("Geen soort heeft een volledige vaste indexreeks voor de robuuste groepsvariant.", call. = FALSE)
+  eligible_ids <- species_results$status$soort_id[
+    species_results$status$analyse_categorie == "brugbare_tijdreeks"
+  ]
+  complete_existing_ids <- select_fixed_robust_species(species_results, periods$combined$years)
   context <- build_bootstrap_context(
     list(species_matrix = restrict_species_matrix_to_bootstrap_clusters(species_matrix, clusters)), clusters,
     list(
@@ -154,6 +211,13 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
       primary_post_years = periods$bridge$primary_post
     )
   )
+  formal_selection <- select_formal_primary_species(context, periods$combined$years)
+  formal_ids <- intersect(eligible_ids, formal_selection$formal_species_ids)
+  robust_ids <- Reduce(intersect, list(complete_existing_ids, formal_ids, formal_selection$complete_species_ids))
+  if (!length(robust_ids)) stop("Geen soort heeft een formele primaire brug en volledige vaste indexreeks voor de robuuste groepsvariant.", call. = FALSE)
+  context$formal_primary_species_ids <- formal_ids
+  context$fixed_robust_species_ids <- robust_ids
+  context$formal_selection_diagnostics <- formal_selection$diagnostics
   context$group_definitions <- build_bootstrap_group_definitions(
     analysis_env$build_group_mapping(tbls),
     analysis_env$build_functional_group_mapping(tbls),
@@ -191,7 +255,10 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
       cluster_count = nrow(clusters),
       primary_bridge_plot_count = sum(clusters$primary_bridge_plot),
       strict_bridge_plot_count = sum(clusters$strict_bridge_plot)
-      , fixed_robust_species_count = length(robust_ids)
+      , eligible_two_period_species_count = length(unique(eligible_ids)),
+      formal_primary_species_count = length(formal_ids),
+      fixed_robust_species_count = length(robust_ids),
+      engine_sha256 = as.list(trim_bootstrap_engine_hashes(repo))
     )
   )
   cat("BUNDLE_STATUS=ready\nBUNDLE_RUN_ID=", run_id, "\n", sep = "")

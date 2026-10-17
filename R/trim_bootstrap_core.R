@@ -255,6 +255,7 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
         result_rows[[counter]] <- data.frame(
           replicate_id = as.integer(replicate_id),
           soort_id = species_id,
+          formal_candidate = species_id %in% (context$formal_primary_species_ids %||% integer()),
           coverage_variant = coverage_name,
           draw_hash = draw_hash,
           pre_model = pre_fit$config %||% NA_character_,

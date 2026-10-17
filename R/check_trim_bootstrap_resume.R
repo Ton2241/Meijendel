@@ -18,7 +18,15 @@ identity <- list(
   code_commit = paste(rep("c", 40), collapse = ""),
   software_id = "R-test"
 )
-replicate_fn <- function(replicate_id) data.frame(replicate_id = replicate_id, value = replicate_id^2)
+replicate_fn <- function(replicate_id) {
+  Sys.sleep(0.01)
+  data.frame(replicate_id = replicate_id, value = replicate_id^2)
+}
+resource_counter <- 0L
+resource_fn <- function() {
+  resource_counter <<- resource_counter + 1L
+  list(peak_memory_mb = 100 + resource_counter, swap_used_bytes = 1000 + 10 * resource_counter)
+}
 
 interrupted <- try(batch_env$run_trim_bootstrap_batch(
   identity = identity,
@@ -26,24 +34,31 @@ interrupted <- try(batch_env$run_trim_bootstrap_batch(
   output = output,
   replicate_fn = replicate_fn,
   worker_id = "test-worker",
-  stop_after = 3L
+  stop_after = 3L,
+  resource_fn = resource_fn
 ), silent = TRUE)
 stopifnot(inherits(interrupted, "try-error"))
 stopifnot(file.exists(paste0(output, ".partial")))
 partial <- readRDS(paste0(output, ".partial"))
 stopifnot(identical(partial$completed_ids, 1:3))
+stopifnot(partial$runtime_seconds > 0)
+stopifnot(partial$swap_growth_bytes > 0)
+interrupted_runtime <- partial$runtime_seconds
 
 batch_env$run_trim_bootstrap_batch(
   identity = identity,
   replicate_ids = 1:5,
   output = output,
   replicate_fn = replicate_fn,
-  worker_id = "test-worker"
+  worker_id = "test-worker",
+  resource_fn = resource_fn
 )
 stopifnot(file.exists(output), !file.exists(paste0(output, ".partial")))
 complete <- readRDS(output)
 stopifnot(identical(complete$completed_ids, 1:5))
 stopifnot(identical(unname(vapply(complete$results, function(x) x$replicate_id, integer(1))), 1:5))
+stopifnot(complete$runtime_seconds >= interrupted_runtime)
+stopifnot(complete$swap_growth_bytes > 0)
 
 merged <- merge_env$merge_trim_bootstrap_batches(c(output), expected_ids = 1:5)
 stopifnot(identical(merged$replicate_ids, 1:5))

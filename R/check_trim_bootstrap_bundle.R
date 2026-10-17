@@ -34,6 +34,9 @@ context$group_definitions <- list(list(
   entity_id = "eco-100-robuust", mapping = data.frame(soort_id = 1:2),
   variant = "robuust", aggregation = "geometrisch"
 ))
+formal_selection <- bundle_env$select_formal_primary_species(context, 1981:1990)
+stopifnot(identical(formal_selection$formal_species_ids, 1:2))
+stopifnot(identical(formal_selection$complete_species_ids, 1:2))
 source_file <- tempfile("trim-bundle-source-", fileext = ".sql")
 writeLines("SELECT 1;", source_file)
 identity <- list(
@@ -47,15 +50,28 @@ on.exit(unlink(root, recursive = TRUE, force = TRUE), add = TRUE)
 bundle <- file.path(root, "input_bundle")
 bundle_env$write_trim_bootstrap_bundle(
   context, identity, bundle,
-  metadata = list(analysis_end_year = 2025L, planned_replicates = 50L, publication_status = "pilot_niet_publiceren")
+  metadata = list(
+    analysis_end_year = 2025L, planned_replicates = 50L,
+    publication_status = "pilot_niet_publiceren",
+    engine_sha256 = as.list(bundle_env$trim_bootstrap_engine_hashes(repo))
+  )
 )
 stopifnot(file.exists(file.path(bundle, "context.rds")), file.exists(file.path(bundle, "identity.rds")))
 manifest <- jsonlite::read_json(file.path(bundle, "bundle_manifest.json"), simplifyVector = TRUE)
 stopifnot(manifest$analysis_end_year == 2025L, manifest$planned_replicates == 50L)
 stopifnot(identical(manifest$publication_status, "pilot_niet_publiceren"))
-validator_env$validate_trim_bootstrap_bundle(bundle, source_file, 1L)
+validator_env$validate_trim_bootstrap_bundle(bundle, source_file, 1L, repo = repo)
 too_many <- try(validator_env$validate_trim_bootstrap_bundle(bundle, source_file, 51L), silent = TRUE)
 stopifnot(inherits(too_many, "try-error"))
+
+tampered_repo <- file.path(root, "tampered-repo")
+dir.create(file.path(tampered_repo, "R"), recursive = TRUE)
+for (file in bundle_env$trim_bootstrap_engine_files()) {
+  file.copy(file.path(repo, file), file.path(tampered_repo, file), overwrite = TRUE)
+}
+write("# wijziging", file.path(tampered_repo, bundle_env$trim_bootstrap_engine_files()[[1L]]), append = TRUE)
+tampered <- try(validator_env$validate_trim_bootstrap_engine(bundle, tampered_repo), silent = TRUE)
+stopifnot(inherits(tampered, "try-error"))
 
 fixed <- bundle_env$select_fixed_robust_species(
   list(

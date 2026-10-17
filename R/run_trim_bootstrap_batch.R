@@ -25,13 +25,47 @@ validate_batch_identity <- function(identity) {
   invisible(TRUE)
 }
 
+batch_system_swap_used_bytes <- function() {
+  if (identical(Sys.info()[["sysname"]], "Darwin")) {
+    output <- suppressWarnings(system2("sysctl", c("-n", "vm.swapusage"), stdout = TRUE, stderr = TRUE))
+    text <- paste(output, collapse = " ")
+    hit <- regexec("used = ([0-9.]+)([KMG])", text, perl = TRUE)
+    fields <- regmatches(text, hit)[[1L]]
+    if (length(fields) == 3L) {
+      multiplier <- c(K = 1024, M = 1024^2, G = 1024^3)[[fields[[3L]]]]
+      return(as.numeric(fields[[2L]]) * multiplier)
+    }
+  }
+  if (file.exists("/proc/meminfo")) {
+    info <- readLines("/proc/meminfo", warn = FALSE)
+    total <- as.numeric(sub("^SwapTotal:[[:space:]]+([0-9]+).*", "\\1", info[grepl("^SwapTotal:", info)]))
+    free <- as.numeric(sub("^SwapFree:[[:space:]]+([0-9]+).*", "\\1", info[grepl("^SwapFree:", info)]))
+    if (length(total) == 1L && length(free) == 1L && all(is.finite(c(total, free)))) return((total - free) * 1024)
+  }
+  NA_real_
+}
+
+batch_resource_snapshot <- function() {
+  list(
+    peak_memory_mb = max(gc()[, "max used"]) * 8 / 1024^2,
+    swap_used_bytes = batch_system_swap_used_bytes()
+  )
+}
+
+batch_max_finite <- function(...) {
+  values <- as.numeric(unlist(list(...), use.names = FALSE))
+  values <- values[is.finite(values)]
+  if (length(values)) max(values) else NA_real_
+}
+
 run_trim_bootstrap_batch <- function(
     identity,
     replicate_ids,
     output,
     replicate_fn,
     worker_id,
-    stop_after = NULL) {
+    stop_after = NULL,
+    resource_fn = batch_resource_snapshot) {
   validate_batch_identity(identity)
   if (!is.function(replicate_fn)) stop("replicate_fn moet een functie zijn.", call. = FALSE)
   replicate_ids <- as.integer(replicate_ids)
@@ -55,12 +89,18 @@ run_trim_bootstrap_batch <- function(
     results = list(),
     errors = list(),
     worker_id = worker_id,
-    started_at = format(Sys.time(), tz = "UTC", usetz = TRUE)
+    started_at = format(Sys.time(), tz = "UTC", usetz = TRUE),
+    runtime_seconds = 0
   )
   if (!identical(state$identity, identity) || !identical(state$requested_ids, replicate_ids)) {
     stop("Partiele batch hoort bij een andere run of replicatiereeks.", call. = FALSE)
   }
+  base_runtime <- as.numeric(state$runtime_seconds %||% 0)
   start <- proc.time()[["elapsed"]]
+  initial_resources <- resource_fn()
+  if (is.null(state$swap_start_bytes)) state$swap_start_bytes <- as.numeric(initial_resources$swap_used_bytes %||% NA_real_)
+  state$peak_memory_mb <- batch_max_finite(state$peak_memory_mb, initial_resources$peak_memory_mb)
+  state$swap_used_bytes <- batch_max_finite(state$swap_used_bytes, initial_resources$swap_used_bytes)
   processed_this_call <- 0L
   for (replicate_id in setdiff(replicate_ids, state$completed_ids)) {
     result <- tryCatch(replicate_fn(replicate_id), error = function(e) e)
@@ -70,13 +110,18 @@ run_trim_bootstrap_batch <- function(
       state$results[[as.character(replicate_id)]] <- result
     }
     state$completed_ids <- sort(c(state$completed_ids, replicate_id))
+    resources <- resource_fn()
+    state$runtime_seconds <- base_runtime + proc.time()[["elapsed"]] - start
+    state$peak_memory_mb <- batch_max_finite(state$peak_memory_mb, resources$peak_memory_mb)
+    state$swap_used_bytes <- batch_max_finite(state$swap_used_bytes, resources$swap_used_bytes)
+    state$swap_growth_bytes <- if (all(is.finite(c(state$swap_start_bytes, state$swap_used_bytes)))) {
+      max(0, state$swap_used_bytes - state$swap_start_bytes)
+    } else NA_real_
     saveRDS(state, partial, compress = TRUE)
     processed_this_call <- processed_this_call + 1L
     if (!is.null(stop_after) && processed_this_call >= stop_after) stop("Bewuste testonderbreking na checkpoint.", call. = FALSE)
   }
-  state$runtime_seconds <- proc.time()[["elapsed"]] - start
-  state$peak_memory_mb <- max(gc()[, "max used"]) * 8 / 1024^2
-  state$swap_used_bytes <- NA_real_
+  state$runtime_seconds <- base_runtime + proc.time()[["elapsed"]] - start
   state$finished_at <- format(Sys.time(), tz = "UTC", usetz = TRUE)
   saveRDS(state, partial, compress = TRUE)
   if (!file.rename(partial, output)) stop("Atomische batchpromotie mislukt.", call. = FALSE)
@@ -87,6 +132,7 @@ run_trim_bootstrap_batch <- function(
     runtime_seconds = state$runtime_seconds,
     peak_memory_mb = state$peak_memory_mb,
     swap_used_bytes = state$swap_used_bytes,
+    swap_growth_bytes = state$swap_growth_bytes,
     worker_id = worker_id,
     error_count = length(state$errors)
   )
@@ -102,6 +148,10 @@ run_trim_bootstrap_batch_cli <- function(args = commandArgs(trailingOnly = TRUE)
   context <- readRDS(file.path(bundle, "context.rds"))
   identity <- readRDS(file.path(bundle, "identity.rds"))
   repo <- normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1L])), ".."), mustWork = TRUE)
+  validation_env <- new.env(parent = globalenv())
+  sys.source(file.path(repo, "R", "build_trim_bootstrap_bundle.R"), envir = validation_env)
+  sys.source(file.path(repo, "R", "validate_trim_bootstrap_bundle.R"), envir = validation_env)
+  validation_env$validate_trim_bootstrap_engine(bundle, repo)
   source(file.path(repo, "R", "trim_bootstrap_core.R"), local = TRUE)
   source(file.path(repo, "R", "trim_bridge_core.R"), local = TRUE)
   run_trim_bootstrap_batch(

@@ -44,6 +44,7 @@ state <- list(
   ),
   errors = list(), worker_id = "test-worker", started_at = "2026-10-17 10:00:00 UTC",
   runtime_seconds = 20, peak_memory_mb = 123, swap_used_bytes = 0,
+  swap_growth_bytes = 0,
   finished_at = "2026-10-17 10:00:20 UTC"
 )
 path <- file.path(tmp, "batch-000001-000002.rds")
@@ -58,6 +59,7 @@ stopifnot(summary$run$runtime_seconds_total[[1L]] == 20)
 stopifnot(summary$run$seconds_per_replicate[[1L]] == 10)
 stopifnot(summary$run$wall_elapsed_seconds[[1L]] == 20)
 stopifnot(summary$run$peak_memory_mb_max[[1L]] == 123)
+stopifnot(summary$run$swap_growth_bytes_max[[1L]] == 0)
 stopifnot(summary$species$valid_replicates[[1L]] == 1L)
 stopifnot(summary$species$valid_fraction[[1L]] == 0.5)
 stopifnot(summary$species$publication_gate[[1L]] == "onvoldoende_bootstrap")
