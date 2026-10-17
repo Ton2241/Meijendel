@@ -47,6 +47,7 @@ VLINDER_ROUTE_RULE_VERSION = "ndff-vlinderroute-v2"
 VLINDER_LEGACY_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
+LIBEL_SELECTION_VERSION = "ndff-libellen-selectie-v1"
 REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v2"
 REPTILE_LEGACY_RULE_VERSION = "ndff-reptielroute-v1"
 AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v2"
@@ -11081,6 +11082,154 @@ def libel_validation_sql() -> str:
     )
 
 
+def select_libel_analysis_rows(source_rows: list[dict], matrix_rows: list[dict],
+                               analysetype: str = "TV") -> dict:
+    """Selecteer hele routebezoeken; verander nooit bronwaarden of nulbewijs."""
+    if analysetype not in ("TV", "TA"):
+        raise ValueError("Libellenmatrix ondersteunt hier uitsluitend TV of TA")
+    visits: dict[str, list[dict]] = defaultdict(list)
+    seen = set()
+    for row in source_rows:
+        record_id = row["waarneming_id"]
+        if record_id is None or record_id in seen:
+            raise ValueError("Ontbrekende of dubbel gekoppelde libellenbronregel")
+        seen.add(record_id)
+        if row["analyse_waarneming_id"] != record_id:
+            raise ValueError("Libellenbronregel ontbreekt in de canonieke analysepoort")
+        if row["plot_id"] is not None and row["scope_plot_id"] is None:
+            raise ValueError("Plot zonder expliciete Meijendel-analysescope")
+        if (not row["gegevensgeschiktheid"] or not row["kwaliteitsmelding"]
+                or not row["protocol_kandidaattypen"]
+                or not row["analysetype_gegevensgeschiktheid"]
+                or not row["analysetype_kwaliteitsmelding"]):
+            raise ValueError("Verplichte kwaliteitsinformatie ontbreekt")
+        visits[row["bezoek_sleutel"]].append(row)
+    selected = {}; mixed = excluded = 0
+    for key, records in visits.items():
+        if {r["bronrecordaantal"] for r in records} != {len(records)}:
+            raise ValueError("Bronrecordaantal wijkt af van de volledige bezoekreconstructie")
+        fields = ("jaar", "routefamilie_id", "reconstructiestatus", "doelbereikstatus")
+        if any(len({r[f] for r in records}) != 1 for f in fields):
+            raise ValueError("Tegenstrijdige bezoekmetadata")
+        allowed = [r for r in records
+                   if r["record_selectiestatus"] == "voorlopig_bruikbaar"
+                   and r["in_scope"] == 1
+                   and analysetype in r["protocol_kandidaattypen"].split(",")]
+        if len(allowed) != len(records):
+            if allowed: mixed += 1
+            else: excluded += 1
+            continue
+        first = records[0]
+        if (first["reconstructiestatus"] != "gereconstrueerd"
+                or first["routefamilie_id"] is None
+                or first["doelbereikstatus"] != "algemene_route"):
+            excluded += 1
+            continue
+        statuses = {r["gegevensgeschiktheid"] for r in records}
+        type_statuses = {r["analysetype_gegevensgeschiktheid"] for r in records}
+        severity = {"geschikt":0, "voorwaardelijk":1, "niet_beoordeeld":2, "onvoldoende":3}
+        if not (statuses | type_statuses) <= severity.keys():
+            raise ValueError("Onbekende gegevensgeschiktheid")
+        selected[key] = dict(bezoek_sleutel=key, jaar=first["jaar"],
+            routefamilie_id=first["routefamilie_id"], bronrecordaantal=len(records),
+            plot_ids=sorted({r["plot_id"] for r in records}),
+            gegevensgeschiktheid=max(statuses,key=severity.get),
+            kwaliteitsmelding=" | ".join(sorted({r["kwaliteitsmelding"] for r in records})),
+            analysetype_gegevensgeschiktheid=max(type_statuses,key=severity.get),
+            analysetype_kwaliteitsmelding=" | ".join(
+                sorted({r["analysetype_kwaliteitsmelding"] for r in records})))
+    matrix = []; matrix_keys = set(); matrix_visits = set()
+    for row in matrix_rows:
+        key = row["bezoek_sleutel"]
+        pair = (key,row["taxon_bronkoppeling_id"])
+        if pair in matrix_keys or row["taxon_id"] is None:
+            raise ValueError("Dubbele of niet centraal bereikbare matrixregel")
+        matrix_keys.add(pair); matrix_visits.add(key)
+        if key not in visits:
+            raise ValueError("Matrixregel zonder bijbehorend bronbezoek")
+        if key in selected:
+            matrix.append({**row, **selected[key], "analysetype":analysetype,
+                           "selectieversie":LIBEL_SELECTION_VERSION,
+                           "reconstructieversie":LIBEL_ROUTE_RULE_VERSION})
+    if set(visits) != matrix_visits:
+        raise ValueError("Bezoek zonder bestaande bezoek-taxonmatrix")
+    years = [r["jaar"] for r in selected.values()]
+    return dict(selectieversie=LIBEL_SELECTION_VERSION, reconstructieversie=LIBEL_ROUTE_RULE_VERSION,
+        analyseketenversie=ANALYSIS_CHAIN_VERSION, analysetype=analysetype,
+        samenvatting=dict(bezoeken=len(visits), bronrecords=len(source_rows),
+            geselecteerde_bezoeken=len(selected), gemengde_bezoeken=mixed,
+            uitgesloten_bezoeken=excluded,
+            geselecteerde_bronrecords=sum(r["bronrecordaantal"] for r in selected.values()),
+            matrixregels=len(matrix), positieve_regels=sum(r["waarnemingsstatus"]=="waargenomen" for r in matrix),
+            bestaande_nulregels=sum(r["waarnemingsstatus"]=="echte_nul" for r in matrix),
+            jaar_van=min(years) if years else None, jaar_tot=max(years) if years else None),
+        matrix=matrix)
+
+
+def libel_analysis_input_sql(analysetype: str = "TV") -> str:
+    """Eén alleen-lezen snapshot van bronselectie en bestaande centrale matrix."""
+    if analysetype not in ("TV", "TA"):
+        raise ValueError("Libellenselectie vereist TV of TA")
+    version = sql_text(LIBEL_ROUTE_RULE_VERSION)
+    analysis_type = sql_text(analysetype)
+    return f"""
+START TRANSACTION WITH CONSISTENT SNAPSHOT, READ ONLY;
+SELECT JSON_OBJECT('soort','controle','bronrecords',COUNT(*))
+FROM Meijendel.ndff_open_waarneming
+WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen';
+SELECT JSON_OBJECT('soort','bron','bezoek_sleutel',b.bezoek_sleutel,
+ 'bronrecordaantal',b.bronrecordaantal,'jaar',b.jaar,'routefamilie_id',b.routefamilie_id,
+ 'reconstructiestatus',b.reconstructiestatus,'doelbereikstatus',b.doelbereikstatus,
+ 'waarneming_id',o.waarneming_id,'analyse_waarneming_id',a.open_waarneming_id,
+ 'record_selectiestatus',a.record_selectiestatus,'plot_id',a.plot_id,
+ 'scope_plot_id',s.plot_id,'in_scope',s.in_scope,
+ 'protocol_kandidaattypen',a.protocol_kandidaattypen,
+ 'gegevensgeschiktheid',a.gegevensgeschiktheid,'kwaliteitsmelding',a.kwaliteitsmelding,
+ 'analysetype_gegevensgeschiktheid',d.gegevensgeschiktheid,
+ 'analysetype_kwaliteitsmelding',d.reden)
+FROM Meijendel.ndff_libel_bezoek b
+LEFT JOIN Meijendel.ndff_open_waarneming o
+ ON o.periode_start=b.periode_start AND o.periode_stop=b.periode_stop
+ AND o.protocol LIKE '07.201%' AND o.soortgroep_raw='Libellen'
+LEFT JOIN Meijendel_ndff_secure.v_ndff_analyse_record a
+ ON a.open_waarneming_id=o.waarneming_id AND a.protocol_sleutel='07.201'
+LEFT JOIN Meijendel.ndff_analysebesluit d
+ ON d.protocol_id=a.protocol_id AND d.soortgroep_raw=a.soortgroep_raw
+ AND d.bron_scope=CASE WHEN a.secure_waarneming_id IS NULL THEN 'openbaar' ELSE 'beveiligd' END
+ AND d.analysetype={analysis_type} AND d.regelversie={sql_text(DECISION_RULE_VERSION)}
+LEFT JOIN Meijendel.plot_analyse_scope s
+ ON s.plot_id=a.plot_id AND s.scope_code='meijendel_natura2000'
+WHERE b.reconstructieversie={version}
+ORDER BY b.bezoek_sleutel,o.waarneming_id;
+SELECT JSON_OBJECT('soort','matrix','bezoek_sleutel',m.bezoek_sleutel,
+ 'taxon_bronkoppeling_id',m.taxon_bronkoppeling_id,'taxon_id',t.taxon_id,
+ 'wetenschappelijke_naam',m.wetenschappelijke_naam,'weergavenaam',t.weergavenaam,
+ 'groep_code',g.groep_code,'aantal',m.aantal,'waarnemingsstatus',m.waarnemingsstatus,
+ 'nulregel',m.nulregel)
+FROM Meijendel.ndff_libel_bezoek_taxon m
+LEFT JOIN Meijendel.taxa_bronkoppeling k ON k.koppeling_id=m.taxon_bronkoppeling_id
+ AND k.koppelstatus IN ('kandidaat','bevestigd')
+LEFT JOIN Meijendel.taxa t ON t.taxon_id=k.taxon_id
+LEFT JOIN Meijendel.taxon_groepen g ON g.groep_id=t.groep_id
+WHERE m.reconstructieversie={version}
+ORDER BY m.bezoek_sleutel,m.wetenschappelijke_naam;
+COMMIT;
+"""
+
+
+def read_libel_analysis_selection(client: Path, client_args: list[str],
+                                  analysetype: str = "TV") -> dict:
+    output = run_mysql(client, client_args+["--batch","--raw","--skip-column-names"],
+                       libel_analysis_input_sql(analysetype), capture=True)
+    rows = [json.loads(line) for line in output.splitlines()]
+    sources = [r for r in rows if r["soort"]=="bron"]
+    controls = [r for r in rows if r["soort"]=="controle"]
+    if len(controls) != 1 or controls[0]["bronrecords"] != len(sources):
+        raise ValueError("Niet alle libellenbronrecords hebben precies één gereconstrueerd bezoek")
+    return select_libel_analysis_rows(sources,
+                                     [r for r in rows if r["soort"]=="matrix"], analysetype)
+
+
 def reptile_validation_sql() -> str:
     version = sql_text(REPTILE_ROUTE_RULE_VERSION)
     legacy_tables = ",".join(sql_text(f"ndff_reptiel_{suffix}") for suffix in (
@@ -12331,6 +12480,9 @@ def main() -> int:
     mode.add_argument("--audit-vliesvleugelen", action="store_true")
     mode.add_argument("--reconstruct-libellen", action="store_true")
     mode.add_argument("--audit-libellen", action="store_true")
+    mode.add_argument("--audit-libellen-selectie", action="store_true")
+    mode.add_argument("--selecteer-libellen", action="store_true")
+    parser.add_argument("--libellen-analysetype", choices=("TV","TA"), default="TV")
     mode.add_argument("--reconstruct-reptielen", action="store_true")
     mode.add_argument("--audit-reptielen", action="store_true")
     mode.add_argument("--reconstruct-amfibieen", action="store_true")
@@ -12379,7 +12531,7 @@ def main() -> int:
     mode.add_argument("--audit-ravon-n2000", action="store_true")
     args = parser.parse_args()
     from import_external_ecology_sources import central_query_guarded_operation
-    mutates = (not args.dry_run
+    mutates = (not args.dry_run and not args.selecteer_libellen
         and args.compare_sovon_bmp_year is None
         and not any(value for key,value in vars(args).items() if key.startswith('audit_')))
     return central_query_guarded_operation(lambda: execute_main(args,parser), enabled=mutates,
@@ -12503,6 +12655,13 @@ def execute_main(args,parser) -> int:
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_libellen(args.mysql_client, client_args)
         print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.audit_libellen_selectie or args.selecteer_libellen:
+        result = read_libel_analysis_selection(args.mysql_client, client_args,
+                                               args.libellen_analysetype)
+        if args.audit_libellen_selectie:
+            result = {k:v for k,v in result.items() if k != "matrix"}
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0
     if args.audit_libellen:
         output = run_mysql(

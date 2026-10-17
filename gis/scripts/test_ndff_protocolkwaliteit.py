@@ -32,6 +32,63 @@ def load_importer():
     return module
 
 
+def test_libel_analysis_selection() -> None:
+    """Een gedeeltelijk toegelaten bezoek mag geen volledige matrix worden."""
+    from copy import deepcopy
+    module = load_importer()
+    def record(visit, record_id, status="voorlopig_bruikbaar", scope=1):
+        return dict(bezoek_sleutel=visit, waarneming_id=record_id,
+                    bronrecordaantal=2, jaar=2020, routefamilie_id=1,
+                    reconstructiestatus="gereconstrueerd", doelbereikstatus="algemene_route",
+                    analyse_waarneming_id=record_id, record_selectiestatus=status,
+                    plot_id=1, scope_plot_id=1, in_scope=scope,
+                    protocol_kandidaattypen="V,TV,TA", gegevensgeschiktheid="niet_beoordeeld",
+                    kwaliteitsmelding="Alleen verkennend gebruik.",
+                    analysetype_gegevensgeschiktheid="onvoldoende",
+                    analysetype_kwaliteitsmelding="Eigen beperking voor TV of TA.")
+    source = [record("heel",1),record("heel",2),record("gemengd",3),
+              record("gemengd",4,"uitgesloten_ruimtelijk"),
+              record("buiten",5,scope=0),record("buiten",6,scope=0)]
+    matrix = [dict(bezoek_sleutel=v, taxon_bronkoppeling_id=i,
+                   taxon_id=i, groep_code=None, aantal=(2 if i==1 else 0),
+                   waarnemingsstatus=("waargenomen" if i==1 else "echte_nul"),
+                   nulregel="Bestaand bewijs")
+              for v in ("heel","gemengd","buiten") for i in (1,2)]
+    before = deepcopy((source,matrix))
+    result = module.select_libel_analysis_rows(source,matrix)
+    assert result["samenvatting"]["geselecteerde_bezoeken"] == 1
+    assert result["samenvatting"]["gemengde_bezoeken"] == 1
+    assert result["samenvatting"]["uitgesloten_bezoeken"] == 1
+    assert len(result["matrix"]) == 2
+    assert {r["bezoek_sleutel"] for r in result["matrix"]} == {"heel"}
+    assert result["matrix"][1]["aantal"] == 0
+    assert result["matrix"][1]["groep_code"] is None  # geen verlies door ontbrekende groep
+    assert result["matrix"][0]["gegevensgeschiktheid"] == "niet_beoordeeld"
+    assert result["matrix"][0]["analysetype_gegevensgeschiktheid"] == "onvoldoende"
+    assert result["matrix"][0]["analysetype_kwaliteitsmelding"] == "Eigen beperking voor TV of TA."
+    assert result["matrix"][0]["kwaliteitsmelding"]
+    assert (source,matrix) == before
+    changed = deepcopy(source); changed[3]["record_selectiestatus"]="voorlopig_bruikbaar"
+    assert module.select_libel_analysis_rows(changed,matrix)["samenvatting"]["geselecteerde_bezoeken"] == 2
+    changed = deepcopy(source); changed[1]["protocol_kandidaattypen"]="V,TA"
+    assert module.select_libel_analysis_rows(changed,matrix)["samenvatting"]["geselecteerde_bezoeken"] == 0
+    assert module.select_libel_analysis_rows(changed,matrix,"TA")["samenvatting"]["geselecteerde_bezoeken"] == 1
+    for defect in ("scope", "analyse", "aantal", "dubbel", "kwaliteit", "typekwaliteit"):
+        broken = deepcopy(source)
+        if defect=="scope": broken[0]["scope_plot_id"]=None
+        elif defect=="analyse": broken[0]["analyse_waarneming_id"]=None
+        elif defect=="aantal": broken[0]["bronrecordaantal"]=3
+        elif defect=="kwaliteit": broken[0]["kwaliteitsmelding"]=""
+        elif defect=="typekwaliteit": broken[0]["analysetype_kwaliteitsmelding"]=""
+        else: broken.append(deepcopy(broken[0]))
+        try: module.select_libel_analysis_rows(broken,matrix)
+        except ValueError: pass
+        else: raise AssertionError("Ongeldige libellenselectie geaccepteerd: "+defect)
+    try: module.select_libel_analysis_rows(source,matrix+[deepcopy(matrix[0])])
+    except ValueError: pass
+    else: raise AssertionError("Dubbele matrixregel geaccepteerd")
+
+
 def remove_xlsx_dimension(path: Path) -> None:
     """Boots de ontbrekende dimensiemetadata van de AVIMAP-XLSX na."""
     replacement = path.with_suffix(".zonder-dimensie.xlsx")
@@ -50,6 +107,7 @@ def remove_xlsx_dimension(path: Path) -> None:
 
 
 def main() -> int:
+    test_libel_analysis_selection()
     sql = SCHEMA.read_text(encoding="utf-8")
     folded = " ".join(sql.casefold().split())
     compact = "".join(sql.casefold().split())

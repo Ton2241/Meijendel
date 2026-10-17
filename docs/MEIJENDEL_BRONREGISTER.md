@@ -237,6 +237,12 @@ De centrale taxonroute bindt afgeleide bronidentiteiten mede aan de tabelnaam. D
 
 **Wat ontbreekt voor zelfstandige trends?** Oorspronkelijke route- en bezoekstructuur en volledige doelsoortenlijst
 
+**Selectie voor bezoekanalyses, 17 oktober 2026.** Gebruik `ndff-libellen-selectie-v1` via `--selecteer-libellen` in `gis/scripts/import_ndff_protocolkwaliteit.py`. De selectie wordt opnieuw berekend uit de levende database, voor analysetype `TV` of `TA`. Alleen een gereconstrueerd algemeen routebezoek waarvan alle bronrecords `voorlopig_bruikbaar` zijn, binnen `meijendel_natura2000` vallen en het gekozen analysetype toestaan, wordt met zijn volledige bestaande taxonmatrix doorgegeven. Ontbrekende of dubbele bron-/analysekoppelingen, afwijkende bezoekaantallen, plots zonder scopestatus en ontbrekende centrale taxonkoppelingen blokkeren de selectie. Taxa zonder soortgroep blijven bereikbaar.
+
+De controle van de 3.280 bronrecords en 461 bezoeken uit 2007–2021 selecteert 98 bezoeken met 515 bronrecords uit 2010–2021. Hun bestaande matrix bevat 2.842 regels: 353 positieve combinaties en 2.489 afgeleide nullen. De 73 gedeeltelijk toegelaten bezoeken uit 2010–2020 en de 290 geheel uitgesloten bezoeken uit 2007–2020 worden niet als volledige matrix doorgegeven. De afzonderlijk toegelaten positieve records uit gedeeltelijke bezoeken blijven beschikbaar als voorkomensinformatie via de bestaande NDFF-analyseview. De selectie bewaart `gegevensgeschiktheid`, `kwaliteitsmelding`, het nulbewijs en de centrale taxonverwijzing. Zij bevestigt geen gevalideerde trend of afwezigheid. Er zijn geen records, bestaande nullen of analysebesluiten gewijzigd en geen extra tabellen of views gemaakt.
+
+De alleen-lezen T7-controle van 17 oktober 2026 vond in de gecontroleerde gegevensmap en archiefinhoud geen afzonderlijke Vlinderstichting-levering. Alle 3.280 libellenregels uit 2007–2021 in de stagingdataset komen op identificatie, periode, taxonnaam, aantal en protocol overeen met de levende database. De beveiligde NDFF-levering van 14.573 records uit 1950–2025 bevat geen `07.201`-records en geen gevuld `sessionid`. Deze controle sluit een levering elders niet uit; de oorspronkelijke route- en bezoekadministratie is hiermee niet verkregen.
+
 #### 1.5.4. Nachtvlinders
 
 **Omvang en periode.** 596 records, 2019–2025

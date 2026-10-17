@@ -403,6 +403,13 @@ Zandhagedis worden daarom geen nullen aangevuld. Controleer de reconstructies
 met `--audit-vlinders`, `--audit-vliesvleugelen`, `--audit-libellen` en
 `--audit-reptielen`.
 
+Voor interne bezoekanalyses is er nu `--selecteer-libellen` met
+`--libellen-analysetype TV` of `TA`; `--audit-libellen-selectie` toont alleen
+het controleoverzicht. De selectie geeft uitsluitend volledige, toegelaten
+routebezoeken met hun bestaande matrix en kwaliteitsmelding door. De regels en
+actuele controle-uitkomst staan in `docs/bronnen/audits/NDFF_PROTOCOLAUDIT.md`.
+
+
 Amfibieënprotocol `01.201` staat onder `ndff-amfibiewater-v2` in vijf
 openbare `Meijendel.ndff_amfibie_*`-tabellen. De 2.439 onvervaagde bronrecords
 uit 2003-2025 vormen 211 telgebiedbezoeken, 50 waterfamilies en 1.300

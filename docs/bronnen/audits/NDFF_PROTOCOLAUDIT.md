@@ -145,6 +145,44 @@ jaarperioden en kilometerhokken geaggregeerd; bezoekdatum, telpunt, val, lamp en
 binnen/buiten-status ontbreken. De bestaande kwalificatie als positieve
 hokjaarcontext zonder nullen of trendinvoer blijft daarom juist.
 
+### Selectie van volledige toegelaten libellenbezoeken
+
+**Selectie voor bezoekanalyses, 17 oktober 2026.** Gebruik `ndff-libellen-selectie-v1` via `--selecteer-libellen` in `gis/scripts/import_ndff_protocolkwaliteit.py`. De selectie wordt opnieuw berekend uit de levende database, voor analysetype `TV` of `TA`. Alleen een gereconstrueerd algemeen routebezoek waarvan alle bronrecords `voorlopig_bruikbaar` zijn, binnen `meijendel_natura2000` vallen en het gekozen analysetype toestaan, wordt met zijn volledige bestaande taxonmatrix doorgegeven. Ontbrekende of dubbele bron-/analysekoppelingen, afwijkende bezoekaantallen, plots zonder scopestatus en ontbrekende centrale taxonkoppelingen blokkeren de selectie. Taxa zonder soortgroep blijven bereikbaar.
+
+De controle van de 3.280 bronrecords en 461 bezoeken uit 2007–2021 selecteert 98 bezoeken met 515 bronrecords uit 2010–2021. Hun bestaande matrix bevat 2.842 regels: 353 positieve combinaties en 2.489 afgeleide nullen. De 73 gedeeltelijk toegelaten bezoeken uit 2010–2020 en de 290 geheel uitgesloten bezoeken uit 2007–2020 worden niet als volledige matrix doorgegeven. De afzonderlijk toegelaten positieve records uit gedeeltelijke bezoeken blijven beschikbaar als voorkomensinformatie via de bestaande NDFF-analyseview. De selectie bewaart `gegevensgeschiktheid`, `kwaliteitsmelding`, het nulbewijs en de centrale taxonverwijzing. Zij bevestigt geen gevalideerde trend of afwezigheid. Er zijn geen records, bestaande nullen of analysebesluiten gewijzigd en geen extra tabellen of views gemaakt.
+
+De alleen-lezen T7-controle van 17 oktober 2026 vond in de gecontroleerde gegevensmap en archiefinhoud geen afzonderlijke Vlinderstichting-levering. Alle 3.280 libellenregels uit 2007–2021 in de stagingdataset komen op identificatie, periode, taxonnaam, aantal en protocol overeen met de levende database. De beveiligde NDFF-levering van 14.573 records uit 1950–2025 bevat geen `07.201`-records en geen gevuld `sessionid`. Deze controle sluit een levering elders niet uit; de oorspronkelijke route- en bezoekadministratie is hiermee niet verkregen.
+
+Controleer de selectie zonder matrixuitvoer:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-libellen-selectie
+```
+
+Gebruik de volledige geselecteerde matrix als JSON voor een interne berekening:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --selecteer-libellen --libellen-analysetype TV
+```
+
+Voor een aantalsvergelijking kiest de afnemer expliciet `--libellen-analysetype TA`.
+Dit is geen goedkeuring van een trendmodel. De oorspronkelijke reconstructie
+`ndff-libellenroute-v1` en de algemene analyseketen `ndff-analyseketen-v1` blijven
+ongewijzigd; de aanvullende, strengere selectie heeft haar eigen versie.
+De bron- en matrixlezing gebeurt in één alleen-lezen databasesnapshot. De functie
+`read_libel_analysis_selection()` geeft dezelfde selectie terug voor hergebruik
+in Python. De bestaande reconstructie-audit `--audit-libellen` blijft daarnaast
+nodig voor de inhoudelijke consistentie van de aangeleverde matrix.
+`plot_ids` beschrijft de plots van de toegelaten bronrecords, geen bewezen
+plotgebonden nul voor ieder taxon. Een bezoek dat meerdere toegelaten plots
+zou bestrijken wordt niet kunstmatig in onafhankelijke plotbezoeken gesplitst.
+Naast de algemene V-kwaliteitsvelden bevat iedere uitvoerregel ook
+`analysetype_gegevensgeschiktheid` en `analysetype_kwaliteitsmelding` uit het
+afzonderlijke actuele TV- of TA-besluit. Ontbreekt dat besluit of de toelichting,
+dan stopt de selectie. De algemene V-status vervangt dit typegebonden besluit niet.
+De codes TV en TA geven het gekozen protocolmatige gebruik aan; de onveranderde
+kwaliteitsmelding en gegevensgeschiktheid bepalen de grenzen van de interpretatie.
+
 ### Wetenschappelijke meerwaarde van ontbrekende Vlinderstichting-velden
 
 De handleidingen maken zichtbaar welke ontbrekende gegevens vooral extra
