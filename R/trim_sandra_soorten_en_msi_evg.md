@@ -42,6 +42,14 @@ formele onzekerheidsvelden. De MSI per ecologische groep blijft beschrijvend:
 de onzekerheid over de onderliggende soorten wordt in deze release niet naar
 de groepstrend doorgevoerd.
 
+De voorbereide onzekerheidsketen behoudt de 110 formele soorttrends over
+1997-2022 rechtstreeks uit `rtrim::overall(..., which = "imputed")`. Voor de
+ecologische groepen worden de volledige plotgeschiedenissen binnen dezelfde
+strata gebootstrapt. Deze Sandra-route gebruikt geen brugfactor; de robuuste
+groep heeft een vaste soortensamenstelling en de volledige groep blijft een
+afzonderlijke gevoeligheidsvariant. De uitkomsten worden pas geactiveerd met
+dezelfde definitieve publicatiepoort als de lange reeks.
+
 ## Plotselectie
 
 Deze Sandra-variant gebruikt:

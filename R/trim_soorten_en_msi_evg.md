@@ -80,6 +80,23 @@ beschrijvend. Zij krijgt dus geen formele standaardfout, 95%-BI, p-waarde of
 trendklasse. De groeps-MSI's zijn om dezelfde reden beschrijvend; hun
 jaarwaarden en samenstellingsdiagnostiek blijven wel beschikbaar.
 
+### Voorbereide formele langetermijnmethode na opname van 2026
+
+Na opname en validatie van broedseizoen 2026 blijven `1958-1983` en
+`1984-2026` de primaire formele soortperioden. De aanvullende trend
+`1958-2026` gebruikt een volledige gestratificeerde clusterbootstrap en een
+geschatte gemeenschappelijke-plotbrug van `1981-1983` naar `1986-1988`.
+De overgangsjaren 1984 en 1985 blijven geldige waarnemingsjaren in het tweede
+TRIM-model, maar kalibreren de brug niet.
+
+De analyse bewaart daarnaast alternatieve brugvensters `1987-1989` en
+`1988-1990`, een strikte zesjaarsset, de eerdere continuiteitsbrug
+`1984-1986` als historische comparator en een vaste historische-kernvariant.
+Hun totale bereik heet `gevoeligheidsenvelop; geen 95%-betrouwbaarheidsinterval`.
+Alleen een geldige run over 1958-2026 met minimaal 2.000 replicaties mag de
+nieuwe formele publicatiebestanden activeren. Pilot- en validatieruns over
+1958-2025 blijven buiten de canonieke uitvoer.
+
 ## Waarom geen `post84` als TRIM-covariaat?
 
 De `rtrim`-module accepteert covariaten alleen als site-kenmerk en niet als tijdsafhankelijke variabele per site-jaar. Daarom kan een indicator als `post84` niet rechtstreeks in één TRIM-model worden opgenomen.
