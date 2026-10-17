@@ -8,17 +8,24 @@ Er worden geen kunstmatige extra kalenderjaren toegevoegd.
 
 Wel gebeurt dit:
 
-1. De hoofdreeks wordt gesplitst in `1958-1983` en `1984-2025`.
+1. De hoofdreeks wordt gesplitst in `1958-1983` en `1984-actueel eindjaar`.
 2. Voor beide delen wordt apart een indexreeks berekend.
-3. Daarna wordt een brugfactor berekend op basis van de ankerperioden `1981-1983` en `1984-1986`.
+3. Voor de voorbereide formele langetermijnmethode wordt de brugfactor berekend
+   op de gemeenschappelijke plots in `1981-1983` en `1986-1988`.
 4. Die brugfactor wordt gebruikt om de post-`1984`-reeks op het niveau van de pre-`1984`-reeks aan te sluiten.
 5. Vervolgens wordt de doorlopende reeks opnieuw geschaald naar een reeks met het eerste beschikbare jaar op `100`.
 
-De bruglogica staat in [trim\_soorten\_en\_msi\_evg.R][1]. De gebruikte methode heet daar expliciet `1981_1983_naar_1984_1986`.
+De huidige beschrijvende CSV-reeks over 1958–2025 gebruikt nog de historische
+continuïteitsbrug `1981_1983_naar_1984_1986`. Zij wordt niet met terugwerkende
+kracht als formeel resultaat behandeld. De voorbereide bootstrapengine gebruikt
+primair `1981-1983` naar `1986-1988`; 1984 en 1985 blijven in het tweede model,
+maar kalibreren de brug niet.
 
 ## Huidige status
 
-- `Brugjaren` zijn nu al in gebruik in de R-analyses.
+- De historische brug is in gebruik in de huidige beschrijvende R-uitvoer.
+- De nieuwe gemeenschappelijke-plotbrug is volledig voorbereid, maar wordt pas
+  canoniek na opname van 2026 en een geldige run met minimaal 2.000 replicaties.
 - `T0`-reeksen als aparte analysemethode op basis van jaar-op-jaar veranderingen zijn nog niet toegevoegd aan de R-analyses.
 - Waar in de huidige code een reeks naar `100` wordt herschaald, is dat dus nog geen aparte `T0 + delta`-analyse, maar onderdeel van de bestaande brug- en indexlogica.
 
@@ -42,12 +49,19 @@ Belangrijk voor de huidige situatie:
 
 ## Hoe de brugfactor wordt bepaald
 
-In de hoofd-TRIM-analyse gebeurt dit als volgt:
+In de voorbereide formele langetermijnanalyse gebeurt dit als volgt:
 
-- gemiddelde nemen van `index_100` in `1981-1983` voor de pre-reeks
-- gemiddelde nemen van `index_100` in `1984-1986` voor de post-reeks
-- `brugfactor = mean(pre) / mean(post)`
+- per soort dezelfde gestratificeerde plottrekking gebruiken voor beide modellen
+- uit de kandidatenpool van 33 gemeenschappelijke plots per soort de bruikbare
+  deelset nemen en daarop hulpindices schatten voor `1981-1983` en `1986-1988`
+- de empirische niveauverhouding als brugfactor gebruiken
 - post-reeks vermenigvuldigen met die brugfactor
+
+De 20 plots die in alle zes jaren zijn geteld vormen een strikte
+gevoeligheidsvariant. `1987-1989`, `1988-1990`, de historische comparator
+`1984-1986` en de vaste historische kern worden afzonderlijk gerapporteerd.
+Hun minimum en maximum vormen een gevoeligheidsenvelop, geen
+95%-betrouwbaarheidsinterval.
 
 Dat gebeurt in [trim\_soorten\_en\_msi\_evg.R][2].
 
@@ -122,7 +136,7 @@ Zie onder meer [bmp\_meijendel\_index.html][7] en [bmp\_meijendel\_index.html][8
 
 De `Sandra`-analyse loopt vanaf `1997` en ligt daarmee volledig ná de methodebreuk van `1984`.
 
-Daardoor speelt de brug over `1981-1983` versus `1984-1986` daar inhoudelijk geen rol. Die set werkt wel met indexreeksen met basis `100`, maar niet met deze historische overbrugging rond `1984`.
+Daardoor speelt de brug over `1981-1983` versus `1986-1988` daar inhoudelijk geen rol. Die set werkt wel met indexreeksen met basis `100`, maar niet met deze historische overbrugging rond `1984`.
 
 ## Voorgestelde T0-reeksen met jaar-op-jaar verschillen
 

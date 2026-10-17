@@ -73,7 +73,12 @@ De MSI geeft daardoor eerder een “gemiddelde ontwikkeling van soorten binnen d
   afgekeurd plotjaar blijft `NA` en een aanwezige onafhankelijke niet-SOVON-
   regel in hetzelfde plotjaar blijft geldig. Een soort zonder minimaal één
   geaccepteerde positieve waarde wordt niet geselecteerd.
-- De methodologische breuk wordt gemodelleerd via aparte standaardisatie vóór en ná `1983`, plus een brugfactor op basis van `1981-1983` versus `1984-1986`.
+- Deze bestaande, beschrijvende analyse modelleert de methodologische breuk via
+  aparte standaardisatie vóór en na `1983`, plus de historische
+  continuïteitsbrug `1981-1983` versus `1984-1986`. De voorbereide formele
+  bootstrapmethode na opname van 2026 gebruikt in plaats daarvan de
+  gemeenschappelijke-plotbrug `1981-1983` versus `1986-1988`; 1984 en 1985
+  kalibreren die brug niet.
 
 ## Interpretatie
 

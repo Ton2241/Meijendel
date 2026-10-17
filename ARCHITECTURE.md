@@ -172,7 +172,40 @@ netwerkloze, read-only container en draait Shiny met
 `MEIJENDEL_REQUIRE_PREBUILT_CACHE=1`. Een cachemisser is daar een
 releasefout, geen aanleiding om 2,76 GB SQL op productie te parsen. Productie
 bewaart alleen de actieve en direct voorafgaande inhoudsgebonden cache. De NAS
-DS225+ blijft back-updoel en heeft geen reken- of cachebouwrol.
+DS224+ blijft back-updoel en heeft zonder afzonderlijke capaciteitsproef geen
+reken- of cachebouwrol.
+
+### TRIM-bootstrapketen na broedseizoen 2026
+
+De gewone TRIM-keten houdt twee primaire modellen: 1958–1983 en
+1984–actueel eindjaar. De aanvullende gecombineerde trend en de groeps-MSI's
+worden niet interactief berekend. Een lokale bundle-builder bindt de volledige
+soortmatrix, groepsdefinities, configuratie, seed, SQL-hash, Git-commit en
+softwareversies aan één run-ID. De ontwikkelset 1958–2025 bevat 52
+plotclusters: 17 in de historische kern en 35 in het latere netwerk. Deze
+aantallen worden na opname van 2026 opnieuw bepaald. Iedere replicatie trekt de
+hele plotgeschiedenis met teruglegging binnen de twee strata; dezelfde trekking
+voedt soortmodellen, brugfactoren en groepen.
+
+De primaire kalibratie vergelijkt 1981–1983 met 1986–1988. De kandidatenpool
+bestaat uit 33 plots die in beide vensters voorkomen; per soort wordt daarvan
+de daadwerkelijk bruikbare deelset gebruikt. Twintig plots vormen de strikte
+zesjaarsvariant.
+1984–1985 blijven modeljaren, maar geen kalibratiejaren. Batches worden na
+iedere replicatie gecheckpoint en pas na checksumcontrole atomisch gepromoveerd.
+Website, dashboard en Shiny lezen uitsluitend een vooraf berekende run over
+1958–2026 met minimaal 2.000 geplande replicaties en status `publiceerbaar`.
+Een andere Shiny-selectie krijgt geen formeel interval. NAS en VPS staan in de
+voorbeeldconfiguratie uit; activering vereist afzonderlijke capaciteitsproef,
+servicecontrole en toestemming.
+
+De vaste groepspopulatie wordt niet alleen op een volledige bestaande
+jaarindex geselecteerd. Een soort moet tevens door de bestaande kwaliteitspoort
+voor twee bruikbare perioden komen én in de ongetrokken brondata een geldige
+formele primaire brug hebben. De ontwikkelset 1958–2025 telt 93 soorten na de
+tweeperiodenpoort, 68 met een geldige formele primaire brug en 33 die bovendien
+voor alle 68 jaren een geldige vaste index hebben. Iedere batch controleert de
+exacte hashes van runner, bootstrapkern en brugkern voordat hij rekent.
 
 ### Beveiligde NDFF-laag
 

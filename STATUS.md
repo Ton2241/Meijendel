@@ -226,6 +226,45 @@ Gereed:
 - MySQL `tellers` en de opnieuw gegenereerde `meijendel.sql` bevatten uitsluitend `id` en de unieke `tellercode`; alle 2.449 historische koppelingen zijn intact en de volledige dumprestore is gecontroleerd.
 - De actuele Git-versie bevat geen oude SQL-back-up meer. Het gedateerde kavelimportscript leest een eventueel persoonsgegeven tellermappingbestand voortaan alleen via `MEIJENDEL_TELLER_MAPPING_CSV` buiten Git.
 
+## 17 oktober 2026 - TRIM-bootstrap voorbereid voor cijfers 2026
+
+- De primaire formele soortresultaten blijven de afzonderlijke perioden
+  1958–1983 en 1984–actueel eindjaar uit `rtrim::overall()`. Na opname van het
+  complete broedseizoen 2026 worden dit 1958–1983 en 1984–2026.
+- De aanvullende trend 1958–2026 gebruikt daarna een gestratificeerde
+  clusterbootstrap met één gemeenschappelijke plottrekking voor soorten,
+  brugfactoren en groepen. De primaire brug gebruikt 1981–1983 tegenover
+  1986–1988 op de gemeenschappelijke plots. De overgangsjaren 1984 en 1985
+  blijven in het tweede TRIM-model, maar kalibreren de brug niet.
+- De gevalideerde ontwikkelbron 1958–2025 bevat 156 soorten in de statuslaag,
+  135 soorten met minimaal één indexreeks en 93 soorten met twee modelperioden.
+  De clusterdefinitie bevat 52 ooit getelde plots: 17 historische kernplots en
+  35 plots van het latere netwerk. De primaire brugset bevat 33 plots; de
+  strikte zesjaarsvariant 20. Na combinatie van de bestaande kwaliteitsselectie
+  en de nieuwe formele brug hebben 68 soorten een formele primaire brug; 33
+  daarvan hebben in de oorspronkelijke fit een geldige index in alle 68 jaren
+  en vormen de gecorrigeerde vaste groepspopulatie.
+- De keten heeft hervatbare, atomische batches, bron- en configuratiehashes,
+  vaste seeds, structurele brug- en dekkingsvarianten en voorbereide maar nog
+  inactieve uitvoercontracten voor dashboard, website en Shiny. Shiny gebruikt
+  later alleen een vooraf berekend interval bij een exact gelijke selectiehash.
+- De lokale 50-pilot over 1958–2025 voltooide 50 replicaties in 10 batches met
+  nul batchfouten. Totale gemeten rekentijd: 2.460,4 seconden; gemiddeld 49,2
+  seconden per replicatie; hoogste R-geheugenmeting: 357,0 MB. Swap is in deze
+  run niet gemeten. NAS en VPS waren uitgeschakeld. Replicaties 1 en 2 waren
+  bij herhaling exact gelijk.
+- De pilot gebruikte nog de voorlopige vaste set van 35 soorten. Slechts 5 van
+  21 primaire vaste groepsschatters haalden 95% geldige replicaties; 21 van 21
+  volledige gevoeligheidsschatters haalden die grens. De 500-validatie is
+  daarom niet gestart. Na aanscherping naar 33 vaste soorten leverde één
+  rookreplicatie 7 van 21 geldige vaste groepen; structurele soortuitval is dus
+  nog niet opgelost.
+- Geen onzekerheidsbestand is canoniek geactiveerd en niets is gepubliceerd.
+  Dat kan pas na een verse dump uit de levende lokale database, complete en
+  gevalideerde cijfers over 2026, minimaal 2.000 geplande replicaties, minimaal
+  95% geldige replicaties per gepubliceerde schatter en een afzonderlijk
+  publicatiebesluit.
+
 ## TRIM-onzekerheid en presentatie
 
 Gereed op de featurebranch:
@@ -239,9 +278,9 @@ Gereed op de featurebranch:
 - De Sandra-reeks met 110 soorten over 1997–2022 gebruikt hetzelfde formele
   contract. Een ontbrekend model of een jaarhiaat krijgt expliciet geen
   formele onzekerheidsvelden.
-- De gebrugde soorttrend 1958–2025 blijft beschrijvend: zonder bootstrap van
-  beide TRIM-modellen en de brugfactor worden geen formele standaardfout,
-  p-waarde of trendklasse gepubliceerd. Bootstrap is vooralsnog gepauzeerd.
+- De huidige gebrugde soorttrend 1958–2025 blijft beschrijvend: zonder de
+  definitieve 2026-bootstrap worden geen formele standaardfout, p-waarde of
+  trendklasse gepubliceerd.
 - De 18 ecologische en 24 functionele groepsregels zijn beschrijvend. Hun
   jaarwaarden en samenstellingsdiagnostiek blijven beschikbaar; een 95%-band
   rond een groeps-GAM is uitsluitend een band rond de gladde lijn en geen
@@ -446,7 +485,11 @@ Gereed:
 - `deploy/update_en_deploy_meijendel.sh` voert deze check automatisch uit na `R/build_groepen_grafieken_dashboard_csv.R` en vóór deploy.
 - Websitegrafieken blijven daarmee afgeleid van `groepen_grafieken/groep_dichtheid.csv`; losse websiteberekening blijft uitgesloten.
 - `R/check_shiny_dashboard_parity.R` controleert de Shiny-berekeningskern tegen de dashboard-CSV `trim_msi_evg/msi_per_groep_per_jaar.csv`.
-- Dashboard-MSI is canoniek voor publicatie en websiteafleiding. Shiny volgt daarom dezelfde MSI-definitie: pre/post-1984 TRIM-modellen, brugfactor op basis van 1981-1983 versus 1984-1986, groeps-MSI op `index_gebrugged`, en `robuust` op soorten met een bruikbare pre- en postreeks.
+- Dashboard-MSI is canoniek voor de huidige beschrijvende publicatie en
+  websiteafleiding. Die bestaande uitvoer gebruikt nog 1981–1983 versus
+  1984–1986. De voorbereide formele 2026-route gebruikt 1981–1983 versus
+  1986–1988, een vooraf vastgelegde volledige-jaarsoortset voor de robuuste
+  groepsvariant en uitsluitend vooraf berekende bootstrapintervallen.
 - `shiny_meijendel/helpers.R` is gelijkgetrokken met de dashboardlogica voor de Shiny-groep-MSI.
 - `deploy/update_en_deploy_meijendel.sh` en `deploy/deploy_meijendel_vps.sh` voeren `R/check_shiny_dashboard_parity.R` nu als harde deploygate uit over 1958-2025 voordat Shiny/de dashboardomgeving naar de VPS gaat.
 - De paritycontrole tussen Shiny en dashboard is actueel groen.

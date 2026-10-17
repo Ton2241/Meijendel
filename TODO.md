@@ -801,13 +801,33 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   zichtbare legacykwaliteitsissues; corrigeer ze alleen gecontroleerd en zonder
   historische data stilzwijgend te herschrijven.
 
-### TRIM-bootstrap — gepauzeerd
+### TRIM-bootstrap — voorbereid; productie wacht op complete cijfers 2026
 
-- Bouw nu geen bootstrap. Heropen dit alleen wanneer één formele trend over
-  1958–2025 of formele groeps-MSI-onzekerheid daadwerkelijk nodig is. Dan moet
-  de afzonderlijke vervolgopdracht de volledige gestratificeerde
-  clusterbootstrap omvatten: beide TRIM-perioden, brugfactoren, soorten en
-  groepen. De huidige periodetrends blijven ook dan de primaire resultaten.
+- De lokale 50-replicatiepilot is afgerond en vastgelegd. Start de
+  500-validatie nog niet: 16 van 21 primaire vaste groepsschatters bleven onder
+  95% geldig. Beslis vóór een nieuwe pilot expliciet hoe groepen met een vaste
+  maar in bootstrapreplicaties onschatbare soort worden behandeld. Vervang ze
+  niet stilzwijgend door de wisselend samengestelde volledige variant.
+- Maak na ontvangst en inhoudelijke validatie van broedseizoen 2026 een verse
+  dump en analysecache rechtstreeks uit de levende lokale MySQL-database. De
+  dump van 8 oktober 2026 bevat wel de gevalideerde vogelcache 1958–2025, maar
+  mist de later vereiste tabel `maatregel_plot_jaar_registratie` en kan daarom
+  de volledige dashboard-/Shiny-regressie niet meer dragen.
+- Herijk dan aantallen, de 52-clusterlineage, de primaire 33-plotbrugset, de
+  strikte 20-plotset, de huidige 68 formele soortkandidaten, de huidige 33 vaste
+  groepssoorten en alle groepsdefinities. Deze aantallen gelden voor 1958–2025
+  en worden niet automatisch op 1958–2026 overgenomen.
+- Draai na dat methodische besluit en de herijking eerst opnieuw 50
+  pilotreplicaties. Start 500 alleen wanneer iedere beoogde formele schatter in
+  die pilot minimaal 95% geldig is.
+- Draai daarna lokaal minimaal 2.000 replicaties over 1958–2026; verhoog alleen
+  tot maximaal 5.000 wanneer de intervalstabiliteitsregel dat vraagt. Gebruik
+  NAS of VPS pas na een afzonderlijke read-only capaciteitsproef en expliciet
+  akkoord. Productiegezondheid en normale NAS-taken gaan altijd voor.
+- Activeer de canonieke onzekerheids-CSV's pas wanneer minimaal 95% van de
+  replicaties per gepubliceerde schatter geldig is, de bron- en codehashes
+  overeenkomen en alle pariteits- en presentatietests groen zijn. Vraag daarna
+  afzonderlijk akkoord voor VPS-publicatie.
 
 - Archiefmodule afronden: aparte uploadpagina, `.doc`-support, PDF-/documentindexering, full-text search, categoriepagina's, uploadrechten vanaf bestuurslidniveau en duidelijke foutafhandeling.
 - Verifiëren dat archiefdocumenten doorzoekbaar zijn na upload en na herindexering.

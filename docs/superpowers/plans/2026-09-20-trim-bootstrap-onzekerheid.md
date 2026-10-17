@@ -1033,19 +1033,25 @@ git commit -m "Gebruik vooraf berekende onzekerheid in Shiny"
 - Consumes: volledig geteste lokale keten en de ontwikkelbronset 1958–2025.
 - Produces: feitelijke prestatie-, uitval- en gevoeligheidsgegevens, een gevalideerde maar nog niet gepubliceerde bootstrapketen en actuele projectdocumentatie.
 
-- [ ] **Step 1: Draai de lokale pilot van 50 replicaties**
+- [x] **Step 1: Draai de lokale pilot van 50 replicaties**
 
 Gebruik batches van 5, één worker en een vaste seed. Registreer totale tijd,
 seconden per replicatie, piekgeheugen, swap, foutpercentage per soort/groep en
 hervatbaarheid. Vergelijk de eerste twee replicaties met een tweede lokale run.
 
-- [ ] **Step 2: Beoordeel op meetwaarden of externe workers later zinvol kunnen zijn**
+- [x] **Step 2: Beoordeel op meetwaarden of externe workers later zinvol kunnen zijn**
 
 Bereken workergeheugenlimiet als 125% van de pilotpiek. Maak alleen een
 read-only geschiktheidsrapport wanneer Ton vooraf het NAS-pad of de VPS-probe
 afzonderlijk goedkeurt. Activeer in deze taak geen NAS- of VPS-worker.
 
 - [ ] **Step 3: Draai validatie met 500 replicaties**
+
+Niet gestart op 17 oktober 2026. De 50-pilot leverde voor slechts 5 van 21
+primaire vaste groepsschatters minimaal 95% geldige replicaties; een eerste
+rookreplicatie na correctie van de formele soortpoort leverde 7 van 21 geldige
+vaste groepen. Volgens de stopregel is eerst een expliciet methodisch besluit
+en daarna een nieuwe 50-pilot nodig.
 
 Controleer:
 
@@ -1067,7 +1073,7 @@ Vergelijk primaire brug, beide alternatieve postvensters, de strikte
 Leg per soort en groep de gevoeligheidsstatus vast. Markeer de keten daarna als
 `gereed_voor_productierun_na_2026`; start geen 2.000-run op 1958–2025.
 
-- [ ] **Step 5: Werk methode- en bronregistratie bij**
+- [x] **Step 5: Werk methode- en bronregistratie bij**
 
 Werk `STATUS.md`, `TODO.md`, `DECISIONS.md`, `ARCHITECTURE.md` en het leidende
 bronregister bij met de getelde dataset, aantallen, periode, brugkeuze,
@@ -1075,7 +1081,7 @@ structurele beperking en 2026-gate. Actualiseer daarna ook
 `docs/MEIJENDEL_BRONREGISTER.docx`, render hem met het bestaande projectscript
 en controleer alle pagina's visueel.
 
-- [ ] **Step 6: Leg feitelijke pilot- en validatieresultaten vast**
+- [x] **Step 6: Leg feitelijke pilot- en validatieresultaten vast**
 
 Leg vast:
 

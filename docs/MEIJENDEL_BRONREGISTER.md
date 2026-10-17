@@ -97,6 +97,36 @@ Iedere ontdekking, levering, import, verplaatsing, uitsluiting of nieuwe beoorde
 
 **Status.** Analyseklaar en primaire bron.
 
+**TRIM-onzekerheidsmethode voorbereid, 17 oktober 2026.** Voor de gevalideerde
+vogelanalyse over 1958–2025 bevat de statuslaag 156 soorten, hebben 135 soorten
+minimaal één TRIM-indexreeks en hebben 93 soorten een model in zowel 1958–1983
+als 1984–2025. De bootstraplineage bevat 52 ooit getelde plots: 17 historische
+kernplots en 35 plots van het latere netwerk. Voor de primaire brug van
+1981–1983 naar 1986–1988 zijn 33 gemeenschappelijke kandidaatplots beschikbaar;
+per soort wordt de daadwerkelijk bruikbare deelset gebruikt. Twintig plots zijn
+in alle zes kalibratiejaren geteld. De jaren 1984 en 1985 blijven in het
+tweede TRIM-model, maar gelden wegens de overgang in methode en tellerbezetting
+niet als primaire kalibratiejaren. Van de 93 soorten met twee bruikbare
+modelperioden hebben er 68 in de ongetrokken brondata een geldige nieuwe
+formele primaire brug. Daarvan hebben 33 soorten een geldige vaste index in
+ieder van de 68 jaren 1958–2025; zij vormen de gecorrigeerde vaste
+groepspopulatie. Deze aantallen beschrijven de ontwikkelbron en worden na
+ontvangst van 2026 opnieuw bepaald.
+
+De statistische bruikbaarheid verandert als volgt. De twee afzonderlijke
+TRIM-perioden blijven primair. Na complete en gevalideerde cijfers over 2026
+kan de aanvullende trend 1958–2026 formele onzekerheid krijgen via een
+gestratificeerde clusterbootstrap van soorten, brugfactoren en groepen. De
+volledige groepsvariant blijft een samenstellingsgevoeligheid. De alternatieve
+brugvensters en historische-kernvariant leveren een gevoeligheidsenvelop en
+geen 95%-betrouwbaarheidsinterval. Er is nog geen formeel bootstrapresultaat.
+De lokale 50-pilot over 1958–2025 voltooide alle replicaties zonder batchfout,
+maar slechts 5 van 21 primaire vaste groepsschatters haalden 95% geldigheid;
+21 van 21 volledige gevoeligheidsschatters deden dat wel. Na correctie van de
+soortpoort leverde één rookreplicatie 7 van 21 geldige vaste groepen. De
+500-validatie is daarom niet gestart, de 2026-cijfers ontbreken en niets is
+gepubliceerd.
+
 **Aanvullende SOVON-jaarleveringen, 2 oktober 2026.** Op de T7 staan voor ieder jaar uit 1984–2025 twee aanvullende officiële SOVON/AVIMAP-werkboeken: 42 territoriummatrices en 42 werkboeken met totalen per bezoek, samen 84 Excelbestanden. Iedere jaarmap bevat daarnaast een puntlaag met individuele bezoekwaarnemingen en een puntlaag met territoria. De waarnemingslagen bevatten samen 623.264 punten uit 2007 en 2009–2025; de territoriumpuntlagen bevatten 126.682 punten uit dezelfde jaren. Voor 1984–2006 en 2008 zijn beide puntlagen leeg. Alle werkboeken zijn leesbaar en bevatten uitsluitend het jaarlabel van de betreffende jaarmap; in de hoofdmap zijn geen losse Excelbestanden achtergebleven. Tracks en de actuele SOVON-gebiedspolygonen worden niet opgenomen. Het lopende jaar 2026 valt buiten deze afgeronde reeks.
 
 De 42 territoriummatrices bevatten 222.852 plot-soortregels: 52.450 positieve resultaten, 86.983 expliciete nulcellen en 83.419 lege cellen. Een lege cel geldt niet als nul. De puntlagen bevatten 22.305 bronwaarnemingen die nog niet in `dagwaarnemingen_bmp` staan; omgekeerd ontbreekt geen bestaande SOVON-bron-ID in de nieuwe levering. Bij 2.629 gedeelde bron-ID's levert SOVON broedcode 0 terwijl de database `NULL` bevat. De downloads bevatten geen zelfstandig veld dat een telling formeel als afgekeurd markeert. Vergelijking en eventuele verrijking volgen daarom per jaar. Daarbij worden BMP-type, standaard alle soorten of een expliciete uitzondering, volledig geteld, goedgekeurd of formeel afgekeurd en de toepasselijke officiële soortenlijst afzonderlijk vastgelegd. Broedcode 0 blijft een positieve vogelwaarneming. Tellercodes worden per jaar gecontroleerd.

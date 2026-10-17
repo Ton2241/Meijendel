@@ -62,6 +62,11 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   beschikbaar als [`Wordbestand`](docs/MEIJENDEL_BRONREGISTER.docx). Dit is een
   levend register dat in dezelfde taak wordt bijgewerkt zodra de status of
   inhoud van een bron verandert.
+- [`docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md`](docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md)
+  Uitvoercontract en vaste volgorde voor de formele gecombineerde trend en
+  groeps-MSI-onzekerheid nadat broedseizoen 2026 compleet en gevalideerd is.
+  Dit draaiboek verleent op zichzelf geen toestemming voor een dump, lange run
+  of publicatie.
 - [`docs/bronnen/importbesluiten/ANALYSEGESCHIKTHEID.md`](docs/bronnen/importbesluiten/ANALYSEGESCHIKTHEID.md)
   Beschrijft de bronoverstijgende analysepoort met de analysetypen `V`, `I`,
   `TV`, `TA` en `TK`. De laag verwijst naar bronrecords en kopieert geen

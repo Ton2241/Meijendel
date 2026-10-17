@@ -1,0 +1,15 @@
+"coverage_variant","period","model","count","total","fraction"
+"historische_kern","post","mislukt",1976,7800,0.253333333333333
+"historische_kern","post","model2_basis",3925,7800,0.503205128205128
+"historische_kern","post","model3_overdisp",1899,7800,0.243461538461538
+"historische_kern","pre","mislukt",3136,7800,0.402051282051282
+"historische_kern","pre","model2_basis",3353,7800,0.429871794871795
+"historische_kern","pre","model3_overdisp",1311,7800,0.168076923076923
+"volledig_netwerk","post","mislukt",1514,7800,0.194102564102564
+"volledig_netwerk","post","model2_basis",3872,7800,0.496410256410256
+"volledig_netwerk","post","model3_basis",9,7800,0.00115384615384615
+"volledig_netwerk","post","model3_overdisp",2405,7800,0.308333333333333
+"volledig_netwerk","pre","mislukt",2707,7800,0.347051282051282
+"volledig_netwerk","pre","model2_basis",3748,7800,0.48051282051282
+"volledig_netwerk","pre","model3_basis",4,7800,0.000512820512820513
+"volledig_netwerk","pre","model3_overdisp",1341,7800,0.171923076923077

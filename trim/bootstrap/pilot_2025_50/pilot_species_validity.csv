@@ -1,0 +1,942 @@
+"soort_id","coverage_variant","bridge_variant","planned_replicates","observed_replicates","valid_replicates","valid_fraction","publication_gate","primary_invalid_reason","invalid_reason_counts"
+1,"historische_kern","primary_1986_1988",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=2;Found zero or less counts for year 2=1;Found zero or less counts for year 3=1"
+1,"volledig_netwerk","alternative_1987_1989",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=2;Found zero or less counts for year 2=1;Found zero or less counts for year 3=1"
+1,"volledig_netwerk","alternative_1988_1990",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=1;Found zero or less counts for year 2=1"
+1,"volledig_netwerk","historical_continuity_1984_1986",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 5","Found zero or less counts for year 5=2"
+1,"volledig_netwerk","primary_1986_1988",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=2;Found zero or less counts for year 2=1;Found zero or less counts for year 3=1"
+1,"volledig_netwerk","strict_all_six",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=4;Found zero or less counts for year 1, 2, 3, 5=1;Found zero or less counts for year 2=1;Found zero or less counts for year 4, 5=1"
+2,"historische_kern","primary_1986_1988",50,50,28,0.56,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=22"
+2,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+2,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+2,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+2,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+2,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+4,"historische_kern","primary_1986_1988",50,50,21,0.42,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=12;Found zero or less counts for year 5=9;Found zero or less counts for year 4, 5=3;Found zero or less counts for year 5, 6=3;Found zero or less counts for year 2, 3, 4, 5, 6=1;Found zero or less counts for year 2, 5, 6=1"
+4,"volledig_netwerk","alternative_1987_1989",50,50,32,0.64,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=12;Found zero or less counts for year 4, 5=3;Found zero or less counts for year 2, 3, 4, 5, 6=1;Found zero or less counts for year 2, 4, 5, 6=1;niet_positief_of_onvolledig_ankervenster=1"
+4,"volledig_netwerk","alternative_1988_1990",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=2;niet_positief_of_onvolledig_ankervenster=2;Found zero or less counts for year 1, 2, 4, 5=1;Found zero or less counts for year 1, 4=1;Found zero or less counts for year 2, 3, 4, 5=1"
+4,"volledig_netwerk","historical_continuity_1984_1986",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=3;Found zero or less counts for year 2, 3, 6=1;Found zero or less counts for year 2, 5=1;Found zero or less counts for year 5=1;niet_positief_of_onvolledig_ankervenster=1"
+4,"volledig_netwerk","primary_1986_1988",50,50,32,0.64,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=9;Found zero or less counts for year 4, 5=3;Found zero or less counts for year 5, 6=3;Found zero or less counts for year 2, 3, 4, 5, 6=1;Found zero or less counts for year 2, 5, 6=1;niet_positief_of_onvolledig_ankervenster=1"
+4,"volledig_netwerk","strict_all_six",50,50,32,0.64,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=7;Found zero or less counts for year 5=5;Found zero or less counts for year 1, 2, 5, 6=1;Found zero or less counts for year 1, 4, 5, 6=1;Found zero or less counts for year 3, 4, 5, 6=1;Found zero or less counts for year 4, 5, 6=1;Found zero or less counts for year 5, 6=1;niet_positief_of_onvolledig_ankervenster=1"
+5,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=37;Years don't have a constant interval=13"
+5,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=37;Years don't have a constant interval=13"
+5,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=23;Found zero or less counts for year 1, 2, 3, 5, 6=14;Found zero or less counts for year 1, 2, 3, 4, 5=10;Years don't have a constant interval=3"
+5,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+5,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=37;Years don't have a constant interval=13"
+5,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=37;Years don't have a constant interval=13"
+7,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5","Found zero or less counts for year 1, 2, 4, 5=33;Found zero or less counts for year 1, 2=14;Years don't have a constant interval=3"
+7,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4","Found zero or less counts for year 1, 2, 4=33;Found zero or less counts for year 1, 2=14;Years don't have a constant interval=3"
+7,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 6","Found zero or less counts for year 1, 2, 6=33;Found zero or less counts for year 1, 2=14;Years don't have a constant interval=3"
+7,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 6","Found zero or less counts for year 1, 2, 6=33;Found zero or less counts for year 1, 2, 4=14;Years don't have a constant interval=3"
+7,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5","Found zero or less counts for year 1, 2, 4, 5=33;Found zero or less counts for year 1, 2=14;Years don't have a constant interval=3"
+7,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5","Found zero or less counts for year 1, 2, 4, 5=33;Found zero or less counts for year 1, 2=14;Years don't have a constant interval=3"
+8,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+8,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+8,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+8,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+8,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+8,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+11,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+11,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=37;Years don't have a constant interval=13"
+11,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=37;Years don't have a constant interval=13"
+11,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=37;Years don't have a constant interval=13"
+11,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=37;Years don't have a constant interval=13"
+11,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=37;Years don't have a constant interval=13"
+17,"historische_kern","primary_1986_1988",50,50,26,0.52,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=22;Found zero or less counts for year 1=2"
+17,"volledig_netwerk","alternative_1987_1989",50,50,44,0.88,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=4;Found zero or less counts for year 1=2"
+17,"volledig_netwerk","alternative_1988_1990",50,50,41,0.82,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=5;niet_positief_of_onvolledig_ankervenster=3;Found zero or less counts for year 1, 2, 3=1"
+17,"volledig_netwerk","historical_continuity_1984_1986",50,50,40,0.8,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=5;niet_positief_of_onvolledig_ankervenster=2;Found zero or less counts for year 1=1;Found zero or less counts for year 1, 4=1;Years don't have a constant interval=1"
+17,"volledig_netwerk","primary_1986_1988",50,50,44,0.88,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=4;Found zero or less counts for year 1=2"
+17,"volledig_netwerk","strict_all_six",50,50,41,0.82,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=5;niet_positief_of_onvolledig_ankervenster=3;Found zero or less counts for year 1, 2, 3=1"
+21,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+21,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+21,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+21,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+21,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+21,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+22,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+22,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+22,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+22,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+22,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+22,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+25,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+25,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+25,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+25,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+25,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+25,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+27,"historische_kern","primary_1986_1988",50,50,28,0.56,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=20;Found zero or less counts for year 5=2"
+27,"volledig_netwerk","alternative_1987_1989",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=1;Found zero or less counts for year 4, 6=1"
+27,"volledig_netwerk","alternative_1988_1990",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 1, 5, 6","Found zero or less counts for year 1, 5, 6=1"
+27,"volledig_netwerk","historical_continuity_1984_1986",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=2"
+27,"volledig_netwerk","primary_1986_1988",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 5","Found zero or less counts for year 5=2"
+27,"volledig_netwerk","strict_all_six",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 1, 5","Found zero or less counts for year 1, 5=1;Found zero or less counts for year 5=1"
+28,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+28,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+28,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+28,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+28,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=29;onvolledige_ankercellen=21"
+28,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+29,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+29,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+29,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+29,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+29,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+29,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+30,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+30,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+30,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+30,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+30,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+30,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+34,"historische_kern","primary_1986_1988",50,50,42,0.84,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8"
+34,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+34,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+34,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+34,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+34,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+35,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=49;Found zero or less counts for year 1, 2, 4, 5, 6=1"
+35,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=49;Found zero or less counts for year 1, 4, 5, 6=1"
+35,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=32;Found zero or less counts for year 4, 5, 6=15;Found zero or less counts for year 1, 4, 5=2;Found zero or less counts for year 1, 4, 5, 6=1"
+35,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=48;Found zero or less counts for year 1, 5, 6=1;Found zero or less counts for year 4, 5, 6=1"
+35,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=49;Found zero or less counts for year 1, 4, 5, 6=1"
+35,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=46;Found zero or less counts for year 1, 2, 4, 5, 6=4"
+36,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+36,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+36,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+36,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+36,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+36,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+37,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+37,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+37,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+37,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+37,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+37,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+38,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+38,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+38,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+38,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+38,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+38,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+39,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=37;Years don't have a constant interval=13"
+39,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=37;Years don't have a constant interval=13"
+39,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=24;Found zero or less counts for year 1, 2, 3, 5, 6=13;Found zero or less counts for year 1, 2, 3, 4, 5=10;Years don't have a constant interval=3"
+39,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+39,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=37;Years don't have a constant interval=13"
+39,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=37;Years don't have a constant interval=13"
+40,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+40,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+40,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+40,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+40,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+40,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+41,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=33;Years don't have a constant interval=17"
+41,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=24;Found zero or less counts for year 1, 2, 3, 4, 5=9;Found zero or less counts for year 1, 2, 3, 5, 6=9;Years don't have a constant interval=8"
+41,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=33;Years don't have a constant interval=17"
+41,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+41,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=33;Years don't have a constant interval=17"
+41,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=33;Years don't have a constant interval=17"
+42,"historische_kern","primary_1986_1988",50,50,42,0.84,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8"
+42,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+42,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+42,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+42,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+42,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+44,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+53,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+53,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+53,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+53,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+53,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+53,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+57,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+57,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+57,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+57,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+57,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+57,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+60,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+60,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+60,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+60,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+60,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+60,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+61,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+61,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+61,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+61,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=34;Years don't have a constant interval=16"
+61,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=34;Years don't have a constant interval=16"
+61,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=34;Years don't have a constant interval=16"
+62,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=26;Years don't have a constant interval=24"
+62,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+62,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+62,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4","Found zero or less counts for year 1, 2, 3, 4=24;Found zero or less counts for year 1, 2, 3, 4, 6=16;Found zero or less counts for year 1, 2, 3, 6=6;Found zero or less counts for year 1, 2, 3, 4, 5=2;Years don't have a constant interval=2"
+62,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=26;Years don't have a constant interval=24"
+62,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=26;Years don't have a constant interval=24"
+64,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=31;Found zero or less counts for year 1, 2, 3, 4, 6=15;Years don't have a constant interval=4"
+64,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=48;Found zero or less counts for year 1, 2, 3=2"
+64,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=48;Found zero or less counts for year 1, 2, 3=2"
+64,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=21;Found zero or less counts for year 1, 2, 6=11;Found zero or less counts for year 1, 2, 5=10;Found zero or less counts for year 1, 2, 5, 6=6;Found zero or less counts for year 1, 2, 3, 6=2"
+64,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=31;Found zero or less counts for year 1, 2, 4=17;Found zero or less counts for year 1, 2, 3, 4=2"
+64,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=31;Found zero or less counts for year 1, 2, 4=15;Found zero or less counts for year 1, 2, 3, 4=2;Found zero or less counts for year 1, 2, 4, 6=2"
+66,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 6","Found zero or less counts for year 1, 2, 6=15;Found zero or less counts for year 1, 2=13;Found zero or less counts for year 1, 2, 4=8;Found zero or less counts for year 1, 2, 4, 5, 6=7;Found zero or less counts for year 1, 2, 3, 4=5;Years don't have a constant interval=2"
+66,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=33;Found zero or less counts for year 1, 2, 3=6;Found zero or less counts for year 1, 2, 5=5;Found zero or less counts for year 1, 2, 4, 5, 6=2;Found zero or less counts for year 1, 2, 6=2;Found zero or less counts for year 1, 2, 3, 6=1;Found zero or less counts for year 1, 2, 4=1"
+66,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=34;Found zero or less counts for year 1, 2, 3=6;Found zero or less counts for year 1, 2, 4=5;Found zero or less counts for year 1, 2, 4, 5, 6=2;Found zero or less counts for year 1, 2, 5=2;Found zero or less counts for year 1, 2, 3, 5=1"
+66,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=28;Found zero or less counts for year 1, 2, 5, 6=15;Years don't have a constant interval=7"
+66,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=23;Found zero or less counts for year 1, 2, 4=12;Found zero or less counts for year 1, 2, 3, 4=7;Found zero or less counts for year 1, 2, 6=5;Found zero or less counts for year 1, 2, 4, 5, 6=2;Found zero or less counts for year 1, 2, 4, 5=1"
+66,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=23;Found zero or less counts for year 1, 2, 4=12;Found zero or less counts for year 1, 2, 3, 4=7;Found zero or less counts for year 1, 2, 6=5;Found zero or less counts for year 1, 2, 4, 5, 6=2;Found zero or less counts for year 1, 2, 4, 5=1"
+67,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+67,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+67,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+67,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+67,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+67,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+69,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+69,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=23;Found zero or less counts for year 2=21;onvolledige_ankercellen=6"
+69,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=21;Found zero or less counts for year 2=18;onvolledige_ankercellen=11"
+69,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=21;onvolledige_ankercellen=15;Found zero or less counts for year 2=14"
+69,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=23;Found zero or less counts for year 2=21;onvolledige_ankercellen=6"
+69,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=21;onvolledige_ankercellen=15;Found zero or less counts for year 2=14"
+70,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+70,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+70,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+70,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+70,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+70,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+71,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=50"
+71,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=50"
+71,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=50"
+71,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=50"
+71,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=50"
+71,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=50"
+72,"historische_kern","primary_1986_1988",50,50,33,0.66,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=10;Found zero or less counts for year 4=4;Found zero or less counts for year 5=3"
+72,"volledig_netwerk","alternative_1987_1989",50,50,44,0.88,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=3;niet_positief_of_onvolledig_ankervenster=3"
+72,"volledig_netwerk","alternative_1988_1990",50,50,46,0.92,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=3;Found zero or less counts for year 6=1"
+72,"volledig_netwerk","historical_continuity_1984_1986",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=4;niet_positief_of_onvolledig_ankervenster=3"
+72,"volledig_netwerk","primary_1986_1988",50,50,40,0.8,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=4;Found zero or less counts for year 5=3;niet_positief_of_onvolledig_ankervenster=3"
+72,"volledig_netwerk","strict_all_six",50,50,40,0.8,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=4;Found zero or less counts for year 5=3;niet_positief_of_onvolledig_ankervenster=3"
+73,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+73,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+73,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+73,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+73,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+73,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+76,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+76,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+76,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+76,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+76,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+76,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+77,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+77,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+77,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+77,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+77,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+77,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+78,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+80,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+80,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+80,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+80,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+80,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+80,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+82,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+82,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+82,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+82,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=33;onvolledige_ankercellen=17"
+82,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=36;onvolledige_ankercellen=14"
+82,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+84,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+84,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+84,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+84,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+84,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+84,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+85,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=34;onvolledige_ankercellen=16"
+85,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+85,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+85,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+85,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+85,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=43;onvolledige_ankercellen=7"
+88,"historische_kern","primary_1986_1988",50,50,37,0.74,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=8;Found zero or less counts for year 4, 5=4;Found zero or less counts for year 4, 5, 6=1"
+88,"volledig_netwerk","alternative_1987_1989",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=2"
+88,"volledig_netwerk","alternative_1988_1990",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=2"
+88,"volledig_netwerk","historical_continuity_1984_1986",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=1"
+88,"volledig_netwerk","primary_1986_1988",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=2;Found zero or less counts for year 4=1"
+88,"volledig_netwerk","strict_all_six",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=4;Found zero or less counts for year 5=2;Found zero or less counts for year 4, 5, 6=1"
+93,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+93,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+93,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+93,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+93,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+93,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+94,"historische_kern","primary_1986_1988",50,50,13,0.26,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=17;Found zero or less counts for year 6=7;Found zero or less counts for year 2, 4, 6=5;Found zero or less counts for year 5, 6=3;niet_positief_of_onvolledig_ankervenster=3;Found zero or less counts for year 1, 2, 4, 6=2"
+94,"volledig_netwerk","alternative_1987_1989",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 5","Found zero or less counts for year 5=2"
+94,"volledig_netwerk","alternative_1988_1990",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=2"
+94,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+94,"volledig_netwerk","primary_1986_1988",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=2"
+94,"volledig_netwerk","strict_all_six",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=2;Found zero or less counts for year 4=1"
+97,"historische_kern","primary_1986_1988",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4, 6","Found zero or less counts for year 4, 6=1;Found zero or less counts for year 6=1"
+97,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+97,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+97,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+97,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+97,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+98,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+98,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+98,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+98,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+98,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+98,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+102,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+102,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+102,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+102,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+102,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+102,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+105,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=28;onvolledige_ankercellen=12;Years don't have a constant interval=10"
+105,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=28;onvolledige_ankercellen=12;Years don't have a constant interval=10"
+105,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=38;onvolledige_ankercellen=12"
+105,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=36;Years don't have a constant interval=13;onvolledige_ankercellen=1"
+105,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=34;Years don't have a constant interval=13;onvolledige_ankercellen=3"
+105,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=38;onvolledige_ankercellen=12"
+106,"historische_kern","primary_1986_1988",50,50,49,0.98,"voldoet_aan_95_procent","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=1"
+106,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+106,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+106,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+106,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+106,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+107,"historische_kern","primary_1986_1988",50,50,49,0.98,"voldoet_aan_95_procent","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=1"
+107,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+107,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+107,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+107,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+107,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+108,"historische_kern","primary_1986_1988",50,50,47,0.94,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=3"
+108,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+108,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+108,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+108,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+108,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+116,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+116,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+116,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+116,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+116,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+116,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+122,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=37;Found zero or less counts for year 1, 2, 3, 4, 5=8;Found zero or less counts for year 1, 2, 3, 5=5"
+122,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=45;Found zero or less counts for year 1, 2, 3=5"
+122,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=45;Found zero or less counts for year 1, 2, 3=5"
+122,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=45;Found zero or less counts for year 1, 2, 3=5"
+122,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=45;Found zero or less counts for year 1, 2, 3=5"
+122,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=43;Found zero or less counts for year 1, 2, 3=5;Found zero or less counts for year 1, 2, 5=2"
+123,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+123,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+123,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+123,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+123,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+123,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+124,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 5, 6","Found zero or less counts for year 1, 5, 6=26;Years don't have a constant interval=24"
+124,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=26;Found zero or less counts for year 4, 5, 6=7;niet_positief_of_onvolledig_ankervenster=5;Found zero or less counts for year 1, 2, 3, 5, 6=3;Overdispersion apparently 0; consider setting overdisp=FALSE=3;Found zero or less counts for year 1, 5, 6=2;Found zero or less counts for year 2, 3, 5, 6=2;Years don't have a constant interval=2"
+124,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=28;Found zero or less counts for year 4, 5, 6=6;Years don't have a constant interval=4;niet_positief_of_onvolledig_ankervenster=3;Overdispersion apparently 0; consider setting overdisp=FALSE=3;Found zero or less counts for year 1, 2, 4, 5=2;Found zero or less counts for year 1, 4, 5=2;Found zero or less counts for year 2, 3, 4, 5=1;Found zero or less counts for year 2, 4, 5=1"
+124,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=18;Found zero or less counts for year 1, 5=8;Found zero or less counts for year 1, 2, 4, 5=7;Found zero or less counts for year 2, 4, 5=7;Found zero or less counts for year 1, 2, 3, 5=5;Found zero or less counts for year 2, 3, 5=4;Found zero or less counts for year 4=1"
+124,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=25;Found zero or less counts for year 5, 6=15;Found zero or less counts for year 1, 2, 3, 6=3;Found zero or less counts for year 1, 2, 3, 5, 6=2;Found zero or less counts for year 1, 6=2;Found zero or less counts for year 2, 3, 6=2;Found zero or less counts for year 4, 6=1"
+124,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=13;Found zero or less counts for year 1, 2, 3, 6=7;Found zero or less counts for year 1, 6=6;Found zero or less counts for year 2, 3, 6=6;Found zero or less counts for year 1, 2, 3, 5, 6=5;Found zero or less counts for year 2, 3, 5, 6=5;Found zero or less counts for year 5, 6=5;Found zero or less counts for year 1, 5, 6=2;Found zero or less counts for year 1, 2, 3, 4, 6=1"
+125,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+125,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+125,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+125,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+125,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+125,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+126,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+126,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+126,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+126,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+126,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+126,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+127,"historische_kern","primary_1986_1988",50,50,49,0.98,"voldoet_aan_95_procent","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=1"
+127,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+127,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+127,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+127,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+127,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+128,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+128,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+128,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+128,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+128,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+128,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+130,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+130,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+130,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+130,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+130,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+130,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+131,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=26;Found zero or less counts for year 1, 2, 3=23;Found zero or less counts for year 1, 2, 3, 4, 6=1"
+131,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=50"
+131,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=50"
+131,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=50"
+131,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=50"
+131,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=50"
+132,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5, 6","Found zero or less counts for year 1, 2, 5, 6=20;Found zero or less counts for year 1, 2, 3, 5, 6=18;Found zero or less counts for year 1, 2=6;Years don't have a constant interval=6"
+132,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5","Found zero or less counts for year 1, 2, 4, 5=35;Found zero or less counts for year 1, 2=11;Years don't have a constant interval=4"
+132,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 6","Found zero or less counts for year 1, 2, 4, 6=35;Found zero or less counts for year 1, 2=11;Years don't have a constant interval=4"
+132,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5","Found zero or less counts for year 1, 2, 5=35;Found zero or less counts for year 1, 2, 5, 6=11;Found zero or less counts for year 1, 2, 3, 5=3;Found zero or less counts for year 1, 2, 3, 5, 6=1"
+132,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5, 6","Found zero or less counts for year 1, 2, 5, 6=35;Found zero or less counts for year 1, 2, 4, 5, 6=9;Found zero or less counts for year 1, 2, 3, 5, 6=3;Found zero or less counts for year 1, 2=2;Years don't have a constant interval=1"
+132,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5, 6","Found zero or less counts for year 1, 2, 5, 6=35;Found zero or less counts for year 1, 2, 4, 5, 6=9;Found zero or less counts for year 1, 2, 3, 5, 6=3;Found zero or less counts for year 1, 2=2;Years don't have a constant interval=1"
+133,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+133,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+133,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=46;onvolledige_ankercellen=4"
+133,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+133,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=46;onvolledige_ankercellen=4"
+133,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=33;onvolledige_ankercellen=17"
+135,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=16;onvolledige_ankercellen=8"
+135,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=23;onvolledige_ankercellen=1"
+135,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=23;onvolledige_ankercellen=1"
+135,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5, 6","Found zero or less counts for year 1, 2, 5, 6=26;Years don't have a constant interval=24"
+135,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=24"
+135,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=23;onvolledige_ankercellen=1"
+136,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+136,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+136,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+136,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+136,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+136,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+137,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+137,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+137,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+137,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+137,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+137,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+138,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+138,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+138,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+138,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+138,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+138,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+141,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+141,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=43;onvolledige_ankercellen=7"
+141,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=43;onvolledige_ankercellen=7"
+141,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=46;onvolledige_ankercellen=4"
+141,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=46;onvolledige_ankercellen=4"
+141,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=43;onvolledige_ankercellen=7"
+142,"historische_kern","primary_1986_1988",50,50,31,0.62,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=17;Found zero or less counts for year 2=2"
+142,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+142,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+142,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+142,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+142,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+143,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=26;Years don't have a constant interval=15;onvolledige_ankercellen=9"
+143,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=35;Found zero or less counts for year 1, 2, 3=12;Found zero or less counts for year 1, 2, 3, 5=3"
+143,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=35;Found zero or less counts for year 1, 2, 3=12;Found zero or less counts for year 1, 2, 3, 4=3"
+143,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=33;Found zero or less counts for year 1, 2, 3=13;Found zero or less counts for year 1, 2, 3, 4=2;Found zero or less counts for year 1, 2, 4=2"
+143,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=35;Found zero or less counts for year 1, 2, 3=12;Found zero or less counts for year 1, 2, 3, 6=3"
+143,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=43;Found zero or less counts for year 1, 2, 3, 6=6;Found zero or less counts for year 1, 2, 3, 4, 6=1"
+144,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=15;niet_positief_of_onvolledig_ankervenster=14;Found zero or less counts for year 4=9;Found zero or less counts for year 2, 3, 4=6;Found zero or less counts for year 4, 6=3;Found zero or less counts for year 1, 2=2;Found zero or less counts for year 1, 3, 4, 6=1"
+144,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+144,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+144,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+144,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+144,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+146,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+146,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=29;Years don't have a constant interval=21"
+146,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+146,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=29;Years don't have a constant interval=21"
+146,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=29;Years don't have a constant interval=21"
+146,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=29;Years don't have a constant interval=21"
+147,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+147,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=21;Years don't have a constant interval=16;Found zero or less counts for year 1, 2=13"
+147,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=29;onvolledige_ankercellen=21"
+147,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=21;Years don't have a constant interval=16;Found zero or less counts for year 1, 2=13"
+147,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=24;Years don't have a constant interval=19;onvolledige_ankercellen=7"
+147,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=29;onvolledige_ankercellen=21"
+148,"historische_kern","primary_1986_1988",50,50,9,0.18,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=21;Found zero or less counts for year 2, 5=15;Overdispersion apparently 0; consider setting overdisp=FALSE=3;Years don't have a constant interval=2"
+148,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=37;Found zero or less counts for year 4, 5, 6=13"
+148,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=50"
+148,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+148,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=37;Found zero or less counts for year 5, 6=13"
+148,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=37;Found zero or less counts for year 4, 5, 6=6;Found zero or less counts for year 1, 3, 4, 5, 6=5;Found zero or less counts for year 3, 4, 5, 6=2"
+150,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=31;Found zero or less counts for year 5, 6=13;Found zero or less counts for year 3, 5, 6=6"
+150,"volledig_netwerk","alternative_1987_1989",50,50,36,0.72,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=5;Found zero or less counts for year 4, 6=3;Found zero or less counts for year 5, 6=3;Found zero or less counts for year 3, 4, 5, 6=2;Found zero or less counts for year 4, 5, 6=1"
+150,"volledig_netwerk","alternative_1988_1990",50,50,26,0.52,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=10;Found zero or less counts for year 5=8;Found zero or less counts for year 4, 5, 6=4;Found zero or less counts for year 3, 4, 5=1;Found zero or less counts for year 3, 4, 5, 6=1"
+150,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=32;Found zero or less counts for year 4, 5=12;Found zero or less counts for year 3, 5=3;Found zero or less counts for year 5, 6=3"
+150,"volledig_netwerk","primary_1986_1988",50,50,35,0.7,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=3;Found zero or less counts for year 5=3;Found zero or less counts for year 6=3;Found zero or less counts for year 3, 5, 6=2;Model can't be estimated due to excessive high beta value at year #4 (4).
+=2;Found zero or less counts for year 5, 6=1;Years don't have a constant interval=1"
+150,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=28;Found zero or less counts for year 5, 6=13;Found zero or less counts for year 3, 5, 6=6;Years don't have a constant interval=3"
+151,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+151,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+151,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+151,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+151,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+151,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+152,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+152,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=38;Years don't have a constant interval=12"
+152,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=38;Years don't have a constant interval=12"
+152,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=38;Years don't have a constant interval=12"
+152,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=38;Years don't have a constant interval=12"
+152,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=38;Years don't have a constant interval=12"
+154,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+154,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+154,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+154,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+154,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+154,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+155,"historische_kern","primary_1986_1988",50,50,16,0.32,"onvoldoende_bootstrap","Model can't be estimated due to excessive high beta value at year #5 (5).
+","Model can't be estimated due to excessive high beta value at year #5 (5).
+=11;Found zero or less counts for year 2, 3=9;Found zero or less counts for year 1, 2, 3=6;Found zero or less counts for year 5=6;Found zero or less counts for year 2, 3, 5=1;Years don't have a constant interval=1"
+155,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+155,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+155,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+155,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+155,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+156,"historische_kern","primary_1986_1988",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=2;Found zero or less counts for year 4=1;niet_positief_of_onvolledig_ankervenster=1"
+156,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+156,"volledig_netwerk","alternative_1988_1990",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=1"
+156,"volledig_netwerk","historical_continuity_1984_1986",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 5","Found zero or less counts for year 5=2"
+156,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+156,"volledig_netwerk","strict_all_six",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 5","Found zero or less counts for year 5=2"
+158,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+158,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3, 4, 6","Found zero or less counts for year 3, 4, 6=26;Years don't have a constant interval=24"
+158,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3, 5","Found zero or less counts for year 3, 5=26;Years don't have a constant interval=24"
+158,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3, 5, 6","Found zero or less counts for year 3, 5, 6=26;Years don't have a constant interval=23;onvolledige_ankercellen=1"
+158,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3, 4, 5","Found zero or less counts for year 3, 4, 5=26;Years don't have a constant interval=24"
+158,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3, 4, 5","Found zero or less counts for year 3, 4, 5=26;Years don't have a constant interval=24"
+159,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+159,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=26;onvolledige_ankercellen=12;Years don't have a constant interval=12"
+159,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4","Found zero or less counts for year 1, 2, 3, 4=26;Years don't have a constant interval=16;onvolledige_ankercellen=8"
+159,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 6","Found zero or less counts for year 1, 2, 3, 6=26;onvolledige_ankercellen=24"
+159,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=44;onvolledige_ankercellen=6"
+159,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=26;onvolledige_ankercellen=24"
+162,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 6","Found zero or less counts for year 4, 6=36;Found zero or less counts for year 2, 4, 6=6;Found zero or less counts for year 2, 3, 4, 6=5;Found zero or less counts for year 2, 4, 5, 6=2;Found zero or less counts for year 2, 3, 4, 5=1"
+162,"volledig_netwerk","alternative_1987_1989",50,50,26,0.52,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=18;Found zero or less counts for year 2, 3, 5, 6=2;Found zero or less counts for year 2, 4, 5, 6=2;Found zero or less counts for year 2, 3, 4=1;Found zero or less counts for year 2, 5, 6=1"
+162,"volledig_netwerk","alternative_1988_1990",50,50,26,0.52,"onvoldoende_bootstrap","Found zero or less counts for year 2, 4, 5","Found zero or less counts for year 2, 4, 5=12;Found zero or less counts for year 2, 3, 4, 5=4;Found zero or less counts for year 2, 3, 4, 5, 6=3;Found zero or less counts for year 2, 4, 5, 6=3;Found zero or less counts for year 1, 2, 4, 5, 6=1;Years don't have a constant interval=1"
+162,"volledig_netwerk","historical_continuity_1984_1986",50,50,19,0.38,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=14;Found zero or less counts for year 4=7;Found zero or less counts for year 4, 6=4;Found zero or less counts for year 2, 5, 6=2;Found zero or less counts for year 2, 3, 4, 6=1;Found zero or less counts for year 2, 3, 5, 6=1;Found zero or less counts for year 2, 3, 6=1;Found zero or less counts for year 2, 4, 5, 6=1"
+162,"volledig_netwerk","primary_1986_1988",50,50,26,0.52,"onvoldoende_bootstrap","Found zero or less counts for year 4, 6","Found zero or less counts for year 4, 6=18;Found zero or less counts for year 2, 3, 4, 6=2;Found zero or less counts for year 2, 4, 5, 6=2;Found zero or less counts for year 2, 3, 4, 5=1;Found zero or less counts for year 2, 4, 6=1"
+162,"volledig_netwerk","strict_all_six",50,50,26,0.52,"onvoldoende_bootstrap","Found zero or less counts for year 2, 4, 5, 6","Found zero or less counts for year 2, 4, 5, 6=8;Found zero or less counts for year 2, 4, 6=7;Found zero or less counts for year 2, 3, 4, 6=6;Found zero or less counts for year 1, 2, 4, 5, 6=1;Found zero or less counts for year 2, 3, 4, 5, 6=1;Years don't have a constant interval=1"
+163,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+163,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+163,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+163,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+163,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+163,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+164,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+164,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+164,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+164,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+164,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+164,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+165,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+166,"historische_kern","primary_1986_1988",50,50,42,0.84,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8"
+166,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+166,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+166,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+166,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+166,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+167,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+168,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=38;Years don't have a constant interval=12"
+168,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4","Found zero or less counts for year 1, 2, 3, 4=38;Years don't have a constant interval=12"
+168,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=38;Years don't have a constant interval=12"
+168,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+168,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=38;Years don't have a constant interval=12"
+168,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=38;Years don't have a constant interval=12"
+169,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+169,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=49;onvolledige_ankercellen=1"
+169,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=30;Years don't have a constant interval=19;onvolledige_ankercellen=1"
+169,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=30;Years don't have a constant interval=20"
+169,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=49;onvolledige_ankercellen=1"
+169,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=44;onvolledige_ankercellen=6"
+170,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+170,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+170,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+170,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+170,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+170,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+171,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=33;Years don't have a constant interval=17"
+171,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4","Found zero or less counts for year 1, 2, 3, 4=30;Found zero or less counts for year 1, 2, 3, 4, 5=15;Found zero or less counts for year 1, 2, 3, 4, 6=3;Years don't have a constant interval=2"
+171,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 6","Found zero or less counts for year 1, 2, 3, 6=30;Found zero or less counts for year 1, 2, 3, 4, 6=12;Found zero or less counts for year 1, 2, 3, 4=3;Found zero or less counts for year 1, 2, 3, 5, 6=3;Years don't have a constant interval=2"
+171,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 6","Found zero or less counts for year 1, 2, 3, 6=38;Years don't have a constant interval=12"
+171,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=33;Years don't have a constant interval=17"
+171,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=33;Years don't have a constant interval=17"
+172,"historische_kern","primary_1986_1988",50,50,36,0.72,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=10;Found zero or less counts for year 1, 2=2;Found zero or less counts for year 3, 5=2"
+172,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+172,"volledig_netwerk","alternative_1988_1990",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=2;Found zero or less counts for year 3=1;Found zero or less counts for year 6=1"
+172,"volledig_netwerk","historical_continuity_1984_1986",50,50,44,0.88,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=3;Found zero or less counts for year 5=1;Found zero or less counts for year 6=1;Model can't be estimated due to excessive high beta value at year #6 (6).
+=1"
+172,"volledig_netwerk","primary_1986_1988",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=1"
+172,"volledig_netwerk","strict_all_six",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=2;Found zero or less counts for year 1, 2=1;Found zero or less counts for year 1, 2, 4=1;Found zero or less counts for year 3=1;Found zero or less counts for year 3, 5=1;niet_positief_of_onvolledig_ankervenster=1"
+173,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+173,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+173,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+173,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+173,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+173,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+174,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+174,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+174,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+174,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+174,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+174,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+175,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+175,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+175,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+175,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+175,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+175,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+176,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+176,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+176,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+176,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+176,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+176,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+177,"historische_kern","primary_1986_1988",50,50,27,0.54,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=21;Found zero or less counts for year 1, 5=1;Found zero or less counts for year 2, 3=1"
+177,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+177,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+177,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+177,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+177,"volledig_netwerk","strict_all_six",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=3"
+179,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=24"
+179,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=19;Found zero or less counts for year 1, 2, 4, 6=15;Found zero or less counts for year 1, 2, 4, 5, 6=11;Years don't have a constant interval=5"
+179,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=19;Found zero or less counts for year 1, 2, 5, 6=15;Found zero or less counts for year 1, 2, 4, 5, 6=11;Years don't have a constant interval=5"
+179,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=24"
+179,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=19;Found zero or less counts for year 1, 2, 4, 5=15;Found zero or less counts for year 1, 2, 4, 5, 6=11;Years don't have a constant interval=5"
+179,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=19;Found zero or less counts for year 1, 2, 4, 5=15;Found zero or less counts for year 1, 2, 4, 5, 6=11;Years don't have a constant interval=5"
+180,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+180,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+180,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+180,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+180,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+180,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+182,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+182,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+182,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+182,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+182,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+182,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+184,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=38;onvolledige_ankercellen=12"
+184,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=46;onvolledige_ankercellen=4"
+184,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=44;onvolledige_ankercellen=6"
+184,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=38;onvolledige_ankercellen=6;Years don't have a constant interval=6"
+184,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=38;Years don't have a constant interval=7;onvolledige_ankercellen=5"
+184,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=38;onvolledige_ankercellen=12"
+186,"historische_kern","primary_1986_1988",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=1;Found zero or less counts for year 4=1;niet_positief_of_onvolledig_ankervenster=1"
+186,"volledig_netwerk","alternative_1987_1989",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 2","Found zero or less counts for year 2=1;niet_positief_of_onvolledig_ankervenster=1"
+186,"volledig_netwerk","alternative_1988_1990",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 2","Found zero or less counts for year 2=1;niet_positief_of_onvolledig_ankervenster=1"
+186,"volledig_netwerk","historical_continuity_1984_1986",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=1;Found zero or less counts for year 5=1;Found zero or less counts for year 6=1;Model can't be estimated due to excessive low beta value at year #5 (5).
+=1;niet_positief_of_onvolledig_ankervenster=1"
+186,"volledig_netwerk","primary_1986_1988",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 2, 4","Found zero or less counts for year 2, 4=1;Found zero or less counts for year 4=1;niet_positief_of_onvolledig_ankervenster=1"
+186,"volledig_netwerk","strict_all_six",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 2, 4","Found zero or less counts for year 2, 4=1;Found zero or less counts for year 4=1;niet_positief_of_onvolledig_ankervenster=1"
+187,"historische_kern","primary_1986_1988",50,50,49,0.98,"voldoet_aan_95_procent","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=1"
+187,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+187,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+187,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+187,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+187,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+188,"historische_kern","primary_1986_1988",50,50,48,0.96,"voldoet_aan_95_procent","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=2"
+188,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+188,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+188,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+188,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+188,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+189,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=20;Found zero or less counts for year 1, 2, 3, 5, 6=14;Found zero or less counts for year 1, 2, 3, 4, 5=8;Years don't have a constant interval=8"
+189,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=28;Years don't have a constant interval=22"
+189,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=28;Years don't have a constant interval=22"
+189,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3","Found zero or less counts for year 1, 2, 3=32;Years don't have a constant interval=16;onvolledige_ankercellen=2"
+189,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=20;Found zero or less counts for year 1, 2, 3, 5, 6=14;Found zero or less counts for year 1, 2, 3, 4, 5=8;Years don't have a constant interval=8"
+189,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5","Found zero or less counts for year 1, 2, 3, 5=20;Found zero or less counts for year 1, 2, 3, 5, 6=14;Found zero or less counts for year 1, 2, 3, 4, 5=8;Years don't have a constant interval=8"
+190,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=17;Found zero or less counts for year 3, 4, 5, 6=14;Found zero or less counts for year 1, 3, 4, 5, 6=12;Years don't have a constant interval=7"
+190,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=17;Found zero or less counts for year 3, 4, 5, 6=14;Found zero or less counts for year 1, 3, 4, 5, 6=12;Years don't have a constant interval=7"
+190,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=17;Found zero or less counts for year 3, 4, 5, 6=14;Found zero or less counts for year 1, 3, 4, 5, 6=12;Years don't have a constant interval=7"
+190,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 5, 6","Found zero or less counts for year 2, 3, 5, 6=17;Found zero or less counts for year 3, 5, 6=14;Found zero or less counts for year 1, 3, 5, 6=12;Years don't have a constant interval=7"
+190,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=17;Found zero or less counts for year 3, 4, 5, 6=14;Found zero or less counts for year 1, 3, 4, 5, 6=12;Years don't have a constant interval=7"
+190,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=17;Found zero or less counts for year 3, 4, 5, 6=14;Found zero or less counts for year 1, 3, 4, 5, 6=12;Years don't have a constant interval=7"
+192,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+192,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+192,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+192,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+192,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+192,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+193,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+194,"historische_kern","primary_1986_1988",50,50,33,0.66,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=17"
+194,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+194,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+194,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+194,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+194,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+195,"historische_kern","primary_1986_1988",50,50,42,0.84,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8"
+195,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+195,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+195,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+195,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+195,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+197,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=31;onvolledige_ankercellen=19"
+197,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=38;Years don't have a constant interval=12"
+197,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=44;Years don't have a constant interval=6"
+197,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+197,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=38;Years don't have a constant interval=12"
+197,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=38;Years don't have a constant interval=12"
+198,"historische_kern","primary_1986_1988",50,50,46,0.92,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=3;Found zero or less counts for year 5=1"
+198,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+198,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+198,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+198,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+198,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+200,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+201,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+201,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+201,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=47;Years don't have a constant interval=3"
+201,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 6","Found zero or less counts for year 1, 2, 3, 6=19;Found zero or less counts for year 1, 2, 3, 4, 6=15;Found zero or less counts for year 1, 2, 3, 5, 6=10;Years don't have a constant interval=6"
+201,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+201,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+202,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+202,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+202,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+202,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+202,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+202,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+203,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+203,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 5, 6","Found zero or less counts for year 1, 2, 3, 5, 6=37;Years don't have a constant interval=13"
+203,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+203,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 6","Found zero or less counts for year 1, 2, 3, 6=38;Years don't have a constant interval=12"
+203,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=37;Years don't have a constant interval=13"
+203,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=37;Years don't have a constant interval=13"
+205,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=26;Years don't have a constant interval=24"
+205,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=26;Years don't have a constant interval=24"
+205,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=26;Years don't have a constant interval=24"
+205,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 5, 6","Found zero or less counts for year 2, 3, 5, 6=17;Found zero or less counts for year 1, 2, 3, 5, 6=13;Years don't have a constant interval=11;Found zero or less counts for year 2, 3, 4, 5, 6=9"
+205,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=26;Years don't have a constant interval=24"
+205,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=26;Years don't have a constant interval=24"
+206,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+206,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+206,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+206,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=44;onvolledige_ankercellen=6"
+206,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+206,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=47;onvolledige_ankercellen=3"
+207,"historische_kern","primary_1986_1988",50,50,42,0.84,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8"
+207,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+207,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+207,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+207,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+207,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+208,"historische_kern","primary_1986_1988",50,50,22,0.44,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=11;Found zero or less counts for year 2=10;Found zero or less counts for year 2, 3=4;Found zero or less counts for year 1, 2, 3=2;Found zero or less counts for year 2, 3, 5=1"
+208,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+208,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+208,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+208,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+208,"volledig_netwerk","strict_all_six",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 2","Found zero or less counts for year 2=1"
+209,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=43;Found zero or less counts for year 3=4;Found zero or less counts for year 1, 3=2;Found zero or less counts for year 2, 3=1"
+209,"volledig_netwerk","alternative_1987_1989",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=3;Found zero or less counts for year 1, 3=1;Found zero or less counts for year 2=1"
+209,"volledig_netwerk","alternative_1988_1990",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=3;Found zero or less counts for year 1, 3=1;Found zero or less counts for year 2=1"
+209,"volledig_netwerk","historical_continuity_1984_1986",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=2;Found zero or less counts for year 4=2;Found zero or less counts for year 1, 3, 4=1;Found zero or less counts for year 2=1;Found zero or less counts for year 3, 4=1"
+209,"volledig_netwerk","primary_1986_1988",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=3;Found zero or less counts for year 1, 3=1;Found zero or less counts for year 2=1"
+209,"volledig_netwerk","strict_all_six",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 3","Found zero or less counts for year 3=3;Found zero or less counts for year 1, 3=1;Found zero or less counts for year 2=1"
+210,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+210,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=33;Found zero or less counts for year 1, 2, 3, 4=7;Found zero or less counts for year 1, 2, 3, 4, 6=6;Found zero or less counts for year 1, 2, 3, 4, 5=3;Overdispersion apparently 0; consider setting overdisp=FALSE=1"
+210,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=33;Found zero or less counts for year 1, 2, 3=7;Found zero or less counts for year 1, 2, 3, 5=6;Found zero or less counts for year 1, 2, 3, 4, 6=3;Overdispersion apparently 0; consider setting overdisp=FALSE=1"
+210,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=29;Found zero or less counts for year 1, 2, 3, 4=9;Overdispersion apparently 0; consider setting overdisp=FALSE=5;Years don't have a constant interval=4;Found zero or less counts for year 1, 2, 3, 4, 6=2;Found zero or less counts for year 1, 2, 3, 4, 5=1"
+210,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=32;Found zero or less counts for year 1, 2, 3, 5=8;Found zero or less counts for year 1, 2, 3, 4, 5=5;Found zero or less counts for year 1, 2, 3, 5, 6=2;Overdispersion apparently 0; consider setting overdisp=FALSE=2;Years don't have a constant interval=1"
+210,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=32;Found zero or less counts for year 1, 2, 3, 5=8;Found zero or less counts for year 1, 2, 3, 4, 5=5;Found zero or less counts for year 1, 2, 3, 5, 6=2;Overdispersion apparently 0; consider setting overdisp=FALSE=2;Years don't have a constant interval=1"
+212,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=48;onvolledige_ankercellen=2"
+212,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 5","Found zero or less counts for year 2, 3, 5=17;Found zero or less counts for year 2, 5=17;Found zero or less counts for year 1, 2, 5, 6=8;Found zero or less counts for year 1, 2, 3, 5, 6=5;Found zero or less counts for year 1, 2=2;Years don't have a constant interval=1"
+212,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4","Found zero or less counts for year 2, 3, 4=17;Found zero or less counts for year 2, 4=17;Found zero or less counts for year 1, 2, 4, 5=8;Found zero or less counts for year 1, 2, 3, 4, 5=5;Found zero or less counts for year 1, 2=2;Years don't have a constant interval=1"
+212,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=17;Found zero or less counts for year 2, 3=17;Found zero or less counts for year 1, 2=5;Found zero or less counts for year 1, 2, 3, 4, 6=5;Found zero or less counts for year 1, 2, 4, 6=5;Years don't have a constant interval=1"
+212,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 6","Found zero or less counts for year 2, 3, 6=17;Found zero or less counts for year 2, 6=17;Found zero or less counts for year 1, 2, 4, 6=8;Found zero or less counts for year 1, 2, 3, 4, 6=5;Found zero or less counts for year 1, 2=2;Years don't have a constant interval=1"
+212,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 6","Found zero or less counts for year 2, 3, 6=34;Found zero or less counts for year 1, 2, 3, 4, 6=13;Years don't have a constant interval=3"
+213,"historische_kern","primary_1986_1988",50,50,41,0.82,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8;Found zero or less counts for year 2=1"
+213,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+213,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+213,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+213,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+213,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+214,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+215,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+215,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 6","Found zero or less counts for year 4, 6=38;Years don't have a constant interval=12"
+215,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=38;Found zero or less counts for year 1, 2, 3, 4, 5=8;Years don't have a constant interval=4"
+215,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=38;Years don't have a constant interval=12"
+215,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=38;Years don't have a constant interval=12"
+215,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=38;Years don't have a constant interval=12"
+217,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5, 6","Found zero or less counts for year 1, 2, 5, 6=12;Found zero or less counts for year 3, 5, 6=8;Found zero or less counts for year 5, 6=8;Found zero or less counts for year 4, 5, 6=6;Found zero or less counts for year 1, 2, 3=5;Found zero or less counts for year 1, 2, 4, 5, 6=5;Found zero or less counts for year 3, 4, 5, 6=4;Years don't have a constant interval=2"
+217,"volledig_netwerk","alternative_1987_1989",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=2;Found zero or less counts for year 6=1;niet_positief_of_onvolledig_ankervenster=1"
+217,"volledig_netwerk","alternative_1988_1990",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=2;Found zero or less counts for year 5=1;niet_positief_of_onvolledig_ankervenster=1"
+217,"volledig_netwerk","historical_continuity_1984_1986",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 4","Found zero or less counts for year 4=2;Found zero or less counts for year 5=2;Found zero or less counts for year 6=1"
+217,"volledig_netwerk","primary_1986_1988",50,50,46,0.92,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=2;Found zero or less counts for year 4=1;niet_positief_of_onvolledig_ankervenster=1"
+217,"volledig_netwerk","strict_all_six",50,50,44,0.88,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=4;Overdispersion apparently 0; consider setting overdisp=FALSE=2"
+218,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=23;Found zero or less counts for year 1, 2, 3, 5, 6=21;Found zero or less counts for year 4=3;Years don't have a constant interval=3"
+218,"volledig_netwerk","alternative_1987_1989",50,50,24,0.48,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=13;Found zero or less counts for year 2, 3=11;niet_positief_of_onvolledig_ankervenster=2"
+218,"volledig_netwerk","alternative_1988_1990",50,50,24,0.48,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=13;Found zero or less counts for year 2, 3=11;niet_positief_of_onvolledig_ankervenster=2"
+218,"volledig_netwerk","historical_continuity_1984_1986",50,50,24,0.48,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=13;Found zero or less counts for year 2, 3=6;Found zero or less counts for year 2, 3, 4=5;niet_positief_of_onvolledig_ankervenster=2"
+218,"volledig_netwerk","primary_1986_1988",50,50,24,0.48,"onvoldoende_bootstrap","Found zero or less counts for year 2","Found zero or less counts for year 2=13;Found zero or less counts for year 2, 3=11;niet_positief_of_onvolledig_ankervenster=2"
+218,"volledig_netwerk","strict_all_six",50,50,24,0.48,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3","Found zero or less counts for year 2, 3=23;niet_positief_of_onvolledig_ankervenster=2;Found zero or less counts for year 1, 2, 3=1"
+219,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=26;Years don't have a constant interval=24"
+219,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=42;Years don't have a constant interval=8"
+219,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=42;Years don't have a constant interval=8"
+219,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 5, 6","Found zero or less counts for year 1, 2, 5, 6=31;Found zero or less counts for year 1, 2, 4, 5, 6=11;Found zero or less counts for year 1, 2, 3, 5=5;Years don't have a constant interval=3"
+219,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=42;Years don't have a constant interval=8"
+219,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 4, 5, 6","Found zero or less counts for year 1, 2, 4, 5, 6=42;Years don't have a constant interval=8"
+222,"historische_kern","primary_1986_1988",50,50,42,0.84,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8"
+222,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+222,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+222,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+222,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+222,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+223,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+224,"historische_kern","primary_1986_1988",50,50,40,0.8,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=8;Found zero or less counts for year 1=1;Found zero or less counts for year 6=1"
+224,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+224,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+224,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+224,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+224,"volledig_netwerk","strict_all_six",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 1, 2, 5","Found zero or less counts for year 1, 2, 5=1"
+225,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+225,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+225,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+225,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+225,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+225,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+226,"historische_kern","primary_1986_1988",50,50,45,0.9,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=4;niet_positief_of_onvolledig_ankervenster=1"
+226,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+226,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+226,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+226,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+226,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+227,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+227,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+227,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+227,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+227,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+227,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+229,"historische_kern","primary_1986_1988",50,50,26,0.52,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=11;Found zero or less counts for year 4, 5, 6=7;niet_positief_of_onvolledig_ankervenster=5;Found zero or less counts for year 2, 4, 5=1"
+229,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+229,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+229,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+229,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+229,"volledig_netwerk","strict_all_six",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=1"
+231,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=33;Years don't have a constant interval=11;onvolledige_ankercellen=6"
+231,"volledig_netwerk","alternative_1987_1989",50,50,33,0.66,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=6;Overdispersion apparently 0; consider setting overdisp=FALSE=4;Found zero or less counts for year 4=3;Found zero or less counts for year 1, 2, 3, 5, 6=2;niet_positief_of_onvolledig_ankervenster=1;Years don't have a constant interval=1"
+231,"volledig_netwerk","alternative_1988_1990",50,50,21,0.42,"onvoldoende_bootstrap","Overdispersion apparently 0; consider setting overdisp=FALSE","Overdispersion apparently 0; consider setting overdisp=FALSE=16;Years don't have a constant interval=12;niet_positief_of_onvolledig_ankervenster=1"
+231,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+231,"volledig_netwerk","primary_1986_1988",50,50,33,0.66,"onvoldoende_bootstrap","Found zero or less counts for year 4, 6","Found zero or less counts for year 4, 6=6;Overdispersion apparently 0; consider setting overdisp=FALSE=4;Found zero or less counts for year 5=3;Found zero or less counts for year 1, 2, 3, 4, 6=2;niet_positief_of_onvolledig_ankervenster=1;Years don't have a constant interval=1"
+231,"volledig_netwerk","strict_all_six",50,50,30,0.6,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=8;Overdispersion apparently 0; consider setting overdisp=FALSE=7;Years don't have a constant interval=3;niet_positief_of_onvolledig_ankervenster=1;onvolledige_ankercellen=1"
+232,"historische_kern","primary_1986_1988",50,50,47,0.94,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=2;niet_positief_of_onvolledig_ankervenster=1"
+232,"volledig_netwerk","alternative_1987_1989",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 5","Found zero or less counts for year 5=1"
+232,"volledig_netwerk","alternative_1988_1990",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=1"
+232,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+232,"volledig_netwerk","primary_1986_1988",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=1"
+232,"volledig_netwerk","strict_all_six",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=1"
+233,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 2, 3, 4, 5, 6","Found zero or less counts for year 2, 3, 4, 5, 6=26;Years don't have a constant interval=24"
+233,"volledig_netwerk","alternative_1987_1989",50,50,8,0.16,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=18;Found zero or less counts for year 2, 3=7;Found zero or less counts for year 4=6;Found zero or less counts for year 1, 2, 3=5;Found zero or less counts for year 2, 3, 4=4;Found zero or less counts for year 1, 4=1;Found zero or less counts for year 4, 5=1"
+233,"volledig_netwerk","alternative_1988_1990",50,50,14,0.28,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=19;Found zero or less counts for year 2, 3=11;Found zero or less counts for year 1, 2, 3=5;Found zero or less counts for year 4=1"
+233,"volledig_netwerk","historical_continuity_1984_1986",50,50,15,0.3,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=19;Found zero or less counts for year 2, 3, 4=10;Found zero or less counts for year 1, 2, 3, 4=5;Found zero or less counts for year 2, 3, 4, 5=1"
+233,"volledig_netwerk","primary_1986_1988",50,50,8,0.16,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=18;Found zero or less counts for year 2, 3=7;Found zero or less counts for year 5=6;Found zero or less counts for year 1, 2, 3=5;Found zero or less counts for year 2, 3, 5=4;Found zero or less counts for year 1, 5=1;Found zero or less counts for year 5, 6=1"
+233,"volledig_netwerk","strict_all_six",50,50,8,0.16,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=18;Found zero or less counts for year 2, 3=7;Found zero or less counts for year 5=6;Found zero or less counts for year 1, 2, 3=5;Found zero or less counts for year 2, 3, 5=4;Found zero or less counts for year 1, 5=1;Found zero or less counts for year 5, 6=1"
+236,"historische_kern","primary_1986_1988",50,50,28,0.56,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=14;Found zero or less counts for year 6=5;Found zero or less counts for year 4=2;Found zero or less counts for year 4, 6=1"
+236,"volledig_netwerk","alternative_1987_1989",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 6","Found zero or less counts for year 6=6;Found zero or less counts for year 5, 6=1"
+236,"volledig_netwerk","alternative_1988_1990",50,50,43,0.86,"onvoldoende_bootstrap","Found zero or less counts for year 5","Found zero or less counts for year 5=6;Found zero or less counts for year 4, 5=1"
+236,"volledig_netwerk","historical_continuity_1984_1986",50,50,49,0.98,"voldoet_aan_95_procent","Found zero or less counts for year 6","Found zero or less counts for year 6=1"
+236,"volledig_netwerk","primary_1986_1988",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=1;Found zero or less counts for year 6=1"
+236,"volledig_netwerk","strict_all_six",50,50,48,0.96,"voldoet_aan_95_procent","Found zero or less counts for year 4","Found zero or less counts for year 4=1;Found zero or less counts for year 6=1"
+237,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+237,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 5, 6","Found zero or less counts for year 1, 5, 6=12;Found zero or less counts for year 1, 6=12;Found zero or less counts for year 1, 4, 6=7;Found zero or less counts for year 1, 2, 3, 6=6;Found zero or less counts for year 1, 4, 5, 6=6;Found zero or less counts for year 1, 2, 3, 5, 6=4;Years don't have a constant interval=2;Found zero or less counts for year 1, 2, 3, 4, 6=1"
+237,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 5","Found zero or less counts for year 1, 5=19;Found zero or less counts for year 1, 4, 5=18;Found zero or less counts for year 1, 2, 3, 5=7;Found zero or less counts for year 1, 2, 3, 4, 5=3;Found zero or less counts for year 3=2;Years don't have a constant interval=1"
+237,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 4, 5","Found zero or less counts for year 1, 4, 5=37;Years don't have a constant interval=13"
+237,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=12;Found zero or less counts for year 1, 6=12;Found zero or less counts for year 1, 5=7;Found zero or less counts for year 1, 2, 3, 4=6;Found zero or less counts for year 1, 5, 6=6;Found zero or less counts for year 1, 2, 3, 4, 6=4;Years don't have a constant interval=2;Found zero or less counts for year 1, 2, 3, 4, 5=1"
+237,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1","Found zero or less counts for year 1=12;Found zero or less counts for year 1, 6=12;Found zero or less counts for year 1, 5=7;Found zero or less counts for year 1, 2, 3, 4=6;Found zero or less counts for year 1, 5, 6=6;Found zero or less counts for year 1, 2, 3, 4, 6=4;Years don't have a constant interval=2;Found zero or less counts for year 1, 2, 3, 4, 5=1"
+238,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+238,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+238,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+238,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+238,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+238,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+239,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+239,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+239,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+239,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+239,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+239,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+240,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5, 6","Found zero or less counts for year 4, 5, 6=50"
+240,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 6","Found zero or less counts for year 4, 6=38;Found zero or less counts for year 4, 5, 6=12"
+240,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=38;Found zero or less counts for year 4, 5, 6=12"
+240,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 5, 6","Found zero or less counts for year 5, 6=37;Found zero or less counts for year 4, 5, 6=13"
+240,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=38;Found zero or less counts for year 4, 5, 6=12"
+240,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 4, 5","Found zero or less counts for year 4, 5=38;Found zero or less counts for year 4, 5, 6=12"
+242,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+242,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+242,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+242,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+242,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+242,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+243,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+243,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+243,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+243,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+243,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+243,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+245,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+245,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=34;Years don't have a constant interval=16"
+245,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=34;Years don't have a constant interval=16"
+245,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=34;Years don't have a constant interval=16"
+245,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=34;Years don't have a constant interval=16"
+245,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2","Found zero or less counts for year 1, 2=34;Years don't have a constant interval=16"
+246,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=50"
+246,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+246,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+246,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+246,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+246,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,
+248,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+248,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 5","Found zero or less counts for year 1, 2, 3, 4, 5=33;Years don't have a constant interval=17"
+248,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","Found zero or less counts for year 1, 2, 3, 4, 6","Found zero or less counts for year 1, 2, 3, 4, 6=33;Years don't have a constant interval=17"
+248,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+248,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+248,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=50"
+249,"historische_kern","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+249,"volledig_netwerk","alternative_1987_1989",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+249,"volledig_netwerk","alternative_1988_1990",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+249,"volledig_netwerk","historical_continuity_1984_1986",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+249,"volledig_netwerk","primary_1986_1988",50,50,0,0,"onvoldoende_bootstrap","Years don't have a constant interval","Years don't have a constant interval=29;onvolledige_ankercellen=21"
+249,"volledig_netwerk","strict_all_six",50,50,0,0,"onvoldoende_bootstrap","onvolledige_ankercellen","onvolledige_ankercellen=50"
+251,"historische_kern","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+251,"volledig_netwerk","alternative_1987_1989",50,50,50,1,"voldoet_aan_95_procent",,
+251,"volledig_netwerk","alternative_1988_1990",50,50,50,1,"voldoet_aan_95_procent",,
+251,"volledig_netwerk","historical_continuity_1984_1986",50,50,50,1,"voldoet_aan_95_procent",,
+251,"volledig_netwerk","primary_1986_1988",50,50,50,1,"voldoet_aan_95_procent",,
+251,"volledig_netwerk","strict_all_six",50,50,50,1,"voldoet_aan_95_procent",,

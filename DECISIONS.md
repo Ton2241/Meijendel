@@ -1399,6 +1399,35 @@
   Hetzelfde beschrijvende regime geldt voor de 18 ecologische en 24
   functionele groepsregels; een band rond een groeps-GAM is geen volledige
   TRIM-onzekerheid.
+- Besluit van 17 oktober 2026: na opname van de complete cijfers over 2026
+  blijven 1958–1983 en 1984–2026 de primaire formele soortperioden. De
+  aanvullende trend 1958–2026 en de groeps-MSI's krijgen alleen formele
+  onzekerheid via één volledige gestratificeerde clusterbootstrap van de
+  plotgeschiedenissen. De primaire gemeenschappelijke-plotbrug loopt van
+  1981–1983 naar 1986–1988; 1984–1985 blijven overgangsjaren in het tweede
+  model en kalibreren niet. Alternatieven 1987–1989, 1988–1990, de strikte
+  zesjaarsset, 1984–1986 als historische comparator en de vaste historische
+  kern zijn gevoeligheidsanalyses. Hun totale bereik is een
+  gevoeligheidsenvelop, geen 95%-betrouwbaarheidsinterval.
+- De robuuste groepsvariant gebruikt een vooraf vastgelegde soortpopulatie die
+  in de oorspronkelijke fit voor ieder jaar van de gecombineerde periode een
+  geldige gebrugde index heeft. Valt één van die soorten in een replicatie uit,
+  dan is die groepsreplicatie ongeldig. De volledige variant mag wisselen en is
+  uitsluitend een gevoeligheidsvariant. Pilot 50, validatie 500 en productie
+  minimaal 2.000 zijn gescheiden, hashgebonden runs; alleen de laatste kan na
+  de 2026-gate publiceerbaar worden.
+- Uitvoeringsbesluit van 17 oktober 2026: de eerste 50-pilot over 1958–2025
+  gebruikte de voorlopige vaste set van 35 soorten en voltooide alle
+  replicaties zonder batchfout. Slechts 5 van 21 primaire vaste
+  groepsschatters haalden 95% geldige replicaties; 21 van 21 volledige,
+  wisselend samengestelde gevoeligheidsschatters haalden die grens. De
+  500-validatie wordt daarom niet gestart. De formele kandidaatpoort is
+  aangescherpt tot bestaande analysetoelating plus een geldige nieuwe brug;
+  dit levert voor 1958–2025 68 formele soortkandidaten en 33 volledige vaste
+  groepssoorten. Eén gecorrigeerde rookreplicatie leverde 7 van 21 geldige
+  vaste groepen. Voor de overige groepen is eerst een expliciet methodisch
+  besluit nodig; zij krijgen niet stilzwijgend de wisselende variant als
+  formeel resultaat.
 - Functionele groepen krijgen geen landelijke vergelijkingslijn zolang geen
   landelijk bronbestand met exact dezelfde traitdefinities, groepsregels en
   gewichten beschikbaar is; dashboard en website tonen wel de Meijendel-lijn.
