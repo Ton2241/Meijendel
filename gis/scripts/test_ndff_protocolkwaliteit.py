@@ -89,6 +89,122 @@ def test_libel_analysis_selection() -> None:
     else: raise AssertionError("Dubbele matrixregel geaccepteerd")
 
 
+def test_libel_exploration() -> None:
+    """Ontbrekende bezoeken of matrixregels mogen geen schijnbare nul geven."""
+    from copy import deepcopy
+    module = load_importer()
+    matrix = []; periods = []
+    for year in (2020, 2021):
+        for month in (6, 7):
+            key = f"{year}-{month}"
+            periods.append(dict(bezoek_sleutel=key,
+                periode_start=f"{year}-{month:02d}-15 12:00:00",
+                periode_stop=f"{year}-{month:02d}-15 13:00:00"))
+            for taxon in (1, 2):
+                positive = taxon == 1 and (year == 2020 or month == 7)
+                matrix.append(dict(bezoek_sleutel=key, jaar=year, routefamilie_id=3,
+                    plot_ids=[3525], bronrecordaantal=2, taxon_id=taxon,
+                    taxon_bronkoppeling_id=taxon, weergavenaam=f"Taxon {taxon}",
+                    wetenschappelijke_naam=f"Species {taxon}", groep_code=None,
+                    aantal=10 if positive else 0,
+                    waarnemingsstatus="waargenomen" if positive else "echte_nul",
+                    nulregel="Bestaand nulbewijs",
+                    gegevensgeschiktheid="niet_beoordeeld", kwaliteitsmelding="Verkennend.",
+                    analysetype_gegevensgeschiktheid="onvoldoende",
+                    analysetype_kwaliteitsmelding="Eigen TV-beperking."))
+    selection = dict(matrix=matrix, analysetype="TV", selectieversie="selectie",
+                     reconstructieversie="reconstructie", analyseketenversie="keten")
+    before = deepcopy((selection, periods))
+    result = module.explore_libel_analysis_selection(selection, periods, 3, 2020, 2021, [6,7], expected_taxa={1,2})
+    assert result["samenvatting"] == dict(bezoeken=4, bronrecords=8, matrixregels=8,
+        positieve_regels=3, bestaande_nulregels=5, taxa=2,
+        taxa_met_positieve_registratie=1, taxa_zonder_positieve_registratie=1)
+    assert result["taxa"][0]["per_jaar"] == [
+        dict(jaar=2020, bezoeken=2, positieve_bezoeken=2),
+        dict(jaar=2021, bezoeken=2, positieve_bezoeken=1)]
+    assert result["taxa"][1]["per_jaar"] == [
+        dict(jaar=2020, bezoeken=2, positieve_bezoeken=0),
+        dict(jaar=2021, bezoeken=2, positieve_bezoeken=0)]
+    assert result["taxa"][1]["nulbewijzen"] == ["Bestaand nulbewijs"]
+    assert result["taxa"][1]["groep_code"] is None
+    assert result["taxa"][0]["gegevensgeschiktheid"] == "niet_beoordeeld"
+    assert result["taxa"][0]["analysetype_gegevensgeschiktheid"] == "onvoldoende"
+    assert result["taxa"][0]["analysetype_kwaliteitsmelding"] == "Eigen TV-beperking."
+    assert (selection, periods) == before
+    # De som van aangeleverde aantallen (30) is geen bezoekfrequentie (3).
+    assert sum(x["positieve_bezoeken"] for x in result["taxa"][0]["per_jaar"]) == 3
+    cases = []
+    broken = deepcopy(selection); broken["matrix"] = broken["matrix"][:-2]
+    cases.append((broken, periods, 3, 2020, 2021, [6,7]))
+    broken = deepcopy(selection); broken["matrix"] = broken["matrix"][:-1]
+    cases.append((broken, periods, 3, 2020, 2021, [6,7]))
+    # Een taxon dat in het hele gekozen tijdvak ontbreekt, mag niet verdwijnen.
+    broken = deepcopy(selection)
+    broken["matrix"] = [r for r in broken["matrix"] if r["taxon_id"] != 2]
+    cases.append((broken, periods, 3, 2020, 2021, [6,7]))
+    broken = deepcopy(selection); broken["matrix"][0]["kwaliteitsmelding"] = ""
+    cases.append((broken, periods, 3, 2020, 2021, [6,7]))
+    broken = deepcopy(selection); broken["matrix"].append(deepcopy(broken["matrix"][0]))
+    cases.append((broken, periods, 3, 2020, 2021, [6,7]))
+    broken = deepcopy(periods); broken[0]["periode_stop"] = "2020-06-16 13:00:00"
+    cases.append((selection, broken, 3, 2020, 2021, [6,7]))
+    cases.extend((selection, periods, *params) for params in (
+        (99,2020,2021,[6,7]), (3,2020,2022,[6,7]), (3,2021,2020,[6,7]),
+        (3,2020,2021,[0]), (3,2020,2021,[6,6]), (3,2020,2021,[])))
+    cases.append((selection, periods[:-1], 3, 2020, 2021, [6,7]))
+    broken = deepcopy(selection); broken["analysetype"] = "TA"
+    cases.append((broken, periods, 3, 2020, 2021, [6,7]))
+    broken = deepcopy(periods); broken.append({**broken[0], "periode_start":"2020-06-14 12:00:00"})
+    cases.append((selection, broken, 3, 2020, 2021, [6,7]))
+    for case in cases:
+        try: module.explore_libel_analysis_selection(*case, expected_taxa={1,2})
+        except ValueError: pass
+        else: raise AssertionError("Onvolledige of ongeldige bezoekvergelijking geaccepteerd")
+
+
+def test_libel_exploration_cli() -> None:
+    """Argumentfouten stoppen vóór DB-contact; geldige verkenning leest één snapshot."""
+    import json
+    import subprocess
+    import sys
+    with tempfile.TemporaryDirectory() as folder:
+        folder = Path(folder)
+        log = folder / "sql.txt"
+        fixture = [dict(soort="controle",bronrecords=1),dict(soort="bron",
+            bezoek_sleutel="een", bronrecordaantal=1, jaar=2020, routefamilie_id=3,
+            periode_start="2020-06-15 12:00:00", periode_stop="2020-06-15 13:00:00",
+            reconstructiestatus="gereconstrueerd", doelbereikstatus="algemene_route",
+            waarneming_id=1, analyse_waarneming_id=1, record_selectiestatus="voorlopig_bruikbaar",
+            plot_id=3525, scope_plot_id=3525, in_scope=1, protocol_kandidaattypen="V,TV,TA",
+            gegevensgeschiktheid="niet_beoordeeld",kwaliteitsmelding="Alleen verkennend.",
+            analysetype_gegevensgeschiktheid="niet_beoordeeld",
+            analysetype_kwaliteitsmelding="Geen bewezen trend."),dict(soort="matrix",
+            bezoek_sleutel="een",taxon_bronkoppeling_id=1,taxon_id=1,
+            weergavenaam="Taxon",wetenschappelijke_naam="Species",groep_code=None,
+            aantal=50,waarnemingsstatus="waargenomen",nulregel="Geen nul")]
+        client = folder / "mysql"
+        client.write_text(f"#!{sys.executable}\nimport sys\nfrom pathlib import Path\n"
+            + f"Path({str(log)!r}).write_text(sys.stdin.read())\n"
+            + f"print({chr(10).join(json.dumps(r) for r in fixture)!r})\n")
+        client.chmod(0o700)
+        base = [sys.executable,"-B",str(IMPORTER),"--mysql-client",str(client)]
+        good = ["--verken-libellen","--libellen-routefamilie","3",
+                "--libellen-jaar-van","2020","--libellen-jaar-tot","2020",
+                "--libellen-maanden","6"]
+        for invalid in (["--verken-libellen"],["--libellen-routefamilie","3"],
+                        good+["--libellen-analysetype","TA"]):
+            run = subprocess.run(base+invalid,capture_output=True,text=True)
+            assert run.returncode == 2 and not log.exists(), run.stderr
+        run = subprocess.run(base+good,capture_output=True,text=True)
+        assert run.returncode == 0,run.stderr
+        result = json.loads(run.stdout)
+        assert result["taxa"][0]["per_jaar"] == [dict(jaar=2020,bezoeken=1,positieve_bezoeken=1)]
+        assert result["taxa"][0]["analysetype_kwaliteitsmelding"] == "Geen bewezen trend."
+        sql = log.read_text()
+        assert sql.count("START TRANSACTION") == 1 and "READ ONLY" in sql
+        assert not any(token in sql.upper() for token in ("CREATE ","INSERT ","UPDATE ","DELETE ","ALTER ","DROP "))
+
+
 def remove_xlsx_dimension(path: Path) -> None:
     """Boots de ontbrekende dimensiemetadata van de AVIMAP-XLSX na."""
     replacement = path.with_suffix(".zonder-dimensie.xlsx")
@@ -108,6 +224,8 @@ def remove_xlsx_dimension(path: Path) -> None:
 
 def main() -> int:
     test_libel_analysis_selection()
+    test_libel_exploration()
+    test_libel_exploration_cli()
     sql = SCHEMA.read_text(encoding="utf-8")
     folded = " ".join(sql.casefold().split())
     compact = "".join(sql.casefold().split())

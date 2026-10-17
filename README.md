@@ -409,6 +409,14 @@ het controleoverzicht. De selectie geeft uitsluitend volledige, toegelaten
 routebezoeken met hun bestaande matrix en kwaliteitsmelding door. De regels en
 actuele controle-uitkomst staan in `docs/bronnen/audits/NDFF_PROTOCOLAUDIT.md`.
 
+Een beschrijvende bezoekvergelijking is beschikbaar als `--verken-libellen`
+met verplichte `--libellen-routefamilie`, `--libellen-jaar-van`,
+`--libellen-jaar-tot` en `--libellen-maanden` (bijvoorbeeld `6 7 8`). De opdracht
+leest één databasesnapshot en stopt bij ontbrekende of ongelijke maanddekking.
+Zij geeft alle taxa met positieve bezoekfrequenties, nuluitkomsten en
+kwaliteitsbeperkingen als interne JSON terug. Dit is geen populatietrend.
+Het concrete M16-voorbeeld staat in dezelfde protocolaudit.
+
 
 Amfibieënprotocol `01.201` staat onder `ndff-amfibiewater-v2` in vijf
 openbare `Meijendel.ndff_amfibie_*`-tabellen. De 2.439 onvervaagde bronrecords

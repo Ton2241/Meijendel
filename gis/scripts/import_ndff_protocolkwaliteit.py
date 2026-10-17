@@ -48,6 +48,7 @@ VLINDER_LEGACY_RULE_VERSION = "ndff-vlinderroute-v1"
 VLIESVLEUGEL_ROUTE_RULE_VERSION = "ndff-vliesvleugelroute-v1"
 LIBEL_ROUTE_RULE_VERSION = "ndff-libellenroute-v1"
 LIBEL_SELECTION_VERSION = "ndff-libellen-selectie-v1"
+LIBEL_EXPLORATION_VERSION = "ndff-libellen-verkenning-v1"
 REPTILE_ROUTE_RULE_VERSION = "ndff-reptielroute-v2"
 REPTILE_LEGACY_RULE_VERSION = "ndff-reptielroute-v1"
 AMPHIBIAN_WATER_RULE_VERSION = "ndff-amfibiewater-v2"
@@ -11179,6 +11180,7 @@ FROM Meijendel.ndff_open_waarneming
 WHERE protocol LIKE '07.201%' AND soortgroep_raw='Libellen';
 SELECT JSON_OBJECT('soort','bron','bezoek_sleutel',b.bezoek_sleutel,
  'bronrecordaantal',b.bronrecordaantal,'jaar',b.jaar,'routefamilie_id',b.routefamilie_id,
+ 'periode_start',b.periode_start,'periode_stop',b.periode_stop,
  'reconstructiestatus',b.reconstructiestatus,'doelbereikstatus',b.doelbereikstatus,
  'waarneming_id',o.waarneming_id,'analyse_waarneming_id',a.open_waarneming_id,
  'record_selectiestatus',a.record_selectiestatus,'plot_id',a.plot_id,
@@ -11217,8 +11219,8 @@ COMMIT;
 """
 
 
-def read_libel_analysis_selection(client: Path, client_args: list[str],
-                                  analysetype: str = "TV") -> dict:
+def read_libel_analysis_inputs(client: Path, client_args: list[str],
+                               analysetype: str = "TV") -> tuple[list[dict], list[dict]]:
     output = run_mysql(client, client_args+["--batch","--raw","--skip-column-names"],
                        libel_analysis_input_sql(analysetype), capture=True)
     rows = [json.loads(line) for line in output.splitlines()]
@@ -11226,8 +11228,107 @@ def read_libel_analysis_selection(client: Path, client_args: list[str],
     controls = [r for r in rows if r["soort"]=="controle"]
     if len(controls) != 1 or controls[0]["bronrecords"] != len(sources):
         raise ValueError("Niet alle libellenbronrecords hebben precies één gereconstrueerd bezoek")
-    return select_libel_analysis_rows(sources,
-                                     [r for r in rows if r["soort"]=="matrix"], analysetype)
+    return sources, [r for r in rows if r["soort"] == "matrix"]
+
+
+def read_libel_analysis_selection(client: Path, client_args: list[str],
+                                  analysetype: str = "TV") -> dict:
+    sources, matrix = read_libel_analysis_inputs(client, client_args, analysetype)
+    return select_libel_analysis_rows(sources, matrix, analysetype)
+
+
+def validate_libel_exploration_parameters(route_id, year_from, year_to, months):
+    if (route_id is None or route_id < 1 or year_from is None or year_to is None
+            or not 1 <= year_from <= year_to <= 9999 or not months
+            or len(set(months)) != len(months) or any(m < 1 or m > 12 for m in months)):
+        raise ValueError("Geef een positieve routefamilie, oplopende jaren en unieke maanden 1–12 op")
+    return list(range(year_from, year_to + 1)), sorted(months)
+
+
+def explore_libel_analysis_selection(selection: dict, source_periods: list[dict],
+                                     route_id: int, year_from: int, year_to: int,
+                                     months: list[int], expected_taxa: set[int]) -> dict:
+    """Beschrijf positieve bezoekregistraties bij gelijke jaar-maanddekking."""
+    years, months = validate_libel_exploration_parameters(route_id, year_from, year_to, months)
+    if not expected_taxa or None in expected_taxa:
+        raise ValueError("Onafhankelijke centrale doelsoortenlijst ontbreekt")
+    if selection["analysetype"] != "TV":
+        raise ValueError("Beschrijvende bezoekfrequenties vereisen analysetype TV")
+    candidates = [r for r in selection["matrix"]
+                  if r["routefamilie_id"] == route_id and year_from <= r["jaar"] <= year_to]
+    visits = {r["bezoek_sleutel"]: r for r in candidates}
+    periods = {}
+    for row in source_periods:
+        key = row["bezoek_sleutel"]
+        if key not in visits:
+            continue
+        try:
+            start = datetime.fromisoformat(str(row["periode_start"]))
+            stop = datetime.fromisoformat(str(row["periode_stop"]))
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError("Bezoekdatum ontbreekt of is ongeldig") from exc
+        if (start.date() != stop.date() or stop < start
+                or start.year != visits[key]["jaar"]):
+            raise ValueError("Bronperiode is geen eenduidig bezoek op één kalenderdag")
+        if key in periods and periods[key] != (start, stop):
+            raise ValueError("Tegenstrijdige bronperioden voor hetzelfde bezoek")
+        periods[key] = (start, stop)
+    if set(periods) != set(visits):
+        raise ValueError("Geselecteerd bezoek mist zijn bronperiode")
+    visits = {k:r for k,r in visits.items() if periods[k][0].month in months}
+    coverage = Counter((r["jaar"], periods[k][0].month) for k,r in visits.items())
+    counts = {coverage[(y,m)] for y in years for m in months}
+    if len(counts) != 1 or not counts or 0 in counts:
+        details = ", ".join(f"{y}-{m:02d}: {coverage[(y,m)]}" for y in years for m in months)
+        raise ValueError("Ongelijke of ontbrekende bezoekdekking; geen vergelijking: " + details)
+    if len({periods[k][0].date() for k in visits}) != len(visits):
+        raise ValueError("Meerdere bezoeken op dezelfde routedatum zijn niet bewezen onafhankelijk")
+    matrix = [r for r in candidates if r["bezoek_sleutel"] in visits]
+    by_taxon = defaultdict(list); by_visit = defaultdict(set); seen = set()
+    severity = {"geschikt":0, "voorwaardelijk":1, "niet_beoordeeld":2, "onvoldoende":3}
+    for row in matrix:
+        pair = (row["bezoek_sleutel"], row["taxon_id"])
+        if row["taxon_id"] is None or pair in seen:
+            raise ValueError("Dubbele of niet centraal gekoppelde bezoek-taxoncombinatie")
+        if row["waarnemingsstatus"] not in ("waargenomen", "echte_nul"):
+            raise ValueError("Onbekende waarnemingsstatus in bezoekmatrix")
+        if (not row["weergavenaam"] or not row["kwaliteitsmelding"]
+                or not row["analysetype_kwaliteitsmelding"]
+                or row["gegevensgeschiktheid"] not in severity
+                or row["analysetype_gegevensgeschiktheid"] not in severity):
+            raise ValueError("Verplichte taxonpresentatie of kwaliteitsinformatie ontbreekt")
+        seen.add(pair); by_visit[pair[0]].add(pair[1]); by_taxon[pair[1]].append(row)
+    if set(by_taxon) != expected_taxa or any(taxa != expected_taxa for taxa in by_visit.values()):
+        raise ValueError("Onvolledige taxonmatrix; ontbrekende regels worden niet als nul aangevuld")
+    taxa = []
+    for taxon_id, rows in sorted(by_taxon.items(), key=lambda item:item[1][0]["weergavenaam"]):
+        first = rows[0]
+        item = {field:first[field] for field in ("weergavenaam", "wetenschappelijke_naam", "groep_code")}
+        item["taxon_id"] = taxon_id
+        item["nulbewijzen"] = sorted({r["nulregel"] for r in rows
+                                     if r["waarnemingsstatus"] == "echte_nul"})
+        for field in ("gegevensgeschiktheid", "analysetype_gegevensgeschiktheid"):
+            item[field] = max({r[field] for r in rows}, key=severity.get)
+        for field in ("kwaliteitsmelding", "analysetype_kwaliteitsmelding"):
+            item[field] = " | ".join(sorted({r[field] for r in rows}))
+        item["per_jaar"] = [dict(jaar=y, bezoeken=sum(r["jaar"] == y for r in visits.values()),
+            positieve_bezoeken=sum(r["jaar"] == y and r["waarnemingsstatus"] == "waargenomen"
+                                   for r in rows)) for y in years]
+        taxa.append(item)
+    positive_taxa = sum(any(y["positieve_bezoeken"] for y in t["per_jaar"]) for t in taxa)
+    return dict(verkenningsversie=LIBEL_EXPLORATION_VERSION,
+        **{k:selection[k] for k in ("selectieversie", "reconstructieversie", "analyseketenversie", "analysetype")},
+        selectie=dict(routefamilie_id=route_id, jaar_van=year_from, jaar_tot=year_to, maanden=months,
+                      plot_ids=sorted({p for r in visits.values() for p in r["plot_ids"]}, key=str)),
+        interpretatie="Geregistreerde aanwezigheid binnen geselecteerde bezoeken. Een nul betekent geen "
+            "positieve registratie in deze selectie; geen bewijs van afwezigheid, populatietrend of beheereffect. "
+            "Gelijke maanddekking bewijst geen gelijke inspanning, detectiekans of volledige bezoekadministratie.",
+        bezoekdekking=[dict(jaar=y, maand=m, bezoeken=coverage[(y,m)]) for y in years for m in months],
+        samenvatting=dict(bezoeken=len(visits), bronrecords=sum(r["bronrecordaantal"] for r in visits.values()),
+            matrixregels=len(matrix), positieve_regels=sum(r["waarnemingsstatus"] == "waargenomen" for r in matrix),
+            bestaande_nulregels=sum(r["waarnemingsstatus"] == "echte_nul" for r in matrix),
+            taxa=len(taxa), taxa_met_positieve_registratie=positive_taxa,
+            taxa_zonder_positieve_registratie=len(taxa)-positive_taxa), taxa=taxa)
 
 
 def reptile_validation_sql() -> str:
@@ -12482,6 +12583,12 @@ def main() -> int:
     mode.add_argument("--audit-libellen", action="store_true")
     mode.add_argument("--audit-libellen-selectie", action="store_true")
     mode.add_argument("--selecteer-libellen", action="store_true")
+    mode.add_argument("--verken-libellen", action="store_true",
+                      help="Vergelijk positieve bezoekregistraties bij gelijke maanddekking (alleen-lezen)")
+    parser.add_argument("--libellen-routefamilie", type=int)
+    parser.add_argument("--libellen-jaar-van", type=int)
+    parser.add_argument("--libellen-jaar-tot", type=int)
+    parser.add_argument("--libellen-maanden", type=int, nargs="+")
     parser.add_argument("--libellen-analysetype", choices=("TV","TA"), default="TV")
     mode.add_argument("--reconstruct-reptielen", action="store_true")
     mode.add_argument("--audit-reptielen", action="store_true")
@@ -12530,8 +12637,19 @@ def main() -> int:
     mode.add_argument("--reconstruct-ravon-n2000", action="store_true")
     mode.add_argument("--audit-ravon-n2000", action="store_true")
     args = parser.parse_args()
+    exploration_args = (args.libellen_routefamilie, args.libellen_jaar_van,
+                        args.libellen_jaar_tot, args.libellen_maanden)
+    if args.verken_libellen:
+        try:
+            validate_libel_exploration_parameters(*exploration_args)
+        except ValueError as exc:
+            parser.error(str(exc))
+        if args.libellen_analysetype != "TV":
+            parser.error("--verken-libellen ondersteunt uitsluitend analysetype TV")
+    elif any(value is not None for value in exploration_args):
+        parser.error("Routefamilie, jaren en maanden vereisen --verken-libellen")
     from import_external_ecology_sources import central_query_guarded_operation
-    mutates = (not args.dry_run and not args.selecteer_libellen
+    mutates = (not args.dry_run and not args.selecteer_libellen and not args.verken_libellen
         and args.compare_sovon_bmp_year is None
         and not any(value for key,value in vars(args).items() if key.startswith('audit_')))
     return central_query_guarded_operation(lambda: execute_main(args,parser), enabled=mutates,
@@ -12655,6 +12773,14 @@ def execute_main(args,parser) -> int:
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_libellen(args.mysql_client, client_args)
         print(json.dumps(metrics, ensure_ascii=False, sort_keys=True))
+        return 0
+    if args.verken_libellen:
+        sources, matrix = read_libel_analysis_inputs(args.mysql_client, client_args, "TV")
+        selection = select_libel_analysis_rows(sources, matrix, "TV")
+        result = explore_libel_analysis_selection(selection, sources, args.libellen_routefamilie,
+            args.libellen_jaar_van, args.libellen_jaar_tot, args.libellen_maanden,
+            expected_taxa={r["taxon_id"] for r in matrix})
+        print(json.dumps(result, ensure_ascii=False, sort_keys=True))
         return 0
     if args.audit_libellen_selectie or args.selecteer_libellen:
         result = read_libel_analysis_selection(args.mysql_client, client_args,

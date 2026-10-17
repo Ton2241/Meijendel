@@ -1604,3 +1604,16 @@ zijn inhoudelijk gelijk in staging en MySQL; de beveiligde levering bevat geen
 07.201-records en geen gevulde sessiesleutel. Er is geen externe vervolgvraag
 verstuurd. De volledige selectievoorwaarden en controle-uitkomsten staan in
 `docs/bronnen/audits/NDFF_PROTOCOLAUDIT.md` en beide versies van het bronregister.
+
+
+## 17 oktober 2026 — vaste beschrijvende libellenvergelijking
+
+`--verken-libellen` voert de eerder vastgelegde bezoekvergelijking uit onder
+`ndff-libellen-verkenning-v1`. Routefamilie, jaren en maanden worden expliciet
+gekozen. De bronselectie, bezoekperioden en matrix worden samen alleen-lezen
+opgehaald; ontbrekende of ongelijke maanddekking en onvolledige matrices
+blokkeren de uitvoer. Alle taxa, nuluitkomsten, bestaande nulbewijzen en
+kwaliteitsbeperkingen blijven zichtbaar. De uitvoer telt positieve bezoeken,
+geen individuen, en schat geen populatietrend. De bestaande toelating,
+reconstructie, bronbeoordeling en M16-uitkomsten wijzigen niet. Er zijn geen
+wijzigingen in de levende database, dump, caches of VPS nodig.

@@ -270,56 +270,46 @@ onderliggende regel aanwezig:
 
 > Voorlopig resultaat op basis van protocolgeschiktheid en doelbereik. De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid. De leveringsgeschiktheid (telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden) en verdere validatie zijn nog niet beoordeeld. Gebruik de uitkomst daarom verkennend en niet als definitief bewijs van trend, afwezigheid of beheereffect.
 
-**Herhaalbare berekening.** Voer eerst `--audit-live` en `--audit-libellen` uit.
-Gebruik daarna vanuit de repositoryroot de bestaande selectiefunctie en de
-oorspronkelijke bezoekdatums. De functie leest de bronselectie en matrix in
-één alleen-lezen snapshot; de bezoekdatums worden afzonderlijk alleen-lezen
-opgehaald. Bij tussentijdse bronwijzigingen moet de controle opnieuw worden
-uitgevoerd. Onderstaande controle stopt bij ontbrekende bezoeken of een
-andere maanddekking, in plaats van ontbrekende bezoeken als nul in te vullen.
+**Vaste lokale opdracht.** Voer vóór inhoudelijke rapportage de bestaande
+controles `--audit-live` en `--audit-libellen` uit. De onderstaande opdracht
+maakt de beschrijvende vergelijking opnieuw uit de levende database:
 
-```python
-import json
-import sys
-from collections import Counter, defaultdict
-from pathlib import Path
-
-sys.path.insert(0, "gis/scripts")
-import import_ndff_protocolkwaliteit as ndff
-
-client = Path("/usr/local/mysql/bin/mysql")
-args = ndff.mysql_args("meijendel_root", "127.0.0.1", 3306)
-selection = ndff.read_libel_analysis_selection(client, args, "TV")
-sql = """
-START TRANSACTION READ ONLY;
-SELECT JSON_OBJECT('key',bezoek_sleutel,'start',periode_start,'stop',periode_stop)
-FROM Meijendel.ndff_libel_bezoek
-WHERE reconstructieversie='ndff-libellenroute-v1';
-COMMIT;
-"""
-raw = ndff.run_mysql(client, args + ["--batch", "--raw", "--skip-column-names"],
-                     sql, capture=True)
-dates = {r["key"]: r for r in map(json.loads, raw.splitlines())}
-assert all(r["bezoek_sleutel"] in dates for r in selection["matrix"])
-matrix = [r for r in selection["matrix"]
-          if r["routefamilie_id"] == 3 and 2010 <= r["jaar"] <= 2015
-          and dates[r["bezoek_sleutel"]]["start"][5:7] in ("06", "07", "08")]
-visits = {r["bezoek_sleutel"]: r for r in matrix}
-months = Counter((r["jaar"], dates[k]["start"][5:7]) for k,r in visits.items())
-assert all(months[(y,m)] == 2 for y in range(2010,2016)
-           for m in ("06", "07", "08"))
-assert all(r["gegevensgeschiktheid"] and r["kwaliteitsmelding"]
-           and r["analysetype_gegevensgeschiktheid"]
-           and r["analysetype_kwaliteitsmelding"] for r in matrix)
-taxa = defaultdict(list)
-for r in matrix:
-    taxa[r["taxon_id"]].append(r)
-for taxon_id, rows in sorted(taxa.items(), key=lambda item:item[1][0]["weergavenaam"]):
-    assert all(sum(r["jaar"] == y for r in rows) == 6 for y in range(2010,2016))
-    print(taxon_id, rows[0]["weergavenaam"],
-          [sum(r["jaar"] == y and r["waarnemingsstatus"] == "waargenomen"
-               for r in rows) for y in range(2010,2016)])
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --verken-libellen \
+  --libellen-routefamilie 3 --libellen-jaar-van 2010 --libellen-jaar-tot 2015 \
+  --libellen-maanden 6 7 8
 ```
+
+De opdracht gebruikt `ndff-libellen-verkenning-v1` en uitsluitend analysetype
+`TV`. Routefamilie, beide jaartallen en unieke maanden 1–12 zijn verplicht;
+zij kunnen voor een andere afgebakende vergelijking worden aangepast. De bron-,
+bezoekdatum- en matrixlezing gebeuren in dezelfde alleen-lezen snapshot.
+`ndff-libellen-selectie-v1` blijft de toelating bepalen; de opdracht verandert
+geen reconstructie of analysebesluit.
+
+De opdracht stopt bij een ontbrekende jaar-maandcombinatie of een ongelijk
+aantal geselecteerde bezoeken per gekozen maand en jaar. Ook ontbrekende of
+tegenstrijdige bezoekdatums, bronperioden over meerdere kalenderdagen,
+meerdere bezoeken op dezelfde routedatum, dubbele centrale bezoek-taxonparen
+en onvolledige taxonmatrices blokkeren de vergelijking. De verwachte centrale
+taxonset komt uit de volledige gereconstrueerde matrix, vóór toelating en keuze
+van route, jaren en maanden. Daardoor wordt ook een taxon dat in het hele
+gekozen tijdvak ontbreekt herkend. De afzonderlijke reconstructie-audit blijft
+nodig om de volledige reconstructie zelf tegen het bronprofiel te controleren.
+Ontbrekende bezoeken of taxonregels worden nooit als nul aangevuld. Gelijke aantallen bezoeken per
+maand bewijzen nog geen gelijke inspanning of detectiekans.
+
+De interne JSON-uitvoer bevat de gekozen routefamilie, plot-ID's, jaren en
+maanden, de dekking per jaar-maand, de omvang en alle taxonuitkomsten. Per taxon
+staan per jaar zowel het aantal geselecteerde bezoeken als het aantal bezoeken
+met positieve registratie. Ook taxa zonder positieve registratie en taxa zonder
+soortgroep blijven zichtbaar. De algemene en TV-kwaliteitsvelden, bestaande
+nulbewijzen en de versies blijven behouden; de toelichting op de grenzen van
+interpretatie staat bij de uitvoer. Er worden geen aantallen individuen opgeteld
+of trendmodellen geschat. Voor de afzonderlijke oorspronkelijke matrixregels
+blijft `--selecteer-libellen` beschikbaar. Zonder `--verken-libellen` mogen de
+route-, jaar- en maandopties niet worden gebruikt; de opdracht stopt dan vóór
+databasecontact, zodat deze opties nooit per ongeluk een import starten.
 
 De reconstructie-audit van 17 oktober 2026 geeft nul ongeldige matrixregels,
 nul afwijkingen tussen positieve bron- en matrixaantallen en nul nullen buiten
