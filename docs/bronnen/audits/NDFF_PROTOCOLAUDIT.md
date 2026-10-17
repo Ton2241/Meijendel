@@ -183,6 +183,150 @@ dan stopt de selectie. De algemene V-status vervangt dit typegebonden besluit ni
 De codes TV en TA geven het gekozen protocolmatige gebruik aan; de onveranderde
 kwaliteitsmelding en gegevensgeschiktheid bepalen de grenzen van de interpretatie.
 
+### Dekking en eerste beschrijvende libellenvergelijking
+
+**Stand 17 oktober 2026.** De 98 geselecteerde bezoeken met 515 bronrecords uit
+2010–2021 vormen zes gereconstrueerde routefamilies in vier plots. De jaren
+2016, 2018 en 2019 ontbreken in deze selectie. Dat zegt niets over wel of niet
+tellen buiten de selectie; deze jaren worden niet met nullen aangevuld.
+
+| Routefamilie | Plot | Jaar | Geselecteerde bezoeken |
+|---|---|---|---:|
+| 1 | M14 | 2015 / 2017 | 3 / 9 |
+| 3 | M16 | 2010 / 2011 / 2012 / 2013 / 2014 / 2015 | 9 / 10 / 9 / 10 / 10 / 8 |
+| 4 | M74 | 2020 / 2021 | 6 / 9 |
+| 6 | M74 | 2020 | 5 |
+| 8 | M74 | 2021 | 9 |
+| 9 | M105 | 2020 | 1 |
+
+Alle 98 geselecteerde bronperioden beginnen en eindigen op dezelfde kalenderdag.
+De 28 bezoeken van de routefamilies 4, 6 en 8 delen in M74 veertien plot-datums:
+vijf in 2020 en negen in 2021. De bronperioden verschillen. Een gedeelde
+plot-datum bewijst dus geen dubbele waarneming en rechtvaardigt geen
+verwijdering, maar zonder native route-/sectieadministratie is hun onderlinge
+onafhankelijkheid evenmin aangetoond. Deze bezoeken worden niet samengevoegd
+of als bewezen onafhankelijke herhalingen opgeteld. De 98 bezoeken geven 84
+unieke plot-datums; ook dat zijn geen 84 bewezen native bezoeken.
+
+Routefamilie 3 in M16 heeft 56 geselecteerde bezoeken uit zes opeenvolgende
+jaren, 2010–2015. De seizoensdekking verschilt: mei ontbreekt in de selectie
+van 2015, terwijl in 2010 en 2012 slechts één septemberbezoek is geselecteerd.
+Voor een eerste beschrijvende vergelijking is daarom uitsluitend juni–augustus
+gebruikt: 36 bezoeken met 156 bronrecords, precies zes bezoeken per jaar en twee
+per maand. Dit maakt de maandverdeling gelijk; het bewijst geen gelijke
+inspanning, detectiekans of volledigheid van alle oorspronkelijke bezoeken.
+
+De onderstaande uitkomst telt per taxon het aantal geselecteerde bezoeken met
+een positieve registratie, steeds uit zes bezoeken per jaar. Er worden geen
+aangeleverde aantallen opgeteld. Alle 29 taxa worden getoond, ook de achttien
+zonder positieve registratie in deze deelreeks. Een 0 betekent hier uitsluitend
+geen positieve registratie tijdens deze zes geselecteerde bezoeken. De
+1.044 onderliggende matrixregels bevatten 103 positieve combinaties en 941
+bestaande afgeleide nullen. De nullen en hun bewijs zijn onveranderd behouden;
+zij worden niet als zelfstandig bewijs van afwezigheid gepresenteerd.
+
+| Taxon | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 |
+|---|---:|---:|---:|---:|---:|---:|
+| Azuurwaterjuffer | 0 | 0 | 0 | 0 | 0 | 1 |
+| Bloedrode heidelibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Bruine glazenmaker | 0 | 0 | 0 | 0 | 0 | 0 |
+| Bruine winterjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Bruinrode heidelibel | 0 | 3 | 1 | 1 | 3 | 0 |
+| Geelvlekheidelibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Gewone oeverlibel | 4 | 3 | 6 | 6 | 4 | 2 |
+| Gewone pantserjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Glassnijder | 0 | 0 | 0 | 0 | 0 | 0 |
+| Grote keizerlibel | 0 | 2 | 3 | 2 | 3 | 2 |
+| Grote roodoogjuffer | 0 | 0 | 0 | 0 | 0 | 1 |
+| Houtpantserjuffer | 1 | 1 | 0 | 0 | 0 | 0 |
+| Kleine roodoogjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Lantaarntje | 4 | 1 | 0 | 3 | 5 | 1 |
+| Noordse witsnuitlibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Paardenbijter | 0 | 0 | 0 | 0 | 0 | 0 |
+| Platbuik | 0 | 0 | 0 | 0 | 0 | 0 |
+| Steenrode heidelibel | 0 | 0 | 0 | 1 | 1 | 0 |
+| Tengere grasjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Tengere pantserjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Variabele waterjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Viervlek | 0 | 0 | 0 | 1 | 0 | 0 |
+| Vroege glazenmaker | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vuurjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vuurlibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Watersnuffel | 6 | 6 | 6 | 6 | 6 | 3 |
+| Zwarte heidelibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Zwervende heidelibel | 0 | 0 | 1 | 1 | 0 | 2 |
+| Zwervende pantserjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+
+**Betekenis en grens.** Dit is een vergelijking van geregistreerde aanwezigheid
+binnen één gereconstrueerde routefamilie en een gelijk gekozen deel van het
+seizoen. Er is geen trendmodel geschat en er zijn geen effectgrootte,
+significantietoets, abundantie-, afwezigheids- of beheerconclusie afgeleid. De
+routefamilie is geen bevestigd oorspronkelijk routenummer. Weer, teller,
+oorspronkelijke inspanning en volledig lege bezoeken zijn niet door deze
+berekening verkregen. Zowel `gegevensgeschiktheid` als
+`analysetype_gegevensgeschiktheid` blijven voor de 1.044 regels
+`niet_beoordeeld`. De algemene en TV-kwaliteitsmelding blijven bij elke
+onderliggende regel aanwezig:
+
+> Voorlopig resultaat op basis van protocolgeschiktheid en doelbereik. De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid. De leveringsgeschiktheid (telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden) en verdere validatie zijn nog niet beoordeeld. Gebruik de uitkomst daarom verkennend en niet als definitief bewijs van trend, afwezigheid of beheereffect.
+
+**Herhaalbare berekening.** Voer eerst `--audit-live` en `--audit-libellen` uit.
+Gebruik daarna vanuit de repositoryroot de bestaande selectiefunctie en de
+oorspronkelijke bezoekdatums. De functie leest de bronselectie en matrix in
+één alleen-lezen snapshot; de bezoekdatums worden afzonderlijk alleen-lezen
+opgehaald. Bij tussentijdse bronwijzigingen moet de controle opnieuw worden
+uitgevoerd. Onderstaande controle stopt bij ontbrekende bezoeken of een
+andere maanddekking, in plaats van ontbrekende bezoeken als nul in te vullen.
+
+```python
+import json
+import sys
+from collections import Counter, defaultdict
+from pathlib import Path
+
+sys.path.insert(0, "gis/scripts")
+import import_ndff_protocolkwaliteit as ndff
+
+client = Path("/usr/local/mysql/bin/mysql")
+args = ndff.mysql_args("meijendel_root", "127.0.0.1", 3306)
+selection = ndff.read_libel_analysis_selection(client, args, "TV")
+sql = """
+START TRANSACTION READ ONLY;
+SELECT JSON_OBJECT('key',bezoek_sleutel,'start',periode_start,'stop',periode_stop)
+FROM Meijendel.ndff_libel_bezoek
+WHERE reconstructieversie='ndff-libellenroute-v1';
+COMMIT;
+"""
+raw = ndff.run_mysql(client, args + ["--batch", "--raw", "--skip-column-names"],
+                     sql, capture=True)
+dates = {r["key"]: r for r in map(json.loads, raw.splitlines())}
+assert all(r["bezoek_sleutel"] in dates for r in selection["matrix"])
+matrix = [r for r in selection["matrix"]
+          if r["routefamilie_id"] == 3 and 2010 <= r["jaar"] <= 2015
+          and dates[r["bezoek_sleutel"]]["start"][5:7] in ("06", "07", "08")]
+visits = {r["bezoek_sleutel"]: r for r in matrix}
+months = Counter((r["jaar"], dates[k]["start"][5:7]) for k,r in visits.items())
+assert all(months[(y,m)] == 2 for y in range(2010,2016)
+           for m in ("06", "07", "08"))
+assert all(r["gegevensgeschiktheid"] and r["kwaliteitsmelding"]
+           and r["analysetype_gegevensgeschiktheid"]
+           and r["analysetype_kwaliteitsmelding"] for r in matrix)
+taxa = defaultdict(list)
+for r in matrix:
+    taxa[r["taxon_id"]].append(r)
+for taxon_id, rows in sorted(taxa.items(), key=lambda item:item[1][0]["weergavenaam"]):
+    assert all(sum(r["jaar"] == y for r in rows) == 6 for y in range(2010,2016))
+    print(taxon_id, rows[0]["weergavenaam"],
+          [sum(r["jaar"] == y and r["waarnemingsstatus"] == "waargenomen"
+               for r in rows) for y in range(2010,2016)])
+```
+
+De reconstructie-audit van 17 oktober 2026 geeft nul ongeldige matrixregels,
+nul afwijkingen tussen positieve bron- en matrixaantallen en nul nullen buiten
+algemeen doelbereik. De controle van de vaste analyseketen is afzonderlijk
+uitgevoerd. Er zijn geen bronrecords, analysebesluiten of databasetabellen
+gewijzigd en geen export, cachebouw of VPS-publicatie uitgevoerd.
+
 ### Wetenschappelijke meerwaarde van ontbrekende Vlinderstichting-velden
 
 De handleidingen maken zichtbaar welke ontbrekende gegevens vooral extra

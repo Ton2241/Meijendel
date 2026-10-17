@@ -243,6 +243,8 @@ De controle van de 3.280 bronrecords en 461 bezoeken uit 2007–2021 selecteert 
 
 De alleen-lezen T7-controle van 17 oktober 2026 vond in de gecontroleerde gegevensmap en archiefinhoud geen afzonderlijke Vlinderstichting-levering. Alle 3.280 libellenregels uit 2007–2021 in de stagingdataset komen op identificatie, periode, taxonnaam, aantal en protocol overeen met de levende database. De beveiligde NDFF-levering van 14.573 records uit 1950–2025 bevat geen `07.201`-records en geen gevuld `sessionid`. Deze controle sluit een levering elders niet uit; de oorspronkelijke route- en bezoekadministratie is hiermee niet verkregen.
 
+De dekkingscontrole van 17 oktober 2026 verdeelt deze 98 bezoeken uit 2010–2021 over zes gereconstrueerde routefamilies; 2016, 2018 en 2019 ontbreken in deze selectie en gelden niet als nuljaren. Routefamilie 3 in M16 bevat 56 bezoeken uit 2010–2015. Daarbinnen vormen 36 bezoeken met 156 bronrecords uit juni–augustus een eerste beschrijvende vergelijking: elk jaar zes bezoeken, twee per maand. De 1.044 matrixregels bevatten 103 positieve combinaties voor elf taxa en 941 bestaande afgeleide nullen; achttien van de 29 taxa hebben geen positieve registratie in deze deelreeks. Dit bewijst geen afwezigheid of populatietrend. In M74 vallen 28 geselecteerde bezoeken uit 2020–2021 op veertien gedeelde plot-datums; zonder oorspronkelijke routeadministratie worden zij niet als bewezen onafhankelijke herhalingen opgeteld. De volledige dekking en alle 29 taxonuitkomsten staan in de protocolaudit. De kwaliteitsstatus blijft niet_beoordeeld.
+
 #### 1.5.4. Nachtvlinders
 
 **Omvang en periode.** 596 records, 2019–2025
