@@ -1,5 +1,3 @@
-args <- commandArgs(trailingOnly = TRUE)
-
 user_lib <- file.path(Sys.getenv("HOME"), "Library/R/arm64/4.5/library")
 if (dir.exists(user_lib)) {
   .libPaths(c(user_lib, .libPaths()))
@@ -12,13 +10,6 @@ script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = 
 script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
 source(file.path(script_dir, "trim_trend_contract.R"))
 source(file.path(script_dir, "meijendel_cache_contract.R"))
-
-sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
-species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/soorten"
-group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg"
-
-dir.create(species_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(group_dir, recursive = TRUE, showWarnings = FALSE)
 
 historische_kavels <- c(
   "1", "1a", "1b", "2", "3", "4", "4-5", "5", "6", "7", "8", "8/9", "8/11",
@@ -1179,7 +1170,7 @@ classify_gam_need <- function(gam_summary) {
   out[order(out$groep_100), ]
 }
 
-write_outputs <- function(basis, species_results, group_results, functional_group_results) {
+write_outputs <- function(basis, species_results, group_results, functional_group_results, species_dir, group_dir) {
   status_samenvatting <- maak_status_samenvatting(species_results$status)
   bruikbaar_status <- species_results$status[species_results$status$analyse_categorie == "brugbare_tijdreeks", ]
   bruikbaar_trends <- species_results$trends[species_results$trends$analyse_categorie == "brugbare_tijdreeks", ]
@@ -1208,48 +1199,55 @@ write_outputs <- function(basis, species_results, group_results, functional_grou
   write.csv(functional_group_results$loso, file.path(group_dir, "functionele_loso_trendgevoeligheid.csv"), row.names = FALSE)
 }
 
-tbls <- parse_tables(sql_path)
-basis <- prepare_analysis_basis(tbls)
-species_matrix <- build_species_matrix(tbls, basis)
-species_results <- analyse_species(species_matrix)
-group_mapping <- build_group_mapping(tbls)
-full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig")
-robust_ids <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
-robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
-robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust")
-group_results <- list(
-  msi = rbind(full_group_results$msi, robust_group_results$msi),
-  trends = rbind(full_group_results$trends, robust_group_results$trends),
-  composition = rbind(full_group_results$composition, robust_group_results$composition)
-)
-gam_parts <- fit_gam_msi(group_results$msi)
-group_results$gam_predictions <- gam_parts$predictions
-group_results$gam_summary <- gam_parts$summary
-group_results$gam_interpretation <- classify_gam_need(gam_parts$summary)
-functional_group_mapping <- build_functional_group_mapping(tbls)
-functional_parts <- list()
-for (analysis_mode in c("binair", "gewogen")) {
-  functional_parts[[paste(analysis_mode, "volledig", sep = "_")]] <- analyse_functional_groups(
-    species_results$indices,
-    functional_group_mapping,
-    analysis_mode,
-    "volledig"
-  )
-  functional_parts[[paste(analysis_mode, "robuust", sep = "_")]] <- analyse_functional_groups(
-    robust_indices,
-    functional_group_mapping,
-    analysis_mode,
-    "robuust"
-  )
-}
-functional_group_results <- list(
-  msi = do.call(rbind, lapply(functional_parts, `[[`, "msi")),
-  trends = do.call(rbind, lapply(functional_parts, `[[`, "trends")),
-  composition = do.call(rbind, lapply(functional_parts, `[[`, "composition")),
-  loso = do.call(rbind, lapply(functional_parts, `[[`, "loso"))
-)
-write_outputs(basis, species_results, group_results, functional_group_results)
+trim_main <- function(args = commandArgs(trailingOnly = TRUE)) {
+  sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
+  species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/soorten"
+  group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg"
+  dir.create(species_dir, recursive = TRUE, showWarnings = FALSE)
+  dir.create(group_dir, recursive = TRUE, showWarnings = FALSE)
 
-cat("Klaar.\n")
-cat("Soorten-output:", species_dir, "\n")
-cat("Groeps-output:", group_dir, "\n")
+  tbls <- parse_tables(sql_path)
+  basis <- prepare_analysis_basis(tbls)
+  species_matrix <- build_species_matrix(tbls, basis)
+  species_results <- analyse_species(species_matrix)
+  group_mapping <- build_group_mapping(tbls)
+  full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig")
+  robust_ids <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
+  robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
+  robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust")
+  group_results <- list(
+    msi = rbind(full_group_results$msi, robust_group_results$msi),
+    trends = rbind(full_group_results$trends, robust_group_results$trends),
+    composition = rbind(full_group_results$composition, robust_group_results$composition)
+  )
+  gam_parts <- fit_gam_msi(group_results$msi)
+  group_results$gam_predictions <- gam_parts$predictions
+  group_results$gam_summary <- gam_parts$summary
+  group_results$gam_interpretation <- classify_gam_need(gam_parts$summary)
+  functional_group_mapping <- build_functional_group_mapping(tbls)
+  functional_parts <- list()
+  for (analysis_mode in c("binair", "gewogen")) {
+    functional_parts[[paste(analysis_mode, "volledig", sep = "_")]] <- analyse_functional_groups(
+      species_results$indices, functional_group_mapping, analysis_mode, "volledig"
+    )
+    functional_parts[[paste(analysis_mode, "robuust", sep = "_")]] <- analyse_functional_groups(
+      robust_indices, functional_group_mapping, analysis_mode, "robuust"
+    )
+  }
+  functional_group_results <- list(
+    msi = do.call(rbind, lapply(functional_parts, `[[`, "msi")),
+    trends = do.call(rbind, lapply(functional_parts, `[[`, "trends")),
+    composition = do.call(rbind, lapply(functional_parts, `[[`, "composition")),
+    loso = do.call(rbind, lapply(functional_parts, `[[`, "loso"))
+  )
+  write_outputs(basis, species_results, group_results, functional_group_results, species_dir, group_dir)
+
+  cat("Klaar.\n")
+  cat("Soorten-output:", species_dir, "\n")
+  cat("Groeps-output:", group_dir, "\n")
+  invisible(list(basis = basis, species = species_results, groups = group_results, functional_groups = functional_group_results))
+}
+
+if (sys.nframe() == 0L) {
+  trim_main(commandArgs(trailingOnly = TRUE))
+}

@@ -1,5 +1,3 @@
-args <- commandArgs(trailingOnly = TRUE)
-
 user_lib <- file.path(Sys.getenv("HOME"), "Library/R/arm64/4.5/library")
 if (dir.exists(user_lib)) {
   .libPaths(c(user_lib, .libPaths()))
@@ -11,13 +9,6 @@ script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = 
 script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
 source(file.path(script_dir, "trim_trend_contract.R"))
 source(file.path(script_dir, "meijendel_cache_contract.R"))
-
-sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
-species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/soorten"
-group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/trim_msi_evg"
-
-dir.create(species_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(group_dir, recursive = TRUE, showWarnings = FALSE)
 
 sandra_kavels <- c(
   "1a", "1b", "3", "4-5", "6", "7", "8", "10-12-76", "12a", "13",
@@ -741,7 +732,7 @@ analyse_groups <- function(species_indices, group_mapping, msi_variant = "volled
   )
 }
 
-write_outputs <- function(basis, selection_df, species_results, group_results) {
+write_outputs <- function(basis, selection_df, species_results, group_results, species_dir, group_dir) {
   status_samenvatting <- maak_status_samenvatting(species_results$status)
   bruikbaar_status <- species_results$status[species_results$status$analyse_categorie == "trim_bruikbaar", ]
   bruikbaar_trends <- species_results$trends[species_results$trends$analyse_categorie == "trim_bruikbaar", ]
@@ -763,28 +754,41 @@ write_outputs <- function(basis, selection_df, species_results, group_results) {
   write.csv(group_results$trends, file.path(group_dir, "trendoverzicht_msi_groepen.csv"), row.names = FALSE)
 }
 
-tbls <- parse_tables(sql_path)
-basis <- prepare_analysis_basis(tbls)
-selection_df <- build_sandra_species_selection(tbls)
-species_matrix <- build_species_matrix(tbls, basis, selection_df)
-species_results <- analyse_species(species_matrix)
-group_mapping <- build_group_mapping(tbls)
-full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig")
-min_robuuste_jaren <- ceiling(0.75 * length(analyse_jaren))
-robust_ids <- species_results$status$soort_id[
-  species_results$status$analyse_categorie == "trim_bruikbaar" &
-    species_results$status$n_jaren_geteld >= min_robuuste_jaren &
-    species_results$status$n_actieve_plots >= 2L
-]
-robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
-robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust")
-group_results <- list(
-  msi = rbind(full_group_results$msi, robust_group_results$msi),
-  trends = rbind(full_group_results$trends, robust_group_results$trends),
-  composition = rbind(full_group_results$composition, robust_group_results$composition)
-)
-write_outputs(basis, selection_df, species_results, group_results)
+trim_sandra_main <- function(args = commandArgs(trailingOnly = TRUE)) {
+  sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
+  species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/soorten"
+  group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim/sandra/trim_msi_evg"
+  dir.create(species_dir, recursive = TRUE, showWarnings = FALSE)
+  dir.create(group_dir, recursive = TRUE, showWarnings = FALSE)
 
-cat("Klaar.\n")
-cat("Sandra soorten-output:", species_dir, "\n")
-cat("Sandra groeps-output:", group_dir, "\n")
+  tbls <- parse_tables(sql_path)
+  basis <- prepare_analysis_basis(tbls)
+  selection_df <- build_sandra_species_selection(tbls)
+  species_matrix <- build_species_matrix(tbls, basis, selection_df)
+  species_results <- analyse_species(species_matrix)
+  group_mapping <- build_group_mapping(tbls)
+  full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig")
+  min_robuuste_jaren <- ceiling(0.75 * length(analyse_jaren))
+  robust_ids <- species_results$status$soort_id[
+    species_results$status$analyse_categorie == "trim_bruikbaar" &
+      species_results$status$n_jaren_geteld >= min_robuuste_jaren &
+      species_results$status$n_actieve_plots >= 2L
+  ]
+  robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
+  robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust")
+  group_results <- list(
+    msi = rbind(full_group_results$msi, robust_group_results$msi),
+    trends = rbind(full_group_results$trends, robust_group_results$trends),
+    composition = rbind(full_group_results$composition, robust_group_results$composition)
+  )
+  write_outputs(basis, selection_df, species_results, group_results, species_dir, group_dir)
+
+  cat("Klaar.\n")
+  cat("Sandra soorten-output:", species_dir, "\n")
+  cat("Sandra groeps-output:", group_dir, "\n")
+  invisible(list(basis = basis, selection = selection_df, species = species_results, groups = group_results))
+}
+
+if (sys.nframe() == 0L) {
+  trim_sandra_main(commandArgs(trailingOnly = TRUE))
+}
