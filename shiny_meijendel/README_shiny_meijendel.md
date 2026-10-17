@@ -21,10 +21,19 @@ De app staat in:
 
 De soortuitvoer volgt `trim-trend-v2`. Afzonderlijke, aaneengesloten
 TRIM-modelperioden tonen trend, standaardfout, 95%-BI, p-waarde, periode en
-methode uit `rtrim::overall()`. Een gebrugde reeks over `1958-2025` is zonder
-bootstrap uitsluitend beschrijvend en heeft geen formele p-waarde of
-trendklasse. Groeps-MSI-trends zijn eveneens beschrijvend; de MSI-jaarwaarden
-en samenstellingsdiagnostiek blijven beschikbaar.
+methode uit `rtrim::overall()`. Zolang de definitieve 2026-bootstrap ontbreekt,
+is de gebrugde reeks over `1958-2025` uitsluitend beschrijvend en heeft zij geen
+formele p-waarde of trendklasse. Groeps-MSI-trends zijn dan eveneens
+beschrijvend; de MSI-jaarwaarden en samenstellingsdiagnostiek blijven
+beschikbaar.
+
+Na opname van 2026 gebruikt de vaste standaardselectie uitsluitend vooraf
+berekende intervallen uit een publiceerbare run met minimaal 2.000 replicaties.
+De aanvullende reeks `1958-2026` gebruikt de gemeenschappelijke-plotbrug van
+`1981-1983` naar `1986-1988`. De jaren 1984 en 1985 blijven in het tweede
+TRIM-model, maar kalibreren de brug niet. Een afwijkende kavel-, jaar-, soort-
+of groepsselectie krijgt het label `Verkennende selectie; geen formeel
+bootstrapinterval.` Shiny start zelf nooit een bootstrapberekening.
 - duidelijke statusmeldingen tonen bij laden en analyseren
 - een GAM-lijn over de soort- en groepsgrafieken tekenen
 - uitkomsten exporteren naar csv

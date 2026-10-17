@@ -18,6 +18,21 @@ library(shiny)
 
 default_sql <- resolve_meijendel_sql_path()
 
+trim_uncertainty_status_tag <- function(resolved) {
+  if (is.null(resolved) || identical(resolved$status, "descriptive_pending_final_run")) {
+    return(tags$p(class = "section-note", "Definitieve 2026-bootstrap nog niet beschikbaar; de lange trend en groeps-MSI blijven beschrijvend."))
+  }
+  if (identical(resolved$status, "exploratory_no_formal_interval")) {
+    return(tags$div(class = "method-warning", tags$strong("Verkennende selectie; geen formeel bootstrapinterval.")))
+  }
+  tags$p(class = "section-note", "Voor deze exacte standaardselectie worden vooraf berekende formele bootstrapintervallen getoond. Shiny rekent de bootstrap niet interactief uit.")
+}
+
+trim_uncertainty_display_columns <- function(rows) {
+  wanted <- c("entity_id", "period", "estimate_pct_per_year", "ci_low_pct", "ci_high_pct", "p_value", "interval_method", "valid_replicates", "bridge_status", "coverage_status")
+  rows[, intersect(wanted, names(rows)), drop = FALSE]
+}
+
 future_analysis_tab <- function(title, subtitle) {
   tabPanel(
     title,
@@ -369,7 +384,7 @@ ui <- navbarPage(
               tags$li("Ec. Vogelgroepen")
             ),
             h4("1. TRIM"),
-            tags$p("TRIM (TRends and Indices for Monitoring data) is een door het Centraal Bureau voor de Statistiek ontwikkeld statistisch model voor analyse van telreeksen met ontbrekende waarnemingen. Het zet tellingen om in indexcijfers, waarbij index 100 hier het eerste analysejaar vanaf het eerste positieve jaar betekent. De app kiest het eerste werkende model volgens een vaste voorkeurshierarchie; dit is geen AIC-modelselectie. De trendlabels zijn eigen trendduidingen op basis van de TRIM-index, geen officiële TRIM-classificaties. Een deel van de territoria data is niet volgens de gestandaardiseerde landelijke SOVON-methode geinterpreteerd. Dit geldt o.a. voor de periode 1958-1983 in Meijendel. In de TRIM analyses wordt, bij gebruik van data voor 1984, gewerkt met brugjaren om de TRIM data vergelijkbaar te maken. Het betreft de jaren 1981-1982-1983 en de jaren 1984-1985-1986."),
+            tags$p("TRIM (TRends and Indices for Monitoring data) is een door het Centraal Bureau voor de Statistiek ontwikkeld statistisch model voor analyse van telreeksen met ontbrekende waarnemingen. Het zet tellingen om in indexcijfers, waarbij index 100 hier het eerste analysejaar vanaf het eerste positieve jaar betekent. De app kiest het eerste werkende model volgens een vaste voorkeurshierarchie; dit is geen AIC-modelselectie. De trendlabels zijn eigen trendduidingen op basis van de TRIM-index, geen officiële TRIM-classificaties. Een deel van de territoria data is niet volgens de gestandaardiseerde landelijke SOVON-methode geinterpreteerd. Dit geldt o.a. voor de periode 1958-1983 in Meijendel. De voorbereide langetermijnmethode gebruikt de gemeenschappelijke plots uit 1981-1983 en 1986-1988 voor de brug. De overgangsjaren 1984-1985 blijven in het tweede TRIM-model, maar kalibreren de brug niet."),
             h4("2. LAMBDA"),
             tags$p("De LAMBDA-methode beschrijft populatieverandering via de groeifactor λ, gedefinieerd als de verhouding tussen aantallen in opeenvolgende jaren (λ = Nₜ₊₁ / Nₜ). Een waarde λ > 1 duidt op groei, λ < 1 op afname en λ = 1 op stabiliteit. Door λ per jaar te berekenen ontstaat een tijdreeks van relatieve veranderingen, die eenvoudig te middelen of cumuleren is. De methode vereist consistente tellingen en is gevoelig voor nulwaarden en waarnemingsfouten. Om die reden zijn sporadisch verschijnende soorten niet meegenomen in de berekening van de MSI van de ec. vogelgroepen. In de praktijk wordt vaak gewerkt met log-transformaties van λ om trends statistisch stabieler te analyseren. LAMBDA gebruikt drie T0-perioden: 1959-1972 (T0=1959), 1973-1983 (T0=1973) en 1984-heden (T0=1984)."),
             h4("3. Biodiversity analyse"),
@@ -448,6 +463,7 @@ ui <- navbarPage(
               "Soorten",
               uiOutput("species_picker_ui"),
               uiOutput("trim_species_model_warning_ui"),
+              uiOutput("trim_species_uncertainty_status_ui"),
               tags$p(class = "section-note", "Groen: TRIM-index per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
               tags$p(class = "section-note", "Download hier de TRIM-uitkomsten per soort: trendoverzicht en indexreeks."),
               plotOutput("species_plot", height = "420px"),
@@ -455,11 +471,14 @@ ui <- navbarPage(
                   downloadButton("download_species_trends", "CSV TRIM-trends"),
                   downloadButton("download_species_indices", "CSV TRIM-indices")),
               h4("Trend per soort"),
-              tableOutput("species_table")
+              tableOutput("species_table"),
+              h4("Formele bootstraponzekerheid standaardselectie"),
+              tableOutput("trim_species_uncertainty_table")
             ),
             tabPanel(
               "Groepen",
               uiOutput("group_picker_ui"),
+              uiOutput("trim_group_uncertainty_status_ui"),
               tags$p(class = "section-note", "Blauw: MSI per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
               tags$p(class = "section-note", "Download hier de groepsuitkomsten: trendoverzicht en MSI per jaar."),
               plotOutput("group_plot", height = "420px"),
@@ -468,12 +487,15 @@ ui <- navbarPage(
                   downloadButton("download_group_msi", "CSV MSI per groep")),
               h4("Trend per groep"),
               tableOutput("group_table"),
+              h4("Formele bootstraponzekerheid standaardselectie"),
+              tableOutput("trim_group_uncertainty_table"),
               h4("Soorten in gekozen groep"),
               tableOutput("group_species_table")
             ),
             tabPanel(
               "Functionele groepen",
               uiOutput("functional_group_picker_ui"),
+              uiOutput("trim_functional_uncertainty_status_ui"),
               radioButtons(
                 "functional_analysis_mode",
                 "Analysewijze",
@@ -489,6 +511,8 @@ ui <- navbarPage(
                   downloadButton("download_functional_group_msi", "CSV functionele MSI")),
               h4("Trend per functionele groep"),
               tableOutput("functional_group_table"),
+              h4("Formele bootstraponzekerheid standaardselectie"),
+              tableOutput("trim_functional_uncertainty_table"),
               h4("Soorten in gekozen functionele groep"),
               tableOutput("functional_group_species_table")
             ),
@@ -1951,6 +1975,11 @@ server <- function(input, output, session) {
           "analyse_subset",
           list(tbls = r_code("tbls"), selected_kavels = selected_plots, year_from = year_from, year_to = year_to)
         )
+        selection_hash <- trim_analysis_selection_hash(analyse, selected_plots, year_from, year_to)
+        analyse$trim_uncertainty <- resolve_trim_uncertainty(
+          selection_hash,
+          load_shiny_trim_uncertainty_results()
+        )
         incProgress(0.9)
         analyse_rv(analyse)
       })
@@ -2999,6 +3028,22 @@ server <- function(input, output, session) {
     )
   })
 
+  output$trim_species_uncertainty_status_ui <- renderUI({
+    analyse <- analyse_rv()
+    req(analyse)
+    trim_uncertainty_status_tag(analyse$trim_uncertainty)
+  })
+  output$trim_group_uncertainty_status_ui <- renderUI({
+    analyse <- analyse_rv()
+    req(analyse)
+    trim_uncertainty_status_tag(analyse$trim_uncertainty)
+  })
+  output$trim_functional_uncertainty_status_ui <- renderUI({
+    analyse <- analyse_rv()
+    req(analyse)
+    trim_uncertainty_status_tag(analyse$trim_uncertainty)
+  })
+
   output$species_plot <- renderPlot({
     analyse <- analyse_rv()
     req(analyse, input$selected_species)
@@ -3044,6 +3089,20 @@ server <- function(input, output, session) {
       "trend_post_klasse", "trend_post_model", "trend_post_model_fallback_reden",
       "brugfactor", "brugmethode"
     )]
+  }, striped = TRUE)
+
+  output$trim_species_uncertainty_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_species)
+    resolved <- analyse$trim_uncertainty
+    validate(need(identical(resolved$status, "precomputed_formal"), "Geen formeel bootstrapinterval voor deze selectie."))
+    trend <- analyse$species_results$trends
+    species_id <- trend$soort_id[match(input$selected_species, trend$soort_naam)]
+    rows <- resolved$rows
+    rows <- rows[grepl("species", rows$entity_type, ignore.case = TRUE) &
+      grepl(paste0("(^|[-_:])", species_id, "($|[-_:])"), rows$entity_id), , drop = FALSE]
+    validate(need(nrow(rows) > 0, "Geen vooraf berekend interval voor deze soort."))
+    trim_uncertainty_display_columns(rows)
   }, striped = TRUE)
 
   output$group_picker_ui <- renderUI({
@@ -4379,6 +4438,20 @@ server <- function(input, output, session) {
     analyse$group_results$trends
   }, striped = TRUE)
 
+  output$trim_group_uncertainty_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_group)
+    resolved <- analyse$trim_uncertainty
+    validate(need(identical(resolved$status, "precomputed_formal"), "Geen formeel bootstrapinterval voor deze selectie."))
+    rows <- resolved$rows
+    rows <- rows[grepl("group", rows$entity_type, ignore.case = TRUE) &
+      !grepl("fun", rows$entity_id, ignore.case = TRUE) &
+      grepl(paste0("(^|[-_:])", input$selected_group, "($|[-_:])"), rows$entity_id), , drop = FALSE]
+    validate(need(nrow(rows) > 0, "Geen vooraf berekend interval voor deze groep."))
+    rows <- rows[order(!grepl("robuust", rows$entity_id, fixed = TRUE)), , drop = FALSE]
+    trim_uncertainty_display_columns(rows)
+  }, striped = TRUE)
+
   output$group_species_table <- renderTable({
     analyse <- analyse_rv()
     req(analyse, input$selected_group)
@@ -4433,6 +4506,19 @@ server <- function(input, output, session) {
       ,
       drop = FALSE
     ]
+  }, striped = TRUE)
+
+  output$trim_functional_uncertainty_table <- renderTable({
+    analyse <- analyse_rv()
+    req(analyse, input$selected_functional_group)
+    resolved <- analyse$trim_uncertainty
+    validate(need(identical(resolved$status, "precomputed_formal"), "Geen formeel bootstrapinterval voor deze selectie."))
+    rows <- resolved$rows
+    rows <- rows[grepl("group", rows$entity_type, ignore.case = TRUE) &
+      grepl(input$selected_functional_group, rows$entity_id, fixed = TRUE), , drop = FALSE]
+    validate(need(nrow(rows) > 0, "Geen vooraf berekend interval voor deze functionele groep."))
+    rows <- rows[order(!grepl("robuust", rows$entity_id, fixed = TRUE)), , drop = FALSE]
+    trim_uncertainty_display_columns(rows)
   }, striped = TRUE)
 
   output$functional_group_species_table <- renderTable({

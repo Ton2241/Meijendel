@@ -35,6 +35,60 @@ source(cache_contract_helper)
 MEIJENDEL_PARSER_CACHE_VERSION <- 15L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
+trim_selection_hash <- function(plots, years, species, groups) {
+  canonical <- list(
+    plots = sort(unique(as.character(plots))),
+    years = sort(unique(as.integer(years))),
+    species = sort(unique(as.character(species))),
+    groups = sort(unique(as.character(groups)))
+  )
+  digest::digest(jsonlite::toJSON(canonical, auto_unbox = TRUE), algo = "sha256", serialize = FALSE)
+}
+
+trim_analysis_selection_hash <- function(analyse, selected_plots, year_from, year_to) {
+  species <- if (!is.null(analyse$species_results$status$soort_id)) analyse$species_results$status$soort_id else character()
+  ecological <- if (!is.null(analyse$group_results$trends$groep_100)) paste0("eco-", analyse$group_results$trends$groep_100) else character()
+  functional <- if (!is.null(analyse$functional_group_results$trends$group_code)) paste0("fun-", analyse$functional_group_results$trends$group_code) else character()
+  trim_selection_hash(selected_plots, seq.int(year_from, year_to), species, c(ecological, functional))
+}
+
+load_shiny_trim_uncertainty_results <- function(candidates = c(Sys.getenv("MEIJENDEL_UNCERTAINTY_ROOT", unset = ""), ".", "..")) {
+  candidates <- unique(candidates[nzchar(candidates)])
+  manifests <- file.path(candidates, "trim", "bootstrap", "run_manifest.json")
+  existing <- which(file.exists(manifests))
+  if (!length(existing)) return(list(manifest = NULL, rows = data.frame()))
+  root <- candidates[[existing[[1L]]]]
+  manifest <- jsonlite::read_json(manifests[[existing[[1L]]]], simplifyVector = TRUE)
+  paths <- c(
+    file.path(root, "trim", "soorten", "soorten_trends_met_onzekerheid.csv"),
+    file.path(root, "trim_msi_evg", "groepstrends_met_onzekerheid.csv"),
+    file.path(root, "trim_msi_evg", "functionele_groepstrends_met_onzekerheid.csv")
+  )
+  if (!all(file.exists(paths))) return(list(manifest = manifest, rows = data.frame()))
+  rows <- do.call(rbind, lapply(paths, utils::read.csv, stringsAsFactors = FALSE))
+  list(manifest = manifest, rows = rows)
+}
+
+resolve_trim_uncertainty <- function(selection_hash, results) {
+  empty <- list(ci_low_pct = NA_real_, ci_high_pct = NA_real_, rows = data.frame())
+  manifest <- results$manifest
+  publishable <- !is.null(manifest) && identical(as.integer(manifest$analysis_end_year), 2026L) &&
+    as.integer(manifest$planned_replicates) >= 2000L && identical(manifest$publication_status, "publiceerbaar")
+  if (!publishable) return(c(list(status = "descriptive_pending_final_run"), empty))
+  if (!identical(as.character(selection_hash), as.character(manifest$selection_hash))) {
+    return(c(list(status = "exploratory_no_formal_interval"), empty))
+  }
+  rows <- results$rows
+  valid <- rows$publication_status != "onvoldoende_bootstrap" & is.finite(rows$ci_low_pct) & is.finite(rows$ci_high_pct)
+  formal <- rows[valid, , drop = FALSE]
+  if (!nrow(formal)) return(c(list(status = "descriptive_pending_final_run"), empty))
+  list(
+    status = "precomputed_formal",
+    ci_low_pct = formal$ci_low_pct[[1L]], ci_high_pct = formal$ci_high_pct[[1L]],
+    rows = rows, manifest = manifest
+  )
+}
+
 extract_columns <- function(header) {
   if (!grepl("\\) VALUES", header, fixed = FALSE)) {
     return(character())

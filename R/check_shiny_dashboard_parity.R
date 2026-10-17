@@ -24,6 +24,10 @@ if (!file.exists(helpers_path)) {
 
 source(helpers_path)
 
+for (helper in c("trim_selection_hash", "trim_analysis_selection_hash", "resolve_trim_uncertainty")) {
+  if (!exists(helper, mode = "function", inherits = TRUE)) fail("Shiny mist onzekerheidshelper: ", helper)
+}
+
 fail <- function(...) {
   stop(paste0(...), call. = FALSE)
 }
