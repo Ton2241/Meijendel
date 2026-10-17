@@ -281,6 +281,31 @@ async function tryAutoLoadWinterCsv(paths,type){
   return false;
 }
 
+function trimUncertaintyManifestIsPublishable(manifest){
+  return manifest&&Number(manifest.analysis_end_year)===2026&&Number(manifest.planned_replicates)>=2000&&manifest.publication_status==="publiceerbaar";
+}
+
+async function tryAutoLoadTrimUncertainty(){
+  try{
+    const manifest=JSON.parse(await fetchTextFile(AUTOLOAD_PATHS.trimUncertaintyManifest));
+    if(!trimUncertaintyManifestIsPublishable(manifest))return false;
+    const [species,groups,functional,sensitivity]=await Promise.all([
+      fetchTextFile(AUTOLOAD_PATHS.trimSpeciesUncertainty).then(parseCSVText),
+      fetchTextFile(AUTOLOAD_PATHS.trimGroupUncertainty).then(parseCSVText),
+      fetchTextFile(AUTOLOAD_PATHS.trimFunctionalUncertainty).then(parseCSVText),
+      fetchTextFile(AUTOLOAD_PATHS.trimBridgeSensitivity).then(parseCSVText)
+    ]);
+    const allRows=[...species,...groups,...functional];
+    if(!allRows.length||allRows.some(row=>row.run_id!==manifest.run_id))return false;
+    S.trimUncertaintyManifest=manifest;
+    S.trimSpeciesUncertainty=species;
+    S.trimGroupUncertainty=groups;
+    S.trimFunctionalUncertainty=functional;
+    S.trimBridgeSensitivity=sensitivity;
+    return true;
+  }catch(_err){return false;}
+}
+
 const AUTOLOAD_PATHS={
   dashboardManifest:"bmp_meijendel_data.json.manifest",
   dashboardData:"bmp_meijendel_data.json",
@@ -297,6 +322,11 @@ const AUTOLOAD_PATHS={
   msiLandelijkGamPred:["trim_msi_evg/gam_voorspellingen_landelijk_msi_groepen.csv","gam_voorspellingen_landelijk_msi_groepen.csv"],
   functionalMsi:["trim_msi_evg/functionele_msi_per_groep_per_jaar.csv","functionele_msi_per_groep_per_jaar.csv"],
   functionalTrend:["trim_msi_evg/functionele_trendoverzicht_msi_groepen.csv","functionele_trendoverzicht_msi_groepen.csv"],
+  trimUncertaintyManifest:"trim/bootstrap/run_manifest.json",
+  trimSpeciesUncertainty:"trim/soorten/soorten_trends_met_onzekerheid.csv",
+  trimGroupUncertainty:"trim_msi_evg/groepstrends_met_onzekerheid.csv",
+  trimFunctionalUncertainty:"trim_msi_evg/functionele_groepstrends_met_onzekerheid.csv",
+  trimBridgeSensitivity:"trim/soorten/brugvenstergevoeligheid.csv",
   winterAnnual:["wintertellingen/winter_jaarindex.csv","winter_jaarindex.csv"],
   winterMonth:["wintertellingen/winter_maandpatroon.csv","winter_maandpatroon.csv"],
   winterPlot:["wintertellingen/winter_plotgebruik.csv","winter_plotgebruik.csv"],
@@ -330,6 +360,7 @@ async function autoLoadFromSameFolder(){
     tryAutoLoadCsv(AUTOLOAD_PATHS.msiLandelijkGamPred,"landelijk_gam_pred"),
     tryAutoLoadCsv(AUTOLOAD_PATHS.functionalMsi,"functional_msi"),
     tryAutoLoadCsv(AUTOLOAD_PATHS.functionalTrend,"functional_trend"),
+    tryAutoLoadTrimUncertainty(),
     tryAutoLoadWinterCsv(AUTOLOAD_PATHS.winterAnnual,"annual"),
     tryAutoLoadWinterCsv(AUTOLOAD_PATHS.winterMonth,"month"),
     tryAutoLoadWinterCsv(AUTOLOAD_PATHS.winterPlot,"plot"),
@@ -667,7 +698,7 @@ function buildCoverageRows(){
 }
 const PLOT_SPECIES_START_YEAR=1958;
 const PLOT_SPECIES_PAGE_SIZE=10;
-const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],excludeGulls:false,yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimIndexBaseData:null,trimIndexPostData:null,trimTrendSummary:null,trimTrendSummaryBase:null,trimTrendSummaryAll:null,trimAllSpecies:[],winterMetric:"abs",winterSelected:[],winterSelectedPlots:[],winterSeasonRange:{van:null,tot:null},winterMeta:null,winterView:"index",winterPilotSpecies:"",winterQualityFilter:"alle",winterShowAllPlots:false,winterAnnualData:null,winterMonthData:null,winterPlotData:null,winterDecisionData:null,kenmerkenSelected:null,voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,landelijkGamPredData:null,functionalMsiData:null,functionalTrendData:null,functionalMode:"binair",msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotSpeciesView:{plot:null,yearRange:{van:PLOT_SPECIES_START_YEAR,tot:null},sort:"alpha",pageEnd:null},plotView:{plot:null,jaar:null}};
+const S={status:"idle",error:"",tables:{},main:null,groepMap:{},areaMeta:null,activeTab:"trend",metric:"abs",selected:[],selectedGroep:"",selectedPlots:[],excludeGulls:false,yearRange:{van:null,tot:null},allYears:[],allPlots:[],plotChoices:[],allSpecies:[],allGroepen:[],filteredRows:[],trendData:null,trimIndexData:null,trimIndexBaseData:null,trimIndexPostData:null,trimTrendSummary:null,trimTrendSummaryBase:null,trimTrendSummaryAll:null,trimAllSpecies:[],trimUncertaintyManifest:null,trimSpeciesUncertainty:null,trimGroupUncertainty:null,trimFunctionalUncertainty:null,trimBridgeSensitivity:null,winterMetric:"abs",winterSelected:[],winterSelectedPlots:[],winterSeasonRange:{van:null,tot:null},winterMeta:null,winterView:"index",winterPilotSpecies:"",winterQualityFilter:"alle",winterShowAllPlots:false,winterAnnualData:null,winterMonthData:null,winterPlotData:null,winterDecisionData:null,kenmerkenSelected:null,voorspData:null,interpData:null,trimMsiData:null,trimMsiTrendData:null,trimGamPredData:null,trimGamInterpData:null,landelijkGamPredData:null,functionalMsiData:null,functionalTrendData:null,functionalMode:"binair",msiSource:"gam",msiGroep:null,msiGroepen:[],msiAllYears:[],msiYearRange:{van:null,tot:null},plotSpeciesView:{plot:null,yearRange:{van:PLOT_SPECIES_START_YEAR,tot:null},sort:"alpha",pageEnd:null},plotView:{plot:null,jaar:null}};
 function setState(patch){Object.assign(S,patch);render();}
 function processTables(inputTables){
   const tables=applyDefaultPlotScope(inputTables);
@@ -1081,6 +1112,7 @@ function renderTrimVariantSummary(groepNaam,variantFilter){
   const ip=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f9fafb",border:"1px solid #e5e7eb",borderRadius:"12px"}});
   ip.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#374151",marginBottom:"12px"}},`TRIM-uitleg — ${groepNaam}${suffix}`));
   const grid=el("div",{className:"interp-grid"});
+  const addCell=(label,value)=>{const cell=el("div",{className:"interp-cell"});cell.appendChild(el("div",{className:"lbl"},label));cell.appendChild(el("div",{className:"val"},String(value??"-")));grid.appendChild(cell);};
   rows.forEach(row=>{
     const pct=value=>value!==null&&value!==undefined&&String(value).trim()!==""&&Number.isFinite(Number(value))?`${Number(value).toFixed(2)}% per jaar`:"-";
     [
@@ -1093,15 +1125,14 @@ function renderTrimVariantSummary(groepNaam,variantFilter){
       ["Gem. soorten",row.gemiddeld_n_soorten??"-"],
       ["Min-max soorten",`${row.min_n_soorten??"-"} - ${row.max_n_soorten??"-"}`],
       ["Samenstelling",row.samenstelling_waarschuwing||"-"]
-    ].forEach(([l,v])=>{
-      const cell=el("div",{className:"interp-cell"});
-      cell.appendChild(el("div",{className:"lbl"},l));
-      cell.appendChild(el("div",{className:"val"},String(v)));
-      grid.appendChild(cell);
-    });
+    ].forEach(([l,v])=>addCell(l,v));
   });
+  const uncertaintyRows=(isFunctionalGroup(S.msiGroep)?(S.trimFunctionalUncertainty||[]):(S.trimGroupUncertainty||[]))
+    .filter(row=>trimEntityMatches(row.entity_id,[S.msiGroep,groepNaam]))
+    .filter(row=>!variantFilter||String(row.entity_id).includes(variantFilter));
+  renderFormalBootstrapRows(grid,uncertaintyRows,addCell);
   ip.appendChild(grid);
-  ip.appendChild(el("p",{style:{marginTop:"12px",fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},"Deze groeps-MSI is beschrijvend. Zonder onzekerheidspropagatie over de onderliggende soorten publiceren we geen formele p-waarde, betrouwbaarheidsinterval of trendklasse."));
+  ip.appendChild(el("p",{style:{marginTop:"12px",fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},uncertaintyRows.length?"De robuuste groepsvariant is primair; de volledige samenstelling is een gevoeligheidsvariant. Gecombineerde trend via een geschatte gemeenschappelijke-plotbrug van 1981–1983 naar 1986–1988; geen enkel doorlopend TRIM-model.":"Deze groeps-MSI is beschrijvend. Zonder onzekerheidspropagatie over de onderliggende soorten publiceren we geen formele p-waarde, betrouwbaarheidsinterval of trendklasse."));
   const minSoorten=Math.min(...rows.map(r=>Number(r.min_n_soorten)).filter(Number.isFinite));
   if(Number.isFinite(minSoorten)&&minSoorten<3){
     ip.appendChild(el("p",{style:{marginTop:"12px",padding:"10px 12px",background:"#fff7ed",border:"1px solid #fed7aa",borderRadius:"10px",fontSize:"12px",color:"#9a3412",lineHeight:"1.5"}},"Let op: deze TRIM-MSI is indicatief omdat minder dan 3 soorten worden gebruikt."));
@@ -1852,6 +1883,29 @@ function renderCsvUploadRow(){return document.createDocumentFragment();}
 function parseTrimNumber(value){if(value===null||value===undefined||String(value).trim()==="")return null;const n=Number(value);return Number.isFinite(n)?n:null;}
 function formatTrimPct(value){const n=parseTrimNumber(value);return n===null?"-":`${n.toFixed(2)}% per jaar`;}
 function formatTrimP(value){const n=parseTrimNumber(value);if(n===null)return "-";return n<0.001?"< 0,001":n.toLocaleString("nl-NL",{maximumFractionDigits:3});}
+function trimEntityMatches(entityId,candidates){const tokens=String(entityId??"").split(/[-_:]/).filter(Boolean);return candidates.filter(v=>v!==null&&v!==undefined&&String(v)!=="").some(v=>String(entityId)===String(v)||tokens.includes(String(v)));}
+function formatBootstrapInterval(row){
+  if(!row||row.publication_status==="onvoldoende_bootstrap")return null;
+  const low=parseTrimNumber(row.ci_low_pct),high=parseTrimNumber(row.ci_high_pct);
+  return low!==null&&high!==null?`${low.toFixed(2)}% tot ${high.toFixed(2)}%`:null;
+}
+function bootstrapQualification(row){
+  const notes=[];
+  if(row?.bridge_status==="bruggevoelig")notes.push("bruggevoelig");
+  if(row?.coverage_status==="gebiedsdekkinggevoelig")notes.push("gebiedsdekkinggevoelig");
+  return notes.length?`Kwalificatie: ${notes.join("; ")}.`:"";
+}
+function renderFormalBootstrapRows(grid,rows,addCell){
+  rows.slice().sort((a,b)=>Number(!String(a.entity_id).includes("robuust"))-Number(!String(b.entity_id).includes("robuust"))).forEach(row=>{
+    const interval=formatBootstrapInterval(row);
+    const label=String(row.entity_id).includes("robuust")?"Robuuste bootstraptrend":"Aanvullende bootstraptrend";
+    if(!interval){addCell(label,`${row.period}: geen formeel interval (${row.publication_status||"onvoldoende_bootstrap"})`);return;}
+    addCell(label,`${row.period}: ${formatTrimPct(row.estimate_pct_per_year)}; 95%-BI ${interval}; p ${formatTrimP(row.p_value)}`);
+    addCell(`${label} — methode`,`${row.method}; ${Number(row.valid_replicates).toLocaleString("nl-NL")} geldige replicaties; ${bootstrapQualification(row)}`);
+  });
+  const manifest=S.trimUncertaintyManifest;
+  if(rows.length&&manifest)addCell("Berekening",`${manifest.calculated_at||"-"}; run ${manifest.run_id}; ${Number(manifest.planned_replicates).toLocaleString("nl-NL")} geplande replicaties`);
+}
 function renderTrimTrendInfo(){
   if(!S.trimTrendSummary||S.selected.length!==1)return null;
   const row=S.trimTrendSummary.find(r=>r.soort_naam===S.selected[0]);
@@ -1875,8 +1929,10 @@ function renderTrimTrendInfo(){
     addCell(fields.label,`${row[fields.periode]}: ${formatTrimPct(row[fields.pct])}; SE ${formatTrimPct(row[fields.se])}; 95%-BI ${interval}; p ${formatTrimP(row[fields.p])}; ${row[fields.klasse]||"-"}`);
     addCell(`${fields.label} — methode`,`${row[fields.methode]||"-"}; ${row[fields.model]||"-"}; ${row[fields.fallback]||"-"}`);
   });
+  const formalRows=(S.trimSpeciesUncertainty||[]).filter(x=>trimEntityMatches(x.entity_id,[row.soort_id,row.soort_naam]));
+  renderFormalBootstrapRows(grid,formalRows,addCell);
   box.appendChild(grid);
-  box.appendChild(el("p",{style:{marginTop:"12px",fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},"De gebrugde trend 1958–2025 is een beschrijvende samenvatting. Zonder bootstrap heeft deze geen formele p-waarde, betrouwbaarheidsinterval of trendklasse."));
+  box.appendChild(el("p",{style:{marginTop:"12px",fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},formalRows.length?"Gecombineerde trend via een geschatte gemeenschappelijke-plotbrug van 1981–1983 naar 1986–1988; geen enkel doorlopend TRIM-model. De gevoeligheidsenvelop; geen 95%-betrouwbaarheidsinterval.":"De gebrugde trend 1958–2025 is een beschrijvende samenvatting. Zonder bootstrap heeft deze geen formele p-waarde, betrouwbaarheidsinterval of trendklasse."));
   return box;
 }
 function renderTrendMethodInfo(){const box=el("div",{style:{marginTop:"16px",padding:"16px",background:"#f8fafc",border:"1px solid #dbeafe",borderRadius:"12px"}});box.appendChild(el("h3",{style:{fontSize:"14px",fontWeight:"600",color:"#1f2937",marginBottom:"10px"}},"Wat betekenen deze drie keuzes?"));const list=el("div",{style:{display:"grid",gap:"10px"}});[["Territoria","Dit zijn de ruwe aantallen territoria die in een jaar zijn vastgelegd."],["Dichtheid (per km²)","Dit zijn de aantallen omgerekend naar oppervlak. Zo kun je jaren of delen van Meijendel eerlijker vergelijken als plots niet even groot zijn."],["TRIM-index","Deze trendmethode gaat om met ontbrekende tellingen en de methodebreuk rond 1984. Index 100 is het eerste analysejaar vanaf het eerste positieve jaar. Voor 1958–1983 en 1984–2025 komen schatting, standaardfout, 95%-betrouwbaarheidsinterval en p-waarde uit rtrim::overall(). De gebrugde reeks 1958–2025 blijft beschrijvend."]].forEach(([titel,tekst])=>{const item=el("div",{style:{padding:"10px 12px",background:"white",border:"1px solid #e5e7eb",borderRadius:"10px"}});item.appendChild(el("div",{style:{fontSize:"13px",fontWeight:"600",color:"#374151",marginBottom:"4px"}},titel));item.appendChild(el("div",{style:{fontSize:"12px",color:"#6b7280",lineHeight:"1.5"}},tekst));list.appendChild(item);});box.appendChild(list);return box;}

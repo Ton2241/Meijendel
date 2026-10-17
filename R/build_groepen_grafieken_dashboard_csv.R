@@ -7,8 +7,9 @@ repo_dir <- normalizePath(file.path(dirname(script_path), ".."), mustWork = FALS
 sql_path <- if (length(args) >= 1L) args[[1]] else file.path(repo_dir, "meijendel.sql")
 out_dir <- if (length(args) >= 2L) args[[2]] else file.path(repo_dir, "groepen_grafieken")
 helpers_path <- file.path(repo_dir, "shiny_meijendel", "helpers.R")
-trim_msi_dir <- file.path(dirname(out_dir), "trim_msi_evg")
-trim_soorten_dir <- file.path(dirname(out_dir), "trim", "soorten")
+uncertainty_helpers_path <- file.path(repo_dir, "R", "trim_uncertainty_presentation.R")
+trim_msi_dir <- file.path(repo_dir, "trim_msi_evg")
+trim_soorten_dir <- file.path(repo_dir, "trim", "soorten")
 dashboard_msi_path <- file.path(trim_msi_dir, "msi_per_groep_per_jaar.csv")
 dashboard_landelijk_gam_path <- file.path(trim_msi_dir, "gam_voorspellingen_landelijk_msi_groepen.csv")
 dashboard_composition_path <- file.path(trim_msi_dir, "groepssamenstelling_100tal.csv")
@@ -46,6 +47,9 @@ if (!file.exists(trim_index_post_path)) {
 
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 source(helpers_path)
+source(uncertainty_helpers_path, local = TRUE)
+uncertainty_state <- load_trim_uncertainty_for_presentation(repo_dir)
+cat("TRIM_ONZEKERHEID=", uncertainty_state$status, "\n", sep = "")
 
 normalize_1990 <- function(curve) {
   if (is.null(curve) || !nrow(curve)) return(NULL)
