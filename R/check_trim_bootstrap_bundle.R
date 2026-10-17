@@ -50,6 +50,18 @@ manifest <- jsonlite::read_json(file.path(bundle, "bundle_manifest.json"), simpl
 stopifnot(manifest$analysis_end_year == 2025L, manifest$planned_replicates == 50L)
 stopifnot(identical(manifest$publication_status, "pilot_niet_publiceren"))
 
+fixed <- bundle_env$select_fixed_robust_species(
+  list(
+    status = data.frame(soort_id = 1:2, analyse_categorie = "brugbare_tijdreeks"),
+    indices = data.frame(
+      soort_id = c(1, 1, 1, 2, 2), jaar = c(2001:2003, 2001:2002),
+      index_gebrugged = c(100, 101, 102, 100, 101)
+    )
+  ),
+  2001:2003
+)
+stopifnot(identical(fixed, 1L))
+
 output <- file.path(root, "batch-000001-000001.rds")
 status <- system2("Rscript", c(
   file.path(repo, "R", "run_trim_bootstrap_batch.R"),

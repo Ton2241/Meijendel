@@ -58,6 +58,17 @@ build_bootstrap_group_definitions <- function(ecological_mapping, functional_map
   definitions
 }
 
+select_fixed_robust_species <- function(species_results, required_years) {
+  indices <- species_results$indices
+  valid_status <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
+  by_species <- split(indices, indices$soort_id)
+  complete <- names(Filter(function(df) {
+    valid <- df$jaar[is.finite(df$index_gebrugged) & df$index_gebrugged > 0]
+    identical(sort(unique(as.integer(valid))), sort(unique(as.integer(required_years))))
+  }, by_species))
+  intersect(as.integer(complete), as.integer(valid_status))
+}
+
 read_bundle_key_values <- function(path) {
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   fields <- strsplit(lines[grepl("=", lines, fixed = TRUE)], "=", fixed = TRUE)
@@ -132,7 +143,8 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
   species_matrix <- analysis_env$build_species_matrix(tbls, basis, end_year)
   clusters <- build_cluster_definition_from_basis(basis, derive_bridge_plot_sets)
   species_results <- analysis_env$analyse_species(species_matrix, periods)
-  robust_ids <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
+  robust_ids <- select_fixed_robust_species(species_results, periods$combined$years)
+  if (!length(robust_ids)) stop("Geen soort heeft een volledige vaste indexreeks voor de robuuste groepsvariant.", call. = FALSE)
   context <- build_bootstrap_context(
     list(species_matrix = restrict_species_matrix_to_bootstrap_clusters(species_matrix, clusters)), clusters,
     list(
@@ -179,6 +191,7 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
       cluster_count = nrow(clusters),
       primary_bridge_plot_count = sum(clusters$primary_bridge_plot),
       strict_bridge_plot_count = sum(clusters$strict_bridge_plot)
+      , fixed_robust_species_count = length(robust_ids)
     )
   )
   cat("BUNDLE_STATUS=ready\nBUNDLE_RUN_ID=", run_id, "\n", sep = "")
