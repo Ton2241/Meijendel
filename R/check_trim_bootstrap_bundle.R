@@ -6,6 +6,8 @@ source(file.path(repo, "R", "trim_bootstrap_core.R"))
 source(file.path(repo, "R", "trim_bridge_core.R"))
 bundle_env <- new.env(parent = globalenv())
 sys.source(file.path(repo, "R", "build_trim_bootstrap_bundle.R"), envir = bundle_env)
+validator_env <- new.env(parent = bundle_env)
+sys.source(file.path(repo, "R", "validate_trim_bootstrap_bundle.R"), envir = validator_env)
 
 clusters <- data.frame(
   plot_id = 1:6, bootstrap_cluster_id = 1:6,
@@ -32,8 +34,10 @@ context$group_definitions <- list(list(
   entity_id = "eco-100-robuust", mapping = data.frame(soort_id = 1:2),
   variant = "robuust", aggregation = "geometrisch"
 ))
+source_file <- tempfile("trim-bundle-source-", fileext = ".sql")
+writeLines("SELECT 1;", source_file)
 identity <- list(
-  run_id = "bundle-test", source_hash = paste(rep("a", 64), collapse = ""),
+  run_id = "bundle-test", source_hash = bundle_env$bundle_sha256_file(source_file),
   config_hash = paste(rep("b", 64), collapse = ""),
   code_commit = paste(rep("c", 40), collapse = ""), software_id = "R-test"
 )
@@ -49,6 +53,9 @@ stopifnot(file.exists(file.path(bundle, "context.rds")), file.exists(file.path(b
 manifest <- jsonlite::read_json(file.path(bundle, "bundle_manifest.json"), simplifyVector = TRUE)
 stopifnot(manifest$analysis_end_year == 2025L, manifest$planned_replicates == 50L)
 stopifnot(identical(manifest$publication_status, "pilot_niet_publiceren"))
+validator_env$validate_trim_bootstrap_bundle(bundle, source_file, 1L)
+too_many <- try(validator_env$validate_trim_bootstrap_bundle(bundle, source_file, 51L), silent = TRUE)
+stopifnot(inherits(too_many, "try-error"))
 
 fixed <- bundle_env$select_fixed_robust_species(
   list(

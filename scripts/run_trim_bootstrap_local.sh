@@ -24,6 +24,7 @@ bundle="$run_root/input_bundle"
   echo "Runbundle ontbreekt; maak eerst de gevalideerde input_bundle voor deze SQL-bron." >&2
   exit 3
 }
+Rscript "$repo/R/validate_trim_bootstrap_bundle.R" "$bundle" "$sql_path" "$replicates"
 mkdir -p "$run_root/batches"
 from=1
 while (( from <= replicates )); do
