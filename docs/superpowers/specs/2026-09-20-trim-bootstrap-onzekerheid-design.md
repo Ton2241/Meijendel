@@ -1,8 +1,8 @@
 # Ontwerp: formele onzekerheid voor TRIM-trends en MSI-groepen
 
-**Datum:** 20 september 2026
+**Datum:** 17 oktober 2026
 
-**Status:** ter inhoudelijke review
+**Status:** geactualiseerd ontwerp ter inhoudelijke review
 
 **Leidende repository:** `Meijendel`
 
@@ -10,7 +10,7 @@
 
 ## 1. Doel en besluit
 
-De Meijendel-broedvogelreeks bevat waarnemingen over 1958–2025. De bestaande
+De actuele Meijendel-broedvogelreeks bevat waarnemingen over 1958–2025. De bestaande
 analyse past per soort afzonderlijke TRIM-modellen voor 1958–1983 en 1984–2025,
 verbindt beide indexreeksen met een geschatte brugfactor en berekent daarna
 soort- en groepstrends. De jaarindices bevatten standaardfouten, maar de huidige
@@ -32,31 +32,87 @@ Het vastgestelde besluit is:
 - de eerste productierun gebruikt minimaal 2.000 replicaties;
 - de berekening wordt vooraf uitgevoerd en niet interactief in website,
   dashboard of Shiny;
+- ontwikkeling, tests en de pilot gebruiken de bronset 1958–2025; de eerste
+  definitieve productierun wacht op de complete en gevalideerde cijfers van
+  broedseizoen 2026 en bestrijkt dan 1958–2026;
 - de berekening wordt normaal jaarlijks herhaald en daarnaast na relevante
   bron-, selectie-, methode-, code- of packagewijzigingen.
 
 ## 2. Gegevensbasis en reikwijdte
 
-De nulmeting van 20 september 2026 op de lokale bronset 1958–2025 omvatte:
+De op 7 oktober 2026 herberekende gevolgde uitvoer op de lokale bronset
+1958–2025 omvat:
 
-- 55 plots;
-- 3.159 plot-jaarregels in de analysebasis;
-- 159 soorten met territoriumrecords;
-- 137 soorten met ten minste één bruikbare TRIM-indexreeks;
-- 95 soorten met een brugbare tijdreeks in beide modelperioden;
+- 53 plots met oppervlaktejaren in de analysebasis, waarvan 52 in 1958–2025
+  ten minste eenmaal als geteld voorkomen;
+- 3.053 plot-jaarregels in de analysebasis;
+- 156 soorten met ten minste één geaccepteerd positief territorium binnen de
+  analysescope;
+- 135 soorten met ten minste één bruikbare TRIM-indexreeks;
+- 93 soorten met een brugbare tijdreeks in beide modelperioden;
 - 18 ecologische groepstrendregels: negen groepen maal `volledig` en `robuust`;
 - 24 functionele groepstrendregels: zes groepen maal `binair` en `gewogen`,
   telkens voor `volledig` en `robuust`.
 
-De 95 soorten met een brugbare tijdreeks vormen de vaste primaire populatie
-voor formele trends over 1958–2025 en voor de primaire robuuste groeps-MSI's.
+De 93 soorten met een brugbare tijdreeks vormen de kandidaatpopulatie voor
+formele trends over 1958–2025 en voor de primaire robuuste groeps-MSI's.
+Een soort krijgt alleen een formele gecombineerde trend wanneer ook de
+gemeenschappelijke-plotbrug voor die soort geldig kan worden geschat.
 De bestaande volledige groepsvarianten blijven beschikbaar als
 gevoeligheidsanalyse; daarin kan de soortensamenstelling per jaar wisselen.
+Na opname van 2026 worden deze aantallen en de vaste primaire populatie opnieuw
+bepaald voordat de productierun start.
 
 De Sandra-reeks omvat 110 geselecteerde soorten over 1997–2022. Deze reeks
 heeft geen breuk in 1984 en gebruikt voor soorttrends rechtstreeks
 `rtrim::overall()`. Groepsonzekerheid in deze reeks wordt wel met een
 clusterbootstrap berekend.
+
+### 2.1 Audit van de brugperiode
+
+De levende lokale MySQL-database is op 17 oktober 2026 uitsluitend-lezen
+gecontroleerd met dezelfde Natura 2000-, oppervlakte- en geteld-poort als de
+TRIM-analyse. Voor 1978–1990 zijn per jaar de volgende aantallen getelde plots,
+unieke tellers, BMP-bezoeken en soorten met een positieve territoriumwaarde
+vastgesteld:
+
+| Jaar | Getelde plots | Tellers | BMP-bezoeken | Positieve soorten |
+|---:|---:|---:|---:|---:|
+| 1978 | 38 | 32 | 0 | 85 |
+| 1979 | 38 | 30 | 0 | 84 |
+| 1980 | 38 | 30 | 0 | 81 |
+| 1981 | 43 | 34 | 0 | 81 |
+| 1982 | 39 | 32 | 0 | 80 |
+| 1983 | 40 | 33 | 0 | 93 |
+| 1984 | 23 | 13 | 230 | 91 |
+| 1985 | 29 | 15 | 312 | 86 |
+| 1986 | 30 | 18 | 290 | 88 |
+| 1987 | 35 | 22 | 317 | 86 |
+| 1988 | 24 | 21 | 246 | 90 |
+| 1989 | 25 | 20 | 268 | 89 |
+| 1990 | 32 | 24 | 285 | 98 |
+
+Het venster 1981–1983 bevat 43 unieke getelde plots en 39 plots die in alle
+drie jaren zijn geteld. Het kandidaatvenster 1986–1988 bevat 37 unieke getelde
+plots en 21 plots die in alle drie jaren zijn geteld. Tussen beide vensters
+komen 33 plots in ten minste één jaar van ieder venster voor; 20 plots zijn in
+alle zes ankerjaren geteld.
+
+De telling over 1981–1983 had dus een brede gebiedsdekking, maar niet ieder
+jaar exact dezelfde huidige analyseplots. De jaren 1984 en 1985 zijn feitelijke
+overgangsjaren naar de nieuwe methodiek met een sterk gereduceerd tellerbestand.
+Zij zijn daarom niet geschikt als primaire kalibratiejaren. Aansluitende
+kalenderjaren zijn geen eis; een stabiele methode en een vergelijkbare
+ruimtelijke doelpopulatie wegen zwaarder.
+
+Drie routes zijn beoordeeld. De bestaande aansluitende continuiteitsbrug
+1981–1983 naar 1984–1986 valt af als hoofdroute omdat twee van de drie
+postjaren overgangsjaren zijn. Een niet-aansluitende continuiteitsbrug naar
+1986–1988 valt af als hoofdroute omdat zij opnieuw zonder gegevens aanneemt dat
+het gemiddelde populatieniveau gelijk bleef. De gekozen route gebruikt daarom
+1986–1988 én schat de niveauverandering empirisch op een gemeenschappelijke
+plotdoelset. Zij is nog steeds conditioneel op de niet-parallelle methoden,
+maar legt geen kunstmatige continuïteit op.
 
 ## 3. Te schatten grootheden
 
@@ -76,19 +132,69 @@ puntschatting; een bootstrapgemiddelde vervangt die niet.
 ### 3.2 Gecombineerde soorttrend 1958–2025
 
 Deze grootheid wordt alleen berekend voor soorten met een geslaagd model in
-beide perioden. De bestaande brugdefinitie blijft inhoudelijk gelijk:
+beide perioden en een geldige gemeenschappelijke-plotbrug. De huidige
+brugdefinitie stelt het gemiddelde niveau 1984–1986 impliciet gelijk aan het
+gemiddelde niveau 1981–1983. Daarmee wordt werkelijke populatieverandering
+rond de methodebreuk zonder empirische onderbouwing weggekalibreerd. Deze
+definitie vervalt voor de formele gecombineerde trend.
 
-- gemiddelde geïndexeerde waarde 1981–1983;
-- gedeeld door de gemiddelde geïndexeerde waarde 1984–1986;
-- de reeks 1984–2025 wordt met deze factor op het niveau van de eerdere reeks
-  gebracht;
+De nieuwe primaire brug gebruikt:
+
+- 1981–1983 als laatste driejarige venster van de oorspronkelijke methodiek;
+- 1986–1988 als eerste driejarige venster na de overgangsjaren 1984 en 1985;
+- een vaste gemeenschappelijke doelset van de 33 plots die in ten minste één
+  jaar van ieder ankervenster als geteld voorkomen;
+- een hulp-TRIM over de zes ankerjaren op deze gemeenschappelijke doelset, met
+  imputed jaartotalen en zonder seriële-correlatiecorrectie over het kalendergat;
+- een empirische niveauverhouding `R`: gemiddeld hulp-TRIM-totaal 1986–1988
+  gedeeld door gemiddeld hulp-TRIM-totaal 1981–1983;
+- een brugfactor `B = gemiddelde(pre_index_1981_1983) * R /
+  gemiddelde(post_index_1986_1988)`;
+- vermenigvuldiging van de volledige reeks vanaf 1984 met `B`;
 - over de gecombineerde positieve jaarindices wordt de loglineaire helling
   berekend en omgerekend naar procent verandering per jaar.
+
+Een hulp-TRIM gebruikt alleen de plot-jaarcellen die volgens de bestaande
+observatiepoort voor de betreffende soort geldig zijn. Wanneer het model, een
+ankervenster of de niveauverhouding niet geldig is, volgt geen formele
+gecombineerde trend en ook geen stilzwijgende brugfactor `1`.
+
+De jaren 1984 en 1985 blijven in het afzonderlijke TRIM-model 1984–eindjaar
+wanneer hun tellingen volgens de bestaande bron- en kwaliteitsregels geldig
+zijn. Zij bepalen niet langer de brugfactor.
 
 De bootstrap levert voor deze samengestelde schatter de standaardfout, het
 95%-interval en een tweezijdige empirische p-waarde. De uitkomst wordt
 gepubliceerd als `gecombineerde trend via brugfactor`, niet als één doorlopend
 TRIM-model.
+
+De brug blijft structureel conditioneel: de oude en nieuwe methode zijn niet
+in hetzelfde kalenderjaar parallel toegepast. Daardoor kan de empirische
+niveauverhouding werkelijke populatieverandering en methodeverschil niet
+volledig scheiden. De bootstrap kwantificeert de steekproef- en
+modelonzekerheid binnen deze brugdefinitie, maar verwijdert dit structurele
+identificatieprobleem niet.
+
+### 3.2.1 Verplichte bruggevoeligheid
+
+Naast de primaire brug worden uit dezelfde soortfits en bootstrapreplicaties
+berekend:
+
+- dezelfde gemeenschappelijke-plotbrug met 1987–1989 als postvenster;
+- dezelfde gemeenschappelijke-plotbrug met 1988–1990 als postvenster;
+- een strikte kalibratie op de 20 plots die in alle zes primaire ankerjaren
+  zijn geteld;
+- de huidige continuiteitsbrug 1981–1983 naar 1984–1986 uitsluitend als
+  historische comparator.
+
+Per soort en groep worden de puntschatting, intervalgrenzen en richting van
+deze varianten bewaard. De primaire bootstrapuitkomst blijft een formeel
+95%-interval onder de vastgelegde primaire brug. De totale minimum- en
+maximumgrens over de gevoeligheidsvarianten heet uitdrukkelijk
+`gevoeligheidsenvelop` en niet `betrouwbaarheidsinterval`. Wanneer de richting
+of de conclusie dat het interval nul wel of niet omvat tussen verdedigbare
+varianten verschilt, krijgt de publicatie status `bruggevoelig` en geen
+ongekwalificeerde trendklasse.
 
 ### 3.3 Groeps-MSI's
 
@@ -110,13 +216,30 @@ weggelaten. In de volledige gevoeligheidsvariant mag de samenstelling volgens
 de bestaande regels per jaar en replicatie wisselen; het werkelijk gebruikte
 aantal soorten wordt daarbij opgeslagen.
 
+### 3.4 Gevoeligheid voor de historische gebiedsdekking
+
+De analyse gebruikt in 1958–1972 alleen de historische kernplots en vanaf 1973
+het bredere netwerk. De bootstrap behandelt deze vastgelegde scopekeuze als
+gegeven en kan mogelijke structurele invloed van die uitbreiding daarom niet
+zelf oplossen.
+
+Naast de hoofdanalyse wordt de gecombineerde trend opnieuw berekend op een
+vaste historische-kernvariant: alleen plots die tot de historische kern horen,
+voor alle beschikbare jaren. Deze variant krijgt dezelfde primaire brug- en
+bootstrapmethode. Het resultaat wordt als gevoeligheidsanalyse gepubliceerd,
+niet als vervanging van de hoofdanalyse. Een verschil in richting of in de
+conclusie of het interval nul omvat, leidt eveneens tot status
+`gebiedsdekkinggevoelig` en het vervallen van een ongekwalificeerde
+langetermijnklasse.
+
 ## 4. Bootstrapontwerp
 
 ### 4.1 Steekproefeenheid
 
 De primaire cluster is de volledige geschiedenis van één onafhankelijk plot.
-Voor implementatie wordt gecontroleerd of `plot_id` door 1958–2025 heen een
-stabiele steekproefeenheid is. Splitsingen, samenvoegingen of hernummeringen
+Voor implementatie wordt gecontroleerd of `plot_id` door 1958–2025 en, zodra
+beschikbaar, 2026 heen een stabiele steekproefeenheid is. Splitsingen,
+samenvoegingen of hernummeringen
 worden zo nodig vastgelegd in een `bootstrap_cluster_id`. Zonder afgeronde
 lineagecontrole start geen productierun.
 
@@ -143,6 +266,13 @@ soorten. Daardoor blijven correlaties tussen soorten, gedeelde ontbrekende
 plot-jaren en gedeelde gebiedseffecten behouden. Onafhankelijke
 soortbootstraps zijn voor groeps-MSI's niet toegestaan.
 
+De vaste primaire kalibratieset van 33 plots en de strikte set van 20 plots
+worden uit de oorspronkelijke-datafit bepaald en veranderen niet per
+replicatie. Hun multipliciteiten volgen wel exact de gemeenschappelijke
+clustertrekking van die replicatie. Een meermalen getrokken kalibratieplot
+krijgt dus dezelfde synthetische kopieën in hoofdmodel, hulp-TRIM, soorttrend
+en groeps-MSI. Er komt geen afzonderlijke trekking voor de brugfactor.
+
 ### 4.4 Volledige replicatieketen
 
 Binnen iedere replicatie worden achtereenvolgens opnieuw uitgevoerd:
@@ -152,15 +282,18 @@ Binnen iedere replicatie worden achtereenvolgens opnieuw uitgevoerd:
 3. toepassing van de vooraf vastgelegde primaire soortselectie en de
    afzonderlijke volledige gevoeligheidsselectie;
 4. TRIM 1958–1983;
-5. TRIM 1984–2025;
+5. TRIM 1984–actueel eindjaar;
 6. de bestaande modelvoorkeurhiërarchie en eventuele fallback;
 7. jaarindices en modelstatus;
-8. brugfactor 1981–1983 naar 1984–1986;
-9. gecombineerde soorttrend 1958–2025;
-10. ecologische MSI's;
-11. functionele binaire en gewogen MSI's;
-12. trends per periode en voor de gecombineerde reeks;
-13. opslag van schattingen, modelkeuze, waarschuwingen en foutstatus.
+8. hulp-TRIM en empirische gemeenschappelijke-plotbrug 1981–1983 naar
+   1986–1988;
+9. de drie bruggevoeligheidsvarianten en de historische comparator;
+10. gecombineerde soorttrend 1958–actueel eindjaar;
+11. ecologische MSI's;
+12. functionele binaire en gewogen MSI's;
+13. trends per periode en voor de gecombineerde reeks;
+14. vaste historische-kerngevoeligheid;
+15. opslag van schattingen, modelkeuze, waarschuwingen en foutstatus.
 
 Onveranderlijke bronparsing, groepsdefinities en oorspronkelijke selecties
 worden buiten de replicatielus voorbereid. Binnen de modelhiërarchie stopt de
@@ -325,6 +458,8 @@ Nieuwe compacte uitvoercontracten zijn:
 
 - `trim/soorten/soorten_trends_met_onzekerheid.csv`;
 - `trim/soorten/soorten_brugfactoren_met_onzekerheid.csv`;
+- `trim/soorten/brugvenstergevoeligheid.csv`;
+- `trim/soorten/historische_kerngevoeligheid.csv`;
 - `trim_msi_evg/groepstrends_met_onzekerheid.csv`;
 - `trim_msi_evg/functionele_groepstrends_met_onzekerheid.csv`;
 - overeenkomstige bestanden onder `trim/sandra/`;
@@ -357,13 +492,15 @@ pariteitstests zijn aangepast.
 Per soort worden in deze volgorde getoond:
 
 1. primaire trend 1958–1983 met TRIM-standaardfout en 95%-interval;
-2. primaire trend 1984–2025 met TRIM-standaardfout en 95%-interval;
-3. aanvullende gecombineerde trend 1958–2025 met bootstrapinterval.
+2. primaire trend 1984–actueel eindjaar met TRIM-standaardfout en 95%-interval;
+3. aanvullende gecombineerde trend 1958–actueel eindjaar met bootstrapinterval.
 
 Bij de gecombineerde trend staat steeds: `Gecombineerde trend via een geschatte
-brugfactor; geen enkel doorlopend TRIM-model.` De presentatie toont daarnaast
-intervalmethode, aantal geldige replicaties en rekendatum. Groeps-MSI's tonen de
-robuuste variant primair en de volledige variant als gevoeligheidsanalyse.
+gemeenschappelijke-plotbrug van 1981–1983 naar 1986–1988; geen enkel doorlopend
+TRIM-model.` De presentatie toont daarnaast intervalmethode, aantal geldige
+replicaties, rekendatum en eventuele status `bruggevoelig` of
+`gebiedsdekkinggevoelig`. Groeps-MSI's tonen de robuuste variant primair en de
+volledige variant als gevoeligheidsanalyse.
 
 ### Shiny
 
@@ -386,6 +523,11 @@ Een nieuwe productierun is vereist:
 - na wijziging van modelhiërarchie, brugvenster of trendschatter;
 - na relevante wijziging van R, `rtrim` of analysecode.
 
+De eerstvolgende definitieve productierun wordt pas gestart nadat de cijfers
+over broedseizoen 2026 compleet zijn opgenomen, de bron- en kwaliteitscontroles
+zijn geslaagd en de vaste soort- en groepsselecties opnieuw zijn vastgelegd.
+Voor die run worden periodelabels 1958–1983, 1984–2026 en 1958–2026 gebruikt.
+
 Bij identieke bronhash, code, configuratie en softwareversies wordt de bestaande
 run hergebruikt. Er is geen continue of kalendergestuurde herberekening zonder
 gewijzigde invoer.
@@ -407,14 +549,13 @@ Voor vrijgave moeten minimaal slagen:
 - Shiny/dashboard- en dashboard/website-pariteit;
 - projectpreflight vóór en na de wijziging.
 
-De huidige baselinecontrole is nog niet geschikt als regressienulpunt: de
-lokale, niet-versiebeheerde `meijendel.sql` met SHA-256
-`7f4bc7ceed1202889407b21c7534b39afc46a007f0c9a75101d739da87719cd0`
-wijkt inhoudelijk af van de vooraf gegenereerde dashboard-CSV's op `main`.
-Daardoor faalde op 20 september 2026 de Shiny/dashboard-pariteitscontrole met
-een maximaal MSI-verschil van 269,4291 indexpunten. Vóór implementatie worden
-SQL-dump, TRIM-output en dashboardbestanden uit één vastgelegde bronrun opnieuw
-opgebouwd; die run vormt daarna de regressiebaseline.
+De levende lokale MySQL-database is de canonieke schrijfbron. Een dump en alle
+TRIM-, dashboard- en Shiny-uitvoer moeten aantoonbaar uit dezelfde vastgelegde
+bronstand komen. De op 7 oktober 2026 gevolgde uitvoer over 1958–2025 vormt de
+ontwikkelbaseline voor schema en bestaande resultaten. Voor de definitieve
+productierun na opname van 2026 worden dump en alle afgeleide producten opnieuw
+uit de gevalideerde levende database opgebouwd; hergebruik van een oudere dump
+is niet toegestaan.
 
 ## 11. Niet in deze eerste implementatie
 
@@ -422,6 +563,5 @@ opgebouwd; die run vormt daarna de regressiebaseline.
 - een permanent cluster of automatische activering van NAS/VPS zonder groene
   capaciteitstest en expliciete workerconfiguratie;
 - opslag van iedere replicatie in MySQL;
-- wijziging van de inhoudelijke brugvensters 1981–1983 en 1984–1986;
 - causale interpretatie van trends;
 - gelijktijdige onzekerheidsbanden over alle jaren van iedere indexgrafiek.
