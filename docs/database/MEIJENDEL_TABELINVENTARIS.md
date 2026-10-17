@@ -508,3 +508,117 @@ De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling,
 Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
 
 Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.
+
+
+## Hercontrole van PQ en twee indexkandidaten op 17 oktober 2026
+
+Dit is een gerichte alleen-lezen vervolgcontrole, geen nieuwe volledige
+schema-inventarisatie en geen uitvoering van het eerdere migratievoorstel.
+De levende lokale database is gebruikt; bronregister en bestaande
+`--pq-inventarisatie` blijven leidend. Er zijn geen T7-, NAS- of VPS-bestanden
+geopend en geen externe informatieverzoeken verzonden.
+
+### Resterende LVD-opnamen
+
+De bestaande opdracht
+`python3 gis/scripts/run_external_ecology_overlap_audit.py --pq-inventarisatie`
+vergelijkt beide LVD-opslagplaatsen met de provinciale reeks in één
+alleen-lezen snapshot. De herhaling geeft dezelfde uitkomst:
+
+| Verzameling of vergelijking | Aantal | Periode |
+|---|---:|---|
+| Provinciale PQ-opnamen / resultaten | 2.007 / 53.122 | 1981–2025 |
+| Gehele toegelaten LVD-laag / resultaten | 3.437 / 81.310 | 1959–2015 |
+| LVD-opnamen / resultaten binnen pq_* | 644 / 16.627 | 1981–2015 |
+| Resterende LVD-opnamen / resultaten | 2.793 / 64.683 | 1959–2015 |
+| Mogelijke opnameparen | 654 | 1981–2015 |
+| Paren met gelijke volledige namen-/codelijst | 20 | Binnen bovenstaande kandidaatparen |
+| Daarvan ook gelijke percentages | 16 | Binnen bovenstaande kandidaatparen |
+| Reeds vastgelegde vermoedelijke koppelingen | 652 | 1981–2015 |
+
+Alle 2.793 resterende LVD-opnamen uit 1959–2015 bevatten een methodeveld,
+maar die waarden beschrijven de bedekkingsschaal of inventarisatiemethode:
+2.606 Braun/Blanquet (B,D&S), 105 Doing, 56 aangepast Braun/Blanquet,
+3 Braun/Blanquet, 16 Barkman, Doing & Segal, 5 ordinale schaal en
+2 vierde Bosstatistiek. Dit bewijst geen permanente herhaallocatie.
+De volledige sleutelsets van zowel de eventmetadata als de geneste
+`releve`-metadata zijn gecontroleerd; zij bevatten geen vaste PQ-, locationID-
+of parentEventID-koppeling. De bron-event-UUID identificeert de opname,
+zonder hiermee een blijvende PQ-locatie te bewijzen.
+
+De twee nabijheidsparen buiten de eerdere verplaatsing zijn afzonderlijk
+gecontroleerd:
+
+| LVD-event | Provinciale opname | Datum | Afstand | Volledige bronlijsten |
+|---|---|---|---:|---|
+| 40650 | 1915 | 21 april 2011 | 4,343 m | 1 tegenover 26 resultaten; namen en codes verschillen. |
+| 43406 | 1026 | 23 mei 2013 | 0,309 m | Elk 1 resultaat; namen of codes verschillen. |
+
+De LVD-locatie-onzekerheid bedraagt bij beide kandidaatparen 3 meter. Een
+kleine afstand en dezelfde datum bewijzen geen gedeelde PQ-identiteit.
+Er is geen aanvullende PQ-verplaatsing of bevestiging van koppelingen
+onderbouwd. De 644 al verplaatste opnamen blijven onder hun bestaande
+vermoedelijke koppelingen bewaard; er wordt niets opnieuw als zelfstandige
+meting toegevoegd. De eerdere broncontrole van het volledige archief en de
+reference-extensie staat in het bronregister; die archiefcontrole is vandaag
+niet opnieuw uitgevoerd. Er wordt niets aan een bronhouder gevraagd op basis
+van deze hercontrole.
+
+### Twee eenvoudige indexkandidaten
+
+De MySQL-signaalview noemt nog tien mogelijk redundante indexes. Alleen de
+twee eenvoudige kandidaten uit de oorspronkelijke beoordeling zijn hier
+nader onderzocht; de overige acht hebben geen verwijderbeoordeling gekregen.
+Volgens de [officiële beschrijving van schema_redundant_indexes](https://dev.mysql.com/doc/refman/9.7/en/sys-schema-redundant-indexes.html)
+is dit een structurele duplicatiesignalering. De uitkomst bewijst geen
+snelheidswinst na verwijdering.
+
+| Tabel en korrel | Omvang en tijdsbetekenis | Kleine index | Bredere unieke index |
+|---|---|---|---|
+| nameninventaris_geometrie, één brongeometrie | 71 regels, peildatums 3 april–14 oktober 2026; geen waarnemingsreeks | ix_nameninventaris_geometrie_object: import_id, object_id | uq_nameninventaris_geometrie: import_id, object_id, source_id, geometrieversie |
+| soorten_kenmerken, één soort-categorie-codekenmerk | 2.513 regels voor 185 soort-IDs; referentiegegevens zonder eigen meetperiode | idx_soorten_kenmerken_soort_id: soort_id | uq_soorten_kenmerken_soort_cat_code: soort_id, hoofdcategorie_id, code |
+
+De tabeldefinities en foreign keys zijn gelezen. In de gecontroleerde R-,
+Python-, SQL- en shellroutes is geen expliciete indexhint naar deze twee kleine
+indexes gevonden. Dit sluit gebruik buiten de gecontroleerde repositoryroutes
+niet uit. Het dashboard leest `soorten_kenmerken`; deze tabel is dus niet los
+van de publieke afnemers te behandelen.
+
+Twee concrete EXPLAIN-vergelijkingen zijn uitgevoerd, telkens normaal en met
+`IGNORE INDEX` voor de kleine index. De hints gelden uitsluitend voor die
+leesopdracht en veranderen geen databaseobject:
+
+- `nameninventaris_geometrie`: zoeken op import 1 en object
+  `OBJ-0128CFD772`, met selectie van geometrie-ID en WKT-hash. Beide plannen
+  kiezen `uq_nameninventaris_geometrie`; geschatte kosten 0,618 en één rij.
+- `soorten_kenmerken`: zoeken op soort-ID 1, met selectie van categorie, code
+  en waarde. Beide plannen kiezen `uq_soorten_kenmerken_soort_cat_code`;
+  geschatte kosten 31,9 en 29 rijen.
+
+Dit zijn optimizerkosten, geen gemeten seconden. De twee plannen zijn gelijk;
+een volledige werklastproef of snelheidswinst is niet aangetoond. De opgeslagen
+InnoDB-indexstatistieken melden voor de twee kleine indexes respectievelijk
+één en vier pagina's van 16 KiB, samen circa 80 KiB. Die statistieken zijn
+bijgewerkt op respectievelijk 16 oktober en 13 augustus 2026; dit is een
+schatting uit opgeslagen statistieken en geen actuele fysieke ruimtewinst.
+
+Bij de momentopname met server-uptime 13.156 seconden rapporteert
+`schema_index_statistics` 142 geselecteerde rijen via de kleine geometrie-index
+en nul via de kleine kenmerken-index. Het meetvenster kan korter zijn dan de
+uptime wanneer tellers zijn gereset. Nul gebruik is daarom geen bewijs dat de
+index nooit nodig is; voor de geometrie-index is gebruik juist aantoonbaar.
+Deze beperkte proef onderbouwt geen prioritaire verwijdering. Beide indexes,
+foreign keys en bestaande afnemers blijven ongewijzigd. Een eventuele latere
+opschoning vereist een afzonderlijke wijzigingsafbakening en passende voor-,
+na- en herstelcontrole; die uitvoering is hier niet verricht.
+
+### Gevolg voor de oorspronkelijke verbeterlijst
+
+De geheugenproef gaf geen grond voor een permanente verhoging. De eerste
+veilige NDFF-gebruiksroute is inmiddels beschikbaar via
+`--selecteer-libellen` en `--verken-libellen`. Voor de resterende PQ-opnamen
+is binnen de gecontroleerde levering geen aanvullende overdracht onderbouwd;
+de twee indexkandidaten leveren in deze beperkte proef geen aangetoonde
+prestatieverbetering op. Er volgt daarom geen extra schema- of gegevenswijziging
+uit deze controle. Dit sluit een latere gerichte verbetering met nieuw bewijs
+niet uit. Bronregister en Wordversie bevatten dezelfde PQ-hercontrole.
