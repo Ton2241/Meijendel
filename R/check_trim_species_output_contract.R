@@ -2,6 +2,8 @@
 
 args <- commandArgs(trailingOnly = TRUE)
 repo_root <- if (length(args) >= 1L) normalizePath(args[[1]], mustWork = TRUE) else normalizePath(".", mustWork = TRUE)
+source(file.path(repo_root, "R", "trim_analysis_config.R"))
+periods <- resolve_trim_periods(2025L)
 
 read_output <- function(...) {
   read.csv(file.path(repo_root, ...), stringsAsFactors = FALSE, check.names = FALSE)
@@ -75,9 +77,9 @@ assert_no_columns(
 )
 assert_true(all(main_trends$trend_contract == "trim-trend-v2"), "hoofdtrendoverzicht heeft verkeerde contractversie")
 assert_true(all(main_trends$overall_trend_formaliteit == "beschrijvend"), "gebrugde hoofdtrend is niet overal beschrijvend")
-assert_true(all(main_trends$overall_periode == "1958-2025"), "gebrugde hoofdperiode is onjuist")
-assert_true(all(main_trends$trend_pre_periode == "1958-1983"), "pre-periodelabel is onjuist")
-assert_true(all(main_trends$trend_post_periode == "1984-2025"), "post-periodelabel is onjuist")
+assert_true(all(main_trends$overall_periode == periods$combined$label), "gebrugde hoofdperiode is onjuist")
+assert_true(all(main_trends$trend_pre_periode == periods$pre$label), "pre-periodelabel is onjuist")
+assert_true(all(main_trends$trend_post_periode == periods$post$label), "post-periodelabel is onjuist")
 
 for (prefix in c("trend_pre_", "trend_post_")) {
   formal <- main_trends[[paste0(prefix, "formaliteit")]] == "formeel"

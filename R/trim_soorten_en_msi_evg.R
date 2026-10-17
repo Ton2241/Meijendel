@@ -10,6 +10,7 @@ script_file <- sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = 
 script_dir <- dirname(normalizePath(script_file, mustWork = TRUE))
 source(file.path(script_dir, "trim_trend_contract.R"))
 source(file.path(script_dir, "meijendel_cache_contract.R"))
+source(file.path(script_dir, "trim_analysis_config.R"))
 
 historische_kavels <- c(
   "1", "1a", "1b", "2", "3", "4", "4-5", "5", "6", "7", "8", "8/9", "8/11",
@@ -332,10 +333,10 @@ make_group_descriptions <- function(evg_vogelgroepen) {
   data.frame(groep_100 = groep_100, groep_titel = label, stringsAsFactors = FALSE)
 }
 
-prepare_analysis_basis <- function(tbls) {
+prepare_analysis_basis <- function(tbls, end_year = 2025L) {
   pjo <- tbls$plot_jaar_oppervlak
   pjo <- merge(pjo, tbls$plots, by = "plot_id", all.x = TRUE)
-  pjo <- pjo[pjo$jaar >= 1958 & pjo$jaar <= 2025, ]
+  pjo <- pjo[pjo$jaar >= 1958 & pjo$jaar <= end_year, ]
   pjo$in_hist_kern <- pjo$kavel_nummer %in% historische_kavels
   pjo$in_analyse <- ifelse(pjo$jaar <= 1972, pjo$in_hist_kern, !is.na(pjo$kavel_nummer))
 
@@ -360,11 +361,11 @@ prepare_analysis_basis <- function(tbls) {
     basis$referentie_oppervlakte_km2 / basis$oppervlakte_km2,
     NA_real_
   )
-  basis$analyse_reeks <- ifelse(basis$jaar <= 1972, "historische_kern_1958_1972", "volledig_netwerk_1973_2025")
+  basis$analyse_reeks <- ifelse(basis$jaar <= 1972, "historische_kern_1958_1972", paste0("volledig_netwerk_1973_", end_year))
   basis[order(basis$jaar, basis$kavel_nummer, basis$plot_id), ]
 }
 
-build_species_matrix <- function(tbls, basis) {
+build_species_matrix <- function(tbls, basis, end_year = 2025L) {
   species <- accepted_positive_species_ids(
     tbls$territoria,
     tbls$bronnen,
@@ -380,7 +381,7 @@ build_species_matrix <- function(tbls, basis) {
   grid <- merge(grid, data.frame(row_id = seq_len(nrow(basis)), basis, stringsAsFactors = FALSE), by = "row_id", all.x = TRUE)
   grid$row_id <- NULL
 
-  counts <- tbls$territoria[tbls$territoria$jaar >= 1958 & tbls$territoria$jaar <= 2025, c("plot_id", "soort_id", "jaar", "territoria", "bron_id")]
+  counts <- tbls$territoria[tbls$territoria$jaar >= 1958 & tbls$territoria$jaar <= end_year, c("plot_id", "soort_id", "jaar", "territoria", "bron_id")]
   grid <- merge(grid, counts, by = c("plot_id", "soort_id", "jaar"), all.x = TRUE)
   grid <- merge(grid, tbls$soorten[, c("id", "euring_code", "soort_naam")], by.x = "soort_id", by.y = "id", all.x = TRUE)
 
@@ -637,7 +638,7 @@ bridge_species_indices <- function(pre_idx, post_idx) {
   list(series = combined, bridge_factor = bridge_factor, bridge_method = bridge_method)
 }
 
-analyse_species <- function(species_matrix) {
+analyse_species <- function(species_matrix, periods = resolve_trim_periods(2025L)) {
   split_species <- split(species_matrix, species_matrix$soort_id)
   status_rows <- list()
   index_rows <- list()
@@ -670,8 +671,8 @@ analyse_species <- function(species_matrix) {
     pre_fit <- if (pre_ok) fit_trim_model(pre_df) else list(model = NULL, config = NA_character_, aic = NA_real_, error = "te_weinig_data_pre", warnings = NA_character_, attempts = NA_character_, year_map = NULL)
     post_fit <- if (post_ok) fit_trim_model(post_df) else list(model = NULL, config = NA_character_, aic = NA_real_, error = "te_weinig_data_post", warnings = NA_character_, attempts = NA_character_, year_map = NULL)
 
-    pre_idx <- if (!is.null(pre_fit$model)) collect_period_index(pre_fit, soort_id, soort_naam, euring_code, "1958-1983") else NULL
-    post_idx <- if (!is.null(post_fit$model)) collect_period_index(post_fit, soort_id, soort_naam, euring_code, "1984-2025") else NULL
+    pre_idx <- if (!is.null(pre_fit$model)) collect_period_index(pre_fit, soort_id, soort_naam, euring_code, periods$pre$label) else NULL
+    post_idx <- if (!is.null(post_fit$model)) collect_period_index(post_fit, soort_id, soort_naam, euring_code, periods$post$label) else NULL
 
     bridged <- bridge_species_indices(pre_idx, post_idx)
 
@@ -749,7 +750,7 @@ analyse_species <- function(species_matrix) {
         "onvolledige_langetermijnreeks"
       }
       overall_contract <- trim_descriptive_contract(
-        periode = "1958-2025",
+        periode = periods$combined$label,
         periode_van = min(series$jaar, na.rm = TRUE),
         periode_tot = max(series$jaar, na.rm = TRUE),
         trend_pct_per_jaar = overall_pct,
@@ -758,15 +759,15 @@ analyse_species <- function(species_matrix) {
       overall_contract$n_modeltijdpunten <- nrow(series)
       pre_contract <- trim_overall_contract(
         pre_fit,
-        periode = "1958-1983",
-        periode_van = 1958L,
-        periode_tot = 1983L
+        periode = periods$pre$label,
+        periode_van = periods$pre$from,
+        periode_tot = periods$pre$to
       )
       post_contract <- trim_overall_contract(
         post_fit,
-        periode = "1984-2025",
-        periode_van = 1984L,
-        periode_tot = 2025L
+        periode = periods$post$label,
+        periode_van = periods$post$from,
+        periode_tot = periods$post$to
       )
 
       trend_rows[[counter]] <- cbind(data.frame(
@@ -816,7 +817,7 @@ build_group_mapping <- function(tbls) {
   merge(mapping, make_group_descriptions(tbls$evg_vogelgroepen), by = "groep_100", all.x = TRUE)
 }
 
-analyse_groups <- function(species_indices, group_mapping, msi_variant = "volledig") {
+analyse_groups <- function(species_indices, group_mapping, msi_variant = "volledig", periods = resolve_trim_periods(2025L)) {
   merged <- merge(
     species_indices[!duplicated(species_indices[, c("soort_id", "jaar")]), c("soort_id", "euring_code", "soort_naam", "jaar", "index_gebrugged")],
     group_mapping,
@@ -833,7 +834,7 @@ analyse_groups <- function(species_indices, group_mapping, msi_variant = "volled
   msi <- merge(msi, n_species, by = c("groep_100", "jaar"), all.x = TRUE)
   msi$msi <- exp(msi$log_index)
   msi$msi_variant <- msi_variant
-  msi$periode <- ifelse(msi$jaar <= 1983, "1958-1983", "1984-2025")
+  msi$periode <- ifelse(msi$jaar <= 1983, periods$pre$label, periods$post$label)
   msi <- msi[order(msi$groep_100, msi$jaar), ]
 
   trend_rows <- lapply(split(msi, msi$groep_100), function(df) {
@@ -939,7 +940,7 @@ aggregate_functional_msi <- function(merged) {
   out[order(out$group_code, out$jaar), , drop = FALSE]
 }
 
-analyse_functional_groups <- function(species_indices, group_mapping, analysis_mode, msi_variant) {
+analyse_functional_groups <- function(species_indices, group_mapping, analysis_mode, msi_variant, periods = resolve_trim_periods(2025L)) {
   merged <- merge(
     species_indices[
       !duplicated(species_indices[, c("soort_id", "jaar")]),
@@ -956,7 +957,7 @@ analyse_functional_groups <- function(species_indices, group_mapping, analysis_m
   msi <- aggregate_functional_msi(merged)
   msi$analysis_mode <- analysis_mode
   msi$msi_variant <- msi_variant
-  msi$periode <- ifelse(msi$jaar <= 1983, "1958-1983", "1984-2025")
+  msi$periode <- ifelse(msi$jaar <= 1983, periods$pre$label, periods$post$label)
 
   trend_rows <- lapply(split(msi, msi$group_code), function(df) {
     meta <- merged[merged$group_code == df$group_code[[1]], , drop = FALSE][1, , drop = FALSE]
@@ -1203,18 +1204,20 @@ trim_main <- function(args = commandArgs(trailingOnly = TRUE)) {
   sql_path <- if (length(args) >= 1L) args[[1]] else "/Users/ton/Documents/GitHub/Meijendel/meijendel.sql"
   species_dir <- if (length(args) >= 2L) args[[2]] else "/Users/ton/Documents/GitHub/Meijendel/trim/soorten"
   group_dir <- if (length(args) >= 3L) args[[3]] else "/Users/ton/Documents/GitHub/Meijendel/trim_msi_evg"
+  end_year <- if (length(args) >= 4L) as.integer(args[[4L]]) else 2025L
+  periods <- resolve_trim_periods(end_year)
   dir.create(species_dir, recursive = TRUE, showWarnings = FALSE)
   dir.create(group_dir, recursive = TRUE, showWarnings = FALSE)
 
   tbls <- parse_tables(sql_path)
-  basis <- prepare_analysis_basis(tbls)
-  species_matrix <- build_species_matrix(tbls, basis)
-  species_results <- analyse_species(species_matrix)
+  basis <- prepare_analysis_basis(tbls, end_year = periods$end_year)
+  species_matrix <- build_species_matrix(tbls, basis, end_year = periods$end_year)
+  species_results <- analyse_species(species_matrix, periods = periods)
   group_mapping <- build_group_mapping(tbls)
-  full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig")
+  full_group_results <- analyse_groups(species_results$indices, group_mapping, msi_variant = "volledig", periods = periods)
   robust_ids <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
   robust_indices <- species_results$indices[species_results$indices$soort_id %in% robust_ids, , drop = FALSE]
-  robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust")
+  robust_group_results <- analyse_groups(robust_indices, group_mapping, msi_variant = "robuust", periods = periods)
   group_results <- list(
     msi = rbind(full_group_results$msi, robust_group_results$msi),
     trends = rbind(full_group_results$trends, robust_group_results$trends),
@@ -1228,10 +1231,10 @@ trim_main <- function(args = commandArgs(trailingOnly = TRUE)) {
   functional_parts <- list()
   for (analysis_mode in c("binair", "gewogen")) {
     functional_parts[[paste(analysis_mode, "volledig", sep = "_")]] <- analyse_functional_groups(
-      species_results$indices, functional_group_mapping, analysis_mode, "volledig"
+      species_results$indices, functional_group_mapping, analysis_mode, "volledig", periods
     )
     functional_parts[[paste(analysis_mode, "robuust", sep = "_")]] <- analyse_functional_groups(
-      robust_indices, functional_group_mapping, analysis_mode, "robuust"
+      robust_indices, functional_group_mapping, analysis_mode, "robuust", periods
     )
   }
   functional_group_results <- list(
