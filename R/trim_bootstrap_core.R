@@ -278,3 +278,80 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
     diagnostics = list(main_site_ids = diagnostic_main, calibration_site_ids = diagnostic_calibration)
   )
 }
+
+geometric_group_mean <- function(values) {
+  values <- values[is.finite(values) & values > 0]
+  if (!length(values)) NA_real_ else exp(mean(log(values)))
+}
+
+binary_group_mean <- function(values, membership) {
+  keep <- is.finite(values) & values > 0 & is.finite(membership) & membership > 0
+  if (!any(keep)) NA_real_ else exp(mean(log(values[keep])))
+}
+
+weighted_group_mean <- function(values, weights) {
+  keep <- is.finite(values) & values > 0 & is.finite(weights) & weights > 0
+  if (!any(keep) || sum(weights[keep]) <= 0) NA_real_ else exp(sum(weights[keep] * log(values[keep])) / sum(weights[keep]))
+}
+
+aggregate_bootstrap_group <- function(indices, fixed_group, variant = c("robuust", "volledig"), aggregation = c("geometrisch", "binair", "gewogen")) {
+  variant <- match.arg(variant)
+  aggregation <- match.arg(aggregation)
+  required_indices <- c("soort_id", "jaar", "index_value", "bridge_variant", "coverage_variant")
+  required_group <- c("soort_id")
+  missing <- c(setdiff(required_indices, names(indices)), setdiff(required_group, names(fixed_group)))
+  if (length(missing)) stop("Groepsinvoer mist: ", paste(unique(missing), collapse = ", "), ".", call. = FALSE)
+  expected <- sort(unique(fixed_group$soort_id))
+  indices <- indices[indices$soort_id %in% expected, , drop = FALSE]
+  keys <- unique(indices[, c("bridge_variant", "coverage_variant", "jaar"), drop = FALSE])
+  keys <- keys[order(keys$coverage_variant, keys$bridge_variant, keys$jaar), , drop = FALSE]
+
+  cell_species <- lapply(seq_len(nrow(keys)), function(i) {
+    cell <- indices[
+      indices$bridge_variant == keys$bridge_variant[[i]] &
+        indices$coverage_variant == keys$coverage_variant[[i]] &
+        indices$jaar == keys$jaar[[i]] & is.finite(indices$index_value) & indices$index_value > 0,
+      , drop = FALSE
+    ]
+    sort(unique(cell$soort_id))
+  })
+  if (variant == "robuust" && (length(cell_species) == 0L || any(vapply(cell_species, function(x) !identical(x, expected), logical(1))))) {
+    return(list(status = "ongeldig_vaste_soort_ontbreekt", series = data.frame()))
+  }
+
+  rows <- lapply(seq_len(nrow(keys)), function(i) {
+    cell <- indices[
+      indices$bridge_variant == keys$bridge_variant[[i]] &
+        indices$coverage_variant == keys$coverage_variant[[i]] &
+        indices$jaar == keys$jaar[[i]] & is.finite(indices$index_value) & indices$index_value > 0,
+      , drop = FALSE
+    ]
+    membership <- fixed_group[match(cell$soort_id, fixed_group$soort_id), , drop = FALSE]
+    binary_weights <- if ("binary_membership" %in% names(membership)) membership$binary_membership else rep(1, nrow(membership))
+    continuous_weights <- if ("membership_weight" %in% names(membership)) membership$membership_weight else rep(1, nrow(membership))
+    value <- switch(
+      aggregation,
+      geometrisch = geometric_group_mean(cell$index_value),
+      binair = binary_group_mean(cell$index_value, binary_weights),
+      gewogen = weighted_group_mean(cell$index_value, continuous_weights)
+    )
+    present <- sort(unique(cell$soort_id))
+    missing_species <- setdiff(expected, present)
+    data.frame(
+      bridge_variant = keys$bridge_variant[[i]],
+      coverage_variant = keys$coverage_variant[[i]],
+      jaar = keys$jaar[[i]],
+      group_index = value,
+      n_soorten = length(present),
+      verwachte_soorten = length(expected),
+      ontbrekende_soorten = paste(missing_species, collapse = ";"),
+      som_gewichten = if (aggregation == "gewogen") sum(continuous_weights[is.finite(continuous_weights) & continuous_weights > 0]) else sum(binary_weights[is.finite(binary_weights) & binary_weights > 0]),
+      aggregation = aggregation,
+      stringsAsFactors = FALSE
+    )
+  })
+  list(
+    status = if (variant == "robuust") "geldig_vaste_samenstelling" else "geldig_wisselende_samenstelling",
+    series = do.call(rbind, rows)
+  )
+}
