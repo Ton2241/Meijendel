@@ -20,6 +20,15 @@ analyse_jaren <- 1997:2022
 eerste_venster <- 1997:2001
 laatste_venster <- 2018:2022
 
+build_sandra_bootstrap_config <- function() {
+  list(
+    bridge = FALSE,
+    period = c(1997L, 2022L),
+    species_method = "rtrim_overall_imputed_vcov",
+    group_variants = c("volledig", "robuust")
+  )
+}
+
 extract_columns <- function(header) {
   start <- regexpr("\\(", header)[1]
   end <- regexpr("\\) VALUES", header)[1]

@@ -355,3 +355,43 @@ aggregate_bootstrap_group <- function(indices, fixed_group, variant = c("robuust
     series = do.call(rbind, rows)
   )
 }
+
+run_unbridged_bootstrap_replicate <- function(context, replicate_id) {
+  if (!identical(context$config$bridge, FALSE)) stop("Ongebrugde replicatie vereist bridge = FALSE.", call. = FALSE)
+  period <- as.integer(context$config$period)
+  if (length(period) != 2L || period[[1L]] > period[[2L]]) stop("Ongeldige ongebrugde analyseperiode.", call. = FALSE)
+  draw <- make_stratified_cluster_draw(context$clusters, replicate_id, context$config$run_seed)
+  drawn <- apply_cluster_draw(context$species_matrix, draw)
+  rows <- lapply(sort(unique(drawn$soort_id)), function(species_id) {
+    df <- drawn[
+      drawn$soort_id == species_id & drawn$jaar >= period[[1L]] & drawn$jaar <= period[[2L]],
+      , drop = FALSE
+    ]
+    fit <- fit_first_working_trim_model(df)
+    index <- bootstrap_model_index(fit)
+    estimate <- if (is.null(index) || length(index) < 3L) {
+      NA_real_
+    } else {
+      years <- as.integer(names(index))
+      keep <- is.finite(index) & index > 0
+      slope <- unname(stats::coef(stats::lm(log(index[keep]) ~ years[keep]))[[2L]])
+      100 * (exp(slope) - 1)
+    }
+    data.frame(
+      replicate_id = as.integer(replicate_id),
+      soort_id = species_id,
+      period = paste(period, collapse = "-"),
+      estimate_pct_per_year = estimate,
+      model_status = if (isTRUE(fit$ok)) "geldig" else fit$reason,
+      model = if (is.null(fit$config)) NA_character_ else fit$config,
+      draw_hash = draw_hash_text(draw),
+      stringsAsFactors = FALSE
+    )
+  })
+  list(
+    replicate_id = as.integer(replicate_id),
+    draw = draw,
+    species = do.call(rbind, rows),
+    group_variants = context$config$group_variants
+  )
+}
