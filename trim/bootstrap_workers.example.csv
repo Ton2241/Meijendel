@@ -1,0 +1,4 @@
+worker_id,backend,ssh_target,remote_root,max_workers,enabled,role
+imac,local,,,1,true,compute
+nas,ssh,,,1,false,storage_or_compute
+vps,ssh,ton@45.87.43.90,/srv/vwgm/bootstrap,1,false,compute
