@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 17 oktober 2026.**
+**Stand: 18 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -786,6 +786,14 @@ Naamactualisering 17 oktober 2026 — Helmduinen Noord. Ton bevestigt dat deze n
 In de levende nameninventaris zijn één naamobject Helmduinen Noord (OBJ-E37FA22F23), één bron en twee bronvermeldingen toegevoegd, waaronder de verduidelijking bij Helmduinen (OBJ-F7B480D407). De ontvangst- en bevestigingsdatum is 17 oktober 2026; dit is geen bewezen eerste naamdatum, kaarteditiejaar of uitvoeringsdatum. Beide naamobjecten hebben een actuele beoordeling bronlacune_geometrie. De oudere beoordeling van Helmduinen is als eerdere versie behouden.
 
 De stand op 17 oktober 2026 is 183 naamobjecten, 321 vermeldingen uit de oorspronkelijke bronperiode 1602–2026 en de nieuwe bevestiging van 17 oktober 2026, 22 bronnen en 224 beoordelingen, waarvan 112 actueel. Alle 71 bestaande naamgeometrieën, 377 naam–kavelrelaties en 365 relaties in v_nameninventaris_plot_actueel zijn ongewijzigd. Het oorspronkelijke importmanifest blijft de levering van 14 oktober 2026 beschrijven. De benaderde natuurherstelcontour is uitsluitend als maatregelplangebied opgenomen en levert geen naamgeometrie voor Helmduinen Noord of Helmduinen. Bronverantwoording: docs/bronnen/namen/helmduinen_noord_20261017/bronverantwoording.json.
+
+### 3.13. Correspondentie over het Helmduinenplan
+
+Ontvangen en beoordeeld op 18 oktober 2026: één door Ton aangeleverde e-mailketen met vier berichten. Drie berichten zijn gedateerd 17 oktober 2026 (Ton aan Jasper 16:52, Bart aan Ton 17:31, Ton aan Bart 19:42); de inhoudelijke reactie van Bart bovenaan heeft geen eigen datumkop. Bart Dijkstra is volgens Ton de vogel- en PQ-teller van het plot inclusief het voorgenomen werkvlak; hij bevestigt jarenlang PQ-werk voor de provincie. Bronbestand: lokaal aangeleverde Geplakte tekst.txt; inhoud en SHA-256 zijn lokaal bewaard bij de dossieractualisering. Privécorrespondentie, geen toestemming voor openbare verspreiding afgeleid. Geen ruwe e-mailtekst of adressen in Git opgenomen.
+
+De bron beschrijft weinig verandering van hogere Duindoorn, vogelwaarde van het aaneengesloten struweel, botanisch herstel bij het Parnassiapad, een recente ingreep naast het Ganzenhoekwandelpad, natuurlijke veroudering van struweel en een brandplek. De twee beschreven valleilocaties, het kleine wilgen-berkenbosje en de brandplek hebben geen meegeleverde polygonen, oppervlakten of vaste meetperioden; zij zijn niet exact met het planvlak verbonden. “Afgelopen winter” is zonder datumkop niet als uitvoeringsjaar vastgelegd. Bart verwacht voor natte condities op hogere delen diep graven; dat is geen berekende plagdiepte. Hij heeft de kuilen nooit actief gezien; zijn afleiding vóór 1983 is geen gemeten laatste stuifjaar. Relatieve zeldzaamheid van Duindoorn en de Grasmusvergelijking tussen kavels zijn terreinbeoordelingen, geen nieuwe kwantitatieve analyse.
+
+Status: kwalitatieve terrein- en beheercontext, geen nieuwe meetdataset of onafhankelijke herhaling van de reeds gebruikte vogel- en PQ-reeksen. Tons bericht van 19:42 herneemt de eerdere analyse en is geen onafhankelijke ecologische bevestiging. De vijf vragen zijn al op 17 oktober aan Jasper verzonden; deze keten bevat geen antwoord van Jasper. De verklaring dat Bart eerder werk niet kende bewijst geen ontbreken van iedere aankondiging. Geen import in Meijendel of Meijendel_bronnen, geen wijziging van tellingen, coördinaten, analysetoelating, naamgrenzen of de drie geplande maatregelregistraties. De bestaande analytische bronnen, contextbronnen en kandidaten behouden hun afzonderlijke omvang, perioden en status. Verwerking: herziene werkbezoek- en veldnotitie-DOCX, aanvulling C1-C4; database- en literatuurstand 17 oktober blijft onderscheiden van correspondentiebeoordeling 18 oktober.
 
 ## 4. Verwachte aanvullingen
 
