@@ -13,7 +13,7 @@ import subprocess
 import sys
 
 # Exercise the actual scan gates; only the external scanner is replaced.
-# A stale baseline must reject the current OpenSSL/Go finding, and removing a
+# A stale baseline must reject the current pcre2 finding, and removing a
 # safety check must make one of the negative cases fail.
 local = Path(sys.argv[1]).read_text()
 remote = Path(sys.argv[2]).read_text()
@@ -35,12 +35,8 @@ remote_gate = ('audit_candidate() {' + remote_gate).replace(
     '/usr/local/libexec/vwgm-admin/vulnerability-audit-root --image "$CANDIDATE_ID"',
     'test_scanner --image "$CANDIDATE_ID"',
 )
-mysql = 'SAMENVATTING|meijendel-mysql|critical=0|high=5|fix_beschikbaar=5|zonder_fix=0'
-groups = '\n'.join([
-    'GROEP|meijendel-mysql|HIGH|aantal=1|pakket=openssl|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|ids=CVE-2026-84782',
-    'GROEP|meijendel-mysql|HIGH|aantal=1|pakket=openssl-libs|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|ids=CVE-2026-84782',
-    'GROEP|meijendel-mysql|HIGH|aantal=3|pakket=stdlib|installed=v1.25.13|fixed=1.26.9, 1.27.2|ids=CVE-2026-78667,CVE-2026-78669,CVE-2026-97031',
-])
+mysql = 'SAMENVATTING|meijendel-mysql|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0'
+groups = 'GROEP|meijendel-mysql|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|ids=CVE-2026-103111,CVE-2026-86145,CVE-2026-89156,CVE-2026-89157,CVE-2026-89158(+2)'
 shiny = 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0'
 attention = 'AANDACHT|container-image|meijendel-mysql|beoordeel beschikbare fix'
 wrapper = "BLOKKADE|vwgm-admin|Command 'vulnerability-audit-root' returned non-zero exit status 1."
@@ -62,12 +58,12 @@ for mode, gate, good in [
     ('candidate', remote_gate + '\naudit_candidate', common + '\n' + candidate + '\n' + tag),
 ]:
     cases = [
-        ('current OpenSSL and Go scan', good, '1', True),
-        ('old libxml2 baseline', good.replace('high=5|fix_beschikbaar=5', 'high=6|fix_beschikbaar=6'), '1', False),
+        ('current pcre2 scan', good, '1', True),
+        ('old OpenSSL and Go baseline', good.replace('high=7|fix_beschikbaar=7', 'high=5|fix_beschikbaar=5'), '1', False),
         ('critical finding', good.replace('mysql|critical=0', 'mysql|critical=1'), '1', False),
-        ('wrong installed version', good.replace('installed=1:3.5.8-1.0.1.el9_8', 'installed=1:3.5.7-1.0.1.el9_8'), '1', False),
-        ('missing fixed version', good.replace('fixed=1:3.5.8-2.0.1.el9_8', 'fixed='), '1', False),
-        ('missing Go finding', good.replace('high=5|fix_beschikbaar=5', 'high=2|fix_beschikbaar=2').replace(groups.splitlines()[-1], ''), '1', False),
+        ('wrong installed version', good.replace('installed=10.40-6.0.1.el9', 'installed=10.40-5.0.1.el9'), '1', False),
+        ('missing fixed version', good.replace('fixed=10.40-7.0.1.el9_8', 'fixed='), '1', False),
+        ('missing pcre2 finding', good.replace('high=7|fix_beschikbaar=7', 'high=0|fix_beschikbaar=0').replace(groups, ''), '1', False),
         ('shiny vulnerable', good.replace('shiny_meijendel|critical=0|high=0', 'shiny_meijendel|critical=0|high=1'), '1', False),
         ('scanner error', good, '2', False),
         ('urgent scanner error', good + '\nURGENT|scanner|failure', '1', False),
@@ -118,21 +114,20 @@ for name, audit, status, expected in [
         env={**os.environ, 'TEST_AUDIT': audit, 'TEST_STATUS': status},
     )
     assert (result.returncode == 0) == expected, f'post: {name}: {result.stderr}'
-print('OK: actuele OpenSSL/Go-scan toegelaten; afwijkende en falende scans geblokkeerd.')
+print('OK: actuele pcre2-scan toegelaten; afwijkende en falende scans geblokkeerd.')
 PY
 
 [[ -x "$local_script" && -x "$remote_script" ]]
 bash -n "$local_script" "$remote_script"
 for marker in \
   'guard_baseline' 'guard_acquire_lock' 'container-status' 'backup-status' \
-  'critical=0|high=5|fix_beschikbaar=5|zonder_fix=0' \
-  'openssl|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8' \
-  'openssl-libs|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8' \
-  'stdlib|installed=v1.25.13|fixed=1.26.9, 1.27.2' \
+  'critical=0|high=7|fix_beschikbaar=7|zonder_fix=0' \
+  'pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8' \
   'vulnerability-audit-root.*non-zero exit status 1' \
   '--finalize' 'FINALIZE_ONLY' \
   'ssh -tt' 'ServerAliveInterval=30' 'ServerAliveCountMax=20' \
-  'EXPECTED_OLD_IMAGE' 'check_caddy_mysql_isolation_vps.sh' \
+  'EXPECTED_OLD_IMAGE' 'EXPECTED_DATA_COMMIT' \
+  'check_caddy_mysql_isolation_vps.sh' \
   'VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl'; do
   grep -Fq -- "$marker" "$local_script"
 done
@@ -147,15 +142,19 @@ for marker in \
   'smoke_status mysql-soortpagina' 'smoke_status leden-afgeschermd' \
   'smoke_status shiny-afgeschermd' 'smoke_status app-redirect' \
   'smoke_status hoofddomein-redirect' \
-  'critical=0|high=5|fix_beschikbaar=5|zonder_fix=0' \
+  'critical=0|high=7|fix_beschikbaar=7|zonder_fix=0' \
+  'pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8' \
   'critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   'validate_image_inventory' 'vwgm-shiny:rollback-*' \
   'PREVIOUS_CONTAINER="meijendel-mysql-rollback-$SHORT_COMMIT"' \
   'PREVIOUS_TAG="vwgm-mysql:rollback-$SHORT_COMMIT"' \
   'GROEN|mysql-image-update|rollback=behouden' \
-  'Meijendel.commit'; do
+  'EXPECTED_DATA_COMMIT' 'Meijendel.commit'; do
   grep -Fq -- "$marker" "$remote_script"
 done
+! grep -Fq 'printf '\''%s\n'\'' "$NEW_COMMIT"' "$remote_script"
+! grep -Fq 'mv "$tmp_state" "$STATE_FILE"' "$remote_script"
+grep -Fq '[[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]]' "$remote_script"
 grep -Fq 'finalize_current' "$remote_script"
 grep -Fq 'mapfile -t rollback_containers' "$remote_script"
 grep -Fq '[[ "${#rollback_containers[@]}" -eq 1 ]]' "$remote_script"

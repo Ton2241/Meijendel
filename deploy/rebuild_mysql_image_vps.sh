@@ -78,7 +78,8 @@ printf '%s\n' \
   "HELPER|deploy/rebuild_mysql_image_vps_remote.sh|sha256=$helper_hash" \
   "VALIDATOR|deploy/validate_mysql_uid_migration_vps_remote.sh|sha256=$validator_hash" \
   "ACTIEF|container=$ACTIVE_CONTAINER|image=$old_image_id" \
-  "DOEL|MySQL=9.7.1|UID:GID=1999:1999|openssl=1:3.5.8-2.0.1.el9_8-of-nieuwer|go-stdlib=1.26.9-of-nieuwer|high=0|critical=0" \
+  "DOEL|MySQL=9.7.1|UID:GID=1999:1999|pcre2=10.40-7.0.1.el9_8-of-nieuwer|high=0|critical=0" \
+  "DATARELEASE|ongewijzigd=$DEPLOY_PREVIOUS_COMMIT|imagebron=$DEPLOY_LOCAL_COMMIT" \
   'GRENS|geen-datamapmigratie|geen-docker-prune|oude-image-en-rollbackcontainer-blijven-behouden'
 
 echo "== Read-only startgate =="
@@ -100,7 +101,7 @@ if [[ "$FINALIZE" -eq 1 ]]; then
     <<< "$baseline_audit" || guard_die "MySQL-finalisatiescan wijkt af."
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$baseline_audit" || guard_die "Shiny-finalisatiescan wijkt af."
-  grep -Eq '^SAMENVATTING\|meijendel-mysql-rollback-[0-9a-f]{12}\|critical=0\|high=5\|fix_beschikbaar=5\|zonder_fix=0$' \
+  grep -Eq '^SAMENVATTING\|meijendel-mysql-rollback-[0-9a-f]{12}\|critical=0\|high=7\|fix_beschikbaar=7\|zonder_fix=0$' \
     <<< "$baseline_audit" || guard_die "MySQL-rollbackfinalisatiescan wijkt af."
   ! grep -Eq '^URGENT\|' <<< "$baseline_audit" || guard_die "finalisatiescan bevat een urgente scannerfout."
   baseline_blockades="$(grep -c '^BLOKKADE|' <<< "$baseline_audit" || true)"
@@ -115,14 +116,10 @@ if [[ "$FINALIZE" -eq 1 ]]; then
   done < <(grep '^AANDACHT|' <<< "$baseline_audit" || true)
 else
 [[ "$baseline_status" -eq 1 ]] || guard_die "uitgangsscan heeft niet uitsluitend de verwachte aandachtstatus."
-grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=5|fix_beschikbaar=5|zonder_fix=0' \
-  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/5 repareerbare HIGH."
-grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=1|pakket=openssl|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|' \
-  <<< "$baseline_audit" || guard_die "openssl-uitgangsversie of fixversie wijkt af."
-grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=1|pakket=openssl-libs|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|' \
-  <<< "$baseline_audit" || guard_die "openssl-libs-uitgangsversie of fixversie wijkt af."
-grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=3|pakket=stdlib|installed=v1.25.13|fixed=1.26.9, 1.27.2|' \
-  <<< "$baseline_audit" || guard_die "Go-stdlib-uitgangsversie of fixversie wijkt af."
+grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0' \
+  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/7 repareerbare HIGH."
+grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|' \
+  <<< "$baseline_audit" || guard_die "pcre2-uitgangsversie of fixversie wijkt af."
 grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   <<< "$baseline_audit" || guard_die "Shiny-uitgangsscan wijkt af."
 ! grep -Eq '^URGENT\|' <<< "$baseline_audit" ||
@@ -150,7 +147,7 @@ scp -i "$SSH_KEY" "$VALIDATE_HELPER" "$VPS:$REMOTE_STAGE/validate-mysql"
 
 ssh -tt -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
   -i "$SSH_KEY" "$VPS" \
-  "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' NEW_COMMIT='$DEPLOY_LOCAL_COMMIT' SHORT_COMMIT='$short_commit' FINALIZE_ONLY='$FINALIZE' bash '$REMOTE_STAGE/rebuild-mysql'"
+  "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' SOURCE_COMMIT='$DEPLOY_LOCAL_COMMIT' EXPECTED_DATA_COMMIT='$DEPLOY_PREVIOUS_COMMIT' SHORT_COMMIT='$short_commit' FINALIZE_ONLY='$FINALIZE' bash '$REMOTE_STAGE/rebuild-mysql'"
 
 echo "== Onafhankelijke nacontrole =="
 VWG_ADMIN_GATEWAY=1 "$VWG_M/website/vwg-m-linux-app/scripts/check_caddy_mysql_isolation_vps.sh"
@@ -184,6 +181,6 @@ while IFS= read -r attention; do
   esac
 done < <(grep '^AANDACHT|' <<< "$post_audit" || true)
 remote_state="$(ssh -i "$SSH_KEY" "$VPS" "cat '$DEPLOY_STATE_FILE'")"
-[[ "$remote_state" == "$DEPLOY_LOCAL_COMMIT" ]] || guard_die "Meijendel-productiestatus is niet bijgewerkt."
+[[ "$remote_state" == "$DEPLOY_PREVIOUS_COMMIT" ]] || guard_die "Meijendel-datarelease is tijdens image-onderhoud gewijzigd."
 
-echo "MySQL-image-update/finalisatie afgerond; productiecommit geregistreerd: $DEPLOY_LOCAL_COMMIT"
+echo "MySQL-image-update/finalisatie afgerond; datarelease ongewijzigd: $DEPLOY_PREVIOUS_COMMIT; imagebron: $DEPLOY_LOCAL_COMMIT"

@@ -6,7 +6,8 @@ set -euo pipefail
 : "${HELPER_HASH:?}"
 : "${VALIDATOR_HASH:?}"
 : "${EXPECTED_OLD_IMAGE:?}"
-: "${NEW_COMMIT:?}"
+: "${SOURCE_COMMIT:?}"
+: "${EXPECTED_DATA_COMMIT:?}"
 : "${SHORT_COMMIT:?}"
 FINALIZE_ONLY="${FINALIZE_ONLY:-0}"
 
@@ -90,14 +91,10 @@ audit_candidate() {
   short="${CANDIDATE_ID#sha256:}"
   grep -Fq "SAMENVATTING|kandidaat-${short:0:12}|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
     <<< "$output" || fail "kandidaat bevat HIGH/CRITICAL of is niet exact gescand"
-  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=5|fix_beschikbaar=5|zonder_fix=0' \
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0' \
     <<< "$output" || fail "actieve uitgangsimage wijkt af tijdens kandidaatscan"
-  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=1|pakket=openssl|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|' \
-    <<< "$output" || fail "openssl-uitgangsversie wijkt af tijdens kandidaatscan"
-  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=1|pakket=openssl-libs|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|' \
-    <<< "$output" || fail "openssl-libs-uitgangsversie wijkt af tijdens kandidaatscan"
-  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=3|pakket=stdlib|installed=v1.25.13|fixed=1.26.9, 1.27.2|' \
-    <<< "$output" || fail "Go-stdlib-uitgangsversie wijkt af tijdens kandidaatscan"
+  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|' \
+    <<< "$output" || fail "pcre2-uitgangsversie wijkt af tijdens kandidaatscan"
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$output" || fail "Shiny wijkt af tijdens kandidaatscan"
   [[ "$status" -eq 1 ]] || fail "kandidaatscan heeft een onverwachte eindstatus"
@@ -125,10 +122,8 @@ audit_active_with_previous() {
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$output" || fail "Shiny-tussenscan wijkt af"
   ! grep -Eq '^(URGENT|BLOKKADE)\|' <<< "$output" || fail "actieve tussenscan is onvolledig"
   rollback_label="$PREVIOUS_CONTAINER"
-  grep -Fq "SAMENVATTING|$rollback_label|critical=0|high=5|fix_beschikbaar=5|zonder_fix=0" <<< "$output" || fail "MySQL-rollbackscan wijkt af"
-  grep -Fq "GROEP|$rollback_label|HIGH|aantal=1|pakket=openssl|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|" <<< "$output" || fail "openssl-rollbackscan wijkt af"
-  grep -Fq "GROEP|$rollback_label|HIGH|aantal=1|pakket=openssl-libs|installed=1:3.5.8-1.0.1.el9_8|fixed=1:3.5.8-2.0.1.el9_8|" <<< "$output" || fail "openssl-libs-rollbackscan wijkt af"
-  grep -Fq "GROEP|$rollback_label|HIGH|aantal=3|pakket=stdlib|installed=v1.25.13|fixed=1.26.9, 1.27.2|" <<< "$output" || fail "Go-stdlib-rollbackscan wijkt af"
+  grep -Fq "SAMENVATTING|$rollback_label|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0" <<< "$output" || fail "MySQL-rollbackscan wijkt af"
+  grep -Fq "GROEP|$rollback_label|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|" <<< "$output" || fail "pcre2-rollbackscan wijkt af"
   grep -Fq "AANDACHT|container-image|$rollback_label|" <<< "$output" || fail "MySQL-rollbackaandacht ontbreekt"
   while IFS= read -r attention; do
     case "$attention" in
@@ -219,20 +214,20 @@ finalize_current() {
   /usr/local/sbin/vwgm-baremetal-backup >/tmp/vwgm-mysql-finalize-backup.json
   validate_backup
   grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up mist nieuwe image"
-  tmp_state="$STATE_FILE.tmp.$$"
-  printf '%s\n' "$NEW_COMMIT" > "$tmp_state"
-  mv "$tmp_state" "$STATE_FILE"
+  [[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde tijdens finalisatie"
   rm -f /tmp/vwgm-mysql-finalize-backup.json
   SUCCESS=1
-  printf 'GROEN|mysql-image-finalisatie|image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|commit=%s\n' \
-    "$CANDIDATE_ID" "$NEW_COMMIT"
+  printf 'GROEN|mysql-image-finalisatie|image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|data_commit=%s|source_commit=%s\n' \
+    "$CANDIDATE_ID" "$EXPECTED_DATA_COMMIT" "$SOURCE_COMMIT"
 }
 
 [[ "$(hash_file "$REMOTE_STAGE/Dockerfile.9.7.1")" == "$DOCKERFILE_HASH" ]] || fail "Dockerfilehash wijkt af"
 [[ "$(hash_file "$REMOTE_STAGE/rebuild-mysql")" == "$HELPER_HASH" ]] || fail "helperhash wijkt af"
 [[ "$(hash_file "$REMOTE_STAGE/validate-mysql")" == "$VALIDATOR_HASH" ]] || fail "validatorhash wijkt af"
 [[ "$EXPECTED_OLD_IMAGE" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "oude image-ID is ongeldig"
-[[ "$NEW_COMMIT" =~ ^[0-9a-f]{40}$ && "$SHORT_COMMIT" == "${NEW_COMMIT:0:12}" ]] || fail "commitbinding wijkt af"
+[[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ && "$SHORT_COMMIT" == "${SOURCE_COMMIT:0:12}" ]] || fail "broncommitbinding wijkt af"
+[[ "$EXPECTED_DATA_COMMIT" =~ ^[0-9a-f]{40}$ ]] || fail "verwachte datarelease is ongeldig"
+[[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde vóór image-onderhoud"
 [[ -d "$LOCK" ]] || fail "gedeelde productielock ontbreekt"
 if [[ "$FINALIZE_ONLY" == 1 ]]; then
   finalize_current
@@ -340,14 +335,12 @@ grep -Fq "$EXPECTED_OLD_IMAGE" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json
 
 [[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql $PREVIOUS_CONTAINER shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
 validate_image_inventory
-tmp_state="$STATE_FILE.tmp.$$"
-printf '%s\n' "$NEW_COMMIT" > "$tmp_state"
-mv "$tmp_state" "$STATE_FILE"
+[[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde tijdens image-onderhoud"
 rm -rf -- "$TASK_ROOT"
 docker ps -a --no-trunc
 docker images --no-trunc
 docker system df
 
 SUCCESS=1
-printf 'GROEN|mysql-image-update|rollback=behouden|image=%s|rollback_image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|commit=%s\n' \
-  "$CANDIDATE_ID" "$EXPECTED_OLD_IMAGE" "$NEW_COMMIT"
+printf 'GROEN|mysql-image-update|rollback=behouden|image=%s|rollback_image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|data_commit=%s|source_commit=%s\n' \
+  "$CANDIDATE_ID" "$EXPECTED_OLD_IMAGE" "$EXPECTED_DATA_COMMIT" "$SOURCE_COMMIT"

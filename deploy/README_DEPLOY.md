@@ -52,6 +52,13 @@ beschikbare fix. Zij past geen image of container aan. Een noodzakelijke fix
 wordt afzonderlijk gebouwd, getest en uitsluitend via deze veilige
 productielijn geactiveerd.
 
+Een MySQL-image-update is infrastructuuronderhoud en publiceert geen nieuwere
+Meijendel-data. De helper bindt de imagebouw voor herleidbaarheid aan de
+actuele `main`-commit, maar controleert vóór en na de wijziging dat
+`/srv/vwgm/deploy-state/Meijendel.commit` exact ongewijzigd blijft. Alleen een
+afzonderlijke, volledig gecontroleerde datadeploy mag die productiestatus
+bijwerken.
+
 Deploy bij voorkeur naar een release-directory per commit en activeer die atomisch. Waar dit voor gedeelde Meijendel-data nog niet mogelijk is, moet het manifest volledig zijn en moeten tijdelijke bestanden pas na succesvolle validatie atomisch naar hun definitieve pad worden verplaatst. Deploy geen los gedeeld kernbestand vanuit een andere branch.
 
 Na deploy wacht het script met begrensde retries op Shiny en dashboard, controleert checksums, containerstatus, HTTP-routes en relevante grafiekinhoud, en registreert pas daarna de nieuwe productiecommit. Herstelmodus is alleen toegestaan met expliciete bevestiging wanneer productie al defect is; ancestrycontrole, lock, manifest en volledige groene nacontrole blijven verplicht.
