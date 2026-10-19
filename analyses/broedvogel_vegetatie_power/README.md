@@ -30,6 +30,15 @@ vooraf gekozen grens van 0,60. Radiometrische normalisatie en beeldtextuur
 verbeteren dit niet. De luchtfoto's worden daarom niet tot een jaarlijkse
 vegetatiestructuurreeks uitgebreid.
 
+Op 19 oktober 2026 zijn de oorspronkelijke geclassificeerde rasters voor 2001
+en 2022 ontvangen. Zij bevestigen de gepubliceerde oppervlaktes en voegen voor
+25 plots echte ruimtelijke structuur toe: per klasse zijn nu onder meer het
+aantal aaneengesloten vlakken, het aandeel van het grootste vlak en de
+randlengte berekend. Deze gegevens verfijnen de twee bestaande
+landbedekkingsmomenten. Zij maken de vijf luchtfotojaren nog niet onderling
+vergelijkbaar, omdat de oorspronkelijke trainingspolygonen en validatiepunten
+niet meer beschikbaar zijn.
+
 Ook de aanvullende omgevingsstap is uitgevoerd. Het stikstofmodel gebruikt
 60.127 soort–plot–jaarrijen uit 674 plotjaren in 51 plots, voor 155 soorten en
 2005–2023. Het CBS-landgebruik gebruikt 15.039 rijen uit 168 plotjaren in 49
@@ -148,6 +157,17 @@ het duidelijkste ruimtelijke signaal voor watervogels. Van vijftig
 validatievergelijkingen voor compositie, IPI en landbedekking zijn er 31 geldig
 en 19 numeriek ongeldig. Daarom worden de resultaten voor open-duin-,
 boomgroep- en bosvogels niet als stevige verbanden gepresenteerd.
+
+De later ontvangen bronrasters omvatten voor diezelfde 25 plots 369.710
+geldige pixels in 2001 en 369.662 in 2022, met een rastermaat van ongeveer 5
+meter. Alle pixels konden aan een van de zeven bronklassen en een bronplot
+worden toegewezen. De rasteroppervlakten verschillen over 350
+plot-klasse-jaarvergelijkingen gemiddeld 0,0032 hectare van het gepubliceerde
+supplement en maximaal 0,030 hectare. Daardoor zijn naast oppervlakte nu ook
+versnippering, grootste aaneengesloten plek, randlengte en
+landschapsdiversiteit herleidbaar. Deze maten zijn als afzonderlijke
+analyse-uitvoer vastgelegd; zij veranderen niet dat slechts 2001 en 2022 zijn
+gemeten.
 
 De aanvullende stikstof- en landgebruiksanalyse gebruikt dezelfde vogelpoort,
 teller/tellerteamcorrectie, inspanningsmaten en vier weercorrecties. Voor

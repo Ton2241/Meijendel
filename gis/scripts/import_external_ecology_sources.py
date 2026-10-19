@@ -293,14 +293,40 @@ CENTRAL_QUERY_SCHEMA = {
     'kernopgave_soort': frozenset(['kernopgave_id', 'soort_id']),
     'kernopgaven': frozenset(['code', 'id', 'omschrijving']),
     'legacy_trait_mapping': frozenset(['category_id', 'id', 'legacy_code', 'mapping_rule', 'mapping_status', 'mapping_strength', 'reviewed_on', 'trait_id']),
+    'maatregel_activiteit_type': frozenset(['activiteit_code', 'omschrijving']),
+    'maatregel_bron': frozenset(['bron_code', 'bron_datum', 'bron_id', 'bronstatus', 'brontype_code', 'opmerking', 'raadpleegdatum', 'titel', 'url', 'zotero_item_key']),
+    'maatregel_brontype': frozenset(['brontype_code', 'landelijke_broncategorie', 'omschrijving']),
+    'maatregel_geometrie': frozenset(['bron_id', 'geometrie', 'geometrie_id', 'geometrie_jaar', 'geometrie_opmerking', 'geometrie_type', 'uitvoering_id']),
     'maatregel_habitat': frozenset(['habitat_id', 'maatregel_id']),
+    'maatregel_plot_koppeling': frozenset(['bron_id', 'doorsnijding_pct', 'koppelmethode', 'opmerking', 'plot_id', 'uitvoering_id', 'verificatiestatus']),
+    'maatregel_project': frozenset(['aangemaakt_op', 'bestuurlijke_status', 'deelgebied', 'doel_omschrijving', 'druk_aandachtspunt', 'externe_projectcode', 'financiering', 'gewijzigd_op', 'juridisch_categorie', 'naam', 'natura2000_gebied', 'omschrijving', 'plan_einddatum', 'plan_startdatum', 'programma', 'project_code', 'project_id', 'verantwoordelijke_organisatie', 'werkcategorie_code']),
+    'maatregel_type': frozenset(['maatregeltype_code', 'omschrijving']),
+    'maatregel_uitvoering': frozenset(['activiteit_code', 'aangemaakt_op', 'cycliciteit', 'datum_precisie', 'datum_tot', 'datum_vanaf', 'gerealiseerde_hoeveelheid', 'gewijzigd_op', 'hoeveelheid_eenheid', 'locatie_naam', 'locatie_precisie', 'maatregel_id', 'maatregeltype_code', 'naam', 'omschrijving', 'opmerking', 'project_id', 'uitvoerder', 'uitvoering_code', 'uitvoering_id', 'uitvoering_status_code']),
+    'maatregel_uitvoering_bron': frozenset(['bewijsnotitie', 'bron_id', 'bronrol', 'pagina_of_paragraaf', 'uitvoering_id']),
+    'maatregel_uitvoering_gebied': frozenset(['bron_id', 'gebied_code', 'indeling_code', 'opmerking', 'relatietype', 'uitvoering_id', 'verificatiestatus']),
+    'maatregel_uitvoering_plotscope': frozenset(['bron_id', 'opmerking', 'plotscope_status', 'uitvoering_id', 'vastgesteld_op', 'verificatiestatus']),
+    'maatregel_uitvoering_jaar': frozenset(['bron_id', 'jaar', 'jaarstatus', 'toelichting', 'uitvoering_id']),
+    'maatregel_uitvoering_status': frozenset(['is_feitelijk_uitgevoerd', 'landelijk_status_code', 'omschrijving', 'uitvoering_status_code']),
+    'maatregel_werkcategorie': frozenset(['omschrijving', 'werkcategorie_code']),
     'maatregelen': frozenset(['code', 'druk_aandachtspunt', 'id', 'maatregelgroep_code', 'omschrijving']),
     'maatregelen_kernwoorden': frozenset(['actief', 'code', 'id', 'kernwoord', 'parent_maatregel_id']),
+    'plot_gebied': frozenset(['gebied_code', 'gebiedstype', 'karakterisering', 'naam', 'sortering']),
+    'plot_gebied_geometrie': frozenset(['afgeleid_op', 'bronplot_aantal', 'gebied_code', 'gebied_geometrie', 'geometrie_sha256', 'indeling_code', 'oppervlakte_ha', 'plotversie_id']),
+    'plot_gebied_lidmaatschap': frozenset(['bewijswijze', 'gebied_code', 'indeling_code', 'lidmaatschap_status', 'opmerking', 'plot_id']),
+    'plot_gebiedsindeling': frozenset(['aangemaakt_op', 'besluitnotitie', 'bron_url', 'indeling_code', 'naam', 'plotversie_id', 'status', 'vastgesteld_op']),
     'meijendel_basisgebied': frozenset(['basisgebiedversie_id', 'gebied_geometrie', 'gebied_id', 'naam']),
     'meijendel_basisgebied_versie': frozenset(['aangemaakt_op', 'basisgebiedversie_id', 'bronbestand', 'bronbestand_sha256', 'crs_epsg', 'oppervlakte_ha', 'projectgeometrie_sha256', 'status', 'versie']),
     'meijendel_natura2000': frozenset(['gebied_geometrie', 'gebiedsnummer', 'naam', 'natura2000versie_id']),
     'meijendel_natura2000_versie': frozenset(['aangemaakt_op', 'bronbestand', 'bronbestand_sha256', 'crs_epsg', 'gebiedsnummer', 'natura2000versie_id', 'oppervlakte_ha', 'versie']),
     'meijendel_waarneming_ruimtelijke_status': frozenset(['basisgebiedversie_id', 'basisstatus', 'beoordeeld_op', 'bron_record_id', 'bron_tabel', 'eenduidig_plot_id', 'locatiemethode', 'natura2000status', 'natura2000versie_id', 'plotversie_id', 'reden', 'regelversie', 'ruimtelijke_status_id', 'sovon_plot_count', 'toelatingsstatus']),
+    'nameninventaris_beoordeling': frozenset(['actueel', 'beoordeling_id', 'beoordelingsstatus', 'beoordeeld_op', 'gevolg', 'import_id', 'kleinste_volgende_bron', 'object_id', 'ontbreekt', 'regelversie']),
+    'nameninventaris_bron': frozenset(['auteur_beheerder', 'bronjaar', 'bronverwijzing', 'brontype', 'import_id', 'kwaliteitsbeoordeling', 'raadpleegdatum', 'rechten', 'ruimtelijke_grondslag', 'source_id', 'titel', 'zotero_item_key']),
+    'nameninventaris_geometrie': frozenset(['aangemaakt_op', 'bronobjecttype', 'geometrie_id', 'geometrieopmerking', 'geometrieversie', 'geometry', 'import_id', 'nauwkeurigheid_m', 'nauwkeurigheidsstatus', 'object_id', 'peildatum', 'ruimtelijke_selectiegrondslag', 'source_id', 'wkt_sha256']),
+    'nameninventaris_geometrie_bronobject': frozenset(['bronobject_id', 'bronobject_systeem', 'geometrie_id']),
+    'nameninventaris_import': frozenset(['archief_sha256', 'bronreferentie', 'geimporteerd_op', 'import_id', 'leveringsdatum', 'regelversie', 'verwacht_bronnen', 'verwacht_geometrieen', 'verwacht_lacunes', 'verwacht_objecten', 'verwacht_vermeldingen', 'versiesleutel']),
+    'nameninventaris_object': frozenset(['aangemaakt_op', 'aangeleverde_naam', 'bewijsstatus', 'bronobjecttype', 'import_id', 'nauwkeurigheid_m', 'nauwkeurigheidsstatus', 'object_id', 'objectklasse', 'voorkeursnaam']),
+    'nameninventaris_plot_koppeling': frozenset(['berekend_op', 'geometrie_id', 'intersectiedimensie', 'naamgeometrie_sha256', 'plot_id', 'plot_geometrie_import_id', 'plotgeometrie_sha256', 'rekenregelversie', 'relatietype']),
+    'nameninventaris_vermelding': frozenset(['bewijsnotitie', 'bronnaam', 'datumprecisie', 'deelgebied', 'import_id', 'jaar_tot', 'jaar_van', 'mention_id', 'object_id', 'pagina_kaart_bronobject', 'periode_einde_letterlijk', 'periode_letterlijk', 'source_id']),
     'natura2000_vogelrichtlijn_soort': frozenset(['bron_gelezen_op', 'bron_url', 'eu_code', 'id', 'pdf_url', 'profiel_url', 'profieltype', 'richtlijn_bijlage', 'richtlijn_id', 'soort_id']),
     'ndff_amfibie_bezoek': frozenset(['bezoek_sleutel', 'bezoekdatum', 'bezoekdekkingstatus', 'bronrecordaantal', 'inspanningstatus', 'jaar', 'periode_start', 'periode_stop', 'periodecodering', 'reconstructieversie', 'waterbezoekaantal']),
     'ndff_amfibie_waterbezoek': frozenset(['bevestigingsstatus', 'bezoek_sleutel', 'bronrecordaantal', 'reconstructieversie', 'waterbezoek_sleutel', 'waterfamilie_id']),
@@ -452,6 +478,9 @@ CENTRAL_QUERY_SCHEMA = {
     'plot_jaar_habitat': frozenset(['aandeel_m2', 'habitat_id', 'id', 'jaar', 'plot_id']),
     'plot_jaar_infra': frozenset(['bron', 'jaar', 'plot_id', 'variabele', 'waarde']),
     'plot_jaar_landgebruik': frozenset(['area_m2', 'bron', 'jaar', 'klasse', 'pct', 'plot_id']),
+    'maatregel_plot_jaar_registratie': frozenset(['beoordelingsstatus', 'bron_id', 'deel_label', 'dekking_pct', 'intensiteit_code', 'jaar', 'maatregel_id', 'opmerking', 'plot_id', 'registratie_id', 'uitvoerder_of_diersoort', 'uitvoering_id']),
+    'maatregel_toegankelijkheid_registratie': frozenset(['aandeel_pct', 'barriere_type', 'beoordelingsstatus', 'bron_id', 'deel_label', 'geom_wkt', 'jaar', 'niveau', 'opmerking', 'ouder_registratie_id', 'plot_id', 'registratie_id', 'status_code', 'uitvoering_id']),
+    'maatregel_registratie_herkomst': frozenset(['beheer_registratie_id', 'bronsleutel', 'brontabel', 'herkomst_id', 'jaar', 'migratieversie', 'oorspronkelijke_rij', 'plot_id', 'rij_sha256', 'toegang_registratie_id', 'uitvoering_id']),
     'plot_jaar_maatregel': frozenset(['bron', 'deel_label', 'dekking_pct', 'id', 'intensiteit_code', 'jaar', 'maatregel_id', 'opmerking', 'plot_id', 'uitvoerder_of_diersoort']),
     'plot_jaar_oppervlak': frozenset(['id', 'jaar', 'oppervlakte_km2', 'plot_id']),
     'plot_jaar_stikstof': frozenset(['bron', 'jaar', 'plot_id', 'stikstof_mean', 'stikstof_median']),
@@ -461,7 +490,8 @@ CENTRAL_QUERY_SCHEMA = {
     'plot_link': frozenset(['bron', 'id', 'label', 'link_type', 'opmerking', 'plot_id', 'url']),
     'plot_analyse_scope': frozenset(['besluitdatum', 'in_scope', 'plot_id', 'reden', 'scope_code']),
     'plotkolom_mapping': frozenset(['kolomnaam', 'plot_id']),
-    'plots': frozenset(['geom', 'in_gebruik', 'kavel_nummer', 'plot_id', 'plot_naam', 'plot_nr', 'plot_wv']),
+    'plot_geometrie_import': frozenset(['actueel', 'bron_datum', 'bron_objecten', 'bronbestand', 'bundel_sha256', 'dbf_sha256', 'geimporteerd_op', 'geimporteerde_plots', 'plot_geometrie_import_id', 'prj_sha256', 'selectieregel', 'shp_sha256', 'shx_sha256', 'uitgesloten_naam', 'uitgesloten_plot_id', 'versiesleutel']),
+    'plots': frozenset(['geom', 'geom_bron_import_id', 'geom_sha256', 'in_gebruik', 'kavel_nummer', 'plot_id', 'plot_naam', 'plot_nr', 'plot_wv']),
     'pq_plot_jaar_vegetatie': frozenset(['bedekking_som_gem', 'bronbestand', 'bronstatus', 'dekking_kwaliteit', 'importversie', 'jaar', 'methode', 'n_opnamen', 'n_pq', 'plot_id', 'shannon_gem', 'soortenrijkdom_gem', 'taxa_aantal', 'taxonlijst_versie']),
     'pq_vegetatie_bronopname': frozenset(['analyse_status', 'bron_event_id', 'bron_locatie', 'bronmetadata', 'coordinate_uncertainty_m', 'dataset_id', 'datum_precisie', 'event_datum', 'event_datum_tot', 'event_id', 'inspanning_eenheid', 'inspanning_waarde', 'jaar', 'latitude', 'longitude', 'ruimtelijke_klasse', 'sampling_protocol', 'zelfstandig_meetellen']),
     'pq_vegetatie_bronoverlap': frozenset(['doelrecord_sleutel', 'doelsysteem', 'koppelmethode', 'overlap_id', 'resultaat_id', 'toelichting', 'zekerheid']),
@@ -521,6 +551,13 @@ CENTRAL_QUERY_SCHEMA = {
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
+    registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
+    legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
+    if not (registraties & set(schema)):
+        for table in registraties: expected.pop(table)
+    elif registraties <= set(schema) and not (legacy & set(schema)):
+        # De oude objecten zijn views, buiten deze inventaris van fysieke tabellen.
+        for table in legacy: expected.pop(table)
     additions = source_family_tables()
     if set(schema) & set(additions):
         expected.update({table: CENTRAL_QUERY_SCHEMA[original] for table,original in additions.items()})

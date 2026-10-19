@@ -66,10 +66,14 @@ vastgesteld welk deel ecologische verandering is. Gezien de zwakke
 overdrachtsscores worden deze verschillen niet als echte jaarverandering
 gebruikt.
 
-Water en kaal zand zijn niet afzonderlijk gevalideerd. AHN onderscheidt beide
-niet en de beschikbare landbedekkingsbron bevat alleen oppervlaktes per plot,
-geen pixelreferenties. Een drempel op kleur of NDVI zou daarom een onbewezen
-indeling opleveren.
+Water en kaal zand waren in deze proef niet afzonderlijk gevalideerd. AHN
+onderscheidt beide niet en destijds was alleen de oppervlaktetabel per plot
+beschikbaar. Op 19 oktober 2026 zijn de classificatierasters voor 2001 en 2022
+ontvangen. Zij bevatten wel pixelklassen voor water en kaal zand, maar niet de
+oorspronkelijke trainingspolygonen of de 125 validatiepunten. Het raster van
+2022 kan dus als bestaande kaart met het beeld van 2022 worden vergeleken,
+maar is geen onafhankelijke waarheid voor datzelfde beeld en valideert geen
+overdracht naar andere jaren.
 
 ## Besluit en herhaalbaarheid
 
@@ -81,9 +85,10 @@ klasse-uitkomsten, alle 53 plotfracties voor vijf jaren en beide
 kenmerkensets, de samenvatting en het downloadmanifest staan onder
 `resultaten/luchtfoto_proef_laatste_*`.
 
-Een nieuwe poging is pas zinvol met onafhankelijke, per pixel begrensde
-trainingsvlakken voor open zand, lage vegetatie, struweel, bomen en water, of
-met de oorspronkelijke classificatierasters van 2001 en 2022. Die referentie
-moet vervolgens per beeldjaar op volledig achtergehouden plots en jaren worden
-getoetst. Tot die tijd blijven AHN2-AHN5 de bruikbare, maar slechts viermaal
-gemeten bron voor verticale vegetatiestructuur.
+De oorspronkelijke classificatierasters van 2001 en 2022 zijn inmiddels
+beschikbaar en worden gebruikt voor de ruimtelijke inrichting van die twee
+jaren. Zij zijn onvoldoende om de jaarlijkse luchtfotoreeks alsnog toe te
+laten. Een nieuwe classificatiepoging vraagt onafhankelijke, per pixel
+begrensde referenties voor meer beeldjaren en moet op volledig achtergehouden
+plots én jaren worden getoetst. Tot die tijd blijven AHN2–AHN5 de bruikbare,
+maar slechts viermaal gemeten bron voor verticale vegetatiestructuur.

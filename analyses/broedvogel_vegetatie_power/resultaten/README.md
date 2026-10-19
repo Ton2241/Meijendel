@@ -159,6 +159,28 @@ faalt.
 hoogtecorrectie, maar een gerichte AHN DSM–DTM-proef. Die proef is inmiddels
 uitgevoerd en staat in de bestanden `habitatgericht_laatste_*`.
 
+## Oorspronkelijke landbedekkingsrasters
+
+De bestanden `landbedekking_raster_laatste_*` zijn afgeleid uit de op 19
+oktober 2026 ontvangen classificatierasters voor 2001 en 2022. Zij omvatten 25
+bronplots, zeven klassen en respectievelijk 369.710 en 369.662 geldige pixels.
+Alle pixels hebben een bekende klasse en vallen binnen een bronplot.
+
+`landbedekking_raster_laatste_oppervlaktecontrole.csv` bevat alle 350
+vergelijkingen met de eerder gebruikte supplementtabel. Het gemiddelde
+absolute verschil is 0,0032 hectare en het maximum 0,030 hectare.
+`landbedekking_raster_laatste_landscapemetrics.csv` bevat per plot en jaar
+klassenrijkdom, Shannon-diversiteit en totale interne randdichtheid.
+`landbedekking_raster_laatste_klassemetrics.csv` bevat per klasse aandeel,
+aantal en dichtheid van aaneengesloten vlakken, aandeel van het grootste vlak
+en randdichtheid. `landbedekking_raster_laatste_verandering.csv` zet voor
+iedere plot en klasse 2001 en 2022 naast elkaar. Het manifest bewaart
+bronhashes, rastermetadata, klassecodes en controles.
+
+Dit zijn beschrijvende ruimtelijke maten op twee kaartmomenten. Zij vormen
+geen jaarlijkse tijdreeks en zijn nog niet als nieuwe voorspellers in een
+vogelmodel geschat.
+
 ## Gerichte habitatmodellen met AHN en weer
 
 De bestanden `habitatgericht_laatste_*` horen bij formele run

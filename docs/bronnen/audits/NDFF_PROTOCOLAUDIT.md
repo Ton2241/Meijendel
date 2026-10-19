@@ -145,6 +145,178 @@ jaarperioden en kilometerhokken geaggregeerd; bezoekdatum, telpunt, val, lamp en
 binnen/buiten-status ontbreken. De bestaande kwalificatie als positieve
 hokjaarcontext zonder nullen of trendinvoer blijft daarom juist.
 
+### Selectie van volledige toegelaten libellenbezoeken
+
+**Selectie voor bezoekanalyses, 17 oktober 2026.** Gebruik `ndff-libellen-selectie-v1` via `--selecteer-libellen` in `gis/scripts/import_ndff_protocolkwaliteit.py`. De selectie wordt opnieuw berekend uit de levende database, voor analysetype `TV` of `TA`. Alleen een gereconstrueerd algemeen routebezoek waarvan alle bronrecords `voorlopig_bruikbaar` zijn, binnen `meijendel_natura2000` vallen en het gekozen analysetype toestaan, wordt met zijn volledige bestaande taxonmatrix doorgegeven. Ontbrekende of dubbele bron-/analysekoppelingen, afwijkende bezoekaantallen, plots zonder scopestatus en ontbrekende centrale taxonkoppelingen blokkeren de selectie. Taxa zonder soortgroep blijven bereikbaar.
+
+De controle van de 3.280 bronrecords en 461 bezoeken uit 2007–2021 selecteert 98 bezoeken met 515 bronrecords uit 2010–2021. Hun bestaande matrix bevat 2.842 regels: 353 positieve combinaties en 2.489 afgeleide nullen. De 73 gedeeltelijk toegelaten bezoeken uit 2010–2020 en de 290 geheel uitgesloten bezoeken uit 2007–2020 worden niet als volledige matrix doorgegeven. De afzonderlijk toegelaten positieve records uit gedeeltelijke bezoeken blijven beschikbaar als voorkomensinformatie via de bestaande NDFF-analyseview. De selectie bewaart `gegevensgeschiktheid`, `kwaliteitsmelding`, het nulbewijs en de centrale taxonverwijzing. Zij bevestigt geen gevalideerde trend of afwezigheid. Er zijn geen records, bestaande nullen of analysebesluiten gewijzigd en geen extra tabellen of views gemaakt.
+
+De alleen-lezen T7-controle van 17 oktober 2026 vond in de gecontroleerde gegevensmap en archiefinhoud geen afzonderlijke Vlinderstichting-levering. Alle 3.280 libellenregels uit 2007–2021 in de stagingdataset komen op identificatie, periode, taxonnaam, aantal en protocol overeen met de levende database. De beveiligde NDFF-levering van 14.573 records uit 1950–2025 bevat geen `07.201`-records en geen gevuld `sessionid`. Deze controle sluit een levering elders niet uit; de oorspronkelijke route- en bezoekadministratie is hiermee niet verkregen.
+
+Controleer de selectie zonder matrixuitvoer:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-libellen-selectie
+```
+
+Gebruik de volledige geselecteerde matrix als JSON voor een interne berekening:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --selecteer-libellen --libellen-analysetype TV
+```
+
+Voor een aantalsvergelijking kiest de afnemer expliciet `--libellen-analysetype TA`.
+Dit is geen goedkeuring van een trendmodel. De oorspronkelijke reconstructie
+`ndff-libellenroute-v1` en de algemene analyseketen `ndff-analyseketen-v1` blijven
+ongewijzigd; de aanvullende, strengere selectie heeft haar eigen versie.
+De bron- en matrixlezing gebeurt in één alleen-lezen databasesnapshot. De functie
+`read_libel_analysis_selection()` geeft dezelfde selectie terug voor hergebruik
+in Python. De bestaande reconstructie-audit `--audit-libellen` blijft daarnaast
+nodig voor de inhoudelijke consistentie van de aangeleverde matrix.
+`plot_ids` beschrijft de plots van de toegelaten bronrecords, geen bewezen
+plotgebonden nul voor ieder taxon. Een bezoek dat meerdere toegelaten plots
+zou bestrijken wordt niet kunstmatig in onafhankelijke plotbezoeken gesplitst.
+Naast de algemene V-kwaliteitsvelden bevat iedere uitvoerregel ook
+`analysetype_gegevensgeschiktheid` en `analysetype_kwaliteitsmelding` uit het
+afzonderlijke actuele TV- of TA-besluit. Ontbreekt dat besluit of de toelichting,
+dan stopt de selectie. De algemene V-status vervangt dit typegebonden besluit niet.
+De codes TV en TA geven het gekozen protocolmatige gebruik aan; de onveranderde
+kwaliteitsmelding en gegevensgeschiktheid bepalen de grenzen van de interpretatie.
+
+### Dekking en eerste beschrijvende libellenvergelijking
+
+**Stand 17 oktober 2026.** De 98 geselecteerde bezoeken met 515 bronrecords uit
+2010–2021 vormen zes gereconstrueerde routefamilies in vier plots. De jaren
+2016, 2018 en 2019 ontbreken in deze selectie. Dat zegt niets over wel of niet
+tellen buiten de selectie; deze jaren worden niet met nullen aangevuld.
+
+| Routefamilie | Plot | Jaar | Geselecteerde bezoeken |
+|---|---|---|---:|
+| 1 | M14 | 2015 / 2017 | 3 / 9 |
+| 3 | M16 | 2010 / 2011 / 2012 / 2013 / 2014 / 2015 | 9 / 10 / 9 / 10 / 10 / 8 |
+| 4 | M74 | 2020 / 2021 | 6 / 9 |
+| 6 | M74 | 2020 | 5 |
+| 8 | M74 | 2021 | 9 |
+| 9 | M105 | 2020 | 1 |
+
+Alle 98 geselecteerde bronperioden beginnen en eindigen op dezelfde kalenderdag.
+De 28 bezoeken van de routefamilies 4, 6 en 8 delen in M74 veertien plot-datums:
+vijf in 2020 en negen in 2021. De bronperioden verschillen. Een gedeelde
+plot-datum bewijst dus geen dubbele waarneming en rechtvaardigt geen
+verwijdering, maar zonder native route-/sectieadministratie is hun onderlinge
+onafhankelijkheid evenmin aangetoond. Deze bezoeken worden niet samengevoegd
+of als bewezen onafhankelijke herhalingen opgeteld. De 98 bezoeken geven 84
+unieke plot-datums; ook dat zijn geen 84 bewezen native bezoeken.
+
+Routefamilie 3 in M16 heeft 56 geselecteerde bezoeken uit zes opeenvolgende
+jaren, 2010–2015. De seizoensdekking verschilt: mei ontbreekt in de selectie
+van 2015, terwijl in 2010 en 2012 slechts één septemberbezoek is geselecteerd.
+Voor een eerste beschrijvende vergelijking is daarom uitsluitend juni–augustus
+gebruikt: 36 bezoeken met 156 bronrecords, precies zes bezoeken per jaar en twee
+per maand. Dit maakt de maandverdeling gelijk; het bewijst geen gelijke
+inspanning, detectiekans of volledigheid van alle oorspronkelijke bezoeken.
+
+De onderstaande uitkomst telt per taxon het aantal geselecteerde bezoeken met
+een positieve registratie, steeds uit zes bezoeken per jaar. Er worden geen
+aangeleverde aantallen opgeteld. Alle 29 taxa worden getoond, ook de achttien
+zonder positieve registratie in deze deelreeks. Een 0 betekent hier uitsluitend
+geen positieve registratie tijdens deze zes geselecteerde bezoeken. De
+1.044 onderliggende matrixregels bevatten 103 positieve combinaties en 941
+bestaande afgeleide nullen. De nullen en hun bewijs zijn onveranderd behouden;
+zij worden niet als zelfstandig bewijs van afwezigheid gepresenteerd.
+
+| Taxon | 2010 | 2011 | 2012 | 2013 | 2014 | 2015 |
+|---|---:|---:|---:|---:|---:|---:|
+| Azuurwaterjuffer | 0 | 0 | 0 | 0 | 0 | 1 |
+| Bloedrode heidelibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Bruine glazenmaker | 0 | 0 | 0 | 0 | 0 | 0 |
+| Bruine winterjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Bruinrode heidelibel | 0 | 3 | 1 | 1 | 3 | 0 |
+| Geelvlekheidelibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Gewone oeverlibel | 4 | 3 | 6 | 6 | 4 | 2 |
+| Gewone pantserjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Glassnijder | 0 | 0 | 0 | 0 | 0 | 0 |
+| Grote keizerlibel | 0 | 2 | 3 | 2 | 3 | 2 |
+| Grote roodoogjuffer | 0 | 0 | 0 | 0 | 0 | 1 |
+| Houtpantserjuffer | 1 | 1 | 0 | 0 | 0 | 0 |
+| Kleine roodoogjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Lantaarntje | 4 | 1 | 0 | 3 | 5 | 1 |
+| Noordse witsnuitlibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Paardenbijter | 0 | 0 | 0 | 0 | 0 | 0 |
+| Platbuik | 0 | 0 | 0 | 0 | 0 | 0 |
+| Steenrode heidelibel | 0 | 0 | 0 | 1 | 1 | 0 |
+| Tengere grasjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Tengere pantserjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Variabele waterjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Viervlek | 0 | 0 | 0 | 1 | 0 | 0 |
+| Vroege glazenmaker | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vuurjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+| Vuurlibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Watersnuffel | 6 | 6 | 6 | 6 | 6 | 3 |
+| Zwarte heidelibel | 0 | 0 | 0 | 0 | 0 | 0 |
+| Zwervende heidelibel | 0 | 0 | 1 | 1 | 0 | 2 |
+| Zwervende pantserjuffer | 0 | 0 | 0 | 0 | 0 | 0 |
+
+**Betekenis en grens.** Dit is een vergelijking van geregistreerde aanwezigheid
+binnen één gereconstrueerde routefamilie en een gelijk gekozen deel van het
+seizoen. Er is geen trendmodel geschat en er zijn geen effectgrootte,
+significantietoets, abundantie-, afwezigheids- of beheerconclusie afgeleid. De
+routefamilie is geen bevestigd oorspronkelijk routenummer. Weer, teller,
+oorspronkelijke inspanning en volledig lege bezoeken zijn niet door deze
+berekening verkregen. Zowel `gegevensgeschiktheid` als
+`analysetype_gegevensgeschiktheid` blijven voor de 1.044 regels
+`niet_beoordeeld`. De algemene en TV-kwaliteitsmelding blijven bij elke
+onderliggende regel aanwezig:
+
+> Voorlopig resultaat op basis van protocolgeschiktheid en doelbereik. De soortgroep valt binnen het inhoudelijke doelbereik van het protocol. De protocoltypen blijven voorlopig bruikbaar, met afzonderlijke beoordeling van leveringsgeschiktheid. De leveringsgeschiktheid (telobjecten, bezoeken, inspanning, nulwaarnemingen en meeteenheden) en verdere validatie zijn nog niet beoordeeld. Gebruik de uitkomst daarom verkennend en niet als definitief bewijs van trend, afwezigheid of beheereffect.
+
+**Vaste lokale opdracht.** Voer vóór inhoudelijke rapportage de bestaande
+controles `--audit-live` en `--audit-libellen` uit. De onderstaande opdracht
+maakt de beschrijvende vergelijking opnieuw uit de levende database:
+
+```bash
+python3 gis/scripts/import_ndff_protocolkwaliteit.py --verken-libellen \
+  --libellen-routefamilie 3 --libellen-jaar-van 2010 --libellen-jaar-tot 2015 \
+  --libellen-maanden 6 7 8
+```
+
+De opdracht gebruikt `ndff-libellen-verkenning-v1` en uitsluitend analysetype
+`TV`. Routefamilie, beide jaartallen en unieke maanden 1–12 zijn verplicht;
+zij kunnen voor een andere afgebakende vergelijking worden aangepast. De bron-,
+bezoekdatum- en matrixlezing gebeuren in dezelfde alleen-lezen snapshot.
+`ndff-libellen-selectie-v1` blijft de toelating bepalen; de opdracht verandert
+geen reconstructie of analysebesluit.
+
+De opdracht stopt bij een ontbrekende jaar-maandcombinatie of een ongelijk
+aantal geselecteerde bezoeken per gekozen maand en jaar. Ook ontbrekende of
+tegenstrijdige bezoekdatums, bronperioden over meerdere kalenderdagen,
+meerdere bezoeken op dezelfde routedatum, dubbele centrale bezoek-taxonparen
+en onvolledige taxonmatrices blokkeren de vergelijking. De verwachte centrale
+taxonset komt uit de volledige gereconstrueerde matrix, vóór toelating en keuze
+van route, jaren en maanden. Daardoor wordt ook een taxon dat in het hele
+gekozen tijdvak ontbreekt herkend. De afzonderlijke reconstructie-audit blijft
+nodig om de volledige reconstructie zelf tegen het bronprofiel te controleren.
+Ontbrekende bezoeken of taxonregels worden nooit als nul aangevuld. Gelijke aantallen bezoeken per
+maand bewijzen nog geen gelijke inspanning of detectiekans.
+
+De interne JSON-uitvoer bevat de gekozen routefamilie, plot-ID's, jaren en
+maanden, de dekking per jaar-maand, de omvang en alle taxonuitkomsten. Per taxon
+staan per jaar zowel het aantal geselecteerde bezoeken als het aantal bezoeken
+met positieve registratie. Ook taxa zonder positieve registratie en taxa zonder
+soortgroep blijven zichtbaar. De algemene en TV-kwaliteitsvelden, bestaande
+nulbewijzen en de versies blijven behouden; de toelichting op de grenzen van
+interpretatie staat bij de uitvoer. Er worden geen aantallen individuen opgeteld
+of trendmodellen geschat. Voor de afzonderlijke oorspronkelijke matrixregels
+blijft `--selecteer-libellen` beschikbaar. Zonder `--verken-libellen` mogen de
+route-, jaar- en maandopties niet worden gebruikt; de opdracht stopt dan vóór
+databasecontact, zodat deze opties nooit per ongeluk een import starten.
+
+De reconstructie-audit van 17 oktober 2026 geeft nul ongeldige matrixregels,
+nul afwijkingen tussen positieve bron- en matrixaantallen en nul nullen buiten
+algemeen doelbereik. De controle van de vaste analyseketen is afzonderlijk
+uitgevoerd. Er zijn geen bronrecords, analysebesluiten of databasetabellen
+gewijzigd en geen export, cachebouw of VPS-publicatie uitgevoerd.
+
 ### Wetenschappelijke meerwaarde van ontbrekende Vlinderstichting-velden
 
 De handleidingen maken zichtbaar welke ontbrekende gegevens vooral extra
@@ -634,6 +806,30 @@ Methodische grondslag: [NDFF protocol 02.202](https://ndff.nl/natuurdata/waarnem
 en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/korstmossen).
 De beoordeelde BLWG-documenten staan in Zotero onder `Meetnetten - BLWG`
 (`8E3TCBHW`).
+
+**Primaire BLWG-levering, 8 oktober 2026 — nog niet geïmporteerd.** Het
+ontvangen Excelbestand bevat zes plots, 32 oorspronkelijke formulieren
+(`kopid`) en 292 positieve soortregels. Vier vaste plots hebben
+zes meetronden in de veldjaren 2000, 2006, 2011, 2015, 2020 en 2025;
+twee eenmalige plots hebben alleen formulieren uit 2021. De 32 bronformulieren
+zijn niet identiek aan de 32 hierboven uit NDFF afgeleide plot-datumbezoeken:
+de bron scheidt onafhankelijke waarnemers op hetzelfde plot en dezelfde datum.
+Van de 292 bronregels matchen 269 op plot, velddatum en soortnaam met
+onvervaagde NDFF-regels; twintig *Usnea articulata*-regels zijn in de openbare
+NDFF-levering vervaagd en drie zijn taxonomische naamsverschillen
+(*Bacidia/Bacidina caligans* tweemaal; *Leptogium/Scytinium pulvinatum*
+eenmaal). De oorspronkelijke `Kwantiteit`-codes 1, 2, 3, 5 en 6 bevatten
+meer detail dan de twee openbare NDFF-klassen. Analyseer volgens de
+velddatum, niet volgens het vaak een jaar eerdere rapportagejaar.
+
+Dezelfde NDFF-selectie 02.202 heeft daarnaast 92 regels op zes andere,
+eenduidig aan een SOVON-plot gekoppelde BLWG-locaties: twee met een bezoek op
+15 februari 2015 (36 regels) en vier met een bezoek op 31 maart 2018
+(56 regels). Deze ontbreken in de primaire Excel-levering. Vraag uitsluitend
+gericht of de oorspronkelijke plot- en bezoekgegevens voor deze zes locaties
+ook beschikbaar zijn. Wijzig tot na een afzonderlijke integratie-audit geen
+NDFF-bronregels of afgeleide matrix; bescherm de twintig publiek vervaagde
+waarnemingen en hun plotkoppeling.
 
 ### Meetnet mossen (`02.204`)
 

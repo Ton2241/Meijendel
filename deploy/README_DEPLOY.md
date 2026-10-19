@@ -52,6 +52,13 @@ beschikbare fix. Zij past geen image of container aan. Een noodzakelijke fix
 wordt afzonderlijk gebouwd, getest en uitsluitend via deze veilige
 productielijn geactiveerd.
 
+Een MySQL-image-update is infrastructuuronderhoud en publiceert geen nieuwere
+Meijendel-data. De helper bindt de imagebouw voor herleidbaarheid aan de
+actuele `main`-commit, maar controleert vóór en na de wijziging dat
+`/srv/vwgm/deploy-state/Meijendel.commit` exact ongewijzigd blijft. Alleen een
+afzonderlijke, volledig gecontroleerde datadeploy mag die productiestatus
+bijwerken.
+
 Deploy bij voorkeur naar een release-directory per commit en activeer die atomisch. Waar dit voor gedeelde Meijendel-data nog niet mogelijk is, moet het manifest volledig zijn en moeten tijdelijke bestanden pas na succesvolle validatie atomisch naar hun definitieve pad worden verplaatst. Deploy geen los gedeeld kernbestand vanuit een andere branch.
 
 Na deploy wacht het script met begrensde retries op Shiny en dashboard, controleert checksums, containerstatus, HTTP-routes en relevante grafiekinhoud, en registreert pas daarna de nieuwe productiecommit. Herstelmodus is alleen toegestaan met expliciete bevestiging wanneer productie al defect is; ancestrycontrole, lock, manifest en volledige groene nacontrole blijven verplicht.
@@ -264,7 +271,7 @@ Oracle Linux-pakketten bij, maar schakelen de MySQL-repositories tijdens die
 update uit. Daardoor blijven server en clients exact 9.7.1 respectievelijk
 9.5.0. De niet gebruikte `mysql-shell` wordt verwijderd. `gosu` 1.19 wordt
 vanaf commit `6456aaa0f3c854d199d0f037f068eb97515b7513` opnieuw gebouwd met de
-digestvaste Go 1.25.13-builder en functioneel getest.
+digestvaste Go 1.26.9-builder en functioneel getest.
 
 Voor iedere MySQL-kandidaat geldt:
 
@@ -284,15 +291,20 @@ De begrensde image-only beveiligingsupdate gebruikt uitsluitend:
 ```sh
 deploy/rebuild_mysql_image_vps.sh
 deploy/rebuild_mysql_image_vps.sh --apply --yes
+deploy/rebuild_mysql_image_vps.sh --finalize --yes
 ```
 
 De helper bouwt zonder cache terwijl de MySQL-repositories uitgeschakeld
 blijven, scant de exacte kandidaat-ID, voert een logische proefimport met
 object-, rij-, schema-, rechten- en `CHECK TABLE EXTENDED`-vergelijking uit en
 valideert vóór en na de wissel een volledige herstelback-up. De actieve
-UID/GID-1999-datamap blijft ongewijzigd. Na groene rooktest en eindscan worden
-uitsluitend de exact benoemde kandidaat-, `previous`- en oude imageartefacten
-verwijderd; een algemene Docker-prune is verboden.
+UID/GID-1999-datamap blijft ongewijzigd. Na groene rooktest en eindscan blijft
+de vorige container gestopt en exact benoemd als rollback, met dezelfde
+datamap en een eigen rollbacktag. Verwijder die rollback pas in een
+afzonderlijke, expliciet goedgekeurde onderhoudsstap met `--finalize --yes`;
+die route herhaalt scan, isolatie-, rook- en back-upcontroles en verwijdert
+uitsluitend de ene aangetroffen MySQL-rollback. Een algemene Docker-prune is
+verboden.
 
 De duurzame UID-scheiding wordt uitsluitend uitgevoerd met:
 

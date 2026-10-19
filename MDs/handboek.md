@@ -531,10 +531,23 @@ De informatie in deze tab komt uit meerdere tabellen, onder andere:
 - `plot_jaar_stikstof`
 - `plot_jaar_landgebruik`
 - `plot_jaar_infra`
-- `plot_jaar_toegankelijkheid`
+- `maatregel_toegankelijkheid_registratie`
 - `plot_jaar_habitat`
-- `plot_jaar_maatregel`
+- `maatregel_plot_jaar_registratie` en de gekoppelde `maatregel_uitvoering_jaar`
 - `territoria`
+
+De plottab leest de 144 oorspronkelijke begrazingsfeiten voor 16 plots uit 1991–1999 rechtstreeks uit de centrale maatregelstructuur via het gegevensobject `maatregel_beheer_jaar`. De bronvaste werkzaamhedenlaag staat daarnaast. Zij bevat op 16 oktober 2026 64 uitvoeringen en 104 expliciete jaarbeoordelingen uit 43 inhoudelijke bronnen; één administratieve migratiebron brengt het bronregister op 44 regels. `maatregel_plot_koppeling` bevat 211 geverifieerde relaties en `v_plot_jaar_maatregel_bronvast` 307 regels. De gecorrigeerde begrazing van Helmduinen loopt vanaf eind 1991 tot heden door en is alleen gekoppeld aan M15 en M16; M17a is retroactief verwijderd. Prinsenduin en Prinsenberg zijn afzonderlijke objecten. Het opslagbeheer in Prinsenduin is daarom voor 2023 en 2024 gekoppeld aan M17a; de eerdere relaties met M2, M3, M35 en M36 zijn verwijderd. Meeuwenduin blijft voor deze maatregel gelijkgesteld aan Meeuwenhoek in M10-12-76, M12a, M73, M74 en M75. Van der Hagen et al. (2020), figuur 1, is als aanvullende ruimtelijke bron vastgelegd. Het jaarlijkse maaibeheer in Ruijgenhoek, Lange Strook en De Loopert is gekoppeld aan M1a, M1b, M32, M45 en M83, maar levert zonder vaststelbare uitvoeringsjaren geen plot-jaarrijen. Maatregel 22h is gekoppeld aan M13s, M15, M16, M17a, M77 en M78/79. Alleen de uitgevoerde jaren 2016 en 2017 leveren twaalf scoperegels; de bron verdeelt het werk niet over kavels. De jaarlijkse begrazing van Vallei Meijendel met 38 heideschapen is gekoppeld aan de negen actuele kavels M3, M4-5, M51, M52, M53, M54a, M54b, M55 en M85; de historische voorgangers M4, M5 en M54 zijn uitgesloten. Omdat de bron geen beginjaar geeft, ontstaan geen plot-jaarrijen. Maatregel 3c, de jaarlijkse begrazing van 110 hectare in Vallei Meijendel, Langestrook en De Loopert, is voor 2017–2021 gekoppeld aan deze negen kavels plus M1a, M1b, M45 en M83. De 65 plot-jaarrijen beschrijven alleen de gezamenlijke uitvoeringsscope; de bron verdeelt de 110 hectare niet over gebieden, kavels of jaren. Maatregel 3d is gekoppeld aan M13s, M15, M16, M17a en M78/79. De uitgevoerde jaren 2021 en 2025 leveren tien scoperegels; 2020 is expliciet niet uitgevoerd en levert geen plot-jaarrij. De in december 2025 vervangen slagbomen bij de toegang van P1 Kievietsduin naar de parkeerterreinen in De Vallei zijn gekoppeld aan M55 en M85. De ene uitgevoerde jaarregel levert twee plot-jaarrijen; de bron publiceert geen werkvoetafdruk per kavel. Het onderzochte PAS-maaibeheer 23 is voor 2016–2019 gekoppeld aan M10-12-76, M12a, M62, M63, M64, M65, M72, M73, M74 en M75. De vier jaarregels blijven `niet_uitgevoerd` en leveren daarom geen regels in de bronvaste plot-jaarview op: de koppeling begrenst alleen het onderzochte zoekgebied. Het PIM-leidingwerk van 2010–2018 is gecorrigeerd naar 6,5 kilometer vernieuwde leiding en gekoppeld aan M41, M42, M43, M45, M84, M84s en M85; de lengte is niet per kavel verdeeld. Vier uitvoeringen hebben geen directe plotkoppeling. De twee Bendel-uitvoeringen en de begrazing van landgoed Weiduin vallen aantoonbaar buiten de 55 Meijendel-plots; daarmee blijft één geheel ongekoppelde uitvoering te beoordelen. De oude fysieke begrazingstabel en gelijknamige view zijn verwijderd; de 144 oorspronkelijke regels blijven voor audit reconstrueerbaar uit de centrale registraties en herkomstkoppelingen.
+
+De programmabrede pannenmaatregel van 2010–2018 is voor het aantoonbaar gelokaliseerde deel gekoppeld aan M6, M7, M13 en M77. Het beheerplan 2016–2022 koppelt de PIM-oeveraanpassingen aan Tafelberg en 't Scheepje; de nameninventaris levert de vier kaveldoorsnijdingen. De 370.000 m3 verwijderd materiaal is niet per infiltratieplas of kavel gespecificeerd en wordt daarom niet over deze relaties verdeeld. De vier koppelingen leveren voor 2018 vier bronvaste plot-jaarrijen.
+
+Gebruik voor nieuwe werkzaamheden deze volgorde:
+
+1. leg project en afzonderlijke uitvoering vast in `maatregel_project` en `maatregel_uitvoering`;
+2. koppel de geraadpleegde bron via `maatregel_uitvoering_bron`;
+3. voeg alleen een regel aan `maatregel_uitvoering_jaar` toe als de bron dat jaar werkelijk beoordeelt;
+4. voeg pas een geometrie of plotkoppeling toe wanneer de begrenzing of relatie aantoonbaar is.
+
+Een plan, subsidie-openstelling of algemene locatieaanduiding bewijst geen uitvoering in een vogelplot. De view toont daarom uitsluitend `jaarstatus = 'uitgevoerd'` met een geverifieerde plotkoppeling.
 
 Praktisch is deze tab vooral nuttig als je voor één plot tegelijk wilt begrijpen:
 
@@ -959,7 +972,7 @@ Voorgestelde variabelen zijn:
 
 Die hoort in een aparte tabel:
 
-- `plot_jaar_toegankelijkheid`
+- `maatregel_toegankelijkheid_registratie`
 
 Mogelijke waarden:
 
@@ -971,11 +984,7 @@ Reden:
 
 - dit is een status en geen meetgetal
 
-Voor gedeeltelijke toegankelijkheid bestaat daarnaast:
-
-- `plot_jaar_toegankelijkheid_deel`
-
-Die tabel gebruik je als een plot niet volledig `afgesloten`, `beperkt` of `vrij` is.
+Voor gedeeltelijke toegankelijkheid gebruik je dezelfde tabel met `niveau = deel`; voor het hele plot geldt `niveau = plot`. Een deelregistratie beschrijft uitsluitend het betreffende deel.
 
 Daar leg je per deel vast:
 
@@ -1124,7 +1133,7 @@ Kolommen:
 - `dekking_pct`
 - `opmerking`
 
-Gebruik dit bestand voor beheermaatregelen per plot en jaar.
+Gebruik dit bestand alleen voor reeds geverifieerde beheermaatregelen per plot en jaar in de bestaande dashboardlaag. Het bestand is niet de ingang voor algemene projectinformatie of een benoemd deelgebied zonder bewezen plotrelatie.
 
 Belangrijk:
 
@@ -1133,6 +1142,36 @@ Belangrijk:
   - `intensiteit_code`
   - `uitvoerder_of_diersoort`
 - hiermee kun je onderscheid maken tussen bijvoorbeeld extensieve en intensieve begrazing en tussen schapen, runderen of paarden
+
+Nieuwe broninformatie over werkzaamheden leg je eerst vast in `maatregel_bron`, `maatregel_project`, `maatregel_uitvoering`, `maatregel_uitvoering_jaar` en `maatregel_uitvoering_bron`. Pas daarna volgt, indien de bron of een gecontroleerde geometrische bewerking dit werkelijk ondersteunt, `maatregel_geometrie` en `maatregel_plot_koppeling`. De afgeleide view `v_plot_jaar_maatregel_bronvast` vormt dan de veilige plot-jaarlaag.
+
+### 21.1. Deelgebieden, speciale gebieden en plotgrenzen
+
+De vastgestelde indeling `vogelplot-gebiedsindeling-v1` koppelt alle 69 plots aan precies één gebied. Daarvan zijn 55 plots actueel en geometrisch beschikbaar in SOVON-plotversie 2025; 14 plots zijn historisch en hebben in die versie geen afzonderlijke grens.
+
+De actuele indeling is:
+
+- Buitenduin Noord, 9 plots: M78/79, M77, M13, M13s, M14, M15, M16, M16s en M17a;
+- Buitenduin Zuid, 7 plots: M17b, M36, M35, M34, M33, M32 en M31;
+- Kijfhoek en Bierlap, 16 plots: M75a, M74, M73, M75, M10-12-76, M12a, M72, M71, M65, M8, M7, M64, M62, M6, M61 en M63;
+- Vallei Meijendel, 9 plots: M55, M4-5, M52, M54a, M54b, M53, M51, M3 en M85;
+- Zuid-oosthoek, 11 plots: M2, M46, M83, M84, M84s, M45, M1b, M1a, M41, M42 en M43;
+- Haagsche Golfclub: M66;
+- Voorlinden: M91;
+- Hertenkamp: M105.
+
+De historische indeling is:
+
+- Buitenduin Noord: M17, M78 en M79;
+- Kijfhoek en Bierlap: M10, M11, M12, M76, M8/11, M8/9 en M9;
+- Vallei Meijendel: M4, M5 en M54;
+- Zuid-oosthoek: M1.
+
+M17 volgt volgens de bevestigde historische indeling M17a. De aangeleverde aanduiding M54q is genormaliseerd naar het bestaande actuele plot M54a; er is geen nieuw plot M54q aangemaakt.
+
+`plot_gebied_geometrie` bevat acht afgeleide MULTIPOLYGON-geometrieën in EPSG:28992. Gebruik `v_plot_gebied_actueel` voor plotlidmaatschap en `v_plot_gebied_geometrie_actueel` voor de actuele gebiedsgrenzen. De geometrieën zijn topologische samenvoegingen van de kavelgrenzen: overlap tussen telplots telt binnen een gebied niet dubbel mee.
+
+Een gebiedskoppeling is geen bewijs dat een maatregel in ieder onderliggend plot is uitgevoerd. Leg een benoemde relatie eerst vast in `maatregel_uitvoering_gebied`. Vul `maatregel_plot_koppeling` alleen wanneer de bron, een gecontroleerde uitvoeringsgeometrie of een eenduidige bijzondere gebiedsnaam de plotrelatie werkelijk bewijst. De begrazing van Kijfhoek en Bierlap vanaf 1990 is daarom wel aan het volledige benoemde gebied gekoppeld, maar niet automatisch aan alle 23 onderliggende actuele en historische plots. Voorlinden is rechtstreeks gekoppeld aan M91; de status van de uitvoering in 2025 blijft `onbekend`, zodat geen uitgevoerde plot-jaarrij ontstaat.
 
 ## 22. Wat is de bezoekersdruklaag?
 
@@ -1312,3 +1351,34 @@ vastgelegd. Synchroniseer Zotero met
 alleen met het gesloten manifest van
 `gis/scripts/migrate_meijendel_bronnen.py`. Beide databases worden afzonderlijk
 gedumpt en gezamenlijk op herstelbaarheid gecontroleerd.
+
+## Integratie begrazing en toegankelijkheid op 16 oktober 2026
+
+De levende lokale database is op 16 oktober 2026 omgezet. De 144 oorspronkelijke begrazingsregistraties voor 16 plots uit 1991–1999 zijn volledig behouden: 139 staan in maatregel_plot_jaar_registratie; de vijf door Ton bevestigde dubbelingen verwijzen naar bestaande uitvoering–plot–jaarfeiten. Dit zijn M15 en M16 in 1991 en M13, M13s en M14 in 1997. Deze vijf feiten worden niet opnieuw opgeslagen.
+
+De 55 toegankelijkheidsregistraties voor 55 plots in 2024 staan in maatregel_toegankelijkheid_registratie: 20 vrij, 14 beperkt, 12 afgesloten, acht deels beperkt/deels vrij en één deels afgesloten/deels vrij. De deeltabel bevatte nul regels; de twee voorbeeldregels uit de deel-CSV zijn niet geïmporteerd. Status, bronspelling, plotnaam, opmerkingen, lege waarden en NULL blijven herleidbaar. De opmerking bij M36 blijft “nog controleren”. Een gemengde status bewijst geen oppervlakteverdeling.
+
+maatregel_registratie_herkomst bevat 199 technische herkomstkoppelingen met oude sleutels, oorspronkelijke rijwaarden, hashes en precies één canoniek doel. Dit zijn auditgegevens, geen extra beheerfeiten. De 43 inhoudelijke maatregelbronnen zijn behouden; één administratieve bron voor deze migratie brengt maatregel_bron op 44 regels. Overnemen uit de handmatige registratie geeft geen nieuwe onafhankelijke bronbevestiging.
+
+De drie oude fysieke tabellen én de gelijknamige compatibiliteitsviews zijn verwijderd. Dashboard en Shiny gebruiken rechtstreeks de centrale registraties. De oorspronkelijke 144, 55 en nul regels blijven voor audit reconstrueerbaar zonder die databaseobjecten. v_plot_jaar_maatregel_bronvast behoudt de bestaande 307 regels voor expliciete jaren tussen 1967 en 2025; v_plot_jaar_maatregel_gecombineerd bevat 446 regels, inclusief de 139 aanvullende jaarfeiten. Deze laatste view mag bronregistraties niet als onafhankelijke terreinmetingen of behandeld oppervlak tellen.
+
+Dashboard en Shiny lezen rechtstreeks uit de centrale basistabellen via build_maatregel_registration_data. Parser/cacheversie is 15; de oude gegevensobjectnamen en de afhankelijkheid van compatibiliteitsviews zijn uit de actieve leesroute verwijderd. Voor analyse geldt een toegankelijkheidsstatus uitsluitend in het geregistreerde jaar; buiten 2024 blijft die voor deze 55 plots onbekend. Het dashboard mag de laatste historische registratie apart tonen met bronjaar, maar presenteert haar niet als bewezen toestand van een later jaar. Beheerjaarfeiten worden evenmin stilzwijgend doorgetrokken.
+
+Nieuwe import richt zich op de maatregelregistraties. De drie bestaande import-SQL-bestanden gebruiken alleen tijdelijke staging en schrijven niet naar de compatibiliteitsviews. De oorspronkelijke bronidentiteit blijft bij correctie behouden; identieke herimport en gewijzigde herimport zijn op fixtures getest. LOAD DATA LOCAL vereist local_infile aan client- en serverzijde; de iMac-server heeft dit uitgeschakeld. Die globale instelling is in deze taak niet veranderd. Voer de voorbeeld-CSV’s niet als actuele levering in.
+
+Controle: volledige rijreconstructie, vijf expliciete ontdubbelingen, idempotentie, herstel na onderbroken tabelwissel, SQL/R-pariteit en cache-/browser-/exportcontracten. De inhoudschecksums van alle overige basistabellen zijn vóór en na de migratie gelijk; bestaande bron- en brontyperegels blijven behouden. De centrale taxoncontrole is vóór en na de wijziging groen: alle 128 centrale routes blijven bereikbaar zonder auditfouten. De afsluitende audit is vastgelegd in de lokale herstelmap.
+
+Herstelkopie en controlebewijs staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid. Herstel verloopt via gis/scripts/migrate_maatregel_registraties.py --database Meijendel --backup-dir /Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid/backup --restore. Een herstelactie vereist een eigen besluit. Meijendel.sql, volledige cachebouw en VPS zijn in deze lokale migratiefase niet vernieuwd.
+
+
+## Rechtstreekse aansluiting zonder compatibiliteitsviews
+
+De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
+
+Dashboard en Shiny lezen rechtstreeks de centrale basistabellen. De 139 aanvullende begrazingsregistraties uit 1991–1999 en de vijf bestaande uitvoeringsfeiten leveren samen dezelfde 144 beheerfeiten voor 16 plots. De 55 toegankelijkheidsregistraties uit 2024 worden met niveau plot/deel gelezen; een deelregistratie wordt niet als toestand van het hele plot gebruikt. De nieuwe gegevensobjecten heten maatregel_beheer_jaar en maatregel_toegankelijkheid_registratie. Parser/cacheversie is 15.
+
+De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling, uitvoeringsjaar en geverifieerde plotkoppeling bereikt, zonder het oorspronkelijke JSON-rijpayload als toepassingsgegevens te reconstrueren. Oude veldnamen en bronwaarden blijven uitsluitend beschikbaar voor historische reconstructie en herstelcontrole. De 307 bronvaste en 446 gecombineerde plot-jaarregels blijven ongewijzigd; deze vervolgwijziging voegt geen waarnemingen of beheerfeiten toe.
+
+Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
+
+Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.

@@ -198,6 +198,20 @@ validate_plot_scope() {
   [[ "$view_count" -eq $((plot_count - 2)) ]] || die "v_meijendel_analyseplot_actueel bevat niet exact alle plots behalve M66 en M91."
 }
 
+# Vergelijk de afgeleide leeslagen ook inhoudelijk; basistabelchecks zijn daarvoor niet genoeg.
+write_maatregel_view_results() {
+  local schema="$1" output="$2" table columns
+  [[ "$schema" =~ ^[A-Za-z0-9_]+$ ]] || die "ongeldige schemanaam."
+  : > "$output"
+  [[ "$(query "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema='$schema' AND table_name='maatregel_registratie_herkomst'")" != "0" ]] || return 0
+  for table in maatregel_plot_jaar_registratie maatregel_toegankelijkheid_registratie maatregel_registratie_herkomst v_plot_jaar_maatregel_bronvast v_plot_jaar_maatregel_gecombineerd; do
+    columns="$(query "SELECT GROUP_CONCAT(CONCAT(QUOTE(column_name),',',CHAR(96),column_name,CHAR(96)) ORDER BY ordinal_position SEPARATOR ',') FROM information_schema.columns WHERE table_schema='$schema' AND table_name='$table'")"
+    [[ -n "$columns" && "$columns" != "NULL" ]] || die "leescontract ontbreekt: $table"
+    printf '%s\n' "$table" >> "$output"
+    query "SELECT JSON_OBJECT($columns) FROM \`$schema\`.\`$table\`" | LC_ALL=C sort >> "$output"
+  done
+}
+
 write_manifest() {
   local dump="$1" manifest="$2" candidate="$3" temp_dir live_counts candidate_counts live_checksums candidate_checksums
   [[ "$candidate" =~ ^codex_meijendel_export_check_[0-9]+$ ]] || die "onveilige kandidaatnaam: $candidate"
@@ -214,6 +228,9 @@ write_manifest() {
   write_table_checksums "$MYSQL_DATABASE" "$live_checksums"
   write_table_checksums "$candidate" "$candidate_checksums"
   cmp -s "$live_checksums" "$candidate_checksums" || die "proefimport wijkt inhoudelijk af van de levende database."
+  write_maatregel_view_results "$MYSQL_DATABASE" "$temp_dir/live-maatregelen.tsv"
+  write_maatregel_view_results "$candidate" "$temp_dir/candidate-maatregelen.tsv"
+  cmp -s "$temp_dir/live-maatregelen.tsv" "$temp_dir/candidate-maatregelen.tsv" || die "proefimport wijkt af in maatregel-/toegankelijkheidsleeslagen."
   validate_plot_scope "$MYSQL_DATABASE"
   validate_plot_scope "$candidate"
   query "SELECT CONCAT_WS('|',TRIGGER_NAME,EVENT_OBJECT_TABLE,ACTION_TIMING,EVENT_MANIPULATION,SHA2(ACTION_STATEMENT,256)) FROM information_schema.triggers WHERE trigger_schema='$MYSQL_DATABASE' ORDER BY trigger_name" > "$temp_dir/live-triggers.tsv"

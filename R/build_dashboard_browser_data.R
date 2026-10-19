@@ -34,9 +34,9 @@ required_tables <- c(
   "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien",
   "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat",
   "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra",
-  "plot_jaar_toegankelijkheid", "pq_plot_jaar_vegetatie",
+  "maatregel_toegankelijkheid_registratie", "pq_plot_jaar_vegetatie",
   "dagwaarnemingen_wv", "maatregelen", "plot_jaar_landgebruik",
-  "plot_jaar_maatregel", "plot_link", "soorten_habitattypen", "tellers", "trends"
+  "maatregel_beheer_jaar", "plot_link", "soorten_habitattypen", "tellers", "trends"
 )
 required_columns <- list(
   plots = c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik"),
@@ -59,11 +59,11 @@ required_columns <- list(
   plot_jaar_ahn_dtm = c("plot_id", "jaar", "bron", "ahn_mean", "ahn_sd"),
   plot_jaar_stikstof = c("plot_id", "jaar", "bron", "stikstof_mean"),
   plot_jaar_infra = c("plot_id", "jaar", "bron", "variabele", "waarde"),
-  plot_jaar_toegankelijkheid = c("plot_id", "jaar", "bron", "status_code"),
+  maatregel_toegankelijkheid_registratie = c("plot_id", "jaar", "bron_id", "niveau", "status_code"),
   pq_plot_jaar_vegetatie = c("plot_id", "jaar", "n_pq", "n_opnamen", "taxa_aantal", "soortenrijkdom_gem", "bedekking_som_gem", "shannon_gem", "dekking_kwaliteit", "bronstatus", "bronbestand", "importversie", "taxonlijst_versie"),
   dagwaarnemingen_wv = c("plot_id", "soort_id", "jaar", "maand", "dag", "aantal"),
   maatregelen = c("id", "omschrijving"), plot_jaar_landgebruik = c("plot_id", "jaar", "bron", "klasse", "pct"),
-  plot_jaar_maatregel = c("plot_id", "jaar", "maatregel_id"), plot_link = c("plot_id", "link_type", "label", "url"),
+  maatregel_beheer_jaar = c("plot_id", "jaar", "maatregel_id"), plot_link = c("plot_id", "link_type", "label", "url"),
   soorten_habitattypen = c("soort_id", "habitattype_id", "koppelingsterkte"), tellers = c("id", "tellercode"),
   trends = c("soort_id", "regio", "jaar", "waarde")
 )
@@ -88,6 +88,11 @@ tables <- cache[["data"]]
 missing_tables <- setdiff(required_tables, names(tables))
 if (length(missing_tables)) stop("Dashboardcache mist: ", paste(missing_tables, collapse = ", "), ".", call. = FALSE)
 tables <- tables[required_tables]
+for(name in c("maatregel_toegankelijkheid_registratie","maatregel_beheer_jaar")) {
+  for(field in c("bron","opmerking","intensiteit_code","uitvoerder_of_diersoort","deel_label","dekking_pct")) {
+    if(field %in% names(tables[[name]])) required_columns[[name]]<-unique(c(required_columns[[name]],field))
+  }
+}
 if (!all(vapply(tables, is.data.frame, logical(1)))) stop("Niet alle dashboardtabellen zijn dataframes.", call. = FALSE)
 for (table_name in names(required_columns)) {
   missing_columns <- setdiff(required_columns[[table_name]], names(tables[[table_name]]))

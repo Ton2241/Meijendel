@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+from collections import defaultdict
 from pathlib import Path
 
 from osgeo import ogr
@@ -19,6 +20,18 @@ DEFAULT_GPKG = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimte
 DEFAULT_MANIFEST = ROOT / "gis" / "vectors" / "meijendel_bereik" / "meijendel_ruimtelijke_lagen_manifest.json"
 SCHEMA = ROOT / "gis" / "database" / "meijendel_ruimtelijke_lagen_schema.sql"
 RULE_VERSION = "meijendel-ruimtelijke-poort-v3"
+PLOT_GEBIED_INDELING = "vogelplot-gebiedsindeling-v1"
+EXPECTED_PLOT_GEBIED_COUNTS = {
+    "buitenduin_noord": 9,
+    "buitenduin_zuid": 7,
+    "kijfhoek_en_bierlap": 16,
+    "vallei_meijendel": 9,
+    "zuid_oosthoek": 11,
+    "haagsche_golfclub": 1,
+    "voorlinden": 1,
+    "hertenkamp": 1,
+}
+PLOT_GEBIED_PRECISION_M = 0.0001
 
 
 def sha256_file(path: Path) -> str:
@@ -39,6 +52,75 @@ def force_multi(geometry: ogr.Geometry) -> ogr.Geometry:
     multi = ogr.Geometry(ogr.wkbMultiPolygon)
     multi.AddGeometry(geometry)
     return multi
+
+
+def validate_plot_gebied_counts(counts: dict[str, int]) -> None:
+    if counts != EXPECTED_PLOT_GEBIED_COUNTS:
+        raise ValueError(
+            "Actuele plotdekking per gebied wijkt af: "
+            f"verwacht {EXPECTED_PLOT_GEBIED_COUNTS}, ontvangen {counts}"
+        )
+    if sum(counts.values()) != 55:
+        raise ValueError(f"Actuele plotdekking moet 55 zijn, ontvangen {sum(counts.values())}")
+
+
+def union_plot_geometries(plot_rows: list[tuple[int, str]]) -> ogr.Geometry:
+    if not plot_rows:
+        raise ValueError("Gebied zonder bronplotgeometrieën")
+    union: ogr.Geometry | None = None
+    seen: set[int] = set()
+    for plot_id, wkb_hex in sorted(plot_rows, key=lambda row: row[0]):
+        if plot_id in seen:
+            raise ValueError(f"Dubbele brongeometrie voor plot {plot_id}")
+        seen.add(plot_id)
+        try:
+            geometry = ogr.CreateGeometryFromWkb(bytes.fromhex(wkb_hex))
+        except (RuntimeError, ValueError) as exc:
+            raise ValueError(f"Onleesbare brongeometrie voor plot {plot_id}") from exc
+        if (
+            geometry is None
+            or geometry.IsEmpty()
+            or not geometry.IsValid()
+            or geometry.GetGeometryName().upper() not in {"POLYGON", "MULTIPOLYGON"}
+        ):
+            raise ValueError(f"Ongeldige brongeometrie voor plot {plot_id}")
+        geometry.FlattenTo2D()
+        union = geometry.Clone() if union is None else union.Union(geometry)
+    if union is None or union.IsEmpty() or not union.IsValid():
+        raise ValueError("Topologische samenvoeging leverde geen geldige geometrie")
+    union = union.SetPrecision(PLOT_GEBIED_PRECISION_M)
+    union = force_multi(union)
+    union.FlattenTo2D()
+    if not union.IsValid():
+        raise ValueError("Afgeleide multipolygon is ongeldig")
+    return union
+
+
+def derive_plot_gebied_geometries(
+    rows: list[tuple[str, int, str]],
+) -> list[tuple[str, int, float, str, str]]:
+    grouped: dict[str, list[tuple[int, str]]] = defaultdict(list)
+    all_plot_ids: set[int] = set()
+    for gebied_code, plot_id, wkb_hex in rows:
+        if plot_id in all_plot_ids:
+            raise ValueError(f"Actueel plot {plot_id} komt in meer dan één gebied voor")
+        all_plot_ids.add(plot_id)
+        grouped[gebied_code].append((plot_id, wkb_hex))
+    validate_plot_gebied_counts({code: len(values) for code, values in grouped.items()})
+    derived = []
+    for gebied_code in sorted(grouped):
+        geometry = union_plot_geometries(grouped[gebied_code])
+        wkb = bytes(geometry.ExportToWkb())
+        derived.append(
+            (
+                gebied_code,
+                len(grouped[gebied_code]),
+                geometry.GetArea() / 10000.0,
+                hashlib.sha256(wkb).hexdigest(),
+                wkb.hex(),
+            )
+        )
+    return derived
 
 
 def read_single_geometry(path: Path, layer_name: str) -> tuple[ogr.Geometry, dict]:
@@ -63,6 +145,105 @@ def run_mysql(mysql: str, mysql_args: list[str], sql: str) -> None:
     )
     if result.returncode:
         raise RuntimeError(result.stderr or result.stdout)
+
+
+def query_mysql(mysql: str, mysql_args: list[str], sql: str) -> str:
+    result = subprocess.run(
+        [mysql, *mysql_args, "--batch", "--raw", "--skip-column-names"],
+        input=sql,
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if result.returncode:
+        raise RuntimeError(result.stderr or result.stdout)
+    return result.stdout.strip()
+
+
+def load_plot_gebied_source(
+    mysql: str, mysql_args: list[str]
+) -> tuple[str, int, list[tuple[str, int, str]]]:
+    output = query_mysql(
+        mysql,
+        mysql_args,
+        f"""
+SELECT i.indeling_code,i.plotversie_id,v.versie,l.gebied_code,l.plot_id,
+       HEX(ST_AsWKB(p.plot_geometrie))
+FROM Meijendel.plot_gebiedsindeling i
+JOIN Meijendel.ndff_sovon_plotversie v USING (plotversie_id)
+JOIN Meijendel.plot_gebied_lidmaatschap l USING (indeling_code)
+JOIN Meijendel.ndff_sovon_plot p
+  ON p.plotversie_id=i.plotversie_id AND p.plot_id=l.plot_id
+WHERE i.indeling_code={sql_text(PLOT_GEBIED_INDELING)}
+  AND i.status='vastgesteld'
+  AND l.lidmaatschap_status='actueel_met_geometrie'
+ORDER BY l.gebied_code,l.plot_id;
+""",
+    )
+    parsed = [line.split("\t") for line in output.splitlines() if line]
+    if len(parsed) != 55:
+        raise ValueError(f"Verwacht 55 actuele plotgeometrieën, ontvangen {len(parsed)}")
+    identities = {(row[0], int(row[1]), row[2]) for row in parsed}
+    if identities != {(PLOT_GEBIED_INDELING, int(parsed[0][1]), "2025")}:
+        raise ValueError(f"Onverwachte indeling of plotversie: {sorted(identities)}")
+    plotversie_id = int(parsed[0][1])
+    rows = [(row[3], int(row[4]), row[5]) for row in parsed]
+    return PLOT_GEBIED_INDELING, plotversie_id, rows
+
+
+def plot_gebied_geometrie_sql(
+    indeling_code: str,
+    plotversie_id: int,
+    derived: list[tuple[str, int, float, str, str]],
+) -> str:
+    if len(derived) != 8:
+        raise ValueError(f"Verwacht acht gebiedsgeometrieën, ontvangen {len(derived)}")
+    values = ",\n".join(
+        "(" + ",".join(
+            (
+                sql_text(indeling_code),
+                sql_text(gebied_code),
+                str(plotversie_id),
+                f"ST_GeomFromWKB(UNHEX({sql_text(wkb_hex)}),28992)",
+                str(bronplot_aantal),
+                f"{oppervlakte_ha:.6f}",
+                sql_text(geometrie_sha256),
+            )
+        ) + ")"
+        for gebied_code, bronplot_aantal, oppervlakte_ha, geometrie_sha256, wkb_hex in derived
+    )
+    return f"""
+USE Meijendel;
+START TRANSACTION;
+DELETE FROM plot_gebied_geometrie
+WHERE indeling_code={sql_text(indeling_code)} AND plotversie_id={plotversie_id};
+INSERT INTO plot_gebied_geometrie
+  (indeling_code,gebied_code,plotversie_id,gebied_geometrie,bronplot_aantal,
+   oppervlakte_ha,geometrie_sha256)
+VALUES
+{values};
+COMMIT;
+"""
+
+
+def apply_plot_gebieden_only(
+    mysql: str,
+    mysql_args: list[str],
+    *,
+    source_loader=load_plot_gebied_source,
+    writer=run_mysql,
+) -> str:
+    indeling_code, plotversie_id, rows = source_loader(mysql, mysql_args)
+    derived = derive_plot_gebied_geometries(rows)
+    writer(
+        mysql,
+        [*mysql_args, "--show-warnings"],
+        plot_gebied_geometrie_sql(indeling_code, plotversie_id, derived),
+    )
+    return (
+        f"OK: {indeling_code}, plotversie {plotversie_id}, "
+        f"55 geldige bronplots en {len(derived)} gebiedsgeometrieën geschreven"
+    )
 
 
 def boundary_sql(gpkg: Path, manifest: dict) -> str:
@@ -280,14 +461,35 @@ def main() -> int:
     parser.add_argument("--mysql", default="/usr/local/mysql/bin/mysql")
     parser.add_argument("--login-path", default="meijendel_root")
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--apply-plot-gebieden", action="store_true")
+    parser.add_argument("--audit-plot-gebieden", action="store_true")
     parser.add_argument("--sql-output", type=Path)
     args = parser.parse_args()
     from import_external_ecology_sources import central_query_guarded_operation
-    return central_query_guarded_operation(lambda: execute_main(args),enabled=args.apply,
-        login_path=args.login_path,client=args.mysql)
+    return central_query_guarded_operation(
+        lambda: execute_main(args),
+        enabled=args.apply or args.apply_plot_gebieden,
+        login_path=args.login_path,
+        client=args.mysql,
+    )
 
 
 def execute_main(args) -> int:
+    if args.apply and args.apply_plot_gebieden:
+        raise ValueError("Gebruik --apply of --apply-plot-gebieden, niet beide")
+    mysql_args = [f"--login-path={args.login_path}", '--protocol=TCP',
+                  '--host=127.0.0.1','--port=3306']
+    if args.apply_plot_gebieden:
+        print(apply_plot_gebieden_only(args.mysql, mysql_args))
+        return 0
+    if args.audit_plot_gebieden and not args.apply:
+        indeling_code, plotversie_id, rows = load_plot_gebied_source(args.mysql, mysql_args)
+        derived = derive_plot_gebied_geometries(rows)
+        print(
+            f"OK: {indeling_code}, plotversie {plotversie_id}, "
+            f"55 geldige bronplots en {len(derived)} afleidbare gebiedsgeometrieën"
+        )
+        return 0
     for path in (args.gpkg, args.manifest, SCHEMA):
         if not path.exists():
             raise FileNotFoundError(path)
@@ -298,9 +500,18 @@ def execute_main(args) -> int:
     if not args.apply:
         print("DRY RUN: SQL opgebouwd; gebruik --apply om de lokale Meijendel-database te wijzigen.")
         return 0
-    run_mysql(args.mysql, [f"--login-path={args.login_path}", '--protocol=TCP',
-                          '--host=127.0.0.1','--port=3306',"--show-warnings"], sql)
-    print(f"OK: ruimtelijke lagen en statusregels geïmporteerd ({RULE_VERSION})")
+    run_mysql(args.mysql, [*mysql_args,"--show-warnings"], sql)
+    indeling_code, plotversie_id, rows = load_plot_gebied_source(args.mysql, mysql_args)
+    derived = derive_plot_gebied_geometries(rows)
+    run_mysql(
+        args.mysql,
+        [*mysql_args,"--show-warnings"],
+        plot_gebied_geometrie_sql(indeling_code, plotversie_id, derived),
+    )
+    print(
+        f"OK: ruimtelijke lagen en statusregels geïmporteerd ({RULE_VERSION}); "
+        f"{len(derived)} plotgebiedsgeometrieën afgeleid"
+    )
     return 0
 
 

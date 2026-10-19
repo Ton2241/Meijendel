@@ -1,0 +1,148 @@
+{
+  "bron": "Schmidt-Tauscher, Häger en Van der Hagen 2025; levering Achim Häger",
+  "ontvangstdatum": "2026-10-19",
+  "jaren": [
+    2001,
+    2022
+  ],
+  "plots": 25,
+  "klassen": [
+    "struik",
+    "bos",
+    "boomgroep",
+    "laag",
+    "riet",
+    "zand",
+    "water"
+  ],
+  "onbekende_codes": {
+    "2001": {},
+    "2022": {}
+  },
+  "niet_toegewezen_pixels": {
+    "2001": 0,
+    "2022": 0
+  },
+  "oppervlaktecontrole": {
+    "2001": {
+      "regels": 175,
+      "gemiddeld_absoluut_verschil_ha": 0.003171428571428656,
+      "maximaal_absoluut_verschil_ha": 0.03000000000000025
+    },
+    "2022": {
+      "regels": 175,
+      "gemiddeld_absoluut_verschil_ha": 0.0032509670350201266,
+      "maximaal_absoluut_verschil_ha": 0.02988856135593032
+    }
+  },
+  "raster_metadata": {
+    "2001": {
+      "bestand": "classification2001_25k_grove.tif",
+      "breedte_pixels": 1047,
+      "hoogte_pixels": 1039,
+      "crs": "EPSG:28992",
+      "pixel_breedte_m": 5.0,
+      "pixel_hoogte_m": 5.0,
+      "geldige_pixels": 369710
+    },
+    "2022": {
+      "bestand": "classification2022_grove_25k.tif",
+      "breedte_pixels": 1047,
+      "hoogte_pixels": 1039,
+      "crs": "EPSG:28992",
+      "pixel_breedte_m": 5.000083285577836,
+      "pixel_hoogte_m": 5.000099999999988,
+      "geldige_pixels": 369662
+    }
+  },
+  "klassecodes": {
+    "2001": {
+      "1": "laag",
+      "2": "struik",
+      "3": "bos",
+      "4": "water",
+      "5": "zand",
+      "13": "boomgroep",
+      "26": "riet",
+      "137": "laag",
+      "138": "laag",
+      "139": "laag",
+      "140": "laag",
+      "2001": "water",
+      "2002": "water",
+      "2003": "water",
+      "2004": "water",
+      "2005": "water",
+      "8001": "bos",
+      "8002": "bos",
+      "8003": "bos",
+      "8004": "bos"
+    },
+    "2022": {
+      "1": "laag",
+      "2": "struik",
+      "3": "bos",
+      "4": "water",
+      "5": "zand",
+      "13": "boomgroep",
+      "26": "riet",
+      "137": "laag",
+      "138": "laag",
+      "139": "laag",
+      "141": "laag",
+      "65": "bos",
+      "66": "bos",
+      "67": "bos",
+      "69": "bos",
+      "75": "boomgroep",
+      "76": "boomgroep",
+      "77": "boomgroep",
+      "79": "boomgroep",
+      "210": "water",
+      "211": "water",
+      "212": "water"
+    }
+  },
+  "bronbestanden": [
+    {
+      "bestand": "classification2001_25k_grove.tif",
+      "bytes": 4364552,
+      "sha256": "75a2c6caf0e1a097bfe02923eac44b927a4721477cd09631bcb77686320e89dc"
+    },
+    {
+      "bestand": "classification2022_grove_25k.tif",
+      "bytes": 4364552,
+      "sha256": "0a5cf5bfaf8ca99e8569c6be0cc02f71ca4fd351c12f28e1afa94b071dd2c870"
+    },
+    {
+      "bestand": "final.qml",
+      "bytes": 3305,
+      "sha256": "963e2b6873162e0e7f2edb87e98a96947e3509ddcdac79e9f44511b13ade2f83"
+    },
+    {
+      "bestand": "kacheln25.cpg",
+      "bytes": 5,
+      "sha256": "3ad3031f5503a4404af825262ee8232cc04d4ea6683d42c5dd0a2f2a27ac9824"
+    },
+    {
+      "bestand": "kacheln25.dbf",
+      "bytes": 4226,
+      "sha256": "90db72f23cb2d29849ee887faadd25b30136f28bc0d44507e6564ae0973118b0"
+    },
+    {
+      "bestand": "kacheln25.prj",
+      "bytes": 427,
+      "sha256": "0179f1933c85d9c5ff64b2313b8b762103eca543b3d9b28bb111f640ee4717f3"
+    },
+    {
+      "bestand": "kacheln25.shp",
+      "bytes": 43116,
+      "sha256": "d07e456a75fdd74f4d749f7e89c47ca153ce9922ee7b7de96be3c51322cda77a"
+    },
+    {
+      "bestand": "kacheln25.shx",
+      "bytes": 300,
+      "sha256": "c15d376d2e520a214175a7069fa5e45c967e6326dc4a3f5e5eea1b902692f803"
+    }
+  ]
+}

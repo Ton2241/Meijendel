@@ -103,6 +103,9 @@ done
 for retired_object in \
   externe_ecologie_dataset externe_ecologie_event externe_ecologie_overlap externe_ecologie_resultaat \
   ndff_daz_bmp_bezoek ndff_daz_bmp_bezoek_taxon ndff_daz_bmp_recordkandidaat ndff_daz_bmp_recordselectie \
+  ndff_florbase_doelbereik ndff_florbase_inventarisatie ndff_florbase_inventarisatie_taxon ndff_florbase_recordselectie \
+  ndff_hns_doelbereik ndff_hns_hok_jaar_taxon ndff_hns_inventarisatie ndff_hns_inventarisatie_taxon ndff_hns_recordselectie \
+  ndff_lmfa_bezoek ndff_lmfa_bezoek_taxon ndff_lmfa_doelsoort ndff_lmfa_recordselectie ndff_lmfa_route \
   vangblik_soorten; do
   grep -Fq "$retired_object" "$REMOTE_HELPER" || \
     fail "remote helper mist expliciet toegestaan vervallen object: $retired_object"

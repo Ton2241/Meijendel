@@ -152,3 +152,20 @@ lokale analyse-uitvoer; compacte validaties, klasse-uitkomsten, plotfracties,
 samenvatting en bronhashes zijn blijvend vastgelegd. Een nieuwe proef begint
 pas nadat onafhankelijke trainingsvlakken of de oorspronkelijke
 classificatierasters beschikbaar zijn.
+
+## Rasterlevering 19 oktober 2026
+
+De oorspronkelijke classificatierasters voor 2001 en 2022 en de begrenzing
+van de 25 bronplots zijn ontvangen. De rasterwaarden reproduceren de
+gepubliceerde oppervlakten: over 350 plot–klasse–jaarvergelijkingen is het
+gemiddelde absolute verschil 0,0032 hectare en het maximum 0,030 hectare. Uit
+de rasters zijn per plot en klasse aandeel, aantal aaneengesloten vlakken,
+vlakdichtheid, aandeel van het grootste vlak en randdichtheid afgeleid; op
+landschapsniveau ook Shannon-diversiteit, klassenrijkdom en interne
+randdichtheid.
+
+Daarmee is de horizontale inrichting voor twee meetmomenten nu bruikbaar. De
+levering bevat niet de oorspronkelijke trainingspolygonen of de 125
+validatiepunten. Zij maakt daarom geen onafhankelijke validatie tussen
+luchtfotojaren mogelijk en verandert het besluit om geen jaarlijkse
+luchtfotoreeks te bouwen niet.

@@ -78,8 +78,9 @@ printf '%s\n' \
   "HELPER|deploy/rebuild_mysql_image_vps_remote.sh|sha256=$helper_hash" \
   "VALIDATOR|deploy/validate_mysql_uid_migration_vps_remote.sh|sha256=$validator_hash" \
   "ACTIEF|container=$ACTIVE_CONTAINER|image=$old_image_id" \
-  "DOEL|MySQL=9.7.1|UID:GID=1999:1999|libxml2=2.9.13-14.el9_8.5-of-nieuwer|high=0|critical=0" \
-  'GRENS|geen-datamapmigratie|geen-docker-prune|geen-andere-container-of-image'
+  "DOEL|MySQL=9.7.1|UID:GID=1999:1999|pcre2=10.40-7.0.1.el9_8-of-nieuwer|high=0|critical=0" \
+  "DATARELEASE|ongewijzigd=$DEPLOY_PREVIOUS_COMMIT|imagebron=$DEPLOY_LOCAL_COMMIT" \
+  'GRENS|geen-datamapmigratie|geen-docker-prune|oude-image-en-rollbackcontainer-blijven-behouden'
 
 echo "== Read-only startgate =="
 ssh -i "$SSH_KEY" -o BatchMode=yes "$VPS" \
@@ -95,19 +96,30 @@ baseline_status=$?
 set -e
 printf '%s\n' "$baseline_audit"
 if [[ "$FINALIZE" -eq 1 ]]; then
-  [[ "$baseline_status" -eq 0 ]] || guard_die "finalisatiescan is niet volledig groen."
+  [[ "$baseline_status" -eq 1 ]] || guard_die "finalisatiescan heeft niet uitsluitend de verwachte rollback-aandachtstatus."
   grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$baseline_audit" || guard_die "MySQL-finalisatiescan wijkt af."
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$baseline_audit" || guard_die "Shiny-finalisatiescan wijkt af."
-  ! grep -Eq '^(URGENT|BLOKKADE|AANDACHT)\|' <<< "$baseline_audit" ||
-    guard_die "finalisatiescan bevat een afwijking."
+  grep -Eq '^SAMENVATTING\|meijendel-mysql-rollback-[0-9a-f]{12}\|critical=0\|high=7\|fix_beschikbaar=7\|zonder_fix=0$' \
+    <<< "$baseline_audit" || guard_die "MySQL-rollbackfinalisatiescan wijkt af."
+  ! grep -Eq '^URGENT\|' <<< "$baseline_audit" || guard_die "finalisatiescan bevat een urgente scannerfout."
+  baseline_blockades="$(grep -c '^BLOKKADE|' <<< "$baseline_audit" || true)"
+  [[ "$baseline_blockades" -eq 1 ]] || guard_die "finalisatiescan bevat een onverwacht aantal blokkaderegels."
+  grep -Eq "^BLOKKADE\|vwgm-admin\|.*vulnerability-audit-root.*non-zero exit status 1" \
+    <<< "$baseline_audit" || guard_die "finalisatiescan bevat een andere blokkade dan de verwachte gateway-wrapper."
+  while IFS= read -r attention; do
+    case "$attention" in
+      AANDACHT\|container-image\|meijendel-mysql-rollback-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\|*|AANDACHT\|container-image\|vwgm-shiny-rollback-* ) ;;
+      *) guard_die "finalisatiescan bevat onverwacht aandachtspunt: $attention" ;;
+    esac
+  done < <(grep '^AANDACHT|' <<< "$baseline_audit" || true)
 else
 [[ "$baseline_status" -eq 1 ]] || guard_die "uitgangsscan heeft niet uitsluitend de verwachte aandachtstatus."
-grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=6|fix_beschikbaar=6|zonder_fix=0' \
-  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/6 repareerbare HIGH."
-grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=6|pakket=libxml2|installed=2.9.13-14.el9_8.4|fixed=2.9.13-14.el9_8.5|' \
-  <<< "$baseline_audit" || guard_die "libxml2-uitgangsversie of fixversie wijkt af."
+grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0' \
+  <<< "$baseline_audit" || guard_die "MySQL-uitgangsscan wijkt af van 0 CRITICAL/7 repareerbare HIGH."
+grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|' \
+  <<< "$baseline_audit" || guard_die "pcre2-uitgangsversie of fixversie wijkt af."
 grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
   <<< "$baseline_audit" || guard_die "Shiny-uitgangsscan wijkt af."
 ! grep -Eq '^URGENT\|' <<< "$baseline_audit" ||
@@ -135,13 +147,40 @@ scp -i "$SSH_KEY" "$VALIDATE_HELPER" "$VPS:$REMOTE_STAGE/validate-mysql"
 
 ssh -tt -o ServerAliveInterval=30 -o ServerAliveCountMax=20 \
   -i "$SSH_KEY" "$VPS" \
-  "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' NEW_COMMIT='$DEPLOY_LOCAL_COMMIT' SHORT_COMMIT='$short_commit' FINALIZE_ONLY='$FINALIZE' bash '$REMOTE_STAGE/rebuild-mysql'"
+  "actual=\$(sha256sum '$REMOTE_STAGE/rebuild-mysql' | cut -d' ' -f1); test \"\$actual\" = '$helper_hash'; exec sudo env REMOTE_STAGE='$REMOTE_STAGE' DOCKERFILE_HASH='$dockerfile_hash' HELPER_HASH='$helper_hash' VALIDATOR_HASH='$validator_hash' EXPECTED_OLD_IMAGE='$old_image_id' SOURCE_COMMIT='$DEPLOY_LOCAL_COMMIT' EXPECTED_DATA_COMMIT='$DEPLOY_PREVIOUS_COMMIT' SHORT_COMMIT='$short_commit' FINALIZE_ONLY='$FINALIZE' bash '$REMOTE_STAGE/rebuild-mysql'"
 
 echo "== Onafhankelijke nacontrole =="
 VWG_ADMIN_GATEWAY=1 "$VWG_M/website/vwg-m-linux-app/scripts/check_caddy_mysql_isolation_vps.sh"
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$SMOKE_SCRIPT"
-"$AUDIT_SCRIPT" --containers-only
+set +e
+post_audit="$("$AUDIT_SCRIPT" --containers-only 2>&1)"
+post_status=$?
+set -e
+printf '%s\n' "$post_audit"
+grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
+  <<< "$post_audit" || guard_die "MySQL-nacontrolescan wijkt af."
+grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
+  <<< "$post_audit" || guard_die "Shiny-nacontrolescan wijkt af."
+! grep -Eq '^URGENT\|' <<< "$post_audit" || guard_die "nacontrolescan bevat een urgente scannerfout."
+[[ "$post_status" -eq 0 || "$post_status" -eq 1 ]] || guard_die "nacontrolescan faalde technisch."
+if [[ "$post_status" -eq 1 ]]; then
+  post_blockades="$(grep -c '^BLOKKADE|' <<< "$post_audit" || true)"
+  [[ "$post_blockades" -eq 1 ]] || guard_die "nacontrolescan bevat een onverwacht aantal blokkaderegels."
+  grep -Eq "^BLOKKADE\|vwgm-admin\|.*vulnerability-audit-root.*non-zero exit status 1" \
+    <<< "$post_audit" || guard_die "nacontrolescan bevat een andere blokkade dan de verwachte gateway-wrapper."
+else
+  ! grep -Eq '^(BLOKKADE|AANDACHT)\|' <<< "$post_audit" || guard_die "groene nacontrolescan bevat een afwijking."
+fi
+while IFS= read -r attention; do
+  case "$attention" in
+    AANDACHT\|container-image\|vwgm-shiny-rollback-* ) ;;
+    AANDACHT\|container-image\|meijendel-mysql-rollback-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]\|*)
+      [[ "$FINALIZE" -eq 0 ]] || guard_die "finalisatie liet een MySQL-rollback achter."
+      ;;
+    *) guard_die "nacontrolescan bevat onverwacht aandachtspunt: $attention" ;;
+  esac
+done < <(grep '^AANDACHT|' <<< "$post_audit" || true)
 remote_state="$(ssh -i "$SSH_KEY" "$VPS" "cat '$DEPLOY_STATE_FILE'")"
-[[ "$remote_state" == "$DEPLOY_LOCAL_COMMIT" ]] || guard_die "Meijendel-productiestatus is niet bijgewerkt."
+[[ "$remote_state" == "$DEPLOY_PREVIOUS_COMMIT" ]] || guard_die "Meijendel-datarelease is tijdens image-onderhoud gewijzigd."
 
-echo "MySQL-image-update/finalisatie afgerond; productiecommit geregistreerd: $DEPLOY_LOCAL_COMMIT"
+echo "MySQL-image-update/finalisatie afgerond; datarelease ongewijzigd: $DEPLOY_PREVIOUS_COMMIT; imagebron: $DEPLOY_LOCAL_COMMIT"

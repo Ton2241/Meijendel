@@ -285,9 +285,24 @@ stilzwijgend herschreven.
   lager. De luchtfoto's worden daarom niet tot een jaarlijkse structuurreeks
   uitgebreid.
 - Water en kaal zand worden niet met onbewezen spectrale drempels gescheiden.
-  Daarvoor zijn onafhankelijke pixelreferenties nodig. De luchtfoto's kunnen
-  AHN dus niet vervangen; een vervolg is alleen zinvol met trainingsvlakken of
-  de oorspronkelijke classificatierasters.
+  Daarvoor ontbraken in deze proef onafhankelijke pixelreferenties. De
+  luchtfoto's kunnen AHN dus niet vervangen.
+
+## 19 oktober 2026 — oorspronkelijke landbedekkingsrasters
+
+- De classificatierasters voor 2001 en 2022 zijn als onveranderde bronkopie
+  met SHA256 opgeslagen. Alle 739.372 geldige pixels konden aan een van zeven
+  klassen en een van 25 bronplots worden gekoppeld. De opnieuw berekende
+  oppervlakten bevestigen de gepubliceerde tabel: gemiddeld absoluut verschil
+  0,0032 hectare en maximaal 0,030 hectare over 350 vergelijkingen.
+- Ruimtelijke structuurmaten zijn toegelaten als afgeleide analyse-uitvoer:
+  per klasse aandeel, aantal en dichtheid van aaneengesloten vlakken, aandeel
+  van het grootste vlak en randdichtheid; per plot ook klassenrijkdom,
+  Shannon-diversiteit en interne randdichtheid.
+- De rasters worden niet als jaarlijkse reeks gelezen. De oorspronkelijke
+  trainingspolygonen en validatiepunten ontbreken en er blijven slechts twee
+  onafhankelijke kaartjaren. De eerdere luchtfoto-uitkomst verandert daarom
+  niet.
 
 ## 12 oktober 2026 — stikstof en CBS-landgebruik
 

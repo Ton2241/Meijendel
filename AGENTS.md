@@ -50,7 +50,7 @@ Bij codewerk:
 - onderzoek eerst kort de bestaande code en volg de bestaande patronen, naamgeving en structuur
 - zoek eerst naar bestaande helpers of utilities voordat je nieuwe toevoegt
 - lever standaard een werkende wijziging op in plaats van alleen een plan, tenzij ik expliciet om analyse of brainstorm vraag
-- creëer geen nieuwe bestanden in de repo tenzij ik daar expliciet om vraag; uitzondering: bestanden die noodzakelijk zijn om bij een crash van de VPS de volledige omgeving op `app.vwg-m.nl` te herstellen mogen wel in de repo worden gezet
+- creëer alleen nieuwe bestanden wanneer zij aantoonbaar nodig zijn voor de expliciet opgedragen wijziging en er geen passend bestaand bestand is; voeg geen losse tijdelijke, gegenereerde of parallelle bestanden toe en licht bij grotere wijzigingen kort toe waarom ieder nieuw bestand nodig is; bestanden die noodzakelijk zijn om bij een crash van de VPS de volledige omgeving op `app.vwg-m.nl` te herstellen mogen eveneens in de repo worden gezet
 - wees voorzichtig met bestaande niet-door-jou-gemaakte wijzigingen en draai die nooit terug zonder expliciete instructie
 - benoem aannames, risico's en blockers kort en concreet
 - houd wijzigingen zo klein mogelijk, maar wel volledig genoeg om het probleem echt op te lossen

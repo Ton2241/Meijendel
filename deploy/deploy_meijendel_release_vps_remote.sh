@@ -155,6 +155,20 @@ retired_release_allowlist() {
     ndff_daz_bmp_bezoek_taxon \
     ndff_daz_bmp_recordkandidaat \
     ndff_daz_bmp_recordselectie \
+    ndff_florbase_doelbereik \
+    ndff_florbase_inventarisatie \
+    ndff_florbase_inventarisatie_taxon \
+    ndff_florbase_recordselectie \
+    ndff_hns_doelbereik \
+    ndff_hns_hok_jaar_taxon \
+    ndff_hns_inventarisatie \
+    ndff_hns_inventarisatie_taxon \
+    ndff_hns_recordselectie \
+    ndff_lmfa_bezoek \
+    ndff_lmfa_bezoek_taxon \
+    ndff_lmfa_doelsoort \
+    ndff_lmfa_recordselectie \
+    ndff_lmfa_route \
     vangblik_soorten | LC_ALL=C sort
 }
 
@@ -189,6 +203,20 @@ DROP TABLE IF EXISTS
   `ndff_daz_bmp_recordkandidaat`,
   `ndff_daz_bmp_recordselectie`,
   `ndff_daz_bmp_bezoek`,
+  `ndff_florbase_inventarisatie_taxon`,
+  `ndff_florbase_recordselectie`,
+  `ndff_florbase_doelbereik`,
+  `ndff_florbase_inventarisatie`,
+  `ndff_hns_inventarisatie_taxon`,
+  `ndff_hns_recordselectie`,
+  `ndff_hns_hok_jaar_taxon`,
+  `ndff_hns_doelbereik`,
+  `ndff_hns_inventarisatie`,
+  `ndff_lmfa_bezoek_taxon`,
+  `ndff_lmfa_recordselectie`,
+  `ndff_lmfa_doelsoort`,
+  `ndff_lmfa_bezoek`,
+  `ndff_lmfa_route`,
   `externe_ecologie_resultaat`,
   `externe_ecologie_overlap`,
   `externe_ecologie_event`,

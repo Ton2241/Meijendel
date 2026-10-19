@@ -6,15 +6,16 @@ set -euo pipefail
 : "${HELPER_HASH:?}"
 : "${VALIDATOR_HASH:?}"
 : "${EXPECTED_OLD_IMAGE:?}"
-: "${NEW_COMMIT:?}"
+: "${SOURCE_COMMIT:?}"
+: "${EXPECTED_DATA_COMMIT:?}"
 : "${SHORT_COMMIT:?}"
 FINALIZE_ONLY="${FINALIZE_ONLY:-0}"
 
 ACTIVE_CONTAINER="meijendel-mysql"
-PREVIOUS_CONTAINER="meijendel-mysql-previous-$SHORT_COMMIT"
+PREVIOUS_CONTAINER="meijendel-mysql-rollback-$SHORT_COMMIT"
 CANDIDATE_CONTAINER="meijendel-mysql-candidate-$SHORT_COMMIT"
 CANDIDATE_TAG="vwgm-mysql:candidate-$SHORT_COMMIT"
-PREVIOUS_TAG="vwgm-mysql:previous-$SHORT_COMMIT"
+PREVIOUS_TAG="vwgm-mysql:rollback-$SHORT_COMMIT"
 CANONICAL_TAG="vwgm-mysql:9.7.1"
 MYSQL_ENV="/srv/vwgm/meijendel-mysql/mysql.env"
 MYSQL_DATA="/srv/vwgm/meijendel-mysql-971-uid1999/data"
@@ -70,7 +71,7 @@ validate_image_inventory() {
       vwgm-shiny:latest)
         shiny_seen=$((shiny_seen + 1))
         ;;
-      vwgm-shiny:rollback-*)
+      vwgm-mysql:rollback-$SHORT_COMMIT|vwgm-shiny:rollback-*)
         ;;
       *)
         fail "onverwachte imagetag in eindsituatie: $tag"
@@ -81,7 +82,7 @@ validate_image_inventory() {
     fail "verplichte actieve imagetags ontbreken of zijn dubbel"
 }
 audit_candidate() {
-  local output status short attention_count
+  local output status short attention blockades
   set +e
   output="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root --image "$CANDIDATE_ID" 2>&1)"
   status=$?
@@ -90,21 +91,27 @@ audit_candidate() {
   short="${CANDIDATE_ID#sha256:}"
   grep -Fq "SAMENVATTING|kandidaat-${short:0:12}|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0" \
     <<< "$output" || fail "kandidaat bevat HIGH/CRITICAL of is niet exact gescand"
-  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=6|fix_beschikbaar=6|zonder_fix=0' \
+  grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0' \
     <<< "$output" || fail "actieve uitgangsimage wijkt af tijdens kandidaatscan"
-  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=6|pakket=libxml2|installed=2.9.13-14.el9_8.4|fixed=2.9.13-14.el9_8.5|' \
-    <<< "$output" || fail "libxml2-uitgangsversie wijkt af tijdens kandidaatscan"
+  grep -Fq 'GROEP|meijendel-mysql|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|' \
+    <<< "$output" || fail "pcre2-uitgangsversie wijkt af tijdens kandidaatscan"
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' \
     <<< "$output" || fail "Shiny wijkt af tijdens kandidaatscan"
   [[ "$status" -eq 1 ]] || fail "kandidaatscan heeft een onverwachte eindstatus"
-  ! grep -Eq '^(URGENT|BLOKKADE)\|' <<< "$output" || fail "kandidaatscan is onvolledig"
-  attention_count="$(grep -c '^AANDACHT|' <<< "$output")"
-  [[ "$attention_count" -eq 2 ]] || fail "kandidaatscan bevat onverwachte aandachtspunten"
+  ! grep -Eq '^URGENT\|' <<< "$output" || fail "kandidaatscan is onvolledig"
+  blockades="$(grep -c '^BLOKKADE|' <<< "$output" || true)"
+  [[ "$blockades" -eq 0 ]] || fail "kandidaatscan bevat een onverwachte blokkaderegel"
   grep -Fq "AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG" <<< "$output" || fail "kandidaattag is niet exact verklaard"
   grep -Fq 'AANDACHT|container-image|meijendel-mysql|' <<< "$output" || fail "oude MySQL-baseline ontbreekt"
+  while IFS= read -r attention; do
+    case "$attention" in
+      "AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG"|AANDACHT\|container-image\|meijendel-mysql\|*|AANDACHT\|container-image\|vwgm-shiny-rollback-* ) ;;
+      *) fail "kandidaatscan bevat onverwacht aandachtspunt: $attention" ;;
+    esac
+  done < <(grep '^AANDACHT|' <<< "$output" || true)
 }
 audit_active_with_previous() {
-  local output status attention_count
+  local output status rollback_label
   set +e
   output="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root 2>&1)"
   status=$?
@@ -114,11 +121,16 @@ audit_active_with_previous() {
   grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$output" || fail "nieuwe actieve MySQL-scan is niet 0/0"
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$output" || fail "Shiny-tussenscan wijkt af"
   ! grep -Eq '^(URGENT|BLOKKADE)\|' <<< "$output" || fail "actieve tussenscan is onvolledig"
-  attention_count="$(grep -c '^AANDACHT|' <<< "$output")"
-  [[ "$attention_count" -eq 3 ]] || fail "actieve tussenscan bevat onverwachte aandachtspunten"
-  grep -Fq "AANDACHT|container-hygiene|onverwachte-container=$PREVIOUS_CONTAINER" <<< "$output" || fail "previous-container is niet exact verklaard"
-  grep -Fq "AANDACHT|container-hygiene|onverwachte-imagetag=$CANDIDATE_TAG" <<< "$output" || fail "kandidaattag is niet exact verklaard"
-  grep -Fq "AANDACHT|container-hygiene|onverwachte-imagetag=$PREVIOUS_TAG" <<< "$output" || fail "previous-tag is niet exact verklaard"
+  rollback_label="$PREVIOUS_CONTAINER"
+  grep -Fq "SAMENVATTING|$rollback_label|critical=0|high=7|fix_beschikbaar=7|zonder_fix=0" <<< "$output" || fail "MySQL-rollbackscan wijkt af"
+  grep -Fq "GROEP|$rollback_label|HIGH|aantal=7|pakket=pcre2|installed=10.40-6.0.1.el9|fixed=10.40-7.0.1.el9_8|" <<< "$output" || fail "pcre2-rollbackscan wijkt af"
+  grep -Fq "AANDACHT|container-image|$rollback_label|" <<< "$output" || fail "MySQL-rollbackaandacht ontbreekt"
+  while IFS= read -r attention; do
+    case "$attention" in
+      "AANDACHT|container-image|$rollback_label|"*|AANDACHT\|container-image\|vwgm-shiny-rollback-* ) ;;
+      *) fail "actieve tussenscan bevat onverwacht aandachtspunt: $attention" ;;
+    esac
+  done < <(grep '^AANDACHT|' <<< "$output" || true)
 }
 rollback_or_cleanup() {
   status=$?
@@ -148,6 +160,8 @@ rollback_or_cleanup() {
 trap rollback_or_cleanup EXIT INT TERM
 
 finalize_current() {
+  local rollback_container rollback_suffix rollback_tag rollback_image final_audit final_status attention
+  local rollback_containers=()
   CANDIDATE_ID="$EXPECTED_OLD_IMAGE"
   [[ "$(docker inspect --format '{{.State.Status}}' "$ACTIVE_CONTAINER")" == "running" ]] || fail "actieve MySQL draait niet"
   [[ "$(docker inspect --format '{{.Image}}' "$ACTIVE_CONTAINER")" == "$CANDIDATE_ID" ]] || fail "actieve eindimage wijkt af"
@@ -156,14 +170,41 @@ finalize_current() {
   docker port "$ACTIVE_CONTAINER" 3306/tcp | grep -Fxq '127.0.0.1:3307' || fail "poortbinding wijkt af"
   [[ "$(docker exec "$ACTIVE_CONTAINER" id -u mysql)" == 1999 && "$(docker exec "$ACTIVE_CONTAINER" id -g mysql)" == 1999 ]] || fail "MySQL UID/GID wijkt af"
   wait_mysql "$ACTIVE_CONTAINER" || fail "actieve MySQL werd niet gereed"
+  mapfile -t rollback_containers < <(
+    docker ps -a --format '{{.Names}}' | grep -E '^meijendel-mysql-rollback-[0-9a-f]{12}$' | sort
+  )
+  [[ "${#rollback_containers[@]}" -eq 1 ]] || fail "finalisatie vereist exact één MySQL-rollbackcontainer"
+  rollback_container="${rollback_containers[0]}"
+  rollback_suffix="${rollback_container#meijendel-mysql-rollback-}"
+  rollback_tag="vwgm-mysql:rollback-$rollback_suffix"
+  rollback_image="$(docker inspect --format '{{.Image}}' "$rollback_container")"
+  [[ "$(docker inspect --format '{{.State.Status}}' "$rollback_container")" == "exited" ]] || fail "rollbackcontainer is niet gestopt"
+  [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$rollback_container")" == "$MYSQL_DATA" ]] || fail "rollbackcontainermount wijkt af"
+  [[ "$(docker image inspect --format '{{.Id}}' "$rollback_tag")" == "$rollback_image" ]] || fail "rollbacktag wijst niet naar rollbackimage"
+
+  docker rm "$rollback_container" >/dev/null
+  docker image rm "$rollback_tag" >/dev/null
+  if docker image inspect "$rollback_image" >/dev/null 2>&1; then
+    docker image rm "$rollback_image" >/dev/null
+  fi
   [[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
   validate_image_inventory
 
-  final_audit="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root)"
+  set +e
+  final_audit="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root 2>&1)"
+  final_status=$?
+  set -e
   printf '%s\n' "$final_audit"
   grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$final_audit" || fail "actieve MySQL-eindscan is niet 0/0"
   grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$final_audit" || fail "Shiny-eindscan wijkt af"
-  ! grep -Eq '^(URGENT|BLOKKADE|AANDACHT)\|' <<< "$final_audit" || fail "eindaudit bevat een afwijking"
+  [[ "$final_status" -eq 0 || "$final_status" -eq 1 ]] || fail "eindaudit faalde technisch"
+  ! grep -Eq '^(URGENT|BLOKKADE)\|' <<< "$final_audit" || fail "eindaudit is onvolledig"
+  while IFS= read -r attention; do
+    case "$attention" in
+      AANDACHT\|container-image\|vwgm-shiny-rollback-* ) ;;
+      *) fail "eindaudit bevat onverwacht aandachtspunt: $attention" ;;
+    esac
+  done < <(grep '^AANDACHT|' <<< "$final_audit" || true)
   /usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation
   smoke_status publieke-home www.vwg-m.nl /welkom/index.asp 200
   smoke_status mysql-soortpagina www.vwg-m.nl '/soorten/vogel.asp?id=90' 200
@@ -173,20 +214,20 @@ finalize_current() {
   /usr/local/sbin/vwgm-baremetal-backup >/tmp/vwgm-mysql-finalize-backup.json
   validate_backup
   grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up mist nieuwe image"
-  tmp_state="$STATE_FILE.tmp.$$"
-  printf '%s\n' "$NEW_COMMIT" > "$tmp_state"
-  mv "$tmp_state" "$STATE_FILE"
+  [[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde tijdens finalisatie"
   rm -f /tmp/vwgm-mysql-finalize-backup.json
   SUCCESS=1
-  printf 'GROEN|mysql-image-finalisatie|image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|commit=%s\n' \
-    "$CANDIDATE_ID" "$NEW_COMMIT"
+  printf 'GROEN|mysql-image-finalisatie|image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|data_commit=%s|source_commit=%s\n' \
+    "$CANDIDATE_ID" "$EXPECTED_DATA_COMMIT" "$SOURCE_COMMIT"
 }
 
 [[ "$(hash_file "$REMOTE_STAGE/Dockerfile.9.7.1")" == "$DOCKERFILE_HASH" ]] || fail "Dockerfilehash wijkt af"
 [[ "$(hash_file "$REMOTE_STAGE/rebuild-mysql")" == "$HELPER_HASH" ]] || fail "helperhash wijkt af"
 [[ "$(hash_file "$REMOTE_STAGE/validate-mysql")" == "$VALIDATOR_HASH" ]] || fail "validatorhash wijkt af"
 [[ "$EXPECTED_OLD_IMAGE" =~ ^sha256:[0-9a-f]{64}$ ]] || fail "oude image-ID is ongeldig"
-[[ "$NEW_COMMIT" =~ ^[0-9a-f]{40}$ && "$SHORT_COMMIT" == "${NEW_COMMIT:0:12}" ]] || fail "commitbinding wijkt af"
+[[ "$SOURCE_COMMIT" =~ ^[0-9a-f]{40}$ && "$SHORT_COMMIT" == "${SOURCE_COMMIT:0:12}" ]] || fail "broncommitbinding wijkt af"
+[[ "$EXPECTED_DATA_COMMIT" =~ ^[0-9a-f]{40}$ ]] || fail "verwachte datarelease is ongeldig"
+[[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde vóór image-onderhoud"
 [[ -d "$LOCK" ]] || fail "gedeelde productielock ontbreekt"
 if [[ "$FINALIZE_ONLY" == 1 ]]; then
   finalize_current
@@ -258,6 +299,7 @@ docker stop "$ACTIVE_CONTAINER" >/dev/null
 docker rename "$ACTIVE_CONTAINER" "$PREVIOUS_CONTAINER"
 docker tag "$EXPECTED_OLD_IMAGE" "$PREVIOUS_TAG"
 docker tag "$CANDIDATE_ID" "$CANONICAL_TAG"
+docker image rm "$CANDIDATE_TAG" >/dev/null
 docker run -d --name "$ACTIVE_CONTAINER" --restart unless-stopped \
   --env-file "$MYSQL_ENV" -p 127.0.0.1:3307:3306 \
   -v "$MYSQL_DATA:/var/lib/mysql" "$CANDIDATE_ID" --local-infile=0 --mysqlx=0 \
@@ -274,46 +316,31 @@ smoke_status shiny-afgeschermd www.vwg-m.nl /shiny_meijendel/ 401
 smoke_status app-redirect app.vwg-m.nl '/welkom/index.asp?bron=app' 308
 smoke_status hoofddomein-redirect vwg-m.nl /welkom/index.asp 301
 
-echo "== Exacte actieve scan en herstelbewijs vóór opruiming =="
+echo "== Exacte actieve scan en herstelbewijs met behouden rollback =="
 audit_active_with_previous
 /usr/local/sbin/vwgm-baremetal-backup > "$TASK_ROOT/post-switch-backup.json"
 validate_backup
 grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "nieuwe image ontbreekt in back-upmanifest"
 
-echo "== Verwijder uitsluitend exacte taakartefacten en oude image =="
+echo "== Verifieer de exact behouden rollback =="
 [[ "$(docker inspect --format '{{.State.Status}}' "$PREVIOUS_CONTAINER")" == "exited" ]] || fail "vorige container is niet gestopt"
 [[ "$(docker inspect --format '{{.Image}}' "$PREVIOUS_CONTAINER")" == "$EXPECTED_OLD_IMAGE" ]] || fail "vorige containerimage wijkt af"
 [[ "$(docker inspect --format '{{range .Mounts}}{{if eq .Destination "/var/lib/mysql"}}{{.Source}}{{end}}{{end}}' "$PREVIOUS_CONTAINER")" == "$MYSQL_DATA" ]] || fail "vorige containermount wijkt af"
-docker rm "$PREVIOUS_CONTAINER" >/dev/null
-docker image rm "$CANDIDATE_TAG" >/dev/null
-docker image rm "$PREVIOUS_TAG" >/dev/null
-if docker image inspect "$EXPECTED_OLD_IMAGE" >/dev/null 2>&1; then
-  docker image rm "$EXPECTED_OLD_IMAGE" >/dev/null
-fi
-SWITCH_STARTED=0
 
-final_audit="$(/usr/local/libexec/vwgm-admin/vulnerability-audit-root)"
-printf '%s\n' "$final_audit"
-grep -Fq 'SAMENVATTING|meijendel-mysql|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$final_audit" || fail "actieve MySQL-eindscan is niet 0/0"
-grep -Fq 'SAMENVATTING|shiny_meijendel|critical=0|high=0|fix_beschikbaar=0|zonder_fix=0' <<< "$final_audit" || fail "Shiny-eindscan wijkt af"
-! grep -Eq '^(URGENT|BLOKKADE|AANDACHT)\|' <<< "$final_audit" || fail "eindaudit bevat een afwijking"
-
-echo "== Definitieve herstelback-up van schone eindsituatie =="
+echo "== Definitieve herstelback-up met actieve image en rollback =="
 /usr/local/sbin/vwgm-baremetal-backup > "$TASK_ROOT/final-backup.json"
 validate_backup
 grep -Fq "$CANDIDATE_ID" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up mist nieuwe image"
-! grep -Fq "$EXPECTED_OLD_IMAGE" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up noemt oude image nog"
+grep -Fq "$EXPECTED_OLD_IMAGE" "$BACKUP_DIR/vwg-m-baremetal-latest-manifest.json" || fail "definitieve back-up mist rollbackimage"
 
-[[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
+[[ "$(docker ps -a --format '{{.Names}}' | sort | tr '\n' ' ')" == "meijendel-mysql $PREVIOUS_CONTAINER shiny_meijendel " ]] || fail "containereindsituatie wijkt af"
 validate_image_inventory
-tmp_state="$STATE_FILE.tmp.$$"
-printf '%s\n' "$NEW_COMMIT" > "$tmp_state"
-mv "$tmp_state" "$STATE_FILE"
+[[ "$(cat "$STATE_FILE")" == "$EXPECTED_DATA_COMMIT" ]] || fail "Meijendel-datarelease wijzigde tijdens image-onderhoud"
 rm -rf -- "$TASK_ROOT"
 docker ps -a --no-trunc
 docker images --no-trunc
 docker system df
 
 SUCCESS=1
-printf 'GROEN|mysql-image-update|image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|commit=%s\n' \
-  "$CANDIDATE_ID" "$NEW_COMMIT"
+printf 'GROEN|mysql-image-update|rollback=behouden|image=%s|rollback_image=%s|mysql=9.7.1|uid=1999|high=0|critical=0|data_commit=%s|source_commit=%s\n' \
+  "$CANDIDATE_ID" "$EXPECTED_OLD_IMAGE" "$EXPECTED_DATA_COMMIT" "$SOURCE_COMMIT"

@@ -1492,11 +1492,12 @@ function getSelectedPlotRecord(){
   return rows.find(r=>String(r.plot_id)===selected||String(r.kavel_nummer)===selected||String(r.plot_nr)===selected)||null;
 }
 function getSelectedToegankelijkheid(plotId,jaar){
-  const rows=getTableRows("plot_jaar_toegankelijkheid")
-    .filter(r=>String(r.plot_id)===String(plotId))
-    .filter(r=>toYear(r.jaar)!=null&&toYear(r.jaar)<=Number(jaar))
-    .sort((a,b)=>Number(b.jaar)-Number(a.jaar));
+  const rows=getTableRows("maatregel_toegankelijkheid_registratie").filter(r=>r.niveau==="plot").filter(r=>String(r.plot_id)===String(plotId)&&toYear(r.jaar)===Number(jaar));
+  if(new Set(rows.map(r=>r.status_code)).size>1)return {status_code:"onbekend",opmerking:"tegenstrijdige bronregistraties",jaar:Number(jaar)};
   return rows[0]||null;
+}
+function getHistorischeToegankelijkheid(plotId,jaar){
+  return getTableRows("maatregel_toegankelijkheid_registratie").filter(r=>r.niveau==="plot").filter(r=>String(r.plot_id)===String(plotId)&&toYear(r.jaar)<Number(jaar)).sort((a,b)=>Number(b.jaar)-Number(a.jaar))[0]||null;
 }
 function getPlotLink(plotId,linkType){
   const rows=getTableRows("plot_link")
@@ -1599,9 +1600,9 @@ function getKerncijfers(plotId,jaar){
   };
 }
 function getMaatregelblok(plotId,jaar){
-  const rows=getTableRows("plot_jaar_maatregel")
+  const rows=getTableRows("maatregel_beheer_jaar")
     .filter(r=>String(r.plot_id)===String(plotId))
-    .filter(r=>toYear(r.jaar)!=null&&Number(toYear(r.jaar))<=Number(jaar));
+    .filter(r=>toYear(r.jaar)!=null&&Number(toYear(r.jaar))===Number(jaar));
   if(!rows.length)return {items:[],bronjaar:null};
   rows.sort((a,b)=>Number(toYear(b.jaar))-Number(toYear(a.jaar)));
   const bronjaar=toYear(rows[0].jaar);
@@ -2143,6 +2144,7 @@ function renderPlotPanel(){
   const toeg=plotRec&&S.plotView.jaar!=null?getSelectedToegankelijkheid(plotRec.plot_id,S.plotView.jaar):null;
   const kaartLink=plotRec?getPlotLink(plotRec.plot_id,"VWG_KAVEL"):null;
   const status=toeg?.status_code||"onbekend";
+  const historischToeg=plotRec?getHistorischeToegankelijkheid(plotRec.plot_id,S.plotView.jaar):null;
   const titleCard=el("div",{className:"plot-title-card"});
   const head=el("div",{className:"plot-title-head"});
   head.appendChild(el("div",{className:"plot-title-main"},[
@@ -2155,7 +2157,7 @@ function renderPlotPanel(){
   ));
   head.appendChild(el("div",{className:"plot-title-statuscol"},[
     el("span",{className:getStatusClass(status)},status),
-    el("div",{className:"plot-title-statusnote"},"toegankelijkheid voor recreanten")
+    el("div",{className:"plot-title-statusnote"},toeg?`toegankelijkheid voor recreanten · registratie ${toeg.jaar}${toeg.opmerking?" · "+toeg.opmerking:""}`:historischToeg?`laatste registratie: ${historischToeg.jaar} · ${historischToeg.status_code}; gekozen jaar onbekend`:"toegankelijkheid voor recreanten · geen registratie voor dit jaar")
   ]));
   titleCard.appendChild(head);
   p.appendChild(titleCard);
@@ -2243,7 +2245,7 @@ function renderPlotPanel(){
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Beheer en maatregel"),
-    el("div",{className:"plot-kern-text"},mb?.items?.length?mb.items.join("; "):"geen data")
+    el("div",{className:"plot-kern-text"},mb?.items?.length?mb.items.join("; "):"geen registratie voor dit jaar")
   ]));
   const vegetatie=plotRec&&S.plotView.jaar!=null?getVegetatieJaar(plotRec.plot_id,S.plotView.jaar):null;
   const vegetatieHistorie=plotRec?getVegetatieHistorie(plotRec.plot_id):[];

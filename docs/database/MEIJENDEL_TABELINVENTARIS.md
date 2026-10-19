@@ -1,6 +1,6 @@
 # Meijendel ingedeeld naar soortgroepen
 
-Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 7 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
+Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 16 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
 
 ## Hoofdkeuze
 
@@ -171,6 +171,66 @@ Het volledige voorstel is een gegevensmigratie. De complexiteit zit vooral in id
 Een betrouwbare urenraming volgt pas uit een proef op een databasekopie. Het aantal nieuwe tabellen staat evenmin vast: sommige structuren worden hernoemd, andere verdeeld, en gedeelde ondersteuning blijft bijeen. De oude rekensom van 149 hernoemingen en veertien behouden namen geldt dus niet meer.
 
 Taxonvertaling is noodzakelijk. `ndff_soorten` heeft 9.828 bronreferenties, Vangblik 275 bij de reeks 1953–1960, PQ 714 bij 1981–2025 en AVIMAP 35 bij 2009–2026. Externe ecologie heeft 2.894 verschillende opgeslagen wetenschappelijke naamwaarden bij de 98.916 resultaten uit 1875–2025, zonder gemeenschappelijke taxon-foreign-key. Behoud bronnamen, rang en versie en leg gecontroleerde overeenkomsten naast de bronidentiteit vast. De vogelgerichte tabel `soorten` blijft onaangetast.
+
+## Bronvast werkzaamhedenmodel
+
+**Actualisering 17 oktober 2026.** De lokale database bevat 22 projecten, 53 bronnen, 90 maatregelregistraties, 132 jaarbeoordelingen, 129 bronkoppelingen en 259 kavelrelaties. Voor het natuurherstelvlak binnen Helmduinen Noord zijn drie plannen met status `gepland` toegevoegd. Eén gedeelde benaderde contour is per maatregel als `TG02_plangebied` opgeslagen: drie geometrie-rijen, geen drie verschillende werkvlakken. Er zijn geen feitelijke uitvoeringsgeometrieën (`TG03`) toegevoegd. De drie nieuwe M13s-relaties zijn `te_beoordelen`; de 357 bestaande bronvaste plot-jaarregels zijn ongewijzigd. De onderstaande eerdere aantallen beschrijven de voorafgaande inventarisstand. Bron en herhaalbare invoer: `docs/bronnen/namen/helmduinen_noord_20261017/` en `gis/database/nameninventaris_helmduinen_noord_20261017.sql`.
+
+De levende lokale database bevat naast de bestaande classificatie een afzonderlijke laag voor projecten, feitelijke of geplande uitvoeringen, expliciete jaarstatussen en bewijsbronnen. Op 14 oktober 2026 is deze laag aangevuld na controle van alle 807 actieve Zotero-bijlagen. De classificatietabellen `maatregelen` en `maatregelen_kernwoorden` blijven bestaan. `plot_jaar_maatregel` is op 16 oktober 2026 eerst vervangen door een compatibiliteitsview. Ook die view is daarna verwijderd; de afnemers gebruiken nu rechtstreeks de centrale registraties. De vier algemene kernwoorden voor recreatiebeheer zijn onder de nieuwe hoofdklasse `rust_en_recreatiebeheer` geplaatst; `strandreservaat` blijft als specifiek kernwoord onder `strandreservaten` herkenbaar.
+
+| Tabel of view | Records | Betekenis |
+|---|---:|---|
+| `maatregel_project` | 18 | Samenhangend project of programma; een project kan meerdere uitvoeringen bevatten. |
+| `maatregel_bron` | 44 | 28 lokaal geraadpleegde Zotero-bronnen en vijftien officiële of institutionele internetbronnen, ieder met type, datum, status en raadpleegdatum. *Holland's Duinen* 63 en 64 en HAR 1204 onderbouwen de plaggebieden Elleboogsprang, Helmduinen, Vinkenhoek en Meeuwenduin. KIWA Mededeling 114 lokaliseert infiltratieplas 27.2; de officiële PIM-bijlage uit 2013 beschrijft de werkzaamheden en werkperiode. De gemeentelijke objectinventaris en de actuele PDOK-Kadastrale Kaart identificeren landgoed Weiduin en het gekoppelde perceel Wassenaar H 2889. |
+| `maatregel_uitvoering` | 64 | Afzonderlijke werkzaamheden of expliciet niet-uitgevoerde, onbekende of geplande activiteiten. Infiltratieplas 27.2 is los van de programmabrede pannenuitvoering geregistreerd, zodat het totale volume van 370.000 m3 niet aan deze plas wordt toegeschreven. |
+| `maatregel_uitvoering_jaar` | 104 | Letterlijk onderbouwde jaarstatussen uit 1967–2026: 88 uitgevoerd, 9 niet uitgevoerd en 7 onbekend. |
+| `maatregel_uitvoering_bron` | 99 | Relaties tussen uitvoering en bewijsbron, met bronrol en bewijsnotitie. De PIM-winputten verwijzen voor ruimtelijke plancontext naar HAR 1306. De plagwerkzaamheden verwijzen aanvullend naar *Holland's Duinen* 63 en 64 en HAR 1204. De uitvoering bij infiltratieplas 27.2 verwijst naar de officiële PIM-bijlage, KIWA Mededeling 114 en Dunea's afrondingsbericht uit 2018; Weiduin is gekoppeld aan de gemeentelijke objectinventaris en de actuele PDOK-Kadastrale Kaart. |
+| `maatregel_uitvoering_plotscope` | 3 | Expliciete beoordeling of een uitvoering binnen de 55 Meijendel-plots valt. De Bendel-herinrichting, het Bendel-nabeheer en de begrazing van landgoed Weiduin zijn geverifieerd als `buiten_meijendel_plotgebied`. Het actuele perceel Wassenaar H 2889 doorsnijdt geen plot; M85 ligt op 226,5 meter. |
+| `maatregel_geometrie` | 0 | Alleen voor later verkregen, bronvaste geometrieën in RD New. |
+| `plot_gebied` | 8 | Vijf Meijendel-deelgebieden en drie speciale gebieden. |
+| `plot_gebiedsindeling` | 1 | Vastgestelde indeling `vogelplot-gebiedsindeling-v1`, gekoppeld aan SOVON-plotversie 2025. |
+| `plot_gebied_lidmaatschap` | 69 | Alle 55 actuele en 14 historische plots hebben precies één gebied. |
+| `plot_gebied_geometrie` | 8 | Topologisch samengevoegde actuele kavelgeometrieën in RD New; samen afgeleid uit 55 plots. |
+| `maatregel_uitvoering_gebied` | 2 | Voorlinden als locatie binnen M91 en begrazing vanaf 1990 voor Kijfhoek en Bierlap als volledig benoemd gebied. |
+| `maatregel_plot_koppeling` | 211 | De programmabrede plagwerkzaamheden zijn gekoppeld aan acht unieke kavels: M10-12-76, M12a, M15, M16, M71, M73, M74 en M75. Elleboogsprang raakt M10-12-76 en M75; Vinkenhoek ligt in M71. Helmduinen is gekoppeld aan M15 en M16; M17a is retroactief verwijderd. Meeuwenduin en Prinsenduin hebben samen zeven relaties. Het maaibeheer in Ruygenhoek, Lange Strook en De Loopert heeft vijf relaties. Maatregel 22h heeft zes relaties. De jaarlijkse begrazing van Vallei Meijendel is gekoppeld aan de negen actuele kavels M3, M4-5, M51, M52, M53, M54a, M54b, M55 en M85; de historische voorgangers M4, M5 en M54 zijn uitgesloten. Maatregel 3c voegt voor dezelfde negen actuele kavels en voor M1a, M1b, M45 en M83 samen dertien relaties toe. Maatregel 3d is gekoppeld aan M13s, M15, M16, M17a en M78/79. De in 2025 vervangen slagbomen tussen P1 Kievietsduin en de parkeerterreinen in De Vallei zijn gekoppeld aan M55 en M85. Het onderzochte maar niet uitgevoerde PAS-maaibeheer 23 is als zoekgebied gekoppeld aan tien kavels: M10-12-76, M12a, M62, M63, M64, M65, M72, M73, M74 en M75. Het PIM-leidingwerk heeft zeven relaties: M41, M42, M43, M45, M84, M84s en M85. De PIM-winputten hebben 22 relaties: M1a, M1b, M3, M6, M10-12-76, M12a, M14, M15, M16, M16s, M17a, M17b, M31, M32, M33, M36, M41, M43, M45, M55, M62 en M83. Het nabeheer van de vijf kerven in 2016 en 2024 is gekoppeld aan M16 en M17a. De aanleg van de vijf kerven in 2014 en 2015 is gekoppeld aan M15, M16 en M17a; de 109.434 m² is niet per kavel of jaar verdeeld. Infiltratieplas 27.2 is gekoppeld aan M77. De precieze werkvoetafdrukken zijn niet gepubliceerd; de doorsnijdingspercentages blijven leeg. |
+| `v_plot_gebied_actueel` | 69 | Actuele leeslaag van de volledige vastgestelde gebiedsindeling. |
+| `v_plot_gebied_geometrie_actueel` | 8 | Actuele leeslaag van de afgeleide gebiedsgeometrieën. |
+| `v_plot_jaar_maatregel_bronvast` | 307 | Bronvaste plot-jaarregels voor 1967–1969, 1972–1975, 1988–1991, 1993, 1997, 2002, 2005–2006 en 2013–2025. De programmabrede plagwerkzaamheden leveren acht scoperegels voor 2018; de bron verdeelt de bijna 40 hectare en 100.000 m³ zand niet per gebied of kavel. Maatregel 3c levert 65 scoperegels voor dertien kavels in 2017–2021; de bron verdeelt de 110 hectare niet per gebied, kavel of jaar. Maatregel 3d levert voor vijf kavels telkens vijf scoperegels in 2021 en 2025; voor het niet-uitgevoerde jaar 2020 ontstaat geen plot-jaarrij. De slagboomvervanging levert twee regels voor M55 en M85 in 2025. Infiltratieplas 27.2 levert voor M77 één regel in 2013 en één in 2014. Het PIM-leidingwerk levert zeven scoperegels voor 2018; de bron verdeelt de lengte niet per kavel. De PIM-winputten leveren 22 scoperegels voor 2018; het programmatotaal van bijna 700 putten is niet per kavel verdeeld. Het kervennabeheer levert vier scoperegels: M16 en M17a in 2016 en 2024. De aanleg van de vijf kerven levert zes gezamenlijke scoperegels: M15, M16 en M17a in 2014 en 2015. |
+
+De vier nieuwe plotrelaties bij de programmabrede pannenmaatregel betreffen M6, M7, M13 en M77. Het beheerplan 2016–2022 koppelt de PIM-oeveraanpassingen aan Tafelberg en 't Scheepje; de actuele nameninventaris verbindt deze namen met de vier kavels. Zij leveren vier extra scoperegels voor 2018. De door Dunea gemelde 370.000 m3 verwijderd materiaal is niet per plas of kavel verdeeld en mag daarom niet uit deze vier regels worden afgeleid.
+
+Voor de programmabrede plagwerkzaamheden zijn de contouren uit HAR 1204 met de gepubliceerde schaal en RD-kilometerhokken op de actuele kavelgeometrie gelegd. Dit lokaliseert Elleboogsprang in M10-12-76 en M75 en Vinkenhoek in M71. De gereconstrueerde Vinkenhoek-contour is circa 8,3 hectare, tegenover circa 8 hectare in de publicatie. De kaart is voldoende voor kaveltoedeling, maar niet voor een exact uitvoeringspercentage. Daarom blijven voor deze acht relaties de eigen maatregelgeometrieën en `doorsnijding_pct`-waarden leeg.
+
+De PIM-winputten zijn met afbeelding 1 en bijlage 2 van HAR 1306 ruimtelijk beoordeeld. De twintig duidelijke doorsnijdingen en de door Ton bevestigde grensdoorsnijdingen M16 en M62 leveren samen 22 unieke kavelrelaties. M10-12-76 wordt één keer gekoppeld, hoewel zowel serie HH als de rand van serie WW deze kavel raakt. HAR 1306 is plancontext; Dunea bevestigt afzonderlijk de afronding van bijna 700 nieuwe putten in 2018. Zonder afzonderlijke putpunten of verdeling per serie blijven voor deze 22 relaties de eigen maatregelgeometrieën en `doorsnijding_pct`-waarden leeg.
+
+Het ontwerpbeheerplan bevestigt het nabeheer van de Meijendelse kerven en stuifkuilen in 2016 en 2024. De publicatie uit 2017 lokaliseert de vijf bestaande kerven in de uitgevoerde zuidelijke zone van 750 meter ten zuiden van de bunker bij het Parnassiapad, maar vermeldt dat tot het voorjaar van 2017 nog geen nabeheer nodig was. Die publicatie heeft voor deze uitvoering daarom de rol `plancontext`. Vergelijking van deze ligging met de gereconstrueerde Parnassiapad-route en de actuele plotgeometrie, gevolgd door Tons bevestiging op 16 oktober 2026, koppelt het nabeheer aan M16 en M17a. De werkvoetafdruk per jaar is niet gepubliceerd; beide `doorsnijding_pct`-waarden blijven leeg.
+
+De referentietabellen `maatregel_werkcategorie`, `maatregel_type`, `maatregel_activiteit_type`, `maatregel_uitvoering_status` en `maatregel_brontype` scheiden categorie, activiteit, feitelijke status en brontype. Waar passend zijn de Natura 2000-codes MT01–MT07 en activiteitcodes A–G gebruikt; lokale aanvullingen hebben een eigen code. Een subsidie-openstelling, ontwerpplan of actuele werkzaamhedenpagina wordt niet als uitvoering behandeld zolang de feitelijke uitvoering niet is bevestigd.
+
+De historische dashboardlaag reconstrueert 144 begrazingsregels voor 16 plots uit 1991–1999 vanuit 139 aanvullende jaarfeiten en vijf bestaande uitvoeringsfeiten. De oorspronkelijke checksum 306480715648 beschrijft de verwijderde fysieke tabel; de nieuwe rijvergelijking bewijst inhoudsbehoud. Overgenomen handmatige registraties worden niet achteraf als onafhankelijk bronvaste projectuitvoering geïnterpreteerd. Nieuwe werkzaamheden gaan pas naar een plot-jaarselectie nadat locatie, jaar en bron voldoende precies zijn vastgesteld.
+
+De gebiedsindeling gebruikt de 55 geldige SOVON-kavelpolygonen uit plotversie 2025, in EPSG:28992. Daaruit zijn vijf geometrieën voor Buitenduin Noord, Buitenduin Zuid, Kijfhoek en Bierlap, Vallei Meijendel en Zuid-oosthoek en drie geometrieën voor Haagsche Golfclub, Voorlinden en Hertenkamp afgeleid. Interne overlap van telplots wordt bij de topologische samenvoeging niet dubbel als gebiedsoppervlak geteld. De 14 historische plots zijn inhoudelijk ingedeeld, maar hebben in plotversie 2025 geen afzonderlijke historische geometrie en worden daarom niet als geometriebron gebruikt.
+
+De actuele aantallen bronplots per geometrie zijn respectievelijk 9, 7, 16, 9 en 11 voor de vijf Meijendel-deelgebieden en 1 voor ieder speciaal gebied. De indeling normaliseert de aangeleverde aanduiding M54q naar het bestaande plot M54a. Historisch M17 volgt M17a en ligt in Buitenduin Noord; M8/11, M8/9, M9 en M11 liggen in Kijfhoek en Bierlap.
+
+## Nameninventaris en plotgeometrie
+
+Versie `meijendel_nameninventaris_2026-10-14` is op 14 oktober 2026 in de levende lokale database opgenomen. De korrel is één naamobject, één bronvermelding of één brongeometrie; naamgeometrie bewijst niet automatisch de exacte grens van een uitgevoerde maatregel.
+
+| Tabel of view | Records | Betekenis |
+|---|---:|---|
+| `nameninventaris_import` | 1 | Herkomst, hash, regelversie en verwachte aantallen van de levering. |
+| `nameninventaris_bron` | 21 | Dertien bronnen toegevoegd op 16 oktober 2026; de acht oorspronkelijke bronnen blijven behouden: Beekman 2021, twee historische artikelen, Neefjes 2010, TOP10NL, OSM en twee Dunea-bronnen. |
+| `nameninventaris_object` | 182 | Onderscheiden gebieds-, functionele, pad-, weg- en routeobjecten. |
+| `nameninventaris_vermelding` | 319 | 299 oorspronkelijke vermeldingen uit 1602–2026 en twintig aanvullende letterlijke vermeldingen; 2026 is bij ongedateerde kaarten uitsluitend raadpleegjaar. |
+| `nameninventaris_geometrie` | 71 | Brongeometrieën in EPSG:28992 voor 71 objecten. |
+| `nameninventaris_geometrie_bronobject` | 107 | Herleidbaarheid van samengevoegde geometrieën naar afzonderlijke bronobjecten. |
+| `nameninventaris_beoordeling` | 222 | 111 actuele, concrete geometrieleemten en 111 bewaarde eerdere beoordelingen; deze namen worden niet ruimtelijk afgeleid. |
+| `plot_geometrie_import` | 1 | Actuele SOVON-kavelgeometrie van 55 plots, versie `sovon-avimap-2025-download-2026-10-02`. |
+| `nameninventaris_plot_koppeling` | 377 | Alle geometrische doorsnijdingen tussen 66 naamobjecten en 55 actuele kavels. |
+| `v_nameninventaris_plot_actueel` | 365 | Actuele leeslaag voor 53 kavels binnen `meijendel_natura2000`; M66 en M91 zijn uitgesloten. |
+
+De maatregelactualisering gebruikt deze laag alleen wanneer de maatregellocatie volledig en letterlijk overeenkomt met één of meer geometriseerde naamobjecten. Daarmee zijn 32 relaties voor zes uitvoeringen toegevoegd. Uitvoeringen met een brede locatie, een niet-geometriseerde naam, een gedeeltelijk geometriseerde samengestelde locatie of een afwijkende naam blijven buiten de automatische koppeling.
 
 ## Website dashboard en Shiny beschermen
 
@@ -417,3 +477,150 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 | `pq_vegetatie_taxon` | 714 | Behouden binnen bronoverstijgende PQ-structuur |
 | `pq_vegetatie_waarneming` | 53.122 | Behouden binnen bronoverstijgende PQ-structuur |
 | `pq_plot_jaar_vegetatie` | 513 | Behouden binnen bronoverstijgende PQ-structuur |
+
+## Integratie begrazing en toegankelijkheid op 16 oktober 2026
+
+De levende lokale database is op 16 oktober 2026 omgezet. De 144 oorspronkelijke begrazingsregistraties voor 16 plots uit 1991–1999 zijn volledig behouden: 139 staan in maatregel_plot_jaar_registratie; de vijf door Ton bevestigde dubbelingen verwijzen naar bestaande uitvoering–plot–jaarfeiten. Dit zijn M15 en M16 in 1991 en M13, M13s en M14 in 1997. Deze vijf feiten worden niet opnieuw opgeslagen.
+
+De 55 toegankelijkheidsregistraties voor 55 plots in 2024 staan in maatregel_toegankelijkheid_registratie: 20 vrij, 14 beperkt, 12 afgesloten, acht deels beperkt/deels vrij en één deels afgesloten/deels vrij. De deeltabel bevatte nul regels; de twee voorbeeldregels uit de deel-CSV zijn niet geïmporteerd. Status, bronspelling, plotnaam, opmerkingen, lege waarden en NULL blijven herleidbaar. De opmerking bij M36 blijft “nog controleren”. Een gemengde status bewijst geen oppervlakteverdeling.
+
+maatregel_registratie_herkomst bevat 199 technische herkomstkoppelingen met oude sleutels, oorspronkelijke rijwaarden, hashes en precies één canoniek doel. Dit zijn auditgegevens, geen extra beheerfeiten. De 43 inhoudelijke maatregelbronnen zijn behouden; één administratieve bron voor deze migratie brengt maatregel_bron op 44 regels. Overnemen uit de handmatige registratie geeft geen nieuwe onafhankelijke bronbevestiging.
+
+De drie oude fysieke tabellen én de gelijknamige compatibiliteitsviews zijn verwijderd. Dashboard en Shiny gebruiken rechtstreeks de centrale registraties. De oorspronkelijke 144, 55 en nul regels blijven voor audit reconstrueerbaar zonder die databaseobjecten. v_plot_jaar_maatregel_bronvast behoudt de bestaande 307 regels voor expliciete jaren tussen 1967 en 2025; v_plot_jaar_maatregel_gecombineerd bevat 446 regels, inclusief de 139 aanvullende jaarfeiten. Deze laatste view mag bronregistraties niet als onafhankelijke terreinmetingen of behandeld oppervlak tellen.
+
+Dashboard en Shiny lezen rechtstreeks uit de centrale basistabellen via build_maatregel_registration_data. Parser/cacheversie is 15; de oude gegevensobjectnamen en de afhankelijkheid van compatibiliteitsviews zijn uit de actieve leesroute verwijderd. Voor analyse geldt een toegankelijkheidsstatus uitsluitend in het geregistreerde jaar; buiten 2024 blijft die voor deze 55 plots onbekend. Het dashboard mag de laatste historische registratie apart tonen met bronjaar, maar presenteert haar niet als bewezen toestand van een later jaar. Beheerjaarfeiten worden evenmin stilzwijgend doorgetrokken.
+
+Nieuwe import richt zich op de maatregelregistraties. De drie bestaande import-SQL-bestanden gebruiken alleen tijdelijke staging en schrijven niet naar de compatibiliteitsviews. De oorspronkelijke bronidentiteit blijft bij correctie behouden; identieke herimport en gewijzigde herimport zijn op fixtures getest. LOAD DATA LOCAL vereist local_infile aan client- en serverzijde; de iMac-server heeft dit uitgeschakeld. Die globale instelling is in deze taak niet veranderd. Voer de voorbeeld-CSV’s niet als actuele levering in.
+
+Controle: volledige rijreconstructie, vijf expliciete ontdubbelingen, idempotentie, herstel na onderbroken tabelwissel, SQL/R-pariteit en cache-/browser-/exportcontracten. De inhoudschecksums van alle overige basistabellen zijn vóór en na de migratie gelijk; bestaande bron- en brontyperegels blijven behouden. De centrale taxoncontrole is vóór en na de wijziging groen: alle 128 centrale routes blijven bereikbaar zonder auditfouten. De afsluitende audit is vastgelegd in de lokale herstelmap.
+
+Herstelkopie en controlebewijs staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid. Herstel verloopt via gis/scripts/migrate_maatregel_registraties.py --database Meijendel --backup-dir /Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid/backup --restore. Een herstelactie vereist een eigen besluit. Meijendel.sql, volledige cachebouw en VPS zijn in deze lokale migratiefase niet vernieuwd.
+
+Betekenistoets: uitvoering, locatie, tijd, toestand en taxonidentiteit blijven onderscheiden volgens Darwin Core (https://dwc.tdwg.org/terms/) en TDWG TCS (https://tcs.tdwg.org/terms/), geraadpleegd op 16 oktober 2026. Begrazingsdieren zijn beheereigenschappen en worden door deze migratie geen wilde soortwaarnemingen.
+
+
+## Rechtstreekse aansluiting zonder compatibiliteitsviews
+
+De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
+
+Dashboard en Shiny lezen rechtstreeks de centrale basistabellen. De 139 aanvullende begrazingsregistraties uit 1991–1999 en de vijf bestaande uitvoeringsfeiten leveren samen dezelfde 144 beheerfeiten voor 16 plots. De 55 toegankelijkheidsregistraties uit 2024 worden met niveau plot/deel gelezen; een deelregistratie wordt niet als toestand van het hele plot gebruikt. De nieuwe gegevensobjecten heten maatregel_beheer_jaar en maatregel_toegankelijkheid_registratie. Parser/cacheversie is 15.
+
+De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling, uitvoeringsjaar en geverifieerde plotkoppeling bereikt, zonder het oorspronkelijke JSON-rijpayload als toepassingsgegevens te reconstrueren. Oude veldnamen en bronwaarden blijven uitsluitend beschikbaar voor historische reconstructie en herstelcontrole. De 307 bronvaste en 446 gecombineerde plot-jaarregels blijven ongewijzigd; deze vervolgwijziging voegt geen waarnemingen of beheerfeiten toe.
+
+Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
+
+Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.
+
+
+## Hercontrole van PQ en twee indexkandidaten op 17 oktober 2026
+
+Dit is een gerichte alleen-lezen vervolgcontrole, geen nieuwe volledige
+schema-inventarisatie en geen uitvoering van het eerdere migratievoorstel.
+De levende lokale database is gebruikt; bronregister en bestaande
+`--pq-inventarisatie` blijven leidend. Er zijn geen T7-, NAS- of VPS-bestanden
+geopend en geen externe informatieverzoeken verzonden.
+
+### Resterende LVD-opnamen
+
+De bestaande opdracht
+`python3 gis/scripts/run_external_ecology_overlap_audit.py --pq-inventarisatie`
+vergelijkt beide LVD-opslagplaatsen met de provinciale reeks in één
+alleen-lezen snapshot. De herhaling geeft dezelfde uitkomst:
+
+| Verzameling of vergelijking | Aantal | Periode |
+|---|---:|---|
+| Provinciale PQ-opnamen / resultaten | 2.007 / 53.122 | 1981–2025 |
+| Gehele toegelaten LVD-laag / resultaten | 3.437 / 81.310 | 1959–2015 |
+| LVD-opnamen / resultaten binnen pq_* | 644 / 16.627 | 1981–2015 |
+| Resterende LVD-opnamen / resultaten | 2.793 / 64.683 | 1959–2015 |
+| Mogelijke opnameparen | 654 | 1981–2015 |
+| Paren met gelijke volledige namen-/codelijst | 20 | Binnen bovenstaande kandidaatparen |
+| Daarvan ook gelijke percentages | 16 | Binnen bovenstaande kandidaatparen |
+| Reeds vastgelegde vermoedelijke koppelingen | 652 | 1981–2015 |
+
+Alle 2.793 resterende LVD-opnamen uit 1959–2015 bevatten een methodeveld,
+maar die waarden beschrijven de bedekkingsschaal of inventarisatiemethode:
+2.606 Braun/Blanquet (B,D&S), 105 Doing, 56 aangepast Braun/Blanquet,
+3 Braun/Blanquet, 16 Barkman, Doing & Segal, 5 ordinale schaal en
+2 vierde Bosstatistiek. Dit bewijst geen permanente herhaallocatie.
+De volledige sleutelsets van zowel de eventmetadata als de geneste
+`releve`-metadata zijn gecontroleerd; zij bevatten geen vaste PQ-, locationID-
+of parentEventID-koppeling. De bron-event-UUID identificeert de opname,
+zonder hiermee een blijvende PQ-locatie te bewijzen.
+
+De twee nabijheidsparen buiten de eerdere verplaatsing zijn afzonderlijk
+gecontroleerd:
+
+| LVD-event | Provinciale opname | Datum | Afstand | Volledige bronlijsten |
+|---|---|---|---:|---|
+| 40650 | 1915 | 21 april 2011 | 4,343 m | 1 tegenover 26 resultaten; namen en codes verschillen. |
+| 43406 | 1026 | 23 mei 2013 | 0,309 m | Elk 1 resultaat; namen of codes verschillen. |
+
+De LVD-locatie-onzekerheid bedraagt bij beide kandidaatparen 3 meter. Een
+kleine afstand en dezelfde datum bewijzen geen gedeelde PQ-identiteit.
+Er is geen aanvullende PQ-verplaatsing of bevestiging van koppelingen
+onderbouwd. De 644 al verplaatste opnamen blijven onder hun bestaande
+vermoedelijke koppelingen bewaard; er wordt niets opnieuw als zelfstandige
+meting toegevoegd. De eerdere broncontrole van het volledige archief en de
+reference-extensie staat in het bronregister; die archiefcontrole is vandaag
+niet opnieuw uitgevoerd. Er wordt niets aan een bronhouder gevraagd op basis
+van deze hercontrole.
+
+### Twee eenvoudige indexkandidaten
+
+De MySQL-signaalview noemt nog tien mogelijk redundante indexes. Alleen de
+twee eenvoudige kandidaten uit de oorspronkelijke beoordeling zijn hier
+nader onderzocht; de overige acht hebben geen verwijderbeoordeling gekregen.
+Volgens de [officiële beschrijving van schema_redundant_indexes](https://dev.mysql.com/doc/refman/9.7/en/sys-schema-redundant-indexes.html)
+is dit een structurele duplicatiesignalering. De uitkomst bewijst geen
+snelheidswinst na verwijdering.
+
+| Tabel en korrel | Omvang en tijdsbetekenis | Kleine index | Bredere unieke index |
+|---|---|---|---|
+| nameninventaris_geometrie, één brongeometrie | 71 regels, peildatums 3 april–14 oktober 2026; geen waarnemingsreeks | ix_nameninventaris_geometrie_object: import_id, object_id | uq_nameninventaris_geometrie: import_id, object_id, source_id, geometrieversie |
+| soorten_kenmerken, één soort-categorie-codekenmerk | 2.513 regels voor 185 soort-IDs; referentiegegevens zonder eigen meetperiode | idx_soorten_kenmerken_soort_id: soort_id | uq_soorten_kenmerken_soort_cat_code: soort_id, hoofdcategorie_id, code |
+
+De tabeldefinities en foreign keys zijn gelezen. In de gecontroleerde R-,
+Python-, SQL- en shellroutes is geen expliciete indexhint naar deze twee kleine
+indexes gevonden. Dit sluit gebruik buiten de gecontroleerde repositoryroutes
+niet uit. Het dashboard leest `soorten_kenmerken`; deze tabel is dus niet los
+van de publieke afnemers te behandelen.
+
+Twee concrete EXPLAIN-vergelijkingen zijn uitgevoerd, telkens normaal en met
+`IGNORE INDEX` voor de kleine index. De hints gelden uitsluitend voor die
+leesopdracht en veranderen geen databaseobject:
+
+- `nameninventaris_geometrie`: zoeken op import 1 en object
+  `OBJ-0128CFD772`, met selectie van geometrie-ID en WKT-hash. Beide plannen
+  kiezen `uq_nameninventaris_geometrie`; geschatte kosten 0,618 en één rij.
+- `soorten_kenmerken`: zoeken op soort-ID 1, met selectie van categorie, code
+  en waarde. Beide plannen kiezen `uq_soorten_kenmerken_soort_cat_code`;
+  geschatte kosten 31,9 en 29 rijen.
+
+Dit zijn optimizerkosten, geen gemeten seconden. De twee plannen zijn gelijk;
+een volledige werklastproef of snelheidswinst is niet aangetoond. De opgeslagen
+InnoDB-indexstatistieken melden voor de twee kleine indexes respectievelijk
+één en vier pagina's van 16 KiB, samen circa 80 KiB. Die statistieken zijn
+bijgewerkt op respectievelijk 16 oktober en 13 augustus 2026; dit is een
+schatting uit opgeslagen statistieken en geen actuele fysieke ruimtewinst.
+
+Bij de momentopname met server-uptime 13.156 seconden rapporteert
+`schema_index_statistics` 142 geselecteerde rijen via de kleine geometrie-index
+en nul via de kleine kenmerken-index. Het meetvenster kan korter zijn dan de
+uptime wanneer tellers zijn gereset. Nul gebruik is daarom geen bewijs dat de
+index nooit nodig is; voor de geometrie-index is gebruik juist aantoonbaar.
+Deze beperkte proef onderbouwt geen prioritaire verwijdering. Beide indexes,
+foreign keys en bestaande afnemers blijven ongewijzigd. Een eventuele latere
+opschoning vereist een afzonderlijke wijzigingsafbakening en passende voor-,
+na- en herstelcontrole; die uitvoering is hier niet verricht.
+
+### Gevolg voor de oorspronkelijke verbeterlijst
+
+De geheugenproef gaf geen grond voor een permanente verhoging. De eerste
+veilige NDFF-gebruiksroute is inmiddels beschikbaar via
+`--selecteer-libellen` en `--verken-libellen`. Voor de resterende PQ-opnamen
+is binnen de gecontroleerde levering geen aanvullende overdracht onderbouwd;
+de twee indexkandidaten leveren in deze beperkte proef geen aangetoonde
+prestatieverbetering op. Er volgt daarom geen extra schema- of gegevenswijziging
+uit deze controle. Dit sluit een latere gerichte verbetering met nieuw bewijs
+niet uit. Bronregister en Wordversie bevatten dezelfde PQ-hercontrole.

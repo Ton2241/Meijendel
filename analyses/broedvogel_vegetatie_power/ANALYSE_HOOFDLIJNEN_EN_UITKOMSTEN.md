@@ -433,6 +433,23 @@ ruimtelijke informatie kan bevatten. Zij levert nog geen algemeen geldig model
 van vogelverandering. Twee momentopnamen meten bovendien geen verticale
 gelaagdheid, vegetatiehoogte, voedsel of nestgelegenheid.
 
+Op 19 oktober 2026 zijn ook de oorspronkelijke classificatierasters en de
+grenzen van de 25 bronplots ontvangen. De twee rasters bevatten 369.710
+geldige pixels voor 2001 en 369.662 voor 2022. Alle pixels konden aan een van
+de zeven gepubliceerde klassen en een bronplot worden toegewezen. Over 350
+plot–klasse–jaarvergelijkingen wijkt de opnieuw berekende oppervlakte
+gemiddeld 0,0032 hectare en maximaal 0,030 hectare af van de supplementtabel.
+De bron is daarmee ruimtelijk herleidbaar, niet alleen als oppervlaktetabel.
+
+Per plot en klasse zijn nu ook aantal en dichtheid van aaneengesloten vlakken,
+aandeel van het grootste vlak en randdichtheid berekend. Per plot zijn
+klassenrijkdom, Shannon-diversiteit en totale interne randdichtheid bepaald.
+Tussen 2001 en 2022 stijgt de mediane interne randdichtheid over de 25 plots
+met 49,0 meter per hectare en de mediane Shannon-diversiteit met 0,049; de
+mediane klassenrijkdom verandert niet. Dat zijn beschrijvende veranderingen
+in het kaartpatroon. Met twee meetmomenten bewijzen zij geen ecologische
+oorzaak en leveren zij nog geen tijdsvalidatie voor vogelverandering.
+
 ### Gerichte habitatmodellen met AHN en landbedekking
 
 De hoogteproef is op 12 oktober 2026 opnieuw opgebouwd met AHN2 uit 2008,
@@ -498,10 +515,14 @@ macro-F1 0,469 voor 2020 naar 2023 en 0,420 in omgekeerde richting, beneden de
 vooraf gekozen grens van 0,60. Normalisatie en beeldtextuur verbeteren dit
 niet. De redelijke ruimtelijke rangorde van houtige bedekking in 24 plots in
 2022 weegt daar niet tegenop: de gemiddelde absolute fout blijft circa 10
-procentpunt. Water en kaal zand zijn zonder pixelreferenties niet afzonderlijk
-gevalideerd. Daarom volgt geen jaarlijkse reeks. Luchtfoto's vervangen de
+procentpunt. Water en kaal zand waren in deze proef zonder pixelreferenties
+niet afzonderlijk gevalideerd. De later ontvangen classificatierasters geven
+voor 2001 en 2022 wel de pixelindeling, maar de oorspronkelijke
+trainingspolygonen en validatiepunten ontbreken. Daardoor kan de
+overdraagbaarheid naar 2016, 2020, 2023 en 2024 nog steeds niet onafhankelijk
+worden getoetst. Daarom volgt geen jaarlijkse reeks. Luchtfoto's vervangen de
 hoogte-informatie niet en herstellen AHN1 niet; een vervolg vereist
-onafhankelijke trainingsvlakken of de oorspronkelijke classificatierasters.
+onafhankelijke referenties voor meer beeldjaren.
 
 ### Aanvullende modellen met stikstof en CBS-landgebruik
 
@@ -674,9 +695,9 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Voorspellend vogelmodel met drie brede PQ-maten | Uitgevoerd | Duidelijke verschillen tussen plots, maar geen duidelijke gemiddelde binnen-plotreactie. De tijdsvalidatie verbetert bescheiden; de ruimtelijke winst blijft tussen maten en blokken gemengd. Met deze drie maten is geen bestendige extra voorspellende waarde over zowel nieuwe plots als latere jaren aangetoond. |
 | Volledige PQ-samenstelling | Uitgevoerd | Drie assen verklaren samen 27,8%. De ruimtelijke voorspelling verbetert in vier van vijf plotblokken; beide tijdsblokken worden iets slechter. |
 | IPI-habitatproxy | Uitgevoerd | Bescheiden ruimtelijke winst in drie van vier geldige plotblokken; geen tijdswinst en geen duidelijke gemiddelde binnen-plotreactie. |
-| Landbedekking 2001/2022 | Uitgevoerd | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
+| Landbedekking 2001/2022 | Uitgevoerd; rasterstructuur beschikbaar | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel. De ontvangen rasters voegen voor 25 plots vlakgrootte, versnippering, randen en landschapsdiversiteit toe; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
 | Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
-| Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. Geen jaarlijkse structuurreeks gebouwd. |
+| Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. De rasters van 2001 en 2022 missen de oorspronkelijke trainings- en validatiereferenties en maken daarvan geen jaarlijkse reeks. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |

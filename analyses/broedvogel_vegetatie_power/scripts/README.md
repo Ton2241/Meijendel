@@ -217,6 +217,22 @@ en door Git genegeerd; alleen compact beoordeelde uitkomsten worden blijvend
 opgenomen. De lokale `.venv_ahn` moet NumPy, Rasterio, GeoPandas, SciPy en
 scikit-learn bevatten; de uitgevoerde proef gebruikte scikit-learn 1.6.1.
 
+De later ontvangen classificatierasters voor 2001 en 2022 worden afzonderlijk
+gecontroleerd en ontsloten met:
+
+```bash
+.venv_ahn/bin/python \
+  analyses/broedvogel_vegetatie_power/scripts/schmidt_tauscher_landbedekking.py \
+  --source-dir Landgebruik/schmidt_tauscher_2025/bron \
+  --published analyses/broedvogel_vegetatie_power/resultaten/vegetatiesamenstelling_laatste_landbedekking.csv \
+  --output-dir analyses/broedvogel_vegetatie_power/resultaten
+```
+
+Deze stap controleert iedere rasterklasse en plottoewijzing, vergelijkt de
+oppervlakten met het openbare supplement en berekent per plot en klasse
+oppervlakte, vlakken, grootste-vlakaandeel en randdichtheid. De twee
+kaartjaren worden niet geïnterpoleerd.
+
 De tests zijn:
 
 ```bash
@@ -229,6 +245,7 @@ De tests zijn:
 bash analyses/broedvogel_vegetatie_power/scripts/test_ahn_vegetatiestructuur_pipeline.sh
 .venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_luchtfoto_download.py
 .venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_luchtfoto_classificatie.py
+.venv_ahn/bin/python analyses/broedvogel_vegetatie_power/scripts/test_schmidt_tauscher_landbedekking.py
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_habitatgericht.R
 bash analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_habitatgericht_pipeline.sh
 ```

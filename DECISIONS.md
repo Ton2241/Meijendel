@@ -35,9 +35,24 @@
   en 0,420, beneden de vooraf gekozen grens van 0,60. Radiometrische
   normalisatie en textuur verbeteren dit niet. De openbare luchtfoto's worden
   daarom niet tot een jaarlijkse structuurreeks uitgebreid en niet in de
-  levende database opgenomen. Water en kaal zand blijven zonder onafhankelijke
-  pixelreferenties ongescheiden. Een vervolg vereist trainingsvlakken of de
-  oorspronkelijke classificatierasters; alle nuluitkomsten blijven bewaard.
+  levende database opgenomen. Water en kaal zand bleven in die proef zonder
+  onafhankelijke pixelreferenties ongescheiden. Alle nuluitkomsten blijven
+  bewaard.
+
+- Op 19 oktober 2026 zijn de oorspronkelijke landbedekkingsrasters voor 2001
+  en 2022, de QGIS-stijl en de begrenzing van de 25 onderzochte BMP-plots van
+  Achim Häger ontvangen. De acht bronbestanden blijven ongewijzigd onder
+  `Landgebruik/schmidt_tauscher_2025/bron/`, met SHA256-controle. Alle
+  739.372 geldige rasterpixels hebben een bekende klasse en vallen binnen een
+  van de 25 bronplots. De per plot berekende oppervlakten wijken gemiddeld
+  0,0032 hectare af van het gepubliceerde supplement; het maximum is 0,030
+  hectare. Dat past bij afronding en rasterbegrenzing. De rasters zijn daarom
+  toegelaten voor afleiding van horizontale structuurmaten per plot en jaar:
+  klasseaandeel, aantal vlakken, grootste-vlakaandeel, randlengte,
+  landschapsdiversiteit en totale interne randdichtheid. Het blijven twee
+  meetmomenten. Zonder de verdwenen trainingspolygonen en validatiepunten
+  worden zij niet gebruikt om de mislukte luchtfotoproef alsnog als
+  betrouwbare jaarlijkse reeks te presenteren.
 
 - Op 12 oktober 2026 zijn stikstofdepositie en CBS-landgebruik toegevoegd aan
   het soortgerichte broedvogelmodel. Het stikstofmodel gebruikt 60.127
@@ -73,6 +88,19 @@
   aanvullende robuustheidscontrole en vervangt het hiërarchische hoofdmodel
   niet. De volledige inhoudelijke interpretatie en de grenzen daarvan staan in
   `analyses/broedvogel_vegetatie_power/ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.md`.
+
+- Provincie Zuid-Holland heeft bevestigd dat haar vegetatiemeetnetgegevens
+  onvolledig in NDFF staan, zonder het ontbrekende aantal, de jaren of de
+  bronregels te specificeren. De provincie controleert de historische reeks
+  samen met CBS en wil haar daarna in NDFF aanvullen. De bestaande provinciale
+  levering met 254 PQ's, 2.007 opnamen en 53.122 taxonregels uit 1981–2025
+  blijft de primaire, analyseklaar *binnen deze voorlopige bronversie*.
+  Leg bij uitkomsten die bronstatus vast. Vervang haar niet met NDFF-regels
+  en gebruik oude NDFF-matchpercentages niet als maat voor ontbrekende data.
+  Vergelijk een latere CBS-gecontroleerde provinciale levering eerst op PQ-ID,
+  opname, datum, soort, bedekking, coördinaat en eerder inactieve PQ's; behoud
+  de eerdere bronversie en herbereken afhankelijke uitkomsten pas na een
+  gecontroleerd bronbesluit.
 
 - Vanaf 6 oktober 2026 geldt voor vogelterritoria een bronafhankelijke
   nulregel. In een officiële SOVON-Excel-download is `0` een harde nul: de
@@ -1341,9 +1369,27 @@
   totdat de surveystructuur is onderzocht; `04.004` en `07.001` vormen de
   inmiddels expliciet beoordeelde uitzondering.
 - Iedere analyse waarin NDFF-data wordt gebruikt, past verplicht de
-  NDFF/PQ-analysepoort toe. Aanleiding is dat 1.039 van 2.007 PQ-opnamen
-  (51,77%) en 24.804 van 53.122 PQ-soortwaarnemingen (46,69%) in de open
-  NDFF-staging herkenbaar zijn, met een sterke daling van de dekking vanaf 2018.
+  NDFF/PQ-analysepoort toe. De vergelijking van 17 augustus 2026 herkende met
+  een strikte datum-, naam- en ruimtelijke match 1.039 van 2.007 provinciale
+  PQ-opnamen (51,77%) en 24.804 van 53.122 taxonregels (46,69%) uit
+  1981–2025 in de openbare NDFF-export. Dit zijn **oude matchpercentages**,
+  geen percentages werkelijk door NDFF overgenomen provinciale gegevens:
+  de toenmalige vergelijking bakende Meijendel niet eerst af en corrigeerde
+  niet voor de door NDFF gemelde coördinatenverschuiving, naamvarianten of
+  vervaging. Bij hercontrole op 10 oktober 2026 liggen 1.363 provinciale
+  opnamen en 36.335 taxonregels binnen Meijendel. Daarvan matchen met de
+  oude methode 897 opnamen en 21.663 regels; een voorlopige test met 5 meter
+  verschuiving van beide coördinaten en beperkte naamnormalisatie vindt 916
+  opnamen en 22.172 regels. Ook dat zijn kandidaatmatches, geen bewezen
+  identieke bronopnamen. Van de 434 opnamen binnen Meijendel uit 2018–2025
+  blijven 91 in deze openbare export herkenbaar. De oorzaak van de lagere
+  herkenbaarheid na 2017 is niet vastgesteld. Daarnaast matchen de 310
+  afgeschermde, openbaar vervaagde NDFF-PQ-regels afzonderlijk met 127
+  provinciale opnamen en 143 taxonregels; deze aantallen overlappen mogelijk
+  met de openbare matches en worden niet opgeteld. Een volgende vergelijking
+  toetst achtereenvolgens gebied, coördinaten, namen en vervaging, en pas
+  daarna bronidentiteit en volledige opname-inhoud. De provinciale PQ-reeks
+  blijft primair; deze correctie verandert de PQ-analysepoort niet.
   Iedere NDFF-waarneming krijgt vóór analyse een
   auditeerbare status `exact`, `waarschijnlijk_dezelfde_opname`, `mogelijk`,
   `onafhankelijk`, `niet_beoordeelbaar` of `niet_van_toepassing`, met een
@@ -1627,3 +1673,50 @@
   auditcode verwijzen naar de nieuwe namen; HNS-, FLORBASE- en LMF-A-audits
   slagen. Een nieuwe `Meijendel.sql`-export, cachebouw en VPS-publicatie
   vallen buiten dit besluit en vergen afzonderlijke toestemming.
+- **8 oktober 2026 — volledige Meijendel-herberekening en VPS-publicatie.** Na
+  expliciete toestemming zijn de volledige SQL-export, Shiny-cache,
+  dashboardbestanden, TRIM-soortuitvoer, ecologische en functionele MSI's,
+  groepsgrafieken en wintertellinguitvoer opnieuw opgebouwd en gepubliceerd.
+  De productie draait op commit `6dbc679887074501f0505ca784e4e494aecd5e3d`
+  met SQL-hash
+  `15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913`.
+  De gesloten releasehelper heeft uitsluitend de 14 vooraf goedgekeurde oude
+  `ndff_hns_*`-, `ndff_florbase_*`- en `ndff_lmfa_*`-tabelnamen verwijderd.
+  Het productieschema, `SQL_CACHE=TRUE`, de canonieke publieke soortselectie en
+  de rookproeven zijn geslaagd. De herstelkopie staat onder
+  `/srv/vwgm/backups/meijendel-mysql/meijendel_before_6dbc679887074501f0505ca784e4e494aecd5e3d_20261008T113632Z.sql.gz`.
+
+
+## 17 oktober 2026 — volledige toegelaten libellenbezoeken selecteren
+
+Voor bezoekanalyses wordt `ndff-libellen-selectie-v1` gebruikt, herberekend uit de
+levende database met `--selecteer-libellen` of gecontroleerd met
+`--audit-libellen-selectie`. Alle bronrecords van een gereconstrueerd algemeen
+routebezoek moeten door de actuele NDFF-recordselectie en de expliciete
+Meijendel-analysescope komen en het gekozen type TV of TA toestaan. Gedeeltelijke
+bezoeken worden niet als complete matrix behandeld. De 98 geselecteerde bezoeken
+met 515 bronrecords uit 2010–2021 zijn een controle-uitkomst, geen vaste lijst.
+De 2.842 bestaande matrixregels behouden alle waarden, nulbewijzen, centrale
+taxonkoppelingen en kwaliteitsbeperkingen. Dit verandert geen analysebesluit en
+is geen validatie van een populatietrend. Selectie gebeurt intern en alleen-lezen;
+er zijn geen wijzigingen in de levende database, dump, caches of VPS.
+
+De goedgekeurde T7-controle vond geen aanvullende native meetnetlevering in de
+gecontroleerde map en archieven. De 3.280 openbare libellenrecords uit 2007–2021
+zijn inhoudelijk gelijk in staging en MySQL; de beveiligde levering bevat geen
+07.201-records en geen gevulde sessiesleutel. Er is geen externe vervolgvraag
+verstuurd. De volledige selectievoorwaarden en controle-uitkomsten staan in
+`docs/bronnen/audits/NDFF_PROTOCOLAUDIT.md` en beide versies van het bronregister.
+
+
+## 17 oktober 2026 — vaste beschrijvende libellenvergelijking
+
+`--verken-libellen` voert de eerder vastgelegde bezoekvergelijking uit onder
+`ndff-libellen-verkenning-v1`. Routefamilie, jaren en maanden worden expliciet
+gekozen. De bronselectie, bezoekperioden en matrix worden samen alleen-lezen
+opgehaald; ontbrekende of ongelijke maanddekking en onvolledige matrices
+blokkeren de uitvoer. Alle taxa, nuluitkomsten, bestaande nulbewijzen en
+kwaliteitsbeperkingen blijven zichtbaar. De uitvoer telt positieve bezoeken,
+geen individuen, en schat geen populatietrend. De bestaande toelating,
+reconstructie, bronbeoordeling en M16-uitkomsten wijzigen niet. Er zijn geen
+wijzigingen in de levende database, dump, caches of VPS nodig.
