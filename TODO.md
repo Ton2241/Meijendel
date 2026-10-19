@@ -864,6 +864,18 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ## Externe ecologiebronnen na fase 1 en 2
 
+- Wacht de door Provincie Zuid-Holland en CBS gecontroleerde versie van het
+  vegetatiemeetnet af. Ingrid de Vries verwachtte de nieuwe levering met
+  niet meer actieve PQ's rond eind 2026; dit is geen bevestigde leverdatum.
+  Vergelijk haar na ontvangst met de huidige provinciale reeks van 254 PQ's,
+  2.007 opnamen en 53.122 taxonregels uit 1981–2025, vooral op PQ-identiteit,
+  opnamejaren, coördinaten, soortnamen en bedekking. Pas daarna besluiten over
+  vervanging en herberekening; vraag NDFF nu niet om een tweede PQ-bronversie.
+- Ontvang de gevalideerde habitatkaart T1 voor Meijendel zodra de provincie
+  haar kan delen. Ingrid acht december 2026 mogelijk; de kaart is nog niet
+  geleverd. Controleer dan eerst versie, begrenzing en aansluiting op T0.
+  Herinner Ingrid alleen kort als na december geen bericht of levering is
+  ontvangen.
 - Georeferenceer de 18 EIS-bijenproefvlakken pas wanneer een betrouwbare
   digitale begrenzing of voldoende controlepunten beschikbaar zijn; importeer
   daarna de gecontroleerde soortenmatrices uit 2019, 2021 en 2023.

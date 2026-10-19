@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 17 oktober 2026.**
+**Stand: 19 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -169,11 +169,13 @@ M53/2007 vraagt een afzonderlijke beperking. SOVON toont 8 bezoeken, 36 soorten 
 
 **Gebruik.** De reeks ondersteunt analyses van vegetatiesamenstelling, bedekking, successie en verandering per permanent kwadraat. Overeenkomende NDFF-regels (zie verder) worden niet als een tweede waarneming geteld.
 
-**Status.** Analyseklaar en primaire bron.
+**Status.** Analyseklaar binnen de huidige provinciale bronversie en primaire bron, maar nog niet de afgeronde, door CBS gecontroleerde levering.
 
 **PQ-integratie, 27–28 september 2026.** De 53.122 provinciale taxonregels uit 1981–2025 zijn lokaal en op de VPS rechtstreeks verbonden met het centrale taxonregister. De 714 oorspronkelijke taxonvermeldingen zijn daar met alle bronvelden behouden; de afzonderlijke PQ-taxoncatalogus is verwijderd. De 2.007 opnamen en de 513 gepubliceerde plot-jaaruitkomsten zijn ongewijzigd. Daarnaast zijn 644 vermoedelijk verwante LVD-bronopnamen met 16.627 resultaten uit 1981–2015 binnen de PQ-tabellen bijeengebracht. Zij behouden alle bronwaarden en 652 mogelijke opnamekoppelingen en tellen niet zelfstandig mee. De oorspronkelijke externe rijen zijn pas na inhoudscontrole verwijderd. De volledige migratie, het terugdraaien en het herstel uit back-up zijn beproefd. De gecontroleerde publicatie naar website, dashboard en Shiny is op 28 september om 15:33 uur geslaagd; hun bestaande provinciale uitkomsten zijn gelijk gebleven.
 
 **Vergelijking met NDFF, 10 oktober 2026.** De eerdere uitkomst dat 1.039 van 2.007 provinciale opnamen uit 1981–2025 in de openbare NDFF-download herkenbaar waren, was een resultaat van de toenmalige strikte matchmethode, niet een maat voor volledige NDFF-dekking. Binnen het huidige Meijendelgebied liggen 1.363 provinciale opnamen; 897 daarvan matchen strikt met de openbare export en 916 na een voorlopige proef met de gemelde verschuiving van beide coördinaten met 5 meter. Naamvarianten leveren op opnameniveau geen extra matches op. Van de 434 provinciale opnamen binnen Meijendel uit 2018–2025 blijven 91 herkenbaar. Afzonderlijk zijn bij 127 opnamen kandidaatmatches gevonden in de beveiligde, openbaar vervaagde NDFF-gegevens; deze kunnen overlappen met de openbare matches en worden niet opgeteld. De reden voor de overige niet-matches staat niet vast. De provinciale PQ-reeks blijft primair; NDFF-PQ telt niet als een tweede opname mee. De methode en de uitsplitsing naar taxonregels staan in `docs/bronnen/bronvergelijkingen/NDFF_STAGINGDATASET.md`.
+
+**Bronbericht provincie, vastgelegd 19 oktober 2026.** Ingrid de Vries bevestigt dat de provinciale vegetatiemeetnetgegevens in NDFF onvolledig zijn. Zij noemt geen aantal ontbrekende opnamen, jaren of oorzaak per record: de hierboven beschreven matchpercentages meten die onvolledigheid niet. Provincie Zuid-Holland controleert met CBS de historische vegetatiemeetnetgegevens, waaronder de eerder gemelde wisselende coördinaten en niet meer actieve PQ's. Na de controle wil de provincie de gecorrigeerde gegevens bij NDFF onderbrengen en Ton een nieuwe provinciale levering geven. Deze leveringen zijn nog niet ontvangen. Ingrid werkt bij de provincie aan het NDFF-databeheer, zit namens de provincies in de NDFF-kwaliteitscommissie en neemt deel aan de programmalijn Data & IV van het Verbeterprogramma VHR-monitoring; haar collega's nemen eveneens deel aan dat programma. De bestaande provinciale reeks van 254 PQ's, 2.007 opnamen en 53.122 taxonregels uit 1981–2025 blijft intussen de primaire, als huidige bronversie herkenbare analysetabel.
 
 Ruimtelijke herbeoordeling voor het getekende Helmduinen-planvlak, 17 oktober 2026. Van de provinciale PQ-bron liggen elf opnamen met 286 soortregels op opgeslagen punten binnen de benaderde contour: zeven opnamen van PQ 1083463022 uit 2002–2023 en vier van PQ 1083463172 uit 1994–2000. Beide locatiegroepen zijn als Duinstruweel geregistreerd. De zeven opnamen van PQ 1083463172 uit 2003–2023 hebben andere coördinaten, circa 56,1 meter van de eerdere positie en 14,8 meter buiten het getekende vlak. Correctie van coördinaten versus verplaatsing is niet vastgesteld; deze reeks mag daarom niet zonder meer als één doorlopende binnen-vlakreeks worden gebruikt. De drie nabije natte-vallei-PQ’s 1083463672, 1083463603 en 1083463109 liggen circa 21–41 meter buiten het vlak en blijven uitsluitend nabije systeemcontext.
 
@@ -793,7 +795,7 @@ De stand op 17 oktober 2026 is 183 naamobjecten, 321 vermeldingen uit de oorspro
 
 **Overige meetnetten:** de overige aangeschreven bronorganisaties hebben op 25 september 2026 nog niet inhoudelijk gereageerd. Nieuwe leveringen worden niet automatisch geïmporteerd, maar eerst gecontroleerd op dekking, sleutels, nullen, inspanning en overlap.
 
-**Habitatkaart T1:** Provincie Zuid-Holland heeft toegezegd de kaart te delen zodra zij later in 2026 beschikbaar komt. De kaart kan veranderingen in habitat helpen verklaren, maar is zelf geen soortenwaarneming.
+**Habitatkaart T1:** Ingrid de Vries heeft de gevalideerde kaart van Meijendel nog niet en verwacht dat deze mogelijk in december 2026 beschikbaar komt. Zij heeft toegezegd de kaart te delen zodra dat kan; december is een verwachting, geen bevestigde leverdatum. De kaart kan veranderingen in habitat helpen verklaren, maar is zelf geen soortenwaarneming.
 
 ## 5. Bronnen die niet verder worden uitgewerkt
 
