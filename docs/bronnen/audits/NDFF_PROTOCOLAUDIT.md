@@ -1725,6 +1725,8 @@ Het schema en de reproduceerbare invoer staan in:
 
 ## Konijnenuitzet en primaire BMP/DAZ-waarnemingen
 
+**Eerste analyse; aangevuld en op onderdelen gecorrigeerd door de sectie `Heranalyse met alle konijnenbronnen` hieronder. Gebruik die heranalyse voor de actuele conclusie.**
+
 Stand: 20 oktober 2026. Opdracht: de vier door Amy van Nobelen (Dunea) opgegeven uitzethokken vastleggen als maatregel; historische en recente konijnenregistraties tijdens BMP-rondes vergelijken; aanvullende informatie benoemen. Alleen de levende lokale database is gewijzigd. Geen nieuwe waarnemingen of nullen, geen export, cachebouw of VPS-publicatie.
 
 ### Broncontrole en ruimtelijke keuze
@@ -1863,3 +1865,126 @@ ORDER BY p.kavel_nummer,v.jaar;
 ```
 
 De naampolygoonafstand gebruikt `ST_Distance` na transformatie van de vier WGS84-punten; kavels volgen `ST_Intersects`. De puntbufferselectie berekent per `(batch_id, bron_waarneming_id, locatie)` eerst de minimale `ST_Distance` tot de twee hokpunten en aggregeert daarna eenmaal per bron-ID. De historische secundaire selectie vóór 2009 gebruikt uitsluitend `daz_bmp_recordselectie.reconstructieversie='ndff-daz-bmp-v1'`, taxon `Oryctolagus cuniculus`, eenduidige bezoek-ID en uitsluiting van actuele `sovon_vervangt_ndff%`-koppelingen. Geen secundaire nulregels worden gebruikt.
+
+
+## Heranalyse met alle konijnenbronnen
+
+Stand: 20 oktober 2026. Deze heranalyse vervangt de conclusie van de eerste, grotendeels op AVIMAP gebaseerde vergelijking hierboven. Vraag: wat laten alle aanwezige konijnenbronnen zien vóór en na de bijplaatsing, in M7 en M45 en rond de vier feitelijke uitzethokken? Brondata, maatregelregistratie en toelatingsregels zijn niet gewijzigd. De berekeningen zijn lokaal uitgevoerd; uitsluitend tijdelijke sessietabellen zijn als rekencache gebruikt. Er is geen database-export, cachebouw of VPS-publicatie uitgevoerd.
+
+### Volledigheid en bronidentiteit
+
+Alle 128 centrale taxonroutes zijn gecontroleerd op het versiegebonden centrale taxon Konijn, `taxon_id=38949`, wetenschappelijke naam `Oryctolagus cuniculus`. De bestaande helper `central_taxon_query()` is gebruikt, niet een vrije overeenkomst op het woord konijn. Afgeleide tabellen, soortcatalogi en protocolkoppelingen zijn geen extra dieren of onafhankelijke bronnen. In de gedeelde tabel `daz_bmp_bezoek_taxon` is nadrukkelijk per reconstructieversie gekeken: de versie `sovon-bmp-jaarbestanden-v1` bevat oorspronkelijke aanvullende SOVON-bezoektotalen en mag niet als uitsluitend NDFF-afleiding worden afgedaan. Dat was een beperking van de eerdere analyse.
+
+| Oorspronkelijke bronlaag | Konijnregels | Periode | Betekenis |
+|---|---:|---|---|
+| SOVON/AVIMAP | 10.003 | 2009–2026 | Positieve puntregistraties tijdens BMP-bezoeken |
+| Aanvullend bewaarde SOVON-jaarbestanden | 1.787 | 2005–2025 | Positieve bezoek-taxontotalen; andere korrel dan puntregistraties |
+| NDFF, protocol 17.209 | 5.095 | 1984–2023 | Sectietellingen zonder route-/sectienummer, geleverd op kilometerhok |
+| NDFF, protocol 17.204 | 4.742 | 1994–2022 | Oudere BMP-zoogdierregistraties, met overlap met primaire SOVON-bronnen |
+| NDFF, LOS | 1.773 | 1960–2025 | Losse meldingen van levende/dode dieren en sporen |
+| NDFF, 102.006 | 7 | 2021–2023 | ObsIdentify |
+| NDFF, 14.204 | 8 | 2017–2021 | Punt Transect Telling |
+| NDFF, 17.005 | 4 | 1970 | Atlas van de Nederlandse Zoogdieren 1992 |
+| NDFF, 17.002 | 1 | 2011 | Braakbalonderzoek |
+
+De zeven NDFF-protocollen tellen samen 11.630 canonieke Konijnrecords. Alle konijnen hebben in de canonieke laag representatie `alleen_openbaar`; er zijn voor dit taxon geen extra beveiligde waarnemingen of vervangingen uit de beveiligde levering. De canonieke route blijft wel verplicht gebruikt. De 5.809 records van protocol 17.209 bestaan uit 5.095 Konijnrecords en 714 bijvangsten. Het getal 5.809 mag dus niet als aantal konijnenwaarnemingen worden gepresenteerd. De in het bronregister eerder genoemde 812 bezoeken zijn eveneens gecorrigeerd: het zijn 812 kalenderdatums voor het gehele protocol, geen bewezen oorspronkelijke bezoeken.
+
+Van de 10.003 AVIMAP-konijnenregels vallen er 9.704 binnen de actuele Natura 2000-analysescope. M66 levert 284 regels uit 2009–2026 en M91 vijftien uit 2014–2020; deze 299 regels zijn buiten de lokale kavel-/bufferanalyse gehouden. De oorspronkelijke bronperiode en bronregels blijven ongewijzigd.
+
+### Overlap en analysepoorten
+
+Van de 1.787 aanvullend bewaarde SOVON-bezoektotalen hebben 1.562 regels uit 2009–2025 een AVIMAP-tegenhanger op hetzelfde bezoek; de overige 225 betreffen 2005–2008, vóór de huidige AVIMAP-reeks. De gemeenschappelijke waarden van M7 en M45 zijn gelijk. Elders verschillen binnen-plotwaarden wanneer het jaarbestand een afzonderlijk aantal buiten het plot vermeldt. Deze bezoektotalen worden daarom niet bij de puntregistraties opgeteld en zijn niet gebruikt om dieren zonder eigen puntpositie naar de 500-meterzone te verplaatsen.
+
+Van de 4.742 NDFF-konijnenregels onder 17.204 zijn er 900 als `sovon_vervangt_ndff_exact` en 968 als `sovon_vervangt_ndff_telconflict` vastgelegd; 2.874 hebben geen SOVON-overlap in de bestaande koppeling. Die laatste status bewijst geen onafhankelijke bron en geeft geen ruimtelijke toelating. De zes Konijnrecords onder 17.209 met `mogelijke_overlap_17_204` blijven apart herkenbaar; zij zijn niet zonder bewijs verwijderd of gecombineerd. De elf mogelijke overlappingen uit de algemene protocolaudit betreffen alle taxa, niet alleen Konijn.
+
+Er zijn daarnaast vijf mogelijke paren tussen toegelaten losse NDFF-meldingen en SOVON-punten op datum en overlappend liggingsvlak: drie NDFF-regels in M8 uit 2015, één in M42 uit 2016 en één in M34 uit 2025. Dat is een waarschuwing voor mogelijk dezelfde waarneming, geen bewezen dubbeling. Er is geen totaalsom over beide bronnen gevormd. In de recente doelkavels M7/M45 en in de A/B-buffervergelijking voor 2024–2025 is geen dergelijk kandidaatpaar aangetroffen.
+
+De verplichte `v_ndff_gebruiksdekking_soortgroep_protocol` is vooraf gelezen. Alle inhoudelijke NDFF-selecties volgen `v_ndff_analyse_record`, keten `ndff-analyseketen-v1`, besluitversie `ndff-analysebesluit-v4`, doelbereik `ndff-protocolbereik-v2`. Alleen `record_selectiestatus='voorlopig_bruikbaar'` wordt als lokale aanwezigheid gebruikt, gevolgd door `v_meijendel_analyseplot_actueel`. Grof gelokaliseerde records worden uitsluitend als uitgesloten broncontext besproken; zij worden niet alsnog als kavelwaarneming toegelaten.
+
+Van de 11.630 NDFF-Konijnrecords zijn 754 voorlopig bruikbaar, waarvan één losse melding uit 2019 in M66 buiten de analysescope valt. De lokale selectie bevat daardoor 753 regels: 751 LOS en twee ObsIdentify. De oorspronkelijke telonderwerpen zijn 724 levende exemplaarmeldingen uit 1995–2025, vijftien meldingen van vers dood gevonden dieren uit 1960–2018 en veertien spoor-/mest-/vraatmeldingen uit 2010–2024. De 724 regels zijn geen 724 dieren; aantallen en herhaalde meldingen verschillen. Gegevensgeschiktheid blijft bij LOS `niet_beoordeeld` en bij ObsIdentify `voorwaardelijk`; gebruik is uitsluitend geregistreerde aanwezigheid (`V`). Ontbrekende meldingen zijn geen afwezigheid of nulbezoeken. De kwaliteitsmelding van de centrale view blijft van toepassing: ruwe meldingsaantallen zijn geen gevalideerde populatietrend.
+
+### M7 en M45: aanvullende informatie en recente uitkomsten
+
+Het historische SOVON-jaarbestand bevat voor M7 op 6 juni 2006 één positief bezoektotaal van twee konijnen. Dit komt boven op de eerder gevonden secundaire NDFF/BMP-meldingen van elk één konijn op 26 mei en 19 juni 2006. Het zijn drie verschillende bezoekdatums; zij zijn geen vier verschillende individuen. De twee historische afgeleide nulregels uit 2006 en 2008 zijn niet gebruikt als afwezigheidsbewijs. In M45 is vóór 2009 in deze geselecteerde bronversies geen positief konijnenbezoek gevonden; dat is geen bewijs dat er geen konijnen waren.
+
+De primaire historische AVIMAP-uitkomsten uit de eerdere volledige jaartabel zijn opnieuw berekend en ongewijzigd. In M7 bevat 2015 nog 63 getelde konijnen over elf bezoeken met zoogdiermeldingen. In 2022 en 2023 bevat die selectie nul konijnen over respectievelijk zes en tien van zulke bezoeken. Die uitkomst geldt uitsluitend voor die bezoekselectie: de aanvullende bronnen bewijzen dat in M7 in mei 2023 wel een levend konijn is gemeld.
+
+| Jaar | M7: AVIMAP-telsom / bezoeken met zoogdiermelding | M7: aanvullende levende LOS-meldingen | M45: AVIMAP-telsom / bezoeken met zoogdiermelding | M45: aanvullende levende LOS-meldingen |
+|---|---:|---:|---:|---:|
+| 2022 | 0 / 6 | 0 | 0 / 8 | 0 |
+| 2023 | 0 / 10 | 1 | 0 / 9 | 0 |
+| 2024 | 2 / 9 | 1 | 0 / 8 | 0 |
+| 2025 | 2 / 9 | 0 | 0 / 5 | 0 |
+
+De vijf toegelaten losse M7-meldingen betreffen november 2015, december 2017, februari 2018, mei 2023 en mei 2024. Iedere melding betreft één levend exemplaar, maar herhaalde individuen zijn niet te onderscheiden. De melding van mei 2023 gaat vooraf aan de eerste gedocumenteerde Dunea-overplaatsingen in oktober 2023. De conclusie hernieuwde aanwezigheid vanaf 2024 is daarom voor de kavel als geheel ingetrokken. Zij was hoogstens een beschrijving van de beperktere BMP-selectie. In M45 is geen toegelaten LOS- of ObsIdentify-konijnenregel gevonden.
+
+De teldekking blijft ongelijk. Voor 2024–2025 heeft M7 achttien BMP-rondes en achttien bezoeken met zoogdierregistratie. M45 heeft zeventien BMP-rondes en dertien bezoeken met zoogdierregistratie. De vier overige rondes zijn geen konijnennullen. Een positieve melding van een andere zoogdiersoort bewijst bovendien niet zelfstandig dat alle konijnen in het hele telgebied zijn geteld. De technische bezoekmatrix blijft een voorwaardelijke reconstructie, geen bewijs dat iedere ronde volledig voor het formele meetnet is uitgevoerd.
+
+De eerder doorgerekende directe buren zijn opnieuw op aanvullende meldingen gecontroleerd. In 2024–2025 komen er geen nieuwe, toegelaten NDFF-konijnenmeldingen in de dertien aangrenzende kavels bij. De oorspronkelijke SOVON-resultaten blijven daarom twee konijnenregistraties tijdens 89 bezoeken met zoogdiermeldingen in zeven buren van M7, en nul tijdens 66 van zulke bezoeken in vijf buren van M45. De ontbrekende zoogdierdekking in M64 en in M43/2024 blijft zichtbaar; die kavels tellen niet als volledig bemeten nulgebieden.
+
+### Rond de feitelijke hokken: 100, 250 en 500 meter
+
+Per locatie is de vereniging van de cirkels rond de twee hokpunten gebruikt. Een bron-ID telt per locatie eenmaal. SOVON-punten kunnen aan de buffer worden getoetst. Voor losse NDFF-meldingen is onderscheid gemaakt tussen een liggingsvlak dat geheel binnen de buffer ligt (`ST_Within`) en een vlak dat de buffer slechts raakt (`ST_Intersects`). Een centroid of kortste afstand mag de laatste categorie niet in bewezen lokale aanwezigheid veranderen.
+
+| Locatie en jaar | Positieve SOVON-puntregels binnen 500 m | Aanvullende levende LOS-regels met geheel liggingsvlak binnen 500 m | Betekenis |
+|---|---:|---:|---|
+| A, 2023 | 1 | 1 | Beide vóór de programmastart in oktober; aanwezigheid bestond al |
+| A, 2024 | 2 | 1 | Twee SOVON-punten buiten 250 m; het losse meldingsvlak doorsnijdt de 250-metergrens |
+| A, 2025 | 3 | 0 | Twee SOVON-punten binnen 250 m, geen binnen 100 m |
+| B, 2023 | 1 | 0 | Historische aanwezigheid in de ruimere omgeving |
+| B, 2024 | 0 | 0 | Geen precies gelokaliseerde positieve melding in deze selectie |
+| B, 2025 | 0 | 0 | Eén grovere melding is uitsluitend mogelijke context, zie hieronder |
+
+Bij A staan in 2024 en 2025 dus telkens drie recente registraties binnen 500 meter, over twee verschillende bronnen. Dat is geen telling van drie verschillende konijnen en geen bewijs dat inspanning of trefkans gelijk was. Binnen 100 meter van de A-hokken is in beide jaren geen konijnenregistratie gevonden; in 2023 was er al een SOVON-punt op 81,8 meter. De aanvullende LOS-melding van 2024 ligt met haar gehele onzekerheidsvlak binnen 500 meter, maar doorsnijdt de grens van 250 meter. De onafhankelijk gecontroleerde kortste afstand tot dat vlak is 246,8 meter; de waarneming ligt dus niet bewezen geheel binnen of geheel buiten 250 meter. De twee SOVON-punten liggen wel buiten 250 meter. Geen van deze drie regels is een telling in het hok zelf.
+
+Bij B zijn in 2024–2025 geen voldoende precies gelokaliseerde levende konijnenmeldingen binnen 500 meter gevonden. Er is wel één LOS-melding van één levend exemplaar uit 2025, vervaagd tot een kilometerhok van 1.000.000 m². Dat hok raakt de 500-meterzone gedeeltelijk. De werkelijke waarneming kan binnen of buiten die zone liggen. Deze regel blijft `uitgesloten_ruimtelijk` en wordt niet als lokale waarneming of nul gebruikt. De eerdere algemene formulering dat rond Loopert geen meldingen bestaan is daarom aangescherpt tot geen voldoende precies gelokaliseerde melding binnen deze selectie.
+
+De SOVON-bufferhistorie blijft herkenbaar en is uitgebreid tot alle beschikbare jaren. Bij A zijn er bijvoorbeeld in 2015 75 positieve puntregels met een telsom van 98, tegen twee regels/telsom twee in 2024 en drie regels/telsom drie in 2025. Bij B bevat 2015 zes regels/telsom zes, 2016 negen en 2020 drie; na één positieve regel uit 2023 zijn er geen punten uit 2024–2025 binnen de buffer. Door wisselende bezochte kavels, routes, tijdstippen en registratie-intensiteit zijn dit beschrijvende uitkomsten, geen populatie-index of formele voor-na-effectschatting.
+
+### Wat voegt het zelfstandige konijnenmeetnet toe?
+
+De 5.095 Konijnrecords van 17.209 zijn alle gekoppeld aan kilometerhokken die meerdere actuele SOVON-plots raken. Route- en sectie-id ontbreken, en alle regels zijn in de gewone NDFF-analyseview ruimtelijk uitgesloten. De bron blijft aanwezig, met kwaliteitsstatus `wacht_op_route_sectie_koppeling`; dit is geen reden om bronregels te verwijderen of gelijke sectietellingen als dubbelen te behandelen.
+
+Voor locatie A raken twee kilometerhokken de zone van 500 meter. Zij bevatten 896 positieve Konijnrecords uit 1984–2022. Geen van deze brongeometrieën ligt geheel binnen de zone; geen van de vier exacte hokpunten valt in een aangeleverd telhok. De dichtstbijzijnde telhokrand ligt op 58,2 meter van een A-punt. Dat is afstand tot het onzekerheidsvlak, niet afstand tot een waargenomen konijn. De 896 regels zouden met een onjuiste ruimtelijke join alle tegelijk in M7, M8 en M64 worden meegeteld. De kandidaatrelatie met drie kavels is geen bewijs van 2.688 onafhankelijke waarnemingen of van aanwezigheid in iedere kavel.
+
+Voor locatie B is de minimale afstand tussen een aangeleverd telhok en een B-punt 574,5 meter. Geen telhok raakt daarom de 500-meterzone. De bronhokken raken wel enkele buurpercelen, waaronder M1a, M1b en M46; voor M1b en M46 worden bijvoorbeeld dezelfde 1.404 bronrecords uit 1984–2023 geraakt. Ook die twee kavelaantallen mogen niet bij elkaar worden opgeteld. Dit zijn uitsluitings- en kandidaatdiagnostieken, geen nieuwe lokale verspreidingsselecties.
+
+De zelfstandige meetnetlevering bevat geen gegevens uit 2024–2025 en bij de twee A-kandidaathokken ook geen records uit 2023. Daardoor is de huidige levering niet geschikt om een recente reactie op de bijplaatsing te meten. Er is geen routejaarindex, bezoekaantal, nulmatrix, abundantie of trend uit deze hokaggregaten afgeleid. De oorspronkelijke route-/sectiekoppeling en recentere bronjaren zijn nodig voordat dit meetnet een plaatsgebonden voor-na-vergelijking kan dragen.
+
+### 2026, conclusie en verificatie
+
+De onvolledige AVIMAP-jaargang 2026 is afzonderlijk gehouden. Zij bevat in M7 één konijnenmelding tijdens tien bezoeken met zoogdiermeldingen; in M45 nul tijdens acht. Binnen de A-zone zijn twee SOVON-punten uit 2026 aanwezig, één in M7 en één in M8. De bron eindigt voor niet-vogels op 19 juli 2026 en is niet als volledig jaar met 2024–2025 vergeleken. De aanvullende NDFF-bronnen eindigen in 2025 of eerder.
+
+De kernconclusie is aangescherpt: konijnen waren aantoonbaar vóór de bijplaatsing aanwezig in de omgeving van beide locaties. Rond A zijn in 2024 en 2025 enkele registraties beschikbaar, ook buiten de BMP-rondes. Rond B ontbreekt in die jaren een voldoende precies gelokaliseerd signaal, maar één vervaagde melding uit 2025 kan de omgeving betreffen. Het zelfstandige konijnenmeetnet vergroot de historische context, zonder in de huidige export een recente effectvergelijking mogelijk te maken. Een positief uitzettingseffect is niet aangetoond en ook niet uitgesloten. Het totaal van alle bronregels is geen aantal dieren en geen gezamenlijke tijdreeks.
+
+Er is geen causaal uitzettingsmodel geschat: de feitelijke uitzet- en vrijlatingsdata en aantallen per hok zijn niet bekend, de recente positieve gegevens zijn schaars, de bezoekdekking verschilt en de zelfstandige routetellingen missen ruimtelijke en recente meetstructuur. Aanwezige openbare plannen en jaarverslagen bepalen niet de uitgevoerde hoeveelheid per hok. Er is geen nieuw extern informatieverzoek opgesteld of verzonden.
+
+De alleen-lezen audit `--audit-live` slaagt voor keten v1: nul canonieke dubbelingen, nul onjuiste representaties en nul ontbrekende analysevelden; alle 810.983 canonieke records zijn technisch sluitend verwerkt. `--audit-konijnen` slaagt: 5.809 protocolrecords, 5.095 doelsoortregels, 714 bijvangsten, nul afgeleide nulregels en expliciete meervoudige plotkoppeling voor alle bronregels. Die technische controles bewijzen geen trendgeschiktheid. Primaire jaaruitkomsten zijn opnieuw uit de bezoekmatrix berekend; losse meldingen zijn onafhankelijk naar telonderwerp, maand, scope en volledige liggingsgeometrie gecontroleerd. Een aanvullende afstandscontrole voorkomt dat een gedeeltelijke overlap met de 250-meterzone als volledig binnen of buiten wordt gepresenteerd. De contexttabellen duinvallei_taxon en jachtspin_soort bevatten nul Oryctolagus-vermeldingen; de dataset-/kandidaatcatalogus bevat geen aanvullende konijnenmeetbron. Beide bronregisterversies zijn inhoudelijk gelijk. Alle 56 gerenderde Wordpagina’s zijn in overzicht en de gewijzigde pagina’s 18, 34 en 35 afzonderlijk visueel gecontroleerd.
+
+### Reproduceerbare kernselecties
+
+De centrale inventarisatie gebruikt `central_query_routes(CentralQueryDatabase().schema())` en per route `central_taxon_query(..., taxon_id=38949)`. Alle oorspronkelijke en afgeleide rollen en alle reconstructieversies zijn daarna afzonderlijk beoordeeld. De jaarlijkse bezoekselectie hierboven blijft herhaalbaar met de eerdere SQL, met aanvullend onderstaande bron- en overlapcontroles.
+
+```sql
+-- Aanvullende SOVON-totalen per kavel en jaar; uitsluitend positief,
+-- geen ontbrekende waarden of historische afgeleide nullen als nul tellen.
+SELECT p.kavel_nummer,v.jaar,COUNT(*) positieve_bezoeken,SUM(m.aantal) telsom
+FROM daz_bmp_bezoek_taxon m
+JOIN dagbezoeken_bmp v ON v.bezoek_id=m.bezoek_id
+JOIN taxa_bronkoppeling t ON t.koppeling_id=m.taxon_bronkoppeling_id
+JOIN v_meijendel_analyseplot_actueel p ON p.plot_id=v.plot_id
+WHERE t.taxon_id=38949 AND m.reconstructieversie='sovon-bmp-jaarbestanden-v1'
+GROUP BY p.kavel_nummer,v.jaar;
+
+-- Aanvullende NDFF-aanwezigheid. Geen record uit de uitgesloten klassen
+-- en geen M66/M91; één canonieke identiteit wordt één keer geselecteerd.
+SELECT p.kavel_nummer,v.jaar,v.protocol_sleutel,w.telonderwerp,COUNT(*) records
+FROM Meijendel_ndff_secure.v_ndff_analyse_record v
+JOIN ndff_open_waarneming w ON w.waarneming_id=v.open_waarneming_id
+JOIN v_meijendel_analyseplot_actueel p ON p.plot_id=CAST(v.plot_id AS UNSIGNED)
+WHERE v.wetenschappelijke_naam='Oryctolagus cuniculus'
+  AND v.record_selectiestatus='voorlopig_bruikbaar'
+GROUP BY p.kavel_nummer,v.jaar,v.protocol_sleutel,w.telonderwerp;
+```
+
+Voor buffers is per locatie `ST_Union(ST_Buffer(hok1,r),ST_Buffer(hok2,r))` gebruikt, voor r=100, 250 en 500 meter in EPSG:28992. SOVON-punten volgen `ST_Intersects(punt,buffer)`. Voor NDFF is `ST_Within(analyse_geometrie,buffer)` vereist om een melding geheel binnen de buffer te noemen; losse intersecties blijven als mogelijke overlap zichtbaar. De diagnostiek van uitgesloten records wordt afzonderlijk uitgevoerd en verandert nooit `record_selectiestatus`. Bron-ID's zijn vóór iedere bufferaggregatie per locatie uniek. Datum en geometrie zijn alleen lokaal voor de overlapcontrole gebruikt; de rapportage bevat geen beveiligde waarnemingslocaties.
