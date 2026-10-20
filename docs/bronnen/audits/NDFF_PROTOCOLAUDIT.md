@@ -1721,3 +1721,145 @@ Het schema en de reproduceerbare invoer staan in:
 - [BLWG Meetnet korstmossen](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
 - [De Vlinderstichting vlinderroute](https://vlinderstichting.nl/wat-kan-jij-doen/tellen/meetnetten/een-route-tellen/vlinderroute-tellen/)
 - [BIJ12 Werkwijze Monitoring en Beoordeling Natuurkwaliteit](https://www.bij12.nl/wp-content/uploads/2023/11/WW-00-TEXT-%E2%80%93-Monitoring-en-Beoordeling-Natuurkwaliteit-EHS-en-Natura-2000.pdf)
+
+
+## Konijnenuitzet en primaire BMP/DAZ-waarnemingen
+
+Stand: 20 oktober 2026. Opdracht: de vier door Amy van Nobelen (Dunea) opgegeven uitzethokken vastleggen als maatregel; historische en recente konijnenregistraties tijdens BMP-rondes vergelijken; aanvullende informatie benoemen. Alleen de levende lokale database is gewijzigd. Geen nieuwe waarnemingen of nullen, geen export, cachebouw of VPS-publicatie.
+
+### Broncontrole en ruimtelijke keuze
+
+Gecontroleerd zijn de door Ton gedeelde mail, de levende maatregel-, namen-, plot-, taxon-, BMP- en AVIMAP-tabellen, het bronregister, de bestaande protocolaudit, de lokale Zotero-catalogus (zoektermen konijnen en bijplaats), de officiële ODH-beschikking van 28 augustus 2023 inclusief activiteitenplan en de Dunea-jaarverslagen 2023 en 2024. De Zotero-catalogus levert vijf treffers op konijnen, waaronder het werkprotocol uit 2022 en historische publicaties uit 1976, 1990, 1991 en 2003, en nul treffers op bijplaats. Deze metadata bevatten geen uitzetlogboek voor de vier actuele hokken. Er is geen bijlage van externe opslag geopend en geen externe vraag verzonden. De mail heeft geen zichtbare verzenddatum; 20 oktober 2026 is de datum waarop Ton deze deelde, geen uitzetdatum.
+
+De vier aangeleverde Google Maps-links zijn gevolgd. Hun bestemmingen bevatten WGS84-coördinaten. Na transformatie naar EPSG:28992 liggen beide A-punten binnen de actuele SOVON-kavel M7 en beide B-punten binnen M45. De kaveltoets gebruikt `v_meijendel_sovon_plot_actueel` en de Natura 2000-selectie `v_meijendel_analyseplot_actueel`. M66 en M91 zijn niet opgenomen. De feitelijke punten vervangen geen bestaande gebiedspolygonen.
+
+| Hok | Bronlabel | Breedtegraad | Lengtegraad | Kavel |
+|---|---|---:|---:|---|
+| A1 | Kijfhoek/Bierlap hok 1 | 52.142559 | 4.349128 | M7 |
+| A2 | Kijfhoek/Bierlap hok 2 | 52.142481 | 4.348571 | M7 |
+| B1 | Loopert hok 1 | 52.117861 | 4.320931 | M45 |
+| B2 | Loopert hok 2 | 52.118227 | 4.321215 | M45 |
+
+Bronlinks: [A1](https://maps.app.goo.gl/wTQRMm2JxG6xc1BP7), [A2](https://maps.app.goo.gl/8fZN9degfhhAJpBB7), [B1](https://maps.app.goo.gl/Bf8PTHbFBp7WbBnb8), [B2](https://maps.app.goo.gl/hv1cdD9n2C2ynKSU6).
+
+De controle omvat alle 183 objecten van het levende namenregister. Kleine Pan en De Loopert zijn onderbouwde namen met polygonen; de vier hokken liggen daarbuiten: A1 en A2 op 172,8 en 202,2 meter van Kleine Pan, B1 en B2 op 102,7 en 145,8 meter van De Loopert. De Kijfhoek- en Bierlap-polygonen bevatten de A-punten evenmin. Loopert is bovendien afzonderlijk geregistreerd als historische naam zonder geometrie. Waterschaps-vallei ontbreekt als afzonderlijk object in het register, maar is een bewezen planlabel in het activiteitenplan. De ODH-kaarten op PDF-pagina 13 en 14 zijn visueel bekeken. Namen uit een plan en namen uit de mail mogen daarom niet automatisch als geometrisch gelijk worden behandeld. De kleinste resterende vraag is hoe de vier feitelijke hokken zich verhouden tot de planlocaties en of hokken zijn verplaatst. De bestaande naampolygonen zijn niet gewijzigd of als fout bestempeld.
+
+Het [Dunea-jaarverslag 2023](https://www.dunea.nl/over-dunea/-/media/bestanden/over-dunea/jaarberichten/dunea-jaarverslag-2023.pdf), gedrukte p. 37, bevestigt eerste overplaatsingen in oktober 2023. Dit corrigeert de eerdere conclusie dat uitzetting pas in 2024 begon. Het jaarverslag noemt geen aantal en geen individueel hok. Het [jaarverslag 2024](https://www.dunea.nl/duinen/-/media/bestanden/over-dunea/jaarberichten/dunea-jaarverslag-2024.pdf) meldt eveneens een gestarte pilot en monitoring. Het [ODH-activiteitenplan](https://omgevingsdiensthaaglanden.nl/wp-content/uploads/besluiten/2023/08/30/4e5424ce-bc9f-42ce-870f-1a146507f6d1/Besluit%20op%20aanvraag%2001069060-ODH701135.pdf) noemt in het plan voor oktober 2023 en januari 2024 telkens 20–40 konijnen en mogelijke herhaling in 2024 en 2025. Deze getallen zijn plannen, geen uitgevoerde aantallen. Ook de letterlijke formulering afgelopen vier jaar uit de mail wordt niet automatisch in vier uitvoeringsjaren vertaald.
+
+### Registratie in de levende database
+
+De bestaande uitvoering `konijnen_bijplaatsing_2024_2026` en de onderbouwde jaarregel 2024 zijn behouden. Haar oude M8/M41-relaties zijn met de eerdere bewijsnotities bewaard als `te_beoordelen`; ze leveren geen geverifieerde plot-jaarrij meer. De actuele punten behoren tot de nieuwe uitvoering `konijnen_feitelijke_hokken_20261020`, onder hetzelfde bestaande project. Die heeft vier puntgeometrieën en twee geverifieerde kavelrelaties, maar geen uitzetdatum, hoeveelheid of jaarregel. Daardoor projecteert de jaarview de huidige hokken niet terug naar onbewezen historische jaren. Het project vermeldt de vanaf oktober 2023 bevestigde programmabrede uitvoering. Een concrete locatie per uitzetmoment blijft onbewezen.
+
+De bestaande seed `gis/database/maatregelen_seed.sql` bevat de herhaalbare aanvulling. Uitvoering gebeurde in één transactie met controles op uitgangsaantallen, kavelkoppeling en eindtotalen. Alleen de betrokken maatregeltabellen zijn vooraf geback-upt: `~/.codex/backups/meijendel/2026-10-20-konijnen/vooraf.sql`, SHA256 `37f623f0fed40a58203eb534428167add80a8d3b5513d619c502e19f0c0e51d3`.
+
+De actuele laag telt 22 projecten, 91 uitvoeringen, 132 jaarregels, 55 bronnen, 132 uitvoering-bronrelaties, 261 kavelrelaties waarvan 256 geverifieerd, zeven geometrieën en 355 bronvaste plot-jaarrijen. Vóór de aanvulling waren dat respectievelijk 22, 90, 132, 53, 129, 259, 256, drie en 357. De daling van twee plot-jaarrijen volgt uit de herbeoordeling van M8/M41; er zijn geen oorspronkelijke regels verwijderd.
+
+Toetsingsbasis, geraadpleegd op 20 oktober 2026: [Darwin Core](https://dwc.tdwg.org/terms/) en [TDWG TCS](https://tcs.tdwg.org/terms/). De uitzetmaatregel is een beheerhandeling, geen soortwaarneming of taxonconcept. Bronidentiteit en bronlabel blijven apart van locatie-identiteit. De puntpositie sluit aan bij decimalLatitude/decimalLongitude, geodeticDatum en georeferenceRemarks; de transformatie en ontbrekende precisie blijven expliciet. Er is geen schema, taxonidentiteit of waarnemingsstatus gewijzigd en er is geen nieuwe afwijking van de canonieke importbasis ingevoerd. De databasebrede centrale taxonpoort controleerde vóór én na de wijziging 128 routes. De aparte historische DAZ-audit slaagt met nul ongeldige matrixregels; de 7.552 historische afgeleide nulregels blijven uitsluitend auditspoor en zijn niet in deze analyse gebruikt. Beide bronregisterversies zijn inhoudelijk gelijk bijgewerkt, alle 55 gerenderde pagina’s zijn in overzicht gecontroleerd en de gewijzigde pagina’s 29, 33 en 34 afzonderlijk bekeken. Het bestaande seedcontract slaagt inclusief herhaalbaarheid, vier puntgeometrieën en blokkering van onbewezen jaarprojectie. Een eerste proef vond dat brontype handmatige_registratie wel in de levende database maar niet in een verse seed aanwezig was; de aanvulling registreert dit bestaande type nu met hetzelfde patroon als de eerdere beheermigratie. Er is geen nieuw brontype bedacht.
+
+### Historische en recente tellingen
+
+Primaire bron: actuele batch 1, `sovon-avimap-252-v1`, ontvangen 13 september 2026. Uitkomsten volgen `v_sovon_avimap_daz_analyse` en reconstructieversie `sovon-avimap-daz-v1`. De kwaliteit blijft `voorwaardelijk`: een echte nul geldt alleen binnen een door een zoogdierregel bevestigd DAZ-bezoek en voor de zeven doelsoorten. Geheel negatieve zoogdierbezoeken kunnen in deze bronselectie ontbreken. De som van tellingen is een som van waargenomen dieren over bezoeken; dezelfde dieren kunnen vaker zijn gezien. Zij is geen aantal unieke dieren, populatieomvang of bewezen trend. De huidige kavelgrenzen bepalen welke kavels hier worden besproken; een historische BMP-plotcode bewijst niet dat ieder vroeg bezoek exact dezelfde voetafdruk had.
+
+BMP-rondes zijn afzonderlijk geteld in `dagbezoeken_bmp` en op bezoek-ID, plot-ID en datum vergeleken. In M7 staan voor 1984–2008 238 historische BMP-rondes; in M45 voor 1986–2008 140. Dit bewijst vogelbezoeken, geen deelname aan zoogdiertellingen. De secundaire reconstructie bevat voor M7 in 2006 drie bevestigde DAZ-bezoeken met vier positieve zoogdierbronregels en in 2008 één bezoek met één zoogdierregel. Daaronder staan twee konijnenmeldingen met elk aantal één: 26 mei en 19 juni 2006, NDFF-ID 655300 en 655310, eenduidig gekoppeld aan een BMP-bezoek. Zij worden uitsluitend als historische positieve aanwezigheid gebruikt. Voor M45 is in deze reconstructie vóór 2009 geen bevestigd DAZ-bezoek gevonden; dat is geen bewijs van afwezigheid. De secundaire bron is `ndff-daz-bmp-v1`, met vervangingscontrole tegen de actuele SOVON-koppeling. Er zijn geen historische nullen afgeleid of als afwezigheid gebruikt.
+
+De primaire SOVON-reeks bevat voor M7 vóór 1 oktober 2023 116 bevestigde DAZ-bezoeken met een telsom van 199 konijnen over 2010–2023. Voor M45 zijn dat 41 bezoeken met telsom negen over 2017–2023. In 2009 heeft geen van beide kavels een bevestigd zoogdierbezoek in deze primaire selectie. De volledige primaire jaarlijkse uitkomsten staan hieronder; een streep betekent dat zoogdierdeelname niet is bevestigd.
+
+| Jaar | M7: bevestigde DAZ-bezoeken | M7: telsom konijn | M45: bevestigde DAZ-bezoeken | M45: telsom konijn |
+|---|---:|---:|---:|---:|
+| 2009 | — | — | — | — |
+| 2010 | 4 | 18 | — | — |
+| 2011 | 11 | 7 | — | — |
+| 2012 | 7 | 9 | — | — |
+| 2013 | 8 | 18 | — | — |
+| 2014 | 2 | 0 | — | — |
+| 2015 | 11 | 63 | — | — |
+| 2016 | 11 | 38 | — | — |
+| 2017 | 9 | 22 | 1 | 0 |
+| 2018 | 10 | 12 | — | — |
+| 2019 | 9 | 10 | 8 | 6 |
+| 2020 | 8 | 1 | 8 | 3 |
+| 2021 | 10 | 1 | 7 | 0 |
+| 2022 | 6 | 0 | 8 | 0 |
+| 2023 | 10 | 0 | 9 | 0 |
+| 2024 | 9 | 2 | 8 | 0 |
+| 2025 | 9 | 2 | 5 | 0 |
+| 2026, onvolledige export | 10 | 1 | 8 | 0 |
+
+De achteruitgang in registraties in M7 is dus al ruim vóór de uitzetting zichtbaar: van 63 over elf bevestigde bezoeken in 2015 naar nul over zes bezoeken in 2022 en nul over tien in 2023. De twee registraties in zowel 2024 als 2025 betekenen een beperkte hernieuwde registratie, zonder terugkeer naar het eerdere niveau. In M45 werden in 2019 en 2020 respectievelijk zes en drie konijnen geteld; in 2021–2025 geen binnen de bevestigde zoogdierbezoeken. Dat ondersteunt geen zichtbaar herstel in deze BMP-selectie. Het bewijst niet dat er bij de hokken geen konijnen leven of dat uitzetting geen effect heeft.
+
+In M7 zijn alle achttien BMP-rondes in 2024–2025 gekoppeld aan een zoogdierbezoek. In M45 zijn dat dertien van zeventien rondes: acht van negen in 2024 en vijf van acht in 2025. De vier ontbrekende koppelingen zijn geen konijnennullen. Ook in M7 bewijst deze koppeling niet dat alle delen van de kavel of alle zoogdieren tijdens ieder bezoek volledig zijn onderzocht.
+
+De vier recente M7-meldingen met aantal één dateren van 10 maart en 10 april 2024 en 30 maart en 29 april 2025. Het ene exemplaar in de onvolledige jaargang 2026 is geregistreerd op 19 juli. Beperking tot maart–juni verandert de uitkomsten voor 2024–2025 niet; voor 2026 wordt M7 dan nul over negen bevestigde bezoeken. De levering bevat in 2026 alleen niet-vogelregistraties van 4 februari tot en met 19 juli en heeft status `uitgesloten_lopend_jaar`. Die jaargang is uitsluitend als afzonderlijke positieve aanvulling getoond, niet als volledig trendjaar.
+
+### Aangrenzende kavels en afstand tot hokken
+
+Direct aangrenzend is operationeel gedefinieerd als minder dan één meter afstand tussen de actuele SOVON-polygonen. Bij M7 gaat het om M6, M8, M14, M15, M16s, M61, M63 en M64; bij M45 om M1a, M1b, M43, M46 en M83. De vergelijking is beschrijvend. Andere beheeringrepen, zichtbaarheid, bezoektijd, telroute en tellerwisselingen zijn niet als gelijk verondersteld.
+
+| Buurkavel | DAZ-bezoeken 2024 | Telsom 2024 | DAZ-bezoeken 2025 | Telsom 2025 |
+|---|---:|---:|---:|---:|
+| M6 | 5 | 0 | 6 | 1 |
+| M8 | 9 | 0 | 8 | 1 |
+| M14 | 9 | 0 | 7 | 0 |
+| M15 | 7 | 0 | 3 | 0 |
+| M16s | 3 | 0 | 5 | 0 |
+| M61 | 8 | 0 | 3 | 0 |
+| M63 | 9 | 0 | 7 | 0 |
+| M64 | — | — | — | — |
+| M1a | 8 | 0 | 8 | 0 |
+| M1b | 8 | 0 | 7 | 0 |
+| M43 | — | — | 1 | 0 |
+| M46 | 9 | 0 | 9 | 0 |
+| M83 | 9 | 0 | 7 | 0 |
+
+Rond M7 zijn er in 2024–2025 twee konijnenregistraties tijdens 89 bevestigde bezoeken in de zeven buurpercelen met DAZ-deelname. Rond M45 zijn er nul tijdens 66 bevestigde bezoeken in vijf buurpercelen, met ontbrekende deelname in M43 in 2024. M64 heeft in 2024 wel tien geregistreerde BMP-rondes maar geen bevestigd zoogdierbezoek; M43 heeft twaalf en dertien BMP-rondes in 2024 en 2025, tegenover respectievelijk nul en één bevestigd zoogdierbezoek. Deze gevallen mogen dus niet als volledig bemeten vergelijkingskavels worden gepresenteerd.
+
+De historische buurvergelijking gebruikt dezelfde bevestigde SOVON/AVIMAP-bezoeken. De aantallen beschikbare kavels wisselen per periode; de telsommen zijn daarom geen onderling gelijke inventarisaties of populatieschattingen.
+
+| Omgeving | Periode | Kavels met gegevens | Bevestigde bezoeken | Telsom konijn |
+|---|---|---:|---:|---:|
+| Buren M7 | 2009–2018 | 8 | 403 | 1.774 |
+| Buren M7 | 2019–2023, vóór oktober | 6 | 127 | 21 |
+| Buren M7 | 2024–2025 | 7 | 89 | 2 |
+| Buren M45 | 2009–2018 | 4 | 266 | 396 |
+| Buren M45 | 2019–2023, vóór oktober | 4 | 166 | 26 |
+| Buren M45 | 2024–2025 | 5 | 66 | 0 |
+
+Ook over de directe buren ligt het recente registratieniveau dus lager dan in de voorafgaande perioden. Wisselende dekking en inspanning verhinderen een directe vertaling naar populatieverandering of een uitzettingseffect. Alle 2019–2023-bezoeken in deze buurselectie dateren uiterlijk 29 juni 2023 en vallen daarmee vóór de eerste gedocumenteerde overplaatsingen in oktober.
+
+Een tweede selectie gebruikt de kortste afstand van een positieve AVIMAP-konijnenregel tot een van beide hokken per locatie. Iedere bron-ID telt per locatie hoogstens eenmaal, zodat overlappende buffers niet dubbel tellen. Voor 2019–2026 zijn de telsommen binnen 500 meter van locatie A achtereenvolgens 10, 1, 1, 0, 1, 2, 3 en 2; voor locatie B 7, 3, 0, 0, 1, 0, 0 en 0. Het nulcijfer betekent hier nul geregistreerde positieve regels in de buffer, geen bewezen afwezigheid of volledig onderzochte buffer.
+
+In 2024 liggen de twee A-meldingen beide meer dan 250 meter van de hokken; de kleinste afstand is 310,6 meter. In 2025 liggen twee van de drie meldingen binnen 250 meter, met minimaal 109,1 meter. Binnen 100 meter zijn er in 2024–2025 geen meldingen. Bij B zijn er sinds 2024 geen positieve konijnenregels binnen 500 meter. Vóór de uitzetting zijn er al positieve registraties dicht bij de huidige punten: bij A een registratie op 20 mei 2023 op 81,8 meter en bij B in 2019 op 90,1 meter. Ook dicht bij de hokken is nieuw geregistreerde aanwezigheid dus niet automatisch door uitzetting ontstaan.
+
+Er is geen model voor een causaal uitzettingseffect geschat: de plaatsings- en vrijlatingsdata en aantallen per hok ontbreken, de recente positieve uitkomsten zijn schaars en de vergelijkingskavels hebben uiteenlopende zoogdierdekking. Deze eerste analyse rapporteert alle nuluitkomsten binnen bevestigde bezoeken én de ontbrekende dekking. De twee 2024/2025-jaargangen ondersteunen in M7 een klein registratiesignaal, in M45 en zijn buren geen zichtbaar signaal; zij bewijzen geen populatieherstel of afwezigheid van effect.
+
+### Aanvullende informatie: kleinste bruikbare lijst
+
+Voor Amy/Dunea, na bovenstaande broncontrole:
+
+1. **Jaren en data per hok.** Welke kalenderjaren worden bedoeld met afgelopen vier jaar? Per hok en per uitzetmoment de datum van plaatsen en de datum waarop de dieren het hok konden verlaten; onderscheid plaatsing in een afgesloten hok van feitelijke vrijlating. Vermeld ook jaren zonder uitzetting.
+2. **Werkelijk uitgezette aantallen.** Per hok en uitzetmoment het aantal geplaatste dieren en, voor zover bekend, het aantal dat levend is vrijgelaten. De 20–40 dieren uit het activiteitenplan zijn beoogde aantallen; een uitvoeringslogboek of bestaande jaarrapportage heeft de voorkeur boven een nieuw samengesteld bestand.
+3. **Ligging door de jaren heen.** Zijn de vier kaartpunten voor alle uitzetjaren dezelfde gebleven? Zo niet: oorspronkelijke positie en datum van verplaatsing. Hoe verhouden Kijfhoek/Bierlap en Loopert zich tot de planlabels Kleine Pan en Waterschaps-vallei? Een bestaande kaart of hoknummering volstaat; de huidige puntcoördinaten hoeven niet opnieuw te worden aangeleverd.
+4. **Bestaande monitoring.** Het beschikbare uitzetlogboek, de jaarlijkse pilotrapportages en eventuele eindrapportage, plus de oorspronkelijke telgegevens van duinwachters/camera’s met datum, locatie, methode, telinspanning en nuluitkomsten. Deze kunnen de vergelijking met BMP rechtstreeks aanvullen. De beschikking schreef jaarlijkse rapportage en een eindrapport voor; dat bewijst niet dat die documenten al zijn ingediend of beschikbaar zijn.
+5. **Nuttige uitvoeringscontext, indien vastgelegd.** Bijvoeren, openstellen/verwijderen van rasters, sterfte, ziekte, gemerkte dieren en herkenbare voortplanting, met datum en hok. Dit helpt een klein of ontbrekend BMP-signaal te duiden. Geen brede nieuwe onderzoeksuitvraag; bestaande registraties zijn voldoende.
+
+Voor Ton en de betrokken BMP-teller/tellerteams, afzonderlijk van de vraag aan Dunea:
+
+6. **Consequente zoogdierregistratie.** Zijn zoogdieren bij de vier M45-rondes zonder bevestigde deelname in 2024–2025 wel onderzocht? Zijn daarbij nulwaarnemingen, niet-doorgegeven meldingen of afwijkende routes bekend? Controleer dit ook in M43 en M64 waar de zoogdierdekking ontbreekt. Welke routes, bezoektijden of registratieafspraken veranderden vóór en na de uitzetting? Beschikbare bezoek-ID’s, data en tellertoedeling moeten eerst uit de lokale tabellen worden gebruikt; hiervoor is geen uitvraag van de al aanwezige vogelbezoekdata nodig.
+
+### Herhaalbare selectie
+
+De primaire jaarselectie (geen NDFF-dubbeling; één matrixrij per bevestigd bezoek en konijn):
+
+```sql
+SELECT p.kavel_nummer, v.jaar, COUNT(*) AS daz_bezoeken,
+       SUM(v.aantal) AS som_tellingen,
+       SUM(v.waarnemingsstatus='waargenomen') AS positieve_bezoeken
+FROM v_sovon_avimap_daz_analyse v
+JOIN v_meijendel_analyseplot_actueel p USING(plot_id)
+WHERE p.kavel_nummer IN ('M7','M45')
+  AND v.nederlandse_naam='Konijn'
+GROUP BY p.kavel_nummer,v.jaar
+ORDER BY p.kavel_nummer,v.jaar;
+```
+
+De naampolygoonafstand gebruikt `ST_Distance` na transformatie van de vier WGS84-punten; kavels volgen `ST_Intersects`. De puntbufferselectie berekent per `(batch_id, bron_waarneming_id, locatie)` eerst de minimale `ST_Distance` tot de twee hokpunten en aggregeert daarna eenmaal per bron-ID. De historische secundaire selectie vóór 2009 gebruikt uitsluitend `daz_bmp_recordselectie.reconstructieversie='ndff-daz-bmp-v1'`, taxon `Oryctolagus cuniculus`, eenduidige bezoek-ID en uitsluiting van actuele `sovon_vervangt_ndff%`-koppelingen. Geen secundaire nulregels worden gebruikt.

@@ -1785,3 +1785,90 @@ DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_jaar_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_uitvoering_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_project_seed;
 DROP TEMPORARY TABLE IF EXISTS tmp_maatregel_bron_seed;
+
+
+-- Konijnen: feitelijke hokken uit de door Ton op 20 oktober 2026 gedeelde mail.
+-- De mail heeft geen zichtbare verzenddatum. Ontvangst/raadpleging is geen uitzetdatum.
+-- Geen nieuwe waarnemingen, jaartoedelingen, aantallen of werkoppervlakken afleiden.
+INSERT INTO maatregel_brontype VALUES ('handmatige_registratie',NULL,'Oorspronkelijke handmatige bronregistratie')
+ON DUPLICATE KEY UPDATE brontype_code=brontype_code;
+INSERT INTO maatregel_bron
+(bron_code,brontype_code,titel,bron_datum,url,raadpleegdatum,bronstatus,opmerking)
+VALUES
+('dunea_konijnen_hokken_mail_20261020','handmatige_registratie','Amy van Nobelen (Dunea): vier feitelijke uitzetlocaties konijnen',NULL,NULL,'2026-10-20','door_eigenaar_gedeelde_correspondentie','Door Ton op 20 oktober 2026 gedeelde mail; verzenddatum ontbreekt. Vier Google Maps-punten. Letterlijke periode: afgelopen 4 jaar; geen afzonderlijke jaren, uitzetdata of aantallen. Benamingen Kijfhoek/Bierlap en Loopert; tussen haakjes locatie A, Kleine Pan en locatie B, Waterschaps-vallei. Bronlabels en punten worden apart bewaard; geen gelijkstelling aan de begrenzingen in het namenregister.'),
+('dunea_jaarverslag_2023_konijnen','onderzoeksrapport','Dunea jaarverslag 2023: eerste konijnen in oktober 2023',NULL,'https://www.dunea.nl/over-dunea/-/media/bestanden/over-dunea/jaarberichten/dunea-jaarverslag-2023.pdf','2026-10-20','vastgesteld_jaarverslag','Gedrukte p. 37, PDF-pagina 37: in oktober 2023 zijn de eerste konijnen van de Maasvlakte overgeplaatst naar ons duingebied; monitoring door duinwachters. Bevestigt programmabrede uitvoering, geen aantallen of toedeling aan de vier huidige hokken.')
+ON DUPLICATE KEY UPDATE titel=VALUES(titel),raadpleegdatum=VALUES(raadpleegdatum),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking);
+
+UPDATE maatregel_project SET bestuurlijke_status='uitvoering_vanaf_2023_bevestigd_hokjaren_onbekend',
+ omschrijving='Proef met bijplaatsing en monitoring van konijnen voor herstel van de begrazingsfunctie. Dunea jaarverslag 2023 bevestigt eerste overplaatsingen in oktober 2023; de vier actuele hokken zijn afzonderlijk gelokaliseerd. Uitgevoerde jaren en aantallen per hok zijn nog niet vastgesteld.',
+ deelgebied='Planlabels: Kleine Pan en Waterschaps-vallei; feitelijke hokken: Kijfhoek/Bierlap (M7) en Loopert (M45)',
+ plan_startdatum='2023-09-01'
+WHERE project_code='konijnen_bijplaatsing';
+
+UPDATE maatregel_uitvoering SET
+ omschrijving='Het jaarverslag 2024 bevestigt uitvoering en monitoring. Het jaarverslag 2023 bevestigt al overplaatsingen in oktober 2023, zonder verdeling over hokken. De jaartoedeling van de vier in 2026 aangeleverde hokpunten is nog niet vastgesteld.',
+ opmerking='Historische uitvoeringsregistratie 2024 behouden. De oorspronkelijke, op plangebiedsnamen gebaseerde M8/M41-koppelingen zijn vanaf 20 oktober 2026 te_beoordelen: de feitelijke hokpunten liggen in M7/M45. Deze ruimtelijke afwijking is geen bewijs dat de vier huidige hokken in ieder genoemd jaar op dezelfde plek lagen. De feitelijke hokken staan daarom in een afzonderlijke uitvoering zonder jaarregels.'
+WHERE uitvoering_code='konijnen_bijplaatsing_2024_2026';
+
+UPDATE maatregel_plot_koppeling k JOIN maatregel_uitvoering u USING(uitvoering_id)
+SET k.verificatiestatus='te_beoordelen',k.opmerking=CONCAT(k.opmerking,' Herbeoordeling 20 oktober 2026: de vier door Dunea aangeleverde feitelijke hokpunten liggen in M7 en M45. Deze eerdere M8/M41-relatie blijft als historisch planbewijs bewaard, maar bewijst geen feitelijke uitzetlocatie. Niet gebruiken als uitgevoerde kavelmaatregel zolang de historische locaties niet zijn vastgesteld.')
+WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026' AND k.plot_id IN (3530,100425)
+AND k.verificatiestatus='geverifieerd';
+
+INSERT INTO maatregel_uitvoering
+(uitvoering_code,project_id,maatregel_id,maatregeltype_code,activiteit_code,uitvoering_status_code,naam,omschrijving,locatie_naam,locatie_precisie,datum_precisie,uitvoerder,opmerking)
+SELECT 'konijnen_feitelijke_hokken_20261020',project_id,NULL,'MT06','F01','uitgevoerd',
+ 'Vier feitelijke uitzethokken konijnen; jaren per hok nog niet vastgesteld',
+ 'Dunea noemt twee hokken bij Kijfhoek/Bierlap en twee bij Loopert. Beide A-punten liggen in M7; beide B-punten in M45. De mail meldt uitzettingen in de afgelopen 4 jaar zonder afzonderlijke kalenderjaren of aantallen.',
+ 'Kijfhoek/Bierlap hok 1-2 (M7); Loopert hok 1-2 (M45)','exacte_geometrie','onbekend','Dunea',
+ 'Vier exacte aangeleverde kaartpunten, geen gemeten hokcontouren of effectgebied. Naamlabels uit de mail zijn geen bewijs van ligging binnen gelijknamige registerpolygonen. Geen jaarregels totdat uitzetjaren en hokgebruik bevestigd zijn; geen afgeleide plot-jaareffecten. Werkelijke uitzetdatum, vrijlatingsdatum en aantallen ontbreken per hok. Positienauwkeurigheid niet opgegeven.'
+FROM maatregel_project WHERE project_code='konijnen_bijplaatsing'
+ON DUPLICATE KEY UPDATE naam=VALUES(naam),omschrijving=VALUES(omschrijving),locatie_naam=VALUES(locatie_naam),opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_uitvoering_bron (uitvoering_id,bron_id,bronrol,pagina_of_paragraaf,bewijsnotitie)
+SELECT u.uitvoering_id,b.bron_id,'primaire_uitvoeringsbron','Mail: locaties 1-4','Vier feitelijke hokken volgens Dunea. Afzonderlijke uitzetjaren, data, hoeveelheden en mogelijke verplaatsingen zijn niet genoemd.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_konijnen_hokken_mail_20261020'
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+ON DUPLICATE KEY UPDATE bewijsnotitie=VALUES(bewijsnotitie);
+INSERT INTO maatregel_uitvoering_bron (uitvoering_id,bron_id,bronrol,pagina_of_paragraaf,bewijsnotitie)
+SELECT u.uitvoering_id,b.bron_id,'plancontext','Activiteitenplan: p. 4-5 en p. 10','Planlabels locatie A, Kleine Pan en locatie B, Waterschaps-vallei. Planperiode 2023-2025 en beoogde hoeveelheden bewijzen geen uitgevoerde aantallen of jaren per feitelijk hok.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='odh_konijnenontheffing_2023'
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+ON DUPLICATE KEY UPDATE bewijsnotitie=VALUES(bewijsnotitie);
+INSERT INTO maatregel_uitvoering_bron (uitvoering_id,bron_id,bronrol,pagina_of_paragraaf,bewijsnotitie)
+SELECT u.uitvoering_id,b.bron_id,'bevestiging','Gedrukte p. 37','Programmabrede eerste overplaatsingen in oktober 2023. Dit corrigeert de eerdere veronderstelling dat bijplaatsing pas in 2024 begon; het jaarverslag wijst geen afzonderlijk hok aan.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_jaarverslag_2023_konijnen'
+WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
+ON DUPLICATE KEY UPDATE bewijsnotitie=VALUES(bewijsnotitie);
+
+INSERT INTO maatregel_plot_koppeling (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT u.uitvoering_id,p.plot_id,'geometrische_doorsnijding',NULL,'geverifieerd',b.bron_id,
+ CONCAT('De twee aangeleverde ',IF(p.kavel_nummer='M7','A','B'),'-hokpunten liggen volgens ST_Intersects binnen de actuele SOVON-geometrie van ',p.kavel_nummer,'. Puntposities uit de mail, WGS84 naar EPSG:28992. Deze koppeling bevat geen jaar, uitvoeringsoppervlak of effectgebied. Geen automatische historische jaartoedeling.')
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_konijnen_hokken_mail_20261020'
+JOIN plots p ON p.kavel_nummer IN ('M7','M45')
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+ON DUPLICATE KEY UPDATE koppelmethode=VALUES(koppelmethode),verificatiestatus=VALUES(verificatiestatus),bron_id=VALUES(bron_id),opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_geometrie (uitvoering_id,geometrie_type,geometrie,geometrie_jaar,bron_id,geometrie_opmerking)
+SELECT u.uitvoering_id,'TG03_uitvoeringsgebied',ST_Transform(ST_GeomFromText('POINT(4.349128 52.142559)',4326,'axis-order=long-lat'),28992),NULL,b.bron_id,'uitzethok=A1; Kijfhoek/Bierlap hok 1; bronlabel locatie A, Kleine Pan; https://maps.app.goo.gl/wTQRMm2JxG6xc1BP7; WGS84 lon lat=4.349128 52.142559; geen contour, positionele nauwkeurigheid en uitzetjaren niet opgegeven.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_konijnen_hokken_mail_20261020'
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+AND NOT EXISTS (SELECT 1 FROM maatregel_geometrie g WHERE g.uitvoering_id=u.uitvoering_id AND g.geometrie_opmerking LIKE 'uitzethok=A1;%');
+
+INSERT INTO maatregel_geometrie (uitvoering_id,geometrie_type,geometrie,geometrie_jaar,bron_id,geometrie_opmerking)
+SELECT u.uitvoering_id,'TG03_uitvoeringsgebied',ST_Transform(ST_GeomFromText('POINT(4.348571 52.142481)',4326,'axis-order=long-lat'),28992),NULL,b.bron_id,'uitzethok=A2; Kijfhoek/Bierlap hok 2; bronlabel locatie A, Kleine Pan; https://maps.app.goo.gl/8fZN9degfhhAJpBB7; WGS84 lon lat=4.348571 52.142481; geen contour, positionele nauwkeurigheid en uitzetjaren niet opgegeven.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_konijnen_hokken_mail_20261020'
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+AND NOT EXISTS (SELECT 1 FROM maatregel_geometrie g WHERE g.uitvoering_id=u.uitvoering_id AND g.geometrie_opmerking LIKE 'uitzethok=A2;%');
+
+INSERT INTO maatregel_geometrie (uitvoering_id,geometrie_type,geometrie,geometrie_jaar,bron_id,geometrie_opmerking)
+SELECT u.uitvoering_id,'TG03_uitvoeringsgebied',ST_Transform(ST_GeomFromText('POINT(4.320931 52.117861)',4326,'axis-order=long-lat'),28992),NULL,b.bron_id,'uitzethok=B1; Loopert hok 1; bronlabel locatie B, Waterschaps-vallei; https://maps.app.goo.gl/Bf8PTHbFBp7WbBnb8; WGS84 lon lat=4.320931 52.117861; geen contour, positionele nauwkeurigheid en uitzetjaren niet opgegeven.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_konijnen_hokken_mail_20261020'
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+AND NOT EXISTS (SELECT 1 FROM maatregel_geometrie g WHERE g.uitvoering_id=u.uitvoering_id AND g.geometrie_opmerking LIKE 'uitzethok=B1;%');
+
+INSERT INTO maatregel_geometrie (uitvoering_id,geometrie_type,geometrie,geometrie_jaar,bron_id,geometrie_opmerking)
+SELECT u.uitvoering_id,'TG03_uitvoeringsgebied',ST_Transform(ST_GeomFromText('POINT(4.321215 52.118227)',4326,'axis-order=long-lat'),28992),NULL,b.bron_id,'uitzethok=B2; Loopert hok 2; bronlabel locatie B, Waterschaps-vallei; https://maps.app.goo.gl/hv1cdD9n2C2ynKSU6; WGS84 lon lat=4.321215 52.118227; geen contour, positionele nauwkeurigheid en uitzetjaren niet opgegeven.'
+FROM maatregel_uitvoering u JOIN maatregel_bron b ON b.bron_code='dunea_konijnen_hokken_mail_20261020'
+WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+AND NOT EXISTS (SELECT 1 FROM maatregel_geometrie g WHERE g.uitvoering_id=u.uitvoering_id AND g.geometrie_opmerking LIKE 'uitzethok=B2;%');

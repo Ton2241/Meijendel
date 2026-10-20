@@ -114,24 +114,25 @@ def main() -> int:
         apply(SCHEMA)
         apply(SEED)
         expected = {
-            "maatregel_bron": 43,
+            "maatregel_bron": 45,
             "maatregel_project": 18,
-            "maatregel_uitvoering": 64,
+            "maatregel_uitvoering": 65,
             "maatregel_uitvoering_jaar": 104,
-            "maatregel_uitvoering_bron": 99,
+            "maatregel_uitvoering_bron": 102,
             "plot_gebied": 8,
             "plot_gebiedsindeling": 1,
             "plot_gebied_lidmaatschap": 69,
-            "maatregel_plot_koppeling": 211,
+            "maatregel_plot_koppeling": 213,
             "maatregel_uitvoering_gebied": 2,
             "maatregel_uitvoering_plotscope": 3,
         }
+        expected["maatregel_geometrie"] = 4
         before = {table: scalar(f"SELECT COUNT(*) FROM {table};") for table in expected}
         assert before == expected, before
         assert scalar("SELECT COUNT(*) FROM maatregel_uitvoering u LEFT JOIN maatregel_uitvoering_bron b USING (uitvoering_id) WHERE b.uitvoering_id IS NULL;") == 0
-        assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 0
+        assert scalar("SELECT COUNT(*) FROM maatregel_geometrie;") == 4
         assert scalar("SELECT COUNT(*) FROM plot_gebied_geometrie;") == 0
-        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 307
+        assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 305
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 69
         assert scalar("SELECT COUNT(DISTINCT plot_id) FROM plot_gebied_lidmaatschap;") == 69
         assert mysql("SELECT GROUP_CONCAT(CONCAT(gebied_code,':',n) ORDER BY gebied_code SEPARATOR ',') FROM (SELECT gebied_code,COUNT(*) n FROM plot_gebied_lidmaatschap GROUP BY gebied_code) x;", TEST_DB) == (
@@ -826,8 +827,8 @@ def main() -> int:
             AND u.datum_vanaf='2024-01-01'
             AND u.datum_tot='2024-12-31'
             AND u.datum_precisie='jaar'
-            AND p.bestuurlijke_status='uitvoering_2024_bevestigd_vervolg_onbekend'
-            AND p.deelgebied='Kleine Pan en Waterschapsvallei'
+            AND p.bestuurlijke_status='uitvoering_vanaf_2023_bevestigd_hokjaren_onbekend'
+            AND p.deelgebied='Planlabels: Kleine Pan en Waterschaps-vallei; feitelijke hokken: Kijfhoek/Bierlap (M7) en Loopert (M45)'
             AND p.plan_einddatum='2026-03-31';
         """) == 1
         assert mysql("""
@@ -837,7 +838,7 @@ def main() -> int:
           JOIN plots p USING (plot_id)
           JOIN maatregel_bron b USING (bron_id)
           WHERE u.uitvoering_code='konijnen_bijplaatsing_2024_2026'
-            AND pk.verificatiestatus='geverifieerd'
+            AND pk.verificatiestatus='te_beoordelen'
             AND pk.doorsnijding_pct IS NULL;
         """, TEST_DB) == "M41:expliciet_in_bron:odh_konijnenontheffing_2023,M8:expliciet_in_bron:odh_konijnenontheffing_2023"
         assert scalar("""
@@ -846,7 +847,7 @@ def main() -> int:
           WHERE uitvoering_code='konijnen_bijplaatsing_2024_2026'
             AND plot_id IN (3530,100425)
             AND jaar=2024;
-        """) == 2
+        """) == 0
         assert mysql("""
           SELECT CONCAT(p.kavel_nummer,':',pk.koppelmethode,':',b.bron_code,':',pk.verificatiestatus)
           FROM maatregel_plot_koppeling pk
@@ -1151,6 +1152,27 @@ def main() -> int:
           WHERE uitvoering_code='ganzenhoek_wandelpad_1974_1975'
             AND jaar IN (1974,1975);
         """) == 8
+        # Hoklocaties mogen geen onbewezen historische plot-jaareffecten opleveren.
+        assert mysql("""
+          SELECT GROUP_CONCAT(CONCAT(p.kavel_nummer,':',k.verificatiestatus) ORDER BY p.kavel_nummer)
+          FROM maatregel_plot_koppeling k JOIN maatregel_uitvoering u USING(uitvoering_id)
+          JOIN plots p USING(plot_id)
+          WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020';
+        """, TEST_DB) == 'M45:geverifieerd,M7:geverifieerd'
+        assert scalar("""
+          SELECT COUNT(*) FROM maatregel_geometrie g JOIN maatregel_uitvoering u USING(uitvoering_id)
+          WHERE u.uitvoering_code='konijnen_feitelijke_hokken_20261020'
+            AND ST_SRID(g.geometrie)=28992 AND ST_GeometryType(g.geometrie)='POINT'
+            AND g.geometrie_jaar IS NULL;
+        """) == 4
+        assert scalar("""
+          SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast
+          WHERE uitvoering_code IN ('konijnen_feitelijke_hokken_20261020','konijnen_bijplaatsing_2024_2026');
+        """) == 0
+        assert scalar("""
+          SELECT COUNT(*) FROM maatregel_bron
+          WHERE bron_code='dunea_konijnen_hokken_mail_20261020' AND bron_datum IS NULL;
+        """) == 1
         mysql("""
           INSERT INTO maatregel_uitvoering_jaar
             (uitvoering_id,jaar,jaarstatus,bron_id,toelichting)
