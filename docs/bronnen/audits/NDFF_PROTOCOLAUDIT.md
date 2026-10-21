@@ -1988,3 +1988,200 @@ GROUP BY p.kavel_nummer,v.jaar,v.protocol_sleutel,w.telonderwerp;
 ```
 
 Voor buffers is per locatie `ST_Union(ST_Buffer(hok1,r),ST_Buffer(hok2,r))` gebruikt, voor r=100, 250 en 500 meter in EPSG:28992. SOVON-punten volgen `ST_Intersects(punt,buffer)`. Voor NDFF is `ST_Within(analyse_geometrie,buffer)` vereist om een melding geheel binnen de buffer te noemen; losse intersecties blijven als mogelijke overlap zichtbaar. De diagnostiek van uitgesloten records wordt afzonderlijk uitgevoerd en verandert nooit `record_selectiestatus`. Bron-ID's zijn vóór iedere bufferaggregatie per locatie uniek. Datum en geometrie zijn alleen lokaal voor de overlapcontrole gebruikt; de rapportage bevat geen beveiligde waarnemingslocaties.
+
+## Gebiedsbrede konijnenhistorie en hotspots
+
+Stand: 21 oktober 2026. Vraag: wat laten alle konijnenwaarnemingen in de levende lokale database zien over de geschiedenis en de huidige zwaartepunten in Meijendel? Dit is een uitbreiding van de locatieanalyse van 20 oktober, geen herhaling met alleen M7 en M45. De 128 centrale taxonroutes zijn opnieuw gecontroleerd voor taxon 38949. De broninventarisatie is ongewijzigd: 10.003 AVIMAP-puntregels (2009–2026), 1.787 aanvullend bewaarde SOVON-bezoektotalen (2005–2025) en 11.630 canonieke NDFF-Konijnrecords (1960–2025). Geen bronregels, classificaties, geometrieën of maatregelgegevens zijn gewijzigd.
+
+De volledige uitvoering, exacte queries, alle jaartabellen, alle kavels inclusief nul- en ontbrekende uitkomsten, de rasterconcentraties en twee figuren staan in [het uitgevoerde analyse-notebook](KONIJN_HISTORIE_HOTSPOTS.ipynb). Het notebook is het enige nieuwe bestand: nodig om de gebiedsbrede berekeningen opnieuw uit te voeren en alle uitkomsten te bewaren. Alle databasequeries zijn omgeven door een alleen-lezen transactie. Er is niets gepubliceerd en geen zware exportketen gestart.
+
+### Afbakening en bronvergelijking
+
+De kavelanalyse gebruikt uitsluitend `v_meijendel_analyseplot_actueel`; M66 en M91 worden alleen in de broninventarisatie verantwoord. Van de 10.003 AVIMAP-regels liggen er 9.704 op een in-scope bronplot. Daarvan betreffen 9.539 positieve punten uit 2009–2025 waarnemingen binnen de eigen kavel, 135 complete-jaarregels liggen erbuiten en dertig punten zijn uit het onvolledige jaar 2026. De bronvlag `in_plot` stemt bij alle 9.704 regels overeen met doorsnijding van de actuele kavelgeometrie. Buiten-plotpunten worden niet alsnog aan een ander kavelbezoek toegeschreven.
+
+Voor de vergelijkende reeks geldt bovendien de kwaliteitsselectie `record_selectiestatus='voorlopig_bruikbaar'` uit `v_sovon_avimap_daz_analyse`. Eén bezoek in M17b op 22 juni 2023 heeft een opgegeven duur van 1.580 minuten. De positieve melding van één konijn blijft aanwezigheidsbewijs; dat bezoek telt niet mee in de vergelijkende noemer. De vergelijkingsreeks bevat daardoor 9.538 punten met telsom 13.482 tijdens 3.838 rondes in vijftig kavels uit 2009–2025. De onvolledige reeks 2026 blijft apart. De primaire gegevensgeschiktheid is voorwaardelijk: een nul geldt uitsluitend binnen een bezoek met oorspronkelijke zoogdiermelding en voor een DAZ-doelsoort. Een ronde zonder zoogdierregistratie is geen nul; gelijkblijvende registratie-intensiteit en volledige detectie zijn niet bewezen.
+
+Binnen scope zijn 1.733 van de 1.787 aanvullende SOVON-jaarbestandtotalen aanwezig. Daarvan zijn 218 uit 2005–2008, vóór AVIMAP, en 1.515 uit 2009–2025. Alle 1.515 gemeenschappelijke totalen stemmen exact overeen met de AVIMAP-puntsommen binnen de kavel én met het totaal inclusief buiten-plotwaarden. Zij zijn geen extra dieren of onafhankelijke tellingen. De 323 eenduidig op BMP-bezoek gekoppelde NDFF-regels zonder vastgelegde SOVON-vervanging blijven secundaire historische context; geen vastgelegde overlap bewijst geen onafhankelijkheid. Er zijn geen nieuwe historische nullen afgeleid.
+
+De toegelaten NDFF-selectie telt opnieuw 753 records: 751 LOS en twee ObsIdentify. Daaronder vallen 724 levende exemplaarmeldingen uit 1995–2025, vijftien dode dieren uit 1960–2018 en veertien spoor-, mest- en vraatmeldingen uit 2010–2024. LOS blijft `gegevensgeschiktheid=niet_beoordeeld`, ObsIdentify `voorwaardelijk`; uitsluitend positieve geregistreerde aanwezigheid is bruikbaar. De kwaliteitsmelding uit de centrale view blijft van toepassing: meldingsintensiteit is geen gevalideerde populatietrend. De vijf mogelijke AVIMAP/LOS-overlapparen zijn opnieuw gevonden; er wordt geen gemeenschappelijk bron- of dierentotaal gevormd. Canonieke representaties en protocolbesluiten blijven zoals beschreven in de voorafgaande heranalyse.
+
+### Historisch overzicht
+
+De oudste ruimtelijk toegelaten losse melding betreft één dood konijn uit 1960. De toegelaten meldingen van levende dieren beginnen in 1995. De route-/sectieloze konijnenmeetnetlevering begint in 1984 en eindigt in 2023; deze laag is uitsluitend historische broncontext. De 218 positieve SOVON-bezoektotalen uit 2005–2008 bevatten samen een telsom van 1.429 in zeven tot twaalf kavels per jaar. De ontbrekende volledige nulmatrix verhindert een vergelijkbaar historisch gemiddelde per ronde.
+
+Voor 2009–2025 is de primaire reeks hieronder beschrijvend vergelijkbaar te maken. Telsom betekent opgetelde geregistreerde aantallen tijdens herhaalde bezoeken, geen unieke konijnen. Ronde betekent hier een oorspronkelijke ronde met minstens één zoogdierregistratie en een bruikbare bezoekstatus.
+
+| Jaar | Rondes | Met konijn | Telsom | Per ronde | Met konijn (%) | Kavels |
+| --- | --- | --- | --- | --- | --- | --- |
+| 2009 | 182 | 148 | 955 | 5,25 | 81,32 | 21 |
+| 2010 | 139 | 111 | 739 | 5,32 | 79,86 | 19 |
+| 2011 | 177 | 129 | 985 | 5,56 | 72,88 | 23 |
+| 2012 | 220 | 170 | 1190 | 5,41 | 77,27 | 26 |
+| 2013 | 222 | 184 | 1104 | 4,97 | 82,88 | 28 |
+| 2014 | 199 | 158 | 1479 | 7,43 | 79,40 | 27 |
+| 2015 | 265 | 192 | 1176 | 4,44 | 72,45 | 31 |
+| 2016 | 230 | 185 | 1696 | 7,37 | 80,43 | 33 |
+| 2017 | 244 | 162 | 1059 | 4,34 | 66,39 | 36 |
+| 2018 | 213 | 155 | 899 | 4,22 | 72,77 | 29 |
+| 2019 | 173 | 109 | 678 | 3,92 | 63,01 | 26 |
+| 2020 | 235 | 120 | 464 | 1,97 | 51,06 | 29 |
+| 2021 | 254 | 102 | 385 | 1,52 | 40,16 | 32 |
+| 2022 | 229 | 54 | 243 | 1,06 | 23,58 | 36 |
+| 2023 | 270 | 43 | 155 | 0,57 | 15,93 | 39 |
+| 2024 | 302 | 44 | 147 | 0,49 | 14,57 | 39 |
+| 2025 | 284 | 26 | 128 | 0,45 | 9,15 | 43 |
+
+| Periode | Rondes | Telsom | Per ronde | Met konijn (%) | Kavels |
+| --- | --- | --- | --- | --- | --- |
+| 2009–2013 | 940 | 4973 | 5,29 | 78,94 | 33 |
+| 2014–2018 | 1151 | 6309 | 5,48 | 74,02 | 42 |
+| 2019–2023 | 1161 | 1925 | 1,66 | 36,86 | 40 |
+| 2024–2025 | 586 | 275 | 0,47 | 11,95 | 44 |
+
+Van 2016 tot 2025 daalt de geregistreerde telsom van 1.696 naar 128, terwijl het aantal geselecteerde rondes stijgt van 230 naar 284. Het aantal per ronde daalt van 7,37 naar 0,45; het aandeel rondes met konijnen van 80,4% naar 9,2%. Die uitkomsten tonen geen gebiedsdekkende populatieomvang of gevalideerde populatie-index. Zij geven wel een sterke afname binnen de geregistreerde rondes.
+
+Om wisselende kaveldekking te beperken zijn 2009–2013 en 2021–2025 ook vergeleken in dezelfde negentien kavels, met per periode minimaal vijftien rondes en drie jaren. De perioden bevatten respectievelijk 731 en 721 rondes. Bij gelijk gewicht per kavel daalt het gemiddelde van 4,755 naar 0,253 per ronde: 94,7% lager. Achttien kavels dalen, één blijft nul en geen stijgt. De gemiddelde frequentie per kavel daalt van 75,1% naar 17,5%. Bij beperking tot maart–juni blijven dezelfde negentien kavels beschikbaar en bedraagt het verschil 94,5%. Dit is geen schatting dat de werkelijke populatie precies 94,7% is afgenomen: waarnemersgedrag, route, tijdstip en detectie zijn hiermee niet volledig ondervangen. M42 en M41 ontbreken in de vroege periode en zitten daarom niet in deze gepaarde vergelijking.
+
+### Hotspots en historische verschuiving
+
+Hotspot betekent hier herhaalde concentratie van positieve registraties. Er is geen formele ruimtelijke significantietoets uitgevoerd: oorspronkelijke looproutes en volledige rasterbezoekdekking ontbreken. Voor kavelvergelijking worden telsom, rondes, positieve frequentie en jaren samen beoordeeld. Ruwe puntdichtheid alleen zou verschillen in kavelomvang en waarnemersinspanning verhullen.
+
+De grootste historische kavel-telsommen uit 2009–2025 zijn:
+
+| Kavel | Rondes | Telsom | Per ronde | Jaren |
+| --- | --- | --- | --- | --- |
+| M42 | 132 | 2520 | 19,09 | 12 |
+| M75 | 155 | 1501 | 9,68 | 17 |
+| M10-12-76 | 181 | 1487 | 8,22 | 17 |
+| M17a | 147 | 1030 | 7,01 | 17 |
+| M77 | 158 | 748 | 4,73 | 17 |
+| M15 | 122 | 538 | 4,41 | 17 |
+| M75a | 118 | 514 | 4,36 | 16 |
+| M2 | 161 | 465 | 2,89 | 17 |
+| M12a | 160 | 414 | 2,59 | 17 |
+| M8 | 122 | 414 | 3,39 | 13 |
+
+De grootste recente kavel-telsommen uit 2021–2025 zijn:
+
+| Kavel | Rondes | Met konijn | Telsom | Per ronde | Jaren |
+| --- | --- | --- | --- | --- | --- |
+| M42 | 57 | 35 | 623 | 10,93 | 5 |
+| M34 | 38 | 23 | 77 | 2,03 | 5 |
+| M33 | 45 | 24 | 62 | 1,38 | 5 |
+| M10-12-76 | 57 | 19 | 37 | 0,65 | 5 |
+| M31 | 24 | 16 | 36 | 1,50 | 3 |
+| M35 | 43 | 17 | 30 | 0,70 | 5 |
+| M41 | 14 | 13 | 27 | 1,93 | 2 |
+| M17b | 31 | 13 | 21 | 0,68 | 5 |
+| M17a | 36 | 14 | 17 | 0,47 | 5 |
+| M75 | 33 | 13 | 16 | 0,48 | 5 |
+| M16 | 25 | 9 | 15 | 0,60 | 5 |
+| M2 | 39 | 8 | 13 | 0,33 | 5 |
+
+M42 is het duidelijkste recente zwaartepunt: 623 van 1.058 getelde konijnen in 2021–2025 (58,9%), verspreid over 35 van 57 rondes en vijf jaren. De grootste dagtelsom is 36, zodat één uitzonderlijk bezoek de uitkomst niet verklaart. In 2024–2025 bevat M42 192 van de 275 getelde konijnen (69,8%), tijdens vijftien van 29 rondes. De overige 43 kavels met dekking in die twee jaren leveren samen 83 tijdens 557 rondes. M42 neemt zelf ook af: 25,53 per ronde in 2014–2018 (51 rondes), 10,93 in 2021–2025 (57) en 6,62 in 2024–2025 (29). Het is een resterend zwaartepunt, geen aangetoond herstelgebied.
+
+M41 bevat in 2024–2025 een telsom van 27 tijdens dertien van veertien rondes. Er is geen vroegere AVIMAP-zoogdierbezoekreeks voor vergelijking: deze hoge meldingsfrequentie bewijst geen recente vestiging. M34 bevat in 2021–2025 nog een telsom van 77 tijdens 38 rondes, maar in 2024–2025 slechts vijf tijdens vijftien. M33 bevat 62 tijdens 45 rondes over vijf jaren en vijftien tijdens twintig rondes in 2024–2025. M31 heeft 36 tijdens 24 rondes in 2021–2023; in 2024–2025 ontbreekt hier de zoogdierbezoekdekking. Die laatste twee jaren worden niet als nul geclassificeerd.
+
+De vroegere zwaartepunten zijn sterk teruggelopen: M75 gaat van 717 tijdens 54 rondes in 2009–2013 naar zestien tijdens 33 rondes in 2021–2025; M17a van 626/50 naar zeventien/36; M10-12-76 van 616/49 naar 37/57. In M10-12-76 zijn in 2024–2025 geen konijnpunten gevonden tijdens 22 rondes met zoogdierregistratie. Dat is geen zelfstandig afwezigheidsbewijs.
+
+De aanvullende NDFF-laag ondersteunt vooral dezelfde recente registratiezwaartepunten: 114 levende meldingen in M42, 23 in M41 en 21 in M31 gedurende 2021–2025. M34 heeft vijftien, M77 veertien. Zij worden niet bij de BMP-telsommen opgeteld; er is geen onafhankelijke populatieschatting gemaakt. De veldinspanning van losse melders is niet bekend.
+
+Het namenregister is ruimtelijk gecontroleerd. Alle 95 recente AVIMAP-punten van M42 liggen in Delfland; slechts 24 liggen in het geregistreerde Koningsbosch. Van de 45 recente M33-punten liggen er dertig in Oostduinpark, van de 36 M31-punten 33. Een kavel krijgt daarom geen onterechte volledige gebiedsnaam. Gebiedspolygonen kunnen overlappen; de aantallen per naam worden niet bij elkaar opgeteld.
+
+De 500-meter-RD-rasteranalyse bevestigt de zuidelijke concentratie. De cel x=80.500–81.000, y=459.000–459.500 bevat in 2021–2025 58 punten tijdens 36 bezoeken in vijf jaren, verdeeld over M31/M33/M41/M42. De zuidelijk aangrenzende cel x=80.500–81.000, y=458.500–459.000 bevat dertig punten, telsom 310, tijdens 23 bezoeken in vijf jaren, alle uit M42. Dit zijn registratieconcentraties zonder rasterbezoeknoemer. Het notebook bewaart alle rastercellen, inclusief historische en recente alternatieven; de grenzen zijn een gekozen raster en geen ecologische leefgebiedgrenzen.
+
+### Alle nuluitkomsten, ontbrekende dekking en 2026
+
+In 2021–2025 hebben achttien kavels geselecteerde rondes maar geen konijnpunten: M105, M13s, M14, M1a, M1b, M3, M36, M4-5, M43, M45, M46, M53, M54b, M61, M62, M72, M73 en M78/79. Aanvullende losse meldingen kunnen in zo'n kavel wel aanwezigheid bewijzen; nul BMP-registraties zijn geen bewezen afwezigheid.
+
+Zeventien van de 67 scopeplots hebben in 2009–2025 geen geselecteerde primaire zoogdierbezoeken: M32, M54a, M84s, M9, M12, M5, M4, M11, M1, M54, M79, M78, M17, M76, M8/11, M10 en M8/9. Dit omvat historische plotindelingen en mag niet als zeventien bemeten nulgebieden worden gelezen. M32 krijgt bijvoorbeeld pas in de onvolledige AVIMAP-jaargang 2026 zoogdierdekking; M84s heeft aanvullende NDFF-meldingen. Alle nul- en ontbrekende uitkomsten worden per bron onderscheiden in het notebook.
+
+De gedeeltelijke bronjaargang 2026 eindigt op 19 juli en bevat binnen de eigen scopekavel dertig positieve konijnpunten in elf kavels, telsom 78, tijdens 23 van 305 rondes met zoogdiermelding in 44 kavels. M42 levert 55 van de 78. De reeks is niet als volledig jaar met 2025 vergeleken.
+
+Het afzonderlijke konijnenmeetnet omvat 5.095 positieve sectieregels uit 1984–2023 en elf kilometerhokken. De levering bevat geen 1999-regels; dat jaar is geen nul. In 2023 zijn nog vijf hokken vertegenwoordigd, tegenover tien in 2016. De bronregelaantallen vormen daarom geen populatie-index. Alle 5.095 regels blijven ruimtelijk uitgesloten van de kavelanalyse; native route- en sectie-id ontbreken. Ook gelijke telwaarden worden niet als dubbel verwijderd. De zes mogelijke 17.204-overlappingen blijven herkenbaar. De overige ruimtelijk uitgesloten NDFF-protocollen blijven zichtbaar in de broninventarisatie.
+
+Er is geen populatietrendmodel, dichtheidsmodel, formele hotspottoets of causaal beheereffectmodel geschat. De respectieve ontbrekende grondslagen zijn gevalideerde detectie/inspanning, ruimtelijke bezoekdekking en de werkelijk uitgevoerde uitzet- en vrijlatingsgegevens per hok. De bestaande brongegevens ondersteunen wel een breed gedragen geregistreerde afname en enkele resterende zwaartepunten. De analyse bewijst geen uitzettingseffect en toetst geen beheerbehandeling.
+
+### Verificatie
+
+De alleen-lezen audits `--audit-live`, `--audit-konijnen` en `--audit-sovon-avimap` slagen op 21 oktober 2026. Keten v1 bevat 810.983 canonieke records, nul dubbelingen, nul foutieve representaties en nul ontbrekende analysevelden. De konijnenaudit vindt 5.095 doelsoortregels, 714 bijvangsten, nul afgeleide nullen en expliciete meervoudige plotkoppeling voor alle 5.809 protocolregels. De primaire SOVON-audit heeft nul ongeldige waarnemingen of afgeleide DAZ-regels. Deze controles zijn technisch, geen bewijs van trendgeschiktheid. Uniciteit van primaire bron-ID's, bezoek-ID's en NDFF-identiteiten is aanvullend afgedwongen; puntselectie en bezoeksommen zijn onafhankelijk met 1.515 jaarbestandtotalen gereconcilieerd. Het notebook is van begin tot eind uitgevoerd; figuren en opgeslagen uitvoer zijn gecontroleerd. De bronregisterversies zijn op dezelfde stand gebracht. Geen database-export of VPS-publicatie.
+
+## Literatuurduiding, habitat en mogelijke bescherming door mensen
+
+Aanvulling op 21 oktober 2026 op verzoek van Ton. Ton beschrijft M42 als open kavel aan de rand van Meijendel, met veel mensen en verkeer langs de grenzen. Dit is expliciete terreinkennis van Ton, geen gemeten historische recreatie- of verkeersreeks. De hypothese dat mensen of verkeer predatoren kunnen afschrikken, of wandelaars hun jacht verstoren, is opgenomen naast habitatkwaliteit, zichtbaarheid en gewenning van vossen.
+
+### Welke Zotero-bronnen zijn daadwerkelijk gelezen?
+
+De lokale Zotero-API is alleen-lezen geraadpleegd. De inventaris bevat 1.520 items. De fulltextroute noemt 800 bijlagen; van 418 geeft de API tekst terug, bij 382 geeft dezelfde route HTTP 404. Dat laatste bewijst niet dat de oorspronkelijke bijlage ontbreekt. In de 418 beschikbare teksten zijn 166 bijlagen gevonden met konijn, rabbit of Oryctolagus. Duplicaten, tijdschriftnummers met meerdere artikelen, trefwoordenlijsten en ongerelateerde vermeldingen zijn niet als 166 onderzoeken behandeld. Alleen de onderstaande geselecteerde werken dragen de inhoudelijke duiding. Er zijn geen paden of bestanden op de T7 of NAS geopend, geen Zotero-items gewijzigd en geen literaire tabelgegevens aan de waarnemingsdatabase toegevoegd.
+
+| Werk en oorspronkelijke tekst | Zotero-herkomst | Wat het toevoegt; grens van het bewijs |
+|---|---|---|
+| Lucas (1990), *Konijnensterfte in Meijendel*, Meijendel Mededelingen 19: 76–77 | Artikelitem `5FGF663X`; gelezen in nummeritem `MZVIKR47`, bijlage `MTMA73DQ` | Beschrijft sterfte vanaf december 1989 en gemiddelden over tien routes, voorjaar 1984–voorjaar 1990. De oorzaak was bij schrijven nog onbekend. Latere RHD-duiding wordt niet als toenmalige diagnose gepresenteerd. De OCR-tabellen zijn niet zonder visuele controle opnieuw gedigitaliseerd. |
+| Bankert & In ’t Groen (2003), *Konijnen in de duinen van Meijendel*, Holland’s Duinen 42: 5–11 | Artikelitem `573XJMG5`; gelezen in nummeritem `QN3SBRM4`, bijlage `RT3DNRBU` | Vijf telwegsecties en aansluitende achterlandproefvlakken, oktober 2001–februari 2002. Zichttellingen bleken verstoringsgevoelig. Keutelonderzoek wees in deze beperkte wintersituatie op circa 30% meer konijnen in het achterland. Geen universele correctiefactor voor BMP, andere jaren of M42. |
+| Van Strien et al. (2011), *Occupancy dynamics … with imperfect detection*, Wildlife Research 38: 717–725, DOI 10.1071/WR11050 | `47FPXWLC`, bijlage `PNRIDHD5` | 245 transecten, Nederlandse kustduinen 1984–2009. Detectie verschilt tussen jaren en habitats; herstel en herkolonisatie verschillen eveneens. Dit ondersteunt het onderscheid tussen zichtbaarheid en voorkomen; de landelijke uitkomsten worden niet aan M42 toegeschreven. |
+| Dekker et al. (2022), *Herstel konijnenpopulaties in de kustduinen*, OBN-2017-86-DK | Bijlage `A9C2QLFG` onder item `PFCUAJ48` | Hoofdrapport bij het werkprotocol. Bemonstering in de winters 2018/2019 en 2019/2020; bloedmonsters uit 23 deelgebieden. Virussen blijven een belangrijke beperking. Korte, voedselrijke kruiden-/grasvegetatie, dekking en holen hangen samen met geschiktheid. Relatief gezonde populaties komen ook in door mensen beïnvloede leefgebieden voor, zonder bewijs dat mensen de oorzaak van dat succes zijn. |
+| Van der Hagen (2022), *Rabbits Rule*, proefschrift, DOI 10.18174/575460 | `U5HPG8GI`, bijlage `973AJYRN` | Langjarige synthese over konijnen, vee en vegetatie in Meijendel. De verandering van de vegetatie heeft meerdere oorzaken. Geen onafhankelijke herhaling van alle analyses die later als artikel verschenen. |
+| Van der Hagen et al. (2023), *The role of livestock grazing in long-term vegetation changes …*, Plant Sociology 60: 1–12, DOI 10.3897/PLS2023601/01 | `XJFRZYF8`, bijlage `WH2RWN2G` | 41 permanente vegetatieplots vanaf de jaren 1950. Koppelt verlies van konijnenbegrazing aan verdere struweel- en bosontwikkeling. Vee in de onderzochte bezetting vervulde niet vanzelf dezelfde functie. Geen meting van begrazingsdruk of draagkracht in M42. |
+| Van der Hagen (2025), *Een konijnenexclosure uit 1976 en de vegetatieontwikkeling sedertdien*, Holland’s Duinen 87: 6–12 | Artikelitem `IQ38WJ9U`; gelezen in nummeritem `RPXR4YWJ`, bijlage `K2KDJXNG` | Acht exclosures aangelegd in 1976; artikel volgt één noordhellingexclosure en omgeving met beelden uit 1978, 2002 en 2025. Onderstreept het langjarige effect van konijnen op vegetatiestructuur. Het Zotero-jaar 1976 is hier het aanlegjaar, niet het publicatiejaar; de bron is november 2025. |
+| De Kok (2016), *Vossenwaarnemingen in de Hollandse duinen*, Holland’s Duinen 67: 14–16 | Nummeritem `6XR2Q2G3`, bijlage `CC6YF2XM` | Ruim 800 waarnemingen gedurende de voorafgaande vijf jaar, in Meijendel en Berkheide. Beschrijft verschillen in schuwheid en vossen die op de Harstenhoek blijven liggen of jagen terwijl mensen buiten het hek passeren. Observationele terreinkennis, geen verstoringsexperiment of rechtstreekse kavel-42-toets. |
+| De Kok (2018), *Vossen van de Harstenhoek, drie jaar nestobservaties*, Holland’s Duinen 72: 33–35 | Nummeritem `TIJHLKKU`, bijlage `VHG9RFMM` | Nestobservaties uit 2016–2018 beschrijven zowel gewenning aan voorbijgangers als mogelijke gevolgen van opdringerige fotografen. Aanwezigheid buiten een hek verschilt van benadering of betreding. Geen bewezen afname van de predatie op konijnen. |
+
+De documentidentiteit is op de tekst zelf gecontroleerd. Bij `PFCUAJ48` heeft het parent-item de titel Werkprotocol, maar de gelezen PDF is het langere hoofdrapport. Het publicatiejaar van de exclosurepublicatie is met de oorspronkelijke tijdschriftkop en WUR-registratie als 2025 vastgesteld. Beide afwijkingen zijn in deze analyse verantwoord; Zotero-metadata zijn niet stilzwijgend gewijzigd.
+
+### Wat verandert de literatuur aan het historische beeld?
+
+De AVIMAP-reeks begint pas in 2009. De literatuur plaatst die reeks in een langere geschiedenis: myxomatose in Meijendel rond 1954, een in december 1989 beschreven nieuwe sterftegolf, gedeeltelijk herstel en herkolonisatie in delen van de Nederlandse duinen na 2003, en RHDV-2 in Nederland vastgesteld in 2015 volgens Dekker et al. (2022). De verschillen tussen 1989 en circa 1990 in latere RHD-beschrijvingen zijn geen exacte datering van een laboratoriumdiagnose per kavel.
+
+De eigen geregistreerde afname van 7,37 konijnen per ronde in 2016 (230 rondes) naar 0,45 in 2025 (284 rondes) past bij een breder patroon van ziekte en moeilijk herstel. De database bevat geen gekoppelde ziekteuitslagen die bewijzen dat RHDV-2 die specifieke lokale afname heeft veroorzaakt. De negentien-kavelvergelijking en de beperking tot maart–juni ondervangen een deel van de wisselende dekking, niet de verschillen in zichtbaarheid en gedrag die Van Strien en Bankert beschrijven.
+
+De ecologische betekenis gaat verder dan aantallen: de exclosures en vegetatiereeksen ondersteunen dat konijnen met begrazing, het eten van kiemplanten en graafwerk een functie vervullen die niet zonder meer door vee wordt overgenomen. De 623 opgetelde konijnenregistraties in M42 uit 2021–2025 bewijzen niet dat daar voldoende konijnen aanwezig zijn om die functie op kavelniveau te vervullen. Begraasd oppervlak, graafactiviteit, reproductie en overleving zijn in deze selectie niet gemeten.
+
+### M42: habitat, zichtbaarheid en de hypothese van predatiebescherming
+
+Er blijven vier verklaringen naast elkaar staan:
+
+- Open en eventueel kortgrazig terrein kan geschikt voedselgebied zijn én konijnen beter zichtbaar maken. Ton bevestigt de openheid; kortgrazigheid, maaibeheer, voedselkwaliteit en holen zijn niet als gemeten M42-kenmerken uit de beschrijving afgeleid.
+- Menselijke aanwezigheid kan vossen op bepaalde tijden of plekken tot vermijding brengen of een jacht onderbreken. Het effect zou ook via tijdstippen kunnen lopen: mensen overdag, vossen meer in schemer en nacht.
+- Vossen kunnen aan voorspelbare voorbijgangers wennen. De lokale waarnemingen van De Kok laten zien dat mensen langs een hek niet altijd voorkomen dat vossen blijven of jagen. Dat sluit tijdelijke verstoring elders of in andere situaties niet uit.
+- Dezelfde omstandigheden kunnen ook konijnen verstoren. Het netto-effect van mensen, honden en verkeer is daarom niet uit de aanwezigheid van mensen alleen af te leiden.
+
+Een aanvullende primaire studie buiten Zotero, Díaz-Ruiz et al. (2016; online 2015), *Drivers of red fox daily activity*, Journal of Zoology 298: 128–138, DOI 10.1111/jzo.12294, onderzocht twaalf Iberische gebieden met cameravallen. Minder dagactiviteit van vossen hing samen met grotere menselijke verstoring. Dit ondersteunt het mogelijke mechanisme van tijdsverschuiving; het onderzoek bewijst geen lager totaal aantal gevangen konijnen in M42. In de onderzochte verstoringscontext speelde ook predatorbestrijding een rol, zodat de uitkomst niet uitsluitend aan wandelaars kan worden toegeschreven. De algemene beschermingshypothese is dus serieus genomen, zonder een lokale uitkomst te veronderstellen.
+
+### Aanvullende controle: liggen de konijnpunten langs de kavelgrens?
+
+De 95 positieve AVIMAP-punten binnen M42 uit 2021–2025 zijn met de actuele kavelgeometrie in EPSG:28992 vergeleken. De afstand is tot de dichtstbijzijnde kavelgrens, niet tot een weg of een wandelaar. De grenzen en stroken zijn gekozen rekenzones, geen gemeten verkeersinvloed.
+
+| Afstand tot kavelgrens | Puntregels binnen de strook | Telsom | Aandeel van de 95 punten | Aandeel kaveloppervlak in strook |
+|---|---:|---:|---:|---:|
+| 0–25 m | 8 | 9 | 8,4% | 17,5% |
+| 0–50 m | 16 | 27 | 16,8% | 33,6% |
+| 0–100 m | 37 | 69 | 38,9% | 60,6% |
+| 0–150 m | 60 | 208 | 63,2% | 80,5% |
+
+De overige 58 punten, met telsom 554, liggen meer dan honderd meter van de dichtstbijzijnde kavelgrens. Het zwaartepunt in de getelde aantallen ligt daarmee niet uitsluitend direct langs de kavelgrens. Dit bewijst noch weerlegt bescherming door mensen: drukte kan verder doorwerken, de route kan punten selecteren en een administratieve kavelgrens is geen maat voor predatie. Zonder afgelegde telroute is ook de vergelijking met het strookoppervlak geen bewijs van een voorkeur voor de binnenruimte.
+
+### Aanvullende controle: vossen tijdens dezelfde BMP-rondes
+
+De centrale taxonidentiteit Vos is 38970 (*Vulpes vulpes*). Alleen primaire punten binnen de eigen kavel zijn samengevat op dezelfde bruikbare zoogdierbezoeken als in de konijnenanalyse; geen NDFF-vossenbron is erbij opgeteld.
+
+In M42 is in 2021–2025 op 21 van 57 rondes een vos gemeld (36,8%), met telsom 35. In de overige 47 kavels met dekking gaat het om 192 van 1.282 rondes (15,0%), met telsom 237. Dit is een ongecorrigeerde registratievergelijking, geen vergelijking van vossendichtheid of predatiedruk. Openheid kan ook de zichtbaarheid van vossen verhogen; meer konijnen kunnen vossen aantrekken. De uitkomst geeft geen steun aan een eenvoudige verklaring waarin vossen M42 doorgaans mijden. Tijdelijk verstoorde jacht of verschuiving naar de nacht blijft hiermee wel mogelijk.
+
+In 2024–2025 zijn in M42 op vijf van 29 rondes vossen gemeld, met telsom vijf. Dat lagere recente meldingsaantal bewijst geen afgenomen jachtsucces. De volledige vossenjaartabel 2014–2025, alle 48 kaveluitkomsten uit 2021–2025 en de exacte queries staan in het notebook. Er is geen model geschat waarin mensen of verkeer konijnensterfte veroorzaken of voorkomen: gekoppelde bezoekers-/verkeersintensiteit, nachtactiviteit, daadwerkelijke jacht en prooisucces ontbreken in deze analyse.
+
+### Beleids- en beheercontext, gescheiden van uitvoering en bewijs
+
+De duiding is gecontroleerd tegen het lokaal beschikbare vastgestelde Natura 2000-beheerplan 2016–2022 (`CZDA8MMM`), het ontwerp 2026–2032 (`LAW9SJXC`), het actuele provinciale Natuurbeheerplan Zuid-Holland 2027 en de officiële Dunea-uitleg over de functie van het konijn. Het Natuurbeheerplan 2027 is een vastgesteld subsidie- en beheerkaartkader; het is geen gemeten konijnenreeks. De geraadpleegde officiële bekendmaking van 22 januari 2026 noemt het Natura 2000-plan 2026–2032 uitdrukkelijk ontwerp. Het is hier niet als definitief plan of als bewijs van uitvoering gebruikt. Het doel van behoud/herstel van open, soortenrijke duinen ondersteunt het belang van konijnen, maar niet een onbewezen dichtheidsnorm voor M42 of het succes van bijplaatsing. Dunea’s uitleg dat konijnenbegrazing en graverij belangrijk zijn voor het duin wordt ondersteund door de lokale vegetatiestudies.
+
+Primaire externe vindplaatsen, naast de vastgelegde Zotero-identiteiten:
+
+- [Bankert & In ’t Groen (2003), WUR-bronregistratie](https://library.wur.nl/WebQuery/groenekennis/1687088).
+- [Van Strien et al. (2011), auteurs-/WUR-registratie](https://research.wur.nl/en/publications/occupancy-dynamics-of-wild-rabits-oryctolagus-cuniculus-in-the-co/).
+- [Dekker et al. (2022), hoofdrapport](https://www.natuurkennis.nl/Uploaded_files/Publicaties/obn-2017-86-dk-herstel-konijnenpopulaties-in-kustduinen.pdf).
+- [Van der Hagen et al. (2023), WUR-registratie](https://research.wur.nl/en/publications/the-role-of-livestock-grazing-in-long-term-vegetation-changes-in-/).
+- [Van der Hagen (2025), oorspronkelijke publicatie](https://edepot.wur.nl/707244).
+- [De Kok (2016), oorspronkelijke tijdschriftuitgave](https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/hollandsduinen-nummer-67-dunea.pdf).
+- [De Kok (2018), oorspronkelijke tijdschriftuitgave](https://www.dunea.nl/duinen/-/media/bestanden/duinen/hollands-duinen/dunea---hollands-duinen-nummer-72.pdf).
+- [Díaz-Ruiz et al. (2016), primaire onderzoeksabstract](https://zslpublications.onlinelibrary.wiley.com/doi/abs/10.1111/jzo.12294).
+- [Provinciaal Natuurbeheerplan](https://www.zuid-holland.nl/onderwerpen/natuur-en-landschap/natuurbeheer/natuurbeheerplan-zuid-holland/), [ontwerp Natura 2000-beheerplan](https://zoek.officielebekendmakingen.nl/prb-2026-1161.html) en [Dunea over konijnenbeheer](https://www.dunea.nl/algemeen/nieuws/2022/duinen-missen-natuurlijk-beheer-van-het-konijn).
+
+De gecombineerde conclusie blijft een breed gedragen geregistreerde afname met enkele resterende zwaartepunten. M42 is een duidelijke registratiehotspot in een open, door mensen beïnvloede randligging. Een bijdrage van gunstige habitat, betere zichtbaarheid, gedrag en mogelijk tijdelijke bescherming door mensen is aannemelijk als verklaringenset, maar de aandelen daarvan zijn niet vastgesteld. Alleen openheid en drukte zijn door Ton als terreinkennis bevestigd; bescherming tegen predatoren is een hypothese, geen geconstateerd effect. De gegevens geven evenmin grond om M42 als eenvoudig model voor uitzetting elders te behandelen.
