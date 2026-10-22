@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import signal
@@ -47,6 +48,10 @@ def validate_manifest(manifest, now):
     require(tested.tzinfo is not None and tested <= now and (now-tested).total_seconds()<86400,
             'testtijd is ongeldig, ligt in de toekomst of is meer dan24uur geleden')
     require(now < dt.datetime(2026,10,23,tzinfo=dt.timezone.utc),'beoordeling verlopen; opnieuw beoordelen')
+
+def attempt_directory(commit):
+    require(bool(re.fullmatch(r'[0-9a-f]{40}',commit)),'ongeldige onderhoudscommit')
+    return Path('/srv/vwgm/mysql974-switch-'+commit[:12])
 
 def dump_hash(path):
     """Source uses the same mysqldump binary/flags before and after preparation."""
@@ -141,14 +146,18 @@ class Runtime:
                 'onbekende actieve container wordt niet verwijderd')
         self.docker('rm','-f',info['Id'])
 
-    def client(self,container,client,args,*,stdout=subprocess.PIPE):
+    def client(self,container,client,args,*,stdout=subprocess.PIPE,timeout=None):
         self.backup.MYSQL_CONTAINER=container
-        result=self.backup.run_mysql(client,args,stdout=stdout,timeout=1800 if client=='mysqldump' else 60)
+        if timeout is None: timeout=1800 if client=='mysqldump' else 60
+        try:
+            result=self.backup.run_mysql(client,args,stdout=stdout,timeout=timeout)
+        except subprocess.TimeoutExpired:
+            raise TimeoutError(f'{client}-controle in {container} overschreed{timeout}seconden') from None
         require(result.returncode==0,f'{client}-controle faalde in {container}')
         return result.stdout.decode() if result.stdout is not None else ''
 
-    def query(self,container,sql):
-        return self.client(container,'mysql',['--batch','--skip-column-names',self.database,'-e',sql]).strip()
+    def query(self,container,sql,*,timeout=60):
+        return self.client(container,'mysql',['--batch','--skip-column-names',self.database,'-e',sql],timeout=timeout).strip()
 
     def wait(self,container,version):
         for attempt in range(120):
@@ -178,7 +187,9 @@ class Runtime:
         checks=0
         for name,item in source.items():
             if item['type']!='BASE TABLE': continue
-            result=self.query(CANDIDATE,f'CHECK TABLE `{name}` EXTENDED')
+            if checks%50==0 or item['rows']>=1_000_000:
+                print(f'CONTROLE|mysql974-tabel|naam={name}|voltooid={checks}/282|max=1800seconden',flush=True)
+            result=self.query(CANDIDATE,f'CHECK TABLE `{name}` EXTENDED',timeout=1800)
             require(result.splitlines()[-1].split('\t')[-2:]==['status','OK'],f'tabelcontrole faalde:{name}')
             checks+=1
         require(checks==282,'aantal tabelcontroles wijkt af')
@@ -290,7 +301,9 @@ def main(stage_path):
     require(old['HostConfig']['NetworkMode'] in ['default','bridge'],'bron heeft afwijkend netwerk')
     require(old['HostConfig']['Memory']==0 and old['HostConfig']['NanoCpus']==0,'bron heeft afwijkende resourcelimieten')
     require(len(old['Mounts'])==1 and len(candidate['Mounts'])==1,'extra bron- of kandidaatmounts aanwezig')
-    require(runtime.query(ACTIVE,'SELECT @@global.read_only, @@global.super_read_only')=='0\t0','bron heeft afwijkende schrijfblokkade')
+    write_state=runtime.query(ACTIVE,'SELECT @@global.read_only, @@global.super_read_only')
+    require(write_state=='0\t0','bron heeft afwijkende schrijfblokkade')
+    print('GROEN|mysql974-bronstatus|versie=9.7.1|read_only=0|super_read_only=0',flush=True)
     backup_manifest=BACKUP/'vwg-m-baremetal-latest-manifest.json'
     previous=json.loads(backup_manifest.read_text())
     created=dt.datetime.fromisoformat(previous['created_at'])
@@ -298,7 +311,7 @@ def main(stage_path):
     require(shutil.disk_usage('/srv').free>10*1024**3,'minder dan10GiBvrije schijfruimte')
     require(runtime.command(['systemctl','is-active','--quiet','vwg-m-baremetal-backup.service'],check=False).returncode!=0,'er loopt al een back-up')
     # Keep root-owned execution and all rollback evidence after Terminal disconnects.
-    work=Path('/srv/vwgm/mysql974-switch-20261022')
+    work=attempt_directory(sources['sources']['Meijendel'])
     require(not work.exists(),'omschakeltaak bestaat al; eerst beoordelen')
     shutil.copytree(stage,work)
     os.chmod(work,0o700)

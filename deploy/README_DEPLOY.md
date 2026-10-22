@@ -631,3 +631,13 @@ SSH-uitkomst blijven slot en stagingmap staan totdat het rootproces aantoonbaar
 is beëindigd; verwijder zo'n slot niet zonder proces- en toestandscontrole.
 Na succesvolle VPS-wissel volgen NAS-overdracht/snapshotcontrole en de iMac-stap.
 De kandidaat-/terugvaldata worden door deze procedure niet gewist.
+
+Uitgebreide tabelcontroles hebben een afzonderlijke begrensde timeout van
+1800seconden; gewone queries houden60seconden. De zware
+`ndff_open_waarneming`-controle overschreed op22oktober de eerdere algemene
+60secondenlimiet vóór de eigenlijke containerwissel. Die poging is afgebroken,
+de kandidaat is gestopt en de oude productiecontainer bleef actief.
+Herhaalde pogingen gebruiken uitsluitend een nieuwe broncommitgebonden werkmap;
+de eerder mislukte werkmap en haar diagnosemateriaal blijven behouden. Iedere
+poging verifieert opnieuw dat de bron geen schrijfblokkade heeft, gebruikt het
+productieslot en voert alle bestaande gegevens- en terugvalcontroles uit.

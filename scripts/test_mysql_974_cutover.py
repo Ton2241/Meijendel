@@ -155,6 +155,60 @@ guard_release_lock() { echo RELEASE_LOCK; }
         self.assertEqual('RELEASE_LOCK' in result.stdout,expected)
         self.assertEqual('REMOTE_CLEAN' in result.stdout,expected)
 
+class TableBudgetTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.m=importlib.util.module_from_spec(SPEC)
+        SPEC.loader.exec_module(cls.m)
+
+    def test_extended_checks_get_long_budget_without_extending_normal_queries(self):
+        module=self.m
+        calls=[]
+        class Backup:
+            MYSQL_CONTAINER=''
+            def run_mysql(self,client,args,stdout=None,timeout=None):
+                sql=args[-1]
+                calls.append((client,sql,timeout))
+                if client=='mysqldump': value='same schema'
+                elif sql=='SELECT VERSION()': value='9.7.1' if self.MYSQL_CONTAINER==module.ACTIVE else '9.7.4'
+                elif sql.startswith('CHECK TABLE'):
+                    if timeout<=60: raise subprocess.TimeoutExpired(['docker','exec'],timeout)
+                    value='table\tcheck\tstatus\tOK'
+                elif 'SCHEMA_PRIVILEGES' in sql: value='1\t0'
+                elif 'USER_PRIVILEGES' in sql: value='0'
+                else: value='same settings'
+                return subprocess.CompletedProcess([],0,value.encode(),b'')
+        class Fake(module.Runtime):
+            def __init__(self): self.backup=Backup();self.database='meijendel'
+            def inventory(self,c):
+                return {f't_{i}':{'type':'BASE TABLE' if i<282 else 'VIEW','rows':10} for i in range(305)}
+            def docker(self,*args,**kwargs): return 'reader'
+        with contextlib.redirect_stdout(io.StringIO()): Fake().validate_candidate()
+        checks=[timeout for client,sql,timeout in calls if sql.startswith('CHECK TABLE')]
+        self.assertEqual(len(checks),282)
+        self.assertEqual(set(checks),{1800})
+        ordinary=[timeout for client,sql,timeout in calls if client=='mysql' and not sql.startswith('CHECK TABLE')]
+        self.assertEqual(set(ordinary),{60})
+
+    def test_timeout_is_reported_without_dumping_entire_client_command(self):
+        module=self.m
+        class Backup:
+            def run_mysql(self,*args,**kwargs):
+                raise subprocess.TimeoutExpired(['docker','exec','PRIVATE_CLIENT_CODE'],kwargs['timeout'])
+        runtime=module.Runtime.__new__(module.Runtime)
+        runtime.backup=Backup();runtime.database='meijendel'
+        with self.assertRaises(TimeoutError) as error:
+            runtime.query(module.CANDIDATE,'CHECK TABLE `large_table` EXTENDED',timeout=1800)
+        self.assertNotIn('PRIVATE_CLIENT_CODE',str(error.exception))
+        self.assertIn('1800',str(error.exception))
+
+    def test_new_attempt_path_preserves_previous_failed_work(self):
+        commit='b'*40
+        path=self.m.attempt_directory(commit)
+        self.assertEqual(path,Path('/srv/vwgm/mysql974-switch-'+commit[:12]))
+        self.assertNotEqual(path,Path('/srv/vwgm/mysql974-switch-20261022'))
+        with self.assertRaises(ValueError): self.m.attempt_directory('../unsafe')
+
 class ActiveVerificationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
