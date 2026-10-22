@@ -579,3 +579,55 @@ alle vijf gebruikersschema's en de accounts/rechten behouden blijven. De
 levende iMac-database blijft de schrijfbron; maak geen datarelease of zware
 export naar de VPS als onderdeel van dit runtimeonderhoud. Pas de canonieke
 versieguard pas gecontroleerd aan wanneer beide installaties zijn beproefd.
+
+### Gecontroleerde runtimewissel 9.7.1 → 9.7.4 (22 oktober 2026)
+
+Na beoordeling van het kandidaatmanifest volgt `deploy/switch_mysql_974_vps.sh`
+(eerst zonder argumenten; toepassen met `--apply --yes` in het gewone zichtbare
+macOS Terminal-venster). Dit is een afgebakende onderhoudsrelease. De lokale
+iMac-installatie, websitecode en Meijendel-datarelease worden hiermee niet
+omgeschakeld. Voor de iMac blijft een afzonderlijke gecontroleerde stap nodig.
+
+De wrapper eist schone actuele `main` voor Meijendel, VWG_M en VWG_Project,
+controleert de geregistreerde productievoorouders en neemt het bestaande
+exclusieve directoryslot. De rootbootstrap verifieert de exacte bestandshashes
+voordat hij de root-owned kopie uitvoert. De vier noodzakelijke uitvoerbestanden
+zijn de omschakelhelper, bestaande back-upsoftware, bestaande herstelsoftware en
+bestaande containeraudit; hun broncommits en hashes staan in `sources.json`.
+
+De helper accepteert uitsluitend kandidaatimage `c58c7a7ee443…`, bronimage
+`787656985cc0…` en het afzonderlijke kandidaatpad uit manifest47d133641833.
+Het proefbewijs verloopt op23oktober2026 en mag maximaal24uur geleden zijn.
+Na een tijdelijke schrijfblokkade vergelijkt hij de volledige nieuwe brondump
+met de dump van de kandidaatproef. Alleen de afsluitende tijdstempelregel wordt
+buiten de hash gelaten. Een gewijzigde veldwaarde blokkeert de omschakeling,
+ook als schema en rijtellingen gelijk zijn gebleven. Daarna volgen opnieuw
+305objecten,282tabelcontroles, schema-, instellingen- en SELECT-rechtencontrole.
+Credentials lopen via de bestaande FD3-client uit de geteste back-upsoftware.
+
+De oude container gaat gestopt, met autorestart uit, naar
+`meijendel-mysql-971-rollback-20261022`; zijn oude datamap blijft behouden.
+De nieuwe productiecontainer krijgt uitsluitend de aparte9.7.4-datamap,
+loopbackpoort3307, UID/GID1999, redo512MiB en binlogretentie3dagen.
+Alle rooktests, exact0HIGH/0CRITICAL voor de actieve images, een nieuwe volledige
+back-up en proefherstel moeten slagen vóór de onderhoudsregistratie wordt
+bevestigd. De bekende HIGH in de expliciete oude rollback blijft zichtbaar.
+
+Noodzakelijke9.7.4-compatibiliteit wordt in dezelfde onderhoudsrelease uit de
+geteste actuele supportrepos geïnstalleerd: back-uphelper plus herstelkopie,
+containeraudit voor de admingateway en voor de bestaande securitymonitor.
+Dit is geen volledige monitorrelease. Bestaande code, ondersteuning en bewijs
+staan afgeschermd in `/srv/vwgm/mysql974-switch-20261022/`; de afzonderlijke
+bronregistraties zijn `deploy-state/mysql974-support.json` en, uitsluitend na
+groene nacontrole, `deploy-state/mysql-runtime.json`. App/data-statebestanden
+blijven ongewijzigd. Na succes hoort een onderhoudsvermelding met de werkelijk
+geregistreerde componentcommits in het centrale releaseoverzicht.
+
+Fouten binnen de omschakeling herstellen de werkelijke oorspronkelijke
+container-ID, naam, restartbeleid en beide schrijfblokkadevariabelen. Dat geldt
+ook wanneer Docker een rename uitvoerde maar de bevestiging verloren ging.
+Een teruggedraaid werkmanifest krijgt status `rolled-back`. Bij onbekende
+SSH-uitkomst blijven slot en stagingmap staan totdat het rootproces aantoonbaar
+is beëindigd; verwijder zo'n slot niet zonder proces- en toestandscontrole.
+Na succesvolle VPS-wissel volgen NAS-overdracht/snapshotcontrole en de iMac-stap.
+De kandidaat-/terugvaldata worden door deze procedure niet gewist.
