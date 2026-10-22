@@ -641,3 +641,20 @@ Herhaalde pogingen gebruiken uitsluitend een nieuwe broncommitgebonden werkmap;
 de eerder mislukte werkmap en haar diagnosemateriaal blijven behouden. Iedere
 poging verifieert opnieuw dat de bron geen schrijfblokkade heeft, gebruikt het
 productieslot en voert alle bestaande gegevens- en terugvalcontroles uit.
+
+Op22oktober slaagden alle305objectcontroles en282uitgebreide tabelcontroles.
+De daaropvolgende HTTP-rooktest was onjuist: de bestaande app-host verwijst
+met308 naar de www-host;401hoort bij de afgeschermde www-route. De automatische
+terugval herstelde de oorspronkelijke9.7.1-container en liet beide datamappen
+behouden. De gecorrigeerde controle toetst nu www401 én exact de app308-locatie.
+
+Na deze aantoonbare terugval kan dezelfde wrapper met
+`--apply --yes --retry-rolled-back` de ontbrekende kandidaatcontainer opnieuw
+aanmaken. Dit vereist het rootbeheerde `rolled-back`-verslag van precies
+`/srv/vwgm/mysql974-switch-7a7dc02c8b18/manifest.json`, met de beoordeelde oude
+en nieuwe image-ID’s. Alle bron-, backup-, lock- en schijfruimtegates gelden
+eerst. Heraanmaak doet uitsluitend `docker create` met de bestaande aparte
+9.7.4-datamap, zonder netwerk of poort en met de kandidaatlimieten. Pas daarna
+volgen opnieuw de brondumpvergelijking en alle305/282inhoudelijke controles.
+Een gewone start zonder deze expliciete herstelvlag mag de ontbrekende
+kandidaat niet automatisch aanmaken. Geen oude werkmap of datamap wordt gewist.

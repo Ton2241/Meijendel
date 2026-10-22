@@ -9,6 +9,7 @@ VWG_M_REPO="${VWG_M_REPO:-$HOME/Documents/GitHub/VWG_M}"
 VWG_PROJECT_REPO="${VWG_PROJECT_REPO:-$HOME/Documents/GitHub/VWG_Project}"
 APPLY=0
 YES=0
+RETRY_ROLLED_BACK=0
 REMOTE_STAGE=''
 LOCAL_STAGE=''
 REMOTE_STARTED=0
@@ -16,7 +17,8 @@ while (($#)); do
   case "$1" in
     --apply) APPLY=1 ;;
     --yes) YES=1 ;;
-    -h|--help) echo 'Gebruik: deploy/switch_mysql_974_vps.sh [--apply --yes]'; exit 0 ;;
+    --retry-rolled-back) RETRY_ROLLED_BACK=1 ;;
+    -h|--help) echo 'Gebruik: deploy/switch_mysql_974_vps.sh [--apply --yes] [--retry-rolled-back]'; exit 0 ;;
     *) echo "Onbekende optie: $1" >&2; exit 2 ;;
   esac
   shift
@@ -76,10 +78,10 @@ cp "$SCRIPT_DIR/switch_mysql_974_vps_remote.py" "$LOCAL_STAGE/"
 cp "$VWG_M_REPO/website/vwg-m-linux-app/scripts/backup_baremetal_vps.py" "$LOCAL_STAGE/"
 cp "$VWG_M_REPO/website/vwg-m-linux-app/scripts/restore_new_vps.sh" "$LOCAL_STAGE/"
 cp "$VWG_PROJECT_REPO/scripts/vulnerability_audit_vps_remote.sh" "$LOCAL_STAGE/container-audit"
-python3 - "$LOCAL_STAGE" "$DEPLOY_LOCAL_COMMIT" "$(git -C "$VWG_M_REPO" rev-parse HEAD)" "$(git -C "$VWG_PROJECT_REPO" rev-parse HEAD)" "$DEPLOY_PREVIOUS_COMMIT" "$APP_PREVIOUS" "$MONITOR_PREVIOUS" <<'PY'
+python3 - "$LOCAL_STAGE" "$DEPLOY_LOCAL_COMMIT" "$(git -C "$VWG_M_REPO" rev-parse HEAD)" "$(git -C "$VWG_PROJECT_REPO" rev-parse HEAD)" "$DEPLOY_PREVIOUS_COMMIT" "$APP_PREVIOUS" "$MONITOR_PREVIOUS" "$RETRY_ROLLED_BACK" <<'PY'
 import hashlib,json,pathlib,sys
 root=pathlib.Path(sys.argv[1])
-manifest=dict(sources=dict(zip(['Meijendel','VWG_M','VWG_Project'],sys.argv[2:5])),
+manifest=dict(retry_rolled_back=sys.argv[8]=='1',sources=dict(zip(['Meijendel','VWG_M','VWG_Project'],sys.argv[2:5])),
               production=dict(zip(['Meijendel','VWG_M','security-monitor'],sys.argv[5:8])),
               files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir()})
 (root/'sources.json').write_text(json.dumps(manifest,indent=2)+'\n')

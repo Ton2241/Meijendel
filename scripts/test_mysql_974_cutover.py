@@ -215,7 +215,7 @@ class ActiveVerificationTests(unittest.TestCase):
         cls.m=importlib.util.module_from_spec(SPEC)
         SPEC.loader.exec_module(cls.m)
 
-    def verify(self,scan_lines,backup_ok=True):
+    def verify(self,scan_lines,backup_ok=True,www_shiny_status=401,app_shiny_redirect="308|https://www.vwg-m.nl/shiny_meijendel/"):
         module=self.m
         with tempfile.TemporaryDirectory() as tmp:
             work=Path(tmp)
@@ -238,7 +238,9 @@ class ActiveVerificationTests(unittest.TestCase):
                     if 'container-audit' in str(args):
                         return subprocess.run([str(a) for a in args],stdout=kwargs['stdout'],check=False)
                     if args[0]=='curl':
-                        code=b'401' if any(x in args[-1] for x in ['member-auth','shiny_meijendel']) else b'200'
+                        if args[-1]=='https://app.vwg-m.nl/shiny_meijendel/': code=app_shiny_redirect.encode()
+                        elif args[-1]=='https://www.vwg-m.nl/shiny_meijendel/': code=str(www_shiny_status).encode()
+                        else: code=b'401' if 'member-auth' in args[-1] else b'200'
                         return subprocess.CompletedProcess(args,0,code,b'')
                     return subprocess.CompletedProcess(args,0,b'',b'')
             old=module.BACKUP
@@ -262,5 +264,44 @@ class ActiveVerificationTests(unittest.TestCase):
 
     def test_failed_backup_proof_blocks_completion(self):
         with self.assertRaises(ValueError): self.verify(self.green_scan(),backup_ok=False)
+
+    def test_actual_shiny_host_requires_auth_and_redirect_must_be_exact(self):
+        with self.assertRaises(ValueError): self.verify(self.green_scan(),www_shiny_status=200)
+        with self.assertRaises(ValueError):
+            self.verify(self.green_scan(),app_shiny_redirect='308|https://wrong.example/shiny_meijendel/')
+
+class CandidateRecoveryTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.m=importlib.util.module_from_spec(SPEC)
+        SPEC.loader.exec_module(cls.m)
+
+    def proof(self):
+        return dict(status='rolled-back',active_version='9.7.1',active_image=self.m.OLD_IMAGE,
+                    attempted_version='9.7.4',attempted_image=self.m.NEW_IMAGE)
+
+    def test_recovery_requires_explicit_retry_and_exact_rollback_proof(self):
+        events=[]
+        class Fake:
+            def docker(self,*args): events.append(args)
+        with self.assertRaises(ValueError): self.m.recreate_candidate(Fake(),self.proof(),False)
+        with self.assertRaises(ValueError):
+            self.m.recreate_candidate(Fake(),{**self.proof(),'status':'validated-active-runtime'},True)
+        self.assertEqual(events,[])
+
+    def test_recovery_creates_only_isolated_stopped_candidate_on_existing_data(self):
+        events=[]
+        class Fake:
+            def docker(self,*args): events.append(args)
+        self.m.recreate_candidate(Fake(),self.proof(),True)
+        self.assertEqual(len(events),1)
+        args=events[0]
+        self.assertEqual(args[0],'create')
+        self.assertIn(self.m.CANDIDATE,args)
+        self.assertIn(self.m.NEW_IMAGE,args)
+        self.assertNotIn('-p',args)
+        self.assertEqual(args[args.index('--network')+1],'none')
+        self.assertIn(str(self.m.CANDIDATE_ROOT/'data')+':/var/lib/mysql',args)
+        self.assertNotIn(self.m.ACTIVE,args)
 
 if __name__=='__main__': unittest.main()

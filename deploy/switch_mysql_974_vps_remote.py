@@ -53,6 +53,17 @@ def attempt_directory(commit):
     require(bool(re.fullmatch(r'[0-9a-f]{40}',commit)),'ongeldige onderhoudscommit')
     return Path('/srv/vwgm/mysql974-switch-'+commit[:12])
 
+def recreate_candidate(runtime,proof,explicit_retry):
+    require(explicit_retry is True,'ontbrekende kandidaat vereist expliciet --retry-rolled-back')
+    expected=dict(status='rolled-back',active_version='9.7.1',active_image=OLD_IMAGE,
+                  attempted_version='9.7.4',attempted_image=NEW_IMAGE)
+    require(all(proof.get(key)==value for key,value in expected.items()),'geen passend bewijs van geslaagde terugval')
+    runtime.docker('create','--name',CANDIDATE,'--restart','no','--network','none',
+                   '--memory','1536m','--cpus','1','--env-file','/srv/vwgm/meijendel-mysql/mysql.env',
+                   '-v',str(CANDIDATE_ROOT/'data')+':/var/lib/mysql',NEW_IMAGE,
+                   '--local-infile=0','--mysqlx=0','--binlog-expire-logs-seconds=259200',
+                   '--innodb-redo-log-capacity=536870912')
+
 def dump_hash(path):
     """Source uses the same mysqldump binary/flags before and after preparation."""
     digest=hashlib.sha256()
@@ -248,10 +259,16 @@ class Runtime:
         for host,path,code in [('www.vwg-m.nl','/welkom/index.asp','200'),
                                ('www.vwg-m.nl','/soorten/vogel.asp?id=90','200'),
                                ('www.vwg-m.nl','/leden/member-auth','401'),
-                               ('app.vwg-m.nl','/shiny_meijendel/','401')]:
+                               ('www.vwg-m.nl','/shiny_meijendel/','401')]:
             result=self.command(['curl','--max-time','30','--silent','--show-error','--insecure','--output','/dev/null',
                                  '--write-out','%{http_code}','--resolve',host+':443:127.0.0.1','https://'+host+path])
-            require(result.stdout.decode()==code,'rooktest faalde:'+host+path)
+            actual=result.stdout.decode()
+            require(actual==code,f'rooktest faalde:{host}{path}:verwacht={code},gekregen={actual}')
+        redirect=self.command(['curl','--max-time','30','--silent','--show-error','--insecure','--output','/dev/null',
+                               '--write-out','%{http_code}|%{redirect_url}','--resolve','app.vwg-m.nl:443:127.0.0.1',
+                               'https://app.vwg-m.nl/shiny_meijendel/'])
+        require(redirect.stdout.decode()=='308|https://www.vwg-m.nl/shiny_meijendel/',
+                'Shiny-doorverwijzing wijkt af van de canonieke www-host')
         self.docker('image','rm',CANDIDATE_TAG)
         with (self.stage/'active-scan.log').open('wb') as output:
             scan=self.command(['/bin/bash',self.stage/'container-audit'],check=False,timeout=1200,stdout=output)
@@ -291,16 +308,15 @@ def main(stage_path):
     validate_manifest(json.loads(manifest.read_text()),dt.datetime.now(dt.timezone.utc))
     runtime=Runtime(stage)
     old=runtime.inspect(ACTIVE)
-    candidate=runtime.inspect(CANDIDATE)
+    candidate=runtime.inspect(CANDIDATE) if runtime.container_id(CANDIDATE) else None
     require(old['Image']==OLD_IMAGE and old['State']['Running'],'actieve uitgangsimage veranderd')
-    require(candidate['Image']==NEW_IMAGE and candidate['State']['Status']=='exited' and candidate['State']['ExitCode']==0,'kandidaat niet schoon gestopt')
-    for info,path in [(old,'/srv/vwgm/meijendel-mysql-971-uid1999/data'),(candidate,str(CANDIDATE_ROOT/'data'))]:
-        require([m['Source'] for m in info['Mounts'] if m['Destination']=='/var/lib/mysql']==[path],'datamount wijkt af')
-    require(set(runtime.docker('ps','-a','--format','{{.Names}}').splitlines())=={ACTIVE,'shiny_meijendel',CANDIDATE},'containerinventaris wijkt af')
+    expected_names={ACTIVE,'shiny_meijendel'} | ({CANDIDATE} if candidate else set())
+    require(set(runtime.docker('ps','-a','--format','{{.Names}}').splitlines())==expected_names,'containerinventaris wijkt af')
+    require([m['Source'] for m in old['Mounts'] if m['Destination']=='/var/lib/mysql']==['/srv/vwgm/meijendel-mysql-971-uid1999/data'],'brondatamount wijkt af')
     require(old['HostConfig']['RestartPolicy']['Name']=='unless-stopped','bronrestartbeleid wijkt af')
     require(old['HostConfig']['NetworkMode'] in ['default','bridge'],'bron heeft afwijkend netwerk')
     require(old['HostConfig']['Memory']==0 and old['HostConfig']['NanoCpus']==0,'bron heeft afwijkende resourcelimieten')
-    require(len(old['Mounts'])==1 and len(candidate['Mounts'])==1,'extra bron- of kandidaatmounts aanwezig')
+    require(len(old['Mounts'])==1,'extra bronmounts aanwezig')
     write_state=runtime.query(ACTIVE,'SELECT @@global.read_only, @@global.super_read_only')
     require(write_state=='0\t0','bron heeft afwijkende schrijfblokkade')
     print('GROEN|mysql974-bronstatus|versie=9.7.1|read_only=0|super_read_only=0',flush=True)
@@ -313,6 +329,23 @@ def main(stage_path):
     # Keep root-owned execution and all rollback evidence after Terminal disconnects.
     work=attempt_directory(sources['sources']['Meijendel'])
     require(not work.exists(),'omschakeltaak bestaat al; eerst beoordelen')
+    recovered=False
+    if candidate is None:
+        proof_path=Path('/srv/vwgm/mysql974-switch-7a7dc02c8b18/manifest.json')
+        require(proof_path.is_file() and not proof_path.is_symlink() and proof_path.stat().st_uid==0,
+                'rootbeheerd terugvalverslag ontbreekt')
+        require(not proof_path.parent.is_symlink() and proof_path.parent.stat().st_uid==0 and
+                proof_path.parent.stat().st_mode&0o777==0o700,'terugvalmap is niet root0700')
+        recreate_candidate(runtime,json.loads(proof_path.read_text()),sources.get('retry_rolled_back',False))
+        candidate=runtime.inspect(CANDIDATE)
+        recovered=True
+    require(candidate['Image']==NEW_IMAGE and candidate['State']['ExitCode']==0 and
+            candidate['State']['Status']==('created' if recovered else 'exited'),'kandidaat niet schoon gestopt of gecontroleerd aangemaakt')
+    require(len(candidate['Mounts'])==1 and
+            [m['Source'] for m in candidate['Mounts'] if m['Destination']=='/var/lib/mysql']==[str(CANDIDATE_ROOT/'data')],
+            'kandidaatdatamount wijkt af')
+    require(candidate['HostConfig']['NetworkMode']=='none' and not candidate['HostConfig']['PortBindings'],
+            'kandidaat is niet netwerkgeisoleerd')
     shutil.copytree(stage,work)
     os.chmod(work,0o700)
     runtime.stage=work
