@@ -914,7 +914,7 @@ Of via Terminal:
   parser-versie, niet periodiek en niet continu. De VPS bouwt of repareert geen
   cache maar weigert Shiny te starten als dump, manifest en vooraf gebouwde
   cache niet exact bij elkaar horen. De NAS heeft hierin geen rekenrol.
-- De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.1 gebruiken. Generatie en deploy blokkeren bij een afwijking.
+- De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.4 gebruiken. Generatie en deploy blokkeren bij een afwijking.
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
 - Ook de PQ-vegetatiegegevens in `pq_vegetatie_import`, `pq_vegetatie_pq`,
