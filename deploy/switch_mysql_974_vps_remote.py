@@ -53,11 +53,12 @@ def attempt_directory(commit):
     require(bool(re.fullmatch(r'[0-9a-f]{40}',commit)),'ongeldige onderhoudscommit')
     return Path('/srv/vwgm/mysql974-switch-'+commit[:12])
 
-def recreate_candidate(runtime,proof,explicit_retry):
+def recreate_candidate(runtime,proof,explicit_retry,*,check_only=False):
     require(explicit_retry is True,'ontbrekende kandidaat vereist expliciet --retry-rolled-back')
     expected=dict(status='rolled-back',active_version='9.7.1',active_image=OLD_IMAGE,
                   attempted_version='9.7.4',attempted_image=NEW_IMAGE)
     require(all(proof.get(key)==value for key,value in expected.items()),'geen passend bewijs van geslaagde terugval')
+    if check_only: return
     runtime.docker('create','--name',CANDIDATE,'--restart','no','--network','none',
                    '--memory','1536m','--cpus','1','--env-file','/srv/vwgm/meijendel-mysql/mysql.env',
                    '-v',str(CANDIDATE_ROOT/'data')+':/var/lib/mysql',NEW_IMAGE,
@@ -144,11 +145,18 @@ class Runtime:
     def inspect(self,container): return json.loads(self.docker('inspect',container))[0]
 
     def container_id(self,name):
-        # Distinguish a missing container from daemon/permission failures.
-        result=self.command(['docker','inspect','--format','{{.Id}}',name],check=False)
-        if result.returncode==0: return result.stdout.decode().strip()
-        if b'No such object' in result.stderr or b'No such container' in result.stderr: return None
-        raise RuntimeError('containeridentiteit kon niet betrouwbaar worden vastgesteld')
+        # Absence is a successful, structured daemon result, never an error string.
+        result=self.command(['docker','container','ls','--all','--no-trunc',
+                             '--format','{{.Names}}\t{{.ID}}'],check=False)
+        require(result.returncode==0,'Docker-inventaris kon niet betrouwbaar worden gelezen')
+        identities={}
+        for line in result.stdout.decode().splitlines():
+            fields=line.split('\t')
+            require(len(fields)==2 and bool(re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9_.-]*',fields[0])) and
+                    bool(re.fullmatch(r'[0-9a-f]{64}',fields[1])),'Docker-inventaris heeft onverwacht formaat')
+            require(fields[0] not in identities,'dubbele containernaam in Docker-inventaris')
+            identities[fields[0]]=fields[1]
+        return identities.get(name)
 
     def remove_new_active(self):
         info=self.inspect(ACTIVE)
@@ -247,15 +255,7 @@ class Runtime:
                      for name in ['security_monitor.py','container-audit'])
         (root/'SHA256SUMS').write_text(sums)
 
-    def verify_active(self,expected_inventory):
-        require(self.inventory(ACTIVE)==expected_inventory,'actieve gegevenscontrole faalt')
-        require(self.query(ACTIVE,'SELECT @@innodb_redo_log_capacity')=='536870912','redo is niet512MiB')
-        info=self.inspect(ACTIVE)
-        require(info['Image']==NEW_IMAGE,'actieve image wijkt af')
-        for flag in ['-u','-g']:
-            require(self.docker('exec',ACTIVE,'id',flag,'mysql').strip()=='1999','actieve UID/GID wijkt af')
-        require(info['HostConfig']['PortBindings']=={'3306/tcp':[{'HostIp':'127.0.0.1','HostPort':'3307'}]},'poortbinding wijkt af')
-        self.command(['/usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation'])
+    def verify_http(self):
         for host,path,code in [('www.vwg-m.nl','/welkom/index.asp','200'),
                                ('www.vwg-m.nl','/soorten/vogel.asp?id=90','200'),
                                ('www.vwg-m.nl','/leden/member-auth','401'),
@@ -269,6 +269,17 @@ class Runtime:
                                'https://app.vwg-m.nl/shiny_meijendel/'])
         require(redirect.stdout.decode()=='308|https://www.vwg-m.nl/shiny_meijendel/',
                 'Shiny-doorverwijzing wijkt af van de canonieke www-host')
+
+    def verify_active(self,expected_inventory):
+        require(self.inventory(ACTIVE)==expected_inventory,'actieve gegevenscontrole faalt')
+        require(self.query(ACTIVE,'SELECT @@innodb_redo_log_capacity')=='536870912','redo is niet512MiB')
+        info=self.inspect(ACTIVE)
+        require(info['Image']==NEW_IMAGE,'actieve image wijkt af')
+        for flag in ['-u','-g']:
+            require(self.docker('exec',ACTIVE,'id',flag,'mysql').strip()=='1999','actieve UID/GID wijkt af')
+        require(info['HostConfig']['PortBindings']=={'3306/tcp':[{'HostIp':'127.0.0.1','HostPort':'3307'}]},'poortbinding wijkt af')
+        self.command(['/usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation'])
+        self.verify_http()
         self.docker('image','rm',CANDIDATE_TAG)
         with (self.stage/'active-scan.log').open('wb') as output:
             scan=self.command(['/bin/bash',self.stage/'container-audit'],check=False,timeout=1200,stdout=output)
@@ -299,6 +310,8 @@ def main(stage_path):
     require((STATE/'production.lock').is_dir(),'productieslot ontbreekt')
     require((STATE/'Meijendel.commit').read_text().strip()==DATA_COMMIT,'datarelease veranderd')
     sources=json.loads((stage/'sources.json').read_text())
+    check_only=sources.get('check_only',False)
+    require(type(check_only) is bool,'ongeldige controlemodus')
     require((STATE/'VWG_M.commit').read_text().strip()==sources['production']['VWG_M'],'website-release veranderd')
     require((STATE/'security-monitor.commit').read_text().strip()==sources['production']['security-monitor'],'monitorrelease veranderd')
     for sig in (signal.SIGINT,signal.SIGTERM,signal.SIGHUP):
@@ -317,6 +330,7 @@ def main(stage_path):
     require(old['HostConfig']['NetworkMode'] in ['default','bridge'],'bron heeft afwijkend netwerk')
     require(old['HostConfig']['Memory']==0 and old['HostConfig']['NanoCpus']==0,'bron heeft afwijkende resourcelimieten')
     require(len(old['Mounts'])==1,'extra bronmounts aanwezig')
+    require(runtime.query(ACTIVE,'SELECT VERSION()')=='9.7.1','bronversie veranderd')
     write_state=runtime.query(ACTIVE,'SELECT @@global.read_only, @@global.super_read_only')
     require(write_state=='0\t0','bron heeft afwijkende schrijfblokkade')
     print('GROEN|mysql974-bronstatus|versie=9.7.1|read_only=0|super_read_only=0',flush=True)
@@ -336,16 +350,26 @@ def main(stage_path):
                 'rootbeheerd terugvalverslag ontbreekt')
         require(not proof_path.parent.is_symlink() and proof_path.parent.stat().st_uid==0 and
                 proof_path.parent.stat().st_mode&0o777==0o700,'terugvalmap is niet root0700')
-        recreate_candidate(runtime,json.loads(proof_path.read_text()),sources.get('retry_rolled_back',False))
-        candidate=runtime.inspect(CANDIDATE)
-        recovered=True
-    require(candidate['Image']==NEW_IMAGE and candidate['State']['ExitCode']==0 and
-            candidate['State']['Status']==('created' if recovered else 'exited'),'kandidaat niet schoon gestopt of gecontroleerd aangemaakt')
-    require(len(candidate['Mounts'])==1 and
-            [m['Source'] for m in candidate['Mounts'] if m['Destination']=='/var/lib/mysql']==[str(CANDIDATE_ROOT/'data')],
-            'kandidaatdatamount wijkt af')
-    require(candidate['HostConfig']['NetworkMode']=='none' and not candidate['HostConfig']['PortBindings'],
-            'kandidaat is niet netwerkgeisoleerd')
+        recreate_candidate(runtime,json.loads(proof_path.read_text()),sources.get('retry_rolled_back',False),check_only=check_only)
+        if not check_only:
+            candidate=runtime.inspect(CANDIDATE)
+            recovered=True
+    if candidate is not None:
+        require(candidate['Image']==NEW_IMAGE and candidate['State']['ExitCode']==0 and
+                candidate['State']['Status']==('created' if recovered else 'exited'),'kandidaat niet schoon gestopt of gecontroleerd aangemaakt')
+        require(len(candidate['Mounts'])==1 and
+                [m['Source'] for m in candidate['Mounts'] if m['Destination']=='/var/lib/mysql']==[str(CANDIDATE_ROOT/'data')],
+                'kandidaatdatamount wijkt af')
+        require(candidate['HostConfig']['NetworkMode']=='none' and not candidate['HostConfig']['PortBindings'],
+                'kandidaat is niet netwerkgeisoleerd')
+    data_stat=(CANDIDATE_ROOT/'data').stat()
+    require(data_stat.st_uid==1999 and data_stat.st_gid==1999,'kandidaatdatamap heeft verkeerde UID/GID')
+    require(runtime.docker('image','inspect','--format','{{.Id}}',NEW_IMAGE).strip()==NEW_IMAGE,'kandidaatimage ontbreekt')
+    runtime.verify_http() # Validate the actual host contract before any switch.
+    if check_only:
+        runtime.command(['/usr/local/libexec/vwgm-admin/check-caddy-mysql-isolation'])
+        print('GROEN|mysql974-vps-controle|bron=9.7.1|schrijfblokkades=uit|docker-inventaris=groen|herstelbewijs=groen|http=groen|productie=ongewijzigd',flush=True)
+        return
     shutil.copytree(stage,work)
     os.chmod(work,0o700)
     runtime.stage=work

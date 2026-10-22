@@ -155,6 +155,31 @@ guard_release_lock() { echo RELEASE_LOCK; }
         self.assertEqual('RELEASE_LOCK' in result.stdout,expected)
         self.assertEqual('REMOTE_CLEAN' in result.stdout,expected)
 
+class StructuredIdentityTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.m=importlib.util.module_from_spec(SPEC)
+        SPEC.loader.exec_module(cls.m)
+
+    def runtime(self,inventory=b'',inventory_status=0):
+        module=self.m
+        class Fake(module.Runtime):
+            def command(self,args,**kwargs):
+                if args[1:3]==['container','ls']:
+                    return subprocess.CompletedProcess(args,inventory_status,inventory,b'daemon failure' if inventory_status else b'')
+                return subprocess.CompletedProcess(args,1,b'',b'Error: container not found')
+        return Fake.__new__(Fake)
+
+    def test_missing_container_is_read_from_successful_inventory(self):
+        runtime=self.runtime(b'meijendel-mysql\t'+b'a'*64+b'\n')
+        self.assertIsNone(runtime.container_id(self.m.CANDIDATE))
+        self.assertEqual(runtime.container_id(self.m.ACTIVE),'a'*64)
+
+    def test_daemon_failure_and_malformed_inventory_never_mean_missing(self):
+        for runtime in [self.runtime(inventory_status=1),self.runtime(b'not-a-valid-row\n'),
+                        self.runtime(b'meijendel-mysql\tshort-id\n')]:
+            with self.assertRaises((RuntimeError,ValueError)): runtime.container_id(self.m.CANDIDATE)
+
 class TableBudgetTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -303,5 +328,14 @@ class CandidateRecoveryTests(unittest.TestCase):
         self.assertEqual(args[args.index('--network')+1],'none')
         self.assertIn(str(self.m.CANDIDATE_ROOT/'data')+':/var/lib/mysql',args)
         self.assertNotIn(self.m.ACTIVE,args)
+
+    def test_read_only_recovery_check_validates_proof_without_creating_container(self):
+        events=[]
+        class Fake:
+            def docker(self,*args): events.append(args)
+        self.m.recreate_candidate(Fake(),self.proof(),True,check_only=True)
+        self.assertEqual(events,[])
+        with self.assertRaises(ValueError):
+            self.m.recreate_candidate(Fake(),{**self.proof(),'active_image':'wrong'},True,check_only=True)
 
 if __name__=='__main__': unittest.main()

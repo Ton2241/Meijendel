@@ -658,3 +658,21 @@ eerst. Heraanmaak doet uitsluitend `docker create` met de bestaande aparte
 volgen opnieuw de brondumpvergelijking en alle305/282inhoudelijke controles.
 Een gewone start zonder deze expliciete herstelvlag mag de ontbrekende
 kandidaat niet automatisch aanmaken. Geen oude werkmap of datamap wordt gewist.
+
+Na de vroege Docker-identiteitsblokkade volgt eerst
+`deploy/switch_mysql_974_vps.sh --check-only --retry-rolled-back` in het
+zichtbare macOS Terminal-venster. Ook deze controle vereist sudo voor de
+beschermde bewijsbestanden. Zij gebruikt uitsluitend gestructureerde
+containerinventaris: namen met volledige64hex-ID’s uit een geslaagde
+`docker container ls --all --no-trunc --format`-opdracht. Foutteksten worden
+niet gebruikt om afwezigheid te concluderen; een daemon- of formaatfout blokkeert.
+
+De controlemodus verifieert actuele9.7.1-bron, beide schrijfblokkades uit,
+bronmount/restartbeleid, beoordeeld kandidaatmanifest, verse back-up en
+schijfruimte, rootbeheerd terugvalbewijs, kandidaatimage en datamap-UID/GID,
+HTTP-routes en Caddy-isolatie. Hij maakt tijdelijk staging en een productieslot
+aan, maar keert terug vóór kandidaatcreatie, supportinstallatie, databasewrites,
+schrijfblokkades of herstarts. `--check-only` en `--apply` sluiten elkaar uit.
+Pas na een geslaagde feitelijke VPS-controle volgt een afzonderlijke
+productiepoging. De volledige kandidaat-/gegevenscontrole en nieuwe back-up
+blijven onderdeel van die latere omschakeling.

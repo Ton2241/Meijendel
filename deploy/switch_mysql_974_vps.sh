@@ -10,15 +10,17 @@ VWG_PROJECT_REPO="${VWG_PROJECT_REPO:-$HOME/Documents/GitHub/VWG_Project}"
 APPLY=0
 YES=0
 RETRY_ROLLED_BACK=0
+CHECK_ONLY=0
 REMOTE_STAGE=''
 LOCAL_STAGE=''
 REMOTE_STARTED=0
 while (($#)); do
   case "$1" in
     --apply) APPLY=1 ;;
+    --check-only) CHECK_ONLY=1 ;;
     --yes) YES=1 ;;
     --retry-rolled-back) RETRY_ROLLED_BACK=1 ;;
-    -h|--help) echo 'Gebruik: deploy/switch_mysql_974_vps.sh [--apply --yes] [--retry-rolled-back]'; exit 0 ;;
+    -h|--help) echo 'Gebruik: deploy/switch_mysql_974_vps.sh [--apply --yes | --check-only] [--retry-rolled-back]'; exit 0 ;;
     *) echo "Onbekende optie: $1" >&2; exit 2 ;;
   esac
   shift
@@ -67,10 +69,15 @@ MONITOR_PREVIOUS="$CROSS_PREVIOUS"
 [[ "$APP_PREVIOUS" =~ ^[0-9a-f]{40}$ && "$MONITOR_PREVIOUS" =~ ^[0-9a-f]{40}$ ]] || guard_die 'supportpreflight mislukt'
 python3 "$LOCAL_REPO/scripts/test_mysql_974_cutover.py"
 python3 "$LOCAL_REPO/scripts/test_mysql_candidate_versions.py"
-echo 'OMSCHAKELING: geteste image c58c7a7ee443, aparte 9.7.4-datamap, bronvergelijking en automatische terugval.'
+if [[ "$CHECK_ONLY" == 1 ]]; then
+  echo 'ALLEEN VPS-CONTROLE: geen installatie, schrijfblokkade of containerwissel.'
+else
+  echo 'OMSCHAKELING: geteste image c58c7a7ee443, aparte 9.7.4-datamap, bronvergelijking en automatische terugval.'
+fi
 echo 'Support: versieafhankelijke back-up/herstel en audit. App- en Meijendel-datarelease blijven gelijk.'
-[[ "$APPLY" == 1 ]] || { echo 'Preflight klaar; productie is niet aangepast.'; exit 0; }
-[[ "$YES" == 1 ]] || guard_die '--apply vereist --yes'
+[[ "$APPLY" == 0 || "$CHECK_ONLY" == 0 ]] || guard_die '--apply en --check-only sluiten elkaar uit'
+[[ "$APPLY" == 1 || "$CHECK_ONLY" == 1 ]] || { echo 'Preflight klaar; productie is niet aangepast.'; exit 0; }
+[[ "$APPLY" == 0 || "$YES" == 1 ]] || guard_die '--apply vereist --yes'
 guard_acquire_lock
 [[ "$(guard_remote "cat '$DEPLOY_STATE_DIR/VWG_M.commit'")" == "$APP_PREVIOUS" && "$(guard_remote "cat '$DEPLOY_STATE_DIR/security-monitor.commit'")" == "$MONITOR_PREVIOUS" ]] || guard_die 'supportrelease veranderde tijdens preflight'
 LOCAL_STAGE="$(mktemp -d /tmp/vwgm-mysql974-switch-local-XXXXXXXX)"
@@ -78,10 +85,10 @@ cp "$SCRIPT_DIR/switch_mysql_974_vps_remote.py" "$LOCAL_STAGE/"
 cp "$VWG_M_REPO/website/vwg-m-linux-app/scripts/backup_baremetal_vps.py" "$LOCAL_STAGE/"
 cp "$VWG_M_REPO/website/vwg-m-linux-app/scripts/restore_new_vps.sh" "$LOCAL_STAGE/"
 cp "$VWG_PROJECT_REPO/scripts/vulnerability_audit_vps_remote.sh" "$LOCAL_STAGE/container-audit"
-python3 - "$LOCAL_STAGE" "$DEPLOY_LOCAL_COMMIT" "$(git -C "$VWG_M_REPO" rev-parse HEAD)" "$(git -C "$VWG_PROJECT_REPO" rev-parse HEAD)" "$DEPLOY_PREVIOUS_COMMIT" "$APP_PREVIOUS" "$MONITOR_PREVIOUS" "$RETRY_ROLLED_BACK" <<'PY'
+python3 - "$LOCAL_STAGE" "$DEPLOY_LOCAL_COMMIT" "$(git -C "$VWG_M_REPO" rev-parse HEAD)" "$(git -C "$VWG_PROJECT_REPO" rev-parse HEAD)" "$DEPLOY_PREVIOUS_COMMIT" "$APP_PREVIOUS" "$MONITOR_PREVIOUS" "$RETRY_ROLLED_BACK" "$CHECK_ONLY" <<'PY'
 import hashlib,json,pathlib,sys
 root=pathlib.Path(sys.argv[1])
-manifest=dict(retry_rolled_back=sys.argv[8]=='1',sources=dict(zip(['Meijendel','VWG_M','VWG_Project'],sys.argv[2:5])),
+manifest=dict(retry_rolled_back=sys.argv[8]=='1',check_only=sys.argv[9]=='1',sources=dict(zip(['Meijendel','VWG_M','VWG_Project'],sys.argv[2:5])),
               production=dict(zip(['Meijendel','VWG_M','security-monitor'],sys.argv[5:8])),
               files={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in root.iterdir()})
 (root/'sources.json').write_text(json.dumps(manifest,indent=2)+'\n')
@@ -121,5 +128,9 @@ printf -v BOOTSTRAP_QUOTED '%q' "$BOOTSTRAP"
 REMOTE_STARTED=1
 ssh -tt -o ServerAliveInterval=30 -o ServerAliveCountMax=20 -i "$SSH_KEY" "$VPS" \
   "sudo /usr/bin/python3 -I -c $BOOTSTRAP_QUOTED '$REMOTE_STAGE' '$MANIFEST_HASH'"
+if [[ "$CHECK_ONLY" == 1 ]]; then
+  echo 'VPS-controle afgerond; geen database-, container- of configuratiewijzigingen uitgevoerd.'
+  exit 0
+fi
 VWG_APP_HOSTS=www.vwg-m.nl,app.vwg-m.nl,vwg-m.nl "$VWG_M_REPO/website/vwg-m-linux-app/scripts/smoke_vps.sh"
 echo 'MySQL9.7.4 VPS-omschakeling geslaagd; NAS-pull en beschermd snapshot nog controleren.'
