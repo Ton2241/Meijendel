@@ -26,4 +26,19 @@ class ScanGateTests(unittest.TestCase):
         for output,status in [(SUMMARY,2),(SUMMARY+'\nURGENT|scanner|failure',1),(SUMMARY+'\nBLOKKADE|scanner|failure',1),(SUMMARY+'\nAANDACHT|container-hygiene|unexpected',1)]:
             self.assertNotEqual(self.gate(output,status).returncode,0)
 
+class FailureCleanupTests(unittest.TestCase):
+    def test_failure_and_signals_stop_exact_candidate_after_local_scope_unwinds(self):
+        name='meijendel-mysql-974-candidate-'+('b'*12)
+        with tempfile.TemporaryDirectory() as d:
+            log=Path(d)/'cleanup.log'
+            for action,code in [('false',1),('kill -TERM $$',143),('kill -HUP $$',129),('kill -INT $$',130)]:
+                log.unlink(missing_ok=True)
+                script='source "$1"; docker(){ printf "%s\\n" "$*" >> "$3"; }; f(){ local candidate="$1"; install_candidate_cleanup "$candidate"; '+action+'; }; f "$2"'
+                # The stub receives normal Docker arguments; log path is fixed in its body.
+                script=script.replace('>> "$3"','>> '+repr(str(log)))
+                result=subprocess.run(['bash','-c',script,'test',str(HELPER),name],capture_output=True,text=True,timeout=5)
+                self.assertEqual(result.returncode,code,result.stderr)
+                self.assertTrue(log.exists(),'kandidaat is na fout of signaal niet gestopt: '+result.stderr)
+                self.assertIn('stop --time 30 '+name,log.read_text())
+
 if __name__=='__main__':unittest.main()

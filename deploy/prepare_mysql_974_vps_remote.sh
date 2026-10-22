@@ -15,6 +15,15 @@ check_candidate_scan() {
   done < <(grep '^AANDACHT|container-hygiene|' "$report" || true)
 }
 
+install_candidate_cleanup() {
+  [[ "$1" =~ ^meijendel-mysql-974-candidate-[0-9a-f]{12}$ ]] || return 1
+  # Bind the name now: function locals disappear while Bash unwinds on failure.
+  trap "result=\$?; trap - EXIT INT TERM HUP; docker stop --time 30 '$1' >/dev/null 2>&1 || true; exit \$result" EXIT
+  trap 'exit 130' INT
+  trap 'exit 143' TERM
+  trap 'exit 129' HUP
+}
+
 prepare_candidate() {
   [[ "$EUID" == 0 && "$#" == 4 ]] || fail 'root, bronmap, broncommit, oude image en datarelease vereist'
   local stage="$1" commit="$2" old_image="$3" data_commit="$4"
@@ -40,7 +49,7 @@ prepare_candidate() {
   install -d -m 0700 "$task"
   # A failed preparation retains its exact private artifacts for diagnosis.
   # It never stops, renames, reconfigures or remounts the production container.
-  trap 'docker stop "$candidate" >/dev/null 2>&1 || true' EXIT
+  install_candidate_cleanup "$candidate"
   docker buildx build --builder default --platform linux/amd64 --pull --no-cache --load \
     --file "$stage/Dockerfile.9.7.4" --tag "$tag" "$stage"
   local image
@@ -90,7 +99,7 @@ pathlib.Path(sys.argv[1]).write_text(json.dumps(dict(
  source_commit=sys.argv[4],data_commit=sys.argv[5],data=sys.argv[6],container=sys.argv[7],
  review_before='2026-10-23',purpose='isolated MySQL upgrade candidate; production unchanged'),indent=2)+'\n')
 PY
-  trap - EXIT
+  trap - EXIT INT TERM HUP
   cat "$task/validation.log"
   printf 'GROEN|mysql974-kandidaat|image=%s|manifest=%s/manifest.json|productie=ongewijzigd\n' "$image" "$task"
 }
