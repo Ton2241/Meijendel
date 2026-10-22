@@ -704,9 +704,12 @@ datamap onder de nieuwe versie geplaatst. De oude datamap blijft intact.
 De nieuwe server start voor nacontrole eerst met super-read-only. Volledige
 SQL-inhoud, accounts/rechten, 724 objecten en 668 uitgebreide tabelcontroles
 moeten slagen voordat een herstart schrijven toestaat. Redo-capaciteit blijft
-512 MiB. Tot aan de schrijfbare vrijgave herstelt een fout na het stoppen
-de oorspronkelijke symlink en launchd-plist en start 9.7.1 met zijn eigen
-oorspronkelijke datamap. Zodra een schrijfbare start is geprobeerd, kunnen
+512 MiB. Tot aan de schrijfbare vrijgave kan een fout na het stoppen
+de oorspronkelijke symlink en launchd-plist herstellen en 9.7.1 met zijn eigen
+datamap starten, uitsluitend wanneer de oude programma’s nog aanwezig zijn.
+Het Oracle-pakket kan die programma’s verwijderen; de oude datamap alleen
+is dan geen direct uitvoerbare terugval. Bij ontbrekende oude programma’s
+stopt de helper en bewaart beide datamappen voor gericht herstel. Zodra een schrijfbare start is geprobeerd, kunnen
 nieuwe gegevens zijn ontvangen: een latere fout stopt de nieuwe server en
 behoudt diens data voor gericht herstel. Er volgt dan geen automatische
 terugval op de eerdere gegevenskopie. Een fout
@@ -716,3 +719,44 @@ nooit een nieuwere datamap met de oude binary te openen.
 De versieguard wordt pas aangepast nadat zowel iMac als VPS aantoonbaar op
 9.7.4 werken. Een gedeeltelijk mislukte installatie laat nieuwe bestanden
 bewust staan voor diagnose; beoordeel die exact vóór een volgende poging.
+
+
+### Herstel van de gedeeltelijk geïnstalleerde iMac-toestand van 22 oktober
+
+De eerste wissel stopte na installatie en verplaatsing van de geteste datamap.
+Het Oracle-pakket verwijderde de 9.7.1-programma’s. Een controle gebruikte nog
+de oude client; de daaropvolgende terugval kon de verdwenen server niet starten.
+De centrale symlink kreeg daarbij door umask 077 een ontoegankelijke modus.
+De herstelroute gebruikt expliciet de aanwezige 9.7.4-client en herstelt alleen
+de symlink naar modus 0777; de private datamappen blijven private.
+
+Gebruik de normale installatieopdracht in deze toestand niet opnieuw.
+De gerichte herstelvoorcontrole (zonder sudo of systeemwijziging) is:
+
+```sh
+python3 deploy/switch_mysql_974_imac.py --recover-installed \
+  --source-frozen /Users/ton/VWG-maintenance/2026-10-22/source-frozen-165512.sql.gz
+```
+
+De controle vereist geen draaiende server/andere installer/helper, de getekende
+9.7.4-programma’s, afzonderlijke echte datamappen, het oorspronkelijke proefbewijs
+en volledige gelijkheid van de besloten bevroren bronkopie met de proefdump.
+Rootstatus kan pas na zichtbare authenticatie worden gecontroleerd.
+
+Uitsluitend na afzonderlijk akkoord voor deze herstelactie, met zichtbare
+sudo-authenticatie in het standaard macOS Terminal-venster, mag dezelfde
+opdracht `--apply --yes` krijgen. Hij installeert geen pakket opnieuw.
+De root-owned oorspronkelijke launchd-plist moet exact overeenkomen met de
+beoordeelde configuratie. De oude launchd-job wordt verwijderd en afwezigheid
+van de job en server gecontroleerd vóór de symlink naar 9.7.4 wordt hersteld.
+Daarna volgen dezelfde read-only start, volledige SQL-/accountvergelijking,
+724 objecten en 668 tabelcontroles en pas daarna de schrijfbare start.
+
+Een fout in deze herstelmodus stopt de nieuwe service en bewaart beide
+gegevensmappen; hij activeert nooit automatisch de eerdere gegevenskopie.
+Het runtimebewijs vermeldt expliciet of oude programma’s nog beschikbaar zijn.
+In de geconstateerde toestand ontbreken die: de oude data zijn behouden,
+maar terugval vereist eerst herstel van de juiste 9.7.1-programma’s.
+Vóór een volgende vendorinstallatie moet daarom ook de programma-installatie
+apart worden veiliggesteld. Er is in deze taak nog geen herstelactie uitgevoerd
+op basis van alleen de geslaagde unit-tests.

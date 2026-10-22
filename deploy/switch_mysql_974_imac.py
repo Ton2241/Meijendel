@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Controlled local Oracle patch upgrade; SQL stays in Ton's login-path context."""
-import argparse,datetime as dt,gzip,hashlib,json,os,plistlib,re,shutil,signal,subprocess,sys,time,threading
+import argparse,datetime as dt,gzip,hashlib,json,os,plistlib,pwd,re,shutil,signal,stat,subprocess,sys,time,threading
 from pathlib import Path
 
 SCHEMAS=['Meijendel','Meijendel_bronnen','meijendel_db','Meijendel_ndff_secure','Meijendel_pq_proef_20260927']
@@ -58,6 +58,42 @@ def transaction(op):
   elif frozen:op.unfreeze_old()
   raise
 
+def recover(op):
+ # The vendor has already removed OLD executables. Never rerun its installer
+ # or activate the old datadir as an implicit recovery action.
+ op.recovery_prepare()
+ try:op.activate();op.verify();op.writable()
+ except BaseException:op.preserve_new();raise
+
+
+def replace_link(target):
+ if not LINK.is_symlink():raise ValueError('centrale mysql-koppeling is geen symlink; niets verwijderen')
+ if target not in (OLD,NEW):raise ValueError('onbekend koppelingsdoel')
+ admin('/bin/rm',LINK)
+ admin('/bin/ln','-s',target.name,LINK)
+ # Darwin honours symlink access modes; sudo can inherit umask 077.
+ admin('/bin/chmod','-h','777',LINK)
+ if LINK.resolve()!=target.resolve():raise ValueError('koppeling wijkt af na herstel')
+
+
+def validate_frozen_source(path):
+ path=Path(path)
+ if path.parent!=WORK.parent or not re.fullmatch(r'source-frozen-[0-9]{6}\.sql\.gz',path.name):raise ValueError('onbekende bevroren bronkopie')
+ if path.is_symlink() or not path.is_file() or path.stat().st_uid!=os.getuid() or path.stat().st_mode&0o077:raise ValueError('bronkopie niet besloten/eigen')
+ if dump_hash(path)!=dump_hash(WORK/'imac-974-proof/user-schemas.sql.gz'):raise ValueError('bevroren bron wijkt af van de gevalideerde proef')
+
+
+def other_maintenance_pids():
+ result=[]
+ for line in run(['/bin/ps','-axo','pid=,comm=,args=']).stdout.decode().splitlines():
+  row=line.split(None,2)
+  if len(row)<3:continue
+  pid=int(row[0]);program=Path(row[1]).name
+  if pid==os.getpid():continue
+  if program=='installer' or (program.lower().startswith('python') and 'switch_mysql_974_imac.py' in row[2]):result.append(pid)
+ return result
+
+
 def run(args,*,check=True,input=None,timeout=120):
  result=subprocess.run([str(a) for a in args],input=input,capture_output=True,timeout=timeout)
  if check and result.returncode:raise RuntimeError('opdracht mislukt: '+str(args[0])+'; stop en beoordeel het besloten onderhoudslog')
@@ -66,7 +102,8 @@ def run(args,*,check=True,input=None,timeout=120):
 def admin(*args,**kw):return run(['/usr/bin/sudo','-n',*args],**kw)
 
 def query(sql):
- result=run([OLD/'bin/mysql',*OPTS,'--batch','--raw','--skip-column-names','-e',sql],timeout=1800)
+ client=NEW/'bin/mysql' if (NEW/'bin/mysql').is_file() else OLD/'bin/mysql'
+ result=run([client,*OPTS,'--batch','--raw','--skip-column-names','-e',sql],timeout=1800)
  return result.stdout.decode().rstrip('\n')
 
 def accounts():
@@ -111,7 +148,7 @@ class Operation:
  def __init__(self):
   self.saved_accounts=json.loads((WORK/'imac-974-proof/accounts-before.json').read_text())
   self.before=json.loads((WORK/'imac-974-proof/source-final-inventory.json').read_text())
-  self.mount=WORK.parent/'oracle-installer-readonly'
+  self.mount=WORK.parent/'oracle-installer-readonly';self.owns_mount=False
   self.original_plist=PLIST.read_bytes();self.installed=False
   self.data_moved=False;self.service_stopped=False;self.old_stopped=False;self.write_exposed=False;self.current_dump=None
   self.args=plistlib.loads(self.original_plist)['ProgramArguments']
@@ -140,7 +177,7 @@ class Operation:
   if sha(dmg)!=DMG_SHA:raise ValueError('installerchecksum wijkt af')
   run(['/usr/bin/hdiutil','verify',dmg],timeout=180)
   if self.mount.exists():raise ValueError('installer-mount bestaat al')
-  self.mount.mkdir(mode=0o700)
+  self.mount.mkdir(mode=0o700);self.owns_mount=True
   run(['/usr/bin/hdiutil','attach','-readonly','-nobrowse','-mountpoint',self.mount,dmg],timeout=180)
   packages=list(self.mount.glob('*.pkg'))
   if len(packages)!=1:raise ValueError('installer niet eenduidig')
@@ -149,6 +186,46 @@ class Operation:
   if 'VB5E2TV963' not in signature or 'trusted' not in signature.lower():raise ValueError('Oracle-/Apple-signatuur niet bevestigd')
   if shutil.disk_usage('/System/Volumes/Data').free<12*1024**3:raise ValueError('minder dan12GiBvrij')
   print('GROEN|imac974-voorcontrole|bron=9.7.1|proef=724/668|accounts=2|installer=geverifieerd',flush=True)
+ def recovery_preflight(self,source):
+  if sys.platform!='darwin' or os.getuid()==0 or Path.home()!=Path('/Users/ton'):raise ValueError('alleen Ton op de iMac, zonder root-Python')
+  if WORK.is_symlink() or WORK.stat().st_uid!=os.getuid() or WORK.stat().st_mode&0o077:raise ValueError('werkmap niet besloten/eigen')
+  if mysql_pids() or other_maintenance_pids():raise ValueError('MySQL, installer of andere omschakelhelper is nog actief')
+  if (WORK.parent/'imac-mysql-runtime.json').exists():raise ValueError('schrijfbare omschakeling al geregistreerd; geen herstelmodus')
+  if not LINK.is_symlink() or PLIST.is_symlink() or PLIST.stat().st_uid!=0 or PLIST.stat().st_mode&0o022:raise ValueError('onveilige centrale koppeling of launchd-configuratie')
+  validate_service(plistlib.loads(self.original_plist),str(OLD/'data'))
+  validate_manifest(json.loads((WORK/'imac-974-proof/manifest.json').read_text()))
+  if sha(WORK/'imac-974-proof/user-schemas.sql.gz')!=ARCHIVE_SHA:raise ValueError('proefdump gewijzigd')
+  if len(self.saved_accounts)!=2 or len(self.before['objects'])!=724:raise ValueError('onvolledig vergelijkingsbewijs')
+  uid=pwd.getpwnam('_mysql').pw_uid
+  identities=[]
+  for base in (OLD,NEW):
+   if base.is_symlink() or base.stat().st_uid!=0:raise ValueError('onveilige versiegebonden installatiemap')
+   data=base/'data'
+   if data.is_symlink() or not data.is_dir() or data.stat().st_uid!=uid or data.stat().st_mode&0o022:raise ValueError('onveilige gegevensmap')
+   identities.append((data.stat().st_dev,data.stat().st_ino))
+  if identities[0]==identities[1]:raise ValueError('bron en doel delen dezelfde gegevensmap')
+  if (WORK/'imac-974-proof/data').exists():raise ValueError('proefdata niet naar het verwachte doel verplaatst')
+  for name in ('mysql','mysqld','mysqldump'):
+   binary=NEW/'bin'/name
+   if not re.search(r'\b9\.7\.4\b',run([binary,'--no-defaults','--version']).stdout.decode()):raise ValueError('geïnstalleerde doelversie wijkt af')
+   run(['/usr/bin/codesign','--verify','--strict',binary])
+   signature=run(['/usr/bin/codesign','-dv','--verbose=2',binary]).stderr.decode()
+   if 'TeamIdentifier=VB5E2TV963' not in signature:raise ValueError('Oracle-signatuur van doelbinary niet bevestigd')
+  self.current_dump=Path(source);validate_frozen_source(self.current_dump)
+  print('GROEN|imac974-herstelvoorcontrole|geïnstalleerd=9.7.4|geen-server-actief|bronkopie=identiek|rootstatus=nog-controleren',flush=True)
+ def recovery_prepare(self):
+  # This metadata is deliberately checked after visible sudo authentication.
+  for path,kind in ((STATE,'Directory'),(STATE/'original.plist','Regular File')):
+   value=admin('/usr/bin/stat','-f','%HT:%u:%Lp',path).stdout.decode().strip().rsplit(':',2)
+   if len(value)!=3 or value[0]!=kind or value[1]!='0' or int(value[2],8)&0o022:raise ValueError('onveilige root-herstelstatus')
+  original=admin('/bin/cat',STATE/'original.plist').stdout
+  validate_service(plistlib.loads(original),str(OLD/'data'))
+  if original!=self.original_plist:raise ValueError('actuele configuratie wijkt af van root-bronkopie')
+  if mysql_pids() or other_maintenance_pids():raise ValueError('ander onderhoud of een database werd gestart')
+  admin('/bin/launchctl','bootout',LABEL,check=False);stopped()
+  if admin('/bin/launchctl','print',LABEL,check=False).returncode==0:raise ValueError('launchd-job is nog geladen')
+  replace_link(NEW)
+  self.old_stopped=True;self.service_stopped=True;self.data_moved=True;self.installed=True
  def freeze(self):
   query('SET GLOBAL super_read_only=ON')
   if query('SELECT @@read_only,@@super_read_only')!='1\t1':raise ValueError('bron niet bevroren')
@@ -168,6 +245,8 @@ class Operation:
   print('INSTALLATIE|officieel-Oracle-pakket|oude-datamap-blijft-behouden',flush=True)
   admin('/usr/sbin/installer','-pkg',self.package,'-target','/',timeout=600)
   self.installed=True
+  if not LINK.is_symlink():raise ValueError('installer heeft geen symlink geplaatst')
+  admin('/bin/chmod','-h','777',LINK)
   if LINK.resolve()!=NEW:raise ValueError('installer heeft niet de verwachte symlink geplaatst')
   version=run([NEW/'bin/mysqld','--no-defaults','--version']).stdout.decode()
   if not re.search(r'\b9\.7\.4\b',version):raise ValueError('geïnstalleerde binaryversie onjuist')
@@ -214,9 +293,9 @@ class Operation:
   self.write_exposed=True
   admin('/bin/launchctl','bootstrap','system',PLIST);wait_version('9.7.4')
   if query('SELECT VERSION(),@@read_only,@@super_read_only')!='9.7.4\t0\t0':raise ValueError('definitieve schrijfbare start niet bevestigd; nieuwe data behouden')
-  record=dict(status='validated-active-runtime',version='9.7.4',data=str(NEW/'data'),rollback_data=str(OLD/'data'),schemas=SCHEMAS,objects=724,checks=668,accounts=2,full_logical_equivalence=True,completed_at=dt.datetime.now(dt.timezone.utc).isoformat())
+  record=dict(status='validated-active-runtime',version='9.7.4',data=str(NEW/'data'),rollback_data=str(OLD/'data'),schemas=SCHEMAS,objects=724,checks=668,accounts=2,full_logical_equivalence=True,rollback_programs_available=(OLD/'bin/mysqld').is_file(),completed_at=dt.datetime.now(dt.timezone.utc).isoformat())
   (WORK.parent/'imac-mysql-runtime.json').write_text(json.dumps(record,indent=2)+'\n')
-  print('GROEN|imac974-omschakeling|versie=9.7.4|objects=724|checks=668|accounts=2|terugval=9.7.1-behouden',flush=True)
+  print('GROEN|imac974-omschakeling|versie=9.7.4|objects=724|checks=668|accounts=2|terugvaldata=9.7.1-behouden|oude-programmas=afzonderlijk-beoordelen',flush=True)
  def unfreeze_old(self):
   if query('SELECT VERSION()')!='9.7.1':raise RuntimeError('bronidentiteit onduidelijk; geen blinde schrijfwijziging')
   query('SET GLOBAL super_read_only=OFF; SET GLOBAL read_only=OFF')
@@ -227,7 +306,8 @@ class Operation:
  def preserve_new(self):
   # Once a writable start is attempted, the new data may contain new writes.
   # Preserve that source and never silently reactivate the stale old copy.
-  print('BLOKKADE|schrijfbare-9.7.4-mogelijk-gestart|nieuwe-data-behouden|geen-terugval-op-oude-data',flush=True)
+  phase='schrijfbare-9.7.4-mogelijk-gestart' if self.write_exposed else 'readonly-9.7.4-herstel-afgebroken'
+  print('BLOKKADE|'+phase+'|nieuwe-data-behouden|geen-terugval-op-oude-data',flush=True)
   admin('/bin/launchctl','bootout',LABEL,check=False);stopped()
  def rollback(self):
   if not self.service_stopped or (not self.old_stopped and self.old_is_live()):
@@ -235,29 +315,33 @@ class Operation:
   if not self.old_stopped:
    try:self.unfreeze_old()
    except (RuntimeError,subprocess.TimeoutExpired):pass
+  if not (OLD/'bin/mysqld').is_file():
+   admin('/bin/launchctl','bootout',LABEL,check=False);stopped()
+   raise RuntimeError('oude programma’s ontbreken; beide datamappen behouden, herstelmodus nodig')
   print('HERSTEL|oorspronkelijke-installatie-en-data',flush=True)
   admin('/bin/launchctl','bootout',LABEL,check=False);stopped()
   # The old version is only ever started with its own original data directory.
-  if LINK.is_symlink():admin('/bin/rm',LINK)
-  elif LINK.exists():raise RuntimeError('onverwachte echte mysql-map; niet verwijderen')
-  admin('/bin/ln','-s',OLD.name,LINK)
+  replace_link(OLD)
   admin('/bin/cp','-p',STATE/'original.plist',PLIST)
   admin('/bin/launchctl','bootstrap','system',PLIST);wait_version('9.7.1');self.unfreeze_old()
   if query('SELECT VERSION(),@@read_only,@@super_read_only')!='9.7.1\t0\t0':raise RuntimeError('terugvalcontrole mislukt')
   print('GROEN|imac974-terugval|9.7.1|oude-data|schrijfstatus=aan',flush=True)
  def cleanup(self):
-  if self.mount.exists():
+  if self.owns_mount and self.mount.exists():
    run(['/usr/bin/hdiutil','detach',self.mount],check=False)
    try:self.mount.rmdir()
    except OSError:pass
 
 def main():
- p=argparse.ArgumentParser();p.add_argument('--apply',action='store_true');p.add_argument('--yes',action='store_true');a=p.parse_args()
+ p=argparse.ArgumentParser();p.add_argument('--apply',action='store_true');p.add_argument('--yes',action='store_true')
+ p.add_argument('--recover-installed',action='store_true');p.add_argument('--source-frozen',type=Path);a=p.parse_args()
+ if a.recover_installed!=bool(a.source_frozen):p.error('--recover-installed en --source-frozen samen gebruiken')
  if a.apply!=a.yes:p.error('gebruik --apply --yes samen')
  os.umask(0o077)
  op=Operation()
  try:
-  op.preflight()
+  if a.recover_installed:op.recovery_preflight(a.source_frozen)
+  else:op.preflight()
   if not a.apply:print('ALLEEN VOORCONTROLE|geen installatie of schrijfstoppauze');return
   if not sys.stdin.isatty() or not sys.stdout.isatty():raise ValueError('alleen zichtbaar standaard macOS Terminal-venster')
   subprocess.run(['/usr/bin/sudo','-v'],check=True)
@@ -271,7 +355,9 @@ def main():
      if result.returncode:print('AANDACHT|sudo-sessie-kon-niet-worden-verlengd',flush=True);return
     except (OSError,subprocess.TimeoutExpired):return
   keeper=threading.Thread(target=renew,daemon=True);keeper.start()
-  try:transaction(op)
+  try:
+   if a.recover_installed:recover(op)
+   else:transaction(op)
   finally:done.set();keeper.join(timeout=20)
  finally:op.cleanup()
 if __name__=='__main__':
