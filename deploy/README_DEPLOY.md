@@ -676,3 +676,43 @@ schrijfblokkades of herstarts. `--check-only` en `--apply` sluiten elkaar uit.
 Pas na een geslaagde feitelijke VPS-controle volgt een afzonderlijke
 productiepoging. De volledige kandidaat-/gegevenscontrole en nieuwe back-up
 blijven onderdeel van die latere omschakeling.
+
+## Lokale iMac: gecontroleerde Oracle-upgrade naar MySQL 9.7.4
+
+De lokale iMac is de schrijfbron. Deze stap publiceert geen gegevens op de VPS.
+Gebruik `deploy/switch_mysql_974_imac.py` uitsluitend voor de beoordeelde
+9.7.1 → 9.7.4-proef van 22 oktober 2026. Eerst moet de eigen onderhoudsmap
+volledig gecontroleerd buiten Documenten/iCloud staan, onder
+`/Users/ton/VWG-maintenance/2026-10-22/mysql-upgrade-work`.
+Het oorspronkelijke proefmanifest blijft historisch bewijs; het
+verplaatsingsbewijs legt het nieuwe pad vast. Er komen geen dumps of datamappen
+in Git.
+
+Start eerst zonder argumenten voor pakket-, bron-, account- en proefcontrole.
+Alleen `--apply --yes` vraagt in het standaard macOS Terminal-venster om
+zichtbare sudo-authenticatie. Ton bevestigt eerst dat de prompt zichtbaar is
+en voert daarna zelf het wachtwoord in. Geen wachtwoorden in de chat.
+
+De helper blokkeert bij gewijzigd bronmateriaal, accounts, installaties of
+onbekende doeldata. Na tijdelijke schrijfstop vergelijkt hij een verse volledige
+logische dump met de geteste proefdump. Alleen de afsluitende dumptijd en de
+bekende serverversieregel 9.7.1/9.7.4 worden voor vergelijking genormaliseerd.
+Vervolgens wordt de oorspronkelijke service gestopt, het officiële
+Oracle-pakket geverifieerd geïnstalleerd en uitsluitend de afzonderlijk geteste
+datamap onder de nieuwe versie geplaatst. De oude datamap blijft intact.
+
+De nieuwe server start voor nacontrole eerst met super-read-only. Volledige
+SQL-inhoud, accounts/rechten, 724 objecten en 668 uitgebreide tabelcontroles
+moeten slagen voordat een herstart schrijven toestaat. Redo-capaciteit blijft
+512 MiB. Tot aan de schrijfbare vrijgave herstelt een fout na het stoppen
+de oorspronkelijke symlink en launchd-plist en start 9.7.1 met zijn eigen
+oorspronkelijke datamap. Zodra een schrijfbare start is geprobeerd, kunnen
+nieuwe gegevens zijn ontvangen: een latere fout stopt de nieuwe server en
+behoudt diens data voor gericht herstel. Er volgt dan geen automatische
+terugval op de eerdere gegevenskopie. Een fout
+vóór het stoppen heft alleen de tijdelijke schrijfstop op. De helper probeert
+nooit een nieuwere datamap met de oude binary te openen.
+
+De versieguard wordt pas aangepast nadat zowel iMac als VPS aantoonbaar op
+9.7.4 werken. Een gedeeltelijk mislukte installatie laat nieuwe bestanden
+bewust staan voor diagnose; beoordeel die exact vóór een volgende poging.
