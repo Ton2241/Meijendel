@@ -535,3 +535,47 @@ Deze waarden kunnen tijdelijk worden overschreven:
 VPS=ton@andere-host SSH_KEY=~/.ssh/andere_key ./deploy/deploy_meijendel_vps.sh
 MYSQL_PORT=3307 ./deploy/update_en_deploy_meijendel.sh
 ```
+
+## MySQL 9.7.4: afzonderlijke kandidaatvoorbereiding (22 oktober 2026)
+
+`deploy/prepare_mysql_974_vps.sh` bereidt uitsluitend de versie-upgradeproef voor.
+De oude `rebuild_mysql_image_vps.sh` blijft voor een 9.7.1-imagerebuild;
+gebruik hem niet voor een versie-upgrade op de bestaande productiedatamap.
+
+Vanaf schone, met origin gesynchroniseerde main:
+
+```sh
+deploy/prepare_mysql_974_vps.sh
+deploy/prepare_mysql_974_vps.sh --apply --yes
+```
+
+De tweede opdracht vraagt sudo in het standaard macOS Terminal-venster.
+De gebruiker bevestigt eerst dat de prompt zichtbaar is. Houd het venster open.
+De rootstap verifieert de drie bronbestanden na sudo en voert uitsluitend
+besloten root-owned kopieën uit. De normale productieguard en het exclusieve
+productieslot blijven verplicht; de Meijendel-datarelease verandert niet.
+
+De Dockerfile pint MySQL9.7.4 en Go1.26.10 per officiële digest, behoudt
+UID/GID1999 en redo512MiB, verwijdert mysql-shell en ververst OS-pakketten.
+De exacte kandidaat moet 0HIGH/0CRITICAL hebben. Een nieuwe logische dump
+van de bestaande VPS-database wordt geïmporteerd in een aparte datamap, in
+ een proefcontainer zonder netwerk of gepubliceerde poorten. De validator
+controleert expliciet bron9.7.1/doel9.7.4, objecttypen, schema, exacte
+rijtellingen, instellingen, SELECT-rechten en CHECK TABLE EXTENDED.
+Bestaande aanroepers van de validator blijven standaard9.7.1/9.7.1 vereisen.
+
+Geslaagde kandidaten blijven gestopt staan met een besloten manifest onder
+`/srv/vwgm/mysql974-candidate-<12hex>/`. Doel: productiewissel voorbereiden;
+uiterlijk23oktober opnieuw beoordelen. Een mislukte voorbereiding stopt alleen
+haar eigen proefcontainer en behoudt haar exacte artefacten voor diagnose.
+Een apart gecontroleerde vervolgactie ruimt die artefacten op of gebruikt
+het bewezen kandidaatimage en een bij de wissel opnieuw gecontroleerde dump.
+Een productiewissel en de iMac-upgrade worden hiermee niet uitgevoerd.
+De oude productiedatamap mag nooit door MySQL9.7.4 worden geopend: behoud
+haar met de9.7.1-image als samenhangende terugvalroute.
+
+Ook de iMac wordt in deze onderhoudsronde voorbereid op9.7.4. Daar moeten
+alle vijf gebruikersschema's en de accounts/rechten behouden blijven. De
+levende iMac-database blijft de schrijfbron; maak geen datarelease of zware
+export naar de VPS als onderdeel van dit runtimeonderhoud. Pas de canonieke
+versieguard pas gecontroleerd aan wanneer beide installaties zijn beproefd.

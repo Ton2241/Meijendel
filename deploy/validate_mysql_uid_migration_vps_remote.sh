@@ -5,6 +5,8 @@ SOURCE_CONTAINER="${1:?broncontainer ontbreekt}"
 TARGET_CONTAINER="${2:?doelcontainer ontbreekt}"
 EXPECTED_UID="${3:?verwachte UID ontbreekt}"
 EXPECTED_GID="${4:?verwachte GID ontbreekt}"
+EXPECTED_SOURCE_VERSION="${5:-9.7.1}"
+EXPECTED_TARGET_VERSION="${6:-9.7.1}"
 
 fail() { printf 'FOUT: %s\n' "$*" >&2; exit 1; }
 mysql_query() {
@@ -23,7 +25,9 @@ for container in "$SOURCE_CONTAINER" "$TARGET_CONTAINER"; do
     fail "mysql-UID wijkt af in $container"
   [[ "$(docker exec "$container" id -g mysql)" == "$EXPECTED_GID" || "$container" == "$SOURCE_CONTAINER" ]] ||
     fail "mysql-GID wijkt af in $container"
-  [[ "$(mysql_query "$container" 'SELECT VERSION()')" == "9.7.1" ]] ||
+  expected_version="$EXPECTED_TARGET_VERSION"
+  [[ "$container" != "$SOURCE_CONTAINER" ]] || expected_version="$EXPECTED_SOURCE_VERSION"
+  [[ "$(mysql_query "$container" 'SELECT VERSION()')" == "$expected_version" ]] ||
     fail "MySQL-versie wijkt af in $container"
 done
 
