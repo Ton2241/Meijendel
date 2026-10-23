@@ -907,3 +907,12 @@ De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling,
 Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
 
 Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.
+
+
+## Archivering van herstelkopieën op 23 oktober 2026
+
+De 60 herstelbestanden uit /Users/ton/Documents/Backups zijn op 23 oktober 2026 ondergebracht in /Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief. De oorspronkelijke submappen zijn behouden: Meijendel bevat 59 SQL-bestanden van 2–3 oktober 2026 (18.190.535.905 bytes); Zotero/Meijendel/2026-09-25 bevat één databasekopie van 25 september 2026 (84.246.528 bytes). Samen: 18.274.782.433 bytes.
+
+Alle 60 bestanden zijn vóór verwijdering uit iCloud per bestand op omvang en SHA-256 vergeleken met de T7-kopie. Het controlebestand CONTROLE_SHA256.json in de archiefmap bevat de relatieve bestandsnamen, aantallen bytes en controlewaarden. De bestanden behouden hun betekenis als historische herstelpunten vóór wijzigingen; dit is geen actuele volledige back-up van de levende databases. De Zotero-databasekopie bevat geen afzonderlijke bijlagebestanden.
+
+De eerdere locatie onder Documents viel onder iCloud. De archiefmap op de T7 staat buiten iCloud. De ecologische bronbestanden, inhoud, bronbeoordelingen en analytische toelatingsstatussen zijn door deze archivering niet gewijzigd. Dit betreft herstelkopieën van Meijendel en Zotero; het verplaatst geen gegevens uit Meijendel_bronnen en wijzigt geen kandidaatbron. De oude locatie wordt niet als back-updoel hergebruikt.
