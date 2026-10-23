@@ -1,14 +1,14 @@
-# NDFF-mossen en -korstmossen: relatiekaart en herstelproef
+# NDFF-mossen en -korstmossen: relatiekaart en fysieke verhuizing
 
-Stand 23 oktober 2026. Deze kaart beschrijft de **levende lokale** MySQL 9.7.4-database `Meijendel`. Zij is geen opdracht om de bestaande tabellen al te verwijderen.
+Stand 23 oktober 2026. Deze kaart beschrijft de **levende lokale** MySQL 9.7.4-database `Meijendel`, inclusief de vandaag afgeronde fysieke verhuizing. De historische aantallen hieronder zijn de nulmeting van vóór de verhuizing.
 
 ## Doel en grens
 
-De 32.353 openbare moswaarnemingen (1940–2025) en 28.643 openbare korstmoswaarnemingen (1936–2025) moeten uiteindelijk ieder precies eenmaal als volledige waarneming in respectievelijk `mossen_waarneming` en `korstmossen_waarneming` staan. De 810.830 unieke openbare NDFF-waarnemingen blijven samen telbaar: na verhuizing 749.834 in `ndff_open_waarneming` plus 60.996 in de twee nieuwe tabellen. Onvervaagde geometrieën blijven uitsluitend in `Meijendel_ndff_secure`; de 17 respectievelijk 202 koppelingen met openbare mos- en korstmosregels moeten intact blijven. De originele BLWG-kop-, bezoek- en resultaatgegevens blijven afzonderlijke entiteiten.
+De 32.353 openbare moswaarnemingen (1940–2025) en 28.643 openbare korstmoswaarnemingen (1936–2025) staan ieder precies eenmaal als volledige waarneming in respectievelijk `mossen_waarneming` en `korstmossen_waarneming`. De 810.830 unieke openbare NDFF-waarnemingen blijven samen telbaar: 749.834 in `ndff_open_waarneming` plus 60.996 in de twee groepstabellen. Onvervaagde geometrieën blijven uitsluitend in `Meijendel_ndff_secure`. De originele BLWG-kop-, bezoek- en resultaatgegevens blijven afzonderlijke entiteiten.
 
 ## Relatiekaart
 
-`ndff_open_waarneming.waarneming_id` is momenteel de enige foreign-keyouder van 32 constraints in 28 tabellen. Daarvan bevatten de volgende verwijzingen een van de te verhuizen IDs. Aantallen zijn **koppelregels**, niet unieke waarnemingen; `ndff_open_pq_koppeling` bewaart twee regelversies per waarneming.
+Vóór de verhuizing was `ndff_open_waarneming.waarneming_id` de foreign-keyouder van 32 constraints in 28 tabellen. Alle 32 verwijzen nu naar `ndff_open_waarneming_register`. De volgende nulmeting toont welke verwijzingen een verhuisd ID bevatten. Aantallen zijn **koppelregels**, niet unieke waarnemingen; `ndff_open_pq_koppeling` bewaart twee regelversies per waarneming.
 
 | Verwijzing | Mos | Korstmos | Betekenis bij verhuizing |
 |---|---:|---:|---|
@@ -23,29 +23,29 @@ De 32.353 openbare moswaarnemingen (1940–2025) en 28.643 openbare korstmoswaar
 | `korstmossen_bron_ndff_groeprecord.ndff_waarneming_id` | 0 | 364 | BLWG-bronmatch behouden |
 | `korstmossen_bron_resultaat.ndff_waarneming_id` | 0 | 210 | BLWG-resultaatmatch behouden |
 
-De overige 18 verwijzende tabellen bevatten voor beide groepen nul getroffen regels, maar hun FK-constraint moet óók worden aangepast als de gezamenlijke parent wordt vervangen door een stabiel ID-register. Daarnaast bewaren `ndff_mossen` 32.353 en `ndff_korstmossen` 28.643 ID-verwijzingen. Er is geen overlap tussen die twee groepen. Van de andere 25 groepsindexen deelt uitsluitend `ndff_schimmels` IDs met deze selectie: 54 korstmoswaarnemingen. Ook de parent-delete/update-triggers bewaken deze relaties.
+De overige 18 verwijzende tabellen bevatten voor beide groepen nul getroffen regels; ook hun FK-constraint is aangepast. De voormalige ID-indexen `ndff_mossen` en `ndff_korstmossen` bevatten respectievelijk 32.353 en 28.643 verwijzingen en zijn na de eindcontrole verwijderd. Er was geen overlap tussen die twee groepen. Van de andere groepsindexen deelt uitsluitend `ndff_schimmels` IDs met deze selectie: 54 korstmoswaarnemingen. De nieuwe triggers bewaken de bron en het smalle register.
 
 De achttien nu lege maar schema-technisch afhankelijke tabellen zijn: `daz_bmp_recordselectie`, `florbase_recordselectie`, `hns_recordselectie`, `lmfa_recordselectie`, `ndff_bospaddenstoel_recordselectie`, `ndff_bospaddenstoel_verspreiding_recordselectie`, `ndff_braakbal_recordselectie`, `ndff_habslak_recordselectie`, `ndff_konijn_recordselectie`, `ndff_kwartiertelling_recordselectie`, `ndff_liveatlas_recordselectie`, `ndff_nachtvlinder_recordselectie`, `ndff_otter_bever_recordselectie`, `ndff_poldervis_recordselectie`, `ndff_ravon_n2000_recordselectie`, `ndff_tuintelling_recordselectie`, `ndff_vleermuis_recordselectie` en `sovon_avimap_ndff_daz_koppeling`.
 
-Buiten de afgedwongen foreign keys zijn 17 openbare regels gekoppeld aan beveiligde mosregels en 202 aan beveiligde korstmosregels via `Meijendel_ndff_secure.ndff_open_secure_koppeling`. De beveiligde views `v_ndff_canonieke_waarneming` en `v_ndff_analyse_record` lezen nu rechtstreeks uit `Meijendel.ndff_open_waarneming`. Hun bronselectie moet vóór de verhuizing worden bijgewerkt, zonder exacte locaties in `Meijendel` op te slaan. Import-, protocol-, ruimtelijke en exportcontroles in `gis/scripts/` en `scripts/` gebruiken de gezamenlijke tabel eveneens. Een fysieke verhuizing zonder hun aanpassing zou 60.996 regels voor die afnemers laten verdwijnen.
+Buiten de afgedwongen foreign keys zijn 17 openbare regels gekoppeld aan beveiligde mosregels en 202 aan beveiligde korstmosregels via `Meijendel_ndff_secure.ndff_open_secure_koppeling`. De bestaande beveiligde view `v_ndff_canonieke_waarneming` selecteert nu uit de drie fysieke openbare tabellen via het register; `v_ndff_analyse_record` blijft daarop aansluiten. De logische selectie bevat zowel vóór als na verhuizing 810.983 waarnemingen. Exacte locaties zijn niet naar `Meijendel` gekopieerd. Import-, protocol-, ruimtelijke en exportcontroles zijn aangepast voor de gesplitste opslag.
 
 De directe codeafnemers zijn ten minste `gis/scripts/import_ndff_public_gbif.py` (bronimport en beveiligde koppeling), `gis/scripts/import_ndff_secure_delivery.py` (secure-koppeling), `gis/scripts/import_ndff_protocolkwaliteit.py` (protocol- en broncontroles), `gis/scripts/import_external_ecology_sources.py` (centrale taxonpoort en gegenereerde triggers), `gis/scripts/import_meijendel_ruimtelijke_lagen.py` (ruimtelijke toewijzing), `gis/scripts/audit_blwg_korstmossen.py` (bronvergelijking), `scripts/test_meijendel_export_contract.sh` en `scripts/validate_meijendel_export.sh`. De schema's `gis/database/ndff_public_schema.sql`, `gis/database/ndff_protocolkwaliteit_schema.sql` en `gis/database/ndff_secure_schema.sql` leggen de bestaande tabel- en viewrelaties vast. Hun wijziging en regressietoets horen bij de live-fase.
 
-## Open inhoudelijke keuze vóór de levende verhuizing
+## PQ-beoordeling blijft afzonderlijk
 
-De actuele PQ-beoordeling `ndff-open-pq-poort-v2` noemt 492 mos- en 275 korstmoswaarnemingen `historische_vegetatiecontext`, en 10.903 mos- en 2.998 korstmoswaarnemingen `niet_beoordeelbaar`. Zij bewijst niet dat al deze regels provinciale PQ-opnamen zijn. De bindende projectregel verlangt dat **werkelijke PQ-inhoud uitsluitend onder `pq_*`** staat. Daarom mag de migratie deze beoordeling niet wissen of alle betreffende regels stilzwijgend als niet-PQ bestempelen. De fysieke bestemming van bevestigde of nog niet uitgesloten PQ-regels moet met die bestaande regel verenigbaar zijn.
+De PQ-beoordeling `ndff-open-pq-poort-v2` noemt 492 mos- en 275 korstmoswaarnemingen `historische_vegetatiecontext`, en 10.903 mos- en 2.998 korstmoswaarnemingen `niet_beoordeelbaar`. Zij bewijst niet dat al deze regels provinciale PQ-opnamen zijn. De bindende projectregel verlangt dat **bevestigde PQ-inhoud uitsluitend onder `pq_*`** staat. Deze migratie verplaatst alleen de oorspronkelijke NDFF-bronregels; zij verandert geen PQ-beoordeling en voegt geen kandidaat toe aan de provinciale PQ-reeks. De inhoudelijke beoordeling van de niet-gematchte kandidaten blijft open.
 
 ## Herstelproef en acceptatiepoort
 
 Een proef mag uitsluitend in een afzonderlijk, exact benoemd lokaal MySQL-proefschema plaatsvinden. Kopieer daarin alle 60.996 bronregels en alle hierboven getroffen kindregels. Leg aantallen en bronidentiteit/geometrie-/payloadchecksums vóór de proef vast. Probeer vervolgens de nieuwe fysieke groepstabellen met gelijkblijvende `waarneming_id` en een smal, gedeeld ID-register als FK-ouder. Simuleer verwijdering van de oude parentregels, herstel de bron- en kindregels uit de proefkopieën en vergelijk iedere koppeling en checksum. Test ook de 54 dubbele soortgroepclassificaties, de 219 beveiligde koppelidentiteiten en de twee bestaande secure-viewselecties. Een smal ID-register bewaart uitsluitend de sleutel en fysieke locatie; het is geen tweede waarneming.
 
-**Stopregel:** geen levende bronregel, FK of groepsindex verwijderen zolang één van deze toetsen faalt, de PQ-bestemming onbeslist is, de bijbehorende import-/analysescripts nog uit de oude tabel lezen, of de gescheiden beveiligde gegevens niet aantoonbaar correct worden gekoppeld. Een grote `Meijendel.sql`-export en Shiny-cachebouw vereisen afzonderlijk akkoord; de herstelproef gebruikt die keten niet.
+**Toegepaste stopregel:** geen levende bronregel of groepsindex verwijderen zolang een herstelproef, bronkopie, FK-controle, centrale taxonpoort of beveiligde selectie faalt. De afzonderlijke inhoudelijke PQ-beoordeling wordt hierdoor niet gewijzigd. Een grote `Meijendel.sql`-export en Shiny-cachebouw vereisen afzonderlijk akkoord; deze verhuizing gebruikte die keten niet.
 
 ### Uitkomst 23 oktober 2026
 
 De reproduceerbare proef `gis/scripts/rehearse_ndff_mos_korstmos_restore.py --apply` is geslaagd. Zij verplaatste in het geïsoleerde schema 60.996 volledige bronregels, behield hun IDs en herstelde daarna zowel de parent als alle 13 daadwerkelijk geraakte kindtabellen uit afzonderlijke proefkopieën. De ouder-checksum was vóór en na herstel `4118877743`; alle kindtabellen behielden hun aantallen en checksums. De proef omvatte onder meer 121.992 PQ-beoordelingsregels, 61.050 soortgroepkoppelingen en de 54 extra schimmelindexregels. Het proefschema is na de controle verwijderd. In `Meijendel` en `Meijendel_ndff_secure` is niets gewijzigd. Deze proef bewijst herstelbaarheid van de geselecteerde rijen en relaties; zij bewijst **nog niet** dat alle bestaande applicatie- en importpaden een permanente gesplitste opslag kunnen lezen.
 
-De actuele database heeft bovendien door het centrale taxonregister gegenereerde triggers die op ruim vijftig NDFF-kinder- en groepstabellen een bestaande rij in `ndff_open_waarneming` eisen. Twee parent-triggers verbieden het verwijderen of wijzigen zolang een kind verwijst. Zelfs na het omzetten van alle 32 foreign keys zouden die triggers een levende verhuizing blokkeren. De triggergenerator in `gis/scripts/import_external_ecology_sources.py` en de twee bestaande beveiligde views moeten daarom aantoonbaar zijn aangepast en opnieuw getest voordat de live-fase begint.
+De vóór de verhuizing aanwezige centrale taxontriggers eisten nog een bronregel in `ndff_open_waarneming`. Hun generator is aangepast en de triggers zijn opnieuw geplaatst: zij gebruiken nu het smalle register en de fysieke opslaglocatie. De nieuwe regels beschermen ook tegen verweesde verwijzingen, dubbele identiteiten en het verwijderen van nog gebruikte bronregels.
 
 ## Volgorde na een geslaagde proef
 
@@ -90,3 +90,23 @@ wordt door deze opslagmigratie niet als bevestigde PQ-opname of als zelfstandige
 waarneming heringedeeld. Werkelijke PQ-inhoud blijft onder de bindende `pq_*`-
 opslagregel vallen; een bevestigde PQ-regel mag niet stilzwijgend in een van de
 nieuwe groepstabellen worden ondergebracht.
+
+### Uitkomst 23 oktober 2026: levende verhuizing afgerond
+
+De voorcontrole bevestigde 810.830 unieke openbare NDFF-regels, waarvan
+32.353 mossen en 28.643 korstmossen, zonder ID-overlap. De herstelproef met
+alle 60.996 doelregels staat hierboven. Een afzonderlijke proef met drie
+voorbeeldrecords testte vervolgens de nieuwe fysieke tabellen, het gedeelde
+register, de triggers en de transactie, inclusief een bewuste fout die volledig
+werd teruggedraaid. Beide proefschema's zijn na verificatie verwijderd.
+
+De levende MySQL-migratie zette alle 32 externe sleutels om, verving de
+bronbewakende triggers en actualiseerde de bestaande beveiligde selectie. De
+60.996 bronregels zijn in één transactie omgeschakeld; de controles bevestigden
+749.834 + 32.353 + 28.643 = 810.830 openbare regels en ongewijzigd 810.983
+logische regels in de beveiligde selectie. Pas daarna zijn de twee oude
+ID-indexen verwijderd. De centrale taxonpoort controleerde 313 basistabellen
+en rapporteerde nul fouten. De kwalificaties van PQ-kandidaten zijn niet
+gewijzigd of opgewaardeerd. Het historische bootstrap-importpad weigert een
+reeds gesplitste database. Er is geen zware export of Shiny-cachebouw gedaan en
+geen VPS-publicatie uitgevoerd.

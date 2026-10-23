@@ -32,6 +32,12 @@ ANALYSIS_CHAIN_VERSION = "ndff-analyseketen-v1"
 SOURCE_XLSX_SHA256 = "12cccb8bf8408fae9a7819f798f4f8748c19c46211dac9f3ab0069086e565592"
 SOURCE_DOCX_SHA256 = "b7dc432d59aaf3a8288873d813825d8c5448a335782fb82e1f9d01deb1b33a75"
 ANALYSIS_TYPES = ("V", "I", "TV", "TA", "TK")
+# Eén logische openbare bron, fysiek verdeeld zonder extra view of bronkopie.
+PUBLIC_NDFF_ROWS = (
+    "(SELECT * FROM Meijendel.ndff_open_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.mossen_waarneming "
+    "UNION ALL SELECT * FROM Meijendel.korstmossen_waarneming)"
+)
 MIXED_POSITIVE_PROTOCOLS = {"04.004", "07.001"}
 POSITIVE_ONLY_SOURCE_PROTOCOLS = {
     "12.004", "12.006", "17.005", "17.006",
@@ -2160,7 +2166,7 @@ FROM (
     TRIM(protocol) AS protocol_raw,
     CASE WHEN TRIM(protocol)='Losse waarnemingen'
          THEN 'LOS' ELSE SUBSTRING_INDEX(TRIM(protocol),' ',1) END AS protocol_sleutel
-  FROM ndff_open_waarneming
+  FROM {PUBLIC_NDFF_ROWS} AS bron
   WHERE protocol IS NOT NULL AND TRIM(protocol)<>''
   UNION
   SELECT DISTINCT 'beveiligd' AS bron_scope,
@@ -2182,7 +2188,7 @@ def record_protocol_link_sql() -> str:
 INSERT INTO Meijendel.ndff_open_waarneming_protocol
   (waarneming_id,protocol_id,bewijsmethode,regelversie)
 SELECT w.waarneming_id,m.protocol_id,m.mapping_methode,{sql_text(RULE_VERSION)}
-FROM Meijendel.ndff_open_waarneming AS w
+FROM {PUBLIC_NDFF_ROWS} AS w
 JOIN Meijendel.ndff_protocol_mapping AS m
   ON m.bron_scope='openbaar'
  AND m.protocol_raw=TRIM(w.protocol)
@@ -2231,7 +2237,7 @@ SELECT w.waarneming_id, {sql_text(RULE_VERSION)}, @ndff_plotversie,
        CASE WHEN w.vervaagd=0 AND COUNT(p.plot_id)=1
                   AND MAX(ST_Within(w.openbare_geometrie,p.plot_geometrie))=1
             THEN 1 ELSE 0 END
-FROM ndff_open_waarneming AS w
+FROM {PUBLIC_NDFF_ROWS} AS w
 LEFT JOIN ndff_sovon_plot AS p
   ON p.plotversie_id=@ndff_plotversie
  AND ST_Intersects(w.openbare_geometrie,p.plot_geometrie)
@@ -2341,7 +2347,7 @@ SELECT p.protocol_id,c.soortgroep_raw,
        CASE WHEN p.protocol_sleutel IN ('12.015','12.205','17.201') THEN '2026-09-15' ELSE '2026-09-11' END
 FROM (
   SELECT soortgroep_raw,TRIM(protocol) AS protocol_raw,COUNT(*) AS recordaantal
-  FROM Meijendel.ndff_open_waarneming
+  FROM {PUBLIC_NDFF_ROWS} AS bron
   WHERE protocol IS NOT NULL AND TRIM(protocol)<>'' AND TRIM(protocol)<>'Losse waarnemingen'
   GROUP BY soortgroep_raw,TRIM(protocol)
 ) AS c
@@ -2370,7 +2376,7 @@ SELECT p.protocol_id,w.soortgroep_raw,w.wetenschappelijke_naam,
             ELSE 'De soort is binnen dit protocol bijvangst en ondersteunt alleen positieve voorkomensinformatie (V).' END,
        {sql_text(SCOPE_RULE_VERSION)},
        CASE WHEN p.protocol_sleutel='17.201' THEN '2026-09-15' ELSE '2026-09-11' END
-FROM Meijendel.ndff_open_waarneming AS w
+FROM {PUBLIC_NDFF_ROWS} AS w
 JOIN Meijendel.ndff_open_waarneming_protocol AS l
   ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
 JOIN Meijendel.ndff_protocol AS p ON p.protocol_id=l.protocol_id
@@ -2406,14 +2412,14 @@ SELECT s.waarneming_id,
             THEN JSON_ARRAY() ELSE JSON_ARRAYAGG(o.waarneming_id) END,
        'Zelfde soort_key, exact periode_start en dezelfde openbare geometrie; vergelijking met alle records met een andere protocol_sleutel.',
        NULL,{sql_text(SNL_OVERLAP_RULE_VERSION)},CURRENT_TIMESTAMP(6)
-FROM Meijendel.ndff_open_waarneming AS s
+FROM {PUBLIC_NDFF_ROWS} AS s
 JOIN Meijendel.ndff_open_waarneming_protocol AS sl
   ON sl.waarneming_id=s.waarneming_id AND sl.regelversie={sql_text(RULE_VERSION)}
 JOIN Meijendel.ndff_protocol AS sp
   ON sp.protocol_id=sl.protocol_id AND sp.protocol_sleutel='12.205'
 LEFT JOIN (
   SELECT w.waarneming_id,w.soort_key,w.periode_start,w.openbare_geometrie_sha256
-  FROM Meijendel.ndff_open_waarneming AS w
+  FROM {PUBLIC_NDFF_ROWS} AS w
   JOIN Meijendel.ndff_open_waarneming_protocol AS l
     ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
   JOIN Meijendel.ndff_protocol AS p
@@ -2461,7 +2467,7 @@ SELECT w.waarneming_id,
             THEN 'Herkenbaar NDFF-PQ-bronrecord: secundaire controlebron; niet als aanvulling op de gezaghebbende provinciale PQ-reeks tellen.'
             ELSE 'Geen PQ-bronindicator aangetroffen binnen deze beslisregel.' END,
        {sql_text(PUBLIC_PQ_RULE_VERSION)},CURRENT_TIMESTAMP(6)
-FROM Meijendel.ndff_open_waarneming AS w
+FROM {PUBLIC_NDFF_ROWS} AS w
 JOIN Meijendel.ndff_open_waarneming_protocol AS l
   ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
 JOIN Meijendel.ndff_protocol AS p ON p.protocol_id=l.protocol_id
@@ -2559,7 +2565,7 @@ FROM (
   SELECT 'openbaar' AS bron_scope,soortgroep_raw,
          TRIM(protocol) AS protocol_raw,
          COUNT(*) AS recordaantal
-  FROM ndff_open_waarneming
+  FROM {PUBLIC_NDFF_ROWS} AS bron
   WHERE protocol IS NOT NULL AND TRIM(protocol)<>''
   GROUP BY soortgroep_raw,TRIM(protocol)
   UNION ALL
@@ -7712,7 +7718,7 @@ SELECT o.waarneming_id,o.identiteit_sha256,o.openbare_geometrie_sha256,
        o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw,
        r.ruimtelijke_klasse,r.toewijzingskwaliteit,
        COALESCE(CAST(r.eenduidig_plot_id AS CHAR),'NULL')
-FROM Meijendel.ndff_open_waarneming o
+FROM Meijendel.korstmossen_waarneming o
 JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
   ON r.waarneming_id=o.waarneming_id
  AND r.regelversie={sql_text(RULE_VERSION)}
@@ -7819,7 +7825,7 @@ SELECT o.waarneming_id,o.identiteit_sha256,o.hoknummer,
        o.wetenschappelijke_naam,o.schaal_telmethode,o.aantal_raw,
        o.openbare_geometrie_sha256,r.ruimtelijke_klasse,
        r.toewijzingskwaliteit
-FROM Meijendel.ndff_open_waarneming o
+FROM Meijendel.mossen_waarneming o
 JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r
   ON r.waarneming_id=o.waarneming_id
  AND r.regelversie={sql_text(RULE_VERSION)}
@@ -11621,8 +11627,8 @@ def korstmos_validation_sql() -> str:
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0),
-  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=1),
+  'source_records',(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0),
+  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=1),
   'meetlocations',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={version}),
   'repeated_meetlocations',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={version} AND herhaalstatus='herhaald_vast_proefvlak'),
   'oneoff_meetlocations',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={version} AND herhaalstatus='eenmalig_proefvlak'),
@@ -11640,13 +11646,13 @@ SELECT JSON_OBJECT(
   'double_same_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse'),
   'double_different_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse'),
   'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'single_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
-  'multiple_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
-  'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0 AND (schaal_telmethode<>'BLWG-bedekkingsklassen' OR aantal_raw NOT IN ('0.01 - 0.1','minimaal 0.1'))),
+  'single_plot_records',(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
+  'multiple_plot_records',(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
+  'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0 AND (schaal_telmethode<>'BLWG-bedekkingsklassen' OR aantal_raw NOT IN ('0.01 - 0.1','minimaal 0.1'))),
   'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling') AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>1)) OR (waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse' AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>2)) OR (waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang IS NOT NULL OR bronrecordaantal<>2)) OR (waarnemingsstatus='echte_nul' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang<>0 OR bronrecordaantal<>0)))),
   'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,CASE WHEN m.herhaalstatus='herhaald_vast_proefvlak' THEN 24 ELSE b.geregistreerde_taxa END doelomvang FROM Meijendel.korstmossen_bezoek b JOIN Meijendel.korstmossen_meetlocatie m ON m.reconstructieversie=b.reconstructieversie AND m.meetlocatie_id=b.meetlocatie_id LEFT JOIN Meijendel.korstmossen_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel,m.herhaalstatus,b.geregistreerde_taxa HAVING matrixregels<>doelomvang) q),
   'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.korstmossen_recordselectie WHERE reconstructieversie={version})),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.korstmossen_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming o LEFT JOIN Meijendel.korstmossen_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
   'legacy_versions',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={sql_text(KORSTMOS_LEGACY_RULE_VERSION)}),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
@@ -11661,8 +11667,8 @@ def mos_validation_sql() -> str:
     ))
     return f"""
 SELECT JSON_OBJECT(
-  'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0),
-  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=1),
+  'source_records',(SELECT COUNT(*) FROM Meijendel.mossen_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0),
+  'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.mossen_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=1),
   'inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version}),
   'single_year_inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='binnen_een_jaar'),
   'cross_year_inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='overspant_jaargrens'),
@@ -11682,13 +11688,13 @@ SELECT JSON_OBJECT(
   'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_presentie'),
   'conflict_positive_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_abundantieconflict'),
   'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
-  'single_plot_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
-  'multiple_plot_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
-  'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0 AND NOT ((schaal_telmethode='BLWG-aantalsklassen' AND aantal_raw IN ('1.0','2.0 - 5.0','minimaal 6.0')) OR (schaal_telmethode IN ('aanwezig','voorkomen') AND aantal_raw='minimaal 1.0'))),
+  'single_plot_source_records',(SELECT COUNT(*) FROM Meijendel.mossen_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
+  'multiple_plot_source_records',(SELECT COUNT(*) FROM Meijendel.mossen_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
+  'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.mossen_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0 AND NOT ((schaal_telmethode='BLWG-aantalsklassen' AND aantal_raw IN ('1.0','2.0 - 5.0','minimaal 6.0')) OR (schaal_telmethode IN ('aanwezig','voorkomen') AND aantal_raw='minimaal 1.0'))),
   'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen_aantalsklasse' AND (bron_schaal<>'BLWG-aantalsklassen' OR aantalsklasse_raw IS NULL OR aantalsrang NOT IN (1,2,3) OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_presentie' AND (bron_schaal NOT IN ('aanwezig','voorkomen') OR aantalsklasse_raw<>'minimaal 1.0' OR aantalsrang IS NOT NULL OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_abundantieconflict' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang IS NOT NULL OR bronrecordaantal<2)) OR (waarnemingsstatus='echte_nul' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang<>0 OR bronrecordaantal<>0)))),
   'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,i.geregistreerde_taxa doelomvang FROM Meijendel.mossen_inventarisatie i LEFT JOIN Meijendel.mossen_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} GROUP BY i.inventarisatie_sleutel,i.geregistreerde_taxa HAVING matrixregels<>doelomvang) q),
   'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.mossen_recordselectie WHERE reconstructieversie={version})),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.mossen_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.mossen_waarneming o LEFT JOIN Meijendel.mossen_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
   'invalid_inspanningstatus',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND inspanningstatus<>'protocolconforme_minimale_inspanning_aangenomen'),
   'legacy_versions',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={sql_text(MOS_LEGACY_RULE_VERSION)}),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
@@ -12273,17 +12279,17 @@ def validation_sql() -> str:
 SELECT 'protocols',COUNT(*) FROM Meijendel.ndff_protocol;
 SELECT 'uses',COUNT(*) FROM Meijendel.ndff_protocol_gebruik WHERE regelversie={sql_text(RULE_VERSION)};
 SELECT 'mappings',COUNT(*) FROM Meijendel.ndff_protocol_mapping WHERE regelversie={sql_text(RULE_VERSION)};
-SELECT 'unmapped_open',COUNT(*) FROM (SELECT DISTINCT TRIM(w.protocol) raw_protocol FROM Meijendel.ndff_open_waarneming w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='openbaar' AND m.protocol_raw=TRIM(w.protocol) AND m.regelversie={sql_text(RULE_VERSION)} WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>'' AND m.mapping_id IS NULL) q;
+SELECT 'unmapped_open',COUNT(*) FROM (SELECT DISTINCT TRIM(w.protocol) raw_protocol FROM {PUBLIC_NDFF_ROWS} w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='openbaar' AND m.protocol_raw=TRIM(w.protocol) AND m.regelversie={sql_text(RULE_VERSION)} WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>'' AND m.mapping_id IS NULL) q;
 SELECT 'unmapped_secure',COUNT(*) FROM (SELECT DISTINCT TRIM(w.protocol) raw_protocol FROM Meijendel_ndff_secure.ndff_waarneming_register w LEFT JOIN Meijendel.ndff_protocol_mapping m ON m.bron_scope='beveiligd' AND m.protocol_raw=TRIM(w.protocol) AND m.regelversie={sql_text(RULE_VERSION)} WHERE w.protocol IS NOT NULL AND TRIM(w.protocol)<>'' AND m.mapping_id IS NULL) q;
-SELECT 'open_records',COUNT(*) FROM Meijendel.ndff_open_waarneming;
+SELECT 'open_records',COUNT(*) FROM {PUBLIC_NDFF_ROWS} AS bron;
 SELECT 'secure_records',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register;
 SELECT 'open_protocol_links',COUNT(*) FROM Meijendel.ndff_open_waarneming_protocol WHERE regelversie={sql_text(RULE_VERSION)};
 SELECT 'secure_protocol_links',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_protocol WHERE regelversie={sql_text(RULE_VERSION)};
-SELECT 'open_loose_records',COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE TRIM(protocol)='Losse waarnemingen';
+SELECT 'open_loose_records',COUNT(*) FROM {PUBLIC_NDFF_ROWS} AS bron WHERE TRIM(protocol)='Losse waarnemingen';
 SELECT 'open_loose_links',COUNT(*) FROM Meijendel.ndff_open_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id WHERE l.regelversie={sql_text(RULE_VERSION)} AND p.protocol_sleutel='LOS' AND l.bewijsmethode='expliciet_losse_waarneming';
 SELECT 'secure_loose_records',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE TRIM(protocol)='Losse waarnemingen';
 SELECT 'secure_loose_links',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id WHERE l.regelversie={sql_text(RULE_VERSION)} AND p.protocol_sleutel='LOS' AND l.bewijsmethode='expliciet_losse_waarneming';
-SELECT 'blank_open_protocol',COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol IS NULL OR TRIM(protocol)='';
+SELECT 'blank_open_protocol',COUNT(*) FROM {PUBLIC_NDFF_ROWS} AS bron WHERE protocol IS NULL OR TRIM(protocol)='';
 SELECT 'blank_secure_protocol',COUNT(*) FROM Meijendel_ndff_secure.ndff_waarneming_register WHERE protocol IS NULL OR TRIM(protocol)='';
 SELECT 'invalid_protocol_evidence',COUNT(*) FROM (
   SELECT l.waarneming_id FROM Meijendel.ndff_open_waarneming_protocol l JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
@@ -12298,7 +12304,7 @@ SELECT 'mixed_species',COUNT(*) FROM Meijendel.ndff_protocol_soort_geschiktheid 
 SELECT 'dependent_combinations',COUNT(*) FROM Meijendel.ndff_protocol_soortgroep_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)} AND doelrelatie='doelsoortafhankelijk';
 SELECT 'mixed_species_missing',COUNT(*) FROM (
   SELECT DISTINCT l.protocol_id,w.soortgroep_raw,w.wetenschappelijke_naam
-  FROM Meijendel.ndff_open_waarneming w
+  FROM {PUBLIC_NDFF_ROWS} w
   JOIN Meijendel.ndff_open_waarneming_protocol l ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
   JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid g
     ON g.protocol_id=l.protocol_id AND g.soortgroep_raw=w.soortgroep_raw
@@ -12325,7 +12331,7 @@ SELECT 'secure_mixed_species_missing',COUNT(*) FROM (
 SELECT 'ambiguous_species',COUNT(*) FROM Meijendel.ndff_protocol_soort_geschiktheid WHERE regelversie={sql_text(SCOPE_RULE_VERSION)} AND doelrelatie='onbepaald';
 SELECT 'scope_missing',COUNT(*) FROM (
   SELECT DISTINCT l.protocol_id,w.soortgroep_raw
-  FROM Meijendel.ndff_open_waarneming w
+  FROM {PUBLIC_NDFF_ROWS} w
   JOIN Meijendel.ndff_open_waarneming_protocol l ON l.waarneming_id=w.waarneming_id AND l.regelversie={sql_text(RULE_VERSION)}
   JOIN Meijendel.ndff_protocol p ON p.protocol_id=l.protocol_id
   LEFT JOIN Meijendel.ndff_protocol_soortgroep_geschiktheid s
@@ -12407,7 +12413,7 @@ SELECT 'open_pq_not_applicable',COUNT(*) FROM Meijendel.ndff_open_pq_koppeling
 WHERE regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}
   AND classificatie='niet_van_toepassing'
   AND ndff_bronrol='niet_van_toepassing';
-SELECT 'open_pq_unassessed',COUNT(*) FROM Meijendel.ndff_open_waarneming w
+SELECT 'open_pq_unassessed',COUNT(*) FROM {PUBLIC_NDFF_ROWS} w
 LEFT JOIN Meijendel.ndff_open_pq_koppeling p
   ON p.waarneming_id=w.waarneming_id
  AND p.regelversie={sql_text(PUBLIC_PQ_RULE_VERSION)}

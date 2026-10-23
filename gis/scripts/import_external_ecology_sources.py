@@ -94,7 +94,7 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             raise ValueError('Ongeldige tabelidentifier')
         if table in {'taxa', 'taxa_bronkoppeling', 'taxon_groepen'}:
             continue
-        if table == 'ndff_waarneming_register':
+        if table == 'ndff_open_waarneming_register':
             # A technical key and storage locator, never a taxon-bearing layer.
             continue
         if table in STAGING_TABLES:
@@ -124,7 +124,7 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
                              'role': 'bronverwijzing',
-                             'partitioned': 'ndff_waarneming_register' in schema}
+                             'partitioned': 'ndff_open_waarneming_register' in schema}
         elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
@@ -171,7 +171,7 @@ def central_taxon_query(table: str, route: dict, taxon_id: int | None = None) ->
                      f"JOIN `{table}` w ON {route['join']}")
         else:
             joins = (f"JOIN `{table}` w\n"
-                 "JOIN ndff_waarneming_register r ON "
+                 "JOIN ndff_open_waarneming_register r ON "
                  +route['join'].replace('o.waarneming_id','r.waarneming_id')+"\n"
                  "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
                  "AND r.opslag_tabel='ndff_open_waarneming'\n"
@@ -574,10 +574,11 @@ CENTRAL_QUERY_SCHEMA = {
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
-    if 'ndff_waarneming_register' in schema:
+    if 'ndff_open_waarneming_register' in schema:
         for table in ('mossen_waarneming', 'korstmossen_waarneming'):
             expected[table] = expected['ndff_open_waarneming']
-        expected['ndff_waarneming_register'] = frozenset({'waarneming_id', 'opslag_tabel'})
+        expected['ndff_open_waarneming_register'] = frozenset({
+            'waarneming_id', 'opslag_tabel', 'identiteit_sha256'})
         expected.pop('ndff_mossen')
         expected.pop('ndff_korstmossen')
     registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
@@ -642,6 +643,29 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
     routes = central_query_routes(schema)
     result = {'rule':QUERY_RULE, 'database':db.database, 'tables':len(schema), 'routes':{}, 'errors':[]}
     errors = result['errors']
+    if partitioned_routes(routes):
+        missing_storage = db.sql(
+            "SELECT COUNT(*) FROM ndff_open_waarneming_register r "
+            "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
+            "AND r.opslag_tabel='ndff_open_waarneming' "
+            "LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id "
+            "AND r.opslag_tabel='mossen_waarneming' "
+            "LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id "
+            "AND r.opslag_tabel='korstmossen_waarneming' "
+            "WHERE COALESCE(o.waarneming_id,m.waarneming_id,k.waarneming_id) IS NULL "
+            "OR r.identiteit_sha256<>COALESCE(o.identiteit_sha256,m.identiteit_sha256,k.identiteit_sha256);")
+        if missing_storage != '0':
+            errors.append('NDFF-register zonder volledige, identieke fysieke bronregel: '+missing_storage)
+        for table in ('ndff_open_waarneming','mossen_waarneming',
+                      'korstmossen_waarneming'):
+            mismatch = db.sql(
+                f"SELECT COUNT(*) FROM {query_identifier(table)} w "
+                "LEFT JOIN ndff_open_waarneming_register r "
+                "ON r.waarneming_id=w.waarneming_id "
+                f"WHERE r.waarneming_id IS NULL OR r.opslag_tabel<>{query_literal(table)} "
+                "OR r.identiteit_sha256<>w.identiteit_sha256;")
+            if mismatch != '0':
+                errors.append(table+': bronregels zonder uniek passende registerlocatie: '+mismatch)
     invalid = db.sql("SELECT COUNT(*) FROM taxa_bronkoppeling b LEFT JOIN taxa t ON t.taxon_id=b.taxon_id "
         "WHERE b.taxon_id IS NOT NULL AND t.taxon_id IS NULL;")
     if invalid != '0': errors.append('Verweesde centrale taxonkoppelingen: '+invalid)
@@ -682,11 +706,11 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
             "'event',EVENT_MANIPULATION,'timing',ACTION_TIMING,'body',ACTION_STATEMENT) FROM information_schema.TRIGGERS "
             "WHERE TRIGGER_SCHEMA=DATABASE();")
         actual={row['name']:row for row in definitions}
-        for match in re.finditer(r'CREATE TRIGGER (\w+) BEFORE (INSERT|UPDATE|DELETE) ON `?(\w+)`? FOR EACH ROW (BEGIN.*?END)\$\$',
+        for match in re.finditer(r'CREATE TRIGGER (\w+) (BEFORE|AFTER) (INSERT|UPDATE|DELETE) ON `?(\w+)`? FOR EACH ROW (BEGIN.*?END)\$\$',
                                 central_query_triggers_sql({'routes':routes}),re.S):
-            name,event,table,body=match.groups()
+            name,timing,event,table,body=match.groups()
             found=actual.get(name)
-            if (found is None or found['table']!=table or found['event']!=event or found['timing']!='BEFORE'
+            if (found is None or found['table']!=table or found['event']!=event or found['timing']!=timing
                     or ' '.join(found['body'].split())!=' '.join(body.split())):
                 errors.append(name+': schrijfbewaking ontbreekt of is gewijzigd')
     for table, route in routes.items():
@@ -727,7 +751,7 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
                     joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming o ON '
                         +route['join']+' LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key ')
                 else:
-                    joined = (f'{qtable} w LEFT JOIN ndff_waarneming_register r ON '
+                    joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming_register r ON '
                     +route['join'].replace('o.waarneming_id','r.waarneming_id')+' '
                     'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
                     "AND r.opslag_tabel='ndff_open_waarneming' "
@@ -998,6 +1022,10 @@ def central_query_schema_sql(plan: dict, *, finalize=False) -> str:
     return '\n'.join(statements)
 
 
+def partitioned_routes(routes: dict[str, dict]) -> bool:
+    return any(r['kind']=='ndff_child' and r.get('partitioned') for r in routes.values())
+
+
 def central_query_triggers_sql(plan: dict) -> str:
     """Guards are local-schema bound and survive a complete dump/restore.
 
@@ -1016,7 +1044,7 @@ def central_query_triggers_sql(plan: dict) -> str:
         body = ''
         declarations = 'DECLARE cq_n BIGINT DEFAULT 0; DECLARE cq_id BIGINT UNSIGNED; DECLARE cq_taxon BIGINT UNSIGNED;'
         if kind=='ndff_child':
-            parent = 'ndff_waarneming_register' if route.get('partitioned') else 'ndff_open_waarneming'
+            parent = 'ndff_open_waarneming_register' if route.get('partitioned') else 'ndff_open_waarneming'
             body = ('IF NOT EXISTS(SELECT 1 FROM '+parent+' o WHERE '+route['join'].replace('w.','NEW.')+
                     ") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronwaarneming bestaat niet'; END IF;")
         elif kind == 'catalogue_child':
@@ -1030,6 +1058,15 @@ def central_query_triggers_sql(plan: dict) -> str:
             if route.get('role')=='soortreferentie':
                 body='IF NOT EXISTS(SELECT 1 FROM '+query_identifier(route['catalogue'])+' c WHERE '+join+\
                      ' AND c.taxon_bronkoppeling_id IS NULL) THEN '+body+' END IF;'
+            if table in {'mossen_waarneming','korstmossen_waarneming'} and partitioned_routes(routes):
+                body += (' IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
+                    'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
+                    'WHERE r.waarneming_id=NEW.waarneming_id AND '
+                    'r.identiteit_sha256=NEW.identiteit_sha256 AND '
+                    "(r.opslag_tabel='"+table+"' OR "
+                    "(r.opslag_tabel='ndff_open_waarneming' AND "
+                    'o.identiteit_sha256=NEW.identiteit_sha256))) THEN '
+                    "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-opslaglocatie of identiteit wijkt af'; END IF;")
         elif kind == 'catalogue':
             if table=='soorten':
                 source_id='CAST(NEW.id AS CHAR)'; name='NEW.latijnse_naam'
@@ -1132,9 +1169,18 @@ def central_query_triggers_sql(plan: dict) -> str:
                   condition+") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Taxonkoppeling past niet bij bronwaarneming'; END IF; "+validity)
         for suffix,event in [('bi','INSERT'),('bu','UPDATE')]:
             trigger=central_trigger_name(table,suffix)
+            event_body=body
+            if (table in {'mossen_waarneming','korstmossen_waarneming'}
+                    and partitioned_routes(routes) and event=='UPDATE'):
+                event_body += (' IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
+                    'WHERE r.waarneming_id=NEW.waarneming_id AND '
+                    "r.opslag_tabel='"+table+"') OR "
+                    'NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
+                    'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256) THEN '
+                    "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-identiteit is vast'; END IF;")
             statements += [f'DROP TRIGGER IF EXISTS {trigger}$$',
                 f'CREATE TRIGGER {trigger} BEFORE {event} ON {query_identifier(table)} FOR EACH ROW BEGIN\n'
-                +declarations+'\n'+body+'\nEND$$']
+                +declarations+'\n'+event_body+'\nEND$$']
     # Registry edits must not make any pinned measurement lose its target or origin.
     references = ' OR '.join(f'EXISTS(SELECT 1 FROM {query_identifier(table)} WHERE taxon_bronkoppeling_id=OLD.koppeling_id)'
         for table,r in routes.items() if r['kind'] in {'catalogue','derived','direct','external'})
@@ -1156,36 +1202,87 @@ def central_query_triggers_sql(plan: dict) -> str:
     children = ' OR '.join('EXISTS(SELECT 1 FROM '+query_identifier(table)+' w WHERE '+
         route['join'].replace('o.waarneming_id','OLD.waarneming_id')+')'
         for table,route in routes.items() if route['kind']=='ndff_child')
-    partitioned = any(r['kind']=='ndff_child' and r.get('partitioned') for r in routes.values())
+    partitioned = partitioned_routes(routes)
     for suffix,event in [('bd','DELETE'),('bu','UPDATE')]:
         if partitioned and event=='DELETE':
             replacements = ' OR '.join(
-                'EXISTS(SELECT 1 FROM ndff_waarneming_register r JOIN '+table+
+                'EXISTS(SELECT 1 FROM ndff_open_waarneming_register r JOIN '+table+
                 ' g ON g.waarneming_id=r.waarneming_id WHERE r.waarneming_id=OLD.waarneming_id '
+                'AND g.identiteit_sha256=OLD.identiteit_sha256 '
                 "AND r.opslag_tabel='"+table+"')"
                 for table in ('mossen_waarneming','korstmossen_waarneming'))
             condition = 'NOT ('+replacements+')'
         elif partitioned:
-            condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id)'
+            condition = ('NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
+                         'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256)')
         else:
             condition = '('+children+')'
             if event=='UPDATE': condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id) AND '+condition
         statements += [f'DROP TRIGGER IF EXISTS cq_ndff_parent_{suffix}$$',
             f'CREATE TRIGGER cq_ndff_parent_{suffix} BEFORE {event} ON ndff_open_waarneming FOR EACH ROW BEGIN '
             'IF '+condition+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Verwijder eerst afgeleide NDFF-verwijzingen'; END IF; END$$"]
+    if partitioned:
+        statements += [
+            'DROP TRIGGER IF EXISTS cq_ndff_register_bd$$',
+            'CREATE TRIGGER cq_ndff_register_bd BEFORE DELETE ON ndff_open_waarneming_register '
+            'FOR EACH ROW BEGIN '
+            'IF EXISTS(SELECT 1 FROM ndff_open_waarneming o '
+            'WHERE o.waarneming_id=OLD.waarneming_id) OR '
+            'EXISTS(SELECT 1 FROM mossen_waarneming m '
+            'WHERE m.waarneming_id=OLD.waarneming_id) OR '
+            'EXISTS(SELECT 1 FROM korstmossen_waarneming k '
+            'WHERE k.waarneming_id=OLD.waarneming_id) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronregel is nog aanwezig'; "
+            'END IF; END$$',
+            'DROP TRIGGER IF EXISTS cq_ndff_register_bu$$',
+            'CREATE TRIGGER cq_ndff_register_bu BEFORE UPDATE ON ndff_open_waarneming_register '
+            'FOR EACH ROW BEGIN '
+            'IF NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
+            'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256) OR NOT ('
+            "(NEW.opslag_tabel='ndff_open_waarneming' AND EXISTS(SELECT 1 FROM ndff_open_waarneming g "
+            'WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256)) OR '
+            "(NEW.opslag_tabel='mossen_waarneming' AND EXISTS(SELECT 1 FROM mossen_waarneming g "
+            'WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256)) OR '
+            "(NEW.opslag_tabel='korstmossen_waarneming' AND EXISTS(SELECT 1 FROM korstmossen_waarneming g "
+            'WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256))) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-register verwijst niet naar volledige bronregel'; "
+            'END IF; END$$',
+            'DROP TRIGGER IF EXISTS cq_ndff_parent_ai$$',
+            'CREATE TRIGGER cq_ndff_parent_ai AFTER INSERT ON ndff_open_waarneming FOR EACH ROW BEGIN '
+            "INSERT INTO ndff_open_waarneming_register(waarneming_id,opslag_tabel,identiteit_sha256) "
+            "VALUES(NEW.waarneming_id,'ndff_open_waarneming',NEW.identiteit_sha256); END$$",
+        ]
+        for table,prefix in [('mossen_waarneming','mossen'),
+                             ('korstmossen_waarneming','korstmossen')]:
+            statements += [
+                f'DROP TRIGGER IF EXISTS cq_ndff_{prefix}_bd$$',
+                f'CREATE TRIGGER cq_ndff_{prefix}_bd BEFORE DELETE ON {table} FOR EACH ROW BEGIN '
+                'IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
+                'JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
+                'WHERE r.waarneming_id=OLD.waarneming_id AND '
+                "r.opslag_tabel='ndff_open_waarneming' AND "
+                'o.identiteit_sha256=OLD.identiteit_sha256) THEN '
+                "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronregel mag niet verdwijnen'; END IF; END$$",
+            ]
     for table,field,child in [('lvd_event','dataset_id','lvd_resultaat'),
                               ('pq_vegetatie_bronopname','dataset_id','pq_vegetatie_bronresultaat')]:
+        if table not in routes:
+            continue
         name=central_trigger_name(table,'bu')
         statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON {table} FOR EACH ROW BEGIN '
             f'IF NOT (NEW.{field}<=>OLD.{field}) AND EXISTS(SELECT 1 FROM {child} WHERE event_id=OLD.event_id) THEN '
             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Waargenomen bronopname kan niet van dataset wisselen'; END IF; END$$"]
-    name=central_trigger_name('lvd_dataset','bu')
-    statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON lvd_dataset FOR EACH ROW BEGIN '
-        'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
-        'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
-        'EXISTS(SELECT 1 FROM lvd_event e JOIN lvd_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
-        'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
-        "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$"]
+    if 'lvd_dataset' in routes:
+        name=central_trigger_name('lvd_dataset','bu')
+        statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON lvd_dataset FOR EACH ROW BEGIN '
+            'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
+            'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
+            'EXISTS(SELECT 1 FROM lvd_event e JOIN lvd_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
+            'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$"]
     for source_key,prefix in SOURCE_FAMILIES.items():
         if prefix+'_resultaat' not in routes: continue
         event_table, dataset_table, result_table = (prefix+'_'+s for s in ('event','dataset','resultaat'))

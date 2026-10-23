@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_bron_resultaat (
   CONSTRAINT fk_blwg_resultaat_taxon FOREIGN KEY (taxon_bronkoppeling_id)
     REFERENCES Meijendel.taxa_bronkoppeling(koppeling_id),
   CONSTRAINT fk_blwg_resultaat_ndff FOREIGN KEY (ndff_waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming(waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register(waarneming_id),
   CONSTRAINT ck_blwg_resultaat_match CHECK
     ((ndff_koppelstatus='direct' AND ndff_waarneming_id IS NOT NULL)
       OR (ndff_koppelstatus='groep' AND ndff_waarneming_id IS NULL))
@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_bron_ndff_groeprecord (
   CONSTRAINT fk_blwg_groeprecord_bron FOREIGN KEY (bronbestand_sha256)
     REFERENCES Meijendel.korstmossen_bronbestand(bronbestand_sha256),
   CONSTRAINT fk_blwg_groeprecord_ndff FOREIGN KEY (ndff_waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming(waarneming_id)
+    REFERENCES Meijendel.ndff_open_waarneming_register(waarneming_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_bron_formulier_taxon (

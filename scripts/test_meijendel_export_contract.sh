@@ -23,6 +23,9 @@ write_dump_without_scope() {
 CREATE TABLE `tellers` (`id` int NOT NULL, `tellercode` varchar(20) NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `pq_vegetatie_pq` (`id` int NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `ndff_open_waarneming` (`id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `ndff_open_waarneming_register` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `mossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `korstmossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 -- Dump completed on 2026-09-20 22:42:46
 SQL
 }
@@ -32,6 +35,9 @@ write_dump() {
 CREATE TABLE `tellers` (`id` int NOT NULL, `tellercode` varchar(20) NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `pq_vegetatie_pq` (`id` int NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `ndff_open_waarneming` (`id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `ndff_open_waarneming_register` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `mossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
+CREATE TABLE `korstmossen_waarneming` (`waarneming_id` bigint NOT NULL) ENGINE=InnoDB;
 CREATE TABLE `plot_analyse_scope` (`scope_code` varchar(64) NOT NULL, `plot_id` int NOT NULL, `in_scope` tinyint(1) NOT NULL, `reden` varchar(255) NOT NULL, PRIMARY KEY (`scope_code`,`plot_id`)) ENGINE=InnoDB;
 INSERT INTO `plot_analyse_scope` VALUES ('meijendel_natura2000',3503,0,'Geen onderdeel van Natura 2000-analysegebied.'),('meijendel_natura2000',3514,0,'Geen onderdeel van Natura 2000-analysegebied.');
 CREATE VIEW `v_meijendel_analyseplot_actueel` AS SELECT `plot_id` FROM `plot_analyse_scope` WHERE `scope_code`='meijendel_natura2000' AND `in_scope`=1;

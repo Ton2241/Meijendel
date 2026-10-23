@@ -132,7 +132,7 @@ def ndff_source_matches(plots: dict, observations: list[dict], mapping: dict,
     public = mysql(
         "SELECT s.meetlocatie_id,DATE(o.periode_start),o.wetenschappelijke_naam,"
         "o.waarneming_id FROM Meijendel.korstmossen_recordselectie s "
-        "JOIN Meijendel.ndff_open_waarneming o ON o.waarneming_id=s.waarneming_id "
+        "JOIN Meijendel.korstmossen_waarneming o ON o.waarneming_id=s.waarneming_id "
         "WHERE s.reconstructieversie='ndff-korstmos-v2';"
     )
     public_ndff = [{"id": int(r[3]), "key": (inverse[int(r[0])],r[1],r[2])}

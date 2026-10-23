@@ -379,7 +379,11 @@ CREATE TEMPORARY TABLE tmp_meijendel_plotmatch (
 ) ENGINE=InnoDB;
 """]
     sources = [
-        ("ndff_open_waarneming", "bronpolygoon", "SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM ndff_open_waarneming", True),
+        ("ndff_open_waarneming", "bronpolygoon", (
+            "SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM ndff_open_waarneming "
+            "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM mossen_waarneming "
+            "UNION ALL SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM korstmossen_waarneming"
+        ), True),
         ("dagwaarnemingen_bmp", "exact_punt", "SELECT CAST(id AS CHAR),ST_SRID(geom,28992) FROM dagwaarnemingen_bmp", False),
         ("dagwaarnemingen_wv", "exact_punt", "SELECT CAST(id AS CHAR),geom FROM dagwaarnemingen_wv", False),
         ("pq_vegetatie_opname", "exact_punt", "SELECT CAST(opname_id AS CHAR),geom FROM pq_vegetatie_opname", False),

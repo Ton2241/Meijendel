@@ -42,6 +42,12 @@ validate_dump_structure() {
   grep -q -- '-- Dump completed on ' "$dump" || die "SQL-dump mist de eindmarkering."
   grep -q 'CREATE TABLE `pq_vegetatie_pq`' "$dump" || die "SQL-dump mist pq_vegetatie_pq."
   grep -q 'CREATE TABLE `ndff_open_waarneming`' "$dump" || die "SQL-dump mist de openbare NDFF-tabel."
+  grep -q 'CREATE TABLE `ndff_open_waarneming_register`' "$dump" || die "SQL-dump mist het openbare NDFF-ID-register."
+  grep -q 'CREATE TABLE `mossen_waarneming`' "$dump" || die "SQL-dump mist de openbare moswaarnemingen."
+  grep -q 'CREATE TABLE `korstmossen_waarneming`' "$dump" || die "SQL-dump mist de openbare korstmoswaarnemingen."
+  if LC_ALL=C grep -Eq 'CREATE TABLE `ndff_(mossen|korstmossen)`' "$dump"; then
+    die "SQL-dump bevat nog een verouderde mos- of korstmosgroepsindex."
+  fi
   grep -q 'CREATE TABLE `plot_analyse_scope`' "$dump" || die "SQL-dump mist plot_analyse_scope."
   grep -q 'v_meijendel_analyseplot_actueel' "$dump" || die "SQL-dump mist v_meijendel_analyseplot_actueel."
   if LC_ALL=C grep -Eq 'Meijendel_ndff_secure|ndff_open_secure_koppeling|ticket_58679' "$dump"; then

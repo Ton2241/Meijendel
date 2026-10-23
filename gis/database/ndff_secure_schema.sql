@@ -265,7 +265,22 @@ SELECT
     THEN 'openbare_geometrie' ELSE 'exacte_geometrie' END AS geometrie_bron,
   o.vervaging_raw AS publieke_vervaging_raw,
   o.vervagingsniveau_km AS publieke_vervagingsniveau_km
-FROM Meijendel.ndff_open_waarneming AS o
+FROM (
+  SELECT o.* FROM Meijendel.ndff_open_waarneming AS o
+  JOIN Meijendel.ndff_open_waarneming_register AS r
+    ON r.waarneming_id=o.waarneming_id
+   AND r.opslag_tabel='ndff_open_waarneming'
+  UNION ALL
+  SELECT m.* FROM Meijendel.mossen_waarneming AS m
+  JOIN Meijendel.ndff_open_waarneming_register AS r
+    ON r.waarneming_id=m.waarneming_id
+   AND r.opslag_tabel='mossen_waarneming'
+  UNION ALL
+  SELECT k.* FROM Meijendel.korstmossen_waarneming AS k
+  JOIN Meijendel.ndff_open_waarneming_register AS r
+    ON r.waarneming_id=k.waarneming_id
+   AND r.opslag_tabel='korstmossen_waarneming'
+) AS o
 LEFT JOIN ndff_open_secure_koppeling AS k
   ON k.open_waarneming_id=o.waarneming_id
 LEFT JOIN ndff_waarneming_register AS s

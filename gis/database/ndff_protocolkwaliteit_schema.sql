@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_open_waarneming_protocol (
   PRIMARY KEY (waarneming_id),
   KEY ix_ndff_open_protocol_id (protocol_id),
   CONSTRAINT fk_ndff_open_protocol_waarneming FOREIGN KEY (waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_open_protocol_protocol FOREIGN KEY (protocol_id)
     REFERENCES Meijendel.ndff_protocol (protocol_id)
 ) ENGINE=InnoDB;
@@ -168,7 +168,7 @@ CREATE TABLE IF NOT EXISTS ndff_open_ruimtelijke_beoordeling (
   KEY ix_ndff_open_ruimte_klasse (regelversie, ruimtelijke_klasse, toewijzingskwaliteit),
   KEY ix_ndff_open_ruimte_plot (plotversie_id, eenduidig_plot_id),
   CONSTRAINT fk_ndff_open_ruimte_waarneming FOREIGN KEY (waarneming_id)
-    REFERENCES ndff_open_waarneming (waarneming_id),
+    REFERENCES ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_open_ruimte_plot FOREIGN KEY (plotversie_id, eenduidig_plot_id)
     REFERENCES ndff_sovon_plot (plotversie_id, plot_id),
   CHECK (vervaagd IN (0,1)),
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS ndff_open_pq_koppeling (
   PRIMARY KEY (waarneming_id, regelversie),
   KEY ix_ndff_open_pq_selectie (regelversie, classificatie, ndff_bronrol),
   CONSTRAINT fk_ndff_open_pq_waarneming FOREIGN KEY (waarneming_id)
-    REFERENCES ndff_open_waarneming (waarneming_id),
+    REFERENCES ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT ck_ndff_open_pq_status CHECK (
          (classificatie='niet_van_toepassing'
           AND ndff_bronrol='niet_van_toepassing'
@@ -231,7 +231,7 @@ CREATE TABLE IF NOT EXISTS ndff_snl_waarneming_context (
   PRIMARY KEY (waarneming_id, regelversie),
   KEY ix_ndff_snl_overlap (regelversie, overlap_status),
   CONSTRAINT fk_ndff_snl_context_waarneming FOREIGN KEY (waarneming_id)
-    REFERENCES ndff_open_waarneming (waarneming_id),
+    REFERENCES ndff_open_waarneming_register (waarneming_id),
   CHECK ((overlap_status IN ('overlap_bevestigd','overlap_mogelijk')
           AND kandidaat_aantal > 0)
       OR (overlap_status IN ('geen_overlap_gevonden','onvoldoende_onderzocht')
@@ -885,10 +885,10 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_vleermuis_recordselectie (
   KEY ix_ndff_vleermuis_selectie_bezoek
     (reconstructieversie, bezoek_sleutel),
   CONSTRAINT fk_ndff_vleermuis_selectie_bron FOREIGN KEY (waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_vleermuis_selectie_canoniek FOREIGN KEY
     (canonieke_waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_vleermuis_selectie_route FOREIGN KEY
     (reconstructieversie, routefamilie_id)
     REFERENCES Meijendel.ndff_vleermuis_routefamilie
@@ -953,7 +953,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_konijn_recordselectie (
   KEY ix_ndff_konijn_doel_seizoen
     (doelrelatie, seizoenstatus, daz_overlapstatus),
   CONSTRAINT fk_ndff_konijn_selectie_bron FOREIGN KEY (waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CHECK (aantal_exact > 0),
   CHECK (exactgelijke_groepsgrootte <= hokdatum_taxon_groepsgrootte)
 ) ENGINE=InnoDB;
@@ -1033,7 +1033,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.daz_bmp_recordselectie (
   KEY ix_daz_bmp_selectie_status (koppelstatus, doelrelatie),
   KEY ix_daz_bmp_selectie_bezoek (reconstructieversie, bezoek_id),
   CONSTRAINT fk_daz_bmp_selectie_bron FOREIGN KEY (waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_daz_bmp_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_id)
     REFERENCES Meijendel.daz_bmp_bezoek (reconstructieversie, bezoek_id),
@@ -1276,9 +1276,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_recordselectie (
   KEY ix_ndff_bospaddenstoel_selectie_canoniek
     (reconstructieversie, canonieke_waarneming_id),
   CONSTRAINT fk_ndff_bospaddenstoel_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_bospaddenstoel_selectie_canoniek FOREIGN KEY
-    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_bospaddenstoel_selectie_meetpunt FOREIGN KEY
     (reconstructieversie, meetpunt_id)
     REFERENCES Meijendel.ndff_bospaddenstoel_meetpunt
@@ -1420,7 +1420,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.hns_recordselectie (
   KEY ix_hns_selectie_inventarisatie
     (reconstructieversie, inventarisatie_sleutel),
   CONSTRAINT fk_hns_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_hns_selectie_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
     REFERENCES Meijendel.hns_inventarisatie
@@ -1562,9 +1562,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_recordselectie (
   KEY ix_korstmossen_selectie_canoniek
     (reconstructieversie, canonieke_waarneming_id),
   CONSTRAINT fk_korstmossen_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_korstmossen_selectie_canoniek FOREIGN KEY
-    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_korstmossen_selectie_meetlocatie FOREIGN KEY
     (reconstructieversie, meetlocatie_id)
     REFERENCES Meijendel.korstmossen_meetlocatie
@@ -1751,9 +1751,9 @@ CREATE TABLE IF NOT EXISTS Meijendel.mossen_recordselectie (
   KEY ix_mossen_selectie_canoniek
     (reconstructieversie, canonieke_waarneming_id),
   CONSTRAINT fk_mossen_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_mossen_selectie_canoniek FOREIGN KEY
-    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_mossen_selectie_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
     REFERENCES Meijendel.mossen_inventarisatie
@@ -1869,7 +1869,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.florbase_recordselectie (
   KEY ix_florbase_selectie_inventarisatie
     (reconstructieversie, inventarisatie_sleutel),
   CONSTRAINT fk_florbase_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_florbase_selectie_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
     REFERENCES Meijendel.florbase_inventarisatie
@@ -1978,7 +1978,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.lmfa_recordselectie (
   PRIMARY KEY (reconstructieversie, waarneming_id),
   KEY ix_lmfa_selectie_bezoek (reconstructieversie, bezoek_sleutel),
   CONSTRAINT fk_lmfa_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_lmfa_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
     REFERENCES Meijendel.lmfa_bezoek (reconstructieversie, bezoek_sleutel)
@@ -2082,7 +2082,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_habslak_recordselectie (
   KEY ix_ndff_habslak_selectie_monster
     (reconstructieversie, monster_sleutel),
   CONSTRAINT fk_ndff_habslak_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_habslak_selectie_monster FOREIGN KEY
     (reconstructieversie, monster_sleutel)
     REFERENCES Meijendel.ndff_habslak_monster
@@ -2212,7 +2212,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_braakbal_recordselectie (
   KEY ix_ndff_braakbal_selectie_hokjaar
     (reconstructieversie, hokjaar_sleutel),
   CONSTRAINT fk_ndff_braakbal_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_braakbal_selectie_hokjaar FOREIGN KEY
     (reconstructieversie, hokjaar_sleutel)
     REFERENCES Meijendel.ndff_braakbal_hokjaar
@@ -2380,7 +2380,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_tuintelling_recordselectie (
   KEY ix_ndff_tuintelling_selectie_periode
     (reconstructieversie, telperiode_sleutel),
   CONSTRAINT fk_ndff_tuintelling_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_tuintelling_selectie_periode FOREIGN KEY
     (reconstructieversie, telperiode_sleutel)
     REFERENCES Meijendel.ndff_tuintelling_telperiode
@@ -2485,7 +2485,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_liveatlas_recordselectie (
   KEY ix_ndff_liveatlas_selectie_bezoek
     (reconstructieversie, bezoek_sleutel),
   CONSTRAINT fk_ndff_liveatlas_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_liveatlas_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
     REFERENCES Meijendel.ndff_liveatlas_bezoek
@@ -2605,7 +2605,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_kwartiertelling_recordselectie (
   KEY ix_ndff_kwartiertelling_selectie_interval
     (reconstructieversie, interval_sleutel),
   CONSTRAINT fk_ndff_kwartiertelling_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_kwartiertelling_selectie_interval FOREIGN KEY
     (reconstructieversie, interval_sleutel)
     REFERENCES Meijendel.ndff_kwartiertelling_telinterval
@@ -2667,7 +2667,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_nachtvlinder_recordselectie (
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
   CONSTRAINT fk_ndff_nachtvlinder_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_nachtvlinder_selectie_hokjaar FOREIGN KEY
     (reconstructieversie, hokjaar_sleutel)
     REFERENCES Meijendel.ndff_nachtvlinder_hokjaar
@@ -2720,7 +2720,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_bospaddenstoel_verspreiding_recordsele
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
   CONSTRAINT fk_ndff_bospaddenstoel_verspreiding_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_bospaddenstoel_verspreiding_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
     REFERENCES Meijendel.ndff_bospaddenstoel_verspreiding_bezoek
@@ -2787,7 +2787,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_ravon_n2000_recordselectie (
   kwaliteitsnotitie VARCHAR(1800) NOT NULL,
   PRIMARY KEY (reconstructieversie, waarneming_id),
   CONSTRAINT fk_ndff_ravon_n2000_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_ravon_n2000_selectie_locatie FOREIGN KEY
     (reconstructieversie, locatie_sleutel)
     REFERENCES Meijendel.ndff_ravon_n2000_monsterlocatieproxy
@@ -2848,7 +2848,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_poldervis_recordselectie (
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
   CONSTRAINT fk_ndff_poldervis_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_poldervis_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
     REFERENCES Meijendel.ndff_poldervis_bezoek
@@ -2904,7 +2904,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_otter_bever_recordselectie (
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
   CONSTRAINT fk_ndff_otter_bever_selectie_waarneming FOREIGN KEY
-    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CONSTRAINT fk_ndff_otter_bever_selectie_hokjaar FOREIGN KEY
     (reconstructieversie, hokjaar_sleutel)
     REFERENCES Meijendel.ndff_otter_bever_hokjaar
@@ -3057,7 +3057,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.sovon_avimap_ndff_daz_koppeling (
   CONSTRAINT fk_sovon_avimap_ndff_batch FOREIGN KEY (batch_id)
     REFERENCES Meijendel.sovon_avimap_import_batch (batch_id),
   CONSTRAINT fk_sovon_avimap_ndff_waarneming FOREIGN KEY (ndff_waarneming_id)
-    REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
+    REFERENCES Meijendel.ndff_open_waarneming_register (waarneming_id),
   CHECK (ndff_recordaantal > 0 AND ndff_aantal_som > 0),
   CHECK ((koppelstatus='geen_sovon_overlap' AND sovon_bronrecordaantal=0
       AND sovon_aantal_som IS NULL AND JSON_LENGTH(sovon_bron_waarneming_ids)=0)

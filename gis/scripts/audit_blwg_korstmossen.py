@@ -78,13 +78,13 @@ def main(path: Path) -> None:
     public = query("SELECT s.meetlocatie_id,DATE(o.periode_start),"
                    "o.wetenschappelijke_naam,o.waarneming_id "
                    "FROM Meijendel.korstmossen_recordselectie s "
-                   "JOIN Meijendel.ndff_open_waarneming o "
+                   "JOIN Meijendel.korstmossen_waarneming o "
                    "ON o.waarneming_id=s.waarneming_id "
                    "WHERE s.reconstructieversie='ndff-korstmos-v2'")
     ndff_keys = Counter((int(r[0]), r[1], r[2]) for r in public)
     missing = source_keys - ndff_keys
     extra = ndff_keys - source_keys
-    ndff_sensitive = query("SELECT jaar,COUNT(*) FROM Meijendel.ndff_open_waarneming "
+    ndff_sensitive = query("SELECT jaar,COUNT(*) FROM Meijendel.korstmossen_waarneming "
                            "WHERE protocol LIKE '02.202%' AND vervaagd=1 "
                            "GROUP BY jaar ORDER BY jaar")
     blurred_by_year = Counter({int(y): int(n) for y, n in ndff_sensitive})
