@@ -505,6 +505,12 @@ NDFF-identiteit niet eenduidig aan één bronformulier te koppelen. De twintig
 vervaagde *Usnea articulata*-regels blijven afgeschermd. Gebruik de twee grove
 NDFF-bedekkingsklassen slechts ordinaal en controleer met `--audit-korstmossen`.
 
+De daarnaast bestaande `ndff_korstmossen` en `ndff_mossen` zijn geen
+BLWG-meettabellen maar NDFF-groepsindexen met alleen `waarneming_id`. Zij
+omvatten waarnemingen van meerdere bronhouders en protocollen; de echte
+NDFF-velden staan in `ndff_open_waarneming`. Daarom behouden deze twee indexen
+het herkomstvoorvoegsel `ndff_`.
+
 Mossenprotocol `02.204` staat onder `ndff-mos-v2` in vijf openbare
 `Meijendel.mossen_*`-tabellen. De 376 onvervaagde bronregels zijn geclusterd
 tot zeven kilometerhokinventarisaties en 21 bronperioden; de matrix bevat
