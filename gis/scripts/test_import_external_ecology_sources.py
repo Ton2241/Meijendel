@@ -880,6 +880,10 @@ def check_central_query_routes():
         'territoria': {'id','soort_id','jaar','territoria'},
         'ndff_soorten': {'ndff_soort_id','soort_key','wetenschappelijke_naam'},
         'ndff_open_waarneming': {'waarneming_id','soort_key','jaar'},
+        'mossen_waarneming': {'waarneming_id','soort_key','jaar'},
+        'korstmossen_waarneming': {'waarneming_id','soort_key','jaar'},
+        'ndff_waarneming_register': {'waarneming_id','opslag_tabel'},
+        'ndff_open_waarneming_protocol': {'waarneming_id','protocol_id'},
         'sovon_avimap_taxon': {'batch_id','soortgroep_code','soortnr'},
         'sovon_avimap_waarneming': {'batch_id','soortgroep_code','soortnr','jaar'},
         'sovon_bmp_soortenlijst_taxon': {
@@ -895,6 +899,31 @@ def check_central_query_routes():
     routes = module.central_query_routes(schema)
     assert routes['territoria']['catalogue'] == 'soorten'
     assert routes['ndff_open_waarneming']['catalogue'] == 'ndff_soorten'
+    assert routes['mossen_waarneming']['catalogue'] == 'ndff_soorten'
+    assert routes['korstmossen_waarneming']['catalogue'] == 'ndff_soorten'
+    assert 'ndff_waarneming_register' not in routes
+    child_query = module.central_taxon_query(
+        'ndff_open_waarneming_protocol', routes['ndff_open_waarneming_protocol'], 7,
+    )
+    assert 'ndff_waarneming_register' in child_query
+    assert 'mossen_waarneming' in child_query
+    assert 'korstmossen_waarneming' in child_query
+    guards = module.central_query_triggers_sql({'routes': routes})
+    assert 'FROM ndff_waarneming_register' in guards
+    delete_guard = guards.split('CREATE TRIGGER cq_ndff_parent_bd',1)[1].split('END$$',1)[0]
+    assert "opslag_tabel='mossen_waarneming'" in delete_guard
+    assert 'JOIN mossen_waarneming' in delete_guard
+    assert "opslag_tabel='korstmossen_waarneming'" in delete_guard
+    assert 'JOIN korstmossen_waarneming' in delete_guard
+    legacy_schema = {k:v for k,v in schema.items() if k not in {
+        'mossen_waarneming','korstmossen_waarneming','ndff_waarneming_register'}}
+    legacy_routes = module.central_query_routes(legacy_schema)
+    legacy_query = module.central_taxon_query(
+        'ndff_open_waarneming_protocol', legacy_routes['ndff_open_waarneming_protocol'], 7)
+    assert 'JOIN ndff_open_waarneming o' in legacy_query
+    assert 'ndff_waarneming_register' not in legacy_query
+    assert 'FROM ndff_open_waarneming o' in module.central_query_triggers_sql(
+        {'routes': legacy_routes})
     assert routes['sovon_avimap_waarneming']['catalogue'] == 'sovon_avimap_taxon'
     assert routes['ndff_habslak_hokjaar']['name_field'] == 'doelsoort'
     assert routes['ndff_test_bezoek_taxon']['kind'] == 'derived'
@@ -919,6 +948,14 @@ def check_central_query_routes():
     actual={k:set(v) for k,v in module.CENTRAL_QUERY_SCHEMA.items()}
     assert len([table for table in actual if table.startswith('sovon_bmp_')]) == 5
     module.central_query_schema_contract(actual)
+    split_schema = {**actual,
+        'mossen_waarneming': actual['ndff_open_waarneming'].copy(),
+        'korstmossen_waarneming': actual['ndff_open_waarneming'].copy(),
+        'ndff_waarneming_register': {'waarneming_id','opslag_tabel'},
+    }
+    split_schema.pop('ndff_mossen')
+    split_schema.pop('ndff_korstmossen')
+    module.central_query_schema_contract(split_schema)
     for changed in ({**actual,'nieuwe_metingen':{'soortnr','aantal','jaar'}},
                     {**actual,'nieuwe_metingen':{'euring_code','aantal','jaar'}},
                     {**actual,'territoria':actual['territoria']|{'ongecontroleerd_taxon'}}):

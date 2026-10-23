@@ -54,3 +54,39 @@ De actuele database heeft bovendien door het centrale taxonregister gegenereerde
 3. Vul de fysieke groepswaarnemingstabellen met onveranderde bronwaarden en IDs; controleer aantallen, checksums, taxonkoppeling en PQ-/analysebesluiten.
 4. Zet de FK-ouder veilig om naar het smalle ID-register en verwijder pas dan de 60.996 oude parentregels. Controleer dat alle 810.830 unieke openbare NDFF-identiteiten precies eenmaal aanwezig en bereikbaar zijn.
 5. Verwijder **als laatste** `ndff_mossen` en `ndff_korstmossen` na volledige nacontrole, inclusief herstelproef, afnemers en bronregister in Markdown én DOCX. Geen VPS-publicatie zonder afzonderlijk akkoord.
+
+## Uitvoeringsplan voor de fysieke verhuizing
+
+De bestaande herstelproef is stap nul, niet de migratie zelf. De verdere stappen
+worden op de bestaande taakbranch uitgevoerd; de levende database verandert pas
+na een tweede, volledige proef.
+
+1. **Leescontract.** Voeg een smal register voor alle openbare NDFF-ID's toe met
+   uitsluitend `waarneming_id` en fysieke opslaglocatie. Behoud de oorspronkelijke
+   waarnemingskolommen alleen in de drie elkaar uitsluitende fysieke tabellen.
+   Test dat iedere identiteit exact eenmaal voorkomt, ook de 54 korstmosregels
+   met een extra schimmelclassificatie.
+2. **Schrijfcontract.** Laat alle 32 bestaande foreign keys en de gegenereerde
+   taxontriggers naar het gedeelde ID-register verwijzen. Nieuwe invoer mag nooit
+   twee fysieke kopieën van één ID opleveren. Test invoer, wijziging, verwijdering
+   en weigering van verweesde kinderregels.
+3. **Afnemers.** Pas de twee bestaande beveiligde views en alle directe
+   import-, protocol-, ruimtelijke, BLWG- en exportafnemers aan. Geen nieuwe
+   views of dubbele waarnemingstabellen. Test de 219 koppelingen naar de
+   beveiligde levering en de centrale route vanuit `taxa`.
+4. **Volledige geïsoleerde proef.** Voer het migratiescript uit op een lokaal
+   proefschema met dezelfde structuur en getroffen rijen. Vergelijk vóór en na
+   aantallen, identiteit, payload, geometrie, PQ-status, protocol, taxonroute,
+   secure-selecties en kindverwijzingen. Bewijs ook terugzetting.
+5. **Levende uitvoering.** Maak een herstelbare kopie van exact de betrokken
+   gegevens. Voer daarna alleen de in stap 4 beproefde migratie lokaal uit.
+   Verwijder de oude groepsindexen pas na een groene volledige nacontrole.
+   Werk beide bronregisterversies en alle betrokken documentatie bij. De zware
+   export/cacheketen en VPS-publicatie zijn uitdrukkelijk geen onderdeel hiervan.
+
+**Beslisregel voor PQ-kandidaten:** de bestaande `niet_beoordeelbaar`- en
+`historische_vegetatiecontext`-beoordelingen blijven ongewijzigd. Een kandidaat
+wordt door deze opslagmigratie niet als bevestigde PQ-opname of als zelfstandige
+waarneming heringedeeld. Werkelijke PQ-inhoud blijft onder de bindende `pq_*`-
+opslagregel vallen; een bevestigde PQ-regel mag niet stilzwijgend in een van de
+nieuwe groepstabellen worden ondergebracht.

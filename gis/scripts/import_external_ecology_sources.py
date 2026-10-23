@@ -94,11 +94,14 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             raise ValueError('Ongeldige tabelidentifier')
         if table in {'taxa', 'taxa_bronkoppeling', 'taxon_groepen'}:
             continue
+        if table == 'ndff_waarneming_register':
+            # A technical key and storage locator, never a taxon-bearing layer.
+            continue
         if table in STAGING_TABLES:
             routes[table] = {'kind': 'staging'}
         elif table in catalogues:
             routes[table] = {'kind': 'catalogue', **catalogues[table]}
-        elif table == 'ndff_open_waarneming':
+        elif table in {'ndff_open_waarneming', 'mossen_waarneming', 'korstmossen_waarneming'}:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'ndff_soorten',
                              'join': 'w.soort_key=c.soort_key', 'role': 'bronwaarneming'}
         elif table == 'sovon_avimap_waarneming':
@@ -120,7 +123,8 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
         elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
-                             'role': 'bronverwijzing'}
+                             'role': 'bronverwijzing',
+                             'partitioned': 'ndff_waarneming_register' in schema}
         elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
@@ -161,9 +165,22 @@ def central_taxon_query(table: str, route: dict, taxon_id: int | None = None) ->
         joins = (f"JOIN `{route['catalogue']}` c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
                  f"JOIN `{table}` w ON {route['join']}")
     elif kind == 'ndff_child':
-        joins = ("JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
-                 "JOIN ndff_open_waarneming o ON o.soort_key=c.soort_key\n"
-                 f"JOIN `{table}` w ON {route['join']}")
+        if not route.get('partitioned'):
+            joins = ("JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
+                     "JOIN ndff_open_waarneming o ON o.soort_key=c.soort_key\n"
+                     f"JOIN `{table}` w ON {route['join']}")
+        else:
+            joins = (f"JOIN `{table}` w\n"
+                 "JOIN ndff_waarneming_register r ON "
+                 +route['join'].replace('o.waarneming_id','r.waarneming_id')+"\n"
+                 "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
+                 "AND r.opslag_tabel='ndff_open_waarneming'\n"
+                 "LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id "
+                 "AND r.opslag_tabel='mossen_waarneming'\n"
+                 "LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id "
+                 "AND r.opslag_tabel='korstmossen_waarneming'\n"
+                 "JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id "
+                 "AND c.soort_key=COALESCE(o.soort_key,m.soort_key,k.soort_key)")
     else:
         joins = f'JOIN `{table}` w ON w.taxon_bronkoppeling_id=b.koppeling_id'
     return ("SELECT t.taxon_id,t.weergavenaam,g.groep_id,g.groep_code,g.groep_naam,"
@@ -557,6 +574,12 @@ CENTRAL_QUERY_SCHEMA = {
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
+    if 'ndff_waarneming_register' in schema:
+        for table in ('mossen_waarneming', 'korstmossen_waarneming'):
+            expected[table] = expected['ndff_open_waarneming']
+        expected['ndff_waarneming_register'] = frozenset({'waarneming_id', 'opslag_tabel'})
+        expected.pop('ndff_mossen')
+        expected.pop('ndff_korstmossen')
     registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
     legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
     if not (registraties & set(schema)):
@@ -700,8 +723,19 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
             if 'taxon_bronkoppeling_id' not in schema[catalogue]:
                 errors.append(table+': centrale catalogusroute ontbreekt'); continue
             if kind == 'ndff_child':
-                joined = f'{qtable} w LEFT JOIN ndff_open_waarneming o ON {route["join"]} '
-                joined += 'LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key '
+                if not route.get('partitioned'):
+                    joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming o ON '
+                        +route['join']+' LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key ')
+                else:
+                    joined = (f'{qtable} w LEFT JOIN ndff_waarneming_register r ON '
+                    +route['join'].replace('o.waarneming_id','r.waarneming_id')+' '
+                    'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
+                    "AND r.opslag_tabel='ndff_open_waarneming' "
+                    'LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id '
+                    "AND r.opslag_tabel='mossen_waarneming' "
+                    'LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id '
+                    "AND r.opslag_tabel='korstmossen_waarneming' "
+                    'LEFT JOIN ndff_soorten c ON c.soort_key=COALESCE(o.soort_key,m.soort_key,k.soort_key) ')
             else:
                 joined = f'{qtable} w LEFT JOIN {query_identifier(catalogue)} c ON {route["join"]} '
             reference_scope = 'c.taxon_bronkoppeling_id IS NOT NULL AND ' if route.get('role')=='soortreferentie' else ''
@@ -982,7 +1016,8 @@ def central_query_triggers_sql(plan: dict) -> str:
         body = ''
         declarations = 'DECLARE cq_n BIGINT DEFAULT 0; DECLARE cq_id BIGINT UNSIGNED; DECLARE cq_taxon BIGINT UNSIGNED;'
         if kind=='ndff_child':
-            body = ('IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming o WHERE '+route['join'].replace('w.','NEW.')+
+            parent = 'ndff_waarneming_register' if route.get('partitioned') else 'ndff_open_waarneming'
+            body = ('IF NOT EXISTS(SELECT 1 FROM '+parent+' o WHERE '+route['join'].replace('w.','NEW.')+
                     ") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronwaarneming bestaat niet'; END IF;")
         elif kind == 'catalogue_child':
             # Catalogue target protection + existing FK protects the factual source key.
@@ -1121,9 +1156,20 @@ def central_query_triggers_sql(plan: dict) -> str:
     children = ' OR '.join('EXISTS(SELECT 1 FROM '+query_identifier(table)+' w WHERE '+
         route['join'].replace('o.waarneming_id','OLD.waarneming_id')+')'
         for table,route in routes.items() if route['kind']=='ndff_child')
+    partitioned = any(r['kind']=='ndff_child' and r.get('partitioned') for r in routes.values())
     for suffix,event in [('bd','DELETE'),('bu','UPDATE')]:
-        condition = '('+children+')'
-        if event=='UPDATE': condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id) AND '+condition
+        if partitioned and event=='DELETE':
+            replacements = ' OR '.join(
+                'EXISTS(SELECT 1 FROM ndff_waarneming_register r JOIN '+table+
+                ' g ON g.waarneming_id=r.waarneming_id WHERE r.waarneming_id=OLD.waarneming_id '
+                "AND r.opslag_tabel='"+table+"')"
+                for table in ('mossen_waarneming','korstmossen_waarneming'))
+            condition = 'NOT ('+replacements+')'
+        elif partitioned:
+            condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id)'
+        else:
+            condition = '('+children+')'
+            if event=='UPDATE': condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id) AND '+condition
         statements += [f'DROP TRIGGER IF EXISTS cq_ndff_parent_{suffix}$$',
             f'CREATE TRIGGER cq_ndff_parent_{suffix} BEFORE {event} ON ndff_open_waarneming FOR EACH ROW BEGIN '
             'IF '+condition+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Verwijder eerst afgeleide NDFF-verwijzingen'; END IF; END$$"]
