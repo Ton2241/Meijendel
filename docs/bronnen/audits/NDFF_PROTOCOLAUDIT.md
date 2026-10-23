@@ -822,14 +822,19 @@ eenmaal). De oorspronkelijke `Kwantiteit`-codes 1, 2, 3, 5 en 6 bevatten
 meer detail dan de twee openbare NDFF-klassen. Analyseer volgens de
 velddatum, niet volgens het vaak een jaar eerdere rapportagejaar.
 
-Dezelfde NDFF-selectie 02.202 heeft daarnaast 92 regels op zes andere,
-eenduidig aan een SOVON-plot gekoppelde BLWG-locaties: twee met een bezoek op
-15 februari 2015 (36 regels) en vier met een bezoek op 31 maart 2018
-(56 regels). Deze ontbreken in de primaire Excel-levering. Vraag uitsluitend
-gericht of de oorspronkelijke plot- en bezoekgegevens voor deze zes locaties
-ook beschikbaar zijn. Wijzig tot na een afzonderlijke integratie-audit geen
-NDFF-bronregels of afgeleide matrix; bescherm de twintig publiek vervaagde
-waarnemingen en hun plotkoppeling.
+**BLWG-nalevering, 23 oktober 2026 — nog niet geïmporteerd.** Dezelfde
+Excelstructuur omvat nu twaalf plots, 44 oorspronkelijke formulieren
+(`kopid`) en 384 positieve soortregels uit 2000–2025. De zes toegevoegde
+eenmalige locaties verklaren precies de eerder ontbrekende 92 regels: twee
+locaties op 15 februari 2015 (36 regels) en vier op 31 maart 2018
+(56 regels). Per locatie zijn twee onafhankelijke waarnemersformulieren
+aanwezig. De vier vaste plots hebben een WKT-begrenzing; voor de acht
+eenmalige locaties geeft BLWG alleen RD-punten en afmetingen. De 92
+nageleverde regels zijn nog niet regel voor regel aan NDFF-identiteiten
+gekoppeld. Er is geen expliciete volledigheidsstatus, nulsoortregel,
+methodewijzigingshistorie of NDFF-sleutel meegeleverd. Beoordeel dat bij
+integratie en wijzig tot die audit geen NDFF-bronregels of afgeleide matrix;
+bescherm de twintig publiek vervaagde waarnemingen en hun plotkoppeling.
 
 ### Meetnet mossen (`02.204`)
 
