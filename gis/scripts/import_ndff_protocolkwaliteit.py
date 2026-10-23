@@ -146,8 +146,8 @@ SOVON_BMP_TABLE_PREFIX = "Meijendel.sovon_bmp"
 ZEEREEP_TABLE_PREFIX = "Meijendel.ndff_zeereep"
 BOSPADDENSTOEL_TABLE_PREFIX = "Meijendel.ndff_bospaddenstoel"
 HNS_TABLE_PREFIX = "Meijendel.hns"
-KORSTMOS_TABLE_PREFIX = "Meijendel.ndff_korstmos"
-MOS_TABLE_PREFIX = "Meijendel.ndff_mos"
+KORSTMOS_TABLE_PREFIX = "Meijendel.korstmossen"
+MOS_TABLE_PREFIX = "Meijendel.mossen"
 FLORBASE_TABLE_PREFIX = "Meijendel.florbase"
 LMFA_TABLE_PREFIX = "Meijendel.lmfa"
 HABSLAK_TABLE_PREFIX = "Meijendel.ndff_habslak"
@@ -542,12 +542,12 @@ KORSTMOS_RECONSTRUCTION_EXPECTED = {
     "selected_records": 364,
     "visits_with_two_counts": 12,
     "visits_without_two_counts": 20,
-    "matrix_rows": 960,
+    "matrix_rows": 643,
     "positive_rows": 287,
     "single_count_positive_rows": 210,
     "double_same_class_positive_rows": 67,
     "double_different_class_positive_rows": 10,
-    "true_zero_rows": 673,
+    "true_zero_rows": 356,
     "single_plot_records": 352,
     "multiple_plot_records": 12,
     "invalid_source_measurements": 0,
@@ -574,12 +574,12 @@ MOS_RECONSTRUCTION_EXPECTED = {
     "selected_records": 353,
     "suppressed_duplicate_records": 21,
     "abundance_conflict_records": 2,
-    "matrix_rows": 777,
+    "matrix_rows": 354,
     "positive_rows": 354,
     "abundance_positive_rows": 312,
     "presence_positive_rows": 41,
     "conflict_positive_rows": 1,
-    "true_zero_rows": 423,
+    "true_zero_rows": 0,
     "single_plot_source_records": 52,
     "multiple_plot_source_records": 324,
     "invalid_source_measurements": 0,
@@ -7651,9 +7651,11 @@ def build_korstmos_visit_matrix(
     visits: set[str],
     visits_met_twee_tellingen: set[str],
     target_taxa: set[str],
+    repeated_visits: set[str],
+    repeated_target_taxa: set[str],
     records: Iterable[dict[str, object]],
 ) -> list[dict[str, object]]:
-    """Maak positieve resultaten en echte nullen voor complete 02.202-lijsten."""
+    """Leid nullen alleen af voor taxa en bezoeken van de vaste plots."""
     positives: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
     for source_row in records:
         row = dict(source_row)
@@ -7663,6 +7665,10 @@ def build_korstmos_visit_matrix(
     for visit in sorted(visits):
         for taxon in sorted(target_taxa):
             source_rows = positives.get((visit, taxon), [])
+            if not source_rows and (
+                visit not in repeated_visits or taxon not in repeated_target_taxa
+            ):
+                continue
             abundances = {str(row["abundance"]) for row in source_rows}
             source_count = len(source_rows)
             if source_count > 2:
@@ -7765,7 +7771,7 @@ def build_mos_inventory_matrix(
     target_taxa: set[str],
     records: Iterable[dict[str, object]],
 ) -> list[dict[str, object]]:
-    """Maak per volledige hokinventarisatie positieve resultaten en echte nullen."""
+    """Bewaar alleen positieve resultaten; oorspronkelijke kopgegevens ontbreken."""
     positives: dict[tuple[str, str], list[dict[str, object]]] = defaultdict(list)
     for source_row in records:
         row = dict(source_row)
@@ -7775,12 +7781,12 @@ def build_mos_inventory_matrix(
     for inventory in sorted(inventories):
         for taxon in sorted(target_taxa):
             source_rows = positives.get((inventory, taxon), [])
+            if not source_rows:
+                continue
             measurements = {
                 (str(row["scale"]), str(row["abundance"])) for row in source_rows
             }
-            if not source_rows:
-                status, scale, raw, rank = "echte_nul", None, None, 0
-            elif len(measurements) > 1:
+            if len(measurements) > 1:
                 status, scale, raw, rank = (
                     "waargenomen_abundantieconflict", None, None, None
                 )
@@ -9146,9 +9152,22 @@ def reconstruct_korstmossen(
     }
 
     target_taxa = {str(row["taxon"]) for row in records}
+    repeated_geometries = {
+        geometry for geometry, info in geometry_info.items()
+        if len(info["visits"]) > 1
+    }
+    repeated_visits = {
+        str(row["visit"]) for row in records
+        if str(row["geometry"]) in repeated_geometries
+    }
+    repeated_target_taxa = {
+        str(row["taxon"]) for row in records
+        if str(row["geometry"]) in repeated_geometries
+    }
     matrix = build_korstmos_visit_matrix(
         visits=set(visits), visits_met_twee_tellingen=visits_met_twee_tellingen,
-        target_taxa=target_taxa, records=records,
+        target_taxa=target_taxa, repeated_visits=repeated_visits,
+        repeated_target_taxa=repeated_target_taxa, records=records,
     )
 
     meetlocation_values: list[str] = []
@@ -9185,8 +9204,9 @@ def reconstruct_korstmossen(
     visit_values: list[str] = []
     visit_note = (
         "Bezoek gereconstrueerd uit dezelfde onvervaagde proefvlakgeometrie en datum. "
-        "Conform 02.202 geldt dit als complete soortenlijst; exacte bezoektijd en "
-        "waarnemer-ID ontbreken in de NDFF-levering."
+        "Alleen de herhaalde vaste plots ondersteunen binnen hun lokale taxonbereik "
+        "lijstnullen. Eenmalige plots leveren uitsluitend positieve aanwezigheid. "
+        "Waarnemer-ID ontbreekt in de NDFF-levering."
     )
     for visit, info in sorted(visits.items()):
         visit_rows, taxa = info["rows"], info["taxa"]
@@ -9196,10 +9216,14 @@ def reconstruct_korstmossen(
             if visit in visits_met_twee_tellingen
             else "tweede_telling_niet_aantoonbaar_in_export"
         )
+        list_status = (
+            "volledige_soortenlijst_protocolconform"
+            if visit in repeated_visits else "eenmalig_alleen_aanwezigheid"
+        )
         visit_values.append(
             f"({sql_text(KORSTMOS_RULE_VERSION)},{sql_text(visit)},"
             f"{int(info['meetlocation'])},{sql_text(str(info['date']))},{int(info['year'])},"
-            f"{len(visit_rows)},{len(taxa)},'volledige_soortenlijst_protocolconform',"
+            f"{len(visit_rows)},{len(taxa)},{sql_text(list_status)},"
             f"{sql_text(registration)},{sql_text(visit_note)})"
         )
 
@@ -9230,16 +9254,16 @@ def reconstruct_korstmossen(
         }
         scope_values.append(
             f"({sql_text(KORSTMOS_RULE_VERSION)},{sql_text(taxon)},"
-            "'openbaar_taxon_waargenomen_op_02_202_bezoek',"
+            f"{sql_text('vast_proefvlak_nulbereik' if taxon in repeated_target_taxa else 'eenmalige_aanwezigheid')},"
             f"{min(positive_years)},{max(positive_years)},{len(positive_visits)})"
         )
 
     matrix_note = (
-        "Echte nul wanneer dit openbare 02.202-doeltaxon niet is gemeld op een bevestigd "
-        "plotbezoek met protocolconform complete soortenlijst. Eén of twee positieve "
-        "exportregels blijven als afzonderlijke waarnemertellingen herkenbaar; zonder "
-        "waarnemer-ID kan bij een enkele detectie niet worden bepaald welke teller de soort "
-        "zag. De twee NDFF-klassen zijn grover dan de zesdelige BLWG-schaal."
+        "Een afgeleide lijstnul geldt alleen voor de 24 openbare taxa die in de vaste "
+        "plots zijn aangetroffen, en alleen binnen hun bevestigde plotbezoeken. "
+        "Eenmalige plots bevatten uitsluitend positieve resultaten. Parallelle "
+        "waarnemertellingen blijven onderscheiden; de NDFF-klassen zijn grover "
+        "dan de oorspronkelijke zesdelige BLWG-schaal."
     )
     matrix_values: list[str] = []
     for row in matrix:
@@ -9249,7 +9273,8 @@ def reconstruct_korstmossen(
             f"({sql_text(KORSTMOS_RULE_VERSION)},{sql_text(str(row['visit']))},"
             f"{sql_text(str(row['taxon']))},{sql_text(str(row['status']))},{raw_sql},"
             f"{rank_sql},{int(row['source_count'])},"
-            f"'niet_gemeld_op_volledige_02_202_soortenlijst',{sql_text(matrix_note)})"
+            f"{sql_text('ontbreekt_op_vast_plot_lijst' if row['status']=='echte_nul' else 'geen_nul')},"
+            f"{sql_text(matrix_note)})"
         )
 
     statements = [
@@ -9362,11 +9387,10 @@ def reconstruct_mossen(
     )
 
     inventory_note = (
-        "Native 02.204-meeteenheid: één zo volledig mogelijk geïnventariseerd RD-"
-        "kilometerhok. De protocolcode onderbouwt de volledige lijst en de minimaal acht "
-        "mensuren plus dekking van alle relevante biotopen. De precieze bezoekduur en "
-        "waarnemer zijn niet nodig om deze protocolclassificatie opnieuw te bewijzen. Het "
-        "kilometerhok wordt niet als waarneming in ieder geraakt SOVON-plot geïnterpreteerd."
+        "Native 02.204-meeteenheid: RD-kilometerhok. Het protocol schrijft een "
+        "zo volledig mogelijke lijst voor, maar oorspronkelijke kopgegevens ontbreken. "
+        "Daarom zijn alleen positieve resultaten toegelaten, zonder afgeleide nullen. "
+        "Het hok wordt niet over geraakte SOVON-plots verdeeld."
     )
     inventory_values: list[str] = []
     for inventory, info in sorted(inventories.items(), key=lambda item: str(item[1]["hok"])):
@@ -9380,7 +9404,7 @@ def reconstruct_mossen(
             f"({sql_text(MOS_RULE_VERSION)},{sql_text(inventory)},'02.204',"
             f"{sql_text(str(info['hok']))},{sql_text(min(starts))},{sql_text(max(stops))},"
             f"{first_year},{last_year},{sql_text(year_status)},{len(clusters)},"
-            f"{len(rows)},{len(taxa)},'volledige_soortenlijst_protocolconform',"
+            f"{len(rows)},{len(taxa)},'kopgegevens_ontbreken_alleen_aanwezigheid',"
             "'protocolconforme_minimale_inspanning_aangenomen',"
             f"'kilometerhok_niet_naar_sovonplot_toegewezen',{sql_text(inventory_note)})"
         )
@@ -9441,9 +9465,9 @@ def reconstruct_mossen(
         )
 
     matrix_note = (
-        "Echte nul wanneer dit openbare 02.204-doeltaxon niet is gemeld op de complete "
-        "kilometerhoklijst. Talrijkheid is uitsluitend de ordinale BLWG-klasse 1-3. "
-        "Presentieregels zonder aantalsklasse en conflicten blijven daarvan gescheiden."
+        "Alleen positieve 02.204-resultaten: oorspronkelijke kopgegevens ontbreken. "
+        "Talrijkheid is uitsluitend de ordinale BLWG-klasse 1-3. Presentieregels "
+        "zonder aantalsklasse en conflicten blijven daarvan gescheiden."
     )
     matrix_values: list[str] = []
     for row in matrix:
@@ -9452,7 +9476,7 @@ def reconstruct_mossen(
             f"({sql_text(MOS_RULE_VERSION)},{sql_text(str(row['inventory']))},"
             f"{sql_text(str(row['taxon']))},{sql_text(str(row['status']))},"
             f"{sql_text(row['scale'])},{sql_text(row['aantalsklasse_raw'])},{rank_sql},"
-            f"{int(row['source_count'])},'niet_gemeld_op_volledige_02_204_soortenlijst',"
+            f"{int(row['source_count'])},'geen_nul',"
             f"{sql_text(matrix_note)})"
         )
 
@@ -11592,38 +11616,38 @@ SELECT JSON_OBJECT(
 
 def korstmos_validation_sql() -> str:
     version = sql_text(KORSTMOS_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_korstmos_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"korstmossen_{suffix}") for suffix in (
         "meetlocatie", "bezoek", "recordselectie", "doelbereik", "bezoek_taxon",
     ))
     return f"""
 SELECT JSON_OBJECT(
   'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0),
   'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=1),
-  'meetlocations',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_meetlocatie WHERE reconstructieversie={version}),
-  'repeated_meetlocations',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_meetlocatie WHERE reconstructieversie={version} AND herhaalstatus='herhaald_vast_proefvlak'),
-  'oneoff_meetlocations',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_meetlocatie WHERE reconstructieversie={version} AND herhaalstatus='eenmalig_proefvlak'),
-  'visits',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek WHERE reconstructieversie={version}),
-  'repeated_location_visits',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek b JOIN Meijendel.ndff_korstmos_meetlocatie m ON m.reconstructieversie=b.reconstructieversie AND m.meetlocatie_id=b.meetlocatie_id WHERE b.reconstructieversie={version} AND m.herhaalstatus='herhaald_vast_proefvlak'),
-  'oneoff_location_visits',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek b JOIN Meijendel.ndff_korstmos_meetlocatie m ON m.reconstructieversie=b.reconstructieversie AND m.meetlocatie_id=b.meetlocatie_id WHERE b.reconstructieversie={version} AND m.herhaalstatus='eenmalig_proefvlak'),
-  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_doelbereik WHERE reconstructieversie={version}),
-  'recordselection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version}),
-  'selected_records',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
-  'visits_with_two_counts',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek WHERE reconstructieversie={version} AND registratiestatus='twee_onafhankelijke_tellingen_aantoonbaar'),
-  'visits_without_two_counts',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek WHERE reconstructieversie={version} AND registratiestatus='tweede_telling_niet_aantoonbaar_in_export'),
-  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version}),
-  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
-  'single_count_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling')),
-  'double_same_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse'),
-  'double_different_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'meetlocations',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={version}),
+  'repeated_meetlocations',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={version} AND herhaalstatus='herhaald_vast_proefvlak'),
+  'oneoff_meetlocations',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={version} AND herhaalstatus='eenmalig_proefvlak'),
+  'visits',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek WHERE reconstructieversie={version}),
+  'repeated_location_visits',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek b JOIN Meijendel.korstmossen_meetlocatie m ON m.reconstructieversie=b.reconstructieversie AND m.meetlocatie_id=b.meetlocatie_id WHERE b.reconstructieversie={version} AND m.herhaalstatus='herhaald_vast_proefvlak'),
+  'oneoff_location_visits',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek b JOIN Meijendel.korstmossen_meetlocatie m ON m.reconstructieversie=b.reconstructieversie AND m.meetlocatie_id=b.meetlocatie_id WHERE b.reconstructieversie={version} AND m.herhaalstatus='eenmalig_proefvlak'),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.korstmossen_doelbereik WHERE reconstructieversie={version}),
+  'recordselection_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_recordselectie WHERE reconstructieversie={version}),
+  'selected_records',(SELECT COUNT(*) FROM Meijendel.korstmossen_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
+  'visits_with_two_counts',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek WHERE reconstructieversie={version} AND registratiestatus='twee_onafhankelijke_tellingen_aantoonbaar'),
+  'visits_without_two_counts',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek WHERE reconstructieversie={version} AND registratiestatus='tweede_telling_niet_aantoonbaar_in_export'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
+  'single_count_positive_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling')),
+  'double_same_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse'),
+  'double_different_class_positive_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
   'single_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
   'multiple_plot_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
   'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.202%' AND soortgroep_raw='Korstmossen' AND vervaagd=0 AND (schaal_telmethode<>'BLWG-bedekkingsklassen' OR aantal_raw NOT IN ('0.01 - 0.1','minimaal 0.1'))),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling') AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>1)) OR (waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse' AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>2)) OR (waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang IS NOT NULL OR bronrecordaantal<>2)) OR (waarnemingsstatus='echte_nul' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang<>0 OR bronrecordaantal<>0)))),
-  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_korstmos_bezoek b LEFT JOIN Meijendel.ndff_korstmos_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel HAVING matrixregels<>doelomvang) q),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_korstmos_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_recordselectie WHERE reconstructieversie={version})),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_korstmos_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
-  'legacy_versions',(SELECT COUNT(*) FROM Meijendel.ndff_korstmos_meetlocatie WHERE reconstructieversie={sql_text(KORSTMOS_LEGACY_RULE_VERSION)}),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus IN ('waargenomen_een_van_twee_tellingen','waargenomen_enkele_exporttelling') AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>1)) OR (waarnemingsstatus='waargenomen_twee_tellingen_zelfde_klasse' AND (bedekkingsklasse_raw IS NULL OR bedekkingsrang NOT IN (1,2) OR bronrecordaantal<>2)) OR (waarnemingsstatus='waargenomen_twee_tellingen_verschillende_klasse' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang IS NOT NULL OR bronrecordaantal<>2)) OR (waarnemingsstatus='echte_nul' AND (bedekkingsklasse_raw IS NOT NULL OR bedekkingsrang<>0 OR bronrecordaantal<>0)))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT b.bezoek_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,CASE WHEN m.herhaalstatus='herhaald_vast_proefvlak' THEN 24 ELSE b.geregistreerde_taxa END doelomvang FROM Meijendel.korstmossen_bezoek b JOIN Meijendel.korstmossen_meetlocatie m ON m.reconstructieversie=b.reconstructieversie AND m.meetlocatie_id=b.meetlocatie_id LEFT JOIN Meijendel.korstmossen_bezoek_taxon t ON t.reconstructieversie=b.reconstructieversie AND t.bezoek_sleutel=b.bezoek_sleutel WHERE b.reconstructieversie={version} GROUP BY b.bezoek_sleutel,m.herhaalstatus,b.geregistreerde_taxa HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.korstmossen_bezoek_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.korstmossen_recordselectie WHERE reconstructieversie={version})),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.korstmossen_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.202%' AND o.soortgroep_raw='Korstmossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'legacy_versions',(SELECT COUNT(*) FROM Meijendel.korstmossen_meetlocatie WHERE reconstructieversie={sql_text(KORSTMOS_LEGACY_RULE_VERSION)}),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """
@@ -11631,7 +11655,7 @@ SELECT JSON_OBJECT(
 
 def mos_validation_sql() -> str:
     version = sql_text(MOS_RULE_VERSION)
-    secure_tables = ",".join(sql_text(f"ndff_mos_{suffix}") for suffix in (
+    secure_tables = ",".join(sql_text(f"mossen_{suffix}") for suffix in (
         "inventarisatie", "datumcluster", "recordselectie", "doelbereik",
         "inventarisatie_taxon",
     ))
@@ -11639,34 +11663,34 @@ def mos_validation_sql() -> str:
 SELECT JSON_OBJECT(
   'source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0),
   'excluded_blurred_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=1),
-  'inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version}),
-  'single_year_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='binnen_een_jaar'),
-  'cross_year_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='overspant_jaargrens'),
-  'date_clusters',(SELECT COUNT(*) FROM Meijendel.ndff_mos_datumcluster WHERE reconstructieversie={version}),
-  'day_clusters',(SELECT COUNT(*) FROM Meijendel.ndff_mos_datumcluster WHERE reconstructieversie={version} AND tijdprecisie='dag'),
-  'year_clusters',(SELECT COUNT(*) FROM Meijendel.ndff_mos_datumcluster WHERE reconstructieversie={version} AND tijdprecisie='jaar'),
-  'single_date_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND datumclusteraantal=1),
-  'multiple_date_inventories',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND datumclusteraantal>1),
-  'target_taxa',(SELECT COUNT(*) FROM Meijendel.ndff_mos_doelbereik WHERE reconstructieversie={version}),
-  'recordselection_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version}),
-  'selected_records',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
-  'suppressed_duplicate_records',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='dubbele_registratie_onderdrukt'),
-  'abundance_conflict_records',(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version} AND selectiestatus='abundantieconflict_bewaard'),
-  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version}),
-  'positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
-  'abundance_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_aantalsklasse'),
-  'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_presentie'),
-  'conflict_positive_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_abundantieconflict'),
-  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
+  'inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version}),
+  'single_year_inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='binnen_een_jaar'),
+  'cross_year_inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND jaarstatus='overspant_jaargrens'),
+  'date_clusters',(SELECT COUNT(*) FROM Meijendel.mossen_datumcluster WHERE reconstructieversie={version}),
+  'day_clusters',(SELECT COUNT(*) FROM Meijendel.mossen_datumcluster WHERE reconstructieversie={version} AND tijdprecisie='dag'),
+  'year_clusters',(SELECT COUNT(*) FROM Meijendel.mossen_datumcluster WHERE reconstructieversie={version} AND tijdprecisie='jaar'),
+  'single_date_inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND datumclusteraantal=1),
+  'multiple_date_inventories',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND datumclusteraantal>1),
+  'target_taxa',(SELECT COUNT(*) FROM Meijendel.mossen_doelbereik WHERE reconstructieversie={version}),
+  'recordselection_rows',(SELECT COUNT(*) FROM Meijendel.mossen_recordselectie WHERE reconstructieversie={version}),
+  'selected_records',(SELECT COUNT(*) FROM Meijendel.mossen_recordselectie WHERE reconstructieversie={version} AND selectiestatus='opgenomen'),
+  'suppressed_duplicate_records',(SELECT COUNT(*) FROM Meijendel.mossen_recordselectie WHERE reconstructieversie={version} AND selectiestatus='dubbele_registratie_onderdrukt'),
+  'abundance_conflict_records',(SELECT COUNT(*) FROM Meijendel.mossen_recordselectie WHERE reconstructieversie={version} AND selectiestatus='abundantieconflict_bewaard'),
+  'matrix_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version}),
+  'positive_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul'),
+  'abundance_positive_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_aantalsklasse'),
+  'presence_positive_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_presentie'),
+  'conflict_positive_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='waargenomen_abundantieconflict'),
+  'true_zero_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus='echte_nul'),
   'single_plot_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.toewijzingskwaliteit='single_volledig_binnen'),
   'multiple_plot_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o JOIN Meijendel.ndff_open_ruimtelijke_beoordeling r ON r.waarneming_id=o.waarneming_id AND r.regelversie={sql_text(RULE_VERSION)} WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND r.ruimtelijke_klasse='multiple'),
   'invalid_source_measurements',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE protocol LIKE '02.204%' AND soortgroep_raw='Mossen' AND vervaagd=0 AND NOT ((schaal_telmethode='BLWG-aantalsklassen' AND aantal_raw IN ('1.0','2.0 - 5.0','minimaal 6.0')) OR (schaal_telmethode IN ('aanwezig','voorkomen') AND aantal_raw='minimaal 1.0'))),
-  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen_aantalsklasse' AND (bron_schaal<>'BLWG-aantalsklassen' OR aantalsklasse_raw IS NULL OR aantalsrang NOT IN (1,2,3) OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_presentie' AND (bron_schaal NOT IN ('aanwezig','voorkomen') OR aantalsklasse_raw<>'minimaal 1.0' OR aantalsrang IS NOT NULL OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_abundantieconflict' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang IS NOT NULL OR bronrecordaantal<2)) OR (waarnemingsstatus='echte_nul' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang<>0 OR bronrecordaantal<>0)))),
-  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,(SELECT COUNT(*) FROM Meijendel.ndff_mos_doelbereik d WHERE d.reconstructieversie={version}) doelomvang FROM Meijendel.ndff_mos_inventarisatie i LEFT JOIN Meijendel.ndff_mos_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} GROUP BY i.inventarisatie_sleutel HAVING matrixregels<>doelomvang) q),
-  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.ndff_mos_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.ndff_mos_recordselectie WHERE reconstructieversie={version})),
-  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.ndff_mos_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
-  'invalid_inspanningstatus',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={version} AND inspanningstatus<>'protocolconforme_minimale_inspanning_aangenomen'),
-  'legacy_versions',(SELECT COUNT(*) FROM Meijendel.ndff_mos_inventarisatie WHERE reconstructieversie={sql_text(MOS_LEGACY_RULE_VERSION)}),
+  'invalid_matrix_rows',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND ((waarnemingsstatus='waargenomen_aantalsklasse' AND (bron_schaal<>'BLWG-aantalsklassen' OR aantalsklasse_raw IS NULL OR aantalsrang NOT IN (1,2,3) OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_presentie' AND (bron_schaal NOT IN ('aanwezig','voorkomen') OR aantalsklasse_raw<>'minimaal 1.0' OR aantalsrang IS NOT NULL OR bronrecordaantal=0)) OR (waarnemingsstatus='waargenomen_abundantieconflict' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang IS NOT NULL OR bronrecordaantal<2)) OR (waarnemingsstatus='echte_nul' AND (bron_schaal IS NOT NULL OR aantalsklasse_raw IS NOT NULL OR aantalsrang<>0 OR bronrecordaantal<>0)))),
+  'matrix_size_mismatch',(SELECT COUNT(*) FROM (SELECT i.inventarisatie_sleutel,COUNT(t.wetenschappelijke_naam) matrixregels,i.geregistreerde_taxa doelomvang FROM Meijendel.mossen_inventarisatie i LEFT JOIN Meijendel.mossen_inventarisatie_taxon t ON t.reconstructieversie=i.reconstructieversie AND t.inventarisatie_sleutel=i.inventarisatie_sleutel WHERE i.reconstructieversie={version} GROUP BY i.inventarisatie_sleutel,i.geregistreerde_taxa HAVING matrixregels<>doelomvang) q),
+  'positive_source_mismatch',ABS((SELECT COALESCE(SUM(bronrecordaantal),0) FROM Meijendel.mossen_inventarisatie_taxon WHERE reconstructieversie={version} AND waarnemingsstatus<>'echte_nul')-(SELECT COUNT(*) FROM Meijendel.mossen_recordselectie WHERE reconstructieversie={version})),
+  'unlinked_source_records',(SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming o LEFT JOIN Meijendel.mossen_recordselectie s ON s.reconstructieversie={version} AND s.waarneming_id=o.waarneming_id WHERE o.protocol LIKE '02.204%' AND o.soortgroep_raw='Mossen' AND o.vervaagd=0 AND s.waarneming_id IS NULL),
+  'invalid_inspanningstatus',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={version} AND inspanningstatus<>'protocolconforme_minimale_inspanning_aangenomen'),
+  'legacy_versions',(SELECT COUNT(*) FROM Meijendel.mossen_inventarisatie WHERE reconstructieversie={sql_text(MOS_LEGACY_RULE_VERSION)}),
   'secure_derived_tables',(SELECT COUNT(*) FROM information_schema.tables WHERE LOWER(table_schema)='meijendel_ndff_secure' AND table_name IN ({secure_tables}))
 );
 """

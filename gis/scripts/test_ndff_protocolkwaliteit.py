@@ -303,16 +303,16 @@ def main() -> int:
         "meijendel.hns_doelbereik",
         "meijendel.hns_inventarisatie_taxon",
         "meijendel.hns_hok_jaar_taxon",
-        "meijendel.ndff_korstmos_meetlocatie",
-        "meijendel.ndff_korstmos_bezoek",
-        "meijendel.ndff_korstmos_recordselectie",
-        "meijendel.ndff_korstmos_doelbereik",
-        "meijendel.ndff_korstmos_bezoek_taxon",
-        "meijendel.ndff_mos_inventarisatie",
-        "meijendel.ndff_mos_datumcluster",
-        "meijendel.ndff_mos_recordselectie",
-        "meijendel.ndff_mos_doelbereik",
-        "meijendel.ndff_mos_inventarisatie_taxon",
+        "meijendel.korstmossen_meetlocatie",
+        "meijendel.korstmossen_bezoek",
+        "meijendel.korstmossen_recordselectie",
+        "meijendel.korstmossen_doelbereik",
+        "meijendel.korstmossen_bezoek_taxon",
+        "meijendel.mossen_inventarisatie",
+        "meijendel.mossen_datumcluster",
+        "meijendel.mossen_recordselectie",
+        "meijendel.mossen_doelbereik",
+        "meijendel.mossen_inventarisatie_taxon",
         "meijendel.florbase_inventarisatie",
         "meijendel.florbase_recordselectie",
         "meijendel.florbase_doelbereik",
@@ -387,8 +387,8 @@ def main() -> int:
     assert "meijendel_ndff_secure.ndff_zeereep_" not in folded
     assert "meijendel_ndff_secure.ndff_bospaddenstoel_" not in folded
     assert "meijendel_ndff_secure.hns_" not in folded
-    assert "meijendel_ndff_secure.ndff_korstmos_" not in folded
-    assert "meijendel_ndff_secure.ndff_mos_" not in folded
+    assert "meijendel_ndff_secure.korstmossen_" not in folded
+    assert "meijendel_ndff_secure.mossen_" not in folded
     assert "meijendel_ndff_secure.florbase_" not in folded
     assert "meijendel_ndff_secure.ndff_habslak_" not in folded
     assert "meijendel_ndff_secure.ndff_braakbal_" not in folded
@@ -1068,10 +1068,10 @@ def main() -> int:
     assert module.HNS_TABLE_PREFIX == "Meijendel.hns"
     assert module.KORSTMOS_RULE_VERSION == "ndff-korstmos-v2"
     assert module.KORSTMOS_LEGACY_RULE_VERSION == "ndff-korstmos-v1"
-    assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.ndff_korstmos"
+    assert module.KORSTMOS_TABLE_PREFIX == "Meijendel.korstmossen"
     assert module.MOS_RULE_VERSION == "ndff-mos-v2"
     assert module.MOS_LEGACY_RULE_VERSION == "ndff-mos-v1"
-    assert module.MOS_TABLE_PREFIX == "Meijendel.ndff_mos"
+    assert module.MOS_TABLE_PREFIX == "Meijendel.mossen"
     assert "waargenomen_twee_tellingen_zelfde_klasse" in folded
     assert "tweede_telling_niet_aantoonbaar_in_export" in folded
     assert "protocolconforme_minimale_inspanning_aangenomen" in folded
@@ -1099,6 +1099,8 @@ def main() -> int:
         visits={"v1", "v2"},
         visits_met_twee_tellingen={"v1"},
         target_taxa={"Taxon a", "Taxon b", "Taxon c"},
+        repeated_visits={"v1"},
+        repeated_target_taxa={"Taxon a", "Taxon b", "Taxon c"},
         records=[
             {"visit": "v1", "taxon": "Taxon a", "abundance": "0.01 - 0.1"},
             {"visit": "v1", "taxon": "Taxon b", "abundance": "0.01 - 0.1"},
@@ -1117,8 +1119,7 @@ def main() -> int:
     assert korstmos_by_key[("v1", "Taxon c")]["bedekkingsrang"] == 2
     assert korstmos_by_key[("v2", "Taxon a")]["status"] == "waargenomen_enkele_exporttelling"
     assert korstmos_by_key[("v2", "Taxon a")]["bedekkingsrang"] == 2
-    assert korstmos_by_key[("v2", "Taxon b")]["status"] == "echte_nul"
-    assert korstmos_by_key[("v2", "Taxon b")]["bedekkingsrang"] == 0
+    assert ("v2", "Taxon b") not in korstmos_by_key
 
     mos_records = module.classify_mos_records([
         {"observation_id": 1, "inventory": "i1", "taxon": "Taxon a",
@@ -1160,8 +1161,7 @@ def main() -> int:
     assert mos_by_key[("i1", "Taxon b")]["aantalsrang"] is None
     assert mos_by_key[("i2", "Taxon a")]["status"] == "waargenomen_presentie"
     assert mos_by_key[("i2", "Taxon a")]["aantalsrang"] is None
-    assert mos_by_key[("i2", "Taxon b")]["status"] == "echte_nul"
-    assert mos_by_key[("i2", "Taxon b")]["aantalsrang"] == 0
+    assert ("i2", "Taxon b") not in mos_by_key
 
     assert module.classify_florbase_inventory(49) == "fragment"
     assert module.classify_florbase_inventory(50) == "volledige_lijst_aannemelijk"

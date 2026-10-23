@@ -1495,7 +1495,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.hns_hok_jaar_taxon (
 -- Alleen onvervaagde openbare records worden afgeleid. De landelijke methode
 -- werkt met complete soortenlijsten per vast proefvlak; daarom mag een niet
 -- gemeld taxon binnen een bevestigd bezoek als echte nul worden vastgelegd.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_meetlocatie (
+CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_meetlocatie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   meetlocatie_id SMALLINT UNSIGNED NOT NULL,
   geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -1513,14 +1513,14 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_meetlocatie (
   kwaliteitsnotitie VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, meetlocatie_id),
-  UNIQUE KEY uq_ndff_korstmos_geometrie (reconstructieversie, geometrie_sha256),
+  UNIQUE KEY uq_korstmossen_geometrie (reconstructieversie, geometrie_sha256),
   CHECK (
     (ruimtelijke_klasse='eenduidig_plot' AND sovon_plot_id IS NOT NULL)
     OR (ruimtelijke_klasse='meerdere_plots' AND sovon_plot_id IS NULL)
   )
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek (
+CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_bezoek (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   meetlocatie_id SMALLINT UNSIGNED NOT NULL,
@@ -1528,7 +1528,8 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek (
   jaar SMALLINT UNSIGNED NOT NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
-  lijststatus ENUM('volledige_soortenlijst_protocolconform') NOT NULL,
+  lijststatus ENUM('volledige_soortenlijst_protocolconform',
+    'eenmalig_alleen_aanwezigheid') NOT NULL,
   registratiestatus ENUM(
     'geen_dubbelen','parallelle_registraties','abundantieconflict',
     'twee_onafhankelijke_tellingen_aantoonbaar',
@@ -1537,16 +1538,16 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek (
   kwaliteitsnotitie VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_sleutel),
-  UNIQUE KEY uq_ndff_korstmos_locatie_datum
+  UNIQUE KEY uq_korstmossen_locatie_datum
     (reconstructieversie, meetlocatie_id, bezoekdatum),
-  CONSTRAINT fk_ndff_korstmos_bezoek_meetlocatie FOREIGN KEY
+  CONSTRAINT fk_korstmossen_bezoek_meetlocatie FOREIGN KEY
     (reconstructieversie, meetlocatie_id)
-    REFERENCES Meijendel.ndff_korstmos_meetlocatie
+    REFERENCES Meijendel.korstmossen_meetlocatie
       (reconstructieversie, meetlocatie_id),
   CHECK (jaar = YEAR(bezoekdatum))
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_recordselectie (
+CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_recordselectie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   canonieke_waarneming_id BIGINT UNSIGNED NULL,
@@ -1558,19 +1559,19 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_recordselectie (
   selectiereden VARCHAR(1000) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
-  KEY ix_ndff_korstmos_selectie_canoniek
+  KEY ix_korstmossen_selectie_canoniek
     (reconstructieversie, canonieke_waarneming_id),
-  CONSTRAINT fk_ndff_korstmos_selectie_waarneming FOREIGN KEY
+  CONSTRAINT fk_korstmossen_selectie_waarneming FOREIGN KEY
     (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_korstmos_selectie_canoniek FOREIGN KEY
+  CONSTRAINT fk_korstmossen_selectie_canoniek FOREIGN KEY
     (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_korstmos_selectie_meetlocatie FOREIGN KEY
+  CONSTRAINT fk_korstmossen_selectie_meetlocatie FOREIGN KEY
     (reconstructieversie, meetlocatie_id)
-    REFERENCES Meijendel.ndff_korstmos_meetlocatie
+    REFERENCES Meijendel.korstmossen_meetlocatie
       (reconstructieversie, meetlocatie_id),
-  CONSTRAINT fk_ndff_korstmos_selectie_bezoek FOREIGN KEY
+  CONSTRAINT fk_korstmossen_selectie_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
-    REFERENCES Meijendel.ndff_korstmos_bezoek
+    REFERENCES Meijendel.korstmossen_bezoek
       (reconstructieversie, bezoek_sleutel),
   CHECK (
     (selectiestatus IN ('opgenomen','dubbele_registratie_onderdrukt')
@@ -1580,10 +1581,11 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_recordselectie (
   )
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_doelbereik (
+CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_doelbereik (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
-  afleidingsregel ENUM('openbaar_taxon_waargenomen_op_02_202_bezoek') NOT NULL,
+  afleidingsregel ENUM('vast_proefvlak_nulbereik',
+    'eenmalige_aanwezigheid') NOT NULL,
   eerste_jaar SMALLINT UNSIGNED NOT NULL,
   laatste_jaar SMALLINT UNSIGNED NOT NULL,
   positieve_bezoekaantal SMALLINT UNSIGNED NOT NULL,
@@ -1592,7 +1594,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_doelbereik (
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.korstmossen_bezoek_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   bezoek_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
@@ -1606,14 +1608,14 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
   bedekkingsklasse_raw VARCHAR(64) NULL,
   bedekkingsrang TINYINT UNSIGNED NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
-  nulregel ENUM('niet_gemeld_op_volledige_02_202_soortenlijst') NOT NULL,
+  nulregel ENUM('geen_nul','ontbreekt_op_vast_plot_lijst') NOT NULL,
   kwaliteitsnotitie VARCHAR(1200) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, bezoek_sleutel, wetenschappelijke_naam),
-  KEY ix_ndff_korstmos_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
-  CONSTRAINT fk_ndff_korstmos_taxon_bezoek FOREIGN KEY
+  KEY ix_korstmossen_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_korstmossen_taxon_bezoek FOREIGN KEY
     (reconstructieversie, bezoek_sleutel)
-    REFERENCES Meijendel.ndff_korstmos_bezoek
+    REFERENCES Meijendel.korstmossen_bezoek
       (reconstructieversie, bezoek_sleutel),
   CHECK (
     (waarnemingsstatus='waargenomen' AND bedekkingsklasse_raw IS NOT NULL
@@ -1637,14 +1639,14 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_korstmos_bezoek_taxon (
   )
 ) ENGINE=InnoDB;
 
-ALTER TABLE Meijendel.ndff_korstmos_bezoek
+ALTER TABLE Meijendel.korstmossen_bezoek
   MODIFY registratiestatus ENUM(
     'geen_dubbelen','parallelle_registraties','abundantieconflict',
     'twee_onafhankelijke_tellingen_aantoonbaar',
     'tweede_telling_niet_aantoonbaar_in_export'
   ) NOT NULL;
 
-ALTER TABLE Meijendel.ndff_korstmos_bezoek_taxon
+ALTER TABLE Meijendel.korstmossen_bezoek_taxon
   MODIFY waarnemingsstatus ENUM(
     'waargenomen','waargenomen_abundantieconflict',
     'waargenomen_enkele_exporttelling',
@@ -1652,8 +1654,8 @@ ALTER TABLE Meijendel.ndff_korstmos_bezoek_taxon
     'waargenomen_twee_tellingen_zelfde_klasse',
     'waargenomen_twee_tellingen_verschillende_klasse','echte_nul'
   ) NOT NULL,
-  DROP CHECK ndff_korstmos_bezoek_taxon_chk_1,
-  ADD CONSTRAINT ndff_korstmos_bezoek_taxon_chk_1 CHECK (
+  DROP CHECK korstmossen_bezoek_taxon_chk_1,
+  ADD CONSTRAINT korstmossen_bezoek_taxon_chk_1 CHECK (
     (waarnemingsstatus='waargenomen' AND bedekkingsklasse_raw IS NOT NULL
       AND bedekkingsrang IN (1,2) AND bronrecordaantal>0)
     OR (waarnemingsstatus='waargenomen_abundantieconflict'
@@ -1674,11 +1676,11 @@ ALTER TABLE Meijendel.ndff_korstmos_bezoek_taxon
       AND bedekkingsrang=0 AND bronrecordaantal=0)
   );
 
--- Reconstructie van 02.204 Meetnet mossen (NEM). De native meeteenheid is
--- een volledig geïnventariseerd RD-kilometerhok. Datumclusters binnen hetzelfde
--- hok zijn onderdelen van één inventarisatie en worden niet als onafhankelijke
--- herhaaltellingen behandeld.
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie (
+-- Reconstructie van 02.204 Meetnet mossen (NEM). De ruimtelijke meeteenheid
+-- is een RD-kilometerhok. Oorspronkelijke kopgegevens en lijstvolledigheid
+-- ontbreken; alleen positieve resultaten, geen afgeleide nullen.
+-- Datumclusters binnen hetzelfde hok zijn geen bewezen herhaaltellingen.
+CREATE TABLE IF NOT EXISTS Meijendel.mossen_inventarisatie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   protocol_sleutel VARCHAR(16) CHARACTER SET ascii NOT NULL DEFAULT '02.204',
@@ -1691,7 +1693,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie (
   datumclusteraantal SMALLINT UNSIGNED NOT NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
   geregistreerde_taxa SMALLINT UNSIGNED NOT NULL,
-  lijststatus ENUM('volledige_soortenlijst_protocolconform') NOT NULL,
+  lijststatus ENUM('kopgegevens_ontbreken_alleen_aanwezigheid') NOT NULL,
   inspanningstatus ENUM(
     'protocolconform_bezoekduur_niet_meegeleverd',
     'protocolconforme_minimale_inspanning_aangenomen'
@@ -1700,18 +1702,18 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie (
   kwaliteitsnotitie VARCHAR(1400) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, inventarisatie_sleutel),
-  UNIQUE KEY uq_ndff_mos_hok (reconstructieversie, hoknummer),
+  UNIQUE KEY uq_mossen_hok (reconstructieversie, hoknummer),
   CHECK (einddatum >= begindatum),
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
-ALTER TABLE Meijendel.ndff_mos_inventarisatie
+ALTER TABLE Meijendel.mossen_inventarisatie
   MODIFY inspanningstatus ENUM(
     'protocolconform_bezoekduur_niet_meegeleverd',
     'protocolconforme_minimale_inspanning_aangenomen'
   ) NOT NULL;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_datumcluster (
+CREATE TABLE IF NOT EXISTS Meijendel.mossen_datumcluster (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   datumcluster_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
@@ -1725,16 +1727,16 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_datumcluster (
   kwaliteitsnotitie VARCHAR(1000) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, datumcluster_sleutel),
-  UNIQUE KEY uq_ndff_mos_inventarisatie_periode
+  UNIQUE KEY uq_mossen_inventarisatie_periode
     (reconstructieversie, inventarisatie_sleutel, periode_start, periode_stop),
-  CONSTRAINT fk_ndff_mos_datumcluster_inventarisatie FOREIGN KEY
+  CONSTRAINT fk_mossen_datumcluster_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_mos_inventarisatie
+    REFERENCES Meijendel.mossen_inventarisatie
       (reconstructieversie, inventarisatie_sleutel),
   CHECK (periode_stop > periode_start)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_recordselectie (
+CREATE TABLE IF NOT EXISTS Meijendel.mossen_recordselectie (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   waarneming_id BIGINT UNSIGNED NOT NULL,
   canonieke_waarneming_id BIGINT UNSIGNED NULL,
@@ -1746,19 +1748,19 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_recordselectie (
   selectiereden VARCHAR(1000) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, waarneming_id),
-  KEY ix_ndff_mos_selectie_canoniek
+  KEY ix_mossen_selectie_canoniek
     (reconstructieversie, canonieke_waarneming_id),
-  CONSTRAINT fk_ndff_mos_selectie_waarneming FOREIGN KEY
+  CONSTRAINT fk_mossen_selectie_waarneming FOREIGN KEY
     (waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_mos_selectie_canoniek FOREIGN KEY
+  CONSTRAINT fk_mossen_selectie_canoniek FOREIGN KEY
     (canonieke_waarneming_id) REFERENCES Meijendel.ndff_open_waarneming (waarneming_id),
-  CONSTRAINT fk_ndff_mos_selectie_inventarisatie FOREIGN KEY
+  CONSTRAINT fk_mossen_selectie_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_mos_inventarisatie
+    REFERENCES Meijendel.mossen_inventarisatie
       (reconstructieversie, inventarisatie_sleutel),
-  CONSTRAINT fk_ndff_mos_selectie_datumcluster FOREIGN KEY
+  CONSTRAINT fk_mossen_selectie_datumcluster FOREIGN KEY
     (reconstructieversie, datumcluster_sleutel)
-    REFERENCES Meijendel.ndff_mos_datumcluster
+    REFERENCES Meijendel.mossen_datumcluster
       (reconstructieversie, datumcluster_sleutel),
   CHECK (
     (selectiestatus IN ('opgenomen','dubbele_registratie_onderdrukt')
@@ -1768,7 +1770,7 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_recordselectie (
   )
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_doelbereik (
+CREATE TABLE IF NOT EXISTS Meijendel.mossen_doelbereik (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   afleidingsregel ENUM('openbaar_taxon_waargenomen_in_02_204_inventarisatie') NOT NULL,
@@ -1780,26 +1782,26 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_doelbereik (
   CHECK (laatste_jaar >= eerste_jaar)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie_taxon (
+CREATE TABLE IF NOT EXISTS Meijendel.mossen_inventarisatie_taxon (
   reconstructieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   inventarisatie_sleutel CHAR(64) CHARACTER SET ascii NOT NULL,
   wetenschappelijke_naam VARCHAR(255) NOT NULL,
   waarnemingsstatus ENUM(
     'waargenomen_aantalsklasse','waargenomen_presentie',
-    'waargenomen_abundantieconflict','echte_nul'
+    'waargenomen_abundantieconflict'
   ) NOT NULL,
   bron_schaal VARCHAR(64) NULL,
   aantalsklasse_raw VARCHAR(64) NULL,
   aantalsrang TINYINT UNSIGNED NULL,
   bronrecordaantal SMALLINT UNSIGNED NOT NULL,
-  nulregel ENUM('niet_gemeld_op_volledige_02_204_soortenlijst') NOT NULL,
+  nulregel ENUM('geen_nul') NOT NULL,
   kwaliteitsnotitie VARCHAR(1400) NOT NULL,
   aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
   PRIMARY KEY (reconstructieversie, inventarisatie_sleutel, wetenschappelijke_naam),
-  KEY ix_ndff_mos_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
-  CONSTRAINT fk_ndff_mos_taxon_inventarisatie FOREIGN KEY
+  KEY ix_mossen_taxon_status (wetenschappelijke_naam, waarnemingsstatus),
+  CONSTRAINT fk_mossen_taxon_inventarisatie FOREIGN KEY
     (reconstructieversie, inventarisatie_sleutel)
-    REFERENCES Meijendel.ndff_mos_inventarisatie
+    REFERENCES Meijendel.mossen_inventarisatie
       (reconstructieversie, inventarisatie_sleutel),
   CHECK (
     (waarnemingsstatus='waargenomen_aantalsklasse'
@@ -1811,8 +1813,6 @@ CREATE TABLE IF NOT EXISTS Meijendel.ndff_mos_inventarisatie_taxon (
     OR (waarnemingsstatus='waargenomen_abundantieconflict'
       AND bron_schaal IS NULL AND aantalsklasse_raw IS NULL
       AND aantalsrang IS NULL AND bronrecordaantal>1)
-    OR (waarnemingsstatus='echte_nul' AND bron_schaal IS NULL
-      AND aantalsklasse_raw IS NULL AND aantalsrang=0 AND bronrecordaantal=0)
   )
 ) ENGINE=InnoDB;
 

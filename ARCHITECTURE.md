@@ -291,21 +291,23 @@ bevatten, maar de export onderscheidt die lijsten niet. De huidige
 en is in `ndff-hns-v2` vervangen door een neutrale kalenderdagstatus. V2
 gebruikt de begindatum als teldatum; v1 blijft als auditspoor bewaard.
 Bron-aantallen worden niet als abundantie gebruikt.
-`ndff_korstmos_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v2` in
+`korstmossen_*` reconstrueert protocol `02.202` onder `ndff-korstmos-v2` in
 `Meijendel`: openbare proefvlakken, bezoeken, recordselectie, lokaal doelbereik
-en een bezoek-soortmatrix. Complete protocolmatige soortenlijsten ondersteunen
-echte nullen. Parallelle positieve regels blijven als afzonderlijke
-waarnemertellingen behouden; per bezoek staat expliciet of twee onafhankelijke
-tellingen in de export aantoonbaar zijn. Vervaagde records worden niet naar
-deze openbare afgeleide laag gekopieerd.
-`ndff_mos_*` reconstrueert protocol `02.204` onder `ndff-mos-v2` in
+en een bezoek-soortmatrix. De primaire BLWG-levering bevestigt vier vaste
+plots met zes meetjaren en acht eenmalige plots. Alleen voor de 24 openbare
+taxa van de vaste plotreeks bevat de matrix 356 afgeleide nullen; de eenmalige
+plots blijven aanwezigheid-only. Parallelle positieve regels blijven
+afzonderlijk. De oorspronkelijke `kopid` is niet voor elke parallelle regel
+eenduidig op een NDFF-identiteit terug te leggen. De twintig vervaagde
+*Usnea articulata*-regels worden niet naar deze openbare laag gekopieerd.
+`mossen_*` reconstrueert protocol `02.204` onder `ndff-mos-v2` in
 `Meijendel`: zeven kilometerhokinventarisaties, 21 onderliggende tijdclusters,
-recordselectie, lokaal doelbereik en een inventarisatie-soortmatrix. Echte
-nullen gelden uitsluitend voor de volledige hoklijst, nooit voor ieder
-datumcluster of geraakt SOVON-plot. De laag bewaart jaarprecisie, een
+recordselectie, lokaal doelbereik en een inventarisatie-soortmatrix. Omdat
+oorspronkelijke kopgegevens en lijstvolledigheid ontbreken, bevat de matrix
+uitsluitend 354 positieve combinaties en geen nullen. De laag bewaart jaarprecisie, een
 jaargrensoverschrijdende inventarisatie, presentiewaarden zonder aantalsklasse,
-dubbelen en abundantieconflicten afzonderlijk. De protocolcode geldt als bewijs
-voor de voorgeschreven minimale inspanning en dekking van relevante biotopen.
+dubbelen en abundantieconflicten afzonderlijk. De protocolcode beschrijft de
+voorgeschreven methode, maar bewijst niet de volledigheid van deze export.
 `florbase_*` reconstrueert protocol `12.001` onder `ndff-florbase-v1` in
 `Meijendel`: kilometerhok-jaarinventarisaties, volledige recordselectie, lokaal
 doelbereik en een inventarisatie-taxonmatrix. Alleen hok-jaren met minimaal 50

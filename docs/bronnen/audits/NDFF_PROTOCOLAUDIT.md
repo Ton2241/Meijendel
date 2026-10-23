@@ -780,24 +780,31 @@ en [CBS Meetprogramma's 2025](https://longreads.cbs.nl/meetprogrammas-flora-en-f
 ### Korstmossen op steen, heiden en stuifzanden (`02.202`)
 
 Regelversie `ndff-korstmos-v2` reconstrueert 364 onvervaagde openbare
-bronregels tot twaalf proefvlakken en 32 bezoeken in 2000-2025. Vier vaste
-proefvlakken zijn in zes meetjaren herhaald; acht proefvlakken hebben één
-bevestigd bezoek. Het openbare lokale doelbereik omvat dertig taxa. Omdat het
-protocol per bezoek een complete soortenlijst voorschrijft, bevat de
-bezoek-soortmatrix 287 positieve combinaties en 673 echte nullen.
+bronregels tot twaalf proefvlakken en 32 plotbezoeken in 2000–2025. Vier vaste
+proefvlakken zijn in zes meetjaren herhaald; acht hebben één bezoek. De
+primaire BLWG-levering bevestigt 25 taxa op de vier vaste plots, waarvan
+*Usnea articulata* niet openbaar is. Voor de overige 24 vaste-plot-taxa
+bevat de openbare matrix 287 positieve combinaties en 356 afgeleide nullen.
+Zes andere taxa komen alleen op eenmalige locaties voor en worden niet als
+nul op vaste plots gezet. De acht eenmalige plotbezoeken blijven uitsluitend
+positieve aanwezigheid.
 
 De officiële methode schrijft per locatie twee onafhankelijke tellingen voor.
 De bron bevat 67 bezoek-taxoncombinaties met twee gelijke klassen en tien met
 twee verschillende klassen. Dit zijn geen technische dubbelen of fouten, maar
 afzonderlijke waarnemertellingen. Bij twaalf bezoeken is de dubbele telling in
-de export aantoonbaar; bij twintig bezoeken is zij niet aantoonbaar. Dat laatste
-bewijst niet dat slechts één teller aanwezig was. De FFV-levering bevat slechts
-twee ordinale klassen,
+de NDFF-export aantoonbaar; bij twintig bezoeken niet. De primaire BLWG-bron
+bevat 44 waarnemersformulieren (`kopid`): op de vaste plots per plotjaar één,
+behalve in 2015 twee per plot; op de acht eenmalige locaties telkens twee.
+De FFV-levering bevat slechts twee ordinale klassen,
 terwijl de oorspronkelijke BLWG-methode zes klassen onderscheidt. Gebruik de
 matrix daarom voor presentie/occupancy en de grove rang alleen als ordinale
 indicator, niet als exacte bedekking. Voor waarnemerspecifieke detectieanalyse
-zijn alsnog waarnemer- of lijst-ID's nodig; de gecombineerde plotanalyse wordt
-daardoor niet geblokkeerd. Twintig vervaagde Saucijs-baardmosrecords
+zijn de BLWG-formulier-ID's nu beschikbaar, maar bij 154 openbare regels met
+dezelfde plot-datum-soortcombinatie kan de individuele NDFF-identiteit niet
+zonder willekeur aan één formulier worden gekoppeld. De gecombineerde
+plotanalyse wordt daardoor niet geblokkeerd. Twintig vervaagde
+*Usnea articulata*-records
 worden niet naar openbare afgeleide tabellen gekopieerd en leveren daar ook geen
 nullen. Controleer de laag vóór gebruik met `--audit-korstmossen`.
 
@@ -807,46 +814,51 @@ en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/
 De beoordeelde BLWG-documenten staan in Zotero onder `Meetnetten - BLWG`
 (`8E3TCBHW`).
 
-**Primaire BLWG-levering, 8 oktober 2026 — nog niet geïmporteerd.** Het
-ontvangen Excelbestand bevat zes plots, 32 oorspronkelijke formulieren
-(`kopid`) en 292 positieve soortregels. Vier vaste plots hebben
-zes meetronden in de veldjaren 2000, 2006, 2011, 2015, 2020 en 2025;
-twee eenmalige plots hebben alleen formulieren uit 2021. De 32 bronformulieren
-zijn niet identiek aan de 32 hierboven uit NDFF afgeleide plot-datumbezoeken:
-de bron scheidt onafhankelijke waarnemers op hetzelfde plot en dezelfde datum.
-Van de 292 bronregels matchen 269 op plot, velddatum en soortnaam met
-onvervaagde NDFF-regels; twintig *Usnea articulata*-regels zijn in de openbare
-NDFF-levering vervaagd en drie zijn taxonomische naamsverschillen
-(*Bacidia/Bacidina caligans* tweemaal; *Leptogium/Scytinium pulvinatum*
-eenmaal). De oorspronkelijke `Kwantiteit`-codes 1, 2, 3, 5 en 6 bevatten
-meer detail dan de twee openbare NDFF-klassen. Analyseer volgens de
-velddatum, niet volgens het vaak een jaar eerdere rapportagejaar.
+**BLWG-leveringen van 8 en 23 oktober 2026 — gecontroleerd, nog niet als
+primaire bron geïmporteerd.** De nalevering bevat twaalf plots, 44 originele
+formulieren (`kopid`) en 384 positieve soortregels. Zes op 23 oktober
+toegevoegde eenmalige locaties verklaren precies de 92 regels die in de eerste
+levering ontbraken. De vier vaste plots hebben WKT-begrenzingen; de acht
+eenmalige locaties hebben RD-punten en afmetingen. De oorspronkelijke
+`Kwantiteit`-codes 1, 2, 3, 5 en 6 bevatten meer detail dan de twee
+NDFF-klassen. Gebruik de velddatum, niet het soms eerdere rapportagejaar.
 
-**BLWG-nalevering, 23 oktober 2026 — nog niet geïmporteerd.** Dezelfde
-Excelstructuur omvat nu twaalf plots, 44 oorspronkelijke formulieren
-(`kopid`) en 384 positieve soortregels uit 2000–2025. De zes toegevoegde
-eenmalige locaties verklaren precies de eerder ontbrekende 92 regels: twee
-locaties op 15 februari 2015 (36 regels) en vier op 31 maart 2018
-(56 regels). Per locatie zijn twee onafhankelijke waarnemersformulieren
-aanwezig. De vier vaste plots hebben een WKT-begrenzing; voor de acht
-eenmalige locaties geeft BLWG alleen RD-punten en afmetingen. De 92
-nageleverde regels zijn nog niet regel voor regel aan NDFF-identiteiten
-gekoppeld. Er is geen expliciete volledigheidsstatus, nulsoortregel,
-methodewijzigingshistorie of NDFF-sleutel meegeleverd. Beoordeel dat bij
-integratie en wijzig tot die audit geen NDFF-bronregels of afgeleide matrix;
-bescherm de twintig publiek vervaagde waarnemingen en hun plotkoppeling.
+De reproduceerbare audit `gis/scripts/audit_blwg_korstmossen.py` vergelijkt
+de bron per plot, velddatum en taxon, met omzetting van drie aantoonbare
+naamparen: *Bacidia/Bacidina caligans*, *Leptogium/Scytinium gelatinosum* en
+*Leptogium/Scytinium pulvinatum*. De 364 niet-gevoelige bronregels komen als
+multiverzameling exact overeen met 364 openbare NDFF-regels: nul ontbrekend,
+nul extra. De twintig gevoelige *Usnea articulata*-regels komen in aantal per
+plotjaar overeen met de beveiligde levering. Bij 154 openbare regels is de
+sleutel plot-datum-soort niet uniek; een individuele koppeling van `kopid` aan
+NDFF-identiteit is dus niet bewezen.
+
+**Opnameplan voor de levende database.** Bewaar de oorspronkelijke v2-Excel
+onveranderd in de overeengekomen lokale bronopslag zodra het definitieve pad
+is bevestigd; registreer hash, leveringsdatum en bronhouder. Neem de primaire
+BLWG-plots, formulieren en positieve resultaten apart op in `Meijendel`, met
+oorspronkelijke `kopid`, velddatum, waarnemer, soortnaam en hoeveelheidscode.
+Koppel de bron-soortnamen via `taxa_bronkoppeling` aan `taxa`, zonder de
+oorspronkelijke naam te overschrijven. Leg voor 210 unieke openbare
+plot-datum-soortregels een directe NDFF-relatie vast en voor de 154 ambigue
+regels slechts een groepsmatch; forceer geen één-op-één-ID. Houd de twintig
+gevoelige exacte locaties onder bestaande beveiligingsregels, buiten openbare
+plots en views. Bouw een analysevoorbereiding met nullen uitsluitend voor de
+vier vaste plots en de 24 openbare vaste-plot-taxa; acht eenmalige locaties
+blijven aanwezigheid-only. Verifieer opnieuw alle bron- en matrixaantallen.
+De bestaande NDFF-bronregels blijven ongewijzigd, dus geen dubbeltelling.
 
 ### Meetnet mossen (`02.204`)
 
 Regelversie `ndff-mos-v2` reconstrueert 376 onvervaagde openbare bronregels
-tot zeven volledige kilometerhokinventarisaties. De 21 bronperioden daarbinnen
+tot zeven vermoedelijke kilometerhokinventarisaties. De 21 bronperioden daarbinnen
 zijn negentien dagclusters en twee jaarintervallen; zij worden niet als 21
 onafhankelijke bezoeken behandeld. Eén inventarisatie overspant de jaargrens
 2010-2011. Geen kilometerhok is in de lokale levering in een latere meetronde
 herhaald, zodat deze selectie zelfstandig geen lokale tijdtrend ondersteunt.
 
-Het uit de openbare records aantoonbare lokale doelbereik omvat 111 taxa. De
-inventarisatie-soortmatrix bevat 354 positieve combinaties en 423 echte nullen.
+Het uit de openbare records herkenbare lokale soortenbereik omvat 111 taxa. De
+inventarisatie-soortmatrix bevat 354 positieve combinaties en geen nullen.
 Van de positieve combinaties hebben er 312 een BLWG-talrijkheidsklasse 1-3 en
 41 alleen een presentiewaarde. Eén combinatie heeft conflicterende
 talrijkheidsklassen. Daarnaast blijven 21 gelijke parallelle bronregels in het
@@ -854,10 +866,12 @@ auditspoor staan, maar zij tellen niet als extra resultaat.
 
 Het protocol vereist een zo volledig mogelijke soortenlijst per geselecteerd
 kilometerhok, minimaal acht mensuren, alle relevante biotopen en een
-talrijkheidsklasse per soort. De expliciete protocolcode geldt als bewijs voor
-die minimale inspanning en habitatdekking; een precieze bezoekduur of waarnemer
-hoeft niet opnieuw te worden opgevraagd om de inventarisatie als protocolconform
-te behandelen. De FFV-export bevat geen oorspronkelijk BLWG-lijst-ID. Een
+talrijkheidsklasse per soort. De protocolcode beschrijft deze voorschriften,
+maar bewijst niet dat de 376 ontvangen NDFF-regels per bezoek een complete
+soortenlijst vormen. BLWG meldde op 8 oktober 2026 dat, voor zover bekend,
+geen oorspronkelijke kopgegevens beschikbaar zijn. Daarom worden ontbrekende
+soorten niet als echte nul afgeleid. De FFV-export bevat geen oorspronkelijk
+BLWG-lijst-ID. Een
 kilometerhok wordt niet als aanwezigheid of nul in ieder geraakt SOVON-plot
 geïnterpreteerd. Eén vervaagd record wordt niet naar openbare afgeleide tabellen
 gekopieerd. Controleer de laag vóór gebruik met `--audit-mossen`.

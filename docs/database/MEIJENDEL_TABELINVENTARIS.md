@@ -87,7 +87,7 @@ Het hernoemen van een al afgebakende meetfamilie is het eenvoudigste deel. Gebru
 | `ndff_amfibie_*`, `ndff_reptiel_*` | `amfibieen_*`, `reptielen_*` |
 | `ndff_vleermuis_*` | `vleermuizen_*` |
 | `ndff_braakbal_*`, `ndff_konijn_*`, `ndff_otter_bever_*` | `zoogdieren_overig_braakbal_*`, `zoogdieren_overig_konijn_*`, `zoogdieren_overig_otter_bever_*` |
-| `ndff_mos_*`, `ndff_korstmos_*` | `mossen_*`, `korstmossen_*` |
+| `mossen_*`, `korstmossen_*` | `mossen_*`, `korstmossen_*` |
 | `ndff_bospaddenstoel_*`, `ndff_zeereep_*` | `schimmels_bospaddenstoel_*`, `schimmels_zeereep_*` |
 | `florbase_*`, `hns_*`, `lmfa_*` | `vaatplanten_florbase_*`, `vaatplanten_hns_*`, `vaatplanten_lmfa_*` |
 | `ndff_vliesvleugel_*` | `vliesvleugeligen_*` |
@@ -330,16 +330,16 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 | `ndff_bospaddenstoel_verspreiding_bezoek` | 2 | `schimmels_bospaddenstoel_verspreiding_bezoek` |
 | `ndff_bospaddenstoel_verspreiding_bezoek_taxon` | 14 | `schimmels_bospaddenstoel_verspreiding_bezoek_taxon` |
 | `ndff_bospaddenstoel_verspreiding_recordselectie` | 14 | `schimmels_bospaddenstoel_verspreiding_recordselectie` |
-| `ndff_korstmos_bezoek` | 32 | `korstmossen_bezoek` |
-| `ndff_korstmos_bezoek_taxon` | 960 | `korstmossen_bezoek_taxon` |
-| `ndff_korstmos_doelbereik` | 30 | `korstmossen_doelbereik` |
-| `ndff_korstmos_meetlocatie` | 12 | `korstmossen_meetlocatie` |
-| `ndff_korstmos_recordselectie` | 364 | `korstmossen_recordselectie` |
-| `ndff_mos_datumcluster` | 21 | `mossen_datumcluster` |
-| `ndff_mos_doelbereik` | 111 | `mossen_doelbereik` |
-| `ndff_mos_inventarisatie` | 7 | `mossen_inventarisatie` |
-| `ndff_mos_inventarisatie_taxon` | 777 | `mossen_inventarisatie_taxon` |
-| `ndff_mos_recordselectie` | 376 | `mossen_recordselectie` |
+| `korstmossen_bezoek` | 32 | `korstmossen_bezoek` |
+| `korstmossen_bezoek_taxon` | 643 | `korstmossen_bezoek_taxon` |
+| `korstmossen_doelbereik` | 30 | `korstmossen_doelbereik` |
+| `korstmossen_meetlocatie` | 12 | `korstmossen_meetlocatie` |
+| `korstmossen_recordselectie` | 364 | `korstmossen_recordselectie` |
+| `mossen_datumcluster` | 21 | `mossen_datumcluster` |
+| `mossen_doelbereik` | 111 | `mossen_doelbereik` |
+| `mossen_inventarisatie` | 7 | `mossen_inventarisatie` |
+| `mossen_inventarisatie_taxon` | 354 | `mossen_inventarisatie_taxon` |
+| `mossen_recordselectie` | 376 | `mossen_recordselectie` |
 | `ndff_braakbal_hokjaar` | 37 | `zoogdieren_overig_braakbal_hokjaar` |
 | `ndff_braakbal_hokjaar_taxon` | 226 | `zoogdieren_overig_braakbal_hokjaar_taxon` |
 | `ndff_braakbal_recordselectie` | 389 | `zoogdieren_overig_braakbal_recordselectie` |
