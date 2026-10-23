@@ -814,8 +814,8 @@ en [NEM Korstmossen](https://www.netwerkecologischemonitoring.nl/meetprogrammas/
 De beoordeelde BLWG-documenten staan in Zotero onder `Meetnetten - BLWG`
 (`8E3TCBHW`).
 
-**BLWG-leveringen van 8 en 23 oktober 2026 — gecontroleerd, nog niet als
-primaire bron geïmporteerd.** De nalevering bevat twaalf plots, 44 originele
+**BLWG-leveringen van 8 en 23 oktober 2026 — als primaire bron geïmporteerd.**
+De nalevering bevat twaalf plots, 44 originele
 formulieren (`kopid`) en 384 positieve soortregels. Zes op 23 oktober
 toegevoegde eenmalige locaties verklaren precies de 92 regels die in de eerste
 levering ontbraken. De vier vaste plots hebben WKT-begrenzingen; de acht
@@ -833,20 +833,29 @@ plotjaar overeen met de beveiligde levering. Bij 154 openbare regels is de
 sleutel plot-datum-soort niet uniek; een individuele koppeling van `kopid` aan
 NDFF-identiteit is dus niet bewezen.
 
-**Opnameplan voor de levende database.** Bewaar de oorspronkelijke v2-Excel
-onveranderd in de overeengekomen lokale bronopslag zodra het definitieve pad
-is bevestigd; registreer hash, leveringsdatum en bronhouder. Neem de primaire
-BLWG-plots, formulieren en positieve resultaten apart op in `Meijendel`, met
-oorspronkelijke `kopid`, velddatum, waarnemer, soortnaam en hoeveelheidscode.
-Koppel de bron-soortnamen via `taxa_bronkoppeling` aan `taxa`, zonder de
-oorspronkelijke naam te overschrijven. Leg voor 210 unieke openbare
-plot-datum-soortregels een directe NDFF-relatie vast en voor de 154 ambigue
-regels slechts een groepsmatch; forceer geen één-op-één-ID. Houd de twintig
-gevoelige exacte locaties onder bestaande beveiligingsregels, buiten openbare
-plots en views. Bouw een analysevoorbereiding met nullen uitsluitend voor de
-vier vaste plots en de 24 openbare vaste-plot-taxa; acht eenmalige locaties
-blijven aanwezigheid-only. Verifieer opnieuw alle bron- en matrixaantallen.
-De bestaande NDFF-bronregels blijven ongewijzigd, dus geen dubbeltelling.
+**Opname in de levende database, 23 oktober 2026.** De oorspronkelijke v2-Excel
+staat bytegelijk op de T7 onder `Meijendel data/NDFF/BLWG/`, SHA-256
+`d90ea5f85e35f4190bdc87c98f74201ec77b5bad27632942ca0b2cd91488a32f`.
+Zes `korstmossen_bron*`-tabellen in `Meijendel` bevatten de twaalf plots,
+44 formulieren en 364 openbare positieve regels. Oorspronkelijke `kopid`,
+velddatum, waarnemer, soortnaam en hoeveelheidscode zijn bewaard. De 31
+bronnamen verwijzen voorlopig via `taxa_bronkoppeling` naar het centrale
+taxonregister, zonder de oorspronkelijke naam te vervangen. Van de openbare
+regels zijn 210 direct aan NDFF gekoppeld; de 154 overige hebben uitsluitend
+een groepskoppeling. De formuliermatrix telt 790 regels: 364 positief en 426
+echte nullen, uitsluitend op de vier vaste plots voor 24 openbare doelsoorten.
+De acht eenmalige locaties hebben alleen positieve bronregistraties.
+
+Vier `blwg_korstmossen_*`-tabellen in `Meijendel_ndff_secure` bevatten uitsluitend
+de vier beschermde exacte plotlocaties, twintig positieve *Usnea articulata*-
+regels (veertien directe en zes groepskoppelingen) en acht nullen op vaste
+formulieren. De eerdere NDFF-reconstructie heeft een andere korrel:
+643 plotbezoek-taxonregels, waarvan 356 nullen, en blijft ter vergelijking
+aanwezig. Tel bronformulieren en NDFF-regels nooit bij elkaar op. De originele
+NDFF-waarnemingstabellen zijn ongewijzigd. Herhaalbare import en audit staan
+in `gis/scripts/import_blwg_korstmossen_bron.py`; het schemascript staat in
+`gis/database/blwg_korstmossen_bron_schema.sql`. De centrale taxonpoort
+controleert beide openbare resultaatlagen en is na import groen.
 
 ### Meetnet mossen (`02.204`)
 

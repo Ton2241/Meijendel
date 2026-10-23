@@ -258,6 +258,12 @@ def central_reachability_scope(table: str, route: dict, alias: str = 'w') -> str
 # Accepted physical schema. Every new/changed column requires an explicit route review.
 # Updated from the canonical local database and checked against the restored candidate.
 CENTRAL_QUERY_SCHEMA = {
+    'korstmossen_bronbestand': frozenset('bronbestand_sha256 bronorganisatie bestandsnaam bronpad leverdatum plotaantal formulieraantal resultaat_aantal beschermd_resultaat_aantal importversie aangemaakt_op'.split()),
+    'korstmossen_bron_plot': frozenset('bronbestand_sha256 bron_plot_id ndff_meetlocatie_id ndff_reconstructieversie subgebied provincie routenaam bron_x_rd bron_y_rd lengte_m breedte_m grootte_m2 aspect vegetatie beheer methode begroeiingstype startjaar stopjaar locatie_afscherming'.split()),
+    'korstmossen_bron_formulier': frozenset('bronbestand_sha256 kopid bron_plot_id velddatum rapportagejaar waarnemer opmerkingen formulierstatus'.split()),
+    'korstmossen_bron_resultaat': frozenset('bronbestand_sha256 bronregelnummer kopid bronnaam hoeveelheidscode opmerkingen taxon_bronkoppeling_id ndff_koppelstatus ndff_waarneming_id ndff_matchgroep_sha256'.split()),
+    'korstmossen_bron_ndff_groeprecord': frozenset('bronbestand_sha256 ndff_matchgroep_sha256 ndff_waarneming_id'.split()),
+    'korstmossen_bron_formulier_taxon': frozenset('bronbestand_sha256 kopid taxon_bronkoppeling_id waarnemingsstatus hoeveelheidscode bronregelnummer'.split()),
     'BGgroup': frozenset(['euring_code', 'group_code', 'id', 'soort_naam']),
     'analyse_datareeks': frozenset(['aangemaakt_op', 'beoordeeld_op', 'beveiligingsniveau', 'bezoekstructuur_status', 'bijgewerkt_op', 'bron_object', 'bron_schema', 'bronorganisatie', 'bronselectie_omschrijving', 'bronstatus', 'classificatiebron', 'datareeks_id', 'datareeks_sleutel', 'jaar_tot', 'jaar_van', 'korrel', 'kwaliteitsmelding', 'methode_status', 'naam', 'nulwaarneming_status', 'recordaantal_bij_beoordeling', 'regelversie', 'ruimtelijke_status', 'soortgroep', 'validatie_status']),
     'analyse_datareeks_geschiktheid': frozenset(['analyse_type_code', 'beoordeeld_op', 'datareeks_geschiktheid_id', 'datareeks_id', 'eindbesluit', 'gegevensgeschiktheid', 'kwaliteitsmelding', 'protocolgeschiktheid', 'regelversie', 'voorwaarden']),

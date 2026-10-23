@@ -313,6 +313,22 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### Soortgerichte meetstructuren
 
+De primaire BLWG-werkmap voor korstmossen (2000–2025) is daarnaast afzonderlijk
+opgenomen. `korstmossen_bronbestand` bevat één bronversie;
+`korstmossen_bron_plot` twaalf plots; `korstmossen_bron_formulier` 44
+waarnemersformulieren; `korstmossen_bron_resultaat` 364 openbare positieve
+bronregels; `korstmossen_bron_ndff_groeprecord` 364 NDFF-kandidaatrelaties; en
+`korstmossen_bron_formulier_taxon` 790 formulier-taxonregels, waarvan 426
+echte nullen op de vier vaste plots. In `Meijendel_ndff_secure` bevatten
+`blwg_korstmossen_plot_exact`, `blwg_korstmossen_resultaat`,
+`blwg_korstmossen_ndff_groeprecord` en
+`blwg_korstmossen_formulier_taxon` respectievelijk vier exacte beschermde
+plots, twintig positieve regels, twintig NDFF-kandidaatrelaties en 28
+formulier-taxonregels (acht nullen). Deze primaire bronlaag is geen tweede
+NDFF-waarnemingsbestand. Voor import, aansluiting op het centrale
+taxonregister en bescherming van exacte locaties: zie
+`gis/scripts/import_blwg_korstmossen_bron.py`.
+
 | Huidige tabel | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_amfibie_bezoek` | 211 | `amfibieen_bezoek` |
