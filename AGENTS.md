@@ -201,6 +201,20 @@ MySQL:
 - voor inloggen is `-u root -p` nodig
 - behandel de levende lokale Meijendel-MySQL-database op de iMac als de
   canonieke schrijfbron
+- sla herstelback-ups die nodig zijn vóór of tijdens een bewerking van de
+  lokale Meijendel-database voortaan op onder
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/`.
+  Dit is de vaste, door Ton aangewezen locatie binnen `Backups-archief`;
+  gebruik herkenbare, unieke bestandsnamen met datum en bewerking
+- controleer vóór de databasebewerking dat de T7 beschikbaar is en de benodigde
+  herstelback-up volledig en leesbaar is vastgelegd; registreer locatie en
+  SHA-256 bij de bewerking. Gebruik bij een niet-beschikbare T7 geen tijdelijke
+  uitwijk naar Documents of iCloud, maar stop vóór de databasewijziging
+- deze opslagafspraak geldt uitsluitend voor herstelback-ups bij
+  databasebewerkingen. De standaardexport `Meijendel.sql` (ook aangeduid als
+  `meijendel.sql`) ter voorbereiding op upload naar de VPS volgt de bestaande
+  afzonderlijke procedure; wijzig daarvoor geen locatie, werkwijze of
+  toestemmingsvereiste op grond van deze afspraak
 - vraag na iedere wijziging van de levende lokale database eerst aan Ton of ook
   de zware afgeleide exportketen nodig is. Start `Meijendel.sql`-export,
   proefimport en Shiny-cachebouw nooit automatisch als onderdeel van een
