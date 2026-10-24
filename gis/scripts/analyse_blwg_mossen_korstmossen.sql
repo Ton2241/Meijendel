@@ -2,8 +2,10 @@
 -- Uitvoeren tegen de lokale database Meijendel. Geen tabellen of bronregels wijzigen.
 -- De primaire BLWG-formulieren, provinciale PQ's en secundaire NDFF-regels
 -- hebben verschillende teleenheden: uitkomsten NOOIT optellen.
--- Deze query's lezen geen beschermde taxa of exacte plotcoordinaten uit
--- Meijendel_ndff_secure. Plot-ID's zijn uitsluitend voor intern gebruik.
+-- Query's 1-9 lezen geen beschermde taxa of exacte plotcoordinaten.
+-- Query 10 leest de afgeschermde formuliermatrix maar geeft uitsluitend
+-- totalen per meetjaar terug; voer deze alleen lokaal en bevoegd uit.
+-- Plot-ID's in query's 1-8 zijn uitsluitend voor intern gebruik.
 -- Meetjaar = YEAR(velddatum), NIET rapportagejaar (bij 40/44 formulieren
 -- een jaar eerder; bij de vier formulieren uit 2006 gelijk aan veldjaar).
 -- Code 0 is een expliciete BLWG-nul, codes 1/2/3/5/6 zijn originele
@@ -201,3 +203,24 @@ FROM Meijendel.mossen_waarneming
 UNION ALL
 SELECT 'korstmossen', COUNT(*), MIN(jaar), MAX(jaar)
 FROM Meijendel.korstmossen_waarneming;
+
+-- 10. Afgeschermde aanvulling op BLWG: alleen lokaal voor bevoegde
+-- onderzoekers. Geen soortnaam, plot-ID, coordinaten of NDFF-identiteit in
+-- de uitvoer. Niet automatisch publiceren: kleine jaartotalen kunnen ook
+-- gevoelige informatie prijsgeven. De onderliggende 28 formulier-taxonregels
+-- (20 positief, 8 nul) worden per plotjaar ontdubbeld zoals in query 2.
+WITH per_plotjaar AS (
+  SELECT YEAR(f.velddatum) AS meetjaar, f.bron_plot_id,
+         MAX(t.waarnemingsstatus = 'waargenomen') AS aanwezig
+  FROM Meijendel.korstmossen_bron_formulier AS f
+  JOIN Meijendel_ndff_secure.blwg_korstmossen_formulier_taxon AS t
+    ON t.bronbestand_sha256 = f.bronbestand_sha256 AND t.kopid = f.kopid
+  WHERE f.formulierstatus = 'vast_plot_volledige_lijst'
+  GROUP BY YEAR(f.velddatum), f.bron_plot_id
+)
+SELECT meetjaar, COUNT(*) AS vaste_plots,
+       SUM(aanwezig) AS plots_met_aanwezigheid,
+       SUM(aanwezig = 0) AS plots_met_echte_nul
+FROM per_plotjaar
+GROUP BY meetjaar
+ORDER BY meetjaar;
