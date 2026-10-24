@@ -2,6 +2,17 @@
 
 Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 16 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
 
+**Historische inventaris.** De tabellen en aantallen hieronder beschrijven de
+nulmeting van 26 september 2026 en het voorstel dat op 16 oktober is
+bijgewerkt; zij vormen geen actueel databaseschema. Op 23 oktober 2026 zijn
+de voormalige openbare ID-indexen `ndff_mossen` en `ndff_korstmossen`
+verwijderd. Hun 32.353 en 28.643 volledige bronregels staan nu in
+`mossen_waarneming` en `korstmossen_waarneming`; identificaties en fysieke
+opslaglocaties staan in `ndff_open_waarneming_register`. De historische rijen
+in de bijlage blijven voor de audit behouden. Voor de actuele opslag gelden
+het [bronregister](../MEIJENDEL_BRONREGISTER.md) en de
+[migratiedocumentatie](NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md).
+
 ## Hoofdkeuze
 
 De hoofdindeling wordt de soortgroep. Libelleninformatie hoort herkenbaar onder `libellen_*`, keverinformatie onder `kevers_*`, enzovoort. De organisatie die gegevens levert en het moment waarop bestanden gezamenlijk zijn geïmporteerd, bepalen niet langer de indeling. Rechtstreekse leveringen moeten dezelfde tabelfamilies kunnen aanvullen als de informatie die via NDFF is ontvangen.
@@ -274,7 +285,7 @@ Geraadpleegd zijn de projectinstructies, README, TODO, DECISIONS, architectuur, 
 
 Bronrechten, toelating en bruikbaarheid zijn niet opnieuw vastgesteld; het bronregister blijft leidend. Geen T7- of NAS-bestanden geopend, nieuwe bronnen aangevraagd of database, dump, cache en productie gewijzigd.
 
-## Bijlage huidige tabellen en bestemmingsrichting
+## Bijlage tabellen bij de nulmeting en bestemmingsrichting
 
 Alle 163 tabelnamen blijven hier terugvindbaar. De aantallen zijn technische rijtellingen van 26 september 2026, geen optelbare onafhankelijke waarnemingen. Een richting met meerdere bestemmingen vereist gegevensverdeling; zij is geen RENAME-opdracht. Definitieve doelnamen en sleutelvertalingen worden in de migratieproef getoetst.
 
@@ -282,7 +293,7 @@ Alle 163 tabelnamen blijven hier terugvindbaar. De aantallen zijn technische rij
 
 Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronoverstijgende familie. Alleen de huidige enkelkolomsindex hernoemen is niet het eindbeeld.
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_amfibieen` | 12.982 | `amfibieen_*` |
 | `ndff_dagvlinders` | 129.238 | `dagvlinders_*` |
@@ -329,7 +340,7 @@ NDFF-waarnemingsbestand. Voor import, aansluiting op het centrale
 taxonregister en bescherming van exacte locaties: zie
 `gis/scripts/import_blwg_korstmossen_bron.py`.
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_amfibie_bezoek` | 211 | `amfibieen_bezoek` |
 | `ndff_amfibie_waterbezoek` | 1.300 | `amfibieen_waterbezoek` |
@@ -417,7 +428,7 @@ taxonregister en bescherming van exacte locaties: zie
 
 ### Gemengde meetstructuren
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_ravon_n2000_monsterlocatieproxy` | 25 | Amfibieën en vissen scheiden; gedeeld monster behouden |
 | `ndff_ravon_n2000_recordselectie` | 67 | Amfibieën en vissen scheiden; gedeeld monster behouden |
@@ -442,7 +453,7 @@ taxonregister en bescherming van exacte locaties: zie
 
 ### Gedeelde bron en beslislaag
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_open_import_batch` | 1 | Bronregistratie behouden en bronoverstijgend verbinden |
 | `ndff_open_waarneming` | 810.830 | Biologische inhoud per soortgroep; stabiele bron- en meetidentiteit behouden |
@@ -464,7 +475,7 @@ taxonregister en bescherming van exacte locaties: zie
 
 ### Externe ecologie
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `externe_ecologie_dataset` | 6 | Naar gedeelde bronregistratie; alle zes datasets herkenbaar houden |
 | `externe_ecologie_event` | 10.994 | PQ-opnamen naar pq_*; overige events naar groep of gedeeld gemengd event |
@@ -473,7 +484,7 @@ taxonregister en bescherming van exacte locaties: zie
 
 ### Vangblik
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `vangblik_import_batch` | 1 | Behouden; vanuit kevers_* en zoogdieren_overig_* koppelen |
 | `vangblik_locatieversie` | 135 | Behouden; vanuit kevers_* en zoogdieren_overig_* koppelen |
@@ -484,7 +495,7 @@ taxonregister en bescherming van exacte locaties: zie
 
 ### PQ
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `pq_vegetatie_import` | 1 | Behouden binnen bronoverstijgende PQ-structuur |
 | `pq_vegetatie_pq` | 254 | Behouden binnen bronoverstijgende PQ-structuur |

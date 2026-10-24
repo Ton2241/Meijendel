@@ -47,7 +47,7 @@ De reproduceerbare proef `gis/scripts/rehearse_ndff_mos_korstmos_restore.py --ap
 
 De vóór de verhuizing aanwezige centrale taxontriggers eisten nog een bronregel in `ndff_open_waarneming`. Hun generator is aangepast en de triggers zijn opnieuw geplaatst: zij gebruiken nu het smalle register en de fysieke opslaglocatie. De nieuwe regels beschermen ook tegen verweesde verwijzingen, dubbele identiteiten en het verwijderen van nog gebruikte bronregels.
 
-## Volgorde na een geslaagde proef
+## Historische uitvoeringsvolgorde na een geslaagde proef
 
 1. Pas scripts, constraints, triggers en beveiligde selecties op een taakbranch aan en voer regressietoetsen uit.
 2. Leg een herstelbare kopie van alle werkelijk geraakte rijen en relaties vast; controleer deze vóór enige productie-`DELETE`.
@@ -55,11 +55,11 @@ De vóór de verhuizing aanwezige centrale taxontriggers eisten nog een bronrege
 4. Zet de FK-ouder veilig om naar het smalle ID-register en verwijder pas dan de 60.996 oude parentregels. Controleer dat alle 810.830 unieke openbare NDFF-identiteiten precies eenmaal aanwezig en bereikbaar zijn.
 5. Verwijder **als laatste** `ndff_mossen` en `ndff_korstmossen` na volledige nacontrole, inclusief herstelproef, afnemers en bronregister in Markdown én DOCX. Geen VPS-publicatie zonder afzonderlijk akkoord.
 
-## Uitvoeringsplan voor de fysieke verhuizing
+## Historisch uitvoeringsplan voor de fysieke verhuizing
 
-De bestaande herstelproef is stap nul, niet de migratie zelf. De verdere stappen
-worden op de bestaande taakbranch uitgevoerd; de levende database verandert pas
-na een tweede, volledige proef.
+Dit vóór de verhuizing vastgelegde plan is op 23 oktober 2026 uitgevoerd;
+het is geen opdracht om de migratie opnieuw uit te voeren. De herstelproef
+was stap nul. De levende uitvoering volgde na de aanvullende proef.
 
 1. **Leescontract.** Voeg een smal register voor alle openbare NDFF-ID's toe met
    uitsluitend `waarneming_id` en fysieke opslaglocatie. Behoud de oorspronkelijke
@@ -110,3 +110,39 @@ en rapporteerde nul fouten. De kwalificaties van PQ-kandidaten zijn niet
 gewijzigd of opgewaardeerd. Het historische bootstrap-importpad weigert een
 reeds gesplitste database. Er is geen zware export of Shiny-cachebouw gedaan en
 geen VPS-publicatie uitgevoerd.
+
+## Actuele leesroute en controle van oude codeverwijzingen
+
+Documentatiecontrole van 24 oktober 2026: `ndff_mossen` en
+`ndff_korstmossen` bestaan niet meer als openbare tabellen in `Meijendel`.
+Een alleen-lezen controle van de fysieke verdeling gebruikt het register:
+
+```sql
+SELECT opslag_tabel, COUNT(*) AS openbare_identificaties
+FROM Meijendel.ndff_open_waarneming_register
+GROUP BY opslag_tabel;
+```
+
+De bij deze migratie vastgestelde verdeling is 749.834, 32.353 en 28.643
+voor respectievelijk `ndff_open_waarneming`, `mossen_waarneming` en
+`korstmossen_waarneming`. Lees de volledige bronvelden uit de betreffende
+fysieke tabel, gekoppeld via `waarneming_id`; tel het register niet als extra
+waarnemingen mee.
+
+Oude namen in `migrate_ndff_mossen_korstmossen.py` en de bijbehorende
+`rehearse_*`-scripts beschrijven de historische uitgangssituatie en de
+herstelproef. Het openbare `ndff_public_schema.sql` en de bootstrap-import
+`import_ndff_public_gbif.py` bevatten eveneens historische indexdefinities;
+hun controles blokkeren toepassing op een reeds gesplitste database. Deze
+paden zijn geen actuele importvoorbeelden voor de gesplitste opslag.
+`import_external_ecology_sources.py` bewaart de oude indexen in het
+historische schemacontract en verwijdert ze uit de verwachte tabellen zodra
+het openbare register aanwezig is.
+
+De gelijknamige tabellen in `ndff_secure_schema.sql` en de groepsmapping in
+`import_ndff_secure_delivery.py` behoren tot het afzonderlijke beveiligde
+schema `Meijendel_ndff_secure`. Hun gelijkluidende namen bewijzen geen
+achtergebleven openbare indexen. De `sync_bronregister_*`-scripts bevatten
+ook oude tekst als zoekanker voor een eerdere documentcorrectie. Deze
+historische en schema-afhankelijke verwijzingen zijn behouden; er is bij deze
+documentatiecorrectie geen databasecode uitgevoerd of gewijzigd.
