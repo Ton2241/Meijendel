@@ -75,6 +75,15 @@ oorspronkelijke trainingspolygonen of de 125 validatiepunten. Het raster van
 maar is geen onafhankelijke waarheid voor datzelfde beeld en valideert geen
 overdracht naar andere jaren.
 
+Sandra Schmidt-Tauscher heeft op 20 oktober 2026 bevestigd dat de
+oorspronkelijke classificatie in de Semi-Automatic Classification Plugin een
+Random Forest gebruikte met 10 beslisbomen en 5.000 trainingspixels. Bij hun
+proeven verminderde de nauwkeurigheid wanneer zij meer bomen of trainingspixels
+gebruikten. Dit vult de methodebeschrijving aan, maar maakt de classificatie
+niet reproduceerbaar: de gebruikte trainingspixels en validatiepunten zijn niet
+meer beschikbaar. Het levert evenmin een onafhankelijke referentie voor andere
+beeldjaren.
+
 ## Besluit en herhaalbaarheid
 
 De vijf beeldjaren worden niet uitgebreid tot een jaarlijkse reeks en gaan

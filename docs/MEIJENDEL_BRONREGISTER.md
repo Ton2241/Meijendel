@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 19 oktober 2026.**
+**Stand: 25 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -889,12 +889,25 @@ randdichtheid met 49,0 meter per hectare en de mediane Shannon-diversiteit met
 0,049; de mediane klassenrijkdom verandert niet. Dit beschrijft ruimtelijke
 patronen in twee kaartjaren, geen jaarlijkse ontwikkeling of causale relatie.
 De levering bevat geen trainingspolygonen en geen oorspronkelijke 125
-validatiepunten. Achim meldt bovendien dat vergelijking over meer dan twee
-beeldjaren ook met textuurmaten moeilijk bleef. De bron meet geen
-vegetatiehoogte, voedsel, nestgelegenheid of andere habitatkwaliteit. Voor
-herpublicatie van de ontvangen bestanden is nog geen afzonderlijke toestemming
-vastgelegd; gebruik blijft daarom voorlopig beperkt tot de lokale
-projectanalyse.
+validatiepunten. Sandra Schmidt-Tauscher heeft op 20 oktober 2026 bevestigd dat
+ook de oorspronkelijke trainingspixels niet meer beschikbaar zijn. Zij heeft
+wel de gebruikte instellingen van de Semi-Automatic Classification Plugin
+vastgelegd: een Random Forest met 10 beslisbomen en 5.000 trainingspixels. In
+hun eigen proeven nam de classificatienauwkeurigheid af bij hogere aantallen
+bomen of trainingspixels. Dit vult de methodebeschrijving aan, maar zonder de
+gebruikte trainingspixels en validatiepunten kan de classificatie niet exact
+worden gereproduceerd of op pixelniveau onafhankelijk worden gecontroleerd.
+Achim meldt bovendien dat vergelijking over meer dan twee beeldjaren ook met
+textuurmaten moeilijk bleef. De bron meet geen vegetatiehoogte, voedsel,
+nestgelegenheid of andere habitatkwaliteit.
+
+Achim Häger en Sandra Schmidt-Tauscher hebben op 20 oktober 2026 beiden
+schriftelijk ingestemd met gebruik van de twee classificatierasters voor verder
+onderzoek. De rasters en afgeleide resultaten mogen daarmee in de
+broedvogel–vegetatieanalyse en de daaruit voortkomende onderzoeksrapportage
+worden gebruikt. Er is geen open licentie of afzonderlijke toestemming voor
+openbare verspreiding van de oorspronkelijke GeoTIFFs vastgelegd; die
+bronbestanden worden daarom niet zelfstandig gepubliceerd.
 
 **KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en hydrologische gegevens. Een afzonderlijke digitale gegevenslevering is nog niet gevonden.
 
