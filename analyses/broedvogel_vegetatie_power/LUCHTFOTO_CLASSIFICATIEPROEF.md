@@ -101,3 +101,23 @@ laten. Een nieuwe classificatiepoging vraagt onafhankelijke, per pixel
 begrensde referenties voor meer beeldjaren en moet op volledig achtergehouden
 plots én jaren worden getoetst. Tot die tijd blijven AHN2–AHN5 de bruikbare,
 maar slechts viermaal gemeten bron voor verticale vegetatiestructuur.
+
+## Kandidaatvervolg via Dunea
+
+Harrie Van der Hagen heeft op 26 oktober 2026 gemeld dat Dunea waarschijnlijk
+over een gebiedsdekkende reeks beschikt met vier zwart-witjaren uit 1938–1966
+en negen kleureninfraroodjaren uit 1975–2023. De exacte inventaris en vooral de
+jaren 2016 en 2023 moeten door Dunea worden bevestigd. Voor de meeste jaren zou
+ook een bestaande vegetatie-interpretatie aanwezig zijn. Dunea heeft deze
+bestanden nog niet geleverd; over beschikbaarstelling beslist volgens Harrie
+Maarten Werink.
+
+Deze mededeling verandert de uitkomst van de uitgevoerde openbare
+luchtfotoproef niet. Zij opent wel een andere route: een afgebakende proef met
+de originele Dunea-beelden en bestaande interpretaties. Die proef begint bij de
+onderling beter vergelijkbare kleureninfraroodreeks vanaf 1975. De grovere
+zwart-witbeelden worden pas afzonderlijk onderzocht wanneer hun schaal,
+schaduwwerking en detailniveau dat toelaten. Toelating tot het vogelmodel vraagt
+opnieuw onafhankelijke toetsing tussen beeldjaren. Daarnaast worden bekende
+ingrepen en plotselinge gebeurtenissen afzonderlijk meegenomen; een kaartreeks
+van vegetatiestructuur is geen zelfstandige verklaring van vogelverandering.

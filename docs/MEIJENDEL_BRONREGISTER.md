@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 25 oktober 2026.**
+**Stand: 26 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -587,6 +587,43 @@ voor meer beeldjaren. Luchtfoto's meten geen vegetatiehoogte, maken AHN1 niet
 vergelijkbaar en mogen niet rechtstreeks als causale verklaring van
 vogelverandering worden gebruikt.
 
+**Historische Dunea-reeks, bronbericht 26 oktober 2026.** Harrie Van der
+Hagen meldt dat Dunea gebiedsdekkende luchtfoto's van heel Meijendel beheert.
+Hij noemt zwart-witopnamen uit 1938, 1944, 1962 en 1966, meestal op ongeveer
+1:18.000, en kleureninfraroodopnamen uit 1975, 1980, 1985, 1990, 1995, 2001,
+2009, 2016 en 2023, op ongeveer 1:2.500. In één doorgestuurde versie staat
+`1895`; dit is in Tons weergave gecorrigeerd naar het chronologisch passende
+1985. Harrie is niet meer zeker van de laatste twee jaren. De exacte jaren,
+vluchten, dekking, bestanden en schaal moeten daarom eerst door Dunea worden
+bevestigd. De bestanden zijn niet ontvangen en blijven kandidaatbron.
+
+Volgens Harrie bestaat voor de meeste jaren een interpretatie op basis van het
+proefschrift van Dan Assendorp. Die indeling was niet passend voor de gebruikte
+broedvogelgroepen en is daarom voor het onderzoek van Schmidt-Tauscher, Häger
+en Van der Hagen opnieuw geïnterpreteerd. Voor zijn eigen proefschrift gebruikte
+Harrie 1975, 1990, 2001 en 2009. De oudere zwart-witbeelden zijn niet zonder
+meer vergelijkbaar met de fijnschaliger kleureninfraroodreeks; vooral het beeld
+uit 1938 bevat door de lage zonnestand schaduwen die op bos kunnen lijken.
+
+Dunea is bronhouder. Harrie heeft geen bevoegdheid de bestanden beschikbaar te
+stellen en verwijst voor een besluit naar Maarten Werink. Hij herinnert zich
+een eerder idee voor een gezamenlijke proef via een stage, maar deze afspraak
+is niet in de nu geraadpleegde projectdocumentatie, bijlage of toegankelijke
+mailbox bevestigd. Vóór een nieuwe uitvraag wordt daarom eerst met Maarten
+vastgesteld wat Dunea al heeft voorgesteld en welke bestaande fotobeelden,
+interpretaties en bronmetadata binnen zo'n proef kunnen worden gebruikt.
+
+De reeks kan de twee kaartmomenten 2001 en 2022 aanvullen, maar levert niet
+automatisch een voorspellend model. Harrie wijst erop dat ontwikkeling in het
+droge duin sterk kan reageren op afzonderlijke gebeurtenissen en menselijk
+ingrijpen. Hij noemt onder meer het wegvallen van konijnen na myxomatose, de
+aanplant van bomen en struiken en van helm tot 1990, begrazing vanaf 1990 en het
+latere opnieuw openmaken van het duin. Voor voorspelling moeten zulke
+gebeurtenissen en ingrepen, voor zover zij per plaats en jaar kunnen worden
+onderbouwd, naast vegetatie, PQ en vogels worden opgenomen. De historische
+fotoreeks kan dus vooral vaststellen *wanneer en waar* structuur veranderde;
+zij verklaart niet zelfstandig waardoor dat gebeurde.
+
 ### 1.9. Werkzaamheden en beheermaatregelen
 
 Deze laag bevat geen nieuwe soortenwaarnemingen. Zij legt uitvoeringsinformatie vast die later, na een afzonderlijk bewezen ruimtelijke koppeling, als verklarende beheerlaag kan worden gebruikt.
@@ -909,7 +946,16 @@ worden gebruikt. Er is geen open licentie of afzonderlijke toestemming voor
 openbare verspreiding van de oorspronkelijke GeoTIFFs vastgelegd; die
 bronbestanden worden daarom niet zelfstandig gepubliceerd.
 
-**KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en hydrologische gegevens. Een afzonderlijke digitale gegevenslevering is nog niet gevonden.
+**KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en
+hydrologische gegevens. Harrie Van der Hagen meldt op 26 oktober 2026 dat het
+vroegere Kiwa vanaf ongeveer 2000 het proefmodel MODAK verder ontwikkelde tot
+PROBE, mede op basis van HYVEG uit 1992. PROBE werd volgens hem bruikbaar voor
+vochtafhankelijke vegetatietypen. Een rond 2023 door Dunea en KWR beproefde
+uitbreiding naar droge duinvegetatie had volgens Harrie weinig voorspellende
+waarde. Dit is relevante ervaringskennis, maar zonder het achterliggende
+rapport, gegevens, modelopzet en toetsingsresultaten nog geen zelfstandige
+analyse-uitkomst voor Meijendel. Een afzonderlijke digitale gegevenslevering
+of projectrapportage is nog niet gevonden.
 
 **Langjarige stuifkuil- en vegetatiemetingen:** publicaties noemen 32–35 stuifkuilen die vanaf 1983 tweemaal per jaar zijn gemeten, 19 permanente vegetatieplots en vergelijkingen van luchtfoto’s en orthofoto’s. De oorspronkelijke tabellen, plot-ID’s en digitale kaartlagen zijn nog niet voldoende geïdentificeerd om deze als afzonderlijke gegevensbron toe te laten.
 

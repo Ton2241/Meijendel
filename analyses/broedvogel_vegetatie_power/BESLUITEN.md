@@ -304,6 +304,26 @@ stilzwijgend herschreven.
   onafhankelijke kaartjaren. De eerdere luchtfoto-uitkomst verandert daarom
   niet.
 
+## 26 oktober 2026 — historische Dunea-luchtfotoreeks als kandidaatvervolg
+
+- Harrie Van der Hagen meldt een gebiedsdekkende Dunea-reeks met vier
+  zwart-witjaren uit 1938–1966 en waarschijnlijk negen
+  kleureninfraroodjaren uit 1975–2023. De exacte inventaris, bestanden,
+  interpretaties, rechten en de laatste twee jaren zijn nog niet door Dunea
+  bevestigd. De bron is daarom nog niet tot de analyse toegelaten.
+- Volgens Harrie beslist Maarten Werink over beschikbaarstelling en is eerder
+  mogelijk een gezamenlijke proef via een stage genoemd. Eerst wordt bij
+  Maarten aangesloten op wat Dunea al heeft voorgesteld; Harrie wordt niet om
+  overdracht van Dunea-bestanden gevraagd.
+- Een eventuele proef begint met de onderling beter vergelijkbare
+  kleureninfraroodreeks vanaf 1975. De zwart-witbeelden van 1938–1966 hebben
+  een grovere schaal en beeldspecifieke beperkingen en worden niet vooraf met
+  die reeks samengevoegd.
+- Het voorspelmodel behandelt vegetatiestructuur niet als enige oorzaak.
+  Plaats- en jaargebonden gebeurtenissen en ingrepen, waaronder verandering in
+  konijnenstand, aanplant, begrazing en het opnieuw openmaken van het duin,
+  worden opgenomen zodra daarvoor voldoende bronbewijs beschikbaar is.
+
 ## 12 oktober 2026 — stikstof en CBS-landgebruik
 
 - Stikstofdepositie en CBS-landgebruik zijn als afzonderlijke verklarende
