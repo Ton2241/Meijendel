@@ -1,6 +1,6 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 12 oktober 2026
+**Stand:** 26 oktober 2026
 
 **Status:** analysematrix, tellergevoeligheid, vegetatiestappen,
 AHN-structuurproef, luchtfotoproef en de aanvullende modellen met stikstof en
@@ -644,6 +644,31 @@ Power wordt afzonderlijk bepaald voor relevante soorten, groepen,
 gemeenschapskenmerken en relaties met vegetatie. Niet-convergerende modellen
 tellen niet als gedetecteerd.
 
+### KWR-modelonderzoek: HYVEG, MODAK en PROBE
+
+Op 26 oktober 2026 zijn HYVEG, MODAK en de PROBE-familie aan de hand van de
+oorspronkelijke publicaties en actuele KWR-documentatie beoordeeld. MODAK was
+in 2003 een haalbaarheidsstudie. PROBE-1, ontwikkeld in 2006, berekent het
+ruimtelijke potentieel van plantengemeenschappen onder scenario's en vraagt
+onder meer een associatiekaart, wortelzonecalcium, GVG en GLG. De huidige
+Meijendel-database bevat deze invoer niet als volledige gebiedsdekkende set.
+
+PROBE-3 berekent wel ontwikkeling door de tijd. De droge-duinproef uit 2016
+onderscheidde zes vegetatieassociaties en classificeerde 82% van een
+achtergehouden helft van ruim 35.000 landelijke vegetatieopnamen juist. De
+temporele veldtoets omvatte slechts 30 proefvlakken in de Luchterduinen en
+modelleerde onder meer begrazing, konijnen, verspreiding en vertraagde reacties
+niet. Het model is daarom geen vervanging voor de waargenomen PQ-, AHN- en
+luchtfotoreeksen en evenmin een directe voorspeller van vogels.
+
+De bruikbare les is de causale volgorde: externe druk en gebeurtenissen werken
+via bodem, water en vegetatie(structuur) op vogels. Deze blokken blijven in de
+Meijendel-analyse afzonderlijk herkenbaar en worden alleen samengebracht als de
+toegevoegde voorspelling standhoudt in achtergehouden plots en jaren. Er is
+geen PROBE-run uitgevoerd, geen databasewaarde gewijzigd en geen nieuw
+powergetal berekend. Het volledige brononderzoek staat in
+`MODAK_PROBE_HYVEG_BRONONDERZOEK.md`.
+
 ## Drie analysevensters
 
 1. **Lange vogelreeks, 1958–2025.** Beschrijving van verandering en bepaling
@@ -700,6 +725,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. De rasters van 2001 en 2022 missen de oorspronkelijke trainings- en validatiereferenties en maken daarvan geen jaarlijkse reeks. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
+| HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 

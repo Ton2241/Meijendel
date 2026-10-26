@@ -58,6 +58,9 @@ door naar power.
   vervolgstap opnieuw moeten worden gemaakt.
 - [Luchtfoto classificatieproef](LUCHTFOTO_CLASSIFICATIEPROEF.md) beschrijft
   gegevens, validatie, nuluitkomsten en het besluit over een jaarlijkse reeks.
+- [Brononderzoek MODAK, HYVEG en PROBE](MODAK_PROBE_HYVEG_BRONONDERZOEK.md)
+  beschrijft wat deze vegetatiemodellen wel en niet aan de Meijendel-analyse
+  kunnen toevoegen.
 - [Ontwerp teller- en ervaringsmodel](ONTWERP_TELLER_EN_ERVARINGSMODEL.md)
   legt de vooraf vastgestelde methode én de gevolgen van de uitgevoerde tweede
   analysestap vast.
@@ -89,6 +92,15 @@ Compacte tabellen, figuren en manifesten die nodig zijn om conclusies te
 controleren mogen na inhoudelijke beoordeling wel worden opgenomen.
 
 ## Wat nu vaststaat
+
+Het brononderzoek van 26 oktober 2026 laat zien dat MODAK een
+haalbaarheidsstudie uit 2003 was en dat PROBE een actuele familie van
+vegetatiemodellen is. De huidige Meijendel-database bevat niet de volledige
+gebiedsdekkende invoer voor PROBE-1. De temporele droge-duinproef met PROBE-3
+steunde op 30 veldproefvlakken en modelleerde begrazing, konijnen en vertraagde
+reacties niet. PROBE wordt daarom niet als kant-en-klaar vogel- of
+vegetatietijdmodel ingevoerd. Het onderzoek verandert geen databasewaarde en
+levert geen nieuw powergetal.
 
 De telleranalyse gebruikt 203.628 geldige soort–plot–jaarrijen uit 2.007
 plotjaren met bekend teller/tellerteam, voor 156 soorten en de periode

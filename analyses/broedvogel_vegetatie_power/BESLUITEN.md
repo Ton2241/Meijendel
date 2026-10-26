@@ -4,6 +4,26 @@ Dit bestand bewaart de inhoudelijke en technische keuzes voor deze analyse.
 Nieuwe besluiten worden gedateerd toegevoegd; eerdere besluiten worden niet
 stilzwijgend herschreven.
 
+## 26 oktober 2026 — gebruik van HYVEG, MODAK en PROBE
+
+- HYVEG, MODAK en PROBE worden niet als bestaand vogelmodel of als vervanging
+  van de PQ-, AHN- en luchtfotoreeksen gebruikt.
+- Er wordt met de huidige database geen eigen PROBE-run uitgevoerd. Voor
+  PROBE-1 ontbreekt de volledige gebiedsdekkende combinatie van
+  vegetatieassociatiekaart, wortelzonecalcium, GVG en GLG.
+- Een eventuele bestaande PROBE-uitvoer voor Meijendel wordt pas als
+  kandidaatbron beoordeeld wanneer modelversie, invoer, scenario, kalibratie
+  en validatie herleidbaar zijn. Toegevoegde voorspellende waarde wordt dan op
+  dezelfde plots en achtergehouden jaren getoetst als de overige
+  omgevingsblokken.
+- De modelopbouw houdt externe druk en gebeurtenissen, vegetatie en
+  vegetatiestructuur, en de vogelrespons als afzonderlijke schakels zichtbaar.
+  Kortdurende gebeurtenissen kunnen een lang vertraagde vegetatiereactie
+  hebben en worden daarom niet uitsluitend met vertragingen van één tot drie
+  jaar onderzocht.
+- De bronbeoordeling verandert geen databasewaarde en levert geen formeel
+  powergetal.
+
 ## 9 oktober 2026 — doel en samenhang
 
 - De analyse moet uiteindelijk leiden tot een artikel voor *Holland's

@@ -946,16 +946,44 @@ worden gebruikt. Er is geen open licentie of afzonderlijke toestemming voor
 openbare verspreiding van de oorspronkelijke GeoTIFFs vastgelegd; die
 bronbestanden worden daarom niet zelfstandig gepubliceerd.
 
-**KWR-onderzoek:** rapporten wijzen op aanvullende vegetatie-, bodem- en
-hydrologische gegevens. Harrie Van der Hagen meldt op 26 oktober 2026 dat het
-vroegere Kiwa vanaf ongeveer 2000 het proefmodel MODAK verder ontwikkelde tot
-PROBE, mede op basis van HYVEG uit 1992. PROBE werd volgens hem bruikbaar voor
-vochtafhankelijke vegetatietypen. Een rond 2023 door Dunea en KWR beproefde
-uitbreiding naar droge duinvegetatie had volgens Harrie weinig voorspellende
-waarde. Dit is relevante ervaringskennis, maar zonder het achterliggende
-rapport, gegevens, modelopzet en toetsingsresultaten nog geen zelfstandige
-analyse-uitkomst voor Meijendel. Een afzonderlijke digitale gegevenslevering
-of projectrapportage is nog niet gevonden.
+**KWR-onderzoek:** de modelreeks is op 26 oktober 2026 getoetst aan de
+oorspronkelijke publicaties en actuele KWR-documentatie. HYVEG is in de
+gevonden publicatie uit 1994 gericht op de relatie tussen hydrologie en planten
+van vochtige duinvalleien. MODAK is een Kiwa-haalbaarheidsstudie uit 2003 van
+45 pagina's; de volledige rapporttekst is niet openbaar teruggevonden.
+PROBE-1 is in 2006 ontwikkeld en wordt volgens de handleiding uit 2025 door
+KWR voor Dunea, PWN en Waternet gebruikt om op 5- of 10-metergrid het
+ruimtelijke potentieel van plantengemeenschappen onder hydrologische,
+depositie- en beheerscenario's te berekenen. De geraadpleegde bronnen tonen een
+inhoudelijke ontwikkellijn, maar bewijzen niet dat HYVEG-code of -coëfficiënten
+rechtstreeks via MODAK in PROBE zijn overgenomen.
+
+PROBE-3 is in 2016 beproefd voor korte, grondwateronafhankelijke droge
+duinvegetatie. De vegetatiemodule onderscheidde zes associaties en classificeerde
+82% van een achtergehouden helft van ruim 35.000 landelijke vegetatieopnamen
+juist. De temporele veldtoets omvatte echter 30 proefvlakken in de
+Luchterduinen. Het rapport noemt onder meer te hoge biomassaschattingen en het
+ontbreken van begrazing, konijnen, mossen, korstmossen, verspreiding en
+vertraagde reacties. Dit is geen volledige mislukking, maar evenmin een
+gevalideerd historisch voorspelmodel voor Meijendel. Het door Harrie Van der
+Hagen genoemde Dunea/KWR-project van omstreeks 2023 met weinig voorspellende
+waarde is niet als afzonderlijk openbaar rapport geïdentificeerd en blijft op
+dat punt ervaringsinformatie. KWR publiceerde in 2025 en 2026 nieuw empirisch
+onderzoek naar droge kustduinvegetatie.
+
+Een schemazoeking in alle tabellen en kolommen van de levende MySQL-database
+`Meijendel` op 26 oktober 2026 vond nul namen voor GVG, GLG,
+wortelzonecalcium of vegetatieassociatie. Dit bewijst niet dat afzonderlijke
+bronnen buiten de database geen hydrologische of vegetatiekundige informatie
+bevatten, maar wel dat de voor PROBE herkenbare gebiedsdekkende invoerset niet
+als zodanig in de levende database is opgeslagen. PROBE voorspelt bovendien
+vegetatie, geen vogels, en vervangt geen waargenomen tijdreeks van horizontale
+structuur. Er zijn nul
+digitale PROBE-uitvoerbestanden of invoerrasters geïmporteerd. Het onderzoek
+verandert daarom geen analysewaarde of bronstatus. De betekenis voor de
+broedvogel–vegetatieanalyse, de beperkingen per model en de geraadpleegde
+primaire bronnen staan in
+`analyses/broedvogel_vegetatie_power/MODAK_PROBE_HYVEG_BRONONDERZOEK.md`.
 
 **Langjarige stuifkuil- en vegetatiemetingen:** publicaties noemen 32–35 stuifkuilen die vanaf 1983 tweemaal per jaar zijn gemeten, 19 permanente vegetatieplots en vergelijkingen van luchtfoto’s en orthofoto’s. De oorspronkelijke tabellen, plot-ID’s en digitale kaartlagen zijn nog niet voldoende geïdentificeerd om deze als afzonderlijke gegevensbron toe te laten.
 
