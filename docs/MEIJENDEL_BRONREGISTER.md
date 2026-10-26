@@ -606,12 +606,12 @@ meer vergelijkbaar met de fijnschaliger kleureninfraroodreeks; vooral het beeld
 uit 1938 bevat door de lage zonnestand schaduwen die op bos kunnen lijken.
 
 Dunea is bronhouder. Harrie heeft geen bevoegdheid de bestanden beschikbaar te
-stellen en verwijst voor een besluit naar Maarten Werink. Hij herinnert zich
-een eerder idee voor een gezamenlijke proef via een stage, maar deze afspraak
-is niet in de nu geraadpleegde projectdocumentatie, bijlage of toegankelijke
-mailbox bevestigd. Vóór een nieuwe uitvraag wordt daarom eerst met Maarten
-vastgesteld wat Dunea al heeft voorgesteld en welke bestaande fotobeelden,
-interpretaties en bronmetadata binnen zo'n proef kunnen worden gebruikt.
+stellen en verwijst voor een besluit naar Maarten Werink. Het idee voor een
+gezamenlijke proef via een stage is eerder alleen terloops door Harrie aan Ton
+genoemd; het was geen voorstel of toezegging van Maarten. Maarten wordt daarom
+zonder veronderstelde voorkennis rechtstreeks gevraagd welke bestaande
+fotobeelden, interpretaties en bronmetadata Dunea voor het onderzoek
+beschikbaar kan stellen en onder welke voorwaarden.
 
 De reeks kan de twee kaartmomenten 2001 en 2022 aanvullen, maar levert niet
 automatisch een voorspellend model. Harrie wijst erop dat ontwikkeling in het

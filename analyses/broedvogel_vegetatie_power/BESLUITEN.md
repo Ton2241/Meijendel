@@ -311,10 +311,12 @@ stilzwijgend herschreven.
   kleureninfraroodjaren uit 1975–2023. De exacte inventaris, bestanden,
   interpretaties, rechten en de laatste twee jaren zijn nog niet door Dunea
   bevestigd. De bron is daarom nog niet tot de analyse toegelaten.
-- Volgens Harrie beslist Maarten Werink over beschikbaarstelling en is eerder
-  mogelijk een gezamenlijke proef via een stage genoemd. Eerst wordt bij
-  Maarten aangesloten op wat Dunea al heeft voorgesteld; Harrie wordt niet om
-  overdracht van Dunea-bestanden gevraagd.
+- Volgens Harrie beslist Maarten Werink over beschikbaarstelling. Het idee
+  voor een gezamenlijke proef via een stage is eerder alleen terloops door
+  Harrie aan Ton genoemd en was geen voorstel of toezegging van Maarten.
+  Maarten wordt daarom zonder veronderstelde voorkennis rechtstreeks om
+  toegang en voorwaarden gevraagd; Harrie wordt niet om overdracht van
+  Dunea-bestanden gevraagd.
 - Een eventuele proef begint met de onderling beter vergelijkbare
   kleureninfraroodreeks vanaf 1975. De zwart-witbeelden van 1938–1966 hebben
   een grovere schaal en beeldspecifieke beperkingen en worden niet vooraf met
