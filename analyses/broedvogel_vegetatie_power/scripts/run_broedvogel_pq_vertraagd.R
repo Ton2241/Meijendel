@@ -310,9 +310,21 @@ run_delayed_pipeline <- function(
       statuses <- vapply(fit$models, `[[`, character(1), "status")
       model_rows[[key]] <- fit$comparison
       validation_rows[[key]] <- validation
-      summaries[[key]] <- summarise_delayed_result(
+      current_summary <- summarise_delayed_result(
         specification, response_type, statuses, validation, modelability
       )
+      gated_decision <- gate_delayed_decision_by_effect_status(
+        current_summary$decision[[1L]], effects$summary$effect_status
+      )
+      if (!identical(gated_decision, current_summary$decision[[1L]])) {
+        current_summary$reason <- paste(
+          c(current_summary$reason, "effectonzekerheid_ongeldig")[nzchar(c(
+            current_summary$reason, "effectonzekerheid_ongeldig"
+          ))], collapse = "; "
+        )
+        current_summary$decision <- gated_decision
+      }
+      summaries[[key]] <- current_summary
       curves[[key]] <- effects$curve
       effect_summaries[[key]] <- effects$summary
       cumulatives[[key]] <- effects$cumulative

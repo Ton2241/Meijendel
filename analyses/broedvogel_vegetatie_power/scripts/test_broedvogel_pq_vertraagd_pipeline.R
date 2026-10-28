@@ -72,6 +72,23 @@ stopifnot(
   decide_delayed_predictive_value(validation)$decision ==
     "geen_bestendige_voorspellende_meerwaarde"
 )
+one_spatial <- validation[c(1L, 6L), ]
+one_spatial$niet_lineair_vs_lineair_logscore <- 0.05
+stopifnot(
+  decide_delayed_predictive_value(one_spatial)$decision ==
+    "geen_bestendige_voorspellende_meerwaarde"
+)
+
+directions <- delayed_change_directions(c(-8, -4, -2, 1, 3, 9))
+stopifnot(
+  directions$change_pp[directions$direction == "afname"] == -4,
+  directions$change_pp[directions$direction == "toename"] == 3
+)
+
+gated <- gate_delayed_decision_by_effect_status(
+  "voorspellende_meerwaarde", c("geslaagd", "ongeldige_onzekerheid")
+)
+stopifnot(gated == "voorspellende_meerwaarde_onzekerheid_ongeldig")
 
 threshold <- large_change_threshold(c(0, -1, 2, -3, 4))
 stopifnot(isTRUE(all.equal(threshold, 3)))

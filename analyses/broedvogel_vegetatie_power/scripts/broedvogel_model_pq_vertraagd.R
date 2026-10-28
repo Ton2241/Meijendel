@@ -365,6 +365,7 @@ decide_delayed_predictive_value <- function(validation) {
   time_base <- if (nrow(temporal)) temporal$niet_lineair_vs_basis_logscore[[1L]] else NA_real_
   time_linear <- if (nrow(temporal)) temporal$niet_lineair_vs_lineair_logscore[[1L]] else NA_real_
   checks <- c(
+    vijf_ruimtelijke_blokken_geldig = nrow(spatial) == 5L,
     ruimtelijk_beter_dan_basis = is.finite(share_base) && share_base >= 0.6,
     ruimtelijk_beter_dan_lineair = is.finite(share_linear) && share_linear >= 0.6,
     later_beter_dan_basis = is.finite(time_base) && time_base > 0,
@@ -511,16 +512,24 @@ delayed_change_directions <- function(change_pp) {
   rows <- list()
   if (length(negative)) rows$afname <- data.frame(
     direction = "afname",
-    change_pp = unname(stats::quantile(negative, 0.10, type = 1, names = FALSE)),
+    change_pp = stats::median(negative),
     stringsAsFactors = FALSE
   )
   if (length(positive)) rows$toename <- data.frame(
     direction = "toename",
-    change_pp = unname(stats::quantile(positive, 0.90, type = 1, names = FALSE)),
+    change_pp = stats::median(positive),
     stringsAsFactors = FALSE
   )
   if (!length(rows)) return(data.frame())
   do.call(rbind, rows)
+}
+
+gate_delayed_decision_by_effect_status <- function(decision, effect_status) {
+  if (!identical(decision, "voorspellende_meerwaarde")) return(decision)
+  if (!length(effect_status) || any(effect_status != "geslaagd")) {
+    return("voorspellende_meerwaarde_onzekerheid_ongeldig")
+  }
+  decision
 }
 
 bind_nonempty_data_frames <- function(items) {
