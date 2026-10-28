@@ -76,4 +76,10 @@ stopifnot(
 threshold <- large_change_threshold(c(0, -1, 2, -3, 4))
 stopifnot(isTRUE(all.equal(threshold, 3)))
 
+bad_covariance <- prediction_covariance_status(matrix(NA_real_, 2, 2))
+stopifnot(
+  bad_covariance$status == "ongeldige_onzekerheid",
+  grepl("niet-eindig", bad_covariance$reason, fixed = TRUE)
+)
+
 cat("OK: vertraagde modelset, drieledige voorspellingstoets en besluitregel.\n")

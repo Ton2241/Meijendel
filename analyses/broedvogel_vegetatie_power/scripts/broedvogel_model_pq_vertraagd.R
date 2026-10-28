@@ -523,6 +523,12 @@ delayed_change_directions <- function(change_pp) {
   do.call(rbind, rows)
 }
 
+bind_nonempty_data_frames <- function(items) {
+  items <- items[vapply(items, function(x) is.data.frame(x) && nrow(x), logical(1))]
+  if (!length(items)) return(data.frame())
+  do.call(rbind, items)
+}
+
 representative_delayed_newdata <- function(data, change_pp, lags = 0:15) {
   base <- data[rep(1L, length(lags)), , drop = FALSE]
   base$lag_years <- as.integer(lags)
@@ -542,6 +548,24 @@ representative_delayed_newdata <- function(data, change_pp, lags = 0:15) {
   base
 }
 
+prediction_covariance_status <- function(covariance) {
+  covariance <- as.matrix(covariance)
+  if (!nrow(covariance) || nrow(covariance) != ncol(covariance)) {
+    return(list(status = "ongeldige_onzekerheid", reason = "Voorspelcovariantie is niet vierkant."))
+  }
+  if (!all(is.finite(covariance))) {
+    return(list(status = "ongeldige_onzekerheid", reason = "Voorspelcovariantie bevat niet-eindige waarden."))
+  }
+  eigenvalues <- tryCatch(
+    eigen((covariance + t(covariance)) / 2, symmetric = TRUE, only.values = TRUE)$values,
+    error = function(error) NA_real_
+  )
+  if (!all(is.finite(eigenvalues)) || min(eigenvalues) < -1e-7) {
+    return(list(status = "ongeldige_onzekerheid", reason = "Voorspelcovariantie is niet positief semidefiniet."))
+  }
+  list(status = "geslaagd", reason = "")
+}
+
 simulate_delayed_effect_curve <- function(
     fit, data, direction, change_pp, response_type, simulations = 1000L,
     seed = 20261028L) {
@@ -555,6 +579,10 @@ simulate_delayed_effect_curve <- function(
   )
   eta <- as.numeric(prediction$fit)
   covariance <- as.matrix(prediction$cov.fit)
+  covariance_status <- prediction_covariance_status(covariance)
+  if (!identical(covariance_status$status, "geslaagd")) {
+    stop(covariance_status$reason, call. = FALSE)
+  }
   set.seed(seed)
   draws <- MASS::mvrnorm(as.integer(simulations), mu = eta, Sigma = covariance)
   n_lag <- length(lags)
@@ -623,10 +651,29 @@ extract_delayed_effects <- function(
   }
   fit <- readRDS(nonlinear$fit_path)
   results <- lapply(seq_len(nrow(directions)), function(i) {
-    simulate_delayed_effect_curve(
-      fit, fit_result$data, directions$direction[[i]], directions$change_pp[[i]],
-      response_type, simulations = simulations,
-      seed = 20261028L + i
+    tryCatch(
+      {
+        result <- simulate_delayed_effect_curve(
+          fit, fit_result$data, directions$direction[[i]], directions$change_pp[[i]],
+          response_type, simulations = simulations,
+          seed = 20261028L + i
+        )
+        result$summary$effect_status <- "geslaagd"
+        result$summary$effect_reason <- ""
+        result
+      },
+      error = function(error) list(
+        curve = data.frame(), cumulative = data.frame(),
+        summary = data.frame(
+          direction = directions$direction[[i]], change_pp = directions$change_pp[[i]],
+          direct_effect = NA_real_, direct_lower95 = NA_real_, direct_upper95 = NA_real_,
+          maximum_effect_lag = NA_integer_, maximum_effect = NA_real_,
+          effect_at_15 = NA_real_, cumulative_0_3 = NA_real_,
+          cumulative_0_7 = NA_real_, cumulative_0_15 = NA_real_,
+          effect_status = "ongeldige_onzekerheid",
+          effect_reason = conditionMessage(error), stringsAsFactors = FALSE
+        )
+      )
     )
   })
   add_keys <- function(data) {
@@ -639,9 +686,15 @@ extract_delayed_effects <- function(
   rm(fit)
   gc(verbose = FALSE)
   list(
-    curve = add_keys(do.call(rbind, lapply(results, `[[`, "curve"))),
+    curve = {
+      value <- bind_nonempty_data_frames(lapply(results, `[[`, "curve"))
+      if (nrow(value)) add_keys(value) else value
+    },
     summary = add_keys(do.call(rbind, lapply(results, `[[`, "summary"))),
-    cumulative = add_keys(do.call(rbind, lapply(results, `[[`, "cumulative")))
+    cumulative = {
+      value <- bind_nonempty_data_frames(lapply(results, `[[`, "cumulative"))
+      if (nrow(value)) add_keys(value) else value
+    }
   )
 }
 
