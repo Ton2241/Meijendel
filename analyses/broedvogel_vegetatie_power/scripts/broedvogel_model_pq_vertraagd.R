@@ -134,8 +134,8 @@ build_delayed_relation_population <- function(assigned, specification, membershi
   groups <- split(seq_len(nrow(selected)), keys)
   carry <- c(
     "plot_id", "jaar", "interval_start_year", "interval_end_year", "interval_years",
-    "lag_years", "event_id", "jaar_decennium", "analyse_bron_factor",
-    "tellerteam_factor", "ervaring_plot_z", "ervaring_elders_z",
+    "lag_years", "event_id", "jaar_decennium", "tellerteam_factor",
+    "ervaring_plot_z", "ervaring_elders_z",
     "log_oppervlakte_km2", "inspanning_duur_z", "inspanning_ongunstig_z",
     "inspanning_ongunstig_bekend", gradient_field
   )
@@ -146,6 +146,9 @@ build_delayed_relation_population <- function(assigned, specification, membershi
     values <- lapply(carry, function(field) constant_value(current[[field]], field))
     names(values) <- carry
     out <- as.data.frame(values, stringsAsFactors = FALSE)
+    sources <- sort(unique(as.character(current$analyse_bron_factor)))
+    sources <- sources[!is.na(sources) & nzchar(sources)]
+    out$analyse_bron_factor <- if (length(sources) == 1L) sources else "gemengd"
     out$total_count <- sum(as.numeric(current$count), na.rm = TRUE)
     out$richness <- sum(as.numeric(current$count) > 0, na.rm = TRUE)
     out$n_species <- length(unique(current$soort_id))
@@ -166,6 +169,7 @@ build_delayed_relation_population <- function(assigned, specification, membershi
   out$richness_absent <- out$n_species - out$richness
   out$plot_factor <- factor(out$plot_id)
   out$year_factor <- factor(out$jaar)
+  out$analyse_bron_factor <- factor(out$analyse_bron_factor)
   out$tellerteam_factor <- factor(out$tellerteam_factor)
   out$row_id <- paste(
     out$analysis_id, out$plot_id, out$jaar, out$interval_end_year, sep = ":"

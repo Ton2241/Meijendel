@@ -25,7 +25,7 @@ birds$row_id <- paste(birds$soort_id, birds$plot_id, birds$jaar, sep = ":")
 birds$count <- as.integer(birds$soort_id == 1L)
 birds$soort_naam <- ifelse(birds$soort_id == 1L, "Soort A", "Soort B")
 birds$tellerteam_factor <- factor("T1")
-birds$analyse_bron_factor <- factor("sovon_m")
+birds$analyse_bron_factor <- factor(ifelse(birds$soort_id == 1L, "sovon_m", "jrvslg_m"))
 birds$jaar_decennium <- (birds$jaar - 2000) / 10
 birds$ervaring_plot_z <- 0
 birds$ervaring_elders_z <- 0
@@ -64,6 +64,7 @@ stopifnot(
   all(aggregated$n_species == 2L),
   all(aggregated$richness == 1L),
   all(aggregated$total_count == 1L),
+  all(as.character(aggregated$analyse_bron_factor) == "gemengd"),
   all(aggregated$change_pp == 2 | aggregated$change_pp == -3)
 )
 
