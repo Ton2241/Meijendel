@@ -44,6 +44,25 @@ stilzwijgend herschreven.
   begrensde maximale reactieduur voor gemeenschap en vogelgroepen. Dit is geen
   garantie voor iedere soort; een soortmodel gaat alleen door bij voldoende
   geldige responsrijen en numeriek geldige schatting.
+- Het hoofdmodel koppelt ieder vogelplotjaar vervolgens hoogstens eenmaal, aan
+  de meest recente voorafgaande PQ-verandering. Daardoor wordt een later
+  PQ-interval niet tegelijk als reactie op een oudere verandering geteld. De
+  feitelijke hoofdmodeldekking bedraagt 650 vogelplotjaren in 35 plots over
+  1994–2025, met maximaal veertien jaar vertraging.
+- Run `20261028T162051Z-70d6fa9bbef7` vergelijkt zeventien vooraf gekozen
+  relaties voor territoriumaantal en aanwezigheid. Voorspellende meerwaarde
+  vereist vijf geldige ruimtelijke blokken, winst ten opzichte van zowel het
+  basis- als het lineaire model, winst in latere jaren en geldige
+  effectonzekerheid.
+- Drie territoriumrelaties voldoen aan die hoofdregel: duingrasland met de
+  gehele gemeenschap, bomen/bos met de gehele gemeenschap en duingrasland met
+  bodemfoeragerende insecteneters. Twee aanwezigheidspatronen halen de
+  voorspellingstoets maar niet de onzekerheidscontrole. Zij gaan niet door.
+- De drie kandidaten hebben vrijwel geen direct effect en brede intervallen
+  voor de langere reactie. De niet-overlappende gebeurtenisanalyse bevestigt
+  hun richting niet. Zij mogen in Taak 4 worden gebruikt om detecteerbaarheid
+  en benodigde meetduur te simuleren, maar gelden niet als bewezen ecologische
+  oorzaak-gevolgrelaties.
 
 ## 26 oktober 2026 — gebruik van HYVEG, MODAK en PROBE
 

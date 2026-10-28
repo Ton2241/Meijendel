@@ -325,3 +325,26 @@ De regressietest is:
 ```bash
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_pq_ecologische_gradienten.R
 ```
+
+## Niet-lineaire PQ-route: vertraagd hoofdmodel
+
+Na de gradiëntenrun wordt het hoofdmodel lokaal en sequentieel uitgevoerd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_broedvogel_pq_vertraagd.sh
+```
+
+De runner vergelijkt per vooraf gekozen relatie en respons een basismodel, een
+lineair vertraagd model en een begrensd kwadratisch niet-lineair model. Hij
+houdt vijf volledige plotblokken en alle jaren vanaf 2018 achter, koppelt ieder
+vogelplotjaar hoogstens eenmaal en voert daarnaast een niet-overlappende
+gebeurtenisanalyse uit. De database blijft read-only; niets wordt naar Shiny,
+dashboard of VPS geschreven.
+
+De drie regressietests zijn:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_pq_vertraagd.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_pq_vertraagd_pipeline.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_pq_vertraagd_runner.R
+```

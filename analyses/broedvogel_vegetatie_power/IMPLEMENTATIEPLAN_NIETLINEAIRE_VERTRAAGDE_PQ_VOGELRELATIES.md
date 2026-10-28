@@ -159,14 +159,37 @@ per soort beslist de modeldekking opnieuw.
 functie van omvang/richting van vegetatieverandering en jaren sinds die
 verandering, boven op hetzelfde vogelbasismodel.
 
-- [ ] Vergelijk op exact dezelfde responsrijen een model zonder PQ, een lineair
+- [x] Vergelijk op exact dezelfde responsrijen een model zonder PQ, een lineair
   vertraagd model en het begrensde niet-lineaire model.
-- [ ] Valideer op niet-gebruikte plots en latere jaren; een betere passing in
+- [x] Valideer op niet-gebruikte plots en latere jaren; een betere passing in
   de schattingsgegevens alleen geldt niet als voorspellende winst.
-- [ ] Rapporteer directe, maximale, cumulatieve en uitdovende effecten plus
+- [x] Rapporteer directe, maximale, cumulatieve en uitdovende effecten plus
   onzekerheid en modelstatus.
-- [ ] Voer een gebeurtenisanalyse rond vooraf gedefinieerde grotere
+- [x] Voer een gebeurtenisanalyse rond vooraf gedefinieerde grotere
   vegetatieveranderingen uit als gevoeligheidsanalyse.
+
+**Uitkomst 28 oktober 2026.** Run `20261028T162051Z-70d6fa9bbef7` onderzocht
+zeventien vooraf vastgelegde vegetatie–vogelrelaties voor territoriumaantal en
+aanwezigheid. Ieder vogelplotjaar is hoogstens eenmaal gekoppeld, aan de meest
+recente voorafgaande PQ-verandering. Daardoor gebruiken de gemeenschapsmodellen
+650 vogelplotjaren in 35 plots over 1994–2025 en is de grootste werkelijk
+gebruikte vertraging veertien jaar; een later PQ-interval vervangt een ouder
+interval.
+
+Van 102 volledige modellen slaagden er 101 numeriek. Van 204
+validatievergelijkingen waren er 189 geldig. Drie territoriumrelaties
+voorspelden in alle vijf geldige ruimtelijke blokken en in latere jaren beter
+dan zowel het basis- als het lineaire model: duingrasland met de gehele
+gemeenschap, bomen/bos met de gehele gemeenschap en duingrasland met
+bodemfoeragerende insecteneters. De directe effecten waren vrijwel nul; de
+langere effectcurven hadden brede intervallen die één omvatten. Twee
+aanwezigheidsrelaties haalden dezelfde voorspellingstoets, maar hun
+effectonzekerheid was numeriek ongeldig. Zij gelden niet als volledig
+gevalideerd. De niet-overlappende gebeurtenisanalyse bevestigde geen van de
+drie kandidaatrelaties; het enige lange-lagresultaat met minstens vijf
+gebeurtenissen had zelfs de tegengestelde richting. Taak 3 levert daarom drie
+voorspellende kandidaten voor een voorzichtige poweranalyse, geen bewezen
+ecologische oorzaak-gevolgrelatie.
 
 ## Task 4 — power en voorspelbaarheid
 

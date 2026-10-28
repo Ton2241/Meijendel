@@ -1,0 +1,296 @@
+{
+  "run_id": "20261028T162051Z-70d6fa9bbef7",
+  "git_commit": "70d6fa9bbef7fa01dd3b211fda07f4694baf7f63",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.4",
+  "executed_at_utc": "2026-10-28T16:31:48Z",
+  "source_fingerprint_sha256": "3ea483489e4b37b0b1827cdfe51fbea55f982318fdc26d6a5fb39ad8a28ac0f3",
+  "tables": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "dagbezoeken_bmp": {
+      "file": "dagbezoeken_bmp.tsv",
+      "rows": 14455,
+      "bytes": 310792,
+      "sha256": "16c6619bd6144ce2a9ce137392674e66bf4c138fb9c1d1960313295971982a50"
+    },
+    "evg_vogel_landschapgroep": {
+      "file": "evg_vogel_landschapgroep.tsv",
+      "rows": 200,
+      "bytes": 1549,
+      "sha256": "e6a84668009a4e65b262947a3df410f6c92b43726c3daee52ba4030eceb3e3bb"
+    },
+    "functional_group_definition": {
+      "file": "functional_group_definition.tsv",
+      "rows": 6,
+      "bytes": 196,
+      "sha256": "b432821fd24c23ef8b3cd41f79274e6a3f94354d1e36cad3311bac6a9ba89a63"
+    },
+    "functional_group_membership": {
+      "file": "functional_group_membership.tsv",
+      "rows": 954,
+      "bytes": 18844,
+      "sha256": "7378bc520797769bb1e4d2f983091968a2fd80a855f5b6a35c4738fa7681d2c6"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 67,
+      "bytes": 1720,
+      "sha256": "d5dc6600e87f2be2b5ec65ceb54f00f17ef755fb18e7604dc24d853a18d138dd"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    },
+    "weer_analyse": {
+      "file": "weer_analyse.tsv",
+      "rows": 24837,
+      "bytes": 603713,
+      "sha256": "ce5c4ce15bb996b33007793255a0248279484b80d72674bbb9f0641e5357bbe9"
+    }
+  },
+  "gradient_file": {
+    "file": "pq_gradient_intervallen_laatste.csv",
+    "sha256": "77ee0e2ca5e30a5740b90a9c4ccf136750c2ad005ba7a126c4b24b1364c25077",
+    "rows": 441
+  },
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "response_exclusions": [
+    {
+      "soort_id": 5,
+      "soort_naam": "Aalscholver",
+      "reden": "Kolonievogel; territoriumaantal wordt bepaald door een nestelplaats die niet door de gebruikte PQ-vegetatiematen wordt gemeten."
+    }
+  ],
+  "interval_assignment": "ieder vogelplotjaar hoogstens eenmaal; meest recente voorafgaande geldige PQ-verandering; maximaal 15 jaar",
+  "model_comparison": ["basis", "lineair_vertraagd", "begrensd_kwadratisch_niet_lineair"],
+  "validation": {
+    "spatial_folds": 5,
+    "temporal_test_from": 2018
+  },
+  "large_event_rule": {
+    "threshold": "75e percentiel van absolute niet-nul verandering per relatie",
+    "window": "-3 tot en met +15 jaar; geen overlappende vogelplotjaren"
+  },
+  "specifications": [
+    {
+      "analysis_id": "gemeenschap_open_pionier",
+      "relation_type": "gemeenschap",
+      "group_type": "gemeenschap",
+      "gradient": "open_pionier",
+      "group_name": "Gehele broedvogelgemeenschap"
+    },
+    {
+      "analysis_id": "gemeenschap_duingrasland_mos_korstmos",
+      "relation_type": "gemeenschap",
+      "group_type": "gemeenschap",
+      "gradient": "duingrasland_mos_korstmos",
+      "group_name": "Gehele broedvogelgemeenschap"
+    },
+    {
+      "analysis_id": "gemeenschap_nat_riet",
+      "relation_type": "gemeenschap",
+      "group_type": "gemeenschap",
+      "gradient": "nat_riet",
+      "group_name": "Gehele broedvogelgemeenschap"
+    },
+    {
+      "analysis_id": "gemeenschap_struweel_ruigte",
+      "relation_type": "gemeenschap",
+      "group_type": "gemeenschap",
+      "gradient": "struweel_ruigte",
+      "group_name": "Gehele broedvogelgemeenschap"
+    },
+    {
+      "analysis_id": "gemeenschap_bomen_bos",
+      "relation_type": "gemeenschap",
+      "group_type": "gemeenschap",
+      "gradient": "bomen_bos",
+      "group_name": "Gehele broedvogelgemeenschap"
+    },
+    {
+      "analysis_id": "ecologisch_open_pionier",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "300",
+      "gradient": "open_pionier",
+      "group_name": "Vogels van pionierbegroeiingen"
+    },
+    {
+      "analysis_id": "ecologisch_duingrasland",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "300",
+      "gradient": "duingrasland_mos_korstmos",
+      "group_name": "Vogels van pionierbegroeiingen"
+    },
+    {
+      "analysis_id": "ecologisch_nat_water",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "100",
+      "gradient": "nat_riet",
+      "group_name": "Watervogels"
+    },
+    {
+      "analysis_id": "ecologisch_nat_riet",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "200",
+      "gradient": "nat_riet",
+      "group_name": "Rietvogels"
+    },
+    {
+      "analysis_id": "ecologisch_struweel",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "600",
+      "gradient": "struweel_ruigte",
+      "group_name": "Struweelvogels"
+    },
+    {
+      "analysis_id": "ecologisch_bomen_bosrand",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "700",
+      "gradient": "bomen_bos",
+      "group_name": "Bosrandvogels"
+    },
+    {
+      "analysis_id": "ecologisch_bomen_bos",
+      "relation_type": "ecologisch",
+      "group_type": "ecologisch",
+      "group_id": "800",
+      "gradient": "bomen_bos",
+      "group_name": "Bosvogels"
+    },
+    {
+      "analysis_id": "functioneel_open_grondbroeders",
+      "relation_type": "functioneel",
+      "group_type": "functioneel",
+      "group_id": "3",
+      "gradient": "open_pionier",
+      "group_name": "Grondbroeders"
+    },
+    {
+      "analysis_id": "functioneel_gras_bodemfoerageerders",
+      "relation_type": "functioneel",
+      "group_type": "functioneel",
+      "group_id": "1",
+      "gradient": "duingrasland_mos_korstmos",
+      "group_name": "Bodemfoeragerende insecteneters"
+    },
+    {
+      "analysis_id": "functioneel_nat_langeafstand",
+      "relation_type": "functioneel",
+      "group_type": "functioneel",
+      "group_id": "5",
+      "gradient": "nat_riet",
+      "group_name": "Langeafstandstrekkers"
+    },
+    {
+      "analysis_id": "functioneel_struweel_langeafstand",
+      "relation_type": "functioneel",
+      "group_type": "functioneel",
+      "group_id": "5",
+      "gradient": "struweel_ruigte",
+      "group_name": "Langeafstandstrekkers"
+    },
+    {
+      "analysis_id": "functioneel_bos_holenbroeders",
+      "relation_type": "functioneel",
+      "group_type": "functioneel",
+      "group_id": "4",
+      "gradient": "bomen_bos",
+      "group_name": "Holenbroeders"
+    }
+  ],
+  "outputs": {
+    "samenvatting": {
+      "file": "pq_vertraagd_samenvatting.csv",
+      "bytes": 8501,
+      "sha256": "5f74d7a20572a648d88288cfb1e4bf1c344b7a535330f77caf051a2bd01767e9"
+    },
+    "dekking": {
+      "file": "pq_vertraagd_dekking.csv",
+      "bytes": 3878,
+      "sha256": "2f463e60b9b15c7691c4cd6db10ece844c672a5a662c5b5c8eb0572104e98df8"
+    },
+    "modellen": {
+      "file": "pq_vertraagd_modellen.csv",
+      "bytes": 20466,
+      "sha256": "bef7397e83ecb895158e696cea4783acfbf86c2480de9bcb7ea5f4868662224e"
+    },
+    "validatie": {
+      "file": "pq_vertraagd_validatie.csv",
+      "bytes": 74292,
+      "sha256": "9f4530e84cefe22b602604ae88b46c91ed76156c00005f51e1df2376831a785b"
+    },
+    "effectcurve": {
+      "file": "pq_vertraagd_effectcurve.csv",
+      "bytes": 122843,
+      "sha256": "8e221b7abd9d3bbc6efe48dad852698f6cfcdf89571630e7fa20e60c05de6913"
+    },
+    "effecten": {
+      "file": "pq_vertraagd_effecten.csv",
+      "bytes": 14417,
+      "sha256": "4d935dee3363957e133e46d380300ff0c8136373882f37ee070780359bfc137a"
+    },
+    "cumulatief": {
+      "file": "pq_vertraagd_cumulatief.csv",
+      "bytes": 16984,
+      "sha256": "5a4f2358604e347b5636dc1612a14444f4a2731a7f4fa0a317cd1b9ac7f7fbd4"
+    },
+    "gebeurtenissen": {
+      "file": "pq_vertraagd_gebeurtenissen.csv",
+      "bytes": 62498,
+      "sha256": "70c10d685805dad72f88013b2d9288480cdad789a327c53c898ad7a52c047788"
+    },
+    "gebeurteniscurve": {
+      "file": "pq_vertraagd_gebeurteniscurve.csv",
+      "bytes": 145596,
+      "sha256": "afbe94eeb8ac377657804340d5a35851d21b68c335ae67cf1290aa271fa0f772"
+    }
+  }
+}

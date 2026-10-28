@@ -212,6 +212,24 @@ en 44 vier jaar lang zijn. De resterende vier intervallen duren vijf, zes,
 zeven of dertien jaar. De vijf gradiënten veranderen ieder in 32–35 plots.
 De gradiënttabellen zijn afgeleide analyseproducten, geen wijziging van de
 provinciale PQ-bron of de levende database.
+
+**Niet-lineair vertraagd vogelmodel, 28 oktober 2026.** Run
+`20261028T162051Z-70d6fa9bbef7` koppelt ieder vogelplotjaar hoogstens eenmaal,
+aan de meest recente voorafgaande geldige PQ-verandering. De
+gemeenschapsmodellen gebruiken 650 vogelplotjaren in 35 plots over 1994–2025,
+136 vogelsoorten en 362 veranderingsintervallen; de feitelijke vertraging loopt
+tot veertien jaar. Zeventien vooraf gekozen relaties zijn voor zowel
+territoriumaantal als aanwezigheid vergeleken met een basis- en lineair model.
+Van 102 volledige modellen waren er 101 numeriek geldig; van 204
+validatievergelijkingen 189. Drie territoriumrelaties voorspelden in vijf
+geldige ruimtelijke blokken en latere jaren beter dan beide eenvoudigere
+modellen: duingrasland met de gehele vogelgemeenschap, bomen/bos met de gehele
+gemeenschap en duingrasland met bodemfoeragerende insecteneters. Hun langere
+effectintervallen omvatten echter steeds de waarde één en een afzonderlijke
+analyse van negen tot 24 grote, niet-overlappende gebeurtenissen per relatie
+bevestigde de richting niet. De provinciale PQ-reeks levert daarmee drie
+voorspellende kandidaten voor een poweranalyse, maar nog geen robuust bewijs
+voor een ecologische oorzaak-gevolgrelatie.
 **Vergelijking met NDFF, 10 oktober 2026.** De eerdere uitkomst dat 1.039 van 2.007 provinciale opnamen uit 1981–2025 in de openbare NDFF-download herkenbaar waren, was een resultaat van de toenmalige strikte matchmethode, niet een maat voor volledige NDFF-dekking. Binnen het huidige Meijendelgebied liggen 1.363 provinciale opnamen; 897 daarvan matchen strikt met de openbare export en 916 na een voorlopige proef met de gemelde verschuiving van beide coördinaten met 5 meter. Naamvarianten leveren op opnameniveau geen extra matches op. Van de 434 provinciale opnamen binnen Meijendel uit 2018–2025 blijven 91 herkenbaar. Afzonderlijk zijn bij 127 opnamen kandidaatmatches gevonden in de beveiligde, openbaar vervaagde NDFF-gegevens; deze kunnen overlappen met de openbare matches en worden niet opgeteld. De reden voor de overige niet-matches staat niet vast. De provinciale PQ-reeks blijft primair; NDFF-PQ telt niet als een tweede opname mee. De methode en de uitsplitsing naar taxonregels staan in `docs/bronnen/bronvergelijkingen/NDFF_STAGINGDATASET.md`.
 
 **Bronbericht provincie, vastgelegd 19 oktober 2026.** Ingrid de Vries bevestigt dat de provinciale vegetatiemeetnetgegevens in NDFF onvolledig zijn. Zij noemt geen aantal ontbrekende opnamen, jaren of oorzaak per record: de hierboven beschreven matchpercentages meten die onvolledigheid niet. Provincie Zuid-Holland controleert met CBS de historische vegetatiemeetnetgegevens, waaronder de eerder gemelde wisselende coördinaten en niet meer actieve PQ's. Na de controle wil de provincie de gecorrigeerde gegevens bij NDFF onderbrengen en Ton een nieuwe provinciale levering geven. Deze leveringen zijn nog niet ontvangen. Ingrid werkt bij de provincie aan het NDFF-databeheer, zit namens de provincies in de NDFF-kwaliteitscommissie en neemt deel aan de programmalijn Data & IV van het Verbeterprogramma VHR-monitoring; haar collega's nemen eveneens deel aan dat programma. De bestaande provinciale reeks van 254 PQ's, 2.007 opnamen en 53.122 taxonregels uit 1981–2025 blijft intussen de primaire, als huidige bronversie herkenbare analysetabel.

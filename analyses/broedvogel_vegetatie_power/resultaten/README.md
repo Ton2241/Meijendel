@@ -6,6 +6,36 @@ checkpoints staan onder de door Git genegeerde map `runs/`. Een getal gaat pas
 naar het hoofddocument of het artikel wanneer selectie, modelstatus en manifest
 zijn gecontroleerd.
 
+## Niet-lineaire vertraagde PQ–vogelrelaties
+
+De bestanden `pq_vertraagd_laatste_*` horen bij run
+`20261028T162051Z-70d6fa9bbef7` van 28 oktober 2026, uitgevoerd met commit
+`70d6fa9bbef7`. Het hoofdmodel onderzocht zeventien vooraf vastgelegde
+vegetatie–vogelrelaties voor territoriumaantal en aanwezigheid. Ieder
+vogelplotjaar is hoogstens eenmaal gekoppeld, aan de meest recente
+voorafgaande PQ-verandering. De gemeenschapsrelaties bevatten 650
+vogelplotjaren in 35 plots over 1994–2025, 136 soorten en 362 verschillende
+intervallen. De feitelijke vertraging loopt tot veertien jaar.
+
+Van 102 volledige modellen slaagden er 101. Van 204 validatievergelijkingen
+waren er 189 geldig: 156 ruimtelijk en 33 temporeel. Drie
+territoriumrelaties voldeden aan de volledige hoofdregel: duingrasland met de
+gehele gemeenschap, bomen/bos met de gehele gemeenschap en duingrasland met
+bodemfoeragerende insecteneters. Voor een mediane afname of toename waren de
+directe rate ratio's 0,999–1,002. Bij veertien tot vijftien jaar liepen de
+puntschattingen verder uiteen, maar alle 95%-intervallen omvatten één. Twee
+aanwezigheidsrelaties haalden de voorspellingstoets, maar hun
+voorspelcovariantie was niet eindig; zij hebben de expliciete status
+`voorspellende_meerwaarde_onzekerheid_ongeldig`.
+
+Per relatie selecteerde de gevoeligheidsanalyse negen tot 24 grote,
+niet-overlappende gebeurtenissen. De richting van de drie kandidaten werd
+niet onafhankelijk bevestigd. Bij afname van duingrasland was het enige
+resultaat na vijftien jaar met minstens vijf gebeurtenissen tegengesteld; de
+overige lange-lagrichtingen bevatten minder dan vijf gebeurtenissen. Alle
+modellen, validatieblokken, effectcurven, gebeurteniscurven en uitvalstatussen
+blijven in de compacte bestanden zichtbaar.
+
 ## Ecologische PQ-gradiënten en veranderingsintervallen
 
 De bestanden `pq_gradient_*_laatste.csv` en het manifest horen bij run

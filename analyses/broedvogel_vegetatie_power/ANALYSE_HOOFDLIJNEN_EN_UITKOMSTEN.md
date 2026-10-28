@@ -701,6 +701,48 @@ eigen responsdekking en modelschatting geldig zijn. Ook deze uitkomst toont
 alleen dat het model geschat kan worden; zij bewijst nog geen verband en is nog
 geen poweranalyse.
 
+Het hoofdmodel voorkomt vervolgens dat hetzelfde vogelplotjaar tegelijk als
+reactie op meerdere PQ-intervallen meetelt. Per plotjaar wordt uitsluitend de
+meest recente voorafgaande verandering gebruikt. Daardoor bevat de
+gemeenschapsanalyse 650 vogelplotjaren in 35 plots over 1994–2025, gekoppeld
+aan 362 veranderingsintervallen. De langste feitelijk gebruikte vertraging is
+veertien jaar: zodra een nieuwe PQ-opname beschikbaar is, vervangt het nieuwe
+interval het oudere als mogelijke verklaring.
+
+Run `20261028T162051Z-70d6fa9bbef7` onderzocht zeventien vooraf vastgelegde
+relaties, ieder voor territoriumaantal en het aandeel aanwezige soorten. Per
+uitkomst zijn op exact dezelfde rijen een basismodel, een lineair vertraagd
+model en een begrensd kwadratisch niet-lineair model vergeleken. Van 102
+volledige modellen waren er 101 numeriek geldig. Van 204 vergelijkingen op
+achtergehouden plots en jaren waren er 189 geldig.
+
+Drie territoriumrelaties voorspelden in alle vijf geldige ruimtelijke blokken
+en in de latere jaren beter dan zowel het basis- als het lineaire model:
+
+- duingrasland/mossen/korstmossen met het totale territoriumaantal van de
+  vogelgemeenschap;
+- bomen/bos met het totale territoriumaantal van de vogelgemeenschap;
+- duingrasland/mossen/korstmossen met het territoriumaantal van
+  bodemfoeragerende insecteneters.
+
+De geschatte directe reactie op een mediane werkelijke afname of toename was
+bij alle drie vrijwel één: praktisch geen onmiddellijke verandering. De
+sterkste modelreactie lag steeds bij veertien tot vijftien jaar. De
+onzekerheidsintervallen omvatten daar echter steeds de waarde één. Twee
+aanwezigheidsrelaties voldeden aan de voorspellingstoets, maar hadden geen
+geldige effectonzekerheid en gelden daarom niet als volledig gevalideerd. Eén
+niet-lineair territoriummodel en vijftien validatiemodellen vielen numeriek
+uit; ook die nul- en uitvaluitkomsten zijn bewaard.
+
+De afzonderlijke gebeurtenisanalyse gebruikte per relatie negen tot 24 grote,
+niet-overlappende vegetatieveranderingen. Zij bevestigde de richting van de
+drie kandidaten niet. Voor een afname van duingrasland was het enige
+lange-lagresultaat met ten minste vijf gebeurtenissen zelfs tegengesteld aan
+de modelcurve; voor de overige richtingen waren op die termijn minder dan
+vijf gebeurtenissen beschikbaar. De drie relaties zijn daarom kandidaten
+voor simulatie van power en benodigde meetduur, niet het bewijs dat
+vegetatieverandering de vogelverandering veroorzaakt.
+
 ### KWR-modelonderzoek: HYVEG, MODAK en PROBE
 
 Op 26 oktober 2026 zijn HYVEG, MODAK en de PROBE-familie aan de hand van de
@@ -783,7 +825,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
-| Niet-lineaire vertraagde PQ–vogelrelaties | Gradiënten en intervallen uitgevoerd | Van 501 PQ-plotjaren in 35 plots over 1981–2025 zijn 485 geldig bij minimaal 80% ingedeelde bronbedekking. Zij leveren 441 opeenvolgende veranderingsintervallen. Bij 7, 10 en 15 jaar zijn respectievelijk 249, 196 en 149 intervallen aan vogelplotjaren te koppelen; bij 15 jaar blijven 30 plots over. De maximale groepsreactieduur is daarom 15 jaar. Er is nog geen effectmodel of poweranalyse uitgevoerd. |
+| Niet-lineaire vertraagde PQ–vogelrelaties | Hoofdmodel en gebeurtenisanalyse uitgevoerd | Het hoofdmodel gebruikt 650 unieke vogelplotjaren in 35 plots over 1994–2025 en maximaal veertien jaar vertraging. Van 34 uitkomsten blijven drie territoriumrelaties als voorspellende kandidaat over. Hun langere effectintervallen omvatten één en de gebeurtenisanalyse bevestigt de richting niet. Nog geen causale conclusie of powergetal. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
