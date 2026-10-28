@@ -9,7 +9,7 @@ zijn gecontroleerd.
 ## Ecologische PQ-gradiënten en veranderingsintervallen
 
 De bestanden `pq_gradient_*_laatste.csv` en het manifest horen bij run
-`20261028T144429Z-f4416afa2c47` van 28 oktober 2026. De runner las de lokale
+`20261028T145317Z-3691b52aedc8` van 28 oktober 2026. De runner las de lokale
 database uitsluitend read-only en gebruikte de officiële SynBioSys-EcoDbase
 als ecologische referentie. Van 642 taxa uit 35.672 taxonregels en 1.314 aan
 35 vogelplots gekoppelde PQ-opnamen uit 1981–2025 zijn 528 taxa aan ten minste

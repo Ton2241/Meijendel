@@ -1,0 +1,151 @@
+{
+  "run_id": "20261028T145317Z-3691b52aedc8",
+  "git_commit": "3691b52aedc859fcd45efdfcb34f66096a5602db",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.4",
+  "executed_at_utc": "2026-10-28T14:53:24Z",
+  "scope": "v_meijendel_analyseplot_actueel; M66 en M91 uitgesloten",
+  "score_validity": "minimaal 80% van de totale bronbedekking aan een gradiënt gekoppeld",
+  "gradient_definitions": {
+    "open_pionier": "Runhaar P; sociologische P; operationele eenheid Kaal land",
+    "duingrasland_mos_korstmos": "Runhaar G; droge/natte duingraslandgroepen; bestaande taxongroepen Mossen en levermossen en Korstmossen; Moslaag",
+    "nat_riet": "Runhaar V/W, hydrofyten en helofyten, natte sociologische groepen; bestaande taxongroep Kranswieren, wieren en algen",
+    "struweel_ruigte": "Runhaar R, zoom/ruigte en groeivorm struik",
+    "bomen_bos": "Runhaar H, bos/struweelgroep en groeivorm boom"
+  },
+  "synbiosys_source": {
+    "url": "https://www.synbiosys.alterra.nl/synbiosysnl/downloads/ecodbase.zip",
+    "zip_sha256": "993a934f55d3b4ceb6044040ec38d8e69f9f469b12de03e1044d2face30ca045",
+    "workbook": "EcoDbase.xlsx",
+    "source_fields": ["WETNAAM", "TYPE", "ECOTP_01-10", "SOC_GRP_ND", "SOC_GRP_DG", "LV_VORM1-3", "GR_VORM1-3"]
+  },
+  "source_files": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 67,
+      "bytes": 1720,
+      "sha256": "d5dc6600e87f2be2b5ec65ceb54f00f17ef755fb18e7604dc24d853a18d138dd"
+    },
+    "pq_taxa": {
+      "file": "pq_taxa.tsv",
+      "rows": 642,
+      "bytes": 49472,
+      "sha256": "8c64d11fbbc782431ac10bd66b43a9d4719cf590d94e59e4a69c4a758562237a"
+    },
+    "pq_taxon_aliases": {
+      "file": "pq_taxon_aliases.tsv",
+      "rows": 1101,
+      "bytes": 33134,
+      "sha256": "55ae0479fdbfba862e79145f8d45b9e60b099467dd195f126c87c43d7d93cf76"
+    },
+    "pq_vegetatie_opname_plot": {
+      "file": "pq_vegetatie_opname_plot.tsv",
+      "rows": 1314,
+      "bytes": 12305,
+      "sha256": "be7058bf3560be75bd6715d9a10a5698282d24c2e414d0794960730ef2fa599a"
+    },
+    "pq_vegetatie_opname": {
+      "file": "pq_vegetatie_opname.tsv",
+      "rows": 1314,
+      "bytes": 56155,
+      "sha256": "1d1071933fa8392a85424e59f0c51ea916fe9a993442d9a5936bd80a953f8c4e"
+    },
+    "pq_vegetatie_waarneming": {
+      "file": "pq_vegetatie_waarneming.tsv",
+      "rows": 35672,
+      "bytes": 546494,
+      "sha256": "21cdee3479487a8db66a817fb57844b935f38fca4f9afddc12b0411480f81d05"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    }
+  },
+  "pq": {
+    "observations": 1314,
+    "taxon_rows": 35672,
+    "taxa": 642,
+    "mapped_taxa": 528,
+    "linked_plots": 35,
+    "plotyears": 501,
+    "valid_plotyears": 485,
+    "first_year": 1981,
+    "last_year": 2025,
+    "intervals": 441
+  },
+  "outputs": {
+    "pq_gradient_taxonmapping": {
+      "file": "pq_gradient_taxonmapping.csv",
+      "rows": 823,
+      "sha256": "7167ee27c9f531e44ba710985bfa70b23a55da3e1a015f86c740ef3c5b6f4c8a"
+    },
+    "pq_gradient_taxonstatus": {
+      "file": "pq_gradient_taxonstatus.csv",
+      "rows": 642,
+      "sha256": "bd3dbe50b26f3e144863d6f9ed2502d41b29c5b26132976d891b9b8c3044a2c5"
+    },
+    "pq_gradient_plotjaar": {
+      "file": "pq_gradient_plotjaar.csv",
+      "rows": 501,
+      "sha256": "b701ec0f487247787317e112e1205e7678f5eab8337ac1575a1f720dc23f9595"
+    },
+    "pq_gradient_intervallen": {
+      "file": "pq_gradient_intervallen.csv",
+      "rows": 441,
+      "sha256": "77ee0e2ca5e30a5740b90a9c4ccf136750c2ad005ba7a126c4b24b1364c25077"
+    },
+    "pq_gradient_intervalverdeling": {
+      "file": "pq_gradient_intervalverdeling.csv",
+      "rows": 8,
+      "sha256": "afb45ada0f3800f0f77e95f434c7b071209dc4db570f932df6e0bdc3292281dc"
+    },
+    "pq_gradient_veranderingsdekking": {
+      "file": "pq_gradient_veranderingsdekking.csv",
+      "rows": 5,
+      "sha256": "ef7c8188f15faa6b4b0caf78e74bb386869efc027463d2c83c83ae185cc75323"
+    },
+    "pq_gradient_responsdekking": {
+      "file": "pq_gradient_responsdekking.csv",
+      "rows": 16,
+      "sha256": "ab1ce7472d1b4cbd8885a8bb56336cc8cd91911eec0bda6683d2d024dbd04dd5"
+    }
+  }
+}

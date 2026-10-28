@@ -33,7 +33,7 @@ stilzwijgend herschreven.
   en groeivorm. Bestaande taxongroepen vullen uitsluitend mossen, levermossen,
   korstmossen en algen aan; onbekende vaatplanten worden niet op naamgevoel
   ingedeeld.
-- De formele gradiëntenrun `20261028T144429Z-f4416afa2c47` koppelt 528 van 642
+- De formele gradiëntenrun `20261028T145317Z-3691b52aedc8` koppelt 528 van 642
   taxa aan ten minste één gradiënt. Een taxon met meerdere gradiënten verdeelt
   zijn bedekking daarover; het wordt niet dubbel geteld. Een plotjaar is geldig
   bij minimaal 80% ingedeelde bronbedekking. Van 501 PQ-plotjaren in 35 plots

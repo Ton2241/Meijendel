@@ -142,7 +142,7 @@ intervallengte en jaarlijkse verandering per gradiënt.
   vertraging modelleerbaar is.
 
 **Uitkomst 28 oktober 2026.** De reproduceerbare run
-`20261028T144429Z-f4416afa2c47` gebruikt 1.314 gekoppelde PQ-opnamen, 35.672
+`20261028T145317Z-3691b52aedc8` gebruikt 1.314 gekoppelde PQ-opnamen, 35.672
 taxonregels en 642 taxa uit 1981–2025. EcoDbase uit SynBioSys levert de
 vogelonafhankelijke ecologische referentie. Met bestaande taxongroepen voor
 mossen, levermossen, korstmossen en algen zijn 528 taxa herleidbaar ingedeeld.

@@ -1,0 +1,643 @@
+"taxon_id","wetenschappelijke_naam","naam_zonder_auteur","weergavenaam","groep_naam","summed_source_cover","gradients","mapped","n_gradients"
+31353,"Hypnum cupressiforme/andoi","Hypnum cupressiforme/andoi","Hypnum cupressiforme/andoi","Mossen en levermossen",14689,"duingrasland_mos_korstmos",TRUE,1
+31339,"Pseudoscleropodium purum","Pseudoscleropodium purum","Groot laddermos","Mossen en levermossen",11483,"duingrasland_mos_korstmos",TRUE,1
+35607,"Crataegus monogyna","Crataegus monogyna","Eenstijlige meidoorn","Vaatplanten",9163,"struweel_ruigte;bomen_bos",TRUE,2
+37150,"Quercus robur","Quercus robur","Zomereik","Vaatplanten",8823,"bomen_bos",TRUE,1
+35569,"Calamagrostis epigejos","Calamagrostis epigejos","Duinriet","Vaatplanten",8743,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35505,"Rubus caesius","Rubus caesius","Dauwbraam","Vaatplanten",8224,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35561,"Hippophae rhamnoides","Hippophae rhamnoides","Duindoorn","Vaatplanten",7690,"struweel_ruigte;bomen_bos",TRUE,2
+37112,"Carex arenaria","Carex arenaria","Zandzegge","Vaatplanten",6558,"open_pionier;duingrasland_mos_korstmos;bomen_bos",TRUE,3
+35641,"Festuca filiformis","Festuca filiformis","Fijn schapengras","Vaatplanten",5413,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+31311,"Calliergonella cuspidata","Calliergonella cuspidata","Gewoon puntmos","Mossen en levermossen",4307,"duingrasland_mos_korstmos",TRUE,1
+31292,"Dicranum scoparium","Dicranum scoparium","Gewoon gaffeltandmos","Mossen en levermossen",4220,"duingrasland_mos_korstmos",TRUE,1
+37039,"Ligustrum vulgare","Ligustrum vulgare","Wilde liguster","Vaatplanten",3704,"struweel_ruigte;bomen_bos",TRUE,2
+31417,"Plagiomnium affine","Plagiomnium affine","Rond boogsterrenmos","Mossen en levermossen",3162,"duingrasland_mos_korstmos",TRUE,1
+31289,"Brachythecium rutabulum","Brachythecium rutabulum","Gewoon dikkopmos","Mossen en levermossen",3139,"duingrasland_mos_korstmos",TRUE,1
+35803,"Agrostis capillaris","Agrostis capillaris","Gewoon struisgras","Vaatplanten",2939,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+35782,"Luzula campestris","Luzula campestris","Gewone veldbies","Vaatplanten",2902,"duingrasland_mos_korstmos",TRUE,1
+35866,"Urtica dioica","Urtica dioica","Grote brandnetel","Vaatplanten",2817,"struweel_ruigte;bomen_bos",TRUE,2
+35756,"Prunella vulgaris","Prunella vulgaris","Gewone brunel","Vaatplanten",2749,"duingrasland_mos_korstmos",TRUE,1
+36519,"Festuca rubra","Festuca rubra","Rood zwenkgras","Vaatplanten",2687,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35982,"Glechoma hederacea","Glechoma hederacea","Hondsdraf","Vaatplanten",2601,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+36998,"Mentha aquatica","Mentha aquatica","Watermunt","Vaatplanten",2487,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte",TRUE,3
+30256,"Cladonia rangiformis","Cladonia rangiformis","Vals rendiermos","Korstmossen",2246,"duingrasland_mos_korstmos",TRUE,1
+35674,"Galium verum","Galium verum","Geel walstro","Vaatplanten",2245,"duingrasland_mos_korstmos",TRUE,1
+36909,"Poa pratensis subsp. pratensis","Poa pratensis subsp. pratensis","Veldbeemdgras — Poa pratensis subsp. pratensis","Vaatplanten",2152,"duingrasland_mos_korstmos",TRUE,1
+37036,"Lonicera periclymenum","Lonicera periclymenum","Wilde kamperfoelie","Vaatplanten",2076,"bomen_bos",TRUE,1
+42502,"Syntrichia ruralis var. arenicola","Syntrichia ruralis var. arenicola","Groot duinsterretje — Syntrichia ruralis var. arenicola","Mossen en levermossen",1918,"duingrasland_mos_korstmos",TRUE,1
+36020,"Jacobaea vulgaris","Jacobaea vulgaris","Jakobskruiskruid / Duinkruiskruid","Vaatplanten",1883,"open_pionier;duingrasland_mos_korstmos;bomen_bos",TRUE,3
+37052,"Claytonia perfoliata","Claytonia perfoliata","Winterpostelein","Vaatplanten",1806,"struweel_ruigte;bomen_bos",TRUE,2
+37117,"Carex flacca","Carex flacca","Zeegroene zegge","Vaatplanten",1794,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+31432,"Homalothecium lutescens","Homalothecium lutescens","Smaragdmos","Mossen en levermossen",1766,"duingrasland_mos_korstmos",TRUE,1
+31255,"Kindbergia praelonga","Kindbergia praelonga","Fijn laddermos","Mossen en levermossen",1594,"duingrasland_mos_korstmos",TRUE,1
+36483,"Phragmites australis","Phragmites australis","Riet","Vaatplanten",1531,"nat_riet;struweel_ruigte",TRUE,2
+36190,"Salix repens","Salix repens","Kruipwilg","Vaatplanten",1504,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+37173,"Pinus nigra","Pinus nigra","Zwarte den","Vaatplanten",1470,"bomen_bos",TRUE,1
+36468,"Populus tremula","Populus tremula","Ratelpopulier","Vaatplanten",1414,"bomen_bos",TRUE,1
+35788,"Hydrocotyle vulgaris","Hydrocotyle vulgaris","Gewone waternavel","Vaatplanten",1407,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+37179,"Populus nigra","Populus nigra","Zwarte populier","Vaatplanten",1347,"bomen_bos",TRUE,1
+30009,"Cladonia furcata","Cladonia furcata","Gevorkt heidestaartje","Korstmossen",1339,"duingrasland_mos_korstmos",TRUE,1
+35555,"Carex trinervis","Carex trinervis","Drienervige zegge","Vaatplanten",1335,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+31243,"Rhynchostegium megapolitanum","Rhynchostegium megapolitanum","Duinsnavelmos","Mossen en levermossen",1239,"duingrasland_mos_korstmos",TRUE,1
+35729,"Holcus lanatus","Holcus lanatus","Gestreepte witbol","Vaatplanten",1194,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+31350,"Hypnum jutlandicum","Hypnum jutlandicum","Heideklauwtjesmos","Mossen en levermossen",1192,"duingrasland_mos_korstmos",TRUE,1
+35211,"Myriophyllum spicatum","Myriophyllum spicatum","Aarvederkruid","Vaatplanten",1166,"nat_riet",TRUE,1
+35813,"Galium mollugo subsp. erectum","Galium mollugo subsp. erectum","Glad walstro — Galium mollugo subsp. erectum","Vaatplanten",1164,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+35776,"Lotus corniculatus var. corniculatus","Lotus corniculatus var. corniculatus","Gewone rolklaver s.s.","Vaatplanten",1161,"duingrasland_mos_korstmos",TRUE,1
+35903,"Pinus sylvestris","Pinus sylvestris","Grove den","Vaatplanten",1158,"bomen_bos",TRUE,1
+36638,"Plantago lanceolata","Plantago lanceolata","Smalle weegbree","Vaatplanten",1144,"duingrasland_mos_korstmos",TRUE,1
+36569,"Rumex acetosella","Rumex acetosella","Schapenzuring","Vaatplanten",1140,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+31330,"Campylopus introflexus","Campylopus introflexus","Grijs kronkelsteeltje","Mossen en levermossen",1132,"duingrasland_mos_korstmos",TRUE,1
+37103,"Cerastium semidecandrum","Cerastium semidecandrum","Zandhoornbloem","Vaatplanten",1028,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35649,"Agrostis stolonifera","Agrostis stolonifera","Fioringras","Vaatplanten",1023,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+31312,"Ceratodon purpureus","Ceratodon purpureus","Gewoon purpersteeltje","Mossen en levermossen",967,"duingrasland_mos_korstmos",TRUE,1
+35593,"Carex oederi","Carex oederi","Dwergzegge — Carex oederi","Vaatplanten",930,"nat_riet",TRUE,1
+30291,"Cladonia foliacea","Cladonia foliacea","Zomersneeuw","Korstmossen",881,"duingrasland_mos_korstmos",TRUE,1
+31389,"Drepanocladus aduncus","Drepanocladus aduncus","Moerassikkelmos","Mossen en levermossen",862,"duingrasland_mos_korstmos",TRUE,1
+35889,"Thymus pulegioides","Thymus pulegioides","Grote tijm","Vaatplanten",837,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+36911,"Veronica arvensis","Veronica arvensis","Veldereprijs","Vaatplanten",837,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+31272,"Eurhynchium striatum","Eurhynchium striatum","Geplooid snavelmos","Mossen en levermossen",777,"duingrasland_mos_korstmos",TRUE,1
+35798,"Anthoxanthum odoratum","Anthoxanthum odoratum","Gewoon reukgras","Vaatplanten",774,"duingrasland_mos_korstmos",TRUE,1
+36913,"Cynoglossum officinale","Cynoglossum officinale","Veldhondstong","Vaatplanten",773,"open_pionier;struweel_ruigte;bomen_bos",TRUE,3
+36978,"Aira praecox","Aira praecox","Vroege haver","Vaatplanten",756,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36890,"Teucrium scorodonia","Teucrium scorodonia","Valse salie","Vaatplanten",730,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+31253,"Polytrichum juniperinum var. juniperinum","Polytrichum juniperinum var. juniperinum","Echt zandhaarmos","Mossen en levermossen",729,"duingrasland_mos_korstmos",TRUE,1
+37174,"Alnus glutinosa","Alnus glutinosa","Zwarte els","Vaatplanten",704,"bomen_bos",TRUE,1
+36551,"Myosotis ramosissima","Myosotis ramosissima","Ruw vergeet-mij-nietje","Vaatplanten",697,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+37156,"Juncus articulatus","Juncus articulatus","Zomprus","Vaatplanten",692,"open_pionier;duingrasland_mos_korstmos;nat_riet",TRUE,3
+37022,"Polygonatum odoratum","Polygonatum odoratum","Welriekende salomonszegel","Vaatplanten",670,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35875,"Lythrum salicaria","Lythrum salicaria","Grote kattenstaart","Vaatplanten",662,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+31263,"Bryum capillare","Bryum capillare","Gedraaid knikmos","Mossen en levermossen",642,"duingrasland_mos_korstmos",TRUE,1
+36416,"Lepidium draba","Lepidium draba","Pijlkruidkers","Vaatplanten",625,"open_pionier",TRUE,1
+37037,"Euonymus europaeus","Euonymus europaeus","Wilde kardinaalsmuts","Vaatplanten",601,"struweel_ruigte;bomen_bos",TRUE,2
+37106,"Taraxacum sect. Erythrosperma","Taraxacum sect. Erythrosperma","Zandpaardenbloem","Vaatplanten",591,"duingrasland_mos_korstmos",TRUE,1
+36153,"Eupatorium cannabinum","Eupatorium cannabinum","Koninginnekruid","Vaatplanten",580,"struweel_ruigte;bomen_bos",TRUE,2
+36262,"Veronica officinalis","Veronica officinalis","Mannetjesereprijs","Vaatplanten",572,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+35554,"Moehringia trinervia","Moehringia trinervia","Drienerfmuur","Vaatplanten",560,"bomen_bos",TRUE,1
+31293,"Rhytidiadelphus squarrosus","Rhytidiadelphus squarrosus","Gewoon haakmos","Mossen en levermossen",551,"duingrasland_mos_korstmos",TRUE,1
+35832,"Populus x canescens","Populus x canescens","Grauwe abeel","Vaatplanten",543,"bomen_bos",TRUE,1
+37108,"Agrostis vinealis","Agrostis vinealis","Zandstruisgras","Vaatplanten",530,"open_pionier;duingrasland_mos_korstmos;bomen_bos",TRUE,3
+35785,"Sambucus nigra","Sambucus nigra","Gewone vlier","Vaatplanten",518,"struweel_ruigte;bomen_bos",TRUE,2
+30329,"Chara vulgaris var. vulgaris","Chara vulgaris var. vulgaris","Gewoon kransblad (var. vulgaris)","Kranswieren, wieren en algen",515,"nat_riet",TRUE,1
+39069,"Draadwier Zygmales",,"Draadwier (Flap)",,512,"nat_riet",TRUE,1
+36067,"Galium aparine","Galium aparine","Kleefkruid","Vaatplanten",510,"struweel_ruigte;bomen_bos",TRUE,2
+31441,"Campylium stellatum","Campylium stellatum","Sterrengoudmos","Mossen en levermossen",493,"duingrasland_mos_korstmos",TRUE,1
+36548,"Poa trivialis","Poa trivialis","Ruw beemdgras","Vaatplanten",490,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+36225,"Equisetum palustre","Equisetum palustre","Lidrus","Vaatplanten",486,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+30313,"Chara contraria","Chara contraria","Brokkelig kransblad","Kranswieren, wieren en algen",472,"nat_riet",TRUE,1
+35787,"Eleocharis palustris","Eleocharis palustris","Gewone waterbies","Vaatplanten",471,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35331,"Senecio inaequidens","Senecio inaequidens","Bezemkruiskruid","Vaatplanten",466,"open_pionier;struweel_ruigte",TRUE,2
+35594,"Picris hieracioides","Picris hieracioides","Echt bitterkruid","Vaatplanten",458,"duingrasland_mos_korstmos",TRUE,1
+36324,"Pilosella officinarum","Pilosella officinarum","Muizenoor — Pilosella officinarum","Vaatplanten",449,"duingrasland_mos_korstmos",TRUE,1
+31210,"Brachythecium albicans","Brachythecium albicans","Bleek dikkopmos","Mossen en levermossen",445,"duingrasland_mos_korstmos",TRUE,1
+35673,"Geum urbanum","Geum urbanum","Geel nagelkruid","Vaatplanten",442,"bomen_bos",TRUE,1
+35679,"Linum catharticum","Linum catharticum","Geelhartje","Vaatplanten",440,"duingrasland_mos_korstmos",TRUE,1
+37091,"Betula pubescens","Betula pubescens","Zachte berk","Vaatplanten",431,"bomen_bos",TRUE,1
+35794,"Hypochaeris radicata","Hypochaeris radicata","Gewoon biggenkruid","Vaatplanten",419,"duingrasland_mos_korstmos",TRUE,1
+35256,"Prunus serotina","Prunus serotina","Amerikaanse vogelkers","Vaatplanten",401,"struweel_ruigte;bomen_bos",TRUE,2
+35226,"Cerastium arvense","Cerastium arvense","Akkerhoornbloem","Vaatplanten",396,"duingrasland_mos_korstmos",TRUE,1
+37101,"Phleum arenarium","Phleum arenarium","Zanddoddegras","Vaatplanten",389,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35455,"Corynephorus canescens","Corynephorus canescens","Buntgras","Vaatplanten",385,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36114,"Cardamine hirsuta","Cardamine hirsuta","Kleine veldkers","Vaatplanten",383,"open_pionier;duingrasland_mos_korstmos;bomen_bos",TRUE,3
+36079,"Crepis capillaris","Crepis capillaris","Klein streepzaad","Vaatplanten",382,"duingrasland_mos_korstmos",TRUE,1
+35784,"Polygala vulgaris","Polygala vulgaris","Gewone vleugeltjesbloem","Vaatplanten",378,"duingrasland_mos_korstmos",TRUE,1
+30155,"Cladonia portentosa","Cladonia portentosa","Open rendiermos","Korstmossen",366,"duingrasland_mos_korstmos",TRUE,1
+31331,"Racomitrium canescens","Racomitrium canescens","Grijze bisschopsmuts","Mossen en levermossen",363,"duingrasland_mos_korstmos",TRUE,1
+31296,"Lophocolea bidentata","Lophocolea bidentata","Gewoon kantmos","Mossen en levermossen",352,"duingrasland_mos_korstmos",TRUE,1
+36394,"Juncus subnodulosus","Juncus subnodulosus","Paddenrus","Vaatplanten",351,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36221,"Convallaria majalis","Convallaria majalis","Lelietje-van-dalen","Vaatplanten",331,"struweel_ruigte;bomen_bos",TRUE,2
+31342,"Fissidens adianthoides","Fissidens adianthoides","Groot vedermos","Mossen en levermossen",328,"duingrasland_mos_korstmos",TRUE,1
+35762,"Veronica chamaedrys","Veronica chamaedrys","Gewone ereprijs","Vaatplanten",324,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+36916,"Lathyrus pratensis","Lathyrus pratensis","Veldlathyrus","Vaatplanten",324,"duingrasland_mos_korstmos",TRUE,1
+36690,"Euphrasia stricta","Euphrasia stricta","Stijve ogentroost","Vaatplanten",320,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36217,"Vicia lathyroides","Vicia lathyroides","Lathyruswikke","Vaatplanten",312,"duingrasland_mos_korstmos",TRUE,1
+36727,"Danthonia decumbens","Danthonia decumbens","Tandjesgras","Vaatplanten",308,"duingrasland_mos_korstmos",TRUE,1
+36492,"Geranium robertianum","Geranium robertianum","Robertskruid","Vaatplanten",304,"bomen_bos",TRUE,1
+35459,"Populus x canadensis","Populus x canadensis","Canadapopulier","Vaatplanten",302,"bomen_bos",TRUE,1
+37005,"Samolus valerandi","Samolus valerandi","Waterpunge","Vaatplanten",297,"open_pionier;nat_riet",TRUE,2
+35767,"Cerastium fontanum subsp. vulgare","Cerastium fontanum subsp. vulgare","Gewone hoornbloem","Vaatplanten",294,"duingrasland_mos_korstmos",TRUE,1
+35834,"Salix cinerea","Salix cinerea","Grauwe wilg s.l.","Vaatplanten",294,"struweel_ruigte;bomen_bos",TRUE,2
+37078,"Lycopus europaeus","Lycopus europaeus","Wolfspoot","Vaatplanten",294,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+36966,"Stellaria media","Stellaria media","Vogelmuur","Vaatplanten",291,"open_pionier",TRUE,1
+35763,"Acer pseudoplatanus","Acer pseudoplatanus","Gewone esdoorn","Vaatplanten",288,"bomen_bos",TRUE,1
+35568,"Erodium cicutarium subsp. dunense","Erodium cicutarium subsp. dunense","Duinreigersbek","Vaatplanten",286,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36555,"Betula pendula","Betula pendula","Ruwe berk","Vaatplanten",286,"bomen_bos",TRUE,1
+36194,"Gentiana cruciata","Gentiana cruciata","Kruisbladgentiaan","Vaatplanten",278,"duingrasland_mos_korstmos",TRUE,1
+36245,"Alliaria petiolata","Alliaria petiolata","Look-zonder-look","Vaatplanten",278,"struweel_ruigte;bomen_bos",TRUE,2
+36096,"Leontodon saxatilis","Leontodon saxatilis","Kleine leeuwentand","Vaatplanten",271,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35401,"Fragaria vesca","Fragaria vesca","Bosaardbei","Vaatplanten",270,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35579,"Festuca arenaria","Festuca arenaria","Duinzwenkgras","Vaatplanten",262,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+31260,"Polytrichum formosum","Polytrichum formosum","Fraai haarmos","Mossen en levermossen",259,"duingrasland_mos_korstmos",TRUE,1
+35941,"Equisetum arvense","Equisetum arvense","Heermoes","Vaatplanten",252,"open_pionier;struweel_ruigte",TRUE,2
+37016,"Rhamnus cathartica","Rhamnus cathartica","Wegedoorn","Vaatplanten",249,"struweel_ruigte;bomen_bos",TRUE,2
+35345,"Solanum dulcamara","Solanum dulcamara","Bitterzoet","Vaatplanten",248,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+31242,"Tortella flavovirens","Tortella flavovirens","Duinkronkelbladmos","Mossen en levermossen",246,"duingrasland_mos_korstmos",TRUE,1
+36472,"Erodium cicutarium","Erodium cicutarium","Reigersbek","Vaatplanten",243,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35563,"Bromus hordeaceus subsp. thominei","Bromus hordeaceus subsp. thominei","Duindravik","Vaatplanten",241,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+30347,"Chara aspera","Chara aspera","Ruw kransblad","Kranswieren, wieren en algen",240,"nat_riet",TRUE,1
+36043,"Saxifraga tridactylites","Saxifraga tridactylites","Kandelaartje","Vaatplanten",237,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35410,"Senecio sylvaticus","Senecio sylvaticus","Boskruiskruid","Vaatplanten",229,"open_pionier;struweel_ruigte;bomen_bos",TRUE,3
+30327,"Chara vulgaris","Chara vulgaris","Gewoon kransblad","Kranswieren, wieren en algen",225,"nat_riet",TRUE,1
+37098,"Geranium molle","Geranium molle","Zachte ooievaarsbek","Vaatplanten",225,"duingrasland_mos_korstmos",TRUE,1
+35566,"Jacobaea vulgaris subsp. dunensis","Jacobaea vulgaris subsp. dunensis","Duinkruiskruid","Vaatplanten",223,"duingrasland_mos_korstmos",TRUE,1
+37040,"Sorbus aucuparia","Sorbus aucuparia","Wilde lijsterbes","Vaatplanten",220,"bomen_bos",TRUE,1
+31317,"Mnium hornum","Mnium hornum","Gewoon sterrenmos","Mossen en levermossen",215,"duingrasland_mos_korstmos",TRUE,1
+35994,"Agrostis gigantea","Agrostis gigantea","Hoog struisgras","Vaatplanten",214,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte",TRUE,3
+37065,"Trifolium repens","Trifolium repens","Witte klaver","Vaatplanten",211,"duingrasland_mos_korstmos",TRUE,1
+31264,"Lophocolea heterophylla","Lophocolea heterophylla","Gedrongen kantmos","Mossen en levermossen",207,"duingrasland_mos_korstmos",TRUE,1
+30213,"Cladonia ciliata","Cladonia ciliata","Sierlijk rendiermos","Korstmossen",197,"duingrasland_mos_korstmos",TRUE,1
+31274,"Plagiomnium undulatum","Plagiomnium undulatum","Gerimpeld boogsterrenmos","Mossen en levermossen",195,"duingrasland_mos_korstmos",TRUE,1
+35760,"Polypodium vulgare","Polypodium vulgare","Gewone eikvaren","Vaatplanten",190,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35358,"Succisa pratensis","Succisa pratensis","Blauwe knoop","Vaatplanten",182,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35886,"Rhinanthus angustifolius","Rhinanthus angustifolius","Grote ratelaar","Vaatplanten",181,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+39279,"Kaal land",,"Kaal land",,179,"open_pionier",TRUE,1
+35602,"Valeriana officinalis","Valeriana officinalis","Echte valeriaan","Vaatplanten",175,"struweel_ruigte;bomen_bos",TRUE,2
+42503,"Syntrichia ruralis var. calcicola","Syntrichia ruralis var. calcicola","Klein duinsterretje — Syntrichia ruralis var. calcicola","Mossen en levermossen",172,"duingrasland_mos_korstmos",TRUE,1
+35944,"Bryonia dioica","Bryonia dioica","Heggenrank","Vaatplanten",168,"bomen_bos",TRUE,1
+35236,"Myosotis arvensis","Myosotis arvensis","Akkervergeet-mij-nietje","Vaatplanten",158,"open_pionier;bomen_bos",TRUE,2
+36844,"Potamogeton pusillus","Potamogeton pusillus","Tenger fonteinkruid","Vaatplanten",157,"nat_riet",TRUE,1
+31381,"Leucobryum glaucum","Leucobryum glaucum","Kussentjesmos","Mossen en levermossen",154,"duingrasland_mos_korstmos",TRUE,1
+35958,"Calamagrostis canescens","Calamagrostis canescens","Hennegras","Vaatplanten",152,"struweel_ruigte;bomen_bos",TRUE,2
+35224,"Cirsium arvense","Cirsium arvense","Akkerdistel","Vaatplanten",150,"open_pionier;struweel_ruigte",TRUE,2
+35769,"Dactylis glomerata subsp. glomerata","Dactylis glomerata subsp. glomerata","Gewone kropaar","Vaatplanten",150,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+31341,"Atrichum undulatum","Atrichum undulatum","Groot rimpelmos","Mossen en levermossen",147,"duingrasland_mos_korstmos",TRUE,1
+36097,"Typha angustifolia","Typha angustifolia","Kleine lisdodde","Vaatplanten",147,"nat_riet;struweel_ruigte",TRUE,2
+29966,"Cladonia pocillum","Cladonia pocillum","Duinbekermos","Korstmossen",143,"duingrasland_mos_korstmos",TRUE,1
+35439,"Dryopteris dilatata","Dryopteris dilatata","Brede stekelvaren","Vaatplanten",143,"bomen_bos",TRUE,1
+35882,"Typha latifolia","Typha latifolia","Grote lisdodde","Vaatplanten",143,"nat_riet;struweel_ruigte",TRUE,2
+37122,"Saponaria officinalis","Saponaria officinalis","Zeepkruid","Vaatplanten",140,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+30183,"Cladonia ramulosa","Cladonia ramulosa","Rafelig bekermos","Korstmossen",137,"duingrasland_mos_korstmos",TRUE,1
+36183,"Ranunculus repens","Ranunculus repens","Kruipende boterbloem","Vaatplanten",134,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+37093,"Bromus hordeaceus subsp. hordeaceus","Bromus hordeaceus subsp. hordeaceus","Zachte dravik s.s.","Vaatplanten",134,"duingrasland_mos_korstmos",TRUE,1
+39070,"Vaucheria","Vaucheria","Draadwier (Vaucheria)","Kranswieren, wieren en algen",134,"nat_riet",TRUE,1
+30311,"Chara globularis","Chara globularis","Breekbaar kransblad","Kranswieren, wieren en algen",133,"nat_riet",TRUE,1
+31464,"Bryum argenteum","Bryum argenteum","Zilvermos","Mossen en levermossen",131,"duingrasland_mos_korstmos",TRUE,1
+31387,"Brachythecium mildeanum","Brachythecium mildeanum","Moerasdikkopmos","Mossen en levermossen",130,"duingrasland_mos_korstmos",TRUE,1
+35499,"Silene dioica","Silene dioica","Dagkoekoeksbloem","Vaatplanten",130,"bomen_bos",TRUE,1
+36542,"Arabis hirsuta subsp. hirsuta","Arabis hirsuta subsp. hirsuta","Ruige scheefkelk","Vaatplanten",130,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36536,"Viola hirta","Viola hirta","Ruig viooltje","Vaatplanten",128,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+36932,"Potentilla reptans","Potentilla reptans","Vijfvingerkruid","Vaatplanten",123,"duingrasland_mos_korstmos",TRUE,1
+36342,"Silene nutans","Silene nutans","Nachtsilene","Vaatplanten",121,"duingrasland_mos_korstmos",TRUE,1
+35364,"Carex panicea","Carex panicea","Blauwe zegge","Vaatplanten",119,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35693,"Viburnum opulus","Viburnum opulus","Gelderse roos","Vaatplanten",119,"struweel_ruigte;bomen_bos",TRUE,2
+35815,"Holcus mollis","Holcus mollis","Gladde witbol","Vaatplanten",118,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+36616,"Eleocharis uniglumis","Eleocharis uniglumis","Slanke waterbies","Vaatplanten",117,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35584,"Achillea millefolium","Achillea millefolium","Duizendblad","Vaatplanten",116,"duingrasland_mos_korstmos",TRUE,1
+36656,"Cirsium vulgare","Cirsium vulgare","Speerdistel","Vaatplanten",115,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+37164,"Fallopia convolvulus","Fallopia convolvulus","Zwaluwtong","Vaatplanten",114,"open_pionier;bomen_bos",TRUE,2
+35507,"Cochlearia danica","Cochlearia danica","Deens lepelblad","Vaatplanten",112,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36304,"Lotus pedunculatus","Lotus pedunculatus","Moerasrolklaver","Vaatplanten",110,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35267,"Eleocharis quinqueflora","Eleocharis quinqueflora","Armbloemige waterbies","Vaatplanten",109,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36311,"Galium palustre","Galium palustre","Moeraswalstro","Vaatplanten",108,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+31426,"Polytrichum piliferum","Polytrichum piliferum","Ruig haarmos","Mossen en levermossen",107,"duingrasland_mos_korstmos",TRUE,1
+36400,"Parnassia palustris","Parnassia palustris","Parnassia — Parnassia palustris","Vaatplanten",106,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36949,"Linaria vulgaris","Linaria vulgaris","Vlasbekje","Vaatplanten",106,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+36546,"Carex hirta","Carex hirta","Ruige zegge","Vaatplanten",105,"duingrasland_mos_korstmos",TRUE,1
+35989,"Viola canina","Viola canina","Hondsviooltje","Vaatplanten",102,"duingrasland_mos_korstmos",TRUE,1
+36333,"Sedum acre","Sedum acre","Muurpeper","Vaatplanten",102,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+31329,"Drepanocladus polygamus","Drepanocladus polygamus","Goudsikkelmos","Mossen en levermossen",101,"duingrasland_mos_korstmos",TRUE,1
+31348,"Calliergon cordifolium","Calliergon cordifolium","Hartbladig puntmos","Mossen en levermossen",99,"duingrasland_mos_korstmos",TRUE,1
+35550,"Carlina vulgaris","Carlina vulgaris","Driedistel","Vaatplanten",99,"duingrasland_mos_korstmos",TRUE,1
+36263,"Dryopteris filix-mas","Dryopteris filix-mas","Mannetjesvaren","Vaatplanten",98,"bomen_bos",TRUE,1
+36182,"Ajuga reptans","Ajuga reptans","Kruipend zenegroen","Vaatplanten",96,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+31252,"Aneura pinguis","Aneura pinguis","Echt vetmos","Mossen en levermossen",94,"duingrasland_mos_korstmos",TRUE,1
+36422,"Juncus effusus","Juncus effusus","Pitrus","Vaatplanten",94,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+30328,"Chara vulgaris var. longibracteata","Chara vulgaris var. longibracteata","Gewoon kransblad (var. longibracteata)","Kranswieren, wieren en algen",93,"nat_riet",TRUE,1
+35371,"Viola riviniana","Viola riviniana","Bleeksporig bosviooltje — Viola riviniana","Vaatplanten",93,"bomen_bos",TRUE,1
+35556,"Potamogeton natans","Potamogeton natans","Drijvend fonteinkruid","Vaatplanten",91,"nat_riet",TRUE,1
+36610,"Echium vulgare","Echium vulgare","Slangenkruid","Vaatplanten",91,"open_pionier;struweel_ruigte",TRUE,2
+36846,"Juncus tenuis","Juncus tenuis","Tengere rus","Vaatplanten",90,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35789,"Arenaria serpyllifolia","Arenaria serpyllifolia","Gewone zandmuur","Vaatplanten",89,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+31291,"Cephaloziella divaricata","Cephaloziella divaricata","Gewoon draadmos","Mossen en levermossen",87,"duingrasland_mos_korstmos",TRUE,1
+35973,"Carex pseudocyperus","Carex pseudocyperus","Hoge cyperzegge","Vaatplanten",87,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+37026,"Athyrium filix-femina","Athyrium filix-femina","Wijfjesvaren","Vaatplanten",84,"bomen_bos",TRUE,1
+30111,"Cladonia fimbriata","Cladonia fimbriata","Kopjes-bekermos","Korstmossen",79,"duingrasland_mos_korstmos",TRUE,1
+36709,"Poa annua","Poa annua","Straatgras","Vaatplanten",79,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36226,"Hippuris vulgaris","Hippuris vulgaris","Lidsteng","Vaatplanten",78,"nat_riet",TRUE,1
+35998,"Humulus lupulus","Humulus lupulus","Hop — Humulus lupulus","Vaatplanten",76,"bomen_bos",TRUE,1
+36314,"Epipactis palustris","Epipactis palustris","Moeraswespenorchis","Vaatplanten",76,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35943,"Fallopia dumetorum","Fallopia dumetorum","Heggenduizendknoop","Vaatplanten",75,"struweel_ruigte;bomen_bos",TRUE,2
+36455,"Lemna trisulca","Lemna trisulca","Puntkroos","Vaatplanten",75,"nat_riet",TRUE,1
+30023,"Cetraria aculeata","Cetraria aculeata","Gewoon kraakloof","Korstmossen",74,"duingrasland_mos_korstmos",TRUE,1
+36035,"Cirsium palustre","Cirsium palustre","Kale jonker","Vaatplanten",74,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+36603,"Hypericum perforatum","Hypericum perforatum","Sint-Janskruid","Vaatplanten",74,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+35232,"Sonchus arvensis","Sonchus arvensis","Akkermelkdistel","Vaatplanten",72,"open_pionier;struweel_ruigte",TRUE,2
+30349,"Chara hispida","Chara hispida","Stekelharig kransblad — Chara hispida","Kranswieren, wieren en algen",71,"nat_riet",TRUE,1
+36001,"Ilex aquifolium","Ilex aquifolium","Hulst","Vaatplanten",70,"struweel_ruigte;bomen_bos",TRUE,2
+30352,"Chara virgata","Chara virgata","Teer kransblad — Chara virgata","Kranswieren, wieren en algen",67,"nat_riet",TRUE,1
+35845,"Ceratophyllum demersum","Ceratophyllum demersum","Grof hoornblad","Vaatplanten",67,"nat_riet",TRUE,1
+30350,"Chara vulgaris var. papillata","Chara vulgaris var. papillata","Stekelig gewoon kransblad","Kranswieren, wieren en algen",65,"nat_riet",TRUE,1
+29935,"Cladonia grayi","Cladonia grayi","Bruin bekermos","Korstmossen",64,"duingrasland_mos_korstmos",TRUE,1
+35407,"Milium effusum","Milium effusum","Bosgierstgras","Vaatplanten",64,"bomen_bos",TRUE,1
+36235,"Sagina procumbens","Sagina procumbens","Liggende vetmuur","Vaatplanten",64,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+37163,"Berberis vulgaris","Berberis vulgaris","Zuurbes","Vaatplanten",64,"struweel_ruigte;bomen_bos",TRUE,2
+36421,"Cardamine pratensis","Cardamine pratensis","Pinksterbloem","Vaatplanten",63,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+31397,"Bryum algovicum","Bryum algovicum","Netknikmos","Mossen en levermossen",62,"duingrasland_mos_korstmos",TRUE,1
+31453,"Bryum pseudotriquetrum","Bryum pseudotriquetrum","Veenknikmos","Mossen en levermossen",62,"duingrasland_mos_korstmos",TRUE,1
+36600,"Sagina nodosa","Sagina nodosa","Sierlijke vetmuur","Vaatplanten",60,"open_pionier",TRUE,1
+31335,"Bryum dichotomum","Bryum dichotomum","Grofkorrelknikmos","Mossen en levermossen",59,"duingrasland_mos_korstmos",TRUE,1
+37002,"Persicaria hydropiper","Persicaria hydropiper","Waterpeper","Vaatplanten",57,"open_pionier",TRUE,1
+37127,"Convolvulus soldanella","Convolvulus soldanella","Zeewinde","Vaatplanten",57,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35752,"Agrimonia eupatoria","Agrimonia eupatoria","Gewone agrimonie","Vaatplanten",55,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+35835,"Juncus bufonius","Juncus bufonius","Greppelrus","Vaatplanten",55,"open_pionier",TRUE,1
+36613,"Gentianella amarella","Gentianella amarella","Slanke gentiaan","Vaatplanten",54,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35933,"Trifolium arvense","Trifolium arvense","Hazenpootje — Trifolium arvense","Vaatplanten",52,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36167,"Allium vineale","Allium vineale","Kraailook","Vaatplanten",52,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+36652,"Acer campestre","Acer campestre","Spaanse aak","Vaatplanten",52,"struweel_ruigte;bomen_bos",TRUE,2
+29991,"Cladonia humilis","Cladonia humilis","Frietzak-bekermos","Korstmossen",51,"duingrasland_mos_korstmos",TRUE,1
+35203,"Ribes rubrum","Ribes rubrum","Aalbes","Vaatplanten",51,"struweel_ruigte;bomen_bos",TRUE,2
+31298,"Aulacomnium androgynum","Aulacomnium androgynum","Gewoon knopjesmos","Mossen en levermossen",50,"duingrasland_mos_korstmos",TRUE,1
+31358,"Ditrichum flexicaule","Ditrichum flexicaule","Kalksmaltandmos","Mossen en levermossen",50,"duingrasland_mos_korstmos",TRUE,1
+36635,"Dryopteris carthusiana","Dryopteris carthusiana","Smalle stekelvaren","Vaatplanten",48,"open_pionier;duingrasland_mos_korstmos;bomen_bos",TRUE,3
+36636,"Elodea nuttallii","Elodea nuttallii","Smalle waterpest","Vaatplanten",47,"nat_riet",TRUE,1
+35613,"Ranunculus flammula","Ranunculus flammula","Egelboterbloem","Vaatplanten",46,"open_pionier;duingrasland_mos_korstmos;nat_riet",TRUE,3
+36005,"Anisantha sterilis","Anisantha sterilis","IJle dravik","Vaatplanten",45,"open_pionier;struweel_ruigte",TRUE,2
+31233,"Bryum","Bryum","Bryum","Mossen en levermossen",44,"duingrasland_mos_korstmos",TRUE,1
+31225,"Bryum rubens","Bryum rubens","Braamknikmos","Mossen en levermossen",43,"duingrasland_mos_korstmos",TRUE,1
+31463,"Polytrichum juniperinum","Polytrichum juniperinum","Zandhaarmos","Mossen en levermossen",43,"duingrasland_mos_korstmos",TRUE,1
+36969,"Vicia cracca","Vicia cracca","Vogelwikke","Vaatplanten",43,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+36552,"Galium uliginosum","Galium uliginosum","Ruw walstro","Vaatplanten",42,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36554,"Betula pendula/pubescens","Betula pendula/pubescens","Ruwe / Zachte berk","Vaatplanten",42,"bomen_bos",TRUE,1
+31277,"Plagiothecium undulatum","Plagiothecium undulatum","Gerimpeld platmos","Mossen en levermossen",40,"duingrasland_mos_korstmos",TRUE,1
+35270,"Asparagus officinalis subsp. officinalis","Asparagus officinalis subsp. officinalis","Asperge","Vaatplanten",40,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35350,"Scutellaria galericulata","Scutellaria galericulata","Blauw glidkruid","Vaatplanten",40,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+35753,"Heracleum sphondylium subsp. sphondylium","Heracleum sphondylium subsp. sphondylium","Gewone berenklauw — Heracleum sphondylium subsp. sphondylium","Vaatplanten",40,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+36971,"Scrophularia vernalis","Scrophularia vernalis","Voorjaarshelmkruid","Vaatplanten",38,"bomen_bos",TRUE,1
+39522,"Warnstorfia fluitans","Warnstorfia fluitans","Vensikkelmos","Mossen en levermossen",38,"duingrasland_mos_korstmos",TRUE,1
+31231,"Pleurozium schreberi","Pleurozium schreberi","Bronsmos","Mossen en levermossen",37,"duingrasland_mos_korstmos",TRUE,1
+31403,"Bryoerythrophyllum recurvirostre","Bryoerythrophyllum recurvirostre","Oranjesteeltje","Mossen en levermossen",37,"duingrasland_mos_korstmos",TRUE,1
+36500,"Cornus sanguinea","Cornus sanguinea","Rode kornoelje","Vaatplanten",35,"struweel_ruigte;bomen_bos",TRUE,2
+31318,"Thuidium tamariscinum","Thuidium tamariscinum","Gewoon thujamos","Mossen en levermossen",34,"duingrasland_mos_korstmos",TRUE,1
+36952,"Dactylorhiza incarnata","Dactylorhiza incarnata","Vleeskleurige orchis","Vaatplanten",34,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+31383,"Tortula subulata","Tortula subulata","Langkapselsterretje","Mossen en levermossen",33,"duingrasland_mos_korstmos",TRUE,1
+31437,"Plagiomnium cuspidatum","Plagiomnium cuspidatum","Spits boogsterrenmos","Mossen en levermossen",33,"duingrasland_mos_korstmos",TRUE,1
+35942,"Torilis japonica","Torilis japonica","Heggendoornzaad","Vaatplanten",33,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+36116,"Berula erecta","Berula erecta","Kleine watereppe","Vaatplanten",32,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+38991,"Alg droog",,"Alg droog",,32,"duingrasland_mos_korstmos",TRUE,1
+36334,"Mycelis muralis","Mycelis muralis","Muursla","Vaatplanten",31,"open_pionier;bomen_bos",TRUE,2
+29964,"Cladonia macilenta","Cladonia macilenta","Dove heidelucifer","Korstmossen",30,"duingrasland_mos_korstmos",TRUE,1
+35732,"Plantago major subsp. intermedia","Plantago major subsp. intermedia","Getande weegbree","Vaatplanten",30,"open_pionier",TRUE,1
+35936,"Pulicaria dysenterica","Pulicaria dysenterica","Heelblaadjes","Vaatplanten",30,"duingrasland_mos_korstmos;struweel_ruigte",TRUE,2
+36556,"Schoenoplectus tabernaemontani","Schoenoplectus tabernaemontani","Ruwe bies","Vaatplanten",30,"nat_riet",TRUE,1
+29936,"Cladonia glauca","Cladonia glauca","Bruin heidestaartje","Korstmossen",29,"duingrasland_mos_korstmos",TRUE,1
+31281,"Bryum provinciale","Bryum provinciale","Getand knikmos","Mossen en levermossen",29,"duingrasland_mos_korstmos",TRUE,1
+31308,"Amblystegium serpens","Amblystegium serpens","Gewoon pluisdraadmos","Mossen en levermossen",29,"duingrasland_mos_korstmos",TRUE,1
+35312,"Epilobium montanum","Epilobium montanum","Bergbasterdwederik","Vaatplanten",29,"open_pionier;bomen_bos",TRUE,2
+36260,"Glyceria fluitans","Glyceria fluitans","Mannagras","Vaatplanten",29,"open_pionier;duingrasland_mos_korstmos;nat_riet",TRUE,3
+30115,"Cladonia subulata","Cladonia subulata","Kronkelheidestaartje","Korstmossen",28,"duingrasland_mos_korstmos",TRUE,1
+31338,"Encalypta streptocarpa","Encalypta streptocarpa","Groot klokhoedje","Mossen en levermossen",28,"duingrasland_mos_korstmos",TRUE,1
+36505,"Veronica catenata","Veronica catenata","Rode waterereprijs","Vaatplanten",28,"open_pionier;nat_riet",TRUE,2
+36712,"Centaurium littorale","Centaurium littorale","Strandduizendguldenkruid","Vaatplanten",27,"open_pionier",TRUE,1
+31337,"Hypnum cupressiforme var. lacunosum","Hypnum cupressiforme var. lacunosum","Groot klauwtjesmos","Mossen en levermossen",26,"duingrasland_mos_korstmos",TRUE,1
+35766,"Galeopsis tetrahit","Galeopsis tetrahit","Gewone hennepnetel","Vaatplanten",26,"open_pionier;struweel_ruigte;bomen_bos",TRUE,3
+35777,"Polygonatum multiflorum","Polygonatum multiflorum","Gewone salomonszegel","Vaatplanten",26,"bomen_bos",TRUE,1
+38992,"Juncus alpinoarticulatus","Juncus alpinoarticulatus","Alpenrus+Duinrus","Vaatplanten",26,"nat_riet",TRUE,1
+35403,"Stachys sylvatica","Stachys sylvatica","Bosandoorn","Vaatplanten",25,"bomen_bos",TRUE,1
+36121,"Erodium lebelii","Erodium lebelii","Kleverige reigersbek","Vaatplanten",25,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+37107,"Arabidopsis thaliana","Arabidopsis thaliana","Zandraket","Vaatplanten",25,"open_pionier",TRUE,1
+37166,"Butomus umbellatus","Butomus umbellatus","Zwanenbloem","Vaatplanten",25,"nat_riet",TRUE,1
+36919,"Rumex acetosa","Rumex acetosa","Veldzuring","Vaatplanten",24,"duingrasland_mos_korstmos",TRUE,1
+31294,"Polytrichum commune","Polytrichum commune","Gewoon haarmos","Mossen en levermossen",23,"duingrasland_mos_korstmos",TRUE,1
+36080,"Teesdalia nudicaulis","Teesdalia nudicaulis","Klein tasjeskruid","Vaatplanten",23,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36129,"Rumex conglomeratus","Rumex conglomeratus","Kluwenzuring","Vaatplanten",23,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+31315,"Barbula convoluta","Barbula convoluta","Gewoon smaragdsteeltje","Mossen en levermossen",22,"duingrasland_mos_korstmos",TRUE,1
+35895,"Alisma plantago-aquatica","Alisma plantago-aquatica","Grote waterweegbree","Vaatplanten",22,"open_pionier;nat_riet",TRUE,2
+31269,"Pellia endiviifolia","Pellia endiviifolia","Gekroesd plakkaatmos","Mossen en levermossen",21,"duingrasland_mos_korstmos",TRUE,1
+36418,"Molinia caerulea","Molinia caerulea","Pijpenstrootje","Vaatplanten",21,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+35778,"Symphytum officinale","Symphytum officinale","Gewone smeerwortel","Vaatplanten",20,"struweel_ruigte;bomen_bos",TRUE,2
+36202,"Rumex crispus","Rumex crispus","Krulzuring","Vaatplanten",20,"open_pionier;duingrasland_mos_korstmos;nat_riet;struweel_ruigte",TRUE,4
+36986,"Orobanche caryophyllacea","Orobanche caryophyllacea","Walstrobremraap","Vaatplanten",20,"duingrasland_mos_korstmos",TRUE,1
+31219,"Rhynchostegium confertum","Rhynchostegium confertum","Boomsnavelmos","Mossen en levermossen",19,"duingrasland_mos_korstmos",TRUE,1
+35570,"Rosa spinosissima","Rosa spinosissima","Duinroos","Vaatplanten",19,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35626,"Fraxinus excelsior","Fraxinus excelsior","Es","Vaatplanten",19,"bomen_bos",TRUE,1
+36155,"Verbascum thapsus","Verbascum thapsus","Koningskaars","Vaatplanten",19,"open_pionier;struweel_ruigte",TRUE,2
+35688,"Sonchus asper","Sonchus asper","Gekroesde melkdistel","Vaatplanten",18,"open_pionier",TRUE,1
+35703,"Iris pseudacorus","Iris pseudacorus","Gele lis","Vaatplanten",18,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+35804,"Phleum pratense","Phleum pratense","Gewoon timoteegras","Vaatplanten",18,"duingrasland_mos_korstmos",TRUE,1
+36490,"Vicia hirsuta","Vicia hirsuta","Ringelwikke","Vaatplanten",18,"open_pionier",TRUE,1
+36577,"Carex acuta","Carex acuta","Scherpe zegge","Vaatplanten",18,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+36841,"Taxus baccata","Taxus baccata","Taxus — Taxus baccata","Vaatplanten",18,"struweel_ruigte;bomen_bos",TRUE,2
+36936,"Epilobium parviflorum","Epilobium parviflorum","Viltige basterdwederik","Vaatplanten",18,"open_pionier;struweel_ruigte",TRUE,2
+39375,"Moslaag",,"Moslaag",,18,"duingrasland_mos_korstmos",TRUE,1
+35416,"Clematis vitalba","Clematis vitalba","Bosrank","Vaatplanten",17,"bomen_bos",TRUE,1
+35645,"Anthriscus caucalis","Anthriscus caucalis","Fijne kervel","Vaatplanten",17,"struweel_ruigte;bomen_bos",TRUE,2
+36095,"Aphanes australis","Aphanes australis","Kleine leeuwenklauw","Vaatplanten",17,"open_pionier",TRUE,1
+37110,"Viola rupestris","Viola rupestris","Zandviooltje","Vaatplanten",17,"duingrasland_mos_korstmos",TRUE,1
+31410,"Rhytidiadelphus triquetrus","Rhytidiadelphus triquetrus","Pluimstaartmos","Mossen en levermossen",16,"duingrasland_mos_korstmos",TRUE,1
+31406,"Pellia","Pellia","Pellia","Mossen en levermossen",15,"duingrasland_mos_korstmos",TRUE,1
+35328,"Fagus sylvatica","Fagus sylvatica","Beuk","Vaatplanten",15,"bomen_bos",TRUE,1
+35811,"Lithospermum officinale","Lithospermum officinale","Glad parelzaad","Vaatplanten",15,"struweel_ruigte;bomen_bos",TRUE,2
+35912,"Convolvulus sepium","Convolvulus sepium","Haagwinde","Vaatplanten",15,"struweel_ruigte;bomen_bos",TRUE,2
+36122,"Hedera helix","Hedera helix","Klimop","Vaatplanten",15,"bomen_bos",TRUE,1
+36575,"Ranunculus acris","Ranunculus acris","Scherpe boterbloem","Vaatplanten",15,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35795,"Jacobaea vulgaris subsp. vulgaris","Jacobaea vulgaris subsp. vulgaris","Gewoon jakobskruiskruid","Vaatplanten",14,"duingrasland_mos_korstmos",TRUE,1
+35897,"Plantago major subsp. major","Plantago major subsp. major","Grote weegbree","Vaatplanten",14,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36075,"Senecio vulgaris","Senecio vulgaris","Klein kruiskruid","Vaatplanten",14,"open_pionier",TRUE,1
+36193,"Ribes uva-crispa","Ribes uva-crispa","Kruisbes","Vaatplanten",14,"struweel_ruigte;bomen_bos",TRUE,2
+36855,"Potentilla erecta","Potentilla erecta","Tormentil","Vaatplanten",14,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35249,"Amelanchier lamarckii","Amelanchier lamarckii","Amerikaans krentenboompje","Vaatplanten",13,"struweel_ruigte;bomen_bos",TRUE,2
+35346,"Ranunculus sceleratus","Ranunculus sceleratus","Blaartrekkende boterbloem","Vaatplanten",13,"open_pionier",TRUE,1
+35442,"Epipactis helleborine","Epipactis helleborine","Brede wespenorchis / Duinwespenorchis","Vaatplanten",13,"bomen_bos",TRUE,1
+36074,"Lemna minor","Lemna minor","Klein kroos","Vaatplanten",13,"nat_riet",TRUE,1
+36617,"Nasturtium microphyllum","Nasturtium microphyllum","Slanke waterkers","Vaatplanten",13,"open_pionier;nat_riet",TRUE,2
+36692,"Ranunculus circinatus","Ranunculus circinatus","Stijve waterranonkel","Vaatplanten",13,"nat_riet",TRUE,1
+30312,"Chara globularis var. globularis","Chara globularis var. globularis","Breekbaar kransblad (var. globularis)","Kranswieren, wieren en algen",12,"nat_riet",TRUE,1
+31305,"Pohlia nutans","Pohlia nutans","Gewoon peermos","Mossen en levermossen",12,"duingrasland_mos_korstmos",TRUE,1
+31422,"Bryum rubens/bornholmense/microerythrocarpum","Bryum rubens/bornholmense/microerythrocarpum","Roodknolknikmos","Mossen en levermossen",12,"duingrasland_mos_korstmos",TRUE,1
+35771,"Sonchus oleraceus","Sonchus oleraceus","Gewone melkdistel","Vaatplanten",12,"open_pionier",TRUE,1
+36510,"Pyrola rotundifolia","Pyrola rotundifolia","Rond wintergroen","Vaatplanten",12,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+36581,"Salix alba","Salix alba","Schietwilg","Vaatplanten",12,"bomen_bos",TRUE,1
+36626,"Poa pratensis subsp. angustifolia","Poa pratensis subsp. angustifolia","Smal beemdgras — Poa pratensis subsp. angustifolia","Vaatplanten",12,"duingrasland_mos_korstmos",TRUE,1
+37121,"Sonchus arvensis var. maritimus","Sonchus arvensis var. maritimus","Zeemelkdistel","Vaatplanten",12,"open_pionier",TRUE,1
+29993,"Cladonia arbuscula","Cladonia arbuscula","Gebogen rendiermos","Korstmossen",11,"duingrasland_mos_korstmos",TRUE,1
+36482,"Rumex obtusifolius","Rumex obtusifolius","Ridderzuring","Vaatplanten",11,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+31246,"Lophozia excisa","Lophozia excisa","Duintrapmos","Mossen en levermossen",10,"duingrasland_mos_korstmos",TRUE,1
+35303,"Epilobium ciliatum","Epilobium ciliatum","Beklierde basterdwederik","Vaatplanten",10,"open_pionier",TRUE,1
+35330,"Briza media","Briza media","Bevertjes","Vaatplanten",10,"duingrasland_mos_korstmos",TRUE,1
+35418,"Cardamine flexuosa","Cardamine flexuosa","Bosveldkers","Vaatplanten",10,"nat_riet;bomen_bos",TRUE,2
+35574,"Viola curtisii subsp. coniophila","Viola curtisii subsp. coniophila","Duinviooltje subsp. coniophila","Vaatplanten",10,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35743,"Hypericum tetrapterum","Hypericum tetrapterum","Gevleugeld hertshooi","Vaatplanten",10,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte",TRUE,3
+35748,"Eleocharis palustris/uniglumis","Eleocharis palustris/uniglumis","Gewone / Slanke waterbies","Vaatplanten",10,"nat_riet",TRUE,1
+36124,"Veronica hederifolia","Veronica hederifolia","Klimopereprijs","Vaatplanten",10,"open_pionier;bomen_bos",TRUE,2
+36176,"Anchusa arvensis","Anchusa arvensis","Kromhals","Vaatplanten",10,"open_pionier",TRUE,1
+36234,"Trifolium campestre","Trifolium campestre","Liggende klaver","Vaatplanten",10,"duingrasland_mos_korstmos",TRUE,1
+37137,"Ranunculus baudotii","Ranunculus baudotii","Zilte waterranonkel","Vaatplanten",10,"open_pionier;nat_riet",TRUE,2
+29967,"Diploschistes muscorum","Diploschistes muscorum","Duindaalder","Korstmossen",9,"duingrasland_mos_korstmos",TRUE,1
+30100,"Peltigera rufescens","Peltigera rufescens","Klein leermos","Korstmossen",9,"duingrasland_mos_korstmos",TRUE,1
+30205,"Cladonia scabriuscula","Cladonia scabriuscula","Ruw heidestaartje","Korstmossen",9,"duingrasland_mos_korstmos",TRUE,1
+31425,"Rhodobryum roseum","Rhodobryum roseum","Rozetmos","Mossen en levermossen",9,"duingrasland_mos_korstmos",TRUE,1
+36361,"Carex riparia","Carex riparia","Oeverzegge","Vaatplanten",9,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+37181,"Carex nigra","Carex nigra","Zwarte zegge","Vaatplanten",9,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+31324,"Brachythecium salebrosum","Brachythecium salebrosum","Glad dikkopmos","Mossen en levermossen",8,"duingrasland_mos_korstmos",TRUE,1
+31465,"Bryum caespiticium","Bryum caespiticium","Zodeknikmos","Mossen en levermossen",8,"duingrasland_mos_korstmos",TRUE,1
+35238,"Convolvulus arvensis","Convolvulus arvensis","Akkerwinde","Vaatplanten",8,"open_pionier;struweel_ruigte",TRUE,2
+35572,"Oenothera oakesiana","Oenothera oakesiana","Duinteunisbloem","Vaatplanten",8,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35658,"Rubus idaeus","Rubus idaeus","Framboos","Vaatplanten",8,"struweel_ruigte;bomen_bos",TRUE,2
+35721,"Galeopsis bifida","Galeopsis bifida","Gespleten hennepnetel","Vaatplanten",8,"struweel_ruigte;bomen_bos",TRUE,2
+35818,"Arrhenatherum elatius","Arrhenatherum elatius","Glanshaver","Vaatplanten",8,"duingrasland_mos_korstmos",TRUE,1
+36407,"Lysimachia nummularia","Lysimachia nummularia","Penningkruid","Vaatplanten",8,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+37083,"Anthyllis vulneraria","Anthyllis vulneraria","Wondklaver","Vaatplanten",8,"duingrasland_mos_korstmos",TRUE,1
+31262,"Lophocolea semiteres","Lophocolea semiteres","Gaaf kantmos","Mossen en levermossen",7,"duingrasland_mos_korstmos",TRUE,1
+35230,"Lapsana communis","Lapsana communis","Akkerkool","Vaatplanten",7,"open_pionier;struweel_ruigte;bomen_bos",TRUE,3
+35589,"Centunculus minimus","Centunculus minimus","Dwergbloem","Vaatplanten",7,"open_pionier",TRUE,1
+35861,"Plantago major","Plantago major","Grote / Getande weegbree","Vaatplanten",7,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35924,"Epilobium hirsutum","Epilobium hirsutum","Harig wilgenroosje","Vaatplanten",7,"nat_riet;struweel_ruigte",TRUE,2
+36060,"Verbascum phlomoides","Verbascum phlomoides","Keizerskaars","Vaatplanten",7,"open_pionier;struweel_ruigte",TRUE,2
+36231,"Asparagus officinalis subsp. prostratus","Asparagus officinalis subsp. prostratus","Liggende asperge","Vaatplanten",7,"duingrasland_mos_korstmos",TRUE,1
+37133,"Oenanthe lachenalii","Oenanthe lachenalii","Zilt torkruid","Vaatplanten",7,"struweel_ruigte",TRUE,1
+29939,"Placynthiella icmalea","Placynthiella icmalea","Bruine veenkorst","Korstmossen",6,"duingrasland_mos_korstmos",TRUE,1
+31321,"Riccia fluitans","Riccia fluitans","Gewoon watervorkje","Mossen en levermossen",6,"duingrasland_mos_korstmos",TRUE,1
+35851,"Circaea lutetiana","Circaea lutetiana","Groot heksenkruid","Vaatplanten",6,"bomen_bos",TRUE,1
+35932,"Corylus avellana","Corylus avellana","Hazelaar","Vaatplanten",6,"struweel_ruigte;bomen_bos",TRUE,2
+36489,"Rosa rugosa","Rosa rugosa","Rimpelroos","Vaatplanten",6,"struweel_ruigte;bomen_bos",TRUE,2
+37187,"Anisantha tectorum","Anisantha tectorum","Zwenkdravik","Vaatplanten",6,"open_pionier;struweel_ruigte",TRUE,2
+30003,"Lepraria finkii","Lepraria finkii","Gelobde poederkorst — Lepraria finkii","Korstmossen",5,"duingrasland_mos_korstmos",TRUE,1
+31227,"Campylopus pyriformis","Campylopus pyriformis","Breekblaadje","Mossen en levermossen",5,"duingrasland_mos_korstmos",TRUE,1
+31328,"Plagiothecium denticulatum","Plagiothecium denticulatum","Glanzend platmos","Mossen en levermossen",5,"duingrasland_mos_korstmos",TRUE,1
+31369,"Oxyrrhynchium hians","Oxyrrhynchium hians","Kleisnavelmos","Mossen en levermossen",5,"duingrasland_mos_korstmos",TRUE,1
+31430,"Leptobryum pyriforme","Leptobryum pyriforme","Slankmos","Mossen en levermossen",5,"duingrasland_mos_korstmos",TRUE,1
+35806,"Polygonum aviculare","Polygonum aviculare","Gewoon varkensgras","Vaatplanten",5,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35888,"Oenothera glazioviana","Oenothera glazioviana","Grote teunisbloem","Vaatplanten",5,"open_pionier;struweel_ruigte",TRUE,2
+35896,"Lysimachia vulgaris","Lysimachia vulgaris","Grote wederik","Vaatplanten",5,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+35910,"Carpinus betulus","Carpinus betulus","Haagbeuk","Vaatplanten",5,"bomen_bos",TRUE,1
+35914,"Potamogeton trichoides","Potamogeton trichoides","Haarfonteinkruid","Vaatplanten",5,"nat_riet",TRUE,1
+35918,"Cynodon dactylon","Cynodon dactylon","Handjesgras","Vaatplanten",5,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36316,"Carex acutiformis","Carex acutiformis","Moeraszegge","Vaatplanten",5,"nat_riet;struweel_ruigte;bomen_bos",TRUE,3
+36403,"Daucus carota","Daucus carota","Peen","Vaatplanten",5,"duingrasland_mos_korstmos",TRUE,1
+36429,"Juncus compressus","Juncus compressus","Platte rus","Vaatplanten",5,"duingrasland_mos_korstmos",TRUE,1
+36619,"Prunus spinosa","Prunus spinosa","Sleedoorn","Vaatplanten",5,"struweel_ruigte;bomen_bos",TRUE,2
+36796,"Taraxacum obliquum","Taraxacum obliquum","Taraxacum obliquum","Vaatplanten",5,"duingrasland_mos_korstmos",TRUE,1
+36964,"Prunus padus","Prunus padus","Vogelkers","Vaatplanten",5,"struweel_ruigte;bomen_bos",TRUE,2
+37102,"Leymus arenarius","Leymus arenarius","Zandhaver","Vaatplanten",5,"open_pionier;duingrasland_mos_korstmos;struweel_ruigte",TRUE,3
+30022,"Agonimia tristicula","Agonimia tristicula","Gewoon haarschubje","Korstmossen",4,"duingrasland_mos_korstmos",TRUE,1
+30198,"Cladonia coccifera","Cladonia coccifera","Rood bekermos","Korstmossen",4,"duingrasland_mos_korstmos",TRUE,1
+35288,"Equisetum x litorale","Equisetum x litorale","Basterdpaardenstaart","Vaatplanten",4,"open_pionier;duingrasland_mos_korstmos;struweel_ruigte",TRUE,3
+35567,"Vulpia ciliata subsp. ambigua","Vulpia ciliata subsp. ambigua","Duinlangbaardgras","Vaatplanten",4,"open_pionier",TRUE,1
+35799,"Galanthus nivalis","Galanthus nivalis","Gewoon sneeuwklokje","Vaatplanten",4,"bomen_bos",TRUE,1
+35961,"Capsella bursa-pastoris","Capsella bursa-pastoris","Herderstasje","Vaatplanten",4,"open_pionier",TRUE,1
+36000,"Medicago lupulina","Medicago lupulina","Hopklaver","Vaatplanten",4,"duingrasland_mos_korstmos",TRUE,1
+36078,"Impatiens parviflora","Impatiens parviflora","Klein springzaad","Vaatplanten",4,"bomen_bos",TRUE,1
+36141,"Centaurea jacea","Centaurea jacea","Knoopkruid","Vaatplanten",4,"duingrasland_mos_korstmos",TRUE,1
+36499,"Trifolium pratense","Trifolium pratense","Rode klaver","Vaatplanten",4,"duingrasland_mos_korstmos",TRUE,1
+36970,"Potentilla verna","Potentilla verna","Voorjaarsganzerik — Potentilla verna","Vaatplanten",4,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+30031,"Cladonia cervicornis","Cladonia cervicornis","Gewoon stapelbekertje","Korstmossen",3,"duingrasland_mos_korstmos",TRUE,1
+30206,"Usnea articulata","Usnea articulata","Saucijs-baardmos","Korstmossen",3,"duingrasland_mos_korstmos",TRUE,1
+31205,"Leptodictyum riparium","Leptodictyum riparium","Beekmos","Mossen en levermossen",3,"duingrasland_mos_korstmos",TRUE,1
+31218,"Climacium dendroides","Climacium dendroides","Boompjesmos","Mossen en levermossen",3,"duingrasland_mos_korstmos",TRUE,1
+31283,"Orthotrichum affine","Orthotrichum affine","Gewone haarmuts","Mossen en levermossen",3,"duingrasland_mos_korstmos",TRUE,1
+31309,"Dicranella heteromalla","Dicranella heteromalla","Gewoon pluisjesmos","Mossen en levermossen",3,"duingrasland_mos_korstmos",TRUE,1
+31380,"Dicranella cerviculata","Dicranella cerviculata","Kroppluisjesmos","Mossen en levermossen",3,"duingrasland_mos_korstmos",TRUE,1
+35233,"Sonchus arvensis var. arvensis","Sonchus arvensis var. arvensis","Akkermelkdistel (var. arvensis)","Vaatplanten",3,"open_pionier",TRUE,1
+35368,"Myosotis discolor s.l.","Myosotis discolor s.l.","Bleek/Veelkleurig vergeet-mij-nietje","Vaatplanten",3,"open_pionier",TRUE,1
+35421,"Salix caprea","Salix caprea","Boswilg","Vaatplanten",3,"struweel_ruigte;bomen_bos",TRUE,2
+35519,"Inula conyzae","Inula conyzae","Donderkruid","Vaatplanten",3,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35521,"Sagina apetala/micropetala","Sagina apetala/micropetala","Donkere / Uitstaande vetmuur","Vaatplanten",3,"open_pionier",TRUE,1
+35609,"Rosa rubiginosa","Rosa rubiginosa","Egelantier","Vaatplanten",3,"struweel_ruigte;bomen_bos",TRUE,2
+35711,"Botrychium lunaria","Botrychium lunaria","Gelobde maanvaren","Vaatplanten",3,"duingrasland_mos_korstmos",TRUE,1
+35761,"Angelica sylvestris","Angelica sylvestris","Gewone engelwortel","Vaatplanten",3,"duingrasland_mos_korstmos;struweel_ruigte;bomen_bos",TRUE,3
+35764,"Arrhenatherum elatius subsp. elatius","Arrhenatherum elatius subsp. elatius","Gewone glanshaver","Vaatplanten",3,"duingrasland_mos_korstmos",TRUE,1
+35786,"Ornithogalum umbellatum","Ornithogalum umbellatum","Gewone vogelmelk","Vaatplanten",3,"duingrasland_mos_korstmos;bomen_bos",TRUE,2
+35830,"Stellaria graminea","Stellaria graminea","Grasmuur","Vaatplanten",3,"duingrasland_mos_korstmos",TRUE,1
+35892,"Alopecurus pratensis","Alopecurus pratensis","Grote vossenstaart","Vaatplanten",3,"duingrasland_mos_korstmos",TRUE,1
+36135,"Poa bulbosa","Poa bulbosa","Knolbeemdgras","Vaatplanten",3,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36137,"Ranunculus bulbosus","Ranunculus bulbosus","Knolboterbloem","Vaatplanten",3,"duingrasland_mos_korstmos",TRUE,1
+36145,"Scrophularia nodosa","Scrophularia nodosa","Knopig helmkruid","Vaatplanten",3,"bomen_bos",TRUE,1
+36257,"Berberis aquifolium","Berberis aquifolium","Mahonie","Vaatplanten",3,"struweel_ruigte",TRUE,1
+36941,"Digitalis purpurea","Digitalis purpurea","Vingerhoedskruid","Vaatplanten",3,"struweel_ruigte;bomen_bos",TRUE,2
+37146,"Prunus avium","Prunus avium","Zoete kers","Vaatplanten",3,"struweel_ruigte;bomen_bos",TRUE,2
+39059,"Enteromorpha","Enteromorpha","Darmwier","Kranswieren, wieren en algen",3,"nat_riet",TRUE,1
+29943,"Cladonia","Cladonia","Cladonia","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+29973,"Vezdaea aestivalis","Vezdaea aestivalis","Duinzomerkorst","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30015,"Lepraria incana","Lepraria incana","Gewone poederkorst","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30034,"Cladonia gracilis","Cladonia gracilis","Girafje","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30058,"Xanthoria parietina","Xanthoria parietina","Groot dooiermos","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30076,"Micarea prasina","Micarea prasina","Houtoogje","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30088,"Agonimia globulifera","Agonimia globulifera","Kalkhaarschubje","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30152,"Placynthiella dasaea","Placynthiella dasaea","Okerbruine veenkorst","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30190,"Cladonia floerkeana","Cladonia floerkeana","Rode heidelucifer","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+30218,"Cladonia coniocraea","Cladonia coniocraea","Smal bekermos","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+31222,"Campylopus flexuosus","Campylopus flexuosus","Boskronkelsteeltje","Mossen en levermossen",2,"duingrasland_mos_korstmos",TRUE,1
+31297,"Physcomitrium pyriforme","Physcomitrium pyriforme","Gewoon knikkertjesmos","Mossen en levermossen",2,"duingrasland_mos_korstmos",TRUE,1
+31370,"Fissidens taxifolius","Fissidens taxifolius","Kleivedermos","Mossen en levermossen",2,"duingrasland_mos_korstmos",TRUE,1
+31371,"Isothecium myosuroides","Isothecium myosuroides","Knikkend palmpjesmos","Mossen en levermossen",2,"duingrasland_mos_korstmos",TRUE,1
+35228,"Veronica hederifolia subsp. hederifolia","Veronica hederifolia subsp. hederifolia","Akkerklimopereprijs","Vaatplanten",2,"open_pionier",TRUE,1
+35338,"Artemisia vulgaris","Artemisia vulgaris","Bijvoet","Vaatplanten",2,"struweel_ruigte",TRUE,1
+35343,"Orobanche picridis","Orobanche picridis","Bitterkruidbremraap","Vaatplanten",2,"duingrasland_mos_korstmos",TRUE,1
+35362,"Veronica anagallis-aquatica","Veronica anagallis-aquatica","Blauwe waterereprijs","Vaatplanten",2,"open_pionier;nat_riet",TRUE,2
+35397,"Equisetum variegatum","Equisetum variegatum","Bonte paardenstaart","Vaatplanten",2,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+35532,"Datura stramonium","Datura stramonium","Doornappel","Vaatplanten",2,"open_pionier;struweel_ruigte",TRUE,2
+35652,"Anthriscus sylvestris","Anthriscus sylvestris","Fluitenkruid","Vaatplanten",2,"struweel_ruigte;bomen_bos",TRUE,2
+35655,"Centaurium pulchellum","Centaurium pulchellum","Fraai duizendguldenkruid","Vaatplanten",2,"open_pionier",TRUE,1
+35685,"Alopecurus geniculatus","Alopecurus geniculatus","Geknikte vossenstaart","Vaatplanten",2,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35772,"Anchusa officinalis","Anchusa officinalis","Gewone ossentong","Vaatplanten",2,"open_pionier;struweel_ruigte",TRUE,2
+35775,"Erodium cicutarium subsp. cicutarium","Erodium cicutarium subsp. cicutarium","Gewone reigersbek","Vaatplanten",2,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35781,"Erysimum cheiranthoides","Erysimum cheiranthoides","Gewone steenraket","Vaatplanten",2,"open_pionier",TRUE,1
+35812,"Digitaria ischaemum","Digitaria ischaemum","Glad vingergras","Vaatplanten",2,"open_pionier",TRUE,1
+35900,"Diplotaxis tenuifolia","Diplotaxis tenuifolia","Grote zandkool","Vaatplanten",2,"open_pionier;struweel_ruigte",TRUE,2
+35911,"Ligustrum ovalifolium","Ligustrum ovalifolium","Haagliguster","Vaatplanten",2,"struweel_ruigte",TRUE,1
+35929,"Doronicum pardalianches","Doronicum pardalianches","Hartbladzonnebloem","Vaatplanten",2,"bomen_bos",TRUE,1
+36047,"Epilobium tetragonum","Epilobium tetragonum","Kantige basterdwederik","Vaatplanten",2,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36064,"Hydrocharis morsus-ranae","Hydrocharis morsus-ranae","Kikkerbeet","Vaatplanten",2,"nat_riet",TRUE,1
+36072,"Tussilago farfara","Tussilago farfara","Klein hoefblad","Vaatplanten",2,"open_pionier",TRUE,1
+36093,"Trifolium dubium","Trifolium dubium","Kleine klaver","Vaatplanten",2,"duingrasland_mos_korstmos",TRUE,1
+36255,"Bellis perennis","Bellis perennis","Madeliefje","Vaatplanten",2,"duingrasland_mos_korstmos",TRUE,1
+36268,"Sorbus aria","Sorbus aria","Meelbes","Vaatplanten",2,"bomen_bos",TRUE,1
+36271,"Chenopodium album","Chenopodium album","Melganzenvoet","Vaatplanten",2,"open_pionier",TRUE,1
+36288,"Myosotis scorpioides","Myosotis scorpioides","Moeras- / Weidevergeet-mij-nietje","Vaatplanten",2,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+36297,"Pedicularis palustris","Pedicularis palustris","Moeraskartelblad","Vaatplanten",2,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36298,"Rorippa palustris","Rorippa palustris","Moeraskers","Vaatplanten",2,"open_pionier",TRUE,1
+36339,"Eleocharis acicularis","Eleocharis acicularis","Naaldwaterbies","Vaatplanten",2,"open_pionier;nat_riet",TRUE,2
+36484,"Phalaris arundinacea","Phalaris arundinacea","Rietgras","Vaatplanten",2,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte;bomen_bos",TRUE,4
+36498,"Lonicera xylosteum","Lonicera xylosteum","Rode kamperfoelie","Vaatplanten",2,"struweel_ruigte;bomen_bos",TRUE,2
+36503,"Spergularia rubra","Spergularia rubra","Rode schijnspurrie","Vaatplanten",2,"open_pionier",TRUE,1
+36567,"Poa nemoralis","Poa nemoralis","Schaduwgras","Vaatplanten",2,"bomen_bos",TRUE,1
+36580,"Cerastium diffusum","Cerastium diffusum","Scheve hoornbloem","Vaatplanten",2,"open_pionier",TRUE,1
+36663,"Verbascum densiflorum","Verbascum densiflorum","Stalkaars","Vaatplanten",2,"open_pionier;struweel_ruigte",TRUE,2
+36669,"Dactylorhiza incarnata subsp. coccinea","Dactylorhiza incarnata subsp. coccinea","Steenrode orchis","Vaatplanten",2,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36850,"Veronica serpyllifolia","Veronica serpyllifolia","Tijmereprijs","Vaatplanten",2,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36852,"Asplenium scolopendrium","Asplenium scolopendrium","Tongvaren","Vaatplanten",2,"open_pionier",TRUE,1
+37124,"Cakile maritima","Cakile maritima","Zeeraket","Vaatplanten",2,"open_pionier",TRUE,1
+39079,"Bacidia bagliettoana","Bacidia bagliettoana","Duinknoopjeskorst — Bacidia bagliettoana","Korstmossen",2,"duingrasland_mos_korstmos",TRUE,1
+39364,"Calypogeia fissa",,"Moerasbuidelmos","Mossen en levermossen",2,"duingrasland_mos_korstmos",TRUE,1
+29978,"Evernia prunastri","Evernia prunastri","Eikenmos","Korstmossen",1,"duingrasland_mos_korstmos",TRUE,1
+30026,"Parmelia sulcata","Parmelia sulcata","Gewoon schildmos","Korstmossen",1,"duingrasland_mos_korstmos",TRUE,1
+30099,"Polycauliona polycarpa","Polycauliona polycarpa","Klein dooiermos — Polycauliona polycarpa","Korstmossen",1,"duingrasland_mos_korstmos",TRUE,1
+35216,"Pteridium aquilinum","Pteridium aquilinum","Adelaarsvaren","Vaatplanten",1,"struweel_ruigte;bomen_bos",TRUE,2
+35227,"Rorippa sylvestris","Rorippa sylvestris","Akkerkers","Vaatplanten",1,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35379,"Rumex sanguineus","Rumex sanguineus","Bloedzuring","Vaatplanten",1,"bomen_bos",TRUE,1
+35549,"Solanum triflorum","Solanum triflorum","Driebloemige nachtschade","Vaatplanten",1,"open_pionier;struweel_ruigte",TRUE,2
+35560,"Artemisia campestris subsp. maritima","Artemisia campestris subsp. maritima","Duinaveruit","Vaatplanten",1,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+35578,"Epipactis helleborine subsp. neerlandica","Epipactis helleborine subsp. neerlandica","Duinwespenorchis","Vaatplanten",1,"bomen_bos",TRUE,1
+35695,"Tragopogon pratensis","Tragopogon pratensis","Gele / Oosterse / Kleine morgenster","Vaatplanten",1,"duingrasland_mos_korstmos",TRUE,1
+35726,"Trifolium striatum","Trifolium striatum","Gestreepte klaver","Vaatplanten",1,"duingrasland_mos_korstmos",TRUE,1
+35774,"Sisymbrium officinale","Sisymbrium officinale","Gewone raket","Vaatplanten",1,"open_pionier;struweel_ruigte",TRUE,2
+35779,"Symphoricarpos albus","Symphoricarpos albus","Gewone sneeuwbes","Vaatplanten",1,"struweel_ruigte;bomen_bos",TRUE,2
+35783,"Valerianella locusta","Valerianella locusta","Gewone veldsla","Vaatplanten",1,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36088,"Pimpinella saxifraga","Pimpinella saxifraga","Kleine bevernel","Vaatplanten",1,"duingrasland_mos_korstmos",TRUE,1
+36110,"Clinopodium acinos","Clinopodium acinos","Kleine steentijm","Vaatplanten",1,"open_pionier;duingrasland_mos_korstmos",TRUE,2
+36200,"Carduus crispus","Carduus crispus","Kruldistel","Vaatplanten",1,"struweel_ruigte",TRUE,1
+36253,"Viola odorata","Viola odorata","Maarts viooltje","Vaatplanten",1,"bomen_bos",TRUE,1
+36307,"Agrostis canina","Agrostis canina","Moerasstruisgras","Vaatplanten",1,"duingrasland_mos_korstmos;nat_riet;bomen_bos",TRUE,3
+36354,"Acer platanoides","Acer platanoides","Noorse esdoorn","Vaatplanten",1,"bomen_bos",TRUE,1
+36435,"Carex paniculata subsp. paniculata","Carex paniculata subsp. paniculata","Pluimzegge — Carex paniculata subsp. paniculata","Vaatplanten",1,"nat_riet;bomen_bos",TRUE,2
+36515,"Anagallis arvensis subsp. arvensis","Anagallis arvensis subsp. arvensis","Rood guichelheil","Vaatplanten",1,"open_pionier",TRUE,1
+36591,"Triglochin maritima","Triglochin maritima","Schorrenzoutgras","Vaatplanten",1,"duingrasland_mos_korstmos;nat_riet",TRUE,2
+36666,"Asplenium trichomanes","Asplenium trichomanes","Steenbreekvaren","Vaatplanten",1,"open_pionier",TRUE,1
+36702,"Monotropa hypopitys","Monotropa hypopitys","Stofzaad","Vaatplanten",1,"duingrasland_mos_korstmos",TRUE,1
+36905,"Persicaria amphibia","Persicaria amphibia","Veenwortel","Vaatplanten",1,"duingrasland_mos_korstmos;nat_riet;struweel_ruigte",TRUE,3
+37175,"Vincetoxicum nigrum","Vincetoxicum nigrum","Zwarte engbloem","Vaatplanten",1,"bomen_bos",TRUE,1
+39449,"Trifolium scabrum","Trifolium scabrum","Ruwe klaver","Vaatplanten",1,"duingrasland_mos_korstmos",TRUE,1
+39598,"Rubus sect. Rubus",,"Zwarte braam — Rubus sect. Rubus","Vaatplanten",1665,,FALSE,0
+37095,"Avenula pubescens","Avenula pubescens","Zachte haver — Avenula pubescens","Vaatplanten",1393,,FALSE,0
+35949,"Calamagrostis arenaria","Calamagrostis arenaria","Helm — Calamagrostis arenaria","Vaatplanten",1228,,FALSE,0
+36624,"Koeleria albescens/macrantha","Koeleria albescens/macrantha","Smal / Duinfakkelgras","Vaatplanten",1049,,FALSE,0
+36179,"Ononis spinosa subsp. procurrens","Ononis spinosa subsp. procurrens","Kruipend stalkruid — Ononis spinosa subsp. procurrens","Vaatplanten",836,,FALSE,0
+36204,"Elymus repens","Elymus repens","Kweek — Elymus repens","Vaatplanten",689,,FALSE,0
+37120,"Elymus athericus","Elymus athericus","Zeekweek","Vaatplanten",626,,FALSE,0
+36388,"Taraxacum officinale","Taraxacum officinale","Paardenbloem","Vaatplanten",526,,FALSE,0
+39268,"Rosa subsect. Caninae",,"Hondsroos s.l. — Rosa subsect. Caninae","Vaatplanten",379,,FALSE,0
+43574,"Rosa subsect. Rubigineae",,"Egelantier s.l. — Rosa subsect. Rubigineae","Vaatplanten",308,,FALSE,0
+35576,"Stellaria apetala","Stellaria apetala","Duinvogelmuur — Stellaria apetala","Vaatplanten",261,,FALSE,0
+35571,"Juncus anceps","Juncus anceps","Duinrus","Vaatplanten",235,,FALSE,0
+36981,"Draba verna","Draba verna","Vroegeling — Draba verna","Vaatplanten",178,,FALSE,0
+35460,"Erigeron canadensis","Erigeron canadensis","Canadese fijnstraal — Erigeron canadensis","Vaatplanten",159,,FALSE,0
+36487,"Schedonorus arundinaceus","Schedonorus arundinaceus","Rietzwenkgras — Schedonorus arundinaceus","Vaatplanten",126,,FALSE,0
+36579,"Carex x elytroides","Carex x elytroides","Scherpe zegge x Zwarte zegge","Vaatplanten",126,,FALSE,0
+36631,"Vicia sativa","Vicia sativa","Smalle / Vergeten / Voederwikke","Vaatplanten",118,,FALSE,0
+35855,"Helosciadium nodiflorum","Helosciadium nodiflorum","Groot moerasscherm — Helosciadium nodiflorum","Vaatplanten",92,,FALSE,0
+35573,"Viola tricolor subsp. curtisii","Viola tricolor subsp. curtisii","Duinviooltje — Viola tricolor subsp. curtisii","Vaatplanten",89,,FALSE,0
+35768,"Arctium minus","Arctium minus","Gewone klit — Arctium minus","Vaatplanten",88,,FALSE,0
+37157,"Myosotis laxa subsp. cespitosa","Myosotis laxa subsp. cespitosa","Zompvergeet-mij-nietje","Vaatplanten",88,,FALSE,0
+36440,"Populus","Populus","Populier","Vaatplanten",78,,FALSE,0
+36688,"Baldellia ranunculoides subsp. ranunculoides","Baldellia ranunculoides subsp. ranunculoides","Stijve moerasweegbree","Vaatplanten",72,,FALSE,0
+36353,"Calamagrostis x calammophila","Calamagrostis x calammophila","Noordse helm — Calamagrostis x calammophila","Vaatplanten",71,,FALSE,0
+35526,"Viola reichenbachiana/riviniana","Viola reichenbachiana/riviniana","Donkersporig / Bleeksporig bosviooltje","Vaatplanten",64,,FALSE,0
+35940,"Bolboschoenus maritimus/laticarpus","Bolboschoenus maritimus/laticarpus","Heen/Oeverbies","Vaatplanten",63,,FALSE,0
+36572,"Hieracium sect. Hieracioides","Hieracium sect. Hieracioides","Schermhavikskruid — Hieracium sect. Hieracioides","Vaatplanten",63,,FALSE,0
+36679,"Callitriche","Callitriche","Sterrenkroos","Vaatplanten",61,,FALSE,0
+36639,"Vicia sativa subsp. angustifolia","Vicia sativa subsp. angustifolia","Smalle wikke","Vaatplanten",59,,FALSE,0
+35720,"Galeopsis bifida/tetrahit","Galeopsis bifida/tetrahit","Gespleten / Gewone hennepnetel","Vaatplanten",55,,FALSE,0
+36570,"Stuckenia pectinata","Stuckenia pectinata","Schedefonteinkruid — Stuckenia pectinata","Vaatplanten",53,,FALSE,0
+37165,"Fallopia convolvulus/dumetorum","Fallopia convolvulus/dumetorum","Zwaluwtong / Heggenduizendknoop","Vaatplanten",46,,FALSE,0
+35917,"Dactylorhiza","Dactylorhiza","Handekenskruid","Vaatplanten",42,,FALSE,0
+35428,"Rubus","Rubus","Braam — Rubus","Vaatplanten",41,,FALSE,0
+35513,"Rubus armeniacus","Rubus armeniacus","Dijkviltbraam","Vaatplanten",40,,FALSE,0
+37047,"Salix","Salix","Wilg","Vaatplanten",40,,FALSE,0
+36485,"Dactylorhiza praetermissa","Dactylorhiza praetermissa","Rietorchis — Dactylorhiza praetermissa","Vaatplanten",38,,FALSE,0
+35334,"Elymus farctus subsp. boreoatlanticus","Elymus farctus subsp. boreoatlanticus","Biestarwegras — Elymus farctus subsp. boreoatlanticus","Vaatplanten",36,,FALSE,0
+36848,"Oenothera","Oenothera","Teunisbloem","Vaatplanten",34,,FALSE,0
+36853,"Verbascum","Verbascum","Toorts onbekend","Vaatplanten",34,,FALSE,0
+35381,"Avenella flexuosa","Avenella flexuosa","Bochtige smele — Avenella flexuosa","Vaatplanten",32,,FALSE,0
+37134,"Juncus ranarius","Juncus ranarius","Zilte greppelrus — Juncus ranarius","Vaatplanten",28,,FALSE,0
+35454,"Lemna gibba/minor","Lemna gibba/minor","Bultkroos / Klein kroos","Vaatplanten",27,,FALSE,0
+36480,"Schedonorus giganteus","Schedonorus giganteus","Reuzenzwenkgras — Schedonorus giganteus","Vaatplanten",27,,FALSE,0
+37182,"Carex x timmiana","Carex x timmiana","Zwarte zegge x Drienervige zegge","Vaatplanten",26,,FALSE,0
+35647,"Ranunculus aquatilis/trichophyllus","Ranunculus aquatilis/trichophyllus","Fijne waterranonkel","Vaatplanten",21,,FALSE,0
+36612,"Nasturtium microphyllum/officinale","Nasturtium microphyllum/officinale","Slanke / Witte waterkers","Vaatplanten",20,,FALSE,0
+29157,"Rana temporaria","Rana temporaria","Bruine kikker","Amfibieën",18,,FALSE,0
+36925,"Scorzoneroides autumnalis","Scorzoneroides autumnalis","Vertakte leeuwentand — Scorzoneroides autumnalis","Vaatplanten",18,,FALSE,0
+35321,"Betula","Betula","Berk (G)","Vaatplanten",16,,FALSE,0
+43598,"Juncus bufonius / ranarius",,"Greppelrus / Zilte greppelrus — Juncus bufonius / ranarius","Vaatplanten",16,,FALSE,0
+29160,"Bufo bufo","Bufo bufo","Gewone pad","Amfibieën",15,,FALSE,0
+39021,"Viola x intersita",,"Bleeksporig bosviooltje — Viola x intersita","Vaatplanten",15,,FALSE,0
+35291,"Epilobium","Epilobium","Basterdwederik (G)","Vaatplanten",14,,FALSE,0
+36730,"Taraxacum","Taraxacum","Taraxacum","Vaatplanten",14,,FALSE,0
+36081,"Phleum nodosum","Phleum nodosum","Klein timoteegras — Phleum nodosum","Vaatplanten",13,,FALSE,0
+35920,"Festuca brevipila","Festuca brevipila","Hard zwenkgras — Festuca brevipila","Vaatplanten",12,,FALSE,0
+36887,"Sagina micropetala","Sagina micropetala","Uitstaande vetmuur","Vaatplanten",11,,FALSE,0
+36125,"Arctium","Arctium","Klit","Vaatplanten",10,,FALSE,0
+35728,"Oenothera x fallax","Oenothera x fallax","Gestreepte teunisbloem","Vaatplanten",9,,FALSE,0
+36992,"Crassula helmsii","Crassula helmsii","Watercrassula","Vaatplanten",9,,FALSE,0
+39438,"Bufo calamita",,"Rugstreeppad — Bufo calamita","Amfibieën",9,,FALSE,0
+36147,"Lemna turionifera","Lemna turionifera","Knopkroos","Vaatplanten",8,,FALSE,0
+36412,"Rubus laciniatus","Rubus laciniatus","Peterseliebraam","Vaatplanten",8,,FALSE,0
+35369,"Pseudognaphalium luteoalbum","Pseudognaphalium luteoalbum","Bleekgele droogbloem — Pseudognaphalium luteoalbum","Vaatplanten",6,,FALSE,0
+36117,"Ranunculus trichophyllus","Ranunculus trichophyllus","Kleine waterranonkel — Ranunculus trichophyllus","Vaatplanten",6,,FALSE,0
+36522,"Rosa","Rosa","Roos (G)","Vaatplanten",6,,FALSE,0
+37092,"Bromus hordeaceus","Bromus hordeaceus","Zachte dravik","Vaatplanten",6,,FALSE,0
+39058,"Lepidoptera",,"Dagvlinder — niet nader bepaald",,6,,FALSE,0
+36576,"Erigeron acris","Erigeron acris","Scherpe fijnstraal — Erigeron acris","Vaatplanten",5,,FALSE,0
+37186,"Sorbus intermedia","Sorbus intermedia","Zweedse lijsterbes","Vaatplanten",5,,FALSE,0
+43636,"Myosotis laxa subsp. caespitosa / scorpioides",,"Zomp- / Moerasvergeet-mij-nietje — Myosotis laxa subsp. caespitosa / scorpioides","Vaatplanten",5,,FALSE,0
+35296,"Schedonorus pratensis","Schedonorus pratensis","Beemdlangbloem — Schedonorus pratensis","Vaatplanten",4,,FALSE,0
+35424,"Ranunculus","Ranunculus","Boterbloem","Vaatplanten",4,,FALSE,0
+35524,"Sagina apetala","Sagina apetala","Donkere vetmuur","Vaatplanten",4,,FALSE,0
+35592,"Cotoneaster","Cotoneaster","Dwergmispel","Vaatplanten",4,,FALSE,0
+35644,"Ranunculus aquatilis/baudotii/trichophyllus","Ranunculus aquatilis/baudotii/trichophyllus","Fijne / Zilte waterranonkel","Vaatplanten",4,,FALSE,0
+36266,"Schoenoplectus lacustris","Schoenoplectus lacustris","Mattenbies — Schoenoplectus lacustris","Vaatplanten",4,,FALSE,0
+36381,"Pilosella aurantiaca","Pilosella aurantiaca","Oranje havikskruid","Vaatplanten",4,,FALSE,0
+36452,"Prunus","Prunus","Prunus (G)","Vaatplanten",4,,FALSE,0
+36467,"Rhinanthus","Rhinanthus","Ratelaar (G)","Vaatplanten",4,,FALSE,0
+37028,"Vicia","Vicia","Wikke","Vaatplanten",4,,FALSE,0
+37048,"Chamaenerion angustifolium","Chamaenerion angustifolium","Wilgenroosje — Chamaenerion angustifolium","Vaatplanten",4,,FALSE,0
+39332,"Lepidium","Lepidium","Kruidkers (G)","Vaatplanten",4,,FALSE,0
+34806,"Gerridae","Gerridae","Schaatsenrijders","Snavelinsecten",3,,FALSE,0
+35751,"Luzula campestris/multiflora","Luzula campestris/multiflora","Gewone / Veelbloemige veldbies","Vaatplanten",3,,FALSE,0
+35960,"Galeopsis","Galeopsis","Hennepnetel (G)","Vaatplanten",3,,FALSE,0
+36922,"Myosotis","Myosotis","Vergeet-mij-nietje (G)","Vaatplanten",3,,FALSE,0
+37009,"Alisma","Alisma","Waterweegbree (Onb.)","Vaatplanten",3,,FALSE,0
+35271,"Asparagus officinalis","Asparagus officinalis","Asperge / Liggende asperge","Vaatplanten",2,,FALSE,0
+35508,"Pinus","Pinus","Den","Vaatplanten",2,,FALSE,0
+35627,"Acer","Acer","Esdoorn","Vaatplanten",2,,FALSE,0
+35705,"Tragopogon pratensis subsp. pratensis","Tragopogon pratensis subsp. pratensis","Gele morgenster","Vaatplanten",2,,FALSE,0
+35805,"Phleum nodosum/pratense","Phleum nodosum/pratense","Gewoon timoteegras / Klein timoteegras","Vaatplanten",2,,FALSE,0
+35975,"Erigeron sumatrensis","Erigeron sumatrensis","Hoge fijnstraal","Vaatplanten",2,,FALSE,0
+36165,"Cornus","Cornus","Kornoelje","Vaatplanten",2,,FALSE,0
+36345,"Narcissus","Narcissus","Narcis","Vaatplanten",2,,FALSE,0
+36630,"Dryopteris carthusiana/dilatata","Dryopteris carthusiana/dilatata","Smalle / Brede stekelvaren","Vaatplanten",2,,FALSE,0
+36923,"Vicia sativa subsp. segetalis","Vicia sativa subsp. segetalis","Vergeten wikke","Vaatplanten",2,,FALSE,0
+39389,"Overige dieren",,"Overige dieren",,2,,FALSE,0
+39542,"Ranunculus (Batrachium)","Ranunculus (Batrachium)","Waterranonkel (G)","Vaatplanten",2,,FALSE,0
+43607,"Salicornia procumbens s. procumbens",,"Langarige zeekraal — Salicornia procumbens s. procumbens","Vaatplanten",2,,FALSE,0
+32118,"Lacerta agilis","Lacerta agilis","Zandhagedis","Reptielen",1,,FALSE,0
+35283,"Hyacinthoides x massartiana","Hyacinthoides x massartiana","Basterdhyacint","Vaatplanten",1,,FALSE,0
+35324,"Rumex x pratensis","Rumex x pratensis","Bermzuring — Rumex x pratensis","Vaatplanten",1,,FALSE,0
+35667,"Potentilla","Potentilla","Ganzerik","Vaatplanten",1,,FALSE,0
+36009,"Ulmus","Ulmus","Iep","Vaatplanten",1,,FALSE,0
+36066,"Trifolium","Trifolium","Klaver onbekend","Vaatplanten",1,,FALSE,0
+36168,"Salix euxina/x fragilis","Salix euxina/x fragilis","Kraakwilg s.l.","Vaatplanten",1,,FALSE,0
+36273,"Sonchus","Sonchus","Melkdistel (G)","Vaatplanten",1,,FALSE,0
+36662,"Frangula alnus","Frangula alnus","Sporkehout — Frangula alnus","Vaatplanten",1,,FALSE,0
+36914,"Cardamine","Cardamine","Veldkers","Vaatplanten",1,,FALSE,0
+39524,"Sagina","Sagina","Vetmuur (G)","Vaatplanten",1,,FALSE,0
+42467,"Rumex maritimus/palustris","Rumex maritimus/palustris","Goud- / Moeraszuring","Vaatplanten",1,,FALSE,0
