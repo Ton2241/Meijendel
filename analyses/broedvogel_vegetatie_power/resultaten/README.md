@@ -9,7 +9,7 @@ zijn gecontroleerd.
 ## PQ-vertragingsdekking 0–15 jaar
 
 `pq_vertragingsdekking_laatste.csv` en het bijbehorende manifest horen bij run
-`20261028T141526Z-0ed7eaf9579f` van 28 oktober 2026. De runner las de actuele
+`20261028T142316Z-d6169d52f603` van 28 oktober 2026. De runner las de actuele
 lokale database alleen-lezen en schatte geen model. De bron omvat 2.007
 PQ-opnamen en 53.122 PQ-taxonregels uit 1981–2025; 1.314 opnamen zijn gekoppeld
 aan 35 Natura 2000-vogelplots. De gekoppelde vogelpopulatie bevat, na

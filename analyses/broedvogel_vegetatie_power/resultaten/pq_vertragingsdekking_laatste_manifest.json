@@ -1,9 +1,9 @@
 {
-  "run_id": "20261028T141526Z-0ed7eaf9579f",
-  "git_commit": "0ed7eaf9579ff6140aad778b197ce999a24d784b",
+  "run_id": "20261028T142316Z-d6169d52f603",
+  "git_commit": "d6169d52f603afa9f4ef91ff527d6a8197daa974",
   "database_name": "Meijendel",
   "mysql_version": "9.7.4",
-  "executed_at_utc": "2026-10-28T14:15:45Z",
+  "executed_at_utc": "2026-10-28T14:23:34Z",
   "source_fingerprint_sha256": "c1b9ebaf49fa9ecd6b1b7d5ef0bab4c12f0fe1f53eb55c3acdf424da358c24cb",
   "source_files": {
     "bronnen": {
@@ -108,6 +108,6 @@
   "output": {
     "file": "pq_vertragingsdekking.csv",
     "rows": 32,
-    "sha256": "3647d02bfafdd1cf1d2d830a05512ef2de71aafef46aa1d3093f25c2f7777ab2"
+    "sha256": "f75dea784377add6c41b91c1ffd6da5d85bb023e1dd3b2f078c7c658c449ebcf"
   }
 }
