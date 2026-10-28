@@ -138,6 +138,8 @@ build_composition_pipeline_state <- function(input_dir) {
 
 coverage_row <- function(block, analysis_id, item) {
   data <- item$data
+  first_bird_year <- if (nrow(data)) min(data$jaar) else NA_integer_
+  last_bird_year <- if (nrow(data)) max(data$jaar) else NA_integer_
   data.frame(
     blok = block,
     analysis_id = analysis_id,
@@ -146,8 +148,8 @@ coverage_row <- function(block, analysis_id, item) {
     plotyears = length(unique(paste(data$plot_id, data$jaar, sep = ":"))),
     plots = length(unique(data$plot_id)),
     species = length(unique(data$soort_id)),
-    first_bird_year = min(data$jaar),
-    last_bird_year = max(data$jaar),
+    first_bird_year = first_bird_year,
+    last_bird_year = last_bird_year,
     row_hash = item$row_hash,
     stringsAsFactors = FALSE
   )

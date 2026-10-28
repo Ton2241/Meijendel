@@ -19,16 +19,35 @@ source(file.path(
 
 build_pq_delay_populations <- function(base_population, composition, ipi) {
   lags <- composition_coverage_lags()
-  composition_populations <- lapply(lags, function(lag) {
-    build_multivariate_vegetation_population(
-      base_population, composition, composition_predictor_contract(), lag
+  build_one <- function(features, fields, lag) {
+    tryCatch(
+      build_multivariate_vegetation_population(
+        base_population, features, fields, lag
+      ),
+      error = function(error) {
+        if (!identical(
+          conditionMessage(error), "Geen gekoppelde vogel- en vegetatierijen."
+        )) stop(error)
+        empty <- base_population[FALSE, , drop = FALSE]
+        list(
+          data = empty,
+          plotyears = data.frame(
+            plot_id = integer(), jaar = integer(),
+            vegetatie_jaar = integer(), lag_years = integer()
+          ),
+          row_hash = row_set_sha256(character()),
+          lag_years = as.integer(lag),
+          excluded_species = pq_response_exclusions()
+        )
+      }
     )
+  }
+  composition_populations <- lapply(lags, function(lag) {
+    build_one(composition, composition_predictor_contract(), lag)
   })
   names(composition_populations) <- paste0("lag", lags)
   ipi_populations <- lapply(lags, function(lag) {
-    build_multivariate_vegetation_population(
-      base_population, ipi, ipi_predictor_contract(), lag
-    )
+    build_one(ipi, ipi_predictor_contract(), lag)
   })
   names(ipi_populations) <- paste0("lag", lags)
   list(
@@ -44,8 +63,8 @@ pq_delay_coverage_table <- function(state) {
       item <- populations[[name]]
       row <- coverage_row(block, name, item)
       years <- as.integer(item$plotyears$vegetatie_jaar)
-      row$first_vegetation_year <- min(years)
-      row$last_vegetation_year <- max(years)
+      row$first_vegetation_year <- if (length(years)) min(years) else NA_integer_
+      row$last_vegetation_year <- if (length(years)) max(years) else NA_integer_
       row
     })
   }
@@ -60,6 +79,22 @@ pq_delay_coverage_table <- function(state) {
   out$blok <- as.character(out$blok)
   rownames(out) <- NULL
   out
+}
+
+add_relative_plotyear_coverage <- function(coverage) {
+  require_prepare_fields(
+    coverage, c("blok", "lag_years", "plotyears"), "vertragingsdekking"
+  )
+  lag0 <- coverage[coverage$lag_years == 0L, c("blok", "plotyears"), drop = FALSE]
+  if (anyDuplicated(lag0$blok) || !setequal(lag0$blok, unique(coverage$blok))) {
+    stop("Ieder vegetatieblok moet exact één lag-0-dekkingsregel hebben.", call. = FALSE)
+  }
+  baseline <- lag0$plotyears[match(coverage$blok, lag0$blok)]
+  if (any(!is.finite(baseline) | baseline <= 0)) {
+    stop("Lag-0-dekking moet per vegetatieblok positief zijn.", call. = FALSE)
+  }
+  coverage$aandeel_plotjaren_tov_lag0 <- coverage$plotyears / baseline
+  coverage
 }
 
 if (sys.nframe() == 0L) {
@@ -115,14 +150,7 @@ if (sys.nframe() == 0L) {
   state <- build_pq_delay_populations(
     populations$long, composition$features, ipi
   )
-  coverage <- pq_delay_coverage_table(state)
-  lag0_rows <- coverage$lag_years == 0L
-  lag0_plotyears <- coverage$plotyears[match(
-    coverage$blok, coverage$blok[lag0_rows]
-  )]
-  coverage$aandeel_plotjaren_tov_lag0 <- (
-    coverage$plotyears / lag0_plotyears
-  )
+  coverage <- add_relative_plotyear_coverage(pq_delay_coverage_table(state))
   coverage <- coverage[c(
     "blok", "lag_years", "rows", "plotyears", "plots", "species",
     "first_vegetation_year", "last_vegetation_year",

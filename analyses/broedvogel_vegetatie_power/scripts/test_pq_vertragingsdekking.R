@@ -10,7 +10,7 @@ source(file.path(
 base <- expand.grid(
   soort_id = c(1L, 2L),
   plot_id = c(10L, 20L),
-  jaar = 2001:2018,
+  jaar = 2001:2010,
   KEEP.OUT.ATTRS = FALSE,
   stringsAsFactors = FALSE
 )
@@ -44,11 +44,29 @@ coverage <- pq_delay_coverage_table(state)
 stopifnot(nrow(coverage) == 32L)
 stopifnot(identical(sort(unique(coverage$lag_years)), 0:15))
 stopifnot(identical(unique(coverage$blok), c("compositie", "ipi")))
-stopifnot(all(coverage$plotyears == 6L))
-stopifnot(all(coverage$plots == 2L))
-stopifnot(all(coverage$species == 2L))
-stopifnot(all(coverage$rows == 12L))
-stopifnot(all(coverage$first_vegetation_year == 2001L))
-stopifnot(all(coverage$last_vegetation_year == 2003L))
+stopifnot(all(coverage$plotyears[coverage$lag_years <= 7L] == 6L))
+stopifnot(all(coverage$plotyears[coverage$lag_years == 8L] == 4L))
+stopifnot(all(coverage$plotyears[coverage$lag_years == 9L] == 2L))
+empty <- coverage[coverage$lag_years >= 10L, , drop = FALSE]
+stopifnot(nrow(empty) == 12L)
+stopifnot(all(empty$rows == 0L))
+stopifnot(all(empty$plotyears == 0L))
+stopifnot(all(empty$plots == 0L))
+stopifnot(all(empty$species == 0L))
+stopifnot(all(is.na(empty$first_bird_year)))
+stopifnot(all(is.na(empty$last_bird_year)))
+stopifnot(all(is.na(empty$first_vegetation_year)))
+stopifnot(all(is.na(empty$last_vegetation_year)))
+
+relative_fixture <- data.frame(
+  blok = rep(c("compositie", "ipi"), each = 2),
+  lag_years = rep(0:1, 2),
+  plotyears = c(406L, 390L, 406L, 390L),
+  stringsAsFactors = FALSE
+)
+relative_fixture <- add_relative_plotyear_coverage(relative_fixture)
+stopifnot(identical(relative_fixture$aandeel_plotjaren_tov_lag0, c(
+  1, 390 / 406, 1, 390 / 406
+)))
 
 cat("OK: PQ-vertragingsdekking 0-15\n")
