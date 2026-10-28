@@ -1,14 +1,117 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 26 oktober 2026
+**Stand:** 28 oktober 2026
 
-**Status:** analysematrix, tellergevoeligheid, vegetatiestappen,
-AHN-structuurproef, luchtfotoproef en de aanvullende modellen met stikstof en
-CBS-landgebruik uitgevoerd; geen van de gerichte habitat- of
-omgevingsmodellen voldoet aan de vooraf vastgelegde poort naar een formele
-poweranalyse
+**Status:** de analysematrix, tellergevoeligheid, vegetatiestappen,
+structuurproeven, omgevingsmodellen, niet-lineaire vertraagde modellen en de
+eerste formele poweranalyse zijn uitgevoerd. Drie vertraagde relaties bleven
+als voorspellende kandidaat over, maar geen daarvan vormt al bewijs voor een
+ecologische oorzaak-gevolgrelatie
 
 **Beoogd eindproduct:** artikel voor *Holland's Duinen*
+
+## Executive summary
+
+De broedvogelreeks van Meijendel beschrijft de ontwikkeling van vogelsoorten
+en vogelgroepen over 1958–2025. De aanvullende analyse onderzocht vervolgens
+of die ontwikkeling samenhangt met veranderingen in vegetatie en omgeving, en
+of zulke relaties ook buiten de gegevens waarmee het model is geschat blijven
+voorspellen. De hoofdconclusie is begrensd. De vogelgegevens zijn geschikt
+voor trendbeschrijving, maar de nu gekoppelde vegetatie- en omgevingsreeksen
+leveren nog geen breed model dat veranderingen in de broedvogelbevolking
+betrouwbaar voorspelt. Ruimtelijke verschillen tussen plots zijn veel
+duidelijker dan veranderingen binnen dezelfde plot door de tijd.
+
+De analyse is stapsgewijs opgebouwd. Eerst zijn de Natura 2000-scope,
+bronafhankelijke nullen, formeel afgekeurde tellingen en ontbrekende waarden
+vastgelegd. De standaardmatrix omvat 328.692 soort–plot–jaarcellen voor 156
+soorten, 52 plots en 2.107 werkelijk getelde plotjaren uit 1958–2025. M66 en
+M91 blijven buiten de analyse. Letterlijke SOVON-nullen, afgeleide
+jaarverslagnullen, lege cellen en formele afkeur blijven afzonderlijk
+herkenbaar. Daardoor wordt een ontbrekende waarneming niet stilzwijgend als
+nul behandeld.
+
+Daarna is het waarnemingsproces onderzocht. Het tellermodel gebruikt 203.628
+geldige soort–plot–jaarrijen uit 2.007 plotjaren met een bekende teller of een
+bekend tellerteam. Ook na correctie voor soort, jaar, plot, oppervlakte en bron
+blijven systematische verschillen bestaan die samenhangen met de teller of het
+tellerteam. De bijbehorende spreiding bedraagt op logschaal 0,382, ofwel een
+factor 1,47 per standaardafwijking. Dit is geen vast correctiepercentage en
+geen ranglijst van tellers. Volgende modellen nemen teller of tellerteam als
+random effect op en schatten ervaring in dezelfde plot en elders afzonderlijk.
+De mediane soorttrend verandert hierdoor weinig, maar bij 67 van 121 voldoende
+gedekte soorten meer dan 0,5 procentpunt per jaar. De mediane breedte van het
+onzekerheidsinterval neemt met 11% toe. Dat voorkomt dat verschillen tussen
+tellers volledig als vogelontwikkeling of ecologische reactie worden gelezen.
+
+Vervolgens zijn drie brede PQ-maten onderzocht: plantensoortenrijkdom,
+Shannon-diversiteit en totale bedekking. Deze modellen gebruiken 37.140
+soort–plot–jaarrijen, 406 vogelplotjaren, 35 plots en 154 soorten over
+1989–2025. De maten beschrijven duidelijke verschillen tussen plots, maar een
+verandering binnen dezelfde plot hangt gemiddeld niet duidelijk samen met een
+verandering in territoriumaantallen, ook niet één tot drie jaar later. De
+volledige plantensamenstelling en de IPI-indeling verbeteren de beschrijving
+van ruimtelijke habitatverschillen enigszins, maar niet de voorspelling van
+latere jaren.
+
+De analyse is daarna uitgebreid met ecologisch specifiekere structuur. De
+landbedekkingskaarten van 2001 en 2022 geven voor 25 plots informatie over open
+zand, lage vegetatie, struweel, bomen, riet en water. Wateroppervlak levert het
+duidelijkste ruimtelijke signaal voor watervogels. Twee kaartmomenten zijn
+echter onvoldoende om vast te stellen wanneer de verandering plaatsvond of om
+een algemene vogelreactie door de tijd te voorspellen. De AHN2–AHN5-reeks
+levert voor 55 plots vier geharmoniseerde hoogtemomenten tussen 2008 en 2023.
+Alleen het boomgroepmodel kon de tijdstoets numeriek doorlopen; de geringe
+verbetering verdween bij het weglaten van één soort. AHN1 bleek te
+methodegevoelig om als vergelijkbaar vijfde moment te gebruiken. De proef met
+tien openbare luchtfoto's uit 2016–2024 bleef met een macro-F1 van
+0,420–0,469 onder de vooraf gekozen grens van 0,60. Daaruit is daarom geen
+jaarlijkse vegetatiestructuurreeks afgeleid.
+
+Weer, stikstofdepositie en CBS-landgebruik zijn als afzonderlijke
+verklaringsblokken toegevoegd. Weer is als correctie in de gerichte modellen
+opgenomen. Het stikstofmodel gebruikt 60.127 soort–plot–jaarrijen uit 674
+plotjaren, 51 plots en 2005–2023. Het laat een verschil tussen plots zien, maar
+geen gemiddelde vogelverandering die binnen dezelfde plot met de depositie
+meeloopt. De landgebruikmodellen gebruiken 15.039 rijen uit 168 plotjaren, 49
+plots en vier kaartjaren tussen 2010 en 2022. Bos en water beschrijven enkele
+ruimtelijke verschillen, maar de volledige modellen en tijdstoetsen zijn te
+instabiel voor een voorspellende conclusie. Geen van deze habitat- en
+omgevingsmodellen ging door naar een poweranalyse.
+
+De laatste modelstap onderzocht niet-lineaire en meerdere jaren beslaande
+reacties op werkelijke veranderingen tussen opeenvolgende PQ-opnamen. Van
+zeventien vooraf gekozen relaties bleven drie territoriumrelaties als
+voorspellende kandidaat over: duingrasland met de gehele vogelgemeenschap,
+bomen en bos met de gehele gemeenschap, en duingrasland met
+bodemfoeragerende insecteneters. De geschatte reactie is direct na de
+vegetatieverandering vrijwel afwezig en wordt volgens de modelcurve pas na
+veertien tot vijftien jaar groter. De onzekerheidsintervallen omvatten dan
+steeds geen effect. Een afzonderlijke gebeurtenisanalyse bevestigde bovendien
+de richting niet. De drie relaties zijn daarom kandidaten voor beoordeling
+van detecteerbaarheid, geen aangetoonde ecologische verbanden.
+
+De poweranalyse gebruikt voor deze drie kandidaten 650 vogelplotjaren in 35
+plots uit 1994–2025, gekoppeld aan 362 PQ-veranderingsintervallen en 96
+teller/tellerteamidentificaties. Van de 650 reacties liggen er 635, of 97,7%,
+binnen nul tot drie jaar na de vegetatieverandering. Slechts vijftien liggen
+vier tot veertien jaar later en slechts vijf acht tot veertien jaar later.
+Geen van de zes richting-specifieke modelreacties haalt 80% power; de berekende
+power bedraagt 25,5–41,0%. Afhankelijk van relatie en richting is bij veertien
+jaar vertraging pas een verandering van 35–65% in het territoriumaantal met
+ten minste 80% power detecteerbaar. Dit percentage betreft de vogelreactie na
+een mediane vegetatieverandering, niet de vegetatieverandering zelf.
+
+De praktische conclusie is dat meer jaarlijkse vogeltellingen alleen het
+probleem niet oplossen. Voor een voorspellend model zijn vooral meer
+onafhankelijke vegetatieveranderingen nodig, gevolgd door vogelmetingen op
+vooraf gekozen latere termijnen. Herhaalde PQ-metingen in meer vogelplots en
+een betrouwbare tijdreeks van horizontale vegetatiestructuur kunnen die
+informatie leveren. De bestaande vogelreeks blijft waardevol voor trends en
+voor het toetsen van concrete, ecologisch vooraf omschreven relaties. De
+huidige combinatie van bronnen ondersteunt echter nog geen causale of breed
+toepasbare voorspelling van toekomstige veranderingen in de
+broedvogelbevolking.
 
 ## Doel
 
@@ -37,10 +140,10 @@ moet daarom in alle
 volgende verklarende modellen worden meegenomen.
 
 Dat gebeurt niet door bestaande territoriumaantallen te veranderen. Het model
-schat voor ieder teller/tellerteam een afwijking ten opzichte van het gemiddelde
-houdt daarnaast afzonderlijk rekening met eerder geregistreerde ervaring in
-dezelfde plot en elders in Meijendel. De tellerfase bepaalt dus de vorm van de
-correctie, niet één universele correctiefactor.
+schat voor iedere teller of ieder tellerteam een afwijking ten opzichte van het
+gemiddelde en houdt daarnaast afzonderlijk rekening met eerder geregistreerde
+ervaring in dezelfde plot en elders in Meijendel. De tellerfase bepaalt dus de
+vorm van de correctie, niet één universele correctiefactor.
 
 Over 1958–2025 is geen gemiddeld leereffect binnen dezelfde plot aangetoond.
 Er is wel een positief verband met eerder geregistreerde ervaring in andere
@@ -924,15 +1027,14 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
-| Niet-lineaire vertraagde PQ–vogelrelaties | Hoofdmodel en gebeurtenisanalyse uitgevoerd | Het hoofdmodel gebruikt 650 unieke vogelplotjaren in 35 plots over 1994–2025 en maximaal veertien jaar vertraging. Van 34 uitkomsten blijven drie territoriumrelaties als voorspellende kandidaat over. Hun langere effectintervallen omvatten één en de gebeurtenisanalyse bevestigt de richting niet. Nog geen causale conclusie of powergetal. |
+| Niet-lineaire vertraagde PQ–vogelrelaties | Hoofdmodel en gebeurtenisanalyse uitgevoerd | Het hoofdmodel gebruikt 650 unieke vogelplotjaren in 35 plots over 1994–2025 en maximaal veertien jaar vertraging. Van 34 uitkomsten blijven drie territoriumrelaties als voorspellende kandidaat over. Hun langere effectintervallen omvatten één en de gebeurtenisanalyse bevestigt de richting niet. Geen causale conclusie. |
 | Poweranalyse | Eerste formele uitvoering afgerond | De zes geschatte richting-specifieke effecten hebben 25,5–41,0% power. De historische detectiegrens ligt bij 35–65% verandering in territoriumaantal op veertien jaar vertraging. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
 ## Betekenis voor het latere artikel
 
-Het artikel wordt pas inhoudelijk afgerond nadat is besloten welke van de
-resterende relaties inhoudelijk sterk genoeg zijn voor een formele
-poweranalyse en die poweranalyse is uitgevoerd. Het moet niet alleen melden welke relaties zijn
+De eerste formele poweranalyse is uitgevoerd voor de drie overgebleven
+territoriumrelaties. Het artikel moet nu niet alleen melden welke relaties zijn
 gevonden, maar ook:
 
 - hoeveel beter het model buiten de schattingsgegevens voorspelt;

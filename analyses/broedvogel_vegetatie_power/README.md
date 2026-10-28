@@ -78,6 +78,9 @@ door naar power.
 
 - [Analyse op hoofdlijnen en uitkomsten](ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.md)
   is het levende inhoudelijke hoofddocument.
+- [Wordversie van het hoofddocument](ANALYSE_HOOFDLIJNEN_EN_UITKOMSTEN.docx)
+  bevat dezelfde tekst, inclusief de executive summary, in lees- en deelbare
+  vorm.
 - [Besluiten](BESLUITEN.md) bewaart methodische keuzes die niet bij iedere
   vervolgstap opnieuw moeten worden gemaakt.
 - [Luchtfoto classificatieproef](LUCHTFOTO_CLASSIFICATIEPROEF.md) beschrijft
