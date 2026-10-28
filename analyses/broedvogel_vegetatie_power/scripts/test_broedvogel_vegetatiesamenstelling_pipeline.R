@@ -8,7 +8,21 @@ source(file.path(
 ))
 
 stopifnot(identical(primary_composition_model_lags(), 0L))
-stopifnot(identical(composition_coverage_lags(), 0:3))
+stopifnot(identical(composition_coverage_lags(), 0:15))
+
+coverage_fixture <- list(
+  data = data.frame(
+    row_id = c("1:10:2015", "2:10:2015"),
+    plot_id = c(10L, 10L),
+    jaar = c(2015L, 2015L),
+    soort_id = c(1L, 2L),
+    stringsAsFactors = FALSE
+  ),
+  row_hash = "fixture-hash",
+  lag_years = 15L
+)
+coverage_fixture_row <- coverage_row("compositie", "lag15", coverage_fixture)
+stopifnot(identical(coverage_fixture_row$lag_years, 15L))
 old_workers <- Sys.getenv("MEIJENDEL_MODEL_WORKERS", unset = NA_character_)
 Sys.setenv(MEIJENDEL_MODEL_WORKERS = "2")
 stopifnot(identical(validation_worker_count(), 1L))

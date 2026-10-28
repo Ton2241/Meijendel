@@ -58,8 +58,8 @@ prepare_joined_vegetation_population <- function(joined, lag_years) {
 build_multivariate_vegetation_population <- function(
     base_population, features, fields, lag_years = 0L) {
   lag_years <- as.integer(lag_years)
-  if (length(lag_years) != 1L || is.na(lag_years) || !lag_years %in% 0:3) {
-    stop("Vertraging moet exact 0, 1, 2 of 3 jaar zijn.", call. = FALSE)
+  if (length(lag_years) != 1L || is.na(lag_years) || !lag_years %in% 0:15) {
+    stop("Vertraging moet een geheel aantal jaren van 0 tot en met 15 zijn.", call. = FALSE)
   }
   require_prepare_fields(
     base_population,

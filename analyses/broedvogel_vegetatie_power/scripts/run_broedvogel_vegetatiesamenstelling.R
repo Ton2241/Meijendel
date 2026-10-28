@@ -17,7 +17,7 @@ source(file.path(
   "run_broedvogel_teller_model.R"
 ))
 
-composition_coverage_lags <- function() 0:3
+composition_coverage_lags <- function() 0:15
 
 primary_composition_model_lags <- function() 0L
 
@@ -141,6 +141,7 @@ coverage_row <- function(block, analysis_id, item) {
   data.frame(
     blok = block,
     analysis_id = analysis_id,
+    lag_years = as.integer(item$lag_years),
     rows = nrow(data),
     plotyears = length(unique(paste(data$plot_id, data$jaar, sep = ":"))),
     plots = length(unique(data$plot_id)),

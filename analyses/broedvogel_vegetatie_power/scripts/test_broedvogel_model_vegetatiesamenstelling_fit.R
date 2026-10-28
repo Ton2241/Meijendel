@@ -7,6 +7,11 @@ source(file.path(
   "broedvogel_model_vegetatiesamenstelling_fit.R"
 ))
 
+expect_error <- function(expr, pattern) {
+  found <- tryCatch({ force(expr); "" }, error = function(e) conditionMessage(e))
+  stopifnot(grepl(pattern, found, fixed = TRUE))
+}
+
 base <- expand.grid(
   soort_id = c(1L, 2L, 5L),
   plot_id = c(10L, 20L),
@@ -42,6 +47,20 @@ population <- build_multivariate_vegetation_population(
 stopifnot(nrow(population$data) == 12L)
 stopifnot(!5L %in% population$data$soort_id)
 stopifnot(all(paste0(composition_predictor_contract(), "_within_z") %in% names(population$data)))
+
+composition_lag15 <- composition
+composition_lag15$jaar <- composition_lag15$jaar - 15L
+population_lag15 <- build_multivariate_vegetation_population(
+  base, composition_lag15, composition_predictor_contract(), lag_years = 15L
+)
+stopifnot(nrow(population_lag15$data) == 12L)
+stopifnot(all(population_lag15$data$jaar - population_lag15$data$vegetatie_jaar == 15L))
+expect_error(
+  build_multivariate_vegetation_population(
+    base, composition_lag15, composition_predictor_contract(), lag_years = 16L
+  ),
+  "Vertraging moet een geheel aantal jaren van 0 tot en met 15 zijn."
+)
 
 formulas <- multivariate_vegetation_model_formulas(
   "compositie", composition_predictor_contract()
