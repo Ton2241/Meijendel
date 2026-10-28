@@ -19,9 +19,11 @@ intervallen. De feitelijke vertraging loopt tot veertien jaar.
 
 Van 102 volledige modellen slaagden er 101. Van 204 validatievergelijkingen
 waren er 189 geldig: 156 ruimtelijk en 33 temporeel. Drie
-territoriumrelaties voldeden aan de volledige hoofdregel: duingrasland met de
-gehele gemeenschap, bomen/bos met de gehele gemeenschap en duingrasland met
-bodemfoeragerende insecteneters. Voor een mediane afname of toename waren de
+territoriumrelaties voldeden aan de volledige hoofdregel: alle vijf
+ruimtelijke blokken waren geldig, in drie van vijf won het niet-lineaire model
+van beide eenvoudigere modellen en ook de tijdstoets was positief. Het gaat om
+duingrasland met de gehele gemeenschap, bomen/bos met de gehele gemeenschap en
+duingrasland met bodemfoeragerende insecteneters. Voor een mediane afname of toename waren de
 directe rate ratio's 0,999–1,002. Bij veertien tot vijftien jaar liepen de
 puntschattingen verder uiteen, maar alle 95%-intervallen omvatten één. Twee
 aanwezigheidsrelaties haalden de voorspellingstoets, maar hun

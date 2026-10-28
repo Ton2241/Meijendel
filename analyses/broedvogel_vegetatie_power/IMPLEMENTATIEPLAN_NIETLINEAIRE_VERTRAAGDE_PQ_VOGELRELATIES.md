@@ -177,9 +177,10 @@ gebruikte vertraging veertien jaar; een later PQ-interval vervangt een ouder
 interval.
 
 Van 102 volledige modellen slaagden er 101 numeriek. Van 204
-validatievergelijkingen waren er 189 geldig. Drie territoriumrelaties
-voorspelden in alle vijf geldige ruimtelijke blokken en in latere jaren beter
-dan zowel het basis- als het lineaire model: duingrasland met de gehele
+validatievergelijkingen waren er 189 geldig. Drie territoriumrelaties hadden
+alle vijf ruimtelijke validatieblokken geldig, voorspelden in drie van die vijf
+blokken beter dan zowel het basis- als het lineaire model en deden dat ook in
+latere jaren: duingrasland met de gehele
 gemeenschap, bomen/bos met de gehele gemeenschap en duingrasland met
 bodemfoeragerende insecteneters. De directe effecten waren vrijwel nul; de
 langere effectcurven hadden brede intervallen die één omvatten. Twee

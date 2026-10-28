@@ -221,9 +221,10 @@ gemeenschapsmodellen gebruiken 650 vogelplotjaren in 35 plots over 1994–2025,
 tot veertien jaar. Zeventien vooraf gekozen relaties zijn voor zowel
 territoriumaantal als aanwezigheid vergeleken met een basis- en lineair model.
 Van 102 volledige modellen waren er 101 numeriek geldig; van 204
-validatievergelijkingen 189. Drie territoriumrelaties voorspelden in vijf
-geldige ruimtelijke blokken en latere jaren beter dan beide eenvoudigere
-modellen: duingrasland met de gehele vogelgemeenschap, bomen/bos met de gehele
+validatievergelijkingen 189. Drie territoriumrelaties hadden vijf geldige
+ruimtelijke validatieblokken, voorspelden in drie van die vijf en in latere
+jaren beter dan beide eenvoudigere modellen: duingrasland met de gehele
+vogelgemeenschap, bomen/bos met de gehele
 gemeenschap en duingrasland met bodemfoeragerende insecteneters. Hun langere
 effectintervallen omvatten echter steeds de waarde één en een afzonderlijke
 analyse van negen tot 24 grote, niet-overlappende gebeurtenissen per relatie

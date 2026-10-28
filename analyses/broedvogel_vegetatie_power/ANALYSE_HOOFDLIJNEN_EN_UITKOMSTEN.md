@@ -716,8 +716,9 @@ model en een begrensd kwadratisch niet-lineair model vergeleken. Van 102
 volledige modellen waren er 101 numeriek geldig. Van 204 vergelijkingen op
 achtergehouden plots en jaren waren er 189 geldig.
 
-Drie territoriumrelaties voorspelden in alle vijf geldige ruimtelijke blokken
-en in de latere jaren beter dan zowel het basis- als het lineaire model:
+Drie territoriumrelaties hadden alle vijf ruimtelijke validatieblokken geldig,
+voorspelden in drie van die vijf blokken beter dan zowel het basis- als het
+lineaire model en deden dat ook in de latere jaren:
 
 - duingrasland/mossen/korstmossen met het totale territoriumaantal van de
   vogelgemeenschap;
