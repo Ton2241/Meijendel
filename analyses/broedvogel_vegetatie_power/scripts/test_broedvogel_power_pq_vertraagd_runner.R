@@ -31,13 +31,16 @@ stopifnot(
   all(scenarios$anchor_lag_years == 4L),
   all(scenarios$status == "geslaagd")
 )
+scenarios$lower95[scenarios$scenario_type == "toekomstig_meetvolume"] <- 0.9
 
 structure <- data.frame(
-  analysis_id = "test", plotyears = 40L, plots = 2L, intervals = 20L,
-  first_year = 2000L, last_year = 2019L, stringsAsFactors = FALSE
+  analysis_id = c("test", "andere_kandidaat"),
+  plotyears = c(40L, 50L), plots = c(2L, 5L), intervals = c(20L, 30L),
+  first_year = c(2000L, 2000L), last_year = c(2019L, 2019L),
+  stringsAsFactors = FALSE
 )
 thresholds <- summarise_power_requirements(
-  scenarios, structure, target_power = 0.8, plots_per_pq_round = 2L
+  scenarios, structure, target_power = 0.8
 )
 stopifnot(
   nrow(thresholds$historical) == 2L,

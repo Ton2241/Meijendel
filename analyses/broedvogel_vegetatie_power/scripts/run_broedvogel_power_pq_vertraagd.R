@@ -83,7 +83,6 @@ build_candidate_power_scenarios <- function(
 
 summarise_power_requirements <- function(
     scenarios, structure, target_power = 0.8, plots_per_pq_round = NULL) {
-  if (is.null(plots_per_pq_round)) plots_per_pq_round <- structure$plots
   keys <- unique(scenarios[c("analysis_id", "direction")])
   historical <- future <- list()
   for (i in seq_len(nrow(keys))) {
@@ -119,6 +118,11 @@ summarise_power_requirements <- function(
       current$scenario_type == "toekomstig_meetvolume"
     ]))
     info <- structure[structure$analysis_id == id, , drop = FALSE]
+    round_plots <- if (is.null(plots_per_pq_round)) {
+      info$plots[[1L]]
+    } else {
+      as.numeric(plots_per_pq_round[[1L]])
+    }
     for (effect in future_effects) {
       candidates <- current[
         current$scenario_type == "toekomstig_meetvolume" &
@@ -132,7 +136,7 @@ summarise_power_requirements <- function(
       translated <- if (is.finite(multiplier)) {
         translate_information_multiplier(
           multiplier, info$plotyears[[1L]], info$first_year[[1L]],
-          info$last_year[[1L]], info$intervals[[1L]], plots_per_pq_round
+          info$last_year[[1L]], info$intervals[[1L]], round_plots
         )
       } else data.frame(
         information_multiplier = NA_real_, additional_plotyears = NA_integer_,
