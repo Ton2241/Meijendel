@@ -1,0 +1,69 @@
+{
+  "run_id": "20261028T172857Z-423b7fe7f7cb",
+  "git_commit": "423b7fe7f7cb53e9c894a69253d38642b73416a0",
+  "executed_at_utc": "2026-10-28T17:29:06Z",
+  "source_run": {
+    "run_id": "20261028T162051Z-70d6fa9bbef7",
+    "git_commit": "70d6fa9bbef7fa01dd3b211fda07f4694baf7f63",
+    "manifest_sha256": "db177384e30d03f844b2a4640256c733fcb29362fab1c43b6726cd1152f0646b",
+    "state_sha256": "118382470f4f4ebb128c3cb14f3bbb0fcb2ddca73af2e4facee52721d868ee89"
+  },
+  "candidates": ["gemeenschap_duingrasland_mos_korstmos", "gemeenschap_bomen_bos", "functioneel_gras_bodemfoerageerders"],
+  "candidate_models": {
+    "gemeenschap_duingrasland_mos_korstmos": {
+      "file": "gemeenschap_duingrasland_mos_korstmos__territoria__niet_lineair.rds",
+      "sha256": "308a24757eaa229b6bb1008c97767fe5ca90e497921365a9b608a55b84d61098"
+    },
+    "gemeenschap_bomen_bos": {
+      "file": "gemeenschap_bomen_bos__territoria__niet_lineair.rds",
+      "sha256": "1abb1ceb5d35743814c3db50db2afe62ea71b9775362c72c59de2b601edad20a"
+    },
+    "functioneel_gras_bodemfoerageerders": {
+      "file": "functioneel_gras_bodemfoerageerders__territoria__niet_lineair.rds",
+      "sha256": "729b2ed1cd4a20934d377c9e1b3a27fb103fbf03c8c815c62e6f02981a38015d"
+    }
+  },
+  "detection_rule": {
+    "test": "gezamenlijke Waldtoets van zes veranderingstermen",
+    "alpha": 0.05,
+    "target_power": 0.8,
+    "direction": "geschat ankereffect moet dezelfde richting hebben",
+    "failures": "ongeldige covariantie telt niet als detectie"
+  },
+  "effect_scenarios": {
+    "historical_percent": [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80],
+    "future_percent": [10, 20, 30],
+    "information_multiplier": [1, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 2.75, 3, 3.25, 3.5, 3.75, 4, 4.25, 4.5, 4.75, 5, 5.25, 5.5, 5.75, 6, 6.25, 6.5, 6.75, 7, 7.25, 7.5, 7.75, 8, 8.25, 8.5, 8.75, 9, 9.25, 9.5, 9.75, 10, 10.25, 10.5, 10.75, 11, 11.25, 11.5, 11.75, 12, 12.25, 12.5, 12.75, 13, 13.25, 13.5, 13.75, 14, 14.25, 14.5, 14.75, 15, 15.25, 15.5, 15.75, 16, 16.25, 16.5, 16.75, 17, 17.25, 17.5, 17.75, 18, 18.25, 18.5, 18.75, 19, 19.25, 19.5, 19.75, 20, 20.25, 20.5, 20.75, 21, 21.25, 21.5, 21.75, 22, 22.25, 22.5, 22.75, 23, 23.25, 23.5, 23.75, 24, 24.25, 24.5, 24.75, 25],
+    "anchor": "mediane afname of toename; maximaal werkelijk waargenomen lag"
+  },
+  "simulations_per_scenario": 10000,
+  "future_interpretation": "equivalent meetvolume bij dezelfde plot-, jaar-, teller/tellerteam-, PQ- en variantiestructuur; geen kalenderprognose",
+  "package_versions": {
+    "glmmTMB": "1.1.14",
+    "geepack": "1.3.13",
+    "digest": "0.6.39",
+    "jsonlite": "2.0.0"
+  },
+  "outputs": {
+    "structuur": {
+      "file": "pq_power_structuur.csv",
+      "bytes": 1565,
+      "sha256": "abd120964aa456ad4a83cf173dde33616f17cedc1f7c1242cd1bfd18e4aea62b"
+    },
+    "scenarios": {
+      "file": "pq_power_scenarios.csv",
+      "bytes": 368308,
+      "sha256": "8a7a9fc9f32d291541945be3b6008dcdbebc99385220b6e8a23ae60fd35ec59b"
+    },
+    "historisch": {
+      "file": "pq_power_historisch.csv",
+      "bytes": 1001,
+      "sha256": "b0292b0d5e97abefc93a54cfd773c02bf0d8b3e6364b037755c4a24d6cf86ef2"
+    },
+    "toekomst": {
+      "file": "pq_power_toekomst.csv",
+      "bytes": 1586,
+      "sha256": "2a55ba5d923f9f47bd1fa4470445e2a48adeb567a2c52f1c0e82eb9d9c2cd121"
+    }
+  }
+}

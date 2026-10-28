@@ -644,6 +644,104 @@ Power wordt afzonderlijk bepaald voor relevante soorten, groepen,
 gemeenschapskenmerken en relaties met vegetatie. Niet-convergerende modellen
 tellen niet als gedetecteerd.
 
+De eerste formele uitvoering is run `20261028T172857Z-423b7fe7f7cb`. Alleen
+de drie in de voorspellende toets overgebleven territoriumrelaties zijn
+doorgegeven. Per scenario zijn 10.000 trekkingen gedaan uit de gezamenlijke
+onzekerheidsverdeling van de zes modelcoëfficiënten waarin de omvang van de
+PQ-verandering voorkomt. De twee losse termen voor tijd sinds de PQ-opname
+zijn niet als vegetatie-effect getoetst. Detectie vereist een gezamenlijke
+Waldtoets met p < 0,05 en een ankereffect in de gesimuleerde richting. De
+ondergrens van het 95%-Monte-Carlo-interval moet ten minste 80% bedragen. Bij
+een werkelijk effect van nul ligt het foutpositieve percentage in de zes
+richtingsscenario's tussen 4,7 en 5,2%; de toets is daarmee overeenkomstig de
+gekozen grens gekalibreerd. Alle 1.854 scenario's waren numeriek geldig.
+
+Dit is een parametrische simulatie op coëfficiëntniveau, geen nieuwe bootstrap
+van alle afzonderlijke territoriumaantallen. De werkelijke plot-, jaar-,
+teller/tellerteam-, PQ-, ontbrekendewaarden- en variantiestructuur werkt door
+via de gezamenlijke coëfficiëntencovariantie van het in Taak 3 geschatte
+model. Voor toekomstscenario's wordt die informatie evenredig opgeschaald.
+Daardoor zijn de uitkomsten geschikt als detectiegrens bij gelijkblijvende
+meetkwaliteit, maar niet als voorspelling van precies welke toekomstige
+plots, tellers of vegetatieveranderingen beschikbaar zullen zijn.
+
+#### Werkelijk waargenomen meetstructuur
+
+De drie kandidaten gebruiken dezelfde 650 vogelplotjaren in 35 plots uit
+1994–2025. De volledige combinatie van 35 plots en 32 jaren zou 1.120
+plotjaren bevatten; 470 combinaties hebben binnen deze analyse geen geldige
+koppeling van vogelrespons, voorafgaande PQ-verandering en bekende
+teller/tellerteamregistratie. Dat betekent een analysematige dekking van
+58,0%, niet dat al die 470 combinaties afgekeurde of ontbrekende tellingen
+zijn.
+
+De 650 plotjaren zijn gekoppeld aan 362 verschillende PQ-intervallen: 132 van
+één jaar, 137 van twee jaar, 54 van drie jaar, 35 van vier jaar en vier van
+vijf tot zeven jaar. De vogelreacties liggen zeer ongelijk over de
+vertragingen: 336 in het eindjaar van het PQ-interval, 299 één tot drie jaar
+later, tien vier tot zeven jaar later en vijf acht tot veertien jaar later.
+Daarmee ligt 97,7% van alle responsinformatie binnen nul tot drie jaar. De
+modelcurve kan tot veertien jaar worden berekend, maar de laatste zeven jaar
+rusten samen op slechts vijf vogelplotjaren.
+
+Voor alle 650 plotjaren is de teller/tellerteamregistratie bekend: 572 zijn
+door één teller uitgevoerd, 77 door twee tellers en één door drie tellers.
+Samen vormen zij 96 verschillende teller/tellerteamidentificaties. Binnen 565
+overgangen naar het direct volgende jaar in dezelfde plot veranderde de
+teller/tellerteamsamenstelling 81 keer. De mediane geregistreerde ervaring in
+de plot is 1,792 op de gebruikte log(1 + eerdere teljaren)-schaal; voor één
+teller komt dat overeen met vijf eerdere geregistreerde teljaren in die plot.
+De mediane geregistreerde ervaring elders is nul.
+
+Voor duingrasland/mossen/korstmossen bevatten de 362 intervallen 182 afnamen
+en 180 toenamen; de medianen zijn respectievelijk −7,59 en +8,60 procentpunt
+bedekking per jaar. Voor bomen/bos zijn dat 171 afnamen, één onveranderd
+interval en 190 toenamen, met medianen −5,33 en +3,91 procentpunt per jaar. De
+gemeenschapsmodellen omvatten 136 vogelsoorten. De functionele groep
+bodemfoeragerende insecteneters omvat 62 soorten.
+
+#### Detecteerbaarheid met de historische opzet
+
+Het effectpercentage hieronder is de verandering in territoriumaantal bij
+veertien jaar vertraging na een mediane vegetatieverandering, ten opzichte van
+geen vegetatieverandering. Het is dus niet het percentage waarmee de
+vegetatie zelf veranderde.
+
+| Relatie | Vegetatierichting | Geschatte vogelreactie | Power | Kleinste detecteerbare vogelreactie |
+|---|---|---:|---:|---:|
+| Duingrasland – gehele gemeenschap | afname | +36,6% | 37,4% | 65% |
+| Duingrasland – gehele gemeenschap | toename | −29,5% | 41,0% | 45% |
+| Bomen/bos – gehele gemeenschap | afname | −20,7% | 26,9% | 35% |
+| Bomen/bos – gehele gemeenschap | toename | +24,2% | 25,5% | 55% |
+| Duingrasland – bodemfoerageerders | afname | +16,5% | 31,2% | 35% |
+| Duingrasland – bodemfoerageerders | toename | −21,2% | 38,9% | 35% |
+
+Geen van de geschatte reacties haalt dus 80% power. Dat past bij de eerdere
+brede onzekerheidsintervallen en de niet-bevestigende gebeurtenisanalyse. De
+poweranalyse maakt nu concreet hoeveel gevoeligheid ontbreekt; zij maakt de
+relaties niet aannemelijker of causaal.
+
+#### Equivalent toekomstig meetvolume
+
+Voor vooraf gekozen vogelreacties van 10%, 20% en 30% is de informatie in de
+historische opzet vermenigvuldigd, met behoud van dezelfde dekking,
+variantie, ontbrekende combinaties, teller/tellerteamverdeling en verdeling
+van PQ-intervallen en vertragingen. Voor een effect van 30% varieert de
+benodigde aanvulling van negen tot tachtig equivalente jaren en van drie tot
+26 volledige PQ-ronden. Voor 20% is dat 57–201 jaren; voor 10% vraagt vijf van
+de zes richtingen 281–768 jaren en haalt afname van duingrasland voor de hele
+gemeenschap zelfs bij 25 maal de huidige informatie de conservatieve
+80%-grens niet.
+
+Deze aantallen zijn geen kalenderprognose en ook geen advies om eenvoudig
+eeuwen door te tellen. Zij drukken uit dat jaarlijkse vogeltellingen alleen
+weinig extra informatie leveren wanneer nauwelijks nieuwe onafhankelijke
+vegetatieveranderingen en lange responsvertragingen beschikbaar komen. Een
+efficiënter vervolgmeetnet vraagt daarom herhaalde PQ-metingen in meer plots,
+gevolgd door vogelmetingen op vooraf gekozen latere termijnen. Een complexer
+toestandsruimtemodel kan de schaarse lange vertragingen niet vervangen en is
+daarom nu niet toegevoegd.
+
 ### 8. Niet-lineaire en vertraagde verandering van PQ naar vogels
 
 De eerdere PQ-modellen toetsten gelijktijdige relaties en afzonderlijke
@@ -827,7 +925,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
 | Niet-lineaire vertraagde PQ–vogelrelaties | Hoofdmodel en gebeurtenisanalyse uitgevoerd | Het hoofdmodel gebruikt 650 unieke vogelplotjaren in 35 plots over 1994–2025 en maximaal veertien jaar vertraging. Van 34 uitkomsten blijven drie territoriumrelaties als voorspellende kandidaat over. Hun langere effectintervallen omvatten één en de gebeurtenisanalyse bevestigt de richting niet. Nog geen causale conclusie of powergetal. |
-| Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
+| Poweranalyse | Eerste formele uitvoering afgerond | De zes geschatte richting-specifieke effecten hebben 25,5–41,0% power. De historische detectiegrens ligt bij 35–65% verandering in territoriumaantal op veertien jaar vertraging. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 
 ## Betekenis voor het latere artikel

@@ -194,15 +194,48 @@ ecologische oorzaak-gevolgrelatie.
 
 ## Task 4 — power en voorspelbaarheid
 
-- [ ] Voer alleen voor gevalideerde relaties simulaties uit onder de werkelijk
+- [x] Voer alleen voor gevalideerde relaties simulaties uit onder de werkelijk
   aangetroffen meetfrequentie, spreiding, teller/tellerteamstructuur en
   ontbrekende jaren.
-- [ ] Bepaal welke verandering met de historische meetopzet aantoonbaar was en
+- [x] Bepaal welke verandering met de historische meetopzet aantoonbaar was en
   hoeveel toekomstige jaren of metingen nodig zijn voor vooraf gekozen
   effectgroottes.
-- [ ] Een gezamenlijk toestandsruimtemodel wordt pas overwogen wanneer Taak 3
+- [x] Een gezamenlijk toestandsruimtemodel wordt pas overwogen wanneer Taak 3
   een stabiel voorspellend signaal oplevert; het is geen voorwaarde voor de
   eerste poweranalyse.
+
+**Uitkomst 28 oktober 2026.** Run `20261028T172857Z-423b7fe7f7cb` simuleert
+per scenario 10.000 trekkingen uit de gezamenlijke onzekerheidsverdeling van
+de zes coëfficiënten die de omvang en richting van de PQ-verandering aan de
+vertraagde vogelreactie koppelen. De nulscenario's leveren 4,7–5,2%
+foutpositieven bij de vooraf gekozen grens van 5%. Alle 1.854 scenario's zijn
+numeriek geldig.
+
+De drie kandidaten hebben dezelfde 650 geldige vogelplotjaren in 35 plots uit
+1994–2025 en 362 PQ-veranderingsintervallen. Van de vogelplotjaren liggen er
+336 in het PQ-eindjaar, 299 één tot drie jaar later, tien vier tot zeven jaar
+later en slechts vijf acht tot veertien jaar later. Alle 650 hebben een
+bekende teller/tellerteamregistratie: 572 met één teller, 77 met twee en één
+met drie tellers. Er zijn 96 verschillende teller/tellerteamidentificaties.
+
+Geen van de zes richting-specifieke, in Taak 3 geschatte effecten haalt met de
+historische structuur 80% power. De berekende power loopt van 25,5% tot 41,0%.
+De kleinste met 80% power detecteerbare verandering in territoriumaantal bij
+de langste werkelijk waargenomen vertraging van veertien jaar bedraagt,
+afhankelijk van relatie en richting, 35–65%. Dit percentage betreft de
+vogelreactie na een mediane vegetatieverandering, niet het veranderingspercentage
+van de vegetatie zelf.
+
+Voor effecten van 10%, 20% en 30% is tevens berekend hoeveel equivalent
+meetvolume nodig zou zijn wanneer dekking, variantie, teller/tellerteam- en
+PQ-structuur exact gelijk blijven. Zelfs een effect van 30% vraagt afhankelijk
+van de relatie nog negen tot tachtig equivalente extra jaren en drie tot 26
+volledige extra PQ-ronden. Dit is een informatie-equivalent, geen voorspelling
+van de kalenderduur: nieuwe meetjaren helpen alleen wanneer zij ook nieuwe,
+voldoende gespreide PQ-veranderingsintervallen en reacties op langere
+vertragingen opleveren. Een gezamenlijk toestandsruimtemodel is daarom niet
+toegevoegd; het gebrek aan onafhankelijke lange vertragingen wordt daarmee
+niet opgelost.
 
 ## Afrondcriteria
 

@@ -8,7 +8,8 @@ veranderingen.
 De analysematrix, tellergevoeligheid en de vegetatiestappen tot en met de
 gerichte habitatmodellen zijn afgerond.
 De vervolgfase met niet-lineaire, meerdere jaren beslaande PQ–vogelrelaties is
-tot en met het vertraagde hoofdmodel en de gebeurtenisanalyse uitgevoerd.
+tot en met het vertraagde hoofdmodel, de gebeurtenisanalyse en de eerste
+formele poweranalyse uitgevoerd.
 De 1.314 gekoppelde PQ-opnamen leveren 501 plotjaren in 35 plots over
 1981–2025. Daarvan halen 485 plotjaren de eis dat minimaal 80% van de
 geregistreerde bedekking herleidbaar aan een gradiënt is gekoppeld. Zij vormen
@@ -23,6 +24,13 @@ vooraf gekozen relaties blijven drie territoriumrelaties als voorspellende
 kandidaat over. Hun effectintervallen zijn breed en de gebeurtenisanalyse
 bevestigt de richting niet. Zij zijn daarom geschikt voor een voorzichtige
 poweranalyse, maar nog niet voor een stellige ecologische conclusie.
+De powersimulatie laat zien dat geen van de zes richting-specifieke
+modelreacties met de historische meetstructuur 80% power haalt. De power van
+de geschatte effecten bedraagt 25,5–41,0%; pas een vogelreactie van 35–65% bij
+veertien jaar vertraging is, afhankelijk van relatie en richting, met ten
+minste 80% power aantoonbaar. De beperking zit vooral in de vertraging: van
+650 geldige vogelplotjaren liggen er slechts vijftien vier jaar of later na de
+gekoppelde PQ-verandering.
 Naast soortenrijkdom, Shannon en totale bedekking zijn nu ook de volledige
 PQ-soortensamenstelling, IPI en de onafhankelijke landbedekking van 2001 en
 2022 onderzocht. De taxonsamenstelling en IPI voorspellen verschillen tussen

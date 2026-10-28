@@ -348,3 +348,18 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_pq_ver
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_pq_vertraagd_pipeline.R
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_pq_vertraagd_runner.R
 ```
+
+## Power van de vertraagde kandidaten
+
+`broedvogel_power_pq_vertraagd.R` bevat de gezamenlijke Waldtoets,
+Monte-Carlo-simulatie, structuursamenvatting en omzetting naar equivalent
+meetvolume. `run_broedvogel_power_pq_vertraagd.R` leest uitsluitend de
+vastgelegde state en drie geldige territoriummodellen uit de voorafgaande run.
+De database, Shiny, het dashboard en de VPS worden niet gewijzigd.
+
+De twee regressietests zijn:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_power_pq_vertraagd.R
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_power_pq_vertraagd_runner.R
+```

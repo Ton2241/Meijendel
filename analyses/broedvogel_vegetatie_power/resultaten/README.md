@@ -6,6 +6,30 @@ checkpoints staan onder de door Git genegeerde map `runs/`. Een getal gaat pas
 naar het hoofddocument of het artikel wanneer selectie, modelstatus en manifest
 zijn gecontroleerd.
 
+## Power van vertraagde PQ–vogelrelaties
+
+De bestanden `pq_power_laatste_*` horen bij run
+`20261028T172857Z-423b7fe7f7cb` van 28 oktober 2026, uitgevoerd met commit
+`423b7fe7f7cb`. Zij gebruiken als bron uitsluitend de drie gevalideerde
+territoriumkandidaten en de modelobjecten uit run
+`20261028T162051Z-70d6fa9bbef7`.
+
+`pq_power_laatste_structuur.csv` beschrijft de werkelijk gebruikte 650
+vogelplotjaren, 35 plots, 362 PQ-intervallen, vertragingen en
+teller/tellerteamverdeling. `pq_power_laatste_scenarios.csv` bevat alle 1.854
+geldige simulatiesamenvattingen. `pq_power_laatste_historisch.csv` geeft per
+relatie en richting de historische detectiegrens en de power van de in Taak 3
+geschatte modelreactie. `pq_power_laatste_toekomst.csv` vertaalt effecten van
+10%, 20% en 30% naar equivalent extra meetvolume.
+
+Per scenario zijn 10.000 trekkingen gebruikt. De nulscenario's geven 4,7–5,2%
+foutpositieven bij α = 0,05. Geen geschatte kandidaatreactie bereikt 80%
+power; de waarden zijn 25,5–41,0%. De historische detectiegrenzen bedragen
+35–65% verandering in territoriumaantal bij de langste werkelijk waargenomen
+vertraging van veertien jaar. Toekomstige jaren en PQ-ronden zijn uitsluitend
+informatie-equivalenten bij ongewijzigde meetstructuur, geen
+kalenderprognoses.
+
 ## Niet-lineaire vertraagde PQ–vogelrelaties
 
 De bestanden `pq_vertraagd_laatste_*` horen bij run

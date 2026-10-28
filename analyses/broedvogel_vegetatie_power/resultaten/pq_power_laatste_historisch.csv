@@ -1,0 +1,7 @@
+"analysis_id","direction","minimum_detectable_percent","threshold_status","observed_model_percent","observed_model_rate_ratio","observed_model_power","observed_model_lower95","observed_model_upper95"
+"gemeenschap_duingrasland_mos_korstmos","afname",65,"bereikt",36.6101408892397,1.3661014088924,0.3742,0.364765432628047,0.383731181362015
+"gemeenschap_duingrasland_mos_korstmos","toename",45,"bereikt",29.5277461876555,0.704722538123445,0.4099,0.400296990298153,0.419572206208242
+"gemeenschap_bomen_bos","afname",35,"bereikt",20.6779707770626,0.793220292229374,0.269,0.260398656216142,0.27777875103111
+"gemeenschap_bomen_bos","toename",55,"bereikt",24.1506852655575,1.24150685265558,0.2549,0.246453618664713,0.263534617336593
+"functioneel_gras_bodemfoerageerders","afname",35,"bereikt",16.5305708369889,1.16530570836989,0.3117,0.302695444386435,0.320849169399962
+"functioneel_gras_bodemfoerageerders","toename",35,"bereikt",21.2054444281778,0.787945555718222,0.3885,0.378991508990487,0.398094122646174

@@ -63,6 +63,27 @@ stilzwijgend herschreven.
   hun richting niet. Zij mogen in Taak 4 worden gebruikt om detecteerbaarheid
   en benodigde meetduur te simuleren, maar gelden niet als bewezen ecologische
   oorzaak-gevolgrelaties.
+- De poweranalyse gebruikt voor deze drie kandidaten uitsluitend de zes
+  coëfficiënten waarin de gemeten vegetatieverandering zelf voorkomt. De losse
+  hoofdeffecten van tijd sinds de PQ-opname tellen niet als bewijs voor een
+  vegetatie-effect.
+- Power betekent hier: de gezamenlijke veranderingstermen zijn bij een grens
+  van 5% aantoonbaar én het geschatte ankereffect heeft de vooraf gesimuleerde
+  richting. Niet-geldige scenario's tellen als niet gedetecteerd. De doelpower
+  is 80%; voor de detectiegrens geldt bovendien dat de ondergrens van het
+  95%-Monte-Carlo-interval 80% moet halen.
+- De drie kandidaten delen 650 vogelplotjaren in 35 plots uit 1994–2025, 362
+  PQ-veranderingsintervallen en 96 teller/tellerteamidentificaties. Van de 650
+  reacties liggen er 635 binnen nul tot drie jaar na de PQ-verandering en
+  slechts vijftien na vier tot veertien jaar. De lange reactietermijn is dus
+  wel aanwezig, maar zeer dun bezet.
+- Geen van de zes geschatte richting-specifieke effecten haalt historisch 80%
+  power. Hun power bedraagt 25,5–41,0%; de detectiegrens ligt bij een
+  vogelreactie van 35–65% op de langste werkelijk waargenomen vertraging.
+- Toekomstige meetbehoefte wordt uitsluitend als equivalent informatievolume
+  gerapporteerd. De omzetting naar extra jaren en volledige PQ-ronden
+  veronderstelt exact dezelfde dekking, variantie en teller/tellerteamstructuur
+  en is geen kalenderprognose.
 
 ## 26 oktober 2026 — gebruik van HYVEG, MODAK en PROBE
 
