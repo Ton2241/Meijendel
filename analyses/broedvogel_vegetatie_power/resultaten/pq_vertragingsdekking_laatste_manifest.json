@@ -1,0 +1,113 @@
+{
+  "run_id": "20261028T141526Z-0ed7eaf9579f",
+  "git_commit": "0ed7eaf9579ff6140aad778b197ce999a24d784b",
+  "database_name": "Meijendel",
+  "mysql_version": "9.7.4",
+  "executed_at_utc": "2026-10-28T14:15:45Z",
+  "source_fingerprint_sha256": "c1b9ebaf49fa9ecd6b1b7d5ef0bab4c12f0fe1f53eb55c3acdf424da358c24cb",
+  "source_files": {
+    "bronnen": {
+      "file": "bronnen.tsv",
+      "rows": 7,
+      "bytes": 93,
+      "sha256": "75a210bd8150386657448e79925ba8204d4fcfd3b397216d68442d1b20af3857"
+    },
+    "dagbezoeken_bmp": {
+      "file": "dagbezoeken_bmp.tsv",
+      "rows": 14455,
+      "bytes": 310792,
+      "sha256": "16c6619bd6144ce2a9ce137392674e66bf4c138fb9c1d1960313295971982a50"
+    },
+    "plot_analyse_scope": {
+      "file": "plot_analyse_scope.tsv",
+      "rows": 69,
+      "bytes": 5450,
+      "sha256": "ab823033d14f19f9e5f376ae65a307f826f47d4bce661be00f07d57984907b07"
+    },
+    "plot_jaar_oppervlak": {
+      "file": "plot_jaar_oppervlak.tsv",
+      "rows": 3714,
+      "bytes": 78923,
+      "sha256": "7e1d1a4390ae37781cc7597e871b96d4bd6a91222d81f95a72dc2decc8d9fa77"
+    },
+    "plot_jaar_teller": {
+      "file": "plot_jaar_teller.tsv",
+      "rows": 2387,
+      "bytes": 32396,
+      "sha256": "c5ca4b8df5482e897ca7eca532bdf3764e35e5e9fa9af92bb71184e94afd7b31"
+    },
+    "plots": {
+      "file": "plots.tsv",
+      "rows": 67,
+      "bytes": 1720,
+      "sha256": "d5dc6600e87f2be2b5ec65ceb54f00f17ef755fb18e7604dc24d853a18d138dd"
+    },
+    "pq_vegetatie_opname_plot": {
+      "file": "pq_vegetatie_opname_plot.tsv",
+      "rows": 1314,
+      "bytes": 12305,
+      "sha256": "be7058bf3560be75bd6715d9a10a5698282d24c2e414d0794960730ef2fa599a"
+    },
+    "pq_vegetatie_opname": {
+      "file": "pq_vegetatie_opname.tsv",
+      "rows": 2007,
+      "bytes": 86069,
+      "sha256": "da7d7e98b656332c6534389604756eb55222260a65ad4fab5c5914eb16ab49b6"
+    },
+    "pq_vegetatie_waarneming": {
+      "file": "pq_vegetatie_waarneming.tsv",
+      "rows": 53122,
+      "bytes": 2552596,
+      "sha256": "a317e5b3a82badf4207a0f776a268e2e99cc7bcebc4e92b5ab33c9ea94f3395f"
+    },
+    "soorten": {
+      "file": "soorten.tsv",
+      "rows": 628,
+      "bytes": 14453,
+      "sha256": "c8c9e390167e13afbadf31b07ea780cda6a42f63057f4de09d4cc8cc0017a396"
+    },
+    "sovon_bmp_plotjaar": {
+      "file": "sovon_bmp_plotjaar.tsv",
+      "rows": 41,
+      "bytes": 1095,
+      "sha256": "e06720a9962babd581392ffe440f04befd11cfa6a88ac21163ac6c5c0c23a638"
+    },
+    "territoria": {
+      "file": "territoria.tsv",
+      "rows": 157580,
+      "bytes": 2811769,
+      "sha256": "756c4d820660164496bff40cc71ed03c6cbf8b442a5c0cb7ef94a622dbdeaa9a"
+    }
+  },
+  "coverage_lags": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+  "fitted_models": 0,
+  "scope": "v_meijendel_analyseplot_actueel; M66 en M91 uitgesloten",
+  "response_exclusions": [
+    {
+      "soort_id": 5,
+      "soort_naam": "Aalscholver",
+      "reden": "Kolonievogel; territoriumaantal wordt bepaald door een nestelplaats die niet door de gebruikte PQ-vegetatiematen wordt gemeten."
+    }
+  ],
+  "bird_population": {
+    "rows": 203628,
+    "plotyears": 2007,
+    "plots": 52,
+    "species": 156,
+    "first_year": 1958,
+    "last_year": 2025
+  },
+  "pq_source": {
+    "observations": 2007,
+    "taxon_rows": 53122,
+    "linked_observations": 1314,
+    "linked_plots": 35,
+    "first_year": 1981,
+    "last_year": 2025
+  },
+  "output": {
+    "file": "pq_vertragingsdekking.csv",
+    "rows": 32,
+    "sha256": "3647d02bfafdd1cf1d2d830a05512ef2de71aafef46aa1d3093f25c2f7777ab2"
+  }
+}

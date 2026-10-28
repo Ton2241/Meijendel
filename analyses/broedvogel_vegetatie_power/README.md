@@ -7,6 +7,12 @@ veranderingen.
 
 De analysematrix, tellergevoeligheid en de vegetatiestappen tot en met de
 gerichte habitatmodellen zijn afgerond.
+De vervolgfase met niet-lineaire, meerdere jaren beslaande PQ–vogelrelaties is
+gestart. De eerste dekkingsrun laat zien dat van de 406 gelijktijdig gekoppelde
+vogelplotjaren in 35 plots nog 285 overblijven bij zeven jaar vertraging, 233
+bij tien jaar en 180 in 32 plots bij vijftien jaar. Dit maakt langere
+vertragingen technisch onderzoekbaar, maar bewijst nog niet dat per
+vegetatiegradiënt genoeg onafhankelijke veranderingen aanwezig zijn.
 Naast soortenrijkdom, Shannon en totale bedekking zijn nu ook de volledige
 PQ-soortensamenstelling, IPI en de onafhankelijke landbedekking van 2001 en
 2022 onderzocht. De taxonsamenstelling en IPI voorspellen verschillen tussen
@@ -66,6 +72,8 @@ door naar power.
   analysestap vast.
 - [Implementatieplan teller- en ervaringsmodel](IMPLEMENTATIEPLAN_TELLER_EN_ERVARINGSMODEL.md)
   is het beknopte uitvoerings- en herhaalbaarheidsverslag van die stap.
+- [Implementatieplan niet-lineaire vertraagde PQ–vogelrelaties](IMPLEMENTATIEPLAN_NIETLINEAIRE_VERTRAAGDE_PQ_VOGELRELATIES.md)
+  legt de nieuwe analysevolgorde, vaste keuzes en afrondcriteria vast.
 - [`scripts/`](scripts/README.md) bevat alleen de scripts die specifiek
   voor deze analyse zijn geschreven.
 - [`resultaten/`](resultaten/README.md) bevat compacte, controleerbare

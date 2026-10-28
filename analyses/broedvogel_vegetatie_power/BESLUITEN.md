@@ -4,6 +4,34 @@ Dit bestand bewaart de inhoudelijke en technische keuzes voor deze analyse.
 Nieuwe besluiten worden gedateerd toegevoegd; eerdere besluiten worden niet
 stilzwijgend herschreven.
 
+## 28 oktober 2026 — niet-lineaire en vertraagde PQ–vogelrelaties
+
+- De volgende PQ-fase onderzoekt veranderingen binnen dezelfde plot en latere
+  vogelreacties. Een lineair verband en een reactie in uitsluitend het eerste
+  jaar worden niet vooraf verondersteld.
+- Uit de PQ-soortensamenstelling worden vijf ecologisch benoemde gradiënten
+  afgeleid: open zand/pionier, duingrasland/mossen/korstmossen, nat/riet,
+  struweel/ruigte en bomen/bos. Verandering wordt per verstreken jaar tussen
+  opeenvolgende PQ-opnamen uitgedrukt.
+- Het hoofdmodel mag een onmiddellijke reactie, vertraging, drempel, piek,
+  herstel of blijvend effect beschrijven. De gladheid wordt begrensd en het
+  model wordt tegen een basis- en lineair model getoetst op achtergehouden
+  plots en latere jaren.
+- De vogelrespons omvat territoriumaantallen, verschijnen/verdwijnen en
+  veranderingen van de gemeenschap en vooraf vastgelegde functionele,
+  ecologische en habitatgroepen. Een gebeurtenisanalyse rond grotere
+  vegetatieveranderingen dient als gevoeligheidsanalyse.
+- De actuele dekkingsrun `20261028T141526Z-0ed7eaf9579f` bevat geen
+  modelschatting. Zij koppelt de 1.314 plotgekoppelde PQ-opnamen uit 1981–2025
+  aan geldige vogelplotjaren met bekende teller/tellerteam. Bij vertraging nul
+  zijn 406 vogelplotjaren in 35 plots beschikbaar; bij 3, 7, 10 en 15 jaar
+  respectievelijk 349, 285, 233 en 180 vogelplotjaren. Bij vijftien jaar zijn
+  nog 32 plots vertegenwoordigd.
+- Deze uitkomst bewijst alleen dat vertraagde koppelingen technisch mogelijk
+  blijven. Zij zegt nog niet hoeveel onafhankelijke vegetatieveranderingen per
+  gradiënt beschikbaar zijn. De maximale modelvertraging wordt daarom pas na
+  de intervalanalyse van de ecologische gradiënten vastgesteld.
+
 ## 26 oktober 2026 — gebruik van HYVEG, MODAK en PROBE
 
 - HYVEG, MODAK en PROBE worden niet als bestaand vogelmodel of als vervanging

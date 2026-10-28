@@ -6,6 +6,23 @@ checkpoints staan onder de door Git genegeerde map `runs/`. Een getal gaat pas
 naar het hoofddocument of het artikel wanneer selectie, modelstatus en manifest
 zijn gecontroleerd.
 
+## PQ-vertragingsdekking 0–15 jaar
+
+`pq_vertragingsdekking_laatste.csv` en het bijbehorende manifest horen bij run
+`20261028T141526Z-0ed7eaf9579f` van 28 oktober 2026. De runner las de actuele
+lokale database alleen-lezen en schatte geen model. De bron omvat 2.007
+PQ-opnamen en 53.122 PQ-taxonregels uit 1981–2025; 1.314 opnamen zijn gekoppeld
+aan 35 Natura 2000-vogelplots. De gekoppelde vogelpopulatie bevat, na
+uitsluiting van Aalscholver, bij vertraging nul 37.140 soort–plot–jaarrijen uit
+406 vogelplotjaren, voor 154 soorten en 1989–2025.
+
+Bij 3, 7, 10 en 15 jaar vertraging blijven respectievelijk 349, 285, 233 en
+180 vogelplotjaren beschikbaar. Bij vijftien jaar zijn nog 32 plots en alle
+154 soorten vertegenwoordigd; het aantal soort–plot–jaarrijen is dan 16.761.
+Dit bestand toont de technische dekking van een PQ-toestand en een later
+vogeljaar. Het toont nog niet het aantal onafhankelijke veranderingen tussen
+twee PQ-opnamen en is daarom nog geen basis voor een effect- of powergetal.
+
 ## Analysematrix
 
 `analysematrix_laatste_samenvatting.csv` beschrijft de actuele

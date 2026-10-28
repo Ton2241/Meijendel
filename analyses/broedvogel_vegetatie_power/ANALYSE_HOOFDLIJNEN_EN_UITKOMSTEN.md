@@ -644,6 +644,47 @@ Power wordt afzonderlijk bepaald voor relevante soorten, groepen,
 gemeenschapskenmerken en relaties met vegetatie. Niet-convergerende modellen
 tellen niet als gedetecteerd.
 
+### 8. Niet-lineaire en vertraagde verandering van PQ naar vogels
+
+De eerdere PQ-modellen toetsten gelijktijdige relaties en afzonderlijke
+vertragingen van één tot drie jaar. De nieuwe fase stelt een andere vraag:
+volgt na een verandering van de vegetatie binnen dezelfde plot een
+onmiddellijke, vertraagde, tijdelijke of blijvende verandering bij vogels? De
+reactie wordt niet vooraf lineair verondersteld en mag meerdere jaren beslaan.
+
+De PQ-soortensamenstelling wordt hiervoor eerst samengevat in vijf ecologisch
+benoemde gradiënten: open zand/pionier, duingrasland/mossen/korstmossen,
+nat/riet, struweel/ruigte en bomen/bos. Verandering wordt gedeeld door het
+aantal jaren tussen twee opeenvolgende PQ-opnamen. Daarna wordt de omvang en
+richting van die verandering gezamenlijk gemodelleerd met het aantal jaren
+sinds de verandering. Hetzelfde vogelbasismodel blijft staan, inclusief
+Natura 2000-scope, teller/tellerteam, geregistreerde ervaring, plot- en
+jaarstructuur. Een basis-, lineair en begrensd niet-lineair model worden op
+dezelfde responsrijen en met achtergehouden plots en jaren vergeleken.
+
+De eerste uitvoering bepaalt uitsluitend de beschikbare koppelingen. Run
+`20261028T141526Z-0ed7eaf9579f` gebruikt de actuele lokale database, 1.314
+plotgekoppelde PQ-opnamen uit 1981–2025 en de vogelmodelpopulatie met bekende
+teller/tellerteam. Aalscholver is conform het bestaande besluit uitgesloten.
+De dekking bedraagt:
+
+| Vertraging | Vogelplotjaren | Plots | Soort–plot–jaarrijen | Aandeel van vertraging 0 |
+|---:|---:|---:|---:|---:|
+| 0 jaar | 406 | 35 | 37.140 | 100% |
+| 3 jaar | 349 | 35 | 32.117 | 86% |
+| 7 jaar | 285 | 35 | 26.461 | 70% |
+| 10 jaar | 233 | 35 | 21.626 | 57% |
+| 15 jaar | 180 | 32 | 16.761 | 44% |
+
+Er is dus geen harde datagrens bij drie jaar. Zelfs bij vijftien jaar blijven
+180 vogelplotjaren in 32 plots over. Dit is nog geen bewijs dat een
+vijftienjarige responscurve verantwoord kan worden geschat. De tabel telt
+mogelijke koppelingen van een PQ-toestand aan een later vogeljaar; zij telt nog
+niet de onafhankelijke veranderingen per vegetatiegradiënt. De volgende stap
+is daarom de vijf gradiënten opbouwen, opeenvolgende PQ-intervallen bepalen en
+vaststellen hoeveel veranderingen bij iedere mogelijke reactieduur werkelijk
+beschikbaar zijn. Pas daarna wordt de maximale vertraging gekozen.
+
 ### KWR-modelonderzoek: HYVEG, MODAK en PROBE
 
 Op 26 oktober 2026 zijn HYVEG, MODAK en de PROBE-familie aan de hand van de
@@ -726,6 +767,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
+| Niet-lineaire vertraagde PQ–vogelrelaties | Gestart; dekkingsanalyse uitgevoerd | Van 406 gelijktijdig gekoppelde vogelplotjaren in 35 plots blijven er bij 7, 10 en 15 jaar vertraging respectievelijk 285, 233 en 180 over; bij 15 jaar zijn 32 plots vertegenwoordigd. Nog niet bekend is hoeveel onafhankelijke vegetatieveranderingen de vijf ecologische gradiënten opleveren. Er is nog geen effectmodel of poweranalyse uitgevoerd. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 

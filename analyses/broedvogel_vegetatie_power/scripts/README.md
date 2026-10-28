@@ -160,6 +160,28 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegeta
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatiesamenstelling_pipeline.R
 ```
 
+## Stap 3 vervolg: dekking van langere PQ-vertragingen
+
+De lichte dekkingsrunner wordt uitgevoerd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_pq_vertragingsdekking.sh
+```
+
+De runner leest de actuele vogel- en PQ-tabellen uit de lokale database,
+gebruikt dezelfde Natura 2000-scope, nulregels, teller/tellerteamselectie en
+Aalscholveruitsluiting als het bestaande vegetatiemodel en koppelt
+PQ-meetjaren aan vogeljaren met vertraging nul tot en met vijftien jaar. Er
+worden geen modellen geschat en geen databasewaarden gewijzigd. De volledige
+run blijft onder `resultaten/runs/`; CSV en manifest worden compact als
+`pq_vertragingsdekking_laatste.*` bewaard.
+
+De zuivere regressietest is:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_pq_vertragingsdekking.R
+```
+
 ## Gerichte habitatmodellen met AHN en weer
 
 Leid eerst voor AHN2 tot en met AHN5 de geharmoniseerde structuurmaten af:

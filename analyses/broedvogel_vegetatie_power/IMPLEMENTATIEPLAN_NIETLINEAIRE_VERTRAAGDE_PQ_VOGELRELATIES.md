@@ -103,17 +103,25 @@ van 0 tot en met 15; `composition_pipeline_coverage()` rapporteert per
 vegetatieblok en vertraging aantallen rijen, vogelplotjaren, plots, soorten en
 eerste en laatste vogeljaar.
 
-- [ ] Schrijf eerst tests die vertraging 15 accepteren, 16 afwijzen en alle
+- [x] Schrijf eerst tests die vertraging 15 accepteren, 16 afwijzen en alle
   zestien vertragingen in oplopende volgorde eisen.
-- [ ] Voer de tests uit en bevestig dat zij om de ontbrekende uitbreiding
+- [x] Voer de tests uit en bevestig dat zij om de ontbrekende uitbreiding
   falen.
-- [ ] Verruim alleen de dekkingsroute; de formeel geschatte eerdere modellen
+- [x] Verruim alleen de dekkingsroute; de formeel geschatte eerdere modellen
   blijven beperkt tot de reeds vastgelegde gelijktijdige analyse.
-- [ ] Bouw een lichte, alleen-lezen runner die de actuele vogel- en PQ-tabellen
+- [x] Bouw een lichte, alleen-lezen runner die de actuele vogel- en PQ-tabellen
   uit de lokale database leest, geen modellen schat en een CSV plus manifest
   schrijft.
-- [ ] Voer de runner uit en leg de volledige dekking, inclusief eventuele lege
+- [x] Voer de runner uit en leg de volledige dekking, inclusief eventuele lege
   vertragingen, vast.
+
+**Uitkomst 28 oktober 2026.** Run
+`20261028T141526Z-0ed7eaf9579f` koppelde 1.314 PQ-opnamen uit 1981–2025 aan de
+geldige vogelmodelpopulatie. Van 406 vogelplotjaren bij vertraging nul blijven
+er 285 bij zeven jaar, 233 bij tien jaar en 180 in 32 plots bij vijftien jaar
+over. Geen vertraging is leeg; er is geen model geschat. De uitkomst begrenst
+de volgende stap nog niet definitief, omdat eerst de werkelijke veranderingen
+tussen opeenvolgende PQ-opnamen per ecologische gradiënt moeten worden geteld.
 
 ## Task 2 — ecologische PQ-gradiënten en jaarlijkse verandering
 
