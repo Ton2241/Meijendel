@@ -6,6 +6,31 @@ checkpoints staan onder de door Git genegeerde map `runs/`. Een getal gaat pas
 naar het hoofddocument of het artikel wanneer selectie, modelstatus en manifest
 zijn gecontroleerd.
 
+## Ecologische PQ-gradiënten en veranderingsintervallen
+
+De bestanden `pq_gradient_*_laatste.csv` en het manifest horen bij run
+`20261028T144429Z-f4416afa2c47` van 28 oktober 2026. De runner las de lokale
+database uitsluitend read-only en gebruikte de officiële SynBioSys-EcoDbase
+als ecologische referentie. Van 642 taxa uit 35.672 taxonregels en 1.314 aan
+35 vogelplots gekoppelde PQ-opnamen uit 1981–2025 zijn 528 taxa aan ten minste
+één van vijf gradiënten gekoppeld. De volledige mapping én alle 114 niet
+ingedeelde taxa blijven in de resultaatbestanden zichtbaar.
+
+Een plotjaar geldt alleen als minimaal 80% van de totale geregistreerde
+bedekking is ingedeeld. Dit geldt voor 485 van 501 plotjaren. Twee
+opeenvolgende, beide geldige PQ-plotjaren leveren 441 veranderingsintervallen:
+164 duren één jaar, 159 twee jaar, 69 drie jaar en 44 vier jaar; vier
+intervallen duren vijf, zes, zeven of dertien jaar. Jaarlijkse verandering is
+de verandering in gradiëntaandeel gedeeld door de werkelijke intervallengte.
+
+Open/pionier, duingrasland/mos/korstmos, struweel/ruigte en bomen/bos veranderen
+in alle 441 intervallen en alle 35 plots. Nat/riet verandert in 357 intervallen
+en 32 plots. Bij nul, zeven, tien en vijftien jaar na het interval zijn
+respectievelijk 366, 249, 196 en 149 intervallen aan een geldig vogelplotjaar
+te koppelen; bij vijftien jaar zijn 30 plots vertegenwoordigd. Vijftien jaar
+blijft daarmee beschikbaar voor gemeenschap en vogelgroepen, maar deze
+dekkingsuitkomst is nog geen aangetoond verband, effectschatting of powergetal.
+
 ## PQ-vertragingsdekking 0–15 jaar
 
 `pq_vertragingsdekking_laatste.csv` en het bijbehorende manifest horen bij run

@@ -8,11 +8,15 @@ veranderingen.
 De analysematrix, tellergevoeligheid en de vegetatiestappen tot en met de
 gerichte habitatmodellen zijn afgerond.
 De vervolgfase met niet-lineaire, meerdere jaren beslaande PQ–vogelrelaties is
-gestart. De eerste dekkingsrun laat zien dat van de 406 gelijktijdig gekoppelde
-vogelplotjaren in 35 plots nog 285 overblijven bij zeven jaar vertraging, 233
-bij tien jaar en 180 in 32 plots bij vijftien jaar. Dit maakt langere
-vertragingen technisch onderzoekbaar, maar bewijst nog niet dat per
-vegetatiegradiënt genoeg onafhankelijke veranderingen aanwezig zijn.
+tot en met de ecologische gradiënten en veranderingsintervallen uitgevoerd.
+De 1.314 gekoppelde PQ-opnamen leveren 501 plotjaren in 35 plots over
+1981–2025. Daarvan halen 485 plotjaren de eis dat minimaal 80% van de
+geregistreerde bedekking herleidbaar aan een gradiënt is gekoppeld. Zij vormen
+441 werkelijk opeenvolgende geldige intervallen. Bij een vogelreactie na
+zeven, tien en vijftien jaar zijn respectievelijk 249, 196 en 149 intervallen
+in 35, 31 en 30 plots beschikbaar. Vijftien jaar blijft daarom modelleerbaar
+voor gemeenschap en vooraf gekozen vogelgroepen; geschiktheid per afzonderlijke
+soort wordt in de modelstap beoordeeld.
 Naast soortenrijkdom, Shannon en totale bedekking zijn nu ook de volledige
 PQ-soortensamenstelling, IPI en de onafhankelijke landbedekking van 2001 en
 2022 onderzocht. De taxonsamenstelling en IPI voorspellen verschillen tussen

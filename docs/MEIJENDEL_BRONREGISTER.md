@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 26 oktober 2026.**
+**Stand: 28 oktober 2026.**
 
 Dit register bevat informatie over:
 
@@ -184,6 +184,34 @@ voorspelling in vier van vijf plotblokken, maar niet de voorspelling van latere
 jaren in twee tijdsblokken. De uitkomst maakt de provinciale PQ-reeks
 bruikbaarder voor ruimtelijke habitatverschillen, maar levert nog geen
 voorspellende relatie tussen vegetatieverandering en vogelverandering.
+
+**Ecologische PQ-gradiënten, 28 oktober 2026.** Voor de nieuwe analyse van
+verandering binnen dezelfde plot zijn de 642 taxa uit de 1.314 gekoppelde
+PQ-opnamen onafhankelijk van de vogeluitkomsten beoordeeld met EcoDbase uit
+SynBioSys. Deze referentietabel bevat per plant onder meer de ecotoopgroepen
+van Runhaar, sociologische groepen voor natte duinvalleien en droge
+duingraslanden, levensvorm en groeivorm. De officiële ZIP-download is niet in
+de database of als ruwe kopie in Git opgenomen; iedere formele run haalt hem
+opnieuw op en controleert SHA-256
+`993a934f55d3b4ceb6044040ec38d8e69f9f469b12de03e1044d2face30ca045`.
+De licentie van dit afzonderlijke downloadbestand is op de downloadpagina en
+in de meegeleverde toelichting niet vermeld. De bron wordt daarom alleen als
+herleidbare analytische referentie gebruikt en niet door het project
+heruitgegeven.
+
+Met exacte namen, bestaande bronaliassen, een eenduidige brede
+soortnaamkoppeling en de reeds vastgelegde taxongroepen voor mossen,
+levermossen, korstmossen en algen zijn 528 van 642 taxa aan ten minste één van
+vijf gradiënten gekoppeld. Meervoudige toedeling is toegestaan, maar de
+bedekking van een taxon wordt over zijn gradiënten verdeeld en niet dubbel
+geteld. Van de 501 PQ-plotjaren uit 1981–2025 halen 485 in alle 35 plots de
+vooraf gekozen eis dat minimaal 80% van de totale bronbedekking is ingedeeld.
+Alleen werkelijk opeenvolgende plotjaren die beide aan die eis voldoen vormen
+een veranderingsinterval: 441 intervallen, waarvan 164 één, 159 twee, 69 drie
+en 44 vier jaar lang zijn. De resterende vier intervallen duren vijf, zes,
+zeven of dertien jaar. De vijf gradiënten veranderen ieder in 32–35 plots.
+De gradiënttabellen zijn afgeleide analyseproducten, geen wijziging van de
+provinciale PQ-bron of de levende database.
 **Vergelijking met NDFF, 10 oktober 2026.** De eerdere uitkomst dat 1.039 van 2.007 provinciale opnamen uit 1981–2025 in de openbare NDFF-download herkenbaar waren, was een resultaat van de toenmalige strikte matchmethode, niet een maat voor volledige NDFF-dekking. Binnen het huidige Meijendelgebied liggen 1.363 provinciale opnamen; 897 daarvan matchen strikt met de openbare export en 916 na een voorlopige proef met de gemelde verschuiving van beide coördinaten met 5 meter. Naamvarianten leveren op opnameniveau geen extra matches op. Van de 434 provinciale opnamen binnen Meijendel uit 2018–2025 blijven 91 herkenbaar. Afzonderlijk zijn bij 127 opnamen kandidaatmatches gevonden in de beveiligde, openbaar vervaagde NDFF-gegevens; deze kunnen overlappen met de openbare matches en worden niet opgeteld. De reden voor de overige niet-matches staat niet vast. De provinciale PQ-reeks blijft primair; NDFF-PQ telt niet als een tweede opname mee. De methode en de uitsplitsing naar taxonregels staan in `docs/bronnen/bronvergelijkingen/NDFF_STAGINGDATASET.md`.
 
 **Bronbericht provincie, vastgelegd 19 oktober 2026.** Ingrid de Vries bevestigt dat de provinciale vegetatiemeetnetgegevens in NDFF onvolledig zijn. Zij noemt geen aantal ontbrekende opnamen, jaren of oorzaak per record: de hierboven beschreven matchpercentages meten die onvolledigheid niet. Provincie Zuid-Holland controleert met CBS de historische vegetatiemeetnetgegevens, waaronder de eerder gemelde wisselende coördinaten en niet meer actieve PQ's. Na de controle wil de provincie de gecorrigeerde gegevens bij NDFF onderbrengen en Ton een nieuwe provinciale levering geven. Deze leveringen zijn nog niet ontvangen. Ingrid werkt bij de provincie aan het NDFF-databeheer, zit namens de provincies in de NDFF-kwaliteitscommissie en neemt deel aan de programmalijn Data & IV van het Verbeterprogramma VHR-monitoring; haar collega's nemen eveneens deel aan dat programma. De bestaande provinciale reeks van 254 PQ's, 2.007 opnamen en 53.122 taxonregels uit 1981–2025 blijft intussen de primaire, als huidige bronversie herkenbare analysetabel.

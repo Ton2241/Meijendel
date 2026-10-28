@@ -676,14 +676,30 @@ De dekking bedraagt:
 | 10 jaar | 233 | 35 | 21.626 | 57% |
 | 15 jaar | 180 | 32 | 16.761 | 44% |
 
-Er is dus geen harde datagrens bij drie jaar. Zelfs bij vijftien jaar blijven
-180 vogelplotjaren in 32 plots over. Dit is nog geen bewijs dat een
-vijftienjarige responscurve verantwoord kan worden geschat. De tabel telt
-mogelijke koppelingen van een PQ-toestand aan een later vogeljaar; zij telt nog
-niet de onafhankelijke veranderingen per vegetatiegradiënt. De volgende stap
-is daarom de vijf gradiënten opbouwen, opeenvolgende PQ-intervallen bepalen en
-vaststellen hoeveel veranderingen bij iedere mogelijke reactieduur werkelijk
-beschikbaar zijn. Pas daarna wordt de maximale vertraging gekozen.
+Er is dus geen harde datagrens bij drie jaar. De daarna uitgevoerde
+intervalanalyse gebruikt de officiële EcoDbase uit SynBioSys om planttaxa op
+grond van ecotoop, sociologische groep, levensvorm en groeivorm aan de vijf
+gradiënten te koppelen. Bestaande taxongroepen vullen mossen, levermossen,
+korstmossen en algen aan. Taxa kunnen meerdere gradiënten dragen, maar hun
+bedekking wordt dan verdeeld en niet dubbel geteld. Onbekende vaatplanten zijn
+niet inhoudelijk geraden.
+
+De 1.314 gekoppelde PQ-opnamen bevatten 35.672 taxonregels en 642 taxa. Hiervan
+zijn 528 taxa herleidbaar ingedeeld. Een plotjaar is alleen geldig als minimaal
+80% van de totale geregistreerde bedekking is ingedeeld. Van 501 plotjaren in
+35 plots over 1981–2025 voldoen er 485. Alleen werkelijk opeenvolgende, beide
+geldige plotjaren vormen een veranderingsinterval. Dat levert 441 intervallen:
+164 van één jaar, 159 van twee, 69 van drie, 44 van vier en vier langere
+intervallen. Alle vijf gradiënten veranderen in 32–35 plots.
+
+Bij nul, zeven, tien en vijftien jaar na een interval zijn respectievelijk 366,
+249, 196 en 149 intervallen aan een geldig vogelplotjaar te koppelen. Bij
+vijftien jaar zijn nog 30 plots vertegenwoordigd. Vijftien jaar blijft daarom
+de maximale reactieduur voor het gemeenschapsmodel en de vooraf gekozen
+vogelgroepen. Voor afzonderlijke soorten geldt die keuze alleen wanneer hun
+eigen responsdekking en modelschatting geldig zijn. Ook deze uitkomst toont
+alleen dat het model geschat kan worden; zij bewijst nog geen verband en is nog
+geen poweranalyse.
 
 ### KWR-modelonderzoek: HYVEG, MODAK en PROBE
 
@@ -767,7 +783,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
-| Niet-lineaire vertraagde PQ–vogelrelaties | Gestart; dekkingsanalyse uitgevoerd | Van 406 gelijktijdig gekoppelde vogelplotjaren in 35 plots blijven er bij 7, 10 en 15 jaar vertraging respectievelijk 285, 233 en 180 over; bij 15 jaar zijn 32 plots vertegenwoordigd. Nog niet bekend is hoeveel onafhankelijke vegetatieveranderingen de vijf ecologische gradiënten opleveren. Er is nog geen effectmodel of poweranalyse uitgevoerd. |
+| Niet-lineaire vertraagde PQ–vogelrelaties | Gradiënten en intervallen uitgevoerd | Van 501 PQ-plotjaren in 35 plots over 1981–2025 zijn 485 geldig bij minimaal 80% ingedeelde bronbedekking. Zij leveren 441 opeenvolgende veranderingsintervallen. Bij 7, 10 en 15 jaar zijn respectievelijk 249, 196 en 149 intervallen aan vogelplotjaren te koppelen; bij 15 jaar blijven 30 plots over. De maximale groepsreactieduur is daarom 15 jaar. Er is nog geen effectmodel of poweranalyse uitgevoerd. |
 | Poweranalyse | Nog uit te voeren | Er bestaat nog geen formeel powergetal of detectiegrens. |
 | Artikel | Nog te schrijven | Alleen doel, structuur en vereiste bewijsroute zijn vastgesteld. |
 

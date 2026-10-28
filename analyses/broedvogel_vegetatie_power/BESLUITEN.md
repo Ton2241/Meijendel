@@ -28,9 +28,22 @@ stilzwijgend herschreven.
   respectievelijk 349, 285, 233 en 180 vogelplotjaren. Bij vijftien jaar zijn
   nog 32 plots vertegenwoordigd.
 - Deze uitkomst bewijst alleen dat vertraagde koppelingen technisch mogelijk
-  blijven. Zij zegt nog niet hoeveel onafhankelijke vegetatieveranderingen per
-  gradiënt beschikbaar zijn. De maximale modelvertraging wordt daarom pas na
-  de intervalanalyse van de ecologische gradiënten vastgesteld.
+  blijven. De opvolgende intervalanalyse gebruikt EcoDbase uit SynBioSys als
+  vogelonafhankelijke referentie voor ecotoop, sociologische groep, levensvorm
+  en groeivorm. Bestaande taxongroepen vullen uitsluitend mossen, levermossen,
+  korstmossen en algen aan; onbekende vaatplanten worden niet op naamgevoel
+  ingedeeld.
+- De formele gradiëntenrun `20261028T144429Z-f4416afa2c47` koppelt 528 van 642
+  taxa aan ten minste één gradiënt. Een taxon met meerdere gradiënten verdeelt
+  zijn bedekking daarover; het wordt niet dubbel geteld. Een plotjaar is geldig
+  bij minimaal 80% ingedeelde bronbedekking. Van 501 PQ-plotjaren in 35 plots
+  over 1981–2025 zijn er 485 geldig. Alleen twee opeenvolgende, beide geldige
+  plotjaren vormen een interval; dat levert 441 intervallen.
+- Na vijftien jaar kunnen 149 van deze intervallen in 30 plots aan een geldig
+  vogelplotjaar worden gekoppeld. Daarom blijft vijftien jaar de vooraf
+  begrensde maximale reactieduur voor gemeenschap en vogelgroepen. Dit is geen
+  garantie voor iedere soort; een soortmodel gaat alleen door bij voldoende
+  geldige responsrijen en numeriek geldige schatting.
 
 ## 26 oktober 2026 — gebruik van HYVEG, MODAK en PROBE
 

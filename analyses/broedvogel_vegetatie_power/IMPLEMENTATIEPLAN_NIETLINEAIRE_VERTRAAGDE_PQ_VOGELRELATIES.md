@@ -132,14 +132,26 @@ dezelfde directory.
 door één tabel per opeenvolgend PQ-interval met beginjaar, eindjaar,
 intervallengte en jaarlijkse verandering per gradiënt.
 
-- [ ] Leg de planttaxa vooraf, herleidbaar en zo veel mogelijk meervoudig
+- [x] Leg de planttaxa vooraf, herleidbaar en zo veel mogelijk meervoudig
   beoordeeld aan de vijf gradiënten vast.
-- [ ] Bereken gradiëntscores zonder de identiteit en bronbedekking van taxa te
+- [x] Bereken gradiëntscores zonder de identiteit en bronbedekking van taxa te
   verliezen.
-- [ ] Bereken jaarlijkse verandering alleen tussen twee geldige opnamen van
+- [x] Bereken jaarlijkse verandering alleen tussen twee geldige opnamen van
   dezelfde plot en rapporteer de intervalverdeling.
-- [ ] Beslis op basis van Taak 1 en de intervalverdeling welke maximale
+- [x] Beslis op basis van Taak 1 en de intervalverdeling welke maximale
   vertraging modelleerbaar is.
+
+**Uitkomst 28 oktober 2026.** De reproduceerbare run
+`20261028T144429Z-f4416afa2c47` gebruikt 1.314 gekoppelde PQ-opnamen, 35.672
+taxonregels en 642 taxa uit 1981–2025. EcoDbase uit SynBioSys levert de
+vogelonafhankelijke ecologische referentie. Met bestaande taxongroepen voor
+mossen, levermossen, korstmossen en algen zijn 528 taxa herleidbaar ingedeeld.
+Van 501 PQ-plotjaren in 35 plots voldoen 485 aan minimaal 80% ingedeelde
+bronbedekking. Alleen werkelijk opeenvolgende, beide geldige plotjaren zijn
+verbonden; dat levert 441 intervallen. Na vijftien jaar blijven 149 intervallen
+in 30 plots aan een geldig vogelplotjaar koppelbaar. De maximale reactieduur
+blijft daarom vijftien jaar voor gemeenschap en vooraf gekozen vogelgroepen;
+per soort beslist de modeldekking opnieuw.
 
 ## Task 3 — niet-lineair vertraagd hoofdmodel
 

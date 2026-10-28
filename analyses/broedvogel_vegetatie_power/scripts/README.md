@@ -303,3 +303,25 @@ De afzonderlijke test is:
 ```bash
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_omgeving.R
 ```
+
+## Niet-lineaire PQ-route: gradiënten en intervallen
+
+De ecologische PQ-gradiënten worden lokaal opgebouwd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_pq_ecologische_gradienten.sh
+```
+
+De runner haalt EcoDbase rechtstreeks van SynBioSys en controleert de vaste
+SHA256 voordat de bron wordt gebruikt. Hij koppelt de PQ-taxa herleidbaar aan
+open/pionier, duingrasland/mos/korstmos, nat/riet, struweel/ruigte en
+bomen/bos. Een taxon met meerdere gradiënten verdeelt zijn bedekking daarover.
+De database blijft ongewijzigd. Volledige runbestanden staan onder `runs/`;
+compacte mappings, plotjaarscores, intervallen, dekkingssamenvattingen en het
+manifest staan in `resultaten/`.
+
+De regressietest is:
+
+```bash
+Rscript analyses/broedvogel_vegetatie_power/scripts/test_pq_ecologische_gradienten.R
+```
