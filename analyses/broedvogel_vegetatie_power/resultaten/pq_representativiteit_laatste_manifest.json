@@ -1,8 +1,8 @@
 {
-  "run_id": "20261029T094712Z-pq-representativiteit",
-  "uitgevoerd_utc": "2026-10-29T09:47:13.949847+00:00",
-  "git_commit_bij_start": "42a2eb6836012f0d33f4d746b1f54e71e8d3d559",
-  "git_werkboomstatus_bij_start": "onopgeslagen_wijzigingen",
+  "run_id": "20261029T095057Z-pq-representativiteit",
+  "uitgevoerd_utc": "2026-10-29T09:50:59.049320+00:00",
+  "git_commit_bij_start": "1961f2762a0aaa30e488d5bf3bef3f1f75982832",
+  "git_werkboomstatus_bij_start": "schoon",
   "mysql_clientversie": "/usr/local/mysql/bin/mysql  Ver 9.7.4 for macos15 on arm64 (MySQL Community Server - GPL)",
   "doel": "PQ-representativiteit binnen 25 kaartplots met landbedekking",
   "kaartjaren": [
