@@ -160,6 +160,34 @@ Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_model_vegeta
 Rscript analyses/broedvogel_vegetatie_power/scripts/test_broedvogel_vegetatiesamenstelling_pipeline.R
 ```
 
+### PQ-representativiteit binnen de landbedekkingsplots
+
+Voer de ruimtelijke representativiteitsanalyse uit met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_pq_representativiteit.sh
+```
+
+De runner leest de actuele PQ-opnamen en de formele Meijendel-deelgebieden
+alleen-lezen uit de lokale database. Per kaartjaar wordt per PQ de
+dichtstbijzijnde opname binnen vijf jaar gekozen. De werkelijke RD-coördinaat
+wordt in het bronraster bemonsterd en vergeleken met de volledige
+oppervlakteverdeling van hetzelfde plot. Een klasse zonder PQ blijft ongedekt.
+M17 gebruikt de bestaande genormaliseerde koppeling naar historisch plot
+999995 en wordt niet verward met M17a.
+
+Iedere uitvoering krijgt een eigen runmap met Git-commit, werkboomstatus,
+MySQL-clientversie en SHA-256-vingerafdrukken van de twee database-extracten,
+de klassemetrics, rasters, het analysescript en alle uitvoerbestanden. De
+compacte `laatste_*`-bestanden worden pas daarna vervangen; het manifest wordt
+als laatste transactiemarkering gepubliceerd.
+
+De gerichte test is:
+
+```bash
+.venv_ahn/bin/python -m unittest analyses/broedvogel_vegetatie_power/scripts/test_pq_representativiteit.py
+```
+
 ## Stap 3 vervolg: dekking van langere PQ-vertragingen
 
 De lichte dekkingsrunner wordt uitgevoerd met:

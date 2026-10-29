@@ -1,6 +1,6 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 28 oktober 2026
+**Stand:** 29 oktober 2026
 
 **Status:** de analysematrix, tellergevoeligheid, vegetatiestappen,
 structuurproeven, omgevingsmodellen, niet-lineaire vertraagde modellen en de
@@ -67,6 +67,14 @@ methodegevoelig om als vergelijkbaar vijfde moment te gebruiken. De proef met
 tien openbare luchtfoto's uit 2016–2024 bleef met een macro-F1 van
 0,420–0,469 onder de vooraf gekozen grens van 0,60. Daaruit is daarom geen
 jaarlijkse vegetatiestructuurreeks afgeleid.
+
+De aanvullende representativiteitsanalyse laat zien dat de
+landbedekkingsklassen waarin minstens één PQ ligt binnen de 25 kaartplots per
+plot mediaan 47,2% van het oppervlak in 2001 en 58,4% in 2022 beslaan. Dat is
+klassedekking: de ruimtelijke spreiding van de PQ’s binnen zo’n klasse is
+hiermee niet getoetst. Oppervlakteweging kan de verdeling tussen bemonsterde
+klassen corrigeren, maar niet de ontbrekende klassen. Daarom is nog geen
+gewogen algemeen vogelmodel geschat.
 
 Weer, stikstofdepositie en CBS-landgebruik zijn als afzonderlijke
 verklaringsblokken toegevoegd. Weer is als correctie in de gerichte modellen
@@ -553,6 +561,63 @@ mediane klassenrijkdom verandert niet. Dat zijn beschrijvende veranderingen
 in het kaartpatroon. Met twee meetmomenten bewijzen zij geen ecologische
 oorzaak en leveren zij nog geen tijdsvalidatie voor vogelverandering.
 
+### Representativiteit van de PQ’s binnen de kaartplots
+
+Op 29 oktober 2026 is voor dezelfde 25 kaartplots formeel vergeleken welk
+aandeel van iedere landbedekkingsklasse aanwezig is en welk aandeel van de
+PQ’s daarin ligt. Per kaartjaar is van ieder PQ de dichtstbijzijnde opname
+binnen vijf jaar gebruikt. De werkelijke RD-coördinaat is rechtstreeks in het
+raster van 2001 of 2022 bemonsterd. Voor 2001 zijn 84 PQ’s geselecteerd,
+waarvan 82 op een bruikbare rasterklasse liggen; voor 2022 zijn dit 102 en
+100. Het samengestelde historische plot M17 is via de bestaande
+genormaliseerde koppeling als `plot_id 999995` behandeld en niet verward met
+M17a (`plot_id 3513`).
+
+In 2001 bevatten 18 van de 25 kaartplots minstens één bruikbaar PQ; in 2022
+zijn dit er 19. De vegetatieklassen waarin werkelijk een PQ ligt beslaan per
+plot mediaan 47,2% van het oppervlak in 2001 en 58,4% in 2022. Gemiddeld is
+dit respectievelijk 44,4% en 44,8%. Dit is klassedekking: zodra in een klasse
+één PQ ligt, telt het volledige oppervlakteaandeel van die klasse mee. De
+ruimtelijke spreiding en de representativiteit binnen die klasse zijn hiermee
+niet vastgesteld. Bij een verkennende minimumvoorwaarde van minstens drie
+PQ’s en minstens 70% klassedekking blijven slechts acht plots in 2001 en negen
+in 2022 over. Dit is geen nieuwe formele geldigheidsgrens, maar maakt zichtbaar
+hoeveel plots zelfs voor een beperkte gewogen proef voldoende steun hebben.
+
+Over alle 25 kaartplots samen is in 2001 vooral boomgroep onderbemonsterd:
+9,8% van het oppervlak tegenover 1,2% van de bruikbare PQ’s. Water beslaat
+6,3% tegenover 2,4% van de PQ’s en riet 2,6% tegenover 1,2%. Lage vegetatie
+en struweel zijn juist oververtegenwoordigd. In 2022 is de grootste afwijking
+water: 8,0% van het oppervlak tegenover 1,0% van de PQ’s. Struweel is dan
+23,2% van het oppervlak en 28,0% van de PQ’s. Bos, boomgroepen en lage
+vegetatie liggen gebiedsbreed dichter bij hun oppervlakteaandeel, maar binnen
+afzonderlijke plots blijven de verschillen groot.
+
+De bestaande vijf Meijendel-deelgebieden zijn als tweede laag gebruikt. De 25
+kaartplots omvatten zes plots in Buitenduin Noord, één in Buitenduin Zuid,
+elf in Kijfhoek en Bierlap, drie in Vallei Meijendel en vier in de
+Zuid-oosthoek. De uitkomsten per deelgebied beschrijven daarom alleen deze 25
+kaartplots. Vooral Buitenduin Zuid, met uitsluitend M17b, kan niet als
+steekproef van het volledige zuidelijke buitenduin worden gelezen.
+
+Voor iedere bemonsterde klasse is een voorlopig oppervlaktegewicht berekend:
+het klasseaandeel gedeeld door het aantal PQ’s in die klasse, daarna binnen
+het bemonsterde deel van het plot genormaliseerd. Een aanwezige klasse zonder
+PQ blijft echter ongedekt. De gewichten kunnen dus scheve verdeling binnen
+het bemonsterde deel corrigeren, maar niet de ontbrekende 41–53% van een
+mediaan plot reconstrueren. Daarom is met deze gewichten nog geen nieuw
+vogelmodel geschat. Dat zou voor de volledige 25 of 52 plots een nauwkeurigheid
+suggereren die de PQ-dekking niet levert. De negatieve modelpoort en alle
+plot-, klasse- en deelgebiedsuitkomsten zijn wel reproduceerbaar vastgelegd.
+
+De verwachte Dunea-luchtfoto’s blijven voor het vervolg belangrijk. Zij
+kunnen de horizontale vegetatiestructuur gebiedsdekkend en op meer historische
+momenten beschrijven, ook in plots en klassen zonder PQ. Zij maken de PQ’s
+niet alsnog gebiedsdekkend voor plantensoortensamenstelling. De definitieve
+vogelmodelvergelijking wordt bovendien na de gevalideerde import van BMP 2026
+opnieuw uitgevoerd, zodat 2026 niet via een afzonderlijke noodroute wordt
+toegevoegd.
+
 ### Gerichte habitatmodellen met AHN en landbedekking
 
 De hoogteproef is op 12 oktober 2026 opnieuw opgebouwd met AHN2 uit 2008,
@@ -1022,6 +1087,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Volledige PQ-samenstelling | Uitgevoerd | Drie assen verklaren samen 27,8%. De ruimtelijke voorspelling verbetert in vier van vijf plotblokken; beide tijdsblokken worden iets slechter. |
 | IPI-habitatproxy | Uitgevoerd | Bescheiden ruimtelijke winst in drie van vier geldige plotblokken; geen tijdswinst en geen duidelijke gemiddelde binnen-plotreactie. |
 | Landbedekking 2001/2022 | Uitgevoerd; rasterstructuur beschikbaar | Duidelijkste ruimtelijke signaal voor watervogels. Voor andere groepen is de winst gemengd of de numerieke validatie te instabiel. De ontvangen rasters voegen voor 25 plots vlakgrootte, versnippering, randen en landschapsdiversiteit toe; twee kaartmomenten leveren geen algemeen model van vogelverandering. |
+| Representativiteit PQ’s binnen kaartplots | Uitgevoerd; geen algemeen gewogen model | In 2001 liggen 82 bruikbare PQ’s in 18 van 25 plots en in 2022 100 in 19 plots. Klassen met minstens één PQ beslaan per plot mediaan 47,2% en 58,4% van het oppervlak; de spreiding binnen die klassen is niet getoetst. Weging corrigeert scheefheid tussen bemonsterde klassen, maar vult ontbrekende klassen niet aan. |
 | Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
 | Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. De rasters van 2001 en 2022 missen de oorspronkelijke trainings- en validatiereferenties en maken daarvan geen jaarlijkse reeks. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |

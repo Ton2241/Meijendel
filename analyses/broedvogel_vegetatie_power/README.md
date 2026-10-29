@@ -210,6 +210,15 @@ landschapsdiversiteit herleidbaar. Deze maten zijn als afzonderlijke
 analyse-uitvoer vastgelegd; zij veranderen niet dat slechts 2001 en 2022 zijn
 gemeten.
 
+De formele representativiteitsanalyse koppelt de werkelijke PQ-coördinaten aan
+deze rasters. Zij vindt 82 bruikbare PQ’s in 18 plots voor 2001 en 100 in 19
+plots voor 2022. Klassen met minstens één PQ beslaan per plot mediaan 47,2%
+respectievelijk 58,4% van het oppervlak. Dit is klassedekking en geen toets van
+de ruimtelijke spreiding binnen die klassen. Water, riet en in 2001 boomgroepen
+zijn gebiedsbreed onderbemonsterd; binnen afzonderlijke plots is de scheefheid
+groter. De berekende oppervlaktegewichten blijven daarom diagnostische uitvoer
+en worden nog niet als correctie in het algemene vogelmodel gebruikt.
+
 De aanvullende stikstof- en landgebruiksanalyse gebruikt dezelfde vogelpoort,
 teller/tellerteamcorrectie, inspanningsmaten en vier weercorrecties. Voor
 stikstof zijn 60.127 soort–plot–jaarrijen uit 674 plotjaren in 51 plots en

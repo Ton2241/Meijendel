@@ -427,6 +427,41 @@ stilzwijgend herschreven.
   konijnenstand, aanplant, begrazing en het opnieuw openmaken van het duin,
   worden opgenomen zodra daarvoor voldoende bronbewijs beschikbaar is.
 
+## 29 oktober 2026 — representativiteit en oppervlakteweging van de PQ’s
+
+- Voor de 25 plots met landbedekkingsrasters is per kaartjaar van ieder PQ de
+  dichtstbijzijnde opname binnen vijf jaar geselecteerd en op de werkelijke
+  RD-coördinaat aan het raster gekoppeld. Dit levert 82 bruikbare PQ’s in 18
+  plots voor 2001 en 100 bruikbare PQ’s in 19 plots voor 2022. Twee punten per
+  kaartjaar vallen buiten een bruikbare rasterklasse en blijven herkenbaar.
+- M17 wordt via de genormaliseerde landbedekking als historisch plot 999995
+  behandeld. Het interne bron-ID 3513 van het rastervlak wordt niet gebruikt
+  als vogelplot-ID, omdat 3513 in de levende database M17a betekent.
+- De door minstens één PQ vertegenwoordigde landbedekkingsklassen beslaan per
+  plot mediaan 47,2% van het oppervlak in 2001 en 58,4% in 2022; gemiddeld is
+  dit 44,4% en 44,8%. Slechts acht respectievelijk negen plots combineren in
+  een verkennende gevoeligheidsgrens minimaal drie PQ’s met minimaal 70%
+  klassedekking. Dit zegt nog niet dat de PQ’s binnen de bemonsterde klasse
+  ruimtelijk representatief zijn.
+- Over alle 25 kaartplots zijn in 2001 vooral boomgroepen, water en riet
+  onderbemonsterd. In 2022 is water het duidelijkst onderbemonsterd: 8,0% van
+  het oppervlak tegenover 1,0% van de PQ’s. De verschillen binnen plots en
+  deelgebieden zijn groter dan deze gebiedsgemiddelden.
+- De vijf bestaande Meijendel-deelgebieden worden gebruikt als tweede
+  beschrijvingslaag. De 25 kaartplots verdelen zich als 6/1/11/3/4 over
+  Buitenduin Noord, Buitenduin Zuid, Kijfhoek en Bierlap, Vallei Meijendel en
+  Zuid-oosthoek. Eén kaartplot voor Buitenduin Zuid ondersteunt geen uitspraak
+  over het volledige deelgebied.
+- Per bemonsterde klasse is een reproduceerbaar oppervlaktegewicht berekend.
+  Een klasse zonder PQ blijft ongedekt; er wordt geen vegetatiewaarde
+  geïmputeerd. Daarom gaat deze weging nu niet door naar een algemeen
+  vogelmodel over 25 of 52 plots. De uitkomst is een negatieve modelpoort, geen
+  mislukte berekening.
+- De representativiteitsanalyse kan direct opnieuw worden uitgevoerd na nieuwe
+  PQ- of kaartgegevens. BMP 2026 verandert de ruimtelijke PQ-dekking niet. Na
+  gevalideerde import wordt de uiteindelijke vogelmodelvergelijking wel met
+  2026 herhaald.
+
 ## 12 oktober 2026 — stikstof en CBS-landgebruik
 
 - Stikstofdepositie en CBS-landgebruik zijn als afzonderlijke verklarende

@@ -279,6 +279,34 @@ Dit zijn beschrijvende ruimtelijke maten op twee kaartmomenten. Zij vormen
 geen jaarlijkse tijdreeks en zijn nog niet als nieuwe voorspellers in een
 vogelmodel geschat.
 
+## Representativiteit van de PQ’s
+
+De bestanden `pq_representativiteit_laatste_*` vergelijken de feitelijke
+ligging van de PQ’s met de zeven landbedekkingsklassen in de 25 kaartplots.
+Voor 2001 zijn 84 PQ’s binnen vijf jaar beschikbaar, waarvan 82 op een
+bruikbare rasterklasse liggen; voor 2022 zijn dit 102 en 100. De bestanden
+bewaren ook de twee niet koppelbare punten per kaartjaar.
+
+`pq_representativiteit_laatste_plots.csv` bevat per plot en kaartjaar het
+aantal PQ’s, het oppervlakteaandeel van klassen met minstens één PQ en de
+effectieve steekproefomvang na weging. Dit is klassedekking; de spreiding binnen
+een klasse wordt niet getoetst. `pq_representativiteit_laatste_klassen.csv`
+zet per klasse het oppervlakteaandeel, PQ-aandeel en hun verhouding naast
+elkaar. `pq_representativiteit_laatste_punten.csv` bevat het voorlopige
+oppervlaktegewicht per PQ. `pq_representativiteit_laatste_deelgebieden.csv`
+vat dezelfde vergelijking samen voor alle 25 kaartplots en voor de vijf
+bestaande Meijendel-deelgebieden. Het manifest legt selectie, tijdsmarge,
+weging en beperking vast. De volledige runmap bevat daarnaast Git-commit,
+werkboomstatus, MySQL-clientversie en SHA-256-vingerafdrukken van invoer en
+uitvoer. Het compacte manifest wordt als laatste transactiemarkering vervangen;
+daardoor is een onvolledige publicatie aan afwijkende hashes herkenbaar.
+
+In 2001 hebben 18 plots minstens één bruikbaar PQ en in 2022 19. Het mediane
+oppervlakteaandeel van bemonsterde klassen is 47,2% en 58,4%; gemiddeld 44,4%
+en 44,8%. Omdat een klasse zonder PQ niet wordt ingevuld, zijn de gewichten
+niet als correctie in het algemene vogelmodel gebruikt. Ook deze negatieve
+modelpoort is een inhoudelijke uitkomst en blijft in de resultaatmap bewaard.
+
 ## Gerichte habitatmodellen met AHN en weer
 
 De bestanden `habitatgericht_laatste_*` horen bij formele run

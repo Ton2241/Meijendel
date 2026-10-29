@@ -1,0 +1,39 @@
+{
+  "run_id": "20261029T094712Z-pq-representativiteit",
+  "uitgevoerd_utc": "2026-10-29T09:47:13.949847+00:00",
+  "git_commit_bij_start": "42a2eb6836012f0d33f4d746b1f54e71e8d3d559",
+  "git_werkboomstatus_bij_start": "onopgeslagen_wijzigingen",
+  "mysql_clientversie": "/usr/local/mysql/bin/mysql  Ver 9.7.4 for macos15 on arm64 (MySQL Community Server - GPL)",
+  "doel": "PQ-representativiteit binnen 25 kaartplots met landbedekking",
+  "kaartjaren": [
+    2001,
+    2022
+  ],
+  "maximale_afstand_pq_opname_tot_kaartjaar": 5,
+  "plots": 25,
+  "pq_punten_geselecteerd": {
+    "2001": 84,
+    "2022": 102
+  },
+  "pq_punten_zonder_bruikbare_rasterklasse": {
+    "2001": 2,
+    "2022": 2
+  },
+  "weging": "klasseoppervlakte gedeeld door aantal PQs in de klasse; genormaliseerd binnen bemonsterde klassen per plot en kaartjaar",
+  "beperking": "Een klasse zonder PQ blijft onbedekt; de weging vult geen vegetatiewaarde in.",
+  "bronbestanden_sha256": {
+    "pq_opnamen_extract": "4cdc662b562456ebb31d4d355d91f21692facfedf88b7652dc9bdb34d6686bb0",
+    "deelgebieden_extract": "deebdd7770b022616a2d9395cd8fecbf372d94681630035a7e7f052a20b0b95c",
+    "landbedekking_klassemetrics": "711cef4f828f842af30302eae280d2597a4fa083549a32aa45bd998a820fdc7f",
+    "raster_2001": "75a2c6caf0e1a097bfe02923eac44b927a4721477cd09631bcb77686320e89dc",
+    "raster_2022": "0a5cf5bfaf8ca99e8569c6be0cc02f71ca4fd351c12f28e1afa94b071dd2c870",
+    "analysescript": "eaa5a041f5c1b48e0b946e8eb4a2cd8781691f4ec54a927e378db1840b7de850"
+  },
+  "uitvoerbestanden_sha256": {
+    "pq_representativiteit_laatste_klassen.csv": "4766a2cfc5d59e68e2d0cf053a457d4f15189f124bd6d8c44cb97c7bc6eb6fa8",
+    "pq_representativiteit_laatste_punten.csv": "bac7c900ad02464fc19958df92b96b14d5e56f74cb24c16841726077da798fa9",
+    "pq_representativiteit_laatste_plots.csv": "1dc44d52ef81708fba537b06d0821b958b2a9b8792335018cff85a7fd0069bf2",
+    "pq_representativiteit_laatste_deelgebieden.csv": "0227e8e0b3a2da366cd3726092376463c7b6748657da856991116b481efb68c9",
+    "pq_representativiteit_laatste_samenvatting.csv": "883b33e1f0751d30968568541089a7cb66638c900637e9aad46acb3a2ec4270c"
+  }
+}
