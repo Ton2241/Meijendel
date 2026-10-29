@@ -2276,3 +2276,21 @@ Het controlebestand staat één niveau hoger als CONTROLE_SHA256.json.
 Eerdere relatieve bestandsverwijzingen in dit document hebben deze archiefmap als basis.
 De oorspronkelijke locatie /Users/ton/Documents/Backups viel onder iCloud;
 de eerdere omschrijving van die locatie als buiten iCloud was onjuist.
+
+
+### Correctie van Rode Lijst-koppelingen op 29 oktober 2026
+
+De officiële referentie is [Staatscourant 2017, 68427](https://zoek.officielebekendmakingen.nl/stcrt-2017-68427.html), lijstjaar 2016, van kracht vanaf 1 januari 2018. Alle 87 vermeldingen zijn gecontroleerd op categorie, lokale broedvogelidentiteit en oorspronkelijk wetenschappelijk taxonbereik. De ruwe HTML heeft SHA-256 `d6f1045069810f90a7b5beb40353ff86a5bd310e58890e75ef4aac42a6ff9b2b`. De volledige vergelijking met oorspronkelijke namen, categorieën, 62 ondersoortvermeldingen, lokale sleutels en bronkoppelingen staat in `officiele_lijstcontrole.json` in de onderstaande herstelmap. Naamvarianten zijn brongetrouw bewaard; er is geen taxonomische conceptfusie uitgevoerd. De categorie Bonte Strandloper verwijst in deze bron uitsluitend naar de Zuidelijke bonte strandloper (*Calidris alpina schinzii*); zij geldt niet zonder nadere determinatie voor alle Bonte Strandlopers. De lokale territoriumreeks voor Bonte Strandloper bestaat uit 28 letterlijke nulregels uit 1993–2025; er is geen positieve territoriumwaarde die door deze ondersoortkwestie anders moet worden geselecteerd.
+
+Na akkoord van Ton zijn uitsluitend twee bestaande regels in `soort_richtlijn` gecorrigeerd:
+
+| Rij-ID | Categorie | Van soort-ID | Naar soort-ID |
+|---|---|---|---|
+| 38 | Kwetsbaar (4) | 135 Nachtzwaluw | 167 Nachtegaal |
+| 55 | Gevoelig (5) | 89 Drieteenstrandloper | 442 Drieteenmeeuw |
+
+De categorie-aantallen 9/10/12/19/37 blijven gelijk; de 14 Oranje Lijst-koppelingen, Vogelrichtlijn-koppelingen en overige regels zijn ongewijzigd. De nominale Gele Kwikstaart gebruikt soort 158/EURING 10171; soort 645/EURING 10170 is een ruimer naamgebruik en is niet uitwisselbaar. De soorten, centrale taxa, bronidentiteiten en waarnemingen zijn niet gewijzigd. Alle 157.580 territoriumregels uit 1958–2025 zijn vóór/na bytegelijk (SHA-256 `eb5d2cf28bfc231b972aa2d4afaba7dc1e3040b7128c37260385cf6975fe416c`). De standaard databasebrede poort controleerde vóór en na uitvoering alle 128 routes, zonder fouten.
+
+Gerichte tabelback-up: `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/rode-lijst-correctie-20261029-203306/soort_richtlijn_voor_20261029-203306.sql.gz`. SHA-256: `1d947f19cc09078552ba5b57ec28246e42abd858b23a9caee3174be23d59694e`. Gzip is volledig teruggelezen; alle tabelrijen zijn gelijk aan de uitgangscontrole. De twee updates zijn eerst in één transactie beproefd, teruggedraaid en op exact herstel gecontroleerd; daarna identiek uitgevoerd en gecommit. Er is geen herstel naar een tweede database uitgevoerd. `bewijs.json`, `centrale_nacontrole.json`, de oorspronkelijke HTML, de volledige lijstcontrole, `uitvoering.sql` en de gerichte `terugdraaien.sql` staan in `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/rode-lijst-correctie-20261029-203306`. Gebruik bij eventueel herstel de gerichte twee-regeltransactie na controle van de huidige stand; herstel niet de gehele database voor deze koppelingen.
+
+Ton heeft export en VPS-publicatie uitdrukkelijk uitgesteld tot na import van BMP 2026. Er is geen nieuwe dump, proefimport, cachebouw of productiepublicatie uitgevoerd. De afgeleide toepassingen gebruiken tot die verversing nog hun eerdere lijstkoppelingen. De toekomstige exportcontrole vergelijkt de 87 operationele categorieën met de vastgelegde officiële referentie.
