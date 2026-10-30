@@ -1749,3 +1749,148 @@ Het schema en de reproduceerbare invoer staan in:
 - [BLWG Meetnet korstmossen](https://www.blwg.nl/meetnet-korstmossen-in-stuifzanden-nem)
 - [De Vlinderstichting vlinderroute](https://vlinderstichting.nl/wat-kan-jij-doen/tellen/meetnetten/een-route-tellen/vlinderroute-tellen/)
 - [BIJ12 Werkwijze Monitoring en Beoordeling Natuurkwaliteit](https://www.bij12.nl/wp-content/uploads/2023/11/WW-00-TEXT-%E2%80%93-Monitoring-en-Beoordeling-Natuurkwaliteit-EHS-en-Natura-2000.pdf)
+
+
+## Konijnen in M15, M16 en M17a rond de aanleg van de vijf kerven
+
+Stand 30 oktober 2026. Deze analyse beoordeelt de door Ton doorgegeven uitspraak van een uitvoerende Dunea-ecoloog dat anekdotisch meer konijnen worden gezien in hoogdynamische gebieden tegen de zeereep. Het is niet bevestigd dat de ecoloog specifiek deze vijf kerven bedoelt of op welke waarnemingsperiode hij doelt. Ton lokaliseert één kerf op de grens met M17a, vooral in M16, en de overige vier in M16/M15. Dit is een vergelijking op kavelniveau; het daadwerkelijk overstoven oppervlak is niet afgebakend.
+
+De [officiële Dunea-publicatie van 18 december 2024](https://www.dunea.nl/zakelijk/nieuwsbrieven/nieuwsbrief-2024-12/dynamiek-in-het-duin) bevestigt voltooiing in 2015 en start van het werk in september 2014. De levende maatregelregistratie bevat uitvoering 33, jaarregels 2014/2015 en geverifieerde koppelingen aan M15, M16 en M17a; de onderliggende publicatie uit 2017 beschrijft winters 2013/2014 en 2014/2015. De hoofdvergelijking gebruikt 2009–2014, overgangsjaar 2015, 2016–2020 en 2021–2025; de controle zonder 2014 gebruikt 2009–2013. Geen uitvoeringsdatum of maatregelregel is veranderd.
+
+De primaire selectie bevat 3.838 bruikbare oorspronkelijke zoogdierbezoeken in 50 in-scope kavels uit 2009–2025 en 9.538 positieve konijnpunten binnen de eigen kavel, met telsom 13.482. De selectie volgt v_sovon_avimap_daz_analyse, record_selectiestatus voorlopig_bruikbaar, en v_meijendel_analyseplot_actueel. M66 en M91 zijn uitgesloten. Eén bezoek met een opgegeven duur van 1.580 minuten blijft buiten de vergelijking. In alle 9.704 bronpunten binnen scope stemt in_plot overeen met de geometrische doorsnijding. Buiten-plotwaarnemingen worden niet aan een ander bezoek toegeschreven. De 1.733 positieve SOVON-jaarbestandregels zijn secundair, geen extra dieren; de 753 toegelaten aanvullende NDFF-regels blijven een afzonderlijke positieve bron.
+
+### Vergelijking per periode
+
+Telsom is het opgetelde geregistreerde aantal bij herhaalde bezoeken, geen unieke dieren of populatieschatting. Geen zoogdierregistratie is geen nulbezoek. Gegevensgeschiktheid blijft voorwaardelijk; vaste detectie of volledige zoogdierregistratie is niet aangetoond.
+
+| Kavel/groep | Periode | Bezoeken | Met konijn | Telsom | Per bezoek | Positief (%) | Kavels |
+|---|---|---:|---:|---:|---:|---:|---:|
+| M15 | voor | 49 | 45 | 335 | 6,837 | 91,837 | 1 |
+| M15 | aanleg | 11 | 11 | 110 | 10,000 | 100,000 | 1 |
+| M15 | eerste_vijf_na | 36 | 24 | 89 | 2,472 | 66,667 | 1 |
+| M15 | recent | 26 | 4 | 4 | 0,154 | 15,385 | 1 |
+| M15 | na | 62 | 28 | 93 | 1,500 | 45,161 | 1 |
+| M15 | laatste_twee | 10 | 0 | 0 | 0,000 | 0,000 | 1 |
+| M15 | voor_zonder_2014 | 38 | 35 | 183 | 4,816 | 92,105 | 1 |
+| M16 | voor | 11 | 5 | 20 | 1,818 | 45,455 | 1 |
+| M16 | aanleg | 10 | 8 | 54 | 5,400 | 80,000 | 1 |
+| M16 | eerste_vijf_na | 43 | 32 | 72 | 1,674 | 74,419 | 1 |
+| M16 | recent | 25 | 9 | 15 | 0,600 | 36,000 | 1 |
+| M16 | na | 68 | 41 | 87 | 1,279 | 60,294 | 1 |
+| M16 | laatste_twee | 8 | 0 | 0 | 0,000 | 0,000 | 1 |
+| M16 | voor_zonder_2014 | 11 | 5 | 20 | 1,818 | 45,455 | 1 |
+| M17a | voor | 60 | 58 | 730 | 12,167 | 96,667 | 1 |
+| M17a | aanleg | 8 | 8 | 90 | 11,250 | 100,000 | 1 |
+| M17a | eerste_vijf_na | 43 | 40 | 193 | 4,488 | 93,023 | 1 |
+| M17a | recent | 36 | 14 | 17 | 0,472 | 38,889 | 1 |
+| M17a | na | 79 | 54 | 210 | 2,658 | 68,354 | 1 |
+| M17a | laatste_twee | 14 | 4 | 4 | 0,286 | 28,571 | 1 |
+| M17a | voor_zonder_2014 | 50 | 48 | 626 | 12,520 | 96,000 | 1 |
+| drie_kavels | voor | 120 | 108 | 1085 | 9,042 | 90,000 | 3 |
+| drie_kavels | aanleg | 29 | 27 | 254 | 8,759 | 93,103 | 3 |
+| drie_kavels | eerste_vijf_na | 122 | 96 | 354 | 2,902 | 78,689 | 3 |
+| drie_kavels | recent | 87 | 27 | 36 | 0,414 | 31,034 | 3 |
+| drie_kavels | na | 209 | 123 | 390 | 1,866 | 58,852 | 3 |
+| drie_kavels | laatste_twee | 32 | 4 | 4 | 0,125 | 12,500 | 3 |
+| drie_kavels | voor_zonder_2014 | 99 | 88 | 829 | 8,374 | 88,889 | 3 |
+| overige_kavels | voor | 1019 | 792 | 5367 | 5,267 | 77,723 | 32 |
+| overige_kavels | aanleg | 236 | 165 | 922 | 3,907 | 69,915 | 28 |
+| overige_kavels | eerste_vijf_na | 973 | 635 | 4442 | 4,565 | 65,262 | 38 |
+| overige_kavels | recent | 1252 | 242 | 1022 | 0,816 | 19,329 | 45 |
+| overige_kavels | na | 2225 | 877 | 5464 | 2,456 | 39,416 | 46 |
+| overige_kavels | laatste_twee | 554 | 66 | 271 | 0,489 | 11,913 | 41 |
+| overige_kavels | voor_zonder_2014 | 841 | 654 | 4144 | 4,927 | 77,765 | 30 |
+| matched_reference | voor | 798 | 632 | 4391 | 5,503 | 79,198 | 18 |
+| matched_reference | aanleg | 155 | 140 | 836 | 5,394 | 90,323 | 16 |
+| matched_reference | eerste_vijf_na | 664 | 457 | 2042 | 3,075 | 68,825 | 18 |
+| matched_reference | recent | 698 | 111 | 169 | 0,242 | 15,903 | 18 |
+| matched_reference | na | 1362 | 568 | 2211 | 1,623 | 41,703 | 18 |
+| matched_reference | laatste_twee | 288 | 18 | 22 | 0,076 | 6,250 | 18 |
+| matched_reference | voor_zonder_2014 | 666 | 524 | 3398 | 5,102 | 78,679 | 18 |
+| M15_M17a | voor | 109 | 103 | 1065 | 9,771 | 94,495 | 2 |
+| M15_M17a | aanleg | 19 | 19 | 200 | 10,526 | 100,000 | 2 |
+| M15_M17a | eerste_vijf_na | 79 | 64 | 282 | 3,570 | 81,013 | 2 |
+| M15_M17a | recent | 62 | 18 | 21 | 0,339 | 29,032 | 2 |
+| M15_M17a | na | 141 | 82 | 303 | 2,149 | 58,156 | 2 |
+| M15_M17a | laatste_twee | 24 | 4 | 4 | 0,167 | 16,667 | 2 |
+| M15_M17a | voor_zonder_2014 | 88 | 83 | 809 | 9,193 | 94,318 | 2 |
+| rest_without_M42 | voor | 1009 | 792 | 5367 | 5,319 | 78,494 | 31 |
+| rest_without_M42 | aanleg | 226 | 165 | 922 | 4,080 | 73,009 | 27 |
+| rest_without_M42 | eerste_vijf_na | 918 | 585 | 2545 | 2,772 | 63,725 | 37 |
+| rest_without_M42 | recent | 1195 | 207 | 399 | 0,334 | 17,322 | 44 |
+| rest_without_M42 | na | 2113 | 792 | 2944 | 1,393 | 37,482 | 45 |
+| rest_without_M42 | laatste_twee | 525 | 51 | 79 | 0,150 | 9,714 | 40 |
+| rest_without_M42 | voor_zonder_2014 | 841 | 654 | 4144 | 4,927 | 77,765 | 30 |
+
+Periodes: voor = 2009–2014; aanleg = 2015; eerste_vijf_na = 2016–2020; recent = 2021–2025; na = 2016–2025; laatste_twee = 2024–2025; voor_zonder_2014 = 2009–2013.
+
+![Jaarlijkse en periodieke konijnenregistraties](KONIJN_ZEEREEP_2015.png)
+
+### Volledige jaarlijkse uitkomsten van de doelkavels en de overige kavels
+
+| Jaar | M15 telsom/bezoeken | M16 telsom/bezoeken | M17a telsom/bezoeken | Drie kavels telsom/bezoeken | Overige telsom/bezoeken |
+|---|---:|---:|---:|---:|---:|
+| 2009 | 17/7 | 20/7 | 214/10 | 251/24 | 704/158 |
+| 2010 | 1/2 | 0/2 | 126/10 | 127/14 | 612/125 |
+| 2011 | 38/9 | 0/2 | 115/10 | 153/21 | 832/156 |
+| 2012 | 66/9 | geen dekking | 98/10 | 164/19 | 1026/201 |
+| 2013 | 61/11 | geen dekking | 73/10 | 134/21 | 970/201 |
+| 2014 | 152/11 | geen dekking | 104/10 | 256/21 | 1223/178 |
+| 2015 | 110/11 | 54/10 | 90/8 | 254/29 | 922/236 |
+| 2016 | 44/8 | 26/10 | 67/9 | 137/27 | 1559/203 |
+| 2017 | 21/10 | 9/9 | 42/9 | 72/28 | 987/216 |
+| 2018 | 20/8 | 21/9 | 30/9 | 71/26 | 828/187 |
+| 2019 | 0/1 | 8/8 | 32/8 | 40/17 | 638/156 |
+| 2020 | 4/9 | 8/7 | 22/8 | 34/24 | 430/211 |
+| 2021 | 3/4 | 13/8 | 6/7 | 22/19 | 363/235 |
+| 2022 | 1/6 | 0/3 | 2/6 | 3/15 | 240/214 |
+| 2023 | 0/6 | 2/6 | 5/9 | 7/21 | 148/249 |
+| 2024 | 0/7 | 0/5 | 4/8 | 4/20 | 143/282 |
+| 2025 | 0/3 | 0/3 | 0/6 | 0/12 | 128/272 |
+
+### Uitkomsten en controles die de interpretatie bepalen
+
+- In de drie doelkavels daalt het geregistreerde aantal per bezoek van 9,042 (1.085/120) in 2009–2014 via 2,902 (354/122) in 2016–2020 naar 0,414 (36/87) in 2021–2025: 95,4% lager dan de uitgangsperiode. Dit is een afname in registraties, geen geschatte populatieafname van precies dat percentage.
+
+- Alle overige kavels samen dalen van 5,267 (5.367/1.019; 32 kavels) naar 0,816 (1.022/1.252; 45 kavels): 84,5%. Door veranderende kaveldekking en M42 als resterend zwaartepunt is dit geen vaste controlegroep. Zonder M42 zijn de gemiddelden 5,319 en 0,334: 93,7% lager.
+
+- Een op teldekking geselecteerde vaste referentiegroep bevat achttien overige kavels: M10-12-76, M12a, M17b, M1a, M2, M3, M35, M46, M6, M61, M63, M7, M71, M75, M75a, M77, M8, M83. Per periode 2009–2014 en 2021–2025 zijn minimaal vijftien bezoeken en drie jaren vereist, zonder selectie op konijnenaantallen. De opgetelde gegevens dalen van 4.391/798 = 5,503 naar 169/698 = 0,242: 95,6%. Bij gelijk gewicht per referentiekavel zijn de gemiddelden 4,674 en 0,238: 94,9% lager. De twee doelkavels met veel betere voorgegevens, M15 en M17a, dalen bij gelijke kavelweging van 9,502 naar 0,313: 96,7%. Er is dus geen beschrijvend bewijs van een aanhoudend gunstiger ontwikkeling in de doelkavels. Dit is geen formele toets dat de afnames gelijk zijn.
+
+- M16 heeft vóór 2015 elf zoogdierbezoeken, uitsluitend in 2009–2011. De 25 BMP-bezoeken uit 2012–2014 hebben geen bevestigde zoogdierdeelname. Het getal 1,818 uit de voorperiode is daardoor geen goed gedekte onmiddellijke uitgangssituatie. In 2015 zijn 54 geregistreerd tijdens tien bezoeken, in 2021 nog dertien tijdens acht bezoeken; daarna twee in 2023 en geen tijdens acht bezoeken in 2024–2025. Een kortdurend gunstiger situatie is hiermee niet uitgesloten, maar een duurzaam herstel blijkt niet.
+
+- De controle zonder 2014 geeft in de drie doelkavels 829/99 = 8,374 vóór de aanleg, versus 0,414 recent; de sterke geregistreerde afname blijft bestaan. De controle met alleen maart–juni geeft 9,118 naar 0,414 voor de doelkavels en 5,148 naar 0,832 voor alle overige kavels. Normalisatie per geregistreerd bezoekuur geeft voor de drie doelkavels 2,186 naar 0,100 en voor alle overige kavels 1,767 naar 0,266. Bezoekduur is vogeltelinspanning en bewijst geen volledige zoogdierzoekinspanning; deze controle corrigeert detectie niet volledig. Alle uitkomsten, ook per kavel en afwijkende periodes, staan in het JSON-bestand.
+
+- In 2025 bevatten de drie doelkavels twaalf zoogdierbezoeken zonder konijn, tegenover 28 BMP-bezoeken. De overige zestien rondes zijn geen konijnennullen. In 2024–2025 zijn er samen 32 zoogdierbezoeken en vier geregistreerde konijnen; alle vier in M17a in 2024. De primaire nulmelding over 2025 is geen afwezigheidsbewijs: de toegelaten NDFF-selectie bevat één losse melding van een levend konijn in M17a uit 2025 en drie uit 2024.
+
+Een andere uitkomst verdient evenveel nadruk: in 2021–2025 is de positieve bezoekfrequentie in de drie doelkavels 27/87 = 31,0%, tegenover 242/1.252 = 19,3% in alle overige kavels en 111/698 = 15,9% in de vaste referentiegroep. Konijnen worden er dus relatief vaker gemeld, ook al ligt de telsom per bezoek lager dan in alle overige kavels samen (0,414 tegenover 0,816). Ten opzichte van de vaste referentiegroep ligt het recente aantal per bezoek juist hoger (0,414 tegenover 0,242). De afname door de tijd en het relatieve resterende voorkomen zijn verschillende vragen. De uitspraak van de ecoloog kan daarom niet uitsluitend met een dalende tijdreeks worden weerlegd. De uitkomst is verenigbaar met plaatselijk relatief geschikt leefgebied, zonder dat de kerven als oorzaak bewezen zijn. M17a kende bovendien al vóór de aanleg een daling, van 214 registraties tijdens tien bezoeken in 2009 naar 73 tijdens tien bezoeken in 2013; het verloop na 2015 bewijst dus evenmin schade door de kerven.
+
+### Aanvullende historie en NDFF
+
+In de drie doelkavels zijn 38 ruimtelijk toegelaten aanvullende NDFF-regels beschikbaar: tien in M15, vijf in M16 en 23 in M17a. Daarvan zijn er 34 meldingen van levende exemplaren, twee meldingen van dode dieren en twee mest-/keutelmeldingen, uit 1995–2025. De volledige jaarverdeling en de onverkorte centrale kwaliteitsmelding staan in de JSON-uitvoer. Alleen positieve aanwezigheid is bruikbaar; gegevensgeschiktheid is niet_beoordeeld. Losse meldingen, punten en historische bezoekregels zijn niet opgeteld tot een dierentotaal. In M15 zijn bijvoorbeeld zes losse levende meldingen uit 2019 beschikbaar, terwijl het enige primaire zoogdierbezoek uit dat jaar geen konijn bevatte. Dit illustreert de beperkte waarnemingsdekking.
+
+De secundaire historische DAZ-reconstructie levert vóór 2009 voor deze vijf onderzochte kavels acht niet-door-SOVON-vervangen positieve bronregels. Zes daarvan liggen in M17a in 2008, op vier kalenderdatums. Twee kalenderdatums bevatten meerdere bronregels; zij worden niet als nieuwe onafhankelijke bezoeken of unieke dieren opgeteld. Twee regels liggen in M7 in 2006. Het positieve oorspronkelijke SOVON-jaarbestand bevat daarnaast één M7-bezoektotaal uit juni 2006. Een volledige vergelijkbare historische bezoekmatrix ontbreekt; daarom begint de vergelijkende reeks in 2009.
+
+Het zelfstandige konijnentelmeetnet 17.209 bevat 5.095 positieve Konijnregels uit 1984–2023 op elf kilometerhokken; alle zijn in de centrale gebruiksdekking ruimtelijk uitgesloten voor kavelanalyse. De aangeleverde routekaart lost de ontbrekende oorspronkelijke route-/sectie-id en routehistorie niet op. Er zijn geen hokregels naar M15/M16/M17a verplaatst, geen nieuwe nullen afgeleid en geen aantallen met DAZ-BMP samengevoegd.
+
+### De twee uitzetlocaties
+
+De levende registratie bevat vier feitelijke hokpunten onder uitvoering 176, geverifieerd in M7 (Kijfhoek/Bierlap) en M45 (Loopert). De eerdere M8/M41-planrelaties onder uitvoering 8 staan te_beoordelen en bewijzen geen feitelijke uitvoering in die kavels. Eerste overplaatsingen zijn in oktober 2023 gedocumenteerd; de jaartallen, aantallen en vrijlatingsmomenten per hok zijn niet vastgesteld.
+
+| Kavel | 2021–2022 telsom/bezoeken | 2023 | 2024–2025 |
+|---|---:|---:|---:|
+| M7 | 1/16 | 0/10 | 4/18 |
+| M45 | 0/15 | 0/9 | 0/13 |
+
+De vier M7-registraties uit 2024–2025 zijn elk één konijn tijdens vier bezoeken; twee bezoeken per jaar. In M45 zijn de dertien bevestigde zoogdierbezoeken geen volledige dekking van de zeventien BMP-rondes. Een losse M7-melding in mei 2023 bewijst aanwezigheid vóór de eerste gedocumenteerde overplaatsingen; één aanvullende levende melding volgt in mei 2024. De kleine toename van primaire meldingen bewijst geen uitzettingseffect, maar de gegevens sluiten zo een effect evenmin uit. De maatregel en de kerven zijn verschillende ingrepen en geen uitwisselbare proef- en controlegroepen.
+
+### Onvolledige bronjaargang 2026 en modelstatus
+
+De niet-vogelpuntenlaag loopt tot en met 19 juli 2026. De volledige 2026-matrix blijft buiten de volledige-jaarvergelijking: 305 zoogdierbezoeken in 44 kavels. De doelkavels hebben zeventien rondes zonder konijn (M15 zes, M16 vijf, M17a zes). M7 bevat één melding tijdens tien rondes; M45 geen tijdens acht. De datum waarop de ecoloog zijn anekdotische waarnemingen deed is niet gegeven; de aangeleverde gegevens toetsen latere waarnemingen uit de nazomer of herfst van 2026 niet.
+
+Er is geen formeel causaal effectmodel geschat: drie niet-gerandomiseerde doelkavels, onvolledige M16-voorperiode, onbekende overstoven oppervlakte en mogelijke gelijktijdige veranderingen in ziekte, vegetatie, beheer en detectie laten geen zuivere toeschrijving aan de kerven toe. De uitkomst ondersteunt geen brede aanhoudende toename op kavelniveau. Zij weerlegt niet dat konijnen zich op kleine dynamische plekken concentreren of dat die plekken relatief geschikt zijn. Ook een beter leefgebied kan tegelijk met een gebiedsbrede populatiedaling bestaan.
+
+### Controle en reproduceerbaarheid
+
+De bezoek- en puntidentiteiten zijn uniek; in_plot is voor alle punten gelijk aan de geometrische controle. Een onafhankelijke SQL-aggregatie vanuit oorspronkelijke punten bevestigt alle twaalf doelkavel-/overige-groep-periodecombinaties op bezoeken, positieve bezoeken en telsom. --audit-live en --audit-konijnen slagen op 30 oktober 2026. De audits bewijzen technische consistentie, geen populatietrend of causaal beheereffect.
+
+Alle uitkomsten, gegevenskwaliteitsmeldingen, teldekking, historische positieve regels, exact uitgevoerde extractiequeries en de berekeningscode staan in [KONIJN_ZEEREEP_2015.json](KONIJN_ZEEREEP_2015.json). Dit JSON-bestand is nodig om ook nuluitkomsten en gevoeligheidsanalyses volledig inspecteerbaar te bewaren. De PNG is de bijbehorende wetenschappelijke figuur. Geen databasewijziging, externe uitvraag, zware export of VPS-publicatie.
