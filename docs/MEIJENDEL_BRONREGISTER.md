@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 30 oktober 2026.**
+**Stand: 31 oktober 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -455,13 +455,23 @@ Deze records blijven herkenbaar als bronmateriaal, maar worden niet zonder een a
 
 Deze gegevens zijn geen soortenwaarnemingen. Zij kunnen wel helpen om ecologische veranderingen te beschrijven of als mogelijke verklaring te toetsen.
 
+Controle levende database voor het onderzoeksvoorstel, 31 oktober 2026. De hieronder genoemde volledige omgevingslagen omvatten maximaal 55 kavels. Binnen de standaardselectie bevatten 52 kavels territoriumgegevens in 2.107 onderscheiden kavel-jaren uit 1958–2025. De volgende overlapcijfers betreffen aanwezige kavel-jaren vóór soortspecifieke bron- en volledigheidsselectie; zij zijn geen aantallen onafhankelijke waarnemingen of afgeronde modellen.
+
+AHN en stikstof. plot_jaar_ahn_dtm bevat 55 DTM-samenvattingen met jaarlabel 2025, waaronder alle 52 kavels met territoriumreeksen; beschikbaar zijn gemiddelde maaiveldhoogte en hoogtevariatie, geen vegetatiehoogte of hoogtereeks. Het label 2025 bewijst niet de inwindatum. plot_jaar_stikstof bevat 1.027 regels uit 2005–2023. Voor de 52 vogelkavels zijn er 988 waarden; 742 kavel-jaren in 51 kavels overlappen met opgeslagen territoriumgegevens. Met tevens PQ-gegevens blijven 270 kavel-jaren in 35 kavels uit 2005–2023 over. Het importscript berekent oppervlaktegewogen waarden uit deposition in ndep_historisch-jaarlagen. RIVM beschrijft de historische bronreeks als gemodelleerde en aan metingen gekalibreerde depositie per vierkante kilometer, in mol N/ha/jaar. Dat maakt kleine kavels niet tot onafhankelijke lokale depositiemetingen.
+
+CBS-bodemgebruik. plot_jaar_landgebruik bevat 918 klasse-oppervlakteregels voor 55 kavels in 1996, 2010, 2015, 2017 en 2022; voor de 52 vogelkavels zijn dat 835 regels in 260 kavel-jaren. Daarvan overlappen 198 kavel-jaren in 49 kavels met territoriumgegevens. De 193 regels uit 1996 gebruiken veertien BG96-codes; andere jaren hebben andere klasselabels. CBS bevestigt een statistische breuk tussen BBG tot en met 2017 en NBBG2022; alleen hernoemen van klassen heft die niet op. Binnen de 52 vogelkavels varieert de verhouding tussen opgetelde kaartoppervlakte en geregistreerde kaveloppervlakte per kaartjaar ongeveer van 0,84 tot 1,06. De klassepercentages tellen wel tot 100%, omdat zij binnen het kaarttotaal zijn genormaliseerd. Stel grensversie en oppervlaktebasis vast voordat verschillen als terreinovergang worden geïnterpreteerd. Vogel-, PQ-, stikstof- en bodemgebruikgegevens delen bij exact gelijke jaren 71 kavel-jaren in 34 kavels uit 2010–2022; maak daarom vraaggerichte deelanalyses, geen algemene complete-caseselectie.
+
+Aanvullende verklarende gegevens. De bronvaste beheer-jaarview bevat nu 355 uitvoering-kavel-jaarrelaties voor 68 uitvoeringen, 52 kavels en 282 unieke kavel-jaren uit 1966–2025. Daarvan overlappen 293 relaties in 43 kavels met territoriumgegevens. doorsnijding_pct is in alle 355 relaties leeg: een kavelkoppeling bewijst niet de behandelde oppervlakte; ontbreken van een registratie bewijst evenmin dat geen beheer plaatsvond. Infrastructuur bevat vier indicatoren voor elk van 55 kavels in 2024; toegankelijkheid bevat 55 kavelregistraties uit 2024. Gebruik die als ruimtelijke context, niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; 3.555 waarden betreffen 156 positief geregistreerde soorten binnen de standaardselectie. Kenmerkwaarden zijn soortmetadata, geen nieuwe waarnemingen door de tijd.
+
+Beperkte aanvullende context. De 2.835 waterstandsaanduidingen bij winterbezoeken in 51 standaardkavels uit 2008–2025 zijn ordinale bezoekinformatie, geen grondwatermetingen. De 5.084 konijn-hokdatum-taxonproxies uit 1984–2023 missen oorspronkelijke route- en sectiesleutels; de 5.809 geselecteerde bronregels hebben trendgebruik wacht_op_route_sectie_koppeling. Gebruik ze niet als jaarlijkse konijnendichtheid per vogelkavel. De resterende LVD-laag bevat 2.793 opnamen en 64.683 taxonregels uit 1959–2015 zonder bewezen vaste PQ-identiteit; behoud de bestaande overlapbeoordeling en gebruik deze laag niet als verlenging van vaste PQ-reeksen. Deze controle wijzigt geen bronregels, analysetoelating of productiedata.
+
 #### 1.8.1. Dagelijks weer
 
 **Eigenaar.** KNMI, stations Valkenburg en Voorschoten
 
-**Omvang en periode in de huidige SQL-dump.** 24.837 dagregels, 1953–2026
+**Omvang en periode in de levende database, gecontroleerd 31 oktober 2026.** 24.837 unieke, aaneengesloten dagregels van 1 januari 1958 tot en met 31 december 2025: 21.307 dagen Valkenburg tot en met 2 mei 2016 en 3.530 dagen Voorschoten vanaf 3 mei 2016.
 
-**Gebruik en grens.** Temperatuur, neerslag, wind, zon en luchtdruk kunnen als covariaten worden gebruikt. Alleen de genormaliseerde analyseview is geldig; 2026 is nog niet compleet.
+**Gebruik en grens.** Gebruik uitsluitend weer_analyse voor genormaliseerde eenheden. Temperatuur ontbreekt op geen van de 24.837 dagen uit 1958–2025. Neerslag ontbreekt op 5.320 dagen: tot en met 30 april 1972 en van 1 juli tot en met 24 september 2020. De 6.466 dagen in maart–juni 1973–2025 hebben zowel temperatuur als neerslag. Eenhedennormalisatie bewijst geen homogeniteit over de stationswisseling; beoordeel die bij trendgebruik. Weer is een gedeelde jaar- of seizoensvariabele, geen onafhankelijke meting per kavel.
 
 #### 1.8.2. Hoogte
 
