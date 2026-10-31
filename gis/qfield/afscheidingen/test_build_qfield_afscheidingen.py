@@ -6,6 +6,7 @@ from __future__ import annotations
 import importlib.util
 import json
 import os
+import shutil
 import sqlite3
 import subprocess
 import tempfile
@@ -244,8 +245,76 @@ class BuilderContractTest(unittest.TestCase):
             "<datasource>./veldwerk.gpkg|layername=bijzonderheden</datasource>", xml
         )
         self.assertIn(
+            "<datasource>./veldwerk.gpkg|layername=gebieden</datasource>", xml
+        )
+        self.assertIn(
             "<datasource>./referentie.gpkg|layername=onderzoekskavels</datasource>", xml
         )
+
+    def test_processing_builder_refuses_to_overwrite_existing_area(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            output_dir = tmp_path / "pakket"
+            command = [
+                str(QGIS_PROCESS),
+                "run",
+                str(BUILDER),
+                "--",
+                f"PLOTS={PLOTS}",
+                f"OUTPUT_DIR={output_dir}",
+                "RASTER=",
+            ]
+            environment = {**os.environ, "QGIS_PREFIX_PATH": "/Applications/QGIS.app"}
+            first = subprocess.run(
+                command, check=False, capture_output=True, text=True, env=environment
+            )
+            self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+            area = tmp_path / "testgebied.geojson"
+            area.write_text(
+                json.dumps(
+                    {
+                        "type": "FeatureCollection",
+                        "crs": {
+                            "type": "name",
+                            "properties": {"name": "urn:ogc:def:crs:EPSG::28992"},
+                        },
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {"id": "testgebied", "categorie": "afgesloten"},
+                                "geometry": {
+                                    "type": "Polygon",
+                                    "coordinates": [[[82000, 461000], [82010, 461000], [82010, 461010], [82000, 461010], [82000, 461000]]],
+                                },
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(
+                [
+                    "ogr2ogr",
+                    "-update",
+                    "-append",
+                    "-nln",
+                    "gebieden",
+                    str(output_dir / "veldwerk.gpkg"),
+                    str(area),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            second = subprocess.run(
+                command, check=False, capture_output=True, text=True, env=environment
+            )
+            combined = second.stdout + second.stderr
+            self.assertNotEqual(second.returncode, 0, combined)
+            self.assertIn("bestaande veldwerkgegevens", combined)
+            with sqlite3.connect(output_dir / "veldwerk.gpkg") as connection:
+                count = connection.execute("SELECT COUNT(*) FROM gebieden").fetchone()[0]
+        self.assertEqual(count, 1)
 
 
 class VectorPackageContractTest(unittest.TestCase):
@@ -331,6 +400,17 @@ class VectorPackageContractTest(unittest.TestCase):
                 "foto",
                 "opmerking",
             ],
+            "gebieden": [
+                "id",
+                "categorie",
+                "datum_tijd",
+                "bron",
+                "ontvanger",
+                "nauwkeurigheid_m",
+                "offset_m",
+                "foto",
+                "opmerking",
+            ],
         }
         for layer, fields in expected.items():
             info = self._ogr_layer_info(self.output_dir / "veldwerk.gpkg", layer)
@@ -347,6 +427,7 @@ class VectorPackageContractTest(unittest.TestCase):
         self.assertIn("referentie.gpkg|layername=onderzoekskavels", xml)
         self.assertIn("veldwerk.gpkg|layername=afscheidingen", xml)
         self.assertIn("veldwerk.gpkg|layername=bijzonderheden", xml)
+        self.assertIn("veldwerk.gpkg|layername=gebieden", xml)
         self.assertIn("readOnly=\"1\"", xml)
         self.assertIn("uuid()", xml)
         self.assertIn("@position_horizontal_accuracy", xml)
@@ -359,7 +440,6 @@ class VectorPackageContractTest(unittest.TestCase):
                 "lage draad",
                 "wildrooster",
                 "muur",
-                "regelgebaseerd",
                 "poort/doorgang",
             ],
         )
@@ -373,9 +453,18 @@ class VectorPackageContractTest(unittest.TestCase):
                 "schade",
                 "foto",
                 "anders",
+                "dierenverzamelplek",
+            ],
+        )
+        self.assertEqual(
+            value_map_values(xml, "categorie"),
+            [
                 "inclosure",
                 "exclosure",
-                "dierenverzamelplek",
+                "openbaar",
+                "beperkt toegankelijk",
+                "afgesloten",
+                "bedrijventerrein",
             ],
         )
         self.assertIn('projectname="Meijendel"', xml)
@@ -390,13 +479,26 @@ class VectorPackageContractTest(unittest.TestCase):
                     "lage draad",
                     "wildrooster",
                     "muur",
-                    "regelgebaseerd",
                     "poort/doorgang",
                 ],
             ),
         )
+        self.assertEqual(
+            categorized_renderer(xml, "Gebieden"),
+            (
+                "categorie",
+                [
+                    "inclosure",
+                    "exclosure",
+                    "openbaar",
+                    "beperkt toegankelijk",
+                    "afgesloten",
+                    "bedrijventerrein",
+                ],
+            ),
+        )
         point_symbols = marker_symbol_options(xml, "Bijzonderheden")
-        self.assertEqual(len(point_symbols), 10)
+        self.assertEqual(len(point_symbols), 8)
         self.assertEqual(
             {symbol["size_unit"] for symbol in point_symbols},
             {"MapUnit"},
@@ -409,7 +511,7 @@ class VectorPackageContractTest(unittest.TestCase):
 
     def test_field_database_has_uuid_defaults_and_no_fixed_plot_column(self):
         with sqlite3.connect(self.output_dir / "veldwerk.gpkg") as connection:
-            for layer in ("afscheidingen", "bijzonderheden"):
+            for layer in ("afscheidingen", "bijzonderheden", "gebieden"):
                 columns = {
                     row[1]: row[4]
                     for row in connection.execute(f'PRAGMA table_info("{layer}")')
@@ -417,6 +519,54 @@ class VectorPackageContractTest(unittest.TestCase):
                 self.assertNotIn("kavel", columns)
                 self.assertNotIn("plot", columns)
                 self.assertIn("id", columns)
+
+    def test_areas_layer_accepts_nested_polygons(self):
+        available = self._ogr_layer_info(self.output_dir / "veldwerk.gpkg", "gebieden")
+        self.assertIn("Polygon", available["geometryFields"][0]["type"])
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            copied = tmp_path / "veldwerk.gpkg"
+            shutil.copy2(self.output_dir / "veldwerk.gpkg", copied)
+            nested = tmp_path / "geneste_gebieden.geojson"
+            nested.write_text(
+                json.dumps(
+                    {
+                        "type": "FeatureCollection",
+                        "crs": {
+                            "type": "name",
+                            "properties": {"name": "urn:ogc:def:crs:EPSG::28992"},
+                        },
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {"id": "buiten", "categorie": "openbaar"},
+                                "geometry": {
+                                    "type": "Polygon",
+                                    "coordinates": [[[82000, 461000], [82100, 461000], [82100, 461100], [82000, 461100], [82000, 461000]]],
+                                },
+                            },
+                            {
+                                "type": "Feature",
+                                "properties": {"id": "binnen", "categorie": "inclosure"},
+                                "geometry": {
+                                    "type": "Polygon",
+                                    "coordinates": [[[82020, 461020], [82040, 461020], [82040, 461040], [82020, 461040], [82020, 461020]]],
+                                },
+                            },
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(
+                ["ogr2ogr", "-update", "-append", "-nln", "gebieden", str(copied), str(nested)],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            with sqlite3.connect(copied) as connection:
+                count = connection.execute("SELECT COUNT(*) FROM gebieden").fetchone()[0]
+        self.assertEqual(count, 2)
 
 
 class RasterPackageContractTest(unittest.TestCase):

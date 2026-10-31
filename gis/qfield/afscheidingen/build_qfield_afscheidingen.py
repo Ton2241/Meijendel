@@ -177,7 +177,6 @@ else:
                     "lage draad",
                     "wildrooster",
                     "muur",
-                    "regelgebaseerd",
                     "poort/doorgang",
                 )
             ),
@@ -192,7 +191,6 @@ else:
             ("lage draad", "235,200,0,255", "dot", "1.2"),
             ("wildrooster", "0,110,220,255", "dash dot", "1.2"),
             ("muur", "60,60,60,255", "solid", "2.0"),
-            ("regelgebaseerd", "150,60,190,255", "dash dot dot", "1.2"),
             ("poort/doorgang", "0,190,220,255", "solid", "2.0"),
         )
         categories = []
@@ -218,8 +216,6 @@ else:
             "schade",
             "foto",
             "anders",
-            "inclosure",
-            "exclosure",
             "dierenverzamelplek",
         )
         layer.setEditorWidgetSetup(layer.fields().indexOf("soort"), _value_map(values))
@@ -235,8 +231,6 @@ else:
             "220,0,0,255",
             "0,255,110,255",
             "180,180,180,255",
-            "0,120,0,255",
-            "0,0,0,255",
             "150,90,30,255",
         )
         categories = []
@@ -258,6 +252,42 @@ else:
             symbol.setSizeMapUnitScale(marker_scale)
             categories.append(QgsRendererCategory(value, symbol, value))
         layer.setRenderer(QgsCategorizedSymbolRenderer("soort", categories))
+
+
+    def _configure_gebieden(layer: QgsVectorLayer) -> None:
+        _configure_common_fields(layer)
+        values = (
+            "inclosure",
+            "exclosure",
+            "openbaar",
+            "beperkt toegankelijk",
+            "afgesloten",
+            "bedrijventerrein",
+        )
+        layer.setEditorWidgetSetup(layer.fields().indexOf("categorie"), _value_map(values))
+        layer.setEditorWidgetSetup(
+            layer.fields().indexOf("bron"),
+            _value_map(("GNSS", "handmatig", "luchtfoto")),
+        )
+        colors = (
+            ("0,150,70,55", "0,120,55,255"),
+            ("30,30,30,45", "0,0,0,255"),
+            ("70,190,90,45", "30,145,55,255"),
+            ("255,175,40,50", "220,120,0,255"),
+            ("230,45,45,50", "190,0,0,255"),
+            ("125,105,85,55", "90,70,50,255"),
+        )
+        categories = []
+        for value, (fill_color, outline_color) in zip(values, colors):
+            symbol = QgsFillSymbol.createSimple(
+                {
+                    "color": fill_color,
+                    "outline_color": outline_color,
+                    "outline_width": "0.8",
+                }
+            )
+            categories.append(QgsRendererCategory(value, symbol, value))
+        layer.setRenderer(QgsCategorizedSymbolRenderer("categorie", categories))
 
 
     def _configure_plot_style(layer: QgsVectorLayer) -> None:
@@ -309,6 +339,14 @@ else:
                         "De pakketmap bevat bestaande veldwerkgegevens; kies een lege "
                         "uitvoermap om overschrijven te voorkomen."
                     )
+            areas = QgsVectorLayer(
+                f"{fieldwork_path}|layername=gebieden", "gebieden", "ogr"
+            )
+            if areas.isValid() and areas.featureCount() > 0:
+                raise QgsProcessingException(
+                    "De pakketmap bevat bestaande veldwerkgegevens; kies een lege "
+                    "uitvoermap om overschrijven te voorkomen."
+                )
         if photos_path.exists() and any(path.is_file() for path in photos_path.rglob("*")):
             raise QgsProcessingException(
                 "De pakketmap bevat bestaande veldwerkgegevens in photos/; kies een "
@@ -361,17 +399,32 @@ else:
             ("foto", QVariant.String, 255),
             ("opmerking", QVariant.String, 1000),
         )
+        area_specs = (
+            ("id", QVariant.String, 36),
+            ("categorie", QVariant.String, 32),
+            ("datum_tijd", QVariant.DateTime, 0),
+            ("bron", QVariant.String, 32),
+            ("ontvanger", QVariant.String, 80),
+            ("nauwkeurigheid_m", QVariant.Double, 0),
+            ("offset_m", QVariant.Double, 0),
+            ("foto", QVariant.String, 255),
+            ("opmerking", QVariant.String, 1000),
+        )
         lines_memory = _empty_field_layer("afscheidingen", "LineString", line_specs)
         points_memory = _empty_field_layer("bijzonderheden", "Point", point_specs)
+        areas_memory = _empty_field_layer("gebieden", "Polygon", area_specs)
         _write_layer(lines_memory, fieldwork_path, "afscheidingen")
         _write_layer(points_memory, fieldwork_path, "bijzonderheden", append=True)
+        _write_layer(areas_memory, fieldwork_path, "gebieden", append=True)
 
         plots = _reload_vector(reference_path, "onderzoekskavels", "Onderzoekskavels")
         lines = _reload_vector(fieldwork_path, "afscheidingen", "Afscheidingen")
         points = _reload_vector(fieldwork_path, "bijzonderheden", "Bijzonderheden")
+        areas = _reload_vector(fieldwork_path, "gebieden", "Gebieden")
         _configure_plot_style(plots)
         _configure_afscheidingen(lines)
         _configure_bijzonderheden(points)
+        _configure_gebieden(areas)
 
         raster = None
         if raster_source:
@@ -396,6 +449,7 @@ else:
         if raster is not None:
             project.addMapLayer(raster)
         project.addMapLayer(plots)
+        project.addMapLayer(areas)
         project.addMapLayer(lines)
         project.addMapLayer(points)
         relation = QgsRelation()
@@ -414,6 +468,7 @@ else:
             "project": "meijendel.qgz",
             "crs": EXPECTED_CRS,
             "plot_count": EXPECTED_PLOT_COUNT,
+            "field_layers": ["afscheidingen", "bijzonderheden", "gebieden"],
             "buffer_m": 100,
             "aerial_layer": "2025_ortho25",
             "aerial_source": "PDOK Landelijke Voorziening Beeldmateriaal WMS",

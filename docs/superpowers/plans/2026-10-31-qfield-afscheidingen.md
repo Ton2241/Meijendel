@@ -270,3 +270,35 @@ Run de volledige tests. Bouw uitsluitend een leeg pakket opnieuw en controleer d
 
 Commit specificatie, plan, builder, test en handleiding; integreer na groene eindcontrole in `main` en push naar GitHub.
 
+### Task 8: Gebieden als geneste polygonen vastleggen
+
+**Files:**
+- Modify: `docs/superpowers/specs/2026-10-31-qfield-afscheidingen-design.md`
+- Modify: `gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/README.md`
+
+**Interfaces:**
+- Consumes: het bestaande `veldwerk.gpkg`, de gemeenschappelijke formulierinstellingen en de veilige herbouwcontrole.
+- Produces: een lege polygonenlaag `gebieden` met veld `categorie`, zes categorieën en ondersteuning voor overlappende of geneste objecten.
+
+- [x] **Step 1: Write the failing contract tests**
+
+Test de derde GeoPackage-laag, de polygoongeometrie, exact zes gebiedscategorieën, twee geneste objecten en bescherming tegen herbouw van een gevuld `gebieden`.
+
+- [x] **Step 2: Run tests to verify RED**
+
+Run de gerichte contracttests. Expected: FAIL omdat `gebieden` nog ontbreekt en de oude keuzelijsten nog `regelgebaseerd`, `inclosure` en `exclosure` bevatten.
+
+- [x] **Step 3: Implement the minimal layer and form changes**
+
+Maak `gebieden` met dezelfde gemeenschappelijke metadata als de andere veldlagen, voeg een transparante gecategoriseerde vlakrenderer toe, neem de laag op tussen kavels en lijnen, en breid de herbouwbeveiliging uit tot deze laag.
+
+- [x] **Step 4: Rebuild and verify**
+
+Run de volledige tests. Bouw uitsluitend een pakket met drie lege veldlagen en een lege fotomap opnieuw; controleer QGZ, relatieve bronnen, geneste polygonen en ZIP.
+
+- [x] **Step 5: Commit and integrate**
+
+Commit specificatie, plan, builder, test en handleiding; integreer na groene eindcontrole in `main` en push naar GitHub.
+

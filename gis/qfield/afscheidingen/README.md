@@ -7,7 +7,8 @@ Het gebouwde pakket staat lokaal onder:
 `outputs/qfield_afscheidingen/meijendel_afscheidingen`
 
 Kopieer steeds de **hele map**. De map bevat het QGIS-project, de vaste
-PDOK-luchtfoto 2025, de 55 onderzoekskavels, `veldwerk.gpkg` en de fotomap.
+PDOK-luchtfoto 2025, de 55 onderzoekskavels, `veldwerk.gpkg` met drie
+meetlagen en de fotomap.
 De bestanden gebruiken relatieve paden en moeten bij elkaar blijven.
 
 Het pakket wordt opnieuw gebouwd met:
@@ -48,11 +49,12 @@ Voer deze proef uit voordat je een volledige veldronde begint:
    QField de weergegeven horizontale nauwkeurigheid.
 4. Registreer één testpunt in `bijzonderheden`, inclusief foto.
 5. Registreer één testlijn van enkele honderden meters in `afscheidingen`.
-6. Vul `offset_m` in als positieve geschatte afstand tussen de GNS 3000 en de
+6. Registreer één testpolygoon in `gebieden` en sluit de omtrek.
+7. Vul `offset_m` in als positieve geschatte afstand tussen de GNS 3000 en de
    werkelijke afscheiding. Noteer links of rechts van de looprichting in
    `opmerking`.
-7. Sluit QField, open het project opnieuw en controleer of punt, lijn en foto
-   nog aanwezig zijn.
+8. Sluit QField, open het project opnieuw en controleer of punt, lijn,
+   polygoon en foto nog aanwezig zijn.
 
 Kies het definitieve tijd- of afstandsinterval voor GPS-tracking pas na deze
 proef. Een kleiner interval geeft meer punten, maar corrigeert de
@@ -60,13 +62,17 @@ positiefout van de ontvanger niet.
 
 ## Veldinvoer
 
-- `afscheidingen`: hekwerk, hoge en lage draad, wildroosters, muren,
-  regelgebaseerde afscheidingen en poorten/doorgangen. Leg een poort of
-  doorgang vast als een kort eigen lijnsegment tussen de aansluitende
-  afscheidingssegmenten.
+- `afscheidingen`: hekwerk, hoge en lage draad, wildroosters, muren en
+  poorten/doorgangen. Leg een poort of doorgang vast als een kort eigen
+  lijnsegment tussen de aansluitende afscheidingssegmenten.
 - `bijzonderheden`: hoeken, onderbrekingen,
-  typewijzigingen, borden, schade, losse foto's, inclosures, exclosures en
-  dierenverzamelplekken.
+  typewijzigingen, borden, schade, losse foto's en dierenverzamelplekken.
+- `gebieden`: inclosure, exclosure, openbaar, beperkt toegankelijk,
+  afgesloten en bedrijventerrein. Polygonen mogen elkaar overlappen of
+  geheel binnen elkaar liggen; ieder gebied blijft een afzonderlijk object.
+- Een opgeslagen polygoon kan later opnieuw worden geselecteerd. Met
+  geometrie- of hoekpuntbewerking kun je grenspunten verplaatsen, toevoegen of
+  verwijderen; categorie en formuliergegevens blijven behouden.
 - De puntsymbolen worden bij uitzoomen kleiner en blijven door een onder- en
   bovengrens zowel op overzichtsschaal als dichtbij leesbaar.
 - `nauwkeurigheid_m`: wordt gevuld met de horizontale nauwkeurigheid die
@@ -89,5 +95,5 @@ vast.
    met de luchtfoto waar de veldwaarneming dat ondersteunt.
 6. Neem `veldwerk.gpkg` pas na deze controle als nieuwe werkversie over.
 
-Door de hele map terug te kopiëren blijven de relatieve fotopaden en beide
-meetlagen intact.
+Door de hele map terug te kopiëren blijven de relatieve fotopaden en alle
+drie meetlagen intact.
