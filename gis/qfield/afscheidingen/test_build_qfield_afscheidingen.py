@@ -85,6 +85,84 @@ class BuilderContractTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0, combined)
         self.assertIn("precies 55 polygonen", combined)
 
+    def test_processing_builder_refuses_to_overwrite_existing_fieldwork(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            output_dir = Path(tmp) / "pakket"
+            command = [
+                str(QGIS_PROCESS),
+                "run",
+                str(BUILDER),
+                "--",
+                f"PLOTS={PLOTS}",
+                f"OUTPUT_DIR={output_dir}",
+                "RASTER=",
+            ]
+            environment = {
+                **os.environ,
+                "QGIS_PREFIX_PATH": "/Applications/QGIS.app",
+            }
+            first = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=environment,
+            )
+            self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+            feature_path = Path(tmp) / "testlijn.geojson"
+            feature_path.write_text(
+                json.dumps(
+                    {
+                        "type": "FeatureCollection",
+                        "name": "afscheidingen",
+                        "crs": {
+                            "type": "name",
+                            "properties": {"name": "urn:ogc:def:crs:EPSG::28992"},
+                        },
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {"id": "test-id", "type": "hek"},
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [[82000, 461000], [82010, 461010]],
+                                },
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(
+                [
+                    "ogr2ogr",
+                    "-update",
+                    "-append",
+                    "-nln",
+                    "afscheidingen",
+                    str(output_dir / "veldwerk.gpkg"),
+                    str(feature_path),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            second = subprocess.run(
+                command,
+                check=False,
+                capture_output=True,
+                text=True,
+                env=environment,
+            )
+            with sqlite3.connect(output_dir / "veldwerk.gpkg") as connection:
+                count = connection.execute(
+                    "SELECT COUNT(*) FROM afscheidingen"
+                ).fetchone()[0]
+        combined = second.stdout + second.stderr
+        self.assertNotEqual(second.returncode, 0, combined)
+        self.assertIn("bestaande veldwerkgegevens", combined)
+        self.assertEqual(count, 1)
+
 
 class VectorPackageContractTest(unittest.TestCase):
     @classmethod

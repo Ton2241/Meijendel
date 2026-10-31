@@ -255,14 +255,39 @@ else:
         return layer
 
 
+    def _ensure_rebuild_is_safe(fieldwork_path: Path, photos_path: Path) -> None:
+        if fieldwork_path.exists():
+            for layer_name in ("afscheidingen", "bijzonderheden"):
+                layer = QgsVectorLayer(
+                    f"{fieldwork_path}|layername={layer_name}", layer_name, "ogr"
+                )
+                if not layer.isValid():
+                    raise QgsProcessingException(
+                        "Bestaand veldwerkbestand is niet leesbaar; herbouw is gestopt: "
+                        f"{fieldwork_path}"
+                    )
+                if layer.featureCount() > 0:
+                    raise QgsProcessingException(
+                        "De pakketmap bevat bestaande veldwerkgegevens; kies een lege "
+                        "uitvoermap om overschrijven te voorkomen."
+                    )
+        if photos_path.exists() and any(path.is_file() for path in photos_path.rglob("*")):
+            raise QgsProcessingException(
+                "De pakketmap bevat bestaande veldwerkgegevens in photos/; kies een "
+                "lege uitvoermap om overschrijven te voorkomen."
+            )
+
+
     def _build_vector_package(
         plot_layer: QgsVectorLayer, output_dir: Path, raster_source: Path | None = None
     ) -> Path:
         output_dir.mkdir(parents=True, exist_ok=True)
-        (output_dir / "photos").mkdir(exist_ok=True)
         reference_path = output_dir / "referentie.gpkg"
         fieldwork_path = output_dir / "veldwerk.gpkg"
         project_path = output_dir / "meijendel_afscheidingen.qgz"
+        photos_path = output_dir / "photos"
+        _ensure_rebuild_is_safe(fieldwork_path, photos_path)
+        photos_path.mkdir(exist_ok=True)
         for generated in (reference_path, fieldwork_path, project_path):
             if generated.exists():
                 generated.unlink()
