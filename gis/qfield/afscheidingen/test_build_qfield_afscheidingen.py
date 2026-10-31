@@ -18,6 +18,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 BUILDER = HERE / "build_qfield_afscheidingen.py"
 DOWNLOADER = HERE / "download_pdok_luchtfoto.sh"
+GUIDE = HERE / "README.md"
 QGIS_PROCESS = Path("/Applications/QGIS.app/Contents/MacOS/qgis_process")
 PLOTS = ROOT / "Plots_2025" / "avimap_252_diversen__gebieden.shp"
 
@@ -322,6 +323,27 @@ class ActualRasterContractTest(unittest.TestCase):
         self.assertGreaterEqual(upper_left[1], ymax)
         self.assertGreaterEqual(lower_right[0], xmax)
         self.assertLessEqual(lower_right[1], ymin)
+
+
+class FieldGuideContractTest(unittest.TestCase):
+    def test_guide_covers_transfer_gns_offline_trial_and_return(self):
+        guide = GUIDE.read_text(encoding="utf-8")
+        required = (
+            "outputs/qfield_afscheidingen/meijendel_afscheidingen",
+            "AirDrop",
+            "QFieldCloud",
+            "GNS 3000",
+            "iPadOS",
+            "vliegtuigmodus",
+            "punt",
+            "lijn",
+            "foto",
+            "offset_m",
+            "terugkopiëren",
+            "iMac",
+        )
+        for phrase in required:
+            self.assertIn(phrase, guide)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Offline QField-project Afscheidingen Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Een herhaalbaar gebouwd en lokaal overdraagbaar QField-pakket maken voor offline registratie van afscheidingen en bijzonderheden in de 55 Meijendel-kavels.
 
@@ -40,27 +40,27 @@
 - Consumes: de 2025-SOVON-shapefile en een uitvoermap.
 - Produces: `validate_plot_source(layer)`, `plot_label(name)` en Processing-algoritme `BuildQFieldAfscheidingen`.
 
-- [ ] **Step 1: Write the failing unit tests**
+- [x] **Step 1: Write the failing unit tests**
 
 Maak tests die `plot_label()` voor gewone en samengestelde namen vastleggen en die via `qgis_process` aantonen dat een bron met een fout featureaantal wordt geweigerd.
 
-- [ ] **Step 2: Run tests to verify RED**
+- [x] **Step 2: Run tests to verify RED**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: FAIL omdat de builder en functies nog ontbreken.
 
-- [ ] **Step 3: Implement the minimal builder contract**
+- [x] **Step 3: Implement the minimal builder contract**
 
 Implementeer de labelnormalisatie, validatie van 55 geldige polygonen in EPSG:28992 en de benodigde Processing-parameters voor bron, uitvoermap en optionele rasterbron.
 
-- [ ] **Step 4: Run tests to verify GREEN**
+- [x] **Step 4: Run tests to verify GREEN**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: PASS voor label- en bronvalidatie.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit: `feat: add qfield fieldwork builder contract`
 
@@ -74,27 +74,27 @@ Commit: `feat: add qfield fieldwork builder contract`
 - Consumes: gevalideerde plotlaag en builderparameters uit Task 1.
 - Produces: `referentie.gpkg`, `veldwerk.gpkg`, `photos/` en `meijendel_afscheidingen.qgz`.
 
-- [ ] **Step 1: Write the failing package-contract tests**
+- [x] **Step 1: Write the failing package-contract tests**
 
 Test laag- en featureaantallen, geometrieën, velden, defaults, keuzevelden, stijlen, project-CRS, relatieve bronpaden, alleen-lezen plotlaag en afwezigheid van absolute `/Users/ton/`-paden in de QGZ-inhoud.
 
-- [ ] **Step 2: Run tests to verify RED**
+- [x] **Step 2: Run tests to verify RED**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: FAIL omdat de pakketbestanden nog niet worden gemaakt.
 
-- [ ] **Step 3: Implement the package build**
+- [x] **Step 3: Implement the package build**
 
 Maak de plotkopie, beide lege meetlagen met de in de spec vastgelegde velden en widgets, de stijlen, QField-defaults en het relatieve QGIS-project.
 
-- [ ] **Step 4: Run tests to verify GREEN**
+- [x] **Step 4: Run tests to verify GREEN**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: PASS; QGIS leest het project en alle drie vectorlagen geldig terug.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit: `feat: build offline qfield vector package`
 
@@ -109,27 +109,27 @@ Commit: `feat: build offline qfield vector package`
 - Consumes: gebufferde kavelextent en PDOK WMS-laag `2025_ortho25`.
 - Produces: `luchtfoto_pdok_2025_25cm.tif` als geldige COG en een QGIS-project dat deze laag relatief en standaard zichtbaar gebruikt.
 
-- [ ] **Step 1: Write the failing raster-contract tests**
+- [x] **Step 1: Write the failing raster-contract tests**
 
 Test vaste laagnaam, EPSG:28992, volledige gebufferde extent, rasterafmetingen groter dan nul, drie beeldbanden, COG-layout en geldige rasterlaag in QGIS.
 
-- [ ] **Step 2: Run tests to verify RED**
+- [x] **Step 2: Run tests to verify RED**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: FAIL omdat de lokale luchtfoto ontbreekt.
 
-- [ ] **Step 3: Implement and run the raster download**
+- [x] **Step 3: Implement and run the raster download**
 
 Maak een GDAL-WMS-configuratie voor `2025_ortho25`, download op 25 cm-resolutie, schrijf JPEG-gecomprimeerde COG-overviews en bouw het QGIS-project opnieuw met de lokale rasterlaag.
 
-- [ ] **Step 4: Run tests to verify GREEN**
+- [x] **Step 4: Run tests to verify GREEN**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: PASS; `gdalinfo` en QGIS lezen de volledige offline luchtfoto zonder netwerkbron.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit: `feat: add fixed pdok aerial basemap`
 
@@ -143,21 +143,21 @@ Commit: `feat: add fixed pdok aerial basemap`
 - Consumes: het voltooide lokale pakket en de GNS 3000-veldconfiguratie.
 - Produces: concrete overdrachts-, koppel-, offline- en proefmeetstappen voor iPad/QField.
 
-- [ ] **Step 1: Write the documentation contract test**
+- [x] **Step 1: Write the documentation contract test**
 
 Test dat de handleiding de pakketlocatie, lokale overdracht, iPadOS-koppeling, offlinecontrole, punt/lijn/foto-proef, `offset_m` en terugkopiëren naar de iMac benoemt.
 
-- [ ] **Step 2: Run tests to verify RED**
+- [x] **Step 2: Run tests to verify RED**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
 Expected: FAIL omdat de handleiding ontbreekt.
 
-- [ ] **Step 3: Write the compact field guide**
+- [x] **Step 3: Write the compact field guide**
 
 Beschrijf installatie van QField, overdracht zonder cloud, koppeling van de GNS 3000, eerste offlineproef, veldinvoer en veilig terugzetten van het bijgewerkte pakket.
 
-- [ ] **Step 4: Run full verification**
+- [x] **Step 4: Run full verification**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
 
@@ -167,7 +167,7 @@ Run: `/Applications/QGIS.app/Contents/MacOS/qgis_process run gis/qfield/afscheid
 
 Expected: succesvolle bouw met 55 plots en twee lege veldlagen.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 Commit: `docs: add qfield gns 3000 field guide`
 
