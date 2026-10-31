@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 
@@ -35,6 +36,7 @@ try:
         QgsMarkerSymbol,
         QgsPalLayerSettings,
         QgsProject,
+        QgsRasterLayer,
         QgsProcessing,
         QgsProcessingAlgorithm,
         QgsProcessingException,
@@ -253,7 +255,9 @@ else:
         return layer
 
 
-    def _build_vector_package(plot_layer: QgsVectorLayer, output_dir: Path) -> Path:
+    def _build_vector_package(
+        plot_layer: QgsVectorLayer, output_dir: Path, raster_source: Path | None = None
+    ) -> Path:
         output_dir.mkdir(parents=True, exist_ok=True)
         (output_dir / "photos").mkdir(exist_ok=True)
         reference_path = output_dir / "referentie.gpkg"
@@ -300,6 +304,19 @@ else:
         _configure_afscheidingen(lines)
         _configure_bijzonderheden(points)
 
+        raster = None
+        if raster_source:
+            if not raster_source.is_file():
+                raise QgsProcessingException(f"Offline luchtfoto ontbreekt: {raster_source}")
+            packaged_raster = output_dir / "luchtfoto_pdok_2025_25cm.tif"
+            if raster_source.resolve() != packaged_raster.resolve():
+                shutil.copy2(raster_source, packaged_raster)
+            raster = QgsRasterLayer(str(packaged_raster), "PDOK luchtfoto 2025 — 25 cm")
+            if not raster.isValid():
+                raise QgsProcessingException(
+                    f"Offline luchtfoto kon niet door QGIS worden geopend: {packaged_raster}"
+                )
+
         project = QgsProject.instance()
         project.clear()
         project.setCrs(QgsCoordinateReferenceSystem(EXPECTED_CRS))
@@ -307,6 +324,8 @@ else:
         project.setPresetHomePath(".")
         project.setTitle("Meijendel — Afscheidingen veldwerk")
         project.setFileName(str(project_path))
+        if raster is not None:
+            project.addMapLayer(raster)
         project.addMapLayer(plots)
         project.addMapLayer(lines)
         project.addMapLayer(points)
@@ -407,10 +426,12 @@ else:
             output_dir = Path(
                 self.parameterAsString(parameters, self.OUTPUT_DIR, context)
             ).expanduser()
+            raster_value = self.parameterAsString(parameters, self.RASTER, context).strip()
+            raster_source = Path(raster_value).expanduser() if raster_value else None
             feedback.pushInfo(
                 f"Plotbron geldig: {EXPECTED_PLOT_COUNT} polygonen in {EXPECTED_CRS}."
             )
-            project_path = _build_vector_package(source, output_dir)
+            project_path = _build_vector_package(source, output_dir, raster_source)
             feedback.pushInfo(f"Vectorpakket gebouwd: {project_path}")
             return {
                 self.PACKAGE_DIR: str(output_dir),

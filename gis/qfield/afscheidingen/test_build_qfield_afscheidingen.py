@@ -17,6 +17,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 BUILDER = HERE / "build_qfield_afscheidingen.py"
+DOWNLOADER = HERE / "download_pdok_luchtfoto.sh"
 QGIS_PROCESS = Path("/Applications/QGIS.app/Contents/MacOS/qgis_process")
 PLOTS = ROOT / "Plots_2025" / "avimap_252_diversen__gebieden.shp"
 
@@ -209,6 +210,118 @@ class VectorPackageContractTest(unittest.TestCase):
                 self.assertNotIn("kavel", columns)
                 self.assertNotIn("plot", columns)
                 self.assertIn("id", columns)
+
+
+class RasterPackageContractTest(unittest.TestCase):
+    def test_download_script_pins_final_2025_25cm_layer(self):
+        script = DOWNLOADER.read_text(encoding="utf-8")
+        self.assertIn("WMTS:https://service.pdok.nl", script)
+        self.assertIn("layer=2025_ortho25", script)
+        self.assertNotIn("Actueel_ortho25", script)
+        self.assertIn("tilematrixset=EPSG:28992", script)
+        self.assertIn("zoom_level=14", script)
+        self.assertIn("-b 1", script)
+        self.assertIn("-b 2", script)
+        self.assertIn("-b 3", script)
+        self.assertIn("GDAL_HTTP_MAX_RETRY 10", script)
+        self.assertIn("GDAL_HTTP_RETRY_CODES 500,502,503,504", script)
+        self.assertIn("GDAL_DEFAULT_WMS_CACHE_PATH", script)
+        self.assertIn("NUM_THREADS=1", script)
+        self.assertNotIn("NUM_THREADS=ALL_CPUS", script)
+        self.assertIn("RAW_RASTER=", script)
+        self.assertIn("gdaladdo", script)
+        self.assertIn("OVERVIEWS=FORCE_USE_EXISTING", script)
+        self.assertIn("download_base_raster()", script)
+        self.assertIn("for ATTEMPT in 1 2 3 4 5", script)
+        self.assertLess(script.index("RAW_RASTER="), script.index("gdaladdo"))
+        self.assertLess(script.index("gdaladdo"), script.index("OVERVIEWS=FORCE_USE_EXISTING"))
+
+    def test_builder_adds_local_raster_with_relative_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            raster = tmp_path / "luchtfoto_pdok_2025_25cm.tif"
+            subprocess.run(
+                [
+                    "gdal_create",
+                    "-of",
+                    "GTiff",
+                    "-a_srs",
+                    "EPSG:28992",
+                    "-a_ullr",
+                    "79497",
+                    "464492",
+                    "86575",
+                    "458256",
+                    "-outsize",
+                    "64",
+                    "64",
+                    "-bands",
+                    "3",
+                    str(raster),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            output_dir = tmp_path / "pakket"
+            result = subprocess.run(
+                [
+                    str(QGIS_PROCESS),
+                    "run",
+                    str(BUILDER),
+                    "--",
+                    f"PLOTS={PLOTS}",
+                    f"OUTPUT_DIR={output_dir}",
+                    f"RASTER={raster}",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+                env={**os.environ, "QGIS_PREFIX_PATH": "/Applications/QGIS.app"},
+            )
+            combined = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 0, combined)
+            project = output_dir / "meijendel_afscheidingen.qgz"
+            with zipfile.ZipFile(project) as archive:
+                qgs = next(name for name in archive.namelist() if name.endswith(".qgs"))
+                xml = archive.read(qgs).decode("utf-8")
+            self.assertIn("luchtfoto_pdok_2025_25cm.tif", xml)
+            self.assertNotIn("service.pdok.nl", xml)
+            self.assertNotIn(str(tmp_path), xml)
+
+
+@unittest.skipUnless(
+    os.environ.get("QFIELD_PACKAGE_DIR"),
+    "alleen voor de daadwerkelijk gedownloade offline luchtfoto",
+)
+class ActualRasterContractTest(unittest.TestCase):
+    def test_actual_aerial_is_complete_cog_in_rd(self):
+        package_dir = Path(os.environ["QFIELD_PACKAGE_DIR"])
+        raster = package_dir / "luchtfoto_pdok_2025_25cm.tif"
+        manifest = json.loads(
+            (package_dir / "pakket_manifest.json").read_text(encoding="utf-8")
+        )
+        result = subprocess.run(
+            ["gdalinfo", "-json", str(raster)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        info = json.loads(result.stdout)
+        self.assertEqual(len(info["bands"]), 3)
+        self.assertGreater(info["size"][0], 0)
+        self.assertGreater(info["size"][1], 0)
+        self.assertEqual(info["stac"]["proj:epsg"], 28992)
+        self.assertAlmostEqual(info["geoTransform"][1], 0.25, places=6)
+        self.assertAlmostEqual(info["geoTransform"][5], -0.25, places=6)
+        self.assertEqual(info["metadata"]["IMAGE_STRUCTURE"]["LAYOUT"], "COG")
+        xmin, ymin, xmax, ymax = manifest["bbox_rd_buffered"]
+        upper_left = info["cornerCoordinates"]["upperLeft"]
+        lower_right = info["cornerCoordinates"]["lowerRight"]
+        self.assertLessEqual(upper_left[0], xmin)
+        self.assertGreaterEqual(upper_left[1], ymax)
+        self.assertGreaterEqual(lower_right[0], xmax)
+        self.assertLessEqual(lower_right[1], ymin)
 
 
 if __name__ == "__main__":
