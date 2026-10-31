@@ -163,6 +163,44 @@ class BuilderContractTest(unittest.TestCase):
         self.assertIn("bestaande veldwerkgegevens", combined)
         self.assertEqual(count, 1)
 
+    def test_processing_builder_writes_portable_paths_for_relative_output_dir(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            relative_output = Path("nested") / "meijendel_afscheidingen"
+            result = subprocess.run(
+                [
+                    str(QGIS_PROCESS),
+                    "run",
+                    str(BUILDER),
+                    "--",
+                    f"PLOTS={PLOTS}",
+                    f"OUTPUT_DIR={relative_output}",
+                    "RASTER=",
+                ],
+                cwd=tmp_path,
+                check=False,
+                capture_output=True,
+                text=True,
+                env={**os.environ, "QGIS_PREFIX_PATH": "/Applications/QGIS.app"},
+            )
+            combined = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 0, combined)
+            project = relative_output / "meijendel_afscheidingen.qgz"
+            with zipfile.ZipFile(tmp_path / project) as archive:
+                qgs = next(name for name in archive.namelist() if name.endswith(".qgs"))
+                xml = archive.read(qgs).decode("utf-8")
+
+        self.assertNotIn("nested/meijendel_afscheidingen/", xml)
+        self.assertIn(
+            "<datasource>./veldwerk.gpkg|layername=afscheidingen</datasource>", xml
+        )
+        self.assertIn(
+            "<datasource>./veldwerk.gpkg|layername=bijzonderheden</datasource>", xml
+        )
+        self.assertIn(
+            "<datasource>./referentie.gpkg|layername=onderzoekskavels</datasource>", xml
+        )
+
 
 class VectorPackageContractTest(unittest.TestCase):
     @classmethod

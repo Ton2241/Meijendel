@@ -450,7 +450,7 @@ else:
             validate_plot_source(source)
             output_dir = Path(
                 self.parameterAsString(parameters, self.OUTPUT_DIR, context)
-            ).expanduser()
+            ).expanduser().resolve()
             raster_value = self.parameterAsString(parameters, self.RASTER, context).strip()
             raster_source = Path(raster_value).expanduser() if raster_value else None
             feedback.pushInfo(
