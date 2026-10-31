@@ -51,6 +51,11 @@ Laagvolgorde van onder naar boven:
 
 De kavellabels worden afgeleid van het veld `naam`, bijvoorbeeld `Meijendel k 17a` als `M17a`.
 
+De legenda toont de zes typen afscheiding afzonderlijk. Ieder type krijgt een
+eigen kleur en lijnpatroon: hekwerk rood en doorgetrokken; hoge draad oranje
+gestreept; lage draad geel gestippeld; veerooster blauw streep-punt; muur
+donkergrijs, dik en doorgetrokken; regelgebaseerd paars streep-punt-punt.
+
 ## Meetlaag `afscheidingen`
 
 Geometrie: lijn.

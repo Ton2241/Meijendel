@@ -184,10 +184,25 @@ else:
             layer.fields().indexOf("bron"),
             _value_map(("GNSS-track", "handmatig meetpunt", "luchtfoto")),
         )
-        symbol = QgsLineSymbol.createSimple(
-            {"line_color": "255,60,0,255", "line_width": "1.2"}
+        styles = (
+            ("hekwerk", "220,0,0,255", "solid", "1.2"),
+            ("hoge draad", "255,120,0,255", "dash", "1.2"),
+            ("lage draad", "235,200,0,255", "dot", "1.2"),
+            ("veerooster", "0,110,220,255", "dash dot", "1.2"),
+            ("muur", "60,60,60,255", "solid", "2.0"),
+            ("regelgebaseerd", "150,60,190,255", "dash dot dot", "1.2"),
         )
-        layer.setRenderer(QgsSingleSymbolRenderer(symbol))
+        categories = []
+        for value, color, line_style, line_width in styles:
+            symbol = QgsLineSymbol.createSimple(
+                {
+                    "line_color": color,
+                    "line_style": line_style,
+                    "line_width": line_width,
+                }
+            )
+            categories.append(QgsRendererCategory(value, symbol, value))
+        layer.setRenderer(QgsCategorizedSymbolRenderer("type", categories))
 
 
     def _configure_bijzonderheden(layer: QgsVectorLayer) -> None:

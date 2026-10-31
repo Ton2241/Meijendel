@@ -45,6 +45,22 @@ def value_map_values(xml: str, field_name: str) -> list[str]:
     raise AssertionError(f"Geen ValueMap gevonden voor veld {field_name}")
 
 
+def categorized_renderer(xml: str, layer_name: str) -> tuple[str, list[str]]:
+    root = ET.fromstring(xml)
+    for layer in root.findall(".//projectlayers/maplayer"):
+        if layer.findtext("layername") == layer_name:
+            renderer = layer.find("./renderer-v2")
+            if renderer is None or renderer.attrib.get("type") != "categorizedSymbol":
+                raise AssertionError(
+                    f"Laag {layer_name} heeft geen gecategoriseerde renderer"
+                )
+            return renderer.attrib["attr"], [
+                category.attrib["value"]
+                for category in renderer.findall("./categories/category")
+            ]
+    raise AssertionError(f"Laag {layer_name} niet gevonden")
+
+
 class BuilderContractTest(unittest.TestCase):
     def test_plot_label_preserves_simple_and_compound_plot_numbers(self):
         builder = load_builder()
@@ -347,6 +363,20 @@ class VectorPackageContractTest(unittest.TestCase):
         )
         self.assertIn('projectname="Meijendel"', xml)
         self.assertIn("<title>Meijendel</title>", xml)
+        self.assertEqual(
+            categorized_renderer(xml, "Afscheidingen"),
+            (
+                "type",
+                [
+                    "hekwerk",
+                    "hoge draad",
+                    "lage draad",
+                    "veerooster",
+                    "muur",
+                    "regelgebaseerd",
+                ],
+            ),
+        )
         self.assertIn("EPSG:28992", xml)
 
     def test_field_database_has_uuid_defaults_and_no_fixed_plot_column(self):

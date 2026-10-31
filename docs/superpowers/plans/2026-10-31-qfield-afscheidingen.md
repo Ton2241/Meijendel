@@ -205,3 +205,36 @@ Run de volledige unittest-suite en de afzonderlijke rastertest. Bouw alleen opni
 
 Commit de specificatie, het plan, de builder, tests en handleiding; integreer na groene eindcontrole in `main` en push naar GitHub.
 
+### Task 6: Zes afscheidingstypen afzonderlijk in de legenda tonen
+
+**Files:**
+- Modify: `docs/superpowers/specs/2026-10-31-qfield-afscheidingen-design.md`
+- Modify: `gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/build_qfield_afscheidingen.py`
+
+**Interfaces:**
+- Consumes: de zes waarden van `afscheidingen.type` uit Task 5.
+- Produces: een `QgsCategorizedSymbolRenderer` op veld `type` met exact zes legenda-items en per type een eigen kleur en lijnpatroon.
+
+- [x] **Step 1: Write the failing renderer test**
+
+Test dat de QGZ voor `Afscheidingen` een gecategoriseerde renderer op `type` bevat met exact `hekwerk`, `hoge draad`, `lage draad`, `veerooster`, `muur` en `regelgebaseerd`.
+
+- [x] **Step 2: Run tests to verify RED**
+
+Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
+
+Expected: FAIL omdat `Afscheidingen` nog een enkel rood lijnsymbool gebruikt.
+
+- [x] **Step 3: Implement the six line categories**
+
+Vervang uitsluitend de renderer van `Afscheidingen` door zes `QgsRendererCategory`-objecten op veld `type`, met de in de specificatie vastgelegde kleuren en patronen. Laat invoervelden en waardenlijst ongewijzigd.
+
+- [x] **Step 4: Rebuild and verify**
+
+Run de volledige unittest-suite inclusief de actuele rastertest. Bouw uitsluitend een leeg pakket opnieuw en controleer in de QGZ de zes categorieën en de vier relatieve bronnen.
+
+- [x] **Step 5: Commit and integrate**
+
+Commit specificatie, plan, builder en test; integreer na groene eindcontrole in `main` en push naar GitHub.
+
