@@ -33,6 +33,7 @@ try:
         QgsFieldConstraints,
         QgsFillSymbol,
         QgsLineSymbol,
+        QgsMapUnitScale,
         QgsMarkerSymbol,
         QgsPalLayerSettings,
         QgsProject,
@@ -174,9 +175,10 @@ else:
                     "hekwerk",
                     "hoge draad",
                     "lage draad",
-                    "veerooster",
+                    "wildrooster",
                     "muur",
                     "regelgebaseerd",
+                    "poort/doorgang",
                 )
             ),
         )
@@ -188,9 +190,10 @@ else:
             ("hekwerk", "220,0,0,255", "solid", "1.2"),
             ("hoge draad", "255,120,0,255", "dash", "1.2"),
             ("lage draad", "235,200,0,255", "dot", "1.2"),
-            ("veerooster", "0,110,220,255", "dash dot", "1.2"),
+            ("wildrooster", "0,110,220,255", "dash dot", "1.2"),
             ("muur", "60,60,60,255", "solid", "2.0"),
             ("regelgebaseerd", "150,60,190,255", "dash dot dot", "1.2"),
+            ("poort/doorgang", "0,190,220,255", "solid", "2.0"),
         )
         categories = []
         for value, color, line_style, line_width in styles:
@@ -209,7 +212,6 @@ else:
         _configure_common_fields(layer)
         values = (
             "hoek",
-            "poort/doorgang",
             "onderbreking",
             "typewijziging",
             "bord",
@@ -227,7 +229,6 @@ else:
         )
         colors = (
             "255,215,0,255",
-            "0,220,255,255",
             "255,0,170,255",
             "160,80,255,255",
             "255,255,255,255",
@@ -239,15 +240,22 @@ else:
             "150,90,30,255",
         )
         categories = []
+        marker_scale = QgsMapUnitScale()
+        marker_scale.minSizeMMEnabled = True
+        marker_scale.minSizeMM = 1.2
+        marker_scale.maxSizeMMEnabled = True
+        marker_scale.maxSizeMM = 4.2
         for value, color in zip(values, colors):
             symbol = QgsMarkerSymbol.createSimple(
                 {
                     "name": "circle",
                     "color": color,
                     "outline_color": "30,30,30,255",
-                    "size": "4.2",
+                    "size": "10",
                 }
             )
+            symbol.setSizeUnit(Qgis.RenderUnit.MapUnits)
+            symbol.setSizeMapUnitScale(marker_scale)
             categories.append(QgsRendererCategory(value, symbol, value))
         layer.setRenderer(QgsCategorizedSymbolRenderer("soort", categories))
 

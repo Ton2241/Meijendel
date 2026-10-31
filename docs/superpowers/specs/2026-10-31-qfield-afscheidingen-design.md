@@ -51,10 +51,12 @@ Laagvolgorde van onder naar boven:
 
 De kavellabels worden afgeleid van het veld `naam`, bijvoorbeeld `Meijendel k 17a` als `M17a`.
 
-De legenda toont de zes typen afscheiding afzonderlijk. Ieder type krijgt een
+De legenda toont de zeven typen afscheiding afzonderlijk. Ieder type krijgt een
 eigen kleur en lijnpatroon: hekwerk rood en doorgetrokken; hoge draad oranje
-gestreept; lage draad geel gestippeld; veerooster blauw streep-punt; muur
-donkergrijs, dik en doorgetrokken; regelgebaseerd paars streep-punt-punt.
+gestreept; lage draad geel gestippeld; wildrooster blauw streep-punt; muur
+donkergrijs, dik en doorgetrokken; regelgebaseerd paars streep-punt-punt; een
+poort/doorgang cyaan, dik en doorgetrokken. Een poort of doorgang wordt als
+kort eigen lijnsegment tussen de aansluitende afscheidingssegmenten vastgelegd.
 
 ## Meetlaag `afscheidingen`
 
@@ -63,7 +65,7 @@ Geometrie: lijn.
 | Veld | Type | Invoer |
 |---|---|---|
 | `id` | tekst/UUID | automatisch |
-| `type` | keuzelijst | hekwerk, hoge draad, lage draad, veerooster, muur, regelgebaseerd |
+| `type` | keuzelijst | hekwerk, hoge draad, lage draad, wildrooster, muur, regelgebaseerd, poort/doorgang |
 | `materiaal` | tekst | optioneel |
 | `datum_tijd` | datum/tijd | automatisch, aanpasbaar |
 | `bron` | keuzelijst | GNSS-track, handmatig meetpunt, luchtfoto |
@@ -83,7 +85,7 @@ Geometrie: punt.
 |---|---|---|
 | `id` | tekst/UUID | automatisch |
 | `afscheiding_id` | tekst/UUID | optionele verwijzing naar een lijn |
-| `soort` | keuzelijst | hoek, poort/doorgang, onderbreking, typewijziging, bord, schade, foto, anders, inclosure, exclosure, dierenverzamelplek |
+| `soort` | keuzelijst | hoek, onderbreking, typewijziging, bord, schade, foto, anders, inclosure, exclosure, dierenverzamelplek |
 | `datum_tijd` | datum/tijd | automatisch, aanpasbaar |
 | `bron` | keuzelijst | GNSS, handmatig, luchtfoto |
 | `ontvanger` | tekst | standaard `GNS 3000 via iPadOS` |
@@ -92,7 +94,7 @@ Geometrie: punt.
 | `foto` | bijlage | projectrelatief pad |
 | `opmerking` | lange tekst | optioneel |
 
-De QGIS-formulieren groeperen automatische gegevens, waarneming en toelichting. Keuzevelden worden als eenvoudige keuzelijsten ingericht; foto's worden in `photos/` opgeslagen.
+De QGIS-formulieren groeperen automatische gegevens, waarneming en toelichting. Keuzevelden worden als eenvoudige keuzelijsten ingericht; foto's worden in `photos/` opgeslagen. De puntsymbolen hebben een diameter van 10 kaartmeter, begrensd op 1,2–4,2 mm op het scherm. Ze worden daardoor kleiner bij uitzoomen, maar blijven zichtbaar.
 
 ## GNS 3000 en positiekwaliteit
 

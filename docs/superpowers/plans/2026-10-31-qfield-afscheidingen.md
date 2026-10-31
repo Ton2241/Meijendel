@@ -185,7 +185,7 @@ Commit: `docs: add qfield gns 3000 field guide`
 
 - [x] **Step 1: Write the failing contract tests**
 
-Test exact de zes typen `hekwerk`, `hoge draad`, `lage draad`, `veerooster`, `muur` en `regelgebaseerd`; test de aanvullende bijzonderheden `inclosure`, `exclosure` en `dierenverzamelplek`; test dat het pakket `meijendel.qgz` bevat en niet `meijendel_afscheidingen.qgz`.
+Test exact de zes typen `hekwerk`, `hoge draad`, `lage draad`, `wildrooster`, `muur` en `regelgebaseerd`; test de aanvullende bijzonderheden `inclosure`, `exclosure` en `dierenverzamelplek`; test dat het pakket `meijendel.qgz` bevat en niet `meijendel_afscheidingen.qgz`.
 
 - [x] **Step 2: Run tests to verify RED**
 
@@ -218,7 +218,7 @@ Commit de specificatie, het plan, de builder, tests en handleiding; integreer na
 
 - [x] **Step 1: Write the failing renderer test**
 
-Test dat de QGZ voor `Afscheidingen` een gecategoriseerde renderer op `type` bevat met exact `hekwerk`, `hoge draad`, `lage draad`, `veerooster`, `muur` en `regelgebaseerd`.
+Test dat de QGZ voor `Afscheidingen` een gecategoriseerde renderer op `type` bevat met exact `hekwerk`, `hoge draad`, `lage draad`, `wildrooster`, `muur` en `regelgebaseerd`.
 
 - [x] **Step 2: Run tests to verify RED**
 
@@ -237,4 +237,36 @@ Run de volledige unittest-suite inclusief de actuele rastertest. Bouw uitsluiten
 - [x] **Step 5: Commit and integrate**
 
 Commit specificatie, plan, builder en test; integreer na groene eindcontrole in `main` en push naar GitHub.
+
+### Task 7: Poort als lijn en schaalafhankelijke puntsymbolen
+
+**Files:**
+- Modify: `docs/superpowers/specs/2026-10-31-qfield-afscheidingen-design.md`
+- Modify: `gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/README.md`
+
+**Interfaces:**
+- Consumes: de bestaande lijnlaag `afscheidingen` en puntlaag `bijzonderheden`.
+- Produces: `poort/doorgang` als zevende lijncategorie en puntsymbolen van 10 kaartmeter, begrensd op 1,2–4,2 mm.
+
+- [x] **Step 1: Write the failing contract test**
+
+Test dat `poort/doorgang` uitsluitend in de lijnkeuzelijst en lijnrenderer staat en dat alle puntsymbolen kaartmeters met de afgesproken begrenzing gebruiken.
+
+- [x] **Step 2: Run tests to verify RED**
+
+Run de volledige unittest-suite; verwacht FAIL op de ontbrekende lijncategorie.
+
+- [x] **Step 3: Implement the minimal model and symbol changes**
+
+Verplaats de waarde zonder tabelwijziging, voeg de lijnstijl toe en stel uitsluitend voor de puntlaag kaartmeters met minimum- en maximumschermmaat in.
+
+- [x] **Step 4: Rebuild and verify**
+
+Run de volledige tests. Bouw uitsluitend een leeg pakket opnieuw en controleer de QGZ, relatieve bronnen en ZIP.
+
+- [x] **Step 5: Commit and integrate**
+
+Commit specificatie, plan, builder, test en handleiding; integreer na groene eindcontrole in `main` en push naar GitHub.
 

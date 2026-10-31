@@ -61,6 +61,23 @@ def categorized_renderer(xml: str, layer_name: str) -> tuple[str, list[str]]:
     raise AssertionError(f"Laag {layer_name} niet gevonden")
 
 
+def marker_symbol_options(xml: str, layer_name: str) -> list[dict[str, str]]:
+    root = ET.fromstring(xml)
+    for layer in root.findall(".//projectlayers/maplayer"):
+        if layer.findtext("layername") == layer_name:
+            return [
+                {
+                    option.attrib["name"]: option.attrib["value"]
+                    for option in symbol_layer.findall(".//Option")
+                    if "name" in option.attrib and "value" in option.attrib
+                }
+                for symbol_layer in layer.findall(
+                    "./renderer-v2/symbols/symbol/layer[@class='SimpleMarker']"
+                )
+            ]
+    raise AssertionError(f"Laag {layer_name} niet gevonden")
+
+
 class BuilderContractTest(unittest.TestCase):
     def test_plot_label_preserves_simple_and_compound_plot_numbers(self):
         builder = load_builder()
@@ -340,16 +357,16 @@ class VectorPackageContractTest(unittest.TestCase):
                 "hekwerk",
                 "hoge draad",
                 "lage draad",
-                "veerooster",
+                "wildrooster",
                 "muur",
                 "regelgebaseerd",
+                "poort/doorgang",
             ],
         )
         self.assertEqual(
             value_map_values(xml, "soort"),
             [
                 "hoek",
-                "poort/doorgang",
                 "onderbreking",
                 "typewijziging",
                 "bord",
@@ -371,11 +388,22 @@ class VectorPackageContractTest(unittest.TestCase):
                     "hekwerk",
                     "hoge draad",
                     "lage draad",
-                    "veerooster",
+                    "wildrooster",
                     "muur",
                     "regelgebaseerd",
+                    "poort/doorgang",
                 ],
             ),
+        )
+        point_symbols = marker_symbol_options(xml, "Bijzonderheden")
+        self.assertEqual(len(point_symbols), 10)
+        self.assertEqual(
+            {symbol["size_unit"] for symbol in point_symbols},
+            {"MapUnit"},
+        )
+        self.assertEqual(
+            {symbol["size_map_unit_scale"] for symbol in point_symbols},
+            {"3x:0,0,1,1.2,1,4.2"},
         )
         self.assertIn("EPSG:28992", xml)
 

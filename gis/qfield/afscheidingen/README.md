@@ -60,11 +60,15 @@ positiefout van de ontvanger niet.
 
 ## Veldinvoer
 
-- `afscheidingen`: hekwerk, hoge en lage draad, veeroosters, muren en
-  regelgebaseerde afscheidingen.
-- `bijzonderheden`: hoeken, poorten/doorgangen, onderbrekingen,
+- `afscheidingen`: hekwerk, hoge en lage draad, wildroosters, muren,
+  regelgebaseerde afscheidingen en poorten/doorgangen. Leg een poort of
+  doorgang vast als een kort eigen lijnsegment tussen de aansluitende
+  afscheidingssegmenten.
+- `bijzonderheden`: hoeken, onderbrekingen,
   typewijzigingen, borden, schade, losse foto's, inclosures, exclosures en
   dierenverzamelplekken.
+- De puntsymbolen worden bij uitzoomen kleiner en blijven door een onder- en
+  bovengrens zowel op overzichtsschaal als dichtbij leesbaar.
 - `nauwkeurigheid_m`: wordt gevuld met de horizontale nauwkeurigheid die
   QField/iPadOS meldt. Noteer het in `opmerking` als dit veld tijdens een
   waarneming leeg blijft.
