@@ -1,7 +1,7 @@
 # Ontwerp offline QField-project voor afscheidingen in Meijendel
 
 **Datum:** 31 oktober 2026  
-**Status:** ter goedkeuring  
+**Status:** goedgekeurd; keuzelijsten en projectnaam aangevuld op 31 oktober 2026
 **Doelapparaat:** iPad met GNS 3000 via iPadOS
 
 ## Doel
@@ -32,7 +32,7 @@ Niet gekozen:
 
 Het overdraagbare pakket krijgt één hoofdmap met:
 
-- `meijendel_afscheidingen.qgz`;
+- `meijendel.qgz`;
 - `referentie.gpkg`, met een kopie van de 55 onderzoekskavels;
 - `veldwerk.gpkg`, met de twee meetlagen;
 - een offline luchtfoto;
@@ -58,7 +58,7 @@ Geometrie: lijn.
 | Veld | Type | Invoer |
 |---|---|---|
 | `id` | tekst/UUID | automatisch |
-| `type` | keuzelijst | hek, raster, sloot, wal, haag, anders |
+| `type` | keuzelijst | hekwerk, hoge draad, lage draad, veerooster, muur, regelgebaseerd |
 | `materiaal` | tekst | optioneel |
 | `datum_tijd` | datum/tijd | automatisch, aanpasbaar |
 | `bron` | keuzelijst | GNSS-track, handmatig meetpunt, luchtfoto |
@@ -78,7 +78,7 @@ Geometrie: punt.
 |---|---|---|
 | `id` | tekst/UUID | automatisch |
 | `afscheiding_id` | tekst/UUID | optionele verwijzing naar een lijn |
-| `soort` | keuzelijst | hoek, poort/doorgang, onderbreking, typewijziging, bord, schade, foto, anders |
+| `soort` | keuzelijst | hoek, poort/doorgang, onderbreking, typewijziging, bord, schade, foto, anders, inclosure, exclosure, dierenverzamelplek |
 | `datum_tijd` | datum/tijd | automatisch, aanpasbaar |
 | `bron` | keuzelijst | GNSS, handmatig, luchtfoto |
 | `ontvanger` | tekst | standaard `GNS 3000 via iPadOS` |

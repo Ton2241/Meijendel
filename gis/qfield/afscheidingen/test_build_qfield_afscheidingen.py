@@ -11,6 +11,7 @@ import subprocess
 import tempfile
 import unittest
 import zipfile
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 
@@ -30,6 +31,18 @@ def load_builder():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+def value_map_values(xml: str, field_name: str) -> list[str]:
+    root = ET.fromstring(xml)
+    for field in root.findall(f".//field[@name='{field_name}']"):
+        widget = field.find("./editWidget[@type='ValueMap']")
+        if widget is not None:
+            return [
+                option.attrib["value"]
+                for option in widget.findall(".//Option[@name='map']/Option/Option")
+            ]
+    raise AssertionError(f"Geen ValueMap gevonden voor veld {field_name}")
 
 
 class BuilderContractTest(unittest.TestCase):
@@ -185,7 +198,7 @@ class BuilderContractTest(unittest.TestCase):
             )
             combined = result.stdout + result.stderr
             self.assertEqual(result.returncode, 0, combined)
-            project = relative_output / "meijendel_afscheidingen.qgz"
+            project = relative_output / "meijendel.qgz"
             with zipfile.ZipFile(tmp_path / project) as archive:
                 qgs = next(name for name in archive.namelist() if name.endswith(".qgs"))
                 xml = archive.read(qgs).decode("utf-8")
@@ -233,10 +246,11 @@ class VectorPackageContractTest(unittest.TestCase):
         for relative in (
             "referentie.gpkg",
             "veldwerk.gpkg",
-            "meijendel_afscheidingen.qgz",
+            "meijendel.qgz",
             "photos",
         ):
             self.assertTrue((self.output_dir / relative).exists(), relative)
+        self.assertFalse((self.output_dir / "meijendel_afscheidingen.qgz").exists())
 
     def _ogr_layer_info(self, dataset: Path, layer: str) -> dict:
         result = subprocess.run(
@@ -291,7 +305,7 @@ class VectorPackageContractTest(unittest.TestCase):
             self.assertEqual([field["name"] for field in info["fields"]], fields)
 
     def test_project_is_relative_read_only_for_plots_and_contains_form_contract(self):
-        project = self.output_dir / "meijendel_afscheidingen.qgz"
+        project = self.output_dir / "meijendel.qgz"
         with zipfile.ZipFile(project) as archive:
             qgs_names = [name for name in archive.namelist() if name.endswith(".qgs")]
             self.assertEqual(len(qgs_names), 1)
@@ -304,17 +318,35 @@ class VectorPackageContractTest(unittest.TestCase):
         self.assertIn("uuid()", xml)
         self.assertIn("@position_horizontal_accuracy", xml)
         self.assertIn("GNS 3000 via iPadOS", xml)
-        for choice in (
-            "hek",
-            "raster",
-            "sloot",
-            "wal",
-            "haag",
-            "poort/doorgang",
-            "onderbreking",
-            "typewijziging",
-        ):
-            self.assertIn(choice, xml)
+        self.assertEqual(
+            value_map_values(xml, "type"),
+            [
+                "hekwerk",
+                "hoge draad",
+                "lage draad",
+                "veerooster",
+                "muur",
+                "regelgebaseerd",
+            ],
+        )
+        self.assertEqual(
+            value_map_values(xml, "soort"),
+            [
+                "hoek",
+                "poort/doorgang",
+                "onderbreking",
+                "typewijziging",
+                "bord",
+                "schade",
+                "foto",
+                "anders",
+                "inclosure",
+                "exclosure",
+                "dierenverzamelplek",
+            ],
+        )
+        self.assertIn('projectname="Meijendel"', xml)
+        self.assertIn("<title>Meijendel</title>", xml)
         self.assertIn("EPSG:28992", xml)
 
     def test_field_database_has_uuid_defaults_and_no_fixed_plot_column(self):
@@ -398,7 +430,7 @@ class RasterPackageContractTest(unittest.TestCase):
             )
             combined = result.stdout + result.stderr
             self.assertEqual(result.returncode, 0, combined)
-            project = output_dir / "meijendel_afscheidingen.qgz"
+            project = output_dir / "meijendel.qgz"
             with zipfile.ZipFile(project) as archive:
                 qgs = next(name for name in archive.namelist() if name.endswith(".qgs"))
                 xml = archive.read(qgs).decode("utf-8")

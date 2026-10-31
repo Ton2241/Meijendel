@@ -31,7 +31,7 @@ Daarvoor is internet nodig. In het veld niet.
 
 Gebruik AirDrop of een kabel met Finder. Bewaar de ontvangen projectmap in de
 Bestanden-app onder `Op mijn iPad`. Open daarna
-`meijendel_afscheidingen.qgz` vanuit QField.
+`meijendel.qgz` vanuit QField.
 
 QFieldCloud is voor dit project niet nodig. Verplaats nooit alleen het
 `.qgz`-bestand: zonder de GeoPackages, luchtfoto en fotomap is het project
@@ -60,9 +60,11 @@ positiefout van de ontvanger niet.
 
 ## Veldinvoer
 
-- `afscheidingen`: doorlopende hekken, rasters, sloten, wallen en hagen.
+- `afscheidingen`: hekwerk, hoge en lage draad, veeroosters, muren en
+  regelgebaseerde afscheidingen.
 - `bijzonderheden`: hoeken, poorten/doorgangen, onderbrekingen,
-  typewijzigingen, borden, schade en losse foto's.
+  typewijzigingen, borden, schade, losse foto's, inclosures, exclosures en
+  dierenverzamelplekken.
 - `nauwkeurigheid_m`: wordt gevuld met de horizontale nauwkeurigheid die
   QField/iPadOS meldt. Noteer het in `opmerking` als dit veld tijdens een
   waarneming leeg blijft.

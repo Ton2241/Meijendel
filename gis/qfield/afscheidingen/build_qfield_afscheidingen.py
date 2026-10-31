@@ -169,7 +169,16 @@ else:
         _configure_common_fields(layer)
         layer.setEditorWidgetSetup(
             layer.fields().indexOf("type"),
-            _value_map(("hek", "raster", "sloot", "wal", "haag", "anders")),
+            _value_map(
+                (
+                    "hekwerk",
+                    "hoge draad",
+                    "lage draad",
+                    "veerooster",
+                    "muur",
+                    "regelgebaseerd",
+                )
+            ),
         )
         layer.setEditorWidgetSetup(
             layer.fields().indexOf("bron"),
@@ -192,6 +201,9 @@ else:
             "schade",
             "foto",
             "anders",
+            "inclosure",
+            "exclosure",
+            "dierenverzamelplek",
         )
         layer.setEditorWidgetSetup(layer.fields().indexOf("soort"), _value_map(values))
         layer.setEditorWidgetSetup(
@@ -207,6 +219,9 @@ else:
             "220,0,0,255",
             "0,255,110,255",
             "180,180,180,255",
+            "0,120,0,255",
+            "0,0,0,255",
+            "150,90,30,255",
         )
         categories = []
         for value, color in zip(values, colors):
@@ -284,11 +299,17 @@ else:
         output_dir.mkdir(parents=True, exist_ok=True)
         reference_path = output_dir / "referentie.gpkg"
         fieldwork_path = output_dir / "veldwerk.gpkg"
-        project_path = output_dir / "meijendel_afscheidingen.qgz"
+        project_path = output_dir / "meijendel.qgz"
+        legacy_project_path = output_dir / "meijendel_afscheidingen.qgz"
         photos_path = output_dir / "photos"
         _ensure_rebuild_is_safe(fieldwork_path, photos_path)
         photos_path.mkdir(exist_ok=True)
-        for generated in (reference_path, fieldwork_path, project_path):
+        for generated in (
+            reference_path,
+            fieldwork_path,
+            project_path,
+            legacy_project_path,
+        ):
             if generated.exists():
                 generated.unlink()
 
@@ -347,7 +368,7 @@ else:
         project.setCrs(QgsCoordinateReferenceSystem(EXPECTED_CRS))
         project.setFilePathStorage(Qgis.FilePathType.Relative)
         project.setPresetHomePath(".")
-        project.setTitle("Meijendel — Afscheidingen veldwerk")
+        project.setTitle("Meijendel")
         project.setFileName(str(project_path))
         if raster is not None:
             project.addMapLayer(raster)
@@ -367,7 +388,7 @@ else:
 
         extent = plot_layer.extent()
         manifest = {
-            "project": "meijendel_afscheidingen.qgz",
+            "project": "meijendel.qgz",
             "crs": EXPECTED_CRS,
             "plot_count": EXPECTED_PLOT_COUNT,
             "buffer_m": 100,

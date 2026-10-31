@@ -25,7 +25,7 @@
 - Een bronlaag met niet precies 55 geldige polygonen moet de bouw stoppen, niet een onvolledig pakket opleveren; test in Task 1.
 - Samengestelde kavelnummers zoals `4-5`, `10-12-76` en `78/79` moeten als `M4-5`, `M10-12-76` en `M78/79` worden gelabeld; test in Task 1.
 - Een offlinepakket mag nergens een absolute lokale gebruikersmap als gegevensbron bevatten; test in Task 2.
-- De meetlagen moeten leeg maar direct bewerkbaar zijn, met unieke UUID-defaults en geldige keuzelijsten; test in Task 2.
+- De meetlagen moeten leeg maar direct bewerkbaar zijn, met unieke UUID-defaults en exact de goedgekeurde keuzelijsten; tests in Task 2 en Task 5.
 - Een onvolledige of onleesbare luchtfoto mag niet als geslaagde bouw worden gemeld; test in Task 3.
 
 ---
@@ -170,4 +170,38 @@ Expected: succesvolle bouw met 55 plots en twee lege veldlagen.
 - [x] **Step 5: Commit**
 
 Commit: `docs: add qfield gns 3000 field guide`
+
+### Task 5: Projectnaam en veldkeuzen actualiseren
+
+**Files:**
+- Modify: `docs/superpowers/specs/2026-10-31-qfield-afscheidingen-design.md`
+- Modify: `gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/build_qfield_afscheidingen.py`
+- Modify: `gis/qfield/afscheidingen/README.md`
+
+**Interfaces:**
+- Consumes: de bestaande pakketbouwer en de twee ongewijzigde GeoPackage-tabellen.
+- Produces: `meijendel.qgz` met projecttitel `Meijendel`, zes typen voor `afscheidingen.type` en drie aanvullende waarden voor `bijzonderheden.soort`.
+
+- [x] **Step 1: Write the failing contract tests**
+
+Test exact de zes typen `hekwerk`, `hoge draad`, `lage draad`, `veerooster`, `muur` en `regelgebaseerd`; test de aanvullende bijzonderheden `inclosure`, `exclosure` en `dierenverzamelplek`; test dat het pakket `meijendel.qgz` bevat en niet `meijendel_afscheidingen.qgz`.
+
+- [x] **Step 2: Run tests to verify RED**
+
+Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py -v`
+
+Expected: FAIL op de oude projectnaam en oude keuzelijst.
+
+- [x] **Step 3: Implement the minimal builder and guide changes**
+
+Vervang uitsluitend de waardenlijst van `afscheidingen.type`, voeg de drie waarden toe aan `bijzonderheden.soort`, schrijf `meijendel.qgz`, stel de projecttitel in op `Meijendel` en pas de pakketnaam in de veldhandleiding aan. Wijzig geen velden of GeoPackage-tabellen.
+
+- [x] **Step 4: Rebuild and verify**
+
+Run de volledige unittest-suite en de afzonderlijke rastertest. Bouw alleen opnieuw als `afscheidingen` en `bijzonderheden` elk 0 records bevatten en `photos/` 0 bestanden bevat. Controleer in een verplaatste proefmap alle vier relatieve bronnen.
+
+- [x] **Step 5: Commit and integrate**
+
+Commit de specificatie, het plan, de builder, tests en handleiding; integreer na groene eindcontrole in `main` en push naar GitHub.
 
