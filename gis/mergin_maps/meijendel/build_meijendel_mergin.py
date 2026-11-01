@@ -58,7 +58,6 @@ try:
         QgsProject,
         QgsProperty,
         QgsSingleSymbolRenderer,
-        QgsSymbol,
         QgsSymbolLayer,
         QgsSymbolLayerUtils,
         QgsVectorFileWriter,

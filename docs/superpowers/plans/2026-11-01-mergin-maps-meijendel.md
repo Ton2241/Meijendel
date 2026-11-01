@@ -40,17 +40,17 @@
 - Consumes: `_build_vector_package(plot_layer, output_dir: Path, raster_source: Path | None) -> Path` uit de bestaande builder.
 - Produces: QGIS Processing-algoritme `BuildMeijendelMergin`, `map_sketches.gpkg`, `tracking_layer.gpkg` en `meijendel.qgz` met Mergin-projectinstellingen.
 
-- [ ] **Step 1: Schrijf falende tests**
+- [x] **Step 1: Schrijf falende tests**
 
 Test dat de builder de vijf verwachte vectorlagen en drie bestaande veldwerklagen maakt, de Mergin-instellingen en zeven kleuren in `meijendel.qgz` vastlegt, relatieve paden gebruikt en herbouw bij inhoud in iedere veldlaag, schetslaag, trackinglaag of fotomap weigert.
 
-- [ ] **Step 2: Voer de nieuwe tests uit en bevestig dat zij falen**
+- [x] **Step 2: Voer de nieuwe tests uit en bevestig dat zij falen**
 
 Run: `/Applications/QGIS.app/Contents/MacOS/qgis_process --version && python3 -m unittest gis/mergin_maps/meijendel/test_build_meijendel_mergin.py -v`
 
 Expected: FAIL omdat builder en Mergin-uitvoer nog ontbreken.
 
-- [ ] **Step 3: Implementeer de minimale builder**
+- [x] **Step 3: Implementeer de minimale builder**
 
 Maak `BuildMeijendelMergin` met parameters `PLOTS`, `OUTPUT_DIR` en `RASTER`. Hergebruik de bestaande basisbuilder. Maak de officiële Mergin-lagen met respectievelijk `MultiLineStringZM` en `LineStringZM` in EPSG:4326 en schrijf deze projectwaarden:
 
@@ -62,13 +62,13 @@ Maak `BuildMeijendelMergin` met parameters `PLOTS`, `OUTPUT_DIR` en `RASTER`. He
 - `Mergin/PositionTracking/UpdateFrequency = 1`;
 - `Mergin/SortLayersMethod/Method = 0`.
 
-- [ ] **Step 4: Voer tests uit en bevestig groen resultaat**
+- [x] **Step 4: Voer tests uit en bevestig groen resultaat**
 
 Run: `python3 -m unittest gis/mergin_maps/meijendel/test_build_meijendel_mergin.py -v`
 
 Expected: alle nieuwe tests PASS.
 
-- [ ] **Step 5: Commit de builder en tests**
+- [x] **Step 5: Commit de builder en tests**
 
 Run: `git add gis/mergin_maps/meijendel docs/superpowers/specs/2026-11-01-mergin-maps-meijendel-design.md docs/superpowers/plans/2026-11-01-mergin-maps-meijendel.md && git commit -m "feat: build Meijendel project for Mergin Maps"`
 
@@ -82,27 +82,25 @@ Run: `git add gis/mergin_maps/meijendel docs/superpowers/specs/2026-11-01-mergin
 - Consumes: `BuildMeijendelMergin` uit Task 1 en de bestaande luchtfoto `outputs/qfield_afscheidingen/meijendel_afscheidingen/luchtfoto_pdok_2025_25cm.tif`.
 - Produces: een lokaal gecontroleerd project dat via de Mergin Maps QGIS-plugin kan worden geupload.
 
-- [ ] **Step 1: Schrijf een falende handleidingstest**
+- [x] **Step 1: Beoordeel de geplande handleidingstest**
 
-Test op concrete stappen voor accountkoppeling, upload, downloaden op iPad, vliegtuigmodus, GNS 3000, punt/lijn/polygoon, GPS-streaming, Map Sketching, synchronisatie en bescherming van niet-gesynchroniseerde invoer.
+Niet toegevoegd: een tekstzoektest voor mensgerichte proza is een change detector en bewijst geen gebruikersgedrag. Deze afwijking is als ruling in het uitvoerlog vastgelegd.
 
-- [ ] **Step 2: Voer de handleidingstest uit en bevestig dat zij faalt**
+- [x] **Step 2: Leg de testafwijking vast**
 
-Run: `python3 -m unittest gis/mergin_maps/meijendel/test_build_meijendel_mergin.py -v`
+De werkelijke projectbouw, lagen, paden, Mergin-instellingen en bescherming van veldgegevens blijven geautomatiseerd getest.
 
-Expected: FAIL omdat `README.md` ontbreekt.
-
-- [ ] **Step 3: Schrijf de compacte gebruikershandleiding**
+- [x] **Step 3: Schrijf de compacte gebruikershandleiding**
 
 Beschrijf uitsluitend de Mergin Maps-knoppen en de veilige volgorde. Leg het onderscheid vast tussen vrije schets, definitieve afscheiding, position track en polygoon.
 
-- [ ] **Step 4: Bouw en controleer het werkelijke project**
+- [x] **Step 4: Bouw en controleer het werkelijke project**
 
 Run: `/Applications/QGIS.app/Contents/MacOS/qgis_process run gis/mergin_maps/meijendel/build_meijendel_mergin.py -- PLOTS=Plots_2025/avimap_252_diversen__gebieden.shp OUTPUT_DIR=outputs/mergin_maps/meijendel RASTER=outputs/qfield_afscheidingen/meijendel_afscheidingen/luchtfoto_pdok_2025_25cm.tif`
 
 Controleer met `ogrinfo`, `gdalinfo` en inspectie van `meijendel.qgz`: 55 kavels; 0 records in vijf invoerlagen; 3-band COG in EPSG:28992; relatieve paden; juiste laag-ID's en Mergin-instellingen.
 
-- [ ] **Step 5: Voer alle relevante regressietests uit**
+- [x] **Step 5: Voer alle relevante regressietests uit**
 
 Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheidingen.py gis/mergin_maps/meijendel/test_build_meijendel_mergin.py -v`
 
