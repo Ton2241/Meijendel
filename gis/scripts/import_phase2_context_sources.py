@@ -96,9 +96,9 @@ INSERT INTO bron (
  'De vier deelgebieden en proefvlakcodes M01-M18 zijn bekend. De rapportfiguren zijn nog niet omgezet in controleerbare digitale grenzen.',
  'context_alleen','geregistreerde_onderzoekers','fase2-2026-09-26'),
 ('aquatische-macrofauna-meijendel-1974-1975','dataset','Aquatische macrofauna Meijendel 1974-1975',
- 'Zeven vaste monsterpunten met een gedocumenteerde, maar deels wisselende bemonsteringsmethode van juni 1974 tot juli 1975.',
+ '19 methodeperioden voor 7 monsterpunten met een gedocumenteerde, maar deels wisselende bemonsteringsmethode van juni 1974 tot juli 1975.',
  'Rijksuniversiteit Leiden; ontsloten via Naturalis',1974,1975,'aquatische macrofauna','gedeeltelijk_geolokaliseerd',
- 'De watercodes Pan 17.1, Pan 26.1.1, K10, G15 en G21 zijn bekend; digitale punt- of watergrenzen ontbreken nog.',
+ 'De 19 methodeperioden betreffen 7 monsterpunten met de watercodes Pan 17.1, Pan 26.1.1, K10, G15 en G21; digitale punt- of watergrenzen ontbreken nog.',
  'context_alleen','geregistreerde_onderzoekers','fase2-2026-09-26'),
 ('vrs-ringgegevens-meijendel-kandidaat','kandidaatbron','Vogeltrekstation-biometrie: nog niet aan VRS Meijendel gekoppeld',
  'De 100.417 GBIF-treffers binnen de projectgrens dragen locatiecode NL19. Volgens de EURING-codebeschrijving betekent NL19 provincie Zuid-Holland, niet ringstation Meijendel. Trektellen-site 403 is wel VRS Meijendel, maar een recordsleutel tussen beide bronnen ontbreekt.',
@@ -126,7 +126,7 @@ INSERT INTO bron_bestand (bron_id,bestand_naam,bestandstype,opslagklasse,recorda
 (@bee_id,'Rapportage_Bijen_Meijendel_2019.pdf','PDF','publieke_url',54,'16a0bdfeab41f9b91c4cbb62980d95af3641f46127cc4461c1191f4574ffc79d','Rapport met drie bezoeken aan 18 proefvlakken in 2019.'),
 (@bee_id,'Rapportage_Bijen_Meijendel_2021.pdf','PDF','publieke_url',54,'5db85fb90ef3d56953b43aad90a9ab36bf6dd3e569bd76b6bf202c40bbd916e5','Rapport met drie bezoeken aan 18 proefvlakken in 2021.'),
 (@bee_id,'Rapportage_Bijen_Meijendel_2023.pdf','PDF','publieke_url',54,'6cf4b098e00cb16a3e143e6311c2321a2c5e82117cbcca59e8f5697895ccaf54','Rapport met drie bezoeken aan 18 proefvlakken in 2023.'),
-(@aquatic_id,'Nieukerken_Doctoraalverslag_Meijendel_1978.pdf','PDF','publieke_url',7,'575fb7e07a08e418cfa8ea843ea7802527cb09c6958f72e53e5b17949c4228eb','Bron voor monsterpunten, periode en methode.'),
+(@aquatic_id,'Nieukerken_Doctoraalverslag_Meijendel_1978.pdf','PDF','publieke_url',19,'575fb7e07a08e418cfa8ea843ea7802527cb09c6958f72e53e5b17949c4228eb','Bron voor 19 methodeperioden op 7 monsterpunten.'),
 (@ring_id,'vt_biometrics.zip','Darwin Core Archive','publieke_url',100417,'d8ae4f07afab61e06fdb020c66ba0152c113204b40accb05bc22f1f0346b7e93','Ruimtelijke treffers; niet toelaatbaar als VRS Meijendel zonder stationsleutel.'),
 (@dry_id,'proefschrift_van_der_hagen.pdf','PDF','publieke_url',41,'2d3c659e9cd0e234ac9d4605bd5fdc905a70d6abd418a74c801e24f5ee2c9a1b','Beschrijving en kaart van 41 plots; kaart bevat geen koppelbare plotcodes.');
 

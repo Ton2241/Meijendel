@@ -7,16 +7,19 @@ Meijendel-literatuuroverzicht uit Zotero worden beheerd in Meijendel_bronnen en
 mogen niet zonder afzonderlijk promotiebesluit in analyses uit Meijendel worden
 gebruikt.
 
-## Inhoud per 26 september 2026
+## Inhoud per 1 november 2026
 
-- duinvalleivegetatie: 488 opnamen uit 2001, 2008 en 2018 op 186 stabiele
-  locatiecodes, maar zonder geometrie per opname;
+- duinvalleivegetatie: 488 opnamen en 101.504 bedekkingsregels uit 2001, 2008
+  en 2018 op 186 stabiele locatiecodes, samen 101.992 geregistreerde regels,
+  maar zonder geometrie per opname;
 - vogelstand 1924: 204 historische soort- en tekstregels zonder
   waarnemingslocatie per regel;
-- jachtspinnen 1969–1970: 3.337 exemplaren van 12 soorten op 28 genummerde,
-  geografisch nog niet herleidbare locaties;
-- literatuur: 522 actuele bibliografische items uit de Zotero-collectie
-  `Meijendel`, weergegeven in Chicago-stijl.
+- jachtspinnen 1969–1970: 336 soort-locatieregels met 3.337 exemplaren van 12
+  soorten op 28 genummerde, geografisch nog niet herleidbare locaties;
+- literatuur: 596 actuele bibliografische items uit de Zotero-collectie
+  `Meijendel`, weergegeven in Chicago-stijl. Zes niet meer in de collectie
+  voorkomende items blijven als vervallen auditregels bewaard en worden niet
+  in het actuele overzicht getoond;
 - bijenmonitoring: 18 vaste hectareproefvlakken en 162 bezoeken uit 2019, 2021
   en 2023; de rapportfiguren zijn nog niet omgezet in betrouwbare digitale
   proefvlakgrenzen en de soortenmatrices zijn nog niet geïmporteerd;
@@ -66,7 +69,7 @@ zijn:
 - `meijendel.sql`:
   `c26e0adb7a68c1dbd1e050337b70ed2da7a33e9cd518e96f8e1604ea91dca666`;
 - `meijendel_bronnen.sql`:
-  `b245d2e0b1d8519dd929e26c50d6f7e4ae3b25ccc4c76ece3e804d4595c3c0ff`.
+  `e4ed0c51c49bcfbb506503ab333a298a361c81aa099549a2c68ba6b7110486c8`.
 
 ## Promotie
 

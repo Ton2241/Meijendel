@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 31 oktober 2026.**
+**Stand: 1 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -32,7 +32,7 @@ In één oogopslag:
 
 - de NDFF-laag is omvangrijk, maar ondersteunt zonder aanvullende meetstructuur vooral verspreidingsonderzoek;
 
-- op de VPS staan in het Analysecentrum drie contextdatasets en 522 literatuurverwijzingen die niet ongemerkt in analyses terecht mogen komen; de hieronder beschreven nieuwe fase-2-context staat vooralsnog alleen in de lokale canonieke database;
+- in `Meijendel_bronnen` staan zeven context- en kandidaatbronnen en 596 actuele literatuurverwijzingen die niet ongemerkt in analyses terecht mogen komen; zes niet meer in Zotero aanwezige literatuuritems blijven uitsluitend als vervallen auditregels bewaard;
 - zes openbare externe bronnen zijn na ruimtelijke toelatings- en overlapcontrole in `Meijendel` opgenomen; hun verschillende analysemogelijkheden blijven per record zichtbaar.
 
 **Taxonomisch register aangevuld en centraal opgeschoond, stand 3 oktober 2026.** De levende lokale database bevat 27 praktische groepen en 11.660 centrale vermeldingen: 11.659 naamvermeldingen en één uitdrukkelijk onbepaald operationeel collectieobject. De tabel met bronkoppelingen bevat 30.057 rijen: alle 18.437 oorspronkelijke bronbesluiten, drie eerdere identificatie-aliassen, 6.121 volledig bewaarde oorspronkelijke taxoncontexten, 5.495 aanvullende brongebruiken voor afgeleide meet-/doelsoortregels en de koppeling van het onbepaalde object. Er zijn 29.970 actieve koppelingen en 87 als eerdere versies bewaarde koppelingen. Dit is geen telling van unieke biologische soorten of lokale aanwezigheid. Het register heeft geen eigen waarnemingsperiode en omvat NDFF, provinciale PQ, Vangblik, SOVON/AVIMAP, de zes externe datasets en aanvullende referentiecatalogi. Meetperioden en toelatingsvoorwaarden blijven die van de afzonderlijke bronnen hieronder.
@@ -623,7 +623,7 @@ Deze database bevat informatie die niet aan de ruimtelijke toelatingsregel van d
 
 **Beheerder.** Van der Aart en Smeenk-Enserink
 
-**Omvang en periode.** 3.337 exemplaren, 12 soorten, 28 locaties en zes milieuvariabelen; 1969–1970
+**Omvang en periode.** 336 soort-locatieregels met 3.337 exemplaren, 12 soorten, 28 locaties en zes milieuvariabelen; 1969–1970
 
 **Waarde en beperking.** De samengevoegde vangstmatrix ondersteunt een soorten-milieuanalyse, maar geen ontwikkeling door de tijd. Datums en vangrondes ontbreken. De 28 locatienummers zijn bovendien nog niet naar werkelijke plaatsen te vertalen en mogen daarom niet als Meijendelwaarnemingen worden geanalyseerd.
 
@@ -631,7 +631,9 @@ Deze database bevat informatie die niet aan de ruimtelijke toelatingsregel van d
 
 **Beheerder.** Zotero-collectie Meijendel
 
-**Omvang en periode.** Het gepubliceerde literatuuroverzicht bevatte 522 bibliografische verwijzingen op 25 september 2026. De lokale Zotero-collectie Meijendel bevat op 17 oktober 2026 469 zelfstandige bibliografische items. Dat zijn verschillende selecties; de actuele Zotero-telling vervangt de vastgelegde publicatiestand niet.
+**Omvang en periode.** De op 1 november 2026 gecontroleerde Zotero-collectie `Meijendel`, inclusief de twee onderliggende deelcollecties, bevat 596 bibliografische items. De lokale database is hiermee transactioneel gesynchroniseerd: 596 items hebben status `actueel`; zes items die niet meer in de collectie voorkomen blijven met status `niet_meer_in_export` als auditregels bewaard en worden niet in het actuele overzicht getoond. Bijlagen, notities en annotaties zijn niet overgenomen en er zijn geen lokale paden geëxporteerd.
+
+De eerdere publicatiestand bevatte 522 bibliografische verwijzingen op 25 september 2026. De lokale Zotero-collectie bevatte op 17 oktober 2026 469 zelfstandige bibliografische items. Die aantallen blijven historische tussenstanden en beschrijven niet de huidige catalogus.
 
 Op 17 oktober 2026 zijn de 29 nog niet aanwezige resultaten uit de selectie van 50 Consensus-resultaten als zelfstandige parent-items toegevoegd aan Zotero-collectie Meijendel. De 29 publicaties beslaan na broncontrole 1926–2023; 18 items hebben een DOI. De lokale collectie groeide hierbij van 437 naar 466 bibliografische items. Alle 29 items hebben een bronnotitie met herkomst en eventuele metadata-afwijkingen. Vijf resultaten hebben een volledige PDF-tekst: Schierbeek (1926), Blankwaardt (1965), Wesselingh et al. (1997), Beunen et al. (2004) en het complete congresabstract van De Bonte en Boosten (1996). Bij Vliegenthart et al. (definitieve jaargang 2023) zijn daarnaast een aanvullend PDF-bestand en een XLSX-gegevenstabel gekoppeld; die zijn niet de volledige artikeltekst. Voor de overige 24 resultaten is de volledige publicatie niet verkregen via de gecontroleerde routes. De zeven nieuwe bestandsbijlagen staan als gekoppelde bestanden op de T7 onder `/Volumes/T7 Data/Zotero/files`; dit is de op 17 oktober 2026 door Ton bevestigde vaste opslagafspraak.
 
