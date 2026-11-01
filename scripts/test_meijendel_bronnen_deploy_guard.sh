@@ -38,6 +38,10 @@ grep -qF 'information_schema.SCHEMA_PRIVILEGES' "$SOURCES_HELPER" ||
   fail 'controle op brede schemarechten ontbreekt.'
 grep -qF 'information_schema.TABLE_PRIVILEGES' "$SOURCES_HELPER" ||
   fail 'controle op uitsluitend drie viewrechten ontbreekt.'
+grep -qF '[[ "$mysql_version" == 9.7.4 ]]' "$SOURCES_HELPER" ||
+  fail 'remote bronrelease vereist niet exact de actuele MySQL 9.7.4-runtime.'
+grep -qF 'REQUIRED_MYSQL_VERSION="${REQUIRED_MYSQL_VERSION:-9.7.4}"' "$SOURCES_DEPLOY" ||
+  fail 'lokale bronrelease vereist niet exact MySQL 9.7.4.'
 grep -qF '/Meijendel_bronnen.sql' "$SOURCES_DEPLOY" ||
   fail 'publieke 403/404-controle voor de bron-dump ontbreekt.'
 grep -qF 'awk '\''{print \$1}'\''' "$SOURCES_DEPLOY" ||

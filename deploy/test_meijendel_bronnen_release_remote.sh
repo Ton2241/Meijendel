@@ -18,7 +18,7 @@ set -euo pipefail
 printf '%s\n' "$*" >> "$MOCK_DOCKER_LOG"
 all="$*"
 if [[ "$1" == inspect ]]; then printf 'running\n'; exit 0; fi
-if [[ "$all" == *'SELECT VERSION()'* ]]; then printf '9.7.1\n'; exit 0; fi
+if [[ "$all" == *'SELECT VERSION()'* ]]; then printf '9.7.4\n'; exit 0; fi
 if [[ "$all" == *'printf %s "$MYSQL_USER"'* ]]; then printf 'website_user'; exit 0; fi
 if [[ "$all" == *mysqldump* ]]; then
   if [[ "${MOCK_LARGE_BACKUP:-0}" == 1 ]]; then
