@@ -106,7 +106,7 @@ Run: `python3 -m unittest gis/qfield/afscheidingen/test_build_qfield_afscheiding
 
 Expected: alle tests PASS; alleen de bestaande expliciet overgeslagen luchtfoto-integratietest mag SKIP zijn als haar omgevingsvariabele niet is gezet.
 
-- [ ] **Step 6: Commit, push en controleer de taakbranch**
+- [x] **Step 6: Commit, push en controleer de taakbranch**
 
 Run: `git add gis/mergin_maps/meijendel && git commit -m "docs: add Mergin Maps field workflow" && git push -u origin codex/mergin-maps-meijendel`
 
