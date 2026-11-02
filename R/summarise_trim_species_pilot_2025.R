@@ -38,6 +38,9 @@ species_pilot_detail <- function(species, baseline, planned=50L) {
 }
 
 species_pilot_reason_nl <- function(text) {
+  text <- gsub("[\r\n]+"," ",text)
+  text <- gsub("pre:model2_basis:Zero expected value at year ([0-9]+)[[:space:]]*", "Model vóór 1984 verwacht nul op modeltijdpunt \\1",text)
+  text <- gsub("post:model2_basis:Zero expected value at year ([0-9]+)[[:space:]]*", "Model vanaf 1984 verwacht nul op modeltijdpunt \\1",text)
   replacements <- c(
     "pre:baseline_geen_getelde_cellen"="Vóór 1984 geen getelde broncellen",
     "post:baseline_geen_getelde_cellen"="Vanaf 1984 geen getelde broncellen",

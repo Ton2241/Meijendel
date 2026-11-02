@@ -105,3 +105,4 @@ stopifnot(nrow(detail)==1L,detail$vijfjaar_n==1,detail$pre_n==2,detail$post_n==1
 stopifnot(inherits(try(env$species_pilot_detail(rbind(d,d[1,]),b,planned=2L),silent=TRUE),'try-error'))
 cat('SPECIES_PILOT_DETAIL_TEST=ready\n')
 stopifnot(env$species_pilot_reason_nl('nul_totaal_volledig_venster=3')=='Volledig brugvenster zonder positieve telling (3 keer)')
+stopifnot(env$species_pilot_reason_nl('pre:model2_basis:Zero expected value at year 18\n=6')=='Model vóór 1984 verwacht nul op modeltijdpunt 18 (6 keer)')
