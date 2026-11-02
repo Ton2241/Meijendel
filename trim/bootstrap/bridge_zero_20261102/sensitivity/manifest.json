@@ -1,0 +1,16 @@
+{
+  "format": "trim-bridge-sensitivity-v1",
+  "cache_sha256": "071e66821f706ae1c0c37b11b3295ddde84a1872b194f9a09f43e595b50252d8",
+  "source_hash": "15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913",
+  "code_sha256": "7289a862901af6c77af812dbf5c55e62c85348323633d58c418dcbd21c484322",
+  "bridge_engine_sha256": "7506f284f60ffdc5f9fefffb712f251ce8b2253ca2e09c63e8502e50da9ad364",
+  "seed": 20260920,
+  "source_period": "1958-2025",
+  "calibration_years": [1981, 1982, 1983, 1986, 1987, 1988],
+  "detailed_species_ids": [150, 162],
+  "boundary_probability_species_ids": [1, 29, 36, 44, 77, 78, 80, 88, 97, 106, 107, 123, 125, 150, 155, 156, 162, 164, 165, 167, 170, 172, 173, 175, 182, 192, 193, 198, 200, 214, 223, 239, 251],
+  "cluster_strata": {
+    "historische_kern": 17,
+    "later_netwerk": 35
+  }
+}

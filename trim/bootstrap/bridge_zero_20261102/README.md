@@ -99,3 +99,17 @@ Rscript R/audit_trim_bridge_zero_totals.R \
 
 Ruwe kalibratieregels blijven uitsluitend in de genegeerde lokale uitvoermap.
 De vier CSV’s hier zijn compacte uitgangs- en geldigheidsdiagnostiek.
+
+
+## Verdiepende beoordeling 2 november 2026
+
+De vergelijking is uitgesplitst in afronding, modelvorm en plotdekking.
+`rtrim::totals()` rondt de uitvoer af; de modelinvoer blijft ongerond. Na
+gebruik van de ongeronde jaartotalen resteert bij Witte Kwikstaart 8,21%
+verschil met het venstermodel in plaats van 32,88%. De precieze kans op
+verlies van alle positieve navensterplots is 4,3182%. De 47/50 bewijst
+dus geen structurele uitval boven 5%; de 95%-geldigheidsgrens alleen is
+echter onvoldoende om de nulrand in het betrouwbaarheidsinterval te
+behandelen. Bij Veldleeuwerik blijft sterke imputatie- en plotgevoeligheid.
+Zie `sensitivity/README.md` voor het afgeronde oordeel en het voorstel
+voor incidentele soorten. De productiemethode is niet gewijzigd.

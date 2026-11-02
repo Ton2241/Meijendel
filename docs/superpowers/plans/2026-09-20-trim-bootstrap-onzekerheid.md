@@ -1255,3 +1255,26 @@ behouden en de drie aanvullingen zijn inhoudelijk gelijk. Alle 57 gerenderde
 Wordpagina’s zijn onafhankelijk visueel gecontroleerd, inclusief de
 gewijzigde pagina 5; geen layoutproblemen. Geen gedeelde productieonderdelen
 gewijzigd. De ontwikkelbranch blijft behouden voor het methodische vervolg.
+
+
+## Afgeronde verdieping en incidentele soorten — 2 november 2026
+
+Opdracht: beoordeel grote brugverschillen en nulvensters; rond af en geef
+een voorstel voor incidentele soorten. Geen productiefunctie gewijzigd.
+`R/audit_trim_bridge_sensitivity.R` splitst uitvoerafronding, modelvorm,
+plotdekking, imputatie, leave-one-plot-out en exacte kansen voor de vaste
+33 soorten. De run is succesvol voltooid; balanced-data- en
+imputatiematrixcontroles slagen. Bron/codehashes en 32 methode-/plotset-
+vergelijkingen zijn gecontroleerd. Onafhankelijke herberekening bevestigt
+8,2144% verschil voor Witte Kwikstaart na ongeronde uitvoer, 4,31818% kans
+op verlies van een venster, en Veldleeuwerik1986 44,72537 geïmputeerd
+boven twee geobserveerde territoria. De 47/50 is geen bewijs voor
+structurele uitval boven 5%; finite-only-intervallen blijven conditioneel
+wanneer de nulrand wordt weggelaten.
+
+Bronregister: exact één inhoudelijk gelijke nieuwe Markdown-/Wordparagraaf;
+alle overige inhoud tegen de vorige commit exact behouden. Alle 58
+gerenderde Wordpagina’s onafhankelijk visueel gecontroleerd, inclusief
+gewijzigde pagina’s 5–6; geen layoutproblemen. Het voorstel houdt
+incidentele soorten zichtbaar en scheidt biologische groepsdefinitie van
+statistische brugbaarheid. Zie `trim/bootstrap/bridge_zero_20261102/sensitivity/README.md`.

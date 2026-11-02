@@ -1,0 +1,33 @@
+"soort_id","soort_naam","plot_set","n_plots","method","level_ratio","reason"
+150,"Veldleeuwerik","primary",33,"yearly_trim",1.08196721311475,
+150,"Veldleeuwerik","primary",33,"yearly_unrounded",1.09902958857441,
+150,"Veldleeuwerik","primary",33,"window_poisson",0.530373372807838,
+150,"Veldleeuwerik","primary",33,"observed_sum",0.215553356769069,"geen_correctie_voor_ontbrekende_cellen"
+150,"Veldleeuwerik","paired",15,"yearly_trim",1.11111111111111,
+150,"Veldleeuwerik","paired",15,"yearly_unrounded",1.09806503234424,
+150,"Veldleeuwerik","paired",15,"window_poisson",0.530373372807838,
+150,"Veldleeuwerik","paired",15,"observed_sum",0.291612993482963,"geen_correctie_voor_ontbrekende_cellen"
+150,"Veldleeuwerik","strict",20,"yearly_trim",,"Found zero or less counts for year 5"
+150,"Veldleeuwerik","strict",20,"yearly_unrounded",,"Found zero or less counts for year 5"
+150,"Veldleeuwerik","strict",20,"window_poisson",0.307174320517559,
+150,"Veldleeuwerik","strict",20,"observed_sum",0.101036720352927,"geen_correctie_voor_ontbrekende_cellen"
+150,"Veldleeuwerik","species_complete",5,"yearly_trim",,"Found zero or less counts for year 1, 2, 3, 5, 6"
+150,"Veldleeuwerik","species_complete",5,"yearly_unrounded",,"Found zero or less counts for year 1, 2, 3, 5, 6"
+150,"Veldleeuwerik","species_complete",5,"window_poisson",,"nul_totaal_volledig_venster"
+150,"Veldleeuwerik","species_complete",5,"observed_sum",Inf,"geen_correctie_voor_ontbrekende_cellen"
+162,"Witte Kwikstaart","primary",33,"yearly_trim",0.416666666666667,
+162,"Witte Kwikstaart","primary",33,"yearly_unrounded",0.51165216468543,
+162,"Witte Kwikstaart","primary",33,"window_poisson",0.553681319296396,
+162,"Witte Kwikstaart","primary",33,"observed_sum",0.436418216566126,"geen_correctie_voor_ontbrekende_cellen"
+162,"Witte Kwikstaart","paired",26,"yearly_trim",0.416666666666667,
+162,"Witte Kwikstaart","paired",26,"yearly_unrounded",0.51165216468543,
+162,"Witte Kwikstaart","paired",26,"window_poisson",0.553681319296396,
+162,"Witte Kwikstaart","paired",26,"observed_sum",0.436418216566126,"geen_correctie_voor_ontbrekende_cellen"
+162,"Witte Kwikstaart","strict",20,"yearly_trim",0.571428571428571,
+162,"Witte Kwikstaart","strict",20,"yearly_unrounded",0.526555003404689,
+162,"Witte Kwikstaart","strict",20,"window_poisson",0.526555003404689,
+162,"Witte Kwikstaart","strict",20,"observed_sum",0.526555003404689,"geen_correctie_voor_ontbrekende_cellen"
+162,"Witte Kwikstaart","species_complete",16,"yearly_trim",0.571428571428571,
+162,"Witte Kwikstaart","species_complete",16,"yearly_unrounded",0.526555003404689,
+162,"Witte Kwikstaart","species_complete",16,"window_poisson",0.526555003404689,
+162,"Witte Kwikstaart","species_complete",16,"observed_sum",0.526555003404689,"geen_correctie_voor_ontbrekende_cellen"

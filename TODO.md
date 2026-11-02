@@ -904,3 +904,19 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   PQ-overlap niet als onafhankelijke tweede waarneming. Mogelijke NDFF-overlap
   blijft zichtbaar, maar vormt zonder gedeelde bron-ID geen automatische
   ontdubbeling.
+
+
+### Afgeronde verdieping op 2 november 2026
+
+De uitvoerafronding in `rtrim::totals()` beïnvloedt de brug; de modelinvoer
+wordt niet afgerond. Bij Witte Kwikstaart resteert met ongeronde totalen
+8,21% modelverschil; bij Veldleeuwerik blijven sterke imputatie- en
+plotgevoeligheid. De exacte kans op verlies van alle positieve
+navensterplots voor Witte Kwikstaart is 4,3182%. De 47/50 toont niet aan
+dat een grotere run onder 95% blijft, maar de nulrand kan niet worden
+weggelaten uit de onzekerheidsverdeling. De 95%-geldigheidsgrens alleen
+is daarom geen voldoende publicatiecriterium. Geen productiefunctie of
+selectie gewijzigd. Vervolg: ongeronde totalen met een regressietest
+aansluiten en een expliciete brug-/intervalpoort voor onvoldoende
+kalibratie-informatie uitwerken; incidentele soorten zichtbaar behouden.
+Bewijs: `trim/bootstrap/bridge_zero_20261102/sensitivity/README.md`.
