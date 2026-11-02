@@ -1751,3 +1751,8 @@ variant. Niet alle soorten dragen in ieder jaar bij. De uitspraak over
 33 soorten geldt dus niet voor die bestaande beschrijvende route.
 Binnen één groepsbootstrap blijft de gekozen samenstelling gelijk;
 dat maakt haar geen selectie voor altijd.
+
+
+## 2 november 2026 — soortenpilot met gegevens tot en met 2025 afgerond
+
+De ontwikkelpilot met de historische cache 1958–2025 is afgerond voor alle 156 soorten, met 50 gezamenlijke gestratificeerde trekkingen van 52 kavelgeschiedenissen en één lokale worker. De experimentele vijfjaarsbrug 1979–1983/1986–1990 is vergeleken met de driejaarsbrug 1981–1983/1986–1988. Van de 70 soorten met een oorspronkelijke lange trend hebben er 48 een berekenbare uitkomst in alle 50 herhalingen, 4 in 48 of 49 en 18 in minder dan 48. De overige 86 soorten blijven zichtbaar met afzonderlijke modelperioden en uitvalredenen. Veldleeuwerik haalt 31/50 bij vijf jaar en 31/50 bij drie jaar; Witte Kwikstaart 49/50 en 48/50. Een berekenbare brug voorkomt niet dat een nuljaar in de hoofdindex de gekozen logaritmische lange trend blokkeert. Vijftig herhalingen en spreiding over alleen eindige uitkomsten leveren geen formele 95%-marge. Er is geen groepsselectie of nieuwe productiestandaard vastgesteld. De resultaten en beperkingen per soort staan in trim/bootstrap/pilot_2025_50_20261102/README.md, PER_SOORT.md en per_soort.csv. Geen 500/2.000-run of publicatie; de definitieve 2026-route blijft afhankelijk van gevalideerde 2026-gegevens.

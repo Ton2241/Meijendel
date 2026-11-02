@@ -1330,26 +1330,46 @@ richt zich op soorten; groepsindicatoren worden niet berekend.
 De vijfjaarsvensters zijn primair in deze expliciet niet-publieke
 pilot; de driejaarsvensters gebruiken dezelfde venstermethode.
 
-- [ ] Deel de bestaande periodevoorbereiding en modelhiërarchie tussen
+- [x] Deel de bestaande periodevoorbereiding en modelhiërarchie tussen
   hoofdroute en bootstrap zonder de bestaande hoofdroute inhoudelijk
   te wijzigen. Leg de oorspronkelijke modeljaren per soort vast;
   verschuif die in replicaties niet naar latere eerste positieve jaren.
-- [ ] Test eerst afrondingsverlies, vijf-/driejaarsconfiguratie, dezelfde
+- [x] Test eerst afrondingsverlies, vijf-/driejaarsconfiguratie, dezelfde
   trekking, vastgehouden jaarbereik, onschatbare soorten en nulvensters.
-- [ ] Implementeer ongeronde totalen via de publieke rtrim-index-API,
+- [x] Lees ongeronde absolute totalen en controleer deze tegen de publieke rtrim-index-API,
   controleer de periodeankers en leg fout-/randstatussen per soort vast.
-- [ ] Bouw een hashgebonden bronbundle uit de bestaande gevalideerde cache
+- [x] Bouw een hashgebonden bronbundle uit de bestaande gevalideerde cache
   en dumpidentiteit, met alle historische soorten en zonder groepsfilter.
   Geef baselinepunten en werkelijk gebruikte modeljaren mee.
-- [ ] Draai een reproduceerbaarheidsproef en 50 herhalingen in hervatbare
+- [x] Draai een reproduceerbaarheidsproef en 50 herhalingen in hervatbare
   batches. Bewaar ruwe state uitsluitend in de lokale genegeerde
   uitvoermap; leg tijd, geheugen, swap, bron- en code-identiteit vast.
-- [ ] Lever een rij per soort met baselinebeschikbaarheid, modeljaren,
+- [x] Lever een rij per soort met baselinebeschikbaarheid, modeljaren,
   slaag-/uitvalaantallen voor vijf en drie jaar, concrete redenen,
   randgevallen en diagnostische spreiding. Geen formele pilotintervallen.
-- [ ] Onafhankelijke code-/resultaatreview, gerichte regressietests en
+- [x] Onafhankelijke code-/resultaatreview, gerichte regressietests en
   bronregister Markdown/Word bijwerken en renderen; commit/push.
 
 Nieuwe scriptbestanden alleen voor deze reproduceerbare pilotopbouw
 en de gevraagde per-soortrapportage. Geen extra gegevensproducten of
 nieuwe externe workers.
+
+
+Uitvoering: enginecommits 7598779b en 69e45944; per-soortrapportage apart gehasht.
+De absolute interne tt_imp-vector is nodig omdat de publieke index alleen
+relatieve waarden levert; de publieke index valideert iedere uitlezing.
+Afrondings- en nieuwe configuratietests zijn eerst falend en daarna groen
+gezien. De bestaande twaalf R-controles en workercontrole zijn groen.
+Onafhankelijke codereview vond geen blokkerende enginefout; de gevonden
+lege-groeps- en redenrapportageproblemen zijn hersteld en getest.
+De ontwikkelpilot met de historische cache 1958–2025 is afgerond voor alle 156 soorten, met 50 gezamenlijke gestratificeerde trekkingen van 52 kavelgeschiedenissen en één lokale worker. De experimentele vijfjaarsbrug 1979–1983/1986–1990 is vergeleken met de driejaarsbrug 1981–1983/1986–1988. Van de 70 soorten met een oorspronkelijke lange trend hebben er 48 een berekenbare uitkomst in alle 50 herhalingen, 4 in 48 of 49 en 18 in minder dan 48. De overige 86 soorten blijven zichtbaar met afzonderlijke modelperioden en uitvalredenen. Veldleeuwerik haalt 31/50 bij vijf jaar en 31/50 bij drie jaar; Witte Kwikstaart 49/50 en 48/50. Een berekenbare brug voorkomt niet dat een nuljaar in de hoofdindex de gekozen logaritmische lange trend blokkeert. Vijftig herhalingen en spreiding over alleen eindige uitkomsten leveren geen formele 95%-marge. Er is geen groepsselectie of nieuwe productiestandaard vastgesteld. De resultaten en beperkingen per soort staan in trim/bootstrap/pilot_2025_50_20261102/README.md, PER_SOORT.md en per_soort.csv. Geen 500/2.000-run of publicatie; de definitieve 2026-route blijft afhankelijk van gevalideerde 2026-gegevens.
+
+Definitieve onafhankelijke QA: alle 15.600 lange-trenduitkomsten uit ruwe
+indexreeksen opnieuw berekend; alle 156 n-kolommen en spreidingsmaten
+bevestigd. Feitelijke kalibratiepools in de soortenmatrix zijn 33
+(vijfjaar) en 32 (driejaar), kleiner dan de basislaag 35/33; tekst en
+manifest zijn daarop gecorrigeerd. Meerregelige rtrim-fouten worden
+leesbaar op één tabelregel gehouden en blijven ongewijzigd in de CSV.
+Alle 58 definitieve Wordpagina's afzonderlijk visueel gecontroleerd;
+geen layoutdefecten. Nieuwe bronregisteralinea is tekstueel gelijk
+in Markdown en Word. Geen herberekening van de 50 trekkingen nodig.

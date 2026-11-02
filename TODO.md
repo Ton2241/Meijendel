@@ -803,16 +803,19 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ### TRIM-bootstrap — voorbereid; productie wacht op complete cijfers 2026
 
-- Stand 2 november: nulcorrectie getest; vensterkalibratie blijft experimenteel.
-  De 50 kalibratieproeven halen voor Witte Kwikstaart 47/50; de uitgangsbrug
-  wijzigt voor Veldleeuwerik −51% en Witte Kwikstaart +33%. Geen nieuwe
-  volledige pilot gestart. Zie `trim/bootstrap/bridge_zero_20261102/README.md`.
+- De nieuwe 50-herhalingenpilot over alle 156 soorten uit 1958–2025 is
+  afgerond. Zie `trim/bootstrap/pilot_2025_50_20261102/README.md` en
+  `PER_SOORT.md`: binnen de 70 oorspronkelijke lange trends halen 48
+  soorten 50/50, 4 halen 48–49/50 en 18 blijven onder 48/50.
+  Alle 86 soorten zonder oorspronkelijke lange trend blijven zichtbaar.
+- Beoordeel vóór een algemene 500/2.000-run de nuljaren in de hoofdindices,
+  bruguitval en behandeling van niet-eindige of onschatbare uitkomsten.
+  Minimaal 95% berekenbaar is een rekendiagnose, geen voldoende bewijs voor
+  een geldig interval. Houd de afzonderlijke formele periodetrends primair.
+- Groepsbootstrap is in deze soortenpilot niet uitgevoerd. De gezamenlijke
+  uitval en vaste samenstelling vragen een afzonderlijke beoordeling;
+  de eerdere groepspilot en haar beperkingen blijven historisch bewaard.
 
-- De lokale 50-replicatiepilot is afgerond en vastgelegd. Start de
-  500-validatie nog niet: 16 van 21 primaire vaste groepsschatters bleven onder
-  95% geldig. Beslis vóór een nieuwe pilot expliciet hoe groepen met een vaste
-  maar in bootstrapreplicaties onschatbare soort worden behandeld. Vervang ze
-  niet stilzwijgend door de wisselend samengestelde volledige variant.
 - Maak na ontvangst en inhoudelijke validatie van broedseizoen 2026 een verse
   dump en analysecache rechtstreeks uit de levende lokale MySQL-database. De
   dump van 8 oktober 2026 bevat wel de gevalideerde vogelcache 1958–2025, maar
@@ -824,7 +827,8 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   en worden niet automatisch op 1958–2026 overgenomen.
 - Draai na dat methodische besluit en de herijking eerst opnieuw 50
   pilotreplicaties. Start 500 alleen wanneer iedere beoogde formele schatter in
-  die pilot minimaal 95% geldig is.
+  die pilot minimaal 95% berekenbaar is én de nulrand-/intervalbehandeling
+  en gezamenlijke groepsuitval zijn beoordeeld.
 - Draai daarna lokaal minimaal 2.000 replicaties over 1958–2026; verhoog alleen
   tot maximaal 5.000 wanneer de intervalstabiliteitsregel dat vraagt. Gebruik
   NAS of VPS pas na een afzonderlijke read-only capaciteitsproef en expliciet
@@ -942,3 +946,8 @@ bronbasis; daarna reproduceerbaarheidsproef, 50-pilot en zo verantwoord
 
 
 Aanvullende conclusie bij de venstervergelijking: de verlaging van de kans op een volledig nulvenster geldt voor de expliciete venstermethode. Het huidige jaarlijkse hulpmodel vereist positieve informatie in ieder afzonderlijk jaar. Voor Witte Kwikstaart blijft in 1986 één dragende bronplot over; bij het vijfjaarsvenster heeft Veldleeuwerik hetzelfde probleem in 1989. De uitvalkans van het jaarlijkse hulpmodel is voor beide soorten daardoor minstens 36,256% onder het bestaande trekkingsontwerp. Alleen langere vensters instellen is dus geen oplossing voor die jaarmodellen. De aanbevolen volgende proef is de afzonderlijke venstermethode met vijf jaar, niet het zonder meer vervangen van drie door vijf in de huidige standaard.
+
+
+## 2 november 2026 — soortenpilot met gegevens tot en met 2025 afgerond
+
+De ontwikkelpilot met de historische cache 1958–2025 is afgerond voor alle 156 soorten, met 50 gezamenlijke gestratificeerde trekkingen van 52 kavelgeschiedenissen en één lokale worker. De experimentele vijfjaarsbrug 1979–1983/1986–1990 is vergeleken met de driejaarsbrug 1981–1983/1986–1988. Van de 70 soorten met een oorspronkelijke lange trend hebben er 48 een berekenbare uitkomst in alle 50 herhalingen, 4 in 48 of 49 en 18 in minder dan 48. De overige 86 soorten blijven zichtbaar met afzonderlijke modelperioden en uitvalredenen. Veldleeuwerik haalt 31/50 bij vijf jaar en 31/50 bij drie jaar; Witte Kwikstaart 49/50 en 48/50. Een berekenbare brug voorkomt niet dat een nuljaar in de hoofdindex de gekozen logaritmische lange trend blokkeert. Vijftig herhalingen en spreiding over alleen eindige uitkomsten leveren geen formele 95%-marge. Er is geen groepsselectie of nieuwe productiestandaard vastgesteld. De resultaten en beperkingen per soort staan in trim/bootstrap/pilot_2025_50_20261102/README.md, PER_SOORT.md en per_soort.csv. Geen 500/2.000-run of publicatie; de definitieve 2026-route blijft afhankelijk van gevalideerde 2026-gegevens.

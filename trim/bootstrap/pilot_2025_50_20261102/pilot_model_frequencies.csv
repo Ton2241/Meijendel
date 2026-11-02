@@ -1,0 +1,9 @@
+"coverage_variant","period","model","count","total","fraction"
+"volledig_netwerk","post","mislukt",1685,7800,0.216025641025641
+"volledig_netwerk","post","model2_basis",3576,7800,0.458461538461538
+"volledig_netwerk","post","model3_basis",30,7800,0.00384615384615385
+"volledig_netwerk","post","model3_overdisp",2509,7800,0.321666666666667
+"volledig_netwerk","pre","mislukt",3016,7800,0.386666666666667
+"volledig_netwerk","pre","model2_basis",3012,7800,0.386153846153846
+"volledig_netwerk","pre","model3_basis",2,7800,0.000256410256410256
+"volledig_netwerk","pre","model3_overdisp",1770,7800,0.226923076923077

@@ -1,0 +1,325 @@
+"soort_id","coverage_variant","bridge_variant","planned_replicates","observed_replicates","valid_replicates","valid_fraction","rekenkundige_95_procent_controle_geen_publicatiebesluit","primary_invalid_reason","invalid_reason_counts"
+1,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+1,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+2,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+2,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+4,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=49;niet_positief_of_onvolledig_ankervenster=1"
+4,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=48;niet_positief_of_onvolledig_ankervenster=1;nul_totaal_volledig_venster=1"
+5,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+5,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+7,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+7,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+8,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+8,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+11,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+11,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+17,"volledig_netwerk","primary_5yr",50,50,32,0.64,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=15;niet_positief_of_onvolledig_ankervenster=3"
+17,"volledig_netwerk","reference_3yr",50,50,32,0.64,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=15;niet_positief_of_onvolledig_ankervenster=3"
+21,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+21,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+22,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+22,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+25,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+25,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+27,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=50"
+27,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=50"
+28,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+28,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+29,"volledig_netwerk","primary_5yr",50,50,31,0.62,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=19"
+29,"volledig_netwerk","reference_3yr",50,50,31,0.62,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=19"
+30,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+30,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+34,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+34,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+35,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=35;nul_totaal_volledig_venster=15"
+35,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=50"
+36,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+36,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+37,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+37,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+38,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+38,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+39,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=46;post:te_weinig_actieve_plots=4"
+39,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=46;post:te_weinig_actieve_plots=4"
+40,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=50"
+40,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=50"
+41,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+41,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+42,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+42,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+44,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+53,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+53,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+57,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+57,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+60,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+60,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+61,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+61,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+62,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+62,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+64,"volledig_netwerk","primary_5yr",50,50,10,0.2,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=39;nul_totaal_volledig_venster=1"
+64,"volledig_netwerk","reference_3yr",50,50,9,0.18,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=36;nul_totaal_volledig_venster=5"
+66,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=47;nul_totaal_volledig_venster=3"
+66,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=42;nul_totaal_volledig_venster=8"
+67,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+67,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+69,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_te_weinig_positieve_jaren","post:baseline_te_weinig_positieve_jaren=49;pre:model2_basis:Years don't have a constant interval=1"
+69,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_te_weinig_positieve_jaren","post:baseline_te_weinig_positieve_jaren=49;pre:model2_basis:Years don't have a constant interval=1"
+70,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+70,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+71,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+71,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+72,"volledig_netwerk","primary_5yr",50,50,27,0.54,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=23"
+72,"volledig_netwerk","reference_3yr",50,50,27,0.54,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=23"
+73,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+73,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+76,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+76,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+77,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+77,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+78,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+80,"volledig_netwerk","primary_5yr",50,50,49,0.98,"voldoet_aan_95_procent","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=1"
+80,"volledig_netwerk","reference_3yr",50,50,49,0.98,"voldoet_aan_95_procent","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=1"
+82,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+82,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+84,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=50"
+84,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=50"
+85,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+85,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+88,"volledig_netwerk","primary_5yr",50,50,42,0.84,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=8"
+88,"volledig_netwerk","reference_3yr",50,50,42,0.84,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=8"
+93,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+93,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+94,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+94,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+97,"volledig_netwerk","primary_5yr",50,50,32,0.64,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=18"
+97,"volledig_netwerk","reference_3yr",50,50,32,0.64,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=18"
+98,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=46;pre:te_weinig_actieve_plots=2;post:te_weinig_actieve_plots=1;pre:model2_basis:Years don't have a constant interval=1"
+98,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=46;pre:te_weinig_actieve_plots=2;post:te_weinig_actieve_plots=1;pre:model2_basis:Years don't have a constant interval=1"
+102,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+102,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+105,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=33;pre:te_weinig_actieve_plots=17"
+105,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=33;pre:te_weinig_actieve_plots=17"
+106,"volledig_netwerk","primary_5yr",50,50,49,0.98,"voldoet_aan_95_procent","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=1"
+106,"volledig_netwerk","reference_3yr",50,50,49,0.98,"voldoet_aan_95_procent","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=1"
+107,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+107,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+108,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+108,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+116,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+116,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+122,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=27;pre:te_weinig_actieve_plots=14;pre:model2_basis:Zero expected value at year 1
+=6;nul_totaal_volledig_venster=3"
+122,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=27;pre:te_weinig_actieve_plots=14;pre:model2_basis:Zero expected value at year 1
+=6;nul_totaal_volledig_venster=3"
+123,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+123,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+124,"volledig_netwerk","primary_5yr",50,50,26,0.52,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=17;nul_totaal_volledig_venster=7"
+124,"volledig_netwerk","reference_3yr",50,50,20,0.4,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=20;index_onvolledig_of_niet_positief=10"
+125,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+125,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+126,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+126,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+127,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+127,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+128,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+128,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+130,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+130,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+131,"volledig_netwerk","primary_5yr",50,50,38,0.76,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=10;niet_positief_of_onvolledig_ankervenster=2"
+131,"volledig_netwerk","reference_3yr",50,50,38,0.76,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=10;niet_positief_of_onvolledig_ankervenster=2"
+132,"volledig_netwerk","primary_5yr",50,50,21,0.42,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=16;index_onvolledig_of_niet_positief=13"
+132,"volledig_netwerk","reference_3yr",50,50,12,0.24,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=31;index_onvolledig_of_niet_positief=7"
+133,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+133,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+135,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+135,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+136,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+136,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+137,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+137,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+138,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+138,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+141,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_te_weinig_positieve_jaren","post:baseline_te_weinig_positieve_jaren=45;pre:te_weinig_actieve_plots=5"
+141,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_te_weinig_positieve_jaren","post:baseline_te_weinig_positieve_jaren=45;pre:te_weinig_actieve_plots=5"
+142,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+142,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+143,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+143,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+144,"volledig_netwerk","primary_5yr",50,50,49,0.98,"voldoet_aan_95_procent","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=1"
+144,"volledig_netwerk","reference_3yr",50,50,49,0.98,"voldoet_aan_95_procent","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=1"
+146,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=19;nul_totaal_volledig_venster=18;pre:te_weinig_actieve_plots=11;pre:model2_basis:Zero expected value at year 10
+=2"
+146,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=37;pre:te_weinig_actieve_plots=11;pre:model2_basis:Zero expected value at year 10
+=2"
+147,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=48;pre:model2_basis:Zero expected value at year 17
+=1;pre:te_weinig_actieve_plots=1"
+147,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=48;pre:model2_basis:Zero expected value at year 17
+=1;pre:te_weinig_actieve_plots=1"
+148,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+148,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+150,"volledig_netwerk","primary_5yr",50,50,31,0.62,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=19"
+150,"volledig_netwerk","reference_3yr",50,50,31,0.62,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=19"
+151,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=35;pre:te_weinig_actieve_plots=9;onvolledige_ankercellen=3;pre:model2_basis:Years don't have a constant interval=2;post:model2_basis:Years don't have a constant interval=1"
+151,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=37;pre:te_weinig_actieve_plots=9;pre:model2_basis:Years don't have a constant interval=2;onvolledige_ankercellen=1;post:model2_basis:Years don't have a constant interval=1"
+152,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=37;pre:te_weinig_actieve_plots=9;pre:model2_basis:Years don't have a constant interval=4"
+152,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=37;pre:te_weinig_actieve_plots=9;pre:model2_basis:Years don't have a constant interval=4"
+154,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+154,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+155,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+155,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+156,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+156,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+158,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=23;pre:te_weinig_actieve_plots=22;post:model2_basis:Years don't have a constant interval=3;nul_totaal_volledig_venster=1;post:bevroren_modeljaar_ontbreekt=1"
+158,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=23;pre:te_weinig_actieve_plots=22;post:model2_basis:Years don't have a constant interval=3;nul_totaal_volledig_venster=1;post:bevroren_modeljaar_ontbreekt=1"
+159,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+159,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+162,"volledig_netwerk","primary_5yr",50,50,49,0.98,"voldoet_aan_95_procent","nul_totaal_volledig_venster","nul_totaal_volledig_venster=1"
+162,"volledig_netwerk","reference_3yr",50,50,48,0.96,"voldoet_aan_95_procent","nul_totaal_volledig_venster","nul_totaal_volledig_venster=2"
+163,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+163,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+164,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+164,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+165,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+166,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+166,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+167,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+168,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+168,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+169,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=19;post:model2_basis:Years don't have a constant interval=12;pre:model2_basis:Years don't have a constant interval=12;pre:te_weinig_actieve_plots=7"
+169,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=19;post:model2_basis:Years don't have a constant interval=12;pre:model2_basis:Years don't have a constant interval=12;pre:te_weinig_actieve_plots=7"
+170,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+170,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+171,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=48;post:model2_basis:Years don't have a constant interval=2"
+171,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=48;post:model2_basis:Years don't have a constant interval=2"
+172,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+172,"volledig_netwerk","reference_3yr",50,50,49,0.98,"voldoet_aan_95_procent","nul_totaal_volledig_venster","nul_totaal_volledig_venster=1"
+173,"volledig_netwerk","primary_5yr",50,50,29,0.58,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=21"
+173,"volledig_netwerk","reference_3yr",50,50,29,0.58,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=21"
+174,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+174,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+175,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+175,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+176,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+176,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+177,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+177,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+179,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=31;niet_positief_of_onvolledig_ankervenster=19"
+179,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=31;niet_positief_of_onvolledig_ankervenster=19"
+180,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+180,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+182,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+182,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+184,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+184,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+186,"volledig_netwerk","primary_5yr",50,50,41,0.82,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=7;niet_positief_of_onvolledig_ankervenster=2"
+186,"volledig_netwerk","reference_3yr",50,50,41,0.82,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=7;niet_positief_of_onvolledig_ankervenster=1;nul_totaal_volledig_venster=1"
+187,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+187,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+188,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+188,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+189,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+189,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+190,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=49;pre:te_weinig_actieve_plots=1"
+190,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=49;pre:te_weinig_actieve_plots=1"
+192,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+192,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+193,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+194,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+194,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+195,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+195,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+197,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+197,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+198,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+198,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+200,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+201,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+201,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+202,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+202,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+203,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=29;index_onvolledig_of_niet_positief=21"
+203,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=50"
+205,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=25;post:model2_basis:Years don't have a constant interval=19;pre:te_weinig_actieve_plots=5;pre:model2_basis:Years don't have a constant interval=1"
+205,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=25;post:model2_basis:Years don't have a constant interval=19;pre:te_weinig_actieve_plots=5;pre:model2_basis:Years don't have a constant interval=1"
+206,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+206,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+207,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+207,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+208,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+208,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+209,"volledig_netwerk","primary_5yr",50,50,17,0.34,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=33"
+209,"volledig_netwerk","reference_3yr",50,50,16,0.32,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=33;nul_totaal_volledig_venster=1"
+210,"volledig_netwerk","primary_5yr",50,50,28,0.56,"onvoldoende_bootstrap","pre:te_weinig_actieve_plots","pre:te_weinig_actieve_plots=17;pre:model2_basis:Years don't have a constant interval=3;index_onvolledig_of_niet_positief=2"
+210,"volledig_netwerk","reference_3yr",50,50,28,0.56,"onvoldoende_bootstrap","pre:te_weinig_actieve_plots","pre:te_weinig_actieve_plots=17;pre:model2_basis:Years don't have a constant interval=3;index_onvolledig_of_niet_positief=2"
+212,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=30;pre:te_weinig_actieve_plots=17;pre:model2_basis:Years don't have a constant interval=3"
+212,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=30;pre:te_weinig_actieve_plots=17;pre:model2_basis:Years don't have a constant interval=3"
+213,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+213,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+214,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+215,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=35;pre:model2_basis:Zero expected value at year 18
+=6;nul_totaal_volledig_venster=3;pre:model2_basis:Years don't have a constant interval=2;pre:model2_basis:Zero expected value at year 19
+=2;pre:model2_basis:Zero expected value at year 20
+=1;pre:te_weinig_actieve_plots=1"
+215,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","niet_positief_of_onvolledig_ankervenster","niet_positief_of_onvolledig_ankervenster=35;pre:model2_basis:Zero expected value at year 18
+=6;nul_totaal_volledig_venster=3;pre:model2_basis:Years don't have a constant interval=2;pre:model2_basis:Zero expected value at year 19
+=2;pre:model2_basis:Zero expected value at year 20
+=1;pre:te_weinig_actieve_plots=1"
+217,"volledig_netwerk","primary_5yr",50,50,43,0.86,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=7"
+217,"volledig_netwerk","reference_3yr",50,50,43,0.86,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=7"
+218,"volledig_netwerk","primary_5yr",50,50,20,0.4,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=21;pre:te_weinig_actieve_plots=9"
+218,"volledig_netwerk","reference_3yr",50,50,20,0.4,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=21;pre:te_weinig_actieve_plots=9"
+219,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=45;post:model2_basis:Years don't have a constant interval=5"
+219,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=45;post:model2_basis:Years don't have a constant interval=5"
+222,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+222,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+223,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+224,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+224,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+225,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+225,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+226,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+226,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+227,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+227,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+229,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+229,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+231,"volledig_netwerk","primary_5yr",50,50,43,0.86,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=6;post:model2_basis:Years don't have a constant interval=1"
+231,"volledig_netwerk","reference_3yr",50,50,43,0.86,"onvoldoende_bootstrap","nul_totaal_volledig_venster","nul_totaal_volledig_venster=6;post:model2_basis:Years don't have a constant interval=1"
+232,"volledig_netwerk","primary_5yr",50,50,47,0.94,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=3"
+232,"volledig_netwerk","reference_3yr",50,50,47,0.94,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=3"
+233,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=34;niet_positief_of_onvolledig_ankervenster=14;pre:te_weinig_actieve_plots=2"
+233,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=30;niet_positief_of_onvolledig_ankervenster=14;nul_totaal_volledig_venster=4;pre:te_weinig_actieve_plots=2"
+236,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+236,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+237,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=28;niet_positief_of_onvolledig_ankervenster=12;pre:te_weinig_actieve_plots=9;pre:model2_basis:Years don't have a constant interval=1"
+237,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","index_onvolledig_of_niet_positief","index_onvolledig_of_niet_positief=20;niet_positief_of_onvolledig_ankervenster=12;pre:te_weinig_actieve_plots=9;nul_totaal_volledig_venster=8;pre:model2_basis:Years don't have a constant interval=1"
+238,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+238,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+239,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+239,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+240,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=50"
+240,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_model2_basis:Years don't have a constant interval","post:baseline_model2_basis:Years don't have a constant interval=50"
+242,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+242,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+243,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+243,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_geen_getelde_cellen","pre:baseline_geen_getelde_cellen=50"
+245,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+245,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+246,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+246,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
+248,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+248,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","pre:baseline_te_weinig_positieve_jaren","pre:baseline_te_weinig_positieve_jaren=50"
+249,"volledig_netwerk","primary_5yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_te_weinig_positieve_jaren","post:baseline_te_weinig_positieve_jaren=40;pre:te_weinig_actieve_plots=10"
+249,"volledig_netwerk","reference_3yr",50,50,0,0,"onvoldoende_bootstrap","post:baseline_te_weinig_positieve_jaren","post:baseline_te_weinig_positieve_jaren=40;pre:te_weinig_actieve_plots=10"
+251,"volledig_netwerk","primary_5yr",50,50,50,1,"voldoet_aan_95_procent",,
+251,"volledig_netwerk","reference_3yr",50,50,50,1,"voldoet_aan_95_procent",,
