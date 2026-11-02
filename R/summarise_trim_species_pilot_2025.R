@@ -37,6 +37,30 @@ species_pilot_detail <- function(species, baseline, planned=50L) {
   out[order(out$soort_naam),]
 }
 
+species_pilot_reason_nl <- function(text) {
+  replacements <- c(
+    "pre:baseline_geen_getelde_cellen"="Vóór 1984 geen getelde broncellen",
+    "post:baseline_geen_getelde_cellen"="Vanaf 1984 geen getelde broncellen",
+    "pre:baseline_te_weinig_positieve_jaren"="Vóór 1984 minder dan drie positieve teljaren",
+    "post:baseline_te_weinig_positieve_jaren"="Vanaf 1984 minder dan drie positieve teljaren",
+    "pre:baseline_te_weinig_actieve_plots"="Vóór 1984 minder dan twee kavels met positieve tellingen",
+    "post:baseline_te_weinig_actieve_plots"="Vanaf 1984 minder dan twee kavels met positieve tellingen",
+    "post:baseline_model2_basis:Years don't have a constant interval"="Oorspronkelijk model vanaf 1984 faalt door ontbrekende modeltijdpunten",
+    "pre:baseline_model2_basis:Years don't have a constant interval"="Oorspronkelijk model vóór 1984 faalt door ontbrekende modeltijdpunten",
+    "post:model2_basis:Years don't have a constant interval"="Trekking: model vanaf 1984 faalt door ontbrekende modeltijdpunten",
+    "pre:model2_basis:Years don't have a constant interval"="Trekking: model vóór 1984 faalt door ontbrekende modeltijdpunten",
+    "pre:te_weinig_actieve_plots"="Trekking: vóór 1984 minder dan twee positieve kavels",
+    "post:te_weinig_actieve_plots"="Trekking: vanaf 1984 minder dan twee positieve kavels",
+    "index_onvolledig_of_niet_positief"="Een vereist indexjaar ontbreekt of is nul",
+    "nul_totaal_volledig_venster"="Volledig brugvenster zonder positieve telling",
+    "niet_positief_of_onvolledig_ankervenster"="Ankerindices ontbreken of zijn niet positief",
+    "onvolledige_ankercellen"="Niet ieder brugjaar heeft getelde cellen",
+    "bevroren_modeljaar_ontbreekt"="Een oorspronkelijk modeljaar heeft in de trekking geen getelde cellen"
+  )
+  for (key in names(replacements)) text <- gsub(key,replacements[[key]],text,fixed=TRUE)
+  gsub("=([0-9]+)"," (\\1 keer)",text)
+}
+
 if(sys.nframe()==0L) {
   args <- commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L)
   repo <- normalizePath(args[[1L]],mustWork=TRUE);run <- normalizePath(args[[2L]],mustWork=TRUE);out <- args[[3L]]
@@ -52,6 +76,7 @@ if(sys.nframe()==0L) {
   stopifnot(nrow(detail)==156L,!anyDuplicated(detail$soort_id),nrow(species)==156L*50L*2L)
   names(summary$species)[names(summary$species)=="publication_gate"] <- "rekenkundige_95_procent_controle_geen_publicatiebesluit"
   write_trim_bootstrap_pilot_summary(summary,out)
+  unlink(file.path(out,"pilot_group_validity.csv")) # geen groepsberekeningen in deze proef
   write.csv(detail,file.path(out,'per_soort.csv'),row.names=FALSE,na='')
   write.csv(baseline,file.path(out,'oorspronkelijke_berekening.csv'),row.names=FALSE,na='')
   fmt <- function(x)ifelse(is.finite(x),sprintf('%.3f',x),'—')
@@ -64,7 +89,7 @@ if(sys.nframe()==0L) {
     '|---|---|---:|---:|---:|---:|---|')
   for(i in seq_len(nrow(detail))) {
     r <- detail[i,];reason <- if(r$duiding=='alle_50_berekenbaar') 'Alleen pilot; geen formeel interval' else if(nzchar(r$vijfjaar_uitvalredenen))r$vijfjaar_uitvalredenen else r$duiding
-    reason <- gsub('|',';',reason,fixed=TRUE)
+    reason <- gsub('|',';',species_pilot_reason_nl(reason),fixed=TRUE)
     lines <- c(lines,sprintf('| %s | %s / %s | %s | %d/50 / %d/50 | %s – %s | %d/50 / %d/50 | %s |',r$soort_naam,period_label(r$pre_model_years),period_label(r$post_model_years),fmt(r$vijfjaar_punt_pct_jaar),r$vijfjaar_n,r$driejaar_n,fmt(r$vijfjaar_min),fmt(r$vijfjaar_max),r$pre_n,r$post_n,reason))
   }
   writeLines(lines,file.path(out,'PER_SOORT.md'))
