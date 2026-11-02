@@ -2,6 +2,7 @@
 
 args <- commandArgs(trailingOnly = TRUE)
 repo <- normalizePath(if (length(args)) args[[1L]] else ".", mustWork = TRUE)
+source(file.path(repo, "R", "trim_trend_contract.R"))
 source(file.path(repo, "R", "trim_bootstrap_core.R"))
 source(file.path(repo, "R", "trim_bridge_core.R"))
 
@@ -77,3 +78,21 @@ stopifnot(all(mapply(
 )))
 
 cat("OK: volledige bootstrapreplicatie gebruikt één trekking voor hoofdmodel, brug en historische kern.\n")
+
+# Baseline preparation follows the existing species route, including delayed starts.
+delayed <- grid[grid$soort_id == 1 & grid$jaar <= 1985, ]
+delayed$count_adjusted[delayed$jaar < 1983] <- 0
+prepared <- prepare_trim_period(delayed)
+stopifnot(prepared$ok, min(prepared$year_map$jaar) == 1983)
+frozen <- fit_first_working_trim_model(delayed, analysis_years = 1981:1985)
+stopifnot(identical(frozen$year_map$jaar, 1981:1985))
+stopifnot(is.na(combined_pct_trend(c(`1981`=100,`1982`=0),c(`1984`=100),1, required_years=c(1981,1982,1984))))
+context$config$coverage_variants <- 'volledig_netwerk'
+context$config$bridge_variants <- list(primary_5yr=list(pre_years=1981:1983,post_years=1986:1990),reference_3yr=list(pre_years=1981:1983,post_years=1986:1988))
+custom <- build_bootstrap_context(list(species_matrix=grid), clusters, context$config)
+custom$group_definitions <- list()
+custom$config$calibration_method <- 'window_poisson'
+r3 <- run_trim_bootstrap_replicate(custom, 7L)
+stopifnot(nrow(r3$species)==4L, setequal(r3$species$bridge_variant,c('primary_5yr','reference_3yr')))
+stopifnot(all(c('pre_ok','post_ok','pre_reason','post_reason','result_reason') %in% names(r3$species)))
+cat('OK: bevroren modeljaren, nulindices en beide pilotvensters.\n')

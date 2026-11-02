@@ -397,38 +397,6 @@ build_species_matrix <- function(tbls, basis, end_year = 2025L) {
   grid[order(grid$soort_id, grid$plot_id, grid$jaar), ]
 }
 
-prepare_trim_period <- function(df) {
-  df <- df[df$geteld & is.finite(df$count_adjusted), , drop = FALSE]
-  if (!nrow(df)) {
-    return(list(ok = FALSE, reason = "geen_getelde_cellen"))
-  }
-
-  year_totals <- aggregate(count_adjusted ~ jaar, data = df, FUN = function(x) sum(x, na.rm = TRUE))
-  positive_years <- sort(year_totals$jaar[year_totals$count_adjusted > 0])
-  if (length(positive_years) < 3L) {
-    return(list(ok = FALSE, reason = "te_weinig_positieve_jaren"))
-  }
-
-  first_positive_year <- min(positive_years)
-  analysis_years <- sort(year_totals$jaar[year_totals$jaar >= first_positive_year])
-  df <- df[df$jaar %in% analysis_years, , drop = FALSE]
-  site_totals <- aggregate(count_adjusted ~ plot_id, data = df, FUN = function(x) sum(x, na.rm = TRUE))
-  active_sites <- site_totals$plot_id[site_totals$count_adjusted > 0]
-  if (length(active_sites) < 2L) {
-    return(list(ok = FALSE, reason = "te_weinig_actieve_plots"))
-  }
-  df <- df[df$plot_id %in% active_sites, , drop = FALSE]
-
-  year_map <- data.frame(
-    jaar = analysis_years,
-    trim_year = seq_along(analysis_years),
-    stringsAsFactors = FALSE
-  )
-  df <- merge(df, year_map, by = "jaar", all.x = TRUE)
-  df <- df[order(df$plot_id, df$jaar), ]
-
-  list(ok = TRUE, data = df, year_map = year_map)
-}
 
 count_derived_year_report_zeros <- function(df, trim_period_only = FALSE) {
   if (trim_period_only) {
@@ -448,12 +416,7 @@ fit_trim_model <- function(df) {
   df_fit <- prepared$data[, c("plot_id", "trim_year", "count_adjusted")]
   names(df_fit) <- c("site", "year", "count")
 
-  configs <- list(
-    list(model = 3, overdisp = TRUE, serialcor = FALSE, label = "model3_overdisp"),
-    list(model = 3, overdisp = TRUE, serialcor = TRUE, label = "model3_overdisp_serialcor"),
-    list(model = 3, overdisp = FALSE, serialcor = FALSE, label = "model3_basis"),
-    list(model = 2, overdisp = FALSE, serialcor = FALSE, label = "model2_basis")
-  )
+  configs <- trim_model_configs()
 
   last_error <- NULL
   last_warnings <- character()

@@ -1313,3 +1313,43 @@ soortenbestand staan in DECISIONS.md, het draaiboek en het
 vensteronderzoekrapport. De bestaande beschrijvende groepsroute
 (135volledig/93robuust in deze historische run) is onderscheiden van
 de33-soortenscope van de bootstrapontwikkelproef.
+
+
+## Opdracht 2 november 2026 — ontwikkelpilot volledig soortenbestand 2025
+
+Uitdrukkelijk goedgekeurd: technische route gereedmaken, expliciete
+venstermethode met 1979–1983/1986–1990 en driejaarsreferentie toepassen
+op de volledige historische bron tot en met 2025, daarna 50 lokale
+ontwikkelherhalingen en een rapport per soort. Geen 500/2.000-run,
+2026-data, definitieve intervallen, databasewijziging of publicatie.
+
+Ontwerp: één gemeenschappelijke gestratificeerde trekking van volledige
+plotgeschiedenissen; één worker. Alle soorten blijven in het rapport.
+De groepselectie van 33 is geen filter op de soortanalyse. Deze pilot
+richt zich op soorten; groepsindicatoren worden niet berekend.
+De vijfjaarsvensters zijn primair in deze expliciet niet-publieke
+pilot; de driejaarsvensters gebruiken dezelfde venstermethode.
+
+- [ ] Deel de bestaande periodevoorbereiding en modelhiërarchie tussen
+  hoofdroute en bootstrap zonder de bestaande hoofdroute inhoudelijk
+  te wijzigen. Leg de oorspronkelijke modeljaren per soort vast;
+  verschuif die in replicaties niet naar latere eerste positieve jaren.
+- [ ] Test eerst afrondingsverlies, vijf-/driejaarsconfiguratie, dezelfde
+  trekking, vastgehouden jaarbereik, onschatbare soorten en nulvensters.
+- [ ] Implementeer ongeronde totalen via de publieke rtrim-index-API,
+  controleer de periodeankers en leg fout-/randstatussen per soort vast.
+- [ ] Bouw een hashgebonden bronbundle uit de bestaande gevalideerde cache
+  en dumpidentiteit, met alle historische soorten en zonder groepsfilter.
+  Geef baselinepunten en werkelijk gebruikte modeljaren mee.
+- [ ] Draai een reproduceerbaarheidsproef en 50 herhalingen in hervatbare
+  batches. Bewaar ruwe state uitsluitend in de lokale genegeerde
+  uitvoermap; leg tijd, geheugen, swap, bron- en code-identiteit vast.
+- [ ] Lever een rij per soort met baselinebeschikbaarheid, modeljaren,
+  slaag-/uitvalaantallen voor vijf en drie jaar, concrete redenen,
+  randgevallen en diagnostische spreiding. Geen formele pilotintervallen.
+- [ ] Onafhankelijke code-/resultaatreview, gerichte regressietests en
+  bronregister Markdown/Word bijwerken en renderen; commit/push.
+
+Nieuwe scriptbestanden alleen voor deze reproduceerbare pilotopbouw
+en de gevraagde per-soortrapportage. Geen extra gegevensproducten of
+nieuwe externe workers.

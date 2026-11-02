@@ -107,3 +107,13 @@ covered_elsewhere$count_adjusted[!covered_elsewhere$geteld] <- NA_real_
 coverage_fit <- fit_bridge_calibration_window(covered_elsewhere,identity_draw,1:2,1981:1983,1986:1988)
 stopifnot(!coverage_fit$ok)
 stopifnot(identical(coverage_fit$reason,"onvolledige_ankercellen_gepaarde_sites"))
+
+# Uitvoertotalen mogen niet eerst op gehele aantallen worden afgerond.
+.libPaths(c(path.expand("~/Library/R/arm64/4.5/library"),.libPaths()))
+fractional <- expand.grid(bootstrap_cluster_id=1:3,jaar=c(1981:1983,1986:1988))
+fractional$geteld <- TRUE
+fractional$count_adjusted <- rep(c(1.2,2.3,3.4,1.7,2.1,4.2,0.9,2.8,3.5),2)*ifelse(fractional$jaar<1984,1,0.63)
+fd <- data.frame(source_cluster_id=1:3,bootstrap_site_id=1:3,draw_position=1:3)
+fractional_fit <- fit_bridge_calibration_trim(fractional,fd,1:3,1981:1983,1986:1988)
+stopifnot(isTRUE(fractional_fit$ok))
+stopifnot(isTRUE(all.equal(mean(fractional_fit$totals[as.character(1986:1988)])/mean(fractional_fit$totals[as.character(1981:1983)]),0.63,tolerance=1e-8)))

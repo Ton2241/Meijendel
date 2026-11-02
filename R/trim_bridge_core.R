@@ -84,9 +84,16 @@ fit_bridge_calibration_trim <- function(species_df, draw, plot_ids, pre_years, p
     error = function(e) e
   )
   if (inherits(fit, "error")) return(list(ok = FALSE, totals = NULL, reason = conditionMessage(fit), warnings = warnings))
-  tt <- rtrim::totals(fit, which = "imputed")
+  # totals() is een afgeronde presentatietabel. Behoud de absolute
+  # ongeronde vector en verifieer haar met de publieke index-API.
+  tt <- rtrim::index(fit, which = "imputed")
+  raw_totals <- as.numeric(fit$tt_imp)
+  if (length(raw_totals) != nrow(tt) || any(!is.finite(raw_totals)) ||
+      any(raw_totals <= 0) || !isTRUE(all.equal(raw_totals / raw_totals[[1L]], as.numeric(tt$imputed), tolerance = 1e-8))) {
+    return(list(ok = FALSE, totals = NULL, reason = "ongeronde_totalen_contract_mislukt"))
+  }
   mapped_years <- year_map$jaar[match(tt$time, year_map$trim_year)]
-  totals <- stats::setNames(as.numeric(tt$imputed), as.character(mapped_years))
+  totals <- stats::setNames(raw_totals, as.character(mapped_years))
   list(ok = TRUE, totals = totals, model = fit, warnings = unique(warnings), site_ids = sort(unique(drawn$bootstrap_site_id)))
 }
 

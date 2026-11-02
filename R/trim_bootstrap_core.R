@@ -89,25 +89,30 @@ apply_cluster_draw <- function(data, draw, cluster_col = "bootstrap_cluster_id")
   out
 }
 
-fit_first_working_trim_model <- function(df, configs = NULL) {
+fit_first_working_trim_model <- function(df, configs = NULL, analysis_years = NULL) {
   required <- c("plot_id", "jaar", "geteld", "count_adjusted")
   missing <- setdiff(required, names(df))
   if (length(missing)) return(list(ok = FALSE, model = NULL, reason = paste("mist", paste(missing, collapse = ","))))
-  df <- df[df$geteld %in% TRUE & is.finite(df$count_adjusted), , drop = FALSE]
-  if (!nrow(df) || length(unique(df$jaar)) < 3L || length(unique(df$plot_id)) < 2L) {
-    return(list(ok = FALSE, model = NULL, reason = "te_weinig_modeldata"))
+  if (is.null(analysis_years)) {
+    prepared <- prepare_trim_period(df)
+  } else {
+    # Preserve the original species estimand when a sampled early record disappears.
+    years <- sort(unique(as.integer(analysis_years)))
+    df <- df[df$geteld %in% TRUE & is.finite(df$count_adjusted) & df$jaar %in% years, , drop=FALSE]
+    year_map <- data.frame(jaar=years, trim_year=seq_along(years))
+    if (!length(years) || !all(years %in% df$jaar)) {
+      return(list(ok=FALSE,model=NULL,reason="bevroren_modeljaar_ontbreekt",year_map=year_map))
+    }
+    totals <- aggregate(count_adjusted ~ plot_id,df,sum)
+    df <- df[df$plot_id %in% totals$plot_id[totals$count_adjusted > 0],,drop=FALSE]
+    if (length(unique(df$plot_id)) < 2L) return(list(ok=FALSE,model=NULL,reason="te_weinig_actieve_plots",year_map=year_map))
+    prepared <- list(ok=TRUE,data=merge(df,year_map,by="jaar"),year_map=year_map)
   }
-  years <- sort(unique(df$jaar))
-  year_map <- data.frame(jaar = years, trim_year = seq_along(years))
-  df <- merge(df, year_map, by = "jaar", all.x = TRUE)
-  fit_data <- data.frame(site = df$plot_id, year = df$trim_year, count = df$count_adjusted)
-  if (is.null(configs)) {
-    configs <- list(
-      list(model = 3, overdisp = TRUE, serialcor = FALSE, label = "model3_overdisp"),
-      list(model = 3, overdisp = FALSE, serialcor = FALSE, label = "model3_basis"),
-      list(model = 2, overdisp = FALSE, serialcor = FALSE, label = "model2_basis")
-    )
-  }
+  if (!isTRUE(prepared$ok)) return(list(ok=FALSE,model=NULL,reason=prepared$reason))
+  df <- prepared$data
+  year_map <- prepared$year_map
+  fit_data <- data.frame(site=df$plot_id,year=df$trim_year,count=df$count_adjusted)
+  if (is.null(configs)) configs <- trim_model_configs()
   attempts <- character()
   for (cfg in configs) {
     warnings <- character()
@@ -134,7 +139,7 @@ fit_first_working_trim_model <- function(df, configs = NULL) {
     }
     attempts <- c(attempts, paste0(cfg$label, ":", conditionMessage(fit)))
   }
-  list(ok = FALSE, model = NULL, reason = tail(attempts, 1L), attempts = attempts)
+  list(ok = FALSE, model = NULL, reason = tail(attempts, 1L), attempts = attempts, year_map = year_map)
 }
 
 bootstrap_model_index <- function(fit) {
@@ -193,6 +198,12 @@ build_bootstrap_context <- function(tbls, cluster_definition, config) {
       allow_transition_years = TRUE
     )
   )
+  if (length(config$bridge_variants)) {
+    variants <- lapply(config$bridge_variants, function(v) {
+      v$plot_ids <- bridge_common_plots(species_matrix,v$pre_years,v$post_years)
+      v
+    })
+  }
   list(
     species_matrix = species_matrix,
     clusters = cluster_definition,
@@ -206,10 +217,11 @@ draw_hash_text <- function(draw) {
   paste(paste(draw$draw_position, draw$source_cluster_id, draw$bootstrap_site_id, sep = ":"), collapse = "|")
 }
 
-combined_pct_trend <- function(pre_index, post_index, bridge_factor) {
+combined_pct_trend <- function(pre_index, post_index, bridge_factor, required_years = NULL) {
   if (is.null(pre_index) || is.null(post_index) || !is.finite(bridge_factor) || bridge_factor <= 0) return(NA_real_)
   series <- c(pre_index, post_index * bridge_factor)
   years <- as.integer(names(series))
+  if (!is.null(required_years) && (!setequal(years,required_years) || any(!is.finite(series) | series <= 0))) return(NA_real_)
   keep <- is.finite(series) & series > 0 & is.finite(years)
   if (sum(keep) < 3L) return(NA_real_)
   slope <- unname(stats::coef(stats::lm(log(series[keep]) ~ years[keep]))[[2L]])
@@ -223,6 +235,7 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
     volledig_netwerk = context$clusters$bootstrap_cluster_id,
     historische_kern = context$historical_cluster_ids
   )
+  if (length(context$config$coverage_variants)) coverage_sets <- coverage_sets[context$config$coverage_variants]
   result_rows <- list()
   index_rows <- list()
   diagnostic_main <- list()
@@ -242,8 +255,14 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
       species_drawn <- apply_cluster_draw(species_original, coverage_draw)
       pre_df <- species_drawn[species_drawn$jaar %in% context$config$periods$pre, , drop = FALSE]
       post_df <- species_drawn[species_drawn$jaar %in% context$config$periods$post, , drop = FALSE]
-      pre_fit <- fit_first_working_trim_model(pre_df)
-      post_fit <- fit_first_working_trim_model(post_df)
+      target <- context$species_targets[[as.character(species_id)]]
+      fit_period <- function(df, period) {
+        t <- target[[period]]
+        if (!is.null(t) && !isTRUE(t$ok)) return(list(ok=FALSE,model=NULL,reason=paste0("baseline_",t$reason)))
+        fit_first_working_trim_model(df,analysis_years=t$years)
+      }
+      pre_fit <- fit_period(pre_df,"pre")
+      post_fit <- fit_period(post_df,"post")
       pre_index <- bootstrap_model_index(pre_fit)
       post_index <- bootstrap_model_index(post_fit)
       bridge_rows <- compute_bridge_variants(
@@ -258,10 +277,17 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
           formal_candidate = species_id %in% (context$formal_primary_species_ids %||% integer()),
           coverage_variant = coverage_name,
           draw_hash = draw_hash,
+          pre_ok = isTRUE(pre_fit$ok), post_ok = isTRUE(post_fit$ok),
+          pre_reason = pre_fit$reason %||% NA_character_, post_reason = post_fit$reason %||% NA_character_,
+          pre_model_years = paste(pre_fit$year_map$jaar, collapse=";"),
+          post_model_years = paste(post_fit$year_map$jaar, collapse=";"),
           pre_model = pre_fit$config %||% NA_character_,
           post_model = post_fit$config %||% NA_character_,
           bridge_rows[i, , drop = FALSE],
-          estimate_pct_per_year = combined_pct_trend(pre_index, post_index, bridge_rows$bridge_factor[[i]]),
+          estimate_pct_per_year = combined_pct_trend(pre_index, post_index, bridge_rows$bridge_factor[[i]],
+            required_years=if (!is.null(target)) c(target$pre$years,target$post$years) else NULL),
+          result_reason = if (!isTRUE(pre_fit$ok)) paste0("pre:",pre_fit$reason) else if (!isTRUE(post_fit$ok)) paste0("post:",post_fit$reason) else if (!is.finite(bridge_rows$bridge_factor[[i]])) bridge_rows$bridge_reason[[i]] else if (!is.finite(combined_pct_trend(pre_index,post_index,bridge_rows$bridge_factor[[i]],required_years=if (!is.null(target)) c(target$pre$years,target$post$years) else NULL))) "index_onvolledig_of_niet_positief" else "berekenbaar",
+
           stringsAsFactors = FALSE
         )
         factor <- bridge_rows$bridge_factor[[i]]
@@ -277,7 +303,7 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
           )
         }
       }
-      primary <- bridge_rows[bridge_rows$bridge_variant == "primary_1986_1988", , drop = FALSE]
+      primary <- bridge_rows[bridge_rows$bridge_variant == (context$config$primary_variant %||% "primary_1986_1988"), , drop = FALSE]
       diagnostic_main[[length(diagnostic_main) + 1L]] <- sort(unique(species_drawn$bootstrap_site_id))
       calibration_ids <- if (nrow(primary) && nzchar(primary$calibration_site_ids[[1L]])) {
         as.integer(strsplit(primary$calibration_site_ids[[1L]], ";", fixed = TRUE)[[1L]])

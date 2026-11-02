@@ -11,7 +11,8 @@ trim_bootstrap_engine_files <- function() {
   c(
     "R/run_trim_bootstrap_batch.R",
     "R/trim_bootstrap_core.R",
-    "R/trim_bridge_core.R"
+    "R/trim_bridge_core.R",
+    "R/trim_trend_contract.R"
   )
 }
 
@@ -186,6 +187,7 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
   analysis_env <- new.env(parent = globalenv())
   sys.source(file.path(repo, "R", "trim_soorten_en_msi_evg.R"), envir = analysis_env)
   runtime_env <- environment(select_formal_primary_species)
+  sys.source(file.path(repo, "R", "trim_trend_contract.R"), envir = runtime_env)
   sys.source(file.path(repo, "R", "trim_bootstrap_core.R"), envir = runtime_env)
   sys.source(file.path(repo, "R", "trim_bridge_core.R"), envir = runtime_env)
   sys.source(file.path(repo, "R", "audit_trim_bridge_windows.R"), envir = runtime_env)

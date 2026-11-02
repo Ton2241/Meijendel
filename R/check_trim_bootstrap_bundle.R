@@ -2,6 +2,7 @@
 
 args <- commandArgs(trailingOnly = TRUE)
 repo <- normalizePath(if (length(args)) args[[1L]] else ".", mustWork = TRUE)
+source(file.path(repo, "R", "trim_trend_contract.R"))
 source(file.path(repo, "R", "trim_bootstrap_core.R"))
 source(file.path(repo, "R", "trim_bridge_core.R"))
 bundle_env <- new.env(parent = globalenv())

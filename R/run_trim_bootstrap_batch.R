@@ -152,6 +152,7 @@ run_trim_bootstrap_batch_cli <- function(args = commandArgs(trailingOnly = TRUE)
   sys.source(file.path(repo, "R", "build_trim_bootstrap_bundle.R"), envir = validation_env)
   sys.source(file.path(repo, "R", "validate_trim_bootstrap_bundle.R"), envir = validation_env)
   validation_env$validate_trim_bootstrap_engine(bundle, repo)
+  source(file.path(repo, "R", "trim_trend_contract.R"), local = TRUE)
   source(file.path(repo, "R", "trim_bootstrap_core.R"), local = TRUE)
   source(file.path(repo, "R", "trim_bridge_core.R"), local = TRUE)
   run_trim_bootstrap_batch(
