@@ -1278,3 +1278,38 @@ gerenderde Wordpagina’s onafhankelijk visueel gecontroleerd, inclusief
 gewijzigde pagina’s 5–6; geen layoutproblemen. Het voorstel houdt
 incidentele soorten zichtbaar en scheidt biologische groepsdefinitie van
 statistische brugbaarheid. Zie `trim/bootstrap/bridge_zero_20261102/sensitivity/README.md`.
+
+
+## Afgerond onderzoek langere vensters — 2 november 2026
+
+De expliciet vooraf vastgelegde 3/5/7/10-jaarsvergelijking is afgerond
+voor dezelfde 33 onderzochte vogelsoorten, met dezelfde oorspronkelijke
+kalibratieplotpool en daarnaast per venster gemeenschappelijke plots.
+528 soort/model/venster/plotpoolregels, 264 dekkingsregels, 528
+weglatingscontroles, 336 groepsuitkomsten en de historische inventaris
+van 156 soorten zijn vastgelegd. De scriptcontroles verifiëren de
+ongeronde totalen tegen de imputatiematrix en de driejaarsreferentie
+tegen de eerdere vergelijking (tolerantie 1e-8). Bron- en codehashes,
+aantallen en Markdown-/Wordgelijkheid zijn gecontroleerd.
+
+Onafhankelijke QA bevestigt de hoofdcijfers: jaarlijkse uitgangsbruggen
+33/33,33/33,30/33,30/33 bij de vier vensters; venstermodel telkens33/33;
+Witte Kwikstaart volledigvensterverlies4,318175% naar1,519241%;
+jaarlijkse uitvalondergrens bij vijf jaar voor Witte Kwikstaart en
+Veldleeuwerik (34/35)^35=0,3625605477. Deze ondergrens verklaart
+waarom alleen langer binnen het jaarlijkse hulpmodel niet volstaat.
+Geen bootstrap, modelkeuze, soortuitsluiting, databasewijziging of
+publicatie uitgevoerd. Vijf jaar bij de afzonderlijke venstermethode
+is uitsluitend geadviseerd als volgende gezamenlijke kandidaat.
+
+Alle 58 definitieve Wordpagina's zijn afzonderlijk onafhankelijk
+visueel bekeken; geen layoutproblemen. Minor formulering voor een
+latere redactie: 'door één leeg jaar' op pagina6 bedoelt verlies van
+het enige positieve plot in een jaar binnen een trekking, geen
+oorspronkelijk leeg jaar. Het volledige rapport beschrijft dat
+mechanisme expliciet. De drie overgenomen afspraken, de juiste
+reikwijdte van de33 en de startvoorwaarden voor het volledige
+soortenbestand staan in DECISIONS.md, het draaiboek en het
+vensteronderzoekrapport. De bestaande beschrijvende groepsroute
+(135volledig/93robuust in deze historische run) is onderscheiden van
+de33-soortenscope van de bootstrapontwikkelproef.

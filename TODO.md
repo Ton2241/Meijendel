@@ -920,3 +920,25 @@ selectie gewijzigd. Vervolg: ongeronde totalen met een regressietest
 aansluiten en een expliciete brug-/intervalpoort voor onvoldoende
 kalibratie-informatie uitwerken; incidentele soorten zichtbaar behouden.
 Bewijs: `trim/bootstrap/bridge_zero_20261102/sensitivity/README.md`.
+
+
+### 2 november 2026 — langere brugvensters afgerond
+
+Voor de 33 onderzochte soorten zijn drie, vijf, zeven en tien jaar
+vergeleken. Vijf jaar (1979–1983/1986–1990) is de aanbevolen volgende
+kandidaat, met drie jaar als referentie; geen nieuwe standaard is
+geactiveerd. Bij Witte Kwikstaart daalt de nulvensterkans van 4,318%
+naar 1,519%; Veldleeuwerik blijft imputatie-/plotgevoelig. Zeven en tien
+jaar veroorzaken nieuwe uitval in het jaarlijkse hulpmodel.
+
+De 33 zijn geen algemene beperking voor de bootstrap per soort. Nog
+nodig: ongeronde uitlezing, vensterconfiguratie en uitval/randbehandeling;
+beoordeling van het volledige soortenbestand; voor de afgesproken
+2026-run definitieve bronvalidatie/import plus verse gevalideerde
+bronbasis; daarna reproduceerbaarheidsproef, 50-pilot en zo verantwoord
+500 en minimaal 2.000. De drie overgenomen afspraken staan in
+`DECISIONS.md`. Bewijs en volledige startvoorwaarden staan in
+`trim/bootstrap/bridge_zero_20261102/long_windows/README.md`.
+
+
+Aanvullende conclusie bij de venstervergelijking: de verlaging van de kans op een volledig nulvenster geldt voor de expliciete venstermethode. Het huidige jaarlijkse hulpmodel vereist positieve informatie in ieder afzonderlijk jaar. Voor Witte Kwikstaart blijft in 1986 één dragende bronplot over; bij het vijfjaarsvenster heeft Veldleeuwerik hetzelfde probleem in 1989. De uitvalkans van het jaarlijkse hulpmodel is voor beide soorten daardoor minstens 36,256% onder het bestaande trekkingsontwerp. Alleen langere vensters instellen is dus geen oplossing voor die jaarmodellen. De aanbevolen volgende proef is de afzonderlijke venstermethode met vijf jaar, niet het zonder meer vervangen van drie door vijf in de huidige standaard.

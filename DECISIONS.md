@@ -1646,3 +1646,108 @@ kwaliteitsbeperkingen blijven zichtbaar. De uitvoer telt positieve bezoeken,
 geen individuen, en schat geen populatietrend. De bestaande toelating,
 reconstructie, bronbeoordeling en M16-uitkomsten wijzigen niet. Er zijn geen
 wijzigingen in de levende database, dump, caches of VPS nodig.
+
+
+## 2 november 2026 — besluiten over brugbaarheid en incidentele soorten
+
+Ton heeft de volgende drie adviezen uit deze chat overgenomen:
+
+1. Dwing geen brug af. Een soort met onvoldoende ankerinformatie krijgt
+   de status `brug_niet_betrouwbaar_schatbaar`. Gebruik geen factor 1,
+   pseudotelling of overgenomen factor van een andere soort als reparatie.
+2. Behoud iedere soort zichtbaar. Gebruik afzonderlijke periodetrends waar
+   de gegevens die dragen; toon anders waarnemingen, aantallen en teldekking.
+   Beoordeel incidenteel voorkomen over de relevante reeks, niet uitsluitend
+   op afwezigheid in de brugjaren. Een onbekende cel blijft onbekend en een
+   geldige getelde afwezigheid blijft nul.
+3. Behoud de ecologische groepsdefinitie. Laat een onschatbare soort niet
+   ongemerkt uit de MSI verdwijnen. Een onvoldoende onderbouwde langjarige
+   groepsindicator krijgt geen geforceerd formeel interval en blijft
+   beschrijvend.
+
+De 33 soorten zijn een vaste statistische selectie voor 1958–2025, geen
+ecologische groep: bruikbare modellen voor beide perioden, een primaire
+brug 1981–1983 naar 1986–1988, en een positieve eindige modelindex in alle
+68 jaren van de oorspronkelijke fit. Die modelindices bewijzen niet dat
+de soort ieder jaar is waargenomen. De pilot toonde dat de oorspronkelijke
+selectie niet voldoende is om bootstrapstabiliteit te garanderen.
+
+Onderzoeksvraag, nog geen selectiebesluit: kan een kleinere vaste rekenkundige
+selectie van goed meetbare soorten een formele indicator dragen? Benoem
+zo'n subset expliciet en vergelijk haar met de volledige ecologische groep;
+zij mag zeldzame, verdwenen of nieuw verschenen soorten niet onzichtbaar
+maken. Beoordeel dekking, uitval en gevoeligheid vóór een definitieve run;
+controleer ook de gezamenlijke groepsuitval.
+
+De twee afzonderlijke TRIM-perioden blijven primair. De historische
+50-pilot, de aangescherpte 33-soortselectie, de uitgevoerde nulcorrectie,
+de experimentele vensterkalibratie, de uitvoerafronding in rtrim,
+imputatie-/plotgevoeligheid en de exacte nulvensterkansen blijven
+herleidbaar in `docs/TRIM_BOOTSTRAP_2026_RUNBOOK.md` en
+`trim/bootstrap/bridge_zero_20261102/`. Geen definitieve bootstrap,
+databasewijziging, nieuwe dump/cache of publicatie is hiermee toegestaan.
+
+Opdracht: onderzoek langere brugvensters als gezamenlijke gevoeligheidsproef.
+Vóór de berekening vastgelegd: 3 jaar (1981–1983/1986–1988), 5 jaar
+(1979–1983/1986–1990), 7 jaar (1977–1983/1986–1992) en 10 jaar
+(1974–1983/1986–1995; brede stresstest). Dezelfde vensters gelden voor
+alle 33 soorten. De overgangsjaren 1984–1985 blijven uitgesloten van
+kalibratie. Vergelijk een vaste plotpool met een per venster veranderende
+gemeenschappelijke plotpool, zodat vensterlengte en netwerkuitbreiding
+onderscheiden blijven. Gebruik ongeronde jaarlijkse totalen naast de
+expliciete venstermethode; wijzig de primaire productiemethode niet.
+
+
+## 2 november 2026 — afgeronde venstervergelijking en reikwijdte
+
+De 33 zijn de onderzochte vogelsoorten, geen 33 probleemsoorten. Het woord
+"vast" beschreef alleen dat dezelfde soorten binnen een vergelijking
+worden gebruikt; het is geen definitieve selectie voor altijd. De
+groeps-MSI in de bootstrapontwikkelproef betrof alleen de soorten uit
+deze statistische selectie die tot de betreffende ecologische groep behoren. Zij
+vertegenwoordigt dus niet de volledige vogelgemeenschap. Een kleinere
+rekenkundige subset is een besproken optie, geen genomen selectiebesluit.
+
+De hoofddoelstelling blijft onzekerheid per vogelsoort voor het volledige
+soortenbestand. De 33 zijn geen algemene beperking voor de soortbootstrap.
+De deelperioden hebben al formele TRIM-onzekerheid; de aanvullende
+bootstrap betreft vooral de samengestelde lange trend inclusief brug en
+de eventuele groepsindicatoren. Het oorspronkelijke invoerbestand bevat
+156 soorten; de nieuwe definitieve bron kan een ander aantal bevatten.
+
+De gezamenlijke vergelijking van 3-, 5-, 7- en 10-jaarsvensters is afgerond.
+Bij gelijke oorspronkelijke kalibratieplots hebben de jaarlijkse
+hulpmodellen respectievelijk 33, 33, 30 en 30 schatbare uitgangsbruggen
+voor 33 soorten. Het venstermodel heeft bij alle vier lengten 33. Dit
+zijn geen bootstrapgeldigheidspercentages. Bij Witte Kwikstaart daalt
+de berekende kans op verlies van een volledig venster bij vijf jaar
+van 4,318% naar 1,519%. Veldleeuwerik blijft sterk afhankelijk van
+imputatie en afzonderlijke plots. Zeven/tien jaar veroorzaken nieuwe
+nuljaren in het jaarlijkse hulpmodel en vermengen meer echte verandering.
+
+Advies, nog geen nieuwe productiestandaard: gebruik 1979–1983 en
+1986–1990 als kandidaat voor de volgende proef, met de driejaarsbrug als
+referentie. Werk eerst de ongeronde uitlezing, expliciete vensterconfiguratie
+en behandeling van nulrand/uitval af. Beoordeel vervolgens het volledige
+soortenbestand per soort en resultaatstype. De afgesproken definitieve
+2026-run vraagt gevalideerde 2026-brondata en een verse gevalideerde
+bronbasis; de kleine proef en pilot gaan vooraf aan 500/2.000 replicaties.
+Er is geen nieuwe selectie, primaire methode, databasebewerking of
+publicatie uitgevoerd. De drie door Ton overgenomen afspraken over
+geen afgedwongen brug, zichtbaar houden en behouden van ecologische
+groepsdefinities blijven gelden. Volledig bewijs en startvoorwaarden:
+`trim/bootstrap/bridge_zero_20261102/long_windows/README.md`.
+
+
+Aanvullende conclusie bij de venstervergelijking: de verlaging van de kans op een volledig nulvenster geldt voor de expliciete venstermethode. Het huidige jaarlijkse hulpmodel vereist positieve informatie in ieder afzonderlijk jaar. Voor Witte Kwikstaart blijft in 1986 één dragende bronplot over; bij het vijfjaarsvenster heeft Veldleeuwerik hetzelfde probleem in 1989. De uitvalkans van het jaarlijkse hulpmodel is voor beide soorten daardoor minstens 36,256% onder het bestaande trekkingsontwerp. Alleen langere vensters instellen is dus geen oplossing voor die jaarmodellen. De aanbevolen volgende proef is de afzonderlijke venstermethode met vijf jaar, niet het zonder meer vervangen van drie door vijf in de huidige standaard.
+
+
+Verduidelijking van de reikwijdte: de 33 horen bij de groepsberekening
+in de bootstrapontwikkelproef en bij deze gevoeligheidsvergelijking.
+De bestaande beschrijvende groepsroute gebruikt ruimere selecties: in
+de historische run 135 soorten met minstens één bruikbare indexreeks
+voor de volledige variant en 93 met beide modelperioden voor de robuuste
+variant. Niet alle soorten dragen in ieder jaar bij. De uitspraak over
+33 soorten geldt dus niet voor die bestaande beschrijvende route.
+Binnen één groepsbootstrap blijft de gekozen samenstelling gelijk;
+dat maakt haar geen selectie voor altijd.

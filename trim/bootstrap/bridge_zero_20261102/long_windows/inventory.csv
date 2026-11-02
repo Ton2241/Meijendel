@@ -1,0 +1,157 @@
+"soort_id","soort_naam","pre_model_gelukt","post_model_gelukt","analyse_categorie","in_deze_venstervergelijking"
+1,"Dodaars",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+2,"Fuut",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+4,"Geoorde Fuut",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+5,"Aalscholver",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+7,"Roerdomp",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+8,"Woudaap",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+11,"Blauwe Reiger",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+17,"Knobbelzwaan",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+21,"Grauwe Gans",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+22,"Soepgans",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+25,"Grote Canadese Gans",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+27,"Nijlgans",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+28,"Casarca",FALSE,FALSE,"lokaal_incidenteel",FALSE
+29,"Bergeend",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+30,"Muskuseend",FALSE,FALSE,"te_zeldzaam",FALSE
+34,"Krakeend",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+35,"Wintertaling",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+36,"Wilde Eend",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+37,"Soepeend",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+38,"Pijlstaart",FALSE,FALSE,"te_zeldzaam",FALSE
+39,"Zomertaling",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+40,"Slobeend",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+41,"Krooneend",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+42,"Tafeleend",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+44,"Kuifeend",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+53,"Wespendief",FALSE,FALSE,"te_weinig_data",FALSE
+57,"Bruine Kiekendief",FALSE,FALSE,"te_zeldzaam",FALSE
+60,"Havik",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+61,"Sperwer",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+62,"Buizerd",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+64,"Torenvalk",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+66,"Boomvalk",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+67,"Slechtvalk",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+69,"Patrijs",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+70,"Kwartel",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+71,"Gewone Fazant",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+72,"Waterral",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+73,"Porseleinhoen",FALSE,FALSE,"lokaal_incidenteel",FALSE
+76,"Kwartelkoning",FALSE,FALSE,"te_zeldzaam",FALSE
+77,"Waterhoen",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+78,"Meerkoet",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+80,"Scholekster",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+82,"Kluut",FALSE,FALSE,"te_zeldzaam",FALSE
+84,"Kleine Plevier",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+85,"Bontbekplevier",FALSE,FALSE,"te_zeldzaam",FALSE
+88,"Kievit",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+93,"Watersnip",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+94,"Houtsnip",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+97,"Wulp",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+98,"Tureluur",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+102,"Oeverloper",FALSE,FALSE,"te_zeldzaam",FALSE
+105,"Kokmeeuw",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+106,"Stormmeeuw",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+107,"Kleine Mantelmeeuw",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+108,"Zilvermeeuw",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+116,"Visdief",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+122,"Holenduif",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+123,"Houtduif",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+124,"Turkse Tortel",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+125,"Tortelduif",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+126,"Halsbandparkiet",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+127,"Koekoek",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+128,"Kerkuil",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+130,"Steenuil",FALSE,FALSE,"te_zeldzaam",FALSE
+131,"Bosuil",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+132,"Ransuil",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+133,"Velduil",FALSE,FALSE,"te_zeldzaam",FALSE
+135,"Nachtzwaluw",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+136,"Gierzwaluw",FALSE,FALSE,"te_zeldzaam",FALSE
+137,"IJsvogel",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+138,"Bijeneter",FALSE,FALSE,"te_zeldzaam",FALSE
+141,"Draaihals",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+142,"Groene Specht",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+143,"Zwarte Specht",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+144,"Grote Bonte Specht",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+146,"Kleine Bonte Specht",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+147,"Kuifleeuwerik",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+148,"Boomleeuwerik",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+150,"Veldleeuwerik",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+151,"Oeverzwaluw",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+152,"Boerenzwaluw",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+154,"Duinpieper",FALSE,FALSE,"te_zeldzaam",FALSE
+155,"Boompieper",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+156,"Graspieper",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+158,"Gele Kwikstaart",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+159,"Engelse Kwikstaart",FALSE,FALSE,"lokaal_incidenteel",FALSE
+162,"Witte Kwikstaart",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+163,"Rouwkwikstaart",FALSE,FALSE,"te_zeldzaam",FALSE
+164,"Winterkoning",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+165,"Heggenmus",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+166,"Roodborst",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+167,"Nachtegaal",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+168,"Blauwborst",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+169,"Zwarte Roodstaart",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+170,"Gekraagde Roodstaart",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+171,"Paapje",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+172,"Roodborsttapuit",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+173,"Tapuit",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+174,"Beflijster",FALSE,FALSE,"te_zeldzaam",FALSE
+175,"Merel",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+176,"Kramsvogel",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+177,"Zanglijster",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+179,"Grote Lijster",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+180,"Cetti's Zanger",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+182,"Sprinkhaanrietzanger",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+184,"Snor",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+186,"Rietzanger",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+187,"Bosrietzanger",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+188,"Kleine Karekiet",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+189,"Grote Karekiet",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+190,"Spotvogel",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+192,"Braamsluiper",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+193,"Grasmus",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+194,"Tuinfluiter",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+195,"Zwartkop",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+197,"Fluiter",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+198,"Tjiftjaf",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+200,"Fitis",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+201,"Goudhaan",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+202,"Vuurgoudhaan",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+203,"Grauwe Vliegenvanger",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+205,"Bonte Vliegenvanger",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+206,"Baardmannetje",FALSE,FALSE,"te_zeldzaam",FALSE
+207,"Staartmees",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+208,"Glanskop",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+209,"Matkop",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+210,"Kuifmees",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+212,"Zwarte Mees",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+213,"Pimpelmees",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+214,"Koolmees",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+215,"Boomklever",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+217,"Boomkruiper",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+218,"Wielewaal",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+219,"Grauwe Klauwier",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+222,"Gaai",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+223,"Ekster",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+224,"Kauw",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+225,"Roek",FALSE,FALSE,"lokaal_incidenteel",FALSE
+226,"Zwarte Kraai",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+227,"Bonte Kraai",FALSE,FALSE,"te_zeldzaam",FALSE
+229,"Spreeuw",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+231,"Huismus",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+232,"Ringmus",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+233,"Vink",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+236,"Groenling",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+237,"Putter",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+238,"Sijs",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+239,"Kneu",TRUE,TRUE,"brugbare_tijdreeks",TRUE
+240,"Barmsijs",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+242,"Kleine Barmsijs",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+243,"Kruisbek",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+245,"Roodmus",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+246,"Goudvink",TRUE,TRUE,"brugbare_tijdreeks",FALSE
+248,"Appelvink",FALSE,TRUE,"alleen_post_bruikbaar",FALSE
+249,"Geelgors",TRUE,FALSE,"alleen_pre_bruikbaar",FALSE
+251,"Rietgors",TRUE,TRUE,"brugbare_tijdreeks",TRUE

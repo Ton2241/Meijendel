@@ -1,0 +1,13 @@
+{
+  "format": "trim-long-window-sensitivity-v1",
+  "source_hash": "15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913",
+  "cache_sha256": "071e66821f706ae1c0c37b11b3295ddde84a1872b194f9a09f43e595b50252d8",
+  "code_sha256": "a90a8582fec37f0b02d4e88daa542e352b33944c9d8a5d4ad66d5cad4bd3ea64",
+  "engine_sha256": "7506f284f60ffdc5f9fefffb712f251ce8b2253ca2e09c63e8502e50da9ad364",
+  "source_period": "1958-2025",
+  "fixed_species_ids": [1, 29, 36, 44, 77, 78, 80, 88, 97, 106, 107, 123, 125, 150, 155, 156, 162, 164, 165, 167, 170, 172, 173, 175, 182, 192, 193, 198, 200, 214, 223, 239, 251],
+  "widths": [3, 5, 7, 10],
+  "post_start": 1986,
+  "pre_end": 1983,
+  "publication_status": "gevoeligheidsproef_geen_bootstrapinterval"
+}
