@@ -42,6 +42,8 @@ for (id in sort(unique(sm$soort_id))) {
    pre_ok=isTRUE(fits$pre$ok),post_ok=isTRUE(fits$post$ok),pre_reason=e$`%||%`(fits$pre$reason,NA_character_),post_reason=e$`%||%`(fits$post$reason,NA_character_),
    pre_model=e$`%||%`(fits$pre$config,NA_character_),post_model=e$`%||%`(fits$post$config,NA_character_),
    pre_model_years=paste(fits$pre$year_map$jaar,collapse=';'),post_model_years=paste(fits$post$year_map$jaar,collapse=';'),
+   pre_estimate_pct_per_year=e$combined_pct_trend(pre,numeric(),1,required_years=fits$pre$year_map$jaar),
+   post_estimate_pct_per_year=e$combined_pct_trend(post,numeric(),1,required_years=fits$post$year_map$jaar),
    br[i,],estimate_pct_per_year=estimate,stringsAsFactors=FALSE)
  }
  cat('BASELINE',id,'\n')

@@ -281,6 +281,8 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
           pre_reason = pre_fit$reason %||% NA_character_, post_reason = post_fit$reason %||% NA_character_,
           pre_model_years = paste(pre_fit$year_map$jaar, collapse=";"),
           post_model_years = paste(post_fit$year_map$jaar, collapse=";"),
+          pre_estimate_pct_per_year = combined_pct_trend(pre_index,numeric(),1,required_years=pre_fit$year_map$jaar),
+          post_estimate_pct_per_year = combined_pct_trend(post_index,numeric(),1,required_years=post_fit$year_map$jaar),
           pre_model = pre_fit$config %||% NA_character_,
           post_model = post_fit$config %||% NA_character_,
           bridge_rows[i, , drop = FALSE],
