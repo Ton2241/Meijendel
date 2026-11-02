@@ -96,3 +96,14 @@ r3 <- run_trim_bootstrap_replicate(custom, 7L)
 stopifnot(nrow(r3$species)==4L, setequal(r3$species$bridge_variant,c('primary_5yr','reference_3yr')))
 stopifnot(all(c('pre_ok','post_ok','pre_reason','post_reason','result_reason') %in% names(r3$species)))
 cat('OK: bevroren modeljaren, nulindices en beide pilotvensters.\n')
+
+# An unavailable original period stays visible and is never redefined.
+custom$species_targets <- list()
+custom$species_targets[['1']] <- list(pre=list(ok=FALSE,reason='te_weinig_positieve_jaren',years=NULL),post=list(ok=TRUE,years=1984:1990))
+r4 <- run_trim_bootstrap_replicate(custom,7L)
+unavailable <- r4$species[r4$species$soort_id==1L,]
+stopifnot(nrow(unavailable)==2L,all(!unavailable$pre_ok),all(is.na(unavailable$estimate_pct_per_year)),all(unavailable$result_reason=='pre:baseline_te_weinig_positieve_jaren'))
+# Exact target years cannot be silently shrunk after loss of all observed cells.
+missing_year <- delayed[delayed$jaar!=1984,]
+stopifnot(identical(fit_first_working_trim_model(missing_year,analysis_years=1981:1985)$reason,'bevroren_modeljaar_ontbreekt'))
+cat('OK: ontbrekend oorspronkelijk model en verloren modeljaren blijven expliciet zichtbaar.\n')

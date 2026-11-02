@@ -81,3 +81,26 @@ stopifnot(nrow(run_csv) == 1L)
 stopifnot(run_csv$run_id[[1L]] == "pilot-fixture")
 
 cat("TRIM_BOOTSTRAP_PILOT_SUMMARY=ready\n")
+
+# Species-only runs preserve the actual model-failure reason and skip groups.
+for(i in seq_along(state$results)) {
+ state$results[[i]]$groups <- data.frame()
+ state$results[[i]]$species$result_reason <- if(i==1L)'berekenbaar' else 'post:model_mislukt'
+}
+saveRDS(state,path)
+hash <- sub('[[:space:]].*$','',system2('shasum',c('-a','256',path),stdout=TRUE)[[1L]])
+saveRDS(list(identity=identity,replicate_ids=1:2,output_sha256=hash),paste0(path,'.manifest.rds'))
+only_species <- env$summarise_trim_bootstrap_pilot(path,1:2)
+stopifnot(nrow(only_species$groups)==0L,only_species$species$primary_invalid_reason=='post:model_mislukt')
+
+sys.source(file.path(repo,'R/summarise_trim_species_pilot_2025.R'),envir=env)
+d <- do.call(rbind,lapply(state$results,`[[`,'species'))
+d$bridge_variant <- 'primary_5yr'
+d$pre_ok <- TRUE; d$post_ok <- c(TRUE,FALSE)
+d$pre_estimate_pct_per_year <- c(1,2);d$post_estimate_pct_per_year <- c(3,NA_real_)
+d2 <- d;d2$bridge_variant <- 'reference_3yr';d<-rbind(d,d2)
+b <- data.frame(soort_id=7L,soort_naam='Testvogel',pre_ok=TRUE,post_ok=TRUE,pre_model='model3_overdisp',post_model='model3_overdisp',pre_model_years='1981;1982;1983',post_model_years='1984;1985;1986',pre_reason=NA_character_,post_reason=NA_character_,bridge_variant=c('primary_5yr','reference_3yr'),estimate_pct_per_year=1.5)
+detail <- env$species_pilot_detail(d,b,planned=2L)
+stopifnot(nrow(detail)==1L,detail$vijfjaar_n==1,detail$pre_n==2,detail$post_n==1,detail$vijfjaar_min==1.5,detail$vijfjaar_max==1.5,is.na(detail$vijfjaar_sd),grepl('post:model_mislukt',detail$vijfjaar_uitvalredenen),detail$duiding=='veel_uitval_geen_formeel_interval')
+stopifnot(inherits(try(env$species_pilot_detail(rbind(d,d[1,]),b,planned=2L),silent=TRUE),'try-error'))
+cat('SPECIES_PILOT_DETAIL_TEST=ready\n')

@@ -131,9 +131,9 @@ summarise_trim_bootstrap_pilot <- function(paths, expected_ids) {
     species = pilot_validity_table(
       species,
       c("soort_id", "coverage_variant", "bridge_variant"),
-      "bridge_reason", planned
+      if ("result_reason" %in% names(species)) "result_reason" else "bridge_reason", planned
     ),
-    groups = pilot_validity_table(
+    groups = if (!nrow(groups)) data.frame() else pilot_validity_table(
       groups,
       c("entity_id", "coverage_variant", "bridge_variant"),
       "group_status", planned
