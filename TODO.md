@@ -808,6 +808,10 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
   `PER_SOORT.md`: binnen de 70 oorspronkelijke lange trends halen 48
   soorten 50/50, 4 halen 48–49/50 en 18 blijven onder 48/50.
   Alle 86 soorten zonder oorspronkelijke lange trend blijven zichtbaar.
+- Herbeoordeel eerst de 45 overall-trenduitkomsten met nuljaartotalen
+  voor 40 soorten in de ontwikkelbron 1958–2025. rtrim 2.3.1 rekent daarbij
+  impliciet met één in plaats van nul. Zie `main_index_zeros/README.md`
+  binnen het pilotrapport. De tellingen en jaarindices blijven behouden.
 - Beoordeel vóór een algemene 500/2.000-run de nuljaren in de hoofdindices,
   bruguitval en behandeling van niet-eindige of onschatbare uitkomsten.
   Minimaal 95% berekenbaar is een rekendiagnose, geen voldoende bewijs voor
@@ -951,3 +955,8 @@ Aanvullende conclusie bij de venstervergelijking: de verlaging van de kans op ee
 ## 2 november 2026 — soortenpilot met gegevens tot en met 2025 afgerond
 
 De ontwikkelpilot met de historische cache 1958–2025 is afgerond voor alle 156 soorten, met 50 gezamenlijke gestratificeerde trekkingen van 52 kavelgeschiedenissen en één lokale worker. De experimentele vijfjaarsbrug 1979–1983/1986–1990 is vergeleken met de driejaarsbrug 1981–1983/1986–1988. Van de 70 soorten met een oorspronkelijke lange trend hebben er 48 een berekenbare uitkomst in alle 50 herhalingen, 4 in 48 of 49 en 18 in minder dan 48. De overige 86 soorten blijven zichtbaar met afzonderlijke modelperioden en uitvalredenen. Veldleeuwerik haalt 31/50 bij vijf jaar en 31/50 bij drie jaar; Witte Kwikstaart 49/50 en 48/50. Een berekenbare brug voorkomt niet dat een nuljaar in de hoofdindex de gekozen logaritmische lange trend blokkeert. Vijftig herhalingen en spreiding over alleen eindige uitkomsten leveren geen formele 95%-marge. Er is geen groepsselectie of nieuwe productiestandaard vastgesteld. De resultaten en beperkingen per soort staan in trim/bootstrap/pilot_2025_50_20261102/README.md, PER_SOORT.md en per_soort.csv. Geen 500/2.000-run of publicatie; de definitieve 2026-route blijft afhankelijk van gevalideerde 2026-gegevens.
+
+
+## 2 november 2026 — nuljaren in de soortindex beoordeeld
+
+In de historische ontwikkelbron 1958–2025 bevatten 45 van de 228 geslaagde periodemodellen echte nuljaartotalen: 21 vóór 1984 en 24 vanaf 1984, verdeeld over veertig soorten. De gebruikte rtrim-versie 2.3.1 behandelt zulke totalen in overall() bij de logberekening feitelijk als één; de huidige contractfunctie geeft deze 45 overall-trenduitkomsten toch het etiket formeel. Een gecontroleerde schaalproef bevestigt dat de berekende relatieve helling daardoor van de rekeneenheid kan afhangen. Deze 45 trenduitkomsten vragen herbeoordeling; de tellingen, periodemodellen en jaarindices zijn daarmee niet automatisch ongeldig. Echte nullen blijven behouden en ontbrekende waarden blijven apart. Een nulvriendelijke, verkennende samenvatting van dezelfde 50 trekkingen maakt binnen de 70 oorspronkelijke lange trends meer soorten volledig berekenbaar (60 in plaats van 48), maar verandert de trendmaat; dit is geen gekozen vervanger. Advies: eerst de nulbehandeling bij de 45 overall-uitkomsten beveiligen, daarna een gerichte inhoudelijke vergelijking van een passend telmodel en een nulvriendelijke samenvatting uitvoeren. Geen model-, gegevens-, uitvoerstatus- of publicatiewijziging is hiermee uitgevoerd. Details en controles: trim/bootstrap/pilot_2025_50_20261102/main_index_zeros/README.md.

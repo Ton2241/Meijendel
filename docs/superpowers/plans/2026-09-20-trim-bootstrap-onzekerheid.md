@@ -1373,3 +1373,23 @@ leesbaar op één tabelregel gehouden en blijven ongewijzigd in de CSV.
 Alle 58 definitieve Wordpagina's afzonderlijk visueel gecontroleerd;
 geen layoutdefecten. Nieuwe bronregisteralinea is tekstueel gelijk
 in Markdown en Word. Geen herberekening van de 50 trekkingen nodig.
+
+
+## 2 november 2026 — nuljaren in de soortindex beoordeeld
+
+In de historische ontwikkelbron 1958–2025 bevatten 45 van de 228 geslaagde periodemodellen echte nuljaartotalen: 21 vóór 1984 en 24 vanaf 1984, verdeeld over veertig soorten. De gebruikte rtrim-versie 2.3.1 behandelt zulke totalen in overall() bij de logberekening feitelijk als één; de huidige contractfunctie geeft deze 45 overall-trenduitkomsten toch het etiket formeel. Een gecontroleerde schaalproef bevestigt dat de berekende relatieve helling daardoor van de rekeneenheid kan afhangen. Deze 45 trenduitkomsten vragen herbeoordeling; de tellingen, periodemodellen en jaarindices zijn daarmee niet automatisch ongeldig. Echte nullen blijven behouden en ontbrekende waarden blijven apart. Een nulvriendelijke, verkennende samenvatting van dezelfde 50 trekkingen maakt binnen de 70 oorspronkelijke lange trends meer soorten volledig berekenbaar (60 in plaats van 48), maar verandert de trendmaat; dit is geen gekozen vervanger. Advies: eerst de nulbehandeling bij de 45 overall-uitkomsten beveiligen, daarna een gerichte inhoudelijke vergelijking van een passend telmodel en een nulvriendelijke samenvatting uitvoeren. Geen model-, gegevens-, uitvoerstatus- of publicatiewijziging is hiermee uitgevoerd. Details en controles: trim/bootstrap/pilot_2025_50_20261102/main_index_zeros/README.md.
+
+Uitgevoerd als beoordeling, zonder wijziging van de analyse-engine.
+Audit: R/audit_trim_main_index_zeros.R; bestaande contextchecksum en
+replicaties 1–50 gecontroleerd. Onafhankelijke review bevestigt de
+45 overall-uitkomsten, de impliciete nul→één-vervanging en de
+veranderde betekenis van de nulvriendelijke samenvatting.
+
+Afrondcontrole nuljarenbeoordeling: bestaande enginebestanden stemmen exact
+met de pilotmanifesthashes overeen; de engine is niet gewijzigd. De 45
+betrokken perioden krijgen in de huidige contractfunctie alle nog de
+status formeel; dit is vastgelegd als herbeoordelingspunt, niet stilzwijgend
+veranderd. Het nieuwe bronregistertekstblok is exact gelijk in Markdown en
+Word. Alle 59 definitieve Wordpagina's zijn onafhankelijk afzonderlijk
+visueel gecontroleerd, zonder layoutdefecten. De adviesroute is geen
+methodebesluit en er is geen 500/2.000-run gestart.

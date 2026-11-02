@@ -44,7 +44,9 @@ De gemeten maximale groei van de systeemswap per batch is
 0 bytes; dit is een systeemmaat, geen exclusief
 R-geheugengebruik.
 
-Advies na deze proef: houd de afzonderlijke formele periodetrends primair.
+Advies na deze proef, nader beoordeeld: de afzonderlijke perioden blijven
+het uitgangspunt, maar 45 overall-trenduitkomsten voor 40 soorten bevatten
+nuljaartotalen en vragen herbeoordeling. Zie de [beoordeling van nuljaren](main_index_zeros/README.md).
 Beoordeel eerst hoe de lange trend met werkelijke nuljaren in de hoofdindex
 kan worden beschreven, zonder nullen weg te laten of pseudotellingen toe
 te voegen. Beoordeel daarnaast de bruguitval per soort. De vijfjaarsvariant

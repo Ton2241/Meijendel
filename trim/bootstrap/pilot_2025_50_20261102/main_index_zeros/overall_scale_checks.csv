@@ -1,0 +1,3 @@
+"replicate_id","period","zero_years","overall_imputed_pct","overall_fitted_pct","overall_imputed_scaled10_pct","zero_to_one_reproduces_overall"
+1,"1984-2025","2017",-5.64709725865069,-3.18405472602946,-6.08618177288933,TRUE
+2,"1984-2025","2015;2016;2017;2018;2019;2021",-10.0973969551767,-8.60305879339672,-12.7090109643549,TRUE

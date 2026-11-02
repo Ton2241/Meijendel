@@ -1,0 +1,21 @@
+{
+  "source_period": "1958-2025",
+  "species": 156,
+  "original_period_models": 228,
+  "original_zero_period_models": 45,
+  "original_zero_species": 40,
+  "original_zero_flagged_formal": 45,
+  "bootstrap_index_failure_cases_original70": 278,
+  "bootstrap_index_failure_species_original70": 20,
+  "all_index_failures_original70_have_actual_zero": false,
+  "any_index_failures_original70_missing_year": true,
+  "ols_all50_species": 48,
+  "quasi_all50_species": 60,
+  "ols_atleast48_species": 52,
+  "quasi_atleast48_species": 64,
+  "publication_status": "beoordeling_geen_methodewijziging_geen_formele_intervallen",
+  "source_hash": "15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913",
+  "context_sha256": "fee0aec6f650ddf27d50cf50f4e50ca6c345ed906e9f2477a3afb56ccefcbaff",
+  "script_sha256": "47d3fcadd64fe00f38f82de1581d7da8a68cf80ee725b4af1f23aba1b5d17681",
+  "rtrim_version": "2.3.1"
+}
