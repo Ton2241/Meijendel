@@ -74,6 +74,13 @@ build_bootstrap_group_definitions <- function(ecological_mapping, functional_map
   definitions
 }
 
+lock_robust_species <- function(available_ids, fixed_ids) {
+  fixed_ids <- as.integer(fixed_ids)
+  if (!length(fixed_ids) || anyNA(fixed_ids) || anyDuplicated(fixed_ids)) stop("Vaste soortselectie is leeg, ongeldig of dubbel.", call. = FALSE)
+  if (any(!fixed_ids %in% available_ids)) stop("Een vast geselecteerde soort voldoet niet aan de formele brug- en volledigheidspoort.", call. = FALSE)
+  sort(fixed_ids)
+}
+
 select_fixed_robust_species <- function(species_results, required_years) {
   indices <- species_results$indices
   valid_status <- species_results$status$soort_id[species_results$status$analyse_categorie == "brugbare_tijdreeks"]
@@ -169,6 +176,10 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
   end_year <- as.integer(bundle_argument(args, "--end-year"))
   planned <- as.integer(bundle_argument(args, "--planned-replicates"))
   run_id <- bundle_argument(args, "--run-id")
+  calibration_method <- bundle_argument(args, "--calibration-method", required = FALSE, default = "yearly_trim")
+  if (!calibration_method %in% c("yearly_trim", "window_poisson")) stop("Onbekende brugkalibratiemethode.", call. = FALSE)
+  fixed_species_file <- bundle_argument(args, "--fixed-species-file", required = FALSE)
+  if (calibration_method == "window_poisson" && is.null(fixed_species_file)) stop("Vaste soortselectie is verplicht voor de experimentele venstermethode.", call. = FALSE)
   run_seed <- as.integer(bundle_argument(args, "--run-seed", required = FALSE, default = "20260920"))
   if (!is.finite(end_year) || !is.finite(planned) || planned < 1L) stop("Ongeldig eindjaar of replicatieaantal.", call. = FALSE)
 
@@ -208,12 +219,19 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
       run_seed = run_seed,
       periods = list(pre = periods$pre$years, post = periods$post$years),
       bridge_pre_years = periods$bridge$pre,
-      primary_post_years = periods$bridge$primary_post
+      primary_post_years = periods$bridge$primary_post,
+      calibration_method = calibration_method
     )
   )
   formal_selection <- select_formal_primary_species(context, periods$combined$years)
   formal_ids <- intersect(eligible_ids, formal_selection$formal_species_ids)
   robust_ids <- Reduce(intersect, list(complete_existing_ids, formal_ids, formal_selection$complete_species_ids))
+  if (!is.null(fixed_species_file)) {
+    fixed_selection <- read.csv(fixed_species_file)
+    if (!"soort_id" %in% names(fixed_selection)) stop("Vaste soortselectie mist soort_id.", call. = FALSE)
+    robust_ids <- lock_robust_species(robust_ids, fixed_selection$soort_id)
+    context$config$fixed_species_sha256 <- bundle_sha256_file(fixed_species_file)
+  }
   if (!length(robust_ids)) stop("Geen soort heeft een formele primaire brug en volledige vaste indexreeks voor de robuuste groepsvariant.", call. = FALSE)
   context$formal_primary_species_ids <- formal_ids
   context$fixed_robust_species_ids <- robust_ids
@@ -258,6 +276,7 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
       , eligible_two_period_species_count = length(unique(eligible_ids)),
       formal_primary_species_count = length(formal_ids),
       fixed_robust_species_count = length(robust_ids),
+      calibration_method = calibration_method,
       engine_sha256 = as.list(trim_bootstrap_engine_hashes(repo))
     )
   )

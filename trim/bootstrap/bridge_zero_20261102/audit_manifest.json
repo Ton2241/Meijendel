@@ -1,0 +1,19 @@
+{
+  "format": "trim-bridge-zero-comparison-v1",
+  "source_hash": "15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913",
+  "cache_sha256": "071e66821f706ae1c0c37b11b3295ddde84a1872b194f9a09f43e595b50252d8",
+  "run_seed": 20260920,
+  "replicate_ids": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50],
+  "fixed_species_ids": [1, 29, 36, 44, 77, 78, 80, 88, 97, 106, 107, 123, 125, 150, 155, 156, 162, 164, 165, 167, 170, 172, 173, 175, 182, 192, 193, 198, 200, 214, 223, 239, 251],
+  "code_sha256": {
+    "R/audit_trim_bridge_zero_totals.R": "9136ffc4d98ad792f6d76b3e8073fae224d98c2dc75d89ae4f4f749f10679ae5",
+    "R/trim_bridge_core.R": "7506f284f60ffdc5f9fefffb712f251ce8b2253ca2e09c63e8502e50da9ad364",
+    "R/trim_bootstrap_core.R": "a11c8dd6a71fb48b35b69d40277e628c13f72b0207da5148d9fc433cb0f6643d",
+    "R/build_trim_bootstrap_bundle.R": "da2f528d776c5abdb5943cf56048ad99abfae9f0884ea7e609583bea10e9ba03"
+  },
+  "selection_source_sha256": {
+    "trim/soorten/soorten_modelstatus.csv": "beb304d98a4cb00380608c826644cf4ee5fa67ed316e2f9c8eaef319653c6ebd",
+    "trim/soorten/soortindices_per_jaar.csv": "cec654e0bbbe207361862cc30774b70946f6a73bbd50fd9f55bc7c40651e1c95"
+  },
+  "publication_status": "experimenteel_geen_bootstrapuitkomst"
+}

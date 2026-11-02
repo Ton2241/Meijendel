@@ -95,3 +95,16 @@ result <- readRDS(output)$results[["1"]]
 stopifnot(nrow(result$species) > 0L, nrow(result$groups) > 0L)
 
 cat("OK: runbundle is atomisch, niet-publicerend en uitvoerbaar voor soorten, brug en groepen.\n")
+
+# Een expliciet vastgelegde populatie mag niet door een methodewissel groeien.
+stopifnot(identical(bundle_env$lock_robust_species(c(1L,2L,3L),c(1L,2L)),c(1L,2L)))
+stopifnot(inherits(try(bundle_env$lock_robust_species(c(1L,2L),c(1L,3L)),silent=TRUE),"try-error"))
+stopifnot(inherits(try(bundle_env$lock_robust_species(c(1L,2L),c(1L,1L)),silent=TRUE),"try-error"))
+
+missing_fixed_file <- try(bundle_env$build_trim_bootstrap_bundle_cli(c(
+  "--sql", source_file, "--bundle", file.path(root,"forbidden-candidate"),
+  "--end-year","2025","--planned-replicates","50","--run-id","candidate-test",
+  "--calibration-method","window_poisson"
+)),silent=TRUE)
+stopifnot(inherits(missing_fixed_file,"try-error"))
+stopifnot(grepl("Vaste soortselectie is verplicht",as.character(missing_fixed_file),fixed=TRUE))

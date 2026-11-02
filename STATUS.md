@@ -642,3 +642,27 @@ Resterende risico's:
 Aanbevolen volgende stap:
 
 - Voer een ingelogde CMS-publicatietest uit voor de vaste pagina `Vogelrichtlijn`.
+
+
+## 2 november 2026 — nuljaartotalen en experimentele vensterkalibratie
+
+De nulcorrectie is uitgevoerd en met regressietests gecontroleerd. Een nul
+blijft in het venstergemiddelde; een ontbrekende of negatieve jaarwaarde
+blokkeert de brug. `yearly_trim` blijft standaard. `window_poisson` is een
+expliciete experimentele variant die een vast soortselectiebestand vereist.
+De selectie blijft exact de eerder vastgestelde 33 soorten.
+
+De kalibratievergelijking gebruikt de historische cache 1958–2025 en de 50
+bestaande trekkingen. Bij het venstermodel slagen 32 soorten 50/50; Witte
+Kwikstaart 47/50 wegens drie volledig nulvensters. De oorspronkelijke
+brugfactor verandert bij Veldleeuwerik −51% en bij Witte Kwikstaart +33%. Er
+zijn geen richtingwisselingen in de 33 oorspronkelijke soorttrends. De
+venstermethode is daarom niet als primaire vervanging vrijgegeven. Dit is
+geen volledige bootstrap en er zijn geen nieuwe intervallen berekend.
+
+Een volledige nieuwe 50-pilot is niet gestart: voor groepen met Witte
+Kwikstaart is de 95%-grens onder deze kalibratie al onhaalbaar in deze
+50 trekkingen. Een methodisch vervolg moet de nulvensters en de omvangrijke
+brugverschillen beoordelen; soorten worden niet automatisch geschrapt.
+Kalibratiebewijs: `trim/bootstrap/bridge_zero_20261102/README.md`. Geen
+500-run, databasewijziging, nieuwe dump/cache of VPS-publicatie.

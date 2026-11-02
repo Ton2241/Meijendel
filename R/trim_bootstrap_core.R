@@ -248,7 +248,7 @@ run_trim_bootstrap_replicate <- function(context, replicate_id) {
       post_index <- bootstrap_model_index(post_fit)
       bridge_rows <- compute_bridge_variants(
         species_original, pre_index, post_index, coverage_draw,
-        list(bridge_variants = variants)
+        list(bridge_variants = variants, calibration_method = context$config$calibration_method %||% "yearly_trim")
       )
       for (i in seq_len(nrow(bridge_rows))) {
         counter <- counter + 1L

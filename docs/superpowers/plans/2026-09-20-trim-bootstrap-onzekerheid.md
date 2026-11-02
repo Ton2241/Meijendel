@@ -1185,3 +1185,73 @@ De vervolgfase omvat pas na complete en gevalideerde cijfers over 2026:
 
 Eis `main == origin/main` in alle drie repositories en een schone werkboom.
 Verwijder geen branch, worktree of pilotbewijs zonder afzonderlijke beoordeling.
+
+
+## Uitvoering 2 november 2026 — nuljaartotalen in de brug
+
+Opdracht: voer het in de conversatie goedgekeurde advies uit. Bestaande
+bootstrapbranch en werkboom blijven leidend; geen databasewijziging, verse
+dump, 500-run of publicatie. Historische ontwikkelbron 1958–2025 met hash
+`15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913`.
+
+### Ontwerp en uitvoeringskeuzes
+
+- Herstel het venstergemiddelde: alle gevraagde jaarwaarden aanwezig en eindig;
+  geen negatieve waarden; echte nullen blijven in de noemer. Een gemiddelde
+  van nul is geen bruikbaar positief anker.
+- Vergelijk huidig jaarlijks TRIM-hulpmodel met een conditioneel Poisson-
+  venstermodel. Per getrokken site twee sommen van oppervlaktegecorrigeerde
+  tellingen en twee aantallen getelde jaren. De gezamenlijke niveauverhouding
+  wordt geschat met een quasi-binomiale conditionele likelihood, met
+  log(n_post/n_pre) als offset. Dit is de geprofileerde site-interceptvariant
+  van een loglineair telmodel met site- en venstereffect. Alle jaar-nullen
+  blijven tellingen en blootstelling. Ontbrekende bezoeken zijn geen nul.
+- Alleen sites met telinformatie in beide vensters dragen aan de verhouding
+  bij. Sites met twee nulvensters hebben geen informatie voor de verhouding.
+  Als een volledig venster in de gebruikte trekking nul is, blijft de brug
+  ongeldig. Geen pseudotelling, nieuwe trekking of fallback.
+- Het kandidaatmodel veronderstelt één gemiddeld niveau binnen ieder venster;
+  het jaarlijkse model laat zes jaarniveaus vrij. De kandidaat is daarom een
+  expliciete methodevariant, geen onzichtbare reparatie van mislukte fits.
+- Behoud voor de vergelijking de bestaande vaste 33 soorten. Verander de
+  groepssamenstelling niet om een pilot te laten slagen. Nieuwe formele
+  kandidaten worden afzonderlijk gerapporteerd, niet automatisch toegevoegd.
+- Accepteer een vervanging pas na vergelijking van uitgangsfactoren,
+  probleemtrekkingen, vensterdekking en groepsgevolgen. Bij onvoldoende
+  onderbouwing blijft de kandidaat experimenteel.
+
+### Taken en afrondcriteria
+
+- [x] 1. Regressietests voor afzonderlijke nul, ontbrekend jaar, negatief jaar,
+  leeg venster en bekende vensterverhouding; eerst rood, dan groen.
+- [x] 2. Venstermodel als expliciete methode, met methode-identiteit in
+  configuratie en uitvoer; reproduceerbare vergelijkingscontrole op broncache.
+- [x] 3. Vergelijking vastleggen, methodisch besluit onderbouwen en daarna
+  zo verantwoord 50 ontwikkelreplicaties met vaste selectie draaien; geen 500.
+- [x] 4. Relevante bestaande contracttests, onafhankelijke review, documentatie
+  en bronregister Markdown/Word gelijktrekken, commit en push.
+
+Nieuwe bestanden zijn alleen toegestaan voor een reproduceerbare
+vergelijkingscontrole en compacte diagnostiek; ruwe batches blijven in een
+uitdrukkelijk genegeerde lokale runmap en komen niet in Git.
+
+Uitvoeringsbesluit 2 november: kandidaat blijft experimenteel. De
+kalibratieproef levert voor Witte Kwikstaart 47/50; primaire brugfactoren
+veranderen Veldleeuwerik −51% en Witte Kwikstaart +33%. Daarom is de
+voorwaardelijke volledige 50-pilot niet gestart. Dit voorkomt een volledige
+run terwijl de kalibratievoorwaarde en de methodekeuze nog niet voldoen.
+
+Review: twee Important-bevindingen zijn met eerst falende tests hersteld:
+verplicht vast selectiebestand voor de kandidaat, en hercontrole van de zes
+ankerjaren op de daadwerkelijk tweezijdig bezochte sites. Ook de exacte
+33-ID-selectie en alle code-/selectiebronhashes zijn vastgelegd.
+
+Afrondbewijs: alle negen relevante R-contracttests en de shelltest voor
+bootstrapworkers slagen na de reviewreparaties; `git diff --check` is schoon.
+De aangescherpte kalibratievergelijking is herhaald en bevestigt 32 soorten
+50/50 en Witte Kwikstaart 47/50. Het bronregister is opgebouwd uit de
+actuele canonieke Markdown-/Wordbasis; de overige Wordparagrafen zijn exact
+behouden en de drie aanvullingen zijn inhoudelijk gelijk. Alle 57 gerenderde
+Wordpagina’s zijn onafhankelijk visueel gecontroleerd, inclusief de
+gewijzigde pagina 5; geen layoutproblemen. Geen gedeelde productieonderdelen
+gewijzigd. De ontwikkelbranch blijft behouden voor het methodische vervolg.

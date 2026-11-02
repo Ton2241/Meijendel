@@ -1,7 +1,8 @@
 finite_positive_mean <- function(x) {
   x <- as.numeric(x)
-  x <- x[is.finite(x) & x > 0]
-  if (!length(x)) NA_real_ else mean(x)
+  if (!length(x) || any(!is.finite(x)) || any(x < 0)) return(NA_real_)
+  value <- mean(x)
+  if (value > 0) value else NA_real_
 }
 
 values_for_years <- function(x, years) {
@@ -89,12 +90,60 @@ fit_bridge_calibration_trim <- function(species_df, draw, plot_ids, pre_years, p
   list(ok = TRUE, totals = totals, model = fit, warnings = unique(warnings), site_ids = sort(unique(drawn$bootstrap_site_id)))
 }
 
+# Geprofileerd loglineair site + venstermodel. De conditionele likelihood
+# gebruikt per site twee venstersommen en hun werkelijk getelde jaren.
+fit_bridge_calibration_window <- function(species_df, draw, plot_ids, pre_years, post_years) {
+  invalid <- function(reason) list(ok = FALSE, totals = NULL, reason = reason)
+  required <- c("bootstrap_cluster_id", "jaar", "geteld", "count_adjusted")
+  if (length(setdiff(required, names(species_df)))) return(invalid("onvolledige_vensterinvoer"))
+  years <- c(as.integer(pre_years), as.integer(post_years))
+  if (anyDuplicated(years)) return(invalid("overlappende_of_dubbele_brugjaren"))
+  drawn <- apply_cluster_draw(species_df, draw)
+  drawn <- drawn[drawn$source_cluster_id %in% plot_ids & drawn$jaar %in% years & drawn$geteld %in% TRUE, , drop = FALSE]
+  if (!nrow(drawn) || !setequal(unique(drawn$jaar), years)) return(invalid("onvolledige_ankercellen"))
+  if (any(!is.finite(drawn$count_adjusted)) || any(drawn$count_adjusted < 0)) return(invalid("ongeldige_venstertelling"))
+  if (anyDuplicated(drawn[c("bootstrap_site_id", "jaar")])) return(invalid("dubbele_venstercel"))
+  drawn$window <- ifelse(drawn$jaar %in% pre_years, "pre", "post")
+  summed <- aggregate(count_adjusted ~ bootstrap_site_id + window, drawn, sum)
+  exposure <- aggregate(jaar ~ bootstrap_site_id + window, drawn, length)
+  names(exposure)[names(exposure) == "jaar"] <- "exposure"
+  summed <- merge(summed, exposure, by = c("bootstrap_site_id", "window"))
+  paired <- merge(summed[summed$window == "pre", ], summed[summed$window == "post", ], by = "bootstrap_site_id", suffixes = c("_pre", "_post"))
+  if (!nrow(paired)) return(invalid("geen_gemeenschappelijke_venstersites"))
+  paired_years <- drawn$jaar[drawn$bootstrap_site_id %in% paired$bootstrap_site_id]
+  if (!setequal(unique(paired_years), years)) return(invalid("onvolledige_ankercellen_gepaarde_sites"))
+  if (sum(paired$count_adjusted_pre) <= 0 || sum(paired$count_adjusted_post) <= 0) return(invalid("nul_totaal_volledig_venster"))
+  paired$total <- paired$count_adjusted_pre + paired$count_adjusted_post
+  paired <- paired[paired$total > 0, , drop = FALSE]
+  paired$proportion <- paired$count_adjusted_post / paired$total
+  paired$log_exposure_ratio <- log(paired$exposure_post / paired$exposure_pre)
+  warnings <- character()
+  fit <- tryCatch(withCallingHandlers(
+    stats::glm(proportion ~ 1 + offset(log_exposure_ratio), weights = total,
+      family = stats::quasibinomial(link = "logit"), data = paired,
+      control = stats::glm.control(epsilon = 1e-10, maxit = 100)),
+    warning = function(w) { warnings <<- c(warnings, conditionMessage(w)); invokeRestart("muffleWarning") }
+  ), error = function(e) e)
+  if (inherits(fit, "error")) return(invalid(conditionMessage(fit)))
+  ratio <- exp(unname(stats::coef(fit)[[1L]]))
+  if (!isTRUE(fit$converged) || !is.finite(ratio) || ratio <= 0) return(invalid("venstermodel_niet_schatbaar"))
+  # Gestandaardiseerd jaarlijks niveau over dezelfde informatieve sites.
+  site_pre <- paired$total / (paired$exposure_pre + ratio * paired$exposure_post)
+  pre_level <- sum(site_pre)
+  totals <- stats::setNames(c(rep(pre_level, length(pre_years)), rep(pre_level * ratio, length(post_years))), as.character(years))
+  list(ok = TRUE, totals = totals, model = fit, warnings = unique(warnings),
+    site_ids = sort(unique(paired$bootstrap_site_id)), reason = NA_character_)
+}
+
 compute_bridge_variants <- function(species_df, pre_index, post_index, draw, config) {
   variants <- config$bridge_variants
   if (is.null(variants) || !length(variants)) stop("Geen brugvarianten geconfigureerd.", call. = FALSE)
+  calibration_method <- config$calibration_method %||% config$config$calibration_method %||% "yearly_trim"
+  if (!calibration_method %in% c("yearly_trim", "window_poisson")) stop("Onbekende brugkalibratiemethode.", call. = FALSE)
+  calibration_fn <- if (calibration_method == "window_poisson") fit_bridge_calibration_window else fit_bridge_calibration_trim
   rows <- lapply(names(variants), function(name) {
     variant <- variants[[name]]
-    calibration <- fit_bridge_calibration_trim(
+    calibration <- calibration_fn(
       species_df, draw, variant$plot_ids, variant$pre_years, variant$post_years
     )
     bridge <- compute_empirical_bridge(
@@ -109,7 +158,8 @@ compute_bridge_variants <- function(species_df, pre_index, post_index, draw, con
       post_years = paste(range(variant$post_years), collapse = "-"),
       level_ratio = bridge$level_ratio,
       bridge_factor = bridge$bridge_factor,
-      bridge_method = bridge$method,
+      bridge_method = paste(bridge$method, calibration_method, sep = ":"),
+      calibration_method = calibration_method,
       bridge_status = bridge$status,
       bridge_reason = if (isTRUE(calibration$ok)) bridge$reason else calibration$reason,
       calibration_site_ids = paste(calibration$site_ids %||% integer(), collapse = ";"),

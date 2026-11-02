@@ -803,6 +803,11 @@ drempelvarianten en leave-one-species-out-minimumstatus zijn vastgelegd.
 
 ### TRIM-bootstrap — voorbereid; productie wacht op complete cijfers 2026
 
+- Stand 2 november: nulcorrectie getest; vensterkalibratie blijft experimenteel.
+  De 50 kalibratieproeven halen voor Witte Kwikstaart 47/50; de uitgangsbrug
+  wijzigt voor Veldleeuwerik −51% en Witte Kwikstaart +33%. Geen nieuwe
+  volledige pilot gestart. Zie `trim/bootstrap/bridge_zero_20261102/README.md`.
+
 - De lokale 50-replicatiepilot is afgerond en vastgelegd. Start de
   500-validatie nog niet: 16 van 21 primaire vaste groepsschatters bleven onder
   95% geldig. Beslis vóór een nieuwe pilot expliciet hoe groepen met een vaste
