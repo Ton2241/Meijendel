@@ -99,6 +99,8 @@ if(sys.nframe()==0L) {
   manifest <- jsonlite::read_json(file.path(run,'input/bundle_manifest.json'),simplifyVector=TRUE)
   repro <- readLines(file.path(run,'reproducibility/result.txt'),warn=FALSE)
   stopifnot(any(grepl('REPRODUCIBILITY_EXACT_1_2=TRUE',repro,fixed=TRUE)))
+  context <- readRDS(file.path(run,'input/context.rds'))
+  manifest$calibration_pools <- lapply(context$bridge_variants,function(v)list(pre_years=v$pre_years,post_years=v$post_years,plot_ids=v$plot_ids,n_plots=length(v$plot_ids)))
   manifest$reproducibility_exact_replicates_1_2 <- TRUE
   manifest$baseline_sha256 <- digest::digest(file=file.path(run,'baseline.csv'),algo='sha256')
   manifest$builder_script_sha256 <- digest::digest(file=file.path(repo,'R/build_trim_species_pilot_2025.R'),algo='sha256')
