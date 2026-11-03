@@ -1,0 +1,14 @@
+{
+  "species": 156,
+  "period": "1958-2025",
+  "saved_replicates": 500,
+  "rows_compared": 234468,
+  "previous_valid_rows_unchanged": 54654,
+  "changed_rows": 27,
+  "changed_primary_cases": 9,
+  "draw_hashes_unchanged": true,
+  "baseline_unchanged": true,
+  "protected_source_outputs_unchanged": true,
+  "zero_new_draws": true,
+  "zero_refits": true
+}

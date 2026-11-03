@@ -1,0 +1,8 @@
+{
+  "batch_count": 100,
+  "replicates": 500,
+  "batch_errors": 0,
+  "runtime_seconds": 11146.64,
+  "peak_R_memory_mb": 396.5977,
+  "max_system_swap_growth_bytes": 1076174520.32
+}

@@ -1,0 +1,28 @@
+#!/usr/bin/env Rscript
+# Compare saved strict and relevant-window assessments; never refit a model.
+args<-commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L)
+repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-normalizePath(args[3],mustWork=TRUE)
+.libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
+a<-read.csv(file.path(run,'assessment/raw_assessment/estimates.csv'))
+b<-read.csv(file.path(out,'raw_assessment/estimates.csv'))
+stopifnot(nrow(a)==234468L,nrow(b)==234468L,identical(a[c('soort_id','replicate_id','width')],b[c('soort_id','replicate_id','width')]))
+ok<-is.finite(a$estimate_net_pct)
+stopifnot(all(is.finite(b$estimate_net_pct[ok])),isTRUE(all.equal(a$estimate_net_pct[ok],b$estimate_net_pct[ok],tolerance=1e-12)),identical(a$status[ok],b$status[ok]))
+change<-a$status!=b$status|xor(is.finite(a$estimate_net_pct),is.finite(b$estimate_net_pct))
+z<-b[change,];z$previous_status<-a$status[change];z$previous_net_pct<-a$estimate_net_pct[change]
+stopifnot(all(z$previous_status=='index_onvolledig_of_ongeldig'),all(is.finite(z$estimate_net_pct)),all(z$n_outside_problem_years>0))
+write.csv(z,file.path(out,'changed_estimates.csv'),row.names=FALSE,na='')
+primary<-b[b$width==5&b$replicate_id>0,];gaps<-primary[is.finite(primary$estimate_net_pct)&primary$n_outside_problem_years>0,]
+write.csv(gaps,file.path(out,'usable_with_outside_gaps.csv'),row.names=FALSE,na='')
+old<-read.csv(file.path(run,'assessment/per_species.csv'));new<-read.csv(file.path(out,'per_species.csv'))
+stopifnot(nrow(new)==156L,identical(old$soort_id,new$soort_id),identical(old$baseline_status,new$baseline_status),isTRUE(all.equal(old$baseline_net_pct,new$baseline_net_pct,tolerance=1e-12)))
+comparison<-data.frame(soort_id=new$soort_id,soort_naam=new$soort_naam,old_n_valid=old$n_valid,new_n_valid=new$n_valid,old_gate=old$gate,new_gate=new$gate)
+write.csv(comparison,file.path(out,'comparison.csv'),row.names=FALSE)
+m0<-jsonlite::read_json(file.path(run,'assessment/manifest.json'),simplifyVector=TRUE)
+m1<-jsonlite::read_json(file.path(out,'manifest.json'),simplifyVector=TRUE)
+stopifnot(identical(m0$metric_manifest$draw_hashes,m1$metric_manifest$draw_hashes),identical(m0$run_bundle_sha256,m1$run_bundle_sha256),m1$metric_manifest$count_models_refitted==0,!m1$bootstrap_started_2000,!m1$formal_intervals)
+protected<-jsonlite::read_json(file.path(repo,'trim/bootstrap/zero_policy_20261103/unchanged_source_outputs.json'))
+stopifnot(all(vapply(names(protected),function(p)identical(digest::digest(file=p,algo='sha256'),protected[[p]]),logical(1))))
+evidence<-list(species=156L,period='1958-2025',saved_replicates=500L,rows_compared=nrow(a),previous_valid_rows_unchanged=sum(ok),changed_rows=nrow(z),changed_primary_cases=sum(z$width==5),draw_hashes_unchanged=TRUE,baseline_unchanged=TRUE,protected_source_outputs_unchanged=TRUE,zero_new_draws=TRUE,zero_refits=TRUE)
+jsonlite::write_json(evidence,file.path(out,'comparison_verification.json'),auto_unbox=TRUE,pretty=TRUE)
+print(table(new$gate));print(comparison[comparison$old_n_valid!=comparison$new_n_valid,]);cat('Stabiliteit laatste/beide: ',sum(new$latest_stable),sum(new$both_stable),'\n');print(evidence)

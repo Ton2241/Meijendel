@@ -30,7 +30,7 @@ assess_trim_500_validation <- function(args=commandArgs(trailingOnly=TRUE)) {
   cbind(row,data.frame(pilot50_n=pilot$n_valid[match(row$soort_id,pilot$soort_id)],pilot50_gate=pilot$gate_500[match(row$soort_id,pilot$soort_id)]),as.data.frame(d,stringsAsFactors=FALSE))
  })
  per_species<-do.call(rbind,rows);write.csv(per_species,file.path(out,'per_species.csv'),row.names=FALSE,na='')
- primary_estimates<-e[e$width==5,c('soort_id','replicate_id','estimate_net_pct','status','first_mean','last_mean')];write.csv(primary_estimates,file.path(out,'primary_estimates.csv'),row.names=FALSE,na='')
+ primary_estimates<-e[e$width==5,c('soort_id','replicate_id','estimate_net_pct','status','first_mean','last_mean','outside_problem_years','n_outside_problem_years')];write.csv(primary_estimates,file.path(out,'primary_estimates.csv'),row.names=FALSE,na='')
  write.csv(s,file.path(out,'window_sensitivity.csv'),row.names=FALSE,na='')
  manifests<-lapply(list.files(file.path(run,'batches'),pattern='\\.rds\\.manifest\\.rds$',full.names=TRUE),readRDS)
  stopifnot(length(manifests)==100L,all(vapply(manifests,function(m)m$error_count==0,logical(1))))
@@ -39,8 +39,9 @@ assess_trim_500_validation <- function(args=commandArgs(trailingOnly=TRUE)) {
  jsonlite::write_json(resources,file.path(out,'resources.json'),auto_unbox=TRUE,pretty=TRUE)
  raw_manifest<-jsonlite::read_json(file.path(out,'raw_assessment/manifest.json'),simplifyVector=TRUE)
  jsonlite::write_json(list(source_period='1958-2025',species=156L,replicates=500L,run_bundle_sha256=digest::digest(file=file.path(run,'input/bundle_manifest.json'),algo='sha256'),
-  metric_manifest=raw_manifest,validation_criteria_sha256=digest::digest(file=file.path(repo,'trim/bootstrap/endpoint_2025_500_20261103/CRITERIA.md'),algo='sha256'),
-  assessment_script_sha256=digest::digest(file=file.path(repo,'R/assess_trim_500_validation.R'),algo='sha256'),first50_estimates_and_statuses_reproduced=TRUE,
+  metric_manifest=raw_manifest,validation_criteria_sha256=digest::digest(file=file.path(repo,'trim/bootstrap/endpoint_2025_500_window_check_20261103/CRITERIA.md'),algo='sha256'),
+  original_500_criteria_sha256=digest::digest(file=file.path(repo,'trim/bootstrap/endpoint_2025_500_20261103/CRITERIA.md'),algo='sha256'),
+  reassessment_criteria_commit='f238f144',assessment_script_sha256=digest::digest(file=file.path(repo,'R/assess_trim_500_validation.R'),algo='sha256'),first50_estimates_and_statuses_reproduced=TRUE,
   bootstrap_started_2000=FALSE,formal_intervals=FALSE),file.path(out,'manifest.json'),auto_unbox=TRUE,pretty=TRUE)
  print(table(per_species$gate));cat('ASSESSMENT_500_COMPLETE\n')
 }

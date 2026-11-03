@@ -1,18 +1,24 @@
 #!/usr/bin/env Rscript
 # Separate 2025 endpoint metric. Does not activate canonical production intervals.
 fixed_endpoint_estimate <- function(ix,expected_years,pre_ok=TRUE,post_ok=TRUE,bridge_ok=TRUE,width=5L) {
- invalid<-function(status)list(status=status,estimate=NA_real_,first_mean=NA_real_,last_mean=NA_real_)
+ first<-1958L+seq_len(width)-1L;last<-2025L-width+seq_len(width)
+ required<-sort(unique(c(first,last,1979:1983,1986:1990)))
+ outside<-sort(setdiff(union(expected_years,ix$jaar),required))
+ problem<-outside[vapply(outside,function(y){v<-ix$index_value[which(ix$jaar==y)];length(v)!=1L||any(!is.finite(v)|v<0)},logical(1))]
+ finish<-function(status,estimate=NA_real_,first_mean=NA_real_,last_mean=NA_real_)
+  list(status=status,estimate=estimate,first_mean=first_mean,last_mean=last_mean,
+   outside_problem_years=paste(problem,collapse=';'),n_outside_problem_years=length(problem))
+ invalid<-function(status)finish(status)
  if(!isTRUE(pre_ok))return(invalid('pre_model_niet_schatbaar'))
  if(!isTRUE(post_ok))return(invalid('post_model_niet_schatbaar'))
  if(!isTRUE(bridge_ok))return(invalid('brug_niet_schatbaar'))
- first<-1958L+seq_len(width)-1L;last<-2025L-width+seq_len(width)
- if(!all(c(first,last)%in%expected_years))return(invalid('vaste_vensterjaren_ontbreken'))
- if(!index_summary_valid(ix,expected_years))return(invalid('index_onvolledig_of_ongeldig'))
+ if(!all(required%in%expected_years))return(invalid('vaste_vensterjaren_ontbreken'))
+ if(!index_summary_valid(ix[ix$jaar%in%required,],required))return(invalid('index_onvolledig_of_ongeldig'))
  a<-mean(ix$index_value[match(first,ix$jaar)]);b<-mean(ix$index_value[match(last,ix$jaar)])
- if(a==0)return(list(status='nul_begingemiddelde',estimate=NA_real_,first_mean=a,last_mean=b))
+ if(a==0)return(finish('nul_begingemiddelde',first_mean=a,last_mean=b))
  value<-100*(b/a-1)
  if(!is.finite(value))return(invalid('verandering_niet_eindig'))
- list(status=if(b==0)'nul_eindgemiddelde' else 'berekenbaar',estimate=value,first_mean=a,last_mean=b)
+ finish(if(b==0)'nul_eindgemiddelde' else 'berekenbaar',estimate=value,first_mean=a,last_mean=b)
 }
 endpoint_interval_diagnostic <- function(theta,draws,planned) {
  stopifnot(length(draws)==planned,planned>=2L)
@@ -67,7 +73,7 @@ run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
    for(w in c(3L,5L,7L)){
     e<-fixed_endpoint_estimate(ix,years,s$pre_ok,s$post_ok,is.finite(s$bridge_factor)&&s$bridge_factor>0,w)
     rows[[length(rows)+1L]]<-data.frame(soort_id=id,replicate_id=r$replicate_id,width=w,estimate_net_pct=e$estimate,status=e$status,
-     first_mean=e$first_mean,last_mean=e$last_mean,n_target_years=length(years),pre_ok=s$pre_ok,post_ok=s$post_ok,
+     first_mean=e$first_mean,last_mean=e$last_mean,outside_problem_years=e$outside_problem_years,n_outside_problem_years=e$n_outside_problem_years,n_target_years=length(years),pre_ok=s$pre_ok,post_ok=s$post_ok,
      bridge_ok=is.finite(s$bridge_factor)&&s$bridge_factor>0,pre_reason=s$pre_reason,post_reason=s$post_reason,bridge_reason=s$bridge_reason)
    }
   }
@@ -89,6 +95,7 @@ run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
    n_planned=planned,n_zero_start=sum(x$status=='nul_begingemiddelde'),n_zero_end=sum(x$status=='nul_eindgemiddelde'),
    n_model_failure=sum(!x$pre_ok|!x$post_ok),n_bridge_failure=sum(!x$bridge_ok),
    n_missing_window=sum(x$status=='vaste_vensterjaren_ontbreken'),
+   n_draws_with_outside_index_problems=sum(x$n_outside_problem_years>0),baseline_outside_problem_years=b$outside_problem_years,
    finite_median=if(length(f))median(f) else NA_real_,finite_min=if(length(f))min(f) else NA_real_,finite_max=if(length(f))max(f) else NA_real_,
    gate_500=gate,reasons=paste(names(frequencies),frequencies,sep='=',collapse=';')),band)
  }
@@ -104,8 +111,8 @@ run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
  for(n in c('estimates','summary','primary','coverage'))write.csv(get(n),file.path(out,paste0(n,'.csv')),row.names=FALSE,na='')
  jsonlite::write_json(list(source_period='1958-2025',species=156,planned_replicates=planned,clusters=52,source_hash=m$source_hash,context_sha256=m$context_sha256,
   source_indices_sha256=digest::digest(file=source_index_path,algo='sha256'),baseline_sha256=digest::digest(file=file.path(run,'baseline.csv'),algo='sha256'),
-  script_sha256=digest::digest(file=file.path(repo,'R/trim_endpoint_bootstrap.R'),algo='sha256'),criteria_sha256=digest::digest(file=file.path(repo,'trim/bootstrap/endpoint_all_2025_50_20261103/CRITERIA.md'),algo='sha256'),
-  criteria_commit='b2d45c6a',baseline_70_max_error=max(errors),baseline_four_curve_max_error=max(abs(z$index_value.x-z$index_value.y)),draw_hashes=hashes,
+  script_sha256=digest::digest(file=file.path(repo,'R/trim_endpoint_bootstrap.R'),algo='sha256'),criteria_sha256=digest::digest(file=file.path(repo,'trim/bootstrap/endpoint_2025_500_window_check_20261103/CRITERIA.md'),algo='sha256'),
+  criteria_commit='f238f144',index_validation='endpoint_and_bridge_windows_other_years_flagged',baseline_70_max_error=max(errors),baseline_four_curve_max_error=max(abs(z$index_value.x-z$index_value.y)),draw_hashes=hashes,
   dependency_sha256=as.list(setNames(vapply(c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'),function(n)digest::digest(file=file.path(repo,'R',n),algo='sha256'),character(1)),c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'))),formal_intervals=FALSE,count_models_refitted=0,assessment_only=TRUE,source_replicates_from_saved_batches=planned,bootstrap_started_500=planned>=500L,R_version=R.version.string),file.path(out,'manifest.json'),auto_unbox=TRUE,pretty=TRUE)
  print(table(primary$gate_500));print(table(primary$baseline_status));cat('ENDPOINT_ALL_SPECIES_ASSESSMENT_READY\n')
 }
