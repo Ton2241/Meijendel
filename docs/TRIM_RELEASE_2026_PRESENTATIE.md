@@ -21,7 +21,7 @@ De huidige formele laadroute vraagt eindjaar 2026, minimaal 2.000 geplande trekk
 
 ## Website VWG_M
 
-De routes hieronder verwijzen naar `website/vwg-m-linux-app/app/main.py`. Controleer bij CMS-pagina’s ook de opgeslagen inhoud en bijlagen. De lokale checkout toont de routes en sjablonen. De definitieve CMS-inventaris en de bijbehorende figuren horen in de lokale releaseproef.
+De routes hieronder verwijzen naar `website/vwg-m-linux-app/app/main.py`. Controleer bij CMS-pagina’s ook de opgeslagen inhoud en bijlagen. De lokale checkout toont de routes en sjablonen. De [lokale CMS- en figuurcontrole](TRIM_RELEASE_2026_CMS_CONTROLE.md) beschrijft de aangetroffen teksten en bestanden per pagina. Vergelijk ze tijdens de releaseproef met de gekozen CMS- en uploadbasis.
 
 | Pagina | Werk voor 2026 | Presentatie |
 |---|---|---|
@@ -31,7 +31,7 @@ De routes hieronder verwijzen naar `website/vwg-m-linux-app/app/main.py`. Contro
 | `/werkgroep/bmp_verslagen.asp` | Controleer jaarlabel en link zodra een officieel verslag beschikbaar is. | Benoem de status van het verslag afzonderlijk van de telgegevens. |
 | `/soorten/index.asp`, `/soorten/alle-soorten.asp` | Ververs analysebereik en links naar soortdetails. Controleer welke soorten in de nieuwe levering en selectie voorkomen. | Houd soorten met gedeeltelijke of ontbrekende trend zichtbaar. |
 | `/soorten/vogel.asp?id=…` | Ververs tellingen, trendgegevens, grafiek, periode en bronverwijzing. De oude grafiekroute verwijst hierheen. | Gebruik de gedeelde status en periode-indeling. Toon een vrijgegeven band bij de bijbehorende maat en vermeld waarom een band of lange maat ontbreekt. |
-| `/groepen/index.asp`, `/groepen/{slug}.asp`, `/groepen/grafiek/{chart_id}.svg` | Ververs alle grafiekcodes en bijbehorende soortlijsten uit de nieuwe groepsuitvoer. Controleer ecologische en habitatgroepen, Rode en Oranje Lijst, Vogelrichtlijn en de binaire en gewogen functionele varianten. | Toon variant en samenstelling. Label GAM en landelijke vergelijking afzonderlijk. Gebruik een formele groepsband uitsluitend met eigen groepsuitvoer. |
+| `/groepen/index.asp`, `/groepen/{slug}.asp`, `/groepen/grafiek/{chart_id}.svg` | Ververs alle grafiekcodes en bijbehorende soortlijsten uit de nieuwe groepsuitvoer. Controleer ecologische en habitatgroepen, Rode en Oranje Lijst, Vogelrichtlijn en de binaire en gewogen functionele varianten. | Toon variant en samenstelling. De publieke SVG gebruikt dichtheid uit `groep_dichtheid.csv`. Controleer GAM, MSI en landelijke vergelijkingen afzonderlijk waar die worden getoond. Gebruik een formele groepsband uitsluitend met eigen groepsuitvoer. |
 | `/meijendel/index.asp`, `/meijendel/beschrijving.asp`, `/meijendel/vogelonderzoek.asp`, `/meijendel/verhalen.asp` | Controleer eindjaren, tellingen, samenvattingen en verwijzingen naar analyse en verhalen. | Geef de peildatum van cijfers. Houd historische ankerjaren en gepubliceerde bronperioden herkenbaar. |
 | `/meijendel/verhalen/landelijke-spiegel.asp` | Controleer lokale eindjaren, landelijke reeks en gemeenschappelijk vergelijkingsvenster. | Benoem het eindjaar per bron en onderbouw eventuele lokale afwijking. |
 | `/meijendel/verhalen/riet-en-watervogels.asp`, `/meijendel/verhalen/meeuwenkolonie.asp` | Controleer figuren, eindwaarden en tekst over riet-, water- en kolonievogels. Gebruik per uitspraak de bijbehorende broedvogel- of koloniebron. | Scheid tellingen, indices en afgeleide verandering. |
