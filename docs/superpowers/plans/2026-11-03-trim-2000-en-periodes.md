@@ -11,3 +11,6 @@ Spec: trim/bootstrap/species_2025_2000_20261103/CRITERIA.md. Bestaande schone ta
 - [ ] Gerichte regressies,bronbehoud,één onafhankelijke review inclalleWordpages;commitpush/eindpreflight. Geen nieuwepublicatie.
 
 Reviewfocus: geen eerste500overschrijven ofheretiketteren; geen andere clusters na selectie32; geen brugafhankelijkheid bij eigenperioden; geen bewegend referentiejaar; geen banduit alleen successen/constante referentieverdeling; geen95%-dekking claimen; alle156/312/10608 zichtbaar.
+
+Voorafcriteria gecommit e7f68940, uitbreidingdriver5050b7a8; beide oude draws1/2 reproduceren32soorten/indices. Nieuwe IDs501–2000 lopen, één fitworker; R-execsession96201, PID51604. Root canoniek outputs/trim-2025-species-2000-20261103, logzelfdepad+.log. Eerste500 blijven in parent outputs/trim-2025-validation-500-20261103. Taakvreemde preflightafwijking VWG_Project/main1commitvoororigin blijft ongemoeid.
+Naextensie wacht hersteldriver via execsession23279 op PID51604; start alleen bijEXTENSION_2000_COMPLETE. Herstelroot child/period_recovery, logchild/period_recovery.log. Niet opnieuw starten zolang deze processen actief zijn. Ongebrrugde herstelhelper/driver6de1c2e9,software/parentidentiteitschecksdeae13ee. Assessoren gereed; analyse pas na complete markers en hashes.

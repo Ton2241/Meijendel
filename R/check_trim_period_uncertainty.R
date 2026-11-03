@@ -17,3 +17,14 @@ s<-period_distribution_500(0,rep(0,500));stopifnot(s$status=='constante_verdelin
 s<-period_distribution_500(0,c(NA,1:499));stopifnot(s$n_valid==499,is.na(s$diagnostic_low))
 s<-period_distribution_500(0,seq(0,10,length.out=500));stopifnot(is.finite(s$diagnostic_low),is.na(s$ci95_low))
 cat('Eigen500banden: vaste referentie/constante nul/uitval krijgen geen schijnband, overige banden uitsluitend diagnostisch: OK\n')
+# Recover an independent post model from the reference bridge when primary failed.
+r<-list(species=data.frame(soort_id=c(1L,1L),bridge_variant=c('primary_5yr','reference_3yr'),coverage_variant='volledig_netwerk',pre_ok=TRUE,post_ok=TRUE,pre_reason=NA_character_,post_reason=NA_character_,pre_model='m',post_model='m',post_estimate_pct_per_year=NA_real_,bridge_factor=c(NA_real_,2)),indices=data.frame(soort_id=1L,bridge_variant='reference_3yr',coverage_variant='volledig_netwerk',jaar=1984:1986,index_value=c(20,40,60)),draw=data.frame())
+cx<-list(species_targets=list('1'=list(post=list(years=1984:1986))),species_matrix=data.frame(soort_id=1L,jaar=1984:1986),config=list(periods=list(post=1984:1986)))
+s<-recover_independent_period(r,1L,'post',cx);stopifnot(!s$refitted,identical(s$index$index_value,c(10,20,30)))
+# If both bridges failed, restore only the saved successful model, and reject a mismatch.
+source('R/trim_bootstrap_core.R')
+r$species$post_estimate_pct_per_year<-combined_pct_trend(setNames(c(10,20,30),1984:1986),numeric(),1,1984:1986);r$species$bridge_factor<-NA_real_
+env<-new.env(parent=globalenv());env$apply_cluster_draw<-function(df,draw)df;env$fit_first_working_trim_model<-function(df,analysis_years)list(ok=TRUE,config='m',year_map=data.frame(jaar=analysis_years));env$bootstrap_model_index<-function(f)setNames(c(10,20,30),1984:1986)
+f<-recover_independent_period;environment(f)<-env;s<-f(r,1L,'post',cx);stopifnot(s$refitted,identical(s$index$index_value,c(10,20,30)))
+env$fit_first_working_trim_model<-function(df,analysis_years)list(ok=TRUE,config='ander_model',year_map=data.frame(jaar=analysis_years));stopifnot(inherits(try(f(r,1L,'post',cx),silent=TRUE),'try-error'))
+cat('Periodeherstel: andere bewaarde brug gebruiken; alleen ontbrekende ongebrrugde uitvoer herstellen; afwijkend model weigeren: OK\n')
