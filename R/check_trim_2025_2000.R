@@ -1,0 +1,6 @@
+#!/usr/bin/env Rscript
+source('R/run_trim_2025_2000.R')
+p<-list(species_matrix=data.frame(soort_id=c(1L,2L,3L),x=1:3),clusters=data.frame(id=1:52),species_targets=list('1'=1,'2'=2,'3'=3),config=list(run_seed=20261102L,planned_replicates=500L,run_id='parent'))
+x<-extension_2000_context(p,c(1L,3L),'child')
+stopifnot(identical(x$clusters,p$clusters),identical(x$config$run_seed,p$config$run_seed),identical(x$species_matrix,p$species_matrix[c(1,3),]),identical(x$species_targets,p$species_targets[c('1','3')]),x$config$planned_replicates==2000L,p$config$planned_replicates==500L)
+cat('2000subset: bevroren jaren/52clusters/seed behouden,500ouder onaangeraakt: OK\n')
