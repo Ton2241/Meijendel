@@ -5,6 +5,9 @@ extension_2000_context <- function(parent,ids,run_id) {
  x$config$planned_replicates<-2000L;x$config$run_id<-run_id
  x$config$species_targets_sha256<-digest::digest(x$species_targets,algo='sha256');x
 }
+extension_parent_provenance <- function(paths) {
+ data.frame(file=basename(paths),sha256=unname(vapply(paths,bundle_sha256_file,character(1))),row.names=NULL)
+}
 run_trim_2025_2000 <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==3L);repo<-normalizePath(args[1],mustWork=TRUE);parent_root<-normalizePath(args[2],mustWork=TRUE);root<-args[3]
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
@@ -26,7 +29,7 @@ run_trim_2025_2000 <- function(args=commandArgs(trailingOnly=TRUE)) {
  validate_trim_bootstrap_engine(bundle,repo);identity<-readRDS(file.path(bundle,'identity.rds'))
  parent_paths<-list.files(file.path(parent_root,'batches'),pattern='^batch-[0-9]+-[0-9]+\\.rds$',full.names=TRUE)
  saved<-merge_trim_bootstrap_batches(parent_paths,1:500)
- provenance<-data.frame(file=basename(parent_paths),sha256=vapply(parent_paths,bundle_sha256_file,character(1)))
+ provenance<-extension_parent_provenance(parent_paths)
  provenance_path<-file.path(root,'parent_batches.csv')
  if(file.exists(provenance_path))stopifnot(identical(read.csv(provenance_path),provenance)) else write.csv(provenance,provenance_path,row.names=FALSE)
  # Reproduce saved results before new fits: preserve source/clusters and species selection semantics.

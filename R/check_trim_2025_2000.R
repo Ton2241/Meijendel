@@ -9,3 +9,7 @@ a<-rep(seq(-20,20,length.out=500),4);s<-long_2000_summary(0,a);stopifnot(s$n_val
 a[2000]<-NA;s<-long_2000_summary(0,a);stopifnot(s$gate=='uitval_geen_band',is.na(s$diagnostic_low))
 s<-long_2000_summary(-100,rep(-100,2000));stopifnot(s$gate=='constante_verdeling_geen_band')
 cat('2000: alle trekkingen vereist, twee stabiliteitsovergangen, geen automatische formele band: OK\n')
+source('R/build_trim_bootstrap_bundle.R')
+f<-c(tempfile(),tempfile());writeLines('a',f[1]);writeLines('b',f[2]);p<-tempfile()
+z<-extension_parent_provenance(f);write.csv(z,p,row.names=FALSE);stopifnot(identical(read.csv(p),z));unlink(c(f,p))
+cat('Ouderbatchherkomst blijft na CSV-opslag/herstart identiek zonder impliciete pad-rijnamen: OK\n')
