@@ -55,8 +55,9 @@ run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
  paths<-list.files(file.path(run,'batches'),pattern='^batch-[0-9]+-[0-9]+\\.rds$',full.names=TRUE)
  merged<-merge_trim_bootstrap_batches(paths,expected_ids=seq_len(planned))
  results<-c(list(list(replicate_id=0L,species=base,indices=baseline_ix)),merged$results)
- rows<-list();hashes<-list()
+ blocks<-list();hashes<-list()
  for(r in results){
+  rows<-list()
   if(r$replicate_id>0)hashes[[as.character(r$replicate_id)]]<-draw_hash_text(r$draw)
   for(id in ids){
    s<-r$species[r$species$soort_id==id&r$species$bridge_variant=='primary_5yr',];stopifnot(nrow(s)==1)
@@ -70,8 +71,9 @@ run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
      bridge_ok=is.finite(s$bridge_factor)&&s$bridge_factor>0,pre_reason=s$pre_reason,post_reason=s$post_reason,bridge_reason=s$bridge_reason)
    }
   }
+  blocks[[length(blocks)+1L]]<-do.call(rbind,rows)
  }
- estimates<-do.call(rbind,rows)
+ estimates<-do.call(rbind,blocks);rm(blocks,rows);gc()
  coverage<-do.call(rbind,lapply(ids,function(id)do.call(rbind,lapply(list(1958:1962,2021:2025),function(ys){
   d<-cx$species_matrix;d<-d[d$soort_id==id&d$jaar%in%ys&d$geteld%in%TRUE&is.finite(d$count_adjusted),]
   data.frame(soort_id=id,first_year=min(ys),last_year=max(ys),n_counted_cells=nrow(d),n_counted_plots=length(unique(d$plot_id)),n_positive_plots=length(unique(d$plot_id[d$count_adjusted>0])))
@@ -104,7 +106,7 @@ run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
   source_indices_sha256=digest::digest(file=source_index_path,algo='sha256'),baseline_sha256=digest::digest(file=file.path(run,'baseline.csv'),algo='sha256'),
   script_sha256=digest::digest(file=file.path(repo,'R/trim_endpoint_bootstrap.R'),algo='sha256'),criteria_sha256=digest::digest(file=file.path(repo,'trim/bootstrap/endpoint_all_2025_50_20261103/CRITERIA.md'),algo='sha256'),
   criteria_commit='b2d45c6a',baseline_70_max_error=max(errors),baseline_four_curve_max_error=max(abs(z$index_value.x-z$index_value.y)),draw_hashes=hashes,
-  dependency_sha256=as.list(setNames(vapply(c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'),function(n)digest::digest(file=file.path(repo,'R',n),algo='sha256'),character(1)),c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'))),formal_intervals=FALSE,count_models_refitted=0,bootstrap_started_500=FALSE,R_version=R.version.string),file.path(out,'manifest.json'),auto_unbox=TRUE,pretty=TRUE)
+  dependency_sha256=as.list(setNames(vapply(c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'),function(n)digest::digest(file=file.path(repo,'R',n),algo='sha256'),character(1)),c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'))),formal_intervals=FALSE,count_models_refitted=0,assessment_only=TRUE,source_replicates_from_saved_batches=planned,bootstrap_started_500=planned>=500L,R_version=R.version.string),file.path(out,'manifest.json'),auto_unbox=TRUE,pretty=TRUE)
  print(table(primary$gate_500));print(table(primary$baseline_status));cat('ENDPOINT_ALL_SPECIES_ASSESSMENT_READY\n')
 }
 if(sys.nframe()==0L)run_endpoint_assessment()
