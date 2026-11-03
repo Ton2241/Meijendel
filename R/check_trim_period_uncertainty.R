@@ -1,0 +1,13 @@
+#!/usr/bin/env Rscript
+source('R/compare_trim_index_summaries.R');source('R/trim_period_uncertainty.R')
+y<-1984:2025;d<-data.frame(jaar=y,index_value=100*exp(.02*(y-1984)))
+s<-period_endpoint_estimate(d,y,TRUE);stopifnot(abs(s$estimate-100*expm1(.02*37))<1e-8)
+z<-d;z$index_value[z$jaar>=2021]<-0;stopifnot(period_endpoint_estimate(z,y,TRUE)$estimate== -100)
+z$index_value[z$jaar<=1988]<-0;stopifnot(is.na(period_endpoint_estimate(z,y,TRUE)$estimate))
+stopifnot(is.finite(period_endpoint_estimate(d[d$jaar!=2000,],y,TRUE)$estimate),is.na(period_endpoint_estimate(d[d$jaar!=1984,],y,TRUE)$estimate),is.na(period_endpoint_estimate(d,2018:2025,TRUE)$estimate),is.na(period_endpoint_estimate(d,y,FALSE)$estimate))
+v<-fixed_reference_indices(d,y,1984L,TRUE);stopifnot(v[1]==100,all(is.finite(v)))
+z<-d;z$index_value[1]<-0;stopifnot(all(is.na(fixed_reference_indices(z,y,1984L,TRUE))))
+z<-d;z$index_value[10]<-0;stopifnot(fixed_reference_indices(z,y,1984L,TRUE)[10]==0)
+z<-rbind(d,d[10,]);v<-fixed_reference_indices(z,y,1984L,TRUE);stopifnot(is.na(v[10]),all(is.finite(v[-10])))
+stopifnot(all(is.na(fixed_reference_indices(d,y,NA_integer_,TRUE))))
+cat('Eigen perioden: geen brug, vaste eindvensters, nulbehoud; jaarindices vast referentiejaar en geen schuiven: OK\n')
