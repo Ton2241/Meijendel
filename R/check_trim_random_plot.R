@@ -1,0 +1,21 @@
+#!/usr/bin/env Rscript
+source('R/compare_trim_zero_count_models.R')
+source('R/trim_random_plot_trial.R')
+m<-random_plot_moments(log(2),.04,TRUE,log(4))
+stopifnot(abs(m$expected-4)<1e-12,abs(m$unknown_site_sd-4*sqrt(3))<1e-12,abs(m$link_se-sqrt(.04+log(4)))<1e-12)
+k<-random_plot_moments(log(2),.04,FALSE,log(4));stopifnot(k$expected==2,k$unknown_site_sd==0,abs(k$link_se-.2)<1e-12)
+d<-expand.grid(plot_id=1:5,jaar=2000:2014);d$geteld<-TRUE
+noise<-rep(c(0,1,0,-1,1),length.out=nrow(d))
+d$count_adjusted<-pmax(0,round((2+d$plot_id)*exp(-.04*(d$jaar-2000))+noise))
+d$count_adjusted[d$plot_id==5]<-0;d$stratum<-ifelse(d$plot_id<=2,'historische_kern','later_netwerk')
+ref<-unique(d[c('plot_id','stratum')]);f<-fit_random_plot(d,2000:2014,ref)
+stopifnot(f$ok,nrow(f$data)==nrow(d),sum(f$data$plot_id==5)==15L,all(f$data$count_adjusted[f$data$plot_id==5]==0),all(is.finite(f$index)),all(f$index>0))
+p<-predict_random_plot(f,data.frame(plot_id=c(1,5,99),stratum=c('historische_kern','later_netwerk','later_netwerk'),jaar=2006))
+stopifnot(all(is.finite(p$expected)),all(p$expected>0),identical(p$unknown_site,c(FALSE,FALSE,TRUE)),p$unknown_site_sd[3]>0,p$unknown_site_sd[2]==0)
+missing<-d;missing$geteld[1]<-FALSE;missing$count_adjusted[1]<-NA
+fm<-fit_random_plot(missing,2000:2014,ref);stopifnot(fm$ok,nrow(fm$data)==nrow(d)-1L)
+empty<-d;empty$count_adjusted<-0;stopifnot(!fit_random_plot(empty,2000:2014,ref)$ok)
+cv<-random_plot_cv(d,2000:2014,ref)
+stopifnot(nrow(cv)==10L,all(cv$status=='berekenbaar'),all(table(cv$model)==5L),all(tapply(cv$n_test,cv$model,sum)==nrow(d)))
+cat('Random-kavelmodel: nulplots behouden, onbekende kavels geïntegreerd, ontbrekend≠nul, volledige CV: OK\n')
+stopifnot(random_trial_close(5,6),!random_trial_close(5,6.01),random_trial_close(.1,-.1),!random_trial_close(2,-2))
