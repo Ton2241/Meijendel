@@ -54,8 +54,8 @@ assess_trim_period_uncertainty <- function(args=commandArgs(trailingOnly=TRUE)) 
  for(i in seq_len(nrow(yk))) {
   id<-yk$soort_id[i];year<-yk$jaar[i];period<-if(year<1984)'pre' else 'post';pi<-which(pk$soort_id==id&pk$period==period);inside<-year%in%targets[[pi]];isref<-is.finite(references[pi])&&year==references[pi]
   s<-period_distribution_500(Y[i,1],Y[i,-1],reference=isref)
-  if(!inside)s$status<-'buiten_bevroren_modeljaren' else if(!OK[pi,1])s$status<-'baseline_model_niet_schatbaar'
-  rows[[i]]<-cbind(data.frame(soort_id=id,soort_naam=names_species$soort_naam[match(id,names_species$soort_id)],period=period,jaar=year,inside_model_years=inside,reference_year=references[pi],is_reference=isref,baseline_index=Y[i,1],n_planned=500L,n_model_failure=if(inside)sum(!OK[pi,-1]) else NA_integer_,n_zero_indices=sum(Y[i,-1]==0,na.rm=TRUE),n_counted_source_cells=source_n(counted,paste(id,year,sep=':')),n_positive_source_plots=source_n(positive,paste(id,year,sep=':'))),s)
+  if(!OK[pi,1])s$status<-'baseline_model_niet_schatbaar' else if(!inside)s$status<-'buiten_bevroren_modeljaren'
+  rows[[i]]<-cbind(data.frame(soort_id=id,soort_naam=names_species$soort_naam[match(id,names_species$soort_id)],period=period,jaar=year,baseline_model_ok=OK[pi,1],baseline_model_reason=meta[[pi]]$baseline_model_reason,inside_model_years=inside,reference_year=references[pi],is_reference=isref,baseline_index=Y[i,1],n_planned=500L,n_model_failure=if(inside)sum(!OK[pi,-1]) else NA_integer_,n_zero_indices=sum(Y[i,-1]==0,na.rm=TRUE),n_counted_source_cells=source_n(counted,paste(id,year,sep=':')),n_positive_source_plots=source_n(positive,paste(id,year,sep=':'))),s)
  }
  annual<-do.call(rbind,rows);stopifnot(nrow(periods)==312L,nrow(annual)==10608L)
  dir.create(out,recursive=TRUE,showWarnings=FALSE)
