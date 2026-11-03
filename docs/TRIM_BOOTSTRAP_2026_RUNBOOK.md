@@ -3,6 +3,11 @@
 Stand: 2 november 2026. Dit draaiboek bereidt de berekening voor; het verleent
 geen toestemming voor een nieuwe dump, een 2.000-run of VPS-publicatie.
 
+**Actuele aanvulling voor de afzonderlijke 2025-analyse:** het besluit en de
+beoordeling van de vaste begin/eindmaat staan onderaan bij 3 november 2026
+en in trim/bootstrap/endpoint_all_2025_50_20261103. Die analyse wacht niet op
+2026. Het oudere stappenplan hieronder geldt voor de 2026-productieroute.
+
 ## Statistisch contract
 
 - Primair: formele TRIM-trends 1958–1983 en 1984–2026 via
@@ -270,3 +275,8 @@ Voor de bewaarde Meijendel-ontwikkelbron 1958–2025 zijn Veldleeuwerik, Torenva
 ## 3 november 2026 — nulvriendelijke helling en begin/eindverandering vergeleken
 
 Voor vier soorten uit de bewaarde Meijendel-ontwikkelbron 1958–2025 zijn de bestaande nulvriendelijke indexhelling en begin/eindverandering vergeleken met exact dezelfde 50 trekkingen van 52 kavelclusters. De criteria en vaste vensters 1958–1962/2021–2025 zijn vooraf gecommit als 58a093ba. Veldleeuwerik, Torenvalk, Tapuit en Koolmees leveren respectievelijk 50/50, 49/50, 50/50 en 50/50 berekenbare uitkomsten. De nulvriendelijke uitgangshellingen zijn −4,57%, −2,75%, −4,13% en +2,29% per jaar; de netto begin/eindveranderingen −93,02%, −90,72%, −99,65% en +710,67%. Vooral Tapuit en Koolmees laten zien dat de twee maten verschillende grootheden samenvatten. Bij Veldleeuwerik geeft trekking 11 een tegengestelde richting tussen beide maten; Torenvalk-trekking 28 blijft zonder schatbare brug. Drie- en zevenjaarsvensters geven dezelfde uitgangsrichting, met variatie in omvang. De vergelijking tussen 17 historische kavels en het volledige netwerk verandert de kavelpopulatie en is daarom geen zelfstandige afkeurtest. Advies: beschrijf de lange verandering met vaste begin/eindvensters naast de volledige jaarreeks en afzonderlijke perioden; geen nieuwe algemene methode ingesteld. Vijftig trekkingen leveren geen formele 95%-marges. Geen vogeltelmodel opnieuw geschat en geen wijziging van brondata, database, 2026, cache of productie. De overige bronstatussen in Meijendel, Meijendel_bronnen en kandidaatbronnen blijven gelijk. Bewijs: trim/bootstrap/index_summary_20261103/README.md.
+
+
+## 3 november 2026 — alle 156 soorten beoordeeld voor de begin/eindmaat
+
+De gekozen begin/eindmaat vergelijkt de gemiddelde index van 1958–1962 met 2021–2025 in de bewaarde Meijendel-ontwikkelbron 1958–2025. Alle 156 soorten en dezelfde 50 trekkingen van 52 kavelgeschiedenissen zijn verwerkt. Criteria en poorten zijn vooraf gecommit als b2d45c6a. Er zijn 37 schatbare uitgangsveranderingen: 33 soorten halen 50/50 geldige uitkomsten en zijn kandidaat voor een 500-intervalvalidatie; Torenvalk en Witte Kwikstaart halen 49/50 en krijgen alleen uitvalonderzoek; Wintertaling 35/50 en Ransuil 34/50 blijven geblokkeerd door bruguitval. Bij 45 andere soorten ontbreken beginindexjaren in de bestaande modeljaarselectie, bij 11 een schatbare brug; bij 63 zijn niet beide benodigde perioden schatbaar (42 hebben één periode, 21 geen). Dit betekent geen verwijdering van soorten of ontbrekende brontellingen. Vijf kandidaten hebben hoogstens één positieve eindvensterkavel; bij zes soorten wisselt de richting tussen drie-, vijf- en zevenjaarsvensters. De aparte 2025-intervalroute weigert banden uit alleen eindige subsets en schijnzekere constante verdelingen. Alle formele 95%-kolommen blijven leeg; een 500-validatie is nog niet uitgevoerd en bewijst geen intervaldekking. Jaarindices, afzonderlijke perioden, bronstatussen van overige gegevens in Meijendel/Meijendel_bronnen en kandidaatbronnen blijven behouden. Geen nieuwe modellen, bruggen, database-, cache-, 2026- of productiewijziging. Alle soortresultaten en beperkingen staan in trim/bootstrap/endpoint_all_2025_50_20261103/README.md en PER_SOORT.md.
