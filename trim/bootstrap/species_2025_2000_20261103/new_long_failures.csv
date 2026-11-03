@@ -1,0 +1,14 @@
+"soort_id","soort_naam","replicate_id","status","missing_required_years","pre_reason","post_reason","bridge_reason"
+107,"Kleine Mantelmeeuw",555,"post_model_niet_schatbaar","","","model2_basis:Zero expected value at year 42
+","niet_positief_of_onvolledig_ankervenster"
+107,"Kleine Mantelmeeuw",645,"post_model_niet_schatbaar","","","model2_basis:Zero expected value at year 38
+","niet_positief_of_onvolledig_ankervenster"
+106,"Stormmeeuw",1519,"index_onvolledig_of_ongeldig","1958;1959;1960;1961;1962","","",""
+107,"Kleine Mantelmeeuw",1519,"pre_model_niet_schatbaar","","model2_basis:Years don't have a constant interval","","niet_positief_of_onvolledig_ankervenster"
+107,"Kleine Mantelmeeuw",1687,"post_model_niet_schatbaar","","","model2_basis:Zero expected value at year 42
+","niet_positief_of_onvolledig_ankervenster"
+107,"Kleine Mantelmeeuw",1719,"post_model_niet_schatbaar","","","model2_basis:Zero expected value at year 41
+","niet_positief_of_onvolledig_ankervenster"
+172,"Roodborsttapuit",1750,"brug_niet_schatbaar","","","","nul_totaal_volledig_venster"
+107,"Kleine Mantelmeeuw",1802,"post_model_niet_schatbaar","","","model2_basis:Zero expected value at year 40
+","niet_positief_of_onvolledig_ankervenster"

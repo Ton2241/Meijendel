@@ -1,0 +1,13 @@
+{
+  "species": 156,
+  "period": "1958-2025",
+  "preserved_primary_parent_rows": 78156,
+  "primary_parent_archive_sha256": "6542add4e00c0eb98c37fd91510ded5ec050753f342e584a2495e3a51b6fba8b",
+  "long_primary_rows": 126156,
+  "period_rows": 312,
+  "annual_rows": 10608,
+  "annual_failure_partition_500_verified": true,
+  "fixed_reference_100_no_band_verified": true,
+  "formal_intervals_empty": true,
+  "protected_source_files_sha256_unchanged": true
+}

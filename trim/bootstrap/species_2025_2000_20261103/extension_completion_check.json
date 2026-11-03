@@ -1,0 +1,19 @@
+{
+  "process_exit_code": 1,
+  "completion_marker": "EXTENSION_2000_COMPLETE",
+  "error_after_completion": "Error in sole() : could not find function \"sole\"",
+  "cause": "Het actieve aanroepbestand is tijdens de run aangepast voor de CSV-herstartcontrole. Bij de oude EOF-offset las R na de voltooide batchlus de resttekst van een verschoven regel.",
+  "driver_at_start": "5050b7a8",
+  "driver_resume_fix": "751647d1",
+  "original_eof_offset_bytes": 5195,
+  "observed_fragment_at_original_eof": "sole();rm(result);gc()",
+  "verified_batches": 300,
+  "verified_draw_ids": [
+    501,
+    2000
+  ],
+  "species_per_draw": 32,
+  "batch_errors": 0,
+  "all_batch_checksums_and_identity_verified": true,
+  "rerun_needed": false
+}

@@ -7,7 +7,7 @@ def read(path):
     with path.open() as f:return list(csv.DictReader(f))
 def write(path,rows):
     with path.open('w',newline='') as f:
-        w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
+        w=csv.DictWriter(f,fieldnames=list(rows[0]),lineterminator="\n");w.writeheader();w.writerows(rows)
 def yes(x):return x=='TRUE'
 def finite(x):
     try:return math.isfinite(float(x))
@@ -82,7 +82,7 @@ def main():
             own=f"{p['model_start']}–{p['model_end']}" if p['model_start'] else 'geen modeljaren'
             md+=[f"- Periode {per}, eigen modeljaren {own}: netto {fmt(p['baseline_net_pct'])}; {p['n_valid']}/500 geldig; {band(p)}. `{p['baseline_status']}` / `{p['status']}`. Positieve bronkavels in eigen begin/eindvenster: {p['source_positive_begin_plots']}/{p['source_positive_end_plots']}."]
         md+=['',f"Jaarindices: {len(available)}/68 kalenderposities met een baseline-index; {len(bands)} diagnostische jaarbanden, waarvan {sum(yes(a['both_stable']) for a in bands)} bij beide opeenvolgende controles stabiel. Referentiejaar vóór1984: {ps[0]['reference_year'] or 'geen'}; vanaf1984: {ps[1]['reference_year'] or 'geen'}; de {len(refs)} vaste referentieposities krijgen geen schijnband. Alle68 jaren met hun eigen aantallen, bronsteun en status staan in annual_indices.csv.",'', 'Beperkingen: '+('; '.join(flags) if flags else 'de vaste modeljaren, bronaanvulling en model-/brugaannamen blijven gelden; dekking is niet bewezen')+'.','']
-    write(dest/'species_overview.csv',overview);write(dest/'species_without_long_baseline.csv',[r for r in overview if r['soort_id'] in missing]);(dest/'PER_SOORT.md').write_text(readable('\n'.join(md)+'\n'))
+    write(dest/'species_overview.csv',overview);write(dest/'species_without_long_baseline.csv',[r for r in overview if r['soort_id'] in missing]);(dest/'PER_SOORT.md').write_text(readable('\n'.join(md).rstrip()+'\n'))
     available119=sum(yes(r['baseline_model_ok']) for r in subsets);net119=sum(finite(r['baseline_net_pct']) for r in subsets)
     bands119=sum(finite(r['diagnostic_low']) for r in subsets);yb119=sum(finite(r['diagnostic_low']) for r in subseta)
     baseyb119=sum(finite(r['baseline_index']) for r in subseta)

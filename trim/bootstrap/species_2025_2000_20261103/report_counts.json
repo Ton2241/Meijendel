@@ -1,0 +1,18 @@
+{
+  "species": 156,
+  "extended": 32,
+  "complete": 29,
+  "stable": 4,
+  "unsettled": 25,
+  "outfall": 3,
+  "period_models_119": 154,
+  "period_baselines_119": 149,
+  "period_bands_119": 73,
+  "annual_baselines_119": 4614,
+  "annual_bands_119": 2420,
+  "models119": {
+    "0": 21,
+    "1": 42,
+    "2": 56
+  }
+}
