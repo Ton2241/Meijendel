@@ -7,12 +7,13 @@ run_trim_period_recovery <- function(args=commandArgs(trailingOnly=TRUE)) {
  cx<-readRDS(file.path(parent,'input/context.rds'));m<-jsonlite::read_json(file.path(parent,'input/bundle_manifest.json'),simplifyVector=TRUE)
  stopifnot(bundle_sha256_file(file.path(parent,'input/context.rds'))==m$context_sha256)
  ids<-sort(unique(cx$species_matrix$soort_id));stopifnot(length(ids)==156L)
+ oldidentity<-readRDS(file.path(parent,'input/identity.rds'));stopifnot(oldidentity$software_id==paste0('R-',getRversion(),'_rtrim-',utils::packageVersion('rtrim')))
  dir.create(root,recursive=TRUE,showWarnings=FALSE)
  identity<-list(run_id='period-recovery-2025-500-20261103',source_hash=m$source_hash,config_hash=digest::digest(list(parent=m$context_sha256,core=bundle_sha256_file(file.path(repo,'R/trim_period_uncertainty.R')),script=bundle_sha256_file(file.path(repo,'R/run_trim_period_recovery.R'))),algo='sha256'),code_commit=system2('git',c('-C',repo,'rev-parse','HEAD'),stdout=TRUE)[1],software_id=paste0('R-',getRversion(),'_rtrim-',utils::packageVersion('rtrim')))
  identity_path<-file.path(root,'identity.rds')
  if(file.exists(identity_path)){old<-readRDS(identity_path);stopifnot(old$config_hash==identity$config_hash,old$source_hash==identity$source_hash,old$software_id==identity$software_id);identity<-old} else saveRDS(identity,identity_path)
  for(from in seq.int(1L,500L,5L)) {
-  to<-from+4L;path<-file.path(parent,'batches',sprintf('batch-%06d-%06d.rds',from,to));pm<-readRDS(paste0(path,'.manifest.rds'));stopifnot(bundle_sha256_file(path)==pm$output_sha256)
+  to<-from+4L;path<-file.path(parent,'batches',sprintf('batch-%06d-%06d.rds',from,to));pm<-readRDS(paste0(path,'.manifest.rds'));stopifnot(bundle_sha256_file(path)==pm$output_sha256,identical(pm$identity,oldidentity))
   old<-readRDS(path)$results
   output<-file.path(root,'batches',basename(path))
   result<-run_trim_bootstrap_batch(identity,from:to,output,replicate_fn=function(n){

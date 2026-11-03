@@ -4,3 +4,8 @@ p<-list(species_matrix=data.frame(soort_id=c(1L,2L,3L),x=1:3),clusters=data.fram
 x<-extension_2000_context(p,c(1L,3L),'child')
 stopifnot(identical(x$clusters,p$clusters),identical(x$config$run_seed,p$config$run_seed),identical(x$species_matrix,p$species_matrix[c(1,3),]),identical(x$species_targets,p$species_targets[c('1','3')]),x$config$planned_replicates==2000L,p$config$planned_replicates==500L)
 cat('2000subset: bevroren jaren/52clusters/seed behouden,500ouder onaangeraakt: OK\n')
+source('R/trim_endpoint_bootstrap.R');source('R/assess_trim_2025_2000.R')
+a<-rep(seq(-20,20,length.out=500),4);s<-long_2000_summary(0,a);stopifnot(s$n_valid==2000,s$gate=='numeriek_stabiele_kandidaat',is.na(s$ci95_low))
+a[2000]<-NA;s<-long_2000_summary(0,a);stopifnot(s$gate=='uitval_geen_band',is.na(s$diagnostic_low))
+s<-long_2000_summary(-100,rep(-100,2000));stopifnot(s$gate=='constante_verdeling_geen_band')
+cat('2000: alle trekkingen vereist, twee stabiliteitsovergangen, geen automatische formele band: OK\n')
