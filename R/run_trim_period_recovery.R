@@ -21,7 +21,7 @@ run_trim_period_recovery <- function(args=commandArgs(trailingOnly=TRUE)) {
    rows<-list();ix<-list();j<-0L
    for(id in ids)for(period in c('pre','post')){
     v<-recover_independent_period(r,id,period,cx);j<-j+1L
-    rows[[j]]<-data.frame(soort_id=id,period=period,ok=v$ok,reason=v$reason,model=v$model,refitted=v$refitted,method=v$method)
+    rows[[j]]<-data.frame(soort_id=id,period=period,ok=v$ok,reason=v$reason,model=v$model,refitted=v$refitted,refit_attempts=v$refit_attempts,method=v$method)
     if(nrow(v$index))ix[[j]]<-cbind(data.frame(soort_id=id,period=period),v$index)
    }
    value<-list(replicate_id=n,draw=r$draw,periods=do.call(rbind,rows),indices=do.call(rbind,ix),parent_batch_sha256=pm$output_sha256)

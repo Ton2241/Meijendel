@@ -30,13 +30,13 @@ assess_trim_period_uncertainty <- function(args=commandArgs(trailingOnly=TRUE)) 
   positive_plots<-function(ys){d<-cx$species_matrix;d<-d[d$soort_id==id&d$jaar%in%ys&d$geteld%in%TRUE&is.finite(d$count_adjusted)&d$count_adjusted>0,];length(unique(d$plot_id))}
   meta[[i]]<-data.frame(soort_id=id,soort_naam=names_species$soort_naam[match(id,names_species$soort_id)],period=period,period_calendar_start=if(period=='pre')1958L else 1984L,period_calendar_end=if(period=='pre')1983L else 2025L,model_start=if(length(years))min(years) else NA_integer_,model_end=if(length(years))max(years) else NA_integer_,n_model_years=length(years),baseline_model_ok=isTRUE(t$ok),baseline_model_reason=t$reason,reference_year=ref,first_window=if(length(years)>=10L)paste(head(years,5),collapse=';') else '',last_window=if(length(years)>=10L)paste(tail(years,5),collapse=';') else '',source_positive_begin_plots=positive_plots(head(years,5)),source_positive_end_plots=positive_plots(tail(years,5)))
  }
- refits<-0L;methods<-list();batchmanifests<-list();parenthashes<-list()
+ refits<-0L;refit_attempts<-0L;methods<-list();batchmanifests<-list();parenthashes<-list()
  for(from in seq.int(1L,500L,5L)) {
   path<-file.path(recovery,'batches',sprintf('batch-%06d-%06d.rds',from,from+4L));z<-merge_trim_bootstrap_batches(path,from:(from+4L));stopifnot(identical(z$identity,identity));batchmanifests[[length(batchmanifests)+1L]]<-readRDS(paste0(path,'.manifest.rds'))
   originalpath<-file.path(parent,'batches',basename(path));ph<-bundle_sha256_file(originalpath);parenthashes[[basename(path)]]<-ph
   for(r in z$results) {
    n<-r$replicate_id;stopifnot(identical(r$draw,make_stratified_cluster_draw(cx$clusters,n,cx$config$run_seed)),r$parent_batch_sha256==ph,nrow(r$periods)==312L)
-   refits<-refits+sum(r$periods$refitted);methods[[length(methods)+1L]]<-as.data.frame(table(r$periods$method),stringsAsFactors=FALSE)
+   refits<-refits+sum(r$periods$refitted);refit_attempts<-refit_attempts+sum(r$periods$refit_attempts);methods[[length(methods)+1L]]<-as.data.frame(table(r$periods$method),stringsAsFactors=FALSE)
    # Split once per draw; no dependence on another period or a calibration bridge.
    splitix<-split(r$indices,paste(r$indices$soort_id,r$indices$period,sep=':'))
    for(i in seq_len(nrow(pk))) {
@@ -62,7 +62,7 @@ assess_trim_period_uncertainty <- function(args=commandArgs(trailingOnly=TRUE)) 
  write.csv(periods,file.path(out,'periods.csv'),row.names=FALSE,na='');write.csv(annual,file.path(out,'annual_indices.csv'),row.names=FALSE,na='')
  saveRDS(list(period_keys=pk,annual_keys=yk,period_values=P,annual_values=Y,period_status=PS,period_model_ok=OK),file.path(out,'period_annual_draws.rds'))
  mt<-do.call(rbind,methods);mt<-aggregate(Freq~Var1,mt,sum)
- jsonlite::write_json(list(species=156L,period='1958-2025',replicates=500L,period_rows=312L,annual_rows=10608L,recovery_model_fits=refits,retrieval_methods=mt,recovery_identity=identity,parent_context_sha256=pm$context_sha256,parent_batch_hashes=parenthashes,criteria_commit='e7f68940',criteria_sha256=bundle_sha256_file(file.path(repo,'trim/bootstrap/species_2025_2000_20261103/CRITERIA.md')),assessment_script_sha256=bundle_sha256_file(file.path(repo,'R/assess_trim_period_uncertainty.R')),period_helper_sha256=bundle_sha256_file(file.path(repo,'R/trim_period_uncertainty.R')),pointwise_annual_bands=TRUE,simultaneous_bands=FALSE,formal_intervals=FALSE,batch_errors=sum(vapply(batchmanifests,`[[`,numeric(1),'error_count')),runtime_seconds=sum(vapply(batchmanifests,`[[`,numeric(1),'runtime_seconds'))),file.path(out,'period_manifest.json'),auto_unbox=TRUE,pretty=TRUE)
+ jsonlite::write_json(list(species=156L,period='1958-2025',replicates=500L,period_rows=312L,annual_rows=10608L,recovery_model_fits=refits,recovery_model_attempts=refit_attempts,retrieval_methods=mt,recovery_identity=identity,parent_context_sha256=pm$context_sha256,parent_batch_hashes=parenthashes,criteria_commit='e7f68940',criteria_sha256=bundle_sha256_file(file.path(repo,'trim/bootstrap/species_2025_2000_20261103/CRITERIA.md')),assessment_script_sha256=bundle_sha256_file(file.path(repo,'R/assess_trim_period_uncertainty.R')),period_helper_sha256=bundle_sha256_file(file.path(repo,'R/trim_period_uncertainty.R')),pointwise_annual_bands=TRUE,simultaneous_bands=FALSE,formal_intervals=FALSE,batch_errors=sum(vapply(batchmanifests,`[[`,numeric(1),'error_count')),runtime_seconds=sum(vapply(batchmanifests,`[[`,numeric(1),'runtime_seconds'))),file.path(out,'period_manifest.json'),auto_unbox=TRUE,pretty=TRUE)
  print(table(periods$status));print(table(annual$status));cat('INDEPENDENT_PERIOD_ANNUAL_ASSESSMENT_COMPLETE\n')
 }
 if(sys.nframe()==0L)assess_trim_period_uncertainty()

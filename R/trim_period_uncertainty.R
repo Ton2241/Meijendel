@@ -21,7 +21,7 @@ fixed_reference_indices <- function(ix,years,reference_year,model_ok) {
 recover_independent_period <- function(r,id,period,context) {
  s<-r$species[r$species$soort_id==id&r$species$bridge_variant=='primary_5yr'&r$species$coverage_variant=='volledig_netwerk',];stopifnot(nrow(s)==1L)
  ok<-isTRUE(s[[paste0(period,'_ok')]]);reason<-s[[paste0(period,'_reason')]];t<-context$species_targets[[as.character(id)]][[period]]
- empty<-data.frame(jaar=integer(),index_value=numeric());result<-list(ok=ok,reason=reason,model=s[[paste0(period,'_model')]],refitted=FALSE,method='model_niet_schatbaar',index=empty)
+ empty<-data.frame(jaar=integer(),index_value=numeric());result<-list(ok=ok,reason=reason,model=s[[paste0(period,'_model')]],refitted=FALSE,refit_attempts=0L,method='model_niet_schatbaar',index=empty)
  if(!ok)return(result)
  variants<-if(period=='pre')'primary_5yr' else r$species$bridge_variant[r$species$soort_id==id&r$species$coverage_variant=='volledig_netwerk'&is.finite(r$species$bridge_factor)&r$species$bridge_factor>0]
  if(length(variants)) {
@@ -39,5 +39,5 @@ recover_independent_period <- function(r,id,period,context) {
  v<-bootstrap_model_index(f);saved<-s[[paste0(period,'_estimate_pct_per_year')]]
  estimate<-combined_pct_trend(v,numeric(),1,required_years=f$year_map$jaar)
  stopifnot(isTRUE(all.equal(estimate,saved,tolerance=1e-10)))
- result$refitted<-TRUE;result$method<-'zelfde_draw_model_hersteld_zonder_brug';result$index<-data.frame(jaar=as.integer(names(v)),index_value=as.numeric(v));result
+ result$refitted<-TRUE;result$refit_attempts<-length(f$attempts);result$method<-'zelfde_draw_model_hersteld_zonder_brug';result$index<-data.frame(jaar=as.integer(names(v)),index_value=as.numeric(v));result
 }
