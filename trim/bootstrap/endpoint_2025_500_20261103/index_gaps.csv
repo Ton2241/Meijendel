@@ -1,0 +1,13 @@
+"soort_id","replicate_id","missing_index_year","counted_source_cells","positive_source_cells","retained_cells_after_zero_site_filter","inside_endpoint_windows","inside_bridge_windows"
+35,191,1984,6,0,0,FALSE,FALSE
+35,191,1985,11,0,0,FALSE,FALSE
+35,198,1984,3,0,0,FALSE,FALSE
+35,198,1985,9,0,0,FALSE,FALSE
+40,198,1984,1,0,0,FALSE,FALSE
+1,333,1984,1,0,0,FALSE,FALSE
+35,333,1984,1,0,0,FALSE,FALSE
+35,333,1985,8,0,0,FALSE,FALSE
+40,333,1984,1,0,0,FALSE,FALSE
+44,333,1984,1,0,0,FALSE,FALSE
+251,333,1984,1,0,0,FALSE,FALSE
+150,339,1984,4,0,0,FALSE,FALSE

@@ -5,12 +5,13 @@
 Bestaande schone analysebranch8ae99e61. Bekende taakvreemde preflightafwijking
 VWG_Project/main blijft ongemoeid. Eén worker opiMac; geen2000 ofpublicatie.
 
-- [ ] Criteria vooraf, driver/context-hergebruik RED→GREEN, commit voorrunstart.
-- [ ] Hashgebonden500context uit opgeslagen50context, payload gelijk,
+- [x] Criteria vooraf, driver/context-hergebruik RED→GREEN, commit voorrunstart.
+- [x] Hashgebonden500context uit opgeslagen50context, payload gelijk,
   bestaande batchhelpers, repl1/2controle en500zelfstandig uitvoeren.
-- [ ] Alle500uitkomsten beoordelen; poorten en250/375/500bandonrust per soort.
-- [ ] Resultaten/beperkingen/advies2000, registerMD/Word en projectdocs.
-- [ ] Eén onafhankelijke eindreview en alleWordpagina's; commit/push/eindpreflight.
+- [x] Alle500uitkomsten beoordelen; poorten en250/375/500bandonrust per soort.
+- [x] Resultaten/beperkingen/advies2000, registerMD/Word en projectdocs.
+- [x] Eén onafhankelijke eindreview en alle 61 Wordpagina's.
+Git-afhandeling en eindpreflight volgen aan het taakeinde; feitelijke stand in het eindbericht.
 
 Uitvoeringskeuze: geen identiteitmigratie van50oude resultaten; zelfstandig500
 berekenen voorkomt onduidelijke herkomst na gewijzigde code/planidentiteit.
@@ -23,3 +24,11 @@ RUNNING: R-execsession3545, PID28094, runroot /Users/ton/Documents/GitHub/Meijen
 NOG: wacht opVALIDATION_500_COMPLETE; draaiR/assess_trim_500_validation.R REPO RUNROOT RUNROOT/assessment; daarna CSVcontrole/rapport/bronregisterWord/eindreview/commitpush. Niet opnieuw500 starten bij compaction; controleer log/checkpoints en bestaandeprocesstatus.
 
 HALFWAY:254/500berekend, 14:14UTC. Geen batchfouten; R-geheugenmaat circa396,6MB. Nieuwe piek systeembrede swapgroei1,076GB inbatch171–175; controle memory_pressure43%vrij en R-RSS419664KiB (circa410MiB), geen actuele geheugenblokkade. Uitvoering blijft één worker. De actuele voortgang staat altijd in het runlog.
+
+VOORTGANG:375/500, 14:57UTC. Geen batchfouten; R-geheugenmaat396,6MB. Nog125trekkingen. De2000beoordeling is voorbereid in R/assess_trim_500_validation.R; draait pas na VALIDATION_500_COMPLETE.
+
+Verduidelijking modelvoorschrift vóór de500-uitkomstbeoordeling: geen modelherselectie betekent geen nieuwe modelzoekactie of wijziging van de bewaarde engine. De bestaande eerste-werkende-variantvolgorde blijft actief en kan, net als in de50pilot, per trekking een ander model_config opleveren. De code en bron zijn daarop ongewijzigd; geen aanpassing op basis van500uitkomsten.
+
+RUN_COMPLETED:500/500,100batches,0batchfouten; batchtijd11146,64s, R-geheugenmaat396,6MB. Repro1/2 en eerste50draws bevestigd. Beoordeling:28kandidaat2000,9uitval,119geenlangemaat. Laatstegrenscontrole3stabiel; beidecontroles0. Nadereaudit9soort-trekkinggevallen=12jaarregels(1984/85), bronnullenaanwezig maar nulsitefilter verwijdert allemodelcellen. De oorspronkelijke9-jaarregelassertie bleek een eenheidsfout; gecorrigeerdnaar9gevallen/12jaarregels, geen wijziging van statistiek ofpoorten. Geen2kgestart.
+
+Eindreview schoon:100batches/500draws,28/9/119, bronpayload/repro50, bron-/codehashes, 9gevallen/12indexgaten en alle61Wordpagina’s bevestigd. Bestaande BLWG-zinsvolgorde verschilt tussenMD/Word zonder inhoudsverschil; geen nieuwe afwijking. Presentatiecorrectie RED→GREEN: Wulp-puntwaarde werd op2decimalen−100,00% terwijlde eindindexpositiefis. Adaptieveextra decimalen voorkomen die schijnnul; alle156rijen behouden, bronCSV’s ongewijzigd.
