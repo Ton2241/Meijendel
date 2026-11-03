@@ -26,6 +26,7 @@ assess_trim_500_validation <- function(args=commandArgs(trailingOnly=TRUE)) {
  rows<-lapply(seq_len(nrow(p)),function(i){
   row<-p[i,];v<-e[e$soort_id==row$soort_id&e$width==5&e$replicate_id>0,];stopifnot(identical(v$replicate_id,1:500))
   d<-endpoint_2000_decision(row$baseline_net_pct,v$estimate_net_pct)
+  stopifnot(row$n_valid==d$n_valid);d$n_valid<-NULL
   cbind(row,data.frame(pilot50_n=pilot$n_valid[match(row$soort_id,pilot$soort_id)],pilot50_gate=pilot$gate_500[match(row$soort_id,pilot$soort_id)]),as.data.frame(d,stringsAsFactors=FALSE))
  })
  per_species<-do.call(rbind,rows);write.csv(per_species,file.path(out,'per_species.csv'),row.names=FALSE,na='')
