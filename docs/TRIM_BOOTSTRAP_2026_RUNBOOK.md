@@ -8,6 +8,8 @@ beoordeling van de vaste begin/eindmaat staan onderaan bij 3 november 2026
 en in trim/bootstrap/species_2025_2000_20261103. Die analyse wacht niet op
 2026. Het oudere stappenplan hieronder geldt voor de 2026-productieroute.
 
+De [presentatiematrix voor de 2026-release](TRIM_RELEASE_2026_PRESENTATIE.md) legt per websiteonderdeel, dashboardgrafiek en Shiny-weergave vast wat lokaal moet worden voorbereid.
+
 ## Statistisch contract
 
 - Primair: formele TRIM-trends 1958–1983 en 1984–2026 via
