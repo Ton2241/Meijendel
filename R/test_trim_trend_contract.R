@@ -102,3 +102,28 @@ assert_true(identical(descriptive$trend_formaliteit, "beschrijvend"), "gebrugde 
 assert_true(is.na(descriptive$trend_p) && is.na(descriptive$trendklasse), "beschrijvende trend bevat formele claim")
 
 cat("trim-trend-v2 contracttest: OK\n")
+
+# Break caught: overall must not turn an actual zero total into implicit count one.
+zero_data <- expand.grid(site=1:4,time=1:6)
+zero_data$count <- (2+zero_data$site)*exp(-.12*(zero_data$time-1))
+zero_data$count[zero_data$time==4] <- 0
+zero_model <- trim(count~site+time,data=zero_data,model=2,overdisp=FALSE,serialcor=FALSE)
+zero_fit <- list(model=zero_model,config='model2_basis',year_map=data.frame(jaar=2000:2005,trim_year=1:6))
+assert_true(any(zero_model$tt_imp==0),'nulfixture mist echte nul')
+zero_contract <- trim_overall_contract(zero_fit,'2000-2005')
+assert_true(zero_contract$trend_formaliteit=='niet_formeel','nuljaartotaal is nog onterecht formeel')
+assert_true(zero_contract$trend_status=='nuljaartotaal_herbeoordelen','nuljaartotaal mist concrete status')
+assert_true(all(is.na(zero_contract[c('trend_pct_per_jaar','trend_se_pct','trend_ci95_laag_pct','trend_ci95_hoog_pct','trend_p','trendklasse')])),'nulperiode bevat nog inferentie')
+assert_true(identical(zero_fit$model$tt_imp,zero_model$tt_imp),'nulgegevens zijn gewijzigd')
+# A positive total below rtrim's internal threshold also triggers its replacement.
+tiny_fit <- fit_obj;tiny_fit$model$tt_imp[3] <- 1e-8
+tiny_contract <- trim_overall_contract(tiny_fit,'1990-1997')
+assert_true(tiny_contract$trend_formaliteit=='niet_formeel'&&tiny_contract$trend_status=='jaartotaal_onder_rtrimgrens_herbeoordelen','klein positief totaal activeert nog impliciete vervanging')
+for(bad in list(NA_real_,-1)) {
+ invalid_fit <- fit_obj;invalid_fit$model$tt_imp[2]<-bad
+ invalid <- trim_overall_contract(invalid_fit,'1990-1997')
+ assert_true(invalid$trend_formaliteit=='niet_formeel'&&invalid$trend_status=='ongeldige_jaartotalen','ongeldige totaalvector is niet geblokkeerd')
+}
+short_fit <- fit_obj;short_fit$model$tt_imp <- short_fit$model$tt_imp[-1]
+assert_true(trim_overall_contract(short_fit,'1990-1997')$trend_status=='ongeldige_jaartotalen','onvolledige totaalvector is niet geblokkeerd')
+cat('Nuljaartotalen blijven behouden zonder ongefundeerde formele inferentie: OK\n')

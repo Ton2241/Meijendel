@@ -1,5 +1,7 @@
 # Beoordeling nuljaren in de hoofdindex per soort
 
+**Uitvoering 3 november 2026:** de 45 betrokken periodetrends zijn inmiddels beveiligd; zie [uitvoering en resultaten](../../zero_policy_20261103/README.md). Onderstaande tekst beschrijft de beoordeling van 2 november.
+
 De nulwaarnemingen en jaarindices blijven behouden. Het probleem zit in de
 gekozen aanvullende samenvatting: een regressie door log(index) vereist
 positieve jaarwaarden. Een echte nul kan daarin niet als eindig getal

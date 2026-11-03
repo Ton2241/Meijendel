@@ -169,3 +169,21 @@ assert_descriptive_group_trends(
 )
 
 cat("TRIM-groepsuitvoercontract: OK (18 ecologisch; 24 functioneel; groepen beschrijvend)\n")
+
+# Break caught: stored source-period trends must not still label zero years formal.
+zero_sets <- list()
+for(part in c('pre','post')) {
+ label <- if(part=='pre')periods$pre$label else periods$post$label
+ ids <- unique(main_indices$soort_id[main_indices$periode==label & is.finite(main_indices$trim_index) & main_indices$trim_index==0])
+ zero_sets[[part]] <- ids
+ assert_true(length(ids)==if(part=='pre')21L else 24L,'onverwachte nulperioden in onveranderde jaarindices')
+ prefix <- paste0('trend_',part,'_')
+ for(tab in list(main_trends,main_usable)) {
+  z <- tab[tab$soort_id%in%ids,,drop=FALSE]
+  assert_true(all(z[[paste0(prefix,'formaliteit')]]=='niet_formeel'),'opgeslagen nulperiode is nog formeel')
+  assert_true(all(z[[paste0(prefix,'status')]]=='nuljaartotaal_herbeoordelen'),'opgeslagen nulperiode mist herbeoordelingsstatus')
+  assert_true(all(vapply(c('pct_per_jaar','se_pct','ci95_laag_pct','ci95_hoog_pct','p','klasse'),function(k)all(is.na(z[[paste0(prefix,k)]])),logical(1))),'opgeslagen nulperiode bevat nog inferentie')
+ }
+}
+assert_true(length(unique(unlist(zero_sets)))==40L,'nulperioden moeten 40 soorten betreffen')
+cat('Historische nulperioden veilig gemarkeerd: 21 pre + 24 post, 40 soorten.\n')

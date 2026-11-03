@@ -1,5 +1,7 @@
 # Ontwikkelpilot bootstrap per vogelsoort tot en met 2025
 
+**Uitvoering 3 november 2026:** de 45 betrokken periodetrends zijn inmiddels beveiligd en de gerichte modelvergelijking is uitgevoerd. Zie [uitvoering en resultaten](../zero_policy_20261103/README.md). De onderstaande tekst bewaart de eerdere pilot/beoordeling.
+
 Opdracht van Ton op 2 november 2026: voer de voorgestelde proef uit met de
 gegevens tot en met 2025, rapporteer per soort en bewaar resultaten en
 beperkingen. De cijfers over 2026 zijn nog niet gevalideerd en vallen buiten

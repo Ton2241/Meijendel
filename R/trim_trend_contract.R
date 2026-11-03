@@ -128,6 +128,25 @@ trim_overall_contract <- function(
     ))
   }
 
+  # rtrim 2.3.1 replaces log(total) by zero below 1e-6, i.e. an
+  # implicit total of one. Preserve those year totals and withhold inference.
+  totals <- as.numeric(model$tt_imp)
+  total_status <- if (length(totals) != length(years) || any(!is.finite(totals)) || any(totals < 0)) {
+    "ongeldige_jaartotalen"
+  } else if (any(totals == 0)) {
+    "nuljaartotaal_herbeoordelen"
+  } else if (any(totals < 1e-6)) {
+    "jaartotaal_onder_rtrimgrens_herbeoordelen"
+  } else NULL
+  if (!is.null(total_status)) {
+    return(trim_contract_row(
+      periode = periode, periode_van = periode_van, periode_tot = periode_tot,
+      n_kalenderjaren = n_calendar, n_modeltijdpunten = length(years),
+      trend_formaliteit = "niet_formeel", trend_status = total_status,
+      model = model_label, trendduiding_type = "herbeoordeling_geen_inferentie"
+    ))
+  }
+
   result <- tryCatch(rtrim::overall(model, which = "imputed"), error = function(e) e)
   if (inherits(result, "error") || is.null(result$slope) || nrow(result$slope) != 1L) {
     return(trim_contract_row(

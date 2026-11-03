@@ -1,0 +1,11 @@
+{
+  "source_period": "1958-2025",
+  "species_ids": [150, 64, 173, 214],
+  "replicates": 50,
+  "context_sha256": "fee0aec6f650ddf27d50cf50f4e50ca6c345ed906e9f2477a3afb56ccefcbaff",
+  "source_hash": "15de9245b0d0fbbd0a65990c6c0d618ff8f0298f712775210fe0b1566a917913",
+  "script_sha256": "77324b847627588f6c1cd28168e8979809280c814b7612d88db838a412f64c02",
+  "rtrim": "2.3.1",
+  "mgcv": "1.9.4",
+  "publication_status": "gerichte_modelvergelijking_geen_methodevervanging_geen_formele_intervallen"
+}
