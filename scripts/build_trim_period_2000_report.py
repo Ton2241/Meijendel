@@ -36,7 +36,7 @@ def main():
         if not extended:limits.append('Geen uitbreidbare periode bij 500; bestaande blokkades hieronder behouden.')
         if any(x['status']=='uitval_geen_band' for x in ps+ys):limits.append('Uitval: geen band voor de betreffende uitkomsten; geldige en beoordeelde aantallen staan apart.')
         if any(finite(x['diagnostic_low']) and not yes(x['both_stable']) for x in ps+ys):limits.append('Een of meer margegrenzen voldoen niet aan beide stabiliteitscontroles.')
-        if any(int(x[k])<2 for x in ps for k in ('source_positive_begin_plots','source_positive_end_plots')):limits.append('Minstens één eigen begin/eindvenster heeft hoogstens één positieve bronkavel; modelaanvulling kan de uitkomst bepalen.')
+        if any(int(x[k])<2 for x in ps if x['first_window'] and x['last_window'] for k in ('source_positive_begin_plots','source_positive_end_plots')):limits.append('Minstens één eigen begin/eindvenster heeft hoogstens één positieve bronkavel; modelaanvulling kan de uitkomst bepalen.')
         if any(finite(x['baseline_index']) and int(x['n_positive_source_plots'])<2 for x in ys):limits.append('Minstens één beschikbare jaarindex berust op hoogstens één positieve bronkavel.')
         if any(x['status'] in ('baseline_model_niet_schatbaar','buiten_bevroren_modeljaren') for x in ys):limits.append('Niet voor alle kalenderposities is een modelindex beschikbaar; ontbrekende jaren blijven zichtbaar.')
         limits.append('De periodebanden omvatten geen onzekerheid van een brug of groepsindex en zijn niet de marge van de jaarlijkse percentages sinds 1958/1990. Intervaldekking en geografische representativiteit zijn niet bewezen.')
