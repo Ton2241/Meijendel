@@ -11,12 +11,24 @@ body{font:15px/1.55 system-ui,sans-serif;color:#173629;background:#fff;margin:0;
 const BOOTSTRAP_DATA=/*BOOTSTRAP_DATA*/null;
 const BootstrapView={
   finite:x=>typeof x==='number'&&Number.isFinite(x),
+  summary(r){
+    const notes=[];
+    if(!this.finite(r.baseline_net_pct))notes.push('Voor deze soort kunnen we het begin en einde van de hele periode niet betrouwbaar vergelijken.');
+    else if(r.n_valid<r.n_planned)notes.push('Niet alle herhaalde berekeningen leverden een uitkomst op. Daarom tonen we geen onzekerheidsmarge voor deze vergelijking.');
+    else if(r.complete_non_degenerate===false)notes.push('De berekeningen leveren geen bruikbare onzekerheidsmarge op.');
+    else if(!r.both_stable)notes.push('De berekende marge is nog niet stabiel. Zij is nog geen definitieve betrouwbaarheidsmarge.');
+    else notes.push('De proefmarge verandert weinig bij meer berekeningen. Zij geldt nog niet als definitieve betrouwbaarheidsmarge.');
+    if(r.scarce_endpoint_support)notes.push('De soort is in een van beide vergelijkingsperioden op hoogstens één kavel aangetroffen. Dat beperkt wat we over de hele periode kunnen zeggen.');
+    if(r.window_direction_sensitive)notes.push('Bij andere begin- en eindjaren verandert ook de richting van de geschatte ontwikkeling.');
+    return notes;
+  },
   band(r){return this.finite(r.diagnostic_low)&&this.finite(r.diagnostic_high)&&r.diagnostic_low<r.diagnostic_high&&r.n_valid===r.n_planned&&r.complete_non_degenerate===true&&r.is_reference!==true;},
   segments(rows,predicate){const out=[];let seg=[];for(const r of rows){if(!predicate(r)){if(seg.length)out.push(seg);seg=[];}else{if(seg.length&&r.jaar!==seg[seg.length-1].jaar+1){out.push(seg);seg=[];}seg.push(r);}}if(seg.length)out.push(seg);return out;},
   csv(rows){const keys=Object.keys(rows[0]||{}),quote=x=>'"'+String(x??'').replaceAll('"','""')+'"';return [keys,...rows.map(r=>keys.map(k=>r[k]))].map(r=>r.map(quote).join(',')).join('\n')+'\n';}
 };
 if(typeof module!=='undefined')module.exports=BootstrapView;
 if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
+ const compact=new URLSearchParams(location.search).get('view')==='dashboard';
  const B=BOOTSTRAP_DATA,$=id=>document.getElementById(id),num=(x,unit='')=>BootstrapView.finite(x)?x.toLocaleString('nl-NL',{maximumFractionDigits:2})+unit:'—';
  function pct(x){return BootstrapView.finite(x)&&x>-100&&x<-99.995?'> −100%':num(x,'%');}
  function node(tag,text,parent){const x=document.createElement(tag);if(text!=null)x.textContent=text;if(parent)parent.appendChild(x);return x;}
@@ -42,8 +54,26 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
  note('Netto verandering vergelijkt venstergemiddelden. De jaarlijkse formele TRIM-trends staan in het bestaande trendoverzicht. Jaarindices zijn modeluitkomsten, met mogelijke aanvulling van ontbrekende tellingen. Een nulindex blijft nul en bewijst geen getelde afwezigheid in alle kavels. Een ontbrekende index blijft een gat.',intro);
  note('Lange maat bij 32 soorten met 2.000 trekkingen, bij 124 soorten met 500. Afzonderlijke perioden en jaarindices bij alle soorten met 500. Geen groepsbootstrap. De vaste referentie 100, constante verdelingen en uitval krijgen geen band. Numerieke stabiliteit bewijst geen volledige dekking.',intro);
  B.long.slice().sort((a,b)=>a.soort_naam.localeCompare(b.soort_naam,'nl')).forEach(r=>{const o=node('option',r.soort_naam,$('species'));o.value=r.soort_id;});
+ if(compact){
+  document.querySelector('h1').hidden=true;document.querySelector('label').hidden=true;
+  $('intro').hidden=true;$('species').hidden=true;document.body.style.padding='1px 0';
+ }
  function render(){
-  const id=Number($('species').value),r=B.long.find(r=>r.soort_id===id),parent=$('result');parent.replaceChildren();if(!r)return;
+  const id=Number($('species').value),r=B.long.find(r=>r.soort_id===id);
+  let parent=$('result');parent.replaceChildren();if(!r)return;
+  if(compact){
+    node('h2','Geschatte verandering tussen begin en einde',parent);
+    const estimate=node('p',BootstrapView.finite(r.baseline_net_pct)?(r.baseline_net_pct>0?'+':'')+pct(r.baseline_net_pct):'Geen schatting voor de hele periode',parent);
+    estimate.style.fontSize='26px';estimate.style.fontWeight='650';estimate.style.margin='6px 0';
+    note(`Vergelijking van het gemiddelde over ${B.long_windows.first} met ${B.long_windows.last}.`,parent);
+    node('h2','Hoe zeker is dit beeld?',parent);
+    BootstrapView.summary(r).forEach(text=>node('p',text,parent));
+    if(!BootstrapView.finite(r.baseline_net_pct))note('Bekijk de beschikbare jaren en eventuele afzonderlijke perioden hieronder.',parent);
+    const technical=node('details',null,parent);
+    node('summary','Perioden, berekeningen en downloads',technical);
+    note(`Voor alle ${B.long.length} soorten over ${B.year_from}–${B.year_to} is de onzekerheid onderzocht. De proefmarges zijn geen definitieve 95%-betrouwbaarheidsmarges.`,technical);
+    parent=technical;
+  }
   node('h2',r.soort_naam,parent);note(`Bronrun ${B.run_id} · ${B.year_from}–${B.year_to} · ${B.selection.plot_ids.length} kavels`,parent);
   node('h3','Lange begin/eindverandering',parent);note(`Gemiddeld ${B.long_windows.first} tegenover ${B.long_windows.last}. Brug ${B.long_windows.bridge}.`,parent);
   const common=[[r=>`${r.n_valid}/${r.n_planned}`,'Geldige trekkingen'],['status','Bandstatus'],['baseline_status','Schattingstatus'],['reasons','Uitvalredenen'],['both_stable','Beide grenscontroles stabiel']];

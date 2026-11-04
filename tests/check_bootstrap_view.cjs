@@ -11,9 +11,9 @@ assert.equal(v.band({diagnostic_low:1,diagnostic_high:2,n_valid:499,n_planned:50
 console.log('OK: nul behouden, gaten gescheiden, referentie/uitval geen band, CSV correct.');
 const dashboard=fs.readFileSync('bmp_meijendel_index.html','utf8');
 const source=dashboard.split('function renderBootstrapPreview(){')[1].split('function renderTrimTrendInfo(){')[0];
-const dom={URLSearchParams,location:{search:'?bootstrapPreview=1'},S:{selected:['Dodaars'],trimTrendSummaryAll:[{soort_naam:'Dodaars',soort_id:1}]},el:(tag,attrs,text)=>({tag,attrs,text,children:[],appendChild(x){this.children.push(x);}})};
+const dom={URLSearchParams,location:{search:'?bootstrapPreview=1'},S:{selected:['Dodaars'],trimTrendSummaryAll:[{soort_naam:'Dodaars',soort_id:1}]},el:(tag,attrs,text)=>({tag,attrs,text,children:[],addEventListener(){},appendChild(x){this.children.push(x);}})};
 vm.createContext(dom);vm.runInContext('function renderBootstrapPreview(){'+source,dom);
-assert.equal(dom.renderBootstrapPreview().children[1].attrs.src,'outputs/bootstrap-presentatie-2026/bootstrap.html#species=1');
+assert.equal(dom.renderBootstrapPreview().children[1].attrs.src,'outputs/bootstrap-presentatie-2026/bootstrap.html?view=dashboard#species=1');
 dom.location.search='';assert.equal(dom.renderBootstrapPreview(),null);
 assert.ok(dashboard.includes('const preview=renderBootstrapPreview();if(preview)p.appendChild(preview);'));
 console.log('OK: dashboard koppelt de juiste soort en activeert de proef uitsluitend expliciet.');
@@ -28,3 +28,18 @@ assert.equal(state.S.trimAllSpecies.length,2,'Ook soort zonder index blijft kies
 console.log('OK: volledig soortoverzicht blijft zichtbaar, ook zonder index.');
 state.processTrendCSV([{soort_id:3,soort_naam:'Woudaap',analyse_categorie:'onvoldoende_data'}],'trim_status');
 assert.equal(state.S.trimAllSpecies.length,3,'De statusinventaris houdt soorten zonder trend zichtbaar');
+// Plain-language summary follows the actual assessment, including missing outcomes.
+assert.equal(typeof v.summary,'function');
+const summaryBase={baseline_net_pct:20,n_valid:2000,n_planned:2000,both_stable:false,scarce_endpoint_support:false,window_direction_sensitive:false};
+assert.match(v.summary(summaryBase).join(' '),/nog niet stabiel/);
+assert.match(v.summary({...summaryBase,n_valid:1999}).join(' '),/geen onzekerheidsmarge/);
+assert.match(v.summary({...summaryBase,baseline_net_pct:null}).join(' '),/niet.*vergelijken/);
+assert.match(v.summary({...summaryBase,both_stable:true,scarce_endpoint_support:true}).join(' '),/hoogstens één kavel/);
+assert.match(v.summary({...summaryBase,window_direction_sensitive:true}).join(' '),/andere begin- en eindjaren/);
+assert.ok(!dashboard.includes('Zonder bootstrap heeft deze geen formele p-waarde'));
+assert.ok(dashboard.includes('bootstrap.html?view=dashboard#species='));
+assert.ok(html.includes('Perioden, berekeningen en downloads'));
+console.log('OK: gewone taal voor onrust, uitval, schaarste en ontbrekende lange vergelijking.');
+const technicalSource=dashboard.slice(dashboard.indexOf('function renderTrimTrendInfo(){'),dashboard.indexOf('function renderTrendMethodInfo(){'));
+assert.ok(technicalSource.includes('const box=el("details"'),'Indexberekeningen moeten standaard uitklapbaar zijn');
+assert.ok(technicalSource.includes('Berekening achter de indexgrafiek'));

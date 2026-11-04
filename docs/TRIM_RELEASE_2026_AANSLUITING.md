@@ -115,3 +115,15 @@ De MySQL-proefdatabase met de actuele websiteobjecten blijft herkenbaar als loka
 ### Lokale voorbereiding afgerond
 
 De lokale technische voorbereiding op basis van de gegevens over 1958–2025 is afgerond. De oude proefdatabase is verwijderd, de actuele lokale kandidaat en herstelbestanden zijn behouden en er zijn geen tijdelijke testaccounts meer. De eerder geslaagde controles zijn niet herhaald omdat uitsluitend de oude proefdatabase en deze afrondingsregistratie zijn gewijzigd. De officiële 2026-bronvalidatie, herberekeningen, schattergebonden vrijgave en controle van de nieuwe bronproducten blijven voor de daadwerkelijke release nodig. Voor VPS-publicatie blijft afzonderlijk akkoord gelden.
+
+### Eenvoudigere lokale dashboardpresentatie
+
+Op verzoek van Ton is op 4 november 2026 de lokale soortpresentatie vereenvoudigd. De indexgrafiek blijft centraal. Daaronder staan de geschatte verandering tussen de gemiddelde begin- en eindjaren en een korte toelichting per soort op de onzekerheid. Die toelichting onderscheidt een ontbrekende vergelijking, uitval bij herhaalde berekeningen, een nog veranderende proefmarge, een stabiele maar niet formeel vrijgegeven proefmarge en beperkte bronsteun. Venstergevoeligheid blijft in gewone taal zichtbaar wanneer de richting verandert.
+
+De tekst die suggereerde dat nog geen bootstrap was uitgevoerd is vervangen. De oude jaarlijkse samenvatting staat onder `Berekening achter de indexgrafiek`. Het volledige bestaande bootstrapoverzicht, beide perioden, jaarindices, bronsteun, statuscodes en CSV-downloads staan onder `Perioden, berekeningen en downloads`. De algemene methode-uitleg is eveneens uitklapbaar. Deze onderdelen beginnen gesloten.
+
+De compacte weergave gebruikt `bootstrap.html?view=dashboard#species=…`. Zij volgt de soortkeuze van het dashboard. De zelfstandige technische review, website en Shiny gebruiken hun bestaande standaardweergave. De hoogte van het dashboardblok volgt het openen en sluiten van de details. De lange vergelijking behoudt haar vaste vensters, ook wanneer de gebruiker de jaren van de indexgrafiek beperkt. Dat staat bij het blok vermeld.
+
+De drie bron-CSV’s en de aantallen van 156 soorten, 312 perioden en 10.608 jaarposities over 1958–2025 zijn behouden. Er zijn geen modellen of bootstrapuitkomsten opnieuw berekend. De broncontrolesommen zijn vergeleken vóór en na de bouw van de gewijzigde presentatie. De proeven voor gewone taal, nulwaarden, ontbrekende jaren, bandvoorwaarden, volledige soortkeuze en de bestaande presentatiecontracten slagen. De browserproef bevestigt de gesloten technische onderdelen en het uitklappen met aangepaste blokhoogte.
+
+Dit betreft de lokale dashboardkandidaat. Er is geen VPS-publicatie uitgevoerd. De productiehandleidingen zijn door deze lokale previewwijziging niet geraakt.
