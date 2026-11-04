@@ -10,6 +10,10 @@ en in trim/bootstrap/species_2025_2000_20261103. Die analyse wacht niet op
 
 De [presentatiematrix voor de 2026-release](TRIM_RELEASE_2026_PRESENTATIE.md) legt per websiteonderdeel, dashboardgrafiek en Shiny-weergave vast wat lokaal moet worden voorbereid.
 
+## Lokale aansluiting op 4 november 2026
+
+De [aansluitnotitie](TRIM_RELEASE_2026_AANSLUITING.md) beschrijft de uitgevoerde koppeling van de bestaande diagnostische 2025-uitvoer aan website, dashboard en Shiny, met resterende bron- en uploadblokkades. De oude jaarlijkse gecombineerde trend en 95%-geldigheidsregel hieronder zijn geen vrijgavecontract voor de nieuwe netto begin/eindmaat of puntgewijze jaarbanden. Die vragen schattergebonden vrijgave vóór formele productieactivering. De diagnostische preview kan geen formele uitvoer activeren.
+
 ## Statistisch contract
 
 - Primair: formele TRIM-trends 1958–1983 en 1984–2026 via

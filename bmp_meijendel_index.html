@@ -1885,7 +1885,7 @@ function formatTrimPct(value){const n=parseTrimNumber(value);return n===null?"-"
 function formatTrimP(value){const n=parseTrimNumber(value);if(n===null)return "-";return n<0.001?"< 0,001":n.toLocaleString("nl-NL",{maximumFractionDigits:3});}
 function trimEntityMatches(entityId,candidates){const tokens=String(entityId??"").split(/[-_:]/).filter(Boolean);return candidates.filter(v=>v!==null&&v!==undefined&&String(v)!=="").some(v=>String(entityId)===String(v)||tokens.includes(String(v)));}
 function formatBootstrapInterval(row){
-  if(!row||row.publication_status==="onvoldoende_bootstrap")return null;
+  if(!row||row.publication_status!=="publiceerbaar")return null;
   const low=parseTrimNumber(row.ci_low_pct),high=parseTrimNumber(row.ci_high_pct);
   return low!==null&&high!==null?`${low.toFixed(2)}% tot ${high.toFixed(2)}%`:null;
 }
@@ -1905,6 +1905,15 @@ function renderFormalBootstrapRows(grid,rows,addCell){
   });
   const manifest=S.trimUncertaintyManifest;
   if(rows.length&&manifest)addCell("Berekening",`${manifest.calculated_at||"-"}; run ${manifest.run_id}; ${Number(manifest.planned_replicates).toLocaleString("nl-NL")} geplande replicaties`);
+}
+function renderBootstrapPreview(){
+  if(new URLSearchParams(location.search).get("bootstrapPreview")!=="1"||S.selected.length!==1)return null;
+  const box=el("div",{style:{marginTop:"16px"}});
+  const row=(S.trimTrendSummaryAll||S.trimTrendSummary||[]).find(r=>r.soort_naam===S.selected[0]);
+  if(!row||!row.soort_id)return null;
+  box.appendChild(el("p",{},"Opgeslagen bootstrapbeoordeling van de standaardbron 1958–2025. De eigen periode-indices hieronder hebben hun eigen schaalanker. De jaarfilter van de bovenstaande grafiek wijzigt deze opgeslagen beoordeling niet."));
+  box.appendChild(el("iframe",{title:"Lokale bootstrapbeoordeling",src:`outputs/bootstrap-presentatie-2026/bootstrap.html#species=${encodeURIComponent(row.soort_id)}`,style:{width:"100%",height:"1100px",border:"1px solid #dce6df"}}));
+  return box;
 }
 function renderTrimTrendInfo(){
   if(!S.trimTrendSummary||S.selected.length!==1)return null;
@@ -2388,7 +2397,7 @@ function renderPlotPanel(){
 function renderTrendPanel(){const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[el("h2",{},"Trend per soort over de jaren")]));const tog=el("div",{className:"metric-toggle",style:{flex:"0 0 auto"}});[["abs","Territoria"],["km2","Dichtheid (per km²)"],["trim","TRIM-index"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.metric===id?" active":"")},lbl);b.addEventListener("click",()=>setState({metric:id}));tog.appendChild(b);});hdr.appendChild(tog);p.appendChild(hdr);if(S.metric==="trim"){p.appendChild(renderCsvUploadRow("TRIM soortindices",{loaded:!!S.trimIndexData,text:S.trimIndexData?`${S.trimIndexData.length} rijen geladen`:"soortindices_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_idx")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimTrendSummary,text:S.trimTrendSummary?`${S.trimTrendSummary.length} rijen geladen`:"soorten_trendoverzicht_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_trend")));p.appendChild(renderSoortFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());}else{p.appendChild(renderSoortFilter());p.appendChild(renderTrendBreakWarning());if(S.main.pc&&S.allPlots.length)p.appendChild(renderKavelFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());p.appendChild(renderCoverageTable());}
   if(S.metric==="trim"&&!S.trimIndexData)p.appendChild(el("p",{className:"empty-msg"},"Laad eerst het TRIM-bestand met soortindices om de grafiek te tonen."));
   else if(!S.selected.length)p.appendChild(el("p",{className:"empty-msg"},"Selecteer een soort hierboven"));
-  else {p.appendChild(el("div",{className:"chart-wrap",id:"lineChart"}));if(S.metric==="trim"){const info=renderTrimTrendInfo();if(info)p.appendChild(info);}}p.appendChild(renderTrendMethodInfo());return p;}
+  else {p.appendChild(el("div",{className:"chart-wrap",id:"lineChart"}));if(S.metric==="trim"){const info=renderTrimTrendInfo();if(info)p.appendChild(info);const preview=renderBootstrapPreview();if(preview)p.appendChild(preview);}}p.appendChild(renderTrendMethodInfo());return p;}
 function renderTrendBreakWarning(){return el("div",{className:"trend-warning"},"Let op rond 1984: de ruwe territoria zijn gevoelig voor methodebreuk en teldekking. In 1984 daalde vooral het aantal plots met territoria; gebruik daarom bij voorkeur dichtheid, TRIM of de teldekkingstabel hieronder voor interpretatie.");}
 function renderMeeuwenFilter(){const label=el("label",{className:"trend-check"});const cb=el("input",{type:"checkbox"});cb.checked=!!S.excludeGulls;cb.addEventListener("change",e=>{const exclude=!!e.target.checked;Object.assign(S,{excludeGulls:exclude,selected:exclude?S.selected.filter(s=>!isMeeuwName(s)):S.selected});refilter();});label.appendChild(cb);label.appendChild(el("span",{},"Meeuwen uitsluiten uit territoria, dichtheid, soortkeuze en teldekkingstabel"));return label;}
 function renderCoverageTable(){const rows=buildCoverageRows();const box=el("div",{className:"coverage-box"});box.appendChild(el("h3",{},"Teldekking per jaar"));box.appendChild(el("p",{},"Plots = plots met positieve territoria in de actuele selectie. Km² is het oppervlak van die plots; territoria/km² is daarop berekend."));if(!rows.length){box.appendChild(el("p",{className:"empty-msg",style:{padding:"12px 0"}},"Geen teldekking voor deze selectie."));return box;}const tbl=el("table",{className:"coverage-table"});tbl.appendChild(el("thead",{},el("tr",{},[el("th",{},"Jaar"),el("th",{},"Plots"),el("th",{},"Km²"),el("th",{},"Territoria/km²")])));const body=el("tbody",{});rows.forEach(r=>body.appendChild(el("tr",{},[el("td",{},String(r.jaar)),el("td",{},r.plots!=null?formatNumber(r.plots,0):"-"),el("td",{},r.km2!=null?formatNumber(r.km2,2):"-"),el("td",{},r.dichtheid!=null?formatNumber(r.dichtheid,1):"-")])));tbl.appendChild(body);box.appendChild(el("div",{className:"coverage-scroll"},tbl));return box;}

@@ -37,4 +37,10 @@ stopifnot(grepl("robuust", presented$entity_id[[1L]], fixed = TRUE))
 stopifnot(is.na(presented$display_ci[[3L]]))
 stopifnot(identical(presented$period[[1L]], "1958-2026"))
 
-cat("OK: website/dashboard activeren alleen definitieve 2026-onzekerheid en bewaren anders de beschrijvende presentatie.\n")
+
+
+diag <- rows[1,,drop=FALSE]
+diag$publication_status <- "diagnostisch"
+stopifnot(is.na(prepare_trim_uncertainty_rows(diag)$display_ci))
+
+cat("OK: alleen expliciet publiceerbare rijen krijgen een formeel interval.\n")

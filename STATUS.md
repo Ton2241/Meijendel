@@ -1,5 +1,9 @@
 # Status Meijendel
 
+## Lokale bootstrapaansluiting 4 november 2026
+
+De bestaande beoordeling van 156 soorten over 1958–2025 is aangesloten via één gedeeld diagnostisch HTML-blok voor website, dashboard en Shiny. CMS-correcties zijn op een afzonderlijke lokale kandidaat toegepast. De volledige lokale soortdetailroute blijft geblokkeerd door de ontbrekende `website_species_mapping` in de actuele analytische database. Drie archieffoto’s ontbreken. De browserdataset en volledige Shiny/dashboard-pariteit wachten op de gevalideerde releasebron. Details en testbewijs staan in [de aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md). Geen formele 2026-activering of VPS-publicatie.
+
 ## 7 oktober 2026 - afgeleide jaarverslagnullen in TRIM
 
 - De gedeelde observatiepoort gebruikt voor officiële SOVON-matrices alleen

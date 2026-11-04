@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bootstrap per soort — lokale beoordeling</title>
+<style>
+body{font:15px/1.55 system-ui,sans-serif;color:#173629;background:#fff;margin:0;padding:18px;max-width:1100px}h1{font-size:1.45rem;margin:0 0 8px}h2{font-size:1.15rem;margin:24px 0 8px}h3{font-size:1rem}.notice{background:#fff7df;border-left:4px solid #b57809;padding:12px 16px;margin:12px 0}.meta{font-size:13px;color:#50635b;overflow-wrap:anywhere}select,button{font:inherit;padding:7px 10px;border:1px solid #aabdb2;border-radius:5px;background:#fff;color:#173629;margin:4px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid #dce6df;padding:7px;text-align:left;vertical-align:top}th{background:#edf4ef;position:sticky;top:0}td{overflow-wrap:anywhere}.scroll{overflow:auto;max-height:380px;border:1px solid #dce6df;margin:10px 0}svg{width:100%;height:auto;background:#fafcfb;border:1px solid #dce6df}details{margin:10px 0}summary{cursor:pointer}a{color:#176b43}.legend{font-size:13px;color:#50635b}button{cursor:pointer}
+</style>
+<h1>Bootstrap per soort</h1><div id="intro"></div>
+<label for="species">Soort</label><select id="species"></select><div id="result"></div>
+<script>
+'use strict';
+const BOOTSTRAP_DATA=/*BOOTSTRAP_DATA*/null;
+const BootstrapView={
+  finite:x=>typeof x==='number'&&Number.isFinite(x),
+  band(r){return this.finite(r.diagnostic_low)&&this.finite(r.diagnostic_high)&&r.diagnostic_low<r.diagnostic_high&&r.n_valid===r.n_planned&&r.complete_non_degenerate===true&&r.is_reference!==true;},
+  segments(rows,predicate){const out=[];let seg=[];for(const r of rows){if(!predicate(r)){if(seg.length)out.push(seg);seg=[];}else{if(seg.length&&r.jaar!==seg[seg.length-1].jaar+1){out.push(seg);seg=[];}seg.push(r);}}if(seg.length)out.push(seg);return out;},
+  csv(rows){const keys=Object.keys(rows[0]||{}),quote=x=>'"'+String(x??'').replaceAll('"','""')+'"';return [keys,...rows.map(r=>keys.map(k=>r[k]))].map(r=>r.map(quote).join(',')).join('\n')+'\n';}
+};
+if(typeof module!=='undefined')module.exports=BootstrapView;
+if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
+ const B=BOOTSTRAP_DATA,$=id=>document.getElementById(id),num=(x,unit='')=>BootstrapView.finite(x)?x.toLocaleString('nl-NL',{maximumFractionDigits:2})+unit:'—';
+ function pct(x){return BootstrapView.finite(x)&&x>-100&&x<-99.995?'> −100%':num(x,'%');}
+ function node(tag,text,parent){const x=document.createElement(tag);if(text!=null)x.textContent=text;if(parent)parent.appendChild(x);return x;}
+ function note(text,parent){const x=node('p',text,parent);x.className='meta';return x;}
+ function table(rows,columns,parent){const wrap=node('div',null,parent);wrap.className='scroll';const t=node('table',null,wrap),head=node('tr',null,node('thead',null,t));columns.forEach(([k,label])=>node('th',label,head));const body=node('tbody',null,t);rows.forEach(r=>{const tr=node('tr',null,body);columns.forEach(([k])=>node('td',typeof k==='function'?k(r):(typeof r[k]==='number'?num(r[k]):typeof r[k]==='boolean'?(r[k]?'ja':'nee'):r[k]??'—'),tr));});}
+ function download(rows,name,parent){const b=node('button',name,parent);b.type='button';b.onclick=()=>{const a=node('a');const url=URL.createObjectURL(new Blob(['\ufeff'+BootstrapView.csv(rows)],{type:'text/csv;charset=utf-8'}));a.href=url;a.download=name+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};}
+ function chart(rows,parent){
+  const valid=rows.filter(r=>BootstrapView.finite(r.baseline_index));if(!valid.length){note('Geen schatbare jaarindices in deze periode.',parent);return;}
+  const W=860,H=270,L=65,R=20,T=20,D=42,years=rows.map(r=>r.jaar),lo=Math.min(...years),hi=Math.max(...years);
+  const ymax=Math.max(100,...valid.map(r=>r.baseline_index),...rows.filter(r=>BootstrapView.band(r)).map(r=>r.diagnostic_high))*1.06;
+  const X=y=>L+(y-lo)/(hi-lo||1)*(W-L-R),Y=v=>H-D-v/ymax*(H-T-D),ns='http://www.w3.org/2000/svg';
+  const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('role','img');svg.setAttribute('aria-label',`Eigen periode-index ${lo}–${hi}, diagnostische puntgewijze band`);parent.appendChild(svg);
+  function s(tag,attrs,text){const x=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>x.setAttribute(k,v));if(text)x.textContent=text;svg.appendChild(x);return x;}
+  for(let i=0;i<=4;i++){const v=ymax*i/4;s('line',{x1:L,x2:W-R,y1:Y(v),y2:Y(v),stroke:'#dce6df'});s('text',{x:L-8,y:Y(v)+4,'text-anchor':'end','font-size':11,fill:'#50635b'},num(v));}
+  [lo,Math.round((lo+hi)/2),hi].forEach(y=>s('text',{x:X(y),y:H-12,'text-anchor':'middle','font-size':12},String(y)));
+  s('line',{x1:L,x2:W-R,y1:Y(100),y2:Y(100),stroke:'#8d9b94','stroke-dasharray':'4 4'});
+  for(const seg of BootstrapView.segments(rows,r=>BootstrapView.band(r))){if(seg.length>1)s('polygon',{points:seg.map(r=>`${X(r.jaar)},${Y(r.diagnostic_low)}`).concat([...seg].reverse().map(r=>`${X(r.jaar)},${Y(r.diagnostic_high)}`)).join(' '),fill:'#d8b46b','fill-opacity':'.38'});seg.forEach(r=>s('line',{x1:X(r.jaar),x2:X(r.jaar),y1:Y(r.diagnostic_low),y2:Y(r.diagnostic_high),stroke:'#b57809','stroke-opacity':'.6'}));}
+  for(const seg of BootstrapView.segments(rows,r=>BootstrapView.finite(r.baseline_index)))s('polyline',{points:seg.map(r=>`${X(r.jaar)},${Y(r.baseline_index)}`).join(' '),fill:'none',stroke:'#157f3b','stroke-width':2});
+  valid.forEach(r=>{const c=s('circle',{cx:X(r.jaar),cy:Y(r.baseline_index),r:3,fill:'#157f3b'});const title=document.createElementNS(ns,'title');title.textContent=`${r.jaar} · ${num(r.baseline_index)} · ${r.status}`;c.appendChild(title);});
+  const legend=node('p','Groen · eigen periode-index. Oker · diagnostische puntgewijze band en jaarmarges. Stippellijn · index 100. Elke periode heeft een eigen referentiejaar en verticale schaal.',parent);legend.className='legend';
+ }
+ const n=B.long.length;const intro=$('intro');node('div',`LOKALE PROEF · ${n} soorten · ${B.year_from}–${B.year_to} · geen vrijgegeven 95%-intervallen`,intro).className='notice';
+ note('Netto verandering vergelijkt venstergemiddelden. De jaarlijkse formele TRIM-trends staan in het bestaande trendoverzicht. Jaarindices zijn modeluitkomsten, met mogelijke aanvulling van ontbrekende tellingen. Een nulindex blijft nul en bewijst geen getelde afwezigheid in alle kavels. Een ontbrekende index blijft een gat.',intro);
+ note('Lange maat bij 32 soorten met 2.000 trekkingen, bij 124 soorten met 500. Afzonderlijke perioden en jaarindices bij alle soorten met 500. Geen groepsbootstrap. De vaste referentie 100, constante verdelingen en uitval krijgen geen band. Numerieke stabiliteit bewijst geen volledige dekking.',intro);
+ B.long.slice().sort((a,b)=>a.soort_naam.localeCompare(b.soort_naam,'nl')).forEach(r=>{const o=node('option',r.soort_naam,$('species'));o.value=r.soort_id;});
+ function render(){
+  const id=Number($('species').value),r=B.long.find(r=>r.soort_id===id),parent=$('result');parent.replaceChildren();if(!r)return;
+  node('h2',r.soort_naam,parent);note(`Bronrun ${B.run_id} · ${B.year_from}–${B.year_to} · ${B.selection.plot_ids.length} kavels`,parent);
+  node('h3','Lange begin/eindverandering',parent);note(`Gemiddeld ${B.long_windows.first} tegenover ${B.long_windows.last}. Brug ${B.long_windows.bridge}.`,parent);
+  const common=[[r=>`${r.n_valid}/${r.n_planned}`,'Geldige trekkingen'],['status','Bandstatus'],['baseline_status','Schattingstatus'],['reasons','Uitvalredenen'],['both_stable','Beide grenscontroles stabiel']];
+  table([r],[[r=>pct(r.baseline_net_pct),'Netto verandering'],[r=>BootstrapView.band(r)?`${pct(r.diagnostic_low)} tot ${pct(r.diagnostic_high)}`:'geen band','Diagnostische band'],['gate','Beoordeling'],...common,['n_source_positive_begin_plots','Positieve beginvensterkavels'],['n_source_positive_end_plots','Positieve eindvensterkavels']],parent);
+  if(r.scarce_endpoint_support)node('div','Hoogstens één positieve bronkavel in een begin- of eindvenster. Modelaanvulling kan de uitkomst bepalen.',parent).className='notice';
+  if(r.window_direction_sensitive)note('De richting wisselt bij een andere lengte van de begin/eindvensters.',parent);
+  const periods=B.periods.filter(x=>x.soort_id===id),annual=B.annual.filter(x=>x.soort_id===id);
+  for(const p of periods){node('h2',`Afzonderlijke periode ${p.period_calendar_start}–${p.period_calendar_end}`,parent);note(`Eigen modeljaren ${p.model_start??'—'}–${p.model_end??'—'}. Referentiejaar ${p.reference_year??'—'} = 100. Beginvenster ${p.first_window??'—'} en eindvenster ${p.last_window??'—'}.`,parent);
+   table([p],[[r=>pct(r.baseline_net_pct),'Netto periodeverandering'],[r=>BootstrapView.band(r)?`${pct(r.diagnostic_low)} tot ${pct(r.diagnostic_high)}`:'geen band','Diagnostische band'],...common,['baseline_model_reason','Modelreden'],['source_positive_begin_plots','Positieve beginvensterkavels'],['source_positive_end_plots','Positieve eindvensterkavels']],parent);
+   const years=annual.filter(r=>r.period===p.period).sort((a,b)=>a.jaar-b.jaar);chart(years,parent);
+   const detail=node('details',null,parent);node('summary',`Jaarwaarden en uitval · alle ${years.length} kalenderposities`,detail);
+   table(years,[['jaar','Jaar'],['baseline_index','Index'],['diagnostic_low','Diagnostisch laag'],['diagnostic_high','Diagnostisch hoog'],['status','Status'],[r=>`${r.n_valid}/${r.n_planned}`,'Geldige trekkingen'],['both_stable','Beide controles stabiel'],['n_counted_source_cells','Getelde broncellen'],['n_positive_source_plots','Positieve bronkavels'],['n_model_failure','Modelfouten'],['n_reference_failure','Referentiefouten'],['n_year_index_missing_or_invalid','Jaarindexuitval'],['baseline_model_reason','Modelreden']],detail);
+  }
+  node('h2','Downloads met volledige beoordeling',parent);download([r],'lange-maat-'+id,parent);download(periods,'perioden-'+id,parent);download(annual,'jaarindices-'+id,parent);
+  const d=node('details',null,parent);node('summary','Herkomst en bestanden',d);node('pre',JSON.stringify({run_id:B.run_id,source_hash:B.source_hash,cache_sha256:B.cache_sha256,selection:B.selection,files:B.files},null,2),d).className='meta';
+ }
+ function fromHash(){const args=new URLSearchParams(location.hash.slice(1)),id=args.get('species');if(id&&B.long.some(r=>String(r.soort_id)===id))$('species').value=id;render();}
+ $('species').onchange=()=>{location.hash='species='+$('species').value;};window.addEventListener('hashchange',fromHash);fromHash();
+}
+</script></html>

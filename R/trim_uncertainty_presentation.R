@@ -11,7 +11,7 @@ prepare_trim_uncertainty_rows <- function(rows) {
     ifelse(grepl("volledig", rows$entity_id, fixed = TRUE), 2L, 3L))
   status_rank <- ifelse(rows$publication_status == "onvoldoende_bootstrap", 2L, 1L)
   rows <- rows[order(status_rank, variant_rank, rows$entity_id, rows$period), , drop = FALSE]
-  formal <- rows$publication_status != "onvoldoende_bootstrap" &
+  formal <- rows$publication_status %in% "publiceerbaar" &
     is.finite(rows$ci_low_pct) & is.finite(rows$ci_high_pct)
   rows$display_ci <- NA_character_
   rows$display_ci[formal] <- sprintf("%.2f%% tot %.2f%%", rows$ci_low_pct[formal], rows$ci_high_pct[formal])

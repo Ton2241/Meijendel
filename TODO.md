@@ -1,5 +1,9 @@
 # TODO
 
+## Bootstrapkandidaat voor de release 2026
+
+De lokale aansluiting is uitgevoerd. Vóór de integrale release staan herstel of gecontroleerde vervanging van het websitekoppelcontract, de drie meeuwenfoto’s en verificatie van de gewone lokale Python-MySQL-connector open. Na de officiële bronlevering volgen vrijgaveregels per schatter, verse dump/cache en browserdataset, herberekening en volledige pariteits- en schermproeven. Zie [uitvoering en concrete blokkades](docs/TRIM_RELEASE_2026_AANSLUITING.md).
+
 ## Nu open
 
 ### SOVON-BMP jaar-voor-jaarvergelijking

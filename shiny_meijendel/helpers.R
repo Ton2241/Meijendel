@@ -79,7 +79,7 @@ resolve_trim_uncertainty <- function(selection_hash, results) {
     return(c(list(status = "exploratory_no_formal_interval"), empty))
   }
   rows <- results$rows
-  valid <- rows$publication_status != "onvoldoende_bootstrap" & is.finite(rows$ci_low_pct) & is.finite(rows$ci_high_pct)
+  valid <- rows$publication_status %in% "publiceerbaar" & is.finite(rows$ci_low_pct) & is.finite(rows$ci_high_pct)
   formal <- rows[valid, , drop = FALSE]
   if (!nrow(formal)) return(c(list(status = "descriptive_pending_final_run"), empty))
   list(

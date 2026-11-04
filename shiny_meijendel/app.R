@@ -13,6 +13,7 @@ if (!requireNamespace("bslib", quietly = TRUE)) {
 
 source("helpers.R", local = TRUE)
 source("ndff_local.R", local = TRUE)
+source("../R/trim_bootstrap_preview.R", local = TRUE)
 
 library(shiny)
 
@@ -473,7 +474,8 @@ ui <- navbarPage(
               h4("Trend per soort"),
               tableOutput("species_table"),
               h4("Formele bootstraponzekerheid standaardselectie"),
-              tableOutput("trim_species_uncertainty_table")
+              tableOutput("trim_species_uncertainty_table"),
+              uiOutput("trim_species_bootstrap_preview")
             ),
             tabPanel(
               "Groepen",
@@ -1278,6 +1280,7 @@ server <- function(input, output, session) {
       withProgress(message = "SQL wordt gelezen.", detail = "Dit kan even duren afhankelijk van het werkgeheugen van de server.", value = 0.1, {
         loaded <- load_meijendel_tables_cached(path)
         incProgress(0.8)
+        loaded$data$bootstrap_source_hash <- sha256_file(path)
         tbls_rv(loaded$data)
         if (loaded$from_cache) {
           load_info_rv(sprintf("SQL geladen uit cache: %s", path))
@@ -1981,6 +1984,11 @@ server <- function(input, output, session) {
           load_shiny_trim_uncertainty_results()
         )
         incProgress(0.9)
+        analyse$bootstrap_selection <- list(
+          plot_ids = unique(analyse$basis$plot_id[analyse$basis$geteld %in% TRUE]),
+          species_ids = analyse$species_results$status$soort_id,
+          year_from = year_from, year_to = year_to, source_hash = tbls$bootstrap_source_hash
+        )
         analyse_rv(analyse)
       })
       analysis_info_rv("Analyse gereed.")
@@ -3026,6 +3034,25 @@ server <- function(input, output, session) {
         status$model_fallback_reden[[1]]
       )
     )
+  })
+
+  output$trim_species_bootstrap_preview <- renderUI({
+    preview <- load_trim_bootstrap_preview()
+    if (is.null(preview)) return(NULL)
+    analyse <- analyse_rv()
+    req(analyse, input$selected_species)
+    selected <- analyse$bootstrap_selection
+    if (is.null(selected) || !do.call(trim_bootstrap_preview_matches, c(list(preview = preview), selected))) {
+      return(tags$p(class = "section-note", "De opgeslagen bootstrap hoort bij een andere bron, kavel- of jarenselectie. Voor deze selectie is geen bootstrapband berekend."))
+    }
+    trends <- analyse$species_results$trends
+    id <- trends$soort_id[match(input$selected_species, trends$soort_naam)]
+    req(length(id) == 1L, !is.na(id))
+    html <- paste(readLines(preview$path, warn = FALSE), collapse = "\n")
+    # Select the species inside the unchanged shared payload on first load.
+    html <- sub("const BOOTSTRAP_DATA=", paste0("location.hash='species=", as.integer(id), "';\nconst BOOTSTRAP_DATA="), html, fixed = TRUE)
+    tags$iframe(title = "Lokale bootstrapbeoordeling", srcdoc = html,
+      style = "width:100%;height:1100px;border:1px solid #dce6df")
   })
 
   output$trim_species_uncertainty_status_ui <- renderUI({

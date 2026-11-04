@@ -2,6 +2,8 @@
 
 Deze matrix beschrijft de beoogde lokale release. De officiële levering bepaalt het eindjaar, de opgenomen soorten en kavels en de beschikbare schattingen. De analyse van 156 soorten over 1958–2025 levert voorbeelden voor de presentatie. De banden uit die analyse hebben de status diagnostisch.
 
+De lokale aansluiting en de aantoonbare resterende blokkades staan in [de uitvoeringsnotitie van 4 november](TRIM_RELEASE_2026_AANSLUITING.md).
+
 ## Gedeelde presentatie
 
 Gebruik voor elk resultaat dezelfde soort- of groepssleutel, selectie, periode, maat, eenheid, puntwaarde en status. Koppel onzekerheid aan dezelfde bronversie en hetzelfde run-ID. Vermeld bij groepsresultaten ook de samenstelling en variant. Leg per jaar vast of de waarde geteld, modelmatig aangevuld of onbekend is.
