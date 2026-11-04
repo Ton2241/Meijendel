@@ -48,7 +48,7 @@ def execute(prepared_file,stage,install=False,yes=False):
   env=os.environ|dict(VWG_M_DIR=str(website),MEIJENDEL_DIR=str(analysis))
   run(['bash',project/'scripts/install_vwgm_admin_gateway_vps.sh','--apply','--yes'],env=env)
  key=Path.home()/'.ssh/vwgm_spectraip_ed25519';target='ton@45.87.43.90';commit=p['commits']['Meijendel'];digest=p['sha256']
- run(['/opt/homebrew/bin/rsync','-a','--partial','--append-verify','-e',shlex.join(['ssh','-i',str(key)]),p['archive'],target+':/srv/vwgm/deploy-state/integral-inbox/'+commit+'.tar.gz'])
+ run(['/usr/bin/rsync','-a','--partial','-e',shlex.join(['ssh','-i',str(key)]),p['archive'],target+':/srv/vwgm/deploy-state/integral-inbox/'+commit+'.tar.gz'])
  def gateway(operation):
   # A reconnect reuses its saved operation ID, never starts another import.
   operations=out/'operations.json';saved=json.loads(operations.read_text()) if operations.exists() else {}
