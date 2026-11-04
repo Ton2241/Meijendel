@@ -17,3 +17,14 @@ assert.equal(dom.renderBootstrapPreview().children[1].attrs.src,'outputs/bootstr
 dom.location.search='';assert.equal(dom.renderBootstrapPreview(),null);
 assert.ok(dashboard.includes('const preview=renderBootstrapPreview();if(preview)p.appendChild(preview);'));
 console.log('OK: dashboard koppelt de juiste soort en activeert de proef uitsluitend expliciet.');
+// A populated post-only list must not hide a species from the complete summary.
+dom.location.search='?bootstrapPreview=1';dom.S.trimTrendSummaryAll=[{soort_naam:'Alleen post',soort_id:2}];dom.S.trimTrendSummary=[{soort_naam:'Dodaars',soort_id:1},...dom.S.trimTrendSummaryAll];
+assert.ok(dom.renderBootstrapPreview(),'Soort uit volledige samenvatting moet een preview krijgen');
+const refreshSource=dashboard.slice(dashboard.indexOf('function trimRowKey('),dashboard.indexOf('function processWinterPilotCSV('));
+const state={S:{trimIndexBaseData:[{soort_id:1,soort_naam:'Dodaars',jaar:1958}],trimIndexPostData:[],selected:[]},normKey:x=>String(x||'').toLowerCase(),render:()=>{}};
+vm.createContext(state);vm.runInContext(refreshSource,state);
+state.processTrendCSV([{soort_id:1,soort_naam:'Dodaars'},{soort_id:2,soort_naam:'Bijeneter',analyse_categorie:'onvoldoende_data'}],'trim_trend_all');
+assert.equal(state.S.trimAllSpecies.length,2,'Ook soort zonder index blijft kiesbaar');
+console.log('OK: volledig soortoverzicht blijft zichtbaar, ook zonder index.');
+state.processTrendCSV([{soort_id:3,soort_naam:'Woudaap',analyse_categorie:'onvoldoende_data'}],'trim_status');
+assert.equal(state.S.trimAllSpecies.length,3,'De statusinventaris houdt soorten zonder trend zichtbaar');

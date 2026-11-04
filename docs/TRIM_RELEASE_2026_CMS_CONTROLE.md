@@ -6,6 +6,8 @@ De effectieve teksten zijn opgehaald via de normale CMS-functie, inclusief de te
 
 De correcties zijn inmiddels op een afzonderlijke lokale CMS-kandidaat toegepast. Uitvoering, routecontroles en resterende ontbrekende bestanden staan in [de aansluitnotitie](TRIM_RELEASE_2026_AANSLUITING.md).
 
+De vervolgcontrole op 4 november 2026 heeft de drie archieffoto’s teruggevonden en hersteld. De actuele websitekoppelingen zijn in een afzonderlijke lokale MySQL-proef geplaatst. De volledige soortpagina’s en gewone connector werken. Zie de afsluitende bevindingen in [de aansluitnotitie](TRIM_RELEASE_2026_AANSLUITING.md).
+
 ## Voorbereiding die losstaat van de officiële levering
 
 - **Begrazing.** De opgeslagen tekst verwijst naar `nachtegaalhabitat-kijfhoek-bierlap-hollands-duinen-86.jpg`. Dat bestand ontbreekt in de checkout. Migratie 167 bevat de vervanging door `nachtegaalhabitat-meijendel-roman-boed.webp`, die lokaal aanwezig is. Neem de bestaande correctie op in de lokale releasekandidaat en controleer foto, alt-tekst en credit samen. Het kaartbestand `begrazingsgebieden-hollands-duinen-60.jpg` is lokaal aanwezig.

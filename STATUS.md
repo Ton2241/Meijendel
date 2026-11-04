@@ -2,7 +2,7 @@
 
 ## Lokale bootstrapaansluiting 4 november 2026
 
-De bestaande beoordeling van 156 soorten over 1958–2025 is aangesloten via één gedeeld diagnostisch HTML-blok voor website, dashboard en Shiny. CMS-correcties zijn op een afzonderlijke lokale kandidaat toegepast. De volledige lokale soortdetailroute blijft geblokkeerd door de ontbrekende `website_species_mapping` in de actuele analytische database. Drie archieffoto’s ontbreken. De browserdataset en volledige Shiny/dashboard-pariteit wachten op de gevalideerde releasebron. Details en testbewijs staan in [de aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md). Geen formele 2026-activering of VPS-publicatie.
+De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. Officiële 2026-validatie, verse bronproducten, formele intervalvrijgave en publicatie blijven afzonderlijke stappen. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 
 ## 7 oktober 2026 - afgeleide jaarverslagnullen in TRIM
 

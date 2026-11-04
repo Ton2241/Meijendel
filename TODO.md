@@ -2,7 +2,7 @@
 
 ## Bootstrapkandidaat voor de release 2026
 
-De lokale aansluiting is uitgevoerd. Vóór de integrale release staan herstel of gecontroleerde vervanging van het websitekoppelcontract, de drie meeuwenfoto’s en verificatie van de gewone lokale Python-MySQL-connector open. Na de officiële bronlevering volgen vrijgaveregels per schatter, verse dump/cache en browserdataset, herberekening en volledige pariteits- en schermproeven. Zie [uitvoering en concrete blokkades](docs/TRIM_RELEASE_2026_AANSLUITING.md).
+De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. Officiële 2026-validatie, verse bronproducten, formele intervalvrijgave en publicatie blijven afzonderlijke stappen. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
 
 ## Nu open
 

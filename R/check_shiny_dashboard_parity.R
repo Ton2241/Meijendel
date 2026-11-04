@@ -40,7 +40,26 @@ if (!is.finite(year_from) || !is.finite(year_to) || year_from > year_to) {
   fail("Ongeldige jaren: ", year_from, "-", year_to)
 }
 
-load_time <- system.time(loaded <- load_meijendel_tables_cached(sql_path))
+if (length(args) == 6L) fail("Geef zowel het bevroren cachebestand als het cachemanifest op.")
+
+# Optional read-only assessment of a saved historical cache. This does not
+# promote it to the current cache schema or write a replacement cache.
+if (length(args) >= 7L) {
+  frozen_cache <- normalizePath(args[[6L]], mustWork = TRUE)
+  frozen_manifest <- read_meijendel_manifest(args[[7L]])
+  if (!identical(sha256_file(frozen_cache), frozen_manifest[["cache_sha256"]])) fail("Bevroren cachehash wijkt af.")
+  load_time <- system.time({
+    saved_cache <- readRDS(frozen_cache)
+    expected <- meijendel_cache_identity_from_manifest(frozen_manifest, as.integer(frozen_manifest[["parser_version"]]))
+    validate_meijendel_cache(saved_cache, expected)
+    loaded <- list(data = apply_meijendel_plot_scope(saved_cache$data), from_cache = TRUE)
+  })
+  cat("FROZEN_CACHE_REVIEW=TRUE\n")
+  cat("FROZEN_SOURCE_SHA256=", frozen_manifest[["sql_sha256"]], "\n", sep = "")
+  cat("FROZEN_PARSER_VERSION=", frozen_manifest[["parser_version"]], "\n", sep = "")
+} else {
+  load_time <- system.time(loaded <- load_meijendel_tables_cached(sql_path))
+}
 tbls <- loaded$data
 selected_kavels <- sort(unique(tbls$plots$kavel_nummer))
 selected_kavels <- selected_kavels[!is.na(selected_kavels) & nzchar(selected_kavels)]
