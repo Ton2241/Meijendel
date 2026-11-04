@@ -1,11 +1,15 @@
 #!/usr/bin/env Rscript
-period_distribution_500 <- function(theta,v,reference=FALSE) {
- stopifnot(length(v)==500L)
- s<-endpoint_interval_diagnostic(theta,v,500L)
- bounds<-function(n){d<-endpoint_interval_diagnostic(theta,v[seq_len(n)],n);c(d$diagnostic_low,d$diagnostic_high)}
- latest<-endpoint_interval_stable(bounds(375L),bounds(500L));previous<-endpoint_interval_stable(bounds(250L),bounds(375L))
+period_distribution <- function(theta,v,reference=FALSE) {
+ n<-length(v);stopifnot(n%in%c(500L,2000L))
+ s<-endpoint_interval_diagnostic(theta,v,n)
+ points<-if(n==500L)c(250L,375L,500L) else c(1000L,1500L,2000L)
+ bounds<-function(m){d<-endpoint_interval_diagnostic(theta,v[seq_len(m)],m);c(d$diagnostic_low,d$diagnostic_high)}
+ latest<-endpoint_interval_stable(bounds(points[2]),bounds(points[3]));previous<-endpoint_interval_stable(bounds(points[1]),bounds(points[2]))
  if(reference){s$status<-'referentie100_definitie_geen_band';s$diagnostic_low<-s$diagnostic_high<-NA_real_;s$complete_non_degenerate<-FALSE;latest<-previous<-FALSE}
  cbind(s,data.frame(latest_stable=latest,both_stable=latest&&previous))
+}
+period_distribution_500 <- function(theta,v,reference=FALSE) {
+ stopifnot(length(v)==500L);period_distribution(theta,v,reference)
 }
 assess_trim_period_uncertainty <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==4L);repo<-normalizePath(args[1],mustWork=TRUE);parent<-normalizePath(args[2],mustWork=TRUE);recovery<-normalizePath(args[3],mustWork=TRUE);out<-args[4]
