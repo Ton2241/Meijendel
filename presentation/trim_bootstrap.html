@@ -52,7 +52,7 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
  }
  const n=B.long.length;const intro=$('intro');node('div',`LOKALE PROEF · ${n} soorten · ${B.year_from}–${B.year_to} · geen vrijgegeven 95%-intervallen`,intro).className='notice';
  note('Netto verandering vergelijkt venstergemiddelden. De jaarlijkse formele TRIM-trends staan in het bestaande trendoverzicht. Jaarindices zijn modeluitkomsten, met mogelijke aanvulling van ontbrekende tellingen. Een nulindex blijft nul en bewijst geen getelde afwezigheid in alle kavels. Een ontbrekende index blijft een gat.',intro);
- note('Lange maat bij 32 soorten met 2.000 trekkingen, bij 124 soorten met 500. Afzonderlijke perioden en jaarindices bij alle soorten met 500. Geen groepsbootstrap. De vaste referentie 100, constante verdelingen en uitval krijgen geen band. Numerieke stabiliteit bewijst geen volledige dekking.',intro);
+ note('Lange maat bij 32 soorten met 2.000 trekkingen, bij 124 soorten met 500. De aantallen voor afzonderlijke perioden en jaarindices staan per uitkomst vermeld. Geen groepsbootstrap. De vaste referentie 100, constante verdelingen en uitval krijgen geen band. Numerieke stabiliteit bewijst geen volledige dekking.',intro);
  B.long.slice().sort((a,b)=>a.soort_naam.localeCompare(b.soort_naam,'nl')).forEach(r=>{const o=node('option',r.soort_naam,$('species'));o.value=r.soort_id;});
  if(compact){
   document.querySelector('h1').hidden=true;document.querySelector('label').hidden=true;
@@ -79,7 +79,7 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
   note('De jaarmarges hieronder horen bij de eigen TRIM-lijn van elke afzonderlijke periode. Ze zijn niet automatisch een betrouwbaarheidsmarge rond de gebrugde lijn in de hoofdgrafiek. Waar geen bruikbare marge kan worden berekend, tonen we geen band.',parent);
   node('h2',r.soort_naam,parent);note(`Bronrun ${B.run_id} · ${B.year_from}–${B.year_to} · ${B.selection.plot_ids.length} kavels`,parent);
   node('h3','Lange begin/eindverandering',parent);note(`Gemiddeld ${B.long_windows.first} tegenover ${B.long_windows.last}. Brug ${B.long_windows.bridge}.`,parent);
-  note(`Lange begin/eindvergelijking: ${num(r.n_planned)} beoordeelde trekkingen, waarvan ${num(r.n_valid)} geldig voor deze uitkomst. De afzonderlijke perioden en jaarindices hieronder gebruiken 500 trekkingen. Geldig betekent dat de berekening voor deze specifieke uitkomst een bruikbare waarde opleverde.`,parent);
+  note(`Lange begin/eindvergelijking: ${num(r.n_planned)} beoordeelde trekkingen, waarvan ${num(r.n_valid)} geldig voor deze uitkomst. De aantallen voor de afzonderlijke perioden en jaarindices staan hieronder per uitkomst vermeld. Geldig betekent dat de berekening voor deze specifieke uitkomst een bruikbare waarde opleverde.`,parent);
   const common=[['n_planned','Beoordeelde trekkingen'],['n_valid','Geldige trekkingen'],['status','Bandstatus'],['baseline_status','Schattingstatus'],['reasons','Uitvalredenen'],['both_stable','Beide grenscontroles stabiel']];
   table([r],[[r=>pct(r.baseline_net_pct),'Netto verandering'],[r=>BootstrapView.band(r)?`${pct(r.diagnostic_low)} tot ${pct(r.diagnostic_high)}`:'geen band','Diagnostische band'],['gate','Beoordeling'],...common,['n_source_positive_begin_plots','Positieve beginvensterkavels'],['n_source_positive_end_plots','Positieve eindvensterkavels']],parent);
   if(r.scarce_endpoint_support)node('div','Hoogstens één positieve bronkavel in een begin- of eindvenster. Modelaanvulling kan de uitkomst bepalen.',parent).className='notice';
@@ -92,7 +92,7 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
    table(years,[['jaar','Jaar'],['baseline_index','Index'],['diagnostic_low','Diagnostisch laag'],['diagnostic_high','Diagnostisch hoog'],['status','Status'],['n_planned','Beoordeelde trekkingen'],['n_valid','Geldige trekkingen'],['both_stable','Beide controles stabiel'],['n_counted_source_cells','Getelde broncellen'],['n_positive_source_plots','Positieve bronkavels'],['n_model_failure','Modelfouten'],['n_reference_failure','Referentiefouten'],['n_year_index_missing_or_invalid','Jaarindexuitval'],['baseline_model_reason','Modelreden']],detail);
   }
   node('h2','Downloads met volledige beoordeling',parent);download(rates,'jaarlijkse-samenvatting-'+id,parent);download([r],'lange-maat-'+id,parent);download(periods,'perioden-'+id,parent);download(annual,'jaarindices-'+id,parent);
-  const d=node('details',null,parent);node('summary','Herkomst en bestanden',d);node('pre',JSON.stringify({run_id:B.run_id,source_hash:B.source_hash,cache_sha256:B.cache_sha256,selection:B.selection,files:B.files,annual_rate_files:B.annual_rate_files},null,2),d).className='meta';
+  const d=node('details',null,parent);node('summary','Herkomst en bestanden',d);node('pre',JSON.stringify({run_id:B.run_id,source_hash:B.source_hash,cache_sha256:B.cache_sha256,selection:B.selection,files:B.files,annual_rate_files:B.annual_rate_files,component_runs:B.component_runs,period_assessment:B.period_assessment},null,2),d).className='meta';
  }
  function fromHash(){
   const args=new URLSearchParams(location.hash.slice(1)),ids=(args.get('species')||'').split(',').map(Number).filter(id=>B.long.some(r=>r.soort_id===id));

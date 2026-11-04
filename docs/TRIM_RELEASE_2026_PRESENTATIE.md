@@ -66,3 +66,10 @@ De routes hieronder verwijzen naar `website/vwg-m-linux-app/app/main.py`. Contro
 6. Leg in de releasebeschrijving bronversie, beide codecommits, gewijzigde pagina’s, grafieken, bestanden en openstaande uitzonderingen vast. Leg die concrete release daarna ter goedkeuring voor.
 
 Hoofdroutes en controles zijn afgeleid uit `VWG_M/website/vwg-m-linux-app/app/main.py`, `bmp_meijendel_index.html`, `shiny_meijendel/app.R`, `R/trim_uncertainty_presentation.R` en `deploy/update_en_deploy_meijendel.sh`. Zie ook [het 2026-draaiboek](TRIM_BOOTSTRAP_2026_RUNBOOK.md).
+
+
+## Doorlopende integrale voorbereiding — afspraak 4 november 2026
+
+Na iedere wijziging worden bronproducten, consumenten, onzekerheids-/uitvalweergave, documentatie en controles in dezelfde taak in de lokale releaseketen verwerkt. Eén gecontroleerde actualisering omvat website, dashboard en Shiny. De actuele zelfstandige periode-/jaarindexuitvoer wordt daarom via `--period-source` in hetzelfde gedeelde bootstrapblok opgenomen; het kandidaatmanifest bindt alle drie consumenten via `--website-root` aan hun codehashes. De broncontext van de lange en zelfstandige maat moet overeenkomen. Beoordeelde en geldige aantallen blijven schattergebonden.
+
+Vóór de uiteindelijke publicatie moet één releasekandidaat database/bronexport, jaargrens, soort-/kavelselectie, drie bootstrap-CSV’s, modelstatussen, jaarindices, groepsproducten, websitefiguren, CMS/migraties/media, dashboard en Shiny onder passende bronidentiteiten en checksums bijeenbrengen. De bovenstaande paginamatrix en de CMS-controle blijven onderdeel van die eindcontrole. Een 2025-artefact is geen gevalideerd 2026-product. Ontbrekende officiële data, onbesliste intervalvrijgave of een afwijkende bron-/jaaridentiteit blokkeren de betreffende publicatie; soorten en uitval verdwijnen daarbij niet uit beeld. Publicatie blijft afzonderlijk te autoriseren.

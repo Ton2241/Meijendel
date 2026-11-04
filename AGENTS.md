@@ -692,3 +692,8 @@ VPS / app.vwg-m.nl:
 - de ledenadministratie/PWA staat niet meer op de VPS; containers `leden_pwa_web` en `leden_pwa_mysql` horen daar niet te draaien
 - toegang tot dashboard, SQL, Shiny en dashboard-output op `app.vwg-m.nl` loopt via Caddy `forward_auth` naar de VWG-M ledenlogin; er is geen PWA-login of magic-link-login op productie
 - bij vragen over toegang tot `app.vwg-m.nl`: kijk eerst naar de Caddy `forward_auth`-configuratie en de routes voor dashboard en Shiny, niet naar de verlaten PWA
+
+
+## Integrale voorbereiding op de 2026-actualisering
+
+Vaste afspraak van Ton, 4 november 2026: verwerk na iedere bewerking in dezelfde taak ook de noodzakelijke voorbereiding om de officiële 2026-gegevens, bootstrapuitkomsten en overige wijzigingen integraal via één gecontroleerde actualisering op de VPS op te nemen, voor website, dashboard en Shiny. Houd de betrokken bronproducten, gedeelde uitvoer, consumenten, manifesten, release-instructies en relevante controles samen actueel. Een nieuwe analyse-uitvoer mag niet los blijven staan van de lokale releaseketen. Bewaak bron, jaren, selectie, versies en checksums; behoud alle soorten en hun uitvalstatus. Officiële bronvalidatie en schattergebonden intervalvrijgave blijven releasepoorten. Deze afspraak verleent geen VPS-publicatieakkoord.

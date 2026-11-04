@@ -1,0 +1,16 @@
+{
+  "species": 156,
+  "periods": 312,
+  "annual_positions": 10608,
+  "batches": 300,
+  "draw_ids": "501-2000",
+  "first500_preserved": true,
+  "unselected_rows_preserved": true,
+  "all_bounds_independently_recomputed": true,
+  "all_stability_flags_independently_recomputed": true,
+  "formal_intervals": false,
+  "period_bands": 134,
+  "stable_period_bands": 14,
+  "annual_bands": 4365,
+  "stable_annual_bands": 222
+}

@@ -1,10 +1,12 @@
 # Status Meijendel
 
-## Zelfstandige periodebootstrap tot en met 2025 — uitvoering 4 november 2026
+## Zelfstandige periodebootstrap tot en met 2025 — 4 november 2026
 
-De uitbreiding loopt lokaal op `codex/trim-brug-bootstrap`. Voorafcriteria: commit `32123615`, `trim/bootstrap/periods_2025_2000_20261104/CRITERIA.md`. Selectie: 141 uitbreidbare perioden van 89 soorten; overige 171 perioden behouden hun 500-beoordeling. Alle 156 soorten blijven in het eindverslag. Twee oude trekkingen zijn voor alle 141 perioden gereproduceerd. Per extra trekking worden 60 beschikbare periode-uitkomsten hergebruikt en 81 ontbrekende zelfstandige periodefits berekend. Eén worker, checkpoints per trekking en batches van vijf. Geen brugfit, 2026, database-/export-/cachewijziging of VPS-publicatie.
+Alle 156 soorten uit de bewaarde ontwikkelbron 1958–2025 blijven zichtbaar: 312 perioden en 10.608 kalenderposities. Van 89 soorten zijn 141 zelfstandige perioden van 500 tot 2.000 trekkingen uitgebreid; de overige 171 perioden van alle soorten behouden de oorspronkelijke 500-beoordeling. Na uitbreiding hebben 134 van de 141 perioden een volledige niet-constante diagnostische band, waarvan 14 beide stabiliteitscontroles halen. Bij de jaarindices zijn 4365 diagnostische banden beschikbaar, waarvan 222 beide controles halen. Er gingen 258 eerdere periode-/jaarbanden verloren door uitval of een niet bruikbare verdeling; deze worden niet met succesvolle subsets gerepareerd. Er kwamen 0 diagnostische jaar-/periodebanden bij.
 
-Uitvoer buiten Git: `Meijendel/outputs/trim-2025-periods-2000-20261104`; voortgang: `Meijendel/outputs/trim-periods-2000-20261104.log`. Hervatten met `R/run_trim_period_2000.R` volgens het uitvoeringsplan. Na voltooiing volgen `R/assess_trim_period_2000.R`, de onafhankelijke resultaatcontrole en `scripts/build_trim_period_2000_report.py`. De resultaten zijn nog niet afgerond of vrijgegeven. De bestaande lokale webpreview blijft herkenbaar de eerdere gegevensversie.
+Voorafcriteria `32123615`; volledige resultaten en beperkingen per soort: [PER_SOORT.md](trim/bootstrap/periods_2025_2000_20261104/PER_SOORT.md). De eerste 500 blijven exact behouden en de bandgrenzen/stabiliteit zijn onafhankelijk gecontroleerd. Alle nieuwe marges blijven diagnostisch, zonder formele 95%-vrijgave. De lange maat en jaarlijkse percentages sinds 1958/1990 zijn ongewijzigd.
+
+De nieuwe zelfstandige uitvoer is opgenomen in dezelfde lokale HTML/manifest voor website, dashboard en Shiny. Het kandidaatmanifest bindt invoer en consumenten met bronidentiteiten en checksums. De werkafspraak over integrale voorbereiding voor één latere 2026-actualisering staat in beide AGENTS en gebruikersgeheugen. Officiële 2026-validatie en publicatie blijven afzonderlijke poorten. Geen VPS-publicatie.
 
 ## Lokale bootstrapaansluiting 4 november 2026
 

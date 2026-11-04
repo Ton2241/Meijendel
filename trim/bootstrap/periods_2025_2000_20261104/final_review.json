@@ -1,0 +1,15 @@
+{
+  "review": "geen_blokkerende_bevindingen",
+  "word_pages_visually_checked": 62,
+  "original_word_paragraphs_preserved_except_date": 482,
+  "new_paragraph_matches_markdown": true,
+  "new_paragraph_page": 10,
+  "all_156_species_present": true,
+  "all_312_periods_present": true,
+  "all_10608_annual_positions_present": true,
+  "first500_exactly_preserved": true,
+  "five_protected_sources_unchanged": true,
+  "shared_payload_three_consumers_verified": true,
+  "formal_intervals_released": false,
+  "vps_published": false
+}

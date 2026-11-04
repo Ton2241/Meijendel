@@ -67,6 +67,8 @@ Rscript R/export_trim_bootstrap_selection.R \
   /tmp/bootstrap-selection.json
 python3 scripts/build_trim_bootstrap_presentation.py \
   --source trim/bootstrap/species_2025_2000_20261103 \
+  --period-source trim/bootstrap/periods_2025_2000_20261104 \
+  --website-root /Users/ton/Documents/GitHub/_worktrees/VWG_M/bootstrap-presentatie-2026 \
   --parent-manifest /Users/ton/Documents/GitHub/Meijendel/outputs/trim-2025-validation-500-20261103/input/bundle_manifest.json \
   --selection /tmp/bootstrap-selection.json \
   --output outputs/bootstrap-presentatie-2026
@@ -142,3 +144,16 @@ De gecontroleerde CSV’s bevatten 32 lange uitkomsten met 2.000 beoordeelde tre
 De lokale website gebruikt dezelfde eenvoudige weergave via `?view=simple`; Shiny gebruikt dezelfde HTML met `data-presentation="simple"`. In Shiny staan de bestaande modelwaarschuwingen, tabellen en downloads achter “Berekeningen en downloads”. De bestaande bewaking op bron, kavels, soorten en jaren blijft gelden. De productiehandleidingen voor leden worden hierdoor niet geraakt; de technische lokale beheerinstructie in VWG_M is bijgewerkt.
 
 Gecontroleerd: zes Python-controles voor de inventaris, bandvoorwaarden en jaarlijkse berekening; JavaScript-contracten voor soortnamen, meerdere soorten, nulwaarden, ontbrekende jaren en expliciete trekkingsaantallen; beide bestaande R-presentatiecontracten; Shiny-rendercontrole inclusief weigering bij een andere selectie; zes gerichte websitecontroles. De Shiny-controle gebruikt een minimale testcontext zonder nieuwe TRIM-berekeningen; haar bestaande min/max-waarschuwingen over de lege basis zijn geen fout in de koppeling. De browser toont de jaarlijkse percentages, gesloten toelichting en juiste aantallen na uitklappen; de titel “Hoe ontwikkelen Dodaars, Fuut en Tapuit zich?” is gecontroleerd. Geen nieuwe bootstrap uitgevoerd en niets op de VPS gepubliceerd.
+
+
+### Vaste integrale releasevoorbereiding — 4 november 2026
+
+Ton heeft expliciet vastgelegd dat na iedere bewerking de noodzakelijke voorbereiding voor één latere integrale actualisering wordt meegenomen: officiële 2026-gegevens, bootstrap en alle overige wijzigingen tegelijk voor website, dashboard en Shiny. Deze afspraak staat in beide repo-AGENTS en in het gebruikersgeheugen. Zij verleent geen publicatieakkoord.
+
+De gedeelde generator accepteert nu `--period-source` voor de zelfstandige 2.000-beoordeling naast de ongewijzigde lange maat. Hij weigert een andere broncontext, formele CI-waarden, een onvolledige inventaris en ongefundeerde banden. Het HTML-blok en manifest behouden beide component-runidentiteiten en invoerhashes. De aantallen zijn per uitkomst zichtbaar; er staat geen vaste 500-tekst meer bij perioden en jaarindices. Alle drie bestaande consumenten krijgen dezelfde bijgewerkte HTML, inclusief alle 156 soorten en hun uitvalstatus.
+
+Met `--website-root` bindt het kandidaatmanifest de broncode van de drie consumenten met SHA-256. De bouw controleert hun bestaande koppeling vóór vervanging van de uitvoer. Het manifest bevat één gedeelde payload, de werkelijke gegevensgrens 2025, de beoogde releasegrens 2026 en expliciete nog te passeren releasepoorten. Zo wordt een nieuwe analyse-uitvoer niet als los bestand naast de releaseketen achtergelaten. Voor iedere volgende wijziging: kandidaat opnieuw bouwen, code- en gegevenshashes vergelijken, alle drie consumenten toetsen en de presentatiematrix/CMS-lijst zo nodig actualiseren.
+
+Voor de eenmalige VPS-actualisering blijven de bestaande poorten gelden: officiële 2026-levering valideren; verse bronproducten en passende bootstrapuitvoer maken; vrijgave per schatter vaststellen; database, CMS, figuren, dashboard, Shiny en hun bron-/jaaridentiteiten gezamenlijk controleren; vervolgens pas expliciet publicatieakkoord. De diagnostische 2025-kandidaat mag niet als 2026-uitvoer worden hernoemd. Deze poorten beschermen de gezamenlijke release; zij worden niet op basis van een nieuwe versie of groter aantal trekkingen overgeslagen.
+
+De nieuwe gekoppelde kandidaat is gecontroleerd met acht Pythonchecks, JavaScriptcontracten, de bestaande R-presentatiecontracten, Shiny-render/afwijkende-selectieproef en zes websitechecks. De browser bevestigt bij Dodaars de lange maat 2.000/2.000, de eigen preperiode 2.000/2.000 en de niet-uitbreidbare postperiode 499/500. De drie consumenten zijn in hetzelfde manifest gebonden en de canonieke bewaarkopie is bytegelijk. De onafhankelijke eindreview en alle 62 Wordpagina’s zijn akkoord. De 2026-releasepoorten in het manifest blijven expliciet open; er is niets op de VPS gepubliceerd.

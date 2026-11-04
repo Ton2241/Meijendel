@@ -99,13 +99,21 @@ def add_annual_rates(bundle):
         for r in bundle['long'] for start in (1958,1990)]
     return bundle
 
-def build_bundle(source):
+def build_bundle(source, period_source=None):
     result = dict(schema='trim-bootstrap-presentation-v1', publication_status='diagnostisch', year_from=1958, year_to=2025, files={})
     for key, name in FILES.items():
-        path = source/name
+        path = (period_source if period_source is not None and key != 'long' else source)/name
         result['files'][name] = hashlib.sha256(path.read_bytes()).hexdigest()
         with path.open(newline='', encoding='utf-8') as f:
             result[key] = [{k: convert(k,v) for k,v in row.items()} for row in csv.DictReader(f)]
+    if period_source is not None:
+        path=period_source/'period_manifest.json'
+        meta=json.loads(path.read_text())
+        if (meta.get('species') != 156 or meta.get('period') != '1958-2025' or
+            meta.get('formal_intervals') is not False or meta.get('first500_preserved_exact') is not True):
+            raise ValueError('Periodebeoordeling heeft geen passende diagnostische herkomst')
+        result['period_assessment']=dict(run_id=meta['run_id'],source_hash=meta['identity']['source_hash'],
+            parent_context_sha256=meta['parent_context_sha256'],manifest_sha256=hashlib.sha256(path.read_bytes()).hexdigest())
     return add_annual_rates(validate_bundle(result))
 
 def render(bundle, template):
@@ -113,14 +121,32 @@ def render(bundle, template):
     payload = json.dumps(bundle, ensure_ascii=False, allow_nan=False, separators=(',',':')).replace('<','\\u003c').replace('\u2028','\\u2028').replace('\u2029','\\u2029')
     return template.replace('/*BOOTSTRAP_DATA*/null', payload)
 
+def release_consumers(repo, website_root):
+    """Bind the three existing consumers to the same generated payload."""
+    paths={
+        'dashboard':[repo/'bmp_meijendel_index.html'],
+        'shiny':[repo/'shiny_meijendel/app.R',repo/'R/trim_bootstrap_preview.R'],
+        'website':[website_root/'website/vwg-m-linux-app/app/bootstrap_presentation.py',
+                   website_root/'website/vwg-m-linux-app/app/templates/species_detail.html']}
+    checks={'dashboard':'outputs/bootstrap-presentatie-2026/bootstrap.html?view=dashboard',
+            'shiny':'load_trim_bootstrap_preview()',
+            'website':'bootstrap-preview.asp?view=simple'}
+    for role,files in paths.items():
+        if not any(checks[role] in p.read_text() for p in files):
+            raise ValueError(f'Gedeelde bootstrapkoppeling ontbreekt: {role}')
+    return {role:{str(p.relative_to(repo if role!='website' else website_root)):hashlib.sha256(p.read_bytes()).hexdigest()
+                  for p in files} for role,files in paths.items()}
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--source',type=Path,required=True)
     parser.add_argument('--output',type=Path,required=True)
+    parser.add_argument('--period-source',type=Path,help='Afzonderlijke latere periode-/jaarindexbeoordeling')
+    parser.add_argument('--website-root',type=Path,help='Bind website, dashboard en Shiny in één lokaal kandidaatmanifest')
     parser.add_argument('--parent-manifest',type=Path,required=True)
     parser.add_argument('--selection',type=Path,required=True)
     args = parser.parse_args()
-    bundle = build_bundle(args.source)
+    bundle = build_bundle(args.source, args.period_source)
     parent = json.loads(args.parent_manifest.read_text())
     pm = json.loads((args.source/'period_manifest.json').read_text())
     lm = json.loads((args.source/'long_manifest.json').read_text())
@@ -128,6 +154,10 @@ def main():
         raise ValueError('Oudermanifest past niet bij lange beoordeling')
     if parent['context_sha256'] != pm['parent_context_sha256'] or parent['analysis_end_year'] != bundle['year_to']:
         raise ValueError('Broncontext wijkt af')
+    if 'period_assessment' in bundle:
+        assessment=bundle['period_assessment']
+        if assessment['source_hash'] != parent['source_hash'] or assessment['parent_context_sha256'] != parent['context_sha256']:
+            raise ValueError('Periodebeoordeling hoort bij een andere broncontext')
     selection = json.loads(args.selection.read_text())
     if selection.get('context_sha256') != parent['context_sha256']:
         raise ValueError('Selectie mist de gecontroleerde modelcontext')
@@ -137,13 +167,24 @@ def main():
     bundle.update(run_id='species-2025-2000-assessment-20261103', source_hash=parent['source_hash'],
                   cache_sha256=parent['cache_sha256'], selection=selection,
                   long_windows=dict(first='1958–1962',last='2021–2025',bridge='1979–1983 / 1986–1990'))
+    if 'period_assessment' in bundle:
+        bundle['component_runs']={'long':bundle['run_id'],'periods':bundle['period_assessment']['run_id']}
+        bundle['run_id']='species-2025-independent-periods-2000-20261104'
     template = (Path(__file__).resolve().parents[1]/'presentation/trim_bootstrap.html').read_text()
     html = render(bundle, template)
+    consumers=release_consumers(Path(__file__).resolve().parents[1],args.website_root) if args.website_root else None
     args.output.mkdir(parents=True,exist_ok=True)
     # The HTML is the single self-contained payload. Publish its manifest last.
     target = args.output/'bootstrap.html'
     tmp = target.with_suffix('.tmp'); tmp.write_text(html); tmp.replace(target)
     manifest = {k: bundle[k] for k in ('schema','publication_status','year_from','year_to','run_id','source_hash','cache_sha256','selection','files','annual_rate_files')}
+    for key in ('period_assessment','component_runs'):
+        if key in bundle:manifest[key]=bundle[key]
+    if consumers is not None:
+        manifest['consumers']=consumers
+        manifest['release_preparation']={'target_end_year':2026,'data_end_year':bundle['year_to'],
+            'single_shared_payload':True,'production_authorized':False,
+            'pending':['official_2026_validation','fresh_2026_source_products','estimator_specific_interval_decision','integral_release_checks','explicit_publication_approval']}
     manifest['html_sha256'] = hashlib.sha256(target.read_bytes()).hexdigest()
     tmp = args.output/'manifest.tmp'; tmp.write_text(json.dumps(manifest,indent=2)+'\n'); tmp.replace(args.output/'manifest.json')
     print(f'OK: {len(bundle["long"])} soorten, {len(bundle["periods"])} perioden, {len(bundle["annual"])} jaarposities. {target}')

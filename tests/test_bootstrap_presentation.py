@@ -54,4 +54,33 @@ class AnnualRateContract(unittest.TestCase):
         self.assertEqual(len(bundle['annual_rates']),312)
         self.assertEqual({r['start_year'] for r in bundle['annual_rates']},{1958,1990})
 
+class PeriodSourceContract(unittest.TestCase):
+    def test_separate_assessment_is_used_and_bound_to_its_manifest(self):
+        import tempfile,json,shutil
+        archive=ROOT/'trim/bootstrap/species_2025_2000_20261103'
+        with tempfile.TemporaryDirectory() as folder:
+            target=Path(folder)
+            for name in ('periods.csv','annual_indices.csv'):shutil.copyfile(archive/name,target/name)
+            meta=dict(species=156,period='1958-2025',formal_intervals=False,first500_preserved_exact=True,
+                      run_id='period-test',parent_context_sha256='context',identity={'source_hash':'source'})
+            (target/'period_manifest.json').write_text(json.dumps(meta))
+            b=p.build_bundle(archive,period_source=target)
+            self.assertEqual(b['period_assessment']['run_id'],'period-test')
+            self.assertEqual(b['period_assessment']['source_hash'],'source')
+            self.assertEqual(b['period_assessment']['parent_context_sha256'],'context')
+            meta['formal_intervals']=True;(target/'period_manifest.json').write_text(json.dumps(meta))
+            with self.assertRaises(ValueError):p.build_bundle(archive,period_source=target)
+
+class ConsumerContract(unittest.TestCase):
+    def test_integral_consumer_inventory(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            website=Path(folder);app=website/'website/vwg-m-linux-app/app'
+            (app/'templates').mkdir(parents=True)
+            (app/'bootstrap_presentation.py').write_text('# fixture')
+            (app/'templates/species_detail.html').write_text('bootstrap-preview.asp?view=simple')
+            roles=p.release_consumers(ROOT,website)
+            self.assertEqual(set(roles),{'dashboard','shiny','website'})
+            self.assertTrue(all(len(h)==64 for files in roles.values() for h in files.values()))
+
 if __name__ == '__main__': unittest.main()
