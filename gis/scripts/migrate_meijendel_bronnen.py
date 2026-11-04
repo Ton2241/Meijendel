@@ -211,7 +211,7 @@ VALUES
    'Volledige soortenmatrix en bodemmetingen op 186 stabiele locatiecodes.',
    'Openbare onderzoeksdataset',2001,2018,'Vaatplanten en vegetatie',
    'niet_geolokaliseerd',
-   'De 488 opnamen hebben stabiele locatiecodes, maar nog geen geometrie per opname.',
+   'De 101.992 geregistreerde regels bestaan uit 488 opnamen en 101.504 bedekkingsregels op stabiele locatiecodes, maar zonder geometrie per opname.',
    'context_alleen','geregistreerde_onderzoekers','{RULE_VERSION}'),
   ('vogelstand-1924','dataset','Vogelstand Meijendel 1924',
    'Historische soort- en tekstregels zonder afzonderlijke waarnemingslocatie.',
@@ -219,10 +219,10 @@ VALUES
    'De 204 regels hebben geen gestructureerde locatie per regel.',
    'context_alleen','geregistreerde_onderzoekers','{RULE_VERSION}'),
   ('jachtspinnen-1969-1970','kandidaatbron','Jachtspinnen Meijendel 1969-1970',
-   'Geaggregeerde vangstmatrix van 28 genummerde locaties.',
+   'Geaggregeerde vangstmatrix met 336 soort-locatieregels en samen 3.337 exemplaren op 28 genummerde locaties.',
    'Van der Aart en Smeenk-Enserink',1969,1970,'Jachtspinnen',
    'niet_geolokaliseerd',
-   'De 28 locatienummers zijn niet naar werkelijke plekken te vertalen.',
+   'De 336 soort-locatieregels met samen 3.337 exemplaren zijn verdeeld over 28 locatienummers die niet naar werkelijke plekken te vertalen zijn.',
    'kandidaat','geregistreerde_onderzoekers','{RULE_VERSION}')
 ON DUPLICATE KEY UPDATE
   titel=VALUES(titel),omschrijving=VALUES(omschrijving),bronorganisatie=VALUES(bronorganisatie),
@@ -333,8 +333,8 @@ INSERT INTO {target}.bron_bestand
   (bron_id,bestand_naam,bestandstype,opslagklasse,recordaantal,sha256,toelichting)
 VALUES
   ({bird_id},'vogelstand_1924','mysql-tabel','overig',204,NULL,'Historische tabel uit Meijendel'),
-  ({spider_id},'jachtspinnen_28_locaties.csv','text/csv','repository',28,{sql_quote(spider_hash)},
-   'Afgeleide openbare matrix; som 3.337 exemplaren');
+  ({spider_id},'jachtspinnen_28_locaties.csv','text/csv','repository',336,{sql_quote(spider_hash)},
+   'Afgeleide openbare matrix met 336 soort-locatieregels; som 3.337 exemplaren op 28 locaties');
 COMMIT;
 """
 

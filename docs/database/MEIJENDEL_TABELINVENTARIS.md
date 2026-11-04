@@ -2,6 +2,17 @@
 
 Tabelinventaris en voorstel voor herinrichting. Stand van de controles: 16 oktober 2026. De aantallen volgen de levende lokale database. Voor HNS zijn v1 en v2 beide opgenomen: v2 is actueel; v1 blijft als auditspoor bewaard.
 
+**Historische inventaris.** De tabellen en aantallen hieronder beschrijven de
+nulmeting van 26 september 2026 en het voorstel dat op 16 oktober is
+bijgewerkt; zij vormen geen actueel databaseschema. Op 23 oktober 2026 zijn
+de voormalige openbare ID-indexen `ndff_mossen` en `ndff_korstmossen`
+verwijderd. Hun 32.353 en 28.643 volledige bronregels staan nu in
+`mossen_waarneming` en `korstmossen_waarneming`; identificaties en fysieke
+opslaglocaties staan in `ndff_open_waarneming_register`. De historische rijen
+in de bijlage blijven voor de audit behouden. Voor de actuele opslag gelden
+het [bronregister](../MEIJENDEL_BRONREGISTER.md) en de
+[migratiedocumentatie](NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md).
+
 ## Hoofdkeuze
 
 De hoofdindeling wordt de soortgroep. Libelleninformatie hoort herkenbaar onder `libellen_*`, keverinformatie onder `kevers_*`, enzovoort. De organisatie die gegevens levert en het moment waarop bestanden gezamenlijk zijn geïmporteerd, bepalen niet langer de indeling. Rechtstreekse leveringen moeten dezelfde tabelfamilies kunnen aanvullen als de informatie die via NDFF is ontvangen.
@@ -87,7 +98,7 @@ Het hernoemen van een al afgebakende meetfamilie is het eenvoudigste deel. Gebru
 | `ndff_amfibie_*`, `ndff_reptiel_*` | `amfibieen_*`, `reptielen_*` |
 | `ndff_vleermuis_*` | `vleermuizen_*` |
 | `ndff_braakbal_*`, `ndff_konijn_*`, `ndff_otter_bever_*` | `zoogdieren_overig_braakbal_*`, `zoogdieren_overig_konijn_*`, `zoogdieren_overig_otter_bever_*` |
-| `ndff_mos_*`, `ndff_korstmos_*` | `mossen_*`, `korstmossen_*` |
+| `mossen_*`, `korstmossen_*` | `mossen_*`, `korstmossen_*` |
 | `ndff_bospaddenstoel_*`, `ndff_zeereep_*` | `schimmels_bospaddenstoel_*`, `schimmels_zeereep_*` |
 | `florbase_*`, `hns_*`, `lmfa_*` | `vaatplanten_florbase_*`, `vaatplanten_hns_*`, `vaatplanten_lmfa_*` |
 | `ndff_vliesvleugel_*` | `vliesvleugeligen_*` |
@@ -274,7 +285,7 @@ Geraadpleegd zijn de projectinstructies, README, TODO, DECISIONS, architectuur, 
 
 Bronrechten, toelating en bruikbaarheid zijn niet opnieuw vastgesteld; het bronregister blijft leidend. Geen T7- of NAS-bestanden geopend, nieuwe bronnen aangevraagd of database, dump, cache en productie gewijzigd.
 
-## Bijlage huidige tabellen en bestemmingsrichting
+## Bijlage tabellen bij de nulmeting en bestemmingsrichting
 
 Alle 163 tabelnamen blijven hier terugvindbaar. De aantallen zijn technische rijtellingen van 26 september 2026, geen optelbare onafhankelijke waarnemingen. Een richting met meerdere bestemmingen vereist gegevensverdeling; zij is geen RENAME-opdracht. Definitieve doelnamen en sleutelvertalingen worden in de migratieproef getoetst.
 
@@ -282,7 +293,7 @@ Alle 163 tabelnamen blijven hier terugvindbaar. De aantallen zijn technische rij
 
 Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronoverstijgende familie. Alleen de huidige enkelkolomsindex hernoemen is niet het eindbeeld.
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_amfibieen` | 12.982 | `amfibieen_*` |
 | `ndff_dagvlinders` | 129.238 | `dagvlinders_*` |
@@ -313,7 +324,23 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### Soortgerichte meetstructuren
 
-| Huidige tabel | Records | Bestemmingsrichting |
+De primaire BLWG-werkmap voor korstmossen (2000–2025) is daarnaast afzonderlijk
+opgenomen. `korstmossen_bronbestand` bevat één bronversie;
+`korstmossen_bron_plot` twaalf plots; `korstmossen_bron_formulier` 44
+waarnemersformulieren; `korstmossen_bron_resultaat` 364 openbare positieve
+bronregels; `korstmossen_bron_ndff_groeprecord` 364 NDFF-kandidaatrelaties; en
+`korstmossen_bron_formulier_taxon` 790 formulier-taxonregels, waarvan 426
+echte nullen op de vier vaste plots. In `Meijendel_ndff_secure` bevatten
+`blwg_korstmossen_plot_exact`, `blwg_korstmossen_resultaat`,
+`blwg_korstmossen_ndff_groeprecord` en
+`blwg_korstmossen_formulier_taxon` respectievelijk vier exacte beschermde
+plots, twintig positieve regels, twintig NDFF-kandidaatrelaties en 28
+formulier-taxonregels (acht nullen). Deze primaire bronlaag is geen tweede
+NDFF-waarnemingsbestand. Voor import, aansluiting op het centrale
+taxonregister en bescherming van exacte locaties: zie
+`gis/scripts/import_blwg_korstmossen_bron.py`.
+
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_amfibie_bezoek` | 211 | `amfibieen_bezoek` |
 | `ndff_amfibie_waterbezoek` | 1.300 | `amfibieen_waterbezoek` |
@@ -330,16 +357,16 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 | `ndff_bospaddenstoel_verspreiding_bezoek` | 2 | `schimmels_bospaddenstoel_verspreiding_bezoek` |
 | `ndff_bospaddenstoel_verspreiding_bezoek_taxon` | 14 | `schimmels_bospaddenstoel_verspreiding_bezoek_taxon` |
 | `ndff_bospaddenstoel_verspreiding_recordselectie` | 14 | `schimmels_bospaddenstoel_verspreiding_recordselectie` |
-| `ndff_korstmos_bezoek` | 32 | `korstmossen_bezoek` |
-| `ndff_korstmos_bezoek_taxon` | 960 | `korstmossen_bezoek_taxon` |
-| `ndff_korstmos_doelbereik` | 30 | `korstmossen_doelbereik` |
-| `ndff_korstmos_meetlocatie` | 12 | `korstmossen_meetlocatie` |
-| `ndff_korstmos_recordselectie` | 364 | `korstmossen_recordselectie` |
-| `ndff_mos_datumcluster` | 21 | `mossen_datumcluster` |
-| `ndff_mos_doelbereik` | 111 | `mossen_doelbereik` |
-| `ndff_mos_inventarisatie` | 7 | `mossen_inventarisatie` |
-| `ndff_mos_inventarisatie_taxon` | 777 | `mossen_inventarisatie_taxon` |
-| `ndff_mos_recordselectie` | 376 | `mossen_recordselectie` |
+| `korstmossen_bezoek` | 32 | `korstmossen_bezoek` |
+| `korstmossen_bezoek_taxon` | 643 | `korstmossen_bezoek_taxon` |
+| `korstmossen_doelbereik` | 30 | `korstmossen_doelbereik` |
+| `korstmossen_meetlocatie` | 12 | `korstmossen_meetlocatie` |
+| `korstmossen_recordselectie` | 364 | `korstmossen_recordselectie` |
+| `mossen_datumcluster` | 21 | `mossen_datumcluster` |
+| `mossen_doelbereik` | 111 | `mossen_doelbereik` |
+| `mossen_inventarisatie` | 7 | `mossen_inventarisatie` |
+| `mossen_inventarisatie_taxon` | 354 | `mossen_inventarisatie_taxon` |
+| `mossen_recordselectie` | 376 | `mossen_recordselectie` |
 | `ndff_braakbal_hokjaar` | 37 | `zoogdieren_overig_braakbal_hokjaar` |
 | `ndff_braakbal_hokjaar_taxon` | 226 | `zoogdieren_overig_braakbal_hokjaar_taxon` |
 | `ndff_braakbal_recordselectie` | 389 | `zoogdieren_overig_braakbal_recordselectie` |
@@ -401,7 +428,7 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### Gemengde meetstructuren
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_ravon_n2000_monsterlocatieproxy` | 25 | Amfibieën en vissen scheiden; gedeeld monster behouden |
 | `ndff_ravon_n2000_recordselectie` | 67 | Amfibieën en vissen scheiden; gedeeld monster behouden |
@@ -426,7 +453,7 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### Gedeelde bron en beslislaag
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `ndff_open_import_batch` | 1 | Bronregistratie behouden en bronoverstijgend verbinden |
 | `ndff_open_waarneming` | 810.830 | Biologische inhoud per soortgroep; stabiele bron- en meetidentiteit behouden |
@@ -448,7 +475,7 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### Externe ecologie
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `externe_ecologie_dataset` | 6 | Naar gedeelde bronregistratie; alle zes datasets herkenbaar houden |
 | `externe_ecologie_event` | 10.994 | PQ-opnamen naar pq_*; overige events naar groep of gedeeld gemengd event |
@@ -457,7 +484,7 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### Vangblik
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `vangblik_import_batch` | 1 | Behouden; vanuit kevers_* en zoogdieren_overig_* koppelen |
 | `vangblik_locatieversie` | 135 | Behouden; vanuit kevers_* en zoogdieren_overig_* koppelen |
@@ -468,7 +495,7 @@ Voor elk van deze 26 indexen geldt: de bestemming wordt een volwaardige bronover
 
 ### PQ
 
-| Huidige tabel | Records | Bestemmingsrichting |
+| Tabel bij nulmeting | Records | Bestemmingsrichting |
 |---|---:|---|
 | `pq_vegetatie_import` | 1 | Behouden binnen bronoverstijgende PQ-structuur |
 | `pq_vegetatie_pq` | 254 | Behouden binnen bronoverstijgende PQ-structuur |

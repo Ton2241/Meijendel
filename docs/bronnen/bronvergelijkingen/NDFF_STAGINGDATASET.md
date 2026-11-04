@@ -152,6 +152,15 @@ gelezen voor de PQ-vergelijking en niet gewijzigd.
   daarnaast als mogelijke verklaringen niet-gevalideerde bronregels en
   vervaging van kwetsbare soorten. Die mogelijkheden zijn niet als oorzaak
   per ontbrekende opname bevestigd.
+- Ingrid de Vries van Provincie Zuid-Holland heeft inmiddels bevestigd dat
+  het provinciale vegetatiemeetnet in NDFF onvolledig is. De provincie
+  controleert de historische bronreeks samen met CBS en wil de gegevens na
+  die controle correct in NDFF onderbrengen. Haar bevestiging geldt voor de
+  bronaanlevering als geheel; zij kwantificeert niet welke van de 2.007
+  provinciale opnamen uit 1981–2025 bij NDFF ontbreken. De bovenstaande
+  niet-matches mogen daarom nog steeds niet één-op-één als ontbrekende
+  NDFF-opnamen worden geteld. De provincie levert na het kwaliteitstraject
+  bovendien een nieuwe bronversie, inclusief eerder niet actieve PQ's.
 - De beveiligde levering bevat 310 PQ-gerelateerde NDFF-regels met een
   vervaagde openbare tegenhanger. Een afzonderlijke strikte vergelijking van
   hun afgeschermde geometrie vindt kandidaten bij 127 provinciale opnamen en

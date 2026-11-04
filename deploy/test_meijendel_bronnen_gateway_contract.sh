@@ -65,7 +65,7 @@ SQL
 cat > "$mock_root/bin/mysql" <<'MOCK'
 #!/usr/bin/env bash
 case "$*" in
-  *'SELECT VERSION()'*) printf '9.7.1\n' ;;
+  *'SELECT VERSION()'*) printf '9.7.4\n' ;;
   *'COUNT(*) AS total'*'zotero_status="actueel"'*'JSON_LENGTH(trefwoorden)>0'*'FROM literatuur'*) printf '522\t518\t4\t342\n' ;;
   *'REFERENTIAL_CONSTRAINTS'*) printf '1\n' ;;
   *'information_schema.VIEWS'*) printf '3\n' ;;
@@ -94,7 +94,7 @@ if [[ "${MOCK_GATEWAY_FAIL:-0}" == 1 ]]; then
   printf 'BLOKKADE|mock-gateway|zichtbare-fout\n'
   exit 47
 fi
-printf 'MYSQL_VERSION=9.7.1\nPREFLIGHT_STATUS=ready\nGATEWAY_JOB_STATUS=ready\n'
+printf 'MYSQL_VERSION=9.7.4\nPREFLIGHT_STATUS=ready\nGATEWAY_JOB_STATUS=ready\n'
 MOCK
 chmod +x "$mock_root/bin/"* "$mock_root/gateway"
 

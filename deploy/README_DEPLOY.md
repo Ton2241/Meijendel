@@ -52,6 +52,13 @@ beschikbare fix. Zij past geen image of container aan. Een noodzakelijke fix
 wordt afzonderlijk gebouwd, getest en uitsluitend via deze veilige
 productielijn geactiveerd.
 
+Een MySQL-image-update is infrastructuuronderhoud en publiceert geen nieuwere
+Meijendel-data. De helper bindt de imagebouw voor herleidbaarheid aan de
+actuele `main`-commit, maar controleert vóór en na de wijziging dat
+`/srv/vwgm/deploy-state/Meijendel.commit` exact ongewijzigd blijft. Alleen een
+afzonderlijke, volledig gecontroleerde datadeploy mag die productiestatus
+bijwerken.
+
 Deploy bij voorkeur naar een release-directory per commit en activeer die atomisch. Waar dit voor gedeelde Meijendel-data nog niet mogelijk is, moet het manifest volledig zijn en moeten tijdelijke bestanden pas na succesvolle validatie atomisch naar hun definitieve pad worden verplaatst. Deploy geen los gedeeld kernbestand vanuit een andere branch.
 
 Na deploy wacht het script met begrensde retries op Shiny en dashboard, controleert checksums, containerstatus, HTTP-routes en relevante grafiekinhoud, en registreert pas daarna de nieuwe productiecommit. Herstelmodus is alleen toegestaan met expliciete bevestiging wanneer productie al defect is; ancestrycontrole, lock, manifest en volledige groene nacontrole blijven verplicht.
@@ -492,7 +499,7 @@ Benodigd:
 - SSH-key: `~/.ssh/vwgm_spectraip_ed25519`
 - toegang tot VPS: `ton@45.87.43.90`
 - lokale MySQL bereikbaar op `127.0.0.1:3306`; het dump-script gebruikt `mysqldump --no-defaults` om conflicterende opties uit `~/.my.cnf` te negeren
-- lokale MySQL-server, `mysql`, `mysqldump` en de productiecontainer draaien exact op MySQL 9.7.1; de preflight blokkeert iedere versieafwijking
+- lokale MySQL-server, `mysql`, `mysqldump` en de productiecontainer draaien exact op MySQL 9.7.4; de preflight blokkeert iedere versieafwijking
 - login-path `meijendel_root` is lokaal beschikbaar voor de niet-interactieve versiecontrole; overschrijven kan alleen via `MEIJENDEL_MYSQL_LOGIN_PATH`
 - de versiecontrole gebruikt de tools uit `PATH` en valt bij de officiële macOS-pakketinstallatie terug op `/usr/local/mysql/bin`
 - de dump wordt gemaakt met kolomnamen in `INSERT`-regels (`--complete-insert`), omdat de R-scripts die kolomnamen gebruiken bij het inlezen
@@ -531,6 +538,230 @@ MYSQL_PORT=3307 MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/update_en_deploy_meije
 
 ## Integrale website/dashboard/Shiny-kandidaat
 
-Zie `../docs/TRIM_INTEGRALE_RELEASE_HERSTELPROEF_20261104.md` voor het lokale pakketcontract, de native praktijkproef en de productiegrenzen. `deploy/integral_release.py build|verify` heeft geen netwerk- of VPS-acties. `scripts/rehearse_integral_release.py` werkt alleen met geïsoleerde lokale proefdatabases. De native adapter is geen productiehostadapter. De bestaande gesloten gateway blijft verplicht; de concrete gezamenlijke Linux-binding en productieherstelproef moeten vóór een daadwerkelijke release zijn aangesloten.
+Zie `../docs/TRIM_INTEGRALE_RELEASE_HERSTELPROEF_20261104.md` voor het lokale pakketcontract, de native praktijkproef en de productiegrenzen. `deploy/integral_release.py build|verify` heeft geen netwerk- of VPS-acties. `scripts/rehearse_integral_release.py` werkt alleen met geïsoleerde lokale proefdatabases. De native adapter is geen productiehostadapter. De bestaande gesloten gateway blijft verplicht. De concrete Linux-binding is lokaal aangesloten en getest; installatie en werkelijke VPS-proef volgen volgens `../docs/TRIM_INTEGRALE_LINUX_GATEWAY_20261104.md`.
 
 De gewone generatie- en deployroute vereist nu expliciet `MEIJENDEL_ANALYSIS_END_YEAR` of `MEIJENDEL_RELEASE_MANIFEST`; een ontbrekend eindjaar blokkeert vóór export/SSH. Kies 2026 pas nadat die officiële bron is gevalideerd. Voor een lokale 2025-proef is de waarde 2025. De voorbeelden hierboven zijn instructies voor een toekomstige vrijgegeven 2026-release, geen opdracht die nu is uitgevoerd.
+## MySQL 9.7.4: afzonderlijke kandidaatvoorbereiding (22 oktober 2026)
+
+`deploy/prepare_mysql_974_vps.sh` bereidt uitsluitend de versie-upgradeproef voor.
+De oude `rebuild_mysql_image_vps.sh` blijft voor een 9.7.1-imagerebuild;
+gebruik hem niet voor een versie-upgrade op de bestaande productiedatamap.
+
+Vanaf schone, met origin gesynchroniseerde main:
+
+```sh
+deploy/prepare_mysql_974_vps.sh
+deploy/prepare_mysql_974_vps.sh --apply --yes
+```
+
+De tweede opdracht vraagt sudo in het standaard macOS Terminal-venster.
+De gebruiker bevestigt eerst dat de prompt zichtbaar is. Houd het venster open.
+De rootstap verifieert de drie bronbestanden na sudo en voert uitsluitend
+besloten root-owned kopieën uit. De normale productieguard en het exclusieve
+productieslot blijven verplicht; de Meijendel-datarelease verandert niet.
+
+De Dockerfile pint MySQL9.7.4 en Go1.26.10 per officiële digest, behoudt
+UID/GID1999 en redo512MiB, verwijdert mysql-shell en ververst OS-pakketten.
+De exacte kandidaat moet 0HIGH/0CRITICAL hebben. Een nieuwe logische dump
+van de bestaande VPS-database wordt geïmporteerd in een aparte datamap, in
+ een proefcontainer zonder netwerk of gepubliceerde poorten. De validator
+controleert expliciet bron9.7.1/doel9.7.4, objecttypen, schema, exacte
+rijtellingen, instellingen, SELECT-rechten en CHECK TABLE EXTENDED.
+Bestaande aanroepers van de validator blijven standaard9.7.1/9.7.1 vereisen.
+
+Geslaagde kandidaten blijven gestopt staan met een besloten manifest onder
+`/srv/vwgm/mysql974-candidate-<12hex>/`. Doel: productiewissel voorbereiden;
+uiterlijk23oktober opnieuw beoordelen. Een mislukte voorbereiding stopt alleen
+haar eigen proefcontainer en behoudt haar exacte artefacten voor diagnose.
+Een apart gecontroleerde vervolgactie ruimt die artefacten op of gebruikt
+het bewezen kandidaatimage en een bij de wissel opnieuw gecontroleerde dump.
+Een productiewissel en de iMac-upgrade worden hiermee niet uitgevoerd.
+De oude productiedatamap mag nooit door MySQL9.7.4 worden geopend: behoud
+haar met de9.7.1-image als samenhangende terugvalroute.
+
+Ook de iMac wordt in deze onderhoudsronde voorbereid op9.7.4. Daar moeten
+alle vijf gebruikersschema's en de accounts/rechten behouden blijven. De
+levende iMac-database blijft de schrijfbron; maak geen datarelease of zware
+export naar de VPS als onderdeel van dit runtimeonderhoud. Pas de canonieke
+versieguard pas gecontroleerd aan wanneer beide installaties zijn beproefd.
+
+### Gecontroleerde runtimewissel 9.7.1 → 9.7.4 (22 oktober 2026)
+
+Na beoordeling van het kandidaatmanifest volgt `deploy/switch_mysql_974_vps.sh`
+(eerst zonder argumenten; toepassen met `--apply --yes` in het gewone zichtbare
+macOS Terminal-venster). Dit is een afgebakende onderhoudsrelease. De lokale
+iMac-installatie, websitecode en Meijendel-datarelease worden hiermee niet
+omgeschakeld. Voor de iMac blijft een afzonderlijke gecontroleerde stap nodig.
+
+De wrapper eist schone actuele `main` voor Meijendel, VWG_M en VWG_Project,
+controleert de geregistreerde productievoorouders en neemt het bestaande
+exclusieve directoryslot. De rootbootstrap verifieert de exacte bestandshashes
+voordat hij de root-owned kopie uitvoert. De vier noodzakelijke uitvoerbestanden
+zijn de omschakelhelper, bestaande back-upsoftware, bestaande herstelsoftware en
+bestaande containeraudit; hun broncommits en hashes staan in `sources.json`.
+
+De helper accepteert uitsluitend kandidaatimage `c58c7a7ee443…`, bronimage
+`787656985cc0…` en het afzonderlijke kandidaatpad uit manifest47d133641833.
+Het proefbewijs verloopt op23oktober2026 en mag maximaal24uur geleden zijn.
+Na een tijdelijke schrijfblokkade vergelijkt hij de volledige nieuwe brondump
+met de dump van de kandidaatproef. Alleen de afsluitende tijdstempelregel wordt
+buiten de hash gelaten. Een gewijzigde veldwaarde blokkeert de omschakeling,
+ook als schema en rijtellingen gelijk zijn gebleven. Daarna volgen opnieuw
+305objecten,282tabelcontroles, schema-, instellingen- en SELECT-rechtencontrole.
+Credentials lopen via de bestaande FD3-client uit de geteste back-upsoftware.
+
+De oude container gaat gestopt, met autorestart uit, naar
+`meijendel-mysql-971-rollback-20261022`; zijn oude datamap blijft behouden.
+De nieuwe productiecontainer krijgt uitsluitend de aparte9.7.4-datamap,
+loopbackpoort3307, UID/GID1999, redo512MiB en binlogretentie3dagen.
+Alle rooktests, exact0HIGH/0CRITICAL voor de actieve images, een nieuwe volledige
+back-up en proefherstel moeten slagen vóór de onderhoudsregistratie wordt
+bevestigd. De bekende HIGH in de expliciete oude rollback blijft zichtbaar.
+
+Noodzakelijke9.7.4-compatibiliteit wordt in dezelfde onderhoudsrelease uit de
+geteste actuele supportrepos geïnstalleerd: back-uphelper plus herstelkopie,
+containeraudit voor de admingateway en voor de bestaande securitymonitor.
+Dit is geen volledige monitorrelease. Bestaande code, ondersteuning en bewijs
+staan afgeschermd in `/srv/vwgm/mysql974-switch-20261022/`; de afzonderlijke
+bronregistraties zijn `deploy-state/mysql974-support.json` en, uitsluitend na
+groene nacontrole, `deploy-state/mysql-runtime.json`. App/data-statebestanden
+blijven ongewijzigd. Na succes hoort een onderhoudsvermelding met de werkelijk
+geregistreerde componentcommits in het centrale releaseoverzicht.
+
+Fouten binnen de omschakeling herstellen de werkelijke oorspronkelijke
+container-ID, naam, restartbeleid en beide schrijfblokkadevariabelen. Dat geldt
+ook wanneer Docker een rename uitvoerde maar de bevestiging verloren ging.
+Een teruggedraaid werkmanifest krijgt status `rolled-back`. Bij onbekende
+SSH-uitkomst blijven slot en stagingmap staan totdat het rootproces aantoonbaar
+is beëindigd; verwijder zo'n slot niet zonder proces- en toestandscontrole.
+Na succesvolle VPS-wissel volgen NAS-overdracht/snapshotcontrole en de iMac-stap.
+De kandidaat-/terugvaldata worden door deze procedure niet gewist.
+
+Uitgebreide tabelcontroles hebben een afzonderlijke begrensde timeout van
+1800seconden; gewone queries houden60seconden. De zware
+`ndff_open_waarneming`-controle overschreed op22oktober de eerdere algemene
+60secondenlimiet vóór de eigenlijke containerwissel. Die poging is afgebroken,
+de kandidaat is gestopt en de oude productiecontainer bleef actief.
+Herhaalde pogingen gebruiken uitsluitend een nieuwe broncommitgebonden werkmap;
+de eerder mislukte werkmap en haar diagnosemateriaal blijven behouden. Iedere
+poging verifieert opnieuw dat de bron geen schrijfblokkade heeft, gebruikt het
+productieslot en voert alle bestaande gegevens- en terugvalcontroles uit.
+
+Op22oktober slaagden alle305objectcontroles en282uitgebreide tabelcontroles.
+De daaropvolgende HTTP-rooktest was onjuist: de bestaande app-host verwijst
+met308 naar de www-host;401hoort bij de afgeschermde www-route. De automatische
+terugval herstelde de oorspronkelijke9.7.1-container en liet beide datamappen
+behouden. De gecorrigeerde controle toetst nu www401 én exact de app308-locatie.
+
+Na deze aantoonbare terugval kan dezelfde wrapper met
+`--apply --yes --retry-rolled-back` de ontbrekende kandidaatcontainer opnieuw
+aanmaken. Dit vereist het rootbeheerde `rolled-back`-verslag van precies
+`/srv/vwgm/mysql974-switch-7a7dc02c8b18/manifest.json`, met de beoordeelde oude
+en nieuwe image-ID’s. Alle bron-, backup-, lock- en schijfruimtegates gelden
+eerst. Heraanmaak doet uitsluitend `docker create` met de bestaande aparte
+9.7.4-datamap, zonder netwerk of poort en met de kandidaatlimieten. Pas daarna
+volgen opnieuw de brondumpvergelijking en alle305/282inhoudelijke controles.
+Een gewone start zonder deze expliciete herstelvlag mag de ontbrekende
+kandidaat niet automatisch aanmaken. Geen oude werkmap of datamap wordt gewist.
+
+Na de vroege Docker-identiteitsblokkade volgt eerst
+`deploy/switch_mysql_974_vps.sh --check-only --retry-rolled-back` in het
+zichtbare macOS Terminal-venster. Ook deze controle vereist sudo voor de
+beschermde bewijsbestanden. Zij gebruikt uitsluitend gestructureerde
+containerinventaris: namen met volledige64hex-ID’s uit een geslaagde
+`docker container ls --all --no-trunc --format`-opdracht. Foutteksten worden
+niet gebruikt om afwezigheid te concluderen; een daemon- of formaatfout blokkeert.
+
+De controlemodus verifieert actuele9.7.1-bron, beide schrijfblokkades uit,
+bronmount/restartbeleid, beoordeeld kandidaatmanifest, verse back-up en
+schijfruimte, rootbeheerd terugvalbewijs, kandidaatimage en datamap-UID/GID,
+HTTP-routes en Caddy-isolatie. Hij maakt tijdelijk staging en een productieslot
+aan, maar keert terug vóór kandidaatcreatie, supportinstallatie, databasewrites,
+schrijfblokkades of herstarts. `--check-only` en `--apply` sluiten elkaar uit.
+Pas na een geslaagde feitelijke VPS-controle volgt een afzonderlijke
+productiepoging. De volledige kandidaat-/gegevenscontrole en nieuwe back-up
+blijven onderdeel van die latere omschakeling.
+
+## Lokale iMac: gecontroleerde Oracle-upgrade naar MySQL 9.7.4
+
+De lokale iMac is de schrijfbron. Deze stap publiceert geen gegevens op de VPS.
+Gebruik `deploy/switch_mysql_974_imac.py` uitsluitend voor de beoordeelde
+9.7.1 → 9.7.4-proef van 22 oktober 2026. Eerst moet de eigen onderhoudsmap
+volledig gecontroleerd buiten Documenten/iCloud staan, onder
+`/Users/ton/VWG-maintenance/2026-10-22/mysql-upgrade-work`.
+Het oorspronkelijke proefmanifest blijft historisch bewijs; het
+verplaatsingsbewijs legt het nieuwe pad vast. Er komen geen dumps of datamappen
+in Git.
+
+Start eerst zonder argumenten voor pakket-, bron-, account- en proefcontrole.
+Alleen `--apply --yes` vraagt in het standaard macOS Terminal-venster om
+zichtbare sudo-authenticatie. Ton bevestigt eerst dat de prompt zichtbaar is
+en voert daarna zelf het wachtwoord in. Geen wachtwoorden in de chat.
+
+De helper blokkeert bij gewijzigd bronmateriaal, accounts, installaties of
+onbekende doeldata. Na tijdelijke schrijfstop vergelijkt hij een verse volledige
+logische dump met de geteste proefdump. Alleen de afsluitende dumptijd en de
+bekende serverversieregel 9.7.1/9.7.4 worden voor vergelijking genormaliseerd.
+Vervolgens wordt de oorspronkelijke service gestopt, het officiële
+Oracle-pakket geverifieerd geïnstalleerd en uitsluitend de afzonderlijk geteste
+datamap onder de nieuwe versie geplaatst. De oude datamap blijft intact.
+
+De nieuwe server start voor nacontrole eerst met super-read-only. Volledige
+SQL-inhoud, accounts/rechten, 724 objecten en 668 uitgebreide tabelcontroles
+moeten slagen voordat een herstart schrijven toestaat. Redo-capaciteit blijft
+512 MiB. Tot aan de schrijfbare vrijgave kan een fout na het stoppen
+de oorspronkelijke symlink en launchd-plist herstellen en 9.7.1 met zijn eigen
+datamap starten, uitsluitend wanneer de oude programma’s nog aanwezig zijn.
+Het Oracle-pakket kan die programma’s verwijderen; de oude datamap alleen
+is dan geen direct uitvoerbare terugval. Bij ontbrekende oude programma’s
+stopt de helper en bewaart beide datamappen voor gericht herstel. Zodra een schrijfbare start is geprobeerd, kunnen
+nieuwe gegevens zijn ontvangen: een latere fout stopt de nieuwe server en
+behoudt diens data voor gericht herstel. Er volgt dan geen automatische
+terugval op de eerdere gegevenskopie. Een fout
+vóór het stoppen heft alleen de tijdelijke schrijfstop op. De helper probeert
+nooit een nieuwere datamap met de oude binary te openen.
+
+De versieguard wordt pas aangepast nadat zowel iMac als VPS aantoonbaar op
+9.7.4 werken. Een gedeeltelijk mislukte installatie laat nieuwe bestanden
+bewust staan voor diagnose; beoordeel die exact vóór een volgende poging.
+
+
+### Herstel van de gedeeltelijk geïnstalleerde iMac-toestand van 22 oktober
+
+De eerste wissel stopte na installatie en verplaatsing van de geteste datamap.
+Het Oracle-pakket verwijderde de 9.7.1-programma’s. Een controle gebruikte nog
+de oude client; de daaropvolgende terugval kon de verdwenen server niet starten.
+De centrale symlink kreeg daarbij door umask 077 een ontoegankelijke modus.
+De herstelroute gebruikt expliciet de aanwezige 9.7.4-client en herstelt alleen
+de symlink naar modus 0777; de private datamappen blijven private.
+
+Gebruik de normale installatieopdracht in deze toestand niet opnieuw.
+De gerichte herstelvoorcontrole (zonder sudo of systeemwijziging) is:
+
+```sh
+python3 deploy/switch_mysql_974_imac.py --recover-installed \
+  --source-frozen /Users/ton/VWG-maintenance/2026-10-22/source-frozen-165512.sql.gz
+```
+
+De controle vereist geen draaiende server/andere installer/helper, de getekende
+9.7.4-programma’s, afzonderlijke echte datamappen, het oorspronkelijke proefbewijs
+en volledige gelijkheid van de besloten bevroren bronkopie met de proefdump.
+Rootstatus kan pas na zichtbare authenticatie worden gecontroleerd.
+
+Uitsluitend na afzonderlijk akkoord voor deze herstelactie, met zichtbare
+sudo-authenticatie in het standaard macOS Terminal-venster, mag dezelfde
+opdracht `--apply --yes` krijgen. Hij installeert geen pakket opnieuw.
+De root-owned oorspronkelijke launchd-plist moet exact overeenkomen met de
+beoordeelde configuratie. De oude launchd-job wordt verwijderd en afwezigheid
+van de job en server gecontroleerd vóór de symlink naar 9.7.4 wordt hersteld.
+Daarna volgen dezelfde read-only start, volledige SQL-/accountvergelijking,
+724 objecten en 668 tabelcontroles en pas daarna de schrijfbare start.
+
+Een fout in deze herstelmodus stopt de nieuwe service en bewaart beide
+gegevensmappen; hij activeert nooit automatisch de eerdere gegevenskopie.
+Het runtimebewijs vermeldt expliciet of oude programma’s nog beschikbaar zijn.
+In de geconstateerde toestand ontbreken die: de oude data zijn behouden,
+maar terugval vereist eerst herstel van de juiste 9.7.1-programma’s.
+Vóór een volgende vendorinstallatie moet daarom ook de programma-installatie
+apart worden veiliggesteld. Er is in deze taak nog geen herstelactie uitgevoerd
+op basis van alleen de geslaagde unit-tests.

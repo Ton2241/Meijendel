@@ -31,6 +31,8 @@ def main() -> int:
     assert "162 gestandaardiseerde bezoeken" in sql
     assert "vrs-ringgegevens-meijendel-kandidaat" in sql
     assert "droge-duinvegetatieplots-1952-2012" in sql
+    assert "'publieke_url',19," in sql
+    assert "19 methodeperioden voor 7 monsterpunten" in sql
     print("OK: fase-2-contextimport")
     return 0
 

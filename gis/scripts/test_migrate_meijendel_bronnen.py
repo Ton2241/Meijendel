@@ -48,6 +48,11 @@ def main() -> int:
     assert sum(row["aantal"] for row in profile.catches) == 3337
     assert profile.locations[0]["locatie_nummer"] == 1
 
+    source = SCRIPT.read_text(encoding="utf-8")
+    assert "'jachtspinnen_28_locaties.csv','text/csv','repository',336" in source
+    assert "336 soort-locatieregels met samen 3.337 exemplaren" in source
+    assert "101.992 geregistreerde regels bestaan uit 488 opnamen en 101.504 bedekkingsregels" in source
+
     print("OK: migratiecontract Meijendel_bronnen")
     return 0
 

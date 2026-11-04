@@ -7,6 +7,14 @@
 
 USE Meijendel;
 
+-- Dit historische bootstrap-schema mag de sinds 23-10-2026 gesplitste
+-- mos-/korstmosopslag niet opnieuw van oude groepsindexen voorzien.
+CREATE TEMPORARY TABLE ndff_unsplit_bootstrap_assert (ok INT NOT NULL CHECK(ok=1));
+INSERT INTO ndff_unsplit_bootstrap_assert
+SELECT IF(COUNT(*)=0,1,0) FROM information_schema.TABLES
+WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='ndff_open_waarneming_register';
+DROP TEMPORARY TABLE ndff_unsplit_bootstrap_assert;
+
 CREATE TEMPORARY TABLE vangblik_bootstrap_assert (ok INT NOT NULL CHECK(ok=1));
 INSERT INTO vangblik_bootstrap_assert
 SELECT IF(COUNT(*)=0,1,0) FROM information_schema.COLUMNS

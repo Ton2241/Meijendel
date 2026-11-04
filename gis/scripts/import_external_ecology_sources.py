@@ -94,11 +94,14 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
             raise ValueError('Ongeldige tabelidentifier')
         if table in {'taxa', 'taxa_bronkoppeling', 'taxon_groepen'}:
             continue
+        if table == 'ndff_open_waarneming_register':
+            # A technical key and storage locator, never a taxon-bearing layer.
+            continue
         if table in STAGING_TABLES:
             routes[table] = {'kind': 'staging'}
         elif table in catalogues:
             routes[table] = {'kind': 'catalogue', **catalogues[table]}
-        elif table == 'ndff_open_waarneming':
+        elif table in {'ndff_open_waarneming', 'mossen_waarneming', 'korstmossen_waarneming'}:
             routes[table] = {'kind': 'catalogue_child', 'catalogue': 'ndff_soorten',
                              'join': 'w.soort_key=c.soort_key', 'role': 'bronwaarneming'}
         elif table == 'sovon_avimap_waarneming':
@@ -120,7 +123,8 @@ def central_query_routes(schema: dict[str, set[str]]) -> dict[str, dict]:
         elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and ('waarneming_id' in columns or 'ndff_waarneming_id' in columns):
             field = 'waarneming_id' if 'waarneming_id' in columns else 'ndff_waarneming_id'
             routes[table] = {'kind': 'ndff_child', 'join': f'w.{field}=o.waarneming_id',
-                             'role': 'bronverwijzing'}
+                             'role': 'bronverwijzing',
+                             'partitioned': 'ndff_open_waarneming_register' in schema}
         elif table.startswith(('ndff_', 'sovon_avimap_', 'daz_bmp_', 'hns_', 'florbase_', 'lmfa_')) and columns & {'wetenschappelijke_naam', 'doelsoort'}:
             name = 'wetenschappelijke_naam' if 'wetenschappelijke_naam' in columns else 'doelsoort'
             version = 'reconstructieversie' if 'reconstructieversie' in columns else 'regelversie'
@@ -161,9 +165,22 @@ def central_taxon_query(table: str, route: dict, taxon_id: int | None = None) ->
         joins = (f"JOIN `{route['catalogue']}` c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
                  f"JOIN `{table}` w ON {route['join']}")
     elif kind == 'ndff_child':
-        joins = ("JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
-                 "JOIN ndff_open_waarneming o ON o.soort_key=c.soort_key\n"
-                 f"JOIN `{table}` w ON {route['join']}")
+        if not route.get('partitioned'):
+            joins = ("JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id\n"
+                     "JOIN ndff_open_waarneming o ON o.soort_key=c.soort_key\n"
+                     f"JOIN `{table}` w ON {route['join']}")
+        else:
+            joins = (f"JOIN `{table}` w\n"
+                 "JOIN ndff_open_waarneming_register r ON "
+                 +route['join'].replace('o.waarneming_id','r.waarneming_id')+"\n"
+                 "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
+                 "AND r.opslag_tabel='ndff_open_waarneming'\n"
+                 "LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id "
+                 "AND r.opslag_tabel='mossen_waarneming'\n"
+                 "LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id "
+                 "AND r.opslag_tabel='korstmossen_waarneming'\n"
+                 "JOIN ndff_soorten c ON c.taxon_bronkoppeling_id=b.koppeling_id "
+                 "AND c.soort_key=COALESCE(o.soort_key,m.soort_key,k.soort_key)")
     else:
         joins = f'JOIN `{table}` w ON w.taxon_bronkoppeling_id=b.koppeling_id'
     return ("SELECT t.taxon_id,t.weergavenaam,g.groep_id,g.groep_code,g.groep_naam,"
@@ -258,6 +275,12 @@ def central_reachability_scope(table: str, route: dict, alias: str = 'w') -> str
 # Accepted physical schema. Every new/changed column requires an explicit route review.
 # Updated from the canonical local database and checked against the restored candidate.
 CENTRAL_QUERY_SCHEMA = {
+    'korstmossen_bronbestand': frozenset('bronbestand_sha256 bronorganisatie bestandsnaam bronpad leverdatum plotaantal formulieraantal resultaat_aantal beschermd_resultaat_aantal importversie aangemaakt_op'.split()),
+    'korstmossen_bron_plot': frozenset('bronbestand_sha256 bron_plot_id ndff_meetlocatie_id ndff_reconstructieversie subgebied provincie routenaam bron_x_rd bron_y_rd lengte_m breedte_m grootte_m2 aspect vegetatie beheer methode begroeiingstype startjaar stopjaar locatie_afscherming'.split()),
+    'korstmossen_bron_formulier': frozenset('bronbestand_sha256 kopid bron_plot_id velddatum rapportagejaar waarnemer opmerkingen formulierstatus'.split()),
+    'korstmossen_bron_resultaat': frozenset('bronbestand_sha256 bronregelnummer kopid bronnaam hoeveelheidscode opmerkingen taxon_bronkoppeling_id ndff_koppelstatus ndff_waarneming_id ndff_matchgroep_sha256'.split()),
+    'korstmossen_bron_ndff_groeprecord': frozenset('bronbestand_sha256 ndff_matchgroep_sha256 ndff_waarneming_id'.split()),
+    'korstmossen_bron_formulier_taxon': frozenset('bronbestand_sha256 kopid taxon_bronkoppeling_id waarnemingsstatus hoeveelheidscode bronregelnummer'.split()),
     'BGgroup': frozenset(['euring_code', 'group_code', 'id', 'soort_naam']),
     'analyse_datareeks': frozenset(['aangemaakt_op', 'beoordeeld_op', 'beveiligingsniveau', 'bezoekstructuur_status', 'bijgewerkt_op', 'bron_object', 'bron_schema', 'bronorganisatie', 'bronselectie_omschrijving', 'bronstatus', 'classificatiebron', 'datareeks_id', 'datareeks_sleutel', 'jaar_tot', 'jaar_van', 'korrel', 'kwaliteitsmelding', 'methode_status', 'naam', 'nulwaarneming_status', 'recordaantal_bij_beoordeling', 'regelversie', 'ruimtelijke_status', 'soortgroep', 'validatie_status']),
     'analyse_datareeks_geschiktheid': frozenset(['analyse_type_code', 'beoordeeld_op', 'datareeks_geschiktheid_id', 'datareeks_id', 'eindbesluit', 'gegevensgeschiktheid', 'kwaliteitsmelding', 'protocolgeschiktheid', 'regelversie', 'voorwaarden']),
@@ -372,11 +395,11 @@ CENTRAL_QUERY_SCHEMA = {
     'ndff_kevers': frozenset(['waarneming_id']),
     'ndff_konijn_hokdatum_taxon': frozenset(['aangemaakt_op', 'aantal_max', 'aantal_min', 'aantal_som', 'aggregatiestatus', 'bronrecordaantal', 'doelrelatie', 'hokdatum_taxon_sleutel', 'hoknummer', 'jaar', 'nulstatus', 'openbare_geometrie_sha256', 'reconstructieversie', 'taxon_bronkoppeling_id', 'teldatum', 'wetenschappelijke_naam']),
     'ndff_konijn_recordselectie': frozenset(['aangemaakt_op', 'aantal_exact', 'daz_overlapstatus', 'doelrelatie', 'exactgelijke_groepsgrootte', 'hokdatum_taxon_groepsgrootte', 'kwaliteitsnotitie', 'meeteenheidstatus', 'protocol_sleutel', 'reconstructieversie', 'recordgroepstatus', 'ruimtelijke_status', 'seizoenstatus', 'trendgebruik', 'waarneming_id']),
-    'ndff_korstmos_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bezoekdatum', 'bronrecordaantal', 'geregistreerde_taxa', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'meetlocatie_id', 'reconstructieversie', 'registratiestatus']),
-    'ndff_korstmos_bezoek_taxon': frozenset(['aangemaakt_op', 'bedekkingsklasse_raw', 'bedekkingsrang', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_korstmos_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_bezoekaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
-    'ndff_korstmos_meetlocatie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'centrum_x_rd', 'centrum_y_rd', 'eerste_jaar', 'geometrie_sha256', 'herhaalstatus', 'kwaliteitsnotitie', 'laatste_jaar', 'meetlocatie_id', 'oppervlakte_m2', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_klasse', 'sovon_plot_id']),
-    'ndff_korstmos_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'canonieke_waarneming_id', 'meetlocatie_id', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'korstmossen_bezoek': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'bezoekdatum', 'bronrecordaantal', 'geregistreerde_taxa', 'jaar', 'kwaliteitsnotitie', 'lijststatus', 'meetlocatie_id', 'reconstructieversie', 'registratiestatus']),
+    'korstmossen_bezoek_taxon': frozenset(['aangemaakt_op', 'bedekkingsklasse_raw', 'bedekkingsrang', 'bezoek_sleutel', 'bronrecordaantal', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'korstmossen_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_bezoekaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'korstmossen_meetlocatie': frozenset(['aangemaakt_op', 'bezoekaantal', 'bronrecordaantal', 'centrum_x_rd', 'centrum_y_rd', 'eerste_jaar', 'geometrie_sha256', 'herhaalstatus', 'kwaliteitsnotitie', 'laatste_jaar', 'meetlocatie_id', 'oppervlakte_m2', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_klasse', 'sovon_plot_id']),
+    'korstmossen_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'canonieke_waarneming_id', 'meetlocatie_id', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'ndff_korstmossen': frozenset(['waarneming_id']),
     'ndff_kranswieren_wieren_algen': frozenset(['waarneming_id']),
     'ndff_kreeftachtigen': frozenset(['waarneming_id']),
@@ -399,11 +422,11 @@ CENTRAL_QUERY_SCHEMA = {
     'lmfa_recordselectie': frozenset(['aangemaakt_op', 'bezoek_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'lmfa_route': frozenset(['aangemaakt_op', 'bron_url', 'hok_x', 'hok_y', 'hoknummer', 'kwaliteitsnotitie', 'protocol_sleutel', 'reconstructieversie', 'route_sleutel', 'route_status']),
     'ndff_microvlinders': frozenset(['waarneming_id']),
-    'ndff_mos_datumcluster': frozenset(['aangemaakt_op', 'brongeometrieaantal', 'bronrecordaantal', 'clusterstatus', 'datumcluster_sleutel', 'geregistreerde_taxa', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'reconstructieversie', 'tijdprecisie']),
-    'ndff_mos_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
-    'ndff_mos_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'eerste_jaar', 'einddatum', 'geregistreerde_taxa', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaarstatus', 'kwaliteitsnotitie', 'laatste_jaar', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie']),
-    'ndff_mos_inventarisatie_taxon': frozenset(['aangemaakt_op', 'aantalsklasse_raw', 'aantalsrang', 'bron_schaal', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
-    'ndff_mos_recordselectie': frozenset(['aangemaakt_op', 'canonieke_waarneming_id', 'datumcluster_sleutel', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
+    'mossen_datumcluster': frozenset(['aangemaakt_op', 'brongeometrieaantal', 'bronrecordaantal', 'clusterstatus', 'datumcluster_sleutel', 'geregistreerde_taxa', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'periode_start', 'periode_stop', 'reconstructieversie', 'tijdprecisie']),
+    'mossen_doelbereik': frozenset(['aangemaakt_op', 'afleidingsregel', 'eerste_jaar', 'laatste_jaar', 'positieve_inventarisatieaantal', 'reconstructieversie', 'taxon_bronkoppeling_id', 'wetenschappelijke_naam']),
+    'mossen_inventarisatie': frozenset(['aangemaakt_op', 'begindatum', 'bronrecordaantal', 'datumclusteraantal', 'eerste_jaar', 'einddatum', 'geregistreerde_taxa', 'hoknummer', 'inspanningstatus', 'inventarisatie_sleutel', 'jaarstatus', 'kwaliteitsnotitie', 'laatste_jaar', 'lijststatus', 'plotstatus', 'protocol_sleutel', 'reconstructieversie']),
+    'mossen_inventarisatie_taxon': frozenset(['aangemaakt_op', 'aantalsklasse_raw', 'aantalsrang', 'bron_schaal', 'bronrecordaantal', 'inventarisatie_sleutel', 'kwaliteitsnotitie', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
+    'mossen_recordselectie': frozenset(['aangemaakt_op', 'canonieke_waarneming_id', 'datumcluster_sleutel', 'inventarisatie_sleutel', 'reconstructieversie', 'selectiereden', 'selectiestatus', 'waarneming_id']),
     'ndff_mossen': frozenset(['waarneming_id']),
     'ndff_nachtvlinder_hokjaar': frozenset(['aangemaakt_op', 'bronrecordaantal', 'hokjaar_sleutel', 'hoknummer', 'jaar', 'kwaliteitsnotitie', 'openbare_geometrie_sha256', 'protocol_sleutel', 'reconstructieversie', 'ruimtelijke_status', 'telstatus']),
     'ndff_nachtvlinder_hokjaar_taxon': frozenset(['aangemaakt_op', 'bronrecordaantal', 'geregistreerd_aantal', 'hokjaar_sleutel', 'kwaliteitsnotitie', 'meetwaarden_json', 'nulregel', 'reconstructieversie', 'taxon_bronkoppeling_id', 'waarnemingsstatus', 'wetenschappelijke_naam']),
@@ -551,6 +574,13 @@ CENTRAL_QUERY_SCHEMA = {
 
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
+    if 'ndff_open_waarneming_register' in schema:
+        for table in ('mossen_waarneming', 'korstmossen_waarneming'):
+            expected[table] = expected['ndff_open_waarneming']
+        expected['ndff_open_waarneming_register'] = frozenset({
+            'waarneming_id', 'opslag_tabel', 'identiteit_sha256'})
+        expected.pop('ndff_mossen')
+        expected.pop('ndff_korstmossen')
     registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
     legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
     if not (registraties & set(schema)):
@@ -613,6 +643,29 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
     routes = central_query_routes(schema)
     result = {'rule':QUERY_RULE, 'database':db.database, 'tables':len(schema), 'routes':{}, 'errors':[]}
     errors = result['errors']
+    if partitioned_routes(routes):
+        missing_storage = db.sql(
+            "SELECT COUNT(*) FROM ndff_open_waarneming_register r "
+            "LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id "
+            "AND r.opslag_tabel='ndff_open_waarneming' "
+            "LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id "
+            "AND r.opslag_tabel='mossen_waarneming' "
+            "LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id "
+            "AND r.opslag_tabel='korstmossen_waarneming' "
+            "WHERE COALESCE(o.waarneming_id,m.waarneming_id,k.waarneming_id) IS NULL "
+            "OR r.identiteit_sha256<>COALESCE(o.identiteit_sha256,m.identiteit_sha256,k.identiteit_sha256);")
+        if missing_storage != '0':
+            errors.append('NDFF-register zonder volledige, identieke fysieke bronregel: '+missing_storage)
+        for table in ('ndff_open_waarneming','mossen_waarneming',
+                      'korstmossen_waarneming'):
+            mismatch = db.sql(
+                f"SELECT COUNT(*) FROM {query_identifier(table)} w "
+                "LEFT JOIN ndff_open_waarneming_register r "
+                "ON r.waarneming_id=w.waarneming_id "
+                f"WHERE r.waarneming_id IS NULL OR r.opslag_tabel<>{query_literal(table)} "
+                "OR r.identiteit_sha256<>w.identiteit_sha256;")
+            if mismatch != '0':
+                errors.append(table+': bronregels zonder uniek passende registerlocatie: '+mismatch)
     invalid = db.sql("SELECT COUNT(*) FROM taxa_bronkoppeling b LEFT JOIN taxa t ON t.taxon_id=b.taxon_id "
         "WHERE b.taxon_id IS NOT NULL AND t.taxon_id IS NULL;")
     if invalid != '0': errors.append('Verweesde centrale taxonkoppelingen: '+invalid)
@@ -653,11 +706,11 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
             "'event',EVENT_MANIPULATION,'timing',ACTION_TIMING,'body',ACTION_STATEMENT) FROM information_schema.TRIGGERS "
             "WHERE TRIGGER_SCHEMA=DATABASE();")
         actual={row['name']:row for row in definitions}
-        for match in re.finditer(r'CREATE TRIGGER (\w+) BEFORE (INSERT|UPDATE|DELETE) ON `?(\w+)`? FOR EACH ROW (BEGIN.*?END)\$\$',
+        for match in re.finditer(r'CREATE TRIGGER (\w+) (BEFORE|AFTER) (INSERT|UPDATE|DELETE) ON `?(\w+)`? FOR EACH ROW (BEGIN.*?END)\$\$',
                                 central_query_triggers_sql({'routes':routes}),re.S):
-            name,event,table,body=match.groups()
+            name,timing,event,table,body=match.groups()
             found=actual.get(name)
-            if (found is None or found['table']!=table or found['event']!=event or found['timing']!='BEFORE'
+            if (found is None or found['table']!=table or found['event']!=event or found['timing']!=timing
                     or ' '.join(found['body'].split())!=' '.join(body.split())):
                 errors.append(name+': schrijfbewaking ontbreekt of is gewijzigd')
     for table, route in routes.items():
@@ -694,8 +747,19 @@ def central_query_audit(db: CentralQueryDatabase, *, require_guards=True) -> dic
             if 'taxon_bronkoppeling_id' not in schema[catalogue]:
                 errors.append(table+': centrale catalogusroute ontbreekt'); continue
             if kind == 'ndff_child':
-                joined = f'{qtable} w LEFT JOIN ndff_open_waarneming o ON {route["join"]} '
-                joined += 'LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key '
+                if not route.get('partitioned'):
+                    joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming o ON '
+                        +route['join']+' LEFT JOIN ndff_soorten c ON c.soort_key=o.soort_key ')
+                else:
+                    joined = (f'{qtable} w LEFT JOIN ndff_open_waarneming_register r ON '
+                    +route['join'].replace('o.waarneming_id','r.waarneming_id')+' '
+                    'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
+                    "AND r.opslag_tabel='ndff_open_waarneming' "
+                    'LEFT JOIN mossen_waarneming m ON m.waarneming_id=r.waarneming_id '
+                    "AND r.opslag_tabel='mossen_waarneming' "
+                    'LEFT JOIN korstmossen_waarneming k ON k.waarneming_id=r.waarneming_id '
+                    "AND r.opslag_tabel='korstmossen_waarneming' "
+                    'LEFT JOIN ndff_soorten c ON c.soort_key=COALESCE(o.soort_key,m.soort_key,k.soort_key) ')
             else:
                 joined = f'{qtable} w LEFT JOIN {query_identifier(catalogue)} c ON {route["join"]} '
             reference_scope = 'c.taxon_bronkoppeling_id IS NOT NULL AND ' if route.get('role')=='soortreferentie' else ''
@@ -958,6 +1022,10 @@ def central_query_schema_sql(plan: dict, *, finalize=False) -> str:
     return '\n'.join(statements)
 
 
+def partitioned_routes(routes: dict[str, dict]) -> bool:
+    return any(r['kind']=='ndff_child' and r.get('partitioned') for r in routes.values())
+
+
 def central_query_triggers_sql(plan: dict) -> str:
     """Guards are local-schema bound and survive a complete dump/restore.
 
@@ -976,7 +1044,8 @@ def central_query_triggers_sql(plan: dict) -> str:
         body = ''
         declarations = 'DECLARE cq_n BIGINT DEFAULT 0; DECLARE cq_id BIGINT UNSIGNED; DECLARE cq_taxon BIGINT UNSIGNED;'
         if kind=='ndff_child':
-            body = ('IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming o WHERE '+route['join'].replace('w.','NEW.')+
+            parent = 'ndff_open_waarneming_register' if route.get('partitioned') else 'ndff_open_waarneming'
+            body = ('IF NOT EXISTS(SELECT 1 FROM '+parent+' o WHERE '+route['join'].replace('w.','NEW.')+
                     ") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronwaarneming bestaat niet'; END IF;")
         elif kind == 'catalogue_child':
             # Catalogue target protection + existing FK protects the factual source key.
@@ -989,6 +1058,15 @@ def central_query_triggers_sql(plan: dict) -> str:
             if route.get('role')=='soortreferentie':
                 body='IF NOT EXISTS(SELECT 1 FROM '+query_identifier(route['catalogue'])+' c WHERE '+join+\
                      ' AND c.taxon_bronkoppeling_id IS NULL) THEN '+body+' END IF;'
+            if table in {'mossen_waarneming','korstmossen_waarneming'} and partitioned_routes(routes):
+                body += (' IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
+                    'LEFT JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
+                    'WHERE r.waarneming_id=NEW.waarneming_id AND '
+                    'r.identiteit_sha256=NEW.identiteit_sha256 AND '
+                    "(r.opslag_tabel='"+table+"' OR "
+                    "(r.opslag_tabel='ndff_open_waarneming' AND "
+                    'o.identiteit_sha256=NEW.identiteit_sha256))) THEN '
+                    "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-opslaglocatie of identiteit wijkt af'; END IF;")
         elif kind == 'catalogue':
             if table=='soorten':
                 source_id='CAST(NEW.id AS CHAR)'; name='NEW.latijnse_naam'
@@ -1091,9 +1169,18 @@ def central_query_triggers_sql(plan: dict) -> str:
                   condition+") THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Taxonkoppeling past niet bij bronwaarneming'; END IF; "+validity)
         for suffix,event in [('bi','INSERT'),('bu','UPDATE')]:
             trigger=central_trigger_name(table,suffix)
+            event_body=body
+            if (table in {'mossen_waarneming','korstmossen_waarneming'}
+                    and partitioned_routes(routes) and event=='UPDATE'):
+                event_body += (' IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
+                    'WHERE r.waarneming_id=NEW.waarneming_id AND '
+                    "r.opslag_tabel='"+table+"') OR "
+                    'NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
+                    'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256) THEN '
+                    "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-identiteit is vast'; END IF;")
             statements += [f'DROP TRIGGER IF EXISTS {trigger}$$',
                 f'CREATE TRIGGER {trigger} BEFORE {event} ON {query_identifier(table)} FOR EACH ROW BEGIN\n'
-                +declarations+'\n'+body+'\nEND$$']
+                +declarations+'\n'+event_body+'\nEND$$']
     # Registry edits must not make any pinned measurement lose its target or origin.
     references = ' OR '.join(f'EXISTS(SELECT 1 FROM {query_identifier(table)} WHERE taxon_bronkoppeling_id=OLD.koppeling_id)'
         for table,r in routes.items() if r['kind'] in {'catalogue','derived','direct','external'})
@@ -1115,25 +1202,87 @@ def central_query_triggers_sql(plan: dict) -> str:
     children = ' OR '.join('EXISTS(SELECT 1 FROM '+query_identifier(table)+' w WHERE '+
         route['join'].replace('o.waarneming_id','OLD.waarneming_id')+')'
         for table,route in routes.items() if route['kind']=='ndff_child')
+    partitioned = partitioned_routes(routes)
     for suffix,event in [('bd','DELETE'),('bu','UPDATE')]:
-        condition = '('+children+')'
-        if event=='UPDATE': condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id) AND '+condition
+        if partitioned and event=='DELETE':
+            replacements = ' OR '.join(
+                'EXISTS(SELECT 1 FROM ndff_open_waarneming_register r JOIN '+table+
+                ' g ON g.waarneming_id=r.waarneming_id WHERE r.waarneming_id=OLD.waarneming_id '
+                'AND g.identiteit_sha256=OLD.identiteit_sha256 '
+                "AND r.opslag_tabel='"+table+"')"
+                for table in ('mossen_waarneming','korstmossen_waarneming'))
+            condition = 'NOT ('+replacements+')'
+        elif partitioned:
+            condition = ('NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
+                         'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256)')
+        else:
+            condition = '('+children+')'
+            if event=='UPDATE': condition = 'NOT (NEW.waarneming_id<=>OLD.waarneming_id) AND '+condition
         statements += [f'DROP TRIGGER IF EXISTS cq_ndff_parent_{suffix}$$',
             f'CREATE TRIGGER cq_ndff_parent_{suffix} BEFORE {event} ON ndff_open_waarneming FOR EACH ROW BEGIN '
             'IF '+condition+" THEN SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Verwijder eerst afgeleide NDFF-verwijzingen'; END IF; END$$"]
+    if partitioned:
+        statements += [
+            'DROP TRIGGER IF EXISTS cq_ndff_register_bd$$',
+            'CREATE TRIGGER cq_ndff_register_bd BEFORE DELETE ON ndff_open_waarneming_register '
+            'FOR EACH ROW BEGIN '
+            'IF EXISTS(SELECT 1 FROM ndff_open_waarneming o '
+            'WHERE o.waarneming_id=OLD.waarneming_id) OR '
+            'EXISTS(SELECT 1 FROM mossen_waarneming m '
+            'WHERE m.waarneming_id=OLD.waarneming_id) OR '
+            'EXISTS(SELECT 1 FROM korstmossen_waarneming k '
+            'WHERE k.waarneming_id=OLD.waarneming_id) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronregel is nog aanwezig'; "
+            'END IF; END$$',
+            'DROP TRIGGER IF EXISTS cq_ndff_register_bu$$',
+            'CREATE TRIGGER cq_ndff_register_bu BEFORE UPDATE ON ndff_open_waarneming_register '
+            'FOR EACH ROW BEGIN '
+            'IF NOT (NEW.waarneming_id<=>OLD.waarneming_id) OR '
+            'NOT (NEW.identiteit_sha256<=>OLD.identiteit_sha256) OR NOT ('
+            "(NEW.opslag_tabel='ndff_open_waarneming' AND EXISTS(SELECT 1 FROM ndff_open_waarneming g "
+            'WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256)) OR '
+            "(NEW.opslag_tabel='mossen_waarneming' AND EXISTS(SELECT 1 FROM mossen_waarneming g "
+            'WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256)) OR '
+            "(NEW.opslag_tabel='korstmossen_waarneming' AND EXISTS(SELECT 1 FROM korstmossen_waarneming g "
+            'WHERE g.waarneming_id=NEW.waarneming_id AND '
+            'g.identiteit_sha256=NEW.identiteit_sha256))) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-register verwijst niet naar volledige bronregel'; "
+            'END IF; END$$',
+            'DROP TRIGGER IF EXISTS cq_ndff_parent_ai$$',
+            'CREATE TRIGGER cq_ndff_parent_ai AFTER INSERT ON ndff_open_waarneming FOR EACH ROW BEGIN '
+            "INSERT INTO ndff_open_waarneming_register(waarneming_id,opslag_tabel,identiteit_sha256) "
+            "VALUES(NEW.waarneming_id,'ndff_open_waarneming',NEW.identiteit_sha256); END$$",
+        ]
+        for table,prefix in [('mossen_waarneming','mossen'),
+                             ('korstmossen_waarneming','korstmossen')]:
+            statements += [
+                f'DROP TRIGGER IF EXISTS cq_ndff_{prefix}_bd$$',
+                f'CREATE TRIGGER cq_ndff_{prefix}_bd BEFORE DELETE ON {table} FOR EACH ROW BEGIN '
+                'IF NOT EXISTS(SELECT 1 FROM ndff_open_waarneming_register r '
+                'JOIN ndff_open_waarneming o ON o.waarneming_id=r.waarneming_id '
+                'WHERE r.waarneming_id=OLD.waarneming_id AND '
+                "r.opslag_tabel='ndff_open_waarneming' AND "
+                'o.identiteit_sha256=OLD.identiteit_sha256) THEN '
+                "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='NDFF-bronregel mag niet verdwijnen'; END IF; END$$",
+            ]
     for table,field,child in [('lvd_event','dataset_id','lvd_resultaat'),
                               ('pq_vegetatie_bronopname','dataset_id','pq_vegetatie_bronresultaat')]:
+        if table not in routes:
+            continue
         name=central_trigger_name(table,'bu')
         statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON {table} FOR EACH ROW BEGIN '
             f'IF NOT (NEW.{field}<=>OLD.{field}) AND EXISTS(SELECT 1 FROM {child} WHERE event_id=OLD.event_id) THEN '
             "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Waargenomen bronopname kan niet van dataset wisselen'; END IF; END$$"]
-    name=central_trigger_name('lvd_dataset','bu')
-    statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON lvd_dataset FOR EACH ROW BEGIN '
-        'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
-        'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
-        'EXISTS(SELECT 1 FROM lvd_event e JOIN lvd_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
-        'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
-        "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$"]
+    if 'lvd_dataset' in routes:
+        name=central_trigger_name('lvd_dataset','bu')
+        statements += [f'DROP TRIGGER IF EXISTS {name}$$',f'CREATE TRIGGER {name} BEFORE UPDATE ON lvd_dataset FOR EACH ROW BEGIN '
+            'IF (NOT (NEW.dataset_sleutel<=>OLD.dataset_sleutel) OR NOT (NEW.bronversie<=>OLD.bronversie) OR '
+            'NOT (NEW.bronbestand_sha256<=>OLD.bronbestand_sha256)) AND ('
+            'EXISTS(SELECT 1 FROM lvd_event e JOIN lvd_resultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id) OR '
+            'EXISTS(SELECT 1 FROM pq_vegetatie_bronopname e JOIN pq_vegetatie_bronresultaat r ON r.event_id=e.event_id WHERE e.dataset_id=OLD.dataset_id)) THEN '
+            "SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT='Gebruikte bronversie mag niet worden overschreven'; END IF; END$$"]
     for source_key,prefix in SOURCE_FAMILIES.items():
         if prefix+'_resultaat' not in routes: continue
         event_table, dataset_table, result_table = (prefix+'_'+s for s in ('event','dataset','resultaat'))

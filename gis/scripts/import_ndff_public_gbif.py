@@ -598,6 +598,12 @@ def open_import_sql(files: dict[str, object], gpkg: Path, source_hash: str) -> s
     )
     return f"""
 USE Meijendel;
+-- Dit historische bootstrap-pad mag de fysiek gesplitste opslag nooit aanvullen.
+CREATE TEMPORARY TABLE ndff_bootstrap_guard (ok INT NOT NULL CHECK (ok=1));
+INSERT INTO ndff_bootstrap_guard
+SELECT IF(COUNT(*)=0,1,0) FROM information_schema.TABLES
+WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='ndff_open_waarneming_register';
+DROP TEMPORARY TABLE ndff_bootstrap_guard;
 START TRANSACTION;
 INSERT INTO ndff_open_import_batch (bronbestand,bronbestand_sha256,bouwversie,periode_start,periode_einde,recordaantal,taxonaantal,bronstatus,opmerkingen)
 VALUES ('{sql_path(gpkg)}','{source_hash}','staging-v1',1950,2025,{files['records']},{files['taxa']},'openbaar','Geintegreerde, ontdubbelde openbare FFV-staging; positieve bronregistratie zonder automatische analysetoelating');
@@ -651,7 +657,8 @@ USE Meijendel_ndff_secure;
 INSERT IGNORE INTO ndff_open_secure_koppeling (secure_waarneming_id,open_identity_sha256,open_waarneming_id,koppelmethode)
 SELECT s.waarneming_id,s.open_identity_sha256,o.waarneming_id,'sha256_publieke_identiteit'
 FROM ndff_waarneming_register s
-JOIN Meijendel.ndff_open_waarneming o ON o.identiteit_sha256=s.open_identity_sha256;
+JOIN Meijendel.ndff_open_waarneming_register o
+  ON o.identiteit_sha256=s.open_identity_sha256;
 """
 
 
@@ -690,7 +697,11 @@ SELECT
   k.koppelmethode,
   b.bronrecord_sha256
 FROM Meijendel_ndff_secure.ndff_open_secure_koppeling AS k
-JOIN Meijendel.ndff_open_waarneming AS o
+JOIN (
+  SELECT * FROM Meijendel.ndff_open_waarneming
+  UNION ALL SELECT * FROM Meijendel.mossen_waarneming
+  UNION ALL SELECT * FROM Meijendel.korstmossen_waarneming
+) AS o
   ON o.waarneming_id=k.open_waarneming_id
 JOIN Meijendel_ndff_secure.ndff_waarneming_register AS s
   ON s.waarneming_id=k.secure_waarneming_id
@@ -750,10 +761,17 @@ CREATE TABLE IF NOT EXISTS ndff_open_secure_koppeling (
 
 def validation(client: Path, mysql_args: list[str]) -> dict[str, int]:
     queries = {
-        "open_records": "SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming",
+        "open_records": "SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming_register",
         "open_taxa": "SELECT COUNT(*) FROM Meijendel.ndff_soorten",
         "open_group_links": "SELECT COUNT(*) FROM Meijendel.ndff_open_soortgroep_koppeling",
-        "open_default_excluded": "SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming WHERE analyse_status='bronregistratie_niet_toegelaten'",
+        "open_default_excluded": (
+            "SELECT (SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming "
+            "WHERE analyse_status='bronregistratie_niet_toegelaten') + "
+            "(SELECT COUNT(*) FROM Meijendel.mossen_waarneming "
+            "WHERE analyse_status='bronregistratie_niet_toegelaten') + "
+            "(SELECT COUNT(*) FROM Meijendel.korstmossen_waarneming "
+            "WHERE analyse_status='bronregistratie_niet_toegelaten')"
+        ),
         "gbif_events": "SELECT COUNT(*) FROM Meijendel.vangblik_event",
         "gbif_locations": "SELECT COUNT(*) FROM Meijendel.vangblik_locatieversie",
         "gbif_occurrences": "SELECT COUNT(*) FROM Meijendel.vangblik_vangst",

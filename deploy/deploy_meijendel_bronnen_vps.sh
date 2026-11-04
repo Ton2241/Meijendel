@@ -18,7 +18,7 @@ MYSQL_BIN="${MYSQL_BIN:-$(command -v mysql 2>/dev/null || true)}"
 RSYNC_BIN="${RSYNC_BIN:-$(command -v rsync 2>/dev/null || true)}"
 SSH_BIN="${SSH_BIN:-$(command -v ssh 2>/dev/null || true)}"
 CURL_BIN="${CURL_BIN:-$(command -v curl 2>/dev/null || true)}"
-REQUIRED_MYSQL_VERSION="${REQUIRED_MYSQL_VERSION:-9.7.1}"
+REQUIRED_MYSQL_VERSION="${REQUIRED_MYSQL_VERSION:-9.7.4}"
 
 if [[ -z "$MYSQL_BIN" && -x /usr/local/mysql/bin/mysql ]]; then
   MYSQL_BIN="/usr/local/mysql/bin/mysql"

@@ -1,5 +1,18 @@
 # Besluiten
 
+- Provincie Zuid-Holland heeft bevestigd dat haar vegetatiemeetnetgegevens
+  onvolledig in NDFF staan, zonder het ontbrekende aantal, de jaren of de
+  bronregels te specificeren. De provincie controleert de historische reeks
+  samen met CBS en wil haar daarna in NDFF aanvullen. De bestaande provinciale
+  levering met 254 PQ's, 2.007 opnamen en 53.122 taxonregels uit 1981–2025
+  blijft de primaire, analyseklaar *binnen deze voorlopige bronversie*.
+  Leg bij uitkomsten die bronstatus vast. Vervang haar niet met NDFF-regels
+  en gebruik oude NDFF-matchpercentages niet als maat voor ontbrekende data.
+  Vergelijk een latere CBS-gecontroleerde provinciale levering eerst op PQ-ID,
+  opname, datum, soort, bedekking, coördinaat en eerder inactieve PQ's; behoud
+  de eerdere bronversie en herbereken afhankelijke uitkomsten pas na een
+  gecontroleerd bronbesluit.
+
 - Vanaf 6 oktober 2026 geldt voor vogelterritoria een bronafhankelijke
   nulregel. In een officiële SOVON-Excel-download is `0` een harde nul: de
   soort is onderzocht maar niet vastgesteld. Een lege cel betekent dat de

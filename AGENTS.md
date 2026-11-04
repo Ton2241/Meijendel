@@ -5,7 +5,7 @@ Hou rekening met de volgende IT-infrastructuur:
 1. iMac M1 8GB Tahoe 26.4 of later Opstart Macintosh HD
 2. Samsung Portable SSD T7 2 terrabyte
 3. NAS DS225+ met 6 GB geheugen
-4. MySQL 9.7.1 op iMac en VPS
+4. MySQL 9.7.4 op iMac en VPS
 
 Op de lokale iMac staat `innodb_redo_log_capacity` persistent op 512 MiB. De
 eerdere standaardwaarde van 100 MiB liet de server bij omvangrijke lokale
@@ -201,6 +201,20 @@ MySQL:
 - voor inloggen is `-u root -p` nodig
 - behandel de levende lokale Meijendel-MySQL-database op de iMac als de
   canonieke schrijfbron
+- sla herstelback-ups die nodig zijn vóór of tijdens een bewerking van de
+  lokale Meijendel-database voortaan op onder
+  `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/`.
+  Dit is de vaste, door Ton aangewezen locatie binnen `Backups-archief`;
+  gebruik herkenbare, unieke bestandsnamen met datum en bewerking
+- controleer vóór de databasebewerking dat de T7 beschikbaar is en de benodigde
+  herstelback-up volledig en leesbaar is vastgelegd; registreer locatie en
+  SHA-256 bij de bewerking. Gebruik bij een niet-beschikbare T7 geen tijdelijke
+  uitwijk naar Documents of iCloud, maar stop vóór de databasewijziging
+- deze opslagafspraak geldt uitsluitend voor herstelback-ups bij
+  databasebewerkingen. De standaardexport `Meijendel.sql` (ook aangeduid als
+  `meijendel.sql`) ter voorbereiding op upload naar de VPS volgt de bestaande
+  afzonderlijke procedure; wijzig daarvoor geen locatie, werkwijze of
+  toestemmingsvereiste op grond van deze afspraak
 - vraag na iedere wijziging van de levende lokale database eerst aan Ton of ook
   de zware afgeleide exportketen nodig is. Start `Meijendel.sql`-export,
   proefimport en Shiny-cachebouw nooit automatisch als onderdeel van een
@@ -498,29 +512,32 @@ MySQL:
   aantallen of dubbele vindplaatsen nooit als plantenabundantie en controleer
   vóór gebruik met `--audit-hns`
 - gebruik voor korstmossenprotocol `02.202` reconstructieversie
-  `ndff-korstmos-v2` en de vijf openbare tabellen `Meijendel.ndff_korstmos_*`.
-  Leid echte nullen alleen af binnen de 32 bevestigde bezoeken en de dertig
-  openbare taxa. Behoud parallelle positieve regels als afzonderlijke
-  waarnemertellingen. Gebruik `registratiestatus` om te onderscheiden of twee
-  onafhankelijke tellingen in de export aantoonbaar zijn; interpreteer
-  `tweede_telling_niet_aantoonbaar_in_export` nooit als één uitgevoerde teller.
-  Behandel de twee FFV-bedekkingsklassen uitsluitend ordinaal. Kopieer de
-  twintig vervaagde Saucijs-baardmosrecords niet naar de openbare afgeleide
-  tabellen en controleer vóór gebruik met
-  `--audit-korstmossen`
+  `ndff-korstmos-v2` en de vijf openbare tabellen `Meijendel.korstmossen_*`.
+  De primaire BLWG-levering bevat 384 regels, 44 waarnemersformulieren en
+  twaalf plots in 2000–2025. Leid in de openbare laag uitsluitend nullen af
+  voor de 24 daar gevolgde niet-gevoelige taxa op de vier vaste plots en hun
+  24 plot-jaarbezoeken; de huidige matrix bevat 356 zulke nullen. De twintig
+  vervaagde *Usnea articulata*-regels en exacte locaties blijven beschermd.
+  De acht eenmalige plotbezoeken zijn uitsluitend positieve aanwezigheid;
+  zes taxa komen alleen daar voor en mogen niet als nul op de vaste plots
+  verschijnen. Behoud parallelle positieve regels als afzonderlijke
+  waarnemertellingen. `registratiestatus` beschrijft alleen wat de NDFF-export
+  liet zien; de primaire `kopid` is leidend zodra de bron apart is ingepast.
+  Koppel bij 154 openbare regels met dezelfde plot-datum-soortcombinatie geen
+  willekeurige NDFF-identiteit aan een bronformulier. Gebruik de twee
+  FFV-bedekkingsklassen alleen ordinaal en controleer met `--audit-korstmossen`.
 - gebruik voor mossenprotocol `02.204` reconstructieversie `ndff-mos-v2` en de
-  vijf openbare tabellen `Meijendel.ndff_mos_*`. De native meeteenheid is het
-  volledige kilometerhok. Behandel de 21 bronperioden als onderdelen van zeven
-  hokinventarisaties, nooit als onafhankelijke herhaaltellingen. Leid echte
-  nullen alleen af op hokniveau binnen de 111 openbare taxa; verdeel een
-  hokuitkomst niet over geraakte SOVON-plots. Gebruik de drie BLWG-klassen
-  uitsluitend ordinaal, houd presentiewaarden en abundantieconflicten apart en
-  leid geen lokale tijdtrend af omdat geen hok is herhaald. Kopieer het ene
-  vervaagde record niet naar de openbare afgeleide tabellen. Accepteer de
-  expliciete protocolcode als bewijs voor de voorgeschreven minimale inspanning
-  van acht mensuren en dekking van relevante biotopen; vraag die gegevens niet
-  opnieuw op zonder een concrete resterende analysebehoefte. Controleer vóór
-  gebruik met `--audit-mossen`
+  vijf openbare tabellen `Meijendel.mossen_*`. De native meeteenheid is het
+  kilometerhok. De 21 NDFF-bronperioden zijn voorlopig geclusterd tot zeven
+  hokinventarisaties, maar BLWG meldde op 8 oktober 2026 dat hiervoor, voor
+  zover bekend, geen oorspronkelijke kopgegevens worden bijgehouden. De
+  ontvangen regels blijven daarom positieve aanwezigheid; de afgeleide laag
+  bevat nul echte nullen. De protocolcode bewijst de voorgeschreven methode,
+  niet de volledigheid van een specifiek ontvangen soortenlijst. Verdeel
+  hokuitkomsten niet over geraakte SOVON-plots en leid geen lokale tijdtrend af.
+  Gebruik de BLWG-klassen slechts ordinaal en houd presentiewaarden en
+  abundantieconflicten apart. Het ene vervaagde record blijft beschermd.
+  Controleer vóór gebruik met `--audit-mossen`
 - gebruik voor FLORBASE-protocol `12.001` reconstructieversie
   `ndff-florbase-v1` en de vier openbare tabellen
   `Meijendel.florbase_*`. Groepeer per werkelijk RD-kilometerhok en jaar.

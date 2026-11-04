@@ -211,7 +211,7 @@ write_sources_state() {
 docker inspect --format '{{.State.Status}}' "$CONTAINER" | grep -qx running || die "MySQL-container draait niet"
 mysql_version="$(docker exec "$CONTAINER" sh -lc 'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT VERSION()"')"
 printf 'MYSQL_VERSION=%s\n' "$mysql_version"
-[[ "$mysql_version" == 9.7.1 ]] || die "MySQL-versie is $mysql_version; vereist 9.7.1"
+[[ "$mysql_version" == 9.7.4 ]] || die "MySQL-versie is $mysql_version; vereist 9.7.4"
 [[ -d "$BACKUP_DIR" && -w "$BACKUP_DIR" ]] || die "bronback-upmap ontbreekt of is niet schrijfbaar"
 df -Pk "$BACKUP_DIR" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }' || die "minder dan 1 GiB vrije bronback-upruimte"
 validate_current_state

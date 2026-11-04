@@ -14,19 +14,19 @@ fail() {
 cat > "$TEST_DIR/mysql" <<'SCRIPT'
 #!/usr/bin/env bash
 if [[ " $* " == *" --version "* ]]; then
-  printf 'mysql  Ver %s for macos15 on arm64\n' "${FAKE_MYSQL_CLIENT_VERSION:-9.7.1}"
+  printf 'mysql  Ver %s for macos15 on arm64\n' "${FAKE_MYSQL_CLIENT_VERSION:-9.7.4}"
 else
-  printf '%s\n' "${FAKE_MYSQL_SERVER_VERSION:-9.7.1}"
+  printf '%s\n' "${FAKE_MYSQL_SERVER_VERSION:-9.7.4}"
 fi
 SCRIPT
 cat > "$TEST_DIR/mysqldump" <<'SCRIPT'
 #!/usr/bin/env bash
-printf 'mysqldump  Ver %s for macos15 on arm64\n' "${FAKE_MYSQLDUMP_VERSION:-9.7.1}"
+printf 'mysqldump  Ver %s for macos15 on arm64\n' "${FAKE_MYSQLDUMP_VERSION:-9.7.4}"
 SCRIPT
 chmod +x "$TEST_DIR/mysql" "$TEST_DIR/mysqldump"
 
-PATH="$TEST_DIR:$PATH" "$GUARD" >/dev/null || fail "geldige 9.7.1-set werd geblokkeerd."
-[[ "$($GUARD --required-version)" == "9.7.1" ]] || fail "vereiste versie is niet 9.7.1."
+PATH="$TEST_DIR:$PATH" "$GUARD" >/dev/null || fail "geldige 9.7.4-set werd geblokkeerd."
+[[ "$($GUARD --required-version)" == "9.7.4" ]] || fail "vereiste versie is niet 9.7.4."
 
 if output="$(PATH="$TEST_DIR:$PATH" FAKE_MYSQL_CLIENT_VERSION=9.5.0 "$GUARD" 2>&1)"; then
   fail "mysql-client 9.5.0 werd niet geblokkeerd."
@@ -43,4 +43,11 @@ if output="$(PATH="$TEST_DIR:$PATH" FAKE_MYSQL_SERVER_VERSION=9.5.0 "$GUARD" 2>&
 fi
 [[ "$output" == *"lokale MySQL-server is 9.5.0"* ]] || fail "gerichte serverfout ontbreekt."
 
-printf 'OK: MySQL-versieguard accepteert uitsluitend exact 9.7.1.\n'
+for component in FAKE_MYSQL_CLIENT_VERSION FAKE_MYSQLDUMP_VERSION FAKE_MYSQL_SERVER_VERSION; do
+  if output="$(env PATH="$TEST_DIR:$PATH" "$component=9.7.1" "$GUARD" 2>&1)"; then
+    fail "$component 9.7.1 werd niet geblokkeerd."
+  fi
+  [[ "$output" == *"9.7.1; vereist is exact 9.7.4"* ]] || fail "gerichte fout voor achtergebleven 9.7.1 ontbreekt."
+done
+
+printf 'OK: MySQL-versieguard accepteert uitsluitend exact 9.7.4.\n'

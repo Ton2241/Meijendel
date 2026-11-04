@@ -74,17 +74,16 @@ WHERE e.event_datum IS NOT NULL
   AND e.latitude IS NOT NULL
   AND e.longitude IS NOT NULL;
 
-INSERT INTO lvd_overlap (
-  resultaat_id,doelsysteem,doelrecord_sleutel,koppelmethode,zekerheid,toelichting
-)
-SELECT
-  x.resultaat_id,
-  'ndff',
-  CONCAT('ndff:',n.waarneming_id),
-  'taxon_datum_in_onzekerheidspolygoon',
-  'mogelijk',
-  'Zelfde taxon en datum; het externe punt valt in de NDFF-onzekerheidspolygoon. Zonder gedeelde bron-ID is dit geen bewezen dubbel.'
-FROM tmp_external_ndff x
+-- Elke fysieke NDFF-bron behoudt zijn eigen index op soort en datum.
+-- De primaire sleutel voorkomt een dubbel paar bij overlappende zoekruimte.
+CREATE TEMPORARY TABLE tmp_external_ndff_match (
+  resultaat_id BIGINT UNSIGNED NOT NULL,
+  waarneming_id BIGINT UNSIGNED NOT NULL,
+  PRIMARY KEY (resultaat_id,waarneming_id)
+) ENGINE=InnoDB;
+
+INSERT IGNORE INTO tmp_external_ndff_match (resultaat_id,waarneming_id)
+SELECT x.resultaat_id,n.waarneming_id FROM tmp_external_ndff x
 JOIN ndff_open_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
   ON n.soort_key=x.soort_key
  AND n.periode_start >= x.datum_van
@@ -92,5 +91,37 @@ JOIN ndff_open_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
  AND MBRIntersects(n.openbare_geometrie,x.punt_rd)
  AND ST_Intersects(n.openbare_geometrie,x.punt_rd)
 WHERE n.analyse_status <> 'uitgesloten';
+
+INSERT IGNORE INTO tmp_external_ndff_match (resultaat_id,waarneming_id)
+SELECT x.resultaat_id,n.waarneming_id FROM tmp_external_ndff x
+JOIN mossen_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
+  ON n.soort_key=x.soort_key
+ AND n.periode_start >= x.datum_van
+ AND n.periode_start < DATE_ADD(x.datum_tot,INTERVAL 1 DAY)
+ AND MBRIntersects(n.openbare_geometrie,x.punt_rd)
+ AND ST_Intersects(n.openbare_geometrie,x.punt_rd)
+WHERE n.analyse_status <> 'uitgesloten';
+
+INSERT IGNORE INTO tmp_external_ndff_match (resultaat_id,waarneming_id)
+SELECT x.resultaat_id,n.waarneming_id FROM tmp_external_ndff x
+JOIN korstmossen_waarneming n FORCE INDEX (ix_ndff_open_soort_datum)
+  ON n.soort_key=x.soort_key
+ AND n.periode_start >= x.datum_van
+ AND n.periode_start < DATE_ADD(x.datum_tot,INTERVAL 1 DAY)
+ AND MBRIntersects(n.openbare_geometrie,x.punt_rd)
+ AND ST_Intersects(n.openbare_geometrie,x.punt_rd)
+WHERE n.analyse_status <> 'uitgesloten';
+
+INSERT INTO lvd_overlap (
+  resultaat_id,doelsysteem,doelrecord_sleutel,koppelmethode,zekerheid,toelichting
+)
+SELECT
+  m.resultaat_id,
+  'ndff',
+  CONCAT('ndff:',m.waarneming_id),
+  'taxon_datum_in_onzekerheidspolygoon',
+  'mogelijk',
+  'Zelfde taxon en datum; het externe punt valt in de NDFF-onzekerheidspolygoon. Zonder gedeelde bron-ID is dit geen bewezen dubbel.'
+FROM tmp_external_ndff_match m;
 
 COMMIT;

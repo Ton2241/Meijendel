@@ -499,27 +499,39 @@ laag daarom voor voorlopige verspreidings- en occupancyanalyse, nooit voor
 plantenabundantie, en controleer haar vooraf met `--audit-hns`.
 
 Korstmossenprotocol `02.202` staat onder `ndff-korstmos-v2` in vijf openbare
-`Meijendel.ndff_korstmos_*`-tabellen. De 364 onvervaagde bronregels vormen
-twaalf proefvlakken, 32 bezoeken en een matrix voor dertig taxa met 287
-positieve combinaties en 673 echte nullen. Bij twaalf bezoeken tonen dubbele
-soortregels de twee onafhankelijke tellingen aan; bij twintig bezoeken is de
-tweede telling in de export niet aantoonbaar. Alle 364 bronregels blijven als
-afzonderlijke waarnemertellingen behouden. De twintig vervaagde
-Saucijs-baardmosrecords blijven alleen in de beveiligde bronlaag. Gebruik de
-twee grove FFV-bedekkingsklassen slechts ordinaal en controleer de reconstructie
-met `--audit-korstmossen`.
+`Meijendel.korstmossen_*`-tabellen. De 364 onvervaagde bronregels vormen
+twaalf proefvlakken en 32 plotbezoeken. De matrix heeft 287 positieve
+combinaties en 356 afgeleide nullen: uitsluitend voor 24 niet-gevoelige taxa
+op de vier vaste plots in zes meetjaren (2000–2025). De acht eenmalige
+plotbezoeken blijven positieve aanwezigheid. De primaire BLWG-levering telt
+384 bronregels en 44 waarnemersformulieren; zij verklaart alle 364 openbare
+en twintig vervaagde NDFF-regels. Bij 154 openbare regels is de individuele
+NDFF-identiteit niet eenduidig aan één bronformulier te koppelen. De twintig
+vervaagde *Usnea articulata*-regels blijven afgeschermd. Gebruik de twee grove
+NDFF-bedekkingsklassen slechts ordinaal en controleer met `--audit-korstmossen`.
+
+Sinds 23 oktober 2026 staan de volledige openbare NDFF-bronregels voor
+mossen en korstmossen in respectievelijk `mossen_waarneming` (32.353 regels)
+en `korstmossen_waarneming` (28.643 regels). Zij omvatten meerdere bronhouders
+en protocollen en zijn afzonderlijk van de BLWG-meetstructuur en de
+protocolreconstructies hierboven. De overige 749.834 openbare bronregels staan
+in `ndff_open_waarneming`. Het gedeelde `ndff_open_waarneming_register`
+bewaart de 810.830 unieke openbare identificaties en hun `opslag_tabel`, zonder
+een tweede volledige waarneming te bewaren. De voormalige ID-only-indexen
+`ndff_mossen` en `ndff_korstmossen` zijn na de nacontrole verwijderd. Zie
+[de migratiedocumentatie](docs/database/NDFF_MOSSEN_KORSTMOSSEN_MIGRATIE.md)
+voor de historische nulmeting en de afgeronde uitvoering.
 
 Mossenprotocol `02.204` staat onder `ndff-mos-v2` in vijf openbare
-`Meijendel.ndff_mos_*`-tabellen. De 376 onvervaagde bronregels vormen zeven
-volledige kilometerhokinventarisaties en een matrix voor 111 taxa met 354
-positieve combinaties en 423 echte nullen. De 21 bronperioden zijn onderdelen
-van de hoklijsten, geen onafhankelijke herhaaltellingen. Er zijn 21 gelijke
-parallelle registraties onderdrukt en één abundantieconflict gemarkeerd. Omdat
-geen hok is herhaald, ondersteunt deze lokale selectie geen tijdtrend per hok.
-Protocolcode `02.204` onderbouwt de volledige lijst en de voorgeschreven
-minimale inspanning van acht mensuren. Gebruik talrijkheidsklassen alleen
-ordinaal, koppel hoknullen niet door naar SOVON-plots en controleer de laag met
-`--audit-mossen`.
+`Meijendel.mossen_*`-tabellen. De 376 onvervaagde bronregels zijn geclusterd
+tot zeven kilometerhokinventarisaties en 21 bronperioden; de matrix bevat
+354 positieve combinaties en geen nullen. Volgens BLWG ontbreken bij deze
+levering de oorspronkelijke kopgegevens voor een complete lijst per bezoek.
+De protocolcode alleen bewijst die volledigheid niet. Er zijn 21 gelijke
+parallelle registraties onderdrukt en één abundantieconflict gemarkeerd.
+Omdat geen hok is herhaald, ondersteunt deze lokale selectie geen trend per
+hok. Gebruik talrijkheidsklassen alleen ordinaal, verdeel de hokuitslag niet
+over geraakte SOVON-plots en controleer met `--audit-mossen`.
 
 FLORBASE-protocol `12.001` staat onder `ndff-florbase-v1` in vier openbare
 `Meijendel.florbase_*`-tabellen. De 21.161 onvervaagde bronregels vormen
@@ -919,7 +931,7 @@ Of via Terminal:
   parser-versie, niet periodiek en niet continu. De VPS bouwt of repareert geen
   cache maar weigert Shiny te starten als dump, manifest en vooraf gebouwde
   cache niet exact bij elkaar horen. De NAS heeft hierin geen rekenrol.
-- De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.1 gebruiken. Generatie en deploy blokkeren bij een afwijking.
+- De lokale MySQL-server, `mysql`, `mysqldump` en de VPS-container moeten exact versie 9.7.4 gebruiken. Generatie en deploy blokkeren bij een afwijking.
 - Lees voor weeranalyses uitsluitend uit `weer_analyse`, nooit rechtstreeks uit `weer`.
 - Voeg aan MySQL `tellers` geen persoonsgegevens toe: alleen `id` en `tellercode` zijn toegestaan. Weergavenamen worden door de website uit PostgreSQL gehaald.
 - Ook de PQ-vegetatiegegevens in `pq_vegetatie_import`, `pq_vegetatie_pq`,

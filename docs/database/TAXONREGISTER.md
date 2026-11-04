@@ -161,8 +161,8 @@ volledig geteld, goedgekeurd of formeel afgekeurd en de toepasselijke officiële
 soortenlijst. Bezoeken, bezoekwaarnemingen en territoriumresultaten staan alleen
 in `dagbezoeken_bmp`, `dagwaarnemingen_bmp` en `territoria`.
 
-De volledige back-up staat buiten Git en iCloud in
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-bmp-20261002-164240.sql`.
+De volledige back-up staat sinds de archivering van 23 oktober 2026 op de T7, buiten Git en iCloud, in
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-before-sovon-bmp-20261002-164240.sql`.
 Het bestand is 4,0 GB, gemaakt met MySQL 9.7.1, en heeft SHA-256
 `fae744b4bca5d715a9345e92325c279e409b0cde57409ebdbd1b54e383b01236`.
 Volledig herstel in `Meijendel_sovon_restore_test_20261002` leverde dezelfde
@@ -332,7 +332,7 @@ Steenmarter en Boommarter gesplitst.
 
 Vóór de verwerking van 2023 zijn `territoria`, `daz_bmp_bezoek` en
 `daz_bmp_bezoek_taxon` geëxporteerd naar
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-2023-20261003.sql`
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-before-sovon-2023-20261003.sql`
 met SHA-256
 `06e96368c1418e9903601865be7230be8c84cd5115d15a507beb8cae889bda53`.
 De taxonroutes vóór de Heckrund-koppeling staan in
@@ -345,12 +345,12 @@ Voor 2025 zijn de tabellen en taxonroutes afzonderlijk bewaard met SHA-256
 en `11c5fc17c8ce8a63f3a13c41d623d5dacbacb12c13a21b82994e34be91d06c81`.
 
 Vóór de hernoeming is de tabelgroep afzonderlijk geëxporteerd naar
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-daz-bmp-before-rename-20261003.sql`;
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-daz-bmp-before-rename-20261003.sql`;
 SHA-256
 `2ef37b6dfcfa37c38b341a0d29a2bc443d1ea3d49bd8de8a6e4d87281cfccc46`.
 Vóór de aanvulling van 2005 is de hernoemde tabelgroep opnieuw geëxporteerd
 naar
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-daz-bmp-before-sovon-2005-supplement-20261003.sql`;
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-daz-bmp-before-sovon-2005-supplement-20261003.sql`;
 SHA-256
 `8ac65ab3112e019e9481ddf95e52d9b8a40a4add9c706aa507d50c342cf9e4ef`.
 Beide bestanden zijn op 3 oktober 2026 volledig teruggelezen in afzonderlijke
@@ -390,20 +390,20 @@ niet tot individuele bronrecords herleidbare soorttotalen; zij zijn niet als
 waarnemingen gereconstrueerd.
 
 Vóór de 1984-correctie is een volledige back-up gemaakt:
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-before-sovon-1984-reconcile-20261002.sql`,
 4,0 GB, SHA-256
 `fee814424dc2183a705cbec4b57b571b1a37fa545d87e07b23d6be1a25f1c197`.
 Vóór de 1985-correctie zijn `territoria` en `plot_jaar_teller` bovendien
 gericht veiliggesteld in
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1985-reconcile-20261003.sql`,
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-before-sovon-1985-reconcile-20261003.sql`,
 3,4 MB, SHA-256
 `e7cabd0ea5644ad6cea3f350e2736e390d770a38ff6b683059670762d19bf730`.
 Vóór de 1986-correctie is opnieuw een volledige back-up gemaakt:
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-before-sovon-1986-reconcile-20261003.sql`,
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-before-sovon-1986-reconcile-20261003.sql`,
 4,0 GB, SHA-256
 `61b14c76d6b6f989b5f82a6a2b4c5a6533b0cd9cc849796b85282d9a156e9b71`.
 Vóór de 1987-correctie is `territoria` gericht veiliggesteld in
-`/Users/ton/Documents/Backups/Meijendel/Meijendel-territoria-before-sovon-1987-reconcile-20261003.sql`,
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/Meijendel-territoria-before-sovon-1987-reconcile-20261003.sql`,
 3,4 MB, SHA-256
 `368b86e17095dc803b5045208832dddbb2f76595db4f1f39ae364eddec404805`.
 Vóór ieder aansluitend controlejaar 1988-2004 is dezelfde tabel gericht
@@ -2265,3 +2265,14 @@ De eerder beschreven terugdraaiing van drie lege tabellen is nu niet meer
 toepasselijk: `taxon_groepen` bevat gegevens. Terugdraaien vereist opnieuw een
 expliciet besluit en controle op eventuele nieuwe verwijzingen; nooit een
 volledige databaseherstelactie voor alleen deze catalogusvulling.
+
+
+### Archivering van de herstelbestanden op 23 oktober 2026
+
+De 59 SQL-herstelbestanden van 2–3 oktober 2026 staan met ongewijzigde namen in
+/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel.
+Zij zijn op omvang en SHA-256 gecontroleerd voordat de originelen uit iCloud zijn verwijderd.
+Het controlebestand staat één niveau hoger als CONTROLE_SHA256.json.
+Eerdere relatieve bestandsverwijzingen in dit document hebben deze archiefmap als basis.
+De oorspronkelijke locatie /Users/ton/Documents/Backups viel onder iCloud;
+de eerdere omschrijving van die locatie als buiten iCloud was onjuist.
