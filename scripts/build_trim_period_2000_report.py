@@ -46,7 +46,8 @@ def main():
         for q in ps:
             parts.append(f"| {q['period_calendar_start']}–{q['period_calendar_end']} | {q['model_start'] or '—'}–{q['model_end'] or '—'} | {q['reference_year'] or '—'} | {q['n_valid']} / {q['n_planned']} | {num(q['baseline_net_pct'])} | {band(q)} | {'ja' if yes(q['both_stable']) else 'nee'} |")
         for q in ps:
-            parts.append(f"\nPeriode {q['period']}: status `{q['status']}`; modelreden `{q['baseline_model_reason'] or 'geen'}`; uitval/verdeling `{q['reasons']}`. Eigen beginvenster {q['first_window'] or '—'}, eindvenster {q['last_window'] or '—'}. Positieve bronkavels in deze vensters: {q['source_positive_begin_plots']} / {q['source_positive_end_plots']}.\n")
+            support=(f"Eigen beginvenster {q['first_window']}, eindvenster {q['last_window']}. Positieve bronkavels in deze vensters: {q['source_positive_begin_plots']} / {q['source_positive_end_plots']}." if q['first_window'] and q['last_window'] else 'Geen eigen vergelijkingsvensters beschikbaar; de bronsteun per jaar staat in annual_indices.csv.')
+            parts.append(f"\nPeriode {q['period']}: status `{q['status']}`; modelreden `{q['baseline_model_reason'] or 'geen'}`; uitval/verdeling `{q['reasons']}`. {support}\n")
         parts.append(f"Jaarindices: {item['available_annual_indices']} beschikbaar op 68 kalenderposities; {len(bands)} met een diagnostische band, waarvan {item['stable_annual_bands']} beide stabiliteitscontroles halen. Alle jaarwaarden, aantallen, referenties, nullen, uitvalredenen en bandgrenzen staan in annual_indices.csv.\n")
         parts.append(f"Lange begin/eindmaat ongewijzigd: {r['n_valid']} / {r['n_planned']} geldig, status `{r['status']}`.\n")
         parts.extend('- '+t for t in limits)
