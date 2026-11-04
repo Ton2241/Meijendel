@@ -99,4 +99,9 @@ set -e
   printf 'FOUT: bron-timeout mist eindstatus\n' >&2; exit 1;
 }
 
+MOCK_CALLS="$calls" MOCK_EXIT_CODE=0 SSH_BIN="$mock_ssh" \
+  GATEWAY_ACTION=meijendel-integral GATEWAY_OPERATION_ID="$operation_id" \
+  "$RUNNER" rehearse 0123456789abcdef0123456789abcdef01234567 \
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa >/dev/null
+
 printf 'OK: gatewayrunner begrenst, bewaart en hervat uitvoer zonder geërfde stdout.\n'

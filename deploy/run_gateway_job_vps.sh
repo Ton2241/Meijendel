@@ -3,6 +3,8 @@ set -euo pipefail
 
 stage="${1:-}"
 commit="${2:-}"
+action="${GATEWAY_ACTION:-meijendel-release}"
+package_hash="${3:-}"
 VPS="${VPS:-ton@45.87.43.90}"
 SSH_KEY="${SSH_KEY:-$HOME/.ssh/vwgm_spectraip_ed25519}"
 GATEWAY="${GATEWAY:-/usr/local/sbin/vwgm-admin}"
@@ -20,16 +22,21 @@ validate_integer_range() {
   (( value >= minimum && value <= maximum )) || die "$name moet tussen $minimum en $maximum seconden liggen."
 }
 
+case "$action" in
+  meijendel-release) [[ "$stage" == preflight || "$stage" == apply ]] || die "ongeldige klassieke fase" ;;
+  meijendel-integral) [[ "$package_hash" =~ ^[0-9a-f]{64}$ ]] || die "exacte integrale pakkethash vereist" ;;
+  *) die "onbekende gesloten gatewayactie" ;;
+esac
 case "$stage" in
-  preflight)
+  preflight|cleanup)
     limit="${GATEWAY_PREFLIGHT_TIMEOUT:-300}"
     validate_integer_range "$limit" 60 900 GATEWAY_PREFLIGHT_TIMEOUT
     ;;
-  apply)
+  apply|rehearse|rollback)
     limit="${GATEWAY_APPLY_TIMEOUT:-10800}"
     validate_integer_range "$limit" 1800 14400 GATEWAY_APPLY_TIMEOUT
     ;;
-  *) die "fase moet preflight of apply zijn." ;;
+  *) die "ongeldige gatewayfase." ;;
 esac
 [[ "$commit" =~ ^[0-9a-f]{40}$ ]] || die "commit vereist exact 40 lowercase hextekens."
 kill_after="${GATEWAY_KILL_AFTER:-3600}"
@@ -40,6 +47,9 @@ resume=0
 if [[ -n "$operation_id" ]]; then
   resume=1
   [[ "$operation_id" =~ ^[0-9a-f]{32}$ ]] || die "GATEWAY_OPERATION_ID vereist exact 32 lowercase hextekens."
+elif [[ -n "${GATEWAY_NEW_OPERATION_ID:-}" ]]; then
+  operation_id="$GATEWAY_NEW_OPERATION_ID"
+  [[ "$operation_id" =~ ^[0-9a-f]{32}$ ]] || die "ongeldige nieuwe operatie-id"
 else
   operation_id="$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')"
   [[ "$operation_id" =~ ^[0-9a-f]{32}$ ]] || die "operatie-id kon niet veilig worden gemaakt."
@@ -50,9 +60,9 @@ ssh_args=(-i "$SSH_KEY" -o ServerAliveInterval=15 -o ServerAliveCountMax=4 "$VPS
 if [[ "$resume" -eq 0 ]]; then
   set +e
   start_output="$("$SSH_BIN" "${ssh_args[@]}" bash -s -- \
-    gateway-start "$operation_id" "$stage" "$commit" "$limit" "$kill_after" "$GATEWAY" <<'REMOTE'
+    gateway-start "$operation_id" "$stage" "$commit" "$limit" "$kill_after" "$GATEWAY" "$action" "$package_hash" <<'REMOTE'
 set -euo pipefail
-mode="$1"; operation_id="$2"; stage="$3"; commit="$4"; limit="$5"; kill_after="$6"; gateway="$7"
+mode="$1"; operation_id="$2"; stage="$3"; commit="$4"; limit="$5"; kill_after="$6"; gateway="$7"; action="$8"; package_hash="$9"
 [[ "$mode" == "gateway-start" ]]
 root="/srv/vwgm/deploy-state/gateway-jobs"
 job="$root/$operation_id"
@@ -70,7 +80,7 @@ else
   printf '%s\n' \
     '#!/usr/bin/env bash' \
     'set -uo pipefail' \
-    'operation_id="$1"; stage="$2"; commit="$3"; limit="$4"; kill_after="$5"; gateway="$6"; job="$7"' \
+    'operation_id="$1"; stage="$2"; commit="$3"; limit="$4"; kill_after="$5"; gateway="$6"; job="$7"; action="$8"; package_hash="$9"' \
     'log="$job/gateway.log"; status="$job/status"; rc=125' \
     'finish() {' \
     '  trap - EXIT INT TERM' \
@@ -80,13 +90,17 @@ else
     '}' \
     'trap finish EXIT INT TERM' \
     'set +e' \
-    'timeout --foreground --signal=TERM --kill-after="${kill_after}s" "${limit}s" sudo -n "$gateway" meijendel-release "$stage" "$commit" >"$log.next" 2>&1' \
+    'if [[ "$action" == meijendel-integral ]]; then' \
+    '  timeout --foreground --signal=TERM --kill-after="${kill_after}s" "${limit}s" sudo -n "$gateway" "$action" "$stage" "$commit" "$package_hash" >"$log.next" 2>&1' \
+    'else' \
+    '  timeout --foreground --signal=TERM --kill-after="${kill_after}s" "${limit}s" sudo -n "$gateway" meijendel-release "$stage" "$commit" >"$log.next" 2>&1' \
+    'fi' \
     'rc=$?' \
     'set -e' \
     'mv "$log.next" "$log"' \
     'exit "$rc"' > "$runner"
   chmod 700 "$runner"
-  nohup "$runner" "$operation_id" "$stage" "$commit" "$limit" "$kill_after" "$gateway" "$job" </dev/null >/dev/null 2>&1 &
+  nohup "$runner" "$operation_id" "$stage" "$commit" "$limit" "$kill_after" "$gateway" "$job" "$action" "$package_hash" </dev/null >/dev/null 2>&1 &
 fi
 while [[ ! -f "$status" ]]; do sleep 1; done
 printf 'GATEWAY_REMOTE_COMPLETED=%s\n' "$operation_id"

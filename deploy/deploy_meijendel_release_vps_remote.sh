@@ -248,6 +248,10 @@ production_only_fingerprint() {
   printf '%s\n' "$digest"
 }
 
+if [[ -f /var/lib/vwgm-integral/production/current/release.json ]] && python3 -c 'import json,sys; m=json.load(open("/var/lib/vwgm-integral/production/current/release.json")); sys.exit(1 if m.get("legacy") else 0)'; then
+  die "actieve integrale release: gebruik uitsluitend meijendel-integral met het volledige pakket"
+fi
+
 [[ " ${STAGES[*]} " == *" $stage "* ]] || die "onbekende fase"
 [[ "$release_commit" =~ ^[0-9a-f]{40}$ ]] || die "commit vereist exact 40 hextekens"
 

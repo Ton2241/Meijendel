@@ -29,14 +29,23 @@ def verify(package):
     if not m.get('files') or m.get('year_to',0)<m.get('year_from',9999):raise ValueError('Onvolledig releasecontract')
     if m.get('mode')=='production':
         if m.get('historical_cache_rehearsal') or any('999_local_' in x for x in m.get('cms',{}).get('migrations',[])):raise ValueError('Proefonderdeel in productierelease')
-        if not m.get('official_data_validated') or set(m.get('components',[]))!={'website','dashboard','shiny','mysql','cms'}:raise ValueError('Productierelease mist validatie of component')
+        if m.get('official_data_validated') is not True or set(m.get('components',[]))!={'website','dashboard','shiny','mysql','cms'}:raise ValueError('Productierelease mist validatie of component')
     elif m.get('mode')!='local_rehearsal':raise ValueError('Onbekende releasemodus')
     for relative,expected in m['files'].items():
         p=safe_path(package,relative)
         if p.is_symlink() or not p.is_file() or sha(p)!=expected:raise ValueError('Releasebestand ontbreekt of wijkt af: '+relative)
+    for section,keys in (('mysql',('source','website_objects')),('cache',('root',))):
+        if section not in m:continue
+        for key in keys:
+            relative=m[section].get(key)
+            if not isinstance(relative,str) or relative not in m['files']:raise ValueError('Niet gecontroleerd runtimebestand')
+            safe_path(package,relative)
+        if section=='mysql' and m['files'][m[section]['source']]!=m['source_hash']:raise ValueError('SQL-bronhash wijkt af')
+        if section=='cache' and m['files'][m[section]['root']]!=m[section]['sha256']:raise ValueError('Cachehash wijkt af')
     if 'bootstrap' in m:
         root=safe_path(package,m['bootstrap']['root']);b=json.loads((root/'manifest.json').read_text())
         if any(b.get(k)!=m[k] for k in ('year_from','year_to','source_hash')):raise ValueError('Bootstrapbron/jaargrens wijkt af')
+        if sha(root/'manifest.json')!=m['bootstrap']['manifest_sha256']:raise ValueError('Bootstrapmanifest wijkt af')
         if b['html_sha256']!=m['bootstrap']['html_sha256'] or sha(root/'bootstrap.html')!=b['html_sha256']:raise ValueError('Bootstrapinhoud wijkt af')
     return m
 
@@ -71,8 +80,8 @@ def activate(root,package,hooks):
         atomic_json(root/'journal.json',journal)
         # Quiesce all consumers BEFORE the coordinated database snapshot/change.
         snapshot_complete=False
-        hooks.stop()
         try:
+            hooks.stop()
             hooks.snapshot(backup)
             snapshot_complete=True
             journal['phase']='apply';atomic_json(root/'journal.json',journal)
@@ -107,8 +116,8 @@ def rollback(root,hooks):
         backup=Path(saved['backup']).resolve()
         if not backup.is_relative_to(root/'backups'):raise ValueError('Onveilig herstelpad')
         now=current(root);rescue=root/'backups'/f'{time.time_ns()}-before-rollback'
-        hooks.stop()
         try:
+            hooks.stop()
             hooks.snapshot(rescue)
         except Exception as error:
             try:
@@ -147,7 +156,12 @@ def build_package(recipe,target):
         source=Path(source);dest=safe_path(target,relative);dest.parent.mkdir(parents=True,exist_ok=True)
         if source.is_dir():
             if any(p.is_symlink() for p in source.rglob('*')):raise ValueError('Bronmap bevat een symlink: '+str(source))
-            shutil.copytree(source,dest,ignore=shutil.ignore_patterns('__pycache__','*.pyc','.DS_Store','app_cache'))
+            def ignored(path,names):
+                result=set(shutil.ignore_patterns('__pycache__','*.pyc','.DS_Store','app_cache')(path,names))
+                if relative=='website/app' and Path(path)==source:result.add('data')
+                if relative=='website/app' and Path(path)==source/'static':result.add('uploads')
+                return result
+            shutil.copytree(source,dest,ignore=ignored)
         else:shutil.copy2(source,dest)
     for name in ('bmp_meijendel_index.html','bmp_meijendel_data_loader.js'):
         copy(repo/name,'www/'+name)

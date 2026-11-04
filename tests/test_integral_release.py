@@ -94,6 +94,10 @@ class IntegralReleaseTests(unittest.TestCase):
     def health(s,p):raise RuntimeError('restart failed')
    with self.assertRaisesRegex(RuntimeError,'Herstart na backupfout mislukt'):m.rollback(root,Hooks())
    journal=json.loads((root/'journal.json').read_text());self.assertEqual(journal['phase'],'recovery_failed');self.assertEqual(journal['error'],'snapshot failed');self.assertEqual(journal['recovery_error'],'restart failed');self.assertEqual(calls[-1],'stop')
+ def test_runtime_sql_path_cannot_escape_verified_package(self):
+  with tempfile.TemporaryDirectory() as d:
+   p=self.candidate(Path(d),'A');data=json.loads((p/'release.json').read_text());data['mysql']={'source':'/etc/passwd'};(p/'release.json').write_text(json.dumps(data))
+   with self.assertRaises(ValueError):m.verify(p)
  def test_checksum_rejection_does_not_stop_services(self):
   with tempfile.TemporaryDirectory() as d:
    root=Path(d);p=self.candidate(root,'A');(p/'www/index.html').write_text('wrong')
