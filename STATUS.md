@@ -1,5 +1,11 @@
 # Status Meijendel
 
+## Zelfstandige periodebootstrap tot en met 2025 — uitvoering 4 november 2026
+
+De uitbreiding loopt lokaal op `codex/trim-brug-bootstrap`. Voorafcriteria: commit `32123615`, `trim/bootstrap/periods_2025_2000_20261104/CRITERIA.md`. Selectie: 141 uitbreidbare perioden van 89 soorten; overige 171 perioden behouden hun 500-beoordeling. Alle 156 soorten blijven in het eindverslag. Twee oude trekkingen zijn voor alle 141 perioden gereproduceerd. Per extra trekking worden 60 beschikbare periode-uitkomsten hergebruikt en 81 ontbrekende zelfstandige periodefits berekend. Eén worker, checkpoints per trekking en batches van vijf. Geen brugfit, 2026, database-/export-/cachewijziging of VPS-publicatie.
+
+Uitvoer buiten Git: `Meijendel/outputs/trim-2025-periods-2000-20261104`; voortgang: `Meijendel/outputs/trim-periods-2000-20261104.log`. Hervatten met `R/run_trim_period_2000.R` volgens het uitvoeringsplan. Na voltooiing volgen `R/assess_trim_period_2000.R`, de onafhankelijke resultaatcontrole en `scripts/build_trim_period_2000_report.py`. De resultaten zijn nog niet afgerond of vrijgegeven. De bestaande lokale webpreview blijft herkenbaar de eerdere gegevensversie.
+
 ## Lokale bootstrapaansluiting 4 november 2026
 
 De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een afzonderlijke proefdatabase beschikbaar, de gewone PyMySQL-connector werkt, de drie meeuwenfoto’s zijn teruggezet en de volledige dashboardroute is bekeken. De Shiny/dashboard-pariteit op de bewaarde bron 1958–2025 is groen. Alle 156 soorten blijven ook zonder trend kiesbaar. De actuele acht websiteobjecten en foto’s zijn uitsluitend op de VPS gelezen. Officiële 2026-validatie, verse bronproducten, formele intervalvrijgave en publicatie blijven afzonderlijke stappen. Zie [de volledige aansluitnotitie](docs/TRIM_RELEASE_2026_AANSLUITING.md).
