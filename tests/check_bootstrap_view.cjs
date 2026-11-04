@@ -53,3 +53,7 @@ assert.ok(!html.includes('Hoe zeker is dit beeld?'));
 assert.ok(!html.includes('De proefmarges zijn geen definitieve 95%-betrouwbaarheidsmarges.'));
 assert.ok(html.includes("['n_planned','Beoordeelde trekkingen'],['n_valid','Geldige trekkingen']"));
 console.log('OK: soortnamen, meervoud, jaarlijkse samenvatting en aantallen per berekening.');
+assert.deepEqual(Array.from(v.speciesSelection('999999',[1,2],1)),[],'Onbekende soort mag niet op een andere soort terugvallen');
+assert.deepEqual(Array.from(v.speciesSelection('1,2,1',[1,2],null)),[1,2]);
+assert.deepEqual(Array.from(v.speciesSelection(null,[1,2],1)),[1]);
+assert.deepEqual(Array.from(v.speciesSelection(null,[1,2],null)),[]);

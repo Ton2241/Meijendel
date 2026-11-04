@@ -83,4 +83,15 @@ class ConsumerContract(unittest.TestCase):
             self.assertEqual(set(roles),{'dashboard','shiny','website'})
             self.assertTrue(all(len(h)==64 for files in roles.values() for h in files.values()))
 
+class YearBoundaryContract(unittest.TestCase):
+    def test_windows_advance_with_the_validated_end_year(self):
+        self.assertEqual(p.presentation_windows(1958,2025)['last'],'2021–2025')
+        self.assertEqual(p.presentation_windows(1958,2026)['last'],'2022–2026')
+        with self.assertRaises(ValueError):p.presentation_windows(2023,2026)
+
+    def test_full_inventory_demands_the_requested_end_year(self):
+        b=p.build_bundle(ROOT/'trim/bootstrap/species_2025_2000_20261103')
+        b['year_to']=2026
+        with self.assertRaises(ValueError):p.validate_bundle(b)
+
 if __name__ == '__main__': unittest.main()

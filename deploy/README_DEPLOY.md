@@ -80,7 +80,7 @@ Voor de volledige standaardroutine: database dumpen, afgeleide bestanden opnieuw
 
 ```sh
 cd /Users/ton/Documents/GitHub/Meijendel
-./deploy/update_en_deploy_meijendel.sh
+MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/update_en_deploy_meijendel.sh
 ```
 
 Dit script genereert en controleert de lokale output, maar deployt niet meer in dezelfde run. Commit en push de gegenereerde bestanden, merge naar `main` en voer daarna vanaf een schone, actuele `main` eerst de deploy-preflight en vervolgens de bevestigde deploy uit.
@@ -89,8 +89,8 @@ Voor alleen deployen van al bijgewerkte lokale bestanden:
 
 ```sh
 cd /Users/ton/Documents/GitHub/Meijendel
-./deploy/deploy_meijendel_vps.sh
-./deploy/deploy_meijendel_vps.sh --apply --yes
+MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/deploy_meijendel_vps.sh
+MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/deploy_meijendel_vps.sh --apply --yes
 ```
 
 Dit ecologische releasepad verwerkt uitsluitend de database `Meijendel`, de
@@ -333,7 +333,7 @@ Daarna opnieuw:
 
 ```sh
 cd /Users/ton/Documents/GitHub/Meijendel
-./deploy/deploy_meijendel_vps.sh
+MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/deploy_meijendel_vps.sh
 ```
 
 ## Controle na afloop
@@ -525,6 +525,12 @@ MYSQL_DATABASE=meijendel
 Deze waarden kunnen tijdelijk worden overschreven:
 
 ```sh
-VPS=ton@andere-host SSH_KEY=~/.ssh/andere_key ./deploy/deploy_meijendel_vps.sh
-MYSQL_PORT=3307 ./deploy/update_en_deploy_meijendel.sh
+VPS=ton@andere-host SSH_KEY=~/.ssh/andere_key MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/deploy_meijendel_vps.sh
+MYSQL_PORT=3307 MEIJENDEL_ANALYSIS_END_YEAR=2026 ./deploy/update_en_deploy_meijendel.sh
 ```
+
+## Integrale website/dashboard/Shiny-kandidaat
+
+Zie `../docs/TRIM_INTEGRALE_RELEASE_HERSTELPROEF_20261104.md` voor het lokale pakketcontract, de native praktijkproef en de productiegrenzen. `deploy/integral_release.py build|verify` heeft geen netwerk- of VPS-acties. `scripts/rehearse_integral_release.py` werkt alleen met geïsoleerde lokale proefdatabases. De native adapter is geen productiehostadapter. De bestaande gesloten gateway blijft verplicht; de concrete gezamenlijke Linux-binding en productieherstelproef moeten vóór een daadwerkelijke release zijn aangesloten.
+
+De gewone generatie- en deployroute vereist nu expliciet `MEIJENDEL_ANALYSIS_END_YEAR` of `MEIJENDEL_RELEASE_MANIFEST`; een ontbrekend eindjaar blokkeert vóór export/SSH. Kies 2026 pas nadat die officiële bron is gevalideerd. Voor een lokale 2025-proef is de waarde 2025. De voorbeelden hierboven zijn instructies voor een toekomstige vrijgegeven 2026-release, geen opdracht die nu is uitgevoerd.

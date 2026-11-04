@@ -99,8 +99,13 @@ def add_annual_rates(bundle):
         for r in bundle['long'] for start in (1958,1990)]
     return bundle
 
-def build_bundle(source, period_source=None):
-    result = dict(schema='trim-bootstrap-presentation-v1', publication_status='diagnostisch', year_from=1958, year_to=2025, files={})
+def presentation_windows(year_from,year_to,width=5):
+    if year_to-year_from+1 < 2*width:raise ValueError('Te korte begin/eindperiode')
+    return dict(first=f'{year_from}–{year_from+width-1}',last=f'{year_to-width+1}–{year_to}',
+                bridge='1979–1983 / 1986–1990')
+
+def build_bundle(source, period_source=None, year_from=1958, year_to=2025):
+    result = dict(schema='trim-bootstrap-presentation-v1', publication_status='diagnostisch', year_from=year_from, year_to=year_to, files={})
     for key, name in FILES.items():
         path = (period_source if period_source is not None and key != 'long' else source)/name
         result['files'][name] = hashlib.sha256(path.read_bytes()).hexdigest()
@@ -109,7 +114,7 @@ def build_bundle(source, period_source=None):
     if period_source is not None:
         path=period_source/'period_manifest.json'
         meta=json.loads(path.read_text())
-        if (meta.get('species') != 156 or meta.get('period') != '1958-2025' or
+        if (meta.get('species') != len(result['long']) or meta.get('period') != f'{year_from}-{year_to}' or
             meta.get('formal_intervals') is not False or meta.get('first500_preserved_exact') is not True):
             raise ValueError('Periodebeoordeling heeft geen passende diagnostische herkomst')
         result['period_assessment']=dict(run_id=meta['run_id'],source_hash=meta['identity']['source_hash'],
@@ -146,8 +151,9 @@ def main():
     parser.add_argument('--parent-manifest',type=Path,required=True)
     parser.add_argument('--selection',type=Path,required=True)
     args = parser.parse_args()
-    bundle = build_bundle(args.source, args.period_source)
     parent = json.loads(args.parent_manifest.read_text())
+    selection = json.loads(args.selection.read_text())
+    bundle = build_bundle(args.source,args.period_source,int(selection['year_from']),int(parent['analysis_end_year']))
     pm = json.loads((args.source/'period_manifest.json').read_text())
     lm = json.loads((args.source/'long_manifest.json').read_text())
     if hashlib.sha256(args.parent_manifest.read_bytes()).hexdigest() != lm['parent_manifest_sha256']:
@@ -164,12 +170,12 @@ def main():
     if (set(selection['species_ids']) != {r['soort_id'] for r in bundle['long']} or
         len(selection['plot_ids']) != parent['cluster_count'] or selection['year_from'] != bundle['year_from'] or selection['year_to'] != bundle['year_to']):
         raise ValueError('Selectie past niet bij beoordeling')
-    bundle.update(run_id='species-2025-2000-assessment-20261103', source_hash=parent['source_hash'],
+    bundle.update(run_id=f"presentation-{bundle['year_from']}-{bundle['year_to']}-{args.source.name}", source_hash=parent['source_hash'],
                   cache_sha256=parent['cache_sha256'], selection=selection,
-                  long_windows=dict(first='1958–1962',last='2021–2025',bridge='1979–1983 / 1986–1990'))
+                  long_windows=presentation_windows(bundle['year_from'],bundle['year_to']))
     if 'period_assessment' in bundle:
         bundle['component_runs']={'long':bundle['run_id'],'periods':bundle['period_assessment']['run_id']}
-        bundle['run_id']='species-2025-independent-periods-2000-20261104'
+        bundle['run_id']=f"presentation-{bundle['year_from']}-{bundle['year_to']}-{bundle['period_assessment']['run_id']}"
     template = (Path(__file__).resolve().parents[1]/'presentation/trim_bootstrap.html').read_text()
     html = render(bundle, template)
     consumers=release_consumers(Path(__file__).resolve().parents[1],args.website_root) if args.website_root else None

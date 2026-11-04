@@ -189,10 +189,18 @@ community_analysis_tab <- function(title, prefix, subtitle, button_label, note, 
   )
 }
 
+release_meta_tags <- NULL
+if (identical(Sys.getenv("MEIJENDEL_BOOTSTRAP_RELEASE"),"1") && file.exists(Sys.getenv("MEIJENDEL_RELEASE_MANIFEST"))) {
+  release_info <- jsonlite::read_json(Sys.getenv("MEIJENDEL_RELEASE_MANIFEST"),simplifyVector=TRUE)
+  release_meta_tags <- tagList(tags$meta(name="meijendel-release-id",content=release_info$release_id),
+    tags$meta(name="meijendel-data-end-year",content=release_info$year_to))
+}
+
 ui <- navbarPage(
   title = "Analyses in R: A Language and Environment for Statistical Computing",
   theme = bslib::bs_theme(version = 5, bootswatch = "flatly"),
   header = tags$head(
+    release_meta_tags,
     tags$style(HTML("
       .navbar {
         align-items: flex-start !important;

@@ -32,6 +32,7 @@ if (is.na(cache_contract_helper)) {
   stop("R/meijendel_cache_contract.R ontbreekt; de Shiny-cache kan niet veilig worden gevalideerd.")
 }
 source(cache_contract_helper)
+source(file.path(dirname(cache_contract_helper),"trim_release_runtime.R"))
 MEIJENDEL_PARSER_CACHE_VERSION <- 15L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
@@ -1113,6 +1114,9 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_p
                                          cache_manifest_path = NULL, require_prebuilt = NULL,
                                          include_out_of_scope_kavels = NULL) {
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
+  if (identical(Sys.getenv("MEIJENDEL_ALLOW_HISTORICAL_REHEARSAL"),"1")) {
+    return(load_historical_release_cache(path,include_out_of_scope_kavels))
+  }
   if (is.null(require_prebuilt)) {
     require_prebuilt <- identical(Sys.getenv("MEIJENDEL_REQUIRE_PREBUILT_CACHE", unset = "0"), "1")
   }

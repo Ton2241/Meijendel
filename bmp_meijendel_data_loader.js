@@ -66,5 +66,24 @@
     return {manifest, tables: inflateTables(compact.tables)};
   }
 
-  return {loadDashboardData, parseManifest, inflateTables};
+  async function loadReleaseConfig(options={}) {
+    const fetchImpl=options.fetchImpl || fetch.bind(globalThis);
+    const response=await fetchImpl('release-config.json',{cache:'no-store'});
+    if(response.status===404)return null;
+    if(!response.ok)throw new Error('Releaseconfiguratie niet beschikbaar');
+    const c=await response.json();
+    const host=options.hostname || (typeof location!=='undefined'?location.hostname:'');
+    if(c.schema!=='meijendel-integral-release-v1'||c.presentation_approved!==true ||
+       (c.mode==='local_rehearsal'?!['127.0.0.1','localhost','::1'].includes(host):c.mode!=='production'||c.official_data_validated!==true))throw new Error('Release niet vrijgegeven voor deze weergave');
+    if(c.source_hash!==options.sourceManifest.sql_sha256)throw new Error('Bootstrap en dashboard hebben een verschillende bron');
+    const metaResponse=await checkedResponse(fetchImpl,'outputs/bootstrap-presentatie-2026/manifest.json');
+    const raw=await metaResponse.text(),b=JSON.parse(raw);
+    const hash=options.sha256 || (async text=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text)))).map(x=>x.toString(16).padStart(2,'0')).join(''));
+    if(await hash(raw)!==c.bootstrap.manifest_sha256 || b.source_hash!==c.source_hash ||
+       b.year_from!==c.year_from || b.year_to!==c.year_to || b.html_sha256!==c.bootstrap.html_sha256 ||
+       b.schema!=='trim-bootstrap-presentation-v1'||b.publication_status!=='diagnostisch')throw new Error('Bootstrapmanifest past niet bij de actieve release');
+    return c;
+  }
+
+  return {loadDashboardData, loadReleaseConfig, parseManifest, inflateTables};
 });

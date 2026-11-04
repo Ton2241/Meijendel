@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Never infer the official data year from the clock or silently retain 2025.
+ANALYSIS_END_YEAR="${MEIJENDEL_ANALYSIS_END_YEAR:-}"
+if [[ -z "$ANALYSIS_END_YEAR" && -n "${MEIJENDEL_RELEASE_MANIFEST:-}" ]]; then
+  ANALYSIS_END_YEAR="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["year_to"])' "$MEIJENDEL_RELEASE_MANIFEST")"
+fi
+[[ "$ANALYSIS_END_YEAR" =~ ^[12][0-9]{3}$ ]] || {
+  echo 'BLOKKADE: geef MEIJENDEL_ANALYSIS_END_YEAR of het integrale releasemanifest op.' >&2; exit 2;
+}
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -110,7 +119,7 @@ Rscript "$REPO_DIR/R/check_shiny_dashboard_parity.R" \
   "$SQL_FILE" \
   "$REPO_DIR/trim_msi_evg/msi_per_groep_per_jaar.csv" \
   1958 \
-  2025
+  "$ANALYSIS_END_YEAR"
 
 log "Synchroniseer gedeelde Shiny-selectie-CSV"
 need_file "$REPO_DIR/R/evg_selctie_T0soort_T0msi.csv"

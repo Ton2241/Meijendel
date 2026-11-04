@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Bootstrap per soort — lokale beoordeling</title>
+<title>Onzekerheidsbeoordeling per soort</title>
 <style>
 body{font:15px/1.55 system-ui,sans-serif;color:#173629;background:#fff;margin:0;padding:18px;max-width:1100px}h1{font-size:1.45rem;margin:0 0 8px}h2{font-size:1.15rem;margin:24px 0 8px}h3{font-size:1rem}.notice{background:#fff7df;border-left:4px solid #b57809;padding:12px 16px;margin:12px 0}.meta{font-size:13px;color:#50635b;overflow-wrap:anywhere}select,button{font:inherit;padding:7px 10px;border:1px solid #aabdb2;border-radius:5px;background:#fff;color:#173629;margin:4px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid #dce6df;padding:7px;text-align:left;vertical-align:top}th{background:#edf4ef;position:sticky;top:0}td{overflow-wrap:anywhere}.scroll{overflow:auto;max-height:380px;border:1px solid #dce6df;margin:10px 0}svg{width:100%;height:auto;background:#fafcfb;border:1px solid #dce6df}details{margin:10px 0}summary{cursor:pointer}a{color:#176b43}.legend{font-size:13px;color:#50635b}button{cursor:pointer}
 </style>
@@ -10,6 +10,10 @@ body{font:15px/1.55 system-ui,sans-serif;color:#173629;background:#fff;margin:0;
 'use strict';
 const BOOTSTRAP_DATA=/*BOOTSTRAP_DATA*/null;
 const BootstrapView={
+  speciesSelection(raw,available,fallback){
+    if(raw==null||raw==='')return fallback==null?[]:[fallback];
+    return [...new Set(raw.split(',').map(Number).filter(id=>available.includes(id)))];
+  },
   finite:x=>typeof x==='number'&&Number.isFinite(x),
   summary(r){
     const notes=[];
@@ -50,9 +54,9 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
   valid.forEach(r=>{const c=s('circle',{cx:X(r.jaar),cy:Y(r.baseline_index),r:3,fill:'#157f3b'});const title=document.createElementNS(ns,'title');title.textContent=`${r.jaar} · ${num(r.baseline_index)} · ${r.status}`;c.appendChild(title);});
   const legend=node('p','Groen · eigen periode-index. Oker · diagnostische puntgewijze band en jaarmarges. Stippellijn · index 100. Elke periode heeft een eigen referentiejaar en verticale schaal.',parent);legend.className='legend';
  }
- const n=B.long.length;const intro=$('intro');node('div',`LOKALE PROEF · ${n} soorten · ${B.year_from}–${B.year_to} · geen vrijgegeven 95%-intervallen`,intro).className='notice';
+ const n=B.long.length;const intro=$('intro');node('div',`DIAGNOSTISCHE BEOORDELING · ${n} soorten · ${B.year_from}–${B.year_to} · geen vrijgegeven 95%-intervallen`,intro).className='notice';
  note('Netto verandering vergelijkt venstergemiddelden. De jaarlijkse formele TRIM-trends staan in het bestaande trendoverzicht. Jaarindices zijn modeluitkomsten, met mogelijke aanvulling van ontbrekende tellingen. Een nulindex blijft nul en bewijst geen getelde afwezigheid in alle kavels. Een ontbrekende index blijft een gat.',intro);
- note('Lange maat bij 32 soorten met 2.000 trekkingen, bij 124 soorten met 500. De aantallen voor afzonderlijke perioden en jaarindices staan per uitkomst vermeld. Geen groepsbootstrap. De vaste referentie 100, constante verdelingen en uitval krijgen geen band. Numerieke stabiliteit bewijst geen volledige dekking.',intro);
+ note(`${B.long.filter(r=>r.n_planned===2000).length} soorten hebben voor de lange maat 2.000 beoordeelde trekkingen; ${B.long.filter(r=>r.n_planned===500).length} soorten hebben er 500. De aantallen voor afzonderlijke perioden en jaarindices staan per uitkomst vermeld. Geen groepsbootstrap. De vaste referentie 100, constante verdelingen en uitval krijgen geen band. Numerieke stabiliteit bewijst geen volledige dekking.`,intro);
  B.long.slice().sort((a,b)=>a.soort_naam.localeCompare(b.soort_naam,'nl')).forEach(r=>{const o=node('option',r.soort_naam,$('species'));o.value=r.soort_id;});
  if(compact){
   document.querySelector('h1').hidden=true;document.querySelector('label').hidden=true;
@@ -95,10 +99,13 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
   const d=node('details',null,parent);node('summary','Herkomst en bestanden',d);node('pre',JSON.stringify({run_id:B.run_id,source_hash:B.source_hash,cache_sha256:B.cache_sha256,selection:B.selection,files:B.files,annual_rate_files:B.annual_rate_files,component_runs:B.component_runs,period_assessment:B.period_assessment},null,2),d).className='meta';
  }
  function fromHash(){
-  const args=new URLSearchParams(location.hash.slice(1)),ids=(args.get('species')||'').split(',').map(Number).filter(id=>B.long.some(r=>r.soort_id===id));
+  const args=new URLSearchParams(location.hash.slice(1));
+  const ids=BootstrapView.speciesSelection(args.get('species'),B.long.map(r=>r.soort_id),compact?null:Number($('species').value));
   if(ids.length)$('species').value=String(ids[0]);
-  const selected=compact&&ids.length?[...new Set(ids)]:[Number($('species').value)];
-  const parent=$('result');parent.replaceChildren();selected.forEach(id=>renderSpecies(id,parent,selected.length>1));
+  const selected=compact?ids:ids.slice(0,1);
+  const parent=$('result');parent.replaceChildren();
+  if(!selected.length){note('Voor deze soort is binnen deze analyse geen uitkomst beschikbaar.',parent);return;}
+  selected.forEach(id=>renderSpecies(id,parent,selected.length>1));
  }
  $('species').onchange=()=>{location.hash='species='+$('species').value;};window.addEventListener('hashchange',fromHash);fromHash();
  if(compact&&window.frameElement){const resize=()=>{window.frameElement.style.height=Math.ceil(document.body.getBoundingClientRect().height+24)+'px';};new ResizeObserver(resize).observe(document.body);resize();}

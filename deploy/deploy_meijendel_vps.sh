@@ -60,6 +60,8 @@ Gebruik:
 Zonder --apply voert het script alleen preflight, manifest, dry-run en huidige
 productiecontroles uit. Productie wordt uitsluitend vanaf schone, actuele main gewijzigd.
 
+Geef MEIJENDEL_ANALYSIS_END_YEAR of MEIJENDEL_RELEASE_MANIFEST op vóór een preflight of deploy.
+
 Opties:
   --apply                         voer de deploy uit
   --yes                           expliciete niet-interactieve bevestiging
@@ -81,7 +83,7 @@ check_dashboard_parity() {
   MEIJENDEL_SQL_MANIFEST_PATH="$SQL_MANIFEST_LOCAL" \
   MEIJENDEL_CACHE_MANIFEST_PATH="$CACHE_MANIFEST_LOCAL" \
     Rscript "$LOCAL_REPO/R/check_shiny_dashboard_parity.R" \
-      "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 2025
+      "$LOCAL_REPO" "$SQL_LOCAL" "$LOCAL_REPO/trim_msi_evg/msi_per_groep_per_jaar.csv" 1958 "$ANALYSIS_END_YEAR"
 }
 
 release_lock() {
@@ -115,6 +117,16 @@ while (($#)); do
   esac
   shift
 done
+
+# Never infer the official data year from the clock or silently retain 2025.
+ANALYSIS_END_YEAR="${MEIJENDEL_ANALYSIS_END_YEAR:-}"
+if [[ -z "$ANALYSIS_END_YEAR" && -n "${MEIJENDEL_RELEASE_MANIFEST:-}" ]]; then
+  ANALYSIS_END_YEAR="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["year_to"])' "$MEIJENDEL_RELEASE_MANIFEST")"
+fi
+[[ "$ANALYSIS_END_YEAR" =~ ^[12][0-9]{3}$ ]] || {
+  echo 'BLOKKADE: geef MEIJENDEL_ANALYSIS_END_YEAR of het integrale releasemanifest op.' >&2; exit 2;
+}
+
 
 [[ "$ALLOW_FAILING_CURRENT_SMOKE" -eq 0 || ("$APPLY" -eq 1 && "$YES" -eq 1) ]] || \
   die "--allow-failing-current-smoke vereist --apply --yes."

@@ -61,6 +61,9 @@ if (length(args) >= 7L) {
   load_time <- system.time(loaded <- load_meijendel_tables_cached(sql_path))
 }
 tbls <- loaded$data
+if (!any(tbls$territoria$jaar == year_to,na.rm=TRUE)) {
+  fail("De gekozen bron bevat geen territoriumregels voor eindjaar ",year_to,"; geen stilzwijgende vergelijking over een kortere periode.")
+}
 selected_kavels <- sort(unique(tbls$plots$kavel_nummer))
 selected_kavels <- selected_kavels[!is.na(selected_kavels) & nzchar(selected_kavels)]
 if (!length(selected_kavels)) {
