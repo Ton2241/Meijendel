@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+.libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
 args<-commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L);repo<-normalizePath(args[1]);prior<-normalizePath(args[2]);root<-normalizePath(args[3]);out<-file.path(root,'assessment')
 old<-readRDS(file.path(prior,'assessment/period_annual_draws.rds'));z<-readRDS(file.path(out,'period_annual_draws.rds'));p<-read.csv(file.path(out,'periods.csv'));a<-read.csv(file.path(out,'annual_indices.csv'));keys<-read.csv(file.path(root,'selected_periods.csv'))
 stopifnot(nrow(p)==312L,nrow(a)==10608L,length(unique(p$soort_id))==156L,identical(old$period_keys,z$period_keys),identical(old$annual_keys,z$annual_keys))
