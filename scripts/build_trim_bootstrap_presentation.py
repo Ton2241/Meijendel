@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """Render an inspectable diagnostic candidate from assessed, frozen CSV results.
 
-No fits, no inference, no promotion to formal uncertainty. Outputs stay in outputs/.
+No TRIM refits or new bootstrap; descriptive summaries only.
+No promotion to formal uncertainty. Outputs stay in outputs/.
 """
 import argparse
 import csv
@@ -57,6 +58,47 @@ def validate_bundle(bundle):
                 if diagnostic_band(row) is None: raise ValueError('Band zonder volledige niet-constante verdeling')
     return bundle
 
+def annual_rate(rows, start_year, end_year):
+    """Descriptive log-linear slope; never shift the start or discard zeros/gaps."""
+    selected = [r for r in rows if start_year <= r['jaar'] <= end_year]
+    result = dict(start_year=start_year, end_year=end_year,
+                  estimate_pct_per_year=None, reason='ontbrekende_jaarindex',
+                  method='loglineaire_samenvatting_jaarindices')
+    if (len(selected) != end_year-start_year+1 or len(selected) < 3 or
+        {r['jaar'] for r in selected} != set(range(start_year, end_year+1)) or
+        any(r['value'] is None for r in selected)):
+        return result
+    if any(r['value'] == 0 for r in selected):
+        return result | dict(reason='nulindex')
+    if any(r['value'] < 0 for r in selected):
+        return result | dict(reason='ongeldige_jaarindex')
+    mean_year = sum(r['jaar'] for r in selected)/len(selected)
+    slope = sum((r['jaar']-mean_year)*math.log(r['value']) for r in selected)/sum((r['jaar']-mean_year)**2 for r in selected)
+    return result | dict(estimate_pct_per_year=math.expm1(slope)*100, reason='berekenbaar')
+
+def add_annual_rates(bundle):
+    # Match the dashboard's primary-series plus post-only merge, not the
+    # independently normalised pre/post series from the bootstrap archive.
+    root = Path(__file__).resolve().parents[1]
+    merged = {}
+    bundle['annual_rate_files'] = {}
+    for filename, post_only in [('soortindices_bruikbare_tijdreeks.csv', False),
+                                ('soortindices_per_jaar.csv', True)]:
+        path = root/'trim/soorten'/filename
+        bundle['annual_rate_files'][filename] = hashlib.sha256(path.read_bytes()).hexdigest()
+        with path.open(newline='', encoding='utf-8') as f:
+            for r in csv.DictReader(f):
+                if post_only and r['brugmethode'] != 'alleen_post': continue
+                key = (int(r['soort_id']), int(r['jaar']))
+                # Same null-coalescing preference as getTrimIndexValue().
+                value = next((number(r[k]) for k in ('index_gebrugged','index_100','trim_index')
+                              if number(r.get(k)) is not None), None)
+                merged[key] = dict(jaar=key[1], value=value)
+    bundle['annual_rates'] = [dict(soort_id=r['soort_id'], soort_naam=r['soort_naam'],
+        **annual_rate([v for (sid,y),v in merged.items() if sid == r['soort_id']], start, bundle['year_to']))
+        for r in bundle['long'] for start in (1958,1990)]
+    return bundle
+
 def build_bundle(source):
     result = dict(schema='trim-bootstrap-presentation-v1', publication_status='diagnostisch', year_from=1958, year_to=2025, files={})
     for key, name in FILES.items():
@@ -64,7 +106,7 @@ def build_bundle(source):
         result['files'][name] = hashlib.sha256(path.read_bytes()).hexdigest()
         with path.open(newline='', encoding='utf-8') as f:
             result[key] = [{k: convert(k,v) for k,v in row.items()} for row in csv.DictReader(f)]
-    return validate_bundle(result)
+    return add_annual_rates(validate_bundle(result))
 
 def render(bundle, template):
     # Escape raw-text closing tags as well as Unicode line separators.
@@ -101,7 +143,7 @@ def main():
     # The HTML is the single self-contained payload. Publish its manifest last.
     target = args.output/'bootstrap.html'
     tmp = target.with_suffix('.tmp'); tmp.write_text(html); tmp.replace(target)
-    manifest = {k: bundle[k] for k in ('schema','publication_status','year_from','year_to','run_id','source_hash','cache_sha256','selection','files')}
+    manifest = {k: bundle[k] for k in ('schema','publication_status','year_from','year_to','run_id','source_hash','cache_sha256','selection','files','annual_rate_files')}
     manifest['html_sha256'] = hashlib.sha256(target.read_bytes()).hexdigest()
     tmp = args.output/'manifest.tmp'; tmp.write_text(json.dumps(manifest,indent=2)+'\n'); tmp.replace(args.output/'manifest.json')
     print(f'OK: {len(bundle["long"])} soorten, {len(bundle["periods"])} perioden, {len(bundle["annual"])} jaarposities. {target}')

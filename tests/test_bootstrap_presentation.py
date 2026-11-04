@@ -12,6 +12,9 @@ class PresentationContract(unittest.TestCase):
         bundle = p.build_bundle(ROOT/'trim/bootstrap/species_2025_2000_20261103')
         self.assertEqual([len(bundle[k]) for k in ('long','periods','annual')], [156,312,10608])
         self.assertEqual(bundle['publication_status'], 'diagnostisch')
+        self.assertEqual(sum(r['n_planned']==2000 for r in bundle['long']),32)
+        self.assertEqual(sum(r['n_planned']==500 for r in bundle['long']),124)
+        self.assertTrue(all(r['n_planned']==500 for key in ('periods','annual') for r in bundle[key]))
         self.assertTrue(all(r['ci95_low'] is None and r['ci95_high'] is None for key in ('long','periods','annual') for r in bundle[key]))
 
     def test_bands_fail_closed(self):
@@ -29,5 +32,26 @@ class PresentationContract(unittest.TestCase):
         bundle = p.build_bundle(ROOT/'trim/bootstrap/species_2025_2000_20261103')
         bundle['annual'].pop()
         with self.assertRaises(ValueError): p.validate_bundle(bundle)
+
+
+class AnnualRateContract(unittest.TestCase):
+    def test_known_growth_and_decline(self):
+        rows=[{'jaar':year,'value':100*1.03**(year-1990)} for year in range(1990,2026)]
+        self.assertAlmostEqual(p.annual_rate(rows,1990,2025)['estimate_pct_per_year'],3,places=10)
+        rows=[{'jaar':year,'value':100*.98**(year-1990)} for year in range(1990,2026)]
+        self.assertAlmostEqual(p.annual_rate(rows,1990,2025)['estimate_pct_per_year'],-2,places=10)
+
+    def test_no_shift_no_dropped_zero_or_gap(self):
+        rows=[{'jaar':year,'value':100} for year in range(1990,2026)]
+        self.assertIsNone(p.annual_rate(rows,1958,2025)['estimate_pct_per_year'])
+        self.assertIsNone(p.annual_rate(rows[:4]+rows[5:],1990,2025)['estimate_pct_per_year'])
+        rows[4]['value']=0
+        self.assertEqual(p.annual_rate(rows,1990,2025)['reason'],'nulindex')
+        self.assertIsNone(p.annual_rate(rows,1990,2025)['estimate_pct_per_year'])
+
+    def test_complete_inventory(self):
+        bundle=p.build_bundle(ROOT/'trim/bootstrap/species_2025_2000_20261103')
+        self.assertEqual(len(bundle['annual_rates']),312)
+        self.assertEqual({r['start_year'] for r in bundle['annual_rates']},{1958,1990})
 
 if __name__ == '__main__': unittest.main()

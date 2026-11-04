@@ -38,8 +38,18 @@ assert.match(v.summary({...summaryBase,both_stable:true,scarce_endpoint_support:
 assert.match(v.summary({...summaryBase,window_direction_sensitive:true}).join(' '),/andere begin- en eindjaren/);
 assert.ok(!dashboard.includes('Zonder bootstrap heeft deze geen formele p-waarde'));
 assert.ok(dashboard.includes('bootstrap.html?view=dashboard#species='));
-assert.ok(html.includes('Perioden, berekeningen en downloads'));
+assert.ok(html.includes('Meer informatie over de betrouwbaarheidsmarge rondom de TRIM-lijn'));
 console.log('OK: gewone taal voor onrust, uitval, schaarste en ontbrekende lange vergelijking.');
 const technicalSource=dashboard.slice(dashboard.indexOf('function renderTrimTrendInfo(){'),dashboard.indexOf('function renderTrendMethodInfo(){'));
 assert.ok(technicalSource.includes('const box=el("details"'),'Indexberekeningen moeten standaard uitklapbaar zijn');
 assert.ok(technicalSource.includes('Berekening achter de indexgrafiek'));
+
+const titleContext={};vm.createContext(titleContext);vm.runInContext(dashboard.slice(dashboard.indexOf('function speciesDevelopmentTitle('),dashboard.indexOf('function renderTrendPanel(')),titleContext);
+assert.equal(titleContext.speciesDevelopmentTitle(['Dodaars']),'Hoe ontwikkelt Dodaars zich?');
+assert.equal(titleContext.speciesDevelopmentTitle(['Dodaars','Fuut','Tapuit']),'Hoe ontwikkelen Dodaars, Fuut en Tapuit zich?');
+dom.S.selected=['Dodaars','Alleen post'];
+assert.equal(dom.renderBootstrapPreview().children[1].attrs.src,'outputs/bootstrap-presentatie-2026/bootstrap.html?view=dashboard#species=1,2');
+assert.ok(!html.includes('Hoe zeker is dit beeld?'));
+assert.ok(!html.includes('De proefmarges zijn geen definitieve 95%-betrouwbaarheidsmarges.'));
+assert.ok(html.includes("['n_planned','Beoordeelde trekkingen'],['n_valid','Geldige trekkingen']"));
+console.log('OK: soortnamen, meervoud, jaarlijkse samenvatting en aantallen per berekening.');

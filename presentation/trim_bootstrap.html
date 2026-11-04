@@ -28,7 +28,7 @@ const BootstrapView={
 };
 if(typeof module!=='undefined')module.exports=BootstrapView;
 if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
- const compact=new URLSearchParams(location.search).get('view')==='dashboard';
+ const compact=['dashboard','simple'].includes(new URLSearchParams(location.search).get('view'))||document.documentElement.dataset.presentation==='simple';
  const B=BOOTSTRAP_DATA,$=id=>document.getElementById(id),num=(x,unit='')=>BootstrapView.finite(x)?x.toLocaleString('nl-NL',{maximumFractionDigits:2})+unit:'—';
  function pct(x){return BootstrapView.finite(x)&&x>-100&&x<-99.995?'> −100%':num(x,'%');}
  function node(tag,text,parent){const x=document.createElement(tag);if(text!=null)x.textContent=text;if(parent)parent.appendChild(x);return x;}
@@ -58,25 +58,29 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
   document.querySelector('h1').hidden=true;document.querySelector('label').hidden=true;
   $('intro').hidden=true;$('species').hidden=true;document.body.style.padding='1px 0';
  }
- function render(){
-  const id=Number($('species').value),r=B.long.find(r=>r.soort_id===id);
-  let parent=$('result');parent.replaceChildren();if(!r)return;
+ function renderSpecies(id,parent,multiple){
+  const r=B.long.find(r=>r.soort_id===id);if(!r)return;
+  const rates=B.annual_rates.filter(x=>x.soort_id===id);
+  if(multiple)node('h2',r.soort_naam,parent);
+  node('h3','Gemiddelde verandering per jaar',parent);
+  for(const rate of rates){
+    const value=rate.estimate_pct_per_year;
+    const text=BootstrapView.finite(value)?(Math.abs(value)<0.005?'0% per jaar':num(Math.abs(value),'%')+' '+(value>0?'toename':'afname')+' per jaar'):'Niet berekenbaar';
+    node('p',`Sinds ${rate.start_year}: ${text}`,parent);
+  }
   if(compact){
-    node('h2','Geschatte verandering tussen begin en einde',parent);
-    const estimate=node('p',BootstrapView.finite(r.baseline_net_pct)?(r.baseline_net_pct>0?'+':'')+pct(r.baseline_net_pct):'Geen schatting voor de hele periode',parent);
-    estimate.style.fontSize='26px';estimate.style.fontWeight='650';estimate.style.margin='6px 0';
-    note(`Vergelijking van het gemiddelde over ${B.long_windows.first} met ${B.long_windows.last}.`,parent);
-    node('h2','Hoe zeker is dit beeld?',parent);
-    BootstrapView.summary(r).forEach(text=>node('p',text,parent));
-    if(!BootstrapView.finite(r.baseline_net_pct))note('Bekijk de beschikbare jaren en eventuele afzonderlijke perioden hieronder.',parent);
     const technical=node('details',null,parent);
-    node('summary','Perioden, berekeningen en downloads',technical);
-    note(`Voor alle ${B.long.length} soorten over ${B.year_from}–${B.year_to} is de onzekerheid onderzocht. De proefmarges zijn geen definitieve 95%-betrouwbaarheidsmarges.`,technical);
+    node('summary','Meer informatie over de betrouwbaarheidsmarge rondom de TRIM-lijn',technical);
     parent=technical;
   }
+  note('De jaarlijkse percentages vatten alle jaarindices in de gekozen periode samen met een rechte lijn door de logaritmen. Het zijn beschrijvende gemiddelden; de bootstrapmarge voor de begin/eindvergelijking hoort niet bij deze percentages.',parent);
+  for(const rate of rates){if(!BootstrapView.finite(rate.estimate_pct_per_year))note(`Sinds ${rate.start_year}: niet berekenbaar doordat ${rate.reason==='nulindex'?'minstens één jaarindex nul is':'de volledige reeks positieve jaarindices ontbreekt'}. We verschuiven het beginjaar niet en laten geen nuljaren weg.`,parent);}
+  BootstrapView.summary(r).forEach(text=>node('p',text,parent));
+  note('De jaarmarges hieronder horen bij de eigen TRIM-lijn van elke afzonderlijke periode. Ze zijn niet automatisch een betrouwbaarheidsmarge rond de gebrugde lijn in de hoofdgrafiek. Waar geen bruikbare marge kan worden berekend, tonen we geen band.',parent);
   node('h2',r.soort_naam,parent);note(`Bronrun ${B.run_id} · ${B.year_from}–${B.year_to} · ${B.selection.plot_ids.length} kavels`,parent);
   node('h3','Lange begin/eindverandering',parent);note(`Gemiddeld ${B.long_windows.first} tegenover ${B.long_windows.last}. Brug ${B.long_windows.bridge}.`,parent);
-  const common=[[r=>`${r.n_valid}/${r.n_planned}`,'Geldige trekkingen'],['status','Bandstatus'],['baseline_status','Schattingstatus'],['reasons','Uitvalredenen'],['both_stable','Beide grenscontroles stabiel']];
+  note(`Lange begin/eindvergelijking: ${num(r.n_planned)} beoordeelde trekkingen, waarvan ${num(r.n_valid)} geldig voor deze uitkomst. De afzonderlijke perioden en jaarindices hieronder gebruiken 500 trekkingen. Geldig betekent dat de berekening voor deze specifieke uitkomst een bruikbare waarde opleverde.`,parent);
+  const common=[['n_planned','Beoordeelde trekkingen'],['n_valid','Geldige trekkingen'],['status','Bandstatus'],['baseline_status','Schattingstatus'],['reasons','Uitvalredenen'],['both_stable','Beide grenscontroles stabiel']];
   table([r],[[r=>pct(r.baseline_net_pct),'Netto verandering'],[r=>BootstrapView.band(r)?`${pct(r.diagnostic_low)} tot ${pct(r.diagnostic_high)}`:'geen band','Diagnostische band'],['gate','Beoordeling'],...common,['n_source_positive_begin_plots','Positieve beginvensterkavels'],['n_source_positive_end_plots','Positieve eindvensterkavels']],parent);
   if(r.scarce_endpoint_support)node('div','Hoogstens één positieve bronkavel in een begin- of eindvenster. Modelaanvulling kan de uitkomst bepalen.',parent).className='notice';
   if(r.window_direction_sensitive)note('De richting wisselt bij een andere lengte van de begin/eindvensters.',parent);
@@ -85,12 +89,18 @@ if(typeof document!=='undefined'&&BOOTSTRAP_DATA){
    table([p],[[r=>pct(r.baseline_net_pct),'Netto periodeverandering'],[r=>BootstrapView.band(r)?`${pct(r.diagnostic_low)} tot ${pct(r.diagnostic_high)}`:'geen band','Diagnostische band'],...common,['baseline_model_reason','Modelreden'],['source_positive_begin_plots','Positieve beginvensterkavels'],['source_positive_end_plots','Positieve eindvensterkavels']],parent);
    const years=annual.filter(r=>r.period===p.period).sort((a,b)=>a.jaar-b.jaar);chart(years,parent);
    const detail=node('details',null,parent);node('summary',`Jaarwaarden en uitval · alle ${years.length} kalenderposities`,detail);
-   table(years,[['jaar','Jaar'],['baseline_index','Index'],['diagnostic_low','Diagnostisch laag'],['diagnostic_high','Diagnostisch hoog'],['status','Status'],[r=>`${r.n_valid}/${r.n_planned}`,'Geldige trekkingen'],['both_stable','Beide controles stabiel'],['n_counted_source_cells','Getelde broncellen'],['n_positive_source_plots','Positieve bronkavels'],['n_model_failure','Modelfouten'],['n_reference_failure','Referentiefouten'],['n_year_index_missing_or_invalid','Jaarindexuitval'],['baseline_model_reason','Modelreden']],detail);
+   table(years,[['jaar','Jaar'],['baseline_index','Index'],['diagnostic_low','Diagnostisch laag'],['diagnostic_high','Diagnostisch hoog'],['status','Status'],['n_planned','Beoordeelde trekkingen'],['n_valid','Geldige trekkingen'],['both_stable','Beide controles stabiel'],['n_counted_source_cells','Getelde broncellen'],['n_positive_source_plots','Positieve bronkavels'],['n_model_failure','Modelfouten'],['n_reference_failure','Referentiefouten'],['n_year_index_missing_or_invalid','Jaarindexuitval'],['baseline_model_reason','Modelreden']],detail);
   }
-  node('h2','Downloads met volledige beoordeling',parent);download([r],'lange-maat-'+id,parent);download(periods,'perioden-'+id,parent);download(annual,'jaarindices-'+id,parent);
-  const d=node('details',null,parent);node('summary','Herkomst en bestanden',d);node('pre',JSON.stringify({run_id:B.run_id,source_hash:B.source_hash,cache_sha256:B.cache_sha256,selection:B.selection,files:B.files},null,2),d).className='meta';
+  node('h2','Downloads met volledige beoordeling',parent);download(rates,'jaarlijkse-samenvatting-'+id,parent);download([r],'lange-maat-'+id,parent);download(periods,'perioden-'+id,parent);download(annual,'jaarindices-'+id,parent);
+  const d=node('details',null,parent);node('summary','Herkomst en bestanden',d);node('pre',JSON.stringify({run_id:B.run_id,source_hash:B.source_hash,cache_sha256:B.cache_sha256,selection:B.selection,files:B.files,annual_rate_files:B.annual_rate_files},null,2),d).className='meta';
  }
- function fromHash(){const args=new URLSearchParams(location.hash.slice(1)),id=args.get('species');if(id&&B.long.some(r=>String(r.soort_id)===id))$('species').value=id;render();}
+ function fromHash(){
+  const args=new URLSearchParams(location.hash.slice(1)),ids=(args.get('species')||'').split(',').map(Number).filter(id=>B.long.some(r=>r.soort_id===id));
+  if(ids.length)$('species').value=String(ids[0]);
+  const selected=compact&&ids.length?[...new Set(ids)]:[Number($('species').value)];
+  const parent=$('result');parent.replaceChildren();selected.forEach(id=>renderSpecies(id,parent,selected.length>1));
+ }
  $('species').onchange=()=>{location.hash='species='+$('species').value;};window.addEventListener('hashchange',fromHash);fromHash();
+ if(compact&&window.frameElement){const resize=()=>{window.frameElement.style.height=Math.ceil(document.body.getBoundingClientRect().height+24)+'px';};new ResizeObserver(resize).observe(document.body);resize();}
 }
 </script></html>

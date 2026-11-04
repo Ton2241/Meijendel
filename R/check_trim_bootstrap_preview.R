@@ -23,7 +23,7 @@ shiny::testServer(server, {
  analyse_rv(list(species_results=list(trends=data.frame(soort_id=1L,soort_naam='Dodaars')),bootstrap_selection=list(plot_ids=m$selection$plot_ids,species_ids=m$selection$species_ids,year_from=m$year_from,year_to=m$year_to,source_hash=m$source_hash)))
  session$setInputs(selected_species='Dodaars')
  html <- output$trim_species_bootstrap_preview
- stopifnot(grepl('iframe', html$html),grepl('species=1', html$html,fixed=TRUE))
+ stopifnot(grepl('iframe', html$html),grepl('species=1', html$html,fixed=TRUE),grepl('data-presentation=&quot;simple&quot;',html$html,fixed=TRUE),grepl('Meer informatie over de betrouwbaarheidsmarge rondom de TRIM-lijn',html$html,fixed=TRUE))
  a <- analyse_rv();a$bootstrap_selection$plot_ids <- 1L;analyse_rv(a)
  session$flushReact()
  html <- output$trim_species_bootstrap_preview

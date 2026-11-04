@@ -1913,12 +1913,12 @@ function renderFormalBootstrapRows(grid,rows,addCell){
   if(rows.length&&manifest)addCell("Berekening",`${manifest.calculated_at||"-"}; run ${manifest.run_id}; ${Number(manifest.planned_replicates).toLocaleString("nl-NL")} geplande replicaties`);
 }
 function renderBootstrapPreview(){
-  if(new URLSearchParams(location.search).get("bootstrapPreview")!=="1"||S.selected.length!==1)return null;
+  if(new URLSearchParams(location.search).get("bootstrapPreview")!=="1"||!S.selected.length)return null;
   const box=el("div",{style:{marginTop:"16px"}});
-  const row=(S.trimTrendSummary||S.trimTrendSummaryAll||[]).find(r=>r.soort_naam===S.selected[0]);
-  if(!row||!row.soort_id)return null;
-  box.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280"}},"Deze vergelijking gebruikt de hele periode tot en met 2025, ook als je de grafiek op minder jaren zet."));
-  const frame=el("iframe",{title:"Ontwikkeling en onzekerheid per soort",src:`outputs/bootstrap-presentatie-2026/bootstrap.html?view=dashboard#species=${encodeURIComponent(row.soort_id)}`,style:{width:"100%",height:"340px",border:"0"}});
+  const rows=S.selected.map(name=>(S.trimTrendSummary||S.trimTrendSummaryAll||[]).find(r=>r.soort_naam===name)).filter(r=>r&&r.soort_id);
+  if(!rows.length)return null;
+  box.appendChild(el("p",{style:{fontSize:"12px",color:"#6b7280"}},"Deze gemiddelden lopen tot en met 2025, ook als je de grafiek op minder jaren zet."));
+  const frame=el("iframe",{title:"Ontwikkeling en onzekerheid per soort",src:`outputs/bootstrap-presentatie-2026/bootstrap.html?view=dashboard#species=${rows.map(r=>encodeURIComponent(r.soort_id)).join(",")}`,style:{width:"100%",height:"340px",border:"0"}});
   frame.addEventListener("load",()=>{
     try{
       const doc=frame.contentDocument;
@@ -2409,7 +2409,12 @@ function renderPlotPanel(){
   p.appendChild(vogelCard);
   return p;
 }
-function renderTrendPanel(){const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[el("h2",{},"Hoe ontwikkelt deze soort zich?")]));const tog=el("div",{className:"metric-toggle",style:{flex:"0 0 auto"}});[["abs","Territoria"],["km2","Dichtheid (per km²)"],["trim","TRIM-index"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.metric===id?" active":"")},lbl);b.addEventListener("click",()=>setState({metric:id}));tog.appendChild(b);});hdr.appendChild(tog);p.appendChild(hdr);if(S.metric==="trim"){p.appendChild(renderCsvUploadRow("TRIM soortindices",{loaded:!!S.trimIndexData,text:S.trimIndexData?`${S.trimIndexData.length} rijen geladen`:"soortindices_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_idx")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimTrendSummary,text:S.trimTrendSummary?`${S.trimTrendSummary.length} rijen geladen`:"soorten_trendoverzicht_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_trend")));p.appendChild(renderSoortFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());}else{p.appendChild(renderSoortFilter());p.appendChild(renderTrendBreakWarning());if(S.main.pc&&S.allPlots.length)p.appendChild(renderKavelFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());p.appendChild(renderCoverageTable());}
+function speciesDevelopmentTitle(names){
+  if(!names.length)return "Hoe ontwikkelen de vogels zich?";
+  const label=names.length>1?names.slice(0,-1).join(", ")+" en "+names[names.length-1]:names[0];
+  return (names.length>1?"Hoe ontwikkelen ":"Hoe ontwikkelt ")+label+" zich?";
+}
+function renderTrendPanel(){const p=el("div",{className:"panel"}),hdr=el("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:"12px",marginBottom:"16px"}});hdr.appendChild(el("div",{style:{flex:"1 1 360px",minWidth:"0"}},[el("h2",{},speciesDevelopmentTitle(S.selected))]));const tog=el("div",{className:"metric-toggle",style:{flex:"0 0 auto"}});[["abs","Territoria"],["km2","Dichtheid (per km²)"],["trim","TRIM-index"]].forEach(([id,lbl])=>{const b=el("button",{className:"metric-btn"+(S.metric===id?" active":"")},lbl);b.addEventListener("click",()=>setState({metric:id}));tog.appendChild(b);});hdr.appendChild(tog);p.appendChild(hdr);if(S.metric==="trim"){p.appendChild(renderCsvUploadRow("TRIM soortindices",{loaded:!!S.trimIndexData,text:S.trimIndexData?`${S.trimIndexData.length} rijen geladen`:"soortindices_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_idx")));p.appendChild(renderCsvUploadRow("TRIM trendoverzicht",{loaded:!!S.trimTrendSummary,text:S.trimTrendSummary?`${S.trimTrendSummary.length} rijen geladen`:"soorten_trendoverzicht_bruikbare_tijdreeks.csv"},data=>processTrendCSV(data,"trim_trend")));p.appendChild(renderSoortFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());}else{p.appendChild(renderSoortFilter());p.appendChild(renderTrendBreakWarning());if(S.main.pc&&S.allPlots.length)p.appendChild(renderKavelFilter());if(S.allYears.length)p.appendChild(renderJaarFilter());p.appendChild(renderCoverageTable());}
   if(S.metric==="trim"&&!S.trimIndexData)p.appendChild(el("p",{className:"empty-msg"},"Laad eerst het TRIM-bestand met soortindices om de grafiek te tonen."));
   else if(!S.selected.length)p.appendChild(el("p",{className:"empty-msg"},"Selecteer een soort hierboven"));
   else {p.appendChild(el("div",{className:"chart-wrap",id:"lineChart"}));if(S.metric==="trim"){const preview=renderBootstrapPreview();if(preview)p.appendChild(preview);const info=renderTrimTrendInfo();if(info)p.appendChild(info);}}p.appendChild(renderTrendMethodInfo());return p;}

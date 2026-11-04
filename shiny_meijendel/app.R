@@ -463,19 +463,23 @@ ui <- navbarPage(
             tabPanel(
               "Soorten",
               uiOutput("species_picker_ui"),
-              uiOutput("trim_species_model_warning_ui"),
-              uiOutput("trim_species_uncertainty_status_ui"),
+              uiOutput("species_development_heading"),
               tags$p(class = "section-note", "Groen: TRIM-index per jaar. Oranje: gladde GAM-lijn. Lichtoranje band: variatiezone rond de GAM-lijn."),
-              tags$p(class = "section-note", "Download hier de TRIM-uitkomsten per soort: trendoverzicht en indexreeks."),
               plotOutput("species_plot", height = "420px"),
-              div(class = "download-row",
-                  downloadButton("download_species_trends", "CSV TRIM-trends"),
-                  downloadButton("download_species_indices", "CSV TRIM-indices")),
-              h4("Trend per soort"),
-              tableOutput("species_table"),
-              h4("Formele bootstraponzekerheid standaardselectie"),
-              tableOutput("trim_species_uncertainty_table"),
-              uiOutput("trim_species_bootstrap_preview")
+              uiOutput("trim_species_bootstrap_preview"),
+              tags$details(
+                tags$summary("Berekeningen en downloads"),
+                uiOutput("trim_species_model_warning_ui"),
+                uiOutput("trim_species_uncertainty_status_ui"),
+                tags$p(class = "section-note", "Download hier de TRIM-uitkomsten per soort: trendoverzicht en indexreeks."),
+                div(class = "download-row",
+                    downloadButton("download_species_trends", "CSV TRIM-trends"),
+                    downloadButton("download_species_indices", "CSV TRIM-indices")),
+                h4("Trend per soort"),
+                tableOutput("species_table"),
+                h4("Formele bootstraponzekerheid standaardselectie"),
+                tableOutput("trim_species_uncertainty_table")
+              )
             ),
             tabPanel(
               "Groepen",
@@ -3036,6 +3040,11 @@ server <- function(input, output, session) {
     )
   })
 
+  output$species_development_heading <- renderUI({
+    req(input$selected_species)
+    tags$h3(paste0("Hoe ontwikkelt ", input$selected_species, " zich?"))
+  })
+
   output$trim_species_bootstrap_preview <- renderUI({
     preview <- load_trim_bootstrap_preview()
     if (is.null(preview)) return(NULL)
@@ -3049,10 +3058,11 @@ server <- function(input, output, session) {
     id <- trends$soort_id[match(input$selected_species, trends$soort_naam)]
     req(length(id) == 1L, !is.na(id))
     html <- paste(readLines(preview$path, warn = FALSE), collapse = "\n")
-    # Select the species inside the unchanged shared payload on first load.
+    # Reuse the simple presentation and preserve the checked selection guard.
+    html <- sub('<html lang="nl">', '<html lang="nl" data-presentation="simple">', html, fixed = TRUE)
     html <- sub("const BOOTSTRAP_DATA=", paste0("location.hash='species=", as.integer(id), "';\nconst BOOTSTRAP_DATA="), html, fixed = TRUE)
     tags$iframe(title = "Lokale bootstrapbeoordeling", srcdoc = html,
-      style = "width:100%;height:1100px;border:1px solid #dce6df")
+      style = "width:100%;height:340px;border:0")
   })
 
   output$trim_species_uncertainty_status_ui <- renderUI({
