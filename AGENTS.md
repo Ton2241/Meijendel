@@ -15,6 +15,20 @@ Antwoord in het Nederlands, compact en praktisch.
 
 Werk standaard op de lokale iMac M1 in mijn thuismap/projectmap. Ga ervan uit dat projecten lokaal staan tenzij ik expliciet zeg dat bestanden op de Samsung Portable SSD T7, op de NAS DS225+ of op de VPS staan. Vraag eerst om bevestiging voordat je paden op externe opslag of NAS gebruikt. Gebruik voor de NAS standaard Synology DSM via de browser.
 
+## Proefomgevingen uitsluitend op T7
+
+Vaste afspraak van Ton, 5 november 2026: registreer en bewaar alle nieuwe of
+opnieuw gegenereerde proefomgevingen onder
+`/Volumes/T7 Data/Home_Ton/Proefomgevingen/`. Deze locatie is vooraf toegestaan;
+vraag hiervoor niet opnieuw om bevestiging. Controleer dat de T7 gemount is;
+stop bij ontbreken, zonder uitwijk naar Documents of iCloud. Dit geldt ook voor
+proefdatabases, runtime, dumps, caches en herstelkopieën binnen een proef.
+Broncode en kleine README-, configuratie- en controlebestanden mogen lokaal
+blijven; de levende canonieke databases blijven op de iMac. Volg `../VWG_Project/workflow.md`,
+sectie `Proefomgevingen uitsluitend op T7`, inclusief het T7-register,
+SHA-256-bewijs, afrond- en opruimcriteria en de bestaande Linux-overgangsuitzondering.
+Verwijder nooit ongericht of automatisch proef- of herstelgegevens.
+
 ## Lokale uitvoercontext is verplicht
 
 - Voer `/Users/ton/Documents/GitHub/VWG_Project/scripts/workspace_preflight.sh`
