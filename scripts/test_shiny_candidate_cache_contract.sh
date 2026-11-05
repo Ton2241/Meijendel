@@ -11,7 +11,7 @@ fail() {
 
 grep -Fq 'MEIJENDEL_REQUIRE_PREBUILT_CACHE=1' "$script" ||
   fail 'kandidaat gebruikt de verplichte vooraf gebouwde cache niet'
-grep -Fq 'MEIJENDEL_SQL_MANIFEST_PATH=/srv/shiny-server/Meijendel.sql.manifest' "$script" ||
+grep -Fq 'MEIJENDEL_SQL_MANIFEST_PATH=/srv/shiny-server/meijendel.sql.manifest' "$script" ||
   fail 'kandidaat krijgt het SQL-manifest niet'
 grep -Fq 'MEIJENDEL_CACHE_MANIFEST_PATH=/srv/shiny-server/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest' "$script" ||
   fail 'kandidaat krijgt het actieve cachemanifest niet'

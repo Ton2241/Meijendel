@@ -19,10 +19,12 @@ def root_directory(path,mode=0o751):
 
 def guard_payload(m):
  if m.get('legacy') or set(m.get('components',[]))!={'website','dashboard','shiny','mysql','cms'}:raise ValueError('Geen volledig gebruikerspakket')
- if m.get('mysql')!={'source':'data/Meijendel.sql','website_objects':'data/website_objects.sql','database':'Meijendel'}:raise ValueError('Onbekende SQL-binding')
+ source=core.sql_source(m)
+ if {core.SQL_SOURCE,core.LEGACY_SQL_SOURCE}.issubset(m.get("files",{})):raise ValueError("Twee SQL-naamsvarianten in pakket")
+ if m.get('mysql')!={'source':source,'website_objects':'data/website_objects.sql','database':'Meijendel'}:raise ValueError('Onbekende SQL-binding')
  if not re.fullmatch(r'data/cache/[A-Za-z0-9_.-]+\.rds',m.get('cache',{}).get('root','')):raise ValueError('Onbekende cachebinding')
  if m.get('bootstrap',{}).get('root')!='www/outputs/bootstrap-presentatie-2026':raise ValueError('Onbekende bootstrapbinding')
- required=['data/Meijendel.sql','data/Meijendel.sql.manifest',m['cache']['root'],str(Path(m['cache']['root']).with_suffix('.manifest')),'website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html']
+ required=[source,source+'.manifest',m['cache']['root'],str(Path(m['cache']['root']).with_suffix('.manifest')),'website/app/main.py','shiny/shiny_meijendel/app.R','www/bmp_meijendel_index.html']
  if any(p not in m['files'] for p in required):raise ValueError('Niet gecontroleerde component')
  for relative in m.get('cms',{}).get('migrations',[]):
   if not re.fullmatch(r'sql/[0-9]{3}_[a-z0-9_]+\.sql',relative) or 'website/'+relative not in m['files']:raise ValueError('Niet gecontroleerde migratie')
@@ -65,7 +67,7 @@ def caddy_config(source,trial=True):
    depth-=1
    if depth==0:end=i+1;break
  if end is None:raise ValueError('Onvolledige Caddy-routeconfiguratie')
- snippet=source[start:end]
+ snippet=source[start:end].replace('\t\ttry_files /meijendel.sql /Meijendel.sql\n','')
  original='root * /srv/vwgm/www\n\t\tfile_server'
  if original not in snippet and '@integral_assets' not in snippet:raise ValueError('Onbekende dashboardbinding; geen automatische configuratiewijziging')
  snippet=snippet.replace(original,'reverse_proxy 127.0.0.1:18196')
@@ -317,7 +319,7 @@ class LinuxHooks:
   args+=['--mount',f'type=bind,src={cache},dst=/srv/shiny-server/shiny_meijendel/app_cache']
   for folder in ('trim','trim_msi_evg','groepen_grafieken','wintertellingen','output_ecologische_groepen'):
    args+=['--mount',f'type=bind,src={package / "www" / folder},dst=/srv/shiny-server/{folder},readonly']
-  for key,value in dict(MEIJENDEL_BOOTSTRAP_RELEASE='1',MEIJENDEL_RELEASE_MANIFEST='/release/release.json',MEIJENDEL_BIND_HOST='127.0.0.1',MEIJENDEL_SQL_PATH='/release/data/Meijendel.sql',MEIJENDEL_SQL_MANIFEST_PATH='/release/data/Meijendel.sql.manifest',MEIJENDEL_CACHE_MANIFEST_PATH='/release/'+str(Path(m['cache']['root']).with_suffix('.manifest')),MEIJENDEL_REQUIRE_PREBUILT_CACHE='1',MEIJENDEL_ALLOW_HISTORICAL_REHEARSAL='1' if m.get('historical_cache_rehearsal') and self.s['trial'] else '0').items():args+=['-e',key+'='+value]
+  for key,value in dict(MEIJENDEL_BOOTSTRAP_RELEASE='1',MEIJENDEL_RELEASE_MANIFEST='/release/release.json',MEIJENDEL_BIND_HOST='127.0.0.1',MEIJENDEL_SQL_PATH='/release/'+core.sql_source(m),MEIJENDEL_SQL_MANIFEST_PATH='/release/'+core.sql_source(m)+'.manifest',MEIJENDEL_CACHE_MANIFEST_PATH='/release/'+str(Path(m['cache']['root']).with_suffix('.manifest')),MEIJENDEL_REQUIRE_PREBUILT_CACHE='1',MEIJENDEL_ALLOW_HISTORICAL_REHEARSAL='1' if m.get('historical_cache_rehearsal') and self.s['trial'] else '0').items():args+=['-e',key+'='+value]
   # Normal cache resolver expects the prebuilt RDS in app_cache.
   shutil.copy2(package/m['cache']['root'],cache/Path(m['cache']['root']).name);os.chmod(cache/Path(m['cache']['root']).name,0o644)
   self.logged(args+[self.s['shiny_image']])
@@ -422,7 +424,7 @@ def safe_extract(archive,destination):
  destination.mkdir(mode=0o700,parents=True)
  with tarfile.open(archive,'r:gz') as tar:
   members=tar.getmembers()
-  expanded=sum(m.size for m in members);sql_size=sum(m.size for m in members if m.name=='payload/data/Meijendel.sql')
+  expanded=sum(m.size for m in members);sql_size=sum(m.size for m in members if m.name in ('payload/data/meijendel.sql','payload/data/Meijendel.sql'))
   if len(members)>100000 or expanded>16*1024**3:raise ValueError('Archief groter dan releasegrens')
   if sys.platform=='linux' and shutil.disk_usage(destination).free<expanded+5*sql_size+8*1024**3:raise ValueError('Onvoldoende ruimte voor pakket, proefdata, drie backups en 8GiB reserve')
   for item in members:
@@ -595,7 +597,7 @@ def legacy_baseline(h):
  if current:return current
  rid='legacy-'+(STATE/'Meijendel.commit').read_text().strip()[:12];path=root/'releases'/rid;path.mkdir(parents=True,mode=0o700)
  secret_json(path/'legacy.json',{'shiny':h.s['original_shiny']})
- m=dict(schema='meijendel-integral-release-v1',release_id=rid,mode='production',year_from=1958,year_to=int(h.sql('SELECT MAX(jaar) FROM Meijendel.territoria;')),source_hash=core.sha(BASE/'data/Meijendel.sql'),official_data_validated=True,presentation_approved=False,components=['website','dashboard','shiny','mysql','cms'],legacy=True,files={'legacy.json':core.sha(path/'legacy.json')})
+ m=dict(schema='meijendel-integral-release-v1',release_id=rid,mode='production',year_from=1958,year_to=int(h.sql('SELECT MAX(jaar) FROM Meijendel.territoria;')),source_hash=core.sha(core.existing_sql(BASE/'data')),official_data_validated=True,presentation_approved=False,components=['website','dashboard','shiny','mysql','cms'],legacy=True,files={'legacy.json':core.sha(path/'legacy.json')})
  core.atomic_json(path/'release.json',m);core.set_current(root,path);return path
 
 
@@ -615,7 +617,7 @@ def production_action(stage,commit,base,receipt,m):
  legacy_baseline(h)
  if stage=='apply':
   live=set(h.sql("SELECT table_name FROM information_schema.tables WHERE table_schema='Meijendel';").splitlines())
-  unknown=live-sql_objects(base/'payload/data/Meijendel.sql')-set(OBJECTS)
+  unknown=live-sql_objects(base/'payload'/core.sql_source(m))-set(OBJECTS)
   if unknown:raise ValueError('Niet-gedekte productieobjecten: '+','.join(sorted(unknown)))
   package=root/'releases'/m['release_id']
   if not package.exists():
@@ -639,7 +641,7 @@ def dashboard(root,port):
   def do_GET(self):
    path=urllib.parse.urlsplit(self.path).path
    if path in ('/Meijendel.sql','/meijendel.sql'):
-    source=core.current(root)/'data/Meijendel.sql';self.send_response(200);self.send_header('Content-Type','text/plain');self.send_header('Content-Length',str(source.stat().st_size));self.end_headers()
+    active=core.current(root);source=active/core.sql_source(jsonfile(active/'release.json'));self.send_response(200);self.send_header('Content-Type','text/plain');self.send_header('Content-Length',str(source.stat().st_size));self.end_headers()
     with source.open('rb') as data:shutil.copyfileobj(data,self.wfile)
     return
    match=re.fullmatch(r'/releases/([A-Za-z0-9][A-Za-z0-9._-]{0,99})/www/(.*)',path)

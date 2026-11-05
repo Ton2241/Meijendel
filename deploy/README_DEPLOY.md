@@ -363,14 +363,14 @@ curl -I http://127.0.0.1:3838/
 
 Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt deze VPS-onderdelen bij:
 
-- canonieke SQL met de veilige koppeltabel `tellers` (`id`, `tellercode`) en zonder historische `pwa_*`-objecten: `/srv/vwgm/data/Meijendel.sql`
-- exportmanifest `/srv/vwgm/data/Meijendel.sql.manifest`;
+- canonieke SQL met de veilige koppeltabel `tellers` (`id`, `tellercode`) en zonder historische `pwa_*`-objecten: `/srv/vwgm/data/meijendel.sql`
+- exportmanifest `/srv/vwgm/data/meijendel.sql.manifest`;
 - vooraf lokaal gebouwde inhoudsgebonden Shiny-cache plus actief cachemanifest
   onder `/srv/vwgm/shiny/shiny_meijendel/app_cache/`;
 - compatibiliteitspaden voor Shiny, dashboard en FastAPI zijn symlinks naar de canonieke SQL:
-  - `/srv/vwgm/shiny/Meijendel.sql`
-  - `/srv/vwgm/www/Meijendel.sql`
-  - `/srv/vwgm/vwg-m-linux-app/data/Meijendel.sql`
+  - `/srv/vwgm/shiny/meijendel.sql`
+  - `/srv/vwgm/www/meijendel.sql`
+  - `/srv/vwgm/vwg-m-linux-app/data/meijendel.sql`
 - Shiny-app: `/srv/vwgm/shiny/shiny_meijendel/`
 - gedeelde R-code: `/srv/vwgm/shiny/R/`
 - HTML-dashboard: `/srv/vwgm/www/bmp_meijendel_index.html`
@@ -378,7 +378,7 @@ Het script uploadt alleen gewijzigde bestanden met `rsync --checksum` en werkt d
   `/srv/vwgm/www/bmp_meijendel_data.json` met
   `/srv/vwgm/www/bmp_meijendel_data.json.manifest`;
 - browserloader: `/srv/vwgm/www/bmp_meijendel_data_loader.js`; het dashboard
-  haalt `Meijendel.sql` niet meer in de browser op en ontleedt die dump daar
+  haalt `meijendel.sql` niet meer in de browser op en ontleedt die dump daar
   ook niet meer;
 - dashboard-outputmappen:
   - `/srv/vwgm/www/output_ecologische_groepen/`
@@ -428,7 +428,7 @@ ledenadministratie-API op productie.
 
 ## Grafieken op de VWG-site
 
-Alle grafieken op `app.vwg-m.nl` moeten qua cijfers en opmaak gelijk blijven aan de dashboardgrafieken. Gebruik daarom geen losse webberekening en parse `Meijendel.sql` niet per request. De FastAPI/Jinja-site leest vooraf gegenereerde CSV-output:
+Alle grafieken op `app.vwg-m.nl` moeten qua cijfers en opmaak gelijk blijven aan de dashboardgrafieken. Gebruik daarom geen losse webberekening en parse `meijendel.sql` niet per request. De FastAPI/Jinja-site leest vooraf gegenereerde CSV-output:
 
 ```sh
 /srv/vwgm/www/groepen_grafieken/gam_dashboard_groepen.csv
@@ -442,7 +442,7 @@ Alle grafieken op `app.vwg-m.nl` moeten qua cijfers en opmaak gelijk blijven aan
 /groepen/grafiek/{chart_id}.svg
 ```
 
-Voor ecologische groepen gebruikt de CSV direct de dashboardbestanden in `trim_msi_evg/`. Voor Rode/Oranje en habitatgroepen volgt de CSV-generator dezelfde dashboardlogica: de Meijendel-lijn wordt opgebouwd uit de TRIM-soortindexbestanden in `trim/soorten/`, habitatsoorten komen uit `soorten_habitattypen` in `Meijendel.sql`, en de landelijke lijn wordt gewogen samengesteld uit `gam_voorspellingen_landelijk_msi_groepen.csv`. Er is dus geen aparte website-GAM of habitat-fallback meer.
+Voor ecologische groepen gebruikt de CSV direct de dashboardbestanden in `trim_msi_evg/`. Voor Rode/Oranje en habitatgroepen volgt de CSV-generator dezelfde dashboardlogica: de Meijendel-lijn wordt opgebouwd uit de TRIM-soortindexbestanden in `trim/soorten/`, habitatsoorten komen uit `soorten_habitattypen` in `meijendel.sql`, en de landelijke lijn wordt gewogen samengesteld uit `gam_voorspellingen_landelijk_msi_groepen.csv`. Er is dus geen aparte website-GAM of habitat-fallback meer.
 
 De CSV wordt in de standaardroutine gegenereerd door:
 
@@ -507,7 +507,7 @@ Benodigd:
   zodat ongewijzigde SQL-inhoud niet onnodig een nieuwe cachebouw veroorzaakt
 - GTID-restore-informatie wordt bewust niet meegenomen (`--set-gtid-purged=OFF`) en de dump gebruikt `--single-transaction`
 - de tabel `tellers` wordt meegenomen en mag uitsluitend `id` en `tellercode` bevatten; de preflight blokkeert ieder uitgebreider schema
-- lokaal SQL-bestand: `meijendel.sql` in de repo-root; op de VPS wordt dit uitsluitend geplaatst als `/srv/vwgm/data/Meijendel.sql`
+- lokaal SQL-bestand: `meijendel.sql` in de repo-root; op de VPS wordt dit uitsluitend geplaatst als `/srv/vwgm/data/meijendel.sql`
 - lokale cachebouw is eenmalig per gewijzigde SQL-hash of parser-versie. De
   meting van 21 september 2026 voor 2.758.897.731 bytes duurde 1.418 seconden
   en piekte op 2.851.733.504 bytes resident geheugen; de cache van 219.585 bytes
@@ -765,3 +765,34 @@ maar terugval vereist eerst herstel van de juiste 9.7.1-programma’s.
 Vóór een volgende vendorinstallatie moet daarom ook de programma-installatie
 apart worden veiliggesteld. Er is in deze taak nog geen herstelactie uitgevoerd
 op basis van alleen de geslaagde unit-tests.
+
+## SQL-bestandsnaam: uitsluitend meijendel.sql
+
+Besluit Ton, 5 november 2026: de vaste nieuwe bestandsnaam is meijendel.sql,
+met meijendel.sql.manifest. Dit geldt voor de werkexport, nieuwe releasepakketten,
+Linux-runtime en de actieve VPS-bestanden. De databasenaam Meijendel verandert niet.
+Oude pakketten en herstelsets met Meijendel.sql blijven byte-identiek bewaard;
+lezers accepteren die vastgelegde naam als historische terugval. De oude URL
+/Meijendel.sql blijft beveiligd bruikbaar. Compatibiliteitsnamen zijn verwijzingen,
+geen tweede export. Bij twee verschillende fysieke actieve dumps: stoppen en beide
+beoordelen; niet automatisch overschrijven.
+
+De gesloten beheerroute houdt voorlopig de oude namen voor tijdelijke
+Meijendel.sql.candidate-COMMIT-bestanden als compatibel overdrachtsprotocol.
+Dat verandert de canonieke actieve naam niet en maakt geen tweede SQL-kopie.
+Installeer bij de eerstvolgende afzonderlijk goedgekeurde VPS-actualisering eerst
+de bijgewerkte beheerroute vanuit de schone Meijendel-mainwerkboom, in het standaard macOS Terminal-venster:
+
+```bash
+MEIJENDEL_DIR="$PWD" VWG_M_DIR="/Users/ton/Documents/GitHub/VWG_M" \
+  /Users/ton/Documents/GitHub/VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh --apply --yes
+```
+
+De nieuwe Linux-startinstructie
+neemt deze installatie mee met --install-gateway. Deze lokale naamgevingswijziging
+voert die installatie of een VPS-actualisering niet zelf uit.
+
+Test met bestaande fixtures en hoofdlettergevoelige tijdelijke opslag. Maak geen
+nieuwe database-export of cache om alleen de bestandsnaam aan te passen. Bouw een
+nieuwe Linux-proefbundel op T7 na de definitieve broncommits; wijzig geen eerder
+vastgelegd pakket of receipt. Nieuwe proeven blijven afzonderlijk goedkeuringsplichtig.

@@ -14,8 +14,9 @@ STATE_DIR="$REMOTE_BASE/deploy-state"
 CANDIDATE_FILE="$STATE_DIR/Meijendel.candidate"
 CONTAINER="meijendel-mysql"
 SHINY_CONTAINER="shiny_meijendel"
-SQL_FILE="$REMOTE_DATA/Meijendel.sql"
-SQL_MANIFEST_FILE="$REMOTE_DATA/Meijendel.sql.manifest"
+SQL_FILE="$REMOTE_DATA/meijendel.sql"
+SQL_MANIFEST_FILE="$REMOTE_DATA/meijendel.sql.manifest"
+# Legacy candidate spelling remains the installed gateway wire protocol.
 SQL_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.candidate-$release_commit"
 SQL_MANIFEST_CANDIDATE_FILE="$REMOTE_DATA/Meijendel.sql.manifest.candidate-$release_commit"
 APP_CACHE="$REMOTE_SHINY/shiny_meijendel/app_cache"
@@ -248,13 +249,6 @@ production_only_fingerprint() {
   printf '%s\n' "$digest"
 }
 
-if [[ -f /var/lib/vwgm-integral/production/current/release.json ]] && python3 -c 'import json,sys; m=json.load(open("/var/lib/vwgm-integral/production/current/release.json")); sys.exit(1 if m.get("legacy") else 0)'; then
-  die "actieve integrale release: gebruik uitsluitend meijendel-integral met het volledige pakket"
-fi
-
-[[ " ${STAGES[*]} " == *" $stage "* ]] || die "onbekende fase"
-[[ "$release_commit" =~ ^[0-9a-f]{40}$ ]] || die "commit vereist exact 40 hextekens"
-
 restore_backup() {
   [[ -s "$backup_file" ]] || return 1
   printf 'ROLLBACK|meijendel-release|database=%s\n' "$backup_file" >&2
@@ -302,7 +296,42 @@ restart_shiny() {
   return 1
 }
 
+validate_mysql_release_version() {
+  [[ "$1" == "9.7.4" ]] || die "MySQL-versie is $1; vereist 9.7.4"
+}
+
+select_active_sql_paths() {
+  ACTIVE_SQL_FILE="$SQL_FILE"
+  ACTIVE_SQL_MANIFEST_FILE="$SQL_MANIFEST_FILE"
+  local legacy="$REMOTE_DATA/Meijendel.sql"
+  if [[ -f "$legacy" && ! -L "$legacy" && ( -L "$SQL_FILE" || ! "$legacy" -ef "$SQL_FILE" ) ]]; then
+    [[ ! -f "$SQL_FILE" || -L "$SQL_FILE" ]] || die "twee fysieke SQL-bestanden; beoordeel beide vóór activering"
+    ACTIVE_SQL_FILE="$legacy"; ACTIVE_SQL_MANIFEST_FILE="$legacy.manifest"
+  fi
+  [[ -f "$ACTIVE_SQL_FILE" && ! -L "$ACTIVE_SQL_FILE" ]] || die "actieve meijendel.sql ontbreekt"
+  [[ -f "$ACTIVE_SQL_MANIFEST_FILE" && ! -L "$ACTIVE_SQL_MANIFEST_FILE" ]] || die "actief meijendel.sql.manifest ontbreekt"
+}
+preserve_previous_sql() {
+  if [[ "$had_sql" -eq 0 && -f "$ACTIVE_SQL_FILE" && ! -L "$ACTIVE_SQL_FILE" ]]; then
+    mv "$ACTIVE_SQL_FILE" "$rollback_sql"; had_sql=1
+  fi
+  if [[ "$had_sql_manifest" -eq 0 && -f "$ACTIVE_SQL_MANIFEST_FILE" && ! -L "$ACTIVE_SQL_MANIFEST_FILE" ]]; then
+    mv "$ACTIVE_SQL_MANIFEST_FILE" "$rollback_sql_manifest"; had_sql_manifest=1
+  fi
+}
+publish_sql_links() {
+  local source="$1" manifest="$2" directory name
+  # One physical file; both spellings remain compatible aliases.
+  for name in meijendel.sql Meijendel.sql; do
+    [[ "$REMOTE_DATA/$name" -ef "$source" ]] || ln -sfn "$source" "$REMOTE_DATA/$name"
+    [[ "$REMOTE_DATA/$name.manifest" -ef "$manifest" ]] || ln -sfn "$manifest" "$REMOTE_DATA/$name.manifest"
+    for directory in "$REMOTE_SHINY" "$REMOTE_WWW" "$REMOTE_APP/data"; do
+      [[ "$directory/$name" -ef "$source" ]] || ln -sfn "$source" "$directory/$name"
+    done
+  done
+}
 install_first_migration_artifacts() {
+  preserve_previous_sql
   mkdir -p "$APP_CACHE"
   if [[ -f "$SQL_CANDIDATE_FILE" ]]; then
     rm -f "$SQL_FILE"
@@ -321,9 +350,7 @@ install_first_migration_artifacts() {
     mv "$CACHE_MANIFEST_CANDIDATE_FILE" "$ACTIVE_CACHE_MANIFEST"
   fi
   chmod 644 "$SQL_FILE" "$SQL_MANIFEST_FILE" "$APP_CACHE/$cache_file" "$ACTIVE_CACHE_MANIFEST"
-  ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
-  ln -sfn "$SQL_FILE" "$REMOTE_WWW/Meijendel.sql"
-  ln -sfn "$SQL_FILE" "$REMOTE_APP/data/Meijendel.sql"
+  publish_sql_links "$SQL_FILE" "$SQL_MANIFEST_FILE"
   rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest"
   printf 'ROLLBACK_ARTIFACT_STATUS=deterministic-equivalent\n'
 }
@@ -347,14 +374,12 @@ restore_files() {
   if [[ "$had_cache_manifest" -eq 1 || "$rollback_uses_candidate_cache" -ne 1 ]]; then
     rm -f "$ACTIVE_CACHE_MANIFEST"
   fi
-  if [[ "$had_sql" -eq 1 ]]; then mv "$rollback_sql" "$SQL_FILE"; fi
-  if [[ "$had_sql_manifest" -eq 1 ]]; then mv "$rollback_sql_manifest" "$SQL_MANIFEST_FILE"; fi
+  if [[ "$had_sql" -eq 1 ]]; then mv "$rollback_sql" "$ACTIVE_SQL_FILE"; fi
+  if [[ "$had_sql_manifest" -eq 1 ]]; then mv "$rollback_sql_manifest" "$ACTIVE_SQL_MANIFEST_FILE"; fi
   if [[ "$had_cache_manifest" -eq 1 ]]; then mv "$rollback_cache_manifest" "$ACTIVE_CACHE_MANIFEST"; fi
   if [[ -n "$cache_file" && "$cache_file" != "$previous_cache_file" ]]; then rm -f "$APP_CACHE/$cache_file"; fi
-  if [[ -f "$SQL_FILE" ]]; then
-    ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
-    ln -sfn "$SQL_FILE" "$REMOTE_WWW/Meijendel.sql"
-    ln -sfn "$SQL_FILE" "$REMOTE_APP/data/Meijendel.sql"
+  if [[ -f "$ACTIVE_SQL_FILE" ]]; then
+    publish_sql_links "$ACTIVE_SQL_FILE" "$ACTIVE_SQL_MANIFEST_FILE"
   fi
 }
 
@@ -385,6 +410,15 @@ finish() {
   fi
   exit "$status"
 }
+main() {
+if [[ -f /var/lib/vwgm-integral/production/current/release.json ]] && python3 -c 'import json,sys; m=json.load(open("/var/lib/vwgm-integral/production/current/release.json")); sys.exit(1 if m.get("legacy") else 0)'; then
+  die "actieve integrale release: gebruik uitsluitend meijendel-integral met het volledige pakket"
+fi
+
+[[ " ${STAGES[*]} " == *" $stage "* ]] || die "onbekende fase"
+[[ "$release_commit" =~ ^[0-9a-f]{40}$ ]] || die "commit vereist exact 40 hextekens"
+
+select_active_sql_paths
 trap finish EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
@@ -396,13 +430,13 @@ docker inspect --format '{{.State.Status}}' "$SHINY_CONTAINER" | grep -qx runnin
 mysql_version="$(docker exec "$CONTAINER" sh -lc \
   'mysql -uroot -p"$MYSQL_ROOT_PASSWORD" -NBe "SELECT VERSION()"')"
 printf 'MYSQL_VERSION=%s\n' "$mysql_version"
-[[ "$mysql_version" == "9.7.1" ]] || die "MySQL-versie is $mysql_version; vereist 9.7.1"
+validate_mysql_release_version "$mysql_version"
 test -d "$BACKUP_DIR" && test -w "$BACKUP_DIR" || die "back-upmap ontbreekt of is niet schrijfbaar"
 df -Pk "$BACKUP_DIR" | awk 'NR == 2 { if ($4 < 1048576) exit 1 }' || \
   die "minder dan 1 GiB vrije back-upruimte"
 
 # Ook bij apply opnieuw controleren onder de gedeelde deploy-lock, vóór import.
-check_release_schema "$SQL_FILE" "$SQL_MANIFEST_FILE"
+check_release_schema "$ACTIVE_SQL_FILE" "$ACTIVE_SQL_MANIFEST_FILE"
 if [[ "$stage" == "preflight" ]]; then
   success=1
   printf 'PREFLIGHT_STATUS=ready\n'
@@ -488,16 +522,16 @@ if [[ -f "$ACTIVE_CACHE_MANIFEST" && ! -L "$ACTIVE_CACHE_MANIFEST" ]]; then
     die "vorige actieve cache ontbreekt, is leeg of is een symlink"
   [[ "$(sha256sum "$previous_cache_path" | awk '{print $1}')" == "$(manifest_value cache_sha256 "$ACTIVE_CACHE_MANIFEST")" ]] || \
     die "vorige actieve cache wijkt af van zijn manifest"
-  [[ "$(sha256sum "$SQL_FILE" | awk '{print $1}')" == "$(manifest_value sql_sha256 "$ACTIVE_CACHE_MANIFEST")" ]] || \
+  [[ "$(sha256sum "$ACTIVE_SQL_FILE" | awk '{print $1}')" == "$(manifest_value sql_sha256 "$ACTIVE_CACHE_MANIFEST")" ]] || \
     die "vorige actieve cache hoort niet bij de actieve SQL-dump"
 else
-  [[ -f "$SQL_FILE" && ! -L "$SQL_FILE" ]] || die "actieve SQL-dump ontbreekt voor rollback"
-  [[ -f "$SQL_MANIFEST_FILE" && ! -L "$SQL_MANIFEST_FILE" ]] || \
+  [[ -f "$ACTIVE_SQL_FILE" && ! -L "$ACTIVE_SQL_FILE" ]] || die "actieve SQL-dump ontbreekt voor rollback"
+  [[ -f "$ACTIVE_SQL_MANIFEST_FILE" && ! -L "$ACTIVE_SQL_MANIFEST_FILE" ]] || \
     die "actief SQL-manifest ontbreekt voor eerste cacheactivering"
   for identity_key in \
     source_database mysql_version base_tables views row_counts_sha256 table_checksums_sha256 \
     dagbezoeken_bmp dagwaarnemingen_bmp territoria; do
-    [[ "$(manifest_value "$identity_key" "$SQL_MANIFEST_FILE")" == \
+    [[ "$(manifest_value "$identity_key" "$ACTIVE_SQL_MANIFEST_FILE")" == \
        "$(manifest_value "$identity_key" "$SQL_MANIFEST_CANDIDATE_FILE")" ]] || \
       die "eerste cacheactivering wijzigt database-inhoud volgens manifestveld $identity_key"
   done
@@ -575,8 +609,7 @@ production_only_fingerprint "$production_only_before" >/dev/null
 printf 'PRODUCTION_ONLY_OBJECTS=unchanged\n'
 
 activation_started=1
-if [[ -f "$SQL_FILE" && ! -L "$SQL_FILE" ]]; then mv "$SQL_FILE" "$rollback_sql"; had_sql=1; fi
-if [[ -f "$SQL_MANIFEST_FILE" && ! -L "$SQL_MANIFEST_FILE" ]]; then mv "$SQL_MANIFEST_FILE" "$rollback_sql_manifest"; had_sql_manifest=1; fi
+preserve_previous_sql
 if [[ -f "$ACTIVE_CACHE_MANIFEST" && ! -L "$ACTIVE_CACHE_MANIFEST" ]]; then
   mv "$ACTIVE_CACHE_MANIFEST" "$rollback_cache_manifest"
   had_cache_manifest=1
@@ -589,9 +622,7 @@ cache_manifest_next="$ACTIVE_CACHE_MANIFEST.next.$$"
 mv "$CACHE_MANIFEST_CANDIDATE_FILE" "$cache_manifest_next"
 chmod 644 "$SQL_FILE" "$SQL_MANIFEST_FILE" "$APP_CACHE/$cache_file" "$cache_manifest_next"
 mv "$cache_manifest_next" "$ACTIVE_CACHE_MANIFEST"
-ln -sfn "$SQL_FILE" "$REMOTE_SHINY/Meijendel.sql"
-ln -sfn "$SQL_FILE" "$REMOTE_WWW/Meijendel.sql"
-ln -sfn "$SQL_FILE" "$REMOTE_APP/data/Meijendel.sql"
+publish_sql_links "$SQL_FILE" "$SQL_MANIFEST_FILE"
 
 restart_shiny
 docker exec "$SHINY_CONTAINER" Rscript -e '
@@ -600,8 +631,8 @@ docker exec "$SHINY_CONTAINER" Rscript -e '
   if (!all(ok)) stop("Niet alle analysepackages zijn beschikbaar.")
   if (!nzchar(Sys.which("perl"))) stop("Perl ontbreekt in de Shiny-container.")
 '
-sha256sum "$REMOTE_DATA/Meijendel.sql" "$REMOTE_SHINY/Meijendel.sql" \
-  "$REMOTE_WWW/Meijendel.sql" "$REMOTE_APP/data/Meijendel.sql"
+sha256sum "$SQL_FILE" "$REMOTE_SHINY/meijendel.sql" \
+  "$REMOTE_WWW/meijendel.sql" "$REMOTE_APP/data/meijendel.sql"
 docker stats --no-stream "$SHINY_CONTAINER"
 docker ps --format 'table {{.Names}}\t{{.Image}}\t{{.Status}}'
 
@@ -615,3 +646,6 @@ done
 rm -f "$rollback_sql" "$rollback_sql_manifest" "$rollback_cache_manifest"
 success=1
 printf 'RELEASE_STATUS=ready\n'
+
+}
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then main "$@"; fi

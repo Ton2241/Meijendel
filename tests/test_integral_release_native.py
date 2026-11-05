@@ -16,7 +16,7 @@ class NativeServiceTests(unittest.TestCase):
     p.wait();p.stdout.close()
  def test_partial_start_records_first_process_before_second_failure(self):
   with tempfile.TemporaryDirectory() as d:
-   h=self.hook(Path(d));package=h.root/'package';package.mkdir();(package/'release.json').write_text(json.dumps({'cache':{'root':'data/cache/test.rds'},'historical_cache_rehearsal':True}))
+   h=self.hook(Path(d));package=h.root/'package';package.mkdir();(package/'release.json').write_text(json.dumps({'cache':{'root':'data/cache/test.rds'},'historical_cache_rehearsal':True,'mysql':{'source':'data/meijendel.sql'}}))
    class Process:pid=12345
    with patch.object(n.subprocess,'Popen',side_effect=[Process(),OSError('second start failed')]):
     with self.assertRaises(OSError):h.start(package)

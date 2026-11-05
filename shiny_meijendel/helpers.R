@@ -103,7 +103,7 @@ extract_columns <- function(header) {
 
 resolve_meijendel_sql_path <- function(
   configured_path = Sys.getenv("MEIJENDEL_SQL_PATH", unset = ""),
-  candidates = c("/srv/shiny-server/Meijendel.sql", "../meijendel.sql", "meijendel.sql")
+  candidates = c("/srv/shiny-server/meijendel.sql", "../meijendel.sql", "meijendel.sql", "/srv/shiny-server/Meijendel.sql", "../Meijendel.sql", "Meijendel.sql")
 ) {
   configured_path <- trimws(configured_path)
   paths <- unique(c(if (nzchar(configured_path)) configured_path, candidates))
@@ -1016,8 +1016,8 @@ parse_meijendel_tables <- function(path) {
 
 sha256_file <- function(path) {
   commands <- list(
-    c(Sys.which("shasum"), "-a", "256", path),
-    c(Sys.which("sha256sum"), path)
+    c(Sys.which("shasum"), "-a", "256", shQuote(path)),
+    c(Sys.which("sha256sum"), shQuote(path))
   )
   for (command in commands) {
     if (!nzchar(command[[1L]])) next

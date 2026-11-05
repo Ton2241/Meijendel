@@ -17,7 +17,7 @@ Dit project bestaat uit twee nauw gekoppelde repositories en een VPS-productieom
   `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`.
 - App-pad: `/srv/vwgm/vwg-m-linux-app`.
 - Runtime-data: onder meer `/srv/vwgm/www`, uploads, archiefdocumenten, dashboard/grafiekoutput en back-ups.
-- Canonieke SQL: `/srv/vwgm/data/Meijendel.sql`.
+- Canonieke SQL: `/srv/vwgm/data/meijendel.sql`.
 - Caddy verzorgt TLS, reverse proxy en `forward_auth` naar de ledenlogin.
 
 ## Applicaties

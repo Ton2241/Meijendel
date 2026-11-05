@@ -3,6 +3,7 @@
 		forward_auth 127.0.0.1:8091 {
 			uri /leden/shiny-auth
 		}
+		try_files /meijendel.sql /Meijendel.sql
 		root * /srv/vwgm/data
 		header Content-Type "text/plain; charset=utf-8"
 		file_server
@@ -12,6 +13,7 @@
 		forward_auth 127.0.0.1:8091 {
 			uri /leden/shiny-auth
 		}
+		try_files /meijendel.sql /Meijendel.sql
 		root * /srv/vwgm/data
 		header Content-Type "text/plain; charset=utf-8"
 		file_server

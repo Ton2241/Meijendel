@@ -17,7 +17,7 @@ read_manifest <- function(path) {
 }
 
 sha256_file <- function(path) {
-  output <- system2("shasum", c("-a", "256", path), stdout = TRUE)
+  output <- system2("shasum", c("-a", "256", shQuote(path)), stdout = TRUE)
   hash <- sub("[[:space:]].*$", "", output[[1L]])
   if (!grepl("^[0-9a-f]{64}$", hash)) stop("SHA-256 kon niet worden bepaald voor ", path, ".", call. = FALSE)
   hash

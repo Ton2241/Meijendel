@@ -187,7 +187,7 @@ gateway_preflight="$("$GATEWAY_RUNNER" preflight "$LOCAL_COMMIT")"
 gateway_preflight_rc=$?
 set -e
 printf '%s\n' "$gateway_preflight"
-[[ "$gateway_preflight_rc" -eq 0 ]] || die "gesloten Meijendel-preflight op de VPS faalde."
+[[ "$gateway_preflight_rc" -eq 0 ]] || die "gesloten Meijendel-preflight op de VPS faalde; werk vóór de volgende goedgekeurde actualisering de beheerroute bij via VWG_Project/scripts/install_vwgm_admin_gateway_vps.sh --apply --yes."
 REMOTE_MYSQL_VERSION="$(sed -n 's/^MYSQL_VERSION=//p' <<<"$gateway_preflight" | tail -n 1)"
 [[ "$REMOTE_MYSQL_VERSION" == "$REQUIRED_MYSQL_VERSION" ]] || \
   die "MySQL op de VPS is $REMOTE_MYSQL_VERSION; vereist is exact $REQUIRED_MYSQL_VERSION."

@@ -7,6 +7,18 @@ local adapter; the same activation, backup and recovery order is used everywhere
 import contextlib,fcntl,hashlib,json,os,re,time
 from pathlib import Path
 
+SQL_SOURCE='data/meijendel.sql'
+LEGACY_SQL_SOURCE='data/Meijendel.sql'
+def sql_source(manifest):
+    source=manifest.get('mysql',{}).get('source')
+    if source not in (SQL_SOURCE,LEGACY_SQL_SOURCE):raise ValueError('Onbekende SQL-binding')
+    return source
+def existing_sql(directory):
+    for name in ('meijendel.sql','Meijendel.sql'):
+        path=Path(directory)/name
+        if path.is_file():return path
+    raise FileNotFoundError('meijendel.sql ontbreekt: '+str(directory))
+
 def sha(path):
     with Path(path).open('rb') as f:return hashlib.file_digest(f,'sha256').hexdigest()
 def safe_path(root,relative):
@@ -174,7 +186,7 @@ def build_package(recipe,target):
     copy(repo/'shiny_meijendel','shiny/shiny_meijendel');copy(repo/'R','shiny/R')
     copy(website/'app','website/app');copy(website/'sql','website/sql');copy(website/'scripts','website/scripts')
     for name in ('requirements.txt','requirements.lock','requirements-bootstrap.lock'):copy(website/name,'website/'+name)
-    copy(recipe['sql'],'data/Meijendel.sql');copy(recipe['sql_manifest'],'data/Meijendel.sql.manifest')
+    copy(recipe['sql'],SQL_SOURCE);copy(recipe['sql_manifest'],SQL_SOURCE+'.manifest')
     cache=Path(recipe['cache']);copy(cache,'data/cache/'+cache.name);copy(recipe['cache_manifest'],'data/cache/'+Path(recipe['cache_manifest']).name)
     copy(recipe['website_objects'],'data/website_objects.sql')
     if recipe.get('local_probe'):
@@ -182,7 +194,7 @@ def build_package(recipe,target):
         probe=target/'website/sql/999_local_release_probe.sql'
         probe.write_text("CREATE TABLE IF NOT EXISTS app._release_probe(id integer primary key,value text); INSERT INTO app._release_probe VALUES(1,'"+recipe['release_id']+"') ON CONFLICT(id) DO UPDATE SET value=excluded.value;\n")
     boot=target/'www/outputs/bootstrap-presentatie-2026';b=json.loads((boot/'manifest.json').read_text())
-    if sha(target/'data/Meijendel.sql')!=b['source_hash']:raise ValueError('SQL en bootstrap hebben een andere bron')
+    if sha(target/SQL_SOURCE)!=b['source_hash']:raise ValueError('SQL en bootstrap hebben een andere bron')
     if (b['year_from'],b['year_to'])!=(recipe['year_from'],recipe['year_to']):raise ValueError('Bootstrapjaargrenzen wijken af')
     public=dict(schema='meijendel-integral-release-v1',release_id=recipe['release_id'],mode=recipe['mode'],
         year_from=b['year_from'],year_to=b['year_to'],source_hash=b['source_hash'],presentation_approved=True,
@@ -192,7 +204,7 @@ def build_package(recipe,target):
     m=public|dict(components=['website','dashboard','shiny','mysql','cms'],
         bootstrap=public['bootstrap']|dict(root='www/outputs/bootstrap-presentatie-2026'),
         cache=dict(root='data/cache/'+cache.name,sha256=sha(target/'data/cache'/cache.name)),
-        mysql=dict(source='data/Meijendel.sql',website_objects='data/website_objects.sql',database='Meijendel'),
+        mysql=dict(source=SQL_SOURCE,website_objects='data/website_objects.sql',database='Meijendel'),
         cms=dict(strategy='versioned_migrations',migrations=recipe.get('cms_migrations',[])),
         historical_cache_rehearsal=recipe.get('historical_cache_rehearsal',False),
         formal_intervals_released=False)

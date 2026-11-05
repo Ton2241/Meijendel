@@ -1,5 +1,5 @@
 .DS_Store
-Meijendel.sql
+meijendel.sql
 meijendel.sql.manifest
 meijendel_bronnen.sql
 .venv*/
@@ -20,3 +20,5 @@ meijendel_tables_cache-p*.manifest
 trim/bootstrap_runs/
 trim/bootstrap_workers.csv
 trim/**/*.partial
+Meijendel.sql
+Meijendel.sql.manifest

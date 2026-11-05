@@ -20,7 +20,7 @@ Belangrijkste werkpaden:
 - Meijendel-bronproject: `/Users/ton/Documents/GitHub/Meijendel`
 - FastAPI/Jinja-site: `/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app`
 - VPS-app-pad: `/srv/vwgm/vwg-m-linux-app`
-- Canonieke SQL op VPS: `/srv/vwgm/data/Meijendel.sql`
+- Canonieke SQL op VPS: `/srv/vwgm/data/meijendel.sql`
 - Canonieke gedeelde hostinventaris:
   `/Users/ton/Documents/GitHub/VWG_Project/VPS_PRODUCTIESTATUS.md`
 - Publieke hoofdhost: `www.vwg-m.nl`.
@@ -920,7 +920,7 @@ Of via Terminal:
 ## Belangrijke aandachtspunten
 
 - De levende lokale Meijendel-MySQL-database op de iMac is de canonieke
-  schrijfbron. `Meijendel.sql` wordt uitsluitend uit die gevalideerde database
+  schrijfbron. `meijendel.sql` wordt uitsluitend uit die gevalideerde database
   gegenereerd en is altijd een afspiegeling, nooit een zelfstandige bron.
 - Iedere export publiceert lokaal één gekoppelde set: `meijendel.sql`,
   `meijendel.sql.manifest`, een inhoudsgebonden
@@ -938,7 +938,7 @@ Of via Terminal:
   `pq_vegetatie_opname`, `pq_vegetatie_taxon`, `pq_vegetatie_waarneming`,
   `pq_vegetatie_opname_plot` en `pq_plot_jaar_vegetatie` worden in de levende
   MySQL-database beheerd. Wijzig deze gegevens nooit handmatig in
-  `Meijendel.sql`; genereer de volledige dump na databasevalidatie opnieuw.
+  `meijendel.sql`; genereer de volledige dump na databasevalidatie opnieuw.
 - Neem ecologische waarnemingen alleen in de Meijendel-database op wanneer per
   waarneming vaststaat dat zij werkelijk binnen Meijendel is gedaan en de
   locatie beschikbaar is of betrouwbaar kan worden herleid. Een algemene

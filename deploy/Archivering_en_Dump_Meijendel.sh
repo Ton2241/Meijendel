@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Archivering_en_Dump Meijendel.sql
+# Archivering_en_Dump meijendel.sql
 # Actualiseert eerst de repo-dump meijendel.sql vanuit de lokale database.
 # Archiveert daarna diezelfde dump met timestamp op de Samsung T7.
 

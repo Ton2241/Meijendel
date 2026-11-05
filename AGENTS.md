@@ -225,15 +225,15 @@ MySQL:
   SHA-256 bij de bewerking. Gebruik bij een niet-beschikbare T7 geen tijdelijke
   uitwijk naar Documents of iCloud, maar stop vóór de databasewijziging
 - deze opslagafspraak geldt uitsluitend voor herstelback-ups bij
-  databasebewerkingen. De standaardexport `Meijendel.sql` (ook aangeduid als
+  databasebewerkingen. De standaardexport `meijendel.sql` (ook aangeduid als
   `meijendel.sql`) ter voorbereiding op upload naar de VPS volgt de bestaande
   afzonderlijke procedure; wijzig daarvoor geen locatie, werkwijze of
   toestemmingsvereiste op grond van deze afspraak
 - vraag na iedere wijziging van de levende lokale database eerst aan Ton of ook
-  de zware afgeleide exportketen nodig is. Start `Meijendel.sql`-export,
+  de zware afgeleide exportketen nodig is. Start `meijendel.sql`-export,
   proefimport en Shiny-cachebouw nooit automatisch als onderdeel van een
   gewone databasecorrectie; daarvoor is afzonderlijk akkoord vereist
-- genereer `Meijendel.sql` uitsluitend opnieuw uit die gevalideerde database;
+- genereer `meijendel.sql` uitsluitend opnieuw uit die gevalideerde database;
   de dump is een afspiegeling en nooit een zelfstandige bron
 - laat een productieback-up of oudere dump nooit de levende database als
   inhoudelijke waarheid vervangen
