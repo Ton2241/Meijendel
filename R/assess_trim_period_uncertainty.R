@@ -13,6 +13,7 @@ period_distribution_500 <- function(theta,v,reference=FALSE) {
 }
 assess_trim_period_uncertainty <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==4L);repo<-normalizePath(args[1],mustWork=TRUE);parent<-normalizePath(args[2],mustWork=TRUE);recovery<-normalizePath(args[3],mustWork=TRUE);out<-args[4]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(n in c('compare_trim_index_summaries.R','trim_endpoint_bootstrap.R','trim_period_uncertainty.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R','build_trim_bootstrap_bundle.R','validate_trim_bootstrap_bundle.R'))source(file.path(repo,'R',n))
  validate_trim_bootstrap_engine(file.path(parent,'input'),repo);cx<-readRDS(file.path(parent,'input/context.rds'));pm<-jsonlite::read_json(file.path(parent,'input/bundle_manifest.json'),simplifyVector=TRUE)

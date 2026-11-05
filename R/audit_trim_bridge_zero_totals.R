@@ -5,6 +5,7 @@ stopifnot(length(args) == 3L)
 repo <- normalizePath(args[[1L]], mustWork = TRUE)
 cache_path <- normalizePath(args[[2L]], mustWork = TRUE)
 out <- args[[3L]]
+source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
 e <- new.env(parent = globalenv())
 e$commandArgs <- function(trailingOnly = FALSE) paste0("--file=", repo, "/R/trim_soorten_en_msi_evg.R")
 for (f in c("trim_soorten_en_msi_evg.R", "trim_bootstrap_core.R", "trim_bridge_core.R", "audit_trim_bridge_windows.R", "build_trim_bootstrap_bundle.R")) sys.source(file.path(repo, "R", f), envir = e)

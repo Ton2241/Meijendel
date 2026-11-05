@@ -4,6 +4,7 @@ validation_2025_context <- function(parent,run_id) {
 }
 run_trim_2025_validation <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==3L);repo<-normalizePath(args[1],mustWork=TRUE);parent_run<-normalizePath(args[2],mustWork=TRUE);root<-args[3]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));root<-trial_output(root)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(n in c('trim_trend_contract.R','trim_bootstrap_core.R','trim_bridge_core.R','run_trim_bootstrap_batch.R','build_trim_bootstrap_bundle.R','validate_trim_bootstrap_bundle.R','merge_trim_bootstrap_batches.R'))source(file.path(repo,'R',n))
  pm<-jsonlite::read_json(file.path(parent_run,'input/bundle_manifest.json'),simplifyVector=TRUE)

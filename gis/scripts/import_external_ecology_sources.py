@@ -1471,6 +1471,11 @@ def execute_central_query_migration(args) -> int:
     if args.database != 'Meijendel' and not re.fullmatch('Meijendel_taxa_query_(?:proef|herstel)_[0-9]+',args.database):
         raise ValueError('Alleen de canonieke database of een gerichte herstelproef')
     db = CentralQueryDatabase(args.database,args.login_path,args.mysql_client,host=args.host,port=args.port,writable=args.apply)
+    if args.apply and args.database != 'Meijendel':
+        import sys
+        sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+        from trial_storage import checked_tree
+        checked_tree(db.sql('SELECT @@datadir;'))
     if args.apply and args.centrale_backup is None: raise ValueError('Volledige back-up is vereist')
     backup_hash=None
     if args.centrale_backup:
@@ -3710,6 +3715,10 @@ def restore_source_copy(db: CentralQueryDatabase, backup: Path) -> None:
         raise ValueError('Herstel uitsluitend naar een eigen, nog niet bestaande proefdatabase')
     if '--host=127.0.0.1' not in db.args or '--port=3306' not in db.args:
         raise ValueError('Herstelproef uitsluitend lokaal')
+    import sys
+    sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+    from trial_storage import checked_tree
+    checked_tree(run_mysql(Path(db.args[0]), db.args[1:-1], 'SELECT @@datadir;'))
     validate_source_backup(backup)
     db_args = db.args[:-1]
     subprocess.run(db_args, input='CREATE DATABASE '+query_identifier(db.database)+

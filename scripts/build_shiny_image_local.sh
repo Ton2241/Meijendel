@@ -28,6 +28,28 @@ while [[ "$#" -gt 0 ]]; do
   esac
 done
 
+# A daemon path inside Docker Desktop is a VM path, not physical host evidence.
+if [[ "$(uname -s)" == Darwin ]]; then
+  printf 'BLOKKADE: Docker Desktop VM-opslag is niet aantoonbaar fysiek op T7; geen lokale kandidaatbuild. Gebruik de bestaande Linux-releaseketen.\n' >&2
+  exit 1
+fi
+[[ -n "${TMPDIR:-}" ]] || {
+  printf 'BLOKKADE: stel TMPDIR expliciet in op een geregistreerde T7-proefmap.\n' >&2
+  exit 1
+}
+trial_tmp="$(python3 "$HOME/Documents/GitHub/VWG_Project/scripts/trial_storage.py" --tree "$TMPDIR")"
+endpoint="${DOCKER_HOST:-$(docker context inspect --format '{{.Endpoints.docker.Host}}')}"
+[[ "$endpoint" == unix://* ]] || {
+  printf 'BLOKKADE: fysieke T7-opslag van een externe Docker-daemon niet vaststelbaar.\n' >&2
+  exit 1
+}
+daemon_os="$(docker info --format '{{.OperatingSystem}}')"
+[[ "$daemon_os" != *'Docker Desktop'* ]] || {
+  printf 'BLOKKADE: Docker Desktop VM-opslag is niet aantoonbaar fysiek op T7.\n' >&2
+  exit 1
+}
+daemon_root="$(docker info --format '{{.DockerRootDir}}')"
+python3 "$HOME/Documents/GitHub/VWG_Project/scripts/trial_storage.py" --tree "$daemon_root" >/dev/null
 "$repo/scripts/test_shiny_reproducibility.sh"
 docker info >/dev/null
 if docker image inspect "$tag" >/dev/null 2>&1; then
@@ -39,7 +61,7 @@ fi
   exit 1
 }
 
-context="$(mktemp -d "${TMPDIR:-/tmp}/vwgm-shiny-build.XXXXXX")"
+context="$(mktemp -d "$trial_tmp/vwgm-shiny-build.XXXXXX")"
 cleanup() {
   rm -rf -- "$context"
 }

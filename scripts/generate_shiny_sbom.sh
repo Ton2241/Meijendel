@@ -15,10 +15,20 @@ output="$output_dir/$(basename "$output")"
   printf 'BLOKKADE: SBOM-uitvoer bestaat al: %s\n' "$output" >&2
   exit 1
 }
+# Local extraction may be large; the small SBOM itself may stay local.
+# Linux/VPS callers retain their existing temporary-storage procedure.
+trial_tmp="${TMPDIR:-/tmp}"
+if [[ "$(uname -s)" == Darwin ]]; then
+  [[ -n "${TMPDIR:-}" ]] || {
+    printf 'BLOKKADE: stel TMPDIR expliciet in op een geregistreerde T7-proefmap.\n' >&2
+    exit 1
+  }
+  trial_tmp="$(python3 "$HOME/Documents/GitHub/VWG_Project/scripts/trial_storage.py" --tree "$TMPDIR")"
+fi
 docker image inspect "$image" >/dev/null
 docker sbom version >/dev/null
 
-work="$(mktemp -d "${TMPDIR:-/tmp}/vwgm-shiny-sbom.XXXXXX")"
+work="$(mktemp -d "$trial_tmp/vwgm-shiny-sbom.XXXXXX")"
 temporary_output="$(mktemp "$output_dir/.vwgm-shiny-sbom.XXXXXX")"
 cleanup() {
   rm -rf -- "$work"

@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 args<-commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L)
-trial<-args[1];old<-args[2];out<-args[3];dir.create(out,recursive=TRUE,showWarnings=FALSE)
+trial<-args[1];old<-args[2];out<-args[3];source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out);dir.create(out,recursive=TRUE,showWarnings=FALSE)
 r<-read.csv(file.path(trial,'curves.csv'));r<-r[r$replicate_id==0L,]
 a<-read.csv(file.path(old,'curves.csv'));a<-a[a$series=='jaarindex',]
 s<-read.csv(file.path(trial,'summary.csv'));nm<-setNames(s$soort_naam,s$soort_id)

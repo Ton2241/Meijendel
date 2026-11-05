@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 args<-commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L)
 repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-args[3]
+source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
 source(file.path(repo,'R/trim_bootstrap_core.R'))
 cx<-readRDS(file.path(run,'input/context.rds'))
 e<-read.csv(file.path(run,'assessment/raw_assessment/estimates.csv'))

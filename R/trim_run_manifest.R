@@ -1,6 +1,6 @@
 sha256_file <- function(path) {
   path <- normalizePath(path, winslash = "/", mustWork = TRUE)
-  output <- system2("shasum", c("-a", "256", path), stdout = TRUE, stderr = TRUE)
+  output <- system2("shasum", c("-a", "256", shQuote(path)), stdout = TRUE, stderr = TRUE)
   status <- attr(output, "status")
   hash <- if (length(output)) sub("[[:space:]].*$", "", output[[1L]]) else ""
   if ((!is.null(status) && status != 0L) || !grepl("^[0-9a-f]{64}$", hash)) {

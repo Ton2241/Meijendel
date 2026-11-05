@@ -36,6 +36,7 @@ index_summary_gap <- function(a,b) {
 }
 run_index_summary_comparison <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==3L);repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-args[3]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  source(file.path(repo,'R/trim_bootstrap_core.R'));source(file.path(repo,'R/merge_trim_bootstrap_batches.R'))
  m<-jsonlite::read_json(file.path(run,'input/bundle_manifest.json'),simplifyVector=TRUE)

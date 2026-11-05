@@ -4,8 +4,10 @@
 No model fits. Preparation is local; the isolated Linux rehearsal is explicit.
 Installing gateway code requires the visible standard macOS Terminal window.
 """
-import argparse,importlib.util,json,os,secrets,shlex,subprocess,tarfile
+import argparse,importlib.util,json,os,secrets,shlex,subprocess,sys,tarfile
 from pathlib import Path
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 ROOT=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('core',ROOT/'deploy/integral_release.py');core=importlib.util.module_from_spec(spec);spec.loader.exec_module(core)
 
@@ -17,10 +19,11 @@ def check_checkout(root):
 
 def prepare(recipe_file,baseline,output,project):
  recipe=json.loads(recipe_file.read_text());analysis=Path(recipe['analysis_root']);website=Path(recipe['website_root'])
+ trial=recipe['mode']=='local_rehearsal'
+ if trial:output=checked_tree(output)
  commits={name:check_checkout(path) for name,path in [('Meijendel',analysis),('VWG_M',website),('VWG_Project',project)]}
  if output.exists():raise ValueError('Nieuw uitvoerpad vereist')
  output.mkdir(parents=True,mode=0o700)
- trial=recipe['mode']=='local_rehearsal'
  if trial and (baseline is None or recipe['year_to']>2025):raise ValueError('Historische Linux-proef vraagt de bewaarde basisbeoordeling tot2025')
  recipe=recipe|dict(local_probe=False,cms_migrations=[],release_id='candidate-'+commits['Meijendel'][:12]) if trial else recipe
  if not trial:
@@ -39,6 +42,7 @@ def prepare(recipe_file,baseline,output,project):
 
 def execute(prepared_file,stage,install=False,yes=False):
  p=json.loads(prepared_file.read_text());analysis=Path(p['recipe']['analysis_root']);website=Path(p['recipe']['website_root']);project=Path(p['project_root']);out=prepared_file.parent
+ if p['intent']=='isolated_trial':out=checked_tree(out)
  for name,path in [('Meijendel',analysis),('VWG_M',website),('VWG_Project',project)]:
   if check_checkout(path)!=p['commits'][name]:raise ValueError('Broncommit veranderd sinds pakketbouw: '+name)
  if core.sha(p['archive'])!=p['sha256']:raise ValueError('Lokaal pakket gewijzigd')

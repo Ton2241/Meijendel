@@ -6,6 +6,9 @@ import subprocess
 import tempfile
 import uuid
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / 'gis/scripts/migrate_maatregel_registraties.py'
@@ -16,6 +19,8 @@ def main():
     m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
     db = 'meijendel_registratie_test_' + uuid.uuid4().hex[:10]
     c = m.Client(db)
+    checked_tree(tempfile.gettempdir())
+    checked_tree(c.sql('SELECT @@datadir;', selected=False))
     c.sql(f'CREATE DATABASE `{db}` CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci', selected=False)
     try:
         c.sql('CREATE TABLE plots(plot_id INT PRIMARY KEY,kavel_nummer VARCHAR(255),in_gebruik TINYINT DEFAULT 1); CREATE TABLE maatregelen(id INT PRIMARY KEY,code VARCHAR(50),omschrijving TEXT); CREATE TABLE ndff_sovon_plotversie(plotversie_id BIGINT UNSIGNED PRIMARY KEY,versie VARCHAR(32),bronbestand VARCHAR(500),bronbestand_sha256 CHAR(64),crs_epsg INT,objectaantal INT);')

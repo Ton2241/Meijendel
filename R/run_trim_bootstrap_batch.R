@@ -140,14 +140,19 @@ run_trim_bootstrap_batch <- function(
   invisible(state)
 }
 
-run_trim_bootstrap_batch_cli <- function(args = commandArgs(trailingOnly = TRUE)) {
+run_trim_bootstrap_batch_cli <- function(args = commandArgs(trailingOnly = TRUE), storage_checked = FALSE) {
   bundle <- normalizePath(script_argument(args, "--bundle"), mustWork = TRUE)
   from <- as.integer(script_argument(args, "--replicate-from"))
   to <- as.integer(script_argument(args, "--replicate-to"))
   output <- script_argument(args, "--output")
+  if (!storage_checked) {
+    source(path.expand("~/Documents/GitHub/Meijendel/R/trial_storage.R"))
+    output <- trial_output(output)
+    trial_output(paste0(output,".partial"));trial_output(paste0(output,".manifest.rds"))
+  }
   context <- readRDS(file.path(bundle, "context.rds"))
   identity <- readRDS(file.path(bundle, "identity.rds"))
-  repo <- normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1L])), ".."), mustWork = TRUE)
+  repo <- if (storage_checked) "/work/input" else normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1L])), ".."), mustWork = TRUE)
   validation_env <- new.env(parent = globalenv())
   sys.source(file.path(repo, "R", "build_trim_bootstrap_bundle.R"), envir = validation_env)
   sys.source(file.path(repo, "R", "validate_trim_bootstrap_bundle.R"), envir = validation_env)

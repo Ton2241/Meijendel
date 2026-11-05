@@ -18,7 +18,7 @@ class NativeServiceTests(unittest.TestCase):
   with tempfile.TemporaryDirectory() as d:
    h=self.hook(Path(d));package=h.root/'package';package.mkdir();(package/'release.json').write_text(json.dumps({'cache':{'root':'data/cache/test.rds'},'historical_cache_rehearsal':True,'mysql':{'source':'data/meijendel.sql'}}))
    class Process:pid=12345
-   with patch.object(n.subprocess,'Popen',side_effect=[Process(),OSError('second start failed')]):
+   with patch.object(h,'guard_postgres'),patch.object(n.subprocess,'Popen',side_effect=[Process(),OSError('second start failed')]):
     with self.assertRaises(OSError):h.start(package)
    self.assertEqual(n.read_json(h.private/'processes.json'),{'website':12345})
 if __name__=='__main__':unittest.main()

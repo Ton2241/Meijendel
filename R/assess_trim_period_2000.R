@@ -1,6 +1,7 @@
 #!/usr/bin/env Rscript
 assess_trim_period_2000 <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==4L);repo<-normalizePath(args[1]);parent<-normalizePath(args[2]);prior<-normalizePath(args[3]);root<-normalizePath(args[4])
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));root<-trial_output(root)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(n in c('compare_trim_index_summaries.R','trim_endpoint_bootstrap.R','trim_period_uncertainty.R','assess_trim_period_uncertainty.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R','build_trim_bootstrap_bundle.R'))source(file.path(repo,'R',n))
  cx<-readRDS(file.path(parent,'input/context.rds'));identity<-readRDS(file.path(root,'identity.rds'));config<-readRDS(file.path(root,'config.rds'));keys<-read.csv(file.path(root,'selected_periods.csv'))

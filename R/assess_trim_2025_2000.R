@@ -9,6 +9,7 @@ long_2000_summary <- function(theta,v) {
 }
 assess_trim_2025_2000 <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==4L);repo<-normalizePath(args[1],mustWork=TRUE);parent<-normalizePath(args[2],mustWork=TRUE);root<-normalizePath(args[3],mustWork=TRUE);out<-args[4]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(n in c('compare_trim_index_summaries.R','trim_endpoint_bootstrap.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R','build_trim_bootstrap_bundle.R','validate_trim_bootstrap_bundle.R'))source(file.path(repo,'R',n))
  dir.create(out,recursive=TRUE,showWarnings=FALSE)

@@ -1014,3 +1014,14 @@ Voor dagelijks gebruik is [`MDs/handboek.md`][24] nu het beste startpunt.
 [22]:	/Users/ton/Documents/GitHub/Meijendel/R/trim_sandra_soorten_en_msi_evg.R
 [23]:	/Users/ton/Documents/GitHub/Meijendel/R/analyse_ecologische_groepen.R
 [24]:	/Users/ton/Documents/GitHub/Meijendel/MDs/handboek.md
+
+## Aanvullende T7-scriptcontrole, 5 november 2026
+
+Lokale proefingangen gebruiken de gedeelde controle uit
+`../VWG_Project/scripts/trial_storage.py`; de volledige scope en behouden
+structurele uitvoer staan in `../VWG_Project/T7_SCRIPTCONTROLE.md`.
+Gebruik voor gerichte tests `scripts/test_local.sh TESTBESTAND ...` met TMPDIR
+in een vooraf geregistreerde T7-map. Nieuwe proefdatabases vragen ook fysiek
+T7-opslag voor de database-instance; alleen een proefnaam volstaat niet.
+Lokale Shiny-imagebouw stopt op macOS zolang Docker Desktop-VM-opslag niet
+als fysieke T7-opslag kan worden vastgesteld. Er is geen daemonconfig gewijzigd.

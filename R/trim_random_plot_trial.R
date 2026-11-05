@@ -86,6 +86,7 @@ random_trial_close <- function(primary,alternative) {
 run_random_plot_trial <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==3L)
  repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-args[3]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(f in c('trim_trend_contract.R','trim_bootstrap_core.R','trim_bridge_core.R','merge_trim_bootstrap_batches.R','compare_trim_zero_count_models.R'))source(file.path(repo,'R',f),local=environment(fit_random_plot))
  criteria<-file.path(repo,'trim/bootstrap/random_kavel_20261103/CRITERIA.md')

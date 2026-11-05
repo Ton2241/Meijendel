@@ -67,6 +67,7 @@ species_pilot_reason_nl <- function(text) {
 if(sys.nframe()==0L) {
   args <- commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L)
   repo <- normalizePath(args[[1L]],mustWork=TRUE);run <- normalizePath(args[[2L]],mustWork=TRUE);out <- args[[3L]]
+  source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
   source(file.path(repo,'R/summarise_trim_bootstrap_pilot.R'))
   source(file.path(repo,'R/merge_trim_bootstrap_batches.R'))
   paths <- list.files(file.path(run,'batches'),pattern='^batch-[0-9]+-[0-9]+\\.rds$',full.names=TRUE)

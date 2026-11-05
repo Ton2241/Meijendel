@@ -44,4 +44,4 @@ docker run --rm --read-only --cpus 0.5 --cpu-shares 128 --pids-limit 256 \
   --memory "$memory_limit" --memory-swap "$memory_limit" \
   --mount "type=bind,src=$input_dir,dst=/work/input,readonly" \
   --mount "type=bind,src=$output_dir,dst=/work/output" \
-  "$image_id" Rscript /work/input/R/run_trim_bootstrap_batch.R "${shifted[@]}"
+  "$image_id" Rscript -e 'source("/work/input/R/run_trim_bootstrap_batch.R");run_trim_bootstrap_batch_cli(commandArgs(TRUE),storage_checked=TRUE)' "${shifted[@]}"

@@ -9,6 +9,8 @@ import os
 import shlex
 import subprocess
 from pathlib import Path
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 
 
 SCRIPT = Path(__file__).with_name("import_external_ecology_sources.py")
@@ -658,6 +660,8 @@ def check_pq_release_retirement() -> int:
     client = Path('/usr/local/mysql/bin/mysql')
     database = f'codex_pq_retirement_{os.getpid()}'
     args = module.mysql_args('meijendel_root') + ['--batch', '--raw', '--skip-column-names']
+    checked_tree(tempfile.gettempdir())
+    checked_tree(module.run_mysql(client, args, 'SELECT @@datadir;'))
     module.run_mysql(client, args, f'CREATE DATABASE `{database}` CHARACTER SET utf8mb4')
     args += [database]
     query = lambda sql: module.run_mysql(client, args, sql)
@@ -750,6 +754,8 @@ def check_pq_release_schema() -> int:
              f'    {command} -e "${{@: -1}}"\n'
              '  fi\n}\n' + '\n'.join(functions) + '\n')
     run = lambda action: subprocess.run(['bash'], input=shell + action, text=True, capture_output=True)
+    checked_tree(tempfile.gettempdir())
+    checked_tree(module.run_mysql(client, args, 'SELECT @@datadir;'))
     module.run_mysql(client, args, f'CREATE DATABASE `{database}` CHARACTER SET utf8mb4')
     try:
         query('CREATE TABLE core(id INT PRIMARY KEY); INSERT INTO core VALUES(1); '
@@ -1082,6 +1088,7 @@ def check_source_separation():
         restore_db = Mock(database='Meijendel_bronnen_herstel_123',
             args=['mysql','--host=127.0.0.1','--port=3306','Meijendel_bronnen_herstel_123'])
         with patch.object(module.subprocess,'run') as create, \
+             patch.object(module,'run_mysql',return_value=str(Path(tmp))) as datadir, \
              patch.object(module.subprocess,'Popen',return_value=process):
             module.restore_source_copy(restore_db,backup)
             assert pipe.getvalue().startswith(b'SET SESSION sql_log_bin=0;\n')

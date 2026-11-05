@@ -6,6 +6,9 @@ from __future__ import annotations
 import subprocess
 import uuid
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -36,6 +39,7 @@ def scalar(sql: str) -> str:
 def main() -> int:
     assert MIGRATION.is_file(), f"migratie ontbreekt: {MIGRATION}"
     assert int(mysql(f"SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='{TEST_DB}';")) == 0
+    checked_tree(mysql('SELECT @@datadir;'))
     mysql(f"CREATE DATABASE {TEST_DB} CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;")
     try:
         mysql(

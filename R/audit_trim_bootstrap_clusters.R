@@ -4,6 +4,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2L) stop("Gebruik: audit_trim_bootstrap_clusters.R SQL_PATH OUTPUT_CSV", call. = FALSE)
 sql_path <- normalizePath(args[[1L]], mustWork = TRUE)
 output_path <- args[[2L]]
+source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));output_path<-trial_output(output_path)
 repo <- normalizePath(file.path(dirname(sub("^--file=", "", grep("^--file=", commandArgs(FALSE), value = TRUE)[1L])), ".."), mustWork = TRUE)
 
 analysis_env <- new.env(parent = globalenv())

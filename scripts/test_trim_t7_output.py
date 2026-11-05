@@ -140,7 +140,7 @@ class EntryPoints(unittest.TestCase):
     def test_plain_directory_cannot_impersonate_volume(self):
         fake = self.root / 'fake-volume'
         fake.mkdir()
-        with patch.object(guard, 'T7', fake), patch.object(guard, 'TRIALS', fake / 'trials'):
+        with patch.object(guard.storage, 'T7', fake), patch.object(guard.storage, 'TRIALS', fake / 'trials'):
             with self.assertRaisesRegex(ValueError, 'gemount'):
                 guard.checked_output(str(fake / 'trials/task/output'))
 

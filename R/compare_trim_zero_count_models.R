@@ -102,6 +102,7 @@ plot_zero_count_curves <- function(curves,names_by_id,out) {
 compare_zero_count_models_cli <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==3L)
  repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-args[3]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(f in c('trim_trend_contract.R','trim_bootstrap_core.R','trim_bridge_core.R','merge_trim_bootstrap_batches.R'))source(file.path(repo,'R',f),local=TRUE)
  manifest<-jsonlite::read_json(file.path(run,'input/bundle_manifest.json'),simplifyVector=TRUE)

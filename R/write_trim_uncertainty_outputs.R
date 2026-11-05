@@ -37,6 +37,10 @@ validate_canonical_trim_manifest <- function(manifest) {
 
 write_trim_uncertainty_outputs <- function(bundle, manifest, output_root, mode = c("fixture", "canonical")) {
   mode <- match.arg(mode)
+  if (mode == "fixture") {
+    source(path.expand("~/Documents/GitHub/Meijendel/R/trial_storage.R"))
+    output_root <- trial_output(output_root)
+  }
   required_bundle <- c(
     "species_trends", "species_bridges", "bridge_sensitivity", "historical_core_sensitivity",
     "group_trends", "functional_group_trends", "sandra_species_trends", "sandra_group_trends", "diagnostics"

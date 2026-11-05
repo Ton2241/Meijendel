@@ -37,6 +37,7 @@ endpoint_interval_stable <- function(previous,current) {
 }
 run_endpoint_assessment <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)%in%3:4);repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-args[3];planned<-if(length(args)==4)as.integer(args[4]) else 50L
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(f in c('compare_trim_index_summaries.R','trim_bootstrap_core.R','merge_trim_bootstrap_batches.R'))source(file.path(repo,'R',f))
  m<-jsonlite::read_json(file.path(run,'input/bundle_manifest.json'),simplifyVector=TRUE)

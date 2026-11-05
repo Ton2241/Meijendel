@@ -7,6 +7,8 @@ only accepts a private MySQL socket plus a vwg_release_ PostgreSQL database.
 """
 import argparse,functools,hashlib,http.server,importlib.util,json,os,re,secrets,signal,subprocess,sys,time,urllib.request,urllib.parse
 from pathlib import Path
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 REPO=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('integral',REPO/'deploy/integral_release.py');release=importlib.util.module_from_spec(spec);spec.loader.exec_module(release)
 MYSQL='/usr/local/mysql/bin/mysql';DUMP='/usr/local/mysql/bin/mysqldump'
@@ -15,8 +17,8 @@ def run(args,**kw):return subprocess.run([str(x) for x in args],check=True,**kw)
 def read_json(path):return json.loads(Path(path).read_text())
 
 class NativeHooks:
- def __init__(self,root,website,fail=False):
-  self.root=Path(root).resolve();self.website=Path(website).resolve();self.private=self.root/'private';self.config=read_json(self.private/'native.json');self.pg=Path(self.config['pg_bin']);self.fail=fail
+ def __init__(self,root,website,fail=False,*,allow_legacy_cleanup=False):
+  self.root=Path(root).resolve() if allow_legacy_cleanup else checked_tree(root);self.website=Path(website).resolve() if website is not None else None;self.private=self.root/'private';self.config=read_json(self.private/'native.json');self.pg=Path(self.config['pg_bin']);self.fail=fail
   self.socket=self.private/'mysql/mysql.sock';self.db=self.config['postgres_database']
   if not re.fullmatch('vwg_release_[a-z0-9_]+',self.db):raise ValueError('Alleen een lokale proefdatabase')
   self.env=os.environ|{'PGHOST':'127.0.0.1','PATH':str(self.pg)+':'+os.environ['PATH']}
@@ -25,8 +27,14 @@ class NativeHooks:
  def pgsql(self,text,database=None):
   return run([self.pg/'psql','-X','-qAt','-v','ON_ERROR_STOP=1','-d',database or self.db,'-c',text],env=self.env,text=True,capture_output=True).stdout.strip()
  def guard_mysql(self):
-  actual=Path(self.sql('SELECT @@datadir;').strip()).resolve()
+  checked_tree(self.root)
+  actual=checked_tree(self.sql('SELECT @@datadir;').strip())
   if actual!=self.private/'mysql/data':raise ValueError('MySQL is niet de geïsoleerde proefinstance')
+ def guard_postgres(self):
+  checked_tree(self.root)
+  checked_tree(self.pgsql('SHOW data_directory'))
+  for path in self.pgsql("SELECT pg_tablespace_location(oid) FROM pg_tablespace WHERE pg_tablespace_location(oid) <> ''").splitlines():
+   checked_tree(path)
  def mysql_fingerprint(self):
   names=self.sql("SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema='Meijendel' ORDER BY TABLE_NAME;").splitlines()
   if not all(re.fullmatch('[A-Za-z0-9_]+',n) for n in names):raise ValueError('Onverwachte tabelnaam')
@@ -52,6 +60,7 @@ class NativeHooks:
     run([MYSQL,'--no-defaults','--protocol=SOCKET','--socket='+str(self.socket),'-uroot','--binary-mode=1','Meijendel'],stdin=source,stdout=log,stderr=log)
   finally:self.sql('ALTER INSTANCE ENABLE INNODB REDO_LOG; SET GLOBAL innodb_flush_log_at_trx_commit=1;')
  def restore(self,path):
+  self.guard_postgres()
   m=read_json(path/'backup.json')
   if release.sha(path/'mysql.sql')!=m['mysql_sha256'] or release.sha(path/'cms.dump')!=m['cms_sha256']:raise ValueError('Herstelbronchecksum wijkt af')
   self.restore_mysql(path/'mysql.sql')
@@ -72,6 +81,7 @@ class NativeHooks:
    b=blocks[name];start=b.index('/*!50001 CREATE');stmt=b[start:b.index(';',start)+1];stmt=re.sub(r'DEFINER=`[^`]+`@`[^`]+`','',stmt).replace('`meijendel`.','`Meijendel`.')
    self.sql('USE Meijendel; DROP VIEW IF EXISTS `'+name+'`;'+stmt)
  def apply(self,package):
+  self.guard_postgres()
   m=read_json(package/'release.json');self.restore_mysql(package/m['mysql']['source']);self.install_website_objects(package/m['mysql']['website_objects'])
   self.sql("CREATE TABLE Meijendel._release_probe(id int primary key,value varchar(100));INSERT INTO Meijendel._release_probe VALUES(1,'"+m['release_id']+"');")
   migrations=m['cms']['migrations']
@@ -104,6 +114,7 @@ class NativeHooks:
   result=subprocess.run(['ps','-p',str(pid),'-o','stat='],text=True,capture_output=True)
   return result.returncode==0 and bool(result.stdout.strip()) and not result.stdout.strip().startswith('Z')
  def start(self,package):
+  self.guard_postgres()
   m=read_json(package/'release.json');runtime=self.root/'runtime';runtime.mkdir(exist_ok=True)
   env=self.env|dict(MEIJENDEL_BOOTSTRAP_RELEASE='1',MEIJENDEL_RELEASE_MANIFEST=str(package/'release.json'),MEIJENDEL_BIND_HOST='127.0.0.1',MEIJENDEL_SQL_PATH=str(package/m['mysql']['source']),MEIJENDEL_SQL_MANIFEST_PATH=str(package/(m['mysql']['source']+'.manifest')),MEIJENDEL_CACHE_MANIFEST_PATH=str(package/Path(m['cache']['root']).with_suffix('.manifest')),MEIJENDEL_REQUIRE_PREBUILT_CACHE='1',MEIJENDEL_ALLOW_HISTORICAL_REHEARSAL='1' if m['historical_cache_rehearsal'] else '0',MEIJENDEL_CACHE_DIR=str(runtime/'shiny-cache'),VWG_EMAIL_DELIVERY_DISABLED='1',PYTHONDONTWRITEBYTECODE='1',DATABASE_URL='postgresql://127.0.0.1/'+self.db,MEIJENDEL_MYSQL_HOST='127.0.0.1',MEIJENDEL_MYSQL_PORT='3306',MEIJENDEL_MYSQL_DATABASE='Meijendel',MEIJENDEL_MYSQL_SOCKET=str(self.socket),MEIJENDEL_MYSQL_USER='release_reader',MEIJENDEL_MYSQL_PASSWORD=self.config['mysql_password'])
   website_code=runtime/'start_website.py';website_code.write_text("import sys,os\nfrom pathlib import Path\np=Path(os.environ['MEIJENDEL_RELEASE_MANIFEST']).parent\nsys.path.insert(0,str(p/'website'))\nos.chdir(p/'website')\nfrom app import main\nmain.GROUP_DENSITY_CSV=p/'www/groepen_grafieken/groep_dichtheid.csv'\nmain.GROUP_SPECIES_CSV=p/'www/groepen_grafieken/groep_soorten.csv'\nimport uvicorn\nuvicorn.run(main.app,host='127.0.0.1',port=18197)\n")
@@ -159,8 +170,9 @@ def serve_dashboard(root):
 
 def main():
  p=argparse.ArgumentParser(description=__doc__);p.add_argument('action',choices=['serve-dashboard','activate','rollback','check','stop','exercise','exercise-recovery']);p.add_argument('--root',type=Path,required=True);p.add_argument('--website-root',type=Path);p.add_argument('--candidate',type=Path);p.add_argument('--fail-health',action='store_true');a=p.parse_args()
+ a.root=a.root.resolve() if a.action=='stop' else checked_tree(a.root)
  if a.action=='serve-dashboard':return serve_dashboard(a.root)
- hooks=NativeHooks(a.root,a.website_root,a.fail_health)
+ hooks=NativeHooks(a.root,a.website_root,a.fail_health,allow_legacy_cleanup=a.action=='stop')
  if a.action=='activate':release.activate(a.root,a.candidate,hooks)
  elif a.action in ('exercise','exercise-recovery'):
   if a.action=='exercise':
@@ -177,6 +189,7 @@ def main():
   # then fail after the three service checks, without changing migration hashes.
   if read_json(old/'release.json')['source_hash']!=read_json(a.candidate/'release.json')['source_hash']:raise ValueError('Foutproef vraagt dezelfde bevroren wetenschappelijke bron')
   def partial_write(package):
+   hooks.guard_postgres()
    rid=read_json(package/'release.json')['release_id']
    hooks.sql("UPDATE Meijendel._release_probe SET value='"+rid+"';")
    hooks.pgsql("UPDATE app._release_probe SET value='"+rid+"';")

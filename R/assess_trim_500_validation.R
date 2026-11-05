@@ -14,6 +14,7 @@ endpoint_2000_decision <- function(theta,draws) {
 }
 assess_trim_500_validation <- function(args=commandArgs(trailingOnly=TRUE)) {
  stopifnot(length(args)==3);repo<-normalizePath(args[1],mustWork=TRUE);run<-normalizePath(args[2],mustWork=TRUE);out<-args[3]
+ source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  source(file.path(repo,'R/trim_endpoint_bootstrap.R'))
  run_endpoint_assessment(c(repo,run,file.path(out,'raw_assessment'),'500'))

@@ -2,6 +2,9 @@
 """Durable per-species report; does not run fits or publish anything."""
 import argparse,csv,hashlib,json,shutil
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 
 def load(p):
     with p.open(newline='',encoding='utf-8') as f:return list(csv.DictReader(f))
@@ -16,7 +19,7 @@ def dump(p,rows):
         w=csv.DictWriter(f,fieldnames=list(rows[0]));w.writeheader();w.writerows(rows)
 def main():
     parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--run',type=Path,required=True);parser.add_argument('--output',type=Path,required=True);a=parser.parse_args()
-    repo=Path(__file__).resolve().parents[1];old=repo/'trim/bootstrap/species_2025_2000_20261103';source=a.run/'assessment';out=a.output
+    repo=Path(__file__).resolve().parents[1];old=repo/'trim/bootstrap/species_2025_2000_20261103';source=checked_tree(a.run/'assessment');out=checked_tree(a.output)
     out.mkdir(parents=True,exist_ok=True)
     p,y,l=load(source/'periods.csv'),load(source/'annual_indices.csv'),load(old/'long_per_species.csv');op,oy=load(old/'periods.csv'),load(old/'annual_indices.csv');m=json.loads((source/'period_manifest.json').read_text());v=json.loads((source/'result_verification.json').read_text())
     assert len(p)==312 and len(y)==10608 and len(l)==156 and v['all_bounds_independently_recomputed']

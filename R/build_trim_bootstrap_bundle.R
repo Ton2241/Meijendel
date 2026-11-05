@@ -174,6 +174,7 @@ build_trim_bootstrap_bundle_cli <- function(args = commandArgs(trailingOnly = TR
   repo <- normalizePath(file.path(dirname(script_file), ".."), mustWork = TRUE)
   sql_path <- normalizePath(bundle_argument(args, "--sql"), mustWork = TRUE)
   bundle_dir <- bundle_argument(args, "--bundle")
+  source(path.expand("~/Documents/GitHub/Meijendel/R/trial_storage.R"));bundle_dir<-trial_output(bundle_dir)
   end_year <- as.integer(bundle_argument(args, "--end-year"))
   planned <- as.integer(bundle_argument(args, "--planned-replicates"))
   run_id <- bundle_argument(args, "--run-id")

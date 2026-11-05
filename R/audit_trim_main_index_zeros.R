@@ -7,6 +7,7 @@ if(length(args)==4L&&!refresh_status)stop("Onbekende optie")
 repo <- normalizePath(args[1],mustWork=TRUE)
 run <- normalizePath(args[2],mustWork=TRUE)
 out <- args[3]
+source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
 .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
 stopifnot(as.character(utils::packageVersion('rtrim'))=='2.3.1')
 for(f in c('trim_trend_contract.R','trim_bootstrap_core.R','trim_bridge_core.R')) source(file.path(repo,'R',f))

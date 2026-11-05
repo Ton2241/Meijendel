@@ -165,6 +165,7 @@ if (sys.nframe() == 0L) {
   args <- commandArgs(trailingOnly = TRUE)
   if (length(args) < 3L) stop("Gebruik: summarise_trim_bootstrap_pilot.R OUTPUT_DIR EXPECTED_N BATCH...", call. = FALSE)
   output_dir <- args[[1L]]
+  source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));output_dir<-trial_output(output_dir)
   expected_n <- as.integer(args[[2L]])
   if (!is.finite(expected_n) || expected_n < 1L) stop("EXPECTED_N moet positief zijn.", call. = FALSE)
   summary <- summarise_trim_bootstrap_pilot(args[-c(1L, 2L)], seq_len(expected_n))

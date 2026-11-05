@@ -2,6 +2,7 @@
 # Gezamenlijke gevoeligheidsproef; geen bootstrap of wijziging van hoofdroute.
 args<-commandArgs(trailingOnly=TRUE);stopifnot(length(args)==3L)
 repo<-normalizePath(args[[1]],mustWork=TRUE);cache_path<-normalizePath(args[[2]],mustWork=TRUE);out<-args[[3]]
+source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
 e<-new.env(parent=globalenv());e$commandArgs<-function(trailingOnly=FALSE)paste0("--file=",repo,"/R/trim_soorten_en_msi_evg.R")
 for(f in c("trim_soorten_en_msi_evg.R","trim_bootstrap_core.R","trim_bridge_core.R","audit_trim_bridge_windows.R","build_trim_bootstrap_bundle.R"))sys.source(file.path(repo,"R",f),envir=e)
 stopifnot(digest::digest(file=cache_path,algo="sha256")=="071e66821f706ae1c0c37b11b3295ddde84a1872b194f9a09f43e595b50252d8")

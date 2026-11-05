@@ -5,6 +5,7 @@ stopifnot(length(args)==3L)
 repo <- normalizePath(args[[1L]],mustWork=TRUE)
 cache_path <- normalizePath(args[[2L]],mustWork=TRUE)
 out <- args[[3L]]
+source(path.expand('~/Documents/GitHub/Meijendel/R/trial_storage.R'));out<-trial_output(out)
 e <- new.env(parent=globalenv())
 e$commandArgs <- function(trailingOnly=FALSE) paste0('--file=',repo,'/R/trim_soorten_en_msi_evg.R')
 .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))

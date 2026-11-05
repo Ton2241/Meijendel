@@ -8,6 +8,10 @@ Only the exact scratch schema below is created and, after success, removed.
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
+import sys
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 import re
 import subprocess
 
@@ -60,6 +64,7 @@ def main() -> None:
     if not args.apply:
         print(f"DRY RUN: alleen {SCRATCH}; gebruik --apply voor de herstelproef")
         return
+    checked_tree(sql('SELECT @@datadir')[0][0])
     if int(sql(f"SELECT COUNT(*) FROM information_schema.schemata WHERE schema_name='{SCRATCH}'")[0][0]):
         raise RuntimeError(f"Proefschema {SCRATCH} bestaat al; niets overschreven")
 

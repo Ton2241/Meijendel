@@ -4,6 +4,10 @@
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
+import sys
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 
 from import_external_ecology_sources import central_query_routes, central_query_triggers_sql
 from migrate_ndff_mossen_korstmossen import new_table_sql, preflight, query, swap_procedure_sql
@@ -49,6 +53,7 @@ def main() -> None:
     if not args.apply:
         print(f"DRY RUN: proefschema {SCRATCH}; levende tabellen blijven ongemoeid")
         return
+    checked_tree(query('SELECT @@datadir')[0][0])
     if scalar("SELECT COUNT(*) FROM information_schema.SCHEMATA "
               f"WHERE SCHEMA_NAME='{SCRATCH}'"):
         raise RuntimeError(f"Proefschema {SCRATCH} bestaat al; niets overschreven")

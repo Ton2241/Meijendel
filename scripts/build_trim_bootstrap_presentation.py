@@ -2,7 +2,7 @@
 """Render an inspectable diagnostic candidate from assessed, frozen CSV results.
 
 No TRIM refits or new bootstrap; descriptive summaries only.
-No promotion to formal uncertainty. Outputs stay in outputs/.
+No promotion to formal uncertainty. Trial outputs stay on the mounted T7.
 """
 import argparse
 import csv
@@ -10,6 +10,9 @@ import hashlib
 import json
 import math
 from pathlib import Path
+import sys
+sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+from trial_storage import checked_tree
 
 FILES = {'long': 'long_per_species.csv', 'periods': 'periods.csv', 'annual': 'annual_indices.csv'}
 TEXT = {'soort_naam','period','baseline_status','baseline_model_reason','reasons','status',
@@ -151,6 +154,7 @@ def main():
     parser.add_argument('--parent-manifest',type=Path,required=True)
     parser.add_argument('--selection',type=Path,required=True)
     args = parser.parse_args()
+    args.output = checked_tree(args.output)
     parent = json.loads(args.parent_manifest.read_text())
     selection = json.loads(args.selection.read_text())
     bundle = build_bundle(args.source,args.period_source,int(selection['year_from']),int(parent['analysis_end_year']))

@@ -49,7 +49,7 @@ state <- list(
 )
 path <- file.path(tmp, "batch-000001-000002.rds")
 saveRDS(state, path)
-hash <- sub("[[:space:]].*$", "", system2("shasum", c("-a", "256", path), stdout = TRUE)[[1L]])
+hash <- sub("[[:space:]].*$", "", system2("shasum", c("-a", "256", shQuote(path)), stdout = TRUE)[[1L]])
 saveRDS(list(identity = identity, replicate_ids = 1:2, output_sha256 = hash), paste0(path, ".manifest.rds"))
 
 summary <- env$summarise_trim_bootstrap_pilot(path, expected_ids = 1:2)
@@ -88,7 +88,7 @@ for(i in seq_along(state$results)) {
  state$results[[i]]$species$result_reason <- if(i==1L)'berekenbaar' else 'post:model_mislukt'
 }
 saveRDS(state,path)
-hash <- sub('[[:space:]].*$','',system2('shasum',c('-a','256',path),stdout=TRUE)[[1L]])
+hash <- sub('[[:space:]].*$','',system2('shasum',c('-a','256',shQuote(path)),stdout=TRUE)[[1L]])
 saveRDS(list(identity=identity,replicate_ids=1:2,output_sha256=hash),paste0(path,'.manifest.rds'))
 only_species <- env$summarise_trim_bootstrap_pilot(path,1:2)
 stopifnot(nrow(only_species$groups)==0L,only_species$species$primary_invalid_reason=='post:model_mislukt')

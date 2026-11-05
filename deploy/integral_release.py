@@ -158,7 +158,14 @@ def rollback(root,hooks):
 def build_package(recipe,target):
     """Assemble existing validated products, never recalculate or relabel data."""
     import shutil
-    target=Path(target);repo=Path(recipe['analysis_root']);website=Path(recipe['website_root'])/'website/vwg-m-linux-app'
+    target=Path(target)
+    if recipe['mode']=='local_rehearsal':
+        # Imported lazily: the shared coordinator also runs on the production VPS.
+        import sys
+        sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
+        from trial_storage import checked_tree
+        target=checked_tree(target)
+    repo=Path(recipe['analysis_root']);website=Path(recipe['website_root'])/'website/vwg-m-linux-app'
     initial=json.loads((Path(recipe['bootstrap_root'])/'manifest.json').read_text())
     if (initial['year_from'],initial['year_to'])!=(recipe['year_from'],recipe['year_to']):raise ValueError('Bootstrapjaargrenzen wijken af')
     if recipe['mode']=='production' and recipe.get('historical_cache_rehearsal'):raise ValueError('Historische proefcache is geen productiecache')

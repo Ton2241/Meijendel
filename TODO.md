@@ -1049,3 +1049,13 @@ De regressies staan in `scripts/test_trim_t7_output.py`. Historische uitvoer,
 brondata, databases en productie zijn niet opnieuw opgebouwd of gewijzigd.
 Het proefregister op T7 bewaart het testbewijs; de registerplicht blijft onderdeel
 van de voorbereiding van iedere nieuwe proef. Zie de README-sectie T7-uitvoer.
+
+
+## 5 november 2026 — aanvullende T7-scriptcontrole
+
+Afgerond: overige lokale R-proefingangen, native releaseproeven, lokale
+proefpakketten, GIS-proefschema's en tijdelijke bouw-/testopslag zijn aan de
+projectbrede T7-controle gekoppeld. Proefdatabasecreatie stopt vóór mutatie
+wanneer de echte datamap buiten T7 ligt. Historische resultaten en canonieke
+brondata zijn niet herberekend. Scope, tests en de concrete beperking van lokale
+Docker Desktop-imagebouw: `../VWG_Project/T7_SCRIPTCONTROLE.md`.
