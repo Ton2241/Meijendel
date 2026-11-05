@@ -1038,3 +1038,14 @@ Alle 156 soorten uit de bewaarde ontwikkelbron 1958–2025 blijven zichtbaar: 31
 Voorafcriteria: `32123615`. De oorspronkelijke 500 matrices zijn exact behouden; 300 nieuwe batches met IDs 501–2000 zijn gecontroleerd. Alle bandgrenzen en stabiliteitsvlaggen zijn onafhankelijk nagerekend. Geen formele 95%-vrijgave, gelijktijdige jaarband of nieuwe lange-trendmarge. Bronsteun, referentiejaarproblemen, modelaanvulling en uitval blijven per soort vermeld. Zie `trim/bootstrap/periods_2025_2000_20261104/README.md`, `PER_SOORT.md` en de volledige CSV’s.
 
 De nieuwe uitvoer is aangesloten op hetzelfde lokale bootstrapblok voor website, dashboard en Shiny. De kandidaat bindt component-runidentiteiten, broncontext en checksums van invoer en consumenten. Tons vaste afspraak over integrale voorbereiding voor één latere 2026-actualisering is in beide repo-AGENTS en geheugen vastgelegd. Officiële 2026-validatie, verse bronproducten, schattergebonden intervalvrijgave, gezamenlijke releasecontroles en expliciet publicatieakkoord blijven poorten. Geen database-, export/cache-, groeps- of VPS-wijziging.
+
+
+## 5 november 2026 — T7-controle TRIM-startscripts
+
+Afgerond: de drie opgegeven TRIM-startscripts controleren vóór uitvoermapaanmaak
+mount en fysiek pad via `scripts/check_trim_t7_output.py`. De worker begrenst
+ook het doorgestuurde batchdoel en weigert een onbekende backend vóór aanmaak.
+De regressies staan in `scripts/test_trim_t7_output.py`. Historische uitvoer,
+brondata, databases en productie zijn niet opnieuw opgebouwd of gewijzigd.
+Het proefregister op T7 bewaart het testbewijs; de registerplicht blijft onderdeel
+van de voorbereiding van iedere nieuwe proef. Zie de README-sectie T7-uitvoer.

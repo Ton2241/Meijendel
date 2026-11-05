@@ -4,7 +4,7 @@ set -euo pipefail
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 probe="$repo/scripts/probe_trim_bootstrap_worker.sh"
 dispatch="$repo/scripts/dispatch_trim_bootstrap_batches.sh"
-tmp="$(mktemp -d /tmp/trim-workers-test.XXXXXX)"
+tmp="$(mktemp -d "${TMPDIR:-/tmp}/trim-workers-test.XXXXXX")"
 trap 'rm -rf "$tmp"' EXIT
 
 write_status() {

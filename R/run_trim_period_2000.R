@@ -9,7 +9,14 @@ direct_independent_period <- function(data,draw,years) {
       index=data.frame(jaar=as.integer(names(v)),index_value=as.numeric(v)))
 }
 run_trim_period_2000 <- function(args=commandArgs(trailingOnly=TRUE)) {
- stopifnot(length(args)==4L);repo<-normalizePath(args[1]);parent<-normalizePath(args[2]);prior<-normalizePath(args[3]);root<-args[4]
+ stopifnot(length(args)==4L);repo<-normalizePath(args[1],mustWork=TRUE)
+ check_t7<-function(path,extra=character()) {
+  guard<-system2('python3',shQuote(c(file.path(repo,'scripts/check_trim_t7_output.py'),path,extra)),stdout=TRUE,stderr=TRUE)
+  if(!is.null(attr(guard,'status')))stop(paste(guard,collapse='\n'),call.=FALSE)
+  guard[[1L]]
+ }
+ root<-check_t7(args[4],c('--check-child','identity.rds','--check-child','config.rds','--check-child','selected_periods.csv','--check-child','reproduction.rds','--check-child','batches'))
+ parent<-normalizePath(args[2]);prior<-normalizePath(args[3])
  .libPaths(c(path.expand('~/Library/R/arm64/4.5/library'),.libPaths()))
  for(n in c('trim_trend_contract.R','trim_bootstrap_core.R','trim_bridge_core.R','run_trim_bootstrap_batch.R','build_trim_bootstrap_bundle.R','validate_trim_bootstrap_bundle.R','trim_period_uncertainty.R'))source(file.path(repo,'R',n))
  validate_trim_bootstrap_engine(file.path(parent,'input'),repo);validate_trim_bootstrap_engine(file.path(prior,'input'),repo)
@@ -43,6 +50,7 @@ run_trim_period_2000 <- function(args=commandArgs(trailingOnly=TRUE)) {
   to<-from+4L;oldpath<-file.path(prior,'batches',sprintf('batch-%06d-%06d.rds',from,to));om<-readRDS(paste0(oldpath,'.manifest.rds'))
   stopifnot(bundle_sha256_file(oldpath)==om$output_sha256,identical(om$identity,oldid));old<-readRDS(oldpath)$results
   path<-file.path(root,'batches',basename(oldpath))
+  path<-check_t7(path,'--batch')
   result<-run_trim_bootstrap_batch(identity,from:to,path,replicate_fn=function(n){
    r<-old[[as.character(n)]];draw<-make_stratified_cluster_draw(cx$clusters,n,cx$config$run_seed);stopifnot(identical(draw,r$draw))
    rows<-indices<-vector('list',nrow(keys))

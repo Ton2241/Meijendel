@@ -10,7 +10,7 @@ script_argument <- function(args, name, required = TRUE) {
 }
 
 batch_sha256_file <- function(path) {
-  output <- system2("shasum", c("-a", "256", path), stdout = TRUE, stderr = TRUE)
+  output <- system2("shasum", c("-a", "256", shQuote(path)), stdout = TRUE, stderr = TRUE)
   hash <- if (length(output)) sub("[[:space:]].*$", "", output[[1L]]) else ""
   if (!grepl("^[0-9a-f]{64}$", hash)) stop("Batchhash kon niet worden bepaald.", call. = FALSE)
   hash

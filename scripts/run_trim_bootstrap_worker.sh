@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 backend=""
 input_dir=""
 output_dir=""
@@ -21,16 +22,18 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 [[ -n "$backend" && -d "$input_dir" && -n "$output_dir" ]] || { echo "Onvolledige workerconfiguratie" >&2; exit 2; }
-mkdir -p "$output_dir"
+[[ "$backend" == local || "$backend" == docker ]] || { echo "Onbekende backend" >&2; exit 2; }
+output_dir="$(python3 "$repo/scripts/check_trim_t7_output.py" "$output_dir" --worker-backend "$backend" -- "${shifted[@]}")"
 
 if [[ "$backend" == local ]]; then
+  mkdir -p "$output_dir"
   exec nice -n 15 Rscript "$input_dir/R/run_trim_bootstrap_batch.R" "${shifted[@]}"
 fi
-[[ "$backend" == docker ]] || { echo "Onbekende backend" >&2; exit 2; }
 [[ "$image_id" =~ ^[^[:space:]]+@sha256:[0-9a-f]{64}$ || "$image_id" =~ ^sha256:[0-9a-f]{64}$ ]] || { echo "Containerimage is niet digestvast" >&2; exit 2; }
 [[ "$memory_limit" =~ ^[1-9][0-9]*[mMgG]$ ]] || { echo "Ongeldige geheugenlimiet" >&2; exit 2; }
 [[ -n "$remote_root" ]] || { echo "remote_root ontbreekt" >&2; exit 2; }
 
+mkdir -p "$output_dir"
 lock="$remote_root/bootstrap.lock"
 production_lock="/srv/vwgm/deploy-state/production.lock"
 mkdir "$lock" 2>/dev/null || { echo "bootstraplock actief" >&2; exit 3; }

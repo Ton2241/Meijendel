@@ -6,7 +6,7 @@ merge_trim_bootstrap_batches <- function(paths, expected_ids) {
     sidecar <- paste0(path, ".manifest.rds")
     if (!file.exists(path) || !file.exists(sidecar)) stop("Batch of batchmanifest ontbreekt: ", path, ".", call. = FALSE)
     manifest <- readRDS(sidecar)
-    output <- system2("shasum", c("-a", "256", path), stdout = TRUE, stderr = TRUE)
+    output <- system2("shasum", c("-a", "256", shQuote(path)), stdout = TRUE, stderr = TRUE)
     hash <- sub("[[:space:]].*$", "", output[[1L]])
     if (!identical(hash, manifest$output_sha256)) stop("Batchchecksum wijkt af: ", path, ".", call. = FALSE)
     list(path = path, manifest = manifest, state = readRDS(path))

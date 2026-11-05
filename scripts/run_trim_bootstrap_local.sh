@@ -19,6 +19,7 @@ done
 [[ "$batch_size" =~ ^[1-9][0-9]*$ ]] || { echo "--batch-size moet positief zijn" >&2; exit 2; }
 [[ -n "$run_root" && -n "$sql_path" ]] || { echo "--run-root en --sql zijn verplicht" >&2; exit 2; }
 [[ -f "$sql_path" ]] || { echo "SQL-bron ontbreekt" >&2; exit 2; }
+run_root="$(python3 "$repo/scripts/check_trim_t7_output.py" "$run_root" --check-child batches)"
 bundle="$run_root/input_bundle"
 [[ -f "$bundle/context.rds" && -f "$bundle/identity.rds" ]] || {
   echo "Runbundle ontbreekt; maak eerst de gevalideerde input_bundle voor deze SQL-bron." >&2
@@ -31,6 +32,7 @@ while (( from <= replicates )); do
   to=$((from + batch_size - 1))
   (( to > replicates )) && to=$replicates
   output=$(printf '%s/batches/batch-%06d-%06d.rds' "$run_root" "$from" "$to")
+  output="$(python3 "$repo/scripts/check_trim_t7_output.py" "$output" --batch)"
   Rscript "$repo/R/run_trim_bootstrap_batch.R" --bundle "$bundle" --replicate-from "$from" --replicate-to "$to" --output "$output"
   from=$((to + 1))
 done

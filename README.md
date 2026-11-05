@@ -341,6 +341,31 @@ python3 gis/scripts/import_ndff_protocolkwaliteit.py \
 python3 gis/scripts/import_ndff_protocolkwaliteit.py --audit-sovon-avimap-vogels
 ```
 
+## T7-uitvoer bij TRIM-proeven
+
+`R/run_trim_period_2000.R` (vierde argument),
+`scripts/run_trim_bootstrap_local.sh` (`--run-root`) en
+`scripts/run_trim_bootstrap_worker.sh` (`--output-dir` én doorgestuurd `--output`)
+controleren vóór mapaanmaak de echte T7-mount en het fysieke uitvoerpad.
+Gebruik een eigen taakmap met datum onder
+`/Volumes/T7 Data/Home_Ton/Proefomgevingen/`; registreer de proef vooraf in
+`REGISTER.json` volgens `VWG_Project/workflow.md`. De padcontrole registreert
+zelf geen nieuwe proef. Relatieve paden, uitvoer buiten deze locatie en
+symlinkontsnappingen worden geweigerd. Er is geen lokale uitwijk.
+
+De worker controleert eerst de backend. Bij Docker ligt `--output` onder
+`/work/output/`, gekoppeld aan de gecontroleerde T7-map op de host. De worker
+geeft geen algemene uitzondering voor een Linux- of VPS-pad.
+Beide shellstarters roepen het batchscript aan, niet het periodescript.
+
+Gerichte regressies: `python3 scripts/test_trim_t7_output.py`, met `TMPDIR`
+onder een geregistreerde T7-testmap. Alleen synthetische fixtures; R en Docker
+worden in de positieve startertests vervangen door argumentregistratie.
+De bestaande worker- en hervattests blijven de batchwerking controleren.
+De R-checksumfuncties quoten paden vanwege de spatie in `T7 Data`.
+Nieuwe runs vragen een bundle met de actuele enginehashes; wijzig geen
+historische manifests of resultaten om een hashcontrole te passeren.
+
 ## Wat is de normale werkvolgorde?
 
 De praktische volgorde is:
