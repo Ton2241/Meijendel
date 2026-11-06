@@ -608,6 +608,26 @@ in de NDFF-export en zijn niet aangevuld. Controle vindt plaats met
 Methodische bronnen: [NDFF 11.201](https://ndff.nl/natuurdata/waarnemen-en-aanleveren/protocollen/11-201-meetnet-bospaddenstoelen-nem/)
 en de [historische handleiding Paddestoelenmonitoring](https://www.netwerkecologischemonitoring.nl/wp-content/uploads/2017/08/Handleiding-paddenstoelen.pdf).
 
+Op 6 november 2026 antwoordde Ronald Morsink namens Paddenstoelenonderzoek
+Nederland op de vraag van 23 september naar aanvullende Meijendel-gegevens voor
+`11.201` en `11.202`: voor aanvullende informatie en gegevens verwijst hij naar
+de NDFF; zijn organisatie kan deze niet langs een andere weg delen. De
+rechtstreekse bronhouderuitvraag is daarmee afgesloten, zonder nieuwe levering.
+Dit antwoord bevestigt niet dat de NDFF de ontbrekende oorspronkelijke
+meetpunt-, bezoek- en tellerscopegegevens bezit. De NDFF had eerder gemeld dat
+zij niet alle oorspronkelijke meetgegevens van bronorganisaties ontvangt.
+De [NMV-invoeruitleg](https://www.mycologen.nl/onderzoek/kartering/paka_nl/)
+beschrijft formulieren en bezoeken in de NDFF Verspreidingsatlas. De publieke
+[bezoekpagina](https://www.verspreidingsatlas.nl/waarnemingen/bezoeken) vereist
+echter inloggen; de ontvangen FFV-export bevat de oorspronkelijke formulier-
+en bezoekcodes niet. Daarmee is voor de Meijendel-reeksen uit 1999-2025 niet
+vastgesteld of de bovenliggende gegevens bij NDFF beschikbaar en exporteerbaar
+zijn. Vraag de NDFF eenmalig en uitsluitend of voor `11.201` en `11.202` de
+oorspronkelijke formulier-/bezoekgegevens en gevolgde soorten per bezoek
+beschikbaar zijn en hoe die kunnen worden geleverd; laat een negatief antwoord
+voor deze protocollen bevestigen. Herhaal de brede gegevensvraag niet. De
+bestaande reconstructies, nulregels en analysebeperkingen zijn niet gewijzigd.
+
 ## Toepassing op beveiligde levering 58679
 
 De op 10 september 2026 ontvangen levering bevestigt de protocolaudit. Van de

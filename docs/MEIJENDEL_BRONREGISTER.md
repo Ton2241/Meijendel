@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 4 november 2026.**
+**Stand: 6 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -394,6 +394,8 @@ De dekkingscontrole van 17 oktober 2026 verdeelt deze 98 bezoeken uit 2010–202
 **Wat kan nu?** Positieve aanwezigheid en voorlopige vergelijking van vaste meetpunten
 
 **Wat ontbreekt voor zelfstandige trends?** Volledige bezoeken en het per teller gevolgde soortenbereik; geen vruchtlichaam is bovendien niet hetzelfde als geen mycelium
+
+**Aanvullende gegevens.** Ronald Morsink (Paddenstoelenonderzoek Nederland) antwoordde op 6 november 2026 dat aanvullende meetnetgegevens uitsluitend via de NDFF kunnen worden gedeeld. Daarmee is de rechtstreekse uitvraag gesloten; het antwoord bevestigt niet dat de NDFF de ontbrekende bezoeken en soortenselectie daadwerkelijk bezit. De 4.720 ontvangen records en hun huidige analysekwalificatie blijven ongewijzigd. De [NMV-invoeruitleg](https://www.mycologen.nl/onderzoek/kartering/paka_nl/) beschrijft formulieren en bezoeken in de NDFF Verspreidingsatlas, maar de publieke bezoekpagina vereist inloggen. De ontvangen Meijendel-export bevat deze koppelsleutels niet. Een eenmalige, gerichte vraag aan de NDFF over de beschikbaarheid en export van de oorspronkelijke formulieren, bezoeken en gevolgde soorten voor `11.201` en `11.202` is daarom de resterende stap.
 
 #### 1.5.16. Weekdieren
 

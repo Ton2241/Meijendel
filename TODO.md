@@ -654,9 +654,15 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
 - `11.201` bevat na onderdrukking van 473 parallelle presentieregels 509
   canonieke positieve resultaten, drie vaste meetpunten en 110 bevestigde
   bezoeken. Gebruik de 2.934 bezoek-taxonregels en 977 jaarlijkse maxima via
-  `ndff-bospaddenstoel-v1`; vul geen geheel negatieve bezoeken aan. Een latere
-  NMV-opvraag kan oorspronkelijke meetpuntnummers, volledig doelbereik en
-  ontbrekende bezoeken valideren, maar blokkeert het voorlopige gebruik niet.
+  `ndff-bospaddenstoel-v1`; vul geen geheel negatieve bezoeken aan. De vraag
+  aan NMV/Paddenstoelenonderzoek Nederland van 23 september 2026 is op
+  6 november beantwoord: aanvullende gegevens kunnen alleen via de NDFF worden
+  gedeeld. De publieke bezoekpagina van NDFF Verspreidingsatlas vereist
+  inloggen; de ontvangen FFV-export heeft geen oorspronkelijke formulier- of
+  bezoekcode. Vraag NDFF eenmalig gericht of meetpunt-, formulier-, bezoek- en
+  gevolgde-soortgegevens voor `11.201` en `11.202` beschikbaar en exporteerbaar
+  zijn. Herhaal geen brede brondata-uitvraag. Dit blokkeert het voorlopige
+  gebruik niet.
 - Afgerond op 13 september 2026: de volledige SOVON/AVIMAP-download van project
   252 is gehasht en gecontroleerd. De 19.960 primaire niet-vogelregels, 4.364
   bijbehorende bezoeken en 35 taxa staan onder `sovon_avimap_*` in `Meijendel`.
