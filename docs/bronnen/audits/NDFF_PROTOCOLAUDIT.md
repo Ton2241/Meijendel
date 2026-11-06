@@ -622,10 +622,11 @@ beschrijft formulieren en bezoeken in de NDFF Verspreidingsatlas. De publieke
 echter inloggen; de ontvangen FFV-export bevat de oorspronkelijke formulier-
 en bezoekcodes niet. Daarmee is voor de Meijendel-reeksen uit 1999-2025 niet
 vastgesteld of de bovenliggende gegevens bij NDFF beschikbaar en exporteerbaar
-zijn. Vraag de NDFF eenmalig en uitsluitend of voor `11.201` en `11.202` de
-oorspronkelijke formulier-/bezoekgegevens en gevolgde soorten per bezoek
-beschikbaar zijn en hoe die kunnen worden geleverd; laat een negatief antwoord
-voor deze protocollen bevestigen. Herhaal de brede gegevensvraag niet. De
+zijn. Deze eenmalige, gerichte vraag is op 6 november 2026 per e-mail aan de NDFF
+verzonden. Gevraagd is of de oorspronkelijke formulier-/bezoekgegevens en
+gevolgde soorten per bezoek voor `11.201` en `11.202` beschikbaar en leverbaar
+zijn; zo niet, dan is om bevestiging daarvan gevraagd. Antwoord nog niet
+ontvangen. De brede gegevensvraag wordt niet herhaald. De
 bestaande reconstructies, nulregels en analysebeperkingen zijn niet gewijzigd.
 
 ## Toepassing op beveiligde levering 58679

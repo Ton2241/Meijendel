@@ -659,9 +659,10 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   6 november beantwoord: aanvullende gegevens kunnen alleen via de NDFF worden
   gedeeld. De publieke bezoekpagina van NDFF Verspreidingsatlas vereist
   inloggen; de ontvangen FFV-export heeft geen oorspronkelijke formulier- of
-  bezoekcode. Vraag NDFF eenmalig gericht of meetpunt-, formulier-, bezoek- en
+  bezoekcode. De gerichte vraag of meetpunt-, formulier-, bezoek- en
   gevolgde-soortgegevens voor `11.201` en `11.202` beschikbaar en exporteerbaar
-  zijn. Herhaal geen brede brondata-uitvraag. Dit blokkeert het voorlopige
+  zijn, is op 6 november 2026 per e-mail aan NDFF verzonden. Wacht op antwoord;
+  herhaal geen brede brondata-uitvraag. Dit blokkeert het voorlopige
   gebruik niet.
 - Afgerond op 13 september 2026: de volledige SOVON/AVIMAP-download van project
   252 is gehasht en gecontroleerd. De 19.960 primaire niet-vogelregels, 4.364
