@@ -572,6 +572,14 @@ else:
             archive.write(project_path, "meijendel.qgz")
             archive.write(routes_path, "routes.gpkg")
             archive.writestr("UPGRADE_IPAD.txt", upgrade_text)
+        package_path = output_dir.parent / "meijendel_qfield.zip"
+        with zipfile.ZipFile(package_path, "w", zipfile.ZIP_DEFLATED) as archive:
+            for path in sorted(output_dir.rglob("*")):
+                relative = path.relative_to(output_dir).as_posix()
+                if path.is_dir():
+                    archive.writestr(f"{relative}/", "")
+                else:
+                    archive.write(path, relative)
         return project_path
 
 

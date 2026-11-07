@@ -664,6 +664,23 @@ class VectorPackageContractTest(unittest.TestCase):
         self.assertIn("veldwerk.gpkg niet vervangen", instructions)
         self.assertNotIn("veldwerk.gpkg", names)
 
+    def test_builder_creates_complete_portable_archive(self):
+        package = self.output_dir.parent / "meijendel_qfield.zip"
+        self.assertTrue(package.is_file())
+        with zipfile.ZipFile(package) as archive:
+            names = set(archive.namelist())
+        self.assertEqual(
+            names,
+            {
+                "meijendel.qgz",
+                "referentie.gpkg",
+                "veldwerk.gpkg",
+                "routes.gpkg",
+                "pakket_manifest.json",
+                "photos/",
+            },
+        )
+
     def test_field_database_has_uuid_defaults_and_no_fixed_plot_column(self):
         with sqlite3.connect(self.output_dir / "veldwerk.gpkg") as connection:
             for layer in ("afscheidingen", "bijzonderheden", "gebieden"):
