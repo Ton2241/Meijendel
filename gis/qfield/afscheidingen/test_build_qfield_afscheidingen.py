@@ -62,6 +62,28 @@ def categorized_renderer(xml: str, layer_name: str) -> tuple[str, list[str]]:
     raise AssertionError(f"Laag {layer_name} niet gevonden")
 
 
+def layer_value_map_values(xml: str, layer_name: str, field_name: str) -> list[str]:
+    root = ET.fromstring(xml)
+    for layer in root.findall(".//projectlayers/maplayer"):
+        if layer.findtext("layername") != layer_name:
+            continue
+        field = layer.find(f".//field[@name='{field_name}']")
+        if field is None:
+            raise AssertionError(
+                f"Veld {field_name} niet gevonden in laag {layer_name}"
+            )
+        widget = field.find("./editWidget[@type='ValueMap']")
+        if widget is None:
+            raise AssertionError(
+                f"Geen ValueMap gevonden voor {layer_name}.{field_name}"
+            )
+        return [
+            option.attrib["value"]
+            for option in widget.findall(".//Option[@name='map']/Option/Option")
+        ]
+    raise AssertionError(f"Laag {layer_name} niet gevonden")
+
+
 def marker_symbol_options(xml: str, layer_name: str) -> list[dict[str, str]]:
     root = ET.fromstring(xml)
     for layer in root.findall(".//projectlayers/maplayer"):
@@ -316,6 +338,77 @@ class BuilderContractTest(unittest.TestCase):
                 count = connection.execute("SELECT COUNT(*) FROM gebieden").fetchone()[0]
         self.assertEqual(count, 1)
 
+    def test_processing_builder_refuses_to_overwrite_existing_route(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            output_dir = tmp_path / "pakket"
+            command = [
+                str(QGIS_PROCESS),
+                "run",
+                str(BUILDER),
+                "--",
+                f"PLOTS={PLOTS}",
+                f"OUTPUT_DIR={output_dir}",
+                "RASTER=",
+            ]
+            environment = {**os.environ, "QGIS_PREFIX_PATH": "/Applications/QGIS.app"}
+            first = subprocess.run(
+                command, check=False, capture_output=True, text=True, env=environment
+            )
+            self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+            route = tmp_path / "testroute.geojson"
+            route.write_text(
+                json.dumps(
+                    {
+                        "type": "FeatureCollection",
+                        "crs": {
+                            "type": "name",
+                            "properties": {"name": "urn:ogc:def:crs:EPSG::28992"},
+                        },
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "id": "testroute",
+                                    "type": "voetpad",
+                                    "toegankelijkheid": "openbaar",
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": [[82000, 461000], [82010, 461010]],
+                                },
+                            }
+                        ],
+                    }
+                ),
+                encoding="utf-8",
+            )
+            subprocess.run(
+                [
+                    "ogr2ogr",
+                    "-update",
+                    "-append",
+                    "-nln",
+                    "paden_en_wegen",
+                    str(output_dir / "routes.gpkg"),
+                    str(route),
+                ],
+                check=True,
+                capture_output=True,
+                text=True,
+            )
+            second = subprocess.run(
+                command, check=False, capture_output=True, text=True, env=environment
+            )
+            with sqlite3.connect(output_dir / "routes.gpkg") as connection:
+                count = connection.execute(
+                    "SELECT COUNT(*) FROM paden_en_wegen"
+                ).fetchone()[0]
+        combined = second.stdout + second.stderr
+        self.assertNotEqual(second.returncode, 0, combined)
+        self.assertIn("bestaande veldwerkgegevens", combined)
+        self.assertEqual(count, 1)
+
 
 class VectorPackageContractTest(unittest.TestCase):
     @classmethod
@@ -348,6 +441,7 @@ class VectorPackageContractTest(unittest.TestCase):
         for relative in (
             "referentie.gpkg",
             "veldwerk.gpkg",
+            "routes.gpkg",
             "meijendel.qgz",
             "photos",
         ):
@@ -411,11 +505,28 @@ class VectorPackageContractTest(unittest.TestCase):
                 "foto",
                 "opmerking",
             ],
+            "paden_en_wegen": [
+                "id",
+                "type",
+                "toegankelijkheid",
+                "naam",
+                "datum_tijd",
+                "bron",
+                "ontvanger",
+                "nauwkeurigheid_m",
+                "opmerking",
+            ],
         }
         for layer, fields in expected.items():
-            info = self._ogr_layer_info(self.output_dir / "veldwerk.gpkg", layer)
+            dataset = "routes.gpkg" if layer == "paden_en_wegen" else "veldwerk.gpkg"
+            info = self._ogr_layer_info(self.output_dir / dataset, layer)
             self.assertEqual(info["featureCount"], 0, layer)
             self.assertEqual([field["name"] for field in info["fields"]], fields)
+            if layer == "paden_en_wegen":
+                self.assertEqual(
+                    info["geometryFields"][0]["coordinateSystem"]["projjson"]["id"]["code"],
+                    28992,
+                )
 
     def test_project_is_relative_read_only_for_plots_and_contains_form_contract(self):
         project = self.output_dir / "meijendel.qgz"
@@ -428,6 +539,7 @@ class VectorPackageContractTest(unittest.TestCase):
         self.assertIn("veldwerk.gpkg|layername=afscheidingen", xml)
         self.assertIn("veldwerk.gpkg|layername=bijzonderheden", xml)
         self.assertIn("veldwerk.gpkg|layername=gebieden", xml)
+        self.assertIn("routes.gpkg|layername=paden_en_wegen", xml)
         self.assertIn("readOnly=\"1\"", xml)
         self.assertIn("uuid()", xml)
         self.assertIn("@position_horizontal_accuracy", xml)
@@ -497,6 +609,18 @@ class VectorPackageContractTest(unittest.TestCase):
                 ],
             ),
         )
+        self.assertEqual(
+            layer_value_map_values(xml, "Paden en wegen", "type"),
+            ["voetpad", "fietspad", "weg"],
+        )
+        self.assertEqual(
+            layer_value_map_values(xml, "Paden en wegen", "toegankelijkheid"),
+            ["openbaar", "beperkt toegankelijk", "afgesloten"],
+        )
+        self.assertEqual(
+            categorized_renderer(xml, "Paden en wegen"),
+            ("type", ["voetpad", "fietspad", "weg"]),
+        )
         point_symbols = marker_symbol_options(xml, "Bijzonderheden")
         self.assertEqual(len(point_symbols), 8)
         self.assertEqual(
@@ -508,6 +632,37 @@ class VectorPackageContractTest(unittest.TestCase):
             {"3x:0,0,1,1.2,1,4.2"},
         )
         self.assertIn("EPSG:28992", xml)
+
+    def test_project_uses_relative_route_path_and_manifest_lists_route_layer(self):
+        project = self.output_dir / "meijendel.qgz"
+        with zipfile.ZipFile(project) as archive:
+            qgs = next(name for name in archive.namelist() if name.endswith(".qgs"))
+            xml = archive.read(qgs).decode("utf-8")
+        self.assertIn(
+            "<datasource>./routes.gpkg|layername=paden_en_wegen</datasource>",
+            xml,
+        )
+        self.assertNotIn(str(self.output_dir), xml)
+        manifest = json.loads(
+            (self.output_dir / "pakket_manifest.json").read_text(encoding="utf-8")
+        )
+        self.assertEqual(
+            manifest["field_layers"],
+            ["afscheidingen", "bijzonderheden", "gebieden", "paden_en_wegen"],
+        )
+
+    def test_upgrade_archive_preserves_existing_fieldwork(self):
+        upgrade = self.output_dir.parent / "meijendel_routes_upgrade.zip"
+        self.assertTrue(upgrade.is_file())
+        with zipfile.ZipFile(upgrade) as archive:
+            names = set(archive.namelist())
+            self.assertEqual(
+                names,
+                {"meijendel.qgz", "routes.gpkg", "UPGRADE_IPAD.txt"},
+            )
+            instructions = archive.read("UPGRADE_IPAD.txt").decode("utf-8")
+        self.assertIn("veldwerk.gpkg niet vervangen", instructions)
+        self.assertNotIn("veldwerk.gpkg", names)
 
     def test_field_database_has_uuid_defaults_and_no_fixed_plot_column(self):
         with sqlite3.connect(self.output_dir / "veldwerk.gpkg") as connection:
