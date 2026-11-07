@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "gis/database/maatregelen_schema.sql"
 MIGRATION = ROOT / "gis/scripts/migrate_toegankelijkheidsgebieden.py"
 CENTRAL = ROOT / "gis/scripts/import_external_ecology_sources.py"
-FEATURE_ID = "2b3ae5c9-1ef6-4d82-9247-470fcc8054f6"
+FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 
 
 def load(path: Path, name: str):
@@ -59,15 +59,41 @@ def main() -> int:
     else:
         raise AssertionError("Onvolledige oude tabel werd toegelaten")
 
-    feature = migration.read_area_feature(migration.DEFAULT_GPKG, FEATURE_ID)
+    assert migration.backup_tables(False) == (
+        "maatregel_bron",
+        "toegankelijkheidsgebied",
+        "toegankelijkheidsgebied_versie",
+        "toegankelijkheidsgebied_plot_afleiding",
+    )
+
+    feature = migration.derive_route_area(migration.DEFAULT_ROUTE_GPKG)
     assert feature["status_code"] == "afgesloten"
     assert feature["epsg"] == 28992
     assert feature["geometry_type"] == "MULTIPOLYGON"
     assert feature["is_valid"]
-    assert 4_484_000 < feature["oppervlakte_m2"] < 4_485_000
+    assert 4_483_000 < feature["oppervlakte_m2"] < 4_484_000
+    assert feature["sluitafstand_m"] < 5
+    assert feature["toegangsspoor_afstand_m"] > 50
     assert len(feature["geometrie_sha256"]) == 64
 
-    statements = migration.build_migration_statements(feature)
+    assert migration.PLOT_AREA_KAVELS == ("M13", "M13s", "M15", "M16", "M17a")
+    assert migration.PLOT_AREA_CODE == "buitenduin_noord_1955"
+    plot_area = migration.read_plot_union(migration.DEFAULT_REFERENCE_GPKG)
+    assert plot_area["status_code"] == "afgesloten"
+    assert plot_area["geometry_type"] == "MULTIPOLYGON"
+    assert plot_area["is_valid"]
+    assert 1_995_000 < plot_area["oppervlakte_m2"] < 1_997_000
+    assert plot_area["kavels"] == migration.PLOT_AREA_KAVELS
+
+    mixed = migration.ogr.CreateGeometryFromWkt(
+        "GEOMETRYCOLLECTION(POLYGON((0 0,10 0,10 10,0 10,0 0)),LINESTRING(0 0,10 10))"
+    )
+    assert migration.polygonal_area(mixed) == 100
+    assert not migration.storable_intersection(0.0004, 100)
+    assert not migration.storable_intersection(0.001, 500_000)
+    assert migration.storable_intersection(1.0, 500_000)
+
+    statements = migration.build_migration_statements(feature, plot_area)
     joined = "\n".join(statements)
     assert "1955-01-01" in joined
     assert FEATURE_ID in joined
@@ -75,8 +101,7 @@ def main() -> int:
     assert "DROP TABLE maatregel_toegankelijkheid_registratie" in joined
     assert "maatregel_plot_jaar_registratie" not in joined
     assert "DELETE FROM maatregel_bron" not in joined
-    assert "ST_Dimension(ST_Intersection(v.geometrie,p.geom))=2" in joined
-    assert "AND ST_Area(ST_Intersection(v.geometrie,p.geom))>0" not in joined
+    assert migration.PLOT_AREA_CODE in joined
 
     print("OK: toegankelijkheidsgebieden-contract")
     return 0

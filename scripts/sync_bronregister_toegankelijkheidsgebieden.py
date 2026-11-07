@@ -20,8 +20,8 @@ ENVIRONMENT = (
     "registratie bewijst evenmin dat geen beheer plaatsvond. Infrastructuur bevat "
     "vier indicatoren voor elk van 55 kavels in 2024. Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
-    "uit versies van omsloten gebieden. De eerste actuele gebiedsversie doorsnijdt "
-    "18 kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "uit versies van omsloten gebieden. Twee actuele gebiedsversies leveren samen "
+    "30 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -31,19 +31,21 @@ ENVIRONMENT = (
 )
 
 GARMIN = (
-    "Garmin-QField-veldbron opgenomen op 7 november 2026. De lokale QField-werkset "
+    "Garmin-QField-veldbron opgenomen en gecorrigeerd op 7 november 2026. De lokale QField-werkset "
     "bevat één door Ton Lansink gelopen Garmin Connect-activiteit uit 7 november "
     "2026: 5.624 GPS-punten in één spoor, 12.328 meter lijngeometrie en één daarvan "
     "afgeleide gebiedspolygoon. Ton bevestigde de volledige route als openbaar "
     "voetpad en het daadwerkelijk omsloten gebied als formeel afgesloten. De route "
-    "staat als één object in paden_en_wegen; het grootste omsloten vlak staat als "
-    "één object in gebieden. Voor de polygoon is de afstand van 40,3 meter tussen "
-    "begin- en eindpunt met een rechte lijn gesloten; zestien kleine kruisingsvlakken "
-    "door lokale GPS-overlap zijn uitgesloten en artefactgaten zijn niet overgenomen. "
+    "staat als één object in paden_en_wegen. Het heen-en-weer gelopen toegangsspoor "
+    "naar de feitelijke gebiedsgrens is geen grens en is bij de correctie van 7 november "
+    "2026 uitgesloten. De gesloten lus gebruikt routepunten 160 tot en met 5470; de "
+    "resterende sluitafstand bedraagt 4,815 meter. Alleen het grootste geldige vlak is "
+    "overgenomen; kleine kruisingsvlakken door lokale GPS-overlap zijn uitgesloten. "
     "De ruwe GPX blijft bij het overdraagbare QField-pakket. Garmin rapporteert in "
     "deze export geen horizontale nauwkeurigheid; dat veld blijft daarom leeg. De "
     "afgesloten polygoon is als één gebiedsversie in Meijendel opgenomen; de "
-    "berekende oppervlakte in Rijksdriehoeksstelsel is 4.484.502,353 m². Dit is een "
+    "berekende oppervlakte in Rijksdriehoeksstelsel is 4.483.573,104 m². De bronhash "
+    "is aa7a6733e1bf8363df63dce66c17582956641db5aae57d0ec4bfe6b95e84c063. Dit is een "
     "lokaal gelokaliseerde veldbron voor toegankelijkheidsinventarisatie, geen "
     "ecologische soortwaarneming en geen bron voor Meijendel_bronnen. De gegevens "
     "vallen onder beheer van Ton Lansink; extern hergebruik is niet beoordeeld."
@@ -67,12 +69,16 @@ SECTION = [
     "NULL betekent dat de versie actueel blijft totdat een einddatum wordt ingevoerd. "
     "De view v_toegankelijkheidsgebied_actueel selecteert alleen versies die op de "
     "huidige datum geldig zijn.",
-    "De eerste invoer bestaat uit één afgesloten gebied en één versie, afgeleid uit "
-    "de Garmin-QField-veldregistratie van 7 november 2026. De geometrie heeft bronhash "
-    "2e709cf102d860e65c5c0b403660a1acfcb8e8ca2f5370c2686d6205cb868e48 en een "
-    "berekende oppervlakte van 4.484.502,353 m². "
-    "toegankelijkheidsgebied_plot_afleiding bevat 18 actuele doorsnijdingen met "
-    "onderzoekskavels. Dit zijn afgeleide relaties: een vlak kan door een kavel lopen "
+    "De levende database bevat twee afgesloten gebieden en twee actuele versies. Het "
+    "gecorrigeerde Garmin-vlak heeft bronhash aa7a6733e1bf8363df63dce66c17582956641db5aae57d0ec4bfe6b95e84c063 "
+    "en een oppervlakte van 4.483.573,104 m². Het tweede vlak is de geometrische "
+    "vereniging van de volledige kavels M13, M13s, M15, M16 en M17a. Dit vlak heeft "
+    "bronhash 8426e70249eef27dcf8b7fcb5a7f809f08926fd67214c7f7bc55f13d5abe0c2e en een "
+    "oppervlakte van 1.996.408,912 m². toegankelijkheidsgebied_plot_afleiding bevat "
+    "30 actuele positieve doorsnijdingen; voor de vijf bevestigde kavels is het aandeel "
+    "100%. De Garmin-veldregistratie en de handmatig bevestigde plotselectie hebben "
+    "ieder een eigen bronregel; maatregel_bron bevat na deze invoer 57 regels. Dit zijn "
+    "afgeleide relaties: een vlak kan door een kavel lopen "
     "en een kavel kan verschillende statusvlakken bevatten. De status van een "
     "volledige kavel wordt daarom niet meer als bronfeit opgeslagen.",
     "Shiny en de statische browser gebruiken parser/cacheversie 16 en leiden per kavel "
@@ -82,12 +88,12 @@ SECTION = [
     "uitkomst gemengd of onbekend. De geldigheid wordt bepaald door de overlap tussen "
     "analysejaar en geldig_vanaf/geldig_tot. De zware SQL-export, proefimport, volledige "
     "cachebouw en VPS-publicatie zijn nog niet uitgevoerd.",
-    "De volledige herstelkopie van vóór de omzetting staat op /Volumes/T7 Data/"
+    "De herstelkopie van vóór deze geometriecorrectie staat op /Volumes/T7 Data/"
     "Home_Ton/Meijendel data/Backups-archief/Meijendel/"
-    "meijendel-toegankelijkheid-voor-migratie-20261107-193506.sql. Omvang: 85.868 "
-    "bytes. SHA-256: 0bb4fe5297272f05f08b86e8891f7900e756a647e0d49065cf40af31209ffa50. "
-    "De bijbehorende metadata legt 55 oude toegankelijkheidsregels, 55 "
-    "herkomstkoppelingen en 139 beheerregistraties vast. Herstel is een afzonderlijk "
+    "meijendel-toegankelijkheid-voor-migratie-20261107-201823.sql. Omvang: 320.511 "
+    "bytes. SHA-256: a1659a857f5b90937d1c199559b07f07b937bdc8f5d35869c444bfcb1c3206ca. "
+    "De bijbehorende metadata legt de vier betrokken tabellen, de twee nieuwe "
+    "bronhashes en 139 behouden beheerregistraties vast. Herstel is een afzonderlijk "
     "besluit.",
 ]
 
@@ -96,6 +102,16 @@ def replace_paragraph(document: Document, prefix: str, text: str) -> None:
     matches = [p for p in document.paragraphs if p.text.startswith(prefix)]
     if len(matches) != 1:
         raise RuntimeError(f"Verwacht één alinea met prefix {prefix!r}, gevonden {len(matches)}")
+    paragraph = matches[0]
+    for run in paragraph.runs:
+        run._element.getparent().remove(run._element)
+    paragraph.add_run(text)
+
+
+def replace_paragraph_any(document: Document, prefixes: tuple[str, ...], text: str) -> None:
+    matches = [p for p in document.paragraphs if any(p.text.startswith(prefix) for prefix in prefixes)]
+    if len(matches) != 1:
+        raise RuntimeError(f"Verwacht één alinea met prefix uit {prefixes!r}, gevonden {len(matches)}")
     paragraph = matches[0]
     for run in paragraph.runs:
         run._element.getparent().remove(run._element)
@@ -121,6 +137,8 @@ def main() -> None:
     document = Document(DOCX)
     replace_paragraph(document, "Aanvullende verklarende gegevens.", ENVIRONMENT)
     replace_paragraph(document, "Garmin-QField-veldbron", GARMIN)
+    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden"), SECTION[2])
+    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie"), SECTION[4])
     rename_once(
         document,
         "Integratie begrazing en toegankelijkheid op 16 oktober 2026",

@@ -20,15 +20,21 @@ ogr.UseExceptions()
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "gis/database/maatregelen_schema.sql"
-_WORKTREE_GPKG = ROOT / "outputs/qfield_afscheidingen/meijendel_afscheidingen/veldwerk.gpkg"
-_CANONICAL_GPKG = Path("/Users/ton/Documents/GitHub/Meijendel/outputs/qfield_afscheidingen/meijendel_afscheidingen/veldwerk.gpkg")
-DEFAULT_GPKG = _WORKTREE_GPKG if _WORKTREE_GPKG.is_file() else _CANONICAL_GPKG
-DEFAULT_FEATURE_ID = "2b3ae5c9-1ef6-4d82-9247-470fcc8054f6"
+_QFIELD_ROOT = Path("/Users/ton/Documents/GitHub/Meijendel/outputs/qfield_afscheidingen/meijendel_afscheidingen")
+DEFAULT_ROUTE_GPKG = _QFIELD_ROOT / "routes.gpkg"
+DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
+DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 STATUS_CODES = ("afgesloten", "toegankelijk", "toegankelijk_met_toegangskaart")
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v1"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v2"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
+PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
+PLOT_AREA_CODE = "buitenduin_noord_1955"
+PLOT_AREA_KAVELS = ("M13", "M13s", "M15", "M16", "M17a")
+ROUTE_START_INDEX = 159
+ROUTE_END_INDEX = 5470
+ACCESS_SPUR_CHECK_INDEX = 79
 
 
 def sql_literal(value: Any) -> str:
@@ -82,6 +88,128 @@ def read_area_feature(path: Path, feature_id: str) -> dict[str, Any]:
     }
 
 
+def _polygon_parts(geometry: ogr.Geometry):
+    name = geometry.GetGeometryName().upper()
+    if name == "POLYGON":
+        yield geometry
+        return
+    for index in range(geometry.GetGeometryCount()):
+        yield from _polygon_parts(geometry.GetGeometryRef(index))
+
+
+def polygonal_area(geometry: ogr.Geometry) -> float:
+    """Som uitsluitend de vlakdelen, ook binnen een GeometryCollection."""
+    return float(sum(part.GetArea() for part in _polygon_parts(geometry)))
+
+
+def storable_intersection(intersection_area: float, plot_area: float) -> bool:
+    if intersection_area <= 0 or plot_area <= 0:
+        return False
+    percentage = min(100.0, 100.0 * intersection_area / plot_area)
+    return round(intersection_area, 3) > 0 and round(percentage, 6) > 0
+
+
+def _area_record(geometry: ogr.Geometry, **metadata: Any) -> dict[str, Any]:
+    if not geometry.IsValid():
+        raise ValueError("Gebiedsgeometrie is ongeldig")
+    geometry = ogr.ForceToMultiPolygon(geometry.Clone())
+    if geometry is None or geometry.GetGeometryName().upper() != "MULTIPOLYGON":
+        raise ValueError("Gebiedsgeometrie is geen multipolygoon")
+    wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
+    return {
+        "status_code": "afgesloten",
+        "epsg": 28992,
+        "geometry_type": "MULTIPOLYGON",
+        "is_valid": True,
+        "wkt": geometry.ExportToIsoWkt(),
+        "geometrie_sha256": hashlib.sha256(wkb).hexdigest(),
+        "oppervlakte_m2": float(geometry.GetArea()),
+        **metadata,
+    }
+
+
+def derive_route_area(path: Path) -> dict[str, Any]:
+    """Leid het omsloten vlak af zonder het heen-en-weer gelopen toegangsspoor."""
+    dataset = ogr.Open(str(path), 0)
+    if dataset is None:
+        raise ValueError(f"GeoPackage niet leesbaar: {path}")
+    layer = dataset.GetLayerByName("paden_en_wegen")
+    if layer is None or layer.GetFeatureCount() != 1:
+        raise ValueError("Verwacht precies één Garmin-route in paden_en_wegen")
+    feature = next(iter(layer))
+    route = feature.GetGeometryRef()
+    if route is None or route.GetGeometryName().upper() != "LINESTRING":
+        raise ValueError("Garmin-route is geen lijn")
+    if route.GetPointCount() < ROUTE_END_INDEX:
+        raise ValueError("Garmin-route bevat te weinig punten voor de bevestigde lus")
+
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    for index in range(ROUTE_START_INDEX, ROUTE_END_INDEX):
+        point = route.GetPoint(index)
+        ring.AddPoint_2D(point[0], point[1])
+    first = route.GetPoint(ROUTE_START_INDEX)
+    last = route.GetPoint(ROUTE_END_INDEX - 1)
+    ring.AddPoint_2D(first[0], first[1])
+    polygon = ogr.Geometry(ogr.wkbPolygon)
+    polygon.AddGeometry(ring)
+    valid = polygon.MakeValid(["METHOD=STRUCTURE"])
+    parts = list(_polygon_parts(valid))
+    if not parts:
+        raise ValueError("De bevestigde routelus levert geen vlak op")
+    largest = max(parts, key=lambda part: part.GetArea()).Clone()
+    access_point = ogr.Geometry(ogr.wkbPoint)
+    access = route.GetPoint(ACCESS_SPUR_CHECK_INDEX)
+    access_point.AddPoint_2D(access[0], access[1])
+    closure = ((last[0] - first[0]) ** 2 + (last[1] - first[1]) ** 2) ** 0.5
+    return _area_record(
+        largest,
+        feature_id=DEFAULT_FEATURE_ID,
+        sluitafstand_m=closure,
+        toegangsspoor_afstand_m=float(access_point.Distance(largest)),
+        datum_tijd=feature.GetFieldAsString("datum_tijd"),
+        bron=feature.GetFieldAsString("bron"),
+        ontvanger=feature.GetFieldAsString("ontvanger"),
+        nauwkeurigheid_m=feature.GetField("nauwkeurigheid_m"),
+        opmerking=(
+            "Gesloten lus uit Garmin-routepunten 160-5470; het heen-en-weer "
+            "gelopen toegangsspoor is geen gebiedsgrens en is uitgesloten."
+        ),
+    )
+
+
+def read_plot_union(path: Path) -> dict[str, Any]:
+    """Vorm één gebied uit de vijf door Ton bevestigde volledige kavels."""
+    dataset = ogr.Open(str(path), 0)
+    if dataset is None:
+        raise ValueError(f"GeoPackage niet leesbaar: {path}")
+    layer = dataset.GetLayerByName("onderzoekskavels")
+    if layer is None:
+        raise ValueError("Laag onderzoekskavels ontbreekt")
+    wanted = set(PLOT_AREA_KAVELS)
+    found: dict[str, ogr.Geometry] = {}
+    for feature in layer:
+        name = feature.GetFieldAsString("naam")
+        kavel = "M" + name.removeprefix("Meijendel k ")
+        if kavel in wanted:
+            found[kavel] = feature.GetGeometryRef().Clone()
+    if set(found) != wanted:
+        raise ValueError(f"Kavelgeometrie ontbreekt: {sorted(wanted - set(found))}")
+    union = found[PLOT_AREA_KAVELS[0]].Clone()
+    for kavel in PLOT_AREA_KAVELS[1:]:
+        union = union.Union(found[kavel])
+    union = union.MakeValid()
+    return _area_record(
+        union,
+        feature_id="plots:" + ",".join(PLOT_AREA_KAVELS),
+        kavels=PLOT_AREA_KAVELS,
+        nauwkeurigheid_m=None,
+        opmerking=(
+            "Volledige kavels M13, M13s, M15, M16 en M17a; door Ton "
+            "bevestigd als één afgesloten gebied."
+        ),
+    )
+
+
 def area_schema_sql() -> str:
     sql = SCHEMA.read_text(encoding="utf-8")
     start = sql.index("CREATE TABLE IF NOT EXISTS toegankelijkheidsstatus")
@@ -89,7 +217,7 @@ def area_schema_sql() -> str:
     return sql[start:end].strip()
 
 
-def build_migration_statements(feature: dict[str, Any]) -> list[str]:
+def build_migration_statements(feature: dict[str, Any], plot_area: dict[str, Any]) -> list[str]:
     accuracy = feature["nauwkeurigheid_m"]
     return [
         "INSERT INTO maatregel_brontype (brontype_code,landelijke_broncategorie,omschrijving) "
@@ -100,7 +228,7 @@ def build_migration_statements(feature: dict[str, Any]) -> list[str]:
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
         f"'{SOURCE_CODE}','veldregistratie','Garmin-veldregistratie omsloten gebied',"
         "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
-        "'Garmin Connect-activiteit 24999201739; afgeleide QField-geometrie') "
+        "'Garmin Connect-activiteit 24999201739; gesloten routelus zonder toegangsspoor') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
         "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
         f"'{AREA_CODE}','Omsloten gebied Garmin-route 7 november 2026',"
@@ -111,29 +239,44 @@ def build_migration_statements(feature: dict[str, Any]) -> list[str]:
         "bron_object_id,inwinningsmethode,nauwkeurigheid_m,geometrie,geometrie_wkt,"
         "geometrie_sha256,oppervlakte_m2,geometrie_opmerking) SELECT "
         f"g.gebied_id,1,{sql_literal(feature['status_code'])},'1955-01-01',NULL,'2026-11-07',"
-        f"b.bron_id,{sql_literal(feature['feature_id'])},'Garmin-route; vlak afgeleid in QField',"
+        f"b.bron_id,{sql_literal(feature['feature_id'])},'Garmin-route; gesloten routelus',"
         f"{sql_literal(accuracy)},ST_GeomFromText({sql_literal(feature['wkt'])},28992),"
         f"{sql_literal(feature['wkt'])},{sql_literal(feature['geometrie_sha256'])},"
         f"{feature['oppervlakte_m2']:.3f},{sql_literal(feature['opmerking'])} "
         "FROM toegankelijkheidsgebied g JOIN maatregel_bron b "
         f"ON b.bron_code='{SOURCE_CODE}' WHERE g.gebied_code='{AREA_CODE}' "
         "ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),geldig_vanaf=VALUES(geldig_vanaf),"
-        "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),"
+        "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),bron_id=VALUES(bron_id),"
+        "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
         "geometrie=VALUES(geometrie),geometrie_wkt=VALUES(geometrie_wkt),"
         "geometrie_sha256=VALUES(geometrie_sha256),oppervlakte_m2=VALUES(oppervlakte_m2),"
         "geometrie_opmerking=VALUES(geometrie_opmerking)",
-        "DELETE FROM toegankelijkheidsgebied_plot_afleiding",
-        "INSERT INTO toegankelijkheidsgebied_plot_afleiding "
-        "(gebied_versie_id,plot_id,status_code,doorsnijding_m2,plot_oppervlakte_m2,aandeel_pct,"
-        "gebied_geometrie_sha256,plot_geometrie_sha256) "
-        "SELECT v.gebied_versie_id,p.plot_id,v.status_code,"
-        "ST_Area(ST_Intersection(v.geometrie,p.geom)),ST_Area(p.geom),"
-        "LEAST(100,100*ST_Area(ST_Intersection(v.geometrie,p.geom))/ST_Area(p.geom)),"
-        "v.geometrie_sha256,p.geom_sha256 FROM toegankelijkheidsgebied_versie v JOIN plots p "
-        "ON p.geom IS NOT NULL AND ST_Intersects(v.geometrie,p.geom) "
-        "AND ST_Dimension(ST_Intersection(v.geometrie,p.geom))=2 "
-        "WHERE v.geldig_tot IS NULL AND ST_IsValid(p.geom) AND ST_Area(p.geom)>0 "
-        "",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{PLOT_SOURCE_CODE}','handmatige_registratie','Handmatig bevestigde afgesloten kavelgroep',"
+        "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
+        "'Volledige kavels M13, M13s, M15, M16 en M17a') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
+        f"'{PLOT_AREA_CODE}','Afgesloten gebied M13-M17a',"
+        "'Door Ton bevestigd als afgesloten gebied over vijf volledige kavels') "
+        "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)",
+        "INSERT INTO toegankelijkheidsgebied_versie "
+        "(gebied_id,versienummer,status_code,geldig_vanaf,geldig_tot,vastgesteld_op,bron_id,"
+        "bron_object_id,inwinningsmethode,nauwkeurigheid_m,geometrie,geometrie_wkt,"
+        "geometrie_sha256,oppervlakte_m2,geometrie_opmerking) SELECT "
+        f"g.gebied_id,1,'afgesloten','1955-01-01',NULL,'2026-11-07',b.bron_id,"
+        f"{sql_literal(plot_area['feature_id'])},'vereniging van volledige onderzoekskavels',NULL,"
+        f"ST_GeomFromText({sql_literal(plot_area['wkt'])},28992),{sql_literal(plot_area['wkt'])},"
+        f"{sql_literal(plot_area['geometrie_sha256'])},{plot_area['oppervlakte_m2']:.3f},"
+        f"{sql_literal(plot_area['opmerking'])} FROM toegankelijkheidsgebied g JOIN maatregel_bron b "
+        f"ON b.bron_code='{PLOT_SOURCE_CODE}' WHERE g.gebied_code='{PLOT_AREA_CODE}' "
+        "ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),geldig_vanaf=VALUES(geldig_vanaf),"
+        "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),bron_id=VALUES(bron_id),"
+        "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
+        "geometrie=VALUES(geometrie),geometrie_wkt=VALUES(geometrie_wkt),"
+        "geometrie_sha256=VALUES(geometrie_sha256),oppervlakte_m2=VALUES(oppervlakte_m2),"
+        "geometrie_opmerking=VALUES(geometrie_opmerking)",
         "DELETE FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL",
         "DROP TABLE maatregel_toegankelijkheid_registratie",
     ]
@@ -187,10 +330,26 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def backup(client: Client, backup_dir: Path, feature: dict[str, Any]) -> Path:
+def backup_tables(old_model_exists: bool) -> tuple[str, ...]:
+    if old_model_exists:
+        return ("maatregel_toegankelijkheid_registratie", "maatregel_registratie_herkomst")
+    return (
+        "maatregel_bron",
+        "toegankelijkheidsgebied",
+        "toegankelijkheidsgebied_versie",
+        "toegankelijkheidsgebied_plot_afleiding",
+    )
+
+
+def backup(client: Client, backup_dir: Path, feature: dict[str, Any], plot_area: dict[str, Any]) -> Path:
     backup_dir = ensure_backup_dir(backup_dir)
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     sql_path = backup_dir / f"meijendel-toegankelijkheid-voor-migratie-{stamp}.sql"
+    old_model_exists = int(client.scalar(
+        "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() "
+        "AND table_name='maatregel_toegankelijkheid_registratie' AND table_type='BASE TABLE'"
+    )) == 1
+    tables = backup_tables(old_model_exists)
     command = client.dump_command() + [
         "--no-tablespaces",
         "--single-transaction",
@@ -198,8 +357,7 @@ def backup(client: Client, backup_dir: Path, feature: dict[str, Any]) -> Path:
         "--complete-insert",
         "--set-gtid-purged=OFF",
         client.database,
-        "maatregel_toegankelijkheid_registratie",
-        "maatregel_registratie_herkomst",
+        *tables,
     ]
     with sql_path.open("wb") as stream:
         result = subprocess.run(command, stdout=stream, stderr=subprocess.PIPE, check=False)
@@ -213,11 +371,12 @@ def backup(client: Client, backup_dir: Path, feature: dict[str, Any]) -> Path:
         "sql_bestand": sql_path.name,
         "sql_sha256": digest,
         "sql_bytes": sql_path.stat().st_size,
-        "oude_toegankelijkheidsregels": int(client.scalar("SELECT COUNT(*) FROM maatregel_toegankelijkheid_registratie")),
-        "oude_toegankelijkheidsherkomsten": int(client.scalar("SELECT COUNT(*) FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL")),
+        "tabellen": tables,
         "beheerregistraties": int(client.scalar("SELECT COUNT(*) FROM maatregel_plot_jaar_registratie")),
         "qfield_feature_id": feature["feature_id"],
         "qfield_geometrie_sha256": feature["geometrie_sha256"],
+        "plotgebied_feature_id": plot_area["feature_id"],
+        "plotgebied_geometrie_sha256": plot_area["geometrie_sha256"],
     }
     metadata_path = sql_path.with_suffix(".json")
     metadata_path.write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -263,14 +422,62 @@ def retire_old_model(client: Client) -> None:
     client.sql("DROP TABLE maatregel_toegankelijkheid_registratie")
 
 
-def apply(client: Client, feature: dict[str, Any]) -> None:
-    statements = build_migration_statements(feature)
-    for statement in statements[:7]:
+def rebuild_plot_derivations(client: Client) -> int:
+    """Bouw ruimtelijke plotdoorsnijdingen op zonder MySQL-ST_Area op collections."""
+    versions = []
+    for line in client.sql(
+        "SELECT gebied_versie_id,status_code,HEX(ST_AsBinary(geometrie)),geometrie_sha256 "
+        "FROM toegankelijkheidsgebied_versie WHERE geldig_tot IS NULL"
+    ).splitlines():
+        version_id, status, geometry_hex, geometry_hash = line.split("\t")
+        versions.append((int(version_id), status, ogr.CreateGeometryFromWkb(bytes.fromhex(geometry_hex)), geometry_hash))
+    plots = []
+    for line in client.sql(
+        "SELECT plot_id,HEX(ST_AsBinary(geom)),geom_sha256 FROM plots "
+        "WHERE geom IS NOT NULL AND ST_IsValid(geom)"
+    ).splitlines():
+        plot_id, geometry_hex, geometry_hash = line.split("\t")
+        geometry = ogr.CreateGeometryFromWkb(bytes.fromhex(geometry_hex))
+        plots.append((int(plot_id), geometry, geometry_hash))
+
+    values = []
+    for version_id, status, area_geometry, area_hash in versions:
+        for plot_id, plot_geometry, plot_hash in plots:
+            if not area_geometry.Intersects(plot_geometry):
+                continue
+            intersection_area = polygonal_area(area_geometry.Intersection(plot_geometry))
+            plot_area = float(plot_geometry.GetArea())
+            if not storable_intersection(intersection_area, plot_area):
+                continue
+            percentage = min(100.0, 100.0 * intersection_area / plot_area)
+            values.append(
+                "(" + ",".join((
+                    str(version_id), str(plot_id), sql_literal(status),
+                    f"{intersection_area:.3f}", f"{plot_area:.3f}", f"{percentage:.6f}",
+                    sql_literal(area_hash), sql_literal(plot_hash),
+                )) + ")"
+            )
+    client.sql("DELETE FROM toegankelijkheidsgebied_plot_afleiding")
+    if values:
+        client.sql(
+            "INSERT INTO toegankelijkheidsgebied_plot_afleiding "
+            "(gebied_versie_id,plot_id,status_code,doorsnijding_m2,plot_oppervlakte_m2,aandeel_pct,"
+            "gebied_geometrie_sha256,plot_geometrie_sha256) VALUES " + ",".join(values)
+        )
+    return len(values)
+
+
+def apply(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) -> None:
+    statements = build_migration_statements(feature, plot_area)
+    for statement in statements:
+        if statement.startswith("DELETE FROM maatregel_registratie_herkomst") or statement.startswith("DROP TABLE"):
+            continue
         client.sql(statement)
     retire_old_model(client)
+    rebuild_plot_derivations(client)
 
 
-def verify(client: Client, feature: dict[str, Any]) -> dict[str, Any]:
+def verify(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) -> dict[str, Any]:
     result = {
         "oude_tabel": int(client.scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='maatregel_toegankelijkheid_registratie' AND table_type='BASE TABLE'")),
         "oude_herkomstkolom": int(client.scalar("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='maatregel_registratie_herkomst' AND column_name='toegang_registratie_id'")),
@@ -285,15 +492,38 @@ def verify(client: Client, feature: dict[str, Any]) -> dict[str, Any]:
         raise AssertionError(result)
     if result["beheerregistraties"] != 139 or result["herkomsten"] != 144 or result["bron101_beheer"] != 139:
         raise AssertionError(result)
+    if result["gebieden"] != 2 or result["gebiedsversies"] != 2 or result["plotdoorsnijdingen"] != 30:
+        raise AssertionError(result)
     row = client.sql(
         "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"
         "ST_SRID(geometrie),ST_IsValid(geometrie),ROUND(ST_Area(geometrie),3),geometrie_sha256 "
-        "FROM toegankelijkheidsgebied_versie WHERE bron_object_id=" + sql_literal(feature["feature_id"])
+        "FROM toegankelijkheidsgebied_versie v JOIN toegankelijkheidsgebied g USING(gebied_id) "
+        f"WHERE g.gebied_code='{AREA_CODE}'"
     ).split("\t")
     if row[:5] != ["afgesloten", "1955-01-01", "NULL", "28992", "1"]:
         raise AssertionError(row)
     if row[6] != feature["geometrie_sha256"] or abs(float(row[5]) - feature["oppervlakte_m2"]) > 0.01:
         raise AssertionError(row)
+    plot_row = client.sql(
+        "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"
+        "ST_SRID(geometrie),ST_IsValid(geometrie),ROUND(ST_Area(geometrie),3),geometrie_sha256 "
+        "FROM toegankelijkheidsgebied_versie v JOIN toegankelijkheidsgebied g USING(gebied_id) "
+        f"WHERE g.gebied_code='{PLOT_AREA_CODE}'"
+    ).split("\t")
+    if plot_row[:5] != ["afgesloten", "1955-01-01", "NULL", "28992", "1"]:
+        raise AssertionError(plot_row)
+    if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
+        raise AssertionError(plot_row)
+    kavel_sql = ",".join(sql_literal(kavel) for kavel in PLOT_AREA_KAVELS)
+    covered = int(client.scalar(
+        "SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding a "
+        "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
+        "JOIN toegankelijkheidsgebied g USING(gebied_id) JOIN plots p USING(plot_id) "
+        f"WHERE g.gebied_code='{PLOT_AREA_CODE}' AND p.kavel_nummer IN ({kavel_sql}) "
+        "AND a.aandeel_pct>99.9999"
+    ))
+    if covered != len(PLOT_AREA_KAVELS):
+        raise AssertionError(f"Niet alle vijf kavels volledig gedekt: {covered}")
     if result["plotdoorsnijdingen"] < 1:
         raise AssertionError("Geen kavels door gebied doorsneden")
     bad = int(client.scalar("SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding WHERE aandeel_pct<=0 OR aandeel_pct>100"))
@@ -305,8 +535,8 @@ def verify(client: Client, feature: dict[str, Any]) -> dict[str, Any]:
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--database", default="Meijendel")
-    parser.add_argument("--gpkg", type=Path, default=DEFAULT_GPKG)
-    parser.add_argument("--feature-id", default=DEFAULT_FEATURE_ID)
+    parser.add_argument("--route-gpkg", type=Path, default=DEFAULT_ROUTE_GPKG)
+    parser.add_argument("--reference-gpkg", type=Path, default=DEFAULT_REFERENCE_GPKG)
     parser.add_argument("--backup-dir", type=Path, default=BACKUP_ROOT)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify", action="store_true")
@@ -315,16 +545,20 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    feature = read_area_feature(args.gpkg, args.feature_id)
+    feature = derive_route_area(args.route_gpkg)
+    plot_area = read_plot_union(args.reference_gpkg)
     client = Client(args.database)
     if args.apply:
-        metadata = backup(client, args.backup_dir, feature)
-        apply(client, feature)
+        metadata = backup(client, args.backup_dir, feature, plot_area)
+        apply(client, feature, plot_area)
         print(f"BACKUP_METADATA={metadata}")
     if args.apply or args.verify:
-        print(json.dumps(verify(client, feature), sort_keys=True))
+        print(json.dumps(verify(client, feature, plot_area), sort_keys=True))
     if not args.apply and not args.verify:
-        print(json.dumps({k: v for k, v in feature.items() if k != "wkt"}, sort_keys=True))
+        print(json.dumps({
+            "garmin": {k: v for k, v in feature.items() if k != "wkt"},
+            "plotgebied": {k: v for k, v in plot_area.items() if k != "wkt"},
+        }, sort_keys=True))
     return 0
 
 
