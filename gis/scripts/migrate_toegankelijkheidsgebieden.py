@@ -131,8 +131,9 @@ def build_migration_statements(feature: dict[str, Any]) -> list[str]:
         "LEAST(100,100*ST_Area(ST_Intersection(v.geometrie,p.geom))/ST_Area(p.geom)),"
         "v.geometrie_sha256,p.geom_sha256 FROM toegankelijkheidsgebied_versie v JOIN plots p "
         "ON p.geom IS NOT NULL AND ST_Intersects(v.geometrie,p.geom) "
+        "AND ST_Dimension(ST_Intersection(v.geometrie,p.geom))=2 "
         "WHERE v.geldig_tot IS NULL AND ST_IsValid(p.geom) AND ST_Area(p.geom)>0 "
-        "AND ST_Area(ST_Intersection(v.geometrie,p.geom))>0",
+        "",
         "DELETE FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL",
         "DROP TABLE maatregel_toegankelijkheid_registratie",
     ]
@@ -145,7 +146,10 @@ class Client:
         self.mysqldump = shutil.which("mysqldump") or "/usr/local/mysql-9.7.4-macos15-arm64/bin/mysqldump"
 
     def command(self, executable: str | None = None) -> list[str]:
-        return [executable or self.mysql, "--login-path=meijendel_root", "--batch", "--raw", self.database]
+        return [executable or self.mysql, "--login-path=meijendel_root", "--batch", "--raw", "--skip-column-names", self.database]
+
+    def dump_command(self) -> list[str]:
+        return [self.mysqldump, "--login-path=meijendel_root"]
 
     def sql(self, statement: str) -> str:
         result = subprocess.run(self.command(), input=statement, text=True, capture_output=True, check=False)
@@ -155,7 +159,7 @@ class Client:
 
     def scalar(self, statement: str) -> str:
         result = subprocess.run(
-            self.command()[:-1] + ["--skip-column-names", self.database, "-e", statement],
+            self.command() + ["-e", statement],
             text=True,
             capture_output=True,
             check=False,
@@ -187,7 +191,7 @@ def backup(client: Client, backup_dir: Path, feature: dict[str, Any]) -> Path:
     backup_dir = ensure_backup_dir(backup_dir)
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     sql_path = backup_dir / f"meijendel-toegankelijkheid-voor-migratie-{stamp}.sql"
-    command = client.command(client.mysqldump)[:-1] + [
+    command = client.dump_command() + [
         "--no-tablespaces",
         "--single-transaction",
         "--quick",
@@ -223,14 +227,19 @@ def backup(client: Client, backup_dir: Path, feature: dict[str, Any]) -> Path:
     return metadata_path
 
 
+def validate_retirement_counts(old_rows: int, origins: int) -> None:
+    if old_rows != 55 or origins not in (0, 55):
+        raise RuntimeError(f"Verwacht 55 voorlopige regels en 55 of reeds verwijderde herkomsten, gevonden {old_rows}/{origins}")
+
+
 def retire_old_model(client: Client) -> None:
     if int(client.scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='maatregel_toegankelijkheid_registratie' AND table_type='BASE TABLE'")) == 0:
         return
     old_rows = int(client.scalar("SELECT COUNT(*) FROM maatregel_toegankelijkheid_registratie"))
     origins = int(client.scalar("SELECT COUNT(*) FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL"))
-    if (old_rows, origins) != (55, 55):
-        raise RuntimeError(f"Verwacht 55/55 voorlopige regels, gevonden {old_rows}/{origins}")
-    client.sql("DELETE FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL")
+    validate_retirement_counts(old_rows, origins)
+    if origins:
+        client.sql("DELETE FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL")
     fk_rows = client.sql(
         "SELECT CONSTRAINT_NAME FROM information_schema.KEY_COLUMN_USAGE "
         "WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME='maatregel_registratie_herkomst' "

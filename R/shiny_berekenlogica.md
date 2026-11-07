@@ -51,7 +51,9 @@ De app leest via `parse_meijendel_tables()` de volgende tabellen in:
 - `plot_jaar_ahn_dtm`
 - `plot_jaar_stikstof`
 - `plot_jaar_infra`
-- `maatregel_toegankelijkheid_registratie`
+- `toegankelijkheidsgebied`
+- `toegankelijkheidsgebied_versie`
+- `toegankelijkheidsgebied_plot_afleiding`
 
 De parser leest `INSERT`-blokken rechtstreeks uit `meijendel.sql` en zet die om naar dataframes.
 
@@ -481,6 +483,10 @@ Deze versie gebruikt alleen covariaten die nu al betrouwbaar in de database aanw
 - `afstand_parkeerplaats_m`
 - `afstand_hoofdtoegang_m`
 - `toegankelijkheid_status`
+- `toegankelijkheid_aandeel_afgesloten`
+- `toegankelijkheid_aandeel_toegangskaart`
+- `toegankelijkheid_aandeel_toegankelijk`
+- `toegankelijkheid_aandeel_onbekend`
 - PQ-vegetatiekenmerken: soortenrijkdom, bedekkingssom en Shannon-index
 - geselecteerde habitat-aandelen uit `plot_jaar_habitat`
 - maart-juni-aggregaties uit het verplichte `weer_analyse`-contract:
@@ -490,7 +496,7 @@ Deze versie gebruikt alleen covariaten die nu al betrouwbaar in de database aanw
 Nog niet meegenomen in deze eerste versie:
 
 - beheermaatregelen
-- deeltoegankelijkheid
+- afzonderlijke lijnobjecten voor fysieke afscheidingen
 - landgebruikssamenstellingen als afzonderlijke modeltermen
 - vogelkenmerken
 
@@ -508,7 +514,7 @@ Daarbij geldt:
   waarde hebben; een gedeeltelijke som blijft `NA`
 - de statusvelden `is_missing`, `territorium_vastgesteld`, `echte_nul`, `observatie_status`, `analyse_bron_code`, `nulstatus`, `bewijsgrond` en `waargenomen_zonder_territorium` worden toegevoegd aan de modeldataset
 - `ahn_mean`, `stikstof_mean` en infra-waarden worden gekoppeld op dichtstbijzijnde beschikbare jaarwaarde per plot
-- `toegankelijkheid_status` gebruikt de laatst bekende status op of vóór het gekozen jaar
+- toegankelijkheidsaandelen worden berekend uit gebiedsversies waarvan `geldig_vanaf`/`geldig_tot` het gekozen jaar overlappen; `geldig_tot = NULL` betekent doorlopend actueel
 - habitatcovariaten worden gekoppeld als aandeel per geselecteerd habitattype in `plot_jaar_habitat`
 - weer wordt per kalenderjaar gekoppeld als maart-juni-aggregaat; de parser past
   exact de stationsafhankelijke eenhedenlogica van de SQL-view `weer_analyse` toe
@@ -623,13 +629,13 @@ Dat zou snel tot inconsistenties leiden tussen:
 [1]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/app.R
 [2]:	/Users/ton/Documents/GitHub/Meijendel/shiny_meijendel/helpers.R
 
-## Jaarselectie beheer en toegankelijkheid
+## Historische jaarselectie beheer en toegankelijkheid
 
 De drie oude fysieke tabellen én de gelijknamige compatibiliteitsviews zijn verwijderd. Dashboard en Shiny gebruiken rechtstreeks de centrale registraties. De oorspronkelijke 144, 55 en nul regels blijven voor audit reconstrueerbaar zonder die databaseobjecten. v_plot_jaar_maatregel_bronvast behoudt de bestaande 307 regels voor expliciete jaren tussen 1967 en 2025; v_plot_jaar_maatregel_gecombineerd bevat 446 regels, inclusief de 139 aanvullende jaarfeiten. Deze laatste view mag bronregistraties niet als onafhankelijke terreinmetingen of behandeld oppervlak tellen.
 
 Dashboard en Shiny lezen rechtstreeks uit de centrale basistabellen via build_maatregel_registration_data. Parser/cacheversie is 15; de oude gegevensobjectnamen en de afhankelijkheid van compatibiliteitsviews zijn uit de actieve leesroute verwijderd. Voor analyse geldt een toegankelijkheidsstatus uitsluitend in het geregistreerde jaar; buiten 2024 blijft die voor deze 55 plots onbekend. Het dashboard mag de laatste historische registratie apart tonen met bronjaar, maar presenteert haar niet als bewezen toestand van een later jaar. Beheerjaarfeiten worden evenmin stilzwijgend doorgetrokken.
 
-## Rechtstreekse aansluiting zonder compatibiliteitsviews
+## Historische rechtstreekse aansluiting zonder compatibiliteitsviews
 
 De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
 
@@ -640,3 +646,11 @@ De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling,
 Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
 
 Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.
+
+## Actuele gebiedsafleiding vanaf 7 november 2026
+
+Parser/cacheversie 16 leest `toegankelijkheidsgebied`, `toegankelijkheidsgebied_versie` en `toegankelijkheidsgebied_plot_afleiding`. De 55 voorlopige kavelregels uit 2024 en de tabel `maatregel_toegankelijkheid_registratie` zijn verwijderd. Voor alle bestaande en toekomstige gebiedsversies is `geldig_vanaf` standaard 1 januari 1955, op basis van Tons inschatting. Een lege `geldig_tot` betekent actueel totdat een einddatum wordt ingevoerd.
+
+Per plot en analysejaar telt `add_toegankelijkheid_covariates()` de doorsnijdingspercentages op voor `afgesloten`, `toegankelijk_met_toegangskaart` en `toegankelijk`. Het resterende aandeel is `toegankelijkheid_aandeel_onbekend`. Meer dan 100% gezamenlijke dekking is een fout. `toegankelijkheid_status` krijgt alleen één status wanneer die status de volledige kavel bedekt; bij gedeeltelijke of verschillende dekking wordt de status `gemengd` of `onbekend`.
+
+De eerste actuele gebiedsversie is afgesloten, heeft een berekende oppervlakte van 4.484.502,353 m² en doorsnijdt 18 kavels. De zware SQL-export, proefimport en volledige cachebouw zijn nog niet uitgevoerd.

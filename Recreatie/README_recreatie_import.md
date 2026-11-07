@@ -1,110 +1,34 @@
 # Importbestanden recreatie
 
-Dit zijn de startbestanden voor recreatie en toegankelijkheid.
+## Actieve invoer
 
-## Bestand 1
+`plot_jaar_infra_recreatie_import.csv` blijft de actieve starttabel voor numerieke infrastructuurkenmerken per plot en jaar. Toegestane variabelen zijn `afstand_pad_m`, `padlengte_m_per_ha`, `afstand_parkeerplaats_m` en `afstand_hoofdtoegang_m`. De import loopt via `Ruimtelijke data/10_import_recreatie_infra.sql`.
 
-[`plot_jaar_infra_recreatie_import.csv`](/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_infra_recreatie_import.csv)
+Toegankelijkheid wordt vanaf 7 november 2026 niet meer per plot geïmporteerd. Nieuwe invoer bestaat uit werkelijk omsloten vlakken:
 
-Kolommen:
+- `toegankelijkheidsgebied` bewaart de blijvende identiteit en naam;
+- `toegankelijkheidsgebied_versie` bewaart status, geometrie, bron en geldigheid;
+- `toegankelijkheidsgebied_plot_afleiding` bewaart uitsluitend opnieuw berekenbare doorsnijdingen met plots.
 
-- `plot_id`
-- `jaar`
-- `bron`
-- `variabele`
-- `waarde`
+Toegestane statussen zijn `afgesloten`, `toegankelijk` en `toegankelijk_met_toegangskaart`. Voor iedere bestaande en toekomstige gebiedsversie is `geldig_vanaf` standaard 1 januari 1955, op basis van Tons inschatting. `geldig_tot = NULL` betekent actueel totdat een einddatum wordt ingevoerd.
 
-Toegestane `variabele`-waarden:
+De invoer en herberekening lopen via `gis/scripts/migrate_toegankelijkheidsgebieden.py`. De eerste actuele invoer bevat één afgesloten gebied, één versie en 18 plotdoorsnijdingen. Een status van een volledige kavel is nooit handmatige invoer: zij wordt uit de oppervlakteaandelen van de geldige gebiedsversies afgeleid.
 
-- `afstand_pad_m`
-- `padlengte_m_per_ha`
-- `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
+## Historische bestanden
 
-Voorkeurs `bron`-waarden:
+`plot_jaar_toegankelijkheid_import.csv`, `plot_jaar_toegankelijkheid_deel_import.csv`, `Ruimtelijke data/11_import_toegankelijkheid.sql` en `Ruimtelijke data/17_import_toegankelijkheid_deel.sql` horen bij de ingetrokken voorlopige kavelregistratie uit 2024. Zij blijven alleen als audit- en herstelmateriaal in Git staan en mogen niet opnieuw als actuele toegankelijkheidsgegevens worden uitgevoerd.
 
-- `BGT`
-- `OSM`
-- `HANDMATIG`
+De 55 oude kavelregels, hun 55 herkomstdoelen, de tabel `maatregel_toegankelijkheid_registratie` en de kolom `maatregel_registratie_herkomst.toegang_registratie_id` zijn op 7 november 2026 uit de levende lokale database verwijderd. Bron 101 blijft bestaan voor 139 beheerregistraties uit 1991–1999.
 
-## Bestand 2
+## Controle
 
-[`plot_jaar_toegankelijkheid_import.csv`](/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_toegankelijkheid_import.csv)
+Na nieuwe of gewijzigde gebiedsversies controleer je:
 
-Kolommen:
+1. geldige, niet-lege `MULTIPOLYGON`-geometrie in SRID 28992;
+2. precies één toegestane status per versie;
+3. geen overlappende geldigheidsperioden voor hetzelfde gebied;
+4. opnieuw opgebouwde plotdoorsnijdingen;
+5. gezamenlijke statusdekking per plot niet boven 100%;
+6. Shiny-contracttests met parser/cacheversie 16.
 
-- `plot_id`
-- `jaar`
-- `bron`
-- `status_code`
-- `opmerking`
-
-Toegestane `status_code`-waarden:
-
-- `afgesloten`
-- `beperkt`
-- `vrij`
-
-Voorkeurs `bron`-waarden:
-
-- `HANDMATIG`
-- `DUNEA_RAPPORT_2022`
-
-## Bestand 3
-
-[`plot_jaar_toegankelijkheid_deel_import.csv`](/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_toegankelijkheid_deel_import.csv)
-
-Kolommen:
-
-- `plot_id`
-- `jaar`
-- `bron`
-- `deel_label`
-- `status_code`
-- `aandeel_pct`
-- `barriere_type`
-- `geom_wkt`
-- `opmerking`
-
-Toegestane `status_code`-waarden:
-
-- `afgesloten`
-- `beperkt`
-- `vrij`
-
-Gebruik dit bestand alleen voor plots die niet volledig in één toegankelijkheidsklasse vallen.
-
-## Import-SQL
-
-Voor `plot_jaar_infra`:
-
-- [`10_import_recreatie_infra.sql`](/Users/ton/Documents/GitHub/Meijendel/Ruimtelijke%20data/10_import_recreatie_infra.sql)
-
-Voor toegankelijkheid op plotniveau (`maatregel_toegankelijkheid_registratie`, `niveau = plot`):
-
-- [`11_import_toegankelijkheid.sql`](/Users/ton/Documents/GitHub/Meijendel/Ruimtelijke%20data/11_import_toegankelijkheid.sql)
-
-Voor toegankelijkheid op deelniveau (`maatregel_toegankelijkheid_registratie`, `niveau = deel`):
-
-- [`17_import_toegankelijkheid_deel.sql`](/Users/ton/Documents/GitHub/Meijendel/Ruimtelijke%20data/17_import_toegankelijkheid_deel.sql)
-
-## Belangrijke controle
-
-Voor `plot_jaar_infra` blijft de bestaande verwijzing naar `plot_jaar_oppervlak` gelden. De centrale toegankelijkheidsregistraties verwijzen rechtstreeks naar `plots`; hun jaar beschrijft de geregistreerde toestand en is geen bewijs dat in dat jaar vogels zijn geteld. Controleer bron, jaar en plot vóór iedere import.
-
-## Centrale registratie vanaf 16 oktober 2026
-
-De 55 toegankelijkheidsregistraties voor 55 plots in 2024 staan in maatregel_toegankelijkheid_registratie: 20 vrij, 14 beperkt, 12 afgesloten, acht deels beperkt/deels vrij en één deels afgesloten/deels vrij. De deeltabel bevatte nul regels; de twee voorbeeldregels uit de deel-CSV zijn niet geïmporteerd. Status, bronspelling, plotnaam, opmerkingen, lege waarden en NULL blijven herleidbaar. De opmerking bij M36 blijft “nog controleren”. Een gemengde status bewijst geen oppervlakteverdeling.
-
-maatregel_registratie_herkomst bevat 199 technische herkomstkoppelingen met oude sleutels, oorspronkelijke rijwaarden, hashes en precies één canoniek doel. Dit zijn auditgegevens, geen extra beheerfeiten. De 43 inhoudelijke maatregelbronnen zijn behouden; één administratieve bron voor deze migratie brengt maatregel_bron op 44 regels. Overnemen uit de handmatige registratie geeft geen nieuwe onafhankelijke bronbevestiging.
-
-Nieuwe import richt zich op de maatregelregistraties. De drie bestaande import-SQL-bestanden gebruiken alleen tijdelijke staging en schrijven niet naar de compatibiliteitsviews. De oorspronkelijke bronidentiteit blijft bij correctie behouden; identieke herimport en gewijzigde herimport zijn op fixtures getest. LOAD DATA LOCAL vereist local_infile aan client- en serverzijde; de iMac-server heeft dit uitgeschakeld. Die globale instelling is in deze taak niet veranderd. Voer de voorbeeld-CSV’s niet als actuele levering in.
-
-De namen `plot_jaar_toegankelijkheid` en `plot_jaar_toegankelijkheid_deel` zijn uit de database verwijderd. De import-SQL gebruikt tijdelijke staging en schrijft naar `maatregel_toegankelijkheid_registratie`; de voorbeelden worden niet automatisch ingevoerd.
-
-
-## Rechtstreeks zonder oude views
-
-De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
-
-Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
+De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie volgen pas na afzonderlijke toestemming.

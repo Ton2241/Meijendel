@@ -27,6 +27,7 @@ def main() -> int:
     migration = load(MIGRATION, "toegankelijkheidsgebieden_migration")
     central = load(CENTRAL, "toegankelijkheidsgebieden_central")
     sql = SCHEMA.read_text(encoding="utf-8")
+    assert "--skip-column-names" in migration.Client("Meijendel").command()
 
     required_tables = {
         "toegankelijkheidsstatus",
@@ -49,6 +50,14 @@ def main() -> int:
         "toegankelijk",
         "toegankelijk_met_toegangskaart",
     )
+    migration.validate_retirement_counts(55, 55)
+    migration.validate_retirement_counts(55, 0)
+    try:
+        migration.validate_retirement_counts(54, 0)
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("Onvolledige oude tabel werd toegelaten")
 
     feature = migration.read_area_feature(migration.DEFAULT_GPKG, FEATURE_ID)
     assert feature["status_code"] == "afgesloten"
@@ -66,6 +75,8 @@ def main() -> int:
     assert "DROP TABLE maatregel_toegankelijkheid_registratie" in joined
     assert "maatregel_plot_jaar_registratie" not in joined
     assert "DELETE FROM maatregel_bron" not in joined
+    assert "ST_Dimension(ST_Intersection(v.geometrie,p.geom))=2" in joined
+    assert "AND ST_Area(ST_Intersection(v.geometrie,p.geom))>0" not in joined
 
     print("OK: toegankelijkheidsgebieden-contract")
     return 0
