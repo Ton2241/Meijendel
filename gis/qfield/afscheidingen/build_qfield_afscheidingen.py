@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import json
 import shutil
+import zipfile
 from pathlib import Path
 
 
@@ -146,19 +147,20 @@ else:
             QgsFieldConstraints.ConstraintStrengthHard,
         )
         photo_index = layer.fields().indexOf("foto")
-        layer.setEditorWidgetSetup(
-            photo_index,
-            QgsEditorWidgetSetup(
-                "ExternalResource",
-                {
-                    "DefaultRoot": "photos",
-                    "DocumentViewer": 1,
-                    "FileWidget": True,
-                    "RelativeStorage": 1,
-                    "StorageMode": 0,
-                },
-            ),
-        )
+        if photo_index >= 0:
+            layer.setEditorWidgetSetup(
+                photo_index,
+                QgsEditorWidgetSetup(
+                    "ExternalResource",
+                    {
+                        "DefaultRoot": "photos",
+                        "DocumentViewer": 1,
+                        "FileWidget": True,
+                        "RelativeStorage": 1,
+                        "StorageMode": 0,
+                    },
+                ),
+            )
         notes_index = layer.fields().indexOf("opmerking")
         layer.setEditorWidgetSetup(
             notes_index,
@@ -290,6 +292,40 @@ else:
         layer.setRenderer(QgsCategorizedSymbolRenderer("categorie", categories))
 
 
+    def _configure_paden_en_wegen(layer: QgsVectorLayer) -> None:
+        _configure_common_fields(layer)
+        route_types = ("voetpad", "fietspad", "weg")
+        access_types = ("openbaar", "beperkt toegankelijk", "afgesloten")
+        layer.setEditorWidgetSetup(
+            layer.fields().indexOf("type"), _value_map(route_types)
+        )
+        layer.setEditorWidgetSetup(
+            layer.fields().indexOf("toegankelijkheid"), _value_map(access_types)
+        )
+        layer.setEditorWidgetSetup(
+            layer.fields().indexOf("bron"),
+            _value_map(("GNSS-track", "handmatig", "luchtfoto")),
+        )
+        for field_name in ("type", "toegankelijkheid"):
+            layer.setFieldConstraint(
+                layer.fields().indexOf(field_name),
+                QgsFieldConstraints.ConstraintNotNull,
+                QgsFieldConstraints.ConstraintStrengthHard,
+            )
+        colors = ("30,170,70,255", "0,120,220,255", "85,85,85,255")
+        categories = []
+        for value, color in zip(route_types, colors):
+            symbol = QgsLineSymbol.createSimple(
+                {
+                    "line_color": color,
+                    "line_style": "solid",
+                    "line_width": "1.4",
+                }
+            )
+            categories.append(QgsRendererCategory(value, symbol, value))
+        layer.setRenderer(QgsCategorizedSymbolRenderer("type", categories))
+
+
     def _configure_plot_style(layer: QgsVectorLayer) -> None:
         symbol = QgsFillSymbol.createSimple(
             {
@@ -323,7 +359,9 @@ else:
         return layer
 
 
-    def _ensure_rebuild_is_safe(fieldwork_path: Path, photos_path: Path) -> None:
+    def _ensure_rebuild_is_safe(
+        fieldwork_path: Path, routes_path: Path, photos_path: Path
+    ) -> None:
         if fieldwork_path.exists():
             for layer_name in ("afscheidingen", "bijzonderheden"):
                 layer = QgsVectorLayer(
@@ -352,6 +390,20 @@ else:
                 "De pakketmap bevat bestaande veldwerkgegevens in photos/; kies een "
                 "lege uitvoermap om overschrijven te voorkomen."
             )
+        if routes_path.exists():
+            routes = QgsVectorLayer(
+                f"{routes_path}|layername=paden_en_wegen", "paden_en_wegen", "ogr"
+            )
+            if not routes.isValid():
+                raise QgsProcessingException(
+                    "Bestaand routebestand is niet leesbaar; herbouw is gestopt: "
+                    f"{routes_path}"
+                )
+            if routes.featureCount() > 0:
+                raise QgsProcessingException(
+                    "De pakketmap bevat bestaande veldwerkgegevens; kies een lege "
+                    "uitvoermap om overschrijven te voorkomen."
+                )
 
 
     def _build_vector_package(
@@ -360,14 +412,16 @@ else:
         output_dir.mkdir(parents=True, exist_ok=True)
         reference_path = output_dir / "referentie.gpkg"
         fieldwork_path = output_dir / "veldwerk.gpkg"
+        routes_path = output_dir / "routes.gpkg"
         project_path = output_dir / "meijendel.qgz"
         legacy_project_path = output_dir / "meijendel_afscheidingen.qgz"
         photos_path = output_dir / "photos"
-        _ensure_rebuild_is_safe(fieldwork_path, photos_path)
+        _ensure_rebuild_is_safe(fieldwork_path, routes_path, photos_path)
         photos_path.mkdir(exist_ok=True)
         for generated in (
             reference_path,
             fieldwork_path,
+            routes_path,
             project_path,
             legacy_project_path,
         ):
@@ -410,21 +464,38 @@ else:
             ("foto", QVariant.String, 255),
             ("opmerking", QVariant.String, 1000),
         )
+        route_specs = (
+            ("id", QVariant.String, 36),
+            ("type", QVariant.String, 32),
+            ("toegankelijkheid", QVariant.String, 32),
+            ("naam", QVariant.String, 120),
+            ("datum_tijd", QVariant.DateTime, 0),
+            ("bron", QVariant.String, 32),
+            ("ontvanger", QVariant.String, 80),
+            ("nauwkeurigheid_m", QVariant.Double, 0),
+            ("opmerking", QVariant.String, 1000),
+        )
         lines_memory = _empty_field_layer("afscheidingen", "LineString", line_specs)
         points_memory = _empty_field_layer("bijzonderheden", "Point", point_specs)
         areas_memory = _empty_field_layer("gebieden", "Polygon", area_specs)
+        routes_memory = _empty_field_layer(
+            "paden_en_wegen", "LineString", route_specs
+        )
         _write_layer(lines_memory, fieldwork_path, "afscheidingen")
         _write_layer(points_memory, fieldwork_path, "bijzonderheden", append=True)
         _write_layer(areas_memory, fieldwork_path, "gebieden", append=True)
+        _write_layer(routes_memory, routes_path, "paden_en_wegen")
 
         plots = _reload_vector(reference_path, "onderzoekskavels", "Onderzoekskavels")
         lines = _reload_vector(fieldwork_path, "afscheidingen", "Afscheidingen")
         points = _reload_vector(fieldwork_path, "bijzonderheden", "Bijzonderheden")
         areas = _reload_vector(fieldwork_path, "gebieden", "Gebieden")
+        routes = _reload_vector(routes_path, "paden_en_wegen", "Paden en wegen")
         _configure_plot_style(plots)
         _configure_afscheidingen(lines)
         _configure_bijzonderheden(points)
         _configure_gebieden(areas)
+        _configure_paden_en_wegen(routes)
 
         raster = None
         if raster_source:
@@ -449,6 +520,7 @@ else:
         if raster is not None:
             project.addMapLayer(raster)
         project.addMapLayer(plots)
+        project.addMapLayer(routes)
         project.addMapLayer(areas)
         project.addMapLayer(lines)
         project.addMapLayer(points)
@@ -468,7 +540,12 @@ else:
             "project": "meijendel.qgz",
             "crs": EXPECTED_CRS,
             "plot_count": EXPECTED_PLOT_COUNT,
-            "field_layers": ["afscheidingen", "bijzonderheden", "gebieden"],
+            "field_layers": [
+                "afscheidingen",
+                "bijzonderheden",
+                "gebieden",
+                "paden_en_wegen",
+            ],
             "buffer_m": 100,
             "aerial_layer": "2025_ortho25",
             "aerial_source": "PDOK Landelijke Voorziening Beeldmateriaal WMS",
@@ -483,6 +560,18 @@ else:
             json.dumps(manifest, ensure_ascii=False, indent=2) + "\n",
             encoding="utf-8",
         )
+        upgrade_path = output_dir.parent / "meijendel_routes_upgrade.zip"
+        upgrade_text = (
+            "QField-upgrade paden en wegen\n\n"
+            "Sluit het project in QField. Kopieer meijendel.qgz en routes.gpkg "
+            "naar de bestaande projectmap en vervang alleen meijendel.qgz.\n"
+            "Belangrijk: veldwerk.gpkg niet vervangen; daarin staan bestaande "
+            "afscheidingen, bijzonderheden en gebieden.\n"
+        )
+        with zipfile.ZipFile(upgrade_path, "w", zipfile.ZIP_DEFLATED) as archive:
+            archive.write(project_path, "meijendel.qgz")
+            archive.write(routes_path, "routes.gpkg")
+            archive.writestr("UPGRADE_IPAD.txt", upgrade_text)
         return project_path
 
 
