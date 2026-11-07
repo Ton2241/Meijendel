@@ -20,8 +20,8 @@ ENVIRONMENT = (
     "registratie bewijst evenmin dat geen beheer plaatsvond. Infrastructuur bevat "
     "vier indicatoren voor elk van 55 kavels in 2024. Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
-    "uit versies van omsloten gebieden. Acht actuele gebiedsversies leveren samen "
-    "52 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "uit versies van omsloten gebieden. Zes actuele gebiedsversies leveren samen "
+    "46 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -44,8 +44,9 @@ GARMIN = (
     "De ruwe GPX blijft bij het overdraagbare QField-pakket. Garmin rapporteert in "
     "deze export geen horizontale nauwkeurigheid; dat veld blijft daarom leeg. De "
     "afgesloten polygoon is als één gebiedsversie in Meijendel opgenomen; de "
-    "berekende oppervlakte in Rijksdriehoeksstelsel is 4.483.573,104 m². De bronhash "
-    "is aa7a6733e1bf8363df63dce66c17582956641db5aae57d0ec4bfe6b95e84c063. Dit is een "
+    "berekende oppervlakte in Rijksdriehoeksstelsel is 4.483.613,185 m². Vier interne "
+    "artefactringen zijn verwijderd; de bronhash is "
+    "789f8ee1c6eb7ca27667000b775de8f9ef7bb4aabb0d29b98f85d820b06b490c. Dit is een "
     "lokaal gelokaliseerde veldbron voor toegankelijkheidsinventarisatie, geen "
     "ecologische soortwaarneming en geen bron voor Meijendel_bronnen. De gegevens "
     "vallen onder beheer van Ton Lansink; extern hergebruik is niet beoordeeld."
@@ -69,18 +70,20 @@ SECTION = [
     "NULL betekent dat de versie actueel blijft totdat een einddatum wordt ingevoerd. "
     "De view v_toegankelijkheidsgebied_actueel selecteert alleen versies die op de "
     "huidige datum geldig zijn.",
-    "De levende database bevat acht actuele gebieden: twee afgesloten en zes toegankelijk. Het "
-    "gecorrigeerde Garmin-vlak heeft bronhash aa7a6733e1bf8363df63dce66c17582956641db5aae57d0ec4bfe6b95e84c063 "
-    "en een oppervlakte van 4.483.573,104 m². Het tweede vlak is de geometrische "
+    "De levende database bevat zes actuele gebieden: twee afgesloten en vier toegankelijk. Het "
+    "gecorrigeerde Garmin-vlak heeft bronhash 789f8ee1c6eb7ca27667000b775de8f9ef7bb4aabb0d29b98f85d820b06b490c "
+    "en een oppervlakte van 4.483.613,185 m². Het tweede vlak is de geometrische "
     "vereniging van de volledige kavels M13, M13s, M14, M15, M16, M16s en M17a. Dit vlak heeft "
-    "bronhash acc5894be90903ea492a6c166d525039c16680bea1ed69211690d70d28e99e22 en een "
-    "oppervlakte van 2.503.891,912 m². M66 en M105 zijn als twee afzonderlijke "
+    "bronhash 8ed9b94a2aaa955deb973bdf545fbe6774261f658e5256cd9f7d096098ce4b85 en een "
+    "oppervlakte van 2.504.793,951 m². Twintig interne artefactringen zijn verwijderd. M66 en M105 zijn als twee afzonderlijke "
     "toegankelijke gebieden opgenomen, exact volgens hun kavelgrenzen; hun oppervlakten "
     "zijn respectievelijk 576.909,232 en 155.796,244 m². Ook M77, M78/79, M75a en M31 "
-    "zijn als vier afzonderlijke toegankelijke gebieden volgens hun volledige "
-    "kavelgrenzen opgenomen. Hun oppervlakten zijn respectievelijk 334.337,290, "
-    "500.792,163, 64.486,814 en 391.788,486 m². "
-    "toegankelijkheidsgebied_plot_afleiding bevat 52 actuele positieve doorsnijdingen; "
+    "zijn opgenomen. M77, M78/79 en M75a vormen één toegankelijk gebied volgens hun "
+    "gezamenlijke buitencontour; veertien interne artefactringen zijn verwijderd. Dit "
+    "vlak heeft bronhash 80405f7198be8a2e46e405e8aa0fa8ccbd94356766ebf26eda0061fdd7993746 "
+    "en een oppervlakte van 899.464,823 m². M31 blijft een afzonderlijk toegankelijk "
+    "gebied van 391.788,486 m². De drie vervangen losse gebiedsrecords zijn verwijderd. "
+    "toegankelijkheidsgebied_plot_afleiding bevat 46 actuele positieve doorsnijdingen; "
     "voor de dertien bevestigde kavels is het aandeel 100%. De Garmin-veldregistratie en de handmatig bevestigde plotselectie hebben "
     "ieder een eigen bronregel; maatregel_bron bevat na deze invoer 57 regels. Dit zijn "
     "afgeleide relaties: een vlak kan door een kavel lopen "
@@ -95,9 +98,9 @@ SECTION = [
     "cachebouw en VPS-publicatie zijn nog niet uitgevoerd.",
     "De herstelkopie van vóór deze geometriecorrectie staat op /Volumes/T7 Data/"
     "Home_Ton/Meijendel data/Backups-archief/Meijendel/"
-    "meijendel-toegankelijkheid-voor-migratie-20261107-212954.sql. Omvang: 364.893 "
-    "bytes. SHA-256: 0e6824be018b9323ff05c0a41247dba8b081a24ba6cb51addb18d51e945d9347. "
-    "De bijbehorende metadata legt de vier betrokken tabellen, de acht actuele "
+    "meijendel-toegankelijkheid-voor-migratie-20261107-232541.sql. Omvang: 366.622 "
+    "bytes. SHA-256: 3473db362b39405204f800cde4efe1a1b94f14485419e450f4e16c153fe7dd9e. "
+    "De bijbehorende metadata legt de vier betrokken tabellen, de zes actuele "
     "bronhashes en 139 behouden beheerregistraties vast. Herstel is een afzonderlijk "
     "besluit.",
 ]
@@ -142,7 +145,7 @@ def main() -> None:
     document = Document(DOCX)
     replace_paragraph(document, "Aanvullende verklarende gegevens.", ENVIRONMENT)
     replace_paragraph(document, "Garmin-QField-veldbron", GARMIN)
-    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden"), SECTION[2])
+    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden"), SECTION[2])
     replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie"), SECTION[4])
     rename_once(
         document,

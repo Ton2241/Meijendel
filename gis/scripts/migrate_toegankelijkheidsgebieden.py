@@ -26,7 +26,7 @@ DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 STATUS_CODES = ("afgesloten", "toegankelijk", "toegankelijk_met_toegangskaart")
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v5"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v6"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
@@ -50,22 +50,10 @@ PLOT_AREA_SPECS = (
         "kavels": ("M105",),
     },
     {
-        "gebied_code": "kavel_m77_1955",
-        "naam": "Kavel M77",
+        "gebied_code": "buitenduin_noord_toegankelijk_1955",
+        "naam": "Toegankelijk gebied M77-M75a",
         "status_code": "toegankelijk",
-        "kavels": ("M77",),
-    },
-    {
-        "gebied_code": "kavel_m78_79_1955",
-        "naam": "Kavel M78/79",
-        "status_code": "toegankelijk",
-        "kavels": ("M78/79",),
-    },
-    {
-        "gebied_code": "kavel_m75a_1955",
-        "naam": "Kavel M75a",
-        "status_code": "toegankelijk",
-        "kavels": ("M75a",),
+        "kavels": ("M77", "M78/79", "M75a"),
     },
     {
         "gebied_code": "kavel_m31_1955",
@@ -74,6 +62,7 @@ PLOT_AREA_SPECS = (
         "kavels": ("M31",),
     },
 )
+OBSOLETE_PLOT_AREA_CODES = ("kavel_m77_1955", "kavel_m78_79_1955", "kavel_m75a_1955")
 ROUTE_START_INDEX = 159
 ROUTE_END_INDEX = 5470
 ACCESS_SPUR_CHECK_INDEX = 79
@@ -151,10 +140,30 @@ def storable_intersection(intersection_area: float, plot_area: float) -> bool:
     return round(intersection_area, 3) > 0 and round(percentage, 6) > 0
 
 
+def exterior_boundaries_only(geometry: ogr.Geometry) -> tuple[ogr.Geometry, int]:
+    """Behoud per vlak alleen de buitenring; statusgebieden hebben geen interne grenzen."""
+    polygons = []
+    removed = 0
+    for part in _polygon_parts(geometry):
+        if part.GetGeometryCount() < 1:
+            continue
+        polygon = ogr.Geometry(ogr.wkbPolygon)
+        polygon.AddGeometry(part.GetGeometryRef(0).Clone())
+        polygons.append(polygon)
+        removed += max(0, part.GetGeometryCount() - 1)
+    if not polygons:
+        raise ValueError("Gebiedsgeometrie bevat geen polygonen")
+    result = ogr.Geometry(ogr.wkbMultiPolygon)
+    for polygon in polygons:
+        result.AddGeometry(polygon)
+    return result.MakeValid(), removed
+
+
 def _area_record(geometry: ogr.Geometry, **metadata: Any) -> dict[str, Any]:
     if not geometry.IsValid():
         raise ValueError("Gebiedsgeometrie is ongeldig")
-    geometry = ogr.ForceToMultiPolygon(geometry.Clone())
+    geometry, removed_rings = exterior_boundaries_only(geometry.Clone())
+    geometry = ogr.ForceToMultiPolygon(geometry)
     if geometry is None or geometry.GetGeometryName().upper() != "MULTIPOLYGON":
         raise ValueError("Gebiedsgeometrie is geen multipolygoon")
     wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
@@ -166,6 +175,8 @@ def _area_record(geometry: ogr.Geometry, **metadata: Any) -> dict[str, Any]:
         "wkt": geometry.ExportToIsoWkt(),
         "geometrie_sha256": hashlib.sha256(wkb).hexdigest(),
         "oppervlakte_m2": float(geometry.GetArea()),
+        "interne_ringen": sum(max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(geometry)),
+        "verwijderde_interne_ringen": removed_rings,
         **metadata,
     }
 
@@ -307,6 +318,13 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "'Volledige kavels M13, M13s, M14, M15, M16, M16s, M17a, M66, M105, M77, M78/79, M75a en M31') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
+    obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)
+    statements.extend((
+        "DELETE FROM v USING toegankelijkheidsgebied_versie v "
+        "JOIN toegankelijkheidsgebied g USING(gebied_id) "
+        f"WHERE g.gebied_code IN ({obsolete_codes})",
+        f"DELETE FROM toegankelijkheidsgebied WHERE gebied_code IN ({obsolete_codes})",
+    ))
     for plot_area in plot_areas:
         statements.extend((
             "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
@@ -540,6 +558,13 @@ def apply(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, An
 
 
 def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, Any]]) -> dict[str, Any]:
+    interior_rings = 0
+    for geometry_hex in client.sql(
+        "SELECT HEX(ST_AsBinary(geometrie)) FROM toegankelijkheidsgebied_versie WHERE geldig_tot IS NULL"
+    ).splitlines():
+        geometry = ogr.CreateGeometryFromWkb(bytes.fromhex(geometry_hex))
+        interior_rings += sum(max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(geometry))
+    obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)
     result = {
         "oude_tabel": int(client.scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='maatregel_toegankelijkheid_registratie' AND table_type='BASE TABLE'")),
         "oude_herkomstkolom": int(client.scalar("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='maatregel_registratie_herkomst' AND column_name='toegang_registratie_id'")),
@@ -549,12 +574,18 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         "gebiedsversies": int(client.scalar("SELECT COUNT(*) FROM toegankelijkheidsgebied_versie")),
         "plotdoorsnijdingen": int(client.scalar("SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding")),
         "bron101_beheer": int(client.scalar("SELECT COUNT(*) FROM maatregel_plot_jaar_registratie WHERE bron_id=101")),
+        "interne_ringen": interior_rings,
+        "vervangen_gebiedsrecords": int(client.scalar(
+            f"SELECT COUNT(*) FROM toegankelijkheidsgebied WHERE gebied_code IN ({obsolete_codes})"
+        )),
     }
     if result["oude_tabel"] or result["oude_herkomstkolom"]:
         raise AssertionError(result)
+    if result["interne_ringen"] or result["vervangen_gebiedsrecords"]:
+        raise AssertionError(result)
     if result["beheerregistraties"] != 139 or result["herkomsten"] != 144 or result["bron101_beheer"] != 139:
         raise AssertionError(result)
-    if result["gebieden"] != 8 or result["gebiedsversies"] != 8 or result["plotdoorsnijdingen"] < 13:
+    if result["gebieden"] != 6 or result["gebiedsversies"] != 6 or result["plotdoorsnijdingen"] < 13:
         raise AssertionError(result)
     row = client.sql(
         "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"
