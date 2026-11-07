@@ -26,12 +26,30 @@ DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 STATUS_CODES = ("afgesloten", "toegankelijk", "toegankelijk_met_toegangskaart")
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v2"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v3"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
-PLOT_AREA_CODE = "buitenduin_noord_1955"
-PLOT_AREA_KAVELS = ("M13", "M13s", "M15", "M16", "M17a")
+PLOT_AREA_SPECS = (
+    {
+        "gebied_code": "buitenduin_noord_1955",
+        "naam": "Afgesloten gebied M13-M17a",
+        "status_code": "afgesloten",
+        "kavels": ("M13", "M13s", "M14", "M15", "M16", "M17a"),
+    },
+    {
+        "gebied_code": "haagsche_golfclub_1955",
+        "naam": "Haagsche Golf- en Countryclub",
+        "status_code": "toegankelijk",
+        "kavels": ("M66",),
+    },
+    {
+        "gebied_code": "hertenkamp_1955",
+        "naam": "Hertenkamp",
+        "status_code": "toegankelijk",
+        "kavels": ("M105",),
+    },
+)
 ROUTE_START_INDEX = 159
 ROUTE_END_INDEX = 5470
 ACCESS_SPUR_CHECK_INDEX = 79
@@ -177,37 +195,44 @@ def derive_route_area(path: Path) -> dict[str, Any]:
     )
 
 
-def read_plot_union(path: Path) -> dict[str, Any]:
-    """Vorm één gebied uit de vijf door Ton bevestigde volledige kavels."""
+def read_plot_areas(path: Path) -> list[dict[str, Any]]:
+    """Vorm de door Ton bevestigde gebieden uit volledige kavelgeometrieën."""
     dataset = ogr.Open(str(path), 0)
     if dataset is None:
         raise ValueError(f"GeoPackage niet leesbaar: {path}")
     layer = dataset.GetLayerByName("onderzoekskavels")
     if layer is None:
         raise ValueError("Laag onderzoekskavels ontbreekt")
-    wanted = set(PLOT_AREA_KAVELS)
+    wanted = {kavel for spec in PLOT_AREA_SPECS for kavel in spec["kavels"]}
     found: dict[str, ogr.Geometry] = {}
     for feature in layer:
         name = feature.GetFieldAsString("naam")
-        kavel = "M" + name.removeprefix("Meijendel k ")
+        suffix = name.replace("Meijendel  k ", "", 1).replace("Meijendel k ", "", 1)
+        kavel = "M" + suffix.split(maxsplit=1)[0]
         if kavel in wanted:
             found[kavel] = feature.GetGeometryRef().Clone()
     if set(found) != wanted:
         raise ValueError(f"Kavelgeometrie ontbreekt: {sorted(wanted - set(found))}")
-    union = found[PLOT_AREA_KAVELS[0]].Clone()
-    for kavel in PLOT_AREA_KAVELS[1:]:
-        union = union.Union(found[kavel])
-    union = union.MakeValid()
-    return _area_record(
-        union,
-        feature_id="plots:" + ",".join(PLOT_AREA_KAVELS),
-        kavels=PLOT_AREA_KAVELS,
-        nauwkeurigheid_m=None,
-        opmerking=(
-            "Volledige kavels M13, M13s, M15, M16 en M17a; door Ton "
-            "bevestigd als één afgesloten gebied."
-        ),
-    )
+    areas = []
+    for spec in PLOT_AREA_SPECS:
+        kavels = spec["kavels"]
+        union = found[kavels[0]].Clone()
+        for kavel in kavels[1:]:
+            union = union.Union(found[kavel])
+        areas.append(_area_record(
+            union.MakeValid(),
+            gebied_code=spec["gebied_code"],
+            naam=spec["naam"],
+            status_code=spec["status_code"],
+            feature_id="plots:" + ",".join(kavels),
+            kavels=kavels,
+            nauwkeurigheid_m=None,
+            opmerking=(
+                f"Volledige {'kavels' if len(kavels) > 1 else 'kavel'} {', '.join(kavels)}; "
+                f"door Ton bevestigd als {spec['status_code']} gebied."
+            ),
+        ))
+    return areas
 
 
 def area_schema_sql() -> str:
@@ -217,9 +242,9 @@ def area_schema_sql() -> str:
     return sql[start:end].strip()
 
 
-def build_migration_statements(feature: dict[str, Any], plot_area: dict[str, Any]) -> list[str]:
+def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[str, Any]]) -> list[str]:
     accuracy = feature["nauwkeurigheid_m"]
-    return [
+    statements = [
         "INSERT INTO maatregel_brontype (brontype_code,landelijke_broncategorie,omschrijving) "
         "VALUES ('veldregistratie','IBC99','Veldregistratie of daarvan afgeleide geometrie') "
         "ON DUPLICATE KEY UPDATE omschrijving=VALUES(omschrijving)",
@@ -253,33 +278,39 @@ def build_migration_statements(feature: dict[str, Any], plot_area: dict[str, Any
         "geometrie_opmerking=VALUES(geometrie_opmerking)",
         "INSERT INTO maatregel_bron "
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
-        f"'{PLOT_SOURCE_CODE}','handmatige_registratie','Handmatig bevestigde afgesloten kavelgroep',"
+        f"'{PLOT_SOURCE_CODE}','handmatige_registratie','Handmatig bevestigde toegankelijkheidsgebieden',"
         "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
-        "'Volledige kavels M13, M13s, M15, M16 en M17a') "
+        "'Volledige kavels M13, M13s, M14, M15, M16, M17a, M66 en M105') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
-        "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
-        f"'{PLOT_AREA_CODE}','Afgesloten gebied M13-M17a',"
-        "'Door Ton bevestigd als afgesloten gebied over vijf volledige kavels') "
-        "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)",
-        "INSERT INTO toegankelijkheidsgebied_versie "
-        "(gebied_id,versienummer,status_code,geldig_vanaf,geldig_tot,vastgesteld_op,bron_id,"
-        "bron_object_id,inwinningsmethode,nauwkeurigheid_m,geometrie,geometrie_wkt,"
-        "geometrie_sha256,oppervlakte_m2,geometrie_opmerking) SELECT "
-        f"g.gebied_id,1,'afgesloten','1955-01-01',NULL,'2026-11-07',b.bron_id,"
-        f"{sql_literal(plot_area['feature_id'])},'vereniging van volledige onderzoekskavels',NULL,"
-        f"ST_GeomFromText({sql_literal(plot_area['wkt'])},28992),{sql_literal(plot_area['wkt'])},"
-        f"{sql_literal(plot_area['geometrie_sha256'])},{plot_area['oppervlakte_m2']:.3f},"
-        f"{sql_literal(plot_area['opmerking'])} FROM toegankelijkheidsgebied g JOIN maatregel_bron b "
-        f"ON b.bron_code='{PLOT_SOURCE_CODE}' WHERE g.gebied_code='{PLOT_AREA_CODE}' "
-        "ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),geldig_vanaf=VALUES(geldig_vanaf),"
-        "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),bron_id=VALUES(bron_id),"
-        "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
-        "geometrie=VALUES(geometrie),geometrie_wkt=VALUES(geometrie_wkt),"
-        "geometrie_sha256=VALUES(geometrie_sha256),oppervlakte_m2=VALUES(oppervlakte_m2),"
-        "geometrie_opmerking=VALUES(geometrie_opmerking)",
+    ]
+    for plot_area in plot_areas:
+        statements.extend((
+            "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
+            f"{sql_literal(plot_area['gebied_code'])},{sql_literal(plot_area['naam'])},"
+            f"{sql_literal(plot_area['opmerking'])}) "
+            "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)",
+            "INSERT INTO toegankelijkheidsgebied_versie "
+            "(gebied_id,versienummer,status_code,geldig_vanaf,geldig_tot,vastgesteld_op,bron_id,"
+            "bron_object_id,inwinningsmethode,nauwkeurigheid_m,geometrie,geometrie_wkt,"
+            "geometrie_sha256,oppervlakte_m2,geometrie_opmerking) SELECT "
+            f"g.gebied_id,1,{sql_literal(plot_area['status_code'])},'1955-01-01',NULL,'2026-11-07',b.bron_id,"
+            f"{sql_literal(plot_area['feature_id'])},'vereniging van volledige onderzoekskavels',NULL,"
+            f"ST_GeomFromText({sql_literal(plot_area['wkt'])},28992),{sql_literal(plot_area['wkt'])},"
+            f"{sql_literal(plot_area['geometrie_sha256'])},{plot_area['oppervlakte_m2']:.3f},"
+            f"{sql_literal(plot_area['opmerking'])} FROM toegankelijkheidsgebied g JOIN maatregel_bron b "
+            f"ON b.bron_code='{PLOT_SOURCE_CODE}' WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
+            "ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),geldig_vanaf=VALUES(geldig_vanaf),"
+            "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),bron_id=VALUES(bron_id),"
+            "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
+            "geometrie=VALUES(geometrie),geometrie_wkt=VALUES(geometrie_wkt),"
+            "geometrie_sha256=VALUES(geometrie_sha256),oppervlakte_m2=VALUES(oppervlakte_m2),"
+            "geometrie_opmerking=VALUES(geometrie_opmerking)",
+        ))
+    statements.extend((
         "DELETE FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL",
         "DROP TABLE maatregel_toegankelijkheid_registratie",
-    ]
+    ))
+    return statements
 
 
 class Client:
@@ -341,7 +372,7 @@ def backup_tables(old_model_exists: bool) -> tuple[str, ...]:
     )
 
 
-def backup(client: Client, backup_dir: Path, feature: dict[str, Any], plot_area: dict[str, Any]) -> Path:
+def backup(client: Client, backup_dir: Path, feature: dict[str, Any], plot_areas: list[dict[str, Any]]) -> Path:
     backup_dir = ensure_backup_dir(backup_dir)
     stamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
     sql_path = backup_dir / f"meijendel-toegankelijkheid-voor-migratie-{stamp}.sql"
@@ -375,8 +406,15 @@ def backup(client: Client, backup_dir: Path, feature: dict[str, Any], plot_area:
         "beheerregistraties": int(client.scalar("SELECT COUNT(*) FROM maatregel_plot_jaar_registratie")),
         "qfield_feature_id": feature["feature_id"],
         "qfield_geometrie_sha256": feature["geometrie_sha256"],
-        "plotgebied_feature_id": plot_area["feature_id"],
-        "plotgebied_geometrie_sha256": plot_area["geometrie_sha256"],
+        "plotgebieden": [
+            {
+                "gebied_code": area["gebied_code"],
+                "feature_id": area["feature_id"],
+                "status_code": area["status_code"],
+                "geometrie_sha256": area["geometrie_sha256"],
+            }
+            for area in plot_areas
+        ],
     }
     metadata_path = sql_path.with_suffix(".json")
     metadata_path.write_text(json.dumps(metadata, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -467,8 +505,8 @@ def rebuild_plot_derivations(client: Client) -> int:
     return len(values)
 
 
-def apply(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) -> None:
-    statements = build_migration_statements(feature, plot_area)
+def apply(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, Any]]) -> None:
+    statements = build_migration_statements(feature, plot_areas)
     for statement in statements:
         if statement.startswith("DELETE FROM maatregel_registratie_herkomst") or statement.startswith("DROP TABLE"):
             continue
@@ -477,7 +515,7 @@ def apply(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) ->
     rebuild_plot_derivations(client)
 
 
-def verify(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) -> dict[str, Any]:
+def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, Any]]) -> dict[str, Any]:
     result = {
         "oude_tabel": int(client.scalar("SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE() AND table_name='maatregel_toegankelijkheid_registratie' AND table_type='BASE TABLE'")),
         "oude_herkomstkolom": int(client.scalar("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='maatregel_registratie_herkomst' AND column_name='toegang_registratie_id'")),
@@ -492,7 +530,7 @@ def verify(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) -
         raise AssertionError(result)
     if result["beheerregistraties"] != 139 or result["herkomsten"] != 144 or result["bron101_beheer"] != 139:
         raise AssertionError(result)
-    if result["gebieden"] != 2 or result["gebiedsversies"] != 2 or result["plotdoorsnijdingen"] != 30:
+    if result["gebieden"] != 4 or result["gebiedsversies"] != 4 or result["plotdoorsnijdingen"] < 8:
         raise AssertionError(result)
     row = client.sql(
         "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"
@@ -504,26 +542,28 @@ def verify(client: Client, feature: dict[str, Any], plot_area: dict[str, Any]) -
         raise AssertionError(row)
     if row[6] != feature["geometrie_sha256"] or abs(float(row[5]) - feature["oppervlakte_m2"]) > 0.01:
         raise AssertionError(row)
-    plot_row = client.sql(
-        "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"
-        "ST_SRID(geometrie),ST_IsValid(geometrie),ROUND(ST_Area(geometrie),3),geometrie_sha256 "
-        "FROM toegankelijkheidsgebied_versie v JOIN toegankelijkheidsgebied g USING(gebied_id) "
-        f"WHERE g.gebied_code='{PLOT_AREA_CODE}'"
-    ).split("\t")
-    if plot_row[:5] != ["afgesloten", "1955-01-01", "NULL", "28992", "1"]:
-        raise AssertionError(plot_row)
-    if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
-        raise AssertionError(plot_row)
-    kavel_sql = ",".join(sql_literal(kavel) for kavel in PLOT_AREA_KAVELS)
-    covered = int(client.scalar(
-        "SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding a "
-        "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
-        "JOIN toegankelijkheidsgebied g USING(gebied_id) JOIN plots p USING(plot_id) "
-        f"WHERE g.gebied_code='{PLOT_AREA_CODE}' AND p.kavel_nummer IN ({kavel_sql}) "
-        "AND a.aandeel_pct>99.9999"
-    ))
-    if covered != len(PLOT_AREA_KAVELS):
-        raise AssertionError(f"Niet alle vijf kavels volledig gedekt: {covered}")
+    for plot_area in plot_areas:
+        plot_row = client.sql(
+            "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"
+            "ST_SRID(geometrie),ST_IsValid(geometrie),ROUND(ST_Area(geometrie),3),geometrie_sha256 "
+            "FROM toegankelijkheidsgebied_versie v JOIN toegankelijkheidsgebied g USING(gebied_id) "
+            f"WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])}"
+        ).split("\t")
+        if plot_row[:5] != [plot_area["status_code"], "1955-01-01", "NULL", "28992", "1"]:
+            raise AssertionError(plot_row)
+        if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
+            raise AssertionError(plot_row)
+        kavel_sql = ",".join(sql_literal(kavel) for kavel in plot_area["kavels"])
+        covered = int(client.scalar(
+            "SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding a "
+            "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
+            "JOIN toegankelijkheidsgebied g USING(gebied_id) JOIN plots p USING(plot_id) "
+            f"WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
+            f"AND p.kavel_nummer IN ({kavel_sql}) AND a.status_code={sql_literal(plot_area['status_code'])} "
+            "AND a.aandeel_pct>99.9999"
+        ))
+        if covered != len(plot_area["kavels"]):
+            raise AssertionError(f"Niet alle kavels volledig gedekt voor {plot_area['gebied_code']}: {covered}")
     if result["plotdoorsnijdingen"] < 1:
         raise AssertionError("Geen kavels door gebied doorsneden")
     bad = int(client.scalar("SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding WHERE aandeel_pct<=0 OR aandeel_pct>100"))
@@ -546,18 +586,18 @@ def parse_args() -> argparse.Namespace:
 def main() -> int:
     args = parse_args()
     feature = derive_route_area(args.route_gpkg)
-    plot_area = read_plot_union(args.reference_gpkg)
+    plot_areas = read_plot_areas(args.reference_gpkg)
     client = Client(args.database)
     if args.apply:
-        metadata = backup(client, args.backup_dir, feature, plot_area)
-        apply(client, feature, plot_area)
+        metadata = backup(client, args.backup_dir, feature, plot_areas)
+        apply(client, feature, plot_areas)
         print(f"BACKUP_METADATA={metadata}")
     if args.apply or args.verify:
-        print(json.dumps(verify(client, feature, plot_area), sort_keys=True))
+        print(json.dumps(verify(client, feature, plot_areas), sort_keys=True))
     if not args.apply and not args.verify:
         print(json.dumps({
             "garmin": {k: v for k, v in feature.items() if k != "wkt"},
-            "plotgebied": {k: v for k, v in plot_area.items() if k != "wkt"},
+            "plotgebieden": [{k: v for k, v in area.items() if k != "wkt"} for area in plot_areas],
         }, sort_keys=True))
     return 0
 

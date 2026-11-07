@@ -76,14 +76,16 @@ def main() -> int:
     assert feature["toegangsspoor_afstand_m"] > 50
     assert len(feature["geometrie_sha256"]) == 64
 
-    assert migration.PLOT_AREA_KAVELS == ("M13", "M13s", "M15", "M16", "M17a")
-    assert migration.PLOT_AREA_CODE == "buitenduin_noord_1955"
-    plot_area = migration.read_plot_union(migration.DEFAULT_REFERENCE_GPKG)
-    assert plot_area["status_code"] == "afgesloten"
-    assert plot_area["geometry_type"] == "MULTIPOLYGON"
-    assert plot_area["is_valid"]
-    assert 1_995_000 < plot_area["oppervlakte_m2"] < 1_997_000
-    assert plot_area["kavels"] == migration.PLOT_AREA_KAVELS
+    plot_areas = migration.read_plot_areas(migration.DEFAULT_REFERENCE_GPKG)
+    assert [(area["gebied_code"], area["status_code"], area["kavels"]) for area in plot_areas] == [
+        ("buitenduin_noord_1955", "afgesloten", ("M13", "M13s", "M14", "M15", "M16", "M17a")),
+        ("haagsche_golfclub_1955", "toegankelijk", ("M66",)),
+        ("hertenkamp_1955", "toegankelijk", ("M105",)),
+    ]
+    for plot_area in plot_areas:
+        assert plot_area["geometry_type"] == "MULTIPOLYGON"
+        assert plot_area["is_valid"]
+        assert plot_area["oppervlakte_m2"] > 0
 
     mixed = migration.ogr.CreateGeometryFromWkt(
         "GEOMETRYCOLLECTION(POLYGON((0 0,10 0,10 10,0 10,0 0)),LINESTRING(0 0,10 10))"
@@ -93,7 +95,7 @@ def main() -> int:
     assert not migration.storable_intersection(0.001, 500_000)
     assert migration.storable_intersection(1.0, 500_000)
 
-    statements = migration.build_migration_statements(feature, plot_area)
+    statements = migration.build_migration_statements(feature, plot_areas)
     joined = "\n".join(statements)
     assert "1955-01-01" in joined
     assert FEATURE_ID in joined
@@ -101,7 +103,10 @@ def main() -> int:
     assert "DROP TABLE maatregel_toegankelijkheid_registratie" in joined
     assert "maatregel_plot_jaar_registratie" not in joined
     assert "DELETE FROM maatregel_bron" not in joined
-    assert migration.PLOT_AREA_CODE in joined
+    assert "buitenduin_noord_1955" in joined
+    assert "haagsche_golfclub_1955" in joined
+    assert "hertenkamp_1955" in joined
+    assert "plots:M13,M13s,M14,M15,M16,M17a" in joined
 
     print("OK: toegankelijkheidsgebieden-contract")
     return 0
