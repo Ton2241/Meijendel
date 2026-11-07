@@ -91,6 +91,26 @@ def main() -> int:
         assert plot_area["oppervlakte_m2"] > 0
         assert plot_area["interne_ringen"] == 0
 
+    # Een smalle, naar de buitenrand open naad tussen twee kavels is geen
+    # statusgrens. De gerichte sluiting moet die naad vullen zonder een
+    # binnenring achter te laten.
+    seamed = migration.ogr.CreateGeometryFromWkt(
+        "POLYGON((0 0,10 0,10 10,6.5 10,6.5 2,3.5 2,3.5 10,0 10,0 0))"
+    )
+    closed = migration.close_narrow_seams(seamed, 2.0)
+    seam_point = migration.ogr.CreateGeometryFromWkt("POINT(5 5)")
+    assert closed.Contains(seam_point)
+    assert sum(
+        max(0, part.GetGeometryCount() - 1)
+        for part in migration._polygon_parts(closed)
+    ) == 0
+
+    north = plot_areas[0]
+    assert north["naad_sluiting_m"] == 2.0
+    assert 50 < north["naad_oppervlakte_m2"] < 53
+    north_geometry = migration.ogr.CreateGeometryFromWkt(north["wkt"])
+    assert 7_800 < north_geometry.Boundary().Length() < 8_000
+
     mixed = migration.ogr.CreateGeometryFromWkt(
         "GEOMETRYCOLLECTION(POLYGON((0 0,10 0,10 10,0 10,0 0)),LINESTRING(0 0,10 10))"
     )

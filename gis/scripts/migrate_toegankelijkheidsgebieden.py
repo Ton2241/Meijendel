@@ -26,7 +26,7 @@ DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 STATUS_CODES = ("afgesloten", "toegankelijk", "toegankelijk_met_toegangskaart")
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v6"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v7"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
@@ -36,6 +36,7 @@ PLOT_AREA_SPECS = (
         "naam": "Afgesloten gebied M13-M17a",
         "status_code": "afgesloten",
         "kavels": ("M13", "M13s", "M14", "M15", "M16", "M16s", "M17a"),
+        "naad_sluiting_m": 2.0,
     },
     {
         "gebied_code": "haagsche_golfclub_1955",
@@ -159,6 +160,34 @@ def exterior_boundaries_only(geometry: ogr.Geometry) -> tuple[ogr.Geometry, int]
     return result.MakeValid(), removed
 
 
+def close_narrow_seams(
+    geometry: ogr.Geometry,
+    tolerance_m: float,
+    source_geometries: list[ogr.Geometry] | None = None,
+) -> ogr.Geometry:
+    """Sluit alleen smalle, naar de buitenrand open topologische naden."""
+    if tolerance_m <= 0:
+        return ogr.ForceToMultiPolygon(geometry.Clone())
+    morphological_close = geometry.Buffer(tolerance_m).Buffer(-tolerance_m).MakeValid()
+    if source_geometries:
+        additions = morphological_close.Difference(geometry)
+        closed = geometry.Clone()
+        for part in _polygon_parts(additions):
+            touching_sources = sum(
+                part.Distance(source) < 1e-7 for source in source_geometries
+            )
+            if touching_sources >= 2:
+                closed = closed.Union(part)
+        closed = closed.MakeValid()
+    else:
+        closed = morphological_close
+    closed, _ = exterior_boundaries_only(closed)
+    closed = ogr.ForceToMultiPolygon(closed)
+    if closed is None or not closed.IsValid():
+        raise ValueError("Naadsluiting levert geen geldige multipolygoon op")
+    return closed
+
+
 def _area_record(geometry: ogr.Geometry, **metadata: Any) -> dict[str, Any]:
     if not geometry.IsValid():
         raise ValueError("Gebiedsgeometrie is ongeldig")
@@ -254,17 +283,43 @@ def read_plot_areas(path: Path) -> list[dict[str, Any]]:
         union = found[kavels[0]].Clone()
         for kavel in kavels[1:]:
             union = union.Union(found[kavel])
+        union = union.MakeValid()
+        tolerance_m = float(spec.get("naad_sluiting_m", 0.0))
+        seam_area_m2 = 0.0
+        removed_rings = None
+        if tolerance_m:
+            exterior, removed_rings = exterior_boundaries_only(union)
+            corrected = close_narrow_seams(
+                exterior,
+                tolerance_m,
+                [found[kavel] for kavel in kavels],
+            )
+            seam_area_m2 = float(corrected.GetArea() - exterior.GetArea())
+            union = corrected
         areas.append(_area_record(
-            union.MakeValid(),
+            union,
             gebied_code=spec["gebied_code"],
             naam=spec["naam"],
             status_code=spec["status_code"],
             feature_id="plots:" + ",".join(kavels),
             kavels=kavels,
+            naad_sluiting_m=tolerance_m,
+            naad_oppervlakte_m2=seam_area_m2,
+            **(
+                {"verwijderde_interne_ringen": removed_rings}
+                if removed_rings is not None
+                else {}
+            ),
             nauwkeurigheid_m=None,
             opmerking=(
                 f"Volledige {'kavels' if len(kavels) > 1 else 'kavel'} {', '.join(kavels)}; "
                 f"door Ton bevestigd als {spec['status_code']} gebied."
+                + (
+                    f" Een topologische naad van minder dan {2 * tolerance_m:g} meter "
+                    "tussen de kavelpolygonen is gesloten; dit is geen statusgrens."
+                    if tolerance_m
+                    else ""
+                )
             ),
         ))
     return areas
