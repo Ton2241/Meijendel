@@ -502,8 +502,11 @@ CENTRAL_QUERY_SCHEMA = {
     'plot_jaar_infra': frozenset(['bron', 'jaar', 'plot_id', 'variabele', 'waarde']),
     'plot_jaar_landgebruik': frozenset(['area_m2', 'bron', 'jaar', 'klasse', 'pct', 'plot_id']),
     'maatregel_plot_jaar_registratie': frozenset(['beoordelingsstatus', 'bron_id', 'deel_label', 'dekking_pct', 'intensiteit_code', 'jaar', 'maatregel_id', 'opmerking', 'plot_id', 'registratie_id', 'uitvoerder_of_diersoort', 'uitvoering_id']),
-    'maatregel_toegankelijkheid_registratie': frozenset(['aandeel_pct', 'barriere_type', 'beoordelingsstatus', 'bron_id', 'deel_label', 'geom_wkt', 'jaar', 'niveau', 'opmerking', 'ouder_registratie_id', 'plot_id', 'registratie_id', 'status_code', 'uitvoering_id']),
-    'maatregel_registratie_herkomst': frozenset(['beheer_registratie_id', 'bronsleutel', 'brontabel', 'herkomst_id', 'jaar', 'migratieversie', 'oorspronkelijke_rij', 'plot_id', 'rij_sha256', 'toegang_registratie_id', 'uitvoering_id']),
+    'maatregel_registratie_herkomst': frozenset(['beheer_registratie_id', 'bronsleutel', 'brontabel', 'herkomst_id', 'jaar', 'migratieversie', 'oorspronkelijke_rij', 'plot_id', 'rij_sha256', 'uitvoering_id']),
+    'toegankelijkheidsstatus': frozenset(['omschrijving', 'status_code']),
+    'toegankelijkheidsgebied': frozenset(['aangemaakt_op', 'gebied_code', 'gebied_id', 'gewijzigd_op', 'naam', 'opmerking']),
+    'toegankelijkheidsgebied_versie': frozenset(['actueel_gebied_id', 'aangemaakt_op', 'bron_id', 'bron_object_id', 'geldig_tot', 'geldig_vanaf', 'gebied_id', 'gebied_versie_id', 'geometrie', 'geometrie_opmerking', 'geometrie_sha256', 'geometrie_wkt', 'inwinningsmethode', 'nauwkeurigheid_m', 'oppervlakte_m2', 'status_code', 'vastgesteld_op', 'versienummer']),
+    'toegankelijkheidsgebied_plot_afleiding': frozenset(['aandeel_pct', 'afgeleid_op', 'doorsnijding_m2', 'gebied_geometrie_sha256', 'gebied_versie_id', 'plot_geometrie_sha256', 'plot_id', 'plot_oppervlakte_m2', 'status_code']),
     'plot_jaar_maatregel': frozenset(['bron', 'deel_label', 'dekking_pct', 'id', 'intensiteit_code', 'jaar', 'maatregel_id', 'opmerking', 'plot_id', 'uitvoerder_of_diersoort']),
     'plot_jaar_oppervlak': frozenset(['id', 'jaar', 'oppervlakte_km2', 'plot_id']),
     'plot_jaar_stikstof': frozenset(['bron', 'jaar', 'plot_id', 'stikstof_mean', 'stikstof_median']),
@@ -581,7 +584,7 @@ def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
             'waarneming_id', 'opslag_tabel', 'identiteit_sha256'})
         expected.pop('ndff_mossen')
         expected.pop('ndff_korstmossen')
-    registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
+    registraties = {'maatregel_plot_jaar_registratie','maatregel_registratie_herkomst'}
     legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
     if not (registraties & set(schema)):
         for table in registraties: expected.pop(table)
