@@ -8,7 +8,7 @@ Het gebouwde pakket staat lokaal onder:
 
 Kopieer steeds de **hele map**. De map bevat het QGIS-project, de vaste
 PDOK-luchtfoto 2025, de 55 onderzoekskavels, `veldwerk.gpkg` met drie
-meetlagen en de fotomap.
+meetlagen, `routes.gpkg` met `paden_en_wegen` en de fotomap.
 De bestanden gebruiken relatieve paden en moeten bij elkaar blijven.
 
 Het pakket wordt opnieuw gebouwd met:
@@ -70,6 +70,9 @@ positiefout van de ontvanger niet.
 - `gebieden`: inclosure, exclosure, openbaar, beperkt toegankelijk,
   afgesloten en bedrijventerrein. Polygonen mogen elkaar overlappen of
   geheel binnen elkaar liggen; ieder gebied blijft een afzonderlijk object.
+- `paden_en_wegen`: voetpad, fietspad of weg. Kies per lijn daarnaast
+  `openbaar`, `beperkt toegankelijk` of `afgesloten`. Naam en opmerking zijn
+  optioneel.
 - Een opgeslagen polygoon kan later opnieuw worden geselecteerd. Met
   geometrie- of hoekpuntbewerking kun je grenspunten verplaatsen, toevoegen of
   verwijderen; categorie en formuliergegevens blijven behouden.
@@ -82,6 +85,33 @@ positiefout van de ontvanger niet.
 
 De ingemeten lijn is een veldwaarneming. Zij stelt geen juridische grens
 vast.
+
+## Een voetpad, fietspad of weg volgen
+
+1. Schakel de GNS 3000 in en wacht tot QField een stabiele positie toont.
+2. Open de **Side Dashboard**.
+3. Druk lang op **Paden en wegen** en kies **Setup tracking**.
+4. Stel de afstand in op `2 m` en de tijd op `1 s`.
+5. Kies **Start tracking**.
+6. Vul in het formulier `type` en `toegankelijkheid` in. `naam` en
+   `opmerking` zijn optioneel.
+7. Loop of ren het routedeel. QField slaat ieder opgenomen meetpunt direct in
+   dezelfde lijn op.
+8. Druk in de **Side Dashboard** lang op de tracking badge naast
+   **Paden en wegen** en kies **Stop tracking**.
+
+Verandert onderweg het routetype of de toegankelijkheid, stop dan de huidige
+tracking en start een nieuw lijnobject. Eén object krijgt altijd één type en
+één toegankelijkheidsstatus.
+
+## Veilige upgrade van het bestaande iPad-project
+
+Gebruik `meijendel_routes_upgrade.zip` wanneer op de iPad al waarnemingen in
+het project staan. Sluit QField, pak de ZIP uit en plaats alleen
+`meijendel.qgz` en `routes.gpkg` in de bestaande projectmap. Vervang
+`meijendel.qgz`; laat `veldwerk.gpkg`, `referentie.gpkg`, de luchtfoto en
+`photos/` staan. Daarmee blijven bestaande afscheidingen, bijzonderheden,
+gebieden en foto's behouden.
 
 ## Veilig terugkopiëren naar de iMac
 
