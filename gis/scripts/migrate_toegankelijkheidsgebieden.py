@@ -26,7 +26,7 @@ DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 STATUS_CODES = ("afgesloten", "toegankelijk", "toegankelijk_met_toegangskaart")
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v3"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v5"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
@@ -35,7 +35,7 @@ PLOT_AREA_SPECS = (
         "gebied_code": "buitenduin_noord_1955",
         "naam": "Afgesloten gebied M13-M17a",
         "status_code": "afgesloten",
-        "kavels": ("M13", "M13s", "M14", "M15", "M16", "M17a"),
+        "kavels": ("M13", "M13s", "M14", "M15", "M16", "M16s", "M17a"),
     },
     {
         "gebied_code": "haagsche_golfclub_1955",
@@ -48,6 +48,30 @@ PLOT_AREA_SPECS = (
         "naam": "Hertenkamp",
         "status_code": "toegankelijk",
         "kavels": ("M105",),
+    },
+    {
+        "gebied_code": "kavel_m77_1955",
+        "naam": "Kavel M77",
+        "status_code": "toegankelijk",
+        "kavels": ("M77",),
+    },
+    {
+        "gebied_code": "kavel_m78_79_1955",
+        "naam": "Kavel M78/79",
+        "status_code": "toegankelijk",
+        "kavels": ("M78/79",),
+    },
+    {
+        "gebied_code": "kavel_m75a_1955",
+        "naam": "Kavel M75a",
+        "status_code": "toegankelijk",
+        "kavels": ("M75a",),
+    },
+    {
+        "gebied_code": "kavel_m31_1955",
+        "naam": "Kavel M31",
+        "status_code": "toegankelijk",
+        "kavels": ("M31",),
     },
 )
 ROUTE_START_INDEX = 159
@@ -280,7 +304,7 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
         f"'{PLOT_SOURCE_CODE}','handmatige_registratie','Handmatig bevestigde toegankelijkheidsgebieden',"
         "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
-        "'Volledige kavels M13, M13s, M14, M15, M16, M17a, M66 en M105') "
+        "'Volledige kavels M13, M13s, M14, M15, M16, M16s, M17a, M66, M105, M77, M78/79, M75a en M31') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
     for plot_area in plot_areas:
@@ -530,7 +554,7 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         raise AssertionError(result)
     if result["beheerregistraties"] != 139 or result["herkomsten"] != 144 or result["bron101_beheer"] != 139:
         raise AssertionError(result)
-    if result["gebieden"] != 4 or result["gebiedsversies"] != 4 or result["plotdoorsnijdingen"] < 8:
+    if result["gebieden"] != 8 or result["gebiedsversies"] != 8 or result["plotdoorsnijdingen"] < 13:
         raise AssertionError(result)
     row = client.sql(
         "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"

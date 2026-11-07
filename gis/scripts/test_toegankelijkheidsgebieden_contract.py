@@ -78,9 +78,13 @@ def main() -> int:
 
     plot_areas = migration.read_plot_areas(migration.DEFAULT_REFERENCE_GPKG)
     assert [(area["gebied_code"], area["status_code"], area["kavels"]) for area in plot_areas] == [
-        ("buitenduin_noord_1955", "afgesloten", ("M13", "M13s", "M14", "M15", "M16", "M17a")),
+        ("buitenduin_noord_1955", "afgesloten", ("M13", "M13s", "M14", "M15", "M16", "M16s", "M17a")),
         ("haagsche_golfclub_1955", "toegankelijk", ("M66",)),
         ("hertenkamp_1955", "toegankelijk", ("M105",)),
+        ("kavel_m77_1955", "toegankelijk", ("M77",)),
+        ("kavel_m78_79_1955", "toegankelijk", ("M78/79",)),
+        ("kavel_m75a_1955", "toegankelijk", ("M75a",)),
+        ("kavel_m31_1955", "toegankelijk", ("M31",)),
     ]
     for plot_area in plot_areas:
         assert plot_area["geometry_type"] == "MULTIPOLYGON"
@@ -106,7 +110,11 @@ def main() -> int:
     assert "buitenduin_noord_1955" in joined
     assert "haagsche_golfclub_1955" in joined
     assert "hertenkamp_1955" in joined
-    assert "plots:M13,M13s,M14,M15,M16,M17a" in joined
+    assert "kavel_m77_1955" in joined
+    assert "kavel_m78_79_1955" in joined
+    assert "kavel_m75a_1955" in joined
+    assert "kavel_m31_1955" in joined
+    assert "plots:M13,M13s,M14,M15,M16,M16s,M17a" in joined
 
     print("OK: toegankelijkheidsgebieden-contract")
     return 0
