@@ -34,7 +34,8 @@ required_tables <- c(
   "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien",
   "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat",
   "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra",
-  "maatregel_toegankelijkheid_registratie", "pq_plot_jaar_vegetatie",
+  "toegankelijkheidsgebied", "toegankelijkheidsgebied_versie",
+  "toegankelijkheidsgebied_plot_afleiding", "pq_plot_jaar_vegetatie",
   "dagwaarnemingen_wv", "maatregelen", "plot_jaar_landgebruik",
   "maatregel_beheer_jaar", "plot_link", "soorten_habitattypen", "tellers", "trends"
 )
@@ -59,7 +60,9 @@ required_columns <- list(
   plot_jaar_ahn_dtm = c("plot_id", "jaar", "bron", "ahn_mean", "ahn_sd"),
   plot_jaar_stikstof = c("plot_id", "jaar", "bron", "stikstof_mean"),
   plot_jaar_infra = c("plot_id", "jaar", "bron", "variabele", "waarde"),
-  maatregel_toegankelijkheid_registratie = c("plot_id", "jaar", "bron_id", "niveau", "status_code"),
+  toegankelijkheidsgebied = c("gebied_id", "gebied_code", "naam"),
+  toegankelijkheidsgebied_versie = c("gebied_versie_id", "gebied_id", "status_code", "geldig_vanaf", "geldig_tot", "geometrie_wkt"),
+  toegankelijkheidsgebied_plot_afleiding = c("gebied_versie_id", "plot_id", "status_code", "aandeel_pct", "geldig_vanaf", "geldig_tot"),
   pq_plot_jaar_vegetatie = c("plot_id", "jaar", "n_pq", "n_opnamen", "taxa_aantal", "soortenrijkdom_gem", "bedekking_som_gem", "shannon_gem", "dekking_kwaliteit", "bronstatus", "bronbestand", "importversie", "taxonlijst_versie"),
   dagwaarnemingen_wv = c("plot_id", "soort_id", "jaar", "maand", "dag", "aantal"),
   maatregelen = c("id", "omschrijving"), plot_jaar_landgebruik = c("plot_id", "jaar", "bron", "klasse", "pct"),
@@ -88,7 +91,7 @@ tables <- cache[["data"]]
 missing_tables <- setdiff(required_tables, names(tables))
 if (length(missing_tables)) stop("Dashboardcache mist: ", paste(missing_tables, collapse = ", "), ".", call. = FALSE)
 tables <- tables[required_tables]
-for(name in c("maatregel_toegankelijkheid_registratie","maatregel_beheer_jaar")) {
+for(name in c("toegankelijkheidsgebied_plot_afleiding","maatregel_beheer_jaar")) {
   for(field in c("bron","opmerking","intensiteit_code","uitvoerder_of_diersoort","deel_label","dekking_pct")) {
     if(field %in% names(tables[[name]])) required_columns[[name]]<-unique(c(required_columns[[name]],field))
   }

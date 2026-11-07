@@ -931,7 +931,7 @@ ui <- navbarPage(
                     "gee_covariates",
                     "Vaste Covariaten",
                     choices = setNames(gee_covariate_specs()$code, gee_covariate_specs()$label),
-                    selected = c("stikstof_mean", "toegankelijkheid_status"),
+                    selected = c("stikstof_mean", "toegankelijkheid_aandeel_afgesloten"),
                     multiple = TRUE,
                     options = list(plugins = list("remove_button"))
                   ),
@@ -1073,7 +1073,7 @@ ui <- navbarPage(
                     "glmm_covariates",
                     "Vaste Covariaten",
                     choices = setNames(gee_covariate_specs()$code, gee_covariate_specs()$label),
-                    selected = c("stikstof_mean", "toegankelijkheid_status"),
+                    selected = c("stikstof_mean", "toegankelijkheid_aandeel_afgesloten"),
                     multiple = TRUE,
                     options = list(plugins = list("remove_button"))
                   ),
@@ -1133,7 +1133,7 @@ ui <- navbarPage(
     "SEM", "sem",
     "Actieve SEM-verkenning voor directe en indirecte relaties tussen variabelen.",
     "Voer SEM-analyse uit",
-    "Kies beschikbare covariaten voor een verkennend padmodel. Categorische toegankelijkheid wordt met dummyvariabelen gemodelleerd. De uitkomst is associatief en niet zonder vooraf gespecificeerde hypothese als causaal bewijs te gebruiken.",
+    "Kies beschikbare covariaten voor een verkennend padmodel. Toegankelijkheid wordt als ruimtelijk afgeleid oppervlakteaandeel per status aangeboden. De uitkomst is associatief en niet zonder vooraf gespecificeerde hypothese als causaal bewijs te gebruiken.",
     extra_controls = tagList(
       uiOutput("sem_covariates_ui"),
       tags$div(
@@ -3483,11 +3483,10 @@ server <- function(input, output, session) {
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
-      toegankelijkheid_statusbeperkt = "Toegankelijkheid: beperkt",
-      toegankelijkheid_statusafgesloten = "Toegankelijkheid: afgesloten",
-      `toegankelijkheid_statusdeels beperkt, deels vrij` = "Toegankelijkheid: deels beperkt/deels vrij",
-      `toegankelijkheid_statusdeels afgesloten, deels vrij` = "Toegankelijkheid: deels afgesloten/deels vrij",
-      toegankelijkheid_statusonbekend = "Toegankelijkheid: onbekend"
+      toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
+      toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
+      toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
     if (!is.null(tbls)) {
       hab_specs <- gee_habitat_covariate_specs(tbls)
@@ -3573,11 +3572,10 @@ server <- function(input, output, session) {
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
-      toegankelijkheid_statusbeperkt = "Toegankelijkheid: beperkt",
-      toegankelijkheid_statusafgesloten = "Toegankelijkheid: afgesloten",
-      `toegankelijkheid_statusdeels beperkt, deels vrij` = "Toegankelijkheid: deels beperkt/deels vrij",
-      `toegankelijkheid_statusdeels afgesloten, deels vrij` = "Toegankelijkheid: deels afgesloten/deels vrij",
-      toegankelijkheid_statusonbekend = "Toegankelijkheid: onbekend"
+      toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
+      toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
+      toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
     if (!is.null(tbls)) {
       hab_specs <- gee_habitat_covariate_specs(tbls)
@@ -3642,7 +3640,11 @@ server <- function(input, output, session) {
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
-      toegankelijkheid_status = "Toegankelijkheidsstatus"
+      toegankelijkheid_status = "Afgeleide toegankelijkheidsstatus",
+      toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
+      toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
+      toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
     if (!is.null(tbls)) {
       hab_specs <- gee_habitat_covariate_specs(tbls)
@@ -3721,7 +3723,9 @@ server <- function(input, output, session) {
       "plot_id", "kavel_nummer", "jaar", "count", "territoria_per_km2", "observatie_status", "echte_nul",
       "ahn_mean", "ahn_sd", "stikstof_mean",
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
-      "afstand_hoofdtoegang_m", "toegankelijkheid_status"
+      "afstand_hoofdtoegang_m", "toegankelijkheid_status",
+      "toegankelijkheid_aandeel_afgesloten", "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_toegankelijk", "toegankelijkheid_aandeel_onbekend"
     ), names(analyse$model_data))
       out <- analyse$model_data[, cols, drop = FALSE]
       out <- out[order(out$jaar, out$kavel_nummer, out$plot_id), , drop = FALSE]
@@ -3805,11 +3809,10 @@ server <- function(input, output, session) {
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
-      toegankelijkheid_statusbeperkt = "Toegankelijkheid: beperkt",
-      toegankelijkheid_statusafgesloten = "Toegankelijkheid: afgesloten",
-      `toegankelijkheid_statusdeels beperkt, deels vrij` = "Toegankelijkheid: deels beperkt/deels vrij",
-      `toegankelijkheid_statusdeels afgesloten, deels vrij` = "Toegankelijkheid: deels afgesloten/deels vrij",
-      toegankelijkheid_statusonbekend = "Toegankelijkheid: onbekend"
+      toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
+      toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
+      toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
     if (!is.null(tbls)) {
       hab_specs <- gee_habitat_covariate_specs(tbls)
@@ -3974,7 +3977,9 @@ server <- function(input, output, session) {
       "plot_id", "kavel_nummer", "jaar", "count", "territoria_per_km2", "observatie_status", "echte_nul",
       "ahn_mean", "ahn_sd", "stikstof_mean",
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
-      "afstand_hoofdtoegang_m", "toegankelijkheid_status"
+      "afstand_hoofdtoegang_m", "toegankelijkheid_status",
+      "toegankelijkheid_aandeel_afgesloten", "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_toegankelijk", "toegankelijkheid_aandeel_onbekend"
     )
     cols <- intersect(base_cols, names(analyse$model_data))
     out <- analyse$model_data[, cols, drop = FALSE]

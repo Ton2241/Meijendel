@@ -33,7 +33,7 @@ if (is.na(cache_contract_helper)) {
 }
 source(cache_contract_helper)
 source(file.path(dirname(cache_contract_helper),"trim_release_runtime.R"))
-MEIJENDEL_PARSER_CACHE_VERSION <- 15L
+MEIJENDEL_PARSER_CACHE_VERSION <- 16L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
 trim_selection_hash <- function(plots, years, species, groups) {
@@ -720,8 +720,7 @@ to_numeric <- function(x) as.numeric(x)
 read_maatregel_registration_tables <- function(path, audit = FALSE) {
   expected <- list(
     maatregel_plot_jaar_registratie=c('registratie_id','plot_id','jaar','maatregel_id','bron_id','uitvoering_id','beoordelingsstatus','intensiteit_code','uitvoerder_of_diersoort','deel_label','dekking_pct','opmerking'),
-    maatregel_toegankelijkheid_registratie=c('registratie_id','plot_id','jaar','bron_id','niveau','uitvoering_id','deel_label','status_code','aandeel_pct','barriere_type','geom_wkt','opmerking'),
-    maatregel_registratie_herkomst=c('herkomst_id','brontabel','beheer_registratie_id','toegang_registratie_id','uitvoering_id','plot_id','jaar'),
+    maatregel_registratie_herkomst=c('herkomst_id','brontabel','beheer_registratie_id','uitvoering_id','plot_id','jaar'),
     maatregel_bron=c('bron_id','bron_code'),
     maatregel_uitvoering=c('uitvoering_id','maatregel_id'),
     maatregel_uitvoering_jaar=c('uitvoering_id','jaar','jaarstatus','bron_id'),
@@ -742,9 +741,7 @@ read_maatregel_registration_tables <- function(path, audit = FALSE) {
 
 reconstruct_legacy_maatregel_rows <- function(tbls) {
   templates <- list(
-    plot_jaar_maatregel=c('id','plot_id','jaar','bron','maatregel_id','intensiteit_code','uitvoerder_of_diersoort','deel_label','dekking_pct','opmerking'),
-    plot_jaar_toegankelijkheid=c('plot_id','plot_naam','jaar','bron','status_code','opmerking'),
-    plot_jaar_toegankelijkheid_deel=c('id','plot_id','jaar','bron','deel_label','status_code','aandeel_pct','barriere_type','geom_wkt','opmerking')
+    plot_jaar_maatregel=c('id','plot_id','jaar','bron','maatregel_id','intensiteit_code','uitvoerder_of_diersoort','deel_label','dekking_pct','opmerking')
   )
   output <- lapply(templates,function(cols) list())
   h <- tbls$maatregel_registratie_herkomst
@@ -759,10 +756,8 @@ reconstruct_legacy_maatregel_rows <- function(tbls) {
     output[[table]][[length(output[[table]])+1L]] <<- as.data.frame(row,stringsAsFactors=FALSE)
   }
   for (table in names(templates)) {
-    beheer <- table=='plot_jaar_maatregel'
-    facts <- tbls[[if(beheer) 'maatregel_plot_jaar_registratie' else 'maatregel_toegankelijkheid_registratie']]
-    fk <- if(beheer) 'beheer_registratie_id' else 'toegang_registratie_id'
-    if(!beheer) facts <- facts[facts$niveau==if(table=='plot_jaar_toegankelijkheid') 'plot' else 'deel',,drop=FALSE]
+    facts <- tbls$maatregel_plot_jaar_registratie
+    fk <- 'beheer_registratie_id'
     for(i in seq_len(nrow(facts))) {
       a <- as.list(facts[i,,drop=FALSE]); match <- which(!is.na(h[[fk]]) & h[[fk]]==a$registratie_id & h$brontabel==table)
       row <- raw_row(match)
@@ -800,7 +795,6 @@ reconstruct_legacy_maatregel_rows <- function(tbls) {
 # Lees de centrale feiten rechtstreeks; herkomst wijst uitsluitend de bestaande doelen aan.
 build_maatregel_registration_data <- function(tbls) {
   beheer <- tbls$maatregel_plot_jaar_registratie
-  toegang <- tbls$maatregel_toegankelijkheid_registratie
   h <- tbls$maatregel_registratie_herkomst
   for(key in intersect(c('registratie_id','plot_id','jaar','maatregel_id','bron_id','uitvoering_id'),names(beheer))) beheer[[key]]<-as.integer(beheer[[key]])
   beheer$registratie_sleutel <- paste0('registratie:',beheer$registratie_id)
@@ -823,9 +817,8 @@ build_maatregel_registration_data <- function(tbls) {
     beheer<-rbind(beheer,row)
   }
   if(anyDuplicated(beheer$registratie_sleutel)) stop('Dubbele centrale beheeridentificatie')
-  for(key in c('registratie_id','plot_id','jaar','bron_id','uitvoering_id')) toegang[[key]]<-as.integer(toegang[[key]])
-  rownames(beheer)<-NULL;rownames(toegang)<-NULL
-  list(maatregel_beheer_jaar=beheer,maatregel_toegankelijkheid_registratie=toegang)
+  rownames(beheer)<-NULL
+  list(maatregel_beheer_jaar=beheer)
 }
 
 parse_meijendel_tables <- function(path) {
@@ -857,7 +850,33 @@ parse_meijendel_tables <- function(path) {
   pja <- read_insert_table(path, "plot_jaar_ahn_dtm", c("plot_id", "jaar", "bron", "ahn_mean", "ahn_sd"))
   pjs <- read_insert_table(path, "plot_jaar_stikstof", c("plot_id", "jaar", "bron", "stikstof_mean"))
   pji <- read_insert_table(path, "plot_jaar_infra", c("plot_id", "jaar", "bron", "variabele", "waarde"))
-  pjtg <- registration_data$maatregel_toegankelijkheid_registratie
+  toegankelijkheidsgebied <- read_insert_table(
+    path,
+    "toegankelijkheidsgebied",
+    c("gebied_id", "gebied_code", "naam", "opmerking")
+  )
+  toegankelijkheidsgebied_versie <- read_insert_table(
+    path,
+    "toegankelijkheidsgebied_versie",
+    c("gebied_versie_id", "gebied_id", "versienummer", "status_code", "geldig_vanaf", "geldig_tot", "vastgesteld_op", "bron_id", "bron_object_id", "inwinningsmethode", "nauwkeurigheid_m", "geometrie_wkt", "geometrie_sha256", "oppervlakte_m2", "geometrie_opmerking"),
+    sanitize_binary = TRUE,
+    fast_tuples = TRUE,
+    keep_only = TRUE,
+    mysql_escapes = TRUE
+  )
+  toegankelijkheidsgebied_plot_afleiding <- read_insert_table(
+    path,
+    "toegankelijkheidsgebied_plot_afleiding",
+    c("gebied_versie_id", "plot_id", "status_code", "doorsnijding_m2", "plot_oppervlakte_m2", "aandeel_pct", "gebied_geometrie_sha256", "plot_geometrie_sha256")
+  )
+  if (nrow(toegankelijkheidsgebied_plot_afleiding)) {
+    geldig <- toegankelijkheidsgebied_versie[, c("gebied_versie_id", "geldig_vanaf", "geldig_tot"), drop = FALSE]
+    pjtg <- merge(toegankelijkheidsgebied_plot_afleiding, geldig, by = "gebied_versie_id", all.x = TRUE, sort = FALSE)
+  } else {
+    pjtg <- toegankelijkheidsgebied_plot_afleiding
+    pjtg$geldig_vanaf <- character()
+    pjtg$geldig_tot <- character()
+  }
   dagwaarnemingen_wv <- read_insert_table(
     path,
     "dagwaarnemingen_wv",
@@ -999,7 +1018,9 @@ parse_meijendel_tables <- function(path) {
     plot_jaar_ahn_dtm = pja,
     plot_jaar_stikstof = pjs,
     plot_jaar_infra = pji,
-    maatregel_toegankelijkheid_registratie = pjtg,
+    toegankelijkheidsgebied = toegankelijkheidsgebied,
+    toegankelijkheidsgebied_versie = toegankelijkheidsgebied_versie,
+    toegankelijkheidsgebied_plot_afleiding = pjtg,
     dagwaarnemingen_wv = dagwaarnemingen_wv,
     maatregelen = maatregelen,
     plot_jaar_landgebruik = plot_jaar_landgebruik,
@@ -1136,7 +1157,7 @@ load_meijendel_tables_cached <- function(path, cache_path = NULL, sql_manifest_p
   if (is.null(include_out_of_scope_kavels)) {
     include_out_of_scope_kavels <- meijendel_out_of_scope_from_env()
   }
-  required_data <- c("plot_analyse_scope", "richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "maatregel_toegankelijkheid_registratie", "pq_plot_jaar_vegetatie", "weer_analyse_jaar")
+  required_data <- c("plot_analyse_scope", "richtlijnen", "soort_richtlijn", "functional_group_definition", "functional_group_membership", "soorten_kenmerken", "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien", "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat", "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra", "toegankelijkheidsgebied", "toegankelijkheidsgebied_versie", "toegankelijkheidsgebied_plot_afleiding", "pq_plot_jaar_vegetatie", "weer_analyse_jaar")
 
   if (file.exists(cache_path)) {
     cache <- tryCatch(readRDS(cache_path), error = function(e) NULL)
@@ -2419,24 +2440,43 @@ add_numeric_covariate <- function(dat, source_df, value_col, new_col, variabele 
   dat
 }
 
-add_toegankelijkheid_covariate <- function(dat, source_df, new_col = "toegankelijkheid_status") {
+add_toegankelijkheid_covariates <- function(dat, source_df) {
+  share_columns <- c(
+    afgesloten = "toegankelijkheid_aandeel_afgesloten",
+    toegankelijk_met_toegangskaart = "toegankelijkheid_aandeel_toegangskaart",
+    toegankelijk = "toegankelijkheid_aandeel_toegankelijk"
+  )
   if (nrow(dat) == 0L) {
-    dat[[new_col]] <- character()
+    dat$toegankelijkheid_status <- factor(character(), levels = c("toegankelijk", "toegankelijk_met_toegangskaart", "afgesloten", "gemengd", "onbekend"))
+    for (column in unname(share_columns)) dat[[column]] <- numeric()
+    dat$toegankelijkheid_aandeel_onbekend <- numeric()
     return(dat)
   }
-  dat[[new_col]] <- vapply(seq_len(nrow(dat)), function(i) {
+  source_df$aandeel_pct <- as.numeric(source_df$aandeel_pct)
+  source_df$geldig_vanaf <- as.Date(source_df$geldig_vanaf)
+  source_df$geldig_tot <- as.Date(source_df$geldig_tot)
+  shares <- t(vapply(seq_len(nrow(dat)), function(i) {
+    start <- as.Date(paste0(dat$jaar[[i]], "-01-01"))
+    stop <- as.Date(paste0(dat$jaar[[i]], "-12-31"))
     rows <- source_df[source_df$plot_id == dat$plot_id[[i]], , drop = FALSE]
-    rows <- rows[rows$jaar == dat$jaar[[i]], , drop = FALSE]
-    if("niveau" %in% names(rows)) rows<-rows[rows$niveau=="plot",,drop=FALSE]
-    statuses <- unique(na.omit(rows$status_code))
-    if (length(statuses)>1L) stop("Tegenstrijdige toegankelijkheid voor plot ",dat$plot_id[[i]]," in ",dat$jaar[[i]])
-    val <- if(length(statuses)) statuses[[1L]] else NA_character_
-    if (length(val) == 0L || is.null(val) || is.na(val)) {
-      return("onbekend")
-    }
-    as.character(val)
+    rows <- rows[!is.na(rows$geldig_vanaf) & rows$geldig_vanaf <= stop & (is.na(rows$geldig_tot) | rows$geldig_tot >= start), , drop = FALSE]
+    values <- stats::setNames(numeric(length(share_columns)), names(share_columns))
+    for (status in names(share_columns)) values[[status]] <- sum(rows$aandeel_pct[rows$status_code == status], na.rm = TRUE)
+    total <- sum(values)
+    if (total > 100.000001) stop("Afgeleide toegankelijkheid beslaat meer dan 100 procent van plot ", dat$plot_id[[i]], " in ", dat$jaar[[i]])
+    c(values, onbekend = max(0, 100 - total))
+  }, numeric(4)))
+  colnames(shares) <- c(names(share_columns), "onbekend")
+  for (status in names(share_columns)) dat[[share_columns[[status]]]] <- unname(shares[, status])
+  dat$toegankelijkheid_aandeel_onbekend <- unname(shares[, "onbekend"])
+  dat$toegankelijkheid_status <- vapply(seq_len(nrow(shares)), function(i) {
+    known <- shares[i, names(share_columns)]
+    if (shares[i, "onbekend"] >= 99.999999) return("onbekend")
+    full <- names(known)[known >= 99.999999]
+    if (length(full) == 1L && shares[i, "onbekend"] <= 0.000001) return(full[[1L]])
+    "gemengd"
   }, character(1))
-  dat[[new_col]] <- factor(dat[[new_col]], levels = c("vrij", "beperkt", "afgesloten", "deels beperkt, deels vrij", "deels afgesloten, deels vrij", "onbekend"))
+  dat$toegankelijkheid_status <- factor(dat$toegankelijkheid_status, levels = c("toegankelijk", "toegankelijk_met_toegangskaart", "afgesloten", "gemengd", "onbekend"))
   dat
 }
 
@@ -2570,7 +2610,7 @@ build_gee_dataset <- function(tbls, selected_kavels, year_from, year_to, target_
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "padlengte_m_per_ha", "padlengte_m_per_ha")
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_parkeerplaats_m", "afstand_parkeerplaats_m")
   dat <- add_numeric_covariate(dat, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
-  dat <- add_toegankelijkheid_covariate(dat, tbls$maatregel_toegankelijkheid_registratie)
+  dat <- add_toegankelijkheid_covariates(dat, tbls$toegankelijkheidsgebied_plot_afleiding)
   dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
   dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
   dat <- add_numeric_covariate(dat, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
@@ -2618,7 +2658,9 @@ gee_covariate_specs <- function() {
     code = c(
       "year_c",
       "stikstof_mean",
-      "toegankelijkheid_status",
+      "toegankelijkheid_aandeel_afgesloten",
+      "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_toegankelijk",
       "vegetatie_soortenrijkdom_gem",
       "vegetatie_bedekking_som_gem",
       "vegetatie_shannon_gem",
@@ -2634,7 +2676,9 @@ gee_covariate_specs <- function() {
     label = c(
       "Jaar (controlevariabele)",
       "Stikstof gemiddelde depositie",
-      "Toegankelijkheidsstatus",
+      "Aandeel afgesloten gebied (%)",
+      "Aandeel toegankelijk met toegangskaart (%)",
+      "Aandeel toegankelijk gebied (%)",
       "Vegetatie: gemiddelde soortenrijkdom per PQ",
       "Vegetatie: gemiddelde som van bedekkingspercentages per PQ",
       "Vegetatie: gemiddelde Shannon-index per PQ",
@@ -2647,7 +2691,7 @@ gee_covariate_specs <- function() {
       "Weer maart-juni: gemiddelde luchtdruk (hPa)",
       "Weer maart-juni: gemiddelde luchtvochtigheid (%)"
     ),
-    type = c("numeric", "numeric", "factor", rep("numeric", 11)),
+    type = rep("numeric", 16),
     stringsAsFactors = FALSE
   )
 }
@@ -2855,6 +2899,9 @@ gee_effect_unit_specs <- function() {
       "padlengte_m_per_ha",
       "afstand_parkeerplaats_m",
       "afstand_hoofdtoegang_m",
+      "toegankelijkheid_aandeel_afgesloten",
+      "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_toegankelijk",
       "weer_temperatuur_gem_c",
       "weer_temperatuur_min_gem_c",
       "weer_temperatuur_max_gem_c",
@@ -2864,7 +2911,7 @@ gee_effect_unit_specs <- function() {
       "weer_luchtdruk_gem_hpa",
       "weer_luchtvochtigheid_gem_pct"
     ),
-    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 100, 1, 1, 1, 10, 1, 10, 10, 10),
+    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 100, 10, 10, 10, 1, 1, 1, 10, 1, 10, 10, 10),
     effect_eenheid = c(
       "per 10 jaar",
       "kwadratische component per jaar^2",
@@ -2877,6 +2924,9 @@ gee_effect_unit_specs <- function() {
       "per 100 m/ha",
       "per 100 m",
       "per 100 m",
+      "per 10 procentpunt",
+      "per 10 procentpunt",
+      "per 10 procentpunt",
       "per 1 °C",
       "per 1 °C",
       "per 1 °C",
@@ -2996,10 +3046,6 @@ gee_equation_term_label <- function(term, analysis) {
   }
   if (identical(term, "baseline_log_density")) {
     return("log(1 + T0_dichtheid)")
-  }
-  if (grepl("^toegankelijkheid_status", term)) {
-    level <- sub("^toegankelijkheid_status", "", term)
-    return(paste0("I(toegankelijkheid = ", level, ")"))
   }
   if (grepl("^habitat_[0-9]+$", term)) {
     return(paste0(term, "_aandeel_pct"))
@@ -4371,7 +4417,7 @@ build_community_matrix_subset <- function(tbls, selected_kavels, year_from, year
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "padlengte_m_per_ha", "padlengte_m_per_ha")
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "afstand_parkeerplaats_m", "afstand_parkeerplaats_m")
   meta <- add_numeric_covariate(meta, tbls$plot_jaar_infra, "waarde", "afstand_hoofdtoegang_m", "afstand_hoofdtoegang_m")
-  meta <- add_toegankelijkheid_covariate(meta, tbls$maatregel_toegankelijkheid_registratie)
+  meta <- add_toegankelijkheid_covariates(meta, tbls$toegankelijkheidsgebied_plot_afleiding)
   meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "soortenrijkdom_gem", "vegetatie_soortenrijkdom_gem")
   meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "bedekking_som_gem", "vegetatie_bedekking_som_gem")
   meta <- add_numeric_covariate(meta, tbls$pq_plot_jaar_vegetatie, "shannon_gem", "vegetatie_shannon_gem")
