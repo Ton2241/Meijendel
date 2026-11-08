@@ -156,6 +156,17 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   De resterende fysieke migratie en aanpassing van imports zijn **nog open**;
   de eerdere PQ/LVD-deelmigratie hieronder blijft afgerond binnen haar
   toenmalige selectie. Geen VPS-publicatie.
+- De actuele restselectie en het bronoverstijgende doelmodel zijn op
+  8 november 2026 alleen-lezen vastgesteld op de levende lokale database;
+  zie `docs/database/TAXONREGISTER.md`, sectie `Restselectie en doelmodel`.
+  Het gaat voor de huidige openbare NDFF-poort om 90.992
+  secundaire PQ-kandidaten uit 1981–2025 en 1.621.660 geversioneerde
+  PQ-beoordelingen. De beveiligde poort bevat 162 exacte koppelingen
+  uit 1994–2023 en 163 niet beoordeelbare records uit 1957–2022.
+  De resterende 2.793 LVD-events uit 1959–2015 zijn niet als geheel
+  PQ; twee nabijheidsgevallen vragen afzonderlijk bronbewijs.
+  De fysieke verplaatsing, aangepaste import-/leesroutes en
+  herstelproef zijn nog niet uitgevoerd.
 - Bepaal de volledige verplaatsingsselectie, niet alleen de tabellen met
   `pq` in hun naam. Onderzoek NDFF-bronregels en hun PQ-poort, resterende
   LVD-opnamen, metadata, JSON-bronvelden, overlap-/kwaliteitsbesluiten,
