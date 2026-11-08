@@ -1,8 +1,10 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 7 november 2026.**
+**Stand: 8 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
+
+**Opslagbeoordeling van 8 november 2026.** De nog gezamenlijke 749.834 openbare NDFF-bronwaarnemingen uit 1700–2025 zijn via het centrale taxonregister ieder aan één van 24 overige soortgroepen gekoppeld. De bestaande 24 `ndff_*`-groepstabellen bevatten slechts ID's; de volledige bronregels zijn nog niet verplaatst. Bij 179 records met twee oorspronkelijke groepslabels is de centrale primaire groep kreeftachtigen. De 90.992 op protocol 12.007 of 12.202 geblokkeerde bronregels uit 1981–2025 zijn daardoor niet automatisch bewezen PQ-opnamen. Hun bronwaarneming blijft bij de soortgroep; hun PQ-beoordeling en uitsluiting van zelfstandig meetellen blijven behouden. De voorgenomen fysieke verplaatsing is nog niet uitgevoerd en verandert nu geen bron, selectie of trendtoelating.
 
 Dit register bevat informatie over:
 

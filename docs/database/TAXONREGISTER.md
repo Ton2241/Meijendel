@@ -1269,7 +1269,7 @@ De resterende fysieke migratie is hiermee nog niet uitgevoerd.
 | Provinciale PQ, 1981–2025 | 254 PQ's, 2.007 opnamen, 53.122 soortregels | Reeds onder `pq_*`; primaire reeks blijft leidend. |
 | Eerder geselecteerde LVD, 1981–2015 | 644 bronopnamen, 16.627 resultaten, 652 vermoedelijke opnamerelaties, 32.657 overlapbesluiten | Reeds onder `pq_*`; telt niet zelfstandig mee. |
 | Resterende LVD, 1959–2015 | 2.793 events en 64.683 resultaten | Blijft onder `lvd_*` zonder positieve PQ-aanwijzing per event. Events 40650 (2011) en 43406 (2013) zijn nabijheidskandidaten, geen bewezen PQ. |
-| Open NDFF, 1981–2025 | 90.992 records met actuele poortstatus `niet_beoordeelbaar`: 77.091 open, 10.903 mossen, 2.998 korstmossen | Secundaire PQ-controlekandidaten; behoud bronwaarden en kandidaatstatus onder `pq_*`, zonder verzonnen opname-ID of zelfstandig meetellen. |
+| Open NDFF, 1981–2025 | 90.992 records met actuele poortstatus `niet_beoordeelbaar`: 77.091 open, 10.903 mossen, 2.998 korstmossen | De status volgt alleen uit protocol `12.007` of `12.202`; geen opname-ID. De volledige bronwaarneming hoort bij haar soortgroep. Bewaar de geversioneerde PQ-beoordeling onder `pq_*` en blijf zelfstandig meetellen blokkeren. |
 | Open NDFF, 1952–1980 | 6.326 records `historische_vegetatiecontext` | Geen gevalideerde PQ-reeks; behoud als historische context zonder PQ-toewijzing, tenzij bronbewijs die later oplevert. |
 | Beveiligde NDFF | 162 `exact` (1994–2023), 163 `niet_beoordeelbaar` (1957–2022) | PQ-specifieke beoordeling en eventuele bronwaarden horen in een afgeschermde `pq_*`-route. Geen zelfstandig meetellen. |
 
@@ -1313,14 +1313,15 @@ evenmin een provinciaal PQ-doelsysteem; hun eigen metingen blijven staan.
 `pq_vegetatie_opname` en `pq_vegetatie_waarneming`.
 Opnamen met onderbouwde of vermoedelijke relaties gebruiken de bestaande
 `pq_vegetatie_bronopname`, `pq_vegetatie_bronresultaat` en
-`pq_vegetatie_opname_bronkoppeling`. Een NDFF-record zonder
-reconstrueerbare opname-identiteit krijgt een afzonderlijke `pq_*`-
-bronwaarneming met dezelfde waarneming-ID, opslagherkomst, volledige
-bronvelden en oorspronkelijke beoordeling. Deze tabel bewaart één
-bronrecord per waarneming-ID; het bestaande NDFF-identiteitsregister
-kan een brononafhankelijke locator houden, maar geen extra PQ-meetwaarde
-of PQ-besluit. Voeg geen fictief Event of
-PQ-nummer toe. Bewaar leverings- en beslisversies afzonderlijk; een latere
+`pq_vegetatie_opname_bronkoppeling`. Een NDFF-record dat alleen vanwege
+protocol `12.007` of `12.202` is geblokkeerd, blijft een bronwaarneming
+in zijn soortgroeptabel; uitsluitend het geversioneerde PQ-besluit hoort
+onder `pq_*`. Voeg geen fictief Event of PQ-nummer toe. Als aanvullend
+bronbewijs een werkelijke of onderbouwd vermoedelijke PQ-opname aanwijst,
+verplaats dan precies die bronopname naar `pq_*` met alle bronwaarden,
+de oorspronkelijke waarneming-ID en de juiste status. Het bestaande
+NDFF-identiteitsregister blijft een smalle locator zonder tweede meting
+of PQ-besluit. Bewaar leverings- en beslisversies afzonderlijk; een latere
 beslissing mag de eerdere niet uitwissen. Iedere soortregel blijft via
 `taxa_bronkoppeling` bereikbaar vanuit `taxa` en `taxon_groepen`.
 Brongetrouwe namen blijven gegevens, geen eigen taxoncatalogus.

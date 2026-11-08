@@ -160,13 +160,32 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   8 november 2026 alleen-lezen vastgesteld op de levende lokale database;
   zie `docs/database/TAXONREGISTER.md`, sectie `Restselectie en doelmodel`.
   Het gaat voor de huidige openbare NDFF-poort om 90.992
-  secundaire PQ-kandidaten uit 1981–2025 en 1.621.660 geversioneerde
-  PQ-beoordelingen. De beveiligde poort bevat 162 exacte koppelingen
+  uitsluitend op protocol geblokkeerde bronregels uit 1981–2025 en
+  1.621.660 geversioneerde PQ-beoordelingen. Volgens het besluit van
+  8 november blijven de volledige bronregels bij hun soortgroep;
+  hun PQ-besluit gaat naar `pq_*`. Een concrete PQ-opname wordt alleen
+  na bronbewijs onder `pq_*` opgeslagen. De beveiligde poort bevat 162 exacte koppelingen
   uit 1994–2023 en 163 niet beoordeelbare records uit 1957–2022.
   De resterende 2.793 LVD-events uit 1959–2015 zijn niet als geheel
   PQ; twee nabijheidsgevallen vragen afzonderlijk bronbewijs.
   De fysieke verplaatsing, aangepaste import-/leesroutes en
   herstelproef zijn nog niet uitgevoerd.
+- Nieuwe hoofdindeling: volledige soortwaarnemingen fysiek per centrale
+  soortgroep, met oorspronkelijke NDFF-herkomst per rij. De lokale
+  nulmeting van 8 november telt 749.834 openbare bronwaarnemingen uit
+  1700–2025 in `ndff_open_waarneming`; 24 `ndff_*`-groepstabellen
+  bevatten alleen ID's. Alle 749.834 records hebben een centrale
+  primaire groep. De 179 dubbel gelabelde kreeftachtigen krijgen
+  fysiek één plek bij kreeftachtigen, met behoud van beide bronlabels.
+  `mossen_waarneming` en `korstmossen_waarneming` zijn reeds volledige
+  groepstabellen. Voer deze verplaatsing met het bestaande smalle
+  ID-register, dezelfde taxonpoort en een volledige T7-herstelproef uit.
+  Pas imports, afgeleide routes en beveiligde views tegelijk aan en
+  verwijder oude ID-tabellen pas na volledige behoudscontrole. De
+  alleen-lezen voorcontrole en doelmodeltests zijn op 8 november geslaagd;
+  het script `gis/scripts/migrate_ndff_soortgroepen.py` voert nog geen
+  databaseverplaatsing uit. De fysieke verhuizing, bijwerking van alle
+  afnemers en geïsoleerde herstelproef staan nog open.
 - Bepaal de volledige verplaatsingsselectie, niet alleen de tabellen met
   `pq` in hun naam. Onderzoek NDFF-bronregels en hun PQ-poort, resterende
   LVD-opnamen, metadata, JSON-bronvelden, overlap-/kwaliteitsbesluiten,
