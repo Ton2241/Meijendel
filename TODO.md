@@ -178,10 +178,11 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   algemene verplaatsingsopdracht voor de 749.834 openbare NDFF-bronregels
   uit 1700–2025 is vervallen. De eerdere alleen-lezen groepsnulmeting
   blijft auditinformatie, geen migratieselectie. Het script
-  `gis/scripts/migrate_ndff_soortgroepen.py` bevat slechts een
-  voorcontrole/doelmodel en mag voor dit vervallen plan niet als
-  uitvoeropdracht worden gebruikt. Bepaal per bestaande herhaalde meetreeks
-  afzonderlijk of zij bruikbaar is en nog buiten een passende
+  `gis/scripts/migrate_ndff_soortgroepen.py` bevat nu uitsluitend een
+  lezende bron- en reeksinventarisatie; de generator voor 24 volledige
+  soortgroeptabellen is verwijderd. De huidige NDFF-reeksbesluiten leveren
+  geen kandidaat voor fysieke verplaatsing op. Bepaal per bestaande herhaalde
+  meetreeks afzonderlijk of zij bruikbaar is en nog buiten een passende
   soortgroeptabel staat; behoud bronwaarden, meetstructuur en taxonroute.
   De eerste concrete verplaatsing is op 8 november lokaal uitgevoerd:
   BMP-niet-vogels uit 2005–2025 staan in `zoogdieren`, `amfibieen`,

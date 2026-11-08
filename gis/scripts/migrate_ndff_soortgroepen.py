@@ -1,22 +1,12 @@
 #!/usr/bin/env python3
-"""Bouw het doelmodel voor fysieke openbare soortgroepwaarnemingen."""
+"""Inventariseer NDFF-groepen en onderbouwde trendreeksen, uitsluitend lezend."""
 
-import re
 import subprocess
 import json
 import argparse
 
-
-GROUP_CODES = (
-    "amfibieen", "dagvlinders", "eencelligen", "geleedpotigen_overig",
-    "insecten_overig", "kevers", "kranswieren_wieren_algen",
-    "kreeftachtigen", "libellen", "microvlinders", "nachtvlinders",
-    "ongewervelden_overig", "reptielen", "schimmels",
-    "snavelinsecten", "spinachtigen", "sprinkhanen_en_krekels",
-    "vaatplanten", "vissen", "vleermuizen", "vliegen_en_muggen",
-    "vliesvleugeligen", "weekdieren", "zoogdieren_overig",
-)
-
+# Bestaande bronlabels zijn alleen nuttig voor een taxonomische dekkingscontrole.
+# Deze lijst is geen tabelindeling of migratieselectie.
 LABEL_CODES = {
     "Amfibieën": "amfibieen",
     "Dagvlinders": "dagvlinders",
@@ -45,47 +35,34 @@ LABEL_CODES = {
 }
 
 
-def identifier(value: str) -> str:
-    if not re.fullmatch(r"[A-Za-z][A-Za-z0-9_]*", value):
-        raise ValueError(f"Ongeldige SQL-identificatie: {value!r}")
-    return f"`{value}`"
-
-
-def destination_for(raw_group: str, primary_group: str | None) -> str:
+def source_group_matches(raw_group: str, primary_group: str | None) -> bool:
+    """Controleer bronlabels tegen de centrale groep, zonder opslagbestemming."""
     labels = raw_group.split("|")
     try:
         source_groups = {LABEL_CODES[label] for label in labels}
     except KeyError as exc:
         raise ValueError(f"Onbekend brongroepslabel: {exc.args[0]}") from exc
-    if primary_group not in source_groups or primary_group not in GROUP_CODES:
-        raise ValueError(
-            f"Primaire centrale groep {primary_group!r} past niet bij {raw_group!r}"
-        )
-    return f"{primary_group}_waarneming"
+    return primary_group in source_groups
 
 
-def new_table_sql(schema: str = "Meijendel") -> list[str]:
-    """Maak brongetrouwe groepstabellen met bestaande register- en bron-FK's."""
-    target = identifier(schema)
-    source = f"{target}.`ndff_open_waarneming`"
-    register = f"{target}.`ndff_open_waarneming_register`"
-    statements = []
-    for group in GROUP_CODES:
-        table = f"{target}.{identifier(group + '_waarneming')}"
-        statements.append(f"CREATE TABLE {table} LIKE {source};")
-        statements.append(
-            f"ALTER TABLE {table} MODIFY `waarneming_id` BIGINT UNSIGNED NOT NULL, "
-            f"ADD CONSTRAINT {identifier('fk_' + group + '_waarneming_register')} "
-            f"FOREIGN KEY (`waarneming_id`) REFERENCES {register} (`waarneming_id`) "
-            "ON UPDATE NO ACTION ON DELETE NO ACTION, "
-            f"ADD CONSTRAINT {identifier('fk_' + group + '_waarneming_batch')} "
-            f"FOREIGN KEY (`batch_id`) REFERENCES {target}.`ndff_open_import_batch` (`batch_id`) "
-            "ON UPDATE NO ACTION ON DELETE NO ACTION, "
-            f"ADD CONSTRAINT {identifier('fk_' + group + '_waarneming_soort')} "
-            f"FOREIGN KEY (`soort_key`) REFERENCES {target}.`ndff_soorten` (`soort_key`) "
-            "ON UPDATE NO ACTION ON DELETE NO ACTION;"
-        )
-    return statements
+def trend_candidate(series: dict) -> bool:
+    """Laat alleen gedocumenteerd complete, toegelaten herhaalde reeksen door."""
+    try:
+        first_year = int(series["jaar_van"])
+        last_year = int(series["jaar_tot"])
+    except (TypeError, ValueError, KeyError):
+        return False
+    return (
+        bool(series.get("deelreeks_sleutel"))
+        and series.get("analyse_type_code") in {"TV", "TA", "TK"}
+        and series.get("eindbesluit") == "toegelaten"
+        and series.get("bezoekstructuur_status") == "volledig"
+        and series.get("methode_status") == "volledig"
+        and series.get("ruimtelijke_status") == "exact_of_eenduidig"
+        and first_year < last_year
+        and (series.get("analyse_type_code") != "TV" or
+             series.get("nulwaarneming_status") in {"expliciet", "betrouwbaar_afleidbaar"})
+    )
 
 
 def query(sql: str) -> list[list[str]]:
@@ -102,7 +79,7 @@ def query(sql: str) -> list[list[str]]:
 
 
 def preflight() -> dict:
-    """Lees de fysieke bron- en taxonverdeling zonder databasewijzigingen."""
+    """Lees bronverdeling en vastgelegde reeksbesluiten zonder migratieplan."""
     rows = query("""SELECT o.soortgroep_raw,g.groep_code,COUNT(*)
         FROM Meijendel.ndff_open_waarneming o
         JOIN Meijendel.ndff_soorten s ON s.soort_key=o.soort_key
@@ -112,36 +89,52 @@ def preflight() -> dict:
         JOIN Meijendel.taxon_groepen g ON g.groep_id=t.groep_id
         GROUP BY o.soortgroep_raw,g.groep_code
         ORDER BY o.soortgroep_raw,g.groep_code""")
-    groups = {code: 0 for code in GROUP_CODES}
+    groups = {}
     dual_labels = 0
     for raw, code, count_raw in rows:
-        destination_for(raw, code)
-        groups[code] += int(count_raw)
+        if not source_group_matches(raw, code):
+            raise RuntimeError(f"Centrale groep {code!r} past niet bij bronlabel {raw!r}")
+        groups[code] = groups.get(code, 0) + int(count_raw)
         if "|" in raw:
             dual_labels += int(count_raw)
-    parent = int(query("SELECT COUNT(*) FROM Meijendel.ndff_open_waarneming")[0][0])
+    parent_raw, first_year, last_year = query(
+        "SELECT COUNT(*),MIN(jaar),MAX(jaar) FROM Meijendel.ndff_open_waarneming"
+    )[0]
+    parent = int(parent_raw)
     if sum(groups.values()) != parent:
         raise RuntimeError("Niet alle bronwaarnemingen hebben precies één centrale groep")
-    targets = query("SELECT TABLE_NAME FROM information_schema.TABLES "
-                    "WHERE TABLE_SCHEMA='Meijendel' AND TABLE_NAME REGEXP "
-                    "'(_waarneming)$'")
-    existing_targets = {row[0] for row in targets} & {
-        f"{code}_waarneming" for code in GROUP_CODES
-    }
-    if existing_targets:
-        raise RuntimeError(f"Doeltabellen bestaan al: {sorted(existing_targets)}")
-    return {"bronregels": parent, "periode": "1700-2025",
-            "dubbel_bronlabel": dual_labels, "per_groep": groups,
+    decisions = query("""SELECT deelreeks_sleutel,analyse_type_code,eindbesluit,
+        bezoekstructuur_status,nulwaarneming_status,methode_status,
+        ruimtelijke_status,jaar_van,jaar_tot
+        FROM Meijendel.v_analyse_catalogus
+        WHERE datareeks_sleutel='ndff-canoniek'
+          AND analyse_type_code IN ('TV','TA','TK')""")
+    fields = ("deelreeks_sleutel", "analyse_type_code", "eindbesluit",
+              "bezoekstructuur_status", "nulwaarneming_status", "methode_status",
+              "ruimtelijke_status", "jaar_van", "jaar_tot")
+    candidates = []
+    for values in decisions:
+        series = dict(zip(fields, values, strict=True))
+        if trend_candidate(series):
+            candidates.append({"deelreeks_sleutel": series["deelreeks_sleutel"],
+                               "analyse_type_code": series["analyse_type_code"]})
+    return {"bronregels": parent, "periode": f"{first_year}-{last_year}",
+            "dubbel_bronlabel": dual_labels, "per_centrale_groep": groups,
+            "mogelijke_trendreeksen": candidates,
+            "betekenis": "Alleen reeksbeoordeling; geen selectie van bronrecords of doeltabellen",
             "levende_database_gewijzigd": False}
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--preflight", action="store_true",
-                        help="alleen-lezen nulmeting; geen migratie")
+                        help="alleen-lezen reeksinventarisatie; geen migratie")
+    parser.add_argument("--apply", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
+    if args.apply:
+        parser.error("De brede NDFF-soortgroepmigratie is vervallen; dit script wijzigt geen database")
     if not args.preflight:
-        parser.error("Alleen --preflight is nu beschikbaar; migratie vereist herstelproef")
+        parser.error("Alleen --preflight is beschikbaar; er bestaat geen breed migratieplan")
     print(json.dumps(preflight(), ensure_ascii=False, indent=2))
 
 
