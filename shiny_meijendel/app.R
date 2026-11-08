@@ -3482,7 +3482,6 @@ server <- function(input, output, session) {
       afstand_pad_m = "Afstand tot pad",
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
-      afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
@@ -3571,7 +3570,6 @@ server <- function(input, output, session) {
       afstand_pad_m = "Afstand tot pad",
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
-      afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
@@ -3639,7 +3637,6 @@ server <- function(input, output, session) {
       afstand_pad_m = "Afstand tot pad",
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
-      afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
       toegankelijkheid_status = "Afgeleide toegankelijkheidsstatus",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
@@ -3723,7 +3720,7 @@ server <- function(input, output, session) {
       "plot_id", "kavel_nummer", "jaar", "count", "territoria_per_km2", "observatie_status", "echte_nul",
       "ahn_mean", "ahn_sd", "stikstof_mean",
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
-      "afstand_hoofdtoegang_m", "toegankelijkheid_status",
+      "toegankelijkheid_status",
       "toegankelijkheid_aandeel_afgesloten", "toegankelijkheid_aandeel_toegangskaart",
       "toegankelijkheid_aandeel_toegankelijk", "toegankelijkheid_aandeel_onbekend"
     ), names(analyse$model_data))
@@ -3808,7 +3805,6 @@ server <- function(input, output, session) {
       afstand_pad_m = "Afstand tot pad",
       padlengte_m_per_ha = "Padlengte per hectare",
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
-      afstand_hoofdtoegang_m = "Afstand tot hoofdtoegang",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
@@ -3977,7 +3973,7 @@ server <- function(input, output, session) {
       "plot_id", "kavel_nummer", "jaar", "count", "territoria_per_km2", "observatie_status", "echte_nul",
       "ahn_mean", "ahn_sd", "stikstof_mean",
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
-      "afstand_hoofdtoegang_m", "toegankelijkheid_status",
+      "toegankelijkheid_status",
       "toegankelijkheid_aandeel_afgesloten", "toegankelijkheid_aandeel_toegangskaart",
       "toegankelijkheid_aandeel_toegankelijk", "toegankelijkheid_aandeel_onbekend"
     )

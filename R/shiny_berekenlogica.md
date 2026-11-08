@@ -481,7 +481,6 @@ Deze versie gebruikt alleen covariaten die nu al betrouwbaar in de database aanw
 - `afstand_pad_m`
 - `padlengte_m_per_ha`
 - `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
 - `toegankelijkheid_status`
 - `toegankelijkheid_aandeel_afgesloten`
 - `toegankelijkheid_aandeel_toegangskaart`
@@ -649,7 +648,7 @@ Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijend
 
 ## Actuele gebiedsafleiding vanaf 7 november 2026
 
-Parser/cacheversie 16 leest `toegankelijkheidsgebied`, `toegankelijkheidsgebied_versie` en `toegankelijkheidsgebied_plot_afleiding`. De 55 voorlopige kavelregels uit 2024 en de tabel `maatregel_toegankelijkheid_registratie` zijn verwijderd. Voor alle bestaande en toekomstige gebiedsversies is `geldig_vanaf` standaard 1 januari 1955, op basis van Tons inschatting. Een lege `geldig_tot` betekent actueel totdat een einddatum wordt ingevoerd.
+Parser/cacheversie 17 leest `toegankelijkheidsgebied`, `toegankelijkheidsgebied_versie` en `toegankelijkheidsgebied_plot_afleiding`. De 55 voorlopige kavelregels uit 2024 en de tabel `maatregel_toegankelijkheid_registratie` zijn verwijderd. Voor alle bestaande en toekomstige gebiedsversies is `geldig_vanaf` standaard 1 januari 1955, op basis van Tons inschatting. Een lege `geldig_tot` betekent actueel totdat een einddatum wordt ingevoerd.
 
 Per plot en analysejaar telt `add_toegankelijkheid_covariates()` de doorsnijdingspercentages op voor `afgesloten`, `toegankelijk_met_toegangskaart` en `toegankelijk`. Het resterende aandeel is `toegankelijkheid_aandeel_onbekend`. Meer dan 100% gezamenlijke dekking is een fout. `toegankelijkheid_status` krijgt alleen één status wanneer die status de volledige kavel bedekt; bij gedeeltelijke of verschillende dekking wordt de status `gemengd` of `onbekend`.
 

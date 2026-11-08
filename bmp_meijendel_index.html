@@ -1574,11 +1574,15 @@ function pickOppervlakteRow(rows,plotId,jaar){
   })[0];
 }
 function getNearestInfraValue(plotId,jaar,variabele){
-  const row=pickNearestRow(
-    getTableRows("plot_jaar_infra").filter(r=>String(r.variabele)===String(variabele)),
-    plotId,
-    jaar
-  );
+  const row=getTableRows("plot_jaar_infra")
+    .filter(r=>String(r.variabele)===String(variabele))
+    .filter(r=>String(r.plot_id)===String(plotId))
+    .filter(r=>{
+      const start=toYear(r.geldig_vanaf)||toYear(r.jaar);
+      const end=toYear(r.geldig_tot);
+      return start!=null&&Number(start)<=Number(jaar)&&(end==null||Number(end)>=Number(jaar));
+    })
+    .sort((a,b)=>String(b.geldig_vanaf||b.jaar).localeCompare(String(a.geldig_vanaf||a.jaar)))[0]||null;
   return row?{waarde:row.waarde,bronjaar:toYear(row.jaar)}:null;
 }
 function getHabitatLookup(){
@@ -1640,8 +1644,7 @@ function getKerncijfers(plotId,jaar){
     landgebruik: {top:landTop,bronjaar:landYear},
     afstandPad: getNearestInfraValue(plotId,jaar,"afstand_pad_m"),
     padlengte: getNearestInfraValue(plotId,jaar,"padlengte_m_per_ha"),
-    afstandParkeerplaats: getNearestInfraValue(plotId,jaar,"afstand_parkeerplaats_m"),
-    afstandHoofdtoegang: getNearestInfraValue(plotId,jaar,"afstand_hoofdtoegang_m")
+    afstandParkeerplaats: getNearestInfraValue(plotId,jaar,"afstand_parkeerplaats_m")
   };
 }
 function getMaatregelblok(plotId,jaar){
@@ -2295,10 +2298,6 @@ function renderPlotPanel(){
   kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.afstandParkeerplaats?.waarde)},[
     el("div",{className:"plot-kern-label"},"Afstand parkeerplaats"),
     el("div",{className:"plot-kern-value"},kc?.afstandParkeerplaats?`${formatNumber(kc.afstandParkeerplaats.waarde,1)} m`:"-")
-  ]));
-  kernGrid.appendChild(el("div",{className:"plot-kern-card"+getDistanceToneClass(kc?.afstandHoofdtoegang?.waarde)},[
-    el("div",{className:"plot-kern-label"},"Afstand hoofdtoegang"),
-    el("div",{className:"plot-kern-value"},kc?.afstandHoofdtoegang?`${formatNumber(kc.afstandHoofdtoegang.waarde,1)} m`:"-")
   ]));
   kernGrid.appendChild(el("div",{className:"plot-kern-card wide"},[
     el("div",{className:"plot-kern-label"},"Top 3 habitattypen"),

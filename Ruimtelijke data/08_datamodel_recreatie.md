@@ -29,14 +29,12 @@ Voorgestelde variabelen:
 - `afstand_pad_m`
 - `padlengte_m_per_ha`
 - `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
 
 Toelichting:
 
 - `afstand_pad_m`: afstand van het plot tot het dichtstbijzijnde pad, in meters
 - `padlengte_m_per_ha`: totale padlengte binnen het plot, omgerekend naar meter per hectare
 - `afstand_parkeerplaats_m`: afstand van het plot tot de dichtstbijzijnde parkeerplaats, in meters
-- `afstand_hoofdtoegang_m`: afstand van het plot tot de dichtstbijzijnde hoofdtoegang, in meters
 
 ### 2. Samenvattende toegankelijkheidsstatus in een aparte tabel
 

@@ -6,6 +6,7 @@ VALIDATOR="$REPO_DIR/scripts/validate_meijendel_export.sh"
 HELPERS="$REPO_DIR/shiny_meijendel/helpers.R"
 TEST_DIR="$(mktemp -d)"
 trap 'rm -rf "$TEST_DIR"' EXIT
+PARSER_VERSION="$(sed -n 's/^MEIJENDEL_PARSER_CACHE_VERSION <- \([0-9][0-9]*\)L$/\1/p' "$HELPERS")"
 
 fail() {
   printf 'FOUT: %s\n' "$*" >&2
@@ -14,6 +15,7 @@ fail() {
 
 grep -A8 -F '"dagwaarnemingen_wv",' "$HELPERS" | grep -Fq 'fast_tuples = TRUE' ||
   fail "dagwaarnemingen_wv gebruikt niet de snelle tuple-parser."
+[[ "$PARSER_VERSION" =~ ^[1-9][0-9]*$ ]] || fail "actuele Shiny-parser-versie kon niet worden gelezen."
 
 dump="$TEST_DIR/Meijendel.sql"
 manifest="$TEST_DIR/Meijendel.sql.manifest"
@@ -113,7 +115,7 @@ write_cache_set() {
   write_manifest
   sql_hash="$(awk -F= '$1 == "sql_sha256" {print $2}' "$manifest")"
   sql_bytes="$(awk -F= '$1 == "sql_bytes" {print $2}' "$manifest")"
-  cache_file="meijendel_tables_cache-p16-${sql_hash}.rds"
+  cache_file="meijendel_tables_cache-p${PARSER_VERSION}-${sql_hash}.rds"
   cache_manifest="${cache_file%.rds}.manifest"
   rm -rf "$cache_dir"
   mkdir -p "$cache_dir"
@@ -124,7 +126,7 @@ write_cache_set() {
 format=meijendel-shiny-cache-manifest-v1
 sql_sha256=$sql_hash
 sql_bytes=$sql_bytes
-parser_version=16
+parser_version=$PARSER_VERSION
 cache_sha256=$cache_hash
 cache_bytes=$cache_bytes
 r_version=4.6.1

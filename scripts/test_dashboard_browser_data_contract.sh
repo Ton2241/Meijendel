@@ -42,7 +42,7 @@ Rscript -e '
     plot_jaar_habitat=c("plot_id","jaar","habitat_id","aandeel_m2"),
     plot_jaar_ahn_dtm=c("plot_id","jaar","bron","ahn_mean","ahn_sd"),
     plot_jaar_stikstof=c("plot_id","jaar","bron","stikstof_mean"),
-    plot_jaar_infra=c("plot_id","jaar","bron","variabele","waarde"),
+    plot_jaar_infra=c("plot_id","jaar","bron","variabele","waarde","geldig_vanaf","geldig_vanaf_grondslag","geldig_tot"),
     toegankelijkheidsgebied=c("gebied_id","gebied_code","naam"),
     toegankelijkheidsgebied_versie=c("gebied_versie_id","gebied_id","status_code","geldig_vanaf","geldig_tot","geometrie_wkt"),
     toegankelijkheidsgebied_plot_afleiding=c("gebied_versie_id","plot_id","status_code","aandeel_pct","geldig_vanaf","geldig_tot"),

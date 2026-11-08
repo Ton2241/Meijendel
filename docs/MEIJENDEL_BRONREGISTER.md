@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 7 november 2026.**
+**Stand: 8 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -495,7 +495,7 @@ AHN en stikstof. plot_jaar_ahn_dtm bevat 55 DTM-samenvattingen met jaarlabel 202
 
 CBS-bodemgebruik. plot_jaar_landgebruik bevat 918 klasse-oppervlakteregels voor 55 kavels in 1996, 2010, 2015, 2017 en 2022; voor de 52 vogelkavels zijn dat 835 regels in 260 kavel-jaren. Daarvan overlappen 198 kavel-jaren in 49 kavels met territoriumgegevens. De 193 regels uit 1996 gebruiken veertien BG96-codes; andere jaren hebben andere klasselabels. CBS bevestigt een statistische breuk tussen BBG tot en met 2017 en NBBG2022; alleen hernoemen van klassen heft die niet op. Binnen de 52 vogelkavels varieert de verhouding tussen opgetelde kaartoppervlakte en geregistreerde kaveloppervlakte per kaartjaar ongeveer van 0,84 tot 1,06. De klassepercentages tellen wel tot 100%, omdat zij binnen het kaarttotaal zijn genormaliseerd. Stel grensversie en oppervlaktebasis vast voordat verschillen als terreinovergang worden geïnterpreteerd. Vogel-, PQ-, stikstof- en bodemgebruikgegevens delen bij exact gelijke jaren 71 kavel-jaren in 34 kavels uit 2010–2022; maak daarom vraaggerichte deelanalyses, geen algemene complete-caseselectie.
 
-Aanvullende verklarende gegevens. De bronvaste beheer-jaarview bevat nu 355 uitvoering-kavel-jaarrelaties voor 68 uitvoeringen, 52 kavels en 282 unieke kavel-jaren uit 1966–2025. Daarvan overlappen 293 relaties in 43 kavels met territoriumgegevens. doorsnijding_pct is in alle 355 relaties leeg: een kavelkoppeling bewijst niet de behandelde oppervlakte; ontbreken van een registratie bewijst evenmin dat geen beheer plaatsvond. Infrastructuur bevat vier indicatoren voor elk van 55 kavels in 2024. Toegankelijkheid wordt sinds 7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid uit versies van omsloten gebieden. Zes actuele gebiedsversies leveren samen 46 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; 3.555 waarden betreffen 156 positief geregistreerde soorten binnen de standaardselectie. Kenmerkwaarden zijn soortmetadata, geen nieuwe waarnemingen door de tijd.
+Aanvullende verklarende gegevens. De bronvaste beheer-jaarview bevat nu 355 uitvoering-kavel-jaarrelaties voor 68 uitvoeringen, 52 kavels en 282 unieke kavel-jaren uit 1966–2025. Daarvan overlappen 293 relaties in 43 kavels met territoriumgegevens. doorsnijding_pct is in alle 355 relaties leeg: een kavelkoppeling bewijst niet de behandelde oppervlakte; ontbreken van een registratie bewijst evenmin dat geen beheer plaatsvond. De OSM-infrastructuurstand van 8 november 2026 bevat 2.232 lijnversies en 269 parkeerplaatsversies. Daaruit zijn met de voorlopig geschatte ingangsdatum 1 januari 1955 automatisch 165 kavelwaarden afgeleid: drie variabelen voor elk van 55 kavels. Toegankelijkheid wordt sinds 7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid uit versies van omsloten gebieden. Zes actuele gebiedsversies leveren samen 46 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; 3.555 waarden betreffen 156 positief geregistreerde soorten binnen de standaardselectie. Kenmerkwaarden zijn soortmetadata, geen nieuwe waarnemingen door de tijd.
 
 Beperkte aanvullende context. De 2.835 waterstandsaanduidingen bij winterbezoeken in 51 standaardkavels uit 2008–2025 zijn ordinale bezoekinformatie, geen grondwatermetingen. De 5.084 konijn-hokdatum-taxonproxies uit 1984–2023 missen oorspronkelijke route- en sectiesleutels; de 5.809 geselecteerde bronregels hebben trendgebruik wacht_op_route_sectie_koppeling. Gebruik ze niet als jaarlijkse konijnendichtheid per vogelkavel. De resterende LVD-laag bevat 2.793 opnamen en 64.683 taxonregels uit 1959–2015 zonder bewezen vaste PQ-identiteit; behoud de bestaande overlapbeoordeling en gebruik deze laag niet als verlenging van vaste PQ-reeksen. Deze controle wijzigt geen bronregels, analysetoelating of productiedata.
 
@@ -961,9 +961,85 @@ De levende lokale database bevat nu drie toegestane gebiedsstatussen: `afgeslote
 
 De levende database bevat zes actuele gebieden: twee afgesloten en vier toegankelijk. Het gecorrigeerde Garmin-vlak heeft bronhash `789f8ee1c6eb7ca27667000b775de8f9ef7bb4aabb0d29b98f85d820b06b490c` en een oppervlakte van 4.483.613,185 m². Het tweede afgesloten vlak is de geometrische vereniging van de volledige kavels M13, M13s, M14, M15, M16, M16s en M17a. Dit vlak heeft bronhash `bfbfe2ea2931b2ec085aec5c5d261387f0637ab8d59295457b175382e0ddd69c` en een oppervlakte van 2.504.846,307 m². Twintig interne artefactringen zijn verwijderd. Daarnaast zijn uitsluitend topologische naden van minder dan 4 meter gesloten waar een aanvulling ten minste twee kavels binnen ditzelfde statusgebied verbindt. Daarmee is 52,356 m² toegevoegd; de overige buitencontour is niet gebufferd. M66 en M105 zijn als twee afzonderlijke toegankelijke gebieden opgenomen, exact volgens hun kavelgrenzen; hun oppervlakten zijn respectievelijk 576.909,232 en 155.796,244 m². M77, M78/79 en M75a vormen één toegankelijk gebied volgens hun gezamenlijke buitencontour; veertien interne artefactringen zijn verwijderd. Dit vlak heeft bronhash `80405f7198be8a2e46e405e8aa0fa8ccbd94356766ebf26eda0061fdd7993746` en een oppervlakte van 899.464,823 m². M31 blijft een afzonderlijk toegankelijk gebied van 391.788,486 m². De drie vervangen losse gebiedsrecords zijn verwijderd. `toegankelijkheidsgebied_plot_afleiding` bevat 46 actuele positieve doorsnijdingen; voor de dertien bevestigde kavels is het aandeel 100%. De Garmin-veldregistratie en de handmatig bevestigde plotselectie hebben ieder een eigen bronregel; `maatregel_bron` bevat na deze invoer 57 regels. Dit zijn afgeleide relaties: een vlak kan door een kavel lopen en een kavel kan verschillende statusvlakken bevatten. De status van een volledige kavel wordt daarom niet meer als bronfeit opgeslagen.
 
-Shiny en de statische browser gebruiken parser/cacheversie 16 en leiden per kavel en jaar oppervlakteaandelen af voor afgesloten, toegankelijk, toegankelijk met toegangskaart en niet door een gebied gedekt. Alleen wanneer één status 100% van de kavel bedekt, krijgt de gehele kavel die enkele status; anders blijft de uitkomst gemengd of onbekend. De geldigheid wordt bepaald door de overlap tussen analysejaar en `geldig_vanaf`/`geldig_tot`. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
+Shiny en de statische browser gebruiken parser/cacheversie 17 en leiden per kavel en jaar oppervlakteaandelen af voor afgesloten, toegankelijk, toegankelijk met toegangskaart en niet door een gebied gedekt. Alleen wanneer één status 100% van de kavel bedekt, krijgt de gehele kavel die enkele status; anders blijft de uitkomst gemengd of onbekend. De geldigheid wordt bepaald door de overlap tussen analysejaar en `geldig_vanaf`/`geldig_tot`. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
 
 De herstelkopie van vóór deze geometriecorrectie staat op `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/meijendel-toegankelijkheid-voor-migratie-20261107-233643.sql`. Omvang: 348.474 bytes. SHA-256: `45478a3f51e90a198984be0d02d839332d8bd402257694addc4d0c4f463c0b8d`. De bijbehorende metadata legt de vier betrokken tabellen, de zes actuele bronhashes en 139 behouden beheerregistraties vast. Herstel is een afzonderlijk besluit.
+
+## OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026
+
+De levende lokale database bevat een volledige gedateerde OpenStreetMap-snapshot
+van de voetpaden, fietspaden en wegen in de ruime Meijendel-bounding box. Het
+bronmoment is 8 november 2026 10:22:35 UTC. Van 4.475 way-objecten voldoen 4.473
+aan de selectie; na afsnijding op het actuele Meijendel-basisgebied blijven 2.232
+lijnsegmenten en 331.297,795 meter over. Daarvan zijn 134 fietspadsegmenten
+(29.988,400 meter), 1.234 voetpadsegmenten (169.456,023 meter) en 864 wegsegmenten
+(131.853,372 meter). De OSM-toegangstags leiden tot 1.262 openbare, 334 beperkt
+toegankelijke en 636 afgesloten segmenten. Deze status is bronafgeleid en vormt
+geen zelfstandige juridische vaststelling.
+
+Alle 2.232 lijnversies hebben voorlopig `geldig_vanaf = 1955-01-01`,
+`geldig_vanaf_grondslag = inschatting` en `geldig_tot = NULL`. Ton heeft
+uitdrukkelijk bepaald dat deze historisch onjuiste begindatum voorlopig ook voor
+voetpaden, fietspaden en wegen wordt gebruikt. Het werkelijke OSM-bronmoment
+blijft afzonderlijk bewaard. Een volgende lijnsnapshot maakt nieuwe versies,
+sluit de voorafgaande stand op het nieuwe bronmoment en herberekent automatisch
+de plotdoorsnijdingen en kavelaggregaten. Oudere versies worden niet
+overschreven. De views `v_infrastructuursegment_actueel` en
+`v_infrastructuursegment_historie` geven de nieuwste respectievelijk alle
+standen.
+
+Een tweede OSM-snapshot bevat 341 parkeerobjecten met bronmoment 8 november 2026
+10:31:51 UTC. Daarvan liggen 269 in of binnen één kilometer van het
+Meijendel-basisgebied; deze zijn als punt- of vlakversie opgeslagen. Ook deze 269
+versies hebben voorlopig de geschatte begindatum 1 januari 1955 en geen
+einddatum. De tabellen `infrastructuurvoorziening` en
+`infrastructuurvoorziening_versie` bewaren OSM-objecttype, object-ID, versie,
+wijzigingstijd, tags, geometrie, afstand tot het basisgebied en bronhash. De
+views `v_infrastructuurvoorziening_actueel` en
+`v_infrastructuurvoorziening_historie` geven de actuele en historische standen.
+
+De voorlopige invoer uit 2024 is volledig ingetrokken. De 220 regels in
+`plot_jaar_infra`, het bestand `Recreatie/plot_jaar_infra_recreatie_import.csv`,
+de oude losse parkeerexport en de bijbehorende SQL-invoerroute zijn verwijderd.
+Vanaf de voorlopig geschatte ingangsdatum 1 januari 1955 bevat
+`plot_jaar_infra` nu 165 automatisch afgeleide regels: voor elk
+van 55 kavels `afstand_pad_m`, `padlengte_m_per_ha` en
+`afstand_parkeerplaats_m`. Afstand en padlengte gebruiken voet- en fietspaden;
+wegen worden wel als afzonderlijke lijnversies en plotdoorsnijdingen bewaard,
+maar tellen niet als pad. De waarden worden binnen dezelfde import opnieuw
+opgebouwd zodra een lijn- of parkeerplaatssnapshot wordt toegevoegd of
+gewijzigd. Shiny en de statische browser kiezen per analysejaar uitsluitend de
+laatste aggregaatversie op of vóór dat jaar; een toekomstige stand werkt dus
+niet achterwaarts door. De oude handmatige variabele
+`afstand_hoofdtoegang_m` keert niet terug.
+
+De vorige lokale OSM-lijnlaag bevat binnen dezelfde begrenzing 1.986 geselecteerde
+segmenten en 309.920,024 meter. De nieuwe snapshot bevat 2.232 segmenten en
+331.297,802 meter: 1.958 OSM-way-ID’s komen in beide voor, 274 alleen in de
+nieuwe snapshot en 28 alleen in de vorige laag. Bij 126 gemeenschappelijke ID’s
+is de geometrie gewijzigd, bij 84 de toegangsclassificatie en bij vijf het
+infrastructuurtype. Het verschil van 21.377,778 meter bewijst niet dat die lengte
+fysiek is aangelegd; splitsingen, hernummering, tagwijzigingen en nauwkeuriger
+intekenen tellen mee. Voor de 134 fietspaden ondersteunt de BGT-controle
+23.147,320 meter (77,188%) binnen tien meter van een officieel fietspadvlak. Van
+die 134 segmenten hebben 114 zulke dekking en 20 niet. BGT is niet gebruikt om
+OSM-geometrie automatisch te vervangen.
+
+De lijnsnapshot heeft SHA-256
+`74fba544c4625911aa4fd82e08c8f231b7488fc06258580e9649ea51c3aed320`;
+de parkeerplaatssnapshot
+`7deab5d058926c70e08da38ee096c6b971a41072c5b71853c4460adf87cb6e5e`.
+De queryhashes zijn respectievelijk
+`80dc8c478893149a66b62582ccecd9fe25e8fdb7eb174b0b8b9194cc21ecc43e`
+en `3b3b4b592dae442817a804636ec6cf8d5ffd30b4a964c8f30eead8815302414b`.
+OpenStreetMap-data valt onder ODbL 1.0 en vereist bronvermelding. Google Maps is
+niet als gegevensbron gebruikt. De laatste herstelkopie van vóór de toevoeging
+van parkeerplaatsen en de geschatte geldigheid staat op
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/meijendel-voor-osm-fietspaden-20261108-120113.sql`.
+Omvang: 3.560.196 bytes. SHA-256:
+`c7216a2dfe92c0d53f87dec908f561c56e8211b93fc43a839a0b6504f0ecc134`.
+De zware `meijendel.sql`-export, proefimport, volledige Shiny-cachebouw en
+VPS-publicatie zijn niet uitgevoerd.
 
 
 ## Historische rechtstreekse aansluiting zonder compatibiliteitsviews

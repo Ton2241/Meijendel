@@ -966,7 +966,6 @@ Voorgestelde variabelen zijn:
 - `afstand_pad_m`
 - `padlengte_m_per_ha`
 - `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
 
 ### 17.2 Toegankelijkheidsgebieden
 
@@ -1000,12 +999,14 @@ Gebruik voor:
 - parkeerplaatsen
 - voorzieningen
 - aanvullende infrastructuur
+- versieerbare zelfstandige fietspadsegmenten
 
-### Handmatige lijst
-
-Gebruik voor:
-
-- hoofdtoegangen
+Voor fietspaden gebruik je een gedateerde Overpass-snapshot. Bewaar query,
+bronmoment, bronbestandhash, OSM-way-ID en ODbL-vermelding. Importeer
+`highway=cycleway` en `path` of `footway` met een expliciet fietsrecht; maak van
+een rijbaan met alleen `cycleway=lane` geen zelfstandige fietspadlijn. Oudere
+snapshots blijven in `v_infrastructuursegment_historie`; de actuele stand staat
+in `v_infrastructuursegment_actueel`.
 
 ### Dunea-rapport 2022
 
@@ -1015,51 +1016,28 @@ Gebruik dit rapport wel later voor een aparte bezoekersdruklaag.
 
 ## 20. Hoe verwerk je recreatiedata uit BGT en OSM?
 
-De basisregel is:
+Gebruik `gis/scripts/import_osm_fietspaden.py`. Het script bewaart eerst de
+gedateerde OSM-lijnen en parkeerplaatsen als versies en berekent daarna:
 
-- bereken eerst de ruimtelijke uitkomsten buiten MySQL
-- importeer daarna alleen de samenvatting per `plot_id` en `jaar`
-
-Doelbestand:
-
-- `Recreatie/plot_jaar_infra_recreatie_import.csv`
-
-Het bijbehorende script berekent:
-
-- afstand tot dichtstbijzijnd pad
-- padlengte binnen plot per hectare
-- afstand tot dichtstbijzijnde parkeerplaats
-- afstand tot dichtstbijzijnde hoofdtoegang
+- afstand tot het dichtstbijzijnde voet- of fietspad;
+- lengte van voet- en fietspaden binnen het plot per hectare;
+- afstand tot de dichtstbijzijnde OSM-parkeerplaats.
 
 Controleer daarna altijd:
 
 - heeft elk plot de verwachte variabelen?
 - zijn alle afstanden groter dan of gelijk aan 0?
 - is `padlengte_m_per_ha` logisch?
-- bestaan alle `plot_id + jaar` combinaties in `plot_jaar_oppervlak`?
+- bestaan alle 55 combinaties van `plot_id + jaar` in `plot_jaar_oppervlak`?
 
-Daarna pas importeer je de output in MySQL.
+Dezelfde import bouwt de drie aggregaten automatisch opnieuw op. De ingetrokken
+CSV-route uit 2024 en `afstand_hoofdtoegang_m` worden niet meer gebruikt.
 
 ## 21. Wat zijn de importbestanden voor recreatie?
 
-Er zijn twee hoofdimportbestanden:
-
-### `plot_jaar_infra_recreatie_import.csv`
-
-Kolommen:
-
-- `plot_id`
-- `jaar`
-- `bron`
-- `variabele`
-- `waarde`
-
-Toegestane variabelen:
-
-- `afstand_pad_m`
-- `padlengte_m_per_ha`
-- `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
+De actieve bronbestanden zijn de gedateerde OSM-JSON-snapshots en hun
+Overpass-querybestanden in `Recreatie/OSM`. De import bewaart bronmoment, query,
+hash, OSM-objectidentiteit en ODbL-vermelding.
 
 ### Historisch `plot_jaar_toegankelijkheid_import.csv`
 
@@ -1162,41 +1140,6 @@ Praktische regel:
 
 - afstands- en padvariabelen mogen direct per plot
 - bezoekersdruk uit rapport nog niet
-
-## 23. Belangrijke uitzondering: afstand tot hoofdtoegang
-
-Voor een aantal plots is de gewone berekening van `afstand_hoofdtoegang_m` niet goed genoeg.
-
-Daar geldt een uitzonderingsregel:
-
-1. eerst afstand van de dichtstbijzijnde hoofdtoegang tot een vast tussenpunt
-2. daarna afstand van dat tussenpunt tot het plot
-
-De formule is dus:
-
-`afstand_hoofdtoegang_m = afstand(hoofdingang, tussenpunt) + afstand(tussenpunt, plot)`
-
-Deze regel geldt voor 16 specifieke plots, waaronder:
-
-- `75`
-- `10-12-76`
-- `8`
-- `7`
-- `6`
-- `4-5`
-- `61`
-- `62`
-- `71`
-- `72`
-- `73`
-- `74`
-- `12a`
-
-Belangrijk:
-
-Als je later `plot_jaar_infra` opnieuw volledig vult vanuit een ouder importbestand of een oude berekening, kunnen deze handmatig gecorrigeerde waarden worden overschreven.
-
-Daarom moet deze uitzondering in toekomstige herberekeningen worden meegenomen.
 
 ## 23A. Hoe wordt het PQ-vegetatiemeetnet gebruikt?
 
@@ -1367,4 +1310,4 @@ Gebruik voor nieuwe invoer:
 
 Na invoer of wijziging worden de ruimtelijke doorsnijdingen in `toegankelijkheidsgebied_plot_afleiding` opnieuw berekend. De eerste actuele invoer bevat één afgesloten gebied, één versie en 18 kaveldoorsnijdingen. Een kavelstatus is voortaan een afgeleide uitkomst: alleen 100% dekking door één status levert één status voor de hele kavel op. Bij gedeeltelijke of meervoudige dekking gebruikt de analyse de oppervlakteaandelen en blijft het ongedekte deel onbekend.
 
-Shiny en de statische browser gebruiken parser/cacheversie 16. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
+Shiny en de statische browser gebruiken parser/cacheversie 17. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
