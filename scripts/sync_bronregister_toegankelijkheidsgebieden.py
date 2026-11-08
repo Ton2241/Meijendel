@@ -2,6 +2,7 @@
 """Synchroniseer het actuele toegankelijkheidsgebiedsmodel naar het bronregister-DOCX."""
 
 from pathlib import Path
+import re
 
 from docx import Document
 from docx.oxml import OxmlElement
@@ -10,6 +11,7 @@ from docx.text.paragraph import Paragraph
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCX = ROOT / "docs" / "MEIJENDEL_BRONREGISTER.docx"
+MARKDOWN = ROOT / "docs" / "MEIJENDEL_BRONREGISTER.md"
 
 ENVIRONMENT = (
     "Aanvullende verklarende gegevens. De bronvaste beheer-jaarview bevat nu 355 "
@@ -113,57 +115,6 @@ SECTION = [
 ]
 
 OSM_SECTION_TITLE = "OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026"
-OSM_SECTION = [
-    "De levende lokale database bevat een volledige gedateerde OpenStreetMap-snapshot van "
-    "de voetpaden, fietspaden en wegen in de ruime Meijendel-bounding box. Het bronmoment is "
-    "8 november 2026 10:22:35 UTC. Van 4.475 way-objecten voldoen 4.473 aan de selectie. Na "
-    "afsnijding op het actuele Meijendel-basisgebied en selectie op een positieve "
-    "doorsnijding met minstens één van de 55 kavels blijven 1.319 lijnsegmenten en "
-    "235.264,661 meter over. Daarvan zijn 59 fietspadsegmenten (20.545,201 meter), 872 "
-    "voetpadsegmenten (134.378,593 meter) en 388 wegsegmenten (80.340,867 meter). De "
-    "OSM-toegangstags leiden tot 680 openbare, 272 beperkt toegankelijke en 367 afgesloten "
-    "segmenten. Deze status is bronafgeleid en vormt geen zelfstandige juridische vaststelling.",
-    "Alle 1.319 lijnversies hebben voorlopig geldig_vanaf = 1955-01-01, "
-    "geldig_vanaf_grondslag = inschatting en geldig_tot = NULL. Ton heeft uitdrukkelijk "
-    "bepaald dat deze historisch onjuiste begindatum voorlopig ook voor voetpaden, fietspaden "
-    "en wegen wordt gebruikt. Een tweede OSM-snapshot bevat 341 parkeerobjecten met bronmoment "
-    "8 november 2026 10:31:51 UTC. Daarvan raken 16 objecten minstens één kavel; ook deze "
-    "versies beginnen voorlopig op 1 januari 1955 en hebben "
-    "geen einddatum. Het werkelijke OSM-bronmoment blijft voor beide snapshots apart bewaard.",
-    "Een volgende snapshot maakt nieuwe versies, sluit de voorafgaande stand op het nieuwe "
-    "bronmoment en herberekent automatisch de plotdoorsnijdingen en kavelaggregaten. Oudere "
-    "versies worden niet overschreven. De actuele en historische views bestaan afzonderlijk "
-    "voor segmenten en parkeerplaatsen. De voorlopige invoer uit 2024 is volledig ingetrokken: "
-    "de 220 regels in plot_jaar_infra, de CSV, de oude losse parkeerexport en de bijbehorende "
-    "SQL-invoerroute zijn verwijderd. Vanaf de voorlopig geschatte ingangsdatum 1 januari "
-    "1955 bevat plot_jaar_infra 165 automatisch afgeleide regels: afstand_pad_m, "
-    "padlengte_m_per_ha en afstand_parkeerplaats_m voor elk van 55 kavels. Shiny en de "
-    "statische browser gebruiken per analysejaar uitsluitend de laatste aggregaatversie op "
-    "of vóór dat jaar; een toekomstige stand werkt niet achterwaarts door.",
-    "De vorige lokale OSM-lijnlaag bevat binnen dezelfde kavelselectie 1.320 segmenten en "
-    "232.769,401 meter. De nieuwe snapshot bevat 1.319 segmenten en 235.264,669 meter: 1.294 "
-    "OSM-way-ID’s komen in beide voor, 25 alleen in de nieuwe snapshot en 26 alleen in de "
-    "vorige laag. Bij 94 gemeenschappelijke ID’s is de geometrie gewijzigd, bij 79 de "
-    "toegangsclassificatie en bij vier het infrastructuurtype. Het verschil van 2.495,268 "
-    "meter bewijst geen fysieke aanleg. Voor de 59 fietspaden ondersteunt de BGT-controle "
-    "17.134,499 meter (83,399%) binnen tien meter van een officieel fietspadvlak; 55 segmenten "
-    "hebben zulke dekking en vier niet. BGT heeft OSM-geometrie niet automatisch vervangen. "
-    "Op 8 november 2026 zijn 913 lijnversies zonder positieve kaveldoorsnijding en 253 "
-    "parkeerplaatsversies zonder kavelrelatie verwijderd: 476 wegen, 75 fietspaden, 362 "
-    "voetpaden en 253 parkeerplaatsen. Objecten die één of meer kavels raken zijn volledig "
-    "behouden en niet op de kavelgrens afgeknipt. De import past deze selectie voortaan bij "
-    "iedere herhaling en nieuwe snapshot toe. Beide identiteitstabellen bevatten geen object "
-    "zonder versie.",
-    "De lijnsnapshot heeft SHA-256 74fba544c4625911aa4fd82e08c8f231b7488fc06258580e9649ea51c3aed320; "
-    "de parkeerplaatssnapshot 7deab5d058926c70e08da38ee096c6b971a41072c5b71853c4460adf87cb6e5e. "
-    "OpenStreetMap-data valt onder ODbL 1.0 en vereist bronvermelding. Google Maps is niet als "
-    "gegevensbron gebruikt. De laatste herstelkopie staat op /Volumes/T7 Data/Home_Ton/"
-    "Meijendel data/Backups-archief/Meijendel/meijendel-voor-osm-fietspaden-20261108-124148.sql. "
-    "Omvang: 3.576.079 bytes. SHA-256: "
-    "5de990ad6efe41ae6b049ccac003e2ee24f96524423304ff83217e94d2fb0710.",
-    "De zware meijendel.sql-export, proefimport, volledige Shiny-cachebouw en VPS-publicatie "
-    "zijn niet uitgevoerd.",
-]
 
 
 def replace_paragraph(document: Document, prefix: str, text: str) -> None:
@@ -221,8 +172,25 @@ def replace_section(document: Document, title: str, paragraphs: list[str]) -> No
         insert_before(anchor, text, "First Paragraph" if index == 0 else "Body Text")
 
 
+def markdown_section(title: str) -> list[str]:
+    """Lees één H2-sectie uit de leidende Markdown-versie als gewone alinea's."""
+    lines = MARKDOWN.read_text(encoding="utf-8").splitlines()
+    heading = f"## {title}"
+    starts = [index for index, line in enumerate(lines) if line == heading]
+    if len(starts) != 1:
+        raise RuntimeError(f"Markdown-sectie {title!r} niet uniek: {len(starts)}")
+    start = starts[0] + 1
+    end = next(
+        (index for index in range(start, len(lines)) if lines[index].startswith("## ")),
+        len(lines),
+    )
+    blocks = re.split(r"\n\s*\n", "\n".join(lines[start:end]).strip())
+    return [re.sub(r"`([^`]*)`", r"\1", " ".join(block.splitlines())) for block in blocks]
+
+
 def main() -> None:
     document = Document(DOCX)
+    osm_section = markdown_section(OSM_SECTION_TITLE)
     replace_paragraph(document, "Stand:", "Stand: 8 november 2026.")
     replace_paragraph(document, "Aanvullende verklarende gegevens.", ENVIRONMENT)
     replace_paragraph(document, "Garmin-QField-veldbron", GARMIN)
@@ -265,9 +233,9 @@ def main() -> None:
             raise RuntimeError("Anker voor OSM-fietspadsectie niet uniek")
         anchor = anchors[0]
         insert_before(anchor, OSM_SECTION_TITLE, "Heading 2")
-        for index, text in enumerate(OSM_SECTION):
+        for index, text in enumerate(osm_section):
             insert_before(anchor, text, "First Paragraph" if index == 0 else "Body Text")
-    replace_section(document, OSM_SECTION_TITLE, OSM_SECTION)
+    replace_section(document, OSM_SECTION_TITLE, osm_section)
     document.save(DOCX)
 
     check = Document(DOCX)
@@ -277,6 +245,8 @@ def main() -> None:
         raise RuntimeError("Parserversie 17 ontbreekt in DOCX")
     if sum(p.text == OSM_SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("OSM-fietspadsectie niet exact eenmaal opgeslagen")
+    if not any("De GeoJSON bevat 1.325 objecten" in p.text for p in check.paragraphs):
+        raise RuntimeError("Publieke VWG_M-levering ontbreekt in DOCX")
     print(f"Bijgewerkt: {DOCX}")
 
 

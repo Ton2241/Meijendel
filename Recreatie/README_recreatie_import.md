@@ -39,6 +39,22 @@ een aggregaatversie toe in haar werkelijke ingangsjaar; herhaling van dezelfde
 snapshot vervangt alleen diezelfde versie. `afstand_hoofdtoegang_m` wordt niet
 meer gevuld.
 
+Voor de individuele kavelpagina's van VWG_M maakt
+`gis/scripts/export_website_kavelkaart_lagen.py` één gecontroleerde publieke
+afgeleide levering. Zij bevat de zes actuele toegankelijkheidsgebieden en de
+volledige geometrie van alle 1.319 actuele lijnsegmenten die minstens één kavel
+raken: 388 wegen, 59 fietspaden en 872 voetpaden. Parkeerplaatsen worden niet
+meegeleverd. `plot_ids` bepaalt op welke kavelpagina's een object kan worden
+getoond; de geometrie wordt niet op de kavelgrens afgeknipt. De GeoJSON en het
+manifest staan in VWG_M onder
+`website/vwg-m-linux-app/app/static/data/kavelkaart-lagen.*`. De levering van
+8 november 2026 heeft GeoJSON-SHA-256
+`f5a16b1465f4bbc86f8c08904eefe38cc591eb1add872d71fb2bb33cb4ec8d39`;
+het manifestbestand heeft SHA-256
+`2fcfb2016e81da3f47477a7291b82e47904118c42502c00c5900458c1a017e19`.
+De CLI schrijft atomair en kan met `--verify` aantonen dat de bestanden nog
+exact overeenkomen met de levende lokale database.
+
 ## Historische bestanden
 
 `plot_jaar_toegankelijkheid_import.csv`, `plot_jaar_toegankelijkheid_deel_import.csv`, `Ruimtelijke data/11_import_toegankelijkheid.sql` en `Ruimtelijke data/17_import_toegankelijkheid_deel.sql` horen bij de ingetrokken voorlopige kavelregistratie uit 2024. Zij blijven alleen als audit- en herstelmateriaal in Git staan en mogen niet opnieuw als actuele toegankelijkheidsgegevens worden uitgevoerd.
@@ -59,5 +75,9 @@ Na nieuwe of gewijzigde gebiedsversies controleer je:
 Na een nieuwe OSM-snapshot controleer je daarnaast bronbestand- en queryhash,
 OSM-bronmoment, classificatieverschillen, BGT-dekking, geldigheidsintervallen en
 precies drie opnieuw berekende waarden voor elk van 55 kavels.
+
+Na een wijziging in actuele gebieds- of lijnversies vernieuw en verifieer je
+ook de publieke VWG_M-levering. Een nieuwe databaseversie werkt dus niet
+stilzwijgend door in de websitebestanden.
 
 De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie volgen pas na afzonderlijke toestemming.

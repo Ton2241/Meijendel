@@ -1047,6 +1047,25 @@ op kaveldoorsnijding, staat op
 `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/meijendel-voor-osm-fietspaden-20261108-124148.sql`.
 Omvang: 3.576.079 bytes. SHA-256:
 `5de990ad6efe41ae6b049ccac003e2ee24f96524423304ff83217e94d2fb0710`.
+
+Op 8 november 2026 is voor de individuele kavelpagina's van VWG_M een
+gecontroleerde afgeleide levering gemaakt. De GeoJSON bevat 1.325 objecten: de
+zes actuele toegankelijkheidsgebieden en de volledige geometrie van 1.319
+actuele lijnsegmenten die minstens één kavel raken, verdeeld over 388 wegen, 59
+fietspaden en 872 voetpaden. Parkeerplaatsen zijn geen onderdeel van deze
+websitelevering. Ieder object bevat de positieve `plot_ids`; lijnen en vlakken
+zijn niet op kavelgrenzen afgeknipt. De bronmomenten zijn 7 november 2026
+23:25:42 voor de gebieden en 8 november 2026 10:22:35 UTC voor de lijnen. De
+bestanden staan in VWG_M als
+`website/vwg-m-linux-app/app/static/data/kavelkaart-lagen.geojson` en
+`kavelkaart-lagen.manifest.json`. De GeoJSON heeft SHA-256
+`f5a16b1465f4bbc86f8c08904eefe38cc591eb1add872d71fb2bb33cb4ec8d39`;
+het manifestbestand heeft SHA-256
+`2fcfb2016e81da3f47477a7291b82e47904118c42502c00c5900458c1a017e19`.
+`gis/scripts/export_website_kavelkaart_lagen.py --verify` vergelijkt aantallen,
+objecten, inhoud en hash opnieuw met de levende lokale database. Deze levering
+is een lokale releasekandidaat; zij is nog niet op de VPS gepubliceerd.
+
 De zware `meijendel.sql`-export, proefimport, volledige Shiny-cachebouw en
 VPS-publicatie zijn niet uitgevoerd.
 
