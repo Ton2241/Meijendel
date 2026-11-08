@@ -2369,3 +2369,64 @@ Het controlebestand staat één niveau hoger als CONTROLE_SHA256.json.
 Eerdere relatieve bestandsverwijzingen in dit document hebben deze archiefmap als basis.
 De oorspronkelijke locatie /Users/ton/Documents/Backups viel onder iCloud;
 de eerdere omschrijving van die locatie als buiten iCloud was onjuist.
+
+### BMP-niet-vogels per soortgroep, lokaal uitgevoerd 8 november 2026
+
+De blijvende regel is nu: iedere aanwezige of nieuwe bruikbare herhaalde
+meetreeks voor trendanalyse krijgt haar feitelijke opslag in de passende
+soortgroeptabel. Bestaande gegevens worden fysiek verplaatst; bronwaarden,
+bezoeken, centrale taxonroute en afnemers blijven behouden. PQ en vogels
+houden hun eigen afgesproken inrichting. Een nieuwe ondersteunende
+`soortgroep_*`-tabel vergt afzonderlijke goedkeuring.
+
+Voor de BMP-niet-vogels uit 2005–2025 zijn vijf fysieke tabellen gemaakt:
+`zoogdieren`, `amfibieen`, `reptielen`, `dagvlinders` en
+`vliesvleugeligen`. Zij gebruiken de bestaande `dagbezoeken_bmp`-sleutel.
+Iedere rij heeft een verplichte FK naar `taxa` en `taxa_bronkoppeling`;
+de centrale schrijfguard controleert ook dat beide naar hetzelfde taxon
+verwijzen en dat de taxongroep bij de doeltabel past. De drie al bekende
+zoogdiertaxa `Martes`, `Microtus arvalis/agrestis` en
+`Sorex araneus spec.` zijn aan de bestaande groep `zoogdieren_overig`
+verbonden.
+
+De vijf tabellen bevatten 170.126 zelfstandige `meetuitkomst`-rijen:
+37 taxa maal 4.598 bezoeken, met 7.852 positieve uitkomsten en 162.274
+als nul afgeleide uitkomsten. Nulafleiding geldt volgens Tons besluit voor
+de overige niet-vogeltaxa zodra op een BMP-bezoek minstens één niet-vogel
+is geregistreerd. Positieve SOVON-waarden gaan bij overlap voor NDFF.
+De 7.552 historische NDFF-nullen blijven met hun bronstatus herkenbaar;
+een bron- of reconstructierij telt nooit zelfstandig naast de gekozen
+`meetuitkomst` mee.
+
+De herkomst is volledig binnen de soortgroeptabellen vastgelegd:
+19.153 oorspronkelijke SOVON-punten uit 2009–2025, 7.399 positieve
+SOVON-bezoektotalen uit 2005–2025, 28.422 SOVON-bezoekuitkomsten uit
+2009–2025, 10.374 NDFF-reconstructierijen en 5.452 bestaande
+SOVON-jaarmatrixrijen. De 82 niet-zoogdierpunten uit 2009–2025 zijn
+onder hun eigen vier soortgroepen opgenomen. Alle oorspronkelijke
+bronvelden, bronidentiteiten en puntgeometrieën zijn gecontroleerd
+overgenomen. De 19.153 oude punten, 28.422 oude SOVON-matrixrijen en
+15.826 oude NDFF/SOVON-jaarmatrixrijen zijn pas daarna op hun vroegere
+plaats verwijderd. Bronselectie, bezoekmetadata, NDFF-bronregels en
+overlapbesluiten blijven als auditspoor bestaan.
+
+De volledige lokale T7-back-up vooraf is
+`Meijendel_voor_BMP_soortgroepen_20261108T191235Z.sql.gz`, SHA-256
+`b00d24b4ee56c19c3d93c3bb0b3cf889bc1a7f9400d56e1e14174107c1e69f33`.
+Checksum, gzip-leesbaarheid en volledig herstel in een afzonderlijke
+MySQL-database zijn gecontroleerd. De definitieve code is van begin tot
+eind op die herstelkopie beproefd, inclusief broncelpariteit, verwijdering
+van de oude trendrijen en de centrale taxonpoort. Beide bestaande
+SOVON-analyseviews behielden veld voor veld hun 19.960 en 30.657 rijen.
+De levende nacontrole telt 327 basistabellen, 133 centrale taxonroutes en
+nul fouten. `dagwaarnemingen_bmp` bleef op 600.959 vogelregels en
+`pq_vegetatie_waarneming` op 53.122 PQ-regels. Er is geen lokale
+publicatie-export of cache en geen VPS-publicatie uitgevoerd.
+
+De 807 oorspronkelijke SOVON-punten en 2.235 bezoekuitkomsten uit 2026
+zijn niet verplaatst. Hun formele BMP-acceptatie en vervolgens een
+soortgroepgerichte invoerroute zijn de volgende afzonderlijke stap.
+De bestaande SOVON- en NDFF-reconstructie-import blokkeren na deze
+verplaatsing een herinvoer in de oude trendtabellen. Nieuwe
+trendgeschikte gegevens worden vóór import aan de passende soortgroeptabellen
+en de drie centrale taxontabellen getoetst.

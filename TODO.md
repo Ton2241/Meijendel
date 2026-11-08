@@ -183,6 +183,11 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   uitvoeropdracht worden gebruikt. Bepaal per bestaande herhaalde meetreeks
   afzonderlijk of zij bruikbaar is en nog buiten een passende
   soortgroeptabel staat; behoud bronwaarden, meetstructuur en taxonroute.
+  De eerste concrete verplaatsing is op 8 november lokaal uitgevoerd:
+  BMP-niet-vogels uit 2005–2025 staan in `zoogdieren`, `amfibieen`,
+  `reptielen`, `dagvlinders` en `vliesvleugeligen`. De oude trendrijen zijn
+  na bron- en afnemerpariteit verwijderd. De 2026-reeks blijft open tot de
+  formele BMP-aanvaarding en een afzonderlijk beoordeelde invoerroute.
 - Bepaal de volledige verplaatsingsselectie, niet alleen de tabellen met
   `pq` in hun naam. Onderzoek NDFF-bronregels en hun PQ-poort, resterende
   LVD-opnamen, metadata, JSON-bronvelden, overlap-/kwaliteitsbesluiten,

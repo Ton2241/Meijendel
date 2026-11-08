@@ -128,6 +128,13 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   in een soortgroeptabel. Gebruik eerst een bestaande passende tabel;
   de hoofdnaam is de soortgroep, bijvoorbeeld `zoogdieren`.
   Ondersteunende `soortnaam_*`-tabellen vereisen afzonderlijke goedkeuring.
+  Iedere reeds aanwezige of nieuwe gegevensreeks die verantwoord trendmatig
+  geanalyseerd kan worden, krijgt zijn feitelijke opslag in de passende
+  soortgroeptabel. Voor bestaande gegevens is dat een verhuizing: na
+  brongetrouwe overdracht, controle van verwijzingen en afnemers verdwijnt
+  de eerdere opslag van die trendgegevens. PQ en vogels behouden hun eigen
+  afgesproken inrichting. Iedere invoer controleert de route via `taxa`,
+  `taxa_bronkoppeling` en `taxon_groepen`.
   Darwin Core en TDWG TCS zijn voortaan verplichte
   toetsingsbasis; afwijkingen vereisen vooraf expliciete goedkeuring door Ton.
 - [`bmp_meijendel_index.html`][7]

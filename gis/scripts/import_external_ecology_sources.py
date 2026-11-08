@@ -217,6 +217,12 @@ def derived_key_sql(route: dict, alias: str = 'w') -> str:
 def central_source_condition(table: str, route: dict, alias='w') -> str:
     """Same semantic check in the acceptance gate and in BEFORE row triggers."""
     kind = route['kind']
+    if table in BMP_NONBIRD_GROUP_TABLES:
+        groups = ('zoogdieren_overig', 'vleermuizen') if table == 'zoogdieren' else (table,)
+        group_names = ','.join(query_literal(name) for name in groups)
+        return (f'b.taxon_id={alias}.taxon_id AND EXISTS(SELECT 1 FROM taxa t '
+                'JOIN taxon_groepen g ON g.groep_id=t.groep_id '
+                f'WHERE t.taxon_id=b.taxon_id AND g.groep_code IN ({group_names}))')
     if table == 'sovon_bmp_soortenlijst_taxon':
         return (
             f'(({alias}.koppelstatus=\'niet_gekoppeld\' AND {alias}.soort_id IS NULL '
@@ -572,8 +578,44 @@ CENTRAL_QUERY_SCHEMA = {
     'weer_legenda': frozenset(['toelichting', 'variabele']),
 }
 
+# De BMP-niet-vogelreeks gebruikt vanaf 8 november 2026 één hoofdtabel per
+# soortgroep. Bronpunten, brontotalen en meetuitkomsten hebben daarin een
+# expliciet regeltype en dezelfde centrale taxonroute.
+BMP_NONBIRD_GROUP_TABLES = (
+    'zoogdieren', 'amfibieen', 'reptielen', 'dagvlinders', 'vliesvleugeligen')
+BMP_NONBIRD_GROUP_COLUMNS = frozenset({
+    'rij_id', 'regeltype', 'bron_sleutel', 'bezoek_id', 'taxon_id',
+    'taxon_bronkoppeling_id', 'waarnemingsstatus', 'aantal',
+    'aantal_buiten_plot', 'zelfstandig_meetellen', 'regelversie',
+    'bronwaarden', 'geom', 'aangemaakt_op'})
+for _bmp_group_table in BMP_NONBIRD_GROUP_TABLES:
+    CENTRAL_QUERY_SCHEMA[_bmp_group_table] = BMP_NONBIRD_GROUP_COLUMNS
+
+# Bestaande, taxonvrije infrastructuuradministratie in de lokale database.
+# Ook deze fysieke tabellen staan expliciet in het gesloten schemacontract.
+CENTRAL_QUERY_SCHEMA.update({
+    'infrastructuurbron_snapshot': frozenset('snapshot_id snapshot_code snapshottype bron_code bron_url licentie querytekst query_sha256 bron_timestamp gedownload_op bronbestand bronbestand_sha256 bron_objecten geselecteerde_objecten geimporteerde_segmenten basisgebiedversie_id aangemaakt_op'.split()),
+    'infrastructuursegment': frozenset('segment_id bron_code bron_objecttype bron_object_id aangemaakt_op'.split()),
+    'infrastructuursegment_plot_afleiding': frozenset('segment_versie_id plot_id infrastructuurtype toegankelijkheidsstatus doorsnijding_m segmentlengte_m aandeel_pct segment_geometrie_sha256 plot_geometrie_sha256 afgeleid_op'.split()),
+    'infrastructuursegment_versie': frozenset('segment_versie_id segment_id snapshot_id bron_versie bron_gewijzigd_op bron_changeset infrastructuurtype toegankelijkheidsstatus beoordelingsstatus classificatieregel naam oppervlak bron_tags geldig_vanaf geldig_vanaf_grondslag geldig_tot geometrie geometrie_wkt geometrie_sha256 lengte_m aangemaakt_op'.split()),
+    'infrastructuurvoorziening': frozenset('voorziening_id bron_code bron_objecttype bron_object_id aangemaakt_op'.split()),
+    'infrastructuurvoorziening_versie': frozenset('voorziening_versie_id voorziening_id snapshot_id bron_versie bron_gewijzigd_op bron_changeset voorzieningstype naam bron_tags geldig_vanaf geldig_vanaf_grondslag geldig_tot binnen_basisgebied afstand_basisgebied_m geometrie geometrie_wkt geometrie_sha256 aangemaakt_op'.split()),
+    'toegankelijkheidsgebied': frozenset('gebied_id gebied_code naam opmerking aangemaakt_op gewijzigd_op'.split()),
+    'toegankelijkheidsgebied_plot_afleiding': frozenset('gebied_versie_id plot_id status_code doorsnijding_m2 plot_oppervlakte_m2 aandeel_pct gebied_geometrie_sha256 plot_geometrie_sha256 afgeleid_op'.split()),
+    'toegankelijkheidsgebied_versie': frozenset('gebied_versie_id gebied_id versienummer status_code geldig_vanaf geldig_tot vastgesteld_op bron_id bron_object_id inwinningsmethode nauwkeurigheid_m geometrie geometrie_wkt geometrie_sha256 oppervlakte_m2 geometrie_opmerking actueel_gebied_id aangemaakt_op'.split()),
+    'toegankelijkheidsstatus': frozenset('status_code omschrijving'.split()),
+    'plot_jaar_infra': frozenset('plot_id jaar bron variabele waarde geldig_vanaf geldig_vanaf_grondslag geldig_tot'.split()),
+    'maatregel_registratie_herkomst': frozenset('herkomst_id brontabel bronsleutel oorspronkelijke_rij rij_sha256 migratieversie beheer_registratie_id uitvoering_id plot_id jaar'.split()),
+})
+
 def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
     expected = dict(CENTRAL_QUERY_SCHEMA)
+    existing_bmp_groups = set(schema) & set(BMP_NONBIRD_GROUP_TABLES)
+    if not existing_bmp_groups:
+        for table in BMP_NONBIRD_GROUP_TABLES:
+            expected.pop(table)
+    elif existing_bmp_groups != set(BMP_NONBIRD_GROUP_TABLES):
+        raise ValueError('BMP-soortgroeptabellen zijn slechts gedeeltelijk aanwezig')
     if 'ndff_open_waarneming_register' in schema:
         for table in ('mossen_waarneming', 'korstmossen_waarneming'):
             expected[table] = expected['ndff_open_waarneming']
@@ -583,9 +625,9 @@ def central_query_schema_contract(schema: dict[str, set[str]]) -> None:
         expected.pop('ndff_korstmossen')
     registraties = {'maatregel_plot_jaar_registratie','maatregel_toegankelijkheid_registratie','maatregel_registratie_herkomst'}
     legacy = {'plot_jaar_maatregel','plot_jaar_toegankelijkheid','plot_jaar_toegankelijkheid_deel'}
-    if not (registraties & set(schema)):
-        for table in registraties: expected.pop(table)
-    elif registraties <= set(schema) and not (legacy & set(schema)):
+    for table in registraties - set(schema):
+        expected.pop(table)
+    if not (legacy & set(schema)):
         # De oude objecten zijn views, buiten deze inventaris van fysieke tabellen.
         for table in legacy: expected.pop(table)
     additions = source_family_tables()

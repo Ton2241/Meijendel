@@ -360,7 +360,7 @@ CROSS JOIN v_meijendel_natura2000_actueel n
 """
 
 
-def status_sql() -> str:
+def status_sql(*, migrated_nonbirds: bool = False) -> str:
     parts = ["""
 USE Meijendel;
 DROP TEMPORARY TABLE IF EXISTS tmp_meijendel_ruimtelijke_bron;
@@ -378,6 +378,14 @@ CREATE TEMPORARY TABLE tmp_meijendel_plotmatch (
   PRIMARY KEY (bron_record_id)
 ) ENGINE=InnoDB;
 """]
+    sovon_points = "SELECT CONCAT(batch_id,':',bron_waarneming_id),geom FROM sovon_avimap_waarneming"
+    if migrated_nonbirds:
+        for group in ("zoogdieren", "amfibieen", "reptielen", "dagvlinders", "vliesvleugeligen"):
+            sovon_points += (
+                " UNION ALL SELECT CONCAT(JSON_UNQUOTE(JSON_EXTRACT(bronwaarden,'$.batch_id')),':',"
+                "JSON_UNQUOTE(JSON_EXTRACT(bronwaarden,'$.bron_waarneming_id'))),geom "
+                f"FROM {group} WHERE regeltype='bronpunt'"
+            )
     sources = [
         ("ndff_open_waarneming", "bronpolygoon", (
             "SELECT CAST(waarneming_id AS CHAR),openbare_geometrie FROM ndff_open_waarneming "
@@ -387,7 +395,7 @@ CREATE TEMPORARY TABLE tmp_meijendel_plotmatch (
         ("dagwaarnemingen_bmp", "exact_punt", "SELECT CAST(id AS CHAR),ST_SRID(geom,28992) FROM dagwaarnemingen_bmp", False),
         ("dagwaarnemingen_wv", "exact_punt", "SELECT CAST(id AS CHAR),geom FROM dagwaarnemingen_wv", False),
         ("pq_vegetatie_opname", "exact_punt", "SELECT CAST(opname_id AS CHAR),geom FROM pq_vegetatie_opname", False),
-        ("sovon_avimap_waarneming", "exact_punt", "SELECT CONCAT(batch_id,':',bron_waarneming_id),geom FROM sovon_avimap_waarneming", False),
+        ("sovon_avimap_waarneming", "exact_punt", sovon_points, False),
         ("vangblik_event", "exact_punt", "SELECT e.event_id,l.locatiepunt FROM vangblik_event e JOIN vangblik_locatieversie l USING (locatieversie_id)", False),
     ]
     for source_table, method, selection, reuse in sources:
@@ -498,7 +506,13 @@ def execute_main(args) -> int:
         if not path.exists():
             raise FileNotFoundError(path)
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
-    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), boundary_sql(args.gpkg, manifest), status_sql()))
+    group_count = int(query_mysql(args.mysql, mysql_args,
+        "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='Meijendel' "
+        "AND TABLE_NAME IN ('zoogdieren','amfibieen','reptielen','dagvlinders','vliesvleugeligen');"))
+    if group_count not in (0, 5):
+        raise RuntimeError("BMP-soortgroeptabellen zijn slechts gedeeltelijk aanwezig")
+    sql = "\n".join((SCHEMA.read_text(encoding="utf-8"), boundary_sql(args.gpkg, manifest),
+                     status_sql(migrated_nonbirds=group_count == 5)))
     if args.sql_output:
         args.sql_output.write_text(sql, encoding="utf-8")
     if not args.apply:

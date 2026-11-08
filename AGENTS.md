@@ -464,12 +464,11 @@ MySQL:
   de BMP-vogeltellers dat aan DAZ deelnam; het zijn geen vogelwaarnemingen.
   Beschouw een BMP-bezoek alleen als deelnemend wanneer minstens één
   17.204-record eenduidig op datum en SOVON-plot aan dat bezoek is gekoppeld.
-  De 7.552 eerder voor de zeven DAZ-doelsoorten afgeleide nulregels blijven
-  onder `ndff-daz-bmp-v1` uitsluitend als historisch auditspoor bewaard; zij
-  zijn niet geschikt als bewezen afwezigheid. Leid uit deze historische
-  reconstructie geen nieuwe nullen af. Een meervoudig koppelbaar record van
-  hetzelfde taxon blijft afzonderlijk herkenbaar. Leid nooit nullen af voor
-  bijvangsten of voor overige BMP-bezoeken. Controleer vóór gebruik met
+  De 7.552 eerder voor de zeven DAZ-doelsoorten afgeleide nulregels zijn door
+  Ton op 8 november 2026 als historische, expliciet als afgeleid gemarkeerde
+  nullen voor de nieuwe niet-vogelreeks aanvaard. Hun bronstatus blijft
+  onderscheidbaar van primaire SOVON-waarden. Een meervoudig koppelbaar record
+  van hetzelfde taxon blijft afzonderlijk herkenbaar. Controleer met
   `--audit-daz-bmp`
 - gebruik vanaf 13 september 2026 voor DAZ-BMP primair de originele
   SOVON/AVIMAP-laag `sovon_avimap_*` met regelversie
@@ -477,12 +476,22 @@ MySQL:
   secundaire reconstructie. Tel een `17.204`-NDFF-record niet mee wanneer
   `sovon_avimap_ndff_daz_koppeling.koppelstatus` begint met
   `sovon_vervangt_ndff`; bij `sovon_vervangt_ndff_telconflict` blijft SOVON
-  leidend en moet het conflict worden vermeld. Leid alleen echte nullen af voor
-  de zeven DAZ-doelsoorten en alleen binnen een bezoek met minimaal één
-  oorspronkelijke zoogdierregel. Behandel `lopend_jaar=1` als onvolledige
+  leidend en moet het conflict worden vermeld. Volgens Tons besluit van
+  8 november 2026 geldt voor elk BMP-bezoek met ten minste één niet-vogelregel
+  een afgeleide nul voor iedere andere soort op de vastgelegde niet-vogelsoortenlijst;
+  dit geldt ook voor de aanvullende SOVON-bezoektotalen 2005–2025. Gebruik
+  hiervoor de centrale taxonidentiteit en tel overlappende bronvormen eenmaal.
+  Behandel `lopend_jaar=1` als onvolledige
   jaardekking. Wijzig vogelgegevens uit deze export nooit zonder een afzonderlijk
   besluit van de eigenaar; rapporteer afwijkingen eerst. Controleer met
   `--audit-sovon-avimap`
+
+- Leg iedere aanwezige of nieuwe reeks die verantwoord voor trendanalyses
+  bruikbaar is vast in de passende soortgroeptabel. Voor reeds aanwezige
+  gegevens is dit een gecontroleerde fysieke verplaatsing, geen tweede kopie.
+  Hergebruik bestaande bezoeken en centrale taxonroutes; behoud bronwaarden en
+  verwijzingen. Verwijder de eerdere opslag pas na volledige pariteits- en
+  afnemercontrole. PQ en vogels behouden hun afgesproken eigen inrichting.
 - synchroniseer de vogelregels uit dezelfde primaire SOVON/AVIMAP-download
   uitsluitend met `--sync-sovon-avimap-vogels` en afsluitjaar 2025. Voeg
   ontbrekende bron-ID's, bezoeken en territoriumresultaten toe en corrigeer

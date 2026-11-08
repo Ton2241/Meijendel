@@ -6967,9 +6967,9 @@ def validate_sovon_avimap(metrics: dict[str, int]) -> None:
         raise ValueError(f"SOVON/AVIMAP-import wijkt af van het vaste bronprofiel: {differences}")
 
 
-def sovon_avimap_analysis_views_sql() -> str:
+def sovon_avimap_analysis_views_sql(*, migrated_nonbirds: bool = False) -> str:
     """Maak expliciete gebruikslagen voor primaire SOVON-niet-vogeldata."""
-    return """
+    sql = """
 CREATE OR REPLACE VIEW Meijendel.v_sovon_avimap_niet_vogel_analyse AS
 SELECT w.batch_id,w.bron_waarneming_id,w.bron_bezoek_id,w.plot_id,
        w.waarnemingsdatum,w.jaar,w.soortgroep_code,w.soortnr,
@@ -7032,6 +7032,51 @@ JOIN Meijendel.sovon_avimap_import_batch b
 JOIN Meijendel.sovon_avimap_bezoek v
   ON v.batch_id=m.batch_id AND v.bron_bezoek_id=m.bron_bezoek_id;
 """
+    if not migrated_nonbirds:
+        return sql
+    def field(alias: str, name: str, kind: str = "CHAR") -> str:
+        raw = f"JSON_UNQUOTE(JSON_EXTRACT({alias}.bronwaarden,'$.{name}'))"
+        return f"CAST({raw} AS {kind})" if kind != "CHAR" else raw
+    point_fields = {
+        'batch_id': 'UNSIGNED', 'bron_waarneming_id': 'UNSIGNED',
+        'bron_bezoek_id': 'UNSIGNED', 'plot_id': 'UNSIGNED',
+        'waarnemingsdatum': 'DATE', 'jaar': 'UNSIGNED',
+        'soortgroep_code': 'UNSIGNED', 'soortnr': 'UNSIGNED',
+        'aantal': 'UNSIGNED', 'gegevensrol': 'CHAR', 'lopend_jaar': 'UNSIGNED',
+    }
+    point_columns = ','.join(f'{field("z", name, kind)} AS {name}'
+                             for name, kind in point_fields.items())
+    point_columns += ',z.geom AS geom'
+    old_point_columns = ','.join('w.' + name for name in point_fields) + ',w.geom'
+    point_branches = [
+        f"SELECT {point_columns} FROM Meijendel.`{group}` z "
+        "WHERE z.regeltype='bronpunt'"
+        for group in ('zoogdieren', 'amfibieen', 'reptielen', 'dagvlinders', 'vliesvleugeligen')
+    ]
+    point_branches.append(f"SELECT {old_point_columns} FROM Meijendel.sovon_avimap_waarneming w "
+                          "WHERE w.jaar=2026")
+    point_source = '(' + ' UNION ALL '.join(point_branches) + ') w'
+    matrix_fields = {
+        'batch_id': 'UNSIGNED', 'reconstructieversie': 'CHAR',
+        'bron_bezoek_id': 'UNSIGNED', 'wetenschappelijke_naam': 'CHAR',
+        'nederlandse_naam': 'CHAR', 'doelrelatie': 'CHAR',
+        'waarnemingsstatus': 'CHAR', 'aantal': 'UNSIGNED',
+        'bronrecordaantal': 'UNSIGNED', 'lopend_jaar': 'UNSIGNED',
+        'kwaliteitsnotitie': 'CHAR',
+    }
+    matrix_columns = ','.join(f'{field("z", name, kind)} AS {name}'
+                              for name, kind in matrix_fields.items())
+    old_matrix_columns = ','.join('m.' + name for name in matrix_fields)
+    matrix_source = (
+        f'(SELECT {matrix_columns} FROM Meijendel.zoogdieren z '
+        "WHERE z.regeltype='sovon_reconstructie' UNION ALL "
+        f'SELECT {old_matrix_columns} FROM Meijendel.sovon_avimap_daz_bezoek_taxon m '
+        'JOIN Meijendel.sovon_avimap_bezoek ov ON ov.batch_id=m.batch_id '
+        'AND ov.bron_bezoek_id=m.bron_bezoek_id WHERE ov.jaar=2026) m'
+    )
+    return sql.replace('FROM Meijendel.sovon_avimap_waarneming w',
+                       'FROM ' + point_source).replace(
+        'FROM Meijendel.sovon_avimap_daz_bezoek_taxon m', 'FROM ' + matrix_source)
 
 
 def _sovon_reference_maps(
@@ -7372,7 +7417,16 @@ VALUES
    'Primaire SOVON-download is leidend voor aanwezige bronregels. Jaar 2026 is uitgesloten. Bestaande territoriumregels zonder bronregel zijn behouden omdat de export geen betrouwbare verwijderingslijst vormt.');
 """
     run_mysql(mysql_client, client_args, audit_sql)
-    run_mysql(mysql_client, client_args, sovon_avimap_analysis_views_sql())
+    migrated_groups = int(run_mysql(
+        mysql_client, flags,
+        "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='Meijendel' "
+        "AND TABLE_NAME IN ('zoogdieren','amfibieen','reptielen','dagvlinders','vliesvleugeligen');",
+        capture=True,
+    ))
+    if migrated_groups not in (0, 5):
+        raise RuntimeError('BMP-soortgroeptabellen zijn slechts gedeeltelijk aanwezig')
+    run_mysql(mysql_client, client_args, sovon_avimap_analysis_views_sql(
+        migrated_nonbirds=migrated_groups == 5))
 
     metrics_output = run_mysql(
         mysql_client, flags,
@@ -12904,6 +12958,10 @@ def execute_main(args,parser) -> int:
         print(output)
         return 0
     if args.reconstruct_daz_bmp:
+        if run_mysql(args.mysql_client, client_args + ["--batch", "--skip-column-names"],
+                     "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='Meijendel' "
+                     "AND TABLE_NAME='zoogdieren';", capture=True).strip() == "1":
+            raise RuntimeError('NDFF-BMP-trenduitkomsten staan inmiddels in zoogdieren; herbouw vereist de soortgroep-import')
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         metrics = reconstruct_daz_bmp(args.mysql_client, client_args)
         validate_daz_bmp_reconstruction(metrics)
@@ -12924,6 +12982,10 @@ def execute_main(args,parser) -> int:
     if args.import_sovon_avimap:
         if args.sovon_source_dir is None:
             parser.error("--import-sovon-avimap vereist --sovon-source-dir")
+        if run_mysql(args.mysql_client, client_args + ["--batch", "--skip-column-names"],
+                     "SELECT COUNT(*) FROM information_schema.TABLES WHERE TABLE_SCHEMA='Meijendel' "
+                     "AND TABLE_NAME='zoogdieren';", capture=True).strip() == "1":
+            raise RuntimeError('SOVON-niet-vogels staan inmiddels in soortgroeptabellen; gebruik de nieuwe bronroute')
         run_mysql(args.mysql_client, client_args, SCHEMA.read_text(encoding="utf-8"))
         if args.sovon_csv_dir is not None:
             metrics = import_sovon_avimap_nonbirds(
