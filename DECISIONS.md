@@ -1,5 +1,18 @@
 # Besluiten
 
+- Op 8 november 2026 heeft Ton de opslagregel voor soortgroeptabellen
+  aangescherpt. Alleen gegevens uit bruikbare herhaalde meetreeksen komen
+  daarvoor in aanmerking. De hoofdnaam is de soortgroep, bijvoorbeeld
+  `zoogdieren`. Bestaat al een passende soortgroeptabel, gebruik die om
+  aanvullende gegevens onder te brengen. Ondersteunende tabellen met het
+  patroon `soortnaam_*` mogen alleen na afzonderlijke goedkeuring worden
+  toegevoegd. Een bron- of protocolnaam alleen rechtvaardigt geen fysieke
+  verplaatsing. De eerder op 8 november beschreven algemene verplaatsing
+  van 749.834 openbare NDFF-bronregels uit 1700–2025 vervalt; die regels
+  blijven in hun huidige opslag totdat een afzonderlijk onderbouwde
+  selectie voor een bruikbare herhaalde meetreeks is vastgesteld. Dit besluit
+  wijzigt geen database, taxonroute, website, dashboard, Shiny of VPS.
+
 - Provincie Zuid-Holland heeft bevestigd dat haar vegetatiemeetnetgegevens
   onvolledig in NDFF staan, zonder het ontbrekende aantal, de jaren of de
   bronregels te specificeren. De provincie controleert de historische reeks

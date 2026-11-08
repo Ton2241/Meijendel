@@ -1,5 +1,12 @@
 # Soortgerichte opslag van Meijendel-waarnemingen
 
+**Vervallen als uitvoeringsplan op 8 november 2026.** Ton heeft daarna
+besloten dat uitsluitend gegevens uit bruikbare herhaalde meetreeksen voor
+soortgroeptabellen in aanmerking komen. De algemene verplaatsing van
+749.834 NDFF-bronregels hieronder wordt niet uitgevoerd. De nulmeting blijft
+historisch controlebewijs; de actuele regel staat in `VWG_Project/workflow.md`
+en `Meijendel/DECISIONS.md`.
+
 ## Doel
 
 De volledige soortwaarneming staat fysiek precies eenmaal in een herkenbare

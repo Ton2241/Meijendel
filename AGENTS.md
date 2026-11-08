@@ -178,6 +178,14 @@ MySQL:
   mag geen bronregel verbergen. Geen afronding zonder databasebrede bewijscontrole.
   Canonieke uitwerking: `docs/database/TAXONREGISTER.md`, sectie
   `Alle waarnemingen vanuit het centrale taxonregister`.
+- Gebruik soortgroeptabellen uitsluitend voor gegevens uit bruikbare herhaalde
+  meetreeksen. Neem de soortgroep als hoofdnaam, bijvoorbeeld `zoogdieren`,
+  en gebruik een reeds bestaande passende tabel voor aanvullende gegevens.
+  Nieuwe ondersteunende `soortnaam_*`-tabellen vereisen afzonderlijke
+  goedkeuring van Ton. Verplaats geen hele broncollectie alleen op grond van
+  een soortgroep- of protocolcode. De algemene verplaatsing van de 749.834
+  openbare NDFF-bronregels uit 1700–2025 is vervallen. Zie de actuele regel
+  in `../VWG_Project/workflow.md`.
 - pas voor iedere PQ-import, correctie of migratie de bindende afspraak
   `../VWG_Project/workflow.md`, sectie `Alle PQ-gegevens uitsluitend in pq_*`,
   toe: alle PQ-inhoud onder `pq_*`, centrale taxonkoppeling, geen losse

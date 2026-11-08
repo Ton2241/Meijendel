@@ -123,8 +123,11 @@ Als je de repo wilt begrijpen of ermee wilt gaan werken, begin dan in deze volgo
   De brongebonden ontvlechting van ENDURE, STOWA, Naturalis Botany/Coleoptera
   en NMR gebruikt dezelfde centrale soortingang. Uitvoering en actuele
   fysieke routes staan in het taxonregisterdocument. Het oude voorstel voor
-  soortgroepprefixen in de tabelinventaris is historische context; de huidige
-  voorkeur is bronbenaming, met PQ en vogels als uitzonderingen.
+  soortgroepprefixen in de tabelinventaris is historische context. De
+  huidige regel laat alleen gegevens uit bruikbare herhaalde meetreeksen toe
+  in een soortgroeptabel. Gebruik eerst een bestaande passende tabel;
+  de hoofdnaam is de soortgroep, bijvoorbeeld `zoogdieren`.
+  Ondersteunende `soortnaam_*`-tabellen vereisen afzonderlijke goedkeuring.
   Darwin Core en TDWG TCS zijn voortaan verplichte
   toetsingsbasis; afwijkingen vereisen vooraf expliciete goedkeuring door Ton.
 - [`bmp_meijendel_index.html`][7]

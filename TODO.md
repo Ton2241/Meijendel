@@ -162,7 +162,7 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   Het gaat voor de huidige openbare NDFF-poort om 90.992
   uitsluitend op protocol geblokkeerde bronregels uit 1981–2025 en
   1.621.660 geversioneerde PQ-beoordelingen. Volgens het besluit van
-  8 november blijven de volledige bronregels bij hun soortgroep;
+  8 november blijven de volledige bronregels op hun huidige bronplek;
   hun PQ-besluit gaat naar `pq_*`. Een concrete PQ-opname wordt alleen
   na bronbewijs onder `pq_*` opgeslagen. De beveiligde poort bevat 162 exacte koppelingen
   uit 1994–2023 en 163 niet beoordeelbare records uit 1957–2022.
@@ -170,22 +170,19 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   PQ; twee nabijheidsgevallen vragen afzonderlijk bronbewijs.
   De fysieke verplaatsing, aangepaste import-/leesroutes en
   herstelproef zijn nog niet uitgevoerd.
-- Nieuwe hoofdindeling: volledige soortwaarnemingen fysiek per centrale
-  soortgroep, met oorspronkelijke NDFF-herkomst per rij. De lokale
-  nulmeting van 8 november telt 749.834 openbare bronwaarnemingen uit
-  1700–2025 in `ndff_open_waarneming`; 24 `ndff_*`-groepstabellen
-  bevatten alleen ID's. Alle 749.834 records hebben een centrale
-  primaire groep. De 179 dubbel gelabelde kreeftachtigen krijgen
-  fysiek één plek bij kreeftachtigen, met behoud van beide bronlabels.
-  `mossen_waarneming` en `korstmossen_waarneming` zijn reeds volledige
-  groepstabellen. Voer deze verplaatsing met het bestaande smalle
-  ID-register, dezelfde taxonpoort en een volledige T7-herstelproef uit.
-  Pas imports, afgeleide routes en beveiligde views tegelijk aan en
-  verwijder oude ID-tabellen pas na volledige behoudscontrole. De
-  alleen-lezen voorcontrole en doelmodeltests zijn op 8 november geslaagd;
-  het script `gis/scripts/migrate_ndff_soortgroepen.py` voert nog geen
-  databaseverplaatsing uit. De fysieke verhuizing, bijwerking van alle
-  afnemers en geïsoleerde herstelproef staan nog open.
+- Soortgroeptabellen: sinds het aangescherpte besluit van 8 november komen
+  alleen gegevens uit bruikbare herhaalde meetreeksen in aanmerking. Gebruik
+  eerst een bestaande passende soortgroeptabel; de hoofdnaam is de
+  soortgroep, bijvoorbeeld `zoogdieren`. Nieuwe ondersteunende
+  `soortnaam_*`-tabellen vereisen afzonderlijke goedkeuring. De eerdere
+  algemene verplaatsingsopdracht voor de 749.834 openbare NDFF-bronregels
+  uit 1700–2025 is vervallen. De eerdere alleen-lezen groepsnulmeting
+  blijft auditinformatie, geen migratieselectie. Het script
+  `gis/scripts/migrate_ndff_soortgroepen.py` bevat slechts een
+  voorcontrole/doelmodel en mag voor dit vervallen plan niet als
+  uitvoeropdracht worden gebruikt. Bepaal per bestaande herhaalde meetreeks
+  afzonderlijk of zij bruikbaar is en nog buiten een passende
+  soortgroeptabel staat; behoud bronwaarden, meetstructuur en taxonroute.
 - Bepaal de volledige verplaatsingsselectie, niet alleen de tabellen met
   `pq` in hun naam. Onderzoek NDFF-bronregels en hun PQ-poort, resterende
   LVD-opnamen, metadata, JSON-bronvelden, overlap-/kwaliteitsbesluiten,
@@ -410,15 +407,18 @@ De lokale technische vervolgcontrole is afgerond. Websitekoppelingen zijn in een
   [`docs/database/MEIJENDEL_TABELINVENTARIS.md`](docs/database/MEIJENDEL_TABELINVENTARIS.md).
   Herschreven naar 26 soortgroepprefixen, zoals `libellen_*`, ongeacht bron.
   Het eerdere voorstel van 149 loutere hernoemingen vervalt. De bijlage
-  inventariseert nog steeds alle 163 fysieke tabellen. Vogels blijven
-  onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
+  inventariseert nog steeds alle 163 fysieke tabellen. Dit is historische
+  context, geen actuele opdracht om alle bronwaarnemingen te verplaatsen.
+  Vogels blijven onaangetast; website, dashboard en Shiny moeten goed blijven functioneren.
 - De verdere hernoeming en gegevensmigratie uit dit voorstel moeten nog worden
   besloten en beproefd, met uitzondering van de hierboven uitgevoerde
   PQ-integratie. Bestaande besluiten over `ndff_soorten`, fysieke soortgroepindexen,
   provinciale PQ en primaire SOVON/AVIMAP blijven gelden.
-- Werk pas na de taxonregisterproef en een afzonderlijk migratiebesluit op een
-  databasekopie een volledige libellenfamilie uit, inclusief
-  echte groepswaarnemingen, bronkoppeling, imports en regressiecontroles.
+- Werk alleen voor een aangetoond bruikbare herhaalde meetreeks en na een
+  afzonderlijk migratiebesluit op een databasekopie de bestemming in een
+  bestaande passende soortgroeptabel uit. Nieuwe ondersteunende
+  `soortnaam_*`-tabellen vereisen afzonderlijke goedkeuring. Behoud
+  bronkoppeling, imports en regressiecontroles.
   De PQ-integratie met vermoedelijke LVD-bronvarianten is afzonderlijk uitgevoerd. Behoud
   bron-ID's en bewijs van reconstructie; voorkom dubbel getelde metingen.
 - Behoud van `pq_*` en `vangblik*` is geaccordeerd, onder de voorwaarde dat
