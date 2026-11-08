@@ -1288,6 +1288,18 @@ brontabellen de bronrij bevat. De twee regelversies omvatten samen
 historische besluiten en `niet_van_toepassing` zijn PQ-specifieke
 beoordelingsgegevens en horen als besluitgeschiedenis onder `pq_*`.
 Een enkele actuele status op de bronrij is hiervoor onvoldoende.
+De poort selecteert deze 90.992 records uitsluitend op protocol
+`12.007` of `12.202` en periode. De `raw_payload` van alle 90.992
+records bevat geen afzonderlijk benoemde PQ-, event- of opnamesleutel;
+een verborgen identificatie in een anders genoemd veld is daarmee niet
+uitgesloten. Hun verplaatsing
+naar een `pq_*`-kandidaatlaag mag daarom geen gelijkheid met een
+provinciale opname suggereren. Op 8 november 2026 gaf een controle van
+alle 27 andere foreign-keykolommen naar het openbare NDFF-register
+nul verwijzingen naar deze 90.992 IDs; de algemene protocol-,
+ruimtelijke en soortgroepkoppelingen verwijzen er wél naar. De
+register-ID en algemene bronidentiteit moeten dus behouden blijven,
+terwijl de fysieke locator en de twee betrokken NDFF-views veranderen.
 Voor de beveiligde levering selecteert de actuele
 `ndff_pq_koppeling` alle 14.573 beoordelingen, inclusief het
 tegenstrijdige geval 13265; slechts de 162 `exact` en 163
