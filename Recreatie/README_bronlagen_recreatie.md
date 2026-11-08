@@ -30,8 +30,9 @@ Belangrijk:
 ### OSM parkeerlaag
 
 De gedateerde JSON-snapshot bevat 341 OSM-objecten met `amenity=parking` en
-bronmoment 8 november 2026 10:31:51 UTC. De import bewaart de 269 objecten in of
-binnen één kilometer van het Meijendel-basisgebied.
+bronmoment 8 november 2026 10:31:51 UTC. De import bewaart uitsluitend de 16
+objecten die minstens één van de 55 kavels raken. De 253 eerder opgenomen
+objecten zonder kavelrelatie zijn op 8 november 2026 verwijderd.
 
 Belangrijk:
 
@@ -41,17 +42,18 @@ Belangrijk:
 ### OSM-lijninfrastructuur
 
 De JSON-snapshot bevat 4.475 OSM-way-objecten met bronmoment 8 november 2026
-10:22:35 UTC. De import deelt 2.232 lijnen binnen het actuele basisgebied in als
-fietspad, voetpad of weg en leidt de toegang af als openbaar, beperkt toegankelijk
-of afgesloten.
+10:22:35 UTC. Daarvan zijn 2.232 bronlijnen binnen het ruimere technische
+basisgebied als fietspad, voetpad of weg geclassificeerd. De levende database
+neemt uitsluitend de 1.319 lijnen met een positieve kaveldoorsnijding op; de
+toegang wordt afgeleid als openbaar, beperkt toegankelijk of afgesloten.
 
-De actuele lijnstand omvat 134 fietspaden, 1.234 voetpaden en 864 wegen, samen
-331.297,795 meter. Alle huidige versies beginnen voorlopig op 1 januari 1955 op
+De actuele lijnstand omvat 59 fietspaden, 872 voetpaden en 388 wegen, samen
+235.264,661 meter. Alle huidige versies beginnen voorlopig op 1 januari 1955 op
 basis van Tons inschatting; het werkelijke OSM-bronmoment blijft afzonderlijk
 bewaard. De vergelijking met BGT is controle, geen geometrische vervanging.
 
 ## Nog open
 
-- beoordeling van de 20 OSM-segmenten zonder BGT-fietspadvlak binnen tien meter
+- beoordeling van de vier OSM-segmenten zonder BGT-fietspadvlak binnen tien meter
 - visuele controle van de BGT-padselectie in QGIS
 - inhoudelijke beoordeling van parkeerobjecten met private of beperkte toegang

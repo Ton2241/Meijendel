@@ -6,6 +6,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from osgeo import ogr
 
@@ -175,6 +176,46 @@ def main() -> int:
         ]}],
     })
     assert parking_relation.GetGeometryName().upper() == "POLYGON"
+
+    with TemporaryDirectory() as temporary_directory:
+        temporary = Path(temporary_directory)
+        basis = line("POLYGON((4 52,5 52,5 53,4 53,4 52))")
+        plot_geometry = line("POLYGON((4.30 52.10,4.31 52.10,4.31 52.11,4.30 52.11,4.30 52.10))")
+        basis.Transform(importer.wgs84_to_rd())
+        plot_geometry.Transform(importer.wgs84_to_rd())
+        plots = {1: ("M1", plot_geometry, "a" * 64)}
+
+        line_snapshot = temporary / "lijnen.json"
+        line_snapshot.write_text(json.dumps({
+            "osm3s": {"timestamp_osm_base": "2026-11-08T10:22:35Z"},
+            "elements": [
+                {"type": "way", "id": 1, "tags": {"highway": "footway"}, "geometry": [
+                    {"lon": 4.302, "lat": 52.102}, {"lon": 4.308, "lat": 52.108},
+                ]},
+                {"type": "way", "id": 2, "tags": {"highway": "footway"}, "geometry": [
+                    {"lon": 4.320, "lat": 52.102}, {"lon": 4.328, "lat": 52.108},
+                ]},
+            ],
+        }), encoding="utf-8")
+        line_metadata, retained_lines = importer.prepare(line_snapshot, basis, plots)
+        assert line_metadata["selected"] == 2
+        assert line_metadata["imported"] == 1
+        assert [record["object_id"] for record in retained_lines] == [1]
+
+        parking_snapshot = temporary / "parkeren.json"
+        parking_snapshot.write_text(json.dumps({
+            "osm3s": {"timestamp_osm_base": "2026-11-08T10:31:51Z"},
+            "elements": [
+                {"type": "node", "id": 11, "lat": 52.105, "lon": 4.305, "tags": {"amenity": "parking"}},
+                {"type": "node", "id": 12, "lat": 52.105, "lon": 4.325, "tags": {"amenity": "parking"}},
+            ],
+        }), encoding="utf-8")
+        parking_metadata, retained_parking = importer.prepare_parking(
+            parking_snapshot, basis, plots
+        )
+        assert parking_metadata["selected"] == 2
+        assert parking_metadata["imported"] == 1
+        assert [record["object_id"] for record in retained_parking] == [11]
 
     payload = json.loads(SNAPSHOT.read_text(encoding="utf-8"))
     selected = [

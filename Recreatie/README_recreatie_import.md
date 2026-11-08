@@ -19,7 +19,9 @@ De invoer en herberekening lopen via `gis/scripts/migrate_toegankelijkheidsgebie
 Voetpaden, fietspaden, wegen en parkeerplaatsen worden vanaf 8 november 2026
 afzonderlijk en versieerbaar geïmporteerd. De tabellen scheiden bronmoment,
 blijvende OSM-objectidentiteit, geometrische versie en afgeleide
-plotdoorsnijding. Een nieuwe snapshot overschrijft oudere versies niet. De
+plotdoorsnijding. Alleen objecten die minstens één actieve kavel raken worden
+opgenomen; objecten zonder kavelrelatie worden ook niet als lege identiteit
+bewaard. Een nieuwe snapshot overschrijft oudere versies niet. De
 huidige eerste versies hebben op Tons aanwijzing `geldig_vanaf = 1955-01-01`,
 grondslag `inschatting` en `geldig_tot = NULL`; het OSM-bronmoment blijft als
 herkomst bewaard. De views

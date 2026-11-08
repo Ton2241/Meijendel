@@ -224,16 +224,29 @@ def parking_geometry(element: dict[str, Any]) -> ogr.Geometry:
     return geometry
 
 
-def prepare_parking(snapshot: Path, basis: ogr.Geometry, max_distance_m: float = 1000.0) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def intersects_any_plot(
+    geometry: ogr.Geometry,
+    plots: dict[int, tuple[str, ogr.Geometry, str]],
+) -> bool:
+    return any(geometry.Intersects(plot) for _kavel, plot, _plot_hash in plots.values())
+
+
+def prepare_parking(
+    snapshot: Path,
+    basis: ogr.Geometry,
+    plots: dict[int, tuple[str, ogr.Geometry, str]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     payload = json.loads(snapshot.read_text(encoding="utf-8"))
     records = []
+    selected = 0
     for element in payload.get("elements", []):
         if element.get("tags", {}).get("amenity") != "parking":
             continue
+        selected += 1
         geometry = parking_geometry(element)
-        distance = float(geometry.Distance(basis))
-        if distance > max_distance_m:
+        if not intersects_any_plot(geometry, plots):
             continue
+        distance = float(geometry.Distance(basis))
         wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
         tags = element.get("tags", {})
         records.append({
@@ -254,7 +267,7 @@ def prepare_parking(snapshot: Path, basis: ogr.Geometry, max_distance_m: float =
     return ({
         "timestamp": payload["osm3s"]["timestamp_osm_base"],
         "objects": len(payload.get("elements", [])),
-        "selected": len(records),
+        "selected": selected,
         "imported": len(records),
     }, records)
 
@@ -320,7 +333,11 @@ def read_db_geometries(client: Client) -> tuple[int, ogr.Geometry, dict[int, tup
     return basis_id, basis, plots
 
 
-def prepare(snapshot: Path, basis: ogr.Geometry) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+def prepare(
+    snapshot: Path,
+    basis: ogr.Geometry,
+    plots: dict[int, tuple[str, ogr.Geometry, str]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
     payload = json.loads(snapshot.read_text(encoding="utf-8"))
     records = []
     selected = 0
@@ -331,6 +348,8 @@ def prepare(snapshot: Path, basis: ogr.Geometry) -> tuple[dict[str, Any], list[d
         selected += 1
         geometry = clip_line(way_geometry(element), basis)
         if geometry.GetGeometryCount() == 0 or round(geometry.Length(), 3) <= 0:
+            continue
+        if not derive_plot_overlaps(geometry, plots):
             continue
         wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
         tags = element.get("tags", {})
@@ -360,7 +379,11 @@ def prepare(snapshot: Path, basis: ogr.Geometry) -> tuple[dict[str, Any], list[d
     return metadata, records
 
 
-def read_previous(path: Path, basis: ogr.Geometry) -> list[dict[str, Any]]:
+def read_previous(
+    path: Path,
+    basis: ogr.Geometry,
+    plots: dict[int, tuple[str, ogr.Geometry, str]],
+) -> list[dict[str, Any]]:
     dataset = ogr.Open(str(path), 0)
     if dataset is None:
         raise ValueError(f"Vorige OSM-laag niet leesbaar: {path}")
@@ -383,6 +406,8 @@ def read_previous(path: Path, basis: ogr.Geometry) -> list[dict[str, Any]]:
         geometry.Transform(wgs84_to_rd())
         geometry = clip_line(geometry, basis)
         if geometry.GetGeometryCount() == 0 or round(geometry.Length(), 3) <= 0:
+            continue
+        if not derive_plot_overlaps(geometry, plots):
             continue
         wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
         records.append({
@@ -668,6 +693,10 @@ def apply_import(
             + ",".join(overlap_values[start:start + 500])
         )
     client.sql(
+        "DELETE s FROM infrastructuursegment s "
+        "WHERE NOT EXISTS (SELECT 1 FROM infrastructuursegment_versie v WHERE v.segment_id=s.segment_id)"
+    )
+    client.sql(
         "UPDATE infrastructuursegment_versie v "
         "JOIN infrastructuurbron_snapshot s USING(snapshot_id) "
         "SET v.geldig_vanaf=IF(s.bron_timestamp=(SELECT MIN(s0.bron_timestamp) FROM infrastructuurbron_snapshot s0 WHERE s0.snapshottype='lijnen'),'1955-01-01 00:00:00',s.bron_timestamp),"
@@ -747,6 +776,10 @@ def apply_parking(
             "(voorziening_id,snapshot_id,bron_versie,bron_gewijzigd_op,bron_changeset,voorzieningstype,naam,bron_tags,geldig_vanaf,geldig_vanaf_grondslag,geldig_tot,binnen_basisgebied,afstand_basisgebied_m,geometrie,geometrie_wkt,geometrie_sha256) VALUES "
             + ",".join(values[start:start + 250])
         )
+    client.sql(
+        "DELETE o FROM infrastructuurvoorziening o "
+        "WHERE NOT EXISTS (SELECT 1 FROM infrastructuurvoorziening_versie v WHERE v.voorziening_id=o.voorziening_id)"
+    )
     client.sql(
         "UPDATE infrastructuurvoorziening_versie v "
         "JOIN infrastructuurbron_snapshot s USING(snapshot_id) "
@@ -840,6 +873,16 @@ def verify(
         "plotdoorsnijdingen": int(client.scalar("SELECT COUNT(*) FROM infrastructuursegment_plot_afleiding")),
         "plots_met_infrastructuur": int(client.scalar("SELECT COUNT(DISTINCT plot_id) FROM infrastructuursegment_plot_afleiding")),
         "parkeerplaatsen": int(client.scalar(f"SELECT COUNT(*) FROM infrastructuurvoorziening_versie WHERE snapshot_id={parking_snapshot_id}")),
+        "lijnversies_zonder_kavel": int(client.scalar(
+            f"SELECT COUNT(*) FROM infrastructuursegment_versie v WHERE v.snapshot_id={snapshot_id} "
+            "AND NOT EXISTS (SELECT 1 FROM infrastructuursegment_plot_afleiding a "
+            "WHERE a.segment_versie_id=v.segment_versie_id)"
+        )),
+        "parkeerversies_zonder_kavel": int(client.scalar(
+            f"SELECT COUNT(*) FROM infrastructuurvoorziening_versie v WHERE v.snapshot_id={parking_snapshot_id} "
+            "AND NOT EXISTS (SELECT 1 FROM plots p WHERE p.in_gebruik=1 AND p.geom IS NOT NULL "
+            "AND ST_Intersects(v.geometrie,p.geom))"
+        )),
         "lijnversies_geschat_vanaf_1955": int(client.scalar(
             f"SELECT COUNT(*) FROM infrastructuursegment_versie WHERE snapshot_id={snapshot_id} "
             "AND geldig_vanaf='1955-01-01 00:00:00' AND geldig_vanaf_grondslag='inschatting' AND geldig_tot IS NULL"
@@ -864,6 +907,8 @@ def verify(
     if result["openbaar"] + result["beperkt"] + result["afgesloten"] != result["segmenten"]:
         raise AssertionError(result)
     if result["parkeerplaatsen"] != parking_metadata["imported"]:
+        raise AssertionError(result)
+    if result["lijnversies_zonder_kavel"] != 0 or result["parkeerversies_zonder_kavel"] != 0:
         raise AssertionError(result)
     if result["lijnversies_geschat_vanaf_1955"] != result["segmenten"]:
         raise AssertionError(result)
@@ -895,19 +940,19 @@ def main() -> int:
     args = parse_args()
     client = Client(args.database)
     basis_id, basis, plots = read_db_geometries(client)
-    metadata, records = prepare(args.snapshot, basis)
-    parking_metadata, parking_records = prepare_parking(args.parking_snapshot, basis)
+    metadata, records = prepare(args.snapshot, basis, plots)
+    parking_metadata, parking_records = prepare_parking(args.parking_snapshot, basis, plots)
     guard = existing_guard(client)
     report: dict[str, Any] = {
         **metadata,
         "totale_lengte_m": round(sum(r["length"] for r in records), 3),
         "parkeerplaatsen_bron": parking_metadata["objects"],
-        "parkeerplaatsen_binnen_1_km": parking_metadata["imported"],
+        "parkeerplaatsen_met_kavelrelatie": parking_metadata["imported"],
         "parkeerplaatsen_bronmoment": parking_metadata["timestamp"],
     }
     if args.previous.is_file():
         report["vergelijking_vorige_osm_laag"] = compare_records(
-            read_previous(args.previous, basis), records
+            read_previous(args.previous, basis, plots), records
         )
     if args.bgt.is_file():
         cycleways = [record for record in records if record["type"] == "fietspad"]
