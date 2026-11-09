@@ -140,6 +140,11 @@ def main() -> int:
             encoding="utf-8",
         )
         boundary_source = migration.read_gpx_boundary(gpx_path)
+        selected_boundary = migration.read_gpx_boundary(
+            gpx_path,
+            start_point_id=1,
+            end_point_id=2,
+        )
     assert boundary_source["punt_aantal"] == 3
     assert boundary_source["start_punt_id"] == 0
     assert boundary_source["eind_punt_id"] == 2
@@ -150,6 +155,11 @@ def main() -> int:
     assert 80_000 < boundary_x < 90_000
     assert 460_000 < boundary_y < 470_000
     assert len(boundary_source["bron_sha256"]) == 64
+    assert selected_boundary["punt_aantal"] == 2
+    assert selected_boundary["start_punt_id"] == 1
+    assert selected_boundary["eind_punt_id"] == 2
+    assert migration.BIERLAP_BOUNDARY_START_POINT_ID == 365
+    assert migration.BIERLAP_BOUNDARY_END_POINT_ID == 833
 
     # Een bevestigd grenssegment van oost naar west snijdt alleen de
     # gedeeltelijke kavel. De volledige noordelijke kavels blijven geheel

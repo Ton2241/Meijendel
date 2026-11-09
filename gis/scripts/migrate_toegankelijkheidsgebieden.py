@@ -41,6 +41,8 @@ SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
 BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
+BIERLAP_BOUNDARY_START_POINT_ID = 365
+BIERLAP_BOUNDARY_END_POINT_ID = 833
 BIERLAP_AREA_SPEC = {
     "gebied_code": "bierlap_kijfhoek_dagkaart_1955",
     "naam": "Bierlap-Kijfhoek toegankelijk met dagkaart",
@@ -231,7 +233,11 @@ def close_narrow_seams(
     return closed
 
 
-def read_gpx_boundary(path: Path) -> dict[str, Any]:
+def read_gpx_boundary(
+    path: Path,
+    start_point_id: int | None = None,
+    end_point_id: int | None = None,
+) -> dict[str, Any]:
     """Lees één Garmin-GPX-spoor als RD-grenslijn met bronmetadata."""
     dataset = ogr.Open(str(path), 0)
     if dataset is None:
@@ -247,6 +253,19 @@ def read_gpx_boundary(path: Path) -> dict[str, Any]:
         raise ValueError("GPX-grens bevat meer dan één track")
     if len({feature.GetFieldAsInteger("track_seg_id") for feature in features}) != 1:
         raise ValueError("GPX-grens bevat meer dan één tracksegment")
+    if start_point_id is not None or end_point_id is not None:
+        lower = features[0].GetFieldAsInteger("track_seg_point_id") if start_point_id is None else start_point_id
+        upper = features[-1].GetFieldAsInteger("track_seg_point_id") if end_point_id is None else end_point_id
+        features = [
+            feature for feature in features
+            if lower <= feature.GetFieldAsInteger("track_seg_point_id") <= upper
+        ]
+        if len(features) < 2:
+            raise ValueError("Geselecteerd GPX-grenssegment bevat minder dan twee trackpunten")
+        if features[0].GetFieldAsInteger("track_seg_point_id") != lower:
+            raise ValueError(f"GPX-startpunt {lower} ontbreekt")
+        if features[-1].GetFieldAsInteger("track_seg_point_id") != upper:
+            raise ValueError(f"GPX-eindpunt {upper} ontbreekt")
 
     source_srs = osr.SpatialReference()
     source_srs.ImportFromEPSG(4326)
@@ -428,7 +447,11 @@ def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[s
         full_union = full_union.Union(found[kavel])
     full_union = full_union.MakeValid()
 
-    boundary_source = read_gpx_boundary(gpx_path)
+    boundary_source = read_gpx_boundary(
+        gpx_path,
+        start_point_id=BIERLAP_BOUNDARY_START_POINT_ID,
+        end_point_id=BIERLAP_BOUNDARY_END_POINT_ID,
+    )
     geometry = build_north_of_boundary_area(
         full_union,
         found[partial_kavel],
@@ -570,7 +593,7 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
         f"'{BIERLAP_SOURCE_CODE}','veldregistratie','Garmin-grens Bierlap-Kijfhoek',"
         "'2026-11-09','2026-11-09','door gebruiker bevestigd',"
-        "'Garmin Connect-activiteit 25020262638; volledige puntenreeks 0-833 vormt de zuidgrens') "
+        "'Garmin Connect-activiteit 25020262638; uitsluitend punten 365-833 vormen de zuidgrens') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
     obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)

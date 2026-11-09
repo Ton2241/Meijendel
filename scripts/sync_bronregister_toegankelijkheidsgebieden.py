@@ -156,7 +156,7 @@ def main() -> None:
         ),
         section[4],
     )
-    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak"), section[5])
+    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak", "De herstelkopie direct vóór deze correctie"), section[5])
     rename_once(
         document,
         "Integratie begrazing en toegankelijkheid op 16 oktober 2026",
