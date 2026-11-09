@@ -41,8 +41,22 @@ SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
 BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
-BIERLAP_BOUNDARY_START_POINT_ID = 365
+BIERLAP_BOUNDARY_START_POINT_ID = 0
 BIERLAP_BOUNDARY_END_POINT_ID = 833
+BIERLAP_WATER_CLOSURE_RD = (
+    (82692.444, 461308.103),
+    (82655.000, 461320.000),
+    (82630.000, 461335.000),
+    (82625.000, 461355.000),
+    (82635.000, 461375.000),
+    (82655.000, 461390.000),
+    (82680.000, 461398.000),
+    (82700.000, 461405.000),
+    (82720.000, 461410.000),
+    (82735.000, 461415.000),
+    (82750.000, 461425.000),
+    (82777.480, 461440.600),
+)
 BIERLAP_AREA_SPEC = {
     "gebied_code": "bierlap_kijfhoek_dagkaart_1955",
     "naam": "Bierlap-Kijfhoek toegankelijk met dagkaart",
@@ -292,6 +306,46 @@ def read_gpx_boundary(
     }
 
 
+def rd_linestring(points: tuple[tuple[float, float], ...]) -> ogr.Geometry:
+    """Bouw één RD-lijn uit een expliciet vastgelegde coördinatenreeks."""
+    if len(points) < 2:
+        raise ValueError("RD-lijn bevat minder dan twee punten")
+    line = ogr.Geometry(ogr.wkbLineString)
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(28992)
+    srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    line.AssignSpatialReference(srs)
+    for x, y in points:
+        line.AddPoint_2D(x, y)
+    return line
+
+
+def compose_boundary_with_closure(
+    land_boundary: ogr.Geometry,
+    water_closure: ogr.Geometry,
+    maximum_join_distance_m: float = 0.01,
+) -> ogr.Geometry:
+    """Verbind Garmin-landgrens en afzonderlijk gedigitaliseerde waterlijn."""
+    if land_boundary.GetGeometryName().upper() != "LINESTRING":
+        raise ValueError("Garmin-landgrens is geen lijn")
+    if water_closure.GetGeometryName().upper() != "LINESTRING":
+        raise ValueError("Waterlijn is geen lijn")
+    land_end = land_boundary.GetPoint(land_boundary.GetPointCount() - 1)[:2]
+    closure_start = water_closure.GetPoint(0)[:2]
+    join_distance = ((land_end[0] - closure_start[0]) ** 2 + (land_end[1] - closure_start[1]) ** 2) ** 0.5
+    if join_distance > maximum_join_distance_m:
+        raise ValueError(f"Garmin-landgrens en waterlijn sluiten niet aan: {join_distance:.3f} m")
+    line = ogr.Geometry(ogr.wkbLineString)
+    line.AssignSpatialReference(land_boundary.GetSpatialReference())
+    for index in range(land_boundary.GetPointCount()):
+        x, y = land_boundary.GetPoint(index)[:2]
+        line.AddPoint_2D(x, y)
+    for index in range(1, water_closure.GetPointCount()):
+        x, y = water_closure.GetPoint(index)[:2]
+        line.AddPoint_2D(x, y)
+    return line
+
+
 def build_north_of_boundary_area(
     full_plot_union: ogr.Geometry,
     split_plot: ogr.Geometry,
@@ -317,8 +371,15 @@ def build_north_of_boundary_area(
     north_polygon.AddGeometry(ring)
     north_polygon = north_polygon.MakeValid(["METHOD=STRUCTURE"])
 
+    linework = combined.Boundary().Union(boundary)
+    faces = linework.Polygonize()
     northern_split = split_plot.Intersection(north_polygon).MakeValid()
     result = full_plot_union.Union(northern_split).MakeValid()
+    for face in _polygon_parts(faces):
+        outside = face.Difference(combined)
+        addition = outside.Intersection(north_polygon).MakeValid()
+        if polygonal_area(addition) > 0.001:
+            result = result.Union(addition).MakeValid()
     result, _ = exterior_boundaries_only(result)
     result = ogr.ForceToMultiPolygon(result)
     if result is None or not result.IsValid():
@@ -351,8 +412,20 @@ def _area_record(geometry: ogr.Geometry, **metadata: Any) -> dict[str, Any]:
         raise ValueError("Gebiedsgeometrie is ongeldig")
     geometry, removed_rings = exterior_boundaries_only(geometry.Clone())
     geometry = ogr.ForceToMultiPolygon(geometry)
+    if geometry is not None and not geometry.IsValid():
+        geometry = geometry.Buffer(0).MakeValid(["METHOD=STRUCTURE"])
+        geometry, additionally_removed = exterior_boundaries_only(geometry)
+        removed_rings += additionally_removed
+        geometry = ogr.ForceToMultiPolygon(geometry)
     if geometry is None or geometry.GetGeometryName().upper() != "MULTIPOLYGON":
         raise ValueError("Gebiedsgeometrie is geen multipolygoon")
+    # MySQL beoordeelt een op een knooppunt zelfaanrakende ring strenger dan
+    # OGR. Een nulbuffer normaliseert uitsluitend die ringtopologie.
+    geometry = ogr.ForceToMultiPolygon(geometry.Buffer(0))
+    geometry = ogr.CreateGeometryFromWkt(geometry.ExportToIsoWkt()).Buffer(0)
+    geometry = ogr.ForceToMultiPolygon(geometry)
+    if not geometry.IsValid():
+        raise ValueError("Opgeschoonde gebiedsgeometrie is ongeldig")
     wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
     return {
         "status_code": "afgesloten",
@@ -437,6 +510,22 @@ def read_plot_geometries(path: Path, wanted: set[str]) -> dict[str, ogr.Geometry
     return found
 
 
+def read_all_plot_geometries(path: Path) -> dict[str, ogr.Geometry]:
+    """Lees alle onderzoekskavels met dezelfde normalisatie als de selectiehelper."""
+    dataset = ogr.Open(str(path), 0)
+    if dataset is None:
+        raise ValueError(f"GeoPackage niet leesbaar: {path}")
+    layer = dataset.GetLayerByName("onderzoekskavels")
+    if layer is None:
+        raise ValueError("Laag onderzoekskavels ontbreekt")
+    found: dict[str, ogr.Geometry] = {}
+    for feature in layer:
+        name = feature.GetFieldAsString("naam")
+        suffix = name.replace("Meijendel  k ", "", 1).replace("Meijendel k ", "", 1)
+        found["M" + suffix.split(maxsplit=1)[0]] = feature.GetGeometryRef().Clone()
+    return found
+
+
 def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[str, Any]:
     """Vorm Bierlap-Kijfhoek uit volledige kavels en noordelijk deel van M4-5."""
     full_kavels = BIERLAP_AREA_SPEC["volledige_kavels"]
@@ -452,11 +541,30 @@ def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[s
         start_point_id=BIERLAP_BOUNDARY_START_POINT_ID,
         end_point_id=BIERLAP_BOUNDARY_END_POINT_ID,
     )
+    water_closure = rd_linestring(BIERLAP_WATER_CLOSURE_RD)
+    boundary = compose_boundary_with_closure(boundary_source["geometry"], water_closure)
+    closure_endpoint = ogr.Geometry(ogr.wkbPoint)
+    closure_endpoint.AddPoint_2D(*BIERLAP_WATER_CLOSURE_RD[-1])
+    closure_to_m6_m = closure_endpoint.Distance(found["M6"].Boundary())
+    if closure_to_m6_m > 0.01:
+        raise ValueError(f"Waterlijn eindigt niet op de M6-grens: {closure_to_m6_m:.3f} m")
     geometry = build_north_of_boundary_area(
         full_union,
         found[partial_kavel],
-        boundary_source["geometry"],
+        boundary,
     )
+    intended_kavels = set(full_kavels) | {partial_kavel}
+    excluded_geometries = [
+        plot_geometry
+        for kavel, plot_geometry in read_all_plot_geometries(reference_path).items()
+        if kavel not in intended_kavels
+    ]
+    if excluded_geometries:
+        excluded_union = excluded_geometries[0].Clone()
+        for plot_geometry in excluded_geometries[1:]:
+            excluded_union = excluded_union.Union(plot_geometry)
+        geometry = geometry.Difference(excluded_union).Union(full_union)
+        geometry = geometry.MakeValid(["METHOD=STRUCTURE"])
     geometry = single_polygon_without_slivers(geometry, 1.0)
     partial_area = polygonal_area(geometry.Intersection(found[partial_kavel]))
     partial_percentage = 100.0 * partial_area / found[partial_kavel].GetArea()
@@ -468,6 +576,7 @@ def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[s
         feature_id=(
             "garmin:25020262638:punten:"
             f"{boundary_source['start_punt_id']}-{boundary_source['eind_punt_id']}"
+            "|waterlijn:pdok2025:m6-oeverknik"
         ),
         kavels=full_kavels + (partial_kavel,),
         volledige_kavels=full_kavels,
@@ -477,14 +586,22 @@ def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[s
         grens_start_tijd=boundary_source["start_tijd"],
         grens_eind_tijd=boundary_source["eind_tijd"],
         grens_lengte_m=float(boundary_source["geometry"].Length()),
+        waterlijn_lengte_m=float(water_closure.Length()),
+        waterlijn_punt_aantal=water_closure.GetPointCount(),
+        waterlijn_m6_aansluiting_m=closure_to_m6_m,
         bronbestand_sha256=boundary_source["bron_sha256"],
         bron_code=BIERLAP_SOURCE_CODE,
         vastgesteld_op=BIERLAP_AREA_SPEC["vastgesteld_op"],
-        inwinningsmethode="Garmin-GPS-grenssegment en onderzoekskavelgeometrieën",
+        inwinningsmethode=(
+            "Garmin-GPS-landgrens; waterlijn gedigitaliseerd op PDOK-luchtfoto 2025 "
+            "en aangesloten op onderzoekskavel M6"
+        ),
         nauwkeurigheid_m=None,
         opmerking=(
             "Volledige kavels " + ", ".join(full_kavels) + "; uitsluitend het deel van "
-            f"{partial_kavel} ten noorden van Garmin Connect-activiteit 25020262638. "
+            f"{partial_kavel} ten noorden van Garmin Connect-activiteit 25020262638, "
+            "aangevuld met de door Ton bevestigde lijn door het water vanaf Garmin-punt "
+            "833 via de landstrook tot de oeverknik van M6. "
             "Door Ton bevestigd als gebied dat alleen met een dagkaart toegankelijk is."
         ),
     )
@@ -593,7 +710,8 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
         f"'{BIERLAP_SOURCE_CODE}','veldregistratie','Garmin-grens Bierlap-Kijfhoek',"
         "'2026-11-09','2026-11-09','door gebruiker bevestigd',"
-        "'Garmin Connect-activiteit 25020262638; uitsluitend punten 365-833 vormen de zuidgrens') "
+        "'Garmin Connect-activiteit 25020262638, punten 0-833 op land; afzonderlijke waterlijn "
+        "op PDOK-luchtfoto 2025 via de landstrook tot de oeverknik van M6') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
     obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)

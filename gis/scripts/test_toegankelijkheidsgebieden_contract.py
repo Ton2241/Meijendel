@@ -158,8 +158,17 @@ def main() -> int:
     assert selected_boundary["punt_aantal"] == 2
     assert selected_boundary["start_punt_id"] == 1
     assert selected_boundary["eind_punt_id"] == 2
-    assert migration.BIERLAP_BOUNDARY_START_POINT_ID == 365
+    assert migration.BIERLAP_BOUNDARY_START_POINT_ID == 0
     assert migration.BIERLAP_BOUNDARY_END_POINT_ID == 833
+
+    land_boundary = migration.ogr.CreateGeometryFromWkt("LINESTRING(10 0,5 0)")
+    water_closure = migration.ogr.CreateGeometryFromWkt("LINESTRING(5 0,3 2,0 2)")
+    composite = migration.compose_boundary_with_closure(land_boundary, water_closure)
+    assert composite.GetPointCount() == 4
+    assert composite.GetPoint(0)[:2] == (10.0, 0.0)
+    assert composite.GetPoint(3)[:2] == (0.0, 2.0)
+    assert migration.BIERLAP_WATER_CLOSURE_RD[0] == (82692.444, 461308.103)
+    assert migration.BIERLAP_WATER_CLOSURE_RD[-1] == (82777.48, 461440.6)
 
     # Een bevestigd grenssegment van oost naar west snijdt alleen de
     # gedeeltelijke kavel. De volledige noordelijke kavels blijven geheel
@@ -185,6 +194,31 @@ def main() -> int:
     single = migration.single_polygon_without_slivers(slivered, 1.0)
     assert len(list(migration._polygon_parts(single))) == 1
     assert abs(single.GetArea() - 100) < 0.000001
+
+    bierlap = migration.derive_bierlap_kijfhoek_area(
+        migration.DEFAULT_REFERENCE_GPKG,
+        migration.DEFAULT_BIERLAP_BOUNDARY_GPX,
+    )
+    bierlap_geometry = migration.ogr.CreateGeometryFromWkt(bierlap["wkt"])
+    intended = set(bierlap["kavels"])
+    all_plots = migration.read_all_plot_geometries(migration.DEFAULT_REFERENCE_GPKG)
+    assert bierlap["waterlijn_punt_aantal"] == 12
+    assert bierlap["waterlijn_m6_aansluiting_m"] < 0.001
+    assert 91 < bierlap["gedeeltelijke_kavel_aandeel_pct"] < 92
+    for kavel in bierlap["volledige_kavels"]:
+        coverage = 100 * migration.polygonal_area(
+            bierlap_geometry.Intersection(all_plots[kavel])
+        ) / all_plots[kavel].GetArea()
+        assert coverage > 99.9999, (kavel, coverage)
+    selected_union = all_plots[bierlap["volledige_kavels"][0]].Clone()
+    for kavel in bierlap["volledige_kavels"][1:]:
+        selected_union = selected_union.Union(all_plots[kavel])
+    for kavel, geometry in all_plots.items():
+        if kavel in intended:
+            continue
+        actual = migration.polygonal_area(bierlap_geometry.Intersection(geometry))
+        unavoidable = migration.polygonal_area(selected_union.Intersection(geometry))
+        assert actual <= unavoidable + 0.001, (kavel, actual, unavoidable)
 
     statements = migration.build_migration_statements(feature, plot_areas)
     joined = "\n".join(statements)

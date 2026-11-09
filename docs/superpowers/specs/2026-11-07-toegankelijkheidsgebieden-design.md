@@ -62,3 +62,23 @@ volledige kavel dekt; anders is de presentatie `gemengd` of deels `onbekend`.
 
 De zware `meijendel.sql`-export, proefimport, volledige Shiny-cachebouw en
 VPS-publicatie vallen buiten deze uitvoering en vereisen afzonderlijk akkoord.
+
+## Correctie zuidgrens Bierlap-Kijfhoek op 9 november 2026
+
+Het gebied `bierlap_kijfhoek_dagkaart_1955` krijgt één samengestelde
+zuidgrens. Het landdeel volgt het door Ton aangewezen deel van Garmin-activiteit
+25020262638, vanaf de groene marker bij de waaiervormige parkeerplaats tot de
+wit-zwarte marker aan de plas. Bij die marker stopt het Garmin-spoor als grens.
+
+Vanaf de marker loopt een afzonderlijk gedigitaliseerd sluitsegment door het
+water, ten noorden van de zuidoever. Het segment kruist uitsluitend het korte
+landstuk uit Tons vierde controlescreenshot en eindigt bij de knik waar de grens
+van M6 de oever verlaat en landinwaarts gaat. Vanaf die knik sluiten de bestaande
+kavelgrenzen het dagkaartvlak. Het landdeel bestaat uit de volledige
+Garmin-puntreeks 0–833; er blijft binnen deze activiteit geen ander routegedeelte
+over waaraan in deze correctie een status wordt toegekend.
+
+De bronregistratie bewaart de puntselectie van het Garmin-deel en de aparte
+gedigitaliseerde waterlijn. Voor iedere levende wijziging wordt eerst een
+T7-herstelkopie gemaakt. De vervangende geometrie wordt vóór invoer als kaart
+gecontroleerd en moet één geldig vlak zonder interne ringen opleveren.

@@ -97,3 +97,23 @@
 - [ ] Controleer dat actieve code nergens meer naar `maatregel_toegankelijkheid_registratie` verwijst.
 - [ ] Laat een verse eindreview uitvoeren en herstel Critical/Important-bevindingen met RED→GREEN.
 - [ ] Commit en push de afgeronde taakbranch; meld de zware afgeleide keten als afzonderlijk resterend besluit.
+
+### Task 5: Gecorrigeerde samengestelde grens Bierlap-Kijfhoek
+
+**Files:**
+- Modify: `gis/scripts/migrate_toegankelijkheidsgebieden.py`
+- Modify: `gis/scripts/test_toegankelijkheidsgebieden_contract.py`
+- Modify: `docs/MEIJENDEL_BRONREGISTER.md`
+- Modify: `docs/MEIJENDEL_BRONREGISTER.docx`
+- Modify: `R/shiny_berekenlogica.md`
+
+**Interfaces:**
+- Consumes: Garmin-activiteit 25020262638, de PDOK-luchtfoto 2025 en de geometrie van M6.
+- Produces: één herleidbare land-water-kavelgrens voor `bierlap_kijfhoek_dagkaart_1955`.
+
+- [x] Leg met een falende test vast dat het Garmin-deel bij de wit-zwarte marker stopt en dat het sluitsegment afzonderlijke bronmetadata heeft.
+- [x] Digitaliseer het watersegment via het korte landstuk tot de oeverknik van M6 en render een proefkaart.
+- [x] Controleer dat de proefgeometrie één geldig vlak zonder interne ringen vormt en uitsluitend het bedoelde deel van M4-5 afsnijdt.
+- [x] Maak een T7-herstelkopie, vervang de levende gebiedsversie en herbereken alle plotdoorsnijdingen.
+- [x] Werk het bronregister en de berekeningsdocumentatie bij; render de Word-versie en voer de volledige contracttestset uit.
+- [x] Commit en push de correctie zonder SQL-export, cachebouw of VPS-publicatie.
