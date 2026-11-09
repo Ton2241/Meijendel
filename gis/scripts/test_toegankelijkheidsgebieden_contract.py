@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -123,6 +124,57 @@ def main() -> int:
     assert not migration.storable_intersection(0.0004, 100)
     assert not migration.storable_intersection(0.001, 500_000)
     assert migration.storable_intersection(1.0, 500_000)
+
+    with tempfile.TemporaryDirectory() as temporary_directory:
+        gpx_path = Path(temporary_directory) / "boundary.gpx"
+        gpx_path.write_text(
+            """<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="contract" xmlns="http://www.topografix.com/GPX/1/1">
+  <trk><name>grens</name><trkseg>
+    <trkpt lat="52.1327" lon="4.3559"><time>2026-11-09T14:07:58Z</time></trkpt>
+    <trkpt lat="52.1340" lon="4.3400"><time>2026-11-09T14:40:00Z</time></trkpt>
+    <trkpt lat="52.1352" lon="4.3310"><time>2026-11-09T15:02:32Z</time></trkpt>
+  </trkseg></trk>
+</gpx>
+""",
+            encoding="utf-8",
+        )
+        boundary_source = migration.read_gpx_boundary(gpx_path)
+    assert boundary_source["punt_aantal"] == 3
+    assert boundary_source["start_punt_id"] == 0
+    assert boundary_source["eind_punt_id"] == 2
+    assert boundary_source["start_tijd"] == "2026/11/09 14:07:58+00"
+    assert boundary_source["eind_tijd"] == "2026/11/09 15:02:32+00"
+    assert boundary_source["geometry"].GetSpatialReference().GetAuthorityCode(None) == "28992"
+    boundary_x, boundary_y, _ = boundary_source["geometry"].GetPoint(0)
+    assert 80_000 < boundary_x < 90_000
+    assert 460_000 < boundary_y < 470_000
+    assert len(boundary_source["bron_sha256"]) == 64
+
+    # Een bevestigd grenssegment van oost naar west snijdt alleen de
+    # gedeeltelijke kavel. De volledige noordelijke kavels blijven geheel
+    # behouden; van de doorsneden kavel blijft uitsluitend het noorddeel over.
+    full_plot = migration.ogr.CreateGeometryFromWkt(
+        "POLYGON((10 0,20 0,20 10,10 10,10 0))"
+    )
+    split_plot = migration.ogr.CreateGeometryFromWkt(
+        "POLYGON((0 0,10 0,10 10,0 10,0 0))"
+    )
+    boundary = migration.ogr.CreateGeometryFromWkt("LINESTRING(12 4,-2 4)")
+    north_area = migration.build_north_of_boundary_area(full_plot, split_plot, boundary)
+    assert north_area.IsValid()
+    assert abs(north_area.GetArea() - 160) < 0.000001
+    assert north_area.Contains(migration.ogr.CreateGeometryFromWkt("POINT(5 8)"))
+    assert not north_area.Contains(migration.ogr.CreateGeometryFromWkt("POINT(5 2)"))
+    assert north_area.Contains(migration.ogr.CreateGeometryFromWkt("POINT(15 5)"))
+
+    slivered = migration.ogr.CreateGeometryFromWkt(
+        "MULTIPOLYGON(((0 0,10 0,10 10,0 10,0 0)),"
+        "((20 20,20.5 20,20.5 20.5,20 20.5,20 20)))"
+    )
+    single = migration.single_polygon_without_slivers(slivered, 1.0)
+    assert len(list(migration._polygon_parts(single))) == 1
+    assert abs(single.GetArea() - 100) < 0.000001
 
     statements = migration.build_migration_statements(feature, plot_areas)
     joined = "\n".join(statements)

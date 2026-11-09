@@ -13,7 +13,7 @@ import shutil
 import subprocess
 from typing import Any
 
-from osgeo import ogr
+from osgeo import ogr, osr
 
 ogr.UseExceptions()
 
@@ -23,6 +23,10 @@ SCHEMA = ROOT / "gis/database/maatregelen_schema.sql"
 _QFIELD_ROOT = Path("/Users/ton/Documents/GitHub/Meijendel/outputs/qfield_afscheidingen/meijendel_afscheidingen")
 DEFAULT_ROUTE_GPKG = _QFIELD_ROOT / "routes.gpkg"
 DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
+DEFAULT_BIERLAP_BOUNDARY_GPX = Path(
+    "/Volumes/T7 Data/Home_Ton/Proefomgevingen/bierlap-kijfhoek-dagkaart-2026-11-09/"
+    "downloads/activity_25020262638.gpx"
+)
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 T7_TRIAL_ROOT = Path("/Volumes/T7 Data/Home_Ton/Proefomgevingen")
@@ -36,6 +40,18 @@ MIGRATION_VERSION = "toegankelijkheidsgebieden-v8"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
+BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
+BIERLAP_AREA_SPEC = {
+    "gebied_code": "bierlap_kijfhoek_dagkaart_1955",
+    "naam": "Bierlap-Kijfhoek toegankelijk met dagkaart",
+    "status_code": "toegankelijk_met_toegangskaart",
+    "volledige_kavels": (
+        "M6", "M61", "M62", "M63", "M64", "M65", "M71", "M72",
+        "M73", "M74", "M75", "M10-12-76", "M12a", "M8", "M7",
+    ),
+    "gedeeltelijke_kavel": "M4-5",
+    "vastgesteld_op": "2026-11-09",
+}
 PLOT_AREA_SPECS = (
     {
         "gebied_code": "buitenduin_noord_1955",
@@ -215,6 +231,102 @@ def close_narrow_seams(
     return closed
 
 
+def read_gpx_boundary(path: Path) -> dict[str, Any]:
+    """Lees één Garmin-GPX-spoor als RD-grenslijn met bronmetadata."""
+    dataset = ogr.Open(str(path), 0)
+    if dataset is None:
+        raise ValueError(f"GPX niet leesbaar: {path}")
+    layer = dataset.GetLayerByName("track_points")
+    if layer is None:
+        raise ValueError("GPX-laag track_points ontbreekt")
+    features = list(layer)
+    if len(features) < 2:
+        raise ValueError("GPX-grens bevat minder dan twee trackpunten")
+    features.sort(key=lambda feature: feature.GetFieldAsInteger("track_seg_point_id"))
+    if len({feature.GetFieldAsInteger("track_fid") for feature in features}) != 1:
+        raise ValueError("GPX-grens bevat meer dan één track")
+    if len({feature.GetFieldAsInteger("track_seg_id") for feature in features}) != 1:
+        raise ValueError("GPX-grens bevat meer dan één tracksegment")
+
+    source_srs = osr.SpatialReference()
+    source_srs.ImportFromEPSG(4326)
+    source_srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    target_srs = osr.SpatialReference()
+    target_srs.ImportFromEPSG(28992)
+    target_srs.SetAxisMappingStrategy(osr.OAMS_TRADITIONAL_GIS_ORDER)
+    transform = osr.CoordinateTransformation(source_srs, target_srs)
+    line = ogr.Geometry(ogr.wkbLineString)
+    line.AssignSpatialReference(target_srs)
+    for feature in features:
+        point = feature.GetGeometryRef().Clone()
+        point.Transform(transform)
+        line.AddPoint_2D(point.GetX(), point.GetY())
+
+    return {
+        "geometry": line,
+        "punt_aantal": len(features),
+        "start_punt_id": features[0].GetFieldAsInteger("track_seg_point_id"),
+        "eind_punt_id": features[-1].GetFieldAsInteger("track_seg_point_id"),
+        "start_tijd": features[0].GetFieldAsString("time"),
+        "eind_tijd": features[-1].GetFieldAsString("time"),
+        "bron_sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
+    }
+
+
+def build_north_of_boundary_area(
+    full_plot_union: ogr.Geometry,
+    split_plot: ogr.Geometry,
+    boundary: ogr.Geometry,
+) -> ogr.Geometry:
+    """Behoud volledige kavels plus het deel van één kavel noord van de grenslijn."""
+    if boundary.GetGeometryName().upper() != "LINESTRING" or boundary.GetPointCount() < 2:
+        raise ValueError("Grenssegment moet één lijn met minstens twee punten zijn")
+    points = [boundary.GetPoint(index)[:2] for index in range(boundary.GetPointCount())]
+    if points[0][0] < points[-1][0]:
+        points.reverse()
+
+    combined = full_plot_union.Union(split_plot)
+    xmin, xmax, ymin, ymax = combined.GetEnvelope()
+    margin = max(xmax - xmin, ymax - ymin, 100.0)
+    ring = ogr.Geometry(ogr.wkbLinearRing)
+    for x, y in points:
+        ring.AddPoint_2D(x, y)
+    ring.AddPoint_2D(xmin - margin, ymax + margin)
+    ring.AddPoint_2D(xmax + margin, ymax + margin)
+    ring.AddPoint_2D(points[0][0], points[0][1])
+    north_polygon = ogr.Geometry(ogr.wkbPolygon)
+    north_polygon.AddGeometry(ring)
+    north_polygon = north_polygon.MakeValid(["METHOD=STRUCTURE"])
+
+    northern_split = split_plot.Intersection(north_polygon).MakeValid()
+    result = full_plot_union.Union(northern_split).MakeValid()
+    result, _ = exterior_boundaries_only(result)
+    result = ogr.ForceToMultiPolygon(result)
+    if result is None or not result.IsValid():
+        raise ValueError("Grenssegment levert geen geldig noordelijk gebied op")
+    return result
+
+
+def single_polygon_without_slivers(
+    geometry: ogr.Geometry,
+    maximum_sliver_area_m2: float,
+) -> ogr.Geometry:
+    """Behoud één hoofdvlak en weiger onverwachte tweede gebiedsdelen."""
+    parts = sorted(
+        (part.Clone() for part in _polygon_parts(geometry)),
+        key=lambda part: part.GetArea(),
+        reverse=True,
+    )
+    if not parts:
+        raise ValueError("Gebiedsgeometrie bevat geen vlak")
+    unexpected = [part.GetArea() for part in parts[1:] if part.GetArea() > maximum_sliver_area_m2]
+    if unexpected:
+        raise ValueError(f"Gebiedsgeometrie bevat meerdere relevante vlakken: {unexpected}")
+    result = ogr.Geometry(ogr.wkbMultiPolygon)
+    result.AddGeometry(parts[0])
+    return result
+
+
 def _area_record(geometry: ogr.Geometry, **metadata: Any) -> dict[str, Any]:
     if not geometry.IsValid():
         raise ValueError("Gebiedsgeometrie is ongeldig")
@@ -286,15 +398,14 @@ def derive_route_area(path: Path) -> dict[str, Any]:
     )
 
 
-def read_plot_areas(path: Path) -> list[dict[str, Any]]:
-    """Vorm de door Ton bevestigde gebieden uit volledige kavelgeometrieën."""
+def read_plot_geometries(path: Path, wanted: set[str]) -> dict[str, ogr.Geometry]:
+    """Lees de gevraagde onderzoekskavels uit de vaste referentielaag."""
     dataset = ogr.Open(str(path), 0)
     if dataset is None:
         raise ValueError(f"GeoPackage niet leesbaar: {path}")
     layer = dataset.GetLayerByName("onderzoekskavels")
     if layer is None:
         raise ValueError("Laag onderzoekskavels ontbreekt")
-    wanted = {kavel for spec in PLOT_AREA_SPECS for kavel in spec["kavels"]}
     found: dict[str, ogr.Geometry] = {}
     for feature in layer:
         name = feature.GetFieldAsString("naam")
@@ -304,6 +415,62 @@ def read_plot_areas(path: Path) -> list[dict[str, Any]]:
             found[kavel] = feature.GetGeometryRef().Clone()
     if set(found) != wanted:
         raise ValueError(f"Kavelgeometrie ontbreekt: {sorted(wanted - set(found))}")
+    return found
+
+
+def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[str, Any]:
+    """Vorm Bierlap-Kijfhoek uit volledige kavels en noordelijk deel van M4-5."""
+    full_kavels = BIERLAP_AREA_SPEC["volledige_kavels"]
+    partial_kavel = BIERLAP_AREA_SPEC["gedeeltelijke_kavel"]
+    found = read_plot_geometries(reference_path, set(full_kavels) | {partial_kavel})
+    full_union = found[full_kavels[0]].Clone()
+    for kavel in full_kavels[1:]:
+        full_union = full_union.Union(found[kavel])
+    full_union = full_union.MakeValid()
+
+    boundary_source = read_gpx_boundary(gpx_path)
+    geometry = build_north_of_boundary_area(
+        full_union,
+        found[partial_kavel],
+        boundary_source["geometry"],
+    )
+    geometry = single_polygon_without_slivers(geometry, 1.0)
+    partial_area = polygonal_area(geometry.Intersection(found[partial_kavel]))
+    partial_percentage = 100.0 * partial_area / found[partial_kavel].GetArea()
+    return _area_record(
+        geometry,
+        gebied_code=BIERLAP_AREA_SPEC["gebied_code"],
+        naam=BIERLAP_AREA_SPEC["naam"],
+        status_code=BIERLAP_AREA_SPEC["status_code"],
+        feature_id=(
+            "garmin:25020262638:punten:"
+            f"{boundary_source['start_punt_id']}-{boundary_source['eind_punt_id']}"
+        ),
+        kavels=full_kavels + (partial_kavel,),
+        volledige_kavels=full_kavels,
+        gedeeltelijke_kavels=(partial_kavel,),
+        gedeeltelijke_kavel_aandeel_pct=partial_percentage,
+        grens_punt_aantal=boundary_source["punt_aantal"],
+        grens_start_tijd=boundary_source["start_tijd"],
+        grens_eind_tijd=boundary_source["eind_tijd"],
+        grens_lengte_m=float(boundary_source["geometry"].Length()),
+        bronbestand_sha256=boundary_source["bron_sha256"],
+        bron_code=BIERLAP_SOURCE_CODE,
+        vastgesteld_op=BIERLAP_AREA_SPEC["vastgesteld_op"],
+        inwinningsmethode="Garmin-GPS-grenssegment en onderzoekskavelgeometrieën",
+        nauwkeurigheid_m=None,
+        opmerking=(
+            "Volledige kavels " + ", ".join(full_kavels) + "; uitsluitend het deel van "
+            f"{partial_kavel} ten noorden van Garmin Connect-activiteit 25020262638. "
+            "Door Ton bevestigd als gebied dat alleen met een dagkaart toegankelijk is."
+        ),
+    )
+
+
+def read_plot_areas(path: Path) -> list[dict[str, Any]]:
+    """Vorm de door Ton bevestigde gebieden uit volledige kavelgeometrieën."""
+    wanted = {kavel for spec in PLOT_AREA_SPECS for kavel in spec["kavels"]}
+    found = read_plot_geometries(path, wanted)
     areas = []
     for spec in PLOT_AREA_SPECS:
         kavels = spec["kavels"]
@@ -399,6 +566,12 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "'2026-11-07','2026-11-09','door gebruiker bevestigd',"
         "'Bevestigingen 7 en 9 november 2026; volledige kavels volgens de gebiedsspecificaties') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{BIERLAP_SOURCE_CODE}','veldregistratie','Garmin-grens Bierlap-Kijfhoek',"
+        "'2026-11-09','2026-11-09','door gebruiker bevestigd',"
+        "'Garmin Connect-activiteit 25020262638; volledige puntenreeks 0-833 vormt de zuidgrens') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
     obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)
     statements.extend((
@@ -408,6 +581,8 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         f"DELETE FROM toegankelijkheidsgebied WHERE gebied_code IN ({obsolete_codes})",
     ))
     for plot_area in plot_areas:
+        source_code = plot_area.get("bron_code", PLOT_SOURCE_CODE)
+        method = plot_area.get("inwinningsmethode", "vereniging van volledige onderzoekskavels")
         statements.extend((
             "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
             f"{sql_literal(plot_area['gebied_code'])},{sql_literal(plot_area['naam'])},"
@@ -419,11 +594,11 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
             "geometrie_sha256,oppervlakte_m2,geometrie_opmerking) SELECT "
             f"g.gebied_id,1,{sql_literal(plot_area['status_code'])},'1955-01-01',NULL,"
             f"{sql_literal(plot_area.get('vastgesteld_op', '2026-11-07'))},b.bron_id,"
-            f"{sql_literal(plot_area['feature_id'])},'vereniging van volledige onderzoekskavels',NULL,"
+            f"{sql_literal(plot_area['feature_id'])},{sql_literal(method)},{sql_literal(plot_area.get('nauwkeurigheid_m'))},"
             f"ST_GeomFromText({sql_literal(plot_area['wkt'])},28992),{sql_literal(plot_area['wkt'])},"
             f"{sql_literal(plot_area['geometrie_sha256'])},{plot_area['oppervlakte_m2']:.3f},"
             f"{sql_literal(plot_area['opmerking'])} FROM toegankelijkheidsgebied g JOIN maatregel_bron b "
-            f"ON b.bron_code='{PLOT_SOURCE_CODE}' WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
+            f"ON b.bron_code={sql_literal(source_code)} WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
             "ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),geldig_vanaf=VALUES(geldig_vanaf),"
             "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),bron_id=VALUES(bron_id),"
             "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
@@ -697,7 +872,8 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
             raise AssertionError(plot_row)
         if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
             raise AssertionError(plot_row)
-        kavel_sql = ",".join(sql_literal(kavel) for kavel in plot_area["kavels"])
+        full_kavels = plot_area.get("volledige_kavels", plot_area["kavels"])
+        kavel_sql = ",".join(sql_literal(kavel) for kavel in full_kavels)
         covered = int(client.scalar(
             "SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding a "
             "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
@@ -706,8 +882,20 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
             f"AND p.kavel_nummer IN ({kavel_sql}) AND a.status_code={sql_literal(plot_area['status_code'])} "
             "AND a.aandeel_pct>99.9999"
         ))
-        if covered != len(plot_area["kavels"]):
+        if covered != len(full_kavels):
             raise AssertionError(f"Niet alle kavels volledig gedekt voor {plot_area['gebied_code']}: {covered}")
+        for partial_kavel in plot_area.get("gedeeltelijke_kavels", ()):
+            partial = float(client.scalar(
+                "SELECT a.aandeel_pct FROM toegankelijkheidsgebied_plot_afleiding a "
+                "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
+                "JOIN toegankelijkheidsgebied g USING(gebied_id) JOIN plots p USING(plot_id) "
+                f"WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
+                f"AND p.kavel_nummer={sql_literal(partial_kavel)}"
+            ))
+            if not 0 < partial < 100:
+                raise AssertionError(
+                    f"Gedeeltelijke kavel {partial_kavel} is niet gedeeltelijk gedekt: {partial}"
+                )
     if result["plotdoorsnijdingen"] < 1:
         raise AssertionError("Geen kavels door gebied doorsneden")
     bad = int(client.scalar("SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding WHERE aandeel_pct<=0 OR aandeel_pct>100"))
@@ -721,6 +909,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--database", default="Meijendel")
     parser.add_argument("--route-gpkg", type=Path, default=DEFAULT_ROUTE_GPKG)
     parser.add_argument("--reference-gpkg", type=Path, default=DEFAULT_REFERENCE_GPKG)
+    parser.add_argument(
+        "--bierlap-boundary-gpx",
+        type=Path,
+        default=DEFAULT_BIERLAP_BOUNDARY_GPX,
+    )
     parser.add_argument("--backup-dir", type=Path, default=BACKUP_ROOT)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify", action="store_true")
@@ -731,6 +924,9 @@ def main() -> int:
     args = parse_args()
     feature = derive_route_area(args.route_gpkg)
     plot_areas = read_plot_areas(args.reference_gpkg)
+    plot_areas.append(
+        derive_bierlap_kijfhoek_area(args.reference_gpkg, args.bierlap_boundary_gpx)
+    )
     client = Client(args.database)
     if args.apply:
         metadata = backup(client, args.backup_dir, feature, plot_areas)

@@ -26,8 +26,8 @@ ENVIRONMENT = (
     "kavelwaarden afgeleid: drie variabelen voor elk van 55 kavels. "
     "Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
-    "uit versies van omsloten gebieden. Negen actuele gebiedsversies leveren samen "
-    "59 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "uit versies van omsloten gebieden. Tien actuele gebiedsversies leveren samen "
+    "86 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -59,61 +59,6 @@ GARMIN = (
 )
 
 SECTION_TITLE = "Toegankelijkheid als gebiedsversies, bijgewerkt 9 november 2026"
-SECTION = [
-    "De voorlopige toegankelijkheid per kavel is volledig vervangen. De 55 "
-    "registraties uit 2024 zijn verwijderd uit maatregel_toegankelijkheid_registratie; "
-    "ook de 55 bijbehorende doelen in maatregel_registratie_herkomst, de kolom "
-    "toegang_registratie_id en de tabel zelf zijn verwijderd. De oude CSV's en "
-    "migratiebestanden blijven uitsluitend als historische audit- en herstelbron "
-    "herkenbaar. Zij vormen geen actieve invoerroute meer. Bron 101 blijft bestaan "
-    "omdat daaraan daarnaast 139 beheerregistraties uit 1991–1999 zijn gekoppeld.",
-    "De levende lokale database bevat nu drie toegestane gebiedsstatussen: afgesloten, "
-    "toegankelijk en toegankelijk_met_toegangskaart. De tabellen "
-    "toegankelijkheidsgebied en toegankelijkheidsgebied_versie bewaren respectievelijk "
-    "de identiteit van een vlak en zijn opeenvolgende geometrische en inhoudelijke "
-    "versies. Voor iedere bestaande en later ingevoerde versie geldt standaard "
-    "geldig_vanaf = 1955-01-01; deze datum berust op Tons inschatting. geldig_tot = "
-    "NULL betekent dat de versie actueel blijft totdat een einddatum wordt ingevoerd. "
-    "De view v_toegankelijkheidsgebied_actueel selecteert alleen versies die op de "
-    "huidige datum geldig zijn.",
-    "De levende database bevat zes actuele gebieden: twee afgesloten en vier toegankelijk. Het "
-    "gecorrigeerde Garmin-vlak heeft bronhash 789f8ee1c6eb7ca27667000b775de8f9ef7bb4aabb0d29b98f85d820b06b490c "
-    "en een oppervlakte van 4.483.613,185 m². Het tweede vlak is de geometrische "
-    "vereniging van de volledige kavels M13, M13s, M14, M15, M16, M16s en M17a. Dit vlak heeft "
-    "bronhash bfbfe2ea2931b2ec085aec5c5d261387f0637ab8d59295457b175382e0ddd69c en een "
-    "oppervlakte van 2.504.846,307 m². Twintig interne artefactringen zijn verwijderd. "
-    "Daarnaast zijn uitsluitend topologische naden van minder dan 4 meter gesloten "
-    "waar een aanvulling ten minste twee kavels binnen ditzelfde statusgebied verbindt. "
-    "Daarmee is 52,356 m² toegevoegd; de overige buitencontour is niet gebufferd. M66 en M105 zijn als twee afzonderlijke "
-    "toegankelijke gebieden opgenomen, exact volgens hun kavelgrenzen; hun oppervlakten "
-    "zijn respectievelijk 576.909,232 en 155.796,244 m². Ook M77, M78/79, M75a en M31 "
-    "zijn opgenomen. M77, M78/79 en M75a vormen één toegankelijk gebied volgens hun "
-    "gezamenlijke buitencontour; veertien interne artefactringen zijn verwijderd. Dit "
-    "vlak heeft bronhash 80405f7198be8a2e46e405e8aa0fa8ccbd94356766ebf26eda0061fdd7993746 "
-    "en een oppervlakte van 899.464,823 m². M31 blijft een afzonderlijk toegankelijk "
-    "gebied van 391.788,486 m². De drie vervangen losse gebiedsrecords zijn verwijderd. "
-    "toegankelijkheidsgebied_plot_afleiding bevat 46 actuele positieve doorsnijdingen; "
-    "voor de dertien bevestigde kavels is het aandeel 100%. De Garmin-veldregistratie en de handmatig bevestigde plotselectie hebben "
-    "ieder een eigen bronregel; maatregel_bron bevat na deze invoer 57 regels. Dit zijn "
-    "afgeleide relaties: een vlak kan door een kavel lopen "
-    "en een kavel kan verschillende statusvlakken bevatten. De status van een "
-    "volledige kavel wordt daarom niet meer als bronfeit opgeslagen.",
-    "Shiny en de statische browser gebruiken parser/cacheversie 17 en leiden per kavel "
-    "en jaar oppervlakteaandelen af voor afgesloten, toegankelijk, toegankelijk met "
-    "toegangskaart en niet door een gebied gedekt. Alleen wanneer één status 100% van "
-    "de kavel bedekt, krijgt de gehele kavel die enkele status; anders blijft de "
-    "uitkomst gemengd of onbekend. De geldigheid wordt bepaald door de overlap tussen "
-    "analysejaar en geldig_vanaf/geldig_tot. De zware SQL-export, proefimport, volledige "
-    "cachebouw en VPS-publicatie zijn nog niet uitgevoerd.",
-    "De herstelkopie van vóór deze geometriecorrectie staat op /Volumes/T7 Data/"
-    "Home_Ton/Meijendel data/Backups-archief/Meijendel/"
-    "meijendel-toegankelijkheid-voor-migratie-20261107-233643.sql. Omvang: 348.474 "
-    "bytes. SHA-256: 45478a3f51e90a198984be0d02d839332d8bd402257694addc4d0c4f463c0b8d. "
-    "De bijbehorende metadata legt de vier betrokken tabellen, de zes actuele "
-    "bronhashes en 139 behouden beheerregistraties vast. Herstel is een afzonderlijk "
-    "besluit.",
-]
-
 OSM_SECTION_TITLE = "OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026"
 
 
@@ -201,7 +146,7 @@ def main() -> None:
         ("De levende lokale database bevat nu drie toegestane gebiedsstatussen", "De levende lokale database bevat nu vier toegestane gebiedsstatussen"),
         section[1],
     )
-    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden"), section[2])
+    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden", "De levende database bevat tien actuele gebieden"), section[2])
     replace_paragraph_any(
         document,
         (
@@ -209,9 +154,9 @@ def main() -> None:
             "Shiny en de statische browser gebruiken parser/cacheversie 17",
             "Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18",
         ),
-        section[3],
+        section[4],
     )
-    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november"), section[4])
+    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak"), section[5])
     rename_once(
         document,
         "Integratie begrazing en toegankelijkheid op 16 oktober 2026",
@@ -235,6 +180,7 @@ def main() -> None:
         insert_before(anchor, SECTION_TITLE, "Heading 2")
         for index, text in enumerate(section):
             insert_before(anchor, text, "First Paragraph" if index == 0 else "Body Text")
+    replace_section(document, SECTION_TITLE, section)
     if not any(p.text == OSM_SECTION_TITLE for p in document.paragraphs):
         anchors = [p for p in document.paragraphs if p.text == "Historische rechtstreekse aansluiting zonder compatibiliteitsviews"]
         if len(anchors) != 1:
