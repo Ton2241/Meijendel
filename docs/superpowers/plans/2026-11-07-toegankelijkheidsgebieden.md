@@ -117,3 +117,16 @@
 - [x] Maak een T7-herstelkopie, vervang de levende gebiedsversie en herbereken alle plotdoorsnijdingen.
 - [x] Werk het bronregister en de berekeningsdocumentatie bij; render de Word-versie en voer de volledige contracttestset uit.
 - [x] Commit en push de correctie zonder SQL-export, cachebouw of VPS-publicatie.
+
+### Task 6: Definitief akkoordvlak en één databaseversie
+
+**Files:**
+- Modify: `gis/scripts/migrate_toegankelijkheidsgebieden.py`
+- Modify: `gis/scripts/test_toegankelijkheidsgebieden_contract.py`
+- Modify: bronregister, berekeningsdocumentatie en ontwerp
+
+- [x] Vergrendel Garmin-punten 0–396, de vloeiende lijn en het visueel goedgekeurde GeoPackage-vlak met contracttests.
+- [x] Toon de volledige buitengrens in blauw.
+- [x] Maak een gerichte T7-herstelkopie en vervang alle eerdere Bierlap-Kijfhoek-versies door precies één actuele versie.
+- [x] Synchroniseer en render het bronregister; voer de volledige gerichte verificatie uit.
+- [x] Commit en push de taakbranch zonder SQL-export, cachebouw, merge of VPS-publicatie.

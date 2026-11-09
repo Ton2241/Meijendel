@@ -159,7 +159,13 @@ def main() -> int:
     assert selected_boundary["start_punt_id"] == 1
     assert selected_boundary["eind_punt_id"] == 2
     assert migration.BIERLAP_BOUNDARY_START_POINT_ID == 0
-    assert migration.BIERLAP_BOUNDARY_END_POINT_ID == 833
+    assert migration.BIERLAP_BOUNDARY_END_POINT_ID == 396
+    assert migration.BIERLAP_CURVE_CONTROL_POINTS_RD == (
+        (83095.6, 461162.4),
+        (83020.1, 461316.3),
+    )
+    assert migration.BIERLAP_M6_ENDPOINT_RD == (83147.280, 461439.310)
+    assert migration.BIERLAP_CURVE_SAMPLES == 96
 
     land_boundary = migration.ogr.CreateGeometryFromWkt("LINESTRING(10 0,5 0)")
     water_closure = migration.ogr.CreateGeometryFromWkt("LINESTRING(5 0,3 2,0 2)")
@@ -167,9 +173,6 @@ def main() -> int:
     assert composite.GetPointCount() == 4
     assert composite.GetPoint(0)[:2] == (10.0, 0.0)
     assert composite.GetPoint(3)[:2] == (0.0, 2.0)
-    assert migration.BIERLAP_WATER_CLOSURE_RD[0] == (82692.444, 461308.103)
-    assert migration.BIERLAP_WATER_CLOSURE_RD[-1] == (82777.48, 461440.6)
-
     # Een bevestigd grenssegment van oost naar west snijdt alleen de
     # gedeeltelijke kavel. De volledige noordelijke kavels blijven geheel
     # behouden; van de doorsneden kavel blijft uitsluitend het noorddeel over.
@@ -202,25 +205,21 @@ def main() -> int:
     bierlap_geometry = migration.ogr.CreateGeometryFromWkt(bierlap["wkt"])
     intended = set(bierlap["kavels"])
     all_plots = migration.read_all_plot_geometries(migration.DEFAULT_REFERENCE_GPKG)
-    assert bierlap["waterlijn_punt_aantal"] == 12
+    assert bierlap["grens_punt_aantal"] == 397
+    assert bierlap["waterlijn_punt_aantal"] == 97
     assert bierlap["waterlijn_m6_aansluiting_m"] < 0.001
-    assert 91 < bierlap["gedeeltelijke_kavel_aandeel_pct"] < 92
+    assert abs(bierlap["oppervlakte_m2"] - 5_551_561.507) < 0.01
+    assert bierlap["geometrie_sha256"] == "e9310c6713f4da9acd273ec75880f944631f81f728d00c13013ff19d159e1d0d"
+    assert abs(bierlap["gedeeltelijke_kavel_aandelen_pct"]["M4-5"] - 31.502056) < 0.00001, bierlap["gedeeltelijke_kavel_aandelen_pct"]
+    assert abs(bierlap["gedeeltelijke_kavel_aandelen_pct"]["M62"] - 96.539888) < 0.00001, bierlap["gedeeltelijke_kavel_aandelen_pct"]
     for kavel in bierlap["volledige_kavels"]:
         coverage = 100 * migration.polygonal_area(
             bierlap_geometry.Intersection(all_plots[kavel])
         ) / all_plots[kavel].GetArea()
         assert coverage > 99.9999, (kavel, coverage)
-    selected_union = all_plots[bierlap["volledige_kavels"][0]].Clone()
-    for kavel in bierlap["volledige_kavels"][1:]:
-        selected_union = selected_union.Union(all_plots[kavel])
-    for kavel, geometry in all_plots.items():
-        if kavel in intended:
-            continue
-        actual = migration.polygonal_area(bierlap_geometry.Intersection(geometry))
-        unavoidable = migration.polygonal_area(selected_union.Intersection(geometry))
-        assert actual <= unavoidable + 0.001, (kavel, actual, unavoidable)
+    assert intended == set(bierlap["volledige_kavels"]) | {"M62", "M4-5"}
 
-    statements = migration.build_migration_statements(feature, plot_areas)
+    statements = migration.build_migration_statements(feature, plot_areas + [bierlap])
     joined = "\n".join(statements)
     assert "1955-01-01" in joined
     assert FEATURE_ID in joined
@@ -233,6 +232,11 @@ def main() -> int:
     assert "hertenkamp_1955" in joined
     assert "buitenduin_noord_toegankelijk_1955" in joined
     assert "DELETE FROM v USING toegankelijkheidsgebied_versie" in joined
+    assert (
+        "DELETE FROM v USING toegankelijkheidsgebied_versie v "
+        "JOIN toegankelijkheidsgebied g USING(gebied_id) "
+        "WHERE g.gebied_code='bierlap_kijfhoek_dagkaart_1955'"
+    ) in statements
     assert "kavel_m77_1955" in joined
     assert "kavel_m78_79_1955" in joined
     assert "kavel_m75a_1955" in joined

@@ -75,10 +75,39 @@ water, ten noorden van de zuidoever. Het segment kruist uitsluitend het korte
 landstuk uit Tons vierde controlescreenshot en eindigt bij de knik waar de grens
 van M6 de oever verlaat en landinwaarts gaat. Vanaf die knik sluiten de bestaande
 kavelgrenzen het dagkaartvlak. Het landdeel bestaat uit de volledige
-Garmin-puntreeks 0–833; er blijft binnen deze activiteit geen ander routegedeelte
-over waaraan in deze correctie een status wordt toegekend.
+Garmin-puntreeks 0–396; het verdere Garmin-spoor heeft voor deze grens een
+andere betekenis en wordt niet aan dit vlak toegekend.
 
-De bronregistratie bewaart de puntselectie van het Garmin-deel en de aparte
-gedigitaliseerde waterlijn. Voor iedere levende wijziging wordt eerst een
+De bronregistratie bewaart de puntselectie van het Garmin-deel, de vloeiende
+lijn en het door Ton goedgekeurde GeoPackage-vlak. Voor iedere levende wijziging wordt eerst een
 T7-herstelkopie gemaakt. De vervangende geometrie wordt vóór invoer als kaart
 gecontroleerd en moet één geldig vlak zonder interne ringen opleveren.
+
+### Herbouw als expliciete buitenring
+
+De eerdere afleiding door een unie van kavelpolygonen wordt voor
+`bierlap_kijfhoek_dagkaart_1955` niet meer gebruikt. Die methode nam de
+aangewezen grenslijnen grotendeels binnen het vlak op: van de waterlijn lag
+0 meter en van de Garminlijn 852,935 van 3.166,543 meter op de opgeslagen
+buitencontour.
+
+De vervangende geometrie wordt daarom rechtstreeks uit één gesloten ring
+opgebouwd. De ring volgt achtereenvolgens:
+
+1. Garmin-punten 0–396, vanaf de marker bij de waaiervormige parkeerplaats tot
+   de wit-zwarte marker;
+2. de afzonderlijke vloeiende lijn door het water tot de oeverknik van M6;
+3. uitsluitend het buitenste noordelijke en oostelijke randdeel van de
+   gezamenlijke geselecteerde kavelgeometrie terug naar het Garmin-beginpunt.
+
+De twee mogelijke richtingen langs de kavelcontour zijn in de proef geometrisch
+opgebouwd. Ton heeft het resulterende vlak visueel goedgekeurd. Dat GeoPackage-vlak
+is vanaf dat moment de vaste geometriebron: runtime-herbouw uit overlappende
+kavelpolygonen is niet toegestaan. Contracttests eisen de vastgelegde oppervlakte,
+geometriehash, veertien volledig gedekte kavels, 96,539888% van M62 en
+31,502056% van M4-5.
+
+De controlekaart toont de volledige buitengrens in hetzelfde blauw. Na Tons
+visuele akkoord vervangt het akkoordvlak alle eerdere lokale versies van
+`bierlap_kijfhoek_dagkaart_1955`; precies één versie blijft over. SQL-export,
+cachebouw, merge naar `main` en VPS-publicatie blijven buiten deze correctiestap.

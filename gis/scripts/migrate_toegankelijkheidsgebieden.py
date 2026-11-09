@@ -27,6 +27,10 @@ DEFAULT_BIERLAP_BOUNDARY_GPX = Path(
     "/Volumes/T7 Data/Home_Ton/Proefomgevingen/bierlap-kijfhoek-dagkaart-2026-11-09/"
     "downloads/activity_25020262638.gpx"
 )
+DEFAULT_BIERLAP_ACCEPTED_GPKG = Path(
+    "/Volumes/T7 Data/Home_Ton/Proefomgevingen/bierlap-kijfhoek-dagkaart-2026-11-09/"
+    "outputs/expliciete-ring-proef/proef-kijfhoek-bierlap-totaal.gpkg"
+)
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 T7_TRIAL_ROOT = Path("/Volumes/T7 Data/Home_Ton/Proefomgevingen")
@@ -36,36 +40,28 @@ STATUS_CODES = (
     "toegankelijk_buiten_broedseizoen",
     "toegankelijk_met_toegangskaart",
 )
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v8"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v9"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
 BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
 BIERLAP_BOUNDARY_START_POINT_ID = 0
-BIERLAP_BOUNDARY_END_POINT_ID = 833
-BIERLAP_WATER_CLOSURE_RD = (
-    (82692.444, 461308.103),
-    (82655.000, 461320.000),
-    (82630.000, 461335.000),
-    (82625.000, 461355.000),
-    (82635.000, 461375.000),
-    (82655.000, 461390.000),
-    (82680.000, 461398.000),
-    (82700.000, 461405.000),
-    (82720.000, 461410.000),
-    (82735.000, 461415.000),
-    (82750.000, 461425.000),
-    (82777.480, 461440.600),
+BIERLAP_BOUNDARY_END_POINT_ID = 396
+BIERLAP_CURVE_CONTROL_POINTS_RD = (
+    (83095.6, 461162.4),
+    (83020.1, 461316.3),
 )
+BIERLAP_M6_ENDPOINT_RD = (83147.280, 461439.310)
+BIERLAP_CURVE_SAMPLES = 96
 BIERLAP_AREA_SPEC = {
     "gebied_code": "bierlap_kijfhoek_dagkaart_1955",
     "naam": "Bierlap-Kijfhoek toegankelijk met dagkaart",
     "status_code": "toegankelijk_met_toegangskaart",
     "volledige_kavels": (
-        "M6", "M61", "M62", "M63", "M64", "M65", "M71", "M72",
+        "M6", "M61", "M63", "M64", "M65", "M71", "M72",
         "M73", "M74", "M75", "M10-12-76", "M12a", "M8", "M7",
     ),
-    "gedeeltelijke_kavel": "M4-5",
+    "gedeeltelijke_kavels": ("M62", "M4-5"),
     "vastgesteld_op": "2026-11-09",
 }
 PLOT_AREA_SPECS = (
@@ -346,6 +342,27 @@ def compose_boundary_with_closure(
     return line
 
 
+def cubic_bezier_linestring(
+    start: tuple[float, float],
+    control1: tuple[float, float],
+    control2: tuple[float, float],
+    end: tuple[float, float],
+    samples: int,
+) -> ogr.Geometry:
+    """Digitaliseer de bevestigde vloeiende verbinding als RD-lijn."""
+    if samples < 2:
+        raise ValueError("Bezierlijn bevat te weinig deelpunten")
+    points = []
+    for index in range(samples + 1):
+        t = index / samples
+        u = 1.0 - t
+        points.append((
+            u**3 * start[0] + 3 * u**2 * t * control1[0] + 3 * u * t**2 * control2[0] + t**3 * end[0],
+            u**3 * start[1] + 3 * u**2 * t * control1[1] + 3 * u * t**2 * control2[1] + t**3 * end[1],
+        ))
+    return rd_linestring(tuple(points))
+
+
 def build_north_of_boundary_area(
     full_plot_union: ogr.Geometry,
     split_plot: ogr.Geometry,
@@ -510,6 +527,23 @@ def read_plot_geometries(path: Path, wanted: set[str]) -> dict[str, ogr.Geometry
     return found
 
 
+def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
+    """Lees exact het door Ton visueel goedgekeurde statusvlak."""
+    dataset = ogr.Open(str(path), 0)
+    if dataset is None:
+        raise ValueError(f"Goedgekeurd GeoPackage niet leesbaar: {path}")
+    layer = dataset.GetLayerByName("statusgebied")
+    if layer is None or layer.GetFeatureCount() != 1:
+        raise ValueError("Goedgekeurd GeoPackage bevat niet precies één statusgebied")
+    feature = next(iter(layer))
+    geometry = feature.GetGeometryRef().Clone()
+    if geometry.GetGeometryName().upper() != "MULTIPOLYGON" or not geometry.IsValid():
+        raise ValueError("Goedgekeurd Bierlap-Kijfhoek-vlak is geen geldige multipolygoon")
+    if sum(max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(geometry)):
+        raise ValueError("Goedgekeurd Bierlap-Kijfhoek-vlak bevat interne ringen")
+    return geometry
+
+
 def read_all_plot_geometries(path: Path) -> dict[str, ogr.Geometry]:
     """Lees alle onderzoekskavels met dezelfde normalisatie als de selectiehelper."""
     dataset = ogr.Open(str(path), 0)
@@ -526,49 +560,50 @@ def read_all_plot_geometries(path: Path) -> dict[str, ogr.Geometry]:
     return found
 
 
-def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[str, Any]:
-    """Vorm Bierlap-Kijfhoek uit volledige kavels en noordelijk deel van M4-5."""
+def derive_bierlap_kijfhoek_area(
+    reference_path: Path,
+    gpx_path: Path,
+    accepted_path: Path = DEFAULT_BIERLAP_ACCEPTED_GPKG,
+) -> dict[str, Any]:
+    """Vorm Bierlap-Kijfhoek uit de bevestigde expliciete buitenring."""
     full_kavels = BIERLAP_AREA_SPEC["volledige_kavels"]
-    partial_kavel = BIERLAP_AREA_SPEC["gedeeltelijke_kavel"]
-    found = read_plot_geometries(reference_path, set(full_kavels) | {partial_kavel})
-    full_union = found[full_kavels[0]].Clone()
-    for kavel in full_kavels[1:]:
-        full_union = full_union.Union(found[kavel])
-    full_union = full_union.MakeValid()
+    partial_kavels = BIERLAP_AREA_SPEC["gedeeltelijke_kavels"]
+    selected_kavels = full_kavels + partial_kavels
+    found = read_plot_geometries(reference_path, set(selected_kavels))
 
     boundary_source = read_gpx_boundary(
         gpx_path,
         start_point_id=BIERLAP_BOUNDARY_START_POINT_ID,
         end_point_id=BIERLAP_BOUNDARY_END_POINT_ID,
     )
-    water_closure = rd_linestring(BIERLAP_WATER_CLOSURE_RD)
+    land_end = boundary_source["geometry"].GetPoint(
+        boundary_source["geometry"].GetPointCount() - 1
+    )[:2]
+    water_closure = cubic_bezier_linestring(
+        land_end,
+        BIERLAP_CURVE_CONTROL_POINTS_RD[0],
+        BIERLAP_CURVE_CONTROL_POINTS_RD[1],
+        BIERLAP_M6_ENDPOINT_RD,
+        BIERLAP_CURVE_SAMPLES,
+    )
     boundary = compose_boundary_with_closure(boundary_source["geometry"], water_closure)
     closure_endpoint = ogr.Geometry(ogr.wkbPoint)
-    closure_endpoint.AddPoint_2D(*BIERLAP_WATER_CLOSURE_RD[-1])
+    closure_endpoint.AddPoint_2D(*BIERLAP_M6_ENDPOINT_RD)
     closure_to_m6_m = closure_endpoint.Distance(found["M6"].Boundary())
     if closure_to_m6_m > 0.01:
-        raise ValueError(f"Waterlijn eindigt niet op de M6-grens: {closure_to_m6_m:.3f} m")
-    geometry = build_north_of_boundary_area(
-        full_union,
-        found[partial_kavel],
-        boundary,
-    )
-    intended_kavels = set(full_kavels) | {partial_kavel}
-    excluded_geometries = [
-        plot_geometry
-        for kavel, plot_geometry in read_all_plot_geometries(reference_path).items()
-        if kavel not in intended_kavels
-    ]
-    if excluded_geometries:
-        excluded_union = excluded_geometries[0].Clone()
-        for plot_geometry in excluded_geometries[1:]:
-            excluded_union = excluded_union.Union(plot_geometry)
-        geometry = geometry.Difference(excluded_union).Union(full_union)
-        geometry = geometry.MakeValid(["METHOD=STRUCTURE"])
-    geometry = single_polygon_without_slivers(geometry, 1.0)
-    partial_area = polygonal_area(geometry.Intersection(found[partial_kavel]))
-    partial_percentage = 100.0 * partial_area / found[partial_kavel].GetArea()
-    return _area_record(
+        raise ValueError(f"Vloeiende lijn eindigt niet op de M6-grens: {closure_to_m6_m:.3f} m")
+
+    geometry = read_accepted_bierlap_geometry(accepted_path)
+    coverages = {
+        kavel: 100.0 * polygonal_area(geometry.Intersection(found[kavel])) / found[kavel].GetArea()
+        for kavel in selected_kavels
+    }
+    if min(coverages[kavel] for kavel in full_kavels) <= 99.99:
+        raise ValueError(f"Goedgekeurd vlak dekt niet alle volledige kavels: {coverages!r}")
+    if not all(0 < coverages[kavel] < 100 for kavel in partial_kavels):
+        raise ValueError(f"Goedgekeurd vlak snijdt de gedeeltelijke kavels niet: {coverages!r}")
+    partial_percentages = {kavel: coverages[kavel] for kavel in partial_kavels}
+    record = _area_record(
         geometry,
         gebied_code=BIERLAP_AREA_SPEC["gebied_code"],
         naam=BIERLAP_AREA_SPEC["naam"],
@@ -576,12 +611,12 @@ def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[s
         feature_id=(
             "garmin:25020262638:punten:"
             f"{boundary_source['start_punt_id']}-{boundary_source['eind_punt_id']}"
-            "|waterlijn:pdok2025:m6-oeverknik"
+            "|vloeiende-lijn:pdok2025:m6-oeverknik"
         ),
-        kavels=full_kavels + (partial_kavel,),
+        kavels=selected_kavels,
         volledige_kavels=full_kavels,
-        gedeeltelijke_kavels=(partial_kavel,),
-        gedeeltelijke_kavel_aandeel_pct=partial_percentage,
+        gedeeltelijke_kavels=partial_kavels,
+        gedeeltelijke_kavel_aandelen_pct=partial_percentages,
         grens_punt_aantal=boundary_source["punt_aantal"],
         grens_start_tijd=boundary_source["start_tijd"],
         grens_eind_tijd=boundary_source["eind_tijd"],
@@ -593,18 +628,24 @@ def derive_bierlap_kijfhoek_area(reference_path: Path, gpx_path: Path) -> dict[s
         bron_code=BIERLAP_SOURCE_CODE,
         vastgesteld_op=BIERLAP_AREA_SPEC["vastgesteld_op"],
         inwinningsmethode=(
-            "Garmin-GPS-landgrens; waterlijn gedigitaliseerd op PDOK-luchtfoto 2025 "
+            "Garmin-GPS-landgrens; vloeiende lijn gedigitaliseerd op PDOK-luchtfoto 2025 "
             "en aangesloten op onderzoekskavel M6"
         ),
         nauwkeurigheid_m=None,
         opmerking=(
-            "Volledige kavels " + ", ".join(full_kavels) + "; uitsluitend het deel van "
-            f"{partial_kavel} ten noorden van Garmin Connect-activiteit 25020262638, "
-            "aangevuld met de door Ton bevestigde lijn door het water vanaf Garmin-punt "
-            "833 via de landstrook tot de oeverknik van M6. "
+            "Volledige kavels " + ", ".join(full_kavels) + "; gedeeltelijke kavels "
+            + ", ".join(partial_kavels) + ". De grens volgt Garmin-punten 0-396 en "
+            "de door Ton bevestigde vloeiende lijn door het water tot de oeverknik van M6. "
             "Door Ton bevestigd als gebied dat alleen met een dagkaart toegankelijk is."
         ),
     )
+    exact_wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
+    record.update(
+        wkt=geometry.ExportToIsoWkt(),
+        geometrie_sha256=hashlib.sha256(exact_wkb).hexdigest(),
+        oppervlakte_m2=float(geometry.GetArea()),
+    )
+    return record
 
 
 def read_plot_areas(path: Path) -> list[dict[str, Any]]:
@@ -710,8 +751,8 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
         f"'{BIERLAP_SOURCE_CODE}','veldregistratie','Garmin-grens Bierlap-Kijfhoek',"
         "'2026-11-09','2026-11-09','door gebruiker bevestigd',"
-        "'Garmin Connect-activiteit 25020262638, punten 0-833 op land; afzonderlijke waterlijn "
-        "op PDOK-luchtfoto 2025 via de landstrook tot de oeverknik van M6') "
+        "'Garmin Connect-activiteit 25020262638, punten 0-396; vloeiende lijn op PDOK-luchtfoto "
+        "2025 door het water tot de oeverknik van M6') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
     obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)
@@ -724,11 +765,19 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
     for plot_area in plot_areas:
         source_code = plot_area.get("bron_code", PLOT_SOURCE_CODE)
         method = plot_area.get("inwinningsmethode", "vereniging van volledige onderzoekskavels")
-        statements.extend((
+        statements.append(
             "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
             f"{sql_literal(plot_area['gebied_code'])},{sql_literal(plot_area['naam'])},"
             f"{sql_literal(plot_area['opmerking'])}) "
-            "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)",
+            "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)"
+        )
+        if plot_area["gebied_code"] == BIERLAP_AREA_SPEC["gebied_code"]:
+            statements.append(
+                "DELETE FROM v USING toegankelijkheidsgebied_versie v "
+                "JOIN toegankelijkheidsgebied g USING(gebied_id) "
+                f"WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])}"
+            )
+        statements.append(
             "INSERT INTO toegankelijkheidsgebied_versie "
             "(gebied_id,versienummer,status_code,geldig_vanaf,geldig_tot,vastgesteld_op,bron_id,"
             "bron_object_id,inwinningsmethode,nauwkeurigheid_m,geometrie,geometrie_wkt,"
@@ -745,8 +794,8 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
             "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
             "geometrie=VALUES(geometrie),geometrie_wkt=VALUES(geometrie_wkt),"
             "geometrie_sha256=VALUES(geometrie_sha256),oppervlakte_m2=VALUES(oppervlakte_m2),"
-            "geometrie_opmerking=VALUES(geometrie_opmerking)",
-        ))
+            "geometrie_opmerking=VALUES(geometrie_opmerking)"
+        )
     statements.extend((
         "DELETE FROM maatregel_registratie_herkomst WHERE toegang_registratie_id IS NOT NULL",
         "DROP TABLE maatregel_toegankelijkheid_registratie",
@@ -1055,6 +1104,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_BIERLAP_BOUNDARY_GPX,
     )
+    parser.add_argument(
+        "--bierlap-accepted-gpkg",
+        type=Path,
+        default=DEFAULT_BIERLAP_ACCEPTED_GPKG,
+    )
     parser.add_argument("--backup-dir", type=Path, default=BACKUP_ROOT)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify", action="store_true")
@@ -1066,7 +1120,11 @@ def main() -> int:
     feature = derive_route_area(args.route_gpkg)
     plot_areas = read_plot_areas(args.reference_gpkg)
     plot_areas.append(
-        derive_bierlap_kijfhoek_area(args.reference_gpkg, args.bierlap_boundary_gpx)
+        derive_bierlap_kijfhoek_area(
+            args.reference_gpkg,
+            args.bierlap_boundary_gpx,
+            args.bierlap_accepted_gpkg,
+        )
     )
     client = Client(args.database)
     if args.apply:
