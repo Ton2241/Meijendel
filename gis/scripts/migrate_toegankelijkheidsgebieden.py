@@ -25,8 +25,14 @@ DEFAULT_ROUTE_GPKG = _QFIELD_ROOT / "routes.gpkg"
 DEFAULT_REFERENCE_GPKG = _QFIELD_ROOT / "referentie.gpkg"
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
-STATUS_CODES = ("afgesloten", "toegankelijk", "toegankelijk_met_toegangskaart")
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v7"
+T7_TRIAL_ROOT = Path("/Volumes/T7 Data/Home_Ton/Proefomgevingen")
+STATUS_CODES = (
+    "afgesloten",
+    "toegankelijk",
+    "toegankelijk_buiten_broedseizoen",
+    "toegankelijk_met_toegangskaart",
+)
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v8"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
@@ -61,6 +67,27 @@ PLOT_AREA_SPECS = (
         "naam": "Kavel M31",
         "status_code": "toegankelijk",
         "kavels": ("M31",),
+    },
+    {
+        "gebied_code": "buitenduin_zuid_broedseizoen_1955",
+        "naam": "Toegankelijk buiten broedseizoen M35-M36",
+        "status_code": "toegankelijk_buiten_broedseizoen",
+        "kavels": ("M35", "M36"),
+        "vastgesteld_op": "2026-11-09",
+    },
+    {
+        "gebied_code": "ruygenhoek_afgesloten_1955",
+        "naam": "Afgesloten gebied M32-M33",
+        "status_code": "afgesloten",
+        "kavels": ("M32", "M33"),
+        "vastgesteld_op": "2026-11-09",
+    },
+    {
+        "gebied_code": "kavel_m34_1955",
+        "naam": "Kavel M34",
+        "status_code": "toegankelijk",
+        "kavels": ("M34",),
+        "vastgesteld_op": "2026-11-09",
     },
 )
 OBSOLETE_PLOT_AREA_CODES = ("kavel_m77_1955", "kavel_m78_79_1955", "kavel_m75a_1955")
@@ -369,8 +396,8 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "INSERT INTO maatregel_bron "
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
         f"'{PLOT_SOURCE_CODE}','handmatige_registratie','Handmatig bevestigde toegankelijkheidsgebieden',"
-        "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
-        "'Volledige kavels M13, M13s, M14, M15, M16, M16s, M17a, M66, M105, M77, M78/79, M75a en M31') "
+        "'2026-11-07','2026-11-09','door gebruiker bevestigd',"
+        "'Bevestigingen 7 en 9 november 2026; volledige kavels volgens de gebiedsspecificaties') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
     ]
     obsolete_codes = ",".join(sql_literal(code) for code in OBSOLETE_PLOT_AREA_CODES)
@@ -390,7 +417,8 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
             "(gebied_id,versienummer,status_code,geldig_vanaf,geldig_tot,vastgesteld_op,bron_id,"
             "bron_object_id,inwinningsmethode,nauwkeurigheid_m,geometrie,geometrie_wkt,"
             "geometrie_sha256,oppervlakte_m2,geometrie_opmerking) SELECT "
-            f"g.gebied_id,1,{sql_literal(plot_area['status_code'])},'1955-01-01',NULL,'2026-11-07',b.bron_id,"
+            f"g.gebied_id,1,{sql_literal(plot_area['status_code'])},'1955-01-01',NULL,"
+            f"{sql_literal(plot_area.get('vastgesteld_op', '2026-11-07'))},b.bron_id,"
             f"{sql_literal(plot_area['feature_id'])},'vereniging van volledige onderzoekskavels',NULL,"
             f"ST_GeomFromText({sql_literal(plot_area['wkt'])},28992),{sql_literal(plot_area['wkt'])},"
             f"{sql_literal(plot_area['geometrie_sha256'])},{plot_area['oppervlakte_m2']:.3f},"
@@ -444,8 +472,12 @@ def ensure_backup_dir(path: Path) -> Path:
     resolved = path.expanduser().resolve()
     if not os.path.ismount("/Volumes/T7 Data"):
         raise RuntimeError("T7 is niet gemount")
-    if resolved != BACKUP_ROOT.resolve() and BACKUP_ROOT.resolve() not in resolved.parents:
-        raise RuntimeError(f"Back-up moet onder {BACKUP_ROOT} staan")
+    task_root_raw = os.getenv("MEIJENDEL_T7_WORK_ROOT", "").strip()
+    approved_root = Path(task_root_raw).expanduser().resolve() if task_root_raw else BACKUP_ROOT.resolve()
+    if task_root_raw and approved_root != T7_TRIAL_ROOT.resolve() and T7_TRIAL_ROOT.resolve() not in approved_root.parents:
+        raise RuntimeError(f"Taakwerkmap moet onder {T7_TRIAL_ROOT} staan")
+    if resolved != approved_root and approved_root not in resolved.parents:
+        raise RuntimeError(f"Back-up moet onder {approved_root} staan")
     resolved.mkdir(parents=True, exist_ok=True)
     return resolved
 
@@ -463,6 +495,7 @@ def backup_tables(old_model_exists: bool) -> tuple[str, ...]:
         return ("maatregel_toegankelijkheid_registratie", "maatregel_registratie_herkomst")
     return (
         "maatregel_bron",
+        "toegankelijkheidsstatus",
         "toegankelijkheidsgebied",
         "toegankelijkheidsgebied_versie",
         "toegankelijkheidsgebied_plot_afleiding",
@@ -640,7 +673,8 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         raise AssertionError(result)
     if result["beheerregistraties"] != 139 or result["herkomsten"] != 144 or result["bron101_beheer"] != 139:
         raise AssertionError(result)
-    if result["gebieden"] != 6 or result["gebiedsversies"] != 6 or result["plotdoorsnijdingen"] < 13:
+    expected_areas = 1 + len(plot_areas)
+    if result["gebieden"] != expected_areas or result["gebiedsversies"] != expected_areas or result["plotdoorsnijdingen"] < 18:
         raise AssertionError(result)
     row = client.sql(
         "SELECT status_code,geldig_vanaf,IF(geldig_tot IS NULL,'NULL',geldig_tot),"

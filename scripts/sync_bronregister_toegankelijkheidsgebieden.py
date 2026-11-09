@@ -26,8 +26,8 @@ ENVIRONMENT = (
     "kavelwaarden afgeleid: drie variabelen voor elk van 55 kavels. "
     "Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
-    "uit versies van omsloten gebieden. Zes actuele gebiedsversies leveren samen "
-    "46 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "uit versies van omsloten gebieden. Negen actuele gebiedsversies leveren samen "
+    "59 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -58,7 +58,7 @@ GARMIN = (
     "vallen onder beheer van Ton Lansink; extern hergebruik is niet beoordeeld."
 )
 
-SECTION_TITLE = "Toegankelijkheid als gebiedsversies op 7 november 2026"
+SECTION_TITLE = "Toegankelijkheid als gebiedsversies, bijgewerkt 9 november 2026"
 SECTION = [
     "De voorlopige toegankelijkheid per kavel is volledig vervangen. De 55 "
     "registraties uit 2024 zijn verwijderd uit maatregel_toegankelijkheid_registratie; "
@@ -190,20 +190,28 @@ def markdown_section(title: str) -> list[str]:
 
 def main() -> None:
     document = Document(DOCX)
+    section = markdown_section(SECTION_TITLE)
     osm_section = markdown_section(OSM_SECTION_TITLE)
-    replace_paragraph(document, "Stand:", "Stand: 8 november 2026.")
+    rename_once(document, "Toegankelijkheid als gebiedsversies op 7 november 2026", SECTION_TITLE)
+    replace_paragraph(document, "Stand:", "Stand: 9 november 2026.")
     replace_paragraph(document, "Aanvullende verklarende gegevens.", ENVIRONMENT)
     replace_paragraph(document, "Garmin-QField-veldbron", GARMIN)
-    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden"), SECTION[2])
+    replace_paragraph_any(
+        document,
+        ("De levende lokale database bevat nu drie toegestane gebiedsstatussen", "De levende lokale database bevat nu vier toegestane gebiedsstatussen"),
+        section[1],
+    )
+    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden"), section[2])
     replace_paragraph_any(
         document,
         (
             "Shiny en de statische browser gebruiken parser/cacheversie 16",
             "Shiny en de statische browser gebruiken parser/cacheversie 17",
+            "Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18",
         ),
-        SECTION[3],
+        section[3],
     )
-    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie"), SECTION[4])
+    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november"), section[4])
     rename_once(
         document,
         "Integratie begrazing en toegankelijkheid op 16 oktober 2026",
@@ -225,7 +233,7 @@ def main() -> None:
             raise RuntimeError("Anker voor actuele toegankelijkheidssectie niet uniek")
         anchor = anchors[0]
         insert_before(anchor, SECTION_TITLE, "Heading 2")
-        for index, text in enumerate(SECTION):
+        for index, text in enumerate(section):
             insert_before(anchor, text, "First Paragraph" if index == 0 else "Body Text")
     if not any(p.text == OSM_SECTION_TITLE for p in document.paragraphs):
         anchors = [p for p in document.paragraphs if p.text == "Historische rechtstreekse aansluiting zonder compatibiliteitsviews"]
@@ -241,8 +249,8 @@ def main() -> None:
     check = Document(DOCX)
     if sum(p.text == SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("Nieuwe sectie niet exact eenmaal opgeslagen")
-    if not any("parser/cacheversie 17" in p.text for p in check.paragraphs):
-        raise RuntimeError("Parserversie 17 ontbreekt in DOCX")
+    if not any("parser/cacheversie 18" in p.text for p in check.paragraphs):
+        raise RuntimeError("Parserversie 18 ontbreekt in DOCX")
     if sum(p.text == OSM_SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("OSM-fietspadsectie niet exact eenmaal opgeslagen")
     if not any("De GeoJSON bevat 1.325 objecten" in p.text for p in check.paragraphs):

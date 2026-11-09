@@ -3484,6 +3484,7 @@ server <- function(input, output, session) {
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_buiten_broedseizoen = "Aandeel toegankelijk buiten broedseizoen (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
       toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
@@ -3572,6 +3573,7 @@ server <- function(input, output, session) {
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_buiten_broedseizoen = "Aandeel toegankelijk buiten broedseizoen (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
       toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
@@ -3640,6 +3642,7 @@ server <- function(input, output, session) {
       toegankelijkheid_status = "Afgeleide toegankelijkheidsstatus",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_buiten_broedseizoen = "Aandeel toegankelijk buiten broedseizoen (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
       toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
@@ -3722,6 +3725,7 @@ server <- function(input, output, session) {
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
       "toegankelijkheid_status",
       "toegankelijkheid_aandeel_afgesloten", "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_buiten_broedseizoen",
       "toegankelijkheid_aandeel_toegankelijk", "toegankelijkheid_aandeel_onbekend"
     ), names(analyse$model_data))
       out <- analyse$model_data[, cols, drop = FALSE]
@@ -3807,6 +3811,7 @@ server <- function(input, output, session) {
       afstand_parkeerplaats_m = "Afstand tot parkeerplaats",
       toegankelijkheid_aandeel_afgesloten = "Aandeel afgesloten gebied (%)",
       toegankelijkheid_aandeel_toegangskaart = "Aandeel toegankelijk met toegangskaart (%)",
+      toegankelijkheid_aandeel_buiten_broedseizoen = "Aandeel toegankelijk buiten broedseizoen (%)",
       toegankelijkheid_aandeel_toegankelijk = "Aandeel toegankelijk gebied (%)",
       toegankelijkheid_aandeel_onbekend = "Aandeel zonder vastgestelde gebiedsstatus (%)"
     )
@@ -3975,6 +3980,7 @@ server <- function(input, output, session) {
       "afstand_pad_m", "padlengte_m_per_ha", "afstand_parkeerplaats_m",
       "toegankelijkheid_status",
       "toegankelijkheid_aandeel_afgesloten", "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_buiten_broedseizoen",
       "toegankelijkheid_aandeel_toegankelijk", "toegankelijkheid_aandeel_onbekend"
     )
     cols <- intersect(base_cols, names(analyse$model_data))

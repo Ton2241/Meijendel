@@ -48,6 +48,7 @@ def main() -> int:
     assert migration.STATUS_CODES == (
         "afgesloten",
         "toegankelijk",
+        "toegankelijk_buiten_broedseizoen",
         "toegankelijk_met_toegangskaart",
     )
     migration.validate_retirement_counts(55, 55)
@@ -61,6 +62,7 @@ def main() -> int:
 
     assert migration.backup_tables(False) == (
         "maatregel_bron",
+        "toegankelijkheidsstatus",
         "toegankelijkheidsgebied",
         "toegankelijkheidsgebied_versie",
         "toegankelijkheidsgebied_plot_afleiding",
@@ -84,6 +86,9 @@ def main() -> int:
         ("hertenkamp_1955", "toegankelijk", ("M105",)),
         ("buitenduin_noord_toegankelijk_1955", "toegankelijk", ("M77", "M78/79", "M75a")),
         ("kavel_m31_1955", "toegankelijk", ("M31",)),
+        ("buitenduin_zuid_broedseizoen_1955", "toegankelijk_buiten_broedseizoen", ("M35", "M36")),
+        ("ruygenhoek_afgesloten_1955", "afgesloten", ("M32", "M33")),
+        ("kavel_m34_1955", "toegankelijk", ("M34",)),
     ]
     for plot_area in plot_areas:
         assert plot_area["geometry_type"] == "MULTIPOLYGON"
@@ -136,6 +141,12 @@ def main() -> int:
     assert "kavel_m78_79_1955" in joined
     assert "kavel_m75a_1955" in joined
     assert "kavel_m31_1955" in joined
+    assert "buitenduin_zuid_broedseizoen_1955" in joined
+    assert "plots:M35,M36" in joined
+    assert "ruygenhoek_afgesloten_1955" in joined
+    assert "plots:M32,M33" in joined
+    assert "kavel_m34_1955" in joined
+    assert "plots:M34" in joined
     assert "plots:M13,M13s,M14,M15,M16,M16s,M17a" in joined
 
     print("OK: toegankelijkheidsgebieden-contract")

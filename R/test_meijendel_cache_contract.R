@@ -506,10 +506,11 @@ stopifnot(!local_result$from_cache, file.exists(local_cache))
 stopifnot(any(grepl(paste0("\\.next\\.", Sys.getpid(), "$"), saved_paths)))
 stopifnot(!any(file.exists(paste0(local_cache, ".next.", Sys.getpid()))))
 
-active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p16-", strrep("a", 64), ".rds"))
+active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p", MEIJENDEL_PARSER_CACHE_VERSION, "-", strrep("a", 64), ".rds"))
+active_identity <- meijendel_cache_identity(strrep("a", 64), 123L, MEIJENDEL_PARSER_CACHE_VERSION)
 active_cache_object <- list(
   format = MEIJENDEL_CACHE_FORMAT,
-  identity = identity,
+  identity = active_identity,
   data = cache_fixture_data()
 )
 base::saveRDS(active_cache_object, active_cache, version = 3)
@@ -521,7 +522,7 @@ writeLines(c(
   paste0("cache_bytes=", file.info(active_cache)$size),
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  "parser_version=16"
+  paste0("parser_version=", MEIJENDEL_PARSER_CACHE_VERSION)
 ), active_manifest)
 manifest_result <- load_meijendel_tables_cached(
   sql_one,
@@ -537,20 +538,21 @@ stopifnot(
 cat("OK: Meijendel-cachecontract is padonafhankelijk en productie faalt gesloten.\n")
 
 # Gebiedsversies gelden vanaf 1 januari 1955 totdat geldig_tot is ingevuld.
-time_input <- data.frame(plot_id=c(1L,1L,1L,2L),jaar=c(1954L,1955L,2026L,2026L))
+time_input <- data.frame(plot_id=c(1L,1L,1L,2L,3L),jaar=c(1954L,1955L,2026L,2026L,2026L))
 time_source <- data.frame(
-  plot_id=c(1L,1L,2L),
-  status_code=c('afgesloten','toegankelijk_met_toegangskaart','toegankelijk'),
-  aandeel_pct=c(60,20,100),
-  geldig_vanaf=as.Date(c('1955-01-01','1955-01-01','1955-01-01')),
-  geldig_tot=as.Date(c(NA,NA,NA))
+  plot_id=c(1L,1L,2L,3L),
+  status_code=c('afgesloten','toegankelijk_met_toegangskaart','toegankelijk','toegankelijk_buiten_broedseizoen'),
+  aandeel_pct=c(60,20,100,100),
+  geldig_vanaf=as.Date(c('1955-01-01','1955-01-01','1955-01-01','1955-01-01')),
+  geldig_tot=as.Date(c(NA,NA,NA,NA))
 )
 time_result <- add_toegankelijkheid_covariates(time_input,time_source)
-stopifnot(identical(as.character(time_result$toegankelijkheid_status),c('onbekend','gemengd','gemengd','toegankelijk')))
-stopifnot(identical(time_result$toegankelijkheid_aandeel_afgesloten,c(0,60,60,0)))
-stopifnot(identical(time_result$toegankelijkheid_aandeel_toegangskaart,c(0,20,20,0)))
-stopifnot(identical(time_result$toegankelijkheid_aandeel_toegankelijk,c(0,0,0,100)))
-stopifnot(identical(time_result$toegankelijkheid_aandeel_onbekend,c(100,20,20,0)))
+stopifnot(identical(as.character(time_result$toegankelijkheid_status),c('onbekend','gemengd','gemengd','toegankelijk','toegankelijk_buiten_broedseizoen')))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_afgesloten,c(0,60,60,0,0)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_toegangskaart,c(0,20,20,0,0)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_toegankelijk,c(0,0,0,100,0)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_buiten_broedseizoen,c(0,0,0,0,100)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_onbekend,c(100,20,20,0,0)))
 expect_error(
   add_toegankelijkheid_covariates(time_input,rbind(time_source,transform(time_source[1,],aandeel_pct=50))),
   'meer dan 100 procent'

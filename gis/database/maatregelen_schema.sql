@@ -463,6 +463,7 @@ CREATE TABLE IF NOT EXISTS toegankelijkheidsstatus (
 INSERT INTO toegankelijkheidsstatus (status_code,omschrijving) VALUES
   ('afgesloten','Afgesloten'),
   ('toegankelijk','Toegankelijk'),
+  ('toegankelijk_buiten_broedseizoen','Toegankelijk buiten broedseizoen'),
   ('toegankelijk_met_toegangskaart','Toegankelijk met toegangskaart')
 ON DUPLICATE KEY UPDATE omschrijving=VALUES(omschrijving);
 

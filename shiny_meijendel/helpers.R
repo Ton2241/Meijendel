@@ -33,7 +33,7 @@ if (is.na(cache_contract_helper)) {
 }
 source(cache_contract_helper)
 source(file.path(dirname(cache_contract_helper),"trim_release_runtime.R"))
-MEIJENDEL_PARSER_CACHE_VERSION <- 17L
+MEIJENDEL_PARSER_CACHE_VERSION <- 18L
 rm(helpers_source_path, species_synonym_helpers, species_synonym_helper, trim_trend_helpers, trim_trend_helper, cache_contract_helpers, cache_contract_helper)
 
 trim_selection_hash <- function(plots, years, species, groups) {
@@ -2476,10 +2476,11 @@ add_toegankelijkheid_covariates <- function(dat, source_df) {
   share_columns <- c(
     afgesloten = "toegankelijkheid_aandeel_afgesloten",
     toegankelijk_met_toegangskaart = "toegankelijkheid_aandeel_toegangskaart",
+    toegankelijk_buiten_broedseizoen = "toegankelijkheid_aandeel_buiten_broedseizoen",
     toegankelijk = "toegankelijkheid_aandeel_toegankelijk"
   )
   if (nrow(dat) == 0L) {
-    dat$toegankelijkheid_status <- factor(character(), levels = c("toegankelijk", "toegankelijk_met_toegangskaart", "afgesloten", "gemengd", "onbekend"))
+    dat$toegankelijkheid_status <- factor(character(), levels = c("toegankelijk", "toegankelijk_buiten_broedseizoen", "toegankelijk_met_toegangskaart", "afgesloten", "gemengd", "onbekend"))
     for (column in unname(share_columns)) dat[[column]] <- numeric()
     dat$toegankelijkheid_aandeel_onbekend <- numeric()
     return(dat)
@@ -2497,7 +2498,7 @@ add_toegankelijkheid_covariates <- function(dat, source_df) {
     total <- sum(values)
     if (total > 100.000001) stop("Afgeleide toegankelijkheid beslaat meer dan 100 procent van plot ", dat$plot_id[[i]], " in ", dat$jaar[[i]])
     c(values, onbekend = max(0, 100 - total))
-  }, numeric(4)))
+  }, numeric(length(share_columns) + 1L)))
   colnames(shares) <- c(names(share_columns), "onbekend")
   for (status in names(share_columns)) dat[[share_columns[[status]]]] <- unname(shares[, status])
   dat$toegankelijkheid_aandeel_onbekend <- unname(shares[, "onbekend"])
@@ -2508,7 +2509,7 @@ add_toegankelijkheid_covariates <- function(dat, source_df) {
     if (length(full) == 1L && shares[i, "onbekend"] <= 0.000001) return(full[[1L]])
     "gemengd"
   }, character(1))
-  dat$toegankelijkheid_status <- factor(dat$toegankelijkheid_status, levels = c("toegankelijk", "toegankelijk_met_toegangskaart", "afgesloten", "gemengd", "onbekend"))
+  dat$toegankelijkheid_status <- factor(dat$toegankelijkheid_status, levels = c("toegankelijk", "toegankelijk_buiten_broedseizoen", "toegankelijk_met_toegangskaart", "afgesloten", "gemengd", "onbekend"))
   dat
 }
 
@@ -2691,6 +2692,7 @@ gee_covariate_specs <- function() {
       "stikstof_mean",
       "toegankelijkheid_aandeel_afgesloten",
       "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_buiten_broedseizoen",
       "toegankelijkheid_aandeel_toegankelijk",
       "vegetatie_soortenrijkdom_gem",
       "vegetatie_bedekking_som_gem",
@@ -2709,6 +2711,7 @@ gee_covariate_specs <- function() {
       "Stikstof gemiddelde depositie",
       "Aandeel afgesloten gebied (%)",
       "Aandeel toegankelijk met toegangskaart (%)",
+      "Aandeel toegankelijk buiten broedseizoen (%)",
       "Aandeel toegankelijk gebied (%)",
       "Vegetatie: gemiddelde soortenrijkdom per PQ",
       "Vegetatie: gemiddelde som van bedekkingspercentages per PQ",
@@ -2722,7 +2725,7 @@ gee_covariate_specs <- function() {
       "Weer maart-juni: gemiddelde luchtdruk (hPa)",
       "Weer maart-juni: gemiddelde luchtvochtigheid (%)"
     ),
-    type = rep("numeric", 16),
+    type = rep("numeric", 17),
     stringsAsFactors = FALSE
   )
 }
@@ -2931,6 +2934,7 @@ gee_effect_unit_specs <- function() {
       "afstand_parkeerplaats_m",
       "toegankelijkheid_aandeel_afgesloten",
       "toegankelijkheid_aandeel_toegangskaart",
+      "toegankelijkheid_aandeel_buiten_broedseizoen",
       "toegankelijkheid_aandeel_toegankelijk",
       "weer_temperatuur_gem_c",
       "weer_temperatuur_min_gem_c",
@@ -2941,7 +2945,7 @@ gee_effect_unit_specs <- function() {
       "weer_luchtdruk_gem_hpa",
       "weer_luchtvochtigheid_gem_pct"
     ),
-    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 10, 10, 10, 1, 1, 1, 10, 1, 10, 10, 10),
+    effect_schaal = c(10, 1, 1, 1, 100, 1, 1, 100, 100, 100, 10, 10, 10, 10, 1, 1, 1, 10, 1, 10, 10, 10),
     effect_eenheid = c(
       "per 10 jaar",
       "kwadratische component per jaar^2",
@@ -2953,6 +2957,7 @@ gee_effect_unit_specs <- function() {
       "per 100 m",
       "per 100 m/ha",
       "per 100 m",
+      "per 10 procentpunt",
       "per 10 procentpunt",
       "per 10 procentpunt",
       "per 10 procentpunt",
