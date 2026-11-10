@@ -1304,10 +1304,10 @@ Gebruik voor nieuwe invoer:
 
 1. één record in `toegankelijkheidsgebied` voor de blijvende gebiedsidentiteit;
 2. één of meer records in `toegankelijkheidsgebied_versie` voor opeenvolgende geometrieën en statussen;
-3. precies één van `afgesloten`, `toegankelijk` en `toegankelijk_met_toegangskaart` per versie;
+3. precies één van `afgesloten`, `toegankelijk`, `toegankelijk_buiten_broedseizoen` en `toegankelijk_met_toegangskaart` per versie;
 4. standaard `geldig_vanaf = 1955-01-01`, op basis van Tons inschatting;
 5. `geldig_tot = NULL` zolang de versie actueel is.
 
-Na invoer of wijziging worden de ruimtelijke doorsnijdingen in `toegankelijkheidsgebied_plot_afleiding` opnieuw berekend. De eerste actuele invoer bevat één afgesloten gebied, één versie en 18 kaveldoorsnijdingen. Een kavelstatus is voortaan een afgeleide uitkomst: alleen 100% dekking door één status levert één status voor de hele kavel op. Bij gedeeltelijke of meervoudige dekking gebruikt de analyse de oppervlakteaandelen en blijft het ongedekte deel onbekend.
+Na invoer of wijziging worden de ruimtelijke doorsnijdingen in `toegankelijkheidsgebied_plot_afleiding` opnieuw berekend. De actuele stand van 10 november 2026 bevat veertien gebieden, veertien actuele versies en 110 positieve kaveldoorsnijdingen. Alle 55 kavels zijn volledig gedekt; er resteert geen statusoverlap van 0,01 m² of groter. Een kavelstatus is een afgeleide uitkomst: alleen 100% dekking door één status levert één status voor de hele kavel op. Bij gedeeltelijke of meervoudige dekking gebruikt de analyse de oppervlakteaandelen.
 
-Shiny en de statische browser gebruiken parser/cacheversie 17. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
+Shiny en de statische browser gebruiken parser/cacheversie 18. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.

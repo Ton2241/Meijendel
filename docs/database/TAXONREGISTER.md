@@ -1259,6 +1259,99 @@ achtergebleven bronlagen is een feitelijke tussenstand, geen blijvende
 opslaguitzondering. `TODO.md`, sectie `Volledige PQ-opslag uitsluitend onder
 pq_*`, beschrijft het resterende werk en de afsluitende controle.
 
+### Restselectie en doelmodel — levende database, 8 november 2026
+
+Deze selectie is alleen-lezen bepaald op de levende lokale MySQL 9.7.4.
+De resterende fysieke migratie is hiermee nog niet uitgevoerd.
+
+| Bron en waarnemingsperiode | Actuele inhoud | Besluit voor restmigratie |
+| --- | --- | --- |
+| Provinciale PQ, 1981–2025 | 254 PQ's, 2.007 opnamen, 53.122 soortregels | Reeds onder `pq_*`; primaire reeks blijft leidend. |
+| Eerder geselecteerde LVD, 1981–2015 | 644 bronopnamen, 16.627 resultaten, 652 vermoedelijke opnamerelaties, 32.657 overlapbesluiten | Reeds onder `pq_*`; telt niet zelfstandig mee. |
+| Resterende LVD, 1959–2015 | 2.793 events en 64.683 resultaten | Blijft onder `lvd_*` zonder positieve PQ-aanwijzing per event. Events 40650 (2011) en 43406 (2013) zijn nabijheidskandidaten, geen bewezen PQ. |
+| Open NDFF, 1981–2025 | 90.992 records met actuele poortstatus `niet_beoordeelbaar`: 77.091 open, 10.903 mossen, 2.998 korstmossen | De status volgt alleen uit protocol `12.007` of `12.202`; geen opname-ID en geen automatische soortgroepverplaatsing. Bewaar de geversioneerde PQ-beoordeling onder `pq_*` en blijf zelfstandig meetellen blokkeren. |
+| Open NDFF, 1952–1980 | 6.326 records `historische_vegetatiecontext` | Geen gevalideerde PQ-reeks; behoud als historische context zonder PQ-toewijzing, tenzij bronbewijs die later oplevert. |
+| Beveiligde NDFF | 162 `exact` (1994–2023), 163 `niet_beoordeelbaar` (1957–2022) | PQ-specifieke beoordeling en eventuele bronwaarden horen in een afgeschermde `pq_*`-route. Geen zelfstandig meetellen. |
+
+De overige 14.248 beveiligde NDFF-records uit 1950–2025 hebben status
+`niet_van_toepassing`. Eén daarvan, waarneming 13265, heeft toch
+`pq_opname_id=261`; datum- en taxonmatch zijn leeg en bronhoudermatch is
+nul. Dat nummer is geen bewijs van een exacte PQ-relatie. De inconsistentie
+moet als bronbesluit worden uitgezocht, niet stilzwijgend weggewerkt.
+
+De reproduceerbare actuele selectie voor openbare NDFF-records is
+`ndff_open_pq_koppeling.regelversie='ndff-open-pq-poort-v2'` én
+`classificatie='niet_beoordeelbaar'`. De koppeling met
+`ndff_open_waarneming_register` bepaalt welke van de drie fysieke
+brontabellen de bronrij bevat. De twee regelversies omvatten samen
+1.621.660 beoordelingsrijen voor 810.830 openbare NDFF-records; ook
+historische besluiten en `niet_van_toepassing` zijn PQ-specifieke
+beoordelingsgegevens en horen als besluitgeschiedenis onder `pq_*`.
+Een enkele actuele status op de bronrij is hiervoor onvoldoende.
+Voor de beveiligde levering selecteert de actuele
+`ndff_pq_koppeling` alle 14.573 beoordelingen, inclusief het
+tegenstrijdige geval 13265; slechts de 162 `exact` en 163
+`niet_beoordeelbaar` zijn in deze stand bronwaarnemingen voor de
+afgeschermde PQ-route. Een bronwaarde uit de categorie
+`niet_van_toepassing` wordt daarmee niet als PQ-opname gekopieerd.
+De oude `pq_status`-kolommen op de drie openbare NDFF-brontabellen
+zijn eveneens PQ-specifieke nevenadministratie en verdwijnen pas na
+bewezen volledige vervanging van alle lees- en importroutes.
+
+`lvd_dataset` bevat één datasetrij en is ouder van zowel `lvd_event`
+als `pq_vegetatie_bronopname`. De gedeelde LVD-bronidentiteit blijft
+bestaan voor de 2.793 resterende events; de sleutel
+`lvd-meijendel-v1-6` verdwijnt niet uit de datasetadministratie.
+Een geversioneerde PQ-bronverwijzing bewaart daarnaast oorspronkelijke
+dataset-ID, bronversie, bestandshash, licentie en importversie. Historische
+metadata en interne event- en resultaat-ID's worden niet overschreven.
+De 48.454 `lvd_overlap`-regels verwijzen uitsluitend naar NDFF.
+De gecontroleerde overlaprijen van ENDURE, STOWA, Naturalis en NMR hebben
+evenmin een provinciaal PQ-doelsysteem; hun eigen metingen blijven staan.
+
+**Doelmodel.** De provinciale reeks blijft in
+`pq_vegetatie_opname` en `pq_vegetatie_waarneming`.
+Opnamen met onderbouwde of vermoedelijke relaties gebruiken de bestaande
+`pq_vegetatie_bronopname`, `pq_vegetatie_bronresultaat` en
+`pq_vegetatie_opname_bronkoppeling`. Een NDFF-record dat alleen vanwege
+protocol `12.007` of `12.202` is geblokkeerd, blijft een bronwaarneming
+op zijn huidige bronplek; uitsluitend het geversioneerde PQ-besluit hoort
+onder `pq_*`. Voeg geen fictief Event of PQ-nummer toe. Als aanvullend
+bronbewijs een werkelijke of onderbouwd vermoedelijke PQ-opname aanwijst,
+verplaats dan precies die bronopname naar `pq_*` met alle bronwaarden,
+de oorspronkelijke waarneming-ID en de juiste status. Het bestaande
+NDFF-identiteitsregister blijft een smalle locator zonder tweede meting
+of PQ-besluit. Bewaar leverings- en beslisversies afzonderlijk; een latere
+beslissing mag de eerdere niet uitwissen. Iedere soortregel blijft via
+`taxa_bronkoppeling` bereikbaar vanuit `taxa` en `taxon_groepen`.
+Brongetrouwe namen blijven gegevens, geen eigen taxoncatalogus.
+
+De NDFF-registers en veel afgeleide tabellen verwijzen met foreign keys
+naar de bestaande waarneming-ID. Verplaats daarom opslag, registerlocator,
+afgeleide verwijzingen, triggers, import- en leesroutes als één wijziging.
+Een kopie gevolgd door het wissen van bronrijen zou de bestaande
+analyses breken. Voor beveiligde waarden moeten de huidige toegangsrechten
+en vervaging ook binnen de PQ-route gelden; de openbare export, website,
+dashboard en Shiny krijgen geen onvervaagde bronwaarden.
+
+Toets de structuur aan Darwin Core Event, Occurrence en
+ResourceRelationship, en aan het onderscheid tussen naamgebruik en
+conceptkoppeling in TDWG TCS. Een PQ-kandidaatstatus is geen taxonidentiteit
+of bewezen gelijkheid van twee opnamen. De officiële termen staan in
+[Darwin Core](https://dwc.tdwg.org/terms/) en
+[TDWG TCS](https://tcs.tdwg.org/terms/).
+
+**Uitvoervolgorde:** leg eerst selecties, kolommapping, bronhashes en
+objectdefinities vast; bouw dan opslag, afscherming, import en leesroutes
+samen; beproef de migratie, herhaling, onderbreking, rollback en volledig
+herstel op een geregistreerde T7-proefdatabase; vergelijk alle bronvelden,
+taxonroutes, verwijzingen, PQ-indicatorwaarden en website-, dashboard- en
+Shiny-uitkomsten. Migreer pas daarna de levende lokale database. Verwijder
+uitsluitend de aantoonbaar volledig overgedragen bronrijen, controleer
+databasebreed dat geen PQ-specifieke informatie buiten `pq_*` resteert,
+en blokkeer herinvoer via de oude importpaden. VPS-publicatie blijft
+afzonderlijk goedkeuringsplichtig.
+
 ### Eerder uitgevoerde deelmigratie
 
 De opgedragen migratie verbindt de 53.122 provinciale taxonregels uit
@@ -2276,3 +2369,64 @@ Het controlebestand staat één niveau hoger als CONTROLE_SHA256.json.
 Eerdere relatieve bestandsverwijzingen in dit document hebben deze archiefmap als basis.
 De oorspronkelijke locatie /Users/ton/Documents/Backups viel onder iCloud;
 de eerdere omschrijving van die locatie als buiten iCloud was onjuist.
+
+### BMP-niet-vogels per soortgroep, lokaal uitgevoerd 8 november 2026
+
+De blijvende regel is nu: iedere aanwezige of nieuwe bruikbare herhaalde
+meetreeks voor trendanalyse krijgt haar feitelijke opslag in de passende
+soortgroeptabel. Bestaande gegevens worden fysiek verplaatst; bronwaarden,
+bezoeken, centrale taxonroute en afnemers blijven behouden. PQ en vogels
+houden hun eigen afgesproken inrichting. Een nieuwe ondersteunende
+`soortgroep_*`-tabel vergt afzonderlijke goedkeuring.
+
+Voor de BMP-niet-vogels uit 2005–2025 zijn vijf fysieke tabellen gemaakt:
+`zoogdieren`, `amfibieen`, `reptielen`, `dagvlinders` en
+`vliesvleugeligen`. Zij gebruiken de bestaande `dagbezoeken_bmp`-sleutel.
+Iedere rij heeft een verplichte FK naar `taxa` en `taxa_bronkoppeling`;
+de centrale schrijfguard controleert ook dat beide naar hetzelfde taxon
+verwijzen en dat de taxongroep bij de doeltabel past. De drie al bekende
+zoogdiertaxa `Martes`, `Microtus arvalis/agrestis` en
+`Sorex araneus spec.` zijn aan de bestaande groep `zoogdieren_overig`
+verbonden.
+
+De vijf tabellen bevatten 170.126 zelfstandige `meetuitkomst`-rijen:
+37 taxa maal 4.598 bezoeken, met 7.852 positieve uitkomsten en 162.274
+als nul afgeleide uitkomsten. Nulafleiding geldt volgens Tons besluit voor
+de overige niet-vogeltaxa zodra op een BMP-bezoek minstens één niet-vogel
+is geregistreerd. Positieve SOVON-waarden gaan bij overlap voor NDFF.
+De 7.552 historische NDFF-nullen blijven met hun bronstatus herkenbaar;
+een bron- of reconstructierij telt nooit zelfstandig naast de gekozen
+`meetuitkomst` mee.
+
+De herkomst is volledig binnen de soortgroeptabellen vastgelegd:
+19.153 oorspronkelijke SOVON-punten uit 2009–2025, 7.399 positieve
+SOVON-bezoektotalen uit 2005–2025, 28.422 SOVON-bezoekuitkomsten uit
+2009–2025, 10.374 NDFF-reconstructierijen en 5.452 bestaande
+SOVON-jaarmatrixrijen. De 82 niet-zoogdierpunten uit 2009–2025 zijn
+onder hun eigen vier soortgroepen opgenomen. Alle oorspronkelijke
+bronvelden, bronidentiteiten en puntgeometrieën zijn gecontroleerd
+overgenomen. De 19.153 oude punten, 28.422 oude SOVON-matrixrijen en
+15.826 oude NDFF/SOVON-jaarmatrixrijen zijn pas daarna op hun vroegere
+plaats verwijderd. Bronselectie, bezoekmetadata, NDFF-bronregels en
+overlapbesluiten blijven als auditspoor bestaan.
+
+De volledige lokale T7-back-up vooraf is
+`Meijendel_voor_BMP_soortgroepen_20261108T191235Z.sql.gz`, SHA-256
+`b00d24b4ee56c19c3d93c3bb0b3cf889bc1a7f9400d56e1e14174107c1e69f33`.
+Checksum, gzip-leesbaarheid en volledig herstel in een afzonderlijke
+MySQL-database zijn gecontroleerd. De definitieve code is van begin tot
+eind op die herstelkopie beproefd, inclusief broncelpariteit, verwijdering
+van de oude trendrijen en de centrale taxonpoort. Beide bestaande
+SOVON-analyseviews behielden veld voor veld hun 19.960 en 30.657 rijen.
+De levende nacontrole telt 327 basistabellen, 133 centrale taxonroutes en
+nul fouten. `dagwaarnemingen_bmp` bleef op 600.959 vogelregels en
+`pq_vegetatie_waarneming` op 53.122 PQ-regels. Er is geen lokale
+publicatie-export of cache en geen VPS-publicatie uitgevoerd.
+
+De 807 oorspronkelijke SOVON-punten en 2.235 bezoekuitkomsten uit 2026
+zijn niet verplaatst. Hun formele BMP-acceptatie en vervolgens een
+soortgroepgerichte invoerroute zijn de volgende afzonderlijke stap.
+De bestaande SOVON- en NDFF-reconstructie-import blokkeren na deze
+verplaatsing een herinvoer in de oude trendtabellen. Nieuwe
+trendgeschikte gegevens worden vóór import aan de passende soortgroeptabellen
+en de drie centrale taxontabellen getoetst.

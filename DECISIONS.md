@@ -1,5 +1,18 @@
 # Besluiten
 
+- Op 8 november 2026 heeft Ton de opslagregel voor soortgroeptabellen
+  aangescherpt. Alleen gegevens uit bruikbare herhaalde meetreeksen komen
+  daarvoor in aanmerking. De hoofdnaam is de soortgroep, bijvoorbeeld
+  `zoogdieren`. Bestaat al een passende soortgroeptabel, gebruik die om
+  aanvullende gegevens onder te brengen. Ondersteunende tabellen met het
+  patroon `soortnaam_*` mogen alleen na afzonderlijke goedkeuring worden
+  toegevoegd. Een bron- of protocolnaam alleen rechtvaardigt geen fysieke
+  verplaatsing. De eerder op 8 november beschreven algemene verplaatsing
+  van 749.834 openbare NDFF-bronregels uit 1700–2025 vervalt; die regels
+  blijven in hun huidige opslag totdat een afzonderlijk onderbouwde
+  selectie voor een bruikbare herhaalde meetreeks is vastgesteld. Dit besluit
+  wijzigt geen database, taxonroute, website, dashboard, Shiny of VPS.
+
 - Provincie Zuid-Holland heeft bevestigd dat haar vegetatiemeetnetgegevens
   onvolledig in NDFF staan, zonder het ontbrekende aantal, de jaren of de
   bronregels te specificeren. De provincie controleert de historische reeks
@@ -1818,3 +1831,20 @@ Alle 156 soorten uit de bewaarde ontwikkelbron 1958–2025 blijven zichtbaar: 31
 Voorafcriteria: `32123615`. De oorspronkelijke 500 matrices zijn exact behouden; 300 nieuwe batches met IDs 501–2000 zijn gecontroleerd. Alle bandgrenzen en stabiliteitsvlaggen zijn onafhankelijk nagerekend. Geen formele 95%-vrijgave, gelijktijdige jaarband of nieuwe lange-trendmarge. Bronsteun, referentiejaarproblemen, modelaanvulling en uitval blijven per soort vermeld. Zie `trim/bootstrap/periods_2025_2000_20261104/README.md`, `PER_SOORT.md` en de volledige CSV’s.
 
 De nieuwe uitvoer is aangesloten op hetzelfde lokale bootstrapblok voor website, dashboard en Shiny. De kandidaat bindt component-runidentiteiten, broncontext en checksums van invoer en consumenten. Tons vaste afspraak over integrale voorbereiding voor één latere 2026-actualisering is in beide repo-AGENTS en geheugen vastgelegd. Officiële 2026-validatie, verse bronproducten, schattergebonden intervalvrijgave, gezamenlijke releasecontroles en expliciet publicatieakkoord blijven poorten. Geen database-, export/cache-, groeps- of VPS-wijziging.
+## 8 november 2026 — trendgeschikte niet-vogelgegevens per soortgroep
+
+Ton heeft bepaald dat iedere bestaande of nieuwe reeks die verantwoord voor
+trendanalyses bruikbaar is, fysiek in de passende soortgroeptabel wordt
+vastgelegd. Voor bestaande databasegegevens is dit een verplaatsing, geen
+blijvende tweede kopie. Bestaande BMP-bezoeken en de centrale taxonroute
+worden hergebruikt; broninformatie, interne verwijzingen en afnemers blijven
+behouden. Aanvullende `soortgroep_*`-tabellen vergen aparte goedkeuring.
+
+Voor de niet-vogelgegevens van BMP geldt per bezoek met ten minste één
+niet-vogelwaarneming een afgeleide nul voor iedere niet-waargenomen soort op de
+vastgelegde niet-vogelsoortenlijst. Dit omvat ook de aanvullende jaarlijkse
+SOVON-bezoektotalen uit 2005–2025. Ton accepteert de 7.552 bestaande
+historische NDFF-nullen als afzonderlijk herkenbare afgeleide waarden. Bij
+overlap gaat de oorspronkelijke SOVON-waarde voor, zonder dubbel te tellen.
+De nog niet formeel geaccepteerde BMP-jaargang 2026 blijft buiten deze
+verplaatsing.

@@ -70,7 +70,7 @@ Na nieuwe of gewijzigde gebiedsversies controleer je:
 3. geen overlappende geldigheidsperioden voor hetzelfde gebied;
 4. opnieuw opgebouwde plotdoorsnijdingen;
 5. gezamenlijke statusdekking per plot niet boven 100%;
-6. Shiny-contracttests met parser/cacheversie 17.
+6. Shiny-contracttests met parser/cacheversie 18.
 
 Na een nieuwe OSM-snapshot controleer je daarnaast bronbestand- en queryhash,
 OSM-bronmoment, classificatieverschillen, BGT-dekking, geldigheidsintervallen en

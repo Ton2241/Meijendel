@@ -96,6 +96,8 @@ def insert_before(anchor: Paragraph, text: str, style: str) -> Paragraph:
 def rename_once(document: Document, old: str, new: str) -> None:
     if any(p.text == new for p in document.paragraphs):
         return
+    if not any(p.text == old for p in document.paragraphs):
+        return
     replace_paragraph(document, old, new)
 
 
@@ -143,22 +145,23 @@ def main() -> None:
     replace_paragraph(document, "Stand:", "Stand: 10 november 2026.")
     replace_paragraph(document, "Aanvullende verklarende gegevens.", ENVIRONMENT)
     replace_paragraph(document, "Garmin-QField-veldbron", GARMIN)
-    replace_paragraph_any(
-        document,
-        ("De levende lokale database bevat nu drie toegestane gebiedsstatussen", "De levende lokale database bevat nu vier toegestane gebiedsstatussen"),
-        section[1],
-    )
-    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden", "De levende database bevat tien actuele gebieden", "De levende database bevat elf actuele gebieden", "De levende database bevat twaalf actuele gebieden", "De levende database bevat dertien actuele gebieden", "De levende database bevat veertien actuele gebieden"), section[2])
-    replace_paragraph_any(
-        document,
-        (
-            "Shiny en de statische browser gebruiken parser/cacheversie 16",
-            "Shiny en de statische browser gebruiken parser/cacheversie 17",
-            "Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18",
-        ),
-        section[4],
-    )
-    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak", "De herstelkopie direct vóór deze correctie", "De herstelkopie direct vóór de definitieve correctie", "De herstelkopie direct vóór deze vervanging", "De primaire herstelkopie direct vóór de invoer van het M4-5-vlak", "De primaire herstelkopie direct vóór de fietspadcorridor"), section[5])
+    if any(p.text == SECTION_TITLE for p in document.paragraphs):
+        replace_paragraph_any(
+            document,
+            ("De levende lokale database bevat nu drie toegestane gebiedsstatussen", "De levende lokale database bevat nu vier toegestane gebiedsstatussen"),
+            section[1],
+        )
+        replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden", "De levende database bevat tien actuele gebieden", "De levende database bevat elf actuele gebieden", "De levende database bevat twaalf actuele gebieden", "De levende database bevat dertien actuele gebieden", "De levende database bevat veertien actuele gebieden"), section[2])
+        replace_paragraph_any(
+            document,
+            (
+                "Shiny en de statische browser gebruiken parser/cacheversie 16",
+                "Shiny en de statische browser gebruiken parser/cacheversie 17",
+                "Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18",
+            ),
+            section[4],
+        )
+        replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak", "De herstelkopie direct vóór deze correctie", "De herstelkopie direct vóór de definitieve correctie", "De herstelkopie direct vóór deze vervanging", "De primaire herstelkopie direct vóór de invoer van het M4-5-vlak", "De primaire herstelkopie direct vóór de fietspadcorridor"), section[5])
     rename_once(
         document,
         "Integratie begrazing en toegankelijkheid op 16 oktober 2026",
