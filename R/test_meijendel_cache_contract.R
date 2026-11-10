@@ -293,6 +293,26 @@ stopifnot(identical(
 ))
 
 source(file.path(repo, "shiny_meijendel", "helpers.R"))
+
+binary_plot_fixture <- tempfile(fileext = ".sql")
+plot_prefix <- paste0(
+  "INSERT INTO `plots` (`plot_id`, `plot_nr`, `plot_wv`, `plot_naam`, ",
+  "`kavel_nummer`, `geom`, `in_gebruik`, `geom_bron_import_id`, `geom_sha256`) VALUES ",
+  "(3490,491,'ZH13363','Meijendel k 33','M33',_binary '"
+)
+plot_suffix <- "',1,NULL,'testhash');\n"
+writeBin(
+  c(charToRaw(plot_prefix), as.raw(0xfa), charToRaw(plot_suffix)),
+  binary_plot_fixture
+)
+binary_plots <- read_plots_cache_table(binary_plot_fixture)
+stopifnot(
+  identical(names(binary_plots), c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik")),
+  identical(binary_plots$plot_id, "3490"),
+  identical(binary_plots$kavel_nummer, "M33")
+)
+unlink(binary_plot_fixture)
+
 complete_count_fixture <- data.frame(
   plot_id = rep(1L, 5L),
   jaar = c(2024L, 2024L, 2025L, 2025L, 2025L),

@@ -576,6 +576,18 @@ read_insert_table <- function(path, table, keep_columns = NULL, respect_parens =
   out
 }
 
+read_plots_cache_table <- function(path) {
+  read_insert_table(
+    path,
+    "plots",
+    c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik"),
+    sanitize_binary = TRUE,
+    fast_tuples = TRUE,
+    keep_only = TRUE,
+    mysql_escapes = TRUE
+  )
+}
+
 read_optional_insert_table <- function(path, table, columns) {
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   prefix <- paste0("INSERT INTO \`", table, "\` ")
@@ -823,7 +835,7 @@ build_maatregel_registration_data <- function(tbls) {
 
 parse_meijendel_tables <- function(path) {
   registration_data <- build_maatregel_registration_data(read_maatregel_registration_tables(path))
-  plots <- read_insert_table(path, "plots")
+  plots <- read_plots_cache_table(path)
   plot_analyse_scope <- read_insert_table(
     path,
     "plot_analyse_scope",
