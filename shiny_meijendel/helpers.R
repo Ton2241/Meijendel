@@ -986,7 +986,6 @@ parse_meijendel_tables <- function(path) {
   pji$jaar <- to_integer(pji$jaar)
   pji$waarde <- to_numeric(pji$waarde)
   pjtg$plot_id <- to_integer(pjtg$plot_id)
-  pjtg$jaar <- to_integer(pjtg$jaar)
   dagwaarnemingen_wv$plot_id <- to_integer(dagwaarnemingen_wv$plot_id)
   dagwaarnemingen_wv$soort_id <- to_integer(dagwaarnemingen_wv$soort_id)
   dagwaarnemingen_wv$jaar <- to_integer(dagwaarnemingen_wv$jaar)

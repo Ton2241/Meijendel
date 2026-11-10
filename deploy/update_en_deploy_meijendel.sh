@@ -51,7 +51,7 @@ cd "$REPO_DIR"
 "$REPO_DIR/scripts/check_local_workspace.sh"
 "$REPO_DIR/scripts/check_mysql_version.sh"
 
-log "Maak en proefimporteer actuele lokale database-dump met MySQL 9.7.1"
+log "Maak en proefimporteer actuele lokale database-dump"
 "$REPO_DIR/scripts/export_meijendel_sql.sh" "$SQL_FILE" "$SQL_MANIFEST"
 
 log "Maak afzonderlijke bron-dump"

@@ -63,6 +63,7 @@ python3 "$REPO_DIR/gis/scripts/import_external_ecology_sources.py" \
 "$MYSQLDUMP_BIN" --login-path="$MYSQL_LOGIN_PATH" \
   --no-tablespaces \
   --complete-insert \
+  --hex-blob \
   --single-transaction \
   --set-gtid-purged=OFF \
   --skip-dump-date \

@@ -330,6 +330,7 @@ stopifnot(
 helpers_source <- readLines(file.path(repo, "shiny_meijendel", "helpers.R"), warn = FALSE)
 stopifnot(
   !any(grepl("plots <- plots[plots$in_gebruik == 1L", helpers_source, fixed = TRUE)),
+  !any(grepl("pjtg$jaar <-", helpers_source, fixed = TRUE)),
   any(grepl("accepted_positive_species_ids", helpers_source, fixed = TRUE))
 )
 batch_gate_files <- c(
