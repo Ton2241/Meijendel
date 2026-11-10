@@ -274,6 +274,69 @@ def main() -> int:
         assert migration.polygonal_area(geometry.Intersection(corridor_geometry)) < 0.001
     assert sum(area.get("corridor_adjusted", False) for area in [adjusted_feature, *adjusted_areas]) == 10
 
+    # De twee gelijk-statusoverlappen worden technisch aan de nauwkeuriger
+    # Garmin- en Harstenhoekvlakken toegewezen. Alleen het grovere
+    # Ruygenhoek-vlak mag geometrisch veranderen.
+    ruygenhoek_before = next(
+        area for area in adjusted_areas
+        if area["gebied_code"] == "ruygenhoek_afgesloten_1955"
+    )
+    harstenhoek_before = next(
+        area for area in adjusted_areas
+        if area["gebied_code"] == "harstenhoek_afgesloten_1955"
+    )
+    garmin_before_geometry = migration.ogr.CreateGeometryFromWkt(adjusted_feature["wkt"])
+    ruygenhoek_before_geometry = migration.ogr.CreateGeometryFromWkt(ruygenhoek_before["wkt"])
+    harstenhoek_before_geometry = migration.ogr.CreateGeometryFromWkt(harstenhoek_before["wkt"])
+    assert abs(
+        migration.polygonal_area(garmin_before_geometry.Intersection(ruygenhoek_before_geometry))
+        - 92_880.406004
+    ) < 0.01
+    assert abs(
+        migration.polygonal_area(harstenhoek_before_geometry.Intersection(ruygenhoek_before_geometry))
+        - 0.384298
+    ) < 0.01
+
+    before_multi = migration.ogr.Geometry(migration.ogr.wkbMultiPolygon)
+    for geometry in (garmin_before_geometry, ruygenhoek_before_geometry, harstenhoek_before_geometry):
+        for part in migration._polygon_parts(geometry):
+            before_multi.AddGeometry(part)
+    before_union_area = before_multi.UnionCascaded().GetArea()
+
+    disentangled_feature, disentangled_areas = migration.disentangle_same_status_closed_areas(
+        adjusted_feature,
+        adjusted_areas,
+    )
+    ruygenhoek_after = next(
+        area for area in disentangled_areas
+        if area["gebied_code"] == "ruygenhoek_afgesloten_1955"
+    )
+    harstenhoek_after = next(
+        area for area in disentangled_areas
+        if area["gebied_code"] == "harstenhoek_afgesloten_1955"
+    )
+    garmin_after_geometry = migration.ogr.CreateGeometryFromWkt(disentangled_feature["wkt"])
+    ruygenhoek_after_geometry = migration.ogr.CreateGeometryFromWkt(ruygenhoek_after["wkt"])
+    harstenhoek_after_geometry = migration.ogr.CreateGeometryFromWkt(harstenhoek_after["wkt"])
+    assert disentangled_feature["geometrie_sha256"] == adjusted_feature["geometrie_sha256"]
+    assert harstenhoek_after["geometrie_sha256"] == harstenhoek_before["geometrie_sha256"]
+    assert all(
+        area["status_code"] == "afgesloten"
+        for area in (disentangled_feature, ruygenhoek_after, harstenhoek_after)
+    )
+    assert migration.polygonal_area(garmin_after_geometry.Intersection(ruygenhoek_after_geometry)) < 0.001
+    assert migration.polygonal_area(harstenhoek_after_geometry.Intersection(ruygenhoek_after_geometry)) < 0.001
+    assert ruygenhoek_after["bron_code"] == "topologiecorrectie_gelijke_status_20261110"
+    assert len(ruygenhoek_after["inwinningsmethode"]) <= 120
+
+    after_multi = migration.ogr.Geometry(migration.ogr.wkbMultiPolygon)
+    for geometry in (garmin_after_geometry, ruygenhoek_after_geometry, harstenhoek_after_geometry):
+        for part in migration._polygon_parts(geometry):
+            after_multi.AddGeometry(part)
+    assert abs(after_multi.UnionCascaded().GetArea() - before_union_area) < 0.01
+
+    adjusted_feature, adjusted_areas = disentangled_feature, disentangled_areas
+
     statements = migration.build_migration_statements(adjusted_feature, adjusted_areas)
     joined = "\n".join(statements)
     assert "1955-01-01" in joined

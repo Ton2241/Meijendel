@@ -53,7 +53,7 @@ STATUS_CODES = (
     "toegankelijk_buiten_broedseizoen",
     "toegankelijk_met_toegangskaart",
 )
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v12"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v13"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
@@ -62,6 +62,9 @@ M45_SOURCE_CODE = "mymaps_grensregistratie_20261110"
 HARSTENHOEK_SOURCE_CODE = "mymaps_harstenhoek_20261110"
 FIETSPAD_CORRIDOR_SOURCE_CODE = "osm_fietspadcorridor_20261110"
 FIETSPAD_CORRIDOR_AREA_CODE = "fietspad_scheveningen_wassenaarse_slag_1955"
+TOPOLOGY_SOURCE_CODE = "topologiecorrectie_gelijke_status_20261110"
+RUYGENHOEK_AREA_CODE = "ruygenhoek_afgesloten_1955"
+HARSTENHOEK_AREA_CODE = "harstenhoek_afgesloten_1955"
 BIERLAP_BOUNDARY_START_POINT_ID = 0
 BIERLAP_BOUNDARY_END_POINT_ID = 396
 BIERLAP_CURVE_CONTROL_POINTS_RD = (
@@ -691,6 +694,113 @@ def apply_accepted_fietspad_corridor(
     return adjusted_feature, adjusted_areas
 
 
+def _polygonal_multipolygon(geometry: ogr.Geometry) -> ogr.Geometry:
+    """Normaliseer uitsluitend de vlakdelen tot een MySQL-veilige multipolygoon."""
+    result = ogr.Geometry(ogr.wkbMultiPolygon)
+    for part in _polygon_parts(geometry):
+        if not part.IsEmpty() and part.GetArea() > 0:
+            result.AddGeometry(part)
+    result = ogr.ForceToMultiPolygon(result.MakeValid())
+    # MySQL beoordeelt zelfrakende ringknooppunten strenger dan OGR. Gebruik
+    # dezelfde nulbuffer-WKT-rondgang als bij de overige gebiedsrecords.
+    result = ogr.ForceToMultiPolygon(result.Buffer(0))
+    result = ogr.CreateGeometryFromWkt(result.ExportToIsoWkt()).Buffer(0)
+    result = ogr.ForceToMultiPolygon(result)
+    if result is None or result.IsEmpty() or not result.IsValid():
+        raise ValueError("Topologiecorrectie levert geen geldige multipolygoon op")
+    return result
+
+
+def _union_area(geometries: tuple[ogr.Geometry, ...]) -> float:
+    multi = ogr.Geometry(ogr.wkbMultiPolygon)
+    for geometry in geometries:
+        for part in _polygon_parts(geometry):
+            multi.AddGeometry(part)
+    return float(multi.UnionCascaded().GetArea())
+
+
+def disentangle_same_status_closed_areas(
+    feature: dict[str, Any],
+    areas: list[dict[str, Any]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Behoud precieze gesloten vlakken en snijd hun overlap uit Ruygenhoek."""
+    by_code = {area["gebied_code"]: area for area in areas}
+    try:
+        ruygenhoek = by_code[RUYGENHOEK_AREA_CODE]
+        harstenhoek = by_code[HARSTENHOEK_AREA_CODE]
+    except KeyError as error:
+        raise ValueError(f"Gebied voor topologiecorrectie ontbreekt: {error.args[0]}") from error
+    if feature["gebied_code"] != AREA_CODE:
+        raise ValueError(f"Onverwacht Garmin-gebied: {feature['gebied_code']}")
+    if {feature["status_code"], ruygenhoek["status_code"], harstenhoek["status_code"]} != {"afgesloten"}:
+        raise ValueError("Topologiecorrectie is uitsluitend toegestaan voor drie afgesloten gebieden")
+
+    garmin_geometry = ogr.CreateGeometryFromWkt(feature["wkt"])
+    ruygenhoek_geometry = ogr.CreateGeometryFromWkt(ruygenhoek["wkt"])
+    harstenhoek_geometry = ogr.CreateGeometryFromWkt(harstenhoek["wkt"])
+    before_union_area = _union_area((garmin_geometry, ruygenhoek_geometry, harstenhoek_geometry))
+    garmin_overlap_m2 = polygonal_area(ruygenhoek_geometry.Intersection(garmin_geometry))
+    harstenhoek_overlap_m2 = polygonal_area(ruygenhoek_geometry.Intersection(harstenhoek_geometry))
+    if garmin_overlap_m2 < 0.001 or harstenhoek_overlap_m2 < 0.001:
+        raise ValueError(
+            "Verwachte gelijk-statusoverlap ontbreekt: "
+            f"Garmin={garmin_overlap_m2:.6f} m2, Harstenhoek={harstenhoek_overlap_m2:.6f} m2"
+        )
+
+    corrected_geometry = _polygonal_multipolygon(
+        ruygenhoek_geometry.Difference(garmin_geometry).Difference(harstenhoek_geometry)
+    )
+    internal_rings = sum(
+        max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(corrected_geometry)
+    )
+    if internal_rings:
+        raise ValueError(f"Ontvlochten Ruygenhoek bevat {internal_rings} interne ringen")
+    if polygonal_area(corrected_geometry.Intersection(garmin_geometry)) >= 0.001:
+        raise ValueError("Ruygenhoek overlapt Garmin na topologiecorrectie")
+    if polygonal_area(corrected_geometry.Intersection(harstenhoek_geometry)) >= 0.001:
+        raise ValueError("Ruygenhoek overlapt Harstenhoek na topologiecorrectie")
+    after_union_area = _union_area((garmin_geometry, corrected_geometry, harstenhoek_geometry))
+    if abs(after_union_area - before_union_area) >= 0.01:
+        raise ValueError(
+            "Gezamenlijke afgesloten unie veranderde door topologiecorrectie: "
+            f"{after_union_area - before_union_area:.6f} m2"
+        )
+
+    wkb = bytes(corrected_geometry.ExportToWkb(ogr.wkbNDR))
+    corrected_record = dict(ruygenhoek)
+    corrected_record.update(
+        wkt=corrected_geometry.ExportToIsoWkt(),
+        geometrie_sha256=hashlib.sha256(wkb).hexdigest(),
+        oppervlakte_m2=float(corrected_geometry.GetArea()),
+        interne_ringen=0,
+        topologie_ontvlochten=True,
+        verwijderde_garmin_overlap_m2=garmin_overlap_m2,
+        verwijderde_harstenhoek_overlap_m2=harstenhoek_overlap_m2,
+        oorspronkelijke_bron_code=ruygenhoek.get("bron_code", PLOT_SOURCE_CODE),
+        oorspronkelijke_bron_object_id=ruygenhoek["feature_id"],
+        bron_code=TOPOLOGY_SOURCE_CODE,
+        feature_id=f"{RUYGENHOEK_AREA_CODE}|ontvlochten-garmin-harstenhoek-20261110",
+        inwinningsmethode=(
+            "Ruygenhoek uitgesneden langs ongewijzigde Garmin- en Harstenhoekvlakken "
+            "met status afgesloten"
+        ),
+        vastgesteld_op="2026-11-10",
+        opmerking=(
+            ruygenhoek["opmerking"].rstrip()
+            + " Op 10 november 2026 zijn uitsluitend de dubbel geregistreerde afgesloten "
+            "delen met Garmin en Harstenhoek uit Ruygenhoek gesneden; de gezamenlijke "
+            "afgesloten dekking en alle statussen bleven gelijk. "
+            f"Oorspronkelijke broncode: {ruygenhoek.get('bron_code', PLOT_SOURCE_CODE)}; "
+            f"oorspronkelijk bronobject: {ruygenhoek['feature_id']}."
+        ),
+    )
+    corrected_areas = [
+        corrected_record if area["gebied_code"] == RUYGENHOEK_AREA_CODE else dict(area)
+        for area in areas
+    ]
+    return dict(feature), corrected_areas
+
+
 def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
     """Lees exact het door Ton visueel goedgekeurde Bierlap-Kijfhoek-vlak."""
     return read_accepted_area_geometry(path, "Bierlap-Kijfhoek")
@@ -958,6 +1068,14 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "'OSM-snapshot 1 van 8 november 2026; vier gekoppelde routetakken; buffer van vijf meter "
         "aan weerszijden; visueel goedgekeurd door Ton op 10 november 2026; oorspronkelijke "
         "statusvlakken blijven in geometrie-opmerking herleidbaar') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{TOPOLOGY_SOURCE_CODE}','handmatige_registratie',"
+        "'Topologiecorrectie dubbel afgesloten gebieden',"
+        "'2026-11-10','2026-11-10','door gebruiker bevestigd',"
+        "'Garmin en Harstenhoek ongewijzigd behouden; gelijk-statusoverlap uitsluitend uit het "
+        "grovere Ruygenhoek-vlak M32-M33 gesneden; gezamenlijke afgesloten unie en status gelijk') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
         "INSERT INTO maatregel_bron "
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
@@ -1367,6 +1485,19 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         overlap = polygonal_area(geometry.Intersection(corridor_geometry))
         if overlap >= 0.001:
             raise AssertionError(f"Statusgebied {area['gebied_code']} overlapt corridor: {overlap:.6f} m2")
+    by_code = {area["gebied_code"]: area for area in plot_areas}
+    ruygenhoek_geometry = ogr.CreateGeometryFromWkt(by_code[RUYGENHOEK_AREA_CODE]["wkt"])
+    harstenhoek_geometry = ogr.CreateGeometryFromWkt(by_code[HARSTENHOEK_AREA_CODE]["wkt"])
+    garmin_geometry = ogr.CreateGeometryFromWkt(feature["wkt"])
+    for protected_code, protected_geometry in (
+        (AREA_CODE, garmin_geometry),
+        (HARSTENHOEK_AREA_CODE, harstenhoek_geometry),
+    ):
+        overlap = polygonal_area(ruygenhoek_geometry.Intersection(protected_geometry))
+        if overlap >= 0.001:
+            raise AssertionError(
+                f"Gelijk-statusoverlap {RUYGENHOEK_AREA_CODE} met {protected_code}: {overlap:.6f} m2"
+            )
     return result
 
 
@@ -1429,6 +1560,7 @@ def main() -> int:
         plot_areas,
         args.fietspad_corridor_gpkg,
     )
+    feature, plot_areas = disentangle_same_status_closed_areas(feature, plot_areas)
     client = Client(args.database)
     if args.apply:
         metadata = backup(client, args.backup_dir, feature, plot_areas)
