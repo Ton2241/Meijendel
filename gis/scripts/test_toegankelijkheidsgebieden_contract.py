@@ -335,7 +335,74 @@ def main() -> int:
             after_multi.AddGeometry(part)
     assert abs(after_multi.UnionCascaded().GetArea() - before_union_area) < 0.01
 
-    adjusted_feature, adjusted_areas = disentangled_feature, disentangled_areas
+    # Ton heeft op 10 november 2026 per conflicterend overlappaar bepaald
+    # welke status leidend is. M75 en M71 vallen binnen Bierlap-Kijfhoek en
+    # behouden daarom de dagkaartstatus.
+    by_code_before = {area["gebied_code"]: area for area in disentangled_areas}
+    conflict_specs = (
+        ("bierlap_kijfhoek_dagkaart_1955", "buitenduin_noord_1955", 155.343834),
+        ("bierlap_kijfhoek_dagkaart_1955", "buitenduin_noord_toegankelijk_1955", 1237.126231),
+        ("bierlap_kijfhoek_dagkaart_1955", "haagsche_golfclub_1955", 203.449367),
+        ("bierlap_kijfhoek_dagkaart_1955", "hertenkamp_1955", 220.546609),
+        ("buitenduin_noord_1955", "buitenduin_noord_toegankelijk_1955", 30.149153),
+        ("buitenduin_zuid_broedseizoen_1955", "kavel_m34_1955", 0.449671),
+        ("kavel_m31_1955", "ruygenhoek_afgesloten_1955", 7567.781026),
+    )
+    conflict_geometries = {}
+    for code_1, code_2, expected_m2 in conflict_specs:
+        geometry_1 = migration.ogr.CreateGeometryFromWkt(by_code_before[code_1]["wkt"])
+        geometry_2 = migration.ogr.CreateGeometryFromWkt(by_code_before[code_2]["wkt"])
+        intersection = geometry_1.Intersection(geometry_2)
+        assert abs(migration.polygonal_area(intersection) - expected_m2) < 0.01
+        conflict_geometries[(code_1, code_2)] = intersection
+
+    all_before = migration.ogr.Geometry(migration.ogr.wkbMultiPolygon)
+    for area in (disentangled_feature, *disentangled_areas):
+        geometry = migration.ogr.CreateGeometryFromWkt(area["wkt"])
+        for part in migration._polygon_parts(geometry):
+            all_before.AddGeometry(part)
+    total_union_before = all_before.UnionCascaded().GetArea()
+
+    resolved_feature, resolved_areas = migration.resolve_conflicting_status_overlaps(
+        disentangled_feature,
+        disentangled_areas,
+    )
+    assert resolved_feature["geometrie_sha256"] == disentangled_feature["geometrie_sha256"]
+    assert len(resolved_areas) == len(disentangled_areas)
+    by_code_after = {area["gebied_code"]: area for area in resolved_areas}
+
+    protected_assignments = (
+        (("bierlap_kijfhoek_dagkaart_1955", "buitenduin_noord_1955"), "bierlap_kijfhoek_dagkaart_1955"),
+        (("bierlap_kijfhoek_dagkaart_1955", "buitenduin_noord_toegankelijk_1955"), "bierlap_kijfhoek_dagkaart_1955"),
+        (("bierlap_kijfhoek_dagkaart_1955", "haagsche_golfclub_1955"), "haagsche_golfclub_1955"),
+        (("bierlap_kijfhoek_dagkaart_1955", "hertenkamp_1955"), "bierlap_kijfhoek_dagkaart_1955"),
+        (("buitenduin_noord_1955", "buitenduin_noord_toegankelijk_1955"), "buitenduin_noord_1955"),
+        (("buitenduin_zuid_broedseizoen_1955", "kavel_m34_1955"), "buitenduin_zuid_broedseizoen_1955"),
+        (("kavel_m31_1955", "ruygenhoek_afgesloten_1955"), "kavel_m31_1955"),
+    )
+    for pair, winner_code in protected_assignments:
+        winner_geometry = migration.ogr.CreateGeometryFromWkt(by_code_after[winner_code]["wkt"])
+        expected_overlap = migration.polygonal_area(conflict_geometries[pair])
+        assert abs(
+            migration.polygonal_area(winner_geometry.Intersection(conflict_geometries[pair]))
+            - expected_overlap
+        ) < 0.01
+
+    all_after_records = [resolved_feature, *resolved_areas]
+    for index, area_1 in enumerate(all_after_records[:-1]):
+        geometry_1 = migration.ogr.CreateGeometryFromWkt(area_1["wkt"])
+        for area_2 in all_after_records[index + 1:]:
+            geometry_2 = migration.ogr.CreateGeometryFromWkt(area_2["wkt"])
+            assert migration.polygonal_area(geometry_1.Intersection(geometry_2)) < 0.01
+
+    all_after = migration.ogr.Geometry(migration.ogr.wkbMultiPolygon)
+    for area in all_after_records:
+        geometry = migration.ogr.CreateGeometryFromWkt(area["wkt"])
+        for part in migration._polygon_parts(geometry):
+            all_after.AddGeometry(part)
+    assert abs(all_after.UnionCascaded().GetArea() - total_union_before) < 0.01
+
+    adjusted_feature, adjusted_areas = resolved_feature, resolved_areas
 
     statements = migration.build_migration_statements(adjusted_feature, adjusted_areas)
     joined = "\n".join(statements)

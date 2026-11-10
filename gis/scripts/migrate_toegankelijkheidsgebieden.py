@@ -53,7 +53,7 @@ STATUS_CODES = (
     "toegankelijk_buiten_broedseizoen",
     "toegankelijk_met_toegangskaart",
 )
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v13"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v14"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
@@ -63,6 +63,7 @@ HARSTENHOEK_SOURCE_CODE = "mymaps_harstenhoek_20261110"
 FIETSPAD_CORRIDOR_SOURCE_CODE = "osm_fietspadcorridor_20261110"
 FIETSPAD_CORRIDOR_AREA_CODE = "fietspad_scheveningen_wassenaarse_slag_1955"
 TOPOLOGY_SOURCE_CODE = "topologiecorrectie_gelijke_status_20261110"
+STATUS_CONFLICT_SOURCE_CODE = "statuscorrectie_conflicten_20261110"
 RUYGENHOEK_AREA_CODE = "ruygenhoek_afgesloten_1955"
 HARSTENHOEK_AREA_CODE = "harstenhoek_afgesloten_1955"
 BIERLAP_BOUNDARY_START_POINT_ID = 0
@@ -801,6 +802,118 @@ def disentangle_same_status_closed_areas(
     return dict(feature), corrected_areas
 
 
+def _union_geometries(geometries: list[ogr.Geometry]) -> ogr.Geometry:
+    multi = ogr.Geometry(ogr.wkbMultiPolygon)
+    for geometry in geometries:
+        for part in _polygon_parts(geometry):
+            multi.AddGeometry(part)
+    return _polygonal_multipolygon(multi.UnionCascaded())
+
+
+def resolve_conflicting_status_overlaps(
+    feature: dict[str, Any],
+    areas: list[dict[str, Any]],
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Ken de zeven bevestigde conflicterende overlaps aan het leidende vlak toe."""
+    records = {area["gebied_code"]: dict(area) for area in areas}
+    geometries = {
+        code: ogr.CreateGeometryFromWkt(record["wkt"])
+        for code, record in records.items()
+    }
+    decisions = (
+        # M75 en M71 vallen binnen Bierlap-Kijfhoek en houden de dagkaartstatus.
+        ("bierlap_kijfhoek_dagkaart_1955", "buitenduin_noord_1955", "buitenduin_noord_1955", 155.343834),
+        ("bierlap_kijfhoek_dagkaart_1955", "buitenduin_noord_toegankelijk_1955", "buitenduin_noord_toegankelijk_1955", 1237.126231),
+        ("bierlap_kijfhoek_dagkaart_1955", "haagsche_golfclub_1955", "bierlap_kijfhoek_dagkaart_1955", 203.449367),
+        ("bierlap_kijfhoek_dagkaart_1955", "hertenkamp_1955", "hertenkamp_1955", 220.546609),
+        ("buitenduin_noord_1955", "buitenduin_noord_toegankelijk_1955", "buitenduin_noord_toegankelijk_1955", 30.149153),
+        ("buitenduin_zuid_broedseizoen_1955", "kavel_m34_1955", "kavel_m34_1955", 0.449671),
+        ("kavel_m31_1955", "ruygenhoek_afgesloten_1955", "ruygenhoek_afgesloten_1955", 7567.781026),
+    )
+    removals: dict[str, list[ogr.Geometry]] = {}
+    removed_area_by_code: dict[str, float] = {}
+    before_union = _union_area(tuple(
+        [ogr.CreateGeometryFromWkt(feature["wkt"]), *geometries.values()]
+    ))
+    for code_1, code_2, loser_code, expected_m2 in decisions:
+        if code_1 not in geometries or code_2 not in geometries:
+            raise ValueError(f"Statusbesluit verwijst naar ontbrekend gebied: {code_1}/{code_2}")
+        intersection = geometries[code_1].Intersection(geometries[code_2])
+        overlap_m2 = polygonal_area(intersection)
+        if abs(overlap_m2 - expected_m2) >= 0.02:
+            raise ValueError(
+                f"Overlap {code_1}/{code_2} wijkt af: {overlap_m2:.6f} in plaats van {expected_m2:.6f} m2"
+            )
+        removals.setdefault(loser_code, []).append(intersection)
+        removed_area_by_code[loser_code] = removed_area_by_code.get(loser_code, 0.0) + overlap_m2
+
+    for code, overlap_geometries in removals.items():
+        removal = _union_geometries(overlap_geometries)
+        corrected = _polygonal_multipolygon(geometries[code].Difference(removal))
+        internal_rings = sum(
+            max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(corrected)
+        )
+        wkb = bytes(corrected.ExportToWkb(ogr.wkbNDR))
+        original = records[code]
+        original_source = original.get("bron_code", PLOT_SOURCE_CODE)
+        original_object = original["feature_id"]
+        records[code].update(
+            wkt=corrected.ExportToIsoWkt(),
+            geometrie_sha256=hashlib.sha256(wkb).hexdigest(),
+            oppervlakte_m2=float(corrected.GetArea()),
+            interne_ringen=internal_rings,
+            status_overlap_adjusted=True,
+            verwijderde_statusoverlap_m2=removed_area_by_code[code],
+            oorspronkelijke_bron_code=original_source,
+            oorspronkelijke_bron_object_id=original_object,
+            bron_code=STATUS_CONFLICT_SOURCE_CODE,
+            feature_id=f"{code}|statusbesluiten-20261110",
+            inwinningsmethode="grenscorrectie volgens zeven door Ton bevestigde statusbesluiten",
+            vastgesteld_op="2026-11-10",
+            opmerking=(
+                original["opmerking"].rstrip()
+                + " Op 10 november 2026 teruggesneden volgens Tons beoordeling van de zeven "
+                "conflicterende statusoverlaps; de totale gebiedsdekking bleef gelijk. "
+                f"Oorspronkelijke broncode: {original_source}; oorspronkelijk bronobject: {original_object}."
+            ),
+        )
+
+    corrected_areas = [records[area["gebied_code"]] for area in areas]
+    all_records = [feature, *corrected_areas]
+    for index, record_1 in enumerate(all_records[:-1]):
+        geometry_1 = ogr.CreateGeometryFromWkt(record_1["wkt"])
+        for record_2 in all_records[index + 1:]:
+            geometry_2 = ogr.CreateGeometryFromWkt(record_2["wkt"])
+            overlap_m2 = polygonal_area(geometry_1.Intersection(geometry_2))
+            if overlap_m2 >= 0.01:
+                raise ValueError(
+                    f"Statusoverlap resteert tussen {record_1['gebied_code']} en "
+                    f"{record_2['gebied_code']}: {overlap_m2:.6f} m2"
+                )
+    after_union = _union_area(tuple(
+        ogr.CreateGeometryFromWkt(record["wkt"]) for record in all_records
+    ))
+    if abs(after_union - before_union) >= 0.01:
+        raise ValueError(f"Totale statusdekking veranderde met {after_union - before_union:.6f} m2")
+    for index, record in enumerate(all_records):
+        geometry = ogr.CreateGeometryFromWkt(record["wkt"])
+        other_union = _union_geometries([
+            ogr.CreateGeometryFromWkt(other["wkt"])
+            for other_index, other in enumerate(all_records)
+            if other_index != index
+        ])
+        for part in _polygon_parts(geometry):
+            for ring_index in range(1, part.GetGeometryCount()):
+                hole = ogr.Geometry(ogr.wkbPolygon)
+                hole.AddGeometry(part.GetGeometryRef(ring_index).Clone())
+                uncovered_m2 = polygonal_area(hole.Difference(other_union))
+                if uncovered_m2 >= 0.01:
+                    raise ValueError(
+                        f"Statusuitsparing in {record['gebied_code']} is voor {uncovered_m2:.6f} m2 ongedekt"
+                    )
+    return dict(feature), corrected_areas
+
+
 def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
     """Lees exact het door Ton visueel goedgekeurde Bierlap-Kijfhoek-vlak."""
     return read_accepted_area_geometry(path, "Bierlap-Kijfhoek")
@@ -1076,6 +1189,14 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "'2026-11-10','2026-11-10','door gebruiker bevestigd',"
         "'Garmin en Harstenhoek ongewijzigd behouden; gelijk-statusoverlap uitsluitend uit het "
         "grovere Ruygenhoek-vlak M32-M33 gesneden; gezamenlijke afgesloten unie en status gelijk') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{STATUS_CONFLICT_SOURCE_CODE}','handmatige_registratie',"
+        "'Correctie zeven conflicterende toegankelijkheidsstatussen',"
+        "'2026-11-10','2026-11-10','door gebruiker bevestigd',"
+        "'Per overlap is het door Ton aangewezen vlak leidend gemaakt; M75 en M71 behouden "
+        "de dagkaartstatus; totale gebiedsdekking en geldigheidsdatums zijn gelijk gebleven') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
         "INSERT INTO maatregel_bron "
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
@@ -1411,7 +1532,10 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
     }
     if result["oude_tabel"] or result["oude_herkomstkolom"]:
         raise AssertionError(result)
-    if result["interne_ringen"] or result["vervangen_gebiedsrecords"]:
+    expected_interior_rings = sum(
+        int(record.get("interne_ringen", 0)) for record in [feature, *plot_areas]
+    )
+    if result["interne_ringen"] != expected_interior_rings or result["vervangen_gebiedsrecords"]:
         raise AssertionError(result)
     if result["beheerregistraties"] != 139 or result["herkomsten"] != 144 or result["bron101_beheer"] != 139:
         raise AssertionError(result)
@@ -1440,7 +1564,7 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
             raise AssertionError(plot_row)
         full_kavels = plot_area.get("volledige_kavels", plot_area["kavels"])
-        if plot_area.get("corridor_adjusted"):
+        if plot_area.get("corridor_adjusted") or plot_area.get("status_overlap_adjusted"):
             full_kavels = ()
         if full_kavels:
             kavel_sql = ",".join(sql_literal(kavel) for kavel in full_kavels)
@@ -1498,6 +1622,16 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
             raise AssertionError(
                 f"Gelijk-statusoverlap {RUYGENHOEK_AREA_CODE} met {protected_code}: {overlap:.6f} m2"
             )
+    current_records = [feature, *plot_areas]
+    for index, record_1 in enumerate(current_records[:-1]):
+        geometry_1 = ogr.CreateGeometryFromWkt(record_1["wkt"])
+        for record_2 in current_records[index + 1:]:
+            geometry_2 = ogr.CreateGeometryFromWkt(record_2["wkt"])
+            overlap = polygonal_area(geometry_1.Intersection(geometry_2))
+            if overlap >= 0.01:
+                raise AssertionError(
+                    f"Statusoverlap {record_1['gebied_code']} met {record_2['gebied_code']}: {overlap:.6f} m2"
+                )
     return result
 
 
@@ -1561,6 +1695,7 @@ def main() -> int:
         args.fietspad_corridor_gpkg,
     )
     feature, plot_areas = disentangle_same_status_closed_areas(feature, plot_areas)
+    feature, plot_areas = resolve_conflicting_status_overlaps(feature, plot_areas)
     client = Client(args.database)
     if args.apply:
         metadata = backup(client, args.backup_dir, feature, plot_areas)

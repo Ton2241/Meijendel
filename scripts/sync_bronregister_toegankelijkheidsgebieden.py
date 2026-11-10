@@ -27,7 +27,7 @@ ENVIRONMENT = (
     "Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
     "uit versies van omsloten gebieden. Dertien actuele gebiedsversies leveren samen "
-    "102 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "93 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -203,10 +203,10 @@ def main() -> None:
         raise RuntimeError("Harstenhoek-gebied ontbreekt in DOCX")
     if not any("fietspad_scheveningen_wassenaarse_slag_1955" in p.text for p in check.paragraphs):
         raise RuntimeError("Fietspadcorridor ontbreekt in DOCX")
-    if not any("topologiecorrectie_gelijke_status_20261110" in p.text for p in check.paragraphs):
-        raise RuntimeError("Topologiecorrectie ontbreekt in DOCX")
-    if not any("ee30584d518fdc5105b4c7856f4206d3a78bd59a7c16aabafa6342f8833e8ac5" in p.text for p in check.paragraphs):
-        raise RuntimeError("Geometriehash van het ontvlochten Ruygenhoek-vlak ontbreekt in DOCX")
+    if not any("statuscorrectie_conflicten_20261110" in p.text for p in check.paragraphs):
+        raise RuntimeError("Correctie van de zeven statusconflicten ontbreekt in DOCX")
+    if not any("1761ec60c17674cdb2ce03679e7cbbb38890667c596efaaeb895e6f467f8d3d4" in p.text for p in check.paragraphs):
+        raise RuntimeError("Geometriehash van het gecorrigeerde Ruygenhoek-vlak ontbreekt in DOCX")
     if sum(p.text == OSM_SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("OSM-fietspadsectie niet exact eenmaal opgeslagen")
     if not any("De GeoJSON bevat 1.325 objecten" in p.text for p in check.paragraphs):
