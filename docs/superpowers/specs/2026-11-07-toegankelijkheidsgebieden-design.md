@@ -111,3 +111,17 @@ De controlekaart toont de volledige buitengrens in hetzelfde blauw. Na Tons
 visuele akkoord vervangt het akkoordvlak alle eerdere lokale versies van
 `bierlap_kijfhoek_dagkaart_1955`; precies één versie blijft over. SQL-export,
 cachebouw, merge naar `main` en VPS-publicatie blijven buiten deze correctiestap.
+
+## Afgesloten vlak bij M4-5 op 10 november 2026
+
+De door Ton in Google My Maps getekende open lijn wordt gesloten langs de
+actuele grens van `bierlap_kijfhoek_dagkaart_1955`, beperkt tot M4-5 en als
+vast, visueel goedgekeurd GeoPackage bewaard. Dit levert het gebied
+`m4_5_afgesloten_1955` met status `afgesloten`, `geldig_vanaf = 1955-01-01`
+en `geldig_tot = NULL`. Het vlak beslaat 166.459,009 m² en 61,446186% van
+M4-5. De brongeometrie blijft met haar eigen hash herleidbaar. Voor opslag in
+MySQL wordt uitsluitend de ringtopologie genormaliseerd; het
+oppervlakteverschil is 0,000000004 m² en het symmetrische geometrieverschil
+0,000000202 m². De database bevat precies één actuele
+versie. Alle kavelwaarden, waaronder kleine raakvlakken met overlappende
+kavelgeometrieën, worden opnieuw ruimtelijk afgeleid.

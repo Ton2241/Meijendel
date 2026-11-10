@@ -219,7 +219,22 @@ def main() -> int:
         assert coverage > 99.9999, (kavel, coverage)
     assert intended == set(bierlap["volledige_kavels"]) | {"M62", "M4-5"}
 
-    statements = migration.build_migration_statements(feature, plot_areas + [bierlap])
+    m45 = migration.derive_m45_closed_area(
+        migration.DEFAULT_REFERENCE_GPKG,
+        migration.DEFAULT_M45_ACCEPTED_GPKG,
+    )
+    assert m45["gebied_code"] == "m4_5_afgesloten_1955"
+    assert m45["naam"] == "Afgesloten gebied bij M4-5"
+    assert m45["status_code"] == "afgesloten"
+    assert m45["kavels"] == ("M4-5",)
+    assert m45["volledige_kavels"] == ()
+    assert m45["gedeeltelijke_kavels"] == ("M4-5",)
+    assert abs(m45["oppervlakte_m2"] - 166_459.008781) < 0.01
+    assert m45["bron_geometrie_sha256"] == "37d0cbaf52ac03dfb3309c53b9c51fa77c6d4a92d51defeeda0a1d6935d30af4"
+    assert m45["geometrie_sha256"] == "e525ca53664e1941a2ec6c232ab10fc1a180f36d5775dd86ee6e9a2cc0c78b11"
+    assert abs(m45["gedeeltelijke_kavel_aandelen_pct"]["M4-5"] - 61.446186) < 0.00001
+
+    statements = migration.build_migration_statements(feature, plot_areas + [bierlap, m45])
     joined = "\n".join(statements)
     assert "1955-01-01" in joined
     assert FEATURE_ID in joined
@@ -237,6 +252,14 @@ def main() -> int:
         "JOIN toegankelijkheidsgebied g USING(gebied_id) "
         "WHERE g.gebied_code='bierlap_kijfhoek_dagkaart_1955'"
     ) in statements
+    assert (
+        "DELETE FROM v USING toegankelijkheidsgebied_versie v "
+        "JOIN toegankelijkheidsgebied g USING(gebied_id) "
+        "WHERE g.gebied_code='m4_5_afgesloten_1955'"
+    ) in statements
+    assert "mymaps_grensregistratie_20261110" in joined
+    assert "m4_5_afgesloten_1955" in joined
+    assert "37d0cbaf52ac03dfb3309c53b9c51fa77c6d4a92d51defeeda0a1d6935d30af4" in joined
     assert "kavel_m77_1955" in joined
     assert "kavel_m78_79_1955" in joined
     assert "kavel_m75a_1955" in joined

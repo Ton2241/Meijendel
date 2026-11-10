@@ -31,6 +31,10 @@ DEFAULT_BIERLAP_ACCEPTED_GPKG = Path(
     "/Volumes/T7 Data/Home_Ton/Proefomgevingen/bierlap-kijfhoek-dagkaart-2026-11-09/"
     "outputs/expliciete-ring-proef/proef-kijfhoek-bierlap-totaal.gpkg"
 )
+DEFAULT_M45_ACCEPTED_GPKG = Path(
+    "/Volumes/T7 Data/Home_Ton/Proefomgevingen/kavel-m4-5-afgesloten-vlak-2026-11-10/"
+    "outputs/afgesloten-m4-5-goedgekeurd.gpkg"
+)
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 T7_TRIAL_ROOT = Path("/Volumes/T7 Data/Home_Ton/Proefomgevingen")
@@ -40,11 +44,12 @@ STATUS_CODES = (
     "toegankelijk_buiten_broedseizoen",
     "toegankelijk_met_toegangskaart",
 )
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v9"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v10"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
 BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
+M45_SOURCE_CODE = "mymaps_grensregistratie_20261110"
 BIERLAP_BOUNDARY_START_POINT_ID = 0
 BIERLAP_BOUNDARY_END_POINT_ID = 396
 BIERLAP_CURVE_CONTROL_POINTS_RD = (
@@ -63,6 +68,13 @@ BIERLAP_AREA_SPEC = {
     ),
     "gedeeltelijke_kavels": ("M62", "M4-5"),
     "vastgesteld_op": "2026-11-09",
+}
+M45_AREA_SPEC = {
+    "gebied_code": "m4_5_afgesloten_1955",
+    "naam": "Afgesloten gebied bij M4-5",
+    "status_code": "afgesloten",
+    "kavels": ("M4-5",),
+    "vastgesteld_op": "2026-11-10",
 }
 PLOT_AREA_SPECS = (
     {
@@ -527,8 +539,8 @@ def read_plot_geometries(path: Path, wanted: set[str]) -> dict[str, ogr.Geometry
     return found
 
 
-def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
-    """Lees exact het door Ton visueel goedgekeurde statusvlak."""
+def read_accepted_area_geometry(path: Path, area_name: str) -> ogr.Geometry:
+    """Lees exact één door Ton visueel goedgekeurd statusvlak."""
     dataset = ogr.Open(str(path), 0)
     if dataset is None:
         raise ValueError(f"Goedgekeurd GeoPackage niet leesbaar: {path}")
@@ -538,10 +550,15 @@ def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
     feature = next(iter(layer))
     geometry = feature.GetGeometryRef().Clone()
     if geometry.GetGeometryName().upper() != "MULTIPOLYGON" or not geometry.IsValid():
-        raise ValueError("Goedgekeurd Bierlap-Kijfhoek-vlak is geen geldige multipolygoon")
+        raise ValueError(f"Goedgekeurd {area_name}-vlak is geen geldige multipolygoon")
     if sum(max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(geometry)):
-        raise ValueError("Goedgekeurd Bierlap-Kijfhoek-vlak bevat interne ringen")
+        raise ValueError(f"Goedgekeurd {area_name}-vlak bevat interne ringen")
     return geometry
+
+
+def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
+    """Lees exact het door Ton visueel goedgekeurde Bierlap-Kijfhoek-vlak."""
+    return read_accepted_area_geometry(path, "Bierlap-Kijfhoek")
 
 
 def read_all_plot_geometries(path: Path) -> dict[str, ogr.Geometry]:
@@ -648,6 +665,49 @@ def derive_bierlap_kijfhoek_area(
     return record
 
 
+def derive_m45_closed_area(
+    reference_path: Path,
+    accepted_path: Path = DEFAULT_M45_ACCEPTED_GPKG,
+) -> dict[str, Any]:
+    """Lees het bevestigde afgesloten vlak dat een deel van M4-5 beslaat."""
+    geometry = read_accepted_area_geometry(accepted_path, "M4-5")
+    plot = read_plot_geometries(reference_path, {"M4-5"})["M4-5"]
+    outside_area = polygonal_area(geometry.Difference(plot))
+    if outside_area > 0.01:
+        raise ValueError(f"Goedgekeurd M4-5-vlak ligt {outside_area:.3f} m2 buiten M4-5")
+    coverage = 100.0 * polygonal_area(geometry.Intersection(plot)) / plot.GetArea()
+    if not 0 < coverage < 100:
+        raise ValueError(f"Goedgekeurd M4-5-vlak dekt M4-5 niet gedeeltelijk: {coverage:.6f}%")
+    source_wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
+    record = _area_record(
+        geometry,
+        gebied_code=M45_AREA_SPEC["gebied_code"],
+        naam=M45_AREA_SPEC["naam"],
+        status_code=M45_AREA_SPEC["status_code"],
+        feature_id="google-mymaps:1BU0etZpLjh0YLg3E_nJ2tZW7Z71HBF4:extra-gebied:lijn-2",
+        kavels=M45_AREA_SPEC["kavels"],
+        volledige_kavels=(),
+        gedeeltelijke_kavels=M45_AREA_SPEC["kavels"],
+        gedeeltelijke_kavel_aandelen_pct={"M4-5": coverage},
+        bron_geometrie_sha256=hashlib.sha256(source_wkb).hexdigest(),
+        bron_oppervlakte_m2=float(geometry.GetArea()),
+        bron_code=M45_SOURCE_CODE,
+        vastgesteld_op=M45_AREA_SPEC["vastgesteld_op"],
+        inwinningsmethode=(
+            "Google My Maps-lijn gesloten langs de actuele grens van Bierlap-Kijfhoek, "
+            "beperkt tot onderzoekskavel M4-5"
+        ),
+        nauwkeurigheid_m=None,
+        opmerking=(
+            "Door Ton visueel bevestigd als formeel afgesloten vlak. De open My Maps-lijn "
+            "is gesloten met de aangrenzende grens van Bierlap-Kijfhoek en beperkt tot M4-5. "
+            "De databasegeometrie is topologisch genormaliseerd voor MySQL; de oppervlakte "
+            "is daardoor niet materieel gewijzigd."
+        ),
+    )
+    return record
+
+
 def read_plot_areas(path: Path) -> list[dict[str, Any]]:
     """Vorm de door Ton bevestigde gebieden uit volledige kavelgeometrieën."""
     wanted = {kavel for spec in PLOT_AREA_SPECS for kavel in spec["kavels"]}
@@ -720,6 +780,14 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
         "'Garmin Connect-activiteit 24999201739; gesloten routelus zonder toegangsspoor') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{M45_SOURCE_CODE}','handmatige_registratie','Google My Maps-grens afgesloten vlak M4-5',"
+        "'2026-11-10','2026-11-10','door gebruiker bevestigd',"
+        "'Google My Maps-kaart 1BU0etZpLjh0YLg3E_nJ2tZW7Z71HBF4, laag extra gebied, Lijn 2; "
+        "open lijn gesloten langs de bevestigde grens van Bierlap-Kijfhoek en beperkt tot M4-5; "
+        "bron-WKB-SHA-256 37d0cbaf52ac03dfb3309c53b9c51fa77c6d4a92d51defeeda0a1d6935d30af4') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
         "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
         f"'{AREA_CODE}','Omsloten gebied Garmin-route 7 november 2026',"
         "'Door Ton bevestigd als daadwerkelijk omsloten gebied') "
@@ -771,7 +839,7 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
             f"{sql_literal(plot_area['opmerking'])}) "
             "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)"
         )
-        if plot_area["gebied_code"] == BIERLAP_AREA_SPEC["gebied_code"]:
+        if plot_area["gebied_code"] in (BIERLAP_AREA_SPEC["gebied_code"], M45_AREA_SPEC["gebied_code"]):
             statements.append(
                 "DELETE FROM v USING toegankelijkheidsgebied_versie v "
                 "JOIN toegankelijkheidsgebied g USING(gebied_id) "
@@ -1063,17 +1131,18 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
             raise AssertionError(plot_row)
         full_kavels = plot_area.get("volledige_kavels", plot_area["kavels"])
-        kavel_sql = ",".join(sql_literal(kavel) for kavel in full_kavels)
-        covered = int(client.scalar(
-            "SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding a "
-            "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
-            "JOIN toegankelijkheidsgebied g USING(gebied_id) JOIN plots p USING(plot_id) "
-            f"WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
-            f"AND p.kavel_nummer IN ({kavel_sql}) AND a.status_code={sql_literal(plot_area['status_code'])} "
-            "AND a.aandeel_pct>99.9999"
-        ))
-        if covered != len(full_kavels):
-            raise AssertionError(f"Niet alle kavels volledig gedekt voor {plot_area['gebied_code']}: {covered}")
+        if full_kavels:
+            kavel_sql = ",".join(sql_literal(kavel) for kavel in full_kavels)
+            covered = int(client.scalar(
+                "SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding a "
+                "JOIN toegankelijkheidsgebied_versie v USING(gebied_versie_id) "
+                "JOIN toegankelijkheidsgebied g USING(gebied_id) JOIN plots p USING(plot_id) "
+                f"WHERE g.gebied_code={sql_literal(plot_area['gebied_code'])} "
+                f"AND p.kavel_nummer IN ({kavel_sql}) AND a.status_code={sql_literal(plot_area['status_code'])} "
+                "AND a.aandeel_pct>99.9999"
+            ))
+            if covered != len(full_kavels):
+                raise AssertionError(f"Niet alle kavels volledig gedekt voor {plot_area['gebied_code']}: {covered}")
         for partial_kavel in plot_area.get("gedeeltelijke_kavels", ()):
             partial = float(client.scalar(
                 "SELECT a.aandeel_pct FROM toegankelijkheidsgebied_plot_afleiding a "
@@ -1109,6 +1178,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_BIERLAP_ACCEPTED_GPKG,
     )
+    parser.add_argument(
+        "--m45-accepted-gpkg",
+        type=Path,
+        default=DEFAULT_M45_ACCEPTED_GPKG,
+    )
     parser.add_argument("--backup-dir", type=Path, default=BACKUP_ROOT)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify", action="store_true")
@@ -1126,6 +1200,7 @@ def main() -> int:
             args.bierlap_accepted_gpkg,
         )
     )
+    plot_areas.append(derive_m45_closed_area(args.reference_gpkg, args.m45_accepted_gpkg))
     client = Client(args.database)
     if args.apply:
         metadata = backup(client, args.backup_dir, feature, plot_areas)

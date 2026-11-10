@@ -130,3 +130,18 @@
 - [x] Maak een gerichte T7-herstelkopie en vervang alle eerdere Bierlap-Kijfhoek-versies door precies één actuele versie.
 - [x] Synchroniseer en render het bronregister; voer de volledige gerichte verificatie uit.
 - [x] Commit en push de taakbranch zonder SQL-export, cachebouw, merge of VPS-publicatie.
+
+### Task 7: Afgesloten akkoordvlak bij M4-5
+
+**Files:**
+- Modify: `gis/scripts/migrate_toegankelijkheidsgebieden.py`
+- Modify: `gis/scripts/test_toegankelijkheidsgebieden_contract.py`
+- Modify: `docs/MEIJENDEL_BRONREGISTER.md`
+- Modify: `docs/MEIJENDEL_BRONREGISTER.docx`
+- Modify: `R/shiny_berekenlogica.md`
+
+- [x] Vergrendel het visueel goedgekeurde GeoPackage, de bronhash, oppervlakte, status en gedeeltelijke dekking van M4-5 met een eerst falende contracttest.
+- [x] Normaliseer uitsluitend de ringtopologie die MySQL 9.7 afwijst en behoud de oorspronkelijke bronhash afzonderlijk.
+- [x] Maak T7-herstelkopieën, voer precies één actuele versie vanaf 1 januari 1955 zonder einddatum in en herbereken alle plotdoorsnijdingen.
+- [x] Synchroniseer en render het bronregister; voer de volledige gerichte verificatie uit.
+- [x] Commit en push de taakbranch zonder SQL-export, cachebouw, merge of VPS-publicatie.
