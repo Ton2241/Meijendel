@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 """Fixed Linux hooks for the hash-bound VWG gateway; no arbitrary commands/paths."""
 from __future__ import annotations
-import argparse,contextlib,hashlib,http.server,importlib.util,json,os,re,shutil,stat,subprocess,sys,time,urllib.parse,urllib.request
+import argparse,contextlib,hashlib,ipaddress,socket,http.server,importlib.util,json,os,re,shutil,stat,subprocess,sys,time,urllib.parse,urllib.request
 from pathlib import Path
 BASE=Path('/srv/vwgm');STATE=BASE/'deploy-state';CONTROL=Path('/var/lib/vwgm-integral');INSTALL=Path(__file__).resolve().parent
 spec=importlib.util.spec_from_file_location('integral_release',INSTALL/'integral_release.py');core=importlib.util.module_from_spec(spec);spec.loader.exec_module(core)
@@ -297,7 +297,20 @@ class LinuxHooks:
   config=self.runtime/'Caddyfile';config.write_text(caddy_config(self.s['caddy_source'],trial=s['trial']));os.chmod(config,0o644)
   if s['trial']:self.start_unit('caddy',['/usr/bin/caddy','run','--adapter','caddyfile','--config',str(config)])
   else:self.logged(['systemctl','start','caddy'])
+ def bind_trial_mysql(self):
+  if not self.s['trial']:raise ValueError('Alleen een proefbinding')
+  item=inspect_container(self.s['mysql'])
+  if item['Config'].get('Labels',{}).get('vwgm.integral.commit')!=self.s['commit']:raise ValueError('Geen eigen proef-MySQL')
+  address=str(ipaddress.IPv4Address(item['NetworkSettings']['Networks'][self.s['network']]['IPAddress']))
+  if not ipaddress.ip_address(address).is_private:raise ValueError('Geen intern proefadres')
+  connection=socket.create_connection((address,3306),timeout=5);connection.close()
+  self.s['website_env'].update(MEIJENDEL_MYSQL_HOST=address,MEIJENDEL_MYSQL_PORT='3306')
+  secret_json(self.private/'settings.json',self.s)
  def start_shiny(self,package,m):
+  # Docker cannot create a nested bind target after its parent becomes read-only.
+  mountpoint=package/'shiny/shiny_meijendel/app_cache'
+  if mountpoint.is_symlink():raise ValueError('Onveilige cachemount')
+  mountpoint.mkdir(mode=0o755,exist_ok=True)
   name=self.s['shiny'];old=subprocess.run(['docker','inspect',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
   if old.returncode==0:self.logged(['docker','rm',name])
   cache=self.runtime/'shiny-cache';cache.mkdir(exist_ok=True);os.chown(cache,self.s['shiny_uid'],self.s['shiny_gid'])
@@ -519,16 +532,33 @@ def initialize_settings(commit,trial):
   h.capture_files(BASE/'vwg-m-linux-app/app/data',private/'initial-data.tar');h.unpack_files(private/'initial-data.tar',s['website_data'])
  secret_json(private/'settings.json',s);return s
 
+def check_initial_baseline(h,a,b,m):
+ if (h.root/'journal.json').exists():raise ValueError('Deze proef heeft al een activering; geen beginhervatting')
+ if core.current(h.root)!=a or (h.root/'trial.marker').read_text().strip()!=h.s['commit']:raise ValueError('Geen oorspronkelijke basisrelease')
+ if jsonfile(h.private/'ownership.json').get('database') is not True:raise ValueError('Geen eigen voltooide CMS-kopie')
+ for package in (a,b):
+  stored=core.verify(package)
+  if stored['release_id']!=package.name or stored['mode']!='local_rehearsal' or any(stored[k]!=m[k] for k in ('source_hash','year_from','year_to')):raise ValueError('Andere bewaarde proefbron')
+ if h.sql('SELECT value FROM Meijendel._release_probe;')!=a.name or h.pgsql('SELECT value FROM app._release_probe;')!=a.name:raise ValueError('Proefdatabases zijn geen beginversie A')
+ if h.sql('SELECT MAX(jaar) FROM Meijendel.territoria;')!=str(m['year_to']):raise ValueError('Proefjaargrens wijkt af')
+ if (Path(h.s['website_data'])/'_integral_release_probe').read_text().strip()!=a.name:raise ValueError('Appbestanden zijn geen beginversie A')
+
+
 def prepare_trial(commit,base,m):
  root=root_directory(layout(commit,True)['root']);marker=root/'trial.marker'
- if marker.exists():raise RuntimeError('Bestaande proef eerst beoordelen/cleanup; niet overschrijven')
+ if marker.exists():
+  secure_file(root/'private/settings.json');s=jsonfile(root/'private/settings.json');h=LinuxHooks(s)
+  a=root/'releases'/('trial-A-'+commit[:12]);b=root/'releases'/('trial-B-'+commit[:12])
+  check_initial_baseline(h,a,b,m)
+  h.stop();h.bind_trial_mysql();h.start(a);h.health(a);h.resumed_initial_baseline=True
+  return h,a,b
  marker.write_text(commit+'\n');os.chmod(marker,0o600);root_directory(root/'private',0o700)
  secret_json(root/'private/ownership.json',dict(database=False))
  s=initialize_settings(commit,True);h=LinuxHooks(s)
  self_env=h.private/'mysql.env';write_env(self_env,dict(MYSQL_ROOT_PASSWORD=s['mysql_password'],MYSQL_DATABASE='Meijendel'),systemd=False)
  h.logged(['docker','network','create','--internal',s['network']])
  data=h.private/'mysql';data.mkdir();os.chown(data,1999,1999)
- h.logged(['docker','run','-d','--name',s['mysql'],'--label','vwgm.integral.commit='+commit,'--network',s['network'],'--restart=no','--memory=768m','--cpus=0.75','--env-file',self_env,'-p','127.0.0.1:33317:3306','--mount',f'type=bind,src={data},dst=/var/lib/mysql',s['mysql_image'],'--local-infile=0','--mysqlx=0','--skip-log-bin','--innodb-buffer-pool-size=134217728','--innodb-redo-log-capacity=536870912'])
+ h.logged(['docker','run','-d','--name',s['mysql'],'--label','vwgm.integral.commit='+commit,'--network',s['network'],'--restart=no','--memory=768m','--cpus=0.75','--env-file',self_env,'--mount',f'type=bind,src={data},dst=/var/lib/mysql',s['mysql_image'],'--local-infile=0','--mysqlx=0','--skip-log-bin','--innodb-buffer-pool-size=134217728','--innodb-redo-log-capacity=536870912'])
  for _ in range(180):
   try:h.sql('SELECT 1;');break
   except Exception:time.sleep(1)
@@ -548,13 +578,13 @@ def prepare_trial(commit,base,m):
  with (h.private/'initial_cms.dump').open('rb') as src,h.log.open('ab') as log:h.pg(['pg_restore','--exit-on-error','--dbname='+s['database']],stdin=src,stdout=log,stderr=log)
  (Path(s['website_data'])/'_integral_release_probe').write_text(a.name+'\n')
  h.pgsql("CREATE TABLE app._release_probe(id int primary key,value text);INSERT INTO app._release_probe VALUES(1,'"+a.name+"');")
- core.set_current(root,a);h.start(a);h.health(a)
+ core.set_current(root,a);h.bind_trial_mysql();h.start(a);h.health(a)
  return h,a,b
 
 
 def exercise_trial(commit,base,m,digest):
  before=production_identity();h,a,b=prepare_trial(commit,base,m)
- evidence=dict(schema='meijendel-integral-linux-proof-v1',commit=commit,package_sha256=digest,source_hash=m['source_hash'],year_from=m['year_from'],year_to=m['year_to'],production_before=before,platform=sys.platform,images={'mysql':h.s['mysql_image'],'shiny':h.s['shiny_image']})
+ evidence=dict(schema='meijendel-integral-linux-proof-v1',commit=commit,package_sha256=digest,source_hash=m['source_hash'],year_from=m['year_from'],year_to=m['year_to'],production_before=before,platform=sys.platform,images={'mysql':h.s['mysql_image'],'shiny':h.s['shiny_image']},resumed_initial_baseline=getattr(h,'resumed_initial_baseline',False))
  core.activate(h.root,b,h);evidence['activation']=jsonfile(h.root/'journal.json');evidence['candidate_health']=jsonfile(h.root/'health.json')
  def partial(package):
   rid=jsonfile(package/'release.json')['release_id'];(Path(h.s['website_data'])/'_integral_release_probe').write_text(rid+'\n');h.sql("UPDATE Meijendel._release_probe SET value='"+rid+"';");h.pgsql("UPDATE app._release_probe SET value='"+rid+"';")

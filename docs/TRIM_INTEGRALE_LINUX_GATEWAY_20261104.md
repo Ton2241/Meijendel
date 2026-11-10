@@ -1,6 +1,6 @@
 # Integrale Linux/VPS-gateway — 4 november 2026
 
-Status: code, isolatie en herstelroute lokaal getest en onafhankelijk beoordeeld. De technische installatie en werkelijke Linux-proef zijn nog niet uitgevoerd. Dit document wordt na die uitvoering met het concrete bewijs aangevuld. De eerdere native proef staat in `TRIM_INTEGRALE_RELEASE_HERSTELPROEF_20261104.md`.
+Status op 10 november 2026: de technische gateway is geïnstalleerd; de gesloten preflight is geslaagd. De eerste geïsoleerde Linux-proef is gestopt bij het maken van de Shiny-cachemount, vóór de eerste dienstcontrole en vóór activering/herstel. De hieronder beschreven fix is lokaal getest; installatie daarvan en daadwerkelijke hervatting wachten op de zichtbare sudo-stap. Geen website- of onderzoeksuitkomsten gepubliceerd.
 
 ## Afgesproken proef
 
@@ -32,3 +32,15 @@ De technische gatewayinstallatie omvat de rootcoördinator, Linux-adapter, migra
 ## Wat op 2026 wacht
 
 Officiële levering en inhoudelijke validatie; export en cache met de echte jaargrens 2026; actualisering van dashboard, figuren, soort-/periode-/jaarindexuitvoer en bootstrap; beoordeling per schatter welke marges vrijgegeven worden; concrete CMS-migraties volgens de paginamatrix. Daarna pakketcontrole en een afzonderlijk expliciet publicatieakkoord. Historische 2025-uitvoer wordt nooit hernoemd tot 2026. Alle drie afnemers gebruiken dezelfde bron, periode, selectie en payload.
+
+## Eerste Linux-uitvoering en gericht herstel — 10 november 2026
+
+De bundel op T7 `integrale-linux-gateway-20261110` gebruikt de bestaande 156 soorten over 1958–2025. Payload-SHA-256: `dfa9c3491e7b5080f9fabb8317a5da5bd06274b8e6a769a9ef26e901279c4556`; broncommits Meijendel `796ede5b`, VWG_M `db943c58`, VWG_Project `5cd9b7f3`. De gebruiker startte de zichtbare Terminal-opdracht. De hashgebonden gatewayinstallatie en preflight slaagden. De volledige proefinvoer doorliep MySQL en PostgreSQL; het proces bereikte de start van de basisdiensten. De Shiny-proefcontainer faalde met Docker125/OCI128: het geneste mountpoint `app_cache` ontbrak in de reeds alleen-lezen gekoppelde appmap. Dit was geen geslaagde activerings- of herstelproef.
+
+De productiewebsite en Caddy bleven actief. Productie-MySQL en productie-Shiny bleven draaien; beide productiecommits bleven exact gelijk aan de preflight (`9da16f606a6fbc58763e83f708f03cd544b73b61` en `b54b7b741326ca9ea1e5789f3a3ded75f6a71b9b`). De foutuitvoer staat op T7 in `outputs/shiny-startdiagnose.log`; de proefobjecten zijn voor diagnose behouden.
+
+De fix maakt uitsluitend de lege cachemountmap vooraf aan; de gecontroleerde pakketbestanden veranderen niet en de app blijft alleen-lezen gekoppeld. Een tweede feitelijk vastgestelde blokkade is de niet bereikbare loopbackpoort33317 van de interne MySQL-proefcontainer (TCP-resultaat111). De proefwebsite krijgt daarom het gecontroleerde private adres van haar eigen gelabelde container binnen het eigen interne netwerk, met een werkelijke TCP-probe vóór de dienststart. Geen extra hostpoort wordt geopend.
+
+Beginhervatting hergebruikt de reeds geladen proefdatabases uitsluitend bij een rootbeheerde marker/eigendomsregistratie, actieve basisrelease A, geen activeringsjournal, geldige pakketbytes/bron/jaren, beide databaseprobes op A, jaargrens2025 en appbestanden op A. Anders stopt de adapter; geen stille herimport of overschrijving. De historische payload en receipt blijven ongewijzigd. Alleen de technische rootadapter komt uit de nieuwe schone actuele mainbron. De bestaande begrensde jobrunner krijgt daarna dezelfde commit/pakkethash en een nieuw operatie-ID. Dit omzeilt geen pakketcontrole: de rootadapter verifieert de ongewijzigde verzegelde bron opnieuw; het hervattingsdossier legt de nieuwe runtimebron afzonderlijk vast.
+
+Alle nieuwe lokale hulp-/log-/controlebestanden en TMPDIR blijven onder de geregistreerde T7-proefmap. Na geslaagde hervatting volgen dezelfde volledige Linux-activerings-/herstelcriteria en controle van productie-identiteit, en uitsluitend de eigen proefobjecten worden opgeruimd. Geen formele intervalvrijgave of 2026-publicatie.
