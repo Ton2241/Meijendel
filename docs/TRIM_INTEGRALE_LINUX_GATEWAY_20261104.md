@@ -1,6 +1,6 @@
 # Integrale Linux/VPS-gateway — 4 november 2026
 
-Status op 10 november 2026: de technische gateway is geïnstalleerd; de gesloten preflight is geslaagd. De eerste geïsoleerde Linux-proef is gestopt bij het maken van de Shiny-cachemount, vóór de eerste dienstcontrole en vóór activering/herstel. De hieronder beschreven fix is lokaal getest; installatie daarvan en daadwerkelijke hervatting wachten op de zichtbare sudo-stap. Geen website- of onderzoeksuitkomsten gepubliceerd.
+Status op 10 november 2026: de technische gateway en gecorrigeerde Linux-adapter zijn geïnstalleerd. De volledige geïsoleerde Linux-proef is geslaagd: activering, bewuste fout, automatisch herstel en expliciet terugzetten, inclusief beide databases, appbestanden, website, dashboard, Shiny en Caddy-toegangsbeveiliging. De eigen proefobjecten zijn opgeruimd; de onafhankelijke productiecontrole is groen. Geen website- of onderzoeksuitkomsten gepubliceerd. De onderstaande eerdere afbrekingen en correcties zijn historische uitvoeringsstappen.
 
 ## Afgesproken proef
 
@@ -54,3 +54,24 @@ De gebruiker installeerde de eerste runtimecorrectie uit main `d8c6d385` via de 
 De echte Caddy-parser wees regel8 af: `Unexpected next token after '{' on same line`. De generator had de nieuwe `forward_auth`-sectie op één regel gezet. De fix gebruikt dezelfde meerregelige blokvorm als de bestaande geldige secties, voert voortaan `caddy adapt` uit vóór de start van de proefdienst en geeft een parsefout leesbaar door via de gatewaylog. De gereedheidscontrole omvat nu ook Caddy; er volgt geen autorisatiecheck voordat die dienst gereed is.
 
 De gecorrigeerde configuratie is via stdin door de daadwerkelijke Caddy-parser op de VPS geaccepteerd (exit0); daarbij zijn geen VPS-bestanden gewijzigd en geen diensten gestart of herstart. De enige parserwaarschuwing betreft formattering, geen configuratiefout. Bewijs staat op T7 in `outputs/caddy-fix/parser-proof.json` en `parser-after.log`. Alle35 betrokken Pythonchecks, JavaScript-/gatewaycontracten en onafhankelijke review zijn groen. Installatie van deze tweede fix en volledige activerings-/herstelproef volgen nog. De eerdere foutlogs en oorspronkelijke payload/receipt blijven behouden.
+
+## Eindresultaat: volledige Linux-proef geslaagd
+
+De laatste begrensde gatewayoperatie `eb2cc17ec6031a8389f4bd68c7e668a4` is volledig groen. De oorspronkelijke beginimport is aantoonbaar hergebruikt. De onveranderde payload gebruikt de gecontroleerde inventaris van 156 soorten, 312 perioderegels en 10.608 jaarposities over 1958–2025, inclusief de vastgelegde ontbrekende schattingen en uitval. Dit soortenaantal komt uit `LOKALE_CONTROLE.json`; bronhash en pakkethash koppelen die lokale controle exact aan het Linux-bewijs. Er zijn geen modellen opnieuw geschat of marges formeel vrijgegeven.
+
+- Activering A naar B: `active`, alle drie diensten, werkelijke Shiny-cache/bootstrap en Caddy-auth groen. Website en dashboard leveren dezelfde B-bootstrapbytes.
+- Opzettelijke fout na echte wijzigingen in beide proefdatabases en appbestanden: `restored` naar B met de bedoelde foutmelding; alle diensten en gegevenscontroles opnieuw groen.
+- Expliciet terugzetten naar A: `rolled_back`; beide databases en veranderlijke appbestanden zijn gelijk aan de back-ups; alle diensten en de oorspronkelijke A-bootstrap opnieuw groen. De aparte A- en B-HTML-hashes zijn behouden in het bewijs.
+- Productie-identiteit vóór/na exact gelijk: beide container-ID's/images, starttijden en restarttellingen, Caddy-configuratiehash en beide productiecommitbestanden. De werkelijke website- en gegevensrelease is niet omgezet.
+
+Bewijs op T7: `outputs/runtime-resume-caddy/linux-proof.json`, `status.json`, `cleanup.log`, `production-smoke.log`, `vps-final-inventory.log`, `own-database-cleanup.log` en `backup-status.log`. De aparte onafhankelijke bewijsreview bevestigt alle booleans, fasen en de beperkte scope van deze conclusie. Root-runtimebron: Meijendel `f1e87a48a9e8b5269edf36a3919d90e79181a7d2`; broncommits en werkelijke modulehashes staan afzonderlijk in `installed-runtime.json`. De oudere foutlogs en gehashte helpersnapshot blijven behouden.
+
+Cleanupoperatie `20e63f0e4c9b47df29a0aba97467d42b` is groen: eigen containers, netwerk, PostgreSQL-kopie, diensten, datamappen, proefback-ups, verzegelde serverkopie en inboxarchief zijn verwijderd. Onafhankelijke cataloguscontrole telt nul exemplaren van de eigen PostgreSQL-proefdatabase. De VPS toont alleen de twee productiecontainers en twee bestaande images, nul gatewayjobs, een vrij productieslot en circa41GiB vrije ruimte. Bestaande Dockerbuildcache en door de installer gemaakte herstelsets zijn behouden; er is geen prune uitgevoerd. Het T7-bronpakket en alle controle-/herstelbewijzen blijven bewaard.
+
+De volledige bestaande rooktest voor www.vwg-m.nl, app.vwg-m.nl en vwg-m.nl is groen, inclusief Caddy/MySQL-isolatie en de gedeployde productieconfiguratie. De normale back-uptimer is actief; de laatst beschikbare reguliere back-up van10november01:30 slaagde, inclusief het tijdelijke MySQL-proefherstel. Die back-up dateert van vóór deze technische installatie. Een extra volledige hostback-up is niet gestart; opname van de nieuwe technische modules volgt via de bijgewerkte normale back-upketen. Voor de onveranderde exacte image-ID's is het bestaande geregistreerde scanbewijs hergebruikt.
+
+### Beperkingen en resterende 2026-poorten
+
+Dit bewijst de volledige gezamenlijke activerings- en herstelcoördinatie op echte Linux-databases en diensten binnen de afgeschermde proefomgeving. Het is geen daadwerkelijke omschakeling van de publieke productie-units en geen nieuwe kale-VPS-herstelproef. Het historische bronbestand van4.272.158.039bytes en de gecontroleerde parser13-cache dienen uitsluitend deze herkenbare1958–2025-proef. De productieroute weigert die historische proefcache.
+
+Nog nodig voor een inhoudelijke2026-release: officiële bronvalidatie, actuele gecontroleerde SQL-export en productiecache, opnieuw samengestelde index-/periode-/trend-/groep-/bootstrapproducten met de echte2026-jaargrens en dan geldende selectie, beoordeling en vrijgave per schatter, CMS-teksten/figuren uit de paginamatrix en expliciet publicatieakkoord. Gebruik daarvoor een nieuwe bundel uit schone actuele mainversies. De afgeronde proef- en hervattingsopdrachten niet opnieuw uitvoeren.
