@@ -39,6 +39,11 @@ DEFAULT_HARSTENHOEK_ACCEPTED_GPKG = Path(
     "/Volumes/T7 Data/Home_Ton/Proefomgevingen/harstenhoek-afgesloten-vlak-2026-11-10/"
     "outputs/harstenhoek-kandidaat.gpkg"
 )
+DEFAULT_FIETSPAD_CORRIDOR_GPKG = Path(
+    "/Volumes/T7 Data/Home_Ton/Proefomgevingen/"
+    "fietspad-scheveningen-wassenaarse-slag-2026-11-10/outputs/"
+    "fietspad-toegankelijkheidsproef.gpkg"
+)
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 T7_TRIAL_ROOT = Path("/Volumes/T7 Data/Home_Ton/Proefomgevingen")
@@ -48,13 +53,15 @@ STATUS_CODES = (
     "toegankelijk_buiten_broedseizoen",
     "toegankelijk_met_toegangskaart",
 )
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v11"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v12"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
 BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
 M45_SOURCE_CODE = "mymaps_grensregistratie_20261110"
 HARSTENHOEK_SOURCE_CODE = "mymaps_harstenhoek_20261110"
+FIETSPAD_CORRIDOR_SOURCE_CODE = "osm_fietspadcorridor_20261110"
+FIETSPAD_CORRIDOR_AREA_CODE = "fietspad_scheveningen_wassenaarse_slag_1955"
 BIERLAP_BOUNDARY_START_POINT_ID = 0
 BIERLAP_BOUNDARY_END_POINT_ID = 396
 BIERLAP_CURVE_CONTROL_POINTS_RD = (
@@ -568,6 +575,122 @@ def read_accepted_area_geometry(path: Path, area_name: str) -> ogr.Geometry:
     return geometry
 
 
+def apply_accepted_fietspad_corridor(
+    feature: dict[str, Any],
+    areas: list[dict[str, Any]],
+    path: Path = DEFAULT_FIETSPAD_CORRIDOR_GPKG,
+) -> tuple[dict[str, Any], list[dict[str, Any]]]:
+    """Neem de visueel goedgekeurde 5+5-meterstrook en aangepaste vlakken over."""
+    dataset = ogr.Open(str(path), 0)
+    if dataset is None:
+        raise ValueError(f"Goedgekeurde fietspadcorridor niet leesbaar: {path}")
+
+    corridor_layer = dataset.GetLayerByName("toegankelijke_strook_10m")
+    adjusted_layer = dataset.GetLayerByName("statusgebieden_aangepast")
+    if corridor_layer is None or corridor_layer.GetFeatureCount() != 1:
+        raise ValueError("Fietspadcorridor bevat niet precies één toegankelijke strook")
+    if adjusted_layer is None:
+        raise ValueError("Laag statusgebieden_aangepast ontbreekt")
+    for layer in (corridor_layer, adjusted_layer):
+        srs = layer.GetSpatialRef()
+        epsg = int(srs.GetAuthorityCode(None)) if srs and srs.GetAuthorityCode(None) else None
+        if epsg != 28992:
+            raise ValueError(f"Laag {layer.GetName()} heeft EPSG:{epsg}, verwacht EPSG:28992")
+
+    corridor_feature = next(iter(corridor_layer))
+    if corridor_feature.GetFieldAsString("status") != "toegankelijk":
+        raise ValueError("De goedgekeurde fietspadcorridor is niet toegankelijk gemarkeerd")
+    if corridor_feature.GetFieldAsString("geldig_vanaf") != "1955-01-01":
+        raise ValueError("De goedgekeurde fietspadcorridor begint niet op 1955-01-01")
+    corridor_geometry = ogr.ForceToMultiPolygon(corridor_feature.GetGeometryRef().Clone())
+    if corridor_geometry is None or not corridor_geometry.IsValid():
+        raise ValueError("De goedgekeurde fietspadcorridor is geen geldige multipolygoon")
+    corridor_record = _area_record(
+        corridor_geometry,
+        gebied_code=FIETSPAD_CORRIDOR_AREA_CODE,
+        naam="Fietspad Scheveningen-Wassenaarse Slag met toegankelijke strook",
+        status_code="toegankelijk",
+        feature_id="osm:snapshot:1:fietspad-scheveningen-wassenaarse-slag:buffer-5m",
+        kavels=(),
+        volledige_kavels=(),
+        gedeeltelijke_kavels=(),
+        bron_code=FIETSPAD_CORRIDOR_SOURCE_CODE,
+        vastgesteld_op="2026-11-10",
+        inwinningsmethode="OpenStreetMap-hartlijn met buffer van 5 meter aan weerszijden",
+        nauwkeurigheid_m=None,
+        opmerking=(
+            "OpenStreetMap-snapshot 8 november 2026, aangevuld met de door Ton opgegeven "
+            "begin-, samenkomst-, eind- en aftakkingspunten. Door Ton visueel goedgekeurd "
+            "op 10 november 2026; het fietspad en vijf meter aan iedere zijde zijn het hele jaar toegankelijk."
+        ),
+    )
+
+    original_by_code = {AREA_CODE: feature, **{area["gebied_code"]: area for area in areas}}
+    adjusted_by_code: dict[str, ogr.Geometry] = {}
+    adjusted_statuses: dict[str, str] = {}
+    for accepted_feature in adjusted_layer:
+        code = accepted_feature.GetFieldAsString("gebied_code")
+        if code in adjusted_by_code:
+            raise ValueError(f"Dubbel aangepast statusgebied: {code}")
+        geometry = ogr.ForceToMultiPolygon(accepted_feature.GetGeometryRef().Clone())
+        if geometry is None or not geometry.IsValid():
+            raise ValueError(f"Aangepast statusgebied is ongeldig: {code}")
+        if sum(max(0, part.GetGeometryCount() - 1) for part in _polygon_parts(geometry)):
+            raise ValueError(f"Aangepast statusgebied bevat interne ringen: {code}")
+        overlap = polygonal_area(geometry.Intersection(corridor_geometry))
+        if overlap >= 0.001:
+            raise ValueError(f"Statusgebied {code} overlapt de fietspadcorridor nog {overlap:.6f} m2")
+        adjusted_by_code[code] = geometry
+        adjusted_statuses[code] = accepted_feature.GetFieldAsString("status_code")
+    if set(adjusted_by_code) != set(original_by_code):
+        raise ValueError(
+            "Aangepaste statusgebieden wijken af van de levende set: "
+            f"ontbreekt={sorted(set(original_by_code) - set(adjusted_by_code))}, "
+            f"extra={sorted(set(adjusted_by_code) - set(original_by_code))}"
+        )
+
+    adjusted_records: dict[str, dict[str, Any]] = {}
+    for code, original in original_by_code.items():
+        if adjusted_statuses[code] != original["status_code"]:
+            raise ValueError(f"Statuswijziging in kandidaat voor {code}")
+        geometry = adjusted_by_code[code]
+        original_geometry = ogr.CreateGeometryFromWkt(original["wkt"])
+        changed_area = polygonal_area(geometry.SymDifference(original_geometry))
+        if changed_area < 0.001:
+            record = dict(original)
+            record.update(gebied_code=code, corridor_adjusted=False)
+            adjusted_records[code] = record
+            continue
+        wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
+        record = dict(original)
+        record.update(
+            gebied_code=code,
+            wkt=geometry.ExportToIsoWkt(),
+            geometrie_sha256=hashlib.sha256(wkb).hexdigest(),
+            oppervlakte_m2=float(geometry.GetArea()),
+            interne_ringen=0,
+            corridor_adjusted=True,
+            oorspronkelijke_bron_code=original.get("bron_code", SOURCE_CODE if code == AREA_CODE else PLOT_SOURCE_CODE),
+            oorspronkelijke_bron_object_id=original["feature_id"],
+            bron_code=FIETSPAD_CORRIDOR_SOURCE_CODE,
+            feature_id=f"{code}|osm-snapshot-1|fietspadcorridor-5m",
+            inwinningsmethode="bestaand statusvlak uitgesneden langs goedgekeurde OSM-fietspadcorridor",
+            vastgesteld_op="2026-11-10",
+            opmerking=(
+                original["opmerking"].rstrip() + " De grens is op 10 november 2026 aangepast "
+                "aan de goedgekeurde fietspadcorridor van vijf meter aan weerszijden; "
+                f"oorspronkelijke broncode: {original.get('bron_code', SOURCE_CODE if code == AREA_CODE else PLOT_SOURCE_CODE)}; "
+                f"oorspronkelijk bronobject: {original['feature_id']}."
+            ),
+        )
+        adjusted_records[code] = record
+
+    adjusted_feature = adjusted_records.pop(AREA_CODE)
+    adjusted_areas = [adjusted_records[area["gebied_code"]] for area in areas]
+    adjusted_areas.append(corridor_record)
+    return adjusted_feature, adjusted_areas
+
+
 def read_accepted_bierlap_geometry(path: Path) -> ogr.Geometry:
     """Lees exact het door Ton visueel goedgekeurde Bierlap-Kijfhoek-vlak."""
     return read_accepted_area_geometry(path, "Bierlap-Kijfhoek")
@@ -815,6 +938,7 @@ def area_schema_sql() -> str:
 
 def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[str, Any]]) -> list[str]:
     accuracy = feature["nauwkeurigheid_m"]
+    feature_source_code = feature.get("bron_code", SOURCE_CODE)
     statements = [
         "INSERT INTO maatregel_brontype (brontype_code,landelijke_broncategorie,omschrijving) "
         "VALUES ('veldregistratie','IBC99','Veldregistratie of daarvan afgeleide geometrie') "
@@ -825,6 +949,15 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         f"'{SOURCE_CODE}','veldregistratie','Garmin-veldregistratie omsloten gebied',"
         "'2026-11-07','2026-11-07','door gebruiker bevestigd',"
         "'Garmin Connect-activiteit 24999201739; gesloten routelus zonder toegangsspoor') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{FIETSPAD_CORRIDOR_SOURCE_CODE}','handmatige_registratie',"
+        "'OpenStreetMap-fietspadcorridor Scheveningen-Wassenaarse Slag',"
+        "'2026-11-08','2026-11-10','door gebruiker bevestigd',"
+        "'OSM-snapshot 1 van 8 november 2026; vier gekoppelde routetakken; buffer van vijf meter "
+        "aan weerszijden; visueel goedgekeurd door Ton op 10 november 2026; oorspronkelijke "
+        "statusvlakken blijven in geometrie-opmerking herleidbaar') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
         "INSERT INTO maatregel_bron "
         "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
@@ -856,7 +989,7 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         f"{sql_literal(feature['wkt'])},{sql_literal(feature['geometrie_sha256'])},"
         f"{feature['oppervlakte_m2']:.3f},{sql_literal(feature['opmerking'])} "
         "FROM toegankelijkheidsgebied g JOIN maatregel_bron b "
-        f"ON b.bron_code='{SOURCE_CODE}' WHERE g.gebied_code='{AREA_CODE}' "
+        f"ON b.bron_code={sql_literal(feature_source_code)} WHERE g.gebied_code='{AREA_CODE}' "
         "ON DUPLICATE KEY UPDATE status_code=VALUES(status_code),geldig_vanaf=VALUES(geldig_vanaf),"
         "geldig_tot=VALUES(geldig_tot),vastgesteld_op=VALUES(vastgesteld_op),bron_id=VALUES(bron_id),"
         "bron_object_id=VALUES(bron_object_id),inwinningsmethode=VALUES(inwinningsmethode),"
@@ -1189,6 +1322,8 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
         if plot_row[6] != plot_area["geometrie_sha256"] or abs(float(plot_row[5]) - plot_area["oppervlakte_m2"]) > 0.01:
             raise AssertionError(plot_row)
         full_kavels = plot_area.get("volledige_kavels", plot_area["kavels"])
+        if plot_area.get("corridor_adjusted"):
+            full_kavels = ()
         if full_kavels:
             kavel_sql = ",".join(sql_literal(kavel) for kavel in full_kavels)
             covered = int(client.scalar(
@@ -1218,6 +1353,20 @@ def verify(client: Client, feature: dict[str, Any], plot_areas: list[dict[str, A
     bad = int(client.scalar("SELECT COUNT(*) FROM toegankelijkheidsgebied_plot_afleiding WHERE aandeel_pct<=0 OR aandeel_pct>100"))
     if bad:
         raise AssertionError(f"Ongeldige afgeleide percentages: {bad}")
+    corridor_records = [
+        area for area in plot_areas
+        if area["gebied_code"] == FIETSPAD_CORRIDOR_AREA_CODE
+    ]
+    if len(corridor_records) != 1:
+        raise AssertionError("De actuele fietspadcorridor ontbreekt of is dubbel")
+    corridor_geometry = ogr.CreateGeometryFromWkt(corridor_records[0]["wkt"])
+    for area in [feature, *plot_areas]:
+        if area["gebied_code"] == FIETSPAD_CORRIDOR_AREA_CODE:
+            continue
+        geometry = ogr.CreateGeometryFromWkt(area["wkt"])
+        overlap = polygonal_area(geometry.Intersection(corridor_geometry))
+        if overlap >= 0.001:
+            raise AssertionError(f"Statusgebied {area['gebied_code']} overlapt corridor: {overlap:.6f} m2")
     return result
 
 
@@ -1246,6 +1395,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_HARSTENHOEK_ACCEPTED_GPKG,
     )
+    parser.add_argument(
+        "--fietspad-corridor-gpkg",
+        type=Path,
+        default=DEFAULT_FIETSPAD_CORRIDOR_GPKG,
+    )
     parser.add_argument("--backup-dir", type=Path, default=BACKUP_ROOT)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify", action="store_true")
@@ -1269,6 +1423,11 @@ def main() -> int:
             args.reference_gpkg,
             args.harstenhoek_accepted_gpkg,
         )
+    )
+    feature, plot_areas = apply_accepted_fietspad_corridor(
+        feature,
+        plot_areas,
+        args.fietspad_corridor_gpkg,
     )
     client = Client(args.database)
     if args.apply:

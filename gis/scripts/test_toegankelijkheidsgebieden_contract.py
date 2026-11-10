@@ -249,10 +249,35 @@ def main() -> int:
     assert harstenhoek["geometrie_sha256"] == "0984642f609bd45ba2a0cf92e032cd456ea3f0e24224b7ff3e44fadd651ce8e9"
     assert abs(harstenhoek["gedeeltelijke_kavel_aandelen_pct"]["M42"] - 78.824723) < 0.00001
 
-    statements = migration.build_migration_statements(feature, plot_areas + [bierlap, m45, harstenhoek])
+    adjusted_feature, adjusted_areas = migration.apply_accepted_fietspad_corridor(
+        feature,
+        plot_areas + [bierlap, m45, harstenhoek],
+        migration.DEFAULT_FIETSPAD_CORRIDOR_GPKG,
+    )
+    corridor = next(
+        area for area in adjusted_areas
+        if area["gebied_code"] == migration.FIETSPAD_CORRIDOR_AREA_CODE
+    )
+    assert adjusted_feature["corridor_adjusted"]
+    assert len(adjusted_areas) == 12
+    assert corridor["status_code"] == "toegankelijk"
+    assert corridor["bron_code"] == migration.FIETSPAD_CORRIDOR_SOURCE_CODE
+    assert abs(corridor["oppervlakte_m2"] - 94_579.891) < 0.01
+    assert corridor["interne_ringen"] == 0
+    corridor_geometry = migration.ogr.CreateGeometryFromWkt(corridor["wkt"])
+    unchanged_codes = {"haagsche_golfclub_1955", "hertenkamp_1955"}
+    for area in [adjusted_feature, *adjusted_areas]:
+        if area["gebied_code"] == migration.FIETSPAD_CORRIDOR_AREA_CODE:
+            continue
+        assert area["corridor_adjusted"] == (area["gebied_code"] not in unchanged_codes)
+        geometry = migration.ogr.CreateGeometryFromWkt(area["wkt"])
+        assert migration.polygonal_area(geometry.Intersection(corridor_geometry)) < 0.001
+    assert sum(area.get("corridor_adjusted", False) for area in [adjusted_feature, *adjusted_areas]) == 10
+
+    statements = migration.build_migration_statements(adjusted_feature, adjusted_areas)
     joined = "\n".join(statements)
     assert "1955-01-01" in joined
-    assert FEATURE_ID in joined
+    assert adjusted_feature["feature_id"] in joined
     assert "DELETE FROM maatregel_registratie_herkomst" in joined
     assert "DROP TABLE maatregel_toegankelijkheid_registratie" in joined
     assert "maatregel_plot_jaar_registratie" not in joined
@@ -278,6 +303,8 @@ def main() -> int:
     assert "mymaps_harstenhoek_20261110" in joined
     assert "harstenhoek_afgesloten_1955" in joined
     assert "49d49027a5fccdbeb418b7993b43bcf3e0133c3f8598c1d3354207f26a836f90" in joined
+    assert migration.FIETSPAD_CORRIDOR_SOURCE_CODE in joined
+    assert migration.FIETSPAD_CORRIDOR_AREA_CODE in joined
     assert "kavel_m77_1955" in joined
     assert "kavel_m78_79_1955" in joined
     assert "kavel_m75a_1955" in joined

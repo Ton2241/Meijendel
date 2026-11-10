@@ -26,8 +26,8 @@ ENVIRONMENT = (
     "kavelwaarden afgeleid: drie variabelen voor elk van 55 kavels. "
     "Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
-    "uit versies van omsloten gebieden. Twaalf actuele gebiedsversies leveren samen "
-    "91 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "uit versies van omsloten gebieden. Dertien actuele gebiedsversies leveren samen "
+    "105 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -49,9 +49,11 @@ GARMIN = (
     "overgenomen; kleine kruisingsvlakken door lokale GPS-overlap zijn uitgesloten. "
     "De ruwe GPX blijft bij het overdraagbare QField-pakket. Garmin rapporteert in "
     "deze export geen horizontale nauwkeurigheid; dat veld blijft daarom leeg. De "
-    "afgesloten polygoon is als één gebiedsversie in Meijendel opgenomen; de "
-    "berekende oppervlakte in Rijksdriehoeksstelsel is 4.483.613,185 m². Vier interne "
-    "artefactringen zijn verwijderd; de bronhash is "
+    "oorspronkelijke afgesloten bronvlak besloeg 4.483.613,185 m². Na uitsnijding "
+    "van de op 10 november 2026 bevestigde fietspadcorridor bevat de actuele "
+    "gebiedsversie 4.478.529,700 m² en heeft zij geometrie-SHA-256 "
+    "a47f90b35c454db4fdecbaaf77b5a2fd855305295c3da47b277646a9514896e1. Vier interne "
+    "artefactringen waren al uit het bronvlak verwijderd; de bronhash is "
     "789f8ee1c6eb7ca27667000b775de8f9ef7bb4aabb0d29b98f85d820b06b490c. Dit is een "
     "lokaal gelokaliseerde veldbron voor toegankelijkheidsinventarisatie, geen "
     "ecologische soortwaarneming en geen bron voor Meijendel_bronnen. De gegevens "
@@ -199,6 +201,8 @@ def main() -> None:
         raise RuntimeError("Parserversie 18 ontbreekt in DOCX")
     if not any("harstenhoek_afgesloten_1955" in p.text for p in check.paragraphs):
         raise RuntimeError("Harstenhoek-gebied ontbreekt in DOCX")
+    if not any("fietspad_scheveningen_wassenaarse_slag_1955" in p.text for p in check.paragraphs):
+        raise RuntimeError("Fietspadcorridor ontbreekt in DOCX")
     if sum(p.text == OSM_SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("OSM-fietspadsectie niet exact eenmaal opgeslagen")
     if not any("De GeoJSON bevat 1.325 objecten" in p.text for p in check.paragraphs):
