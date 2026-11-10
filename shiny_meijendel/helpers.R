@@ -588,6 +588,18 @@ read_plots_cache_table <- function(path) {
   )
 }
 
+read_toegankelijkheidsgebied_versie_cache_table <- function(path) {
+  read_insert_table(
+    path,
+    "toegankelijkheidsgebied_versie",
+    c("gebied_versie_id", "gebied_id", "versienummer", "status_code", "geldig_vanaf", "geldig_tot"),
+    sanitize_binary = TRUE,
+    fast_tuples = FALSE,
+    keep_only = TRUE,
+    mysql_escapes = TRUE
+  )
+}
+
 read_optional_insert_table <- function(path, table, columns) {
   lines <- readLines(path, warn = FALSE, encoding = "UTF-8")
   prefix <- paste0("INSERT INTO \`", table, "\` ")
@@ -877,15 +889,7 @@ parse_meijendel_tables <- function(path) {
     "toegankelijkheidsgebied",
     c("gebied_id", "gebied_code", "naam", "opmerking")
   )
-  toegankelijkheidsgebied_versie <- read_insert_table(
-    path,
-    "toegankelijkheidsgebied_versie",
-    c("gebied_versie_id", "gebied_id", "versienummer", "status_code", "geldig_vanaf", "geldig_tot", "vastgesteld_op", "bron_id", "bron_object_id", "inwinningsmethode", "nauwkeurigheid_m", "geometrie_wkt", "geometrie_sha256", "oppervlakte_m2", "geometrie_opmerking"),
-    sanitize_binary = TRUE,
-    fast_tuples = TRUE,
-    keep_only = TRUE,
-    mysql_escapes = TRUE
-  )
+  toegankelijkheidsgebied_versie <- read_toegankelijkheidsgebied_versie_cache_table(path)
   toegankelijkheidsgebied_plot_afleiding <- read_insert_table(
     path,
     "toegankelijkheidsgebied_plot_afleiding",
@@ -985,6 +989,10 @@ parse_meijendel_tables <- function(path) {
   pji$plot_id <- to_integer(pji$plot_id)
   pji$jaar <- to_integer(pji$jaar)
   pji$waarde <- to_numeric(pji$waarde)
+  toegankelijkheidsgebied_versie$gebied_versie_id <- to_integer(toegankelijkheidsgebied_versie$gebied_versie_id)
+  toegankelijkheidsgebied_versie$gebied_id <- to_integer(toegankelijkheidsgebied_versie$gebied_id)
+  toegankelijkheidsgebied_versie$versienummer <- to_integer(toegankelijkheidsgebied_versie$versienummer)
+  pjtg$gebied_versie_id <- to_integer(pjtg$gebied_versie_id)
   pjtg$plot_id <- to_integer(pjtg$plot_id)
   dagwaarnemingen_wv$plot_id <- to_integer(dagwaarnemingen_wv$plot_id)
   dagwaarnemingen_wv$soort_id <- to_integer(dagwaarnemingen_wv$soort_id)

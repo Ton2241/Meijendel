@@ -313,6 +313,44 @@ stopifnot(
 )
 unlink(binary_plot_fixture)
 
+gebied_fixture <- tempfile(fileext = ".sql")
+writeLines(paste0(
+  "INSERT INTO `toegankelijkheidsgebied_versie` ",
+  "(`gebied_versie_id`, `gebied_id`, `versienummer`, `status_code`, `geldig_vanaf`, `geldig_tot`, `geometrie_wkt`) VALUES ",
+  "(1,1,1,'toegankelijk','1955-01-01',NULL,'MULTIPOLYGON(((0 0,1 0,1 1,0 0)),((2 2,3 2,3 3,2 2)))'),",
+  "(2,2,1,'afgesloten','1955-01-01',NULL,'MULTIPOLYGON(((4 4,5 4,5 5,4 4)))');"
+), gebied_fixture, useBytes = TRUE)
+gebied_versies <- read_toegankelijkheidsgebied_versie_cache_table(gebied_fixture)
+stopifnot(
+  nrow(gebied_versies) == 2L,
+  identical(gebied_versies$gebied_versie_id, c("1", "2")),
+  identical(gebied_versies$status_code, c("toegankelijk", "afgesloten"))
+)
+unlink(gebied_fixture)
+
+invalid_accessibility_identity <- meijendel_cache_identity(strrep("a", 64), 123L, 18L)
+invalid_accessibility_cache <- list(
+  format = MEIJENDEL_CACHE_FORMAT,
+  identity = invalid_accessibility_identity,
+  data = list(
+    toegankelijkheidsgebied_versie = data.frame(
+      gebied_versie_id = c("1", "MULTIPOLYGON-fragment"),
+      gebied_id = c("1", "fragment"),
+      status_code = c("toegankelijk", "fragment"),
+      stringsAsFactors = FALSE
+    ),
+    toegankelijkheidsgebied_plot_afleiding = data.frame(
+      gebied_versie_id = "1",
+      plot_id = "3490",
+      stringsAsFactors = FALSE
+    )
+  )
+)
+expect_error(
+  validate_meijendel_cache(invalid_accessibility_cache, invalid_accessibility_identity),
+  "toegankelijkheidsgebied_versie bevat een ongeldig of dubbel gebied_versie_id"
+)
+
 complete_count_fixture <- data.frame(
   plot_id = rep(1L, 5L),
   jaar = c(2024L, 2024L, 2025L, 2025L, 2025L),
@@ -504,6 +542,17 @@ cache_fixture_data <- function() {
     plot_id = 1L,
     in_scope = 1L,
     reden = "Onderdeel van Natura 2000-analysegebied.",
+    stringsAsFactors = FALSE
+  )
+  data$toegankelijkheidsgebied_versie <- data.frame(
+    gebied_versie_id = integer(),
+    gebied_id = integer(),
+    status_code = character(),
+    stringsAsFactors = FALSE
+  )
+  data$toegankelijkheidsgebied_plot_afleiding <- data.frame(
+    gebied_versie_id = integer(),
+    plot_id = integer(),
     stringsAsFactors = FALSE
   )
   data

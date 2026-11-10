@@ -374,5 +374,38 @@ validate_meijendel_cache <- function(cache, expected_identity, required_data = c
   if (length(missing_data)) {
     stop("Cachedata mist: ", paste(missing_data, collapse = ", "), call. = FALSE)
   }
+  if (all(c("toegankelijkheidsgebied_versie", "toegankelijkheidsgebied_plot_afleiding") %in% names(cache$data))) {
+    versions <- cache$data$toegankelijkheidsgebied_versie
+    derivations <- cache$data$toegankelijkheidsgebied_plot_afleiding
+    required_versions <- c("gebied_versie_id", "gebied_id", "status_code")
+    required_derivations <- c("gebied_versie_id", "plot_id")
+    if (!is.data.frame(versions) || length(setdiff(required_versions, names(versions)))) {
+      stop("toegankelijkheidsgebied_versie mist verplichte cachevelden.", call. = FALSE)
+    }
+    if (!is.data.frame(derivations) || length(setdiff(required_derivations, names(derivations)))) {
+      stop("toegankelijkheidsgebied_plot_afleiding mist verplichte cachevelden.", call. = FALSE)
+    }
+    version_ids <- suppressWarnings(as.integer(versions$gebied_versie_id))
+    gebied_ids <- suppressWarnings(as.integer(versions$gebied_id))
+    if (anyNA(version_ids) || any(version_ids < 1L) || anyDuplicated(version_ids)) {
+      stop("toegankelijkheidsgebied_versie bevat een ongeldig of dubbel gebied_versie_id.", call. = FALSE)
+    }
+    if (anyNA(gebied_ids) || any(gebied_ids < 1L)) {
+      stop("toegankelijkheidsgebied_versie bevat een ongeldig gebied_id.", call. = FALSE)
+    }
+    allowed_status <- c(
+      "afgesloten", "toegankelijk", "toegankelijk_buiten_broedseizoen",
+      "toegankelijk_met_toegangskaart"
+    )
+    if (any(!as.character(versions$status_code) %in% allowed_status)) {
+      stop("toegankelijkheidsgebied_versie bevat een onbekende status_code.", call. = FALSE)
+    }
+    derivation_version_ids <- suppressWarnings(as.integer(derivations$gebied_versie_id))
+    derivation_plot_ids <- suppressWarnings(as.integer(derivations$plot_id))
+    if (anyNA(derivation_version_ids) || anyNA(derivation_plot_ids) ||
+        any(!derivation_version_ids %in% version_ids)) {
+      stop("toegankelijkheidsgebied_plot_afleiding bevat een ongeldige of verweesde koppeling.", call. = FALSE)
+    }
+  }
   TRUE
 }
