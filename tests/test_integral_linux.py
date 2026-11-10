@@ -99,6 +99,21 @@ class InternalShinyBinding(unittest.TestCase):
   self.assertIn('reverse_proxy 172.29.0.3:3838',config)
   self.assertIn('/auth/analysis-shiny',config)
   self.assertNotIn('127.0.0.1:18198',config)
+class CaddyReadiness(unittest.TestCase):
+ def test_generated_auth_block_uses_parser_supported_newlines(self):
+  source=Path('/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app/deploy/caddy/Caddyfile.production').read_text()
+  config=linux.caddy_config(source,True,shiny_upstream='172.29.0.3:3838')
+  self.assertNotIn('{ uri ',config)
+ def test_readiness_wait_includes_caddy_and_retries_connection_refusal(self):
+  from unittest.mock import patch
+  h=linux.LinuxHooks(linux.layout('a'*40,True));h.s['shiny_upstream']='172.29.0.3:3838';calls=[]
+  def get(url):
+   calls.append(url)
+   if ':18199/' in url and calls.count(url)==1:raise ConnectionRefusedError('starting')
+   return b'ok',200,url
+  h.get=get
+  with patch.object(linux.time,'sleep'):h.wait_services()
+  self.assertEqual(calls.count('http://127.0.0.1:18199/'),2)
 class InitialTrialResumeGuard(unittest.TestCase):
  def test_resume_rejects_trial_that_already_started_activation(self):
   from unittest.mock import Mock

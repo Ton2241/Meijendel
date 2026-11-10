@@ -73,7 +73,9 @@ def caddy_config(source,trial=True,shiny_upstream=None):
  snippet=snippet.replace(original,'reverse_proxy 127.0.0.1:18196')
  extra='''\n\t@integral_assets path /releases/* /release-config.json /bmp_meijendel_data_loader.js /groepen_grafieken/*
 \thandle @integral_assets {
-\t\tforward_auth 127.0.0.1:8091 { uri /auth/analysis-output }
+\t\tforward_auth 127.0.0.1:8091 {
+			uri /auth/analysis-output
+		}
 \t\treverse_proxy 127.0.0.1:18196
 \t}
 '''
@@ -299,7 +301,10 @@ class LinuxHooks:
   else:self.logged(['systemctl','start',s['units']['dashboard']])
   self.start_shiny(package,m)
   config=self.runtime/'Caddyfile';config.write_text(caddy_config(self.s['caddy_source'],trial=s['trial'],shiny_upstream=s.get('shiny_upstream') if s['trial'] else None));os.chmod(config,0o644)
-  if s['trial']:self.start_unit('caddy',['/usr/bin/caddy','run','--adapter','caddyfile','--config',str(config)])
+  if s['trial']:
+   parsed=subprocess.run(['/usr/bin/caddy','adapt','--adapter','caddyfile','--config',str(config)],stdout=subprocess.DEVNULL,stderr=subprocess.PIPE,text=True)
+   if parsed.returncode:raise RuntimeError('Caddy-proefconfiguratie afgewezen: '+parsed.stderr[:2000])
+   self.start_unit('caddy',['/usr/bin/caddy','run','--adapter','caddyfile','--config',str(config)])
   else:self.logged(['systemctl','start','caddy'])
  def trial_address(self,name):
   if not self.s['trial'] or name not in (self.s['mysql'],self.s['shiny']):raise ValueError('Alleen een eigen proefbinding')
@@ -350,16 +355,19 @@ class LinuxHooks:
    self.s['shiny_upstream']=self.trial_address(self.s['shiny'])+':3838';secret_json(self.private/'settings.json',self.s)
  def get(self,url):
   with urllib.request.urlopen(url,timeout=10) as r:return r.read(),r.status,r.url
- def health(self,package):
-  print('INTEGRAL_STEP='+'health',flush=True)
-  m=jsonfile(package/'release.json')
-  if m.get('legacy'):return self.health_legacy()
+ def wait_services(self):
   urls=[f'http://127.0.0.1:{self.p[role]}/' for role in ('website','dashboard')]+[self.shiny_url()]
+  if self.s['trial']:urls.append(f'http://127.0.0.1:{self.p["caddy"]}/')
   for url in urls:
    for _ in range(120):
     try:self.get(url);break
     except Exception:time.sleep(.5)
    else:raise RuntimeError('Dienst niet gereed: '+url)
+ def health(self,package):
+  print('INTEGRAL_STEP='+'health',flush=True)
+  m=jsonfile(package/'release.json')
+  if m.get('legacy'):return self.health_legacy()
+  self.wait_services()
   body,_,url=self.get(f'http://127.0.0.1:{self.p["dashboard"]}/release-config.json')
   if json.loads(body)['release_id']!=m['release_id'] or '/releases/'+m['release_id']+'/www/' not in url:raise RuntimeError('Verkeerde dashboardversie')
   for port,path in [(self.p['dashboard'],'/outputs/bootstrap-presentatie-2026/bootstrap.html'),(self.p['website'],'/soorten/bootstrap.asp')]:
