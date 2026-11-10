@@ -234,7 +234,22 @@ def main() -> int:
     assert m45["geometrie_sha256"] == "e525ca53664e1941a2ec6c232ab10fc1a180f36d5775dd86ee6e9a2cc0c78b11"
     assert abs(m45["gedeeltelijke_kavel_aandelen_pct"]["M4-5"] - 61.446186) < 0.00001
 
-    statements = migration.build_migration_statements(feature, plot_areas + [bierlap, m45])
+    harstenhoek = migration.derive_harstenhoek_closed_area(
+        migration.DEFAULT_REFERENCE_GPKG,
+        migration.DEFAULT_HARSTENHOEK_ACCEPTED_GPKG,
+    )
+    assert harstenhoek["gebied_code"] == "harstenhoek_afgesloten_1955"
+    assert harstenhoek["naam"] == "Afgesloten gebied Harstenhoek"
+    assert harstenhoek["status_code"] == "afgesloten"
+    assert harstenhoek["kavels"] == ("M42",)
+    assert harstenhoek["volledige_kavels"] == ()
+    assert harstenhoek["gedeeltelijke_kavels"] == ("M42",)
+    assert abs(harstenhoek["oppervlakte_m2"] - 322_677.870557) < 0.01
+    assert harstenhoek["bron_geometrie_sha256"] == "49d49027a5fccdbeb418b7993b43bcf3e0133c3f8598c1d3354207f26a836f90"
+    assert harstenhoek["geometrie_sha256"] == "0984642f609bd45ba2a0cf92e032cd456ea3f0e24224b7ff3e44fadd651ce8e9"
+    assert abs(harstenhoek["gedeeltelijke_kavel_aandelen_pct"]["M42"] - 78.824723) < 0.00001
+
+    statements = migration.build_migration_statements(feature, plot_areas + [bierlap, m45, harstenhoek])
     joined = "\n".join(statements)
     assert "1955-01-01" in joined
     assert FEATURE_ID in joined
@@ -260,6 +275,9 @@ def main() -> int:
     assert "mymaps_grensregistratie_20261110" in joined
     assert "m4_5_afgesloten_1955" in joined
     assert "37d0cbaf52ac03dfb3309c53b9c51fa77c6d4a92d51defeeda0a1d6935d30af4" in joined
+    assert "mymaps_harstenhoek_20261110" in joined
+    assert "harstenhoek_afgesloten_1955" in joined
+    assert "49d49027a5fccdbeb418b7993b43bcf3e0133c3f8598c1d3354207f26a836f90" in joined
     assert "kavel_m77_1955" in joined
     assert "kavel_m78_79_1955" in joined
     assert "kavel_m75a_1955" in joined

@@ -26,8 +26,8 @@ ENVIRONMENT = (
     "kavelwaarden afgeleid: drie variabelen voor elk van 55 kavels. "
     "Toegankelijkheid wordt sinds "
     "7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid "
-    "uit versies van omsloten gebieden. Elf actuele gebiedsversies leveren samen "
-    "89 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
+    "uit versies van omsloten gebieden. Twaalf actuele gebiedsversies leveren samen "
+    "91 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, "
     "niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 "
     "BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De "
     "kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; "
@@ -146,7 +146,7 @@ def main() -> None:
         ("De levende lokale database bevat nu drie toegestane gebiedsstatussen", "De levende lokale database bevat nu vier toegestane gebiedsstatussen"),
         section[1],
     )
-    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden", "De levende database bevat tien actuele gebieden", "De levende database bevat elf actuele gebieden"), section[2])
+    replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden", "De levende database bevat tien actuele gebieden", "De levende database bevat elf actuele gebieden", "De levende database bevat twaalf actuele gebieden"), section[2])
     replace_paragraph_any(
         document,
         (
@@ -197,6 +197,8 @@ def main() -> None:
         raise RuntimeError("Nieuwe sectie niet exact eenmaal opgeslagen")
     if not any("parser/cacheversie 18" in p.text for p in check.paragraphs):
         raise RuntimeError("Parserversie 18 ontbreekt in DOCX")
+    if not any("harstenhoek_afgesloten_1955" in p.text for p in check.paragraphs):
+        raise RuntimeError("Harstenhoek-gebied ontbreekt in DOCX")
     if sum(p.text == OSM_SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("OSM-fietspadsectie niet exact eenmaal opgeslagen")
     if not any("De GeoJSON bevat 1.325 objecten" in p.text for p in check.paragraphs):

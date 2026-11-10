@@ -35,6 +35,10 @@ DEFAULT_M45_ACCEPTED_GPKG = Path(
     "/Volumes/T7 Data/Home_Ton/Proefomgevingen/kavel-m4-5-afgesloten-vlak-2026-11-10/"
     "outputs/afgesloten-m4-5-goedgekeurd.gpkg"
 )
+DEFAULT_HARSTENHOEK_ACCEPTED_GPKG = Path(
+    "/Volumes/T7 Data/Home_Ton/Proefomgevingen/harstenhoek-afgesloten-vlak-2026-11-10/"
+    "outputs/harstenhoek-kandidaat.gpkg"
+)
 DEFAULT_FEATURE_ID = "garmin_activity_24999201739_routepunten_160_5470"
 BACKUP_ROOT = Path("/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel")
 T7_TRIAL_ROOT = Path("/Volumes/T7 Data/Home_Ton/Proefomgevingen")
@@ -44,12 +48,13 @@ STATUS_CODES = (
     "toegankelijk_buiten_broedseizoen",
     "toegankelijk_met_toegangskaart",
 )
-MIGRATION_VERSION = "toegankelijkheidsgebieden-v10"
+MIGRATION_VERSION = "toegankelijkheidsgebieden-v11"
 SOURCE_CODE = "garmin_veldregistratie_20261107"
 AREA_CODE = "garmin_24999201739_omsloten_gebied"
 PLOT_SOURCE_CODE = "handmatige_plotselectie_20261107"
 BIERLAP_SOURCE_CODE = "garmin_grensregistratie_20261109"
 M45_SOURCE_CODE = "mymaps_grensregistratie_20261110"
+HARSTENHOEK_SOURCE_CODE = "mymaps_harstenhoek_20261110"
 BIERLAP_BOUNDARY_START_POINT_ID = 0
 BIERLAP_BOUNDARY_END_POINT_ID = 396
 BIERLAP_CURVE_CONTROL_POINTS_RD = (
@@ -74,6 +79,13 @@ M45_AREA_SPEC = {
     "naam": "Afgesloten gebied bij M4-5",
     "status_code": "afgesloten",
     "kavels": ("M4-5",),
+    "vastgesteld_op": "2026-11-10",
+}
+HARSTENHOEK_AREA_SPEC = {
+    "gebied_code": "harstenhoek_afgesloten_1955",
+    "naam": "Afgesloten gebied Harstenhoek",
+    "status_code": "afgesloten",
+    "kavels": ("M42",),
     "vastgesteld_op": "2026-11-10",
 }
 PLOT_AREA_SPECS = (
@@ -708,6 +720,40 @@ def derive_m45_closed_area(
     return record
 
 
+def derive_harstenhoek_closed_area(
+    reference_path: Path,
+    accepted_path: Path = DEFAULT_HARSTENHOEK_ACCEPTED_GPKG,
+) -> dict[str, Any]:
+    """Lees het door Ton visueel goedgekeurde afgesloten vlak in Harstenhoek."""
+    geometry = read_accepted_area_geometry(accepted_path, "Harstenhoek")
+    plot = read_plot_geometries(reference_path, {"M42"})["M42"]
+    coverage = 100.0 * polygonal_area(geometry.Intersection(plot)) / plot.GetArea()
+    if not 0 < coverage < 100:
+        raise ValueError(f"Goedgekeurd Harstenhoek-vlak dekt M42 niet gedeeltelijk: {coverage:.6f}%")
+    source_wkb = bytes(geometry.ExportToWkb(ogr.wkbNDR))
+    return _area_record(
+        geometry,
+        gebied_code=HARSTENHOEK_AREA_SPEC["gebied_code"],
+        naam=HARSTENHOEK_AREA_SPEC["naam"],
+        status_code=HARSTENHOEK_AREA_SPEC["status_code"],
+        feature_id="google-mymaps:1BU0etZpLjh0YLg3E_nJ2tZW7Z71HBF4:extra-gebied:hartenhoek",
+        kavels=HARSTENHOEK_AREA_SPEC["kavels"],
+        volledige_kavels=(),
+        gedeeltelijke_kavels=HARSTENHOEK_AREA_SPEC["kavels"],
+        gedeeltelijke_kavel_aandelen_pct={"M42": coverage},
+        bron_geometrie_sha256=hashlib.sha256(source_wkb).hexdigest(),
+        bron_oppervlakte_m2=float(geometry.GetArea()),
+        bron_code=HARSTENHOEK_SOURCE_CODE,
+        vastgesteld_op=HARSTENHOEK_AREA_SPEC["vastgesteld_op"],
+        inwinningsmethode="Google My Maps-polygoon geprojecteerd op PDOK-luchtfoto 2025",
+        nauwkeurigheid_m=None,
+        opmerking=(
+            "Door Ton visueel bevestigd als formeel afgesloten vlak in Harstenhoek. "
+            "De rechtstreeks gesloten My Maps-polygoon is als vaste akkoordgeometrie overgenomen."
+        ),
+    )
+
+
 def read_plot_areas(path: Path) -> list[dict[str, Any]]:
     """Vorm de door Ton bevestigde gebieden uit volledige kavelgeometrieën."""
     wanted = {kavel for spec in PLOT_AREA_SPECS for kavel in spec["kavels"]}
@@ -788,6 +834,14 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
         "open lijn gesloten langs de bevestigde grens van Bierlap-Kijfhoek en beperkt tot M4-5; "
         "bron-WKB-SHA-256 37d0cbaf52ac03dfb3309c53b9c51fa77c6d4a92d51defeeda0a1d6935d30af4') "
         "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
+        "INSERT INTO maatregel_bron "
+        "(bron_code,brontype_code,titel,bron_datum,raadpleegdatum,bronstatus,opmerking) VALUES ("
+        f"'{HARSTENHOEK_SOURCE_CODE}','handmatige_registratie','Google My Maps-vlak Harstenhoek',"
+        "'2026-11-10','2026-11-10','door gebruiker bevestigd',"
+        "'Google My Maps-kaart 1BU0etZpLjh0YLg3E_nJ2tZW7Z71HBF4, laag extra gebied, object hartenhoek; "
+        "gesloten polygoon met 11 unieke grenspunten; visueel bevestigd op PDOK-luchtfoto 2025; "
+        "bron-WKB-SHA-256 49d49027a5fccdbeb418b7993b43bcf3e0133c3f8598c1d3354207f26a836f90') "
+        "ON DUPLICATE KEY UPDATE titel=VALUES(titel),bronstatus=VALUES(bronstatus),opmerking=VALUES(opmerking)",
         "INSERT INTO toegankelijkheidsgebied (gebied_code,naam,opmerking) VALUES ("
         f"'{AREA_CODE}','Omsloten gebied Garmin-route 7 november 2026',"
         "'Door Ton bevestigd als daadwerkelijk omsloten gebied') "
@@ -839,7 +893,11 @@ def build_migration_statements(feature: dict[str, Any], plot_areas: list[dict[st
             f"{sql_literal(plot_area['opmerking'])}) "
             "ON DUPLICATE KEY UPDATE naam=VALUES(naam),opmerking=VALUES(opmerking)"
         )
-        if plot_area["gebied_code"] in (BIERLAP_AREA_SPEC["gebied_code"], M45_AREA_SPEC["gebied_code"]):
+        if plot_area["gebied_code"] in (
+            BIERLAP_AREA_SPEC["gebied_code"],
+            M45_AREA_SPEC["gebied_code"],
+            HARSTENHOEK_AREA_SPEC["gebied_code"],
+        ):
             statements.append(
                 "DELETE FROM v USING toegankelijkheidsgebied_versie v "
                 "JOIN toegankelijkheidsgebied g USING(gebied_id) "
@@ -1183,6 +1241,11 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_M45_ACCEPTED_GPKG,
     )
+    parser.add_argument(
+        "--harstenhoek-accepted-gpkg",
+        type=Path,
+        default=DEFAULT_HARSTENHOEK_ACCEPTED_GPKG,
+    )
     parser.add_argument("--backup-dir", type=Path, default=BACKUP_ROOT)
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--verify", action="store_true")
@@ -1201,6 +1264,12 @@ def main() -> int:
         )
     )
     plot_areas.append(derive_m45_closed_area(args.reference_gpkg, args.m45_accepted_gpkg))
+    plot_areas.append(
+        derive_harstenhoek_closed_area(
+            args.reference_gpkg,
+            args.harstenhoek_accepted_gpkg,
+        )
+    )
     client = Client(args.database)
     if args.apply:
         metadata = backup(client, args.backup_dir, feature, plot_areas)
