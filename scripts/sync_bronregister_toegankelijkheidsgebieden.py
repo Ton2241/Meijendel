@@ -58,7 +58,7 @@ GARMIN = (
     "vallen onder beheer van Ton Lansink; extern hergebruik is niet beoordeeld."
 )
 
-SECTION_TITLE = "Toegankelijkheid als gebiedsversies, bijgewerkt 9 november 2026"
+SECTION_TITLE = "Toegankelijkheid als gebiedsversies, bijgewerkt 10 november 2026"
 OSM_SECTION_TITLE = "OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026"
 
 
@@ -137,8 +137,8 @@ def main() -> None:
     document = Document(DOCX)
     section = markdown_section(SECTION_TITLE)
     osm_section = markdown_section(OSM_SECTION_TITLE)
-    rename_once(document, "Toegankelijkheid als gebiedsversies op 7 november 2026", SECTION_TITLE)
-    replace_paragraph(document, "Stand:", "Stand: 9 november 2026.")
+    rename_once(document, "Toegankelijkheid als gebiedsversies, bijgewerkt 9 november 2026", SECTION_TITLE)
+    replace_paragraph(document, "Stand:", "Stand: 10 november 2026.")
     replace_paragraph(document, "Aanvullende verklarende gegevens.", ENVIRONMENT)
     replace_paragraph(document, "Garmin-QField-veldbron", GARMIN)
     replace_paragraph_any(
@@ -156,7 +156,7 @@ def main() -> None:
         ),
         section[4],
     )
-    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak", "De herstelkopie direct vóór deze correctie", "De herstelkopie direct vóór de definitieve correctie"), section[5])
+    replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak", "De herstelkopie direct vóór deze correctie", "De herstelkopie direct vóór de definitieve correctie", "De herstelkopie direct vóór deze vervanging"), section[5])
     rename_once(
         document,
         "Integratie begrazing en toegankelijkheid op 16 oktober 2026",

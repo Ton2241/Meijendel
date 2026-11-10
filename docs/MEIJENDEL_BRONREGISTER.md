@@ -953,7 +953,7 @@ Herstelkopie en controlebewijs staan lokaal in /Users/ton/Documents/Meijendel-he
 
 Betekenistoets: uitvoering, locatie, tijd, toestand en taxonidentiteit blijven onderscheiden volgens Darwin Core (https://dwc.tdwg.org/terms/) en TDWG TCS (https://tcs.tdwg.org/terms/), geraadpleegd op 16 oktober 2026. Begrazingsdieren zijn beheereigenschappen en worden door deze migratie geen wilde soortwaarnemingen.
 
-## Toegankelijkheid als gebiedsversies, bijgewerkt 9 november 2026
+## Toegankelijkheid als gebiedsversies, bijgewerkt 10 november 2026
 
 De voorlopige toegankelijkheid per kavel is volledig vervangen. De 55 registraties uit 2024 zijn verwijderd uit `maatregel_toegankelijkheid_registratie`; ook de 55 bijbehorende doelen in `maatregel_registratie_herkomst`, de kolom `toegang_registratie_id` en de tabel zelf zijn verwijderd. De oude CSV's en migratiebestanden blijven uitsluitend als historische audit- en herstelbron herkenbaar. Zij vormen geen actieve invoerroute meer. Bron 101 blijft bestaan omdat daaraan daarnaast 139 beheerregistraties uit 1991–1999 zijn gekoppeld.
 
@@ -966,6 +966,8 @@ De levende database bevat tien actuele gebieden: drie afgesloten, vijf toegankel
 Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18. Deze versie kent ook `toegankelijk_buiten_broedseizoen` en leidt daarvoor een afzonderlijk oppervlakteaandeel af. De geldigheid wordt bepaald door de overlap tussen analysejaar en `geldig_vanaf`/`geldig_tot`. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd; de huidige productiecache bevat deze toevoeging dus nog niet.
 
 De herstelkopie direct vóór deze vervanging staat op `/Volumes/T7 Data/Home_Ton/Proefomgevingen/bierlap-kijfhoek-dagkaart-2026-11-09/outputs/backups/meijendel-toegankelijkheid-voor-migratie-20261109-224524.sql`. Omvang: 417.613 bytes. SHA-256: `0129a4a8af13f9bc2a3a1dd01e20e4e7f12e17f271ae1d37a6978c0b94413bc6`. De metadata legt de vijf betrokken tabellen, de tien berekende gebiedsdefinities en 139 behouden beheerregistraties vast. Herstel is een afzonderlijk besluit.
+
+Op 10 november 2026 heeft Ton in Google My Maps een open grenslijn voor een mogelijk formeel afgesloten vlak bij M4-5 aangeleverd. De KMZ bevat in de laag `extra gebied` één object, `Lijn 2`, met 26 WGS84-punten. De lijn is voor visuele beoordeling gesloten langs de actuele grens van `bierlap_kijfhoek_dagkaart_1955`, beperkt tot de huidige geometrie van M4-5 en ontdaan van overlap met het dagkaartvlak. De aldus berekende proefgeometrie beslaat 166.459,009 m². Het eerste lijnpunt ligt 1,034 meter van de bestaande Kijfhoek-Bierlapgrens; het laatste 24,841 meter. Delen van de getekende lijn liggen buiten de huidige M4-5-geometrie, waardoor de proefsluiting daar de kavelgrens volgt. Dit vereist Tons visuele beoordeling en is nog geen gebiedsbesluit. De lijn en proefgeometrie zijn niet in de levende database, SQL-export, Shiny-cache of website opgenomen. Bronbestanden en controlekaart staan in `/Volumes/T7 Data/Home_Ton/Proefomgevingen/kavel-m4-5-afgesloten-vlak-2026-11-10`; KMZ-SHA-256: `d088e3468f5852b7e728b0d081c3e996186929608f3d50006a1f8c0d58afe8ce`, KML-SHA-256: `21a437bc8218d5de9a944c2be4d26e465bc98dd572c46270d7b9532ea06a7dc2`. Dit is een door Ton gemaakte kandidaatbron voor toegankelijkheidsinventarisatie; extern hergebruik is niet beoordeeld.
 
 ## OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026
 
