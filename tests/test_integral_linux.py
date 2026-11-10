@@ -72,12 +72,12 @@ class ShinyMountRegression(unittest.TestCase):
    root=Path(d);package=root/'package';(package/'shiny/shiny_meijendel').mkdir(parents=True)
    (package/'cache.rds').write_text('cache');(root/'runtime').mkdir()
    s=linux.layout('a'*40,True);s.update(root=str(root),shiny_uid=1,shiny_gid=1,shiny_image='sha256:'+'b'*64)
-   h=object.__new__(linux.LinuxHooks);h.s=s;h.runtime=root/'runtime';h.p=s['ports']
+   h=object.__new__(linux.LinuxHooks);h.s=s;h.runtime=root/'runtime';h.p=s['ports'];h.private=root;h.trial_address=lambda name:'172.29.0.3'
    def logged(args,**kw):
     if args[:2]==['docker','run']:
      self.assertTrue((package/'shiny/shiny_meijendel/app_cache').is_dir(),'Docker needs the nested mountpoint before the parent bind becomes read-only')
    h.logged=logged
-   with patch.object(linux.subprocess,'run',return_value=SimpleNamespace(returncode=1)),patch.object(linux.os,'chown'):
+   with patch.object(linux.subprocess,'run',return_value=SimpleNamespace(returncode=1)),patch.object(linux.os,'chown'),patch.object(linux,'secret_json'):
     h.start_shiny(package,{'cache':{'root':'cache.rds'},'mysql':{'source':'data/meijendel.sql'}})
  def test_trial_website_uses_host_reachable_internal_mysql_address(self):
   from unittest.mock import patch
@@ -89,6 +89,16 @@ class ShinyMountRegression(unittest.TestCase):
    h.bind_trial_mysql()
   self.assertEqual(s['website_env']['MEIJENDEL_MYSQL_HOST'],'172.29.0.2')
   self.assertEqual(s['website_env']['MEIJENDEL_MYSQL_PORT'],'3306')
+class InternalShinyBinding(unittest.TestCase):
+ def test_shiny_health_uses_internal_container_endpoint(self):
+  s=linux.layout('a'*40,True);s['shiny_upstream']='172.29.0.3:3838';h=linux.LinuxHooks(s)
+  self.assertEqual(h.shiny_url(),'http://172.29.0.3:3838/')
+ def test_trial_caddy_uses_same_internal_endpoint_and_keeps_auth(self):
+  source=Path('/Users/ton/Documents/GitHub/VWG_M/website/vwg-m-linux-app/deploy/caddy/Caddyfile.production').read_text()
+  config=linux.caddy_config(source,trial=True,shiny_upstream='172.29.0.3:3838')
+  self.assertIn('reverse_proxy 172.29.0.3:3838',config)
+  self.assertIn('/auth/analysis-shiny',config)
+  self.assertNotIn('127.0.0.1:18198',config)
 class InitialTrialResumeGuard(unittest.TestCase):
  def test_resume_rejects_trial_that_already_started_activation(self):
   from unittest.mock import Mock

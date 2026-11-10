@@ -58,7 +58,7 @@ def guard_trial_layout(m):
  expected=layout(m['commit'],True)
  if not m.get('trial') or any(m[k]!=expected[k] for k in ('root','database','mysql','shiny','network','units','ports')):raise ValueError('Proef moet volledig geïsoleerd blijven')
 
-def caddy_config(source,trial=True):
+def caddy_config(source,trial=True,shiny_upstream=None):
  # Use the existing auth routes, never replace them with an unauthenticated file server.
  start=source.index('(vwg_app_routes) {');depth=0;end=None
  for i in range(source.index('{',start),len(source)):
@@ -82,6 +82,10 @@ def caddy_config(source,trial=True):
  snippet=snippet.replace('root * /srv/vwgm/data\n\t\theader Content-Type "text/plain; charset=utf-8"\n\t\tfile_server','reverse_proxy 127.0.0.1:18196')
  if trial:
   snippet=snippet.replace('127.0.0.1:8091','127.0.0.1:18197').replace('127.0.0.1:3838','127.0.0.1:18198')
+  if shiny_upstream is not None:
+   host,port=shiny_upstream.split(':')
+   if port!='3838' or not ipaddress.IPv4Address(host).is_private:raise ValueError('Geen interne Shiny-binding')
+   snippet=snippet.replace('127.0.0.1:18198',shiny_upstream)
   return '{\n admin off\n persist_config off\n}\n'+snippet+'\nhttp://127.0.0.1:18199 {\n import vwg_app_routes\n}\n'
  return source[:start]+snippet+source[end:]
 
@@ -294,18 +298,23 @@ class LinuxHooks:
   if s['trial']:self.start_unit('dashboard',['/usr/bin/python3',str(Path(__file__).resolve()),'_dashboard',str(self.root),str(self.p['dashboard'])])
   else:self.logged(['systemctl','start',s['units']['dashboard']])
   self.start_shiny(package,m)
-  config=self.runtime/'Caddyfile';config.write_text(caddy_config(self.s['caddy_source'],trial=s['trial']));os.chmod(config,0o644)
+  config=self.runtime/'Caddyfile';config.write_text(caddy_config(self.s['caddy_source'],trial=s['trial'],shiny_upstream=s.get('shiny_upstream') if s['trial'] else None));os.chmod(config,0o644)
   if s['trial']:self.start_unit('caddy',['/usr/bin/caddy','run','--adapter','caddyfile','--config',str(config)])
   else:self.logged(['systemctl','start','caddy'])
- def bind_trial_mysql(self):
-  if not self.s['trial']:raise ValueError('Alleen een proefbinding')
-  item=inspect_container(self.s['mysql'])
-  if item['Config'].get('Labels',{}).get('vwgm.integral.commit')!=self.s['commit']:raise ValueError('Geen eigen proef-MySQL')
+ def trial_address(self,name):
+  if not self.s['trial'] or name not in (self.s['mysql'],self.s['shiny']):raise ValueError('Alleen een eigen proefbinding')
+  item=inspect_container(name)
+  if item['Config'].get('Labels',{}).get('vwgm.integral.commit')!=self.s['commit']:raise ValueError('Geen eigen proefcontainer')
   address=str(ipaddress.IPv4Address(item['NetworkSettings']['Networks'][self.s['network']]['IPAddress']))
   if not ipaddress.ip_address(address).is_private:raise ValueError('Geen intern proefadres')
+  return address
+ def bind_trial_mysql(self):
+  address=self.trial_address(self.s['mysql'])
   connection=socket.create_connection((address,3306),timeout=5);connection.close()
   self.s['website_env'].update(MEIJENDEL_MYSQL_HOST=address,MEIJENDEL_MYSQL_PORT='3306')
   secret_json(self.private/'settings.json',self.s)
+ def shiny_url(self):
+  return 'http://'+(self.s['shiny_upstream'] if self.s['trial'] else '127.0.0.1:'+str(self.p['shiny']))+'/'
  def start_shiny(self,package,m):
   # Docker cannot create a nested bind target after its parent becomes read-only.
   mountpoint=package/'shiny/shiny_meijendel/app_cache'
@@ -314,7 +323,8 @@ class LinuxHooks:
   name=self.s['shiny'];old=subprocess.run(['docker','inspect',name],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
   if old.returncode==0:self.logged(['docker','rm',name])
   cache=self.runtime/'shiny-cache';cache.mkdir(exist_ok=True);os.chown(cache,self.s['shiny_uid'],self.s['shiny_gid'])
-  args=['docker','run','-d','--name',name,'--label','vwgm.integral.commit='+self.s['commit'],'--restart='+('no' if self.s['trial'] else 'unless-stopped'),'-p','127.0.0.1:'+str(self.p['shiny'])+':3838']
+  args=['docker','run','-d','--name',name,'--label','vwgm.integral.commit='+self.s['commit'],'--restart='+('no' if self.s['trial'] else 'unless-stopped')]
+  if not self.s['trial']:args+=['-p','127.0.0.1:'+str(self.p['shiny'])+':3838']
   if self.s['trial']:args+=['--memory=1g','--cpus=0.75']
   else:
    old=self.s['original_shiny'];host=old['HostConfig']
@@ -336,13 +346,15 @@ class LinuxHooks:
   # Normal cache resolver expects the prebuilt RDS in app_cache.
   shutil.copy2(package/m['cache']['root'],cache/Path(m['cache']['root']).name);os.chmod(cache/Path(m['cache']['root']).name,0o644)
   self.logged(args+[self.s['shiny_image']])
+  if self.s['trial']:
+   self.s['shiny_upstream']=self.trial_address(self.s['shiny'])+':3838';secret_json(self.private/'settings.json',self.s)
  def get(self,url):
   with urllib.request.urlopen(url,timeout=10) as r:return r.read(),r.status,r.url
  def health(self,package):
   print('INTEGRAL_STEP='+'health',flush=True)
   m=jsonfile(package/'release.json')
   if m.get('legacy'):return self.health_legacy()
-  urls=[f'http://127.0.0.1:{self.p[role]}/' for role in ('website','dashboard','shiny')]
+  urls=[f'http://127.0.0.1:{self.p[role]}/' for role in ('website','dashboard')]+[self.shiny_url()]
   for url in urls:
    for _ in range(120):
     try:self.get(url);break
