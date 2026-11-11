@@ -967,7 +967,7 @@ De levende database bevat veertien actuele gebieden: vijf afgesloten, zeven toeg
 
 `toegankelijkheidsgebied_plot_afleiding` bevat na herberekening 110 positieve gebied-kaveldoorsnijdingen. Daarvan horen 23 doorsnijdingen bij de fietspadcorridor, 23 bij het dagkaartvlak en 17 bij het openbare restgebied. De corridor raakt delen van 23 kavels; het grootste aandeel ligt in M16s met 3,104827%, gevolgd door M17b met 2,775091%. De uit de oorspronkelijke statusvlakken weggesneden corridoroppervlakte wordt niet dubbel als afgesloten, seizoensgebonden of dagkaartgebied geteld. Na de zeven statusbesluiten heeft het Ruygenhoek-vlak drie positieve kaveldoorsnijdingen: M32 364.947,415 m², M33 239.286,370 m² en M42 21,134 m²; de eerdere doorsnijding met M31 is volledig aan het toegankelijke M31-vlak toegewezen. Het dagkaartvlak bevat de door Ton aan M75 en M71 toegewezen grensdelen en raakt daardoor tevens kleine delen van M75a, M77, M78/79 en M105. Dit zijn ruimtelijke afleidingen uit de bevestigde statusvlakken, geen handmatige kavelstatussen. De corridor, de topologiecorrectie, de correctie van de zeven statusconflicten en de openbare statusaanvulling hebben elk een eigen bronregel; `maatregel_bron` bevat 64 regels.
 
-Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18. Deze versie kent ook `toegankelijk_buiten_broedseizoen` en leidt daarvoor een afzonderlijk oppervlakteaandeel af. De geldigheid wordt bepaald door de overlap tussen analysejaar en `geldig_vanaf`/`geldig_tot`. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd; de huidige productiecache bevat deze toevoeging dus nog niet.
+Shiny en de statische browser gebruiken parser/cacheversie 18. Deze versie kent ook `toegankelijk_buiten_broedseizoen` en leidt daarvoor een afzonderlijk oppervlakteaandeel af. De geldigheid wordt bepaald door de overlap tussen analysejaar en `geldig_vanaf`/`geldig_tot`. De zware SQL-export, proefimport en definitieve cachebouw zijn op 11 november 2026 afgerond en gevalideerd. De Meijendel-release is daarna onder commit `bf6616d8fd1ccf83a7f8977bc02d60dd18be8b62` op de VPS gepubliceerd; de productiecache bevat deze toevoeging nu wel.
 
 De primaire herstelkopie direct vóór de fietspadcorridor staat op `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/meijendel-toegankelijkheid-voor-migratie-20261110-105502.sql`: 434.081 bytes, SHA-256 `03671dd1fb7c9cf6a835f39c6ecd797fd41d8facb7a720c90fb08deaf85cbf27`. De tweede herstelkopie, direct vóór de provenancecorrectie voor de niet geraakte gebieden M66 en M105, staat als `meijendel-toegankelijkheid-voor-migratie-20261110-110044.sql`: 503.374 bytes, SHA-256 `318b48795fe6a9181852b26c87ddc82756b980bd52299bae4a6417d10941cef2`. Voor de topologiecorrectie zijn drie aanvullende herstelkopieën gemaakt: `meijendel-toegankelijkheid-voor-migratie-20261110-115750.sql`, SHA-256 `50a806a5b6696fb1d357b4df57249b657abb1df3bcdae44c13d045e31a5a7ebf`, vóór de eerste veilig afgebroken poging; `meijendel-toegankelijkheid-voor-migratie-20261110-115917.sql`, SHA-256 `22ec793567711a14d7f3379cc79b82bfd99f0f35cfbf4c6981920c688f7d07e6`, vóór de tweede veilig afgebroken poging; en `meijendel-toegankelijkheid-voor-migratie-20261110-120054.sql`, SHA-256 `a4a58041359538df09ff71d787fa690298c6d5054dad623be23be5f2dbc421cb`, direct vóór de geslaagde invoer. Herstel is een afzonderlijk besluit.
 
@@ -1082,16 +1082,26 @@ het manifestbestand heeft SHA-256
 `6ddb2f8138209ad477d3db585f4bf92915d6d7cfe0501a6e693f4aa9b08f54b5`.
 `gis/scripts/export_website_kavelkaart_lagen.py --verify` vergelijkt aantallen,
 objecten, inhoud en hash opnieuw met de levende lokale database. Deze levering
-is een lokale releasekandidaat; zij is nog niet op de VPS gepubliceerd.
+is onderdeel van de op 11 november 2026 voorbereide integrale publicatie; de
+Meijendel-database en Shiny zijn gepubliceerd, de aansluitende VWG_M-publicatie
+volgt binnen dezelfde gecontroleerde release.
 
 De zware `meijendel.sql`-export, proefimport en volledige Shiny-cachebouw zijn op
 11 november 2026 uitgevoerd. De export bevat 327 basistabellen en 28 views, is
 4.488.615.348 bytes groot en heeft SHA-256
 `91eccb72cdd1e18de9207bc63e521614830894f573bf2efe132d7533eee2c317`.
-De cache bevat 14 gebiedsversies en 110 positieve kavelafleidingen, is 528.264
-bytes groot en heeft SHA-256
-`2157d7dd063e48c6c8d9ab58bcae226b7461fc65d9eed6a765f9b06e81c681ea`.
-VPS-publicatie volgt vanuit de schone, gepushte hoofdbranches.
+De definitieve cache bevat 14 gebiedsversies en 110 positieve
+kavelafleidingen, is 706.954 bytes groot en heeft SHA-256
+`a8ee0e863346baeef9e13ff8bd23b7b6207b19d914071de5fa386e08cd57ad69`.
+De browserlevering is 6.990.276 bytes groot en heeft SHA-256
+`079327b319aa43497ad3dcc313cf9b7f09589423e37f71287507acb33318a416`.
+De Meijendel-release is op 11 november 2026 onder commit
+`bf6616d8fd1ccf83a7f8977bc02d60dd18be8b62` op de VPS gepubliceerd. Vooraf is
+de productieback-up
+`meijendel_before_bf6616d8fd1ccf83a7f8977bc02d60dd18be8b62_20261111T110614Z.sql.gz`
+gemaakt. Na verwijdering van de vijftien expliciet aangewezen, vervangen
+productietabellen zijn productieschema, SQL-cache, browserdata en Shiny met de
+bovenstaande hashes als gereed gecontroleerd.
 
 
 ## Historische rechtstreekse aansluiting zonder compatibiliteitsviews

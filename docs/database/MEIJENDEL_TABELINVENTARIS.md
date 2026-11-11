@@ -553,7 +553,7 @@ De actieve structuur bestaat uit:
 
 Voor alle bestaande en toekomstige gebiedsversies is de standaardwaarde `geldig_vanaf = 1955-01-01`, op basis van Tons inschatting. `geldig_tot = NULL` betekent actueel totdat een einddatum wordt ingevoerd. De actuele invoer bevat veertien gebieden en veertien actuele gebiedsversies: vijf afgesloten, zeven toegankelijk, één toegankelijk buiten het broedseizoen en één toegankelijk met toegangskaart. Zij leveren 110 positieve plotdoorsnijdingen. Alle 55 kavels zijn volledig gedekt; er resteert geen statusoverlap van 0,01 m² of groter.
 
-Shiny en de browser gebruiken parser/cacheversie 18. Zij leiden per plot en analysejaar aandelen afgesloten, toegankelijk, toegankelijk buiten het broedseizoen, toegankelijk met toegangskaart en onbekend af. Een enkele kavelstatus wordt alleen getoond wanneer één status 100% van de kavel bedekt. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
+Shiny en de browser gebruiken parser/cacheversie 18. Zij leiden per plot en analysejaar aandelen afgesloten, toegankelijk, toegankelijk buiten het broedseizoen, toegankelijk met toegangskaart en onbekend af. Een enkele kavelstatus wordt alleen getoond wanneer één status 100% van de kavel bedekt. De zware SQL-export, proefimport en definitieve cachebouw zijn op 11 november 2026 afgerond en gevalideerd. De release is daarna onder commit `bf6616d8fd1ccf83a7f8977bc02d60dd18be8b62` op de VPS gepubliceerd; productieschema, SQL-cache en Shiny zijn gereed bevonden.
 
 
 ## Hercontrole van PQ en twee indexkandidaten op 17 oktober 2026
