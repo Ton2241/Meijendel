@@ -1082,9 +1082,12 @@ het manifestbestand heeft SHA-256
 `6ddb2f8138209ad477d3db585f4bf92915d6d7cfe0501a6e693f4aa9b08f54b5`.
 `gis/scripts/export_website_kavelkaart_lagen.py --verify` vergelijkt aantallen,
 objecten, inhoud en hash opnieuw met de levende lokale database. Deze levering
-is onderdeel van de op 11 november 2026 voorbereide integrale publicatie; de
-Meijendel-database en Shiny zijn gepubliceerd, de aansluitende VWG_M-publicatie
-volgt binnen dezelfde gecontroleerde release.
+is onderdeel van de op 11 november 2026 afgeronde integrale publicatie. De
+Meijendel-database en Shiny zijn onder productiecommit
+`bf6616d8fd1ccf83a7f8977bc02d60dd18be8b62` gepubliceerd; de aansluitende
+VWG_M-publicatie is onder productiecommit
+`c59e19948c5d0f2d7dbe2cc822d53a89f0d5203d` gepubliceerd. De volledige
+releasevergelijking is exact en de onafhankelijke multi-hostrooktest is groen.
 
 De zware `meijendel.sql`-export, proefimport en volledige Shiny-cachebouw zijn op
 11 november 2026 uitgevoerd. De export bevat 327 basistabellen en 28 views, is

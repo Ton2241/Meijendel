@@ -62,6 +62,12 @@ GARMIN = (
 
 SECTION_TITLE = "Toegankelijkheid als gebiedsversies, bijgewerkt 10 november 2026"
 OSM_SECTION_TITLE = "OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026"
+SHINY_PARAGRAPH_PREFIXES = (
+    "Shiny en de statische browser gebruiken parser/cacheversie 16",
+    "Shiny en de statische browser gebruiken parser/cacheversie 17",
+    "Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18",
+    "Shiny en de statische browser gebruiken parser/cacheversie 18",
+)
 
 
 def replace_paragraph(document: Document, prefix: str, text: str) -> None:
@@ -154,11 +160,7 @@ def main() -> None:
         replace_paragraph_any(document, ("De eerste invoer bestaat", "De levende database bevat twee afgesloten gebieden", "De levende database bevat vier actuele gebieden", "De levende database bevat acht actuele gebieden", "De levende database bevat zes actuele gebieden", "De levende database bevat negen actuele gebieden", "De levende database bevat tien actuele gebieden", "De levende database bevat elf actuele gebieden", "De levende database bevat twaalf actuele gebieden", "De levende database bevat dertien actuele gebieden", "De levende database bevat veertien actuele gebieden"), section[2])
         replace_paragraph_any(
             document,
-            (
-                "Shiny en de statische browser gebruiken parser/cacheversie 16",
-                "Shiny en de statische browser gebruiken parser/cacheversie 17",
-                "Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18",
-            ),
+            SHINY_PARAGRAPH_PREFIXES,
             section[4],
         )
         replace_paragraph_any(document, ("De volledige herstelkopie van vóór de omzetting", "De herstelkopie van vóór deze geometriecorrectie", "De herstelkopie direct vóór de toevoeging van 9 november", "De herstelkopie direct vóór de toevoeging van het dagkaartvlak", "De herstelkopie direct vóór deze correctie", "De herstelkopie direct vóór de definitieve correctie", "De herstelkopie direct vóór deze vervanging", "De primaire herstelkopie direct vóór de invoer van het M4-5-vlak", "De primaire herstelkopie direct vóór de fietspadcorridor"), section[5])
