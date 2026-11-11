@@ -1067,25 +1067,31 @@ Omvang: 3.576.079 bytes. SHA-256:
 `5de990ad6efe41ae6b049ccac003e2ee24f96524423304ff83217e94d2fb0710`.
 
 Op 8 november 2026 is voor de individuele kavelpagina's van VWG_M een
-gecontroleerde afgeleide levering gemaakt. De GeoJSON bevat 1.325 objecten: de
-zes actuele toegankelijkheidsgebieden en de volledige geometrie van 1.319
+gecontroleerde afgeleide levering gemaakt en op 10 november 2026 vernieuwd. De GeoJSON bevat 1.333 objecten: de
+veertien actuele toegankelijkheidsgebieden en de volledige geometrie van 1.319
 actuele lijnsegmenten die minstens één kavel raken, verdeeld over 388 wegen, 59
 fietspaden en 872 voetpaden. Parkeerplaatsen zijn geen onderdeel van deze
 websitelevering. Ieder object bevat de positieve `plot_ids`; lijnen en vlakken
-zijn niet op kavelgrenzen afgeknipt. De bronmomenten zijn 7 november 2026
-23:25:42 voor de gebieden en 8 november 2026 10:22:35 UTC voor de lijnen. De
+zijn niet op kavelgrenzen afgeknipt. De bronmomenten zijn 10 november 2026
+14:23:25 voor de gebieden en 8 november 2026 10:22:35 UTC voor de lijnen. De
 bestanden staan in VWG_M als
 `website/vwg-m-linux-app/app/static/data/kavelkaart-lagen.geojson` en
 `kavelkaart-lagen.manifest.json`. De GeoJSON heeft SHA-256
-`f5a16b1465f4bbc86f8c08904eefe38cc591eb1add872d71fb2bb33cb4ec8d39`;
+`46060fcfe04a849d3d7716be24639f723ff4ef5e21796434892587c6ed4e9f7d`;
 het manifestbestand heeft SHA-256
-`2fcfb2016e81da3f47477a7291b82e47904118c42502c00c5900458c1a017e19`.
+`6ddb2f8138209ad477d3db585f4bf92915d6d7cfe0501a6e693f4aa9b08f54b5`.
 `gis/scripts/export_website_kavelkaart_lagen.py --verify` vergelijkt aantallen,
 objecten, inhoud en hash opnieuw met de levende lokale database. Deze levering
 is een lokale releasekandidaat; zij is nog niet op de VPS gepubliceerd.
 
-De zware `meijendel.sql`-export, proefimport, volledige Shiny-cachebouw en
-VPS-publicatie zijn niet uitgevoerd.
+De zware `meijendel.sql`-export, proefimport en volledige Shiny-cachebouw zijn op
+11 november 2026 uitgevoerd. De export bevat 327 basistabellen en 28 views, is
+4.488.615.348 bytes groot en heeft SHA-256
+`91eccb72cdd1e18de9207bc63e521614830894f573bf2efe132d7533eee2c317`.
+De cache bevat 14 gebiedsversies en 110 positieve kavelafleidingen, is 528.264
+bytes groot en heeft SHA-256
+`2157d7dd063e48c6c8d9ab58bcae226b7461fc65d9eed6a765f9b06e81c681ea`.
+VPS-publicatie volgt vanuit de schone, gepushte hoofdbranches.
 
 
 ## Historische rechtstreekse aansluiting zonder compatibiliteitsviews

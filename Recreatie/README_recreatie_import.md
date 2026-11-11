@@ -41,17 +41,17 @@ meer gevuld.
 
 Voor de individuele kavelpagina's van VWG_M maakt
 `gis/scripts/export_website_kavelkaart_lagen.py` één gecontroleerde publieke
-afgeleide levering. Zij bevat de zes actuele toegankelijkheidsgebieden en de
+afgeleide levering. Zij bevat de veertien actuele toegankelijkheidsgebieden en de
 volledige geometrie van alle 1.319 actuele lijnsegmenten die minstens één kavel
 raken: 388 wegen, 59 fietspaden en 872 voetpaden. Parkeerplaatsen worden niet
 meegeleverd. `plot_ids` bepaalt op welke kavelpagina's een object kan worden
 getoond; de geometrie wordt niet op de kavelgrens afgeknipt. De GeoJSON en het
 manifest staan in VWG_M onder
 `website/vwg-m-linux-app/app/static/data/kavelkaart-lagen.*`. De levering van
-8 november 2026 heeft GeoJSON-SHA-256
-`f5a16b1465f4bbc86f8c08904eefe38cc591eb1add872d71fb2bb33cb4ec8d39`;
+10 november 2026 bevat 1.333 objecten en heeft GeoJSON-SHA-256
+`46060fcfe04a849d3d7716be24639f723ff4ef5e21796434892587c6ed4e9f7d`;
 het manifestbestand heeft SHA-256
-`2fcfb2016e81da3f47477a7291b82e47904118c42502c00c5900458c1a017e19`.
+`6ddb2f8138209ad477d3db585f4bf92915d6d7cfe0501a6e693f4aa9b08f54b5`.
 De CLI schrijft atomair en kan met `--verify` aantonen dat de bestanden nog
 exact overeenkomen met de levende lokale database.
 
@@ -80,4 +80,4 @@ Na een wijziging in actuele gebieds- of lijnversies vernieuw en verifieer je
 ook de publieke VWG_M-levering. Een nieuwe databaseversie werkt dus niet
 stilzwijgend door in de websitebestanden.
 
-De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie volgen pas na afzonderlijke toestemming.
+De zware SQL-export, proefimport en volledige cachebouw zijn op 11 november 2026 afgerond en gevalideerd. VPS-publicatie volgt vanuit de schone, gepushte hoofdbranches.

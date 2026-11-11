@@ -216,7 +216,7 @@ def main() -> None:
         raise RuntimeError("Geometriehash van het openbare restgebied ontbreekt in DOCX")
     if sum(p.text == OSM_SECTION_TITLE for p in check.paragraphs) != 1:
         raise RuntimeError("OSM-fietspadsectie niet exact eenmaal opgeslagen")
-    if not any("De GeoJSON bevat 1.325 objecten" in p.text for p in check.paragraphs):
+    if not any("De GeoJSON bevat 1.333 objecten" in p.text for p in check.paragraphs):
         raise RuntimeError("Publieke VWG_M-levering ontbreekt in DOCX")
     print(f"Bijgewerkt: {DOCX}")
 
