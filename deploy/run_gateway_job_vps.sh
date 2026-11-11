@@ -27,6 +27,11 @@ case "$action" in
   meijendel-integral) [[ "$package_hash" =~ ^[0-9a-f]{64}$ ]] || die "exacte integrale pakkethash vereist" ;;
   *) die "onbekende gesloten gatewayactie" ;;
 esac
+# OpenSSH bouwt van losse argumenten opnieuw een remote commandoregel. Een leeg
+# laatste argument verdwijnt daarbij. Gebruik voor de klassieke release daarom
+# een vaste transportwaarde; de klassieke gatewayactie leest deze waarde niet.
+package_wire="$package_hash"
+[[ -n "$package_wire" ]] || package_wire=classic-no-package
 case "$stage" in
   preflight|cleanup)
     limit="${GATEWAY_PREFLIGHT_TIMEOUT:-300}"
@@ -60,7 +65,7 @@ ssh_args=(-i "$SSH_KEY" -o ServerAliveInterval=15 -o ServerAliveCountMax=4 "$VPS
 if [[ "$resume" -eq 0 ]]; then
   set +e
   start_output="$("$SSH_BIN" "${ssh_args[@]}" bash -s -- \
-    gateway-start "$operation_id" "$stage" "$commit" "$limit" "$kill_after" "$GATEWAY" "$action" "$package_hash" <<'REMOTE'
+    gateway-start "$operation_id" "$stage" "$commit" "$limit" "$kill_after" "$GATEWAY" "$action" "$package_wire" <<'REMOTE'
 set -euo pipefail
 mode="$1"; operation_id="$2"; stage="$3"; commit="$4"; limit="$5"; kill_after="$6"; gateway="$7"; action="$8"; package_hash="$9"
 [[ "$mode" == "gateway-start" ]]

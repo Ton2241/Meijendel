@@ -82,6 +82,10 @@ first_start="$(grep -n 'bash -s -- gateway-start' "$calls" | head -n 1 | cut -d:
 first_fetch="$(grep -n 'bash -s -- gateway-fetch' "$calls" | head -n 1 | cut -d: -f1)"
 [[ "$first_start" =~ ^[0-9]+$ && "$first_fetch" =~ ^[0-9]+$ && "$first_start" -lt "$first_fetch" ]] || \
   { printf 'FOUT: log werd niet pas na de startopdracht opgehaald\n' >&2; exit 1; }
+grep -Fq 'classic-no-package' "$calls" || {
+  printf 'FOUT: klassieke gatewaystart bewaart geen niet-lege negende transportwaarde\n' >&2
+  exit 1
+}
 grep -Fq '>"$log.next" 2>&1' "$calls" || { printf 'FOUT: gatewayuitvoer gaat niet naar het remote logbestand\n' >&2; exit 1; }
 grep -Fq 'mv "$log.next" "$log"' "$calls" || { printf 'FOUT: remote logbestand wordt niet atomisch gepubliceerd\n' >&2; exit 1; }
 
