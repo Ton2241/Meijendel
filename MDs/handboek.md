@@ -509,7 +509,7 @@ Deze tab is bedoeld als plotoverzicht.
 Je kunt daar onder andere zien:
 
 - plotnaam en `plot_id`
-- toegankelijkheidsstatus voor recreanten
+- afgeleide oppervlakteaandelen per toegankelijkheidsstatus
 - een link naar de kaart
 - oppervlakte
 - AHN
@@ -531,7 +531,7 @@ De informatie in deze tab komt uit meerdere tabellen, onder andere:
 - `plot_jaar_stikstof`
 - `plot_jaar_landgebruik`
 - `plot_jaar_infra`
-- `maatregel_toegankelijkheid_registratie`
+- `toegankelijkheidsgebied`, `toegankelijkheidsgebied_versie` en `toegankelijkheidsgebied_plot_afleiding`
 - `plot_jaar_habitat`
 - `maatregel_plot_jaar_registratie` en de gekoppelde `maatregel_uitvoering_jaar`
 - `territoria`
@@ -966,33 +966,12 @@ Voorgestelde variabelen zijn:
 - `afstand_pad_m`
 - `padlengte_m_per_ha`
 - `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
 
-### 17.2 Toegankelijkheidsstatus
+### 17.2 Toegankelijkheidsgebieden
 
-Die hoort in een aparte tabel:
+Toegankelijkheid wordt als versie van een werkelijk omsloten vlak opgeslagen, niet als bronkenmerk van een volledige kavel. Gebruik `toegankelijkheidsgebied` voor de blijvende identiteit en `toegankelijkheidsgebied_versie` voor status, geometrie, bron en geldigheid. Toegestane statussen zijn `afgesloten`, `toegankelijk` en `toegankelijk_met_toegangskaart`.
 
-- `maatregel_toegankelijkheid_registratie`
-
-Mogelijke waarden:
-
-- `afgesloten`
-- `beperkt`
-- `vrij`
-
-Reden:
-
-- dit is een status en geen meetgetal
-
-Voor gedeeltelijke toegankelijkheid gebruik je dezelfde tabel met `niveau = deel`; voor het hele plot geldt `niveau = plot`. Een deelregistratie beschrijft uitsluitend het betreffende deel.
-
-Daar leg je per deel vast:
-
-- welk deel het is
-- welke status daar geldt
-- welk percentage van het plot het betreft
-- welk hek, raster of andere barrière relevant is
-- eventueel de geometrie van dat deel
+Voor alle bestaande en toekomstige versies is `geldig_vanaf` standaard 1 januari 1955, op basis van Tons inschatting. Een lege `geldig_tot` betekent dat de versie actueel is totdat een einddatum wordt ingevoerd. De tabel `toegankelijkheidsgebied_plot_afleiding` bevat alleen berekende doorsnijdingen met kavels. Deze relaties worden na iedere nieuwe of gewijzigde geometrie opnieuw opgebouwd; zij zijn geen zelfstandig bronfeit.
 
 ### 17.3 Bezoekersdruk
 
@@ -1020,12 +999,14 @@ Gebruik voor:
 - parkeerplaatsen
 - voorzieningen
 - aanvullende infrastructuur
+- versieerbare zelfstandige fietspadsegmenten
 
-### Handmatige lijst
-
-Gebruik voor:
-
-- hoofdtoegangen
+Voor fietspaden gebruik je een gedateerde Overpass-snapshot. Bewaar query,
+bronmoment, bronbestandhash, OSM-way-ID en ODbL-vermelding. Importeer
+`highway=cycleway` en `path` of `footway` met een expliciet fietsrecht; maak van
+een rijbaan met alleen `cycleway=lane` geen zelfstandige fietspadlijn. Oudere
+snapshots blijven in `v_infrastructuursegment_historie`; de actuele stand staat
+in `v_infrastructuursegment_actueel`.
 
 ### Dunea-rapport 2022
 
@@ -1035,53 +1016,30 @@ Gebruik dit rapport wel later voor een aparte bezoekersdruklaag.
 
 ## 20. Hoe verwerk je recreatiedata uit BGT en OSM?
 
-De basisregel is:
+Gebruik `gis/scripts/import_osm_fietspaden.py`. Het script bewaart eerst de
+gedateerde OSM-lijnen en parkeerplaatsen als versies en berekent daarna:
 
-- bereken eerst de ruimtelijke uitkomsten buiten MySQL
-- importeer daarna alleen de samenvatting per `plot_id` en `jaar`
-
-Doelbestand:
-
-- `Recreatie/plot_jaar_infra_recreatie_import.csv`
-
-Het bijbehorende script berekent:
-
-- afstand tot dichtstbijzijnd pad
-- padlengte binnen plot per hectare
-- afstand tot dichtstbijzijnde parkeerplaats
-- afstand tot dichtstbijzijnde hoofdtoegang
+- afstand tot het dichtstbijzijnde voet- of fietspad;
+- lengte van voet- en fietspaden binnen het plot per hectare;
+- afstand tot de dichtstbijzijnde OSM-parkeerplaats.
 
 Controleer daarna altijd:
 
 - heeft elk plot de verwachte variabelen?
 - zijn alle afstanden groter dan of gelijk aan 0?
 - is `padlengte_m_per_ha` logisch?
-- bestaan alle `plot_id + jaar` combinaties in `plot_jaar_oppervlak`?
+- bestaan alle 55 combinaties van `plot_id + jaar` in `plot_jaar_oppervlak`?
 
-Daarna pas importeer je de output in MySQL.
+Dezelfde import bouwt de drie aggregaten automatisch opnieuw op. De ingetrokken
+CSV-route uit 2024 en `afstand_hoofdtoegang_m` worden niet meer gebruikt.
 
 ## 21. Wat zijn de importbestanden voor recreatie?
 
-Er zijn twee hoofdimportbestanden:
+De actieve bronbestanden zijn de gedateerde OSM-JSON-snapshots en hun
+Overpass-querybestanden in `Recreatie/OSM`. De import bewaart bronmoment, query,
+hash, OSM-objectidentiteit en ODbL-vermelding.
 
-### `plot_jaar_infra_recreatie_import.csv`
-
-Kolommen:
-
-- `plot_id`
-- `jaar`
-- `bron`
-- `variabele`
-- `waarde`
-
-Toegestane variabelen:
-
-- `afstand_pad_m`
-- `padlengte_m_per_ha`
-- `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
-
-### `plot_jaar_toegankelijkheid_import.csv`
+### Historisch `plot_jaar_toegankelijkheid_import.csv`
 
 Kolommen:
 
@@ -1091,19 +1049,9 @@ Kolommen:
 - `status_code`
 - `opmerking`
 
-Toegestane statuscodes:
+Dit bestand bevat de ingetrokken voorlopige kavelregistraties uit 2024. Het blijft alleen als audit- en herstelbron bewaard en mag niet opnieuw als actuele toegankelijkheid worden geïmporteerd.
 
-- `afgesloten`
-- `beperkt`
-- `vrij`
-
-Belangrijk:
-
-Elke rij moet verwijzen naar een bestaande combinatie van `plot_id` en `jaar` in `plot_jaar_oppervlak`.
-
-Anders krijg je een foreign key-fout.
-
-### `plot_jaar_toegankelijkheid_deel_import.csv`
+### Historisch `plot_jaar_toegankelijkheid_deel_import.csv`
 
 Kolommen:
 
@@ -1117,7 +1065,7 @@ Kolommen:
 - `geom_wkt`
 - `opmerking`
 
-Gebruik dit bestand voor plots met meerdere toegankelijkheidsdelen.
+Dit voorbeeldbestand is geen actieve invoerroute. Nieuwe toegankelijkheid wordt als vlak met tijdgeldigheid ingevoerd in `toegankelijkheidsgebied_versie`.
 
 ### `plot_jaar_maatregel_import.csv`
 
@@ -1192,41 +1140,6 @@ Praktische regel:
 
 - afstands- en padvariabelen mogen direct per plot
 - bezoekersdruk uit rapport nog niet
-
-## 23. Belangrijke uitzondering: afstand tot hoofdtoegang
-
-Voor een aantal plots is de gewone berekening van `afstand_hoofdtoegang_m` niet goed genoeg.
-
-Daar geldt een uitzonderingsregel:
-
-1. eerst afstand van de dichtstbijzijnde hoofdtoegang tot een vast tussenpunt
-2. daarna afstand van dat tussenpunt tot het plot
-
-De formule is dus:
-
-`afstand_hoofdtoegang_m = afstand(hoofdingang, tussenpunt) + afstand(tussenpunt, plot)`
-
-Deze regel geldt voor 16 specifieke plots, waaronder:
-
-- `75`
-- `10-12-76`
-- `8`
-- `7`
-- `6`
-- `4-5`
-- `61`
-- `62`
-- `71`
-- `72`
-- `73`
-- `74`
-- `12a`
-
-Belangrijk:
-
-Als je later `plot_jaar_infra` opnieuw volledig vult vanuit een ouder importbestand of een oude berekening, kunnen deze handmatig gecorrigeerde waarden worden overschreven.
-
-Daarom moet deze uitzondering in toekomstige herberekeningen worden meegenomen.
 
 ## 23A. Hoe wordt het PQ-vegetatiemeetnet gebruikt?
 
@@ -1352,7 +1265,7 @@ alleen met het gesloten manifest van
 `gis/scripts/migrate_meijendel_bronnen.py`. Beide databases worden afzonderlijk
 gedumpt en gezamenlijk op herstelbaarheid gecontroleerd.
 
-## Integratie begrazing en toegankelijkheid op 16 oktober 2026
+## Historische integratie begrazing en toegankelijkheid op 16 oktober 2026
 
 De levende lokale database is op 16 oktober 2026 omgezet. De 144 oorspronkelijke begrazingsregistraties voor 16 plots uit 1991–1999 zijn volledig behouden: 139 staan in maatregel_plot_jaar_registratie; de vijf door Ton bevestigde dubbelingen verwijzen naar bestaande uitvoering–plot–jaarfeiten. Dit zijn M15 en M16 in 1991 en M13, M13s en M14 in 1997. Deze vijf feiten worden niet opnieuw opgeslagen.
 
@@ -1371,7 +1284,7 @@ Controle: volledige rijreconstructie, vijf expliciete ontdubbelingen, idempotent
 Herstelkopie en controlebewijs staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid. Herstel verloopt via gis/scripts/migrate_maatregel_registraties.py --database Meijendel --backup-dir /Users/ton/Documents/Meijendel-herstel/2026-10-16-beheer-toegankelijkheid/backup --restore. Een herstelactie vereist een eigen besluit. Meijendel.sql, volledige cachebouw en VPS zijn in deze lokale migratiefase niet vernieuwd.
 
 
-## Rechtstreekse aansluiting zonder compatibiliteitsviews
+## Historische rechtstreekse aansluiting zonder compatibiliteitsviews
 
 De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
 
@@ -1382,3 +1295,19 @@ De vijf bestaande uitvoeringsfeiten worden via hun expliciete herkomstkoppeling,
 Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
 
 Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.
+
+## Actueel toegankelijkheidsmodel vanaf 7 november 2026
+
+De 55 voorlopige kavelregistraties uit 2024 zijn volledig vervangen door omsloten gebieden met versies. De oude tabel `maatregel_toegankelijkheid_registratie`, de 55 bijbehorende herkomstdoelen en de kolom `maatregel_registratie_herkomst.toegang_registratie_id` zijn verwijderd. Bron 101 blijft bestaan voor 139 beheerregistraties uit 1991–1999.
+
+Gebruik voor nieuwe invoer:
+
+1. één record in `toegankelijkheidsgebied` voor de blijvende gebiedsidentiteit;
+2. één of meer records in `toegankelijkheidsgebied_versie` voor opeenvolgende geometrieën en statussen;
+3. precies één van `afgesloten`, `toegankelijk`, `toegankelijk_buiten_broedseizoen` en `toegankelijk_met_toegangskaart` per versie;
+4. standaard `geldig_vanaf = 1955-01-01`, op basis van Tons inschatting;
+5. `geldig_tot = NULL` zolang de versie actueel is.
+
+Na invoer of wijziging worden de ruimtelijke doorsnijdingen in `toegankelijkheidsgebied_plot_afleiding` opnieuw berekend. De actuele stand van 10 november 2026 bevat veertien gebieden, veertien actuele versies en 110 positieve kaveldoorsnijdingen. Alle 55 kavels zijn volledig gedekt; er resteert geen statusoverlap van 0,01 m² of groter. Een kavelstatus is een afgeleide uitkomst: alleen 100% dekking door één status levert één status voor de hele kavel op. Bij gedeeltelijke of meervoudige dekking gebruikt de analyse de oppervlakteaandelen.
+
+Shiny en de statische browser gebruiken parser/cacheversie 18. De zware SQL-export, proefimport en volledige cachebouw zijn op 11 november 2026 afgerond en gevalideerd. De SQL-export heeft SHA-256 `91eccb72cdd1e18de9207bc63e521614830894f573bf2efe132d7533eee2c317`; de cache heeft SHA-256 `2157d7dd063e48c6c8d9ab58bcae226b7461fc65d9eed6a765f9b06e81c681ea`. VPS-publicatie volgt vanuit de schone, gepushte hoofdbranches.

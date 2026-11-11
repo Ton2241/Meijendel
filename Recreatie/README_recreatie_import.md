@@ -1,110 +1,83 @@
 # Importbestanden recreatie
 
-Dit zijn de startbestanden voor recreatie en toegankelijkheid.
+## Actieve invoer
 
-## Bestand 1
+De oude CSV- en SQL-invoerroute uit 2024 is verwijderd. De 220 bijbehorende
+databaseregels zijn ingetrokken. Actieve infrastructuurinvoer loopt uitsluitend
+via `gis/scripts/import_osm_fietspaden.py`.
 
-[`plot_jaar_infra_recreatie_import.csv`](/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_infra_recreatie_import.csv)
+Toegankelijkheid wordt vanaf 7 november 2026 niet meer per plot geïmporteerd. Nieuwe invoer bestaat uit werkelijk omsloten vlakken:
 
-Kolommen:
+- `toegankelijkheidsgebied` bewaart de blijvende identiteit en naam;
+- `toegankelijkheidsgebied_versie` bewaart status, geometrie, bron en geldigheid;
+- `toegankelijkheidsgebied_plot_afleiding` bewaart uitsluitend opnieuw berekenbare doorsnijdingen met plots.
 
-- `plot_id`
-- `jaar`
-- `bron`
-- `variabele`
-- `waarde`
+Toegestane statussen zijn `afgesloten`, `toegankelijk` en `toegankelijk_met_toegangskaart`. Voor iedere bestaande en toekomstige gebiedsversie is `geldig_vanaf` standaard 1 januari 1955, op basis van Tons inschatting. `geldig_tot = NULL` betekent actueel totdat een einddatum wordt ingevoerd.
 
-Toegestane `variabele`-waarden:
+De invoer en herberekening lopen via `gis/scripts/migrate_toegankelijkheidsgebieden.py`. De actuele invoer bevat zes gebieden, zes versies en 46 positieve plotdoorsnijdingen. Een status van een volledige kavel is nooit handmatige invoer: zij wordt uit de oppervlakteaandelen van de geldige gebiedsversies afgeleid.
 
-- `afstand_pad_m`
-- `padlengte_m_per_ha`
-- `afstand_parkeerplaats_m`
-- `afstand_hoofdtoegang_m`
+Voetpaden, fietspaden, wegen en parkeerplaatsen worden vanaf 8 november 2026
+afzonderlijk en versieerbaar geïmporteerd. De tabellen scheiden bronmoment,
+blijvende OSM-objectidentiteit, geometrische versie en afgeleide
+plotdoorsnijding. Alleen objecten die minstens één actieve kavel raken worden
+opgenomen; objecten zonder kavelrelatie worden ook niet als lege identiteit
+bewaard. Een nieuwe snapshot overschrijft oudere versies niet. De
+huidige eerste versies hebben op Tons aanwijzing `geldig_vanaf = 1955-01-01`,
+grondslag `inschatting` en `geldig_tot = NULL`; het OSM-bronmoment blijft als
+herkomst bewaard. De views
+`v_infrastructuursegment_actueel` en `v_infrastructuursegment_historie` bieden
+respectievelijk de nieuwste lijnstand en alle lijnstanden. Voor parkeerplaatsen
+bestaan gelijksoortige voorzieningsviews.
 
-Voorkeurs `bron`-waarden:
+Iedere import bouwt voor het ingangsjaar van de actuele gecombineerde stand
+automatisch 165 regels in
+`plot_jaar_infra`: `afstand_pad_m`, `padlengte_m_per_ha` en
+`afstand_parkeerplaats_m` voor elk van 55 kavels. De eerste twee gebruiken
+voet- en fietspaden. Wegen blijven afzonderlijke infrastructuur, maar tellen niet
+als pad. De eerste stand begint op 1 januari 1955. Een volgende snapshot voegt
+een aggregaatversie toe in haar werkelijke ingangsjaar; herhaling van dezelfde
+snapshot vervangt alleen diezelfde versie. `afstand_hoofdtoegang_m` wordt niet
+meer gevuld.
 
-- `BGT`
-- `OSM`
-- `HANDMATIG`
+Voor de individuele kavelpagina's van VWG_M maakt
+`gis/scripts/export_website_kavelkaart_lagen.py` één gecontroleerde publieke
+afgeleide levering. Zij bevat de veertien actuele toegankelijkheidsgebieden en de
+volledige geometrie van alle 1.319 actuele lijnsegmenten die minstens één kavel
+raken: 388 wegen, 59 fietspaden en 872 voetpaden. Parkeerplaatsen worden niet
+meegeleverd. `plot_ids` bepaalt op welke kavelpagina's een object kan worden
+getoond; de geometrie wordt niet op de kavelgrens afgeknipt. De GeoJSON en het
+manifest staan in VWG_M onder
+`website/vwg-m-linux-app/app/static/data/kavelkaart-lagen.*`. De levering van
+10 november 2026 bevat 1.333 objecten en heeft GeoJSON-SHA-256
+`46060fcfe04a849d3d7716be24639f723ff4ef5e21796434892587c6ed4e9f7d`;
+het manifestbestand heeft SHA-256
+`6ddb2f8138209ad477d3db585f4bf92915d6d7cfe0501a6e693f4aa9b08f54b5`.
+De CLI schrijft atomair en kan met `--verify` aantonen dat de bestanden nog
+exact overeenkomen met de levende lokale database.
 
-## Bestand 2
+## Historische bestanden
 
-[`plot_jaar_toegankelijkheid_import.csv`](/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_toegankelijkheid_import.csv)
+`plot_jaar_toegankelijkheid_import.csv`, `plot_jaar_toegankelijkheid_deel_import.csv`, `Ruimtelijke data/11_import_toegankelijkheid.sql` en `Ruimtelijke data/17_import_toegankelijkheid_deel.sql` horen bij de ingetrokken voorlopige kavelregistratie uit 2024. Zij blijven alleen als audit- en herstelmateriaal in Git staan en mogen niet opnieuw als actuele toegankelijkheidsgegevens worden uitgevoerd.
 
-Kolommen:
+De 55 oude kavelregels, hun 55 herkomstdoelen, de tabel `maatregel_toegankelijkheid_registratie` en de kolom `maatregel_registratie_herkomst.toegang_registratie_id` zijn op 7 november 2026 uit de levende lokale database verwijderd. Bron 101 blijft bestaan voor 139 beheerregistraties uit 1991–1999.
 
-- `plot_id`
-- `jaar`
-- `bron`
-- `status_code`
-- `opmerking`
+## Controle
 
-Toegestane `status_code`-waarden:
+Na nieuwe of gewijzigde gebiedsversies controleer je:
 
-- `afgesloten`
-- `beperkt`
-- `vrij`
+1. geldige, niet-lege `MULTIPOLYGON`-geometrie in SRID 28992;
+2. precies één toegestane status per versie;
+3. geen overlappende geldigheidsperioden voor hetzelfde gebied;
+4. opnieuw opgebouwde plotdoorsnijdingen;
+5. gezamenlijke statusdekking per plot niet boven 100%;
+6. Shiny-contracttests met parser/cacheversie 18.
 
-Voorkeurs `bron`-waarden:
+Na een nieuwe OSM-snapshot controleer je daarnaast bronbestand- en queryhash,
+OSM-bronmoment, classificatieverschillen, BGT-dekking, geldigheidsintervallen en
+precies drie opnieuw berekende waarden voor elk van 55 kavels.
 
-- `HANDMATIG`
-- `DUNEA_RAPPORT_2022`
+Na een wijziging in actuele gebieds- of lijnversies vernieuw en verifieer je
+ook de publieke VWG_M-levering. Een nieuwe databaseversie werkt dus niet
+stilzwijgend door in de websitebestanden.
 
-## Bestand 3
-
-[`plot_jaar_toegankelijkheid_deel_import.csv`](/Users/ton/Documents/GitHub/Meijendel/Recreatie/plot_jaar_toegankelijkheid_deel_import.csv)
-
-Kolommen:
-
-- `plot_id`
-- `jaar`
-- `bron`
-- `deel_label`
-- `status_code`
-- `aandeel_pct`
-- `barriere_type`
-- `geom_wkt`
-- `opmerking`
-
-Toegestane `status_code`-waarden:
-
-- `afgesloten`
-- `beperkt`
-- `vrij`
-
-Gebruik dit bestand alleen voor plots die niet volledig in één toegankelijkheidsklasse vallen.
-
-## Import-SQL
-
-Voor `plot_jaar_infra`:
-
-- [`10_import_recreatie_infra.sql`](/Users/ton/Documents/GitHub/Meijendel/Ruimtelijke%20data/10_import_recreatie_infra.sql)
-
-Voor toegankelijkheid op plotniveau (`maatregel_toegankelijkheid_registratie`, `niveau = plot`):
-
-- [`11_import_toegankelijkheid.sql`](/Users/ton/Documents/GitHub/Meijendel/Ruimtelijke%20data/11_import_toegankelijkheid.sql)
-
-Voor toegankelijkheid op deelniveau (`maatregel_toegankelijkheid_registratie`, `niveau = deel`):
-
-- [`17_import_toegankelijkheid_deel.sql`](/Users/ton/Documents/GitHub/Meijendel/Ruimtelijke%20data/17_import_toegankelijkheid_deel.sql)
-
-## Belangrijke controle
-
-Voor `plot_jaar_infra` blijft de bestaande verwijzing naar `plot_jaar_oppervlak` gelden. De centrale toegankelijkheidsregistraties verwijzen rechtstreeks naar `plots`; hun jaar beschrijft de geregistreerde toestand en is geen bewijs dat in dat jaar vogels zijn geteld. Controleer bron, jaar en plot vóór iedere import.
-
-## Centrale registratie vanaf 16 oktober 2026
-
-De 55 toegankelijkheidsregistraties voor 55 plots in 2024 staan in maatregel_toegankelijkheid_registratie: 20 vrij, 14 beperkt, 12 afgesloten, acht deels beperkt/deels vrij en één deels afgesloten/deels vrij. De deeltabel bevatte nul regels; de twee voorbeeldregels uit de deel-CSV zijn niet geïmporteerd. Status, bronspelling, plotnaam, opmerkingen, lege waarden en NULL blijven herleidbaar. De opmerking bij M36 blijft “nog controleren”. Een gemengde status bewijst geen oppervlakteverdeling.
-
-maatregel_registratie_herkomst bevat 199 technische herkomstkoppelingen met oude sleutels, oorspronkelijke rijwaarden, hashes en precies één canoniek doel. Dit zijn auditgegevens, geen extra beheerfeiten. De 43 inhoudelijke maatregelbronnen zijn behouden; één administratieve bron voor deze migratie brengt maatregel_bron op 44 regels. Overnemen uit de handmatige registratie geeft geen nieuwe onafhankelijke bronbevestiging.
-
-Nieuwe import richt zich op de maatregelregistraties. De drie bestaande import-SQL-bestanden gebruiken alleen tijdelijke staging en schrijven niet naar de compatibiliteitsviews. De oorspronkelijke bronidentiteit blijft bij correctie behouden; identieke herimport en gewijzigde herimport zijn op fixtures getest. LOAD DATA LOCAL vereist local_infile aan client- en serverzijde; de iMac-server heeft dit uitgeschakeld. Die globale instelling is in deze taak niet veranderd. Voer de voorbeeld-CSV’s niet als actuele levering in.
-
-De namen `plot_jaar_toegankelijkheid` en `plot_jaar_toegankelijkheid_deel` zijn uit de database verwijderd. De import-SQL gebruikt tijdelijke staging en schrijft naar `maatregel_toegankelijkheid_registratie`; de voorbeelden worden niet automatisch ingevoerd.
-
-
-## Rechtstreeks zonder oude views
-
-De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
-
-Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties. De oude classificatieherstelroute is onafhankelijk gemaakt van de verwijderde objecten. Een onderbroken migratie met achtergebleven _migratie_oud-tabellen stopt expliciet. De eerdere v1-migratie en haar oorspronkelijke herstelkopie blijven historisch controleerbaar; normale herhaling na de viewverwijdering maakt de views niet opnieuw aan.
+De zware SQL-export, proefimport en volledige cachebouw zijn op 11 november 2026 afgerond en gevalideerd. VPS-publicatie volgt vanuit de schone, gepushte hoofdbranches.

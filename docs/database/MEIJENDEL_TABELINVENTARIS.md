@@ -538,6 +538,23 @@ Import- en exportcontroles gebruiken eveneens de centrale tabellen en selecties.
 
 Controlebewijs en hersteldefinities staan lokaal in /Users/ton/Documents/Meijendel-herstel/2026-10-16-maatregelen-rechtstreeks. De drie viewdefinities staan in views/restore-views.sql. Dit bestand wordt uitsluitend bij een afzonderlijk besloten herstel gebruikt. De zware Meijendel.sql-export, volledige cachebouw en VPS-publicatie maken geen deel uit van deze vervolgwijziging.
 
+## Gebiedsgebonden toegankelijkheid, stand 10 november 2026
+
+De 55 voorlopige kavelregistraties uit 2024 en hun 55 herkomstdoelen zijn volledig verwijderd. Ook `maatregel_toegankelijkheid_registratie` en `maatregel_registratie_herkomst.toegang_registratie_id` bestaan niet meer. De bestaande bron 101 blijft behouden voor de 139 beheerregistraties uit 1991–1999. Historische CSV's en migraties zijn alleen audit- en herstelmateriaal en mogen niet opnieuw als actuele toegankelijkheid worden geïmporteerd.
+
+De actieve structuur bestaat uit:
+
+- `toegankelijkheidsstatus`: de vier waarden `afgesloten`, `toegankelijk`, `toegankelijk_buiten_broedseizoen` en `toegankelijk_met_toegangskaart`;
+- `toegankelijkheidsgebied`: blijvende identiteit en naam van een omsloten vlak;
+- `toegankelijkheidsgebied_versie`: status, bron, geometrie in SRID 28992 en tijdgeldigheid per versie;
+- `toegankelijkheidsgebied_plot_afleiding`: ruimtelijk afgeleide doorsnijdingsoppervlakte en percentage per gebiedsversie en plot;
+- `v_toegankelijkheidsgebied_actueel`: de op de huidige datum geldige gebiedsversies;
+- `v_plot_toegankelijkheid_actueel`: de actuele afgeleide oppervlakteaandelen per plot en status.
+
+Voor alle bestaande en toekomstige gebiedsversies is de standaardwaarde `geldig_vanaf = 1955-01-01`, op basis van Tons inschatting. `geldig_tot = NULL` betekent actueel totdat een einddatum wordt ingevoerd. De actuele invoer bevat veertien gebieden en veertien actuele gebiedsversies: vijf afgesloten, zeven toegankelijk, één toegankelijk buiten het broedseizoen en één toegankelijk met toegangskaart. Zij leveren 110 positieve plotdoorsnijdingen. Alle 55 kavels zijn volledig gedekt; er resteert geen statusoverlap van 0,01 m² of groter.
+
+Shiny en de browser gebruiken parser/cacheversie 18. Zij leiden per plot en analysejaar aandelen afgesloten, toegankelijk, toegankelijk buiten het broedseizoen, toegankelijk met toegangskaart en onbekend af. Een enkele kavelstatus wordt alleen getoond wanneer één status 100% van de kavel bedekt. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd.
+
 
 ## Hercontrole van PQ en twee indexkandidaten op 17 oktober 2026
 

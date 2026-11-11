@@ -42,8 +42,10 @@ Rscript -e '
     plot_jaar_habitat=c("plot_id","jaar","habitat_id","aandeel_m2"),
     plot_jaar_ahn_dtm=c("plot_id","jaar","bron","ahn_mean","ahn_sd"),
     plot_jaar_stikstof=c("plot_id","jaar","bron","stikstof_mean"),
-    plot_jaar_infra=c("plot_id","jaar","bron","variabele","waarde"),
-    maatregel_toegankelijkheid_registratie=c("plot_id","jaar","bron_id","niveau","status_code"),
+    plot_jaar_infra=c("plot_id","jaar","bron","variabele","waarde","geldig_vanaf","geldig_vanaf_grondslag","geldig_tot"),
+    toegankelijkheidsgebied=c("gebied_id","gebied_code","naam"),
+    toegankelijkheidsgebied_versie=c("gebied_versie_id","gebied_id","status_code","geldig_vanaf","geldig_tot","geometrie_wkt"),
+    toegankelijkheidsgebied_plot_afleiding=c("gebied_versie_id","plot_id","status_code","aandeel_pct","geldig_vanaf","geldig_tot"),
     pq_plot_jaar_vegetatie=c("plot_id","jaar","n_pq","n_opnamen","taxa_aantal","soortenrijkdom_gem","bedekking_som_gem","shannon_gem","dekking_kwaliteit","bronstatus","bronbestand","importversie","taxonlijst_versie"),
     dagwaarnemingen_wv=c("plot_id","soort_id","jaar","maand","dag","aantal"),
     maatregelen=c("id","omschrijving"), plot_jaar_landgebruik=c("plot_id","jaar","bron","klasse","pct"),
@@ -102,7 +104,7 @@ Rscript "$ROOT/R/build_dashboard_browser_data.R" \
 grep -Fqx 'format=meijendel-dashboard-data-manifest-v1' "$output_manifest"
 grep -Fqx "sql_sha256=$sql_hash" "$output_manifest"
 grep -Fqx 'parser_version=13' "$output_manifest"
-grep -Fqx 'table_count=33' "$output_manifest"
+grep -Fqx 'table_count=35' "$output_manifest"
 expected_hash="$(awk -F= '$1=="dashboard_data_sha256"{print $2}' "$output_manifest")"
 [[ "$(shasum -a 256 "$output" | awk '{print $1}')" == "$expected_hash" ]] || {
   echo "FOUT: dashboardhash wijkt af van manifest." >&2

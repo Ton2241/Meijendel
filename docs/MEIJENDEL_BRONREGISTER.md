@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 8 november 2026.**
+**Stand: 10 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -499,7 +499,7 @@ AHN en stikstof. plot_jaar_ahn_dtm bevat 55 DTM-samenvattingen met jaarlabel 202
 
 CBS-bodemgebruik. plot_jaar_landgebruik bevat 918 klasse-oppervlakteregels voor 55 kavels in 1996, 2010, 2015, 2017 en 2022; voor de 52 vogelkavels zijn dat 835 regels in 260 kavel-jaren. Daarvan overlappen 198 kavel-jaren in 49 kavels met territoriumgegevens. De 193 regels uit 1996 gebruiken veertien BG96-codes; andere jaren hebben andere klasselabels. CBS bevestigt een statistische breuk tussen BBG tot en met 2017 en NBBG2022; alleen hernoemen van klassen heft die niet op. Binnen de 52 vogelkavels varieert de verhouding tussen opgetelde kaartoppervlakte en geregistreerde kaveloppervlakte per kaartjaar ongeveer van 0,84 tot 1,06. De klassepercentages tellen wel tot 100%, omdat zij binnen het kaarttotaal zijn genormaliseerd. Stel grensversie en oppervlaktebasis vast voordat verschillen als terreinovergang worden geïnterpreteerd. Vogel-, PQ-, stikstof- en bodemgebruikgegevens delen bij exact gelijke jaren 71 kavel-jaren in 34 kavels uit 2010–2022; maak daarom vraaggerichte deelanalyses, geen algemene complete-caseselectie.
 
-Aanvullende verklarende gegevens. De bronvaste beheer-jaarview bevat nu 355 uitvoering-kavel-jaarrelaties voor 68 uitvoeringen, 52 kavels en 282 unieke kavel-jaren uit 1966–2025. Daarvan overlappen 293 relaties in 43 kavels met territoriumgegevens. doorsnijding_pct is in alle 355 relaties leeg: een kavelkoppeling bewijst niet de behandelde oppervlakte; ontbreken van een registratie bewijst evenmin dat geen beheer plaatsvond. Infrastructuur bevat vier indicatoren voor elk van 55 kavels in 2024; toegankelijkheid bevat 55 kavelregistraties uit 2024. Gebruik die als ruimtelijke context, niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; 3.555 waarden betreffen 156 positief geregistreerde soorten binnen de standaardselectie. Kenmerkwaarden zijn soortmetadata, geen nieuwe waarnemingen door de tijd.
+Aanvullende verklarende gegevens. De bronvaste beheer-jaarview bevat nu 355 uitvoering-kavel-jaarrelaties voor 68 uitvoeringen, 52 kavels en 282 unieke kavel-jaren uit 1966–2025. Daarvan overlappen 293 relaties in 43 kavels met territoriumgegevens. doorsnijding_pct is in alle 355 relaties leeg: een kavelkoppeling bewijst niet de behandelde oppervlakte; ontbreken van een registratie bewijst evenmin dat geen beheer plaatsvond. De OSM-infrastructuurstand van 8 november 2026 bevat 1.319 lijnversies en 16 parkeerplaatsversies die minstens één van de 55 kavels raken. Daaruit zijn met de voorlopig geschatte ingangsdatum 1 januari 1955 automatisch 165 kavelwaarden afgeleid: drie variabelen voor elk van 55 kavels. Toegankelijkheid wordt sinds 7 november 2026 niet meer als kavelkenmerk opgeslagen, maar ruimtelijk afgeleid uit versies van omsloten gebieden. Zes actuele gebiedsversies leveren samen 46 positieve doorsnijdingen met kavels. Gebruik de afgeleide oppervlakteaandelen als ruimtelijke context, niet als historische drukreeks. Binnen de 52 vogelkavels zijn 13.902 BMP-bezoeken uit 1984–2025 beschikbaar voor controle van telinspanning. De kenmerkenlaag bevat 3.607 goedgekeurde voorkeurswaarden voor 159 vogelsoorten; 3.555 waarden betreffen 156 positief geregistreerde soorten binnen de standaardselectie. Kenmerkwaarden zijn soortmetadata, geen nieuwe waarnemingen door de tijd.
 
 Beperkte aanvullende context. De 2.835 waterstandsaanduidingen bij winterbezoeken in 51 standaardkavels uit 2008–2025 zijn ordinale bezoekinformatie, geen grondwatermetingen. De 5.084 konijn-hokdatum-taxonproxies uit 1984–2023 missen oorspronkelijke route- en sectiesleutels; de 5.809 geselecteerde bronregels hebben trendgebruik wacht_op_route_sectie_koppeling. Gebruik ze niet als jaarlijkse konijnendichtheid per vogelkavel. De resterende LVD-laag bevat 2.793 opnamen en 64.683 taxonregels uit 1959–2015 zonder bewezen vaste PQ-identiteit; behoud de bestaande overlapbeoordeling en gebruik deze laag niet als verlenging van vaste PQ-reeksen. Deze controle wijzigt geen bronregels, analysetoelating of productiedata.
 
@@ -935,13 +935,13 @@ De controle van 26 september 2026 omvatte GBIF, DataCite, Zenodo, Dryad, Figshar
 - [Ruimtelijke bronlagen en toelatingsregels](bronnen/importbesluiten/MEIJENDEL_RUIMTELIJKE_LAGEN.md)
 - [Beveiligde NDFF-ontvangst](bronnen/importbesluiten/NDFF_SECURE_ONTVANGST.md)
 
-## Integratie begrazing en toegankelijkheid op 16 oktober 2026
+## Historische integratie begrazing en toegankelijkheid op 16 oktober 2026
 
 De levende lokale database is op 16 oktober 2026 omgezet. De 144 oorspronkelijke begrazingsregistraties voor 16 plots uit 1991–1999 zijn volledig behouden: 139 staan in maatregel_plot_jaar_registratie; de vijf door Ton bevestigde dubbelingen verwijzen naar bestaande uitvoering–plot–jaarfeiten. Dit zijn M15 en M16 in 1991 en M13, M13s en M14 in 1997. Deze vijf feiten worden niet opnieuw opgeslagen.
 
 De 55 toegankelijkheidsregistraties voor 55 plots in 2024 staan in maatregel_toegankelijkheid_registratie: 20 vrij, 14 beperkt, 12 afgesloten, acht deels beperkt/deels vrij en één deels afgesloten/deels vrij. De deeltabel bevatte nul regels; de twee voorbeeldregels uit de deel-CSV zijn niet geïmporteerd. Status, bronspelling, plotnaam, opmerkingen, lege waarden en NULL blijven herleidbaar. De opmerking bij M36 blijft “nog controleren”. Een gemengde status bewijst geen oppervlakteverdeling.
 
-**Garmin-QField-veldbron toegevoegd op 7 november 2026.** De lokale QField-werkset bevat één door Ton Lansink gelopen Garmin Connect-activiteit uit 7 november 2026: 5.624 GPS-punten in één spoor, 12.328 meter lijngeometrie en één daarvan afgeleide gebiedspolygoon van 4.484.502 m². Ton bevestigde de volledige route als openbaar voetpad en het daadwerkelijk omsloten gebied als formeel afgesloten. De route staat als één object in `paden_en_wegen`; het grootste omsloten vlak staat als één object in `gebieden`. Voor de polygoon is de afstand van 40,3 meter tussen begin- en eindpunt met een rechte lijn gesloten; zestien kleine kruisingsvlakken door lokale GPS-overlap zijn uitgesloten en artefactgaten zijn niet overgenomen. De ruwe GPX blijft bij het overdraagbare QField-pakket. Garmin rapporteert in deze export geen horizontale nauwkeurigheid; dat veld blijft daarom leeg. Dit is een lokaal gelokaliseerde veldbron voor toegankelijkheidsinventarisatie, geen ecologische soortwaarneming en nog geen import in `Meijendel` of `Meijendel_bronnen`. De gegevens vallen onder beheer van Ton Lansink; extern hergebruik is niet beoordeeld.
+**Garmin-QField-veldbron opgenomen en gecorrigeerd op 7 november 2026.** De lokale QField-werkset bevat één door Ton Lansink gelopen Garmin Connect-activiteit uit 7 november 2026: 5.624 GPS-punten in één spoor en 12.328 meter lijngeometrie. Ton bevestigde de volledige route als openbaar voetpad en het daadwerkelijk omsloten gebied als formeel afgesloten. De route staat als één object in `paden_en_wegen`. Het heen-en-weer gelopen toegangsspoor naar de feitelijke gebiedsgrens is geen grens en is bij de correctie uitgesloten. De gesloten lus gebruikt routepunten 160 tot en met 5470; de resterende sluitafstand bedraagt 4,815 meter. Alleen het grootste geldige vlak is overgenomen; kleine kruisingsvlakken door lokale GPS-overlap zijn uitgesloten. De ruwe GPX blijft bij het overdraagbare QField-pakket. Garmin rapporteert in deze export geen horizontale nauwkeurigheid; dat veld blijft daarom leeg. Het oorspronkelijke afgesloten bronvlak besloeg 4.483.613,185 m². Na uitsnijding van de op 10 november 2026 bevestigde fietspadcorridor bevat de actuele gebiedsversie 4.478.529,700 m² en heeft zij geometrie-SHA-256 `a47f90b35c454db4fdecbaaf77b5a2fd855305295c3da47b277646a9514896e1`. Vier interne artefactringen waren al uit het bronvlak verwijderd; de bronhash is `789f8ee1c6eb7ca27667000b775de8f9ef7bb4aabb0d29b98f85d820b06b490c`. Dit is een lokaal gelokaliseerde veldbron voor toegankelijkheidsinventarisatie, geen ecologische soortwaarneming en geen bron voor `Meijendel_bronnen`. De gegevens vallen onder beheer van Ton Lansink; extern hergebruik is niet beoordeeld.
 
 maatregel_registratie_herkomst bevat 199 technische herkomstkoppelingen met oude sleutels, oorspronkelijke rijwaarden, hashes en precies één canoniek doel. Dit zijn auditgegevens, geen extra beheerfeiten. De 43 inhoudelijke maatregelbronnen zijn behouden; één administratieve bron voor deze migratie brengt maatregel_bron op 44 regels. Overnemen uit de handmatige registratie geeft geen nieuwe onafhankelijke bronbevestiging.
 
@@ -957,8 +957,144 @@ Herstelkopie en controlebewijs staan lokaal in /Users/ton/Documents/Meijendel-he
 
 Betekenistoets: uitvoering, locatie, tijd, toestand en taxonidentiteit blijven onderscheiden volgens Darwin Core (https://dwc.tdwg.org/terms/) en TDWG TCS (https://tcs.tdwg.org/terms/), geraadpleegd op 16 oktober 2026. Begrazingsdieren zijn beheereigenschappen en worden door deze migratie geen wilde soortwaarnemingen.
 
+## Toegankelijkheid als gebiedsversies, bijgewerkt 10 november 2026
 
-## Rechtstreekse aansluiting zonder compatibiliteitsviews
+De voorlopige toegankelijkheid per kavel is volledig vervangen. De 55 registraties uit 2024 zijn verwijderd uit `maatregel_toegankelijkheid_registratie`; ook de 55 bijbehorende doelen in `maatregel_registratie_herkomst`, de kolom `toegang_registratie_id` en de tabel zelf zijn verwijderd. De oude CSV's en migratiebestanden blijven uitsluitend als historische audit- en herstelbron herkenbaar. Zij vormen geen actieve invoerroute meer. Bron 101 blijft bestaan omdat daaraan daarnaast 139 beheerregistraties uit 1991–1999 zijn gekoppeld.
+
+De levende lokale database bevat nu vier toegestane gebiedsstatussen: `afgesloten`, `toegankelijk`, `toegankelijk_buiten_broedseizoen` en `toegankelijk_met_toegangskaart`. De tabellen `toegankelijkheidsgebied` en `toegankelijkheidsgebied_versie` bewaren respectievelijk de identiteit van een vlak en zijn opeenvolgende geometrische en inhoudelijke versies. Voor iedere bestaande en later ingevoerde versie geldt standaard `geldig_vanaf = 1955-01-01`; deze datum berust op Tons inschatting. `geldig_tot = NULL` betekent dat de versie actueel blijft totdat een einddatum wordt ingevoerd. De view `v_toegankelijkheidsgebied_actueel` selecteert alleen versies die op de huidige datum geldig zijn.
+
+De levende database bevat veertien actuele gebieden: vijf afgesloten, zeven toegankelijk, één toegankelijk buiten het broedseizoen en één toegankelijk met toegangskaart. Het dertiende vlak is `fietspad_scheveningen_wassenaarse_slag_1955`; het veertiende is `overig_meijendel_toegankelijk_1955`. De landgrens van `bierlap_kijfhoek_dagkaart_1955` gebruikt Garmin-punten 0 tot en met 396 van activiteit 25020262638 van 9 november 2026: 397 GPS-punten en 1.473,335 meter lijn, vanaf de groene startmarker bij de waaiervormige parkeerplaats tot de wit-zwarte marker aan de plas. De GPX-SHA-256 is `abc85c96be5c04cce7c7edb0678e7cc9f855a933ea9f7f5ba679c3301f5bcae0`. Vanaf punt 396 loopt de door Ton op de luchtfoto bevestigde vloeiende lijn door het water naar de knik waar de grens van M6 landinwaarts gaat. Deze lijn telt 97 deelpunten, is 498,939 meter lang en sluit rekenkundig binnen 0,001 meter op M6 aan. Het goedgekeurde bronvlak is bewaard in `proef-kijfhoek-bierlap-totaal.gpkg`; vóór de corridorcorrectie was de oppervlakte 5.551.561,507 m² en de geometrie-SHA-256 `e9310c6713f4da9acd273ec75880f944631f81f728d00c13013ff19d159e1d0d`. Na uitsnijding van de fietspadcorridor is de actuele oppervlakte 5.536.971,687 m² en de geometrie-SHA-256 `c1b410be46c85577d3411fb96f01c1cc0e0498b7d4bb9b8143a40c124f8b30fe`. Alleen versienummer 1 resteert, geldig vanaf 1 januari 1955 zonder einddatum; het vlak bevat geen interne ringen.
+
+`toegankelijkheidsgebied_plot_afleiding` bevat na herberekening 110 positieve gebied-kaveldoorsnijdingen. Daarvan horen 23 doorsnijdingen bij de fietspadcorridor, 23 bij het dagkaartvlak en 17 bij het openbare restgebied. De corridor raakt delen van 23 kavels; het grootste aandeel ligt in M16s met 3,104827%, gevolgd door M17b met 2,775091%. De uit de oorspronkelijke statusvlakken weggesneden corridoroppervlakte wordt niet dubbel als afgesloten, seizoensgebonden of dagkaartgebied geteld. Na de zeven statusbesluiten heeft het Ruygenhoek-vlak drie positieve kaveldoorsnijdingen: M32 364.947,415 m², M33 239.286,370 m² en M42 21,134 m²; de eerdere doorsnijding met M31 is volledig aan het toegankelijke M31-vlak toegewezen. Het dagkaartvlak bevat de door Ton aan M75 en M71 toegewezen grensdelen en raakt daardoor tevens kleine delen van M75a, M77, M78/79 en M105. Dit zijn ruimtelijke afleidingen uit de bevestigde statusvlakken, geen handmatige kavelstatussen. De corridor, de topologiecorrectie, de correctie van de zeven statusconflicten en de openbare statusaanvulling hebben elk een eigen bronregel; `maatregel_bron` bevat 64 regels.
+
+Shiny en de statische browser gebruiken voor de volgende integrale cachebouw parser/cacheversie 18. Deze versie kent ook `toegankelijk_buiten_broedseizoen` en leidt daarvoor een afzonderlijk oppervlakteaandeel af. De geldigheid wordt bepaald door de overlap tussen analysejaar en `geldig_vanaf`/`geldig_tot`. De zware SQL-export, proefimport, volledige cachebouw en VPS-publicatie zijn nog niet uitgevoerd; de huidige productiecache bevat deze toevoeging dus nog niet.
+
+De primaire herstelkopie direct vóór de fietspadcorridor staat op `/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/meijendel-toegankelijkheid-voor-migratie-20261110-105502.sql`: 434.081 bytes, SHA-256 `03671dd1fb7c9cf6a835f39c6ecd797fd41d8facb7a720c90fb08deaf85cbf27`. De tweede herstelkopie, direct vóór de provenancecorrectie voor de niet geraakte gebieden M66 en M105, staat als `meijendel-toegankelijkheid-voor-migratie-20261110-110044.sql`: 503.374 bytes, SHA-256 `318b48795fe6a9181852b26c87ddc82756b980bd52299bae4a6417d10941cef2`. Voor de topologiecorrectie zijn drie aanvullende herstelkopieën gemaakt: `meijendel-toegankelijkheid-voor-migratie-20261110-115750.sql`, SHA-256 `50a806a5b6696fb1d357b4df57249b657abb1df3bcdae44c13d045e31a5a7ebf`, vóór de eerste veilig afgebroken poging; `meijendel-toegankelijkheid-voor-migratie-20261110-115917.sql`, SHA-256 `22ec793567711a14d7f3379cc79b82bfd99f0f35cfbf4c6981920c688f7d07e6`, vóór de tweede veilig afgebroken poging; en `meijendel-toegankelijkheid-voor-migratie-20261110-120054.sql`, SHA-256 `a4a58041359538df09ff71d787fa690298c6d5054dad623be23be5f2dbc421cb`, direct vóór de geslaagde invoer. Herstel is een afzonderlijk besluit.
+
+Op 10 november 2026 heeft Ton in Google My Maps een open grenslijn voor een formeel afgesloten vlak bij M4-5 aangeleverd en de daaruit vervaardigde controlekaart visueel goedgekeurd. De KMZ bevat in de laag `extra gebied` één object, `Lijn 2`, met 26 WGS84-punten. De lijn is gesloten langs de actuele grens van `bierlap_kijfhoek_dagkaart_1955`, beperkt tot M4-5 en ontdaan van overlap met het dagkaartvlak. Het goedgekeurde bronvlak in `afgesloten-m4-5-goedgekeurd.gpkg` beslaat 166.459,008781 m² en heeft WKB-SHA-256 `37d0cbaf52ac03dfb3309c53b9c51fa77c6d4a92d51defeeda0a1d6935d30af4`. Na uitsnijding van de fietspadcorridor is de actuele databaseoppervlakte 166.275,970 m² en de geometrie-SHA-256 `8062fd89520a59eee96769b6625fd53073af3fccfc3c25a082e2bd77c932d3a0`. De levende database bevat precies één versie met status `afgesloten`, `geldig_vanaf = 1955-01-01`, `geldig_tot = NULL` en `vastgesteld_op = 2026-11-10`. Bronbestanden en controlekaart staan in `/Volumes/T7 Data/Home_Ton/Proefomgevingen/kavel-m4-5-afgesloten-vlak-2026-11-10`; KMZ-SHA-256: `d088e3468f5852b7e728b0d081c3e996186929608f3d50006a1f8c0d58afe8ce`, KML-SHA-256: `21a437bc8218d5de9a944c2be4d26e465bc98dd572c46270d7b9532ea06a7dc2`. De oorspronkelijke bronregel is `mymaps_grensregistratie_20261110`; de actuele afgeleide geometrie verwijst naar de corridorbron. De zware SQL-export, proefimport, Shiny-cachebouw en VPS-publicatie zijn niet uitgevoerd. Extern hergebruik is niet beoordeeld.
+
+Op 10 november 2026 heeft Ton in dezelfde Google My Maps-kaart het gesloten object `hartenhoek` met elf unieke WGS84-grenspunten gemarkeerd en de controlekaart op de PDOK-luchtfoto 2025 visueel goedgekeurd. Het kandidaatbestand `harstenhoek-kandidaat.gpkg` bevat één geldige multipolygoon zonder interne ringen, is 98.304 bytes groot en heeft SHA-256 `14548252b6930769e41c450fad11c735dd85a732815b1d104e5d9d306e80cdc0`. De brongeometrie beslaat 322.677,870557 m² en heeft WKB-SHA-256 `49d49027a5fccdbeb418b7993b43bcf3e0133c3f8598c1d3354207f26a836f90`. Na uitsnijding van de fietspadcorridor is de actuele databaseoppervlakte 319.940,929 m² en de geometrie-SHA-256 `2c8e677770f7a1ee92ef8c9c5080d09fc9b6fe3c8b6c4c81ae6f76a2076ce674`. De levende database bevat precies één versie van `harstenhoek_afgesloten_1955` met status `afgesloten`, `geldig_vanaf = 1955-01-01`, `geldig_tot = NULL` en `vastgesteld_op = 2026-11-10`. Het vlak dekt 78,139366% van M42 en raakt 0,384 m² van M33; die tweede koppeling is een geometrische afleiding. Bronbestanden en controlekaart staan in `/Volumes/T7 Data/Home_Ton/Proefomgevingen/harstenhoek-afgesloten-vlak-2026-11-10`; KMZ-SHA-256: `e54e23fc34bd6022f7cc89138a01a39cb3144f0c909a0a59d2cc20f189a469ea`, KML-SHA-256: `be03914e7ad35dcc52d11bbe6e092729a5ffa844a3e494917149a0ebc2d5fdc3`. De oorspronkelijke bronregel is `mymaps_harstenhoek_20261110`; de actuele afgeleide geometrie verwijst naar de corridorbron. De zware SQL-export, proefimport, Shiny-cachebouw en VPS-publicatie zijn niet uitgevoerd. Extern hergebruik is niet beoordeeld.
+
+De fietspadcorridor volgt vier verbonden routetakken uit de OpenStreetMap-snapshot van 8 november 2026: twee beginroutes bij Scheveningen, de hoofdroute naar de Wassenaarse Slag en de aftakking naar het strand. De totale hartlijnlengte is 9.487,702 meter. De toegankelijke strook omvat vijf meter aan weerszijden, heeft een oppervlakte van 94.579,891 m², geometrie-SHA-256 `4a1b1bca20166d6837172ed687ef44d3838fb92266f22e43d7c9dfd346c87571` en bevat geen interne ringen. Ton keurde de controlekaart op 10 november 2026 goed. Tien van de twaalf bestaande statusvlakken zijn langs deze strook uitgesneden; M66 en M105 worden niet geraakt en behouden hun bestaande geometrie en oorspronkelijke bron. Geen actuele gebiedsgrens loopt door de fietspadcorridor. De corridorversie heeft status `toegankelijk`, `geldig_vanaf = 1955-01-01`, `geldig_tot = NULL` en broncode `osm_fietspadcorridor_20261110`. Het goedgekeurde GeoPackage staat op `/Volumes/T7 Data/Home_Ton/Proefomgevingen/fietspad-scheveningen-wassenaarse-slag-2026-11-10/outputs/fietspad-toegankelijkheidsproef.gpkg`, is 286.720 bytes groot en heeft SHA-256 `0b59cc88a80de095f9d2473e688c4f823704b8d3454605cecef5bb12d700a79b`. De volledige actuele kaart staat in dezelfde taakmap als `meijendel-actuele-statusgebieden-20261110.png`, SHA-256 `5590ebed6ec15355957c377d1c6b87fadb1b96fdea290f1e893aec7e06b91037`.
+
+Op 10 november 2026 zijn eerst de twee overlapparen met gelijke status technisch ontvlochten. Daarna heeft Ton voor alle zeven overlapparen met verschillende statussen het leidende vlak bepaald. De dagkaartstatus van Bierlap-Kijfhoek is leidend gemaakt tegenover het afgesloten vlak M13-M17a en de toegankelijke vlakken bij M75 en M71; bij de overlap met de Haagsche Golf- en Countryclub is de toegankelijke status van M66 leidend. De afgesloten status van M13s en M14 is leidend tegenover het toegankelijke gebied M77-M75a. De seizoensstatus van M35 is leidend tegenover M34. De toegankelijke status van M31 is leidend tegenover het afgesloten Ruygenhoek-vlak M32-M33. De geometrieën zijn uitsluitend aan de verliezende zijde teruggesneden. De totale gebiedsdekking en de dertien statussen bleven gelijk: vijf afgesloten, zes toegankelijk, één toegankelijk buiten het broedseizoen en één toegankelijk met toegangskaart. Er resteert geen statusoverlap van 0,01 m² of groter. Vier interne ringen zijn noodzakelijke, volledig door een ander statusvlak gevulde uitsparingen; het zijn geen grenzen binnen één statusgebied. De actuele hashes van de zes aangepaste vlakken zijn: Bierlap-Kijfhoek `9255c3d2265fcc9eea92edfd11424877d0f048f005c8e5f77c089af1b489afd7`, Buitenduin Noord afgesloten `6b11eb9a4aeea9773b80f6f9241bc8fb9a8a58fccdcdc61a3e254e4c53d0ab7f`, Buitenduin Noord toegankelijk `16be99d603349113eb79817da88292ff83bd69dd7640ffa1069436af97e708dd`, Hertenkamp `98751806130863799b6b956e250813db71b0924762b8f2ded713bff420b2bb38`, M34 `b7e69542b63ea9244e87ee94af31d6042594581ec991cb8d5fe3491fc8edbc60` en Ruygenhoek `1761ec60c17674cdb2ce03679e7cbbb38890667c596efaaeb895e6f467f8d3d4`. De broncode is `statuscorrectie_conflicten_20261110`. De herstelkopie direct vóór migratie v14 staat in `/Volumes/T7 Data/Home_Ton/Proefomgevingen/oplossen-zeven-statusoverlappen-2026-11-10/outputs/meijendel-toegankelijkheid-voor-migratie-20261110-132523.sql`: 507.279 bytes, SHA-256 `f8937e855c0ba01a96e901a164cedecc8e26ddab5c18e1a986c713cfa828329b`. De controlebestanden en kaart staan in dezelfde T7-taakmap. De zware SQL-export, proefimport, Shiny-cachebouw en VPS-publicatie zijn niet uitgevoerd.
+
+Na Tons visuele goedkeuring van de turkooizen restgebieden is op 10 november 2026 `overig_meijendel_toegankelijk_1955` toegevoegd. Dit vlak is het exacte complement van de dertien eerdere actuele statusvlakken binnen de actuele geometrie van de 55 onderzoekskavels. Het omvat veertien losse delen, beslaat 3.040.272,952003 m² en heeft geometrie-SHA-256 `d2e2f2d38eb655145548e23857a012de9fdfe971c14533bf6e0517d61468ea43`. De 42 interne ringen zijn volledig door andere statusvlakken gevulde uitsparingen en vormen dus geen gebied zonder status. De versie heeft status `toegankelijk`, `geldig_vanaf = 1955-01-01`, `geldig_tot = NULL`, broncode `handmatige_statusaanvulling_20261110` en zeventien positieve kaveldoorsnijdingen. Alle 55 kavels zijn daardoor volledig door actuele statusvlakken gedekt; er resteert geen statusoverlap van 0,01 m² of groter. De herstelkopie direct vóór deze toevoeging staat in `/Volumes/T7 Data/Home_Ton/Proefomgevingen/definitieve-statusdekking-meijendel-2026-11-10/outputs/meijendel-toegankelijkheid-voor-migratie-20261110-142322.sql`: 513.203 bytes, SHA-256 `c1f18c112df25ad54e3ca798f0dea02400a82cb37189bbda98d44c22da2dabc6`. De definitieve controlekaart in dezelfde taakmap heeft SHA-256 `072e95fa2aaef0387869780244e2207ec43804052d5aec90ed6f912c62e7320a`. De zware SQL-export, proefimport, Shiny-cachebouw en VPS-publicatie zijn niet uitgevoerd.
+
+Bronbestandscontrole op 10 november 2026: de eerder geregistreerde kandidaatbestanden `proef-kijfhoek-bierlap-totaal.gpkg`, `afgesloten-m4-5-goedgekeurd.gpkg`, `harstenhoek-kandidaat.gpkg` en `fietspad-toegankelijkheidsproef.gpkg` zijn niet meer op hun oorspronkelijke T7-taakpaden aangetroffen. De oorspronkelijke Garmin-GPX is daar evenmin aanwezig; een byte-identieke kopie met SHA-256 `abc85c96be5c04cce7c7edb0678e7cc9f855a933ea9f7f5ba679c3301f5bcae0` staat alleen in de tijdelijke Synology-prullenbaklocatie `/Volumes/T7 Data/Home_Ton/.SynologyWorkingDirectory/Temp/#SynoRecycle/CRcvuFfY/downloads/activity_25020262638.gpx` en geldt niet als duurzame bron. Dit verandert de actuele geometrie niet: alle veertien gebiedsversies staan in de levende database en in de herstel-SQL van 10 november 2026. Het betekent wel dat de volledige historische migratie niet uitsluitend uit de eerder geregistreerde kandidaatbestanden kan worden herhaald zolang geen duurzame bronkopieën zijn hersteld.
+
+## OpenStreetMap lijninfrastructuur en parkeerplaatsen op 8 november 2026
+
+De levende lokale database bevat een volledige gedateerde OpenStreetMap-snapshot
+van de voetpaden, fietspaden en wegen in de ruime Meijendel-bounding box. Het
+bronmoment is 8 november 2026 10:22:35 UTC. Van 4.475 way-objecten voldoen 4.473
+aan de selectie. Na afsnijding op het actuele Meijendel-basisgebied en selectie
+op een positieve doorsnijding met minstens één van de 55 kavels blijven 1.319
+lijnsegmenten en 235.264,661 meter over. Daarvan zijn 59 fietspadsegmenten
+(20.545,201 meter), 872 voetpadsegmenten (134.378,593 meter) en 388 wegsegmenten
+(80.340,867 meter). De OSM-toegangstags leiden tot 680 openbare, 272 beperkt
+toegankelijke en 367 afgesloten segmenten. Deze status is bronafgeleid en vormt
+geen zelfstandige juridische vaststelling.
+
+Alle 1.319 lijnversies hebben voorlopig `geldig_vanaf = 1955-01-01`,
+`geldig_vanaf_grondslag = inschatting` en `geldig_tot = NULL`. Ton heeft
+uitdrukkelijk bepaald dat deze historisch onjuiste begindatum voorlopig ook voor
+voetpaden, fietspaden en wegen wordt gebruikt. Het werkelijke OSM-bronmoment
+blijft afzonderlijk bewaard. Een volgende lijnsnapshot maakt nieuwe versies,
+sluit de voorafgaande stand op het nieuwe bronmoment en herberekent automatisch
+de plotdoorsnijdingen en kavelaggregaten. Oudere versies worden niet
+overschreven. De views `v_infrastructuursegment_actueel` en
+`v_infrastructuursegment_historie` geven de nieuwste respectievelijk alle
+standen.
+
+Een tweede OSM-snapshot bevat 341 parkeerobjecten met bronmoment 8 november 2026
+10:31:51 UTC. Daarvan raken 16 objecten minstens één kavel; deze zijn als punt-
+of vlakversie opgeslagen. Ook deze 16 versies hebben voorlopig de geschatte
+begindatum 1 januari 1955 en geen
+einddatum. De tabellen `infrastructuurvoorziening` en
+`infrastructuurvoorziening_versie` bewaren OSM-objecttype, object-ID, versie,
+wijzigingstijd, tags, geometrie, afstand tot het basisgebied en bronhash. De
+views `v_infrastructuurvoorziening_actueel` en
+`v_infrastructuurvoorziening_historie` geven de actuele en historische standen.
+
+De voorlopige invoer uit 2024 is volledig ingetrokken. De 220 regels in
+`plot_jaar_infra`, het bestand `Recreatie/plot_jaar_infra_recreatie_import.csv`,
+de oude losse parkeerexport en de bijbehorende SQL-invoerroute zijn verwijderd.
+Vanaf de voorlopig geschatte ingangsdatum 1 januari 1955 bevat
+`plot_jaar_infra` nu 165 automatisch afgeleide regels: voor elk
+van 55 kavels `afstand_pad_m`, `padlengte_m_per_ha` en
+`afstand_parkeerplaats_m`. Afstand en padlengte gebruiken voet- en fietspaden;
+wegen worden wel als afzonderlijke lijnversies en plotdoorsnijdingen bewaard,
+maar tellen niet als pad. De waarden worden binnen dezelfde import opnieuw
+opgebouwd zodra een lijn- of parkeerplaatssnapshot wordt toegevoegd of
+gewijzigd. Shiny en de statische browser kiezen per analysejaar uitsluitend de
+laatste aggregaatversie op of vóór dat jaar; een toekomstige stand werkt dus
+niet achterwaarts door. De oude handmatige variabele
+`afstand_hoofdtoegang_m` keert niet terug.
+
+De vorige lokale OSM-lijnlaag bevat binnen dezelfde kavelselectie 1.320 segmenten
+en 232.769,401 meter. De nieuwe snapshot bevat 1.319 segmenten en 235.264,669
+meter: 1.294 OSM-way-ID’s komen in beide voor, 25 alleen in de nieuwe snapshot
+en 26 alleen in de vorige laag. Bij 94 gemeenschappelijke ID’s is de geometrie
+gewijzigd, bij 79 de toegangsclassificatie en bij vier het infrastructuurtype.
+Het verschil van 2.495,268 meter bewijst niet dat die lengte
+fysiek is aangelegd; splitsingen, hernummering, tagwijzigingen en nauwkeuriger
+intekenen tellen mee. Voor de 59 fietspaden ondersteunt de BGT-controle
+17.134,499 meter (83,399%) binnen tien meter van een officieel fietspadvlak. Van
+die 59 segmenten hebben 55 zulke dekking en vier niet. BGT is niet gebruikt om
+OSM-geometrie automatisch te vervangen.
+
+Op 8 november 2026 zijn 913 lijnversies zonder positieve kaveldoorsnijding en
+253 parkeerplaatsversies zonder kavelrelatie uit de levende database verwijderd:
+476 wegen, 75 fietspaden, 362 voetpaden en 253 parkeerplaatsen. Objecten die één
+of meer kavels raken zijn volledig behouden; hun geometrie is niet op de
+kavelgrens afgeknipt. De import past deze selectie voortaan bij iedere herhaling
+en nieuwe snapshot toe. Na de verwijdering bevat geen van beide identiteitstabellen
+een object zonder versie.
+
+De lijnsnapshot heeft SHA-256
+`74fba544c4625911aa4fd82e08c8f231b7488fc06258580e9649ea51c3aed320`;
+de parkeerplaatssnapshot
+`7deab5d058926c70e08da38ee096c6b971a41072c5b71853c4460adf87cb6e5e`.
+De queryhashes zijn respectievelijk
+`80dc8c478893149a66b62582ccecd9fe25e8fdb7eb174b0b8b9194cc21ecc43e`
+en `3b3b4b592dae442817a804636ec6cf8d5ffd30b4a964c8f30eead8815302414b`.
+OpenStreetMap-data valt onder ODbL 1.0 en vereist bronvermelding. Google Maps is
+niet als gegevensbron gebruikt. De laatste herstelkopie, gemaakt vóór de selectie
+op kaveldoorsnijding, staat op
+`/Volumes/T7 Data/Home_Ton/Meijendel data/Backups-archief/Meijendel/meijendel-voor-osm-fietspaden-20261108-124148.sql`.
+Omvang: 3.576.079 bytes. SHA-256:
+`5de990ad6efe41ae6b049ccac003e2ee24f96524423304ff83217e94d2fb0710`.
+
+Op 8 november 2026 is voor de individuele kavelpagina's van VWG_M een
+gecontroleerde afgeleide levering gemaakt en op 10 november 2026 vernieuwd. De GeoJSON bevat 1.333 objecten: de
+veertien actuele toegankelijkheidsgebieden en de volledige geometrie van 1.319
+actuele lijnsegmenten die minstens één kavel raken, verdeeld over 388 wegen, 59
+fietspaden en 872 voetpaden. Parkeerplaatsen zijn geen onderdeel van deze
+websitelevering. Ieder object bevat de positieve `plot_ids`; lijnen en vlakken
+zijn niet op kavelgrenzen afgeknipt. De bronmomenten zijn 10 november 2026
+14:23:25 voor de gebieden en 8 november 2026 10:22:35 UTC voor de lijnen. De
+bestanden staan in VWG_M als
+`website/vwg-m-linux-app/app/static/data/kavelkaart-lagen.geojson` en
+`kavelkaart-lagen.manifest.json`. De GeoJSON heeft SHA-256
+`46060fcfe04a849d3d7716be24639f723ff4ef5e21796434892587c6ed4e9f7d`;
+het manifestbestand heeft SHA-256
+`6ddb2f8138209ad477d3db585f4bf92915d6d7cfe0501a6e693f4aa9b08f54b5`.
+`gis/scripts/export_website_kavelkaart_lagen.py --verify` vergelijkt aantallen,
+objecten, inhoud en hash opnieuw met de levende lokale database. Deze levering
+is een lokale releasekandidaat; zij is nog niet op de VPS gepubliceerd.
+
+De zware `meijendel.sql`-export, proefimport en volledige Shiny-cachebouw zijn op
+11 november 2026 uitgevoerd. De export bevat 327 basistabellen en 28 views, is
+4.488.615.348 bytes groot en heeft SHA-256
+`91eccb72cdd1e18de9207bc63e521614830894f573bf2efe132d7533eee2c317`.
+De cache bevat 14 gebiedsversies en 110 positieve kavelafleidingen, is 528.264
+bytes groot en heeft SHA-256
+`2157d7dd063e48c6c8d9ab58bcae226b7461fc65d9eed6a765f9b06e81c681ea`.
+VPS-publicatie volgt vanuit de schone, gepushte hoofdbranches.
+
+
+## Historische rechtstreekse aansluiting zonder compatibiliteitsviews
 
 De drie compatibiliteitsviews plot_jaar_maatregel, plot_jaar_toegankelijkheid en plot_jaar_toegankelijkheid_deel zijn op 16 oktober 2026 op verzoek van Ton verwijderd. Er zijn onder deze drie namen geen tabellen of views meer aanwezig. De fysieke registratietabellen, de 199 herkomstkoppelingen en alle overige gegevens zijn behouden.
 

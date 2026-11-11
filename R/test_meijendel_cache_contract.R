@@ -241,26 +241,26 @@ stopifnot(identical(
   5L
 ))
 
-identity <- meijendel_cache_identity(strrep("a", 64), 123L, 15L)
+identity <- meijendel_cache_identity(strrep("a", 64), 123L, 16L)
 cache <- list(
   format = "meijendel-shiny-cache-v1",
   identity = identity,
   data = list(plots = data.frame())
 )
 stopifnot(validate_meijendel_cache(cache, identity))
-stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 15L)))
+stopifnot(identical(identity, meijendel_cache_identity(strrep("a", 64), 123L, 16L)))
 
-wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 15L)
+wrong_hash <- meijendel_cache_identity(strrep("b", 64), 123L, 16L)
 expect_error(validate_meijendel_cache(cache, wrong_hash), "sql_sha256")
 
-wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 15L)
+wrong_size <- meijendel_cache_identity(strrep("a", 64), 124L, 16L)
 expect_error(validate_meijendel_cache(cache, wrong_size), "sql_bytes")
 
-wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 16L)
+wrong_parser <- meijendel_cache_identity(strrep("a", 64), 123L, 15L)
 expect_error(validate_meijendel_cache(cache, wrong_parser), "parser_version")
 
-expect_error(meijendel_cache_identity("ABC", 123L, 15L), "sql_sha256")
-expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 15L), "sql_bytes")
+expect_error(meijendel_cache_identity("ABC", 123L, 16L), "sql_sha256")
+expect_error(meijendel_cache_identity(strrep("a", 64), 0L, 16L), "sql_bytes")
 
 tmp <- tempfile("meijendel-cache-contract-")
 dir.create(tmp)
@@ -270,8 +270,8 @@ writeLines(c(
   "format=meijendel-export-v1",
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  paste0("cache_file=meijendel_tables_cache-p15-", strrep("a", 64), ".rds"),
-  paste0("cache_manifest=meijendel_tables_cache-p15-", strrep("a", 64), ".manifest")
+  paste0("cache_file=meijendel_tables_cache-p16-", strrep("a", 64), ".rds"),
+  paste0("cache_manifest=meijendel_tables_cache-p16-", strrep("a", 64), ".manifest")
 ), manifest)
 parsed <- read_meijendel_manifest(manifest)
 stopifnot(identical(unname(parsed[["sql_bytes"]]), "123"))
@@ -288,11 +288,69 @@ writeBin(charToRaw("dezelfde dumpbytes"), sql_one)
 stopifnot(file.copy(sql_one, sql_two))
 stopifnot(!identical(normalizePath(sql_one), normalizePath(sql_two)))
 stopifnot(identical(
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 15L),
-  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 15L)
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 16L),
+  meijendel_cache_identity(parsed[["sql_sha256"]], parsed[["sql_bytes"]], 16L)
 ))
 
 source(file.path(repo, "shiny_meijendel", "helpers.R"))
+
+binary_plot_fixture <- tempfile(fileext = ".sql")
+plot_prefix <- paste0(
+  "INSERT INTO `plots` (`plot_id`, `plot_nr`, `plot_wv`, `plot_naam`, ",
+  "`kavel_nummer`, `geom`, `in_gebruik`, `geom_bron_import_id`, `geom_sha256`) VALUES ",
+  "(3490,491,'ZH13363','Meijendel k 33','M33',_binary '"
+)
+plot_suffix <- "',1,NULL,'testhash');\n"
+writeBin(
+  c(charToRaw(plot_prefix), as.raw(0xfa), charToRaw(plot_suffix)),
+  binary_plot_fixture
+)
+binary_plots <- read_plots_cache_table(binary_plot_fixture)
+stopifnot(
+  identical(names(binary_plots), c("plot_id", "plot_naam", "kavel_nummer", "in_gebruik")),
+  identical(binary_plots$plot_id, "3490"),
+  identical(binary_plots$kavel_nummer, "M33")
+)
+unlink(binary_plot_fixture)
+
+gebied_fixture <- tempfile(fileext = ".sql")
+writeLines(paste0(
+  "INSERT INTO `toegankelijkheidsgebied_versie` ",
+  "(`gebied_versie_id`, `gebied_id`, `versienummer`, `status_code`, `geldig_vanaf`, `geldig_tot`, `geometrie_wkt`) VALUES ",
+  "(1,1,1,'toegankelijk','1955-01-01',NULL,'MULTIPOLYGON(((0 0,1 0,1 1,0 0)),((2 2,3 2,3 3,2 2)))'),",
+  "(2,2,1,'afgesloten','1955-01-01',NULL,'MULTIPOLYGON(((4 4,5 4,5 5,4 4)))');"
+), gebied_fixture, useBytes = TRUE)
+gebied_versies <- read_toegankelijkheidsgebied_versie_cache_table(gebied_fixture)
+stopifnot(
+  nrow(gebied_versies) == 2L,
+  identical(gebied_versies$gebied_versie_id, c("1", "2")),
+  identical(gebied_versies$status_code, c("toegankelijk", "afgesloten"))
+)
+unlink(gebied_fixture)
+
+invalid_accessibility_identity <- meijendel_cache_identity(strrep("a", 64), 123L, 18L)
+invalid_accessibility_cache <- list(
+  format = MEIJENDEL_CACHE_FORMAT,
+  identity = invalid_accessibility_identity,
+  data = list(
+    toegankelijkheidsgebied_versie = data.frame(
+      gebied_versie_id = c("1", "MULTIPOLYGON-fragment"),
+      gebied_id = c("1", "fragment"),
+      status_code = c("toegankelijk", "fragment"),
+      stringsAsFactors = FALSE
+    ),
+    toegankelijkheidsgebied_plot_afleiding = data.frame(
+      gebied_versie_id = "1",
+      plot_id = "3490",
+      stringsAsFactors = FALSE
+    )
+  )
+)
+expect_error(
+  validate_meijendel_cache(invalid_accessibility_cache, invalid_accessibility_identity),
+  "toegankelijkheidsgebied_versie bevat een ongeldig of dubbel gebied_versie_id"
+)
+
 complete_count_fixture <- data.frame(
   plot_id = rep(1L, 5L),
   jaar = c(2024L, 2024L, 2025L, 2025L, 2025L),
@@ -310,6 +368,7 @@ stopifnot(
 helpers_source <- readLines(file.path(repo, "shiny_meijendel", "helpers.R"), warn = FALSE)
 stopifnot(
   !any(grepl("plots <- plots[plots$in_gebruik == 1L", helpers_source, fixed = TRUE)),
+  !any(grepl("pjtg$jaar <-", helpers_source, fixed = TRUE)),
   any(grepl("accepted_positive_species_ids", helpers_source, fixed = TRUE))
 )
 batch_gate_files <- c(
@@ -472,7 +531,8 @@ required_names <- c(
   "soorten_kenmerken_datadictionary", "soorten_kenmerken_hoofdcategorien",
   "soorten_kenmerken_vogeltypering", "habitattypen", "plot_jaar_habitat",
   "plot_jaar_ahn_dtm", "plot_jaar_stikstof", "plot_jaar_infra",
-  "maatregel_toegankelijkheid_registratie", "pq_plot_jaar_vegetatie", "weer_analyse_jaar"
+  "toegankelijkheidsgebied", "toegankelijkheidsgebied_versie",
+  "toegankelijkheidsgebied_plot_afleiding", "pq_plot_jaar_vegetatie", "weer_analyse_jaar"
 )
 cache_fixture_data <- function() {
   data <- stats::setNames(lapply(required_names, function(name) data.frame()), required_names)
@@ -482,6 +542,17 @@ cache_fixture_data <- function() {
     plot_id = 1L,
     in_scope = 1L,
     reden = "Onderdeel van Natura 2000-analysegebied.",
+    stringsAsFactors = FALSE
+  )
+  data$toegankelijkheidsgebied_versie <- data.frame(
+    gebied_versie_id = integer(),
+    gebied_id = integer(),
+    status_code = character(),
+    stringsAsFactors = FALSE
+  )
+  data$toegankelijkheidsgebied_plot_afleiding <- data.frame(
+    gebied_versie_id = integer(),
+    plot_id = integer(),
     stringsAsFactors = FALSE
   )
   data
@@ -505,10 +576,11 @@ stopifnot(!local_result$from_cache, file.exists(local_cache))
 stopifnot(any(grepl(paste0("\\.next\\.", Sys.getpid(), "$"), saved_paths)))
 stopifnot(!any(file.exists(paste0(local_cache, ".next.", Sys.getpid()))))
 
-active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p15-", strrep("a", 64), ".rds"))
+active_cache <- file.path(tmp, paste0("meijendel_tables_cache-p", MEIJENDEL_PARSER_CACHE_VERSION, "-", strrep("a", 64), ".rds"))
+active_identity <- meijendel_cache_identity(strrep("a", 64), 123L, MEIJENDEL_PARSER_CACHE_VERSION)
 active_cache_object <- list(
   format = MEIJENDEL_CACHE_FORMAT,
-  identity = identity,
+  identity = active_identity,
   data = cache_fixture_data()
 )
 base::saveRDS(active_cache_object, active_cache, version = 3)
@@ -520,7 +592,7 @@ writeLines(c(
   paste0("cache_bytes=", file.info(active_cache)$size),
   paste0("sql_sha256=", strrep("a", 64)),
   "sql_bytes=123",
-  "parser_version=15"
+  paste0("parser_version=", MEIJENDEL_PARSER_CACHE_VERSION)
 ), active_manifest)
 manifest_result <- load_meijendel_tables_cached(
   sql_one,
@@ -535,8 +607,23 @@ stopifnot(
 
 cat("OK: Meijendel-cachecontract is padonafhankelijk en productie faalt gesloten.\n")
 
-# Een momentopname is uitsluitend bewijs voor het geregistreerde jaar.
-time_input <- data.frame(plot_id=rep(1L,4),jaar=c(2023L,2024L,2025L,2026L))
-time_source <- data.frame(plot_id=1L,jaar=2024L,status_code='vrij')
-stopifnot(identical(as.character(add_toegankelijkheid_covariate(time_input,time_source)$toegankelijkheid_status),c('onbekend','vrij','onbekend','onbekend')))
-expect_error(add_toegankelijkheid_covariate(time_input,rbind(time_source,transform(time_source,status_code='beperkt'))),'Tegenstrijdige toegankelijkheid')
+# Gebiedsversies gelden vanaf 1 januari 1955 totdat geldig_tot is ingevuld.
+time_input <- data.frame(plot_id=c(1L,1L,1L,2L,3L),jaar=c(1954L,1955L,2026L,2026L,2026L))
+time_source <- data.frame(
+  plot_id=c(1L,1L,2L,3L),
+  status_code=c('afgesloten','toegankelijk_met_toegangskaart','toegankelijk','toegankelijk_buiten_broedseizoen'),
+  aandeel_pct=c(60,20,100,100),
+  geldig_vanaf=as.Date(c('1955-01-01','1955-01-01','1955-01-01','1955-01-01')),
+  geldig_tot=as.Date(c(NA,NA,NA,NA))
+)
+time_result <- add_toegankelijkheid_covariates(time_input,time_source)
+stopifnot(identical(as.character(time_result$toegankelijkheid_status),c('onbekend','gemengd','gemengd','toegankelijk','toegankelijk_buiten_broedseizoen')))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_afgesloten,c(0,60,60,0,0)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_toegangskaart,c(0,20,20,0,0)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_toegankelijk,c(0,0,0,100,0)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_buiten_broedseizoen,c(0,0,0,0,100)))
+stopifnot(identical(time_result$toegankelijkheid_aandeel_onbekend,c(100,20,20,0,0)))
+expect_error(
+  add_toegankelijkheid_covariates(time_input,rbind(time_source,transform(time_source[1,],aandeel_pct=50))),
+  'meer dan 100 procent'
+)

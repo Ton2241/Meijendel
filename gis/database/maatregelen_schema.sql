@@ -101,7 +101,8 @@ INSERT INTO maatregel_brontype (brontype_code, landelijke_broncategorie, omschri
   ('onderzoeksrapport', 'IBC09', 'Onderzoeks- of monitoringsrapport'),
   ('beheerpublicatie', 'IBC99', 'Beheerhistorische publicatie'),
   ('officiele_webpagina', 'IBC99', 'Officiële webpagina van overheid of terreinbeheerder'),
-  ('subsidiebesluit', 'IBC99', 'Subsidiebesluit of openstellingsbesluit')
+  ('subsidiebesluit', 'IBC99', 'Subsidiebesluit of openstellingsbesluit'),
+  ('veldregistratie', 'IBC99', 'Veldregistratie of daarvan afgeleide geometrie')
 ON DUPLICATE KEY UPDATE
   landelijke_broncategorie=VALUES(landelijke_broncategorie),
   omschrijving=VALUES(omschrijving);
@@ -453,30 +454,116 @@ CREATE TABLE IF NOT EXISTS maatregel_plot_jaar_registratie (
   CHECK (dekking_pct IS NULL OR dekking_pct BETWEEN 0 AND 100)
 ) ENGINE=InnoDB;
 
-CREATE TABLE IF NOT EXISTS maatregel_toegankelijkheid_registratie (
-  registratie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  plot_id INT NOT NULL,
-  jaar SMALLINT UNSIGNED NOT NULL,
-  bron_id BIGINT UNSIGNED NOT NULL,
-  niveau ENUM('plot','deel') NOT NULL,
-  ouder_registratie_id BIGINT UNSIGNED NULL,
-  deel_label VARCHAR(100) NOT NULL DEFAULT '',
-  status_code VARCHAR(30) NOT NULL,
-  aandeel_pct DECIMAL(5,2) NULL,
-  barriere_type VARCHAR(50) NOT NULL DEFAULT '',
-  geom_wkt LONGTEXT NULL,
-  uitvoering_id BIGINT UNSIGNED NULL,
-  opmerking VARCHAR(255) NULL,
-  beoordelingsstatus VARCHAR(32) NOT NULL DEFAULT 'overgenomen_bronregistratie',
-  UNIQUE KEY uq_mtr (plot_id,jaar,bron_id,niveau,deel_label),
-  FOREIGN KEY (plot_id) REFERENCES plots(plot_id),
-  FOREIGN KEY (bron_id) REFERENCES maatregel_bron(bron_id),
-  FOREIGN KEY (uitvoering_id) REFERENCES maatregel_uitvoering(uitvoering_id),
-  FOREIGN KEY (ouder_registratie_id) REFERENCES maatregel_toegankelijkheid_registratie(registratie_id),
-  CHECK (aandeel_pct IS NULL OR aandeel_pct BETWEEN 0 AND 100),
-  CHECK (niveau='deel' OR (deel_label='' AND aandeel_pct IS NULL AND ouder_registratie_id IS NULL)),
-  CHECK (status_code IN ('vrij','beperkt','afgesloten','deels beperkt, deels vrij','deels afgesloten, deels vrij','onbekend'))
+CREATE TABLE IF NOT EXISTS toegankelijkheidsstatus (
+  status_code VARCHAR(40) CHARACTER SET ascii NOT NULL,
+  omschrijving VARCHAR(160) NOT NULL,
+  PRIMARY KEY (status_code)
 ) ENGINE=InnoDB;
+
+INSERT INTO toegankelijkheidsstatus (status_code,omschrijving) VALUES
+  ('afgesloten','Afgesloten'),
+  ('toegankelijk','Toegankelijk'),
+  ('toegankelijk_buiten_broedseizoen','Toegankelijk buiten broedseizoen'),
+  ('toegankelijk_met_toegangskaart','Toegankelijk met toegangskaart')
+ON DUPLICATE KEY UPDATE omschrijving=VALUES(omschrijving);
+
+CREATE TABLE IF NOT EXISTS toegankelijkheidsgebied (
+  gebied_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  gebied_code VARCHAR(96) CHARACTER SET ascii NOT NULL,
+  naam VARCHAR(255) NOT NULL,
+  opmerking TEXT NULL,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  gewijzigd_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (gebied_id),
+  UNIQUE KEY uq_toegankelijkheidsgebied_code (gebied_code)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS toegankelijkheidsgebied_versie (
+  gebied_versie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  gebied_id BIGINT UNSIGNED NOT NULL,
+  versienummer SMALLINT UNSIGNED NOT NULL DEFAULT 1,
+  status_code VARCHAR(40) CHARACTER SET ascii NOT NULL,
+  geldig_vanaf DATE NOT NULL DEFAULT '1955-01-01',
+  geldig_tot DATE NULL,
+  vastgesteld_op DATE NOT NULL,
+  bron_id BIGINT UNSIGNED NOT NULL,
+  bron_object_id VARCHAR(255) CHARACTER SET ascii NULL,
+  inwinningsmethode VARCHAR(120) NOT NULL,
+  nauwkeurigheid_m DECIMAL(10,3) NULL,
+  geometrie MULTIPOLYGON NOT NULL SRID 28992,
+  geometrie_wkt LONGTEXT NOT NULL,
+  geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  oppervlakte_m2 DECIMAL(16,3) NOT NULL,
+  geometrie_opmerking TEXT NULL,
+  actueel_gebied_id BIGINT UNSIGNED GENERATED ALWAYS AS
+    (IF(geldig_tot IS NULL,gebied_id,NULL)) STORED,
+  aangemaakt_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (gebied_versie_id),
+  UNIQUE KEY uq_toegankelijkheidsgebied_versie (gebied_id,versienummer),
+  UNIQUE KEY uq_toegankelijkheidsgebied_actueel (actueel_gebied_id),
+  UNIQUE KEY uq_toegankelijkheidsgebied_bronobject (bron_id,bron_object_id),
+  SPATIAL KEY sx_toegankelijkheidsgebied_geometrie (geometrie),
+  CONSTRAINT fk_toegankelijkheidsgebied_versie_gebied FOREIGN KEY (gebied_id)
+    REFERENCES toegankelijkheidsgebied(gebied_id),
+  CONSTRAINT fk_toegankelijkheidsgebied_versie_status FOREIGN KEY (status_code)
+    REFERENCES toegankelijkheidsstatus(status_code),
+  CONSTRAINT fk_toegankelijkheidsgebied_versie_bron FOREIGN KEY (bron_id)
+    REFERENCES maatregel_bron(bron_id),
+  CHECK (geldig_tot IS NULL OR geldig_tot >= geldig_vanaf),
+  CHECK (nauwkeurigheid_m IS NULL OR nauwkeurigheid_m >= 0),
+  CHECK (oppervlakte_m2 > 0),
+  CHECK (ST_SRID(geometrie)=28992),
+  CHECK (ST_IsValid(geometrie))
+) ENGINE=InnoDB;
+
+-- Reproduceerbare cache van de ruimtelijke doorsnijding; nooit een bronfeit.
+CREATE TABLE IF NOT EXISTS toegankelijkheidsgebied_plot_afleiding (
+  gebied_versie_id BIGINT UNSIGNED NOT NULL,
+  plot_id INT NOT NULL,
+  status_code VARCHAR(40) CHARACTER SET ascii NOT NULL,
+  doorsnijding_m2 DECIMAL(16,3) NOT NULL,
+  plot_oppervlakte_m2 DECIMAL(16,3) NOT NULL,
+  aandeel_pct DECIMAL(9,6) NOT NULL,
+  gebied_geometrie_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
+  plot_geometrie_sha256 CHAR(64) CHARACTER SET ascii NULL,
+  afgeleid_op DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+  PRIMARY KEY (gebied_versie_id,plot_id),
+  KEY ix_toegankelijkheidsgebied_plot (plot_id,status_code),
+  CONSTRAINT fk_toegankelijkheidsgebied_plot_versie FOREIGN KEY (gebied_versie_id)
+    REFERENCES toegankelijkheidsgebied_versie(gebied_versie_id) ON DELETE CASCADE,
+  CONSTRAINT fk_toegankelijkheidsgebied_plot_plot FOREIGN KEY (plot_id)
+    REFERENCES plots(plot_id),
+  CONSTRAINT fk_toegankelijkheidsgebied_plot_status FOREIGN KEY (status_code)
+    REFERENCES toegankelijkheidsstatus(status_code),
+  CHECK (doorsnijding_m2 > 0),
+  CHECK (plot_oppervlakte_m2 > 0),
+  CHECK (aandeel_pct > 0 AND aandeel_pct <= 100)
+) ENGINE=InnoDB;
+
+CREATE OR REPLACE VIEW v_toegankelijkheidsgebied_actueel AS
+SELECT v.*
+FROM toegankelijkheidsgebied_versie v
+WHERE v.geldig_tot IS NULL;
+
+CREATE OR REPLACE VIEW v_plot_toegankelijkheid_actueel AS
+SELECT
+  a.plot_id,
+  p.kavel_nummer,
+  a.gebied_versie_id,
+  v.gebied_id,
+  g.gebied_code,
+  g.naam AS gebied_naam,
+  a.status_code,
+  v.geldig_vanaf,
+  v.geldig_tot,
+  a.doorsnijding_m2,
+  a.plot_oppervlakte_m2,
+  a.aandeel_pct
+FROM toegankelijkheidsgebied_plot_afleiding a
+JOIN toegankelijkheidsgebied_versie v USING (gebied_versie_id)
+JOIN toegankelijkheidsgebied g USING (gebied_id)
+JOIN plots p USING (plot_id)
+WHERE v.geldig_tot IS NULL;
 
 -- Uitsluitend herkomstmetadata: precies één doel, geen tweede beheerfeit.
 CREATE TABLE IF NOT EXISTS maatregel_registratie_herkomst (
@@ -487,16 +574,14 @@ CREATE TABLE IF NOT EXISTS maatregel_registratie_herkomst (
   rij_sha256 CHAR(64) CHARACTER SET ascii NOT NULL,
   migratieversie VARCHAR(64) CHARACTER SET ascii NOT NULL,
   beheer_registratie_id BIGINT UNSIGNED NULL,
-  toegang_registratie_id BIGINT UNSIGNED NULL,
   uitvoering_id BIGINT UNSIGNED NULL,
   plot_id INT NULL,
   jaar SMALLINT UNSIGNED NULL,
   UNIQUE KEY uq_mrh_bron (brontabel,bronsleutel),
   FOREIGN KEY (beheer_registratie_id) REFERENCES maatregel_plot_jaar_registratie(registratie_id),
-  FOREIGN KEY (toegang_registratie_id) REFERENCES maatregel_toegankelijkheid_registratie(registratie_id),
   FOREIGN KEY (uitvoering_id,plot_id) REFERENCES maatregel_plot_koppeling(uitvoering_id,plot_id),
   FOREIGN KEY (uitvoering_id,jaar) REFERENCES maatregel_uitvoering_jaar(uitvoering_id,jaar),
-  CHECK ((beheer_registratie_id IS NOT NULL)+(toegang_registratie_id IS NOT NULL)+(uitvoering_id IS NOT NULL)=1),
+  CHECK ((beheer_registratie_id IS NOT NULL)+(uitvoering_id IS NOT NULL)=1),
   CHECK ((uitvoering_id IS NOT NULL AND plot_id IS NOT NULL AND jaar IS NOT NULL)
       OR (uitvoering_id IS NULL AND plot_id IS NULL AND jaar IS NULL))
 ) ENGINE=InnoDB;

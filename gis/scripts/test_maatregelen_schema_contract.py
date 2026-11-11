@@ -86,8 +86,11 @@ def main() -> int:
         apply_schema()
         required = {
             "maatregel_plot_jaar_registratie",
-            "maatregel_toegankelijkheid_registratie",
             "maatregel_registratie_herkomst",
+            "toegankelijkheidsstatus",
+            "toegankelijkheidsgebied",
+            "toegankelijkheidsgebied_versie",
+            "toegankelijkheidsgebied_plot_afleiding",
             "maatregel_werkcategorie",
             "maatregel_type",
             "maatregel_activiteit_type",
@@ -125,7 +128,7 @@ def main() -> int:
                 TEST_DB,
             ).splitlines())
             assert module.CENTRAL_QUERY_SCHEMA.get(table) == frozenset(columns), table
-        assert scalar("SELECT COUNT(*) FROM information_schema.views WHERE table_schema=DATABASE() AND table_name IN ('v_plot_jaar_maatregel_bronvast','v_plot_gebied_actueel','v_plot_gebied_geometrie_actueel');") == 3
+        assert scalar("SELECT COUNT(*) FROM information_schema.views WHERE table_schema=DATABASE() AND table_name IN ('v_plot_jaar_maatregel_bronvast','v_plot_gebied_actueel','v_plot_gebied_geometrie_actueel','v_toegankelijkheidsgebied_actueel','v_plot_toegankelijkheid_actueel');") == 5
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_geometrie_actueel;") == 0

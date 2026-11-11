@@ -83,11 +83,11 @@ Betekenis:
 
 Voorkeursbron:
 
-- BGT
+- gedateerde OSM-`highway`-snapshot; alleen voet- en fietspaden
 
 Controlebron:
 
-- OSM `highway`-objecten die als pad of weg relevant zijn
+- BGT-padvlakken
 
 Meetregel:
 
@@ -106,11 +106,11 @@ Betekenis:
 
 Voorkeursbron:
 
-- BGT
+- gedateerde OSM-`highway`-snapshot; alleen voet- en fietspaden
 
 Controlebron:
 
-- OSM `highway`-objecten
+- BGT-padvlakken
 
 Meetregel:
 
@@ -143,29 +143,6 @@ Meetregel:
 Jaarlogica:
 
 - alleen aanpassen als een parkeerplaats is toegevoegd, verwijderd of verplaatst
-
-### Variabele 4: `afstand_hoofdtoegang_m`
-
-Betekenis:
-
-- kortste afstand in meters van het plot naar een gedefinieerde hoofdtoegang van Meijendel
-
-Voorkeursbron:
-
-- handmatig vastgelegde lijst van hoofdtoegangen, ondersteund door OSM en Dunea-context
-
-Waarom niet alleen BGT of OSM:
-
-- `hoofdtoegang` is meestal een beheerkeuze, niet alleen een objecttype
-
-Meetregel:
-
-- maak eerst een vaste lijst met hoofdtoegangspunten
-- bereken daarna de minimale afstand van het plot tot die punten
-
-Jaarlogica:
-
-- alleen aanpassen als de definitie of ligging van hoofdtoegang verandert
 
 ## Toegankelijkheidsstatus
 
