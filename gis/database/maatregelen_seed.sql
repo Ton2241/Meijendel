@@ -45,8 +45,17 @@ INSERT INTO tmp_maatregel_bron_seed
   ('zotero_vogelrapport_1974','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1974','1976-11-01','HTUFWIAS',NULL,'2026-10-14','gepubliceerd','Rapport over kalenderjaar 1974; publicatiedatum november 1976.'),
   ('zotero_vogelrapport_1975','beheerpublicatie','Vogelpopulatieonderzoek Meijendel - Rapport 1975',NULL,'8CFXEBIQ',NULL,'2026-10-14','gepubliceerd','Volledige rapporttekst geraadpleegd; 1975 is het rapportjaar, een exacte publicatiedatum is niet vastgelegd.'),
   ('zotero_rietpoten_1992','onderzoeksrapport','De toepassing van rietpoten ter bestrijding van winderosie in Meijendel: het effect na drie jaar','1992-04-01','NZWRNSSI',NULL,'2026-10-14','gepubliceerd','Beschrijft aanleg van proefvlakken van 29 oktober tot en met 6 november 1987.'),
-  ('zotero_begrazing_2008','beheerpublicatie','Begrazingsbeheer in Meijendel','2008-04-01','4BFHKS7Q',NULL,'2026-10-14','gepubliceerd','Beschrijft invoering en uitbreiding van extensieve begrazing vanaf september 1990.'),
-  ('zotero_begrazing_2012','onderzoeksrapport','Evaluatie begrazingsbeheer Meijendel','2012-11-01','JQZFPPEK',NULL,'2026-10-14','gepubliceerd','Bevestigt start in september 1990 en noemt oppervlakten van Kijfhoek-Bierlap en Helmduinen.'),
+  ('zotero_begrazing_1990_bakker','beheerpublicatie','Begrazing van Meijendel met paarden en koeien','1990-11-01','UNQKQA7F',NULL,'2026-11-11','gepubliceerd','Primaire historische beschrijving van de introductie van Noorse fjordenpaarden op 29 september 1990; Gallowayrunderen volgden kort daarna.'),
+  ('zotero_begrazing_1992_monitoring','beheerpublicatie','Monitoring en begrazing in Meijendel','1992-04-01','2DTPDE3F',NULL,'2026-11-11','gepubliceerd','Historische monitoring en kaart van het toenmalige begrazingsgebied; de kaartgrens is nog niet als digitale geometrie over de huidige kavels gelegd.'),
+  ('zotero_begrazingsonderzoek_1993','beheerpublicatie','Begrazingsonderzoek: impressies na drie jaar','1993-11-01','EAZMT3DN',NULL,'2026-11-11','gepubliceerd','Historische evaluatie na drie jaar begrazing.'),
+  ('zotero_begrazing_1999_de_bonte','onderzoeksrapport','Vegetation development influenced by grazing in the coastal dunes near The Hague, The Netherlands','1999-01-01','2LJHNLXU','https://doi.org/10.1007/BF02802740','2026-11-11','gepubliceerd','Wetenschappelijke evaluatie van vegetatieontwikkeling onder begrazing.'),
+  ('zotero_begrazingsbeheer_2012_fauna','onderzoeksrapport','Begrazingsbeheer in relatie tot herstel van faunagemeenschappen in de duinen, Eindrapportage 1e fase 2009-2011','2012-01-01','8BPDBYC5',NULL,'2026-11-11','gepubliceerd','Eindrapportage van de eerste onderzoeksfase naar begrazingsbeheer en faunagemeenschappen.'),
+  ('zotero_begrazingsbeheer_2014_obn','onderzoeksrapport','Begrazingsbeheer in relatie tot faunagemeenschappen in droge grasduinen, eindrapportage 2009-2013','2014-01-01','I3QJJ4ID',NULL,'2026-11-11','gepubliceerd','OBN190-DK; noemt voor het Meeuwenhoek-veldonderzoek begrazing met runderen en paarden vanaf 2004.'),
+  ('zotero_rabbits_rule_2022','onderzoeksrapport','Rabbits rule: Evaluating livestock grazing in coastal sand dunes of Meijendel, the Netherlands','2022-01-01','U5HPG8GI','https://doi.org/10.18174/575460','2026-11-11','gepubliceerd','Proefschrift over de evaluatie van begrazingsbeheer in Meijendel.'),
+  ('eis_bijenmonitoring_2023','onderzoeksrapport','Bijenmonitoring in duingebied Meijendel. Herhaling 2023','2023-01-01',NULL,NULL,'2026-11-11','gepubliceerd','EIS2023-16; beschrijft voor de monitoringsjaren 2019, 2021 en 2023 de winter- en jaarrondbegrazingsregimes.'),
+  ('handmatig_begrazing_m74_20261111','handmatige_registratie','Handmatige bronvaststelling begrazing M74 vanaf 1996','2026-11-11',NULL,NULL,'2026-11-11','bevestigd_door_ton','Ton bevestigde op 11 november 2026 dat M74 vanaf 1996 zonder onderbreking wordt begraasd. De publicaties bevestigen deze specifieke kavelstart niet onafhankelijk.'),
+  ('zotero_begrazing_2008','beheerpublicatie','Integrale begrazing door vee in Meijendel','2008-04-01','4BFHKS7Q',NULL,'2026-11-11','gepubliceerd','Beschrijft invoering en uitbreiding van extensieve begrazing vanaf september 1990 en de administratieve toevoeging van Meeuwenhoek in 2005.'),
+  ('zotero_begrazing_2012','onderzoeksrapport','Twintig jaar paarden en koeien in Meijendel, een panacee voor alle kwalen?','2012-11-01','JQZFPPEK',NULL,'2026-11-11','gepubliceerd','Bevestigt start in september 1990, de verlaging van de graasdruk in 1995 en noemt oppervlakten van Kijfhoek-Bierlap, Helmduinen en Kikkervalleien.'),
   ('zotero_valleien_2003','beheerpublicatie','Vegetatieontwikkeling in duinvalleien van Meijendel na opheffen van infiltratieplassen','2003-04-01','9Z4K34B6',NULL,'2026-10-14','gepubliceerd','Holland''s Duinen 42, april 2003. Beschrijft maaien in de Libellenvallei, plaggen langs het Parnassiapad en de Kikkervalleien.'),
   ('zotero_natuurherstel_2005','beheerpublicatie','Natuurherstel in de Kikkervalleien','2005-11-01','G3K24ZDB',NULL,'2026-10-14','gepubliceerd','Aanvullende bevestiging van de in 1997 uitgevoerde eerste herstelfase.'),
   ('zotero_slib_plassen_2005','beheerpublicatie','Slib in infiltratieplassen van Meijendel','2005-04-01','MUAD7GB2',NULL,'2026-10-14','gepubliceerd','Alleen de als uitgevoerd beschreven slibverwijdering in plas 8.4.2 uit 2002 is ingevoerd; prioriteiten en voorstellen niet.'),
@@ -162,11 +171,14 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('zeereep_vijf_kerven_2014_2015','zeereep_kerven','zeereepbeheer','MT04','E02','uitgevoerd_voor_2026','Vijf kerven aanleggen','Op vijf plekken vegetatie en een tot twee decimeter bodem verwijderd; werk gestart winter 2013/2014 en afgerond winter 2014/2015.','Zeereep Meijendel','benoemd_deelgebied','2013-12-01','2015-03-31','periode',NULL,'Dunea',10.9434,'ha','109.434 m2 feitelijk afgegraven oppervlak.'),
   ('zeereep_kerven_nabeheer','zeereep_kerven','zeereepbeheer','MT02','E02','uitgevoerd','Nabeheer kerven en stuifkuilen','Openhouden en zo nodig ontdoen van vegetatie om zandtransport te behouden.','Zeereep Meijendel','benoemd_deelgebied','2016-01-01',NULL,'jaar','waar nodig','Dunea',NULL,NULL,NULL),
   ('pas_3d_begrazing_zuid','pas_meijendel_grijze_duinen','begrazing','MT01','A01','in_uitvoering','Begrazing Zeereep, Helmduinen en Prinsenduin','Jaarlijkse begrazing; in 2020 onderbroken na het doden van schapen door honden, in 2021 hervat en in 2025 binnen vaste rasters.','Zeereep Meijendel, Helmduinen en Prinsenduin','benoemd_deelgebied',NULL,NULL,'onbekend','jaarlijks','Dunea',75,'ha',NULL),
-  ('pas_22h_aanvullend_beheer','pas_meijendel_grijze_duinen','maaibeheer_aanvullend','MT02','D01','uitgevoerd_voor_2026','Aanvullend beheer Zeereep, Helmduinen, Prinsenduin en Ganzenhoek','Monitoring en bij vergrassing of verstruweling maaien, afvoeren of gescheperd begrazen.','Zeereep Meijendel, Helmduinen, Prinsenduin en Ganzenhoek','benoemd_deelgebied','2016-01-01','2021-12-31','periode','waar nodig','Dunea',1,'ha','2016: 200 Kempense schapen; 2017 beperkt gemaaid en delen begraasd; 2018-2021 onbekend.'),
+  ('pas_22h_aanvullend_beheer','pas_meijendel_grijze_duinen','maaibeheer_aanvullend','MT02','D01','uitgevoerd_voor_2026','Aanvullend maaibeheer Zeereep, Helmduinen, Prinsenduin en Ganzenhoek','In 2017 is beperkt gemaaid; begrazing in 2016 en 2017 is als afzonderlijke uitvoering geregistreerd.','Zeereep Meijendel, Helmduinen, Prinsenduin en Ganzenhoek','benoemd_deelgebied','2017-01-01','2017-12-31','jaar','eenmalig beperkt','Dunea',1,'ha','De eerdere gemengde registratie is ontvlochten: deze uitvoering bevat alleen het in 2017 gemelde maaibeheer.'),
+  ('pas_22h_schapenbegrazing_2016','pas_meijendel_grijze_duinen','begrazing','MT01','A01','uitgevoerd_voor_2026','Tijdelijke begrazing met Kempense schapen','Van half november tot half december 2016 zijn tweehonderd Kempense schapen ingezet voor aanvullend beheer.','Zeereep Meijendel, Helmduinen, Prinsenduin en Ganzenhoek','benoemd_deelgebied','2016-11-15','2016-12-15','periode','tijdelijke kudde','Dunea',200,'aantal','De bron verdeelt de kudde niet over de vier naamgebieden of de zes gekoppelde kavels.'),
+  ('pas_22h_deelbegrazing_2017','pas_meijendel_grijze_duinen','begrazing','MT01','A01','uitgevoerd_voor_2026','Begrazing van delen van maatregelgebied 22h','In 2017 zijn delen van het maatregelgebied begraasd; aantal dieren, oppervlakte en verdeling ontbreken.','Zeereep Meijendel, Helmduinen, Prinsenduin en Ganzenhoek','benoemd_deelgebied','2017-01-01','2017-12-31','jaar','eenmalig gedeeltelijk','Dunea',NULL,NULL,'Geen aantal, oppervlakte of verdeling over naamgebieden en kavels afgeleid.'),
   ('pas_23_maaibeheer','pas_meijendel_grijze_duinen','maaibeheer_aanvullend','MT02','A06','niet_uitgevoerd','Aanvullend maaibeheer noordelijke Kijfhoek, Bierlap en Meeuwenhoek','In 2016 onderzocht; van 2016 tot en met 2019 niet uitgevoerd.','Kijfhoek, Bierlap en Meeuwenhoek','benoemd_deelgebied','2016-01-01','2019-12-31','periode','jaarlijks voorgenomen','Dunea',1,'ha',NULL),
   ('pas_23_vogelkers_2020','pas_meijendel_grijze_duinen','exotenbestrijding','MT02','F04','uitgevoerd_voor_2026','Amerikaanse vogelkers gericht bestrijden','Vervangende uitvoering van maatregel 23 in 2020.','Kijfhoek, Bierlap en Meeuwenhoek','benoemd_deelgebied','2020-01-01','2020-12-31','jaar','eenmalig','Dunea',1,'ha',NULL),
   ('pas_3b_vallei_begrazing','pas_meijendel_grijze_duinen','begrazing','MT01','A01','in_uitvoering','Begrazing Vallei Meijendel','Maaibeheer vervangen door statische en gescheperde extensieve begrazing met 38 heideschapen.','Vallei Meijendel','benoemd_deelgebied',NULL,NULL,'onbekend','jaarlijks','Dunea',38,'aantal',NULL),
   ('pas_3c_begrazing','pas_meijendel_grijze_duinen','begrazing','MT01','A01','uitgevoerd_voor_2026','Begrazing Vallei Meijendel, Langestrook en De Loopert','Uitgevoerd van 2017 tot en met 2021 en daarna als beheer voortgezet.','Vallei Meijendel, Langestrook en De Loopert','benoemd_deelgebied','2017-01-01','2021-12-31','periode','jaarlijks','Dunea',110,'ha',NULL),
+  ('pas_3c_begrazing_vanaf_2022','pas_meijendel_grijze_duinen','begrazing','MT01','A01','in_uitvoering','Voortgezette begrazing Vallei Meijendel, Langestrook en De Loopert','Dunea heeft de in 2017-2021 uitgevoerde jaarlijkse begrazing daarna als regulier beheer voortgezet.','Vallei Meijendel, Langestrook en De Loopert','benoemd_deelgebied','2022-01-01',NULL,'jaar','jaarlijks voortgezet','Dunea',110,'ha','Er worden geen afzonderlijke jaarregels vanaf 2022 geconstrueerd; de bron bevestigt de voortzetting als beheer maar specificeert geen kalenderjaren.'),
   ('pas_24a_weiduin','pas_meijendel_grijze_duinen','begrazing','MT01','A01','in_uitvoering','Begrazing Weiduin','Jaarlijkse beweiding met vier Drentse heideschapen.','Weiduin','benoemd_deelgebied',NULL,NULL,'onbekend','jaarlijks','Dunea en eigenaar',4,'aantal',NULL),
   ('pas_24b_ouderijs','pas_meijendel_grijze_duinen','maaibeheer_aanvullend','MT01','A06','vervallen','Maaibeheer Oude Rijs','Werd jaarlijks gemaaid; ten tijde van 2025 niet meer.','Oude Rijs','benoemd_deelgebied',NULL,'2025-12-31','onbekend','voorheen jaarlijks','Dunea en eigenaar',NULL,NULL,NULL),
   ('pas_24c_voorlinden','pas_meijendel_grijze_duinen','maaibeheer_aanvullend','MT02','D01','onbekend','Beheer duingrasland Voorlinden','Eigenaar wilde maatregelen zelf uitvoeren; uitvoering niet bekend.','Voorlinden','benoemd_deelgebied',NULL,NULL,'onbekend',NULL,'Eigenaar Voorlinden',NULL,NULL,NULL),
@@ -207,9 +219,12 @@ INSERT INTO tmp_maatregel_uitvoering_seed VALUES
   ('ganzenhoek_wandelpad_1974_1975','historische_recreatiepaden_1974_1975','rust_en_recreatiebeheer','MT03','L02','uitgevoerd_voor_2026','Wandelpad langs M13, M13s, M14 en M77 aanleggen','Het wandelpad op de grens van M13, M14 en M77 is in 1974 aangelegd en in 1975 langs M13, M13s, M14 en M77 voltooid.','Ganzenhoek en kavels M13, M13s, M14 en M77','benoemd_deelgebied','1974-01-01','1975-12-31','periode',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
   ('ruiterpad_kavel13_1974','historische_recreatiepaden_1974_1975','rust_en_recreatiebeheer','MT03','L02','uitgevoerd_voor_2026','Ruiterpad door M13 aanleggen','Door aanleg van een ruiterpad is het noordelijke deel van M13 afgescheiden.','Kavel M13','benoemd_deelgebied','1974-01-01','1974-12-31','jaar',NULL,'Duinwaterleiding van s-Gravenhage',NULL,NULL,NULL),
   ('rietpoten_noord_1987','rietpotenproef_1987',NULL,'MT06','D01','uitgevoerd_voor_2026','Rietpoten in stuifplekken aanbrengen','In elf proef- en referentiestuifplekken zijn tussen 29 oktober en 6 november 1987 proefvlakken aangelegd en rietpoten geplaatst.','Driehoek Klippad, Bunkerpad en Wassenaarse Slag','benoemd_deelgebied','1987-10-29','1987-11-06','dag','eenmalige proef','Terreinbeheer DZH',11,'aantal','Binnenduinproef; niet als zeereepbeheer geclassificeerd.'),
-  ('begrazing_kijfhoek_bierlap_1990','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Extensieve begrazing Kijfhoek en Bierlap invoeren','Extensieve begrazing is in september 1990 ingevoerd in Kijfhoek en Bierlap.','Kijfhoek en Bierlap','benoemd_deelgebied','1990-09-01',NULL,'maand','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',275,'ha',NULL),
-  ('begrazing_helmduinen_1991','integrale_begrazing_1990','begrazing','MT01','A01','in_uitvoering','Extensieve begrazing Helmduinen invoeren','De Helmduinen worden sinds 1991 extensief begraasd.','Helmduinen','benoemd_deelgebied','1991-01-01',NULL,'jaar','doorlopend tot heden','Duinwaterbedrijf Zuid-Holland',125,'ha','Ton bevestigde op 14 oktober 2026 dat deze begrazing sinds de invoering doorloopt tot heden. De open einddatum betekent voortgezet beheer en niet een onbekende einddatum.'),
-  ('begrazing_meeuwenhoek_voor_2008','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Begrazingsgebied uitbreiden met Meeuwenhoek','De begrazing is later uitgebreid met de Meeuwenhoek; de bron uit 2008 noemt geen invoeringsjaar.','Meeuwenhoek','benoemd_deelgebied',NULL,NULL,'onbekend','doorlopend na invoering','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Geen jaarregel omdat de bron geen betrouwbaar invoeringsjaar geeft.'),
+  ('begrazing_kijfhoek_bierlap_1990','integrale_begrazing_1990','begrazing','MT01','A01','in_uitvoering','Extensieve begrazing Kijfhoek en Bierlap invoeren','Noorse fjordenpaarden zijn op 29 september 1990 uitgezet; Gallowayrunderen volgden kort daarna.','Kijfhoek en Bierlap','benoemd_deelgebied','1990-09-29',NULL,'dag','doorlopend tot heden','Duinwaterbedrijf Zuid-Holland',275,'ha','Bronnen noemen circa 270 of 275 hectare. De historische grens uit 1992 is nog niet digitaal over de huidige kavels gelegd.'),
+  ('begrazingsdruk_kijfhoek_bierlap_1995','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Begrazingsdruk Kijfhoek en Bierlap verlagen','De bezetting is verlaagd van circa een dier per 12 hectare naar circa een dier per 18 hectare.','Historisch begrazingsgebied Kijfhoek en Bierlap','onbekend','1995-01-01','1995-12-31','jaar','intensiteitswijziging binnen doorlopende begrazing','Duinwaterbedrijf Zuid-Holland',18,'ha_per_dier','Geen plotkoppelingen totdat de historische gebiedsgrens uit 1992 is gedigitaliseerd.'),
+  ('begrazing_m74_1996','integrale_begrazing_1990','begrazing','MT01','A01','in_uitvoering','Doorlopende begrazing kavel M74','M74 wordt volgens de door Ton bevestigde lokale kavelinformatie vanaf 1996 zonder onderbreking begraasd.','Kavel M74','benoemd_deelgebied','1996-01-01',NULL,'jaar','doorlopend tot heden','Dunea',NULL,NULL,'Handmatige bronvaststelling van 11 november 2026; de specifieke kavelstart is niet onafhankelijk in de publicaties teruggevonden.'),
+  ('begrazing_helmduinen_1991','integrale_begrazing_1990','begrazing','MT01','A01','in_uitvoering','Extensieve begrazing Helmduinen invoeren','De best onderbouwde eerste uitzetting in de Helmduinen vond eind 1991 plaats.','Helmduinen','benoemd_deelgebied','1991-01-01',NULL,'jaar','doorlopend tot heden','Duinwaterbedrijf Zuid-Holland',125,'ha','De historische beheersevaluatie noemt eind 1991; OBN en het Natura 2000-beheerplan gebruiken 1992. Het bronverschil blijft bewaard.'),
+  ('begrazing_meeuwenhoek_2004','integrale_begrazing_1990','begrazing','MT01','A01','in_uitvoering','Begrazingsgebied uitbreiden met Meeuwenhoek','Veldonderzoek noemt begrazing met runderen en paarden vanaf 2004; in 2005 is Meeuwenhoek administratief aan Kijfhoek en Bierlap toegevoegd.','Meeuwenhoek','benoemd_deelgebied','2004-01-01',NULL,'jaar','doorlopend tot heden','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Het totale naamgebied omvat M10-12-76, M12a, M73, M74 en M75. De uitbreidingsuitvoering koppelt alleen de vier overige kavels, omdat M74 al afzonderlijk vanaf 1996 is geregistreerd.'),
+  ('begrazingsregime_meijendel_2019_2023','integrale_begrazing_1990','begrazing','MT01','A01','uitgevoerd_voor_2026','Graasdruk verlagen en seizoensregime toepassen','Vanaf 2019 is de graasdruk verlaagd van circa een dier per 15-18 hectare naar een dier per 30 hectare. In de monitoringsjaren zijn Buitenduinen alleen in de winter en andere eenheden jaarrond begraasd.','Meijendel, meerdere begrazingseenheden','meijendel_breed','2019-01-01','2023-12-31','periode','monitoringsjaren 2019, 2021 en 2023','Dunea',30,'ha_per_dier','Geen directe kavelkoppelingen; de bron beschrijft beheerregimes per naamgebied en geen exacte uitvoeringsgeometrie.'),
   ('maaibeheer_libellenvallei_1975_2003','duinvalleibeheer_1975_2003','maaibeheer_aanvullend','MT01','A06','uitgevoerd_voor_2026','Libellenvallei jaarlijks maaien','Volgens de bron uit 2003 is de Libellenvallei sinds 1975 jaarlijks in het najaar gemaaid.','Libellenvallei','benoemd_deelgebied','1975-01-01','2003-12-31','periode','jaarlijks in het najaar','Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Alleen 1975 krijgt een jaarregel; de bron onderbouwt het terugkerende beheer als periode, niet iedere afzonderlijke jaaruitvoering.'),
   ('plaggen_parnassiapad2_1993','duinvalleibeheer_1975_2003','plaggen_chopperen_afgraven','MT02','B04','uitgevoerd_voor_2026','Proefvlak Parnassiapad 2 plaggen','Proefvlak Parnassiapad 2 is volgens de in 2001 beschreven ouderdom ongeveer in 1993 geplagd.','Parnassiapad 2','benoemd_deelgebied','1993-01-01','1993-12-31','jaar',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Jaar is uit de bron afgeleid als circa acht jaar voor 2001.'),
   ('plaggen_parnassiapad1_1997','duinvalleibeheer_1975_2003','plaggen_chopperen_afgraven','MT02','B04','uitgevoerd_voor_2026','Proefvlak Parnassiapad 1 plaggen','Proefvlak Parnassiapad 1 is volgens de in 2001 beschreven ouderdom ongeveer in 1997 geplagd.','Parnassiapad 1','benoemd_deelgebied','1997-01-01','1997-12-31','jaar',NULL,'Duinwaterbedrijf Zuid-Holland',NULL,NULL,'Jaar is uit de bron afgeleid als circa vier jaar voor 2001.'),
@@ -265,12 +280,9 @@ INSERT INTO tmp_maatregel_jaar_seed VALUES
   ('pas_3d_begrazing_zuid',2020,'niet_uitgevoerd','zotero_n2000_ontwerp_2026','Tijdelijk gestopt na het doden van schapen door honden.'),
   ('pas_3d_begrazing_zuid',2021,'uitgevoerd','zotero_n2000_ontwerp_2026','Hervat binnen verplaatsbaar wolvenraster.'),
   ('pas_3d_begrazing_zuid',2025,'uitgevoerd','zotero_n2000_ontwerp_2026','Begrazing binnen vaste rasters.'),
-  ('pas_22h_aanvullend_beheer',2016,'uitgevoerd','zotero_n2000_evaluatie_2025','Half november tot half december begraasd met 200 Kempense schapen.'),
-  ('pas_22h_aanvullend_beheer',2017,'uitgevoerd','zotero_n2000_evaluatie_2025','Beperkt gemaaid en delen begraasd.'),
-  ('pas_22h_aanvullend_beheer',2018,'onbekend','zotero_n2000_evaluatie_2025',NULL),
-  ('pas_22h_aanvullend_beheer',2019,'onbekend','zotero_n2000_evaluatie_2025',NULL),
-  ('pas_22h_aanvullend_beheer',2020,'onbekend','zotero_n2000_evaluatie_2025',NULL),
-  ('pas_22h_aanvullend_beheer',2021,'onbekend','zotero_n2000_evaluatie_2025',NULL),
+  ('pas_22h_aanvullend_beheer',2017,'uitgevoerd','zotero_n2000_evaluatie_2025','Beperkt gemaaid; de deelbegrazing is als afzonderlijke uitvoering geregistreerd.'),
+  ('pas_22h_schapenbegrazing_2016',2016,'uitgevoerd','zotero_n2000_evaluatie_2025','Half november tot half december begraasd met 200 Kempense schapen.'),
+  ('pas_22h_deelbegrazing_2017',2017,'uitgevoerd','zotero_n2000_evaluatie_2025','Delen van het maatregelgebied zijn begraasd.'),
   ('pas_23_maaibeheer',2016,'niet_uitgevoerd','zotero_n2000_evaluatie_2025','Mogelijkheden onderzocht; geen maaivlakken onderscheiden.'),
   ('pas_23_maaibeheer',2017,'niet_uitgevoerd','zotero_n2000_evaluatie_2025',NULL),
   ('pas_23_maaibeheer',2018,'niet_uitgevoerd','zotero_n2000_evaluatie_2025',NULL),
@@ -343,8 +355,14 @@ INSERT INTO tmp_maatregel_jaar_seed VALUES
   ('ganzenhoek_wandelpad_1974_1975',1975,'uitgevoerd','zotero_vogelrapport_1975','Pad langs M13, M13s, M14 en M77 voltooid.'),
   ('ruiterpad_kavel13_1974',1974,'uitgevoerd','zotero_vogelrapport_1974','Ruiterpad aangelegd.'),
   ('rietpoten_noord_1987',1987,'uitgevoerd','zotero_rietpoten_1992','Proefvlakken aangelegd van 29 oktober tot en met 6 november.'),
-  ('begrazing_kijfhoek_bierlap_1990',1990,'uitgevoerd','zotero_begrazing_2008','Begrazing ingevoerd in september.'),
+  ('begrazing_kijfhoek_bierlap_1990',1990,'uitgevoerd','zotero_begrazing_1990_bakker','Noorse fjordenpaarden uitgezet op 29 september; Gallowayrunderen volgden kort daarna.'),
+  ('begrazingsdruk_kijfhoek_bierlap_1995',1995,'uitgevoerd','zotero_begrazing_2012','Graasdruk verlaagd van circa een dier per 12 hectare naar circa een dier per 18 hectare.'),
+  ('begrazing_m74_1996',1996,'uitgevoerd','handmatig_begrazing_m74_20261111','Doorlopende begrazing van M74 begon volgens de handmatige bronvaststelling in 1996.'),
   ('begrazing_helmduinen_1991',1991,'uitgevoerd','zotero_begrazing_2008','Begrazing vanaf 1991.'),
+  ('begrazing_meeuwenhoek_2004',2004,'uitgevoerd','zotero_begrazingsbeheer_2014_obn','Begrazing met runderen en paarden vanaf 2004.'),
+  ('begrazingsregime_meijendel_2019_2023',2019,'uitgevoerd','eis_bijenmonitoring_2023','Monitoringsjaar met verlaagde graasdruk en onderscheiden winter- en jaarrondbegrazing.'),
+  ('begrazingsregime_meijendel_2019_2023',2021,'uitgevoerd','eis_bijenmonitoring_2023','Monitoringsjaar met verlaagde graasdruk en onderscheiden winter- en jaarrondbegrazing.'),
+  ('begrazingsregime_meijendel_2019_2023',2023,'uitgevoerd','eis_bijenmonitoring_2023','Monitoringsjaar met verlaagde graasdruk en onderscheiden winter- en jaarrondbegrazing.'),
   ('maaibeheer_libellenvallei_1975_2003',1975,'uitgevoerd','zotero_valleien_2003','Start van het volgens de bron jaarlijks uitgevoerde najaarsmaaien.'),
   ('plaggen_parnassiapad2_1993',1993,'uitgevoerd','zotero_valleien_2003','Circa-jaar, afgeleid uit de in 2001 genoemde ouderdom van acht jaar.'),
   ('plaggen_parnassiapad1_1997',1997,'uitgevoerd','zotero_valleien_2003','Circa-jaar, afgeleid uit de in 2001 genoemde ouderdom van vier jaar.'),
@@ -402,7 +420,12 @@ SELECT uitvoering_code,
          WHEN uitvoering_code IN ('pannen_drooglegging_4_7_1974','ganzenhoek_wandelpad_1974_1975','ruiterpad_kavel13_1974') THEN 'zotero_vogelrapport_1974'
          WHEN uitvoering_code='nieuwe_plas_14_16_1975' THEN 'zotero_vogelrapport_1975'
          WHEN uitvoering_code='rietpoten_noord_1987' THEN 'zotero_rietpoten_1992'
-         WHEN uitvoering_code IN ('begrazing_kijfhoek_bierlap_1990','begrazing_helmduinen_1991','begrazing_meeuwenhoek_voor_2008') THEN 'zotero_begrazing_2008'
+         WHEN uitvoering_code='begrazing_kijfhoek_bierlap_1990' THEN 'zotero_begrazing_1990_bakker'
+         WHEN uitvoering_code='begrazingsdruk_kijfhoek_bierlap_1995' THEN 'zotero_begrazing_2012'
+         WHEN uitvoering_code='begrazing_m74_1996' THEN 'handmatig_begrazing_m74_20261111'
+         WHEN uitvoering_code='begrazing_meeuwenhoek_2004' THEN 'zotero_begrazingsbeheer_2014_obn'
+         WHEN uitvoering_code='begrazingsregime_meijendel_2019_2023' THEN 'eis_bijenmonitoring_2023'
+         WHEN uitvoering_code='begrazing_helmduinen_1991' THEN 'zotero_begrazing_2008'
          WHEN uitvoering_code IN ('maaibeheer_libellenvallei_1975_2003','plaggen_parnassiapad2_1993','plaggen_parnassiapad1_1997') THEN 'zotero_valleien_2003'
          WHEN uitvoering_code='slib_plas_8_4_2_2002' THEN 'zotero_slib_plassen_2005'
          WHEN uitvoering_code IN ('slib_plas20_2005_2006','plas20_hydrologie_2005_2006','plas20_infrastructuur_2005_2006') THEN 'zotero_plas20_2006'
@@ -452,9 +475,19 @@ INSERT INTO tmp_maatregel_uitvoering_bron_seed VALUES
   ('pas_3d_begrazing_zuid','zotero_n2000_ontwerp_2026','bevestiging','4.2','Actualiseert onderbreking in 2020, hervatting in 2021 en vaste rasters in 2025.'),
   ('pas_24b_ouderijs','zotero_n2000_ontwerp_2026','tegenstrijdig_bewijs','4.2','Evaluatie noemt jaarlijks maaien; ontwerp actualiseert dat dit ten tijde van 2025 niet meer gebeurt.'),
   ('pas_22a_tafelberg_scheepje','zotero_n2000_ontwerp_2026','bevestiging','4.1.2','Bevestigt niet maaien in 2016 en hervatting in 2025.'),
+  ('begrazing_kijfhoek_bierlap_1990','zotero_begrazing_1992_monitoring','bevestiging',NULL,'Bevestigt en karteert het toenmalige begrazingsgebied; de kaartgrens is nog niet digitaal over de huidige kavels gelegd.'),
+  ('begrazing_kijfhoek_bierlap_1990','zotero_begrazingsonderzoek_1993','bevestiging',NULL,'Beschrijft de ontwikkeling na drie jaar begrazing.'),
+  ('begrazing_kijfhoek_bierlap_1990','zotero_begrazing_1999_de_bonte','bevestiging',NULL,'Wetenschappelijke evaluatie van de vegetatieontwikkeling onder begrazing.'),
+  ('begrazing_kijfhoek_bierlap_1990','zotero_begrazing_2008','bevestiging',NULL,'Bevestigt invoering in 1990 en noemt circa 270 hectare; de bronwaarde blijft naast de 275 hectare uit 2012 bewaard.'),
   ('begrazing_kijfhoek_bierlap_1990','zotero_begrazing_2012','bevestiging',NULL,'Bevestigt invoering in september 1990 en een begraasd oppervlak van 275 hectare.'),
+  ('begrazingsdruk_kijfhoek_bierlap_1995','zotero_begrazing_1999_de_bonte','bevestiging',NULL,'Ondersteunt de evaluatie van de gewijzigde begrazingsdruk; de historische gebiedsgrens wordt niet naar actuele kavels vertaald.'),
   ('begrazing_helmduinen_1991','zotero_begrazing_2012','bevestiging',NULL,'Bevestigt begrazing van 125 hectare Helmduinen sinds 1991.'),
+  ('begrazing_helmduinen_1991','zotero_rabbits_rule_2022','tegenstrijdig_bewijs',NULL,'Het proefschrift en enkele samenvattende tabellen gebruiken 1992; de historische beheersevaluatie noemt eind 1991. De database behoudt 1991 met precisie jaar.'),
+  ('begrazing_meeuwenhoek_2004','zotero_begrazingsbeheer_2012_fauna','bevestiging',NULL,'Onderzoekscontext voor de vijf Meeuwenhoek-kavels; geen uitbreiding naar de overige elf kavels van de actuele regio Kijfhoek en Bierlap.'),
+  ('begrazing_meeuwenhoek_2004','zotero_begrazing_2008','bevestiging',NULL,'Bevestigt de administratieve toevoeging van Meeuwenhoek aan Kijfhoek en Bierlap in 2005; dit is onderscheiden van de fysieke start in 2004.'),
+  ('begrazingsregime_meijendel_2019_2023','zotero_rabbits_rule_2022','bevestiging',NULL,'Biedt beheerhistorische context voor de lagere graasdruk vanaf 2019; de jaarfeiten 2019, 2021 en 2023 volgen uit de bijenmonitoring.'),
   ('kikkervalleien_begrazing_1997','zotero_valleien_2003','bevestiging',NULL,'Beschrijft toevoeging van de Kikkervalleien aan het begrazingsgebied na de herinrichting; de bron formuleert het vervolg als 1998.'),
+  ('kikkervalleien_begrazing_1997','zotero_begrazing_2012','tegenstrijdig_bewijs',NULL,'Van der Hagen noemt circa 30 hectare Kikkervalleien; Holland''s Duinen 55 noemt circa 50 hectare. Beide bronwaarden blijven behouden zonder samenvoeging tot een exact oppervlak.'),
   ('kikkervalleien_bodem_1997','zotero_natuurherstel_2005','bevestiging',NULL,'Bevestigt uitvoering van de eerste herstelfase in de winter van 1997.'),
   ('kikkervalleien_infra_1997','zotero_natuurherstel_2005','bevestiging',NULL,'Bevestigt de herinrichting na beëindiging van waterwinning in een deel van de Kikkervalleien.'),
   ('kikkervalleien_infra_1997','zotero_meijendel_mededelingen_30_1996','plancontext','p. 99','Koppelt Sprang PI letterlijk aan kavel 13s en plaatst het voor regeneratie bestemde rietgebied in kavels 13s en 14. Dit is ruimtelijke plancontext; de uitvoering van het verwijderen van leidingen en putten in 1997 wordt door de primaire bron bevestigd.'),
@@ -722,6 +755,28 @@ ON DUPLICATE KEY UPDATE
   bron_id=VALUES(bron_id),
   opmerking=VALUES(opmerking);
 
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,p.plot_id,'benoemd_gebied_gevalideerd',NULL,'geverifieerd',b.bron_id,
+  CONCAT(
+    CASE u.uitvoering_code
+      WHEN 'pas_22h_schapenbegrazing_2016' THEN 'De tijdelijke kudde van 200 Kempense schapen is in 2016 ingezet binnen het gezamenlijke maatregelgebied 22h. '
+      ELSE 'De Natura 2000-evaluatie meldt in 2017 begrazing van delen van het gezamenlijke maatregelgebied 22h. '
+    END,
+    'De bron verdeelt de uitvoering niet over Zeereep, Helmduinen, Prinsenduin, Ganzenhoek of de zes gekoppelde kavels; de koppeling beschrijft uitsluitend de gezamenlijke scope.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M13s','M15','M16','M17a','M77','M78/79')
+WHERE u.uitvoering_code IN ('pas_22h_schapenbegrazing_2016','pas_22h_deelbegrazing_2017')
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
 DELETE pk
 FROM maatregel_plot_koppeling pk
 JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
@@ -735,6 +790,22 @@ JOIN maatregel_uitvoering u ON u.uitvoering_id=pk.uitvoering_id
 JOIN plots p ON p.plot_id=pk.plot_id
 WHERE u.uitvoering_code='begrazing_helmduinen_1991'
   AND p.kavel_nummer IN ('M13','M13s','M14');
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,p.plot_id,'expliciet_in_bron',NULL,'geverifieerd',b.bron_id,
+  'Ton bevestigde op 11 november 2026 dat M74 vanaf 1996 zonder onderbreking wordt begraasd. Deze specifieke kavelstart is niet onafhankelijk in de publicaties teruggevonden.'
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='handmatig_begrazing_m74_20261111'
+JOIN plots p ON p.kavel_nummer='M74'
+WHERE u.uitvoering_code='begrazing_m74_1996'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
 
 INSERT INTO maatregel_plot_koppeling
   (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
@@ -1017,11 +1088,10 @@ INSERT INTO tmp_maatregel_nameninventaris_plot_seed VALUES
   ('begrazing_kijfhoek_bierlap_1990',3518,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
   ('begrazing_kijfhoek_bierlap_1990',3526,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
   ('begrazing_kijfhoek_bierlap_1990',3527,'zotero_begrazing_2012','Bierlap [OBJ-636B14D1E3; geometrie 25]'),
-  ('begrazing_meeuwenhoek_voor_2008',3502,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
-  ('begrazing_meeuwenhoek_voor_2008',3519,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
-  ('begrazing_meeuwenhoek_voor_2008',3527,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
-  ('begrazing_meeuwenhoek_voor_2008',3528,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
-  ('begrazing_meeuwenhoek_voor_2008',3531,'zotero_begrazing_2008','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_2004',3502,'zotero_begrazingsbeheer_2014_obn','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_2004',3519,'zotero_begrazingsbeheer_2014_obn','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_2004',3527,'zotero_begrazingsbeheer_2014_obn','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
+  ('begrazing_meeuwenhoek_2004',3531,'zotero_begrazingsbeheer_2014_obn','Meeuwenhoek [OBJ-78715810AF; geometrie 34]'),
   ('pas_22a_tafelberg_scheepje',3511,'zotero_n2000_evaluatie_2025','Tafelberg [OBJ-87A3731527; geometrie 37]'),
   ('pas_22a_tafelberg_scheepje',3521,'zotero_n2000_evaluatie_2025','''t Scheepje [OBJ-3DB0CB7DAA; geometrie 18]'),
   ('pas_22a_tafelberg_scheepje',3498,'zotero_n2000_evaluatie_2025','''t Scheepje [OBJ-3DB0CB7DAA; geometrie 18]'),
@@ -1705,6 +1775,25 @@ FROM maatregel_uitvoering u
 JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
 JOIN plots p ON p.kavel_nummer IN ('M1a','M1b','M3','M4-5','M45','M51','M52','M53','M54a','M54b','M55','M83','M85')
 WHERE u.uitvoering_code='pas_3c_begrazing'
+ON DUPLICATE KEY UPDATE
+  koppelmethode=VALUES(koppelmethode),
+  doorsnijding_pct=VALUES(doorsnijding_pct),
+  verificatiestatus=VALUES(verificatiestatus),
+  bron_id=VALUES(bron_id),
+  opmerking=VALUES(opmerking);
+
+INSERT INTO maatregel_plot_koppeling
+  (uitvoering_id,plot_id,koppelmethode,doorsnijding_pct,verificatiestatus,bron_id,opmerking)
+SELECT
+  u.uitvoering_id,p.plot_id,'benoemd_gebied_gevalideerd',NULL,'geverifieerd',b.bron_id,
+  CONCAT(
+    'De Natura 2000-evaluatie bevestigt dat Dunea de jaarlijkse begrazing van Vallei Meijendel, Langestrook en De Loopert na 2021 als beheer voortzet. ',
+    'Deze vervolguitvoering gebruikt dezelfde dertien gezamenlijk gevalideerde kavels, maar krijgt zonder kalenderjaarspecifieke bron geen afzonderlijke jaarregels. De 110 hectare wordt niet per gebied of kavel verdeeld.'
+  )
+FROM maatregel_uitvoering u
+JOIN maatregel_bron b ON b.bron_code='zotero_n2000_evaluatie_2025'
+JOIN plots p ON p.kavel_nummer IN ('M1a','M1b','M3','M4-5','M45','M51','M52','M53','M54a','M54b','M55','M83','M85')
+WHERE u.uitvoering_code='pas_3c_begrazing_vanaf_2022'
 ON DUPLICATE KEY UPDATE
   koppelmethode=VALUES(koppelmethode),
   doorsnijding_pct=VALUES(doorsnijding_pct),

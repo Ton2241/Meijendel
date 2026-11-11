@@ -102,6 +102,7 @@ INSERT INTO maatregel_brontype (brontype_code, landelijke_broncategorie, omschri
   ('beheerpublicatie', 'IBC99', 'Beheerhistorische publicatie'),
   ('officiele_webpagina', 'IBC99', 'Officiële webpagina van overheid of terreinbeheerder'),
   ('subsidiebesluit', 'IBC99', 'Subsidiebesluit of openstellingsbesluit'),
+  ('handmatige_registratie', 'IBC99', 'Oorspronkelijke handmatige bronregistratie'),
   ('veldregistratie', 'IBC99', 'Veldregistratie of daarvan afgeleide geometrie')
 ON DUPLICATE KEY UPDATE
   landelijke_broncategorie=VALUES(landelijke_broncategorie),

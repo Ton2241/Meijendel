@@ -6,6 +6,7 @@ from __future__ import annotations
 import subprocess
 import uuid
 import importlib.util
+import os
 from pathlib import Path
 import sys
 sys.path.insert(0,str(Path.home()/'Documents/GitHub/VWG_Project/scripts'))
@@ -16,11 +17,17 @@ ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "gis" / "database" / "maatregelen_schema.sql"
 TEST_DB = f"meijendel_maatregelen_test_{uuid.uuid4().hex[:12]}"
 MYSQL = "/usr/local/mysql/bin/mysql"
+MYSQL_SOCKET = os.environ.get("MEIJENDEL_TEST_MYSQL_SOCKET")
 CENTRAL_QUERY = ROOT / "gis" / "scripts" / "import_external_ecology_sources.py"
 
 
 def mysql(sql: str, database: str | None = None) -> str:
-    command = [MYSQL, "--login-path=meijendel_root", "--host=127.0.0.1", "--protocol=TCP", "--batch", "--skip-column-names"]
+    command = [MYSQL]
+    if MYSQL_SOCKET:
+        command.extend(["--no-defaults", "--protocol=SOCKET", f"--socket={MYSQL_SOCKET}", "-uroot"])
+    else:
+        command.extend(["--login-path=meijendel_root", "--host=127.0.0.1", "--protocol=TCP"])
+    command.extend(["--batch", "--skip-column-names"])
     if database:
         command.append(database)
     result = subprocess.run(command, input=sql, text=True, capture_output=True, check=False)
@@ -132,6 +139,7 @@ def main() -> int:
         assert scalar("SELECT COUNT(*) FROM v_plot_jaar_maatregel_bronvast;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_actueel;") == 0
         assert scalar("SELECT COUNT(*) FROM v_plot_gebied_geometrie_actueel;") == 0
+        assert scalar("SELECT COUNT(*) FROM maatregel_brontype WHERE brontype_code='handmatige_registratie';") == 1
         assert scalar("SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema=DATABASE() AND constraint_type='FOREIGN KEY';") >= 22
         assert scalar("SELECT COUNT(*) FROM information_schema.statistics WHERE table_schema=DATABASE() AND table_name='plot_gebied_lidmaatschap' AND index_name='PRIMARY' AND column_name IN ('indeling_code','plot_id');") == 2
         assert scalar("SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=DATABASE() AND table_name='maatregel_uitvoering_plotscope' AND column_name IN ('uitvoering_id','plotscope_status','bron_id','vastgesteld_op','verificatiestatus','opmerking');") == 6
