@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 10 november 2026.**
+**Stand: 11 november 2026.**
 
 **Opslagwijziging van 23 oktober 2026.** De 32.353 openbare NDFF-moswaarnemingen uit 1940–2025 en 28.643 openbare NDFF-korstmoswaarnemingen uit 1936–2025 staan nu als volledige bronregels in `Meijendel.mossen_waarneming` en `Meijendel.korstmossen_waarneming`. De overige 749.834 openbare regels blijven in `ndff_open_waarneming`. Een smal register verbindt de 810.830 unieke openbare identiteiten met precies één fysieke tabel; het bewaart geen tweede volledige waarneming. De vroegere ID-only-tabellen `ndff_mossen` en `ndff_korstmossen` zijn verwijderd. De afzonderlijke BLWG-formulieren en hun resultaten, de bestaande PQ-kwalificaties en de afgeschermde exacte geometrieën zijn behouden. Dit is een opslagverbetering, geen nieuwe bron of bewijs voor extra trends.
 
@@ -856,6 +856,18 @@ Naamactualisering 17 oktober 2026 — Helmduinen Noord. Ton bevestigt dat deze n
 In de levende nameninventaris zijn één naamobject Helmduinen Noord (OBJ-E37FA22F23), één bron en twee bronvermeldingen toegevoegd, waaronder de verduidelijking bij Helmduinen (OBJ-F7B480D407). De ontvangst- en bevestigingsdatum is 17 oktober 2026; dit is geen bewezen eerste naamdatum, kaarteditiejaar of uitvoeringsdatum. Beide naamobjecten hebben een actuele beoordeling bronlacune_geometrie. De oudere beoordeling van Helmduinen is als eerdere versie behouden.
 
 De stand op 17 oktober 2026 is 183 naamobjecten, 321 vermeldingen uit de oorspronkelijke bronperiode 1602–2026 en de nieuwe bevestiging van 17 oktober 2026, 22 bronnen en 224 beoordelingen, waarvan 112 actueel. Alle 71 bestaande naamgeometrieën, 377 naam–kavelrelaties en 365 relaties in v_nameninventaris_plot_actueel zijn ongewijzigd. Het oorspronkelijke importmanifest blijft de levering van 14 oktober 2026 beschrijven. De benaderde natuurherstelcontour is uitsluitend als maatregelplangebied opgenomen en levert geen naamgeometrie voor Helmduinen Noord of Helmduinen. Bronverantwoording: docs/bronnen/namen/helmduinen_noord_20261017/bronverantwoording.json.
+
+### 3.13. Historische publicaties in Delpher, eerste selectie
+
+Op 11 november 2026 zijn in Delpher zonder datumfilter zes zoekvormen uitgevoerd: Meijendel, Meyendel, Meyendell, Maijendel, Mayendel en de frase “mei en del”. De eerste selectie bevat 13 publicaties uit 1826–1990: vier negentiende-eeuwse uitgaven, drie tijdschriftartikelen waarvan twee als overdruk in de boekencollectie staan, en zes krantenartikelen. De treffers van de zoekvormen overlappen en de selectie is nog niet volledig. De OCR leest de gedrukte kop “Meyendel een natuurmonument” als “Mayendel”.
+
+Ontginning, water en bos: Gevers van Endegeest (1826, p. 66; Delpher Google -XFNAAAAcAAJ) beschrijft een voorgestelde vaarverbinding. Henket (1869, deel 2, p. 8; EqZlAAAAcAAJ) beschrijft duinreliëf en begroeiing in een ontwerp voor duinwaterwinning. De Verslagen en mededeelingen der Koninklijke Akademie van Wetenschappen (1878, p. 226; fERnAAAAcAAJ) bevatten twee meetmomenten bij Meijendel, juli 1866 en november 1868. Het rapport van de Nederlandsche Heidemaatschappij (1892, pp. 61–62, 66; N7dpAAAAcAAJ) beschrijft ontginning en plaatselijke natuurlijke berkenopslag.
+
+Bescherming en veldonderzoek: Nieuwe Rotterdamsche Courant (6 oktober 1925; ddd:010028059:mpeg21:a0140) beschrijft Schierbeeks beschermingsverzoek. Schierbeek (1 mei 1926; MMKB21:042351000) licht het onderzoeksprogramma toe. Tinbergen (april 1927; MMKB21:042657000) beschrijft het Oude Bos, vak 50, en de vastlegging van stuifduinen met helm in december 1926. Wiebes (1 mei 1960; MMNAT03:047821006:00003) koppelt wolfspinnen aan terreintypen; overlap met de historische vangblikreeks is nog niet per tabel vastgesteld.
+
+Waterwinning, toegang en begrazing: Twentsche courant (11 oktober 1958; MMCOLO01:280944011:mpeg21:a00046) meldt de start van een exploratieboring. Trouw (27 april 1976; ABCDDD:010819560:mpeg21:a0144) meldt een raadsbesluit over infiltratiewerken bij de Vlakte van Waalsdorp. Trouw (31 maart 1979; ABCDDD:010826970:mpeg21:a0469 en 2 juni 1982; ABCDDD:010819381:mpeg21:a0268) beschrijft voorgestelde bezoekerszonering en padregels. Algemeen Dagblad (26 juli 1990; KBPERS01:003088022:mpeg21:a00063) beschrijft voorgenomen paarden- en runderbegrazing tegen verruiging.
+
+Status: historische literatuurcontext en kandidaatbron voor afzonderlijke historische gegevens. Geen nieuwe invoer in Meijendel of Meijendel_bronnen. Gepubliceerde plannen en verwachtingen leveren geen uitvoeringsdatums of effectmetingen. De publicaties geven plaatsnamen en soms een vaknummer, maar zijn in deze selectie niet aan huidige kavels gekoppeld. Voor de hydrologische tabel zijn meetmethode, eenheden en referentiepeil nog te controleren. Hergebruikrechten en overlap met lokale bronnen worden per publicatie beoordeeld vóór eventuele gegevensovername.
 
 ## 4. Verwachte aanvullingen
 
