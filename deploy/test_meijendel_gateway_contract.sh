@@ -106,9 +106,21 @@ for retired_object in \
   ndff_florbase_doelbereik ndff_florbase_inventarisatie ndff_florbase_inventarisatie_taxon ndff_florbase_recordselectie \
   ndff_hns_doelbereik ndff_hns_hok_jaar_taxon ndff_hns_inventarisatie ndff_hns_inventarisatie_taxon ndff_hns_recordselectie \
   ndff_lmfa_bezoek ndff_lmfa_bezoek_taxon ndff_lmfa_doelsoort ndff_lmfa_recordselectie ndff_lmfa_route \
+  ndff_korstmos_bezoek ndff_korstmos_bezoek_taxon ndff_korstmos_doelbereik ndff_korstmos_meetlocatie \
+  ndff_korstmos_recordselectie ndff_korstmossen ndff_mos_datumcluster ndff_mos_doelbereik \
+  ndff_mos_inventarisatie ndff_mos_inventarisatie_taxon ndff_mos_recordselectie ndff_mossen \
+  plot_jaar_maatregel plot_jaar_toegankelijkheid plot_jaar_toegankelijkheid_deel \
   vangblik_soorten; do
   grep -Fq "$retired_object" "$REMOTE_HELPER" || \
     fail "remote helper mist expliciet toegestaan vervallen object: $retired_object"
+done
+
+for canonical_path in \
+  'MEIJENDEL_SQL_MANIFEST_PATH: /srv/shiny-server/meijendel.sql.manifest' \
+  '/srv/vwgm/data/meijendel.sql.manifest:/srv/shiny-server/meijendel.sql.manifest:ro' \
+  'identical(path, \"/srv/shiny-server/meijendel.sql\")'; do
+  grep -Fq "$canonical_path" "$REMOTE_HELPER" || \
+    fail "remote helper mist canoniek kleinletterpad: $canonical_path"
 done
 
 for file in "$DEPLOY_SCRIPT" "$REMOTE_HELPER"; do

@@ -170,6 +170,21 @@ retired_release_allowlist() {
     ndff_lmfa_doelsoort \
     ndff_lmfa_recordselectie \
     ndff_lmfa_route \
+    ndff_korstmos_bezoek \
+    ndff_korstmos_bezoek_taxon \
+    ndff_korstmos_doelbereik \
+    ndff_korstmos_meetlocatie \
+    ndff_korstmos_recordselectie \
+    ndff_korstmossen \
+    ndff_mos_datumcluster \
+    ndff_mos_doelbereik \
+    ndff_mos_inventarisatie \
+    ndff_mos_inventarisatie_taxon \
+    ndff_mos_recordselectie \
+    ndff_mossen \
+    plot_jaar_maatregel \
+    plot_jaar_toegankelijkheid \
+    plot_jaar_toegankelijkheid_deel \
     vangblik_soorten | LC_ALL=C sort
 }
 
@@ -218,6 +233,21 @@ DROP TABLE IF EXISTS
   `ndff_lmfa_doelsoort`,
   `ndff_lmfa_bezoek`,
   `ndff_lmfa_route`,
+  `ndff_korstmos_bezoek_taxon`,
+  `ndff_korstmos_recordselectie`,
+  `ndff_korstmos_doelbereik`,
+  `ndff_korstmos_meetlocatie`,
+  `ndff_korstmos_bezoek`,
+  `ndff_korstmossen`,
+  `ndff_mos_inventarisatie_taxon`,
+  `ndff_mos_recordselectie`,
+  `ndff_mos_datumcluster`,
+  `ndff_mos_doelbereik`,
+  `ndff_mos_inventarisatie`,
+  `ndff_mossen`,
+  `plot_jaar_toegankelijkheid_deel`,
+  `plot_jaar_toegankelijkheid`,
+  `plot_jaar_maatregel`,
   `externe_ecologie_resultaat`,
   `externe_ecologie_overlap`,
   `externe_ecologie_event`,
@@ -260,19 +290,19 @@ restore_backup() {
 ensure_shiny_contract() {
   local compose="$REMOTE_SHINY/docker-compose.yml"
   grep -Fq 'MEIJENDEL_REQUIRE_PREBUILT_CACHE:' "$compose" || perl -0pi -e \
-    's#(    restart: unless-stopped\n)#$1    environment:\n      MEIJENDEL_REQUIRE_PREBUILT_CACHE: "1"\n      MEIJENDEL_SQL_MANIFEST_PATH: /srv/shiny-server/Meijendel.sql.manifest\n      MEIJENDEL_CACHE_MANIFEST_PATH: /srv/shiny-server/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest\n#' "$compose"
-  grep -Fq '/srv/shiny-server/Meijendel.sql.manifest:ro' "$compose" || perl -0pi -e \
-    's#(      - /srv/vwgm/shiny/Meijendel.sql:/srv/shiny-server/Meijendel.sql:ro\n)#$1      - /srv/vwgm/data/Meijendel.sql.manifest:/srv/shiny-server/Meijendel.sql.manifest:ro\n#' "$compose"
+    's#(    restart: unless-stopped\n)#$1    environment:\n      MEIJENDEL_REQUIRE_PREBUILT_CACHE: "1"\n      MEIJENDEL_SQL_MANIFEST_PATH: /srv/shiny-server/meijendel.sql.manifest\n      MEIJENDEL_CACHE_MANIFEST_PATH: /srv/shiny-server/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest\n#' "$compose"
+  grep -Fq '/srv/shiny-server/meijendel.sql.manifest:ro' "$compose" || perl -0pi -e \
+    's#(      - /srv/vwgm/shiny/meijendel.sql:/srv/shiny-server/meijendel.sql:ro\n)#$1      - /srv/vwgm/data/meijendel.sql.manifest:/srv/shiny-server/meijendel.sql.manifest:ro\n#' "$compose"
   grep -Fq 'MEIJENDEL_REQUIRE_PREBUILT_CACHE: "1"' "$compose" || die "Compose mist verplichte cachemodus"
-  grep -Fq 'MEIJENDEL_SQL_MANIFEST_PATH: /srv/shiny-server/Meijendel.sql.manifest' "$compose" || die "Compose mist SQL-manifestpad"
+  grep -Fq 'MEIJENDEL_SQL_MANIFEST_PATH: /srv/shiny-server/meijendel.sql.manifest' "$compose" || die "Compose mist SQL-manifestpad"
   grep -Fq 'MEIJENDEL_CACHE_MANIFEST_PATH: /srv/shiny-server/shiny_meijendel/app_cache/meijendel_tables_cache.active.manifest' "$compose" || die "Compose mist cachemanifestpad"
-  grep -Fq '/srv/vwgm/data/Meijendel.sql.manifest:/srv/shiny-server/Meijendel.sql.manifest:ro' "$compose" || die "Compose mist read-only SQL-manifestmount"
+  grep -Fq '/srv/vwgm/data/meijendel.sql.manifest:/srv/shiny-server/meijendel.sql.manifest:ro' "$compose" || die "Compose mist read-only SQL-manifestmount"
 }
 
 runtime_cache_check() {
   local output
   output="$(docker exec -u shiny "$SHINY_CONTAINER" sh -lc \
-    'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/Meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(isTRUE(x[[\"from_cache\"]])); cat(\"SQL_CACHE=TRUE\\n\")"')"
+    'cd /srv/shiny-server/shiny_meijendel && Rscript -e "source(\"helpers.R\"); path <- resolve_meijendel_sql_path(); stopifnot(identical(path, \"/srv/shiny-server/meijendel.sql\")); x <- load_meijendel_tables_cached(path); stopifnot(isTRUE(x[[\"from_cache\"]])); cat(\"SQL_CACHE=TRUE\\n\")"')"
   printf '%s\n' "$output"
   grep -Fqx 'SQL_CACHE=TRUE' <<<"$output"
 }
