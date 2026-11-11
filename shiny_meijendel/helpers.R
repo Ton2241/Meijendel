@@ -592,7 +592,7 @@ read_toegankelijkheidsgebied_versie_cache_table <- function(path) {
   read_insert_table(
     path,
     "toegankelijkheidsgebied_versie",
-    c("gebied_versie_id", "gebied_id", "versienummer", "status_code", "geldig_vanaf", "geldig_tot"),
+    c("gebied_versie_id", "gebied_id", "versienummer", "status_code", "geldig_vanaf", "geldig_tot", "geometrie_wkt"),
     sanitize_binary = TRUE,
     fast_tuples = FALSE,
     keep_only = TRUE,

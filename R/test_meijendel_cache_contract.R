@@ -324,7 +324,8 @@ gebied_versies <- read_toegankelijkheidsgebied_versie_cache_table(gebied_fixture
 stopifnot(
   nrow(gebied_versies) == 2L,
   identical(gebied_versies$gebied_versie_id, c("1", "2")),
-  identical(gebied_versies$status_code, c("toegankelijk", "afgesloten"))
+  identical(gebied_versies$status_code, c("toegankelijk", "afgesloten")),
+  grepl("\\),\\(", gebied_versies$geometrie_wkt[[1L]])
 )
 unlink(gebied_fixture)
 
