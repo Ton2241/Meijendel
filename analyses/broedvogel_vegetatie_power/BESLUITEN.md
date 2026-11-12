@@ -4,6 +4,33 @@ Dit bestand bewaart de inhoudelijke en technische keuzes voor deze analyse.
 Nieuwe besluiten worden gedateerd toegevoegd; eerdere besluiten worden niet
 stilzwijgend herschreven.
 
+## 12 november 2026 — Lansu-model als methodebron, niet als historische tijdreeks
+
+- Lansu et al. (2025), *Habitat mapping of coastal dunes with deep learning*,
+  is als artikel met PDF opgenomen in de Zotero-collectie Meijendel
+  (`BQACM7L2`). Het proefschrift *Squeezed sands: Human footprints in coastal
+  lands* is met de volledige PDF opgenomen als `F3EP7REZ`.
+- Het gepubliceerde U-net onderscheidt kaal zand, struweel, zoet water, gras,
+  loofbomen en naaldbomen. Alleen RGB behaalde 92% totale nauwkeurigheid; met
+  nabij-infrarood, afstand tot zee, DSM en kroonhoogte was dat 95%. De
+  onafhankelijke vergelijking met 499 veldpunten behaalde 88%.
+- Zenodo-record `10.5281/zenodo.14197160` bevat de Python-scripts en 6,55 GB
+  trainingsbeelden en maskers. Het bevat geen getrainde modelgewichten of
+  checkpoints. Tons reeds verzonden verzoek om het classificatiemodel blijft
+  daarom zinvol; de kleinste resterende leemte bestaat uit de gebruikte
+  gewichten, exacte voorbewerking en bijbehorende modelversie.
+- Het model is een bruikbaar vertrekpunt en een benchmark voor recente
+  25-centimeterbeelden. De landelijke nauwkeurigheid vervangt niet de lokale
+  overdrachtstoets: de Meijendel-proef tussen 2020 en 2023 bleef op macro-F1
+  0,420–0,469. Voor historische zwart-witbeelden is bovendien een afzonderlijk
+  getrainde en gevalideerde classificatie nodig.
+- De eerstvolgende modelstap wacht niet op een brede nieuwe bronuitvraag. Eerst
+  wordt na ontvangst van de gewichten op een klein recent Meijendel-proefvlak
+  getoetst of het gepubliceerde model zonder of met beperkte lokale
+  hertraining overdraagbaar is. De historische Dunea-reeks blijft de
+  voorkeursbron voor de tijdreconstructie; Kadaster en Dotka zijn pas een
+  aanvullende route voor jaren die Dunea niet kan leveren.
+
 ## 28 oktober 2026 — niet-lineaire en vertraagde PQ–vogelrelaties
 
 - De volgende PQ-fase onderzoekt veranderingen binnen dezelfde plot en latere

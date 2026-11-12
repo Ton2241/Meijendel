@@ -121,3 +121,45 @@ schaduwwerking en detailniveau dat toelaten. Toelating tot het vogelmodel vraagt
 opnieuw onafhankelijke toetsing tussen beeldjaren. Daarnaast worden bekende
 ingrepen en plotselinge gebeurtenissen afzonderlijk meegenomen; een kaartreeks
 van vegetatiestructuur is geen zelfstandige verklaring van vogelverandering.
+
+## Gepubliceerd U-net van Lansu et al., 12 november 2026
+
+Lansu et al. (2025) hebben een U-net getraind voor zes duinhabitatklassen:
+kaal zand, struweel, zoet water, gras, loofbomen en naaldbomen. Het onderzoek
+omvat 562 km² Nederlandse kustduinen op 25 centimeter. Alleen RGB behaalde 92%
+totale nauwkeurigheid, 80% gemiddelde recall en 70% precisie. Met
+nabij-infrarood, afstand tot zee, DSM en kroonhoogte steeg dit tot 95%, 88% en
+80%. De vergelijking met 499 veldpunten behaalde 88% nauwkeurigheid, 74%
+gemiddelde recall en 62% precisie.
+
+Artikel en proefschrift zijn met PDF in de Zotero-collectie Meijendel
+opgenomen als `BQACM7L2` en `F3EP7REZ`. Het bijbehorende Zenodo-record
+`10.5281/zenodo.14197160` bevat een codearchief van 18,4 KB met circa 48 KB
+uitgepakte Python-code, een leeswijzer en 6,55 GB
+trainingsbeelden en maskers. De code kan een checkpoint opslaan en laden, maar
+het gepubliceerde archief bevat geen getrainde modelgewichten. Ton heeft die al
+bij de auteur opgevraagd. Niet opnieuw vragen; eerst de reactie afwachten.
+
+Dit verandert het negatieve resultaat van de eigen overdrachtstoets niet. De
+landelijke nauwkeurigheid is gemeten binnen de gegevensopzet van Lansu en
+bewijst niet dat één getraind model verschillende Meijendelse beeldjaren
+zonder nieuwe validatie vergelijkbaar indeelt. Voor recente beelden is het
+model wel een concreet startpunt: toets eerst de ontvangen gewichten op een
+klein, volledig achtergehouden Meijendel-gebied en vergelijk exact dezelfde
+pixels met de bestaande classificatie van 2022 en de AHN-hoogteklassen. Alleen
+als de klassefouten en de overdracht tussen jaren voldoende klein zijn, volgt
+opschaling naar alle 53 Natura 2000-plots.
+
+De historische zwart-witbeelden vormen een afzonderlijk probleem. Zij missen
+infrarood en bijbehorende historische DSM- en kroonhoogtelagen, en verschillen
+sterk in schaal, schaduw en beeldkwaliteit. Daarvoor wordt geen moderne
+modelprestatie overgenomen. Nodig is een eigen trainings- en validatieset per
+beeldfamilie, met ten minste volledig achtergehouden plots en jaren.
+
+PDOK ontsluit open RGB-luchtfoto's vanaf 2016; in 2021 is wel 8 centimeter maar
+geen 25-centimeterlaag aanwezig. Het Kadaster levert historische foto's uit
+1927–2012 en Dotka ontsluit de gedigitaliseerde Kadastercollectie 1932–2002.
+Dit zijn beschikbaarheidsroutes, geen ontvangen Meijendel-bronnen. De
+Dunea-reeks blijft voorrang houden omdat zij voor meerdere jaren ook bestaande
+vegetatie-interpretaties kan bevatten. Kadaster en Dotka worden pas gericht
+gebruikt voor concrete ontbrekende jaren na de Dunea-inventaris.

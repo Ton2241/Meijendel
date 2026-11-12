@@ -1,6 +1,6 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 29 oktober 2026
+**Stand:** 12 november 2026
 
 **Status:** de analysematrix, tellergevoeligheid, vegetatiestappen,
 structuurproeven, omgevingsmodellen, niet-lineaire vertraagde modellen en de
@@ -67,6 +67,16 @@ methodegevoelig om als vergelijkbaar vijfde moment te gebruiken. De proef met
 tien openbare luchtfoto's uit 2016–2024 bleef met een macro-F1 van
 0,420–0,469 onder de vooraf gekozen grens van 0,60. Daaruit is daarom geen
 jaarlijkse vegetatiestructuurreeks afgeleid.
+
+Sindsdien is een direct relevante methodebron toegevoegd. Lansu et al. (2025)
+classificeerden 562 km² Nederlandse kustduinen op 25 centimeter met een U-net.
+Alleen RGB behaalde 92% totale nauwkeurigheid; met infrarood, afstand tot zee,
+DSM en kroonhoogte was dat 95%. De scripts en 6,55 GB trainingsmateriaal zijn
+openbaar, maar de getrainde modelgewichten niet. Ton heeft die al bij de auteur
+opgevraagd. Het model biedt daardoor een concrete nieuwe proefroute voor
+recente Meijendel-beelden, maar maakt de eerdere zwakke overdracht tussen
+beeldjaren niet ongedaan en is niet rechtstreeks toepasbaar op historische
+zwart-witfoto's.
 
 De aanvullende representativiteitsanalyse laat zien dat de
 landbedekkingsklassen waarin minstens één PQ ligt binnen de 25 kaartplots per
@@ -692,6 +702,16 @@ worden getoetst. Daarom volgt geen jaarlijkse reeks. Luchtfoto's vervangen de
 hoogte-informatie niet en herstellen AHN1 niet; een vervolg vereist
 onafhankelijke referenties voor meer beeldjaren.
 
+Het gepubliceerde U-net van Lansu et al. is daarom niet als nieuwe uitkomst in
+het vogelmodel opgenomen, maar als kandidaatmethode vastgelegd. Artikel en
+proefschrift staan met PDF in de Zotero-collectie Meijendel. Het Zenodo-pakket
+bevat de trainingsbeelden, maskers en scripts, maar geen getrainde gewichten.
+Na ontvangst van die gewichten volgt eerst een kleine lokale overdrachtstoets
+op volledig achtergehouden Meijendel-pixels. Alleen bij voldoende
+klasseprestaties én stabiliteit tussen beeldjaren wordt opgeschaald. Voor de
+zwart-witbeelden van vóór 1975 blijft een afzonderlijk getrainde en
+gevalideerde classificatie nodig.
+
 ### Aanvullende modellen met stikstof en CBS-landgebruik
 
 De laatste verklarende stap gebruikt dezelfde soortgerichte modelbasis als de
@@ -1090,6 +1110,7 @@ brondata blijft vanzelfsprekend nodig om de getallen exact te reproduceren.
 | Representativiteit PQ’s binnen kaartplots | Uitgevoerd; geen algemeen gewogen model | In 2001 liggen 82 bruikbare PQ’s in 18 van 25 plots en in 2022 100 in 19 plots. Klassen met minstens één PQ beslaan per plot mediaan 47,2% en 58,4% van het oppervlak; de spreiding binnen die klassen is niet getoetst. Weging corrigeert scheefheid tussen bemonsterde klassen, maar vult ontbrekende klassen niet aan. |
 | Vegetatiehoogte en gerichte habitatgroepen | Uitgevoerd | AHN2–AHN5 leveren 220 geharmoniseerde structuurregels voor 55 plots en vier momenten, 2008–2023. De tijdstoets is nu uitvoerbaar, maar alleen het boomgroepmodel slaagt numeriek; de winst is 0,0024 logscorepunt en niet robuust voor het weglaten van een soort. AHN1/1997–1998 is wegens sterke methodegevoeligheid alleen experimenteel. Geen model gaat door naar power. |
 | Jaarlijkse RGB/CIR-luchtfoto's | Proef uitgevoerd; niet toegelaten | Tien beelden uit 2016, 2020, 2022, 2023 en 2024 zijn voor 53 Natura 2000-plots onderzocht. De onafhankelijke overdracht 2020–2023 behaalt macro-F1 0,420–0,469 en blijft onder 0,60; normalisatie en textuur verbeteren dit niet. De rasters van 2001 en 2022 missen de oorspronkelijke trainings- en validatiereferenties en maken daarvan geen jaarlijkse reeks. |
+| U-net van Lansu et al. (2025) | Methode beschikbaar; gewichten opgevraagd | Zes klassen; 562 km² op 25 cm. Nauwkeurigheid: RGB 92%, alle lagen 95% en 499 veldpunten 88%. Eerst lokaal toetsen; niet gebruiken voor historische zwart-witfoto's. |
 | Weer | In gerichte modellen verwerkt | Dagweer uit 1958–2025 is samengevat als wintertemperatuur, vorstdagen, voorjaarstemperatuur en voorjaarsneerslag. Dit zijn correcties en mogelijke verklaringen, geen afzonderlijk bewijs van een weereffect. |
 | Stikstof en CBS-landgebruik | Uitgevoerd | Stikstof gebruikt 60.127 soort–plot–jaarrijen, 674 plotjaren, 51 plots en 2005–2023; CBS-landgebruik 15.039 rijen, 168 plotjaren, 49 plots en vier kaartjaren uit 2010–2022. Stikstof laat een verschil tussen plots zien, maar geen gemiddelde binnen-plotreactie. Van twaalf volledige modellen zijn er vier geldig; van 36 validaties twaalf. Geen tijdstoets slaagt en geen model gaat door naar power. |
 | HYVEG, MODAK en PROBE | Brononderzoek uitgevoerd | MODAK blijkt een haalbaarheidsstudie uit 2003. PROBE is een actuele vegetatiemodellenfamilie, maar de huidige Meijendel-database mist de volledige invoer voor PROBE-1. De PROBE-3-proef voor droog duin gebruikte 30 veldproefvlakken en modelleerde juist voor deze analyse belangrijke processen als begrazing, konijnen en vertraagde respons niet. Geen PROBE-run of poweranalyse uitgevoerd. |
@@ -1110,7 +1131,6 @@ gevonden, maar ook:
 - welke veranderingen de meetopzet niet betrouwbaar kon detecteren;
 - welke gegevensbeperkingen de interpretatie begrenzen.
 
-Bij het schrijven worden het dan geldende Natuurbeheerplan Zuid-Holland, het
-Natura 2000-beheerplan Meijendel & Berkheide en de actuele beheerinvulling van
-Dunea opnieuw geraadpleegd. Vastgesteld beleid, beheerambitie, feitelijke
-maatregel en ecologische interpretatie blijven onderscheiden.
+Bij het schrijven worden Natuurbeheerplan, Natura 2000-beheerplan en Dunea's
+beheerinvulling geraadpleegd; beleid, ambitie, maatregel en ecologische
+interpretatie blijven onderscheiden.

@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 28 oktober 2026.**
+**Stand: 12 november 2026.**
 
 Dit register bevat informatie over:
 
@@ -650,6 +650,46 @@ jaarlijkse reeks uitgebreid. Een vervolg vereist onafhankelijke referenties
 voor meer beeldjaren. Luchtfoto's meten geen vegetatiehoogte, maken AHN1 niet
 vergelijkbaar en mogen niet rechtstreeks als causale verklaring van
 vogelverandering worden gebruikt.
+
+**Methodenbron Lansu et al., stand 12 november 2026.** Het artikel *Habitat
+mapping of coastal dunes with deep learning* (Ecological Informatics 92,
+103444; DOI `10.1016/j.ecoinf.2025.103444`) en het proefschrift *Squeezed
+sands: Human footprints in coastal lands* (DOI
+`10.33612/diss.1294442415`) staan met PDF in de Zotero-collectie Meijendel als
+`BQACM7L2` en `F3EP7REZ`. Het artikel is CC BY 4.0; voor het proefschrift gelden
+de gebruiksvoorwaarden van de RUG-repository. Dit zijn methode- en
+contextbronnen, geen nieuwe Meijendel-waarnemingen en geen import in de levende
+database.
+
+Het U-net onderscheidt kaal zand, struweel, zoet water, gras, loofbomen en
+naaldbomen. Het onderzoek omvat 562 km² Nederlandse kustduinen op 25
+centimeter. Alleen RGB behaalde 92% totale nauwkeurigheid, 80% gemiddelde
+recall en 70% precisie. Met nabij-infrarood, afstand tot zee, DSM en
+kroonhoogte was dit 95%, 88% en 80%. De vergelijking met 499 veldpunten
+behaalde 88% nauwkeurigheid, 74% gemiddelde recall en 62% precisie.
+
+Het openbare Zenodo-record `10.5281/zenodo.14197160` verwijst naar versie
+`14197161` en bevat een codearchief van 18.429 bytes, een leeswijzer van 99.737
+bytes en een datapakket van 6.552.447.633 bytes met trainingsbeelden en
+maskers. Het archief bevat geen getrainde modelgewichten of checkpoints. Ton
+heeft het classificatiemodel al bij de auteur opgevraagd; op 12 november 2026
+is de reactie nog niet ontvangen. De resterende leemte is concreet: de
+gebruikte gewichten, exacte voorbewerking en bijbehorende modelversie. De
+gepubliceerde landelijke nauwkeurigheid vervangt de lokale overdrachtstoets
+niet. De eigen Meijendel-proef tussen 2020 en 2023 bleef op macro-F1
+0,420–0,469. Voor historische zwart-witbeelden is bovendien een afzonderlijk
+getrainde en gevalideerde classificatie nodig.
+
+De actuele openbare beschikbaarheidscontrole bevestigt RGB-luchtfoto's via
+PDOK vanaf 2016; voor 2021 is wel 8 centimeter maar geen 25-centimeterlaag
+zichtbaar. Het Kadaster biedt historische luchtfoto's uit 1927–2012; tot en
+met 2006 zijn deze zwart-wit en vanaf 2007 in kleur. Dotka ontsluit de
+gedigitaliseerde Kadastercollectie 1932–2002. Dit zijn geïdentificeerde
+aanvullende routes, geen reeds ontvangen Meijendel-datasets. De lopende
+Dunea-route blijft eerste keus, omdat daar naast de beelden voor meerdere
+jaren bestaande vegetatie-interpretaties kunnen bestaan. Kadaster en Dotka
+worden pas voor concrete ontbrekende jaren gebruikt nadat Dunea de eigen
+inventaris en gebruiksvoorwaarden heeft bevestigd.
 
 **Historische Dunea-reeks, bronbericht 26 oktober 2026.** Harrie Van der
 Hagen meldt dat Dunea gebiedsdekkende luchtfoto's van heel Meijendel beheert.
