@@ -881,6 +881,8 @@ Veldonderzoek en beheer. Het KNNV-conferentieverslag uit 1953 (MMKB29:019897000:
 
 Het wederopbouwrapport uit 1947 (MMKB45:255926000:00012) bevat een voorstel voor strandontsluiting bij Meyendel. Wandelen in en om Den Haag (1955; MMKB53:311443000:00068 en MMKB53:311443000:00096) beschrijft Lekwateraanvoer, verwachte natuurverandering en toegang met jaarkaart tot Kijfhoek en Bierlap. De 83 vangsten, de historische floracijfers en de losse vogelmeldingen zijn niet ingevoerd in Meijendel of Meijendel_bronnen.
 
+Delpher, aanvullende krantentoets op 12 november 2026. De zoekslag met Meiendel telt 1.475 unieke krantenrecords vanaf 1945, 23 meer dan de oorspronkelijke zes zoekvormen. Drie OCR-gelezen artikelen uit 1950–1969 brengen de selectie op 76 publicaties uit 1947–2001. Het Binnenhof meldt begraven oorlogsbeton en helmaanplant tussen Ruigenhoek en Meijendel (30 augustus 1950; MMKB19:000372051:mpeg21:a00033). Het Vrije Volk documenteert gedeeltelijke openstelling (23 mei 1959; ddd:010953402:mpeg21:a0281). Het Rotterdamsch Parool meldt toegangsbeperking na recreatieschade en kondigt onderzoek aan (24 september 1969; MMSARO03:259066021:mpeg21:a00103). De afzonderlijke deelgebiedzoekslag en de resterende zoekresultaten zijn nog niet volledig beoordeeld.
+
 ## 4. Verwachte aanvullingen
 
 **Vlindergegevens:** De Vlinderstichting verwacht in de week van 28 september 2026 aanvullende meetstructuur te kunnen leveren. Die levering wordt eerst vergeleken met de 82.217 NDFF-dagvlinderrecords en de bestaande routeconstructie.
