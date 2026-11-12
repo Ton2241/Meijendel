@@ -244,6 +244,7 @@ CREATE TABLE IF NOT EXISTS maatregel_uitvoering_plotscope (
 
 CREATE TABLE IF NOT EXISTS maatregel_geometrie (
   geometrie_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  object_code VARCHAR(32) CHARACTER SET ascii NOT NULL DEFAULT 'geheel',
   uitvoering_id BIGINT UNSIGNED NOT NULL,
   geometrie_type ENUM('TG01_zoekgebied','TG02_plangebied','TG03_uitvoeringsgebied','TG04_effectgebied') NOT NULL,
   geometrie GEOMETRY NOT NULL SRID 28992,
@@ -251,7 +252,7 @@ CREATE TABLE IF NOT EXISTS maatregel_geometrie (
   bron_id BIGINT UNSIGNED NOT NULL,
   geometrie_opmerking VARCHAR(1000) NULL,
   PRIMARY KEY (geometrie_id),
-  UNIQUE KEY uq_maatregel_geometrie (uitvoering_id, geometrie_type, geometrie_jaar),
+  UNIQUE KEY uq_maatregel_geometrie (uitvoering_id, geometrie_type, geometrie_jaar, object_code),
   SPATIAL KEY sx_maatregel_geometrie (geometrie),
   KEY ix_maatregel_geometrie_bron (bron_id),
   CONSTRAINT fk_maatregel_geometrie_uitvoering FOREIGN KEY (uitvoering_id)

@@ -325,7 +325,7 @@ CENTRAL_QUERY_SCHEMA = {
     'maatregel_activiteit_type': frozenset(['activiteit_code', 'omschrijving']),
     'maatregel_bron': frozenset(['bron_code', 'bron_datum', 'bron_id', 'bronstatus', 'brontype_code', 'opmerking', 'raadpleegdatum', 'titel', 'url', 'zotero_item_key']),
     'maatregel_brontype': frozenset(['brontype_code', 'landelijke_broncategorie', 'omschrijving']),
-    'maatregel_geometrie': frozenset(['bron_id', 'geometrie', 'geometrie_id', 'geometrie_jaar', 'geometrie_opmerking', 'geometrie_type', 'uitvoering_id']),
+    'maatregel_geometrie': frozenset(['bron_id', 'geometrie', 'geometrie_id', 'geometrie_jaar', 'geometrie_opmerking', 'geometrie_type', 'object_code', 'uitvoering_id']),
     'maatregel_habitat': frozenset(['habitat_id', 'maatregel_id']),
     'maatregel_plot_koppeling': frozenset(['bron_id', 'doorsnijding_pct', 'koppelmethode', 'opmerking', 'plot_id', 'uitvoering_id', 'verificatiestatus']),
     'maatregel_project': frozenset(['aangemaakt_op', 'bestuurlijke_status', 'deelgebied', 'doel_omschrijving', 'druk_aandachtspunt', 'externe_projectcode', 'financiering', 'gewijzigd_op', 'juridisch_categorie', 'naam', 'natura2000_gebied', 'omschrijving', 'plan_einddatum', 'plan_startdatum', 'programma', 'project_code', 'project_id', 'verantwoordelijke_organisatie', 'werkcategorie_code']),

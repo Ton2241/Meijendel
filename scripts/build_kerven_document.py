@@ -111,7 +111,7 @@ def add_footer(section) -> None:
     footer = section.footer
     p = footer.paragraphs[0]
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = p.add_run("Kerven in Meijendel · bronoverzicht 11 november 2026 · ")
+    run = p.add_run("Kerven in Meijendel · bronoverzicht 12 november 2026 · ")
     run.font.size = Pt(8)
     run.font.color.rgb = TEXT_GREY
     fld_char1 = OxmlElement("w:fldChar")
@@ -162,7 +162,7 @@ def build() -> None:
     title = doc.add_paragraph(style="Title")
     title.add_run("De vijf kerven in Meijendel")
     subtitle = doc.add_paragraph(style="Subtitle")
-    subtitle.add_run("Levende database en lokale Zotero-bibliotheek · stand 11 november 2026")
+    subtitle.add_run("Levende database en lokale Zotero-bibliotheek · stand 12 november 2026")
 
     box = doc.add_table(rows=1, cols=1)
     box.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -175,7 +175,8 @@ def build() -> None:
         "Kern. De vijf kerven zijn in de winters 2013/2014 en 2014/2015 aangelegd en in 2015 "
         "voltooid. Over 750 meter zeereep is op vijf plekken vegetatie verwijderd, samen met "
         "10–20 cm bodem; 109.434 m² is feitelijk afgegraven. De levende database koppelt de aanleg "
-        "aan M15, M16 en M17a. Nabeheer is vastgelegd voor 2016 en 2024, gekoppeld aan M16 en "
+        "aan M15, M16 en M17a en bewaart MEY1–MEY5 als vijf gereconstrueerde kernvlakken van "
+        "ieder 30 × 30 meter. Nabeheer is vastgelegd voor 2016 en 2024, gekoppeld aan M16 en "
         "M17a. Nieuw in deze broncontrole is het OBN-rapport uit 2025: het onderscheidt MEY1–MEY5 "
         "en laat zien dat de vijf kerven geomorfologisch verschillend functioneren."
     )
@@ -196,8 +197,8 @@ def build() -> None:
     p.add_run(
         "In de lokale database Meijendel staan voor project zeereep_kerven één project, twee "
         "uitvoeringen, vier expliciete jaarbeoordelingen over 2014, 2015, 2016 en 2024, vier "
-        "uitvoering–bronrelaties, vijf uitvoering–kavelrelaties en tien regels in "
-        "v_plot_jaar_maatregel_bronvast."
+        "uitvoering–bronrelaties, vijf uitvoering–kavelrelaties, vijf gereconstrueerde "
+        "uitvoeringsgeometrieën en tien regels in v_plot_jaar_maatregel_bronvast."
     )
     add_table(
         doc,
@@ -219,12 +220,14 @@ def build() -> None:
         [Inches(1.35), Inches(1.65), Inches(1.05), Inches(3.0)],
     )
     p = doc.add_paragraph()
-    p.add_run("Ruimtelijke grens. ").bold = True
+    p.add_run("Ruimtelijke opslag. ").bold = True
     p.add_run(
-        "De database bewaart geverifieerde kaveltoedelingen, geen exacte werkpolygonen. "
-        "Het gezamenlijke ontgravingsoppervlak is niet over M15, M16 en M17a verdeeld. Ook voor "
-        "het nabeheer ontbreken per jaar de exacte voetafdruk en het aandeel per kavel; daarom "
-        "zijn alle doorsnijdingspercentages leeg."
+        "De database bewaart de vijf handmatig op de PDOK-luchtfoto 2025 gepositioneerde "
+        "kernvlakken als TG03-polygonen, met objectcodes MEY1–MEY5 en geometriejaar 2015. "
+        "Ieder vlak is 900 m²; samen 4.500 m². Het zijn gereconstrueerde kerfkernen, geen exacte "
+        "begrenzing van het volledige werk. Daarom verdelen of vervangen zij het gezamenlijke "
+        "ontgravingsoppervlak van 109.434 m² niet. De kaveltoedelingen M15, M16 en M17a blijven "
+        "afzonderlijke relaties zonder doorsnijdingspercentage."
     )
     p = doc.add_paragraph()
     p.add_run("Bronspanning. ").bold = True
@@ -337,10 +340,10 @@ def build() -> None:
     )
 
     doc.add_heading("5. Wat nog niet is vastgelegd", level=1)
-    add_number(doc, "De exacte polygonen van MEY1–MEY5 en de koppeling van iedere afzonderlijke kerf aan M15, M16 en M17a. De database bewaart nu alleen de gezamenlijke uitvoeringsscope.")
+    add_number(doc, "De exacte volledige werkpolygonen van MEY1–MEY5. De database bewaart vijf gereconstrueerde kernvlakken van 900 m²; deze zijn niet gelijk aan de volledige ontgravingsvoetafdruk.")
     add_number(doc, "Een verdeling van 109.434 m² over kerven, kavels en uitvoeringsjaren. De bronnen geven alleen het gezamenlijke totaal.")
     add_number(doc, "De precieze werkvoetafdruk van het nabeheer in 2016 en 2024. Daarom blijven doorsnijdingspercentages leeg.")
-    add_number(doc, "Het OBN-rapport uit 2025 als maatregelbron en de kerfcodes MEY1–MEY5 als afzonderlijke objecten. De bron is wel in Zotero aanwezig en nu in het Meijendel-bronregister beschreven.")
+    add_number(doc, "Een bronvaste verdeling van de kerfcodes MEY1–MEY5 over M15, M16 en M17a. De uitvoering is aan de drie kavels gekoppeld; per kerf is geen afzonderlijke kavelrelatie geconstrueerd.")
     add_number(doc, "Een causale ecologische effectschatting. De bronnen ondersteunen meer zanddynamiek en lokale doorstuiving, maar niet dat een waargenomen verandering in vogels, konijnen of vegetatie uitsluitend door de kerven is veroorzaakt.")
 
     doc.add_heading("6. Bronnen", level=1)
@@ -355,10 +358,11 @@ def build() -> None:
     p = doc.add_paragraph()
     p.add_run(
         "Dit overzicht is gebaseerd op een directe uitlezing van de lokale levende database "
-        "Meijendel op 11 november 2026 en op de gekoppelde volledige PDF's in de lokale "
+        "Meijendel op 12 november 2026 en op de gekoppelde volledige PDF's in de lokale "
         "Zotero-bibliotheek op /Volumes/T7 Data/Zotero. De database is voor deze opdracht niet "
-        "gewijzigd. Alleen het bronregister is aangevuld met de nieuw herkende betekenis van het "
-        "OBN-tussenrapport uit 2025."
+        "alleen inhoudelijk gecontroleerd, maar ook aangevuld met vijf gereconstrueerde "
+        "kervenkernvlakken. De bestaande uitvoering, jaren, hoeveelheid en kavelrelaties zijn "
+        "daarbij ongewijzigd gebleven."
     )
 
     doc.core_properties.title = "De vijf kerven in Meijendel"
