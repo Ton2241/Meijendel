@@ -54,6 +54,13 @@ vooraf gekozen grens van 0,60. Radiometrische normalisatie en beeldtextuur
 verbeteren dit niet. De luchtfoto's worden daarom niet tot een jaarlijkse
 vegetatiestructuurreeks uitgebreid.
 
+Voor de afzonderlijke Lansu-route is inmiddels een gecontroleerde
+2020-modelinvoer opgebouwd voor M13s, M13, M14, M15 en M16. Die omvat de zeven
+gepubliceerde banden in 25 volledige modeltegels. Dit is een technische
+voorbereiding, geen nieuwe classificatie-uitkomst. De gewichten zijn nog niet
+ontvangen en de LGN2020-afleiding van afstand en uitsluitingsmaskers moet nog
+tegen de nu gebruikte BRT-hoogwaterlijn worden gecontroleerd.
+
 Op 19 oktober 2026 zijn de oorspronkelijke geclassificeerde rasters voor 2001
 en 2022 ontvangen. Zij bevestigen de gepubliceerde oppervlaktes en voegen voor
 25 plots echte ruimtelijke structuur toe: per klasse zijn nu onder meer het
@@ -85,6 +92,8 @@ door naar power.
   vervolgstap opnieuw moeten worden gemaakt.
 - [Luchtfoto classificatieproef](LUCHTFOTO_CLASSIFICATIEPROEF.md) beschrijft
   gegevens, validatie, nuluitkomsten en het besluit over een jaarlijkse reeks.
+- [Voorbereiding Lansu-modeltoets 2020](LANSU_MODELINVOER_2020.md) legt
+  pilotkeuze, bronbestanden, zevenlagencontract en checkpointcontrole vast.
 - [Brononderzoek MODAK, HYVEG en PROBE](MODAK_PROBE_HYVEG_BRONONDERZOEK.md)
   beschrijft wat deze vegetatiemodellen wel en niet aan de Meijendel-analyse
   kunnen toevoegen.

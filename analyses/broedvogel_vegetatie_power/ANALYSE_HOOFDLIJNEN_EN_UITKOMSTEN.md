@@ -1,6 +1,6 @@
 # Analyse op hoofdlijnen en uitkomsten
 
-**Stand:** 12 november 2026
+**Stand:** 13 november 2026
 
 **Status:** de analysematrix, tellergevoeligheid, vegetatiestappen,
 structuurproeven, omgevingsmodellen, niet-lineaire vertraagde modellen en de
@@ -77,6 +77,17 @@ opgevraagd. Het model biedt daardoor een concrete nieuwe proefroute voor
 recente Meijendel-beelden, maar maakt de eerdere zwakke overdracht tussen
 beeldjaren niet ongedaan en is niet rechtstreeks toepasbaar op historische
 zwart-witfoto's.
+
+Die proefroute is technisch voorbereid. Voor de vijf aaneengesloten plots
+M13s, M13, M14, M15 en M16 zijn de originele 25-centimeterbeelden van 2020
+gekoppeld aan AHN4. De zeven gepubliceerde modelbanden zijn vastgelegd in 25
+volledige U-net-tegels; binnen de plots zijn zij volledig numeriek gevuld. Het
+product is uitsluitend modelinvoer, nog geen habitatkaart. Afstand tot zee is
+voorlopig afgeleid van de officiële BRT-hoogwaterlijn. Lansu gebruikte
+LGN2020 voor deze afstand en voor uitsluitingsmaskers; na ontvangst van dat
+bestand wordt het verschil eerst gekwantificeerd. De gewichten blijven de
+enige blokkade voor inferentie. Een technische controle weigert ieder
+checkpoint dat niet exact zeven invoerkanalen en zeven uitvoerklassen bevat.
 
 De aanvullende representativiteitsanalyse laat zien dat de
 landbedekkingsklassen waarin minstens één PQ ligt binnen de 25 kaartplots per

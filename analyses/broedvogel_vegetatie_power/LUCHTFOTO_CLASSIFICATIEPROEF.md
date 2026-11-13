@@ -163,3 +163,19 @@ Dit zijn beschikbaarheidsroutes, geen ontvangen Meijendel-bronnen. De
 Dunea-reeks blijft voorrang houden omdat zij voor meerdere jaren ook bestaande
 vegetatie-interpretaties kan bevatten. Kadaster en Dotka worden pas gericht
 gebruikt voor concrete ontbrekende jaren na de Dunea-inventaris.
+
+## Voorbereide lokale Lansu-toets, 13 november 2026
+
+Voor M13s, M13, M14, M15 en M16 is een afzonderlijke modelinvoer uit 2020
+opgebouwd. De originele RGB- en CIR-orthofoto's op 25 centimeter, AHN4 DSM en
+DTM op 50 centimeter en de officiële BRT-hoogwaterlijn zijn op hetzelfde
+rooster samengebracht. De vaste zeven bandvolgorde en normalisatiewaarden uit
+de gepubliceerde configuratie zijn technisch vastgelegd. De invoer doorstaat
+de rastercontrole; zij bevat nog geen voorspellingen.
+
+Lansu gebruikte LGN2020 om de zee en het landelijke studiegebied te
+begrenzen. Die bron is nog niet ontvangen. De BRT-afleiding maakt de lokale
+invoer uitvoerbaar, maar wordt vóór inferentie tegen LGN2020 vergeleken. Ook
+na ontvangst van de gewichten blijft lokale validatie vereist. De voorbereiding
+verandert daarom noch de negatieve overdrachtstoets van de eigen classifier,
+noch het besluit om daaruit geen jaarlijkse vegetatiereeks af te leiden.

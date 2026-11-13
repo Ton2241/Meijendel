@@ -4,6 +4,31 @@ Dit bestand bewaart de inhoudelijke en technische keuzes voor deze analyse.
 Nieuwe besluiten worden gedateerd toegevoegd; eerdere besluiten worden niet
 stilzwijgend herschreven.
 
+## 13 november 2026 — modelinvoer voorbereid voor M13s tot en met M16
+
+- De eerste lokale Lansu-toets gebruikt de vijf aaneengesloten buitenduinplots
+  M13s, M13, M14, M15 en M16. Samen bevatten zij open zand, lage vegetatie,
+  struweel, bomen en water in een compact gebied; zij zijn een pilot en geen
+  nieuwe analysescope voor alle vogelmodellen.
+- De oorspronkelijke RGB- en CIR-GeoTIFFs uit 2020 zijn op 25 centimeter van
+  GeoTiles ontvangen. AHN4 DSM en DTM op 50 centimeter worden hergebruikt uit
+  de gecontroleerde run van 12 oktober 2026. De modelinvoer heeft de vaste
+  volgorde rood, groen, blauw, nabij-infrarood, DSM in centimeter,
+  kroonhoogte in centimeter en afstand tot zee in meter.
+- Het raster bestaat uit 25 hele invoertegels van 2.048 bij 2.048 pixels. Alle
+  modelbanden zijn binnen de pilotplots volledig numeriek. De oorspronkelijke
+  AHN4-dekking blijft apart zichtbaar: 93,4% voor DSM en 91,9% voor de
+  combinatie DSM-DTM. Ontbrekende hoogtewaarden, vooral water, worden nul
+  omdat de gepubliceerde datalader geen nodatamasker toepast.
+- LGN2020 is nog niet ontvangen. Tot die bron beschikbaar is, komt afstand tot
+  zee uit de officiële BRT-hoogwaterlijn. Voor inferentie wordt eerst het
+  verschil met de LGN2020-afleiding gecontroleerd; het landelijke
+  uitsluitingsmasker wordt niet stilzwijgend vervangen.
+- Er wordt pas geclassificeerd nadat de ontvangen gewichten aantoonbaar zeven
+  invoerkanalen en zeven uitvoerklassen bevatten. De uitkomst wordt eerst
+  lokaal gevalideerd. Geen raster gaat nu naar de levende database, Shiny of
+  de VPS.
+
 ## 12 november 2026 — Lansu-model als methodebron, niet als historische tijdreeks
 
 - Lansu et al. (2025), *Habitat mapping of coastal dunes with deep learning*,

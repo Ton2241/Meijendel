@@ -1,6 +1,6 @@
 # Bronregister ecologische gegevens Meijendel
 
-**Stand: 12 november 2026.**
+**Stand: 13 november 2026.**
 
 Dit register bevat informatie over:
 
@@ -690,6 +690,30 @@ Dunea-route blijft eerste keus, omdat daar naast de beelden voor meerdere
 jaren bestaande vegetatie-interpretaties kunnen bestaan. Kadaster en Dotka
 worden pas voor concrete ontbrekende jaren gebruikt nadat Dunea de eigen
 inventaris en gebruiksvoorwaarden heeft bevestigd.
+
+**Ontvangen 2020-modelbronnen en lokale pilot, stand 13 november 2026.** Van
+GeoTiles zijn de oorspronkelijke RGB- en CIR-GeoTIFFs uit 2020 ontvangen voor
+de kaartbladen die de pilot M13s, M13, M14, M15 en M16 dekken. De gebruikte
+bladen `30EZ1` en `30GN1` hebben 25-centimeterpixels, EPSG:28992 en een CC BY
+4.0-licentie. De bestanden blijven met hashes op T7; zij worden niet in Git of
+de levende database opgeslagen. AHN4 DSM en DTM op 50 centimeter worden
+hergebruikt uit de gecontroleerde bronrun van 12 oktober 2026. Samen leveren
+zij 25 volledige U-net-tegels van 2.048 bij 2.048 pixels met de zeven
+gepubliceerde invoerbanden. Binnen de vijf plots zijn alle modelbanden
+numeriek gevuld. De oorspronkelijke AHN4-dekking bedraagt 93,4% voor DSM en
+91,9% voor de combinatie DSM-DTM; de ontbrekende hoogtepixels, vooral water,
+zijn als nul gecodeerd omdat de gepubliceerde datalader geen nodatamasker
+toepast.
+
+LGN2020 is wel als open 5-meterbron geïdentificeerd, maar nog niet ontvangen:
+de downloadlink wordt door WUR pas na een formulier met naam en e-mailadres
+verstrekt. Lansu gebruikte LGN2020 voor afstand tot zee en uitsluiting van
+niet-duingebruik. Voor de lokale technische pilot is afstand tot zee voorlopig
+afgeleid van de officiële gemiddelde hoogwaterlijn uit de BRT-bronlaag. Deze
+vervanging wordt niet als gelijkwaardig verondersteld: na ontvangst van
+LGN2020 worden de afstandslaag en het uitsluitingsmasker gereconstrueerd en
+vergeleken. De voorbereide rasterstack is daarom kandidaat-modelinvoer, geen
+nieuwe ecologische meetbron en geen habitatclassificatie.
 
 **Historische Dunea-reeks, bronbericht 26 oktober 2026.** Harrie Van der
 Hagen meldt dat Dunea gebiedsdekkende luchtfoto's van heel Meijendel beheert.

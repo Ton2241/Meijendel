@@ -23,6 +23,29 @@ Ieder uitvoerscript moet een uitvoermanifest schrijven zoals beschreven in het
 hoofddocument. Scripts schrijven niet rechtstreeks naar Shiny, dashboard of
 VPS.
 
+## Lansu-modelinvoer 2020
+
+De lokale pilot M13s-M16 wordt reproduceerbaar opgebouwd met:
+
+```bash
+analyses/broedvogel_vegetatie_power/scripts/run_lansu_modelinvoer_2020.sh \
+  '/Volumes/T7 Data/Home_Ton/Proefomgevingen/lansu-modelinvoer-2020-2026-11-13'
+```
+
+De runner leest originele RGB/CIR-GeoTIFFs uit de geregistreerde T7-map en
+hergebruikt de gecontroleerde AHN4-mozaieken. Hij schrijft een zevenbands
+GeoTIFF, manifest en controlerapport uitsluitend op T7. De vaste bandvolgorde,
+hoogteschaal, modeltegelgrootte en checkpointvorm worden getest met:
+
+```bash
+/Users/ton/Documents/GitHub/Meijendel/.venv_ahn/bin/python \
+  analyses/broedvogel_vegetatie_power/scripts/test_lansu_modelinvoer.py
+```
+
+Na ontvangst van de modelgewichten controleert
+`controleer_lansu_checkpoint.py` de SHA256-hash, het aantal invoerkanalen en
+het aantal uitvoerklassen voordat inferentie mag beginnen.
+
 ## Stap 1: vogelmatrix
 
 Voer vanuit de repository uit:
